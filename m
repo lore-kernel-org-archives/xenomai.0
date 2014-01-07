@@ -1,24 +1,13 @@
-Message-ID: <52CB32BD.7020607@xenomai.org>
-Date: Mon, 06 Jan 2014 23:48:29 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAFnctWFSGJc0Q6ebZ0zBhxRmFEwkvCYKinAEgD-xzcCbfLaPBg@mail.gmail.com>
- <52C7CF1E.2050404@xenomai.org> <52C85088.7020501@xenomai.org>
- <52C86093.4000609@xenomai.org>
- <CAFnctWG1QoQ=f9JCsdxAoU25mc797fKoT9dVS_DdZFRcQ5CP3A@mail.gmail.com>
- <52C891C1.2090007@xenomai.org>
- <CAFnctWFb-dNtNDGf0kckejhQ+tFAj2hBw3gm5Xv8DoALi6f26g@mail.gmail.com>
- <52C949D6.6090904@xenomai.org> <52C9B255.7030702@xenomai.org>
- <52CA622D.806@xenomai.org>
- <CAFnctWGs-mqukTTujenvex9Doq0DoJ_ohFEPDjd7ECYRzu6tpw@mail.gmail.com>
- <52CB23F5.6000006@xenomai.org>
- <CAFnctWGwssFMPeLwhpJnob46rXwRDDxuj_Snoh6Cqs8cbRN2Cw@mail.gmail.com>
- <52CB261F.1050808@xenomai.org> <52CB29F9.4020100@xenomai.org>
- <CAFnctWFJZxFORV-QLxou2PD_DDyFGWiaA5=R3W0VMVqwj+e3_A@mail.gmail.com>
-In-Reply-To: <CAFnctWFJZxFORV-QLxou2PD_DDyFGWiaA5=R3W0VMVqwj+e3_A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rtdm_task_init call freezes the system
+In-Reply-To: <52CAEA4D.1020505@xenomai.org>
+References: <CAKJ14NdsfwK4Vj=UpYb6p9bvFE=1ZoQb6ss--9f-WqXOXGDn2g@mail.gmail.com>
+ <52CAEA4D.1020505@xenomai.org>
+Date: Tue, 7 Jan 2014 07:23:12 +0000
+Message-ID: <CAKJ14NdEUTDywB=TY+azn+HE=nqcpNmL7f3cOD7E8p2JT3TUMg@mail.gmail.com>
+From: Andreas Glatz <andi.glatz@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Command line freeze during xeno-regression-test on
+	omap4460
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,18 +16,150 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Nima Nourozi <n.nourozi@gmail.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 01/06/2014 11:47 PM, Nima Nourozi wrote:
-> I'm not seeing the latency command on my board. Is it part of xenomai? I'm
-> using buildroot for my filesystem.
+Hi Gilles,
 
-It may not be installed in /usr/bin
+At first /tmp was tmpfs since I didn't want to wear out my flash with the
+testing. Now I connected an external usb harddrive to the panda and mounted
+one of the harddrive partions as /tmp. Additionally, I did not load
+xeno_klat and xeno_rtdmtest, which were both in before. I started
+xeno-regression-test -l "/usr/lib/xenomai/testsuite/dohell -m /tmp -l
+/opt/ltp" -t 2 again (btw I modified dohell to call runltp instead of
+runallscripts.sh since the latter is deprecated). And the good news was
+that it ran nearly all the tests (everything up to cgroup*) and 'top' was
+working all the way. However this morning I noticed that it's still at the
+first test of the cgroup* and didn't go any further. 'top' stopped working
+and i cannot open additional consoles. On the consoles that are still open
+(3 of them) I can execute simple commands like ps, grep, df, ... but
+nothing like reboot, top, shutdown, ... Suprisingly, cat /var/log/messages
+also gets blocked:
 
-Try "xeno latency"
+Console 1:
+root@arm:~# cat /var/log/messages
+^C # <-- notice: I tried to kill it here but no response
+
+Console 2:
+root@arm:/opt/ltp/results# ps ax
+  PID TTY      STAT   TIME COMMAND
+...
+15149 pts/2    D+     0:00 cat /var/log/messages
+...
+
+Nothing else is running though (neither on linux nor xenomai) :
+root@arm:/opt/ltp/results# cat /proc/xenomai/stat
+CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+  0  0      0          986564     0     00500080  100.0  ROOT/0
+  1  0      0          992712     0     00500080  100.0  ROOT/1
+  1  0      0          309543     0     00000000    0.0  IRQ29: [timer]
+
+To me this looks like a problem with the filesystem (maybe my sd flash card
+where the rootfs resides). I will try and install the rootfs on the
+external harddrive and repreat everything... maybe this might solve the
+problem.
+
+I still have all three consoles open, where just one is still repsonsive.
+Any further suggestions?
+
+Thanks for any help,
+
+A.
 
 
--- 
-                                                                Gilles.
 
+
+
+On Mon, Jan 6, 2014 at 5:39 PM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+
+> On 01/06/2014 04:30 PM, Andreas Glatz wrote:
+>
+>> Hi,
+>>
+>> I managed to produce a kernel (v3.8.13) with xenomai 2.6.3 ipipe patch and
+>> rootfs (debian wheezy) with xenomai 2.6.3 libraries for my Pandaboard ES
+>> (omap4460). The simple regression test, which only calls dd during the
+>> switchtest, works fine. However the regression test with the linux test
+>> project (ltp-full-20130904) scripts causes some sort of system lock up.
+>> After that I only can ctrl-c xeno-regression-test (i.e. switchtest),
+>> which,
+>> however, doesn't help to regain console access (neigher over ethernet nor
+>> serial).
+>>
+>> Here's what I did:
+>>
+>> -- Building --
+>> As recomended in the Xenomai 2.6 readme I followed the instructions in [1]
+>> to produce a kernel and filesystem. To get a xenomai kernel I had to do
+>> three things differently:
+>>
+>> *) I used: git checkout origin/v3.8.x -b tmp
+>> *) I applied ipipe-core-3.8.13-arm-3.patch from the xenomai-2.6 git tree
+>> as
+>> described in the Xenomai 2.6 readme
+>> *) I disabled KGDB and TIDSPBRIDGE since those produced compile errors
+>> (see
+>> config [2])
+>>
+>> After a while I obtained the following messages from dmesg [3] and from
+>> the
+>> command prompt:
+>>
+>> root@arm:~# cat /proc/version
+>> Linux version 3.8.13-x3.6 (aglatz@linuxvbox) (gcc version 4.7.3 20130328
+>> (prerelease) (crosstool-NG linaro-1.13.1-4.7-2013.04-20130415 - Linaro
+>> GCC
+>> 2013.04) ) #4 SMP Sat Jan 4 15:54:20 GMT 2014
+>>
+>> -- Testing Linux --
+>> To see if everything works I downloaded and cross-compiled
+>> ltp-full-20130904 [4] with the same toolchain and flags (-march=armv7-a
+>> -mfpu=vfp3) as the xenomai libs and runtime. I started ltp with "./runltp
+>> -p -l dohell-2014-01-06-1.log -S xenomai.skiplist" and after a while it
+>> finished with a few failed tests [5]. The console access, however, worked
+>> fine.
+>>
+>> -- Testing Xenomai --
+>> First I sucessfully could run the simple xenomai regression test:
+>> xeno-regression-test -l "/usr/lib/xenomai/testsuite/dohell -m /tmp 100"
+>> -t
+>> 2 which produced the output in [6] and the following additional messages
+>> with dmesg:
+>>
+>> [  476.215057] Xenomai: RTDM: closing file descriptor 1.
+>> [  477.434936] Xenomai: Posix: destroying semaphore f0069c00.
+>> [  477.440887] Xenomai: Posix: destroying mutex f0069a00.
+>> [  477.475372] xnheap: destroying shared heap 'rt_heap: heap' with 16384
+>> bytes still in use.
+>> [  479.008453] Xenomai: Switching rt_task to secondary mode after
+>> exception
+>> #0 from user-space at 0x9620 (pid 2145)
+>> [  480.574462] Xenomai: watchdog triggered -- signaling runaway thread
+>> 'rt_task'
+>> [  480.582061] [sched_delayed] sched: RT throttling activated
+>> [  557.336425] Xenomai: Posix: closing message queue descriptor 3.
+>>
+>> and  "cat /proc/xenomai/*" produced [7].
+>>
+>> When I started the realistic xenomai regression test: xeno-regression-test
+>> -l "/usr/lib/xenomai/testsuite/dohell -m /tmp -l /opt/ltp" -t 2
+>> everything
+>> seemed fine at first - I could logon and start top to inspect the running
+>> processes. However, the command line (over serial and ethernet)
+>> consistently freezes after a while (at different ltp tests though). First
+>> I
+>> thought it's the massive system load which doesn't leave CPU for the
+>> console... however ctrl-c of xeno-regression-test does not help to regain
+>> console access...
+>>
+>
+> That is because kill xeno-regression-test does not kill all the script
+> children. So, basically, the load tasks are still running. Also, what
+> filesystem is /tmp? dohell is using dd to alternatively write to /tmp, then
+> erase the file. If /tmp is some flash, it will become slow after a while.
+> If it is a tmpfs, it will eat RAM.
+>
+> --
+>                                             Gilles.
+>
