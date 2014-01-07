@@ -1,12 +1,12 @@
-Message-ID: <52CC83F1.40000@xenomai.org>
-Date: Tue, 07 Jan 2014 23:47:13 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <52CC85C5.4060703@steinkuehler.net>
+Date: Tue, 07 Jan 2014 16:55:01 -0600
+From: Charles Steinkuehler <charles@steinkuehler.net>
 MIME-Version: 1.0
 References: <44lhyrmuw9.fsf@be-well.ilk.org>
- <52CC7D71.4040703@steinkuehler.net>
-In-Reply-To: <52CC7D71.4040703@steinkuehler.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ <52CC7D71.4040703@steinkuehler.net> <52CC83F1.40000@xenomai.org>
+In-Reply-To: <52CC83F1.40000@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Altera Cyclone V
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,21 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Charles Steinkuehler <charles@steinkuehler.net>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 01/07/2014 11:19 PM, Charles Steinkuehler wrote:
-> The single-core A8 on the
-> BeagleBone is good for about 25 uS typical and 80 uS or so worst case
-> latency.
-
-That is really high. On a 720MHz OMAP3, with the latency test running
-with a 100us period, I typically get latencies close to 40us (under
-dohell load). Granted I do not run many functionalities of the SOC
-(typically, not the graphic processor), but I would not expect latencies
-to get so high. Is there any chance you could trigger a trace with the
-I-pipe tracer?
-
--- 
-                                                                Gilles.
-
+T24gMS83LzIwMTQgNDo0NyBQTSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDEv
+MDcvMjAxNCAxMToxOSBQTSwgQ2hhcmxlcyBTdGVpbmt1ZWhsZXIgd3JvdGU6Cj4+IFRoZSBzaW5n
+bGUtY29yZSBBOCBvbiB0aGUKPj4gQmVhZ2xlQm9uZSBpcyBnb29kIGZvciBhYm91dCAyNSB1UyB0
+eXBpY2FsIGFuZCA4MCB1UyBvciBzbyB3b3JzdCBjYXNlCj4+IGxhdGVuY3kuCj4gCj4gVGhhdCBp
+cyByZWFsbHkgaGlnaC4gT24gYSA3MjBNSHogT01BUDMsIHdpdGggdGhlIGxhdGVuY3kgdGVzdCBy
+dW5uaW5nCj4gd2l0aCBhIDEwMHVzIHBlcmlvZCwgSSB0eXBpY2FsbHkgZ2V0IGxhdGVuY2llcyBj
+bG9zZSB0byA0MHVzICh1bmRlcgo+IGRvaGVsbCBsb2FkKS4gR3JhbnRlZCBJIGRvIG5vdCBydW4g
+bWFueSBmdW5jdGlvbmFsaXRpZXMgb2YgdGhlIFNPQwo+ICh0eXBpY2FsbHksIG5vdCB0aGUgZ3Jh
+cGhpYyBwcm9jZXNzb3IpLCBidXQgSSB3b3VsZCBub3QgZXhwZWN0IGxhdGVuY2llcwo+IHRvIGdl
+dCBzbyBoaWdoLiBJcyB0aGVyZSBhbnkgY2hhbmNlIHlvdSBjb3VsZCB0cmlnZ2VyIGEgdHJhY2Ug
+d2l0aCB0aGUKPiBJLXBpcGUgdHJhY2VyPwoKSSBjYW4gdHJ5Li4uZ2l2ZSBtZSBhIHdoaWxlIHRv
+IHNvcnQgdGhyb3VnaCB0aGUgSS1waXBlOlRyYWNlciB3aWtpIHBhZ2UKKG9yIGFyZSB0aGVyZSBi
+ZXR0ZXIgaW5zdHJ1Y3Rpb25zPykuCgpUaGlzIG1heSBhbHNvIGhhdmUgaW1wcm92ZWQgc29tZXdo
+YXQuLi5teSBudW1iZXJzIGFyZSBmcm9tIGEgeWVhciBvciBzbwphZ28gd2hlbiBldmVyeXRoaW5n
+IGZpcnN0IHN0YXJ0ZWQgd29ya2luZy4gIEkgaGF2ZW4ndCBiZWVuIHJlZ3Jlc3Npb24KdGVzdGlu
+ZyB0aGUgbGF0ZXN0IGtlcm5lbHMuICA8Ymx1c2g+ICBJIGtub3cgdGhlcmUgaGF2ZSBiZWVuIHNp
+Z25pZmljYW50CmltcHJvdmVtZW50cyBvbiBib3RoIHRoZSBYZW5vbWFpIHNpZGUgYW5kIHdpdGgg
+dGhlIEJlYWdsZUJvbmUga2VybmVsCnBhdGNoZXMvZHJpdmVycy4KCi0tIApDaGFybGVzIFN0ZWlu
+a3VlaGxlcgpjaGFybGVzQHN0ZWlua3VlaGxlci5uZXQKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFy
+dCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5h
+bWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAy
+NjEgYnl0ZXMKRGVzYzogT3BlblBHUCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3
+Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTQwMTA3L2EyYzVk
+OTcyL2F0dGFjaG1lbnQuc2lnPgo=
