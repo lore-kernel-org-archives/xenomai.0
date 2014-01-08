@@ -1,5 +1,5 @@
-Message-ID: <52CD0AA1.8050505@xenomai.org>
-Date: Wed, 08 Jan 2014 09:21:53 +0100
+Message-ID: <52CD132C.6030609@xenomai.org>
+Date: Wed, 08 Jan 2014 09:58:20 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <44lhyrmuw9.fsf@be-well.ilk.org>
@@ -54,13 +54,15 @@ On 01/08/2014 05:04 AM, Charles Steinkuehler wrote:
 > 
 > The link error goes away if I disable CONFIG_THUMB2_KERNEL, which
 > wasn't set in the original kernel config.
-
-Have you tried enabling workaround for broken gas?
-CONFIG_THUMB2_AVOID_R_ARM_THM_JUMP11?
-
-Also note that you may want to use a toolchain with hard floating
-points. I use linaro toolchains for instance.
-
+> 
+> I'll report details when I get some debug kernels tested and
+> capture the requested data.
+> 
+Also, something to be checked is whether the "PIC muting" is enabled
+for the beaglebone. PIC muting is already implemented for the OMAP3
+interrupt controller and GPIOS, you simply need to check that the
+initialization function (omap3_pic_muter_register) gets called in the
+BeagleBone processor initialization.
 
 - -- 
                                                                 Gilles.
@@ -68,8 +70,8 @@ points. I use linaro toolchains for instance.
 Version: GnuPG v1.4.12 (GNU/Linux)
 Comment: Using GnuPG with Icedove - http://www.enigmail.net/
 
-iD8DBQFSzQqhGpcgE6m/fboRAjqcAJ9RZpIOpB/btilqK7VdeXZEsgpJOQCdEBYg
-4nGKdWB78EzLvKIDKwqpvs4=
-=kE9J
+iD8DBQFSzRMsGpcgE6m/fboRAmP6AJ46enpi6Yy9+cJ3iP1FBvLGOKjQIQCggg8y
+pcHgitqDiBjDR0lxmjDhbdE=
+=4/vB
 -----END PGP SIGNATURE-----
 
