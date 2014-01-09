@@ -1,13 +1,24 @@
-Message-ID: <52CDDCEC.6030205@xenomai.org>
-Date: Thu, 09 Jan 2014 00:19:08 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <44lhyrmuw9.fsf@be-well.ilk.org> <52CC62A0.3090108@xenomai.org>
- <44lhyqgkip.fsf@lowell-desk.lan>
-In-Reply-To: <44lhyqgkip.fsf@lowell-desk.lan>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Altera Cyclone V
+In-Reply-To: <52CB32BD.7020607@xenomai.org>
+References: <CAFnctWFSGJc0Q6ebZ0zBhxRmFEwkvCYKinAEgD-xzcCbfLaPBg@mail.gmail.com>
+ <52C7CF1E.2050404@xenomai.org> <52C85088.7020501@xenomai.org>
+ <52C86093.4000609@xenomai.org>
+ <CAFnctWG1QoQ=f9JCsdxAoU25mc797fKoT9dVS_DdZFRcQ5CP3A@mail.gmail.com>
+ <52C891C1.2090007@xenomai.org>
+ <CAFnctWFb-dNtNDGf0kckejhQ+tFAj2hBw3gm5Xv8DoALi6f26g@mail.gmail.com>
+ <52C949D6.6090904@xenomai.org> <52C9B255.7030702@xenomai.org>
+ <52CA622D.806@xenomai.org>
+ <CAFnctWGs-mqukTTujenvex9Doq0DoJ_ohFEPDjd7ECYRzu6tpw@mail.gmail.com>
+ <52CB23F5.6000006@xenomai.org>
+ <CAFnctWGwssFMPeLwhpJnob46rXwRDDxuj_Snoh6Cqs8cbRN2Cw@mail.gmail.com>
+ <52CB261F.1050808@xenomai.org> <52CB29F9.4020100@xenomai.org>
+ <CAFnctWFJZxFORV-QLxou2PD_DDyFGWiaA5=R3W0VMVqwj+e3_A@mail.gmail.com>
+ <52CB32BD.7020607@xenomai.org>
+Date: Wed, 8 Jan 2014 18:51:20 -0800
+Message-ID: <CAFnctWFdG5hXxGm7ivfwz94pYxTsDm6c87-FkoeePAAHS5uAiw@mail.gmail.com>
+From: Nima Nourozi <n.nourozi@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] rtdm_task_init call freezes the system
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,61 +27,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lowell Gilbert <kludge@be-well.ilk.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 01/08/2014 11:45 PM, Lowell Gilbert wrote:
-> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
-> 
->> On 01/07/2014 08:52 PM, Lowell Gilbert wrote:
->>> What I'm hitting at the moment is that gt_setup() is getting called, 
->>> but twd_timer_setup() hasn't run yet, so the frequency isn't set yet. 
->>> Both functions are in __cpuinit, and the file would be used the same for
->>> other chips containing the Cortex A9, so I'm confused about what might
->>> be wrong.
->>
->> gt_setup is supposed to be called after twd_local_timer_common_register,
->> which calls twd_get_clock, which gets the timer frequency from the twd
->> clock node. If your SOC does not have a clock node for the twd clock,
->> then you should add one, because the calibration method yields unprecise
->> results, which may result in "early shots", meaning too many interrupts,
->> if the GT is not used as TSC.
-> 
-> But I do want the GT to be my TSC, no?
+On Mon, Jan 6, 2014 at 2:48 PM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
 
-Yes, but that is not always possible, not all cortex A9 have a GT.
-And as I said the calibration is imprecise, so, even if you do not get 
-early shots, you will still have the Xenomai clock drifting fast from 
-the Linux clock (if it is syncrhonized with ntp for instance).
+> On 01/06/2014 11:47 PM, Nima Nourozi wrote:
+> > I'm not seeing the latency command on my board. Is it part of xenomai?
+> I'm
+> > using buildroot for my filesystem.
+>
+> It may not be installed in /usr/bin
+>
+> Try "xeno latency"
+>
+>
+> --
+>                                                                 Gilles.
+>
 
-> 
->>>
->>> Any pointers would be appreciated.
->>
->> See:
->> https://www.xenomai.org/index.php/I-pipe-core:ArmPorting
->> In particular, about this specific issue:
->>
->> https://www.xenomai.org/index.php/I-pipe-core:ArmPorting#The_Cortex-A9_case
-> 
-> Ah; I had read that as saying that the clock node would be part of the
-> general A9 support. It should be the same for all chips using a Cortex
-> A9, no? 
+Gilles, good news!
 
-No, every ARM SOC has its own clocks implementation. This is currently 
-changing with the switch to device tree, but not all SOCs are 
-converted, at least not all of them were last time I checked. Anyway, 
-if your SOC uses device tree, adding a clock may simply be a matter of 
-adding it to the device tree.
+I was about to report back that the "simplified SPI code" was throwing the
+same exception before I messed around in the kernel a little bit more and
+turned off VFP feature and low and behold the task is working now!!
+Hurray!! I don't know why VFP was causing all this headache but I'm glad
+it's working.
 
-> 
-> Come to think of it, this is similar to my surprise at having to write
-> my own __ipipe_mach_update_tsc(), which surprised me. I'm clearly still
-
-No, you do not have to write your own __ipipe_mach_update_tsc(). See:
-https://www.xenomai.org/index.php/I-pipe-core:ArmPorting#High_resolution_counter
-
-
--- 
-                                                                Gilles.
-
+Thanks everybody for all help!
