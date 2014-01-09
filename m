@@ -1,5 +1,5 @@
-Message-ID: <52CE5EE7.90003@xenomai.org>
-Date: Thu, 09 Jan 2014 09:33:43 +0100
+Message-ID: <52CE6A13.3090909@xenomai.org>
+Date: Thu, 09 Jan 2014 10:21:23 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CAFnctWFSGJc0Q6ebZ0zBhxRmFEwkvCYKinAEgD-xzcCbfLaPBg@mail.gmail.com>
@@ -60,12 +60,18 @@ On 01/09/2014 03:51 AM, Nima Nourozi wrote:
 > 
 > Thanks everybody for all help!
 
-That is totally unexpected. Turning on or off VFP on AT91 should not
-change anything, since this processor does not have a VFP unit, as far
-as I can tell, or does it have one?
+Actually, what the VFP changes is the size of rtdm_task_t, so if the
+behaviour of your driver depends on the size of rtdm_task_t, there is
+definitely something wrong (like for instance an rtdm_task_t put on
+stack). So, again:
 
-Please post the simplified code so that I can test it on AT91SAM9263.
+please re-enable VFP and test xeno latency -t 1
+to see if rtdm_task_init works on your system
 
+please send an as reduced as possible piece of code which allows to
+reproduce the problem. The reason to reduce it as much as possible is to:
+- be sure of exactly what sequence of calls causes the problem;
+- allow people helping you to grasp quickly what this sequence of calls is.
 
 -- 
                                                                 Gilles.
