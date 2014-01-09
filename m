@@ -1,11 +1,13 @@
-Message-ID: <52CEA753.8000800@espera.de>
-Date: Thu, 09 Jan 2014 14:42:43 +0100
-From: Andreas Schwark <schwark@espera.de>
+From: Lowell Gilbert <kludge@be-well.ilk.org>
+References: <44lhyrmuw9.fsf@be-well.ilk.org> <52CC62A0.3090108@xenomai.org>
+ <44lhyqgkip.fsf@lowell-desk.lan> <52CDDCEC.6030205@xenomai.org>
+Date: Thu, 09 Jan 2014 13:06:29 -0500
+In-Reply-To: <52CDDCEC.6030205@xenomai.org> (Gilles Chanteperdrix's message of
+ "Thu, 09 Jan 2014 00:19:08 +0100")
+Message-ID: <44wqi9hvx6.fsf@lowell-desk.lan>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] POSIX message queues
-Reply-To: schwark@espera.de
+Content-Type: text/plain
+Subject: Re: [Xenomai] Altera Cyclone V
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,17 +18,12 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi all,
+Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
 
-we are working with Orocos-Toolchain on a PC with Lubuntu Version 12.04 
-patched with Xenomai. For inter-process communication between Orocos 
-processes we use POSIX messages queues. The communication works fine 
-with less then 60 message queues. If we want to use more than 60 message 
-quess, than we are not able to create more than 60 queues.  Can somebody 
-tell me where we can setup the maximum number of queues?
+> No, you do not have to write your own __ipipe_mach_update_tsc(). See:
+> https://www.xenomai.org/index.php/I-pipe-core:ArmPorting#High_resolution_counter
 
-Thank you in advance,
-Andreas
-
-
+I appreciate the help, but I still don't see an implementation
+of __ipipe_mach_update_tsc() that I could have used.
+Where was I supposed to get it from?
 
