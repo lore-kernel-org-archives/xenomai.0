@@ -1,17 +1,11 @@
-Message-ID: <52D13631.2060100@xenomai.org>
-Date: Sat, 11 Jan 2014 13:16:49 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <44lhyrmuw9.fsf@be-well.ilk.org>
- <52CC7D71.4040703@steinkuehler.net> <52CC83F1.40000@xenomai.org>
- <52CC85C5.4060703@steinkuehler.net> <52CC8A18.2020807@xenomai.org>
- <52CCA101.2040604@steinkuehler.net>
- <3FA64D57-1BB1-4B4A-AB25-AC8E280105F8@mah.priv.at>
-In-Reply-To: <3FA64D57-1BB1-4B4A-AB25-AC8E280105F8@mah.priv.at>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] i-pipe tracer on in production kernels? (was Re:
- Altera Cyclone V)
+From: "Yogi A. Patel" <yapatel@gatech.edu>
+Mime-Version: 1.0 (1.0)
+Message-Id: <10FA295E-2AE2-402F-8C2D-4653C9E0BD4E@gatech.edu>
+Date: Sat, 11 Jan 2014 11:04:55 -0500
+Content-Type: text/plain;
+	charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Analogy Calibrate NI-DAQ
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,23 +14,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Haberler <mail17@mah.priv.at>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 01/11/2014 11:22 AM, Michael Haberler wrote:
-> 
-> http://www.xenomai.org/index.php/I-pipe:Tracer describes the trace
-> API, which could be useful to track down issues
-> 
-> Q: does enabling the tracer incur significant overhead if compiled in
-> but unused, or is it reasonable to leave it on in a production
-> kernel?
+Hi -
 
-You should run some tests to answer that question: measure the latency
-with tracer compiled-in but not enabled, and with tracer completely
-disabled. I would expect to see a difference between the two
-configurations, but I do not know if it would be very significant.
+I develop a real-time electrophysiology platform called RTXI (www.rtxi.org) a=
+nd have run into a slight issue. We recently switched over from RTAI to Xeno=
+mai (for multiple reasons) and I can't seem to find an equivalent to comedi_=
+soft_calibarate for the National Instruments DAQs that we use.
 
--- 
-                                                                Gilles.
+Was such a tool ever made? If not, would anyone be able to point me in the d=
+irection to making such a tool for the Analogy drivers? I've written low-lev=
+el drivers before (somewhat) - and wouldn't mind writing this - just need so=
+me guidance.
 
+--=20
+Yogi A. Patel
