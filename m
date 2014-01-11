@@ -1,5 +1,5 @@
-Message-ID: <52D1896A.8070202@xenomai.org>
-Date: Sat, 11 Jan 2014 19:11:54 +0100
+Message-ID: <52D18D0A.8010905@xenomai.org>
+Date: Sat, 11 Jan 2014 19:27:22 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <44lhyrmuw9.fsf@be-well.ilk.org>
@@ -7,7 +7,8 @@ References: <44lhyrmuw9.fsf@be-well.ilk.org>
  <52CC85C5.4060703@steinkuehler.net> <52CC8A18.2020807@xenomai.org>
  <52CCA101.2040604@steinkuehler.net>
  <3FA64D57-1BB1-4B4A-AB25-AC8E280105F8@mah.priv.at>
-In-Reply-To: <3FA64D57-1BB1-4B4A-AB25-AC8E280105F8@mah.priv.at>
+ <52D18B7D.5080705@xenomai.org>
+In-Reply-To: <52D18B7D.5080705@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] i-pipe tracer on in production kernels? (was Re:
@@ -20,30 +21,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Haberler <mail17@mah.priv.at>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 01/11/2014 11:22 AM, Michael Haberler wrote:
+On 01/11/2014 07:20 PM, Philippe Gerum wrote:
+> On 01/11/2014 11:22 AM, Michael Haberler wrote:
+>>
+>> http://www.xenomai.org/index.php/I-pipe:Tracer describes the trace API, which could be useful to track down issues
+>>
+>> Q: does enabling the tracer incur significant overhead if compiled in but unused, or is it reasonable to leave it on in a production kernel?
+>>
+>> if the former, we might have to build/make available a second i-pipe tracer enabled kernel to track down issues 'in the field'; if the latter, it'd be less build/distribution chores
+>>
 > 
-> http://www.xenomai.org/index.php/I-pipe:Tracer describes the trace
-> API, which could be useful to track down issues
-> 
-> Q: does enabling the tracer incur significant overhead if compiled in
-> but unused, or is it reasonable to leave it on in a production
-> kernel?
-> 
-> if the former, we might have to build/make available a second i-pipe
-> tracer enabled kernel to track down issues 'in the field'; if the
-> latter, it'd be less build/distribution chores
+> The I-pipe tracer is based on the ftrace infrastructure, so tracepoints 
+> are left out when the tracer is disabled. If you can live with the 
+> minimal overhead ftrace adds, then leaving the I-pipe tracer code built 
+> in may be an option.
 
-Normally, with DYNAMIC_FTRACE, there should be a way to reduce the
-overhead. Unfortunately, the I-pipe tracer disables DYNAMIC_FTRACE,
-because at some point in the past, it did not work (with the I-pipe
-tracer) on ARM. We could re-enable DYNAMIC_FTRACE and try and understand
-why it does not work (if it still does not work), but that means you
-would have to add patches on top of the I-pipe patch, because all I-pipe
-patches released for some time, forbid DYNAMIC_FTRACE with the I-pipe
-tracer, at least on ARM.
+That is less true without DYNAMIC_FTRACE than with DYNAMIC_FTRACE.
+
 
 -- 
                                                                 Gilles.
