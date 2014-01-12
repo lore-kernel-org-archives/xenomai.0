@@ -1,11 +1,11 @@
-Message-ID: <52D3017F.9030304@xenomai.org>
-Date: Sun, 12 Jan 2014 21:56:31 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <52D30335.9000600@steinkuehler.net>
+Date: Sun, 12 Jan 2014 15:03:49 -0600
+From: Charles Steinkuehler <charles@steinkuehler.net>
 MIME-Version: 1.0
-References: <52D1B083.5090709@steinkuehler.net>
-In-Reply-To: <52D1B083.5090709@steinkuehler.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <52D1B083.5090709@steinkuehler.net> <52D3017F.9030304@xenomai.org>
+In-Reply-To: <52D3017F.9030304@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] BeagleBone Xenomai Latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,65 +15,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Charles Steinkuehler <charles@steinkuehler.net>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 01/11/2014 09:58 PM, Charles Steinkuehler wrote:
-> (Starting a new thread)
-> On 1/7/2014 5:13 PM, Gilles Chanteperdrix wrote:
->> On 01/07/2014 11:55 PM, Charles Steinkuehler wrote:
->>> On 1/7/2014 4:47 PM, Gilles Chanteperdrix wrote:
->>>> Is there any chance you could trigger a trace with the I-pipe 
->>>> tracer?
->>
->>> I can try...give me a while to sort through the I-pipe:Tracer wiki
->>> page (or are there better instructions?).
->>
->> Enable I-pipe tracer in kernel configuration, especially
->> IPIPE_TRACE_MCOUNT, and IPIPE_TRACE_VMALLOC.
->>
->> When the system has booted, do:
->>
->> echo 1 > /proc/ipipe/trace/enable
->> echo 1000 > /proc/ipipe/trace/back_trace_points
->>
->> Then launch latency -p 200 -f
->>
->> Run the load you usually run (for instance dohell).
->>
->> When the test is finished, do
->> cat /proc/ipipe/trace/frozen > /tmp/frozen.txt
->>
->> then post the resulting frozen.txt to this list.
->>
->> Expect the latency found by the test to be double the latency you get
->> without the I-pipe tracer.
-> 
-> OK, I tested a variety of kernels.  Simply enabling the ipipe trace
-> options on the otherwise unchanged kernel configuration I'm using
-> resulted in a system that was *EXTREMELY* slow and unresponsive, even
-> before I enabled the iPipe trace.  After waiting the better part of a
-> day for a GUI application to launch, I gave up on this kernel and tested
-> one with the recommended performance options:
-> 
-> 
-> Already in the BeagleBone Xenomai kernels I've been building:
->> optimize for size
->> disable CONFIG_PREEMPT
->> enable stack unwinding
->> disable root thread priority coupling (xenomai option)
-
-The .config you attached to the mail I am answering has CONFIG_PREEMPT
-enabled.
-You may want to select CONFIG_PREEMPT_NONE.
-
-I also do not really understand the trace you have attached. Are you
-running other real-time tasks than the latency test? Because to get
-accurate results, you should run the latency test without any other
-programs using xenomai.
-
-
-
--- 
-                                                                Gilles.
-
+T24gMS8xMi8yMDE0IDI6NTYgUE0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+IE9uIDAx
+LzExLzIwMTQgMDk6NTggUE0sIENoYXJsZXMgU3RlaW5rdWVobGVyIHdyb3RlOgo+PiAoU3RhcnRp
+bmcgYSBuZXcgdGhyZWFkKQo+PiBPbiAxLzcvMjAxNCA1OjEzIFBNLCBHaWxsZXMgQ2hhbnRlcGVy
+ZHJpeCB3cm90ZToKPj4+IE9uIDAxLzA3LzIwMTQgMTE6NTUgUE0sIENoYXJsZXMgU3RlaW5rdWVo
+bGVyIHdyb3RlOgo+Pj4+IE9uIDEvNy8yMDE0IDQ6NDcgUE0sIEdpbGxlcyBDaGFudGVwZXJkcml4
+IHdyb3RlOgo+Pj4+PiBJcyB0aGVyZSBhbnkgY2hhbmNlIHlvdSBjb3VsZCB0cmlnZ2VyIGEgdHJh
+Y2Ugd2l0aCB0aGUgSS1waXBlIAo+Pj4+PiB0cmFjZXI/Cj4+Pgo+Pj4+IEkgY2FuIHRyeS4uLmdp
+dmUgbWUgYSB3aGlsZSB0byBzb3J0IHRocm91Z2ggdGhlIEktcGlwZTpUcmFjZXIgd2lraQo+Pj4+
+IHBhZ2UgKG9yIGFyZSB0aGVyZSBiZXR0ZXIgaW5zdHJ1Y3Rpb25zPykuCj4+Pgo+Pj4gRW5hYmxl
+IEktcGlwZSB0cmFjZXIgaW4ga2VybmVsIGNvbmZpZ3VyYXRpb24sIGVzcGVjaWFsbHkKPj4+IElQ
+SVBFX1RSQUNFX01DT1VOVCwgYW5kIElQSVBFX1RSQUNFX1ZNQUxMT0MuCj4+Pgo+Pj4gV2hlbiB0
+aGUgc3lzdGVtIGhhcyBib290ZWQsIGRvOgo+Pj4KPj4+IGVjaG8gMSA+IC9wcm9jL2lwaXBlL3Ry
+YWNlL2VuYWJsZQo+Pj4gZWNobyAxMDAwID4gL3Byb2MvaXBpcGUvdHJhY2UvYmFja190cmFjZV9w
+b2ludHMKPj4+Cj4+PiBUaGVuIGxhdW5jaCBsYXRlbmN5IC1wIDIwMCAtZgo+Pj4KPj4+IFJ1biB0
+aGUgbG9hZCB5b3UgdXN1YWxseSBydW4gKGZvciBpbnN0YW5jZSBkb2hlbGwpLgo+Pj4KPj4+IFdo
+ZW4gdGhlIHRlc3QgaXMgZmluaXNoZWQsIGRvCj4+PiBjYXQgL3Byb2MvaXBpcGUvdHJhY2UvZnJv
+emVuID4gL3RtcC9mcm96ZW4udHh0Cj4+Pgo+Pj4gdGhlbiBwb3N0IHRoZSByZXN1bHRpbmcgZnJv
+emVuLnR4dCB0byB0aGlzIGxpc3QuCj4+Pgo+Pj4gRXhwZWN0IHRoZSBsYXRlbmN5IGZvdW5kIGJ5
+IHRoZSB0ZXN0IHRvIGJlIGRvdWJsZSB0aGUgbGF0ZW5jeSB5b3UgZ2V0Cj4+PiB3aXRob3V0IHRo
+ZSBJLXBpcGUgdHJhY2VyLgo+Pgo+PiBPSywgSSB0ZXN0ZWQgYSB2YXJpZXR5IG9mIGtlcm5lbHMu
+ICBTaW1wbHkgZW5hYmxpbmcgdGhlIGlwaXBlIHRyYWNlCj4+IG9wdGlvbnMgb24gdGhlIG90aGVy
+d2lzZSB1bmNoYW5nZWQga2VybmVsIGNvbmZpZ3VyYXRpb24gSSdtIHVzaW5nCj4+IHJlc3VsdGVk
+IGluIGEgc3lzdGVtIHRoYXQgd2FzICpFWFRSRU1FTFkqIHNsb3cgYW5kIHVucmVzcG9uc2l2ZSwg
+ZXZlbgo+PiBiZWZvcmUgSSBlbmFibGVkIHRoZSBpUGlwZSB0cmFjZS4gIEFmdGVyIHdhaXRpbmcg
+dGhlIGJldHRlciBwYXJ0IG9mIGEKPj4gZGF5IGZvciBhIEdVSSBhcHBsaWNhdGlvbiB0byBsYXVu
+Y2gsIEkgZ2F2ZSB1cCBvbiB0aGlzIGtlcm5lbCBhbmQgdGVzdGVkCj4+IG9uZSB3aXRoIHRoZSBy
+ZWNvbW1lbmRlZCBwZXJmb3JtYW5jZSBvcHRpb25zOgo+Pgo+Pgo+PiBBbHJlYWR5IGluIHRoZSBC
+ZWFnbGVCb25lIFhlbm9tYWkga2VybmVscyBJJ3ZlIGJlZW4gYnVpbGRpbmc6Cj4+PiBvcHRpbWl6
+ZSBmb3Igc2l6ZQo+Pj4gZGlzYWJsZSBDT05GSUdfUFJFRU1QVAo+Pj4gZW5hYmxlIHN0YWNrIHVu
+d2luZGluZwo+Pj4gZGlzYWJsZSByb290IHRocmVhZCBwcmlvcml0eSBjb3VwbGluZyAoeGVub21h
+aSBvcHRpb24pCj4gCj4gVGhlIC5jb25maWcgeW91IGF0dGFjaGVkIHRvIHRoZSBtYWlsIEkgYW0g
+YW5zd2VyaW5nIGhhcyBDT05GSUdfUFJFRU1QVAo+IGVuYWJsZWQuCj4gWW91IG1heSB3YW50IHRv
+IHNlbGVjdCBDT05GSUdfUFJFRU1QVF9OT05FLgoKT0ssIHRoYW5rcyBmb3IgdGhlIGNsYXJpZmlj
+YXRpb24uICBJIHNob3cgQ09ORklHX1BSRUVNUFQgd2FzIG5vdCBzZXQsCmJ1dCBDT05GSUdfUFJF
+RU1QVF9WT0xVTlRBUlkgd2FzOgoKIyBDT05GSUdfUFJFRU1QVF9OT05FIGlzIG5vdCBzZXQKQ09O
+RklHX1BSRUVNUFRfVk9MVU5UQVJZPXkKIyBDT05GSUdfUFJFRU1QVCBpcyBub3Qgc2V0CgpJIGNh
+biBzZWxlY3QgQ09ORklHX1BSRUVNUFRfTk9ORSBhbmQgcmUtdGVzdC4KCj4gSSBhbHNvIGRvIG5v
+dCByZWFsbHkgdW5kZXJzdGFuZCB0aGUgdHJhY2UgeW91IGhhdmUgYXR0YWNoZWQuIEFyZSB5b3UK
+PiBydW5uaW5nIG90aGVyIHJlYWwtdGltZSB0YXNrcyB0aGFuIHRoZSBsYXRlbmN5IHRlc3Q/IEJl
+Y2F1c2UgdG8gZ2V0Cj4gYWNjdXJhdGUgcmVzdWx0cywgeW91IHNob3VsZCBydW4gdGhlIGxhdGVu
+Y3kgdGVzdCB3aXRob3V0IGFueSBvdGhlcgo+IHByb2dyYW1zIHVzaW5nIHhlbm9tYWkuCgpZZXMs
+IG15IHByaW1hcnkgbG9hZCBpcyBydW5uaW5nIExpbnV4Q05DLCB3aGljaCB1c2VzIFhlbm9tYWku
+ICBJJ2xsCmJ1aWxkIGEgbmV3IGtlcm5lbCBhbmQgcG9zdCBhIG5ldyB0cmFjZSwgdGhpcyB0aW1l
+IHdpdGhvdXQgcnVubmluZyBhbnkKb3RoZXIgcHJvZ3JhbXMgdGhhdCB1c2UgWGVub21haS4KClRo
+YW5rcyBmb3IgYWxsIHRoZSBhZHZpY2UgYW5kIGhlbHAhCgotLSAKQ2hhcmxlcyBTdGVpbmt1ZWhs
+ZXIKY2hhcmxlc0BzdGVpbmt1ZWhsZXIubmV0CgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0t
+LS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBz
+aWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjYxIGJ5
+dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5v
+bWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE0MDExMi9iYmYzY2QxNi9h
+dHRhY2htZW50LnNpZz4K
