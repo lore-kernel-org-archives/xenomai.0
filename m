@@ -1,11 +1,11 @@
-Message-ID: <52D2FCCF.6080700@steinkuehler.net>
-Date: Sun, 12 Jan 2014 14:36:31 -0600
-From: Charles Steinkuehler <charles@steinkuehler.net>
+Message-ID: <52D3017F.9030304@xenomai.org>
+Date: Sun, 12 Jan 2014 21:56:31 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52D1B083.5090709@steinkuehler.net> <52D2FB0E.6080506@xenomai.org>
-In-Reply-To: <52D2FB0E.6080506@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <52D1B083.5090709@steinkuehler.net>
+In-Reply-To: <52D1B083.5090709@steinkuehler.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] BeagleBone Xenomai Latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,36 +15,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Charles Steinkuehler <charles@steinkuehler.net>
 Cc: xenomai@xenomai.org
 
-T24gMS8xMi8yMDE0IDI6MjkgUE0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+IE9uIDAx
-LzExLzIwMTQgMDk6NTggUE0sIENoYXJsZXMgU3RlaW5rdWVobGVyIHdyb3RlOgo+PiBSZWNvbW1l
-bmRlZCBidXQgbm90IHNlbGVjdGVkIChjYXVzZXMgbGlua2luZyBlcnJvcnMgYXBwYXJlbnRseSBk
-dWUgdG8KPj4gdGhlIGtlcm5lbCBzaXplIGJlaW5nIHRvbyBsYXJnZSBmb3Igc29tZSBvZiB0aGUg
-bGltaXRlZCByZWFjaCB0aHVtYjIKPj4ganVtcC9icmFuY2ggaW5zdHJ1Y3Rpb25zKToKPiAKPiBZ
-b3UgbWVhbiB0aHVtYjI/IERpZCB5b3UgZW5hYmxlIHRoZSB3b3JrYXJvdW5kIGZvciBidWdneSBn
-YXM/CgpZZXMsIHRodW1iMiwgYW5kIHllcywgdGhlIGJ1Z2d5IGdhcyB3b3JrYXJvdW5kIHdhcyBl
-bmFibGVkIChieSBkZWZhdWx0CndoZW4gc2VsZWN0aW5nIGEgdGh1bWIyIGJ1aWxkKS4gIEdvb2ds
-aW5nIHRoZSByZXN1bHRpbmcgZXJyb3JzIGJyb3VnaHQKdXAgc29tZSB0aHJlYWRzIGFib3V0IGlN
-WDYga2VybmVsIGJ1aWxkcyBmYWlsaW5nIHRoZSBzYW1lIHdheSwgd2hpY2ggaXMKd2hlcmUgSSBn
-b3QgInRvbyBiaWcgZm9yIHNvbWUganVtcC9icmFuY2ggaW5zdHJ1Y3Rpb25zIiB3aGljaCBJIGFs
-c28KdHJhbnNsYXRlIGFzICJiZXlvbmQgbXkgY3VycmVudGx5IGNhcGFiaWxpdHkgdG8gZml4IHdp
-dGggYW55IGV4cGVjdGF0aW9uCnRoYXQgSSdtIG5vdCBpbnRyb2R1Y2luZyBvdGhlciBpc3N1ZXMi
-LiAgOikKCj4+IE9WRVJBTEwgUkVTVUxUUzoKPj4gQWRkaW5nIHRoZSByZWNvbW1lbmRlZCBvcHRp
-b25zIGRyYW1hdGljYWxseSBoZWxwZWQgd2l0aCBsYXRlbmN5IHdoZW4KPj4gaVBpcGUgdHJhY2Ug
-d2FzIGVuYWJsZWQsIGJ1dCBub3Qgc28gbXVjaCBmb3IgdGhlIG5vcm1hbCBrZXJuZWwuICBJIGRp
-ZAo+PiBzZWUgdHlwaWNhbCBhbmQgYmVzdCBjYXNlIGxhdGVuY3kgZHJvcCBzaWduaWZpY2FudGx5
-IChieSBhYm91dCAyNSUpIHdpdGgKPj4gdGhlIHJlY29tbWVuZGVkIG9wdGlvbnMsIGJ1dCB3b3Jz
-dC1jYXNlIGxhdGVuY3kgZm9yIGJvdGgga2VybmVscwo+PiByZW1haW5lZCBhcm91bmQgNTAgdVMu
-Cj4gCj4gSSBhbHNvIGdldCA1MHVzIGF0IDFrSHosIEkgb25seSBnZXQgNDB1cyBhdCAxMGtIei4K
-Ckdvb2QsIGl0IHNvdW5kcyBsaWtlIHdlJ3JlIHNlZWluZyBiYXNpY2FsbHkgdGhlIHNhbWUgbnVt
-YmVycy4gIEkgY2FuCmxpdmUgd2l0aCB0aGUgNTAgdVMgbGF0ZW5jeSwgd2hpY2ggaXMgYWxyZWFk
-eSBzaWduaWZpY2FudGx5IGJldHRlciB0aGFuCkkgd2FzIGV4cGVjdGluZyBzaW5jZSBJIGhhZG4n
-dCBkb25lIHRlc3RpbmcgZm9yIGEgd2hpbGUuCgotLSAKQ2hhcmxlcyBTdGVpbmt1ZWhsZXIKY2hh
-cmxlc0BzdGVpbmt1ZWhsZXIubmV0CgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0t
-LS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1
-cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjYxIGJ5dGVzCkRl
-c2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9y
-Zy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE0MDExMi8zYmYxM2Y3Yy9hdHRhY2ht
-ZW50LnNpZz4K
+On 01/11/2014 09:58 PM, Charles Steinkuehler wrote:
+> (Starting a new thread)
+> On 1/7/2014 5:13 PM, Gilles Chanteperdrix wrote:
+>> On 01/07/2014 11:55 PM, Charles Steinkuehler wrote:
+>>> On 1/7/2014 4:47 PM, Gilles Chanteperdrix wrote:
+>>>> Is there any chance you could trigger a trace with the I-pipe 
+>>>> tracer?
+>>
+>>> I can try...give me a while to sort through the I-pipe:Tracer wiki
+>>> page (or are there better instructions?).
+>>
+>> Enable I-pipe tracer in kernel configuration, especially
+>> IPIPE_TRACE_MCOUNT, and IPIPE_TRACE_VMALLOC.
+>>
+>> When the system has booted, do:
+>>
+>> echo 1 > /proc/ipipe/trace/enable
+>> echo 1000 > /proc/ipipe/trace/back_trace_points
+>>
+>> Then launch latency -p 200 -f
+>>
+>> Run the load you usually run (for instance dohell).
+>>
+>> When the test is finished, do
+>> cat /proc/ipipe/trace/frozen > /tmp/frozen.txt
+>>
+>> then post the resulting frozen.txt to this list.
+>>
+>> Expect the latency found by the test to be double the latency you get
+>> without the I-pipe tracer.
+> 
+> OK, I tested a variety of kernels.  Simply enabling the ipipe trace
+> options on the otherwise unchanged kernel configuration I'm using
+> resulted in a system that was *EXTREMELY* slow and unresponsive, even
+> before I enabled the iPipe trace.  After waiting the better part of a
+> day for a GUI application to launch, I gave up on this kernel and tested
+> one with the recommended performance options:
+> 
+> 
+> Already in the BeagleBone Xenomai kernels I've been building:
+>> optimize for size
+>> disable CONFIG_PREEMPT
+>> enable stack unwinding
+>> disable root thread priority coupling (xenomai option)
+
+The .config you attached to the mail I am answering has CONFIG_PREEMPT
+enabled.
+You may want to select CONFIG_PREEMPT_NONE.
+
+I also do not really understand the trace you have attached. Are you
+running other real-time tasks than the latency test? Because to get
+accurate results, you should run the latency test without any other
+programs using xenomai.
+
+
+
+-- 
+                                                                Gilles.
+
