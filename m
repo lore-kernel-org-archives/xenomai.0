@@ -1,13 +1,20 @@
-Message-ID: <52CAEA4D.1020505@xenomai.org>
-Date: Mon, 06 Jan 2014 18:39:25 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Antoine MOREL <A.MOREL@polysoude.com>
+Date: Mon, 13 Jan 2014 16:38:49 +0000
+Message-ID: <11e0247bbd174e5bb553b1374326c219@DBXPR03MB093.eurprd03.prod.outlook.com>
+References: <8ceffc54095e43d88f6dfa0edd0bb852@DBXPR03MB093.eurprd03.prod.outlook.com>
+ <52496200.2010808@xenomai.org>
+ <295e5f6a1e6849079d9fb3e53dcc1827@DBXPR03MB093.eurprd03.prod.outlook.com>
+ <524B1F6C.7080705@xenomai.org>
+ <0181d61119d749ecaf4bfea3b3c827f3@DBXPR03MB093.eurprd03.prod.outlook.com>
+ <524BDFD7.5010104@xenomai.org>
+ <753016a9a00c43fca6252ef26d024461@DBXPR03MB093.eurprd03.prod.outlook.com>
+ <524EA63E.8080507@xenomai.org>
+In-Reply-To: <524EA63E.8080507@xenomai.org>
+Content-Language: fr-FR
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <CAKJ14NdsfwK4Vj=UpYb6p9bvFE=1ZoQb6ss--9f-WqXOXGDn2g@mail.gmail.com>
-In-Reply-To: <CAKJ14NdsfwK4Vj=UpYb6p9bvFE=1ZoQb6ss--9f-WqXOXGDn2g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Command line freeze during xeno-regression-test on
- omap4460
+Subject: Re: [Xenomai] No GPIO IRQ on imx28(apf28), kernel 3.8.13
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,85 +23,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Andreas Glatz <andi.glatz@gmail.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 01/06/2014 04:30 PM, Andreas Glatz wrote:
-> Hi,
->
-> I managed to produce a kernel (v3.8.13) with xenomai 2.6.3 ipipe patch and
-> rootfs (debian wheezy) with xenomai 2.6.3 libraries for my Pandaboard ES
-> (omap4460). The simple regression test, which only calls dd during the
-> switchtest, works fine. However the regression test with the linux test
-> project (ltp-full-20130904) scripts causes some sort of system lock up.
-> After that I only can ctrl-c xeno-regression-test (i.e. switchtest), which,
-> however, doesn't help to regain console access (neigher over ethernet nor
-> serial).
->
-> Here's what I did:
->
-> -- Building --
-> As recomended in the Xenomai 2.6 readme I followed the instructions in [1]
-> to produce a kernel and filesystem. To get a xenomai kernel I had to do
-> three things differently:
->
-> *) I used: git checkout origin/v3.8.x -b tmp
-> *) I applied ipipe-core-3.8.13-arm-3.patch from the xenomai-2.6 git tree as
-> described in the Xenomai 2.6 readme
-> *) I disabled KGDB and TIDSPBRIDGE since those produced compile errors (see
-> config [2])
->
-> After a while I obtained the following messages from dmesg [3] and from the
-> command prompt:
->
-> root@arm:~# cat /proc/version
-> Linux version 3.8.13-x3.6 (aglatz@linuxvbox) (gcc version 4.7.3 20130328
-> (prerelease) (crosstool-NG linaro-1.13.1-4.7-2013.04-20130415 - Linaro GCC
-> 2013.04) ) #4 SMP Sat Jan 4 15:54:20 GMT 2014
->
-> -- Testing Linux --
-> To see if everything works I downloaded and cross-compiled
-> ltp-full-20130904 [4] with the same toolchain and flags (-march=armv7-a
-> -mfpu=vfp3) as the xenomai libs and runtime. I started ltp with "./runltp
-> -p -l dohell-2014-01-06-1.log -S xenomai.skiplist" and after a while it
-> finished with a few failed tests [5]. The console access, however, worked
-> fine.
->
-> -- Testing Xenomai --
-> First I sucessfully could run the simple xenomai regression test:
-> xeno-regression-test -l "/usr/lib/xenomai/testsuite/dohell -m /tmp 100" -t
-> 2 which produced the output in [6] and the following additional messages
-> with dmesg:
->
-> [  476.215057] Xenomai: RTDM: closing file descriptor 1.
-> [  477.434936] Xenomai: Posix: destroying semaphore f0069c00.
-> [  477.440887] Xenomai: Posix: destroying mutex f0069a00.
-> [  477.475372] xnheap: destroying shared heap 'rt_heap: heap' with 16384
-> bytes still in use.
-> [  479.008453] Xenomai: Switching rt_task to secondary mode after exception
-> #0 from user-space at 0x9620 (pid 2145)
-> [  480.574462] Xenomai: watchdog triggered -- signaling runaway thread
-> 'rt_task'
-> [  480.582061] [sched_delayed] sched: RT throttling activated
-> [  557.336425] Xenomai: Posix: closing message queue descriptor 3.
->
-> and  "cat /proc/xenomai/*" produced [7].
->
-> When I started the realistic xenomai regression test: xeno-regression-test
-> -l "/usr/lib/xenomai/testsuite/dohell -m /tmp -l /opt/ltp" -t 2 everything
-> seemed fine at first - I could logon and start top to inspect the running
-> processes. However, the command line (over serial and ethernet)
-> consistently freezes after a while (at different ltp tests though). First I
-> thought it's the massive system load which doesn't leave CPU for the
-> console... however ctrl-c of xeno-regression-test does not help to regain
-> console access...
-
-That is because kill xeno-regression-test does not kill all the script 
-children. So, basically, the load tasks are still running. Also, what 
-filesystem is /tmp? dohell is using dd to alternatively write to /tmp, 
-then erase the file. If /tmp is some flash, it will become slow after a 
-while. If it is a tmpfs, it will eat RAM.
-
--- 
-					    Gilles.
+SGVsbG8gR2lsbGVzLA0KDQpZb3UgdXBkYXRlZCB0aGUgYWRlb3MgcGF0Y2ggYnV0IHlvdSBmb3Jn
+b3QgdG8gaW5jbHVkZSB0aGUgPGxpbnV4L2lwaXBlLmg+IGluIHRoZSBncGlvLW14cy5jDQoNCkFu
+dG9pbmUNCg0KLS0tLS1NZXNzYWdlIGQnb3JpZ2luZS0tLS0tDQpEZcKgOiBHaWxsZXMgQ2hhbnRl
+cGVyZHJpeCBbbWFpbHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXSANCkVudm95
+w6nCoDogdmVuZHJlZGkgNCBvY3RvYnJlIDIwMTMgMTM6MjgNCsOAwqA6IEFudG9pbmUgTU9SRUwN
+CkNjwqA6IHhlbm9tYWlAeGVub21haS5vcmcNCk9iamV0wqA6IFJlOiBbWGVub21haV0gTm8gR1BJ
+TyBJUlEgb24gaW14MjgoYXBmMjgpLCBrZXJuZWwgMy44LjEzDQoNCk9uIDEwLzA0LzIwMTMgMTE6
+MDEgQU0sIEFudG9pbmUgTU9SRUwgd3JvdGU6DQo+IEhlbGxvIEdpbGxlcywNCj4gDQo+IEkgdHJp
+ZWQgdGhlIHBhdGNoIGFuZCBpdCB3b3JrcyENCj4gRGlkIHRoZSBhZGVvcyBwYXRjaCB3aWxsIGJl
+IHVwZGF0ZWQ/DQoNClllcywgaXQgd2lsbCBiZSB1cGRhdGVkLg0KDQotLSANCiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBHaWxs
+ZXMuDQo=
 
