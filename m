@@ -1,12 +1,12 @@
-Message-ID: <52D30335.9000600@steinkuehler.net>
-Date: Sun, 12 Jan 2014 15:03:49 -0600
-From: Charles Steinkuehler <charles@steinkuehler.net>
+Message-ID: <52D3DE54.30608@xenomai.org>
+Date: Mon, 13 Jan 2014 13:38:44 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52D1B083.5090709@steinkuehler.net> <52D3017F.9030304@xenomai.org>
-In-Reply-To: <52D3017F.9030304@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] BeagleBone Xenomai Latency
+References: <52CEA753.8000800@espera.de>
+In-Reply-To: <52CEA753.8000800@espera.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] POSIX message queues
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,57 +15,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: schwark@espera.de
 Cc: xenomai@xenomai.org
 
-T24gMS8xMi8yMDE0IDI6NTYgUE0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+IE9uIDAx
-LzExLzIwMTQgMDk6NTggUE0sIENoYXJsZXMgU3RlaW5rdWVobGVyIHdyb3RlOgo+PiAoU3RhcnRp
-bmcgYSBuZXcgdGhyZWFkKQo+PiBPbiAxLzcvMjAxNCA1OjEzIFBNLCBHaWxsZXMgQ2hhbnRlcGVy
-ZHJpeCB3cm90ZToKPj4+IE9uIDAxLzA3LzIwMTQgMTE6NTUgUE0sIENoYXJsZXMgU3RlaW5rdWVo
-bGVyIHdyb3RlOgo+Pj4+IE9uIDEvNy8yMDE0IDQ6NDcgUE0sIEdpbGxlcyBDaGFudGVwZXJkcml4
-IHdyb3RlOgo+Pj4+PiBJcyB0aGVyZSBhbnkgY2hhbmNlIHlvdSBjb3VsZCB0cmlnZ2VyIGEgdHJh
-Y2Ugd2l0aCB0aGUgSS1waXBlIAo+Pj4+PiB0cmFjZXI/Cj4+Pgo+Pj4+IEkgY2FuIHRyeS4uLmdp
-dmUgbWUgYSB3aGlsZSB0byBzb3J0IHRocm91Z2ggdGhlIEktcGlwZTpUcmFjZXIgd2lraQo+Pj4+
-IHBhZ2UgKG9yIGFyZSB0aGVyZSBiZXR0ZXIgaW5zdHJ1Y3Rpb25zPykuCj4+Pgo+Pj4gRW5hYmxl
-IEktcGlwZSB0cmFjZXIgaW4ga2VybmVsIGNvbmZpZ3VyYXRpb24sIGVzcGVjaWFsbHkKPj4+IElQ
-SVBFX1RSQUNFX01DT1VOVCwgYW5kIElQSVBFX1RSQUNFX1ZNQUxMT0MuCj4+Pgo+Pj4gV2hlbiB0
-aGUgc3lzdGVtIGhhcyBib290ZWQsIGRvOgo+Pj4KPj4+IGVjaG8gMSA+IC9wcm9jL2lwaXBlL3Ry
-YWNlL2VuYWJsZQo+Pj4gZWNobyAxMDAwID4gL3Byb2MvaXBpcGUvdHJhY2UvYmFja190cmFjZV9w
-b2ludHMKPj4+Cj4+PiBUaGVuIGxhdW5jaCBsYXRlbmN5IC1wIDIwMCAtZgo+Pj4KPj4+IFJ1biB0
-aGUgbG9hZCB5b3UgdXN1YWxseSBydW4gKGZvciBpbnN0YW5jZSBkb2hlbGwpLgo+Pj4KPj4+IFdo
-ZW4gdGhlIHRlc3QgaXMgZmluaXNoZWQsIGRvCj4+PiBjYXQgL3Byb2MvaXBpcGUvdHJhY2UvZnJv
-emVuID4gL3RtcC9mcm96ZW4udHh0Cj4+Pgo+Pj4gdGhlbiBwb3N0IHRoZSByZXN1bHRpbmcgZnJv
-emVuLnR4dCB0byB0aGlzIGxpc3QuCj4+Pgo+Pj4gRXhwZWN0IHRoZSBsYXRlbmN5IGZvdW5kIGJ5
-IHRoZSB0ZXN0IHRvIGJlIGRvdWJsZSB0aGUgbGF0ZW5jeSB5b3UgZ2V0Cj4+PiB3aXRob3V0IHRo
-ZSBJLXBpcGUgdHJhY2VyLgo+Pgo+PiBPSywgSSB0ZXN0ZWQgYSB2YXJpZXR5IG9mIGtlcm5lbHMu
-ICBTaW1wbHkgZW5hYmxpbmcgdGhlIGlwaXBlIHRyYWNlCj4+IG9wdGlvbnMgb24gdGhlIG90aGVy
-d2lzZSB1bmNoYW5nZWQga2VybmVsIGNvbmZpZ3VyYXRpb24gSSdtIHVzaW5nCj4+IHJlc3VsdGVk
-IGluIGEgc3lzdGVtIHRoYXQgd2FzICpFWFRSRU1FTFkqIHNsb3cgYW5kIHVucmVzcG9uc2l2ZSwg
-ZXZlbgo+PiBiZWZvcmUgSSBlbmFibGVkIHRoZSBpUGlwZSB0cmFjZS4gIEFmdGVyIHdhaXRpbmcg
-dGhlIGJldHRlciBwYXJ0IG9mIGEKPj4gZGF5IGZvciBhIEdVSSBhcHBsaWNhdGlvbiB0byBsYXVu
-Y2gsIEkgZ2F2ZSB1cCBvbiB0aGlzIGtlcm5lbCBhbmQgdGVzdGVkCj4+IG9uZSB3aXRoIHRoZSBy
-ZWNvbW1lbmRlZCBwZXJmb3JtYW5jZSBvcHRpb25zOgo+Pgo+Pgo+PiBBbHJlYWR5IGluIHRoZSBC
-ZWFnbGVCb25lIFhlbm9tYWkga2VybmVscyBJJ3ZlIGJlZW4gYnVpbGRpbmc6Cj4+PiBvcHRpbWl6
-ZSBmb3Igc2l6ZQo+Pj4gZGlzYWJsZSBDT05GSUdfUFJFRU1QVAo+Pj4gZW5hYmxlIHN0YWNrIHVu
-d2luZGluZwo+Pj4gZGlzYWJsZSByb290IHRocmVhZCBwcmlvcml0eSBjb3VwbGluZyAoeGVub21h
-aSBvcHRpb24pCj4gCj4gVGhlIC5jb25maWcgeW91IGF0dGFjaGVkIHRvIHRoZSBtYWlsIEkgYW0g
-YW5zd2VyaW5nIGhhcyBDT05GSUdfUFJFRU1QVAo+IGVuYWJsZWQuCj4gWW91IG1heSB3YW50IHRv
-IHNlbGVjdCBDT05GSUdfUFJFRU1QVF9OT05FLgoKT0ssIHRoYW5rcyBmb3IgdGhlIGNsYXJpZmlj
-YXRpb24uICBJIHNob3cgQ09ORklHX1BSRUVNUFQgd2FzIG5vdCBzZXQsCmJ1dCBDT05GSUdfUFJF
-RU1QVF9WT0xVTlRBUlkgd2FzOgoKIyBDT05GSUdfUFJFRU1QVF9OT05FIGlzIG5vdCBzZXQKQ09O
-RklHX1BSRUVNUFRfVk9MVU5UQVJZPXkKIyBDT05GSUdfUFJFRU1QVCBpcyBub3Qgc2V0CgpJIGNh
-biBzZWxlY3QgQ09ORklHX1BSRUVNUFRfTk9ORSBhbmQgcmUtdGVzdC4KCj4gSSBhbHNvIGRvIG5v
-dCByZWFsbHkgdW5kZXJzdGFuZCB0aGUgdHJhY2UgeW91IGhhdmUgYXR0YWNoZWQuIEFyZSB5b3UK
-PiBydW5uaW5nIG90aGVyIHJlYWwtdGltZSB0YXNrcyB0aGFuIHRoZSBsYXRlbmN5IHRlc3Q/IEJl
-Y2F1c2UgdG8gZ2V0Cj4gYWNjdXJhdGUgcmVzdWx0cywgeW91IHNob3VsZCBydW4gdGhlIGxhdGVu
-Y3kgdGVzdCB3aXRob3V0IGFueSBvdGhlcgo+IHByb2dyYW1zIHVzaW5nIHhlbm9tYWkuCgpZZXMs
-IG15IHByaW1hcnkgbG9hZCBpcyBydW5uaW5nIExpbnV4Q05DLCB3aGljaCB1c2VzIFhlbm9tYWku
-ICBJJ2xsCmJ1aWxkIGEgbmV3IGtlcm5lbCBhbmQgcG9zdCBhIG5ldyB0cmFjZSwgdGhpcyB0aW1l
-IHdpdGhvdXQgcnVubmluZyBhbnkKb3RoZXIgcHJvZ3JhbXMgdGhhdCB1c2UgWGVub21haS4KClRo
-YW5rcyBmb3IgYWxsIHRoZSBhZHZpY2UgYW5kIGhlbHAhCgotLSAKQ2hhcmxlcyBTdGVpbmt1ZWhs
-ZXIKY2hhcmxlc0BzdGVpbmt1ZWhsZXIubmV0CgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0t
-LS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBz
-aWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjYxIGJ5
-dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5v
-bWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE0MDExMi9iYmYzY2QxNi9h
-dHRhY2htZW50LnNpZz4K
+On 01/09/2014 02:42 PM, Andreas Schwark wrote:
+> Hi all,
+> 
+> we are working with Orocos-Toolchain on a PC with Lubuntu Version 12.04 
+> patched with Xenomai. For inter-process communication between Orocos 
+> processes we use POSIX messages queues. The communication works fine 
+> with less then 60 message queues. If we want to use more than 60 message 
+> quess, than we are not able to create more than 60 queues.
+
+Have you checked mq_open documentation for the error you get?
+
+
+-- 
+                                                                Gilles.
+
