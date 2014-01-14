@@ -1,13 +1,10 @@
-From: Lowell Gilbert <kludge@be-well.ilk.org>
-References: <44lhyrmuw9.fsf@be-well.ilk.org> <52CC62A0.3090108@xenomai.org>
- <44lhyqgkip.fsf@lowell-desk.lan> <52CDDCEC.6030205@xenomai.org>
-Date: Mon, 13 Jan 2014 19:15:37 -0500
-In-Reply-To: <52CDDCEC.6030205@xenomai.org> (Gilles Chanteperdrix's message of
- "Thu, 09 Jan 2014 00:19:08 +0100")
-Message-ID: <44r48bpgeu.fsf@lowell-desk.lan>
 MIME-Version: 1.0
-Content-Type: text/plain
-Subject: Re: [Xenomai] Altera Cyclone V
+Date: Tue, 14 Jan 2014 10:27:07 +0330
+Message-ID: <CAKKWdteBOh9yTRsWSBxpO+orgwLztR+i_2YiZ4UaM4bVYSTMWg@mail.gmail.com>
+From: ali hagigat <hagigatali@gmail.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] xenomai test for rt_task_suspend() and rt_task_resume()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,25 +13,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
+I am using kernel-3.5.7 with xenomai-2.6.3.
+I think the scheduler should schedule task1 and task2(for 3 times
+alltogether) and then both tasks should be suspended but as it has
+been indicated in output.txt , there are many "inside task2..."
+messages (part of them were copied to the file) and then sudenly task1
+is killed!!
+Xenomai function seems incorrect(though i may have ignored some facts
+as usual, i apologize in advance)
+-------------- next part --------------
+dmesg
+Jan 14 09:58:47 localhost kernel: inside task2...
+Jan 14 09:58:47 localhost kernel: inside task2...
+Jan 14 09:58:47 localhost kernel: inside task2...
+Jan 14 09:58:47 localhost kernel: inside task2...
+Jan 14 09:58:47 localhost kernel: inside task2...
+Jan 14 09:58:47 localhost kernel: inside task2...
+Jan 14 09:58:47 localhost kernel: inside task2...
+Jan 14 09:58:47 localhost kernel: inside task2...
+Jan 14 09:58:47 localhost kernel: inside task2...
+Jan 14 09:58:47 localhost kernel: inside task2...
+Jan 14 09:58:47 localhost kernel: inside task2...
+Jan 14 09:58:47 localhost kernel: Clocksource tsc unstable (delta =3D 39220=
+90473 ns)
+Jan 14 09:58:47 localhost kernel: Switching to clocksource jiffies
 
-> No, every ARM SOC has its own clocks implementation. This is currently 
-> changing with the switch to device tree, but not all SOCs are 
-> converted, at least not all of them were last time I checked. Anyway, 
-> if your SOC uses device tree, adding a clock may simply be a matter of 
-> adding it to the device tree.
 
-It was already in the device tree. What I had missed was that the
-frequency wasn't being set in the device tree, because there's a clock
-manager block separate from the Cortex A9 block, so it wasn't inheriting
-the master clock. I set it separately, but I'd prefer to tie it to the
-clock manager numbers if I can figure out a way to do that.
 
-I'm now puzzling through interrupt mapping. The BSP doesn't have a
-handle_irq function, and I'm not sure whether I need to write one or
-not.
+cat /proc/xenomai/sched
+CPU  PID    CLASS  PRI      TIMEOUT   TIMEBASE   STAT       NAME
+  0  0      idle    -1      -         master     R          ROOT/0
+  1  0      idle    -1      -         master     R          ROOT/1
+  2  0      idle    -1      -         master     R          ROOT/2
+  3  0      idle    -1      -         master     R          ROOT/3
+  0  0      rt      50      -         master     Sf         KTask1
 
-Be well.
-
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: kerneltask3.c
+Type: text/x-csrc
+Size: 1443 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140114/7118e44=
+9/attachment.c>
