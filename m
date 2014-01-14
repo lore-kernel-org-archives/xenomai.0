@@ -1,12 +1,10 @@
-Message-ID: <52D5085A.9040607@xenomai.org>
-Date: Tue, 14 Jan 2014 10:50:18 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: "Leopold Palomo-Avellaneda" <leo@alaxarxa.net>
+Date: Tue, 14 Jan 2014 13:15:33 +0100
 MIME-Version: 1.0
-References: <CAKKWdteq0SUPqv5ecE8V_kAe55pf3GyoYdkJwsrK7JM6=gBaGg@mail.gmail.com>
-In-Reply-To: <CAKKWdteq0SUPqv5ecE8V_kAe55pf3GyoYdkJwsrK7JM6=gBaGg@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] real-time taks and signals
+Message-Id: <201401141315.38870.leo@alaxarxa.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] xddp port questions
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,21 +13,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>, xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 01/14/2014 09:49 AM, ali hagigat wrote:
-> When a real-time task is in suspend or blocked state, the signals like
-> "^C" are caught. While in R state, it seems that it is not seen. Is
-> this funtion of Xenomai OK?
-
-Yes. 'R' means ready to run in real-time mode. Real-time threads are 
-delivered linux signals only when they block or relax (which is also a 
-blocked state Xenomai-wise).
-
-The ROOT thread placeholder maps the entire regular linux context, so in 
-that sense, it is always ready to run and may never block from the 
-Xenomai point of view.
-
--- 
-Philippe.
-
+SGksCgppbiB0aGUgZXhhbXBsZSB4ZGRwLWxhYmVsIGEgdHdvIHJlYWx0aW1lIHRhc2sgYXJlIGNv
+bm5lY3RlZCB3aXRoIGEgbm9uLQpyZWFsdGltZSB0aW1lLiBUaGV5IHNoYXJlIHRoZSBzYW1lIHBv
+cnQgd2hlcmUgb25lIHJ0IHRhc2sgcmVjZWl2ZSBmcm9tIHRoZSAKbm9uLXJ0IHRhc2sgYW5kIHRo
+ZSBvdGhlciBzZW5kIHRvIHJ0LXRhc2suCgpUaGUgcmVndWxhciB0aHJlYWQgcmVhZCBhbmQgd3Jp
+dGUgaW4gdGhlIHNhbWUgZGV2bmFtZSAKKC9wcm9jL3hlbm9tYWkvcmVnaXN0cnkvcnRpcGMveGRk
+cC9YRERQX1BPUlRfTEFCRUwpLiBPbmUgcnQgdGhyZWFkIGxpc3RlbiBmcm9tIAp0aGF0IHBvcnQu
+CgpJIGRvbid0IHVuZGVyc3RhbmQgaG93IGlzIHBvc3NpYmxlIHRoYXQgYm90aCAobm9uLXJ0IGFu
+ZCBydCB0aHJlYWRzKSBsaXN0ZW4gCmZyb20gdGhlIHNhbWUgcG9ydCBhbmQgY291bGQgbm90IGhh
+dmUgY29sbGlzaW9ucyAgaWYgdHdvIHRocmVhZHMgKG5vbi1ydCBhbmQgCnJ0KSB0cnkgdG8gd3Jp
+dGUgaW4gdGhlIHNhbWUgcG9ydC4KCkNvdWxkIG5vdCBiZSBiZXR0ZXIgdG8gc2VwYXJhdGUgaXQ/
+CgpUaGFua3MgaW4gYWR2YW5jZSwKCkxlb3BvbGQKCgotLSAKLS0KTGludXggVXNlciAxNTI2OTIK
+Q2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10
+ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTog
+YXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAxOTggYnl0ZXMKRGVzYzogVGhpcyBpcyBh
+IGRpZ2l0YWxseSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWku
+b3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTQwMTE0LzkzNWE5OGUwL2F0dGFj
+aG1lbnQuc2lnPgo=
