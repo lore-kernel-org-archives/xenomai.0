@@ -1,20 +1,13 @@
-Message-ID: <52D44A71.9030602@xenomai.org>
-Date: Mon, 13 Jan 2014 21:20:01 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Lowell Gilbert <kludge@be-well.ilk.org>
+References: <44lhyrmuw9.fsf@be-well.ilk.org> <52CC62A0.3090108@xenomai.org>
+ <44lhyqgkip.fsf@lowell-desk.lan> <52CDDCEC.6030205@xenomai.org>
+Date: Mon, 13 Jan 2014 19:15:37 -0500
+In-Reply-To: <52CDDCEC.6030205@xenomai.org> (Gilles Chanteperdrix's message of
+ "Thu, 09 Jan 2014 00:19:08 +0100")
+Message-ID: <44r48bpgeu.fsf@lowell-desk.lan>
 MIME-Version: 1.0
-References: <8ceffc54095e43d88f6dfa0edd0bb852@DBXPR03MB093.eurprd03.prod.outlook.com>
- <52496200.2010808@xenomai.org>
- <295e5f6a1e6849079d9fb3e53dcc1827@DBXPR03MB093.eurprd03.prod.outlook.com>
- <524B1F6C.7080705@xenomai.org>
- <0181d61119d749ecaf4bfea3b3c827f3@DBXPR03MB093.eurprd03.prod.outlook.com>
- <524BDFD7.5010104@xenomai.org>
- <753016a9a00c43fca6252ef26d024461@DBXPR03MB093.eurprd03.prod.outlook.com>
- <524EA63E.8080507@xenomai.org>
- <11e0247bbd174e5bb553b1374326c219@DBXPR03MB093.eurprd03.prod.outlook.com>
-In-Reply-To: <11e0247bbd174e5bb553b1374326c219@DBXPR03MB093.eurprd03.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] No GPIO IRQ on imx28(apf28), kernel 3.8.13
+Content-Type: text/plain
+Subject: Re: [Xenomai] Altera Cyclone V
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,18 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Antoine MOREL <A.MOREL@polysoude.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 01/13/2014 05:38 PM, Antoine MOREL wrote:
-> Hello Gilles,
-> 
-> You updated the adeos patch but you forgot to include the <linux/ipipe.h> in the gpio-mxs.c
+Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
 
-I applied the patch you told me fixed the issue... Will add the #include
-then.
+> No, every ARM SOC has its own clocks implementation. This is currently 
+> changing with the switch to device tree, but not all SOCs are 
+> converted, at least not all of them were last time I checked. Anyway, 
+> if your SOC uses device tree, adding a clock may simply be a matter of 
+> adding it to the device tree.
 
+It was already in the device tree. What I had missed was that the
+frequency wasn't being set in the device tree, because there's a clock
+manager block separate from the Cortex A9 block, so it wasn't inheriting
+the master clock. I set it separately, but I'd prefer to tie it to the
+clock manager numbers if I can figure out a way to do that.
 
--- 
-                                                                Gilles.
+I'm now puzzling through interrupt mapping. The BSP doesn't have a
+handle_irq function, and I'm not sure whether I need to write one or
+not.
+
+Be well.
 
