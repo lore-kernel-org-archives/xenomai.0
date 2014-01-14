@@ -1,10 +1,14 @@
-From: "Leopold Palomo-Avellaneda" <leo@alaxarxa.net>
-Date: Tue, 14 Jan 2014 13:15:33 +0100
+Message-ID: <52D52D60.9030500@siemens.com>
+Date: Tue, 14 Jan 2014 13:28:16 +0100
+From: Gernot Hillier <gernot.hillier@siemens.com>
 MIME-Version: 1.0
-Message-Id: <201401141315.38870.leo@alaxarxa.net>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] xddp port questions
+References: <527B5BBF.2040301@siemens.com> <527BD591.9060504@xenomai.org>
+ <527C7CE6.6090603@siemens.com> <527D1E27.3030708@xenomai.org>
+In-Reply-To: <527D1E27.3030708@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [Xenomai-forge] [PATCH v2] Silence unused_result
+ warning from write()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,22 +17,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-SGksCgppbiB0aGUgZXhhbXBsZSB4ZGRwLWxhYmVsIGEgdHdvIHJlYWx0aW1lIHRhc2sgYXJlIGNv
-bm5lY3RlZCB3aXRoIGEgbm9uLQpyZWFsdGltZSB0aW1lLiBUaGV5IHNoYXJlIHRoZSBzYW1lIHBv
-cnQgd2hlcmUgb25lIHJ0IHRhc2sgcmVjZWl2ZSBmcm9tIHRoZSAKbm9uLXJ0IHRhc2sgYW5kIHRo
-ZSBvdGhlciBzZW5kIHRvIHJ0LXRhc2suCgpUaGUgcmVndWxhciB0aHJlYWQgcmVhZCBhbmQgd3Jp
-dGUgaW4gdGhlIHNhbWUgZGV2bmFtZSAKKC9wcm9jL3hlbm9tYWkvcmVnaXN0cnkvcnRpcGMveGRk
-cC9YRERQX1BPUlRfTEFCRUwpLiBPbmUgcnQgdGhyZWFkIGxpc3RlbiBmcm9tIAp0aGF0IHBvcnQu
-CgpJIGRvbid0IHVuZGVyc3RhbmQgaG93IGlzIHBvc3NpYmxlIHRoYXQgYm90aCAobm9uLXJ0IGFu
-ZCBydCB0aHJlYWRzKSBsaXN0ZW4gCmZyb20gdGhlIHNhbWUgcG9ydCBhbmQgY291bGQgbm90IGhh
-dmUgY29sbGlzaW9ucyAgaWYgdHdvIHRocmVhZHMgKG5vbi1ydCBhbmQgCnJ0KSB0cnkgdG8gd3Jp
-dGUgaW4gdGhlIHNhbWUgcG9ydC4KCkNvdWxkIG5vdCBiZSBiZXR0ZXIgdG8gc2VwYXJhdGUgaXQ/
-CgpUaGFua3MgaW4gYWR2YW5jZSwKCkxlb3BvbGQKCgotLSAKLS0KTGludXggVXNlciAxNTI2OTIK
-Q2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10
-ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTog
-YXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAxOTggYnl0ZXMKRGVzYzogVGhpcyBpcyBh
-IGRpZ2l0YWxseSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWku
-b3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTQwMTE0LzkzNWE5OGUwL2F0dGFj
-aG1lbnQuc2lnPgo=
+
+Some glibc versions mark write() with attribute warn_unused_result (found in
+Ubuntu 12.04 / eglibc 2.15 / gcc 4.6.3), so we need to silence this warning,
+especially because we're building with -Werror.
+
+Signed-off-by: Gernot Hillier <gernot.hillier@siemens.com>
+---
+ lib/cobalt/init.c           | 3 ++-
+ testsuite/latency/latency.c | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+Sorry for late self follow-up, but I was a bit offline due to parental
+leave...
+
+This is a friendly reminder to v2 of the patch (already posted on
+2013-11-11), adressing your comments from 2013-11-08, Gilles. I also
+rebased patch to today's master. 
+
+The "attribute unused" style was adopted from
+testsuite/latency/latency.c. We still think fixing the warning in the
+source code is better than in the configure command line.
+
+diff --git a/lib/cobalt/init.c b/lib/cobalt/init.c
+index 0c2b29a..c3086a9 100644
+--- a/lib/cobalt/init.c
++++ b/lib/cobalt/init.c
+@@ -54,7 +54,8 @@ int __rtdm_fd_start = INT_MAX;
+ static void sigill_handler(int sig)
+ {
+ 	const char m[] = "no Xenomai support in kernel?\n";
+-	write(2, m, sizeof(m) - 1);
++	ssize_t rc __attribute__ ((unused));
++	rc = write(2, m, sizeof(m) - 1);
+ 	exit(EXIT_FAILURE);
+ }
+ 
+diff --git a/testsuite/latency/latency.c b/testsuite/latency/latency.c
+index 6325672..12b90a9 100644
+--- a/testsuite/latency/latency.c
++++ b/testsuite/latency/latency.c
+@@ -507,7 +507,7 @@ static void sigdebug(int sig, siginfo_t *si, void *context)
+ 	case SIGDEBUG_WATCHDOG:
+ 		n = snprintf(buffer, sizeof(buffer), "%s\n",
+ 			     reason_str[reason]);
+-		write(STDERR_FILENO, buffer, n);
++		n = write(STDERR_FILENO, buffer, n);
+ 		exit(EXIT_FAILURE);
+ 	}
+ 
+-- 
+1.8.4
+
+
