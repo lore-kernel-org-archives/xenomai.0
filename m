@@ -1,14 +1,14 @@
-Message-ID: <52D57C33.2050908@siemens.com>
-Date: Tue, 14 Jan 2014 19:04:35 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
-MIME-Version: 1.0
-References: <CA+6vZpS6Mw7rfvHnNBkB-9Jd9C-UUjRJ_hD6Ket_f__8F8iaLg@mail.gmail.com>
- <52D531E4.4040407@xenomai.org>
- <CA+6vZpREPx9H7TxKBniP-TKOs5oo_MfEnc+a-JCRBtjUirsLGQ@mail.gmail.com>
-In-Reply-To: <CA+6vZpREPx9H7TxKBniP-TKOs5oo_MfEnc+a-JCRBtjUirsLGQ@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] filter ipipe tracing
+References: <10FA295E-2AE2-402F-8C2D-4653C9E0BD4E@gatech.edu>
+ <CAMesUR6di8omZ+N26f__FcedVPVE67Xm6xjeabgvOZxMt8YytA@mail.gmail.com>
+Mime-Version: 1.0 (1.0)
+In-Reply-To: <CAMesUR6di8omZ+N26f__FcedVPVE67Xm6xjeabgvOZxMt8YytA@mail.gmail.com>
+Message-Id: <FC0EB8FF-E108-4F1F-93BC-7AB5BBD8733D@gatech.edu>
+From: "Yogi A. Patel" <yapatel@gatech.edu>
+Date: Tue, 14 Jan 2014 23:02:35 -0500
+Content-Type: text/plain;
+	charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Analogy Calibrate NI-DAQ
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,34 +17,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: David <david35k@gmail.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Alexis Berlemont <alexis.berlemont@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2014-01-14 18:30, David wrote:
-> OK thanks, it helps to reduce by two factor (div 2) the number of trace per
-> milliseconds ; more importantly is CPU usage lowered from 100% down to 50%.
-> On a trace of 100000 points, i reached 250ms. 25% of these tracepoints are
-> __ipipe_syscall_root+xxx that does not mean anything to me, but all
-> syscalls, scheduling decisions and interrupts are visible.
-> 
-> The resulting trace contains tracepoints on the current CPU that activates
-> the trace freeze. Is there a way to activate the simultaneous trace capture
-> on two+ cores ?
-> 
-> I see trace_mark(...info...) in the Xenomai code. I don't think this info
-> is displayed in ipipe trace, am I wrong ?
+To get started - what I need is the following:
 
-No, trace_mark are dead remainders of LTTng support. I'm slowly
-converting them to ftrace tracepoints that you can then retrieve and
-visualize with standard tools. It's an x86-64-only endeavor so far,
-artifacts can be found in [1] for Xenomai 2 (on maintenance now). For
-Xenomai 3, I didn't push anything yet.
+I know that the older NI cards did hardware calibration and the new cards do=
+ software calibration.=20
 
-Jan
+Now, I know that comedi has functions for it - so I am wondering how useful i=
+t would be to start with the comedi code and modify for analogy.=20
 
-[1] http://git.xenomai.org/xenomai-jki.git/log/?h=queues/ftrace
+I believe the best route to start is try to get the software calibration wor=
+king since the newer cards all use that method. Is there documentation on ho=
+w the DAQs go about doing this calibration?
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Also, where do I clone a copy of the development code from? And what reposit=
+ory do I send pull requests to?
 
+That should get me started - thank you!
+
+--
+Yogi A. Patel
+(url): www.yapatel.org | @yapatel525
+
+> On Jan 14, 2014, at 2:01, Alexis Berlemont <alexis.berlemont@gmail.com> wr=
+ote:
+>=20
+> Hi,
+>=20
+> Sorry for answering so late. Here is a short mail of apology.
+>=20
+> My free time has been drastically reduced these last few years; that
+> is the reason why I was unable to provide many features which were
+> planned into analogy (and notably the tool you need).
+>=20
+> Your contribution on this subject would be more than welcome.
+>=20
+> What kind of information do you need ?
+>=20
+> Regards,
+>=20
+> Alexis.
+>=20
+>> On Sat, Jan 11, 2014 at 5:04 PM, Yogi A. Patel <yapatel@gatech.edu> wrote=
+:
+>> Hi -
+>>=20
+>> I develop a real-time electrophysiology platform called RTXI (www.rtxi.or=
+g) and have run into a slight issue. We recently switched over from RTAI to X=
+enomai (for multiple reasons) and I can't seem to find an equivalent to come=
+di_soft_calibarate for the National Instruments DAQs that we use.
+>>=20
+>> Was such a tool ever made? If not, would anyone be able to point me in th=
+e direction to making such a tool for the Analogy drivers? I've written low-=
+level drivers before (somewhat) - and wouldn't mind writing this - just need=
+ some guidance.
+>>=20
+>> --
+>> Yogi A. Patel
+>> _______________________________________________
+>> Xenomai mailing list
+>> Xenomai@xenomai.org
+>> http://www.xenomai.org/mailman/listinfo/xenomai
