@@ -1,14 +1,14 @@
-Message-ID: <52D86421.4060507@xenomai.org>
-Date: Thu, 16 Jan 2014 23:58:41 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <180542a9.1c6fc.1439a711789.Coremail.ericvic@163.com>
- <52D85E3A.4060501@xenomai.org>
-In-Reply-To: <52D85E3A.4060501@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] xenomai-2.6.3 with freescale imx6 kernel threads
- binding cpu
+Sender: bodgesoc@gmail.com
+In-Reply-To: <52D8609C.5050903@xenomai.org>
+References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
+ <CAN1+YZWOjxf=s+6LH3Xymzx_mwWa6XmO_Xt7SHF589RzJCANBA@mail.gmail.com>
+ <52D8609C.5050903@xenomai.org>
+From: Andy Pugh <andy@bodgesoc.org>
+Date: Thu, 16 Jan 2014 23:17:34 +0000
+Message-ID: <CAN1+YZW+nJgMb0hLy2JWZW6JrxA+mZzA+-oN-gjQgeGTcoe0jg@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Fwd: Kernel Compilation Problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,117 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 01/16/2014 11:33 PM, Gilles Chanteperdrix wrote:
-> On 01/16/2014 10:45 AM, 嵌入式工程师 wrote:
->>
->>
->> Just the wrong message，below is my question。
->>
->>
->> I use xenomai-2.6.3 with freescale imx6 kernel-3.0.35 threads binding cpu。
->> rt_task_create(&t1, "task1", 4096, 88, T_FPU|T_CPU(1));
->> But will randomly select binding cpu, not what I want cpu1,what is wrong？
->> thanks!
-> 
-> Hi,
-> 
-> I have been trying to reproduce this issue with the program which 
-> follows,
+On 16 January 2014 22:43, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
 
-Or better:
+>
+> The pre- and post- patches are for the freescale tree. If the Udoo tree
+> is not based on the freescale tree, there is no reason to add the pre
+> and post patches.
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <time.h>
-#include <sched.h>
-#include <unistd.h>
 
-#include <native/task.h>
+I think it must have been at some point. The main adeos patch "took"
+cleanly after forcing the ..pre.patch, and not at all without it.
 
-void body(void *cookie)
-{
-	long target_cpu = (long)cookie;
-	long real_cpu = sched_getcpu();
-	
-	if (real_cpu < 0) {
-		perror("sched_getcpu");
-		exit(EXIT_FAILURE);
-	}
-	
-	if (real_cpu != target_cpu) {
-		fprintf(stderr, "Real cpu is %ld instead of %ld\n", 
-			real_cpu, target_cpu);
-		exit(EXIT_FAILURE);
-	}
-}
 
-int main(void)
-{
-	int nrcpus = sysconf(_SC_NPROCESSORS_ONLN);
-	double divider = 1 / sqrt(RAND_MAX);
-	unsigned i = 0;
+> You are probably better off following the I-pipe
+> porting guide, and add support for the imx6 yourself
 
-	if (nrcpus < 0) {
-		perror("sysconf(_SC_NPROCESSORS_ONLN)");
-		return EXIT_FAILURE;
-	}
 
-	srandom(time(NULL));
+Unfortunately that is probably rather outside my skill level, but I might
+return to that if my current plan fails (which is making a patch of all the
+changes in the Udoo github, and seeing if those will apply to my working
+xenomai/arm kernel
 
-	for(;;) {
-		char name[80];
-		long target_cpu;
-		cpu_set_t cpu_set;
-		RT_TASK task;
-		long aff;
-		int err;
-		++i;
+>
+> > I am pretty sure that there really isn't any function anywhere called
+> > "`imx_pcm_preallocate_dma_buffer.constprop.8"
+>
 
-		target_cpu = (int)(random() * divider) % nrcpus;
-		aff = 1 + (int)(random() * divider) % ((1 << nrcpus) - 1);
+Does the
+>  unpatched kernel, with exactly the same configuration, compile correctly?
+>
 
-		CPU_ZERO(&cpu_set);
-		for (err = 0; err < nrcpus; err++)
-			if (aff & (1 << err))
-				CPU_SET(err, &cpu_set);
-		
-		err = sched_setaffinity(0, sizeof(cpu_set), &cpu_set);
-		if (err < 0) {
-			perror("sched_setaffinity");
-			return EXIT_FAILURE;
-		}
-		
-		fprintf(stderr, "%09d: affinity: %ld, target: %ld\n", 
-			i, aff, target_cpu);
-
-		snprintf(name, sizeof(name), "task%d", i);
-		err = rt_task_create(&task, name, 65536, 88, 
-				T_FPU | T_CPU(target_cpu) | T_JOINABLE);
-		if (err < 0) {
-			fprintf(stderr, "rt_task_create: %d, %d\n", err, i);
-			return EXIT_FAILURE;
-		}
-
-		err = rt_task_start(&task, body, (void *)target_cpu);
-		if (err < 0) {
-			fprintf(stderr, "rt_task_start: %d\n", err);
-			return EXIT_FAILURE;
-		}
-		
-		err = rt_task_join(&task);
-		if (err < 0) {
-			fprintf(stderr, "rt_task_join: %d\n", err);
-			return EXIT_FAILURE;
-		}
-	}
-}
-
+Yes it does, which is why it seemed like a promising starting-point.
 
 
 -- 
-                                                                Gilles.
-
+atp
