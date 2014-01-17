@@ -1,10 +1,10 @@
-Message-ID: <52D91E6B.7090408@siemens.com>
-Date: Fri, 17 Jan 2014 13:13:31 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PULL] forge: various small fixes
+Date: Fri, 17 Jan 2014 15:42:52 +0100
+Message-ID: <CAOm2F2aZbA3kKgU1LTjF+Y_qNiU2jhKm6BNXj3ZTr+uAjxcKRg@mail.gmail.com>
+From: Simone Chiale <zimbo2288@gmail.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Timing problem
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,54 +13,100 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-The following changes since commit 1250012103de3d14d0a68448b65fd0994c21bd5e:
+Hi,
+Can someone help me with my xenomai problem?
+I've patched correctly xenomai 2.6.3 on a vanilla kernel 3.8.13 on a
+Pentium M 740 (1.73 GHz) 1 Gb RAM with last Xubuntu OS.
+I've used an rt_task_set_periodic() timer to create a loop in which every 2
+ms my thread does something. It works well but i ve some problem with RTIME
+stamp.
+Following an example found in the xenomai help forum  i've tried a simple
+program to print every second with rt_printf using rt_timer_read():
 
-  cobalt/posix/sem: fix error path on failed creation (2014-01-10 16:28:08 +0100)
+---------------------------------------------------------------------------=
+-----------------------------------------------------------------
 
-are available in the git repository at:
+#include <signal.h>
+#include <sys/mman.h>
+#include <native/task.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <rtdk.h>
 
-  git://git.xenomai.org/xenomai-jki.git for-forge
+RT_TASK demo_task;
+int count =3D 0;
+RTIME k_time;
 
-for you to fetch changes up to 520fc6ac080f2b4a47e39eaa7838270fb2768748:
+void demo(void *arg)
+{
 
-  Silence unused_result warning from write() (2014-01-17 13:06:44 +0100)
+rt_task_set_periodic(NULL, TM_NOW, 1000000000);
 
-Some patches are pretty old by now. I think I didn't miss any pending
-review comment, otherwise please complain if I did.
+while (count<10) {
 
-Jan
+    rt_printf("%llu\n", k_time);
 
-----------------------------------------------------------------
-Gernot Hillier (1):
-      Silence unused_result warning from write()
+    rt_task_wait_period(NULL);
 
-Jan Kiszka (8):
-      clocktest: Update to new clocks and clock encoding scheme
-      xeno-test: Use new -E switch of clocktest
-      cobalt: Add missing prefix to sc_cobalt_check_init
-      cobalt/kernel: clean up timers on __xnthread_init errors
-      switchtest: Bail out early from rtswitch_ktask on termination
-      cobalt/kernel: Provide uninterruptible xnthread_join for RTDM use cases
-      switchtest: Avoid clashes RTSWITCH_* vs. RTTST_SWTEST_* constants
-      Provide "native" alias in xeno-config
+    k_time =3D rt_timer_read();
 
- include/cobalt/kernel/rtdm/driver.h |  2 +-
- include/cobalt/kernel/thread.h      |  2 +-
- include/cobalt/uapi/syscall.h       |  2 +-
- kernel/cobalt/posix/syscall.c       |  2 +-
- kernel/cobalt/posix/thread.c        |  2 +-
- kernel/cobalt/rtdm/drvlib.c         |  2 +-
- kernel/cobalt/thread.c              | 22 +++++++++++++++++-----
- kernel/drivers/testing/switchtest.c |  9 +++------
- lib/cobalt/init.c                   |  3 ++-
- lib/cobalt/mutex.c                  |  2 +-
- scripts/xeno-config-cobalt.in       |  3 +++
- scripts/xeno-config-mercury.in      |  3 +++
- testsuite/clocktest/clocktest.c     | 17 +++++++++++++++--
- testsuite/latency/latency.c         |  2 +-
- testsuite/xeno-test/xeno-test.in    |  2 +-
- 15 files changed, 52 insertions(+), 23 deletions(-)
+    count++;
 
+    }
+}
+
+void catch_signal(int sig) {
+rt_task_delete(&demo_task);
+printf("In ::catch_signal(), sig =3D=3D %d\n",sig);
+
+}
+
+int main(int argc, char* argv[])
+{
+signal(SIGINT, catch_signal);
+rt_print_auto_init(1);
+mlockall(MCL_CURRENT | MCL_FUTURE);
+rt_task_create(&demo_task, "mydemo", 0, 99, 0);
+rt_task_start(&demo_task, &demo, NULL);
+pause();
+rt_task_delete(&demo_task);
+return 0;
+}
+---------------------------------------------------------------------------=
+---------------------------------------------------------------------
+
+My results are very strange so i suppose that something in my TSC is not so
+good.
+Results:
+-----------------------------------------------------------
+0
+18446744073446329852
+736770608
+1736771638
+18446744072151357874
+18446744073151357892
+441806040
+1441805091
+18446744071856389894
+18446744072856387160
+-------------------------------------------------------------
+
+How is it possible? Can someone help me to fix it?
+Thank you,
+
+Simone
+
+ps: I attach my config file.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: config-3.8.13
+Type: application/octet-stream
+Size: 149238 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140117/99288f9=
+2/attachment.obj>
