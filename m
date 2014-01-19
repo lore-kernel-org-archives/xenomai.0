@@ -1,15 +1,10 @@
-Message-ID: <52DC4CD2.90707@xenomai.org>
-Date: Sun, 19 Jan 2014 23:08:18 +0100
+Message-ID: <52DC4E56.1000505@xenomai.org>
+Date: Sun, 19 Jan 2014 23:14:46 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52AEB440.5090103@xenomai.org> <52AF2686.7010907@xenomai.org>
- <52AF26C1.1060300@xenomai.org> <52AF2BDF.9000801@xenomai.org>
- <52AF2C6E.8010701@xenomai.org> <52AF2ED5.8070503@xenomai.org>
- <52C02780.2050104@xenomai.org> <52C0644A.9080108@xenomai.org>
-In-Reply-To: <52C0644A.9080108@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rehashing
+Subject: [Xenomai] Pull request
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,111 +16,63 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 12/29/2013 07:04 PM, Philippe Gerum wrote:
-> On 12/29/2013 02:45 PM, Gilles Chanteperdrix wrote:
->> On 12/16/2013 05:48 PM, Philippe Gerum wrote:
->>> On 12/16/2013 05:38 PM, Gilles Chanteperdrix wrote:
->>>> On 12/16/2013 05:35 PM, Philippe Gerum wrote:
->>>>> On 12/16/2013 05:13 PM, Gilles Chanteperdrix wrote:
->>>>>> On 12/16/2013 05:12 PM, Philippe Gerum wrote:
->>>>>>> On 12/16/2013 09:05 AM, Gilles Chanteperdrix wrote:
->>>>>>>>
->>>>>>>> Hi Philippe,
->>>>>>>>
->>>>>>>> looking at the registry code, I had an idea: we could increase the
->>>>>>>> number of descriptors dynamically when they are exhausted, and
->>>>>>>> increase
->>>>>>>> the hash size as well. This would make the configurable number of
->>>>>>>> slots
->>>>>>>> a starting point, but not a liimit. The access to the registry by name
->>>>>>>> does not really need to be fast, so we could protect it with a mutex
->>>>>>>
->>>>>>> The registry hash is a low contention resource, so using a dedicated
->>>>>>> mutex is likely more efficient than grabbing the big nklock in most
->>>>>>> cases anyway.
->>>>>>>
->>>>>>>> (that would mean that all services accessing the registry by name
->>>>>>>> would
->>>>>>>> need to run in secondary mode, but I am not sure we care, and if we
->>>>>>>> do,
->>>>>>>> we can use an xnsynch instead).
->>>>>>>>
->>>>>>>> What do you think?
->>>>>>>>
->>>>>>>
->>>>>>> Recent Cobalt users of the registry put aside, this is basically about
->>>>>>> deciding whether:
->>>>>>>
->>>>>>> - issuing connect() on a rtipc socket should switch the caller to
->>>>>>> secondary mode, since other in-kernel users disappeared during the
->>>>>>> Great
->>>>>>> Refactoring (tm). bind() does have such requirement already.
->>>>>>>
->>>>>>> - all present and future callers of xnregistry_remove() should run in
->>>>>>> secondary mode as well. There is only one caller remaining so far, and
->>>>>>> it does (i.e. thread cleanup code).
->>>>>>
->>>>>> sem_destroy/sem_close/sem_unlink, pthread_mutex_destroy, and
->>>>>> pthread_cond_destroy now call xnregistry_remove.
->>>>>>
->>>>>
->>>>> Since your recent additions involve dropping keys from the registry from
->>>>> mutex and cond deletion routines, I would then stick with an
->>>>> implementation that allows primary-mode calls.
->>>>
->>>> Ok, just forgot that mutex and conds are anonymous, so, they need not
->>>> access the hash table, only sem_unlink and sem_open will access the
->>>> hash. Ok, I need to see what exactly needs to be protected during the
->>>> rehash. Maybe not much after all.
->>>>
->>>
->>> You also have to serialize access to the handle table, and keep key
->>> indexing and handle registration seen as a single atomic operation from
->>> external code.
->>>
->> Ok, I think I have found a way. It is not very complicated finally. I
->> guess I found out something everybody knew already... When we know we
->> are rehashing:
->> - any search searches both in the old and the new hash
->> - any insertion goes straight to the new hash.
->> So, no wait for the rehash end is needed, except for the unlucky caller
->> of the hash insertion routine which is doing the rehash.
->>
->> Here is the patch for the "xnid_table" hash, pushed yesterday, and used
->> for named semaphores, file descriptors and timer ids.
->>
-> 
-> I'm not fond of the concept of rehashing since this is introduced by the 
-> requirement to provide a dedicated mechanism for extending the (xn)file 
-> table dynamically in the first place.
-> 
-> I understand your concerns about keeping fast lookups while improving 
-> memory efficiency for the index meta-data. But at the same time, I'm not 
-> comfortable with the idea of introducing table rehash as a mean to deal 
-> with these goals.
-> 
-> Just like any other old cranky meatball whose education closely followed 
-> the ancient un*x mantra, I'm reluctant to introduce changes which would 
-> impact 100% of the user base only to address an issue experienced by 1% 
-> of it (i.e. those who would actually trigger the extension).
-> 
-> Could we try addressing the core issue using a different indexing 
-> structure, typically? Maybe we could reach an acceptable trade-off 
-> another way?
-> 
-To close this issue, I made a benchmark comparing
-- the hash based original implementation
-- a first alternative putting the file descriptors in an rbtree in the
-cobalt_process per-process structure (stored in a has as well)
-- a second alternative, where a pointer to the cobalt_process structure
-is made accessible directly via the ipipe_threadinfo structure.
+The following changes since commit bf3a1b1df9f7df874e36faf60b6e5311ecfeb913:
 
-The most efficient (with 128 file descriptors) seems to be the second
-alternative, see results here:
+  doc: regenerate documentation (2014-01-17 15:38:12 +0100)
 
-http://sisyphus.hd.free.fr/~gilles/fd-lookup/fd-lookup.png
+are available in the git repository at:
 
-So, the hash based implementation is abandoned.
+  git://git.xenomai.org/xenomai-gch.git for-forge
+
+for you to fetch changes up to ae62edaa5cc9372d36f298779b378e4852463e4d:
+
+  cobalt/nsem: rebase on xnid (2014-01-19 19:17:07 +0100)
+
+----------------------------------------------------------------
+Gilles Chanteperdrix (10):
+      cobalt/arm: fix compilation warning
+      testsuite: add select+mq test
+      cobalt: wrap the glibc function pthread_setname_np
+      cobalt/timer: return overruns on 64 bits
+      switchtest: avoid printf stack overflow
+      cobalt/timer: make timer_id per-process instead of global
+      cobalt/arm: fix VFP related lockup
+      cobalt: replace ppd mechanism
+      cobalt: add xnid, rbtree based per-process ids table
+      cobalt/nsem: rebase on xnid
+
+ include/cobalt/kernel/ppd.h               |   45 ++--
+ include/cobalt/kernel/shadow.h            |   22 +-
+ include/cobalt/kernel/timer.h             |    2 +-
+ include/cobalt/kernel/tree.h              |   74 +++++++
+ include/cobalt/pthread.h                  |    2 +
+ kernel/cobalt/Makefile                    |    3 +-
+ kernel/cobalt/arch/arm/switch.S           |   16 ++
+ kernel/cobalt/arch/arm/thread.c           |   32 ++-
+ kernel/cobalt/include/ipipe/thread_info.h |    6 +-
+ kernel/cobalt/posix/init.c                |    9 -
+ kernel/cobalt/posix/internal.h            |   25 +--
+ kernel/cobalt/posix/nsem.c                |  105 +++------
+ kernel/cobalt/posix/process.h             |   10 +-
+ kernel/cobalt/posix/sem.h                 |    4 -
+ kernel/cobalt/posix/syscall.c             |   22 +-
+ kernel/cobalt/posix/timer.c               |  209 +++++++++---------
+ kernel/cobalt/posix/timer.h               |   19 +-
+ kernel/cobalt/rtdm/core.c                 |    8 +-
+ kernel/cobalt/rtdm/internal.h             |    2 -
+ kernel/cobalt/rtdm/syscall.c              |    9 +-
+ kernel/cobalt/shadow.c                    |  365 ++++++++++++++------------------
+ kernel/cobalt/timer.c                     |    4 +-
+ kernel/cobalt/tree.c                      |   58 +++++
+ lib/cobalt/cobalt.wrappers                |    1 +
+ lib/cobalt/thread.c                       |    6 +
+ testsuite/regression/posix/Makefile.am    |    4 +-
+ testsuite/regression/posix/mq_select.c    |  118 +++++++++++
+ testsuite/switchtest/switchtest.c         |    9 +-
+ 28 files changed, 675 insertions(+), 514 deletions(-)
+ create mode 100644 include/cobalt/kernel/tree.h
+ create mode 100644 kernel/cobalt/tree.c
+ create mode 100644 testsuite/regression/posix/mq_select.c
 
 -- 
                                                                 Gilles.
