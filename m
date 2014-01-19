@@ -1,5 +1,5 @@
-Message-ID: <52DBC5FE.6060806@xenomai.org>
-Date: Sun, 19 Jan 2014 13:33:02 +0100
+Message-ID: <52DBD649.2000908@xenomai.org>
+Date: Sun, 19 Jan 2014 14:42:33 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
@@ -11,7 +11,8 @@ References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
  <CAN1+YZWnLC=MLxWqYd9xH1URimWnOdEhU4mwZ0S3QFdpghUaGQ@mail.gmail.com>
  <52DAE756.3070606@xenomai.org>
  <CAN1+YZWmjvsu7My92EBktFhWYhheRJvdYrEq=r3+Ravp_Wzoyw@mail.gmail.com>
-In-Reply-To: <CAN1+YZWmjvsu7My92EBktFhWYhheRJvdYrEq=r3+Ravp_Wzoyw@mail.gmail.com>
+ <52DBC5FE.6060806@xenomai.org>
+In-Reply-To: <52DBC5FE.6060806@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Fwd: Kernel Compilation Problems
@@ -26,38 +27,41 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Andy Pugh <andy@bodgesoc.org>
 Cc: xenomai <xenomai@xenomai.org>
 
-On 01/18/2014 11:31 PM, Andy Pugh wrote:
-> On 18 January 2014 12:43, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
+On 01/19/2014 01:33 PM, Gilles Chanteperdrix wrote:
+> On 01/18/2014 11:31 PM, Andy Pugh wrote:
+>> On 18 January 2014 12:43, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>
+>>> It is an imx6, right? Could you try ton run the X server without
+>>> acceleration (using the fbdev driver)?
+>>
+>> That does look a lot more promising:
+>>
+>> RTT|  00:00:43  (periodic user-mode task, 1000 us period, priority 99)
+>> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+>> RTD|      6.404|     13.219|     42.202|       0|     0|      1.709|     44.921
+>> RTD|      3.856|     14.416|     46.916|       0|     0|      1.709|     46.916
+>> RTD|      3.765|     15.383|     36.954|       0|     0|      1.709|     46.916
+>> RTD|      2.939|     15.292|     40.489|       0|     0|      1.709|     46.916
+>> RTD|      2.886|     15.669|     75.785|       0|     0|      1.709|     75.785
+>> RTD|      3.679|     15.752|     42.689|       0|     0|      1.709|     75.785
+>> RTD|      4.585|     17.161|     47.861|       0|     0|      1.709|     75.785
+>> RTD|      4.590|     16.749|     46.838|       0|     0|      1.709|     75.785
+>> RTD|      3.343|     14.154|     28.101|       0|     0|      1.709|     75.785
+>> RTD|      3.323|     16.641|     48.358|       0|     0|      1.709|     75.785
+>>
+>> The 75uS was the point where I opened a web browser. Running glxgears
+>> seemed to have no effect at all
+>>
+> BTW, you should wait a bit more than 43 seconds to hope having a good 
+> approximation of the worst case. Using LTP is recommended.
 > 
->> It is an imx6, right? Could you try ton run the X server without
->> acceleration (using the fbdev driver)?
-> 
-> That does look a lot more promising:
-> 
-> RTT|  00:00:43  (periodic user-mode task, 1000 us period, priority 99)
-> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
-> RTD|      6.404|     13.219|     42.202|       0|     0|      1.709|     44.921
-> RTD|      3.856|     14.416|     46.916|       0|     0|      1.709|     46.916
-> RTD|      3.765|     15.383|     36.954|       0|     0|      1.709|     46.916
-> RTD|      2.939|     15.292|     40.489|       0|     0|      1.709|     46.916
-> RTD|      2.886|     15.669|     75.785|       0|     0|      1.709|     75.785
-> RTD|      3.679|     15.752|     42.689|       0|     0|      1.709|     75.785
-> RTD|      4.585|     17.161|     47.861|       0|     0|      1.709|     75.785
-> RTD|      4.590|     16.749|     46.838|       0|     0|      1.709|     75.785
-> RTD|      3.343|     14.154|     28.101|       0|     0|      1.709|     75.785
-> RTD|      3.323|     16.641|     48.358|       0|     0|      1.709|     75.785
-> 
-> The 75uS was the point where I opened a web browser. Running glxgears
-> seemed to have no effect at all
-> 
-BTW, you should wait a bit more than 43 seconds to hope having a good 
-approximation of the worst case. Using LTP is recommended.
+> Could you try the following patch to see if it improves anything?
 
-Could you try the following patch to see if it improves anything?
+Sorry, wrong patch version. Please try this one instead:
 
 diff --git a/arch/arm/mm/cache-l2x0.c b/arch/arm/mm/cache-l2x0.c
-index d9cb476..fe177c8 100644
+index d9cb476..1e2c52d 100644
 --- a/arch/arm/mm/cache-l2x0.c
 +++ b/arch/arm/mm/cache-l2x0.c
 @@ -41,7 +41,7 @@ static inline void cache_wait_way(void __iomem *reg, unsigned long mask)
@@ -77,17 +81,18 @@ index d9cb476..fe177c8 100644
  static void l2x0_flush_all(void)
  {
  	unsigned long flags;
-@@ -145,6 +146,51 @@ static void l2x0_flush_all(void)
- 	__l2x0_flush_all();
+@@ -157,6 +158,81 @@ static void l2x0_clean_all(void)
+ 	cache_sync();
  	spin_unlock_irqrestore(&l2x0_lock, flags);
  }
 +#else
-+static void l2x0_clean_line_idx(unsigned line, unsigned way)
++static void l2x0_clean_inv_line_idx(unsigned line, unsigned way)
 +{
 +	void __iomem *base = l2x0_base;
 +
-+	writel_relaxed((way << 28) | (line << 5), base + L2X0_CLEAN_LINE_IDX);
-+	cache_wait(base + L2X0_CLEAN_LINE_IDX, 1);
++	writel_relaxed((way << 28) | (line << 5), 
++		base + L2X0_CLEAN_INV_LINE_IDX);
++	cache_wait(base + L2X0_CLEAN_INV_LINE_IDX, 1);
 +}
 +
 +static void l2x0_flush_way(unsigned way, unsigned len, unsigned lines)
@@ -99,19 +104,11 @@ index d9cb476..fe177c8 100644
 +		spin_lock_irqsave(&l2x0_lock, flags);
 +		debug_writel(0x03);
 +		for (i = 0; i < len && line + i < lines; i++)
-+			l2x0_clean_line_idx(line + i, way);
++			l2x0_clean_inv_line_idx(line + i, way);
 +		cache_sync();
 +		debug_writel(0x00);
 +		spin_unlock_irqrestore(&l2x0_lock, flags);
 +	}
-+
-+	spin_lock_irqsave(&l2x0_lock, flags);
-+	debug_writel(0x03);
-+	writel_relaxed((1 << way), l2x0_base + L2X0_CLEAN_WAY);
-+	cache_wait_way(l2x0_base + L2X0_CLEAN_WAY, (1 << way));
-+	cache_sync();
-+	debug_writel(0x00);
-+	spin_unlock_irqrestore(&l2x0_lock, flags);
 +}
 +
 +static void l2x0_flush_all(void)
@@ -125,10 +122,50 @@ index d9cb476..fe177c8 100644
 +	for (way = 0; way < ways; way++)
 +		l2x0_flush_way(way, len, lines);
 +}
++
++static void l2x0_clean_line_idx(unsigned line, unsigned way)
++{
++	void __iomem *base = l2x0_base;
++
++	writel_relaxed((way << 28) | (line << 5), 
++		base + L2X0_CLEAN_LINE_IDX);
++	cache_wait(base + L2X0_CLEAN_LINE_IDX, 1);
++}
++
++static void l2x0_clean_way(unsigned way, unsigned len, unsigned lines)
++{
++	unsigned long flags;
++	unsigned line, i;
++	
++	for (line = 0; line < lines; line += len ) {
++		spin_lock_irqsave(&l2x0_lock, flags);
++		debug_writel(0x03);
++		for (i = 0; i < len && line + i < lines; i++)
++			l2x0_clean_line_idx(line + i, way);
++		cache_sync();
++		debug_writel(0x00);
++		spin_unlock_irqrestore(&l2x0_lock, flags);
++	}
++}
++
++static void l2x0_clean_all(void)
++{
++	unsigned lines, len, way, ways;
++
++	ways = fls(l2x0_way_mask);
++	lines = l2x0_size / (ways * CACHE_LINE_SIZE);
++	len = L2X0_SPINLOCK_LEN / CACHE_LINE_SIZE;
++
++	for (way = 0; way < ways; way++)
++		l2x0_clean_way(way, len, lines);
++}
 +#endif
  
- static void l2x0_clean_all(void)
+ static void l2x0_inv_all(void)
  {
+-- 
+1.7.10.4
+
 
 
 -- 
