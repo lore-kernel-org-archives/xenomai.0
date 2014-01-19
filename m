@@ -1,21 +1,15 @@
-Message-ID: <52DBD649.2000908@xenomai.org>
-Date: Sun, 19 Jan 2014 14:42:33 +0100
+Message-ID: <52DC4CD2.90707@xenomai.org>
+Date: Sun, 19 Jan 2014 23:08:18 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
- <CAN1+YZWOjxf=s+6LH3Xymzx_mwWa6XmO_Xt7SHF589RzJCANBA@mail.gmail.com>
- <52D8609C.5050903@xenomai.org>
- <CAN1+YZW+nJgMb0hLy2JWZW6JrxA+mZzA+-oN-gjQgeGTcoe0jg@mail.gmail.com>
- <CAN1+YZUY_3FExF=qrUtMQDQxTqossnQsPCy6zfPjfqp8PitZCg@mail.gmail.com>
- <52D9984F.9080203@xenomai.org>
- <CAN1+YZWnLC=MLxWqYd9xH1URimWnOdEhU4mwZ0S3QFdpghUaGQ@mail.gmail.com>
- <52DAE756.3070606@xenomai.org>
- <CAN1+YZWmjvsu7My92EBktFhWYhheRJvdYrEq=r3+Ravp_Wzoyw@mail.gmail.com>
- <52DBC5FE.6060806@xenomai.org>
-In-Reply-To: <52DBC5FE.6060806@xenomai.org>
+References: <52AEB440.5090103@xenomai.org> <52AF2686.7010907@xenomai.org>
+ <52AF26C1.1060300@xenomai.org> <52AF2BDF.9000801@xenomai.org>
+ <52AF2C6E.8010701@xenomai.org> <52AF2ED5.8070503@xenomai.org>
+ <52C02780.2050104@xenomai.org> <52C0644A.9080108@xenomai.org>
+In-Reply-To: <52C0644A.9080108@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Fwd: Kernel Compilation Problems
+Subject: Re: [Xenomai] rehashing
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,149 +18,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Andy Pugh <andy@bodgesoc.org>
-Cc: xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 01/19/2014 01:33 PM, Gilles Chanteperdrix wrote:
-> On 01/18/2014 11:31 PM, Andy Pugh wrote:
->> On 18 January 2014 12:43, Gilles Chanteperdrix
->> <gilles.chanteperdrix@xenomai.org> wrote:
+On 12/29/2013 07:04 PM, Philippe Gerum wrote:
+> On 12/29/2013 02:45 PM, Gilles Chanteperdrix wrote:
+>> On 12/16/2013 05:48 PM, Philippe Gerum wrote:
+>>> On 12/16/2013 05:38 PM, Gilles Chanteperdrix wrote:
+>>>> On 12/16/2013 05:35 PM, Philippe Gerum wrote:
+>>>>> On 12/16/2013 05:13 PM, Gilles Chanteperdrix wrote:
+>>>>>> On 12/16/2013 05:12 PM, Philippe Gerum wrote:
+>>>>>>> On 12/16/2013 09:05 AM, Gilles Chanteperdrix wrote:
+>>>>>>>>
+>>>>>>>> Hi Philippe,
+>>>>>>>>
+>>>>>>>> looking at the registry code, I had an idea: we could increase the
+>>>>>>>> number of descriptors dynamically when they are exhausted, and
+>>>>>>>> increase
+>>>>>>>> the hash size as well. This would make the configurable number of
+>>>>>>>> slots
+>>>>>>>> a starting point, but not a liimit. The access to the registry by name
+>>>>>>>> does not really need to be fast, so we could protect it with a mutex
+>>>>>>>
+>>>>>>> The registry hash is a low contention resource, so using a dedicated
+>>>>>>> mutex is likely more efficient than grabbing the big nklock in most
+>>>>>>> cases anyway.
+>>>>>>>
+>>>>>>>> (that would mean that all services accessing the registry by name
+>>>>>>>> would
+>>>>>>>> need to run in secondary mode, but I am not sure we care, and if we
+>>>>>>>> do,
+>>>>>>>> we can use an xnsynch instead).
+>>>>>>>>
+>>>>>>>> What do you think?
+>>>>>>>>
+>>>>>>>
+>>>>>>> Recent Cobalt users of the registry put aside, this is basically about
+>>>>>>> deciding whether:
+>>>>>>>
+>>>>>>> - issuing connect() on a rtipc socket should switch the caller to
+>>>>>>> secondary mode, since other in-kernel users disappeared during the
+>>>>>>> Great
+>>>>>>> Refactoring (tm). bind() does have such requirement already.
+>>>>>>>
+>>>>>>> - all present and future callers of xnregistry_remove() should run in
+>>>>>>> secondary mode as well. There is only one caller remaining so far, and
+>>>>>>> it does (i.e. thread cleanup code).
+>>>>>>
+>>>>>> sem_destroy/sem_close/sem_unlink, pthread_mutex_destroy, and
+>>>>>> pthread_cond_destroy now call xnregistry_remove.
+>>>>>>
+>>>>>
+>>>>> Since your recent additions involve dropping keys from the registry from
+>>>>> mutex and cond deletion routines, I would then stick with an
+>>>>> implementation that allows primary-mode calls.
+>>>>
+>>>> Ok, just forgot that mutex and conds are anonymous, so, they need not
+>>>> access the hash table, only sem_unlink and sem_open will access the
+>>>> hash. Ok, I need to see what exactly needs to be protected during the
+>>>> rehash. Maybe not much after all.
+>>>>
+>>>
+>>> You also have to serialize access to the handle table, and keep key
+>>> indexing and handle registration seen as a single atomic operation from
+>>> external code.
+>>>
+>> Ok, I think I have found a way. It is not very complicated finally. I
+>> guess I found out something everybody knew already... When we know we
+>> are rehashing:
+>> - any search searches both in the old and the new hash
+>> - any insertion goes straight to the new hash.
+>> So, no wait for the rehash end is needed, except for the unlucky caller
+>> of the hash insertion routine which is doing the rehash.
 >>
->>> It is an imx6, right? Could you try ton run the X server without
->>> acceleration (using the fbdev driver)?
+>> Here is the patch for the "xnid_table" hash, pushed yesterday, and used
+>> for named semaphores, file descriptors and timer ids.
 >>
->> That does look a lot more promising:
->>
->> RTT|  00:00:43  (periodic user-mode task, 1000 us period, priority 99)
->> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
->> RTD|      6.404|     13.219|     42.202|       0|     0|      1.709|     44.921
->> RTD|      3.856|     14.416|     46.916|       0|     0|      1.709|     46.916
->> RTD|      3.765|     15.383|     36.954|       0|     0|      1.709|     46.916
->> RTD|      2.939|     15.292|     40.489|       0|     0|      1.709|     46.916
->> RTD|      2.886|     15.669|     75.785|       0|     0|      1.709|     75.785
->> RTD|      3.679|     15.752|     42.689|       0|     0|      1.709|     75.785
->> RTD|      4.585|     17.161|     47.861|       0|     0|      1.709|     75.785
->> RTD|      4.590|     16.749|     46.838|       0|     0|      1.709|     75.785
->> RTD|      3.343|     14.154|     28.101|       0|     0|      1.709|     75.785
->> RTD|      3.323|     16.641|     48.358|       0|     0|      1.709|     75.785
->>
->> The 75uS was the point where I opened a web browser. Running glxgears
->> seemed to have no effect at all
->>
-> BTW, you should wait a bit more than 43 seconds to hope having a good 
-> approximation of the worst case. Using LTP is recommended.
 > 
-> Could you try the following patch to see if it improves anything?
+> I'm not fond of the concept of rehashing since this is introduced by the 
+> requirement to provide a dedicated mechanism for extending the (xn)file 
+> table dynamically in the first place.
+> 
+> I understand your concerns about keeping fast lookups while improving 
+> memory efficiency for the index meta-data. But at the same time, I'm not 
+> comfortable with the idea of introducing table rehash as a mean to deal 
+> with these goals.
+> 
+> Just like any other old cranky meatball whose education closely followed 
+> the ancient un*x mantra, I'm reluctant to introduce changes which would 
+> impact 100% of the user base only to address an issue experienced by 1% 
+> of it (i.e. those who would actually trigger the extension).
+> 
+> Could we try addressing the core issue using a different indexing 
+> structure, typically? Maybe we could reach an acceptable trade-off 
+> another way?
+> 
+To close this issue, I made a benchmark comparing
+- the hash based original implementation
+- a first alternative putting the file descriptors in an rbtree in the
+cobalt_process per-process structure (stored in a has as well)
+- a second alternative, where a pointer to the cobalt_process structure
+is made accessible directly via the ipipe_threadinfo structure.
 
-Sorry, wrong patch version. Please try this one instead:
+The most efficient (with 128 file descriptors) seems to be the second
+alternative, see results here:
 
-diff --git a/arch/arm/mm/cache-l2x0.c b/arch/arm/mm/cache-l2x0.c
-index d9cb476..1e2c52d 100644
---- a/arch/arm/mm/cache-l2x0.c
-+++ b/arch/arm/mm/cache-l2x0.c
-@@ -41,7 +41,7 @@ static inline void cache_wait_way(void __iomem *reg, unsigned long mask)
- {
- 	/* wait for cache operation by line or way to complete */
- 	while (readl_relaxed(reg) & mask)
--		;
-+		cpu_relax();
- }
- 
- #ifdef CONFIG_CACHE_PL310
-@@ -136,6 +136,7 @@ static void __l2x0_flush_all(void)
- 	debug_writel(0x00);
- }
- 
-+#ifndef CONFIG_IPIPE
- static void l2x0_flush_all(void)
- {
- 	unsigned long flags;
-@@ -157,6 +158,81 @@ static void l2x0_clean_all(void)
- 	cache_sync();
- 	spin_unlock_irqrestore(&l2x0_lock, flags);
- }
-+#else
-+static void l2x0_clean_inv_line_idx(unsigned line, unsigned way)
-+{
-+	void __iomem *base = l2x0_base;
-+
-+	writel_relaxed((way << 28) | (line << 5), 
-+		base + L2X0_CLEAN_INV_LINE_IDX);
-+	cache_wait(base + L2X0_CLEAN_INV_LINE_IDX, 1);
-+}
-+
-+static void l2x0_flush_way(unsigned way, unsigned len, unsigned lines)
-+{
-+	unsigned long flags;
-+	unsigned line, i;
-+	
-+	for (line = 0; line < lines; line += len ) {
-+		spin_lock_irqsave(&l2x0_lock, flags);
-+		debug_writel(0x03);
-+		for (i = 0; i < len && line + i < lines; i++)
-+			l2x0_clean_inv_line_idx(line + i, way);
-+		cache_sync();
-+		debug_writel(0x00);
-+		spin_unlock_irqrestore(&l2x0_lock, flags);
-+	}
-+}
-+
-+static void l2x0_flush_all(void)
-+{
-+	unsigned lines, len, way, ways;
-+
-+	ways = fls(l2x0_way_mask);
-+	lines = l2x0_size / (ways * CACHE_LINE_SIZE);
-+	len = L2X0_SPINLOCK_LEN / CACHE_LINE_SIZE;
-+
-+	for (way = 0; way < ways; way++)
-+		l2x0_flush_way(way, len, lines);
-+}
-+
-+static void l2x0_clean_line_idx(unsigned line, unsigned way)
-+{
-+	void __iomem *base = l2x0_base;
-+
-+	writel_relaxed((way << 28) | (line << 5), 
-+		base + L2X0_CLEAN_LINE_IDX);
-+	cache_wait(base + L2X0_CLEAN_LINE_IDX, 1);
-+}
-+
-+static void l2x0_clean_way(unsigned way, unsigned len, unsigned lines)
-+{
-+	unsigned long flags;
-+	unsigned line, i;
-+	
-+	for (line = 0; line < lines; line += len ) {
-+		spin_lock_irqsave(&l2x0_lock, flags);
-+		debug_writel(0x03);
-+		for (i = 0; i < len && line + i < lines; i++)
-+			l2x0_clean_line_idx(line + i, way);
-+		cache_sync();
-+		debug_writel(0x00);
-+		spin_unlock_irqrestore(&l2x0_lock, flags);
-+	}
-+}
-+
-+static void l2x0_clean_all(void)
-+{
-+	unsigned lines, len, way, ways;
-+
-+	ways = fls(l2x0_way_mask);
-+	lines = l2x0_size / (ways * CACHE_LINE_SIZE);
-+	len = L2X0_SPINLOCK_LEN / CACHE_LINE_SIZE;
-+
-+	for (way = 0; way < ways; way++)
-+		l2x0_clean_way(way, len, lines);
-+}
-+#endif
- 
- static void l2x0_inv_all(void)
- {
--- 
-1.7.10.4
+http://sisyphus.hd.free.fr/~gilles/fd-lookup/fd-lookup.png
 
-
+So, the hash based implementation is abandoned.
 
 -- 
                                                                 Gilles.
