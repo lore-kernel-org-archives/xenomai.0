@@ -1,10 +1,13 @@
+From: "Leopold Palomo-Avellaneda" <leo@alaxarxa.net>
+Date: Mon, 20 Jan 2014 17:18:27 +0100
+References: <201401141315.38870.leo@alaxarxa.net>
+ <52D54836.3070203@xenomai.org>
+In-Reply-To: <52D54836.3070203@xenomai.org>
 MIME-Version: 1.0
-From: Seong-hyeon Kim <zedoul@gmail.com>
-Date: Mon, 20 Jan 2014 16:55:05 +0100
-Message-ID: <CA+dLyOUvoZX5SeN_e2CkwQPJuv_aZ7RgC-x7gGrDwqjGNxCTkg@mail.gmail.com>
-Content-Type: text/plain; charset=windows-1252
+Message-Id: <201401201718.28484.leo@alaxarxa.net>
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Asking probe method in RTDM
+Subject: Re: [Xenomai] xddp port questions
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,86 +16,105 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hi,
+A Dimarts, 14 de gener de 2014, Philippe Gerum va escriure:
+> On 01/14/2014 01:15 PM, Leopold Palomo-Avellaneda wrote:
+> > Hi,
+> >
+> > in the example xddp-label a two realtime task are connected with a non-
+> > realtime time. They share the same port where one rt task receive from =
+the
+> > non-rt task and the other send to rt-task.
+> >
+> > The regular thread read and write in the same devname
+> > (/proc/xenomai/registry/rtipc/xddp/XDDP_PORT_LABEL). One rt thread list=
+en =
 
+from
+> > that port.
+> >
+> > I don't understand how is possible that both (non-rt and rt threads) =
 
-I am trying to call *probe* function in RTDM device driver. However, I
-could not make it, and also fail to find suitable source. It will be very
-helpful if someone let me know some good source for it.
+listen
+> > from the same port and could not have collisions  if two threads (non-r=
+t =
 
+and
+> > rt) try to write in the same port.
+> >
+> > Could not be better to separate it?
+> >
+> =
 
-What I have been tried is, I use =93platform_driver_register=94 function to
-load "platform_driver" structure as bellows:
+> No, that would defeat the purpose of the illustration.
+> =
 
+> XDDP is a wrapper over Xenomai's message pipe support, offering a =
 
+> socket-based interface to applications. Each XDDP port is mapped to a =
 
-static int rt_probe(struct platform_device *pdev)
+> given /dev/rtp device minor, but the communication endpoints between RT =
 
-{
+> and NRT are different internally.
+> =
 
-int res;
+> [XDDP-port] <---> xnpipe #<port>
+>                       ^
+>                       |
+>                       |  * input queue:  /dev/rtp -> xnpipe
+>                       |  * output queue: xnpipe -> /dev/rtp
+>                       |
+>                       v
+>                 /dev/rtp<port>
+> =
 
-rtdm_printk( "%s %d\n",__func__,__LINE__);
+> So, when NRT reads from /dev/rtp<port>, it does not actually listen to =
 
-res =3D rtdm_dev_register(&device):
+> the same endpoint/queue than RT, because message pipes are =
 
-return res:
+> bi-directional. Likewise, NRT and RT never write to the same queue, =
 
-}
+> since the purpose of message pipes is to cross the RT/NRT domain boundary.
 
+Ok,
 
-static struct platform_driver rt_id_table[] =3D {
+in the example the same thread open a device for write and read from the sa=
+me =
 
-{"test",},
+device. From your answer about the endpoints, I understand that when the NR=
+T =
 
-{},
+open for read, read from the RT world, and when the NRT writes to the RT =
 
-};
+world.
 
+So, could I have a NRT function (thread) that open the device to just read =
 
-static struct platform_driver pwm_driver =3D {
-
-.probe =3D rt_probe,
-
-.remove =3D rt_remove,
-
-.id_table =3D rt_id_table,
-
-.driver =3D {
-
-.name =3D =93DRIVER_NAME",
-
-.owner =3D THIS_MODULE,
-
-},
-
-};
-
-
-int __init rt_pwm_init(void)
-
-{
-
-rtdm_printk( "%s %d\n",__func__,__LINE__);
-
-return platform_driver_register(&pwm_driver);
-
-}
-
-
-module_init(rt_pwm_init);
-
-
-
-I hope above code is able to call *rt_probe* method, but it only calls
-=93rt_pwm_init=94, nothing else, without any messages.
-
-
-I use Xenomai 2.6, on =93cdsteinkuehler=94 kernel (
-https://github.com/cdsteinkuehler/linux-dev) on Beaglebone.
+from the RT world and _another_ that send to the RT world? =
 
 
+Because I have to one the same device, and I don't know that I could do it =
+at =
 
-Thank you for reading this.
+the same time.
+ =
+
+Regards,
+
+Leopold
+
+-- =
+
+--
+Linux User 152692
+Catalonia
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 198 bytes
+Desc: This is a digitally signed message part.
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140120/e730351=
+a/attachment.sig>
