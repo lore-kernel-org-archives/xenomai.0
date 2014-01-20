@@ -1,14 +1,14 @@
-Message-ID: <52DD89AF.4090905@xenomai.org>
-Date: Mon, 20 Jan 2014 21:40:15 +0100
+Message-ID: <52DD8F27.1050008@xenomai.org>
+Date: Mon, 20 Jan 2014 22:03:35 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CANKLDmv_hfbVcWzoxjerWOTEWqEWPnQzUu44GF=SbC0iSopDOg@mail.gmail.com>
- <52DCF0D1.4000307@xenomai.org>
- <CANKLDms3aXrSoov7Z9T2JBN6fpmuh43LCQ0RUEETrDAYr3=1dA@mail.gmail.com>
-In-Reply-To: <CANKLDms3aXrSoov7Z9T2JBN6fpmuh43LCQ0RUEETrDAYr3=1dA@mail.gmail.com>
+References: <52BD3D0E.3010802@xenomai.org> <52C6C14C.9000306@web.de>
+ <52C6F57B.3090101@xenomai.org> <52C71AE0.3090807@web.de>
+ <52C7260C.1010004@xenomai.org> <52C7DAA8.5090506@web.de>
+In-Reply-To: <52C7DAA8.5090506@web.de>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xnarch_xchg infinite loop
+Subject: Re: [Xenomai] reworking rtdm
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,64 +17,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henri Roosen <henriroosen@gmail.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 01/20/2014 11:02 AM, Henri Roosen wrote:
-> On Mon, Jan 20, 2014 at 10:48 AM, Gilles Chanteperdrix <
-> gilles.chanteperdrix@xenomai.org> wrote:
-> 
->> On 01/20/2014 09:31 AM, Henri Roosen wrote:
->>> Hi all,
->>>
->>> We have the problem that (hot-)rebooting our Xenomai system fails every 1
->>> out of 10 times.
->>>
->>> The system is an ARM iMX6Solo (Cortex-A9) running Xenomai 2.6.2.1 and
->>> kernel 3.0 (freescale branch).
->>>
->>> When the system hangs at reboot, it is in an infinite loop in the Xenomai
->>> atomic exchange implementation, with STREX always returning 1:
->>>
->>> __xnarch_xchg
->>> S:0xC0094B2C : ADD      r3,r6,#0x890
->>> S:0xC0094B30 : LDREX    r2,[r3]
->>> S:0xC0094B34 : STREX    r1,r9,[r3]
->>> S:0xC0094B38 : TEQ      r1,#0
->>> S:0xC0094B3C : BNE      {pc}-0xc ; 0xc0094b30
->>>
->>> Does anyone know what is causing the STREX to always return 0 and why it
->>> might get into this state?
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 01/04/2014 10:55 AM, Jan Kiszka wrote:
+> On 2014-01-03 22:05, Gilles Chanteperdrix wrote:
+>>>> Now the question is, do we want to have a macro allowing to fix the
+>>>> callbacks signature to compile for both 2.x and forge? Or do you plan to
+>>>> stop supporting 2.x for instance for rtnet, when 3.0 is out?
+>>>>
 >>
->> Normally, strex fails if "something else" stores data in between ldrex
->> and strex. Do you have the full stack trace?
+>>> I guess RTnet will not be the only affected project.
 >>
+>> I understand you want to be able to support both API I take it?
 > 
-> Thank you for your reply Gilles. Please find the stacktrace below:
-> 
-> #0 __xnarch_xchg( size = 4, x = 3204479504, ptr = <Value optimised away by
-> compiler> ) at atomic_asm.h:79
-> #1 xnintr_irq_handler( irq = 260, cookie = (void*) 0xBF0079E8 ) at
-> atomic_asm.h:93
-> #2 __ipipe_sync_stage() at core.c:1301
-> #3 ipipe_suspend_domain() at core.c:856
-> #4 __ipipe_walk_pipeline( pos = (struct list_head*) 0xC0463884 ) at
-> core.c:797
-> #5 __ipipe_handle_irq( irq = 98, flags = 0 ) at ipipe.c:564
-> #6 __ipipe_grab_irq( irq = <Value optimised away by compiler>, regs =
-> (struct pt_regs*) 0xCC897DD8 ) at ipipe.c:618
-> #7 [__irq_svc+0x40]
+> Yes, we have to for a certain period. X3-only drivers may just use the
+> new API, but those supporting X2 for longer while will require wrappers.
+> Those should ideally be placed in some rtdm/compat.h which could then be
+> carried by out-of-tree drivers in case the target Xenomai version does
+> not provide it.
 
-I do not really see what is going on. However, how come you have a
-driver still running while rebooting? Do you not remove the drivers
-before rebooting? Also, __irq_svc means you received an interrupt while
-in svc mode, so, it would be interesting to know what is below
-__irq_svc. I believe you can know that by adding a call to show_stack
-(and preferably build the kernel with frame pointers). The trick will be
-to avoid getting a show_stack on every interrupt.
+So, coming back from that discussion, I propose:
 
-Regards.
+#if FORGE
+#define RTDM_CONTEXT(name) rtdm_dev_context_t *name
+#define RTDM_DEFINE_USER_INFO(name, context) rtdm_user_info_t *name = rtdm_user_info(context)
+#else /* CLASSIC */
+#define RTDM_CONTEXT(name) rtdm_dev_context_t *name, rtdm_user_info_t __user_info __attribute__((unused))
+#define RTDM_DEFINE_USER_INFO(name, context) rtdm_user_info_t *name = __user_info
+#endif
 
--- 
+So, a callback would be written
+
+ssize_t foo_read(RTDM_CONTEXT(fd), char *__user buf, size_t size)
+{
+	...
+}
+
+And if it needs the user_info, it would be:
+
+ssize_t foo_read(RTDM_CONTEXT(fd), char *__user buf, size_t size)
+{
+	RTDM_DEFINE_USER_INFO(user_info, fd);
+	... user user_info
+}
+
+
+- -- 
                                                                 Gilles.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+Comment: Using GnuPG with Icedove - http://www.enigmail.net/
+
+iD8DBQFS3Y8nGpcgE6m/fboRAhkwAJ0Wk294Xvky01ZgWSHE6zd1IQ2qhgCeJzWa
+3a1ttHg31MfUvvGHILjoAqQ=
+=zrcC
+-----END PGP SIGNATURE-----
 
