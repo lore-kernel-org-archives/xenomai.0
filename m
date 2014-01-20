@@ -1,13 +1,12 @@
-Message-ID: <52DD4F00.4020703@xenomai.org>
-Date: Mon, 20 Jan 2014 17:29:52 +0100
+Message-ID: <52DD4FCE.2060402@xenomai.org>
+Date: Mon, 20 Jan 2014 17:33:18 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <201401141315.38870.leo@alaxarxa.net>
- <52D54836.3070203@xenomai.org> <201401201718.28484.leo@alaxarxa.net>
-In-Reply-To: <201401201718.28484.leo@alaxarxa.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <52DC4E56.1000505@xenomai.org>
+In-Reply-To: <52DC4E56.1000505@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xddp port questions
+Subject: Re: [Xenomai] Pull request
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,77 +15,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 01/20/2014 05:18 PM, Leopold Palomo-Avellaneda wrote:
-> A Dimarts, 14 de gener de 2014, Philippe Gerum va escriure:
->> On 01/14/2014 01:15 PM, Leopold Palomo-Avellaneda wrote:
->>> Hi,
->>>
->>> in the example xddp-label a two realtime task are connected with a non-
->>> realtime time. They share the same port where one rt task receive from the
->>> non-rt task and the other send to rt-task.
->>>
->>> The regular thread read and write in the same devname
->>> (/proc/xenomai/registry/rtipc/xddp/XDDP_PORT_LABEL). One rt thread listen
-> from
->>> that port.
->>>
->>> I don't understand how is possible that both (non-rt and rt threads)
-> listen
->>> from the same port and could not have collisions  if two threads (non-rt
-> and
->>> rt) try to write in the same port.
->>>
->>> Could not be better to separate it?
->>>
->>
->> No, that would defeat the purpose of the illustration.
->>
->> XDDP is a wrapper over Xenomai's message pipe support, offering a
->> socket-based interface to applications. Each XDDP port is mapped to a
->> given /dev/rtp device minor, but the communication endpoints between RT
->> and NRT are different internally.
->>
->> [XDDP-port] <---> xnpipe #<port>
->>                        ^
->>                        |
->>                        |  * input queue:  /dev/rtp -> xnpipe
->>                        |  * output queue: xnpipe -> /dev/rtp
->>                        |
->>                        v
->>                  /dev/rtp<port>
->>
->> So, when NRT reads from /dev/rtp<port>, it does not actually listen to
->> the same endpoint/queue than RT, because message pipes are
->> bi-directional. Likewise, NRT and RT never write to the same queue,
->> since the purpose of message pipes is to cross the RT/NRT domain boundary.
+On 01/19/2014 11:14 PM, Gilles Chanteperdrix wrote:
+> The following changes since commit bf3a1b1df9f7df874e36faf60b6e5311ecfeb913:
 >
-> Ok,
+>    doc: regenerate documentation (2014-01-17 15:38:12 +0100)
 >
-> in the example the same thread open a device for write and read from the same
-> device. From your answer about the endpoints, I understand that when the NRT
-> open for read, read from the RT world, and when the NRT writes to the RT
-> world.
+> are available in the git repository at:
 >
-> So, could I have a NRT function (thread) that open the device to just read
-> from the RT world and _another_ that send to the RT world?
+>    git://git.xenomai.org/xenomai-gch.git for-forge
 >
-> Because I have to one the same device, and I don't know that I could do it at
-> the same time.
+> for you to fetch changes up to ae62edaa5cc9372d36f298779b378e4852463e4d:
+>
+>    cobalt/nsem: rebase on xnid (2014-01-19 19:17:07 +0100)
 >
 
-You can both send-receive data to/from the same socket descriptor 
-RT-wise, and read-write from/to the same /dev/rtp* descriptor NRT-wise. 
-Message pipes are bi-directional by design, on both ends. In the XDDP 
-case, traffic is routed as follows:
-
-- RT-writes -> NRT-reads
-- RT-reads <- NRT-writes
-
-So, fd = open("/dev/rtpX", ...) => read(fd, and write(fd, are allowed
-     s = socket(AF_RTIPC, ...) => sendmsg(s,  and recv(s, are allowed.
+Merged, thanks.
 
 -- 
 Philippe.
