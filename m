@@ -1,15 +1,16 @@
-Message-ID: <52DFD1B0.6070303@xenomai.org>
-Date: Wed, 22 Jan 2014 15:12:00 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52DF9C5F.70005@geral.com> <52DFAA18.6080703@xenomai.org>
- <52DFAD29.4000800@geral.com> <52DFB2DE.4050501@xenomai.org>
- <52DFC734.2090906@geral.com> <52DFC80D.6050101@xenomai.org>
- <52DFCFDE.9060700@geral.com>
-In-Reply-To: <52DFCFDE.9060700@geral.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] imx28 rtcan flexcan system freezes
+In-Reply-To: <52DFA1C5.9000006@xenomai.org>
+References: <CANKLDmv_hfbVcWzoxjerWOTEWqEWPnQzUu44GF=SbC0iSopDOg@mail.gmail.com>
+ <52DCF0D1.4000307@xenomai.org>
+ <CANKLDms3aXrSoov7Z9T2JBN6fpmuh43LCQ0RUEETrDAYr3=1dA@mail.gmail.com>
+ <52DD89AF.4090905@xenomai.org>
+ <CANKLDmtkrhERdZ8h3HV0=Q3fPHxLjw9T4n12n0A0=-1chKPS7A@mail.gmail.com>
+ <52DFA1C5.9000006@xenomai.org>
+Date: Wed, 22 Jan 2014 15:49:15 +0100
+Message-ID: <CANKLDmvujEYxC_Z_5xE0oyBRmnnwOVbk55xweMu0m+gsgB5rfA@mail.gmail.com>
+From: Henri Roosen <henriroosen@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] xnarch_xchg infinite loop
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,53 +19,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Alexandre COFFIGNAL <acoffignal@geral.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 01/22/2014 03:04 PM, Alexandre COFFIGNAL wrote:
+On Wed, Jan 22, 2014 at 11:47 AM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+
+> On 01/22/2014 09:31 AM, Henri Roosen wrote:
+> > Removing the device driver before reboot doesn't help: we still get a
+> > LDREX/STREX lockup in the Xenomai timertick path. I'm still not sure what
+> > actually causes this lockup, but my guess is somewhere late in the
+> > shutdown-sequence the memory (or something else) is put into a state that
+> > makes LDREX/STREX fail all the time. Any interrupt from the Xenomai
+> domain
+> > locks the system then.
+> >
+> > As a quick (and dirty!) workaround skipping __ipipe_handle_irq when
+> > system_state == SYSTEM_REBOOT solves the problem.
+> >
+> > So thinking towards a proper solution: is there or should there be any
+> > shutdown/de-initialization of Xenomai and it's services in the Linux
+> > shutdown sequence?
 >
-> Le 22/01/2014 14:30, Gilles Chanteperdrix a écrit :
->> On 01/22/2014 02:27 PM, Alexandre COFFIGNAL wrote:
->>>
->>> Le 22/01/2014 13:00, Gilles Chanteperdrix a écrit :
->>>> On 01/22/2014 12:36 PM, Alexandre COFFIGNAL wrote:
->>>>>>> +        cf->data[3]=((data0 >> 0)  & 0xFF) ;
->>>>>>> +        cf->data[2]=((data0 >> 8)  & 0xFF) ;
->>>>>>> +        cf->data[1]=((data0 >> 16)  & 0xFF) ;
->>>>>>> +        cf->data[0]=((data0 >> 24)  & 0xFF) ;
->>>>>>> +        cf->data[7]=((data1 >> 0)  & 0xFF) ;
->>>>>>> +        cf->data[6]=((data1 >> 8)  & 0xFF) ;
->>>>>>> +        cf->data[5]=((data1 >> 16)  & 0xFF) ;
->>>>>>> +        cf->data[4]=((data1 >> 24)  & 0xFF) ;
->>>>>>>
->>>>>>> rtcan flexcan works perfectly.
->>>>>>> is  anyone know what is the problem with first instructions ?
->>>>>> Probably mb->data does not have the right alignment. Could you not
->>>>>> arrange to get it properly aligned? Failing that, you should use
->>>>>> put_unaligned instead of open coding it.
->>>>>>
->>>>>>
->>>>> here structures used in flexcan driver, it seem to be aligned
->>>>
->>>> I am talking about the alignment of cf->data, since obviously, that is
->>>> the one which is causing problems.
->>>>
->>>>
->>> Thank a lot, put_unaligned fix this issue if you want, i can send a path
->>>
->>
->> The other solution (getting cf->data to be properly aligned) would be
->> more efficient, why is not it possible to get cf->data properly aligned?
->>
-> I think, i can't get cf->data to be properly aligned because "cf" is
-> receive internal frame representation within the ring buffer
-> of a struct rtcan_socket and struct rtcan_rb_frame is a generic
-> structure used in all rtcan drivers .
+> The simplest solution seems to find the Linux code involved, which
+> probably contains a local_irq_disable() to avoid this situation, and
+> replace it with hard_local_irq_disable() in the I-pipe case so as to
+> also block xenomai interrupts.
+>
 
-Well, if you fix rtcan_rb_frame to be aligned, it will be aligned for 
-all drivers, so that looks like a worthwile improvement...
+Great, this seems to work. Thanks Gilles!
+I replaced with local_irq_disable_hw(), that is what you meant right?
+
+The ARM reboot code also disables the fiq with local_fiq_disable(). It it
+necessary to also change this by local_fiq_disable_hw() for the ipipe case?
+Or is there no need for that?
+
+Thanks,
+Henri
 
 
--- 
-					    Gilles.
-
+> --
+>                                                                 Gilles.
+>
