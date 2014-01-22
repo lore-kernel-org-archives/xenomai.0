@@ -1,12 +1,12 @@
-Message-ID: <52DFB2DE.4050501@xenomai.org>
-Date: Wed, 22 Jan 2014 13:00:30 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <52DFC734.2090906@geral.com>
+Date: Wed, 22 Jan 2014 14:27:16 +0100
+From: Alexandre COFFIGNAL <acoffignal@geral.com>
 MIME-Version: 1.0
 References: <52DF9C5F.70005@geral.com> <52DFAA18.6080703@xenomai.org>
- <52DFAD29.4000800@geral.com>
-In-Reply-To: <52DFAD29.4000800@geral.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+ <52DFAD29.4000800@geral.com> <52DFB2DE.4050501@xenomai.org>
+In-Reply-To: <52DFB2DE.4050501@xenomai.org>
+Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] imx28 rtcan flexcan system freezes
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,32 +16,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Alexandre COFFIGNAL <acoffignal@geral.com>
 Cc: xenomai@xenomai.org
 
-On 01/22/2014 12:36 PM, Alexandre COFFIGNAL wrote:
->>> +        cf->data[3]=((data0 >> 0)  & 0xFF) ;
->>> +        cf->data[2]=((data0 >> 8)  & 0xFF) ;
->>> +        cf->data[1]=((data0 >> 16)  & 0xFF) ;
->>> +        cf->data[0]=((data0 >> 24)  & 0xFF) ;
->>> +        cf->data[7]=((data1 >> 0)  & 0xFF) ;
->>> +        cf->data[6]=((data1 >> 8)  & 0xFF) ;
->>> +        cf->data[5]=((data1 >> 16)  & 0xFF) ;
->>> +        cf->data[4]=((data1 >> 24)  & 0xFF) ;
+
+Le 22/01/2014 13:00, Gilles Chanteperdrix a =E9crit :
+> On 01/22/2014 12:36 PM, Alexandre COFFIGNAL wrote:
+>>>> +        cf->data[3]=3D((data0 >> 0)  & 0xFF) ;
+>>>> +        cf->data[2]=3D((data0 >> 8)  & 0xFF) ;
+>>>> +        cf->data[1]=3D((data0 >> 16)  & 0xFF) ;
+>>>> +        cf->data[0]=3D((data0 >> 24)  & 0xFF) ;
+>>>> +        cf->data[7]=3D((data1 >> 0)  & 0xFF) ;
+>>>> +        cf->data[6]=3D((data1 >> 8)  & 0xFF) ;
+>>>> +        cf->data[5]=3D((data1 >> 16)  & 0xFF) ;
+>>>> +        cf->data[4]=3D((data1 >> 24)  & 0xFF) ;
+>>>>
+>>>> rtcan flexcan works perfectly.
+>>>> is  anyone know what is the problem with first instructions ?
+>>> Probably mb->data does not have the right alignment. Could you not
+>>> arrange to get it properly aligned? Failing that, you should use
+>>> put_unaligned instead of open coding it.
 >>>
->>> rtcan flexcan works perfectly.
->>> is  anyone know what is the problem with first instructions ?
->> Probably mb->data does not have the right alignment. Could you not
->> arrange to get it properly aligned? Failing that, you should use
->> put_unaligned instead of open coding it.
->>
->>
-> here structures used in flexcan driver, it seem to be aligned
-
-I am talking about the alignment of cf->data, since obviously, that is 
-the one which is causing problems.
-
-
--- 
-					    Gilles.
+>>>
+>> here structures used in flexcan driver, it seem to be aligned
+>
+> I am talking about the alignment of cf->data, since obviously, that is=20
+> the one which is causing problems.
+>
+>
+Thank a lot, put_unaligned fix this issue if you want, i can send a path
+--=20
 
