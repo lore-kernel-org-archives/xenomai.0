@@ -1,10 +1,12 @@
-Message-ID: <52DF9C5F.70005@geral.com>
-Date: Wed, 22 Jan 2014 11:24:31 +0100
-From: Alexandre COFFIGNAL <acoffignal@geral.com>
+Message-ID: <52DFA12F.3000304@xenomai.org>
+Date: Wed, 22 Jan 2014 11:45:03 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+References: <CAKKWdtc7uTkGTX30oso0ciV4JisdTXSNL6YbWbmsnoD6C_r_Uw@mail.gmail.com>
+In-Reply-To: <CAKKWdtc7uTkGTX30oso0ciV4JisdTXSNL6YbWbmsnoD6C_r_Uw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] imx28 rtcan flexcan system freezes
+Subject: Re: [Xenomai] Computer froze by a loop
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,37 +15,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: ali hagigat <hagigatali@gmail.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-Hi all,
+On 01/22/2014 10:04 AM, ali hagigat wrote:
+> Watchdog is enabled and if i put "while(1);" command at the begining
+> of task2, or any where in task1, after 4 seconds all the tasks are
+> killed. But in the example I have attached ( please look at the place
+> of "while(1);") computer froze! Not <ctrl-C> nor Linux scheduling
+> works!
+> 
+> I have two questions:
+> 
+> 1) Why computer freezes in the cae? It seems a bug
 
-I use two rtcan flexcan on imx28-evk board.
+The Xenomai watchdog only handles task which are looping in primary
+mode, handling task running in secondary mode is left to the Linux
+scheduler. Normally, you should see a message about RT throttling, and
+you should be able to interrupt the task with Ctrl-C, unless you
+disabled rt throttling by writing to /proc/sys/kernel/sched_rt_*
 
-If both rtcan devices receive a data at the same time, this cause a freeze.
-After investigation, i found that if I replace in flexcan_rx_interrupt 
-these instructions :
--        *(__be32 *)(cf->data + 0) =
--            cpu_to_be32(flexcan_read(&mb->data[0]));
--        *(__be32 *)(cf->data + 4) =
--            cpu_to_be32(flexcan_read(&mb->data[1]));
+> 2) When I put "while(1);" instruction in task1, then task1 is killed
+> by SIGXCPU and the CPU time exceeded, why task2 and the parent task
+> are all killed? I mean only one task should be killed not all of them!
 
-by these
+That is the default way of handling SIGXCPU. If you want a different
+behaviour, simply register a signal handler for SIGXCPU. Note that doing
+nothing in SIGXCPU signal handler will defeat the watchdog, as the
+killed task will continue to run, in secondary mode however.
 
-+        data0 = flexcan_read(&mb->data[0]);
-+        data1 = flexcan_read(&mb->data[1]);
-+
-+        cf->data[3]=((data0 >> 0)  & 0xFF) ;
-+        cf->data[2]=((data0 >> 8)  & 0xFF) ;
-+        cf->data[1]=((data0 >> 16)  & 0xFF) ;
-+        cf->data[0]=((data0 >> 24)  & 0xFF) ;
-+        cf->data[7]=((data1 >> 0)  & 0xFF) ;
-+        cf->data[6]=((data1 >> 8)  & 0xFF) ;
-+        cf->data[5]=((data1 >> 16)  & 0xFF) ;
-+        cf->data[4]=((data1 >> 24)  & 0xFF) ;
-
-rtcan flexcan works perfectly.
-is  anyone know what is the problem with first instructions ?
-
-My config : xenomai 2.6.3,  linux 3.8.13,
-
+-- 
+                                                                Gilles.
 
