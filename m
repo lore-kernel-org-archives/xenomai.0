@@ -1,10 +1,10 @@
+Message-ID: <52DF9C5F.70005@geral.com>
+Date: Wed, 22 Jan 2014 11:24:31 +0100
+From: Alexandre COFFIGNAL <acoffignal@geral.com>
 MIME-Version: 1.0
-Date: Wed, 22 Jan 2014 04:04:32 -0500
-Message-ID: <CAKKWdtc7uTkGTX30oso0ciV4JisdTXSNL6YbWbmsnoD6C_r_Uw@mail.gmail.com>
-From: ali hagigat <hagigatali@gmail.com>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Computer froze by a loop
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] imx28 rtcan flexcan system freezes
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,33 +13,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Watchdog is enabled and if i put "while(1);" command at the begining
-of task2, or any where in task1, after 4 seconds all the tasks are
-killed. But in the example I have attached ( please look at the place
-of "while(1);") computer froze! Not <ctrl-C> nor Linux scheduling
-works!
+Hi all,
 
-I have two questions:
+I use two rtcan flexcan on imx28-evk board.
 
-1) Why computer freezes in the cae? It seems a bug
-2) When I put "while(1);" instruction in task1, then task1 is killed
-by SIGXCPU and the CPU time exceeded, why task2 and the parent task
-are all killed? I mean only one task should be killed not all of them!
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: examp9.c
-Type: text/x-csrc
-Size: 1256 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140122/7dfb8e5=
-8/attachment.c>
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: config1
-Type: application/octet-stream
-Size: 131428 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140122/7dfb8e5=
-8/attachment.obj>
+If both rtcan devices receive a data at the same time, this cause a freeze.
+After investigation, i found that if I replace in flexcan_rx_interrupt 
+these instructions :
+-        *(__be32 *)(cf->data + 0) =
+-            cpu_to_be32(flexcan_read(&mb->data[0]));
+-        *(__be32 *)(cf->data + 4) =
+-            cpu_to_be32(flexcan_read(&mb->data[1]));
+
+by these
+
++        data0 = flexcan_read(&mb->data[0]);
++        data1 = flexcan_read(&mb->data[1]);
++
++        cf->data[3]=((data0 >> 0)  & 0xFF) ;
++        cf->data[2]=((data0 >> 8)  & 0xFF) ;
++        cf->data[1]=((data0 >> 16)  & 0xFF) ;
++        cf->data[0]=((data0 >> 24)  & 0xFF) ;
++        cf->data[7]=((data1 >> 0)  & 0xFF) ;
++        cf->data[6]=((data1 >> 8)  & 0xFF) ;
++        cf->data[5]=((data1 >> 16)  & 0xFF) ;
++        cf->data[4]=((data1 >> 24)  & 0xFF) ;
+
+rtcan flexcan works perfectly.
+is  anyone know what is the problem with first instructions ?
+
+My config : xenomai 2.6.3,  linux 3.8.13,
+
+
