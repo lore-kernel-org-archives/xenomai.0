@@ -1,29 +1,10 @@
-Message-ID: <52ECE5DC.5090108@xenomai.org>
-Date: Sat, 01 Feb 2014 13:17:32 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
- <52D8609C.5050903@xenomai.org>
- <CAN1+YZW+nJgMb0hLy2JWZW6JrxA+mZzA+-oN-gjQgeGTcoe0jg@mail.gmail.com>
- <CAN1+YZUY_3FExF=qrUtMQDQxTqossnQsPCy6zfPjfqp8PitZCg@mail.gmail.com>
- <52D9984F.9080203@xenomai.org>
- <CAN1+YZWnLC=MLxWqYd9xH1URimWnOdEhU4mwZ0S3QFdpghUaGQ@mail.gmail.com>
- <52DAE756.3070606@xenomai.org>
- <CAN1+YZWmjvsu7My92EBktFhWYhheRJvdYrEq=r3+Ravp_Wzoyw@mail.gmail.com>
- <52DBC5FE.6060806@xenomai.org> <52DBD649.2000908@xenomai.org>
- <CAN1+YZWCMh4mR0ccw2v7FeuLKpYDUoPoB-FGHZmutj623DW7hw@mail.gmail.com>
- <52EB6BBC.8040600@xenomai.org>
- <CAN1+YZUhzb1zRE=dhjX+_1_b2cD2vEWatP6-je7b9NdNPosFvA@mail.gmail.com>
- <52EBE4B7.6060800@xenomai.org>
- <CAN1+YZXKAen4YAxKfG9TZTL8B5qXqA-u7O41-ZJqbHqCdbcyow@mail.gmail.com>
- <52EC054C.9070707@xenomai.org>
- <CAN1+YZX=cnRDcadrUHMzLaNBjNPnNbVuBnBHfEK-mTFYmx+3fA@mail.gmail.com>
- <52EC1079.2040300@xenomai.org>
- <CAN1+YZVq7cwFnUX=bkJs8MbAkpio3azSvev2fmZwqQpgjTnvfg@mail.gmail.com>
-In-Reply-To: <CAN1+YZVq7cwFnUX=bkJs8MbAkpio3azSvev2fmZwqQpgjTnvfg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Fwd: Kernel Compilation Problems
+From: Jonathan Bohren <jonathan.bohren@gmail.com>
+Date: Fri, 24 Jan 2014 14:48:11 -0500
+Message-ID: <CADy-PFjSMxbbA9-c4rm+ChJSxVbzFDLVng=yFwvC+Xwr2tAycQ@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] Xenomai.org webserver server blacklisted for security
+	concerns
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -32,24 +13,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Andy Pugh <andy@bodgesoc.org>
-Cc: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 01/31/2014 11:58 PM, Andy Pugh wrote:
-> On 31 January 2014 21:07, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
-> 
->> Ok, I am still interested by your kernel logs though, to see whether we
->> can improve the latencies by using the cache auxiliary configuration
->> register.
-> 
-> Is this what you need, or do you need Xenomai actually active?
-> 
-> http://pastebin.com/PSKwQH3A
-> 
-> 
-That is all I needed, thanks.
+For the past couple of weeks, we've been unable to access xenomai.org from
+Johns Hopkins University, and today we found out that the university was
+blocking it because:
+
+"This site is hosted on an IP range that was known to be hosting many
+malicious sites. "
+
+They've since unblocked it at our request. I don't know if there's anything
+the Xenomai devs / webadmins need to do about this, but I thought I'd give
+you a head's up.
+
+If you want to know more, I can connect you with the Johns Hopkins Network
+and Information Security group.
+
+best,
+-jon
 
 -- 
-                                                                Gilles.
-
+Jonathan Bohren
+Laboratory for Computational Sensing and Robotics
+http://dscl.lcsr.jhu.edu/People/JonathanBohren
