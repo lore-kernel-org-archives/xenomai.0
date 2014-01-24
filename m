@@ -1,11 +1,13 @@
-Message-ID: <52EBA6D0.2010208@siemens.com>
-Date: Fri, 31 Jan 2014 14:36:16 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <52E25A15.4080406@xenomai.org>
+Date: Fri, 24 Jan 2014 13:18:29 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+References: <52E1D646.8050907@steinkuehler.net> <52E24D0C.4050207@xenomai.org>
+ <52E25099.9070107@steinkuehler.net>
+In-Reply-To: <52E25099.9070107@steinkuehler.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] forge/cobalt: Do we need to wrap all POSIX calls for
-	non-POSIX skins?
+Subject: Re: [Xenomai] ARM/BeagleBone Thumb2 Kernels
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,17 +16,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Charles Steinkuehler <charles@steinkuehler.net>
+Cc: xenomai@xenomai.org
 
-Hi,
-
-was asked why, e.g., xeno-config --skin=alchemy --ldflags returns
--Wl,@/data/xenomai-forge/inst64/lib/cobalt.wrappers. Is there a
-technical reason? On first glance and after minimal testing, it seems not.
-
-Jan
+On 01/24/2014 12:38 PM, Charles Steinkuehler wrote:
+> As I understand it, the issue arises as the kernel grows larger and the
+> distance between the branch and it's target increases.  My vmlinux for
+> the (fixed Thumb2 version) BeagleBone kernel is currently weighing in at
+> 13225004 bytes.
+>
+That is precisely the thing I do not understand: the jump goes from 
+entry-armv.S to entry-common.S which should remain close since they 
+follow each other on the link-edit command line. Since the source files 
+are assembly, the distance should more or less be the same, whatever the 
+compilation options. And if they are not close, this is where the bug 
+is, because this assembly is used for every syscall and every interrupt.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
