@@ -1,29 +1,14 @@
+Message-ID: <52E25C7E.6040002@xenomai.org>
+Date: Fri, 24 Jan 2014 13:28:46 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Sender: bodgesoc@gmail.com
-In-Reply-To: <52EC1079.2040300@xenomai.org>
-References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
- <CAN1+YZWOjxf=s+6LH3Xymzx_mwWa6XmO_Xt7SHF589RzJCANBA@mail.gmail.com>
- <52D8609C.5050903@xenomai.org>
- <CAN1+YZW+nJgMb0hLy2JWZW6JrxA+mZzA+-oN-gjQgeGTcoe0jg@mail.gmail.com>
- <CAN1+YZUY_3FExF=qrUtMQDQxTqossnQsPCy6zfPjfqp8PitZCg@mail.gmail.com>
- <52D9984F.9080203@xenomai.org>
- <CAN1+YZWnLC=MLxWqYd9xH1URimWnOdEhU4mwZ0S3QFdpghUaGQ@mail.gmail.com>
- <52DAE756.3070606@xenomai.org>
- <CAN1+YZWmjvsu7My92EBktFhWYhheRJvdYrEq=r3+Ravp_Wzoyw@mail.gmail.com>
- <52DBC5FE.6060806@xenomai.org> <52DBD649.2000908@xenomai.org>
- <CAN1+YZWCMh4mR0ccw2v7FeuLKpYDUoPoB-FGHZmutj623DW7hw@mail.gmail.com>
- <52EB6BBC.8040600@xenomai.org>
- <CAN1+YZUhzb1zRE=dhjX+_1_b2cD2vEWatP6-je7b9NdNPosFvA@mail.gmail.com>
- <52EBE4B7.6060800@xenomai.org>
- <CAN1+YZXKAen4YAxKfG9TZTL8B5qXqA-u7O41-ZJqbHqCdbcyow@mail.gmail.com>
- <52EC054C.9070707@xenomai.org>
- <CAN1+YZX=cnRDcadrUHMzLaNBjNPnNbVuBnBHfEK-mTFYmx+3fA@mail.gmail.com>
- <52EC1079.2040300@xenomai.org>
-From: Andy Pugh <andy@bodgesoc.org>
-Date: Fri, 31 Jan 2014 22:58:50 +0000
-Message-ID: <CAN1+YZVq7cwFnUX=bkJs8MbAkpio3azSvev2fmZwqQpgjTnvfg@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Fwd: Kernel Compilation Problems
+References: <52E1D646.8050907@steinkuehler.net> <52E24D0C.4050207@xenomai.org>
+ <52E25099.9070107@steinkuehler.net> <52E25A15.4080406@xenomai.org>
+ <52E2544A.3060907@steinkuehler.net>
+In-Reply-To: <52E2544A.3060907@steinkuehler.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] ARM/BeagleBone Thumb2 Kernels
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -32,21 +17,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai <xenomai@xenomai.org>
+To: Charles Steinkuehler <charles@steinkuehler.net>
+Cc: xenomai@xenomai.org
 
-On 31 January 2014 21:07, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
+On 01/24/2014 12:53 PM, Charles Steinkuehler wrote:
+> On 1/24/2014 6:18 AM, Gilles Chanteperdrix wrote:
+>> On 01/24/2014 12:38 PM, Charles Steinkuehler wrote:
+>>> As I understand it, the issue arises as the kernel grows larger and the
+>>> distance between the branch and it's target increases.  My vmlinux for
+>>> the (fixed Thumb2 version) BeagleBone kernel is currently weighing in at
+>>> 13225004 bytes.
+>>>
+>> That is precisely the thing I do not understand: the jump goes from
+>> entry-armv.S to entry-common.S which should remain close since they
+>> follow each other on the link-edit command line. Since the source files
+>> are assembly, the distance should more or less be the same, whatever the
+>> compilation options. And if they are not close, this is where the bug
+>> is, because this assembly is used for every syscall and every interrupt.
+>
+> Well I don't pretend to know what goes on in the kernel memory map.  Is
+> there anything I can send from my kernel builds that would shed light on
+> this (a linker map or something)?
+>
 
-> Ok, I am still interested by your kernel logs though, to see whether we
-> can improve the latencies by using the cache auxiliary configuration
-> register.
-
-Is this what you need, or do you need Xenomai actually active?
-
-http://pastebin.com/PSKwQH3A
-
+I have no doubt that in the kernel you build, entry-arm.S and 
+entry-common.S end up far from each other, which a linker map would 
+show. What I am interested in is why this happens, for that, I need to 
+build the kernel the same way you build it, and see what happens. You 
+have given me all I need.
 
 -- 
-atp
+					    Gilles.
 
