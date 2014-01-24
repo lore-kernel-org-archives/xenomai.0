@@ -1,14 +1,12 @@
-Message-ID: <52EA816B.9060305@xenomai.org>
-Date: Thu, 30 Jan 2014 17:44:27 +0100
+Message-ID: <52E24D0C.4050207@xenomai.org>
+Date: Fri, 24 Jan 2014 12:22:52 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1391006203.6916.YahooMailNeo@web163902.mail.gq1.yahoo.com>
- <52E950FB.70400@xenomai.org> <52E95E66.2060905@xenomai.org>
- <201401301624.25756.paul_c@tuxcnc.org>
-In-Reply-To: <201401301624.25756.paul_c@tuxcnc.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <52E1D646.8050907@steinkuehler.net>
+In-Reply-To: <52E1D646.8050907@steinkuehler.net>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] debuild of xenomai failing: Directory nonexistent
+Subject: Re: [Xenomai] ARM/BeagleBone Thumb2 Kernels
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,65 +15,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paul <paul_c@tuxcnc.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Charles Steinkuehler <charles@steinkuehler.net>
+Cc: xenomai@xenomai.org
 
-On 01/30/2014 05:24 PM, Paul wrote:
-> On Wednesday 29 January 2014, Gilles Chanteperdrix wrote:
->> On 01/29/2014 08:05 PM, Gilles Chanteperdrix wrote:
->>> On 01/29/2014 03:36 PM, Huub Van Niekerk wrote:
->>>> Hi,
->>>>
->>>> I'm trying to build the xenomai libs on Ubuntu 12.04 armhf
->>>> according to
->>>> http://www.xenomai.org/index.php/Building_Debian_packages. It goes
->>>> wrong with a message "cannot create
->>>> <user>/Downloads/xenomai-2.6.3/debian/libxenomai1/etc/udev//xenoma
->>>> i.rules: Directory nonexistent". Any idea what the cause of this is
->>>> ? I did it before on x86, which went great.
->>>
->>> I do not see why this even works on x86... Please try the following
->>> patch:
+On 01/24/2014 03:56 AM, Charles Steinkuehler wrote:
+> So when I try to build a Xenomai patched kernel for the BeagleBone using
+> Thumb2 instructions, I get the following linker errors:
+> 
+>>   LD      init/built-in.o
+>> arch/arm/kernel/built-in.o: In function `__irq_usr':
+>> :(.kprobes.text+0x3c2): relocation truncated to fit: R_ARM_THM_JUMP19
+>> against symbol `__ipipe_ret_to_user_irqs_disabled' defined in .text
+>> section in arch/arm/kernel/built-in.o
+>> arch/arm/kernel/built-in.o: In function `ret_from_exception':
+>> :(.kprobes.text+0x600): relocation truncated to fit: R_ARM_THM_JUMP19
+>> against symbol `__ipipe_ret_to_user_irqs_disabled' defined in .text
+>> section in arch/arm/kernel/built-in.o
+>> make: *** [vmlinux] Error 1
 >>
->> Please try this one instead:
->>
->> diff --git a/debian/libxenomai1.install b/debian/libxenomai1.install
->> index 093956b..9c732f5 100644
->> --- a/debian/libxenomai1.install
->> +++ b/debian/libxenomai1.install
->> @@ -1 +1,2 @@
->> +etc/udev/rules.d/*
->>   usr/lib/*.so.*
->> diff --git a/debian/rules b/debian/rules
->> index 3915fd6..c842986 100755
->> --- a/debian/rules
->> +++ b/debian/rules
->> @@ -61,14 +61,12 @@ install: build
->>   	dh_testroot
->>   	dh_prep
->>   	dh_installdirs
->> +	mkdir -p $(CURDIR)/debian/tmp/etc/udev/rules.d
->
-> This shouldn't be necessary as etc/udev/rules.d is listed in
-> libxenomai1.dirs - dh_installdirs uses this to create the target
-> dirctories.
->
->>   	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp/
->>   	dh_install --sourcedir=$(CURDIR)/debian/tmp
->>   	# xeno-config should be only in libxenomai-dev
->>   	rm -f $(CURDIR)/debian/xenomai-runtime/usr/bin/xeno-config
->>   	rm -f
->> $(CURDIR)/debian/xenomai-runtime/usr/share/man/man1/xeno-config.1
->> -	for f in $(CURDIR)/ksrc/nucleus/udev/*.rules ; do \
->> -	    cat $$f >> $(CURDIR)/debian/libxenomai1/etc/udev/xenomai.rules
->> ; \ -	done
->
-> This is needed so that the udev rules get copied across.
+>> The link error goes away if I disable CONFIG_THUMB2_KERNEL, which wasn't
+>> set in the original kernel config.
+> 
+> This has recently become more of a problem, as the default BeagleBone
+> kernel has switched to enabling CONFIG_THUMB2_KERNEL.
+> 
+> A bit of Googling turned up the following patch to fix a similar problem
+> on the Tegra (not Xenomai related):
+> 
+>   http://patchwork.ozlabs.org/patch/236760/
+> 
+> I applied a similar if-then patch (see below) to the two Xenomai calls
+> that generate the linker errors, and the result is a working kernel.
+> 
+> Can someone more familiar with iPipeand ARM assembly review the attached
+> minor patch and advise on whether or not it seems OK?
+> 
+> As I understand things, the two bne calls in the default ipipe patch
+> don't work when building a kernel using the thumb instructions due to
+> the limited range of the conditional branch.  Using the if-then
+> construct when THUMB2 is enabled allows for a larger addressing range in
+> the branch, thus avoiding the linker errors.  If this seems OK, perhaps
+> it should be applied to the master ipipe patch set?  If not, is there a
+> better way to avoid the linker errors when building with the thumb
+> instructions?
+> 
 
-If the directory /etc/udev/rules.d exists, Xenomai's "make install", 
-should copy the rules itself.
+Could you provide me with the details (kernel version or git url, config
+file used, toolchain used) allowing to reproduce this issue?
 
+I have been compiling thumb2 kernels for omap3 and omap4 for a long
+time, and never observed this issue. So, there must be something
+different in your case.
 
 -- 
-					    Gilles.
+                                                                Gilles.
 
