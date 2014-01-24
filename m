@@ -1,23 +1,13 @@
+Message-ID: <52E2544A.3060907@steinkuehler.net>
+Date: Fri, 24 Jan 2014 05:53:46 -0600
+From: Charles Steinkuehler <charles@steinkuehler.net>
 MIME-Version: 1.0
-Sender: bodgesoc@gmail.com
-In-Reply-To: <52EB6BBC.8040600@xenomai.org>
-References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
- <CAN1+YZWOjxf=s+6LH3Xymzx_mwWa6XmO_Xt7SHF589RzJCANBA@mail.gmail.com>
- <52D8609C.5050903@xenomai.org>
- <CAN1+YZW+nJgMb0hLy2JWZW6JrxA+mZzA+-oN-gjQgeGTcoe0jg@mail.gmail.com>
- <CAN1+YZUY_3FExF=qrUtMQDQxTqossnQsPCy6zfPjfqp8PitZCg@mail.gmail.com>
- <52D9984F.9080203@xenomai.org>
- <CAN1+YZWnLC=MLxWqYd9xH1URimWnOdEhU4mwZ0S3QFdpghUaGQ@mail.gmail.com>
- <52DAE756.3070606@xenomai.org>
- <CAN1+YZWmjvsu7My92EBktFhWYhheRJvdYrEq=r3+Ravp_Wzoyw@mail.gmail.com>
- <52DBC5FE.6060806@xenomai.org> <52DBD649.2000908@xenomai.org>
- <CAN1+YZWCMh4mR0ccw2v7FeuLKpYDUoPoB-FGHZmutj623DW7hw@mail.gmail.com>
- <52EB6BBC.8040600@xenomai.org>
-From: Andy Pugh <andy@bodgesoc.org>
-Date: Fri, 31 Jan 2014 17:48:59 +0000
-Message-ID: <CAN1+YZUhzb1zRE=dhjX+_1_b2cD2vEWatP6-je7b9NdNPosFvA@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Fwd: Kernel Compilation Problems
+References: <52E1D646.8050907@steinkuehler.net> <52E24D0C.4050207@xenomai.org>
+ <52E25099.9070107@steinkuehler.net> <52E25A15.4080406@xenomai.org>
+In-Reply-To: <52E25A15.4080406@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] ARM/BeagleBone Thumb2 Kernels
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,53 +17,28 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 31 January 2014 09:24, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-
-> Use the xeno_hal.supported_cpus parameter, it is a bitfield, so 1 is for
-> cpu 0.
-
-I have tried this, but I am not sure how to tell if it is working.
-
-The Udoo board seems a bit strange. The only way I have found to use
-setenv is to connect via a serial terminal and interrupt the boot
-sequence. At that point setenv / printenv work (this is also what is
-suggested in the Udoo docs).
-printenv shows:
-
-boot_fdt=try
-bootargs=isolcpus=0
-bootcmd=mmc dev ${mmcdev}; if mmc rescan; then if run loadbootscript;
-then run bootscript; else if run loaduimage; then run mmcboot; else
-run netboot; fi; fi; else run netboot; fi
-
-and
-
-update_sd_firmware_filename=u-boot.imx
-xeno_hal.supported_cpus=1
-Environment size: 2097/8188 bytes
-
-However dmesg contains:
-
-[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.
-Total pages: 227328
-[    0.000000] Kernel command line: console=ttymxc1,115200
-root=/dev/mmcblk0p1 rootwait rw fbmem=24M
-video=mxcfb0:dev=hdmi,1920x1080M@60,bpp=32
-[    0.000000] PID hash table entries: 4096 (order: 2, 16384 bytes)
-
-and cat /proc/cmdline returns:
-
-andypugh@udoo:~$ cat /proc/cmdline
-console=ttymxc1,115200 root=/dev/mmcblk0p1 rootwait rw fbmem=24M
-video=mxcfb0:dev=hdmi,1920x1080M@60,bpp=32
-
-So I suspect that there is more to adding to the kernel command line
-than a simple "setenv" in this case. (I also suspect that this is a
-question for the Udoo forums rather than Xenomai)
-
--- 
-atp
-
+T24gMS8yNC8yMDE0IDY6MTggQU0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+IE9uIDAx
+LzI0LzIwMTQgMTI6MzggUE0sIENoYXJsZXMgU3RlaW5rdWVobGVyIHdyb3RlOgo+PiBBcyBJIHVu
+ZGVyc3RhbmQgaXQsIHRoZSBpc3N1ZSBhcmlzZXMgYXMgdGhlIGtlcm5lbCBncm93cyBsYXJnZXIg
+YW5kIHRoZQo+PiBkaXN0YW5jZSBiZXR3ZWVuIHRoZSBicmFuY2ggYW5kIGl0J3MgdGFyZ2V0IGlu
+Y3JlYXNlcy4gIE15IHZtbGludXggZm9yCj4+IHRoZSAoZml4ZWQgVGh1bWIyIHZlcnNpb24pIEJl
+YWdsZUJvbmUga2VybmVsIGlzIGN1cnJlbnRseSB3ZWlnaGluZyBpbiBhdAo+PiAxMzIyNTAwNCBi
+eXRlcy4KPj4KPiBUaGF0IGlzIHByZWNpc2VseSB0aGUgdGhpbmcgSSBkbyBub3QgdW5kZXJzdGFu
+ZDogdGhlIGp1bXAgZ29lcyBmcm9tCj4gZW50cnktYXJtdi5TIHRvIGVudHJ5LWNvbW1vbi5TIHdo
+aWNoIHNob3VsZCByZW1haW4gY2xvc2Ugc2luY2UgdGhleQo+IGZvbGxvdyBlYWNoIG90aGVyIG9u
+IHRoZSBsaW5rLWVkaXQgY29tbWFuZCBsaW5lLiBTaW5jZSB0aGUgc291cmNlIGZpbGVzCj4gYXJl
+IGFzc2VtYmx5LCB0aGUgZGlzdGFuY2Ugc2hvdWxkIG1vcmUgb3IgbGVzcyBiZSB0aGUgc2FtZSwg
+d2hhdGV2ZXIgdGhlCj4gY29tcGlsYXRpb24gb3B0aW9ucy4gQW5kIGlmIHRoZXkgYXJlIG5vdCBj
+bG9zZSwgdGhpcyBpcyB3aGVyZSB0aGUgYnVnCj4gaXMsIGJlY2F1c2UgdGhpcyBhc3NlbWJseSBp
+cyB1c2VkIGZvciBldmVyeSBzeXNjYWxsIGFuZCBldmVyeSBpbnRlcnJ1cHQuCgpXZWxsIEkgZG9u
+J3QgcHJldGVuZCB0byBrbm93IHdoYXQgZ29lcyBvbiBpbiB0aGUga2VybmVsIG1lbW9yeSBtYXAu
+ICBJcwp0aGVyZSBhbnl0aGluZyBJIGNhbiBzZW5kIGZyb20gbXkga2VybmVsIGJ1aWxkcyB0aGF0
+IHdvdWxkIHNoZWQgbGlnaHQgb24KdGhpcyAoYSBsaW5rZXIgbWFwIG9yIHNvbWV0aGluZyk/Cgot
+LSAKQ2hhcmxlcyBTdGVpbmt1ZWhsZXIKY2hhcmxlc0BzdGVpbmt1ZWhsZXIubmV0CgotLS0tLS0t
+LS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdh
+cyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1z
+aWduYXR1cmUKU2l6ZTogMjYxIGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUK
+VVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50
+cy8yMDE0MDEyNC9jNThkZGYyYi9hdHRhY2htZW50LnNpZz4K
