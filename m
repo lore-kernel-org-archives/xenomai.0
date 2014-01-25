@@ -1,13 +1,12 @@
-Message-ID: <52EF93B6.6080606@siemens.com>
-Date: Mon, 03 Feb 2014 14:03:50 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <52E3F8F4.1030006@steinkuehler.net>
+Date: Sat, 25 Jan 2014 11:48:36 -0600
+From: Charles Steinkuehler <charles@steinkuehler.net>
 MIME-Version: 1.0
-References: <52EBA6D0.2010208@siemens.com> <52EBAE26.8050901@xenomai.org>
-In-Reply-To: <52EBAE26.8050901@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] forge/cobalt: Do we need to wrap all POSIX calls for
- non-POSIX skins?
+References: <52E1D646.8050907@steinkuehler.net> <52E3FEEF.9050205@xenomai.org>
+In-Reply-To: <52E3FEEF.9050205@xenomai.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] ARM/BeagleBone Thumb2 Kernels
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,39 +15,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 2014-01-31 15:07, Philippe Gerum wrote:
-> On 01/31/2014 02:36 PM, Jan Kiszka wrote:
->> Hi,
+On 1/25/2014 12:14 PM, Gilles Chanteperdrix wrote:
+> On 01/24/2014 03:56 AM, Charles Steinkuehler wrote:
 >>
->> was asked why, e.g., xeno-config --skin=alchemy --ldflags returns
->> -Wl,@/data/xenomai-forge/inst64/lib/cobalt.wrappers. Is there a
->> technical reason? On first glance and after minimal testing, it seems
->> not.
->>
-> 
-> There is no technical reason, since all libs are required to use manual
-> wrapping for these symbols (e.g. __RT()/__STD()) to keep automatic
-> wrapping via the linker optional.
-> 
-> The current assumption is that application code using cobalt-provided
-> routines do want such wrapping to take place automatically, for mixing
-> APIs.
-> 
-> OTOH, we could require such applications to mention --posix explicitly
-> for enabling this feature. It makes sense either way. We need to ponder
-> which one follows the principle of least astonishment.
+>> I applied a similar if-then patch (see below) to the two Xenomai calls
+>> that generate the linker errors, and the result is a working kernel.
+> =
 
-I would suggest explicit listing of --skin=posix|cobalt, thus this
-patch:
-http://git.xenomai.org/xenomai-jki.git/commit/?h=for-forge&id=eb8a1d4a69836c073461947eaab775b5fc7c01aa.
-That is more consistent because there is no way to disable that wrapping
-(except for fragile filtering on the returned ldflags).
+> Applied, thanks, I could reproduce the issue, and thinking about it
+> having entry-common.o close to entry-arm.o should not bring any
+> performance improvement in fact.
 
-Jan
+Thanks for looking into this!
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+I've been running the Thumb2 kernel a while with no apparent problems,
+and it does seem to have improved the latency numbers even with all the
+other suggested tweaks.  Thanks again for all the advice!
 
+-- =
+
+Charles Steinkuehler
+charles@steinkuehler.net
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 261 bytes
+Desc: OpenPGP digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140125/a404d09=
+d/attachment.sig>
