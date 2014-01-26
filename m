@@ -1,16 +1,12 @@
-Message-ID: <52F12800.1030500@xenomai.org>
-Date: Tue, 04 Feb 2014 18:48:48 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <52E51CAD.6030705@xenomai.org>
+Date: Sun, 26 Jan 2014 15:33:17 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <E1WAhle-0006kB-0q@sd-51317.dedibox.fr>
- <52F1172B.2080500@xenomai.org> <52F11F94.9000309@siemens.com>
- <52F1231A.7080603@xenomai.org> <52F12442.3040301@xenomai.org>
- <52F125E8.6020200@xenomai.org> <52F12700.3020400@xenomai.org>
-In-Reply-To: <52F12700.3020400@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <CAKKWdtcbBAPx8XgPQiZtWqwN=MERqRL7AfyKqPnTyB1yfigqKQ@mail.gmail.com>
+In-Reply-To: <CAKKWdtcbBAPx8XgPQiZtWqwN=MERqRL7AfyKqPnTyB1yfigqKQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : alchemy: Replace static
- variable no_alchemy_task with macro
+Subject: Re: [Xenomai] Xenomai kernel task in Domain 1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,42 +15,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-git@xenomai.org, Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: ali hagigat <hagigatali@gmail.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 02/04/2014 06:44 PM, Gilles Chanteperdrix wrote:
-> On 02/04/2014 06:39 PM, Philippe Gerum wrote:
->> On 02/04/2014 06:32 PM, Gilles Chanteperdrix wrote:
->>> On 02/04/2014 06:27 PM, Philippe Gerum wrote:
->>>> If g++ chokes on the initializer part because it is outdated, then
->>>> using
->>>> old-fashioned ones may be an option. Actually, I find macroizing this
->>>> definition quite bad.
->>>>
->>>> static const RT_TASK no_alchemy_task = {
->>>> -    .handle = 0,
->>>> -    .thread = 0
->>>> +    handle: 0,
->>>> +    thread: 0
->>>>     };
->>>
->>> No, the previous version is better, it is standard compliant C and C++,
->>> the second version is a gcc extension, which works only when compiling
->>> C, if I remember correctly.
->>>
->>
->> Recent g++ is happy with both (no -std forced though). But the former is
->> allowed by the C++ parser only since recently.
->>
->
-> Well, on the other hand:
-> static const RT_TAKS no_alchemy_task;
->
-> Will zero initialized the structure just as well...
->
+On 01/26/2014 07:31 AM, ali hagigat wrote:
+> How can i make a Xenomai kernel task switch to the secondary domain?
 
-In that case you will have the object exist in the .bss.
+You can not. Kernel-space tasks only run in Xenomai domain.
 
 -- 
-Philippe.
+                                                                Gilles.
 
