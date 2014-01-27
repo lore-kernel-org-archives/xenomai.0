@@ -1,10 +1,13 @@
-Message-ID: <52E67336.1010709@siemens.com>
-Date: Mon, 27 Jan 2014 15:54:46 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <52E6811E.10406@xenomai.org>
+Date: Mon, 27 Jan 2014 16:54:06 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+References: <52E67336.1010709@siemens.com>
+In-Reply-To: <52E67336.1010709@siemens.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PULL][forge] Only export required CFLAGS via xeno-config
+Subject: Re: [Xenomai] [PULL][forge] Only export required CFLAGS via
+	xeno-config
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,25 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-The following changes since commit 14872270fbfd58e88d5d14f3691a1728500b61b3:
+On 01/27/2014 03:54 PM, Jan Kiszka wrote:
+> The following changes since commit 14872270fbfd58e88d5d14f3691a1728500b61b3:
+>
+>    cobalt/timer: fix description of CONFIG_XENO_OPT_NRTIMERS (2014-01-20 17:31:47 +0100)
+>
+> are available in the git repository at:
+>
+>    git://git.xenomai.org/xenomai-jki.git for-forge
+>
+> for you to fetch changes up to cfe5d34959c52d67f21463d9b98a8b6b33b458ae:
+>
+>    Only export required CFLAGS via xeno-config (2014-01-27 15:47:39 +0100)
+>
+> ----------------------------------------------------------------
+> Jan Kiszka (1):
+>        Only export required CFLAGS via xeno-config
+>
+>   configure.ac | 14 +++++++-------
+>   1 file changed, 7 insertions(+), 7 deletions(-)
+>
 
-  cobalt/timer: fix description of CONFIG_XENO_OPT_NRTIMERS (2014-01-20 17:31:47 +0100)
+This breaks builds with --enable-registry set. Unlike CFLAGS, every link 
+flag required for building the Xenomai stack is implicitly required for 
+building apps.
 
-are available in the git repository at:
-
-  git://git.xenomai.org/xenomai-jki.git for-forge
-
-for you to fetch changes up to cfe5d34959c52d67f21463d9b98a8b6b33b458ae:
-
-  Only export required CFLAGS via xeno-config (2014-01-27 15:47:39 +0100)
-
-----------------------------------------------------------------
-Jan Kiszka (1):
-      Only export required CFLAGS via xeno-config
-
- configure.ac | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+-- 
+Philippe.
 
