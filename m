@@ -1,15 +1,11 @@
-Message-ID: <52E699DF.4030609@siemens.com>
-Date: Mon, 27 Jan 2014 18:39:43 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <1390856074.81966.YahooMailNeo@web171601.mail.ir2.yahoo.com>
+Date: Mon, 27 Jan 2014 20:54:34 +0000 (GMT)
+From: Matthias Schneider <ma30002000@yahoo.de>
 MIME-Version: 1.0
-References: <52E67336.1010709@siemens.com> <52E6811E.10406@xenomai.org>
- <52E6813E.1050406@siemens.com> <52E6845E.2040300@xenomai.org>
- <52E68F5B.20805@siemens.com> <52E69418.5080700@xenomai.org>
-In-Reply-To: <52E69418.5080700@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PULL][forge] Only export required CFLAGS via
-	xeno-config
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] segmentation fault in taskSpawn (xenomai-forge)
+Reply-To: Matthias Schneider <ma30002000@yahoo.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,63 +14,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2014-01-27 18:15, Philippe Gerum wrote:
-> On 01/27/2014 05:54 PM, Jan Kiszka wrote:
->> On 2014-01-27 17:07, Philippe Gerum wrote:
->>> On 01/27/2014 04:54 PM, Jan Kiszka wrote:
->>>> On 2014-01-27 16:54, Philippe Gerum wrote:
->>>>> On 01/27/2014 03:54 PM, Jan Kiszka wrote:
->>>>>> The following changes since commit
->>>>>> 14872270fbfd58e88d5d14f3691a1728500b61b3:
->>>>>>
->>>>>>      cobalt/timer: fix description of CONFIG_XENO_OPT_NRTIMERS
->>>>>> (2014-01-20 17:31:47 +0100)
->>>>>>
->>>>>> are available in the git repository at:
->>>>>>
->>>>>>      git://git.xenomai.org/xenomai-jki.git for-forge
->>>>>>
->>>>>> for you to fetch changes up to
->>>>>> cfe5d34959c52d67f21463d9b98a8b6b33b458ae:
->>>>>>
->>>>>>      Only export required CFLAGS via xeno-config (2014-01-27 15:47:39
->>>>>> +0100)
->>>>>>
->>>>>> ----------------------------------------------------------------
->>>>>> Jan Kiszka (1):
->>>>>>          Only export required CFLAGS via xeno-config
->>>>>>
->>>>>>     configure.ac | 14 +++++++-------
->>>>>>     1 file changed, 7 insertions(+), 7 deletions(-)
->>>>>>
->>>>>
->>>>> This breaks builds with --enable-registry set. Unlike CFLAGS, every
->>>>> link
->>>>> flag required for building the Xenomai stack is implicitly required
->>>>> for
->>>>> building apps.
->>>>
->>>> So we lack the fuse linker switches? Or more?
->>>>
->>>
->>> So far only the fuse switches, but we may add more deps in the future.
->>
->> Strangely, I can't reproduce - is this affecting cobalt, mercury or both?
->>
-> 
-> mercury.
-
-OK, finally. Updated version pushed to for-forge.
-
-BTW, mercury's "make install" tries to create device nodes. I suppose
-that is not really required, is it?
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+=0A=0AHi all,=0A=0Ain case taskSpawn() fails due to lack of permissions in =
+the current=A0=0Axenomai-forge checkout (tried with mercury), the following=
+ function=0A=0Aret =3D __bt(copperplate_create_thread(&cta, &task->thobj.ti=
+d));=0A=0Areturns ret !=3D 0 and I get the following segmentation fault:=0A=
+=0Ahttp://pastebin.ca/2591742=0A=0Aholder->prev and holder->next seem to be=
+ nullptrs. I am not 100% sure how to fix=A0=0Athis issue... I have a clone =
+from the latest =A0xenomai-forge.git/next.=0A=0A=0AAlso, I would like to as=
+k about the xenomai-forge style of resources handles=A0=0A(e.g. tasks, queu=
+es, semaphores, etc.), which are actually pointers converted=A0=0Awith the =
+mainheap_ref and mainheap_deref =A0macros.=0A=0AIn the xenomai 2.6 implemen=
+tation, handles were resolved via a registry,=A0=0Aallowing the detection o=
+f handles on deleted objects. However, with the=A0=0Apointer-based approach=
+ in xenomai-forge, the result of a handle to a deleted=A0=0Aobject may eith=
+er be gracefully detected (in case the memory is still readable=A0=0Aand th=
+e magic does not match) or we will get a segmentation fault if the address=
+=A0=0Ahas been freed. Obviously, since this happens in user mode, it will n=
+ot have=A0=0Aimpact on kernel stability, and it indicates an improper use o=
+f a handle, but is=A0=0Astill a different behaviour than xenomai 2.6.x. Is =
+this desired or are there=A0=0Aplans to solve this differently in the futur=
+e (e.g. by using some sort of=A0=0Aregistry, etc.)?=0A=0AThanks in advance =
+for your answers,=A0=0Aregards,=0AMatthias=0A
 
