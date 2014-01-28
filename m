@@ -1,12 +1,10 @@
-Message-ID: <52E17786.2070008@xenomai.org>
-Date: Thu, 23 Jan 2014 21:11:50 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <BLU177-W31F32253D5B6FE390B1A96A0AD0@phx.gbl>
+From: =?ks_c_5601-1987?B?tNm/uQ==?= <whimt@hotmail.com>
+Date: Tue, 28 Jan 2014 16:10:47 +0000
 MIME-Version: 1.0
-References: <1390318566-3704-1-git-send-email-sr@denx.de>
-In-Reply-To: <1390318566-3704-1-git-send-email-sr@denx.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH v3] hal/arm: Add Zynq v3.5.7 patches
+Content-Type: text/plain; charset="euc-kr"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] [Xenomai-help] writing digital output on PCI 6221 card
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,36 +13,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Stefan Roese <sr@denx.de>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 01/21/2014 04:36 PM, Stefan Roese wrote:
-> Xilinx Zynq is already supported in the mainline Xenomai git repository.
-> This patch adds support for the v3.5.7 Linux Kernel with the latest
-> arm-6 i-pipe patch additionally to the already present v3.8 support.
-> 
-> Signed-off-by: Stefan Roese <sr@denx.de>
-> ---
-> v3:
-> - Removed all non-ipipe related patches from post- patch
-> - Only EXPORT_SYMBOL_GPL(init_mm) is now removed
-> 
-> v2:
-> - Base pre-patch on top of a different git reopsitory based on v3.5.7
-> - Remove defconfig and other board specific stuff from post-patch
-> - All this leads to minimal pre- and post- patches as requested
->   by Gilles
-> 
->  ksrc/arch/arm/patches/README                       |  11 +-
->  .../patches/zynq/ipipe-core-3.5.7-zynq-post.patch  | 271 +++++++++++++++++++++
->  .../patches/zynq/ipipe-core-3.5.7-zynq-pre.patch   |  28 +++
->  3 files changed, 309 insertions(+), 1 deletion(-)
->  create mode 100644 ksrc/arch/arm/patches/zynq/ipipe-core-3.5.7-zynq-post.patch
->  create mode 100644 ksrc/arch/arm/patches/zynq/ipipe-core-3.5.7-zynq-pre.patch
-
-Merged, thanks.
-
-
--- 
-                                                                Gilles.
-
+CgoKCgoKSGVsbG8gdG8gYWxsLA0KSSBhbSB1c2luZyB4ZW5vbWFpIDIuNi4zIHdpdGggbGludXgg
+a2VybmVsIDMuNS43IG9uIGFuIHVidW50dSAxMi4wNC4NCkkgYW0gdHJ5aW5nIHRvIHNldCB1cCBk
+aWdpdGFsIGlucHV0IC8gb3V0cHV0IHRvIHdvcmsgd2l0aCBteSBOSSBQQ0kgNjIyMSBjYXJkLg0K
+VXNpbmcgYTRsX2NvbmZpZ19zdWJkIGFuZCBhNGxfc3luY19kaW8gZnVuY3Rpb25zLCBJIHdhcyBh
+YmxlIHRvIHJlYWQgYW5kIHdyaXRlIGRpZ2l0YWwgc2lnbmFsIGZvciBQMC4wfjAuNyBwaW5zIChp
+LmUuIHN1YmRldmljZSAyKS4gSG93ZXZlciwgSSB3YXMgb25seSBhYmxlIHRvIHJlYWQgdGhlIGRh
+dGEgd2l0aCBQMS4wfjIuNyBwaW5zIChpLmUuIHN1YmRldmljZSA3KS4NCldoZW5ldmVyIEkgdXNl
+IGE0bF9zeW5jX2RpbyBmdW5jdGlvbiB0byB3cml0ZSBkaWdpdGFsIG91dHB1dCB3aXRoIHN1YmRl
+dmljZSA3LCBJIGdldCAgMHg0MjQgYW5kIDB4NTJjIGZsdWN0dWF0aW5nIHZhbHVlIGluIHRoZSBi
+dWZmZXIgaW5zdGVhZCBvZiB3aGF0IEkgc3BlY2lmaWVkLldoZW4gSSBjaGVjayB0aGUgcGlucyAo
+UDEuMH4yLjcpIHdpdGggYW4gb3NjaWxsb3Njb3BlLCB0aGUgc2luZSB3YXZlcyBhcmUgc2hvd24g
+KGUuZy4gb24gUDIuNiwgYSBzaW5lIHdhdmUgd2l0aCBwZWFrLXRvLXBlYWsgdmFsdWUgb2YgNjky
+IG1WIHdpdGggNTBucyBwZXJpb2QpDQpDb3VsZCBzb21lb25lIHBsZWFzZSBoZWxwIG1lIHdpdGgg
+dGhlIHByb2JsZW0/UGxlYXNlIHNlZSB0aGUgYXR0YWNoZWQgZmlsZSBmb3IgdGhlIGNvZGUuDQpU
+aGFua3MgaW4gYWR2YW5jZSBmb3IgeW91ciBhZHZpY2UhDQpSb3NhbGkNCgoKIAkJIAkgICAJCSAg
+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFj
+aG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGRpb19wcm9ibGVtLmNwcApUeXBlOiB0ZXh0L3gt
+YwpTaXplOiAyMjU5IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3dy54
+ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE0MDEyOC9hZWY1OWUz
+ZC9hdHRhY2htZW50LmJpbj4K
