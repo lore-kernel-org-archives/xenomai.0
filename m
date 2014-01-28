@@ -1,11 +1,16 @@
-Date: Mon, 27 Jan 2014 21:29:13 -0800
-From: John Syn <john3909@gmail.com>
-Message-ID: <CF0C8022.1881D%jsynesio@us-power.com>
-Mime-version: 1.0
-Content-Type: text/plain;
-	charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] NetLink for IPC between Xenomai Driver and User Space App
+Message-ID: <52E7644C.8050409@xenomai.org>
+Date: Tue, 28 Jan 2014 09:03:24 +0100
+From: Philippe Gerum <rpm@xenomai.org>
+MIME-Version: 1.0
+References: <52E67336.1010709@siemens.com> <52E6811E.10406@xenomai.org>
+ <52E6813E.1050406@siemens.com> <52E6845E.2040300@xenomai.org>
+ <52E68F5B.20805@siemens.com> <52E69418.5080700@xenomai.org>
+ <52E699DF.4030609@siemens.com>
+In-Reply-To: <52E699DF.4030609@siemens.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PULL][forge] Only export required CFLAGS via
+	xeno-config
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,16 +19,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Is there any ways to implement NetLink in a Xenomai Driver?
+On 01/27/2014 06:39 PM, Jan Kiszka wrote:
+> On 2014-01-27 18:15, Philippe Gerum wrote:
+>> On 01/27/2014 05:54 PM, Jan Kiszka wrote:
+>>> On 2014-01-27 17:07, Philippe Gerum wrote:
+>>>> On 01/27/2014 04:54 PM, Jan Kiszka wrote:
+>>>>> On 2014-01-27 16:54, Philippe Gerum wrote:
+>>>>>> On 01/27/2014 03:54 PM, Jan Kiszka wrote:
+>>>>>>> The following changes since commit
+>>>>>>> 14872270fbfd58e88d5d14f3691a1728500b61b3:
+>>>>>>>
+>>>>>>>       cobalt/timer: fix description of CONFIG_XENO_OPT_NRTIMERS
+>>>>>>> (2014-01-20 17:31:47 +0100)
+>>>>>>>
+>>>>>>> are available in the git repository at:
+>>>>>>>
+>>>>>>>       git://git.xenomai.org/xenomai-jki.git for-forge
+>>>>>>>
+>>>>>>> for you to fetch changes up to
+>>>>>>> cfe5d34959c52d67f21463d9b98a8b6b33b458ae:
+>>>>>>>
+>>>>>>>       Only export required CFLAGS via xeno-config (2014-01-27 15:47:39
+>>>>>>> +0100)
+>>>>>>>
+>>>>>>> ----------------------------------------------------------------
+>>>>>>> Jan Kiszka (1):
+>>>>>>>           Only export required CFLAGS via xeno-config
+>>>>>>>
+>>>>>>>      configure.ac | 14 +++++++-------
+>>>>>>>      1 file changed, 7 insertions(+), 7 deletions(-)
+>>>>>>>
+>>>>>>
+>>>>>> This breaks builds with --enable-registry set. Unlike CFLAGS, every
+>>>>>> link
+>>>>>> flag required for building the Xenomai stack is implicitly required
+>>>>>> for
+>>>>>> building apps.
+>>>>>
+>>>>> So we lack the fuse linker switches? Or more?
+>>>>>
+>>>>
+>>>> So far only the fuse switches, but we may add more deps in the future.
+>>>
+>>> Strangely, I can't reproduce - is this affecting cobalt, mercury or both?
+>>>
+>>
+>> mercury.
+>
+> OK, finally. Updated version pushed to for-forge.
+>
+> BTW, mercury's "make install" tries to create device nodes. I suppose
+> that is not really required, is it?
+>
 
-I=B9m thinking that a Netlink IPC interface would simplify the interface
-between a Xenomai device driver and a user space app (nodejs with
-asynchronous I/O) compared with IOCTL/syscalls.
+Nope, it's a left-over from the cobalt side.
 
-Regards,
 
-John=20
-
+-- 
+Philippe.
 
