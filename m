@@ -1,10 +1,13 @@
-Message-ID: <BLU177-W31F32253D5B6FE390B1A96A0AD0@phx.gbl>
-From: =?ks_c_5601-1987?B?tNm/uQ==?= <whimt@hotmail.com>
-Date: Tue, 28 Jan 2014 16:10:47 +0000
+Message-ID: <52E7F09C.40807@xenomai.org>
+Date: Tue, 28 Jan 2014 19:02:04 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="euc-kr"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] [Xenomai-help] writing digital output on PCI 6221 card
+References: <CF0C8022.1881D%jsynesio@us-power.com>
+In-Reply-To: <CF0C8022.1881D%jsynesio@us-power.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] NetLink for IPC between Xenomai Driver and User Space
+ App
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,25 +16,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: John Syn <john3909@gmail.com>
+Cc: Xenomai@xenomai.org
 
-CgoKCgoKSGVsbG8gdG8gYWxsLA0KSSBhbSB1c2luZyB4ZW5vbWFpIDIuNi4zIHdpdGggbGludXgg
-a2VybmVsIDMuNS43IG9uIGFuIHVidW50dSAxMi4wNC4NCkkgYW0gdHJ5aW5nIHRvIHNldCB1cCBk
-aWdpdGFsIGlucHV0IC8gb3V0cHV0IHRvIHdvcmsgd2l0aCBteSBOSSBQQ0kgNjIyMSBjYXJkLg0K
-VXNpbmcgYTRsX2NvbmZpZ19zdWJkIGFuZCBhNGxfc3luY19kaW8gZnVuY3Rpb25zLCBJIHdhcyBh
-YmxlIHRvIHJlYWQgYW5kIHdyaXRlIGRpZ2l0YWwgc2lnbmFsIGZvciBQMC4wfjAuNyBwaW5zIChp
-LmUuIHN1YmRldmljZSAyKS4gSG93ZXZlciwgSSB3YXMgb25seSBhYmxlIHRvIHJlYWQgdGhlIGRh
-dGEgd2l0aCBQMS4wfjIuNyBwaW5zIChpLmUuIHN1YmRldmljZSA3KS4NCldoZW5ldmVyIEkgdXNl
-IGE0bF9zeW5jX2RpbyBmdW5jdGlvbiB0byB3cml0ZSBkaWdpdGFsIG91dHB1dCB3aXRoIHN1YmRl
-dmljZSA3LCBJIGdldCAgMHg0MjQgYW5kIDB4NTJjIGZsdWN0dWF0aW5nIHZhbHVlIGluIHRoZSBi
-dWZmZXIgaW5zdGVhZCBvZiB3aGF0IEkgc3BlY2lmaWVkLldoZW4gSSBjaGVjayB0aGUgcGlucyAo
-UDEuMH4yLjcpIHdpdGggYW4gb3NjaWxsb3Njb3BlLCB0aGUgc2luZSB3YXZlcyBhcmUgc2hvd24g
-KGUuZy4gb24gUDIuNiwgYSBzaW5lIHdhdmUgd2l0aCBwZWFrLXRvLXBlYWsgdmFsdWUgb2YgNjky
-IG1WIHdpdGggNTBucyBwZXJpb2QpDQpDb3VsZCBzb21lb25lIHBsZWFzZSBoZWxwIG1lIHdpdGgg
-dGhlIHByb2JsZW0/UGxlYXNlIHNlZSB0aGUgYXR0YWNoZWQgZmlsZSBmb3IgdGhlIGNvZGUuDQpU
-aGFua3MgaW4gYWR2YW5jZSBmb3IgeW91ciBhZHZpY2UhDQpSb3NhbGkNCgoKIAkJIAkgICAJCSAg
-Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFj
-aG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGRpb19wcm9ibGVtLmNwcApUeXBlOiB0ZXh0L3gt
-YwpTaXplOiAyMjU5IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3dy54
-ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE0MDEyOC9hZWY1OWUz
-ZC9hdHRhY2htZW50LmJpbj4K
+On 01/28/2014 06:29 AM, John Syn wrote:
+> Is there any ways to implement NetLink in a Xenomai Driver?
+>
+> I¹m thinking that a Netlink IPC interface would simplify the interface
+> between a Xenomai device driver and a user space app (nodejs with
+> asynchronous I/O) compared with IOCTL/syscalls.
+
+RTDM, the interface used to create drivers for xenomai, allows you to 
+define drivers for arbitrary socket protocols (this is used for instance 
+by rtnet to implement IP/UDP socket, or by the RTIPC driver to implement 
+specialized IPCs), so, you can define the AF_NETLINK socket if you like.
+
+
+-- 
+					    Gilles.
+
