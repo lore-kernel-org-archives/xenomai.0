@@ -1,20 +1,11 @@
+Message-ID: <1390987721.64002.YahooMailNeo@web163903.mail.gq1.yahoo.com>
+Date: Wed, 29 Jan 2014 01:28:41 -0800 (PST)
+From: Huub Van Niekerk <huubvanniekerk@yahoo.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Date: Wed, 29 Jan 2014 08:16:42 +0100
-From: Wolfgang Grandegger <wg@grandegger.com>
-In-Reply-To: <52E829FE.5040106@xenomai.org>
-References: <52DF9C5F.70005@geral.com> <52DFAA18.6080703@xenomai.org>
- <52DFAD29.4000800@geral.com> <52DFB2DE.4050501@xenomai.org>
- <52DFC734.2090906@geral.com> <52DFC80D.6050101@xenomai.org>
- <52DFCFDE.9060700@geral.com> <52DFD1B0.6070303@xenomai.org>
- <52E5616F.90002@grandegger.com> <52E56221.5070005@xenomai.org>
- <52E56D0F.2040909@grandegger.com> <52E5766A.1040306@xenomai.org>
- <701f63f992829713e3d3d6b872165208@grandegger.com>
- <52E829FE.5040106@xenomai.org>
-Message-ID: <e6e602522fbca3bbba4a3188f8c7f996@grandegger.com>
-Subject: Re: [Xenomai] imx28 rtcan flexcan system freezes
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Cross-compile vanilla kernel to armhf fails
+Reply-To: Huub Van Niekerk <huubvanniekerk@yahoo.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,108 +14,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, 28 Jan 2014 23:06:54 +0100, Gilles Chanteperdrix
-
-<gilles.chanteperdrix@xenomai.org> wrote:
-
-> On 01/27/2014 08:56 AM, Wolfgang Grandegger wrote:
-
->> On Sun, 26 Jan 2014 21:56:10 +0100, Gilles Chanteperdrix
-
->>> IMO, it is not just for the flexcan driver, it will avoid unaligned
-
->> 
-
->>> accesses for all drivers which access data 4 bytes at a time. And I do
-
->> 
-
->>> not think it "breaks" anything. What I do not know is:
-
->> 
-
->> 
-
->> 
-
->> But it's just the Flexcan driver which is doing unaligned accesses.
-
-> 
-
-> Ok, can we agree on the following patch then?
-
-> 
-
-> diff --git a/ksrc/drivers/can/rtcan_flexcan.c
-
-> b/ksrc/drivers/can/rtcan_flexcan.c
-
-> index 8f0e8d1..1674b73 100644
-
-> --- a/ksrc/drivers/can/rtcan_flexcan.c
-
-> +++ b/ksrc/drivers/can/rtcan_flexcan.c
-
-> @@ -38,6 +38,7 @@
-
->  #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,5,0)
-
->  #include <linux/pinctrl/consumer.h>
-
->  #endif
-
-> +#include <asm/unaligned.h>
-
->  
-
->  #include <rtdm/rtdm_driver.h>
-
->  
-
-> @@ -497,11 +498,9 @@ static void flexcan_rx_interrupt(struct
-
-rtcan_device
-
-> *dev,
-
->  		cf->can_id |= CAN_RTR_FLAG;
-
->  		skb->rb_frame_size = EMPTY_RB_FRAME_SIZE;
-
->  	} else {
-
-> -		skb->rb_frame_size = EMPTY_RB_FRAME_SIZE + cf->can_dlc ;
-
-> -		*(__be32 *)(cf->data + 0) =
-
-> -			cpu_to_be32(flexcan_read(&mb->data[0]));
-
-> -		*(__be32 *)(cf->data + 4) =
-
-> -			cpu_to_be32(flexcan_read(&mb->data[1]));
-
-> +		skb->rb_frame_size = EMPTY_RB_FRAME_SIZE + cf->can_dlc;
-
-> +		put_unaligned_be32(flexcan_read(&mb->data[0]), cf->data + 0);
-
-> +		put_unaligned_be32(flexcan_read(&mb->data[1]), cf->data + 4);
-
->  	}
-
->  
-
->  	/* Store the interface index */
-
-
-
-D'accord, thanks.
-
-
-
-Wolfgang.
-
-
-
+Hi,=0A=0AI'm trying to cross-compile xenomai-2.6.3 patched vanilla linux ke=
+rnel 3.5.7 to armhf using this command:=0A=0A/Downloads/linux-3.5.7$ CONCUR=
+RENCY_LEVEL=3D2 CLEAN_SOURCE=3Dno DEB_HOST_ARCH=3Darmhf fakeroot make-kpkg =
+--arch arm --cross-compile /usr/bin/arm-linux-gnueabihf- --initrd --append-=
+to-version -xenomai-2.6.3 --revision 1.0 kernel_image kernel_headers=0A=0A=
+=0Aand get this error:=0A=0A=A0 CC=A0=A0=A0=A0=A0 drivers/xenomai/testing/t=
+imerbench.o=0A=A0 LD=A0=A0=A0=A0=A0 drivers/xenomai/testing/xeno_timerbench=
+.o=0A=A0 LD=A0=A0=A0=A0=A0 drivers/xenomai/testing/xeno_switchtest.o=0A=A0 =
+LD=A0=A0=A0=A0=A0 drivers/xenomai/testing/built-in.o=0A=A0 LD=A0=A0=A0=A0=
+=A0 drivers/xenomai/built-in.o=0A=A0 LD=A0=A0=A0=A0=A0 drivers/built-in.o=
+=0Amake[1]: Leaving directory `/home/huub/Downloads/linux-3.5.7'=0Amake: **=
+* [debian/stamp/build/kernel] Error 2=0A=0A=0AI've tried to find a possible=
+ cause but found nothing. Can anyone please direct me into a possible solut=
+ion ?=0A=0AThanks
