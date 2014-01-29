@@ -1,10 +1,14 @@
-Message-ID: <52E1D646.8050907@steinkuehler.net>
-Date: Thu, 23 Jan 2014 20:56:06 -0600
-From: Charles Steinkuehler <charles@steinkuehler.net>
+Message-ID: <52E908F3.9030801@gmail.com>
+Date: Wed, 29 Jan 2014 14:58:11 +0100
+From: Sagar Behere <sagar.behere@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] ARM/BeagleBone Thumb2 Kernels
+References: <1390987721.64002.YahooMailNeo@web163903.mail.gq1.yahoo.com>
+ <52E8CF13.4070904@xenomai.org> <201401291346.49045.paul_c@tuxcnc.org>
+In-Reply-To: <201401291346.49045.paul_c@tuxcnc.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Cross-compile vanilla kernel to armhf fails
+Reply-To: sagar.behere@gmail.com
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,78 +19,54 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-So when I try to build a Xenomai patched kernel for the BeagleBone using
-Thumb2 instructions, I get the following linker errors:
+On 01/29/2014 02:46 PM, Paul wrote:
+> On Wednesday 29 January 2014, Gilles Chanteperdrix wrote:
+>> On 01/29/2014 10:28 AM, Huub Van Niekerk wrote:
+>>> Hi,
+>>>
+>>> I'm trying to cross-compile xenomai-2.6.3 patched vanilla linux
+>>> kernel 3.5.7 to armhf using this command:
+>>>
+>>> /Downloads/linux-3.5.7$ CONCURRENCY_LEVEL=2 CLEAN_SOURCE=no
+>>> DEB_HOST_ARCH=armhf fakeroot make-kpkg --arch arm --cross-compile
+>>> /usr/bin/arm-linux-gnueabihf- --initrd --append-to-version
+>>> -xenomai-2.6.3 --revision 1.0 kernel_image kernel_headers
+>>>
+>>>
+>>> and get this error:
+>>>
+>>>     CC      drivers/xenomai/testing/timerbench.o
+>>>     LD      drivers/xenomai/testing/xeno_timerbench.o
+>>>     LD      drivers/xenomai/testing/xeno_switchtest.o
+>>>     LD      drivers/xenomai/testing/built-in.o
+>>>     LD      drivers/xenomai/built-in.o
+>>>     LD      drivers/built-in.o
+>>> make[1]: Leaving directory `/home/huub/Downloads/linux-3.5.7'
+>>> make: *** [debian/stamp/build/kernel] Error 2
+>>>
+>>>
+>>> I've tried to find a possible cause but found nothing. Can anyone
+>>> please direct me into a possible solution ?
+>>
+>> You are lacking the line with the actual error. The full log should
+>> contain it. Otherwise you can try without CONCURRENCY_LEVEL, in which
+>> case make should stop immediately after the error.
+>
+> You may also need:
+> 	--subarch armhf
+> as an option passed to make-kpkg...
+>
+> But the first question should be, can you cross compile a kernel for the
+> target using the standard kernel make ?
+>
+> If you can't, then using make-kpkg will fail also.
 
->   LD      init/built-in.o
-> arch/arm/kernel/built-in.o: In function `__irq_usr':
-> :(.kprobes.text+0x3c2): relocation truncated to fit: R_ARM_THM_JUMP19
-> against symbol `__ipipe_ret_to_user_irqs_disabled' defined in .text
-> section in arch/arm/kernel/built-in.o
-> arch/arm/kernel/built-in.o: In function `ret_from_exception':
-> :(.kprobes.text+0x600): relocation truncated to fit: R_ARM_THM_JUMP19
-> against symbol `__ipipe_ret_to_user_irqs_disabled' defined in .text
-> section in arch/arm/kernel/built-in.o
-> make: *** [vmlinux] Error 1
-> =
++1. You can use the instructions here
 
-> The link error goes away if I disable CONFIG_THUMB2_KERNEL, which wasn't
-> set in the original kernel config.
+http://wiki.gumstix.org/index.php?title=Installing_Debian_and_Xenomai_on_gumstix_Overo
 
-This has recently become more of a problem, as the default BeagleBone
-kernel has switched to enabling CONFIG_THUMB2_KERNEL.
+for attempting a basic kernel cross-compile. Just be sure to replace the 
+`gnueabi` in those instructions with `gnueabihf` if you are using armhf
 
-A bit of Googling turned up the following patch to fix a similar problem
-on the Tegra (not Xenomai related):
+/Sagar
 
-  http://patchwork.ozlabs.org/patch/236760/
-
-I applied a similar if-then patch (see below) to the two Xenomai calls
-that generate the linker errors, and the result is a working kernel.
-
-Can someone more familiar with iPipeand ARM assembly review the attached
-minor patch and advise on whether or not it seems OK?
-
-As I understand things, the two bne calls in the default ipipe patch
-don't work when building a kernel using the thumb instructions due to
-the limited range of the conditional branch.  Using the if-then
-construct when THUMB2 is enabled allows for a larger addressing range in
-the branch, thus avoiding the linker errors.  If this seems OK, perhaps
-it should be applied to the master ipipe patch set?  If not, is there a
-better way to avoid the linker errors when building with the thumb
-instructions?
-
--- =
-
-Charles Steinkuehler
-charles@steinkuehler.net
--------------- next part --------------
-diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
-index e2bc263..6f4d9f0 100644
---- a/arch/arm/kernel/entry-armv.S
-+++ b/arch/arm/kernel/entry-armv.S
-@@ -469,6 +469,7 @@ __irq_usr:
- 	kuser_cmpxchg_check
- 	irq_handler
- #ifdef CONFIG_IPIPE
-+THUMB(	it	ne )
- 	bne	__ipipe_ret_to_user_irqs_disabled
- #endif	/* CONFIG_IPIPE */
- 	get_thread_info tsk
-@@ -767,6 +768,7 @@ ENTRY(ret_from_exception)
- 	disable_irq
- 	bl	__ipipe_check_root
- 	cmp     r0, #1
-+THUMB(	it	ne )
- 	bne	__ipipe_ret_to_user_irqs_disabled  @ Fast exit path over non-root dom=
-ains
- #endif /* CONFIG_IPIPE */
- 	get_thread_info tsk
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 261 bytes
-Desc: OpenPGP digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140123/8019559=
-b/attachment.sig>
