@@ -1,11 +1,12 @@
-Message-ID: <1390987721.64002.YahooMailNeo@web163903.mail.gq1.yahoo.com>
-Date: Wed, 29 Jan 2014 01:28:41 -0800 (PST)
-From: Huub Van Niekerk <huubvanniekerk@yahoo.com>
+Message-ID: <52E8CD0F.6040808@xenomai.org>
+Date: Wed, 29 Jan 2014 10:42:39 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Cross-compile vanilla kernel to armhf fails
-Reply-To: Huub Van Niekerk <huubvanniekerk@yahoo.com>
+References: <1390939945.5452.YahooMailNeo@web171602.mail.ir2.yahoo.com>
+In-Reply-To: <1390939945.5452.YahooMailNeo@web171602.mail.ir2.yahoo.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] atomic_sub_fetch in atomic.h
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,19 +15,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,=0A=0AI'm trying to cross-compile xenomai-2.6.3 patched vanilla linux ke=
-rnel 3.5.7 to armhf using this command:=0A=0A/Downloads/linux-3.5.7$ CONCUR=
-RENCY_LEVEL=3D2 CLEAN_SOURCE=3Dno DEB_HOST_ARCH=3Darmhf fakeroot make-kpkg =
---arch arm --cross-compile /usr/bin/arm-linux-gnueabihf- --initrd --append-=
-to-version -xenomai-2.6.3 --revision 1.0 kernel_image kernel_headers=0A=0A=
-=0Aand get this error:=0A=0A=A0 CC=A0=A0=A0=A0=A0 drivers/xenomai/testing/t=
-imerbench.o=0A=A0 LD=A0=A0=A0=A0=A0 drivers/xenomai/testing/xeno_timerbench=
-.o=0A=A0 LD=A0=A0=A0=A0=A0 drivers/xenomai/testing/xeno_switchtest.o=0A=A0 =
-LD=A0=A0=A0=A0=A0 drivers/xenomai/testing/built-in.o=0A=A0 LD=A0=A0=A0=A0=
-=A0 drivers/xenomai/built-in.o=0A=A0 LD=A0=A0=A0=A0=A0 drivers/built-in.o=
-=0Amake[1]: Leaving directory `/home/huub/Downloads/linux-3.5.7'=0Amake: **=
-* [debian/stamp/build/kernel] Error 2=0A=0A=0AI've tried to find a possible=
- cause but found nothing. Can anyone please direct me into a possible solut=
-ion ?=0A=0AThanks
+On 01/28/2014 09:12 PM, Matthias Schneider wrote:
+> Hi all,
+>
+> shouldn't
+>
+> #define atomic_sub_fetch(v, n)  _sync_sub_and_fetch(&(v), n)
+>
+> in file include/nocore/atomic.h line 48 of xenomai-forge be rather
+>
+> #define atomic_sub_fetch(v, n)  __sync_sub_and_fetch(&(v), n)
+>
+> ?
+> It is not used by the current code anyway, but does not compile when trying to
+> do so..
+>
+
+Typo indeed. Thanks for the heads up.
+
+-- 
+Philippe.
+
