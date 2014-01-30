@@ -1,22 +1,10 @@
-Message-ID: <52EAA41F.1020005@xenomai.org>
-Date: Thu, 30 Jan 2014 20:12:31 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <DUB112-W1296E6715891C2DFCE34EADF6AF0@phx.gbl>
+From: Andrea Saltari <david812@hotmail.it>
+Date: Thu, 30 Jan 2014 20:43:56 +0100
 MIME-Version: 1.0
-References: <1391006203.6916.YahooMailNeo@web163902.mail.gq1.yahoo.com>
- <52E950FB.70400@xenomai.org> <52E95E66.2060905@xenomai.org>
- <1391067115.6898.YahooMailNeo@web163904.mail.gq1.yahoo.com>
- <52EA0FDF.6040604@xenomai.org>
- <1391072739.44037.YahooMailNeo@web163902.mail.gq1.yahoo.com>
- <52EA1A55.3040907@xenomai.org>
- <1391074883.36568.YahooMailNeo@web163905.mail.gq1.yahoo.com>
- <52EA2EDF.2050900@xenomai.org>
- <1391083620.48248.YahooMailNeo@web163903.mail.gq1.yahoo.com>
- <52EA4B35.2090306@xenomai.org>
- <1391088235.30999.YahooMailNeo@web163901.mail.gq1.yahoo.com>
-In-Reply-To: <1391088235.30999.YahooMailNeo@web163901.mail.gq1.yahoo.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] debuild of xenomai failing: Directory nonexistent
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Using of Shared Memory
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,20 +13,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Huub Van Niekerk <huubvanniekerk@yahoo.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 01/30/2014 02:23 PM, Huub Van Niekerk wrote:
-> I've added the mkdir's I thought were necessary. However, what I don't
-> understand is the message "ERROR: ld.so: object 'libfakeroot-sysv.so'
-> from LD_PRELOAD cannot be preloaded: ignored". After this it asks for
-> the sudo password. After that the error message shows again, the script
-> goes on shortly and ends in the "cannot create directory" error. Do you
-> have any idea what the cause of the ld.so error may be ?
+Dear All=2C
+I didn't fully understand how to write on a shared memory.
+The example lead to create=2C bind and allocate a shared memory but it does=
+n't explain how to copy data on it.
+Do i need to use a simple C function  memcpy()? Doesn't it push out from pr=
+imary mode??
+Thanks
+Andrea
 
-Have you tried debuild -rfakeroot?
-Or are you using fakeroot debuild directly?
-
--- 
-					    Gilles.
-
+ 		 	   		  =
