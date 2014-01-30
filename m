@@ -1,5 +1,5 @@
-Message-ID: <52EA81A1.4000305@xenomai.org>
-Date: Thu, 30 Jan 2014 17:45:21 +0100
+Message-ID: <52EAA41F.1020005@xenomai.org>
+Date: Thu, 30 Jan 2014 20:12:31 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <1391006203.6916.YahooMailNeo@web163902.mail.gq1.yahoo.com>
@@ -36,8 +36,8 @@ On 01/30/2014 02:23 PM, Huub Van Niekerk wrote:
 > goes on shortly and ends in the "cannot create directory" error. Do you
 > have any idea what the cause of the ld.so error may be ?
 
-It is caused by fakeroot, you can ignore that.
-
+Have you tried debuild -rfakeroot?
+Or are you using fakeroot debuild directly?
 
 -- 
 					    Gilles.
