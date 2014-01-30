@@ -1,12 +1,22 @@
-Message-ID: <52E24D0C.4050207@xenomai.org>
-Date: Fri, 24 Jan 2014 12:22:52 +0100
+Message-ID: <52EA81A1.4000305@xenomai.org>
+Date: Thu, 30 Jan 2014 17:45:21 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52E1D646.8050907@steinkuehler.net>
-In-Reply-To: <52E1D646.8050907@steinkuehler.net>
-Content-Type: text/plain; charset=UTF-8
+References: <1391006203.6916.YahooMailNeo@web163902.mail.gq1.yahoo.com>
+ <52E950FB.70400@xenomai.org> <52E95E66.2060905@xenomai.org>
+ <1391067115.6898.YahooMailNeo@web163904.mail.gq1.yahoo.com>
+ <52EA0FDF.6040604@xenomai.org>
+ <1391072739.44037.YahooMailNeo@web163902.mail.gq1.yahoo.com>
+ <52EA1A55.3040907@xenomai.org>
+ <1391074883.36568.YahooMailNeo@web163905.mail.gq1.yahoo.com>
+ <52EA2EDF.2050900@xenomai.org>
+ <1391083620.48248.YahooMailNeo@web163903.mail.gq1.yahoo.com>
+ <52EA4B35.2090306@xenomai.org>
+ <1391088235.30999.YahooMailNeo@web163901.mail.gq1.yahoo.com>
+In-Reply-To: <1391088235.30999.YahooMailNeo@web163901.mail.gq1.yahoo.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ARM/BeagleBone Thumb2 Kernels
+Subject: Re: [Xenomai] debuild of xenomai failing: Directory nonexistent
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,58 +25,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Charles Steinkuehler <charles@steinkuehler.net>
-Cc: xenomai@xenomai.org
+To: Huub Van Niekerk <huubvanniekerk@yahoo.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 01/24/2014 03:56 AM, Charles Steinkuehler wrote:
-> So when I try to build a Xenomai patched kernel for the BeagleBone using
-> Thumb2 instructions, I get the following linker errors:
-> 
->>   LD      init/built-in.o
->> arch/arm/kernel/built-in.o: In function `__irq_usr':
->> :(.kprobes.text+0x3c2): relocation truncated to fit: R_ARM_THM_JUMP19
->> against symbol `__ipipe_ret_to_user_irqs_disabled' defined in .text
->> section in arch/arm/kernel/built-in.o
->> arch/arm/kernel/built-in.o: In function `ret_from_exception':
->> :(.kprobes.text+0x600): relocation truncated to fit: R_ARM_THM_JUMP19
->> against symbol `__ipipe_ret_to_user_irqs_disabled' defined in .text
->> section in arch/arm/kernel/built-in.o
->> make: *** [vmlinux] Error 1
->>
->> The link error goes away if I disable CONFIG_THUMB2_KERNEL, which wasn't
->> set in the original kernel config.
-> 
-> This has recently become more of a problem, as the default BeagleBone
-> kernel has switched to enabling CONFIG_THUMB2_KERNEL.
-> 
-> A bit of Googling turned up the following patch to fix a similar problem
-> on the Tegra (not Xenomai related):
-> 
->   http://patchwork.ozlabs.org/patch/236760/
-> 
-> I applied a similar if-then patch (see below) to the two Xenomai calls
-> that generate the linker errors, and the result is a working kernel.
-> 
-> Can someone more familiar with iPipeand ARM assembly review the attached
-> minor patch and advise on whether or not it seems OK?
-> 
-> As I understand things, the two bne calls in the default ipipe patch
-> don't work when building a kernel using the thumb instructions due to
-> the limited range of the conditional branch.  Using the if-then
-> construct when THUMB2 is enabled allows for a larger addressing range in
-> the branch, thus avoiding the linker errors.  If this seems OK, perhaps
-> it should be applied to the master ipipe patch set?  If not, is there a
-> better way to avoid the linker errors when building with the thumb
-> instructions?
-> 
+On 01/30/2014 02:23 PM, Huub Van Niekerk wrote:
+> I've added the mkdir's I thought were necessary. However, what I don't
+> understand is the message "ERROR: ld.so: object 'libfakeroot-sysv.so'
+> from LD_PRELOAD cannot be preloaded: ignored". After this it asks for
+> the sudo password. After that the error message shows again, the script
+> goes on shortly and ends in the "cannot create directory" error. Do you
+> have any idea what the cause of the ld.so error may be ?
 
-Could you provide me with the details (kernel version or git url, config
-file used, toolchain used) allowing to reproduce this issue?
+It is caused by fakeroot, you can ignore that.
 
-I have been compiling thumb2 kernels for omap3 and omap4 for a long
-time, and never observed this issue. So, there must be something
-different in your case.
 
 -- 
-                                                                Gilles.
+					    Gilles.
 
