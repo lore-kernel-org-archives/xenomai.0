@@ -1,12 +1,14 @@
-Message-ID: <52E245E9.6080301@xenomai.org>
-Date: Fri, 24 Jan 2014 11:52:25 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <52EA03D8.5080307@axelsw.it>
+Date: Thu, 30 Jan 2014 08:48:40 +0100
+From: Marco Tessore <marco.tessore@axelsw.it>
 MIME-Version: 1.0
-References: <52E1D646.8050907@steinkuehler.net>
-In-Reply-To: <52E1D646.8050907@steinkuehler.net>
-Content-Type: text/plain; charset=UTF-8
+References: <52E90C95.702@axelsw.it> <52E94484.3050607@xenomai.org>
+In-Reply-To: <52E94484.3050607@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ARM/BeagleBone Thumb2 Kernels
+Subject: Re: [Xenomai] Please,
+ can anybody help me to find where is supposed to be the handler
+ function for the Xenomai syscall in the kernel tree?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,53 +17,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Charles Steinkuehler <charles@steinkuehler.net>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 01/24/2014 03:56 AM, Charles Steinkuehler wrote:
-> So when I try to build a Xenomai patched kernel for the BeagleBone using
-> Thumb2 instructions, I get the following linker errors:
-> 
->>   LD      init/built-in.o
->> arch/arm/kernel/built-in.o: In function `__irq_usr':
->> :(.kprobes.text+0x3c2): relocation truncated to fit: R_ARM_THM_JUMP19
->> against symbol `__ipipe_ret_to_user_irqs_disabled' defined in .text
->> section in arch/arm/kernel/built-in.o
->> arch/arm/kernel/built-in.o: In function `ret_from_exception':
->> :(.kprobes.text+0x600): relocation truncated to fit: R_ARM_THM_JUMP19
->> against symbol `__ipipe_ret_to_user_irqs_disabled' defined in .text
->> section in arch/arm/kernel/built-in.o
->> make: *** [vmlinux] Error 1
->>
->> The link error goes away if I disable CONFIG_THUMB2_KERNEL, which wasn't
->> set in the original kernel config.
-> 
-> This has recently become more of a problem, as the default BeagleBone
-> kernel has switched to enabling CONFIG_THUMB2_KERNEL.
-> 
-> A bit of Googling turned up the following patch to fix a similar problem
-> on the Tegra (not Xenomai related):
-> 
->   http://patchwork.ozlabs.org/patch/236760/
-> 
-> I applied a similar if-then patch (see below) to the two Xenomai calls
-> that generate the linker errors, and the result is a working kernel.
-> 
-> Can someone more familiar with iPipeand ARM assembly review the attached
-> minor patch and advise on whether or not it seems OK?
-> 
-> As I understand things, the two bne calls in the default ipipe patch
-> don't work when building a kernel using the thumb instructions due to
-> the limited range of the conditional branch.  Using the if-then
-> construct when THUMB2 is enabled allows for a larger addressing range in
-> the branch, thus avoiding the linker errors.  If this seems OK, perhaps
-> it should be applied to the master ipipe patch set?  If not, is there a
-> better way to avoid the linker errors when building with the thumb
-> instructions?
+Il 29/01/2014 19:12, Gilles Chanteperdrix ha scritto:
+> On 01/29/2014 03:13 PM, Marco Tessore wrote:
+>> Good morning,
+>> I am a newbie of Xenomai, and I'm trying to patch a modified (non
+>> vanilla) Linux kernel 3.11.0rc3 for ARM architecture (Freescale iMx28)
+>> with Xenomai 2.6.3.
+>> To achieve this goal I have modified, then applied the patch
+>> ipipe-core-3.8.13-arm-3, but, probably because of my changes, something
+>> seems to not work properly.
+>
+> Note that:
+> - you may use the I-pipe kernel for 3.10 as a base for 3.11.0rc3, 
+> available here:
+> git://git.kernel.org/ipipe.git branch stable/ipipe-3.10.18
+> - using an rc kernel is bad idea
+> - how to port Xenomai on new ARM processors is documented here:
+> https://www.xenomai.org/index.php/I-pipe-core:ArmPorting
+>
+>
+Thank you Gilles very much for your suggestions,
+I think I will try the stable/ipipe-3.10.18 branch as base for my 
+kernel: it may work well for me.
 
-This looks fine, but I have one objection: why does it work for me with
-the toolchain I use (linaro 2012.09)?
-
--- 
-                                                                Gilles.
+Best regards
+Marco
 
