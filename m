@@ -1,14 +1,14 @@
-Message-ID: <52EA03D8.5080307@axelsw.it>
-Date: Thu, 30 Jan 2014 08:48:40 +0100
-From: Marco Tessore <marco.tessore@axelsw.it>
+Message-ID: <52EA0FDF.6040604@xenomai.org>
+Date: Thu, 30 Jan 2014 09:39:59 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52E90C95.702@axelsw.it> <52E94484.3050607@xenomai.org>
-In-Reply-To: <52E94484.3050607@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <1391006203.6916.YahooMailNeo@web163902.mail.gq1.yahoo.com>
+ <52E950FB.70400@xenomai.org> <52E95E66.2060905@xenomai.org>
+ <1391067115.6898.YahooMailNeo@web163904.mail.gq1.yahoo.com>
+In-Reply-To: <1391067115.6898.YahooMailNeo@web163904.mail.gq1.yahoo.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Please,
- can anybody help me to find where is supposed to be the handler
- function for the Xenomai syscall in the kernel tree?
+Subject: Re: [Xenomai] debuild of xenomai failing: Directory nonexistent
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,32 +17,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Huub Van Niekerk <huubvanniekerk@yahoo.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Il 29/01/2014 19:12, Gilles Chanteperdrix ha scritto:
-> On 01/29/2014 03:13 PM, Marco Tessore wrote:
->> Good morning,
->> I am a newbie of Xenomai, and I'm trying to patch a modified (non
->> vanilla) Linux kernel 3.11.0rc3 for ARM architecture (Freescale iMx28)
->> with Xenomai 2.6.3.
->> To achieve this goal I have modified, then applied the patch
->> ipipe-core-3.8.13-arm-3, but, probably because of my changes, something
->> seems to not work properly.
->
-> Note that:
-> - you may use the I-pipe kernel for 3.10 as a base for 3.11.0rc3, 
-> available here:
-> git://git.kernel.org/ipipe.git branch stable/ipipe-3.10.18
-> - using an rc kernel is bad idea
-> - how to port Xenomai on new ARM processors is documented here:
-> https://www.xenomai.org/index.php/I-pipe-core:ArmPorting
->
->
-Thank you Gilles very much for your suggestions,
-I think I will try the stable/ipipe-3.10.18 branch as base for my 
-kernel: it may work well for me.
+On 01/30/2014 08:31 AM, Huub Van Niekerk wrote:
+> I assume I have to save this patch into a textfile (e.g. debuild-patch) and use the patch command: patch debuild debuild-patch ?
 
-Best regards
-Marco
+Type:
+cd <user>/Downloads/xenomai-2.6.3
+patch -p1 < /path/to/debuild-patch
+
+
+-- 
+                                                                Gilles.
 
