@@ -1,21 +1,11 @@
-Message-ID: <52EBA1E2.8000808@geral.com>
-Date: Fri, 31 Jan 2014 14:15:14 +0100
-From: Alexandre COFFIGNAL <acoffignal@geral.com>
+Message-ID: <52EBA6D0.2010208@siemens.com>
+Date: Fri, 31 Jan 2014 14:36:16 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <52DF9C5F.70005@geral.com> <52DFAA18.6080703@xenomai.org>
- <52DFAD29.4000800@geral.com> <52DFB2DE.4050501@xenomai.org>
- <52DFC734.2090906@geral.com> <52DFC80D.6050101@xenomai.org>
- <52DFCFDE.9060700@geral.com> <52DFD1B0.6070303@xenomai.org>
- <52E5616F.90002@grandegger.com> <52E56221.5070005@xenomai.org>
- <52E56D0F.2040909@grandegger.com> <52E5766A.1040306@xenomai.org>
- <701f63f992829713e3d3d6b872165208@grandegger.com>
- <52E829FE.5040106@xenomai.org>
- <e6e602522fbca3bbba4a3188f8c7f996@grandegger.com>
- <52E9235C.7090204@geral.com> <52E9415B.4040509@xenomai.org>
-In-Reply-To: <52E9415B.4040509@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] imx28 rtcan flexcan system freezes
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] forge/cobalt: Do we need to wrap all POSIX calls for
+	non-POSIX skins?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,72 +14,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
+Hi,
 
-Le 29/01/2014 18:58, Gilles Chanteperdrix a écrit :
-> On 01/29/2014 04:50 PM, Alexandre COFFIGNAL wrote:
->>
->> Le 29/01/2014 08:16, Wolfgang Grandegger a écrit :
->>> On Tue, 28 Jan 2014 23:06:54 +0100, Gilles Chanteperdrix
->>> <gilles.chanteperdrix@xenomai.org> wrote:
->>>> On 01/27/2014 08:56 AM, Wolfgang Grandegger wrote:
->>>>> On Sun, 26 Jan 2014 21:56:10 +0100, Gilles Chanteperdrix
->>>>>> IMO, it is not just for the flexcan driver, it will avoid unaligned
->>>>>> accesses for all drivers which access data 4 bytes at a time. And 
->>>>>> I do
->>>>>> not think it "breaks" anything. What I do not know is:
->>>>>
->>>>>
->>>>> But it's just the Flexcan driver which is doing unaligned accesses.
->>>> Ok, can we agree on the following patch then?
->>>>
->>>> diff --git a/ksrc/drivers/can/rtcan_flexcan.c
->>>> b/ksrc/drivers/can/rtcan_flexcan.c
->>>> index 8f0e8d1..1674b73 100644
->>>> --- a/ksrc/drivers/can/rtcan_flexcan.c
->>>> +++ b/ksrc/drivers/can/rtcan_flexcan.c
->>>> @@ -38,6 +38,7 @@
->>>>    #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,5,0)
->>>>    #include <linux/pinctrl/consumer.h>
->>>>    #endif
->>>> +#include <asm/unaligned.h>
->>>>
->>>>    #include <rtdm/rtdm_driver.h>
->>>>
->>>> @@ -497,11 +498,9 @@ static void flexcan_rx_interrupt(struct
->>> rtcan_device
->>>> *dev,
->>>>            cf->can_id |= CAN_RTR_FLAG;
->>>>            skb->rb_frame_size = EMPTY_RB_FRAME_SIZE;
->>>>        } else {
->>>> -        skb->rb_frame_size = EMPTY_RB_FRAME_SIZE + cf->can_dlc ;
->>>> -        *(__be32 *)(cf->data + 0) =
->>>> -            cpu_to_be32(flexcan_read(&mb->data[0]));
->>>> -        *(__be32 *)(cf->data + 4) =
->>>> -            cpu_to_be32(flexcan_read(&mb->data[1]));
->>>> +        skb->rb_frame_size = EMPTY_RB_FRAME_SIZE + cf->can_dlc;
->>>> + put_unaligned_be32(flexcan_read(&mb->data[0]), cf->data + 0);
->>>> + put_unaligned_be32(flexcan_read(&mb->data[1]), cf->data + 4);
->>>>        }
->>>>
->>>>        /* Store the interface index */
->>> D'accord, thanks.
->>>
->>> Wolfgang.
->>>
->> Thank you all for your replies
->
-> Hi Alexandre,
->
-> Did you check the last patch? Does it compile and work for you?
->
-> Regards.
->
+was asked why, e.g., xeno-config --skin=alchemy --ldflags returns
+-Wl,@/data/xenomai-forge/inst64/lib/cobalt.wrappers. Is there a
+technical reason? On first glance and after minimal testing, it seems not.
 
-I tested this patch, it works perfectly on i.MX28. Thank you very much.
+Jan
 
-
-Regards.
-
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
