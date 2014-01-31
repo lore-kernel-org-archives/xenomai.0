@@ -1,7 +1,6 @@
-Message-ID: <52EC1079.2040300@xenomai.org>
-Date: Fri, 31 Jan 2014 22:07:05 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+Sender: bodgesoc@gmail.com
+In-Reply-To: <52EC1079.2040300@xenomai.org>
 References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
  <CAN1+YZWOjxf=s+6LH3Xymzx_mwWa6XmO_Xt7SHF589RzJCANBA@mail.gmail.com>
  <52D8609C.5050903@xenomai.org>
@@ -19,9 +18,11 @@ References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
  <CAN1+YZXKAen4YAxKfG9TZTL8B5qXqA-u7O41-ZJqbHqCdbcyow@mail.gmail.com>
  <52EC054C.9070707@xenomai.org>
  <CAN1+YZX=cnRDcadrUHMzLaNBjNPnNbVuBnBHfEK-mTFYmx+3fA@mail.gmail.com>
-In-Reply-To: <CAN1+YZX=cnRDcadrUHMzLaNBjNPnNbVuBnBHfEK-mTFYmx+3fA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ <52EC1079.2040300@xenomai.org>
+From: Andy Pugh <andy@bodgesoc.org>
+Date: Fri, 31 Jan 2014 22:58:50 +0000
+Message-ID: <CAN1+YZVq7cwFnUX=bkJs8MbAkpio3azSvev2fmZwqQpgjTnvfg@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Subject: Re: [Xenomai] Fwd: Kernel Compilation Problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -31,27 +32,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Andy Pugh <andy@bodgesoc.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai <xenomai@xenomai.org>
 
-On 01/31/2014 10:03 PM, Andy Pugh wrote:
-> On 31 January 2014 20:19, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
->> latency -c 0
-> 
-> I thought at first that there was a huge improvement, as it was idling
-> at 7uS (less than half the previous idle) .
-> However, opening a couple of web browsers pushed it up to 44uS.
-> 
-> I think I will move my attention to getting LinuxCNC running on the
-> board now, it looks like Xenomai is working.
-> 
-Ok, I am still interested by your kernel logs though, to see whether we
-can improve the latencies by using the cache auxiliary configuration
-register. You may want to lockdown some L2 cache ways for CPU0 as well,
-in order to avoid the non-realtime cores to interfere with the real-time
-core cache.
+On 31 January 2014 21:07, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+
+> Ok, I am still interested by your kernel logs though, to see whether we
+> can improve the latencies by using the cache auxiliary configuration
+> register.
+
+Is this what you need, or do you need Xenomai actually active?
+
+http://pastebin.com/PSKwQH3A
+
 
 -- 
-                                                                Gilles.
+atp
 
