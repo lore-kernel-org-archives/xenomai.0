@@ -1,5 +1,5 @@
-Message-ID: <52EC054C.9070707@xenomai.org>
-Date: Fri, 31 Jan 2014 21:19:24 +0100
+Message-ID: <52EC05B5.2050801@xenomai.org>
+Date: Fri, 31 Jan 2014 21:21:09 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
@@ -33,25 +33,14 @@ To: Andy Pugh <andy@bodgesoc.org>
 Cc: xenomai <xenomai@xenomai.org>
 
 On 01/31/2014 09:15 PM, Andy Pugh wrote:
-> On 31 January 2014 18:00, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
-> 
->> I am afraid this is off-topic on this mailing list.
-> 
-> OK, thanks.
-> 
 > I will just say that, having figured out how to set the command line
 > parameters (I needed a serial terminal that did actual terminal
-> emulation, and I needed to edit a non-standard environment file) I
-> seem to be able to isolate a CPU, but xeno-test fails when I also add
-> the supported_cpus parameter (it runs fine without the parameter):
-> 
-> andypugh@udoo:~$ xeno-test
+> emulation, and I needed to edit a non-standard environment file)
 
-Ok, let us forget about xeno-test, could you try latency -c 0 (if 0 is
-the supported cpu).
-
-What do the kernel log say? Has xenomai started correctly?
+U-boot is the de-factor standard for booting Linux on anything else than
+an x86. So, the effort is probably not a complete waste: you will not
+have to learn how to use U-boot for the next embedded board. Besides,
+U-boot is well documented.
 
 -- 
                                                                 Gilles.
