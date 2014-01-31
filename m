@@ -1,15 +1,23 @@
-Message-ID: <52EBAFA6.1050904@xenomai.org>
-Date: Fri, 31 Jan 2014 15:13:58 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1391006203.6916.YahooMailNeo@web163902.mail.gq1.yahoo.com>
- <52EAB676.7000103@xenomai.org>
- <1391159926.16255.YahooMailNeo@web163901.mail.gq1.yahoo.com>
- <201401311412.40855.paul_c@tuxcnc.org>
-In-Reply-To: <201401311412.40855.paul_c@tuxcnc.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] debuild of xenomai failing: Directory nonexistent
+Sender: bodgesoc@gmail.com
+In-Reply-To: <52EB6BBC.8040600@xenomai.org>
+References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
+ <CAN1+YZWOjxf=s+6LH3Xymzx_mwWa6XmO_Xt7SHF589RzJCANBA@mail.gmail.com>
+ <52D8609C.5050903@xenomai.org>
+ <CAN1+YZW+nJgMb0hLy2JWZW6JrxA+mZzA+-oN-gjQgeGTcoe0jg@mail.gmail.com>
+ <CAN1+YZUY_3FExF=qrUtMQDQxTqossnQsPCy6zfPjfqp8PitZCg@mail.gmail.com>
+ <52D9984F.9080203@xenomai.org>
+ <CAN1+YZWnLC=MLxWqYd9xH1URimWnOdEhU4mwZ0S3QFdpghUaGQ@mail.gmail.com>
+ <52DAE756.3070606@xenomai.org>
+ <CAN1+YZWmjvsu7My92EBktFhWYhheRJvdYrEq=r3+Ravp_Wzoyw@mail.gmail.com>
+ <52DBC5FE.6060806@xenomai.org> <52DBD649.2000908@xenomai.org>
+ <CAN1+YZWCMh4mR0ccw2v7FeuLKpYDUoPoB-FGHZmutj623DW7hw@mail.gmail.com>
+ <52EB6BBC.8040600@xenomai.org>
+From: Andy Pugh <andy@bodgesoc.org>
+Date: Fri, 31 Jan 2014 17:48:59 +0000
+Message-ID: <CAN1+YZUhzb1zRE=dhjX+_1_b2cD2vEWatP6-je7b9NdNPosFvA@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Fwd: Kernel Compilation Problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,29 +26,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paul <paul_c@tuxcnc.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 01/31/2014 03:12 PM, Paul wrote:
-> On Friday 31 January 2014, Huub Van Niekerk wrote:
->> Despite starting all over (tar jxf xenomai), downloading and patching
->> again, debuild stops at exactly the same place. I still wonder why
->> debuild on x86 (Ubuntu 10.04) worked great instantly and on armhf
->> (Ubuntu 12.04) keeps ending in error. I just ran a test with standard
->> "debuild -uc -us" on Ubuntu 12.04 x86 and it delivers the expected
->> xenomai deb files without a problem. So why doesn't it do the same on
->> armhf ?
->
-> This is sounding more like a bug either in Ubuntu 12.04 or some
-> peculiarities with this particular armhf flavour rather than a Xenomai
-> issue.
->
-> If Gilles is OK with this, I can work with Huub off list to identify the
-> issue and post back to the list with a resolution.
+On 31 January 2014 09:24, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
 
-No problem.
+> Use the xeno_hal.supported_cpus parameter, it is a bitfield, so 1 is for
+> cpu 0.
 
+I have tried this, but I am not sure how to tell if it is working.
+
+The Udoo board seems a bit strange. The only way I have found to use
+setenv is to connect via a serial terminal and interrupt the boot
+sequence. At that point setenv / printenv work (this is also what is
+suggested in the Udoo docs).
+printenv shows:
+
+boot_fdt=try
+bootargs=isolcpus=0
+bootcmd=mmc dev ${mmcdev}; if mmc rescan; then if run loadbootscript;
+then run bootscript; else if run loaduimage; then run mmcboot; else
+run netboot; fi; fi; else run netboot; fi
+
+and
+
+update_sd_firmware_filename=u-boot.imx
+xeno_hal.supported_cpus=1
+Environment size: 2097/8188 bytes
+
+However dmesg contains:
+
+[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.
+Total pages: 227328
+[    0.000000] Kernel command line: console=ttymxc1,115200
+root=/dev/mmcblk0p1 rootwait rw fbmem=24M
+video=mxcfb0:dev=hdmi,1920x1080M@60,bpp=32
+[    0.000000] PID hash table entries: 4096 (order: 2, 16384 bytes)
+
+and cat /proc/cmdline returns:
+
+andypugh@udoo:~$ cat /proc/cmdline
+console=ttymxc1,115200 root=/dev/mmcblk0p1 rootwait rw fbmem=24M
+video=mxcfb0:dev=hdmi,1920x1080M@60,bpp=32
+
+So I suspect that there is more to adding to the kernel command line
+than a simple "setenv" in this case. (I also suspect that this is a
+question for the Udoo forums rather than Xenomai)
 
 -- 
-					    Gilles.
+atp
 
