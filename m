@@ -1,12 +1,22 @@
-Message-ID: <52E25099.9070107@steinkuehler.net>
-Date: Fri, 24 Jan 2014 05:38:01 -0600
-From: Charles Steinkuehler <charles@steinkuehler.net>
+Message-ID: <52EB6BBC.8040600@xenomai.org>
+Date: Fri, 31 Jan 2014 10:24:12 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52E1D646.8050907@steinkuehler.net> <52E24D0C.4050207@xenomai.org>
-In-Reply-To: <52E24D0C.4050207@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] ARM/BeagleBone Thumb2 Kernels
+References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
+ <CAN1+YZWOjxf=s+6LH3Xymzx_mwWa6XmO_Xt7SHF589RzJCANBA@mail.gmail.com>
+ <52D8609C.5050903@xenomai.org>
+ <CAN1+YZW+nJgMb0hLy2JWZW6JrxA+mZzA+-oN-gjQgeGTcoe0jg@mail.gmail.com>
+ <CAN1+YZUY_3FExF=qrUtMQDQxTqossnQsPCy6zfPjfqp8PitZCg@mail.gmail.com>
+ <52D9984F.9080203@xenomai.org>
+ <CAN1+YZWnLC=MLxWqYd9xH1URimWnOdEhU4mwZ0S3QFdpghUaGQ@mail.gmail.com>
+ <52DAE756.3070606@xenomai.org>
+ <CAN1+YZWmjvsu7My92EBktFhWYhheRJvdYrEq=r3+Ravp_Wzoyw@mail.gmail.com>
+ <52DBC5FE.6060806@xenomai.org> <52DBD649.2000908@xenomai.org>
+ <CAN1+YZWCMh4mR0ccw2v7FeuLKpYDUoPoB-FGHZmutj623DW7hw@mail.gmail.com>
+In-Reply-To: <CAN1+YZWCMh4mR0ccw2v7FeuLKpYDUoPoB-FGHZmutj623DW7hw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Fwd: Kernel Compilation Problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,36 +25,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Andy Pugh <andy@bodgesoc.org>
+Cc: xenomai <xenomai@xenomai.org>
 
-T24gMS8yNC8yMDE0IDU6MjIgQU0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+IAo+IENv
-dWxkIHlvdSBwcm92aWRlIG1lIHdpdGggdGhlIGRldGFpbHMgKGtlcm5lbCB2ZXJzaW9uIG9yIGdp
-dCB1cmwsIGNvbmZpZwo+IGZpbGUgdXNlZCwgdG9vbGNoYWluIHVzZWQpIGFsbG93aW5nIHRvIHJl
-cHJvZHVjZSB0aGlzIGlzc3VlPwoKVG9vbCBjaGFpbjogZ2NjLWxpbmFyby1hcm0tbGludXgtZ251
-ZWFiaWhmLTQuNy0yMDEzLjA0LTIwMTMwNDE1X2xpbnV4CgpJJ20gYnVpbGRpbmcga2VybmVscyBm
-b3IgdGhlIEJlYWdsZUJvbmUsIG1haW50YWluZWQgYXMgYSBzZXQgb2YgcGF0Y2hlcwphbmQgc2Ny
-aXB0cyB0aGF0IGFwcGx5IHRvIGEgY2xlYW4ga2VybmVsIHNvdXJjZSB0cmVlLiAgVGhlIHNjcmlw
-dHMgY2FuCmJlIGZvdW5kIGhlcmU6CgogIGh0dHBzOi8vZ2l0aHViLmNvbS9jZHN0ZWlua3VlaGxl
-ci9saW51eC1kZXYKCkNoZWNrb3V0IHRoZSAzLjguMTMtYm9uZTM3LXhlbm9tYWkgYnJhbmNoLiAg
-Q29weSBzeXN0ZW0uc2guc2FtcGxlIHRvCnN5c3RlbS5zaCBhbmQgZWRpdCBhcyBuZWVkZWQgZm9y
-IHlvdXIgc3lzdGVtLiAgSWYgeW91IGhhdmUgYSBsb2NhbCBjb3B5Cm9mIGxpbmFybyBhbmQgdGhl
-IExpbnVzIGtlcm5lbCBzb3VyY2UsIHlvdSBjYW4gc2V0IENDPSBhbmQgTElOVVhfR0lUPSB0bwpz
-YXZlIGEgYnVuY2ggb2YgZG93bmxvYWQgdGltZSBhbmQgZHJpdmUgc3BhY2UsIG90aGVyd2lzZSB0
-aGUgc2NyaXB0cwp3aWxsIGluc3RhbGwgYm90aCBmb3IgeW91LgoKSWYgeW91IHNldCBBVVRPX0JV
-SUxEPTEgaW4gdGhlIHNjcmlwdCwgaXQgd2lsbCBidWlsZCBhIGtlcm5lbAp1bmF0dGVuZGVkLiAg
-SWYgeW91IGRvbid0IHNldCB0aGlzLCB5b3UnbGwgYmUgdGFrZW4gdG8gbWVudWNvbmZpZyB3aXRo
-CnRoZSBkZWZhdWx0IGNvbmZpZ3VyYXRpb24gbG9hZGVkLgoKPiBJIGhhdmUgYmVlbiBjb21waWxp
-bmcgdGh1bWIyIGtlcm5lbHMgZm9yIG9tYXAzIGFuZCBvbWFwNCBmb3IgYSBsb25nCj4gdGltZSwg
-YW5kIG5ldmVyIG9ic2VydmVkIHRoaXMgaXNzdWUuIFNvLCB0aGVyZSBtdXN0IGJlIHNvbWV0aGlu
-Zwo+IGRpZmZlcmVudCBpbiB5b3VyIGNhc2UuCgpBcyBJIHVuZGVyc3RhbmQgaXQsIHRoZSBpc3N1
-ZSBhcmlzZXMgYXMgdGhlIGtlcm5lbCBncm93cyBsYXJnZXIgYW5kIHRoZQpkaXN0YW5jZSBiZXR3
-ZWVuIHRoZSBicmFuY2ggYW5kIGl0J3MgdGFyZ2V0IGluY3JlYXNlcy4gIE15IHZtbGludXggZm9y
-CnRoZSAoZml4ZWQgVGh1bWIyIHZlcnNpb24pIEJlYWdsZUJvbmUga2VybmVsIGlzIGN1cnJlbnRs
-eSB3ZWlnaGluZyBpbiBhdAoxMzIyNTAwNCBieXRlcy4KCi0tIApDaGFybGVzIFN0ZWlua3VlaGxl
-cgpjaGFybGVzQHN0ZWlua3VlaGxlci5uZXQKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0t
-LS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNp
-Z25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAyNjEgYnl0
-ZXMKRGVzYzogT3BlblBHUCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9t
-YWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTQwMTI0L2I1ZGVkNTI2L2F0
-dGFjaG1lbnQuc2lnPgo=
+On 01/31/2014 01:05 AM, Andy Pugh wrote:
+> On 19 January 2014 13:42, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+> 
+>>> Could you try the following patch to see if it improves anything?
+>>
+>> Sorry, wrong patch version. Please try this one instead:
+> 
+> The patch appears to reduce the latency to about 60uS.
+> 
+> I thought that setenv isolcpus=0 had had an effect, as I opened
+> Firefox and didn't see max latency increase over the 45uS it was at,
+> but then opening Chromium too pushed it up to 60uS.
+> 
+> Does Xenomai automatically choose the isolated CPU, or is some config needed?
+> 
+> In fact, how do I tell that I have an isolated CPU?
+
+Use the xeno_hal.supported_cpus parameter, it is a bitfield, so 1 is for
+cpu 0.
+
+There is more we can do to improve performances on imx6:
+- enable more features in the L2 cache auxiliary control register (the
+value of this register is passed to the l2x0_init function, and
+currently imx6 passes all 0)
+- use the L2 cache "lockdown by master" feature, to reserve several
+cache ways to the core where xenomai runs.
+
+l2x0_init prints the value of the auxiliary control register at boot,
+could you show me the boot logs you get to see which bits exactly are
+already enabled?
+
+Regards.
+
+-- 
+                                                                Gilles.
+
