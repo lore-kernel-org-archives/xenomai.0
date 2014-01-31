@@ -1,16 +1,13 @@
-From: Paul <paul_c@tuxcnc.org>
-Date: Fri, 31 Jan 2014 14:12:40 +0000
-References: <1391006203.6916.YahooMailNeo@web163902.mail.gq1.yahoo.com>
- <52EAB676.7000103@xenomai.org>
- <1391159926.16255.YahooMailNeo@web163901.mail.gq1.yahoo.com>
-In-Reply-To: <1391159926.16255.YahooMailNeo@web163901.mail.gq1.yahoo.com>
+Message-ID: <52EBAFB4.6000508@xenomai.org>
+Date: Fri, 31 Jan 2014 15:14:12 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
+References: <52EBA6D0.2010208@siemens.com> <52EBAAC3.7090105@xenomai.org>
+In-Reply-To: <52EBAAC3.7090105@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <201401311412.40855.paul_c@tuxcnc.org>
-Subject: Re: [Xenomai] debuild of xenomai failing: Directory nonexistent
+Subject: Re: [Xenomai] forge/cobalt: Do we need to wrap all POSIX calls for
+ non-POSIX skins?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,25 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Huub Van Niekerk <huubvanniekerk@yahoo.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Friday 31 January 2014, Huub Van Niekerk wrote:
-> Despite starting all over (tar jxf xenomai), downloading and patching
-> again, debuild stops at exactly the same place. I still wonder why
-> debuild on x86 (Ubuntu 10.04) worked great instantly and on armhf
-> (Ubuntu 12.04) keeps ending in error. I just ran a test with standard
-> "debuild -uc -us" on Ubuntu 12.04 x86 and it delivers the expected
-> xenomai deb files without a problem. So why doesn't it do the same on
-> armhf ?
+On 01/31/2014 02:53 PM, Gilles Chanteperdrix wrote:
+> On 01/31/2014 02:36 PM, Jan Kiszka wrote:
+>> Hi,
+>>
+>> was asked why, e.g., xeno-config --skin=alchemy --ldflags returns
+>> -Wl,@/data/xenomai-forge/inst64/lib/cobalt.wrappers. Is there a
+>> technical reason? On first glance and after minimal testing, it seems
+>> not.
+>
+> Maybe we could drop xeno-config entirely, and move to pkg-config? This
+> forces users which develop for Xenomai to have pkg-config installed, but
+> who does not have it these days?
+>
+>
 
-This is sounding more like a bug either in Ubuntu 12.04 or some 
-peculiarities with this particular armhf flavour rather than a Xenomai 
-issue.
+xeno-config is sometimes used on the target as well, for retrieving 
+installation parameters.
 
-If Gilles is OK with this, I can work with Huub off list to identify the 
-issue and post back to the list with a resolution.
-
-
-Regards, Paul.
+-- 
+Philippe.
 
