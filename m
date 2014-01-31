@@ -1,21 +1,12 @@
-Message-ID: <52EB6C6F.40009@xenomai.org>
-Date: Fri, 31 Jan 2014 10:27:11 +0100
+Message-ID: <52EB6D1C.4000006@xenomai.org>
+Date: Fri, 31 Jan 2014 10:30:04 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <1391006203.6916.YahooMailNeo@web163902.mail.gq1.yahoo.com>
- <52E950FB.70400@xenomai.org> <52E95E66.2060905@xenomai.org>
- <1391067115.6898.YahooMailNeo@web163904.mail.gq1.yahoo.com>
- <52EA0FDF.6040604@xenomai.org>
- <1391072739.44037.YahooMailNeo@web163902.mail.gq1.yahoo.com>
- <52EA1A55.3040907@xenomai.org>
- <1391074883.36568.YahooMailNeo@web163905.mail.gq1.yahoo.com>
- <52EA2EDF.2050900@xenomai.org>
- <1391083620.48248.YahooMailNeo@web163903.mail.gq1.yahoo.com>
- <52EA4B35.2090306@xenomai.org>
- <1391088235.30999.YahooMailNeo@web163901.mail.gq1.yahoo.com>
- <52EAA41F.1020005@xenomai.org>
- <1391151524.70706.YahooMailNeo@web163904.mail.gq1.yahoo.com>
-In-Reply-To: <1391151524.70706.YahooMailNeo@web163904.mail.gq1.yahoo.com>
+ <201401301624.25756.paul_c@tuxcnc.org> <52EA816B.9060305@xenomai.org>
+ <201401301957.54742.paul_c@tuxcnc.org> <52EAB676.7000103@xenomai.org>
+ <1391151622.28778.YahooMailNeo@web163904.mail.gq1.yahoo.com>
+In-Reply-To: <1391151622.28778.YahooMailNeo@web163904.mail.gq1.yahoo.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] debuild of xenomai failing: Directory nonexistent
@@ -30,10 +21,16 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Huub Van Niekerk <huubvanniekerk@yahoo.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 01/31/2014 07:58 AM, Huub Van Niekerk wrote:
-> I'm just using the debuild script/command as a user, i.e. ../xenomai-2.6.3$ debuild. So if debuild uses fakeroot, then yes.
+On 01/31/2014 08:00 AM, Huub Van Niekerk wrote:
+> Does this mean I have to re-download your patch, clean up xenomai, patch it and run debuild again ?
 
-According to the man page, if no -r option is passed -rfakeroot is assumed.
+It means that Paul's fix has been merged in xenomai repository. So, if
+you are building from the git repository, you have to do a "git pull" to
+get the update. If you are not building from the git repository, then
+you have to wait for Xenomai next release to see the fix.
+
+Also, the xenomai mailing list is an old fashioned mailing list where we
+prefer bottom posting than top posting. So, please avoid top posting.
 
 
 -- 
