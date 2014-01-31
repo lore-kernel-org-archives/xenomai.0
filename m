@@ -1,7 +1,6 @@
-Message-ID: <52EBE4B7.6060800@xenomai.org>
-Date: Fri, 31 Jan 2014 19:00:23 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+Sender: bodgesoc@gmail.com
+In-Reply-To: <52EBE4B7.6060800@xenomai.org>
 References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
  <CAN1+YZWOjxf=s+6LH3Xymzx_mwWa6XmO_Xt7SHF589RzJCANBA@mail.gmail.com>
  <52D8609C.5050903@xenomai.org>
@@ -15,9 +14,11 @@ References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
  <CAN1+YZWCMh4mR0ccw2v7FeuLKpYDUoPoB-FGHZmutj623DW7hw@mail.gmail.com>
  <52EB6BBC.8040600@xenomai.org>
  <CAN1+YZUhzb1zRE=dhjX+_1_b2cD2vEWatP6-je7b9NdNPosFvA@mail.gmail.com>
-In-Reply-To: <CAN1+YZUhzb1zRE=dhjX+_1_b2cD2vEWatP6-je7b9NdNPosFvA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+ <52EBE4B7.6060800@xenomai.org>
+From: Andy Pugh <andy@bodgesoc.org>
+Date: Fri, 31 Jan 2014 20:15:57 +0000
+Message-ID: <CAN1+YZXKAen4YAxKfG9TZTL8B5qXqA-u7O41-ZJqbHqCdbcyow@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Subject: Re: [Xenomai] Fwd: Kernel Compilation Problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -27,65 +28,98 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Andy Pugh <andy@bodgesoc.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai <xenomai@xenomai.org>
 
-On 01/31/2014 06:48 PM, Andy Pugh wrote:
-> On 31 January 2014 09:24, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
->
->> Use the xeno_hal.supported_cpus parameter, it is a bitfield, so 1 is for
->> cpu 0.
->
-> I have tried this, but I am not sure how to tell if it is working.
->
-> The Udoo board seems a bit strange. The only way I have found to use
-> setenv is to connect via a serial terminal and interrupt the boot
-> sequence. At that point setenv / printenv work (this is also what is
-> suggested in the Udoo docs).
-> printenv shows:
->
-> boot_fdt=try
-> bootargs=isolcpus=0
-> bootcmd=mmc dev ${mmcdev}; if mmc rescan; then if run loadbootscript;
-> then run bootscript; else if run loaduimage; then run mmcboot; else
-> run netboot; fi; fi; else run netboot; fi
->
-> and
->
-> update_sd_firmware_filename=u-boot.imx
-> xeno_hal.supported_cpus=1
-> Environment size: 2097/8188 bytes
->
-> However dmesg contains:
->
-> [    0.000000] Built 1 zonelists in Zone order, mobility grouping on.
-> Total pages: 227328
-> [    0.000000] Kernel command line: console=ttymxc1,115200
-> root=/dev/mmcblk0p1 rootwait rw fbmem=24M
-> video=mxcfb0:dev=hdmi,1920x1080M@60,bpp=32
-> [    0.000000] PID hash table entries: 4096 (order: 2, 16384 bytes)
->
-> and cat /proc/cmdline returns:
->
-> andypugh@udoo:~$ cat /proc/cmdline
-> console=ttymxc1,115200 root=/dev/mmcblk0p1 rootwait rw fbmem=24M
-> video=mxcfb0:dev=hdmi,1920x1080M@60,bpp=32
->
-> So I suspect that there is more to adding to the kernel command line
-> than a simple "setenv" in this case. (I also suspect that this is a
-> question for the Udoo forums rather than Xenomai)
->
+On 31 January 2014 18:00, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
 
-xeno_hal.supported_cpus=1 is a kernel argument, thus it should be added 
-to the boot arguments, like isolcpus. Since you do not see isolcpus on 
-the kernel command line, I guess the loadbootcscript, bootscript, 
-loaduimage, mmcboot or netboot script overrides the boot arguments. If 
-you are booting from SD card, maybe you can find the script on the SD 
-card itself?
+> I am afraid this is off-topic on this mailing list.
 
-I am afraid this is off-topic on this mailing list.
+OK, thanks.
+
+I will just say that, having figured out how to set the command line
+parameters (I needed a serial terminal that did actual terminal
+emulation, and I needed to edit a non-standard environment file) I
+seem to be able to isolate a CPU, but xeno-test fails when I also add
+the supported_cpus parameter (it runs fine without the parameter):
+
+andypugh@udoo:~$ xeno-test
+
+Started child 3840: /bin/bash
+/usr/lib/xenomai/testsuite/xeno-test-run-wrapper /usr/bin/xeno-test
+
+++ echo 0
+
+/usr/bin/xeno-test: line 43: /proc/xenomai/latency: Permission denied
+
+++ :
+
+++ /usr/lib/xenomai/testsuite/arith
+
+mul: 0x79364d93, shft: 26
+
+integ: 30, frac: 0x4d9364d9364d9364
+
+
+signed positive operation: 0x03ffffffffffffff * 1000000000 / 33000000
+
+inline calibration: 0x0000000000000000: 45.470 ns, rejected 1/10000
+
+inlined llimd: 0x79364d9364d9362f: 1727.408 ns, rejected 2/10000
+
+inlined llmulshft: 0x79364d92ffffffe1: 32.817 ns, rejected 0/10000
+
+inlined nodiv_llimd: 0x79364d9364d9362f: 45.453 ns, rejected 0/10000
+
+out of line calibration: 0x0000000000000000: 47.993 ns, rejected 0/10000
+
+out of line llimd: 0x79364d9364d9362f: 1778.918 ns, rejected 3/10000
+
+out of line llmulshft: 0x79364d92ffffffe1: 27.894 ns, rejected 0/10000
+
+out of line nodiv_llimd: 0x79364d9364d9362f: 40.399 ns, rejected 0/10000
+
+
+signed negative operation: 0xfc00000000000001 * 1000000000 / 33000000
+
+inline calibration: 0x0000000000000000: 45.458 ns, rejected 0/10000
+
+inlined llimd: 0x86c9b26c9b26c9d1: 1750.968 ns, rejected 3/10000
+
+inlined llmulshft: 0xd45d172d0000001e: 22.732 ns, rejected 0/10000
+
+inlined nodiv_llimd: 0x86c9b26c9b26c9d1: 50.516 ns, rejected 0/10000
+
+out of line calibration: 0x0000000000000000: 70.571 ns, rejected 1/10000
+
+out of line llimd: 0x86c9b26c9b26c9d1: 1740.908 ns, rejected 1/10000
+
+out of line llmulshft: 0xd45d172d0000001e: 10.245 ns, rejected 0/10000
+
+out of line nodiv_llimd: 0x86c9b26c9b26c9d1: 30.462 ns, rejected 0/10000
+
+
+unsigned operation: 0x03ffffffffffffff * 1000000000 / 33000000
+
+inline calibration: 0x0000000000000000: 45.460 ns, rejected 0/10000
+
+inlined nodiv_ullimd: 0x79364d9364d9362f: 42.926 ns, rejected 0/10000
+
+out of line calibration: 0x0000000000000000: 47.993 ns, rejected 0/10000
+
+out of line nodiv_ullimd: 0x79364d9364d9362f: 40.411 ns, rejected 0/10000
+
+++ /usr/lib/xenomai/testsuite/clocktest -C 42 -T 30
+
+Xenomai Posix skin init: pthread_setschedparam: Invalid argument
+
+++ /usr/lib/xenomai/testsuite/clocktest -T 30
+
+Xenomai Posix skin init: pthread_setschedparam: Invalid argument
+
+
 
 -- 
-					    Gilles.
+atp
 
