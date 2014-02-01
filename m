@@ -1,9 +1,8 @@
-Message-ID: <52ECF912.10308@xenomai.org>
-Date: Sat, 01 Feb 2014 14:39:30 +0100
+Message-ID: <52ECFB5F.4070907@xenomai.org>
+Date: Sat, 01 Feb 2014 14:49:19 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
- <52D8609C.5050903@xenomai.org>
  <CAN1+YZW+nJgMb0hLy2JWZW6JrxA+mZzA+-oN-gjQgeGTcoe0jg@mail.gmail.com>
  <CAN1+YZUY_3FExF=qrUtMQDQxTqossnQsPCy6zfPjfqp8PitZCg@mail.gmail.com>
  <52D9984F.9080203@xenomai.org>
@@ -20,7 +19,8 @@ References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
  <CAN1+YZX=cnRDcadrUHMzLaNBjNPnNbVuBnBHfEK-mTFYmx+3fA@mail.gmail.com>
  <52EC1079.2040300@xenomai.org>
  <CAN1+YZVq7cwFnUX=bkJs8MbAkpio3azSvev2fmZwqQpgjTnvfg@mail.gmail.com>
-In-Reply-To: <CAN1+YZVq7cwFnUX=bkJs8MbAkpio3azSvev2fmZwqQpgjTnvfg@mail.gmail.com>
+ <52ECF912.10308@xenomai.org>
+In-Reply-To: <52ECF912.10308@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Fwd: Kernel Compilation Problems
@@ -35,24 +35,22 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Andy Pugh <andy@bodgesoc.org>
 Cc: xenomai <xenomai@xenomai.org>
 
-On 01/31/2014 11:58 PM, Andy Pugh wrote:
-> On 31 January 2014 21:07, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
+On 02/01/2014 02:39 PM, Gilles Chanteperdrix wrote:
+> On 01/31/2014 11:58 PM, Andy Pugh wrote:
+>> On 31 January 2014 21:07, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>
+>>> Ok, I am still interested by your kernel logs though, to see whether we
+>>> can improve the latencies by using the cache auxiliary configuration
+>>> register.
+>>
+>> Is this what you need, or do you need Xenomai actually active?
+>>
+>> http://pastebin.com/PSKwQH3A
 > 
->> Ok, I am still interested by your kernel logs though, to see whether we
->> can improve the latencies by using the cache auxiliary configuration
->> register.
-> 
-> Is this what you need, or do you need Xenomai actually active?
-> 
-> http://pastebin.com/PSKwQH3A
+> Could you try and apply the following patch?
 
-Could you try and apply the following patch?
-
-When you are booted, try dmesg | grep AUX_CTRL, then run a latency test
-and see if latency has improved?
-
-Regards.
+Sorry, wrong patch again, please try:
 
 diff --git a/arch/arm/include/asm/hardware/cache-l2x0.h b/arch/arm/include/asm/hardware/cache-l2x0.h
 index bfa706ff..bd3c8ce 100644
@@ -68,19 +66,20 @@ index bfa706ff..bd3c8ce 100644
  #define L2X0_AUX_CTRL_WAY_SIZE_SHIFT		17
  #define L2X0_AUX_CTRL_WAY_SIZE_MASK		(0x7 << 17)
 diff --git a/arch/arm/mach-mx6/mm.c b/arch/arm/mach-mx6/mm.c
-index 3cf6b22..cec64b6 100644
+index 3cf6b22..185c4a9 100644
 --- a/arch/arm/mach-mx6/mm.c
 +++ b/arch/arm/mach-mx6/mm.c
-@@ -97,7 +97,7 @@ void __init mx6_map_io(void)
+@@ -97,7 +97,8 @@ void __init mx6_map_io(void)
  #ifdef CONFIG_CACHE_L2X0
  int mxc_init_l2x0(void)
  {
 -	unsigned int val;
 +	unsigned int val, aux_ctrl;
++	void __iomem *l2x0_base;
  
  	#define IOMUXC_GPR11_L2CACHE_AS_OCRAM 0x00000002
  
-@@ -114,12 +114,34 @@ int mxc_init_l2x0(void)
+@@ -114,12 +115,37 @@ int mxc_init_l2x0(void)
  	val = readl(IO_ADDRESS(L2_BASE_ADDR + L2X0_PREFETCH_CTRL));
  	val |= 0x40800000;
  	writel(val, IO_ADDRESS(L2_BASE_ADDR + L2X0_PREFETCH_CTRL));
@@ -99,9 +98,12 @@ index 3cf6b22..cec64b6 100644
 +		(1 << L2X0_AUX_CTRL_EARLY_BRESP_SHIFT) |
 +		(1 << 11));
 +
-+	l2x0_init(IO_ADDRESS(L2_BASE_ADDR), aux_ctrl, L2X0_AUX_CTRL_MASK);
++	l2x0_base = IO_ADDRESS(L2_BASE_ADDR);
++
++	l2x0_init(l2x0_base, aux_ctrl, L2X0_AUX_CTRL_MASK);
 +
 +#ifdef CONFIG_IPIPE
++	{
 +	writel_relaxed(0xEEEE, l2x0_base + 0x900);
 +	writel_relaxed(0xEEEE, l2x0_base + 0x904);	
 +	writel_relaxed(0xDDDD, l2x0_base + 0x908);
@@ -132,7 +134,4 @@ index 1e2c52d..27550b3 100644
  	outer_cache.flush_range = l2x0_flush_range;
 
 
-
--- 
-                                                                Gilles.
 
