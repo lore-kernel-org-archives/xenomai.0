@@ -1,18 +1,29 @@
-Message-ID: <52E114B5.1090807@geral.com>
-Date: Thu, 23 Jan 2014 14:10:13 +0100
-From: Alexandre COFFIGNAL <acoffignal@geral.com>
+Message-ID: <52ECE5DC.5090108@xenomai.org>
+Date: Sat, 01 Feb 2014 13:17:32 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52DF9C5F.70005@geral.com> <52DFAA18.6080703@xenomai.org>
- <52DFAD29.4000800@geral.com> <52DFB2DE.4050501@xenomai.org>
- <52DFC734.2090906@geral.com> <52DFC80D.6050101@xenomai.org>
- <52DFCFDE.9060700@geral.com> <52DFD1B0.6070303@xenomai.org>
- <52E0E93C.8010209@xenomai.org>
- <1bab8396d7c946110418979cb8177d9b@grandegger.com>
- <52E110EC.4090009@geral.com>
-In-Reply-To: <52E110EC.4090009@geral.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] imx28 rtcan flexcan system freezes
+References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
+ <52D8609C.5050903@xenomai.org>
+ <CAN1+YZW+nJgMb0hLy2JWZW6JrxA+mZzA+-oN-gjQgeGTcoe0jg@mail.gmail.com>
+ <CAN1+YZUY_3FExF=qrUtMQDQxTqossnQsPCy6zfPjfqp8PitZCg@mail.gmail.com>
+ <52D9984F.9080203@xenomai.org>
+ <CAN1+YZWnLC=MLxWqYd9xH1URimWnOdEhU4mwZ0S3QFdpghUaGQ@mail.gmail.com>
+ <52DAE756.3070606@xenomai.org>
+ <CAN1+YZWmjvsu7My92EBktFhWYhheRJvdYrEq=r3+Ravp_Wzoyw@mail.gmail.com>
+ <52DBC5FE.6060806@xenomai.org> <52DBD649.2000908@xenomai.org>
+ <CAN1+YZWCMh4mR0ccw2v7FeuLKpYDUoPoB-FGHZmutj623DW7hw@mail.gmail.com>
+ <52EB6BBC.8040600@xenomai.org>
+ <CAN1+YZUhzb1zRE=dhjX+_1_b2cD2vEWatP6-je7b9NdNPosFvA@mail.gmail.com>
+ <52EBE4B7.6060800@xenomai.org>
+ <CAN1+YZXKAen4YAxKfG9TZTL8B5qXqA-u7O41-ZJqbHqCdbcyow@mail.gmail.com>
+ <52EC054C.9070707@xenomai.org>
+ <CAN1+YZX=cnRDcadrUHMzLaNBjNPnNbVuBnBHfEK-mTFYmx+3fA@mail.gmail.com>
+ <52EC1079.2040300@xenomai.org>
+ <CAN1+YZVq7cwFnUX=bkJs8MbAkpio3azSvev2fmZwqQpgjTnvfg@mail.gmail.com>
+In-Reply-To: <CAN1+YZVq7cwFnUX=bkJs8MbAkpio3azSvev2fmZwqQpgjTnvfg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Fwd: Kernel Compilation Problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,119 +32,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Andy Pugh <andy@bodgesoc.org>
+Cc: xenomai <xenomai@xenomai.org>
 
+On 01/31/2014 11:58 PM, Andy Pugh wrote:
+> On 31 January 2014 21:07, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+> 
+>> Ok, I am still interested by your kernel logs though, to see whether we
+>> can improve the latencies by using the cache auxiliary configuration
+>> register.
+> 
+> Is this what you need, or do you need Xenomai actually active?
+> 
+> http://pastebin.com/PSKwQH3A
+> 
+> 
+That is all I needed, thanks.
 
-Le 23/01/2014 13:54, Alexandre COFFIGNAL a écrit :
->
-> Le 23/01/2014 12:36, Wolfgang Grandegger a écrit :
->> Hi Gilles,
->>
->>
->>
->> On Thu, 23 Jan 2014 11:04:44 +0100, Gilles Chanteperdrix
->>
->> <gilles.chanteperdrix@xenomai.org> wrote:
->>
->>> On 01/22/2014 03:12 PM, Gilles Chanteperdrix wrote:
->>>> On 01/22/2014 03:04 PM, Alexandre COFFIGNAL wrote:
->>>>> Le 22/01/2014 14:30, Gilles Chanteperdrix a écrit :
->>>>>> On 01/22/2014 02:27 PM, Alexandre COFFIGNAL wrote:
->>>>>>> Le 22/01/2014 13:00, Gilles Chanteperdrix a écrit :
->>>>>>>> On 01/22/2014 12:36 PM, Alexandre COFFIGNAL wrote:
->>>>>>>>>>> + cf->data[3]=((data0 >> 0)  & 0xFF) ;
->>>>>>>>>>> +        cf->data[2]=((data0 >> 8) & 0xFF) ;
->>>>>>>>>>> +        cf->data[1]=((data0 >> 16) & 0xFF) ;
->>>>>>>>>>> +        cf->data[0]=((data0 >> 24) & 0xFF) ;
->>>>>>>>>>> +        cf->data[7]=((data1 >> 0) & 0xFF) ;
->>>>>>>>>>> +        cf->data[6]=((data1 >> 8) & 0xFF) ;
->>>>>>>>>>> +        cf->data[5]=((data1 >> 16) & 0xFF) ;
->>>>>>>>>>> +        cf->data[4]=((data1 >> 24) & 0xFF) ;
->>>>>>>>>>> rtcan flexcan works perfectly.
->>>>>>>>>>> is  anyone know what is the problem with first instructions ?
->>>>>>>>>> Probably mb->data does not have the right alignment. Could you
->> not
->>
->>>>>>>>>> arrange to get it properly aligned? Failing that, you should use
->>>>>>>>>> put_unaligned instead of open coding it.
->>
->>
->> How are unaligned accesses handled on your system? Alexandre,
->>
->> what does "cat /proc/cpu/alignment" report? Aligned access
->>
->> would be better, I agree.
->>
->>
->>
->>>>>>>>> here structures used in flexcan driver, it seem to be aligned
->>>>>>>> I am talking about the alignment of cf->data, since obviously, 
->>>>>>>> that
->>>>>>>> is
->>>>>>>> the one which is causing problems.
->>>>>>> Thank a lot, put_unaligned fix this issue if you want, i can send a
->>>>>>> path
->>>>>> The other solution (getting cf->data to be properly aligned) 
->>>>>> would be
->>>>>> more efficient, why is not it possible to get cf->data properly
->>>>>> aligned?
->>>>> I think, i can't get cf->data to be properly aligned because "cf" is
->>>>> receive internal frame representation within the ring buffer
->>>>> of a struct rtcan_socket and struct rtcan_rb_frame is a generic
->>>>> structure used in all rtcan drivers .
->>>> Well, if you fix rtcan_rb_frame to be aligned, it will be aligned for
->>>> all drivers, so that looks like a worthwile improvement...
->>> Wolfgang, what do you think? Should we change the alignment of
->>> rtcan_rb_frame::data, or use put_unaligned on ARM?
->>
->>
->> I realized the mail and wonder why this problem does not show up with
->>
->> vanilla
->>
->> Linux. Maybe we need to port over some patch from there. I will have a
->>
->> closer
->>
->> look this even or over the weekend.
->>
->>
->>
->> Wolfgang.
->>
->>
->>
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> http://www.xenomai.org/mailman/listinfo/xenomai
->
-> Hi,
->
-> "cat /proc/cpu/alignment" report
-> User:           0
-> System:         0
-> Skipped:        0
-> Half:           0
-> Word:           0
-> DWord:          0
-> Multi:          0
-> User faults:    0 (ignored)
->
-> something wrong with that ?
->
-> Alexandre.
->
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
-
-For your information :
-Actualy my kernel is linux 3.8.13 vanilla from 
-https://www.kernel.org/pub/linux/kernel/v3.x/"
-with Adeos/Xenomai Real-time patch 2.6.3 from
-download.gna.org/xenomai/stable/xenomai-2.6.3.tar.bz2
-
+-- 
+                                                                Gilles.
 
