@@ -1,13 +1,29 @@
-Message-ID: <52E3FA95.7060201@xenomai.org>
-Date: Sat, 25 Jan 2014 18:55:33 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CADy-PFjSMxbbA9-c4rm+ChJSxVbzFDLVng=yFwvC+Xwr2tAycQ@mail.gmail.com>
-In-Reply-To: <CADy-PFjSMxbbA9-c4rm+ChJSxVbzFDLVng=yFwvC+Xwr2tAycQ@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai.org webserver server blacklisted for security
- concerns
+Sender: bodgesoc@gmail.com
+In-Reply-To: <52ECFB5F.4070907@xenomai.org>
+References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
+ <CAN1+YZW+nJgMb0hLy2JWZW6JrxA+mZzA+-oN-gjQgeGTcoe0jg@mail.gmail.com>
+ <CAN1+YZUY_3FExF=qrUtMQDQxTqossnQsPCy6zfPjfqp8PitZCg@mail.gmail.com>
+ <52D9984F.9080203@xenomai.org>
+ <CAN1+YZWnLC=MLxWqYd9xH1URimWnOdEhU4mwZ0S3QFdpghUaGQ@mail.gmail.com>
+ <52DAE756.3070606@xenomai.org>
+ <CAN1+YZWmjvsu7My92EBktFhWYhheRJvdYrEq=r3+Ravp_Wzoyw@mail.gmail.com>
+ <52DBC5FE.6060806@xenomai.org> <52DBD649.2000908@xenomai.org>
+ <CAN1+YZWCMh4mR0ccw2v7FeuLKpYDUoPoB-FGHZmutj623DW7hw@mail.gmail.com>
+ <52EB6BBC.8040600@xenomai.org>
+ <CAN1+YZUhzb1zRE=dhjX+_1_b2cD2vEWatP6-je7b9NdNPosFvA@mail.gmail.com>
+ <52EBE4B7.6060800@xenomai.org>
+ <CAN1+YZXKAen4YAxKfG9TZTL8B5qXqA-u7O41-ZJqbHqCdbcyow@mail.gmail.com>
+ <52EC054C.9070707@xenomai.org>
+ <CAN1+YZX=cnRDcadrUHMzLaNBjNPnNbVuBnBHfEK-mTFYmx+3fA@mail.gmail.com>
+ <52EC1079.2040300@xenomai.org>
+ <CAN1+YZVq7cwFnUX=bkJs8MbAkpio3azSvev2fmZwqQpgjTnvfg@mail.gmail.com>
+ <52ECF912.10308@xenomai.org> <52ECFB5F.4070907@xenomai.org>
+From: Andy Pugh <andy@bodgesoc.org>
+Date: Sun, 2 Feb 2014 21:53:11 +0000
+Message-ID: <CAN1+YZUOYLPwB45um_FpkQejr5prR936KnmzKkHEnHJzcae7rQ@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Fwd: Kernel Compilation Problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,29 +32,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jonathan Bohren <jonathan.bohren@gmail.com>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 01/24/2014 08:48 PM, Jonathan Bohren wrote:
-> For the past couple of weeks, we've been unable to access xenomai.org from
-> Johns Hopkins University, and today we found out that the university was
-> blocking it because:
+On 1 February 2014 13:49, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
 >
-> "This site is hosted on an IP range that was known to be hosting many
-> malicious sites. "
+>>> http://pastebin.com/PSKwQH3A
+>>
+>> Could you try and apply the following patch?
 >
-> They've since unblocked it at our request. I don't know if there's anything
-> the Xenomai devs / webadmins need to do about this, but I thought I'd give
-> you a head's up.
->
-> If you want to know more, I can connect you with the Johns Hopkins Network
-> and Information Security group.
->
+> Sorry, wrong patch again, please try:
 
-Yes, please, we would definitely appreciate this. Please Cc: to 
-gilles.chanteperdrix@xenomai.org and myself.
-
-TIA,
+Sorry, but my mail software is not playing nice with patches (gmail
+simply doesn't save to text, and the "real" mailer seems to do odd
+things too.
+Is it possible that you could attach the patch as an attachment?
 
 -- 
-Philippe.
+atp
 
