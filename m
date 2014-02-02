@@ -1,14 +1,12 @@
-Message-ID: <52E3E71B.40501@xenomai.org>
-Date: Sat, 25 Jan 2014 17:32:27 +0100
+Message-ID: <52ED8F8B.70806@xenomai.org>
+Date: Sun, 02 Feb 2014 01:21:31 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAKKWdtc7uTkGTX30oso0ciV4JisdTXSNL6YbWbmsnoD6C_r_Uw@mail.gmail.com>
- <52DFA12F.3000304@xenomai.org>
- <CAKKWdtehVfx_ahU-GKRgX3nnt1PLQqUjD8sWPsFFBydkAcKSPg@mail.gmail.com>
-In-Reply-To: <CAKKWdtehVfx_ahU-GKRgX3nnt1PLQqUjD8sWPsFFBydkAcKSPg@mail.gmail.com>
+References: <52ED3BA0.4040105@xenomai.org>
+In-Reply-To: <52ED3BA0.4040105@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Computer froze by a loop
+Subject: Re: [Xenomai] RTDM rework
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,68 +15,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>, Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 01/25/2014 08:53 AM, ali hagigat wrote:
-> Regarding to examp9.c: The computer freezes, it means that no key
-> works. I can not use <ctrl-C> either. The task2 is in Primary mode, I
-> am sure. I have checked  /proc/sys/kernel/. sched_rt_period_us=1000000
-> and sched_rt_runtime_us=950000.
-> If task2 immigrates to Linux domain, the computer becomes responsive
-> and the key-presses are seen. Besides while(1) is present after
-> rt_task_inquire() which i guess makes task2 go to the primary domain.
+On 02/01/2014 07:23 PM, Gilles Chanteperdrix wrote:
+> 
+> Hi Jan, Philippe,
+> 
+> I have started working on rebasing RTDM on the common fd implementation
+> (xnfd). Before I start changing the drivers, the current state of the
+> changes follow as patches. These patches are based on the commits in the
+> "for-forge" branch in xenomai-gch repository. Please do not pull from
+> this branch just yet, it is probably going to be rebased.
+> 
+> The thing which I know we will discuss, even before you read the patches:
+> - struct xnfd appears instead of struct rtdm_dev_context in callbacks,
+> we already discussed that, you prefer rtdm typedefs, the thing is, in
+> forge, the habit to typedef structs seems gone, and typedef struct xnfd
+> rtdm_dev_contex_t would be confusing since struct rtdm_dev_context still
+> exists, albeit is no longer exported to drivers;
 
-And your guess is wrong, rt_task_inquire has the __xn_exec_any flag, so,
-it will not migrate its caller. So, rt_task_inquire is executed with the
-caller task running in secondary domain, since it comes after a call to
-printf. I have tried your example, and I get the:
+The simple solution is:
+#define rtdm_dev_context xnfd, and rename the real struct
+rtdm_dev_context to __rtdm_dev_context, since it is internal anyway.
 
-[sched_delayed] sched: RT throttling activated
+> - the xnfd structure is defined in cobalt, and not cobalt/posix, this
+> was made so that both rtdm and posix can use it, but maybe it makes more
+> sense to move it to posix (after all, file descriptors are a posix
+> thing), and get rtdm to use it anyway;
+> - doc is probably out of sync, this will be arranged in later commits
+> - maybe select should be moved to fd.c now, posix/select.c contains 3
+> functions, and it now supports xnfds exclusively;
+> - context_flags are gone, since the two flags it used are no longer
+> used, since driver have a private structure, drivers can move their
+> flags to their private structure if they want;
+> - handling -EAGAIN in the close callback is gone, the close callback now
+> returns void, it is possible to delay file descriptor destruction by
+> using rtdm_lock/rtdm_unlock, so the -EAGAIN return value was IMO redundant.
 
-Message on the kernel console, I can then interrupt the task with ctrl-C.
+Having read the rtdm test, I noticed that the semantics of "close" has
+more changed than that: it is no longer possible to delay the close
+while already in the close callback by calling rtdm_context_lock.
+rtdm_context_lock should be called before that, to prevent the close
+callback from even be called. This, I hope, should be more in line with
+Linux drivers and follow the principle of least surprise.
 
-I enabled CONFIG_SMP in my kernel configuration and was able to
-reproduce the behaviour you report. I then reduce your example to be as
-simple as possible, up to:
-
-#include <pthread.h>
-
-void *burnit(void *cookie)
-{
-	while(1)
-		;
-	return cookie;
-}
-
-int main(void)
-{
-	pthread_attr_t tattr;
-	struct sched_param sp;
-	pthread_t tid;
-	void *s;
-	
-	sp.sched_priority = 50;
-	
-	pthread_attr_init(&tattr);
-	pthread_attr_setinheritsched(&tattr, PTHREAD_EXPLICIT_SCHED);
-	pthread_attr_setschedpolicy(&tattr, SCHED_FIFO);
-	pthread_attr_setschedparam(&tattr, &sp);
-	
-	pthread_create(&tid, &tattr, burnit, NULL);
-	pthread_join(tid, &s);
-
-	return 0;
-}
-
-And it causes a lockup (with CONFIG_SMP), on Linux 3.5.7, 3.8.13, and
-3.10.18 (all without I-pipe patch). So, really, this is a Linux issue,
-not a Xenomai issue.
-
-Also, you have been told already, but since you seem to ignore it, I am
-going to repeat: the xenomai mailing list is an old-fashioned mailing
-list where we believe that "bottom-posting" results in more readable
-archives than "top-posting", so, please stop top posting.
 
 -- 
                                                                 Gilles.
