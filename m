@@ -1,9 +1,8 @@
+Message-ID: <52EEBFD7.8070901@xenomai.org>
+Date: Sun, 02 Feb 2014 22:59:51 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Sender: bodgesoc@gmail.com
-In-Reply-To: <52ECFB5F.4070907@xenomai.org>
 References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
- <CAN1+YZW+nJgMb0hLy2JWZW6JrxA+mZzA+-oN-gjQgeGTcoe0jg@mail.gmail.com>
- <CAN1+YZUY_3FExF=qrUtMQDQxTqossnQsPCy6zfPjfqp8PitZCg@mail.gmail.com>
  <52D9984F.9080203@xenomai.org>
  <CAN1+YZWnLC=MLxWqYd9xH1URimWnOdEhU4mwZ0S3QFdpghUaGQ@mail.gmail.com>
  <52DAE756.3070606@xenomai.org>
@@ -19,10 +18,10 @@ References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
  <52EC1079.2040300@xenomai.org>
  <CAN1+YZVq7cwFnUX=bkJs8MbAkpio3azSvev2fmZwqQpgjTnvfg@mail.gmail.com>
  <52ECF912.10308@xenomai.org> <52ECFB5F.4070907@xenomai.org>
-From: Andy Pugh <andy@bodgesoc.org>
-Date: Sun, 2 Feb 2014 21:53:11 +0000
-Message-ID: <CAN1+YZUOYLPwB45um_FpkQejr5prR936KnmzKkHEnHJzcae7rQ@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
+ <CAN1+YZUOYLPwB45um_FpkQejr5prR936KnmzKkHEnHJzcae7rQ@mail.gmail.com>
+In-Reply-To: <CAN1+YZUOYLPwB45um_FpkQejr5prR936KnmzKkHEnHJzcae7rQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Fwd: Kernel Compilation Problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -32,23 +31,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Andy Pugh <andy@bodgesoc.org>
 Cc: xenomai <xenomai@xenomai.org>
 
-On 1 February 2014 13:49, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
->
->>> http://pastebin.com/PSKwQH3A
+On 02/02/2014 10:53 PM, Andy Pugh wrote:
+> On 1 February 2014 13:49, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
 >>
->> Could you try and apply the following patch?
->
-> Sorry, wrong patch again, please try:
+>>>> http://pastebin.com/PSKwQH3A
+>>>
+>>> Could you try and apply the following patch?
+>>
+>> Sorry, wrong patch again, please try:
+> 
+> Sorry, but my mail software is not playing nice with patches (gmail
+> simply doesn't save to text, and the "real" mailer seems to do odd
+> things too.
+> Is it possible that you could attach the patch as an attachment?
+> 
+Available here:
 
-Sorry, but my mail software is not playing nice with patches (gmail
-simply doesn't save to text, and the "real" mailer seems to do odd
-things too.
-Is it possible that you could attach the patch as an attachment?
+http://sisyphus.hd.free.fr/~gilles/mx6.patch
 
 -- 
-atp
+                                                                Gilles.
 
