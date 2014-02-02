@@ -1,12 +1,12 @@
-Message-ID: <52ED8F8B.70806@xenomai.org>
-Date: Sun, 02 Feb 2014 01:21:31 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <1391373420.28930.YahooMailNeo@web171604.mail.ir2.yahoo.com>
+Date: Sun, 2 Feb 2014 20:37:00 +0000 (GMT)
+From: Matthias Schneider <ma30002000@yahoo.de>
 MIME-Version: 1.0
-References: <52ED3BA0.4040105@xenomai.org>
-In-Reply-To: <52ED3BA0.4040105@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RTDM rework
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] race condition when creating and deleting VxWorks tasks
+	in xenomai-forge
+Reply-To: Matthias Schneider <ma30002000@yahoo.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,52 +15,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>, Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 02/01/2014 07:23 PM, Gilles Chanteperdrix wrote:
-> 
-> Hi Jan, Philippe,
-> 
-> I have started working on rebasing RTDM on the common fd implementation
-> (xnfd). Before I start changing the drivers, the current state of the
-> changes follow as patches. These patches are based on the commits in the
-> "for-forge" branch in xenomai-gch repository. Please do not pull from
-> this branch just yet, it is probably going to be rebased.
-> 
-> The thing which I know we will discuss, even before you read the patches:
-> - struct xnfd appears instead of struct rtdm_dev_context in callbacks,
-> we already discussed that, you prefer rtdm typedefs, the thing is, in
-> forge, the habit to typedef structs seems gone, and typedef struct xnfd
-> rtdm_dev_contex_t would be confusing since struct rtdm_dev_context still
-> exists, albeit is no longer exported to drivers;
-
-The simple solution is:
-#define rtdm_dev_context xnfd, and rename the real struct
-rtdm_dev_context to __rtdm_dev_context, since it is internal anyway.
-
-> - the xnfd structure is defined in cobalt, and not cobalt/posix, this
-> was made so that both rtdm and posix can use it, but maybe it makes more
-> sense to move it to posix (after all, file descriptors are a posix
-> thing), and get rtdm to use it anyway;
-> - doc is probably out of sync, this will be arranged in later commits
-> - maybe select should be moved to fd.c now, posix/select.c contains 3
-> functions, and it now supports xnfds exclusively;
-> - context_flags are gone, since the two flags it used are no longer
-> used, since driver have a private structure, drivers can move their
-> flags to their private structure if they want;
-> - handling -EAGAIN in the close callback is gone, the close callback now
-> returns void, it is possible to delay file descriptor destruction by
-> using rtdm_lock/rtdm_unlock, so the -EAGAIN return value was IMO redundant.
-
-Having read the rtdm test, I noticed that the semantics of "close" has
-more changed than that: it is no longer possible to delay the close
-while already in the close callback by calling rtdm_context_lock.
-rtdm_context_lock should be called before that, to prevent the close
-callback from even be called. This, I hope, should be more in line with
-Linux drivers and follow the principle of least surprise.
-
-
--- 
-                                                                Gilles.
+Hi all, there seems to be a race condition in the VxWorks skin in xenomai-f=
+orge=A0=0Awhen creating and deleting tasks in rapid succession. The problem=
+ seems to be the=A0=0Aadding and removing of tasks to wind_task_list in tas=
+k_trampoline() and=A0=0Atask_finalizer().=0A=0AWhen creating a task, before=
+ returning a handle to the created task to the=A0=0Aapplication, calling th=
+readobj_start() from taskActivate() will wait for=A0=0A&thobj->barrier by c=
+alling wait_on_barrier(). This condition is triggered from=A0=0Athe newly c=
+reated task via task_trampoline() calling threadobj_prologue().=A0=0AHaving=
+ unblocked taskActivate(), the creating task/thread will return to the=A0=
+=0Acalling application, which in turn can delete the task in quick successi=
+on.=A0=0ADeleting the task will trigger the execution of task_finalizer, wh=
+ich will try=A0=0Ato remove the task from wind_task_table. However, due to =
+specific timing=A0=0Asituations, it may be possible =A0that the started tas=
+k has not yet added itself=A0=0Ato the list (it may still be "just" leaving=
+ threadobj_prologue()), leading to=0Aa segmentation fault. This behavior ca=
+n be easily reproduced by adding a delay=0Ain task_trampoline() at the foll=
+owing location in taskLib.c:=0A=0Aret =3D __bt(threadobj_prologue(&task->th=
+obj, task->name));=0A=0Ausleep(100000);=0A=0Awrite_lock_nocancel(&wind_task=
+_lock);=0Apvlist_append(&task->next, &wind_task_list);=0Awrite_unlock(&wind=
+_task_lock);=0A=0A=0Awriting a simple test application that simply calls=0A=
+=0ASEM_ID tid =3D taskSpawn(name, 50, 0, 0, task, 0, 0, 0, 0, 0, 0, 0, 0, 0=
+, 0);=0AtaskDelete(tid);=0A=0Awill then reliably demonstrate the issue.=0A=
+=0AMoving the last three lines appending the task to the list above threado=
+bj_prologue()=A0=0Aseems to fix the issue, although I am not 100% sure abou=
+t possible side effects.=0A=0AThanks in advance for commenting my issue,=0A=
+regards,=0A=0AMatthias
 
