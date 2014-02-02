@@ -1,5 +1,5 @@
-Message-ID: <52EEBFD7.8070901@xenomai.org>
-Date: Sun, 02 Feb 2014 22:59:51 +0100
+Message-ID: <52EECA63.6070609@xenomai.org>
+Date: Sun, 02 Feb 2014 23:44:51 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
@@ -19,7 +19,8 @@ References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
  <CAN1+YZVq7cwFnUX=bkJs8MbAkpio3azSvev2fmZwqQpgjTnvfg@mail.gmail.com>
  <52ECF912.10308@xenomai.org> <52ECFB5F.4070907@xenomai.org>
  <CAN1+YZUOYLPwB45um_FpkQejr5prR936KnmzKkHEnHJzcae7rQ@mail.gmail.com>
-In-Reply-To: <CAN1+YZUOYLPwB45um_FpkQejr5prR936KnmzKkHEnHJzcae7rQ@mail.gmail.com>
+ <52EEBFD7.8070901@xenomai.org>
+In-Reply-To: <52EEBFD7.8070901@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Fwd: Kernel Compilation Problems
@@ -34,24 +35,28 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Andy Pugh <andy@bodgesoc.org>
 Cc: xenomai <xenomai@xenomai.org>
 
-On 02/02/2014 10:53 PM, Andy Pugh wrote:
-> On 1 February 2014 13:49, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
->>
->>>> http://pastebin.com/PSKwQH3A
+On 02/02/2014 10:59 PM, Gilles Chanteperdrix wrote:
+> On 02/02/2014 10:53 PM, Andy Pugh wrote:
+>> On 1 February 2014 13:49, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org> wrote:
 >>>
->>> Could you try and apply the following patch?
+>>>>> http://pastebin.com/PSKwQH3A
+>>>>
+>>>> Could you try and apply the following patch?
+>>>
+>>> Sorry, wrong patch again, please try:
 >>
->> Sorry, wrong patch again, please try:
+>> Sorry, but my mail software is not playing nice with patches (gmail
+>> simply doesn't save to text, and the "real" mailer seems to do odd
+>> things too.
+>> Is it possible that you could attach the patch as an attachment?
+>>
+> Available here:
 > 
-> Sorry, but my mail software is not playing nice with patches (gmail
-> simply doesn't save to text, and the "real" mailer seems to do odd
-> things too.
-> Is it possible that you could attach the patch as an attachment?
+> http://sisyphus.hd.free.fr/~gilles/mx6.patch
 > 
-Available here:
-
-http://sisyphus.hd.free.fr/~gilles/mx6.patch
+Please try again, the patch could not compile for mx6. It should be
+fixed now.
 
 -- 
                                                                 Gilles.
