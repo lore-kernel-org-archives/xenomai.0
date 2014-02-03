@@ -1,13 +1,28 @@
-Message-ID: <52EF7772.2000008@xenomai.org>
-Date: Mon, 03 Feb 2014 12:03:14 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <52EF7C99.6020203@xenomai.org>
+Date: Mon, 03 Feb 2014 12:25:13 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1391373420.28930.YahooMailNeo@web171604.mail.ir2.yahoo.com>
-In-Reply-To: <1391373420.28930.YahooMailNeo@web171604.mail.ir2.yahoo.com>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
+ <52DAE756.3070606@xenomai.org>
+ <CAN1+YZWmjvsu7My92EBktFhWYhheRJvdYrEq=r3+Ravp_Wzoyw@mail.gmail.com>
+ <52DBC5FE.6060806@xenomai.org> <52DBD649.2000908@xenomai.org>
+ <CAN1+YZWCMh4mR0ccw2v7FeuLKpYDUoPoB-FGHZmutj623DW7hw@mail.gmail.com>
+ <52EB6BBC.8040600@xenomai.org>
+ <CAN1+YZUhzb1zRE=dhjX+_1_b2cD2vEWatP6-je7b9NdNPosFvA@mail.gmail.com>
+ <52EBE4B7.6060800@xenomai.org>
+ <CAN1+YZXKAen4YAxKfG9TZTL8B5qXqA-u7O41-ZJqbHqCdbcyow@mail.gmail.com>
+ <52EC054C.9070707@xenomai.org>
+ <CAN1+YZX=cnRDcadrUHMzLaNBjNPnNbVuBnBHfEK-mTFYmx+3fA@mail.gmail.com>
+ <52EC1079.2040300@xenomai.org>
+ <CAN1+YZVq7cwFnUX=bkJs8MbAkpio3azSvev2fmZwqQpgjTnvfg@mail.gmail.com>
+ <52ECF912.10308@xenomai.org> <52ECFB5F.4070907@xenomai.org>
+ <CAN1+YZUOYLPwB45um_FpkQejr5prR936KnmzKkHEnHJzcae7rQ@mail.gmail.com>
+ <52EEBFD7.8070901@xenomai.org> <52EECA63.6070609@xenomai.org>
+ <CAN1+YZXQVX0awpJbGeGP-2eXEZcethOj_G+7SPRLhwqCmNPBuQ@mail.gmail.com>
+In-Reply-To: <CAN1+YZXQVX0awpJbGeGP-2eXEZcethOj_G+7SPRLhwqCmNPBuQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] race condition when creating and deleting VxWorks
- tasks in xenomai-forge
+Subject: Re: [Xenomai] Fwd: Kernel Compilation Problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,81 +31,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Andy Pugh <andy@bodgesoc.org>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 02/02/2014 09:37 PM, Matthias Schneider wrote:
-> Hi all, there seems to be a race condition in the VxWorks skin in xenomai-forge
-> when creating and deleting tasks in rapid succession. The problem seems to be the
-> adding and removing of tasks to wind_task_list in task_trampoline() and
-> task_finalizer().
-> 
-> When creating a task, before returning a handle to the created task to the
-> application, calling threadobj_start() from taskActivate() will wait for
-> &thobj->barrier by calling wait_on_barrier(). This condition is triggered from
-> the newly created task via task_trampoline() calling threadobj_prologue().
-> Having unblocked taskActivate(), the creating task/thread will return to the
-> calling application, which in turn can delete the task in quick succession.
-> Deleting the task will trigger the execution of task_finalizer, which will try
-> to remove the task from wind_task_table. However, due to specific timing
-> situations, it may be possible  that the started task has not yet added itself
-> to the list (it may still be "just" leaving threadobj_prologue()), leading to
-> a segmentation fault. This behavior can be easily reproduced by adding a delay
-> in task_trampoline() at the following location in taskLib.c:
-> 
-> ret = __bt(threadobj_prologue(&task->thobj, task->name));
-> 
-> usleep(100000);
-> 
-> write_lock_nocancel(&wind_task_lock);
-> pvlist_append(&task->next, &wind_task_list);
-> write_unlock(&wind_task_lock);
+On 02/03/2014 01:25 AM, Andy Pugh wrote:
+>>>>>> Could you try and apply the following patch?
 > 
 > 
-> writing a simple test application that simply calls
+> Not necessarily due to the patch, but first reboot was:
 > 
-> SEM_ID tid = taskSpawn(name, 50, 0, 0, task, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-> taskDelete(tid);
-> 
-> will then reliably demonstrate the issue.
-> 
-> Moving the last three lines appending the task to the list above threadobj_prologue()
-> seems to fix the issue, although I am not 100% sure about possible side effects.
-> 
-> Thanks in advance for commenting my issue,
-> regards,
+> (...)
+>
+> Now, where did I leave that bootable kernel?
 > 
 
-All correct, the bug bites as described. As you suspected, simply swapping the statements would introduce another race. Could you try this patch instead? TIA,
-
-diff --git a/lib/vxworks/taskLib.c b/lib/vxworks/taskLib.c
-index 1ef52a5..e3457a3 100644
---- a/lib/vxworks/taskLib.c
-+++ b/lib/vxworks/taskLib.c
-@@ -151,9 +151,11 @@ static void task_finalizer(struct threadobj *thobj)
- {
- 	struct wind_task *task = container_of(thobj, struct wind_task, thobj);
- 
--	write_lock_nocancel(&wind_task_lock);
--	pvlist_remove(&task->next);
--	write_unlock(&wind_task_lock);
-+	if (pvholder_linked(&task->next)) {
-+		write_lock_nocancel(&wind_task_lock);
-+		pvlist_remove(&task->next);
-+		write_unlock(&wind_task_lock);
-+	}
- 
- 	task->tcb->status |= WIND_DEAD;
- 	cluster_delobj(&wind_task_table, &task->cobj);
-@@ -356,6 +358,7 @@ static STATUS __taskInit(struct wind_task *task,
- 	idata.finalizer = task_finalizer;
- 	idata.priority = cprio;
- 	threadobj_init(&task->thobj, &idata);
-+	initpvh(&task->next);
- 
- 	ret = __bt(cluster_addobj(&wind_task_table, task->name, &task->cobj));
- 	if (ret) {
-
+The issue you have seems clearly related to the cache initialization,
+it happens a little after the cache initialization. So, the patch is
+probably the culprit.
 
 -- 
-Philippe.
+                                                                Gilles.
 
