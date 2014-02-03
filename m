@@ -1,12 +1,12 @@
-Message-ID: <52E3FEEF.9050205@xenomai.org>
-Date: Sat, 25 Jan 2014 19:14:07 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52E1D646.8050907@steinkuehler.net>
-In-Reply-To: <52E1D646.8050907@steinkuehler.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ARM/BeagleBone Thumb2 Kernels
+In-Reply-To: <52EEBDD2.2040906@xenomai.org>
+References: <CAKKWdtc5QWhvcOwp2fjkUMHB1jTV9gV-hXf+3vzt0McLZ433fQ@mail.gmail.com>
+ <52EEBC19.80605@xenomai.org> <52EEBDD2.2040906@xenomai.org>
+Date: Mon, 3 Feb 2014 05:09:42 -0500
+Message-ID: <CAKKWdtd_O_=dbdShvxHLWZjhDPvdWLBjqqKeBOMRYA9_ja55gA@mail.gmail.com>
+From: ali hagigat <hagigatali@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] installing a signal handler
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,44 +15,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Charles Steinkuehler <charles@steinkuehler.net>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 01/24/2014 03:56 AM, Charles Steinkuehler wrote:
-> So when I try to build a Xenomai patched kernel for the BeagleBone using
-> Thumb2 instructions, I get the following linker errors:
-> 
->>   LD      init/built-in.o
->> arch/arm/kernel/built-in.o: In function `__irq_usr':
->> :(.kprobes.text+0x3c2): relocation truncated to fit: R_ARM_THM_JUMP19
->> against symbol `__ipipe_ret_to_user_irqs_disabled' defined in .text
->> section in arch/arm/kernel/built-in.o
->> arch/arm/kernel/built-in.o: In function `ret_from_exception':
->> :(.kprobes.text+0x600): relocation truncated to fit: R_ARM_THM_JUMP19
->> against symbol `__ipipe_ret_to_user_irqs_disabled' defined in .text
->> section in arch/arm/kernel/built-in.o
->> make: *** [vmlinux] Error 1
+On 2/2/14, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+> On 02/02/2014 10:43 PM, Gilles Chanteperdrix wrote:
+>> On 02/01/2014 01:36 PM, ali hagigat wrote:
+>>> It seems that signal handler does not execute...
 >>
->> The link error goes away if I disable CONFIG_THUMB2_KERNEL, which wasn't
->> set in the original kernel config.
-> 
-> This has recently become more of a problem, as the default BeagleBone
-> kernel has switched to enabling CONFIG_THUMB2_KERNEL.
-> 
-> A bit of Googling turned up the following patch to fix a similar problem
-> on the Tegra (not Xenomai related):
-> 
->   http://patchwork.ozlabs.org/patch/236760/
-> 
-> I applied a similar if-then patch (see below) to the two Xenomai calls
-> that generate the linker errors, and the result is a working kernel.
+>> With what version of Xenomai? on what architecture?
+>>
+> and what version of the I-pipe patch?
+>
+> --
+>                                                                 Gilles.
+>
 
-Applied, thanks, I could reproduce the issue, and thinking about it
-having entry-common.o close to entry-arm.o should not bring any
-performance improvement in fact.
-
-Regards.
-
--- 
-                                                                Gilles.
+ipipe-core-3.5.7-x86-4
+Xenomai-2.6.3
+Linux kernel: 3.5.7
+ARCH: x86, 32 bits
+Fedora13
+CPU: Intel quad core 2.4GHZ
 
