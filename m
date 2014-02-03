@@ -1,11 +1,11 @@
+Message-ID: <52EF71E0.3080208@xenomai.org>
+Date: Mon, 03 Feb 2014 11:39:28 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <52EEBDD2.2040906@xenomai.org>
 References: <CAKKWdtc5QWhvcOwp2fjkUMHB1jTV9gV-hXf+3vzt0McLZ433fQ@mail.gmail.com>
- <52EEBC19.80605@xenomai.org> <52EEBDD2.2040906@xenomai.org>
-Date: Mon, 3 Feb 2014 05:09:42 -0500
-Message-ID: <CAKKWdtd_O_=dbdShvxHLWZjhDPvdWLBjqqKeBOMRYA9_ja55gA@mail.gmail.com>
-From: ali hagigat <hagigatali@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
+In-Reply-To: <CAKKWdtc5QWhvcOwp2fjkUMHB1jTV9gV-hXf+3vzt0McLZ433fQ@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] installing a signal handler
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,26 +15,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai <xenomai@xenomai.org>
+To: ali hagigat <hagigatali@gmail.com>, xenomai <xenomai@xenomai.org>
 
-On 2/2/14, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
-> On 02/02/2014 10:43 PM, Gilles Chanteperdrix wrote:
->> On 02/01/2014 01:36 PM, ali hagigat wrote:
->>> It seems that signal handler does not execute...
->>
->> With what version of Xenomai? on what architecture?
->>
-> and what version of the I-pipe patch?
+On 02/01/2014 01:36 PM, ali hagigat wrote:
+> It seems that signal handler does not execute...
+> -------------- next part --------------
+>> cat /proc/xenomai/sched
+> CPU  PID    CLASS  PRI      TIMEOUT   TIMEBASE   STAT       NAME
+>    0  0      idle    -1      -         master     R          ROOT/0
+>    1  0      idle    -1      -         master     R          ROOT/1
+>    2  0      idle    -1      -         master     R          ROOT/2
+>    3  0      idle    -1      -         master     R          ROOT/3
+>    0  0      rt      50      -         master     Df         KTask1
+>    0  0      rt      50      -         master     Df         KTask2
 >
-> --
->                                                                 Gilles.
+>
+>> dmesg
+> notify is successful...
 >
 
-ipipe-core-3.5.7-x86-4
-Xenomai-2.6.3
-Linux kernel: 3.5.7
-ARCH: x86, 32 bits
-Fedora13
-CPU: Intel quad core 2.4GHZ
+This deprecated feature does not wake up the receiving task.
+
+-- 
+Philippe.
 
