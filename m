@@ -1,9 +1,13 @@
+Message-ID: <52F10684.8040807@xenomai.org>
+Date: Tue, 04 Feb 2014 16:25:56 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Sun, 26 Jan 2014 10:01:35 +0330
-Message-ID: <CAKKWdtcbBAPx8XgPQiZtWqwN=MERqRL7AfyKqPnTyB1yfigqKQ@mail.gmail.com>
-From: ali hagigat <hagigatali@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] Xenomai kernel task in Domain 1
+References: <E1WAhle-0006kK-1j@sd-51317.dedibox.fr>
+In-Reply-To: <E1WAhle-0006kK-1j@sd-51317.dedibox.fr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : copperplate: Fix inclusion
+ into C++ programs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,10 +16,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-How can i make a Xenomai kernel task switch to the secondary domain?
-Pause() and sleep() functions can not be compiled with the Makefile
-for building modules.
-I create Xenomai kernel tasks by init_module() and defining a module....
+On 02/04/2014 04:18 PM, git repository hosting wrote:
+> Module: xenomai-jki
+> Branch: for-forge
+> Commit: b202c018332568d8b7fb3236ad38d76240c32a3e
+> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=b202c018332568d8b7fb3236ad38d76240c32a3e
+>
+> Author: Jan Kiszka <jan.kiszka@siemens.com>
+> Date:   Tue Feb  4 16:16:03 2014 +0100
+>
+> copperplate: Fix inclusion into C++ programs
+>
+> C++ requires explicit type casts
+
+Are not heapobj.h and threadobj.h internal headers? Do we really have to 
+uglify them with these useless explicit casts?
+
+-- 
+					    Gilles.
 
