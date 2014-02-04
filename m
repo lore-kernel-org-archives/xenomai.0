@@ -1,11 +1,11 @@
-Message-ID: <52F1231A.7080603@xenomai.org>
-Date: Tue, 04 Feb 2014 18:27:54 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <52F123DC.1010307@xenomai.org>
+Date: Tue, 04 Feb 2014 18:31:08 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <E1WAhle-0006kB-0q@sd-51317.dedibox.fr>
  <52F1172B.2080500@xenomai.org> <52F11F94.9000309@siemens.com>
 In-Reply-To: <52F11F94.9000309@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : alchemy: Replace static
  variable no_alchemy_task with macro
@@ -17,7 +17,8 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org, xenomai-git@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai-git@xenomai.org, xenomai@xenomai.org
 
 On 02/04/2014 06:12 PM, Jan Kiszka wrote:
 > On 2014-02-04 17:36, Philippe Gerum wrote:
@@ -44,31 +45,32 @@ On 02/04/2014 06:12 PM, Jan Kiszka wrote:
 >
 > It is ugly to define potentially unused static variables in a header,
 > even more when this header is part of the public interface, pulled in by
-> our users with hard to predict compiler configurations.
-
-This is a const static, exposed as a common definition, which normally 
-has no existence in the data segment when built with g++ 4.x. Not even 
-with -O0.
-
-So maybe you could tell us which is the exact issue you have beyond the 
-struct initializer issue, and the compiler release you are currently 
-using, along with the build flags?
-
-But more
+> our users with hard to predict compiler configurations. But more
 > important is the conflict with C++ (including C++11).
->
 
-If g++ chokes on the initializer part because it is outdated, then using 
-old-fashioned ones may be an option. Actually, I find macroizing this 
-definition quite bad.
+Are you sure you are using a C++ compiler recent enough?
 
-static const RT_TASK no_alchemy_task = {
--	.handle = 0,
--	.thread = 0
-+	handle: 0,
-+	thread: 0
-  };
+Using g++ 4.7, I do not get any warning compiling the following code:
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct x {
+	unsigned a;
+	unsigned b;
+} y = {
+	.a = 42,
+	.b = 43,
+};
+
+int main(void)
+{
+	printf("%u\n", y.a);
+}
+
+Without even passing a -std option.
+
 
 -- 
-Philippe.
+					    Gilles.
 
