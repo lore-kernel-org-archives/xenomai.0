@@ -1,12 +1,29 @@
-Message-ID: <52F27A1D.1000407@xenomai.org>
-Date: Wed, 05 Feb 2014 18:51:25 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <52F275D8.6070303@siemens.com>
-In-Reply-To: <52F275D8.6070303@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] forge: API header cobalt/arith.h
+Sender: bodgesoc@gmail.com
+In-Reply-To: <52F15DB8.8080304@xenomai.org>
+References: <CAN1+YZVvgPNNHFub5QAkw6SeSUPuf1dv_94kYGqhbjMpNt70Sg@mail.gmail.com>
+ <52DAE756.3070606@xenomai.org>
+ <CAN1+YZWmjvsu7My92EBktFhWYhheRJvdYrEq=r3+Ravp_Wzoyw@mail.gmail.com>
+ <52DBC5FE.6060806@xenomai.org> <52DBD649.2000908@xenomai.org>
+ <CAN1+YZWCMh4mR0ccw2v7FeuLKpYDUoPoB-FGHZmutj623DW7hw@mail.gmail.com>
+ <52EB6BBC.8040600@xenomai.org>
+ <CAN1+YZUhzb1zRE=dhjX+_1_b2cD2vEWatP6-je7b9NdNPosFvA@mail.gmail.com>
+ <52EBE4B7.6060800@xenomai.org>
+ <CAN1+YZXKAen4YAxKfG9TZTL8B5qXqA-u7O41-ZJqbHqCdbcyow@mail.gmail.com>
+ <52EC054C.9070707@xenomai.org>
+ <CAN1+YZX=cnRDcadrUHMzLaNBjNPnNbVuBnBHfEK-mTFYmx+3fA@mail.gmail.com>
+ <52EC1079.2040300@xenomai.org>
+ <CAN1+YZVq7cwFnUX=bkJs8MbAkpio3azSvev2fmZwqQpgjTnvfg@mail.gmail.com>
+ <52ECF912.10308@xenomai.org> <52ECFB5F.4070907@xenomai.org>
+ <CAN1+YZUOYLPwB45um_FpkQejr5prR936KnmzKkHEnHJzcae7rQ@mail.gmail.com>
+ <52EEBFD7.8070901@xenomai.org> <52EECA63.6070609@xenomai.org>
+ <CAN1+YZXQVX0awpJbGeGP-2eXEZcethOj_G+7SPRLhwqCmNPBuQ@mail.gmail.com>
+ <52F15DB8.8080304@xenomai.org>
+From: Andy Pugh <andy@bodgesoc.org>
+Date: Tue, 4 Feb 2014 23:24:35 +0000
+Message-ID: <CAN1+YZVhWD0_5ufRD+mtiza3v9Xq2oLpVryDYFCVY_ndCZFF5w@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Fwd: Kernel Compilation Problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,20 +32,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 02/05/2014 06:33 PM, Jan Kiszka wrote:
-> Hi,
->
-> while testing stand-alone builds of all installed headers, I also
-> stumbled over cobalt/arith.h. It seems this one is not part of the
-> external API, is it? It tries to pull in headers from asm/xenomai/ which
-> is not available for ordinary applications. Should I simply skip it from
-> being tested, or can we drop it from the set of installed headers?
->
+On 4 February 2014 21:38, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
 
-This one is not part of the API and should move to noinst_HEADERS.
+> The patch you will find here:
+> http://sisyphus.hd.free.fr/~gilles/mx6.patch
+
+It's too late to try it now (I need to get the board booting again
+first) but I should be able to get back to it on Thursday
 
 -- 
-Philippe.
+atp
 
