@@ -1,13 +1,13 @@
-Message-ID: <52F10684.8040807@xenomai.org>
-Date: Tue, 04 Feb 2014 16:25:56 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <52F1172B.2080500@xenomai.org>
+Date: Tue, 04 Feb 2014 17:36:59 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <E1WAhle-0006kK-1j@sd-51317.dedibox.fr>
-In-Reply-To: <E1WAhle-0006kK-1j@sd-51317.dedibox.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <E1WAhle-0006kB-0q@sd-51317.dedibox.fr>
+In-Reply-To: <E1WAhle-0006kB-0q@sd-51317.dedibox.fr>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : copperplate: Fix inclusion
- into C++ programs
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : alchemy: Replace static
+ variable no_alchemy_task with macro
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,24 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai@xenomai.org, xenomai-git@xenomai.org
 
 On 02/04/2014 04:18 PM, git repository hosting wrote:
 > Module: xenomai-jki
 > Branch: for-forge
-> Commit: b202c018332568d8b7fb3236ad38d76240c32a3e
-> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=b202c018332568d8b7fb3236ad38d76240c32a3e
+> Commit: bffcc58ed0114985a4d8d8a4cff2adff1b13292d
+> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=bffcc58ed0114985a4d8d8a4cff2adff1b13292d
 >
 > Author: Jan Kiszka <jan.kiszka@siemens.com>
-> Date:   Tue Feb  4 16:16:03 2014 +0100
+> Date:   Tue Feb  4 16:12:07 2014 +0100
 >
-> copperplate: Fix inclusion into C++ programs
+> alchemy: Replace static variable no_alchemy_task with macro
 >
-> C++ requires explicit type casts
+> The current definition of a static const variable representing an
+> invalid alchemy task is both C++-incompatible and also ugly as we do not
+> use them in every module that includes task.h. So replace it with a
+> macro that builds the required struct on-the-fly.
 
-Are not heapobj.h and threadobj.h internal headers? Do we really have to 
-uglify them with these useless explicit casts?
+Could you elaborate on the ugly part of things? I don't really get your 
+point.
 
 -- 
-					    Gilles.
+Philippe.
 
