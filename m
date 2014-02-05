@@ -1,29 +1,13 @@
+Message-ID: <52F223B5.2010408@xenomai.org>
+Date: Wed, 05 Feb 2014 12:42:45 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <531075E7.7060107@xenomai.org>
-References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
- <530CFB0D.8040001@xenomai.org>
- <CAEbDrgkJCnbWu_J4svoXOU1x2rz=n95A5+3Ee=R_9CpMgx-JmA@mail.gmail.com>
- <530CFC27.5050700@xenomai.org>
- <CAEbDrgnmM_dD3WX42PYawhkW8zTaYczzfozEe1EX7Z5HnERz3g@mail.gmail.com>
- <530D0205.9050406@xenomai.org>
- <CAEbDrgmwch94crHAcrbJDj9MxaiBNaYeLH2U9NtS0tuJKmdDDw@mail.gmail.com>
- <530D0BBD.6070704@xenomai.org>
- <CAK4EZFR_L+=-LtSVHkvZ36rPOA8ViVboB9M9rf4Yqk=crfBotw@mail.gmail.com>
- <CAEbDrgk=yrGq8KdpdN8e7RtO7qUpWTtwRXhrg0A0=KbDjqoDng@mail.gmail.com>
- <530D2C92.9010607@xenomai.org>
- <CAEbDrgkWZqSxjCUfjR3YCp=YOzh1r-=YC6Wyr-Jvk9d7JYEcmQ@mail.gmail.com>
- <530E6159.4050204@xenomai.org>
- <CAEbDrgmo==15Zar2X=yz=wBL3pJ4DOiqKy2xx43UPxuu6_5LhA@mail.gmail.com>
- <530F17EC.6020204@xenomai.org>
- <CAEbDrgnq46OJ6bi1FCQmC8JBWhSA6o=M9K=fg4x4hq3JpwcBjw@mail.gmail.com>
- <530F9CA2.2040601@xenomai.org>
- <CAEbDrgmLq08Xq5Cgt7oXX3koQDr+HVx_JS-7Nn_pC53rmTTV-g@mail.gmail.com>
- <531075E7.7060107@xenomai.org>
-Date: Sat, 1 Mar 2014 12:27:43 +0000
-Message-ID: <CAEbDrgmQNRjaTEm5TvM93Yy3k+fa+QRETFzXdM3bz8=-N15DPQ@mail.gmail.com>
-From: Gregory Dymarek <gregd72002@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] RaspberryPi kernel 3.8 issue
+References: <CAKKWdtc5QWhvcOwp2fjkUMHB1jTV9gV-hXf+3vzt0McLZ433fQ@mail.gmail.com>	<52EF71E0.3080208@xenomai.org>
+ <CAKKWdtdpVTdD6j1QYXB-wF_3SjpQWDTB62=kKrCWU7Y1zkc9_Q@mail.gmail.com>
+In-Reply-To: <CAKKWdtdpVTdD6j1QYXB-wF_3SjpQWDTB62=kKrCWU7Y1zkc9_Q@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] installing a signal handler
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -32,37 +16,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: ali hagigat <hagigatali@gmail.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-Hi Gilles,
-
-Uploaded a new trace in here with them being reduced to 10 and 9
-respectively:
- https://github.com/gregd72002/rpicopter/blob/master/tmp/frozen
-
-
-
-On 28 February 2014 11:41, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
-
-> On 02/27/2014 09:33 PM, Gregory Dymarek wrote:
-> > Not sure if I understand this. This is the first call to
-> __report_bad_irq (
-> >
-> https://github.com/raspberrypi/linux/blob/rpi-3.8.y/kernel/irq/spurious.c)
-> >
-> > I added the trace on line 192.
-> >
-> > AFAIK this is the first call to the function. the trace freeze i added is
-> > not conditional.
+On 02/05/2014 12:08 PM, ali hagigat wrote:
+> On 2/3/14, Philippe Gerum <rpm@xenomai.org> wrote:
+>> On 02/01/2014 01:36 PM, ali hagigat wrote:
+>>> It seems that signal handler does not execute...
+>>> -------------- next part --------------
+>>>> cat /proc/xenomai/sched
+>>> CPU  PID    CLASS  PRI      TIMEOUT   TIMEBASE   STAT       NAME
+>>>     0  0      idle    -1      -         master     R          ROOT/0
+>>>     1  0      idle    -1      -         master     R          ROOT/1
+>>>     2  0      idle    -1      -         master     R          ROOT/2
+>>>     3  0      idle    -1      -         master     R          ROOT/3
+>>>     0  0      rt      50      -         master     Df         KTask1
+>>>     0  0      rt      50      -         master     Df         KTask2
+>>>
+>>>
+>>>> dmesg
+>>> notify is successful...
+>>>
+>>
+>> This deprecated feature does not wake up the receiving task.
+>>
+>> --
+>> Philippe.
+>>
 >
-> I think the issue you observe is that the irqs_unhandled counter goes
-> over 99000, meaning that the driver returns IRQ_NONE and does not
-> acknowledge the interrupt at device level, so that the interrupt
-> triggers again. So, having enough trace points to see what happens
-> before this irq storm will be hard. Could you try reducing the 100000
-> and 99000 thresholds in kernel/irq/spurious.c, function note_interrupt?
+> There are some warning messages complaining using the deprecated
+> function, "rt_task_create()" at compile.
+> but no warn message for rt_task_notify().
+> This function does not work at user space too.
 >
-> --
->                                                                 Gilles.
->
+
+Your application code does wrong assumptions on what 
+rt_task_notify/catch really does. So I'm unsure what "too" refers to in 
+your sentence, but as a matter of fact, your code can't work.
+
+Besides, would you have cared for the warning at rt_task_create() and 
+refrained from using a dead interface from kernel space, you would not 
+have even considered using rt_task_notify() for sending signals to a 
+kernel-based native task in the first place.
+
+Regarding the behavior of rt_task_notify() from user-space, you have to 
+provide evidence that you are properly using the interface, so that 
+people are not always investing time fixing your own bugs. You received 
+more than enough information in the previous conversations to do so. 
+FWIW, I had a quick look at the Xenomai code, and did not find anything 
+wrong.
+
+-- 
+Philippe.
+
