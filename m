@@ -1,15 +1,20 @@
-Message-ID: <530F45DB.7000606@xenomai.org>
-Date: Thu, 27 Feb 2014 15:04:11 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <52F20780.9010002@siemens.com>
+Date: Wed, 05 Feb 2014 10:42:24 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <530CD8B9.2010303@xenomai.org> <530CDCD3.6070703@xenomai.org>
- <530DB691.7010106@xenomai.org> <530F2BA3.5040005@xenomai.org>
- <530F3FA5.9090001@xenomai.org> <530F4052.8000501@xenomai.org>
- <530F437D.6090901@xenomai.org>
-In-Reply-To: <530F437D.6090901@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <E1WAhle-0006kB-0q@sd-51317.dedibox.fr>
+ <52F1172B.2080500@xenomai.org> <52F11F94.9000309@siemens.com>
+ <52F1231A.7080603@xenomai.org> <52F12442.3040301@xenomai.org>
+ <52F125E8.6020200@xenomai.org> <52F12700.3020400@xenomai.org>
+ <52F12800.1030500@xenomai.org> <52F12937.3050105@xenomai.org>
+ <52F12B7A.4060408@siemens.com> <52F1F749.2030501@xenomai.org>
+ <52F1FB24.4090603@siemens.com> <52F1FD3B.1070304@xenomai.org>
+ <52F1FEFC.9070708@siemens.com> <52F20604.4020200@xenomai.org>
+In-Reply-To: <52F20604.4020200@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Road to 3.0
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : alchemy: Replace static
+ variable no_alchemy_task with macro
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,67 +23,182 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 02/27/2014 02:54 PM, Philippe Gerum wrote:
-> On 02/27/2014 02:40 PM, Gilles Chanteperdrix wrote:
->> On 02/27/2014 02:37 PM, Philippe Gerum wrote:
->>> On 02/27/2014 01:12 PM, Gilles Chanteperdrix wrote:
->>>> On 02/26/2014 10:40 AM, Philippe Gerum wrote:
->>>>> On 02/25/2014 07:11 PM, Gilles Chanteperdrix wrote:
->>>>>
->>>>>> The API documentation already lives in a per-version directory on the
->>>>>> server. README.INSTALL, TROUBLESHOOTING and manual pages link directly
->>>>>> to 2.6 documentation.
+On 2014-02-05 10:36, Philippe Gerum wrote:
+> On 02/05/2014 10:06 AM, Jan Kiszka wrote:
+>> On 2014-02-05 09:58, Philippe Gerum wrote:
+>>> On 02/05/2014 09:49 AM, Jan Kiszka wrote:
+>>>> On 2014-02-05 09:33, Philippe Gerum wrote:
+>>>>> On 02/04/2014 07:03 PM, Jan Kiszka wrote:
+>>>>>> On 2014-02-04 18:53, Philippe Gerum wrote:
+>>>>>>> On 02/04/2014 06:48 PM, Philippe Gerum wrote:
+>>>>>>>> On 02/04/2014 06:44 PM, Gilles Chanteperdrix wrote:
+>>>>>>>>> On 02/04/2014 06:39 PM, Philippe Gerum wrote:
+>>>>>>>>>> On 02/04/2014 06:32 PM, Gilles Chanteperdrix wrote:
+>>>>>>>>>>> On 02/04/2014 06:27 PM, Philippe Gerum wrote:
+>>>>>>>>>>>> If g++ chokes on the initializer part because it is outdated,
+>>>>>>>>>>>> then
+>>>>>>>>>>>> using
+>>>>>>>>>>>> old-fashioned ones may be an option. Actually, I find
+>>>>>>>>>>>> macroizing
+>>>>>>>>>>>> this
+>>>>>>>>>>>> definition quite bad.
+>>>>>>>>>>>>
+>>>>>>>>>>>> static const RT_TASK no_alchemy_task = {
+>>>>>>>>>>>> -    .handle = 0,
+>>>>>>>>>>>> -    .thread = 0
+>>>>>>>>>>>> +    handle: 0,
+>>>>>>>>>>>> +    thread: 0
+>>>>>>>>>>>>        };
+>>>>>>>>>>>
+>>>>>>>>>>> No, the previous version is better, it is standard compliant
+>>>>>>>>>>> C and
+>>>>>>>>>>> C++,
+>>>>>>>>>>> the second version is a gcc extension, which works only when
+>>>>>>>>>>> compiling
+>>>>>>>>>>> C, if I remember correctly.
+>>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> Recent g++ is happy with both (no -std forced though). But the
+>>>>>>>>>> former is
+>>>>>>>>>> allowed by the C++ parser only since recently.
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Well, on the other hand:
+>>>>>>>>> static const RT_TAKS no_alchemy_task;
+>>>>>>>>>
+>>>>>>>>> Will zero initialized the structure just as well...
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> In that case you will have the object exist in the .bss.
+>>>>>>>>
+>>>>>>>
+>>>>>>> It turns out that old gcc 4.x releases will create a private bss
+>>>>>>> entry
+>>>>>>> for this symbol in any case, which recent ones won't produce
+>>>>>>> regardless
+>>>>>>> of the optimizing level (unless I messed up with nm, but it does not
+>>>>>>> seem so).
+>>>>>>>
+>>>>>>
+>>>>>> Then what is so bad about the symbolic NO_ALCHEMY_TASK? The code
+>>>>>> will be
+>>>>>> the same anyway.
+>>>>>>
+>>>>>> BTW, there are way more issues with C++ when enabling standard
+>>>>>> compliance. Not sure where all the errors come from and if they
+>>>>>> easy to
+>>>>>> fixing. But I think we should try to be as clean as possible in out
+>>>>>> external interfaces.
 >>>>>>
 >>>>>
->>>>> There will be significant differences, and I'd rather split the entire
->>>>> documentation, compared to crippling this material with
->>>>> version-specific
->>>>> notes and footers.
+>>>>> Mmm, no. I don't want to rush merging all kinds of isolated fixes for
+>>>>> all sorts of pedantic modes. I see the other one following with typeof
+>>>>> constructs, later we will get other changes triggered by other
+>>>>> restrictions on gcc extensions, and this general trend is not
+>>>>> acceptable. The fact that the external API headers still share
+>>>>> portions
+>>>>> with the implementation does not help, but this is not a reason for
+>>>>> downgrading the C dialect of the latter with ugly work arounds.
+>>>>>
+>>>>> If you really want to go this way, I suggest that you issue a single,
+>>>>> all-in-one patch making the current code base conforming with the
+>>>>> C/C++
+>>>>> standard you aim at, so that we have a general overview of the
+>>>>> changes.
+>>>>> With that information, we should be able to address strict standard
+>>>>> conformance better, which may involve addressing the
+>>>>> interface/implementation issue with headers.
 >>>>
->>>> What I meant is that it is already split. The direct links to
->>>> README.INSTALL, TROUBLESHOOTING and manual pages point to the 2.6
->>>> directory.
+>>>> It's pointless to make the core standard-compliant, C or even C++. But
+>>>
+>>> This has never been considered for sure.
+>>>
+>>>> we are exposing an interface that definitely has to be compatible with
+>>>> C++ (most of my patches) as we do not have control over the user's
+>>>> toolchain and language (there would be no good reason to restrict it).
+>>>> And if it is trivial to get the interface even ANSI compliant (last
+>>>> patch) and also recommended by GCC to do so in libraries, what pain
+>>>> does
+>>>> it cause to us to follow this road?
 >>>>
 >>>
->>> With that layout, we can't explicitly access to a particular
->>> version-specific documentation bundle from the heading menu.
+>>> The pain is that we seem to be adding more and more restrictions to the
+>>> C dialect usable by the implementation, because of that sharing with the
+>>> interface. This is not acceptable.
 >>
->> The problem is the nenu, not the layout of the documentation. As I said,
->> on the server disk, the documentation is already split.
+>> Were do we restrict us here? Give me one example.
+> 
+> Forcing cast on assigning generic pointers is a restriction, the same
+> way disabling arithmetic on them is yet another artificial restriction
+> with absolutely no upside on our side, only obfuscation.
+
+Unfortunately required for ordinary C++ support, not only strict
+standard compliance. So it is pointless to moan about it IMHO - unless
+we want to drop C++ completely.
+
+> 
 >>
->> You can try:
->> http://www.xenomai.org/documentation/xenomai-2.5/README.INSTALL
->> http://www.xenomai.org/documentation/xenomai-2.4/README.INSTALL
+>>>
+>>>> Yes, the amount of internals currently exposed via the external headers
+>>>> should be optimized. But I guess this is something to be done as
+>>>> cleanup
+>>>> once the code base, including Mercury, settled a bit more.
+>>>>
+>>>
+>>> This is a copperplate issue, regardless of whether you stack it over the
+>>> dual or single kernel system, and in this respect, the copperplate API
+>>> is stable (although I really have to document it at some point though).
 >>
->> And you will find previsous versions installation instructions.
+>> Well, I can have a look at that patch again and try to get those inline
+>> helpers out of the public. Or are they supposed to be used, directly or
+>> indirectly, by applications?
+> 
+> Some of them may be, such as pvmalloc(), which guarantees a rt-capable,
+> private memory allocation regardless of the underlying real-time core.
+> Others won't, such as all of the threadobj_* routines, which are for
+> API/skin designers instead.
+> 
+> This is the reason why I suggest again to have all the required changes
+> for building for -ansi/c++11 introduced in place first, without even
+> trying to move code around, all in a single patch. With that
+> information, we may then define some coding rules for the exposed API
+> headers for the future, and possibly rearrange the implementation so
+> that it is not exposed uselessly to external interfaces.
+
+So you just want me to fold patch 2 and 3 together? I don't fully get it
+yet.
+
+> 
 >>
->
-> Thanks, I'm aware of this. My point is: would you ask anyone who wants
-> to find information about the RTDM API over 2.6 to know about a URL? Or
-> shall we kill that menu in its current form, and provide something less
-> confusing, which can be found on the main page?
->
-> Now, we might point people at:
-> http://xenomai.org/index.php/Included_documentation_summary
->
-> Unfortunately, 3.x has a migration guide which 2.x does not have, 3.x
-> does not have a "native" API but an "alchemy" API, and 3.x will likely
-> have distinct/additional testing tools from 2.x. So this won't fly.
->
-> http://xenomai.org/index.php/<version>/Included_documentation_summary
-> would make more sense in this case.
->
-> But again, regardless of the layout of the information on disk which no
-> user cares a dime about, this is first and foremost a problem with the
-> layout of the information on the website's main page.
->
-What I meant is that it is a much easier task than having to change the 
-way the documentation is kept up-to-date on the server. Of course users 
-do not care, they are not the ones who maintain the server-side scripts.
+>> The no_alchemy_task thing is not a dialect issue, so I think it's clear
+>> now.
+> 
+> This issue is only relevant to how smart the compiler you use is with
+> respect to optimizing the output, when it sees a statically-scoped
+> variable which is explicitly read-only.
+
+Right, so one of the issue it causes has nothing to do with [strict] C++
+compliance.
+
+> 
+>  And the __typeof__ is, IMHO, also clear as gcc clearly recommends
+>> to use the underscore version in public headers. And that's all.
+>>
+> 
+> I don't have any issue with using the alternative keywords to please
+> compilers switched to pedantic mode, just like I'm usually preferring
+> __asm__ over asm in code. The fact that I'm arguing about some of the
+> proposed changes toward supporting -ansi or -std=<whatever>, does not
+> mean that I'm asking for all changes to be dropped mindlessly.
+
+Again, the typeof is for ansi, the rest is for [gcc-]C++.
+
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
