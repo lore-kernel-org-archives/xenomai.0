@@ -1,19 +1,21 @@
+Message-ID: <52F2123A.2070607@siemens.com>
+Date: Wed, 05 Feb 2014 11:28:10 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <530F60F8.2020301@xenomai.org>
-References: <CAKc2HpbgUU77_Y25KXjf6jHHLzmNX3PmOxqQsYK4dH0crk9--A@mail.gmail.com>
- <530CBFB6.6000908@xenomai.org>
- <CAKc2HpZeu+o+8iQU0q+2oi_uVkqwc71S+JgKQ7dkC7sG0RZocA@mail.gmail.com>
- <530DB32C.2070403@xenomai.org>
- <CAKc2HpbxAuOmAP2_qaWU+LbLtnY77ALSDeOum_iBpHXsYEcUtw@mail.gmail.com>
- <530F0A59.10904@xenomai.org> <530F1880.2090702@xenomai.org>
- <CAKc2HpYXNrC9qWznz6qRuacUfG=kF1qHfRjtBY38hb968yrRqQ@mail.gmail.com>
- <530F60F8.2020301@xenomai.org>
-Date: Fri, 28 Feb 2014 14:37:04 +0100
-Message-ID: <CAKc2HpadenMiEw5ZS+i9VahLVCvxqe-ffZM0nNDuThGz6gM=yA@mail.gmail.com>
-From: Kim De Mey <kim.demey@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Xenomai-forge: SIGCHLD to SIG_IGN in spawn_daemon()
-	okay?
+References: <E1WAhle-0006kB-0q@sd-51317.dedibox.fr>
+ <52F1172B.2080500@xenomai.org> <52F11F94.9000309@siemens.com>
+ <52F1231A.7080603@xenomai.org> <52F12442.3040301@xenomai.org>
+ <52F125E8.6020200@xenomai.org> <52F12700.3020400@xenomai.org>
+ <52F12800.1030500@xenomai.org> <52F12937.3050105@xenomai.org>
+ <52F12B7A.4060408@siemens.com> <52F1F749.2030501@xenomai.org>
+ <52F1FB24.4090603@siemens.com> <52F1FD3B.1070304@xenomai.org>
+ <52F1FEFC.9070708@siemens.com> <52F20604.4020200@xenomai.org>
+ <52F20780.9010002@siemens.com> <52F20E32.3010706@xenomai.org>
+In-Reply-To: <52F20E32.3010706@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : alchemy: Replace static
+ variable no_alchemy_task with macro
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,157 +24,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-2014-02-27 16:59 GMT+01:00 Philippe Gerum <rpm@xenomai.org>:
-> On 02/27/2014 12:54 PM, Kim De Mey wrote:
+On 2014-02-05 11:10, Philippe Gerum wrote:
+> On 02/05/2014 10:42 AM, Jan Kiszka wrote:
+>> So you just want me to fold patch 2 and 3 together? I don't fully get it
+>> yet.
+> 
+> I'm asking for a clarification: do you have more patches following these
+> two? I understood from the past conversation that more work was
+> required, so I'm assuming you will have. If so, then we may save a lot
+> of time by seeing the complete change set that would fit the bill for
+> supporting standard C/C++ restrictions, the way your current port work
+> seems to require it.
+
+I'm not aware of further issues after the __typeof__ thing. However, I
+will try to run through all public headers in an automated way,
+including them in strict modes to check if there is something remaining.
+Maybe we can also hook this into our build tests here.
+
+> 
 >>
->> 2014-02-27 11:50 GMT+01:00 Philippe Gerum <rpm@xenomai.org>:
 >>>
->>> On 02/27/2014 10:50 AM, Philippe Gerum wrote:
 >>>>
->>>>
->>>> On 02/27/2014 08:36 AM, Kim De Mey wrote:
->>>>>
->>>>>
->>>>> 2014-02-26 10:26 GMT+01:00 Philippe Gerum <rpm@xenomai.org>:
->>>>>>
->>>>>>
->>>>>> On 02/25/2014 08:03 PM, Kim De Mey wrote:
->>>>>>>
->>>>>>>
->>>>>>>
->>>>>>> 2014-02-25 17:07 GMT+01:00 Philippe Gerum <rpm@xenomai.org>:
->>>>>>>>
->>>>>>>>
->>>>>>>>
->>>>>>>> On 02/25/2014 10:07 AM, Kim De Mey wrote:
->>>>>>>>>
->>>>>>>>>
->>>>>>>>>
->>>>>>>>>
->>>>>>>>> Hello all,
->>>>>>>>>
->>>>>>>>> I noticed that when enabling the registry in Xenomai-forge (mercury
->>>>>>>>> core), that the SIGCHLD gets set to ignore (SIG_IGN) in the
->>>>>>>>> spawn_daemon() call.
->>>>>>>>> I guess this choice was made to make sure no zombies of the daemon
->>>>>>>>> stay alive. Correct?
->>>>>>>>
->>>>>>>>
->>>>>>>>
->>>>>>>>
->>>>>>>>
->>>>>>>> Yes.
->>>>>>>>
->>>>>>>>
->>>>>>>>>
->>>>>>>>> This does however mean that the default behaviour of the
->>>>>>>>> application
->>>>>>>>> regarding the handling of children is changed. Now I wonder
->>>>>>>>> whether it
->>>>>>>>> is okay (as a rule/practice) for a library to change this
->>>>>>>>> behaviour of
->>>>>>>>> the application. Shouldn't we look for a solution where the
->>>>>>>>> behaviour
->>>>>>>>> of the application remains untouched?
->>>>>>>>>
->>>>>>>>
->>>>>>>> The default action for SIGCHLD is to ignore it. If the app wants to
->>>>>>>> handle
->>>>>>>> this signal specifically, it will have to trap it and figure out
->>>>>>>> which
->>>>>>>> child
->>>>>>>> it cares about has exited in any case. So the library action for
->>>>>>>> this
->>>>>>>> signal
->>>>>>>> does not change anything to the default case actually.
->>>>>>>>
->>>>>>>
->>>>>>> It is true that the default is to ignore it. However setting the
->>>>>>> action explicitly to ignore does change the termination behaviour of
->>>>>>> children. The children that terminate will no longer become zombies
->>>>>>> and behaviour of wait() and wait_pid() calls is thus different (see
->>>>>>> man page of waitpid()).
->>>>>>> This different behaviour of waitpid() is also how I noticed the
->>>>>>> SIG_IGN.
->>>>>>>
->>>>>>
->>>>>> Which does not change the situation with respect to handling SIGCLD,
->>>>>> only
->>>>>> for background threads calling waitpid() to collect exit statuses
->>>>>> eagerly,
->>>>>> in absence of exit notification.
->>>>>>
->>>>>> Your application can still re-trap SIGCLD to some handler, do the
->>>>>> wait() to
->>>>>> collect the exit status there, identifying your own threads based on
->>>>>> the
->>>>>> returned pid to take proper action. In that sense, the fact that the
->>>>>> library
->>>>>> initially ignores the signal does not change the general behavior if
->>>>>> you do
->>>>>> care for such signal afterwards.
->>>>>>
->>>>>> The issue in your case seems that you don't want to set any
->>>>>> disposition for
->>>>>> SIGCLD, and therefore expect that copperplate won't do it either. So
->>>>>> the
->>>>>> alternative for preventing zombies is between trusting the
->>>>>> application for
->>>>>> collecting all statuses properly, or asking the application to use the
->>>>>> signal-based mechanism for collecting exit status. Option #2 is
->>>>>> current, as
->>>>>> you noticed it.
->>>>>
->>>>>
->>>>>
->>>>> I understand this reasoning and the fact that you can't trust the
->>>>> application to handle all the zombies and thus your choice for option
->>>>> #2. However I was just hoping there was an option #3 where the library
->>>>> does leave the behaviour of the application as is and can handle the
->>>>> daemon exit itself somehow.
->>>>
->>>>
->>>>
->>>> There is a simpler option: the library could install a valid handler
->>>> instead of SIG_IGN, which the application could override. Whether the
->>>> application does install its own handler or only copperplate does,
->>>> zombies would be prevented. I'll push something along these lines.
->>>>
+>>>> The no_alchemy_task thing is not a dialect issue, so I think it's clear
+>>>> now.
 >>>
->>> To make this clearer: if copperplate traps SIGCHLD to a valid handler,
->>> with
->>> this handler calling waitpid(<regd-pid>, WNOHANG...), then you should
->>> still
->>> be able to wait() for child processes explicitly, without the copperplate
->>> handler reaping your child application processes inadvertently.
->>>
+>>> This issue is only relevant to how smart the compiler you use is with
+>>> respect to optimizing the output, when it sees a statically-scoped
+>>> variable which is explicitly read-only.
 >>
->> That sounds good. Looks like it covers all the cases then. Thanks.
->>
->
-> That one - from the next branch - should do, well, in theory (read: not even
-> remotely tested).
->
-> http://git.xenomai.org/xenomai-forge.git/commit/?h=next&id=591427b13e1c655cb00157d6faa72e538cbd4f4b
+>> Right, so one of the issue it causes has nothing to do with [strict] C++
+>> compliance.
+> 
+> Which is the reason why I tend to suspect patches claiming about fixing
+> some perceived ugliness, factual information is better. This construct
+> is valid, but does not fit well with the gcc release you are aiming at,
+> which is another issue. Xenomai 3.x does impose minimum requirements on
+> the compiler/toolchain, including sane/working support of builtin sync
+> primitives and tls.
+> 
+> In this respect, your patch about no_alchemy_task would have been better
+> explained by the goal of not depending on too recent optimizers, which
+> does make sense to me. The language is important so that my limited
+> mono-neuronal brain can deal with your commit logs.
 
-Tested this and it works.
+OK, will do /s/ugliness/objective reason for ugliness/.
 
->
-> Btw, you can also start sysregd manually, if the auto-exec is a burden.
-> Copperplate will detect a running sysregd serving the proper fuse mount
-> point, and refrain from forking off another daemon.
->
+Jan
 
-I hadn't realized this yet, I tried it out now and that works also indeed.
-
-Again many thanks for the help!
-
-Regards,
-Kim
-
-> --
-> Philippe.
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
