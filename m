@@ -1,12 +1,18 @@
-Message-ID: <530766CD.3060707@xenomai.org>
-Date: Fri, 21 Feb 2014 15:46:37 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: <dietmar.schindler@manroland-web.com>
+Date: Wed, 5 Feb 2014 07:30:33 +0000
+Message-ID: <208C6975C932E94F86239FEA59CCA632325A6677@AUSMXMBX02.mrws.biz>
+References: <E1WAhle-0006kB-0q@sd-51317.dedibox.fr>
+ <52F1172B.2080500@xenomai.org> <52F11F94.9000309@siemens.com>
+ <52F1231A.7080603@xenomai.org> <52F12442.3040301@xenomai.org>
+ <52F125E8.6020200@xenomai.org> <52F12700.3020400@xenomai.org>
+ <52F12800.1030500@xenomai.org>
+In-Reply-To: <52F12800.1030500@xenomai.org>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <1392993075.52404.YahooMailNeo@web140605.mail.bf1.yahoo.com>
-In-Reply-To: <1392993075.52404.YahooMailNeo@web140605.mail.bf1.yahoo.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] User Space Problems
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : alchemy: Replace static
+ variable no_alchemy_task with macro
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,53 +21,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Bruno Tunes de Mello <bruno_v05_2005@yahoo.com.br>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: xenomai-git@xenomai.org, xenomai@xenomai.org
 
-On 02/21/2014 03:31 PM, Bruno Tunes de Mello wrote:
-> Hi,
->
-> I'm using a Sabre Lite board with IMX6Q for a project.
-> I
-> installed xenomai with the kernel 3.0.35 from boundary Devices, its not
-> the version indicated in README file, but I applied the patches and it
-> seems work. When it boots can see the messages:
->
-> I-pipe: Domain Xenomai registered.
-> Xenomai: hal/arm started.
-> Xenomai: scheduling class idle registered.
-> Xenomai: scheduling class rt registered.
-> Xenomai: real-time nucleus v2.6.3 (Lies and Truths) loaded.
-> Xenomai: debug mode enabled.
-> Xenomai: starting native API services.
-> Xenomai: starting POSIX services.
-> Xenomai: starting RTDM services.
->
-> But the user space is not working. When I try to execute latency and xeno-test commands I get a error message: not
->   found.
->
-> linaro@linaro-alip:/usr/xenomai/bin$ ./latency
-> bash: ./latency: No such file or directory
-> linaro@linaro-alip:/usr/xenomai/bin$ ./xeno-test
-> bash: ./xeno-test: /usr/xenomai/bin/xeno-test-run: bad interpreter: No such file or directory
-> linaro@linaro-alip:/usr/xenomai/bin$ sudo ./xeno latency
-> ./xeno: 15: exec: /usr/xenomai/bin/latency: not found
->
-> The only command that work is xeno-config. I started using Linux for this project so I don't know how to solve it.
->
-> I
->   tried to search some solution on mailing list, but anything yet. In
-> troubleshooting guide I read about EABI and OABI compilers mismatch, but
->   I compiled both kernel and user space with Linaro toolchain
-> (arm-linux-gnueabi). I tried with Ubuntu cross-compiler too
-> (arm-linux-gnueabihf), but same result.
-
-Xenomai user-space support is probably mis-compiled:
-- either you did not compile it for ARM;
-- or you compile it with a toolchain which is not the same as the one 
-used to generate the rest of the root filesystem.
-
-
--- 
-					    Gilles.
+PiBWb246IFBoaWxpcHBlIEdlcnVtDQo+IEdlc2VuZGV0OiBEaWVuc3RhZywgNC4gRmVicnVhciAy
+MDE0IDE4OjQ5DQo+DQo+IE9uIDAyLzA0LzIwMTQgMDY6NDQgUE0sIEdpbGxlcyBDaGFudGVwZXJk
+cml4IHdyb3RlOg0KPiA+IE9uIDAyLzA0LzIwMTQgMDY6MzkgUE0sIFBoaWxpcHBlIEdlcnVtIHdy
+b3RlOg0KPiA+PiBPbiAwMi8wNC8yMDE0IDA2OjMyIFBNLCBHaWxsZXMgQ2hhbnRlcGVyZHJpeCB3
+cm90ZToNCj4gPj4+IE9uIDAyLzA0LzIwMTQgMDY6MjcgUE0sIFBoaWxpcHBlIEdlcnVtIHdyb3Rl
+Og0KPiA+Pj4+IElmIGcrKyBjaG9rZXMgb24gdGhlIGluaXRpYWxpemVyIHBhcnQgYmVjYXVzZSBp
+dCBpcyBvdXRkYXRlZCwgdGhlbg0KPiA+Pj4+IHVzaW5nDQo+ID4+Pj4gb2xkLWZhc2hpb25lZCBv
+bmVzIG1heSBiZSBhbiBvcHRpb24uIEFjdHVhbGx5LCBJIGZpbmQgbWFjcm9pemluZyB0aGlzDQo+
+ID4+Pj4gZGVmaW5pdGlvbiBxdWl0ZSBiYWQuDQo+ID4+Pj4NCj4gPj4+PiBzdGF0aWMgY29uc3Qg
+UlRfVEFTSyBub19hbGNoZW15X3Rhc2sgPSB7DQo+ID4+Pj4gLSAgICAuaGFuZGxlID0gMCwNCj4g
+Pj4+PiAtICAgIC50aHJlYWQgPSAwDQo+ID4+Pj4gKyAgICBoYW5kbGU6IDAsDQo+ID4+Pj4gKyAg
+ICB0aHJlYWQ6IDANCj4gPj4+PiAgICAgfTsNCj4gPj4+DQo+ID4+PiBObywgdGhlIHByZXZpb3Vz
+IHZlcnNpb24gaXMgYmV0dGVyLCBpdCBpcyBzdGFuZGFyZCBjb21wbGlhbnQgQyBhbmQgQysrLA0K
+PiA+Pj4gdGhlIHNlY29uZCB2ZXJzaW9uIGlzIGEgZ2NjIGV4dGVuc2lvbiwgd2hpY2ggd29ya3Mg
+b25seSB3aGVuIGNvbXBpbGluZw0KPiA+Pj4gQywgaWYgSSByZW1lbWJlciBjb3JyZWN0bHkuDQo+
+ID4+Pg0KPiA+Pg0KPiA+PiBSZWNlbnQgZysrIGlzIGhhcHB5IHdpdGggYm90aCAobm8gLXN0ZCBm
+b3JjZWQgdGhvdWdoKS4gQnV0IHRoZSBmb3JtZXIgaXMNCj4gPj4gYWxsb3dlZCBieSB0aGUgQysr
+IHBhcnNlciBvbmx5IHNpbmNlIHJlY2VudGx5Lg0KPiA+Pg0KPiA+DQo+ID4gV2VsbCwgb24gdGhl
+IG90aGVyIGhhbmQ6DQo+ID4gc3RhdGljIGNvbnN0IFJUX1RBS1Mgbm9fYWxjaGVteV90YXNrOw0K
+PiA+DQo+ID4gV2lsbCB6ZXJvIGluaXRpYWxpemVkIHRoZSBzdHJ1Y3R1cmUganVzdCBhcyB3ZWxs
+Li4uDQo+ID4NCj4NCj4gSW4gdGhhdCBjYXNlIHlvdSB3aWxsIGhhdmUgdGhlIG9iamVjdCBleGlz
+dCBpbiB0aGUgLmJzcy4NCg0KSWYgZGlmZmVyZW50IGNvbXBpbGVyIHZlcnNpb25zIGZpbmQgZmF1
+bHQgd2l0aCBkaWZmZXJlbnQgaW5pdGlhbGl6ZXIgc3R5bGVzIGFuZCBzb21lIGluaXRpYWxpemVy
+IGlzIHdhbnRlZCBpbiBlaXRoZXIgY2FzZSBkdWUgdG8gdGhlIC5ic3MgaXNzdWUsIHRoZW4gcGVy
+aGFwcyBhIG5vdCBkZXNpZ25hdGVkIGluaXRpYWxpemVyIHdvdWxkIGRvLg0KDQpzdGF0aWMgY29u
+c3QgUlRfVEFTSyBub19hbGNoZW15X3Rhc2sgPSB7IDAsIDAgfTsNCg0KLS0NCkJlc3QgcmVnYXJk
+cywNCkRpZXRtYXIgU2NoaW5kbGVyDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0K
+bWFucm9sYW5kIHdlYiBzeXN0ZW1zIEdtYkggLS0gTWFuYWdlbWVudCBCb2FyZDogRWNraGFyZCBI
+b2VybmVyLU1hcmFzcyAoU3Bva2VzbWFuKSwgSm9lcm4gR29zc8OpDQpSZWdpc3RlcmVkIE9mZmlj
+ZTogQXVnc2J1cmcgLS0gVHJhZGUgUmVnaXN0ZXI6IEFHIEF1Z3NidXJnIC0tIEhSQi1Oby46IDI2
+ODE2IC0tIFZBVDogREUyODEzODk4NDANCg0KQ29uZmlkZW50aWFsaXR5IG5vdGU6DQpUaGlzIGVN
+YWlsIGFuZCBhbnkgZmlsZXMgdHJhbnNtaXR0ZWQgd2l0aCBpdCBhcmUgY29uZmlkZW50aWFsIGFu
+ZCBpbnRlbmRlZCBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGluZGl2aWR1YWwgb3IgZW50aXR5
+IHRvIHdob20gdGhleSBhcmUgYWRkcmVzc2VkLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQg
+cmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0aGF0IGFueSB1c2Ugb3IgZGlzc2Vt
+aW5hdGlvbiBvZiB0aGlzIGNvbW11bmljYXRpb24gaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYg
+eW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlTWFpbCBpbiBlcnJvciwgdGhlbiBwbGVhc2UgZGVsZXRl
+IHRoaXMgZU1haWwuDQoNCiEgUGxlYXNlIGNvbnNpZGVyIHlvdXIgZW52aXJvbm1lbnRhbCByZXNw
+b25zaWJpbGl0eSBiZWZvcmUgcHJpbnRpbmcgdGhpcyBlTWFpbCAhDQpfX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXw0K
 
