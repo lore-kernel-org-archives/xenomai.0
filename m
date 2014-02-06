@@ -1,14 +1,10 @@
-From: "Leopold Palomo-Avellaneda" <leo@alaxarxa.net>
-Date: Thu, 6 Feb 2014 16:27:07 +0100
-References: <201402061158.29746.leo@alaxarxa.net>
- <201402061328.55141.leo@alaxarxa.net> <52F3848E.9030006@xenomai.org>
-In-Reply-To: <52F3848E.9030006@xenomai.org>
+Message-ID: <52F3B77F.3020405@marel.com>
+Date: Thu, 6 Feb 2014 16:25:35 +0000
+From: Marcel van Mierlo <marcel.vanmierlo@marel.com>
 MIME-Version: 1.0
-Message-Id: <201402061627.18322.leo@alaxarxa.net>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Xddp and socket: Address family not supported by
-	protocol
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] High CPU load using q_send under pSOS skin
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,73 +13,93 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Sergi Ruiz Parra <sergi.ruiz.parra@upc.edu>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-QSBEaWpvdXMsIDYgZGUgZmVicmVyIGRlIDIwMTQsIEdpbGxlcyBDaGFudGVwZXJkcml4IHZhIGVz
-Y3JpdXJlOgo+IE9uIDAyLzA2LzIwMTQgMDE6MjggUE0sIExlb3BvbGQgUGFsb21vLUF2ZWxsYW5l
-ZGEgd3JvdGU6Cj4gPiBBIERpam91cywgNiBkZSBmZWJyZXIgZGUgMjAxNCwgR2lsbGVzIENoYW50
-ZXBlcmRyaXggdmEgZXNjcml1cmU6Cj4gPj4gT24gMDIvMDYvMjAxNCAxMjowOSBQTSwgUGhpbGlw
-cGUgR2VydW0gd3JvdGU6Cj4gPj4+IE9uIDAyLzA2LzIwMTQgMTE6NTggQU0sIExlb3BvbGQgUGFs
-b21vLUF2ZWxsYW5lZGEgd3JvdGU6Cj4gPj4+PiBIaSBhbGwsCj4gPj4+Pgo+ID4+Pj4gd2UgYXJl
-IHRyeWluZyB0byBkZXZlbG9wIGFuIGFwcGxpY2F0aW9uIHVzaW5nIHhkZHAgcHJvdG9jb2wuIFdl
-IHVzZSBhcwo+ID4gYmFzZSwKPiA+Pj4+IHRoZSB4ZGRwLWxhYmVsIGV4YWFtcGxlIHRoYXQgY29t
-cGlsZXMgYW5kIHJ1biBwZXJmZWN0bHkgaW4gb3VyIHN5c3RlbQo+ID4+Pj4gKFhlbm9tYWktMi42
-LjMgd2l0aCBMaW51eCAzLjguMTMpLgo+ID4+Pj4KPiA+Pj4+IE91ciBhcHAgaXMgZGlmZmVyZW50
-IGZyb20gdGhlIHhkZHAgZXhhbXBsZSBiZWNhdXNlIHdlIGhhdmUgZW5jYXBzdWxhdGVkCj4gPiB0
-aGUKPiA+Pj4+IHJlYWx0aW1lIHRocmVhZCBpbiBhIHRhc2ssIHRoYXQgaXQncyBpbiBhIGxpYnJh
-cnkuIFdlIGNhbiBydW4gdGhlCj4gPiB0YXNrLGNhbGxlZAo+ID4+Pj4gZnJvbSBhbm90aGVyIHBh
-cnQsIGFuZCBpdCBydXMuCj4gPj4+Pgo+ID4+Pj4gT3VyIHRhc2sgY3JlYXRlIHR3byBzb2NrZXRz
-LCBvbmUgdG8gcmVjZWl2ZSBmcm9tIHRoZSBOUlQgYW5kIGFub3RoZXIgdG8KPiA+IHNlbmQuCj4g
-Pj4+PiBZZXMsIEkga25vdyB0aGF0IHdlIGNvdWxkIGRvIGl0IGluIGp1c3Qgb25lIHNvY2tldCwg
-YnV0IGJ5IGRlc2lnbiB3ZSAKbXVzdAo+ID4gZG8KPiA+Pj4+IGl0IGluIHRoZSB3YXkuCj4gPj4+
-Pgo+ID4+Pj4gT3VyIG1haW4gcHJvYmxlbSBpcyB3aGVuIHRoZSBSVCB0YXNrIHRyeSB0byBvcGVu
-IHRoZSBzb2NrZXQsIHRoZSBpcGMKPiA+Pj4+IGRldmljZSBpc24ndCBjcmVhdGVkLiBUaGUgZXJy
-b3IgdGhhdCBhcHBlYXJzIGlzOiJzb2NrZXQ6IEFkZHJlc3MgZmFtaWx5Cj4gPiBub3QKPiA+Pj4+
-IHN1cHBvcnRlZCBieSBwcm90b2NvbCIuIEkgYXR0YWNoIHRoZSByZWFsLXRpbWUgdGFzayBjb2Rl
-IGJlbG93Lgo+ID4+Pj4KPiA+Pj4+IFRoZSB4ZGRwIHdvcmtzLCBiZWNhdXNlIHRoZSBleGFtcGxl
-cyB3b3Jrcy4gV2UgaGF2ZSBzZXZlcmFsIC9kZXYvcnRwWCAKYW5kCj4gPiB3aGVuCj4gPj4+PiB3
-ZSBydW4gdGhlIGV4YW1wbGUgdGhlIC9wcm9jL3hlbm9tYWkvcmVnaXN0cnkvcnRpcGMveGRkcC94
-ZGRwLWxhYmVsIGlzCj4gPj4+PiBjcmVhdGVkLgo+ID4+Pj4KPiA+Pj4+IFNvbWVvbmUgY291bGQg
-Z2l2ZSB1cyBzb21lIGlkZWEgYWJvdXQgd2hhdCBhcmUgd2UgZG9pbmcgd3Jvbmc/Cj4gPj4+Pgo+
-ID4+Pgo+ID4+PiBZb3VyIGFwcGxpY2F0aW9uIGlzIGxpa2VseSBub3Qgd3JhcHBpbmcgUE9TSVgg
-c3ltYm9scyBwcm9wZXJseSwgY2FsbGluZwo+ID4+PiByZWd1bGFyIHNvY2tldCgpIGluc3RlYWQg
-b2YgdGhlIFhlbm9tYWkgaW1wbGVtZW50YXRpb24uIENoZWNrCj4gPj4+IGV4YW1wbGVzL3J0ZG0v
-cHJvZmlsZXMvaXBjL01ha2VmaWxlIGZvciBMRExJQlMuIFlvdSBtdXN0IGhhdmUgLS13cmFwIG9y
-Cj4gPj4+IC1XbCxAL3NvbWUvcGF0aC9wb3NpeC53cmFwcGVycyBhcHBlYXJpbmcgaW4geW91ciBs
-aW5rIGZsYWdzLCBmb3IgdGhlCj4gPj4+IHdyYXBwaW5nIHRvIHRha2UgcGxhY2UgcHJvcGVybHku
-Cj4gPj4KPiA+PiBTZWUgYWxzbzoKPiA+Pgo+ID4gCmh0dHBzOi8vd3d3Lnhlbm9tYWkub3JnL2lu
-ZGV4LnBocC9Qb3J0aW5nX1BPU0lYX2FwcGxpY2F0aW9uc190b19YZW5vbWFpI0NvbXBpbGF0aW9u
-X2ZsYWdzCj4gPiAKPiA+IFRoYW5rcyBmb3IgdGhlIGFuc3dlcnMuCj4gPiAgIAo+ID4gSG93ZXZl
-ciwgdGhlIHBhbmRvcmEgYm94IGhhcyBiZWVuIG9wZW4uIDotKAo+ID4gCj4gPiBXZSBhcmUgdXNp
-bmcgYSBtb2RpZmllZCB2ZXJzaW9uIG9mIFNPRU0gWzFdWzJdIHdoZXJlIHRoZSBwb3NpeCBjYWxs
-cyBhbmQKPiA+IHNlbGVjdGVkIGluIGZ1bmN0aW9uIG9mIGEgZGVmaW5lcy4KPiA+IAo+ID4gV2Ug
-aGF2ZSBub3QgdXNlZCBhbnkgcG9zaXggc2tpbiwgaWYgbm90IG5hdGl2ZSBhbmQgcnRkbS4gVXNp
-bmcgdGhhdCAKd3JhcHBlcgo+ID4gaGF2ZSBkb25lIHRoYXQgb3VyIGxpYiBkb2Vzbid0IHdvcmsu
-IEFsbCBvZiBvdXIgcHJvZ3JhbXMgcmVjZWl2ZSBhbiAKU0lHWENQVQo+ID4gKENQVSB0aW1lIGxp
-bWl0IGV4Y2VlZGVkKS4gSXQncyBub3QgZWFzeSBmb3IgdXMgd2l0aCB0aGF0Lgo+IAo+IFNJR1hD
-UFUgaXMgaW4gZmFjdCBYZW5vbWFpJ3MgU0lHREVCVUcuIFNlZSBleGFtcGxlcy9uYXRpdmUvc2ln
-ZGVidWcuYyAKPiB0byBmaW5kIG91dCB3aHkgeW91IHJlY2VpdmUgU0lHREVCVUcuIE15IGJldCB3
-b3VsZCBiZSB0aGF0IHlvdSBhcmUgCj4gbWlzc2luZyBtbG9ja2FsbC4gVGhhdCBzYWlkLCBYZW5v
-bWFpIHNob3VsZCBpc3N1ZSB0aGUgbWxvY2thbGwgCj4gYXV0b21hdGljYWxseSwgeW91IHNpbXBs
-eSBoYXZlIHRvIHRha2UgY2FyZSBvZiBwdXR0aW5nIHhlbm9tYWkgCj4gbGlicmFyaWVzIGF0IHRo
-ZSBlbmQgb2YgdGhlIGxpbmstZWRpdCBjb21tYW5kIGxpbmUsIHNvIHRoYXQgeGVub21haSAKPiBs
-aWJyYXJpZXMgYXJlIGxvYWRlZCBmaXJzdC4KCk9rLAoKCm5vdyBpdCB3b3JrcywgaGFsZiB3b3Jr
-LiBTbywgaXQgY291bGQgYmUgZXF1aXZhbGVudCBpZiBJIGNhbGwgdGhlIG1sb2NrYWxsIApmdW5j
-dGlvbiBpbiB0aGUgZW50cnkgcG9pbnQgb2YgdGhlIGxpYj8gSSBtZWFuLCBpZiBJIGNyZWF0ZSBh
-IGluaXQgZnVuY3Rpb24gb2YgCnRoZSBsaWIgYW5kIHdoZW4gSSBsb2FkIGl0LCBtbG9ja2FsbCBp
-cyBjYWxsZWQuCgo+ID4gCj4gPiBTbywgY2FuIHdlIHVzZSB0aGUgeGRkcCBwcm90b2NvbCBmcm9t
-IG5hdGl2ZT8gV2hpY2ggZnVuY3Rpb25zIHdlIHNob3VsZCAKdXNlIHRvCj4gPiBzZW5kL3JlY2Vp
-dmUsIGV0Yz8KPiAKPiBTZWU6Cj4gCmh0dHA6Ly93d3cueGVub21haS5vcmcvZG9jdW1lbnRhdGlv
-bi94ZW5vbWFpLTIuNi9odG1sL2FwaS9ncm91cF9fdXNlcmFwaS5odG1sCgpnb29kLCBkb25lLiBQ
-ZXJmZWN0LiBIb3dldmVyIHdlIGFyZSBoYXZpbmcgcHJvYmxlbXMgYmVjYXVzZSBfb25seV8gb25l
-IGxhYmVsIAppcyBjcmVhdGVkLiBJIHN1cHBvc2UgdGhhdCB0aGVyZSdzIG5vIGxpbWl0IG9mIHRo
-ZSBudW1iZXIgb2Ygc29ja2V0cyBjcmVhdGVkIAppbiB0aGUgUlQgdGhyZWFkLCBubz8KCldlIGFy
-ZSBjbG9zaW5nIC4uLi4KClRoYW5rcyBmb3IgYWxsLAoKTGVvcG9sZAoKCgoKCgo+IAo+IC0tIAo+
-IAkJCQkJICAgIEdpbGxlcy4KPiAKCgotLSAKLS0KTGludXggVXNlciAxNTI2OTIKQ2F0YWxvbmlh
-Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFj
-aG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRp
-b24vcGdwLXNpZ25hdHVyZQpTaXplOiAxOTggYnl0ZXMKRGVzYzogVGhpcyBpcyBhIGRpZ2l0YWxs
-eSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVy
-bWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTQwMjA2Lzk5OWY2NDI5L2F0dGFjaG1lbnQuc2ln
-Pgo=
+Hi,
+
+I've been investigating this for a couple of days and would really 
+appreciate some insight
+on what might be going on or what I can do to progress this...
+
+I am porting a legacy pSOS application - to Xenomai on BeagleBoard Black 
+3.8 kernel
+and have noticed %CPU (via. top) of MAIN around 40% when using q_send, 
+and doing no "work".
+
+Surprisingly,  if I add a printf() and fflush() to the task body then 
+the CPU drops down to < 1%.
+
+I've checked compile options, nothing obviously wrong. Here is the 
+(abridged) body of the task.
+It just provides a periodic message for watchdog purposes.
+
+
+[%CPU ~%40]
+while{1}
+{
+     q_send(ulCanTQid, (INT32 *)&oCanMsg);
+     tm_wkafter(100);  // ~100ms
+}
+
+
+[%CPU < %1]
+while{1}
+{
+     q_send(ulCanTQid, (INT32 *)&oCanMsg);
+     tm_wkafter(100);  // ~100ms
+
+     printf("WAKING");
+     fflush(stdout);
+}
+
+there is a task calling q_receive on the queue, but I have stubbed out 
+any work to keep it as simple as possible.
+
+
+root@arm:~# cat /proc/xenomai/version
+2.6.3
+
+Here is xenomai/stat when running at ~40 %CPUfrom top. I presume that 
+ROOT/0 represents the
+Xenomai/I-PIPE kernel. Nothing is reported as hogging the CPU....
+
+Every 2.0s: cat /proc/xenomai/stat                      Sat Jan  1 
+00:09:03 2000
+
+CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+   0  0      0          186436     0     00500080   94.2  ROOT/0
+   0  2882   16         427        0     00300380    0.0  MAIN
+   0  2883   0          54128      0     00300184    1.0 onemsscheduler
+   0  2884   0          542        0     00300184    0.0  FREE
+   0  2885   0          1499       0     00300184    0.0  flsh
+   0  2886   0          1          0     00300182    0.0  EWRN
+   0  2887   0          45158      0     00300186    0.8  EEDT
+   0  2888   0          53921      0     00300184    1.4  RESP
+   0  2889   1          1          0     00300380    0.0  SERV
+   0  2890   0          10784      0     00300184    0.4  CMND
+   0  2891   2          1370       0     00300186    0.1  SERP
+   0  2896   0          53080      0     00300184    0.8  SERO
+   0  2899   0          536        0     00300186    0.0  CANP
+   0  2900   0          1          0     00300182    0.0  CANG
+   0  2901   0          1          0     00300182    0.0  CANE
+   0  2902   0          315        0     00300182    0.0  CANT
+   0  2903   1          1          0     00300380    0.0  CNMN
+   0  2904   236        628        0     00300184    0.0  CIOW
+   0  0      0          699350     0     00000000    1.0  IRQ83: [timer]
+
+
+So questions are:
+
+- Why does the %CPU under xenomai/stat not reflect whats reported by top 
+(where is the 40% going)?
+- How can I track down the high CPU load?
+- Why would using printf and fflush make such a massive difference to 
+%CPU? The application is not busy waiting or doing any CPU intensive work...
+
+
+
+Any pointers greatly appreciated...happy to provide any further 
+information....
+
+Cheers,
+Marcel.
