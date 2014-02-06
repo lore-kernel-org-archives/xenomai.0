@@ -1,22 +1,14 @@
-Message-ID: <52F3A918.3040504@siemens.com>
-Date: Thu, 06 Feb 2014 16:24:08 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: "Leopold Palomo-Avellaneda" <leo@alaxarxa.net>
+Date: Thu, 6 Feb 2014 16:27:07 +0100
+References: <201402061158.29746.leo@alaxarxa.net>
+ <201402061328.55141.leo@alaxarxa.net> <52F3848E.9030006@xenomai.org>
+In-Reply-To: <52F3848E.9030006@xenomai.org>
 MIME-Version: 1.0
-References: <E1WAhle-0006kB-0q@sd-51317.dedibox.fr>
- <52F1172B.2080500@xenomai.org> <52F11F94.9000309@siemens.com>
- <52F1231A.7080603@xenomai.org> <52F12442.3040301@xenomai.org>
- <52F125E8.6020200@xenomai.org> <52F12700.3020400@xenomai.org>
- <52F12800.1030500@xenomai.org> <52F12937.3050105@xenomai.org>
- <52F12B7A.4060408@siemens.com> <52F1F749.2030501@xenomai.org>
- <52F1FB24.4090603@siemens.com> <52F1FD3B.1070304@xenomai.org>
- <52F1FEFC.9070708@siemens.com> <52F20604.4020200@xenomai.org>
- <52F20780.9010002@siemens.com> <52F20E32.3010706@xenomai.org>
- <52F2123A.2070607@siemens.com>
-In-Reply-To: <52F2123A.2070607@siemens.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : alchemy: Replace static
- variable no_alchemy_task with macro
+Message-Id: <201402061627.18322.leo@alaxarxa.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Xddp and socket: Address family not supported by
+	protocol
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,77 +17,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Sergi Ruiz Parra <sergi.ruiz.parra@upc.edu>, xenomai@xenomai.org
 
-On 2014-02-05 11:28, Jan Kiszka wrote:
-> On 2014-02-05 11:10, Philippe Gerum wrote:
->> On 02/05/2014 10:42 AM, Jan Kiszka wrote:
->>> So you just want me to fold patch 2 and 3 together? I don't fully get it
->>> yet.
->>
->> I'm asking for a clarification: do you have more patches following these
->> two? I understood from the past conversation that more work was
->> required, so I'm assuming you will have. If so, then we may save a lot
->> of time by seeing the complete change set that would fit the bill for
->> supporting standard C/C++ restrictions, the way your current port work
->> seems to require it.
-> 
-> I'm not aware of further issues after the __typeof__ thing. However, I
-> will try to run through all public headers in an automated way,
-> including them in strict modes to check if there is something remaining.
-> Maybe we can also hook this into our build tests here.
-
-Done this, found 2 more spots regarding typeof, but that's it. What I
-tested was this:
-
-#!/bin/bash
-
-XENO_INCLUDE_DIR= \
-	`. xeno-config --core >/dev/null; echo $XENO_INCLUDE_DIR`
-
-exclude_patterns="
-	\/uapi\/ \
-	boilerplate\/private-list.h \
-	boilerplate\/shared-list.h"
-
-for f in `find $XENO_INCLUDE_DIR -name *.h`; do
-	echo -n "$f - "
-	skip=0
-	for pattern in $exclude_patterns; do
-		if [ "${f/$pattern//}" != "$f" ]; then
-			echo "skipped"
-			skip=1
-			break
-		fi
-	done
-	if [ $skip -ne 0 ]; then
-		continue;
-	fi
-	echo "#include <"${f#include/}">" > .build-test.c
-	gcc -Wall -Werror `xeno-config --skin=alchemy --skin=posix \
-		--skin=vxworks --skin=psos --cflags` -c .build-test.c \
-		-o .build-test.o
-	if [ $? != 0 ]; then
-		break;
-	fi
-	echo -n "C "
-	g++ -std=c++98 -Wall -Werror `xeno-config --skin=alchemy \
-		--skin=posix --skin=vxworks --skin=psos --cflags` \
-		-c .build-test.c -o .build-test.o
-	if [ $? != 0 ]; then
-		break;
-	fi
-	echo "C++"
-	rm -f .build-test.[co]
-done
-
-So the patch
-http://git.xenomai.org/xenomai-jki.git/commit/?h=for-forge&id=884b5d74df015c39961452965e28a8ec69a92a3c
-in for-forge now contains everything required to include all headers in
-strict standard mode.
-http://git.xenomai.org/xenomai-jki.git/commit/?h=for-forge&id=a79f18bf7254eb91ad64def9b30d6b4f68e9247b
-is required already for permissive GCC C++ mode.
-
-Jan
-
+QSBEaWpvdXMsIDYgZGUgZmVicmVyIGRlIDIwMTQsIEdpbGxlcyBDaGFudGVwZXJkcml4IHZhIGVz
+Y3JpdXJlOgo+IE9uIDAyLzA2LzIwMTQgMDE6MjggUE0sIExlb3BvbGQgUGFsb21vLUF2ZWxsYW5l
+ZGEgd3JvdGU6Cj4gPiBBIERpam91cywgNiBkZSBmZWJyZXIgZGUgMjAxNCwgR2lsbGVzIENoYW50
+ZXBlcmRyaXggdmEgZXNjcml1cmU6Cj4gPj4gT24gMDIvMDYvMjAxNCAxMjowOSBQTSwgUGhpbGlw
+cGUgR2VydW0gd3JvdGU6Cj4gPj4+IE9uIDAyLzA2LzIwMTQgMTE6NTggQU0sIExlb3BvbGQgUGFs
+b21vLUF2ZWxsYW5lZGEgd3JvdGU6Cj4gPj4+PiBIaSBhbGwsCj4gPj4+Pgo+ID4+Pj4gd2UgYXJl
+IHRyeWluZyB0byBkZXZlbG9wIGFuIGFwcGxpY2F0aW9uIHVzaW5nIHhkZHAgcHJvdG9jb2wuIFdl
+IHVzZSBhcwo+ID4gYmFzZSwKPiA+Pj4+IHRoZSB4ZGRwLWxhYmVsIGV4YWFtcGxlIHRoYXQgY29t
+cGlsZXMgYW5kIHJ1biBwZXJmZWN0bHkgaW4gb3VyIHN5c3RlbQo+ID4+Pj4gKFhlbm9tYWktMi42
+LjMgd2l0aCBMaW51eCAzLjguMTMpLgo+ID4+Pj4KPiA+Pj4+IE91ciBhcHAgaXMgZGlmZmVyZW50
+IGZyb20gdGhlIHhkZHAgZXhhbXBsZSBiZWNhdXNlIHdlIGhhdmUgZW5jYXBzdWxhdGVkCj4gPiB0
+aGUKPiA+Pj4+IHJlYWx0aW1lIHRocmVhZCBpbiBhIHRhc2ssIHRoYXQgaXQncyBpbiBhIGxpYnJh
+cnkuIFdlIGNhbiBydW4gdGhlCj4gPiB0YXNrLGNhbGxlZAo+ID4+Pj4gZnJvbSBhbm90aGVyIHBh
+cnQsIGFuZCBpdCBydXMuCj4gPj4+Pgo+ID4+Pj4gT3VyIHRhc2sgY3JlYXRlIHR3byBzb2NrZXRz
+LCBvbmUgdG8gcmVjZWl2ZSBmcm9tIHRoZSBOUlQgYW5kIGFub3RoZXIgdG8KPiA+IHNlbmQuCj4g
+Pj4+PiBZZXMsIEkga25vdyB0aGF0IHdlIGNvdWxkIGRvIGl0IGluIGp1c3Qgb25lIHNvY2tldCwg
+YnV0IGJ5IGRlc2lnbiB3ZSAKbXVzdAo+ID4gZG8KPiA+Pj4+IGl0IGluIHRoZSB3YXkuCj4gPj4+
+Pgo+ID4+Pj4gT3VyIG1haW4gcHJvYmxlbSBpcyB3aGVuIHRoZSBSVCB0YXNrIHRyeSB0byBvcGVu
+IHRoZSBzb2NrZXQsIHRoZSBpcGMKPiA+Pj4+IGRldmljZSBpc24ndCBjcmVhdGVkLiBUaGUgZXJy
+b3IgdGhhdCBhcHBlYXJzIGlzOiJzb2NrZXQ6IEFkZHJlc3MgZmFtaWx5Cj4gPiBub3QKPiA+Pj4+
+IHN1cHBvcnRlZCBieSBwcm90b2NvbCIuIEkgYXR0YWNoIHRoZSByZWFsLXRpbWUgdGFzayBjb2Rl
+IGJlbG93Lgo+ID4+Pj4KPiA+Pj4+IFRoZSB4ZGRwIHdvcmtzLCBiZWNhdXNlIHRoZSBleGFtcGxl
+cyB3b3Jrcy4gV2UgaGF2ZSBzZXZlcmFsIC9kZXYvcnRwWCAKYW5kCj4gPiB3aGVuCj4gPj4+PiB3
+ZSBydW4gdGhlIGV4YW1wbGUgdGhlIC9wcm9jL3hlbm9tYWkvcmVnaXN0cnkvcnRpcGMveGRkcC94
+ZGRwLWxhYmVsIGlzCj4gPj4+PiBjcmVhdGVkLgo+ID4+Pj4KPiA+Pj4+IFNvbWVvbmUgY291bGQg
+Z2l2ZSB1cyBzb21lIGlkZWEgYWJvdXQgd2hhdCBhcmUgd2UgZG9pbmcgd3Jvbmc/Cj4gPj4+Pgo+
+ID4+Pgo+ID4+PiBZb3VyIGFwcGxpY2F0aW9uIGlzIGxpa2VseSBub3Qgd3JhcHBpbmcgUE9TSVgg
+c3ltYm9scyBwcm9wZXJseSwgY2FsbGluZwo+ID4+PiByZWd1bGFyIHNvY2tldCgpIGluc3RlYWQg
+b2YgdGhlIFhlbm9tYWkgaW1wbGVtZW50YXRpb24uIENoZWNrCj4gPj4+IGV4YW1wbGVzL3J0ZG0v
+cHJvZmlsZXMvaXBjL01ha2VmaWxlIGZvciBMRExJQlMuIFlvdSBtdXN0IGhhdmUgLS13cmFwIG9y
+Cj4gPj4+IC1XbCxAL3NvbWUvcGF0aC9wb3NpeC53cmFwcGVycyBhcHBlYXJpbmcgaW4geW91ciBs
+aW5rIGZsYWdzLCBmb3IgdGhlCj4gPj4+IHdyYXBwaW5nIHRvIHRha2UgcGxhY2UgcHJvcGVybHku
+Cj4gPj4KPiA+PiBTZWUgYWxzbzoKPiA+Pgo+ID4gCmh0dHBzOi8vd3d3Lnhlbm9tYWkub3JnL2lu
+ZGV4LnBocC9Qb3J0aW5nX1BPU0lYX2FwcGxpY2F0aW9uc190b19YZW5vbWFpI0NvbXBpbGF0aW9u
+X2ZsYWdzCj4gPiAKPiA+IFRoYW5rcyBmb3IgdGhlIGFuc3dlcnMuCj4gPiAgIAo+ID4gSG93ZXZl
+ciwgdGhlIHBhbmRvcmEgYm94IGhhcyBiZWVuIG9wZW4uIDotKAo+ID4gCj4gPiBXZSBhcmUgdXNp
+bmcgYSBtb2RpZmllZCB2ZXJzaW9uIG9mIFNPRU0gWzFdWzJdIHdoZXJlIHRoZSBwb3NpeCBjYWxs
+cyBhbmQKPiA+IHNlbGVjdGVkIGluIGZ1bmN0aW9uIG9mIGEgZGVmaW5lcy4KPiA+IAo+ID4gV2Ug
+aGF2ZSBub3QgdXNlZCBhbnkgcG9zaXggc2tpbiwgaWYgbm90IG5hdGl2ZSBhbmQgcnRkbS4gVXNp
+bmcgdGhhdCAKd3JhcHBlcgo+ID4gaGF2ZSBkb25lIHRoYXQgb3VyIGxpYiBkb2Vzbid0IHdvcmsu
+IEFsbCBvZiBvdXIgcHJvZ3JhbXMgcmVjZWl2ZSBhbiAKU0lHWENQVQo+ID4gKENQVSB0aW1lIGxp
+bWl0IGV4Y2VlZGVkKS4gSXQncyBub3QgZWFzeSBmb3IgdXMgd2l0aCB0aGF0Lgo+IAo+IFNJR1hD
+UFUgaXMgaW4gZmFjdCBYZW5vbWFpJ3MgU0lHREVCVUcuIFNlZSBleGFtcGxlcy9uYXRpdmUvc2ln
+ZGVidWcuYyAKPiB0byBmaW5kIG91dCB3aHkgeW91IHJlY2VpdmUgU0lHREVCVUcuIE15IGJldCB3
+b3VsZCBiZSB0aGF0IHlvdSBhcmUgCj4gbWlzc2luZyBtbG9ja2FsbC4gVGhhdCBzYWlkLCBYZW5v
+bWFpIHNob3VsZCBpc3N1ZSB0aGUgbWxvY2thbGwgCj4gYXV0b21hdGljYWxseSwgeW91IHNpbXBs
+eSBoYXZlIHRvIHRha2UgY2FyZSBvZiBwdXR0aW5nIHhlbm9tYWkgCj4gbGlicmFyaWVzIGF0IHRo
+ZSBlbmQgb2YgdGhlIGxpbmstZWRpdCBjb21tYW5kIGxpbmUsIHNvIHRoYXQgeGVub21haSAKPiBs
+aWJyYXJpZXMgYXJlIGxvYWRlZCBmaXJzdC4KCk9rLAoKCm5vdyBpdCB3b3JrcywgaGFsZiB3b3Jr
+LiBTbywgaXQgY291bGQgYmUgZXF1aXZhbGVudCBpZiBJIGNhbGwgdGhlIG1sb2NrYWxsIApmdW5j
+dGlvbiBpbiB0aGUgZW50cnkgcG9pbnQgb2YgdGhlIGxpYj8gSSBtZWFuLCBpZiBJIGNyZWF0ZSBh
+IGluaXQgZnVuY3Rpb24gb2YgCnRoZSBsaWIgYW5kIHdoZW4gSSBsb2FkIGl0LCBtbG9ja2FsbCBp
+cyBjYWxsZWQuCgo+ID4gCj4gPiBTbywgY2FuIHdlIHVzZSB0aGUgeGRkcCBwcm90b2NvbCBmcm9t
+IG5hdGl2ZT8gV2hpY2ggZnVuY3Rpb25zIHdlIHNob3VsZCAKdXNlIHRvCj4gPiBzZW5kL3JlY2Vp
+dmUsIGV0Yz8KPiAKPiBTZWU6Cj4gCmh0dHA6Ly93d3cueGVub21haS5vcmcvZG9jdW1lbnRhdGlv
+bi94ZW5vbWFpLTIuNi9odG1sL2FwaS9ncm91cF9fdXNlcmFwaS5odG1sCgpnb29kLCBkb25lLiBQ
+ZXJmZWN0LiBIb3dldmVyIHdlIGFyZSBoYXZpbmcgcHJvYmxlbXMgYmVjYXVzZSBfb25seV8gb25l
+IGxhYmVsIAppcyBjcmVhdGVkLiBJIHN1cHBvc2UgdGhhdCB0aGVyZSdzIG5vIGxpbWl0IG9mIHRo
+ZSBudW1iZXIgb2Ygc29ja2V0cyBjcmVhdGVkIAppbiB0aGUgUlQgdGhyZWFkLCBubz8KCldlIGFy
+ZSBjbG9zaW5nIC4uLi4KClRoYW5rcyBmb3IgYWxsLAoKTGVvcG9sZAoKCgoKCgo+IAo+IC0tIAo+
+IAkJCQkJICAgIEdpbGxlcy4KPiAKCgotLSAKLS0KTGludXggVXNlciAxNTI2OTIKQ2F0YWxvbmlh
+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFj
+aG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRp
+b24vcGdwLXNpZ25hdHVyZQpTaXplOiAxOTggYnl0ZXMKRGVzYzogVGhpcyBpcyBhIGRpZ2l0YWxs
+eSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVy
+bWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTQwMjA2Lzk5OWY2NDI5L2F0dGFjaG1lbnQuc2ln
+Pgo=
