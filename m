@@ -1,12 +1,15 @@
-Message-ID: <52F3DBDB.4060805@xenomai.org>
-Date: Thu, 06 Feb 2014 20:00:43 +0100
+Message-ID: <52F4036C.4010401@xenomai.org>
+Date: Thu, 06 Feb 2014 22:49:32 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52F3B77F.3020405@marel.com> <52F3C5DD.8010208@xenomai.org>
-In-Reply-To: <52F3C5DD.8010208@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <201402061158.29746.leo@alaxarxa.net>
+ <201402061328.55141.leo@alaxarxa.net> <52F3848E.9030006@xenomai.org>
+ <201402061627.18322.leo@alaxarxa.net>
+In-Reply-To: <201402061627.18322.leo@alaxarxa.net>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] High CPU load using q_send under pSOS skin
+Subject: Re: [Xenomai] Xddp and socket: Address family not supported by
+	protocol
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,58 +18,142 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Cc: Sergi Ruiz Parra <sergi.ruiz.parra@upc.edu>, xenomai@xenomai.org
 
-On 02/06/2014 06:26 PM, Philippe Gerum wrote:
->> Every 2.0s: cat /proc/xenomai/stat                      Sat Jan  1
->> 00:09:03 2000
->>
->> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
->>     0  0      0          186436     0     00500080   94.2  ROOT/0
->>     0  2882   16         427        0     00300380    0.0  MAIN
->>     0  2883   0          54128      0     00300184    1.0 onemsscheduler
->>     0  2884   0          542        0     00300184    0.0  FREE
->>     0  2885   0          1499       0     00300184    0.0  flsh
->>     0  2886   0          1          0     00300182    0.0  EWRN
->>     0  2887   0          45158      0     00300186    0.8  EEDT
->>     0  2888   0          53921      0     00300184    1.4  RESP
->>     0  2889   1          1          0     00300380    0.0  SERV
->>     0  2890   0          10784      0     00300184    0.4  CMND
->>     0  2891   2          1370       0     00300186    0.1  SERP
->>     0  2896   0          53080      0     00300184    0.8  SERO
->>     0  2899   0          536        0     00300186    0.0  CANP
->>     0  2900   0          1          0     00300182    0.0  CANG
->>     0  2901   0          1          0     00300182    0.0  CANE
->>     0  2902   0          315        0     00300182    0.0  CANT
->>     0  2903   1          1          0     00300380    0.0  CNMN
->>     0  2904   236        628        0     00300184    0.0  CIOW
->>     0  0      0          699350     0     00000000    1.0  IRQ83: [timer]
->>
->>
->> So questions are:
->>
->> - Why does the %CPU under xenomai/stat not reflect whats reported by top
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 02/06/2014 04:27 PM, Leopold Palomo-Avellaneda wrote:
+> A Dijous, 6 de febrer de 2014, Gilles Chanteperdrix va escriure:
+>> On 02/06/2014 01:28 PM, Leopold Palomo-Avellaneda wrote:
+>>> A Dijous, 6 de febrer de 2014, Gilles Chanteperdrix va
+>>> escriure:
+>>>> On 02/06/2014 12:09 PM, Philippe Gerum wrote:
+>>>>> On 02/06/2014 11:58 AM, Leopold Palomo-Avellaneda wrote:
+>>>>>> Hi all,
+>>>>>> 
+>>>>>> we are trying to develop an application using xddp
+>>>>>> protocol. We use as
+>>> base,
+>>>>>> the xddp-label exaample that compiles and run perfectly
+>>>>>> in our system (Xenomai-2.6.3 with Linux 3.8.13).
+>>>>>> 
+>>>>>> Our app is different from the xddp example because we
+>>>>>> have encapsulated
+>>> the
+>>>>>> realtime thread in a task, that it's in a library. We can
+>>>>>> run the
+>>> task,called
+>>>>>> from another part, and it rus.
+>>>>>> 
+>>>>>> Our task create two sockets, one to receive from the NRT
+>>>>>> and another to
+>>> send.
+>>>>>> Yes, I know that we could do it in just one socket, but
+>>>>>> by design we
+> must
+>>> do
+>>>>>> it in the way.
+>>>>>> 
+>>>>>> Our main problem is when the RT task try to open the
+>>>>>> socket, the ipc device isn't created. The error that
+>>>>>> appears is:"socket: Address family
+>>> not
+>>>>>> supported by protocol". I attach the real-time task code
+>>>>>> below.
+>>>>>> 
+>>>>>> The xddp works, because the examples works. We have
+>>>>>> several /dev/rtpX
+> and
+>>> when
+>>>>>> we run the example the
+>>>>>> /proc/xenomai/registry/rtipc/xddp/xddp-label is created.
+>>>>>> 
+>>>>>> Someone could give us some idea about what are we doing
+>>>>>> wrong?
+>>>>>> 
+>>>>> 
+>>>>> Your application is likely not wrapping POSIX symbols
+>>>>> properly, calling regular socket() instead of the Xenomai
+>>>>> implementation. Check examples/rtdm/profiles/ipc/Makefile
+>>>>> for LDLIBS. You must have --wrap or 
+>>>>> -Wl,@/some/path/posix.wrappers appearing in your link
+>>>>> flags, for the wrapping to take place properly.
+>>>> 
+>>>> See also:
+>>>> 
+>>> 
+> https://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai#Compilation_flags
+>>>
+>>>
+> 
+Thanks for the answers.
+>>> 
+>>> However, the pandora box has been open. :-(
+>>> 
+>>> We are using a modified version of SOEM [1][2] where the posix
+>>> calls and selected in function of a defines.
+>>> 
+>>> We have not used any posix skin, if not native and rtdm. Using
+>>> that
+> wrapper
+>>> have done that our lib doesn't work. All of our programs
+>>> receive an
+> SIGXCPU
+>>> (CPU time limit exceeded). It's not easy for us with that.
+>> 
+>> SIGXCPU is in fact Xenomai's SIGDEBUG. See
+>> examples/native/sigdebug.c to find out why you receive SIGDEBUG.
+>> My bet would be that you are missing mlockall. That said, Xenomai
+>> should issue the mlockall automatically, you simply have to take
+>> care of putting xenomai libraries at the end of the link-edit
+>> command line, so that xenomai libraries are loaded first.
+> 
+> Ok,
+> 
+> 
+> now it works, half work. So, it could be equivalent if I call the
+> mlockall function in the entry point of the lib? I mean, if I
+> create a init function of the lib and when I load it, mlockall is
+> called.
+
+If the library uses xenomai posix skin services (through wrapping),
+mlockall is not sufficient, the xenomai posix skin library has an
+initialization function which must be called first. Getting a library
+written for Linux implementation to work with xenomai requires several
+changes (which the document posted in answer to your first question
+tries to document). So, if you do not need this library to run in
+primary mode, I suggest you stick to your original plan which was to
+use RTDM without the posix skin wrapping.
+
+> 
+>>> 
+>>> So, can we use the xddp protocol from native? Which functions
+>>> we should
+> use to
+>>> send/receive, etc?
+>> 
+>> See:
+>> 
+> http://www.xenomai.org/documentation/xenomai-2.6/html/api/group__userapi.html
 >
-> Because top reports the CPU consumed when Linux is active, which
-> excludes Xenomai activity.
->
->> (where is the 40% going)?
->
-> Good question.
+>  good, done. Perfect. However we are having problems because _only_
+> one label is created. I suppose that there's no limit of the number
+> of sockets created in the RT thread, no?
 
-I think we have a known issue: the registers passed to Linux timer tick 
-are the ones of the last timer tick, which may very well happen to 
-always hit the same task. Could this be the cause?
+Please try and reduce the problematic program to the minimal
+self-contained test case which we can run to reproduce the issue you have.
 
-Is the MAIN task the one which does the tm_wkafter ?
 
-Is the hardware timer of the beaglebone black shared with Linux (like 
-omap4) or do linux and xenomai have different timers (like omap3)?
+- -- 
+                                                                Gilles.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+Comment: Using GnuPG with Icedove - http://www.enigmail.net/
 
-Could you arm the T_WARNSW bit to see if the MAIN task experiences mode 
-switches?
-
--- 
-					    Gilles.
+iD8DBQFS9ANsGpcgE6m/fboRAgz9AJoDR4rwNtvZHSJUgl148FyviXQsGwCggYMr
+92w+o+8nXjWXxbEMdniTSDo=
+=87KQ
+-----END PGP SIGNATURE-----
 
