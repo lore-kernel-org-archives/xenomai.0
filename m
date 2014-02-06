@@ -1,12 +1,13 @@
-From: "Leopold Palomo-Avellaneda" <leo@alaxarxa.net>
-Date: Thu, 6 Feb 2014 13:28:50 +0100
+Message-ID: <52F3848E.9030006@xenomai.org>
+Date: Thu, 06 Feb 2014 13:48:14 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
 References: <201402061158.29746.leo@alaxarxa.net>
  <52F36D64.7000109@xenomai.org> <52F372B5.9050909@xenomai.org>
-In-Reply-To: <52F372B5.9050909@xenomai.org>
-MIME-Version: 1.0
-Message-Id: <201402061328.55141.leo@alaxarxa.net>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <201402061328.55141.leo@alaxarxa.net>
+In-Reply-To: <201402061328.55141.leo@alaxarxa.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Xddp and socket: Address family not supported by
 	protocol
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,53 +18,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
 Cc: Sergi Ruiz Parra <sergi.ruiz.parra@upc.edu>, xenomai@xenomai.org
 
-QSBEaWpvdXMsIDYgZGUgZmVicmVyIGRlIDIwMTQsIEdpbGxlcyBDaGFudGVwZXJkcml4IHZhIGVz
-Y3JpdXJlOgo+IE9uIDAyLzA2LzIwMTQgMTI6MDkgUE0sIFBoaWxpcHBlIEdlcnVtIHdyb3RlOgo+
-ID4gT24gMDIvMDYvMjAxNCAxMTo1OCBBTSwgTGVvcG9sZCBQYWxvbW8tQXZlbGxhbmVkYSB3cm90
-ZToKPiA+PiBIaSBhbGwsCj4gPj4KPiA+PiB3ZSBhcmUgdHJ5aW5nIHRvIGRldmVsb3AgYW4gYXBw
-bGljYXRpb24gdXNpbmcgeGRkcCBwcm90b2NvbC4gV2UgdXNlIGFzIApiYXNlLAo+ID4+IHRoZSB4
-ZGRwLWxhYmVsIGV4YWFtcGxlIHRoYXQgY29tcGlsZXMgYW5kIHJ1biBwZXJmZWN0bHkgaW4gb3Vy
-IHN5c3RlbQo+ID4+IChYZW5vbWFpLTIuNi4zIHdpdGggTGludXggMy44LjEzKS4KPiA+Pgo+ID4+
-IE91ciBhcHAgaXMgZGlmZmVyZW50IGZyb20gdGhlIHhkZHAgZXhhbXBsZSBiZWNhdXNlIHdlIGhh
-dmUgZW5jYXBzdWxhdGVkIAp0aGUKPiA+PiByZWFsdGltZSB0aHJlYWQgaW4gYSB0YXNrLCB0aGF0
-IGl0J3MgaW4gYSBsaWJyYXJ5LiBXZSBjYW4gcnVuIHRoZSAKdGFzayxjYWxsZWQKPiA+PiBmcm9t
-IGFub3RoZXIgcGFydCwgYW5kIGl0IHJ1cy4KPiA+Pgo+ID4+IE91ciB0YXNrIGNyZWF0ZSB0d28g
-c29ja2V0cywgb25lIHRvIHJlY2VpdmUgZnJvbSB0aGUgTlJUIGFuZCBhbm90aGVyIHRvIApzZW5k
-Lgo+ID4+IFllcywgSSBrbm93IHRoYXQgd2UgY291bGQgZG8gaXQgaW4ganVzdCBvbmUgc29ja2V0
-LCBidXQgYnkgZGVzaWduIHdlIG11c3QgCmRvCj4gPj4gaXQgaW4gdGhlIHdheS4KPiA+Pgo+ID4+
-IE91ciBtYWluIHByb2JsZW0gaXMgd2hlbiB0aGUgUlQgdGFzayB0cnkgdG8gb3BlbiB0aGUgc29j
-a2V0LCB0aGUgaXBjCj4gPj4gZGV2aWNlIGlzbid0IGNyZWF0ZWQuIFRoZSBlcnJvciB0aGF0IGFw
-cGVhcnMgaXM6InNvY2tldDogQWRkcmVzcyBmYW1pbHkgCm5vdAo+ID4+IHN1cHBvcnRlZCBieSBw
-cm90b2NvbCIuIEkgYXR0YWNoIHRoZSByZWFsLXRpbWUgdGFzayBjb2RlIGJlbG93Lgo+ID4+Cj4g
-Pj4gVGhlIHhkZHAgd29ya3MsIGJlY2F1c2UgdGhlIGV4YW1wbGVzIHdvcmtzLiBXZSBoYXZlIHNl
-dmVyYWwgL2Rldi9ydHBYIGFuZCAKd2hlbgo+ID4+IHdlIHJ1biB0aGUgZXhhbXBsZSB0aGUgL3By
-b2MveGVub21haS9yZWdpc3RyeS9ydGlwYy94ZGRwL3hkZHAtbGFiZWwgaXMKPiA+PiBjcmVhdGVk
-Lgo+ID4+Cj4gPj4gU29tZW9uZSBjb3VsZCBnaXZlIHVzIHNvbWUgaWRlYSBhYm91dCB3aGF0IGFy
-ZSB3ZSBkb2luZyB3cm9uZz8KPiA+Pgo+ID4gCj4gPiBZb3VyIGFwcGxpY2F0aW9uIGlzIGxpa2Vs
-eSBub3Qgd3JhcHBpbmcgUE9TSVggc3ltYm9scyBwcm9wZXJseSwgY2FsbGluZyAKPiA+IHJlZ3Vs
-YXIgc29ja2V0KCkgaW5zdGVhZCBvZiB0aGUgWGVub21haSBpbXBsZW1lbnRhdGlvbi4gQ2hlY2sg
-Cj4gPiBleGFtcGxlcy9ydGRtL3Byb2ZpbGVzL2lwYy9NYWtlZmlsZSBmb3IgTERMSUJTLiBZb3Ug
-bXVzdCBoYXZlIC0td3JhcCBvciAKPiA+IC1XbCxAL3NvbWUvcGF0aC9wb3NpeC53cmFwcGVycyBh
-cHBlYXJpbmcgaW4geW91ciBsaW5rIGZsYWdzLCBmb3IgdGhlIAo+ID4gd3JhcHBpbmcgdG8gdGFr
-ZSBwbGFjZSBwcm9wZXJseS4KPiAKPiBTZWUgYWxzbzoKPiAKaHR0cHM6Ly93d3cueGVub21haS5v
-cmcvaW5kZXgucGhwL1BvcnRpbmdfUE9TSVhfYXBwbGljYXRpb25zX3RvX1hlbm9tYWkjQ29tcGls
-YXRpb25fZmxhZ3MKClRoYW5rcyBmb3IgdGhlIGFuc3dlcnMuIAogCkhvd2V2ZXIsIHRoZSBwYW5k
-b3JhIGJveCBoYXMgYmVlbiBvcGVuLiA6LSgKCldlIGFyZSB1c2luZyBhIG1vZGlmaWVkIHZlcnNp
-b24gb2YgU09FTSBbMV1bMl0gd2hlcmUgdGhlIHBvc2l4IGNhbGxzIGFuZCAKc2VsZWN0ZWQgaW4g
-ZnVuY3Rpb24gb2YgYSBkZWZpbmVzLgoKV2UgaGF2ZSBub3QgdXNlZCBhbnkgcG9zaXggc2tpbiwg
-aWYgbm90IG5hdGl2ZSBhbmQgcnRkbS4gVXNpbmcgdGhhdCB3cmFwcGVyIApoYXZlIGRvbmUgdGhh
-dCBvdXIgbGliIGRvZXNuJ3Qgd29yay4gQWxsIG9mIG91ciBwcm9ncmFtcyByZWNlaXZlIGFuIFNJ
-R1hDUFUgCihDUFUgdGltZSBsaW1pdCBleGNlZWRlZCkuIEl0J3Mgbm90IGVhc3kgZm9yIHVzIHdp
-dGggdGhhdC4KClNvLCBjYW4gd2UgdXNlIHRoZSB4ZGRwIHByb3RvY29sIGZyb20gbmF0aXZlPyBX
-aGljaCBmdW5jdGlvbnMgd2Ugc2hvdWxkIHVzZSB0byAKc2VuZC9yZWNlaXZlLCBldGM/CgpSZWdh
-cmRzLAoKCkxlb3BvbGQKCgpbMV0gaHR0cDovL3NvZW0uYmVybGlvcy5kZS8KWzJdIGh0dHBzOi8v
-c2lyLnVwYy5lZHUvd2lraXMvcm9ibGFiL2luZGV4LnBocC9EZXZlbG9wbWVudC9Tb2VtCgotLSAK
-LS0KTGludXggVXNlciAxNTI2OTIKQ2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAt
-LS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6
-IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAxOTgg
-Ynl0ZXMKRGVzYzogVGhpcyBpcyBhIGRpZ2l0YWxseSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6
-IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIw
-MTQwMjA2LzhiMjIzYzE0L2F0dGFjaG1lbnQuc2lnPgo=
+On 02/06/2014 01:28 PM, Leopold Palomo-Avellaneda wrote:
+> A Dijous, 6 de febrer de 2014, Gilles Chanteperdrix va escriure:
+>> On 02/06/2014 12:09 PM, Philippe Gerum wrote:
+>>> On 02/06/2014 11:58 AM, Leopold Palomo-Avellaneda wrote:
+>>>> Hi all,
+>>>>
+>>>> we are trying to develop an application using xddp protocol. We use as
+> base,
+>>>> the xddp-label exaample that compiles and run perfectly in our system
+>>>> (Xenomai-2.6.3 with Linux 3.8.13).
+>>>>
+>>>> Our app is different from the xddp example because we have encapsulated
+> the
+>>>> realtime thread in a task, that it's in a library. We can run the
+> task,called
+>>>> from another part, and it rus.
+>>>>
+>>>> Our task create two sockets, one to receive from the NRT and another to
+> send.
+>>>> Yes, I know that we could do it in just one socket, but by design we must
+> do
+>>>> it in the way.
+>>>>
+>>>> Our main problem is when the RT task try to open the socket, the ipc
+>>>> device isn't created. The error that appears is:"socket: Address family
+> not
+>>>> supported by protocol". I attach the real-time task code below.
+>>>>
+>>>> The xddp works, because the examples works. We have several /dev/rtpX and
+> when
+>>>> we run the example the /proc/xenomai/registry/rtipc/xddp/xddp-label is
+>>>> created.
+>>>>
+>>>> Someone could give us some idea about what are we doing wrong?
+>>>>
+>>>
+>>> Your application is likely not wrapping POSIX symbols properly, calling
+>>> regular socket() instead of the Xenomai implementation. Check
+>>> examples/rtdm/profiles/ipc/Makefile for LDLIBS. You must have --wrap or
+>>> -Wl,@/some/path/posix.wrappers appearing in your link flags, for the
+>>> wrapping to take place properly.
+>>
+>> See also:
+>>
+> https://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai#Compilation_flags
+> 
+> Thanks for the answers.
+>   
+> However, the pandora box has been open. :-(
+> 
+> We are using a modified version of SOEM [1][2] where the posix calls and
+> selected in function of a defines.
+> 
+> We have not used any posix skin, if not native and rtdm. Using that wrapper
+> have done that our lib doesn't work. All of our programs receive an SIGXCPU
+> (CPU time limit exceeded). It's not easy for us with that.
+
+SIGXCPU is in fact Xenomai's SIGDEBUG. See examples/native/sigdebug.c 
+to find out why you receive SIGDEBUG. My bet would be that you are 
+missing mlockall. That said, Xenomai should issue the mlockall 
+automatically, you simply have to take care of putting xenomai 
+libraries at the end of the link-edit command line, so that xenomai 
+libraries are loaded first.
+
+> 
+> So, can we use the xddp protocol from native? Which functions we should use to
+> send/receive, etc?
+
+See:
+http://www.xenomai.org/documentation/xenomai-2.6/html/api/group__userapi.html
+
+-- 
+					    Gilles.
+
