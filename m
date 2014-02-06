@@ -1,13 +1,12 @@
-Message-ID: <52F4036C.4010401@xenomai.org>
-Date: Thu, 06 Feb 2014 22:49:32 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Thu, 06 Feb 2014 23:46:40 +0100
+Message-ID: <1564203.ZFLZKtcx78@indiana>
+In-Reply-To: <52F4036C.4010401@xenomai.org>
 References: <201402061158.29746.leo@alaxarxa.net>
- <201402061328.55141.leo@alaxarxa.net> <52F3848E.9030006@xenomai.org>
- <201402061627.18322.leo@alaxarxa.net>
-In-Reply-To: <201402061627.18322.leo@alaxarxa.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ <201402061627.18322.leo@alaxarxa.net> <52F4036C.4010401@xenomai.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Subject: Re: [Xenomai] Xddp and socket: Address family not supported by
 	protocol
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,142 +17,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Sergi Ruiz Parra <sergi.ruiz.parra@upc.edu>, xenomai@xenomai.org
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+El Dijous, 6 de febrer de 2014, a les 22:49:32, Gilles Chanteperdrix va 
+escriure:
+[...]
 
-On 02/06/2014 04:27 PM, Leopold Palomo-Avellaneda wrote:
-> A Dijous, 6 de febrer de 2014, Gilles Chanteperdrix va escriure:
->> On 02/06/2014 01:28 PM, Leopold Palomo-Avellaneda wrote:
->>> A Dijous, 6 de febrer de 2014, Gilles Chanteperdrix va
->>> escriure:
->>>> On 02/06/2014 12:09 PM, Philippe Gerum wrote:
->>>>> On 02/06/2014 11:58 AM, Leopold Palomo-Avellaneda wrote:
->>>>>> Hi all,
->>>>>> 
->>>>>> we are trying to develop an application using xddp
->>>>>> protocol. We use as
->>> base,
->>>>>> the xddp-label exaample that compiles and run perfectly
->>>>>> in our system (Xenomai-2.6.3 with Linux 3.8.13).
->>>>>> 
->>>>>> Our app is different from the xddp example because we
->>>>>> have encapsulated
->>> the
->>>>>> realtime thread in a task, that it's in a library. We can
->>>>>> run the
->>> task,called
->>>>>> from another part, and it rus.
->>>>>> 
->>>>>> Our task create two sockets, one to receive from the NRT
->>>>>> and another to
->>> send.
->>>>>> Yes, I know that we could do it in just one socket, but
->>>>>> by design we
-> must
->>> do
->>>>>> it in the way.
->>>>>> 
->>>>>> Our main problem is when the RT task try to open the
->>>>>> socket, the ipc device isn't created. The error that
->>>>>> appears is:"socket: Address family
->>> not
->>>>>> supported by protocol". I attach the real-time task code
->>>>>> below.
->>>>>> 
->>>>>> The xddp works, because the examples works. We have
->>>>>> several /dev/rtpX
-> and
->>> when
->>>>>> we run the example the
->>>>>> /proc/xenomai/registry/rtipc/xddp/xddp-label is created.
->>>>>> 
->>>>>> Someone could give us some idea about what are we doing
->>>>>> wrong?
->>>>>> 
->>>>> 
->>>>> Your application is likely not wrapping POSIX symbols
->>>>> properly, calling regular socket() instead of the Xenomai
->>>>> implementation. Check examples/rtdm/profiles/ipc/Makefile
->>>>> for LDLIBS. You must have --wrap or 
->>>>> -Wl,@/some/path/posix.wrappers appearing in your link
->>>>> flags, for the wrapping to take place properly.
->>>> 
->>>> See also:
->>>> 
->>> 
-> https://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai#Compilation_flags
->>>
->>>
+> > 
+> >>> (CPU time limit exceeded). It's not easy for us with that.
+> >> 
+> >> SIGXCPU is in fact Xenomai's SIGDEBUG. See
+> >> examples/native/sigdebug.c to find out why you receive SIGDEBUG.
+> >> My bet would be that you are missing mlockall. That said, Xenomai
+> >> should issue the mlockall automatically, you simply have to take
+> >> care of putting xenomai libraries at the end of the link-edit
+> >> command line, so that xenomai libraries are loaded first.
+> > 
+> > Ok,
+> > 
+> > 
+> > now it works, half work. So, it could be equivalent if I call the
+> > mlockall function in the entry point of the lib? I mean, if I
+> > create a init function of the lib and when I load it, mlockall is
+> > called.
 > 
-Thanks for the answers.
->>> 
->>> However, the pandora box has been open. :-(
->>> 
->>> We are using a modified version of SOEM [1][2] where the posix
->>> calls and selected in function of a defines.
->>> 
->>> We have not used any posix skin, if not native and rtdm. Using
->>> that
-> wrapper
->>> have done that our lib doesn't work. All of our programs
->>> receive an
-> SIGXCPU
->>> (CPU time limit exceeded). It's not easy for us with that.
->> 
->> SIGXCPU is in fact Xenomai's SIGDEBUG. See
->> examples/native/sigdebug.c to find out why you receive SIGDEBUG.
->> My bet would be that you are missing mlockall. That said, Xenomai
->> should issue the mlockall automatically, you simply have to take
->> care of putting xenomai libraries at the end of the link-edit
->> command line, so that xenomai libraries are loaded first.
+> If the library uses xenomai posix skin services (through wrapping),
+
+no, AFAIR we don't use the posix skin. Just for the examples.
+
+> mlockall is not sufficient, the xenomai posix skin library has an
+> initialization function which must be called first. Getting a library
+> written for Linux implementation to work with xenomai requires several
+> changes (which the document posted in answer to your first question
+> tries to document). So, if you do not need this library to run in
+> primary mode, I suggest you stick to your original plan which was to
+> use RTDM without the posix skin wrapping.
+
+Ok, I will look the document. I would prefer to have a clean implementation of 
+pure xenomai native.
+
+> >>> So, can we use the xddp protocol from native? Which functions
+> >>> we should
+> > 
+> > use to
+> > 
+> >>> send/receive, etc?
+> >> 
+> >> See:
+> > http://www.xenomai.org/documentation/xenomai-2.6/html/api/group__userapi.h
+> > tml> 
+> >  good, done. Perfect. However we are having problems because _only_
+> > 
+> > one label is created. I suppose that there's no limit of the number
+> > of sockets created in the RT thread, no?
 > 
-> Ok,
-> 
-> 
-> now it works, half work. So, it could be equivalent if I call the
-> mlockall function in the entry point of the lib? I mean, if I
-> create a init function of the lib and when I load it, mlockall is
-> called.
+> Please try and reduce the problematic program to the minimal
+> self-contained test case which we can run to reproduce the issue you have.
 
-If the library uses xenomai posix skin services (through wrapping),
-mlockall is not sufficient, the xenomai posix skin library has an
-initialization function which must be called first. Getting a library
-written for Linux implementation to work with xenomai requires several
-changes (which the document posted in answer to your first question
-tries to document). So, if you do not need this library to run in
-primary mode, I suggest you stick to your original plan which was to
-use RTDM without the posix skin wrapping.
+Yes, I'm almost sure that we are doing something wrong. However, I think that 
+to create a modification example from the xddp-echo or label could be a good 
+idea. Tomorrow more,
 
-> 
->>> 
->>> So, can we use the xddp protocol from native? Which functions
->>> we should
-> use to
->>> send/receive, etc?
->> 
->> See:
->> 
-> http://www.xenomai.org/documentation/xenomai-2.6/html/api/group__userapi.html
->
->  good, done. Perfect. However we are having problems because _only_
-> one label is created. I suppose that there's no limit of the number
-> of sockets created in the RT thread, no?
+Thanks for all,
 
-Please try and reduce the problematic program to the minimal
-self-contained test case which we can run to reproduce the issue you have.
+Leopold
 
+-- 
+--
+Linux User 152692     PGP: 0xF944807E
+Catalonia
+-------------------------------------
+A: Because it messes up the order in which people normally read text.
+Q: Why is top-posting such a bad thing?
+A: Top-posting.
+Q: What is the most annoying thing in e-mail?
 
-- -- 
-                                                                Gilles.
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-Comment: Using GnuPG with Icedove - http://www.enigmail.net/
-
-iD8DBQFS9ANsGpcgE6m/fboRAgz9AJoDR4rwNtvZHSJUgl148FyviXQsGwCggYMr
-92w+o+8nXjWXxbEMdniTSDo=
-=87KQ
------END PGP SIGNATURE-----
 
