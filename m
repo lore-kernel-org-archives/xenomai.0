@@ -1,5 +1,5 @@
-Message-ID: <52F34D40.8000205@xenomai.org>
-Date: Thu, 06 Feb 2014 09:52:16 +0100
+Message-ID: <52F355E1.4010709@xenomai.org>
+Date: Thu, 06 Feb 2014 10:29:05 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <52F27AAD.8050809@siemens.com> <52F2983E.5080505@xenomai.org>
@@ -35,8 +35,9 @@ On 02/05/2014 08:59 PM, Gilles Chanteperdrix wrote:
 > in my tree uses the posix api.
 >
 
-This is an unexpected dependency on copperplate which is revealed by old 
-linkers. Looking at this.
+This one may help:
+
+http://git.xenomai.org/xenomai-forge.git/commit/?h=next&id=ba1f4b636a490e42af332e0c1f079e67b96255d5
 
 -- 
 Philippe.
