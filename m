@@ -1,5 +1,5 @@
-Message-ID: <52F4E7A4.4030701@xenomai.org>
-Date: Fri, 07 Feb 2014 15:03:16 +0100
+Message-ID: <52F4E865.5000200@xenomai.org>
+Date: Fri, 07 Feb 2014 15:06:29 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <52F3B77F.3020405@marel.com> <52F3C5DD.8010208@xenomai.org>
@@ -22,13 +22,13 @@ Cc: xenomai@xenomai.org
 
 On 02/07/2014 02:32 PM, Marcel van Mierlo wrote:
 
-> - Why is printf/fflush impacting time taken to invoke q_send?
->
+>      - When I comment out q_send (so only call tm_wakeafter) MSW does
+> not increase and stays on zero.
+>      *** Why does q_send cause mode switches?
 
-Depending on how you measure this, but since printf/fflush will turn 
-your thread to secondary mode, qsend() won't be charged for the same 
-transition it (unexpectedly) requires since your thread will be in that 
-mode already.
+Where do the data words passed to qsend() come from? Plain regular memory?
+
+Also, what does /proc/xenomai/faults show after runtime?
 
 -- 
 Philippe.
