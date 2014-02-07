@@ -1,14 +1,13 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Thu, 06 Feb 2014 23:46:40 +0100
-Message-ID: <1564203.ZFLZKtcx78@indiana>
-In-Reply-To: <52F4036C.4010401@xenomai.org>
-References: <201402061158.29746.leo@alaxarxa.net>
- <201402061627.18322.leo@alaxarxa.net> <52F4036C.4010401@xenomai.org>
+Message-ID: <52F49F07.9040801@xenomai.org>
+Date: Fri, 07 Feb 2014 09:53:27 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-Subject: Re: [Xenomai] Xddp and socket: Address family not supported by
-	protocol
+References: <52F3B77F.3020405@marel.com> <52F3C5DD.8010208@xenomai.org>
+ <52F3DBDB.4060805@xenomai.org>
+In-Reply-To: <52F3DBDB.4060805@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] High CPU load using q_send under pSOS skin
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,79 +17,73 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Sergi Ruiz Parra <sergi.ruiz.parra@upc.edu>, xenomai@xenomai.org
+Cc: xenomai@xenomai.org
 
-El Dijous, 6 de febrer de 2014, a les 22:49:32, Gilles Chanteperdrix va 
-escriure:
-[...]
+On 02/06/2014 08:00 PM, Gilles Chanteperdrix wrote:
+> On 02/06/2014 06:26 PM, Philippe Gerum wrote:
+>>> Every 2.0s: cat /proc/xenomai/stat                      Sat Jan  1
+>>> 00:09:03 2000
+>>>
+>>> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+>>>     0  0      0          186436     0     00500080   94.2  ROOT/0
+>>>     0  2882   16         427        0     00300380    0.0  MAIN
+>>>     0  2883   0          54128      0     00300184    1.0 onemsscheduler
+>>>     0  2884   0          542        0     00300184    0.0  FREE
+>>>     0  2885   0          1499       0     00300184    0.0  flsh
+>>>     0  2886   0          1          0     00300182    0.0  EWRN
+>>>     0  2887   0          45158      0     00300186    0.8  EEDT
+>>>     0  2888   0          53921      0     00300184    1.4  RESP
+>>>     0  2889   1          1          0     00300380    0.0  SERV
+>>>     0  2890   0          10784      0     00300184    0.4  CMND
+>>>     0  2891   2          1370       0     00300186    0.1  SERP
+>>>     0  2896   0          53080      0     00300184    0.8  SERO
+>>>     0  2899   0          536        0     00300186    0.0  CANP
+>>>     0  2900   0          1          0     00300182    0.0  CANG
+>>>     0  2901   0          1          0     00300182    0.0  CANE
+>>>     0  2902   0          315        0     00300182    0.0  CANT
+>>>     0  2903   1          1          0     00300380    0.0  CNMN
+>>>     0  2904   236        628        0     00300184    0.0  CIOW
+>>>     0  0      0          699350     0     00000000    1.0  IRQ83:
+>>> [timer]
+>>>
+>>>
+>>> So questions are:
+>>>
+>>> - Why does the %CPU under xenomai/stat not reflect whats reported by top
+>>
+>> Because top reports the CPU consumed when Linux is active, which
+>> excludes Xenomai activity.
+>>
+>>> (where is the 40% going)?
+>>
+>> Good question.
+>
+> I think we have a known issue: the registers passed to Linux timer tick
+> are the ones of the last timer tick, which may very well happen to
+> always hit the same task. Could this be the cause?
+>
 
-> > 
-> >>> (CPU time limit exceeded). It's not easy for us with that.
-> >> 
-> >> SIGXCPU is in fact Xenomai's SIGDEBUG. See
-> >> examples/native/sigdebug.c to find out why you receive SIGDEBUG.
-> >> My bet would be that you are missing mlockall. That said, Xenomai
-> >> should issue the mlockall automatically, you simply have to take
-> >> care of putting xenomai libraries at the end of the link-edit
-> >> command line, so that xenomai libraries are loaded first.
-> > 
-> > Ok,
-> > 
-> > 
-> > now it works, half work. So, it could be equivalent if I call the
-> > mlockall function in the entry point of the lib? I mean, if I
-> > create a init function of the lib and when I load it, mlockall is
-> > called.
-> 
-> If the library uses xenomai posix skin services (through wrapping),
+I checked your arm-side pipeline implementation yesterday, I believe the 
+saved CPSR value does exhibit PSR_I_BIT as expected when the timer 
+preempts the Xenomai domain, so there should not be any accounting issue 
+(i.e. __ipipe_root_tick_p would prevent update_process_times() to charge 
+the last active linux task). This said, the adverse side-effect which is 
+solved by the code I just mentioned would rather happen when a Xenomai 
+task does frequent relax/harden transitions, not when it runs 
+exclusively in real-time mode.
 
-no, AFAIR we don't use the posix skin. Just for the examples.
+> Is the MAIN task the one which does the tm_wkafter ?
+>
+> Is the hardware timer of the beaglebone black shared with Linux (like
+> omap4) or do linux and xenomai have different timers (like omap3)?
+>
+> Could you arm the T_WARNSW bit to see if the MAIN task experiences mode
+> switches?
+>
 
-> mlockall is not sufficient, the xenomai posix skin library has an
-> initialization function which must be called first. Getting a library
-> written for Linux implementation to work with xenomai requires several
-> changes (which the document posted in answer to your first question
-> tries to document). So, if you do not need this library to run in
-> primary mode, I suggest you stick to your original plan which was to
-> use RTDM without the posix skin wrapping.
-
-Ok, I will look the document. I would prefer to have a clean implementation of 
-pure xenomai native.
-
-> >>> So, can we use the xddp protocol from native? Which functions
-> >>> we should
-> > 
-> > use to
-> > 
-> >>> send/receive, etc?
-> >> 
-> >> See:
-> > http://www.xenomai.org/documentation/xenomai-2.6/html/api/group__userapi.h
-> > tml> 
-> >  good, done. Perfect. However we are having problems because _only_
-> > 
-> > one label is created. I suppose that there's no limit of the number
-> > of sockets created in the RT thread, no?
-> 
-> Please try and reduce the problematic program to the minimal
-> self-contained test case which we can run to reproduce the issue you have.
-
-Yes, I'm almost sure that we are doing something wrong. However, I think that 
-to create a modification example from the xddp-echo or label could be a good 
-idea. Tomorrow more,
-
-Thanks for all,
-
-Leopold
+It would also be interesting to check that commenting out q_send() still 
+produces the same result.
 
 -- 
---
-Linux User 152692     PGP: 0xF944807E
-Catalonia
--------------------------------------
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
-
+Philippe.
 
