@@ -1,5 +1,5 @@
-Message-ID: <52F4E641.1080506@xenomai.org>
-Date: Fri, 07 Feb 2014 14:57:21 +0100
+Message-ID: <52F4E7A4.4030701@xenomai.org>
+Date: Fri, 07 Feb 2014 15:03:16 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <52F3B77F.3020405@marel.com> <52F3C5DD.8010208@xenomai.org>
@@ -21,15 +21,14 @@ To: Marcel van Mierlo <marcel.vanmierlo@marel.com>, Gilles Chanteperdrix <gilles
 Cc: xenomai@xenomai.org
 
 On 02/07/2014 02:32 PM, Marcel van Mierlo wrote:
-> - I cant see how to set T_WARNSW using the pSOS skin.
->      - I get warning that "T_FPU" redefined when including native/task.h
-> and psos+/psos.h
->      - If I hack the mask by using "0x00040000" explicitly I get
-> SIGXCPU: CPU time limit exceeded when calling rt_task_set_mode at runtime.
 
-At first sight, qsend() in your test case seems to trigger a migration 
-to linux mode, that might explain (part of) the overhead. Use t_mode(0, 
-T_TRAPSW, &oldmode) to enable SIGXCPU.
+> - Why is printf/fflush impacting time taken to invoke q_send?
+>
+
+Depending on how you measure this, but since printf/fflush will turn 
+your thread to secondary mode, qsend() won't be charged for the same 
+transition it (unexpectedly) requires since your thread will be in that 
+mode already.
 
 -- 
 Philippe.
