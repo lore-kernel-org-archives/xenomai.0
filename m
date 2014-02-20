@@ -1,17 +1,10 @@
-Message-ID: <52F532C6.9090005@xenomai.org>
-Date: Fri, 07 Feb 2014 20:23:50 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52F3B77F.3020405@marel.com> <52F3C5DD.8010208@xenomai.org>
- <52F3DBDB.4060805@xenomai.org> <52F49F07.9040801@xenomai.org>
- <52F4E084.3020809@marel.com> <52F4E865.5000200@xenomai.org>
- <52F4EE97.2070800@marel.com> <52F4EFE5.2040000@xenomai.org>
- <52F4F698.7030900@marel.com> <52F4F768.2060808@xenomai.org>
- <52F4FA3A.1030003@marel.com>
-In-Reply-To: <52F4FA3A.1030003@marel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] High CPU load using q_send under pSOS skin
+Date: Thu, 20 Feb 2014 20:57:29 +0100
+Message-ID: <CAPydA0FQ+0AEeUQ2tXvcP1FZ0S21vVryBMqya0mcdg5vr8xmbw@mail.gmail.com>
+From: Orestes Mas <masorestes@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Realtime tasks concepts (II)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,27 +13,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marcel van Mierlo <marcel.vanmierlo@marel.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 02/07/2014 04:22 PM, Marcel van Mierlo wrote:
 >
-> On 07/02/14 15:10, Gilles Chanteperdrix wrote:
->> On 02/07/2014 04:07 PM, Marcel van Mierlo wrote:
->>> TASK cio_watchdog_kick(void)
->>> {
->>>        u_long cantmsg[4];
+> A 2014-02-20 11:41, Gilles Chanteperdrix escrigu=E9:
+>
+> On 02/20/2014 11:27 AM, Gilles Chanteperdrix wrote:
+>
+> Our aim is to design NRT master and slaves (c++ objects) that communicate=
+s
+>>> with a RT task. The RT task is in charge of establish a continuous
+>>> communication with EtherCAT devices. This task communicates with NRT ma=
+ster
+>>> by the xddp sockects. The problem appears when the master call the RT S=
+OEM
+>>> functions for the configuration, because it is necessary that the maste=
+r
+>>> becomes a RT task, if not it doesn't work. And it has no sense.
+>>>
 >>
->> This one should be properly aligned, what about the buffer you use for
->> q_recv?
+>> Only a task with a shadow can call RT services, because it needs to be
+>> able to switch to primary mode, and only a task with a shadow can switch=
+ to
+>> primary mode.
 >>
->>
-> Hmmm, again, created on the stack. Here is the code for task function
-> which invokes q_recv. Will put together a self-contained example.
+>
+> By RT services, I mean rt_mutex services and RTDM callbacks for which
+> you implemented the _rt version. If you mean anything else (like Xenomai
+> services), then you are to imprecise again, and the answer to your
+> question is "it depends", because on a service by service basis, some
+> need a task with a shadow, some do not. But usually, if a service needs
+> a task with a shadow, that is because its implementation requires it
+> (for instance because the task needs to be suspended in Xenomai
+> scheduler, which can not happen if the task does not have a shadow).
+>
 
-It probably means that the unaligned access happens in kernel-space. 
-What version of gcc are you using?
 
--- 
-					    Gilles.
+Sorry if I start a new thread with the same subject: I've just joined the
+mailing list and I don't have the past messages in my e-mail client.
 
+Thanks for your explanations, Gilles. So, let's try to re-state the problem
+in "shadow" terms, to see if we finally understand it.
+
+1) We've a linux installation with xenomai patches and rt_net driver (RTDM)
+that manage rteth0 interface. From our experience and your explanations we
+assume that rt_net services, being RTDM, must be called _always_ from a
+task with a shadow. Is this correct?
+
+The problem that started this list thread was that the SOEM library we use
+to communicate with some devices through the rteth0 interface has some
+initialization functions (init, config, and so on) and then a function to
+be executed periodically to maintain a data flow between the host PC and
+the devices. Initially we put _only_ this periodic part into a task with a
+shadow, but tried to call init and config functions from the main program
+--without a shadow--, and that didn't work. For it to work we had to shadow
+also the main task, a thing that becomes obvious after your explanations.
+
+2) We didn't like to have the main task shadowed because we assumed
+(perhaps erroneously) that it's better to keep the number of shadowed tasks
+to a minimum. If it's not possible, from your explanations I think that
+perhaps the best compromise is to have tha main task shadowed, but with
+priority 0 and scheduled by SCHED_OTHER. If I do that, will my shadowed
+task running in primary mode commute to secondary mode when called by the
+main task?
+
+Probably I'll have more questions, but let's go step by step and clarify
+these before asking more.
+
+Thanks.
+
+Orestes.
