@@ -1,10 +1,12 @@
-Message-ID: <5308C79B.30708@athel.de>
-Date: Sat, 22 Feb 2014 16:51:55 +0100
-From: =?ISO-8859-15?Q?Christian_G=F6beler?= <christian@athel.de>
+Message-ID: <53090AA4.4000903@xenomai.org>
+Date: Sat, 22 Feb 2014 21:37:56 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] changing priority and policy VS unblocking
+References: <CAKKWdtfmWoZPjDmiqd2wVq2GOZEA0==iwv=KTcBHBn+wB3nZxw@mail.gmail.com>
+In-Reply-To: <CAKKWdtfmWoZPjDmiqd2wVq2GOZEA0==iwv=KTcBHBn+wB3nZxw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Virtual terminal does not work
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,19 +17,30 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-One question regarding xenomai best practices.
+Le 22/02/2014 09:35, ali hagigat a écrit :
+> I have installed:
+> 
+> xenomai-2.6.3
+> linux-3.5.7
+> x86, 32 bits Intel-quad-core machine@2.4GHZ
+> Fedora 13
+> GNOME 2
+> Motherboard: ASUS Commando
+> 
+> Once I logged in as root graphically and then i used "switch user" icon and
+> then i logged in as a regular user and pressed, <CTRL-ALT-F2> and i pressed
+> some <CTRL_ALT-Fx> suddenly computer froze and i had a black screen, no
+> key-presses or mouse movements were seen and the computer started beeping
+> repeatedly.
+> When i pressed <CTRL-ALT-F2> to see a Linux text-based virtual terminal,
+> there is a black screen and no terminal and no key presses are seen
+> 
+> My kernel config file is attached, i thought to share this experience.
 
-I have to modify an application running user defined code in worker
-threads (POSIX threads).
-
-Performance-wise is it better to create designated RT-Threads waiting
-for a condition to be signaled and then continue to run in primary mode
-whatever code the user passed in or would it be just as fast and
-reliable to promote an already running worker thread by changing its
-priority to let's say 99 for example and its sched-policy to FIFO?
+Doesn't the same kernel configuration, only without Xenomai patch, and
+without enabling Xenomai, show the same behaviour?
 
 
-Thanks
-
-Christian
+-- 
+Gilles.
 
