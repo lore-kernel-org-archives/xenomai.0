@@ -1,10 +1,10 @@
+Message-ID: <5308C79B.30708@athel.de>
+Date: Sat, 22 Feb 2014 16:51:55 +0100
+From: =?ISO-8859-15?Q?Christian_G=F6beler?= <christian@athel.de>
 MIME-Version: 1.0
-Date: Sat, 22 Feb 2014 12:05:43 +0330
-Message-ID: <CAKKWdtfmWoZPjDmiqd2wVq2GOZEA0==iwv=KTcBHBn+wB3nZxw@mail.gmail.com>
-From: ali hagigat <hagigatali@gmail.com>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Virtual terminal does not work
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] changing priority and policy VS unblocking
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,31 +13,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-I have installed:
+One question regarding xenomai best practices.
 
-xenomai-2.6.3
-linux-3.5.7
-x86, 32 bits Intel-quad-core machine@2.4GHZ
-Fedora 13
-GNOME 2
-Motherboard: ASUS Commando
+I have to modify an application running user defined code in worker
+threads (POSIX threads).
 
-Once I logged in as root graphically and then i used "switch user" icon and
-then i logged in as a regular user and pressed, <CTRL-ALT-F2> and i pressed
-some <CTRL_ALT-Fx> suddenly computer froze and i had a black screen, no
-key-presses or mouse movements were seen and the computer started beeping
-repeatedly.
-When i pressed <CTRL-ALT-F2> to see a Linux text-based virtual terminal,
-there is a black screen and no terminal and no key presses are seen
+Performance-wise is it better to create designated RT-Threads waiting
+for a condition to be signaled and then continue to run in primary mode
+whatever code the user passed in or would it be just as fast and
+reliable to promote an already running worker thread by changing its
+priority to let's say 99 for example and its sched-policy to FIFO?
 
-My kernel config file is attached, i thought to share this experience.
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: config1
-Type: application/octet-stream
-Size: 131993 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140222/3665005=
-1/attachment.obj>
+
+Thanks
+
+Christian
+
