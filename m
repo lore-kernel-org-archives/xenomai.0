@@ -1,13 +1,13 @@
-Message-ID: <5309FCCB.8060200@xenomai.org>
-Date: Sun, 23 Feb 2014 14:51:07 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAE2JnQw75gJAH2ZsqKw3LPAz9FM2-1EsdWBR02DOAjr+eR1hxg@mail.gmail.com>
-In-Reply-To: <CAE2JnQw75gJAH2ZsqKw3LPAz9FM2-1EsdWBR02DOAjr+eR1hxg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Path sunxi-linux 3.4.79 with xenomai - how to solve
- Unable to patch kernel 3.4.79 with ipipe-core-3.4.6-arm-4.patch
+In-Reply-To: <53090AA4.4000903@xenomai.org>
+References: <CAKKWdtfmWoZPjDmiqd2wVq2GOZEA0==iwv=KTcBHBn+wB3nZxw@mail.gmail.com>
+ <53090AA4.4000903@xenomai.org>
+Date: Sun, 23 Feb 2014 19:24:05 +0330
+Message-ID: <CAKKWdtf0qqEOTsAbXE_SSYxVFV-3JpRHodzw_PmS1z0byp9N7w@mail.gmail.com>
+From: ali hagigat <hagigatali@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Virtual terminal does not work
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,29 +16,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Le 23/02/2014 14:20, Alexandre Donisete Bensi a écrit :
-> Hello,
-> 
->  I am trying to fix xenomai in last sunxi_linux 3.4 in my Cubieboard
-> A10, but, I dont know how to do right :(
-> 
-> Unable to patch kernel 3.4.79 with ipipe-core-3.4.6-arm-4.patch - but
-> i dont have  ipipe-core-3.4.7 ?!?!
-> 
->  What is the favorite version to do this?
+On 2/23/14, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+> Le 22/02/2014 09:35, ali hagigat a =E9crit :
+>> I have installed:
+>>
+>> xenomai-2.6.3
+>> linux-3.5.7
+>> x86, 32 bits Intel-quad-core machine@2.4GHZ
+>> Fedora 13
+>> GNOME 2
+>> Motherboard: ASUS Commando
+>>
+>> Once I logged in as root graphically and then i used "switch user" icon
+>> and
+>> then i logged in as a regular user and pressed, <CTRL-ALT-F2> and i
+>> pressed
+>> some <CTRL_ALT-Fx> suddenly computer froze and i had a black screen, no
+>> key-presses or mouse movements were seen and the computer started beepin=
+g
+>> repeatedly.
+>> When i pressed <CTRL-ALT-F2> to see a Linux text-based virtual terminal,
+>> there is a black screen and no terminal and no key presses are seen
+>>
+>> My kernel config file is attached, i thought to share this experience.
+>
+> Doesn't the same kernel configuration, only without Xenomai patch, and
+> without enabling Xenomai, show the same behaviour?
+>
+>
+> --
+> Gilles.
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+>
 
-ipipe-core-3.4.6 applies to Linux 3.4.6, not a later version apparently.
-
-Besides, allwinner a10 is not supported by the I-pipe core for Linux
-3.4.6. Patches have been submitted, have been reviewed, and we are now
-waiting for a corrected submission of the patches (but they will likely
-target a more recent version than Linux 3.4.6).
-
-Regards.
-
-
--- 
-Gilles.
+Yes, you were right. I just copied the .config file of
+linux-with-xenomai to a new linux-3.5.7 and ran 'make', it first asked
+some questions about para-virtualization, high memory and huge page
+tables and then started to make. Not sure if that wrote over that
+.config file but when i logged in with the new kernel, there was the
+same problem, i did not have virtual terminal in Fedora 13.
+Thank you for your direction
 
