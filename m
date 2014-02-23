@@ -1,12 +1,15 @@
-Message-ID: <530A69FD.9060708@xenomai.org>
-Date: Sun, 23 Feb 2014 22:37:01 +0100
+Message-ID: <530A6C03.9080206@xenomai.org>
+Date: Sun, 23 Feb 2014 22:45:39 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
-In-Reply-To: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
+References: <CAE2JnQw75gJAH2ZsqKw3LPAz9FM2-1EsdWBR02DOAjr+eR1hxg@mail.gmail.com>
+ <5309FCCB.8060200@xenomai.org>
+ <CAE2JnQzwO3EEN_NSu6nw3ScE-f-QYTNt3Nm4btACM8QXtxWPfA@mail.gmail.com>
+In-Reply-To: <CAE2JnQzwO3EEN_NSu6nw3ScE-f-QYTNt3Nm4btACM8QXtxWPfA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RaspberryPi kernel 3.8 issue
+Subject: Re: [Xenomai] Path sunxi-linux 3.4.79 with xenomai - how to solve
+ Unable to patch kernel 3.4.79 with ipipe-core-3.4.6-arm-4.patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,37 +18,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gregory Dymarek <gregd72002@gmail.com>
+To: Alexandre Donisete Bensi <adbensi@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 02/23/2014 10:27 PM, Gregory Dymarek wrote:
-> Hi,
+On 02/23/2014 06:46 PM, Alexandre Donisete Bensi wrote:
+>>>  I am trying to fix xenomai in last sunxi_linux 3.4 in my Cubieboard
+>>> A10, but, I dont know how to do right :(
+>>>
+>>> Unable to patch kernel 3.4.79 with ipipe-core-3.4.6-arm-4.patch - but
+>>> i dont have  ipipe-core-3.4.7 ?!?!
+>>>
+>>>  What is the favorite version to do this?
 > 
+>> ipipe-core-3.4.6 applies to Linux 3.4.6, not a later version apparently.
+>>
+>> Besides, allwinner a10 is not supported by the I-pipe core for Linux
+>> 3.4.6. Patches have been submitted, have been reviewed, and we are now
+>> waiting for a corrected submission of the patches (but they will likely
+>> target a more recent version than Linux 3.4.6).
 > 
-> I compiled a fresh rpi-3.8 kernel using the following patches (from
-> xenomai-2.6.3):
-> - ipipe-core-3.8.13-raspberry-pre-2.patch
-> - ipipe-core-3.8.13-arm-3.patch
-> - ipipe-core-3.8.13-raspberry-post-2.patch
+>   I understand,
 > 
-> All compiled well, but when booting this kernel it reports an exception.
-> The entire boot log is here: http://pastebin.com/K7v44nPw
+>   I see that Xenomai target versions are 3.4.6 or 3.5.7 or 3.8.13
+>   The sunxi-linux versions I downloaded are: 3.4.61 and 3.4.79 and 3.14
 > 
-> I am still not very faimiliar with the architecture so I am not really able
-> to sort it myself...
-> Any advise please?
-
-
-
+>   I can not find exact versions, but the closest still does not work:
+>   prepare kernel.sh: Unable to patch kernel 3.4.61 with
+> ipipe-core-3.4.6-arm-4.patch
 > 
-> [    1.915956] hub 1-0:1.0: 1 port detected
-> [    1.923672] ------------[ cut here ]------------
-> [    1.931807] WARNING: at kernel/irq/handle.c:146
-> handle_irq_event_percpu+0x190/0x1b4()
+>   If Allwinner A10 is not supported by ipipe, something is recommended
+> or I need waiting?
 
-It is not an exception, it is a warning, what is there at
-kernel/irq/handle.c:146 in the kernel you are using?
+Well, to accelerate the work, you could submit the corrected patch
+yourself, starting from the comments we made in this thread:
 
+http://www.xenomai.org/pipermail/xenomai/2013-March/027960.html
 
 -- 
                                                                 Gilles.
