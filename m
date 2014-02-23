@@ -1,9 +1,12 @@
+Message-ID: <5309FCCB.8060200@xenomai.org>
+Date: Sun, 23 Feb 2014 14:51:07 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Sun, 23 Feb 2014 10:20:36 -0300
-Message-ID: <CAE2JnQw75gJAH2ZsqKw3LPAz9FM2-1EsdWBR02DOAjr+eR1hxg@mail.gmail.com>
-From: Alexandre Donisete Bensi <adbensi@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] Path sunxi-linux 3.4.79 with xenomai - how to solve
+References: <CAE2JnQw75gJAH2ZsqKw3LPAz9FM2-1EsdWBR02DOAjr+eR1hxg@mail.gmail.com>
+In-Reply-To: <CAE2JnQw75gJAH2ZsqKw3LPAz9FM2-1EsdWBR02DOAjr+eR1hxg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Path sunxi-linux 3.4.79 with xenomai - how to solve
  Unable to patch kernel 3.4.79 with ipipe-core-3.4.6-arm-4.patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,21 +18,27 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hello,
+Le 23/02/2014 14:20, Alexandre Donisete Bensi a écrit :
+> Hello,
+> 
+>  I am trying to fix xenomai in last sunxi_linux 3.4 in my Cubieboard
+> A10, but, I dont know how to do right :(
+> 
+> Unable to patch kernel 3.4.79 with ipipe-core-3.4.6-arm-4.patch - but
+> i dont have  ipipe-core-3.4.7 ?!?!
+> 
+>  What is the favorite version to do this?
 
- I am trying to fix xenomai in last sunxi_linux 3.4 in my Cubieboard
-A10, but, I dont know how to do right :(
+ipipe-core-3.4.6 applies to Linux 3.4.6, not a later version apparently.
 
-Unable to patch kernel 3.4.79 with ipipe-core-3.4.6-arm-4.patch - but
-i dont have  ipipe-core-3.4.7 ?!?!
+Besides, allwinner a10 is not supported by the I-pipe core for Linux
+3.4.6. Patches have been submitted, have been reviewed, and we are now
+waiting for a corrected submission of the patches (but they will likely
+target a more recent version than Linux 3.4.6).
 
- What is the favorite version to do this?
- My sources:
-  git clone -b sunxi-3.4 http://github.com/linux-sunxi/linux-sunxi.git
-  wget http://download.gna.org/xenomai/stable/xenomai-2.6.3.tar.bz2
+Regards.
 
- Appreciate any feedback,
 
-Best Regards,
-Alexandre Bensi
+-- 
+Gilles.
 
