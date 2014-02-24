@@ -1,10 +1,10 @@
-Message-ID: <530B13CF.2040901@siemens.com>
-Date: Mon, 24 Feb 2014 10:41:35 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <530B360A.9080704@xenomai.org>
+Date: Mon, 24 Feb 2014 13:07:38 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <530A9265.80706@xenomai.org> <530B0933.5010307@siemens.com>
 In-Reply-To: <530B0933.5010307@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] pull request for the ipipe-3.10 branch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,10 +15,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2014-02-24 09:56, Jan Kiszka wrote:
+On 02/24/2014 09:56 AM, Jan Kiszka wrote:
 > On 2014-02-24 01:29, Gilles Chanteperdrix wrote:
 >> Hi,
 >>
@@ -66,13 +66,12 @@ On 2014-02-24 09:56, Jan Kiszka wrote:
 > 
 > http://git.xenomai.org/ipipe-jki.git/commit/?h=for-upstream/3.10&id=63866844101456d3f2f2405620eee7c4ad0bd88d
 
-Better this one:
-
-http://git.xenomai.org/ipipe-jki.git/commit/?h=for-upstream/3.10&id=57769beb86c4d45c83b9a0859a37bb15d73266e3
-
-Jan
+Since we are going to have to retest everything anyway when I am done
+with the fd stuff, I would tend to prefer postponing the I-pipe stable
+update at the same time. Even further than that: when we are ready to
+release 3.0, so that if stable had a few more commits in the mean-time,
+we will avoid useless tests.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+                                                                Gilles.
 
