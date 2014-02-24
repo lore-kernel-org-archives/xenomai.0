@@ -1,11 +1,12 @@
 MIME-Version: 1.0
-In-Reply-To: <201402240022.11419.paul_c@tuxcnc.org>
+In-Reply-To: <CAK4EZFTC3-gENQYJy65WM=tzovSK7dnBQ+06uMKrEF_tLofWMg@mail.gmail.com>
 References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
  <CAK4EZFTRhDxJkRdY7epTqQ=f0rpoK570uJckq4aOYnt7z6fzxA@mail.gmail.com>
  <CAEbDrgkAqAGWrap1156fiQnLiuBJ_P6NUdxQQQRBiLkDEKRwGQ@mail.gmail.com>
  <201402240022.11419.paul_c@tuxcnc.org>
-Date: Sun, 23 Feb 2014 19:47:30 -0500
-Message-ID: <CAK4EZFTC3-gENQYJy65WM=tzovSK7dnBQ+06uMKrEF_tLofWMg@mail.gmail.com>
+ <CAK4EZFTC3-gENQYJy65WM=tzovSK7dnBQ+06uMKrEF_tLofWMg@mail.gmail.com>
+Date: Sun, 23 Feb 2014 19:53:11 -0500
+Message-ID: <CAK4EZFShB5_8bGMJV+mQNw3pG+1BAxxxKttyU4t6QVZY0CmL6Q@mail.gmail.com>
 From: Adam Vaughan <vaughana@umich.edu>
 Content-Type: text/plain; charset=ISO-8859-1
 Subject: Re: [Xenomai] RaspberryPi kernel 3.8 issue
@@ -19,23 +20,31 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-It's a separate issue, but I just rebuilt a Xenomai RPi 3.8.13 kernel with
-the patch at [1], and it now boots with the USB FIQ disabled.  It has been
-a while, but I'm pretty sure it wasn't booting with FIQ disabled before, as
-detailed in [1].  I am able to run my FIQ code after retargeting the module
-for the more recent kernel (my stopgap solution was to use 3.5.7).
+Regarding Paul's question, it doesn't matter if the dwc_otg.fiq_fix_enable=1
+or 0.  The same issue is still there.
 
-Gilles, can you include KrfVan's patch at [1] with any modifications you
-make to the official Xenomai RPi patches to address the issue Gregory
-pointed out?  Also, for what its worth, I also see the same issue Gregory
-sees in the kernel logs:
 
-...
-[    1.167969] hub 1-0:1.0: 1 port detected
-[    1.171818] ------------[ cut here ]------------
-[    1.175376] WARNING: at kernel/irq/handle.c:146
-handle_irq_event_percpu+0x198/0x1c0()
-[    1.179042] irq 75 handler usb_hcd_irq+0x0/0x84 enabled interrupts
-...
+On Sun, Feb 23, 2014 at 7:47 PM, Adam Vaughan <vaughana@umich.edu> wrote:
 
-[1]  https://github.com/raspberrypi/linux/issues/355
+> It's a separate issue, but I just rebuilt a Xenomai RPi 3.8.13 kernel with
+> the patch at [1], and it now boots with the USB FIQ disabled.  It has been
+> a while, but I'm pretty sure it wasn't booting with FIQ disabled before, as
+> detailed in [1].  I am able to run my FIQ code after retargeting the module
+> for the more recent kernel (my stopgap solution was to use 3.5.7).
+>
+> Gilles, can you include KrfVan's patch at [1] with any modifications you
+> make to the official Xenomai RPi patches to address the issue Gregory
+> pointed out?  Also, for what its worth, I also see the same issue Gregory
+> sees in the kernel logs:
+>
+> ...
+> [    1.167969] hub 1-0:1.0: 1 port detected
+> [    1.171818] ------------[ cut here ]------------
+> [    1.175376] WARNING: at kernel/irq/handle.c:146
+> handle_irq_event_percpu+0x198/0x1c0()
+> [    1.179042] irq 75 handler usb_hcd_irq+0x0/0x84 enabled interrupts
+> ...
+>
+> [1]  https://github.com/raspberrypi/linux/issues/355
+>
+>
