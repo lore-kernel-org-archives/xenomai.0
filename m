@@ -1,18 +1,16 @@
-Message-ID: <52F1F749.2030501@xenomai.org>
-Date: Wed, 05 Feb 2014 09:33:13 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <E1WAhle-0006kB-0q@sd-51317.dedibox.fr>
- <52F1172B.2080500@xenomai.org> <52F11F94.9000309@siemens.com>
- <52F1231A.7080603@xenomai.org> <52F12442.3040301@xenomai.org>
- <52F125E8.6020200@xenomai.org> <52F12700.3020400@xenomai.org>
- <52F12800.1030500@xenomai.org> <52F12937.3050105@xenomai.org>
- <52F12B7A.4060408@siemens.com>
-In-Reply-To: <52F12B7A.4060408@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : alchemy: Replace static
- variable no_alchemy_task with macro
+In-Reply-To: <CAK4EZFShB5_8bGMJV+mQNw3pG+1BAxxxKttyU4t6QVZY0CmL6Q@mail.gmail.com>
+References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
+ <CAK4EZFTRhDxJkRdY7epTqQ=f0rpoK570uJckq4aOYnt7z6fzxA@mail.gmail.com>
+ <CAEbDrgkAqAGWrap1156fiQnLiuBJ_P6NUdxQQQRBiLkDEKRwGQ@mail.gmail.com>
+ <201402240022.11419.paul_c@tuxcnc.org>
+ <CAK4EZFTC3-gENQYJy65WM=tzovSK7dnBQ+06uMKrEF_tLofWMg@mail.gmail.com>
+ <CAK4EZFShB5_8bGMJV+mQNw3pG+1BAxxxKttyU4t6QVZY0CmL6Q@mail.gmail.com>
+Date: Sun, 23 Feb 2014 20:20:57 -0500
+Message-ID: <CAK4EZFRFamYurRWxN6Oh+tcUpUTKrNYUOxm0Jbrvn-LZmGcmfg@mail.gmail.com>
+From: Adam Vaughan <vaughana@umich.edu>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] RaspberryPi kernel 3.8 issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,78 +19,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-git@xenomai.org, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 02/04/2014 07:03 PM, Jan Kiszka wrote:
-> On 2014-02-04 18:53, Philippe Gerum wrote:
->> On 02/04/2014 06:48 PM, Philippe Gerum wrote:
->>> On 02/04/2014 06:44 PM, Gilles Chanteperdrix wrote:
->>>> On 02/04/2014 06:39 PM, Philippe Gerum wrote:
->>>>> On 02/04/2014 06:32 PM, Gilles Chanteperdrix wrote:
->>>>>> On 02/04/2014 06:27 PM, Philippe Gerum wrote:
->>>>>>> If g++ chokes on the initializer part because it is outdated, then
->>>>>>> using
->>>>>>> old-fashioned ones may be an option. Actually, I find macroizing this
->>>>>>> definition quite bad.
->>>>>>>
->>>>>>> static const RT_TASK no_alchemy_task = {
->>>>>>> -    .handle = 0,
->>>>>>> -    .thread = 0
->>>>>>> +    handle: 0,
->>>>>>> +    thread: 0
->>>>>>>      };
->>>>>>
->>>>>> No, the previous version is better, it is standard compliant C and
->>>>>> C++,
->>>>>> the second version is a gcc extension, which works only when compiling
->>>>>> C, if I remember correctly.
->>>>>>
->>>>>
->>>>> Recent g++ is happy with both (no -std forced though). But the
->>>>> former is
->>>>> allowed by the C++ parser only since recently.
->>>>>
->>>>
->>>> Well, on the other hand:
->>>> static const RT_TAKS no_alchemy_task;
->>>>
->>>> Will zero initialized the structure just as well...
->>>>
->>>
->>> In that case you will have the object exist in the .bss.
->>>
+I just recompiled 3.8.13 without the patch at [1], and my memory was
+apparently correct.  The system stalls as shown in [1] with
+dwc_otg.fiq_fix_enable=0
+without the patch.
+
+[1]  https://github.com/raspberrypi/linux/issues/355
+
+
+On Sun, Feb 23, 2014 at 7:53 PM, Adam Vaughan <vaughana@umich.edu> wrote:
+
+> Regarding Paul's question, it doesn't matter if the dwc_otg.fiq_fix_enable=1
+> or 0.  The same issue is still there.
+>
+>
+> On Sun, Feb 23, 2014 at 7:47 PM, Adam Vaughan <vaughana@umich.edu> wrote:
+>
+>> It's a separate issue, but I just rebuilt a Xenomai RPi 3.8.13 kernel
+>> with the patch at [1], and it now boots with the USB FIQ disabled.  It has
+>> been a while, but I'm pretty sure it wasn't booting with FIQ disabled
+>> before, as detailed in [1].  I am able to run my FIQ code after retargeting
+>> the module for the more recent kernel (my stopgap solution was to use
+>> 3.5.7).
 >>
->> It turns out that old gcc 4.x releases will create a private bss entry
->> for this symbol in any case, which recent ones won't produce regardless
->> of the optimizing level (unless I messed up with nm, but it does not
->> seem so).
+>> Gilles, can you include KrfVan's patch at [1] with any modifications you
+>> make to the official Xenomai RPi patches to address the issue Gregory
+>> pointed out?  Also, for what its worth, I also see the same issue Gregory
+>> sees in the kernel logs:
+>>
+>> ...
+>> [    1.167969] hub 1-0:1.0: 1 port detected
+>> [    1.171818] ------------[ cut here ]------------
+>> [    1.175376] WARNING: at kernel/irq/handle.c:146
+>> handle_irq_event_percpu+0x198/0x1c0()
+>> [    1.179042] irq 75 handler usb_hcd_irq+0x0/0x84 enabled interrupts
+>> ...
+>>
+>> [1]  https://github.com/raspberrypi/linux/issues/355
+>>
 >>
 >
-> Then what is so bad about the symbolic NO_ALCHEMY_TASK? The code will be
-> the same anyway.
->
-> BTW, there are way more issues with C++ when enabling standard
-> compliance. Not sure where all the errors come from and if they easy to
-> fixing. But I think we should try to be as clean as possible in out
-> external interfaces.
->
-
-Mmm, no. I don't want to rush merging all kinds of isolated fixes for 
-all sorts of pedantic modes. I see the other one following with typeof 
-constructs, later we will get other changes triggered by other 
-restrictions on gcc extensions, and this general trend is not 
-acceptable. The fact that the external API headers still share portions 
-with the implementation does not help, but this is not a reason for 
-downgrading the C dialect of the latter with ugly work arounds.
-
-If you really want to go this way, I suggest that you issue a single, 
-all-in-one patch making the current code base conforming with the C/C++ 
-standard you aim at, so that we have a general overview of the changes. 
-With that information, we should be able to address strict standard 
-conformance better, which may involve addressing the 
-interface/implementation issue with headers.
-
--- 
-Philippe.
-
