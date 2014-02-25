@@ -1,12 +1,17 @@
-Message-ID: <530CDCD3.6070703@xenomai.org>
-Date: Tue, 25 Feb 2014 19:11:31 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <530CD8B9.2010303@xenomai.org>
-In-Reply-To: <530CD8B9.2010303@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Road to 3.0
+In-Reply-To: <530BC103.3010809@xenomai.org>
+References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
+ <CAK4EZFRN56pZkzmYwBpyupYkbj+V1mgYUPHk4YfLshSs-zFGGw@mail.gmail.com>
+ <CAK4EZFTRhDxJkRdY7epTqQ=f0rpoK570uJckq4aOYnt7z6fzxA@mail.gmail.com>
+ <CAEbDrgkAqAGWrap1156fiQnLiuBJ_P6NUdxQQQRBiLkDEKRwGQ@mail.gmail.com>
+ <530A8767.4030004@xenomai.org>
+ <CAEbDrgmf+RtS5gS5SKO7eq66ge-LHoJ0hTOC=yeRmUgk0MXqog@mail.gmail.com>
+ <530BC103.3010809@xenomai.org>
+Date: Tue, 25 Feb 2014 20:04:37 +0000
+Message-ID: <CAEbDrgnFr7YvfoMmFQx=PBKSFEWvwJftx0wZx39ySMqRO2X6gQ@mail.gmail.com>
+From: Gregory Dymarek <gregd72002@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] RaspberryPi kernel 3.8 issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,109 +20,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 02/25/2014 06:54 PM, Philippe Gerum wrote:
->
-> Hi,
->
-> This is the remaining work toward 3.0 from my perspective. Please
-> comment, amend, extend or shatter as needed.
->
-> - RTDM
-> 	* decide and freeze API changes.
-> 	* the native implementation may need some care and testing, we never
-> had any feedback for this code.
-> 	* fixup of in-tree drivers for API changes
->
-> - Analogy
-> 	* comedi drivers still in the staging tree for mainline vs porting the
-> Analogy framework over the mercury core.
->
-> - Alchemy needs more test cases, although all core features are covered
-> by at least one test already - except messages pipes. This latter
-> interface is now a plain wrapper on top of rtipc/xddp though.
->
-> - Documentation
-> 	* the inline documentation for the Cobalt kernel was amended gradually
-> as development took place, but we still have a general review and
-> cleanup duties ahead for this material.
+Thanks Gilles,
 
-We need to reintroduce the posix services documentation, likely moving 
-it as doxygen documentation in lib/* rather than in the kernel-space 
-code as it was in 2.x. Not at a high priority since the posix API is 
-documented elsewhere, the only interest in having a documentation is to 
-document the behaviours which are unspecified (or non-conformant).
+Do you mean to execute ipipe_trace_freeze instead of the warning and
+kernel/irq/handle.c:146
+?
 
-> 	* Copperplate is not documented yet. Only API designers would need this
-> though.
-> 	* User guide for 3.x.
-> 	* Review, fixup of the new migration and installation guides.
-> 	* website updates for 3.x. We may want to fork the documentation area
-> in two distinct zones, for 2.x and 3.x, otherwise I suspect that many
-> people will get utterly confused.
+I've recompiled the kernel with the following code in handle.c:146
+ 13 irqreturn_t
 
-The API documentation already lives in a per-version directory on the 
-server. README.INSTALL, TROUBLESHOOTING and manual pages link directly 
-to 2.6 documentation.
+ 12 handle_irq_event_percpu(struct irq_desc *desc, struct irqaction
+*action)
+ 11 {
 
->
-> - /proc/xenomai refactoring for Cobalt. With most APIs now implemented
-> in userland and the introduction of the new fuse-based registry,
-> /proc/xenomai/registry does not contain much these days. In fact, only
-> the RTIPC drivers can still create links there.
->
-> It boils down to this question: will the POSIX core introduce new
-> registry files, or will RTDM-based code remain the only in-kernel
-> registry user?
+ 10     irqreturn_t retval = IRQ_NONE;
 
-I was planning to work on this, I even had some stuff started in a 
-corner of my HDD. I would like to add registry files for all the POSIX 
-skin objects, including anonymous ones (such as mutex and condvars). And 
-use the information in /proc to make a user-space deadlock debugger.
-This is not high priority stuff.
+  9     unsigned int flags = 0, irq = desc->irq_data.irq;
 
->
-> - I pulled out the examples area during the early development days, it
-> is time to push some demo code back in, preferably that would work over
-> both Cobalt and Mercury cores indifferently.
->
-> - nios2 and sh4 over Cobalt are lagging behind, basically because we
-> would need a 3.10+ reference kernel for implementing the proper pipeline
-> bits 3.x requires, which we don't have. I'll be looking for such kernel
-> for supporting nios2 at some point. I'm unsure for sh4: no hardware at
-> hand, and most importantly, nobody seemed to care about running Xenomai
-> over this architecture.
->
-> - running the Copperplate layer over uClibc instead of glibc. Last time
-> I tried (a couple of years ago), several nightmare-class issues popped
-> up. The question is: do we still need this, is it worth the effort, or
-> can we reasonably make glibc a pre-requisite for running non-POSIX APIs
-> in dual kernel (i.e. Cobalt) mode? Blackfin and nios2 were the primary
-> users of Xenomai's uClibc compatibility in 2.x.
->
-> - any change that would be pending to the pipeline core API. If you have
-> any brewing or to be suggested, now is a good time to speak up.
+  8
 
-Nothing on my side except ipipe_smp_p introduced by latest patches.
+  7     do {
 
->
-> - The vrtx and uITRON APIs have not been rewritten over the copperplate
-> layer yet. Given that we received no valuable feedback over the years
-> for these skins, I don't see the point in implementing this today.
->
-> - Finally, I have a series of 130+ specific implementation
-> changes/issues for the -forge tree pending in my todo list. Nothing
-> really bad or difficult, only a truckload of details.
->
-> I'm refraining from indicating any priority for these tasks, since this
-> should be part of the discussion. A distinction between what's available
-> for the first candidate release and the final one may make sense.
+  6         irqreturn_t res;
 
-I have no preference for the priorities.
+  5
+
+  4         trace_irq_handler_entry(irq, action);
+
+  3         res = action->handler(irq, action->dev_id);
+
+  2         trace_irq_handler_exit(irq, action, res);
+
+  1
+
+145         if (!irqs_disabled()) ipipe_trace_freeze(1);
+
+  1
+
+  2         if (WARN_ONCE(!irqs_disabled(),"irq %u handler %pF enabled
+interrupts\n",
+  3                   irq, action->handler))
+
+  4             local_irq_disable();
 
 
--- 
-					    Gilles.
+But this does not trigger trace freeze.
+What is the 'unsigned int v' in the definition of ipipe_trace_freeze?
 
+
+On 24 February 2014 22:00, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+
+> On 02/24/2014 10:19 PM, Gregory Dymarek wrote:
+> > Hi Gilles,
+> >
+> > I compiled the kernel width the stack unwind disabled and it throws the
+> > same warning while booting: http://pastebin.com/mSTnPACr
+> > [    1.948056] WARNING: at kernel/irq/handle.c:146
+> > handle_irq_event_percpu+0x198/0x1c0(
+> > [    1.959568] irq 32 handler usb_hcd_irq+0x0/0x84 enabled interrupts
+> >
+> > Also, when unlpugging USB devices I get kernel panics:
+> > http://pastebin.com/Nr87y8Ki
+>
+> Yes, but we now have a clear trace, where we see that ipipe_do_irq is
+> indeed called.
+>
+> >
+> > What else would you need to see to identify the actual failure?
+> > How should be the root domain stalled, how to look for it?
+>
+> The simplest solution is to enable the I-pipe tracer, and trigger a
+> trace freeze instead of the warning.
+>
+> The I-pipe tracer should show us where the root domain is unstalled.
+>
+> --
+>                                                                 Gilles.
+>
