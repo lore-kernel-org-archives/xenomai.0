@@ -1,14 +1,13 @@
-Message-ID: <530CBD81.1090703@xenomai.org>
-Date: Tue, 25 Feb 2014 16:57:53 +0100
+Message-ID: <530CBFB6.6000908@xenomai.org>
+Date: Tue, 25 Feb 2014 17:07:18 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <52FBA4D5.3010606@marel.com> <52FCA810.2080604@marel.com>
- <530C8967.2050900@marel.com>
-In-Reply-To: <530C8967.2050900@marel.com>
+References: <CAKc2HpbgUU77_Y25KXjf6jHHLzmNX3PmOxqQsYK4dH0crk9--A@mail.gmail.com>
+In-Reply-To: <CAKc2HpbgUU77_Y25KXjf6jHHLzmNX3PmOxqQsYK4dH0crk9--A@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] resource leak and kernel panic with pSOS q_vcreate on
- arm (BeagleBone Black)
+Subject: Re: [Xenomai] Xenomai-forge: SIGCHLD to SIG_IGN in spawn_daemon()
+ okay?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,23 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marcel van Mierlo <marcel.vanmierlo@marel.com>, xenomai@xenomai.org
+To: Kim De Mey <kim.demey@gmail.com>, xenomai@xenomai.org
 
-On 02/25/2014 01:15 PM, Marcel van Mierlo wrote:
-> Hi,
+On 02/25/2014 10:07 AM, Kim De Mey wrote:
+> Hello all,
 >
-> I posted this information a few weeks back but got no response...does
-> anyone have insight on this...I've been digging into the queue
-> management code in Xenomai but I'm not getting very far...any help on
-> this would be appreciated as I am not sure what to try next.
+> I noticed that when enabling the registry in Xenomai-forge (mercury
+> core), that the SIGCHLD gets set to ignore (SIG_IGN) in the
+> spawn_daemon() call.
+> I guess this choice was made to make sure no zombies of the daemon
+> stay alive. Correct?
+
+Yes.
+
+>
+> This does however mean that the default behaviour of the application
+> regarding the handling of children is changed. Now I wonder whether it
+> is okay (as a rule/practice) for a library to change this behaviour of
+> the application. Shouldn't we look for a solution where the behaviour
+> of the application remains untouched?
 >
 
-Broken auto-cleanup code at work. Please pull the fixes from 
-git://git.xenomai.org/xenomai-2.6.git:
-
-http://git.xenomai.org/xenomai-2.6.git/commit/?id=5704dd0c118c5c85c22f703ea937551c88e0ef44
-to
-http://git.xenomai.org/xenomai-2.6.git/commit/?id=4081e1b032329bf0cc9442f466233d5fc1083fc5
+The default action for SIGCHLD is to ignore it. If the app wants to 
+handle this signal specifically, it will have to trap it and figure out 
+which child it cares about has exited in any case. So the library action 
+for this signal does not change anything to the default case actually.
 
 -- 
 Philippe.
