@@ -1,25 +1,10 @@
-Message-ID: <530D0BBD.6070704@xenomai.org>
-Date: Tue, 25 Feb 2014 22:31:41 +0100
+Message-ID: <530D0D7B.9010501@xenomai.org>
+Date: Tue, 25 Feb 2014 22:39:07 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
- <CAK4EZFRN56pZkzmYwBpyupYkbj+V1mgYUPHk4YfLshSs-zFGGw@mail.gmail.com>
- <CAK4EZFTRhDxJkRdY7epTqQ=f0rpoK570uJckq4aOYnt7z6fzxA@mail.gmail.com>
- <CAEbDrgkAqAGWrap1156fiQnLiuBJ_P6NUdxQQQRBiLkDEKRwGQ@mail.gmail.com>
- <530A8767.4030004@xenomai.org>
- <CAEbDrgmf+RtS5gS5SKO7eq66ge-LHoJ0hTOC=yeRmUgk0MXqog@mail.gmail.com>
- <530BC103.3010809@xenomai.org>
- <CAEbDrgnFr7YvfoMmFQx=PBKSFEWvwJftx0wZx39ySMqRO2X6gQ@mail.gmail.com>
- <530CFB0D.8040001@xenomai.org>
- <CAEbDrgkJCnbWu_J4svoXOU1x2rz=n95A5+3Ee=R_9CpMgx-JmA@mail.gmail.com>
- <530CFC27.5050700@xenomai.org>
- <CAEbDrgnmM_dD3WX42PYawhkW8zTaYczzfozEe1EX7Z5HnERz3g@mail.gmail.com>
- <530D0205.9050406@xenomai.org>
- <CAEbDrgmwch94crHAcrbJDj9MxaiBNaYeLH2U9NtS0tuJKmdDDw@mail.gmail.com>
-In-Reply-To: <CAEbDrgmwch94crHAcrbJDj9MxaiBNaYeLH2U9NtS0tuJKmdDDw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RaspberryPi kernel 3.8 issue
+Subject: [Xenomai] request pull for xenomai-forge
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -28,39 +13,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gregory Dymarek <gregd72002@gmail.com>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 02/25/2014 10:09 PM, Gregory Dymarek wrote:
-> So the frame freeze I got on my version is on line 145 in here:
-> https://github.com/raspberrypi/linux/blob/rpi-3.8.y/kernel/irq/handle.c
-> 
-> The dwc_otg_hcd_handle_intr is here:
-> https://github.com/raspberrypi/linux/blob/rpi-3.8.y/drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c
-> 
-> 
-> Is the line 523 the problem?
->     local_fiq_enable();
+The following changes since commit 21c98d8c4e2ce4320f688163570dab9b11da55c1:
 
-Please try the following patch:
+  doc: provide details about the new registry hierarchy (2014-02-21 17:31:27 +0100)
 
-diff --git a/arch/arm/include/asm/ipipe_hwirq.h b/arch/arm/include/asm/ipipe_hwirq.h
-index 6b864aa..bd8cda1 100644
---- a/arch/arm/include/asm/ipipe_hwirq.h
-+++ b/arch/arm/include/asm/ipipe_hwirq.h
-@@ -200,9 +200,9 @@ static inline void hard_local_irq_restore(unsigned long x)
- 		ipipe_unstall_root();			\
- 	} while (0)
- 
--#define local_fiq_enable() ipipe_unstall_root()
-+#define local_fiq_enable() hard_local_fiq_enable_notrace()
- 
--#define local_fiq_disable() ipipe_stall_root()
-+#define local_fiq_disable() hard_local_fiq_disable_notrace()
- 
- #define arch_local_irq_restore(flags)			\
- 	do {						\
+are available in the git repository at:
 
+  git://git.xenomai.org/xenomai-gch.git for-forge
+
+for you to fetch changes up to 87d6615a4572e945bdaaf6609e47e82235606d6f:
+
+  cobalt/xnlock: allow moving out-of-line (2014-02-24 01:25:02 +0100)
+
+----------------------------------------------------------------
+Gilles Chanteperdrix (1):
+      cobalt/xnlock: allow moving out-of-line
+
+ include/cobalt/kernel/lock.h   |   45 +++++++++++++++++++++++++++++++++----------
+ kernel/cobalt/arch/arm/Kconfig |    4 ++++
+ kernel/cobalt/lock.c           |   17 ++++++++++++++--
+ 3 files changed, 54 insertions(+), 12 deletions(-)
 
 -- 
                                                                 Gilles.
