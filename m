@@ -1,18 +1,9 @@
-References: <1392993075.52404.YahooMailNeo@web140605.mail.bf1.yahoo.com>
- <530766CD.3060707@xenomai.org>
- <1393198348.29895.YahooMailNeo@web140605.mail.bf1.yahoo.com>
- <530A862C.1060805@xenomai.org>
- <1393204287.98060.YahooMailNeo@web140606.mail.bf1.yahoo.com>
- <530B374B.1080507@xenomai.org>
-Message-ID: <1393298793.43978.YahooMailNeo@web140605.mail.bf1.yahoo.com>
-Date: Mon, 24 Feb 2014 19:26:33 -0800 (PST)
-From: Bruno Tunes de Mello <bruno_v05_2005@yahoo.com.br>
-In-Reply-To: <530B374B.1080507@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] User Space Problems
-Reply-To: Bruno Tunes de Mello <bruno_v05_2005@yahoo.com.br>
+Date: Tue, 25 Feb 2014 10:07:38 +0100
+Message-ID: <CAKc2HpbgUU77_Y25KXjf6jHHLzmNX3PmOxqQsYK4dH0crk9--A@mail.gmail.com>
+From: Kim De Mey <kim.demey@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] Xenomai-forge: SIGCHLD to SIG_IGN in spawn_daemon() okay?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,190 +12,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi Gilles,=0AThe kernel is booting and I executed latency and xeno-test com=
-mands. The results are below.=0A=0Alinaro@linaro-alip:/usr/xenomai/bin$ sud=
-o ./latency=0A=3D=3D Sampling period: 1000 us=0A=3D=3D Test mode: periodic =
-user-mode task=0A=3D=3D All results in microseconds=0Awarming up...=0ARTT|=
-=A0 00:00:01=A0 (periodic user-mode task, 1000 us period, priority 99)=0ART=
-H|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat wor=
-st=0ARTD|=A0=A0=A0=A0=A0 4.017|=A0=A0=A0=A0 10.896|=A0=A0=A0=A0 21.088|=A0=
-=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 4.017|=A0=A0=A0=A0 21.088=
-=0ARTD|=A0=A0=A0=A0=A0 4.507|=A0=A0=A0=A0=A0 9.898|=A0=A0=A0=A0 24.037|=A0=
-=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 4.017|=A0=A0=A0=A0 24.037=
-=0ARTD|=A0=A0=A0=A0=A0 4.209|=A0=A0=A0=A0 10.840|=A0=A0=A0=A0 33.416|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 4.017|=A0=A0=A0=A0 33.416=0AR=
-TD|=A0=A0=A0=A0=A0 3.962|=A0=A0=A0=A0 14.106|=A0=A0=A0 699.722|=A0=A0=A0=A0=
-=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.962|=A0=A0=A0 699.722=0ARTD|=A0=
-=A0=A0=A0=A0 3.727|=A0=A0=A0=A0 12.861|=A0=A0=A0 249.477|=A0=A0=A0=A0=A0=A0=
- 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.727|=A0=A0=A0 699.722=0ARTD|=A0=A0=A0=
-=A0=A0 4.032|=A0=A0=A0=A0 11.598|=A0=A0=A0 317.497|=A0=A0=A0=A0=A0=A0 0|=A0=
-=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.727|=A0=A0=A0 699.722=0ARTD|=A0=A0=A0=A0=A0 4=
-.747|=A0=A0=A0=A0 13.290|=A0=A0=A0 368.406|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=
-=A0 0|=A0=A0=A0=A0=A0 3.727|=A0=A0=A0 699.722=0ARTD|=A0=A0=A0=A0=A0 8.270|=
-=A0=A0=A0=A0 12.785|=A0=A0=A0 464.007|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
-=A0=A0=A0=A0=A0 3.727|=A0=A0=A0 699.722=0ARTD|=A0=A0=A0=A0=A0 3.681|=A0=A0=
-=A0=A0 11.505|=A0=A0=A0 253.196|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=
-=A0=A0=A0 3.681|=A0=A0=A0 699.722=0ARTD|=A0=A0=A0=A0=A0 4.047|=A0=A0=A0=A0 =
-11.358|=A0=A0=A0=A0 23.550|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=
-=A0 3.681|=A0=A0=A0 699.722=0ARTD|=A0=A0=A0=A0=A0 4.148|=A0=A0=A0=A0=A0 9.4=
-09|=A0=A0=A0=A0 21.568|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 =
-3.681|=A0=A0=A0 699.722=0ARTD|=A0=A0=A0=A0=A0 3.800|=A0=A0=A0=A0 11.169|=A0=
-=A0=A0 155.095|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.681|=
-=A0=A0=A0 699.722=0ARTD|=A0=A0=A0=A0=A0 3.707|=A0=A0=A0=A0 12.517|=A0=A0=A0=
- 562.151|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.681|=A0=A0=
-=A0 699.722=0ARTD|=A0=A0=A0=A0=A0 3.979|=A0=A0=A0=A0 11.356|=A0=A0=A0=A0 21=
-.737|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.681|=A0=A0=A0 69=
-9.722=0ARTD|=A0=A0=A0=A0=A0 4.492|=A0=A0=A0=A0 11.813|=A0=A0=A0 622.838|=A0=
-=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.681|=A0=A0=A0 699.722=0A=
-RTD|=A0=A0=A0=A0=A0 3.863|=A0=A0=A0=A0=A0 9.227|=A0=A0=A0=A0 19.388|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.681|=A0=A0=A0 699.722=0ARTD=
-|=A0=A0=A0=A0=A0 3.787|=A0=A0=A0=A0=A0 7.977|=A0=A0=A0 304.196|=A0=A0=A0=A0=
-=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.681|=A0=A0=A0 699.722=0ARTD|=A0=
-=A0=A0=A0=A0 3.818|=A0=A0=A0=A0=A0 7.848|=A0=A0=A0 488.876|=A0=A0=A0=A0=A0=
-=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.681|=A0=A0=A0 699.722=0ARTD|=A0=A0=
-=A0=A0=A0 3.921|=A0=A0=A0=A0=A0 8.030|=A0=A0=A0 507.181|=A0=A0=A0=A0=A0=A0 =
-0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.681|=A0=A0=A0 699.722=0ARTD|=A0=A0=A0=A0=
-=A0 3.949|=A0=A0=A0=A0=A0 7.290|=A0=A0=A0=A0 19.797|=A0=A0=A0=A0=A0=A0 0|=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.681|=A0=A0=A0 699.722=0ARTD|=A0=A0=A0=A0=
-=A0 3.813|=A0=A0=A0=A0=A0 9.431|=A0=A0=A0=A0 34.290|=A0=A0=A0=A0=A0=A0 0|=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.681|=A0=A0=A0 699.722=0ARTT|=A0 00:00:22=
-=A0 (periodic user-mode task, 1000 us period, priority 99)=0ARTH|----lat mi=
-n|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst=0ARTD|=A0=
-=A0=A0=A0=A0 3.684|=A0=A0=A0=A0 10.997|=A0=A0=A0=A0 20.499|=A0=A0=A0=A0=A0=
-=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.681|=A0=A0=A0 699.722=0ARTD|=A0=A0=
-=A0=A0=A0 8.535|=A0=A0=A0=A0 11.383|=A0=A0=A0=A0 34.055|=A0=A0=A0=A0=A0=A0 =
-0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.681|=A0=A0=A0 699.722=0ARTD|=A0=A0=A0=A0=
-=A0 4.429|=A0=A0=A0=A0 11.002|=A0=A0=A0=A0 30.623|=A0=A0=A0=A0=A0=A0 0|=A0=
-=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.681|=A0=A0=A0 699.722=0ARTD|=A0=A0=A0=A0=A0 3=
-.881|=A0=A0=A0=A0=A0 8.739|=A0=A0=A0=A0 19.378|=A0=A0=A0=A0=A0=A0 0|=A0=A0=
-=A0=A0 0|=A0=A0=A0=A0=A0 3.681|=A0=A0=A0 699.722=0ARTD|=A0=A0=A0=A0=A0 3.93=
-9|=A0=A0=A0=A0=A0 7.984|=A0=A0=A0=A0 22.012|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=
-=A0 0|=A0=A0=A0=A0=A0 3.681|=A0=A0=A0 699.722=0ARTD|=A0=A0=A0=A0=A0 3.909|=
-=A0=A0=A0=A0=A0 7.739|=A0=A0=A0=A0 24.398|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0=
- 0|=A0=A0=A0=A0=A0 3.681|=A0=A0=A0 699.722=0ARTD|=A0=A0=A0=A0=A0 3.893|=A0=
-=A0=A0=A0=A0 8.209|=A0=A0=A0 278.093|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
-=A0=A0=A0=A0=A0 3.681|=A0=A0=A0 699.722=0ARTD|=A0=A0=A0=A0=A0 3.929|=A0=A0=
-=A0=A0=A0 9.452|=A0=A0=A0 323.429|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=
-=A0=A0=A0=A0 3.681|=A0=A0=A0 699.722=0ARTD|=A0=A0=A0=A0=A0 4.032|=A0=A0=A0=
-=A0 11.227|=A0=A0=A0 277.406|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=
-=A0=A0 3.681|=A0=A0=A0 699.722=0ARTD|=A0=A0=A0=A0=A0 3.780|=A0=A0=A0=A0 12.=
-323|=A0=A0=A0 367.732|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3=
-.681|=A0=A0=A0 699.722=0ARTD|=A0=A0=A0=A0=A0 4.085|=A0=A0=A0=A0 13.952|=A0=
-=A0=A0 639.260|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.681|=
-=A0=A0=A0 699.722=0ARTD|=A0=A0=A0=A0=A0 3.727|=A0=A0=A0=A0 12.202|=A0=A0=A0=
- 663.416|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.681|=A0=A0=
-=A0 699.722=0ARTD|=A0=A0=A0=A0=A0 4.393|=A0=A0=A0=A0 12.383|=A0=A0=A0 412.7=
-57|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.681|=A0=A0=A0 699.=
-722=0A^C---|-----------|-----------|-----------|--------|------|-----------=
---------------=0ARTS|=A0=A0=A0=A0=A0 3.681|=A0=A0=A0=A0 10.669|=A0=A0=A0 69=
-9.722|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0 00:00:34/00:00:34=0A=0A=
-Xeno-test result:=0AStarted child 14303: dohell 900=0AStarted child 14304: =
-/usr/xenomai/bin/latency=0A=3D=3D Sampling period: 1000 us=0A=3D=3D Test mo=
-de: periodic user-mode task=0A=3D=3D All results in microseconds=0Awarming =
-up...=0ARTT|=A0 00:00:01=A0 (periodic user-mode task, 1000 us period, prior=
-ity 99)=0ARTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat be=
-st|--lat worst=0ARTD|=A0=A0=A0=A0=A0 3.790|=A0=A0=A0=A0 12.032|=A0=A0=A0=A0=
- 20.199|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.790|=A0=A0=A0=
-=A0 20.199=0ARTD|=A0=A0=A0=A0=A0 4.017|=A0=A0=A0=A0 11.207|=A0=A0=A0 259.62=
-8|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.790|=A0=A0=A0 259.6=
-28=0ARTD|=A0=A0=A0=A0=A0 3.924|=A0=A0=A0=A0 10.648|=A0=A0=A0 502.863|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.790|=A0=A0=A0 502.863=0ARTD=
-|=A0=A0=A0=A0=A0 3.997|=A0=A0=A0=A0 11.222|=A0=A0=A0 521.247|=A0=A0=A0=A0=
-=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.790|=A0=A0=A0 521.247=0ARTD|=A0=
-=A0=A0=A0=A0 4.002|=A0=A0=A0=A0 10.679|=A0=A0=A0 167.633|=A0=A0=A0=A0=A0=A0=
- 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.790|=A0=A0=A0 521.247=0ARTD|=A0=A0=A0=
-=A0=A0 3.823|=A0=A0=A0=A0 11.035|=A0=A0=A0 432.459|=A0=A0=A0=A0=A0=A0 0|=A0=
-=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.790|=A0=A0=A0 521.247=0ARTD|=A0=A0=A0=A0=A0 3=
-.858|=A0=A0=A0=A0 11.247|=A0=A0=A0 693.482|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=
-=A0 0|=A0=A0=A0=A0=A0 3.790|=A0=A0=A0 693.482=0ARTD|=A0=A0=A0=A0=A0 3.782|=
-=A0=A0=A0=A0 10.227|=A0=A0=A0 618.681|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
-=A0=A0=A0=A0=A0 3.782|=A0=A0=A0 693.482=0ARTD|=A0=A0=A0=A0=A0 3.977|=A0=A0=
-=A0=A0 11.856|=A0=A0=A0 614.128|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=
-=A0=A0=A0 3.782|=A0=A0=A0 693.482=0ARTD|=A0=A0=A0=A0=A0 4.007|=A0=A0=A0=A0 =
-11.287|=A0=A0=A0 571.318|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=
-=A0 3.782|=A0=A0=A0 693.482=0ARTD|=A0=A0=A0=A0=A0 3.853|=A0=A0=A0=A0 10.502=
-|=A0=A0=A0 105.585|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.78=
-2|=A0=A0=A0 693.482=0ARTD|=A0=A0=A0=A0=A0 3.934|=A0=A0=A0=A0 10.734|=A0=A0=
-=A0 281.207|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.782|=A0=
-=A0=A0 693.482=0ARTD|=A0=A0=A0=A0=A0 3.845|=A0=A0=A0=A0=A0 9.318|=A0=A0=A0 =
-187.479|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.782|=A0=A0=A0=
- 693.482=0ARTD|=A0=A0=A0=A0=A0 4.022|=A0=A0=A0=A0 10.353|=A0=A0=A0=A0 98.50=
-5|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.782|=A0=A0=A0 693.4=
-82=0ARTD|=A0=A0=A0=A0=A0 3.999|=A0=A0=A0=A0 11.154|=A0=A0=A0 316.641|=A0=A0=
-=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.782|=A0=A0=A0 693.482=0ARTD=
-|=A0=A0=A0=A0=A0 3.901|=A0=A0=A0=A0 10.972|=A0=A0=A0 280.275|=A0=A0=A0=A0=
-=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.782|=A0=A0=A0 693.482=0ARTD|=A0=
-=A0=A0=A0=A0 3.818|=A0=A0=A0=A0 10.714|=A0=A0=A0 601.404|=A0=A0=A0=A0=A0=A0=
- 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.782|=A0=A0=A0 693.482=0ARTD|=A0=A0=A0=
-=A0=A0 3.916|=A0=A0=A0=A0 10.729|=A0=A0=A0 681.338|=A0=A0=A0=A0=A0=A0 0|=A0=
-=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.782|=A0=A0=A0 693.482=0ARTD|=A0=A0=A0=A0=A0 4=
-.015|=A0=A0=A0=A0 12.406|=A0=A0=A0 793.967|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=
-=A0 0|=A0=A0=A0=A0=A0 3.782|=A0=A0=A0 793.967=0ARTD|=A0=A0=A0=A0=A0 3.939|=
-=A0=A0=A0=A0 11.224|=A0=A0=A0 627.510|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
-=A0=A0=A0=A0=A0 3.782|=A0=A0=A0 793.967=0ARTD|=A0=A0=A0=A0=A0 3.863|=A0=A0=
-=A0=A0 11.734|=A0=A0=A0 520.931|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=
-=A0=A0=A0 3.782|=A0=A0=A0 793.967=0ARTT|=A0 00:00:22=A0 (periodic user-mode=
- task, 1000 us period, priority 99)=0ARTH|----lat min|----lat avg|----lat m=
-ax|-overrun|---msw|---lat best|--lat worst=0ARTD|=A0=A0=A0=A0=A0 3.780|=A0=
-=A0=A0=A0 10.545|=A0=A0=A0 461.820|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=
-=A0=A0=A0=A0 3.780|=A0=A0=A0 793.967=0ARTD|=A0=A0=A0=A0=A0 4.032|=A0=A0=A0=
-=A0 12.909|=A0=A0=A0 743.262|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=
-=A0=A0 3.780|=A0=A0=A0 793.967=0ARTD|=A0=A0=A0=A0=A0 4.030|=A0=A0=A0=A0 11.=
-906|=A0=A0=A0 376.366|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3=
-.780|=A0=A0=A0 793.967=0ARTD|=A0=A0=A0=A0=A0 4.063|=A0=A0=A0=A0 11.714|=A0=
-=A0=A0 683.219|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.780|=
-=A0=A0=A0 793.967=0ARTD|=A0=A0=A0=A0=A0 4.010|=A0=A0=A0=A0 12.941|=A0=A0=A0=
- 689.578|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.780|=A0=A0=
-=A0 793.967=0ARTD|=A0=A0=A0=A0=A0 3.972|=A0=A0=A0=A0 10.616|=A0=A0=A0 414.1=
-28|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.780|=A0=A0=A0 793.=
-967=0ARTD|=A0=A0=A0=A0=A0 3.994|=A0=A0=A0=A0 11.643|=A0=A0=A0 491.795|=A0=
-=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.780|=A0=A0=A0 793.967=0A=
-RTD|=A0=A0=A0=A0=A0 3.843|=A0=A0=A0=A0 10.994|=A0=A0=A0 110.843|=A0=A0=A0=
-=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.780|=A0=A0=A0 793.967=0ARTD|=
-=A0=A0=A0=A0=A0 3.974|=A0=A0=A0=A0 11.439|=A0=A0=A0 466.378|=A0=A0=A0=A0=A0=
-=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.780|=A0=A0=A0 793.967=0A^C---|------=
------|-----------|-----------|--------|------|-------------------------=0AR=
-TS|=A0=A0=A0=A0=A0 3.780|=A0=A0=A0=A0 11.199|=A0=A0=A0 793.967|=A0=A0=A0=A0=
-=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0 00:00:30/00:00:30=0A=0AThanks for the rep=
-ly,=0ABruno=0A=0A=0A=0A=0AEm Segunda-feira, 24 de Fevereiro de 2014 9:13, G=
-illes Chanteperdrix <gilles.chanteperdrix@xenomai.org> escreveu:=0A =0AOn 0=
-2/24/2014 02:11 AM, Bruno Tunes de Mello wrote:=0A> Hi Gilles,=0A> =0A> I d=
-id the changes, but the kernel is not booting.=0A=0AOk, you are the second =
-to report this issue, so the patch must=0Abe touching bits it should not to=
-uch. Please try that one instead:=0A=0Adiff --git a/arch/arm/mach-mx6/mm.c =
-b/arch/arm/mach-mx6/mm.c=0Aindex 3cf6b22..d89393c 100644=0A--- a/arch/arm/m=
-ach-mx6/mm.c=0A+++ b/arch/arm/mach-mx6/mm.c=0A@@ -97,7 +97,7 @@ void __init=
- mx6_map_io(void)=0A#ifdef CONFIG_CACHE_L2X0=0Aint mxc_init_l2x0(void)=0A{=
-=0A-=A0=A0=A0 unsigned int val;=0A+=A0=A0=A0 unsigned int val, aux_ctrl;=0A=
-=0A=A0=A0=A0 #define IOMUXC_GPR11_L2CACHE_AS_OCRAM 0x00000002=0A=0A@@ -114,=
-12 +114,28 @@ int mxc_init_l2x0(void)=0A=A0=A0=A0 val =3D readl(IO_ADDRESS(=
-L2_BASE_ADDR + L2X0_PREFETCH_CTRL));=0A=A0=A0=A0 val |=3D 0x40800000;=0A=A0=
-=A0=A0 writel(val, IO_ADDRESS(L2_BASE_ADDR + L2X0_PREFETCH_CTRL));=0A+#ifnd=
-ef CONFIG_IPIPE=0A=A0=A0=A0 val =3D readl(IO_ADDRESS(L2_BASE_ADDR + L2X0_PO=
-WER_CTRL));=0A=A0=A0=A0 val |=3D L2X0_DYNAMIC_CLK_GATING_EN;=0A=A0=A0=A0 va=
-l |=3D L2X0_STNDBY_MODE_EN;=0A=A0=A0=A0 writel(val, IO_ADDRESS(L2_BASE_ADDR=
- + L2X0_POWER_CTRL));=0A+#endif=0A+=0A+#if 0=0A+=A0=A0=A0 aux_ctrl =3D ((1 =
-<< L2X0_AUX_CTRL_ASSOCIATIVITY_SHIFT) |=0A+=A0=A0=A0 =A0=A0=A0 (0x1 << L2X0=
-_AUX_CTRL_NS_LOCKDOWN_SHIFT) |=0A+=A0=A0=A0 =A0=A0=A0 (0x1 << L2X0_AUX_CTRL=
-_NS_INT_CTRL_SHIFT) |=0A+=A0=A0=A0 =A0=A0=A0 (1 << 23) |=0A+=A0=A0=A0 =A0=
-=A0=A0 (1 << L2X0_AUX_CTRL_SHARE_OVERRIDE_SHIFT) |=0A+=A0=A0=A0 =A0=A0=A0 (=
-1 << L2X0_AUX_CTRL_DATA_PREFETCH_SHIFT) |=0A+=A0=A0=A0 =A0=A0=A0 (1 << L2X0=
-_AUX_CTRL_INSTR_PREFETCH_SHIFT) |=0A+=A0=A0=A0 =A0=A0=A0 (1 << L2X0_AUX_CTR=
-L_EARLY_BRESP_SHIFT));=0A+=0A+=A0=A0=A0 l2x0_init(IO_ADDRESS(L2_BASE_ADDR),=
- aux_ctrl, L2X0_AUX_CTRL_MASK);=0A+#else=0A+=A0=A0=A0 l2x0_init(IO_ADDRESS(=
-L2_BASE_ADDR), 1 << 23, ~(1 << 23));=0A=0A+#endif=0A=0A-=A0=A0=A0 l2x0_init=
-(IO_ADDRESS(L2_BASE_ADDR), 0x0, ~0x00000000);=0A=A0=A0=A0 return 0;=0A}=0A=
-=0Adiff --git a/arch/arm/mm/cache-l2x0.c b/arch/arm/mm/cache-l2x0.c=0Aindex=
- 1e2c52d..27550b3 100644=0A--- a/arch/arm/mm/cache-l2x0.c=0A+++ b/arch/arm/=
-mm/cache-l2x0.c=0A@@ -421,6 +421,9 @@ void l2x0_init(void __iomem *base, __=
-u32 aux_val, __u32 aux_mask)=0A=A0=A0=A0 =A0=A0=A0 writel_relaxed(1, l2x0_b=
-ase + L2X0_CTRL);=0A=A0=A0=A0 }=0A=0A+=A0=A0=A0 /* Re-read it in case some =
-bits are reserved. */=0A+=A0=A0=A0 aux =3D readl_relaxed(l2x0_base + L2X0_A=
-UX_CTRL);=0A+=0A=A0=A0=A0 outer_cache.inv_range =3D l2x0_inv_range;=0A=A0=
-=A0=A0 outer_cache.clean_range =3D l2x0_clean_range;=0A=A0=A0=A0 outer_cach=
-e.flush_range =3D l2x0_flush_range;=0A=0A-- =0A=A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0 =A0 =A0 =A0 =A0 =A0 Gilles.
+Hello all,
+
+I noticed that when enabling the registry in Xenomai-forge (mercury
+core), that the SIGCHLD gets set to ignore (SIG_IGN) in the
+spawn_daemon() call.
+I guess this choice was made to make sure no zombies of the daemon
+stay alive. Correct?
+
+This does however mean that the default behaviour of the application
+regarding the handling of children is changed. Now I wonder whether it
+is okay (as a rule/practice) for a library to change this behaviour of
+the application. Shouldn't we look for a solution where the behaviour
+of the application remains untouched?
+
+Regards,
+Kim
+
