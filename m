@@ -1,14 +1,20 @@
-Message-ID: <530C8C54.7090706@marel.com>
-Date: Tue, 25 Feb 2014 12:28:04 +0000
-From: Marcel van Mierlo <marcel.vanmierlo@marel.com>
+References: <1392993075.52404.YahooMailNeo@web140605.mail.bf1.yahoo.com>
+ <530766CD.3060707@xenomai.org>
+ <1393198348.29895.YahooMailNeo@web140605.mail.bf1.yahoo.com>
+ <530A862C.1060805@xenomai.org>
+ <1393204287.98060.YahooMailNeo@web140606.mail.bf1.yahoo.com>
+ <530B374B.1080507@xenomai.org>
+ <1393298793.43978.YahooMailNeo@web140605.mail.bf1.yahoo.com>
+ <530C6AC6.6030200@xenomai.org>
+Message-ID: <1393335358.33826.YahooMailNeo@web140603.mail.bf1.yahoo.com>
+Date: Tue, 25 Feb 2014 05:35:58 -0800 (PST)
+From: Bruno Tunes de Mello <bruno_v05_2005@yahoo.com.br>
+In-Reply-To: <530C6AC6.6030200@xenomai.org>
 MIME-Version: 1.0
-References: <52FBA4D5.3010606@marel.com> <52FCA810.2080604@marel.com>
- <530C8967.2050900@marel.com>
-In-Reply-To: <530C8967.2050900@marel.com>
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] resource leak and kernel panic with pSOS q_vcreate on
- arm (BeagleBone Black)
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] User Space Problems
+Reply-To: Bruno Tunes de Mello <bruno_v05_2005@yahoo.com.br>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,137 +23,261 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-
-On 25/02/14 12:15, Marcel van Mierlo wrote:
-> Hi,
->
-> I posted this information a few weeks back but got no response...does 
-> anyone have insight on this...I've been digging into the queue 
-> management code in Xenomai but I'm not getting very far...any help on 
-> this would be appreciated as I am not sure what to try next.
->
-> This behaviour has been observed on BeagleBoard Black Linux arm 
-> 3.8.13-bone26.1, Xenomai 2.6.3
->
-> basically the resources created by pSOS q_vcreate do not appear to be 
-> released when the application exits. q_create appears to be fine. When 
-> the application starts up again after exit (without calling 
-> q_vdelete), calling q_vcreate on the named queue returns (-17 File 
-> Exists). If I instead use q_vident to get a handle on the queue, the 
-> API appears to return with a valid handle, but when the program exits 
-> the second time Xenomai appears to sit in a resource-release loop and 
-> I end up with a kernel panic. This is a non-trivial application with 
-> about 30 running tasks and lots of fixed size queues using CAN. The 
-> system is stable except for v-queues so there certainly seems to be 
-> something amiss here. I have included a trivial test case which 
-> reproduces the problem.
->
-> [  144.346739] Kernel panic - not syncing: softlockup: hung tasks
-> [  144.352845] [<c00138dc>] (unwind_backtrace+0x0/0xe0) from 
-> [<c06b0af0>] (panic+0x84/0x1e0)
-> [  144.361426] [<c06b0af0>] (panic+0x84/0x1e0) from [<c0094724>] 
-> (watchdog_timer_fn+0x120/0x164)
-> [  144.370338] [<c0094724>] (watchdog_timer_fn+0x120/0x164) from 
-> [<c005e1c4>] (__run_hrtimer+0xec/0x1e4)
-> [  144.379976] [<c005e1c4>] (__run_hrtimer+0xec/0x1e4) from 
-> [<c005ec00>] (hrtimer_interrupt+0x108/0x25c)
-> [  144.389614] [<c005ec00>] (hrtimer_interrupt+0x108/0x25c) from 
-> [<c0025f88>] (omap2_gp_timer_interrupt+0x44/0x54)
-> [  144.400162] [<c0025f88>] (omap2_gp_timer_interrupt+0x44/0x54) from 
-> [<c0095144>] (handle_irq_event_percpu+0x60/0x214)
-> [  144.411156] [<c0095144>] (handle_irq_event_percpu+0x60/0x214) from 
-> [<c0095334>] (handle_irq_event+0x3c/0x5c)
-> [  144.421430] [<c0095334>] (handle_irq_event+0x3c/0x5c) from 
-> [<c0098260>] (handle_level_irq+0x98/0xd0)
-> [  144.430974] [<c0098260>] (handle_level_irq+0x98/0xd0) from 
-> [<c0094b7c>] (generic_handle_irq+0x20/0x30)
-> [  144.440700] [<c0094b7c>] (generic_handle_irq+0x20/0x30) from 
-> [<c000e45c>] (handle_IRQ+0x64/0x8c)
-> [  144.449886] [<c000e45c>] (handle_IRQ+0x64/0x8c) from [<c009e594>] 
-> (__ipipe_do_sync_stage+0x1f4/0x220)
-> [  144.459526] [<c009e594>] (__ipipe_do_sync_stage+0x1f4/0x220) from 
-> [<c009e710>] (ipipe_unstall_root+0x30/0x3c)
-> [  144.469887] [<c009e710>] (ipipe_unstall_root+0x30/0x3c) from 
-> [<c003e908>] (vprintk_emit+0x444/0x4bc)
-> [  144.479428] [<c003e908>] (vprintk_emit+0x444/0x4bc) from 
-> [<c003eb24>] (vprintk+0x1c/0x20)
-> [  144.487974] [<c003eb24>] (vprintk+0x1c/0x20) from [<c06b0d14>] 
-> (printk+0xa4/0x144)
-> [  144.495891] [<c06b0d14>] (printk+0xa4/0x144) from [<c0149638>] 
-> (psos_shadow_eventcb+0x7f8/0x16b8)
-> [  144.505169] [<c0149638>] (psos_shadow_eventcb+0x7f8/0x16b8) from 
-> [<c00db35c>] (detach_ppd+0x28/0x44)
-> [  144.514718] [<c00db35c>] (detach_ppd+0x28/0x44) from [<c00dce74>] 
-> (taskexit_event+0x5ec/0x884)
-> [  144.523724] [<c00dce74>] (taskexit_event+0x5ec/0x884) from 
-> [<c009fb14>] (ipipe_kevent_hook+0x24/0x2c)
-> [  144.533367] [<c009fb14>] (ipipe_kevent_hook+0x24/0x2c) from 
-> [<c009e324>] (__ipipe_notify_kevent+0x3c/0x64)
-> [  144.543457] [<c009e324>] (__ipipe_notify_kevent+0x3c/0x64) from 
-> [<c004193c>] (do_exit+0x348/0x88c)
-> [  144.552819] [<c004193c>] (do_exit+0x348/0x88c) from [<c0041f30>] 
-> (do_group_exit+0x84/0xc0)
-> [  144.561465] [<c0041f30>] (do_group_exit+0x84/0xc0) from 
-> [<c004e938>] (get_signal_to_deliver+0x49c/0x508)
-> [  144.571375] [<c004e938>] (get_signal_to_deliver+0x49c/0x508) from 
-> [<c0010a7c>] (do_signal+0x90/0x478)
-> [  144.581018] [<c0010a7c>] (do_signal+0x90/0x478) from [<c0011350>] 
-> (do_work_pending+0x5c/0xa4)
-> [  144.589966] [<c0011350>] (do_work_pending+0x5c/0xa4) from 
-> [<c000dba4>] (work_pending+0xc/0x20)
-> [  144.598961] drm_kms_helper: panic occurred, switching back to text 
-> console
->
-> In summary:
->
->   1. "USED main heap" under /proc/xenomai/heap does not return to 
-> previous level after terminating an application which uses q_vcreate - 
-> it is increased.
->   2. After (1) has occurred, calling q_vcreate in a separate 
-> invocation of the application returns -17 (File Exists) - suggesting 
-> the queue is still in existence. This happens with plenty of "main 
-> heap" left. I would expect all resources associated with the queue to 
-> be released on termination. "USED main heap" is increased after 
-> termination for this scenario as well, which certainly seems wrong.
->
->
-> [  677.528359] Xenomai: pSOS: cleaning up q "q002" (ret=58).
-> whenever exiting without calling q_vdelete after q_vcreate.
->
-> When using q_create, on exit I get:
-> [ 445.419293] Xenomai: pSOS: cleaning up q "q001" (ret=0).
-> when I do not call q_delete.
->
-> I've included a simple test case which demonstrates the problem.
->
-> Any assistance with this would be appreciated.
->
->
-> Marcel.
-> -------------- next part --------------
-> A non-text attachment was scrubbed...
-> Name: qvcreatetest.tar.gz
-> Type: application/x-gzip
-> Size: 625 bytes
-> Desc: not available
-> URL: 
-> <http://www.xenomai.org/pipermail/xenomai/attachments/20140225/8032fb74/attachment.bin>
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
-
-OK, digging a little further...If I check for the v-queues existence at 
-start up (before attempting to create it) using q_vident and then *do 
-not* call q_vdelete on it I seem to be able to avoid the kernel panic 
-and resource leak...not sure whether the v-queue is actually usable the 
-second time around yet....but it seems that it may get created ok, just 
-messed up at point of deletion.
-
-Marcel.
-
-
-
+Hi Gilles,=0A=0AI applied this new patch and I got the results below.=0A=0A=
+This is the complete boot log: http://pastebin.com/YY5pFyaN=0A=0AI executed=
+ latency and xeno-test some times and the results:=0A=0Alinaro@linaro-alip:=
+/usr/xenomai/bin$ sudo ./latency=0A=3D=3D Sampling period: 1000 us=0A=3D=3D=
+ Test mode: periodic user-mode task=0A=3D=3D All results in microseconds=0A=
+warming up...=0ARTT|=A0 00:00:01=A0 (periodic user-mode task, 1000 us perio=
+d, priority 99)=0ARTH|----lat min|----lat avg|----lat max|-overrun|---msw|-=
+--lat best|--lat worst=0ARTD|=A0=A0=A0=A0=A0 4.904|=A0=A0=A0=A0=A0 9.997|=
+=A0=A0=A0=A0 26.108|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 4.9=
+04|=A0=A0=A0=A0 26.108=0ARTD|=A0=A0=A0=A0=A0 4.669|=A0=A0=A0=A0=A0 9.931|=
+=A0=A0=A0=A0 25.295|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 4.6=
+69|=A0=A0=A0=A0 26.108=0ARTD|=A0=A0=A0=A0=A0 4.709|=A0=A0=A0=A0 10.035|=A0=
+=A0=A0=A0 25.694|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 4.669|=
+=A0=A0=A0=A0 26.108=0ARTD|=A0=A0=A0=A0=A0 3.893|=A0=A0=A0=A0 10.383|=A0=A0=
+=A0=A0 41.742|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=
+=A0=A0=A0 41.742=0ARTD|=A0=A0=A0=A0=A0 4.598|=A0=A0=A0=A0=A0 9.618|=A0=A0=
+=A0=A0 49.883|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=
+=A0=A0=A0 49.883=0ARTD|=A0=A0=A0=A0=A0 4.823|=A0=A0=A0=A0=A0 9.820|=A0=A0=
+=A0=A0 31.297|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=
+=A0=A0=A0 49.883=0ARTD|=A0=A0=A0=A0=A0 4.282|=A0=A0=A0=A0=A0 9.603|=A0=A0=
+=A0=A0 23.123|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=
+=A0=A0=A0 49.883=0ARTD|=A0=A0=A0=A0=A0 4.343|=A0=A0=A0=A0=A0 9.583|=A0=A0=
+=A0=A0 33.345|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=
+=A0=A0=A0 49.883=0ARTD|=A0=A0=A0=A0=A0 4.267|=A0=A0=A0=A0 11.138|=A0=A0=A0=
+=A0 36.436|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=A0=
+=A0=A0 49.883=0ARTD|=A0=A0=A0=A0=A0 4.919|=A0=A0=A0=A0 10.891|=A0=A0=A0=A0 =
+22.083|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=A0=A0=
+=A0 49.883=0ARTD|=A0=A0=A0=A0=A0 4.414|=A0=A0=A0=A0=A0 9.752|=A0=A0=A0=A0 3=
+4.035|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=A0=A0=
+=A0 49.883=0ARTD|=A0=A0=A0=A0=A0 4.535|=A0=A0=A0=A0=A0 9.765|=A0=A0=A0=A0 3=
+5.512|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=A0=A0=
+=A0 49.883=0ARTD|=A0=A0=A0=A0=A0 4.113|=A0=A0=A0=A0=A0 9.851|=A0=A0=A0=A0 3=
+9.275|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=A0=A0=
+=A0 49.883=0ARTD|=A0=A0=A0=A0=A0 3.944|=A0=A0=A0=A0 10.613|=A0=A0=A0=A0 31.=
+088|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=A0=A0=A0 =
+49.883=0ARTD|=A0=A0=A0=A0=A0 9.593|=A0=A0=A0=A0 12.545|=A0=A0=A0=A0 37.883|=
+=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=A0=A0=A0 49.8=
+83=0ARTD|=A0=A0=A0=A0=A0 9.479|=A0=A0=A0=A0 12.603|=A0=A0=A0=A0 44.626|=A0=
+=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=A0=A0=A0 49.883=
+=0ARTD|=A0=A0=A0=A0=A0 9.060|=A0=A0=A0=A0 12.689|=A0=A0=A0=A0 43.363|=A0=A0=
+=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=A0=A0=A0 49.883=0AR=
+TD|=A0=A0=A0=A0=A0 4.494|=A0=A0=A0=A0 10.919|=A0=A0=A0=A0 42.674|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=A0=A0=A0 49.883=0ARTD|=
+=A0=A0=A0=A0=A0 4.709|=A0=A0=A0=A0 10.540|=A0=A0=A0=A0 37.252|=A0=A0=A0=A0=
+=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=A0=A0=A0 49.883=0ARTD|=A0=
+=A0=A0=A0=A0 4.191|=A0=A0=A0=A0=A0 9.179|=A0=A0=A0=A0 22.212|=A0=A0=A0=A0=
+=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=A0=A0=A0 49.883=0ARTD|=A0=
+=A0=A0=A0=A0 4.969|=A0=A0=A0=A0 11.126|=A0=A0=A0=A0 24.075|=A0=A0=A0=A0=A0=
+=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=A0=A0=A0 49.883=0ARTT|=A0 00=
+:00:22=A0 (periodic user-mode task, 1000 us period, priority 99)=0ARTH|----=
+lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst=0AR=
+TD|=A0=A0=A0=A0=A0 4.494|=A0=A0=A0=A0 12.487|=A0=A0=A0=A0 28.108|=A0=A0=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=A0=A0=A0 49.883=0ARTD|=
+=A0=A0=A0=A0=A0 4.156|=A0=A0=A0=A0 11.126|=A0=A0=A0=A0 21.053|=A0=A0=A0=A0=
+=A0=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=A0=A0=A0 49.883=0ARTD|=A0=
+=A0=A0=A0=A0 4.462|=A0=A0=A0=A0 11.654|=A0=A0=A0=A0 39.888|=A0=A0=A0=A0=A0=
+=A0 0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=A0=A0=A0 49.883=0ARTD|=A0=A0=
+=A0=A0=A0 5.510|=A0=A0=A0=A0 12.931|=A0=A0=A0=A0 41.967|=A0=A0=A0=A0=A0=A0 =
+0|=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=A0=A0=A0 49.883=0ARTD|=A0=A0=A0=
+=A0=A0 4.282|=A0=A0=A0=A0 12.989|=A0=A0=A0=A0 43.045|=A0=A0=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.893|=A0=A0=A0=A0 49.883=0ARTD|=A0=A0=A0=A0=
+=A0 3.792|=A0=A0=A0=A0 12.520|=A0=A0=A0=A0 37.727|=A0=A0=A0=A0=A0=A0 0|=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.792|=A0=A0=A0=A0 49.883=0ARTD|=A0=A0=A0=A0=A0=
+ 4.459|=A0=A0=A0=A0 13.199|=A0=A0=A0=A0 36.714|=A0=A0=A0=A0=A0=A0 0|=A0=A0=
+=A0=A0 0|=A0=A0=A0=A0=A0 3.792|=A0=A0=A0=A0 49.883=0ARTD|=A0=A0=A0=A0=A0 4.=
+494|=A0=A0=A0=A0 11.055|=A0=A0=A0=A0 51.909|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=
+=A0 0|=A0=A0=A0=A0=A0 3.792|=A0=A0=A0=A0 51.909=0ARTD|=A0=A0=A0=A0=A0 4.530=
+|=A0=A0=A0=A0=A0 9.979|=A0=A0=A0=A0 48.623|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=
+=A0 0|=A0=A0=A0=A0=A0 3.792|=A0=A0=A0=A0 51.909=0ARTD|=A0=A0=A0=A0=A0 4.224=
+|=A0=A0=A0=A0=A0 9.325|=A0=A0=A0=A0 42.828|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=
+=A0 0|=A0=A0=A0=A0=A0 3.792|=A0=A0=A0=A0 51.909=0ARTD|=A0=A0=A0=A0=A0 3.891=
+|=A0=A0=A0=A0=A0 9.176|=A0=A0=A0=A0 54.623|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=
+=A0 0|=A0=A0=A0=A0=A0 3.792|=A0=A0=A0=A0 54.623=0ARTD|=A0=A0=A0=A0=A0 4.472=
+|=A0=A0=A0=A0 12.499|=A0=A0=A0=A0 33.911|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 =
+0|=A0=A0=A0=A0=A0 3.792|=A0=A0=A0=A0 54.623=0ARTD|=A0=A0=A0=A0=A0 6.810|=A0=
+=A0=A0=A0 13.015|=A0=A0=A0=A0 45.351|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.792|=A0=A0=A0=A0 54.623=0ARTD|=A0=A0=A0=A0=A0 4.936|=A0=
+=A0=A0=A0 13.906|=A0=A0=A0=A0 49.749|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.792|=A0=A0=A0=A0 54.623=0ARTD|=A0=A0=A0=A0=A0 4.732|=A0=
+=A0=A0=A0 15.356|=A0=A0=A0=A0 52.207|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.792|=A0=A0=A0=A0 54.623=0ARTD|=A0=A0=A0=A0=A0 5.608|=A0=
+=A0=A0=A0 12.479|=A0=A0=A0=A0 49.457|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.792|=A0=A0=A0=A0 54.623=0ARTD|=A0=A0=A0=A0=A0 6.348|=A0=
+=A0=A0=A0 13.356|=A0=A0=A0=A0 39.015|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.792|=A0=A0=A0=A0 54.623=0ARTD|=A0=A0=A0=A0=A0 8.702|=A0=
+=A0=A0=A0 13.520|=A0=A0=A0=A0 40.843|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.792|=A0=A0=A0=A0 54.623=0ARTD|=A0=A0=A0=A0=A0 6.898|=A0=
+=A0=A0=A0 12.949|=A0=A0=A0=A0 42.744|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.792|=A0=A0=A0=A0 54.623=0ARTD|=A0=A0=A0=A0=A0 4.222|=A0=
+=A0=A0=A0 12.335|=A0=A0=A0=A0 39.363|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.792|=A0=A0=A0=A0 54.623=0ARTD|=A0=A0=A0=A0=A0 3.891|=A0=
+=A0=A0=A0 12.383|=A0=A0=A0=A0 35.325|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.792|=A0=A0=A0=A0 54.623=0ARTT|=A0 00:00:43=A0 (periodic u=
+ser-mode task, 1000 us period, priority 99)=0ARTH|----lat min|----lat avg|-=
+---lat max|-overrun|---msw|---lat best|--lat worst=0ARTD|=A0=A0=A0=A0=A0 8.=
+116|=A0=A0=A0=A0 13.333|=A0=A0=A0=A0 38.209|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=
+=A0 0|=A0=A0=A0=A0=A0 3.792|=A0=A0=A0=A0 54.623=0ARTD|=A0=A0=A0=A0=A0 8.510=
+|=A0=A0=A0=A0 13.126|=A0=A0=A0=A0 40.661|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 =
+0|=A0=A0=A0=A0=A0 3.792|=A0=A0=A0=A0 54.623=0A^C---|-----------|-----------=
+|-----------|--------|------|-------------------------=0ARTS|=A0=A0=A0=A0=
+=A0 3.792|=A0=A0=A0=A0 11.482|=A0=A0=A0=A0 54.623|=A0=A0=A0=A0=A0=A0 0|=A0=
+=A0=A0=A0 0|=A0=A0=A0 00:00:45/00:00:45=0A=0A=0A(Xeno-test)=0A=0AStarted ch=
+ild 27013: dohell 900=0AStarted child 27015: /usr/xenomai/bin/latency=0A=3D=
+=3D Sampling period: 1000 us=0A=3D=3D Test mode: periodic user-mode task=0A=
+=3D=3D All results in microseconds=0Awarming up...=0ARTT|=A0 00:00:01=A0 (p=
+eriodic user-mode task, 1000 us period, priority 99)=0ARTH|----lat min|----=
+lat avg|----lat max|-overrun|---msw|---lat best|--lat worst=0ARTD|=A0=A0=A0=
+=A0=A0 4.065|=A0=A0=A0=A0 10.621|=A0=A0=A0=A0 21.959|=A0=A0=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0 0|=A0=A0=A0=A0=A0 4.065|=A0=A0=A0=A0 21.959=0ARTD|=A0=A0=A0=A0=
+=A0 3.952|=A0=A0=A0=A0 11.335|=A0=A0=A0=A0 46.752|=A0=A0=A0=A0=A0=A0 0|=A0=
+=A0=A0=A0 0|=A0=A0=A0=A0=A0 3.952|=A0=A0=A0=A0 46.752=0ARTD|=A0=A0=A0=A0=A0=
+ 4.050|=A0=A0=A0=A0 11.121|=A0=A0=A0=A0 49.285|=A0=A0=A0=A0=A0=A0 0|=A0=A0=
+=A0=A0 0|=A0=A0=A0=A0=A0 3.952|=A0=A0=A0=A0 49.285=0ARTD|=A0=A0=A0=A0=A0 4.=
+088|=A0=A0=A0=A0 11.131|=A0=A0=A0=A0 41.467|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=
+=A0 0|=A0=A0=A0=A0=A0 3.952|=A0=A0=A0=A0 49.285=0ARTD|=A0=A0=A0=A0=A0 4.065=
+|=A0=A0=A0=A0 10.851|=A0=A0=A0=A0 58.446|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 =
+0|=A0=A0=A0=A0=A0 3.952|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.027|=A0=
+=A0=A0=A0 10.949|=A0=A0=A0=A0 43.684|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.952|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.027|=A0=
+=A0=A0=A0 10.366|=A0=A0=A0=A0 35.911|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.952|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 3.982|=A0=
+=A0=A0=A0 10.292|=A0=A0=A0=A0 32.992|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.952|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.012|=A0=
+=A0=A0=A0 10.126|=A0=A0=A0=A0 43.656|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.952|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 3.795|=A0=
+=A0=A0=A0=A0 9.898|=A0=A0=A0=A0 35.883|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.795|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.300|=A0=
+=A0=A0=A0 10.257|=A0=A0=A0=A0 25.505|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.795|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.520|=A0=
+=A0=A0=A0 10.345|=A0=A0=A0=A0 30.060|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.795|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.436|=A0=
+=A0=A0=A0 10.449|=A0=A0=A0=A0 29.542|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.795|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.696|=A0=
+=A0=A0=A0 10.416|=A0=A0=A0=A0 31.156|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.795|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 3.717|=A0=
+=A0=A0=A0=A0 9.555|=A0=A0=A0=A0 28.782|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.717|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 3.699|=A0=
+=A0=A0=A0=A0 8.686|=A0=A0=A0=A0 26.416|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 3.709|=A0=
+=A0=A0=A0=A0 9.133|=A0=A0=A0=A0 28.300|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 3.770|=A0=
+=A0=A0=A0=A0 8.661|=A0=A0=A0=A0 21.747|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.070|=A0=
+=A0=A0=A0=A0 8.702|=A0=A0=A0=A0 24.411|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 3.999|=A0=
+=A0=A0=A0=A0 9.570|=A0=A0=A0=A0 26.651|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.012|=A0=
+=A0=A0=A0=A0 9.762|=A0=A0=A0=A0 23.934|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTT|=A0 00:00:22=A0 (periodic u=
+ser-mode task, 1000 us period, priority 99)=0ARTH|----lat min|----lat avg|-=
+---lat max|-overrun|---msw|---lat best|--lat worst=0ARTD|=A0=A0=A0=A0=A0 4.=
+045|=A0=A0=A0=A0 10.755|=A0=A0=A0=A0 25.207|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=
+=A0 0|=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 3.881=
+|=A0=A0=A0=A0 10.616|=A0=A0=A0=A0 35.510|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 =
+0|=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 3.957|=A0=
+=A0=A0=A0 10.166|=A0=A0=A0=A0 33.967|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.098|=A0=
+=A0=A0=A0=A0 8.474|=A0=A0=A0=A0 31.830|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 3.893|=A0=
+=A0=A0=A0 10.047|=A0=A0=A0=A0 40.204|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.123|=A0=
+=A0=A0=A0 10.962|=A0=A0=A0=A0 28.047|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.063|=A0=
+=A0=A0=A0 10.568|=A0=A0=A0=A0 30.244|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 3.972|=A0=
+=A0=A0=A0 10.252|=A0=A0=A0=A0 32.785|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.012|=A0=
+=A0=A0=A0=A0 8.707|=A0=A0=A0=A0 24.633|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.085|=A0=
+=A0=A0=A0 10.229|=A0=A0=A0=A0 25.648|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 3.957|=A0=
+=A0=A0=A0 10.179|=A0=A0=A0=A0 25.866|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.042|=A0=
+=A0=A0=A0 10.191|=A0=A0=A0=A0 25.489|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.093|=A0=
+=A0=A0=A0 10.560|=A0=A0=A0=A0 25.578|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.053|=A0=
+=A0=A0=A0 10.838|=A0=A0=A0=A0 34.282|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 3.959|=A0=
+=A0=A0=A0 10.409|=A0=A0=A0=A0 26.353|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.050|=A0=
+=A0=A0=A0 10.396|=A0=A0=A0=A0 30.277|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.065|=A0=
+=A0=A0=A0=A0 9.603|=A0=A0=A0=A0 27.381|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 3.949|=A0=
+=A0=A0=A0 10.090|=A0=A0=A0=A0 31.560|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.073|=A0=
+=A0=A0=A0 10.242|=A0=A0=A0=A0 24.941|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.083|=A0=
+=A0=A0=A0=A0 9.204|=A0=A0=A0=A0 25.424|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 4.103|=A0=
+=A0=A0=A0=A0 9.017|=A0=A0=A0=A0 38.196|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTT|=A0 00:00:43=A0 (periodic u=
+ser-mode task, 1000 us period, priority 99)=0ARTH|----lat min|----lat avg|-=
+---lat max|-overrun|---msw|---lat best|--lat worst=0ARTD|=A0=A0=A0=A0=A0 4.=
+068|=A0=A0=A0=A0=A0 9.702|=A0=A0=A0=A0 29.547|=A0=A0=A0=A0=A0=A0 0|=A0=A0=
+=A0=A0 0|=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0ARTD|=A0=A0=A0=A0=A0 3.=
+979|=A0=A0=A0=A0 10.494|=A0=A0=A0=A0 25.823|=A0=A0=A0=A0=A0=A0 0|=A0=A0=A0=
+=A0 0|=A0=A0=A0=A0=A0 3.699|=A0=A0=A0=A0 58.446=0A^C---|-----------|-------=
+----|-----------|--------|------|-------------------------=0ARTS|=A0=A0=A0=
+=A0=A0 3.699|=A0=A0=A0=A0 10.088|=A0=A0=A0=A0 58.446|=A0=A0=A0=A0=A0=A0 0|=
+=A0=A0=A0=A0 0|=A0=A0=A0 00:00:44/00:00:44=0A=0AThanks,=0ABruno=0A=0A=0A=0A=
+=0A=0AEm Ter=E7a-feira, 25 de Fevereiro de 2014 7:04, Gilles Chanteperdrix =
+<gilles.chanteperdrix@xenomai.org> escreveu:=0A =0AOn 02/25/2014 04:26 AM, =
+Bruno Tunes de Mello wrote:=0A> Hi Gilles,=0A> The kernel is booting and I =
+executed latency and xeno-test commands. The results are below.=0A=0AYou al=
+so need this patch.=0A=0Adiff --git a/arch/arm/mm/cache-l2x0.c b/arch/arm/m=
+m/cache-l2x0.c=0Aindex d9cb476..1e2c52d 100644=0A--- a/arch/arm/mm/cache-l2=
+x0.c=0A+++ b/arch/arm/mm/cache-l2x0.c=0A@@ -41,7 +41,7 @@ static inline voi=
+d cache_wait_way(void __iomem *reg, unsigned long mask)=0A{=0A=A0=A0=A0 /* =
+wait for cache operation by line or way to complete */=0A=A0=A0=A0 while (r=
+eadl_relaxed(reg) & mask)=0A-=A0=A0=A0 =A0=A0=A0 ;=0A+=A0=A0=A0 =A0=A0=A0 c=
+pu_relax();=0A}=0A=0A#ifdef CONFIG_CACHE_PL310=0A@@ -136,6 +136,7 @@ static=
+ void __l2x0_flush_all(void)=0A=A0=A0=A0 debug_writel(0x00);=0A}=0A=0A+#ifn=
+def CONFIG_IPIPE=0Astatic void l2x0_flush_all(void)=0A{=0A=A0=A0=A0 unsigne=
+d long flags;=0A@@ -157,6 +158,81 @@ static void l2x0_clean_all(void)=0A=A0=
+=A0=A0 cache_sync();=0A=A0=A0=A0 spin_unlock_irqrestore(&l2x0_lock, flags);=
+=0A}=0A+#else=0A+static void l2x0_clean_inv_line_idx(unsigned line, unsigne=
+d way)=0A+{=0A+=A0=A0=A0 void __iomem *base =3D l2x0_base;=0A+=0A+=A0=A0=A0=
+ writel_relaxed((way << 28) | (line << 5), =0A+=A0=A0=A0 =A0=A0=A0 base + L=
+2X0_CLEAN_INV_LINE_IDX);=0A+=A0=A0=A0 cache_wait(base + L2X0_CLEAN_INV_LINE=
+_IDX, 1);=0A+}=0A+=0A+static void l2x0_flush_way(unsigned way, unsigned len=
+, unsigned lines)=0A+{=0A+=A0=A0=A0 unsigned long flags;=0A+=A0=A0=A0 unsig=
+ned line, i;=0A+=A0=A0=A0 =0A+=A0=A0=A0 for (line =3D 0; line < lines; line=
+ +=3D len ) {=0A+=A0=A0=A0 =A0=A0=A0 spin_lock_irqsave(&l2x0_lock, flags);=
+=0A+=A0=A0=A0 =A0=A0=A0 debug_writel(0x03);=0A+=A0=A0=A0 =A0=A0=A0 for (i =
+=3D 0; i < len && line + i < lines; i++)=0A+=A0=A0=A0 =A0=A0=A0 =A0=A0=A0 l=
+2x0_clean_inv_line_idx(line + i, way);=0A+=A0=A0=A0 =A0=A0=A0 cache_sync();=
+=0A+=A0=A0=A0 =A0=A0=A0 debug_writel(0x00);=0A+=A0=A0=A0 =A0=A0=A0 spin_unl=
+ock_irqrestore(&l2x0_lock, flags);=0A+=A0=A0=A0 }=0A+}=0A+=0A+static void l=
+2x0_flush_all(void)=0A+{=0A+=A0=A0=A0 unsigned lines, len, way, ways;=0A+=
+=0A+=A0=A0=A0 ways =3D fls(l2x0_way_mask);=0A+=A0=A0=A0 lines =3D l2x0_size=
+ / (ways * CACHE_LINE_SIZE);=0A+=A0=A0=A0 len =3D L2X0_SPINLOCK_LEN / CACHE=
+_LINE_SIZE;=0A+=0A+=A0=A0=A0 for (way =3D 0; way < ways; way++)=0A+=A0=A0=
+=A0 =A0=A0=A0 l2x0_flush_way(way, len, lines);=0A+}=0A+=0A+static void l2x0=
+_clean_line_idx(unsigned line, unsigned way)=0A+{=0A+=A0=A0=A0 void __iomem=
+ *base =3D l2x0_base;=0A+=0A+=A0=A0=A0 writel_relaxed((way << 28) | (line <=
+< 5), =0A+=A0=A0=A0 =A0=A0=A0 base + L2X0_CLEAN_LINE_IDX);=0A+=A0=A0=A0 cac=
+he_wait(base + L2X0_CLEAN_LINE_IDX, 1);=0A+}=0A+=0A+static void l2x0_clean_=
+way(unsigned way, unsigned len, unsigned lines)=0A+{=0A+=A0=A0=A0 unsigned =
+long flags;=0A+=A0=A0=A0 unsigned line, i;=0A+=A0=A0=A0 =0A+=A0=A0=A0 for (=
+line =3D 0; line < lines; line +=3D len ) {=0A+=A0=A0=A0 =A0=A0=A0 spin_loc=
+k_irqsave(&l2x0_lock, flags);=0A+=A0=A0=A0 =A0=A0=A0 debug_writel(0x03);=0A=
++=A0=A0=A0 =A0=A0=A0 for (i =3D 0; i < len && line + i < lines; i++)=0A+=A0=
+=A0=A0 =A0=A0=A0 =A0=A0=A0 l2x0_clean_line_idx(line + i, way);=0A+=A0=A0=A0=
+ =A0=A0=A0 cache_sync();=0A+=A0=A0=A0 =A0=A0=A0 debug_writel(0x00);=0A+=A0=
+=A0=A0 =A0=A0=A0 spin_unlock_irqrestore(&l2x0_lock, flags);=0A+=A0=A0=A0 }=
+=0A+}=0A+=0A+static void l2x0_clean_all(void)=0A+{=0A+=A0=A0=A0 unsigned li=
+nes, len, way, ways;=0A+=0A+=A0=A0=A0 ways =3D fls(l2x0_way_mask);=0A+=A0=
+=A0=A0 lines =3D l2x0_size / (ways * CACHE_LINE_SIZE);=0A+=A0=A0=A0 len =3D=
+ L2X0_SPINLOCK_LEN / CACHE_LINE_SIZE;=0A+=0A+=A0=A0=A0 for (way =3D 0; way =
+< ways; way++)=0A+=A0=A0=A0 =A0=A0=A0 l2x0_clean_way(way, len, lines);=0A+}=
+=0A+#endif=0A=0Astatic void l2x0_inv_all(void)=0A=0A{=0A=0A-- =0A=A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 Gilles.
