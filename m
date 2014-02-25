@@ -1,10 +1,12 @@
-Message-ID: <530CD8B9.2010303@xenomai.org>
-Date: Tue, 25 Feb 2014 18:54:01 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <530CDCD3.6070703@xenomai.org>
+Date: Tue, 25 Feb 2014 19:11:31 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <530CD8B9.2010303@xenomai.org>
+In-Reply-To: <530CD8B9.2010303@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Road to 3.0
+Subject: Re: [Xenomai] Road to 3.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,83 +15,109 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
+On 02/25/2014 06:54 PM, Philippe Gerum wrote:
+>
+> Hi,
+>
+> This is the remaining work toward 3.0 from my perspective. Please
+> comment, amend, extend or shatter as needed.
+>
+> - RTDM
+> 	* decide and freeze API changes.
+> 	* the native implementation may need some care and testing, we never
+> had any feedback for this code.
+> 	* fixup of in-tree drivers for API changes
+>
+> - Analogy
+> 	* comedi drivers still in the staging tree for mainline vs porting the
+> Analogy framework over the mercury core.
+>
+> - Alchemy needs more test cases, although all core features are covered
+> by at least one test already - except messages pipes. This latter
+> interface is now a plain wrapper on top of rtipc/xddp though.
+>
+> - Documentation
+> 	* the inline documentation for the Cobalt kernel was amended gradually
+> as development took place, but we still have a general review and
+> cleanup duties ahead for this material.
 
-Hi,
+We need to reintroduce the posix services documentation, likely moving 
+it as doxygen documentation in lib/* rather than in the kernel-space 
+code as it was in 2.x. Not at a high priority since the posix API is 
+documented elsewhere, the only interest in having a documentation is to 
+document the behaviours which are unspecified (or non-conformant).
 
-This is the remaining work toward 3.0 from my perspective. Please 
-comment, amend, extend or shatter as needed.
+> 	* Copperplate is not documented yet. Only API designers would need this
+> though.
+> 	* User guide for 3.x.
+> 	* Review, fixup of the new migration and installation guides.
+> 	* website updates for 3.x. We may want to fork the documentation area
+> in two distinct zones, for 2.x and 3.x, otherwise I suspect that many
+> people will get utterly confused.
 
-- RTDM
-	* decide and freeze API changes.
-	* the native implementation may need some care and testing, we never 
-had any feedback for this code.
-	* fixup of in-tree drivers for API changes
+The API documentation already lives in a per-version directory on the 
+server. README.INSTALL, TROUBLESHOOTING and manual pages link directly 
+to 2.6 documentation.
 
-- Analogy
-	* comedi drivers still in the staging tree for mainline vs porting the 
-Analogy framework over the mercury core.
+>
+> - /proc/xenomai refactoring for Cobalt. With most APIs now implemented
+> in userland and the introduction of the new fuse-based registry,
+> /proc/xenomai/registry does not contain much these days. In fact, only
+> the RTIPC drivers can still create links there.
+>
+> It boils down to this question: will the POSIX core introduce new
+> registry files, or will RTDM-based code remain the only in-kernel
+> registry user?
 
-- Alchemy needs more test cases, although all core features are covered 
-by at least one test already - except messages pipes. This latter 
-interface is now a plain wrapper on top of rtipc/xddp though.
+I was planning to work on this, I even had some stuff started in a 
+corner of my HDD. I would like to add registry files for all the POSIX 
+skin objects, including anonymous ones (such as mutex and condvars). And 
+use the information in /proc to make a user-space deadlock debugger.
+This is not high priority stuff.
 
-- Documentation
-	* the inline documentation for the Cobalt kernel was amended gradually 
-as development took place, but we still have a general review and 
-cleanup duties ahead for this material.
-	* Copperplate is not documented yet. Only API designers would need this 
-though.
-	* User guide for 3.x.
-	* Review, fixup of the new migration and installation guides.
-	* website updates for 3.x. We may want to fork the documentation area 
-in two distinct zones, for 2.x and 3.x, otherwise I suspect that many 
-people will get utterly confused.
+>
+> - I pulled out the examples area during the early development days, it
+> is time to push some demo code back in, preferably that would work over
+> both Cobalt and Mercury cores indifferently.
+>
+> - nios2 and sh4 over Cobalt are lagging behind, basically because we
+> would need a 3.10+ reference kernel for implementing the proper pipeline
+> bits 3.x requires, which we don't have. I'll be looking for such kernel
+> for supporting nios2 at some point. I'm unsure for sh4: no hardware at
+> hand, and most importantly, nobody seemed to care about running Xenomai
+> over this architecture.
+>
+> - running the Copperplate layer over uClibc instead of glibc. Last time
+> I tried (a couple of years ago), several nightmare-class issues popped
+> up. The question is: do we still need this, is it worth the effort, or
+> can we reasonably make glibc a pre-requisite for running non-POSIX APIs
+> in dual kernel (i.e. Cobalt) mode? Blackfin and nios2 were the primary
+> users of Xenomai's uClibc compatibility in 2.x.
+>
+> - any change that would be pending to the pipeline core API. If you have
+> any brewing or to be suggested, now is a good time to speak up.
 
-- /proc/xenomai refactoring for Cobalt. With most APIs now implemented 
-in userland and the introduction of the new fuse-based registry, 
-/proc/xenomai/registry does not contain much these days. In fact, only 
-the RTIPC drivers can still create links there.
+Nothing on my side except ipipe_smp_p introduced by latest patches.
 
-It boils down to this question: will the POSIX core introduce new 
-registry files, or will RTDM-based code remain the only in-kernel 
-registry user?
+>
+> - The vrtx and uITRON APIs have not been rewritten over the copperplate
+> layer yet. Given that we received no valuable feedback over the years
+> for these skins, I don't see the point in implementing this today.
+>
+> - Finally, I have a series of 130+ specific implementation
+> changes/issues for the -forge tree pending in my todo list. Nothing
+> really bad or difficult, only a truckload of details.
+>
+> I'm refraining from indicating any priority for these tasks, since this
+> should be part of the discussion. A distinction between what's available
+> for the first candidate release and the final one may make sense.
 
-- I pulled out the examples area during the early development days, it 
-is time to push some demo code back in, preferably that would work over 
-both Cobalt and Mercury cores indifferently.
+I have no preference for the priorities.
 
-- nios2 and sh4 over Cobalt are lagging behind, basically because we 
-would need a 3.10+ reference kernel for implementing the proper pipeline 
-bits 3.x requires, which we don't have. I'll be looking for such kernel 
-for supporting nios2 at some point. I'm unsure for sh4: no hardware at 
-hand, and most importantly, nobody seemed to care about running Xenomai 
-over this architecture.
-
-- running the Copperplate layer over uClibc instead of glibc. Last time 
-I tried (a couple of years ago), several nightmare-class issues popped 
-up. The question is: do we still need this, is it worth the effort, or 
-can we reasonably make glibc a pre-requisite for running non-POSIX APIs 
-in dual kernel (i.e. Cobalt) mode? Blackfin and nios2 were the primary 
-users of Xenomai's uClibc compatibility in 2.x.
-
-- any change that would be pending to the pipeline core API. If you have 
-any brewing or to be suggested, now is a good time to speak up.
-
-- The vrtx and uITRON APIs have not been rewritten over the copperplate 
-layer yet. Given that we received no valuable feedback over the years 
-for these skins, I don't see the point in implementing this today.
-
-- Finally, I have a series of 130+ specific implementation 
-changes/issues for the -forge tree pending in my todo list. Nothing 
-really bad or difficult, only a truckload of details.
-
-I'm refraining from indicating any priority for these tasks, since this 
-should be part of the discussion. A distinction between what's available 
-for the first candidate release and the final one may make sense.
 
 -- 
-Philippe.
+					    Gilles.
 
