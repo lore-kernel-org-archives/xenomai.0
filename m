@@ -1,14 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <CAKc2HpaFwremV-pUgYez_O5gAvg_f=NeMihnFMZ0vgf3GJWG8Q@mail.gmail.com>
-References: <CAKc2HpZ+zHoF22BjPKj_x0V+oOX9ZcLpU-N1jNv1pjq6sQhsqQ@mail.gmail.com>
- <52F7B36C.5010905@xenomai.org>
- <CAKc2HpaFwremV-pUgYez_O5gAvg_f=NeMihnFMZ0vgf3GJWG8Q@mail.gmail.com>
-Date: Wed, 26 Feb 2014 09:54:26 +0100
-Message-ID: <CAKc2Hpaus4Vryt5LdDexzRTyYr16Ux-bbVz2c6WoWdgX6j7D5Q@mail.gmail.com>
+In-Reply-To: <530CBFB6.6000908@xenomai.org>
+References: <CAKc2HpbgUU77_Y25KXjf6jHHLzmNX3PmOxqQsYK4dH0crk9--A@mail.gmail.com>
+ <530CBFB6.6000908@xenomai.org>
+Date: Wed, 26 Feb 2014 10:02:47 +0100
+Message-ID: <CAKc2Hpbr_4RVB5iJqvUymk2vUPqCtAiTU9kt5L3BUc58mYsVEQ@mail.gmail.com>
 From: Kim De Mey <kim.demey@gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Xenomai-forge pSOS t_start followed by t_suspend does
- not work
+Subject: Re: [Xenomai] Xenomai-forge: SIGCHLD to SIG_IGN in spawn_daemon()
+	okay?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,63 +19,42 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-2014-02-10 12:23 GMT+01:00 Kim De Mey <kim.demey@gmail.com>:
-> 2014-02-09 17:57 GMT+01:00 Philippe Gerum <rpm@xenomai.org>:
->> On 02/06/2014 02:36 PM, Kim De Mey wrote:
->>>
->>> Hi,
->>>
->>> I believe there is a problem in Xenomai-forge when doing a pSOS
->>> t_suspend() call right after a t_start() call.
->>> It looks like the task does not get suspended in some cases. The
->>> return value of t_suspend() is 0 however.
->>>
->>> I suspect that this happens when the threadobj_prologue() is not
->>> finished yet at the moment that the notifier_sighandler() is called.
->>> In this case it could be that the notifier_init() did not run yet. If
->>> this is the case, then the notifier_sighandler() will not do any
->>> notifier callback and thus the task will not be suspended. Additional
->>> t_suspend() calls will not work as the "notified" flag has been set
->>> already.
->>> Is this possible?
->>>
+2014-02-25 17:07 GMT+01:00 Philippe Gerum <rpm@xenomai.org>:
+> On 02/25/2014 10:07 AM, Kim De Mey wrote:
 >>
->> Unfortunately, yes.
+>> Hello all,
 >>
->> This is a general issue in the current implementation, as any child thread
->> created by the emulation sub-system might not have fully registered before
->> the parent refers to it due to priority/wait state issues.
+>> I noticed that when enabling the registry in Xenomai-forge (mercury
+>> core), that the SIGCHLD gets set to ignore (SIG_IGN) in the
+>> spawn_daemon() call.
+>> I guess this choice was made to make sure no zombies of the daemon
+>> stay alive. Correct?
+>
+>
+> Yes.
+>
+>
 >>
->> We definitely need stronger handshaking there, could you please check again
->> with this changes in?
->> http://git.xenomai.org/xenomai-forge.git/commit/?h=next&id=a48b8f640cad510a1101e380cc54ef2bf29afcd6
->>
->> TIA,
+>> This does however mean that the default behaviour of the application
+>> regarding the handling of children is changed. Now I wonder whether it
+>> is okay (as a rule/practice) for a library to change this behaviour of
+>> the application. Shouldn't we look for a solution where the behaviour
+>> of the application remains untouched?
 >>
 >
-> I tested the new revision and the problems no longer occur. So it looks good!
+> The default action for SIGCHLD is to ignore it. If the app wants to handle
+> this signal specifically, it will have to trap it and figure out which child
+> it cares about has exited in any case. So the library action for this signal
+> does not change anything to the default case actually.
 >
-> Many thanks for fixing this so quickly.
->
 
-Hi Philippe,
+It is true that the default is to ignore it. However setting the
+action explicitly to ignore does change the termination behaviour of
+children. The children that terminate will no longer become zombies
+and behaviour of wait() and wait_pid() calls is thus different (see
+man page of waitpid()).
+This different behaviour of waitpid() is also how I noticed the SIG_IGN.
 
-I'm afraid the new handshaking mechanism introduced to fix the
-problems I was having created an actually worse problem.
-
-If now a parent task with high priority creates a child task with low
-priority while there is another task with medium priority creating a
-high load on the CPU then the parent task gets stuck in the creation
-of the child. This while the parent task has a higher priority than
-the task creating the load.
-
-I believe it is due to the fact that the parent task now waits for a
-sem_post of the child, which in this case has a too low priority to
-get this done.
-
-Should the child priority be temporary increased to the one of the
-parent during the creation or would that be a bad idea?
-
-Regards,
-Kim
+> --
+> Philippe.
 
