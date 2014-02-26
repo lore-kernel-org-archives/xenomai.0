@@ -1,10 +1,27 @@
+Message-ID: <530E60C2.6010509@xenomai.org>
+Date: Wed, 26 Feb 2014 22:46:42 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <CAEbDrgkJCnq_qTV-gqbH5QbT4DjL7oOyCe09gogiftTHGpGn-Q@mail.gmail.com>
-References: <CAEbDrgkJCnq_qTV-gqbH5QbT4DjL7oOyCe09gogiftTHGpGn-Q@mail.gmail.com>
-Date: Wed, 26 Feb 2014 20:29:31 +0000
-Message-ID: <CAEbDrgmx0yOHTVcLfKVmdZOQ-ek8FoAn3NGxqiodsNdDWOgPxw@mail.gmail.com>
-From: Gregory Dymarek <gregd72002@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
+ <530BC103.3010809@xenomai.org>
+ <CAEbDrgnFr7YvfoMmFQx=PBKSFEWvwJftx0wZx39ySMqRO2X6gQ@mail.gmail.com>
+ <530CFB0D.8040001@xenomai.org>
+ <CAEbDrgkJCnbWu_J4svoXOU1x2rz=n95A5+3Ee=R_9CpMgx-JmA@mail.gmail.com>
+ <530CFC27.5050700@xenomai.org>
+ <CAEbDrgnmM_dD3WX42PYawhkW8zTaYczzfozEe1EX7Z5HnERz3g@mail.gmail.com>
+ <530D0205.9050406@xenomai.org>
+ <CAEbDrgmwch94crHAcrbJDj9MxaiBNaYeLH2U9NtS0tuJKmdDDw@mail.gmail.com>
+ <530D0BBD.6070704@xenomai.org>
+ <CAK4EZFR_L+=-LtSVHkvZ36rPOA8ViVboB9M9rf4Yqk=crfBotw@mail.gmail.com>
+ <CAEbDrgk=yrGq8KdpdN8e7RtO7qUpWTtwRXhrg0A0=KbDjqoDng@mail.gmail.com>
+ <CAK4EZFRm-jd=0VrEjFVjE_h7dWu8nEBVi=HQijkgWXu2MBiPNQ@mail.gmail.com>
+ <CAK4EZFRerL7yrqD+nKzp0DyvYFvv+gxpBVqzKWbeyy2vbspiAg@mail.gmail.com>
+ <CAEbDrgkAus9KtTHiP6_n6+JoA5geg2yX0ELdU3yBEZyCmH=XrQ@mail.gmail.com>
+ <530D365F.5010606@xenomai.org>
+ <CAEbDrgk+zkgSY4xGu-bD25Dy+6_ncnLbS0+jhkGZ55EY1SYPfA@mail.gmail.com>
+In-Reply-To: <CAEbDrgk+zkgSY4xGu-bD25Dy+6_ncnLbS0+jhkGZ55EY1SYPfA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] RaspberryPi kernel 3.8 issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -14,53 +31,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gregory Dymarek <gregd72002@gmail.com>
+Cc: xenomai@xenomai.org
 
-Here is one more ipipe trace with less garbage:
-http://pastebin.com/WG80f6cx
+On 02/26/2014 11:00 AM, Gregory Dymarek wrote:
+> I will have a look later on. However this makes me question, why to spend
+> time fixing old kernel if there are already ipipe patches for 3.10.
+> Shouldn't we try to do this for the more recent kernel 3.10 so this can be
+> eventually incorporated into Xenomai? or this not that straight forward?
 
-This happened when i plug usb device after boot is complete
+Well, the local_fiq_enable/local_fiq_disable fix will apply to 3.10 as
+well, and chances are that the second issue is there on 3.10, since it
+has not been fixed.
 
 
-On 26 February 2014 19:59, Gregory Dymarek <gregd72002@gmail.com> wrote:
+-- 
+                                                                Gilles.
 
->
-> Gilles
-> here is the ipipe trace (see line 112)
-> http://pastebin.com/EcLn0MxJ
->
-> that corresponds to
-> http://pastebin.com/vjLJVDGS
->
-> I do not see any call to enable irq, but there are plenty calls for debug.
->
->
-> Could you also explain in a few words the previous patch please.
-> What was wrong with local_fiq_disable() defined as ipipe_stall_root() ?
->
-> Thanks
->
->
-> On 25 February 2014 23:51, Gilles Chanteperdrix <
-> gilles.chanteperdrix@xenomai.org> wrote:
->
->> On 02/26/2014 12:20 AM, Gregory Dymarek wrote:
->> > well, this does not work for me. It boots fine when there is no USB
->> device
->> > plugged in.
->> > However, when my WIFI or bluetooth adapter is plugged in, the boot log
->> > shows: http://pastebin.com/vjLJVDGS
->>
->> Well, it looks like a different issue, which happens when irqs are
->> re-enabled by DWC_SPINUNLOCK_IRQRESTORE. So, maybe we have progressed. I
->> am cloning the rpi repository, to see what happens at this point.
->>
->> But you can try and use the I-pipe tracer again, put a trace freeze in
->> the "report_bad_irq" function.
->>
->> --
->>                                                                 Gilles.
->>
->
->
->
