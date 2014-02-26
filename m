@@ -1,12 +1,29 @@
-MIME-Version: 1.0
-In-Reply-To: <52FFABEA.9020700@xenomai.org>
-References: <CAKKWdtf8-JMgtY+yksL1R6M4g+cN-+C_PAzye+dPBzy6VkymEw@mail.gmail.com>
- <52FFABEA.9020700@xenomai.org>
-Date: Wed, 26 Feb 2014 18:14:40 +0330
-Message-ID: <CAKKWdtfEGZNougOFJKqvC2z08+uUcVf9sHA=XMsOwX4NLRnoqg@mail.gmail.com>
-From: ali hagigat <hagigatali@gmail.com>
+References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
+ <530A8767.4030004@xenomai.org>
+ <CAEbDrgmf+RtS5gS5SKO7eq66ge-LHoJ0hTOC=yeRmUgk0MXqog@mail.gmail.com>
+ <530BC103.3010809@xenomai.org>
+ <CAEbDrgnFr7YvfoMmFQx=PBKSFEWvwJftx0wZx39ySMqRO2X6gQ@mail.gmail.com>
+ <530CFB0D.8040001@xenomai.org>
+ <CAEbDrgkJCnbWu_J4svoXOU1x2rz=n95A5+3Ee=R_9CpMgx-JmA@mail.gmail.com>
+ <530CFC27.5050700@xenomai.org>
+ <CAEbDrgnmM_dD3WX42PYawhkW8zTaYczzfozEe1EX7Z5HnERz3g@mail.gmail.com>
+ <530D0205.9050406@xenomai.org>
+ <CAEbDrgmwch94crHAcrbJDj9MxaiBNaYeLH2U9NtS0tuJKmdDDw@mail.gmail.com>
+ <530D0BBD.6070704@xenomai.org>
+ <CAK4EZFR_L+=-LtSVHkvZ36rPOA8ViVboB9M9rf4Yqk=crfBotw@mail.gmail.com>
+ <CAEbDrgk=yrGq8KdpdN8e7RtO7qUpWTtwRXhrg0A0=KbDjqoDng@mail.gmail.com>
+ <CAK4EZFRm-jd=0VrEjFVjE_h7dWu8nEBVi=HQijkgWXu2MBiPNQ@mail.gmail.com>
+ <CAK4EZFRerL7yrqD+nKzp0DyvYFvv+gxpBVqzKWbeyy2vbspiAg@mail.gmail.com>
+ <CAEbDrgkAus9KtTHiP6_n6+JoA5geg2yX0ELdU3yBEZyCmH=XrQ@mail.gmail.com>
+ <530D365F.5010606@xenomai.org>
+ <CAEbDrgk+zkgSY4xGu-bD25Dy+6_ncnLbS0+jhkGZ55EY1SYPfA@mail.gmail.com>
+From: Adam Vaughan <vaughana@umich.edu>
+In-Reply-To: <CAEbDrgk+zkgSY4xGu-bD25Dy+6_ncnLbS0+jhkGZ55EY1SYPfA@mail.gmail.com>
+Mime-Version: 1.0 (iPad Mail 8J3)
+Date: Wed, 26 Feb 2014 13:48:15 -0500
+Message-ID: <-8891387949839254149@unknownmsgid>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] freeze for rt_task_delete()
+Subject: Re: [Xenomai] RaspberryPi kernel 3.8 issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,35 +32,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai <xenomai@xenomai.org>
+To: Gregory Dymarek <gregd72002@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2/15/14, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
-> On 02/15/2014 04:30 PM, ali hagigat wrote:
->> My system:
->> Fedora 13
->> x86, 32 bits
->> xenomai-2.6.3
->> kernel-3.5.7
->>
->> I executed examp13 and then examp12, computer froze, GNOME stopped,
->> only mouse could move but it could not point at the icons or execute
->> any thing. Key-presses were not seen.
->
-> That is the usual sign for a kernel oops. Try runnning the example in
-> text mode, in order to capture the oops. You can also capture the oops
-> by redirecting kernel logs to a serial port or via network.
->
-> --
->                                                                 Gilles.
->
+> I will have a look later on. However this makes me question, why to spend
+> time fixing old kernel if there are already ipipe patches for 3.10.
+> Shouldn't we try to do this for the more recent kernel 3.10 so this can be
+> eventually incorporated into Xenomai? or this not that straight forward?
 
-I solved the problem of Linux virtual terminal and the text interface
-and executing those programs are OK now. Yesterday i was writing some
-simple codes for heap and message passing task services and i made
-some mistakes in them and computer broke several times . I could not
-repeat the problem, so i did not attach the code. But even
-rt_timer_spin() made the computer to stop and break. Today was OK, i
-was surprised why a real time task can make the whole  system fail.
-When i used some timer functions the system started to become OK......
+Using a recent 3.10 version would be the most ideal solution as it
+ostensibly includes fixes for heavy SD card access issues I was
+seeing, the USB FIQ disable fix, and any other mainline issues people
+were seeing since the 3.8 branch isn't really being maintained by the
+Raspberry Pi foundation.  I believe it would need the patch that
+Gilles and you figured out a few emails back.
+
+The only problem is that I've never made a patch of that magnitude.
+That said, I imagine it'd be similar to the 3.8 one that Paul made.
 
