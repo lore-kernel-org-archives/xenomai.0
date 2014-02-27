@@ -1,20 +1,14 @@
-Message-ID: <52F20604.4020200@xenomai.org>
-Date: Wed, 05 Feb 2014 10:36:04 +0100
+Message-ID: <530F0A59.10904@xenomai.org>
+Date: Thu, 27 Feb 2014 10:50:17 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <E1WAhle-0006kB-0q@sd-51317.dedibox.fr>
- <52F1172B.2080500@xenomai.org> <52F11F94.9000309@siemens.com>
- <52F1231A.7080603@xenomai.org> <52F12442.3040301@xenomai.org>
- <52F125E8.6020200@xenomai.org> <52F12700.3020400@xenomai.org>
- <52F12800.1030500@xenomai.org> <52F12937.3050105@xenomai.org>
- <52F12B7A.4060408@siemens.com> <52F1F749.2030501@xenomai.org>
- <52F1FB24.4090603@siemens.com> <52F1FD3B.1070304@xenomai.org>
- <52F1FEFC.9070708@siemens.com>
-In-Reply-To: <52F1FEFC.9070708@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <CAKc2HpbgUU77_Y25KXjf6jHHLzmNX3PmOxqQsYK4dH0crk9--A@mail.gmail.com>	<530CBFB6.6000908@xenomai.org>	<CAKc2HpZeu+o+8iQU0q+2oi_uVkqwc71S+JgKQ7dkC7sG0RZocA@mail.gmail.com>	<530DB32C.2070403@xenomai.org>
+ <CAKc2HpbxAuOmAP2_qaWU+LbLtnY77ALSDeOum_iBpHXsYEcUtw@mail.gmail.com>
+In-Reply-To: <CAKc2HpbxAuOmAP2_qaWU+LbLtnY77ALSDeOum_iBpHXsYEcUtw@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : alchemy: Replace static
- variable no_alchemy_task with macro
+Subject: Re: [Xenomai] Xenomai-forge: SIGCHLD to SIG_IGN in spawn_daemon()
+ okay?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,153 +17,107 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Kim De Mey <kim.demey@gmail.com>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 02/05/2014 10:06 AM, Jan Kiszka wrote:
-> On 2014-02-05 09:58, Philippe Gerum wrote:
->> On 02/05/2014 09:49 AM, Jan Kiszka wrote:
->>> On 2014-02-05 09:33, Philippe Gerum wrote:
->>>> On 02/04/2014 07:03 PM, Jan Kiszka wrote:
->>>>> On 2014-02-04 18:53, Philippe Gerum wrote:
->>>>>> On 02/04/2014 06:48 PM, Philippe Gerum wrote:
->>>>>>> On 02/04/2014 06:44 PM, Gilles Chanteperdrix wrote:
->>>>>>>> On 02/04/2014 06:39 PM, Philippe Gerum wrote:
->>>>>>>>> On 02/04/2014 06:32 PM, Gilles Chanteperdrix wrote:
->>>>>>>>>> On 02/04/2014 06:27 PM, Philippe Gerum wrote:
->>>>>>>>>>> If g++ chokes on the initializer part because it is outdated,
->>>>>>>>>>> then
->>>>>>>>>>> using
->>>>>>>>>>> old-fashioned ones may be an option. Actually, I find macroizing
->>>>>>>>>>> this
->>>>>>>>>>> definition quite bad.
->>>>>>>>>>>
->>>>>>>>>>> static const RT_TASK no_alchemy_task = {
->>>>>>>>>>> -    .handle = 0,
->>>>>>>>>>> -    .thread = 0
->>>>>>>>>>> +    handle: 0,
->>>>>>>>>>> +    thread: 0
->>>>>>>>>>>        };
->>>>>>>>>>
->>>>>>>>>> No, the previous version is better, it is standard compliant C and
->>>>>>>>>> C++,
->>>>>>>>>> the second version is a gcc extension, which works only when
->>>>>>>>>> compiling
->>>>>>>>>> C, if I remember correctly.
->>>>>>>>>>
->>>>>>>>>
->>>>>>>>> Recent g++ is happy with both (no -std forced though). But the
->>>>>>>>> former is
->>>>>>>>> allowed by the C++ parser only since recently.
->>>>>>>>>
->>>>>>>>
->>>>>>>> Well, on the other hand:
->>>>>>>> static const RT_TAKS no_alchemy_task;
->>>>>>>>
->>>>>>>> Will zero initialized the structure just as well...
->>>>>>>>
->>>>>>>
->>>>>>> In that case you will have the object exist in the .bss.
->>>>>>>
->>>>>>
->>>>>> It turns out that old gcc 4.x releases will create a private bss entry
->>>>>> for this symbol in any case, which recent ones won't produce
->>>>>> regardless
->>>>>> of the optimizing level (unless I messed up with nm, but it does not
->>>>>> seem so).
->>>>>>
+On 02/27/2014 08:36 AM, Kim De Mey wrote:
+> 2014-02-26 10:26 GMT+01:00 Philippe Gerum <rpm@xenomai.org>:
+>> On 02/25/2014 08:03 PM, Kim De Mey wrote:
+>>>
+>>> 2014-02-25 17:07 GMT+01:00 Philippe Gerum <rpm@xenomai.org>:
+>>>>
+>>>> On 02/25/2014 10:07 AM, Kim De Mey wrote:
 >>>>>
->>>>> Then what is so bad about the symbolic NO_ALCHEMY_TASK? The code
->>>>> will be
->>>>> the same anyway.
 >>>>>
->>>>> BTW, there are way more issues with C++ when enabling standard
->>>>> compliance. Not sure where all the errors come from and if they easy to
->>>>> fixing. But I think we should try to be as clean as possible in out
->>>>> external interfaces.
+>>>>> Hello all,
+>>>>>
+>>>>> I noticed that when enabling the registry in Xenomai-forge (mercury
+>>>>> core), that the SIGCHLD gets set to ignore (SIG_IGN) in the
+>>>>> spawn_daemon() call.
+>>>>> I guess this choice was made to make sure no zombies of the daemon
+>>>>> stay alive. Correct?
+>>>>
+>>>>
+>>>>
+>>>> Yes.
+>>>>
+>>>>
+>>>>>
+>>>>> This does however mean that the default behaviour of the application
+>>>>> regarding the handling of children is changed. Now I wonder whether it
+>>>>> is okay (as a rule/practice) for a library to change this behaviour of
+>>>>> the application. Shouldn't we look for a solution where the behaviour
+>>>>> of the application remains untouched?
 >>>>>
 >>>>
->>>> Mmm, no. I don't want to rush merging all kinds of isolated fixes for
->>>> all sorts of pedantic modes. I see the other one following with typeof
->>>> constructs, later we will get other changes triggered by other
->>>> restrictions on gcc extensions, and this general trend is not
->>>> acceptable. The fact that the external API headers still share portions
->>>> with the implementation does not help, but this is not a reason for
->>>> downgrading the C dialect of the latter with ugly work arounds.
+>>>> The default action for SIGCHLD is to ignore it. If the app wants to
+>>>> handle
+>>>> this signal specifically, it will have to trap it and figure out which
+>>>> child
+>>>> it cares about has exited in any case. So the library action for this
+>>>> signal
+>>>> does not change anything to the default case actually.
 >>>>
->>>> If you really want to go this way, I suggest that you issue a single,
->>>> all-in-one patch making the current code base conforming with the C/C++
->>>> standard you aim at, so that we have a general overview of the changes.
->>>> With that information, we should be able to address strict standard
->>>> conformance better, which may involve addressing the
->>>> interface/implementation issue with headers.
 >>>
->>> It's pointless to make the core standard-compliant, C or even C++. But
->>
->> This has never been considered for sure.
->>
->>> we are exposing an interface that definitely has to be compatible with
->>> C++ (most of my patches) as we do not have control over the user's
->>> toolchain and language (there would be no good reason to restrict it).
->>> And if it is trivial to get the interface even ANSI compliant (last
->>> patch) and also recommended by GCC to do so in libraries, what pain does
->>> it cause to us to follow this road?
+>>> It is true that the default is to ignore it. However setting the
+>>> action explicitly to ignore does change the termination behaviour of
+>>> children. The children that terminate will no longer become zombies
+>>> and behaviour of wait() and wait_pid() calls is thus different (see
+>>> man page of waitpid()).
+>>> This different behaviour of waitpid() is also how I noticed the SIG_IGN.
 >>>
 >>
->> The pain is that we seem to be adding more and more restrictions to the
->> C dialect usable by the implementation, because of that sharing with the
->> interface. This is not acceptable.
->
-> Were do we restrict us here? Give me one example.
-
-Forcing cast on assigning generic pointers is a restriction, the same 
-way disabling arithmetic on them is yet another artificial restriction 
-with absolutely no upside on our side, only obfuscation.
-
->
+>> Which does not change the situation with respect to handling SIGCLD, only
+>> for background threads calling waitpid() to collect exit statuses eagerly,
+>> in absence of exit notification.
 >>
->>> Yes, the amount of internals currently exposed via the external headers
->>> should be optimized. But I guess this is something to be done as cleanup
->>> once the code base, including Mercury, settled a bit more.
->>>
+>> Your application can still re-trap SIGCLD to some handler, do the wait() to
+>> collect the exit status there, identifying your own threads based on the
+>> returned pid to take proper action. In that sense, the fact that the library
+>> initially ignores the signal does not change the general behavior if you do
+>> care for such signal afterwards.
 >>
->> This is a copperplate issue, regardless of whether you stack it over the
->> dual or single kernel system, and in this respect, the copperplate API
->> is stable (although I really have to document it at some point though).
+>> The issue in your case seems that you don't want to set any disposition for
+>> SIGCLD, and therefore expect that copperplate won't do it either. So the
+>> alternative for preventing zombies is between trusting the application for
+>> collecting all statuses properly, or asking the application to use the
+>> signal-based mechanism for collecting exit status. Option #2 is current, as
+>> you noticed it.
 >
-> Well, I can have a look at that patch again and try to get those inline
-> helpers out of the public. Or are they supposed to be used, directly or
-> indirectly, by applications?
+> I understand this reasoning and the fact that you can't trust the
+> application to handle all the zombies and thus your choice for option
+> #2. However I was just hoping there was an option #3 where the library
+> does leave the behaviour of the application as is and can handle the
+> daemon exit itself somehow.
 
-Some of them may be, such as pvmalloc(), which guarantees a rt-capable, 
-private memory allocation regardless of the underlying real-time core. 
-Others won't, such as all of the threadobj_* routines, which are for 
-API/skin designers instead.
-
-This is the reason why I suggest again to have all the required changes 
-for building for -ansi/c++11 introduced in place first, without even 
-trying to move code around, all in a single patch. With that 
-information, we may then define some coding rules for the exposed API 
-headers for the future, and possibly rearrange the implementation so 
-that it is not exposed uselessly to external interfaces.
+There is a simpler option: the library could install a valid handler 
+instead of SIG_IGN, which the application could override. Whether the 
+application does install its own handler or only copperplate does, 
+zombies would be prevented. I'll push something along these lines.
 
 >
-> The no_alchemy_task thing is not a dialect issue, so I think it's clear
-> now.
-
-This issue is only relevant to how smart the compiler you use is with 
-respect to optimizing the output, when it sees a statically-scoped 
-variable which is explicitly read-only.
-
-  And the __typeof__ is, IMHO, also clear as gcc clearly recommends
-> to use the underscore version in public headers. And that's all.
+> As you might have guessed, our application does not use a signal-based
+> mechanism to collect the child exit status but does it sequentially
+> with waitpid after the forking (we need to wait for the child to end
+> anyway). Hence the issue.
+>
+> Also If I understand it right, it means that if you then do install a
+> signal handler, you have to make sure that you also handle the Xenomai
+> daemon exit correct. Which then again puts thrust within the
+> application, although the application developer might not even realize
+> this if a signal handler was already used in the first place.
 >
 
-I don't have any issue with using the alternative keywords to please 
-compilers switched to pedantic mode, just like I'm usually preferring 
-__asm__ over asm in code. The fact that I'm arguing about some of the 
-proposed changes toward supporting -ansi or -std=<whatever>, does not 
-mean that I'm asking for all changes to be dropped mindlessly.
+As the application installs a valid handler for dealing with its own 
+children, it implicitly registers for receiving regd exit notification, 
+preventing zombies. If it does not install any handler, the library did 
+so earlier though, so problem gone the same way. In other words, by 
+trapping SIGCHLD, the application already does the job of preventing 
+zombies implicitly.
+
+The bogus case would be that no one within the parent process - either 
+copperplate or the application code - installs a handler for SIGCHLD, 
+either valid or SIG_IGN, it does not matter.
 
 -- 
 Philippe.
