@@ -1,5 +1,5 @@
-Message-ID: <530FA6F4.9020705@xenomai.org>
-Date: Thu, 27 Feb 2014 21:58:28 +0100
+Message-ID: <530FAAE3.6080505@xenomai.org>
+Date: Thu, 27 Feb 2014 22:15:15 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
@@ -20,8 +20,7 @@ References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
  <CAEbDrgnq46OJ6bi1FCQmC8JBWhSA6o=M9K=fg4x4hq3JpwcBjw@mail.gmail.com>
  <530F9CA2.2040601@xenomai.org>
  <CAEbDrgmLq08Xq5Cgt7oXX3koQDr+HVx_JS-7Nn_pC53rmTTV-g@mail.gmail.com>
- <530FA4B1.80305@xenomai.org>
-In-Reply-To: <530FA4B1.80305@xenomai.org>
+In-Reply-To: <CAEbDrgmLq08Xq5Cgt7oXX3koQDr+HVx_JS-7Nn_pC53rmTTV-g@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] RaspberryPi kernel 3.8 issue
@@ -36,21 +35,24 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gregory Dymarek <gregd72002@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 02/27/2014 09:48 PM, Gilles Chanteperdrix wrote:
-> On 02/27/2014 09:33 PM, Gregory Dymarek wrote:
->> Not sure if I understand this. This is the first call to __report_bad_irq (
->> https://github.com/raspberrypi/linux/blob/rpi-3.8.y/kernel/irq/spurious.c )
->>
->> I added the trace on line 192.
->>
->> AFAIK this is the first call to the function. the trace freeze i added is
->> not conditional.
+On 02/27/2014 09:33 PM, Gregory Dymarek wrote:
+> Not sure if I understand this. This is the first call to __report_bad_irq (
+> https://github.com/raspberrypi/linux/blob/rpi-3.8.y/kernel/irq/spurious.c )
 > 
-> __report_bad_irq is called when report_bad_irq has been called 100
-> times. Could you put the trace freeze in report_bad_irq instead of
-> __report_bad_irq ?
+> I added the trace on line 192.
+> 
+> AFAIK this is the first call to the function. the trace freeze i added is
+> not conditional.
 
-Sorry, no, that is not how it works.
+I am looking at the "post" patch for Raspberry, and I do not see that 
+it touches drivers/irqchip/irq-bcm2835.c
+
+Here the calls to handle_IRQ are not replaced with ipipe calls, this 
+can not work.
+
+See:
+http://www.xenomai.org/index.php/I-pipe-core:ArmPorting#Interrupt_controller
+
 -- 
                                                                 Gilles.
 
