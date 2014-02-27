@@ -1,14 +1,29 @@
-Message-ID: <530F60F8.2020301@xenomai.org>
-Date: Thu, 27 Feb 2014 16:59:52 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAKc2HpbgUU77_Y25KXjf6jHHLzmNX3PmOxqQsYK4dH0crk9--A@mail.gmail.com>	<530CBFB6.6000908@xenomai.org>	<CAKc2HpZeu+o+8iQU0q+2oi_uVkqwc71S+JgKQ7dkC7sG0RZocA@mail.gmail.com>	<530DB32C.2070403@xenomai.org>	<CAKc2HpbxAuOmAP2_qaWU+LbLtnY77ALSDeOum_iBpHXsYEcUtw@mail.gmail.com>	<530F0A59.10904@xenomai.org>	<530F1880.2090702@xenomai.org>
- <CAKc2HpYXNrC9qWznz6qRuacUfG=kF1qHfRjtBY38hb968yrRqQ@mail.gmail.com>
-In-Reply-To: <CAKc2HpYXNrC9qWznz6qRuacUfG=kF1qHfRjtBY38hb968yrRqQ@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai-forge: SIGCHLD to SIG_IGN in spawn_daemon()
- okay?
+In-Reply-To: <530F17EC.6020204@xenomai.org>
+References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
+ <530A8767.4030004@xenomai.org>
+ <CAEbDrgmf+RtS5gS5SKO7eq66ge-LHoJ0hTOC=yeRmUgk0MXqog@mail.gmail.com>
+ <530BC103.3010809@xenomai.org>
+ <CAEbDrgnFr7YvfoMmFQx=PBKSFEWvwJftx0wZx39ySMqRO2X6gQ@mail.gmail.com>
+ <530CFB0D.8040001@xenomai.org>
+ <CAEbDrgkJCnbWu_J4svoXOU1x2rz=n95A5+3Ee=R_9CpMgx-JmA@mail.gmail.com>
+ <530CFC27.5050700@xenomai.org>
+ <CAEbDrgnmM_dD3WX42PYawhkW8zTaYczzfozEe1EX7Z5HnERz3g@mail.gmail.com>
+ <530D0205.9050406@xenomai.org>
+ <CAEbDrgmwch94crHAcrbJDj9MxaiBNaYeLH2U9NtS0tuJKmdDDw@mail.gmail.com>
+ <530D0BBD.6070704@xenomai.org>
+ <CAK4EZFR_L+=-LtSVHkvZ36rPOA8ViVboB9M9rf4Yqk=crfBotw@mail.gmail.com>
+ <CAEbDrgk=yrGq8KdpdN8e7RtO7qUpWTtwRXhrg0A0=KbDjqoDng@mail.gmail.com>
+ <530D2C92.9010607@xenomai.org>
+ <CAEbDrgkWZqSxjCUfjR3YCp=YOzh1r-=YC6Wyr-Jvk9d7JYEcmQ@mail.gmail.com>
+ <530E6159.4050204@xenomai.org>
+ <CAEbDrgmo==15Zar2X=yz=wBL3pJ4DOiqKy2xx43UPxuu6_5LhA@mail.gmail.com>
+ <530F17EC.6020204@xenomai.org>
+Date: Thu, 27 Feb 2014 18:43:13 +0000
+Message-ID: <CAEbDrgnq46OJ6bi1FCQmC8JBWhSA6o=M9K=fg4x4hq3JpwcBjw@mail.gmail.com>
+From: Gregory Dymarek <gregd72002@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] RaspberryPi kernel 3.8 issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,126 +32,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Kim De Mey <kim.demey@gmail.com>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 02/27/2014 12:54 PM, Kim De Mey wrote:
-> 2014-02-27 11:50 GMT+01:00 Philippe Gerum <rpm@xenomai.org>:
->> On 02/27/2014 10:50 AM, Philippe Gerum wrote:
->>>
->>> On 02/27/2014 08:36 AM, Kim De Mey wrote:
->>>>
->>>> 2014-02-26 10:26 GMT+01:00 Philippe Gerum <rpm@xenomai.org>:
->>>>>
->>>>> On 02/25/2014 08:03 PM, Kim De Mey wrote:
->>>>>>
->>>>>>
->>>>>> 2014-02-25 17:07 GMT+01:00 Philippe Gerum <rpm@xenomai.org>:
->>>>>>>
->>>>>>>
->>>>>>> On 02/25/2014 10:07 AM, Kim De Mey wrote:
->>>>>>>>
->>>>>>>>
->>>>>>>>
->>>>>>>> Hello all,
->>>>>>>>
->>>>>>>> I noticed that when enabling the registry in Xenomai-forge (mercury
->>>>>>>> core), that the SIGCHLD gets set to ignore (SIG_IGN) in the
->>>>>>>> spawn_daemon() call.
->>>>>>>> I guess this choice was made to make sure no zombies of the daemon
->>>>>>>> stay alive. Correct?
->>>>>>>
->>>>>>>
->>>>>>>
->>>>>>>
->>>>>>> Yes.
->>>>>>>
->>>>>>>
->>>>>>>>
->>>>>>>> This does however mean that the default behaviour of the application
->>>>>>>> regarding the handling of children is changed. Now I wonder
->>>>>>>> whether it
->>>>>>>> is okay (as a rule/practice) for a library to change this
->>>>>>>> behaviour of
->>>>>>>> the application. Shouldn't we look for a solution where the behaviour
->>>>>>>> of the application remains untouched?
->>>>>>>>
->>>>>>>
->>>>>>> The default action for SIGCHLD is to ignore it. If the app wants to
->>>>>>> handle
->>>>>>> this signal specifically, it will have to trap it and figure out which
->>>>>>> child
->>>>>>> it cares about has exited in any case. So the library action for this
->>>>>>> signal
->>>>>>> does not change anything to the default case actually.
->>>>>>>
->>>>>>
->>>>>> It is true that the default is to ignore it. However setting the
->>>>>> action explicitly to ignore does change the termination behaviour of
->>>>>> children. The children that terminate will no longer become zombies
->>>>>> and behaviour of wait() and wait_pid() calls is thus different (see
->>>>>> man page of waitpid()).
->>>>>> This different behaviour of waitpid() is also how I noticed the
->>>>>> SIG_IGN.
->>>>>>
->>>>>
->>>>> Which does not change the situation with respect to handling SIGCLD,
->>>>> only
->>>>> for background threads calling waitpid() to collect exit statuses
->>>>> eagerly,
->>>>> in absence of exit notification.
->>>>>
->>>>> Your application can still re-trap SIGCLD to some handler, do the
->>>>> wait() to
->>>>> collect the exit status there, identifying your own threads based on the
->>>>> returned pid to take proper action. In that sense, the fact that the
->>>>> library
->>>>> initially ignores the signal does not change the general behavior if
->>>>> you do
->>>>> care for such signal afterwards.
->>>>>
->>>>> The issue in your case seems that you don't want to set any
->>>>> disposition for
->>>>> SIGCLD, and therefore expect that copperplate won't do it either. So the
->>>>> alternative for preventing zombies is between trusting the
->>>>> application for
->>>>> collecting all statuses properly, or asking the application to use the
->>>>> signal-based mechanism for collecting exit status. Option #2 is
->>>>> current, as
->>>>> you noticed it.
->>>>
->>>>
->>>> I understand this reasoning and the fact that you can't trust the
->>>> application to handle all the zombies and thus your choice for option
->>>> #2. However I was just hoping there was an option #3 where the library
->>>> does leave the behaviour of the application as is and can handle the
->>>> daemon exit itself somehow.
->>>
->>>
->>> There is a simpler option: the library could install a valid handler
->>> instead of SIG_IGN, which the application could override. Whether the
->>> application does install its own handler or only copperplate does,
->>> zombies would be prevented. I'll push something along these lines.
->>>
->>
->> To make this clearer: if copperplate traps SIGCHLD to a valid handler, with
->> this handler calling waitpid(<regd-pid>, WNOHANG...), then you should still
->> be able to wait() for child processes explicitly, without the copperplate
->> handler reaping your child application processes inadvertently.
->>
+Here is the trace with 10000 points:
+https://github.com/gregd72002/rpicopter/blob/master/tmp/frozen
+
+
+
+On 27 February 2014 10:48, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+
+> On 02/26/2014 11:37 PM, Gregory Dymarek wrote:
+> > Right,
+> > here is updated trace:
+> > http://pastebin.com/FW6i2Gds
+> >
+> > there is unstall root call on line 39
+> > followed by read_current_timer at line 88
+> >
+> > if I understand this well read_current_timer fails with bad_irq?
 >
-> That sounds good. Looks like it covers all the cases then. Thanks.
+> I would say the driver interrupt handler does not acknowledge the
+> interrupt correctly at device level, so that the interrupt triggers
+> again, as soon as it is unmasked at interrupt controller level.
 >
-
-That one - from the next branch - should do, well, in theory (read: not 
-even remotely tested).
-
-http://git.xenomai.org/xenomai-forge.git/commit/?h=next&id=591427b13e1c655cb00157d6faa72e538cbd4f4b
-
-Btw, you can also start sysregd manually, if the auto-exec is a burden. 
-Copperplate will detect a running sysregd serving the proper fuse mount 
-point, and refrain from forking off another daemon.
-
--- 
-Philippe.
-
+> Could you take a trace with say 10000 points, in order to confirm this?
+>
+> To add trace points, use
+>
+> echo 10000 > /proc/ipipe/trace/back_trace_points
+>
+> To save the trace to a file use:
+>
+> cat /proc/ipipe/trace/frozen > frozen.txt
+>
+> --
+>                                                                 Gilles.
+>
