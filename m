@@ -1,7 +1,5 @@
-Message-ID: <530FAAE3.6080505@xenomai.org>
-Date: Thu, 27 Feb 2014 22:15:15 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+In-Reply-To: <530FAAE3.6080505@xenomai.org>
 References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
  <530CFB0D.8040001@xenomai.org>
  <CAEbDrgkJCnbWu_J4svoXOU1x2rz=n95A5+3Ee=R_9CpMgx-JmA@mail.gmail.com>
@@ -20,9 +18,11 @@ References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
  <CAEbDrgnq46OJ6bi1FCQmC8JBWhSA6o=M9K=fg4x4hq3JpwcBjw@mail.gmail.com>
  <530F9CA2.2040601@xenomai.org>
  <CAEbDrgmLq08Xq5Cgt7oXX3koQDr+HVx_JS-7Nn_pC53rmTTV-g@mail.gmail.com>
-In-Reply-To: <CAEbDrgmLq08Xq5Cgt7oXX3koQDr+HVx_JS-7Nn_pC53rmTTV-g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ <530FAAE3.6080505@xenomai.org>
+Date: Thu, 27 Feb 2014 22:54:00 +0000
+Message-ID: <CAEbDrgnNE__3Tegh7Mm7hmuH1L0a+=RR+t3wS_YgZKu7q_+abA@mail.gmail.com>
+From: Gregory Dymarek <gregd72002@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Subject: Re: [Xenomai] RaspberryPi kernel 3.8 issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -32,27 +32,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gregory Dymarek <gregd72002@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 02/27/2014 09:33 PM, Gregory Dymarek wrote:
-> Not sure if I understand this. This is the first call to __report_bad_irq (
-> https://github.com/raspberrypi/linux/blob/rpi-3.8.y/kernel/irq/spurious.c )
-> 
-> I added the trace on line 192.
-> 
-> AFAIK this is the first call to the function. the trace freeze i added is
-> not conditional.
+right, i think i see it.
 
-I am looking at the "post" patch for Raspberry, and I do not see that 
-it touches drivers/irqchip/irq-bcm2835.c
+Up to and including kernel version 3.6 there was no handle_irq abstraction:
+https://github.com/raspberrypi/linux/blob/rpi-3.2.27/arch/arm/mach-bcm2708/bcm2708.c
 
-Here the calls to handle_IRQ are not replaced with ipipe calls, this 
-can not work.
+handle_irq was introduced in 3.8 and as such this is not getting patched.
 
-See:
-http://www.xenomai.org/index.php/I-pipe-core:ArmPorting#Interrupt_controller
 
--- 
-                                                                Gilles.
+On 27 February 2014 21:15, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
 
+> On 02/27/2014 09:33 PM, Gregory Dymarek wrote:
+> > Not sure if I understand this. This is the first call to
+> __report_bad_irq (
+> >
+> https://github.com/raspberrypi/linux/blob/rpi-3.8.y/kernel/irq/spurious.c)
+> >
+> > I added the trace on line 192.
+> >
+> > AFAIK this is the first call to the function. the trace freeze i added is
+> > not conditional.
+>
+> I am looking at the "post" patch for Raspberry, and I do not see that
+> it touches drivers/irqchip/irq-bcm2835.c
+>
+> Here the calls to handle_IRQ are not replaced with ipipe calls, this
+> can not work.
+>
+> See:
+>
+> http://www.xenomai.org/index.php/I-pipe-core:ArmPorting#Interrupt_controller
+>
+> --
+>                                                                 Gilles.
+>
