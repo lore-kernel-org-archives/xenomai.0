@@ -1,7 +1,5 @@
-Message-ID: <530F9CA2.2040601@xenomai.org>
-Date: Thu, 27 Feb 2014 21:14:26 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+In-Reply-To: <530F9CA2.2040601@xenomai.org>
 References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
  <530BC103.3010809@xenomai.org>
  <CAEbDrgnFr7YvfoMmFQx=PBKSFEWvwJftx0wZx39ySMqRO2X6gQ@mail.gmail.com>
@@ -20,9 +18,11 @@ References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
  <CAEbDrgmo==15Zar2X=yz=wBL3pJ4DOiqKy2xx43UPxuu6_5LhA@mail.gmail.com>
  <530F17EC.6020204@xenomai.org>
  <CAEbDrgnq46OJ6bi1FCQmC8JBWhSA6o=M9K=fg4x4hq3JpwcBjw@mail.gmail.com>
-In-Reply-To: <CAEbDrgnq46OJ6bi1FCQmC8JBWhSA6o=M9K=fg4x4hq3JpwcBjw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ <530F9CA2.2040601@xenomai.org>
+Date: Thu, 27 Feb 2014 20:33:54 +0000
+Message-ID: <CAEbDrgmLq08Xq5Cgt7oXX3koQDr+HVx_JS-7Nn_pC53rmTTV-g@mail.gmail.com>
+From: Gregory Dymarek <gregd72002@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Subject: Re: [Xenomai] RaspberryPi kernel 3.8 issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -32,18 +32,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gregory Dymarek <gregd72002@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 02/27/2014 07:43 PM, Gregory Dymarek wrote:
-> Here is the trace with 10000 points:
-> https://github.com/gregd72002/rpicopter/blob/master/tmp/frozen
+Not sure if I understand this. This is the first call to __report_bad_irq (
+https://github.com/raspberrypi/linux/blob/rpi-3.8.y/kernel/irq/spurious.c )
 
-Unfortunately, we do not have the beginning of the event. Could you put
-the trace freeze at the first call to report_bad_irq (i.e. not wait for
-the message)?
+I added the trace on line 192.
+
+AFAIK this is the first call to the function. the trace freeze i added is
+not conditional.
 
 
--- 
-                                                                Gilles.
 
+
+On 27 February 2014 20:14, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+
+> On 02/27/2014 07:43 PM, Gregory Dymarek wrote:
+> > Here is the trace with 10000 points:
+> > https://github.com/gregd72002/rpicopter/blob/master/tmp/frozen
+>
+> Unfortunately, we do not have the beginning of the event. Could you put
+> the trace freeze at the first call to report_bad_irq (i.e. not wait for
+> the message)?
+>
+>
+> --
+>                                                                 Gilles.
+>
