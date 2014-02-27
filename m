@@ -1,29 +1,22 @@
+Message-ID: <530FA1D0.2000209@grandegger.com>
+Date: Thu, 27 Feb 2014 21:36:32 +0100
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-In-Reply-To: <530F9CA2.2040601@xenomai.org>
-References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
- <530BC103.3010809@xenomai.org>
- <CAEbDrgnFr7YvfoMmFQx=PBKSFEWvwJftx0wZx39ySMqRO2X6gQ@mail.gmail.com>
- <530CFB0D.8040001@xenomai.org>
- <CAEbDrgkJCnbWu_J4svoXOU1x2rz=n95A5+3Ee=R_9CpMgx-JmA@mail.gmail.com>
- <530CFC27.5050700@xenomai.org>
- <CAEbDrgnmM_dD3WX42PYawhkW8zTaYczzfozEe1EX7Z5HnERz3g@mail.gmail.com>
- <530D0205.9050406@xenomai.org>
- <CAEbDrgmwch94crHAcrbJDj9MxaiBNaYeLH2U9NtS0tuJKmdDDw@mail.gmail.com>
- <530D0BBD.6070704@xenomai.org>
- <CAK4EZFR_L+=-LtSVHkvZ36rPOA8ViVboB9M9rf4Yqk=crfBotw@mail.gmail.com>
- <CAEbDrgk=yrGq8KdpdN8e7RtO7qUpWTtwRXhrg0A0=KbDjqoDng@mail.gmail.com>
- <530D2C92.9010607@xenomai.org>
- <CAEbDrgkWZqSxjCUfjR3YCp=YOzh1r-=YC6Wyr-Jvk9d7JYEcmQ@mail.gmail.com>
- <530E6159.4050204@xenomai.org>
- <CAEbDrgmo==15Zar2X=yz=wBL3pJ4DOiqKy2xx43UPxuu6_5LhA@mail.gmail.com>
- <530F17EC.6020204@xenomai.org>
- <CAEbDrgnq46OJ6bi1FCQmC8JBWhSA6o=M9K=fg4x4hq3JpwcBjw@mail.gmail.com>
- <530F9CA2.2040601@xenomai.org>
-Date: Thu, 27 Feb 2014 20:33:54 +0000
-Message-ID: <CAEbDrgmLq08Xq5Cgt7oXX3koQDr+HVx_JS-7Nn_pC53rmTTV-g@mail.gmail.com>
-From: Gregory Dymarek <gregd72002@gmail.com>
+References: <4C58E39DE6620348B85D78E601C268AF437ABD@srv-exchang2-mi.jerviswebb.com>,
+ <201402142329.10853.paul_c@tuxcnc.org>
+ <4C58E39DE6620348B85D78E601C268AF438358@srv-exchang2-mi.jerviswebb.com>
+ <1392655777.26562.YahooMailNeo@web163503.mail.gq1.yahoo.com>
+ <53026F63.5080403@grandegger.com>
+ <1392760838.41780.YahooMailNeo@web163505.mail.gq1.yahoo.com>
+ <d3241e64b0ad1946aaa3952553fe354f@grandegger.com>
+ <1392847535.52577.YahooMailNeo@web163501.mail.gq1.yahoo.com>
+ <3a692b55821a5a04d7b55253388edeaf@grandegger.com>
+ <5305BAA6.1040007@xenomai.org>
+ <1393345381.78835.YahooMailNeo@web163505.mail.gq1.yahoo.com>
+In-Reply-To: <1393345381.78835.YahooMailNeo@web163505.mail.gq1.yahoo.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] RaspberryPi kernel 3.8 issue
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] CAN ISA support
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -32,31 +25,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Wayne Ross <mr_trekkie@yahoo.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Not sure if I understand this. This is the first call to __report_bad_irq (
-https://github.com/raspberrypi/linux/blob/rpi-3.8.y/kernel/irq/spurious.c )
+On 02/25/2014 05:23 PM, Wayne Ross wrote:
+> On Thursday, February 20, 2014 3:19 AM Gilles Chanteperdrix wrote:
+> 
+>> On 02/20/2014 08:47 AM, Wolfgang Grandegger wrote:
+>>> Am Mi, 19.02.2014, 23:05 schrieb Wayne Ross:
+>>>> On Wednesday, February 19, 2014 3:16 AM Wolfgang Grandegger wrote:
+>>>>> - What does "/proc/xenomai/irq" list after you have sent a message?
+>>>>>
+>>>> # cat /proc/xenomai/irq
+>>>> IRQ         CPU0        CPU1        CPU2        CPU3
+>>>>   12:           0           0           0           0         SJA1000
+>>>>   15:           0           0           0           0         SJA1000
+>>>
+>>> ... the problem is here. No interrupts are triggered. Are your sure
+>>> that the IRQ numbers are correct (check jumpers on the card/board)?>
+>> You can also check cat /proc/interrupts when using the Linux driver.
+>>
+>> -- 
+>>                                                                 Gilles.
+> 
+> 
+> Thanks for all the in-sight.  Tracing down this lack of interrupts led me to the following solution:
+> - the Advantech driver *transmits* without the aid of IRQs, so I "thought" it was working, when indeed no IRQs were seen.
 
-I added the trace on line 192.
+It works for just one message.
 
-AFAIK this is the first call to the function. the trace freeze i added is
-not conditional.
+> - I had never tried to receive CAN with the Advantech driver: when I did so, it would not (no IRQs)
+
+You mean you only sent messages with the Advantech driver?
+
+> - I found the setting in my v2.61 American Megatrends BIOS that allows "Legacy IRQs" to be "Reserved" (not allowed to be used by PCIPnP).
+
+BIOS settings may need the be adjusted but I understood that the device
+was already working with another driver.
+
+> - I also had to select different IRQs that all components (BIOS, CAN card, 4 16550A UARTs & some ata/acpi Linux drivers) agree were unused and I could tag as "Reserved"
+
+> - In hindsight, all of this should have been done first, but such is the lesson learned when venturing down a new road.  I'm not used to dealing with a BIOS that gets between the chips on my board and the software I write.
+
+Does it now work (with IRQs)?
+
+> I intend to look more at the btr1 register "issue".  As Wolfgang mentions, it *should* be 0x1c, so only sometimes do I get the correct value.  I think the 0x9c means "3 samples" (instead of 1) -- at least when I put these register settings into my Windows driver, that is how that software decodes the meaning.  But it does indeed transmit and receive thousands of messages without a problem.
+
+Yes, that's weird.  Maybe there are register access problems.
+
+Wolfgang.
 
 
-
-
-On 27 February 2014 20:14, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
-
-> On 02/27/2014 07:43 PM, Gregory Dymarek wrote:
-> > Here is the trace with 10000 points:
-> > https://github.com/gregd72002/rpicopter/blob/master/tmp/frozen
->
-> Unfortunately, we do not have the beginning of the event. Could you put
-> the trace freeze at the first call to report_bad_irq (i.e. not wait for
-> the message)?
->
->
-> --
->                                                                 Gilles.
->
