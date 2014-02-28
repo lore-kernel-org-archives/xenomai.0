@@ -1,16 +1,14 @@
-From: Paul <paul_c@tuxcnc.org>
-Date: Fri, 28 Feb 2014 01:12:14 +0000
-References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
- <CAEbDrgmLq08Xq5Cgt7oXX3koQDr+HVx_JS-7Nn_pC53rmTTV-g@mail.gmail.com>
- <530FAAE3.6080505@xenomai.org>
-In-Reply-To: <530FAAE3.6080505@xenomai.org>
+Message-ID: <53104C58.3040903@xenomai.org>
+Date: Fri, 28 Feb 2014 09:44:08 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
+References: <E1WJ3I1-00060i-NR@sd-51317.dedibox.fr>
+ <530F96D3.4040407@xenomai.org>
+In-Reply-To: <530F96D3.4040407@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <201402280112.14374.paul_c@tuxcnc.org>
-Subject: Re: [Xenomai] RaspberryPi kernel 3.8 issue
+Subject: Re: [Xenomai] [Xenomai-git] Philippe Gerum : copperplate/registry:
+ reap sysregd selectively
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,33 +17,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
 
-On Thursday 27 February 2014, Gilles Chanteperdrix wrote:
-> I am looking at the "post" patch for Raspberry, and I do not see that
-> it touches drivers/irqchip/irq-bcm2835.c
+On 02/27/2014 08:49 PM, Gilles Chanteperdrix wrote:
+> On 02/27/2014 04:54 PM, git repository hosting wrote:
+>>   	memset(&sa, 0, sizeof(sa));
+>>   	sa.sa_handler = SIG_IGN;
+>>   	sigaction(SIGCHLD, &sa, NULL);
 >
-> Here the calls to handle_IRQ are not replaced with ipipe calls, this
-> can not work.
+> Why not masking the signal here instead of ignoring it? So that the
+> notifications which would happen during the short interval are not lost?
+>
+>
 
-It is somewhat confusing that there are two sets of code for the 
-Raspberry Pi chip. bcm2708* is the original code as used by 
-the "official" RPi kernel and is found in the 
-github.com/raspberrypi/linux tree.
+We only want the child to be reaped instead of going zombie, we don't 
+actually care about the exit status.
 
-For the mainline kernel, for various reasons, it was decided that the 
-bcm2835 prefix would be used for the RPi SoC - Having two sets of 
-sources for one SoC can be somewhat confusing.
-
-drivers/irqchip/irq-bcm2835.c doesn't get compiled for the Raspberry Pi 
-kernel - Instead, one should look at arch/arm/mach-bcm2708/armctrl.c
-
-> See:
-> http://www.xenomai.org/index.php/I-pipe-core:ArmPorting#Interrupt_con
->troller
-
-
-Regards, Paul.
-
-
+-- 
+Philippe.
 
