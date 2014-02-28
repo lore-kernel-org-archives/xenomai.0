@@ -1,12 +1,14 @@
-Message-ID: <5310A51F.8080607@xenomai.org>
-Date: Fri, 28 Feb 2014 16:02:55 +0100
+Message-ID: <5310A5CF.9040801@xenomai.org>
+Date: Fri, 28 Feb 2014 16:05:51 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <53107B01.2000103@control.lth.se>
-In-Reply-To: <53107B01.2000103@control.lth.se>
+References: <CAKc2HpZ+zHoF22BjPKj_x0V+oOX9ZcLpU-N1jNv1pjq6sQhsqQ@mail.gmail.com>	<52F7B36C.5010905@xenomai.org>	<CAKc2HpaFwremV-pUgYez_O5gAvg_f=NeMihnFMZ0vgf3GJWG8Q@mail.gmail.com>	<CAKc2Hpaus4Vryt5LdDexzRTyYr16Ux-bbVz2c6WoWdgX6j7D5Q@mail.gmail.com>	<53108F8C.20000@xenomai.org>	<531096F9.8080503@xenomai.org>
+ <CAKc2HpZEC7RD4ghGvZ16W0Qvt9rmMLneZJMOvXN2tyJURwj9sg@mail.gmail.com>
+In-Reply-To: <CAKc2HpZEC7RD4ghGvZ16W0Qvt9rmMLneZJMOvXN2tyJURwj9sg@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai-3 and native RTDM question
+Subject: Re: [Xenomai] Xenomai-forge pSOS t_start followed by t_suspend does
+ not work
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,32 +17,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Anders Blomdell <anders.blomdell@control.lth.se>, Xenomai <xenomai@xenomai.org>
+To: Kim De Mey <kim.demey@gmail.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 02/28/2014 01:03 PM, Anders Blomdell wrote:
-> With Xenomai-3, will it be possible to use the native RTDM an a vanilla kernel, or
-> only on PREEMPT_RT kernels?
+On 02/28/2014 03:35 PM, Kim De Mey wrote:
+> 2014-02-28 15:02 GMT+01:00 Philippe Gerum <rpm@xenomai.org>:
+>> On 02/28/2014 02:30 PM, Philippe Gerum wrote:
+>>> On 02/26/2014 09:54 AM, Kim De Mey wrote:
+>>>> 2014-02-10 12:23 GMT+01:00 Kim De Mey <kim.demey@gmail.com>:
+>>>>> 2014-02-09 17:57 GMT+01:00 Philippe Gerum <rpm@xenomai.org>:
+>>>>>> On 02/06/2014 02:36 PM, Kim De Mey wrote:
+>>>>>>>
+>>>>>>> Hi,
+>>>>>>>
+>>>>>>> I believe there is a problem in Xenomai-forge when doing a pSOS
+>>>>>>> t_suspend() call right after a t_start() call.
+>>>>>>> It looks like the task does not get suspended in some cases. The
+>>>>>>> return value of t_suspend() is 0 however.
+>>>>>>>
+>>>>>>> I suspect that this happens when the threadobj_prologue() is not
+>>>>>>> finished yet at the moment that the notifier_sighandler() is called.
+>>>>>>> In this case it could be that the notifier_init() did not run yet. If
+>>>>>>> this is the case, then the notifier_sighandler() will not do any
+>>>>>>> notifier callback and thus the task will not be suspended. Additional
+>>>>>>> t_suspend() calls will not work as the "notified" flag has been set
+>>>>>>> already.
+>>>>>>> Is this possible?
+>>>>>>>
+>>>>>>
+>>>>>> Unfortunately, yes.
+>>>>>>
+>>>>>> This is a general issue in the current implementation, as any child
+>>>>>> thread
+>>>>>> created by the emulation sub-system might not have fully registered
+>>>>>> before
+>>>>>> the parent refers to it due to priority/wait state issues.
+>>>>>>
+>>>>>> We definitely need stronger handshaking there, could you please
+>>>>>> check again
+>>>>>> with this changes in?
+>>>>>> http://git.xenomai.org/xenomai-forge.git/commit/?h=next&id=a48b8f640cad510a1101e380cc54ef2bf29afcd6
+>>>>>>
+>>>>>>
+>>>>>> TIA,
+>>>>>>
+>>>>>
+>>>>> I tested the new revision and the problems no longer occur. So it
+>>>>> looks good!
+>>>>>
+>>>>> Many thanks for fixing this so quickly.
+>>>>>
+>>>>
+>>>> Hi Philippe,
+>>>>
+>>>> I'm afraid the new handshaking mechanism introduced to fix the
+>>>> problems I was having created an actually worse problem.
+>>>>
+>>>> If now a parent task with high priority creates a child task with low
+>>>> priority while there is another task with medium priority creating a
+>>>> high load on the CPU then the parent task gets stuck in the creation
+>>>> of the child. This while the parent task has a higher priority than
+>>>> the task creating the load.
+>>>>
+>>>> I believe it is due to the fact that the parent task now waits for a
+>>>> sem_post of the child, which in this case has a too low priority to
+>>>> get this done.
+>>>>
+>>>> Should the child priority be temporary increased to the one of the
+>>>> parent during the creation or would that be a bad idea?
+>>>>
+>>>
+>>> I don't see any other option for preventing this priority inversion
+>>> anyway, since the child prologue is logically part of the parent context
+>>> actually. IOW, the child has to fully inherit the scheduling parameters
+>>> of the parent until its prologue is over. Ok, will do this.
+>>>
+>>
+>> Does this patch helps with your test case?
+>
+> Yes, this patch fixes the problem. Test case works and the original
+> suspend test case also still works.
+> I will run it over more tests but so far it looks good.
+>
 
-Any kernel will do, provided it fits the user requirements in terms of 
-response and execution time. PREEMPT_RT is not a pre-requisite for x3, 
-it's an option, just like the Cobalt co-kernel is. There are projects 
-currently based on x3 over plain 3.x kernels, only to leverage the 
-legacy RTOS emulation capabilities.
-
-  The reason that I ask, is that I need to upgrade the
-> software in our labs (vanilla kernels, mostly) and would like to get comedi
-> (www.comedi.org) to work with RTDM (so I get all the drivers from comedi,
-> the analogy double effort seems like a bad idea to me).
-
-In all fairness, Alex - the Analogy author - tried hard to contribute to 
-Comedi at a time when the project was stalled, and also to avoid 
-duplicate effort:
-http://osdir.com/ml/comedi/2006-04/msg00017.html
-https://lkml.org/lkml/2009/5/6/543
-
-The intent was to port Comedi over RTDM since day one. Apparently, it 
-turned out that Alex could not find anyone to work with from the Comedi 
-team for evolving the code, hence Analogy.
+Ok, thanks. All API test suites passed here as well. So I'll push it to 
+the -next branch, staging for a while. Would any issue arise with 
+further testing, just pull the break.
 
 -- 
 Philippe.
