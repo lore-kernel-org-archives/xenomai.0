@@ -1,16 +1,29 @@
-Message-ID: <531073B8.7040208@xenomai.org>
-Date: Fri, 28 Feb 2014 12:32:08 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <531075E7.7060107@xenomai.org>
+Date: Fri, 28 Feb 2014 12:41:27 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <E1WJ3I1-00060i-NR@sd-51317.dedibox.fr>
- <530F96D3.4040407@xenomai.org> <53104C58.3040903@xenomai.org>
- <53106E73.9030702@xenomai.org> <53106EF2.2020109@xenomai.org>
- <53107343.9010707@xenomai.org>
-In-Reply-To: <53107343.9010707@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
+ <530CFB0D.8040001@xenomai.org>
+ <CAEbDrgkJCnbWu_J4svoXOU1x2rz=n95A5+3Ee=R_9CpMgx-JmA@mail.gmail.com>
+ <530CFC27.5050700@xenomai.org>
+ <CAEbDrgnmM_dD3WX42PYawhkW8zTaYczzfozEe1EX7Z5HnERz3g@mail.gmail.com>
+ <530D0205.9050406@xenomai.org>
+ <CAEbDrgmwch94crHAcrbJDj9MxaiBNaYeLH2U9NtS0tuJKmdDDw@mail.gmail.com>
+ <530D0BBD.6070704@xenomai.org>
+ <CAK4EZFR_L+=-LtSVHkvZ36rPOA8ViVboB9M9rf4Yqk=crfBotw@mail.gmail.com>
+ <CAEbDrgk=yrGq8KdpdN8e7RtO7qUpWTtwRXhrg0A0=KbDjqoDng@mail.gmail.com>
+ <530D2C92.9010607@xenomai.org>
+ <CAEbDrgkWZqSxjCUfjR3YCp=YOzh1r-=YC6Wyr-Jvk9d7JYEcmQ@mail.gmail.com>
+ <530E6159.4050204@xenomai.org>
+ <CAEbDrgmo==15Zar2X=yz=wBL3pJ4DOiqKy2xx43UPxuu6_5LhA@mail.gmail.com>
+ <530F17EC.6020204@xenomai.org>
+ <CAEbDrgnq46OJ6bi1FCQmC8JBWhSA6o=M9K=fg4x4hq3JpwcBjw@mail.gmail.com>
+ <530F9CA2.2040601@xenomai.org>
+ <CAEbDrgmLq08Xq5Cgt7oXX3koQDr+HVx_JS-7Nn_pC53rmTTV-g@mail.gmail.com>
+In-Reply-To: <CAEbDrgmLq08Xq5Cgt7oXX3koQDr+HVx_JS-7Nn_pC53rmTTV-g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Philippe Gerum : copperplate/registry:
- reap sysregd selectively
+Subject: Re: [Xenomai] RaspberryPi kernel 3.8 issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,38 +32,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Gregory Dymarek <gregd72002@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 02/28/2014 12:30 PM, Gilles Chanteperdrix wrote:
-> On 02/28/2014 12:11 PM, Philippe Gerum wrote:
->> On 02/28/2014 12:09 PM, Gilles Chanteperdrix wrote:
->>> On 02/28/2014 09:44 AM, Philippe Gerum wrote:
->>>> On 02/27/2014 08:49 PM, Gilles Chanteperdrix wrote:
->>>>> On 02/27/2014 04:54 PM, git repository hosting wrote:
->>>>>>     	memset(&sa, 0, sizeof(sa));
->>>>>>     	sa.sa_handler = SIG_IGN;
->>>>>>     	sigaction(SIGCHLD, &sa, NULL);
->>>>>
->>>>> Why not masking the signal here instead of ignoring it? So that the
->>>>> notifications which would happen during the short interval are not lost?
->>>>>
->>>>>
->>>>
->>>> We only want the child to be reaped instead of going zombie, we don't
->>>> actually care about the exit status.
->>>
->>> What if the application wants the exit status of another child process
->>> which would be created at the same time?
->>>
->>
->> This can't be, since the application has not started yet at this point.
->>
-> Even if it loads xenomai libraries with dlopen?
->
+On 02/27/2014 09:33 PM, Gregory Dymarek wrote:
+> Not sure if I understand this. This is the first call to __report_bad_irq (
+> https://github.com/raspberrypi/linux/blob/rpi-3.8.y/kernel/irq/spurious.c )
+> 
+> I added the trace on line 192.
+> 
+> AFAIK this is the first call to the function. the trace freeze i added is
+> not conditional.
 
-Yes, even in that case. The copperplate core would not be initialized.
+I think the issue you observe is that the irqs_unhandled counter goes
+over 99000, meaning that the driver returns IRQ_NONE and does not
+acknowledge the interrupt at device level, so that the interrupt
+triggers again. So, having enough trace points to see what happens
+before this irq storm will be hard. Could you try reducing the 100000
+and 99000 thresholds in kernel/irq/spurious.c, function note_interrupt?
 
 -- 
-Philippe.
+                                                                Gilles.
 
