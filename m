@@ -1,14 +1,10 @@
-Message-ID: <5310762A.2070003@xenomai.org>
-Date: Fri, 28 Feb 2014 12:42:34 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <53107B01.2000103@control.lth.se>
+Date: Fri, 28 Feb 2014 13:03:13 +0100
+From: Anders Blomdell <anders.blomdell@control.lth.se>
 MIME-Version: 1.0
-References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
- <CAEbDrgmLq08Xq5Cgt7oXX3koQDr+HVx_JS-7Nn_pC53rmTTV-g@mail.gmail.com>
- <530FAAE3.6080505@xenomai.org> <201402280112.14374.paul_c@tuxcnc.org>
-In-Reply-To: <201402280112.14374.paul_c@tuxcnc.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RaspberryPi kernel 3.8 issue
+Subject: [Xenomai] Xenomai-3 and native RTDM question
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,31 +13,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paul <paul_c@tuxcnc.org>
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 02/28/2014 02:12 AM, Paul wrote:
-> On Thursday 27 February 2014, Gilles Chanteperdrix wrote:
->> I am looking at the "post" patch for Raspberry, and I do not see that
->> it touches drivers/irqchip/irq-bcm2835.c
->>
->> Here the calls to handle_IRQ are not replaced with ipipe calls, this
->> can not work.
-> 
-> It is somewhat confusing that there are two sets of code for the 
-> Raspberry Pi chip. bcm2708* is the original code as used by 
-> the "official" RPi kernel and is found in the 
-> github.com/raspberrypi/linux tree.
-> 
-> For the mainline kernel, for various reasons, it was decided that the 
-> bcm2835 prefix would be used for the RPi SoC - Having two sets of 
-> sources for one SoC can be somewhat confusing.
-> 
-> drivers/irqchip/irq-bcm2835.c doesn't get compiled for the Raspberry Pi 
-> kernel - Instead, one should look at arch/arm/mach-bcm2708/armctrl.c
+With Xenomai-3, will it be possible to use the native RTDM an a vanilla kernel, or
+only on PREEMPT_RT kernels? The reason that I ask, is that I need to upgrade the
+software in our labs (vanilla kernels, mostly) and would like to get comedi 
+(www.comedi.org) to work with RTDM (so I get all the drivers from comedi,
+the analogy double effort seems like a bad idea to me).
 
-Ok, thanks.
+In the best of worlds, native RTDM could be pushed into the kernel staging area 
+where comedi currently lives, and perhaps make the RTAI part of comedi easier
+to support.
+
+/Anders
+
 
 -- 
-                                                                Gilles.
+Anders Blomdell                  Email: anders.blomdell@control.lth.se
+Department of Automatic Control
+Lund University                  Phone:    +46 46 222 4625
+P.O. Box 118                     Fax:      +46 46 138118
+SE-221 00 Lund, Sweden
+
 
