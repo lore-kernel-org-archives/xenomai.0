@@ -1,21 +1,15 @@
-Message-ID: <52F2123A.2070607@siemens.com>
-Date: Wed, 05 Feb 2014 11:28:10 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <531096F9.8080503@xenomai.org>
+Date: Fri, 28 Feb 2014 15:02:33 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <E1WAhle-0006kB-0q@sd-51317.dedibox.fr>
- <52F1172B.2080500@xenomai.org> <52F11F94.9000309@siemens.com>
- <52F1231A.7080603@xenomai.org> <52F12442.3040301@xenomai.org>
- <52F125E8.6020200@xenomai.org> <52F12700.3020400@xenomai.org>
- <52F12800.1030500@xenomai.org> <52F12937.3050105@xenomai.org>
- <52F12B7A.4060408@siemens.com> <52F1F749.2030501@xenomai.org>
- <52F1FB24.4090603@siemens.com> <52F1FD3B.1070304@xenomai.org>
- <52F1FEFC.9070708@siemens.com> <52F20604.4020200@xenomai.org>
- <52F20780.9010002@siemens.com> <52F20E32.3010706@xenomai.org>
-In-Reply-To: <52F20E32.3010706@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+References: <CAKc2HpZ+zHoF22BjPKj_x0V+oOX9ZcLpU-N1jNv1pjq6sQhsqQ@mail.gmail.com>	<52F7B36C.5010905@xenomai.org>	<CAKc2HpaFwremV-pUgYez_O5gAvg_f=NeMihnFMZ0vgf3GJWG8Q@mail.gmail.com>
+ <CAKc2Hpaus4Vryt5LdDexzRTyYr16Ux-bbVz2c6WoWdgX6j7D5Q@mail.gmail.com>
+ <53108F8C.20000@xenomai.org>
+In-Reply-To: <53108F8C.20000@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : alchemy: Replace static
- variable no_alchemy_task with macro
+Subject: Re: [Xenomai] Xenomai-forge pSOS t_start followed by t_suspend does
+ not work
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,57 +18,206 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Kim De Mey <kim.demey@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 2014-02-05 11:10, Philippe Gerum wrote:
-> On 02/05/2014 10:42 AM, Jan Kiszka wrote:
->> So you just want me to fold patch 2 and 3 together? I don't fully get it
->> yet.
-> 
-> I'm asking for a clarification: do you have more patches following these
-> two? I understood from the past conversation that more work was
-> required, so I'm assuming you will have. If so, then we may save a lot
-> of time by seeing the complete change set that would fit the bill for
-> supporting standard C/C++ restrictions, the way your current port work
-> seems to require it.
-
-I'm not aware of further issues after the __typeof__ thing. However, I
-will try to run through all public headers in an automated way,
-including them in strict modes to check if there is something remaining.
-Maybe we can also hook this into our build tests here.
-
-> 
->>
->>>
+On 02/28/2014 02:30 PM, Philippe Gerum wrote:
+> On 02/26/2014 09:54 AM, Kim De Mey wrote:
+>> 2014-02-10 12:23 GMT+01:00 Kim De Mey <kim.demey@gmail.com>:
+>>> 2014-02-09 17:57 GMT+01:00 Philippe Gerum <rpm@xenomai.org>:
+>>>> On 02/06/2014 02:36 PM, Kim De Mey wrote:
+>>>>>
+>>>>> Hi,
+>>>>>
+>>>>> I believe there is a problem in Xenomai-forge when doing a pSOS
+>>>>> t_suspend() call right after a t_start() call.
+>>>>> It looks like the task does not get suspended in some cases. The
+>>>>> return value of t_suspend() is 0 however.
+>>>>>
+>>>>> I suspect that this happens when the threadobj_prologue() is not
+>>>>> finished yet at the moment that the notifier_sighandler() is called.
+>>>>> In this case it could be that the notifier_init() did not run yet. If
+>>>>> this is the case, then the notifier_sighandler() will not do any
+>>>>> notifier callback and thus the task will not be suspended. Additional
+>>>>> t_suspend() calls will not work as the "notified" flag has been set
+>>>>> already.
+>>>>> Is this possible?
+>>>>>
 >>>>
->>>> The no_alchemy_task thing is not a dialect issue, so I think it's clear
->>>> now.
+>>>> Unfortunately, yes.
+>>>>
+>>>> This is a general issue in the current implementation, as any child 
+>>>> thread
+>>>> created by the emulation sub-system might not have fully registered 
+>>>> before
+>>>> the parent refers to it due to priority/wait state issues.
+>>>>
+>>>> We definitely need stronger handshaking there, could you please 
+>>>> check again
+>>>> with this changes in?
+>>>> http://git.xenomai.org/xenomai-forge.git/commit/?h=next&id=a48b8f640cad510a1101e380cc54ef2bf29afcd6 
+>>>>
+>>>>
+>>>> TIA,
+>>>>
 >>>
->>> This issue is only relevant to how smart the compiler you use is with
->>> respect to optimizing the output, when it sees a statically-scoped
->>> variable which is explicitly read-only.
+>>> I tested the new revision and the problems no longer occur. So it 
+>>> looks good!
+>>>
+>>> Many thanks for fixing this so quickly.
+>>>
 >>
->> Right, so one of the issue it causes has nothing to do with [strict] C++
->> compliance.
+>> Hi Philippe,
+>>
+>> I'm afraid the new handshaking mechanism introduced to fix the
+>> problems I was having created an actually worse problem.
+>>
+>> If now a parent task with high priority creates a child task with low
+>> priority while there is another task with medium priority creating a
+>> high load on the CPU then the parent task gets stuck in the creation
+>> of the child. This while the parent task has a higher priority than
+>> the task creating the load.
+>>
+>> I believe it is due to the fact that the parent task now waits for a
+>> sem_post of the child, which in this case has a too low priority to
+>> get this done.
+>>
+>> Should the child priority be temporary increased to the one of the
+>> parent during the creation or would that be a bad idea?
+>>
 > 
-> Which is the reason why I tend to suspect patches claiming about fixing
-> some perceived ugliness, factual information is better. This construct
-> is valid, but does not fit well with the gcc release you are aiming at,
-> which is another issue. Xenomai 3.x does impose minimum requirements on
-> the compiler/toolchain, including sane/working support of builtin sync
-> primitives and tls.
+> I don't see any other option for preventing this priority inversion 
+> anyway, since the child prologue is logically part of the parent context 
+> actually. IOW, the child has to fully inherit the scheduling parameters 
+> of the parent until its prologue is over. Ok, will do this.
 > 
-> In this respect, your patch about no_alchemy_task would have been better
-> explained by the goal of not depending on too recent optimizers, which
-> does make sense to me. The language is important so that my limited
-> mono-neuronal brain can deal with your commit logs.
 
-OK, will do /s/ugliness/objective reason for ugliness/.
+Does this patch helps with your test case?
 
-Jan
+diff --git a/lib/copperplate/internal.c b/lib/copperplate/internal.c
+index a7f86e7..86e69af 100644
+--- a/lib/copperplate/internal.c
++++ b/lib/copperplate/internal.c
+@@ -68,10 +68,9 @@ int copperplate_probe_node(unsigned int id)
+ int copperplate_create_thread(struct corethread_attributes *cta,
+ 			      pthread_t *tid)
+ {
+-	struct sched_param_ex param_ex;
+ 	pthread_attr_ex_t attr_ex;
+ 	size_t stacksize;
+-	int policy, ret;
++	int ret;
+ 
+ 	ret = thread_spawn_prologue(cta);
+ 	if (ret)
+@@ -81,12 +80,8 @@ int copperplate_create_thread(struct corethread_attributes *cta,
+ 	if (stacksize < PTHREAD_STACK_MIN * 4)
+ 		stacksize = PTHREAD_STACK_MIN * 4;
+ 
+-	param_ex.sched_priority = cta->prio;
+-	policy = cta->prio ? SCHED_RT : SCHED_OTHER;
+ 	pthread_attr_init_ex(&attr_ex);
+-	pthread_attr_setinheritsched_ex(&attr_ex, PTHREAD_EXPLICIT_SCHED);
+-	pthread_attr_setschedpolicy_ex(&attr_ex, policy);
+-	pthread_attr_setschedparam_ex(&attr_ex, &param_ex);
++	pthread_attr_setinheritsched_ex(&attr_ex, PTHREAD_INHERIT_SCHED);
+ 	pthread_attr_setstacksize_ex(&attr_ex, stacksize);
+ 	pthread_attr_setdetachstate_ex(&attr_ex, cta->detachstate);
+ 	ret = __bt(-pthread_create_ex(tid, &attr_ex, thread_trampoline, cta));
+@@ -120,6 +115,11 @@ static inline void prepare_wait_corespec(void)
+ 	cobalt_thread_harden();
+ }
+ 
++static inline int finish_wait_corespec(struct corethread_attributes *cta)
++{
++	return __bt(copperplate_renice_thread(pthread_self(), cta->prio));
++}
++
+ #else /* CONFIG_XENO_MERCURY */
+ 
+ int copperplate_probe_node(unsigned int id)
+@@ -130,10 +130,9 @@ int copperplate_probe_node(unsigned int id)
+ int copperplate_create_thread(struct corethread_attributes *cta,
+ 			      pthread_t *tid)
+ {
+-	struct sched_param param;
+ 	pthread_attr_t attr;
+ 	size_t stacksize;
+-	int policy, ret;
++	int ret;
+ 
+ 	ret = thread_spawn_prologue(cta);
+ 	if (ret)
+@@ -143,12 +142,8 @@ int copperplate_create_thread(struct corethread_attributes *cta,
+ 	if (stacksize < PTHREAD_STACK_MIN * 4)
+ 		stacksize = PTHREAD_STACK_MIN * 4;
+ 
+-	param.sched_priority = cta->prio;
+-	policy = cta->prio ? SCHED_RT : SCHED_OTHER;
+ 	pthread_attr_init(&attr);
+-	pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+-	pthread_attr_setschedpolicy(&attr, policy);
+-	pthread_attr_setschedparam(&attr, &param);
++	pthread_attr_setinheritsched(&attr, PTHREAD_INHERIT_SCHED);
+ 	pthread_attr_setstacksize(&attr, stacksize);
+ 	pthread_attr_setdetachstate(&attr, cta->detachstate);
+ 	ret = __bt(-pthread_create(tid, &attr, thread_trampoline, cta));
+@@ -176,6 +171,11 @@ static inline void prepare_wait_corespec(void)
+ 	/* empty */
+ }
+ 
++static inline int finish_wait_corespec(struct corethread_attributes *cta)
++{
++	return __bt(copperplate_renice_thread(pthread_self(), cta->prio));
++}
++
+ #endif  /* CONFIG_XENO_MERCURY */
+ 
+ static int thread_spawn_prologue(struct corethread_attributes *cta)
+@@ -208,19 +208,17 @@ static void thread_spawn_wait(sem_t *sem)
+ 
+ static void *thread_trampoline(void *arg)
+ {
+-	struct corethread_attributes *cta = arg;
+-	void *__arg, *(*__run)(void *arg);
++	struct corethread_attributes *cta = arg, _cta;
+ 	sem_t released;
+ 	int ret;
+ 
+ 	/*
+ 	 * cta may be on the parent's stack, so it may be dandling
+-	 * soon after the parent is posted: copy what we need from
+-	 * this area early on.
++	 * soon after the parent is posted: copy this argument
++	 * structure early on.
+ 	 */
+-	__run = cta->run;
+-	__arg = cta->arg;
+-	ret = cta->prologue(__arg);
++	_cta = *cta;
++	ret = cta->prologue(cta->arg);
+ 	cta->__reserved.status = ret;
+ 
+ 	if (ret) {
+@@ -238,12 +236,13 @@ static void *thread_trampoline(void *arg)
+ 	 */
+ 	prepare_wait_corespec();
+ 	__RT(sem_post(&cta->__reserved.warm));
+-
+ 	thread_spawn_wait(&released);
+-
+ 	__RT(sem_destroy(&released));
++	ret = finish_wait_corespec(&_cta);
++	if (ret)
++		warning("core thread prologue failed, %s", symerror(ret));
+ 
+-	return __run(__arg);
++	return _cta.run(_cta.arg);
+ }
+ 
+ static int thread_spawn_epilogue(struct corethread_attributes *cta)
+
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
