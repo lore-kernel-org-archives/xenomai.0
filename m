@@ -1,18 +1,29 @@
-Message-ID: <53317791.3030106@xenomai.org>
-Date: Tue, 25 Mar 2014 13:33:21 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CACKc53LDHUFyLAy5-=wW7Zy+rmB1gthujCORsY1w4zyzip1bmQ@mail.gmail.com>
- <53163439.6070608@gmail.com> <532DBBFF.9010900@xenomai.org>
- <53302093.9090503@gmail.com> <533022B7.9000405@xenomai.org>
- <533159E0.7090809@gmail.com> <53316570.5060600@xenomai.org>
- <5331685C.8030100@gmail.com> <53316A3F.1040601@xenomai.org>
- <53316E59.3000607@gmail.com> <53316F63.1030306@xenomai.org>
- <53317338.60805@gmail.com>
-In-Reply-To: <53317338.60805@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Sensoray 626 analogy driver
+In-Reply-To: <531380BA.70006@xenomai.org>
+References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
+ <530D0BBD.6070704@xenomai.org>
+ <CAK4EZFR_L+=-LtSVHkvZ36rPOA8ViVboB9M9rf4Yqk=crfBotw@mail.gmail.com>
+ <CAEbDrgk=yrGq8KdpdN8e7RtO7qUpWTtwRXhrg0A0=KbDjqoDng@mail.gmail.com>
+ <530D2C92.9010607@xenomai.org>
+ <CAEbDrgkWZqSxjCUfjR3YCp=YOzh1r-=YC6Wyr-Jvk9d7JYEcmQ@mail.gmail.com>
+ <530E6159.4050204@xenomai.org>
+ <CAEbDrgmo==15Zar2X=yz=wBL3pJ4DOiqKy2xx43UPxuu6_5LhA@mail.gmail.com>
+ <530F17EC.6020204@xenomai.org>
+ <CAEbDrgnq46OJ6bi1FCQmC8JBWhSA6o=M9K=fg4x4hq3JpwcBjw@mail.gmail.com>
+ <530F9CA2.2040601@xenomai.org>
+ <CAEbDrgmLq08Xq5Cgt7oXX3koQDr+HVx_JS-7Nn_pC53rmTTV-g@mail.gmail.com>
+ <531075E7.7060107@xenomai.org>
+ <CAEbDrgmQNRjaTEm5TvM93Yy3k+fa+QRETFzXdM3bz8=-N15DPQ@mail.gmail.com>
+ <53134A2E.1000406@xenomai.org>
+ <CAEbDrgmB4vZ0TPrD2-_-vR8bDwYXLKL2fMdNzFZWGsoiK9ZBDQ@mail.gmail.com>
+ <53137581.5060600@xenomai.org>
+ <CAEbDrg=2nX1kKOGt6i7b-w5AsLXkEyoJCGUMw1dkMXvka4MeKw@mail.gmail.com>
+ <53137F18.3020409@xenomai.org> <531380BA.70006@xenomai.org>
+Date: Sun, 2 Mar 2014 19:08:59 +0000
+Message-ID: <CAEbDrg=NkOMjtnqH623q_f4c6c6Hsm+OmqHhSgA02+cgPt0DLA@mail.gmail.com>
+From: Gregory Dymarek <gregd72002@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] RaspberryPi kernel 3.8 issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,103 +32,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wojciech Domski <wojciech.domski@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 03/25/2014 01:14 PM, Wojciech Domski wrote:
-> W dniu 25.03.2014 12:58, Gilles Chanteperdrix pisze:
->> On 03/25/2014 12:54 PM, Wojciech Domski wrote:
->>> W dniu 25.03.2014 12:36, Gilles Chanteperdrix pisze:
->>>> On 03/25/2014 12:28 PM, Wojciech Domski wrote:
->>>>> W dniu 25.03.2014 12:16, Gilles Chanteperdrix pisze:
->>>>>> On 03/25/2014 11:26 AM, Wojciech Domski wrote:
->>>>>>> W dniu 24.03.2014 13:19, Gilles Chanteperdrix pisze:
->>>>>>>> The solution which would be acceptable is not to have busy waits, except
->>>>>>>> for very short durations. But for instance transferring a byte on I2C
->>>>>>>> takes around 20us at 400 kHz, a 20us masking section is unacceptable.
->>>>>>>> rtdm_task_busy_sleep, as the name suggests is a busy wait loop, so, no,
->>>>>>>> it is not acceptable either.
->>>>>>>>
->>>>>>>> Use a thread or a timer to reschedule while you wait for the end of the
->>>>>>>> transfer, instead of busy waiting.
->>>>>>> Dear Gilles,
->>>>>>>
->>>>>>> As you mentioned before the driver has few places like this:
->>>>>>>
->>>>>>> while(!FLAG1);
->>>>>>> while(!FLAG2);
->>>>>>>
->>>>>>> Would a solution of creating a separate task for this purpose be ok?
->>>>>>>
->>>>>>> task()
->>>>>>> {
->>>>>>>         while(!FLAG1);
->>>>>>>         while(!FLAG2);
->>>>>>> }
->>>>>> I was rather thinking about rtdm_task_sleep() instead.
->>>>>>
->>>>>>> In the place of those loops a piece of code responsible for creating and
->>>>>>> joining task would be put instead:
->>>>>>>
->>>>>>> rtdm_task_init();
->>>>>>> rtdm_task_join_nrt();
->>>>>> This will not work for code currently running in interrupt handlers. An
->>>>>> interrupt handler can not call rtdm_task_join_nrt(). You will rather
->>>>>> have to wake up the thread, not reenabling the interrupt at the end of
->>>>>> the handler, and reenable the interrupt in the thread when the job is
->>>>>> done. Or alternatively, fire a timer instead of waking up a thread.
->>>>>>
->>>>>>
->>>>> Dear Gilles,
->>>>>
->>>>> If what I have understood correctly, basically what you mean is changing:
->>>>>
->>>>> while(!FLAG) ;
->>>>>
->>>>> into
->>>>>
->>>>> while(!FLAG)
->>>>>        rtdm_task_sleep();
->>>>>
->>>>> Xenomai's documentation that rtdm_task_sleep() can be always
->>>>> rescheduled. In my opinion
->>>>> this solution is sufficient and meets Xenomai requirements.
->>>> This solution will not work if the busy loop was in an irq handler. You
->>>> can not call rtdm_task_sleep from the context of an irq handler.
->>>>
->>>>
->>> Ok, now I get your point.
->>>
->>> However, what do you mean exactly by rescheduling while waiting? Do you
->>> mean something like
->>> putting all irq services into another thread and only in irq handler
->>> notify the separate thread
->>> to do the job accordingly?
->> Well, I do not know exactly, I have not looked at the details of the
->> driver, you are supposed to do that. But you may be able to split the
->> interrupt code in two parts: a first part that will run in interrupt
->> mode, and a second part that will run as a thread. The irq handler would
->> wake the thread up at the end of the first part, and return without
->> reenabling the interrupt at interrupt controller level. The thread would
->> execute, sleep during the I2C transfers as needed, and reenable the
->> interrupt before going back to sleep.
->>
->>
-> So would it be a good practise to create a new task for irq service with
-> 
-> rtdm_task_init();
-> 
-> inside attach function and join it with
-> 
-> rtdm_task_join_nrt();
-> 
-> inside detach function?
+Understood. I will have a look.
 
-I do not know the details about analogy drivers, so, again, it is left
-to you to read other analogy drivers and see where is the best place to
-do what you want to do.
+I'll be getting kernel 3.10 in a moment. It looks like USB driver is
+different to the one in 3.8.
+Will see what it does.
+
+Overall, there has been a lot of debate around the USB driver on this SOC
+so you might be right that the driver is not working as it is supposed to.
+Not yet at least.
 
 
--- 
-                                                                Gilles.
 
+On 2 March 2014 19:04, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+
+> On 03/02/2014 07:57 PM, Gilles Chanteperdrix wrote:
+> > On 03/02/2014 07:54 PM, Gregory Dymarek wrote:
+> >> This works!!
+> >>
+> >> I thought xenomai does not deal with fiq. Why is it required to enable
+> them
+> >> in the driver when having xenomai on?
+> >
+> > Because without CONFIG_IPIPE local_irq_restore deals with FIQs
+> > With CONFIG_IPIPE local_irq_restore does not deal with FIQs
+> >
+> > We can of course rework local_irq_restore to take into account FIQs with
+> > CONFIG_IPIPE, but that would make local_irq_restore heavier in a lot of
+> > places, whereas there are in fact only three spots to fix, for only one
+> SOC.
+> >
+> >
+> BTW, using FIQs for USB means that USB activity will be able to
+> influence xenomai latencies. So, it is really not recommended, if there
+> is a configuration option for disabling the use of FIQ with this driver,
+> this should be recommended for use with xenomai.
+>
+> --
+>                                                                 Gilles.
+>
