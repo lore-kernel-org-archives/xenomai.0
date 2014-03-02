@@ -1,21 +1,30 @@
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Date: Thu, 20 Mar 2014 15:04:34 +0000
-From: Wolfgang Grandegger <wg@grandegger.com>
-In-Reply-To: <1395322305.1566.YahooMailNeo@web163504.mail.gq1.yahoo.com>
-References: <4C58E39DE6620348B85D78E601C268AF437ABD@srv-exchang2-mi.jerviswebb.com>, 
- <201402142329.10853.paul_c@tuxcnc.org>
- <4C58E39DE6620348B85D78E601C268AF438358@srv-exchang2-mi.jerviswebb.com>
- <1392655777.26562.YahooMailNeo@web163503.mail.gq1.yahoo.com>
- <53026F63.5080403@grandegger.com>
- <1392760838.41780.YahooMailNeo@web163505.mail.gq1.yahoo.com>
- <d3241e64b0ad1946aaa3952553fe354f@grandegger.com>
- <1392847535.52577.YahooMailNeo@web163501.mail.gq1.yahoo.com>
- <3a692b55821a5a04d7b55253388edeaf@grandegger.com>
- <1395322305.1566.YahooMailNeo@web163504.mail.gq1.yahoo.com>
-Message-ID: <1369ea7dd64955631e1c5ed5bf3c573f@grandegger.com>
-Subject: Re: [Xenomai] CAN ISA support
+In-Reply-To: <CAEbDrg=2nX1kKOGt6i7b-w5AsLXkEyoJCGUMw1dkMXvka4MeKw@mail.gmail.com>
+References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
+ <530D0205.9050406@xenomai.org>
+ <CAEbDrgmwch94crHAcrbJDj9MxaiBNaYeLH2U9NtS0tuJKmdDDw@mail.gmail.com>
+ <530D0BBD.6070704@xenomai.org>
+ <CAK4EZFR_L+=-LtSVHkvZ36rPOA8ViVboB9M9rf4Yqk=crfBotw@mail.gmail.com>
+ <CAEbDrgk=yrGq8KdpdN8e7RtO7qUpWTtwRXhrg0A0=KbDjqoDng@mail.gmail.com>
+ <530D2C92.9010607@xenomai.org>
+ <CAEbDrgkWZqSxjCUfjR3YCp=YOzh1r-=YC6Wyr-Jvk9d7JYEcmQ@mail.gmail.com>
+ <530E6159.4050204@xenomai.org>
+ <CAEbDrgmo==15Zar2X=yz=wBL3pJ4DOiqKy2xx43UPxuu6_5LhA@mail.gmail.com>
+ <530F17EC.6020204@xenomai.org>
+ <CAEbDrgnq46OJ6bi1FCQmC8JBWhSA6o=M9K=fg4x4hq3JpwcBjw@mail.gmail.com>
+ <530F9CA2.2040601@xenomai.org>
+ <CAEbDrgmLq08Xq5Cgt7oXX3koQDr+HVx_JS-7Nn_pC53rmTTV-g@mail.gmail.com>
+ <531075E7.7060107@xenomai.org>
+ <CAEbDrgmQNRjaTEm5TvM93Yy3k+fa+QRETFzXdM3bz8=-N15DPQ@mail.gmail.com>
+ <53134A2E.1000406@xenomai.org>
+ <CAEbDrgmB4vZ0TPrD2-_-vR8bDwYXLKL2fMdNzFZWGsoiK9ZBDQ@mail.gmail.com>
+ <53137581.5060600@xenomai.org>
+ <CAEbDrg=2nX1kKOGt6i7b-w5AsLXkEyoJCGUMw1dkMXvka4MeKw@mail.gmail.com>
+Date: Sun, 2 Mar 2014 18:55:43 +0000
+Message-ID: <CAEbDrgmpCpP_BFf0NsjEi+doPbk-9OGvtk5-a=_ooW6oh9T85g@mail.gmail.com>
+From: Gregory Dymarek <gregd72002@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] RaspberryPi kernel 3.8 issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,91 +33,9 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wayne Ross <mr_trekkie@yahoo.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Thu, 20 Mar 2014 06:31:45 -0700 (PDT), Wayne Ross
-<mr_trekkie@yahoo.com> wrote:
-> On Thursday, February 20, 2014 2:47 AM Wolfgang Grandegger wrote:
->> Am Mi, 19.02.2014, 23:05 schrieb Wayne Ross:
->>> On Wednesday, February 19, 2014 3:16 AM Wolfgang Grandegger wrote:
->>>> Am Di, 18.02.2014, 23:00 schrieb Wayne Ross:
->>>>> On Monday, February 17, 2014 3:21 PM, Wolfgang Grandegger
->>>>> <wg@grandegger.com> wrote:
-> ...
->>>>> dmesg shows new activity: 
-> 
->>>>> rtcan0: real bitrate 250000, sampling point 87.5%
->>>>> rtcan_sja_set_bit_time: btr0=0x1 btr1=0x1c
->>>>> rtcan1: real bitrate 250000, sampling point 87.5%
->>>>> rtcan_sja_set_bit_time: btr0=0x1 btr1=0x9c
->>>>
->>>> That's strange. "btr1" should here be "0x1c" as well.
->>>>
->>> *Most* times I start after boot, BOTH report btr1=0x9c...
->>> One boot I saw the values swapped.
->>
->> That's wired == not OK! btr1 should always be "0x1c".
->>
->> Wolfgang.
->  
-> Researching
-> this some more, I *think* I have tracked down this behavior to an
-> uninitialized variable in the file ksrc/drivers/can/rtcan_raw_dev.c,
-> routine
-> rtcan_cal_bit_time(): this function is called by rtcan_ioctl_dev_set(),
-> passing a can_bittime pointer.  At the end of rtcan_calc_bit_time, 5
-> members of that structure (bt) are filled out, not touching 1 value
-(sam,
-> a single bit) leaving it uninitialized.  I don't see any
-> initialization of that structure in the calling routine either. 
-> 
-> 
-> I
-> see the alternate Kernel configuration of
-> CONFIG_XENO_DRIVERS_CAN_CALC_BITTIME_OLD earlier in the file always sets
-> this
-> value to 0.
-> 
->  I
-> cannot see any reason to have this value unset for the STD
-> calculation. 
-> 
-> include/rtdm/rtcan.h describes this bit as "enable triple sampling",
-which
-> is probably available
-> for a custom timing. 
-> 
-> So, I
-> propose the following change:
-> diff --git a/ksrc/drivers/can/rtcan_raw_dev.c
-> b/ksrc/drivers/can/rtcan_raw_dev.c
-> index c5fd1b6..d305bab 100644
-> --- a/ksrc/drivers/can/rtcan_raw_dev.c
-> +++ b/ksrc/drivers/can/rtcan_raw_dev.c
-> @@ -219,6 +219,7 @@ static int rtcan_calc_bit_time(struct rtcan_device
-> *dev,
->      bt->phase_seg1 = tseg1 - bt->prop_seg;
->      bt->phase_seg2 = tseg2;
->      bt->sjw = 1;
-> +    bt->sam = 0;
->      bt->brp = best_brp;
->  
->      /* real bit-rate */
-> 
->
+This works!!
 
-Acked-by: Wolfgang Grandegger <wg@grandegger.com>
- 
-> With this change I have confirmed rtcanconfig *always* yields the *same*
-> result for btr1 (0x1c):
-> rtcan0: real bitrate 250000, sampling point 87.5%
-> rtcan_sja_set_bit_time: btr0=0x1 btr1=0x1c
-
-Good catch!
-
-Thanks,
-
-Wolfgang.
-
-
+I thought xenomai does not deal with fiq. Why is it required to enable them
+in the driver when having xenomai on?
