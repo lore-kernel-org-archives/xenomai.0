@@ -1,14 +1,29 @@
-References: <1394996997.10478.YahooMailNeo@web171605.mail.ir2.yahoo.com>
- <5326AE7E.3050201@xenomai.org> 
-Message-ID: <1395076680.34261.YahooMailNeo@web171604.mail.ir2.yahoo.com>
-Date: Mon, 17 Mar 2014 17:18:00 +0000 (GMT)
-From: Matthias Schneider <ma30002000@yahoo.de>
-In-Reply-To: <5326AE7E.3050201@xenomai.org>
+Message-ID: <53137581.5060600@xenomai.org>
+Date: Sun, 02 Mar 2014 19:16:33 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Issue suspending threads on mercury
-Reply-To: Matthias Schneider <ma30002000@yahoo.de>
+References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
+ <530D0205.9050406@xenomai.org>
+ <CAEbDrgmwch94crHAcrbJDj9MxaiBNaYeLH2U9NtS0tuJKmdDDw@mail.gmail.com>
+ <530D0BBD.6070704@xenomai.org>
+ <CAK4EZFR_L+=-LtSVHkvZ36rPOA8ViVboB9M9rf4Yqk=crfBotw@mail.gmail.com>
+ <CAEbDrgk=yrGq8KdpdN8e7RtO7qUpWTtwRXhrg0A0=KbDjqoDng@mail.gmail.com>
+ <530D2C92.9010607@xenomai.org>
+ <CAEbDrgkWZqSxjCUfjR3YCp=YOzh1r-=YC6Wyr-Jvk9d7JYEcmQ@mail.gmail.com>
+ <530E6159.4050204@xenomai.org>
+ <CAEbDrgmo==15Zar2X=yz=wBL3pJ4DOiqKy2xx43UPxuu6_5LhA@mail.gmail.com>
+ <530F17EC.6020204@xenomai.org>
+ <CAEbDrgnq46OJ6bi1FCQmC8JBWhSA6o=M9K=fg4x4hq3JpwcBjw@mail.gmail.com>
+ <530F9CA2.2040601@xenomai.org>
+ <CAEbDrgmLq08Xq5Cgt7oXX3koQDr+HVx_JS-7Nn_pC53rmTTV-g@mail.gmail.com>
+ <531075E7.7060107@xenomai.org>
+ <CAEbDrgmQNRjaTEm5TvM93Yy3k+fa+QRETFzXdM3bz8=-N15DPQ@mail.gmail.com>
+ <53134A2E.1000406@xenomai.org>
+ <CAEbDrgmB4vZ0TPrD2-_-vR8bDwYXLKL2fMdNzFZWGsoiK9ZBDQ@mail.gmail.com>
+In-Reply-To: <CAEbDrgmB4vZ0TPrD2-_-vR8bDwYXLKL2fMdNzFZWGsoiK9ZBDQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] RaspberryPi kernel 3.8 issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,33 +32,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gregory Dymarek <gregd72002@gmail.com>
+Cc: xenomai@xenomai.org
 
-> On Monday, March 17, 2014 9:12 AM, Philippe Gerum <rpm@xenomai.org> wrote=
-:=0A=0A> > On 03/16/2014 08:09 PM, Matthias Schneider wrote:=0A>>=A0 Hi all=
-,=0A>> =0A>>=A0 I am experiencing a problem with xenomai-forge (recent "nex=
-t" checkout) on=0A>>=A0 Mercury (on top of a 3.12.9+CONFIG_PREEMPT_RT on x8=
-6) when suspending=0A>>=A0 tasks/threads.=0A>> =0A>>=A0 As far=A0 as I unde=
-rstand, the mercury implementation sends a signal to the thread=0A>>=A0 to =
-be suspended, with that threads signal handler setting the suspended state,=
-=0A>>=A0 i.e. the setting of __THREAD_S_SUSPENDED happens in notifier_callb=
-ack, which=0A>>=A0 seems to be different from the cobalt implementation.=0A=
->> =0A>>=A0 The problem I am experiencing is that sometimes the signal hand=
-ler never seems=0A>>=A0 to get called in a thread that should be suspended,=
-=A0 i.e. that thread suspension=0A>>=A0 sometimes simply does not work.=0A>=
->=A0 The following example code (for the vxworks skin) reproduces the issue=
- (it gets=0A>>=A0 stuck in the loop waiting for the WIND_SUSPEND flag):=0A>=
-> =0A>>=A0 http://www.pastebin.ca/2667435=0A> =0A> Could you check this URL=
-? I can't seem to find anything pasted there.=0A> =0A> =0A>> =0A>>=A0 Any h=
-ints on how I can continue investigating this issue?=0A>> =0A> =0A> Running=
- the test suite in lib/vxworks/testsuite may give us more =0A> information.=
- sem-1, sem-2, task-2 and wd-1 are all using the =0A> suspend/resume mechan=
-ism.=0A> =0A> -- =0A> Philippe.=0A>=0A=0AHi all,=0A=0Aplease find another c=
-opy of the example code at:=0A=0Ahttp://pastebin.com/rNGDfR2b=0A=0A=0AThe s=
-cenario described by Kim when using gdb may coincide with ocurrence=A0=0Aof=
- the issue all the time when using gdb on my system. However,=A0=0Aalso wit=
-hout gdb it happens from time to time (several 10000s cycles=A0=0Aof the co=
-de above).=0A=0AThe enclosed test code from vxworks/testsuite seems to work=
- when executing it once,=A0=0Abut note that the issue only happens from tim=
-e to time (thats why I added the sample=A0=0Acode).=0A=0AMatthias
+On 03/02/2014 06:26 PM, Gregory Dymarek wrote:
+> So I started from scratch, have not used any xenomai/ipipe patches. But
+> used the same .config.
+> As a result all worked fine. The USB device is getting initialized
+> correctly.
+> 
+> So the current situation is that xenomai does work on 3.2 but does not on
+> 3.8 because of some USB driver issues.
+> I diff'ed the code for dwc_otg_hcd_handle_intr and this has changed.
+> What is intriguing:
+> https://github.com/raspberrypi/linux/blob/rpi-3.8.y/drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c#L530
+> 
+> // We should be OK doing this because the common interrupts should already
+> have been serviced
+> 
+> So I removed all the DEBUG code from this function, but this did not help
+> either. Not sure if my test is valid in here.
+
+If the driver relies on FIQ to work (which is a bad idea with Xenomai, 
+as it will cause an increase in latencies), the following construction:
+
+
+local_irq_save(flags);
+local_fiq_disable();
+
+/* do something */
+
+local_irq_restore(flags);
+
+Will mask the FIQ with CONFIG_IPIPE whereas local_irq_restore unmasks 
+both the IRQ and FIQ without CONFIG_IPIPE. 
+
+So, as a last try before giving up, could you try the following patch?
+
+diff --git a/drivers/usb/host/dwc_common_port/dwc_common_linux.c b/drivers/usb/host/dwc_common_port/dwc_common_linux.c
+index 0812d3a..6d01261 100644
+--- a/drivers/usb/host/dwc_common_port/dwc_common_linux.c
++++ b/drivers/usb/host/dwc_common_port/dwc_common_linux.c
+@@ -585,6 +585,7 @@ void DWC_MODIFY_REG32(uint32_t volatile *reg, uint32_t clear_mask, uint32_t set_
+ 	local_irq_save(flags);
+ 	local_fiq_disable();
+ 	writel((readl(reg) & ~clear_mask) | set_mask, reg);
++	local_fiq_enable();
+ 	local_irq_restore(flags);
+ }
+ 
+diff --git a/drivers/usb/host/dwc_otg/dwc_otg_cil_intr.c b/drivers/usb/host/dwc_otg/dwc_otg_cil_intr.c
+index b5a007d..10eead2 100644
+--- a/drivers/usb/host/dwc_otg/dwc_otg_cil_intr.c
++++ b/drivers/usb/host/dwc_otg/dwc_otg_cil_intr.c
+@@ -1354,6 +1354,7 @@ static inline uint32_t dwc_otg_read_common_intr(dwc_otg_core_if_t * core_if, gin
+ 		gintmsk.d32 |= gintmsk_common.d32;
+ 		gintsts_saved.d32 &= ~gintmsk_common.d32;
+ 		reenable_gintmsk->d32 = gintmsk.d32;
++		local_fiq_enable();
+ 		local_irq_restore(flags);
+ 	}
+ 
+diff --git a/drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c b/drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c
+index 7d521d9..86d9cbe 100644
+--- a/drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c
++++ b/drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c
+@@ -97,6 +97,7 @@ void notrace _fiq_print(FIQDBG_T dbg_lvl, char *fmt, ...)
+ 		memcpy(buffer + wptr, text, 16);
+ 		wptr = (wptr + 16) % sizeof(buffer);
+ 	}
++	local_fiq_enable();
+ 	local_irq_restore(flags);
+ }
+ #endif
+
+
+-- 
+                                                                Gilles.
 
