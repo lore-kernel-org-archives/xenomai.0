@@ -1,12 +1,11 @@
-Message-ID: <5316DA0C.9090502@xenomai.org>
-Date: Wed, 05 Mar 2014 09:02:20 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <53174F44.6000309@sigmatek.at>
+Date: Wed, 05 Mar 2014 17:22:28 +0100
+From: Johann Obermayr <johann.obermayr@sigmatek.at>
 MIME-Version: 1.0
-References: <C2E8B18D-18DA-4EB6-9E92-7CD39319979E@tuebingen.mpg.de>
-In-Reply-To: <C2E8B18D-18DA-4EB6-9E92-7CD39319979E@tuebingen.mpg.de>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] real-time guarantee issues on xenomai 2.6.2.1
+Subject: [Xenomai] xenomai , irq and pci
+Reply-To: johann.obermayr@sigmatek.at
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,22 +14,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Alexander Herzog <aherzog@tuebingen.mpg.de>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/04/2014 08:55 PM, Alexander Herzog wrote:
-> Hi,
-> 
-> We have some real-time issues with our xenomai machine running Ubuntu
-> 12.04 with kernel version 3.5.7 patched with Xenomai 2.6.2.1 .
+Hello,
 
-Hi,
+celeron dual core with PCIe - PCI bridge
+we use kernel 3.10.xx smp with  (isolcpus=0)
+smi is disabled.
+xenomai 2.6.3
 
-do you get the same issues with the "latency" test and with Xenomai
-2.6.3? On what hardware do you observe this?
+we have a pci card with a fpga (with irq) and sram.
 
-Regards.
+we have 2 task running.
 
--- 
-                                                                Gilles.
+task0 is one high prior in primary domain on core0.
+this task wait for event, that is fired by fpga irq.
+than this task will make some pci accesses to the fpga.
+
+the other task (task1) is a shadow task, but running in secondary domain 
+on core 1.
+This task make many big memcpy to sram.
+
+in the ipipe_handler_irq we have a function callback.
+a small driver hooks to this callback add make some tracepoint into
+a shared memory.
+
+with the trace we see some time a very high jitter in the ipipe_handler_irq
+function (around 250 us).
+has anyone an explanation for this?
+
+and a 4 byte access from task0 to fpga need more than 300us,
+  while task1 is writing to sram.
+
+Thanks
+   Johann
+
+
 
