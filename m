@@ -1,10 +1,11 @@
-Message-ID: <5318D04F.3090701@sigmatek.at>
-Date: Thu, 06 Mar 2014 20:45:19 +0100
+Message-ID: <5318D231.9050008@sigmatek.at>
+Date: Thu, 06 Mar 2014 20:53:21 +0100
 From: Johann Obermayr <johann.obermayr@sigmatek.at>
 MIME-Version: 1.0
 References: <53174F44.6000309@sigmatek.at> <5317539C.5040700@xenomai.org>
  <5318310E.1030002@sigmatek.at> <5318CA7D.9020505@xenomai.org>
-In-Reply-To: <5318CA7D.9020505@xenomai.org>
+ <5318D021.8020802@sigmatek.at> <5318D0B3.4020900@xenomai.org>
+In-Reply-To: <5318D0B3.4020900@xenomai.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] xenomai , irq and pci
@@ -19,64 +20,58 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Am 06.03.2014 20:20, schrieb Gilles Chanteperdrix:
-> On 03/06/2014 09:25 AM, Johann Obermayr wrote:
->> Am 05.03.2014 17:41, schrieb Gilles Chanteperdrix:
->>> On 03/05/2014 05:22 PM, Johann Obermayr wrote:
->>>> Hello,
+Am 06.03.2014 20:46, schrieb Gilles Chanteperdrix:
+> On 03/06/2014 08:44 PM, Johann Obermayr wrote:
+>> Am 06.03.2014 20:20, schrieb Gilles Chanteperdrix:
+>>> On 03/06/2014 09:25 AM, Johann Obermayr wrote:
+>>>> Am 05.03.2014 17:41, schrieb Gilles Chanteperdrix:
+>>>>> On 03/05/2014 05:22 PM, Johann Obermayr wrote:
+>>>>>> Hello,
+>>>>>>
+>>>>>> celeron dual core with PCIe - PCI bridge
+>>>>>> we use kernel 3.10.xx smp with  (isolcpus=0)
+>>>>>> smi is disabled.
+>>>>>> xenomai 2.6.3
+>>>>>>
+>>>>>> we have a pci card with a fpga (with irq) and sram.
+>>>>>>
+>>>>>> we have 2 task running.
+>>>>>>
+>>>>>> task0 is one high prior in primary domain on core0.
+>>>>>> this task wait for event, that is fired by fpga irq.
+>>>>>> than this task will make some pci accesses to the fpga.
+>>>>>>
+>>>>>> the other task (task1) is a shadow task, but running in secondary domain
+>>>>>> on core 1.
+>>>>>> This task make many big memcpy to sram.
+>>>>>>
+>>>>>> in the ipipe_handler_irq we have a function callback.
+>>>>>> a small driver hooks to this callback add make some tracepoint into
+>>>>>> a shared memory.
+>>>>>>
+>>>>>> with the trace we see some time a very high jitter in the ipipe_handler_irq
+>>>>>> function (around 250 us).
+>>>>>> has anyone an explanation for this?
+>>>>>>
+>>>>>> and a 4 byte access from task0 to fpga need more than 300us,
+>>>>>>      while task1 is writing to sram.
+>>>>> Maybe the problem is the size of the PCI burst when writing to the SRAM?
+>>>>> How large is it? If the sram is mapped with "write-combine", it will be
+>>>>> buffered and written in large bursts. Maybe you could try mapping the
+>>>>> sram area uncached?
+>>>>>
+>>>> Hi,
 >>>>
->>>> celeron dual core with PCIe - PCI bridge
->>>> we use kernel 3.10.xx smp with  (isolcpus=0)
->>>> smi is disabled.
->>>> xenomai 2.6.3
->>>>
->>>> we have a pci card with a fpga (with irq) and sram.
->>>>
->>>> we have 2 task running.
->>>>
->>>> task0 is one high prior in primary domain on core0.
->>>> this task wait for event, that is fired by fpga irq.
->>>> than this task will make some pci accesses to the fpga.
->>>>
->>>> the other task (task1) is a shadow task, but running in secondary domain
->>>> on core 1.
->>>> This task make many big memcpy to sram.
->>>>
->>>> in the ipipe_handler_irq we have a function callback.
->>>> a small driver hooks to this callback add make some tracepoint into
->>>> a shared memory.
->>>>
->>>> with the trace we see some time a very high jitter in the ipipe_handler_irq
->>>> function (around 250 us).
->>>> has anyone an explanation for this?
->>>>
->>>> and a 4 byte access from task0 to fpga need more than 300us,
->>>>     while task1 is writing to sram.
->>> Maybe the problem is the size of the PCI burst when writing to the SRAM?
->>> How large is it? If the sram is mapped with "write-combine", it will be
->>> buffered and written in large bursts. Maybe you could try mapping the
->>> sram area uncached?
->>>
->> Hi,
->>
->> we use 2 real cores, no HT.
->> task1 do a memcpy with 10000 bytes.
-> have you tried splitting the copy in smaller chunks, and use a mutex for
-> exclusion between the two threads?
-That can we do.
-Only in our testsystem, but in customer application, we have no way to 
-change this.
->> For mapping we use, rtdm_iomap_to_user
->> rval = rtdm_iomap_to_user(user_info, lv.phys_addr, lv.len, PROT_READ |
->> PROT_WRITE, &lv.virt_addr, NULL, NULL);
-> You may want to try the following patch:
+>>>> we use 2 real cores, no HT.
+>>>> task1 do a memcpy with 10000 bytes.
+>>> have you tried splitting the copy in smaller chunks, and use a mutex for
+>>> exclusion between the two threads?
+>> That can we do.
+>> Only in our testsystem, but in customer application, we have no way to
+>> change this.
+> Ok, I suppose you can change the FPGA then? Have you tried to make the
+> BAR with the SRAM appear as register intead of memory?
 >
-> http://git.xenomai.org/xenomai-2.6.git/commit/?id=1b8fb14e486ac0604e44067a0f1f89dc14153e95
->
->
-we will test this.
-
-Thanks,
-   Johann
+i'll talk to the fpga department.
 
 
