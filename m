@@ -1,12 +1,14 @@
-Message-ID: <5318CACD.1020102@xenomai.org>
-Date: Thu, 06 Mar 2014 20:21:49 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5318D04F.3090701@sigmatek.at>
+Date: Thu, 06 Mar 2014 20:45:19 +0100
+From: Johann Obermayr <johann.obermayr@sigmatek.at>
 MIME-Version: 1.0
-References: <1394099202.26562.YahooMailNeo@web163902.mail.gq1.yahoo.com>
-In-Reply-To: <1394099202.26562.YahooMailNeo@web163902.mail.gq1.yahoo.com>
-Content-Type: text/plain; charset=UTF-8
+References: <53174F44.6000309@sigmatek.at> <5317539C.5040700@xenomai.org>
+ <5318310E.1030002@sigmatek.at> <5318CA7D.9020505@xenomai.org>
+In-Reply-To: <5318CA7D.9020505@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] process behaviour when running xenomai
+Subject: Re: [Xenomai] xenomai , irq and pci
+Reply-To: johann.obermayr@sigmatek.at
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,29 +17,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Huub Van Niekerk <huubvanniekerk@yahoo.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/06/2014 10:46 AM, Huub Van Niekerk wrote:
-> Hi,
-> 
-> I'm running Xenomai 2.6.3 with kernel 3.10.18 now on BeagleBoard-Xm
-> Rev. C and experience this behaviour: when I try to install packages
-> from commandline, the installation manager starts quick and reads the
-> package(s), but after that it stays dead quiet like it's frozen. ps
-> -ef shows it's just going on, no defunc or anything like that. Also,
-> when I want to watch the processes using top, it starts, but nothing
-> shows. When I want to end it, Ctl-C gives no response giving me no
-> other option than to use kill. Is this a known behaviour when running
-> Xenomai ?
+Am 06.03.2014 20:20, schrieb Gilles Chanteperdrix:
+> On 03/06/2014 09:25 AM, Johann Obermayr wrote:
+>> Am 05.03.2014 17:41, schrieb Gilles Chanteperdrix:
+>>> On 03/05/2014 05:22 PM, Johann Obermayr wrote:
+>>>> Hello,
+>>>>
+>>>> celeron dual core with PCIe - PCI bridge
+>>>> we use kernel 3.10.xx smp with  (isolcpus=0)
+>>>> smi is disabled.
+>>>> xenomai 2.6.3
+>>>>
+>>>> we have a pci card with a fpga (with irq) and sram.
+>>>>
+>>>> we have 2 task running.
+>>>>
+>>>> task0 is one high prior in primary domain on core0.
+>>>> this task wait for event, that is fired by fpga irq.
+>>>> than this task will make some pci accesses to the fpga.
+>>>>
+>>>> the other task (task1) is a shadow task, but running in secondary domain
+>>>> on core 1.
+>>>> This task make many big memcpy to sram.
+>>>>
+>>>> in the ipipe_handler_irq we have a function callback.
+>>>> a small driver hooks to this callback add make some tracepoint into
+>>>> a shared memory.
+>>>>
+>>>> with the trace we see some time a very high jitter in the ipipe_handler_irq
+>>>> function (around 250 us).
+>>>> has anyone an explanation for this?
+>>>>
+>>>> and a 4 byte access from task0 to fpga need more than 300us,
+>>>>     while task1 is writing to sram.
+>>> Maybe the problem is the size of the PCI burst when writing to the SRAM?
+>>> How large is it? If the sram is mapped with "write-combine", it will be
+>>> buffered and written in large bursts. Maybe you could try mapping the
+>>> sram area uncached?
+>>>
+>> Hi,
+>>
+>> we use 2 real cores, no HT.
+>> task1 do a memcpy with 10000 bytes.
+> have you tried splitting the copy in smaller chunks, and use a mutex for
+> exclusion between the two threads?
+That can we do.
+Only in our testsystem, but in customer application, we have no way to 
+change this.
+>> For mapping we use, rtdm_iomap_to_user
+>> rval = rtdm_iomap_to_user(user_info, lv.phys_addr, lv.len, PROT_READ |
+>> PROT_WRITE, &lv.virt_addr, NULL, NULL);
+> You may want to try the following patch:
+>
+> http://git.xenomai.org/xenomai-2.6.git/commit/?id=1b8fb14e486ac0604e44067a0f1f89dc14153e95
+>
+>
+we will test this.
 
-It seems that you have a lot of things enabled in your kernel
-configuration, could you post the kernel configuration somewhere?
+Thanks,
+   Johann
 
-Have you tried the exact same configuration, only without xenomai?
-
-Regards.
-
--- 
-                                                                Gilles.
 
