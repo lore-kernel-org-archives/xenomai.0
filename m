@@ -1,10 +1,9 @@
-Message-ID: <5319C7CA.1030701@xenomai.org>
-Date: Fri, 07 Mar 2014 14:21:14 +0100
+Message-ID: <5319F47D.3080906@xenomai.org>
+Date: Fri, 07 Mar 2014 17:31:57 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <1394099202.26562.YahooMailNeo@web163902.mail.gq1.yahoo.com>
- <53199C18.40508@reliableembeddedsystems.com>
-In-Reply-To: <53199C18.40508@reliableembeddedsystems.com>
+In-Reply-To: <1394099202.26562.YahooMailNeo@web163902.mail.gq1.yahoo.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] process behaviour when running xenomai
@@ -16,36 +15,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Robert Berger <gmane@reliableembeddedsystems.com>
-Cc: xenomai@xenomai.org
+To: Huub Van Niekerk <huubvanniekerk@yahoo.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/07/2014 11:14 AM, Robert Berger wrote:
+On 03/06/2014 10:46 AM, Huub Van Niekerk wrote:
 > Hi,
 > 
-> On 03/06/2014 11:46 AM, Huub Van Niekerk wrote:
->> Hi,
->>
->> I'm running Xenomai 2.6.3 with kernel 3.10.18 now on BeagleBoard-Xm Rev. C and experience this behaviour: when I try to install packages from commandline, the installation manager starts quick and reads the package(s), but after that it stays dead quiet like it's frozen. ps -ef shows it's just going on, no defunc or anything like that. Also, when I want to watch the processes using top, it starts, but nothing shows. When I want to end it, Ctl-C gives no response giving me no other option than to use kill. Is this a known behaviour when running Xenomai ?
-> 
-> I tried something similar (just took the patch from the ELDK 5.5) but
-> have some issues:
-> 
-> 1) no network on the beagle-xm and even if I hack my way through with
-> phy_nop it's not getting better
-> 
-> I really would like to boot with a rootfs over nfs and it does not look
-> like this is going to hapen with a 3.10 kernel on a beagle-xm.
+> I'm running Xenomai 2.6.3 with kernel 3.10.18 now on BeagleBoard-Xm
+> Rev. C and experience this behaviour: when I try to install packages
+> from commandline, the installation manager starts quick and reads the
+> package(s), but after that it stays dead quiet like it's frozen. ps
+> -ef shows it's just going on, no defunc or anything like that. Also,
+> when I want to watch the processes using top, it starts, but nothing
+> shows. When I want to end it, Ctl-C gives no response giving me no
+> other option than to use kill. Is this a known behaviour when running
+> Xenomai ?
 
-FWIW, I only test xenomai with tftp + nfs, even the U-boot script is not
-on the board itself. Xenomai 2.6.3 with linux 3.10.18 has been tested on
-the pandaboard, which has exactly the same ethernet chip as beagle-xm
-(from what I see in Huub's dmesg). The only difficulty for me was the
-missing USB transceiver in the kernel configuration.
+Does the access to SD-card work fine? BeagleBone users have reported an 
+issue with the OMAP SD card controller fixed in the 3.12 kernel by this 
+patch:
 
-Generally, before you report a non-working configuration of Xenomai,
-with a certain version of the kernel, please try the exact same kernel
-configuration without Xenomai.
+http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=7472bab236bdee1173412585591329e718f4d324
 
+Patching the kernel with Xenomai made the bug more likely to happen.
 
 -- 
                                                                 Gilles.
