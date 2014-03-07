@@ -1,15 +1,12 @@
-Message-ID: <5318D231.9050008@sigmatek.at>
-Date: Thu, 06 Mar 2014 20:53:21 +0100
-From: Johann Obermayr <johann.obermayr@sigmatek.at>
-MIME-Version: 1.0
-References: <53174F44.6000309@sigmatek.at> <5317539C.5040700@xenomai.org>
- <5318310E.1030002@sigmatek.at> <5318CA7D.9020505@xenomai.org>
- <5318D021.8020802@sigmatek.at> <5318D0B3.4020900@xenomai.org>
-In-Reply-To: <5318D0B3.4020900@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Robert Berger <gmane@reliableembeddedsystems.com>
+Date: Fri, 07 Mar 2014 12:14:48 +0200
+Message-ID: <53199C18.40508@reliableembeddedsystems.com>
+References: <1394099202.26562.YahooMailNeo@web163902.mail.gq1.yahoo.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xenomai , irq and pci
-Reply-To: johann.obermayr@sigmatek.at
+In-Reply-To: <1394099202.26562.YahooMailNeo@web163902.mail.gq1.yahoo.com>
+Subject: Re: [Xenomai] process behaviour when running xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,60 +15,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Am 06.03.2014 20:46, schrieb Gilles Chanteperdrix:
-> On 03/06/2014 08:44 PM, Johann Obermayr wrote:
->> Am 06.03.2014 20:20, schrieb Gilles Chanteperdrix:
->>> On 03/06/2014 09:25 AM, Johann Obermayr wrote:
->>>> Am 05.03.2014 17:41, schrieb Gilles Chanteperdrix:
->>>>> On 03/05/2014 05:22 PM, Johann Obermayr wrote:
->>>>>> Hello,
->>>>>>
->>>>>> celeron dual core with PCIe - PCI bridge
->>>>>> we use kernel 3.10.xx smp with  (isolcpus=0)
->>>>>> smi is disabled.
->>>>>> xenomai 2.6.3
->>>>>>
->>>>>> we have a pci card with a fpga (with irq) and sram.
->>>>>>
->>>>>> we have 2 task running.
->>>>>>
->>>>>> task0 is one high prior in primary domain on core0.
->>>>>> this task wait for event, that is fired by fpga irq.
->>>>>> than this task will make some pci accesses to the fpga.
->>>>>>
->>>>>> the other task (task1) is a shadow task, but running in secondary domain
->>>>>> on core 1.
->>>>>> This task make many big memcpy to sram.
->>>>>>
->>>>>> in the ipipe_handler_irq we have a function callback.
->>>>>> a small driver hooks to this callback add make some tracepoint into
->>>>>> a shared memory.
->>>>>>
->>>>>> with the trace we see some time a very high jitter in the ipipe_handler_irq
->>>>>> function (around 250 us).
->>>>>> has anyone an explanation for this?
->>>>>>
->>>>>> and a 4 byte access from task0 to fpga need more than 300us,
->>>>>>      while task1 is writing to sram.
->>>>> Maybe the problem is the size of the PCI burst when writing to the SRAM?
->>>>> How large is it? If the sram is mapped with "write-combine", it will be
->>>>> buffered and written in large bursts. Maybe you could try mapping the
->>>>> sram area uncached?
->>>>>
->>>> Hi,
->>>>
->>>> we use 2 real cores, no HT.
->>>> task1 do a memcpy with 10000 bytes.
->>> have you tried splitting the copy in smaller chunks, and use a mutex for
->>> exclusion between the two threads?
->> That can we do.
->> Only in our testsystem, but in customer application, we have no way to
->> change this.
-> Ok, I suppose you can change the FPGA then? Have you tried to make the
-> BAR with the SRAM appear as register intead of memory?
->
-i'll talk to the fpga department.
+Hi,
+
+On 03/06/2014 11:46 AM, Huub Van Niekerk wrote:
+> Hi,
+> 
+> I'm running Xenomai 2.6.3 with kernel 3.10.18 now on BeagleBoard-Xm Rev. C and experience this behaviour: when I try to install packages from commandline, the installation manager starts quick and reads the package(s), but after that it stays dead quiet like it's frozen. ps -ef shows it's just going on, no defunc or anything like that. Also, when I want to watch the processes using top, it starts, but nothing shows. When I want to end it, Ctl-C gives no response giving me no other option than to use kill. Is this a known behaviour when running Xenomai ?
+
+I tried something similar (just took the patch from the ELDK 5.5) but
+have some issues:
+
+1) no network on the beagle-xm and even if I hack my way through with
+phy_nop it's not getting better
+
+I really would like to boot with a rootfs over nfs and it does not look
+like this is going to hapen with a 3.10 kernel on a beagle-xm.
+
+3.13.x with fdt works nicely, but there is no Xenomai patch for it;)
+
+> 
+> 
+> Thanks,
+> 
+> hvn
+> 
+
+Regards,
+
+Robert
+
+...For every complex problem there is a solution which is simple, neat
+and wrong. -- H.L. Mencken
+
+My public pgp key is available,at:
+http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x90320BF1
+
 
 
