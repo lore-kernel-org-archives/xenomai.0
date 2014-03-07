@@ -1,5 +1,5 @@
-Message-ID: <5319C250.4050209@xenomai.org>
-Date: Fri, 07 Mar 2014 13:57:52 +0100
+Message-ID: <5319C7CA.1030701@xenomai.org>
+Date: Fri, 07 Mar 2014 14:21:14 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <1394099202.26562.YahooMailNeo@web163902.mail.gq1.yahoo.com>
@@ -32,9 +32,20 @@ On 03/07/2014 11:14 AM, Robert Berger wrote:
 > 
 > 1) no network on the beagle-xm and even if I hack my way through with
 > phy_nop it's not getting better
+> 
+> I really would like to boot with a rootfs over nfs and it does not look
+> like this is going to hapen with a 3.10 kernel on a beagle-xm.
 
-Have you selected an USB transceiver? This is a difference between 3.8
-and 3.10, and is not enabled by default.
+FWIW, I only test xenomai with tftp + nfs, even the U-boot script is not
+on the board itself. Xenomai 2.6.3 with linux 3.10.18 has been tested on
+the pandaboard, which has exactly the same ethernet chip as beagle-xm
+(from what I see in Huub's dmesg). The only difficulty for me was the
+missing USB transceiver in the kernel configuration.
+
+Generally, before you report a non-working configuration of Xenomai,
+with a certain version of the kernel, please try the exact same kernel
+configuration without Xenomai.
+
 
 -- 
                                                                 Gilles.
