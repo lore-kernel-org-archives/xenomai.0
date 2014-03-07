@@ -1,10 +1,10 @@
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Date: Fri,  7 Mar 2014 21:20:34 +0100
-Message-Id: <1394223638-13070-5-git-send-email-gilles.chanteperdrix@xenomai.org>
+Date: Fri,  7 Mar 2014 21:20:33 +0100
+Message-Id: <1394223638-13070-4-git-send-email-gilles.chanteperdrix@xenomai.org>
 In-Reply-To: <1394223638-13070-1-git-send-email-gilles.chanteperdrix@xenomai.org>
 References: <531A29CC.4040201@xenomai.org>
  <1394223638-13070-1-git-send-email-gilles.chanteperdrix@xenomai.org>
-Subject: [Xenomai] [PATCH 5/9] drivers/testing: adapt switchtest after RTDM
+Subject: [Xenomai] [PATCH 4/9] drivers/testing: adapt timerbench after RTDM
 	changes
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,257 +17,235 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 
 ---
- kernel/drivers/testing/switchtest.c |  111 ++++++++++++++---------------------
- 1 file changed, 45 insertions(+), 66 deletions(-)
+ kernel/drivers/testing/timerbench.c |   90 +++++++++++++++--------------------
+ 1 file changed, 39 insertions(+), 51 deletions(-)
 
-diff --git a/kernel/drivers/testing/switchtest.c b/kernel/drivers/testing/switchtest.c
-index f48c4e2..d88625b 100644
---- a/kernel/drivers/testing/switchtest.c
-+++ b/kernel/drivers/testing/switchtest.c
-@@ -511,11 +511,9 @@ static void rtswitch_utask_waker(rtdm_nrtsig_t sig, void *arg)
- 	up(&ctx->utask->nrt_synch);
+diff --git a/kernel/drivers/testing/timerbench.c b/kernel/drivers/testing/timerbench.c
+index efb5ca2..4852703 100644
+--- a/kernel/drivers/testing/timerbench.c
++++ b/kernel/drivers/testing/timerbench.c
+@@ -189,12 +189,11 @@ static void timer_proc(rtdm_timer_t *timer)
+ 	} while (err);
  }
  
--static int rtswitch_open(struct rtdm_dev_context *context,
--			 rtdm_user_info_t *user_info,
--			 int oflags)
-+static int rtswitch_open(struct rtdm_fd *context, int oflags)
+-static int rt_tmbench_open(struct rtdm_dev_context *context,
+-			   rtdm_user_info_t *user_info, int oflags)
++static int rt_tmbench_open(struct rtdm_fd *context, int oflags)
  {
--	rtswitch_context_t *ctx = (rtswitch_context_t *) context->dev_private;
-+	rtswitch_context_t *ctx = rtdm_context_to_private(context);
- 	int err;
+ 	struct rt_tmbench_context *ctx;
  
- 	ctx->tasks = NULL;
-@@ -534,10 +532,9 @@ static int rtswitch_open(struct rtdm_dev_context *context,
+-	ctx = (struct rt_tmbench_context *)context->dev_private;
++	ctx = rtdm_context_to_private(context);
+ 
+ 	ctx->mode = RTTST_TMBENCH_INVALID;
+ 	sema_init(&ctx->nrt_mutex, 1);
+@@ -202,12 +201,11 @@ static int rt_tmbench_open(struct rtdm_dev_context *context,
  	return 0;
  }
  
--static int rtswitch_close(struct rtdm_dev_context *context,
--			  rtdm_user_info_t *user_info)
-+static void rtswitch_close(struct rtdm_fd *context)
+-static int rt_tmbench_close(struct rtdm_dev_context *context,
+-			    rtdm_user_info_t *user_info)
++static void rt_tmbench_close(struct rtdm_fd *context)
  {
--	rtswitch_context_t *ctx = (rtswitch_context_t *) context->dev_private;
-+	rtswitch_context_t *ctx = rtdm_context_to_private(context);
- 	unsigned i;
+ 	struct rt_tmbench_context *ctx;
  
- 	if (ctx->tasks) {
-@@ -556,16 +553,13 @@ static int rtswitch_close(struct rtdm_dev_context *context,
+-	ctx = (struct rt_tmbench_context *)context->dev_private;
++	ctx = rtdm_context_to_private(context);
+ 
+ 	down(&ctx->nrt_mutex);
+ 
+@@ -227,13 +225,10 @@ static int rt_tmbench_close(struct rtdm_dev_context *context,
  	}
- 	rtdm_timer_destroy(&ctx->wake_up_delay);
- 	rtdm_nrtsig_destroy(&ctx->wake_utask);
+ 
+ 	up(&ctx->nrt_mutex);
 -
 -	return 0;
  }
  
--static int rtswitch_ioctl_nrt(struct rtdm_dev_context *context,
--			      rtdm_user_info_t *user_info,
-+static int rtswitch_ioctl_nrt(struct rtdm_fd *context,
- 			      unsigned int request,
- 			      void *arg)
+-static int rt_tmbench_start(struct rtdm_dev_context *context,
++static int rt_tmbench_start(struct rtdm_fd *context,
+ 			    struct rt_tmbench_context *ctx,
+-			    rtdm_user_info_t *user_info,
+ 			    struct rttst_tmbench_config __user *user_config)
  {
--	rtswitch_context_t *ctx = (rtswitch_context_t *) context->dev_private;
-+	rtswitch_context_t *ctx = rtdm_context_to_private(context);
- 	struct rttst_swtest_task task;
- 	struct rttst_swtest_dir fromto;
- 	unsigned long count;
-@@ -588,15 +582,15 @@ static int rtswitch_ioctl_nrt(struct rtdm_dev_context *context,
- 		return 0;
+ 	int err = 0;
+@@ -242,9 +237,9 @@ static int rt_tmbench_start(struct rtdm_dev_context *context,
+ 	struct rttst_tmbench_config *config =
+ 		(struct rttst_tmbench_config *)user_config;
  
- 	case RTTST_RTIOC_SWTEST_REGISTER_UTASK:
--		if (!rtdm_rw_user_ok(user_info, arg, sizeof(task)))
-+		if (!rtdm_rw_user_ok(context, arg, sizeof(task)))
+-	if (user_info) {
++	if (rtdm_context_user_p(context)) {
+ 		if (rtdm_safe_copy_from_user
+-		    (user_info, &config_buf,user_config,
++		    (context, &config_buf,user_config,
+ 		     sizeof(struct rttst_tmbench_config)) < 0)
  			return -EFAULT;
  
--		rtdm_copy_from_user(user_info, &task, arg, sizeof(task));
-+		rtdm_copy_from_user(context, &task, arg, sizeof(task));
+@@ -295,33 +290,28 @@ static int rt_tmbench_start(struct rtdm_dev_context *context,
+ 	rtdm_event_init(&ctx->result_event, 0);
  
- 		err = rtswitch_register_task(ctx, &task);
+ 	if (config->mode == RTTST_TMBENCH_TASK) {
+-		if (!test_bit(RTDM_CLOSING, &context->context_flags)) {
+-			err = rtdm_task_init(&ctx->timer_task, "timerbench",
+-					     timer_task_proc, ctx,
+-					     config->priority, 0);
+-			if (!err)
+-				ctx->mode = RTTST_TMBENCH_TASK;
+-		}
++		err = rtdm_task_init(&ctx->timer_task, "timerbench",
++				timer_task_proc, ctx,
++				config->priority, 0);
++		if (!err)
++			ctx->mode = RTTST_TMBENCH_TASK;
+ 	} else {
+ 		rtdm_timer_init(&ctx->timer, timer_proc,
+-				context->device->device_name);
++				rtdm_context_device(context)->device_name);
  
- 		if (!err)
--			rtdm_copy_to_user(user_info,
-+			rtdm_copy_to_user(context,
- 					  arg,
- 					  &task,
- 					  sizeof(task));
-@@ -604,15 +598,15 @@ static int rtswitch_ioctl_nrt(struct rtdm_dev_context *context,
- 		return err;
+ 		ctx->curr.test_loops = 0;
  
- 	case RTTST_RTIOC_SWTEST_CREATE_KTASK:
--		if (!rtdm_rw_user_ok(user_info, arg, sizeof(task)))
-+		if (!rtdm_rw_user_ok(context, arg, sizeof(task)))
- 			return -EFAULT;
+-		if (!test_bit(RTDM_CLOSING, &context->context_flags)) {
+-			ctx->mode = RTTST_TMBENCH_HANDLER;
++		ctx->mode = RTTST_TMBENCH_HANDLER;
  
--		rtdm_copy_from_user(user_info, &task, arg, sizeof(task));
-+		rtdm_copy_from_user(context, &task, arg, sizeof(task));
+-			RTDM_EXECUTE_ATOMICALLY(
+-				ctx->start_time = rtdm_clock_read_monotonic();
++		RTDM_EXECUTE_ATOMICALLY(
++			ctx->start_time = rtdm_clock_read_monotonic();
  
- 		err = rtswitch_create_ktask(ctx, &task);
+-				/* first event: one millisecond from now. */
+-				ctx->date = ctx->start_time + 1000000;
++			/* first event: one millisecond from now. */
++			ctx->date = ctx->start_time + 1000000;
  
- 		if (!err)
--			rtdm_copy_to_user(user_info,
-+			rtdm_copy_to_user(context,
- 					  arg,
- 					  &task,
- 					  sizeof(task));
-@@ -620,18 +614,18 @@ static int rtswitch_ioctl_nrt(struct rtdm_dev_context *context,
- 		return err;
- 
- 	case RTTST_RTIOC_SWTEST_PEND:
--		if (!rtdm_read_user_ok(user_info, arg, sizeof(task)))
-+		if (!rtdm_read_user_ok(context, arg, sizeof(task)))
- 			return -EFAULT;
- 
--		rtdm_copy_from_user(user_info, &task, arg, sizeof(task));
-+		rtdm_copy_from_user(context, &task, arg, sizeof(task));
- 
- 		return rtswitch_pend_nrt(ctx, task.index);
- 
- 	case RTTST_RTIOC_SWTEST_SWITCH_TO:
--		if (!rtdm_read_user_ok(user_info, arg, sizeof(fromto)))
-+		if (!rtdm_read_user_ok(context, arg, sizeof(fromto)))
- 			return -EFAULT;
- 
--		rtdm_copy_from_user(user_info,
-+		rtdm_copy_from_user(context,
- 				    &fromto,
- 				    arg,
- 				    sizeof(fromto));
-@@ -639,20 +633,20 @@ static int rtswitch_ioctl_nrt(struct rtdm_dev_context *context,
- 		return rtswitch_to_nrt(ctx, fromto.from, fromto.to);
- 
- 	case RTTST_RTIOC_SWTEST_GET_SWITCHES_COUNT:
--		if (!rtdm_rw_user_ok(user_info, arg, sizeof(count)))
-+		if (!rtdm_rw_user_ok(context, arg, sizeof(count)))
- 			return -EFAULT;
- 
- 		count = ctx->switches_count;
- 
--		rtdm_copy_to_user(user_info, arg, &count, sizeof(count));
-+		rtdm_copy_to_user(context, arg, &count, sizeof(count));
- 
- 		return 0;
- 
- 	case RTTST_RTIOC_SWTEST_GET_LAST_ERROR:
--		if (!rtdm_rw_user_ok(user_info, arg, sizeof(ctx->error)))
-+		if (!rtdm_rw_user_ok(context, arg, sizeof(ctx->error)))
- 			return -EFAULT;
- 
--		rtdm_copy_to_user(user_info,
-+		rtdm_copy_to_user(context,
- 				  arg,
- 				  &ctx->error,
- 				  sizeof(ctx->error));
-@@ -664,12 +658,11 @@ static int rtswitch_ioctl_nrt(struct rtdm_dev_context *context,
+-				err =
+-				    rtdm_timer_start(&ctx->timer, ctx->date, 0,
+-						     RTDM_TIMERMODE_ABSOLUTE);
+-			);
+-		}
++			err = rtdm_timer_start(&ctx->timer, ctx->date, 0,
++					RTDM_TIMERMODE_ABSOLUTE);
++					);
  	}
+ 
+ 	up(&ctx->nrt_mutex);
+@@ -330,9 +320,9 @@ static int rt_tmbench_start(struct rtdm_dev_context *context,
  }
  
--static int rtswitch_ioctl_rt(struct rtdm_dev_context *context,
--			     rtdm_user_info_t *user_info,
-+static int rtswitch_ioctl_rt(struct rtdm_fd *context,
- 			     unsigned int request,
- 			     void *arg)
+ static int rt_tmbench_stop(struct rt_tmbench_context *ctx,
+-			   rtdm_user_info_t *user_info,
+ 			   struct rttst_overall_bench_res __user *user_res)
  {
--	rtswitch_context_t *ctx = (rtswitch_context_t *) context->dev_private;
-+	rtswitch_context_t *ctx = rtdm_context_to_private(context);
- 	struct rttst_swtest_task task;
- 	struct rttst_swtest_dir fromto;
++	struct rtdm_fd *context = rtdm_private_to_context(ctx);
+ 	int err = 0;
  
-@@ -680,18 +673,18 @@ static int rtswitch_ioctl_rt(struct rtdm_dev_context *context,
- 		return -ENOSYS;
+ 	down(&ctx->nrt_mutex);
+@@ -356,8 +346,8 @@ static int rt_tmbench_stop(struct rt_tmbench_context *ctx,
+ 		   ((ctx->result.overall.test_loops) > 1 ?
+ 		    ctx->result.overall.test_loops : 2) - 1);
  
- 	case RTTST_RTIOC_SWTEST_PEND:
--		if (!rtdm_read_user_ok(user_info, arg, sizeof(task)))
-+		if (!rtdm_read_user_ok(context, arg, sizeof(task)))
- 			return -EFAULT;
+-	if (user_info)
+-		err = rtdm_safe_copy_to_user(user_info, &user_res->result,
++	if (rtdm_context_user_p(context))
++		err = rtdm_safe_copy_to_user(context, &user_res->result,
+ 					     &ctx->result.overall,
+ 					     sizeof(struct rttst_bench_res));
+ 		/* Do not break on error here - we may have to free a
+@@ -373,19 +363,19 @@ static int rt_tmbench_stop(struct rt_tmbench_context *ctx,
+ 	if (ctx->histogram_size > 0) {
+ 		int size = ctx->histogram_size * sizeof(long);
  
--		rtdm_copy_from_user(user_info, &task, arg, sizeof(task));
-+		rtdm_copy_from_user(context, &task, arg, sizeof(task));
+-		if (user_info) {
++		if (rtdm_context_user_p(context)) {
+ 			struct rttst_overall_bench_res res_buf;
  
- 		return rtswitch_pend_rt(ctx, task.index);
- 
- 	case RTTST_RTIOC_SWTEST_SWITCH_TO:
--		if (!rtdm_read_user_ok(user_info, arg, sizeof(fromto)))
-+		if (!rtdm_read_user_ok(context, arg, sizeof(fromto)))
- 			return -EFAULT;
- 
--		rtdm_copy_from_user(user_info,
-+		rtdm_copy_from_user(context,
- 				    &fromto,
- 				    arg,
- 				    sizeof(fromto));
-@@ -699,10 +692,10 @@ static int rtswitch_ioctl_rt(struct rtdm_dev_context *context,
- 		return rtswitch_to_rt(ctx, fromto.from, fromto.to);
- 
- 	case RTTST_RTIOC_SWTEST_GET_LAST_ERROR:
--		if (!rtdm_rw_user_ok(user_info, arg, sizeof(ctx->error)))
-+		if (!rtdm_rw_user_ok(context, arg, sizeof(ctx->error)))
- 			return -EFAULT;
- 
--		rtdm_copy_to_user(user_info,
-+		rtdm_copy_to_user(context,
- 				  arg,
- 				  &ctx->error,
- 				  sizeof(ctx->error));
-@@ -715,43 +708,29 @@ static int rtswitch_ioctl_rt(struct rtdm_dev_context *context,
+-			if (rtdm_safe_copy_from_user(user_info,
++			if (rtdm_safe_copy_from_user(context,
+ 						     &res_buf, user_res,
+ 						     sizeof(res_buf)) < 0 ||
+-			    rtdm_safe_copy_to_user(user_info,
++			    rtdm_safe_copy_to_user(context,
+ 				    (void __user *)res_buf.histogram_min,
+ 				    ctx->histogram_min, size) < 0 ||
+-			    rtdm_safe_copy_to_user(user_info,
++			    rtdm_safe_copy_to_user(context,
+ 				    (void __user *)res_buf.histogram_max,
+ 				    ctx->histogram_max, size) < 0 ||
+-			    rtdm_safe_copy_to_user(user_info,
++			    rtdm_safe_copy_to_user(context,
+ 				    (void __user *)res_buf.histogram_avg,
+ 				    ctx->histogram_avg, size) < 0)
+ 				err = -EFAULT;
+@@ -406,22 +396,21 @@ static int rt_tmbench_stop(struct rt_tmbench_context *ctx,
+ 	return err;
  }
  
- static struct rtdm_device device = {
--	struct_version: RTDM_DEVICE_STRUCT_VER,
--
--	device_flags: RTDM_NAMED_DEVICE,
--	context_size: sizeof(rtswitch_context_t),
--	device_name:  "",
--
--	open_rt: NULL,
--	open_nrt: rtswitch_open,
--
--	ops: {
--		close_rt: NULL,
--		close_nrt: rtswitch_close,
--
--		ioctl_rt: rtswitch_ioctl_rt,
--		ioctl_nrt: rtswitch_ioctl_nrt,
-+	.struct_version = RTDM_DEVICE_STRUCT_VER,
+-static int rt_tmbench_ioctl_nrt(struct rtdm_dev_context *context,
+-				rtdm_user_info_t *user_info,
++static int rt_tmbench_ioctl_nrt(struct rtdm_fd *context,
+ 				unsigned int request, void __user *arg)
+ {
+ 	struct rt_tmbench_context *ctx;
+ 	int err = 0;
  
--		read_rt: NULL,
--		read_nrt: NULL,
-+	.device_flags = RTDM_NAMED_DEVICE,
-+	.context_size = sizeof(rtswitch_context_t),
-+	.device_name = "",
+-	ctx = (struct rt_tmbench_context *)context->dev_private;
++	ctx = rtdm_context_to_private(context);
  
--		write_rt: NULL,
--		write_nrt: NULL,
-+	.open = rtswitch_open,
+ 	switch (request) {
+ 	case RTTST_RTIOC_TMBENCH_START:
+-		err = rt_tmbench_start(context, ctx, user_info, arg);
++		err = rt_tmbench_start(context, ctx, arg);
+ 		break;
  
--		recvmsg_rt: NULL,
--		recvmsg_nrt: NULL,
-+	.ops = {
-+		.close = rtswitch_close,
+ 	case RTTST_RTIOC_TMBENCH_STOP:
+-		err = rt_tmbench_stop(ctx, user_info, arg);
++		err = rt_tmbench_stop(ctx, arg);
+ 		break;
  
--		sendmsg_rt: NULL,
--		sendmsg_nrt: NULL,
-+		.ioctl_rt = rtswitch_ioctl_rt,
-+		.ioctl_nrt = rtswitch_ioctl_nrt,
- 	},
+ 	case RTTST_RTIOC_INTERM_BENCH_RES:
+@@ -435,14 +424,13 @@ static int rt_tmbench_ioctl_nrt(struct rtdm_dev_context *context,
+ 	return err;
+ }
  
--	device_class: RTDM_CLASS_TESTING,
--	device_sub_class: RTDM_SUBCLASS_SWITCHTEST,
--	profile_version: RTTST_PROFILE_VER,
--	driver_name: "xeno_switchtest",
--	driver_version: RTDM_DRIVER_VER(0, 1, 1),
--	peripheral_name: "Context Switch Test",
--	provider_name: "Gilles Chanteperdrix",
--	proc_name: device.device_name,
-+	.device_class = RTDM_CLASS_TESTING,
-+	.device_sub_class = RTDM_SUBCLASS_SWITCHTEST,
-+	.profile_version = RTTST_PROFILE_VER,
-+	.driver_name = "xeno_switchtest",
-+	.driver_version = RTDM_DRIVER_VER(0, 1, 1),
-+	.peripheral_name = "Context Switch Test",
-+	.provider_name = "Gilles Chanteperdrix",
-+	.proc_name = device.device_name,
- };
+-static int rt_tmbench_ioctl_rt(struct rtdm_dev_context *context,
+-			       rtdm_user_info_t *user_info,
++static int rt_tmbench_ioctl_rt(struct rtdm_fd *context,
+ 			       unsigned int request, void __user *arg)
+ {
+ 	struct rt_tmbench_context *ctx;
+ 	int err = 0;
  
- int __init __switchtest_init(void)
+-	ctx = (struct rt_tmbench_context *)context->dev_private;
++	ctx = rtdm_context_to_private(context);
+ 
+ 	switch (request) {
+ 	case RTTST_RTIOC_INTERM_BENCH_RES:
+@@ -450,10 +438,10 @@ static int rt_tmbench_ioctl_rt(struct rtdm_dev_context *context,
+ 		if (err)
+ 			return err;
+ 
+-		if (user_info) {
++		if (rtdm_context_user_p(context)) {
+ 			struct rttst_interm_bench_res __user *user_res = arg;
+ 
+-			err = rtdm_safe_copy_to_user(user_info, user_res,
++			err = rtdm_safe_copy_to_user(context, user_res,
+ 						     &ctx->result,
+ 						     sizeof(*user_res));
+ 		} else {
+@@ -483,10 +471,10 @@ static struct rtdm_device device = {
+ 	.context_size		= sizeof(struct rt_tmbench_context),
+ 	.device_name		= "",
+ 
+-	.open_nrt		= rt_tmbench_open,
++	.open			= rt_tmbench_open,
+ 
+ 	.ops = {
+-		.close_nrt	= rt_tmbench_close,
++		.close		= rt_tmbench_close,
+ 
+ 		.ioctl_rt	= rt_tmbench_ioctl_rt,
+ 		.ioctl_nrt	= rt_tmbench_ioctl_nrt,
 -- 
 1.7.10.4
 
