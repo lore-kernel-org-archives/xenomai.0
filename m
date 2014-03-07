@@ -1,10 +1,10 @@
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Date: Fri,  7 Mar 2014 21:20:37 +0100
-Message-Id: <1394223638-13070-8-git-send-email-gilles.chanteperdrix@xenomai.org>
+Date: Fri,  7 Mar 2014 21:20:36 +0100
+Message-Id: <1394223638-13070-7-git-send-email-gilles.chanteperdrix@xenomai.org>
 In-Reply-To: <1394223638-13070-1-git-send-email-gilles.chanteperdrix@xenomai.org>
 References: <531A29CC.4040201@xenomai.org>
  <1394223638-13070-1-git-send-email-gilles.chanteperdrix@xenomai.org>
-Subject: [Xenomai] [PATCH 8/9] drivers/ipc: adapt IDDP after RTDM changes
+Subject: [Xenomai] [PATCH 7/9] drivers/ipc: adapt XDDP after RTDM changes
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,67 +16,342 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 
 ---
- kernel/drivers/ipc/iddp.c     |  114 +++++++++++++++++++++--------------------
- kernel/drivers/ipc/internal.h |   10 ----
- 2 files changed, 59 insertions(+), 65 deletions(-)
+ kernel/drivers/ipc/internal.h |   26 +++++-----
+ kernel/drivers/ipc/rtipc.c    |   67 +++++++++++-------------
+ kernel/drivers/ipc/xddp.c     |  115 ++++++++++++++++++++++-------------------
+ 3 files changed, 104 insertions(+), 104 deletions(-)
 
-diff --git a/kernel/drivers/ipc/iddp.c b/kernel/drivers/ipc/iddp.c
-index 3fe43db..86b699a 100644
---- a/kernel/drivers/ipc/iddp.c
-+++ b/kernel/drivers/ipc/iddp.c
-@@ -192,7 +192,7 @@ static void __iddp_flush_pool(struct xnheap *heap,
+diff --git a/kernel/drivers/ipc/internal.h b/kernel/drivers/ipc/internal.h
+index 34985df..4422ba0 100644
+--- a/kernel/drivers/ipc/internal.h
++++ b/kernel/drivers/ipc/internal.h
+@@ -42,28 +42,28 @@ struct rtipc_protocol {
+ 	void (*proto_exit)(void);
+ 	struct {
+ 		int (*socket)(struct rtipc_private *priv,
+-			      rtdm_user_info_t *user_info);
+-		int (*close)(struct rtipc_private *priv,
+-			     rtdm_user_info_t *user_info);
++			      struct rtdm_fd *context);
++		void (*close)(struct rtipc_private *priv,
++			struct rtdm_fd *context);
+ 		ssize_t (*recvmsg)(struct rtipc_private *priv,
+-				   rtdm_user_info_t *user_info,
++				   struct rtdm_fd *context,
+ 				   struct msghdr *msg, int flags);
+ 		ssize_t (*sendmsg)(struct rtipc_private *priv,
+-				   rtdm_user_info_t *user_info,
++				   struct rtdm_fd *context,
+ 				   const struct msghdr *msg, int flags);
+ 		ssize_t (*read)(struct rtipc_private *priv,
+-				rtdm_user_info_t *user_info,
++				struct rtdm_fd *context,
+ 				void *buf, size_t len);
+ 		ssize_t (*write)(struct rtipc_private *priv,
+-				 rtdm_user_info_t *user_info,
++				 struct rtdm_fd *context,
+ 				 const void *buf, size_t len);
+ 		int (*ioctl)(struct rtipc_private *priv,
+-			     rtdm_user_info_t *user_info,
++			     struct rtdm_fd *context,
+ 			     unsigned int request, void *arg);
+ 	} proto_ops;
+ };
+ 
+-static inline void *rtipc_context_to_state(struct rtdm_dev_context *context)
++static inline void *rtipc_context_to_state(struct rtdm_fd *context)
+ {
+ 	struct rtipc_private *p = rtdm_context_to_private(context);
+ 	return p->state;
+@@ -97,16 +97,16 @@ static inline void rtipc_ns_to_timeval(struct timeval *tv, nanosecs_rel_t ns)
+ 	tv->tv_usec = nsecs / 1000;
  }
  
- static int iddp_socket(struct rtipc_private *priv,
--		       rtdm_user_info_t *user_info)
-+		       struct rtdm_fd *context)
- {
- 	struct iddp_socket *sk = priv->state;
+-int rtipc_get_arg(rtdm_user_info_t *user_info,
++int rtipc_get_arg(struct rtdm_fd *fd,
+ 		  void *dst, const void *src, size_t len);
  
-@@ -217,14 +217,16 @@ static int iddp_socket(struct rtipc_private *priv,
+-int rtipc_put_arg(rtdm_user_info_t *user_info,
++int rtipc_put_arg(struct rtdm_fd *fd,
+ 		  void *dst, const void *src, size_t len);
+ 
+-int rtipc_get_sockaddr(rtdm_user_info_t *user_info,
++int rtipc_get_sockaddr(struct rtdm_fd *fd,
+ 		       const void *arg, struct sockaddr_ipc **saddrp);
+ 
+-int rtipc_put_sockaddr(rtdm_user_info_t *user_info, void *arg,
++int rtipc_put_sockaddr(struct rtdm_fd *fd, void *arg,
+ 		       const struct sockaddr_ipc *saddr);
+ 
+ ssize_t rtipc_get_iov_flatlen(struct iovec *iov, int iovlen);
+diff --git a/kernel/drivers/ipc/rtipc.c b/kernel/drivers/ipc/rtipc.c
+index 20c2a74..e9e815b 100644
+--- a/kernel/drivers/ipc/rtipc.c
++++ b/kernel/drivers/ipc/rtipc.c
+@@ -37,11 +37,11 @@ static struct rtipc_protocol *protocols[IPCPROTO_MAX] = {
+ 
+ DEFINE_XNPTREE(rtipc_ptree, "rtipc");
+ 
+-int rtipc_get_arg(rtdm_user_info_t *user_info,
++int rtipc_get_arg(struct rtdm_fd *context,
+ 		  void *dst, const void *src, size_t len)
+ {
+-	if (user_info) {
+-		if (rtdm_safe_copy_from_user(user_info, dst, src, len))
++	if (rtdm_context_user_p(context)) {
++		if (rtdm_safe_copy_from_user(context, dst, src, len))
+ 			return -EFAULT;
+ 	} else
+ 		memcpy(dst, src, len);
+@@ -49,11 +49,11 @@ int rtipc_get_arg(rtdm_user_info_t *user_info,
  	return 0;
  }
  
--static int iddp_close(struct rtipc_private *priv,
--		      rtdm_user_info_t *user_info)
-+static void iddp_close(struct rtipc_private *priv,
-+		struct rtdm_fd *context)
+-int rtipc_put_arg(rtdm_user_info_t *user_info,
++int rtipc_put_arg(struct rtdm_fd *context,
+ 		  void *dst, const void *src, size_t len)
  {
- 	struct iddp_socket *sk = priv->state;
- 	struct iddp_message *mbuf;
- 
- 	if (sk->name.sipc_port > -1)
--		xnmap_remove(portmap, sk->name.sipc_port);
-+		RTDM_EXECUTE_ATOMICALLY(
-+			xnmap_remove(portmap, sk->name.sipc_port);
-+		);
- 
- 	rtdm_sem_destroy(&sk->insem);
- 	rtdm_event_destroy(&sk->privevt);
-@@ -234,7 +236,7 @@ static int iddp_close(struct rtipc_private *priv,
- 
- 	if (sk->bufpool != &kheap) {
- 		xnheap_destroy(&sk->privpool, __iddp_flush_pool, NULL);
--		return 0;
-+		return;
- 	}
- 
- 	/* Send unread datagrams back to the system heap. */
-@@ -246,11 +248,11 @@ static int iddp_close(struct rtipc_private *priv,
- 
- 	kfree(sk);
- 
--	return 0;
-+	return;
+-	if (user_info) {
+-		if (rtdm_safe_copy_to_user(user_info, dst, src, len))
++	if (rtdm_context_user_p(context)) {
++		if (rtdm_safe_copy_to_user(context, dst, src, len))
+ 			return -EFAULT;
+ 	} else
+ 		memcpy(dst, src, len);
+@@ -61,12 +61,12 @@ int rtipc_put_arg(rtdm_user_info_t *user_info,
+ 	return 0;
  }
  
- static ssize_t __iddp_recvmsg(struct rtipc_private *priv,
+-int rtipc_get_sockaddr(rtdm_user_info_t *user_info,
++int rtipc_get_sockaddr(struct rtdm_fd *context,
+ 		       const void *arg, struct sockaddr_ipc **saddrp)
+ {
+ 	struct _rtdm_setsockaddr_args setaddr;
+ 
+-	if (rtipc_get_arg(user_info,
++	if (rtipc_get_arg(context,
+ 			  &setaddr, arg, sizeof(setaddr)))
+ 		return -EFAULT;
+ 
+@@ -74,7 +74,7 @@ int rtipc_get_sockaddr(rtdm_user_info_t *user_info,
+ 		if (setaddr.addrlen != sizeof(**saddrp))
+ 			return -EINVAL;
+ 
+-		if (rtipc_get_arg(user_info, *saddrp,
++		if (rtipc_get_arg(context, *saddrp,
+ 				  setaddr.addr, sizeof(**saddrp)))
+ 			return -EFAULT;
+ 	} else {
+@@ -86,29 +86,29 @@ int rtipc_get_sockaddr(rtdm_user_info_t *user_info,
+ 	return 0;
+ }
+ 
+-int rtipc_put_sockaddr(rtdm_user_info_t *user_info, void *arg,
++int rtipc_put_sockaddr(struct rtdm_fd *context, void *arg,
+ 		       const struct sockaddr_ipc *saddr)
+ {
+ 	struct _rtdm_getsockaddr_args getaddr;
+ 	socklen_t len;
+ 
+-	if (rtipc_get_arg(user_info,
++	if (rtipc_get_arg(context,
+ 			  &getaddr, arg, sizeof(getaddr)))
+ 		return -EFAULT;
+ 
+-	if (rtipc_get_arg(user_info,
++	if (rtipc_get_arg(context,
+ 			  &len, getaddr.addrlen, sizeof(len)))
+ 		return -EFAULT;
+ 
+ 	if (len < sizeof(*saddr))
+ 		return -EINVAL;
+ 
+-	if (rtipc_put_arg(user_info,
++	if (rtipc_put_arg(context,
+ 			  getaddr.addr, saddr, sizeof(*saddr)))
+ 		return -EFAULT;
+ 
+ 	len = sizeof(*saddr);
+-	if (rtipc_put_arg(user_info,
++	if (rtipc_put_arg(context,
+ 			  getaddr.addrlen, &len, sizeof(len)))
+ 		return -EFAULT;
+ 
+@@ -131,8 +131,7 @@ ssize_t rtipc_get_iov_flatlen(struct iovec *iov, int iovlen)
+ 	return len;
+ }
+ 
+-static int rtipc_socket(struct rtdm_dev_context *context,
+-			rtdm_user_info_t *user_info, int protocol)
++static int rtipc_socket(struct rtdm_fd *context, int protocol)
+ {
+ 	struct rtipc_protocol *proto;
+ 	struct rtipc_private *p;
+@@ -155,15 +154,14 @@ static int rtipc_socket(struct rtdm_dev_context *context,
+ 	if (p->state == NULL)
+ 		return -ENOMEM;
+ 
+-	ret = proto->proto_ops.socket(p, user_info);
++	ret = proto->proto_ops.socket(p, context);
+ 	if (ret)
+ 		kfree(p->state);
+ 
+ 	return ret;
+ }
+ 
+-static int rtipc_close(struct rtdm_dev_context *context,
+-		       rtdm_user_info_t *user_info)
++static void rtipc_close(struct rtdm_fd *context)
+ {
+ 	struct rtipc_private *p;
+ 
+@@ -173,47 +171,42 @@ static int rtipc_close(struct rtdm_dev_context *context,
+ 	 * proto_ops.close() handler when appropriate (which may be
+ 	 * done asynchronously later, see XDDP).
+ 	 */
+-	return p->proto->proto_ops.close(p, user_info);
++	p->proto->proto_ops.close(p, context);
+ }
+ 
+-static ssize_t rtipc_recvmsg(struct rtdm_dev_context *context,
+-			     rtdm_user_info_t *user_info,
++static ssize_t rtipc_recvmsg(struct rtdm_fd *context,
+ 			     struct msghdr *msg, int flags)
+ {
+ 	struct rtipc_private *p = rtdm_context_to_private(context);
+-	return p->proto->proto_ops.recvmsg(p, user_info, msg, flags);
++	return p->proto->proto_ops.recvmsg(p, context, msg, flags);
+ }
+ 
+-static ssize_t rtipc_sendmsg(struct rtdm_dev_context *context,
+-			     rtdm_user_info_t *user_info,
++static ssize_t rtipc_sendmsg(struct rtdm_fd *context,
+ 			     const struct msghdr *msg, int flags)
+ {
+ 	struct rtipc_private *p = rtdm_context_to_private(context);
+-	return p->proto->proto_ops.sendmsg(p, user_info, msg, flags);
++	return p->proto->proto_ops.sendmsg(p, context, msg, flags);
+ }
+ 
+-static ssize_t rtipc_read(struct rtdm_dev_context *context,
+-			  rtdm_user_info_t *user_info,
++static ssize_t rtipc_read(struct rtdm_fd *context,
+ 			  void *buf, size_t len)
+ {
+ 	struct rtipc_private *p = rtdm_context_to_private(context);
+-	return p->proto->proto_ops.read(p, user_info, buf, len);
++	return p->proto->proto_ops.read(p, context, buf, len);
+ }
+ 
+-static ssize_t rtipc_write(struct rtdm_dev_context *context,
+-			   rtdm_user_info_t *user_info,
++static ssize_t rtipc_write(struct rtdm_fd *context,
+ 			   const void *buf, size_t len)
+ {
+ 	struct rtipc_private *p = rtdm_context_to_private(context);
+-	return p->proto->proto_ops.write(p, user_info, buf, len);
++	return p->proto->proto_ops.write(p, context, buf, len);
+ }
+ 
+-static int rtipc_ioctl(struct rtdm_dev_context *context,
+-		       rtdm_user_info_t *user_info,
++static int rtipc_ioctl(struct rtdm_fd *context,
+ 		       unsigned int request, void *arg)
+ {
+ 	struct rtipc_private *p = rtdm_context_to_private(context);
+-	return p->proto->proto_ops.ioctl(p, user_info, request, arg);
++	return p->proto->proto_ops.ioctl(p, context, request, arg);
+ }
+ 
+ static struct rtdm_device device = {
+@@ -223,9 +216,9 @@ static struct rtdm_device device = {
+ 	.device_name	=	"rtipc",
+ 	.protocol_family=	PF_RTIPC,
+ 	.socket_type	=	SOCK_DGRAM,
+-	.socket_nrt	=	rtipc_socket,
++	.socket		=	rtipc_socket,
+ 	.ops = {
+-		.close_nrt	=	rtipc_close,
++		.close		=	rtipc_close,
+ 		.recvmsg_rt	=	rtipc_recvmsg,
+ 		.recvmsg_nrt	=	NULL,
+ 		.sendmsg_rt	=	rtipc_sendmsg,
+diff --git a/kernel/drivers/ipc/xddp.c b/kernel/drivers/ipc/xddp.c
+index 728a6ed..eef1ed7 100644
+--- a/kernel/drivers/ipc/xddp.c
++++ b/kernel/drivers/ipc/xddp.c
+@@ -42,7 +42,7 @@ struct xddp_socket {
+ 	size_t poolsz;
+ 	xnhandle_t handle;
+ 	char label[XNOBJECT_NAME_LEN];
+-	int fd;			/* i.e. RTDM socket fd */
++	struct rtdm_fd *fd;			/* i.e. RTDM socket fd */
+ 
+ 	struct xddp_message *buffer;
+ 	int buffer_port;
+@@ -56,7 +56,7 @@ struct xddp_socket {
+ 	nanosecs_rel_t timeout;	/* connect()/recvmsg() timeout */
+ 	size_t reqbufsz;	/* Requested streaming buffer size */
+ 
+-	int (*monitor)(int s, int event, long arg);
++	int (*monitor)(struct rtdm_fd *fd, int event, long arg);
+ 	struct rtipc_private *priv;
+ };
+ 
+@@ -65,7 +65,7 @@ static struct sockaddr_ipc nullsa = {
+ 	.sipc_port = -1
+ };
+ 
+-static int portmap[CONFIG_XENO_OPT_PIPE_NRDEV]; /* indexes RTDM fildes */
++static struct rtdm_fd *portmap[CONFIG_XENO_OPT_PIPE_NRDEV]; /* indexes RTDM fildes */
+ 
+ #define _XDDP_SYNCWAIT  0
+ #define _XDDP_ATOMIC    1
+@@ -219,7 +219,7 @@ static void __xddp_release_handler(void *skarg) /* nklock free */
+ }
+ 
+ static int xddp_socket(struct rtipc_private *priv,
+-		       rtdm_user_info_t *user_info)
++		       struct rtdm_fd *context)
+ {
+ 	struct xddp_socket *sk = priv->state;
+ 
+@@ -245,26 +245,28 @@ static int xddp_socket(struct rtipc_private *priv,
+ 	return 0;
+ }
+ 
+-static int xddp_close(struct rtipc_private *priv,
+-		      rtdm_user_info_t *user_info)
++static void xddp_close(struct rtipc_private *priv,
++		      struct rtdm_fd *context)
+ {
+ 	struct xddp_socket *sk = priv->state;
+ 
+ 	sk->monitor = NULL;
+ 
+ 	if (!test_bit(_XDDP_BOUND, &sk->status))
+-		return 0;
++		return;
+ 
+-	portmap[sk->name.sipc_port] = -1;
++	RTDM_EXECUTE_ATOMICALLY(
++		portmap[sk->name.sipc_port] = NULL;
++	);
+ 
+ 	if (sk->handle)
+ 		xnregistry_remove(sk->handle);
+ 
+-	return xnpipe_disconnect(sk->minor);
++	xnpipe_disconnect(sk->minor);
+ }
+ 
+ static ssize_t __xddp_recvmsg(struct rtipc_private *priv,
 -			      rtdm_user_info_t *user_info,
 +			      struct rtdm_fd *context,
  			      struct iovec *iov, int iovlen, int flags,
  			      struct sockaddr_ipc *saddr)
  {
-@@ -303,7 +305,7 @@ static ssize_t __iddp_recvmsg(struct rtipc_private *priv,
+@@ -304,7 +306,7 @@ static ssize_t __xddp_recvmsg(struct rtipc_private *priv,
  		if (iov[nvec].iov_len == 0)
  			continue;
  		vlen = wrlen >= iov[nvec].iov_len ? iov[nvec].iov_len : wrlen;
@@ -85,16 +360,16 @@ index 3fe43db..86b699a 100644
  			xnbufd_map_uread(&bufd, iov[nvec].iov_base, vlen);
  			ret = xnbufd_copy_from_kmem(&bufd, mbuf->data + rdoff, vlen);
  			xnbufd_unmap_uread(&bufd);
-@@ -327,7 +329,7 @@ static ssize_t __iddp_recvmsg(struct rtipc_private *priv,
+@@ -328,7 +330,7 @@ out:
  }
  
- static ssize_t iddp_recvmsg(struct rtipc_private *priv,
+ static ssize_t xddp_recvmsg(struct rtipc_private *priv,
 -			    rtdm_user_info_t *user_info,
 +			    struct rtdm_fd *context,
  			    struct msghdr *msg, int flags)
  {
  	struct iovec iov[RTIPC_IOV_MAX];
-@@ -347,23 +349,23 @@ static ssize_t iddp_recvmsg(struct rtipc_private *priv,
+@@ -348,23 +350,23 @@ static ssize_t xddp_recvmsg(struct rtipc_private *priv,
  		return -EINVAL;
  
  	/* Copy I/O vector in */
@@ -103,8 +378,8 @@ index 3fe43db..86b699a 100644
  			  sizeof(iov[0]) * msg->msg_iovlen))
  		return -EFAULT;
  
--	ret = __iddp_recvmsg(priv, user_info,
-+	ret = __iddp_recvmsg(priv, context,
+-	ret = __xddp_recvmsg(priv, user_info,
++	ret = __xddp_recvmsg(priv, context,
  			     iov, msg->msg_iovlen, flags, &saddr);
  	if (ret <= 0)
  		return ret;
@@ -122,70 +397,80 @@ index 3fe43db..86b699a 100644
  				  &saddr, sizeof(saddr)))
  			return -EFAULT;
  		msg->msg_namelen = sizeof(struct sockaddr_ipc);
-@@ -373,35 +375,34 @@ static ssize_t iddp_recvmsg(struct rtipc_private *priv,
+@@ -374,11 +376,11 @@ static ssize_t xddp_recvmsg(struct rtipc_private *priv,
  }
  
- static ssize_t iddp_read(struct rtipc_private *priv,
+ static ssize_t xddp_read(struct rtipc_private *priv,
 -			 rtdm_user_info_t *user_info,
 +			 struct rtdm_fd *context,
  			 void *buf, size_t len)
  {
  	struct iovec iov = { .iov_base = buf, .iov_len = len };
--	return __iddp_recvmsg(priv, user_info, &iov, 1, 0, NULL);
-+	return __iddp_recvmsg(priv, context, &iov, 1, 0, NULL);
+-	return __xddp_recvmsg(priv, user_info, &iov, 1, 0, NULL);
++	return __xddp_recvmsg(priv, context, &iov, 1, 0, NULL);
  }
  
- static ssize_t __iddp_sendmsg(struct rtipc_private *priv,
+ static ssize_t __xddp_stream(struct xddp_socket *sk,
+@@ -456,15 +458,15 @@ out:
+ }
+ 
+ static ssize_t __xddp_sendmsg(struct rtipc_private *priv,
 -			      rtdm_user_info_t *user_info,
 +			      struct rtdm_fd *context,
  			      struct iovec *iov, int iovlen, int flags,
  			      const struct sockaddr_ipc *daddr)
  {
- 	struct iddp_socket *sk = priv->state, *rsk;
+ 	ssize_t len, rdlen, wrlen, vlen, ret, sublen;
+ 	struct xddp_socket *sk = priv->state;
 -	struct rtdm_dev_context *rcontext;
- 	struct iddp_message *mbuf;
- 	ssize_t len, rdlen, vlen;
+ 	struct xddp_message *mbuf;
+ 	struct xddp_socket *rsk;
 +	struct rtdm_fd *rcontext;
- 	int nvec, wroff, ret;
+ 	int nvec, to, from;
  	struct xnbufd bufd;
--	void *p;
  
- 	len = rtipc_get_iov_flatlen(iov, iovlen);
- 	if (len == 0)
- 		return 0;
+@@ -475,7 +477,12 @@ static ssize_t __xddp_sendmsg(struct rtipc_private *priv,
+ 	from = sk->name.sipc_port;
+ 	to = daddr->sipc_port;
  
--	p = xnmap_fetch_nocheck(portmap, daddr->sipc_port);
--	if (p == NULL)
--		return -ECONNRESET;
--
--	rcontext = rtdm_context_get(rtipc_map2fd(p));
+-	rcontext = rtdm_context_get(portmap[to]);
 +	RTDM_EXECUTE_ATOMICALLY(
-+		rcontext = xnmap_fetch_nocheck(portmap, daddr->sipc_port);
++		rcontext = portmap[to];
 +		if (rcontext && rtdm_context_lock(rcontext) < 0)
 +			rcontext = NULL;
 +	);
++	
  	if (rcontext == NULL)
  		return -ECONNRESET;
  
-@@ -423,7 +424,7 @@ static ssize_t __iddp_sendmsg(struct rtipc_private *priv,
+@@ -501,7 +508,7 @@ static ssize_t __xddp_sendmsg(struct rtipc_private *priv,
+ 			if (iov[nvec].iov_len == 0)
+ 				continue;
+ 			vlen = rdlen >= iov[nvec].iov_len ? iov[nvec].iov_len : rdlen;
+-			if (user_info) {
++			if (rtdm_context_user_p(context)) {
+ 				xnbufd_map_uread(&bufd, iov[nvec].iov_base, vlen);
+ 				ret = __xddp_stream(rsk, from, &bufd);
+ 				xnbufd_unmap_uread(&bufd);
+@@ -544,7 +551,7 @@ nostream:
  		if (iov[nvec].iov_len == 0)
  			continue;
  		vlen = rdlen >= iov[nvec].iov_len ? iov[nvec].iov_len : rdlen;
 -		if (user_info) {
 +		if (rtdm_context_user_p(context)) {
  			xnbufd_map_uread(&bufd, iov[nvec].iov_base, vlen);
- 			ret = xnbufd_copy_to_kmem(mbuf->data + wroff, &bufd, vlen);
+ 			ret = xnbufd_copy_to_kmem(mbuf->data + wrlen, &bufd, vlen);
  			xnbufd_unmap_uread(&bufd);
-@@ -462,7 +463,7 @@ fail:
+@@ -580,7 +587,7 @@ nostream:
  }
  
- static ssize_t iddp_sendmsg(struct rtipc_private *priv,
+ static ssize_t xddp_sendmsg(struct rtipc_private *priv,
 -			    rtdm_user_info_t *user_info,
 +			    struct rtdm_fd *context,
  			    const struct msghdr *msg, int flags)
  {
- 	struct iddp_socket *sk = priv->state;
-@@ -478,7 +479,7 @@ static ssize_t iddp_sendmsg(struct rtipc_private *priv,
+ 	struct xddp_socket *sk = priv->state;
+@@ -608,7 +615,7 @@ static ssize_t xddp_sendmsg(struct rtipc_private *priv,
  			return -EINVAL;
  
  		/* Fetch the destination address to send to. */
@@ -194,7 +479,7 @@ index 3fe43db..86b699a 100644
  				  msg->msg_name, sizeof(daddr)))
  			return -EFAULT;
  
-@@ -497,17 +498,17 @@ static ssize_t iddp_sendmsg(struct rtipc_private *priv,
+@@ -627,17 +634,17 @@ static ssize_t xddp_sendmsg(struct rtipc_private *priv,
  		return -EINVAL;
  
  	/* Copy I/O vector in */
@@ -203,8 +488,8 @@ index 3fe43db..86b699a 100644
  			  sizeof(iov[0]) * msg->msg_iovlen))
  		return -EFAULT;
  
--	ret = __iddp_sendmsg(priv, user_info, iov,
-+	ret = __iddp_sendmsg(priv, context, iov,
+-	ret = __xddp_sendmsg(priv, user_info, iov,
++	ret = __xddp_sendmsg(priv, context, iov,
  			     msg->msg_iovlen, flags, &daddr);
  	if (ret <= 0)
  		return ret;
@@ -215,56 +500,56 @@ index 3fe43db..86b699a 100644
  			  sizeof(iov[0]) * msg->msg_iovlen))
  		return -EFAULT;
  
-@@ -515,7 +516,7 @@ static ssize_t iddp_sendmsg(struct rtipc_private *priv,
+@@ -645,7 +652,7 @@ static ssize_t xddp_sendmsg(struct rtipc_private *priv,
  }
  
- static ssize_t iddp_write(struct rtipc_private *priv,
+ static ssize_t xddp_write(struct rtipc_private *priv,
 -			  rtdm_user_info_t *user_info,
 +			  struct rtdm_fd *context,
  			  const void *buf, size_t len)
  {
  	struct iovec iov = { .iov_base = (void *)buf, .iov_len = len };
-@@ -524,14 +525,15 @@ static ssize_t iddp_write(struct rtipc_private *priv,
+@@ -654,7 +661,7 @@ static ssize_t xddp_write(struct rtipc_private *priv,
  	if (sk->peer.sipc_port < 0)
  		return -EDESTADDRREQ;
  
--	return __iddp_sendmsg(priv, user_info, &iov, 1, 0, &sk->peer);
-+	return __iddp_sendmsg(priv, context, &iov, 1, 0, &sk->peer);
+-	return __xddp_sendmsg(priv, user_info, &iov, 1, 0, &sk->peer);
++	return __xddp_sendmsg(priv, context, &iov, 1, 0, &sk->peer);
  }
  
- static int __iddp_bind_socket(struct rtipc_private *priv,
- 			      struct sockaddr_ipc *sa)
- {
- 	struct iddp_socket *sk = priv->state;
--	int ret = 0, port, fd;
-+	int ret = 0, port;
-+	struct rtdm_fd *fd;
- 	void *poolmem;
- 	size_t poolsz;
+ static int __xddp_bind_socket(struct rtipc_private *priv,
+@@ -711,7 +718,7 @@ static int __xddp_bind_socket(struct rtipc_private *priv,
+ 		sk->curbufsz = sk->reqbufsz;
+ 	}
  
-@@ -552,8 +554,10 @@ static int __iddp_bind_socket(struct rtipc_private *priv,
+-	sk->fd = rtdm_private_to_context(priv)->fd;
++	sk->fd = rtdm_private_to_context(priv);
  
- 	/* Will auto-select a free port number if unspec (-1). */
- 	port = sa->sipc_port;
--	fd = rtdm_private_to_context(priv)->fd;
--	port = xnmap_enter(portmap, port, rtipc_fd2map(fd));
-+	fd = rtdm_private_to_context(priv);
-+	RTDM_EXECUTE_ATOMICALLY(
-+		port = xnmap_enter(portmap, port, fd);
-+	);
- 	if (port < 0)
- 		return port == -EEXIST ? -EADDRINUSE : -ENOMEM;
+ 	ops.output = &__xddp_output_handler;
+ 	ops.input = &__xddp_input_handler;
+@@ -753,7 +760,7 @@ static int __xddp_bind_socket(struct rtipc_private *priv,
+ 	}
  
-@@ -680,7 +684,7 @@ set_assoc:
+ 	RTDM_EXECUTE_ATOMICALLY(
+-		portmap[sk->minor] = sk->fd;
++		portmap[sk->minor] = rtdm_private_to_context(priv);
+ 		__clear_bit(_XDDP_BINDING, &sk->status);
+ 		__set_bit(_XDDP_BOUND, &sk->status);
+ 	);
+@@ -827,10 +834,10 @@ set_assoc:
  }
  
- static int __iddp_setsockopt(struct iddp_socket *sk,
+ static int __xddp_setsockopt(struct xddp_socket *sk,
 -			     rtdm_user_info_t *user_info,
 +			     struct rtdm_fd *context,
  			     void *arg)
  {
+-	int (*monitor)(int s, int event, long arg);
++	int (*monitor)(struct rtdm_fd *fd, int event, long arg);
  	struct _rtdm_setsockopt_args sopt;
-@@ -689,7 +693,7 @@ static int __iddp_setsockopt(struct iddp_socket *sk,
+ 	struct rtipc_port_label plabel;
+ 	rtdm_lockctx_t lockctx;
+@@ -838,7 +845,7 @@ static int __xddp_setsockopt(struct xddp_socket *sk,
  	int ret = 0;
  	size_t len;
  
@@ -273,7 +558,7 @@ index 3fe43db..86b699a 100644
  		return -EFAULT;
  
  	if (sopt.level == SOL_SOCKET) {
-@@ -698,7 +702,7 @@ static int __iddp_setsockopt(struct iddp_socket *sk,
+@@ -847,7 +854,7 @@ static int __xddp_setsockopt(struct xddp_socket *sk,
  		case SO_RCVTIMEO:
  			if (sopt.optlen != sizeof(tv))
  				return -EINVAL;
@@ -281,18 +566,18 @@ index 3fe43db..86b699a 100644
 +			if (rtipc_get_arg(context, &tv,
  					  sopt.optval, sizeof(tv)))
  				return -EFAULT;
- 			sk->rx_timeout = rtipc_timeval_to_ns(&tv);
-@@ -707,7 +711,7 @@ static int __iddp_setsockopt(struct iddp_socket *sk,
- 		case SO_SNDTIMEO:
- 			if (sopt.optlen != sizeof(tv))
- 				return -EINVAL;
--			if (rtipc_get_arg(user_info, &tv,
-+			if (rtipc_get_arg(context, &tv,
- 					  sopt.optval, sizeof(tv)))
- 				return -EFAULT;
- 			sk->tx_timeout = rtipc_timeval_to_ns(&tv);
-@@ -728,7 +732,7 @@ static int __iddp_setsockopt(struct iddp_socket *sk,
- 	case IDDP_POOLSZ:
+ 			sk->timeout = rtipc_timeval_to_ns(&tv);
+@@ -868,7 +875,7 @@ static int __xddp_setsockopt(struct xddp_socket *sk,
+ 	case XDDP_BUFSZ:
+ 		if (sopt.optlen != sizeof(len))
+ 			return -EINVAL;
+-		if (rtipc_get_arg(user_info, &len,
++		if (rtipc_get_arg(context, &len,
+ 				  sopt.optval, sizeof(len)))
+ 			return -EFAULT;
+ 		if (len > 0) {
+@@ -890,7 +897,7 @@ static int __xddp_setsockopt(struct xddp_socket *sk,
+ 	case XDDP_POOLSZ:
  		if (sopt.optlen != sizeof(len))
  			return -EINVAL;
 -		if (rtipc_get_arg(user_info, &len,
@@ -300,8 +585,17 @@ index 3fe43db..86b699a 100644
  				  sopt.optval, sizeof(len)))
  			return -EFAULT;
  		if (len == 0)
-@@ -749,7 +753,7 @@ static int __iddp_setsockopt(struct iddp_socket *sk,
- 	case IDDP_LABEL:
+@@ -906,7 +913,7 @@ static int __xddp_setsockopt(struct xddp_socket *sk,
+ 
+ 	case XDDP_MONITOR:
+ 		/* Monitoring is available from kernel-space only. */
+-		if (user_info)
++		if (rtdm_context_user_p(context))
+ 			return -EPERM;
+ 		if (sopt.optlen != sizeof(monitor))
+ 			return -EINVAL;
+@@ -919,7 +926,7 @@ static int __xddp_setsockopt(struct xddp_socket *sk,
+ 	case XDDP_LABEL:
  		if (sopt.optlen < sizeof(plabel))
  			return -EINVAL;
 -		if (rtipc_get_arg(user_info, &plabel,
@@ -309,16 +603,16 @@ index 3fe43db..86b699a 100644
  				  sopt.optval, sizeof(plabel)))
  			return -EFAULT;
  		RTDM_EXECUTE_ATOMICALLY(
-@@ -774,7 +778,7 @@ static int __iddp_setsockopt(struct iddp_socket *sk,
+@@ -941,7 +948,7 @@ static int __xddp_setsockopt(struct xddp_socket *sk,
  }
  
- static int __iddp_getsockopt(struct iddp_socket *sk,
+ static int __xddp_getsockopt(struct xddp_socket *sk,
 -			     rtdm_user_info_t *user_info,
 +			     struct rtdm_fd *context,
  			     void *arg)
  {
  	struct _rtdm_getsockopt_args sopt;
-@@ -783,10 +787,10 @@ static int __iddp_getsockopt(struct iddp_socket *sk,
+@@ -950,10 +957,10 @@ static int __xddp_getsockopt(struct xddp_socket *sk,
  	socklen_t len;
  	int ret = 0;
  
@@ -331,25 +625,16 @@ index 3fe43db..86b699a 100644
  		return -EFAULT;
  
  	if (sopt.level == SOL_SOCKET) {
-@@ -796,7 +800,7 @@ static int __iddp_getsockopt(struct iddp_socket *sk,
+@@ -963,7 +970,7 @@ static int __xddp_getsockopt(struct xddp_socket *sk,
  			if (len != sizeof(tv))
  				return -EINVAL;
- 			rtipc_ns_to_timeval(&tv, sk->rx_timeout);
+ 			rtipc_ns_to_timeval(&tv, sk->timeout);
 -			if (rtipc_put_arg(user_info, sopt.optval,
 +			if (rtipc_put_arg(context, sopt.optval,
  					  &tv, sizeof(tv)))
  				return -EFAULT;
  			break;
-@@ -805,7 +809,7 @@ static int __iddp_getsockopt(struct iddp_socket *sk,
- 			if (len != sizeof(tv))
- 				return -EINVAL;
- 			rtipc_ns_to_timeval(&tv, sk->tx_timeout);
--			if (rtipc_put_arg(user_info, sopt.optval,
-+			if (rtipc_put_arg(context, sopt.optval,
- 					  &tv, sizeof(tv)))
- 				return -EFAULT;
- 			break;
-@@ -828,7 +832,7 @@ static int __iddp_getsockopt(struct iddp_socket *sk,
+@@ -986,7 +993,7 @@ static int __xddp_getsockopt(struct xddp_socket *sk,
  		RTDM_EXECUTE_ATOMICALLY(
  			strcpy(plabel.label, sk->label);
  		);
@@ -358,24 +643,23 @@ index 3fe43db..86b699a 100644
  				  &plabel, sizeof(plabel)))
  			return -EFAULT;
  		break;
-@@ -841,7 +845,7 @@ static int __iddp_getsockopt(struct iddp_socket *sk,
+@@ -999,7 +1006,7 @@ static int __xddp_getsockopt(struct xddp_socket *sk,
  }
  
- static int __iddp_ioctl(struct rtipc_private *priv,
+ static int __xddp_ioctl(struct rtipc_private *priv,
 -			rtdm_user_info_t *user_info,
 +			struct rtdm_fd *context,
  			unsigned int request, void *arg)
  {
  	struct sockaddr_ipc saddr, *saddrp = &saddr;
-@@ -851,14 +855,14 @@ static int __iddp_ioctl(struct rtipc_private *priv,
+@@ -1009,13 +1016,13 @@ static int __xddp_ioctl(struct rtipc_private *priv,
  	switch (request) {
  
  	case _RTIOC_CONNECT:
 -		ret = rtipc_get_sockaddr(user_info, arg, &saddrp);
 +		ret = rtipc_get_sockaddr(context, arg, &saddrp);
- 		if (ret)
- 		  return ret;
- 		ret = __iddp_connect_socket(sk, saddrp);
+ 		if (ret == 0)
+ 			ret = __xddp_connect_socket(sk, saddrp);
  		break;
  
  	case _RTIOC_BIND:
@@ -384,7 +668,7 @@ index 3fe43db..86b699a 100644
  		if (ret)
  			return ret;
  		if (saddrp == NULL)
-@@ -867,19 +871,19 @@ static int __iddp_ioctl(struct rtipc_private *priv,
+@@ -1024,19 +1031,19 @@ static int __xddp_ioctl(struct rtipc_private *priv,
  		break;
  
  	case _RTIOC_GETSOCKNAME:
@@ -398,20 +682,20 @@ index 3fe43db..86b699a 100644
  		break;
  
  	case _RTIOC_SETSOCKOPT:
--		ret = __iddp_setsockopt(sk, user_info, arg);
-+		ret = __iddp_setsockopt(sk, context, arg);
+-		ret = __xddp_setsockopt(sk, user_info, arg);
++		ret = __xddp_setsockopt(sk, context, arg);
  		break;
  
  	case _RTIOC_GETSOCKOPT:
--		ret = __iddp_getsockopt(sk, user_info, arg);
-+		ret = __iddp_getsockopt(sk, context, arg);
+-		ret = __xddp_getsockopt(sk, user_info, arg);
++		ret = __xddp_getsockopt(sk, context, arg);
  		break;
  
  	case _RTIOC_LISTEN:
-@@ -899,13 +903,13 @@ static int __iddp_ioctl(struct rtipc_private *priv,
+@@ -1056,13 +1063,13 @@ static int __xddp_ioctl(struct rtipc_private *priv,
  }
  
- static int iddp_ioctl(struct rtipc_private *priv,
+ static int xddp_ioctl(struct rtipc_private *priv,
 -		      rtdm_user_info_t *user_info,
 +		      struct rtdm_fd *context,
  		      unsigned int request, void *arg)
@@ -419,32 +703,11 @@ index 3fe43db..86b699a 100644
  	if (rtdm_in_rt_context() && request == _RTIOC_BIND)
  		return -ENOSYS;	/* Try downgrading to NRT */
  
--	return __iddp_ioctl(priv, user_info, request, arg);
-+	return __iddp_ioctl(priv, context, request, arg);
+-	return __xddp_ioctl(priv, user_info, request, arg);
++	return __xddp_ioctl(priv, context, request, arg);
  }
  
- static int iddp_init(void)
-diff --git a/kernel/drivers/ipc/internal.h b/kernel/drivers/ipc/internal.h
-index 4422ba0..7470342 100644
---- a/kernel/drivers/ipc/internal.h
-+++ b/kernel/drivers/ipc/internal.h
-@@ -69,16 +69,6 @@ static inline void *rtipc_context_to_state(struct rtdm_fd *context)
- 	return p->state;
- }
- 
--static inline void *rtipc_fd2map(int fd)
--{
--	return (void *)(long)(fd + 1);
--}
--
--static inline int rtipc_map2fd(void *p)
--{
--	return (long)p - 1;
--}
--
- static inline nanosecs_rel_t rtipc_timeval_to_ns(const struct timeval *tv)
- {
- 	nanosecs_rel_t ns = tv->tv_usec * 1000;
+ struct rtipc_protocol xddp_proto_driver = {
 -- 
 1.7.10.4
 
