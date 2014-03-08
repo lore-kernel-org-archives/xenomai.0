@@ -1,14 +1,9 @@
-Message-ID: <531A3EE0.8070205@xenomai.org>
-Date: Fri, 07 Mar 2014 22:49:20 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1394099202.26562.YahooMailNeo@web163902.mail.gq1.yahoo.com>
- <53199C18.40508@reliableembeddedsystems.com> <5319C7CA.1030701@xenomai.org>
- <531A36AB.9040009@reliableembeddedsystems.com>
-In-Reply-To: <531A36AB.9040009@reliableembeddedsystems.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] process behaviour when running xenomai
+Date: Fri, 7 Mar 2014 18:24:39 -0800
+Message-ID: <CADoY7i-=m7VYrr8VqihSOS9LNPpQGCkXE5ttR6wo+rTevQEymg@mail.gmail.com>
+From: Newell Jensen <newell.jensen@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] imx6dl -- setup
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,40 +12,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Robert Berger <gmane@reliableembeddedsystems.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 03/07/2014 10:14 PM, Robert Berger wrote:
-> Hi Gilles,
-> 
-> On 03/07/2014 03:21 PM, Gilles Chanteperdrix wrote:>
->> Generally, before you report a non-working configuration of Xenomai,
->> with a certain version of the kernel, please try the exact same kernel
->> configuration without Xenomai.
->>
->>
-> 
-> I think I was not explicit enough in my previous email.
-> The problem that ethernet does not work is __NOT__ due to Xenomai!
-> 
-> It's a general problem with beagle-xm and 3.10 (and not just)
-> The workaround in theory is CONFIG_NOP_USB_XCEIV=M which will in best
-> case turn on the ethernet interface in user space and not allow the
-> kernel to load a rootfs over nfs.
+All,
 
-I would say you need CONFIG_NOP_USB_XCEIV=Y instead of M, otherwise you
-will need to put the module in an initramfs (if you try to load the
-module from the rootfs on NFS, you have an obvious chicken-and-egg issue).
-I also turn on the OMAP-specific transceivers in the configuration I
-use, just in case.
+First off I want to say hello.  I am new to this list and I am hoping that
+someone might be able to point me in the direction to many of the questions
+that I have.
 
-You may also have to use the rootwait kernel parameter in order to wait
-for the USB detection.
+Background on my situation:
 
-And finally, in u-boot, you may want to use "usb stop" before you call
-bootm, as some versions of Linux do not like to start with the USB
-already running.
+1. Target machine: imx6dl-sabresd (not imx6q) development board from
+Freescale.
+2. Host machine: Linux debian 3.2.0-4-amd64 #1 SMP Debian 3.2.54-2 x86_64
+GNU/Linux
+3.
+CROSS_COMPILE=/opt/freescale/usr/local/gcc-4.6.2-glibc-2.13-linaro-multilib-2011.12/fsl-linaro-toolchain/bin/arm-none-linux-gnueabi-
+4. I would like to install Xenomai on Linux for hard real time requirements
+with SMP.
 
--- 
-                                                                Gilles.
+The link below makes mention that Xenomai doesn't work with 3.0.35 because
+it doesn't have support for SMP.
 
+https://community.freescale.com/docs/DOC-97974
+
+Because of this I have been thinking that I would need to get a higher
+version kernel since we need SMP to work on our system.  However, since I
+have an imx6dl-sabresd board I need at least the 3.10 kernel instead of a
+3.8 kernel because u-boot wants the device tree blob file
+imx6dl-sabresd.dtb, which from what I can tell isn't possible until
+imx6dl-sabresd.dts makes its way into the kernel.
+
+I have hope though, as I read that 3.10 patches are not included in Xenomai
+2.6.3 but that they can *work* with 3.10 kernels.
+
+Questions:
+
+1. Are there any specific kernel and patch set combinations that I could
+use to get Xenomai installed on an imx6dl-sabresd board?
+2. If so, which specific kernel, patches, and other versions of the tools
+should I use?
+
+I feel that I have the know-how to get this working but trying every
+possible combination with only slightly educated guesses wastes time and I
+hate doing that.
+
+I appreciate any help that I receive.
+
+Thanks,
+
+Newell
