@@ -1,7 +1,12 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Date: Mon, 10 Mar 2014 14:12:20 +0100
-Message-Id: <1394457140-11250-1-git-send-email-gilles.chanteperdrix@xenomai.org>
-Subject: [Xenomai] [PATCH] registry: use pkg-config to retrieve fuse flags
+MIME-Version: 1.0
+In-Reply-To: <531D6083.3030006@xenomai.org>
+References: <CAFNBftdTVXFwu5OjMML0R7GJTXDQricBYACkV_HmQmf9Rv6DDg@mail.gmail.com>
+ <531D6083.3030006@xenomai.org>
+Date: Mon, 10 Mar 2014 11:57:50 -0300
+Message-ID: <CAFNBftfGFHxWN0eV=_rfq1y6sAVzgnqm0qKZ6bWaX1cYNSaV7g@mail.gmail.com>
+From: Flavio Castro Alves Filho <flavio.alves@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Build Xenomai Lib native on the Beaglebone Black
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,56 +15,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-This helps forcing Xenomai to use a custom built version of libfuse, instead
-of the one it finds in /usr/lib.
----
- configure.ac |   22 ++++------------------
- 1 file changed, 4 insertions(+), 18 deletions(-)
+Hello Gilles,
 
-diff --git a/configure.ac b/configure.ac
-index 791f12e..5088429 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -286,23 +286,9 @@ AC_ARG_ENABLE(registry,
- AC_MSG_RESULT(${use_registry:-no})
- 
- if test x$use_registry = xy; then
--	fuse_cflags="-D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=25"
--	fuse_ldflags="-lfuse"
--	AC_LANG_SAVE
--	AC_LANG_C
--	save_CPPFLAGS="$CPPFLAGS"
--	CPPFLAGS=$fuse_cflags
--	AC_CHECK_HEADER(fuse.h,,
--		AC_MSG_ERROR([Cannot find fuse.h (part of libfuse development package) on this system])
--	)
--	AC_CHECK_LIB(fuse, fuse_new,,
--		AC_MSG_ERROR([Cannot find libfuse (FUSE development package) on this system]),
--		[-lpthread -lrt -ldl]
--	)
--	CPPFLAGS="$save_CPPFLAGS"
--	AC_LANG_RESTORE
-+        PKG_CHECK_MODULES(FUSE, fuse)
-+
- 	AC_DEFINE(CONFIG_XENO_REGISTRY,1,[config])
--	AC_DEFINE(_FILE_OFFSET_BITS,64,[config])
- 	AC_DEFINE(FUSE_USE_VERSION,25,[config])
- fi
- AM_CONDITIONAL(XENO_REGISTRY,[test x$use_registry = xy])
-@@ -614,8 +600,8 @@ XENO_USER_APP_CFLAGS="-D_GNU_SOURCE -D_REENTRANT"
- XENO_USER_APP_LDFLAGS=
- 
- if test x$use_registry = xy; then
--   XENO_FUSE_CFLAGS=$fuse_cflags
--   XENO_USER_APP_LDFLAGS="$XENO_USER_APP_LDFLAGS $fuse_ldflags"
-+   XENO_FUSE_CFLAGS=$FUSE_CFLAGS
-+   XENO_USER_APP_LDFLAGS="$XENO_USER_APP_LDFLAGS $FUSE_LIBS"
- fi
- 
- dnl Internal CFLAGS and LDFLAGS, may be enhanced per-arch below
+It worked :-)
+
+Thank you.
+
+Flavio
+
+
+2014-03-10 3:49 GMT-03:00 Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org>:
+> On 03/10/2014 04:00 AM, Flavio Castro Alves Filho wrote:
+>> Hello,
+>>
+>> Does anybody tried to build the Xenomai user space native on a BeagleBone Black?
+>>
+>> I'm using Debian on my board, with the build-essential package installed.
+>
+> If you do not use xenomai 2.6 git, you will probably need this patch:
+> http://git.xenomai.org/xenomai-2.6.git/commit/?id=b10527ed14399a6485f69b935988d9d5211066d0
+>
+> to allow compiling xenomai for the armhf flavor of debian.
+>
+>>
+>> Should we have the same result as cross-compiling?
+>
+> With the same versions of the tools, you should have exactly the same result.
+> Only, you will probably get it after some more time.
+>
+> Regards.
+>
+> --
+>                                                                 Gilles.
+
+
+
 -- 
-1.7.10.4
+Flavio de Castro Alves Filho
 
+flavio.alves@gmail.com
+www.linuxembarcado.com
+Twitter: http://twitter.com/#!/fraviofii
+LinkedIn profile: www.linkedin.com/in/flaviocastroalves
 
