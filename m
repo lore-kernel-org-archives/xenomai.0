@@ -1,10 +1,12 @@
+Message-ID: <531DD795.5050801@xenomai.org>
+Date: Mon, 10 Mar 2014 16:17:41 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Mon, 10 Mar 2014 18:31:30 +0330
-Message-ID: <CAKKWdtdSNQ1BHnqfOQjQcXHVAztzqkCu2qd60DOVwvtYJxcx+Q@mail.gmail.com>
-From: ali hagigat <hagigatali@gmail.com>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] a question about rt_mutex_acquire()
+References: <CAKKWdtdSNQ1BHnqfOQjQcXHVAztzqkCu2qd60DOVwvtYJxcx+Q@mail.gmail.com>
+In-Reply-To: <CAKKWdtdSNQ1BHnqfOQjQcXHVAztzqkCu2qd60DOVwvtYJxcx+Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] a question about rt_mutex_acquire()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,25 +15,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: ali hagigat <hagigatali@gmail.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-rt_mutex_acquire() creates a segmentation fault, why?
--------------- next part --------------
-./examp1
-inside task2
-Segmentation fault (core dumped)
+On 03/10/2014 04:01 PM, ali hagigat wrote:
+> rt_mutex_acquire() creates a segmentation fault, why?
 
+Because rt_mutex_create failed? Otherwise we would see the message 
+"success"?
 
-dmesg -c
-xtask2[12314]: segfault at 0 ip b7703b38 sp b76ea2a0 error 4 in libnative.s=
-o.3.0.0[b7700000+6000]
+Is this a game? Or are you using Xenomai for a real project?
 
 
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: examp1.c
-Type: text/x-csrc
-Size: 1131 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140310/7cb2f3c=
-d/attachment.c>
+-- 
+					    Gilles.
+
