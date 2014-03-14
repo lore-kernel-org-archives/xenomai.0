@@ -1,12 +1,10 @@
-Message-ID: <53205346.6020605@xenomai.org>
-Date: Wed, 12 Mar 2014 13:29:58 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <3F7844F7-FC18-44C3-A946-528C28CB81AC@gatech.edu>
-In-Reply-To: <3F7844F7-FC18-44C3-A946-528C28CB81AC@gatech.edu>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Build Xenomai Lib native on the Beaglebone Black
+Date: Fri, 14 Mar 2014 15:22:27 +0530
+Message-ID: <CAC-NLwzBXJ6BkmR+L-WnmJ04PnTba+7pbW2Y3nr7D30bozJzTA@mail.gmail.com>
+From: ashwin damle <ashwindamle@gmail.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Transfer data from a kernel module to user
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,57 +13,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Yogi A. Patel" <yapatel@gatech.edu>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 03/12/2014 12:59 AM, Yogi A. Patel wrote:
-> Flavio -
-> 
-> Would you mind sharing what latencies you are seeing on your Beaglebone black with xenomai?
+Hello Developers,
 
-Some results which might be interesting, the results for the IGEPv2
-board, using an omap3630 processor, close to the beaglebone black
-processor, are in the 40-45us range, if the kernel is compiled with the
-right options, that is:
-- kernel built using thumb2 and optimized for size
-- preemption set to CONFIG_PREEMPT_NONE
-- CONFIG_SMP disabled
-- stack unwinding enabled
-- xenomai unlocked switch disabled
-- all xenomai/ipipe debugs off, except maybe "watchdog support" and
-"detect mutexes held in relaxed sections", as they should not incur an
-increase in latency.
+I am trying to pass data from the Xenomai kernel module, using RTDM driver,
+to a user program. I am using the default examples-tut01-skeleton-drv.c and
+tut01-skeleton-app.c. The examples are working nicely  and I could get the
+right expected results. I am using Linux raspberrypi 3.5.7-xenomai #4
+PREEMPT Tue Mar 11 16:49:44 IST 2014 armv6l GNU/Linux, Xenomai used for
+during compilation was xenomai-2.6.2.1. The target is RaspberryPi.
 
-Since the I-pipe core series (so since linux 3.2), I have started
-recording the results I get on the test platforms I have, see, to show
-the improvements over time (most improvements are due to configurations
-changes):
+The intention is to transfer a integer variable from the kernel to user. I
+tried changing the default example program only to reeive the error message
+""ERROR : can't copy data from driver". I am unable to figure-out the
+problem. Attach is the program which I edited. I have written a comment
+wherever I define my variable, which is freq. Below is a snap
 
-http://xenomai.org/~gch/core-3.2-latencies/
-http://xenomai.org/~gch/core-3.4-latencies/
-http://xenomai.org/~gch/core-3.5-latencies/
-http://xenomai.org/~gch/core-3.8-latencies/
-http://xenomai.org/~gch/core-3.10-latencies/
+"
+static ssize_t simple_rtdm_read_nrt(struct rtdm_dev_context *context,
+                    rtdm_user_info_t * user_info, void *buf,
+                    size_t nbyte)
+{
+    buffer_t * buffer =3D (buffer_t *) context->dev_private;
+    int size =3D (buffer->size > nbyte) ? nbyte : buffer->size;
 
-Note that we recently discovered that disabling the L2 cache
-"write-allocate" bit on imx6 and omap4, so probably on any multi-core
-cortex a9, improved latencies considerably, and that moving the
-spinlocks code out-of-line did too, see:
-http://sisyphus.hd.free.fr/~gilles/panda-test/inline-spinlocks.png
+    buffer->size =3D sizeof(buffer->freq);
+    buffer->freq =3D 50;            //my variable, this is printed correctly
+as seen in dmesg
 
-The change of the L2 write-allocate bit will be in the next Xenomai 2.x
-release, whereas the change of spinlock code will only appear in xenomai
-3.0.
+    if (rtdm_safe_copy_to_user(user_info, buf, &buffer->freq,
+sizeof(buffer->freq)))
+        rtdm_printk("ERROR : can't copy data from driver\n");
 
-Anyway, I would like to also try disabling the L2 cache write-allocate
-on omap3, but IGEPv2 is running in secure mode, so I can not change this
-configuration, I would probably need an "smc" call, but I have not found
-a documentation for these calls, so if anyone knows where to find this
-info, I am interested.
+    return size;
+}
+"
+Attached is the user program, too.
 
-Regards.
+Also, I wanted to know whether it is explicitly required to write to the
+device before reading it? I only want to read the device.( My application
+is noting the time of GPIO interrupts. )
+
+Could you please help me with this? Request you to help me solve the
+problem.
+
+Thanks.
+Ashwin
+
+-- =
 
 
--- 
-                                                                Gilles.
-
+Support the
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: tut01-skeleton-app.c
+Type: text/x-csrc
+Size: 3667 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140314/6a2404f=
+5/attachment.c>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: tut01-skeleton-drv.c
+Type: text/x-csrc
+Size: 5110 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140314/6a2404f=
+5/attachment-0001.c>
