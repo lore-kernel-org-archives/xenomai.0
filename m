@@ -1,11 +1,12 @@
-Message-ID: <1394996997.10478.YahooMailNeo@web171605.mail.ir2.yahoo.com>
-Date: Sun, 16 Mar 2014 19:09:57 +0000 (GMT)
-From: Matthias Schneider <ma30002000@yahoo.de>
+Message-ID: <532605BE.3060101@xenomai.org>
+Date: Sun, 16 Mar 2014 21:12:46 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Issue suspending threads on mercury
-Reply-To: Matthias Schneider <ma30002000@yahoo.de>
+References: <1394996997.10478.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+In-Reply-To: <1394996997.10478.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Issue suspending threads on mercury
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,20 +15,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Matthias Schneider <ma30002000@yahoo.de>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi all,=0A=0AI am experiencing a problem with xenomai-forge (recent "next" =
-checkout) on=A0=0AMercury (on top of a 3.12.9+CONFIG_PREEMPT_RT on x86) whe=
-n suspending=A0=0Atasks/threads.=0A=0AAs far =A0as I understand, the mercur=
-y implementation sends a signal to the thread=A0=0Ato be suspended, with th=
-at threads signal handler setting the suspended state,=A0=0Ai.e. the settin=
-g of __THREAD_S_SUSPENDED happens in notifier_callback, which=A0=0Aseems to=
- be different from the cobalt implementation.=0A=0AThe problem I am experie=
-ncing is that sometimes the signal handler never seems=A0=0Ato get called i=
-n a thread that should be suspended, =A0i.e. that thread suspension=A0=0Aso=
-metimes simply does not work.=0AThe following example code (for the vxworks=
- skin) reproduces the issue (it gets=A0=0Astuck in the loop waiting for the=
- WIND_SUSPEND flag):=A0=0A=0Ahttp://www.pastebin.ca/2667435=0A=0AAny hints =
-on how I can continue investigating this issue?=0A=0AThanks in advance for =
-the help=0Aregards,=0AMatthias=0A
+On 03/16/2014 08:09 PM, Matthias Schneider wrote:
+> Hi all,
+> 
+> I am experiencing a problem with xenomai-forge (recent "next" checkout) on 
+> Mercury (on top of a 3.12.9+CONFIG_PREEMPT_RT on x86) when suspending 
+> tasks/threads.
+> 
+> As far  as I understand, the mercury implementation sends a signal to the thread 
+> to be suspended, with that threads signal handler setting the suspended state, 
+> i.e. the setting of __THREAD_S_SUSPENDED happens in notifier_callback, which 
+> seems to be different from the cobalt implementation.
+> 
+> The problem I am experiencing is that sometimes the signal handler never seems 
+> to get called in a thread that should be suspended,  i.e. that thread suspension 
+> sometimes simply does not work.
+> The following example code (for the vxworks skin) reproduces the issue (it gets 
+> stuck in the loop waiting for the WIND_SUSPEND flag): 
+> 
+> http://www.pastebin.ca/2667435
+> 
+> Any hints on how I can continue investigating this issue?
+
+Have you tried checking taskSpawn and taskSuspend return values? To see
+if the calls are successful?
+
+
+-- 
+                                                                Gilles.
 
