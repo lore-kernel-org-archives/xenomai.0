@@ -1,29 +1,14 @@
-Message-ID: <531372CF.4060608@xenomai.org>
-Date: Sun, 02 Mar 2014 19:05:03 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+References: <1394996997.10478.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+ <532605BE.3060101@xenomai.org>
+Message-ID: <1395004042.86948.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+Date: Sun, 16 Mar 2014 21:07:22 +0000 (GMT)
+From: Matthias Schneider <ma30002000@yahoo.de>
+In-Reply-To: <532605BE.3060101@xenomai.org>
 MIME-Version: 1.0
-References: <CAEbDrgkifqMcqqEqh5hKA90YzFzcyDxLHFC79F8CWvZi5heyWQ@mail.gmail.com>
- <530D0205.9050406@xenomai.org>
- <CAEbDrgmwch94crHAcrbJDj9MxaiBNaYeLH2U9NtS0tuJKmdDDw@mail.gmail.com>
- <530D0BBD.6070704@xenomai.org>
- <CAK4EZFR_L+=-LtSVHkvZ36rPOA8ViVboB9M9rf4Yqk=crfBotw@mail.gmail.com>
- <CAEbDrgk=yrGq8KdpdN8e7RtO7qUpWTtwRXhrg0A0=KbDjqoDng@mail.gmail.com>
- <530D2C92.9010607@xenomai.org>
- <CAEbDrgkWZqSxjCUfjR3YCp=YOzh1r-=YC6Wyr-Jvk9d7JYEcmQ@mail.gmail.com>
- <530E6159.4050204@xenomai.org>
- <CAEbDrgmo==15Zar2X=yz=wBL3pJ4DOiqKy2xx43UPxuu6_5LhA@mail.gmail.com>
- <530F17EC.6020204@xenomai.org>
- <CAEbDrgnq46OJ6bi1FCQmC8JBWhSA6o=M9K=fg4x4hq3JpwcBjw@mail.gmail.com>
- <530F9CA2.2040601@xenomai.org>
- <CAEbDrgmLq08Xq5Cgt7oXX3koQDr+HVx_JS-7Nn_pC53rmTTV-g@mail.gmail.com>
- <531075E7.7060107@xenomai.org>
- <CAEbDrgmQNRjaTEm5TvM93Yy3k+fa+QRETFzXdM3bz8=-N15DPQ@mail.gmail.com>
- <53134A2E.1000406@xenomai.org>
- <CAEbDrgmB4vZ0TPrD2-_-vR8bDwYXLKL2fMdNzFZWGsoiK9ZBDQ@mail.gmail.com>
-In-Reply-To: <CAEbDrgmB4vZ0TPrD2-_-vR8bDwYXLKL2fMdNzFZWGsoiK9ZBDQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RaspberryPi kernel 3.8 issue
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Issue suspending threads on mercury
+Reply-To: Matthias Schneider <ma30002000@yahoo.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -32,32 +17,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gregory Dymarek <gregd72002@gmail.com>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/02/2014 06:26 PM, Gregory Dymarek wrote:
-> So I started from scratch, have not used any xenomai/ipipe patches. But
-> used the same .config.
-> As a result all worked fine. The USB device is getting initialized
-> correctly.
-> 
-> So the current situation is that xenomai does work on 3.2 but does not on
-> 3.8 because of some USB driver issues.
-> I diff'ed the code for dwc_otg_hcd_handle_intr and this has changed.
-> What is intriguing:
-> https://github.com/raspberrypi/linux/blob/rpi-3.8.y/drivers/usb/host/dwc_otg/dwc_otg_hcd_intr.c#L530
-> 
-> // We should be OK doing this because the common interrupts should already
-> have been serviced
-> 
-> So I removed all the DEBUG code from this function, but this did not help
-> either. Not sure if my test is valid in here.
-
-As I said, I believe there is now no substitute to understanding how the
-driver works if you want to debug the issue on 3.8. The problem to
-understand is why the interrupt handler does nothing and returns
-IRQ_NONE instead of acknowledging the interrupt and returning IRQ_HANDLED.
-
--- 
-                                                                Gilles.
+> On Sunday, March 16, 2014 9:12 PM, Gilles Chanteperdrix <gilles.chanteper=
+drix@xenomai.org> wrote:=0A=0A> > On 03/16/2014 08:09 PM, Matthias Schneide=
+r wrote:=0A> =0A>>  Hi all,=0A>> =0A>>  I am experiencing a problem with xe=
+nomai-forge (recent "next" =0A> checkout) on Mercury (on top of a 3.12.9+CO=
+NFIG_PREEMPT_RT on x86) when suspending =0A>>  tasks/threads.=0A>> =0A>>  A=
+s far=A0 as I understand, the mercury implementation sends a signal to the =
+thread =0A>>  to be suspended, with that threads signal handler setting the=
+ suspended state, =0A>>  i.e. the setting of __THREAD_S_SUSPENDED happens i=
+n notifier_callback, which =0A>>  seems to be different from the cobalt imp=
+lementation.=0A>> =0A>>  The problem I am experiencing is that sometimes th=
+e signal handler never seems =0A>>  to get called in a thread that should b=
+e suspended,=A0 i.e. that thread suspension =0A>>  sometimes simply does no=
+t work.=0A>>  The following example code (for the vxworks skin) reproduces =
+the issue (it=A0gets =0A>>  stuck in the loop waiting for the WIND_SUSPEND =
+flag): =0A>> =0A>>  http://www.pastebin.ca/2667435=0A>> =0A>>  Any hints on=
+ how I can continue investigating this issue?=0A> =0A> Have you tried check=
+ing taskSpawn and taskSuspend return values? To see=0A> if the calls are su=
+ccessful?=0A> =0A> =0A> -- =0A> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 Gilles.=0A> =0A=0AHi Gilles,=0A=0Ayes, the calls seem to return=
+ with "OK". I have put updated sample code at=0A=0Ahttp://www.pastebin.ca/2=
+667459=0A=0A=0AThe problem seems to happen quite often when attached with g=
+db (mostly during=0Athe first execution of the do .. while loop.=0A=0AThe t=
+hread not suspended stack looks like this:=0A#0 =A00xffffe424 in __kernel_v=
+syscall ()=0A#1 =A00xb7e8e8ee in clock_nanosleep (clock_id=3D-1208270244, f=
+lags=3D1, req=3D0xb69ff1f0, rem=3D0x0) at ../sysdeps/unix/sysv/linux/clock_=
+nanosleep.c:47=0A#2 =A00xb7fa02cb in threadobj_sleep (ts=3D0xb69ff1f0) at t=
+hreadobj.c:1096=0A#3 =A00xb7fcdf00 in taskDelay (ticks=3D1000) at taskLib.c=
+:851=0A#4 =A00x0804878f in windTask (...) at task-1.c:15=0A[...]=0A=0Awhile=
+ all the other suspended stacks look like=0A=0A#0 =A00xffffe424 in __kernel=
+_vsyscall ()=0A#1 =A00xb7f5272b in read () at ../sysdeps/unix/syscall-templ=
+ate.S:81=0A#2 =A00xb7fa679f in notifier_wait (nf=3D0x804a418) at notifier.c=
+:279=0A#3 =A00xb7f9cf36 in notifier_callback (nf=3D0x804a418) at threadobj.=
+c:430=0A#4 =A00xb7fa524d in notifier_sighandler (sig=3D42, siginfo=3D0xb7d8=
+9e0c, uc=3D0xb7d89e8c) at notifier.c:91=0A#5 =A0<signal handler called>=0A#=
+6 =A00xffffe424 in __kernel_vsyscall ()=0A#7 =A00xb7e8e8ee in clock_nanosle=
+ep (...) at clock_nanosleep.c:47=0A#8 =A00xb7fa02cb in threadobj_sleep (ts=
+=3D0xb7d8a1f0) at threadobj.c:1096=0A#9 =A00xb7fcdf00 in taskDelay (ticks=
+=3D1000) at taskLib.c:851=0A#10 0x0804878f in windTask (...) at task-1.c:15=
+=0A=0A, which is probably what I would suspect...=0A=0AMatthias
 
