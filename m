@@ -1,14 +1,12 @@
-Message-ID: <53263819.1050501@xenomai.org>
-Date: Mon, 17 Mar 2014 00:47:37 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5326AE7E.3050201@xenomai.org>
+Date: Mon, 17 Mar 2014 09:12:46 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <3F7844F7-FC18-44C3-A946-528C28CB81AC@gatech.edu>
- <53205346.6020605@xenomai.org>
- <09644C14-EC74-4FA5-AA27-92DDEECF57C5@gatech.edu>
-In-Reply-To: <09644C14-EC74-4FA5-AA27-92DDEECF57C5@gatech.edu>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Build Xenomai Lib native on the Beaglebone Black
+References: <1394996997.10478.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+In-Reply-To: <1394996997.10478.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Issue suspending threads on mercury
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,22 +15,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Yogi A. Patel" <yapatel@gatech.edu>
-Cc: xenomai@xenomai.org
+To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/16/2014 10:37 PM, Yogi A. Patel wrote:
-> Hi Gilles -
-> 
-> Thanks for this information - this is great and provides a good
-> comparison. I am getting about 40us on my beaglebone black running
-> debian+xenomai 2.6.3. Disabling the L2 cache write-allocate bit to
-> get 10us would be phenomenal.
-> 
-> Question - what is the option to deselect in the “make menuconfig” to
-> disable the L2 cache write-allocate bit?
+On 03/16/2014 08:09 PM, Matthias Schneider wrote:
+> Hi all,
+>
+> I am experiencing a problem with xenomai-forge (recent "next" checkout) on
+> Mercury (on top of a 3.12.9+CONFIG_PREEMPT_RT on x86) when suspending
+> tasks/threads.
+>
+> As far  as I understand, the mercury implementation sends a signal to the thread
+> to be suspended, with that threads signal handler setting the suspended state,
+> i.e. the setting of __THREAD_S_SUSPENDED happens in notifier_callback, which
+> seems to be different from the cobalt implementation.
+>
+> The problem I am experiencing is that sometimes the signal handler never seems
+> to get called in a thread that should be suspended,  i.e. that thread suspension
+> sometimes simply does not work.
+> The following example code (for the vxworks skin) reproduces the issue (it gets
+> stuck in the loop waiting for the WIND_SUSPEND flag):
+>
+> http://www.pastebin.ca/2667435
 
-Please read my answer again.
+Could you check this URL? I can't seem to find anything pasted there.
+
+>
+> Any hints on how I can continue investigating this issue?
+>
+
+Running the test suite in lib/vxworks/testsuite may give us more 
+information. sem-1, sem-2, task-2 and wd-1 are all using the 
+suspend/resume mechanism.
 
 -- 
-                                                                Gilles.
+Philippe.
 
