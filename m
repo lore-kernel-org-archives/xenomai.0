@@ -1,10 +1,9 @@
-Message-ID: <BLU177-W25E97426D2CEB8930CE73AA07F0@phx.gbl>
-From: Rosali Pyun <whimt@hotmail.com>
-Date: Wed, 19 Mar 2014 16:50:56 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Analogy- Using counter with NI m series DAQ card
+Date: Wed, 19 Mar 2014 14:24:10 -0700
+Message-ID: <CADoY7i80BSHm4iu9Mv35mcQ6v=SK2d1fL0qyoDeHoaib+4D8mw@mail.gmail.com>
+From: Newell Jensen <newell.jensen@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] Device Profile and API questions
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,47 +12,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hello to all,
-I am using xenomai 2.6.3 with linux kernel 3.5.7 on an ubuntu 12.04.
-I am trying to implement counter functionality for NI M series DAQ card (i.=
-e. NI PCI 6229).
-I was adpated the code from Comedi example on NI general-purpose counter (a=
-nd also with the answer from the mailing list http://www.xenomai.org/piperm=
-ail/xenomai/2011-April/023204.html), =
+Hello,
 
-but I got the following values even when I did not wire any signals to =
+We are currently evaluating Xenomai's interrupt latency response on the
+Freescale imx6dl chip.  I have successfully installed Xenomai several days
+ago after posting this question to the mailing list:
 
-the pins. (Please see the attachment for my code)
+http://www.xenomai.org/pipermail/xenomai/2014-March/030336.html
 
-At least it increments, and I can arm/disarm the counter.
+Thanks to Gilles for supplying that information :)
 
-counter reader : 0x1317252counter reader : 0x26299a1counter reader : 0x393b=
-ca6
+I used the ipipe pre-patched kernel and have a Debian rootfs.  Everything
+is working great so far.  I have used latency, klatency and the other tests
+and the response so far has been passable for our requirements.  We now
+want to write a driver for the EPIT counter to learn how to use Xenomai as
+well as see what kind of interrupt latency we can achieve.  If this passes
+we can then move on to our ultimate goal.
 
-counter reader : 0x4c4e453counter reader : 0x5f60c1acounter reader : 0x7273=
-3c6counter reader : 0x8585540
+Our ultimate goal is to have a dedicated hardware interrupt line (pin to
+chip) which will handle 125 microsecond interrupts that will initiate
+parallel bus reads/writes.
 
-counter reader : 0x9897b6ccounter reader : 0xabaa1b5counter reader : 0xbebc=
-93dcounter reader : 0xd1cef7b
+The questions below relate to 'both' the counter irq and the dedicated hard
+irq (pin to chip) drivers so if there are different Profiles or APIs that I
+should use for each one and vice versa, pointing that out would be greatly
+appreciated.  My general questions are listed below.
 
+1. Which Device Profile is best for hard irq interrupt handler?
 
-I think there must be a problem how I configured the counter.Could anyone g=
-ive me some tips on configuring the counter properly?Also, is there a Analo=
-gy documentation that tells which macro variables to configure to load coun=
-ter?
-(My goal in the end would be using counter for encoder.)
+2. What API is best for hard irq interrupt handler?
 
+I noticed that irqbench.c is using the HAL API for hard irq but RTDM for
+other irq and didn't know what to make of that.
 
-I appreciate any help that I receive.
-Best,Rosali 		 	   		  =
+Thanks in advance,
 
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: counterPCI6229.cpp
-Type: text/x-c
-Size: 3887 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140319/f37a5cc=
-2/attachment.bin>
+Newell
