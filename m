@@ -1,15 +1,10 @@
-Message-ID: <53286AAF.20708@xenomai.org>
-Date: Tue, 18 Mar 2014 16:47:59 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <BLU177-W25E97426D2CEB8930CE73AA07F0@phx.gbl>
+From: Rosali Pyun <whimt@hotmail.com>
+Date: Wed, 19 Mar 2014 16:50:56 +0000
 MIME-Version: 1.0
-References: <CAKKWdtdSNQ1BHnqfOQjQcXHVAztzqkCu2qd60DOVwvtYJxcx+Q@mail.gmail.com>
- <531DD795.5050801@xenomai.org>
- <CAKKWdtd09OQTenTC6KcQP021VnmezUZHkj0J19DKAGLzEe3Fdw@mail.gmail.com>
- <CAKKWdtd5y4PF+oEhap-pxNckSTsWquBxj_Y5zG7ZByY+X5e_NA@mail.gmail.com>
-In-Reply-To: <CAKKWdtd5y4PF+oEhap-pxNckSTsWquBxj_Y5zG7ZByY+X5e_NA@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] a question about rt_mutex_acquire()
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Analogy- Using counter with NI m series DAQ card
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,36 +13,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/18/2014 04:42 PM, ali hagigat wrote:
-> On 3/11/14, ali hagigat <hagigatali@gmail.com> wrote:
->> On 3/10/14, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
->>> On 03/10/2014 04:01 PM, ali hagigat wrote:
->>>> rt_mutex_acquire() creates a segmentation fault, why?
->>>
->>> Because rt_mutex_create failed? Otherwise we would see the message
->>> "success"?
->>>
->>> Is this a game? Or are you using Xenomai for a real project?
->>>
->>>
->>> --
->>> 					    Gilles.
->>>
->>
->> I am just testing Xenomai. If i comment rt_mutex_acquire() I see the
->> message, "success", and a real time mutex is created correctly.  by
->> uncommenting "rt_mutex_acquire()" there is a segmentation fault.
->>
->
-> Why there is a segmentation fault?
->
+Hello to all,
+I am using xenomai 2.6.3 with linux kernel 3.5.7 on an ubuntu 12.04.
+I am trying to implement counter functionality for NI M series DAQ card (i.=
+e. NI PCI 6229).
+I was adpated the code from Comedi example on NI general-purpose counter (a=
+nd also with the answer from the mailing list http://www.xenomai.org/piperm=
+ail/xenomai/2011-April/023204.html), =
 
-Because rt_mutex_acquire() runs before rt_mutex_create(). Check your 
-code to find out why.
+but I got the following values even when I did not wire any signals to =
 
--- 
-Philippe.
+the pins. (Please see the attachment for my code)
 
+At least it increments, and I can arm/disarm the counter.
+
+counter reader : 0x1317252counter reader : 0x26299a1counter reader : 0x393b=
+ca6
+
+counter reader : 0x4c4e453counter reader : 0x5f60c1acounter reader : 0x7273=
+3c6counter reader : 0x8585540
+
+counter reader : 0x9897b6ccounter reader : 0xabaa1b5counter reader : 0xbebc=
+93dcounter reader : 0xd1cef7b
+
+
+I think there must be a problem how I configured the counter.Could anyone g=
+ive me some tips on configuring the counter properly?Also, is there a Analo=
+gy documentation that tells which macro variables to configure to load coun=
+ter?
+(My goal in the end would be using counter for encoder.)
+
+
+I appreciate any help that I receive.
+Best,Rosali 		 	   		  =
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: counterPCI6229.cpp
+Type: text/x-c
+Size: 3887 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140319/f37a5cc=
+2/attachment.bin>
