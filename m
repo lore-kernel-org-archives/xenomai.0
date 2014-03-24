@@ -1,15 +1,13 @@
-Message-ID: <532F0BCF.5080603@xenomai.org>
-Date: Sun, 23 Mar 2014 17:29:03 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <53302093.9090503@gmail.com>
+Date: Mon, 24 Mar 2014 13:09:55 +0100
+From: Wojciech Domski <wojciech.domski@gmail.com>
 MIME-Version: 1.0
-References: <1394996997.10478.YahooMailNeo@web171605.mail.ir2.yahoo.com>
- <5326AE7E.3050201@xenomai.org>
- <1395076680.34261.YahooMailNeo@web171604.mail.ir2.yahoo.com>
- <1395582539.27462.YahooMailNeo@web171602.mail.ir2.yahoo.com>
-In-Reply-To: <1395582539.27462.YahooMailNeo@web171602.mail.ir2.yahoo.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <CACKc53LDHUFyLAy5-=wW7Zy+rmB1gthujCORsY1w4zyzip1bmQ@mail.gmail.com>
+ <53163439.6070608@gmail.com> <532DBBFF.9010900@xenomai.org>
+In-Reply-To: <532DBBFF.9010900@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Issue suspending threads on mercury
+Subject: Re: [Xenomai] Sensoray 626 analogy driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,26 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 03/23/2014 02:48 PM, Matthias Schneider wrote:
-> If I understand correctly, the desired behavior, i.e. sending a signal to a
-> specific thread, would just be achieved up to Linux 2.6.12. Note that I also
-> stumbled over some manpages that did not include the paragraph above...
+W dniu 22.03.2014 17:36, Gilles Chanteperdrix pisze:
+> First, the coding style. You use mixed-case identifiers, whereas the
+> tradition is to use lower case with underscores, and you do not seem to
+> indent with tabs, which is also the rule for kernel code. Your code also
+> contains some code in commentaries, which makes it uselessly hard to read.
+Yes, this needs my attention. However, it is not critical.
 >
+> Second, I see a lot of busy wait loops, for instance for things such as
+> I2C transfers, but I2C transfers are usually slow, so busy waiting for
+> the end of an I2C transfer in a critical section (as the comments say),
+> will create large masking sections for the rest of the system, which is
+> unacceptable for Xenomai, as we try hard to guarantee low latencies.
+Yes, you have right. Could you elaborate on this a bit more?
+Inside the kernel module there are plenty of while loops. Could you tell 
+me if I
+could use  rtdm_task_busy_sleep() function inside those loops?
 
-This makes sense, as the notifier logic was written many moons ago.
+Would such solution be acceptable inside Xenomai kernel module?
 
-> Using F_SETOWN_EX like in the attached patch solves my problem (at least the
-> described one) with the misdirected signals. However I still do not understand
-> why the signal seems to have been delivered sometimes to the correct thread and
-> sometimes not, but the answer can probably be found studying the kernel sources..
->
+Wojciech Domski
 
-wants_signal() probably diverts the signal to another thread, because 
-the original target is either traced (gdb) or already received a signal 
-which is still pending delivery.
+Domski.pl
 
--- 
-Philippe.
+Wojciech.Domski.pl
+
 
