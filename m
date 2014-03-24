@@ -1,14 +1,9 @@
-Message-ID: <533022B7.9000405@xenomai.org>
-Date: Mon, 24 Mar 2014 13:19:03 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CACKc53LDHUFyLAy5-=wW7Zy+rmB1gthujCORsY1w4zyzip1bmQ@mail.gmail.com>
- <53163439.6070608@gmail.com> <532DBBFF.9010900@xenomai.org>
- <53302093.9090503@gmail.com>
-In-Reply-To: <53302093.9090503@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Sensoray 626 analogy driver
+Date: Mon, 24 Mar 2014 13:48:56 +0000
+Message-ID: <CAKJ14NcHyt724RqMxa_Wa2kQBtc=j1Z6VpJK-2M6Z4ieNjqzsQ@mail.gmail.com>
+From: Andreas Glatz <andi.glatz@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Raspberry Pi SD Card Issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,42 +12,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wojciech Domski <wojciech.domski@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 03/24/2014 01:09 PM, Wojciech Domski wrote:
-> W dniu 22.03.2014 17:36, Gilles Chanteperdrix pisze:
->> First, the coding style. You use mixed-case identifiers, whereas the
->> tradition is to use lower case with underscores, and you do not seem to
->> indent with tabs, which is also the rule for kernel code. Your code also
->> contains some code in commentaries, which makes it uselessly hard to read.
-> Yes, this needs my attention. However, it is not critical.
+>
+> Message: 2
+> Date: Fri, 21 Mar 2014 10:47:20 -0400
+> From: Adam Vaughan <vaughana@umich.edu>
+> To: Paul <paul_c@tuxcnc.org>, "xenomai@xenomai.org"
+>         <xenomai@xenomai.org>
+> Subject: Re: [Xenomai] Raspberry Pi SD Card Issue
+> Message-ID:
+>         <CAK4EZFQecV3B0uq+d3KKWX7HJB0=
+> Ume48fqcfaqH492rMpXmWg@mail.gmail.com>
+> Content-Type: text/plain; charset=ISO-8859-1
+>
+> After a fair amount of detective work with kernel code, searching
+> through forums / commit logs, trying different kernel versions /
+> configs, etc. I finally found the cause for this problem.  It was the
+> cross-compile toolchain I built with crosstool-ng.  I was using the
+> stock crosstool-ng armv6-rpi-linux-gnueabi configuration and I believe
+> (but I am not 100% sure) commit 86a8d1d467c8.
+>
 
-Not critical, but mandatory.
+Thanks for investigating this. I think that might be a good starting point
+for me [1] since it my problem persists even after trying the same tests
+with two brand new sd cards on several occasions (I am using 'crosstool-NG
+linaro-1.13.1-4.7-2013.04-20130415 - Linaro GCC 2013.04').
 
->>
->> Second, I see a lot of busy wait loops, for instance for things such as
->> I2C transfers, but I2C transfers are usually slow, so busy waiting for
->> the end of an I2C transfer in a critical section (as the comments say),
->> will create large masking sections for the rest of the system, which is
->> unacceptable for Xenomai, as we try hard to guarantee low latencies.
-> Yes, you have right. Could you elaborate on this a bit more?
-> Inside the kernel module there are plenty of while loops. Could you tell 
-> me if I
-> could use  rtdm_task_busy_sleep() function inside those loops?
-> 
-> Would such solution be acceptable inside Xenomai kernel module?
-
-The solution which would be acceptable is not to have busy waits, except
-for very short durations. But for instance transferring a byte on I2C
-takes around 20us at 400 kHz, a 20us masking section is unacceptable.
-rtdm_task_busy_sleep, as the name suggests is a busy wait loop, so, no,
-it is not acceptable either.
-
-Use a thread or a timer to reschedule while you wait for the end of the
-transfer, instead of busy waiting.
+However, the cited commit (
+http://crosstool-ng.org/hg/crosstool-ng/rev/86a8d1d467c8 ) looks
+unsuspicious to me. Could you elaborate how this might influence the
+generated kernel binaries?
 
 
--- 
-                                                                Gilles.
-
+>
+> The fix is to use the toolchain provided by the Raspberry Pi
+> foundation at git://github.com/raspberrypi/tools.git .  I don't really
+> have time to dig into why the other toolchain produced an occasional
+> kernel glitch, but I thought I'd let everyone know it's something to
+> be aware of.
+>
+>
+[1] https://www.mail-archive.com/xenomai@xenomai.org/msg04453.html
