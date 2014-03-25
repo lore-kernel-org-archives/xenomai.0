@@ -1,11 +1,13 @@
-From: "Mnatsakanyan, M." <m.mnatsakanyan@tue.nl>
-Date: Tue, 25 Mar 2014 16:03:26 +0000
-Message-ID: <6781B7C7F03D8A4BAF673DC4478144C406908D51@XSERVER21A.campus.tue.nl>
-Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <5331AB44.5070402@xenomai.org>
+Date: Tue, 25 Mar 2014 17:13:56 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: [Xenomai] Switch to secondary mode due to pop/push into TBB queue
+References: <6781B7C7F03D8A4BAF673DC4478144C406908D51@XSERVER21A.campus.tue.nl>
+In-Reply-To: <6781B7C7F03D8A4BAF673DC4478144C406908D51@XSERVER21A.campus.tue.nl>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Switch to secondary mode due to pop/push into TBB
+	queue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,23 +16,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Mnatsakanyan, M." <m.mnatsakanyan@tue.nl>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello,
+On 03/25/2014 05:03 PM, Mnatsakanyan, M. wrote:
+> Hello,
+>
+> I am trying to build a real-time application, but still do not understand all Xenomai concepts clearly,
 
-I am trying to build a real-time application, but still do not understand a=
-ll Xenomai concepts clearly, so I'm having difficulty to explain why my rt =
-task switches to secondary mode.
+So, I suggest you read the documentation at http://www.xenomai.org
 
-My tasks communicate using TBB concurrent_bounded_queue. Whenever the tasks=
- push or pop into the queue they switch to secondary mode.
-
-I am aware of RT_QUEUE provided by Xenomai, but I would like to avoid makin=
-g this change.
-My question is: is it possible to prevent mode switch while still using TBB=
- queue? And how this mode switch can be explained? I read that system calls=
- cause mode switch, but here I cannot recognize a system call.
-
-Thank you,
-Mari
+-- 
+					    Gilles.
 
