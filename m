@@ -1,16 +1,11 @@
-Message-ID: <53316A3F.1040601@xenomai.org>
-Date: Tue, 25 Mar 2014 12:36:31 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <53316C4C.6000708@sigmatek.at>
+Date: Tue, 25 Mar 2014 12:45:16 +0100
+From: Erwin Pranz <erwin.pranz@sigmatek.at>
 MIME-Version: 1.0
-References: <CACKc53LDHUFyLAy5-=wW7Zy+rmB1gthujCORsY1w4zyzip1bmQ@mail.gmail.com>
- <53163439.6070608@gmail.com> <532DBBFF.9010900@xenomai.org>
- <53302093.9090503@gmail.com> <533022B7.9000405@xenomai.org>
- <533159E0.7090809@gmail.com> <53316570.5060600@xenomai.org>
- <5331685C.8030100@gmail.com>
-In-Reply-To: <5331685C.8030100@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Sensoray 626 analogy driver
+Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Rescnt imbalance in rtdm_mutex_timedlock
+Reply-To: erwin.pranz@sigmatek.at
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,68 +14,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wojciech Domski <wojciech.domski@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 03/25/2014 12:28 PM, Wojciech Domski wrote:
-> W dniu 25.03.2014 12:16, Gilles Chanteperdrix pisze:
->> On 03/25/2014 11:26 AM, Wojciech Domski wrote:
->>> W dniu 24.03.2014 13:19, Gilles Chanteperdrix pisze:
->>>> The solution which would be acceptable is not to have busy waits, except
->>>> for very short durations. But for instance transferring a byte on I2C
->>>> takes around 20us at 400 kHz, a 20us masking section is unacceptable.
->>>> rtdm_task_busy_sleep, as the name suggests is a busy wait loop, so, no,
->>>> it is not acceptable either.
->>>>
->>>> Use a thread or a timer to reschedule while you wait for the end of the
->>>> transfer, instead of busy waiting.
->>> Dear Gilles,
->>>
->>> As you mentioned before the driver has few places like this:
->>>
->>> while(!FLAG1);
->>> while(!FLAG2);
->>>
->>> Would a solution of creating a separate task for this purpose be ok?
->>>
->>> task()
->>> {
->>>       while(!FLAG1);
->>>       while(!FLAG2);
->>> }
->> I was rather thinking about rtdm_task_sleep() instead.
->>
->>> In the place of those loops a piece of code responsible for creating and
->>> joining task would be put instead:
->>>
->>> rtdm_task_init();
->>> rtdm_task_join_nrt();
->> This will not work for code currently running in interrupt handlers. An
->> interrupt handler can not call rtdm_task_join_nrt(). You will rather
->> have to wake up the thread, not reenabling the interrupt at the end of
->> the handler, and reenable the interrupt in the thread when the job is
->> done. Or alternatively, fire a timer instead of waking up a thread.
->>
->>
-> Dear Gilles,
-> 
-> If what I have understood correctly, basically what you mean is changing:
-> 
-> while(!FLAG) ;
-> 
-> into
-> 
-> while(!FLAG)
->      rtdm_task_sleep();
-> 
-> Xenomai's documentation that rtdm_task_sleep() can be always 
-> rescheduled. In my opinion
-> this solution is sufficient and meets Xenomai requirements.
+Hello,
 
-This solution will not work if the busy loop was in an irq handler. You
-can not call rtdm_task_sleep from the context of an irq handler.
+I am using rtdm_mutex_lock/rtdm_mutex_unlock in a rtdm driver and I get=20
+a signal SIGDEBUG_MIGRATE_PRIOINV when I call the driver from a=20
+priority-0 thread.The signal is sent in xnsynch_release_thread when=20
+rescnt is 0 on a XNOTHER thread, which means that rescnt is not balanced.
 
+I think the reason why rescnt is not balanced is in=20
+rtdm_mutex_timedlock: when the owner of the mutex is NULL, the owner is=20
+changed to the calling thread, but rescnt is not increased.
 
--- 
-                                                                Gilles.
+I suggest the following fix in rtdm_mutex_timedlock:
+-       else if (likely(xnsynch_owner(&mutex->synch_base) =3D=3D NULL))
++       else if (likely(xnsynch_owner(&mutex->synch_base) =3D=3D NULL)) {
+                 xnsynch_set_owner(&mutex->synch_base, curr_thread);
++               if (xnthread_test_state(curr_thread, XNOTHER))
++                       xnthread_inc_rescnt(curr_thread);
++       }
+
+Best regards,
+
+--=20
+Erwin Pranz
+Software
+________________________________
+
+SIGMATEK GmbH & Co KG
+Sigmatekstra=DFe 1
+5112 Lamprechtshausen =D6sterreich / Austria
+
+Tel.:  +43/6274/4321-0
+Fax:  +43/6274/4321-18
+E-Mail: erwin.pranz@sigmatek.at
+http://www.sigmatek-automation.com
+
 
