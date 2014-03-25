@@ -1,15 +1,14 @@
+Message-ID: <533159E0.7090809@gmail.com>
+Date: Tue, 25 Mar 2014 11:26:40 +0100
+From: Wojciech Domski <wojciech.domski@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <532F0BCF.5080603@xenomai.org>
-References: <1394996997.10478.YahooMailNeo@web171605.mail.ir2.yahoo.com>
- <5326AE7E.3050201@xenomai.org>
- <1395076680.34261.YahooMailNeo@web171604.mail.ir2.yahoo.com>
- <1395582539.27462.YahooMailNeo@web171602.mail.ir2.yahoo.com>
- <532F0BCF.5080603@xenomai.org>
-Date: Tue, 25 Mar 2014 11:08:20 +0100
-Message-ID: <CAKc2HpbToN72M49_6kFo=qys=qvUdT7TRBQi-TC2AehtWVPv+A@mail.gmail.com>
-From: Kim De Mey <kim.demey@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Issue suspending threads on mercury
+References: <CACKc53LDHUFyLAy5-=wW7Zy+rmB1gthujCORsY1w4zyzip1bmQ@mail.gmail.com>
+ <53163439.6070608@gmail.com> <532DBBFF.9010900@xenomai.org>
+ <53302093.9090503@gmail.com> <533022B7.9000405@xenomai.org>
+In-Reply-To: <533022B7.9000405@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Sensoray 626 analogy driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,39 +17,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-2014-03-23 17:29 GMT+01:00 Philippe Gerum <rpm@xenomai.org>:
-> On 03/23/2014 02:48 PM, Matthias Schneider wrote:
->>
->> If I understand correctly, the desired behavior, i.e. sending a signal to
->> a
->> specific thread, would just be achieved up to Linux 2.6.12. Note that I
->> also
->> stumbled over some manpages that did not include the paragraph above...
->>
+W dniu 24.03.2014 13:19, Gilles Chanteperdrix pisze:
+> The solution which would be acceptable is not to have busy waits, except
+> for very short durations. But for instance transferring a byte on I2C
+> takes around 20us at 400 kHz, a 20us masking section is unacceptable.
+> rtdm_task_busy_sleep, as the name suggests is a busy wait loop, so, no,
+> it is not acceptable either.
 >
-> This makes sense, as the notifier logic was written many moons ago.
->
->
->> Using F_SETOWN_EX like in the attached patch solves my problem (at least
->> the
->> described one) with the misdirected signals. However I still do not
->> understand
->> why the signal seems to have been delivered sometimes to the correct
->> thread and
->> sometimes not, but the answer can probably be found studying the kernel
->> sources..
->>
->
-> wants_signal() probably diverts the signal to another thread, because the
-> original target is either traced (gdb) or already received a signal which is
-> still pending delivery.
->
+> Use a thread or a timer to reschedule while you wait for the end of the
+> transfer, instead of busy waiting.
+Dear Gilles,
 
-That would explain what I noticed when using gdb.
-I have tested the patch on my setup and the problem is indeed solved.
-The signal is now always diverted to correct thread, also when
-debugging. Thanks for figuring this out!
+As you mentioned before the driver has few places like this:
+
+while(!FLAG1);
+while(!FLAG2);
+
+Would a solution of creating a separate task for this purpose be ok?
+
+task()
+{
+     while(!FLAG1);
+     while(!FLAG2);
+}
+
+In the place of those loops a piece of code responsible for creating and 
+joining task would be put instead:
+
+rtdm_task_init();
+rtdm_task_join_nrt();
+
+Best regards,
+
+Wojciech Domski
+
+Domski.pl
+
+Wojciech.Domski.pl
+
 
