@@ -1,15 +1,14 @@
-Message-ID: <5331685C.8030100@gmail.com>
-Date: Tue, 25 Mar 2014 12:28:28 +0100
-From: Wojciech Domski <wojciech.domski@gmail.com>
+Message-ID: <533168CA.6010703@xenomai.org>
+Date: Tue, 25 Mar 2014 12:30:18 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CACKc53LDHUFyLAy5-=wW7Zy+rmB1gthujCORsY1w4zyzip1bmQ@mail.gmail.com>
- <53163439.6070608@gmail.com> <532DBBFF.9010900@xenomai.org>
- <53302093.9090503@gmail.com> <533022B7.9000405@xenomai.org>
- <533159E0.7090809@gmail.com> <53316570.5060600@xenomai.org>
-In-Reply-To: <53316570.5060600@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Sensoray 626 analogy driver
+References: <40a355c3.3a46.144f6fe3c91.Coremail.ericvic@163.com>
+ <36d2cb6f.ac9a.144f81578c0.Coremail.ericvic@163.com>
+In-Reply-To: <36d2cb6f.ac9a.144f81578c0.Coremail.ericvic@163.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] On mx6q specifically,
+	it seems the framebuffer is a latency killer
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,68 +17,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?UTF-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-W dniu 25.03.2014 12:16, Gilles Chanteperdrix pisze:
-> On 03/25/2014 11:26 AM, Wojciech Domski wrote:
->> W dniu 24.03.2014 13:19, Gilles Chanteperdrix pisze:
->>> The solution which would be acceptable is not to have busy waits, except
->>> for very short durations. But for instance transferring a byte on I2C
->>> takes around 20us at 400 kHz, a 20us masking section is unacceptable.
->>> rtdm_task_busy_sleep, as the name suggests is a busy wait loop, so, no,
->>> it is not acceptable either.
->>>
->>> Use a thread or a timer to reschedule while you wait for the end of the
->>> transfer, instead of busy waiting.
->> Dear Gilles,
->>
->> As you mentioned before the driver has few places like this:
->>
->> while(!FLAG1);
->> while(!FLAG2);
->>
->> Would a solution of creating a separate task for this purpose be ok?
->>
->> task()
->> {
->>       while(!FLAG1);
->>       while(!FLAG2);
->> }
-> I was rather thinking about rtdm_task_sleep() instead.
->
->> In the place of those loops a piece of code responsible for creating and
->> joining task would be put instead:
->>
->> rtdm_task_init();
->> rtdm_task_join_nrt();
-> This will not work for code currently running in interrupt handlers. An
-> interrupt handler can not call rtdm_task_join_nrt(). You will rather
-> have to wake up the thread, not reenabling the interrupt at the end of
-> the handler, and reenable the interrupt in the thread when the job is
-> done. Or alternatively, fire a timer instead of waking up a thread.
->
->
-Dear Gilles,
+On 03/25/2014 08:12 AM, 嵌入式工程师 wrote:
+> 
+> Thanks ,I find the problem like mine ,http://www.marshut.com/iqphrn/user-space-problems.html
 
-If what I have understood correctly, basically what you mean is changing:
+Please try the
+ipipe-3.0-imx6q
+branch on git://git.xenomai.org/ipipe-gch.git
 
-while(!FLAG) ;
+It should solve high latencies with imx6q. Note however that a 40us
+latency is not really considered a problem for this class of processors.
 
-into
-
-while(!FLAG)
-     rtdm_task_sleep();
-
-Xenomai's documentation that rtdm_task_sleep() can be always 
-rescheduled. In my opinion
-this solution is sufficient and meets Xenomai requirements.
-
-Best regards,
-
-Wojciech Domski
-
-Domski.pl
-
-Wojciech.Domski.pl
-
+-- 
+                                                                Gilles.
 
