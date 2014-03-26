@@ -1,11 +1,12 @@
-From: "Mnatsakanyan, M." <m.mnatsakanyan@tue.nl>
-Date: Wed, 26 Mar 2014 15:55:40 +0000
-Message-ID: <6781B7C7F03D8A4BAF673DC4478144C406909DD7@XSERVER21A.campus.tue.nl>
-Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: [Xenomai] Enabling Round-robin scheduling
+In-Reply-To: <53316C4C.6000708@sigmatek.at>
+References: <53316C4C.6000708@sigmatek.at>
+Date: Wed, 26 Mar 2014 17:49:41 +0100
+Message-ID: <CANKLDmuMDpiUC7Z7dsXa5K3LYNA4LNwA7mhAicJ_Dey+2S9PCg@mail.gmail.com>
+From: Henri Roosen <henriroosen@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Rescnt imbalance in rtdm_mutex_timedlock
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,45 +15,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: erwin.pranz@sigmatek.at
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello,
+On Tue, Mar 25, 2014 at 12:45 PM, Erwin Pranz <erwin.pranz@sigmatek.at>wrot=
+e:
 
-My question is related to enabling round-robin scheduling using Native Xeno=
-mai API 2.6.3.
-It is a beginner's question, but I hope it is ok to post it here.
+> Hello,
+>
+> I am using rtdm_mutex_lock/rtdm_mutex_unlock in a rtdm driver and I get a
+> signal SIGDEBUG_MIGRATE_PRIOINV when I call the driver from a priority-0
+> thread.The signal is sent in xnsynch_release_thread when rescnt is 0 on a
+> XNOTHER thread, which means that rescnt is not balanced.
+>
+> I think the reason why rescnt is not balanced is in rtdm_mutex_timedlock:
+> when the owner of the mutex is NULL, the owner is changed to the calling
+> thread, but rescnt is not increased.
+>
+> I suggest the following fix in rtdm_mutex_timedlock:
+> -       else if (likely(xnsynch_owner(&mutex->synch_base) =3D=3D NULL))
+> +       else if (likely(xnsynch_owner(&mutex->synch_base) =3D=3D NULL)) {
+>                 xnsynch_set_owner(&mutex->synch_base, curr_thread);
+> +               if (xnthread_test_state(curr_thread, XNOTHER))
+> +                       xnthread_inc_rescnt(curr_thread);
+> +       }
+>
+>
+Hi Gilles,
 
-The problem is that I am not managing to enable round-robin scheduler.
-The only place where I could find something about it is this page:
-http://www.cs.ru.nl/lab/xenomai/exercises/ex07/Exercise-7.html
+Could you maybe elaborate on this? It seems the resource counting is not in
+balance. It would be great to know if this the correct way to fix it.
 
-But it is rather old page and seems many things have changed after that.
-Simply set, it advises to enable RR by following two calls:
+The problem should be easily reproducible by having just one shadowed
+priority 0 thread that somehow calls rtdm_mutex_lock directly followed by
+rtdm_mutex_unlock. This will trigger the code in ksrc/nucleus/synch.c that
+was added by commit-486afd15, which sends SIGDEBUG_MIGRATE_PRIOINV on
+Xenomai v2.6.2.1. It shouldn't send any signal in that case, as nothing is
+wrong.
 
-rt_task_set_mode(0,T_RRB ,NULL);
-rt_task_slice(task_descr,quantum)
+Note we are on Xenomai v2.6.2.1. Xenomai v2.6.3 sends (the better name for
+it) SIGDEBUG_RESCNT_IMBALANCE.
 
-T_RRB is not defined in 2.6.3 so I tried to replace it with XNRRB and call =
-these two methods inside my task function but it did not work. I used the c=
-ode example given in the mentioned page.
-
-My first question is whether it is the right method to enable RR?
-
-Given the description of rt_task_set_mode in API documentation I have anoth=
-er question.
-
-As I understand if we want to use RR scheduler, we call rt_task_set_mode fr=
-om task function in order to specify that the task undergoes a round-robin =
-scheduling. So it is up to task to decide whether it wants to be scheduled =
-by RR or not. Is it a correct assumption?
-
-My question is whether it is possible to have tasks undergoing RR and not u=
-ndergoing in the same application?
-
-If yes, how all the tasks are scheduled?
-
-Your elaboration on these questions would be a great help.
-
-Thank you!
+Thanks for your help,
+Henri
 
 
+> Best regards,
+>
+> --
+> Erwin Pranz
+> Software
+> ________________________________
+>
+> SIGMATEK GmbH & Co KG
+> Sigmatekstra=DFe 1
+> 5112 Lamprechtshausen =D6sterreich / Austria
+>
+> Tel.:  +43/6274/4321-0
+> Fax:  +43/6274/4321-18
+> E-Mail: erwin.pranz@sigmatek.at
+> http://www.sigmatek-automation.com
+>
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+>
