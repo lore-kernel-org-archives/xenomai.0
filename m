@@ -1,14 +1,10 @@
-Message-ID: <5332A14F.2070303@xenomai.org>
-Date: Wed, 26 Mar 2014 10:43:43 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Wed, 26 Mar 2014 19:36:10 +0800 (CST)
+From: =?GBK?B?x7bI68q9uaSzzMqm?= <ericvic@163.com>
 MIME-Version: 1.0
-References: <CAK4EZFTBCxVWrbMS9DTnR72bcVnSkrkEDCfCZye4u-BREFGoBg@mail.gmail.com>
- <CAEbDrgkmpYUeizDvZ9gr-VVB-WD+wm=M_saB24E-8BvWj=BphQ@mail.gmail.com>
-In-Reply-To: <CAEbDrgkmpYUeizDvZ9gr-VVB-WD+wm=M_saB24E-8BvWj=BphQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Raspberry Pi Xenomai Linux + Minimal Raspian Net
- Install Guide
+Message-ID: <5072ab06.2340b.144fe2d11ed.Coremail.ericvic@163.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] imx6q xenomai  ipipe-3.0-imx6q
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,19 +13,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gregory Dymarek <gregd72002@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/26/2014 10:09 AM, Gregory Dymarek wrote:
-> Nice one.
-> 
-> Just to add, when compiling the same for 3.10 kernel the USB patches
-> are not required. The ipipe patch 3.10 also does not apply cleanly but
-> it is straightforward to adjust it.
-
-Then please generate a -pre and -post patch which we can put in xenomai
-repository.
-
--- 
-                                                                Gilles.
-
+SSB1c2UgaW14NnEgeGVub21haSAgaXBpcGUtMy4wLWlteDZxICCjrGkgZG9uYHQga25vdyBpZiBy
+dF9waXBlIGFuZCBydF90aW1lciB3aWxsIGFmZmVjdCB0aGUgbGF0ZW5jeT9iZWNhdXNlIEkgdXNl
+IGxvdHMgb2YgcnRfcGlwZSBjb21tYW5kIGFuZCB3aGVuIEkgc2VuZCB0aGUgcnRfcGlwZSBjb21t
+YW5kIHRoZSBsYXRlbmN5IHdpbGwgbGlrZSBibG93ClJUSHwtLS0tbGF0IG1pbnwtLS0tbGF0IGF2
+Z3wtLS0tbGF0IG1heHwtb3ZlcnJ1bnwtLS1tc3d8LS0tbGF0IGJlc3R8LS1sYXQgd29yc3QKUlRE
+fCAgICAgIDEuNTY3fCAgICAgIDIuMDIzfCAgICAgIDUuMTk5fCAgICAgICAwfCAgICAgMHwgICAg
+ICAxLjI4MnwgICAgMzI2Ljk2MgpSVER8ICAgICAgMS41NjB8ICAgICAgMi4wNTB8ICAgICAgNS40
+OTJ8ICAgICAgIDB8ICAgICAwfCAgICAgIDEuMjgyfCAgICAzMjYuOTYyClJURHwgICAgICAxLjUy
+MnwgICAgICAyLjA2NnwgICAgICA1Ljk4NHwgICAgICAgMHwgICAgIDB8ICAgICAgMS4yODJ8ICAg
+IDMyNi45NjIKUlREfCAgICAgIDEuNTUyfCAgICAgIDIuMDU2fCAgICAgIDQuOTM4fCAgICAgICAw
+fCAgICAgMHwgICAgICAxLjI4MnwgICAgMzI2Ljk2MgpSVER8ICAgICAgMS41NzJ8ICAgICAgMi4w
+NDB8ICAgICAgNS4wMjF8ICAgICAgIDB8ICAgICAwfCAgICAgIDEuMjgyfCAgICAzMjYuOTYyClJU
+RHwgICAgICAxLjUzNnwgICAgICAyLjA0N3wgICAgICA0LjY3OHwgICAgICAgMHwgICAgIDB8ICAg
+ICAgMS4yODJ8ICAgIDMyNi45NjIKUlREfCAgICAgIDEuNTk5fCAgICAgIDIuMDUyfCAgICAgIDUu
+NDQyfCAgICAgICAwfCAgICAgMHwgICAgICAxLjI4MnwgICAgMzI2Ljk2MgpSVER8ICAgICAgMS42
+Mzl8ICAgICAgMi4wODB8ICAgICAgNi42OTJ8ICAgICAgIDB8ICAgICAwfCAgICAgIDEuMjgyfCAg
+ICAzMjYuOTYyClJURHwgICAgICAxLjUzM3wgICAgICAyLjA1NnwgICAgICA2Ljg2OXwgICAgICAg
+MHwgICAgIDB8ICAgICAgMS4yODJ8ICAgIDMyNi45NjIKUlREfCAgICAgIDEuNTc4fCAgICAgIDIu
+MDM2fCAgICAgIDUuMzY0fCAgICAgICAwfCAgICAgMHwgICAgICAxLjI4MnwgICAgMzI2Ljk2MgpS
+VER8ICAgICAgMS41ODN8ICAgICAgMi4wNDJ8ICAgICAgNS4yMjJ8ICAgICAgIDB8ICAgICAwfCAg
+ICAgIDEuMjgyfCAgICAzMjYuOTYyClJURHwgICAgICAxLjUyMnwgICAgICAyLjA1MnwgICAgICA1
+LjcwMnwgICAgICAgMHwgICAgIDB8ICAgICAgMS4yODJ8ICAgIDMyNi45NjIKUlREfCAgICAgIDEu
+NTQyfCAgICAgIDIuMDQyfCAgICAgIDUuMjcyfCAgICAgICAwfCAgICAgMHwgICAgICAxLjI4Mnwg
+ICAgMzI2Ljk2MgpSVER8ICAgICAgMS42MTh8ICAgICAgMi4wNDl8ICAgICAgNS41ODB8ICAgICAg
+IDB8ICAgICAwfCAgICAgIDEuMjgyfCAgICAzMjYuOTYyClJURHwgICAgICAxLjU1NXwgICAgICAy
+LjA1OXwgICAgICA2LjM5OHwgICAgICAgMHwgICAgIDB8ICAgICAgMS4yODJ8ICAgIDMyNi45NjIK
+UlREfCAgICAgIDEuNTI3fCAgICAgIDIuMDU0fCAgICAgIDUuODYyfCAgICAgICAwfCAgICAgMHwg
+ICAgICAxLjI4MnwgICAgMzI2Ljk2MgpSVER8ICAgICAgMS41NjR8ICAgICAgMi4wMzh8ICAgICAg
+NS45NTF8ICAgICAgIDB8ICAgICAwfCAgICAgIDEuMjgyfCAgICAzMjYuOTYyClJURHwgICAgICAx
+LjU2N3wgICAgICAyLjA1M3wgICAgICA0Ljg1N3wgICAgICAgMHwgICAgIDB8ICAgICAgMS4yODJ8
+ICAgIDMyNi45NjIKUlREfCAgICAgIDEuNTk3fCAgICAgIDIuMDcyfCAgICAgIDUuNDMzfCAgICAg
+ICAwfCAgICAgMHwgICAgICAxLjI4MnwgICAgMzI2Ljk2MgpSVER8ICAgICAgMS41MzN8ICAgICAg
+Mi4wNTd8ICAgICAgNS43MjV8ICAgICAgIDB8ICAgICAwfCAgICAgIDEuMjgyfCAgICAzMjYuOTYy
+ClJURHwgICAgICAxLjYzNHwgICAgICAyLjA1NXwgICAgICA1LjU2NnwgICAgICAgMHwgICAgIDB8
+ICAgICAgMS4yODJ8ICAgIDMyNi45NjIKUlRUfCAgMDA6MTA6MTAgIChpbi1rZXJuZWwgcGVyaW9k
+aWMgdGFzaywgMTAwMCB1cyBwZXJpb2QsIHByaW9yaXR5IDk5KQpSVEh8LS0tLWxhdCBtaW58LS0t
+LWxhdCBhdmd8LS0tLWxhdCBtYXh8LW92ZXJydW58LS0tbXN3fC0tLWxhdCBiZXN0fC0tbGF0IHdv
+cnN0ClJURHwgICAgICAxLjUyM3wgICAgICAyLjA2M3wgICAgICA0Ljg3NHwgICAgICAgMHwgICAg
+IDB8ICAgICAgMS4yODJ8ICAgIDMyNi45NjIKUlREfCAgICAgIDEuNjAxfCAgICAgIDIuMDM2fCAg
+ICAgIDQuOTIyfCAgICAgICAwfCAgICAgMHwgICAgICAxLjI4MnwgICAgMzI2Ljk2MgpSVER8ICAg
+ICAgMS41NzN8ICAgICAgMi4wNjR8ICAgICAgNS4yMzd8ICAgICAgIDB8ICAgICAwfCAgICAgIDEu
+MjgyfCAgICAzMjYuOTYyClJURHwgICAgICAxLjU2M3wgICAgICAyLjA0MHwgICAgICA1LjM4Nnwg
+ICAgICAgMHwgICAgIDB8ICAgICAgMS4yODJ8ICAgIDMyNi45NjI=
