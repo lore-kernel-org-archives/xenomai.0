@@ -1,15 +1,16 @@
-Message-ID: <53347046.3050507@xenomai.org>
-Date: Thu, 27 Mar 2014 19:39:02 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <53316C4C.6000708@sigmatek.at>	<CANKLDmuMDpiUC7Z7dsXa5K3LYNA4LNwA7mhAicJ_Dey+2S9PCg@mail.gmail.com>	<53335D9A.9040902@xenomai.org>	<5333F22F.70805@xenomai.org>
- <CANKLDmttO4jZtRxV-bjYQwg3YkGBKwFL74ATkdM2SBH8Xby31A@mail.gmail.com>
- <53345143.7000009@xenomai.org> <53346835.4030202@web.de>
- <53346CF7.2020805@xenomai.org> <53346E91.8080903@web.de>
-In-Reply-To: <53346E91.8080903@web.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Rescnt imbalance in rtdm_mutex_timedlock
+In-Reply-To: <CAK4EZFSr_caXdr+ZsPG4-z5iXFcoBFTzwcM2jbb2H+QWOx_cpQ@mail.gmail.com>
+References: <CAK4EZFTBCxVWrbMS9DTnR72bcVnSkrkEDCfCZye4u-BREFGoBg@mail.gmail.com>
+ <5332A14F.2070303@xenomai.org>
+ <CAK4EZFSWuzPgQ8QWn8tY8Wpmojca+vgezSkFMXsS13kBOx7qsA@mail.gmail.com>
+ <201403271118.45617.paul_c@tuxcnc.org>
+ <CAK4EZFSr_caXdr+ZsPG4-z5iXFcoBFTzwcM2jbb2H+QWOx_cpQ@mail.gmail.com>
+Date: Thu, 27 Mar 2014 15:09:39 -0400
+Message-ID: <CAK4EZFRmUsGQWUu4Tdw3_hoGD8ykpHb2fRfi-uVXBuTn3xS_ig@mail.gmail.com>
+From: Adam Vaughan <vaughana@umich.edu>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Raspberry Pi Xenomai Linux + Minimal Raspian Net
+ Install Guide
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,205 +19,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/27/2014 07:31 PM, Jan Kiszka wrote:
-> On 2014-03-27 19:24, Philippe Gerum wrote:
->> On 03/27/2014 07:04 PM, Jan Kiszka wrote:
->>> On 2014-03-27 17:26, Philippe Gerum wrote:
->>>> On 03/27/2014 04:02 PM, Henri Roosen wrote:
->>>>>
->>>>>
->>>>>
->>>>> On Thu, Mar 27, 2014 at 10:41 AM, Philippe Gerum <rpm@xenomai.org
->>>>> <mailto:rpm@xenomai.org>> wrote:
->>>>>
->>>>>       On 03/27/2014 12:07 AM, Gilles Chanteperdrix wrote:
->>>>>
->>>>>           On 03/26/2014 05:49 PM, Henri Roosen wrote:
->>>>>
->>>>>               On Tue, Mar 25, 2014 at 12:45 PM, Erwin Pranz
->>>>>               <erwin.pranz@sigmatek.at
->>>>>               <mailto:erwin.pranz@sigmatek.at>>__wrote:
->>>>>
->>>>>                   Hello,
->>>>>
->>>>>                   I am using rtdm_mutex_lock/rtdm_mutex___unlock in a
->>>>> rtdm
->>>>>                   driver and I get a
->>>>>                   signal SIGDEBUG_MIGRATE_PRIOINV when I call the driver
->>>>>                   from a priority-0
->>>>>                   thread.The signal is sent in xnsynch_release_thread
->>>>> when
->>>>>                   rescnt is 0 on a
->>>>>                   XNOTHER thread, which means that rescnt is not
->>>>> balanced.
->>>>>
->>>>>                   I think the reason why rescnt is not balanced is in
->>>>>                   rtdm_mutex_timedlock:
->>>>>                   when the owner of the mutex is NULL, the owner is
->>>>>                   changed to the calling
->>>>>                   thread, but rescnt is not increased.
->>>>>
->>>>>                   I suggest the following fix in rtdm_mutex_timedlock:
->>>>>                   -       else if
->>>>>                   (likely(xnsynch_owner(&mutex->__synch_base) == NULL))
->>>>>                   +       else if
->>>>>                   (likely(xnsynch_owner(&mutex->__synch_base) ==
->>>>> NULL)) {
->>>>>
->>>>>                     xnsynch_set_owner(&mutex->__synch_base,
->>>>> curr_thread);
->>>>>                   +               if (xnthread_test_state(curr___thread,
->>>>>                   XNOTHER))
->>>>>                   +
->>>>> xnthread_inc_rescnt(curr___thread);
->>>>>                   +       }
->>>>>
->>>>>
->>>>>               Hi Gilles,
->>>>>
->>>>>               Could you maybe elaborate on this? It seems the resource
->>>>>               counting is not in
->>>>>               balance. It would be great to know if this the correct way
->>>>>               to fix it.
->>>>>
->>>>>               The problem should be easily reproducible by having
->>>>> just one
->>>>>               shadowed
->>>>>               priority 0 thread that somehow calls rtdm_mutex_lock
->>>>>               directly followed by
->>>>>               rtdm_mutex_unlock. This will trigger the code in
->>>>>               ksrc/nucleus/synch.c that
->>>>>               was added by commit-486afd15, which sends
->>>>>               SIGDEBUG_MIGRATE_PRIOINV on
->>>>>               Xenomai v2.6.2.1. It shouldn't send any signal in that
->>>>> case,
->>>>>               as nothing is
->>>>>               wrong.
->>>>>
->>>>>               Note we are on Xenomai v2.6.2.1. Xenomai v2.6.3 sends (the
->>>>>               better name for
->>>>>               it) SIGDEBUG_RESCNT_IMBALANCE.
->>>>>
->>>>>
->>>>>           To be completely frank, I expected Jan to answer this mail
->>>>> as this
->>>>>           concerns RTDM. Anyway, I had a look into it, and:
->>>>>           - the RTDM skin is not alone in this case, several skins
->>>>>           implement the
->>>>>           same pattern (if owner == NULL, set owner, then return);
->>>>>           - adding calls to xnthread_inc_rescnt everywhere does not seem
->>>>>           right, I
->>>>>           would prefer to move this inside some xnsynch_ service. The
->>>>> best
->>>>>           candidate I found for that is xnsynch_set_owner, though I
->>>>> am not
->>>>>           sure if
->>>>>           this will work, especially with fastsynchs.
->>>>>
->>>>>
->>>>>
->>>>>       Indeed this wouldn't. I suspect the skins mentioned did not have
->>>>>       access to xnsynch_acquire(), and were not updated when the
->>>>>       auto-relax feature was introduced for XNOTHER threads.
->>>>>
->>>>>       We could provide a helper for fast grabbing a mutex which has no
->>>>>       fast locking support shared with userland, saving a call to
->>>>>       xnsynch_acquire() in the non-contended case, e.g.
->>>>>
->>>>>       diff --git a/include/nucleus/synch.h b/include/nucleus/synch.h
->>>>>       index 7deae21..87456ea 100644
->>>>>       --- a/include/nucleus/synch.h
->>>>>       +++ b/include/nucleus/synch.h
->>>>>       @@ -192,6 +192,22 @@ static inline void xnsynch_set_owner(struct
->>>>>       xnsynch *synch,
->>>>>                synch->owner = thread;
->>>>>         }
->>>>>
->>>>>       +static inline int xnsynch_fast_grab(struct xnsynch *synch,
->>>>>       +                                   struct xnthread *thread)
->>>>>       +{
->>>>>       +       XENO_BUGON(NUCLEUS, xnsynch_fastlock_p(synch));
->>>>>       +
->>>>>       +       if (likely(xnsynch_owner(synch) != NULL))
->>>>>       +               return 0;
->>>>>       +
->>>>>       +       xnsynch_set_owner(synch, thread);
->>>>>       +
->>>>>       +       if (xnthread_test_state(thread, XNOTHER))
->>>>>       +               xnthread_inc_rescnt(thread);
->>>>>       +
->>>>>       +       return 1;
->>>>>       +}
->>>>>       +
->>>>>         static inline void xnsynch_register_cleanup(__struct xnsynch
->>>>> *synch,
->>>>>                                                    void
->>>>> (*handler)(struct
->>>>>       xnsynch *))
->>>>>         {
->>>>>       diff --git a/ksrc/skins/rtdm/drvlib.c b/ksrc/skins/rtdm/drvlib.c
->>>>>       index 391d45f..338005d 100644
->>>>>       --- a/ksrc/skins/rtdm/drvlib.c
->>>>>       +++ b/ksrc/skins/rtdm/drvlib.c
->>>>>       @@ -1538,9 +1538,7 @@ int rtdm_mutex_timedlock(rtdm___mutex_t
->>>>>       *mutex, nanosecs_rel_t timeout,
->>>>>                if (unlikely(xnsynch_test_flags(&__mutex->synch_base,
->>>>>                                                RTDM_SYNCH_DELETED)))
->>>>>                        err = -EIDRM;
->>>>>
->>>>>       -       else if (likely(xnsynch_owner(&mutex->__synch_base) ==
->>>>> NULL))
->>>>>       -               xnsynch_set_owner(&mutex->__synch_base,
->>>>> curr_thread);
->>>>>       -       else {
->>>>>       +       else if (!xnsynch_fast_grab(&mutex->__synch_base,
->>>>>       curr_thread)) {
->>>>>                        /* Redefinition to clarify XENO_ASSERT output */
->>>>>                        #define mutex_owner
->>>>> xnsynch_owner(&mutex->synch___base)
->>>>>                        XENO_ASSERT(RTDM, mutex_owner != curr_thread,
->>>>>
->>>>>       The VxWorks and VRTX skins would have to use it as well.
->>>>>
->>>>>
->>>>> Thanks for the replies! We'll give this patch a try for the RTDM case.
->>>>>
->>>>
->>>> Minor points, but a compiler hint above was inverted and eventually
->>>> useless, and the naming not descriptive enough. Take #2:
->>>>
->>>> diff --git a/include/nucleus/synch.h b/include/nucleus/synch.h
->>>> index 7deae21..09ebdbf 100644
->>>> --- a/include/nucleus/synch.h
->>>> +++ b/include/nucleus/synch.h
->>>> @@ -192,6 +192,22 @@ static inline void xnsynch_set_owner(struct
->>>> xnsynch *synch,
->>>>        synch->owner = thread;
->>>>    }
->>>>
->>>> +static inline int xnsynch_try_grab(struct xnsynch *synch,
->>>> +                   struct xnthread *thread)
->>>> +{
->>>> +    XENO_BUGON(NUCLEUS, xnsynch_fastlock_p(synch));
->>>> +
->>>> +    if (xnsynch_owner(synch) != NULL)
->>>
->>> if (unlikely(...)) - locks are generally unlikely to be contended
->>> (unless something is suboptimally designed at the user site).
->>>
->>
->> I'm unsure we really need to take a chance at giving such hint. Modern
->> CPUs tend to have branch prediction right.
+Actually, I forgot I also copy over kernel sources.  So that, the
+kernel headers, and the Raspbian package build-essential should be
+removed to cut down on the size, if you're cross-compiling everything.
+ Removing the kernel sources alone brings the disk usage to 320 MB.
+
+Anyway, I need to focus on some other work.  If someone wants to take
+the lead and modify this guide to be better, feel free to do so.
+
+On Thu, Mar 27, 2014 at 2:10 PM, Adam Vaughan <vaughana@umich.edu> wrote:
+> I wrote this guide as if I was starting from scratch.  I thought it
+> would be helpful.  I don't intend for it to cover everyone's use case,
+> but it covers all the steps to get a basic install working.
 >
-> Then likely/unlikely will be emptied by Linux. But I'm not aware of any
-> plans in the kernel community to phase out this tag.
-
-On ARM at least, I have seen situation where gcc does not take 
-likely/unlikely into account. The same code is simply generated.
-
--- 
-					    Gilles.
+> I'm not aware of any other guide that talks about the recent 3.8.13
+> patches for Xenomai which Gilles and Gregory figured out.  This is my
+> primary reason for sharing it.
+>
+>
+>> A netinstall on to an SD card is extremely slow, and quite honestly, not
+>> really needed unless you are trying squeeze a minimal install on to a
+>> small card - The standard Raspian images fit quite comfortably on to a
+>> 2G card (which is the starting point for most).
+>
+> It's not slow.  It takes <10 minutes from start to finish.  It takes
+> time to download an ~800 MB compressed Raspbian image and then load it
+> onto an SD card too...
+>
+> As for space, I need space to store data files on a headless Raspberry
+> Pi.  I do not need to waste space on X11 or any penguin games that
+> might be installed.  Sure, there are other small custom options such
+> as Buildroot, but honestly its easier / faster to start with a
+> precompiled distribution with reasonably well tuned binaries.
+>
+> The author of the net installer says it can fit on a 512 MB SD card
+> [1].  After I add compilation tools, the disk usage is 1.3 GB, which
+> surprised me, but I haven't looked at it closely.  You can definitely
+> build a smaller install with other tools, but I would like to just
+> mention that there are other install options for the net installer,
+> see [1].
+>
+>
+>>> // Blow away existing tools...
+>>
+>> Why ?????
+>
+> Rather than attempting to figure out what a user may or may not have
+> installed it's easier to just clear the two directories used.
+>
+> Feel free to add checking for existing tools.  If you want to also
+> check for a Crosstool toolchain, make sure the most recent Crosstool
+> is used.  In another thread I mentioned SD card issues that were due
+> to a bad default Crosstool toolchain for the Raspberry Pi.  I haven't
+> looked to find the actual cause, but it seems to be fixed in the most
+> recent version.
+>
+> For what it's worth, I don't actually erase my tools each time.  I
+> know the toolchain I currently have works.
+>
+>
+>>> // Get RPi cross compile tools...
+>>> git clone --depth=1 git://github.com/raspberrypi/tools.git
+>>
+>> One of the key points of GIT (and other VCS packages) is that you only
+>> need to pull in changes - This reduces the amount of data being
+>> transfered and reduces the load on the hosting servers. Some people
+>> have to pay for each Gigabyte and won't thank you for needlessly
+>> running up their bill !
+>
+> You're right, I took the easiest way out by not attempting to figure
+> out whether the user has someone installed or not.  This could be
+> improved, but it does not have any technical impact on the result.
+>
+> As for bandwidth, --depth=1 is there.  There are also companies that
+> provide free bandwidth and understand there are users that use that
+> bandwidth.  I'm very happy with DreamHost.com
+>
+>
+>>> https://www.dropbox.com/s/dcju74md5sz45at/rpi_xenomai_config && mv
+>>> rpi_xenomai_config .config && make ARCH=arm oldconfig #
+>>
+>> A less than optimal config with CPU Frequency scaling enabled along with
+>> a whole bunch of debug/tracing options that impact on performance.
+>
+> I hadn't looked at it closely.  I didn't write it.  Thanks for pointing it out.
+>
+> A recommended configuration for debug and regular usage would improve
+> this guide.
+>
+> [1]  https://github.com/hifi/raspbian-ua-netinst
 
