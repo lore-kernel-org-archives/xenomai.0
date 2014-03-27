@@ -1,17 +1,18 @@
-From: Paul <paul_c@tuxcnc.org>
-Date: Thu, 27 Mar 2014 11:18:45 +0000
-References: <CAK4EZFTBCxVWrbMS9DTnR72bcVnSkrkEDCfCZye4u-BREFGoBg@mail.gmail.com>
- <5332A14F.2070303@xenomai.org>
- <CAK4EZFSWuzPgQ8QWn8tY8Wpmojca+vgezSkFMXsS13kBOx7qsA@mail.gmail.com>
-In-Reply-To: <CAK4EZFSWuzPgQ8QWn8tY8Wpmojca+vgezSkFMXsS13kBOx7qsA@mail.gmail.com>
+Message-ID: <53341923.3050401@xenomai.org>
+Date: Thu, 27 Mar 2014 13:27:15 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <201403271118.45617.paul_c@tuxcnc.org>
-Subject: Re: [Xenomai] Raspberry Pi Xenomai Linux + Minimal Raspian Net
-	Install Guide
+References: <5072ab06.2340b.144fe2d11ed.Coremail.ericvic@163.com>
+ <5332BF1F.3000504@xenomai.org>
+ <76a8b1fe.2477d.144fe96fb16.Coremail.ericvic@163.com>
+ <5332D759.7010806@xenomai.org>
+ <23d0b1ec.250da.144fecc28e4.Coremail.ericvic@163.com>
+ <53335E2F.4040608@xenomai.org>
+ <594fd0f5.8241.14501ff6aba.Coremail.ericvic@163.com>
+In-Reply-To: <594fd0f5.8241.14501ff6aba.Coremail.ericvic@163.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] imx6q xenomai  ipipe-3.0-imx6q
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,53 +21,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?UTF-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
+On 03/27/2014 06:24 AM, 嵌入式工程师 wrote:
+> I do as you said ,the result is the matter still has ,but when i change  
+> 
+> UIMAGE  arch/arm/boot/uImage
+> Image Name:   Linux-3.0.43-ge13355f
+> Created:      Thu Mar 27 11:07:59 2014
+> Image Type:   ARM Linux Kernel Image (uncompressed)
+> Data Size:    3448764 Bytes = 3367.93 kB = 3.29 MB
+> Load Address: 10008000
+> Entry Point:  10008000
+>   Image arch/arm/boot/uImage is ready
+> 
+> 
+> CONFIG_SMP=y
+> CONFIG_SMP_ON_UP=y
+> to 
+> CONFIG_SMP=n
+> CONFIG_SMP_ON_UP=n
+> CONFIG_BROKEN_ON_SMP=y
+> the up-kernal start  and latency start  and do my program
 
-Going to highlight a couple of issues:
+Turning off SMP improves latency, that is a general rule, for all
+processors. The problem is that if you do that you do not take advantage
+of all the cores your processor has. The question is: what latency did
+you have with the correct branch? If it is, say, less than 80us, it is a
+bit high but may still be normal. If it is 300us, then you may still
+have a problem, it depends on the answer you give to the questions I
+asked about your usage of rt_pipes.
 
-On Wednesday 26 March 2014, Adam Vaughan wrote:
-> So its all in one place, I've also attached is an updated guide for
-> minimal Raspbian and Xenomai with the attached patch. 
+To be sure that you are running the kernel I expect, could you show us
+the boot logs?
 
-> ===============================================================
-> // Automatically install minimal Raspbian OS through net installer...
-> //
-> echo "wget -q -O -
-> http://hifi.iki.fi/raspbian-ua-netinst/raspbian-ua-netinst-20140115-g
->itf8f70f8.img.xz | xzcat - > /dev/sde" | sudo sh sync
+Regards.
 
-A netinstall on to an SD card is extremely slow, and quite honestly, not 
-really needed unless you are trying squeeze a minimal install on to a 
-small card - The standard Raspian images fit quite comfortably on to a 
-2G card (which is the starting point for most).
-
-For those that need/want a minimal embedded install will have the tools 
-and knowledge to produce their own.
-
-> ===============================================================
-> // Blow away existing tools...
-
-Why ?????
-
-> ===============================================================
-> // Get RPi cross compile tools...
-> git clone --depth=1 git://github.com/raspberrypi/tools.git
-
-One of the key points of GIT (and other VCS packages) is that you only 
-need to pull in changes - This reduces the amount of data being 
-transfered and reduces the load on the hosting servers. Some people 
-have to pay for each Gigabyte and won't thank you for needlessly 
-running up their bill !
-
-> ===============================================================
-> // Set the base Linux kernel config
-> # OPTION:  wget
-> https://www.dropbox.com/s/dcju74md5sz45at/rpi_xenomai_config && mv
-> rpi_xenomai_config .config && make ARCH=arm oldconfig #
-
-A less than optimal config with CPU Frequency scaling enabled along with 
-a whole bunch of debug/tracing options that impact on performance.
-
-> ===============================================================
+-- 
+                                                                Gilles.
 
