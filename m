@@ -1,17 +1,14 @@
-Date: Thu, 27 Mar 2014 13:24:47 +0800 (CST)
-From: =?UTF-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
-In-Reply-To: <53335E2F.4040608@xenomai.org>
-References: <5072ab06.2340b.144fe2d11ed.Coremail.ericvic@163.com>
- <5332BF1F.3000504@xenomai.org>
- <76a8b1fe.2477d.144fe96fb16.Coremail.ericvic@163.com>
- <5332D759.7010806@xenomai.org>
- <23d0b1ec.250da.144fecc28e4.Coremail.ericvic@163.com>
- <53335E2F.4040608@xenomai.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+Message-ID: <5333F22F.70805@xenomai.org>
+Date: Thu, 27 Mar 2014 10:41:03 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Message-ID: <594fd0f5.8241.14501ff6aba.Coremail.ericvic@163.com>
-Subject: Re: [Xenomai] imx6q xenomai  ipipe-3.0-imx6q
+References: <53316C4C.6000708@sigmatek.at>
+ <CANKLDmuMDpiUC7Z7dsXa5K3LYNA4LNwA7mhAicJ_Dey+2S9PCg@mail.gmail.com>
+ <53335D9A.9040902@xenomai.org>
+In-Reply-To: <53335D9A.9040902@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Rescnt imbalance in rtdm_mutex_timedlock
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,68 +17,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Henri Roosen <henriroosen@gmail.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SSBkbyBhcyB5b3Ugc2FpZCAsdGhlIHJlc3VsdCBpcyB0aGUgbWF0dGVyIHN0aWxsIGhhcyAsYnV0
-IHdoZW4gaSBjaGFuZ2UgIAoKVUlNQUdFICBhcmNoL2FybS9ib290L3VJbWFnZQpJbWFnZSBOYW1l
-OiAgIExpbnV4LTMuMC40My1nZTEzMzU1ZgpDcmVhdGVkOiAgICAgIFRodSBNYXIgMjcgMTE6MDc6
-NTkgMjAxNApJbWFnZSBUeXBlOiAgIEFSTSBMaW51eCBLZXJuZWwgSW1hZ2UgKHVuY29tcHJlc3Nl
-ZCkKRGF0YSBTaXplOiAgICAzNDQ4NzY0IEJ5dGVzID0gMzM2Ny45MyBrQiA9IDMuMjkgTUIKTG9h
-ZCBBZGRyZXNzOiAxMDAwODAwMApFbnRyeSBQb2ludDogIDEwMDA4MDAwCiAgSW1hZ2UgYXJjaC9h
-cm0vYm9vdC91SW1hZ2UgaXMgcmVhZHkKCgpDT05GSUdfU01QPXkKQ09ORklHX1NNUF9PTl9VUD15
-CnRvIApDT05GSUdfU01QPW4KQ09ORklHX1NNUF9PTl9VUD1uCkNPTkZJR19CUk9LRU5fT05fU01Q
-PXkKdGhlIHVwLWtlcm5hbCBzdGFydCAgYW5kIGxhdGVuY3kgc3RhcnQgIGFuZCBkbyBteSBwcm9n
-cmFtCgpSVEh8LS0tLWxhdCBtaW58LS0tLWxhdCBhdmd8LS0tLWxhdCBtYXh8LW92ZXJydW58LS0t
-bXN3fC0tLWxhdCBiZXN0fC0tbGF0IHdvcnN0ClJURHwgICAgICA3LjMxOHwgICAgICA4LjQxOHwg
-ICAgIDExLjMxOHwgICAgICAgMHwgICAgIDB8ICAgICAgNi45OTh8ICAgICAxOS42NTYKUlREfCAg
-ICAgIDcuMzE4fCAgICAgIDguNjk1fCAgICAgMTcuNjUxfCAgICAgICAwfCAgICAgMHwgICAgICA2
-Ljk5OHwgICAgIDE5LjY1NgpSVER8ICAgICAgNy4zMTh8ICAgICAgOC4zNTR8ICAgICAxMC45ODV8
-ICAgICAgIDB8ICAgICAwfCAgICAgIDYuOTk4fCAgICAgMTkuNjU2ClJURHwgICAgICA3LjMxOHwg
-ICAgICA4LjM0NnwgICAgIDExLjY1MXwgICAgICAgMHwgICAgIDB8ICAgICAgNi45OTh8ICAgICAx
-OS42NTYKUlREfCAgICAgIDcuMzE3fCAgICAgIDguNDI5fCAgICAgMTEuNjUxfCAgICAgICAwfCAg
-ICAgMHwgICAgICA2Ljk5OHwgICAgIDE5LjY1NgpSVER8ICAgICAgNy4zMTd8ICAgICAgOC4zMTB8
-ICAgICAxMC45ODR8ICAgICAgIDB8ICAgICAwfCAgICAgIDYuOTk4fCAgICAgMTkuNjU2ClJURHwg
-ICAgICA3LjMxN3wgICAgICA4LjQyMXwgICAgIDE2Ljk4NHwgICAgICAgMHwgICAgIDB8ICAgICAg
-Ni45OTh8ICAgICAxOS42NTYKUlREfCAgICAgIDcuMzE3fCAgICAgIDguNjI3fCAgICAgMTIuMzE3
-fCAgICAgICAwfCAgICAgMHwgICAgICA2Ljk5OHwgICAgIDE5LjY1NgpSVER8ICAgICAgNy4zMTZ8
-ICAgICAgOC41ODR8ICAgICAxMS42NTB8ICAgICAgIDB8ICAgICAwfCAgICAgIDYuOTk4fCAgICAg
-MTkuNjU2ClJURHwgICAgICA3LjMxNnwgICAgICA4LjQ2OHwgICAgIDEyLjk4M3wgICAgICAgMHwg
-ICAgIDB8ICAgICAgNi45OTh8ICAgICAxOS42NTYKUlREfCAgICAgIDcuMzE2fCAgICAgIDguNjk1
-fCAgICAgMTMuOTgyfCAgICAgICAwfCAgICAgMHwgICAgICA2Ljk5OHwgICAgIDE5LjY1NgpSVER8
-ICAgICAgNy4zMTZ8ICAgICAgOC43NTR8ICAgICAxOC42NDl8ICAgICAgIDB8ICAgICAwfCAgICAg
-IDYuOTk4fCAgICAgMTkuNjU2ClJURHwgICAgICA3LjMxNXwgICAgICA4LjUxOHwgICAgIDExLjY0
-OXwgICAgICAgMHwgICAgIDB8ICAgICAgNi45OTh8ICAgICAxOS42NTYKUlREfCAgICAgIDcuMzE1
-fCAgICAgIDguNTgzfCAgICAgMTEuMzE1fCAgICAgICAwfCAgICAgMHwgICAgICA2Ljk5OHwgICAg
-IDE5LjY1NgpSVER8ICAgICAgNy4zMTV8ICAgICAgOC41MzZ8ICAgICAxMi4zMTV8ICAgICAgIDB8
-ICAgICAwfCAgICAgIDYuOTk4fCAgICAgMTkuNjU2ClJURHwgICAgICA3LjMxNXwgICAgICA4LjQ1
-MHwgICAgIDEwLjk4MXwgICAgICAgMHwgICAgIDB8ICAgICAgNi45OTh8ICAgICAxOS42NTYKUlRE
-fCAgICAgIDcuMzE0fCAgICAgIDguMzkwfCAgICAgMTEuOTgxfCAgICAgICAwfCAgICAgMHwgICAg
-ICA2Ljk5OHwgICAgIDE5LjY1NgpSVER8ICAgICAgNy4zMTR8ICAgICAgOC4zOTJ8ICAgICAxMi4z
-MTR8ICAgICAgIDB8ICAgICAwfCAgICAgIDYuOTk4fCAgICAgMTkuNjU2ClJURHwgICAgICA3LjMx
-NHwgICAgICA4LjM2M3wgICAgIDExLjMxNHwgICAgICAgMHwgICAgIDB8ICAgICAgNi45OTh8ICAg
-ICAxOS42NTYKUlREfCAgICAgIDcuMzE0fCAgICAgIDguMzg2fCAgICAgMTEuMzE0fCAgICAgICAw
-fCAgICAgMHwgICAgICA2Ljk5OHwgICAgIDE5LjY1NgpSVER8ICAgICAgNy4zMTN8ICAgICAgOC4z
-OTR8ICAgICAxMS45ODB8ICAgICAgIDB8ICAgICAwfCAgICAgIDYuOTk4fCAgICAgMTkuNjU2ClJU
-VHwgIDAwOjAxOjI1ICAoaW4ta2VybmVsIHBlcmlvZGljIHRhc2ssIDEwMDAgdXMgcGVyaW9kLCBw
-cmlvcml0eSA5OSkKUlRIfC0tLS1sYXQgbWlufC0tLS1sYXQgYXZnfC0tLS1sYXQgbWF4fC1vdmVy
-cnVufC0tLW1zd3wtLS1sYXQgYmVzdHwtLWxhdCB3b3JzdApSVER8ICAgICAgNy4zMTN8ICAgICAg
-OC4zODN8ICAgICAxMi42NDd8ICAgICAgIDB8ICAgICAwfCAgICAgIDYuOTk4fCAgICAgMTkuNjU2
-ClJURHwgICAgICA3LjMxM3wgICAgICA4LjM5N3wgICAgIDExLjMxM3wgICAgICAgMHwgICAgIDB8
-ICAgICAgNi45OTh8ICAgICAxOS42NTYKUlREfCAgICAgIDcuMzEzfCAgICAgIDguMzU0fCAgICAg
-MTEuMzEzfCAgICAgICAwfCAgICAgMHwgICAgICA2Ljk5OHwgICAgIDE5LjY1NgpeQy0tLXwtLS0t
-LS0tLS0tLXwtLS0tLS0tLS0tLXwtLS0tLS0tLS0tLXwtLS0tLS0tLXwtLS0tLS18LS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLQpSVFN8ICAgICAgNi45OTh8ICAgICAgOC40NjV8ICAgICAxOS42NTZ8
-ICAgICAgIDB8ICAgICAwfCAgICAwMDowMToyNy8wMDowMToyNwrlnKggMjAxNC0wMy0yNyAwNzow
-OTozNe+8jCJHaWxsZXMgQ2hhbnRlcGVyZHJpeCIgPGdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9t
-YWkub3JnPiDlhpnpgZPvvJoKPk9uIDAzLzI2LzIwMTQgMDM6MjkgUE0sIOW1jOWFpeW8j+W3peeo
-i+W4iCB3cm90ZToNCj4+IGkgdXNlIGlwaXBlLWdjaC1pcGlwZS0zLjAtaW14NnEudGFyLmJ6MiB3
-aXRoIHhlbm9tYWktMi42LjMgL214Yy9pcGlwLTMuMC40MyogcGF0Y2ggLGl0IGlzIG5vdCByaWdo
-dD8NCj4NCj5ObywgeW91IHNob3VsZCB1c2UgZ2l0IHRvIGNoZWNrb3V0IHRoZSBpcGlwZS0zLjAt
-aW14NnEgZnJvbSB0aGUNCj5pcGlwZS1nY2ggZ2l0LCBhbmQgcnVuIHByZXBhcmUta2VybmVsLnNo
-IGZyb20geGVub21haSBzb3VyY2VzLCB5b3UgZG8NCj5ub3QgbmVlZCB0byBhcHBseSB0aGUgcHJl
-LSBhbmQgcG9zdC0gcGF0Y2hlcywgdGhlIGlwaXBlLTMuMC1pbXg2cSBpcyB0aGUNCj5icmFuY2gg
-ZnJvbSB3aGljaCB0aGUgcHJlLSBhbmQgcG9zdC0gcGF0Y2hlcyBhcmUgbWFkZS4NCj4NCj4NCj4t
-LSANCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgR2lsbGVzLg0K
+On 03/27/2014 12:07 AM, Gilles Chanteperdrix wrote:
+> On 03/26/2014 05:49 PM, Henri Roosen wrote:
+>> On Tue, Mar 25, 2014 at 12:45 PM, Erwin Pranz <erwin.pranz@sigmatek.at>wrote:
+>>
+>>> Hello,
+>>>
+>>> I am using rtdm_mutex_lock/rtdm_mutex_unlock in a rtdm driver and I get a
+>>> signal SIGDEBUG_MIGRATE_PRIOINV when I call the driver from a priority-0
+>>> thread.The signal is sent in xnsynch_release_thread when rescnt is 0 on a
+>>> XNOTHER thread, which means that rescnt is not balanced.
+>>>
+>>> I think the reason why rescnt is not balanced is in rtdm_mutex_timedlock:
+>>> when the owner of the mutex is NULL, the owner is changed to the calling
+>>> thread, but rescnt is not increased.
+>>>
+>>> I suggest the following fix in rtdm_mutex_timedlock:
+>>> -       else if (likely(xnsynch_owner(&mutex->synch_base) == NULL))
+>>> +       else if (likely(xnsynch_owner(&mutex->synch_base) == NULL)) {
+>>>                  xnsynch_set_owner(&mutex->synch_base, curr_thread);
+>>> +               if (xnthread_test_state(curr_thread, XNOTHER))
+>>> +                       xnthread_inc_rescnt(curr_thread);
+>>> +       }
+>>>
+>>>
+>> Hi Gilles,
+>>
+>> Could you maybe elaborate on this? It seems the resource counting is not in
+>> balance. It would be great to know if this the correct way to fix it.
+>>
+>> The problem should be easily reproducible by having just one shadowed
+>> priority 0 thread that somehow calls rtdm_mutex_lock directly followed by
+>> rtdm_mutex_unlock. This will trigger the code in ksrc/nucleus/synch.c that
+>> was added by commit-486afd15, which sends SIGDEBUG_MIGRATE_PRIOINV on
+>> Xenomai v2.6.2.1. It shouldn't send any signal in that case, as nothing is
+>> wrong.
+>>
+>> Note we are on Xenomai v2.6.2.1. Xenomai v2.6.3 sends (the better name for
+>> it) SIGDEBUG_RESCNT_IMBALANCE.
+>
+> To be completely frank, I expected Jan to answer this mail as this
+> concerns RTDM. Anyway, I had a look into it, and:
+> - the RTDM skin is not alone in this case, several skins implement the
+> same pattern (if owner == NULL, set owner, then return);
+> - adding calls to xnthread_inc_rescnt everywhere does not seem right, I
+> would prefer to move this inside some xnsynch_ service. The best
+> candidate I found for that is xnsynch_set_owner, though I am not sure if
+> this will work, especially with fastsynchs.
+>
+>
+
+Indeed this wouldn't. I suspect the skins mentioned did not have access 
+to xnsynch_acquire(), and were not updated when the auto-relax feature 
+was introduced for XNOTHER threads.
+
+We could provide a helper for fast grabbing a mutex which has no fast 
+locking support shared with userland, saving a call to xnsynch_acquire() 
+in the non-contended case, e.g.
+
+diff --git a/include/nucleus/synch.h b/include/nucleus/synch.h
+index 7deae21..87456ea 100644
+--- a/include/nucleus/synch.h
++++ b/include/nucleus/synch.h
+@@ -192,6 +192,22 @@ static inline void xnsynch_set_owner(struct xnsynch 
+*synch,
+  	synch->owner = thread;
+  }
+
++static inline int xnsynch_fast_grab(struct xnsynch *synch,
++				    struct xnthread *thread)
++{
++	XENO_BUGON(NUCLEUS, xnsynch_fastlock_p(synch));
++
++	if (likely(xnsynch_owner(synch) != NULL))
++		return 0;
++
++	xnsynch_set_owner(synch, thread);
++
++	if (xnthread_test_state(thread, XNOTHER))
++		xnthread_inc_rescnt(thread);
++
++	return 1;
++}
++
+  static inline void xnsynch_register_cleanup(struct xnsynch *synch,
+  					    void (*handler)(struct xnsynch *))
+  {
+diff --git a/ksrc/skins/rtdm/drvlib.c b/ksrc/skins/rtdm/drvlib.c
+index 391d45f..338005d 100644
+--- a/ksrc/skins/rtdm/drvlib.c
++++ b/ksrc/skins/rtdm/drvlib.c
+@@ -1538,9 +1538,7 @@ int rtdm_mutex_timedlock(rtdm_mutex_t *mutex, 
+nanosecs_rel_t timeout,
+  	if (unlikely(xnsynch_test_flags(&mutex->synch_base,
+  					RTDM_SYNCH_DELETED)))
+  		err = -EIDRM;
+-	else if (likely(xnsynch_owner(&mutex->synch_base) == NULL))
+-		xnsynch_set_owner(&mutex->synch_base, curr_thread);
+-	else {
++	else if (!xnsynch_fast_grab(&mutex->synch_base, curr_thread)) {
+  		/* Redefinition to clarify XENO_ASSERT output */
+  		#define mutex_owner xnsynch_owner(&mutex->synch_base)
+  		XENO_ASSERT(RTDM, mutex_owner != curr_thread,
+
+The VxWorks and VRTX skins would have to use it as well.
+
+-- 
+Philippe.
 
