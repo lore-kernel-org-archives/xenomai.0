@@ -1,19 +1,15 @@
-Date: Fri, 28 Mar 2014 17:08:36 +0800 (CST)
-From: =?GBK?B?x7bI68q9uaSzzMqm?= <ericvic@163.com>
-In-Reply-To: <53341923.3050401@xenomai.org>
-References: <5072ab06.2340b.144fe2d11ed.Coremail.ericvic@163.com>
- <5332BF1F.3000504@xenomai.org>
- <76a8b1fe.2477d.144fe96fb16.Coremail.ericvic@163.com>
- <5332D759.7010806@xenomai.org>
- <23d0b1ec.250da.144fecc28e4.Coremail.ericvic@163.com>
- <53335E2F.4040608@xenomai.org>
- <594fd0f5.8241.14501ff6aba.Coremail.ericvic@163.com>
- <53341923.3050401@xenomai.org>
+Message-ID: <53354665.10604@sigmatek.at>
+Date: Fri, 28 Mar 2014 10:52:37 +0100
+From: Erwin Pranz <erwin.pranz@sigmatek.at>
 MIME-Version: 1.0
-Message-ID: <3ebf00ca.a99c.14507f2b0d1.Coremail.ericvic@163.com>
-Content-Type: text/plain; charset="gbk"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] imx6q xenomai  ipipe-3.0-imx6q
+References: <53316C4C.6000708@sigmatek.at>	<CANKLDmuMDpiUC7Z7dsXa5K3LYNA4LNwA7mhAicJ_Dey+2S9PCg@mail.gmail.com>	<53335D9A.9040902@xenomai.org>	<5333F22F.70805@xenomai.org>
+ <CANKLDmttO4jZtRxV-bjYQwg3YkGBKwFL74ATkdM2SBH8Xby31A@mail.gmail.com>
+ <53345143.7000009@xenomai.org>
+In-Reply-To: <53345143.7000009@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Rescnt imbalance in rtdm_mutex_timedlock
+Reply-To: erwin.pranz@sigmatek.at
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,236 +18,220 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Cgpzb3JyeSAgLCBJIHRob3VnaHQgb2YgYSBwcm9ibGVtIG9uIHRoZSBjcHUwIGJpbmRpbmcgYSBy
-dF9waXBlIHVzZWQgdG8gd3JpdGUgIGFuZCBvbiB0aGUgY3B1MSBiaW5kaW5nIGFub3RoZXIgcnRf
-cGlwZSB1c2VkIHRvIHJlYWQgLGlmIGl0IGNhbiBjYXVzZSByZWFsdGltZSBsb3N0PwoKCgoKCgoK
-CgoKCgpUSGlzIGlzIG15IG5ld3Rlc3Qgb24gbXkgaW14NnEgYm9hcmQgd2l0aCAgaXBpcGUtMy4w
-LWlteDZxIAoKbXkgYm9vdCBsb2dzIApXQVJOSU5HISBUaGUgcmVtb3RlIFNTSCBzZXJ2ZXIgcmVq
-ZWN0ZWQgWDExIGZvcndhcmRpbmcgcmVxdWVzdC4KLXNoLTIuMDViIyBkbWVzZwpMaW51eCB2ZXJz
-aW9uIDMuMC40MyAobHVjaWRAdWJ1bnR1KSAoZ2NjIHZlcnNpb24gNC40LjQgKDQuNC40XzA5LjA2
-LjIwMTApICkgIzEwIFNNUCBQUkVFTVBUIEZyaSBNYXIgMjggMDA6NTg6MjMgUERUIDIwMTQKQ1BV
-OiBBUk12NyBQcm9jZXNzb3IgWzQxMmZjMDlhXSByZXZpc2lvbiAxMCAoQVJNdjcpLCBjcj0xMGM1
-M2M3ZApDUFU6IFZJUFQgbm9uYWxpYXNpbmcgZGF0YSBjYWNoZSwgVklQVCBhbGlhc2luZyBpbnN0
-cnVjdGlvbiBjYWNoZQpNYWNoaW5lOiBGcmVlc2NhbGUgaS5NWCA2UXVhZC9EdWFsTGl0ZS9Tb2xv
-IExZTlVDIEVWQiBCb2FyZAo9PT09PT09PT09PT09PT09PT09PT09ZmlyZSBseW51YyBldmIgPT09
-PT09PT09PT09PT09PT09PT09PT09Cj09PT09PT09PT09PT09PT09PT09PT0jIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMgPT09PT09PT09PT09PT09PT09PT09PT09Cklnbm9yaW5nIHVucmVjb2duaXNl
-ZCB0YWcgMHg1NDQxMDAwOApNZW1vcnkgcG9saWN5OiBFQ0MgZGlzYWJsZWQsIERhdGEgY2FjaGUg
-d3JpdGVhbGxvYwpDUFUgaWRlbnRpZmllZCBhcyBpLk1YNlEsIHNpbGljb24gcmV2IDEuMgpPbiBu
-b2RlIDAgdG90YWxwYWdlczogMjI5Mzc2CmZyZWVfYXJlYV9pbml0X25vZGU6IG5vZGUgMCwgcGdk
-YXQgODA2ZTBmODAsIG5vZGVfbWVtX21hcCA4YjgwMDAwMAogIERNQSB6b25lOiAzNjggcGFnZXMg
-dXNlZCBmb3IgbWVtbWFwCiAgRE1BIHpvbmU6IDAgcGFnZXMgcmVzZXJ2ZWQKICBETUEgem9uZTog
-NDY3MzYgcGFnZXMsIExJRk8gYmF0Y2g6MTUKICBOb3JtYWwgem9uZTogMTY4MCBwYWdlcyB1c2Vk
-IGZvciBtZW1tYXAKICBOb3JtYWwgem9uZTogMTgwNTkyIHBhZ2VzLCBMSUZPIGJhdGNoOjMxClBF
-UkNQVTogRW1iZWRkZWQgOSBwYWdlcy9jcHUgQDhjMDA4MDAwIHMxNDQ2NCByODE5MiBkMTQyMDgg
-dTM2ODY0CnBjcHUtYWxsb2M6IHMxNDQ2NCByODE5MiBkMTQyMDggdTM2ODY0IGFsbG9jPTkqNDA5
-NgpwY3B1LWFsbG9jOiBbMF0gMCBbMF0gMSBbMF0gMiBbMF0gMyAKQnVpbHQgMSB6b25lbGlzdHMg
-aW4gWm9uZSBvcmRlciwgbW9iaWxpdHkgZ3JvdXBpbmcgb24uICBUb3RhbCBwYWdlczogMjI3MzI4
-Cktlcm5lbCBjb21tYW5kIGxpbmU6IGNvbnNvbGU9dHR5bXhjMCwxMTUyMDAgcm9vdD0vZGV2L21t
-Y2JsazBwMSByb290d2FpdApQSUQgaGFzaCB0YWJsZSBlbnRyaWVzOiA0MDk2IChvcmRlcjogMiwg
-MTYzODQgYnl0ZXMpCkRlbnRyeSBjYWNoZSBoYXNoIHRhYmxlIGVudHJpZXM6IDEzMTA3MiAob3Jk
-ZXI6IDcsIDUyNDI4OCBieXRlcykKSW5vZGUtY2FjaGUgaGFzaCB0YWJsZSBlbnRyaWVzOiA2NTUz
-NiAob3JkZXI6IDYsIDI2MjE0NCBieXRlcykKTWVtb3J5OiA2NDBNQiAyNTZNQiA9IDg5Nk1CIHRv
-dGFsCk1lbW9yeTogOTAwOTc2ay85MDA5NzZrIGF2YWlsYWJsZSwgMTQ3NjAwayByZXNlcnZlZCwg
-MEsgaGlnaG1lbQpWaXJ0dWFsIGtlcm5lbCBtZW1vcnkgbGF5b3V0OgogICAgdmVjdG9yICA6IDB4
-ZmZmZjAwMDAgLSAweGZmZmYxMDAwICAgKCAgIDQga0IpCiAgICBmaXhtYXAgIDogMHhmZmYwMDAw
-MCAtIDB4ZmZmZTAwMDAgICAoIDg5NiBrQikKICAgIERNQSAgICAgOiAweGY0NjAwMDAwIC0gMHhm
-ZmUwMDAwMCAgICggMTg0IE1CKQogICAgdm1hbGxvYyA6IDB4YzA4MDAwMDAgLSAweGYyMDAwMDAw
-ICAgKCA3OTIgTUIpCiAgICBsb3dtZW0gIDogMHg4MDAwMDAwMCAtIDB4YzAwMDAwMDAgICAoMTAy
-NCBNQikKICAgIHBrbWFwICAgOiAweDdmZTAwMDAwIC0gMHg4MDAwMDAwMCAgICggICAyIE1CKQog
-ICAgbW9kdWxlcyA6IDB4N2YwMDAwMDAgLSAweDdmZTAwMDAwICAgKCAgMTQgTUIpCiAgICAgIC5p
-bml0IDogMHg4MDAwODAwMCAtIDB4ODAwNDAwMDAgICAoIDIyNCBrQikKICAgICAgLnRleHQgOiAw
-eDgwMDQwMDAwIC0gMHg4MDY5YmVjMCAgICg2NTEyIGtCKQogICAgICAuZGF0YSA6IDB4ODA2OWMw
-MDAgLSAweDgwNmUyMDIwICAgKCAyODEga0IpCiAgICAgICAuYnNzIDogMHg4MDZlMjA0NCAtIDB4
-ODA3MzFjMGMgICAoIDMxOSBrQikKU0xVQjogR2Vuc2xhYnM9MTMsIEhXYWxpZ249MzIsIE9yZGVy
-PTAtMywgTWluT2JqZWN0cz0wLCBDUFVzPTQsIE5vZGVzPTEKUHJlZW1wdGlibGUgaGllcmFyY2hp
-Y2FsIFJDVSBpbXBsZW1lbnRhdGlvbi4KTlJfSVJRUzo0OTYKTVhDIEdQSU8gaGFyZHdhcmUKc2No
-ZWRfY2xvY2s6IDMyIGJpdHMgYXQgMzAwMGtIeiwgcmVzb2x1dGlvbiAzMzNucywgd3JhcHMgZXZl
-cnkgMTQzMTY1NW1zCk1YQ19FYXJseSBzZXJpYWwgY29uc29sZSBhdCBNTUlPIDB4MjAyMDAwMCAo
-b3B0aW9ucyAnMTE1MjAwJykKYm9vdGNvbnNvbGUgW3R0eW14YzBdIGVuYWJsZWQKSS1waXBlIDEu
-MTgtMTM6IHBpcGVsaW5lIGVuYWJsZWQuCkNvbnNvbGU6IGNvbG91ciBkdW1teSBkZXZpY2UgODB4
-MzAKQ2FsaWJyYXRpbmcgZGVsYXkgbG9vcC4uLiAxNTgxLjA1IEJvZ29NSVBTIChscGo9NzkwNTI4
-MCkKcGlkX21heDogZGVmYXVsdDogMzI3NjggbWluaW11bTogMzAxCk1vdW50LWNhY2hlIGhhc2gg
-dGFibGUgZW50cmllczogNTEyCkNQVTogVGVzdGluZyB3cml0ZSBidWZmZXIgY29oZXJlbmN5OiBv
-awpJLXBpcGUsIDM5Ni4wMDAgTUh6IHRpbWVyCkktcGlwZSwgMzk2LjAwMCBNSHogY2xvY2tzb3Vy
-Y2UKaHcgcGVyZmV2ZW50czogZW5hYmxlZCB3aXRoIEFSTXY3IENvcnRleC1BOSBQTVUgZHJpdmVy
-LCA3IGNvdW50ZXJzIGF2YWlsYWJsZQpDUFUxOiBCb290ZWQgc2Vjb25kYXJ5IHByb2Nlc3NvcgpD
-UFUyOiBCb290ZWQgc2Vjb25kYXJ5IHByb2Nlc3NvcgpDUFUzOiBCb290ZWQgc2Vjb25kYXJ5IHBy
-b2Nlc3NvcgpCcm91Z2h0IHVwIDQgQ1BVcwpTTVA6IFRvdGFsIG9mIDQgcHJvY2Vzc29ycyBhY3Rp
-dmF0ZWQgKDYzMjQuMjIgQm9nb01JUFMpLgpwcmludF9jb25zdHJhaW50czogZHVtbXk6IApORVQ6
-IFJlZ2lzdGVyZWQgcHJvdG9jb2wgZmFtaWx5IDE2CnByaW50X2NvbnN0cmFpbnRzOiB2ZGRwdTog
-NzI1IDwtLT4gMTMwMCBtViBhdCA3MDAgbVYgZmFzdCBub3JtYWwgCnByaW50X2NvbnN0cmFpbnRz
-OiB2ZGRjb3JlOiA3MjUgPC0tPiAxMzAwIG1WIGF0IDExNTAgbVYgZmFzdCBub3JtYWwgCnByaW50
-X2NvbnN0cmFpbnRzOiB2ZGRzb2M6IDcyNSA8LS0+IDEzMDAgbVYgYXQgMTIwMCBtViBmYXN0IG5v
-cm1hbCAKcHJpbnRfY29uc3RyYWludHM6IHZkZDJwNTogMjAwMCA8LS0+IDI3NzUgbVYgYXQgMjQw
-MCBtViBmYXN0IG5vcm1hbCAKcHJpbnRfY29uc3RyYWludHM6IHZkZDFwMTogODAwIDwtLT4gMTQw
-MCBtViBhdCAxMTAwIG1WIGZhc3Qgbm9ybWFsIApwcmludF9jb25zdHJhaW50czogdmRkM3AwOiAy
-ODAwIDwtLT4gMzE1MCBtViBhdCAzMDAwIG1WIGZhc3Qgbm9ybWFsIApDTEtDVExfQ0NHUjY9YzAw
-CmNzY21yMT0xMjcwMDAwNwpyYXRlPTUyODAwMDAwCldhcm5pbmc6IGVtaV9zbG93X2NsayBub3Qg
-c2V0IHRvIDEzMiBNSHohIFdFSU0gTk9SIHRpbWluZyBtYXkgYmUgaW5jb3JyZWN0IQpObyBBSENJ
-IHNhdmUgUFdSOiBQRERRIGVuYWJsZWQKaHctYnJlYWtwb2ludDogZm91bmQgNiBicmVha3BvaW50
-IGFuZCAxIHdhdGNocG9pbnQgcmVnaXN0ZXJzLgpody1icmVha3BvaW50OiAxIGJyZWFrcG9pbnQo
-cykgcmVzZXJ2ZWQgZm9yIHdhdGNocG9pbnQgc2luZ2xlLXN0ZXAuCmh3LWJyZWFrcG9pbnQ6IG1h
-eGltdW0gd2F0Y2hwb2ludCBzaXplIGlzIDQgYnl0ZXMuCkwzMTAgY2FjaGUgY29udHJvbGxlciBl
-bmFibGVkCmwyeDA6IDE2IHdheXMsIENBQ0hFX0lEIDB4NDEwMDAwYzcsIEFVWF9DVFJMIDB4MDI4
-NzAwMDAsIENhY2hlIHNpemU6IDEwNDg1NzYgQgpJTVggdXNiIHdha2V1cCBwcm9iZQp0aGUgd2Fr
-ZXVwIHBkYXRhIGlzIDB4YmZlMzc1MDAKYmlvOiBjcmVhdGUgc2xhYiA8YmlvLTA+IGF0IDAKU0NT
-SSBzdWJzeXN0ZW0gaW5pdGlhbGl6ZWQKdXNiY29yZTogcmVnaXN0ZXJlZCBuZXcgaW50ZXJmYWNl
-IGRyaXZlciB1c2Jmcwp1c2Jjb3JlOiByZWdpc3RlcmVkIG5ldyBpbnRlcmZhY2UgZHJpdmVyIGh1
-Ygp1c2Jjb3JlOiByZWdpc3RlcmVkIG5ldyBkZXZpY2UgZHJpdmVyIHVzYgpGcmVlc2NhbGUgVVNC
-IE9URyBEcml2ZXIgbG9hZGVkLCAkUmV2aXNpb246IDEuNTUgJAphZGQgd2FrZSB1cCBzb3VyY2Ug
-aXJxIDc1CmlteC1pcHV2MyBpbXgtaXB1djMuMDogSVBVIERNRkMgTk9STUFMIG1vZGU6IDEoMH4x
-KSwgNUIoNCw1KSwgNUYoNiw3KQppbXgtaXB1djMgaW14LWlwdXYzLjE6IElQVSBETUZDIE5PUk1B
-TCBtb2RlOiAxKDB+MSksIDVCKDQsNSksIDVGKDYsNykKTUlQSSBDU0kyIGRyaXZlciBtb2R1bGUg
-bG9hZGVkCkFkdmFuY2VkIExpbnV4IFNvdW5kIEFyY2hpdGVjdHVyZSBEcml2ZXIgVmVyc2lvbiAx
-LjAuMjQuCkJsdWV0b290aDogQ29yZSB2ZXIgMi4xNgpORVQ6IFJlZ2lzdGVyZWQgcHJvdG9jb2wg
-ZmFtaWx5IDMxCkJsdWV0b290aDogSENJIGRldmljZSBhbmQgY29ubmVjdGlvbiBtYW5hZ2VyIGlu
-aXRpYWxpemVkCkJsdWV0b290aDogSENJIHNvY2tldCBsYXllciBpbml0aWFsaXplZApCbHVldG9v
-dGg6IEwyQ0FQIHNvY2tldCBsYXllciBpbml0aWFsaXplZApCbHVldG9vdGg6IFNDTyBzb2NrZXQg
-bGF5ZXIgaW5pdGlhbGl6ZWQKY2ZnODAyMTE6IENhbGxpbmcgQ1JEQSB0byB1cGRhdGUgd29ybGQg
-cmVndWxhdG9yeSBkb21haW4KaTJjLWNvcmU6IGRyaXZlciBbbWF4MTcxMzVdIHVzaW5nIGxlZ2Fj
-eSBzdXNwZW5kIG1ldGhvZAppMmMtY29yZTogZHJpdmVyIFttYXgxNzEzNV0gdXNpbmcgbGVnYWN5
-IHJlc3VtZSBtZXRob2QKU3dpdGNoaW5nIHRvIGNsb2Nrc291cmNlIGlwaXBlX3RzYwpORVQ6IFJl
-Z2lzdGVyZWQgcHJvdG9jb2wgZmFtaWx5IDIKSVAgcm91dGUgY2FjaGUgaGFzaCB0YWJsZSBlbnRy
-aWVzOiAzMjc2OCAob3JkZXI6IDUsIDEzMTA3MiBieXRlcykKVENQIGVzdGFibGlzaGVkIGhhc2gg
-dGFibGUgZW50cmllczogMTMxMDcyIChvcmRlcjogOCwgMTA0ODU3NiBieXRlcykKVENQIGJpbmQg
-aGFzaCB0YWJsZSBlbnRyaWVzOiA2NTUzNiAob3JkZXI6IDcsIDc4NjQzMiBieXRlcykKVENQOiBI
-YXNoIHRhYmxlcyBjb25maWd1cmVkIChlc3RhYmxpc2hlZCAxMzEwNzIgYmluZCA2NTUzNikKVENQ
-IHJlbm8gcmVnaXN0ZXJlZApVRFAgaGFzaCB0YWJsZSBlbnRyaWVzOiA1MTIgKG9yZGVyOiAyLCAx
-NjM4NCBieXRlcykKVURQLUxpdGUgaGFzaCB0YWJsZSBlbnRyaWVzOiA1MTIgKG9yZGVyOiAyLCAx
-NjM4NCBieXRlcykKTkVUOiBSZWdpc3RlcmVkIHByb3RvY29sIGZhbWlseSAxClJQQzogUmVnaXN0
-ZXJlZCBuYW1lZCBVTklYIHNvY2tldCB0cmFuc3BvcnQgbW9kdWxlLgpSUEM6IFJlZ2lzdGVyZWQg
-dWRwIHRyYW5zcG9ydCBtb2R1bGUuClJQQzogUmVnaXN0ZXJlZCB0Y3AgdHJhbnNwb3J0IG1vZHVs
-ZS4KUlBDOiBSZWdpc3RlcmVkIHRjcCBORlN2NC4xIGJhY2tjaGFubmVsIHRyYW5zcG9ydCBtb2R1
-bGUuClN0YXRpYyBQb3dlciBNYW5hZ2VtZW50IGZvciBGcmVlc2NhbGUgaS5NWDYKd2FpdCBtb2Rl
-IGlzIGRpc2FibGVkIGZvciBpLk1YNgpjcGFkZHIgPSBjMDg4MDAwMCBzdXNwZW5kX2lyYW1fYmFz
-ZT1jMDhlYzAwMApQTSBkcml2ZXIgbW9kdWxlIGxvYWRlZApJTVggdXNiIHdha2V1cCBwcm9iZQp0
-aGUgd2FrZXVwIHBkYXRhIGlzIDB4YmZlOGJiNDAKSS1waXBlOiBEb21haW4gWGVub21haSByZWdp
-c3RlcmVkLgpYZW5vbWFpOiBoYWwvYXJtIHN0YXJ0ZWQuClhlbm9tYWk6IHNjaGVkdWxpbmcgY2xh
-c3MgaWRsZSByZWdpc3RlcmVkLgpYZW5vbWFpOiBzY2hlZHVsaW5nIGNsYXNzIHJ0IHJlZ2lzdGVy
-ZWQuClhlbm9tYWk6IHJlYWwtdGltZSBudWNsZXVzIHYyLjYuMyAoTGllcyBhbmQgVHJ1dGhzKSBs
-b2FkZWQuClhlbm9tYWk6IGRlYnVnIG1vZGUgZW5hYmxlZC4KWGVub21haTogc3RhcnRpbmcgbmF0
-aXZlIEFQSSBzZXJ2aWNlcy4KWGVub21haTogc3RhcnRpbmcgUE9TSVggc2VydmljZXMuClhlbm9t
-YWk6IHN0YXJ0aW5nIFJURE0gc2VydmljZXMuCkpGRlMyIHZlcnNpb24gMi4yLiAoTkFORCkgwqkg
-MjAwMS0yMDA2IFJlZCBIYXQsIEluYy4KbXNnbW5pIGhhcyBiZWVuIHNldCB0byAxNzU5CmlvIHNj
-aGVkdWxlciBub29wIHJlZ2lzdGVyZWQKaW8gc2NoZWR1bGVyIGRlYWRsaW5lIHJlZ2lzdGVyZWQK
-aW8gc2NoZWR1bGVyIGNmcSByZWdpc3RlcmVkIChkZWZhdWx0KQpteGNfc2RjX2ZiIG14Y19zZGNf
-ZmIuMDogcmVnaXN0ZXIgbXhjIGRpc3BsYXkgZHJpdmVyIGxkYgpteGNfc2RjX2ZiIG14Y19zZGNf
-ZmIuMDogTk8gbXhjIGRpc3BsYXkgZHJpdmVyIGZvdW5kIQpteGNfc2RjX2ZiIG14Y19zZGNfZmIu
-MTogcmVnaXN0ZXIgbXhjIGRpc3BsYXkgZHJpdmVyIGxkYgpteGNfc2RjX2ZiIG14Y19zZGNfZmIu
-MTogTk8gbXhjIGRpc3BsYXkgZHJpdmVyIGZvdW5kIQpteGNfc2RjX2ZiIG14Y19zZGNfZmIuMjog
-cmVnaXN0ZXIgbXhjIGRpc3BsYXkgZHJpdmVyIGxjZAppbXgtc2RtYSBpbXgtc2RtYTogbG9hZGVk
-IGZpcm13YXJlIDEuMQppbXgtc2RtYSBpbXgtc2RtYTogaW5pdGlhbGl6ZWQKU2VyaWFsOiBJTVgg
-ZHJpdmVyCmlteC11YXJ0LjA6IHR0eW14YzAgYXQgTU1JTyAweDIwMjAwMDAgKGlycSA9IDU4KSBp
-cyBhIElNWApjb25zb2xlIFt0dHlteGMwXSBlbmFibGVkLCBib290Y29uc29sZSBkaXNhYmxlZAps
-b29wOiBtb2R1bGUgbG9hZGVkCnZjYW46IFZpcnR1YWwgQ0FOIGludGVyZmFjZSBkcml2ZXIKQ0FO
-IGRldmljZSBkcml2ZXIgaW50ZXJmYWNlCmZsZXhjYW4gbmV0ZGV2aWNlIGRyaXZlcgpmbGV4Y2Fu
-IGlteDZxLWZsZXhjYW4uMDogZGV2aWNlIHJlZ2lzdGVyZWQgKHJlZ19iYXNlPWMwOTM4MDAwLCBp
-cnE9MTQyKQp1c2Jjb3JlOiByZWdpc3RlcmVkIG5ldyBpbnRlcmZhY2UgZHJpdmVyIHNtc2M5NXh4
-CmVoY2lfaGNkOiBVU0IgMi4wICdFbmhhbmNlZCcgSG9zdCBDb250cm9sbGVyIChFSENJKSBEcml2
-ZXIKZnNsLWVoY2kgZnNsLWVoY2kuMDogRnJlZXNjYWxlIE9uLUNoaXAgRUhDSSBIb3N0IENvbnRy
-b2xsZXIKZnNsLWVoY2kgZnNsLWVoY2kuMDogbmV3IFVTQiBidXMgcmVnaXN0ZXJlZCwgYXNzaWdu
-ZWQgYnVzIG51bWJlciAxCmZzbC1laGNpIGZzbC1laGNpLjA6IGlycSA3NSwgaW8gYmFzZSAweDAy
-MTg0MDAwCmZzbC1laGNpIGZzbC1laGNpLjA6IFVTQiAyLjAgc3RhcnRlZCwgRUhDSSAxLjAwCmh1
-YiAxLTA6MS4wOiBVU0IgaHViIGZvdW5kCmh1YiAxLTA6MS4wOiAxIHBvcnQgZGV0ZWN0ZWQKYWRk
-IHdha2UgdXAgc291cmNlIGlycSA3Mgpmc2wtZWhjaSBmc2wtZWhjaS4xOiBGcmVlc2NhbGUgT24t
-Q2hpcCBFSENJIEhvc3QgQ29udHJvbGxlcgpmc2wtZWhjaSBmc2wtZWhjaS4xOiBuZXcgVVNCIGJ1
-cyByZWdpc3RlcmVkLCBhc3NpZ25lZCBidXMgbnVtYmVyIDIKZnNsLWVoY2kgZnNsLWVoY2kuMTog
-aXJxIDcyLCBpbyBiYXNlIDB4MDIxODQyMDAKZnNsLWVoY2kgZnNsLWVoY2kuMTogVVNCIDIuMCBz
-dGFydGVkLCBFSENJIDEuMDAKaHViIDItMDoxLjA6IFVTQiBodWIgZm91bmQKaHViIDItMDoxLjA6
-IDEgcG9ydCBkZXRlY3RlZApJbml0aWFsaXppbmcgVVNCIE1hc3MgU3RvcmFnZSBkcml2ZXIuLi4K
-dXNiY29yZTogcmVnaXN0ZXJlZCBuZXcgaW50ZXJmYWNlIGRyaXZlciB1c2Itc3RvcmFnZQpVU0Ig
-TWFzcyBTdG9yYWdlIHN1cHBvcnQgcmVnaXN0ZXJlZC4KQVJDIFVTQk9URyBEZXZpY2UgQ29udHJv
-bGxlciBkcml2ZXIgKDEgQXVndXN0IDIwMDUpCmdfZXRoZXIgZ2FkZ2V0OiB1c2luZyByYW5kb20g
-c2VsZiBldGhlcm5ldCBhZGRyZXNzCmdfZXRoZXIgZ2FkZ2V0OiB1c2luZyByYW5kb20gaG9zdCBl
-dGhlcm5ldCBhZGRyZXNzCnVzYjA6IE1BQyBlZTozYTphMzozNDplMjo5Zgp1c2IwOiBIT1NUIE1B
-QyA1Mjo1NTo0MjowNjoyNDoyNwpnX2V0aGVyIGdhZGdldDogY29udHJvbGxlciAnZnNsLXVzYjIt
-dWRjJyBub3QgcmVjb2duaXplZDsgdHJ5aW5nIENEQyBFdGhlcm5ldCAoRUVNKQpnX2V0aGVyIGdh
-ZGdldDogRXRoZXJuZXQgR2FkZ2V0LCB2ZXJzaW9uOiBNZW1vcmlhbCBEYXkgMjAwOApnX2V0aGVy
-IGdhZGdldDogZ19ldGhlciByZWFkeQpTdXNwZW5kIHVkYyBmb3IgT1RHIGF1dG8gZGV0ZWN0ClVT
-QiBIb3N0IHN1c3BlbmQgYmVnaW5zCndpbGwgc3VzcGVuZCByb290aHViIGFuZCBpdHMgY2hpbGRy
-ZW4KZWhjaV9mc2xfYnVzX3N1c3BlbmQgYmVnaW5zLCBEUgplaGNpX2ZzbF9idXNfc3VzcGVuZCBl
-bmRzLCBEUgpob3N0IHN1c3BlbmQgZW5kcwpVU0IgR2FkZ2V0IHJlc3VtZSBiZWdpbnMKZnNsX3Vk
-Y19yZXN1bWUsIFdhaXQgZm9yIHdha2V1cCB0aHJlYWQgZmluaXNoZXMKZHJfY29udHJvbGxlcl9y
-dW46IHVkYyBlbnRlciBsb3cgcG93ZXIgbW9kZSAKVVNCIEdhZGdldCByZXN1bWUgZW5kcwpmc2wt
-dXNiMi11ZGM6IGJpbmQgdG8gZHJpdmVyIGdfZXRoZXIgCm1vdXNlZGV2OiBQUy8yIG1vdXNlIGRl
-dmljZSBjb21tb24gZm9yIGFsbCBtaWNlCmlucHV0OiBncGlvLWtleXMgYXMgL2RldmljZXMvcGxh
-dGZvcm0vZ3Bpby1rZXlzL2lucHV0L2lucHV0MAppMmMtY29yZTogZHJpdmVyIFtpc2wyOTAyM10g
-dXNpbmcgbGVnYWN5IHN1c3BlbmQgbWV0aG9kCmkyYy1jb3JlOiBkcml2ZXIgW2lzbDI5MDIzXSB1
-c2luZyBsZWdhY3kgcmVzdW1lIG1ldGhvZAppMmMgL2RldiBlbnRyaWVzIGRyaXZlcgppbXgyLXdk
-dCBpbXgyLXdkdC4wOiBJTVgyKyBXYXRjaGRvZyBUaW1lciBlbmFibGVkLiB0aW1lb3V0PTYwcyAo
-bm93YXlvdXQ9MSkKQmx1ZXRvb3RoOiBWaXJ0dWFsIEhDSSBkcml2ZXIgdmVyIDEuMwpCbHVldG9v
-dGg6IEhDSSBVQVJUIGRyaXZlciB2ZXIgMi4yCkJsdWV0b290aDogSENJQVRIM0sgcHJvdG9jb2wg
-aW5pdGlhbGl6ZWQKQmx1ZXRvb3RoOiBHZW5lcmljIEJsdWV0b290aCBVU0IgZHJpdmVyIHZlciAw
-LjYKdXNiY29yZTogcmVnaXN0ZXJlZCBuZXcgaW50ZXJmYWNlIGRyaXZlciBidHVzYgpzZGhjaTog
-U2VjdXJlIERpZ2l0YWwgSG9zdCBDb250cm9sbGVyIEludGVyZmFjZSBkcml2ZXIKc2RoY2k6IENv
-cHlyaWdodChjKSBQaWVycmUgT3NzbWFuCm1tYzA6IG5vIHZtbWMgcmVndWxhdG9yIGZvdW5kCm1t
-YzA6IFNESENJIGNvbnRyb2xsZXIgb24gcGxhdGZvcm0gW3NkaGNpLWVzZGhjLWlteC4yXSB1c2lu
-ZyBETUEKbW1jMTogbm8gdm1tYyByZWd1bGF0b3IgZm91bmQKbW1jMTogU0RIQ0kgY29udHJvbGxl
-ciBvbiBwbGF0Zm9ybSBbc2RoY2ktZXNkaGMtaW14LjFdIHVzaW5nIERNQQpteGNfYXNyYyByZWdp
-c3RlcmVkClRoZXJtYWwgY2FsaWJyYXRpb24gZGF0YSBpcyAweDVlYzU1ZDY5CkFuYXRvcCBUaGVy
-bWFsIHJlZ2lzdGVyZWQgYXMgdGhlcm1hbF96b25lMAphbmF0b3BfdGhlcm1hbF9wcm9iZTogZGVm
-YXVsdCBjb29saW5nIGRldmljZSBpcyBjcHVmcmVxIQp1c2Jjb3JlOiByZWdpc3RlcmVkIG5ldyBp
-bnRlcmZhY2UgZHJpdmVyIHVzYmhpZAp1c2JoaWQ6IFVTQiBISUQgY29yZSBkcml2ZXIKdXNiY29y
-ZTogcmVnaXN0ZXJlZCBuZXcgaW50ZXJmYWNlIGRyaXZlciBzbmQtdXNiLWF1ZGlvCkNpcnJ1cyBM
-b2dpYyBDUzQyODg4IEFMU0EgU29DIENvZGVjIERyaXZlcgppMmMtY29yZTogZHJpdmVyIFtjczQy
-ODg4XSB1c2luZyBsZWdhY3kgc3VzcGVuZCBtZXRob2QKaTJjLWNvcmU6IGRyaXZlciBbY3M0Mjg4
-OF0gdXNpbmcgbGVnYWN5IHJlc3VtZSBtZXRob2QKaW14XzNzdGFjayBhc29jIGRyaXZlcgpBTFNB
-IGRldmljZSBsaXN0OgogIE5vIHNvdW5kY2FyZHMgZm91bmQuClRDUCBjdWJpYyByZWdpc3RlcmVk
-Ck5FVDogUmVnaXN0ZXJlZCBwcm90b2NvbCBmYW1pbHkgMTcKY2FuOiBjb250cm9sbGVyIGFyZWEg
-bmV0d29yayBjb3JlIChyZXYgMjAwOTAxMDUgYWJpIDgpCk5FVDogUmVnaXN0ZXJlZCBwcm90b2Nv
-bCBmYW1pbHkgMjkKY2FuOiByYXcgcHJvdG9jb2wgKHJldiAyMDA5MDEwNSkKY2FuOiBicm9hZGNh
-c3QgbWFuYWdlciBwcm90b2NvbCAocmV2IDIwMDkwMTA1IHQpCkJsdWV0b290aDogUkZDT01NIFRU
-WSBsYXllciBpbml0aWFsaXplZApCbHVldG9vdGg6IFJGQ09NTSBzb2NrZXQgbGF5ZXIgaW5pdGlh
-bGl6ZWQKQmx1ZXRvb3RoOiBSRkNPTU0gdmVyIDEuMTEKQmx1ZXRvb3RoOiBCTkVQIChFdGhlcm5l
-dCBFbXVsYXRpb24pIHZlciAxLjMKQmx1ZXRvb3RoOiBCTkVQIGZpbHRlcnM6IHByb3RvY29sIG11
-bHRpY2FzdApCbHVldG9vdGg6IEhJRFAgKEh1bWFuIEludGVyZmFjZSBFbXVsYXRpb24pIHZlciAx
-LjIKbGliODAyMTE6IGNvbW1vbiByb3V0aW5lcyBmb3IgSUVFRTgwMi4xMSBkcml2ZXJzCmxpYjgw
-MjExX2NyeXB0OiByZWdpc3RlcmVkIGFsZ29yaXRobSAnTlVMTCcKbGliODAyMTFfY3J5cHQ6IHJl
-Z2lzdGVyZWQgYWxnb3JpdGhtICdXRVAnCmxpYjgwMjExX2NyeXB0OiByZWdpc3RlcmVkIGFsZ29y
-aXRobSAnQ0NNUCcKbGliODAyMTFfY3J5cHQ6IHJlZ2lzdGVyZWQgYWxnb3JpdGhtICdUS0lQJwpW
-RlAgc3VwcG9ydCB2MC4zOiBpbXBsZW1lbnRvciA0MSBhcmNoaXRlY3R1cmUgMyBwYXJ0IDMwIHZh
-cmlhbnQgOSByZXYgNApCdXMgZnJlcSBkcml2ZXIgbW9kdWxlIGxvYWRlZAp1c2IgMi0xOiBuZXcg
-aGlnaCBzcGVlZCBVU0IgZGV2aWNlIG51bWJlciAyIHVzaW5nIGZzbC1laGNpCkJ1cyBmcmVxIGRy
-aXZlciBFbmFibGVkCm14Y19kdmZzX2NvcmVfcHJvYmUKRFZGUyBkcml2ZXIgbW9kdWxlIGxvYWRl
-ZAptbWMwOiBuZXcgaGlnaCBzcGVlZCBERFIgTU1DIGNhcmQgYXQgYWRkcmVzcyAwMDAxCmRyaXZl
-cnMvcnRjL2hjdG9zeXMuYzogdW5hYmxlIHRvIG9wZW4gcnRjIGRldmljZSAocnRjMCkKV2FpdGlu
-ZyBmb3Igcm9vdCBkZXZpY2UgL2Rldi9tbWNibGswcDEuLi4KbW1jYmxrMDogbW1jMDowMDAxIFNF
-TTA0RyAzLjY4IEdpQiAKbW1jYmxrMGJvb3QwOiBtbWMwOjAwMDEgU0VNMDRHIHBhcnRpdGlvbiAx
-IDEuMDAgTWlCCm1tY2JsazBib290MTogbW1jMDowMDAxIFNFTTA0RyBwYXJ0aXRpb24gMiAxLjAw
-IE1pQgogbW1jYmxrMDogcDEKIG1tY2JsazBib290MTogdW5rbm93biBwYXJ0aXRpb24gdGFibGUK
-IG1tY2JsazBib290MDogdW5rbm93biBwYXJ0aXRpb24gdGFibGUKRVhUMy1mczogYmFycmllcnMg
-bm90IGVuYWJsZWQKc21zYzk1eHggdjEuMC40CnNtc2M5NXh4IDItMToxLjA6IGV0aDA6IHJlZ2lz
-dGVyICdzbXNjOTV4eCcgYXQgdXNiLWZzbC1laGNpLjEtMSwgc21zYzk1eHggVVNCIDIuMCBFdGhl
-cm5ldCwgMDA6ODA6MGY6OWU6MDQ6MjMKCgoKCgoKCgoK1NogMjAxNC0wMy0yNyAyMDoyNzoxNaOs
-IkdpbGxlcyBDaGFudGVwZXJkcml4IiA8Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmc+
-INC0tcCjugo+T24gMDMvMjcvMjAxNCAwNjoyNCBBTSwgx7bI68q9uaSzzMqmIHdyb3RlOgo+PiBJ
-IGRvIGFzIHlvdSBzYWlkICx0aGUgcmVzdWx0IGlzIHRoZSBtYXR0ZXIgc3RpbGwgaGFzICxidXQg
-d2hlbiBpIGNoYW5nZSAgCj4+IAo+PiBVSU1BR0UgIGFyY2gvYXJtL2Jvb3QvdUltYWdlCj4+IElt
-YWdlIE5hbWU6ICAgTGludXgtMy4wLjQzLWdlMTMzNTVmCj4+IENyZWF0ZWQ6ICAgICAgVGh1IE1h
-ciAyNyAxMTowNzo1OSAyMDE0Cj4+IEltYWdlIFR5cGU6ICAgQVJNIExpbnV4IEtlcm5lbCBJbWFn
-ZSAodW5jb21wcmVzc2VkKQo+PiBEYXRhIFNpemU6ICAgIDM0NDg3NjQgQnl0ZXMgPSAzMzY3Ljkz
-IGtCID0gMy4yOSBNQgo+PiBMb2FkIEFkZHJlc3M6IDEwMDA4MDAwCj4+IEVudHJ5IFBvaW50OiAg
-MTAwMDgwMDAKPj4gICBJbWFnZSBhcmNoL2FybS9ib290L3VJbWFnZSBpcyByZWFkeQo+PiAKPj4g
-Cj4+IENPTkZJR19TTVA9eQo+PiBDT05GSUdfU01QX09OX1VQPXkKPj4gdG8gCj4+IENPTkZJR19T
-TVA9bgo+PiBDT05GSUdfU01QX09OX1VQPW4KPj4gQ09ORklHX0JST0tFTl9PTl9TTVA9eQo+PiB0
-aGUgdXAta2VybmFsIHN0YXJ0ICBhbmQgbGF0ZW5jeSBzdGFydCAgYW5kIGRvIG15IHByb2dyYW0K
-Pgo+VHVybmluZyBvZmYgU01QIGltcHJvdmVzIGxhdGVuY3ksIHRoYXQgaXMgYSBnZW5lcmFsIHJ1
-bGUsIGZvciBhbGwKPnByb2Nlc3NvcnMuIFRoZSBwcm9ibGVtIGlzIHRoYXQgaWYgeW91IGRvIHRo
-YXQgeW91IGRvIG5vdCB0YWtlIGFkdmFudGFnZQo+b2YgYWxsIHRoZSBjb3JlcyB5b3VyIHByb2Nl
-c3NvciBoYXMuIFRoZSBxdWVzdGlvbiBpczogd2hhdCBsYXRlbmN5IGRpZAo+eW91IGhhdmUgd2l0
-aCB0aGUgY29ycmVjdCBicmFuY2g/IElmIGl0IGlzLCBzYXksIGxlc3MgdGhhbiA4MHVzLCBpdCBp
-cyBhCj5iaXQgaGlnaCBidXQgbWF5IHN0aWxsIGJlIG5vcm1hbC4gSWYgaXQgaXMgMzAwdXMsIHRo
-ZW4geW91IG1heSBzdGlsbAo+aGF2ZSBhIHByb2JsZW0sIGl0IGRlcGVuZHMgb24gdGhlIGFuc3dl
-ciB5b3UgZ2l2ZSB0byB0aGUgcXVlc3Rpb25zIEkKPmFza2VkIGFib3V0IHlvdXIgdXNhZ2Ugb2Yg
-cnRfcGlwZXMuCj4KPlRvIGJlIHN1cmUgdGhhdCB5b3UgYXJlIHJ1bm5pbmcgdGhlIGtlcm5lbCBJ
-IGV4cGVjdCwgY291bGQgeW91IHNob3cgdXMKPnRoZSBib290IGxvZ3M/Cj4KPlJlZ2FyZHMuCj4K
-Pi0tIAo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgIEdpbGxlcy4KCgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0t
-LS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogPz8yLnBu
-ZwpUeXBlOiBpbWFnZS9wbmcKU2l6ZTogMjI0NzkwIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUK
-VVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50
-cy8yMDE0MDMyOC80Yzc5M2UwZC9hdHRhY2htZW50LnBuZz4K
+Am 27.03.2014 17:26, schrieb Philippe Gerum:
+> On 03/27/2014 04:02 PM, Henri Roosen wrote:
+>>
+>>
+>> On Thu, Mar 27, 2014 at 10:41 AM, Philippe Gerum <rpm@xenomai.org
+>> <mailto:rpm@xenomai.org>> wrote:
+>>
+>>      On 03/27/2014 12:07 AM, Gilles Chanteperdrix wrote:
+>>
+>>          On 03/26/2014 05:49 PM, Henri Roosen wrote:
+>>
+>>              On Tue, Mar 25, 2014 at 12:45 PM, Erwin Pranz
+>>              <erwin.pranz@sigmatek.at
+>>              <mailto:erwin.pranz@sigmatek.at>>__wrote:
+>>
+>>                  Hello,
+>>
+>>                  I am using rtdm_mutex_lock/rtdm_mutex___unlock in a rtdm
+>>                  driver and I get a
+>>                  signal SIGDEBUG_MIGRATE_PRIOINV when I call the driver
+>>                  from a priority-0
+>>                  thread.The signal is sent in xnsynch_release_thread when
+>>                  rescnt is 0 on a
+>>                  XNOTHER thread, which means that rescnt is not balanced.
+>>
+>>                  I think the reason why rescnt is not balanced is in
+>>                  rtdm_mutex_timedlock:
+>>                  when the owner of the mutex is NULL, the owner is
+>>                  changed to the calling
+>>                  thread, but rescnt is not increased.
+>>
+>>                  I suggest the following fix in rtdm_mutex_timedlock:
+>>                  -       else if
+>>                  (likely(xnsynch_owner(&mutex->__synch_base) == NULL))
+>>                  +       else if
+>>                  (likely(xnsynch_owner(&mutex->__synch_base) == NULL)) {
+>>                                  
+>>                    xnsynch_set_owner(&mutex->__synch_base, curr_thread);
+>>                  +               if (xnthread_test_state(curr___thread,
+>>                  XNOTHER))
+>>                  +                       xnthread_inc_rescnt(curr___thread);
+>>                  +       }
+>>
+>>
+>>              Hi Gilles,
+>>
+>>              Could you maybe elaborate on this? It seems the resource
+>>              counting is not in
+>>              balance. It would be great to know if this the correct way
+>>              to fix it.
+>>
+>>              The problem should be easily reproducible by having just one
+>>              shadowed
+>>              priority 0 thread that somehow calls rtdm_mutex_lock
+>>              directly followed by
+>>              rtdm_mutex_unlock. This will trigger the code in
+>>              ksrc/nucleus/synch.c that
+>>              was added by commit-486afd15, which sends
+>>              SIGDEBUG_MIGRATE_PRIOINV on
+>>              Xenomai v2.6.2.1. It shouldn't send any signal in that case,
+>>              as nothing is
+>>              wrong.
+>>
+>>              Note we are on Xenomai v2.6.2.1. Xenomai v2.6.3 sends (the
+>>              better name for
+>>              it) SIGDEBUG_RESCNT_IMBALANCE.
+>>
+>>
+>>          To be completely frank, I expected Jan to answer this mail as this
+>>          concerns RTDM. Anyway, I had a look into it, and:
+>>          - the RTDM skin is not alone in this case, several skins
+>>          implement the
+>>          same pattern (if owner == NULL, set owner, then return);
+>>          - adding calls to xnthread_inc_rescnt everywhere does not seem
+>>          right, I
+>>          would prefer to move this inside some xnsynch_ service. The best
+>>          candidate I found for that is xnsynch_set_owner, though I am not
+>>          sure if
+>>          this will work, especially with fastsynchs.
+>>
+>>
+>>
+>>      Indeed this wouldn't. I suspect the skins mentioned did not have
+>>      access to xnsynch_acquire(), and were not updated when the
+>>      auto-relax feature was introduced for XNOTHER threads.
+>>
+>>      We could provide a helper for fast grabbing a mutex which has no
+>>      fast locking support shared with userland, saving a call to
+>>      xnsynch_acquire() in the non-contended case, e.g.
+>>
+>>      diff --git a/include/nucleus/synch.h b/include/nucleus/synch.h
+>>      index 7deae21..87456ea 100644
+>>      --- a/include/nucleus/synch.h
+>>      +++ b/include/nucleus/synch.h
+>>      @@ -192,6 +192,22 @@ static inline void xnsynch_set_owner(struct
+>>      xnsynch *synch,
+>>               synch->owner = thread;
+>>        }
+>>
+>>      +static inline int xnsynch_fast_grab(struct xnsynch *synch,
+>>      +                                   struct xnthread *thread)
+>>      +{
+>>      +       XENO_BUGON(NUCLEUS, xnsynch_fastlock_p(synch));
+>>      +
+>>      +       if (likely(xnsynch_owner(synch) != NULL))
+>>      +               return 0;
+>>      +
+>>      +       xnsynch_set_owner(synch, thread);
+>>      +
+>>      +       if (xnthread_test_state(thread, XNOTHER))
+>>      +               xnthread_inc_rescnt(thread);
+>>      +
+>>      +       return 1;
+>>      +}
+>>      +
+>>        static inline void xnsynch_register_cleanup(__struct xnsynch *synch,
+>>                                                   void (*handler)(struct
+>>      xnsynch *))
+>>        {
+>>      diff --git a/ksrc/skins/rtdm/drvlib.c b/ksrc/skins/rtdm/drvlib.c
+>>      index 391d45f..338005d 100644
+>>      --- a/ksrc/skins/rtdm/drvlib.c
+>>      +++ b/ksrc/skins/rtdm/drvlib.c
+>>      @@ -1538,9 +1538,7 @@ int rtdm_mutex_timedlock(rtdm___mutex_t
+>>      *mutex, nanosecs_rel_t timeout,
+>>               if (unlikely(xnsynch_test_flags(&__mutex->synch_base,
+>>                                               RTDM_SYNCH_DELETED)))
+>>                       err = -EIDRM;
+>>
+>>      -       else if (likely(xnsynch_owner(&mutex->__synch_base) == NULL))
+>>      -               xnsynch_set_owner(&mutex->__synch_base, curr_thread);
+>>      -       else {
+>>      +       else if (!xnsynch_fast_grab(&mutex->__synch_base,
+>>      curr_thread)) {
+>>                       /* Redefinition to clarify XENO_ASSERT output */
+>>                       #define mutex_owner xnsynch_owner(&mutex->synch___base)
+>>                       XENO_ASSERT(RTDM, mutex_owner != curr_thread,
+>>
+>>      The VxWorks and VRTX skins would have to use it as well.
+>>
+>>
+>> Thanks for the replies! We'll give this patch a try for the RTDM case.
+>>
+> Minor points, but a compiler hint above was inverted and eventually useless, and the naming not descriptive enough. Take #2:
+>
+> diff --git a/include/nucleus/synch.h b/include/nucleus/synch.h
+> index 7deae21..09ebdbf 100644
+> --- a/include/nucleus/synch.h
+> +++ b/include/nucleus/synch.h
+> @@ -192,6 +192,22 @@ static inline void xnsynch_set_owner(struct xnsynch *synch,
+>   	synch->owner = thread;
+>   }
+>   
+> +static inline int xnsynch_try_grab(struct xnsynch *synch,
+> +				   struct xnthread *thread)
+> +{
+> +	XENO_BUGON(NUCLEUS, xnsynch_fastlock_p(synch));
+> +
+> +	if (xnsynch_owner(synch) != NULL)
+> +		return 0;
+> +
+> +	xnsynch_set_owner(synch, thread);
+> +
+> +	if (xnthread_test_state(thread, XNOTHER))
+> +		xnthread_inc_rescnt(thread);
+> +
+> +	return 1;
+> +}
+> +
+>   static inline void xnsynch_register_cleanup(struct xnsynch *synch,
+>   					    void (*handler)(struct xnsynch *))
+>   {
+> diff --git a/ksrc/skins/rtdm/drvlib.c b/ksrc/skins/rtdm/drvlib.c
+> index 391d45f..aa85d11 100644
+> --- a/ksrc/skins/rtdm/drvlib.c
+> +++ b/ksrc/skins/rtdm/drvlib.c
+> @@ -1538,9 +1538,7 @@ int rtdm_mutex_timedlock(rtdm_mutex_t *mutex, nanosecs_rel_t timeout,
+>   	if (unlikely(xnsynch_test_flags(&mutex->synch_base,
+>   					RTDM_SYNCH_DELETED)))
+>   		err = -EIDRM;
+> -	else if (likely(xnsynch_owner(&mutex->synch_base) == NULL))
+> -		xnsynch_set_owner(&mutex->synch_base, curr_thread);
+> -	else {
+> +	else if (!xnsynch_try_grab(&mutex->synch_base, curr_thread)) {
+>   		/* Redefinition to clarify XENO_ASSERT output */
+>   		#define mutex_owner xnsynch_owner(&mutex->synch_base)
+>   		XENO_ASSERT(RTDM, mutex_owner != curr_thread,
+>
+Hello,
+
+I tried this patch, but it did not compile:
+In file included from include/xenomai/nucleus/registry.h:33:0,
+                  from include/xenomai/nucleus/thread.h:160,
+                  from include/xenomai/nucleus/sched.h:31,
+                  from include/xenomai/nucleus/pod.h:34,
+                  from include/xenomai/nucleus/xenomai.h:23,
+                  from include/xenomai/rtdm/rtdm_driver.h:37,
+                  from drivers/xenomai/can/rtcan_internal.h:30,
+                  from drivers/xenomai/can/rtcan_dev.c:32:
+include/xenomai/nucleus/synch.h: In function 'xnsynch_try_grab':
+include/xenomai/nucleus/synch.h:205:2: error: implicit declaration of 
+function 'xnthread_test_state' [-Werror=implicit-function-declaration]
+include/xenomai/nucleus/synch.h:206:3: error: implicit declaration of 
+function 'xnthread_inc_rescnt' [-Werror=implicit-function-declaration]
+
+I think there is a circular dependency problem in the header files:
+- thread.h includes sync.h via registry.h at a point before 
+xnthread_test_state/xnthread_inc_rescnt is defined
+- synch.h needs the defines from thread.h 
+(xnthread_test_state/xnthread_inc_rescnt)
+
+I could not resolve this dependency
+
+Erwin
+
