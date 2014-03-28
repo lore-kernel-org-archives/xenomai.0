@@ -1,5 +1,5 @@
-Message-ID: <5335B354.5000404@xenomai.org>
-Date: Fri, 28 Mar 2014 18:37:24 +0100
+Message-ID: <5335B3B2.4010602@xenomai.org>
+Date: Fri, 28 Mar 2014 18:38:58 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <5072ab06.2340b.144fe2d11ed.Coremail.ericvic@163.com>
@@ -10,8 +10,8 @@ References: <5072ab06.2340b.144fe2d11ed.Coremail.ericvic@163.com>
  <53335E2F.4040608@xenomai.org>
  <594fd0f5.8241.14501ff6aba.Coremail.ericvic@163.com>
  <53341923.3050401@xenomai.org>
- <73b7ea7c.981e.14507c57f41.Coremail.ericvic@163.com>
-In-Reply-To: <73b7ea7c.981e.14507c57f41.Coremail.ericvic@163.com>
+ <3ebf00ca.a99c.14507f2b0d1.Coremail.ericvic@163.com>
+In-Reply-To: <3ebf00ca.a99c.14507f2b0d1.Coremail.ericvic@163.com>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai] imx6q xenomai  ipipe-3.0-imx6q
@@ -26,12 +26,16 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: =?UTF-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/28/2014 09:19 AM, 嵌入式工程师 wrote:
-> THis is my newtest on my imx6q board with  ipipe-3.0-imx6q
+On 03/28/2014 10:08 AM, 嵌入式工程师 wrote:
+>
+> sorry  , I thought of a problemon the cpu0 binding a rt_pipe used to
+> write  and on the cpu1 binding another rt_pipe used to read ,if it can
+> cause realtime lost?
 
-Note that the latency test only really make sense if no other real-time 
-activity is running on the board. Otherwise you are not really measuring 
-the system worst case latency.
+No, but I asked you some questions about your usage of rt_pipe to which 
+I would appreciate you give an answer.
+
+Also, please do not use top-posting.
 
 -- 
 					    Gilles.
