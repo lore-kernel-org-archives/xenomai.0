@@ -1,13 +1,20 @@
-References: <1393935764.2258.YahooMailNeo@web163903.mail.gq1.yahoo.com>
- <CAEbDrgnFcZb3iO0mU_-7Up9OfjtcryDwU_LA3xNpOHj11K661A@mail.gmail.com>
-Message-ID: <1393938968.37774.YahooMailNeo@web163902.mail.gq1.yahoo.com>
-Date: Tue, 4 Mar 2014 05:16:08 -0800 (PST)
-From: Huub Van Niekerk <huubvanniekerk@yahoo.com>
-In-Reply-To: <CAEbDrgnFcZb3iO0mU_-7Up9OfjtcryDwU_LA3xNpOHj11K661A@mail.gmail.com>
+Message-ID: <5335B2E5.1000004@xenomai.org>
+Date: Fri, 28 Mar 2014 18:35:33 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Subject: Re: [Xenomai] compiling kernel after xenomai-patch ends in error
-Reply-To: Huub Van Niekerk <huubvanniekerk@yahoo.com>
+References: <5072ab06.2340b.144fe2d11ed.Coremail.ericvic@163.com>
+ <5332BF1F.3000504@xenomai.org>
+ <76a8b1fe.2477d.144fe96fb16.Coremail.ericvic@163.com>
+ <5332D759.7010806@xenomai.org>
+ <23d0b1ec.250da.144fecc28e4.Coremail.ericvic@163.com>
+ <53335E2F.4040608@xenomai.org>
+ <594fd0f5.8241.14501ff6aba.Coremail.ericvic@163.com>
+ <53341923.3050401@xenomai.org>
+ <4658698e.5d51.145071116e0.Coremail.ericvic@163.com>
+In-Reply-To: <4658698e.5d51.145071116e0.Coremail.ericvic@163.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] imx6q xenomai  ipipe-3.0-imx6q
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,53 +23,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gregory Dymarek <gregd72002@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?UTF-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-
-
->On Tuesday, March 4, 2014 2:09 PM, Gregory Dymarek <gregd72002@gmail.com> wrote:
- 
->had the same issue before. The solution is to disable remote kernel
->debugging (kernel hacking menu)
-
-You mean disabling Low-level kernel debugging uart ?
-
-
-On 4 March 2014 12:22, Huub Van Niekerk <huubvanniekerk@yahoo.com> wrote:
-
-> Hi,
+On 03/28/2014 06:02 AM, 嵌入式工程师 wrote:
+> This is my logs
 >
-> I just patched vanilla kernel 3.10.18 with ipipe-core-3.10.18-arm-1 and
-> get these errors:
 >
-> kernel/ipipe/core.c: In function 'ipipe_probe_kernel_read':
-> kernel/ipipe/core.c:1742:2: error: implicit declaration of function
-> 'get_fs' [-Werror=implicit-function-declaration]
-> kernel/ipipe/core.c:1744:2: error: implicit declaration of function
-> 'set_fs' [-Werror=implicit-function-declaration]
-> kernel/ipipe/core.c:1744:9: error: 'KERNEL_DS' undeclared (first use in
-> this function)
-> kernel/ipipe/core.c:1744:9: note: each undeclared identifier is reported
-> only once for each function it appears in
-> kernel/ipipe/core.c:1747:2: error: implicit declaration of function
-> '__copy_from_user_inatomic' [-Werror=implicit-function-declaration]
-> kernel/ipipe/core.c: In function 'ipipe_probe_kernel_write':
-> kernel/ipipe/core.c:1761:9: error: 'KERNEL_DS' undeclared (first use in
-> this function)
-> kernel/ipipe/core.c:1764:2: error: implicit declaration of function
-> '__copy_to_user_inatomic' [-Werror=implicit-function-declaration]
 >
-> With previous kernel 3.2 I got warning and errors before saving the
-> kernel, now I didn't. Looking on the net for these errors, I find some
-> postings, but none related to ipipe. Any ideas?
 >
-> Thanks.
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
-_______________________________________________
-Xenomai mailing list
-Xenomai@xenomai.org
-http://www.xenomai.org/mailman/listinfo/xenomai
+ > (...)
+> hw perfevents: enabled with ARMv7 Cortex-A9 PMU driver, 7 counters available
+
+I guess you should probably not enable perf. On some architectures, it 
+creates unwanted latencies, by using NMI.
+
+ > (...)
+> l2x0: 16 ways, CACHE_ID 0x410000c7, AUX_CTRL 0x02870000, Cache size: 1048576 B
+
+So, your auxiliary register has bit 23 set (0x800000), and has L2 write 
+allocate disabled.
+
+-- 
+					    Gilles.
+
