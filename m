@@ -1,12 +1,13 @@
-Message-ID: <5335A94C.8040203@xenomai.org>
-Date: Fri, 28 Mar 2014 17:54:36 +0100
+Message-ID: <5335AE4C.5040201@xenomai.org>
+Date: Fri, 28 Mar 2014 18:15:56 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <1396022634.2464.YahooMailNeo@web163904.mail.gq1.yahoo.com>
  <5335A11C.4080105@xenomai.org>
  <1396025238.91408.YahooMailNeo@web163901.mail.gq1.yahoo.com>
-In-Reply-To: <1396025238.91408.YahooMailNeo@web163901.mail.gq1.yahoo.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+ <5335A94C.8040203@xenomai.org>
+In-Reply-To: <5335A94C.8040203@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] usage with 3.10.18 kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -20,28 +21,36 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Huub Van Niekerk <huubvanniekerk@yahoo.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/28/2014 05:47 PM, Huub Van Niekerk wrote:
-> On Friday, March 28, 2014 5:20 PM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
-> On 03/28/2014 05:03 PM, Huub Van Niekerk wrote:
->
->  > Hi,
->  >
->  > Knowing that xenomai is being tested on armhf before release, were
-> there any problems using linux system commands on this platform with the
-> 3.10.18 kernel ?
->
->
->  >No version of xenomai has been released since the 3.10 patch.
->
-> Do you mean that the xenomai patch for 3.10.18 that I used is not
-> released yet ?
+On 03/28/2014 05:54 PM, Gilles Chanteperdrix wrote:
+> On 03/28/2014 05:47 PM, Huub Van Niekerk wrote:
+>> On Friday, March 28, 2014 5:20 PM, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org> wrote:
+>> On 03/28/2014 05:03 PM, Huub Van Niekerk wrote:
+>>
+>>   > Hi,
+>>   >
+>>   > Knowing that xenomai is being tested on armhf before release, were
+>> there any problems using linux system commands on this platform with the
+>> 3.10.18 kernel ?
+>>
+>>
+>>   >No version of xenomai has been released since the 3.10 patch.
+>>
+>> Do you mean that the xenomai patch for 3.10.18 that I used is not
+>> released yet ?
+> 
+> The last release of Xenomai is 2.6.3, and it was released without the
+> 3.10.18 patch. Though it has been tested with it, and no particular
+> issue were observed. armhf is not a platform by the way, it is just a
+> name for the way the toolchain is compiled (ARM architecture with
+> support for VFP floating point instructions).
+> 
 
-The last release of Xenomai is 2.6.3, and it was released without the 
-3.10.18 patch. Though it has been tested with it, and no particular 
-issue were observed. armhf is not a platform by the way, it is just a 
-name for the way the toolchain is compiled (ARM architecture with 
-support for VFP floating point instructions).
+Actually, one issue was found and fixed, see:
+http://git.xenomai.org/ipipe.git/commit/?h=stable/ipipe-3.10.18&id=c26e7ad5679f9391cd8ea1db001bf301d2f6bc88
+
+For a fix. You may use the stable/ipipe-3.10.18 branch from ipipe.git 
+directly.
 
 -- 
 					    Gilles.
