@@ -1,5 +1,5 @@
-Message-ID: <5336C45C.50603@xenomai.org>
-Date: Sat, 29 Mar 2014 14:02:20 +0100
+Message-ID: <5336CC15.8070102@xenomai.org>
+Date: Sat, 29 Mar 2014 14:35:17 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CADoY7i8=SSBVO6R7eiGtMLb9ZnAsXj+mC4L_pDRs3-zDBaP7aQ@mail.gmail.com>
@@ -15,8 +15,7 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Newell Jensen <newell.jensen@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
 Le 29/03/2014 00:41, Newell Jensen a écrit :
 > Hello,
@@ -30,17 +29,14 @@ Le 29/03/2014 00:41, Newell Jensen a écrit :
 > that I can make.
 > 
 > Here is a link to my code:  http://pastebin.com/TFWLq9mq
-> 
-> My questions are:
-> 
-> 1. Is there anything that I am not doing in my code that I should be to
-> reduce interrupt latency?
 
-Also, there is probably not much to gain by using this EPIT compared to
-using Xenomai timer system. Xenomai timers are just that: executed on a
-counter interruption, except that Xenomai timers have an anticipation
-system which will help improving the perceived latency.
-
+Also, the code measuring latency seems all wrong. Debugging this looks
+like a waste of time:
+- we provide the latency test, which we hope is reasonably debugged, so
+duplicating the effort is a waste of (our) time;
+- from the code, I would guess the EPIT runs at 6 MHz, whereas the
+cortex A9 has timers running at 400 or 500 MHz, which results in lower
+latencies for accessing their registers.
 
 -- 
 Gilles.
