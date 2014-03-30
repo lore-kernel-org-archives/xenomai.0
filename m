@@ -1,11 +1,11 @@
-Message-ID: <53388F8A.6030403@xenomai.org>
-Date: Sun, 30 Mar 2014 23:41:30 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <533894D3.8090803@steinkuehler.net>
+Date: Sun, 30 Mar 2014 17:04:03 -0500
+From: Charles Steinkuehler <charles@steinkuehler.net>
 MIME-Version: 1.0
-References: <5338834B.5090604@steinkuehler.net>
-In-Reply-To: <5338834B.5090604@steinkuehler.net>
+References: <5338834B.5090604@steinkuehler.net> <53388F8A.6030403@xenomai.org>
+In-Reply-To: <53388F8A.6030403@xenomai.org>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Dedicated Core?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,59 +15,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Charles Steinkuehler <charles@steinkuehler.net>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/30/2014 10:49 PM, Charles Steinkuehler wrote:
-> Is it possible to (easily) dedicate a CPU core to a single Xenomai
-> user-space thread?
-> 
-> Background:
-> I am running software based step/direction generation logic for motion
-> control as part of LinuxCNC.  On the x86 platform, latency numbers are
-> very good, and it's possible to run fast enough as a Xenomai user-space
-> thread.
-> 
-> ARM systems have significantly worse latency numbers, but on the
-> BeagleBone I have migrated the step/direction code to the PRU on-board
-> co-processors so everything works fine (actually better than on most x86
-> systems).
-> 
-> But most available ARM CPUs do not have the PRU co-processors found on
-> the BeagleBone.  However, there are a number of systems that have
-> multiple cores, and I'm particularly looking at the quad-core iMX6 parts.
-
-First, the imx6 is reported to have high latencies, and it is mostly due
-to cache effects, so isolating the cpus will not help.
-
-Second, I would say relying on low user-space latencies to do in
-user-space things that the kernel should do is a bad design. You would
-have better success implementing the step motor control low level
-details as a kernel driver, and only move the high level stuff in
-user-space.
-
-> 
-> If it would be possible to simply keep a thread running full-time on one
-> core, I could get really good step/direction performance without having
-> to worry about interrupt latency, but I don't know if there's an (easy)
-> way to do this using Xenomai, or if the 'dedicated' core would still be
-> subject to hardware interrupts and if my running thread might be
-> occasionally migrated to other physical cores.
-> 
-
-The latency you get in user-spâce are not interrupt latency, but
-user-space scheduling latencies, which are significantly higher. See the
-difference between latency -t 0 and latency -t 2 on your plaforms. If
-you want to only depend on interrupt latencies, you should implement a
-driver, and get user-space to interact with the driver.
-
-As you may have already read on this list, Xenomai never migrates task
-automatically, and you can change the task affinity to define on which
-core it should run. That said, you probably want the processor to remain
-interrupt triggered, and the real-time task to suspend from time to time
-to let linux do its duty (like handling Linux domain timer interrupts).
-
-
--- 
-                                                                Gilles.
-
+T24gMy8zMC8yMDE0IDQ6NDEgUE0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+IAo+IEZp
+cnN0LCB0aGUgaW14NiBpcyByZXBvcnRlZCB0byBoYXZlIGhpZ2ggbGF0ZW5jaWVzLCBhbmQgaXQg
+aXMgbW9zdGx5IGR1ZQo+IHRvIGNhY2hlIGVmZmVjdHMsIHNvIGlzb2xhdGluZyB0aGUgY3B1cyB3
+aWxsIG5vdCBoZWxwLgo+IAo+IFNlY29uZCwgSSB3b3VsZCBzYXkgcmVseWluZyBvbiBsb3cgdXNl
+ci1zcGFjZSBsYXRlbmNpZXMgdG8gZG8gaW4KPiB1c2VyLXNwYWNlIHRoaW5ncyB0aGF0IHRoZSBr
+ZXJuZWwgc2hvdWxkIGRvIGlzIGEgYmFkIGRlc2lnbi4gWW91IHdvdWxkCj4gaGF2ZSBiZXR0ZXIg
+c3VjY2VzcyBpbXBsZW1lbnRpbmcgdGhlIHN0ZXAgbW90b3IgY29udHJvbCBsb3cgbGV2ZWwKPiBk
+ZXRhaWxzIGFzIGEga2VybmVsIGRyaXZlciwgYW5kIG9ubHkgbW92ZSB0aGUgaGlnaCBsZXZlbCBz
+dHVmZiBpbgo+IHVzZXItc3BhY2UuCgpJIGFtIG5vdCBsb29raW5nIHRvIG1pZ3JhdGUgc29tZXRo
+aW5nIHRoYXQgc2hvdWxkIGJlIGEga2VybmVsIHNlcnZpY2UsCmluc3RlYWQgSSdtIHRyeWluZyB0
+byByZXBsYWNlIGhhdmluZyBkZWRpY2F0ZWQgaGFyZHdhcmUuCgo+PiBJZiBpdCB3b3VsZCBiZSBw
+b3NzaWJsZSB0byBzaW1wbHkga2VlcCBhIHRocmVhZCBydW5uaW5nIGZ1bGwtdGltZSBvbiBvbmUK
+Pj4gY29yZSwgSSBjb3VsZCBnZXQgcmVhbGx5IGdvb2Qgc3RlcC9kaXJlY3Rpb24gcGVyZm9ybWFu
+Y2Ugd2l0aG91dCBoYXZpbmcKPj4gdG8gd29ycnkgYWJvdXQgaW50ZXJydXB0IGxhdGVuY3ksIGJ1
+dCBJIGRvbid0IGtub3cgaWYgdGhlcmUncyBhbiAoZWFzeSkKPj4gd2F5IHRvIGRvIHRoaXMgdXNp
+bmcgWGVub21haSwgb3IgaWYgdGhlICdkZWRpY2F0ZWQnIGNvcmUgd291bGQgc3RpbGwgYmUKPj4g
+c3ViamVjdCB0byBoYXJkd2FyZSBpbnRlcnJ1cHRzIGFuZCBpZiBteSBydW5uaW5nIHRocmVhZCBt
+aWdodCBiZQo+PiBvY2Nhc2lvbmFsbHkgbWlncmF0ZWQgdG8gb3RoZXIgcGh5c2ljYWwgY29yZXMu
+Cj4gCj4gVGhlIGxhdGVuY3kgeW91IGdldCBpbiB1c2VyLXNww6JjZSBhcmUgbm90IGludGVycnVw
+dCBsYXRlbmN5LCBidXQKPiB1c2VyLXNwYWNlIHNjaGVkdWxpbmcgbGF0ZW5jaWVzLCB3aGljaCBh
+cmUgc2lnbmlmaWNhbnRseSBoaWdoZXIuIFNlZSB0aGUKPiBkaWZmZXJlbmNlIGJldHdlZW4gbGF0
+ZW5jeSAtdCAwIGFuZCBsYXRlbmN5IC10IDIgb24geW91ciBwbGFmb3Jtcy4gSWYKPiB5b3Ugd2Fu
+dCB0byBvbmx5IGRlcGVuZCBvbiBpbnRlcnJ1cHQgbGF0ZW5jaWVzLCB5b3Ugc2hvdWxkIGltcGxl
+bWVudCBhCj4gZHJpdmVyLCBhbmQgZ2V0IHVzZXItc3BhY2UgdG8gaW50ZXJhY3Qgd2l0aCB0aGUg
+ZHJpdmVyLgo+IAo+IEFzIHlvdSBtYXkgaGF2ZSBhbHJlYWR5IHJlYWQgb24gdGhpcyBsaXN0LCBY
+ZW5vbWFpIG5ldmVyIG1pZ3JhdGVzIHRhc2sKPiBhdXRvbWF0aWNhbGx5LCBhbmQgeW91IGNhbiBj
+aGFuZ2UgdGhlIHRhc2sgYWZmaW5pdHkgdG8gZGVmaW5lIG9uIHdoaWNoCj4gY29yZSBpdCBzaG91
+bGQgcnVuLiBUaGF0IHNhaWQsIHlvdSBwcm9iYWJseSB3YW50IHRoZSBwcm9jZXNzb3IgdG8gcmVt
+YWluCj4gaW50ZXJydXB0IHRyaWdnZXJlZCwgYW5kIHRoZSByZWFsLXRpbWUgdGFzayB0byBzdXNw
+ZW5kIGZyb20gdGltZSB0byB0aW1lCj4gdG8gbGV0IGxpbnV4IGRvIGl0cyBkdXR5IChsaWtlIGhh
+bmRsaW5nIExpbnV4IGRvbWFpbiB0aW1lciBpbnRlcnJ1cHRzKS4KCldlIGFscmVhZHkgaGF2ZSBo
+b29rcyB0byBzZXQgcHJvY2Vzc29yIGFmZmluaXR5LiAgV2hhdCBJIGFtIGludGVyZXN0ZWQKaW4g
+aXMgaWYgSSBkZWRpY2F0ZSBhbiBlbnRpcmUgY29yZSB0byBydW5uaW5nIGEgdGlnaHQgY29kZSBs
+b29wLCBjYW4gSQphdm9pZCBYZW5vbWFpIGFuZC9vciBMaW51eCAicHVsbGluZyB0aGUgY29yZSBv
+dXQgZnJvbSB1bmRlciBtZSIgYXMgYQpyZXN1bHQgb2YgdmFyaW91cyBoYXJkd2FyZSBpbnRlcnJ1
+cHRzIG9yIGdlbmVyYWwgdGFzayBzY2hlZHVsaW5nPwoKSSBjYW4gbGl2ZSB3aXRoIHRoZSBjb2Rl
+IG5vdCBydW5uaW5nIGZvciB0aGUgZHVyYXRpb24gb2YgdGhlIFhlbm9tYWkKaW50ZXJydXB0IGhh
+bmRsZXIgKHRoYXQncyBoYXBwZW5pbmcgbm93IGFueXdheSksIEkganVzdCB3YW50IHRvIGtub3cg
+aWYKaXQgaXMgKGVhc3kpIHRvIGtlZXAgWGVub21haSBhbmQgTGludXggZnJvbSBncmFiYmluZyB0
+aGUgY29yZSBydW5uaW5nIG15CnRpZ2h0IGxvb3AgYWZ0ZXIgdGhlIGludGVycnVwdCBldmVudC4g
+IEl0J3Mgc2ltaWxhciB0byBoYXZpbmcgb25lIGNvcmUKcnVubmluZyAiYmFyZSBtZXRhbCIgY29k
+ZSwgYnV0IEkgYWN0dWFsbHkgbmVlZCBMaW51eCBhbmQgWGVub21haSB0bwptYW5hZ2Ugc2V0dGlu
+ZyB1cCB0aGUgc2hhcmVkIG1lbW9yeSByZWdpb25zIHVzZWQgZm9yIElQQyBwcmlvciB0bwpsYXVu
+Y2hpbmcgbXkgY29kZS4KCi0tIApDaGFybGVzIFN0ZWlua3VlaGxlcgpjaGFybGVzQHN0ZWlua3Vl
+aGxlci5uZXQKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10
+ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTog
+YXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAyNjEgYnl0ZXMKRGVzYzogT3BlblBHUCBk
+aWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94
+ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTQwMzMwL2I1NWQ0MjdjL2F0dGFjaG1lbnQuc2lnPgo=
