@@ -1,24 +1,17 @@
-Message-ID: <5315ED1F.60602@xenomai.org>
-Date: Tue, 04 Mar 2014 16:11:27 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Mon, 31 Mar 2014 15:37:42 -0400
+Message-ID: <20140331193742.GS17765@csclub.uwaterloo.ca>
+References: <20140331174555.GO17765@csclub.uwaterloo.ca>
+ <5339B015.3080008@xenomai.org>
+ <20140331182404.GP17765@csclub.uwaterloo.ca>
+ <20140331191502.GQ17765@csclub.uwaterloo.ca>
+ <5339BF3C.8090906@xenomai.org>
+ <20140331191849.GR17765@csclub.uwaterloo.ca>
 MIME-Version: 1.0
-References: <1392993075.52404.YahooMailNeo@web140605.mail.bf1.yahoo.com>
- <530766CD.3060707@xenomai.org>
- <1393198348.29895.YahooMailNeo@web140605.mail.bf1.yahoo.com>
- <530A862C.1060805@xenomai.org>
- <1393204287.98060.YahooMailNeo@web140606.mail.bf1.yahoo.com>
- <530B374B.1080507@xenomai.org>
- <1393298793.43978.YahooMailNeo@web140605.mail.bf1.yahoo.com>
- <530C6AC6.6030200@xenomai.org>
- <1393335358.33826.YahooMailNeo@web140603.mail.bf1.yahoo.com>
- <530C9D87.60805@xenomai.org>
- <1393871535.96739.YahooMailNeo@web140604.mail.bf1.yahoo.com>
- <5314CDDA.4030308@xenomai.org>
- <1393904852.42577.YahooMailNeo@web140603.mail.bf1.yahoo.com>
-In-Reply-To: <1393904852.42577.YahooMailNeo@web140603.mail.bf1.yahoo.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] User Space Problems
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20140331191849.GR17765@csclub.uwaterloo.ca>
+Subject: Re: [Xenomai] Porting xenomai 2.6.3 and ipipe to 3.12 kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,47 +20,135 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Bruno Tunes de Mello <bruno_v05_2005@yahoo.com.br>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 03/04/2014 04:47 AM, Bruno Tunes de Mello wrote:
-> Hi Gilles,
+On Mon, Mar 31, 2014 at 03:18:49PM -0400, Lennart Sorensen wrote:
+> On Mon, Mar 31, 2014 at 09:17:16PM +0200, Gilles Chanteperdrix wrote:
+> > Are you sure you are loking at the right tree? I am talking about the
+> > raw/for-ipipe-3.12.0 tree in ipipe-gch.git, not the raw/ipipe-3.12.0
+> > tree in ipipe.git
 > 
-> You are right, in the first test, I executed both latency and xeno-test commands. Sorry.
-> The others test I executed only latency command.
+> Oh, then no, wrong tree.
 > 
-> I tried to enable the discard service on /etc/inetd.conf, I don't know if I did it right, but in /etc/services file I found 'discard 9/tcp sink null' and 'discard 9/udp sink null'.
-> Then I used the command you said:
-> xeno-test -l "dohell -s 192.168.0.5 -m /media/linaro/PENDRIVE -l /opt/ltp" -c 0 -p 100 -g histo
-> 
-> I tested a few times and the better result is: http://pt-br.tinypic.com/r/206mmvn/8
-> This result is not so good like that you showed.
-> 
-> My doubt is if this result is satisfactory (the platform is ready for develop applications) or do you think that I need to do some correction?
+> Let me check the other one.
 
-70us is a bit high, but on the other hand:
-- the mx6q is a quad-core, whereas the omap4 is a dual core, the latency
-increases with the number of cores;
-- the tests I make on omap4 do not use much of the processor
-peripherals, such as the graphic co-processor, so, if you use the
-graphic co-processor, you may observe an increase in latencies as well.
+Ok that looks better.
 
-Finally, whether this is satisfactory depends on your application.
+Couple of things:
 
-The only way to improve latency is to enable the I-pipe tracer, and try
-and understand where the maximum latency come from, but this is time
-consuming.
+I think this is wrong:
 
-Also, some settings are known to result in an improvement in latencies:
-- turn off CONFIG_PREEMPT (i.e. enable CONFIG_PREEMPT_NONE), this looks
-contradictory, as the menu entry says "low latency", but it is talking
-about Linux latencies, not Xenomai's
-- build kernel and user-space in thumb2
-- disable Xenomai unlocked context switch
+  @@ -268,13 +298,22 @@ extern void flush_cache_page(struct vm_area_struct *vma, unsigned long user_addr                               
+    * Harvard caches are synchronised for the user space address range.                                                                
+    * This is used for the ARM private sys_cacheflush system call.
+    */
+  -#define flush_cache_user_range(s,e)    __cpuc_coherent_user_range(s,e)
+  +#define flush_cache_user_range(s, e)                                   \                                                            
+  +       ({                                                              \                                                            
+  +               struct mm_struct *_mm = current->mm;                    \
+  +               unsigned long _s, _e;                                   \
+  +               _s = fcse_va_to_mva(_mm, s) & PAGE_MASK;                \
+  +               _e = PAGE_ALIGN(fcse_va_to_mva(_mm, e));                \
+  +               __cpuc_coherent_user_range(_s, _e);                     \                                                            
+  +       })                                                                                                                           
+   
+   /* 
+    * Perform necessary cache operations to ensure that data previously                                                                
 
-But do not expect these settings to reduce the latency by more than say 5us.
+The kernel specificly did NOT want the PAGE_MASK and PAGE_ALIGN and got
+rid of it.  At last that's what the commit that changed it said.  So I
+think the ipipe patch should follow that change too.  ie:
 
+  @@ -268,13 +298,22 @@ extern void flush_cache_page(struct vm_area_struct *vma, unsigned long user_addr                               
+    * Harvard caches are synchronised for the user space address range.                                                                
+    * This is used for the ARM private sys_cacheflush system call.
+    */
+  -#define flush_cache_user_range(s,e)    __cpuc_coherent_user_range(s,e)
+  +#define flush_cache_user_range(s, e)                                   \                                                            
+  +       ({                                                              \                                                            
+  +               struct mm_struct *_mm = current->mm;                    \
+  +               unsigned long _s, _e;                                   \
+  +               _s = fcse_va_to_mva(_mm, s);                            \
+  +               _e = fcse_va_to_mva(_mm, e);                            \
+  +               __cpuc_coherent_user_range(_s, _e);                     \                                                            
+  +       })                                                                                                                           
+   
+   /* 
+    * Perform necessary cache operations to ensure that data previously                                                                
+
+Also my version of arch/arm/include/asm/barrier.h turned out a bit
+different (I was trying to avoid changing the kernel code as much as
+possible).  Diff versus yours is:
+
+--- /tmp/barrier.h      2014-03-31 19:26:10.000000000 +0000
++++ linux-3.12.14.rr1/arch/arm/include/asm/barrier.h    2014-03-27 20:06:33.000000000 +0000
+@@ -16,17 +16,15 @@
+ #if __LINUX_ARM_ARCH__ >= 7
+ #define isb(option) __asm__ __volatile__ ("isb " #option : : : "memory")
+ #define dsb(option) __asm__ __volatile__ ("dsb " #option : : : "memory")
+-#define DMB(option) "dmb " #option
++#define DMB "dmb"
+ #define DMB_IN
+-
+ #elif defined(CONFIG_CPU_XSC3) || __LINUX_ARM_ARCH__ == 6
+ #define isb(x) __asm__ __volatile__ ("mcr p15, 0, %0, c7, c5, 4" \
+                                    : : "r" (0) : "memory")
+ #define dsb(x) __asm__ __volatile__ ("mcr p15, 0, %0, c7, c10, 4" \
+                                    : : "r" (0) : "memory")
+-#define DMB(option) "mcr p15, 0, %0, c7, c10, 5"
++#define DMB "mcr p15, 0, %0, c7, c10, 5"
+ #define DMB_IN "r" (0)
+-
+ #elif defined(CONFIG_CPU_FA526)
+ #define isb(x) __asm__ __volatile__ ("mcr p15, 0, %0, c7, c5, 4" \
+                                    : : "r" (0) : "memory")
+@@ -39,9 +37,9 @@
+ #endif
+ 
+ #ifdef DMB
+-#define dmb(option) __asm__ __volatile__(DMB(option) : : DMB_IN : "memory")
++#define dmb(option) __asm__ __volatile__(DMB #option : : DMB_IN : "memory")
+ #else
+-#define dmb(option) __asm__ __volatile__("" : : : "memory")
++#define dmb(option) __asm__ __volatile__("" #option : : : "memory")
+ #endif
+ 
+ 
+@@ -62,7 +60,6 @@
+ #define smp_rmb()      barrier()
+ #define smp_wmb()      barrier()
+ #else
+-
+ #ifdef CONFIG_THUMB2_KERNEL
+ #define SMP_ONLY(smp) \
+        "9998:  " smp "\n"                                      \
+@@ -80,16 +77,13 @@
+ #endif
+ 
+ #ifdef DMB
+-#define smp_mb() \
+-       __asm__ __volatile__ (SMP_ONLY(DMB(ish)) : : DMB_IN : "memory")
+-#define smp_rmb() \
+-       __asm__ __volatile__ (SMP_ONLY(DMB(ish)) : : DMB_IN : "memory")
+-#define smp_wmb() \
+-       __asm__ __volatile__ (SMP_ONLY(DMB(ishst)) : : DMB_IN : "memory")
+-#else
+-#define smp_mb() barrier()
+-#define smp_rmb() barrier()
+-#define smp_wmb() barrier()
++#define smp_mb() __asm__ __volatile__ (SMP_ONLY(DMB " ish") : : DMB_IN : "memory")
++#define smp_rmb()      smp_mb()
++#define smp_wmb() __asm__ __volatile__ (SMP_ONLY(DMB " ishst") : : DMB_IN : "memory")
++#else
++#define smp_mb()       dmb(ish)
++#define smp_rmb()      smp_mb()
++#define smp_wmb()      dmb(ishst)
+ #endif
+ #endif
+
+I haven't fully checked if there is any functional difference yet.
 
 -- 
-                                                                Gilles.
+Len Sorensen
 
