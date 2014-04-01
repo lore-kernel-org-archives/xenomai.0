@@ -1,16 +1,20 @@
-Message-ID: <5342694E.60401@xenomai.org>
-Date: Mon, 07 Apr 2014 11:01:02 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Mon, 31 Mar 2014 21:32:27 -0400
+Message-ID: <20140401013227.GA17765@csclub.uwaterloo.ca>
+References: <20140331205339.GU17765@csclub.uwaterloo.ca>
+ <20140331205710.GV17765@csclub.uwaterloo.ca>
+ <5339D8EB.3030702@xenomai.org>
+ <20140331212534.GW17765@csclub.uwaterloo.ca>
+ <5339E2CE.7060703@xenomai.org>
+ <20140331215348.GX17765@csclub.uwaterloo.ca>
+ <20140331215933.GY17765@csclub.uwaterloo.ca>
+ <20140331220421.GZ17765@csclub.uwaterloo.ca>
+ <5339E80C.9020604@xenomai.org> <5339EBE1.3060907@xenomai.org>
 MIME-Version: 1.0
-References: <1396262085.387.YahooMailNeo@web171601.mail.ir2.yahoo.com>
- <53395104.6050109@xenomai.org> <53396B31.1090903@xenomai.org>
- <5339AACA.4090807@xenomai.org>
- <1396782702.1096.YahooMailNeo@web171605.mail.ir2.yahoo.com>
- <53416D09.7060805@xenomai.org> <53416E2E.20000@xenomai.org>
-In-Reply-To: <53416E2E.20000@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] EINTR in notifier.c (mercury)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5339EBE1.3060907@xenomai.org>
+Subject: Re: [Xenomai] Porting xenomai 2.6.3 and ipipe to 3.12 kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,28 +24,97 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 04/06/2014 05:09 PM, Gilles Chanteperdrix wrote:
-> On 04/06/2014 05:04 PM, Philippe Gerum wrote:
->> @@ -1093,7 +1093,9 @@ int threadobj_sleep(struct timespec *ts)
->>   	 */
->>   	current->run_state = __THREAD_S_DELAYED;
->>   	threadobj_save_timeout(&current->core, ts);
->> -	ret = -__RT(clock_nanosleep(CLOCK_COPPERPLATE, TIMER_ABSTIME, ts, NULL));
->> +	do
->> +		ret = -__RT(clock_nanosleep(CLOCK_COPPERPLATE, TIMER_ABSTIME, ts, NULL));
->>
->> We should definitely pass and use the "remain" field in clock_nanosleep(), not to restart a complete wait each time we get interrupted.
->>
->
-> The remain field only makes sense without TIMER_ABSTIME. With
-> TIMER_ABSTIME, since the wake-up time is absolute, passing it again to
-> clock_nanosleep should be fine.
->
+On Tue, Apr 01, 2014 at 12:27:45AM +0200, Gilles Chanteperdrix wrote:
+> Ok, arch_counter_set_user_access disables user access to the 
+> architected timer counter. The following patch should avoid this:
+> 
+> diff --git a/drivers/clocksource/arm_arch_timer.c b/drivers/clocksource/arm_arch_timer.c
+> index b605f04e..7aea949 100644
+> --- a/drivers/clocksource/arm_arch_timer.c
+> +++ b/drivers/clocksource/arm_arch_timer.c
+> @@ -374,7 +374,9 @@ static int arch_timer_setup(struct clock_event_device *clk)
+>  			enable_percpu_irq(arch_timer_ppi[PHYS_NONSECURE_PPI], 0);
+>  	}
+>  
+> +#ifndef CONFIG_IPIPE
+>  	arch_counter_set_user_access();
+> +#endif
+>  
+>  	return 0;
+>  }
 
-Yes, sorry. That's right.
+That might have taken me a while to track down.  Excellent work.
+
+root@omap5:~# /usr/lib/xenomai/testsuite/latency 
+== Sampling period: 1000 us
+== Test mode: periodic user-mode task
+== All results in microseconds
+warming up...
+RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99)
+RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+RTD|     -0.163|      0.488|      3.743|       0|     0|     -0.163|      3.743
+RTD|     -0.652|      0.000|      3.092|       0|     0|     -0.652|      3.743
+RTD|     -0.652|      0.000|      2.929|       0|     0|     -0.652|      3.743
+RTD|     -0.652|      0.000|      2.929|       0|     0|     -0.652|      3.743
+RTD|     -0.652|      0.325|      3.255|       0|     0|     -0.652|      3.743
+RTD|     -0.652|      0.000|      2.929|       0|     0|     -0.652|      3.743
+RTD|     -0.489|      0.162|      3.743|       0|     0|     -0.652|      3.743
+RTD|     -0.652|      0.000|      2.929|       0|     0|     -0.652|      3.743
+RTD|     -0.652|      0.000|      3.092|       0|     0|     -0.652|      3.743
+RTD|     -0.652|      0.325|      3.906|       0|     0|     -0.652|      3.906
+RTD|     -0.652|      0.000|      3.255|       0|     0|     -0.652|      3.906
+RTD|     -0.652|      0.000|      2.278|       0|     0|     -0.652|      3.906
+RTD|     -2.442|      0.000|      2.604|       0|     0|     -2.442|      3.906
+RTD|     -0.652|      0.162|      3.255|       0|     0|     -2.442|      3.906
+RTD|     -0.652|      0.325|      3.092|       0|     0|     -2.442|      3.906
+RTD|     -0.652|      0.000|      3.255|       0|     0|     -2.442|      3.906
+RTD|     -0.652|      0.000|      2.929|       0|     0|     -2.442|      3.906
+RTD|     -0.652|      0.000|      3.743|       0|     0|     -2.442|      3.906
+RTD|     -0.652|      0.000|      2.929|       0|     0|     -2.442|      3.906
+RTD|     -0.652|      0.325|      3.417|       0|     0|     -2.442|      3.906
+RTD|     -1.954|      0.000|      3.255|       0|     0|     -2.442|      3.906
+RTT|  00:00:22  (periodic user-mode task, 1000 us period, priority 99)
+RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+RTD|     -0.652|      0.000|      2.929|       0|     0|     -2.442|      3.906
+RTD|     -0.652|      0.000|      2.766|       0|     0|     -2.442|      3.906
+RTD|     -0.652|      0.000|      2.766|       0|     0|     -2.442|      3.906
+RTD|     -0.652|      0.325|      3.092|       0|     0|     -2.442|      3.906
+RTD|     -0.652|      0.000|      2.766|       0|     0|     -2.442|      3.906
+RTD|     -0.652|      0.000|      2.929|       0|     0|     -2.442|      3.906
+RTD|     -0.652|      0.000|      3.092|       0|     0|     -2.442|      3.906
+RTD|     -1.465|      0.000|      2.929|       0|     0|     -2.442|      3.906
+RTD|     -0.652|      0.325|      3.580|       0|     0|     -2.442|      3.906
+RTD|     -1.628|      0.000|      3.092|       0|     0|     -2.442|      3.906
+RTD|     -0.652|      0.000|      2.929|       0|     0|     -2.442|      3.906
+RTD|     -0.652|      0.000|      2.766|       0|     0|     -2.442|      3.906
+RTD|     -0.652|      0.000|      3.092|       0|     0|     -2.442|      3.906
+RTD|     -0.489|      0.325|      4.231|       0|     0|     -2.442|      4.231
+RTD|     -0.652|      0.000|      3.580|       0|     0|     -2.442|      4.231
+RTD|     -0.652|      0.000|      2.766|       0|     0|     -2.442|      4.231
+RTD|     -0.652|      0.000|      2.604|       0|     0|     -2.442|      4.231
+RTD|     -1.303|      0.000|      3.417|       0|     0|     -2.442|      4.231
+RTD|     -0.652|      0.325|      3.743|       0|     0|     -2.442|      4.231
+RTD|     -1.954|      0.000|      2.929|       0|     0|     -2.442|      4.231
+RTD|     -0.652|      0.000|      2.441|       0|     0|     -2.442|      4.231
+RTT|  00:00:43  (periodic user-mode task, 1000 us period, priority 99)
+RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+RTD|     -0.652|      0.000|      2.929|       0|     0|     -2.442|      4.231
+RTD|     -0.652|      0.000|      2.929|       0|     0|     -2.442|      4.231
+RTD|     -0.652|      0.325|      3.417|       0|     0|     -2.442|      4.231
+RTD|     -0.652|      0.000|      2.604|       0|     0|     -2.442|      4.231
+RTD|     -0.652|      0.000|      2.929|       0|     0|     -2.442|      4.231
+RTD|     -0.652|      0.000|      3.092|       0|     0|     -2.442|      4.231
+^C---|-----------|-----------|-----------|--------|------|-------------------------
+RTS|     -2.442|      0.000|      4.231|       0|     0|    00:00:48/00:00:48
+
+mutex torture tests now pass, cond tests pass, most things seem to pass,
+but I think the failing ones need either modules enabled I didn't enable,
+or maybe special hardware.
+
+Any recommended way to test if things are really working now?
 
 -- 
-Philippe.
+Len Sorensen
 
