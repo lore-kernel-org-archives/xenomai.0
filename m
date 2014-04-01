@@ -1,17 +1,10 @@
-References: <1396262085.387.YahooMailNeo@web171601.mail.ir2.yahoo.com>
- <53395104.6050109@xenomai.org> <53396B31.1090903@xenomai.org>
- <5339AACA.4090807@xenomai.org>
- <1396782702.1096.YahooMailNeo@web171605.mail.ir2.yahoo.com>
- <53416D09.7060805@xenomai.org>
-Message-ID: <1396889360.63594.YahooMailNeo@web171605.mail.ir2.yahoo.com>
-Date: Mon, 7 Apr 2014 17:49:20 +0100 (BST)
-From: Matthias Schneider <ma30002000@yahoo.de>
-In-Reply-To: <53416D09.7060805@xenomai.org>
+Date: Tue, 1 Apr 2014 10:35:02 +0800 (CST)
+From: =?GBK?B?x7bI68q9uaSzzMqm?= <ericvic@163.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] EINTR in notifier.c (mercury)
-Reply-To: Matthias Schneider <ma30002000@yahoo.de>
+Message-ID: <36553bb2.3800.1451b23ccfc.Coremail.ericvic@163.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] imx6q xenomai ipipe-3.0-imx6q
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,156 +13,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
------ Original Message -----
-
-> From: Philippe Gerum <rpm@xenomai.org>
-> To: Matthias Schneider <ma30002000@yahoo.de>; "xenomai@xenomai.org" <xeno=
-mai@xenomai.org>
-> Cc: =
-
-> Sent: Sunday, April 6, 2014 5:04 PM
-> Subject: Re: [Xenomai] EINTR in notifier.c (mercury)
-> =
-
-> On 04/06/2014 01:11 PM, Matthias Schneider wrote:
->>>  On Monday, March 31, 2014 7:50 PM, Gilles Chanteperdrix =
-
-> <gilles.chanteperdrix@xenomai.org> wrote:
->> =
-
->>>>  On 03/31/2014 03:18 PM, Philippe Gerum wrote:
->>>> =A0  On 03/31/2014 01:27 PM, Gilles Chanteperdrix wrote:
->>>>> =A0  On 03/31/2014 12:34 PM, Matthias Schneider wrote:
->>>>>> =A0  Hi all,
->>>>>> =
-
->>>>>> =
-
->>>>>> =A0  still working on thread suspension in mercury, I noticed =
-
-> that some
->>>>>> =A0  threadobj_suspend() and threadobj_resume() calls seemed =
-
-> not to have the desired
->>>>>> =A0  effect. Analyzing the issue, I found out that sometimes =
-
-> the read operations on
->>>>>> =A0  the pipe in notifier_wait() seem to return with EINTR, =
-
-> especially in
->>>>>> =A0  heavily loaded systems. Restarting the read system call =
-
-> in that case made
->>>>>> =A0  thread suspension a lot more reliable in my case.
->>>>>> =
-
->>>>>> =A0  I have attached a patch adding loops to deal with the =
-
-> EINTR situation in all
->>>>> =
-
->>>>> =A0  You can probably avoid testing for EINTR if all signal =
-
-> handlers are
->>>>> =A0  registered with the SA_RESTART flag.
->>>>> =
-
->>>> =
-
->>>> =A0  The app may not explicitly care for signals (granted, most would =
-
-> do, but
->>>> =A0  we would then have to assume they do it right).
->>>> =
-
->>> =
-
->>>  Yes, applications may want to use signals to interrupt a call to read
->>>  and voluntarily get EINTR anyway.
->>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 Gilles.
->> =
-
->> =
-
->>  Please find attached a third version of my patch dealing with
->>  EINTR syscalls. Note that I also stumbled over unexpected behavior
->>  in threadobj_sleep and cancel_sync due to EINTRs. Considering that
->>  mercury is using signals for user-space round-robin and thread
->>  suspension, even without any application signals EINTR happens
->>  quite often.
-> =
-
-> @@ -86,9 +88,13 @@ static void notifier_sighandler(int sig, siginfo_t *si=
-ginfo, =
-
-> void *uc)
-> =A0=A0=A0 =A0=A0=A0 if (nf->owner && nf->owner !=3D tid)
-> =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 continue;
-> =
-
-> -=A0=A0=A0 =A0=A0=A0 while (__STD(read(nf->psfd[0], &c, 1)) > 0)
-> -=A0=A0=A0 =A0=A0=A0 =A0=A0=A0 /* Callee must run async-safe code only. */
-> -=A0=A0=A0 =A0=A0=A0 =A0=A0=A0 nf->callback(nf);
-> +=A0=A0=A0 =A0=A0=A0 do {
-> +=A0=A0=A0 =A0=A0=A0 =A0=A0=A0 ret =3D __STD(read(nf->psfd[0], &c, 1)); =
-
-> +=A0=A0=A0 =A0=A0=A0 =A0=A0=A0 if (ret > 0)
-> +=A0=A0=A0 =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 /* Callee must run async-safe co=
-de only. */
-> +=A0=A0=A0 =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 nf->callback(nf);
-> +=A0=A0=A0 =A0=A0=A0 } while (ret > 0 || errno =3D=3D EINTR);
-> =
-
-> In theory, we could receive a zero byte count on EOF, in which case we sh=
-ould =
-
-> not test errno, rather we should bail out immediately.
-> =
-
-> @@ -1093,7 +1093,9 @@ int threadobj_sleep(struct timespec *ts)
-> =A0=A0=A0  */
-> =A0=A0=A0 current->run_state =3D __THREAD_S_DELAYED;
-> =A0=A0=A0 threadobj_save_timeout(&current->core, ts);
-> -=A0=A0=A0 ret =3D -__RT(clock_nanosleep(CLOCK_COPPERPLATE, TIMER_ABSTIME=
-, ts, NULL));
-> +=A0=A0=A0 do
-> +=A0=A0=A0 =A0=A0=A0 ret =3D -__RT(clock_nanosleep(CLOCK_COPPERPLATE, TIM=
-ER_ABSTIME, ts, =
-
-> NULL));
-> =
-
-> We should definitely pass and use the "remain" field in =
-
-> clock_nanosleep(), not to restart a complete wait each time we get interr=
-upted.
-> =
-
-> =
-
-> -- =
-
-> Philippe.
-> =
-
-
-I have attached a new version of the patch leaving the loop on ret =3D=3D 0=
-. Note=A0
-that this will be a new behavior in compared to before the patch.
-
-Gilles already pointed out that=A0TIMER_ABSTIME allows restarting the same =
-syscall
-in threadobj_sleep.
-
-Regards,
-Matthias
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: eintr_4.patch
-Type: text/x-patch
-Size: 3055 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140407/439744e=
-d/attachment.bin>
+SGVsbG8gR2lsbGVzIKOsdGhpcyBpcyBteSB0ZXN0IGFib3V0IHhlbm9tYWkgo6x0aGlzIGNhbiBh
+bHNvIGVmZmVjdCB0aGUgbXkgcHJvZ3JhbSAgYW5kIHRoZSBsYXRlbmN5IHRlc3QKo6x0aGFua3Mg
+oaMKCgo9PSBTYW1wbGluZyBwZXJpb2Q6IDEwMDAgdXMKPT0gVGVzdCBtb2RlOiBpbi1rZXJuZWwg
+cGVyaW9kaWMgdGFzawo9PSBBbGwgcmVzdWx0cyBpbiBtaWNyb3NlY29uZHMKd2FybWluZyB1cC4u
+LgpSVFR8ICAwMDowMDowMSAgKGluLWtlcm5lbCBwZXJpb2RpYyB0YXNrLCAxMDAwIHVzIHBlcmlv
+ZCwgcHJpb3JpdHkgOTkpClJUSHwtLS0tbGF0IG1pbnwtLS0tbGF0IGF2Z3wtLS0tbGF0IG1heHwt
+b3ZlcnJ1bnwtLS1tc3d8LS0tbGF0IGJlc3R8LS1sYXQgd29yc3QKUlREfCAgICAgIDAuNDUyfCAg
+ICAgMTcuMjIxfCAgMTY2MzcuNDkyfCAgICAgIDE2fCAgICAgMHwgICAgICAwLjQ1MnwgIDE2NjM3
+LjQ5MgpSVER8ICAgICAgMC40MzF8ICAgICAxNy4yNTN8ICAxNjY0MS45NzR8ICAgICAgMzJ8ICAg
+ICAwfCAgICAgIDAuNDMxfCAgMTY2NDEuOTc0ClJURHwgICAgICAwLjQ1OXwgICAgIDE3LjIzM3wg
+IDE2NjM5LjIyNHwgICAgICA0OHwgICAgIDB8ICAgICAgMC40MzF8ICAxNjY0MS45NzQKUlREfCAg
+ICAgIDAuNDM5fCAgICAgMTcuMjMxfCAgMTY2MzguNDIzfCAgICAgIDY0fCAgICAgMHwgICAgICAw
+LjQzMXwgIDE2NjQxLjk3NApSVER8ICAgICAgMC40NTR8ICAgICAxNy4yMzJ8ICAxNjYzOC40ODl8
+ICAgICAgODB8ICAgICAwfCAgICAgIDAuNDMxfCAgMTY2NDEuOTc0ClJURHwgICAgICAwLjQ1M3wg
+ICAgIDE3LjIyM3wgIDE2NjM4LjU2OXwgICAgICA5NnwgICAgIDB8ICAgICAgMC40MzF8ICAxNjY0
+MS45NzQKUlREfCAgICAgIDAuNDQwfCAgICAgMTcuMjI3fCAgMTY2MzguNjEyfCAgICAgMTEyfCAg
+ICAgMHwgICAgICAwLjQzMXwgIDE2NjQxLjk3NApSVER8ICAgICAgMC40NTh8ICAgICAxNy4yMjR8
+ICAxNjYzNy44MjJ8ICAgICAxMjh8ICAgICAwfCAgICAgIDAuNDMxfCAgMTY2NDEuOTc0ClJURHwg
+ICAgICAwLjQwN3wgICAgIDE3LjI2OXwgIDE2NjM5LjQxN3wgICAgIDE0NHwgICAgIDB8ICAgICAg
+MC40MDd8ICAxNjY0MS45NzQKUlREfCAgICAgIDAuNDMyfCAgICAgMTcuMjM3fCAgMTY2MzguNjA3
+fCAgICAgMTYwfCAgICAgMHwgICAgICAwLjQwN3wgIDE2NjQxLjk3NApSVER8ICAgICAgMC40NDJ8
+ICAgICAxNy4yNzh8ICAxNjYzOC42OTV8ICAgICAxNzZ8ICAgICAwfCAgICAgIDAuNDA3fCAgMTY2
+NDEuOTc0ClJURHwgICAgICAwLjQzN3wgICAgIDE3LjIyNnwgIDE2NjM5LjIwMnwgICAgIDE5Mnwg
+ICAgIDB8ICAgICAgMC40MDd8ICAxNjY0MS45NzQKUlREfCAgICAgIDAuNDI3fCAgICAgMTcuMjMy
+fCAgMTY2MzcuNDY3fCAgICAgMjA4fCAgICAgMHwgICAgICAwLjQwN3wgIDE2NjQxLjk3NApSVER8
+ICAgICAgMC40NTR8ICAgICAxNy4yODB8ICAxNjYzOC44Mjh8ICAgICAyMjR8ICAgICAwfCAgICAg
+IDAuNDA3fCAgMTY2NDEuOTc0ClJURHwgICAgICAwLjQyMXwgICAgIDE3LjI0MXwgIDE2NjM3Ljg2
+NnwgICAgIDI0MHwgICAgIDB8ICAgICAgMC40MDd8ICAxNjY0MS45NzQKUlREfCAgICAgIDAuMzk4
+fCAgICAgMTcuMjM2fCAgMTY2MzkuNTMwfCAgICAgMjU2fCAgICAgMHwgICAgICAwLjM5OHwgIDE2
+NjQxLjk3NApSVER8ICAgICAgMC40MzF8ICAgICAxNy4yNTJ8ICAxNjYzNy4wMzJ8ICAgICAyNzJ8
+ICAgICAwfCAgICAgIDAuMzk4fCAgMTY2NDEuOTc0ClJURHwgICAgICAwLjQ0NnwgICAgIDE3LjI1
+NnwgIDE2NjM4Ljg0NXwgICAgIDI4OHwgICAgIDB8ICAgICAgMC4zOTh8ICAxNjY0MS45NzQKUlRE
+fCAgICAgIDAuNDQ2fCAgICAgMTcuMjUzfCAgMTY2MzguOTgxfCAgICAgMzA0fCAgICAgMHwgICAg
+ICAwLjM5OHwgIDE2NjQxLjk3NApSVER8ICAgICAgMC40MzN8ICAgICAxNy4yNDN8ICAxNjYzNy4z
+Mjl8ICAgICAzMjB8ICAgICAwfCAgICAgIDAuMzk4fCAgMTY2NDEuOTc0Cl5DLS0tfC0tLS0tLS0t
+LS0tfC0tLS0tLS0tLS0tfC0tLS0tLS0tLS0tfC0tLS0tLS0tfC0tLS0tLXwtLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tClJUU3wgICAgICAwLjM5OHwgICAgIDE3LjI0MnwgIDE2NjQxLjk3NHwgICAg
+IDMyMHwgICAgIDB8ICAgIDAwOjAwOjIxLzAwOjAwOjIxCi1zaC0yLjA1YiMgCgoKCgojaW5jbHVk
+ZSA8c3RkaW8uaD4KI2luY2x1ZGUgPHNpZ25hbC5oPgojaW5jbHVkZSA8dW5pc3RkLmg+CiNpbmNs
+dWRlIDxzeXMvbW1hbi5oPgoKCiNpbmNsdWRlIDxuYXRpdmUvdGFzay5oPgojaW5jbHVkZSA8bmF0
+aXZlL3RpbWVyLmg+CgoKUlRfVEFTSyBkZW1vX3Rhc2s7CgoKLyogTk9URTogZXJyb3IgaGFuZGxp
+bmcgb21pdHRlZC4gKi8KCgp2b2lkIGRlbW8odm9pZCAqYXJnKQp7CiAgICAgICAgUlRJTUUgbm93
+LCBwcmV2aW91czsKCgogICAgICAgIC8qCiAgICAgICAgICogQXJndW1lbnRzOiAmdGFzayAoTlVM
+TD1zZWxmKSwKICAgICAgICAgKiAgICAgICAgICAgIHN0YXJ0IHRpbWUsCiAgICAgICAgICogICAg
+ICAgICAgICBwZXJpb2QgKGhlcmU6IDEgcykKICAgICAgICAgKi8KICAgICAgICBydF90YXNrX3Nl
+dF9wZXJpb2RpYyhOVUxMLCBUTV9OT1csIDEwMDAwMDAwMDApOwogICAgICAgIHByZXZpb3VzID0g
+cnRfdGltZXJfcmVhZCgpOwpsb25nIGxvbmcgaSxqLGs7CiAgICAgICAgd2hpbGUgKDEpIHsKICAg
+ICAgICAgICAgICAgIHJ0X3Rhc2tfd2FpdF9wZXJpb2QoTlVMTCk7CiAgICAgICAgICAgICAgICBu
+b3cgPSBydF90aW1lcl9yZWFkKCk7CiBmb3IoaT0xO2k8MTAwMDtpKyspCmZvcihqPTE7ajxpO2or
+KykKaz1pKmo7CiAgICAgICAgICAgICAgICAvKgogICAgICAgICAgICAgICAgICogTk9URTogcHJp
+bnRmIG1heSBoYXZlIHVuZXhwZWN0ZWQgaW1wYWN0IG9uIHRoZSB0aW1pbmcgb2YKICAgICAgICAg
+ICAgICAgICAqICAgICAgIHlvdXIgcHJvZ3JhbS4gSXQgaXMgdXNlZCBoZXJlIGluIHRoZSBjcml0
+aWNhbCBsb29wCiAgICAgICAgICAgICAgICAgKiAgICAgICBvbmx5IGZvciBkZW1vbnN0cmF0aW9u
+IHB1cnBvc2VzLgogICAgICAgICAgICAgICAgICovCiAgICAgICAgICAgICAgICBwcmludGYoIlRp
+bWUgc2luY2UgbGFzdCB0dXJuOiAlbGQuJTA2bGQgbXNcbiIsCiAgICAgICAgICAgICAgICAgICAg
+ICAgKGxvbmcpKG5vdyAtIHByZXZpb3VzKSAvIDEwMDAwMDAsCiAgICAgICAgICAgICAgICAgICAg
+ICAgKGxvbmcpKG5vdyAtIHByZXZpb3VzKSAlIDEwMDAwMDApOwogICAgICAgICAgICAgICAgICAg
+ICAgIHByZXZpb3VzID0gbm93OwogICAgICAgIH0KfQoKCnZvaWQgY2F0Y2hfc2lnbmFsKGludCBz
+aWcpCnsKfQoKCmludCBtYWluKGludCBhcmdjLCBjaGFyKiBhcmd2W10pCnsKICAgICAgICBzaWdu
+YWwoU0lHVEVSTSwgY2F0Y2hfc2lnbmFsKTsKICAgICAgICBzaWduYWwoU0lHSU5ULCBjYXRjaF9z
+aWduYWwpOwoKCiAgICAgICAgLyogQXZvaWRzIG1lbW9yeSBzd2FwcGluZyBmb3IgdGhpcyBwcm9n
+cmFtICovCiAgICAgICAgbWxvY2thbGwoTUNMX0NVUlJFTlR8TUNMX0ZVVFVSRSk7CgoKICAgICAg
+ICAvKgogICAgICAgICAqIEFyZ3VtZW50czogJnRhc2ssCiAgICAgICAgICogICAgICAgICAgICBu
+YW1lLAogICAgICAgICAqICAgICAgICAgICAgc3RhY2sgc2l6ZSAoMD1kZWZhdWx0KSwKICAgICAg
+ICAgKiAgICAgICAgICAgIHByaW9yaXR5LAogICAgICAgICAqICAgICAgICAgICAgbW9kZSAoRlBV
+LCBzdGFydCBzdXNwZW5kZWQsIC4uLikKICAgICAgICAgKi8KICAgICAgICBydF90YXNrX2NyZWF0
+ZSgmZGVtb190YXNrLCAidHJpdmlhbCIsIDAsIDk5LCAwKTsKCgogICAgICAgIC8qCiAgICAgICAg
+ICogQXJndW1lbnRzOiAmdGFzaywKICAgICAgICAgKiAgICAgICAgICAgIHRhc2sgZnVuY3Rpb24s
+CiAgICAgICAgICogICAgICAgICAgICBmdW5jdGlvbiBhcmd1bWVudAogICAgICAgICAqLwogICAg
+ICAgIHJ0X3Rhc2tfc3RhcnQoJmRlbW9fdGFzaywgJmRlbW8sIE5VTEwpOwoKCiAgICAgICAgcGF1
+c2UoKTsKCgogICAgICAgIHJ0X3Rhc2tfZGVsZXRlKCZkZW1vX3Rhc2spOwp9
