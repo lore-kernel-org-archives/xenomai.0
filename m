@@ -1,13 +1,17 @@
-Message-ID: <534D44CA.3000105@xenomai.org>
-Date: Tue, 15 Apr 2014 16:40:10 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <533B3748.10101@xenomai.org>
+Date: Wed, 02 Apr 2014 00:01:44 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAPRPZsAmXEyH4wcMeGcWPB3B-3=04DoS=K2k-QbQ+DidPcptAg@mail.gmail.com>	<534BD45B.8070402@xenomai.org>
- <CAPRPZsDSg6Yb3w+UEktb+7AmdZ-7JngVQH4tBbxnk5EV04y0AA@mail.gmail.com>
-In-Reply-To: <CAPRPZsDSg6Yb3w+UEktb+7AmdZ-7JngVQH4tBbxnk5EV04y0AA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <20140331215933.GY17765@csclub.uwaterloo.ca>
+ <20140331220421.GZ17765@csclub.uwaterloo.ca> <5339E80C.9020604@xenomai.org>
+ <5339EBE1.3060907@xenomai.org> <20140401013227.GA17765@csclub.uwaterloo.ca>
+ <533A9A7C.7020408@xenomai.org> <20140401131257.GB17765@csclub.uwaterloo.ca>
+ <533B14FC.1000007@xenomai.org> <20140401194053.GC17765@csclub.uwaterloo.ca>
+ <533B270F.4060702@xenomai.org> <20140401214539.GD17765@csclub.uwaterloo.ca>
+In-Reply-To: <20140401214539.GD17765@csclub.uwaterloo.ca>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Slow execution of RT task
+Subject: Re: [Xenomai] Porting xenomai 2.6.3 and ipipe to 3.12 kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,43 +20,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Cc: xenomai@xenomai.org
 
-On 04/14/2014 02:45 PM, Jeroen Van den Keybus wrote:
->> .config would help. TIA,
->
->
-> I've attached both the one for the 3.10 and the 3.8 kernels. In the
-> meantime I found out that the 3.8 kernel exhibits the same problem.
->
-> Please let know if attachments don't work. I'll paste into e-mail
-> immediately (but personally I don't like .configs in the archive...).
->
->
+On 04/01/2014 11:45 PM, Lennart Sorensen wrote:
+> On Tue, Apr 01, 2014 at 10:52:31PM +0200, Gilles Chanteperdrix wrote:
+>> On 04/01/2014 09:40 PM, Lennart Sorensen wrote:
+>>> On Tue, Apr 01, 2014 at 09:35:24PM +0200, Gilles Chanteperdrix wrote:
+>>>> On 04/01/2014 03:12 PM, Lennart Sorensen wrote:
+>>>>> On Tue, Apr 01, 2014 at 12:52:44PM +0200, Gilles Chanteperdrix wrote:
+>>>>>> The way I test it is by running xeno-regression-test, using dohell with
+>>>>>> LTP to create a load. Note that the latency result given by
+>>>>>> xeno-regression-test should not be taken into account as switchtest is
+>>>>>> running concurrently and creates large non-preemptible sections,
+>>>>>> xeno-regression-test is more a stress test.
+>>>>>
+>>>>> I will see if I can find the invocation to run that then.
+>>>>>
+>>>>> I let cyclictest, switchtest and latency running the last 8 hours,
+>>>>> and latency test currently says:
+>>>>>
+>>>>> RTD|     -0.814|      2.441|      7.486|       0|     0|     -2.116|     20.182
+>>>>>
+>>>>> That seems decent at least.
+>>>>>
+>>>>
+>>>> I use:
+>>>> xeno-regression-test -l "dohell -s 192.168.0.5 -m /mnt -l /ltp"
+>>>>
+>>>> Where the machine with ip 192.168.0.5 has the "discard" service enabled
+>>>> (port 9, available in inetd), an usb key is mounted on /mnt, and LTP is
+>>>> installed in /ltp.
+>>>
+>>> I get an error when I use the -s option.
+>>
+>> Probably because the machine with the IP address you pass after -s does
+>> not have the "discard" service enabled in inetd.conf
+> 
+> I thought I had.
 
-I can't reproduce this bug using your configuration, so we need a 
-different approach.
+Do you have the nc command available?
 
-Could you patch the code fragment in, enable CONFIG_IPIPE_TRACE, then 
-get a dump from /proc/ipipe/trace/frozen once the warning has triggered?
-Maybe getting a bit more context by setting 
-/proc/ipipe/trace/backtrace_points to 2048 would help too. TIA,
+> 
+> root@omap5:~# grep RTIPC /boot/config-3.12-1-dra7xx 
+> CONFIG_XENO_DRIVERS_RTIPC=m
+> CONFIG_XENO_DRIVERS_RTIPC_XDDP=y
+> CONFIG_XENO_DRIVERS_RTIPC_IDDP=y
+> CONFIG_XENO_DRIVERS_RTIPC_BUFP=y
+> 
+> Maybe I forgot to load the module....  Yep that was it.
+> 
+> Then I got to this:
+> 
+> Started child 14296: /usr/lib/xenomai/testsuite/latency xeno-regression-test -l dohell -s 10.200.19.25 -m /mnt -l /mnt -t 2
 
-diff --git a/kernel/rcutree.c b/kernel/rcutree.c
-index 3538001..a1f09e3 100644
---- a/kernel/rcutree.c
-+++ b/kernel/rcutree.c
-@@ -477,6 +477,8 @@ void rcu_irq_exit(void)
-  	rdtp = &__get_cpu_var(rcu_dynticks);
-  	oldval = rdtp->dynticks_nesting;
-  	rdtp->dynticks_nesting--;
-+	if (rdtp->dynticks_nesting < 0)
-+		ipipe_trace_freeze(0);
-  	WARN_ON_ONCE(rdtp->dynticks_nesting < 0);
-  	if (rdtp->dynticks_nesting)
-  		trace_rcu_dyntick("--=", oldval, rdtp->dynticks_nesting);
+I woud say you forgot the quotes around the dohell command, so the -m
+option gets passed to latency instead of dohell.
 
 -- 
-Philippe.
+                                                                Gilles.
 
