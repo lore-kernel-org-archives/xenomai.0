@@ -1,10 +1,18 @@
-Message-Id: <4C65087F-A489-460C-89B6-660C6F62316E@gmail.com>
-From: Andreas Glatz <andi.glatz@gmail.com>
-Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
+Message-ID: <533B14FC.1000007@xenomai.org>
+Date: Tue, 01 Apr 2014 21:35:24 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <5339D8EB.3030702@xenomai.org>
+ <20140331212534.GW17765@csclub.uwaterloo.ca> <5339E2CE.7060703@xenomai.org>
+ <20140331215348.GX17765@csclub.uwaterloo.ca>
+ <20140331215933.GY17765@csclub.uwaterloo.ca>
+ <20140331220421.GZ17765@csclub.uwaterloo.ca> <5339E80C.9020604@xenomai.org>
+ <5339EBE1.3060907@xenomai.org> <20140401013227.GA17765@csclub.uwaterloo.ca>
+ <533A9A7C.7020408@xenomai.org> <20140401131257.GB17765@csclub.uwaterloo.ca>
+In-Reply-To: <20140401131257.GB17765@csclub.uwaterloo.ca>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Mime-Version: 1.0 (Apple Message framework v936)
-Date: Sat, 12 Apr 2014 15:30:40 +0100
-Subject: [Xenomai] Analogy: Basic question regarding a4l_snd_insnlist()
+Subject: Re: [Xenomai] Porting xenomai 2.6.3 and ipipe to 3.12 kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,37 +21,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Cc: xenomai@xenomai.org
 
-Hi,
+On 04/01/2014 03:12 PM, Lennart Sorensen wrote:
+> On Tue, Apr 01, 2014 at 12:52:44PM +0200, Gilles Chanteperdrix wrote:
+>> The way I test it is by running xeno-regression-test, using dohell with
+>> LTP to create a load. Note that the latency result given by
+>> xeno-regression-test should not be taken into account as switchtest is
+>> running concurrently and creates large non-preemptible sections,
+>> xeno-regression-test is more a stress test.
+> 
+> I will see if I can find the invocation to run that then.
+> 
+> I let cyclictest, switchtest and latency running the last 8 hours,
+> and latency test currently says:
+> 
+> RTD|     -0.814|      2.441|      7.486|       0|     0|     -2.116|     20.182
+> 
+> That seems decent at least.
+> 
 
-I think a4l_snd_insnlist() would be the best option for my use-case,  
-where I basically want to turn GPIOs on and off, occasionally change  
-DAC values and at the end acquire a certain amount of ADC samples. So  
-basically it's a linear sequence of synchronous (well, partly  
-asynchronous - depending how the last instruction is realized in  
-hardware) commands which should get executed at certain points in  
-time. However, when I look at a4l_snd_insnlist() I can pass a list of  
-instructions but there is no possibility to tell that function when to  
-exactly execute each instruction of the list. I think this would be a  
-very nice feature to have since you can get pretty good timing  
-accuracy with Xenomai as demonstrated previously [1].
+I use:
+xeno-regression-test -l "dohell -s 192.168.0.5 -m /mnt -l /ltp"
 
-IMHO this shouldn't require many changes (at least for synchronous  
-instructions): Firstly the a4l_instruction_list struct could be  
-generalised so that each instruction gets a relative (?) time when it  
-should be executed. This time is then used in a4l_ioctl_insnlist() to  
-translate the relative into an absolute time (?) and execute all  
-instructions at the given time with the method used in e.g. [1]. If  
-the relative time of each instruction is 0, then the modified  
-a4l_ioctl_insnlist() falls back to the current mode of operation...  
-and it remains compatible with everything before that change.
+Where the machine with ip 192.168.0.5 has the "discard" service enabled
+(port 9, available in inetd), an usb key is mounted on /mnt, and LTP is
+installed in /ltp.
 
-A.
-
-PS: I think that's a very general use-case since it is required in  
-every sequence based hardware control applications (MRI scanners come  
-to my mind).
-
-[1] http://www.xenomai.org/pipermail/xenomai/2014-March/030482.html
+-- 
+                                                                Gilles.
 
