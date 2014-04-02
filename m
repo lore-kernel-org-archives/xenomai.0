@@ -1,14 +1,12 @@
-Message-ID: <533BBC0A.7050601@xenomai.org>
-Date: Wed, 02 Apr 2014 09:28:10 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <36553bb2.3800.1451b23ccfc.Coremail.ericvic@163.com>
- <533A99AD.4010404@xenomai.org>
- <4e1f2397.14cae.1451fed778d.Coremail.ericvic@163.com>
-In-Reply-To: <4e1f2397.14cae.1451fed778d.Coremail.ericvic@163.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] imx6q xenomai ipipe-3.0-imx6q
+Message-Id: <DB7A75AE-FD4F-4B02-9D82-41B0D43C3126@gmail.com>
+From: Andreas Glatz <andi.glatz@gmail.com>
+In-Reply-To: <mailman.33.1396388743.2839.xenomai@xenomai.org>
+Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
+Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0 (Apple Message framework v936)
+Date: Wed, 2 Apr 2014 10:21:34 +0100
+References: <mailman.33.1396388743.2839.xenomai@xenomai.org>
+Subject: Re: [Xenomai] Porting xenomai 2.6.3 and ipipe to 3.12 kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,23 +15,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 04/02/2014 02:53 AM, 嵌入式工程师 wrote:
-> I know latency test can not run with e other real-time  activity, but
-> my program will run some real-time activties at the same time ,now it
-> looks  like because multiple cpu shared memory causes a great
-> difference jitter .
+> Message: 7
+> Date: Tue, 1 Apr 2014 17:45:39 -0400
+> From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+> To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+> Cc: xenomai@xenomai.org
+> Subject: Re: [Xenomai] Porting xenomai 2.6.3 and ipipe to 3.12 kernel
+> Message-ID: <20140401214539.GD17765@csclub.uwaterloo.ca>
+> Content-Type: text/plain; charset=us-ascii
+>
+> On Tue, Apr 01, 2014 at 10:52:31PM +0200, Gilles Chanteperdrix wrote:
+>> On 04/01/2014 09:40 PM, Lennart Sorensen wrote:
+>>> On Tue, Apr 01, 2014 at 09:35:24PM +0200, Gilles Chanteperdrix  
+>>> wrote:
+>>>> On 04/01/2014 03:12 PM, Lennart Sorensen wrote:
+>>>>> On Tue, Apr 01, 2014 at 12:52:44PM +0200, Gilles Chanteperdrix  
+>>>>> wrote:
+>>>>>> The way I test it is by running xeno-regression-test, using  
+>>>>>> dohell with
+>>>>>> LTP to create a load. Note that the latency result given by
+>>>>>> xeno-regression-test should not be taken into account as  
+>>>>>> switchtest is
+>>>>>> running concurrently and creates large non-preemptible sections,
+>>>>>> xeno-regression-test is more a stress test.
+>>>>>
+>>>>> I will see if I can find the invocation to run that then.
+>>>>>
+>>>>> I let cyclictest, switchtest and latency running the last 8 hours,
+>>>>> and latency test currently says:
+>>>>>
+>>>>> RTD|     -0.814|      2.441|      7.486|       0|     0|      
+>>>>> -2.116|     20.182
+>>>>>
+>>>>> That seems decent at least.
+>>>>>
+>>>>
+>>>> I use:
+>>>> xeno-regression-test -l "dohell -s 192.168.0.5 -m /mnt -l /ltp"
+>>>>
+>>>> Where the machine with ip 192.168.0.5 has the "discard" service  
+>>>> enabled
+>>>> (port 9, available in inetd), an usb key is mounted on /mnt, and  
+>>>> LTP is
+>>>> installed in /ltp.
+>>>
+>>> I get an error when I use the -s option.
+>>
+>> Probably because the machine with the IP address you pass after -s  
+>> does
+>> not have the "discard" service enabled in inetd.conf
+>
+>
 
-That is not your problem. Your problem is that if you run a task with
-priority 99 on the same cpu as the latency test, the time this task
-prevents the latency test from running is counted by the latency test as
-latency, which gives wrong results. This is not latency, this is simply
-the scheduler doing its job: letting a task running until it suspends
-before letting the latency task running. That is because the two tasks
-have the same priority.
+[...]
 
--- 
-                                                                Gilles.
+> d14: 1 != 2
+> d15: 1 != 2
+> == FPU check routines: OK.
+> /usr/bin/xeno-regression-test failed: child 14296 exited with status 2
+>
+> I was running:
+>
+> xeno-regression-test xeno-regression-test -l "dohell -s 10.200.19.25  
+> -m /mnt -l /mnt" -t 2
+>
+> Maybe I got something wrong.
+>
+> ltp is installed to /mnt (which is a USB stick).
+>
+
+On my board the directory where 'dohell' resides was not included in  
+PATH. Maybe try this:
+
+  xeno-regression-test -l "/usr/lib/xenomai/testsuite/dohell -s  
+10.200.19.25 -m /mnt -l /mnt" -t 2
+
+A.
+
+
 
