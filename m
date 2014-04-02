@@ -1,9 +1,10 @@
-MIME-Version: 1.0
-Date: Thu, 17 Apr 2014 13:14:40 +0200
-Message-ID: <CACKc53+X9XQ1tqJXrcW8qLrmBVoCfDvqozjVwMDWEQUabHL2oA@mail.gmail.com>
-From: Wojciech Domski <wojciech.domski@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] Configuring analog subdevice via analogy interface
+Message-ID: <1396407588.27578.5.camel@localhost.localdomain>
+From: Peter Howard <pjh@northern-ridge.com.au>
+Date: Wed, 02 Apr 2014 13:59:48 +1100
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] OMAP L138
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,27 +13,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Dear all,
+Hi,
 
-I have question concerning analog subdevice support in Analogy.
+I'm interested in running xenomai on a TI-OMAP L138 board.  I found the
+following thread in the archives:
 
-I have signal Sensoray 626 which is capable of setting range
-for analog input to +/-5V or +/-10V. During writing the driver
-for Sensoray 626 I have ported a function which address
-is put into field of subdevice structure do_cmd.
+http://www.xenomai.org/pipermail/xenomai/2010-January/018898.html
 
-This function can configure multiple channels of analog
-subdevice separately. However, what should I use from
-User Space interface to invoke this function (do_cmd)
-in kernel space?
+where someone was working on porting ipipe and xenomai to that board.
+However, the thread ended with problems still unresolved, and the patch
+in the thread (just the changes for ipipe) isn't in the ipipe
+repository.
 
-I have tried using a4l_snd_command but this one
-seems to be dedicated for digital subdevices.
-Is there a way to do what I want to?
+Does anyone know if this work was completed or just faded into the
+ether?
 
-Best regards,
-Wojciech Domski
+Thanks in advance.
 
-Domski.pl
+-- 
+Peter Howard <pjh@northern-ridge.com.au>
+
+
