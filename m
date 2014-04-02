@@ -1,10 +1,9 @@
-Message-ID: <533C3753.6050109@xenomai.org>
-Date: Wed, 02 Apr 2014 18:14:11 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <533C38FF.5050703@steinkuehler.net>
+Date: Wed, 02 Apr 2014 11:21:19 -0500
+From: Charles Steinkuehler <charles@steinkuehler.net>
 MIME-Version: 1.0
-References: <533C32E3.3090309@steinkuehler.net> <533C348F.3010801@xenomai.org>
- <533C36F8.6030800@steinkuehler.net>
-In-Reply-To: <533C36F8.6030800@steinkuehler.net>
+References: <533C32E3.3090309@steinkuehler.net> <533C3622.1030601@xenomai.org>
+In-Reply-To: <533C3622.1030601@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Debian Package Building Broken
@@ -16,43 +15,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Charles Steinkuehler <charles@steinkuehler.net>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 04/02/2014 06:12 PM, Charles Steinkuehler wrote:
-> On 4/2/2014 11:02 AM, Gilles Chanteperdrix wrote:
->> On 04/02/2014 05:55 PM, Charles Steinkuehler wrote:
->>>
->>> I am building from the 2.6.3 tag, but the configure file still exists in
->>> master:
->>>
->>> http://git.xenomai.org/xenomai-2.6.git/tree/
+On 4/2/2014 11:09 AM, Gilles Chanteperdrix wrote:
 >>
->> No, the configure file is in the tree, this is intentional, this avoids
->> requiring people which compile the package from the git tree to have the
->> autotools installed. If debian/rules does not support that, it should be
->> fixed to support it.
-> 
-> I'm not sure if debian/rules allows that or not...I'm just trying to
-> build 2.6.3 packages from git following the directions on the wiki:
-> 
-> http://xenomai.org/index.php/Building_Debian_packages#from_a_Git_repository
-> 
-> ...mostly because for some reason Debian doesn't build the armhf flavor
-> of the Xenomai packages:
-> 
-> https://packages.debian.org/sid/xenomai-runtime
-> 
-> ...there's armel, but no armhf.  :(
-> 
+> Does this still happen if you remove the line "autoreconf -fi" from
+> debian/rules ?
 
+Yes, see below (pasted as a quote to hopefully avoid wrapping).  The
+build complains about uncommitted changes immediately after deleting the
+configure file, which is what causes the uncommitted change.
 
-This is a known issue, which has been fixed in xenomai git:
+I have some other problem as well, even if I remove the configure file
+the build still dies, but I think that's something on my end.  It's
+unrelated to the configure file, anyway.
 
-http://git.xenomai.org/xenomai-2.6.git/commit/?id=b10527ed14399a6485f69b935988d9d5211066d0
-
-You will not have it when building from the 2.6.3 tag, though.
+> linuxcnc@mah2:~/xenomai$ git-buildpackage --git-debian-branch=v2.6.3-deb --git-export-dir=.. -uc -us
+> dh_testdir
+> dh_testroot
+> rm -f configure-stamp build-indep-stamp build-arch-stamp
+> if test -f Makefile ; then \
+>             /usr/bin/make distclean ; \
+>         fi
+> dh_clean
+> rm -fR /home/linuxcnc/xenomai/tmp
+> rm -f /home/linuxcnc/xenomai/*.patch
+> rm -f configure
+> gbp:error: You have uncommitted changes in your source tree:
+> gbp:error: # On branch v2.6.3-deb
+> # Changes not staged for commit:
+> #   (use "git add/rm <file>..." to update what will be committed)
+> #   (use "git checkout -- <file>..." to discard changes in working directory)
+> #
+> #       deleted:    configure
+> #
+> no changes added to commit (use "git add" and/or "git commit -a")
+> 
+> gbp:error: Use --git-ignore-new to ignore.
 
 -- 
-					    Gilles.
+Charles Steinkuehler
+charles@steinkuehler.net
 
