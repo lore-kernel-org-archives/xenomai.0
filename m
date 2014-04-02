@@ -1,13 +1,10 @@
-Message-ID: <533C496C.2020303@steinkuehler.net>
-Date: Wed, 02 Apr 2014 12:31:24 -0500
-From: Charles Steinkuehler <charles@steinkuehler.net>
 MIME-Version: 1.0
-References: <533C32E3.3090309@steinkuehler.net> <533C3622.1030601@xenomai.org>
- <533C38FF.5050703@steinkuehler.net> <533C4093.6040106@xenomai.org>
-In-Reply-To: <533C4093.6040106@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Debian Package Building Broken
+Date: Wed, 2 Apr 2014 18:37:11 +0100
+Message-ID: <CAEbDrgnR1aU-A6KDq7uRCKqV0=sj8yoQE_zUeiVdxmemdfnyMQ@mail.gmail.com>
+From: Gregory Dymarek <gregd72002@gmail.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai]  [patch] prepare_kernel.sh --board argument
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,22 +13,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 4/2/2014 11:53 AM, Gilles Chanteperdrix wrote:
-> 
-> Actually, it is better if you start from Xenomai 2.6 git head instead of
-> the v2.6.3 tag, as you will avoid the few issues (including the fact
-> that it does not compile for armhf) which have been fixed since the
-> 2.6.3 release.
+Hi,
 
-Between commenting the rm configure and using 2.6 HEAD, I got packages
-to successfully build.
+>From ealier discussion - given the evolution pace of ARM platforms, it
+seems we will always have -pre and -post patches, so it would make
+sense to add this support to prepare-kernel.sh.
 
-Thanks for the help!
+Included patch that adds support for --board parameter to the
+prepare_kernel.sh script. This will cause prepare_kernel.sh to apply
+automatically pre and post patches if available.
 
--- 
-Charles Steinkuehler
-charles@steinkuehler.net
+When --board is provided the script will look for optional board
+patches in the folder that ipipe patch is and in $board subfolder if
+exsists.
+It expects the patch name to be: {ipipe_base_name}-{board_name}-{pre,post}-*
+Where {ipipe_base_name} is the ipipe name before the last '-'.
 
+Example:
+For ipipe-core-3.10.18-arm-1.patch and --board=3Draspberry it will look for:
+- ipipe-core-3.10.18-arm-raspberry-{pre,post}-*.patch
+
+
+Regards,
+Gregory
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: prepare_kernel_board.patch
+Type: text/x-patch
+Size: 3051 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140402/e2e648f=
+1/attachment.bin>
