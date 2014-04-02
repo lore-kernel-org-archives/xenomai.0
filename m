@@ -1,5 +1,5 @@
-Message-ID: <533C348F.3010801@xenomai.org>
-Date: Wed, 02 Apr 2014 18:02:23 +0200
+Message-ID: <533C3622.1030601@xenomai.org>
+Date: Wed, 02 Apr 2014 18:09:06 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <533C32E3.3090309@steinkuehler.net>
@@ -35,11 +35,9 @@ On 04/02/2014 05:55 PM, Charles Steinkuehler wrote:
 > master:
 >
 > http://git.xenomai.org/xenomai-2.6.git/tree/
-
-No, the configure file is in the tree, this is intentional, this avoids 
-requiring people which compile the package from the git tree to have the 
-autotools installed. If debian/rules does not support that, it should be 
-fixed to support it.
+>
+Does this still happen if you remove the line "autoreconf -fi" from 
+debian/rules ?
 
 -- 
 					    Gilles.
