@@ -1,10 +1,14 @@
+From: Paul <paul_c@tuxcnc.org>
+Date: Wed, 2 Apr 2014 18:40:39 +0100
+References: <CAEbDrgmdy_u5O-1VW+sE6bF4xbM9QaQTtGZh7Ljf8TnDiCpT6w@mail.gmail.com>
+In-Reply-To: <CAEbDrgmdy_u5O-1VW+sE6bF4xbM9QaQTtGZh7Ljf8TnDiCpT6w@mail.gmail.com>
 MIME-Version: 1.0
-Date: Wed, 2 Apr 2014 18:37:11 +0100
-Message-ID: <CAEbDrgnR1aU-A6KDq7uRCKqV0=sj8yoQE_zUeiVdxmemdfnyMQ@mail.gmail.com>
-From: Gregory Dymarek <gregd72002@gmail.com>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai]  [patch] prepare_kernel.sh --board argument
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <201404021840.39308.paul_c@tuxcnc.org>
+Subject: Re: [Xenomai] [patch] Raspberry Pi - 3.10.34
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,36 +17,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi,
+On Wednesday 02 April 2014, Gregory Dymarek wrote:
+> Hi,
+>
+> Enclosed patches needed to get Xenomai compiled on Raspbery Pi kernel
+> 3.10.34 (github sha: 7cf0cf0d3e53b4c62f4931bb2d7cb60a1a07b132)
+>
+> This is based on ipipe-core-3.10.18-arm-1.patch.
+>
+> Steps:
+> 1) get ipipe-core-3.10.18-arm-1.patch
+> 2) patch it using rpi-ipipe-core-3.10.34-arm-1.patch
 
->From ealier discussion - given the evolution pace of ARM platforms, it
-seems we will always have -pre and -post patches, so it would make
-sense to add this support to prepare-kernel.sh.
+No.
 
-Included patch that adds support for --board parameter to the
-prepare_kernel.sh script. This will cause prepare_kernel.sh to apply
-automatically pre and post patches if available.
+The pre-patch is applied to the kernel sources so that the corresponding 
+ipipe-core patch applies cleanly. Do not patch a patch to fix a 
+problem.
 
-When --board is provided the script will look for optional board
-patches in the folder that ipipe patch is and in $board subfolder if
-exsists.
-It expects the patch name to be: {ipipe_base_name}-{board_name}-{pre,post}-*
-Where {ipipe_base_name} is the ipipe name before the last '-'.
-
-Example:
-For ipipe-core-3.10.18-arm-1.patch and --board=3Draspberry it will look for:
-- ipipe-core-3.10.18-arm-raspberry-{pre,post}-*.patch
+> 3) do prepare_kernel.sh or patch the kernel using the above patch
+> 4) patch kernel using ipipe-core-3.10.34-arm-raspberry-post-1.patch
+> 5) done
 
 
-Regards,
-Gregory
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: prepare_kernel_board.patch
-Type: text/x-patch
-Size: 3051 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140402/e2e648f=
-1/attachment.bin>
