@@ -1,15 +1,15 @@
-Message-ID: <1396488534.26198.0.camel@localhost.localdomain>
-From: Peter Howard <pjh@northern-ridge.com.au>
-Date: Thu, 03 Apr 2014 12:28:54 +1100
-In-Reply-To: <533C9DD5.6090603@xenomai.org>
-References: <1396407588.27578.5.camel@localhost.localdomain>
- <533BBB11.5090808@xenomai.org>
- <1396478246.24976.1.camel@localhost.localdomain>
- <533C9DD5.6090603@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] OMAP L138
+Date: Thu, 3 Apr 2014 18:25:06 +0800 (CST)
+From: =?UTF-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
+In-Reply-To: <533BBC0A.7050601@xenomai.org>
+References: <36553bb2.3800.1451b23ccfc.Coremail.ericvic@163.com>
+ <533A99AD.4010404@xenomai.org>
+ <4e1f2397.14cae.1451fed778d.Coremail.ericvic@163.com>
+ <533BBC0A.7050601@xenomai.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
+MIME-Version: 1.0
+Message-ID: <16f77d23.f60b.145271ee0f6.Coremail.ericvic@163.com>
+Subject: Re: [Xenomai] imx6q xenomai ipipe-3.0-imx6q
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,52 +19,23 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thu, 2014-04-03 at 01:31 +0200, Gilles Chanteperdrix wrote:
-> On 04/03/2014 12:37 AM, Peter Howard wrote:
-> > On Wed, 2014-04-02 at 09:24 +0200, Gilles Chanteperdrix wrote:
-> >> On 04/02/2014 04:59 AM, Peter Howard wrote:
-> >>> Hi,
-> >>>
-> >>> I'm interested in running xenomai on a TI-OMAP L138 board.  I found the
-> >>> following thread in the archives:
-> >>>
-> >>> http://www.xenomai.org/pipermail/xenomai/2010-January/018898.html
-> >>>
-> >>> where someone was working on porting ipipe and xenomai to that board.
-> >>> However, the thread ended with problems still unresolved, and the patch
-> >>> in the thread (just the changes for ipipe) isn't in the ipipe
-> >>> repository.
-> >>>
-> >>> Does anyone know if this work was completed or just faded into the
-> >>> ether?
-> >>
-> >> We never merged a patch for this processor. And a lot of things changed
-> >> since that time. If you are interested in porting the I-pipe patch to
-> >> this processor, see:
-> >>
-> >> http://www.xenomai.org/index.php/I-pipe-core:ArmPorting
-> >>
-> > 
-> > Thanks for that.  A further question - the latest "official" kernel for
-> > that board is 3.3.  Looking through the ipip git repo I can trace back
-> > against mainline to 3.8, but no further.  Did work in the git repo
-> > (re-)start then?  Or am I missing things?
-> 
-> I do not know which git you are talking about, but the "official" git,
-> that is:
-> 
-> http://git.xenomai.org/ipipe.git/refs/heads
-> 
-> goes back to 2.6.19.
-> 
-> 
-
-Brain fade on my part (briefly forgetting everything I know about git
-branches).  Sorry for that - all good now.
-
--- 
-Peter Howard <pjh@northern-ridge.com.au>
-
+b2gg77yMdGhhbmtzCuWcqCAyMDE0LTA0LTAyIDE1OjI4OjEw77yMIkdpbGxlcyBDaGFudGVwZXJk
+cml4IiA8Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmc+IOWGmemBk++8mgo+T24gMDQv
+MDIvMjAxNCAwMjo1MyBBTSwg5bWM5YWl5byP5bel56iL5biIIHdyb3RlOg0KPj4gSSBrbm93IGxh
+dGVuY3kgdGVzdCBjYW4gbm90IHJ1biB3aXRoIGUgb3RoZXIgcmVhbC10aW1lICBhY3Rpdml0eSwg
+YnV0DQo+PiBteSBwcm9ncmFtIHdpbGwgcnVuIHNvbWUgcmVhbC10aW1lIGFjdGl2dGllcyBhdCB0
+aGUgc2FtZSB0aW1lICxub3cgaXQNCj4+IGxvb2tzICBsaWtlIGJlY2F1c2UgbXVsdGlwbGUgY3B1
+IHNoYXJlZCBtZW1vcnkgY2F1c2VzIGEgZ3JlYXQNCj4+IGRpZmZlcmVuY2Ugaml0dGVyIC4NCj4N
+Cj5UaGF0IGlzIG5vdCB5b3VyIHByb2JsZW0uIFlvdXIgcHJvYmxlbSBpcyB0aGF0IGlmIHlvdSBy
+dW4gYSB0YXNrIHdpdGgNCj5wcmlvcml0eSA5OSBvbiB0aGUgc2FtZSBjcHUgYXMgdGhlIGxhdGVu
+Y3kgdGVzdCwgdGhlIHRpbWUgdGhpcyB0YXNrDQo+cHJldmVudHMgdGhlIGxhdGVuY3kgdGVzdCBm
+cm9tIHJ1bm5pbmcgaXMgY291bnRlZCBieSB0aGUgbGF0ZW5jeSB0ZXN0IGFzDQo+bGF0ZW5jeSwg
+d2hpY2ggZ2l2ZXMgd3JvbmcgcmVzdWx0cy4gVGhpcyBpcyBub3QgbGF0ZW5jeSwgdGhpcyBpcyBz
+aW1wbHkNCj50aGUgc2NoZWR1bGVyIGRvaW5nIGl0cyBqb2I6IGxldHRpbmcgYSB0YXNrIHJ1bm5p
+bmcgdW50aWwgaXQgc3VzcGVuZHMNCj5iZWZvcmUgbGV0dGluZyB0aGUgbGF0ZW5jeSB0YXNrIHJ1
+bm5pbmcuIFRoYXQgaXMgYmVjYXVzZSB0aGUgdHdvIHRhc2tzDQo+aGF2ZSB0aGUgc2FtZSBwcmlv
+cml0eS4NCj4NCj4tLSANCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgR2lsbGVzLg0K
 
