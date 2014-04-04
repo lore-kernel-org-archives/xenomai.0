@@ -1,21 +1,12 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Thu, 3 Apr 2014 10:16:35 -0400
-Message-ID: <20140403141635.GM17765@csclub.uwaterloo.ca>
-References: <20140402132401.GF17765@csclub.uwaterloo.ca>
- <533C100A.7050501@xenomai.org>
- <20140402134017.GG17765@csclub.uwaterloo.ca>
- <20140402134133.GH17765@csclub.uwaterloo.ca>
- <20140402134609.GI17765@csclub.uwaterloo.ca>
- <533C1709.3090305@xenomai.org>
- <20140402143809.GJ17765@csclub.uwaterloo.ca>
- <533C21A0.30502@xenomai.org>
- <20140403134647.GL17765@csclub.uwaterloo.ca>
- <533D688A.7050609@xenomai.org>
+Message-ID: <533E7855.3090309@xenomai.org>
+Date: Fri, 04 Apr 2014 11:16:05 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <533D688A.7050609@xenomai.org>
-Subject: Re: [Xenomai] Porting xenomai 2.6.3 and ipipe to 3.12 kernel
+References: <CAEbDrgnR1aU-A6KDq7uRCKqV0=sj8yoQE_zUeiVdxmemdfnyMQ@mail.gmail.com>
+In-Reply-To: <CAEbDrgnR1aU-A6KDq7uRCKqV0=sj8yoQE_zUeiVdxmemdfnyMQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [patch] prepare_kernel.sh --board argument
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,30 +15,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Gregory Dymarek <gregd72002@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thu, Apr 03, 2014 at 03:56:26PM +0200, Gilles Chanteperdrix wrote:
-> On 04/03/2014 03:46 PM, Lennart Sorensen wrote:
-> >Load script terminated, terminating checked scripts
-> >---|-----------|-----------|-----------|--------|------|-------------------------
-> >RTS|     -1.140|      2.280|     10.811|       0|     0|    18:21:26/18:21:26
-> >RTD|           0|         795|    63498250
-> >RTD|           0|        4654|  1051007408
-> >RTD|           1|       14862|  1064936835
-> >RTD|           1|         134|    63457021
-> >pipe_in: /tmp/xeno-test-in-9751
-> >
-> >I am guessing that looks successful.
+On 04/02/2014 07:37 PM, Gregory Dymarek wrote:
+> Hi,
 > 
-> Yes, I guess a 15us worst case interrupt latency is unprecedented
-> for the ARM architecture. The timer anticipation may be a bit too
-> eager for this SOC, which results in negative latencies. What does
-> cat /proc/xenomai/timer say?
+> From ealier discussion - given the evolution pace of ARM platforms, it
+> seems we will always have -pre and -post patches, so it would make
+> sense to add this support to prepare-kernel.sh.
+> 
+> Included patch that adds support for --board parameter to the
+> prepare_kernel.sh script. This will cause prepare_kernel.sh to apply
+> automatically pre and post patches if available.
+> 
+> When --board is provided the script will look for optional board
+> patches in the folder that ipipe patch is and in $board subfolder if
+> exsists.
+> It expects the patch name to be: {ipipe_base_name}-{board_name}-{pre,post}-*
+> Where {ipipe_base_name} is the ipipe name before the last '-'.
+> 
+> Example:
+> For ipipe-core-3.10.18-arm-1.patch and --board=raspberry it will look for:
+> - ipipe-core-3.10.18-arm-raspberry-{pre,post}-*.patch
 
-root@omap5:~# cat /proc/xenomai/timer
-status=on+watchdog:setup=488:clock=3556147959244:timerdev=arch_sys_timer:clockdev=ipipe_tsc
+Hi Gregory,
+
+sorry for not answering earlier. The --board argument looks
+complicated, and misleading. Complicated because it imposes restrictions
+on -pre and -post patch names which do not exist currently. Misleading,
+because applying pre- and post- patches is not
+really board specific but more specific to kernel forks, which may more
+aim at supporting SOC or even SOC family peripherals, but are not
+restricted to that (think of Android for instance). Anyway, it would
+be much simpler to modify the --ipipe argument to allow passing a list
+of patches separated by comas.
+
+For instance
+
+prepare-kernel.sh --ipipe patch1.patch,patch2.patch,patch3.patch
+
+would apply the three patches patch1.patch, path2.patch and patch3.patch
+sequentially.
+
+Regards.
 
 -- 
-Len Sorensen
+                                                                Gilles.
 
