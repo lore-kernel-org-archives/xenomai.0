@@ -1,13 +1,15 @@
-Message-ID: <533EDFC7.5020301@xenomai.org>
-Date: Fri, 04 Apr 2014 18:37:27 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <533F0FDE.9010009@xenomai.org>
+Date: Fri, 04 Apr 2014 22:02:38 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52F9FD79.5030401@siemens.com> <533ED24C.1040103@siemens.com>
- <533EDE00.9070407@xenomai.org>
-In-Reply-To: <533EDE00.9070407@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <CAEbDrgnR1aU-A6KDq7uRCKqV0=sj8yoQE_zUeiVdxmemdfnyMQ@mail.gmail.com>
+ <533E7855.3090309@xenomai.org>
+ <CAEbDrgm-7SvkR1hgfuYvGKTnP_RxBP1uYbxzbcSsYaUadVx3=w@mail.gmail.com>
+ <CAEbDrgn8xuqU92XSkzr7Ry=mrev6-vZbe=x5HW6f_N3WZy2fKw@mail.gmail.com>
+In-Reply-To: <CAEbDrgn8xuqU92XSkzr7Ry=mrev6-vZbe=x5HW6f_N3WZy2fKw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PULL][forge] Merging debian/* into -forge
+Subject: Re: [Xenomai] [patch] prepare_kernel.sh --board argument
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,48 +18,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gernot Hillier <gernot.hillier@siemens.com>, xenomai@xenomai.org
+To: Gregory Dymarek <gregd72002@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/04/2014 06:29 PM, Philippe Gerum wrote:
-> On 04/04/2014 05:39 PM, Gernot Hillier wrote:
->> Hi there!
->>
->> On 11.02.2014 11:37, Gernot Hillier wrote:
->>> The following changes since commit
->>> ab722a488be1cc0b8879784551c7648503a8186c:
->>>
->>>    bootstrap (2014-02-09 17:43:21 +0100)
->>>
->>> are available in the git repository at:
->>>
->>>    git://github.com/siemens/xenomai-forge.git debian-for-forge
->>
->> I did a small bugfix to one of my patches there and also rebased this
->> branch to current forge master, which is a good opportunity to say:
->> <ping>.
->>
->> You, Gilles, said last year, I shall feel free to post patches if I need
->> debian infrastructure in -forge. This is my third post regarding that,
->> we use those patches to build and deploy test packages since months, so
->> I'd say, this qualifies as "I need it". :)
->>
->> So how can we proceed with this?
->>
->> Please let me know if you need another pull request, another review
->> round, another format of patches or whatever. I'd really love to see
->> this included in -forge soon as this is currently a blocking point for
->> me to setup automatic nightly tests for -forge in our x86 scenario.
->>
->
-> I merged the core of it a week ago with other backported bits from
-> recent 2.6 updates:
-> a3a8249023652bc31238db554ec5a788b5016b46
->
-> This still needs validation though.
->
+On 04/04/2014 05:42 PM, Gregory Dymarek wrote:
+> New patch below.
+> Changes:
+> - wrap the ipipe apply patch piece with a for loop that splits the
+> ipipe_patch variable by comma and new line
+> 
+> 
+> diff -rupN xenomai-2.6.3.orig/scripts/prepare-kernel.sh
+> xenomai-2.6.3/scripts/prepare-kernel.sh
+> --- xenomai-2.6.3.orig/scripts/prepare-kernel.sh        2013-05-25
+> 14:44:03.000000000 +0100
+> +++ xenomai-2.6.3/scripts/prepare-kernel.sh     2014-04-04
+> 16:38:38.490435289 +0100
+> @@ -403,16 +403,21 @@ else
+>           ipipe_patch=
+>        fi
+>     done
+> -   patchdir=`dirname $ipipe_patch`;
+> -   patchdir=`cd $patchdir && pwd`
+> -   ipipe_patch=$patchdir/`basename $ipipe_patch`
+> -   curdir=$PWD
+> -   cd $linux_tree && patch --dry-run -p1 -f < $ipipe_patch || {
+> -        cd $curdir;
+> -        echo "$me: Unable to patch kernel
+> $linux_version$linux_EXTRAVERSION with `basename $ipipe_patch`." >&2
+> -        exit 2;
+> -   }
+> -   patch -p1 -f -s < $ipipe_patch
+> +   startdir=`pwd`
+> +   for patch in $(echo $ipipe_patch | tr "," "\n")
 
-See the -next branch. I'll push this to master once this is validated.
+Just a minor nit, $() is not used anywhere else in the script, and is
+not strictly necessary here, you may use ``
+
+> +   do
+> +          cd $startdir
+> +          patchdir=`dirname $patch`;  #relative dir
+> +          patchdir=`cd $patchdir && pwd`; #absolute dir
+> +          patch=$patchdir/`basename $patch`
+> +          curdir=$PWD
+> +          cd $linux_tree && patch --dry-run -p1 -f < $patch || {
+> +               cd $curdir;
+> +               echo "$me: Unable to patch kernel
+> $linux_version$linux_EXTRAVERSION with `basename $patch`." >&2
+> +               exit 2;
+> +          }
+> +          patch -p1 -f -s < $patch
+
+That is not really correct. The point of running patch --dry-run is to
+avoid leaving the code in a state where the patch is half-applied. By
+applying some patches and stopping if patch --dry-run fails for some
+other patch, this is exactly what you do. Note that I do not know how to
+solve this, though.
+
 
 -- 
-Philippe.
+                                                                Gilles.
 
