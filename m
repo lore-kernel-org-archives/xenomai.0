@@ -1,19 +1,17 @@
-Message-Id: <8AF0EE3E-686C-4429-9AC0-107A6665BE6A@gmail.com>
-From: Andreas Glatz <andi.glatz@gmail.com>
-In-Reply-To: <533E8D1F.7040405@xenomai.org>
-Mime-Version: 1.0 (Apple Message framework v936)
-Date: Fri, 4 Apr 2014 12:19:39 +0100
+Message-ID: <533E95C1.20603@xenomai.org>
+Date: Fri, 04 Apr 2014 13:21:37 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
 References: <CAKJ14NdsfwK4Vj=UpYb6p9bvFE=1ZoQb6ss--9f-WqXOXGDn2g@mail.gmail.com>
  <52CAEA4D.1020505@xenomai.org>
  <6FD43B5D-6C35-48E7-BC3C-1414A0B809C9@gmail.com>
  <533E8D1F.7040405@xenomai.org>
-Content-Type: text/plain;
-	charset=US-ASCII;
-	format=flowed;
-	delsp=yes
+ <8AF0EE3E-686C-4429-9AC0-107A6665BE6A@gmail.com>
+In-Reply-To: <8AF0EE3E-686C-4429-9AC0-107A6665BE6A@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Command line freeze during xeno-regression-test on
-	omap4460
+ omap4460
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,187 +20,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Andreas Glatz <andi.glatz@gmail.com>
 Cc: xenomai@xenomai.org
 
+On 04/04/2014 01:19 PM, Andreas Glatz wrote:
+> I saw that the patch you mentioned is in
+> the 3.10.18 tree. Shall I apply it to my kernel as well?
 
-On 4 Apr 2014, at 11:44, Gilles Chanteperdrix wrote:
+Yes, definitely.
 
-> On 04/04/2014 12:27 PM, Andreas Glatz wrote:
->> Hi Gilles,
->>
->> I'm finally back to my original problem below:
->>
->> On 6 Jan 2014, at 17:39, Gilles Chanteperdrix wrote:
->>
->>> On 01/06/2014 04:30 PM, Andreas Glatz wrote:
->>>> Hi,
->>>>
->>>> I managed to produce a kernel (v3.8.13) with xenomai 2.6.3 ipipe
->>>> patch and
->>>> rootfs (debian wheezy) with xenomai 2.6.3 libraries for my
->>>> Pandaboard ES
->>>> (omap4460). The simple regression test, which only calls dd during
->>>> the
->>>> switchtest, works fine. However the regression test with the linux
->>>> test
->>>> project (ltp-full-20130904) scripts causes some sort of system lock
->>>> up.
->>>> After that I only can ctrl-c xeno-regression-test (i.e.
->>>> switchtest), which,
->>>> however, doesn't help to regain console access (neigher over
->>>> ethernet nor
->>>> serial).
->>>>
->>>> Here's what I did:
->>>>
->>>> -- Building --
->>>> As recomended in the Xenomai 2.6 readme I followed the instructions
->>>> in [1]
->>>> to produce a kernel and filesystem. To get a xenomai kernel I had
->>>> to do
->>>> three things differently:
->>>>
->>>> *) I used: git checkout origin/v3.8.x -b tmp
->>>> *) I applied ipipe-core-3.8.13-arm-3.patch from the xenomai-2.6 git
->>>> tree as
->>>> described in the Xenomai 2.6 readme
->>>> *) I disabled KGDB and TIDSPBRIDGE since those produced compile
->>>> errors (see
->>>> config [2])
->>>>
->>>> After a while I obtained the following messages from dmesg [3] and
->>>> from the
->>>> command prompt:
->>>>
->>>> root@arm:~# cat /proc/version
->>>> Linux version 3.8.13-x3.6 (aglatz@linuxvbox) (gcc version 4.7.3
->>>> 20130328
->>>> (prerelease) (crosstool-NG linaro-1.13.1-4.7-2013.04-20130415 -
->>>> Linaro GCC
->>>> 2013.04) ) #4 SMP Sat Jan 4 15:54:20 GMT 2014
->>>>
->>>> -- Testing Linux --
->>>> To see if everything works I downloaded and cross-compiled
->>>> ltp-full-20130904 [4] with the same toolchain and flags (-
->>>> march=armv7-a
->>>> -mfpu=vfp3) as the xenomai libs and runtime. I started ltp with "./
->>>> runltp
->>>> -p -l dohell-2014-01-06-1.log -S xenomai.skiplist" and after a
->>>> while it
->>>> finished with a few failed tests [5]. The console access, however,
->>>> worked
->>>> fine.
->>>>
->>>> -- Testing Xenomai --
->>>> First I sucessfully could run the simple xenomai regression test:
->>>> xeno-regression-test -l "/usr/lib/xenomai/testsuite/dohell -m /tmp
->>>> 100" -t
->>>> 2 which produced the output in [6] and the following additional
->>>> messages
->>>> with dmesg:
->>>>
->>>> [  476.215057] Xenomai: RTDM: closing file descriptor 1.
->>>> [  477.434936] Xenomai: Posix: destroying semaphore f0069c00.
->>>> [  477.440887] Xenomai: Posix: destroying mutex f0069a00.
->>>> [  477.475372] xnheap: destroying shared heap 'rt_heap: heap' with
->>>> 16384
->>>> bytes still in use.
->>>> [  479.008453] Xenomai: Switching rt_task to secondary mode after
->>>> exception
->>>> #0 from user-space at 0x9620 (pid 2145)
->>>> [  480.574462] Xenomai: watchdog triggered -- signaling runaway
->>>> thread
->>>> 'rt_task'
->>>> [  480.582061] [sched_delayed] sched: RT throttling activated
->>>> [  557.336425] Xenomai: Posix: closing message queue descriptor 3.
->>>>
->>>> and  "cat /proc/xenomai/*" produced [7].
->>>>
->>>> When I started the realistic xenomai regression test: xeno-
->>>> regression-test
->>>> -l "/usr/lib/xenomai/testsuite/dohell -m /tmp -l /opt/ltp" -t 2
->>>> everything
->>>> seemed fine at first - I could logon and start top to inspect the
->>>> running
->>>> processes. However, the command line (over serial and ethernet)
->>>> consistently freezes after a while (at different ltp tests though).
->>>> First I
->>>> thought it's the massive system load which doesn't leave CPU for  
->>>> the
->>>> console... however ctrl-c of xeno-regression-test does not help to
->>>> regain
->>>> console access...
->>>
->>> That is because kill xeno-regression-test does not kill all the
->>> script children. So, basically, the load tasks are still running.
->>> Also, what filesystem is /tmp? dohell is using dd to alternatively
->>> write to /tmp, then erase the file. If /tmp is some flash, it will
->>> become slow after a while. If it is a tmpfs, it will eat RAM.
->>>
->>>
->>
->> The described problem is _very_ reproducible on my PandaBoard ES
->> (omap4460), where I boot from an SD card partition and the rootfs is
->> also on the SD card partition. I tried it with several kernel  
->> versions
->> (3.8.13, 3.10.18, and 3.10.34) with the latest ipipe and xenomai from
->> git the git repos. Everytime I start the regression test (see command
->> above) the following happens: Everything works fine until the switch/
->> latency tests start. Then I see that there is heavy access to the SD
->> card, which is expected, as the status LED 2 is blinking. After  
->> ~5mins
->> this status LED is constantly on. That's when I know that everything
->> is over. On the console I can only execute commands that are already
->> in RAM, such as the bash things like ps, mount, ... However, if I try
->> a simple 'touch new' it blocks forever and I know that it blocks in
->> the syscall where the file should be created, because I looked at it
->> with strace. I tried several things: I turned off CONFIG_PM (which  
->> was
->> on by default), turned on the MMC debugging, put extra prink's in the
->> omap_hsmmc.c ISR. However, everything seems to work on this level:  
->> DMA
->> requests are started and do finish, the ISR is called regularly (bc
->> first I though that Xenomai would starve it).
->>
->> Have you every run Xenonmai on this _specific_ board (since  
->> everything
->> is running smoothly on the omap5 board)?
->> Any more ideas how to debug it?
->>
->> Currently, I'm compiling the ipipe trace in hope that it would tell  
->> me
->> something useful...
->>
->> Oh yes, the best bit is that the regression test works perfectly fine
->> if I boot from an external USB HD _AND_ unmount (!) all MMC  
->> partitions.
->
-> So, the MMC driver has a problem. Have you tried:
-> - running the exact same kernel configuration only with CONFIG_XENOMAI
-> disabled (and stress with dohell)
-> - then with CONFIG_XENOMAI and CONFIG_IPIPE disabled.
->
-> Also, do you have this patch in the tree you tried?
-> http://git.xenomai.org/ipipe.git/commit/?h=stable/ipipe-3.10.18&id=c26e7ad5679f9391cd8ea1db001bf301d2f6bc88
->
->
-
-I did try the regression test without the switch/latency tests (aka: '/ 
-usr/lib/xenomai/testsuite/dohell -m /tmp -l /opt/ltp') and, as far as  
-I recall, they finished successfully. I also couldn't find any error  
-reports about the omap mmc driver on the kernel mailing list. The only  
-thing I found was this patch [1], which I also applied. It didn't  
-change a thing though.
-
-However, I'll try an run the test you suggested on my shiny new  
-3.10.34 kernel. I built it last Monday after merging all the ipipe git  
-stuff with CNelsons 3.18.14 kernel. I saw that the patch you mentioned  
-is in the 3.10.18 tree. Shall I apply it to my kernel as well?
-
-A.
-
-[1] http://www.spinics.net/lists/linux-omap/msg104712.html
-
-
+-- 
+					    Gilles.
 
