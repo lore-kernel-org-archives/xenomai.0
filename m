@@ -1,12 +1,14 @@
-MIME-Version: 1.0
-In-Reply-To: <533E7855.3090309@xenomai.org>
-References: <CAEbDrgnR1aU-A6KDq7uRCKqV0=sj8yoQE_zUeiVdxmemdfnyMQ@mail.gmail.com>
- <533E7855.3090309@xenomai.org>
-Date: Fri, 4 Apr 2014 10:22:34 +0100
-Message-ID: <CAEbDrgm-7SvkR1hgfuYvGKTnP_RxBP1uYbxzbcSsYaUadVx3=w@mail.gmail.com>
-From: Gregory Dymarek <gregd72002@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] [patch] prepare_kernel.sh --board argument
+Message-Id: <6FD43B5D-6C35-48E7-BC3C-1414A0B809C9@gmail.com>
+From: Andreas Glatz <andi.glatz@gmail.com>
+In-Reply-To: <52CAEA4D.1020505@xenomai.org>
+Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
+Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0 (Apple Message framework v936)
+Date: Fri, 4 Apr 2014 11:27:09 +0100
+References: <CAKJ14NdsfwK4Vj=UpYb6p9bvFE=1ZoQb6ss--9f-WqXOXGDn2g@mail.gmail.com>
+ <52CAEA4D.1020505@xenomai.org>
+Subject: Re: [Xenomai] Command line freeze during xeno-regression-test on
+	omap4460
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,57 +18,166 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Will create a new patch later on.
-I really like this approach.
+Hi Gilles,
 
-Thanks!
+I'm finally back to my original problem below:
 
-On 4 April 2014 10:16, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On 04/02/2014 07:37 PM, Gregory Dymarek wrote:
+On 6 Jan 2014, at 17:39, Gilles Chanteperdrix wrote:
+
+> On 01/06/2014 04:30 PM, Andreas Glatz wrote:
 >> Hi,
 >>
->> From ealier discussion - given the evolution pace of ARM platforms, it
->> seems we will always have -pre and -post patches, so it would make
->> sense to add this support to prepare-kernel.sh.
+>> I managed to produce a kernel (v3.8.13) with xenomai 2.6.3 ipipe  
+>> patch and
+>> rootfs (debian wheezy) with xenomai 2.6.3 libraries for my  
+>> Pandaboard ES
+>> (omap4460). The simple regression test, which only calls dd during  
+>> the
+>> switchtest, works fine. However the regression test with the linux  
+>> test
+>> project (ltp-full-20130904) scripts causes some sort of system lock  
+>> up.
+>> After that I only can ctrl-c xeno-regression-test (i.e.  
+>> switchtest), which,
+>> however, doesn't help to regain console access (neigher over  
+>> ethernet nor
+>> serial).
 >>
->> Included patch that adds support for --board parameter to the
->> prepare_kernel.sh script. This will cause prepare_kernel.sh to apply
->> automatically pre and post patches if available.
+>> Here's what I did:
 >>
->> When --board is provided the script will look for optional board
->> patches in the folder that ipipe patch is and in $board subfolder if
->> exsists.
->> It expects the patch name to be: {ipipe_base_name}-{board_name}-{pre,post}-*
->> Where {ipipe_base_name} is the ipipe name before the last '-'.
+>> -- Building --
+>> As recomended in the Xenomai 2.6 readme I followed the instructions  
+>> in [1]
+>> to produce a kernel and filesystem. To get a xenomai kernel I had  
+>> to do
+>> three things differently:
 >>
->> Example:
->> For ipipe-core-3.10.18-arm-1.patch and --board=raspberry it will look for:
->> - ipipe-core-3.10.18-arm-raspberry-{pre,post}-*.patch
+>> *) I used: git checkout origin/v3.8.x -b tmp
+>> *) I applied ipipe-core-3.8.13-arm-3.patch from the xenomai-2.6 git  
+>> tree as
+>> described in the Xenomai 2.6 readme
+>> *) I disabled KGDB and TIDSPBRIDGE since those produced compile  
+>> errors (see
+>> config [2])
+>>
+>> After a while I obtained the following messages from dmesg [3] and  
+>> from the
+>> command prompt:
+>>
+>> root@arm:~# cat /proc/version
+>> Linux version 3.8.13-x3.6 (aglatz@linuxvbox) (gcc version 4.7.3  
+>> 20130328
+>> (prerelease) (crosstool-NG linaro-1.13.1-4.7-2013.04-20130415 -  
+>> Linaro GCC
+>> 2013.04) ) #4 SMP Sat Jan 4 15:54:20 GMT 2014
+>>
+>> -- Testing Linux --
+>> To see if everything works I downloaded and cross-compiled
+>> ltp-full-20130904 [4] with the same toolchain and flags (- 
+>> march=armv7-a
+>> -mfpu=vfp3) as the xenomai libs and runtime. I started ltp with "./ 
+>> runltp
+>> -p -l dohell-2014-01-06-1.log -S xenomai.skiplist" and after a  
+>> while it
+>> finished with a few failed tests [5]. The console access, however,  
+>> worked
+>> fine.
+>>
+>> -- Testing Xenomai --
+>> First I sucessfully could run the simple xenomai regression test:
+>> xeno-regression-test -l "/usr/lib/xenomai/testsuite/dohell -m /tmp  
+>> 100" -t
+>> 2 which produced the output in [6] and the following additional  
+>> messages
+>> with dmesg:
+>>
+>> [  476.215057] Xenomai: RTDM: closing file descriptor 1.
+>> [  477.434936] Xenomai: Posix: destroying semaphore f0069c00.
+>> [  477.440887] Xenomai: Posix: destroying mutex f0069a00.
+>> [  477.475372] xnheap: destroying shared heap 'rt_heap: heap' with  
+>> 16384
+>> bytes still in use.
+>> [  479.008453] Xenomai: Switching rt_task to secondary mode after  
+>> exception
+>> #0 from user-space at 0x9620 (pid 2145)
+>> [  480.574462] Xenomai: watchdog triggered -- signaling runaway  
+>> thread
+>> 'rt_task'
+>> [  480.582061] [sched_delayed] sched: RT throttling activated
+>> [  557.336425] Xenomai: Posix: closing message queue descriptor 3.
+>>
+>> and  "cat /proc/xenomai/*" produced [7].
+>>
+>> When I started the realistic xenomai regression test: xeno- 
+>> regression-test
+>> -l "/usr/lib/xenomai/testsuite/dohell -m /tmp -l /opt/ltp" -t 2  
+>> everything
+>> seemed fine at first - I could logon and start top to inspect the  
+>> running
+>> processes. However, the command line (over serial and ethernet)
+>> consistently freezes after a while (at different ltp tests though).  
+>> First I
+>> thought it's the massive system load which doesn't leave CPU for the
+>> console... however ctrl-c of xeno-regression-test does not help to  
+>> regain
+>> console access...
 >
-> Hi Gregory,
+> That is because kill xeno-regression-test does not kill all the  
+> script children. So, basically, the load tasks are still running.  
+> Also, what filesystem is /tmp? dohell is using dd to alternatively  
+> write to /tmp, then erase the file. If /tmp is some flash, it will  
+> become slow after a while. If it is a tmpfs, it will eat RAM.
 >
-> sorry for not answering earlier. The --board argument looks
-> complicated, and misleading. Complicated because it imposes restrictions
-> on -pre and -post patch names which do not exist currently. Misleading,
-> because applying pre- and post- patches is not
-> really board specific but more specific to kernel forks, which may more
-> aim at supporting SOC or even SOC family peripherals, but are not
-> restricted to that (think of Android for instance). Anyway, it would
-> be much simpler to modify the --ipipe argument to allow passing a list
-> of patches separated by comas.
 >
-> For instance
->
-> prepare-kernel.sh --ipipe patch1.patch,patch2.patch,patch3.patch
->
-> would apply the three patches patch1.patch, path2.patch and patch3.patch
-> sequentially.
->
-> Regards.
->
-> --
->                                                                 Gilles.
+
+The described problem is _very_ reproducible on my PandaBoard ES  
+(omap4460), where I boot from an SD card partition and the rootfs is  
+also on the SD card partition. I tried it with several kernel versions  
+(3.8.13, 3.10.18, and 3.10.34) with the latest ipipe and xenomai from  
+git the git repos. Everytime I start the regression test (see command  
+above) the following happens: Everything works fine until the switch/ 
+latency tests start. Then I see that there is heavy access to the SD  
+card, which is expected, as the status LED 2 is blinking. After ~5mins  
+this status LED is constantly on. That's when I know that everything  
+is over. On the console I can only execute commands that are already  
+in RAM, such as the bash things like ps, mount, ... However, if I try  
+a simple 'touch new' it blocks forever and I know that it blocks in  
+the syscall where the file should be created, because I looked at it  
+with strace. I tried several things: I turned off CONFIG_PM (which was  
+on by default), turned on the MMC debugging, put extra prink's in the  
+omap_hsmmc.c ISR. However, everything seems to work on this level: DMA  
+requests are started and do finish, the ISR is called regularly (bc  
+first I though that Xenomai would starve it).
+
+Have you every run Xenonmai on this _specific_ board (since everything  
+is running smoothly on the omap5 board)?
+Any more ideas how to debug it?
+
+Currently, I'm compiling the ipipe trace in hope that it would tell me  
+something useful...
+
+Oh yes, the best bit is that the regression test works perfectly fine  
+if I boot from an external USB HD _AND_ unmount (!) all MMC partitions.
+
+Thanks,
+
+A.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
