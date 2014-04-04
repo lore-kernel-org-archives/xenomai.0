@@ -1,16 +1,12 @@
-Message-Id: <3C2A634E-CDA0-4FAA-A206-77DA757E684B@gmail.com>
-From: Andreas Glatz <andi.glatz@gmail.com>
-In-Reply-To: <533E90E2.1020302@xenomai.org>
-Mime-Version: 1.0 (Apple Message framework v936)
-Date: Fri, 4 Apr 2014 14:38:52 +0100
-References: <CAKJ14NdsfwK4Vj=UpYb6p9bvFE=1ZoQb6ss--9f-WqXOXGDn2g@mail.gmail.com>
- <52CAEA4D.1020505@xenomai.org>
- <6FD43B5D-6C35-48E7-BC3C-1414A0B809C9@gmail.com>
- <533E90E2.1020302@xenomai.org>
+Message-ID: <533ED24C.1040103@siemens.com>
+Date: Fri, 04 Apr 2014 17:39:56 +0200
+From: Gernot Hillier <gernot.hillier@siemens.com>
+MIME-Version: 1.0
+References: <52F9FD79.5030401@siemens.com>
+In-Reply-To: <52F9FD79.5030401@siemens.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"; DelSp="yes"
-Subject: Re: [Xenomai] Command line freeze during xeno-regression-test on
-	omap4460
+Subject: Re: [Xenomai] [PULL][forge] Merging debian/* into -forge
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,147 +15,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
+Hi there!
 
-On 4 Apr 2014, at 12:00, Gilles Chanteperdrix wrote:
-
-> On 04/04/2014 12:27 PM, Andreas Glatz wrote:
->> Hi Gilles,
->>
->> I'm finally back to my original problem below:
->>
->> On 6 Jan 2014, at 17:39, Gilles Chanteperdrix wrote:
->>
->>> On 01/06/2014 04:30 PM, Andreas Glatz wrote:
->>>> Hi,
->>>>
->>>> I managed to produce a kernel (v3.8.13) with xenomai 2.6.3 ipipe
->>>> patch and
->>>> rootfs (debian wheezy) with xenomai 2.6.3 libraries for my
->>>> Pandaboard ES
->>>> (omap4460). The simple regression test, which only calls dd during
->>>> the
->>>> switchtest, works fine. However the regression test with the linux
->>>> test
->>>> project (ltp-full-20130904) scripts causes some sort of system lock
->>>> up.
->>>> After that I only can ctrl-c xeno-regression-test (i.e.
->>>> switchtest), which,
->>>> however, doesn't help to regain console access (neigher over
->>>> ethernet nor
->>>> serial).
->>>>
->>>> Here's what I did:
->>>>
->>>> -- Building --
->>>> As recomended in the Xenomai 2.6 readme I followed the instructions
->>>> in [1]
->>>> to produce a kernel and filesystem. To get a xenomai kernel I had
->>>> to do
->>>> three things differently:
->>>>
->>>> *) I used: git checkout origin/v3.8.x -b tmp
->>>> *) I applied ipipe-core-3.8.13-arm-3.patch from the xenomai-2.6 git
->>>> tree as
->>>> described in the Xenomai 2.6 readme
->>>> *) I disabled KGDB and TIDSPBRIDGE since those produced compile
->>>> errors (see
->>>> config [2])
->>>>
->>>> After a while I obtained the following messages from dmesg [3] and
->>>> from the
->>>> command prompt:
->>>>
->>>> root@arm:~# cat /proc/version
->>>> Linux version 3.8.13-x3.6 (aglatz@linuxvbox) (gcc version 4.7.3
->>>> 20130328
->>>> (prerelease) (crosstool-NG linaro-1.13.1-4.7-2013.04-20130415 -
->>>> Linaro GCC
->>>> 2013.04) ) #4 SMP Sat Jan 4 15:54:20 GMT 2014
->>>>
->>>> -- Testing Linux --
->>>> To see if everything works I downloaded and cross-compiled
->>>> ltp-full-20130904 [4] with the same toolchain and flags (-
->>>> march=armv7-a
->>>> -mfpu=vfp3) as the xenomai libs and runtime. I started ltp with "./
->>>> runltp
->>>> -p -l dohell-2014-01-06-1.log -S xenomai.skiplist" and after a
->>>> while it
->>>> finished with a few failed tests [5]. The console access, however,
->>>> worked
->>>> fine.
->>>>
->>>> -- Testing Xenomai --
->>>> First I sucessfully could run the simple xenomai regression test:
->>>> xeno-regression-test -l "/usr/lib/xenomai/testsuite/dohell -m /tmp
->>>> 100" -t
->>>> 2 which produced the output in [6] and the following additional
->>>> messages
->>>> with dmesg:
->>>>
->>>> [  476.215057] Xenomai: RTDM: closing file descriptor 1.
->>>> [  477.434936] Xenomai: Posix: destroying semaphore f0069c00.
->>>> [  477.440887] Xenomai: Posix: destroying mutex f0069a00.
->>>> [  477.475372] xnheap: destroying shared heap 'rt_heap: heap' with
->>>> 16384
->>>> bytes still in use.
->>>> [  479.008453] Xenomai: Switching rt_task to secondary mode after
->>>> exception
->>>> #0 from user-space at 0x9620 (pid 2145)
->>>> [  480.574462] Xenomai: watchdog triggered -- signaling runaway
->>>> thread
->>>> 'rt_task'
->>>> [  480.582061] [sched_delayed] sched: RT throttling activated
->>>> [  557.336425] Xenomai: Posix: closing message queue descriptor 3.
->>>>
->>>> and  "cat /proc/xenomai/*" produced [7].
->>>>
->>>> When I started the realistic xenomai regression test: xeno-
->>>> regression-test
->>>> -l "/usr/lib/xenomai/testsuite/dohell -m /tmp -l /opt/ltp" -t 2
->>>> everything
->>>> seemed fine at first - I could logon and start top to inspect the
->>>> running
->>>> processes. However, the command line (over serial and ethernet)
->>>> consistently freezes after a while (at different ltp tests though).
->>>> First I
->>>> thought it's the massive system load which doesn't leave CPU for  
->>>> the
->>>> console... however ctrl-c of xeno-regression-test does not help to
->>>> regain
->>>> console access...
->>>
->>> That is because kill xeno-regression-test does not kill all the
->>> script children. So, basically, the load tasks are still running.
->>> Also, what filesystem is /tmp? dohell is using dd to alternatively
->>> write to /tmp, then erase the file. If /tmp is some flash, it will
->>> become slow after a while. If it is a tmpfs, it will eat RAM.
->>>
->>>
->>
->> The described problem is _very_ reproducible on my PandaBoard ES
->> (omap4460), where I boot from an SD card partition and the rootfs is
+On 11.02.2014 11:37, Gernot Hillier wrote:
+> The following changes since commit ab722a488be1cc0b8879784551c7648503a8186c:
 >
-> I have a pandaboard, I can check whether I can reproduce that.
+>    bootstrap (2014-02-09 17:43:21 +0100)
+>
+> are available in the git repository at:
+>
+>    git://github.com/siemens/xenomai-forge.git debian-for-forge
 
-Thanks, I really appreciate that. For completeness sake I'm also  
-including my current kernel config. This config is derived from  
-CNelsons config and still has a lot of unnecessary stuff in it.  
-CONFIG_PM can be disabled after disabling CONFIG_ARCH_OMAP2PLUS_TYPICAL.
+I did a small bugfix to one of my patches there and also rebased this 
+branch to current forge master, which is a good opportunity to say: <ping>.
 
-A.
+You, Gilles, said last year, I shall feel free to post patches if I need 
+debian infrastructure in -forge. This is my third post regarding that, 
+we use those patches to build and deploy test packages since months, so 
+I'd say, this qualifies as "I need it". :)
 
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: configv2
-Type: application/octet-stream
-Size: 120523 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140404/81e66bf9/attachment.obj>
--------------- next part --------------
+So how can we proceed with this?
 
+Please let me know if you need another pull request, another review 
+round, another format of patches or whatever. I'd really love to see 
+this included in -forge soon as this is currently a blocking point for 
+me to setup automatic nightly tests for -forge in our x86 scenario.
 
+-- 
+Gernot Hillier
+
+Siemens AG, CT RTC ITP SES-DE, Corporate Competence Center Embedded Linux
 
 
