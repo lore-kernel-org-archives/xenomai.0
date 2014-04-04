@@ -1,12 +1,12 @@
-Message-ID: <533E8D1F.7040405@xenomai.org>
-Date: Fri, 04 Apr 2014 12:44:47 +0200
+Message-ID: <533E90E2.1020302@xenomai.org>
+Date: Fri, 04 Apr 2014 13:00:50 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CAKJ14NdsfwK4Vj=UpYb6p9bvFE=1ZoQb6ss--9f-WqXOXGDn2g@mail.gmail.com>
  <52CAEA4D.1020505@xenomai.org>
  <6FD43B5D-6C35-48E7-BC3C-1414A0B809C9@gmail.com>
 In-Reply-To: <6FD43B5D-6C35-48E7-BC3C-1414A0B809C9@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Command line freeze during xeno-regression-test on
  omap4460
@@ -23,11 +23,11 @@ Cc: xenomai@xenomai.org
 
 On 04/04/2014 12:27 PM, Andreas Glatz wrote:
 > Hi Gilles,
-> 
+>
 > I'm finally back to my original problem below:
-> 
+>
 > On 6 Jan 2014, at 17:39, Gilles Chanteperdrix wrote:
-> 
+>
 >> On 01/06/2014 04:30 PM, Andreas Glatz wrote:
 >>> Hi,
 >>>
@@ -133,44 +133,17 @@ On 04/04/2014 12:27 PM, Andreas Glatz wrote:
 >> become slow after a while. If it is a tmpfs, it will eat RAM.
 >>
 >>
-> 
+>
 > The described problem is _very_ reproducible on my PandaBoard ES
 > (omap4460), where I boot from an SD card partition and the rootfs is
-> also on the SD card partition. I tried it with several kernel versions
-> (3.8.13, 3.10.18, and 3.10.34) with the latest ipipe and xenomai from
-> git the git repos. Everytime I start the regression test (see command
-> above) the following happens: Everything works fine until the switch/
-> latency tests start. Then I see that there is heavy access to the SD
-> card, which is expected, as the status LED 2 is blinking. After ~5mins
-> this status LED is constantly on. That's when I know that everything
-> is over. On the console I can only execute commands that are already
-> in RAM, such as the bash things like ps, mount, ... However, if I try
-> a simple 'touch new' it blocks forever and I know that it blocks in
-> the syscall where the file should be created, because I looked at it
-> with strace. I tried several things: I turned off CONFIG_PM (which was
-> on by default), turned on the MMC debugging, put extra prink's in the
-> omap_hsmmc.c ISR. However, everything seems to work on this level: DMA
-> requests are started and do finish, the ISR is called regularly (bc
-> first I though that Xenomai would starve it).
-> 
-> Have you every run Xenonmai on this _specific_ board (since everything
-> is running smoothly on the omap5 board)?
-> Any more ideas how to debug it?
-> 
-> Currently, I'm compiling the ipipe trace in hope that it would tell me
-> something useful...
-> 
-> Oh yes, the best bit is that the regression test works perfectly fine
-> if I boot from an external USB HD _AND_ unmount (!) all MMC partitions.
 
-So, the MMC driver has a problem. Have you tried:
-- running the exact same kernel configuration only with CONFIG_XENOMAI 
-disabled (and stress with dohell)
-- then with CONFIG_XENOMAI and CONFIG_IPIPE disabled.
+I have a pandaboard, I can check whether I can reproduce that.
 
-Also, do you have this patch in the tree you tried?
-http://git.xenomai.org/ipipe.git/commit/?h=stable/ipipe-3.10.18&id=c26e7ad5679f9391cd8ea1db001bf301d2f6bc88
+I believe the same problem has also been reported on beagleboard XM:
+http://www.xenomai.org/pipermail/xenomai/2014-March/030311.html
 
+So, there may be an issue with Xenomai or interrupt pipelining and the 
+MMC driver for omap3 and omap4.
 
 
 -- 
