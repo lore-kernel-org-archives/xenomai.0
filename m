@@ -1,13 +1,12 @@
-Message-ID: <533FED48.6000409@xenomai.org>
-Date: Sat, 05 Apr 2014 13:47:20 +0200
+Message-ID: <533FF394.1020405@xenomai.org>
+Date: Sat, 05 Apr 2014 14:14:12 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <DUB121-W7067785C23E81792E6879816E0@phx.gbl>
-In-Reply-To: <DUB121-W7067785C23E81792E6879816E0@phx.gbl>
+References: <531A29CC.4040201@xenomai.org>
+In-Reply-To: <531A29CC.4040201@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] problem with Task management services: Synchronous
- message passing
+Subject: Re: [Xenomai] RTDM rework (2)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,16 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: mobin Motallebizadeh <mobin.seven@live.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 04/05/2014 10:30 AM, mobin Motallebizadeh wrote:
-> When I try to run this code system hangs and crashes! Please help- Xenomai 2.6.3 - linux 3.8.13- default xenomai native makefile 
+On 03/07/2014 09:19 PM, Gilles Chanteperdrix wrote:
+> 
+> Hi,
+> 
+> here comes a second attempt at introducing a file descriptor support for
+> other purposes than RTDM drivers.
+> 
+> This time, the file descriptors are called rtdm_fd and are part of the
+> RTDM API, but can be used by the POSIX personality. The actual RB-tree
+> where they are stored is part of the xnsys_ppd structure, as this way it
+> can be used by one of the RTDM and POSIX personalities, even if the
+> current process is not bound to the other personality.
+> 
+> I have posted the patches to the timerbench, switchtest, rtdm, xddp,
+> iddp and bufp drivers to allow seeing the API changes.
 
-The answer to your question is probably on the kernel console. Try to
-retrieve it with UART or network. And also tell us on which
-architecture/board you have this issue.
+Hi Jan,
 
+ping?
+
+I have a pile of code needing to be rebased on these patches, I would
+very much like to get all this merged before it bitrots too much.
+
+Regards.
 
 -- 
                                                                 Gilles.
