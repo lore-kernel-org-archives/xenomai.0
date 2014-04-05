@@ -1,12 +1,12 @@
-Message-ID: <DUB121-W336081C19823FF8115EF18816E0@phx.gbl>
-From: mobin Motallebizadeh <mobin.seven@live.com>
-Date: Sat, 5 Apr 2014 09:19:56 +0000
-In-Reply-To: <DUB121-W7067785C23E81792E6879816E0@phx.gbl>
-References: <DUB121-W7067785C23E81792E6879816E0@phx.gbl>
+Message-ID: <533FED48.6000409@xenomai.org>
+Date: Sat, 05 Apr 2014 13:47:20 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] FW: problem with Task management services: Synchronous
+References: <DUB121-W7067785C23E81792E6879816E0@phx.gbl>
+In-Reply-To: <DUB121-W7067785C23E81792E6879816E0@phx.gbl>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] problem with Task management services: Synchronous
  message passing
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,17 +16,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: mobin Motallebizadeh <mobin.seven@live.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+
+On 04/05/2014 10:30 AM, mobin Motallebizadeh wrote:
+> When I try to run this code system hangs and crashes! Please help- Xenomai 2.6.3 - linux 3.8.13- default xenomai native makefile 
+
+The answer to your question is probably on the kernel console. Try to
+retrieve it with UART or network. And also tell us on which
+architecture/board you have this issue.
 
 
+-- 
+                                                                Gilles.
 
-When I try to run this code system hangs and crashes! Please help- Xenomai =
-2.6.3 - linux 3.8.13- default xenomai native makefile =
-
- 		 	   		   		 	   		  =
-
--------------- next part --------------
-An embedded and charset-unspecified text was scrubbed...
-Name: satch.c.txt
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140405/fbc541f=
-7/attachment.txt>
