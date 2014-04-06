@@ -1,20 +1,19 @@
-Message-ID: <5341C176.1070404@xenomai.org>
-Date: Sun, 06 Apr 2014 23:04:54 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+Message-Id: <83EC67CC-9E7E-4BD3-811A-7066D24D59D6@gmail.com>
+From: Andreas Glatz <andi.glatz@gmail.com>
+In-Reply-To: <5341BEF3.20701@xenomai.org>
+Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
+Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0 (Apple Message framework v936)
+Date: Sun, 6 Apr 2014 22:23:15 +0100
 References: <CAKJ14NdsfwK4Vj=UpYb6p9bvFE=1ZoQb6ss--9f-WqXOXGDn2g@mail.gmail.com>
  <52CAEA4D.1020505@xenomai.org>
  <6FD43B5D-6C35-48E7-BC3C-1414A0B809C9@gmail.com>
  <533E8D1F.7040405@xenomai.org>
- <F7F39021-A6D9-433D-B8F9-917C44A4B6B8@gmail.com> <53416845.70109@xenomai.org>
- <FE59AAA1-DE81-4E92-87FB-6DC3FE49C065@gmail.com>
- <534172B2.8080401@xenomai.org>
- <642D9597-0847-4E99-9BC2-725A943E5CC2@gmail.com>
-In-Reply-To: <642D9597-0847-4E99-9BC2-725A943E5CC2@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ <F7F39021-A6D9-433D-B8F9-917C44A4B6B8@gmail.com>
+ <534178AC.3090905@xenomai.org>
+ <50C4037C-3A2F-4357-97CB-1F114385D922@gmail.com> <5341BEF3.20701@xenomai.org>
 Subject: Re: [Xenomai] Command line freeze during xeno-regression-test on
- omap4460
+	omap4460
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,351 +22,137 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Andreas Glatz <andi.glatz@gmail.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 04/06/2014 10:57 PM, Andreas Glatz wrote:
-> 
-> On 6 Apr 2014, at 16:28, Gilles Chanteperdrix wrote:
-> 
->> On 04/06/2014 05:22 PM, Andreas Glatz wrote:
->>>
->>> On 6 Apr 2014, at 15:44, Gilles Chanteperdrix wrote:
->>>
->>>> On 04/06/2014 01:21 PM, Andreas Glatz wrote:
->>>>>
->>>>> On 4 Apr 2014, at 11:44, Gilles Chanteperdrix wrote:
->>>>>
->>>>>> On 04/04/2014 12:27 PM, Andreas Glatz wrote:
->>>>>>> Hi Gilles,
->>>>>>>
->>>>>>> I'm finally back to my original problem below:
->>>>>>>
->>>>>>> On 6 Jan 2014, at 17:39, Gilles Chanteperdrix wrote:
->>>>>>>
->>>>>>>> On 01/06/2014 04:30 PM, Andreas Glatz wrote:
->>>>>>>>> Hi,
->>>>>>>>>
->>>>>>>>> I managed to produce a kernel (v3.8.13) with xenomai 2.6.3  
->>>>>>>>> ipipe
->>>>>>>>> patch and
->>>>>>>>> rootfs (debian wheezy) with xenomai 2.6.3 libraries for my
->>>>>>>>> Pandaboard ES
->>>>>>>>> (omap4460). The simple regression test, which only calls dd
->>>>>>>>> during
->>>>>>>>> the
->>>>>>>>> switchtest, works fine. However the regression test with the
->>>>>>>>> linux
->>>>>>>>> test
->>>>>>>>> project (ltp-full-20130904) scripts causes some sort of system
->>>>>>>>> lock
->>>>>>>>> up.
->>>>>>>>> After that I only can ctrl-c xeno-regression-test (i.e.
->>>>>>>>> switchtest), which,
->>>>>>>>> however, doesn't help to regain console access (neigher over
->>>>>>>>> ethernet nor
->>>>>>>>> serial).
->>>>>>>>>
->>>>>>>>> Here's what I did:
->>>>>>>>>
->>>>>>>>> -- Building --
->>>>>>>>> As recomended in the Xenomai 2.6 readme I followed the
->>>>>>>>> instructions
->>>>>>>>> in [1]
->>>>>>>>> to produce a kernel and filesystem. To get a xenomai kernel I  
->>>>>>>>> had
->>>>>>>>> to do
->>>>>>>>> three things differently:
->>>>>>>>>
->>>>>>>>> *) I used: git checkout origin/v3.8.x -b tmp
->>>>>>>>> *) I applied ipipe-core-3.8.13-arm-3.patch from the xenomai-2.6
->>>>>>>>> git
->>>>>>>>> tree as
->>>>>>>>> described in the Xenomai 2.6 readme
->>>>>>>>> *) I disabled KGDB and TIDSPBRIDGE since those produced compile
->>>>>>>>> errors (see
->>>>>>>>> config [2])
->>>>>>>>>
->>>>>>>>> After a while I obtained the following messages from dmesg [3]
->>>>>>>>> and
->>>>>>>>> from the
->>>>>>>>> command prompt:
->>>>>>>>>
->>>>>>>>> root@arm:~# cat /proc/version
->>>>>>>>> Linux version 3.8.13-x3.6 (aglatz@linuxvbox) (gcc version 4.7.3
->>>>>>>>> 20130328
->>>>>>>>> (prerelease) (crosstool-NG linaro-1.13.1-4.7-2013.04-20130415 -
->>>>>>>>> Linaro GCC
->>>>>>>>> 2013.04) ) #4 SMP Sat Jan 4 15:54:20 GMT 2014
->>>>>>>>>
->>>>>>>>> -- Testing Linux --
->>>>>>>>> To see if everything works I downloaded and cross-compiled
->>>>>>>>> ltp-full-20130904 [4] with the same toolchain and flags (-
->>>>>>>>> march=armv7-a
->>>>>>>>> -mfpu=vfp3) as the xenomai libs and runtime. I started ltp with
->>>>>>>>> "./
->>>>>>>>> runltp
->>>>>>>>> -p -l dohell-2014-01-06-1.log -S xenomai.skiplist" and after a
->>>>>>>>> while it
->>>>>>>>> finished with a few failed tests [5]. The console access,
->>>>>>>>> however,
->>>>>>>>> worked
->>>>>>>>> fine.
->>>>>>>>>
->>>>>>>>> -- Testing Xenomai --
->>>>>>>>> First I sucessfully could run the simple xenomai regression  
->>>>>>>>> test:
->>>>>>>>> xeno-regression-test -l "/usr/lib/xenomai/testsuite/dohell -m /
->>>>>>>>> tmp
->>>>>>>>> 100" -t
->>>>>>>>> 2 which produced the output in [6] and the following additional
->>>>>>>>> messages
->>>>>>>>> with dmesg:
->>>>>>>>>
->>>>>>>>> [  476.215057] Xenomai: RTDM: closing file descriptor 1.
->>>>>>>>> [  477.434936] Xenomai: Posix: destroying semaphore f0069c00.
->>>>>>>>> [  477.440887] Xenomai: Posix: destroying mutex f0069a00.
->>>>>>>>> [  477.475372] xnheap: destroying shared heap 'rt_heap: heap'
->>>>>>>>> with
->>>>>>>>> 16384
->>>>>>>>> bytes still in use.
->>>>>>>>> [  479.008453] Xenomai: Switching rt_task to secondary mode  
->>>>>>>>> after
->>>>>>>>> exception
->>>>>>>>> #0 from user-space at 0x9620 (pid 2145)
->>>>>>>>> [  480.574462] Xenomai: watchdog triggered -- signaling runaway
->>>>>>>>> thread
->>>>>>>>> 'rt_task'
->>>>>>>>> [  480.582061] [sched_delayed] sched: RT throttling activated
->>>>>>>>> [  557.336425] Xenomai: Posix: closing message queue descriptor
->>>>>>>>> 3.
->>>>>>>>>
->>>>>>>>> and  "cat /proc/xenomai/*" produced [7].
->>>>>>>>>
->>>>>>>>> When I started the realistic xenomai regression test: xeno-
->>>>>>>>> regression-test
->>>>>>>>> -l "/usr/lib/xenomai/testsuite/dohell -m /tmp -l /opt/ltp" -t 2
->>>>>>>>> everything
->>>>>>>>> seemed fine at first - I could logon and start top to inspect  
->>>>>>>>> the
->>>>>>>>> running
->>>>>>>>> processes. However, the command line (over serial and ethernet)
->>>>>>>>> consistently freezes after a while (at different ltp tests
->>>>>>>>> though).
->>>>>>>>> First I
->>>>>>>>> thought it's the massive system load which doesn't leave CPU  
->>>>>>>>> for
->>>>>>>>> the
->>>>>>>>> console... however ctrl-c of xeno-regression-test does not help
->>>>>>>>> to
->>>>>>>>> regain
->>>>>>>>> console access...
->>>>>>>>
->>>>>>>> That is because kill xeno-regression-test does not kill all the
->>>>>>>> script children. So, basically, the load tasks are still  
->>>>>>>> running.
->>>>>>>> Also, what filesystem is /tmp? dohell is using dd to  
->>>>>>>> alternatively
->>>>>>>> write to /tmp, then erase the file. If /tmp is some flash, it  
->>>>>>>> will
->>>>>>>> become slow after a while. If it is a tmpfs, it will eat RAM.
->>>>>>>>
->>>>>>>>
->>>>>>>
->>>>>>> The described problem is _very_ reproducible on my PandaBoard ES
->>>>>>> (omap4460), where I boot from an SD card partition and the rootfs
->>>>>>> is
->>>>>>> also on the SD card partition. I tried it with several kernel
->>>>>>> versions
->>>>>>> (3.8.13, 3.10.18, and 3.10.34) with the latest ipipe and xenomai
->>>>>>> from
->>>>>>> git the git repos. Everytime I start the regression test (see
->>>>>>> command
->>>>>>> above) the following happens: Everything works fine until the
->>>>>>> switch/
->>>>>>> latency tests start. Then I see that there is heavy access to the
->>>>>>> SD
->>>>>>> card, which is expected, as the status LED 2 is blinking. After
->>>>>>> ~5mins
->>>>>>> this status LED is constantly on. That's when I know that
->>>>>>> everything
->>>>>>> is over. On the console I can only execute commands that are
->>>>>>> already
->>>>>>> in RAM, such as the bash things like ps, mount, ... However, if I
->>>>>>> try
->>>>>>> a simple 'touch new' it blocks forever and I know that it  
->>>>>>> blocks in
->>>>>>> the syscall where the file should be created, because I looked at
->>>>>>> it
->>>>>>> with strace. I tried several things: I turned off CONFIG_PM  
->>>>>>> (which
->>>>>>> was
->>>>>>> on by default), turned on the MMC debugging, put extra prink's in
->>>>>>> the
->>>>>>> omap_hsmmc.c ISR. However, everything seems to work on this  
->>>>>>> level:
->>>>>>> DMA
->>>>>>> requests are started and do finish, the ISR is called regularly  
->>>>>>> (bc
->>>>>>> first I though that Xenomai would starve it).
->>>>>>>
->>>>>>> Have you every run Xenonmai on this _specific_ board (since
->>>>>>> everything
->>>>>>> is running smoothly on the omap5 board)?
->>>>>>> Any more ideas how to debug it?
->>>>>>>
->>>>>>> Currently, I'm compiling the ipipe trace in hope that it would  
->>>>>>> tell
->>>>>>> me
->>>>>>> something useful...
->>>>>>>
->>>>>>> Oh yes, the best bit is that the regression test works perfectly
->>>>>>> fine
->>>>>>> if I boot from an external USB HD _AND_ unmount (!) all MMC
->>>>>>> partitions.
->>>>>>
->>>>>> So, the MMC driver has a problem. Have you tried:
->>>>>> - running the exact same kernel configuration only with
->>>>>> CONFIG_XENOMAI
->>>>>> disabled (and stress with dohell)
->>>>>> - then with CONFIG_XENOMAI and CONFIG_IPIPE disabled.
->>>>>>
->>>>>> Also, do you have this patch in the tree you tried?
->>>>>> http://git.xenomai.org/ipipe.git/commit/?h=stable/ipipe-3.10.18&id=c26e7ad5679f9391cd8ea1db001bf301d2f6bc88
->>>>>>
->>>>>
->>>>> First i mounted tmpfs on /tmp so I don't wear out the SD card too
->>>>> much:
->>>>> mount -t tmpfs -osize=192M tmpfs /tmp
->>>>>
->>>>> Then I used the following line to start the test (substitute MYTEST
->>>>> below with the following line):
->>>>> /usr/lib/xenomai/testsuite/dohell -m /tmp -l /opt/ltp
->>>>>
->>>>> Note: I always monitored the test over wifi with 'top' so I also  
->>>>> had
->>>>> some network load...
->>>>>
->>>>> I got the following results with the 3.10.34 kernel, which includes
->>>>> everything up to the current ipipe-3.10 tag (it also included the
->>>>> patch you mentioned):
->>>>>
->>>>> - xeno-regression-test "MYTEST" -> FAIL if booted from SD card (see
->>>>> description above); OK if booted from ext USB HD _AND_ no mmc
->>>>> partitions mounted
->>>>> - CONFIG_IPIPE && CONFIG_XENOMAI && MYTEST -> FAIL (got status  
->>>>> LED 2
->>>>> constantly on as described above)
->>>>> - CONFIG_IPIPE && MYTEST -> OK (see attached config file and ltp  
->>>>> test
->>>>> log)
->>>>>
->>>>> Anything else I should try?
+
+On 6 Apr 2014, at 21:54, Gilles Chanteperdrix wrote:
+
+> On 04/06/2014 06:02 PM, Andreas Glatz wrote:
+>>
+>> On 6 Apr 2014, at 16:54, Gilles Chanteperdrix wrote:
+>>
+>>> On 04/06/2014 01:21 PM, Andreas Glatz wrote:
+>>>> First i mounted tmpfs on /tmp so I don't wear out the SD card too
+>>>> much:
+>>>> mount -t tmpfs -osize=192M tmpfs /tmp
 >>>>
->>>> Is the current LTP test when the failure happens always the same?
+>>>> Then I used the following line to start the test (substitute MYTEST
+>>>> below with the following line):
+>>>> /usr/lib/xenomai/testsuite/dohell -m /tmp -l /opt/ltp
 >>>>
+>>>> Note: I always monitored the test over wifi with 'top' so I also  
+>>>> had
+>>>> some network load...
 >>>>
+>>>> I got the following results with the 3.10.34 kernel, which includes
+>>>> everything up to the current ipipe-3.10 tag (it also included the
+>>>> patch you mentioned):
+>>>>
+>>>> - xeno-regression-test "MYTEST" -> FAIL if booted from SD card (see
+>>>> description above); OK if booted from ext USB HD _AND_ no mmc
+>>>> partitions mounted
+>>>> - CONFIG_IPIPE && CONFIG_XENOMAI && MYTEST -> FAIL (got status  
+>>>> LED 2
+>>>> constantly on as described above)
+>>>> - CONFIG_IPIPE && MYTEST -> OK (see attached config file and ltp  
+>>>> test
+>>>> log)
 >>>
->>> I went through all the logfiles on my pandaboard and and identified
->>> the last tests that ltp logged before the error occurred (I'm  
->>> assuming
->>> that ltp writes to the file in /opt/ltp/results after completing the
->>> test since there is the PASS/FAIL note as well, which logically  
->>> should
->>> only be available after completing the test):
->>>
->>> test                               count
->>> ========================
->>> rt_sigqueueinfo01    1
->>> clock_nanosleep01 10
->>> munmap02                1
->>> semget06                   1
->>> epoll_create1_01     5
->>> splice01                      1
->>> clock_getres01          1
->>> rename13                   1
->>> BindMounts                1
->>> utimes01                     1
->>>
->>> So it seems that the test after 'clock_nanosleep01', which is
->>> 'clone01' according to the LTP log file I sent you, seems to be the
->>> prime hotspot of failure followed by 'epoll01', which comes after
->>> 'epoll_create1_01'.
->>>
->>> I'm using the standard LTP version 'ltp-full-20130904', which I
->>> downloaded and compiled on the target with gcc 4.6.3 (default debian
->>> wheezy).
+>>> Of course, I assume you used the exact same kernel configuration,  
+>>> the
+>>> only difference being CONFIG_XENOMAI in the two cases, right?
 >>
->> Ok. I am not sure it is meaningful. Anyway, the only difference  
->> between
->> CONFIG_XENOMAI + CONFIG_IPIPE and CONFIG_IPIPE alone, provided that  
->> you
->> are not running any program using Xenomai, is the host tick emulation.
->>
->> So, could you please try to turn off
->> CONFIG_NO_HZ_IDLE
->> CONFIG_NO_HZ
->> CONFIG_HIGH_RES_TIMERS
->>
->> And see if it works better?
->>
-> 
-> As I wrote before, I recompiled the Kernel with your timer options and  
-> CONFIG_XENOMAI, installed it, synced it and rebooted after cutting the  
-> power to the board for ~10secs.
-> 
-> It seems with those options it got much further with the tests.  
-> However, eventually all ssh connections broke up and the last messages  
-> on the console, where I started do hell were:
-> 
-> [...]
-> 102400000 bytes (102 MB) copied, 2.97674 s, 34.4 MB/s
-> 100+0 records in
-> 100+0 records out
-> 102400000 bytes (102 MB) copied, 1.97433 s, 51.9 MB/s
-> 100+0 records in
-> 100+0 records out
-> 102400000 bytes (102 MB) copied, 2.68371 s, 38.2 MB/s
-> 100+0 records in
-> 100+0 records out
-> 102400000 bytes (102 MB) copied, 2.57073 s, 39.8 MB/s
-> dd: writing `/tmp/bigfile': No space left on device
-> 7+0 records in
-> 6+0 records out
-> 6164480 bytes (6.2 MB) copied, 0.189001 s, 32.6 MB/s
-> /usr/lib/xenomai/testsuite/dohell: 62: /usr/lib/xenomai/testsuite/ 
-> dohell: Cannot fork
+>> Yes! I just went into menuconfig and disabled CONFIG_XENOMAI, rebuilt
+>> it, installed it and rebooted. I'm now recompiling the kernel with  
+>> the
+>> last config I sent you and the changes I attached (i got all those
+>> changes after enabling CONFIG_XENOMAI and your CONFIG_* changes with
+>> make menuconfig). After everything is built, I'll install it and
+>> repeat running 'MYTEST' without 'xeno-regression-test'.
+>
+> Another interesting test would be to enable CONFIG_DETECT_HUNG_TASK.
+> With a little luck, we will find on what is blocked the kernel.
+>
 
-This may simply be due to some LTP test which forks a lot and prevent
-the system from being able to fork. This should be a temporary solution.
+Unfortunately, I rebooted the system and couldn't check the serial  
+console. I started ltp again... so I should have more info tomorrow.
 
-> Write failed: Host is down
-> 
-> ... and as usuall status LED 2 is permanently on.
-> 
-> As u suspect there's something wrong with the timer subsystem I looked  
-> around a bit what extra patches went into the 3.10.14 kernel of  
-> RobertCNelson, which I used as a base to merge the ipipe git tree.  
-> Here is the list:
-> 
-> 0001-panda-fix-wl12xx-regulator.patch
-> 0002-ti-st-st-kim-fixing-firmware-path.patch
-> 0003-Panda-expansion-add-spidev.patch
-> 0004-HACK-PandaES-disable-cpufreq-so-board-will-boot.patch
-> 0005-HACK-panda-enable-OMAP4_ERRATA_I688.patch
-> 0006-ARM-hw_breakpoint-Enable-debug-powerdown-only-if-sys.patch
-> 0007-Revert-regulator-twl-Remove-TWL6030_FIXED_RESOURCE.patch
-> 0008-Revert-regulator-twl-Remove-another-unused-variable-.patch
-> 0009-Revert-regulator-twl-Remove-references-to-the-twl403.patch
-> 0010-Revert-regulator-twl-Remove-references-to-32kHz-cloc.patch
-> 0011-panda-spidev-setup-pinmux.patch
-> 
-> Do you think those may have something to do with it?
+However, last week I got the following backtraces with a CONFIG_IPIPE  
+&& CONFIG_XENOMAI kernel:
 
-I do not think so. When the LED is still on, can you use the serial
-console to run cat /proc/interrupts to see if the timer is still ticking?
+[10683.230000] INFO: task arith:2623 blocked for more than 120 seconds.
+[10683.240000] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"  
+disables this message.
+[10683.250000] arith           D c0825a34     0  2623      1 0x00000001
+[10683.260000] [<c0825a34>] (__schedule+0x550/0x858) from [<c0825dcc>]  
+(schedule+0x90/0x94)
+[10683.270000] [<c0825dcc>] (schedule+0x90/0x94) from [<c08260b4>]  
+(io_schedule+0xbc/0x12c)
+[10683.280000] [<c08260b4>] (io_schedule+0xbc/0x12c) from [<c02077a4>]  
+(sleep_on_buffer+0x18/0x20)
+[10683.290000] [<c02077a4>] (sleep_on_buffer+0x18/0x20) from  
+[<c0823ef0>] (__wait_on_bit+0x64/0xb0)
+[10683.300000] [<c0823ef0>] (__wait_on_bit+0x64/0xb0) from  
+[<c0823fc4>] (out_of_line_wait_on_bit+0x88/0x94)
+[10683.310000] [<c0823fc4>] (out_of_line_wait_on_bit+0x88/0x94) from  
+[<c0207860>] (__wait_on_buffer+0x30/0x38)
+[10683.320000] [<c0207860>] (__wait_on_buffer+0x30/0x38) from  
+[<c0270e34>] (__ext4_get_inode_loc+0x1cc/0x448)
+[10683.330000] [<c0270e34>] (__ext4_get_inode_loc+0x1cc/0x448) from  
+[<c0272b64>] (ext4_iget+0x64/0x840)
+[10683.340000] [<c0272b64>] (ext4_iget+0x64/0x840) from [<c027b9d4>]  
+(ext4_lookup+0x120/0x168)
+[10683.350000] [<c027b9d4>] (ext4_lookup+0x120/0x168) from  
+[<c01e37e4>] (lookup_real+0x40/0x5c)
+[10683.360000] [<c01e37e4>] (lookup_real+0x40/0x5c) from [<c01e7b64>]  
+(do_last+0x604/0xd24)
+[10683.370000] [<c01e7b64>] (do_last+0x604/0xd24) from [<c01e8348>]  
+(path_openat+0xc4/0x460)
+[10683.380000] [<c01e8348>] (path_openat+0xc4/0x460) from [<c01e9440>]  
+(do_filp_open+0x3c/0x88)
+[10683.390000] [<c01e9440>] (do_filp_open+0x3c/0x88) from [<c01d9c48>]  
+(do_sys_open+0xf4/0x180)
+[10683.400000] [<c01d9c48>] (do_sys_open+0xf4/0x180) from [<c01d9d04>]  
+(SyS_open+0x30/0x34)
+[10683.410000] [<c01d9d04>] (SyS_open+0x30/0x34) from [<c000e020>]  
+(ret_fast_syscall+0x0/0x50)
+
+[10683.070000] INFO: task rs:main Q:Reg:2063 blocked for more than 120  
+seconds.
+[10683.070000] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"  
+disables this message.
+[10683.080000] rs:main Q:Reg   D c0825a34     0  2063      1 0x00000000
+[10683.090000] [<c0825a34>] (__schedule+0x550/0x858) from [<c0825dcc>]  
+(schedule+0x90/0x94)
+[10683.100000] [<c0825dcc>] (schedule+0x90/0x94) from [<c08260b4>]  
+(io_schedule+0xbc/0x12c)
+[10683.110000] [<c08260b4>] (io_schedule+0xbc/0x12c) from [<c0195570>]  
+(sleep_on_page+0x18/0x20)
+[10683.120000] [<c0195570>] (sleep_on_page+0x18/0x20) from  
+[<c0823ef0>] (__wait_on_bit+0x64/0xb0)
+[10683.130000] [<c0823ef0>] (__wait_on_bit+0x64/0xb0) from  
+[<c0195364>] (wait_on_page_bit+0xa0/0xb0)
+[10683.140000] [<c0195364>] (wait_on_page_bit+0xa0/0xb0) from  
+[<c02765fc>] (ext4_da_write_begin+0x1d4/0x28c)
+[10683.150000] [<c02765fc>] (ext4_da_write_begin+0x1d4/0x28c) from  
+[<c01966ec>] (generic_file_buffered_write+0xdc/0x240)
+[10683.160000] [<c01966ec>] (generic_file_buffered_write+0xdc/0x240)  
+from [<c01979b0>] (__generic_file_aio_write+0x360/0x3ac)
+[10683.170000] [<c01979b0>] (__generic_file_aio_write+0x360/0x3ac)  
+from [<c0197a64>] (generic_file_aio_write+0x68/0xc8)
+[10683.190000] [<c0197a64>] (generic_file_aio_write+0x68/0xc8) from  
+[<c026d33c>] (ext4_file_write+0x36c/0x454)
+[10683.200000] [<c026d33c>] (ext4_file_write+0x36c/0x454) from  
+[<c01da120>] (do_sync_write+0x84/0xa8)
+[10683.210000] [<c01da120>] (do_sync_write+0x84/0xa8) from  
+[<c01da8c0>] (vfs_write+0xe0/0x1c8)
+[10683.220000] [<c01da8c0>] (vfs_write+0xe0/0x1c8) from [<c01daec8>]  
+(SyS_write+0x4c/0x7c)
+[10683.230000] [<c01daec8>] (SyS_write+0x4c/0x7c) from [<c000e020>]  
+(ret_fast_syscall+0x0/0x50)
+
+A.
 
 
--- 
-                                                                Gilles.
 
