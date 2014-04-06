@@ -1,17 +1,15 @@
-Message-ID: <53416845.70109@xenomai.org>
-Date: Sun, 06 Apr 2014 16:44:21 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <53416D09.7060805@xenomai.org>
+Date: Sun, 06 Apr 2014 17:04:41 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAKJ14NdsfwK4Vj=UpYb6p9bvFE=1ZoQb6ss--9f-WqXOXGDn2g@mail.gmail.com>
- <52CAEA4D.1020505@xenomai.org>
- <6FD43B5D-6C35-48E7-BC3C-1414A0B809C9@gmail.com>
- <533E8D1F.7040405@xenomai.org>
- <F7F39021-A6D9-433D-B8F9-917C44A4B6B8@gmail.com>
-In-Reply-To: <F7F39021-A6D9-433D-B8F9-917C44A4B6B8@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+References: <1396262085.387.YahooMailNeo@web171601.mail.ir2.yahoo.com>
+ <53395104.6050109@xenomai.org> <53396B31.1090903@xenomai.org>
+ <5339AACA.4090807@xenomai.org>
+ <1396782702.1096.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+In-Reply-To: <1396782702.1096.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Command line freeze during xeno-regression-test on
- omap4460
+Subject: Re: [Xenomai] EINTR in notifier.c (mercury)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,198 +18,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Andreas Glatz <andi.glatz@gmail.com>
-Cc: xenomai@xenomai.org
+To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/06/2014 01:21 PM, Andreas Glatz wrote:
+On 04/06/2014 01:11 PM, Matthias Schneider wrote:
+>> On Monday, March 31, 2014 7:50 PM, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
 > 
-> On 4 Apr 2014, at 11:44, Gilles Chanteperdrix wrote:
-> 
->> On 04/04/2014 12:27 PM, Andreas Glatz wrote:
->>> Hi Gilles,
->>>
->>> I'm finally back to my original problem below:
->>>
->>> On 6 Jan 2014, at 17:39, Gilles Chanteperdrix wrote:
->>>
->>>> On 01/06/2014 04:30 PM, Andreas Glatz wrote:
->>>>> Hi,
+>>> On 03/31/2014 03:18 PM, Philippe Gerum wrote:
+>>>   On 03/31/2014 01:27 PM, Gilles Chanteperdrix wrote:
+>>>>   On 03/31/2014 12:34 PM, Matthias Schneider wrote:
+>>>>>   Hi all,
 >>>>>
->>>>> I managed to produce a kernel (v3.8.13) with xenomai 2.6.3 ipipe
->>>>> patch and
->>>>> rootfs (debian wheezy) with xenomai 2.6.3 libraries for my
->>>>> Pandaboard ES
->>>>> (omap4460). The simple regression test, which only calls dd during
->>>>> the
->>>>> switchtest, works fine. However the regression test with the linux
->>>>> test
->>>>> project (ltp-full-20130904) scripts causes some sort of system lock
->>>>> up.
->>>>> After that I only can ctrl-c xeno-regression-test (i.e.
->>>>> switchtest), which,
->>>>> however, doesn't help to regain console access (neigher over
->>>>> ethernet nor
->>>>> serial).
 >>>>>
->>>>> Here's what I did:
+>>>>>   still working on thread suspension in mercury, I noticed that some
+>>>>>   threadobj_suspend() and threadobj_resume() calls seemed not to have the desired
+>>>>>   effect. Analyzing the issue, I found out that sometimes the read operations on
+>>>>>   the pipe in notifier_wait() seem to return with EINTR, especially in
+>>>>>   heavily loaded systems. Restarting the read system call in that case made
+>>>>>   thread suspension a lot more reliable in my case.
 >>>>>
->>>>> -- Building --
->>>>> As recomended in the Xenomai 2.6 readme I followed the instructions
->>>>> in [1]
->>>>> to produce a kernel and filesystem. To get a xenomai kernel I had
->>>>> to do
->>>>> three things differently:
->>>>>
->>>>> *) I used: git checkout origin/v3.8.x -b tmp
->>>>> *) I applied ipipe-core-3.8.13-arm-3.patch from the xenomai-2.6 git
->>>>> tree as
->>>>> described in the Xenomai 2.6 readme
->>>>> *) I disabled KGDB and TIDSPBRIDGE since those produced compile
->>>>> errors (see
->>>>> config [2])
->>>>>
->>>>> After a while I obtained the following messages from dmesg [3] and
->>>>> from the
->>>>> command prompt:
->>>>>
->>>>> root@arm:~# cat /proc/version
->>>>> Linux version 3.8.13-x3.6 (aglatz@linuxvbox) (gcc version 4.7.3
->>>>> 20130328
->>>>> (prerelease) (crosstool-NG linaro-1.13.1-4.7-2013.04-20130415 -
->>>>> Linaro GCC
->>>>> 2013.04) ) #4 SMP Sat Jan 4 15:54:20 GMT 2014
->>>>>
->>>>> -- Testing Linux --
->>>>> To see if everything works I downloaded and cross-compiled
->>>>> ltp-full-20130904 [4] with the same toolchain and flags (-
->>>>> march=armv7-a
->>>>> -mfpu=vfp3) as the xenomai libs and runtime. I started ltp with "./
->>>>> runltp
->>>>> -p -l dohell-2014-01-06-1.log -S xenomai.skiplist" and after a
->>>>> while it
->>>>> finished with a few failed tests [5]. The console access, however,
->>>>> worked
->>>>> fine.
->>>>>
->>>>> -- Testing Xenomai --
->>>>> First I sucessfully could run the simple xenomai regression test:
->>>>> xeno-regression-test -l "/usr/lib/xenomai/testsuite/dohell -m /tmp
->>>>> 100" -t
->>>>> 2 which produced the output in [6] and the following additional
->>>>> messages
->>>>> with dmesg:
->>>>>
->>>>> [  476.215057] Xenomai: RTDM: closing file descriptor 1.
->>>>> [  477.434936] Xenomai: Posix: destroying semaphore f0069c00.
->>>>> [  477.440887] Xenomai: Posix: destroying mutex f0069a00.
->>>>> [  477.475372] xnheap: destroying shared heap 'rt_heap: heap' with
->>>>> 16384
->>>>> bytes still in use.
->>>>> [  479.008453] Xenomai: Switching rt_task to secondary mode after
->>>>> exception
->>>>> #0 from user-space at 0x9620 (pid 2145)
->>>>> [  480.574462] Xenomai: watchdog triggered -- signaling runaway
->>>>> thread
->>>>> 'rt_task'
->>>>> [  480.582061] [sched_delayed] sched: RT throttling activated
->>>>> [  557.336425] Xenomai: Posix: closing message queue descriptor 3.
->>>>>
->>>>> and  "cat /proc/xenomai/*" produced [7].
->>>>>
->>>>> When I started the realistic xenomai regression test: xeno-
->>>>> regression-test
->>>>> -l "/usr/lib/xenomai/testsuite/dohell -m /tmp -l /opt/ltp" -t 2
->>>>> everything
->>>>> seemed fine at first - I could logon and start top to inspect the
->>>>> running
->>>>> processes. However, the command line (over serial and ethernet)
->>>>> consistently freezes after a while (at different ltp tests though).
->>>>> First I
->>>>> thought it's the massive system load which doesn't leave CPU for  
->>>>> the
->>>>> console... however ctrl-c of xeno-regression-test does not help to
->>>>> regain
->>>>> console access...
+>>>>>   I have attached a patch adding loops to deal with the EINTR situation in all
 >>>>
->>>> That is because kill xeno-regression-test does not kill all the
->>>> script children. So, basically, the load tasks are still running.
->>>> Also, what filesystem is /tmp? dohell is using dd to alternatively
->>>> write to /tmp, then erase the file. If /tmp is some flash, it will
->>>> become slow after a while. If it is a tmpfs, it will eat RAM.
->>>>
+>>>>   You can probably avoid testing for EINTR if all signal handlers are
+>>>>   registered with the SA_RESTART flag.
 >>>>
 >>>
->>> The described problem is _very_ reproducible on my PandaBoard ES
->>> (omap4460), where I boot from an SD card partition and the rootfs is
->>> also on the SD card partition. I tried it with several kernel  
->>> versions
->>> (3.8.13, 3.10.18, and 3.10.34) with the latest ipipe and xenomai from
->>> git the git repos. Everytime I start the regression test (see command
->>> above) the following happens: Everything works fine until the switch/
->>> latency tests start. Then I see that there is heavy access to the SD
->>> card, which is expected, as the status LED 2 is blinking. After  
->>> ~5mins
->>> this status LED is constantly on. That's when I know that everything
->>> is over. On the console I can only execute commands that are already
->>> in RAM, such as the bash things like ps, mount, ... However, if I try
->>> a simple 'touch new' it blocks forever and I know that it blocks in
->>> the syscall where the file should be created, because I looked at it
->>> with strace. I tried several things: I turned off CONFIG_PM (which  
->>> was
->>> on by default), turned on the MMC debugging, put extra prink's in the
->>> omap_hsmmc.c ISR. However, everything seems to work on this level:  
->>> DMA
->>> requests are started and do finish, the ISR is called regularly (bc
->>> first I though that Xenomai would starve it).
+>>>   The app may not explicitly care for signals (granted, most would do, but
+>>>   we would then have to assume they do it right).
 >>>
->>> Have you every run Xenonmai on this _specific_ board (since  
->>> everything
->>> is running smoothly on the omap5 board)?
->>> Any more ideas how to debug it?
->>>
->>> Currently, I'm compiling the ipipe trace in hope that it would tell  
->>> me
->>> something useful...
->>>
->>> Oh yes, the best bit is that the regression test works perfectly fine
->>> if I boot from an external USB HD _AND_ unmount (!) all MMC  
->>> partitions.
 >>
->> So, the MMC driver has a problem. Have you tried:
->> - running the exact same kernel configuration only with CONFIG_XENOMAI
->> disabled (and stress with dohell)
->> - then with CONFIG_XENOMAI and CONFIG_IPIPE disabled.
->>
->> Also, do you have this patch in the tree you tried?
->> http://git.xenomai.org/ipipe.git/commit/?h=stable/ipipe-3.10.18&id=c26e7ad5679f9391cd8ea1db001bf301d2f6bc88
->>
+>> Yes, applications may want to use signals to interrupt a call to read
+>> and voluntarily get EINTR anyway.
+>>                          Gilles.
 > 
-> First i mounted tmpfs on /tmp so I don't wear out the SD card too much:
-> mount -t tmpfs -osize=192M tmpfs /tmp
 > 
-> Then I used the following line to start the test (substitute MYTEST  
-> below with the following line):
-> /usr/lib/xenomai/testsuite/dohell -m /tmp -l /opt/ltp
-> 
-> Note: I always monitored the test over wifi with 'top' so I also had  
-> some network load...
-> 
-> I got the following results with the 3.10.34 kernel, which includes  
-> everything up to the current ipipe-3.10 tag (it also included the  
-> patch you mentioned):
-> 
-> - xeno-regression-test "MYTEST" -> FAIL if booted from SD card (see  
-> description above); OK if booted from ext USB HD _AND_ no mmc  
-> partitions mounted
-> - CONFIG_IPIPE && CONFIG_XENOMAI && MYTEST -> FAIL (got status LED 2  
-> constantly on as described above)
-> - CONFIG_IPIPE && MYTEST -> OK (see attached config file and ltp test  
-> log)
-> 
-> Anything else I should try?
+> Please find attached a third version of my patch dealing with
+> EINTR syscalls. Note that I also stumbled over unexpected behavior
+> in threadobj_sleep and cancel_sync due to EINTRs. Considering that
+> mercury is using signals for user-space round-robin and thread
+> suspension, even without any application signals EINTR happens
+> quite often.
 
-Is the current LTP test when the failure happens always the same?
+@@ -86,9 +88,13 @@ static void notifier_sighandler(int sig, siginfo_t *siginfo, void *uc)
+ 		if (nf->owner && nf->owner != tid)
+ 			continue;
+ 
+-		while (__STD(read(nf->psfd[0], &c, 1)) > 0)
+-			/* Callee must run async-safe code only. */
+-			nf->callback(nf);
++		do {
++			ret = __STD(read(nf->psfd[0], &c, 1)); 
++			if (ret > 0)
++				/* Callee must run async-safe code only. */
++				nf->callback(nf);
++		} while (ret > 0 || errno == EINTR);
+
+In theory, we could receive a zero byte count on EOF, in which case we should not test errno, rather we should bail out immediately.
+
+@@ -1093,7 +1093,9 @@ int threadobj_sleep(struct timespec *ts)
+ 	 */
+ 	current->run_state = __THREAD_S_DELAYED;
+ 	threadobj_save_timeout(&current->core, ts);
+-	ret = -__RT(clock_nanosleep(CLOCK_COPPERPLATE, TIMER_ABSTIME, ts, NULL));
++	do
++		ret = -__RT(clock_nanosleep(CLOCK_COPPERPLATE, TIMER_ABSTIME, ts, NULL));
+
+We should definitely pass and use the "remain" field in clock_nanosleep(), not to restart a complete wait each time we get interrupted.
 
 -- 
-                                                                Gilles.
+Philippe.
 
