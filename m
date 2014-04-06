@@ -1,19 +1,15 @@
-Message-ID: <5339E80C.9020604@xenomai.org>
-Date: Tue, 01 Apr 2014 00:11:24 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+References: <1396262085.387.YahooMailNeo@web171601.mail.ir2.yahoo.com>
+ <53395104.6050109@xenomai.org> <53396B31.1090903@xenomai.org>
+ <5339AACA.4090807@xenomai.org>
+Message-ID: <1396782702.1096.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+Date: Sun, 6 Apr 2014 12:11:42 +0100 (BST)
+From: Matthias Schneider <ma30002000@yahoo.de>
+In-Reply-To: <5339AACA.4090807@xenomai.org>
 MIME-Version: 1.0
-References: <20140331193742.GS17765@csclub.uwaterloo.ca>
- <5339C5AC.4040409@xenomai.org> <20140331204257.GT17765@csclub.uwaterloo.ca>
- <20140331205339.GU17765@csclub.uwaterloo.ca>
- <20140331205710.GV17765@csclub.uwaterloo.ca> <5339D8EB.3030702@xenomai.org>
- <20140331212534.GW17765@csclub.uwaterloo.ca> <5339E2CE.7060703@xenomai.org>
- <20140331215348.GX17765@csclub.uwaterloo.ca>
- <20140331215933.GY17765@csclub.uwaterloo.ca>
- <20140331220421.GZ17765@csclub.uwaterloo.ca>
-In-Reply-To: <20140331220421.GZ17765@csclub.uwaterloo.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Porting xenomai 2.6.3 and ipipe to 3.12 kernel
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] EINTR in notifier.c (mercury)
+Reply-To: Matthias Schneider <ma30002000@yahoo.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,63 +18,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/01/2014 12:04 AM, Lennart Sorensen wrote:
-> On Mon, Mar 31, 2014 at 05:59:33PM -0400, Lennart Sorensen wrote:
->> On Mon, Mar 31, 2014 at 05:53:48PM -0400, Lennart Sorensen wrote:
->>> I am using the xenomai-2.6 git tree (current commit I see is as HEAD is
->>> 4081e1b032329bf0cc9442f466233d5fc1083fc5).
->>>
->>> Doing a git pull I see I am 4 commits behind, and one does sound
->>> interesting.  I will have to update that.
->>
->> Hmm, the interesting patch does the same thing I already did myself to
->> get it to compile.  I guess that is OK then.
-> 
-> Hmm, gdb is being not helpful at all:
-> 
-> root@omap5:/mnt/xenomai-2.6.3# gdb /usr/lib/xenomai/testsuite/latency 
-> GNU gdb (GDB) 7.4.1-debian
-> Copyright (C) 2012 Free Software Foundation, Inc.
-> License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
-> This is free software: you are free to change and redistribute it.
-> There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
-> and "show warranty" for details.
-> This GDB was configured as "arm-linux-gnueabihf".
-> For bug reporting instructions, please see:
-> <http://www.gnu.org/software/gdb/bugs/>...
-> Reading symbols from /usr/lib/xenomai/testsuite/latency...done.
-> (gdb) run
-> Starting program: /usr/lib/xenomai/testsuite/latency 
-> [Thread debugging using libthread_db enabled]
-> Using host libthread_db library "/lib/arm-linux-gnueabihf/libthread_db.so.1".
-> == Sampling period: 1000 us
-> == Test mode: periodic user-mode task
-> == All results in microseconds
-> [New Thread 0xb6e15470 (LWP 32035)]
-> [New Thread 0xb6e0d470 (LWP 32036)]
-> warming up...
-> 
-> Program received signal SIGILL, Illegal instruction.
-> [Switching to Thread 0xb6e0d470 (LWP 32036)]
-> 0xffff0f04 in ?? ()
-> (gdb) where
-> #0  0xffff0f04 in ?? ()
-> Cannot access memory at address 0x3e0
-> (gdb) list
-> Cannot access memory at address 0x3e0
-> (gdb) 
-> 
+> On Monday, March 31, 2014 7:50 PM, Gilles Chanteperdrix <gilles.chanteper=
+drix@xenomai.org> wrote:
 
-0xffff0f04 looks like one of the kuser helpers. It is the I-pipe tsc
-emulation address actually. You probably do not have access to the
-architected timers in user-space. There is a snippet in
-drivers/clocksource/arm_arch_timer.c to enable this access through the
-CNTKCTL register. Maybe this only enables access to physical counter
-whereas newer kernels use virtual counters?
+> > On 03/31/2014 03:18 PM, Philippe Gerum wrote:
+>>  On 03/31/2014 01:27 PM, Gilles Chanteperdrix wrote:
+>>>  On 03/31/2014 12:34 PM, Matthias Schneider wrote:
+>>>>  Hi all,
+>>>> =
 
--- 
-                                                                Gilles.
+>>>> =
 
+>>>>  still working on thread suspension in mercury, I noticed that some
+>>>>  threadobj_suspend() and threadobj_resume() calls seemed not to have=
+=A0the desired
+>>>>  effect. Analyzing the issue, I found out that sometimes the read oper=
+ations on
+>>>>  the pipe in notifier_wait() seem to return with EINTR, especially=A0in
+>>>>  heavily loaded systems. Restarting the read system call in that case =
+made
+>>>>  thread suspension a lot more reliable in my case.
+>>>> =
+
+>>>>  I have attached a patch adding loops to deal with the EINTR situation=
+ in all
+>>> =
+
+>>>  You can probably avoid testing for EINTR if all signal handlers are
+>>>  registered with the SA_RESTART flag.
+>>> =
+
+>> =
+
+>>  The app may not explicitly care for signals (granted, most would do, but
+>>  we would then have to assume they do it right).
+>> =
+
+> =
+
+> Yes, applications may want to use signals to interrupt a call to read =
+
+> and voluntarily get EINTR anyway.
+> =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 =A0 =A0 Gilles.
+
+
+Please find attached a third version of my patch dealing with
+EINTR syscalls. Note that I also stumbled over unexpected behavior
+in threadobj_sleep and cancel_sync due to EINTRs. Considering that
+mercury is using signals for user-space round-robin and thread
+suspension, even without any application signals EINTR happens=A0
+quite often.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: eintr_3.patch
+Type: text/x-patch
+Size: 3040 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140406/c4a1fe2=
+0/attachment.bin>
