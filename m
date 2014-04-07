@@ -1,14 +1,13 @@
-Message-ID: <534275AD.50005@xenomai.org>
-Date: Mon, 07 Apr 2014 11:53:49 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <534276FE.7000805@xenomai.org>
+Date: Mon, 07 Apr 2014 11:59:26 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <1396407588.27578.5.camel@localhost.localdomain>
- <533BBB11.5090808@xenomai.org>
- <1396848843.2481.15.camel@localhost.localdomain>
-In-Reply-To: <1396848843.2481.15.camel@localhost.localdomain>
-Content-Type: text/plain; charset=UTF-8
+References: <1396785025.43347.YahooMailNeo@web171602.mail.ir2.yahoo.com>
+In-Reply-To: <1396785025.43347.YahooMailNeo@web171602.mail.ir2.yahoo.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] OMAP L138
+Subject: Re: [Xenomai] Deadlock in CANCEL_RESTORE with
+ CONFIG_XENO_ASYNC_CANCEL during thread suspension
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,43 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Peter Howard <pjh@northern-ridge.com.au>
-Cc: xenomai@xenomai.org
+To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/07/2014 07:34 AM, Peter Howard wrote:
-> 
-> On Wed, 2014-04-02 at 09:24 +0200, Gilles Chanteperdrix wrote:
->> On 04/02/2014 04:59 AM, Peter Howard wrote:
->>> Hi,
->>>
->>> I'm interested in running xenomai on a TI-OMAP L138 board.  I found the
->>> following thread in the archives:
->>>
->>> http://www.xenomai.org/pipermail/xenomai/2010-January/018898.html
->>>
->>> where someone was working on porting ipipe and xenomai to that board.
->>> However, the thread ended with problems still unresolved, and the patch
->>> in the thread (just the changes for ipipe) isn't in the ipipe
->>> repository.
->>>
->>> Does anyone know if this work was completed or just faded into the
->>> ether?
->>
->> We never merged a patch for this processor. And a lot of things changed
->> since that time. If you are interested in porting the I-pipe patch to
->> this processor, see:
->>
->> http://www.xenomai.org/index.php/I-pipe-core:ArmPorting
->>
-> 
-> Contrary to what I said last week, I'm working on a patch off the head
-> of the ipipe repo.  I have built a kernel with an ipipe port and with
-> xenomai patched in.  However the latency results are bad right now:
+On 04/06/2014 01:50 PM, Matthias Schneider wrote:
+> Hi all,
+>
+> using xenomai-forge with mercury, when
+> CONFIG_XENO_ASYNC_CANCEL is defined, CANCEL_RESTORE
+> will include a call to backtrace_check(), which in turn
+> will call backtrace_dump, which will take the
+> mutex "__printlock".
+>
+> In case a thread gets suspended while holding that lock,
+> the next call to CANCEL_RESTORE from whatever thread will
+> cause a deadlock.
 
-Well, in that case enable the I-pipe tracer, and run latency with the -f
-option to know why.
+That's the price for using thread suspend/resume unsafe constructs, we 
+never know at which location we will be preempting threads.
 
+>
+> Is there any way of getting around that?
+>
+
+We could block the notification signal when holding this internal lock. 
+I'll have a look.
 
 -- 
-                                                                Gilles.
+Philippe.
 
