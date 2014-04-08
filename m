@@ -1,17 +1,15 @@
-Message-ID: <5343A3A2.7080000@xenomai.org>
-Date: Tue, 08 Apr 2014 09:22:10 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5343AF72.8060107@xenomai.org>
+Date: Tue, 08 Apr 2014 10:12:34 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1396262085.387.YahooMailNeo@web171601.mail.ir2.yahoo.com>
- <53395104.6050109@xenomai.org> <53396B31.1090903@xenomai.org>
- <5339AACA.4090807@xenomai.org>
- <1396782702.1096.YahooMailNeo@web171605.mail.ir2.yahoo.com>
- <53416D09.7060805@xenomai.org>
- <1396889360.63594.YahooMailNeo@web171605.mail.ir2.yahoo.com>
-In-Reply-To: <1396889360.63594.YahooMailNeo@web171605.mail.ir2.yahoo.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <1396407588.27578.5.camel@localhost.localdomain>
+ <533BBB11.5090808@xenomai.org>
+ <1396848843.2481.15.camel@localhost.localdomain> <534275AD.50005@xenomai.org>
+ <1396924672.16375.8.camel@localhost.localdomain>
+In-Reply-To: <1396924672.16375.8.camel@localhost.localdomain>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] EINTR in notifier.c (mercury)
+Subject: Re: [Xenomai] OMAP L138
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,109 +18,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Peter Howard <pjh@northern-ridge.com.au>
+Cc: xenomai@xenomai.org
 
-On 04/07/2014 06:49 PM, Matthias Schneider wrote:
-> ----- Original Message -----
->
->> From: Philippe Gerum <rpm@xenomai.org>
->> To: Matthias Schneider <ma30002000@yahoo.de>; "xenomai@xenomai.org" <xenomai@xenomai.org>
->> Cc:
->> Sent: Sunday, April 6, 2014 5:04 PM
->> Subject: Re: [Xenomai] EINTR in notifier.c (mercury)
->>
->> On 04/06/2014 01:11 PM, Matthias Schneider wrote:
->>>>   On Monday, March 31, 2014 7:50 PM, Gilles Chanteperdrix
->> <gilles.chanteperdrix@xenomai.org> wrote:
+On 04/08/2014 04:37 AM, Peter Howard wrote:
+> On Mon, 2014-04-07 at 11:53 +0200, Gilles Chanteperdrix wrote:
+>> On 04/07/2014 07:34 AM, Peter Howard wrote:
 >>>
->>>>>   On 03/31/2014 03:18 PM, Philippe Gerum wrote:
->>>>>     On 03/31/2014 01:27 PM, Gilles Chanteperdrix wrote:
->>>>>>     On 03/31/2014 12:34 PM, Matthias Schneider wrote:
->>>>>>>     Hi all,
->>>>>>>
->>>>>>>
->>>>>>>     still working on thread suspension in mercury, I noticed
->> that some
->>>>>>>     threadobj_suspend() and threadobj_resume() calls seemed
->> not to have the desired
->>>>>>>     effect. Analyzing the issue, I found out that sometimes
->> the read operations on
->>>>>>>     the pipe in notifier_wait() seem to return with EINTR,
->> especially in
->>>>>>>     heavily loaded systems. Restarting the read system call
->> in that case made
->>>>>>>     thread suspension a lot more reliable in my case.
->>>>>>>
->>>>>>>     I have attached a patch adding loops to deal with the
->> EINTR situation in all
->>>>>>
->>>>>>     You can probably avoid testing for EINTR if all signal
->> handlers are
->>>>>>     registered with the SA_RESTART flag.
->>>>>>
+>>> On Wed, 2014-04-02 at 09:24 +0200, Gilles Chanteperdrix wrote:
+>>>> On 04/02/2014 04:59 AM, Peter Howard wrote:
+>>>>> Hi,
 >>>>>
->>>>>     The app may not explicitly care for signals (granted, most would
->> do, but
->>>>>     we would then have to assume they do it right).
+>>>>> I'm interested in running xenomai on a TI-OMAP L138 board.  I found the
+>>>>> following thread in the archives:
 >>>>>
+>>>>> http://www.xenomai.org/pipermail/xenomai/2010-January/018898.html
+>>>>>
+>>>>> where someone was working on porting ipipe and xenomai to that board.
+>>>>> However, the thread ended with problems still unresolved, and the patch
+>>>>> in the thread (just the changes for ipipe) isn't in the ipipe
+>>>>> repository.
+>>>>>
+>>>>> Does anyone know if this work was completed or just faded into the
+>>>>> ether?
 >>>>
->>>>   Yes, applications may want to use signals to interrupt a call to read
->>>>   and voluntarily get EINTR anyway.
->>>>                            Gilles.
+>>>> We never merged a patch for this processor. And a lot of things changed
+>>>> since that time. If you are interested in porting the I-pipe patch to
+>>>> this processor, see:
+>>>>
+>>>> http://www.xenomai.org/index.php/I-pipe-core:ArmPorting
+>>>>
 >>>
->>>
->>>   Please find attached a third version of my patch dealing with
->>>   EINTR syscalls. Note that I also stumbled over unexpected behavior
->>>   in threadobj_sleep and cancel_sync due to EINTRs. Considering that
->>>   mercury is using signals for user-space round-robin and thread
->>>   suspension, even without any application signals EINTR happens
->>>   quite often.
+>>> Contrary to what I said last week, I'm working on a patch off the head
+>>> of the ipipe repo.  I have built a kernel with an ipipe port and with
+>>> xenomai patched in.  However the latency results are bad right now:
 >>
->> @@ -86,9 +88,13 @@ static void notifier_sighandler(int sig, siginfo_t *siginfo,
->> void *uc)
->>          if (nf->owner && nf->owner != tid)
->>              continue;
+>> Well, in that case enable the I-pipe tracer, and run latency with the -f
+>> option to know why.
 >>
->> -        while (__STD(read(nf->psfd[0], &c, 1)) > 0)
->> -            /* Callee must run async-safe code only. */
->> -            nf->callback(nf);
->> +        do {
->> +            ret = __STD(read(nf->psfd[0], &c, 1));
->> +            if (ret > 0)
->> +                /* Callee must run async-safe code only. */
->> +                nf->callback(nf);
->> +        } while (ret > 0 || errno == EINTR);
->>
->> In theory, we could receive a zero byte count on EOF, in which case we should
->> not test errno, rather we should bail out immediately.
->>
->> @@ -1093,7 +1093,9 @@ int threadobj_sleep(struct timespec *ts)
->>       */
->>      current->run_state = __THREAD_S_DELAYED;
->>      threadobj_save_timeout(&current->core, ts);
->> -    ret = -__RT(clock_nanosleep(CLOCK_COPPERPLATE, TIMER_ABSTIME, ts, NULL));
->> +    do
->> +        ret = -__RT(clock_nanosleep(CLOCK_COPPERPLATE, TIMER_ABSTIME, ts,
->> NULL));
->>
->> We should definitely pass and use the "remain" field in
->> clock_nanosleep(), not to restart a complete wait each time we get interrupted.
->>
->>
->> --
->> Philippe.
->>
->
-> I have attached a new version of the patch leaving the loop on ret == 0. Note
-> that this will be a new behavior in compared to before the patch.
->
-> Gilles already pointed out that TIMER_ABSTIME allows restarting the same syscall
-> in threadobj_sleep.
->
+> 
+> I turned the tracing on and . . . start getting kernel panics from a
+> NULL pointer dereference.  If I have tracing on from boot it dies
+> shortly after getting to the login prompt.  If I disable it at boot, I
+> start getting ext-3 errors as soon as I enable it (losing the ability to
+> read the filesystem at all), then get the panic a few seconds later.  I
+> get an I-pipe tracer log along with the panic, but aren't really sure
+> how to interpret it in this context.   In all cases the failure appears
+> to be in the context of __ipipe_trace():
 
-Merged, thanks.
+Do you have CONFIG_IPIPE_TRACE_VMALLOC turned on? If not, you should. If
+the backtraces are not meaningful, you can try disabling stack unwinding.
 
+> 
+> 
+> Unable to handle kernel NULL pointer dereference at virtual address 00000004    
+> pgd = c73e8000, hw pgd = c73e8000                                               
+> [00000004] *pgd=c72a3831, *pte=00000000, *ppte=00000000                         
+> Internal error: Oops: 817 [#1] PREEMPT ARM                                      
+> Modules linked in:                                                              
+> CPU: 0 PID: 2307 Comm: run-parts Not tainted 3.10.0-ipipe-00165-g9a2c8c8-dirty 5
+> task: c70ef800 ti: c737a000 task.ti: c737a000                                   
+> PC is at get_page_from_freelist+0x164/0x750                                     
+> LR is at __ipipe_trace+0xa8/0x5b8                                           
+> 
+> 
+> I'm going to keep digging to see if I can work out what the actual
+> failure is, but any suggestions would be appreciated.  (I can provide
+> full dump and following trace log if it would be useful)
+
+Disable stack unwinding, and show us the backtrace you get, and the full
+trace if you get it.
 
 -- 
-Philippe.
+                                                                Gilles.
 
