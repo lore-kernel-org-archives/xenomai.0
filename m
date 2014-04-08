@@ -1,17 +1,11 @@
-References: <1396873278.9042.YahooMailNeo@web163902.mail.gq1.yahoo.com>
- <53429F30.4080204@xenomai.org>
- <1396961235.36322.YahooMailNeo@web163901.mail.gq1.yahoo.com>
- <5343F1D2.8080909@xenomai.org>
- <1396965543.83663.YahooMailNeo@web163905.mail.gq1.yahoo.com>
- <53440F85.7020701@xenomai.org>
-Message-ID: <1396974927.93802.YahooMailNeo@web163906.mail.gq1.yahoo.com>
-Date: Tue, 8 Apr 2014 09:35:27 -0700 (PDT)
-From: Huub Van Niekerk <huubvanniekerk@yahoo.com>
-In-Reply-To: <53440F85.7020701@xenomai.org>
+From: "Mnatsakanyan, M." <m.mnatsakanyan@tue.nl>
+Date: Tue, 8 Apr 2014 18:01:27 +0000
+Message-ID: <6781B7C7F03D8A4BAF673DC4478144C4069135D7@XSERVER21B.campus.tue.nl>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Subject: Re: [Xenomai] patch for 3.14 kernel ?
-Reply-To: Huub Van Niekerk <huubvanniekerk@yahoo.com>
+Subject: [Xenomai] real-time support for CAN-USB devices
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,16 +14,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tuesday, April 8, 2014 5:02 PM, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
- 
-On 04/08/2014 03:59 PM, Huub Van Niekerk wrote:
-> I had the 3.10.18 kernel working (with xenomai), including the
-> smsc95xx, usb phy, usb hid, etc. Just the clock didnt work.
+Hi,=0A=
+=0A=
+I am repeating this post because I found out that I did not keep one of the=
+ rules=0A=
+of mailing list etiquette. Sorry for that. Hopefully this was a reason that=
+ my =0A=
+question is not being answered. =0A=
+=0A=
+So here is my question:=0A=
+In a Dutch research organization we develop a prototype of a real-time driv=
+er =0A=
+assistance system based on Xenomai. In non-RT version of this system we wid=
+ely=0A=
+use CAN-USB devices and would like to continue using them also in RT versio=
+n, =0A=
+but we realized that CAN-USB devices are not supported by Xenomai.=0A=
+To estimate the future development perspectives for our real-time prototype=
+, =0A=
+we would like to know whether you envision the CAN-USB device support in ne=
+ar =0A=
+future.=0A=
+=0A=
+Regards!=
 
->What does the "clock didn't work" mean, clock_gettime does not return 
->monotonically increasing values?
-
-Correct.
