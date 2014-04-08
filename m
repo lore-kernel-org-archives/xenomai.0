@@ -1,10 +1,15 @@
-Date: Tue, 1 Apr 2014 10:35:02 +0800 (CST)
-From: =?GBK?B?x7bI68q9uaSzzMqm?= <ericvic@163.com>
-MIME-Version: 1.0
-Message-ID: <36553bb2.3800.1451b23ccfc.Coremail.ericvic@163.com>
-Content-Type: text/plain; charset=GBK
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] imx6q xenomai ipipe-3.0-imx6q
+Message-ID: <1396924672.16375.8.camel@localhost.localdomain>
+From: Peter Howard <pjh@northern-ridge.com.au>
+Date: Tue, 08 Apr 2014 12:37:52 +1000
+In-Reply-To: <534275AD.50005@xenomai.org>
+References: <1396407588.27578.5.camel@localhost.localdomain>
+ <533BBB11.5090808@xenomai.org>
+ <1396848843.2481.15.camel@localhost.localdomain>
+ <534275AD.50005@xenomai.org>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] OMAP L138
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,76 +18,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-SGVsbG8gR2lsbGVzIKOsdGhpcyBpcyBteSB0ZXN0IGFib3V0IHhlbm9tYWkgo6x0aGlzIGNhbiBh
-bHNvIGVmZmVjdCB0aGUgbXkgcHJvZ3JhbSAgYW5kIHRoZSBsYXRlbmN5IHRlc3QKo6x0aGFua3Mg
-oaMKCgo9PSBTYW1wbGluZyBwZXJpb2Q6IDEwMDAgdXMKPT0gVGVzdCBtb2RlOiBpbi1rZXJuZWwg
-cGVyaW9kaWMgdGFzawo9PSBBbGwgcmVzdWx0cyBpbiBtaWNyb3NlY29uZHMKd2FybWluZyB1cC4u
-LgpSVFR8ICAwMDowMDowMSAgKGluLWtlcm5lbCBwZXJpb2RpYyB0YXNrLCAxMDAwIHVzIHBlcmlv
-ZCwgcHJpb3JpdHkgOTkpClJUSHwtLS0tbGF0IG1pbnwtLS0tbGF0IGF2Z3wtLS0tbGF0IG1heHwt
-b3ZlcnJ1bnwtLS1tc3d8LS0tbGF0IGJlc3R8LS1sYXQgd29yc3QKUlREfCAgICAgIDAuNDUyfCAg
-ICAgMTcuMjIxfCAgMTY2MzcuNDkyfCAgICAgIDE2fCAgICAgMHwgICAgICAwLjQ1MnwgIDE2NjM3
-LjQ5MgpSVER8ICAgICAgMC40MzF8ICAgICAxNy4yNTN8ICAxNjY0MS45NzR8ICAgICAgMzJ8ICAg
-ICAwfCAgICAgIDAuNDMxfCAgMTY2NDEuOTc0ClJURHwgICAgICAwLjQ1OXwgICAgIDE3LjIzM3wg
-IDE2NjM5LjIyNHwgICAgICA0OHwgICAgIDB8ICAgICAgMC40MzF8ICAxNjY0MS45NzQKUlREfCAg
-ICAgIDAuNDM5fCAgICAgMTcuMjMxfCAgMTY2MzguNDIzfCAgICAgIDY0fCAgICAgMHwgICAgICAw
-LjQzMXwgIDE2NjQxLjk3NApSVER8ICAgICAgMC40NTR8ICAgICAxNy4yMzJ8ICAxNjYzOC40ODl8
-ICAgICAgODB8ICAgICAwfCAgICAgIDAuNDMxfCAgMTY2NDEuOTc0ClJURHwgICAgICAwLjQ1M3wg
-ICAgIDE3LjIyM3wgIDE2NjM4LjU2OXwgICAgICA5NnwgICAgIDB8ICAgICAgMC40MzF8ICAxNjY0
-MS45NzQKUlREfCAgICAgIDAuNDQwfCAgICAgMTcuMjI3fCAgMTY2MzguNjEyfCAgICAgMTEyfCAg
-ICAgMHwgICAgICAwLjQzMXwgIDE2NjQxLjk3NApSVER8ICAgICAgMC40NTh8ICAgICAxNy4yMjR8
-ICAxNjYzNy44MjJ8ICAgICAxMjh8ICAgICAwfCAgICAgIDAuNDMxfCAgMTY2NDEuOTc0ClJURHwg
-ICAgICAwLjQwN3wgICAgIDE3LjI2OXwgIDE2NjM5LjQxN3wgICAgIDE0NHwgICAgIDB8ICAgICAg
-MC40MDd8ICAxNjY0MS45NzQKUlREfCAgICAgIDAuNDMyfCAgICAgMTcuMjM3fCAgMTY2MzguNjA3
-fCAgICAgMTYwfCAgICAgMHwgICAgICAwLjQwN3wgIDE2NjQxLjk3NApSVER8ICAgICAgMC40NDJ8
-ICAgICAxNy4yNzh8ICAxNjYzOC42OTV8ICAgICAxNzZ8ICAgICAwfCAgICAgIDAuNDA3fCAgMTY2
-NDEuOTc0ClJURHwgICAgICAwLjQzN3wgICAgIDE3LjIyNnwgIDE2NjM5LjIwMnwgICAgIDE5Mnwg
-ICAgIDB8ICAgICAgMC40MDd8ICAxNjY0MS45NzQKUlREfCAgICAgIDAuNDI3fCAgICAgMTcuMjMy
-fCAgMTY2MzcuNDY3fCAgICAgMjA4fCAgICAgMHwgICAgICAwLjQwN3wgIDE2NjQxLjk3NApSVER8
-ICAgICAgMC40NTR8ICAgICAxNy4yODB8ICAxNjYzOC44Mjh8ICAgICAyMjR8ICAgICAwfCAgICAg
-IDAuNDA3fCAgMTY2NDEuOTc0ClJURHwgICAgICAwLjQyMXwgICAgIDE3LjI0MXwgIDE2NjM3Ljg2
-NnwgICAgIDI0MHwgICAgIDB8ICAgICAgMC40MDd8ICAxNjY0MS45NzQKUlREfCAgICAgIDAuMzk4
-fCAgICAgMTcuMjM2fCAgMTY2MzkuNTMwfCAgICAgMjU2fCAgICAgMHwgICAgICAwLjM5OHwgIDE2
-NjQxLjk3NApSVER8ICAgICAgMC40MzF8ICAgICAxNy4yNTJ8ICAxNjYzNy4wMzJ8ICAgICAyNzJ8
-ICAgICAwfCAgICAgIDAuMzk4fCAgMTY2NDEuOTc0ClJURHwgICAgICAwLjQ0NnwgICAgIDE3LjI1
-NnwgIDE2NjM4Ljg0NXwgICAgIDI4OHwgICAgIDB8ICAgICAgMC4zOTh8ICAxNjY0MS45NzQKUlRE
-fCAgICAgIDAuNDQ2fCAgICAgMTcuMjUzfCAgMTY2MzguOTgxfCAgICAgMzA0fCAgICAgMHwgICAg
-ICAwLjM5OHwgIDE2NjQxLjk3NApSVER8ICAgICAgMC40MzN8ICAgICAxNy4yNDN8ICAxNjYzNy4z
-Mjl8ICAgICAzMjB8ICAgICAwfCAgICAgIDAuMzk4fCAgMTY2NDEuOTc0Cl5DLS0tfC0tLS0tLS0t
-LS0tfC0tLS0tLS0tLS0tfC0tLS0tLS0tLS0tfC0tLS0tLS0tfC0tLS0tLXwtLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tClJUU3wgICAgICAwLjM5OHwgICAgIDE3LjI0MnwgIDE2NjQxLjk3NHwgICAg
-IDMyMHwgICAgIDB8ICAgIDAwOjAwOjIxLzAwOjAwOjIxCi1zaC0yLjA1YiMgCgoKCgojaW5jbHVk
-ZSA8c3RkaW8uaD4KI2luY2x1ZGUgPHNpZ25hbC5oPgojaW5jbHVkZSA8dW5pc3RkLmg+CiNpbmNs
-dWRlIDxzeXMvbW1hbi5oPgoKCiNpbmNsdWRlIDxuYXRpdmUvdGFzay5oPgojaW5jbHVkZSA8bmF0
-aXZlL3RpbWVyLmg+CgoKUlRfVEFTSyBkZW1vX3Rhc2s7CgoKLyogTk9URTogZXJyb3IgaGFuZGxp
-bmcgb21pdHRlZC4gKi8KCgp2b2lkIGRlbW8odm9pZCAqYXJnKQp7CiAgICAgICAgUlRJTUUgbm93
-LCBwcmV2aW91czsKCgogICAgICAgIC8qCiAgICAgICAgICogQXJndW1lbnRzOiAmdGFzayAoTlVM
-TD1zZWxmKSwKICAgICAgICAgKiAgICAgICAgICAgIHN0YXJ0IHRpbWUsCiAgICAgICAgICogICAg
-ICAgICAgICBwZXJpb2QgKGhlcmU6IDEgcykKICAgICAgICAgKi8KICAgICAgICBydF90YXNrX3Nl
-dF9wZXJpb2RpYyhOVUxMLCBUTV9OT1csIDEwMDAwMDAwMDApOwogICAgICAgIHByZXZpb3VzID0g
-cnRfdGltZXJfcmVhZCgpOwpsb25nIGxvbmcgaSxqLGs7CiAgICAgICAgd2hpbGUgKDEpIHsKICAg
-ICAgICAgICAgICAgIHJ0X3Rhc2tfd2FpdF9wZXJpb2QoTlVMTCk7CiAgICAgICAgICAgICAgICBu
-b3cgPSBydF90aW1lcl9yZWFkKCk7CiBmb3IoaT0xO2k8MTAwMDtpKyspCmZvcihqPTE7ajxpO2or
-KykKaz1pKmo7CiAgICAgICAgICAgICAgICAvKgogICAgICAgICAgICAgICAgICogTk9URTogcHJp
-bnRmIG1heSBoYXZlIHVuZXhwZWN0ZWQgaW1wYWN0IG9uIHRoZSB0aW1pbmcgb2YKICAgICAgICAg
-ICAgICAgICAqICAgICAgIHlvdXIgcHJvZ3JhbS4gSXQgaXMgdXNlZCBoZXJlIGluIHRoZSBjcml0
-aWNhbCBsb29wCiAgICAgICAgICAgICAgICAgKiAgICAgICBvbmx5IGZvciBkZW1vbnN0cmF0aW9u
-IHB1cnBvc2VzLgogICAgICAgICAgICAgICAgICovCiAgICAgICAgICAgICAgICBwcmludGYoIlRp
-bWUgc2luY2UgbGFzdCB0dXJuOiAlbGQuJTA2bGQgbXNcbiIsCiAgICAgICAgICAgICAgICAgICAg
-ICAgKGxvbmcpKG5vdyAtIHByZXZpb3VzKSAvIDEwMDAwMDAsCiAgICAgICAgICAgICAgICAgICAg
-ICAgKGxvbmcpKG5vdyAtIHByZXZpb3VzKSAlIDEwMDAwMDApOwogICAgICAgICAgICAgICAgICAg
-ICAgIHByZXZpb3VzID0gbm93OwogICAgICAgIH0KfQoKCnZvaWQgY2F0Y2hfc2lnbmFsKGludCBz
-aWcpCnsKfQoKCmludCBtYWluKGludCBhcmdjLCBjaGFyKiBhcmd2W10pCnsKICAgICAgICBzaWdu
-YWwoU0lHVEVSTSwgY2F0Y2hfc2lnbmFsKTsKICAgICAgICBzaWduYWwoU0lHSU5ULCBjYXRjaF9z
-aWduYWwpOwoKCiAgICAgICAgLyogQXZvaWRzIG1lbW9yeSBzd2FwcGluZyBmb3IgdGhpcyBwcm9n
-cmFtICovCiAgICAgICAgbWxvY2thbGwoTUNMX0NVUlJFTlR8TUNMX0ZVVFVSRSk7CgoKICAgICAg
-ICAvKgogICAgICAgICAqIEFyZ3VtZW50czogJnRhc2ssCiAgICAgICAgICogICAgICAgICAgICBu
-YW1lLAogICAgICAgICAqICAgICAgICAgICAgc3RhY2sgc2l6ZSAoMD1kZWZhdWx0KSwKICAgICAg
-ICAgKiAgICAgICAgICAgIHByaW9yaXR5LAogICAgICAgICAqICAgICAgICAgICAgbW9kZSAoRlBV
-LCBzdGFydCBzdXNwZW5kZWQsIC4uLikKICAgICAgICAgKi8KICAgICAgICBydF90YXNrX2NyZWF0
-ZSgmZGVtb190YXNrLCAidHJpdmlhbCIsIDAsIDk5LCAwKTsKCgogICAgICAgIC8qCiAgICAgICAg
-ICogQXJndW1lbnRzOiAmdGFzaywKICAgICAgICAgKiAgICAgICAgICAgIHRhc2sgZnVuY3Rpb24s
-CiAgICAgICAgICogICAgICAgICAgICBmdW5jdGlvbiBhcmd1bWVudAogICAgICAgICAqLwogICAg
-ICAgIHJ0X3Rhc2tfc3RhcnQoJmRlbW9fdGFzaywgJmRlbW8sIE5VTEwpOwoKCiAgICAgICAgcGF1
-c2UoKTsKCgogICAgICAgIHJ0X3Rhc2tfZGVsZXRlKCZkZW1vX3Rhc2spOwp9
+On Mon, 2014-04-07 at 11:53 +0200, Gilles Chanteperdrix wrote:
+> On 04/07/2014 07:34 AM, Peter Howard wrote:
+> > 
+> > On Wed, 2014-04-02 at 09:24 +0200, Gilles Chanteperdrix wrote:
+> >> On 04/02/2014 04:59 AM, Peter Howard wrote:
+> >>> Hi,
+> >>>
+> >>> I'm interested in running xenomai on a TI-OMAP L138 board.  I found the
+> >>> following thread in the archives:
+> >>>
+> >>> http://www.xenomai.org/pipermail/xenomai/2010-January/018898.html
+> >>>
+> >>> where someone was working on porting ipipe and xenomai to that board.
+> >>> However, the thread ended with problems still unresolved, and the patch
+> >>> in the thread (just the changes for ipipe) isn't in the ipipe
+> >>> repository.
+> >>>
+> >>> Does anyone know if this work was completed or just faded into the
+> >>> ether?
+> >>
+> >> We never merged a patch for this processor. And a lot of things changed
+> >> since that time. If you are interested in porting the I-pipe patch to
+> >> this processor, see:
+> >>
+> >> http://www.xenomai.org/index.php/I-pipe-core:ArmPorting
+> >>
+> > 
+> > Contrary to what I said last week, I'm working on a patch off the head
+> > of the ipipe repo.  I have built a kernel with an ipipe port and with
+> > xenomai patched in.  However the latency results are bad right now:
+> 
+> Well, in that case enable the I-pipe tracer, and run latency with the -f
+> option to know why.
+> 
+
+I turned the tracing on and . . . start getting kernel panics from a
+NULL pointer dereference.  If I have tracing on from boot it dies
+shortly after getting to the login prompt.  If I disable it at boot, I
+start getting ext-3 errors as soon as I enable it (losing the ability to
+read the filesystem at all), then get the panic a few seconds later.  I
+get an I-pipe tracer log along with the panic, but aren't really sure
+how to interpret it in this context.   In all cases the failure appears
+to be in the context of __ipipe_trace():
+
+
+Unable to handle kernel NULL pointer dereference at virtual address 00000004    
+pgd = c73e8000, hw pgd = c73e8000                                               
+[00000004] *pgd=c72a3831, *pte=00000000, *ppte=00000000                         
+Internal error: Oops: 817 [#1] PREEMPT ARM                                      
+Modules linked in:                                                              
+CPU: 0 PID: 2307 Comm: run-parts Not tainted 3.10.0-ipipe-00165-g9a2c8c8-dirty 5
+task: c70ef800 ti: c737a000 task.ti: c737a000                                   
+PC is at get_page_from_freelist+0x164/0x750                                     
+LR is at __ipipe_trace+0xa8/0x5b8                                           
+
+
+I'm going to keep digging to see if I can work out what the actual
+failure is, but any suggestions would be appreciated.  (I can provide
+full dump and following trace log if it would be useful)
+> 
+
+-- 
+Peter Howard <pjh@northern-ridge.com.au>
+
+
