@@ -1,5 +1,5 @@
-Message-ID: <534491C2.3070501@xenomai.org>
-Date: Wed, 09 Apr 2014 02:18:10 +0200
+Message-ID: <53449244.8040502@xenomai.org>
+Date: Wed, 09 Apr 2014 02:20:20 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <1396407588.27578.5.camel@localhost.localdomain>
@@ -99,7 +99,10 @@ On 04/09/2014 01:30 AM, Peter Howard wrote:
 > I enabled FCSE, and the max latency is more consistent (though the min
 > and average  latency has climbed).  How do the below figures look?
 
-Without any load? It is meaningless.
+Otherwise, it is hard to say whether there is an issue or not. It is not
+uncommon for armv4 or armv5 to have high latencies like this.
+On what core is this processor based, running at what frequency?
+
 
 -- 
                                                                 Gilles.
