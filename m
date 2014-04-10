@@ -1,18 +1,18 @@
-Message-ID: <533A9A7C.7020408@xenomai.org>
-Date: Tue, 01 Apr 2014 12:52:44 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20140331205339.GU17765@csclub.uwaterloo.ca>
- <20140331205710.GV17765@csclub.uwaterloo.ca> <5339D8EB.3030702@xenomai.org>
- <20140331212534.GW17765@csclub.uwaterloo.ca> <5339E2CE.7060703@xenomai.org>
- <20140331215348.GX17765@csclub.uwaterloo.ca>
- <20140331215933.GY17765@csclub.uwaterloo.ca>
- <20140331220421.GZ17765@csclub.uwaterloo.ca> <5339E80C.9020604@xenomai.org>
- <5339EBE1.3060907@xenomai.org> <20140401013227.GA17765@csclub.uwaterloo.ca>
-In-Reply-To: <20140401013227.GA17765@csclub.uwaterloo.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Porting xenomai 2.6.3 and ipipe to 3.12 kernel
+In-Reply-To: <53317791.3030106@xenomai.org>
+References: <CACKc53LDHUFyLAy5-=wW7Zy+rmB1gthujCORsY1w4zyzip1bmQ@mail.gmail.com>
+ <53163439.6070608@gmail.com> <532DBBFF.9010900@xenomai.org>
+ <53302093.9090503@gmail.com> <533022B7.9000405@xenomai.org>
+ <533159E0.7090809@gmail.com> <53316570.5060600@xenomai.org>
+ <5331685C.8030100@gmail.com> <53316A3F.1040601@xenomai.org>
+ <53316E59.3000607@gmail.com> <53316F63.1030306@xenomai.org>
+ <53317338.60805@gmail.com> <53317791.3030106@xenomai.org>
+Date: Thu, 10 Apr 2014 14:25:41 +0200
+Message-ID: <CACKc53JTFYsFt1Xbm2m8zdr=uNBGm3m_mQJWJ5vO0Jx+Os_OmQ@mail.gmail.com>
+From: Wojciech Domski <wojciech.domski@gmail.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Sensoray 626 analogy driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,105 +21,143 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 04/01/2014 03:32 AM, Lennart Sorensen wrote:
-> On Tue, Apr 01, 2014 at 12:27:45AM +0200, Gilles Chanteperdrix wrote:
->> Ok, arch_counter_set_user_access disables user access to the 
->> architected timer counter. The following patch should avoid this:
->>
->> diff --git a/drivers/clocksource/arm_arch_timer.c b/drivers/clocksource/arm_arch_timer.c
->> index b605f04e..7aea949 100644
->> --- a/drivers/clocksource/arm_arch_timer.c
->> +++ b/drivers/clocksource/arm_arch_timer.c
->> @@ -374,7 +374,9 @@ static int arch_timer_setup(struct clock_event_device *clk)
->>  			enable_percpu_irq(arch_timer_ppi[PHYS_NONSECURE_PPI], 0);
->>  	}
->>  
->> +#ifndef CONFIG_IPIPE
->>  	arch_counter_set_user_access();
->> +#endif
->>  
->>  	return 0;
->>  }
-> 
-> That might have taken me a while to track down.  Excellent work.
-> 
-> root@omap5:~# /usr/lib/xenomai/testsuite/latency 
-> == Sampling period: 1000 us
-> == Test mode: periodic user-mode task
-> == All results in microseconds
-> warming up...
-> RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99)
-> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
-> RTD|     -0.163|      0.488|      3.743|       0|     0|     -0.163|      3.743
-> RTD|     -0.652|      0.000|      3.092|       0|     0|     -0.652|      3.743
-> RTD|     -0.652|      0.000|      2.929|       0|     0|     -0.652|      3.743
-> RTD|     -0.652|      0.000|      2.929|       0|     0|     -0.652|      3.743
-> RTD|     -0.652|      0.325|      3.255|       0|     0|     -0.652|      3.743
-> RTD|     -0.652|      0.000|      2.929|       0|     0|     -0.652|      3.743
-> RTD|     -0.489|      0.162|      3.743|       0|     0|     -0.652|      3.743
-> RTD|     -0.652|      0.000|      2.929|       0|     0|     -0.652|      3.743
-> RTD|     -0.652|      0.000|      3.092|       0|     0|     -0.652|      3.743
-> RTD|     -0.652|      0.325|      3.906|       0|     0|     -0.652|      3.906
-> RTD|     -0.652|      0.000|      3.255|       0|     0|     -0.652|      3.906
-> RTD|     -0.652|      0.000|      2.278|       0|     0|     -0.652|      3.906
-> RTD|     -2.442|      0.000|      2.604|       0|     0|     -2.442|      3.906
-> RTD|     -0.652|      0.162|      3.255|       0|     0|     -2.442|      3.906
-> RTD|     -0.652|      0.325|      3.092|       0|     0|     -2.442|      3.906
-> RTD|     -0.652|      0.000|      3.255|       0|     0|     -2.442|      3.906
-> RTD|     -0.652|      0.000|      2.929|       0|     0|     -2.442|      3.906
-> RTD|     -0.652|      0.000|      3.743|       0|     0|     -2.442|      3.906
-> RTD|     -0.652|      0.000|      2.929|       0|     0|     -2.442|      3.906
-> RTD|     -0.652|      0.325|      3.417|       0|     0|     -2.442|      3.906
-> RTD|     -1.954|      0.000|      3.255|       0|     0|     -2.442|      3.906
-> RTT|  00:00:22  (periodic user-mode task, 1000 us period, priority 99)
-> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
-> RTD|     -0.652|      0.000|      2.929|       0|     0|     -2.442|      3.906
-> RTD|     -0.652|      0.000|      2.766|       0|     0|     -2.442|      3.906
-> RTD|     -0.652|      0.000|      2.766|       0|     0|     -2.442|      3.906
-> RTD|     -0.652|      0.325|      3.092|       0|     0|     -2.442|      3.906
-> RTD|     -0.652|      0.000|      2.766|       0|     0|     -2.442|      3.906
-> RTD|     -0.652|      0.000|      2.929|       0|     0|     -2.442|      3.906
-> RTD|     -0.652|      0.000|      3.092|       0|     0|     -2.442|      3.906
-> RTD|     -1.465|      0.000|      2.929|       0|     0|     -2.442|      3.906
-> RTD|     -0.652|      0.325|      3.580|       0|     0|     -2.442|      3.906
-> RTD|     -1.628|      0.000|      3.092|       0|     0|     -2.442|      3.906
-> RTD|     -0.652|      0.000|      2.929|       0|     0|     -2.442|      3.906
-> RTD|     -0.652|      0.000|      2.766|       0|     0|     -2.442|      3.906
-> RTD|     -0.652|      0.000|      3.092|       0|     0|     -2.442|      3.906
-> RTD|     -0.489|      0.325|      4.231|       0|     0|     -2.442|      4.231
-> RTD|     -0.652|      0.000|      3.580|       0|     0|     -2.442|      4.231
-> RTD|     -0.652|      0.000|      2.766|       0|     0|     -2.442|      4.231
-> RTD|     -0.652|      0.000|      2.604|       0|     0|     -2.442|      4.231
-> RTD|     -1.303|      0.000|      3.417|       0|     0|     -2.442|      4.231
-> RTD|     -0.652|      0.325|      3.743|       0|     0|     -2.442|      4.231
-> RTD|     -1.954|      0.000|      2.929|       0|     0|     -2.442|      4.231
-> RTD|     -0.652|      0.000|      2.441|       0|     0|     -2.442|      4.231
-> RTT|  00:00:43  (periodic user-mode task, 1000 us period, priority 99)
-> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
-> RTD|     -0.652|      0.000|      2.929|       0|     0|     -2.442|      4.231
-> RTD|     -0.652|      0.000|      2.929|       0|     0|     -2.442|      4.231
-> RTD|     -0.652|      0.325|      3.417|       0|     0|     -2.442|      4.231
-> RTD|     -0.652|      0.000|      2.604|       0|     0|     -2.442|      4.231
-> RTD|     -0.652|      0.000|      2.929|       0|     0|     -2.442|      4.231
-> RTD|     -0.652|      0.000|      3.092|       0|     0|     -2.442|      4.231
-> ^C---|-----------|-----------|-----------|--------|------|-------------------------
-> RTS|     -2.442|      0.000|      4.231|       0|     0|    00:00:48/00:00:48
-> 
-> mutex torture tests now pass, cond tests pass, most things seem to pass,
-> but I think the failing ones need either modules enabled I didn't enable,
-> or maybe special hardware.
-> 
-> Any recommended way to test if things are really working now?
-> 
-The way I test it is by running xeno-regression-test, using dohell with
-LTP to create a load. Note that the latency result given by
-xeno-regression-test should not be taken into account as switchtest is
-running concurrently and creates large non-preemptible sections,
-xeno-regression-test is more a stress test.
+2014-03-25 13:33 GMT+01:00 Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org>:
 
--- 
-                                                                Gilles.
+> On 03/25/2014 01:14 PM, Wojciech Domski wrote:
+> > W dniu 25.03.2014 12:58, Gilles Chanteperdrix pisze:
+> >> On 03/25/2014 12:54 PM, Wojciech Domski wrote:
+> >>> W dniu 25.03.2014 12:36, Gilles Chanteperdrix pisze:
+> >>>> On 03/25/2014 12:28 PM, Wojciech Domski wrote:
+> >>>>> W dniu 25.03.2014 12:16, Gilles Chanteperdrix pisze:
+> >>>>>> On 03/25/2014 11:26 AM, Wojciech Domski wrote:
+> >>>>>>> W dniu 24.03.2014 13:19, Gilles Chanteperdrix pisze:
+> >>>>>>>> The solution which would be acceptable is not to have busy waits,
+> except
+> >>>>>>>> for very short durations. But for instance transferring a byte on
+> I2C
+> >>>>>>>> takes around 20us at 400 kHz, a 20us masking section is
+> unacceptable.
+> >>>>>>>> rtdm_task_busy_sleep, as the name suggests is a busy wait loop,
+> so, no,
+> >>>>>>>> it is not acceptable either.
+> >>>>>>>>
+> >>>>>>>> Use a thread or a timer to reschedule while you wait for the end
+> of the
+> >>>>>>>> transfer, instead of busy waiting.
+> >>>>>>> Dear Gilles,
+> >>>>>>>
+> >>>>>>> As you mentioned before the driver has few places like this:
+> >>>>>>>
+> >>>>>>> while(!FLAG1);
+> >>>>>>> while(!FLAG2);
+> >>>>>>>
+> >>>>>>> Would a solution of creating a separate task for this purpose be
+> ok?
+> >>>>>>>
+> >>>>>>> task()
+> >>>>>>> {
+> >>>>>>>         while(!FLAG1);
+> >>>>>>>         while(!FLAG2);
+> >>>>>>> }
+> >>>>>> I was rather thinking about rtdm_task_sleep() instead.
+> >>>>>>
+> >>>>>>> In the place of those loops a piece of code responsible for
+> creating and
+> >>>>>>> joining task would be put instead:
+> >>>>>>>
+> >>>>>>> rtdm_task_init();
+> >>>>>>> rtdm_task_join_nrt();
+> >>>>>> This will not work for code currently running in interrupt
+> handlers. An
+> >>>>>> interrupt handler can not call rtdm_task_join_nrt(). You will rath=
+er
+> >>>>>> have to wake up the thread, not reenabling the interrupt at the end
+> of
+> >>>>>> the handler, and reenable the interrupt in the thread when the job
+> is
+> >>>>>> done. Or alternatively, fire a timer instead of waking up a thread.
+> >>>>>>
+> >>>>>>
+> >>>>> Dear Gilles,
+> >>>>>
+> >>>>> If what I have understood correctly, basically what you mean is
+> changing:
+> >>>>>
+> >>>>> while(!FLAG) ;
+> >>>>>
+> >>>>> into
+> >>>>>
+> >>>>> while(!FLAG)
+> >>>>>        rtdm_task_sleep();
+> >>>>>
+> >>>>> Xenomai's documentation that rtdm_task_sleep() can be always
+> >>>>> rescheduled. In my opinion
+> >>>>> this solution is sufficient and meets Xenomai requirements.
+> >>>> This solution will not work if the busy loop was in an irq handler.
+> You
+> >>>> can not call rtdm_task_sleep from the context of an irq handler.
+> >>>>
+> >>>>
+> >>> Ok, now I get your point.
+> >>>
+> >>> However, what do you mean exactly by rescheduling while waiting? Do y=
+ou
+> >>> mean something like
+> >>> putting all irq services into another thread and only in irq handler
+> >>> notify the separate thread
+> >>> to do the job accordingly?
+> >> Well, I do not know exactly, I have not looked at the details of the
+> >> driver, you are supposed to do that. But you may be able to split the
+> >> interrupt code in two parts: a first part that will run in interrupt
+> >> mode, and a second part that will run as a thread. The irq handler wou=
+ld
+> >> wake the thread up at the end of the first part, and return without
+> >> reenabling the interrupt at interrupt controller level. The thread wou=
+ld
+> >> execute, sleep during the I2C transfers as needed, and reenable the
+> >> interrupt before going back to sleep.
+> >>
+> >>
+> > So would it be a good practise to create a new task for irq service with
+> >
+> > rtdm_task_init();
+> >
+> > inside attach function and join it with
+> >
+> > rtdm_task_join_nrt();
+> >
+> > inside detach function?
+>
+> I do not know the details about analogy drivers, so, again, it is left
+> to you to read other analogy drivers and see where is the best place to
+> do what you want to do.
+>
+>
+> --
+>                                                                 Gilles.
+>
 
+Dear Gilles,
+
+I have altered the driver according to your advices.
+If I had omitted something please let me know.
+
+Please find a patch enclosed in the attachment.
+
+Best regards,
+Wojciech Domski
+
+Domski.pl
+
+Wojciech.Domski.pl
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: s626_patch.patch
+Type: text/x-patch
+Size: 141659 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140410/e719124=
+7/attachment.bin>
