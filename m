@@ -1,23 +1,19 @@
-Message-ID: <53471389.6000000@xenomai.org>
-Date: Thu, 10 Apr 2014 23:56:25 +0200
+Message-ID: <534714A3.7000404@xenomai.org>
+Date: Fri, 11 Apr 2014 00:01:07 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1396407588.27578.5.camel@localhost.localdomain>
- <533BBB11.5090808@xenomai.org>
- <1396848843.2481.15.camel@localhost.localdomain>
- <5343BEFB.7050402@xenomai.org>
- <1396999856.2660.7.camel@localhost.localdomain>
- <53449244.8040502@xenomai.org>
- <1397003664.2660.14.camel@localhost.localdomain>
- <1397017658.2660.16.camel@localhost.localdomain>
- <534534FD.5090805@xenomai.org>
- <1397113300.2720.5.camel@localhost.localdomain>
- <5346895B.6080401@xenomai.org>
- <1397159850.2881.3.camel@localhost.localdomain>
-In-Reply-To: <1397159850.2881.3.camel@localhost.localdomain>
+References: <CACKc53LDHUFyLAy5-=wW7Zy+rmB1gthujCORsY1w4zyzip1bmQ@mail.gmail.com>
+ <53163439.6070608@gmail.com> <532DBBFF.9010900@xenomai.org>
+ <53302093.9090503@gmail.com> <533022B7.9000405@xenomai.org>
+ <533159E0.7090809@gmail.com> <53316570.5060600@xenomai.org>
+ <5331685C.8030100@gmail.com> <53316A3F.1040601@xenomai.org>
+ <53316E59.3000607@gmail.com> <53316F63.1030306@xenomai.org>
+ <53317338.60805@gmail.com> <53317791.3030106@xenomai.org>
+ <CACKc53JTFYsFt1Xbm2m8zdr=uNBGm3m_mQJWJ5vO0Jx+Os_OmQ@mail.gmail.com>
+In-Reply-To: <CACKc53JTFYsFt1Xbm2m8zdr=uNBGm3m_mQJWJ5vO0Jx+Os_OmQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] OMAP L138
+Subject: Re: [Xenomai] Sensoray 626 analogy driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,163 +22,149 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Peter Howard <pjh@northern-ridge.com.au>
+To: Wojciech Domski <wojciech.domski@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 04/10/2014 09:57 PM, Peter Howard wrote:
-> On Thu, 2014-04-10 at 14:06 +0200, Gilles Chanteperdrix wrote:
->> On 04/10/2014 09:01 AM, Peter Howard wrote:
->>> On Wed, 2014-04-09 at 13:54 +0200, Gilles Chanteperdrix wrote:
->>>> On 04/09/2014 06:27 AM, Peter Howard wrote:
->>>>> On Wed, 2014-04-09 at 10:34 +1000, Peter Howard wrote:
->>>>>> On Wed, 2014-04-09 at 02:20 +0200, Gilles Chanteperdrix wrote:
->>>>>>> On 04/09/2014 01:30 AM, Peter Howard wrote:
->>>>>>>> On Tue, 2014-04-08 at 11:18 +0200, Gilles Chanteperdrix wrote:
->>>>>>>>> On 04/07/2014 07:34 AM, Peter Howard wrote:
+On 04/10/2014 02:25 PM, Wojciech Domski wrote:
+> 2014-03-25 13:33 GMT+01:00 Gilles Chanteperdrix <
+> gilles.chanteperdrix@xenomai.org>:
+> 
+>> On 03/25/2014 01:14 PM, Wojciech Domski wrote:
+>>> W dniu 25.03.2014 12:58, Gilles Chanteperdrix pisze:
+>>>> On 03/25/2014 12:54 PM, Wojciech Domski wrote:
+>>>>> W dniu 25.03.2014 12:36, Gilles Chanteperdrix pisze:
+>>>>>> On 03/25/2014 12:28 PM, Wojciech Domski wrote:
+>>>>>>> W dniu 25.03.2014 12:16, Gilles Chanteperdrix pisze:
+>>>>>>>> On 03/25/2014 11:26 AM, Wojciech Domski wrote:
+>>>>>>>>> W dniu 24.03.2014 13:19, Gilles Chanteperdrix pisze:
+>>>>>>>>>> The solution which would be acceptable is not to have busy waits,
+>> except
+>>>>>>>>>> for very short durations. But for instance transferring a byte on
+>> I2C
+>>>>>>>>>> takes around 20us at 400 kHz, a 20us masking section is
+>> unacceptable.
+>>>>>>>>>> rtdm_task_busy_sleep, as the name suggests is a busy wait loop,
+>> so, no,
+>>>>>>>>>> it is not acceptable either.
 >>>>>>>>>>
->>>>>>>>>> On Wed, 2014-04-02 at 09:24 +0200, Gilles Chanteperdrix wrote:
->>>>>>>>>>> On 04/02/2014 04:59 AM, Peter Howard wrote:
->>>>>>>>>>>> Hi,
->>>>>>>>>>>>
->>>>>>>>>>>> I'm interested in running xenomai on a TI-OMAP L138 board.  I found the
->>>>>>>>>>>> following thread in the archives:
->>>>>>>>>>>>
->>>>>>>>>>>> http://www.xenomai.org/pipermail/xenomai/2010-January/018898.html
->>>>>>>>>>>>
->>>>>>>>>>>> where someone was working on porting ipipe and xenomai to that board.
->>>>>>>>>>>> However, the thread ended with problems still unresolved, and the patch
->>>>>>>>>>>> in the thread (just the changes for ipipe) isn't in the ipipe
->>>>>>>>>>>> repository.
->>>>>>>>>>>>
->>>>>>>>>>>> Does anyone know if this work was completed or just faded into the
->>>>>>>>>>>> ether?
->>>>>>>>>>>
->>>>>>>>>>> We never merged a patch for this processor. And a lot of things changed
->>>>>>>>>>> since that time. If you are interested in porting the I-pipe patch to
->>>>>>>>>>> this processor, see:
->>>>>>>>>>>
->>>>>>>>>>> http://www.xenomai.org/index.php/I-pipe-core:ArmPorting
->>>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>> Contrary to what I said last week, I'm working on a patch off the head
->>>>>>>>>> of the ipipe repo.  I have built a kernel with an ipipe port and with
->>>>>>>>>> xenomai patched in.  However the latency results are bad right now:
->>>>>>>>>>
->>>>>>>>>> root@arago:~# xeno latency -T 25
->>>>>>>>>> == Sampling period: 1000 us
->>>>>>>>>> == Test mode: periodic user-mode task
->>>>>>>>>> == All results in microseconds
->>>>>>>>>> warming up...
->>>>>>>>>> RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99)
->>>>>>>>>> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
->>>>>>>>>> RTD|      3.541|      8.833|     60.749|       0|     0|      3.541|     60.749
->>>>>>>>>> RTD|      3.499|     13.583|     93.916|       0|     0|      3.499|     93.916
->>>>>>>>>> RTD|      3.666|     88.999|    109.708|       0|     0|      3.499|    109.708
->>>>>>>>>> RTD|      3.541|     14.958|     95.374|       0|     0|      3.499|    109.708
->>>>>>>>>> RTD|      3.541|      9.333|     77.583|       0|     0|      3.499|    109.708
->>>>>>>>>> RTD|      4.041|     88.416|    109.791|       0|     0|      3.499|    109.791
->>>>>>>>>> RTD|      3.499|      8.958|     72.791|       0|     0|      3.499|    109.791
->>>>>>>>>> RTD|      3.499|     26.041|    106.874|       0|     0|      3.499|    109.791
->>>>>>>>>> RTD|      3.874|     82.708|    107.916|       0|     0|      3.499|    109.791
->>>>>>>>>> RTD|      3.499|      9.083|     73.708|       0|     0|      3.499|    109.791
->>>>>>>>>> RTD|      3.333|      8.874|     62.458|       0|     0|      3.333|    109.791
->>>>>>>>>> RTD|      3.333|      8.749|     62.208|       0|     0|      3.333|    109.791 
->>>>>>>>>> RTD|      3.416|     12.708|     99.416|       0|     0|      3.333|    109.791 
->>>>>>>>>> RTD|      3.499|     14.249|    106.749|       0|     0|      3.333|    109.791 
->>>>>>>>>> RTD|      3.541|      9.083|     76.499|       0|     0|      3.333|    109.791 
->>>>>>>>>> RTD|      3.249|      8.791|     63.499|       0|     0|      3.249|    109.791 
->>>>>>>>>> RTD|      3.416|      8.999|     62.499|       0|     0|      3.249|    109.791 
->>>>>>>>>> RTD|      3.541|     26.166|    101.208|       0|     0|      3.249|    109.791 
->>>>>>>>>> RTD|      3.583|     13.624|     92.458|       0|     0|      3.249|    109.791 
->>>>>>>>>> RTD|      3.541|      8.916|     73.708|       0|     0|      3.249|    109.791 
->>>>>>>>>> RTD|      3.541|      8.999|     64.291|       0|     0|      3.249|    109.791 
->>>>>>>>>> RTT|  00:00:22  (periodic user-mode task, 1000 us period, priority 99)          
->>>>>>>>>> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst 
->>>>>>>>>> RTD|      3.499|      8.874|     61.374|       0|     0|      3.249|    109.791 
->>>>>>>>>> RTD|      3.499|     13.833|    100.749|       0|     0|      3.249|    109.791 
->>>>>>>>>> RTD|      3.541|     13.083|     99.249|       0|     0|      3.249|    109.791 
->>>>>>>>>> ---|-----------|-----------|-----------|--------|------|------------------------
->>>>>>>>>> RTS|      3.249|     21.458|    109.791|       0|     0|    00:00:25/00:00:25   
->>>>>>>>>> root@arago:~# 
+>>>>>>>>>> Use a thread or a timer to reschedule while you wait for the end
+>> of the
+>>>>>>>>>> transfer, instead of busy waiting.
+>>>>>>>>> Dear Gilles,
 >>>>>>>>>
->>>>>>>>> Note that if the OMAPL138 is an armv4 or armv5, you may want to enable
->>>>>>>>> the FCSE in order to reduce context switch time (and latencies).
+>>>>>>>>> As you mentioned before the driver has few places like this:
 >>>>>>>>>
+>>>>>>>>> while(!FLAG1);
+>>>>>>>>> while(!FLAG2);
 >>>>>>>>>
+>>>>>>>>> Would a solution of creating a separate task for this purpose be
+>> ok?
+>>>>>>>>>
+>>>>>>>>> task()
+>>>>>>>>> {
+>>>>>>>>>         while(!FLAG1);
+>>>>>>>>>         while(!FLAG2);
+>>>>>>>>> }
+>>>>>>>> I was rather thinking about rtdm_task_sleep() instead.
 >>>>>>>>
->>>>>>>> I enabled FCSE, and the max latency is more consistent (though the min
->>>>>>>> and average  latency has climbed).  How do the below figures look?
+>>>>>>>>> In the place of those loops a piece of code responsible for
+>> creating and
+>>>>>>>>> joining task would be put instead:
+>>>>>>>>>
+>>>>>>>>> rtdm_task_init();
+>>>>>>>>> rtdm_task_join_nrt();
+>>>>>>>> This will not work for code currently running in interrupt
+>> handlers. An
+>>>>>>>> interrupt handler can not call rtdm_task_join_nrt(). You will rather
+>>>>>>>> have to wake up the thread, not reenabling the interrupt at the end
+>> of
+>>>>>>>> the handler, and reenable the interrupt in the thread when the job
+>> is
+>>>>>>>> done. Or alternatively, fire a timer instead of waking up a thread.
+>>>>>>>>
+>>>>>>>>
+>>>>>>> Dear Gilles,
 >>>>>>>
->>>>>>> Otherwise, it is hard to say whether there is an issue or not. It is not
->>>>>>> uncommon for armv4 or armv5 to have high latencies like this.
->>>>>>> On what core is this processor based, running at what frequency?
+>>>>>>> If what I have understood correctly, basically what you mean is
+>> changing:
 >>>>>>>
+>>>>>>> while(!FLAG) ;
 >>>>>>>
->>>>>> It's an AMR926EJ-S r5.  Datasheet claims 375MHz, U-boot claims 300MHz.
+>>>>>>> into
+>>>>>>>
+>>>>>>> while(!FLAG)
+>>>>>>>        rtdm_task_sleep();
+>>>>>>>
+>>>>>>> Xenomai's documentation that rtdm_task_sleep() can be always
+>>>>>>> rescheduled. In my opinion
+>>>>>>> this solution is sufficient and meets Xenomai requirements.
+>>>>>> This solution will not work if the busy loop was in an irq handler.
+>> You
+>>>>>> can not call rtdm_task_sleep from the context of an irq handler.
 >>>>>>
->>>>>> Load test to follow.
 >>>>>>
+>>>>> Ok, now I get your point.
 >>>>>
->>>>> OK, this run was done with LTP running on the board (runltplite.sh),
->>>>> with cpu utilization between 90% and 100%
+>>>>> However, what do you mean exactly by rescheduling while waiting? Do you
+>>>>> mean something like
+>>>>> putting all irq services into another thread and only in irq handler
+>>>>> notify the separate thread
+>>>>> to do the job accordingly?
+>>>> Well, I do not know exactly, I have not looked at the details of the
+>>>> driver, you are supposed to do that. But you may be able to split the
+>>>> interrupt code in two parts: a first part that will run in interrupt
+>>>> mode, and a second part that will run as a thread. The irq handler would
+>>>> wake the thread up at the end of the first part, and return without
+>>>> reenabling the interrupt at interrupt controller level. The thread would
+>>>> execute, sleep during the I2C transfers as needed, and reenable the
+>>>> interrupt before going back to sleep.
 >>>>
->>>> You have to run the latency test while ltp is running, and run this for 
->>>> a few hours (ltp runs a few hours anyway).
 >>>>
->>>> We provide the xeno-test script to do this (and dohell to generate 
->>>> load).
->>>>
->>>> See:
->>>> http://www.xenomai.org/documentation/xenomai-2.6/html/xeno-test/index.html
->>>> http://www.xenomai.org/documentation/xenomai-2.6/html/dohell/index.html
->>>>
+>>> So would it be a good practise to create a new task for irq service with
 >>>
->>> That's proving to be a bit challenging.  Giving dohell ltp is causing
->>> more kernel panics - usually a SIGSEGV to init.  Now I'm aware from your
->>> previous thread on the OMAP-L138 that ltp doesn't run cleanly on low-end
->>> arm chips as-is, but I'm guessing kernel panics wasn't the failure mode
->>> you were seeing.  (running ltp by itself also gives a different kernel
->>> panic after about 15-20 minutes)  So I need to look into that more.
+>>> rtdm_task_init();
 >>>
->>> I also need to try the ltp build on the stock Ti-supplied system to make
->>> sure there's not a pre-existing problem lurking in there; I should do
->>> that tomorrow.
->>
->> The thing is, if you enabled FCSE in guaranteed mode, it does not really
->> make sense to run LTP: most tests will fail because of the processes
->> number limit. In that case you should use the -b option, and pass the
->> path to hackbench only.
->>
+>>> inside attach function and join it with
 >>>
->>> FWIW just running xeno-test with no arguments finishes cleanly after
->>> running for 10 minutes or so.
+>>> rtdm_task_join_nrt();
 >>>
->>> Is it worth putting up the diff to the ipipe tree at this stage for
->>> people to look over?
+>>> inside detach function?
 >>
->> If you have random segfault, then something is still wrong. Have you
->> tried enabling I-pipe debugging options?
->>
->> The non-working I-pipe tracer with stack unwinding is not normal either,
->> what version of the kernel are you using?
+>> I do not know the details about analogy drivers, so, again, it is left
+>> to you to read other analogy drivers and see where is the best place to
+>> do what you want to do.
 >>
 >>
-> The kernel source I'm modifying is the master branch of the ipipe git
-> repo.
+>> --
+>>                                                                 Gilles.
+>>
+> 
+> Dear Gilles,
+> 
+> I have altered the driver according to your advices.
+> If I had omitted something please let me know.
+> 
+> Please find a patch enclosed in the attachment.
+> 
+> Best regards,
+> Wojciech Domski
+> 
+> Domski.pl
+> 
+> Wojciech.Domski.pl
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: s626_patch.patch
+> Type: text/x-patch
+> Size: 141659 bytes
+> Desc: not available
+> URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140410/e7191247/attachment.bin>
 
-Despite the fact that this branch does not correspond to any released
-I-pipe patch, I can confirm that the I-pipe tracer works with stack
-unwinding on at91rm9200, ,an armv4, and at91sam9263, an armv5. So, you
-must miss something in your patch. Again, I would advise you to use:
+scripts/checkpatch.pl attchment.bin:
 
-http://www.xenomai.org/index.php/I-pipe-core:ArmPorting
+total: 325 errors, 392 warnings, 3991 lines checked
 
-As a check list.
-
-Also, if you can give us more details about the crash you get (kernel
-configuration, console messages), we could help you find what is wrong.
-And again, please enable all the I-pipe debugging option, in case it
-would catch an issue.
+Please fix these errors.
 
 
 -- 
