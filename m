@@ -1,13 +1,13 @@
-Message-ID: <5347EADC.3070402@xenomai.org>
-Date: Fri, 11 Apr 2014 15:15:08 +0200
+Message-ID: <5347F5AD.1030201@xenomai.org>
+Date: Fri, 11 Apr 2014 16:01:17 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <C88E27E5-9B12-44C3-BA38-70D5A38A401A@gmail.com>
-In-Reply-To: <C88E27E5-9B12-44C3-BA38-70D5A38A401A@gmail.com>
+References: <1396783490.22359.YahooMailNeo@web171604.mail.ir2.yahoo.com>
+In-Reply-To: <1396783490.22359.YahooMailNeo@web171604.mail.ir2.yahoo.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Analogy: subdev list not intitialized if driver
- private data is NULL
+Subject: Re: [Xenomai] Race condition between threadobj_unlock and
+ threadobj_free in t_resume
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,120 +16,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Andreas Glatz <andi.glatz@gmail.com>, xenomai@xenomai.org
+To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/10/2014 10:58 AM, Andreas Glatz wrote:
-> Currently my analogy driver for a new DAQ board doesn't need the private
-> data struct of the driver, so I set the size to 0:
+On 04/06/2014 01:24 PM, Matthias Schneider wrote:
+> The following minimal program
 >
-> /* Analogy driver structure */
-> static a4l_drv_t a4l_drv_pandadaq = {
->      .owner = THIS_MODULE,
->      .board_name = "analogy_pandadaq",
->      .attach = dev_pandadaq_attach,
->      .detach = dev_pandadaq_detach,
->      .privdata_size = 0,
-> };
+> http://pastebin.com/JdnnXwsF
 >
-> However, due to a potential bug the kernel crashes with a NULL ptr
-> exception after linking analogy0 to my driver.
+> seems to lead to a race condition between threadobj_unlock
+> and threadobj_free as indicated by valgrind (xenomai-forge
+> and mercury):
 >
-> If I apply this patch to the git head of xenomai-2.6 everything works
-> for me:
+> ==9573== Invalid read of size 4
+> ==9573==    at 0x403F214: threadobj_unlock (threadobj.h:407)
+> ==9573==    by 0x403FAD2: put_psos_task (task.c:151)
+> ==9573==    by 0x4040E9F: t_resume (task.c:419)
+> ==9573==    by 0x80486F9: main (task-2.c:20)
+> ==9573==  Address 0x42a20c4 is 172 bytes inside a block of size 664 free'd
+> ==9573==    at 0x4029C88: free (vg_replace_malloc.c:446)
+> ==9573==    by 0x40641B6: pvfree (heapobj.h:156)
+> ==9573==    by 0x406425A: xnfree (heapobj.h:421)
+> ==9573==    by 0x406460C: threadobj_free (threadobj.h:285)
+> ==9573==    by 0x4068C6B: finalize_thread (threadobj.c:1239)
+> ==9573==    by 0x40B5AE5: __nptl_deallocate_tsd (pthread_create.c:157)
+> ==9573==    by 0x40B5CFE: start_thread (pthread_create.c:318)
+> ==9573==    by 0x41C2C3D: clone (clone.S:131)
+> ==9573==
 >
-> diff --git a/ksrc/drivers/analogy/device.c b/ksrc/drivers/analogy/device.c
-> index b93ae72..c4095a2 100644
-> --- a/ksrc/drivers/analogy/device.c
-> +++ b/ksrc/drivers/analogy/device.c
-> @@ -278,15 +278,14 @@ int a4l_assign_driver(a4l_cxt_t * cxt,
->          a4l_dev_t *dev = a4l_get_dev(cxt);
+> I am not sure on how to fix this, any ideas? I do admit
+> that the use case is neither typical nor very useful on its own,
+> but it is used in my test environment.
 >
->          dev->driver = drv;
-> +
-> +       INIT_LIST_HEAD(&dev->subdvsq);
->
->          if (drv->privdata_size == 0)
->                  __a4l_dbg(1, core_dbg,
->                            "a4l_assign_driver: warning! "
->                            "the field priv will not be usable\n");
->          else {
-> -
-> -               INIT_LIST_HEAD(&dev->subdvsq);
-> -
->                  dev->priv = rtdm_malloc(drv->privdata_size);
->                  if (dev->priv == NULL && drv->privdata_size != 0) {
->                          __a4l_err("a4l_assign_driver: "
->
->
+> It seems that when resuming a thread that already is in
+> its finalizer may lead to that thread's heap already being freed
+> when it is about to being unlocked by the resume function.
 
-Makes sense. This release routine may also attempt to free a NULL 
-pointer, which is fortunately caught by the underlying allocator, but is 
-definitely invalid. Finally, the open-coded iterator for subdevices 
-reinvents a wheel. Could you try this patch adding a few fixups to 
-yours? TIA,
+I could not reproduce this issue with your test code (it's likely too 
+timing-dependent), but looking at the backtrace above a bit closer, this 
+patch should help:
 
-diff --git a/ksrc/drivers/analogy/device.c b/ksrc/drivers/analogy/device.c
-index b93ae72..60b2977 100644
---- a/ksrc/drivers/analogy/device.c
-+++ b/ksrc/drivers/analogy/device.c
-@@ -278,17 +278,15 @@ int a4l_assign_driver(a4l_cxt_t * cxt,
-  	a4l_dev_t *dev = a4l_get_dev(cxt);
+diff --git a/include/boilerplate/lock.h b/include/boilerplate/lock.h
+index dce1ff0..4819b34 100644
+--- a/include/boilerplate/lock.h
++++ b/include/boilerplate/lock.h
+@@ -177,9 +177,9 @@ int __check_cancel_type(const char *locktype);
 
-  	dev->driver = drv;
-+	INIT_LIST_HEAD(&dev->subdvsq);
-
-  	if (drv->privdata_size == 0)
-  		__a4l_dbg(1, core_dbg,
-  			  "a4l_assign_driver: warning! "
-  			  "the field priv will not be usable\n");
-  	else {
--
--		INIT_LIST_HEAD(&dev->subdvsq);
--
-  		dev->priv = rtdm_malloc(drv->privdata_size);
--		if (dev->priv == NULL && drv->privdata_size != 0) {
-+		if (dev->priv == NULL) {
-  			__a4l_err("a4l_assign_driver: "
-  				  "call(alloc) failed\n");
-  			ret = -ENOMEM;
-@@ -325,27 +323,26 @@ out_assign_driver:
-
-  int a4l_release_driver(a4l_cxt_t * cxt)
-  {
--	int ret = 0;
-  	a4l_dev_t *dev = a4l_get_dev(cxt);
-+	a4l_subd_t *subd, *tmp;
-+	int ret = 0;
-
-  	if ((ret = dev->driver->detach(dev)) != 0)
-  		goto out_release_driver;
-
--	/* Decrease module's count
--	   so as to allow module unloading */
-  	module_put(dev->driver->owner);
-
-  	/* In case, the driver developer did not free the subdevices */
--	while (&dev->subdvsq != dev->subdvsq.next) {
--		struct list_head *this = dev->subdvsq.next;
--		a4l_subd_t *tmp = list_entry(this, a4l_subd_t, list);
--
--		list_del(this);
--		rtdm_free(tmp);
--	}
-+	if (!list_empty(&dev->subdvsq))
-+		list_for_each_entry_safe(subd, tmp, &dev->subdvsq, list) {
-+			list_del(&subd->list);
-+			rtdm_free(subd);
-+		}
-
-  	/* Free the private field */
--	rtdm_free(dev->priv);
-+	if (dev->priv)
-+		rtdm_free(dev->priv);
-+
-  	dev->driver = NULL;
-
-  out_release_driver:
+  #define __do_unlock_safe(__lock, __state)				\
+  	({								\
+-		int __ret;						\
++		int __ret, __restored_state = __state;			\
+  		__ret = -__RT(pthread_mutex_unlock(__lock));		\
+-		pthread_setcancelstate(__state, NULL);			\
++		pthread_setcancelstate(__restored_state, NULL);		\
+  		__ret;							\
+  	})
 
 -- 
 Philippe.
