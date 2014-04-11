@@ -1,5 +1,5 @@
-Message-ID: <5348033D.70806@xenomai.org>
-Date: Fri, 11 Apr 2014 16:59:09 +0200
+Message-ID: <53480514.9010801@xenomai.org>
+Date: Fri, 11 Apr 2014 17:07:00 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <1396262085.387.YahooMailNeo@web171601.mail.ir2.yahoo.com>
@@ -8,7 +8,8 @@ References: <1396262085.387.YahooMailNeo@web171601.mail.ir2.yahoo.com>
  <1396782702.1096.YahooMailNeo@web171605.mail.ir2.yahoo.com>
  <53416D09.7060805@xenomai.org>
  <1396889360.63594.YahooMailNeo@web171605.mail.ir2.yahoo.com>
-In-Reply-To: <1396889360.63594.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+ <5348033D.70806@xenomai.org>
+In-Reply-To: <5348033D.70806@xenomai.org>
 Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
 Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] EINTR in notifier.c (mercury)
@@ -22,121 +23,127 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/07/2014 06:49 PM, Matthias Schneider wrote:
-> ----- Original Message -----
->
->> From: Philippe Gerum <rpm@xenomai.org>
->> To: Matthias Schneider <ma30002000@yahoo.de>; "xenomai@xenomai.org" <xen=
-omai@xenomai.org>
->> Cc:
->> Sent: Sunday, April 6, 2014 5:04 PM
->> Subject: Re: [Xenomai] EINTR in notifier.c (mercury)
+On 04/11/2014 04:59 PM, Philippe Gerum wrote:
+> On 04/07/2014 06:49 PM, Matthias Schneider wrote:
+>> ----- Original Message -----
 >>
->> On 04/06/2014 01:11 PM, Matthias Schneider wrote:
->>>>   On Monday, March 31, 2014 7:50 PM, Gilles Chanteperdrix
->> <gilles.chanteperdrix@xenomai.org> wrote:
+>>> From: Philippe Gerum <rpm@xenomai.org>
+>>> To: Matthias Schneider <ma30002000@yahoo.de>; "xenomai@xenomai.org"
+>>> <xenomai@xenomai.org>
+>>> Cc:
+>>> Sent: Sunday, April 6, 2014 5:04 PM
+>>> Subject: Re: [Xenomai] EINTR in notifier.c (mercury)
 >>>
->>>>>   On 03/31/2014 03:18 PM, Philippe Gerum wrote:
->>>>>     On 03/31/2014 01:27 PM, Gilles Chanteperdrix wrote:
->>>>>>     On 03/31/2014 12:34 PM, Matthias Schneider wrote:
->>>>>>>     Hi all,
->>>>>>>
->>>>>>>
->>>>>>>     still working on thread suspension in mercury, I noticed
->> that some
->>>>>>>     threadobj_suspend() and threadobj_resume() calls seemed
->> not to have the desired
->>>>>>>     effect. Analyzing the issue, I found out that sometimes
->> the read operations on
->>>>>>>     the pipe in notifier_wait() seem to return with EINTR,
->> especially in
->>>>>>>     heavily loaded systems. Restarting the read system call
->> in that case made
->>>>>>>     thread suspension a lot more reliable in my case.
->>>>>>>
->>>>>>>     I have attached a patch adding loops to deal with the
->> EINTR situation in all
->>>>>>
->>>>>>     You can probably avoid testing for EINTR if all signal
->> handlers are
->>>>>>     registered with the SA_RESTART flag.
->>>>>>
->>>>>
->>>>>     The app may not explicitly care for signals (granted, most would
->> do, but
->>>>>     we would then have to assume they do it right).
->>>>>
+>>> On 04/06/2014 01:11 PM, Matthias Schneider wrote:
+>>>>>   On Monday, March 31, 2014 7:50 PM, Gilles Chanteperdrix
+>>> <gilles.chanteperdrix@xenomai.org> wrote:
 >>>>
->>>>   Yes, applications may want to use signals to interrupt a call to read
->>>>   and voluntarily get EINTR anyway.
->>>>                            Gilles.
+>>>>>>   On 03/31/2014 03:18 PM, Philippe Gerum wrote:
+>>>>>>     On 03/31/2014 01:27 PM, Gilles Chanteperdrix wrote:
+>>>>>>>     On 03/31/2014 12:34 PM, Matthias Schneider wrote:
+>>>>>>>>     Hi all,
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>     still working on thread suspension in mercury, I noticed
+>>> that some
+>>>>>>>>     threadobj_suspend() and threadobj_resume() calls seemed
+>>> not to have the desired
+>>>>>>>>     effect. Analyzing the issue, I found out that sometimes
+>>> the read operations on
+>>>>>>>>     the pipe in notifier_wait() seem to return with EINTR,
+>>> especially in
+>>>>>>>>     heavily loaded systems. Restarting the read system call
+>>> in that case made
+>>>>>>>>     thread suspension a lot more reliable in my case.
+>>>>>>>>
+>>>>>>>>     I have attached a patch adding loops to deal with the
+>>> EINTR situation in all
+>>>>>>>
+>>>>>>>     You can probably avoid testing for EINTR if all signal
+>>> handlers are
+>>>>>>>     registered with the SA_RESTART flag.
+>>>>>>>
+>>>>>>
+>>>>>>     The app may not explicitly care for signals (granted, most would
+>>> do, but
+>>>>>>     we would then have to assume they do it right).
+>>>>>>
+>>>>>
+>>>>>   Yes, applications may want to use signals to interrupt a call to
+>>>>> read
+>>>>>   and voluntarily get EINTR anyway.
+>>>>>                            Gilles.
+>>>>
+>>>>
+>>>>   Please find attached a third version of my patch dealing with
+>>>>   EINTR syscalls. Note that I also stumbled over unexpected behavior
+>>>>   in threadobj_sleep and cancel_sync due to EINTRs. Considering that
+>>>>   mercury is using signals for user-space round-robin and thread
+>>>>   suspension, even without any application signals EINTR happens
+>>>>   quite often.
+>>>
+>>> @@ -86,9 +88,13 @@ static void notifier_sighandler(int sig, siginfo_t
+>>> *siginfo,
+>>> void *uc)
+>>>          if (nf->owner && nf->owner !=3D tid)
+>>>              continue;
+>>>
+>>> -        while (__STD(read(nf->psfd[0], &c, 1)) > 0)
+>>> -            /* Callee must run async-safe code only. */
+>>> -            nf->callback(nf);
+>>> +        do {
+>>> +            ret =3D __STD(read(nf->psfd[0], &c, 1));
+>>> +            if (ret > 0)
+>>> +                /* Callee must run async-safe code only. */
+>>> +                nf->callback(nf);
+>>> +        } while (ret > 0 || errno =3D=3D EINTR);
+>>>
+>>> In theory, we could receive a zero byte count on EOF, in which case
+>>> we should
+>>> not test errno, rather we should bail out immediately.
+>>>
+>>> @@ -1093,7 +1093,9 @@ int threadobj_sleep(struct timespec *ts)
+>>>       */
+>>>      current->run_state =3D __THREAD_S_DELAYED;
+>>>      threadobj_save_timeout(&current->core, ts);
+>>> -    ret =3D -__RT(clock_nanosleep(CLOCK_COPPERPLATE, TIMER_ABSTIME,
+>>> ts, NULL));
+>>> +    do
+>>> +        ret =3D -__RT(clock_nanosleep(CLOCK_COPPERPLATE,
+>>> TIMER_ABSTIME, ts,
+>>> NULL));
+>>>
+>>> We should definitely pass and use the "remain" field in
+>>> clock_nanosleep(), not to restart a complete wait each time we get
+>>> interrupted.
 >>>
 >>>
->>>   Please find attached a third version of my patch dealing with
->>>   EINTR syscalls. Note that I also stumbled over unexpected behavior
->>>   in threadobj_sleep and cancel_sync due to EINTRs. Considering that
->>>   mercury is using signals for user-space round-robin and thread
->>>   suspension, even without any application signals EINTR happens
->>>   quite often.
+>>> --
+>>> Philippe.
+>>>
 >>
->> @@ -86,9 +88,13 @@ static void notifier_sighandler(int sig, siginfo_t *s=
-iginfo,
->> void *uc)
->>          if (nf->owner && nf->owner !=3D tid)
->>              continue;
+>> I have attached a new version of the patch leaving the loop on ret =3D=3D
+>> 0. Note
+>> that this will be a new behavior in compared to before the patch.
 >>
->> -        while (__STD(read(nf->psfd[0], &c, 1)) > 0)
->> -            /* Callee must run async-safe code only. */
->> -            nf->callback(nf);
->> +        do {
->> +            ret =3D __STD(read(nf->psfd[0], &c, 1));
->> +            if (ret > 0)
->> +                /* Callee must run async-safe code only. */
->> +                nf->callback(nf);
->> +        } while (ret > 0 || errno =3D=3D EINTR);
->>
->> In theory, we could receive a zero byte count on EOF, in which case we s=
-hould
->> not test errno, rather we should bail out immediately.
->>
->> @@ -1093,7 +1093,9 @@ int threadobj_sleep(struct timespec *ts)
->>       */
->>      current->run_state =3D __THREAD_S_DELAYED;
->>      threadobj_save_timeout(&current->core, ts);
->> -    ret =3D -__RT(clock_nanosleep(CLOCK_COPPERPLATE, TIMER_ABSTIME, ts,=
- NULL));
->> +    do
->> +        ret =3D -__RT(clock_nanosleep(CLOCK_COPPERPLATE, TIMER_ABSTIME,=
- ts,
->> NULL));
->>
->> We should definitely pass and use the "remain" field in
->> clock_nanosleep(), not to restart a complete wait each time we get inter=
-rupted.
->>
->>
->> --
->> Philippe.
+>> Gilles already pointed out that TIMER_ABSTIME allows restarting the
+>> same syscall
+>> in threadobj_sleep.
 >>
 >
-> I have attached a new version of the patch leaving the loop on ret =3D=3D=
- 0. Note
-> that this will be a new behavior in compared to before the patch.
+> Yes, but unfortunately, that part of the patch is still broken and
+> introduced a regression of other copperplate-based AP=CFs. Several RTOS
+> implement some kind of thread/task_unblock() service, which shall cause
+> sleep calls based on threadobj_sleep() to return upon receiving the
+> SIGRELS notification via a signal. This is the meaning of the comment
+> heading that code.
 >
-> Gilles already pointed out that TIMER_ABSTIME allows restarting the same =
-syscall
-> in threadobj_sleep.
+> So the proper fix should go to the call site in the pSOS emulator,
+> instead of changing the generic behavior in threadobj_sleep().
 >
 
-Yes, but unfortunately, that part of the patch is still broken and=20
-introduced a regression of other copperplate-based AP=CFs. Several RTOS=20
-implement some kind of thread/task_unblock() service, which shall cause=20
-sleep calls based on threadobj_sleep() to return upon receiving the=20
-SIGRELS notification via a signal. This is the meaning of the comment=20
-heading that code.
-
-So the proper fix should go to the call site in the pSOS emulator,=20
-instead of changing the generic behavior in threadobj_sleep().
+Or threadobj_sleep() should be made smarter, specifically detecting=20
+SIGRELS in the mercury case for aborting the wait.
 
 --=20
 Philippe.
