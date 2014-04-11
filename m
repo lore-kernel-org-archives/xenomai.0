@@ -1,13 +1,13 @@
-Message-ID: <5347DF09.9080905@xenomai.org>
-Date: Fri, 11 Apr 2014 14:24:41 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5347EADC.3070402@xenomai.org>
+Date: Fri, 11 Apr 2014 15:15:08 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <5347D5BB.1070107@mitrol.it> <5347D6E0.2030805@xenomai.org>
- <5347DCCC.3040801@mitrol.it>
-In-Reply-To: <5347DCCC.3040801@mitrol.it>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <C88E27E5-9B12-44C3-BA38-70D5A38A401A@gmail.com>
+In-Reply-To: <C88E27E5-9B12-44C3-BA38-70D5A38A401A@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] arm imx6 and hardware FPU
+Subject: Re: [Xenomai] Analogy: subdev list not intitialized if driver
+ private data is NULL
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,116 +16,121 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paolo Minazzi <Paolo.Minazzi@mitrol.it>
-Cc: xenomai@xenomai.org
+To: Andreas Glatz <andi.glatz@gmail.com>, xenomai@xenomai.org
 
-On 04/11/2014 02:15 PM, Paolo Minazzi wrote:
-> Il 11/04/2014 13.49, Gilles Chanteperdrix ha scritto:
->> On 04/11/2014 01:44 PM, Paolo Minazzi wrote:
->>> Hi to all,
->>> I'm trying to test my imx6 with xenomai 2.6.3.
->>> I use the linaro cross-compiler that uses the hardware floating point.
->>>
->>> I made a simple floating point test.
->>>
->>> If I use two non-realtime user-space tasks the test works OK and I have
->>> no errors in calculations.
->>> This means that compiler and hardware works well.
->>>
->>> But I I use two realtime user-space tasks I have errors in calculations.
->>> Real-time tasks are created with rt_task_create(&demo, "demo", 0, 99,
->>> T_FPU);
->>>
->>>
->>> This is my kernel config
->>> ============================================
->>> ...
->>> #
->>> # Machine
->>> #
->>> CONFIG_IPIPE_WANT_PREEMPTIBLE_SWITCH=y
->>> CONFIG_IPIPE_WANT_ACTIVE_MM=y
->>> CONFIG_XENO_HW_FPU=y
->>> CONFIG_XENO_HW_UNLOCKED_SWITCH=y
->>> ...
->>> #
->>> # At least one emulation must be selected
->>> #
->>> CONFIG_VFP=y
->>> CONFIG_VFPv3=y
->>> CONFIG_NEON=y
->>> CONFIG_VFP_3_2_BACKPORT=y
->>> ...
->>> ============================================
->>>
->>> Is it possible to use ***hardware floating point*** with realtime
->>> user-space tasks ?
->>
->> Yes, it should be. Do you get the same issue when running both the
->> switchtest and switchtest -s 1000 tests? Do you have the same issue
->> with the I-pipe patch for Linux 3.8?
->>
->>
-> / # ./switchtest -s 1000
-> == Testing FPU check routines...
-> d0: 1 != 2
-> d1: 1 != 2
-> d2: 1 != 2
-> d3: 1 != 2
-> d4: 1 != 2
-> d5: 1 != 2
-> d6: 1 != 2
-> d7: 1 != 2
-> d8: 1 != 2
-> d9: 1 != 2
-> d10: 1 != 2
-> d11: 1 != 2
-> d12: 1 != 2
-> d13: 1 != 2
-> d14: 1 != 2
-> d15: 1 != 2
-> == FPU check routines: OK.
+On 04/10/2014 10:58 AM, Andreas Glatz wrote:
+> Currently my analogy driver for a new DAQ board doesn't need the private
+> data struct of the driver, so I set the size to 0:
 >
-> / # ./switchtest
-> == Testing FPU check routines...
-> d0: 1 != 2
-> d1: 1 != 2
-> d2: 1 != 2
-> d3: 1 != 2
-> d4: 1 != 2
-> d5: 1 != 2
-> d6: 1 != 2
-> d7: 1 != 2
-> d8: 1 != 2
-> d9: 1 != 2
-> d10: 1 != 2
-> d11: 1 != 2
-> d12: 1 != 2
-> d13: 1 != 2
-> d14: 1 != 2
-> d15: 1 != 2
-> == FPU check routines: OK.
+> /* Analogy driver structure */
+> static a4l_drv_t a4l_drv_pandadaq = {
+>      .owner = THIS_MODULE,
+>      .board_name = "analogy_pandadaq",
+>      .attach = dev_pandadaq_attach,
+>      .detach = dev_pandadaq_detach,
+>      .privdata_size = 0,
+> };
 >
-> As you can see the test seems OK.
-> But If I understand correctly switchtest is not a real-time test.
-
-You do not understand correctly. You should run
-switchtest & switchtest -s 1000
-
-And let them run for some time.
-
-> I see the problem If I use my floating point test.
-> I try to calculate sin(2x).
-> Then I claculate 2*sin(x)*cos(x).
-> They should be similar. But sometime they are very different ===> fpu error
+> However, due to a potential bug the kernel crashes with a NULL ptr
+> exception after linking analogy0 to my driver.
+>
+> If I apply this patch to the git head of xenomai-2.6 everything works
+> for me:
+>
+> diff --git a/ksrc/drivers/analogy/device.c b/ksrc/drivers/analogy/device.c
+> index b93ae72..c4095a2 100644
+> --- a/ksrc/drivers/analogy/device.c
+> +++ b/ksrc/drivers/analogy/device.c
+> @@ -278,15 +278,14 @@ int a4l_assign_driver(a4l_cxt_t * cxt,
+>          a4l_dev_t *dev = a4l_get_dev(cxt);
+>
+>          dev->driver = drv;
+> +
+> +       INIT_LIST_HEAD(&dev->subdvsq);
+>
+>          if (drv->privdata_size == 0)
+>                  __a4l_dbg(1, core_dbg,
+>                            "a4l_assign_driver: warning! "
+>                            "the field priv will not be usable\n");
+>          else {
+> -
+> -               INIT_LIST_HEAD(&dev->subdvsq);
+> -
+>                  dev->priv = rtdm_malloc(drv->privdata_size);
+>                  if (dev->priv == NULL && drv->privdata_size != 0) {
+>                          __a4l_err("a4l_assign_driver: "
 >
 >
-> I have kerne 3.0.35.
-> For me it is not so easy try 3.8.
 
-How is that? To test xenomai you do not need all the drivers, just the uart.
+Makes sense. This release routine may also attempt to free a NULL 
+pointer, which is fortunately caught by the underlying allocator, but is 
+definitely invalid. Finally, the open-coded iterator for subdevices 
+reinvents a wheel. Could you try this patch adding a few fixups to 
+yours? TIA,
 
+diff --git a/ksrc/drivers/analogy/device.c b/ksrc/drivers/analogy/device.c
+index b93ae72..60b2977 100644
+--- a/ksrc/drivers/analogy/device.c
++++ b/ksrc/drivers/analogy/device.c
+@@ -278,17 +278,15 @@ int a4l_assign_driver(a4l_cxt_t * cxt,
+  	a4l_dev_t *dev = a4l_get_dev(cxt);
+
+  	dev->driver = drv;
++	INIT_LIST_HEAD(&dev->subdvsq);
+
+  	if (drv->privdata_size == 0)
+  		__a4l_dbg(1, core_dbg,
+  			  "a4l_assign_driver: warning! "
+  			  "the field priv will not be usable\n");
+  	else {
+-
+-		INIT_LIST_HEAD(&dev->subdvsq);
+-
+  		dev->priv = rtdm_malloc(drv->privdata_size);
+-		if (dev->priv == NULL && drv->privdata_size != 0) {
++		if (dev->priv == NULL) {
+  			__a4l_err("a4l_assign_driver: "
+  				  "call(alloc) failed\n");
+  			ret = -ENOMEM;
+@@ -325,27 +323,26 @@ out_assign_driver:
+
+  int a4l_release_driver(a4l_cxt_t * cxt)
+  {
+-	int ret = 0;
+  	a4l_dev_t *dev = a4l_get_dev(cxt);
++	a4l_subd_t *subd, *tmp;
++	int ret = 0;
+
+  	if ((ret = dev->driver->detach(dev)) != 0)
+  		goto out_release_driver;
+
+-	/* Decrease module's count
+-	   so as to allow module unloading */
+  	module_put(dev->driver->owner);
+
+  	/* In case, the driver developer did not free the subdevices */
+-	while (&dev->subdvsq != dev->subdvsq.next) {
+-		struct list_head *this = dev->subdvsq.next;
+-		a4l_subd_t *tmp = list_entry(this, a4l_subd_t, list);
+-
+-		list_del(this);
+-		rtdm_free(tmp);
+-	}
++	if (!list_empty(&dev->subdvsq))
++		list_for_each_entry_safe(subd, tmp, &dev->subdvsq, list) {
++			list_del(&subd->list);
++			rtdm_free(subd);
++		}
+
+  	/* Free the private field */
+-	rtdm_free(dev->priv);
++	if (dev->priv)
++		rtdm_free(dev->priv);
++
+  	dev->driver = NULL;
+
+  out_release_driver:
 
 -- 
-					    Gilles.
+Philippe.
 
