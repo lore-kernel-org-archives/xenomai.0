@@ -1,13 +1,17 @@
-Message-ID: <5347F5AD.1030201@xenomai.org>
-Date: Fri, 11 Apr 2014 16:01:17 +0200
+Message-ID: <5348033D.70806@xenomai.org>
+Date: Fri, 11 Apr 2014 16:59:09 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <1396783490.22359.YahooMailNeo@web171604.mail.ir2.yahoo.com>
-In-Reply-To: <1396783490.22359.YahooMailNeo@web171604.mail.ir2.yahoo.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Race condition between threadobj_unlock and
- threadobj_free in t_resume
+References: <1396262085.387.YahooMailNeo@web171601.mail.ir2.yahoo.com>
+ <53395104.6050109@xenomai.org> <53396B31.1090903@xenomai.org>
+ <5339AACA.4090807@xenomai.org>
+ <1396782702.1096.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+ <53416D09.7060805@xenomai.org>
+ <1396889360.63594.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+In-Reply-To: <1396889360.63594.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] EINTR in notifier.c (mercury)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,59 +22,122 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/06/2014 01:24 PM, Matthias Schneider wrote:
-> The following minimal program
+On 04/07/2014 06:49 PM, Matthias Schneider wrote:
+> ----- Original Message -----
 >
-> http://pastebin.com/JdnnXwsF
+>> From: Philippe Gerum <rpm@xenomai.org>
+>> To: Matthias Schneider <ma30002000@yahoo.de>; "xenomai@xenomai.org" <xen=
+omai@xenomai.org>
+>> Cc:
+>> Sent: Sunday, April 6, 2014 5:04 PM
+>> Subject: Re: [Xenomai] EINTR in notifier.c (mercury)
+>>
+>> On 04/06/2014 01:11 PM, Matthias Schneider wrote:
+>>>>   On Monday, March 31, 2014 7:50 PM, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>>
+>>>>>   On 03/31/2014 03:18 PM, Philippe Gerum wrote:
+>>>>>     On 03/31/2014 01:27 PM, Gilles Chanteperdrix wrote:
+>>>>>>     On 03/31/2014 12:34 PM, Matthias Schneider wrote:
+>>>>>>>     Hi all,
+>>>>>>>
+>>>>>>>
+>>>>>>>     still working on thread suspension in mercury, I noticed
+>> that some
+>>>>>>>     threadobj_suspend() and threadobj_resume() calls seemed
+>> not to have the desired
+>>>>>>>     effect. Analyzing the issue, I found out that sometimes
+>> the read operations on
+>>>>>>>     the pipe in notifier_wait() seem to return with EINTR,
+>> especially in
+>>>>>>>     heavily loaded systems. Restarting the read system call
+>> in that case made
+>>>>>>>     thread suspension a lot more reliable in my case.
+>>>>>>>
+>>>>>>>     I have attached a patch adding loops to deal with the
+>> EINTR situation in all
+>>>>>>
+>>>>>>     You can probably avoid testing for EINTR if all signal
+>> handlers are
+>>>>>>     registered with the SA_RESTART flag.
+>>>>>>
+>>>>>
+>>>>>     The app may not explicitly care for signals (granted, most would
+>> do, but
+>>>>>     we would then have to assume they do it right).
+>>>>>
+>>>>
+>>>>   Yes, applications may want to use signals to interrupt a call to read
+>>>>   and voluntarily get EINTR anyway.
+>>>>                            Gilles.
+>>>
+>>>
+>>>   Please find attached a third version of my patch dealing with
+>>>   EINTR syscalls. Note that I also stumbled over unexpected behavior
+>>>   in threadobj_sleep and cancel_sync due to EINTRs. Considering that
+>>>   mercury is using signals for user-space round-robin and thread
+>>>   suspension, even without any application signals EINTR happens
+>>>   quite often.
+>>
+>> @@ -86,9 +88,13 @@ static void notifier_sighandler(int sig, siginfo_t *s=
+iginfo,
+>> void *uc)
+>>          if (nf->owner && nf->owner !=3D tid)
+>>              continue;
+>>
+>> -        while (__STD(read(nf->psfd[0], &c, 1)) > 0)
+>> -            /* Callee must run async-safe code only. */
+>> -            nf->callback(nf);
+>> +        do {
+>> +            ret =3D __STD(read(nf->psfd[0], &c, 1));
+>> +            if (ret > 0)
+>> +                /* Callee must run async-safe code only. */
+>> +                nf->callback(nf);
+>> +        } while (ret > 0 || errno =3D=3D EINTR);
+>>
+>> In theory, we could receive a zero byte count on EOF, in which case we s=
+hould
+>> not test errno, rather we should bail out immediately.
+>>
+>> @@ -1093,7 +1093,9 @@ int threadobj_sleep(struct timespec *ts)
+>>       */
+>>      current->run_state =3D __THREAD_S_DELAYED;
+>>      threadobj_save_timeout(&current->core, ts);
+>> -    ret =3D -__RT(clock_nanosleep(CLOCK_COPPERPLATE, TIMER_ABSTIME, ts,=
+ NULL));
+>> +    do
+>> +        ret =3D -__RT(clock_nanosleep(CLOCK_COPPERPLATE, TIMER_ABSTIME,=
+ ts,
+>> NULL));
+>>
+>> We should definitely pass and use the "remain" field in
+>> clock_nanosleep(), not to restart a complete wait each time we get inter=
+rupted.
+>>
+>>
+>> --
+>> Philippe.
+>>
 >
-> seems to lead to a race condition between threadobj_unlock
-> and threadobj_free as indicated by valgrind (xenomai-forge
-> and mercury):
+> I have attached a new version of the patch leaving the loop on ret =3D=3D=
+ 0. Note
+> that this will be a new behavior in compared to before the patch.
 >
-> ==9573== Invalid read of size 4
-> ==9573==    at 0x403F214: threadobj_unlock (threadobj.h:407)
-> ==9573==    by 0x403FAD2: put_psos_task (task.c:151)
-> ==9573==    by 0x4040E9F: t_resume (task.c:419)
-> ==9573==    by 0x80486F9: main (task-2.c:20)
-> ==9573==  Address 0x42a20c4 is 172 bytes inside a block of size 664 free'd
-> ==9573==    at 0x4029C88: free (vg_replace_malloc.c:446)
-> ==9573==    by 0x40641B6: pvfree (heapobj.h:156)
-> ==9573==    by 0x406425A: xnfree (heapobj.h:421)
-> ==9573==    by 0x406460C: threadobj_free (threadobj.h:285)
-> ==9573==    by 0x4068C6B: finalize_thread (threadobj.c:1239)
-> ==9573==    by 0x40B5AE5: __nptl_deallocate_tsd (pthread_create.c:157)
-> ==9573==    by 0x40B5CFE: start_thread (pthread_create.c:318)
-> ==9573==    by 0x41C2C3D: clone (clone.S:131)
-> ==9573==
+> Gilles already pointed out that TIMER_ABSTIME allows restarting the same =
+syscall
+> in threadobj_sleep.
 >
-> I am not sure on how to fix this, any ideas? I do admit
-> that the use case is neither typical nor very useful on its own,
-> but it is used in my test environment.
->
-> It seems that when resuming a thread that already is in
-> its finalizer may lead to that thread's heap already being freed
-> when it is about to being unlocked by the resume function.
 
-I could not reproduce this issue with your test code (it's likely too 
-timing-dependent), but looking at the backtrace above a bit closer, this 
-patch should help:
+Yes, but unfortunately, that part of the patch is still broken and=20
+introduced a regression of other copperplate-based AP=CFs. Several RTOS=20
+implement some kind of thread/task_unblock() service, which shall cause=20
+sleep calls based on threadobj_sleep() to return upon receiving the=20
+SIGRELS notification via a signal. This is the meaning of the comment=20
+heading that code.
 
-diff --git a/include/boilerplate/lock.h b/include/boilerplate/lock.h
-index dce1ff0..4819b34 100644
---- a/include/boilerplate/lock.h
-+++ b/include/boilerplate/lock.h
-@@ -177,9 +177,9 @@ int __check_cancel_type(const char *locktype);
+So the proper fix should go to the call site in the pSOS emulator,=20
+instead of changing the generic behavior in threadobj_sleep().
 
-  #define __do_unlock_safe(__lock, __state)				\
-  	({								\
--		int __ret;						\
-+		int __ret, __restored_state = __state;			\
-  		__ret = -__RT(pthread_mutex_unlock(__lock));		\
--		pthread_setcancelstate(__state, NULL);			\
-+		pthread_setcancelstate(__restored_state, NULL);		\
-  		__ret;							\
-  	})
-
--- 
+--=20
 Philippe.
 
