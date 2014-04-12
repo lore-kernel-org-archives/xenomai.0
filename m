@@ -1,19 +1,14 @@
-Message-ID: <5348200C.4050406@xenomai.org>
-Date: Fri, 11 Apr 2014 19:02:04 +0200
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
-References: <1396262085.387.YahooMailNeo@web171601.mail.ir2.yahoo.com>
- <53395104.6050109@xenomai.org> <53396B31.1090903@xenomai.org>
- <5339AACA.4090807@xenomai.org>
- <1396782702.1096.YahooMailNeo@web171605.mail.ir2.yahoo.com>
- <53416D09.7060805@xenomai.org>
- <1396889360.63594.YahooMailNeo@web171605.mail.ir2.yahoo.com>
- <5348033D.70806@xenomai.org> <53480514.9010801@xenomai.org>
- <1397234658.97268.YahooMailNeo@web171602.mail.ir2.yahoo.com>
-In-Reply-To: <1397234658.97268.YahooMailNeo@web171602.mail.ir2.yahoo.com>
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] EINTR in notifier.c (mercury)
+Message-Id: <F0D5804F-FEFC-4836-9C7B-0BDC7D6B3ED2@gmail.com>
+From: Andreas Glatz <andi.glatz@gmail.com>
+In-Reply-To: <5347EADC.3070402@xenomai.org>
+Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
+Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0 (Apple Message framework v936)
+Date: Sat, 12 Apr 2014 13:14:21 +0100
+References: <C88E27E5-9B12-44C3-BA38-70D5A38A401A@gmail.com>
+ <5347EADC.3070402@xenomai.org>
+Subject: Re: [Xenomai] Analogy: subdev list not intitialized if driver
+	private data is NULL
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,190 +17,143 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 04/11/2014 06:44 PM, Matthias Schneider wrote:
->
->
->
->
-> ----- Original Message -----
->> From: Philippe Gerum <rpm@xenomai.org>
->> To: Matthias Schneider <ma30002000@yahoo.de>; "xenomai@xenomai.org" <xen=
-omai@xenomai.org>
->> Cc:
->> Sent: Friday, April 11, 2014 5:07 PM
->> Subject: Re: [Xenomai] EINTR in notifier.c (mercury)
+
+On 11 Apr 2014, at 14:15, Philippe Gerum wrote:
+
+> On 04/10/2014 10:58 AM, Andreas Glatz wrote:
+>> Currently my analogy driver for a new DAQ board doesn't need the  
+>> private
+>> data struct of the driver, so I set the size to 0:
 >>
->> On 04/11/2014 04:59 PM, Philippe Gerum wrote:
->>>   On 04/07/2014 06:49 PM, Matthias Schneider wrote:
->>>>   ----- Original Message -----
->>>>
->>>>>   From: Philippe Gerum <rpm@xenomai.org>
->>>>>   To: Matthias Schneider <ma30002000@yahoo.de>;
->> "xenomai@xenomai.org"
->>>>>   <xenomai@xenomai.org>
->>>>>   Cc:
->>>>>   Sent: Sunday, April 6, 2014 5:04 PM
->>>>>   Subject: Re: [Xenomai] EINTR in notifier.c (mercury)
->>>>>
->>>>>   On 04/06/2014 01:11 PM, Matthias Schneider wrote:
->>>>>>>     On Monday, March 31, 2014 7:50 PM, Gilles Chanteperdrix
->>>>>   <gilles.chanteperdrix@xenomai.org> wrote:
->>>>>>
->>>>>>>>     On 03/31/2014 03:18 PM, Philippe Gerum wrote:
->>>>>>>>       On 03/31/2014 01:27 PM, Gilles Chanteperdrix wrote:
->>>>>>>>>       On 03/31/2014 12:34 PM, Matthias Schneider
->> wrote:
->>>>>>>>>>       Hi all,
->>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>>       still working on thread suspension in
->> mercury, I noticed
->>>>>   that some
->>>>>>>>>>       threadobj_suspend() and threadobj_resume()
->> calls seemed
->>>>>   not to have the desired
->>>>>>>>>>       effect. Analyzing the issue, I found out
->> that sometimes
->>>>>   the read operations on
->>>>>>>>>>       the pipe in notifier_wait() seem to return
->> with EINTR,
->>>>>   especially in
->>>>>>>>>>       heavily loaded systems. Restarting the read
->> system call
->>>>>   in that case made
->>>>>>>>>>       thread suspension a lot more reliable in my
->> case.
->>>>>>>>>>
->>>>>>>>>>       I have attached a patch adding loops to
->> deal with the
->>>>>   EINTR situation in all
->>>>>>>>>
->>>>>>>>>       You can probably avoid testing for EINTR if all
->> signal
->>>>>   handlers are
->>>>>>>>>       registered with the SA_RESTART flag.
->>>>>>>>>
->>>>>>>>
->>>>>>>>       The app may not explicitly care for signals
->> (granted, most would
->>>>>   do, but
->>>>>>>>       we would then have to assume they do it right).
->>>>>>>>
->>>>>>>
->>>>>>>     Yes, applications may want to use signals to interrupt a
->> call to
->>>>>>>   read
->>>>>>>     and voluntarily get EINTR anyway.
->>>>>>>                              Gilles.
->>>>>>
->>>>>>
->>>>>>     Please find attached a third version of my patch dealing with
->>>>>>     EINTR syscalls. Note that I also stumbled over unexpected
->> behavior
->>>>>>     in threadobj_sleep and cancel_sync due to EINTRs. Considering
->> that
->>>>>>     mercury is using signals for user-space round-robin and
->> thread
->>>>>>     suspension, even without any application signals EINTR
->> happens
->>>>>>     quite often.
->>>>>
->>>>>   @@ -86,9 +88,13 @@ static void notifier_sighandler(int sig,
->> siginfo_t
->>>>>   *siginfo,
->>>>>   void *uc)
->>>>>            if (nf->owner && nf->owner !=3D tid)
->>>>>                continue;
->>>>>
->>>>>   -        while (__STD(read(nf->psfd[0], &c, 1)) > 0)
->>>>>   -            /* Callee must run async-safe code only. */
->>>>>   -            nf->callback(nf);
->>>>>   +        do {
->>>>>   +            ret =3D __STD(read(nf->psfd[0], &c, 1));
->>>>>   +            if (ret > 0)
->>>>>   +                /* Callee must run async-safe code only. */
->>>>>   +                nf->callback(nf);
->>>>>   +        } while (ret > 0 || errno =3D=3D EINTR);
->>>>>
->>>>>   In theory, we could receive a zero byte count on EOF, in which case
->>>>>   we should
->>>>>   not test errno, rather we should bail out immediately.
->>>>>
->>>>>   @@ -1093,7 +1093,9 @@ int threadobj_sleep(struct timespec *ts)
->>>>>         */
->>>>>        current->run_state =3D __THREAD_S_DELAYED;
->>>>>        threadobj_save_timeout(&current->core, ts);
->>>>>   -    ret =3D -__RT(clock_nanosleep(CLOCK_COPPERPLATE, TIMER_ABSTIME,
->>>>>   ts, NULL));
->>>>>   +    do
->>>>>   +        ret =3D -__RT(clock_nanosleep(CLOCK_COPPERPLATE,
->>>>>   TIMER_ABSTIME, ts,
->>>>>   NULL));
->>>>>
->>>>>   We should definitely pass and use the "remain" field in
->>>>>   clock_nanosleep(), not to restart a complete wait each time we get
->>>>>   interrupted.
->>>>>
->>>>>
->>>>>   --
->>>>>   Philippe.
->>>>>
->>>>
->>>>   I have attached a new version of the patch leaving the loop on ret =
-=3D=3D
->>>>   0. Note
->>>>   that this will be a new behavior in compared to before the patch.
->>>>
->>>>   Gilles already pointed out that TIMER_ABSTIME allows restarting the
->>>>   same syscall
->>>>   in threadobj_sleep.
->>>>
->>>
->>>   Yes, but unfortunately, that part of the patch is still broken and
->>>   introduced a regression of other copperplate-based AP=CFs. Several RT=
-OS
->>>   implement some kind of thread/task_unblock() service, which shall cau=
-se
->>>   sleep calls based on threadobj_sleep() to return upon receiving the
->>>   SIGRELS notification via a signal. This is the meaning of the comment
->>>   heading that code.
->>>
->>>   So the proper fix should go to the call site in the pSOS emulator,
->>>   instead of changing the generic behavior in threadobj_sleep().
->>>
+>> /* Analogy driver structure */
+>> static a4l_drv_t a4l_drv_pandadaq = {
+>>     .owner = THIS_MODULE,
+>>     .board_name = "analogy_pandadaq",
+>>     .attach = dev_pandadaq_attach,
+>>     .detach = dev_pandadaq_detach,
+>>     .privdata_size = 0,
+>> };
 >>
->> Or threadobj_sleep() should be made smarter, specifically detecting
->> SIGRELS in the mercury case for aborting the wait.
+>> However, due to a potential bug the kernel crashes with a NULL ptr
+>> exception after linking analogy0 to my driver.
+>>
+>> If I apply this patch to the git head of xenomai-2.6 everything works
+>> for me:
+>>
+>> diff --git a/ksrc/drivers/analogy/device.c b/ksrc/drivers/analogy/ 
+>> device.c
+>> index b93ae72..c4095a2 100644
+>> --- a/ksrc/drivers/analogy/device.c
+>> +++ b/ksrc/drivers/analogy/device.c
+>> @@ -278,15 +278,14 @@ int a4l_assign_driver(a4l_cxt_t * cxt,
+>>         a4l_dev_t *dev = a4l_get_dev(cxt);
+>>
+>>         dev->driver = drv;
+>> +
+>> +       INIT_LIST_HEAD(&dev->subdvsq);
+>>
+>>         if (drv->privdata_size == 0)
+>>                 __a4l_dbg(1, core_dbg,
+>>                           "a4l_assign_driver: warning! "
+>>                           "the field priv will not be usable\n");
+>>         else {
+>> -
+>> -               INIT_LIST_HEAD(&dev->subdvsq);
+>> -
+>>                 dev->priv = rtdm_malloc(drv->privdata_size);
+>>                 if (dev->priv == NULL && drv->privdata_size != 0) {
+>>                         __a4l_err("a4l_assign_driver: "
 >>
 >>
->> --
->> Philippe.
->>
 >
-> I think I would prefer to encapsulate that in threadobj_sleep(). Would
-> storing a flag in threadobj_current() in unblock_sighandler() and
-> checking this in threadobj_sleep() be an option?
-
-We'll have to mate threadobj_unblock() and threadobj_sleep() logically=20
-instead, to make this work for both cobalt and mercury cores, but yes,=20
-using a TCB-based flag for handling this specific problem is the way to=20
-go. This way, only SIGRELS notifications would make threadobj_sleep()=20
-abort with EINTR as expected, silently resuming sleep after other signals.
-
-Since the pSOS emulator should never receive SIGRELS, we should not have=20
-to handle EINTR from tm_wkafter/tm_wkwhen() actually.
-
-I'm working on a patch.
-
-  Sorry for having
-> overlooked this,
+> Makes sense. This release routine may also attempt to free a NULL  
+> pointer, which is fortunately caught by the underlying allocator,  
+> but is definitely invalid. Finally, the open-coded iterator for  
+> subdevices reinvents a wheel. Could you try this patch adding a few  
+> fixups to yours? TIA,
+>
+> diff --git a/ksrc/drivers/analogy/device.c b/ksrc/drivers/analogy/ 
+> device.c
+> index b93ae72..60b2977 100644
+> --- a/ksrc/drivers/analogy/device.c
+> +++ b/ksrc/drivers/analogy/device.c
+> @@ -278,17 +278,15 @@ int a4l_assign_driver(a4l_cxt_t * cxt,
+> 	a4l_dev_t *dev = a4l_get_dev(cxt);
+>
+> 	dev->driver = drv;
+> +	INIT_LIST_HEAD(&dev->subdvsq);
+>
+> 	if (drv->privdata_size == 0)
+> 		__a4l_dbg(1, core_dbg,
+> 			  "a4l_assign_driver: warning! "
+> 			  "the field priv will not be usable\n");
+> 	else {
+> -
+> -		INIT_LIST_HEAD(&dev->subdvsq);
+> -
+> 		dev->priv = rtdm_malloc(drv->privdata_size);
+> -		if (dev->priv == NULL && drv->privdata_size != 0) {
+> +		if (dev->priv == NULL) {
+> 			__a4l_err("a4l_assign_driver: "
+> 				  "call(alloc) failed\n");
+> 			ret = -ENOMEM;
+> @@ -325,27 +323,26 @@ out_assign_driver:
+>
+> int a4l_release_driver(a4l_cxt_t * cxt)
+> {
+> -	int ret = 0;
+> 	a4l_dev_t *dev = a4l_get_dev(cxt);
+> +	a4l_subd_t *subd, *tmp;
+> +	int ret = 0;
+>
+> 	if ((ret = dev->driver->detach(dev)) != 0)
+> 		goto out_release_driver;
+>
+> -	/* Decrease module's count
+> -	   so as to allow module unloading */
+> 	module_put(dev->driver->owner);
+>
+> 	/* In case, the driver developer did not free the subdevices */
+> -	while (&dev->subdvsq != dev->subdvsq.next) {
+> -		struct list_head *this = dev->subdvsq.next;
+> -		a4l_subd_t *tmp = list_entry(this, a4l_subd_t, list);
+> -
+> -		list_del(this);
+> -		rtdm_free(tmp);
+> -	}
+> +	if (!list_empty(&dev->subdvsq))
+> +		list_for_each_entry_safe(subd, tmp, &dev->subdvsq, list) {
+> +			list_del(&subd->list);
+> +			rtdm_free(subd);
+> +		}
+>
+> 	/* Free the private field */
+> -	rtdm_free(dev->priv);
+> +	if (dev->priv)
+> +		rtdm_free(dev->priv);
+> +
+> 	dev->driver = NULL;
+>
+> out_release_driver:
+>
 >
 
-No problem, copperplate still lacks documentation anyway.
+Your patch compiles cleanly and works for me.
 
+I tested:
 
---=20
-Philippe.
+ > analogy_config analogy0 analogy_pandadaq
+ > [...]
+ > analogy_config -r analogy0
+ > rmmod analogy_pandadaq
+ > insmod analogy_pandadaq
+ > [... and the same from the start]
+
+I didn't see any warnings in dmesg...
+
+A.
+
 
