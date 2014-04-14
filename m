@@ -1,13 +1,21 @@
-Message-ID: <534BDA32.50205@xenomai.org>
-Date: Mon, 14 Apr 2014 14:53:06 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Mon, 14 Apr 2014 09:21:24 -0400
+Message-ID: <20140414132124.GH17765@csclub.uwaterloo.ca>
+References: <5346895B.6080401@xenomai.org>
+ <1397159850.2881.3.camel@localhost.localdomain>
+ <53471389.6000000@xenomai.org>
+ <1397168263.6356.11.camel@localhost.localdomain>
+ <534719F5.2020605@xenomai.org>
+ <1397170912.6356.19.camel@localhost.localdomain>
+ <20140411154630.GE17765@csclub.uwaterloo.ca>
+ <1397435281.3064.1.camel@localhost.localdomain>
+ <20140414011032.GG17765@csclub.uwaterloo.ca>
+ <1397451751.3064.4.camel@localhost.localdomain>
 MIME-Version: 1.0
-References: <CAPRPZsAmXEyH4wcMeGcWPB3B-3=04DoS=K2k-QbQ+DidPcptAg@mail.gmail.com>	<534BD45B.8070402@xenomai.org>
- <CAPRPZsDSg6Yb3w+UEktb+7AmdZ-7JngVQH4tBbxnk5EV04y0AA@mail.gmail.com>
-In-Reply-To: <CAPRPZsDSg6Yb3w+UEktb+7AmdZ-7JngVQH4tBbxnk5EV04y0AA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Slow execution of RT task
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1397451751.3064.4.camel@localhost.localdomain>
+Subject: Re: [Xenomai] OMAP L138
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,23 +24,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Peter Howard <pjh@northern-ridge.com.au>
+Cc: xenomai@xenomai.org
 
-On 04/14/2014 02:45 PM, Jeroen Van den Keybus wrote:
->> .config would help. TIA,
->
->
-> I've attached both the one for the 3.10 and the 3.8 kernels. In the
-> meantime I found out that the 3.8 kernel exhibits the same problem.
->
-> Please let know if attachments don't work. I'll paste into e-mail
-> immediately (but personally I don't like .configs in the archive...).
->
->
+On Mon, Apr 14, 2014 at 03:02:31PM +1000, Peter Howard wrote:
+> The 3.11 git branch displays the same behavior as master, and on the
+> 3.12 and 3.14 branches (and, presumably the 3.13 branch too) the kernel
+> no longer detects the SD card (driver _is_ enabled).  Not sure where the
+> bug appears, but it's one bug too many for the moment.
 
-Attaching .configs is ok. Thanks,
+That would be very inconvinient.
 
 -- 
-Philippe.
+Len Sorensen
 
