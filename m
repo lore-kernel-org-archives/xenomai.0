@@ -1,21 +1,14 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Mon, 14 Apr 2014 17:06:38 -0400
-Message-ID: <20140414210638.GI17765@csclub.uwaterloo.ca>
-References: <533C100A.7050501@xenomai.org>
- <20140402134017.GG17765@csclub.uwaterloo.ca>
- <20140402134133.GH17765@csclub.uwaterloo.ca>
- <20140402134609.GI17765@csclub.uwaterloo.ca>
- <533C1709.3090305@xenomai.org>
- <20140402143809.GJ17765@csclub.uwaterloo.ca>
- <533C21A0.30502@xenomai.org>
- <20140403134647.GL17765@csclub.uwaterloo.ca>
- <533D688A.7050609@xenomai.org>
- <20140403141635.GM17765@csclub.uwaterloo.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20140403141635.GM17765@csclub.uwaterloo.ca>
-Subject: Re: [Xenomai] Porting xenomai 2.6.3 and ipipe to 3.12 kernel
+In-Reply-To: <534C4608.9090200@xenomai.org>
+References: <CAPRPZsAmXEyH4wcMeGcWPB3B-3=04DoS=K2k-QbQ+DidPcptAg@mail.gmail.com>
+ <534BD82E.6080205@xenomai.org>
+ <CAPRPZsCkGj=n4LJeduM5MJM0UbAcjwg+5uZkNnAn9dSGwaKeoQ@mail.gmail.com>
+ <534C4608.9090200@xenomai.org>
+Date: Mon, 14 Apr 2014 23:14:30 +0200
+Message-ID: <CAPRPZsDkrH5FOiCqwo8570x0zcg+dcAZ0CncF_02EwkuexR=aQ@mail.gmail.com>
+From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Slow execution of RT task
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,34 +18,36 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thu, Apr 03, 2014 at 10:16:35AM -0400, Lennart Sorensen wrote:
-> On Thu, Apr 03, 2014 at 03:56:26PM +0200, Gilles Chanteperdrix wrote:
-> > On 04/03/2014 03:46 PM, Lennart Sorensen wrote:
-> > >Load script terminated, terminating checked scripts
-> > >---|-----------|-----------|-----------|--------|------|-------------------------
-> > >RTS|     -1.140|      2.280|     10.811|       0|     0|    18:21:26/18:21:26
-> > >RTD|           0|         795|    63498250
-> > >RTD|           0|        4654|  1051007408
-> > >RTD|           1|       14862|  1064936835
-> > >RTD|           1|         134|    63457021
-> > >pipe_in: /tmp/xeno-test-in-9751
-> > >
-> > >I am guessing that looks successful.
-> > 
-> > Yes, I guess a 15us worst case interrupt latency is unprecedented
-> > for the ARM architecture. The timer anticipation may be a bit too
-> > eager for this SOC, which results in negative latencies. What does
-> > cat /proc/xenomai/timer say?
-> 
-> root@omap5:~# cat /proc/xenomai/timer
-> status=on+watchdog:setup=488:clock=3556147959244:timerdev=arch_sys_timer:clockdev=ipipe_tsc
+> Maybe the clocksource is no longer the tsc? What does:
+>
+> cat /sys/devices/system/clocksource/clocksource0/current_clocksource
+>
+> say?
 
-Any more info on this?
+tsc
 
-The negative minimum latency seems a bit odd after all.
+But I just discovered the reason of the increased execution times:
+while looking for delays caused by the CPU accidentally entering C3
+state, I turned on the I-pipe tracer and simply forgot to turn it back
+off. I just learnt that the tracer causes an appreciable bit of
+delay...
 
--- 
-Len Sorensen
+Kernel build time is now 2m27s and the times of the test program are now:
+
+1397509817942908822:    -2317      134 T=   -2183 (0)
+1397509818942908822:    -2307      129 T=   -2178 (0)
+1397509819942908822:    -2306      129 T=   -2177 (0)
+
+Sorry to have bothered you with this and thanks for your help.
+
+Still, I do get these warnings in kernel/rcutree.c and, with the
+tracer still on, the system at least locked up hard once while
+modprobing xeno_native.
+
+Thanks again,
+
+
+Jeroen
 
