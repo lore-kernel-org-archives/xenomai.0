@@ -1,18 +1,15 @@
-Message-ID: <533B270F.4060702@xenomai.org>
-Date: Tue, 01 Apr 2014 22:52:31 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <534BD539.2080601@xenomai.org>
+Date: Mon, 14 Apr 2014 14:31:53 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <5339E2CE.7060703@xenomai.org>
- <20140331215348.GX17765@csclub.uwaterloo.ca>
- <20140331215933.GY17765@csclub.uwaterloo.ca>
- <20140331220421.GZ17765@csclub.uwaterloo.ca> <5339E80C.9020604@xenomai.org>
- <5339EBE1.3060907@xenomai.org> <20140401013227.GA17765@csclub.uwaterloo.ca>
- <533A9A7C.7020408@xenomai.org> <20140401131257.GB17765@csclub.uwaterloo.ca>
- <533B14FC.1000007@xenomai.org> <20140401194053.GC17765@csclub.uwaterloo.ca>
-In-Reply-To: <20140401194053.GC17765@csclub.uwaterloo.ca>
-Content-Type: text/plain; charset=UTF-8
+References: <5334334D.4050300@mail.de> <53352740.3060900@mail.de>
+ <534B8669.2050904@mail.de> <534B94E1.1000408@xenomai.org>
+ <534BD044.9010400@mail.de> <534BD289.1010802@xenomai.org>
+In-Reply-To: <534BD289.1010802@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Porting xenomai 2.6.3 and ipipe to 3.12 kernel
+Subject: Re: [Xenomai] error / bugfix in ipipe-core-3-10.28-powerpc-1.patch
+ (from eldk 5.5, company denx)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,53 +18,108 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: xenomai@xenomai.org
+To: Ralf <ralf.moder@mail.de>, xenomai@xenomai.org
 
-On 04/01/2014 09:40 PM, Lennart Sorensen wrote:
-> On Tue, Apr 01, 2014 at 09:35:24PM +0200, Gilles Chanteperdrix wrote:
->> On 04/01/2014 03:12 PM, Lennart Sorensen wrote:
->>> On Tue, Apr 01, 2014 at 12:52:44PM +0200, Gilles Chanteperdrix wrote:
->>>> The way I test it is by running xeno-regression-test, using dohell with
->>>> LTP to create a load. Note that the latency result given by
->>>> xeno-regression-test should not be taken into account as switchtest is
->>>> running concurrently and creates large non-preemptible sections,
->>>> xeno-regression-test is more a stress test.
+On 04/14/2014 02:20 PM, Philippe Gerum wrote:
+> On 04/14/2014 02:10 PM, Ralf wrote:
+>> Am 14.04.2014 09:57, schrieb Philippe Gerum:
+>>> On 04/14/2014 08:55 AM, Ralf wrote:
+>>>> Am 28.03.2014 08:39, schrieb Ralf:
+>>>>> Hello,
+>>>>>
+>>>>> i have found an error in the ipipe-patch above.
+>>>>> Here ist the error description:
+>>>>>
+>>>>> Our system:
+>>>>> Linux 3.10.28 with xenomai 2.6 patch on a PowerPC MPC5200
+>>>>>
+>>>>> Error description:
+>>>>> We use the xenomai-(posix-skin-)function clock_gettime(
+>>>>> CLOCK_HOST_REALTIME, ..) to read out our system time. Thus, we set
+>>>>> up a
+>>>>> NTP clock that runs on an FPGA. Later, we compare the system time and
+>>>>> NTP time deviations. Unfortunately we recognize in any comparison with
+>>>>> the nanoseconds a deviation of at least 100 million nsecs. We then
+>>>>> started the xenomai test suite and get the following prints on our
+>>>>> console:
+>>>>>
+>>> [snip]
 >>>
->>> I will see if I can find the invocation to run that then.
+>>>>> tk_xtime() makes a shift to the right on the nanoseconds. This
+>>>>> shift is
+>>>>> at our clock source 24. If this shift now run twice consecutively,
+>>>>> that
+>>>>> explains naturally why we only get the most significant 8 bits of the
+>>>>> nanosecond value.
+>>>>>
+>>>>> a fix that might solve the problem, looks like this
+>>>>>
+>>>>> void ipipe_update_hostrt(struct timekeeper *tk)
+>>>>> {
+>>>>>       struct ipipe_hostrt_data data;
+>>>>>       struct timespec xt;
+>>>>>
+>>>>> //     xt = tk_xtime(tk);
+>>>>>       ipipe_root_only();
+>>>>>       data.live = 1;
+>>>>>       data.cycle_last = tk->clock->cycle_last;
+>>>>>       data.mask = tk->clock->mask;
+>>>>>       data.mult = tk->mult;
+>>>>>       data.shift = tk->shift;
+>>>>>       data.wall_time_sec = tk->xtime_sec;
+>>>>>       data.wall_time_nsec = (long)tk->xtime_nsec;
+>>>>>       data.wall_to_monotonic = tk->wall_to_monotonic;
+>>>>>       __ipipe_notify_kevent(IPIPE_KEVT_HOSTRT, &data);
+>>>>> }
+>>>>>
+>>>> Has anyone observed the same thing? Do you think that bugfix correct?
+>>>> How can i bring it into mainline? I would be very grateful for some
+>>>> help.
+>>>>
+>>> Good catch, thanks. This bug is introduced by a work-around specific
+>>> to the few architectures which do not implement the newest VSYSCALL
+>>> interface yet, like powerpc. However, the suggested change would
+>>> break others which do, could you test the patch below instead? TIA,
 >>>
->>> I let cyclictest, switchtest and latency running the last 8 hours,
->>> and latency test currently says:
->>>
->>> RTD|     -0.814|      2.441|      7.486|       0|     0|     -2.116|     20.182
->>>
->>> That seems decent at least.
->>>
+>>> diff --git a/arch/powerpc/kernel/time.c b/arch/powerpc/kernel/time.c
+>>> index e1214ba..5b01356 100644
+>>> --- a/arch/powerpc/kernel/time.c
+>>> +++ b/arch/powerpc/kernel/time.c
+>>> @@ -749,7 +749,7 @@ static cycle_t timebase_read(struct clocksource *cs)
+>>>    * API.
+>>>    */
+>>>   static inline void update_hostrt(struct timespec *wall_time, struct
+>>> timespec *wtm,
+>>> -                 struct clocksource *clock, u32 mult)
+>>> +                 struct clocksource *clock, u32 mult, u32 shift)
+>>>   {
+>>>       /*
+>>>        * This is a temporary work-around until powerpc implements
+>>> @@ -761,7 +761,7 @@ static inline void update_hostrt(struct timespec
+>>> *wall_time, struct timespec *wt
+>>>           .shift = clock->shift,
+>>>           .mult = mult,
+>>>           .xtime_sec = wall_time->tv_sec,
+>>> -        .xtime_nsec = wall_time->tv_nsec,
+>>> +        .xtime_nsec = wall_time->tv_nsec << shift,
+>> Unfortunately, this solution does not work on our powerpc, because
+>> "wall_time->tv_nsec" is only a 32 bit value and "xtime_nsec" a 64 bit
+>> value. It seems that the shift on the 32 bit value happens first and
+>> only then the assignment to the 64 bit value. So the shifted bits
+>> greater than 32 bit are lost.
+>> A cast avoids this problem:
 >>
->> I use:
->> xeno-regression-test -l "dohell -s 192.168.0.5 -m /mnt -l /ltp"
+>>                          .xtime_nsec = (u64)wall_time->tv_nsec << shift;
 >>
->> Where the machine with ip 192.168.0.5 has the "discard" service enabled
->> (port 9, available in inetd), an usb key is mounted on /mnt, and LTP is
->> installed in /ltp.
-> 
-> I get an error when I use the -s option.
+>> After that everything works well.
+>
+> This make sense.
 
-Probably because the machine with the IP address you pass after -s does
-not have the "discard" service enabled in inetd.conf
+And this also makes sense without the typo. Oh, well...
 
-> 
-> I ran out of space, so ltp is instaled on the usb key mounted at /mnt.
-> Hopefully it won't mind that.
-> 
-> ++ /usr/lib/xenomai/testsuite/regression/posix/xddp_test
-> FAILURE xddp_test.c:41: socket(AF_RTIPC, SOCK_DGRAM, IPCPROTO_XDDP): Address family not supported by protocol
-
-> 
-> Maybe I am mising a kernel config.
-
-Well, you need to enable xddp.
+  I'll merge this fix, thanks.
+>
 
 -- 
-                                                                Gilles.
+Philippe.
 
