@@ -1,14 +1,14 @@
-Message-ID: <534B8FA4.9070102@xenomai.org>
-Date: Mon, 14 Apr 2014 09:35:00 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <534B94E1.1000408@xenomai.org>
+Date: Mon, 14 Apr 2014 09:57:21 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAKJ14NdsfwK4Vj=UpYb6p9bvFE=1ZoQb6ss--9f-WqXOXGDn2g@mail.gmail.com>
- <534B8AA0.50203@xenomai.org> <FFE2622A-6519-4B2C-84B5-B0453F6A8850@gmail.com>
-In-Reply-To: <FFE2622A-6519-4B2C-84B5-B0453F6A8850@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+References: <5334334D.4050300@mail.de> <53352740.3060900@mail.de>
+ <534B8669.2050904@mail.de>
+In-Reply-To: <534B8669.2050904@mail.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Command line freeze during xeno-regression-test on
- omap4460
+Subject: Re: [Xenomai] error / bugfix in ipipe-core-3-10.28-powerpc-1.patch
+ (from eldk 5.5, company denx)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,47 +17,124 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Andreas Glatz <andi.glatz@gmail.com>
-Cc: xenomai@xenomai.org
+To: Ralf <ralf.moder@mail.de>, xenomai@xenomai.org
 
-On 04/14/2014 09:24 AM, Andreas Glatz wrote:
-> 
-> On 14 Apr 2014, at 08:13, Gilles Chanteperdrix wrote:
-> 
->> On 01/06/2014 04:30 PM, Andreas Glatz wrote:
->>> Hi,
->>>
->>> I managed to produce a kernel (v3.8.13) with xenomai 2.6.3 ipipe  
->>> patch and
->>> rootfs (debian wheezy) with xenomai 2.6.3 libraries for my  
->>> Pandaboard ES
->>> (omap4460). The simple regression test, which only calls dd during  
->>> the
->>> switchtest, works fine. However the regression test with the linux  
->>> test
->>> project (ltp-full-20130904) scripts causes some sort of system lock  
->>> up.
->>> After that I only can ctrl-c xeno-regression-test (i.e.  
->>> switchtest), which,
->>> however, doesn't help to regain console access (neigher over  
->>> ethernet nor
->>> serial).
+On 04/14/2014 08:55 AM, Ralf wrote:
+> Am 28.03.2014 08:39, schrieb Ralf:
+>> Hello,
 >>
->> Hi,
+>> i have found an error in the ipipe-patch above.
+>> Here ist the error description:
 >>
->> I finally ran some tests with SD card: I booted my pandaboard using  
->> NFS
->> as usual, but ran the xeno-test script passing the mount point of  
->> the SD
->> card to dohell's -m option. And I could not reproduce any issue. The
->> kernel I used is 3.14, the configuration is omap2plus_defconfig.
+>> Our system:
+>> Linux 3.10.28 with xenomai 2.6 patch on a PowerPC MPC5200
 >>
-> 
-> OK, brilliant. I'll give that a try. I'm assuming that you tested with  
-> the git tag 'raw/ipipe-3.14.0' ?
+>> Error description:
+>> We use the xenomai-(posix-skin-)function clock_gettime(
+>> CLOCK_HOST_REALTIME, ..) to read out our system time. Thus, we set up a
+>> NTP clock that runs on an FPGA. Later, we compare the system time and
+>> NTP time deviations. Unfortunately we recognize in any comparison with
+>> the nanoseconds a deviation of at least 100 million nsecs. We then
+>> started the xenomai test suite and get the following prints on our console:
+>>
 
-It is a branch actually, but yes.
+[snip]
+
+>> tk_xtime() makes a shift to the right on the nanoseconds. This shift is
+>> at our clock source 24. If this shift now run twice consecutively, that
+>> explains naturally why we only get the most significant 8 bits of the
+>> nanosecond value.
+>>
+>> a fix that might solve the problem, looks like this
+>>
+>> void ipipe_update_hostrt(struct timekeeper *tk)
+>> {
+>>      struct ipipe_hostrt_data data;
+>>      struct timespec xt;
+>>
+>> //     xt = tk_xtime(tk);
+>>      ipipe_root_only();
+>>      data.live = 1;
+>>      data.cycle_last = tk->clock->cycle_last;
+>>      data.mask = tk->clock->mask;
+>>      data.mult = tk->mult;
+>>      data.shift = tk->shift;
+>>      data.wall_time_sec = tk->xtime_sec;
+>>      data.wall_time_nsec = (long)tk->xtime_nsec;
+>>      data.wall_to_monotonic = tk->wall_to_monotonic;
+>>      __ipipe_notify_kevent(IPIPE_KEVT_HOSTRT, &data);
+>> }
+>>
+> 
+> Has anyone observed the same thing? Do you think that bugfix correct?
+> How can i bring it into mainline? I would be very grateful for some help.
+> 
+
+Good catch, thanks. This bug is introduced by a work-around specific to the few architectures which do not implement the newest VSYSCALL interface yet, like powerpc. However, the suggested change would break others which do, could you test the patch below instead? TIA,
+
+diff --git a/arch/powerpc/kernel/time.c b/arch/powerpc/kernel/time.c
+index e1214ba..5b01356 100644
+--- a/arch/powerpc/kernel/time.c
++++ b/arch/powerpc/kernel/time.c
+@@ -749,7 +749,7 @@ static cycle_t timebase_read(struct clocksource *cs)
+  * API.
+  */
+ static inline void update_hostrt(struct timespec *wall_time, struct timespec *wtm,
+-				 struct clocksource *clock, u32 mult)
++				 struct clocksource *clock, u32 mult, u32 shift)
+ {
+ 	/*
+ 	 * This is a temporary work-around until powerpc implements
+@@ -761,7 +761,7 @@ static inline void update_hostrt(struct timespec *wall_time, struct timespec *wt
+ 		.shift = clock->shift,
+ 		.mult = mult,
+ 		.xtime_sec = wall_time->tv_sec,
+-		.xtime_nsec = wall_time->tv_nsec,
++		.xtime_nsec = wall_time->tv_nsec << shift,
+ 		.wall_to_monotonic = *wtm,
+ 	};
+ 
+@@ -771,7 +771,7 @@ static inline void update_hostrt(struct timespec *wall_time, struct timespec *wt
+ #endif
+ 
+ void update_vsyscall_old(struct timespec *wall_time, struct timespec *wtm,
+-			struct clocksource *clock, u32 mult)
++			 struct clocksource *clock, u32 mult, u32 shift)
+ {
+ 	u64 new_tb_to_xs, new_stamp_xsec;
+ 	u32 frac_sec;
+@@ -814,7 +814,7 @@ void update_vsyscall_old(struct timespec *wall_time, struct timespec *wtm,
+ 	smp_wmb();
+ 	++(vdso_data->tb_update_count);
+ 
+-	update_hostrt(wall_time, wtm, clock, mult);
++	update_hostrt(wall_time, wtm, clock, mult, shift);
+ }
+ 
+ void update_vsyscall_tz(void)
+diff --git a/include/linux/timekeeper_internal.h b/include/linux/timekeeper_internal.h
+index c1825eb..93ee8d6 100644
+--- a/include/linux/timekeeper_internal.h
++++ b/include/linux/timekeeper_internal.h
+@@ -89,7 +89,7 @@ extern void update_vsyscall_tz(void);
+ #elif defined(CONFIG_GENERIC_TIME_VSYSCALL_OLD)
+ 
+ extern void update_vsyscall_old(struct timespec *ts, struct timespec *wtm,
+-				struct clocksource *c, u32 mult);
++				struct clocksource *c, u32 mult, u32 shift);
+ extern void update_vsyscall_tz(void);
+ 
+ static inline void update_vsyscall(struct timekeeper *tk)
+@@ -97,7 +97,7 @@ static inline void update_vsyscall(struct timekeeper *tk)
+ 	struct timespec xt;
+ 
+ 	xt = tk_xtime(tk);
+-	update_vsyscall_old(&xt, &tk->wall_to_monotonic, tk->clock, tk->mult);
++	update_vsyscall_old(&xt, &tk->wall_to_monotonic, tk->clock, tk->mult, tk->shift);
+ }
+ 
+ #else
 
 -- 
-                                                                Gilles.
+Philippe.
 
