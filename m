@@ -1,15 +1,12 @@
-Message-ID: <534BD539.2080601@xenomai.org>
-Date: Mon, 14 Apr 2014 14:31:53 +0200
+Message-ID: <534BD82E.6080205@xenomai.org>
+Date: Mon, 14 Apr 2014 14:44:30 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <5334334D.4050300@mail.de> <53352740.3060900@mail.de>
- <534B8669.2050904@mail.de> <534B94E1.1000408@xenomai.org>
- <534BD044.9010400@mail.de> <534BD289.1010802@xenomai.org>
-In-Reply-To: <534BD289.1010802@xenomai.org>
+References: <CAPRPZsAmXEyH4wcMeGcWPB3B-3=04DoS=K2k-QbQ+DidPcptAg@mail.gmail.com>
+In-Reply-To: <CAPRPZsAmXEyH4wcMeGcWPB3B-3=04DoS=K2k-QbQ+DidPcptAg@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] error / bugfix in ipipe-core-3-10.28-powerpc-1.patch
- (from eldk 5.5, company denx)
+Subject: Re: [Xenomai] Slow execution of RT task
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,107 +15,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ralf <ralf.moder@mail.de>, xenomai@xenomai.org
+To: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/14/2014 02:20 PM, Philippe Gerum wrote:
-> On 04/14/2014 02:10 PM, Ralf wrote:
->> Am 14.04.2014 09:57, schrieb Philippe Gerum:
->>> On 04/14/2014 08:55 AM, Ralf wrote:
->>>> Am 28.03.2014 08:39, schrieb Ralf:
->>>>> Hello,
->>>>>
->>>>> i have found an error in the ipipe-patch above.
->>>>> Here ist the error description:
->>>>>
->>>>> Our system:
->>>>> Linux 3.10.28 with xenomai 2.6 patch on a PowerPC MPC5200
->>>>>
->>>>> Error description:
->>>>> We use the xenomai-(posix-skin-)function clock_gettime(
->>>>> CLOCK_HOST_REALTIME, ..) to read out our system time. Thus, we set
->>>>> up a
->>>>> NTP clock that runs on an FPGA. Later, we compare the system time and
->>>>> NTP time deviations. Unfortunately we recognize in any comparison with
->>>>> the nanoseconds a deviation of at least 100 million nsecs. We then
->>>>> started the xenomai test suite and get the following prints on our
->>>>> console:
->>>>>
->>> [snip]
->>>
->>>>> tk_xtime() makes a shift to the right on the nanoseconds. This
->>>>> shift is
->>>>> at our clock source 24. If this shift now run twice consecutively,
->>>>> that
->>>>> explains naturally why we only get the most significant 8 bits of the
->>>>> nanosecond value.
->>>>>
->>>>> a fix that might solve the problem, looks like this
->>>>>
->>>>> void ipipe_update_hostrt(struct timekeeper *tk)
->>>>> {
->>>>>       struct ipipe_hostrt_data data;
->>>>>       struct timespec xt;
->>>>>
->>>>> //     xt = tk_xtime(tk);
->>>>>       ipipe_root_only();
->>>>>       data.live = 1;
->>>>>       data.cycle_last = tk->clock->cycle_last;
->>>>>       data.mask = tk->clock->mask;
->>>>>       data.mult = tk->mult;
->>>>>       data.shift = tk->shift;
->>>>>       data.wall_time_sec = tk->xtime_sec;
->>>>>       data.wall_time_nsec = (long)tk->xtime_nsec;
->>>>>       data.wall_to_monotonic = tk->wall_to_monotonic;
->>>>>       __ipipe_notify_kevent(IPIPE_KEVT_HOSTRT, &data);
->>>>> }
->>>>>
->>>> Has anyone observed the same thing? Do you think that bugfix correct?
->>>> How can i bring it into mainline? I would be very grateful for some
->>>> help.
->>>>
->>> Good catch, thanks. This bug is introduced by a work-around specific
->>> to the few architectures which do not implement the newest VSYSCALL
->>> interface yet, like powerpc. However, the suggested change would
->>> break others which do, could you test the patch below instead? TIA,
->>>
->>> diff --git a/arch/powerpc/kernel/time.c b/arch/powerpc/kernel/time.c
->>> index e1214ba..5b01356 100644
->>> --- a/arch/powerpc/kernel/time.c
->>> +++ b/arch/powerpc/kernel/time.c
->>> @@ -749,7 +749,7 @@ static cycle_t timebase_read(struct clocksource *cs)
->>>    * API.
->>>    */
->>>   static inline void update_hostrt(struct timespec *wall_time, struct
->>> timespec *wtm,
->>> -                 struct clocksource *clock, u32 mult)
->>> +                 struct clocksource *clock, u32 mult, u32 shift)
->>>   {
->>>       /*
->>>        * This is a temporary work-around until powerpc implements
->>> @@ -761,7 +761,7 @@ static inline void update_hostrt(struct timespec
->>> *wall_time, struct timespec *wt
->>>           .shift = clock->shift,
->>>           .mult = mult,
->>>           .xtime_sec = wall_time->tv_sec,
->>> -        .xtime_nsec = wall_time->tv_nsec,
->>> +        .xtime_nsec = wall_time->tv_nsec << shift,
->> Unfortunately, this solution does not work on our powerpc, because
->> "wall_time->tv_nsec" is only a 32 bit value and "xtime_nsec" a 64 bit
->> value. It seems that the shift on the 32 bit value happens first and
->> only then the assignment to the 64 bit value. So the shifted bits
->> greater than 32 bit are lost.
->> A cast avoids this problem:
->>
->>                          .xtime_nsec = (u64)wall_time->tv_nsec << shift;
->>
->> After that everything works well.
+On 04/14/2014 11:14 AM, Jeroen Van den Keybus wrote:
 >
-> This make sense.
+> [  143.797961] WARNING: at kernel/rcutree.c:480 rcu_irq_exit+0xb9/0xd0()
+> [  143.797967] Modules linked in: xeno_native xeno_nucleus i915
+> coretemp mperf ghash_clmulni_intel aesni_intel aes_x86_64 lrw gf128mul
+> glue_helper ablk_helper cryptd drm_kms_helper drm lpc_ich mfd_core
+> ehci_pci ehci_hcd video backlight processor xhci_hcd e1000e igb
+> usbcore firewire_ohci firewire_core i2c_algo_bit hwmon crc_itu_t ptp
+> pps_core usb_common thermal fan
+> [  143.798151] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G        W
+> 3.10.18-ipipe #17
 
-And this also makes sense without the typo. Oh, well...
+Do you have CONFIG_NO_HZ_FULL enabled? If so, could you disable it and 
+retry? Next step, same question for CONFIG_NO_HZ_IDLE.
 
-  I'll merge this fix, thanks.
->
+TIA,
 
 -- 
 Philippe.
