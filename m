@@ -1,23 +1,13 @@
-Message-ID: <1397454499.3064.6.camel@localhost.localdomain>
-From: Peter Howard <pjh@northern-ridge.com.au>
-Date: Mon, 14 Apr 2014 15:48:19 +1000
-In-Reply-To: <1397451751.3064.4.camel@localhost.localdomain>
-References: <534534FD.5090805@xenomai.org>
- <1397113300.2720.5.camel@localhost.localdomain>
- <5346895B.6080401@xenomai.org>
- <1397159850.2881.3.camel@localhost.localdomain>
- <53471389.6000000@xenomai.org>
- <1397168263.6356.11.camel@localhost.localdomain>
- <534719F5.2020605@xenomai.org>
- <1397170912.6356.19.camel@localhost.localdomain>
- <20140411154630.GE17765@csclub.uwaterloo.ca>
- <1397435281.3064.1.camel@localhost.localdomain>
- <20140414011032.GG17765@csclub.uwaterloo.ca>
- <1397451751.3064.4.camel@localhost.localdomain>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Message-ID: <534B8669.2050904@mail.de>
+Date: Mon, 14 Apr 2014 08:55:37 +0200
+From: Ralf <ralf.moder@mail.de>
+MIME-Version: 1.0
+References: <5334334D.4050300@mail.de> <53352740.3060900@mail.de>
+In-Reply-To: <53352740.3060900@mail.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] OMAP L138
+Subject: Re: [Xenomai] error / bugfix in ipipe-core-3-10.28-powerpc-1.patch
+ (from eldk 5.5, company denx)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,24 +16,147 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, 2014-04-14 at 15:02 +1000, Peter Howard wrote:
+Am 28.03.2014 08:39, schrieb Ralf:
+> Hello,
+>
+> i have found an error in the ipipe-patch above.
+> Here ist the error description:
+>
+> Our system:
+> Linux 3.10.28 with xenomai 2.6 patch on a PowerPC MPC5200
+>
+> Error description:
+> We use the xenomai-(posix-skin-)function clock_gettime(
+> CLOCK_HOST_REALTIME, ..) to read out our system time. Thus, we set up a
+> NTP clock that runs on an FPGA. Later, we compare the system time and
+> NTP time deviations. Unfortunately we recognize in any comparison with
+> the nanoseconds a deviation of at least 100 million nsecs. We then
+> started the xenomai test suite and get the following prints on our console:
+>
+> root@hbm-000a0f(NFS):/$clocktest -D -C
+> 42                                      
+> hostrt data area is
+> live                                                       
+> Sequence counter :
+> 92323948                                                    
+> wall_time_sec    :
+> 1395909476                                                  
+> wall_time_nsec   :
+> 49                                                          
+> wall_to_monotonic                                                              
+>
+> tv_sec : -1395754171                                                 
+> tv_nsec : 750313156                                                   
+> cycle_last       :
+> 5127088924084                                               
+> mask             :
+> 0xffffffffffffffff                                          
+> mult             :
+> 508284933                                                   
+> shift            :
+> 24                                                          
+>                                                                                
+>
+> == Tested clock: 42
+> (CLOCK_HOST_REALTIME)                                      
+> CPU      ToD offset [us] ToD drift [us/s]      warps max delta
+> [us]            
+> --- -------------------- ---------------- ----------
+> --------------            
+>   0            -990145.8       -11538.531       2740         6253.3
+>
+> As you can see, only 8 bits of the nanosecond value (wall_time_nsec)
+> will be displayed. Instrumentation (printks) has shown that these are
+> the most significant 8 bits of the value.
+>
+> Reason:
+> The function tk_xtime(struct timekeeper *tk) (in file
+> include/linux/timekeeper_internal.h)
+>
+> static inline struct timespec tk_xtime(struct timekeeper *tk)
+> {
+>     struct timespec ts;
+>
+>     ts.tv_sec = tk->xtime_sec;
+>     ts.tv_nsec = (long)(tk->xtime_nsec >> tk->shift);
+>     return ts;
+> }
+>
+> is applied twice to the system time. First in this function (in file
+> include/linux/timekeeper_internal.h):
+>
+> static inline void update_vsyscall(struct timekeeper *tk)
+> {
+>     struct timespec xt;
+>
+>     xt = tk_xtime(tk);
+>     update_vsyscall_old(&xt, &tk->wall_to_monotonic, tk->clock, tk->mult);
+> }
+>
+> and then in this function (in file /kernel/ipipe/timer.c):
+>
+> void ipipe_update_hostrt(struct timekeeper *tk)
+> {
+>     struct ipipe_hostrt_data data;
+>     struct timespec xt;
+>
+>     xt = tk_xtime(tk);
+>     ipipe_root_only();
+>     data.live = 1;
+>     data.cycle_last = tk->clock->cycle_last;
+>     data.mask = tk->clock->mask;
+>     data.mult = tk->mult;
+>     data.shift = tk->shift;
+>     data.wall_time_sec = xt.tv_sec;
+>     data.wall_time_nsec = xt.tv_nsec;
+>     data.wall_to_monotonic = tk->wall_to_monotonic;
+>     __ipipe_notify_kevent(IPIPE_KEVT_HOSTRT, &data);
+> }
+>
+> tk_xtime() makes a shift to the right on the nanoseconds. This shift is
+> at our clock source 24. If this shift now run twice consecutively, that
+> explains naturally why we only get the most significant 8 bits of the
+> nanosecond value.
+>
+> a fix that might solve the problem, looks like this
+>
+> void ipipe_update_hostrt(struct timekeeper *tk)
+> {
+>     struct ipipe_hostrt_data data;
+>     struct timespec xt;
+>
+> //     xt = tk_xtime(tk);
+>     ipipe_root_only();
+>     data.live = 1;
+>     data.cycle_last = tk->clock->cycle_last;
+>     data.mask = tk->clock->mask;
+>     data.mult = tk->mult;
+>     data.shift = tk->shift;
+>     data.wall_time_sec = tk->xtime_sec;
+>     data.wall_time_nsec = (long)tk->xtime_nsec;
+>     data.wall_to_monotonic = tk->wall_to_monotonic;
+>     __ipipe_notify_kevent(IPIPE_KEVT_HOSTRT, &data);
+> }
+>
+> I have successfully tested this fix on our system.
+>
+> Regards
+>
+> Ralf
+>
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+>
 
-> 
-> The 3.11 git branch displays the same behavior as master, and on the
-> 3.12 and 3.14 branches (and, presumably the 3.13 branch too) the kernel
-> no longer detects the SD card (driver _is_ enabled).  Not sure where the
-> bug appears, but it's one bug too many for the moment.
-> 
+Has anyone observed the same thing? Do you think that bugfix correct?
+How can i bring it into mainline? I would be very grateful for some help.
 
-I take it back; after my frustration levels returned to "acceptable",
-git bisect found the offending commit in ~30 minute :-)  Once I've
-resolved it fully I'll report properly on 3.12 and later.
+Regards
 
-
--- 
-Peter Howard <pjh@northern-ridge.com.au>
-
+Ralf
 
