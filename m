@@ -1,14 +1,22 @@
-MIME-Version: 1.0
-In-Reply-To: <534C4608.9090200@xenomai.org>
-References: <CAPRPZsAmXEyH4wcMeGcWPB3B-3=04DoS=K2k-QbQ+DidPcptAg@mail.gmail.com>
- <534BD82E.6080205@xenomai.org>
- <CAPRPZsCkGj=n4LJeduM5MJM0UbAcjwg+5uZkNnAn9dSGwaKeoQ@mail.gmail.com>
- <534C4608.9090200@xenomai.org>
-Date: Mon, 14 Apr 2014 23:14:30 +0200
-Message-ID: <CAPRPZsDkrH5FOiCqwo8570x0zcg+dcAZ0CncF_02EwkuexR=aQ@mail.gmail.com>
-From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Slow execution of RT task
+Message-ID: <1397527125.26887.2.camel@localhost.localdomain>
+From: Peter Howard <pjh@northern-ridge.com.au>
+Date: Tue, 15 Apr 2014 11:58:45 +1000
+In-Reply-To: <20140414011032.GG17765@csclub.uwaterloo.ca>
+References: <534534FD.5090805@xenomai.org>
+ <1397113300.2720.5.camel@localhost.localdomain>
+ <5346895B.6080401@xenomai.org>
+ <1397159850.2881.3.camel@localhost.localdomain>
+ <53471389.6000000@xenomai.org>
+ <1397168263.6356.11.camel@localhost.localdomain>
+ <534719F5.2020605@xenomai.org>
+ <1397170912.6356.19.camel@localhost.localdomain>
+ <20140411154630.GE17765@csclub.uwaterloo.ca>
+ <1397435281.3064.1.camel@localhost.localdomain>
+ <20140414011032.GG17765@csclub.uwaterloo.ca>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] OMAP L138
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,37 +25,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Cc: xenomai@xenomai.org
 
-> Maybe the clocksource is no longer the tsc? What does:
->
-> cat /sys/devices/system/clocksource/clocksource0/current_clocksource
->
-> say?
+On Sun, 2014-04-13 at 21:10 -0400, Lennart Sorensen wrote:
+> On Mon, Apr 14, 2014 at 10:28:01AM +1000, Peter Howard wrote:
+> > The ipipe repo is at 3.10, and I've just confirmed I have that patch.
+> > Sadly that's not the problem.
+> > 
+> > Thanks for the suggestion though.
+> 
+> Well I hadn't tried it yet myself.  All I know so far is 3.12 works
+> great for me, and 3.8 segfaulted randomly during sigchld handling.
+> 
+> If you could get a debug build of init and turn on core dumps, that
+> might give you something to analyze with gdb to see if you might be
+> hitting the same situation.
+> 
+> Xenomai also seems to be running great on arm on 3.12 for me using the
+> ipipe for 3.12 git branch, and the latest xenomai-2.6 git tree.
+> 
+> Maybe that would be worth giving a try.
+> 
 
-tsc
+OK, so I managed to get the SD card being detected on 3.12 (getting that
+properly fixed is a thread on a different mailing list).  And I've
+gotten a 3.12 kernel with my ipipe changes for the DA850 and Xenomai 2.6
+running.
 
-But I just discovered the reason of the increased execution times:
-while looking for delays caused by the CPU accidentally entering C3
-state, I turned on the I-pipe tracer and simply forgot to turn it back
-off. I just learnt that the tracer causes an appreciable bit of
-delay...
+Sadly I'm left with the same set of panics that I had before; usually
+ending with init getting a SIGSEGV.
+-- 
+Peter Howard <pjh@northern-ridge.com.au>
 
-Kernel build time is now 2m27s and the times of the test program are now:
-
-1397509817942908822:    -2317      134 T=   -2183 (0)
-1397509818942908822:    -2307      129 T=   -2178 (0)
-1397509819942908822:    -2306      129 T=   -2177 (0)
-
-Sorry to have bothered you with this and thanks for your help.
-
-Still, I do get these warnings in kernel/rcutree.c and, with the
-tracer still on, the system at least locked up hard once while
-modprobing xeno_native.
-
-Thanks again,
-
-
-Jeroen
 
