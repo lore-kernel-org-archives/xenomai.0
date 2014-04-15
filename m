@@ -1,18 +1,25 @@
-Message-ID: <1397527125.26887.2.camel@localhost.localdomain>
+Message-ID: <1397541812.6541.3.camel@localhost.localdomain>
 From: Peter Howard <pjh@northern-ridge.com.au>
-Date: Tue, 15 Apr 2014 11:58:45 +1000
-In-Reply-To: <20140414011032.GG17765@csclub.uwaterloo.ca>
-References: <534534FD.5090805@xenomai.org>
+Date: Tue, 15 Apr 2014 16:03:32 +1000
+In-Reply-To: <1397170339.6356.17.camel@localhost.localdomain>
+References: <1396407588.27578.5.camel@localhost.localdomain>
+ <533BBB11.5090808@xenomai.org>
+ <1396848843.2481.15.camel@localhost.localdomain>
+ <5343BEFB.7050402@xenomai.org>
+ <1396999856.2660.7.camel@localhost.localdomain>
+ <53449244.8040502@xenomai.org>
+ <1397003664.2660.14.camel@localhost.localdomain>
+ <1397017658.2660.16.camel@localhost.localdomain>
+ <534534FD.5090805@xenomai.org>
  <1397113300.2720.5.camel@localhost.localdomain>
  <5346895B.6080401@xenomai.org>
  <1397159850.2881.3.camel@localhost.localdomain>
  <53471389.6000000@xenomai.org>
  <1397168263.6356.11.camel@localhost.localdomain>
  <534719F5.2020605@xenomai.org>
- <1397170912.6356.19.camel@localhost.localdomain>
- <20140411154630.GE17765@csclub.uwaterloo.ca>
- <1397435281.3064.1.camel@localhost.localdomain>
- <20140414011032.GG17765@csclub.uwaterloo.ca>
+ <1397169248.6356.15.camel@localhost.localdomain>
+ <53471FDB.50008@xenomai.org>
+ <1397170339.6356.17.camel@localhost.localdomain>
 Content-Type: text/plain; charset="UTF-8"
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -25,36 +32,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Sun, 2014-04-13 at 21:10 -0400, Lennart Sorensen wrote:
-> On Mon, Apr 14, 2014 at 10:28:01AM +1000, Peter Howard wrote:
-> > The ipipe repo is at 3.10, and I've just confirmed I have that patch.
-> > Sadly that's not the problem.
+On Fri, 2014-04-11 at 08:52 +1000, Peter Howard wrote:
+> On Fri, 2014-04-11 at 00:48 +0200, Gilles Chanteperdrix wrote:
+> > On 04/11/2014 12:34 AM, Peter Howard wrote:
+> > > On Fri, 2014-04-11 at 00:23 +0200, Gilles Chanteperdrix wrote:
+> > > (Stripping back conversation on this one - apologies if that's bad
+> > > etiquette for this list)
+> > >  
+> > >> Attachment is better. Also please post the changes you made for omapL138
+> > >>
+> > > 
+> > > diff --git a/arch/arm/mach-davinci/Kconfig b/arch/arm/mach-davinci/Kconfig
+> > > index a075b3e..3d8bc59 100644
+> > > --- a/arch/arm/mach-davinci/Kconfig
+> > > +++ b/arch/arm/mach-davinci/Kconfig
+> > > @@ -41,6 +41,8 @@ config ARCH_DAVINCI_DA850
+> > >  	select ARCH_DAVINCI_DA8XX
+> > >  	select ARCH_HAS_CPUFREQ
+> > >  	select CP_INTC
+> > > +    select IPIPE_ARM_KUSER_TSC if IPIPE
+> > > +    select ARM_FCSE if IPIPE
 > > 
-> > Thanks for the suggestion though.
+> > You may want to leave the choice of enabling or disabling FCSE to the user.
+> > 
 > 
-> Well I hadn't tried it yet myself.  All I know so far is 3.12 works
-> great for me, and 3.8 segfaulted randomly during sigchld handling.
-> 
-> If you could get a debug build of init and turn on core dumps, that
-> might give you something to analyze with gdb to see if you might be
-> hitting the same situation.
-> 
-> Xenomai also seems to be running great on arm on 3.12 for me using the
-> ipipe for 3.12 git branch, and the latest xenomai-2.6 git tree.
-> 
-> Maybe that would be worth giving a try.
-> 
+> Understood; at the moment the variance on max latency is really bad if
+> you don't enable FCSE.  When I sort out the crashing issues I'll re-test
+> with it off.
 
-OK, so I managed to get the SD card being detected on 3.12 (getting that
-properly fixed is a thread on a different mailing list).  And I've
-gotten a 3.12 kernel with my ipipe changes for the DA850 and Xenomai 2.6
-running.
+Well, FCSE turned out to be my problem.
 
-Sadly I'm left with the same set of panics that I had before; usually
-ending with init getting a SIGSEGV.
+More specifically,  FCSE and ARM_FCSE_BEST_EFFORT.  Either a) disabling
+ARM_FCSE altogether, or b) selecting ARM_FCSE with ARM_FCSE_GUARENTEED
+gets rid of the crashes/panics with ipipe latency tracing enabled.
+
+So now things seem reasonably stable, I'll go through the full set of
+tests.  Though I still can't do 'xeno-test -l "dohell -l /opt/ltp"' as
+ltp takes out the system without any ipipe/xenomai bits.
+
 -- 
 Peter Howard <pjh@northern-ridge.com.au>
 
