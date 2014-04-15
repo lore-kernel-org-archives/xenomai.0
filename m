@@ -1,10 +1,13 @@
-Date: Tue, 15 Apr 2014 14:42:47 +0200
-From: =?utf-8?q?Petr_Cervenka?= <grugh@centrum.cz>
+Message-ID: <534D44CA.3000105@xenomai.org>
+Date: Tue, 15 Apr 2014 16:40:10 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Message-Id: <20140415144247.9126D1A5@centrum.cz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai] =?utf-8?q?non-blocking_rt=5Ftask=5Fsuspend=28NULL=29?=
+References: <CAPRPZsAmXEyH4wcMeGcWPB3B-3=04DoS=K2k-QbQ+DidPcptAg@mail.gmail.com>	<534BD45B.8070402@xenomai.org>
+ <CAPRPZsDSg6Yb3w+UEktb+7AmdZ-7JngVQH4tBbxnk5EV04y0AA@mail.gmail.com>
+In-Reply-To: <CAPRPZsDSg6Yb3w+UEktb+7AmdZ-7JngVQH4tBbxnk5EV04y0AA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Slow execution of RT task
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,17 +16,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello I have a problem with the rt_task_suspend(NULL) call.
-I'm using it for synchronization of two (producer / consumer like) tasks.
-1) When the consumer task has no work to do, it stops itself by calling of the rt_task_suspend(NULL).
-2) When the producer creates new work for consumer, it wakes it up by calling of rt_task_resume(&consumerTask).
-The problem is, that consumer seldom switches to a state, that it sleeps by rt_task_suspend no more. And the task then takes all the CPU time.
-The return code is 0. But I already have seen couple of -4 (-EINTR) values in the past also.
-Consumer task status was 00300380 before and 00300184 (if there is small safety sleep present).
-I can use for example RT_EVENT variable instead, but I'm curious if you by chance don't know, what is happening?
-Xenomai 2.6.3, Linux 3.5.7
+On 04/14/2014 02:45 PM, Jeroen Van den Keybus wrote:
+>> .config would help. TIA,
+>
+>
+> I've attached both the one for the 3.10 and the 3.8 kernels. In the
+> meantime I found out that the 3.8 kernel exhibits the same problem.
+>
+> Please let know if attachments don't work. I'll paste into e-mail
+> immediately (but personally I don't like .configs in the archive...).
+>
+>
 
-Petr Cervenka
+I can't reproduce this bug using your configuration, so we need a 
+different approach.
+
+Could you patch the code fragment in, enable CONFIG_IPIPE_TRACE, then 
+get a dump from /proc/ipipe/trace/frozen once the warning has triggered?
+Maybe getting a bit more context by setting 
+/proc/ipipe/trace/backtrace_points to 2048 would help too. TIA,
+
+diff --git a/kernel/rcutree.c b/kernel/rcutree.c
+index 3538001..a1f09e3 100644
+--- a/kernel/rcutree.c
++++ b/kernel/rcutree.c
+@@ -477,6 +477,8 @@ void rcu_irq_exit(void)
+  	rdtp = &__get_cpu_var(rcu_dynticks);
+  	oldval = rdtp->dynticks_nesting;
+  	rdtp->dynticks_nesting--;
++	if (rdtp->dynticks_nesting < 0)
++		ipipe_trace_freeze(0);
+  	WARN_ON_ONCE(rdtp->dynticks_nesting < 0);
+  	if (rdtp->dynticks_nesting)
+  		trace_rcu_dyntick("--=", oldval, rdtp->dynticks_nesting);
+
+-- 
+Philippe.
 
