@@ -1,32 +1,12 @@
-Message-ID: <534E328F.5030709@xenomai.org>
-Date: Wed, 16 Apr 2014 09:34:39 +0200
+Message-ID: <534E4885.3060400@xenomai.org>
+Date: Wed, 16 Apr 2014 11:08:21 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1396407588.27578.5.camel@localhost.localdomain>
- <1396848843.2481.15.camel@localhost.localdomain>
- <5343BEFB.7050402@xenomai.org>
- <1396999856.2660.7.camel@localhost.localdomain>
- <53449244.8040502@xenomai.org>
- <1397003664.2660.14.camel@localhost.localdomain>
- <1397017658.2660.16.camel@localhost.localdomain>
- <534534FD.5090805@xenomai.org>
- <1397113300.2720.5.camel@localhost.localdomain>
- <5346895B.6080401@xenomai.org>
- <1397159850.2881.3.camel@localhost.localdomain>
- <53471389.6000000@xenomai.org>
- <1397168263.6356.11.camel@localhost.localdomain>
- <534719F5.2020605@xenomai.org>
- <1397169248.6356.15.camel@localhost.localdomain> <53471FDB.50008@xenomai.org>
- <1397170339.6356.17.camel@localhost.localdomain>
- <1397541812.6541.3.camel@localhost.localdomain>
- <534D19FA.3040506@xenomai.org>
- <1397599195.2652.0.camel@localhost.localdomain>
- <534DB1C7.4060905@xenomai.org>
- <1397609916.2652.6.camel@localhost.localdomain>
-In-Reply-To: <1397609916.2652.6.camel@localhost.localdomain>
-Content-Type: text/plain; charset=UTF-8
+References: <20140415144247.9126D1A5@centrum.cz>
+In-Reply-To: <20140415144247.9126D1A5@centrum.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] OMAP L138
+Subject: Re: [Xenomai] non-blocking rt_task_suspend(NULL)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -35,89 +15,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Peter Howard <pjh@northern-ridge.com.au>
-Cc: xenomai@xenomai.org
+To: Petr Cervenka <grugh@centrum.cz>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 04/16/2014 02:58 AM, Peter Howard wrote:
-> On Wed, 2014-04-16 at 00:25 +0200, Gilles Chanteperdrix wrote:
->> On 04/15/2014 11:59 PM, Peter Howard wrote:
->>> On Tue, 2014-04-15 at 13:37 +0200, Gilles Chanteperdrix wrote:
->>>> On 04/15/2014 08:03 AM, Peter Howard wrote:
->>>>> On Fri, 2014-04-11 at 08:52 +1000, Peter Howard wrote:
->>>>>> On Fri, 2014-04-11 at 00:48 +0200, Gilles Chanteperdrix wrote:
->>>>>>> On 04/11/2014 12:34 AM, Peter Howard wrote:
->>>>>>>> On Fri, 2014-04-11 at 00:23 +0200, Gilles Chanteperdrix wrote:
->>>>>>>> (Stripping back conversation on this one - apologies if that's bad
->>>>>>>> etiquette for this list)
->>>>>>>>  
->>>>>>>>> Attachment is better. Also please post the changes you made for omapL138
->>>>>>>>>
->>>>>>>>
->>>>>>>> diff --git a/arch/arm/mach-davinci/Kconfig b/arch/arm/mach-davinci/Kconfig
->>>>>>>> index a075b3e..3d8bc59 100644
->>>>>>>> --- a/arch/arm/mach-davinci/Kconfig
->>>>>>>> +++ b/arch/arm/mach-davinci/Kconfig
->>>>>>>> @@ -41,6 +41,8 @@ config ARCH_DAVINCI_DA850
->>>>>>>>  	select ARCH_DAVINCI_DA8XX
->>>>>>>>  	select ARCH_HAS_CPUFREQ
->>>>>>>>  	select CP_INTC
->>>>>>>> +    select IPIPE_ARM_KUSER_TSC if IPIPE
->>>>>>>> +    select ARM_FCSE if IPIPE
->>>>>>>
->>>>>>> You may want to leave the choice of enabling or disabling FCSE to the user.
->>>>>>>
->>>>>>
->>>>>> Understood; at the moment the variance on max latency is really bad if
->>>>>> you don't enable FCSE.  When I sort out the crashing issues I'll re-test
->>>>>> with it off.
->>>>>
->>>>> Well, FCSE turned out to be my problem.
->>>>>
->>>>> More specifically,  FCSE and ARM_FCSE_BEST_EFFORT.  Either a) disabling
->>>>> ARM_FCSE altogether, or b) selecting ARM_FCSE with ARM_FCSE_GUARENTEED
->>>>> gets rid of the crashes/panics with ipipe latency tracing enabled.
->>>>>
->>>>> So now things seem reasonably stable, I'll go through the full set of
->>>>> tests.  Though I still can't do 'xeno-test -l "dohell -l /opt/ltp"' as
->>>>> ltp takes out the system without any ipipe/xenomai bits.
->>>>>
->>>> Ok, FCSE best effort is currently being validated on 3.14, so it may
->>>> well be broken. After all, the raw/* branches are work in progress.
->>>>
->>>
->>> Note: selecting ARM_FCSE_BEST_EFFORT produces the same result on the
->>> master branch too . . .
->>>
->>
->> Could you turn CONFIG_ARM_FCSE_MESSAGES on and show us the messages you
->> get (with the 3.14 kernel, not the master branch)?
->>
-> 
-> OK - sadly there's not much, but here's what I get from the "dies at, or
-> immediately after, login" rootfs.  That also has all ipipe debugging,
-> and stack unwinding, enabled.
+On 04/15/2014 02:42 PM, Petr Cervenka wrote:
+> Hello I have a problem with the rt_task_suspend(NULL) call. I'm using
+> it for synchronization of two (producer / consumer like) tasks. 1)
+> When the consumer task has no work to do, it stops itself by calling
+> of the rt_task_suspend(NULL). 2) When the producer creates new work
+> for consumer, it wakes it up by calling of
+> rt_task_resume(&consumerTask). The problem is, that consumer seldom
+> switches to a state, that it sleeps by rt_task_suspend no more. And
+> the task then takes all the CPU time. The return code is 0. But I
+> already have seen couple of -4 (-EINTR) values in the past also.
+> Consumer task status was 00300380 before and 00300184 (if there is
+> small safety sleep present). I can use for example RT_EVENT variable
+> instead, but I'm curious if you by chance don't know, what is
+> happening? Xenomai 2.6.3, Linux 3.5.7
 
-You should enable CONFIG_DEBUG_USER and boot with the user_debug=29
-kernel parameter. Disabling stack unwinding enable frame pointers which
-usually lead to better stack traces.
-
-> 
-> Arago Project http://arago-project.org arago ttyS2                              
->                                                                                 
-> Arago 2011.06 arago ttyS2                                                       
->                                                                                 
-> arago login: Unable to handle kernel paging request at virtual address e5902f10 
-> fcse pid: 0, 0x00000000, hw pid: 0x00000000                                     
-> pgd = c6934000, hw pgd = c6934000                                               
-> [e5902f10] *pgd=00000000                                                        
-> Internal error: Oops: 80000005 [#1] PREEMPT ARM                                 
-> Modules linked in:                                                              
-> CPU: 0 PID: 2456 Comm: matrix_guiE Not tainted 3.12.0-ipipe-12092-g1f7fa99-dirt7
-
-Please do not base your work on the 3.12 kernel: the previous released
-I-pipe was 3.10 and the next will be 3.14.
-
+Could you post the example of code you are using to get this issue?
 
 -- 
-                                                                Gilles.
+					    Gilles.
 
