@@ -1,12 +1,15 @@
-Message-ID: <534EAD14.9000906@xenomai.org>
-Date: Wed, 16 Apr 2014 18:17:24 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+References: <1396785025.43347.YahooMailNeo@web171602.mail.ir2.yahoo.com>
+ <534276FE.7000805@xenomai.org>
+Message-ID: <1397673291.55013.YahooMailNeo@web171601.mail.ir2.yahoo.com>
+Date: Wed, 16 Apr 2014 19:34:51 +0100 (BST)
+From: Matthias Schneider <ma30002000@yahoo.de>
+In-Reply-To: <534276FE.7000805@xenomai.org>
 MIME-Version: 1.0
-References: <20140416180205.C2109F56@centrum.cz>
-In-Reply-To: <20140416180205.C2109F56@centrum.cz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] non-blocking rt_task_suspend(NULL)
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Deadlock in CANCEL_RESTORE with
+	CONFIG_XENO_ASYNC_CANCEL during thread suspension
+Reply-To: Matthias Schneider <ma30002000@yahoo.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,75 +18,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Petr Cervenka <grugh@centrum.cz>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/16/2014 06:02 PM, Petr Cervenka wrote:
->> Od: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>
->> CC: "Xenomai" <xenomai@xenomai.org>
->> On 04/16/2014 04:20 PM, Petr Cervenka wrote:
->>>> Od: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>>>
->>>> CC: "Xenomai" <xenomai@xenomai.org> On 04/16/2014 02:22 PM, Petr
->>>> Cervenka wrote:
->>>>>> Od: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>>>>>
->>>>>> CC: "Xenomai" <xenomai@xenomai.org> On 04/15/2014 02:42 PM,
->>>>>> Petr Cervenka wrote:
->>>>>>> Hello I have a problem with the rt_task_suspend(NULL) call.
->>>>>>> I'm using it for synchronization of two (producer / consumer
->>>>>>> like) tasks. 1) When the consumer task has no work to do, it
->>>>>>> stops itself by calling of the rt_task_suspend(NULL). 2) When
->>>>>>> the producer creates new work for consumer, it wakes it up by
->>>>>>> calling of rt_task_resume(&consumerTask). The problem is,
->>>>>>> that consumer seldom switches to a state, that it sleeps by
->>>>>>> rt_task_suspend no more. And the task then takes all the CPU
->>>>>>> time. The return code is 0. But I already have seen couple of
->>>>>>> -4 (-EINTR) values in the past also. Consumer task status was
->>>>>>> 00300380 before and 00300184 (if there is small safety sleep
->>>>>>> present). I can use for example RT_EVENT variable instead,
->>>>>>> but I'm curious if you by chance don't know, what is
->>>>>>> happening? Xenomai 2.6.3, Linux 3.5.7
->>>>>>
->>>>>> Could you post the example of code you are using to get this
->>>>>> issue?
->>>>>>
->>>>>
->>>>> It's and application with many threads, mutexes and others. It's
->>>>> also special measuring HW dependent. I can post here some
->>>>> simplified example. But I don't think it would be possible to
->>>>> reproduce the same behavior easily. It happens in my
->>>>> configuration only probably once per day and very unpredictably.
->>>>> But I have more details. I replaced rt_task_suspend /
->>>>> rt_task_resume by rt_event_wait / rt_event_signal. It failed
->>>>> similar way, but this time the result of wait was -4 (-EINTR).
->>>>> And (after several millions of invocations) it recovered itself.
->>>>
->>>> -EINTR is a valid return value for both rt_event_wait and
->>>> rt_task_suspend. In case you get this error, you should loop to
->>>> call rt_event_wait again, and not call rt_event_clear, as you risk
->>>> clearing an event which has been signaled afterwards.
->>>>
->>> You are right. It was just very quick replace of waiting and
->>> waking-up functions. But I'm checking the "work queue" anyway and it
->>> also doesn't need exact timing here. My problem it that the slow
->>> consumer task seems to be "interrupted by signal" (or whatever) for
->>> several minutes. I mean, that it doesn't wait for the event anymore
->>> and it always returns immediately (with -EINTR return code).
->>
->> Are you running inside gdb? Does the task receive the SIGDEBUG signal?
->> Do you have the XNWARNSW bit armed?
->>
->
-> gdb: No.
-> SIGDEBUG, XNWARNSW: I don't even know what it is ;-).
+----- Original Message -----
 
-See examples/native/sigdebug.c in xenomai sources. Try installing the 
-same signal handler in your application to be notified upon reception of 
-this signal.
+> From: Philippe Gerum <rpm@xenomai.org>
+> To: Matthias Schneider <ma30002000@yahoo.de>; "xenomai@xenomai.org" <xeno=
+mai@xenomai.org>
+> Cc: =
+
+> Sent: Monday, April 7, 2014 11:59 AM
+> Subject: Re: [Xenomai] Deadlock in CANCEL_RESTORE with CONFIG_XENO_ASYNC_=
+CANCEL during thread suspension
+> =
+
+> On 04/06/2014 01:50 PM, Matthias Schneider wrote:
+>>  Hi all,
+>> =
+
+>>  using xenomai-forge with mercury, when
+>>  CONFIG_XENO_ASYNC_CANCEL is defined, CANCEL_RESTORE
+>>  will include a call to backtrace_check(), which in turn
+>>  will call backtrace_dump, which will take the
+>>  mutex "__printlock".
+>> =
+
+>>  In case a thread gets suspended while holding that lock,
+>>  the next call to CANCEL_RESTORE from whatever thread will
+>>  cause a deadlock.
+> =
+
+> That's the price for using thread suspend/resume unsafe constructs, we =
+
+> never know at which location we will be preempting threads.
+> =
+
+> =
+
+>> =
+
+>>  Is there any way of getting around that?
+>> =
+
+> =
+
+> We could block the notification signal when holding this internal lock. =
+
+> I'll have a look.
+> =
+
+> -- =
+
+> Philippe.
+> =
 
 
--- 
-					    Gilles.
+Would the enclosed patch be an acceptable solution to the problem? It seems=
+ to=A0
+work=A0quite well in my case.
 
+Regards,
+Matthias
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: backtrace_dump_block_signals.patch
+Type: text/x-patch
+Size: 1109 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140416/62286c1=
+6/attachment.bin>
