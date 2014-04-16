@@ -1,12 +1,15 @@
-Message-ID: <534E4885.3060400@xenomai.org>
-Date: Wed, 16 Apr 2014 11:08:21 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20140415144247.9126D1A5@centrum.cz>
-In-Reply-To: <20140415144247.9126D1A5@centrum.cz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] non-blocking rt_task_suspend(NULL)
+In-Reply-To: <534D44CA.3000105@xenomai.org>
+References: <CAPRPZsAmXEyH4wcMeGcWPB3B-3=04DoS=K2k-QbQ+DidPcptAg@mail.gmail.com>
+ <534BD45B.8070402@xenomai.org>
+ <CAPRPZsDSg6Yb3w+UEktb+7AmdZ-7JngVQH4tBbxnk5EV04y0AA@mail.gmail.com>
+ <534D44CA.3000105@xenomai.org>
+Date: Wed, 16 Apr 2014 11:43:17 +0200
+Message-ID: <CAPRPZsD6r6y6UpYsN544WeLxYEnruKzjoHH4e33NPKEDCswJqQ@mail.gmail.com>
+From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Slow execution of RT task
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,26 +18,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Petr Cervenka <grugh@centrum.cz>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/15/2014 02:42 PM, Petr Cervenka wrote:
-> Hello I have a problem with the rt_task_suspend(NULL) call. I'm using
-> it for synchronization of two (producer / consumer like) tasks. 1)
-> When the consumer task has no work to do, it stops itself by calling
-> of the rt_task_suspend(NULL). 2) When the producer creates new work
-> for consumer, it wakes it up by calling of
-> rt_task_resume(&consumerTask). The problem is, that consumer seldom
-> switches to a state, that it sleeps by rt_task_suspend no more. And
-> the task then takes all the CPU time. The return code is 0. But I
-> already have seen couple of -4 (-EINTR) values in the past also.
-> Consumer task status was 00300380 before and 00300184 (if there is
-> small safety sleep present). I can use for example RT_EVENT variable
-> instead, but I'm curious if you by chance don't know, what is
-> happening? Xenomai 2.6.3, Linux 3.5.7
-
-Could you post the example of code you are using to get this issue?
-
--- 
-					    Gilles.
-
+PiBDb3VsZCB5b3UgcGF0Y2ggdGhlIGNvZGUgZnJhZ21lbnQgaW4sIGVuYWJsZSBDT05GSUdfSVBJ
+UEVfVFJBQ0UsIHRoZW4gZ2V0IGEKPiBkdW1wIGZyb20gL3Byb2MvaXBpcGUvdHJhY2UvZnJvemVu
+IG9uY2UgdGhlIHdhcm5pbmcgaGFzIHRyaWdnZXJlZD8KPiBNYXliZSBnZXR0aW5nIGEgYml0IG1v
+cmUgY29udGV4dCBieSBzZXR0aW5nCj4gL3Byb2MvaXBpcGUvdHJhY2UvYmFja3RyYWNlX3BvaW50
+cyB0byAyMDQ4IHdvdWxkIGhlbHAgdG9vLiBUSUEsCgpJJ3ZlIGF0dGFjaGVkIHRoZSAoc29tZXdo
+YXQgbGVuZ3RoeSkgdHJhY2UuCgpCVFcgSSBub3cgbG9hZGVkIHhlbm9fbnVjbGV1cyBhbmQgeGVu
+b19uYXRpdmUgaW4gc3VjY2Vzc2lvbi4gVGhlCm1vZHByb2Jpbmcgb2YgeGVub19uYXRpdmUgYWdh
+aW4gbG9ja2VkIHVudGlsIGEgbmV3IHNzaCB0ZXJtaW5hbCB3YXMKb3BlbmVkICh0eXBpbmcgY2hh
+cnMgaW4gdGhlIHdhaXRpbmcgc3NoIGNsaWVudCBkaWRuJ3QgaGVscCkuCgpKZXJvZW4KLS0tLS0t
+LS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3
+YXMgc2NydWJiZWQuLi4KTmFtZTogdHJhY2VfZnJvemVuXzMuMTAuMThfMApUeXBlOiBhcHBsaWNh
+dGlvbi9vY3RldC1zdHJlYW0KU2l6ZTogMTc4OTUyIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUK
+VVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50
+cy8yMDE0MDQxNi83YjE2ZWNjNi9hdHRhY2htZW50Lm9iaj4K
