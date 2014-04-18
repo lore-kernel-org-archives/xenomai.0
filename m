@@ -1,13 +1,12 @@
-Message-ID: <535A4E5F.9060109@xenomai.org>
-Date: Fri, 25 Apr 2014 14:00:31 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Fri, 18 Apr 2014 10:51:31 +0200
+From: =?utf-8?q?Petr_Cervenka?= <grugh@centrum.cz>
+References: <20140416180205.C2109F56@centrum.cz> <534EAD14.9000906@xenomai.org>
+In-Reply-To: <534EAD14.9000906@xenomai.org>
 MIME-Version: 1.0
-References: <531A29CC.4040201@xenomai.org> <533FF394.1020405@xenomai.org>
- <535A3B92.5070206@siemens.com>
-In-Reply-To: <535A3B92.5070206@siemens.com>
+Message-Id: <20140418105131.0F41467F@centrum.cz>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RTDM rework (2)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] =?utf-8?q?non-blocking_rt=5Ftask=5Fsuspend=28NULL=29?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,40 +15,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: =?utf-8?q?Gilles_Chanteperdrix?= <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 04/25/2014 12:40 PM, Jan Kiszka wrote:
-> On 2014-04-05 14:14, Gilles Chanteperdrix wrote:
->> On 03/07/2014 09:19 PM, Gilles Chanteperdrix wrote:
+> Od: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+>
+> CC: "Xenomai" <xenomai@xenomai.org>
+>On 04/16/2014 06:02 PM, Petr Cervenka wrote:
+>>> Od: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 >>>
->>> Hi,
+>>> CC: "Xenomai" <xenomai@xenomai.org>
+>>> On 04/16/2014 04:20 PM, Petr Cervenka wrote:
+>>>>> Od: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+>>>>>
+>>>>> CC: "Xenomai" <xenomai@xenomai.org> On 04/16/2014 02:22 PM, Petr
+>>>>> Cervenka wrote:
+>>>>>>> Od: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+>>>>>>>
+>>>>>>> CC: "Xenomai" <xenomai@xenomai.org> On 04/15/2014 02:42 PM,
+>>>>>>> Petr Cervenka wrote:
+>>>>>>>> Hello I have a problem with the rt_task_suspend(NULL) call.
+>>>>>>>> I'm using it for synchronization of two (producer / consumer
+>>>>>>>> like) tasks. 1) When the consumer task has no work to do, it
+>>>>>>>> stops itself by calling of the rt_task_suspend(NULL). 2) When
+>>>>>>>> the producer creates new work for consumer, it wakes it up by
+>>>>>>>> calling of rt_task_resume(&consumerTask). The problem is,
+>>>>>>>> that consumer seldom switches to a state, that it sleeps by
+>>>>>>>> rt_task_suspend no more. And the task then takes all the CPU
+>>>>>>>> time. The return code is 0. But I already have seen couple of
+>>>>>>>> -4 (-EINTR) values in the past also. Consumer task status was
+>>>>>>>> 00300380 before and 00300184 (if there is small safety sleep
+>>>>>>>> present). I can use for example RT_EVENT variable instead,
+>>>>>>>> but I'm curious if you by chance don't know, what is
+>>>>>>>> happening? Xenomai 2.6.3, Linux 3.5.7
+>>>>>>>
+>>>>>>> Could you post the example of code you are using to get this
+>>>>>>> issue?
+>>>>>>>
+>>>>>>
+>>>>>> It's and application with many threads, mutexes and others. It's
+>>>>>> also special measuring HW dependent. I can post here some
+>>>>>> simplified example. But I don't think it would be possible to
+>>>>>> reproduce the same behavior easily. It happens in my
+>>>>>> configuration only probably once per day and very unpredictably.
+>>>>>> But I have more details. I replaced rt_task_suspend /
+>>>>>> rt_task_resume by rt_event_wait / rt_event_signal. It failed
+>>>>>> similar way, but this time the result of wait was -4 (-EINTR).
+>>>>>> And (after several millions of invocations) it recovered itself.
+>>>>>
+>>>>> -EINTR is a valid return value for both rt_event_wait and
+>>>>> rt_task_suspend. In case you get this error, you should loop to
+>>>>> call rt_event_wait again, and not call rt_event_clear, as you risk
+>>>>> clearing an event which has been signaled afterwards.
+>>>>>
+>>>> You are right. It was just very quick replace of waiting and
+>>>> waking-up functions. But I'm checking the "work queue" anyway and it
+>>>> also doesn't need exact timing here. My problem it that the slow
+>>>> consumer task seems to be "interrupted by signal" (or whatever) for
+>>>> several minutes. I mean, that it doesn't wait for the event anymore
+>>>> and it always returns immediately (with -EINTR return code).
 >>>
->>> here comes a second attempt at introducing a file descriptor support for
->>> other purposes than RTDM drivers.
+>>> Are you running inside gdb? Does the task receive the SIGDEBUG signal?
+>>> Do you have the XNWARNSW bit armed?
 >>>
->>> This time, the file descriptors are called rtdm_fd and are part of the
->>> RTDM API, but can be used by the POSIX personality. The actual RB-tree
->>> where they are stored is part of the xnsys_ppd structure, as this way it
->>> can be used by one of the RTDM and POSIX personalities, even if the
->>> current process is not bound to the other personality.
->>>
->>> I have posted the patches to the timerbench, switchtest, rtdm, xddp,
->>> iddp and bufp drivers to allow seeing the API changes.
 >>
->> Hi Jan,
->>
->> ping?
->>
->> I have a pile of code needing to be rebased on these patches, I would
->> very much like to get all this merged before it bitrots too much.
-> 
-> Finally looking into them now. Do you happen to have them in git
-> somewhere? Or what was the revision they once applied to?
+>> gdb: No.
+>> SIGDEBUG, XNWARNSW: I don't even know what it is ;-).
+>
+>See examples/native/sigdebug.c in xenomai sources. Try installing the 
+>same signal handler in your application to be notified upon reception of 
+>this signal.
+>
+SIGDEBUG signal was not received.
+Task status from rt_task_inquire() was 0x300180 or 0x300380 (depends where it is placed)
+When the task is in the "wrong" state, also the call of rt_task_sleep(100000) is returning permanently -EINTR code.
+Do you have any other idea what to check or what can cause perhaps every xenomai call fail with -EINTR in one task?
 
-Branch for-forge-rtdm-rework in xenomai-gch.git.
-
-
--- 
-                                                                Gilles.
+Petr
 
