@@ -1,14 +1,15 @@
-Message-ID: <536F796F.7070007@xenomai.org>
-Date: Sun, 11 May 2014 15:21:51 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <CAMbo_3DjWPb2xt27WAR6MF6bLHf-QZM-n-VduNTugx34cQ0LPg@mail.gmail.com>
- <536DF390.9000604@xenomai.org> <536E1962.30008@xenomai.org>
- <CAMbo_3Av1qCUpXk1osvwczvu5OtCzyge3wxSgsfbOZcYq786uw@mail.gmail.com>
-In-Reply-To: <CAMbo_3Av1qCUpXk1osvwczvu5OtCzyge3wxSgsfbOZcYq786uw@mail.gmail.com>
+Date: Sun, 20 Apr 2014 18:46:21 +0800 (CST)
+From: eric <ericvic@163.com>
+In-Reply-To: <53539207.2030803@xenomai.org>
+References: <7dad12a6.21b0a.14574613527.Coremail.ericvic@163.com>
+ <535110C3.40500@xenomai.org>
+ <59ece04.26b88.1457d86db18.Coremail.ericvic@163.com>
+ <53538D60.8040107@xenomai.org> <53539207.2030803@xenomai.org>
+Content-Transfer-Encoding: base64
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai on v3.14
+MIME-Version: 1.0
+Message-ID: <410c61f.2e6bb.1457ebe7220.Coremail.ericvic@163.com>
+Subject: Re: [Xenomai] imx6q xenomai ipipe-3.0-imx6q
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,23 +18,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Brian Morel <brianmorel99@gmail.com>, Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: huang.c.h@lynuc.cn, liu.h.f@lynuc.cn, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/11/2014 02:07 AM, Brian Morel wrote:
-> I cloned the ipipe.git repository & checked out ipipe-3.14 .  I tried
-> running the genpatches.sh script, but it appears that tag v3.14 doesn't
-> exist in the repository.  I tried the same process for 3.8 & it worked
-> fine.  I assume this is because the stable tree isn't there, but my git foo
-> isn't good, so I don't know how to add it.  Any advice would be great.
-
-Note that you can work directly with the ipipe git instead of generating
-patches, simply run prepare-kernel.sh from the ipipe git,
-prepare-kernel.sh will detect that the kernel already contains the ipipe
-bits and will not try and apply an I-pipe patch. This makes testing
-changes to the I-pipe kernel a lot easier.
-
-
--- 
-                                                                Gilles.
+T0sgdGhhbmsgeW91IGZvciB0aGUgaW5mb3JtYXRpb24K5ZyoIDIwMTQtMDQtMjAgMTc6MjM6MTnv
+vIwiR2lsbGVzIENoYW50ZXBlcmRyaXgiIDxnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9y
+Zz4g5YaZ6YGT77yaCkxlIDIwLzA0LzIwMTQgMTE6MDMsIEdpbGxlcyBDaGFudGVwZXJkcml4IGEg
+w6ljcml0IDoNCj4gTGUgMjAvMDQvMjAxNCAwNzowNiwgZXJpYyBhIMOpY3JpdCA6DQo+PiBTbyBp
+ZiBteSBwcm9ncmFtIHVzZSBsb3RzIG9mIG1lbW9yeSBvcGVyYXRpb25zICBmb3IgYSBsb25nIHRp
+bWUgaXQgbWF5YmUNCj4+IGdpdmVzIG5vbiByZWFsLXRpbWUgYWN0aXZpdGllcyBvcHBvcnR1bml0
+eSB0byB0aHJhc2ggdGhlIGNhY2hlPw0KPiANCj4gSXQgaXMgdW5yZWxhdGVkLCBidXQgb24gYSBt
+dWx0aS1jb3JlIHByb2Nlc3NvciBldmVuIHdoZW4gb25lIGNvcmUgaXMNCj4gcnVubmluZyBhIHJl
+YWwtdGltZSB0YXNrLCBvdGhlciBjb3JlcyBjYW4gdGhyYXNoIHRoZSBjYWNoZSBhdCB3aWxsLCBv
+cg0KPiBzbG93IGRvd24gdGhlIHJlYWwtdGltZSB0YXNrIGJ5IHVzaW5nIGEgc2hhcmVkIHJlc3Nv
+dXJjZSAoZm9yIGluc3RhbmNlDQo+IEREUikgYW5kIHN0YXJ2aW5nIHRoZSBjb3JlIHdoZXJlIHRo
+ZSByZWFsLXRpbWUgdGFzayBydW5zLiBCeSBkZWZhdWx0IHRoZQ0KPiBMMiBjYWNoZSBpcyBzaGFy
+ZWQgYmV0d2VlbiBhbGwgY29yZXMsIHlvdSBjYW4gdHJ5IGFuZCByZXNlcnZlIHBhcnRzIG9mDQo+
+IHRoZSBjYWNoZSBmb3IgZWFjaCBjb3JlIChjaGVjayB0aGUgbDJ4MCByZWdpc3RlcnMgZG9jdW1l
+bnRhdGlvbiB0byBzZWUNCj4gaG93KSwgSSB0cmllZCB0aGlzIG9uIG9tYXA0LCBidXQgaXQgcmVz
+dWx0cyBvbiB3b3JzZSBsYXRlbmNpZXMsDQo+IHNpdHVhdGlvbiBtYXkgYmUgZGlmZmVyZW50IG9u
+IGlteDYgdGhvdWdoLiBBbm90aGVyIHByb2JsZW0gaXMgdGhhdCBzaW5jZQ0KPiB0aGUgTDEgY2Fj
+aGUgaXMgcGVyLWNvcmUsIEkgYmVsaWV2ZSwgYW5kIHdlIGRpc2FibGUgTDIgd3JpdGUgYWxsb2Nh
+dGUsDQo+IHJlYWRpbmcgb24gb25lIGNvcmUgbWVtb3J5IHdyaXR0ZW4gb24gYW5vdGhlciBjb3Jl
+IHJlc3VsdHMgaW4gYWNjZXNzZXMNCj4gYXQgdGhlIEREUiBzcGVlZCwgYW5kIG5vdCBhdCB0aGUg
+Y2FjaGUgc3BlZWQuDQo+IA0KPiBBbGwgdGhpcyB0byBzYXkgdGhhdCBYZW5vbWFpIGZvY3VzZXMg
+b24gdHJ5aW5nIHRvIHNjaGVkdWxlIHlvdXIgZHJpdmVyDQo+IGludGVycnVwdHMgYW5kIGFwcGxp
+Y2F0aW9uIHRocmVhZHMgaW4gYSBkZXRlcm1pbmlzdGljIGZhc2hpb24gYnV0IGl0IGlzDQo+IHlv
+dXIgam9iIHRvIG1ha2Ugc3VyZSB0aGF0IHRoZXNlIGludGVycnVwdHMgYW5kIHRocmVhZHMgZG8g
+bm90IHRha2UgdG9vDQo+IGxvbmcgYSB0aW1lIHRvIGV4ZWN1dGUsIGJlY2F1c2UgaWYgdGhleSBk
+bywgeWVzLCB5b3VyIGFwcGxpY2F0aW9uIHdpbGwNCj4gbm90IG1lZXQgaXRzIGRlYWRsaW5lcywg
+YnV0IGl0IGlzIG5vdCBYZW5vbWFpJ3MgZmF1bHQuDQoNCkkgZG8gbm90IG1lYW4gdG8gc2F5IHRo
+YXQgeW91IGRvIG5vdCBoYXZlIGEgcHJvYmxlbSB3aXRoIFhlbm9tYWkgb24NCmlteDZxLCBidXQg
+c28gZmFyLCBJIGhhdmUgbm90IHVuZGVyc3Rvb2Qgd2hhdCB0aGlzIHByb2JsZW0gd2FzLg0KDQoN
+Ci0tIA0KR2lsbGVzLg0K
 
