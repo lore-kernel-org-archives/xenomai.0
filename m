@@ -1,12 +1,12 @@
-Message-ID: <535573FD.6050308@steinkuehler.net>
-Date: Mon, 21 Apr 2014 14:39:41 -0500
-From: Charles Steinkuehler <charles@steinkuehler.net>
+Message-ID: <535588B2.90205@xenomai.org>
+Date: Mon, 21 Apr 2014 23:08:02 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <5352BA1D.7070707@xenomai.org> <5355705B.5010604@steinkuehler.net>
- <5355728F.80507@xenomai.org>
-In-Reply-To: <5355728F.80507@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <5355728F.80507@xenomai.org> <535573FD.6050308@steinkuehler.net>
+In-Reply-To: <535573FD.6050308@steinkuehler.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Pre/Post patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,27 +16,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Charles Steinkuehler <charles@steinkuehler.net>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gNC8yMS8yMDE0IDI6MzMgUE0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+IE9uIDA0
-LzIxLzIwMTQgMDk6MjQgUE0sIENoYXJsZXMgU3RlaW5rdWVobGVyIHdyb3RlOgo+Pj4KPj4gVGhl
-IG5leHQgcHJvYmxlbSBjb21lcyB3aGVuIGJ1aWxkaW5nIHRoZSBrZXJuZWwsIEkgZ2V0IGFuIHVu
-ZGVmaW5lZAo+PiB3YXJuaW5nIGZyb20gdGhlIHJhaWQ0NTYua28gbW9kdWxlIChzZWUgYmVsb3cp
-LiAgSSdsbCBrZWVwIHBsdWdnaW5nCj4+IGF3YXksIGJ1dCBhbnkgYWR2aWNlIHdvdWxkIGJlIGFw
-cHJlY2lhdGVkLgo+IAo+IHByb2JhYmx5IHNvbWV0aGluZyB3cm9uZyB3aXRoIHRoZSBjb25maWd1
-cmF0aW9uLiBXaHkgZG8geW91IG5lZWQgcmFpZCA0LAo+IDUsIDYgYW55d2F5PyAKCkkgZG9uJ3Qs
-IG9mIGNvdXJzZSwgaXQncyBqdXN0IHdoYXQgdGhlIGNvbmZpZyBmcm9tIFJDTidzIGJ1aWxkIHNj
-cmlwdHMKaGFzIHNldHVwIGZvciBieSBkZWZhdWx0LgoKPiBJbiBhIGZpcnN0IHN0ZXAsIHlvdSBz
-aG91bGQgd29yayB3aXRoIGEgc3RhbmRhcmQKPiBjb25maWd1cmFpdG9uLCBzdWNoIGFzIG9tYXAy
-cGx1c19kZWZjb25maWcsIG9yIGJldHRlciwgaWYgeW91IGhhdmUgaXQsCj4gd2l0aCBhIG1pbmlt
-YWwgY29uZmlndXJhdGlvbiBzdWl0ZWQgZm9yIHlvdXIgYm9hcmQsIHdoaWNoIHdpbGwgYXZvaWQ6
-Cj4gCj4+ICguLi4pCj4+ICAgTU9EUE9TVCAxOTUwIG1vZHVsZXMKPiAKPiBhbmQgYnVpbGQgYSBr
-ZXJuZWwgaW4ganVzdCBhIGZldyBtaW51dGVzLgoKQXMgbWVudGlvbmVkLCBJJ20gc3RpbGwgcGx1
-Z2dpbmcgYWxvbmcsIGFuZCBtb3N0bHkgbGVhcm5pbmcgYXMgSSBnby4KClRoYW5rcyBmb3IgdGhl
-IGJyZWFkY3J1bWJzISAgOikKCi0tIApDaGFybGVzIFN0ZWlua3VlaGxlcgpjaGFybGVzQHN0ZWlu
-a3VlaGxlci5uZXQKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5v
-bi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlw
-ZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAyNjEgYnl0ZXMKRGVzYzogT3BlblBH
-UCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFp
-bC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTQwNDIxLzI5NmM5N2FjL2F0dGFjaG1lbnQuc2lnPgo=
+On 04/21/2014 09:39 PM, Charles Steinkuehler wrote:
+> On 4/21/2014 2:33 PM, Gilles Chanteperdrix wrote:
+>> On 04/21/2014 09:24 PM, Charles Steinkuehler wrote:
+>>>> 
+>>> The next problem comes when building the kernel, I get an
+>>> undefined warning from the raid456.ko module (see below).  I'll
+>>> keep plugging away, but any advice would be appreciated.
+>> 
+>> probably something wrong with the configuration. Why do you need
+>> raid 4, 5, 6 anyway?
+> 
+> I don't, of course, it's just what the config from RCN's build
+> scripts has setup for by default.
+> 
+>> In a first step, you should work with a standard configuraiton,
+>> such as omap2plus_defconfig, or better, if you have it, with a
+>> minimal configuration suited for your board, which will avoid:
+>> 
+>>> (...) MODPOST 1950 modules
+>> 
+>> and build a kernel in just a few minutes.
+> 
+> As mentioned, I'm still plugging along, and mostly learning as I
+> go.
+> 
+> Thanks for the breadcrumbs!  :)
+
+Our users have evolved. Somewhere along the road, Linux users stopped
+being used to configuring their kernel, and we did not notice. I hope
+to be able to propose something soon to help this situation.
+
+Anyway, start with an unpatched kernel, tune the configuration until
+you get a kernel which compiles and runs.
+
+Then merge with the I-pipe tree. If the same configuration (minus the
+usual forbidden options) does not compile, then there may be a problem
+in the I-pipe tree.
+
+Something to definitely disable for the time being is context tracking
+(and so CONFIG_NOHZ_FULL).
+
+
+-- 
+                                                                Gilles.
+
