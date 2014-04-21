@@ -1,14 +1,11 @@
-Message-ID: <535539E6.90306@xenomai.org>
-Date: Mon, 21 Apr 2014 17:31:50 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5355705B.5010604@steinkuehler.net>
+Date: Mon, 21 Apr 2014 14:24:11 -0500
+From: Charles Steinkuehler <charles@steinkuehler.net>
 MIME-Version: 1.0
 References: <5352BA1D.7070707@xenomai.org>
- <1398061722.33492.YahooMailNeo@web163901.mail.gq1.yahoo.com>
- <5354D3AB.3020009@xenomai.org>
- <1398083901.18170.YahooMailNeo@web163905.mail.gq1.yahoo.com>
-In-Reply-To: <1398083901.18170.YahooMailNeo@web163905.mail.gq1.yahoo.com>
+In-Reply-To: <5352BA1D.7070707@xenomai.org>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Pre/Post patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -18,48 +15,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Huub Van Niekerk <huubvanniekerk@yahoo.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/21/2014 02:38 PM, Huub Van Niekerk wrote:
-> On Monday, April 21, 2014 10:15 AM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
-> 
-> Le 21/04/2014 08:28, Huub Van Niekerk a écrit :
->>> On Saturday, April 19, 2014 8:07 PM, Gilles Chanteperdrix
->> <gilles.chanteperdrix@xenomai.org> wrote:
->> 
->>> Hi all,
->> 
->>> I am currently validating the I-pipe patch for Linux 3.14 on
->>> armv4 and armv5, but it should already work for armv6 and armv7
->>> processors, it is available as a branch for-ipipe-3.14.0 in
->>> ipipe-gch git. Could you have a look at it on BeagleBone,
->>> Raspberry and Zynq? For the SOCs supported by mainline, please
->>> simply send patches to the for-ipipe-3.14.0 branch.
->> 
->> Hi,
->> 
->> When looking at
->> http://git.xenomai.org/ipipe-gch.git/?h=for-ipipe-3.14.0 , I think
->> I see several patches but I'm not sure how to act to get a patch
->> for the armv7 (armhf / beagle-xm).
-> 
->> Note that the mail was intended for BeagleBone, Raspberry and Zynq.
->> For beagleboard, the kernel should already work, and you can wait
->> for the final I-pipe patch to be released. But if you want to
->> validate the kernel early, please go ahead, it will not hurt.
-> 
->> Simply checkout this tree, and use it with the "prepare-kernel.sh" 
->> script, it will detect that the tree already contains the I-pipe 
->> changes, and will not try and apply an I-pipe patch.
-> 
-> Ok, I think I will wait for the final I-pipe patch then (assuming it
-> won't be a long wait). BTW, with this be for version 2.6.3 or a new
-> version ?
-
-We will have to release 2.6.4.
-
--- 
-                                                                Gilles.
-
+T24gNC8xOS8yMDE0IDE6MDIgUE0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+IAo+IEkg
+YW0gY3VycmVudGx5IHZhbGlkYXRpbmcgdGhlIEktcGlwZSBwYXRjaCBmb3IgTGludXggMy4xNCBv
+biBhcm12NCBhbmQKPiBhcm12NSwgYnV0IGl0IHNob3VsZCBhbHJlYWR5IHdvcmsgZm9yIGFybXY2
+IGFuZCBhcm12NyBwcm9jZXNzb3JzLCBpdCBpcwo+IGF2YWlsYWJsZSBhcyBhIGJyYW5jaCBmb3It
+aXBpcGUtMy4xNC4wIGluIGlwaXBlLWdjaCBnaXQuIENvdWxkIHlvdSBoYXZlCj4gYSBsb29rIGF0
+IGl0IG9uIEJlYWdsZUJvbmUsIFJhc3BiZXJyeSBhbmQgWnlucT8gRm9yIHRoZSBTT0NzIHN1cHBv
+cnRlZAo+IGJ5IG1haW5saW5lLCBwbGVhc2Ugc2ltcGx5IHNlbmQgcGF0Y2hlcyB0byB0aGUgZm9y
+LWlwaXBlLTMuMTQuMCBicmFuY2guCgpJJ20gc3RpbGwgd29ya2luZyBvbiBidWlsZGluZyBhIGtl
+cm5lbCBmb3IgdGhlIEJlYWdsZUJvbmUgQmxhY2suCgpJIHRyaWVkIHRoZSBzdGFuZGFyZCBtZXRo
+b2Qgb2YgZ2VuZXJhdGluZyB0aGUgaXBpcGUgcGF0Y2ggYW5kIGFwcGx5aW5nCml0IHRvIHRoZSBC
+ZWFnbGVCb25lIHBhdGNoZWQga2VybmVsIHNvdXJjZS4gIFRoZSBmaXJzdCBwcm9ibGVtIEkKZW5j
+b3VudGVyZWQgd2FzIGFuIHVua25vd24gYXJjaGl0ZWN0dXJlIGVycm9yIGZvciB0aGUKbmV0L2V0
+aGVybmV0L2NhZGVuY2UvYXQ5MV9ldGhlci5jIGRyaXZlci4gIEkgZWRpdGVkIHRoZSBnZW5wYXRj
+aGVzLnNoCnNjcmlwdCBhbmQgZm9yY2VkIHRoaXMgdG8geDg2IChzaW5jZSBJJ20gcHJldHR5IHN1
+cmUgSSBkb24ndCBuZWVkIHRoaXMKZHJpdmVyIGZvciB0aGUgQmVhZ2xlQm9uZSkuICBOb3RlIHRo
+ZSBwYXRjaCBzZXQgZm9yIHRoZSAzLjE0IEJlYWdsZUJvbmUKa2VybmVsIGlzIG1vc3RseSBkZXZp
+Y2UtdHJlZSBjaGFuZ2VzIGFuZCBhYm91dCBmb3VyIGZhaXJseSBzaW1wbGUKYmFjay1wb3J0ZWQg
+Zml4ZXMuCgpUaGUgbmV4dCBwcm9ibGVtIGNvbWVzIHdoZW4gYnVpbGRpbmcgdGhlIGtlcm5lbCwg
+SSBnZXQgYW4gdW5kZWZpbmVkCndhcm5pbmcgZnJvbSB0aGUgcmFpZDQ1Ni5rbyBtb2R1bGUgKHNl
+ZSBiZWxvdykuICBJJ2xsIGtlZXAgcGx1Z2dpbmcKYXdheSwgYnV0IGFueSBhZHZpY2Ugd291bGQg
+YmUgYXBwcmVjaWF0ZWQuCgpLZXJuZWwgYnVpbGQgZXJyb3I6CiAgPHNuaXA+CiAgQnVpbGRpbmcg
+bW9kdWxlcywgc3RhZ2UgMi4KICBPQkpDT1BZIGFyY2gvYXJtL2Jvb3QvSW1hZ2UKICBLZXJuZWw6
+IGFyY2gvYXJtL2Jvb3QvSW1hZ2UgaXMgcmVhZHkKICBBUyAgICAgIGFyY2gvYXJtL2Jvb3QvY29t
+cHJlc3NlZC9oZWFkLm8KICBYWktFUk4gIGFyY2gvYXJtL2Jvb3QvY29tcHJlc3NlZC9waWdneS54
+emtlcm4KICBDQyAgICAgIGFyY2gvYXJtL2Jvb3QvY29tcHJlc3NlZC9taXNjLm8KICBDQyAgICAg
+IGFyY2gvYXJtL2Jvb3QvY29tcHJlc3NlZC9kZWNvbXByZXNzLm8KICBDQyAgICAgIGFyY2gvYXJt
+L2Jvb3QvY29tcHJlc3NlZC9zdHJpbmcubwogIEFTICAgICAgYXJjaC9hcm0vYm9vdC9jb21wcmVz
+c2VkL2h5cC1zdHViLm8KICBBUyAgICAgIGFyY2gvYXJtL2Jvb3QvY29tcHJlc3NlZC9saWIxZnVu
+Y3MubwogIE1PRFBPU1QgMTk1MCBtb2R1bGVzCkVSUk9SOiAiX19iYWRfbG9ja190eXBlIiBbZHJp
+dmVycy9tZC9yYWlkNDU2LmtvXSB1bmRlZmluZWQhCm1ha2VbMV06ICoqKiBbX19tb2Rwb3N0XSBF
+cnJvciAxCm1ha2U6ICoqKiBbbW9kdWxlc10gRXJyb3IgMgptYWtlOiAqKiogV2FpdGluZyBmb3Ig
+dW5maW5pc2hlZCBqb2JzLi4uLgogIEFTICAgICAgYXJjaC9hcm0vYm9vdC9jb21wcmVzc2VkL3Bp
+Z2d5Lnh6a2Vybi5vCiAgTEQgICAgICBhcmNoL2FybS9ib290L2NvbXByZXNzZWQvdm1saW51eAog
+IE9CSkNPUFkgYXJjaC9hcm0vYm9vdC96SW1hZ2UKICBLZXJuZWw6IGFyY2gvYXJtL2Jvb3Qveklt
+YWdlIGlzIHJlYWR5CmNoYXJsZXNAY3Vib3g6fi9saW51eC1kZXYtMy4xNCQKCgotLSAKQ2hhcmxl
+cyBTdGVpbmt1ZWhsZXIKY2hhcmxlc0BzdGVpbmt1ZWhsZXIubmV0CgotLS0tLS0tLS0tLS0tLSBu
+ZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJl
+ZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUK
+U2l6ZTogMjYxIGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0
+cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE0MDQy
+MS80OWY4YWVlMC9hdHRhY2htZW50LnNpZz4K
