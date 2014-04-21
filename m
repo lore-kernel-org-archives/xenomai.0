@@ -1,11 +1,11 @@
-Message-ID: <5355705B.5010604@steinkuehler.net>
-Date: Mon, 21 Apr 2014 14:24:11 -0500
-From: Charles Steinkuehler <charles@steinkuehler.net>
+Message-ID: <5355728F.80507@xenomai.org>
+Date: Mon, 21 Apr 2014 21:33:35 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <5352BA1D.7070707@xenomai.org>
-In-Reply-To: <5352BA1D.7070707@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <5352BA1D.7070707@xenomai.org> <5355705B.5010604@steinkuehler.net>
+In-Reply-To: <5355705B.5010604@steinkuehler.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Pre/Post patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,46 +15,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Charles Steinkuehler <charles@steinkuehler.net>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gNC8xOS8yMDE0IDE6MDIgUE0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+IAo+IEkg
-YW0gY3VycmVudGx5IHZhbGlkYXRpbmcgdGhlIEktcGlwZSBwYXRjaCBmb3IgTGludXggMy4xNCBv
-biBhcm12NCBhbmQKPiBhcm12NSwgYnV0IGl0IHNob3VsZCBhbHJlYWR5IHdvcmsgZm9yIGFybXY2
-IGFuZCBhcm12NyBwcm9jZXNzb3JzLCBpdCBpcwo+IGF2YWlsYWJsZSBhcyBhIGJyYW5jaCBmb3It
-aXBpcGUtMy4xNC4wIGluIGlwaXBlLWdjaCBnaXQuIENvdWxkIHlvdSBoYXZlCj4gYSBsb29rIGF0
-IGl0IG9uIEJlYWdsZUJvbmUsIFJhc3BiZXJyeSBhbmQgWnlucT8gRm9yIHRoZSBTT0NzIHN1cHBv
-cnRlZAo+IGJ5IG1haW5saW5lLCBwbGVhc2Ugc2ltcGx5IHNlbmQgcGF0Y2hlcyB0byB0aGUgZm9y
-LWlwaXBlLTMuMTQuMCBicmFuY2guCgpJJ20gc3RpbGwgd29ya2luZyBvbiBidWlsZGluZyBhIGtl
-cm5lbCBmb3IgdGhlIEJlYWdsZUJvbmUgQmxhY2suCgpJIHRyaWVkIHRoZSBzdGFuZGFyZCBtZXRo
-b2Qgb2YgZ2VuZXJhdGluZyB0aGUgaXBpcGUgcGF0Y2ggYW5kIGFwcGx5aW5nCml0IHRvIHRoZSBC
-ZWFnbGVCb25lIHBhdGNoZWQga2VybmVsIHNvdXJjZS4gIFRoZSBmaXJzdCBwcm9ibGVtIEkKZW5j
-b3VudGVyZWQgd2FzIGFuIHVua25vd24gYXJjaGl0ZWN0dXJlIGVycm9yIGZvciB0aGUKbmV0L2V0
-aGVybmV0L2NhZGVuY2UvYXQ5MV9ldGhlci5jIGRyaXZlci4gIEkgZWRpdGVkIHRoZSBnZW5wYXRj
-aGVzLnNoCnNjcmlwdCBhbmQgZm9yY2VkIHRoaXMgdG8geDg2IChzaW5jZSBJJ20gcHJldHR5IHN1
-cmUgSSBkb24ndCBuZWVkIHRoaXMKZHJpdmVyIGZvciB0aGUgQmVhZ2xlQm9uZSkuICBOb3RlIHRo
-ZSBwYXRjaCBzZXQgZm9yIHRoZSAzLjE0IEJlYWdsZUJvbmUKa2VybmVsIGlzIG1vc3RseSBkZXZp
-Y2UtdHJlZSBjaGFuZ2VzIGFuZCBhYm91dCBmb3VyIGZhaXJseSBzaW1wbGUKYmFjay1wb3J0ZWQg
-Zml4ZXMuCgpUaGUgbmV4dCBwcm9ibGVtIGNvbWVzIHdoZW4gYnVpbGRpbmcgdGhlIGtlcm5lbCwg
-SSBnZXQgYW4gdW5kZWZpbmVkCndhcm5pbmcgZnJvbSB0aGUgcmFpZDQ1Ni5rbyBtb2R1bGUgKHNl
-ZSBiZWxvdykuICBJJ2xsIGtlZXAgcGx1Z2dpbmcKYXdheSwgYnV0IGFueSBhZHZpY2Ugd291bGQg
-YmUgYXBwcmVjaWF0ZWQuCgpLZXJuZWwgYnVpbGQgZXJyb3I6CiAgPHNuaXA+CiAgQnVpbGRpbmcg
-bW9kdWxlcywgc3RhZ2UgMi4KICBPQkpDT1BZIGFyY2gvYXJtL2Jvb3QvSW1hZ2UKICBLZXJuZWw6
-IGFyY2gvYXJtL2Jvb3QvSW1hZ2UgaXMgcmVhZHkKICBBUyAgICAgIGFyY2gvYXJtL2Jvb3QvY29t
-cHJlc3NlZC9oZWFkLm8KICBYWktFUk4gIGFyY2gvYXJtL2Jvb3QvY29tcHJlc3NlZC9waWdneS54
-emtlcm4KICBDQyAgICAgIGFyY2gvYXJtL2Jvb3QvY29tcHJlc3NlZC9taXNjLm8KICBDQyAgICAg
-IGFyY2gvYXJtL2Jvb3QvY29tcHJlc3NlZC9kZWNvbXByZXNzLm8KICBDQyAgICAgIGFyY2gvYXJt
-L2Jvb3QvY29tcHJlc3NlZC9zdHJpbmcubwogIEFTICAgICAgYXJjaC9hcm0vYm9vdC9jb21wcmVz
-c2VkL2h5cC1zdHViLm8KICBBUyAgICAgIGFyY2gvYXJtL2Jvb3QvY29tcHJlc3NlZC9saWIxZnVu
-Y3MubwogIE1PRFBPU1QgMTk1MCBtb2R1bGVzCkVSUk9SOiAiX19iYWRfbG9ja190eXBlIiBbZHJp
-dmVycy9tZC9yYWlkNDU2LmtvXSB1bmRlZmluZWQhCm1ha2VbMV06ICoqKiBbX19tb2Rwb3N0XSBF
-cnJvciAxCm1ha2U6ICoqKiBbbW9kdWxlc10gRXJyb3IgMgptYWtlOiAqKiogV2FpdGluZyBmb3Ig
-dW5maW5pc2hlZCBqb2JzLi4uLgogIEFTICAgICAgYXJjaC9hcm0vYm9vdC9jb21wcmVzc2VkL3Bp
-Z2d5Lnh6a2Vybi5vCiAgTEQgICAgICBhcmNoL2FybS9ib290L2NvbXByZXNzZWQvdm1saW51eAog
-IE9CSkNPUFkgYXJjaC9hcm0vYm9vdC96SW1hZ2UKICBLZXJuZWw6IGFyY2gvYXJtL2Jvb3Qveklt
-YWdlIGlzIHJlYWR5CmNoYXJsZXNAY3Vib3g6fi9saW51eC1kZXYtMy4xNCQKCgotLSAKQ2hhcmxl
-cyBTdGVpbmt1ZWhsZXIKY2hhcmxlc0BzdGVpbmt1ZWhsZXIubmV0CgotLS0tLS0tLS0tLS0tLSBu
-ZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJl
-ZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUK
-U2l6ZTogMjYxIGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0
-cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE0MDQy
-MS80OWY4YWVlMC9hdHRhY2htZW50LnNpZz4K
+On 04/21/2014 09:24 PM, Charles Steinkuehler wrote:
+> On 4/19/2014 1:02 PM, Gilles Chanteperdrix wrote:
+>>
+>> I am currently validating the I-pipe patch for Linux 3.14 on armv4 and
+>> armv5, but it should already work for armv6 and armv7 processors, it is
+>> available as a branch for-ipipe-3.14.0 in ipipe-gch git. Could you have
+>> a look at it on BeagleBone, Raspberry and Zynq? For the SOCs supported
+>> by mainline, please simply send patches to the for-ipipe-3.14.0 branch.
+> 
+> I'm still working on building a kernel for the BeagleBone Black.
+> 
+> I tried the standard method of generating the ipipe patch and applying
+> it to the BeagleBone patched kernel source.  The first problem I
+> encountered was an unknown architecture error for the
+> net/ethernet/cadence/at91_ether.c driver.  I edited the genpatches.sh
+> script and forced this to x86 (since I'm pretty sure I don't need this
+> driver for the BeagleBone).
+
+Well, at91 are arms, will fix.
+
+> Note the patch set for the 3.14 BeagleBone
+> kernel is mostly device-tree changes and about four fairly simple
+> back-ported fixes.
+> 
+> The next problem comes when building the kernel, I get an undefined
+> warning from the raid456.ko module (see below).  I'll keep plugging
+> away, but any advice would be appreciated.
+
+probably something wrong with the configuration. Why do you need raid 4,
+5, 6 anyway? In a first step, you should work with a standard
+configuraiton, such as omap2plus_defconfig, or better, if you have it,
+with a minimal configuration suited for your board, which will avoid:
+
+> (...)
+>   MODPOST 1950 modules
+
+and build a kernel in just a few minutes.
+
+-- 
+                                                                Gilles.
+
