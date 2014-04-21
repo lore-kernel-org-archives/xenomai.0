@@ -1,13 +1,13 @@
-Message-ID: <5355934D.8020105@xenomai.org>
-Date: Mon, 21 Apr 2014 23:53:17 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <535599ED.3030409@zultron.com>
+Date: Mon, 21 Apr 2014 17:21:33 -0500
+From: John Morris <john@zultron.com>
 MIME-Version: 1.0
-References: <1398115447.70510.YahooMailNeo@web171605.mail.ir2.yahoo.com>
- <53558E66.8090102@xenomai.org>
-In-Reply-To: <53558E66.8090102@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] occasional EBADF in select() in notifier.c
+References: <52CB0DA1.9080302@zultron.com> <52CB17A9.6080901@xenomai.org>
+ <52CB30F9.50505@zultron.com> <5353FBA6.2060504@xenomai.org>
+In-Reply-To: <5353FBA6.2060504@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Xenomai Red Hat packaging
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,42 +16,98 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Matthias Schneider <ma30002000@yahoo.de>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 04/21/2014 11:32 PM, Gilles Chanteperdrix wrote:
-> On 04/21/2014 11:24 PM, Matthias Schneider wrote:
->> Still working on thread suspension in forge/mercury, I occasionally get a EBADF
->> of the select() call in notifier.c. I suspect that this is due to accessing a 
->> copy of the file descriptor list notifier_rset while one of the file descriptors 
->> is being closed. This seems to be due to concurrent access on the notifier_rset 
->> from notifier_sighandler() and notifier_destroy(). "notifier_lock" is held in 
->> notifier_lock(), but not when copying and invoking select in notifier_sighandler().
->> The EBADF leads to a "spurious notification" reporting and process termination -
->>  obviously, the thread suspension was not triggered.
+On 04/20/2014 11:53 AM, Gilles Chanteperdrix wrote:
+> Le 06/01/2014 23:40, John Morris a écrit :
+>> On 01/06/2014 02:52 PM, Gilles Chanteperdrix wrote:
+>>> On 01/06/2014 09:10 PM, John Morris wrote:
+>>>> Here are the packaging materials I've been using on Red Hat Enterprise
+>>>> Linux clones for some time now, also recently updated for Fedora.
+>>>>
+>>>> https://github.com/zultron/xenomai-rpm
+>>>>
+>>>> The packaging is pretty straightforward, and follows the Debian
+>>>> packaging for the xenomai-devel subpackage.
+>>>>
+>>>> A significant addition is the 'xenomai-gid-ctl' script for configuring
+>>>> non-root access to Xenomai services, plus sysv and systemd boot init
+>>>> scripts.
+>>>
+>>> Are these specific to Red Hat, or can we put them in the set of files
+>>> installed by default?
 >>
->> I can think of several ways of addressing this issue but I am not sure about 
->> side effects:
->> a) hold the "notifier_lock" mutex between copying the descriptor list and calling select
->> b) repeating the select() call in the case of EBADF
+>> The 'xenomai-gid-ctl' script should work anywhere.
 >>
->> Any ideas?
+>> The 'xenomai.default' file (installed into /etc/default/xenomai) works
+>> with RH- & Debian-derivatives, and other distros with the /etc/default
+>> directory.  /etc/default/xenomai is only used to override the default
+>> 'xenomai' group, is semi-optional, and may be relocated.
 >>
->> Anyway, why is the select call necessary, isnt the file descriptor signaled via 
->> siginfo->si_fd, too?
-> 
-> I do not know this part of the code, but normally, when select is called
-> for a closed descriptor, select will return with the descriptor
-> readable, EOF is returned when reading the descriptor, which can then be
-> closed. We had a bug report some time ago to implement this behaviour in
-> xenomai posix skin (so for cobalt).
+>> Installing 'xenomai-gid-ctl' (and 'xenomai.default', if /etc/default
+>> exists) from 'make install' could be useful to the end user, since it is
+>> a stand-alone utility.
+>>
+>> The EL6 sysv init script needs modification to support Debian's LSB init
+>> system, simple for someone more familiar.
+>>
+>> Other projects I'm familiar with often ship system init scripts in a
+>> e.g. 'contrib' directory, and don't include complex makefile logic to
+>> detect distro and install the correct init script.  Manual installation
+>> is left up to the end user or the packager.
+>>
+>>>    I'd appreciate comments on the control script's correctness
+>>>> and the init scripts' utility.
+>>>
+>>> You do not need to pass --enable-x86-tsc as it is enabled by default
+>>> now.
+>>
+>> Thanks!
+>>
+>>> As for building the doc, xenomai sources contain generated
+>>> documentation, so if you do not enable any option, you will have some
+>>> documentation installed. If you still want to generate the doxygen
+>>> documentation, what is the problem with --enable-dox-doc?
+>>
+>> I'll find time to revisit doc generation and report back.
+>
+> Hi John,
+>
+> despite the long response time, I am still interested in merging support
+> for redhat packaging. I guess we coud add a "make rpm" rule which builds
+> the redhat package. However, looking at the spec file, it see that it
+> works by looking for the release tarball on gna download site, so, is it
+> possible to get the spec file to use the sources from the .. directory,
+> or failing that, use a tarball generated locally (we would then simply
+> have to get the rpm target depend on the dist target).
 
-Obviously, if it is already closed, read will not return EOF, and there
-is no need to close it again, I got all mixed up, sorry for the noise.
+Hi Gilles,
 
-> 
+Rpmbuild actually doesn't try to download a tarball; that is expected to 
+be in the local directory.  The URL is for recording the tarball's 
+origin, for use by humans and Fedora Project infrastructure, and ignored 
+by the rpm-build system.
 
+When the RPM is built from git, the Release: tag should be changed to 
+indicate as much.  A little work on the specfile would need to be done 
+to make that easier.
 
--- 
-                                                                Gilles.
+A script could run 'git archive' to build a tarball, tweak the Release: 
+in a copy of the specfile, and then perform some annoying acrobatics 
+needed to build the packages.  Is the purpose of the script for the 
+end-user?
+
+I'm actually setting up a Wandboard right now, and will be building 
+Xenomai for it tomorrow.  While I'm at it, I'll work some of the changes 
+into the specfile itself.
+
+Additionally, I did finally get that buildbot running for RHEL6 and 
+current Fedoras, x86_64 and i686 architectures, but backed down to 
+2.6.2.1 to do so.  In the process, most of the issues I identified 
+running 2.6.3 were also encountered in 2.6.2.1 and solved (operator 
+error, of course :P ), so it might be time to take another stab at 
+building against 2.6.3.
+
+	John
 
