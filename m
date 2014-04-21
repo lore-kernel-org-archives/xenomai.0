@@ -1,10 +1,13 @@
-Message-ID: <1397815203.1378.21.camel@port-msalvini.smigroup.local>
-From: Mauro Salvini <mauro.salvini@smigroup.net>
-Date: Fri, 18 Apr 2014 12:00:03 +0200
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Disable L2 write allocate on iMX6q
+Message-ID: <535573FD.6050308@steinkuehler.net>
+Date: Mon, 21 Apr 2014 14:39:41 -0500
+From: Charles Steinkuehler <charles@steinkuehler.net>
+MIME-Version: 1.0
+References: <5352BA1D.7070707@xenomai.org> <5355705B.5010604@steinkuehler.net>
+ <5355728F.80507@xenomai.org>
+In-Reply-To: <5355728F.80507@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Pre/Post patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,27 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello,
-I'm testing an iMX6q Sabrelite board from Element14 with Xenomai 2.6.3.
-
-First of all I tried kernel 3.0.43 from Xenomai git branch
-ipipe-3.0-imx6q. This kernel works well, a 15 hours running latency test
-(with manually generated system load like dd, netcat, ssh) shows an
-average latency of 5.690us and a worst case latency of 42.186us.
-Then I tried 3.4.6 vanilla kernel, but in this case latency test average
-result for is a bit worse, with a value around 18us. Worst case is about
-the same (<50us).
-I read in mailing list that L2 write allocate is disabled in 3.0.43
-kernel (in facts log says: l2x0: 16 ways, CACHE_ID 0x410000c7, AUX_CTRL
-0x02870000, Cache size: 1048576 B).
-This feature is enabled in 3.4.6 kernel ( log says: l2x0: 16 ways,
-CACHE_ID 0x410000c7, AUX_CTRL 0x02070000, Cache size: 1048576 B). Could
-this be the cause of latency degradation observed in 3.4.6 kernel? I
-also tried 3.8.13 with same results.
-Kernel configurations are the default ones for each kernel, with hw_perf
-disabled.
-
-Thanks in advance
-Mauro
+T24gNC8yMS8yMDE0IDI6MzMgUE0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+IE9uIDA0
+LzIxLzIwMTQgMDk6MjQgUE0sIENoYXJsZXMgU3RlaW5rdWVobGVyIHdyb3RlOgo+Pj4KPj4gVGhl
+IG5leHQgcHJvYmxlbSBjb21lcyB3aGVuIGJ1aWxkaW5nIHRoZSBrZXJuZWwsIEkgZ2V0IGFuIHVu
+ZGVmaW5lZAo+PiB3YXJuaW5nIGZyb20gdGhlIHJhaWQ0NTYua28gbW9kdWxlIChzZWUgYmVsb3cp
+LiAgSSdsbCBrZWVwIHBsdWdnaW5nCj4+IGF3YXksIGJ1dCBhbnkgYWR2aWNlIHdvdWxkIGJlIGFw
+cHJlY2lhdGVkLgo+IAo+IHByb2JhYmx5IHNvbWV0aGluZyB3cm9uZyB3aXRoIHRoZSBjb25maWd1
+cmF0aW9uLiBXaHkgZG8geW91IG5lZWQgcmFpZCA0LAo+IDUsIDYgYW55d2F5PyAKCkkgZG9uJ3Qs
+IG9mIGNvdXJzZSwgaXQncyBqdXN0IHdoYXQgdGhlIGNvbmZpZyBmcm9tIFJDTidzIGJ1aWxkIHNj
+cmlwdHMKaGFzIHNldHVwIGZvciBieSBkZWZhdWx0LgoKPiBJbiBhIGZpcnN0IHN0ZXAsIHlvdSBz
+aG91bGQgd29yayB3aXRoIGEgc3RhbmRhcmQKPiBjb25maWd1cmFpdG9uLCBzdWNoIGFzIG9tYXAy
+cGx1c19kZWZjb25maWcsIG9yIGJldHRlciwgaWYgeW91IGhhdmUgaXQsCj4gd2l0aCBhIG1pbmlt
+YWwgY29uZmlndXJhdGlvbiBzdWl0ZWQgZm9yIHlvdXIgYm9hcmQsIHdoaWNoIHdpbGwgYXZvaWQ6
+Cj4gCj4+ICguLi4pCj4+ICAgTU9EUE9TVCAxOTUwIG1vZHVsZXMKPiAKPiBhbmQgYnVpbGQgYSBr
+ZXJuZWwgaW4ganVzdCBhIGZldyBtaW51dGVzLgoKQXMgbWVudGlvbmVkLCBJJ20gc3RpbGwgcGx1
+Z2dpbmcgYWxvbmcsIGFuZCBtb3N0bHkgbGVhcm5pbmcgYXMgSSBnby4KClRoYW5rcyBmb3IgdGhl
+IGJyZWFkY3J1bWJzISAgOikKCi0tIApDaGFybGVzIFN0ZWlua3VlaGxlcgpjaGFybGVzQHN0ZWlu
+a3VlaGxlci5uZXQKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5v
+bi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlw
+ZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAyNjEgYnl0ZXMKRGVzYzogT3BlblBH
+UCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFp
+bC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTQwNDIxLzI5NmM5N2FjL2F0dGFjaG1lbnQuc2lnPgo=
