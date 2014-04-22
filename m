@@ -1,9 +1,13 @@
+Message-ID: <5356A4F0.8080700@xenomai.org>
+Date: Tue, 22 Apr 2014 19:20:48 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Tue, 22 Apr 2014 18:02:35 +0200
-Message-ID: <CAPRPZsBD_5ufxFAhPCFqRf9YZSm1FhqfcmL+MTbhJ=1Sb7ED_g@mail.gmail.com>
-From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] Reading /proc/xenomai/stat causes high latencies
+References: <20140416180205.C2109F56@centrum.cz>
+ <534EAD14.9000906@xenomai.org> <20140418105131.0F41467F@centrum.cz>
+In-Reply-To: <20140418105131.0F41467F@centrum.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] non-blocking rt_task_suspend(NULL)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,45 +16,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Petr Cervenka <grugh@centrum.cz>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Using a 3.10.18 kernel with Xenomai 2.6.3, reading the stat entry of
-/proc/xenomai causes high latencies in RT tasks. I've found a report
-on a similar issue in
-https://sites.google.com/site/manisbutareed/linuxcnc-2-5/xenomai-user-threads.
-We also had this occurring on a 3.8.13 kernel.
+On 04/18/2014 10:51 AM, Petr Cervenka wrote:
+>> Od: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+>>
+>> CC: "Xenomai" <xenomai@xenomai.org> On 04/16/2014 06:02 PM, Petr
+>> Cervenka wrote:
+>>>> Od: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+>>>>
+>>>> CC: "Xenomai" <xenomai@xenomai.org> On 04/16/2014 04:20 PM,
+>>>> Petr Cervenka wrote:
+>>>>>> Od: Gilles Chanteperdrix
+>>>>>> <gilles.chanteperdrix@xenomai.org>
+>>>>>>
+>>>>>> CC: "Xenomai" <xenomai@xenomai.org> On 04/16/2014 02:22 PM,
+>>>>>> Petr Cervenka wrote:
+>>>>>>>> Od: Gilles Chanteperdrix
+>>>>>>>> <gilles.chanteperdrix@xenomai.org>
+>>>>>>>>
+>>>>>>>> CC: "Xenomai" <xenomai@xenomai.org> On 04/15/2014 02:42
+>>>>>>>> PM, Petr Cervenka wrote:
+>>>>>>>>> Hello I have a problem with the rt_task_suspend(NULL)
+>>>>>>>>> call. I'm using it for synchronization of two
+>>>>>>>>> (producer / consumer like) tasks. 1) When the
+>>>>>>>>> consumer task has no work to do, it stops itself by
+>>>>>>>>> calling of the rt_task_suspend(NULL). 2) When the
+>>>>>>>>> producer creates new work for consumer, it wakes it
+>>>>>>>>> up by calling of rt_task_resume(&consumerTask). The
+>>>>>>>>> problem is, that consumer seldom switches to a state,
+>>>>>>>>> that it sleeps by rt_task_suspend no more. And the
+>>>>>>>>> task then takes all the CPU time. The return code is
+>>>>>>>>> 0. But I already have seen couple of -4 (-EINTR)
+>>>>>>>>> values in the past also. Consumer task status was
+>>>>>>>>> 00300380 before and 00300184 (if there is small
+>>>>>>>>> safety sleep present). I can use for example RT_EVENT
+>>>>>>>>> variable instead, but I'm curious if you by chance
+>>>>>>>>> don't know, what is happening? Xenomai 2.6.3, Linux
+>>>>>>>>> 3.5.7
+>>>>>>>>
+>>>>>>>> Could you post the example of code you are using to get
+>>>>>>>> this issue?
+>>>>>>>>
+>>>>>>>
+>>>>>>> It's and application with many threads, mutexes and
+>>>>>>> others. It's also special measuring HW dependent. I can
+>>>>>>> post here some simplified example. But I don't think it
+>>>>>>> would be possible to reproduce the same behavior easily.
+>>>>>>> It happens in my configuration only probably once per day
+>>>>>>> and very unpredictably. But I have more details. I
+>>>>>>> replaced rt_task_suspend / rt_task_resume by
+>>>>>>> rt_event_wait / rt_event_signal. It failed similar way,
+>>>>>>> but this time the result of wait was -4 (-EINTR). And
+>>>>>>> (after several millions of invocations) it recovered
+>>>>>>> itself.
+>>>>>>
+>>>>>> -EINTR is a valid return value for both rt_event_wait and
+>>>>>> rt_task_suspend. In case you get this error, you should
+>>>>>> loop to call rt_event_wait again, and not call
+>>>>>> rt_event_clear, as you risk clearing an event which has
+>>>>>> been signaled afterwards.
+>>>>>>
+>>>>> You are right. It was just very quick replace of waiting and
+>>>>> waking-up functions. But I'm checking the "work queue" anyway
+>>>>> and it also doesn't need exact timing here. My problem it
+>>>>> that the slow consumer task seems to be "interrupted by
+>>>>> signal" (or whatever) for several minutes. I mean, that it
+>>>>> doesn't wait for the event anymore and it always returns
+>>>>> immediately (with -EINTR return code).
+>>>>
+>>>> Are you running inside gdb? Does the task receive the SIGDEBUG
+>>>> signal? Do you have the XNWARNSW bit armed?
+>>>>
+>>>
+>>> gdb: No. SIGDEBUG, XNWARNSW: I don't even know what it is ;-).
+>>
+>> See examples/native/sigdebug.c in xenomai sources. Try installing
+>> the same signal handler in your application to be notified upon
+>> reception of this signal.
+>>
+> SIGDEBUG signal was not received. Task status from rt_task_inquire()
+> was 0x300180 or 0x300380 (depends where it is placed) When the task
+> is in the "wrong" state, also the call of rt_task_sleep(100000) is
+> returning permanently -EINTR code. Do you have any other idea what to
+> check or what can cause perhaps every xenomai call fail with -EINTR
+> in one task?
 
-A typical latency test run looks like:
+If I had to debug this issue, I would enable the I-pipe tracer and 
+trigger a trace freeze when the -EINTR code is received. With enough 
+trace points, it should be possible to understand what happens.
 
-RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
-RTD|     -2.382|     -2.357|     -1.945|       0|     0|     -2.382|     -1.945
-RTD|     -2.577|     -2.360|     -1.749|       0|     0|     -2.577|     -1.749
-RTD|     -2.380|     -2.360|     -1.865|       0|     0|     -2.577|     -1.749
-RTD|     -2.568|     -2.361|     -1.530|       0|     0|     -2.577|     -1.530
-RTD|     -2.379|     -2.359|     -1.732|       0|     0|     -2.577|     -1.530
-RTD|     -2.381|     -2.361|     -2.008|       0|     0|     -2.577|     -1.530
-RTD|     -2.381|     -2.360|     -2.085|       0|     0|     -2.577|     -1.530
-RTD|     -2.699|     -2.359|      2.566|       0|     0|     -2.699|      2.566
-RTD|     -2.380|     -2.320|     -1.876|       0|     0|     -2.699|      2.566
-RTD|     -2.381|     -2.359|      2.528|       0|     0|     -2.699|      2.566
-RTD|     -2.380|     -2.360|     -1.805|       0|     0|     -2.699|      2.566
-RTD|     -2.579|     -2.311|     -0.045|       0|     0|     -2.699|      2.566
-RTD|     -2.380|     -2.359|     -2.072|       0|     0|     -2.699|      2.566
-RTD|     -2.575|     -2.360|      2.065|       0|     0|     -2.699|      2.566
-RTD|     -2.381|     19.028|   3043.067|      31|     0|     -2.699|   3043.067
-RTD|     -2.566|     26.488|    105.823|      32|     0|     -2.699|   3043.067
-RTD|     -2.443|     -2.276|      0.597|      32|     0|     -2.699|   3043.067
-RTD|     -2.584|     -2.306|      2.032|      32|     0|     -2.699|   3043.067
-RTD|     -2.377|     -2.242|      4.106|      32|     0|     -2.699|   3043.067
-RTD|     -2.537|     -2.291|      4.394|      32|     0|     -2.699|   3043.067
-
-It is obvious where I issued the 'cat /proc/xenomai/stat' command.
-
-I will try to create an I-trace now. (config is same as under my
-previous post 'Slow execution of RT task' - I'm still looking into
-that issue as well).
-
-
-Jeroen.
+-- 
+					    Gilles.
 
