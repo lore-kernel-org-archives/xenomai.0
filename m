@@ -1,12 +1,31 @@
-Message-ID: <53510CB4.3000501@xenomai.org>
-Date: Fri, 18 Apr 2014 13:29:56 +0200
+Message-ID: <5356F4FE.3050406@xenomai.org>
+Date: Wed, 23 Apr 2014 01:02:22 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1397815203.1378.21.camel@port-msalvini.smigroup.local>
-In-Reply-To: <1397815203.1378.21.camel@port-msalvini.smigroup.local>
+References: <1396407588.27578.5.camel@localhost.localdomain>
+ <533BBB11.5090808@xenomai.org>
+ <1396848843.2481.15.camel@localhost.localdomain>
+ <5343BEFB.7050402@xenomai.org>
+ <1396999856.2660.7.camel@localhost.localdomain>
+ <53449244.8040502@xenomai.org>
+ <1397003664.2660.14.camel@localhost.localdomain>
+ <1397017658.2660.16.camel@localhost.localdomain>
+ <534534FD.5090805@xenomai.org>
+ <1397113300.2720.5.camel@localhost.localdomain>
+ <5346895B.6080401@xenomai.org>
+ <1397159850.2881.3.camel@localhost.localdomain>
+ <53471389.6000000@xenomai.org>
+ <1397168263.6356.11.camel@localhost.localdomain>
+ <534719F5.2020605@xenomai.org>
+ <1397169248.6356.15.camel@localhost.localdomain> <53471FDB.50008@xenomai.org>
+ <1397170339.6356.17.camel@localhost.localdomain>
+ <1397541812.6541.3.camel@localhost.localdomain>
+ <534D19FA.3040506@xenomai.org>
+ <1397599195.2652.0.camel@localhost.localdomain>
+In-Reply-To: <1397599195.2652.0.camel@localhost.localdomain>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Disable L2 write allocate on iMX6q
+Subject: Re: [Xenomai] OMAP L138
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,39 +34,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Mauro Salvini <mauro.salvini@smigroup.net>
+To: Peter Howard <pjh@northern-ridge.com.au>
 Cc: xenomai@xenomai.org
 
-On 04/18/2014 12:00 PM, Mauro Salvini wrote:
-> Hello,
-> I'm testing an iMX6q Sabrelite board from Element14 with Xenomai 2.6.3.
+On 04/15/2014 11:59 PM, Peter Howard wrote:
+> On Tue, 2014-04-15 at 13:37 +0200, Gilles Chanteperdrix wrote:
+>> On 04/15/2014 08:03 AM, Peter Howard wrote:
+>>> On Fri, 2014-04-11 at 08:52 +1000, Peter Howard wrote:
+>>>> On Fri, 2014-04-11 at 00:48 +0200, Gilles Chanteperdrix wrote:
+>>>>> On 04/11/2014 12:34 AM, Peter Howard wrote:
+>>>>>> On Fri, 2014-04-11 at 00:23 +0200, Gilles Chanteperdrix wrote:
+>>>>>> (Stripping back conversation on this one - apologies if that's bad
+>>>>>> etiquette for this list)
+>>>>>>  
+>>>>>>> Attachment is better. Also please post the changes you made for omapL138
+>>>>>>>
+>>>>>>
+>>>>>> diff --git a/arch/arm/mach-davinci/Kconfig b/arch/arm/mach-davinci/Kconfig
+>>>>>> index a075b3e..3d8bc59 100644
+>>>>>> --- a/arch/arm/mach-davinci/Kconfig
+>>>>>> +++ b/arch/arm/mach-davinci/Kconfig
+>>>>>> @@ -41,6 +41,8 @@ config ARCH_DAVINCI_DA850
+>>>>>>  	select ARCH_DAVINCI_DA8XX
+>>>>>>  	select ARCH_HAS_CPUFREQ
+>>>>>>  	select CP_INTC
+>>>>>> +    select IPIPE_ARM_KUSER_TSC if IPIPE
+>>>>>> +    select ARM_FCSE if IPIPE
+>>>>>
+>>>>> You may want to leave the choice of enabling or disabling FCSE to the user.
+>>>>>
+>>>>
+>>>> Understood; at the moment the variance on max latency is really bad if
+>>>> you don't enable FCSE.  When I sort out the crashing issues I'll re-test
+>>>> with it off.
+>>>
+>>> Well, FCSE turned out to be my problem.
+>>>
+>>> More specifically,  FCSE and ARM_FCSE_BEST_EFFORT.  Either a) disabling
+>>> ARM_FCSE altogether, or b) selecting ARM_FCSE with ARM_FCSE_GUARENTEED
+>>> gets rid of the crashes/panics with ipipe latency tracing enabled.
+>>>
+>>> So now things seem reasonably stable, I'll go through the full set of
+>>> tests.  Though I still can't do 'xeno-test -l "dohell -l /opt/ltp"' as
+>>> ltp takes out the system without any ipipe/xenomai bits.
+>>>
+>> Ok, FCSE best effort is currently being validated on 3.14, so it may
+>> well be broken. After all, the raw/* branches are work in progress.
+>>
 > 
-> First of all I tried kernel 3.0.43 from Xenomai git branch
-> ipipe-3.0-imx6q. This kernel works well, a 15 hours running latency test
-> (with manually generated system load like dd, netcat, ssh) shows an
-> average latency of 5.690us and a worst case latency of 42.186us.
-> Then I tried 3.4.6 vanilla kernel, but in this case latency test average
-> result for is a bit worse, with a value around 18us. Worst case is about
-> the same (<50us).
-> I read in mailing list that L2 write allocate is disabled in 3.0.43
-> kernel (in facts log says: l2x0: 16 ways, CACHE_ID 0x410000c7, AUX_CTRL
-> 0x02870000, Cache size: 1048576 B).
-> This feature is enabled in 3.4.6 kernel ( log says: l2x0: 16 ways,
-> CACHE_ID 0x410000c7, AUX_CTRL 0x02070000, Cache size: 1048576 B). Could
-> this be the cause of latency degradation observed in 3.4.6 kernel? I
-> also tried 3.8.13 with same results.
-> Kernel configurations are the default ones for each kernel, with hw_perf
-> disabled.
+> Note: selecting ARM_FCSE_BEST_EFFORT produces the same result on the
+> master branch too . . .
+> 
+Hi Peter,
 
-Yes, L2 write allocate on imx6 has disastrous effects on latency.
-L2 write allocate is disabled starting from the 3.10 kernel for the 
-mainline I-pipe patches. See branch ipipe-3.10 in ipipe.git.
+I am unable to reproduce these issues with 3.14, FCSE seems to be doing
+just fine, I can boot and run the LTP testsuite and get almost the same
+results as a non patched kernel. I have tried with and without
+preemptible cache flushes, and with and without Xenomai. My rootfs is
+based on busybox and minimal, maybe that is the reason why it works
+fine, could you put a tarball with your rootfs somewhere?
 
-The patch which disables L2 write allocate is:
-http://git.xenomai.org/ipipe.git/commit/?h=ipipe-3.10&id=05d6bcc014821c286248f6f4c1c953fcbde67f27
-
-and is probably easy to backport to earlier branches (but why would you 
-want to use a 3.4 kernel anyway?).
+Regards.
 
 -- 
                                                                 Gilles.
