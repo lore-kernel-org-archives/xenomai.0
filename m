@@ -1,14 +1,9 @@
-Message-ID: <53566854.2040502@xenomai.org>
-Date: Tue, 22 Apr 2014 15:02:12 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <1398115447.70510.YahooMailNeo@web171605.mail.ir2.yahoo.com>
- <53561B23.6010104@xenomai.org>
- <1398163799.26874.YahooMailNeo@web171604.mail.ir2.yahoo.com>
-In-Reply-To: <1398163799.26874.YahooMailNeo@web171604.mail.ir2.yahoo.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] occasional EBADF in select() in notifier.c
+Date: Tue, 22 Apr 2014 18:02:35 +0200
+Message-ID: <CAPRPZsBD_5ufxFAhPCFqRf9YZSm1FhqfcmL+MTbhJ=1Sb7ED_g@mail.gmail.com>
+From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] Reading /proc/xenomai/stat causes high latencies
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,76 +12,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/22/2014 12:49 PM, Matthias Schneider wrote:
-> ----- Original Message -----
->> From: Philippe Gerum <rpm@xenomai.org>
->> To: Matthias Schneider <ma30002000@yahoo.de>; "xenomai@xenomai.org" <xenomai@xenomai.org>
->> Cc:
->> Sent: Tuesday, April 22, 2014 9:32 AM
->> Subject: Re: [Xenomai] occasional EBADF in select() in notifier.c
->>
->> On 04/21/2014 11:24 PM, Matthias Schneider wrote:
->>>    Still working on thread suspension in forge/mercury, I occasionally get a
->> EBADF
->>>    of the select() call in notifier.c. I suspect that this is due to accessing
->> a
->>>    copy of the file descriptor list notifier_rset while one of the file
->> descriptors
->>>    is being closed. This seems to be due to concurrent access on the
->> notifier_rset
->>>    from notifier_sighandler() and notifier_destroy().
->> "notifier_lock" is held in
->>>    notifier_lock(), but not when copying and invoking select in
->> notifier_sighandler().
->>>    The EBADF leads to a "spurious notification" reporting and
->> process termination -
->>>     obviously, the thread suspension was not triggered.
->>>
->>>    I can think of several ways of addressing this issue but I am not sure
->> about
->>>    side effects:
->>>    a) hold the "notifier_lock" mutex between copying the descriptor
->> list and calling select
->>
->> Not an option, we would need a threaded handler for grabbing the
->> mutex-based lock, which would defeat the purpose of using a directed
->> signal for forcing the recipient thread to stop execution until released.
->>
->
-> Ok, I understand.
->
->>>    b) repeating the select() call in the case of EBADF
->>>
->>
->> EBADF should be ignored. This just means that we won't find the notifier
->> block in the scanned list anyway, which is a possible and correct outcome.
->
->
-> I do not agree. EBADF only signals that any of the fds is invalid, but not necessarily the one the current thread is interested in. In the scenario being produced in my test, descriptor "A" was being signaled and "B" was closed, being the cause for EBADF. If I had ignored the error, I would have missed a notification for "A". Repeating the select call with a fresh copy of notifier_rset seemed to correctly retrieved the right entry.
+Using a 3.10.18 kernel with Xenomai 2.6.3, reading the stat entry of
+/proc/xenomai causes high latencies in RT tasks. I've found a report
+on a similar issue in
+https://sites.google.com/site/manisbutareed/linuxcnc-2-5/xenomai-user-threads.
+We also had this occurring on a 3.8.13 kernel.
 
-This is what I implied: ignore the invalid fd causing EBADF, drop it 
-from the poll mask and redo. We obviously don't want to miss other valid 
-notifications.
+A typical latency test run looks like:
 
->
->>
->>>    Any ideas?
->>>
->>>    Anyway, why is the select call necessary, isnt the file descriptor signaled
->> via
->>>    siginfo->si_fd, too?
->>>
->>
->> Yes it is. This select() loop is a left-over.
->
-> So would this be a third variant, getting rid of select() and using si_fd?
->
+RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
+RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+RTD|     -2.382|     -2.357|     -1.945|       0|     0|     -2.382|     -1.945
+RTD|     -2.577|     -2.360|     -1.749|       0|     0|     -2.577|     -1.749
+RTD|     -2.380|     -2.360|     -1.865|       0|     0|     -2.577|     -1.749
+RTD|     -2.568|     -2.361|     -1.530|       0|     0|     -2.577|     -1.530
+RTD|     -2.379|     -2.359|     -1.732|       0|     0|     -2.577|     -1.530
+RTD|     -2.381|     -2.361|     -2.008|       0|     0|     -2.577|     -1.530
+RTD|     -2.381|     -2.360|     -2.085|       0|     0|     -2.577|     -1.530
+RTD|     -2.699|     -2.359|      2.566|       0|     0|     -2.699|      2.566
+RTD|     -2.380|     -2.320|     -1.876|       0|     0|     -2.699|      2.566
+RTD|     -2.381|     -2.359|      2.528|       0|     0|     -2.699|      2.566
+RTD|     -2.380|     -2.360|     -1.805|       0|     0|     -2.699|      2.566
+RTD|     -2.579|     -2.311|     -0.045|       0|     0|     -2.699|      2.566
+RTD|     -2.380|     -2.359|     -2.072|       0|     0|     -2.699|      2.566
+RTD|     -2.575|     -2.360|      2.065|       0|     0|     -2.699|      2.566
+RTD|     -2.381|     19.028|   3043.067|      31|     0|     -2.699|   3043.067
+RTD|     -2.566|     26.488|    105.823|      32|     0|     -2.699|   3043.067
+RTD|     -2.443|     -2.276|      0.597|      32|     0|     -2.699|   3043.067
+RTD|     -2.584|     -2.306|      2.032|      32|     0|     -2.699|   3043.067
+RTD|     -2.377|     -2.242|      4.106|      32|     0|     -2.699|   3043.067
+RTD|     -2.537|     -2.291|      4.394|      32|     0|     -2.699|   3043.067
 
-Yes, we don't need to maintain the notifier_rset and the select loop. 
-Just check for psfd[0] ==  siginfo->si_fd in loop for a match.
+It is obvious where I issued the 'cat /proc/xenomai/stat' command.
 
--- 
-Philippe.
+I will try to create an I-trace now. (config is same as under my
+previous post 'Slow execution of RT task' - I'm still looking into
+that issue as well).
+
+
+Jeroen.
 
