@@ -1,12 +1,16 @@
-Message-ID: <535110C3.40500@xenomai.org>
-Date: Fri, 18 Apr 2014 13:47:15 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5357C407.8060206@xenomai.org>
+Date: Wed, 23 Apr 2014 15:45:43 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <7dad12a6.21b0a.14574613527.Coremail.ericvic@163.com>
-In-Reply-To: <7dad12a6.21b0a.14574613527.Coremail.ericvic@163.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] imx6q xenomai ipipe-3.0-imx6q
+References: <1398115447.70510.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+ <53561B23.6010104@xenomai.org>
+ <1398163799.26874.YahooMailNeo@web171604.mail.ir2.yahoo.com>
+ <53566854.2040502@xenomai.org>
+ <1398189653.17723.YahooMailNeo@web171602.mail.ir2.yahoo.com>
+In-Reply-To: <1398189653.17723.YahooMailNeo@web171602.mail.ir2.yahoo.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] occasional EBADF in select() in notifier.c
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,25 +19,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
-Cc: huang.c.h@lynuc.cn, liu.h.f@lynuc.cn, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/18/2014 12:28 PM, 嵌入式工程师 wrote:
-> 
-> 
-> I do the same on the imx53 with imx6 test, in the process of
-> real-time task to run the same operation content, start the qt deform
-> demo and copy large file  to memory, in 250 us the  latency on imx6
-> board began to accumulate, lost real-time, but latency  on the imx53
-> only value within 20 us. I do not run anyother rt task on my below
-> test：
+On 04/22/2014 08:00 PM, Matthias Schneider wrote:
 
-Looking at your code, it seems your problem (if I understand correctly),
-is that a series of memcpy and memset takes a long time to execute when
-non real-time activities are given an opportunity to thrash the cache.
+>
+> Considering the three options I think I prefer the last one and remove the
+> select() altogether. I have attached a small patch that does exactly that.
+>
 
-Am I understanding correctly?
+Merged, thanks.
+
 
 -- 
-                                                                Gilles.
+Philippe.
 
