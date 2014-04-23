@@ -1,12 +1,9 @@
 MIME-Version: 1.0
-In-Reply-To: <535659BE.4000601@xenomai.org>
+In-Reply-To: <CAC66z97Q39YpEQ8aug7DqnCM-+cQ8NRAVgFHLgJamgbqjV4PfA@mail.gmail.com>
 References: <CAC66z97Q39YpEQ8aug7DqnCM-+cQ8NRAVgFHLgJamgbqjV4PfA@mail.gmail.com>
- <53564F83.4070401@control.lth.se>
- <A973FC64-9FD8-4892-BF4B-2BBE74942BA3@mah.priv.at>
- <535659BE.4000601@xenomai.org>
-Date: Wed, 23 Apr 2014 11:10:21 +0530
-Message-ID: <CAC66z97mgcrHHecrZtw5LMzLfH4MTFDgaXVFoSSPH264B2s_kA@mail.gmail.com>
-From: yogesh garg <yogesh.garg1983@gmail.com>
+Date: Wed, 23 Apr 2014 09:36:48 +0200
+Message-ID: <CAPRPZsBUNopzbL5CdXKNdjePVm+Q4Qj+1S=dSmiXnutvhd_QuQ@mail.gmail.com>
+From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Subject: Re: [Xenomai] RTDM: Ethernet driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,65 +14,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: yogesh garg <yogesh.garg1983@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-What about license part. I think RTnet is GNU GPL, so I can't use it for
-commercial products.
-Otherwise I need to expose complete source code.
+> Can someone suggest me any example code or useful links/docs
+> which can help me to do so.
 
+Have a good look at Linux drivers/net/ethernet/intel/e1000e and think
+again about writing a network driver yourself. Note that the larger
+part of a NIC driver is needed just to get a link reliably across the
+large number of MAC/PHY combinations and revisions that are out there.
 
-On Tue, Apr 22, 2014 at 5:29 PM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+Also grep for 'workaround'...
 
-> On 04/22/2014 01:53 PM, Michael Haberler wrote:
->
->>
->> Am 22.04.2014 um 13:16 schrieb Anders Blomdell
->> <anders.blomdell@control.lth.se>:
->>
->>  On 04/22/2014 11:45 AM, yogesh garg wrote:
->>>
->>>> I want to write Ethernet (NIC) driver on Xenomai using RTDM. I
->>>> don't want to use RTnet.
->>>>
->>> Why not?
->>>
->>> RTnet does not imply that you have to use the RTnet protocol, it's
->>> perfectly fine to use just the Ethernet drivers as you see fit
->>> (that's what I do all the time).
->>>
->>> By going your own way, realtime ethernet for Xenomai will be
->>> fragmented, which will benefit nobody (except possibly
->>> WindRiver/Microsoft/...)
->>>
->>
->> well there are valid reasons
->>
->> One we have is: since the application runs across RTAI, Xenomai and
->> RT_PREEMPT a single method would be beneficial, even at the cost of
->> lower performance. Not everyone is fond of networking silos.
->>
->
-> RTnet already works with RTAI and Xenomai, the API exposed by RTnet is the
-> standard socket interface and drivers in RTnet are copycats of Linux
-> drivers.
->
-> So, I do not see what prevents you from using Linux drivers with Linux and
-> preempt_rt and RTnet drivers with Xenomai and RTAI.
+Jeroen.
+
 >
 > --
->                                             Gilles.
->
->
+> Regards,
+> Yogesh Garg
 > _______________________________________________
 > Xenomai mailing list
 > Xenomai@xenomai.org
 > http://www.xenomai.org/mailman/listinfo/xenomai
->
 
-
-
--- 
-Regards,
-Yogesh Garg
