@@ -1,16 +1,14 @@
-Date: Wed, 23 Apr 2014 12:40:28 +0800 (CST)
-From: eric  <ericvic@163.com>
-In-Reply-To: <410c61f.2e6bb.1457ebe7220.Coremail.ericvic@163.com>
-References: <7dad12a6.21b0a.14574613527.Coremail.ericvic@163.com>
- <535110C3.40500@xenomai.org>
- <59ece04.26b88.1457d86db18.Coremail.ericvic@163.com>
- <53538D60.8040107@xenomai.org> <53539207.2030803@xenomai.org>
- <410c61f.2e6bb.1457ebe7220.Coremail.ericvic@163.com>
 MIME-Version: 1.0
-Message-ID: <13c7e4f5.789a.1458ce28c87.Coremail.ericvic@163.com>
+In-Reply-To: <535659BE.4000601@xenomai.org>
+References: <CAC66z97Q39YpEQ8aug7DqnCM-+cQ8NRAVgFHLgJamgbqjV4PfA@mail.gmail.com>
+ <53564F83.4070401@control.lth.se>
+ <A973FC64-9FD8-4892-BF4B-2BBE74942BA3@mah.priv.at>
+ <535659BE.4000601@xenomai.org>
+Date: Wed, 23 Apr 2014 11:10:21 +0530
+Message-ID: <CAC66z97mgcrHHecrZtw5LMzLfH4MTFDgaXVFoSSPH264B2s_kA@mail.gmail.com>
+From: yogesh garg <yogesh.garg1983@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] imx6q xenomai ipipe-3.0-imx6q
+Subject: Re: [Xenomai] RTDM: Ethernet driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,84 +17,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: eric <ericvic@163.com>
-Cc: huang.c.h@lynuc.cn, liu.h.f@lynuc.cn, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-CgoKCgoKCgoK5ZyoIDIwMTQtMDQtMjAgMTg6NDY6MjHvvIxlcmljIDxlcmljdmljQDE2My5jb20+
-IOWGmemBk++8mgoKPuWcqCAyMDE0LTA0LTIwIDE3OjIzOjE577yMIkdpbGxlcyBDaGFudGVwZXJk
-cml4IiA8Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmc+IOWGmemBk++8mgo+TGUgMjAv
-MDQvMjAxNCAxMTowMywgR2lsbGVzIENoYW50ZXBlcmRyaXggYSDDqWNyaXQgOgo+PiBMZSAyMC8w
-NC8yMDE0IDA3OjA2LCBlcmljIGEgw6ljcml0IDoKPj4+IFNvIGlmIG15IHByb2dyYW0gdXNlIGxv
-dHMgb2YgbWVtb3J5IG9wZXJhdGlvbnMgIGZvciBhIGxvbmcgdGltZSBpdCBtYXliZQo+Pj4gZ2l2
-ZXMgbm9uIHJlYWwtdGltZSBhY3Rpdml0aWVzIG9wcG9ydHVuaXR5IHRvIHRocmFzaCB0aGUgY2Fj
-aGU/Cj4+IAo+PiBJdCBpcyB1bnJlbGF0ZWQsIGJ1dCBvbiBhIG11bHRpLWNvcmUgcHJvY2Vzc29y
-IGV2ZW4gd2hlbiBvbmUgY29yZSBpcwo+PiBydW5uaW5nIGEgcmVhbC10aW1lIHRhc2ssIG90aGVy
-IGNvcmVzIGNhbiB0aHJhc2ggdGhlIGNhY2hlIGF0IHdpbGwsIG9yCj4+IHNsb3cgZG93biB0aGUg
-cmVhbC10aW1lIHRhc2sgYnkgdXNpbmcgYSBzaGFyZWQgcmVzc291cmNlIChmb3IgaW5zdGFuY2UK
-Pj4gRERSKSBhbmQgc3RhcnZpbmcgdGhlIGNvcmUgd2hlcmUgdGhlIHJlYWwtdGltZSB0YXNrIHJ1
-bnMuIEJ5IGRlZmF1bHQgdGhlCj4+IEwyIGNhY2hlIGlzIHNoYXJlZCBiZXR3ZWVuIGFsbCBjb3Jl
-cywgeW91IGNhbiB0cnkgYW5kIHJlc2VydmUgcGFydHMgb2YKPj4gdGhlIGNhY2hlIGZvciBlYWNo
-IGNvcmUgKGNoZWNrIHRoZSBsMngwIHJlZ2lzdGVycyBkb2N1bWVudGF0aW9uIHRvIHNlZQo+PiBo
-b3cpLCBJIHRyaWVkIHRoaXMgb24gb21hcDQsIGJ1dCBpdCByZXN1bHRzIG9uIHdvcnNlIGxhdGVu
-Y2llcywKPj4gc2l0dWF0aW9uIG1heSBiZSBkaWZmZXJlbnQgb24gaW14NiB0aG91Z2guIEFub3Ro
-ZXIgcHJvYmxlbSBpcyB0aGF0IHNpbmNlCj4+IHRoZSBMMSBjYWNoZSBpcyBwZXItY29yZSwgSSBi
-ZWxpZXZlLCBhbmQgd2UgZGlzYWJsZSBMMiB3cml0ZSBhbGxvY2F0ZSwKPj4gcmVhZGluZyBvbiBv
-bmUgY29yZSBtZW1vcnkgd3JpdHRlbiBvbiBhbm90aGVyIGNvcmUgcmVzdWx0cyBpbiBhY2Nlc3Nl
-cwo+PiBhdCB0aGUgRERSIHNwZWVkLCBhbmQgbm90IGF0IHRoZSBjYWNoZSBzcGVlZC4KPj4gCj4+
-IEFsbCB0aGlzIHRvIHNheSB0aGF0IFhlbm9tYWkgZm9jdXNlcyBvbiB0cnlpbmcgdG8gc2NoZWR1
-bGUgeW91ciBkcml2ZXIKPj4gaW50ZXJydXB0cyBhbmQgYXBwbGljYXRpb24gdGhyZWFkcyBpbiBh
-IGRldGVybWluaXN0aWMgZmFzaGlvbiBidXQgaXQgaXMKPj4geW91ciBqb2IgdG8gbWFrZSBzdXJl
-IHRoYXQgdGhlc2UgaW50ZXJydXB0cyBhbmQgdGhyZWFkcyBkbyBub3QgdGFrZSB0b28KPj4gbG9u
-ZyBhIHRpbWUgdG8gZXhlY3V0ZSwgYmVjYXVzZSBpZiB0aGV5IGRvLCB5ZXMsIHlvdXIgYXBwbGlj
-YXRpb24gd2lsbAo+PiBub3QgbWVldCBpdHMgZGVhZGxpbmVzLCBidXQgaXQgaXMgbm90IFhlbm9t
-YWkncyBmYXVsdC4KPgo+SSBkbyBub3QgbWVhbiB0byBzYXkgdGhhdCB5b3UgZG8gbm90IGhhdmUg
-YSBwcm9ibGVtIHdpdGggWGVub21haSBvbgo+aW14NnEsIGJ1dCBzbyBmYXIsIEkgaGF2ZSBub3Qg
-dW5kZXJzdG9vZCB3aGF0IHRoaXMgcHJvYmxlbSB3YXMuCj4KPgo+LS0gCj5HaWxsZXMuCgoKCgoK
-SGVsbG8gR2lsbGVzIEkgZm91bmQgdGhlIHNhbWUgdGVzdCBvbiB4ODYgZG91YmxlIGNvcmVzIGFu
-ZCBlbmJsZSBzbXAgIHdpdGggcnRhaSB3aWxsIG5vdCBoYXZlIHRoZSBtYXggZGVsYXkgLGl0IGlz
-IGp1c3QgNTB1cyBsYXRlbmNpZXMgLHRoaXMgaXMgbXkgdGVzdCB3aXRoIHJ0YWkgLCB0aGUgbXVs
-dGktY29yZSBwcm9jZXNzb3Igd2l0aCAgc2hhcmVkIGNhY2hlIGNhbiBiZSB0aHJhc2hlZCBqdXN0
-IO+7v2FwcGVhcnMgb24gaW14NiBhbmQgb21hcDQgb3IgYWxsIGFybSB3aXRoIG11bHRpLWNvcmUg
-aGFzIHRoZSBzYW1lIHByb2JsZW1zPyB0aGFuayB5b3UKI2luY2x1ZGUgPGxpbnV4L21vZHVsZS5o
-PgojaW5jbHVkZSA8cnRhaS5oPgojaW5jbHVkZSA8cnRhaV9zY2hlZC5oPgogI2luY2x1ZGUgPGFz
-bS90aW1leC5oPgojZGVmaW5lIExQVDFfQkFTRSAweDM3OAojZGVmaW5lIFNUQUNLX1NJWkUgNDA5
-NgojZGVmaW5lIFRJTUVSVElDS1MgMTAwMDAwMCAKCnN0YXRpYyBSVF9UQVNLIHRhc2tzOwpjaGFy
-IGxvZ29bNDAqMTAyNF09ezB9OwpjaGFyIG1lbV9zcHZtWzQwKjEwMjRdOwpSVElNRSBwcmV2aW91
-cyxwcHJldmlvdXMsbm93LHBub3cscG1heDsKbG9uZyBsb25nIHRtcD0wOwpsb25nIGk9MDsKdW5z
-aWduZWQgbG9uZyBzdGFydCxzdG9wLHRhc2tfbWF4OwpzdGF0aWMgdm9pZCB0YXNrKGludCB0KQp7
-CglwcmV2aW91cyA9IHJ0X2dldF90aW1lX25zKCk7Cgl3aGlsZSgxKXsKCXJ0X3Rhc2tfd2FpdF9w
-ZXJpb2QoKTsKCXN0YXJ0PWdldF9jeWNsZXMoKTsKCQoJbWVtc2V0KG1lbV9zcHZtLDAsc2l6ZW9m
-KGxvZ28pKTsKCQltZW1jcHkobWVtX3Nwdm0sbG9nbyxzaXplb2YobG9nbykpOwoJCW1lbXNldCht
-ZW1fc3B2bSwxMjcsc2l6ZW9mKGxvZ28pKTsKCQltZW1jcHkobWVtX3Nwdm0sbG9nbyxzaXplb2Yo
-bG9nbykpOwoJCW1lbXNldChtZW1fc3B2bSwwLHNpemVvZihsb2dvKSk7CgkJbWVtY3B5KG1lbV9z
-cHZtLGxvZ28sc2l6ZW9mKGxvZ28pKTsKCQltZW1zZXQobWVtX3Nwdm0sMTI3LHNpemVvZihsb2dv
-KSk7CgkJbWVtY3B5KG1lbV9zcHZtLGxvZ28sc2l6ZW9mKGxvZ28pKTsKCQltZW1zZXQobWVtX3Nw
-dm0sMCxzaXplb2YobG9nbykpOwoJCW1lbWNweShtZW1fc3B2bSxsb2dvLHNpemVvZihsb2dvKSk7
-CgkJbWVtc2V0KG1lbV9zcHZtLDEyNyxzaXplb2YobG9nbykpOwoJCW1lbWNweShtZW1fc3B2bSxs
-b2dvLHNpemVvZihsb2dvKSk7CgkJbWVtc2V0KG1lbV9zcHZtLDAsc2l6ZW9mKGxvZ28pKTsKCQlt
-ZW1jcHkobWVtX3Nwdm0sbG9nbyxzaXplb2YobG9nbykpOwoJCW1lbXNldChtZW1fc3B2bSwxMjcs
-c2l6ZW9mKGxvZ28pKTsKCQltZW1jcHkobWVtX3Nwdm0sbG9nbyxzaXplb2YobG9nbykpOwoJCW1l
-bXNldChtZW1fc3B2bSwwLHNpemVvZihsb2dvKSk7CgkJbWVtY3B5KG1lbV9zcHZtLGxvZ28sc2l6
-ZW9mKGxvZ28pKTsKCQltZW1zZXQobWVtX3Nwdm0sMTI3LHNpemVvZihsb2dvKSk7CgkJbWVtY3B5
-KG1lbV9zcHZtLGxvZ28sc2l6ZW9mKGxvZ28pKTsKCQltZW1zZXQobWVtX3Nwdm0sMCxzaXplb2Yo
-bG9nbykpOwoJCW1lbWNweShtZW1fc3B2bSxsb2dvLHNpemVvZihsb2dvKSk7CgkJbWVtc2V0KG1l
-bV9zcHZtLDEyNyxzaXplb2YobG9nbykpOwoJCW1lbWNweShtZW1fc3B2bSxsb2dvLHNpemVvZihs
-b2dvKSk7CgkJbWVtc2V0KG1lbV9zcHZtLDEyNyxzaXplb2YobG9nbykpOwoJCW1lbXNldChtZW1f
-c3B2bSwwLHNpemVvZihsb2dvKSk7CgkJbWVtY3B5KG1lbV9zcHZtLGxvZ28sc2l6ZW9mKGxvZ28p
-KTsKCQltZW1zZXQobWVtX3Nwdm0sMTI3LHNpemVvZihsb2dvKSk7CgkJbWVtY3B5KG1lbV9zcHZt
-LGxvZ28sc2l6ZW9mKGxvZ28pKTsKCQoJCXBub3c9cnRfZ2V0X3RpbWVfbnMoKTsKCQlzdG9wPWdl
-dF9jeWNsZXMoKTsKCQlwbWF4PShwbm93LXByZXZpb3VzKTsKCQlwbWF4PXBtYXg8MD8tcG1heDpw
-bWF4OwoJCWlmKHRhc2tfbWF4PChzdG9wLXN0YXJ0KSkKCQl0YXNrX21heD1zdG9wLXN0YXJ0OwoJ
-CWlmKGkrKzwxMDAwMCkKCQl0YXNrX21heD0wOwoJCXByaW50aygib3RpbWU6ICVsZC4lMDZsZCBt
-c1xuIiwobG9uZylwbWF4LzEwMDAwMDAsKGxvbmcpcG1heCUxMDAwMDAwKTsvL3RoZSBtYXggZGVs
-YXkgYWJvdXQgMTU0IHVzCgkJcHJpbnRrKCJzdGltZTogJWxkLiUwNmxkIG1zXG4iLChsb25nKXRh
-c2tfbWF4LzEwMDAwMDAsKGxvbmcpdGFza19tYXglMTAwMDAwMCk7Ly90aGUgbWF4IGRlbGF5IGFi
-b3V0IDE1NCB1cwoJCS8vcHJldmlvdXM9cG5vdzsKCQlwcmV2aW91cz1wcmV2aW91cysxMDAwMDAw
-OwoJCgl9Cn0KCgoKaW50IGluaXRfbW9kdWxlKHZvaWQpCnsKCVJUSU1FIHRpY2tfcGVyaW9kLCBu
-b3c7CgoJcnRfc2V0X3BlcmlvZGljX21vZGUoKTsKICAgICAgICBydF90YXNrX2luaXQoJnRhc2ss
-IHRhc2ssIDAsIFNUQUNLX1NJWkUsIDAsIDAsIDApOwoKCgl0aWNrX3BlcmlvZCA9IHN0YXJ0X3J0
-X3RpbWVyKG5hbm8yY291bnQgKFRJTUVSVElDS1MpKTsKCW5vdyA9IHJ0X2dldF90aW1lKCk7Cgly
-dF90YXNrX21ha2VfcGVyaW9kaWMoJnRhc2tzLCBub3cgKyB0aWNrX3BlcmlvZCwgdGlja19wZXJp
-b2QpOwoJcmV0dXJuIDA7Cn0KCnZvaWQgY2xlYW51cF9tb2R1bGUodm9pZCkKewoJc3RvcF9ydF90
-aW1lcigpOwoJcnRfYnVzeV9zbGVlcCgxMDAwMDAwMCk7CgoJcnRfdGFza19kZWxldGUoJnRhc2tz
-WzBdKTsKCXJ0X3Rhc2tfZGVsZXRlKCZ0YXNrc1sxXSk7CgkKfQoK
+What about license part. I think RTnet is GNU GPL, so I can't use it for
+commercial products.
+Otherwise I need to expose complete source code.
+
+
+On Tue, Apr 22, 2014 at 5:29 PM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+
+> On 04/22/2014 01:53 PM, Michael Haberler wrote:
+>
+>>
+>> Am 22.04.2014 um 13:16 schrieb Anders Blomdell
+>> <anders.blomdell@control.lth.se>:
+>>
+>>  On 04/22/2014 11:45 AM, yogesh garg wrote:
+>>>
+>>>> I want to write Ethernet (NIC) driver on Xenomai using RTDM. I
+>>>> don't want to use RTnet.
+>>>>
+>>> Why not?
+>>>
+>>> RTnet does not imply that you have to use the RTnet protocol, it's
+>>> perfectly fine to use just the Ethernet drivers as you see fit
+>>> (that's what I do all the time).
+>>>
+>>> By going your own way, realtime ethernet for Xenomai will be
+>>> fragmented, which will benefit nobody (except possibly
+>>> WindRiver/Microsoft/...)
+>>>
+>>
+>> well there are valid reasons
+>>
+>> One we have is: since the application runs across RTAI, Xenomai and
+>> RT_PREEMPT a single method would be beneficial, even at the cost of
+>> lower performance. Not everyone is fond of networking silos.
+>>
+>
+> RTnet already works with RTAI and Xenomai, the API exposed by RTnet is the
+> standard socket interface and drivers in RTnet are copycats of Linux
+> drivers.
+>
+> So, I do not see what prevents you from using Linux drivers with Linux and
+> preempt_rt and RTnet drivers with Xenomai and RTAI.
+>
+> --
+>                                             Gilles.
+>
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+>
+
+
+
+-- 
+Regards,
+Yogesh Garg
