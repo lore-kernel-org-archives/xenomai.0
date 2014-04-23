@@ -1,16 +1,14 @@
-Message-ID: <5357C407.8060206@xenomai.org>
-Date: Wed, 23 Apr 2014 15:45:43 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5357C92F.2060206@xenomai.org>
+Date: Wed, 23 Apr 2014 16:07:43 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1398115447.70510.YahooMailNeo@web171605.mail.ir2.yahoo.com>
- <53561B23.6010104@xenomai.org>
- <1398163799.26874.YahooMailNeo@web171604.mail.ir2.yahoo.com>
- <53566854.2040502@xenomai.org>
- <1398189653.17723.YahooMailNeo@web171602.mail.ir2.yahoo.com>
-In-Reply-To: <1398189653.17723.YahooMailNeo@web171602.mail.ir2.yahoo.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <CAPRPZsBD_5ufxFAhPCFqRf9YZSm1FhqfcmL+MTbhJ=1Sb7ED_g@mail.gmail.com>
+ <CAPRPZsBsOmiaWPJmPR9RK0uv_BXbw_s43rarKOvVoGfN2gWZjQ@mail.gmail.com>
+ <CAPRPZsCnAJH_-070SbSMB+Q_dQwf+FYfKpmp1wzwtz=zMA2bcA@mail.gmail.com>
+In-Reply-To: <CAPRPZsCnAJH_-070SbSMB+Q_dQwf+FYfKpmp1wzwtz=zMA2bcA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] occasional EBADF in select() in notifier.c
+Subject: Re: [Xenomai] Reading /proc/xenomai/stat causes high latencies
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,18 +17,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/22/2014 08:00 PM, Matthias Schneider wrote:
+On 04/23/2014 03:45 PM, Jeroen Van den Keybus wrote:
+> I've attached an I-trace from what happens when 'modprobe xeno_native'
+> stalls. I could use some hints as where to start looking into this
+> issue. Right now, I would say I have a look at which code paths are
+> traversed and not when CONFIG_IPIPE_TRACE is unset and set
+> respectively.
 
->
-> Considering the three options I think I prefer the last one and remove the
-> select() altogether. I have attached a small patch that does exactly that.
->
-
-Merged, thanks.
+Do you get the same behaviour if you only enable the tracer after 
+loading the xeno_native module?
 
 
 -- 
-Philippe.
+					    Gilles.
 
