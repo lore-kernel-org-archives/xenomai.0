@@ -1,11 +1,32 @@
+Message-ID: <5357AE78.2020808@xenomai.org>
+Date: Wed, 23 Apr 2014 14:13:44 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <CAPRPZsBD_5ufxFAhPCFqRf9YZSm1FhqfcmL+MTbhJ=1Sb7ED_g@mail.gmail.com>
-References: <CAPRPZsBD_5ufxFAhPCFqRf9YZSm1FhqfcmL+MTbhJ=1Sb7ED_g@mail.gmail.com>
-Date: Wed, 23 Apr 2014 11:14:25 +0200
-Message-ID: <CAPRPZsBsOmiaWPJmPR9RK0uv_BXbw_s43rarKOvVoGfN2gWZjQ@mail.gmail.com>
-From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
+References: <1396407588.27578.5.camel@localhost.localdomain>
+ <1396848843.2481.15.camel@localhost.localdomain>
+ <5343BEFB.7050402@xenomai.org>
+ <1396999856.2660.7.camel@localhost.localdomain>
+ <53449244.8040502@xenomai.org>
+ <1397003664.2660.14.camel@localhost.localdomain>
+ <1397017658.2660.16.camel@localhost.localdomain>
+ <534534FD.5090805@xenomai.org>
+ <1397113300.2720.5.camel@localhost.localdomain>
+ <5346895B.6080401@xenomai.org>
+ <1397159850.2881.3.camel@localhost.localdomain>
+ <53471389.6000000@xenomai.org>
+ <1397168263.6356.11.camel@localhost.localdomain>
+ <534719F5.2020605@xenomai.org>
+ <1397169248.6356.15.camel@localhost.localdomain> <53471FDB.50008@xenomai.org>
+ <1397170339.6356.17.camel@localhost.localdomain>
+ <1397541812.6541.3.camel@localhost.localdomain>
+ <534D19FA.3040506@xenomai.org>
+ <1397599195.2652.0.camel@localhost.localdomain>
+ <5356F4FE.3050406@xenomai.org>
+ <1398217532.2723.18.camel@localhost.localdomain>
+In-Reply-To: <1398217532.2723.18.camel@localhost.localdomain>
 Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Reading /proc/xenomai/stat causes high latencies
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] OMAP L138
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,58 +35,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Peter Howard <pjh@northern-ridge.com.au>
+Cc: xenomai@xenomai.org
 
-Curious. If I enable the I-pipe tracer, the problem goes away. If I
-disable it, it reliably returns. In the last case, however, loading
-xeno_native is either slow (several seconds) or does not terminate
-unitl I hit a key (I used <SHIFT L>) on an attached keyboard.
+On 04/23/2014 03:45 AM, Peter Howard wrote:
+> On Wed, 2014-04-23 at 01:02 +0200, Gilles Chanteperdrix wrote:
+>> On 04/15/2014 11:59 PM, Peter Howard wrote:
+>>> On Tue, 2014-04-15 at 13:37 +0200, Gilles Chanteperdrix wrote:
+>>>> On 04/15/2014 08:03 AM, Peter Howard wrote:
+>>>>> On Fri, 2014-04-11 at 08:52 +1000, Peter Howard wrote:
+>>>>>> On Fri, 2014-04-11 at 00:48 +0200, Gilles Chanteperdrix wrote:
+>>>>>>> On 04/11/2014 12:34 AM, Peter Howard wrote:
+>>>>>>>> On Fri, 2014-04-11 at 00:23 +0200, Gilles Chanteperdrix wrote:
+>>>>>>>> (Stripping back conversation on this one - apologies if that's bad
+>>>>>>>> etiquette for this list)
+>>>>>>>>  
+>>>>>>>>> Attachment is better. Also please post the changes you made for omapL138
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> diff --git a/arch/arm/mach-davinci/Kconfig b/arch/arm/mach-davinci/Kconfig
+>>>>>>>> index a075b3e..3d8bc59 100644
+>>>>>>>> --- a/arch/arm/mach-davinci/Kconfig
+>>>>>>>> +++ b/arch/arm/mach-davinci/Kconfig
+>>>>>>>> @@ -41,6 +41,8 @@ config ARCH_DAVINCI_DA850
+>>>>>>>>  	select ARCH_DAVINCI_DA8XX
+>>>>>>>>  	select ARCH_HAS_CPUFREQ
+>>>>>>>>  	select CP_INTC
+>>>>>>>> +    select IPIPE_ARM_KUSER_TSC if IPIPE
+>>>>>>>> +    select ARM_FCSE if IPIPE
+>>>>>>>
+>>>>>>> You may want to leave the choice of enabling or disabling FCSE to the user.
+>>>>>>>
+>>>>>>
+>>>>>> Understood; at the moment the variance on max latency is really bad if
+>>>>>> you don't enable FCSE.  When I sort out the crashing issues I'll re-test
+>>>>>> with it off.
+>>>>>
+>>>>> Well, FCSE turned out to be my problem.
+>>>>>
+>>>>> More specifically,  FCSE and ARM_FCSE_BEST_EFFORT.  Either a) disabling
+>>>>> ARM_FCSE altogether, or b) selecting ARM_FCSE with ARM_FCSE_GUARENTEED
+>>>>> gets rid of the crashes/panics with ipipe latency tracing enabled.
+>>>>>
+>>>>> So now things seem reasonably stable, I'll go through the full set of
+>>>>> tests.  Though I still can't do 'xeno-test -l "dohell -l /opt/ltp"' as
+>>>>> ltp takes out the system without any ipipe/xenomai bits.
+>>>>>
+>>>> Ok, FCSE best effort is currently being validated on 3.14, so it may
+>>>> well be broken. After all, the raw/* branches are work in progress.
+>>>>
+>>>
+>>> Note: selecting ARM_FCSE_BEST_EFFORT produces the same result on the
+>>> master branch too . . .
+>>>
+>> Hi Peter,
+>>
+>> I am unable to reproduce these issues with 3.14, FCSE seems to be doing
+>> just fine, I can boot and run the LTP testsuite and get almost the same
+>> results as a non patched kernel. I have tried with and without
+>> preemptible cache flushes, and with and without Xenomai. My rootfs is
+>> based on busybox and minimal, maybe that is the reason why it works
+>> fine, could you put a tarball with your rootfs somewhere?
+> 
+> A bit of testing shows (at least) one case is directly related to the
+> rootfs.  This is the Texas Instruments rootfs that is supplied for the
+> DA850 board.  During normal startup, it wants to start the GUI for the
+> LCD which would go past the 32MB process limit with FCSE enabled.  With
+> FCSE_GUARENTEED selected this is noted but doesn't cause a crash.  With
+> FCSE_BEST_EFFORT selected this is noted and then the system crashes
+> within a few seconds. 
 
-(dmesg log contains the same rcutree warnings in both cases as
-mentioned under 'Slow ... RT task' post)
+With FCSE_GUARANTEED the system refuses processes to go above the 32MB
+limit, so, the program probably does not even start. With
+FCSE_BEST_EFFORT, processes should be allowed to go above 32MB.
 
-Jeroen.
+ I'm not sure if this counts as a bug in
+> BEST_EFFORT or whether all bets are off if you try to start a process
+> that's too large.
 
+It is supposed to work.
 
-2014-04-22 18:02 GMT+02:00 Jeroen Van den Keybus
-<jeroen.vandenkeybus@gmail.com>:
-> Using a 3.10.18 kernel with Xenomai 2.6.3, reading the stat entry of
-> /proc/xenomai causes high latencies in RT tasks. I've found a report
-> on a similar issue in
-> https://sites.google.com/site/manisbutareed/linuxcnc-2-5/xenomai-user-threads.
-> We also had this occurring on a 3.8.13 kernel.
->
-> A typical latency test run looks like:
->
-> RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
-> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
-> RTD|     -2.382|     -2.357|     -1.945|       0|     0|     -2.382|     -1.945
-> RTD|     -2.577|     -2.360|     -1.749|       0|     0|     -2.577|     -1.749
-> RTD|     -2.380|     -2.360|     -1.865|       0|     0|     -2.577|     -1.749
-> RTD|     -2.568|     -2.361|     -1.530|       0|     0|     -2.577|     -1.530
-> RTD|     -2.379|     -2.359|     -1.732|       0|     0|     -2.577|     -1.530
-> RTD|     -2.381|     -2.361|     -2.008|       0|     0|     -2.577|     -1.530
-> RTD|     -2.381|     -2.360|     -2.085|       0|     0|     -2.577|     -1.530
-> RTD|     -2.699|     -2.359|      2.566|       0|     0|     -2.699|      2.566
-> RTD|     -2.380|     -2.320|     -1.876|       0|     0|     -2.699|      2.566
-> RTD|     -2.381|     -2.359|      2.528|       0|     0|     -2.699|      2.566
-> RTD|     -2.380|     -2.360|     -1.805|       0|     0|     -2.699|      2.566
-> RTD|     -2.579|     -2.311|     -0.045|       0|     0|     -2.699|      2.566
-> RTD|     -2.380|     -2.359|     -2.072|       0|     0|     -2.699|      2.566
-> RTD|     -2.575|     -2.360|      2.065|       0|     0|     -2.699|      2.566
-> RTD|     -2.381|     19.028|   3043.067|      31|     0|     -2.699|   3043.067
-> RTD|     -2.566|     26.488|    105.823|      32|     0|     -2.699|   3043.067
-> RTD|     -2.443|     -2.276|      0.597|      32|     0|     -2.699|   3043.067
-> RTD|     -2.584|     -2.306|      2.032|      32|     0|     -2.699|   3043.067
-> RTD|     -2.377|     -2.242|      4.106|      32|     0|     -2.699|   3043.067
-> RTD|     -2.537|     -2.291|      4.394|      32|     0|     -2.699|   3043.067
->
-> It is obvious where I issued the 'cat /proc/xenomai/stat' command.
->
-> I will try to create an I-trace now. (config is same as under my
-> previous post 'Slow execution of RT task' - I'm still looking into
-> that issue as well).
->
->
-> Jeroen.
+> 
+> At this point I'm not sure if anything else is specific to that rootfs
+> but I'll still make it available to you to have a look.
+> 
+> 
+Yes, please make it available if that is possible.
+
+Regards.
+
+-- 
+                                                                Gilles.
 
