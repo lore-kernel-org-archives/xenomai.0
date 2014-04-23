@@ -1,32 +1,17 @@
-Message-ID: <5357AE78.2020808@xenomai.org>
-Date: Wed, 23 Apr 2014 14:13:44 +0200
+Message-ID: <5357B0F1.8070909@xenomai.org>
+Date: Wed, 23 Apr 2014 14:24:17 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1396407588.27578.5.camel@localhost.localdomain>
- <1396848843.2481.15.camel@localhost.localdomain>
- <5343BEFB.7050402@xenomai.org>
- <1396999856.2660.7.camel@localhost.localdomain>
- <53449244.8040502@xenomai.org>
- <1397003664.2660.14.camel@localhost.localdomain>
- <1397017658.2660.16.camel@localhost.localdomain>
- <534534FD.5090805@xenomai.org>
- <1397113300.2720.5.camel@localhost.localdomain>
- <5346895B.6080401@xenomai.org>
- <1397159850.2881.3.camel@localhost.localdomain>
- <53471389.6000000@xenomai.org>
- <1397168263.6356.11.camel@localhost.localdomain>
- <534719F5.2020605@xenomai.org>
- <1397169248.6356.15.camel@localhost.localdomain> <53471FDB.50008@xenomai.org>
- <1397170339.6356.17.camel@localhost.localdomain>
- <1397541812.6541.3.camel@localhost.localdomain>
- <534D19FA.3040506@xenomai.org>
- <1397599195.2652.0.camel@localhost.localdomain>
- <5356F4FE.3050406@xenomai.org>
- <1398217532.2723.18.camel@localhost.localdomain>
-In-Reply-To: <1398217532.2723.18.camel@localhost.localdomain>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] OMAP L138
+References: <7dad12a6.21b0a.14574613527.Coremail.ericvic@163.com>
+ <535110C3.40500@xenomai.org>
+ <59ece04.26b88.1457d86db18.Coremail.ericvic@163.com>
+ <53538D60.8040107@xenomai.org> <53539207.2030803@xenomai.org>
+ <410c61f.2e6bb.1457ebe7220.Coremail.ericvic@163.com>
+ <13c7e4f5.789a.1458ce28c87.Coremail.ericvic@163.com>
+In-Reply-To: <13c7e4f5.789a.1458ce28c87.Coremail.ericvic@163.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] imx6q xenomai ipipe-3.0-imx6q
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -35,94 +20,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Peter Howard <pjh@northern-ridge.com.au>
-Cc: xenomai@xenomai.org
+To: eric <ericvic@163.com>
+Cc: huang.c.h@lynuc.cn, liu.h.f@lynuc.cn, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/23/2014 03:45 AM, Peter Howard wrote:
-> On Wed, 2014-04-23 at 01:02 +0200, Gilles Chanteperdrix wrote:
->> On 04/15/2014 11:59 PM, Peter Howard wrote:
->>> On Tue, 2014-04-15 at 13:37 +0200, Gilles Chanteperdrix wrote:
->>>> On 04/15/2014 08:03 AM, Peter Howard wrote:
->>>>> On Fri, 2014-04-11 at 08:52 +1000, Peter Howard wrote:
->>>>>> On Fri, 2014-04-11 at 00:48 +0200, Gilles Chanteperdrix wrote:
->>>>>>> On 04/11/2014 12:34 AM, Peter Howard wrote:
->>>>>>>> On Fri, 2014-04-11 at 00:23 +0200, Gilles Chanteperdrix wrote:
->>>>>>>> (Stripping back conversation on this one - apologies if that's bad
->>>>>>>> etiquette for this list)
->>>>>>>>  
->>>>>>>>> Attachment is better. Also please post the changes you made for omapL138
->>>>>>>>>
->>>>>>>>
->>>>>>>> diff --git a/arch/arm/mach-davinci/Kconfig b/arch/arm/mach-davinci/Kconfig
->>>>>>>> index a075b3e..3d8bc59 100644
->>>>>>>> --- a/arch/arm/mach-davinci/Kconfig
->>>>>>>> +++ b/arch/arm/mach-davinci/Kconfig
->>>>>>>> @@ -41,6 +41,8 @@ config ARCH_DAVINCI_DA850
->>>>>>>>  	select ARCH_DAVINCI_DA8XX
->>>>>>>>  	select ARCH_HAS_CPUFREQ
->>>>>>>>  	select CP_INTC
->>>>>>>> +    select IPIPE_ARM_KUSER_TSC if IPIPE
->>>>>>>> +    select ARM_FCSE if IPIPE
->>>>>>>
->>>>>>> You may want to leave the choice of enabling or disabling FCSE to the user.
->>>>>>>
->>>>>>
->>>>>> Understood; at the moment the variance on max latency is really bad if
->>>>>> you don't enable FCSE.  When I sort out the crashing issues I'll re-test
->>>>>> with it off.
->>>>>
->>>>> Well, FCSE turned out to be my problem.
->>>>>
->>>>> More specifically,  FCSE and ARM_FCSE_BEST_EFFORT.  Either a) disabling
->>>>> ARM_FCSE altogether, or b) selecting ARM_FCSE with ARM_FCSE_GUARENTEED
->>>>> gets rid of the crashes/panics with ipipe latency tracing enabled.
->>>>>
->>>>> So now things seem reasonably stable, I'll go through the full set of
->>>>> tests.  Though I still can't do 'xeno-test -l "dohell -l /opt/ltp"' as
->>>>> ltp takes out the system without any ipipe/xenomai bits.
->>>>>
->>>> Ok, FCSE best effort is currently being validated on 3.14, so it may
->>>> well be broken. After all, the raw/* branches are work in progress.
->>>>
->>>
->>> Note: selecting ARM_FCSE_BEST_EFFORT produces the same result on the
->>> master branch too . . .
->>>
->> Hi Peter,
->>
->> I am unable to reproduce these issues with 3.14, FCSE seems to be doing
->> just fine, I can boot and run the LTP testsuite and get almost the same
->> results as a non patched kernel. I have tried with and without
->> preemptible cache flushes, and with and without Xenomai. My rootfs is
->> based on busybox and minimal, maybe that is the reason why it works
->> fine, could you put a tarball with your rootfs somewhere?
-> 
-> A bit of testing shows (at least) one case is directly related to the
-> rootfs.  This is the Texas Instruments rootfs that is supplied for the
-> DA850 board.  During normal startup, it wants to start the GUI for the
-> LCD which would go past the 32MB process limit with FCSE enabled.  With
-> FCSE_GUARENTEED selected this is noted but doesn't cause a crash.  With
-> FCSE_BEST_EFFORT selected this is noted and then the system crashes
-> within a few seconds. 
-
-With FCSE_GUARANTEED the system refuses processes to go above the 32MB
-limit, so, the program probably does not even start. With
-FCSE_BEST_EFFORT, processes should be allowed to go above 32MB.
-
- I'm not sure if this counts as a bug in
-> BEST_EFFORT or whether all bets are off if you try to start a process
-> that's too large.
-
-It is supposed to work.
-
-> 
-> At this point I'm not sure if anything else is specific to that rootfs
-> but I'll still make it available to you to have a look.
+On 04/23/2014 06:40 AM, eric wrote:
 > 
 > 
-Yes, please make it available if that is possible.
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 在 2014-04-20 18:46:21，eric <ericvic@163.com> 写道：
+> 
+>> 在 2014-04-20 17:23:19，"Gilles Chanteperdrix"
+>> <gilles.chanteperdrix@xenomai.org> 写道： Le 20/04/2014 11:03, Gilles
+>> Chanteperdrix a écrit :
+>>> Le 20/04/2014 07:06, eric a écrit :
+>>>> So if my program use lots of memory operations  for a long time
+>>>> it maybe gives non real-time activities opportunity to thrash
+>>>> the cache?
+>>> 
+>>> It is unrelated, but on a multi-core processor even when one core
+>>> is running a real-time task, other cores can thrash the cache at
+>>> will, or slow down the real-time task by using a shared ressource
+>>> (for instance DDR) and starving the core where the real-time task
+>>> runs. By default the L2 cache is shared between all cores, you
+>>> can try and reserve parts of the cache for each core (check the
+>>> l2x0 registers documentation to see how), I tried this on omap4,
+>>> but it results on worse latencies, situation may be different on
+>>> imx6 though. Another problem is that since the L1 cache is
+>>> per-core, I believe, and we disable L2 write allocate, reading on
+>>> one core memory written on another core results in accesses at
+>>> the DDR speed, and not at the cache speed.
+>>> 
+>>> All this to say that Xenomai focuses on trying to schedule your
+>>> driver interrupts and application threads in a deterministic
+>>> fashion but it is your job to make sure that these interrupts and
+>>> threads do not take too long a time to execute, because if they
+>>> do, yes, your application will not meet its deadlines, but it is
+>>> not Xenomai's fault.
+>> 
+>> I do not mean to say that you do not have a problem with Xenomai
+>> on imx6q, but so far, I have not understood what this problem was.
+>> 
+>> 
+>> -- Gilles.
+> 
+> 
+> 
+> 
+> 
+> Hello Gilles I found the same test on x86 double cores and enble smp
+> with rtai will not have the max delay ,it is just 50us latencies
+> ,this is my test with rtai , the multi-core processor with  shared
+> cache can be thrashed just ﻿appears on imx6 and omap4 or all arm with
+> multi-core has the same problems? thank you
 
-Regards.
+Yes, the behaviour of cache is highly dependent on the processor you are
+using. Besides, disabling L2 write allocate may be bad for you use case,
+you may want to re-enable it to see if it leads to better throughput in
+your case.
 
 -- 
                                                                 Gilles.
