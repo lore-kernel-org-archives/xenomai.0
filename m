@@ -1,18 +1,12 @@
-Message-ID: <53583DF7.3080700@xenomai.org>
-Date: Thu, 24 Apr 2014 00:25:59 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5358B713.9040300@easyarm.com>
+Date: Thu, 24 Apr 2014 12:32:43 +0530
+From: vattipalli <praveen.v@easyarm.com>
 MIME-Version: 1.0
-References: <CAPRPZsBD_5ufxFAhPCFqRf9YZSm1FhqfcmL+MTbhJ=1Sb7ED_g@mail.gmail.com>
- <CAPRPZsBsOmiaWPJmPR9RK0uv_BXbw_s43rarKOvVoGfN2gWZjQ@mail.gmail.com>
- <CAPRPZsCnAJH_-070SbSMB+Q_dQwf+FYfKpmp1wzwtz=zMA2bcA@mail.gmail.com>
- <5357C92F.2060206@xenomai.org>
- <CAPRPZsAvxx9XVB5MYi65m1FPaz2p7Rgh7+M4U357exJBbo0kHQ@mail.gmail.com>
- <535828F6.6050308@xenomai.org>
- <CAPRPZsA4ZQEm1a+2TV6s2wvD2_M53RrL4zLz0sJgLKEF8ALo1w@mail.gmail.com>
-In-Reply-To: <CAPRPZsA4ZQEm1a+2TV6s2wvD2_M53RrL4zLz0sJgLKEF8ALo1w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+References: <5355F933.20200@easyarm.com> <535640F8.1040805@xenomai.org>
+In-Reply-To: <535640F8.1040805@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Reading /proc/xenomai/stat causes high latencies
+Subject: Re: [Xenomai] porting xenomai to 3.2 kernel using SOC Ti Am3359
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,26 +15,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 04/23/2014 11:39 PM, Jeroen Van den Keybus wrote:
->> You mean with tracer on? Then you have a trace for the high latency?
-> 
-> No, unfortunately. Every time I enable the tracer, all is well, no latencies.
-> 
-> Since this is so elusive, I started to install all kernels I built
-> (and keep the configs along). I just found that one of them does not
-> have the high latencies and does not have the I-pipe debugging on
-> either. Hooray.
-> 
-> However, when I powerdown the machine and reboot this very kernel, the
-> problem reappears.
+Hi Gilles,
+Thanks for your help.
 
-Could you put a printk in the function vfile_stat_rewind to see if it
-gets called (more than once) when the problem happens?
+As per your suggestion, instead of working on linux-3.2 kernel for 
+Am3359, I want to configure Xenomai  for 3.13 kernel. Can i get any 
+patches for kernel 3.13 kernel.  Because I have gone through 
+ksrc/arch/arm/patches/README in Xenomai 2.6.3 sources, I found patches 
+for 3.8 kernel for Beaglebone.
+
+Thanks & Regards
+Praveen
 
 
--- 
-                                                                Gilles.
+
+
+On Tuesday 22 April 2014 03:44 PM, Gilles Chanteperdrix wrote:
+> On 04/22/2014 07:08 AM, vattipalli wrote:
+>> hi, I am working on Ti Am3359 processor with linux-3.2 kernel. I am
+>> trying to port Xenomai. I have applied ipipe-core-3.2.21-arm-4.patch
+>> patch, and compiled the kernel. But when booting uImage it hanged at
+>>
+>> Uncompressing Linux... done, booting the kernel. I could not see any
+>> console after this.
+> The I-pipe patch for Linux 3.2 does not support Am33xx processors. And
+> in fact has known bugs, so is not recommended at all. We have more
+> recent patches for Linux 3.8 and Linux 3.10. See the help for beaglebone
+> in ksrc/arch/arm/patches/README in Xenomai 2.6.3 sources.
+>
+>
+>> But the above patch   Support for CSR SiRFSoC ARM
+>> Cortex A9 Platform.
+> I do not understand this sentence.
+>
+>> Could i get any patch for ARM Cortex A8
+>> Platform(Ti AM3359) for linux-3.2 kernel.
+> No.
+>
+
 
