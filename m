@@ -1,14 +1,15 @@
-Message-ID: <53594599.3050204@xenomai.org>
-Date: Thu, 24 Apr 2014 19:10:49 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <53594F80.7010203@xenomai.org>
+Date: Thu, 24 Apr 2014 19:53:04 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <E1WdMf6-0003VG-Mu@sd-51317.dedibox.fr>
- <53593F7F.5000106@xenomai.org>
-In-Reply-To: <53593F7F.5000106@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <20140416180205.C2109F56@centrum.cz>,
+ <534EAD14.9000906@xenomai.org>,
+ <20140418105131.0F41467F@centrum.cz> <5356A4F0.8080700@xenomai.org>
+ <20140424170623.DADE41D4@centrum.cz>
+In-Reply-To: <20140424170623.DADE41D4@centrum.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt/kernel: Instrument
- syscalls
+Subject: Re: [Xenomai] non-blocking rt_task_suspend(NULL)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,27 +18,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
+To: Petr Cervenka <grugh@centrum.cz>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 04/24/2014 06:44 PM, Gilles Chanteperdrix wrote:
->> +    ),
->> +    TP_printk("nfds=%d in=%lx... out=%lx... exc=%lx..."
->> +          " timeout(%s)=%ld.%09ld", __entry->nfds, __entry->in_fds,
->> +          __entry->out_fds, __entry->exc_fds,
->> +          __timespec_used(timeout), __timespec_args(timeout))
->> +);
->> +#endif
+On 04/24/2014 05:06 PM, Petr Cervenka wrote:
+>> Od: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+>>
+>>> SIGDEBUG signal was not received. Task status from
+>>> rt_task_inquire() was 0x300180 or 0x300380 (depends where it is
+>>> placed) When the task is in the "wrong" state, also the call of
+>>> rt_task_sleep(100000) is returning permanently -EINTR code. Do
+>>> you have any other idea what to check or what can cause perhaps
+>>> every xenomai call fail with -EINTR in one task?
+>>
+>> If I had to debug this issue, I would enable the I-pipe tracer and
+>> trigger a trace freeze when the -EINTR code is received. With
+>> enough trace points, it should be possible to understand what
+>> happens.
+>>
+> I called a xntrace_user_freeze() immediately when the issue occurs,
+> but I simply don't understand what is happening there. The trace
+> output is in the attachment. Could you please help me to understand
+> it?
 >
-> Do we really have to add all that dead code?
->
+> I also got some minor problem with xntrace_user_freeze, because the
+> linker was not able to find it: asyncwriter.cpp:(.text+0x843):
+> undefined reference to `xntrace_user_freeze(unsigned long, int)' It
+> is defined in src/skins/common/trace.c and (should be) contained in
+> libxenomai.so. But I was not successful and I had to define it myself
+> (under different name). Version of xenomai is 2.6.3.
 
-Jan is just handing over the tracepoint stuff for the POSIX layer to me 
-with this commit, I'll pick what is needed when merging this code on top 
-the instrumentation I recently did for the cobalt core (see -next branch).
+We see that xnpod_suspend_thread returns immediately, likely because it 
+has the XNKICKED bit set. Could you add more back trace points? So that 
+we see what is setting the XNKICKED bit?
 
-This already makes my life much easier to have all the event classes and 
-trace helpers readily available for the syscalls. Thanks for this.
 
 -- 
-Philippe.
+					    Gilles.
 
