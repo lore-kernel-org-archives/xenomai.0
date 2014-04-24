@@ -1,14 +1,13 @@
-Date: Thu, 24 Apr 2014 17:06:23 +0200
-From: =?utf-8?q?Petr_Cervenka?= <grugh@centrum.cz>
-References: <20140416180205.C2109F56@centrum.cz>,
- <534EAD14.9000906@xenomai.org>,
- <20140418105131.0F41467F@centrum.cz> <5356A4F0.8080700@xenomai.org>
-In-Reply-To: <5356A4F0.8080700@xenomai.org>
+Message-ID: <53593685.3010900@xenomai.org>
+Date: Thu, 24 Apr 2014 18:06:29 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Message-Id: <20140424170623.DADE41D4@centrum.cz>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Subject: Re: [Xenomai] =?utf-8?q?non-blocking_rt=5Ftask=5Fsuspend=28NULL=29?=
+References: <E1WdM0c-0000RW-Gi@sd-51317.dedibox.fr>
+In-Reply-To: <E1WdM0c-0000RW-Gi@sd-51317.dedibox.fr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [Xenomai-git] Philippe Gerum : cobalt/kernel:
+ generalize use of safe *snprintf()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,32 +16,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?q?Gilles_Chanteperdrix?= <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org, xenomai-git@xenomai.org
 
-PiBPZDogR2lsbGVzIENoYW50ZXBlcmRyaXggPGdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWku
-b3JnPgo+Cj4+IFNJR0RFQlVHIHNpZ25hbCB3YXMgbm90IHJlY2VpdmVkLiBUYXNrIHN0YXR1cyBm
-cm9tIHJ0X3Rhc2tfaW5xdWlyZSgpCj4+IHdhcyAweDMwMDE4MCBvciAweDMwMDM4MCAoZGVwZW5k
-cyB3aGVyZSBpdCBpcyBwbGFjZWQpIFdoZW4gdGhlIHRhc2sKPj4gaXMgaW4gdGhlICJ3cm9uZyIg
-c3RhdGUsIGFsc28gdGhlIGNhbGwgb2YgcnRfdGFza19zbGVlcCgxMDAwMDApIGlzCj4+IHJldHVy
-bmluZyBwZXJtYW5lbnRseSAtRUlOVFIgY29kZS4gRG8geW91IGhhdmUgYW55IG90aGVyIGlkZWEg
-d2hhdCB0bwo+PiBjaGVjayBvciB3aGF0IGNhbiBjYXVzZSBwZXJoYXBzIGV2ZXJ5IHhlbm9tYWkg
-Y2FsbCBmYWlsIHdpdGggLUVJTlRSCj4+IGluIG9uZSB0YXNrPwo+Cj5JZiBJIGhhZCB0byBkZWJ1
-ZyB0aGlzIGlzc3VlLCBJIHdvdWxkIGVuYWJsZSB0aGUgSS1waXBlIHRyYWNlciBhbmQgCj50cmln
-Z2VyIGEgdHJhY2UgZnJlZXplIHdoZW4gdGhlIC1FSU5UUiBjb2RlIGlzIHJlY2VpdmVkLiBXaXRo
-IGVub3VnaCAKPnRyYWNlIHBvaW50cywgaXQgc2hvdWxkIGJlIHBvc3NpYmxlIHRvIHVuZGVyc3Rh
-bmQgd2hhdCBoYXBwZW5zLgo+CkkgY2FsbGVkIGEgeG50cmFjZV91c2VyX2ZyZWV6ZSgpIGltbWVk
-aWF0ZWx5IHdoZW4gdGhlIGlzc3VlIG9jY3VycywgYnV0IEkgc2ltcGx5IGRvbid0IHVuZGVyc3Rh
-bmQgd2hhdCBpcyBoYXBwZW5pbmcgdGhlcmUuIFRoZSB0cmFjZSBvdXRwdXQgaXMgaW4gdGhlIGF0
-dGFjaG1lbnQuIENvdWxkIHlvdSBwbGVhc2UgaGVscCBtZSB0byB1bmRlcnN0YW5kIGl0PwoKSSBh
-bHNvIGdvdCBzb21lIG1pbm9yIHByb2JsZW0gd2l0aCB4bnRyYWNlX3VzZXJfZnJlZXplLCBiZWNh
-dXNlIHRoZSBsaW5rZXIgd2FzIG5vdCBhYmxlIHRvIGZpbmQgaXQ6CmFzeW5jd3JpdGVyLmNwcDoo
-LnRleHQrMHg4NDMpOiB1bmRlZmluZWQgcmVmZXJlbmNlIHRvIGB4bnRyYWNlX3VzZXJfZnJlZXpl
-KHVuc2lnbmVkIGxvbmcsIGludCknCkl0IGlzIGRlZmluZWQgaW4gc3JjL3NraW5zL2NvbW1vbi90
-cmFjZS5jIGFuZCAoc2hvdWxkIGJlKSBjb250YWluZWQgaW4gbGlieGVub21haS5zby4gQnV0IEkg
-d2FzIG5vdCBzdWNjZXNzZnVsIGFuZCBJIGhhZCB0byBkZWZpbmUgaXQgbXlzZWxmICh1bmRlciBk
-aWZmZXJlbnQgbmFtZSkuIFZlcnNpb24gb2YgeGVub21haSBpcyAyLjYuMy4KClBldHIKCi0tLS0t
-LS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBbiBlbWJlZGRlZCBhbmQgY2hhcnNl
-dC11bnNwZWNpZmllZCB0ZXh0IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBmcmVlemUxLnR4dApVUkw6
-IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIw
-MTQwNDI0LzA5YzE4YzIzL2F0dGFjaG1lbnQudHh0Pgo=
+On 04/24/2014 05:56 PM, git repository hosting wrote:
+> Module: xenomai-forge
+> Branch: rtdm-api-waitqueues
+> Commit: f8490220177c0c007ae98dac4a956ecd0de89120
+> URL:    http://git.xenomai.org/?p=xenomai-forge.git;a=commit;h=f8490220177c0c007ae98dac4a956ecd0de89120
+>
+> Author: Philippe Gerum <rpm@xenomai.org>
+> Date:   Thu Apr 17 11:44:08 2014 +0200
+>
+> cobalt/kernel: generalize use of safe *snprintf()
+>
+> Make sure to have the destination string null-terminated on character
+> overflow.
+
+snprintf already adds the null, systematically, even in case of overflow.
+
+-- 
+					    Gilles.
+
