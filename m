@@ -1,15 +1,12 @@
-Date: Fri, 25 Apr 2014 10:38:17 +0200
-From: =?utf-8?q?Petr_Cervenka?= <grugh@centrum.cz>
-References: <20140416180205.C2109F56@centrum.cz>,
- <534EAD14.9000906@xenomai.org>, <20140418105131.0F41467F@centrum.cz>,
- <5356A4F0.8080700@xenomai.org>,
- <20140424170623.DADE41D4@centrum.cz> <53594F80.7010203@xenomai.org>
-In-Reply-To: <53594F80.7010203@xenomai.org>
+Message-ID: <535A3B92.5070206@siemens.com>
+Date: Fri, 25 Apr 2014 12:40:18 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Message-Id: <20140425103817.36FBE959@centrum.cz>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Subject: Re: [Xenomai] =?utf-8?q?non-blocking_rt=5Ftask=5Fsuspend=28NULL=29?=
+References: <531A29CC.4040201@xenomai.org> <533FF394.1020405@xenomai.org>
+In-Reply-To: <533FF394.1020405@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] RTDM rework (2)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,43 +15,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?q?Gilles_Chanteperdrix?= <gilles.chanteperdrix@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-Cj4gT2Q6IEdpbGxlcyBDaGFudGVwZXJkcml4IDxnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFp
-Lm9yZz4KPgo+IENDOiAiWGVub21haSIgPHhlbm9tYWlAeGVub21haS5vcmc+Cj5PbiAwNC8yNC8y
-MDE0IDA1OjA2IFBNLCBQZXRyIENlcnZlbmthIHdyb3RlOgo+Pj4gT2Q6IEdpbGxlcyBDaGFudGVw
-ZXJkcml4IDxnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZz4KPj4+Cj4+Pj4gU0lHREVC
-VUcgc2lnbmFsIHdhcyBub3QgcmVjZWl2ZWQuIFRhc2sgc3RhdHVzIGZyb20KPj4+PiBydF90YXNr
-X2lucXVpcmUoKSB3YXMgMHgzMDAxODAgb3IgMHgzMDAzODAgKGRlcGVuZHMgd2hlcmUgaXQgaXMK
-Pj4+PiBwbGFjZWQpIFdoZW4gdGhlIHRhc2sgaXMgaW4gdGhlICJ3cm9uZyIgc3RhdGUsIGFsc28g
-dGhlIGNhbGwgb2YKPj4+PiBydF90YXNrX3NsZWVwKDEwMDAwMCkgaXMgcmV0dXJuaW5nIHBlcm1h
-bmVudGx5IC1FSU5UUiBjb2RlLiBEbwo+Pj4+IHlvdSBoYXZlIGFueSBvdGhlciBpZGVhIHdoYXQg
-dG8gY2hlY2sgb3Igd2hhdCBjYW4gY2F1c2UgcGVyaGFwcwo+Pj4+IGV2ZXJ5IHhlbm9tYWkgY2Fs
-bCBmYWlsIHdpdGggLUVJTlRSIGluIG9uZSB0YXNrPwo+Pj4KPj4+IElmIEkgaGFkIHRvIGRlYnVn
-IHRoaXMgaXNzdWUsIEkgd291bGQgZW5hYmxlIHRoZSBJLXBpcGUgdHJhY2VyIGFuZAo+Pj4gdHJp
-Z2dlciBhIHRyYWNlIGZyZWV6ZSB3aGVuIHRoZSAtRUlOVFIgY29kZSBpcyByZWNlaXZlZC4gV2l0
-aAo+Pj4gZW5vdWdoIHRyYWNlIHBvaW50cywgaXQgc2hvdWxkIGJlIHBvc3NpYmxlIHRvIHVuZGVy
-c3RhbmQgd2hhdAo+Pj4gaGFwcGVucy4KPj4+Cj4+IEkgY2FsbGVkIGEgeG50cmFjZV91c2VyX2Zy
-ZWV6ZSgpIGltbWVkaWF0ZWx5IHdoZW4gdGhlIGlzc3VlIG9jY3VycywKPj4gYnV0IEkgc2ltcGx5
-IGRvbid0IHVuZGVyc3RhbmQgd2hhdCBpcyBoYXBwZW5pbmcgdGhlcmUuIFRoZSB0cmFjZQo+PiBv
-dXRwdXQgaXMgaW4gdGhlIGF0dGFjaG1lbnQuIENvdWxkIHlvdSBwbGVhc2UgaGVscCBtZSB0byB1
-bmRlcnN0YW5kCj4+IGl0Pwo+Pgo+PiBJIGFsc28gZ290IHNvbWUgbWlub3IgcHJvYmxlbSB3aXRo
-IHhudHJhY2VfdXNlcl9mcmVlemUsIGJlY2F1c2UgdGhlCj4+IGxpbmtlciB3YXMgbm90IGFibGUg
-dG8gZmluZCBpdDogYXN5bmN3cml0ZXIuY3BwOigudGV4dCsweDg0Myk6Cj4+IHVuZGVmaW5lZCBy
-ZWZlcmVuY2UgdG8gYHhudHJhY2VfdXNlcl9mcmVlemUodW5zaWduZWQgbG9uZywgaW50KScgSXQK
-Pj4gaXMgZGVmaW5lZCBpbiBzcmMvc2tpbnMvY29tbW9uL3RyYWNlLmMgYW5kIChzaG91bGQgYmUp
-IGNvbnRhaW5lZCBpbgo+PiBsaWJ4ZW5vbWFpLnNvLiBCdXQgSSB3YXMgbm90IHN1Y2Nlc3NmdWwg
-YW5kIEkgaGFkIHRvIGRlZmluZSBpdCBteXNlbGYKPj4gKHVuZGVyIGRpZmZlcmVudCBuYW1lKS4g
-VmVyc2lvbiBvZiB4ZW5vbWFpIGlzIDIuNi4zLgo+Cj5XZSBzZWUgdGhhdCB4bnBvZF9zdXNwZW5k
-X3RocmVhZCByZXR1cm5zIGltbWVkaWF0ZWx5LCBsaWtlbHkgYmVjYXVzZSBpdCAKPmhhcyB0aGUg
-WE5LSUNLRUQgYml0IHNldC4gQ291bGQgeW91IGFkZCBtb3JlIGJhY2sgdHJhY2UgcG9pbnRzPyBT
-byB0aGF0IAo+d2Ugc2VlIHdoYXQgaXMgc2V0dGluZyB0aGUgWE5LSUNLRUQgYml0Pwo+CgpJIGhh
-dmUgYWRkZWQgKG1heWJlIHRvbyBtdWNoKSBiYWNrIHRyYWNlIHBvaW50cy4gQnV0IGFzIGxhc3Qg
-dGltZSwgSSdtIG5vdCBhYmxlIHRvIHNlZSAoYWxtb3N0KSBhbnl0aGluZyBpbiBpdCA7LSkKUHJl
-dmlvdXMgeG5wb2Rfc3VzcGVuZF90aHJlYWQgKG9uIGxpbmUgMzcxMywgcHJvYmFibHkgY2F1c2Vk
-IGJ5IHJ0X211dGV4X2FxdWlyZSkgc2VlbXMgdG8gYmUgZmluZSAoZm9yIG1lOy0pICkuCgpQZXRy
-Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBbiBlbWJlZGRlZCBhbmQg
-Y2hhcnNldC11bnNwZWNpZmllZCB0ZXh0IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBmcmVlemU3LnR4
-dApVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1l
-bnRzLzIwMTQwNDI1LzQyODhjNjc5L2F0dGFjaG1lbnQudHh0Pgo=
+On 2014-04-05 14:14, Gilles Chanteperdrix wrote:
+> On 03/07/2014 09:19 PM, Gilles Chanteperdrix wrote:
+>>
+>> Hi,
+>>
+>> here comes a second attempt at introducing a file descriptor support for
+>> other purposes than RTDM drivers.
+>>
+>> This time, the file descriptors are called rtdm_fd and are part of the
+>> RTDM API, but can be used by the POSIX personality. The actual RB-tree
+>> where they are stored is part of the xnsys_ppd structure, as this way it
+>> can be used by one of the RTDM and POSIX personalities, even if the
+>> current process is not bound to the other personality.
+>>
+>> I have posted the patches to the timerbench, switchtest, rtdm, xddp,
+>> iddp and bufp drivers to allow seeing the API changes.
+> 
+> Hi Jan,
+> 
+> ping?
+> 
+> I have a pile of code needing to be rebased on these patches, I would
+> very much like to get all this merged before it bitrots too much.
+
+Finally looking into them now. Do you happen to have them in git
+somewhere? Or what was the revision they once applied to?
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
+
