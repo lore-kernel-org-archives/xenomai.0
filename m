@@ -1,12 +1,12 @@
-Date: Fri, 18 Apr 2014 10:51:31 +0200
-From: =?utf-8?q?Petr_Cervenka?= <grugh@centrum.cz>
-References: <20140416180205.C2109F56@centrum.cz> <534EAD14.9000906@xenomai.org>
-In-Reply-To: <534EAD14.9000906@xenomai.org>
+Message-ID: <1398502711.53016.YahooMailNeo@web171601.mail.ir2.yahoo.com>
+Date: Sat, 26 Apr 2014 09:58:31 +0100 (BST)
+From: Matthias Schneider <ma30002000@yahoo.de>
 MIME-Version: 1.0
-Message-Id: <20140418105131.0F41467F@centrum.cz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] =?utf-8?q?non-blocking_rt=5Ftask=5Fsuspend=28NULL=29?=
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Issue in notifier_callback while threadobj_lock is being
+	held (forge/mercury)
+Reply-To: Matthias Schneider <ma30002000@yahoo.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,81 +15,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?q?Gilles_Chanteperdrix?= <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-> Od: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->
-> CC: "Xenomai" <xenomai@xenomai.org>
->On 04/16/2014 06:02 PM, Petr Cervenka wrote:
->>> Od: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>>
->>> CC: "Xenomai" <xenomai@xenomai.org>
->>> On 04/16/2014 04:20 PM, Petr Cervenka wrote:
->>>>> Od: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>>>>
->>>>> CC: "Xenomai" <xenomai@xenomai.org> On 04/16/2014 02:22 PM, Petr
->>>>> Cervenka wrote:
->>>>>>> Od: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>>>>>>
->>>>>>> CC: "Xenomai" <xenomai@xenomai.org> On 04/15/2014 02:42 PM,
->>>>>>> Petr Cervenka wrote:
->>>>>>>> Hello I have a problem with the rt_task_suspend(NULL) call.
->>>>>>>> I'm using it for synchronization of two (producer / consumer
->>>>>>>> like) tasks. 1) When the consumer task has no work to do, it
->>>>>>>> stops itself by calling of the rt_task_suspend(NULL). 2) When
->>>>>>>> the producer creates new work for consumer, it wakes it up by
->>>>>>>> calling of rt_task_resume(&consumerTask). The problem is,
->>>>>>>> that consumer seldom switches to a state, that it sleeps by
->>>>>>>> rt_task_suspend no more. And the task then takes all the CPU
->>>>>>>> time. The return code is 0. But I already have seen couple of
->>>>>>>> -4 (-EINTR) values in the past also. Consumer task status was
->>>>>>>> 00300380 before and 00300184 (if there is small safety sleep
->>>>>>>> present). I can use for example RT_EVENT variable instead,
->>>>>>>> but I'm curious if you by chance don't know, what is
->>>>>>>> happening? Xenomai 2.6.3, Linux 3.5.7
->>>>>>>
->>>>>>> Could you post the example of code you are using to get this
->>>>>>> issue?
->>>>>>>
->>>>>>
->>>>>> It's and application with many threads, mutexes and others. It's
->>>>>> also special measuring HW dependent. I can post here some
->>>>>> simplified example. But I don't think it would be possible to
->>>>>> reproduce the same behavior easily. It happens in my
->>>>>> configuration only probably once per day and very unpredictably.
->>>>>> But I have more details. I replaced rt_task_suspend /
->>>>>> rt_task_resume by rt_event_wait / rt_event_signal. It failed
->>>>>> similar way, but this time the result of wait was -4 (-EINTR).
->>>>>> And (after several millions of invocations) it recovered itself.
->>>>>
->>>>> -EINTR is a valid return value for both rt_event_wait and
->>>>> rt_task_suspend. In case you get this error, you should loop to
->>>>> call rt_event_wait again, and not call rt_event_clear, as you risk
->>>>> clearing an event which has been signaled afterwards.
->>>>>
->>>> You are right. It was just very quick replace of waiting and
->>>> waking-up functions. But I'm checking the "work queue" anyway and it
->>>> also doesn't need exact timing here. My problem it that the slow
->>>> consumer task seems to be "interrupted by signal" (or whatever) for
->>>> several minutes. I mean, that it doesn't wait for the event anymore
->>>> and it always returns immediately (with -EINTR return code).
->>>
->>> Are you running inside gdb? Does the task receive the SIGDEBUG signal?
->>> Do you have the XNWARNSW bit armed?
->>>
->>
->> gdb: No.
->> SIGDEBUG, XNWARNSW: I don't even know what it is ;-).
->
->See examples/native/sigdebug.c in xenomai sources. Try installing the 
->same signal handler in your application to be notified upon reception of 
->this signal.
->
-SIGDEBUG signal was not received.
-Task status from rt_task_inquire() was 0x300180 or 0x300380 (depends where it is placed)
-When the task is in the "wrong" state, also the call of rt_task_sleep(100000) is returning permanently -EINTR code.
-Do you have any other idea what to check or what can cause perhaps every xenomai call fail with -EINTR in one task?
-
-Petr
+Hi all,=0A=0Awhen threadobj_lock is being held and a thread suspension trig=
+gers a call of=0Anotifier_callback, I am experiencing some issues. The scen=
+ario in my case=0Awas a thread being started waiting on threadobj_wait_star=
+t()/wait_on_barrier()=0Awhile a thread suspension was already triggered. (I=
+n case the started thread is=A0=0Aof lower priority than the starting threa=
+d, threadobj_start() will not wait=0Afor it).=0A=0AThe problem I was experi=
+encing (due to timing) was that threadobj_lock()=0Awas called in notifier_c=
+allback(), failed because the mutex was already held=0A(by wait_on_barrier(=
+)) and thus did not set the threadobj->status variable,=A0=0Ahowever, wait_=
+on_barrier() had already unset the status variable before actually=A0=0Aunl=
+ocking the mutex in pthread_cond_wait().=0A=0AThis caused threadobj_lock() =
+in notifier_callback() return -EDEADLK and not=A0=0Adoing anything, and thr=
+eadobj_unlock() to assert on __threadobj_tag_unlocked(thobj)=0Adue status n=
+ot reflecting the locked state.=0A=0AAdditionally I see problems in notifie=
+r_callback() in general since it will=0Aleave the threadobj unlocked on ret=
+urn regardless of its previos state.=0AI am not sure how to address this is=
+sue, I have helped myself by blocking=A0=0ASIGNOTIFY in wait_on_barrier(), =
+but that is obviously an incomplete fix=0A(if it is any at all). Probably t=
+here are other situtions as well that could=A0=0Acause this behavior.=0A=0A=
+Any ideas on what to do about that?=A0=0A=0AThanks in advance,=0AMatthias
 
