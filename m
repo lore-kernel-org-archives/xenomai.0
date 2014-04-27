@@ -1,34 +1,12 @@
-Message-ID: <1398636879.4975.0.camel@localhost.localdomain>
-From: Peter Howard <pjh@northern-ridge.com.au>
-Date: Mon, 28 Apr 2014 08:14:39 +1000
-In-Reply-To: <5359827E.7040900@xenomai.org>
-References: <1396407588.27578.5.camel@localhost.localdomain>
- <1396848843.2481.15.camel@localhost.localdomain>
- <5343BEFB.7050402@xenomai.org>
- <1396999856.2660.7.camel@localhost.localdomain>
- <53449244.8040502@xenomai.org>
- <1397003664.2660.14.camel@localhost.localdomain>
- <1397017658.2660.16.camel@localhost.localdomain>
- <534534FD.5090805@xenomai.org>
- <1397113300.2720.5.camel@localhost.localdomain>
- <5346895B.6080401@xenomai.org>
- <1397159850.2881.3.camel@localhost.localdomain>
- <53471389.6000000@xenomai.org>
- <1397168263.6356.11.camel@localhost.localdomain>
- <534719F5.2020605@xenomai.org>
- <1397169248.6356.15.camel@localhost.localdomain>
- <53471FDB.50008@xenomai.org>
- <1397170339.6356.17.camel@localhost.localdomain>
- <1397541812.6541.3.camel@localhost.localdomain>
- <534D19FA.3040506@xenomai.org>
- <1397599195.2652.0.camel@localhost.localdomain>
- <5356F4FE.3050406@xenomai.org>
- <1398217532.2723.18.camel@localhost.localdomain>
- <5359827E.7040900@xenomai.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] OMAP L138
+Message-ID: <535D3E4B.7060506@xenomai.org>
+Date: Sun, 27 Apr 2014 19:28:43 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <1BF62296-6E7D-4758-9084-62F575A58151@mah.priv.at>
+In-Reply-To: <1BF62296-6E7D-4758-9084-62F575A58151@mah.priv.at>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] q: userland timestamps  which match rt_timer_read()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -37,85 +15,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Michael Haberler <mail17@mah.priv.at>, xenomai@xenomai.org
 
-T24gVGh1LCAyMDE0LTA0LTI0IGF0IDIzOjMwICswMjAwLCBHaWxsZXMgQ2hhbnRlcGVyZHJpeCB3
-cm90ZToKPiBPbiAwNC8yMy8yMDE0IDAzOjQ1IEFNLCBQZXRlciBIb3dhcmQgd3JvdGU6Cj4gPiBP
-biBXZWQsIDIwMTQtMDQtMjMgYXQgMDE6MDIgKzAyMDAsIEdpbGxlcyBDaGFudGVwZXJkcml4IHdy
-b3RlOgo+ID4+IE9uIDA0LzE1LzIwMTQgMTE6NTkgUE0sIFBldGVyIEhvd2FyZCB3cm90ZToKPiA+
-Pj4gT24gVHVlLCAyMDE0LTA0LTE1IGF0IDEzOjM3ICswMjAwLCBHaWxsZXMgQ2hhbnRlcGVyZHJp
-eCB3cm90ZToKPiA+Pj4+IE9uIDA0LzE1LzIwMTQgMDg6MDMgQU0sIFBldGVyIEhvd2FyZCB3cm90
-ZToKPiA+Pj4+PiBPbiBGcmksIDIwMTQtMDQtMTEgYXQgMDg6NTIgKzEwMDAsIFBldGVyIEhvd2Fy
-ZCB3cm90ZToKPiA+Pj4+Pj4gT24gRnJpLCAyMDE0LTA0LTExIGF0IDAwOjQ4ICswMjAwLCBHaWxs
-ZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKPiA+Pj4+Pj4+IE9uIDA0LzExLzIwMTQgMTI6MzQgQU0s
-IFBldGVyIEhvd2FyZCB3cm90ZToKPiA+Pj4+Pj4+PiBPbiBGcmksIDIwMTQtMDQtMTEgYXQgMDA6
-MjMgKzAyMDAsIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+ID4+Pj4+Pj4+IChTdHJpcHBp
-bmcgYmFjayBjb252ZXJzYXRpb24gb24gdGhpcyBvbmUgLSBhcG9sb2dpZXMgaWYgdGhhdCdzIGJh
-ZAo+ID4+Pj4+Pj4+IGV0aXF1ZXR0ZSBmb3IgdGhpcyBsaXN0KQo+ID4+Pj4+Pj4+ICAKPiA+Pj4+
-Pj4+Pj4gQXR0YWNobWVudCBpcyBiZXR0ZXIuIEFsc28gcGxlYXNlIHBvc3QgdGhlIGNoYW5nZXMg
-eW91IG1hZGUgZm9yIG9tYXBMMTM4Cj4gPj4+Pj4+Pj4+Cj4gPj4+Pj4+Pj4KPiA+Pj4+Pj4+PiBk
-aWZmIC0tZ2l0IGEvYXJjaC9hcm0vbWFjaC1kYXZpbmNpL0tjb25maWcgYi9hcmNoL2FybS9tYWNo
-LWRhdmluY2kvS2NvbmZpZwo+ID4+Pj4+Pj4+IGluZGV4IGEwNzViM2UuLjNkOGJjNTkgMTAwNjQ0
-Cj4gPj4+Pj4+Pj4gLS0tIGEvYXJjaC9hcm0vbWFjaC1kYXZpbmNpL0tjb25maWcKPiA+Pj4+Pj4+
-PiArKysgYi9hcmNoL2FybS9tYWNoLWRhdmluY2kvS2NvbmZpZwo+ID4+Pj4+Pj4+IEBAIC00MSw2
-ICs0MSw4IEBAIGNvbmZpZyBBUkNIX0RBVklOQ0lfREE4NTAKPiA+Pj4+Pj4+PiAgCXNlbGVjdCBB
-UkNIX0RBVklOQ0lfREE4WFgKPiA+Pj4+Pj4+PiAgCXNlbGVjdCBBUkNIX0hBU19DUFVGUkVRCj4g
-Pj4+Pj4+Pj4gIAlzZWxlY3QgQ1BfSU5UQwo+ID4+Pj4+Pj4+ICsgICAgc2VsZWN0IElQSVBFX0FS
-TV9LVVNFUl9UU0MgaWYgSVBJUEUKPiA+Pj4+Pj4+PiArICAgIHNlbGVjdCBBUk1fRkNTRSBpZiBJ
-UElQRQo+ID4+Pj4+Pj4KPiA+Pj4+Pj4+IFlvdSBtYXkgd2FudCB0byBsZWF2ZSB0aGUgY2hvaWNl
-IG9mIGVuYWJsaW5nIG9yIGRpc2FibGluZyBGQ1NFIHRvIHRoZSB1c2VyLgo+ID4+Pj4+Pj4KPiA+
-Pj4+Pj4KPiA+Pj4+Pj4gVW5kZXJzdG9vZDsgYXQgdGhlIG1vbWVudCB0aGUgdmFyaWFuY2Ugb24g
-bWF4IGxhdGVuY3kgaXMgcmVhbGx5IGJhZCBpZgo+ID4+Pj4+PiB5b3UgZG9uJ3QgZW5hYmxlIEZD
-U0UuICBXaGVuIEkgc29ydCBvdXQgdGhlIGNyYXNoaW5nIGlzc3VlcyBJJ2xsIHJlLXRlc3QKPiA+
-Pj4+Pj4gd2l0aCBpdCBvZmYuCj4gPj4+Pj4KPiA+Pj4+PiBXZWxsLCBGQ1NFIHR1cm5lZCBvdXQg
-dG8gYmUgbXkgcHJvYmxlbS4KPiA+Pj4+Pgo+ID4+Pj4+IE1vcmUgc3BlY2lmaWNhbGx5LCAgRkNT
-RSBhbmQgQVJNX0ZDU0VfQkVTVF9FRkZPUlQuICBFaXRoZXIgYSkgZGlzYWJsaW5nCj4gPj4+Pj4g
-QVJNX0ZDU0UgYWx0b2dldGhlciwgb3IgYikgc2VsZWN0aW5nIEFSTV9GQ1NFIHdpdGggQVJNX0ZD
-U0VfR1VBUkVOVEVFRAo+ID4+Pj4+IGdldHMgcmlkIG9mIHRoZSBjcmFzaGVzL3BhbmljcyB3aXRo
-IGlwaXBlIGxhdGVuY3kgdHJhY2luZyBlbmFibGVkLgo+ID4+Pj4+Cj4gPj4+Pj4gU28gbm93IHRo
-aW5ncyBzZWVtIHJlYXNvbmFibHkgc3RhYmxlLCBJJ2xsIGdvIHRocm91Z2ggdGhlIGZ1bGwgc2V0
-IG9mCj4gPj4+Pj4gdGVzdHMuICBUaG91Z2ggSSBzdGlsbCBjYW4ndCBkbyAneGVuby10ZXN0IC1s
-ICJkb2hlbGwgLWwgL29wdC9sdHAiJyBhcwo+ID4+Pj4+IGx0cCB0YWtlcyBvdXQgdGhlIHN5c3Rl
-bSB3aXRob3V0IGFueSBpcGlwZS94ZW5vbWFpIGJpdHMuCj4gPj4+Pj4KPiA+Pj4+IE9rLCBGQ1NF
-IGJlc3QgZWZmb3J0IGlzIGN1cnJlbnRseSBiZWluZyB2YWxpZGF0ZWQgb24gMy4xNCwgc28gaXQg
-bWF5Cj4gPj4+PiB3ZWxsIGJlIGJyb2tlbi4gQWZ0ZXIgYWxsLCB0aGUgcmF3LyogYnJhbmNoZXMg
-YXJlIHdvcmsgaW4gcHJvZ3Jlc3MuCj4gPj4+Pgo+ID4+Pgo+ID4+PiBOb3RlOiBzZWxlY3Rpbmcg
-QVJNX0ZDU0VfQkVTVF9FRkZPUlQgcHJvZHVjZXMgdGhlIHNhbWUgcmVzdWx0IG9uIHRoZQo+ID4+
-PiBtYXN0ZXIgYnJhbmNoIHRvbyAuIC4gLgo+ID4+Pgo+ID4+IEhpIFBldGVyLAo+ID4+Cj4gPj4g
-SSBhbSB1bmFibGUgdG8gcmVwcm9kdWNlIHRoZXNlIGlzc3VlcyB3aXRoIDMuMTQsIEZDU0Ugc2Vl
-bXMgdG8gYmUgZG9pbmcKPiA+PiBqdXN0IGZpbmUsIEkgY2FuIGJvb3QgYW5kIHJ1biB0aGUgTFRQ
-IHRlc3RzdWl0ZSBhbmQgZ2V0IGFsbW9zdCB0aGUgc2FtZQo+ID4+IHJlc3VsdHMgYXMgYSBub24g
-cGF0Y2hlZCBrZXJuZWwuIEkgaGF2ZSB0cmllZCB3aXRoIGFuZCB3aXRob3V0Cj4gPj4gcHJlZW1w
-dGlibGUgY2FjaGUgZmx1c2hlcywgYW5kIHdpdGggYW5kIHdpdGhvdXQgWGVub21haS4gTXkgcm9v
-dGZzIGlzCj4gPj4gYmFzZWQgb24gYnVzeWJveCBhbmQgbWluaW1hbCwgbWF5YmUgdGhhdCBpcyB0
-aGUgcmVhc29uIHdoeSBpdCB3b3Jrcwo+ID4+IGZpbmUsIGNvdWxkIHlvdSBwdXQgYSB0YXJiYWxs
-IHdpdGggeW91ciByb290ZnMgc29tZXdoZXJlPwo+ID4gCj4gPiBBIGJpdCBvZiB0ZXN0aW5nIHNo
-b3dzIChhdCBsZWFzdCkgb25lIGNhc2UgaXMgZGlyZWN0bHkgcmVsYXRlZCB0byB0aGUKPiA+IHJv
-b3Rmcy4gIFRoaXMgaXMgdGhlIFRleGFzIEluc3RydW1lbnRzIHJvb3RmcyB0aGF0IGlzIHN1cHBs
-aWVkIGZvciB0aGUKPiA+IERBODUwIGJvYXJkLiAgRHVyaW5nIG5vcm1hbCBzdGFydHVwLCBpdCB3
-YW50cyB0byBzdGFydCB0aGUgR1VJIGZvciB0aGUKPiA+IExDRCB3aGljaCB3b3VsZCBnbyBwYXN0
-IHRoZSAzMk1CIHByb2Nlc3MgbGltaXQgd2l0aCBGQ1NFIGVuYWJsZWQuICBXaXRoCj4gPiBGQ1NF
-X0dVQVJFTlRFRUQgc2VsZWN0ZWQgdGhpcyBpcyBub3RlZCBidXQgZG9lc24ndCBjYXVzZSBhIGNy
-YXNoLiAgV2l0aAo+ID4gRkNTRV9CRVNUX0VGRk9SVCBzZWxlY3RlZCB0aGlzIGlzIG5vdGVkIGFu
-ZCB0aGVuIHRoZSBzeXN0ZW0gY3Jhc2hlcwo+ID4gd2l0aGluIGEgZmV3IHNlY29uZHMuICBJJ20g
-bm90IHN1cmUgaWYgdGhpcyBjb3VudHMgYXMgYSBidWcgaW4KPiA+IEJFU1RfRUZGT1JUIG9yIHdo
-ZXRoZXIgYWxsIGJldHMgYXJlIG9mZiBpZiB5b3UgdHJ5IHRvIHN0YXJ0IGEgcHJvY2Vzcwo+ID4g
-dGhhdCdzIHRvbyBsYXJnZS4KPiA+IAo+ID4gQXQgdGhpcyBwb2ludCBJJ20gbm90IHN1cmUgaWYg
-YW55dGhpbmcgZWxzZSBpcyBzcGVjaWZpYyB0byB0aGF0IHJvb3Rmcwo+ID4gYnV0IEknbGwgc3Rp
-bGwgbWFrZSBpdCBhdmFpbGFibGUgdG8geW91IHRvIGhhdmUgYSBsb29rLgo+IAo+IE5vIGx1Y2sg
-d2l0aCB5b3VyIHJvb3RmczogbWF0cml4X0dVSSBjcmFjaGVzIGluZGVlZCwgYnV0IGl0IGFsc28g
-Y3Jhc2hlcwo+IHdpdGhvdXQgQ09ORklHX0ZDU0UsIHNvIGl0IHdvdWxkIHNlZW0gdGhlIGNyYXNo
-IGlzIHVucmVsYXRlZCB0byB0aGUKPiBGQ1NFLiBPYnZpb3VzbHkgaXQgZG9lcyBub3QgY3Jhc2gg
-d2l0aCBGQ1NFX0dVQVJBTlRFRUQsIGJlY2F1c2UgaXQgaXMKPiBzdG9wcGVkIGFzIHNvb24gYXMg
-aXQgd2FudHMgdG8gZ28gb3ZlciAzMiBNQi4gQW5kIHRoYXQgY3Jhc2ggZG9lcyBub3QKPiBjYXVz
-ZSB0aGUgY2FzY2FkZSBvZiBjcmFzaGVzIHlvdSBtZW50aW9uZWQsIGVuZGluZyB3aXRoIGluaXQg
-Y3Jhc2hpbmcuCj4gVGhlIHByb2Nlc3NvciBvbiB3aGljaCBJIGFtIHJ1bm5pbmcgdGhlIHRlc3Rz
-IGRvZXMgbm90IGhhdmUgYQo+IGZyYW1lYnVmZmVyIG1heWJlIHRoYXQgaXMgdGhlIHJlYXNvbiBJ
-IGdldCBhIGNyYXNoLCBhbmQgZG8gbm90IGdvIGFzIGZhcgo+IGFzIGluIHlvdXIgY2FzZS4KPiAK
-PiBDb3VsZCB5b3UgcG9zdCB0aGUga2VybmVsIGNvbmZpZ3VyYXRpb24geW91IHVzZT8KPiAKCi0t
-LS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1l
-bnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IC5jb25maWcKVHlwZTogYXBwbGljYXRpb24veC1jb25m
-aWcKU2l6ZTogNTUwMTAgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8vd3d3
-Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTQwNDI4LzUwYWQy
-ZTI5L2F0dGFjaG1lbnQuYmluPgo=
+On 04/27/2014 05:29 PM, Michael Haberler wrote:
+> I need to create ns-resolution timestamps from RT (using
+> rt_timer_read() - no surprises) and from normal userland programs
+> 
+> the latter binaries should be Xenomai-unaware if possible - is there
+> a normal Linux API which reads the same timestamp source as
+> rt_timer_read()?
+> 
+> eg: clock_gettime(CLOCK_xxxx)?
+
+No, xenomai clock and linux clock generally are not synchronized. If you
+need only timestamps though, you can access linux realtime clock from
+xenomai program (wihout a switch to secondary mode) by using xenomai
+posix skin clock_gettime(CLOCK_HOST_REALTIME). This clock can not be
+used for timers (or timeouts) though.
+
+-- 
+                                                                Gilles.
+
