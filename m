@@ -1,14 +1,34 @@
-Message-ID: <53511687.3010809@xenomai.org>
-Date: Fri, 18 Apr 2014 14:11:51 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <1397815203.1378.21.camel@port-msalvini.smigroup.local>
- <53510CB4.3000501@xenomai.org>
- <1397822896.1378.34.camel@port-msalvini.smigroup.local>
-In-Reply-To: <1397822896.1378.34.camel@port-msalvini.smigroup.local>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Disable L2 write allocate on iMX6q
+Message-ID: <1398647960.4975.2.camel@localhost.localdomain>
+From: Peter Howard <pjh@northern-ridge.com.au>
+Date: Mon, 28 Apr 2014 11:19:20 +1000
+In-Reply-To: <5359827E.7040900@xenomai.org>
+References: <1396407588.27578.5.camel@localhost.localdomain>
+ <1396848843.2481.15.camel@localhost.localdomain>
+ <5343BEFB.7050402@xenomai.org>
+ <1396999856.2660.7.camel@localhost.localdomain>
+ <53449244.8040502@xenomai.org>
+ <1397003664.2660.14.camel@localhost.localdomain>
+ <1397017658.2660.16.camel@localhost.localdomain>
+ <534534FD.5090805@xenomai.org>
+ <1397113300.2720.5.camel@localhost.localdomain>
+ <5346895B.6080401@xenomai.org>
+ <1397159850.2881.3.camel@localhost.localdomain>
+ <53471389.6000000@xenomai.org>
+ <1397168263.6356.11.camel@localhost.localdomain>
+ <534719F5.2020605@xenomai.org>
+ <1397169248.6356.15.camel@localhost.localdomain>
+ <53471FDB.50008@xenomai.org>
+ <1397170339.6356.17.camel@localhost.localdomain>
+ <1397541812.6541.3.camel@localhost.localdomain>
+ <534D19FA.3040506@xenomai.org>
+ <1397599195.2652.0.camel@localhost.localdomain>
+ <5356F4FE.3050406@xenomai.org>
+ <1398217532.2723.18.camel@localhost.localdomain>
+ <5359827E.7040900@xenomai.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] OMAP L138
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,59 +37,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Mauro Salvini <mauro.salvini@smigroup.net>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 04/18/2014 02:08 PM, Mauro Salvini wrote:
-> On Fri, 2014-04-18 at 13:29 +0200, Gilles Chanteperdrix wrote:
-> 
->> On 04/18/2014 12:00 PM, Mauro Salvini wrote:
->>> Hello,
->>> I'm testing an iMX6q Sabrelite board from Element14 with Xenomai 2.6.3.
->>>
->>> First of all I tried kernel 3.0.43 from Xenomai git branch
->>> ipipe-3.0-imx6q. This kernel works well, a 15 hours running latency test
->>> (with manually generated system load like dd, netcat, ssh) shows an
->>> average latency of 5.690us and a worst case latency of 42.186us.
->>> Then I tried 3.4.6 vanilla kernel, but in this case latency test average
->>> result for is a bit worse, with a value around 18us. Worst case is about
->>> the same (<50us).
->>> I read in mailing list that L2 write allocate is disabled in 3.0.43
->>> kernel (in facts log says: l2x0: 16 ways, CACHE_ID 0x410000c7, AUX_CTRL
->>> 0x02870000, Cache size: 1048576 B).
->>> This feature is enabled in 3.4.6 kernel ( log says: l2x0: 16 ways,
->>> CACHE_ID 0x410000c7, AUX_CTRL 0x02070000, Cache size: 1048576 B). Could
->>> this be the cause of latency degradation observed in 3.4.6 kernel? I
->>> also tried 3.8.13 with same results.
->>> Kernel configurations are the default ones for each kernel, with hw_perf
->>> disabled.
->>
->> Yes, L2 write allocate on imx6 has disastrous effects on latency.
->> L2 write allocate is disabled starting from the 3.10 kernel for the 
->> mainline I-pipe patches. See branch ipipe-3.10 in ipipe.git.
->>
->> The patch which disables L2 write allocate is:
->> http://git.xenomai.org/ipipe.git/commit/?h=ipipe-3.10&id=05d6bcc014821c286248f6f4c1c953fcbde67f27
->>
->> and is probably easy to backport to earlier branches (but why would you 
->> want to use a 3.4 kernel anyway?).
->>
-> 
-> Thank you very much, I will try the patch.
-> 
-> I haven't a strict need to use 3.4 kernel, it was only a test. By the
-> way, is there a general rule to follow to choose a kernel version for an
-> ARM architecture (e.g. latest kernel release against older but
-> most-SOC-optimized release)? For example, for Xenomai 2.6.3 there are
-> three ipipe patches (for 3.4.6, 3.5.7 and 3.8.13 kernels), but as stated
-> into README file iMXQ6 should use ipipe patch contained into mcx dir,
-> that is for 3.0.43 kernel .
-
-No, the README does not say that you should use the patch for the 3.0.43
-kernel. The patch is there IN CASE you want to use that kernel, because
-that kernel is based on the one provided by Freescale. But you are very
-much encouraged to use more recent mainline releases.
-
--- 
-                                                                Gilles.
-
+UmUtc2VuZGluZyBhcyB0aGUgb3JpZ2luYWwgc2VlbXMgdG8gaGF2ZSB2YW5pc2hlZCBpbnRvIHRo
+ZSBldGhlci4KCk9uIFRodSwgMjAxNC0wNC0yNCBhdCAyMzozMCArMDIwMCwgR2lsbGVzIENoYW50
+ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDQvMjMvMjAxNCAwMzo0NSBBTSwgUGV0ZXIgSG93YXJkIHdy
+b3RlOgo+ID4gT24gV2VkLCAyMDE0LTA0LTIzIGF0IDAxOjAyICswMjAwLCBHaWxsZXMgQ2hhbnRl
+cGVyZHJpeCB3cm90ZToKPiA+PiBPbiAwNC8xNS8yMDE0IDExOjU5IFBNLCBQZXRlciBIb3dhcmQg
+d3JvdGU6Cj4gPj4+IE9uIFR1ZSwgMjAxNC0wNC0xNSBhdCAxMzozNyArMDIwMCwgR2lsbGVzIENo
+YW50ZXBlcmRyaXggd3JvdGU6Cj4gPj4+PiBPbiAwNC8xNS8yMDE0IDA4OjAzIEFNLCBQZXRlciBI
+b3dhcmQgd3JvdGU6Cj4gPj4+Pj4gT24gRnJpLCAyMDE0LTA0LTExIGF0IDA4OjUyICsxMDAwLCBQ
+ZXRlciBIb3dhcmQgd3JvdGU6Cj4gPj4+Pj4+IE9uIEZyaSwgMjAxNC0wNC0xMSBhdCAwMDo0OCAr
+MDIwMCwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gPj4+Pj4+PiBPbiAwNC8xMS8yMDE0
+IDEyOjM0IEFNLCBQZXRlciBIb3dhcmQgd3JvdGU6Cj4gPj4+Pj4+Pj4gT24gRnJpLCAyMDE0LTA0
+LTExIGF0IDAwOjIzICswMjAwLCBHaWxsZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKPiA+Pj4+Pj4+
+PiAoU3RyaXBwaW5nIGJhY2sgY29udmVyc2F0aW9uIG9uIHRoaXMgb25lIC0gYXBvbG9naWVzIGlm
+IHRoYXQncyBiYWQKPiA+Pj4+Pj4+PiBldGlxdWV0dGUgZm9yIHRoaXMgbGlzdCkKPiA+Pj4+Pj4+
+PiAgCj4gPj4+Pj4+Pj4+IEF0dGFjaG1lbnQgaXMgYmV0dGVyLiBBbHNvIHBsZWFzZSBwb3N0IHRo
+ZSBjaGFuZ2VzIHlvdSBtYWRlIGZvciBvbWFwTDEzOAo+ID4+Pj4+Pj4+Pgo+ID4+Pj4+Pj4+Cj4g
+Pj4+Pj4+Pj4gZGlmZiAtLWdpdCBhL2FyY2gvYXJtL21hY2gtZGF2aW5jaS9LY29uZmlnIGIvYXJj
+aC9hcm0vbWFjaC1kYXZpbmNpL0tjb25maWcKPiA+Pj4+Pj4+PiBpbmRleCBhMDc1YjNlLi4zZDhi
+YzU5IDEwMDY0NAo+ID4+Pj4+Pj4+IC0tLSBhL2FyY2gvYXJtL21hY2gtZGF2aW5jaS9LY29uZmln
+Cj4gPj4+Pj4+Pj4gKysrIGIvYXJjaC9hcm0vbWFjaC1kYXZpbmNpL0tjb25maWcKPiA+Pj4+Pj4+
+PiBAQCAtNDEsNiArNDEsOCBAQCBjb25maWcgQVJDSF9EQVZJTkNJX0RBODUwCj4gPj4+Pj4+Pj4g
+IAlzZWxlY3QgQVJDSF9EQVZJTkNJX0RBOFhYCj4gPj4+Pj4+Pj4gIAlzZWxlY3QgQVJDSF9IQVNf
+Q1BVRlJFUQo+ID4+Pj4+Pj4+ICAJc2VsZWN0IENQX0lOVEMKPiA+Pj4+Pj4+PiArICAgIHNlbGVj
+dCBJUElQRV9BUk1fS1VTRVJfVFNDIGlmIElQSVBFCj4gPj4+Pj4+Pj4gKyAgICBzZWxlY3QgQVJN
+X0ZDU0UgaWYgSVBJUEUKPiA+Pj4+Pj4+Cj4gPj4+Pj4+PiBZb3UgbWF5IHdhbnQgdG8gbGVhdmUg
+dGhlIGNob2ljZSBvZiBlbmFibGluZyBvciBkaXNhYmxpbmcgRkNTRSB0byB0aGUgdXNlci4KPiA+
+Pj4+Pj4+Cj4gPj4+Pj4+Cj4gPj4+Pj4+IFVuZGVyc3Rvb2Q7IGF0IHRoZSBtb21lbnQgdGhlIHZh
+cmlhbmNlIG9uIG1heCBsYXRlbmN5IGlzIHJlYWxseSBiYWQgaWYKPiA+Pj4+Pj4geW91IGRvbid0
+IGVuYWJsZSBGQ1NFLiAgV2hlbiBJIHNvcnQgb3V0IHRoZSBjcmFzaGluZyBpc3N1ZXMgSSdsbCBy
+ZS10ZXN0Cj4gPj4+Pj4+IHdpdGggaXQgb2ZmLgo+ID4+Pj4+Cj4gPj4+Pj4gV2VsbCwgRkNTRSB0
+dXJuZWQgb3V0IHRvIGJlIG15IHByb2JsZW0uCj4gPj4+Pj4KPiA+Pj4+PiBNb3JlIHNwZWNpZmlj
+YWxseSwgIEZDU0UgYW5kIEFSTV9GQ1NFX0JFU1RfRUZGT1JULiAgRWl0aGVyIGEpIGRpc2FibGlu
+Zwo+ID4+Pj4+IEFSTV9GQ1NFIGFsdG9nZXRoZXIsIG9yIGIpIHNlbGVjdGluZyBBUk1fRkNTRSB3
+aXRoIEFSTV9GQ1NFX0dVQVJFTlRFRUQKPiA+Pj4+PiBnZXRzIHJpZCBvZiB0aGUgY3Jhc2hlcy9w
+YW5pY3Mgd2l0aCBpcGlwZSBsYXRlbmN5IHRyYWNpbmcgZW5hYmxlZC4KPiA+Pj4+Pgo+ID4+Pj4+
+IFNvIG5vdyB0aGluZ3Mgc2VlbSByZWFzb25hYmx5IHN0YWJsZSwgSSdsbCBnbyB0aHJvdWdoIHRo
+ZSBmdWxsIHNldCBvZgo+ID4+Pj4+IHRlc3RzLiAgVGhvdWdoIEkgc3RpbGwgY2FuJ3QgZG8gJ3hl
+bm8tdGVzdCAtbCAiZG9oZWxsIC1sIC9vcHQvbHRwIicgYXMKPiA+Pj4+PiBsdHAgdGFrZXMgb3V0
+IHRoZSBzeXN0ZW0gd2l0aG91dCBhbnkgaXBpcGUveGVub21haSBiaXRzLgo+ID4+Pj4+Cj4gPj4+
+PiBPaywgRkNTRSBiZXN0IGVmZm9ydCBpcyBjdXJyZW50bHkgYmVpbmcgdmFsaWRhdGVkIG9uIDMu
+MTQsIHNvIGl0IG1heQo+ID4+Pj4gd2VsbCBiZSBicm9rZW4uIEFmdGVyIGFsbCwgdGhlIHJhdy8q
+IGJyYW5jaGVzIGFyZSB3b3JrIGluIHByb2dyZXNzLgo+ID4+Pj4KPiA+Pj4KPiA+Pj4gTm90ZTog
+c2VsZWN0aW5nIEFSTV9GQ1NFX0JFU1RfRUZGT1JUIHByb2R1Y2VzIHRoZSBzYW1lIHJlc3VsdCBv
+biB0aGUKPiA+Pj4gbWFzdGVyIGJyYW5jaCB0b28gLiAuIC4KPiA+Pj4KPiA+PiBIaSBQZXRlciwK
+PiA+Pgo+ID4+IEkgYW0gdW5hYmxlIHRvIHJlcHJvZHVjZSB0aGVzZSBpc3N1ZXMgd2l0aCAzLjE0
+LCBGQ1NFIHNlZW1zIHRvIGJlIGRvaW5nCj4gPj4ganVzdCBmaW5lLCBJIGNhbiBib290IGFuZCBy
+dW4gdGhlIExUUCB0ZXN0c3VpdGUgYW5kIGdldCBhbG1vc3QgdGhlIHNhbWUKPiA+PiByZXN1bHRz
+IGFzIGEgbm9uIHBhdGNoZWQga2VybmVsLiBJIGhhdmUgdHJpZWQgd2l0aCBhbmQgd2l0aG91dAo+
+ID4+IHByZWVtcHRpYmxlIGNhY2hlIGZsdXNoZXMsIGFuZCB3aXRoIGFuZCB3aXRob3V0IFhlbm9t
+YWkuIE15IHJvb3RmcyBpcwo+ID4+IGJhc2VkIG9uIGJ1c3lib3ggYW5kIG1pbmltYWwsIG1heWJl
+IHRoYXQgaXMgdGhlIHJlYXNvbiB3aHkgaXQgd29ya3MKPiA+PiBmaW5lLCBjb3VsZCB5b3UgcHV0
+IGEgdGFyYmFsbCB3aXRoIHlvdXIgcm9vdGZzIHNvbWV3aGVyZT8KPiA+IAo+ID4gQSBiaXQgb2Yg
+dGVzdGluZyBzaG93cyAoYXQgbGVhc3QpIG9uZSBjYXNlIGlzIGRpcmVjdGx5IHJlbGF0ZWQgdG8g
+dGhlCj4gPiByb290ZnMuICBUaGlzIGlzIHRoZSBUZXhhcyBJbnN0cnVtZW50cyByb290ZnMgdGhh
+dCBpcyBzdXBwbGllZCBmb3IgdGhlCj4gPiBEQTg1MCBib2FyZC4gIER1cmluZyBub3JtYWwgc3Rh
+cnR1cCwgaXQgd2FudHMgdG8gc3RhcnQgdGhlIEdVSSBmb3IgdGhlCj4gPiBMQ0Qgd2hpY2ggd291
+bGQgZ28gcGFzdCB0aGUgMzJNQiBwcm9jZXNzIGxpbWl0IHdpdGggRkNTRSBlbmFibGVkLiAgV2l0
+aAo+ID4gRkNTRV9HVUFSRU5URUVEIHNlbGVjdGVkIHRoaXMgaXMgbm90ZWQgYnV0IGRvZXNuJ3Qg
+Y2F1c2UgYSBjcmFzaC4gIFdpdGgKPiA+IEZDU0VfQkVTVF9FRkZPUlQgc2VsZWN0ZWQgdGhpcyBp
+cyBub3RlZCBhbmQgdGhlbiB0aGUgc3lzdGVtIGNyYXNoZXMKPiA+IHdpdGhpbiBhIGZldyBzZWNv
+bmRzLiAgSSdtIG5vdCBzdXJlIGlmIHRoaXMgY291bnRzIGFzIGEgYnVnIGluCj4gPiBCRVNUX0VG
+Rk9SVCBvciB3aGV0aGVyIGFsbCBiZXRzIGFyZSBvZmYgaWYgeW91IHRyeSB0byBzdGFydCBhIHBy
+b2Nlc3MKPiA+IHRoYXQncyB0b28gbGFyZ2UuCj4gPiAKPiA+IEF0IHRoaXMgcG9pbnQgSSdtIG5v
+dCBzdXJlIGlmIGFueXRoaW5nIGVsc2UgaXMgc3BlY2lmaWMgdG8gdGhhdCByb290ZnMKPiA+IGJ1
+dCBJJ2xsIHN0aWxsIG1ha2UgaXQgYXZhaWxhYmxlIHRvIHlvdSB0byBoYXZlIGEgbG9vay4KPiAK
+PiBObyBsdWNrIHdpdGggeW91ciByb290ZnM6IG1hdHJpeF9HVUkgY3JhY2hlcyBpbmRlZWQsIGJ1
+dCBpdCBhbHNvIGNyYXNoZXMKPiB3aXRob3V0IENPTkZJR19GQ1NFLCBzbyBpdCB3b3VsZCBzZWVt
+IHRoZSBjcmFzaCBpcyB1bnJlbGF0ZWQgdG8gdGhlCj4gRkNTRS4gT2J2aW91c2x5IGl0IGRvZXMg
+bm90IGNyYXNoIHdpdGggRkNTRV9HVUFSQU5URUVELCBiZWNhdXNlIGl0IGlzCj4gc3RvcHBlZCBh
+cyBzb29uIGFzIGl0IHdhbnRzIHRvIGdvIG92ZXIgMzIgTUIuIEFuZCB0aGF0IGNyYXNoIGRvZXMg
+bm90Cj4gY2F1c2UgdGhlIGNhc2NhZGUgb2YgY3Jhc2hlcyB5b3UgbWVudGlvbmVkLCBlbmRpbmcg
+d2l0aCBpbml0IGNyYXNoaW5nLgo+IFRoZSBwcm9jZXNzb3Igb24gd2hpY2ggSSBhbSBydW5uaW5n
+IHRoZSB0ZXN0cyBkb2VzIG5vdCBoYXZlIGEKPiBmcmFtZWJ1ZmZlciBtYXliZSB0aGF0IGlzIHRo
+ZSByZWFzb24gSSBnZXQgYSBjcmFzaCwgYW5kIGRvIG5vdCBnbyBhcyBmYXIKPiBhcyBpbiB5b3Vy
+IGNhc2UuCj4gCj4gQ291bGQgeW91IHBvc3QgdGhlIGtlcm5lbCBjb25maWd1cmF0aW9uIHlvdSB1
+c2U/Cj4gCgpBdHRhY2hlZC4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0t
+CkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogLmNvbmZpZwpUeXBl
+OiBhcHBsaWNhdGlvbi94LWNvbmZpZwpTaXplOiA1NTAxMCBieXRlcwpEZXNjOiBub3QgYXZhaWxh
+YmxlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNo
+bWVudHMvMjAxNDA0MjgvYzAxN2FiNzcvYXR0YWNobWVudC5iaW4+Cg==
