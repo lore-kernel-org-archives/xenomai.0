@@ -1,9 +1,13 @@
+Message-ID: <535FC7A8.3060508@siemens.com>
+Date: Tue, 29 Apr 2014 17:39:20 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Date: Tue, 29 Apr 2014 17:07:53 +0200
-Message-ID: <CAF-_xSQO+RJ8UFNZpoPyifKew3k+vbJufuGD5YuxtdEeub9_5Q@mail.gmail.com>
-From: Massimo Savina <massimo.savina@gmail.com>
+References: <531A29CC.4040201@xenomai.org> <533FF394.1020405@xenomai.org>
+ <535A3B92.5070206@siemens.com> <535A4E5F.9060109@xenomai.org>
+In-Reply-To: <535A4E5F.9060109@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai]  Raspberry Pi UART and SPI RTDM drivers
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] RTDM rework (2)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,17 +16,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Hi guys,
-I started to develop an application based on the Raspberry Pi, which makes
-use of SPI and UART peripherals, to talk with realtime hardware (1ms loop
-on SPI, 10ms loop on UART).
-So I need of realtime drivers for the SPI and UART port.
-1) Can I use the current 16550A-Compatible UART driver or do I have to
-adapt it to the PL011 available on RPi Broadcom?
-2) Is already available a SPI rtdm driver for RPi, or where it is better to
-start to write one from myself?
+On 2014-04-25 14:00, Gilles Chanteperdrix wrote:
+> On 04/25/2014 12:40 PM, Jan Kiszka wrote:
+>> On 2014-04-05 14:14, Gilles Chanteperdrix wrote:
+>>> On 03/07/2014 09:19 PM, Gilles Chanteperdrix wrote:
+>>>>
+>>>> Hi,
+>>>>
+>>>> here comes a second attempt at introducing a file descriptor support for
+>>>> other purposes than RTDM drivers.
+>>>>
+>>>> This time, the file descriptors are called rtdm_fd and are part of the
+>>>> RTDM API, but can be used by the POSIX personality. The actual RB-tree
+>>>> where they are stored is part of the xnsys_ppd structure, as this way it
+>>>> can be used by one of the RTDM and POSIX personalities, even if the
+>>>> current process is not bound to the other personality.
+>>>>
+>>>> I have posted the patches to the timerbench, switchtest, rtdm, xddp,
+>>>> iddp and bufp drivers to allow seeing the API changes.
+>>>
+>>> Hi Jan,
+>>>
+>>> ping?
+>>>
+>>> I have a pile of code needing to be rebased on these patches, I would
+>>> very much like to get all this merged before it bitrots too much.
+>>
+>> Finally looking into them now. Do you happen to have them in git
+>> somewhere? Or what was the revision they once applied to?
+> 
+> Branch for-forge-rtdm-rework in xenomai-gch.git.
 
-Thank in advance,
-Massimo.
+Thanks, worked through this now. I'm fine with the general approach. We
+should prepare it for merge.
+
+Some minor things I stumbled over while reading:
+
+- rtdm_context_user_p (I personally still prefer something like
+  "is_user") and rtdm_context_device (to_device?) are apparently public
+  APIs and, thus, need documentation
+- there are still things (arguments, functions etc.) called "context"
+  that are of type rtdm_fd, thus should rather be called "fd", no?
+- outdated documentation of rtdm_device
+- diff highlighted quite a lot of trailing white spaces here
+- API and struct versions should be increased to reflect the changes
+  and allow drivers to wrap the difference if desired
+
+BTW, some compat wrapping would be helpful, i.e. something to allow the
+same driver sources to be used for both Xenomai 2.x and 3.x. Have you
+already thought about any helpers/macros that could be provided by
+Xenomai (for copying over into out-of-tree drivers)?
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
+
