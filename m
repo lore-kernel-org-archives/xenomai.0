@@ -1,13 +1,10 @@
-Message-ID: <535FC7A8.3060508@siemens.com>
-Date: Tue, 29 Apr 2014 17:39:20 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <535FD440.7000104@zultron.com>
+Date: Tue, 29 Apr 2014 11:33:04 -0500
+From: John Morris <john@zultron.com>
 MIME-Version: 1.0
-References: <531A29CC.4040201@xenomai.org> <533FF394.1020405@xenomai.org>
- <535A3B92.5070206@siemens.com> <535A4E5F.9060109@xenomai.org>
-In-Reply-To: <535A4E5F.9060109@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RTDM rework (2)
+Subject: [Xenomai] CONFIG_XENO_OPT_NATIVE_INTR=y
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,63 +13,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 2014-04-25 14:00, Gilles Chanteperdrix wrote:
-> On 04/25/2014 12:40 PM, Jan Kiszka wrote:
->> On 2014-04-05 14:14, Gilles Chanteperdrix wrote:
->>> On 03/07/2014 09:19 PM, Gilles Chanteperdrix wrote:
->>>>
->>>> Hi,
->>>>
->>>> here comes a second attempt at introducing a file descriptor support for
->>>> other purposes than RTDM drivers.
->>>>
->>>> This time, the file descriptors are called rtdm_fd and are part of the
->>>> RTDM API, but can be used by the POSIX personality. The actual RB-tree
->>>> where they are stored is part of the xnsys_ppd structure, as this way it
->>>> can be used by one of the RTDM and POSIX personalities, even if the
->>>> current process is not bound to the other personality.
->>>>
->>>> I have posted the patches to the timerbench, switchtest, rtdm, xddp,
->>>> iddp and bufp drivers to allow seeing the API changes.
->>>
->>> Hi Jan,
->>>
->>> ping?
->>>
->>> I have a pile of code needing to be rebased on these patches, I would
->>> very much like to get all this merged before it bitrots too much.
->>
->> Finally looking into them now. Do you happen to have them in git
->> somewhere? Or what was the revision they once applied to?
-> 
-> Branch for-forge-rtdm-rework in xenomai-gch.git.
+My Debian kernel packages [1] use Gilles's kernel config snippet [2] for 
+Xenomai configuration, where CONFIG_XENO_OPT_NATIVE_INTR is turned off.
 
-Thanks, worked through this now. I'm fine with the general approach. We
-should prepare it for merge.
+Michael Haberler requested [3] that option be turned on to support RT 
+parport ISRs [4], presumably since many LinuxCNC and Machinekit users 
+attach stepper motor drivers through the parport.
 
-Some minor things I stumbled over while reading:
+Given the 'one size fits all' approach to these kernel packages, which 
+are intended to run on a variety of x86 hardware for a variety of 
+applications (not necessarily just Machinekit), is this an appropriate 
+option to enable for general use?  Is there a specific reason this is 
+turned off in Gilles's configuration?
 
-- rtdm_context_user_p (I personally still prefer something like
-  "is_user") and rtdm_context_device (to_device?) are apparently public
-  APIs and, thus, need documentation
-- there are still things (arguments, functions etc.) called "context"
-  that are of type rtdm_fd, thus should rather be called "fd", no?
-- outdated documentation of rtdm_device
-- diff highlighted quite a lot of trailing white spaces here
-- API and struct versions should be increased to reflect the changes
-  and allow drivers to wrap the difference if desired
+Thanks-
 
-BTW, some compat wrapping would be helpful, i.e. something to allow the
-same driver sources to be used for both Xenomai 2.x and 3.x. Have you
-already thought about any helpers/macros that could be provided by
-Xenomai (for copying over into out-of-tree drivers)?
+	John
 
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+[1] https://github.com/zultron/kernel-rt-deb
+[2] http://www.xenomai.org/pipermail/xenomai/2013-January/027345.html
+[3] https://github.com/zultron/kernel-rt-deb/issues/1
+[4] http://acadis.org/pages/captain.at/parallel-port-intr-isr
 
