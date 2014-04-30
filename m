@@ -1,12 +1,11 @@
-Message-ID: <535FD6DC.3020802@xenomai.org>
-Date: Tue, 29 Apr 2014 18:44:12 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: "Lim Tao Ming (SIMTech)" <tmlim@simtech.a-star.edu.sg>
+Date: Wed, 30 Apr 2014 02:36:48 +0000
+Message-ID: <EF7485C1EA725C47A37C7090FD7DDF784420DE08@S3-EXCHMB05.shared-svc.local>
+Content-Language: en-US
 MIME-Version: 1.0
-References: <535FD440.7000104@zultron.com>
-In-Reply-To: <535FD440.7000104@zultron.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] CONFIG_XENO_OPT_NATIVE_INTR=y
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] ipipe-core-3.10 patch for arm
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,29 +14,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: John Morris <john@zultron.com>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/29/2014 06:33 PM, John Morris wrote:
-> My Debian kernel packages [1] use Gilles's kernel config snippet [2] for
-> Xenomai configuration, where CONFIG_XENO_OPT_NATIVE_INTR is turned off.
->
-> Michael Haberler requested [3] that option be turned on to support RT
-> parport ISRs [4], presumably since many LinuxCNC and Machinekit users
-> attach stepper motor drivers through the parport.
->
-> Given the 'one size fits all' approach to these kernel packages, which
-> are intended to run on a variety of x86 hardware for a variety of
-> applications (not necessarily just Machinekit), is this an appropriate
-> option to enable for general use?  Is there a specific reason this is
-> turned off in Gilles's configuration?
+Hello,
 
-The reason to turn this off by default is because this interface is 
-deprecated, and was dropped from the upcoming 3.x API. The preferred 
-(and strongly suggested) way for dealing with interrupts from userland 
-is via an RTDM driver, for reliability reasons.
+I saw from your past discussion that there is a patch for kernel version 3.=
+10 but was not released. It just so happened that the provided kernel sourc=
+e code with support for my hardware is always released with version subleve=
+l=3D0 (i.e. 3.10 but not 3.10.18 or 3.10.32). Can I get this patch from you=
+ to try out xenomai? BTW I am a newbie at this and I've tried patching the =
+3.10 source code using the 3.10.18 and 3.10.32 patches without success.
 
-HTH,
-
--- 
-Philippe.
-
+Thanks and best regards
+TM
