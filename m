@@ -1,11 +1,11 @@
-Message-ID: <53638FC9.7050909@xenomai.org>
-Date: Fri, 02 May 2014 14:30:01 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <53639AC8.1000507@xenomai.org>
+Date: Fri, 02 May 2014 15:16:56 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <20140502141307.B6A14EC0@centrum.cz>
 In-Reply-To: <20140502141307.B6A14EC0@centrum.cz>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] non-blocking rt_task_suspend(NULL)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,10 +15,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Petr Cervenka <grugh@centrum.cz>
+To: Petr Cervenka <grugh@centrum.cz>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-Le 02/05/2014 14:13, Petr Cervenka a écrit :
+On 05/02/2014 02:13 PM, Petr Cervenka wrote:
 >> Od: "Petr Cervenka" <grugh@centrum.cz>
 >>
 >> CC: "Xenomai" <xenomai@xenomai.org>
@@ -52,29 +52,47 @@ Le 02/05/2014 14:13, Petr Cervenka a écrit :
 >>>> libxenomai.so. But I was not successful and I had to define it myself
 >>>> (under different name). Version of xenomai is 2.6.3.
 >>>
->>> We see that xnpod_suspend_thread returns immediately, likely because it 
->>> has the XNKICKED bit set. Could you add more back trace points? So that 
+>>> We see that xnpod_suspend_thread returns immediately, likely because it
+>>> has the XNKICKED bit set. Could you add more back trace points? So that
 >>> we see what is setting the XNKICKED bit?
 >>>
 >>
 >> I have added (maybe too much) back trace points. But as last time, I'm not able to see (almost) anything in it ;-)
 >> Previous xnpod_suspend_thread (on line 3713, probably caused by rt_mutex_aquire) seems to be fine (for me;-) ).
 >>
-> 
+>
 > Could you please help me with analysis, what is happening in the trace log?
 > I only see at the end only peaces of log, which are already contained somewhere before.
 > For example lines 3832-3993 are the same as 2901-3062.
 > Also 3697-3861 and 3065-3229.
 > Also 3596-3692 and 2935-3058
 > Also 3065-3550 and 2402-2887
-> 
+>
 > There are also suspicious lines with "device_not_available" and "ipipe_handle_exception", but they seem to be regularly appearing.
+>
 
-I will probably not have time to have a look at it before the end of the
-week-end. I had a quick glance and did not find what I expected. We will
-have to add some calls to ipipe_trace_special to see get the values of
-the task state or info flags in the trace.
+Please add these bits to your trace setup:
+
+diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
+index 13865a3..ccc54a8 100644
+--- a/ksrc/nucleus/shadow.c
++++ b/ksrc/nucleus/shadow.c
+@@ -2516,6 +2516,10 @@ int do_losyscall_event(unsigned event, 
+rthal_pipeline_stage_t *stage,
+  		 * We may have gained a shadow TCB from the syscall we
+  		 * just invoked, so make sure to fetch it.
+  		 */
++		if (__xn_interrupted_p(regs)) {
++			xntrace_special(0x44, thread->info);
++			xntrace_special(0x55, signal_pending(current));
++		}
+  		thread = xnshadow_thread(current);
+  		if (signal_pending(current)) {
+  			sigs = 1;
+
+
+TIA,
 
 -- 
-Gilles.
+Philippe.
 
