@@ -1,12 +1,11 @@
-Message-ID: <53639AC8.1000507@xenomai.org>
-Date: Fri, 02 May 2014 15:16:56 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <53639F52.2070108@gmail.com>
+Date: Fri, 02 May 2014 19:06:18 +0530
+From: Arun Kumar Gupta <arungupta143@gmail.com>
 MIME-Version: 1.0
-References: <20140502141307.B6A14EC0@centrum.cz>
-In-Reply-To: <20140502141307.B6A14EC0@centrum.cz>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] non-blocking rt_task_suspend(NULL)
+Subject: [Xenomai] Is everything inside a function(task wchi made as a
+ RT_task) is comes under Realtime ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,84 +14,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Petr Cervenka <grugh@centrum.cz>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 05/02/2014 02:13 PM, Petr Cervenka wrote:
->> Od: "Petr Cervenka" <grugh@centrum.cz>
->>
->> CC: "Xenomai" <xenomai@xenomai.org>
->>> Od: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>>
->>> CC: "Xenomai" <xenomai@xenomai.org>
->>> On 04/24/2014 05:06 PM, Petr Cervenka wrote:
->>>>> Od: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>>>>
->>>>>> SIGDEBUG signal was not received. Task status from
->>>>>> rt_task_inquire() was 0x300180 or 0x300380 (depends where it is
->>>>>> placed) When the task is in the "wrong" state, also the call of
->>>>>> rt_task_sleep(100000) is returning permanently -EINTR code. Do
->>>>>> you have any other idea what to check or what can cause perhaps
->>>>>> every xenomai call fail with -EINTR in one task?
->>>>>
->>>>> If I had to debug this issue, I would enable the I-pipe tracer and
->>>>> trigger a trace freeze when the -EINTR code is received. With
->>>>> enough trace points, it should be possible to understand what
->>>>> happens.
->>>>>
->>>> I called a xntrace_user_freeze() immediately when the issue occurs,
->>>> but I simply don't understand what is happening there. The trace
->>>> output is in the attachment. Could you please help me to understand
->>>> it?
->>>>
->>>> I also got some minor problem with xntrace_user_freeze, because the
->>>> linker was not able to find it: asyncwriter.cpp:(.text+0x843):
->>>> undefined reference to `xntrace_user_freeze(unsigned long, int)' It
->>>> is defined in src/skins/common/trace.c and (should be) contained in
->>>> libxenomai.so. But I was not successful and I had to define it myself
->>>> (under different name). Version of xenomai is 2.6.3.
->>>
->>> We see that xnpod_suspend_thread returns immediately, likely because it
->>> has the XNKICKED bit set. Could you add more back trace points? So that
->>> we see what is setting the XNKICKED bit?
->>>
->>
->> I have added (maybe too much) back trace points. But as last time, I'm not able to see (almost) anything in it ;-)
->> Previous xnpod_suspend_thread (on line 3713, probably caused by rt_mutex_aquire) seems to be fine (for me;-) ).
->>
->
-> Could you please help me with analysis, what is happening in the trace log?
-> I only see at the end only peaces of log, which are already contained somewhere before.
-> For example lines 3832-3993 are the same as 2901-3062.
-> Also 3697-3861 and 3065-3229.
-> Also 3596-3692 and 2935-3058
-> Also 3065-3550 and 2402-2887
->
-> There are also suspicious lines with "device_not_available" and "ipipe_handle_exception", but they seem to be regularly appearing.
->
+Hello, I am new here,
 
-Please add these bits to your trace setup:
+I want to know if i make a function(task) to real time,
 
-diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
-index 13865a3..ccc54a8 100644
---- a/ksrc/nucleus/shadow.c
-+++ b/ksrc/nucleus/shadow.c
-@@ -2516,6 +2516,10 @@ int do_losyscall_event(unsigned event, 
-rthal_pipeline_stage_t *stage,
-  		 * We may have gained a shadow TCB from the syscall we
-  		 * just invoked, so make sure to fetch it.
-  		 */
-+		if (__xn_interrupted_p(regs)) {
-+			xntrace_special(0x44, thread->info);
-+			xntrace_special(0x55, signal_pending(current));
-+		}
-  		thread = xnshadow_thread(current);
-  		if (signal_pending(current)) {
-  			sigs = 1;
+Is everything inside that function is in realtime scheduler or not ?
+For Ex.
 
 
-TIA,
+/*#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+#include <sys/mman.h>
 
--- 
-Philippe.
+#include <native/task.h>
+#include <native/timer.h>
+
+#include  <rtdk.h>
+*/
+#include "../../include/Controller/statcom.h"
+
+RT_TASK demo_task;
+
+void demo(void *arg){
+   RT_TASK *curtask;
+   RT_TASK_INFO curtaskinfo;
+
+   // hello world
+   rt_printf("Hello World!\n");
+     printf("Something");
+     printf("Something");
+printf("Something");
+
+
+   // inquire current task
+   curtask=rt_task_self();
+   rt_task_inquire(curtask,&curtaskinfo);
+
+   // print task name
+   rt_printf("Task name : %s \n", curtaskinfo.name);
+}
+
+int main(void)
+{
+   char  str[10] ;
+
+   // Perform auto-init of rt_print buffers if the task doesn't do so
+   rt_print_auto_init(1);
+
+   // Lock memory : avoid memory swapping for this program
+   mlockall(MCL_CURRENT|MCL_FUTURE);
+
+   rt_printf("start task\n");
+
+   /*
+    * Arguments: &task,
+    *            name,
+    *            stack size (0=default),
+    *            priority,
+    *            mode (FPU, start suspended, ...)
+    */
+   sprintf(str,"hello");
+   rt_task_create(&demo_task, str, 0, 50, 0);
+
+   /*
+    * Arguments: &task,
+    *            task function,
+    *            function argument
+    */
+   rt_task_start(&demo_task, &demo, 0);
+   return 0;
+}
+
+
+Here i am trying to print "Something" using "printf" will it's priority 
+will be as high as "rt_printf"
+
+Here task "demo" is in realtime mode.
+
+it's important to know.
 
