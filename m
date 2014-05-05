@@ -1,10 +1,10 @@
-Message-ID: <53676ACB.4030204@xenomai.org>
-Date: Mon, 05 May 2014 12:41:15 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <53676B5A.4060909@xenomai.org>
+Date: Mon, 05 May 2014 12:43:38 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <DUB121-W16C3D6303DA348F2821C53814C0@phx.gbl>
 In-Reply-To: <DUB121-W16C3D6303DA348F2821C53814C0@phx.gbl>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Round-robin "unknown error -3"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,14 +18,10 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: mobin Motallebizadeh <mobin.seven@live.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 On 05/05/2014 12:04 PM, mobin Motallebizadeh wrote:
-> I used the "round-robin-example.c" and got the
-> "round-robin-example-output".the first task returns 0 (success) and
-> works correctlyothers return -3.what am I doing wrong.thanks in
-> advance
+> I used the "round-robin-example.c" and got the "round-robin-example-output".the first task returns 0 (success) and works correctlyothers return -3.what am I doing wrong.thanks in advance 		 	   		
 
-rt_task_slice return value is 0 if successful and a negative error in
-case of error. So, you should pass -err to strerror, not err.
+-ESRCH, unknown task. Your demo task exits after 200 ms runtime.
 
 -- 
-                                                                Gilles.
+Philippe.
 
