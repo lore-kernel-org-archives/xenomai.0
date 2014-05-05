@@ -1,17 +1,13 @@
-Message-ID: <53676B5B.3020409@xenomai.org>
-Date: Mon, 05 May 2014 12:43:39 +0200
+Message-ID: <53676D14.4050502@xenomai.org>
+Date: Mon, 05 May 2014 12:51:00 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <DUB121-W7067785C23E81792E6879816E0@phx.gbl>,
- <533FED48.6000409@xenomai.org>,
- <DUB121-W25E81E35147A9FAF3D07D81690@phx.gbl>
- <DUB121-W28D0B56879463825E4F1B281690@phx.gbl>,
- <53418206.1040601@xenomai.org> <DUB121-W24F26324C941C6D102E58A814C0@phx.gbl>
-In-Reply-To: <DUB121-W24F26324C941C6D102E58A814C0@phx.gbl>
+References: <53661901.8090400@cantastic.org> <53666383.9010302@xenomai.org>
+ <536741B1.8010800@cantastic.org>
+In-Reply-To: <536741B1.8010800@cantastic.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] problem with Task management services: Synchronous
- message passing
+Subject: Re: [Xenomai] Testing on Freescale i.MX6
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,39 +16,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: mobin Motallebizadeh <mobin.seven@live.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Ralf Roesch <xenomai@cantastic.org>, xenomai@xenomai.org
 
-On 05/05/2014 11:01 AM, mobin Motallebizadeh wrote:
+On 05/05/2014 09:45 AM, Ralf Roesch wrote:
+> On Sun May 04 2014 17:57:55 GMT+0200 (CEST), Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+>> On 05/04/2014 12:40 PM, Ralf Roesch wrote:
+>>> Hi,
+>>>
+>>> based on your suggestions from thread "[Xenomai] ipipe-core-3.10 patch
+>>> for arm"
+>>> I started testing Xenomai on an i.MX6 board [1].
+>>>
+>>>   * checked out branch imx_3.10.17_1.0.0_ga from linux-2.6-imx.git [2]
+>>>   * merged vanilla v3.10.32 tag
+>>>     resolved 3 conflicts:
+>>>     drivers/net/can/flexcan.c
+>>>     drivers/usb/host/ehci.h
+>>>     sound/soc/codecs/wm8962.c
+>>>   * applied ipipe-v3.10.32.patch
+>>>     resolved 4 conflicts:
+>>>     arch/arm/mach-imx/clk-imx6q.c
+>>>     arch/arm/mach-imx/mach-imx6q.c
+>>>     arch/arm/mach-imx/mm-imx27.c
+>>>     arch/arm/mach-imx/mm-imx3.c
+>>>   * applied xenomai-2.6 support (prepare-kernel.sh)
+>>>
+>>> My box boots without errors and seems to be quiet stable at the first
+>>> glance.
+>>> Linux arm 3.10.32-xenomai-armv7-x1 #24 SMP Sun May 4 12:17:10 CEST 2014
+>>> armv7l GNU/Linux
+>>>
+>>> The first thing I observed is a system time problem:
+>>> the RTC and system time clocks get out of phase very quickly.
+>>> I do compare the timers (end - start) on console by calling:
+>>>     - hwclock && date (start)
+>>>     - wait an hour or more
+>>>     - hwclock && date (end)
+>>> The hwclock time is always o.k. but the system time reported by date is
+>>> roughly 25% faster.
+>>> Do you have an idea what could go wrong here?
+>> The timer frequency. Did you not forget to disable CONFIG_CPU_FREQ? Do
+>> you have the same issue without the I-pipe patch?
+>>
+>>
+> Thanks Gilles, I had not disabled the CONFIG_CPU_FREQ.
+> After disabling I had also to disable CONFIG_PM, because I got a lot of
+> unresolved linker errors.
+> More fixes  had to be made in various modules where CONFIG_PM was not
+> taken into account.
+> In the end I had a bootable kernel, where the "out of phase of timer
+> problem"  has been resolved.
+> Both timers keep in sync now.
 > 
+> The kernel without I-pipe patch did work correctly, sorry for not
+> mentioning that before.
 > 
->> Date: Sun, 6 Apr 2014 18:34:14 +0200
->> From: gilles.chanteperdrix@xenomai.org
->> To: mobin.seven@live.com
->> CC: xenomai@xenomai.org
->> Subject: Re: [Xenomai] problem with Task management services: Synchronous message passing
->>
->> On 04/06/2014 06:19 PM, mobin Motallebizadeh wrote:
->>> I dont know what to do with kernel console.please explain more.
->>> I'm running a x86_64 mint Linux pc (core i7)
->>
->> Send us to us what the kernel console tell you... we can not guess what
->> the issue is if you do not send us information about it.
->>
->> Also, the xenomai mailing list is an old fashioned mailing list where we
->> do not top post. So please, no top posting.
->>
->> -- 
->>                                                                 Gilles.
+> I have some more questions regarding timer frequency:
 > 
-> The attachment is the log from netconsole.Thanks in advance
+>   * I prefer to leave CONFIG_CPU_FREQ enabled,
+>     because in this case I can use the CPUFreq governor (cpufrequtils
+>     package)
+>     to use the highest frequency, i.e. "performance"
+>   * if the governer is set to "performance" a frequency switch shoud not
+>     be possible
+>     (because the processor is fixed to the high rate)
+>   * without governer I can not use the highest rate of the processor:
+>     - the frequency (now) without CONFIG_CPU_FREQ is 792MHz
+>     - when CONFIG_CPU_FREQ is enabled (before) and governer set to
+>     performance it is 996MHz
+> 
+> If I compare this both frequencies (792MHz vs. 996MHz) I estimate there
+> is a wrong scaling factor responsible for the "out of phase" problem.
 
-The error is on the first line of the logs:
-
-[  111.023581] Watchdog detected hard LOCKUP on cpu 0
-[  128.060170] BUG: soft lockup - CPU#1 stuck for 23s! [satch:2028]
-
-Your program has spinned 23s without relinquishing cpu.
-
+Look at the mx6 patch for 3.0.43, it solves a similar issue. We support
+mainline, and freescale 3.0.35, not freescale 3.10, so, you may have a
+lot of issues with this version which were solved for 3.0.43 but are not
+in the patch for mainline 3.10. If I remember correctly, there were
+multiple such issues such as idle thread and broadcast timer.
 
 -- 
                                                                 Gilles.
