@@ -1,13 +1,12 @@
-Message-ID: <53679C78.9080201@xenomai.org>
-Date: Mon, 05 May 2014 16:13:12 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <1399222750.71931.YahooMailNeo@web171601.mail.ir2.yahoo.com>
- <53676902.5050405@xenomai.org> <53679A45.2060309@xenomai.org>
-In-Reply-To: <53679A45.2060309@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] FreeRTOS skin
+In-Reply-To: <CAF-_xSSo5O==HvcV+NMBog2k6_JHm9FNTg5Cv_q0Wm03vpnKBw@mail.gmail.com>
+References: <CAF-_xSQO+RJ8UFNZpoPyifKew3k+vbJufuGD5YuxtdEeub9_5Q@mail.gmail.com>
+ <CAF-_xSSo5O==HvcV+NMBog2k6_JHm9FNTg5Cv_q0Wm03vpnKBw@mail.gmail.com>
+Date: Mon, 5 May 2014 11:48:23 -0400
+Message-ID: <CAK4EZFTgGSFVhki=bNTjHPRsSsznSAW746WbYgndCoCXG5qYiA@mail.gmail.com>
+From: Adam Vaughan <vaughana@umich.edu>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Raspberry Pi UART and SPI RTDM drivers
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,23 +15,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Massimo Savina <massimo.savina@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/05/2014 04:03 PM, Gilles Chanteperdrix wrote:
-> On 05/05/2014 12:33 PM, Philippe Gerum wrote:
->> - vTaskSuspendAll()/vTaskResumeAll() maintain useless status flags.
->> Copperplate provides __THREAD_S_SUSPENDED in the core status of threads
->> for the very same purpose.
+I don't think anyone has written RTDM drivers for the SPI and UART
+peripherals yet.
+
+
+On Mon, May 5, 2014 at 4:21 AM, Massimo Savina <massimo.savina@gmail.com>wrote:
+
+> 2014-04-29 17:07 GMT+02:00 Massimo Savina <massimo.savina@gmail.com>:
 >
-> I believe in FreeRTOS vTaskSuspendAll/vTaskResumeAll is more like a task
-> lock mechanism than a service suspending/resuming all tasks for real. Of
-> course this only provides mutual exclusion on UP.
+> > Hi guys,
+> > I started to develop an application based on the Raspberry Pi, which
+> makes
+> > use of SPI and UART peripherals, to talk with realtime hardware (1ms loop
+> > on SPI, 10ms loop on UART).
+> > So I need of realtime drivers for the SPI and UART port.
+> > 1) Can I use the current 16550A-Compatible UART driver or do I have to
+> > adapt it to the PL011 available on RPi Broadcom?
+> > 2) Is already available a SPI rtdm driver for RPi, or where it is better
+> > to start to write one from myself?
+> >
+> > Thank in advance,
+> > Massimo.
+> >
 >
+> Hi,
+> is there someone than can help me with my issues?
+> Best regards.
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
 >
-
-Definitely, this is threadobj_sched_lock() in all its glory. A bit of a 
-misnomer. So the current implementation could be simplified a lot it seems.
-
--- 
-Philippe.
-
