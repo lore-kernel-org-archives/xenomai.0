@@ -1,12 +1,17 @@
-Message-ID: <53676B5A.4060909@xenomai.org>
-Date: Mon, 05 May 2014 12:43:38 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <53676B5B.3020409@xenomai.org>
+Date: Mon, 05 May 2014 12:43:39 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <DUB121-W16C3D6303DA348F2821C53814C0@phx.gbl>
-In-Reply-To: <DUB121-W16C3D6303DA348F2821C53814C0@phx.gbl>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <DUB121-W7067785C23E81792E6879816E0@phx.gbl>,
+ <533FED48.6000409@xenomai.org>,
+ <DUB121-W25E81E35147A9FAF3D07D81690@phx.gbl>
+ <DUB121-W28D0B56879463825E4F1B281690@phx.gbl>,
+ <53418206.1040601@xenomai.org> <DUB121-W24F26324C941C6D102E58A814C0@phx.gbl>
+In-Reply-To: <DUB121-W24F26324C941C6D102E58A814C0@phx.gbl>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Round-robin "unknown error -3"
+Subject: Re: [Xenomai] problem with Task management services: Synchronous
+ message passing
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,11 +22,38 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: mobin Motallebizadeh <mobin.seven@live.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/05/2014 12:04 PM, mobin Motallebizadeh wrote:
-> I used the "round-robin-example.c" and got the "round-robin-example-output".the first task returns 0 (success) and works correctlyothers return -3.what am I doing wrong.thanks in advance 		 	   		
+On 05/05/2014 11:01 AM, mobin Motallebizadeh wrote:
+> 
+> 
+>> Date: Sun, 6 Apr 2014 18:34:14 +0200
+>> From: gilles.chanteperdrix@xenomai.org
+>> To: mobin.seven@live.com
+>> CC: xenomai@xenomai.org
+>> Subject: Re: [Xenomai] problem with Task management services: Synchronous message passing
+>>
+>> On 04/06/2014 06:19 PM, mobin Motallebizadeh wrote:
+>>> I dont know what to do with kernel console.please explain more.
+>>> I'm running a x86_64 mint Linux pc (core i7)
+>>
+>> Send us to us what the kernel console tell you... we can not guess what
+>> the issue is if you do not send us information about it.
+>>
+>> Also, the xenomai mailing list is an old fashioned mailing list where we
+>> do not top post. So please, no top posting.
+>>
+>> -- 
+>>                                                                 Gilles.
+> 
+> The attachment is the log from netconsole.Thanks in advance
 
--ESRCH, unknown task. Your demo task exits after 200 ms runtime.
+The error is on the first line of the logs:
+
+[  111.023581] Watchdog detected hard LOCKUP on cpu 0
+[  128.060170] BUG: soft lockup - CPU#1 stuck for 23s! [satch:2028]
+
+Your program has spinned 23s without relinquishing cpu.
+
 
 -- 
-Philippe.
+                                                                Gilles.
 
