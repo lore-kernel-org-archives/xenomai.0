@@ -1,12 +1,11 @@
-Message-ID: <536741B1.8010800@cantastic.org>
-Date: Mon, 05 May 2014 09:45:53 +0200
-From: Ralf Roesch <xenomai@cantastic.org>
 MIME-Version: 1.0
-References: <53661901.8090400@cantastic.org> <53666383.9010302@xenomai.org>
-In-Reply-To: <53666383.9010302@xenomai.org>
+In-Reply-To: <CAF-_xSQO+RJ8UFNZpoPyifKew3k+vbJufuGD5YuxtdEeub9_5Q@mail.gmail.com>
+References: <CAF-_xSQO+RJ8UFNZpoPyifKew3k+vbJufuGD5YuxtdEeub9_5Q@mail.gmail.com>
+Date: Mon, 5 May 2014 10:21:01 +0200
+Message-ID: <CAF-_xSSo5O==HvcV+NMBog2k6_JHm9FNTg5Cv_q0Wm03vpnKBw@mail.gmail.com>
+From: Massimo Savina <massimo.savina@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Testing on Freescale i.MX6
+Subject: Re: [Xenomai] Raspberry Pi UART and SPI RTDM drivers
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,76 +16,22 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-On Sun May 04 2014 17:57:55 GMT+0200 (CEST), Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On 05/04/2014 12:40 PM, Ralf Roesch wrote:
->> Hi,
->>
->> based on your suggestions from thread "[Xenomai] ipipe-core-3.10 patch
->> for arm"
->> I started testing Xenomai on an i.MX6 board [1].
->>
->>   * checked out branch imx_3.10.17_1.0.0_ga from linux-2.6-imx.git [2]
->>   * merged vanilla v3.10.32 tag
->>     resolved 3 conflicts:
->>     drivers/net/can/flexcan.c
->>     drivers/usb/host/ehci.h
->>     sound/soc/codecs/wm8962.c
->>   * applied ipipe-v3.10.32.patch
->>     resolved 4 conflicts:
->>     arch/arm/mach-imx/clk-imx6q.c
->>     arch/arm/mach-imx/mach-imx6q.c
->>     arch/arm/mach-imx/mm-imx27.c
->>     arch/arm/mach-imx/mm-imx3.c
->>   * applied xenomai-2.6 support (prepare-kernel.sh)
->>
->> My box boots without errors and seems to be quiet stable at the first
->> glance.
->> Linux arm 3.10.32-xenomai-armv7-x1 #24 SMP Sun May 4 12:17:10 CEST 2014
->> armv7l GNU/Linux
->>
->> The first thing I observed is a system time problem:
->> the RTC and system time clocks get out of phase very quickly.
->> I do compare the timers (end - start) on console by calling:
->>     - hwclock && date (start)
->>     - wait an hour or more
->>     - hwclock && date (end)
->> The hwclock time is always o.k. but the system time reported by date is
->> roughly 25% faster.
->> Do you have an idea what could go wrong here?
-> The timer frequency. Did you not forget to disable CONFIG_CPU_FREQ? Do
-> you have the same issue without the I-pipe patch?
+2014-04-29 17:07 GMT+02:00 Massimo Savina <massimo.savina@gmail.com>:
+
+> Hi guys,
+> I started to develop an application based on the Raspberry Pi, which makes
+> use of SPI and UART peripherals, to talk with realtime hardware (1ms loop
+> on SPI, 10ms loop on UART).
+> So I need of realtime drivers for the SPI and UART port.
+> 1) Can I use the current 16550A-Compatible UART driver or do I have to
+> adapt it to the PL011 available on RPi Broadcom?
+> 2) Is already available a SPI rtdm driver for RPi, or where it is better
+> to start to write one from myself?
 >
+> Thank in advance,
+> Massimo.
 >
-Thanks Gilles, I had not disabled the CONFIG_CPU_FREQ.
-After disabling I had also to disable CONFIG_PM, because I got a lot of
-unresolved linker errors.
-More fixes  had to be made in various modules where CONFIG_PM was not
-taken into account.
-In the end I had a bootable kernel, where the "out of phase of timer
-problem"  has been resolved.
-Both timers keep in sync now.
 
-The kernel without I-pipe patch did work correctly, sorry for not
-mentioning that before.
-
-I have some more questions regarding timer frequency:
-
-  * I prefer to leave CONFIG_CPU_FREQ enabled,
-    because in this case I can use the CPUFreq governor (cpufrequtils
-    package)
-    to use the highest frequency, i.e. "performance"
-  * if the governer is set to "performance" a frequency switch shoud not
-    be possible
-    (because the processor is fixed to the high rate)
-  * without governer I can not use the highest rate of the processor:
-    - the frequency (now) without CONFIG_CPU_FREQ is 792MHz
-    - when CONFIG_CPU_FREQ is enabled (before) and governer set to
-    performance it is 996MHz
-
-If I compare this both frequencies (792MHz vs. 996MHz) I estimate there
-is a wrong scaling factor responsible for the "out of phase" problem.
-
---
-Ralf
-
+Hi,
+is there someone than can help me with my issues?
+Best regards.
