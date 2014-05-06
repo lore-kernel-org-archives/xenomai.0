@@ -1,11 +1,9 @@
 References: <1399222750.71931.YahooMailNeo@web171601.mail.ir2.yahoo.com>
- <53676902.5050405@xenomai.org> <53679427.90603@xenomai.org>
- <1399360194.79292.YahooMailNeo@web171603.mail.ir2.yahoo.com>
- <53689342.2050005@xenomai.org>
-Message-ID: <1399395015.38309.YahooMailNeo@web171606.mail.ir2.yahoo.com>
-Date: Tue, 6 May 2014 17:50:15 +0100 (BST)
+ <53676902.5050405@xenomai.org>
+Message-ID: <1399396759.65313.YahooMailNeo@web171604.mail.ir2.yahoo.com>
+Date: Tue, 6 May 2014 18:19:19 +0100 (BST)
 From: Matthias Schneider <ma30002000@yahoo.de>
-In-Reply-To: <53689342.2050005@xenomai.org>
+In-Reply-To: <53676902.5050405@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: quoted-printable
@@ -21,71 +19,83 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-> From: Philippe Gerum <rpm@xenomai.org>=0A> On 05/06/2014 09:09 AM, Matthi=
-as Schneider wrote:=0A>>> On 05/05/2014 12:33 PM, Philippe Gerum wrote:=0A>=
->>>     On 05/04/2014 06:59 PM, Matthias Schneider wrote:=0A>>>>>     Hi al=
-l,=0A>>>>>=A0=0A>>>>>     please find enclosed a patch with a FreeRTOS skin=
- for xenomai-forge I=0A>>>>>     have  been  working on for some time.=A0=
-=0A[...]=A0=0A>>>>=A0=0A>>>>     Ok, thanks for this. Let's address issues =
-gradually,  starting with the=0A>>>>     task module.=0A>>>>=A0=0A>>>=A0=0A=
->>> In addition to the above, there are a few coding style items:=0A>>>=A0=
-=0A>>> - Please always take the fastest possible path when exiting on error=
-,=0A>>>     so that we don't have to cripple the normal processing followin=
-g the=0A>>>     failure point with error-specific checks. e.g. what is done=
- with  the=0A>>>     "task" variable in vTaskStartScheduler(), within the t=
-hread=0A>>>     cancellation loop, ends up being convoluted and confusing, =
-compared=0A>>>     to unwinding and leaving the routine immediately after t=
-he error is=0A>>>     detected.=0A>>=A0=0A>>=A0=0A>> I will review the code=
- and simplify occurrences of the mentioned pattern.=0A>> However I do not s=
-ee this pattern in this particular code fragment, since=A0=0A> it basically=
- does the following:=0A>>=A0=0A>> * take the first entry of the task list=
-=0A>=A0=0A> The first check for list emptiness looks racy, as it is not cov=
-ered by=A0=0A> the scheduler.lock.=0A=0ATrue. See below.=0A=0A=0A>> * check=
- if the task object can be locked=0A>> * unlock the scheduler lock=0A>> * i=
-f it was possible to lock the task, cancel it=0A>> * else wait 1ms and try =
-to lock it again=0A>=A0=0A> If you found it in your task queue but can't lo=
-ck it, then call Houston=A0=0A> because we have a problem: the task finaliz=
-er where this task is dropped=A0=0A> from the list runs prior to deleting t=
-he lock. However, testing for the=A0=0A> magic word on success is indeed re=
-quired in the current implementation,=A0=0A> since the thread lock is dropp=
-ed shortly prior to canceling the thread=A0=0A> in copperplate.=0A>=A0=0A> =
-You could use pvlist_for_each_entry_safe() for iterating over the task=A0=
-=0A> queue.=0A>=A0=0A>>=A0=0A>> No error condition leads to leaving this lo=
-op. I do agree however, that the=0A>> code is convoluted, mainly due to the=
- erroneous-looking nested locks, one=0A>> for protecting freertos_task_list=
- and one locking the threadobj. The list=A0=0A> should be locked while acce=
-ssing it, while holding it when cancelling the=A0=0A> threadobj will lead t=
-o deadlocks (task_finalizer takes freertos_scheduler.lock).=0A>>=A0=0A>=A0=
-=0A> Setting task to NULL upon locking error, only for the purpose of=A0=0A=
-> avoiding the magic check in the normal code flow is the issue I mentioned=
-:=0A>=A0=0A>         if (task && threadobj_lock(&task->thobj) =3D=3D -EINVA=
-L)=0A>             task =3D NULL;=0A>=A0=0A>         if (task && threadobj_=
-get_magic(&task->thobj) !=3D=A0=0A> task_magic) {=0A>             threadobj=
-_unlock(&task->thobj);=0A>             task =3D NULL;=0A>         }=0A>=A0=
-=0A[...]=A0=0A=0AOk let's simplify the code (and add the missing lock):=0A=
-=0Awrite_lock_nocancel(&freertos_scheduler.lock);=0Afreertos_scheduler.stat=
-e =3D taskSCHEDULER_NOT_STARTED;=0A=0A/* cancel all tasks in list */=0Awhil=
-e (!pvlist_empty(&freertos_task_list)) {=0A=A0 =A0 task =3D pvlist_first_en=
-try(&freertos_task_list, struct freertos_task, next);=0A=A0 =A0 if (threado=
-bj_lock(&task->thobj) !=3D -EINVAL) {=0A=A0 =A0 =A0 =A0 =A0 =A0 if (threado=
-bj_get_magic(&task->thobj) =3D=3D task_magic) {=0A=A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 /* need to leave freertos_scheduler.lock since it is=0A=A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 taken in task_finalizer while w=
-e block in=0A=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 threadobj_canc=
-el */=0A=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 write_unlock(&freertos_sche=
-duler.lock);=0A=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 threadobj_cancel(&ta=
-sk->thobj);=0A=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 write_lock_nocancel(&=
-freertos_scheduler.lock);=0A=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 continu=
-e;=0A=A0 =A0 =A0 =A0 =A0 =A0 }=0A=A0 =A0 =A0 =A0 =A0 =A0 threadobj_unlock(&=
-task->thobj);=0A=A0 =A0 }=0A=A0 =A0 /* Need to release the lock for a while=
- since a task in deletion=0A=A0 =A0 =A0 =A0 may need it to unregister itsel=
-f from freertos_task_list */=0A=A0 =A0 write_unlock(&freertos_scheduler.loc=
-k);=0A=A0 =A0 struct timespec rqt;=0A=A0 =A0 clockobj_ticks_to_timeout(&fre=
-ertos_clock,=0A=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-0.001 * xGetTicksPerSecond(),=0A=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0 =A0 =A0 =A0 &rqt);=0A=A0 =A0 threadobj_sleep(&rqt);=0A=A0 =A0 write_lo=
-ck_nocancel(&freertos_scheduler.lock);=0A}=0Awrite_unlock(&freertos_schedul=
-er.lock);=0A=0AI had used pvlist_for_each_entry_safe() originally, but due =
-to the possibility=A0=0Ahaving to=A0access a single task multiple times, I =
-ended up=A0with two nested loops.=0A=0A> --=A0=0A> Philippe.=0A>
+----- Original Message -----=0A> From: Philippe Gerum <rpm@xenomai.org>=0A>=
+ To: Matthias Schneider <ma30002000@yahoo.de>; "xenomai@xenomai.org" <xenom=
+ai@xenomai.org>=0A> Cc:=A0=0A> Sent: Monday, May 5, 2014 12:33 PM=0A> Subje=
+ct: Re: [Xenomai] FreeRTOS skin=0A>=A0=0A> On 05/04/2014 06:59 PM, Matthias=
+ Schneider wrote:=0A>=A0=0A>> Hi all,=0A>>=A0=0A>> please find enclosed a p=
+atch with a FreeRTOS skin for xenomai-forge I have=0A>> been  working on fo=
+r some time. I would like to get some feedback and advice=0A>> what still n=
+eeds to be done to get it accepted in Xenomai. There is a set of=0A>> unit =
+tests included and the possibility to download the original FreeRTOS packag=
+e=0A>> in order to run most of its (platform independent) test suite. Until=
+ now I have=0A>> been working under mercury only. Documentation is availabl=
+e in form of a README=0A>> file in lib/freertos/README, which should also b=
+e a good starting point.=0A>=A0=0A> Ok, thanks for this. Let's address issu=
+es gradually, starting with the task module.=0A=0AI will try to address som=
+e of the mentioned issues now, the rest later:=0A=0A> I'd suggest to revisi=
+t the following mechanisms to get our feet wet:=A0=0A> vTaskStartScheduler(=
+)/vTaskEndScheduler() and=A0=0A> vTaskSuspendAll()/vTaskResumeAll().=0A>=A0=
+=0A> - synchronizing on scheduler start/stop events can be made simpler, by=
+=A0=0A> waiting on a barrier after threadobj_wait_start() has returned in t=
+he=A0=0A> task trampoline, meanwhile starting all tasks copperplate-wise at=
+=A0=0A> creation time via threadobj_start(). Such additional barrier should=
+ be a=A0=0A> condition variable protected by your current scheduler.lock mu=
+tex,=A0=0A> signaled by vTaskStartScheduler(). Tasks would have to check fo=
+r the=A0=0A> scheduler state before breaking the wait loop.=0A>=A0=0A> - as=
+suming that threadobj_cancel() already waits for the canceled thread=A0=0A>=
+ to finalize, you should only need to change the scheduler object state=A0=
+=0A> in vTaskEndScheduler() prior to cancelling all tasks. You should not=
+=A0=0A> need the extra syncobj.=0A=0AAre you referring to freertos_schedule=
+r.sem? It is used to blocke the=A0=0Amain thread while the "scheduer" is ru=
+nning. Even when moving the task=A0=0Acancellation loop to inside the vTask=
+EndScheduler(), vTaskStartScheduler()=0Awould still need to block until vTa=
+skEndScheduler() is a=0A=0A> - vTaskSuspendAll()/vTaskResumeAll() maintain =
+useless status flags.=A0=0A> Copperplate provides __THREAD_S_SUSPENDED in t=
+he core status of threads=A0=0A> for the very same purpose.=0A=0AThis is no=
+t entirely correct. Consider the following case (part of the demo=0Aactuall=
+y):=0A=0AvTaskSuspendAll();=0AvTaskSuspend(th1);=0AvTaskResumeAll();=0A=0AT=
+his is supposed to leave th1 suspended after vTaskResumeAll(). This=A0=0Ain=
+formation needs to be stored somewhere. After vTaskSuspendAll(), all=0Aexce=
+pt the current thread have __THREAD_S_SUSPENDED set, so another way to=0Ast=
+ore this informaion is needed. I have also experimented modelling these=A0=
+=0Afunctions using threadobj_sched_lock() & co., however, even on UP machin=
+es=0Athe following code would not behave as supposed:=0A=0AvTaskSuspendAll(=
+);=0AvTaskDelay(xGetTicksPerSecond() * 0.01);=0AvTaskResumeAll();=0A=0AObvi=
+ously, during vTaskDelay() other tasks of lower than "sched" prio may=0Abe =
+executed.=0A=0A> The other set of issues is all about locking is managed. A=
+ couple of hints:=0A>=A0=0A> - vPortEnterCritical()/vPortExitCritical() can=
+'t be emulated since we=A0=0A> can't mask IRQs in userland (and we certainl=
+y don't want to even try=A0=0A> doing so). This would be a RTDM driver's bu=
+siness in the Xenomai model.=A0=0A> Looking at the FreeRTOS doc, the closes=
+t approximation would be=A0=0A> threadobj_sched_lock() in userland, but sin=
+ce hardware drivers should=A0=0A> move to kernel space over RTDM, I'm unsur=
+e emulating these calls has any=A0=0A> benefit in our context.=0A=0ACorrect=
+. I though I had seen use of it in the plateform-independent demo=0Apreviou=
+sly, but apparently I remember incorrectly. Defining them as empty=0Afuncti=
+ons thus.=0A=0A>=A0=0A> - threadobj_sched_lock() does not prevent the calle=
+r from scheduling=0A> out, it only stops involuntary preemption when runnin=
+g non-blocking=A0=0A> code. Typically, locking a mutex is potentially block=
+ing code, so the=A0=0A> guarantee disappears in that case. IIUC, the curren=
+t code assumes more=A0=0A> than this. Moreover, issuing a sleeping call vol=
+untarily when holding=A0=0A> this lock is logically wrong, even if Xenomai =
+won't jump over the window=A0=0A> doing so, unlike many RTOS vTaskStartSche=
+duler()).=0A>=A0=0A> - the read/write_lock_nocancel() form is reserved for =
+protecting=A0=0A> sections which are known not to traverse cancellation poi=
+nts, as defined=A0=0A> by POSIX=A0=0A> (http://pubs.opengroup.org/onlinepub=
+s/009695399/functions/xsh_chap02_09.html).=A0=0A> This is about self-docume=
+ntation of the code, and optimizing execution=A0=0A> by omitting costly man=
+agement of cleanup blocks when it is deemed safe=A0=0A> to do so.=0A>=A0=0A=
+> - CANCEL_DEFER() / CANCEL_RESTORE() should protect sections against=A0=0A=
+> asynchronous cancellation, we typically do this before invoking the=A0=0A=
+> copperplate layer, so that we may assume that pthread_cancel() won't be=
+=A0=0A> a problem when running inner code, provided we have been careful ab=
+out=A0=0A> handling read/write lock cleanups. These macros work by disablin=
+g=A0=0A> asynchronous cancellation for the current thread when=A0=0A> --ena=
+ble-async-cancel was given at build time. Otherwise, this part is a=A0=0A> =
+nop.=0A>=A0=0A> - Scheduler.queued_task, .state and .num_tasks all seem log=
+ically=A0=0A> related. So .num_tasks should be updated holding Scheduler.lo=
+ck, instead=A0=0A> of using an atomic type. We'd need to issue smp_rmb() pr=
+ior to reading=A0=0A> that counter locklessly.=0A>=A0=0A> HTH,=0A>=A0=0A> -=
+-=A0=0A> Philippe.=0A>
 
