@@ -1,5 +1,5 @@
-Message-ID: <53689FAA.1000905@xenomai.org>
-Date: Tue, 06 May 2014 10:39:06 +0200
+Message-ID: <5368A3A2.1010302@xenomai.org>
+Date: Tue, 06 May 2014 10:56:02 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <20140502141307.B6A14EC0@centrum.cz>
@@ -113,16 +113,10 @@ On 05/06/2014 10:17 AM, Petr Cervenka wrote:
 > :   + (0x55)    0x00000000    -3      0.119  losyscall_event+0x292
 > (ipipe_syscall_hook+0x89)
 > Long version is in the attachment.
->
 
-Ok, thanks. Things are getting clearer: the real-time core believes it 
-has kicked a thread out of sleep for receiving a linux signal, but linux 
-does not have any signal to process for this thread. So the real-time 
-core ends up propagating EINTR to userland as nobody clears the kick 
-notification Xenomai-wise. Ok, something is definitely wrong in the 
-Xenomai core logic here.
+Could you post your kernel config?
 
-And this bug is likely present in Xenomai 3/Cobalt as well.
+TIA,
 
 -- 
 Philippe.
