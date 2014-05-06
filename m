@@ -1,15 +1,12 @@
-Message-ID: <5368953E.50204@xenomai.org>
-Date: Tue, 06 May 2014 09:54:38 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Tue, 06 May 2014 10:17:35 +0200
+From: =?utf-8?q?Petr_Cervenka?= <grugh@centrum.cz>
+References: <20140502141307.B6A14EC0@centrum.cz> <53639AC8.1000507@xenomai.org>
+In-Reply-To: <53639AC8.1000507@xenomai.org>
 MIME-Version: 1.0
-References: <1399222750.71931.YahooMailNeo@web171601.mail.ir2.yahoo.com>
- <53676902.5050405@xenomai.org> <53679427.90603@xenomai.org>
- <1399360194.79292.YahooMailNeo@web171603.mail.ir2.yahoo.com>
- <53689342.2050005@xenomai.org>
-In-Reply-To: <53689342.2050005@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] FreeRTOS skin
+Message-Id: <20140506101735.3A0BEBEB@centrum.cz>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Subject: Re: [Xenomai] =?utf-8?q?non-blocking_rt=5Ftask=5Fsuspend=28NULL=29?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,79 +15,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?utf-8?q?Philippe_Gerum?= <rpm@xenomai.org>, =?utf-8?q?Gilles_Chanteperdrix?= <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 05/06/2014 09:46 AM, Philippe Gerum wrote:
-> On 05/06/2014 09:09 AM, Matthias Schneider wrote:
->> ----- Original Message -----
->>> From: Philippe Gerum <rpm@xenomai.org>
->>> To: Matthias Schneider <ma30002000@yahoo.de>; "xenomai@xenomai.org"
->>> <xenomai@xenomai.org>
->>> Cc:
->>> Sent: Monday, May 5, 2014 3:37 PM
->>> Subject: Re: [Xenomai] FreeRTOS skin
->>>
->>> On 05/05/2014 12:33 PM, Philippe Gerum wrote:
->>>>    On 05/04/2014 06:59 PM, Matthias Schneider wrote:
->>>>>    Hi all,
->>>>>
->>>>>    please find enclosed a patch with a FreeRTOS skin for
->>>>> xenomai-forge I
->>>>>    have
->>>>>    been  working on for some time. I would like to get some
->>>>> feedback and
->>>>>    advice
->>>>>    what still needs to be done to get it accepted in Xenomai. There
->>>>> is a
->>>>>    set of
->>>>>    unit tests included and the possibility to download the original
->>>>>    FreeRTOS package
->>>>>    in order to run most of its (platform independent) test suite.
->>>>> Until
->>>>>    now I have
->>>>>    been working under mercury only. Documentation is available in
->>>>> form of
->>>>>    a README
->>>>>    file in lib/freertos/README, which should also be a good starting
->>> point.
->>>>
->>>>    Ok, thanks for this. Let's address issues gradually, starting
->>>> with the
->>>>    task module.
->>>>
->>>
->>> In addition to the above, there are a few coding style items:
->>>
->>> - Please always take the fastest possible path when exiting on error,
->>>     so that we don't have to cripple the normal processing following the
->>>     failure point with error-specific checks. e.g. what is done with the
->>>     "task" variable in vTaskStartScheduler(), within the thread
->>>     cancellation loop, ends up being convoluted and confusing, compared
->>>     to unwinding and leaving the routine immediately after the error is
->>>     detected.
->>
->>
->> I will review the code and simplify occurrences of the mentioned pattern.
->> However I do not see this pattern in this particular code fragment,
->> since it basically does the following:
->>
->> * take the first entry of the task list
->
-> The first check for list emptiness looks racy, as it is not covered by
-> the scheduler.lock.
->
->> * check if the task object can be locked
->> * unlock the scheduler lock
->> * if it was possible to lock the task, cancel it
->> * else wait 1ms and try to lock it again
->
-> If you found it in your task queue but can't lock it, then call Houston
-> because we have a problem: the task finalizer where this task is dropped
-> from the list runs prior to deleting the lock.
-
-No, I'm wrong. There is still a race which could allow that. So we need 
-both checks.
-
--- 
-Philippe.
-
+PiBPZDogUGhpbGlwcGUgR2VydW0gPHJwbUB4ZW5vbWFpLm9yZz4KPgo+IENDOiAiWGVub21haSIg
+PHhlbm9tYWlAeGVub21haS5vcmc+Cj5PbiAwNS8wMi8yMDE0IDAyOjEzIFBNLCBQZXRyIENlcnZl
+bmthIHdyb3RlOgo+Pj4gT2Q6ICJQZXRyIENlcnZlbmthIiA8Z3J1Z2hAY2VudHJ1bS5jej4KPj4+
+Cj4+PiBDQzogIlhlbm9tYWkiIDx4ZW5vbWFpQHhlbm9tYWkub3JnPgo+Pj4+IE9kOiBHaWxsZXMg
+Q2hhbnRlcGVyZHJpeCA8Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmc+Cj4+Pj4KPj4+
+PiBDQzogIlhlbm9tYWkiIDx4ZW5vbWFpQHhlbm9tYWkub3JnPgo+Pj4+IE9uIDA0LzI0LzIwMTQg
+MDU6MDYgUE0sIFBldHIgQ2VydmVua2Egd3JvdGU6Cj4+Pj4+PiBPZDogR2lsbGVzIENoYW50ZXBl
+cmRyaXggPGdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnPgo+Pj4+Pj4KPj4+Pj4+PiBT
+SUdERUJVRyBzaWduYWwgd2FzIG5vdCByZWNlaXZlZC4gVGFzayBzdGF0dXMgZnJvbQo+Pj4+Pj4+
+IHJ0X3Rhc2tfaW5xdWlyZSgpIHdhcyAweDMwMDE4MCBvciAweDMwMDM4MCAoZGVwZW5kcyB3aGVy
+ZSBpdCBpcwo+Pj4+Pj4+IHBsYWNlZCkgV2hlbiB0aGUgdGFzayBpcyBpbiB0aGUgIndyb25nIiBz
+dGF0ZSwgYWxzbyB0aGUgY2FsbCBvZgo+Pj4+Pj4+IHJ0X3Rhc2tfc2xlZXAoMTAwMDAwKSBpcyBy
+ZXR1cm5pbmcgcGVybWFuZW50bHkgLUVJTlRSIGNvZGUuIERvCj4+Pj4+Pj4geW91IGhhdmUgYW55
+IG90aGVyIGlkZWEgd2hhdCB0byBjaGVjayBvciB3aGF0IGNhbiBjYXVzZSBwZXJoYXBzCj4+Pj4+
+Pj4gZXZlcnkgeGVub21haSBjYWxsIGZhaWwgd2l0aCAtRUlOVFIgaW4gb25lIHRhc2s/Cj4+Pj4+
+Pgo+Pj4+Pj4gSWYgSSBoYWQgdG8gZGVidWcgdGhpcyBpc3N1ZSwgSSB3b3VsZCBlbmFibGUgdGhl
+IEktcGlwZSB0cmFjZXIgYW5kCj4+Pj4+PiB0cmlnZ2VyIGEgdHJhY2UgZnJlZXplIHdoZW4gdGhl
+IC1FSU5UUiBjb2RlIGlzIHJlY2VpdmVkLiBXaXRoCj4+Pj4+PiBlbm91Z2ggdHJhY2UgcG9pbnRz
+LCBpdCBzaG91bGQgYmUgcG9zc2libGUgdG8gdW5kZXJzdGFuZCB3aGF0Cj4+Pj4+PiBoYXBwZW5z
+Lgo+Pj4+Pj4KPj4+Pj4gSSBjYWxsZWQgYSB4bnRyYWNlX3VzZXJfZnJlZXplKCkgaW1tZWRpYXRl
+bHkgd2hlbiB0aGUgaXNzdWUgb2NjdXJzLAo+Pj4+PiBidXQgSSBzaW1wbHkgZG9uJ3QgdW5kZXJz
+dGFuZCB3aGF0IGlzIGhhcHBlbmluZyB0aGVyZS4gVGhlIHRyYWNlCj4+Pj4+IG91dHB1dCBpcyBp
+biB0aGUgYXR0YWNobWVudC4gQ291bGQgeW91IHBsZWFzZSBoZWxwIG1lIHRvIHVuZGVyc3RhbmQK
+Pj4+Pj4gaXQ/Cj4+Pj4+Cj4+Pj4+IEkgYWxzbyBnb3Qgc29tZSBtaW5vciBwcm9ibGVtIHdpdGgg
+eG50cmFjZV91c2VyX2ZyZWV6ZSwgYmVjYXVzZSB0aGUKPj4+Pj4gbGlua2VyIHdhcyBub3QgYWJs
+ZSB0byBmaW5kIGl0OiBhc3luY3dyaXRlci5jcHA6KC50ZXh0KzB4ODQzKToKPj4+Pj4gdW5kZWZp
+bmVkIHJlZmVyZW5jZSB0byBgeG50cmFjZV91c2VyX2ZyZWV6ZSh1bnNpZ25lZCBsb25nLCBpbnQp
+JyBJdAo+Pj4+PiBpcyBkZWZpbmVkIGluIHNyYy9za2lucy9jb21tb24vdHJhY2UuYyBhbmQgKHNo
+b3VsZCBiZSkgY29udGFpbmVkIGluCj4+Pj4+IGxpYnhlbm9tYWkuc28uIEJ1dCBJIHdhcyBub3Qg
+c3VjY2Vzc2Z1bCBhbmQgSSBoYWQgdG8gZGVmaW5lIGl0IG15c2VsZgo+Pj4+PiAodW5kZXIgZGlm
+ZmVyZW50IG5hbWUpLiBWZXJzaW9uIG9mIHhlbm9tYWkgaXMgMi42LjMuCj4+Pj4KPj4+PiBXZSBz
+ZWUgdGhhdCB4bnBvZF9zdXNwZW5kX3RocmVhZCByZXR1cm5zIGltbWVkaWF0ZWx5LCBsaWtlbHkg
+YmVjYXVzZSBpdAo+Pj4+IGhhcyB0aGUgWE5LSUNLRUQgYml0IHNldC4gQ291bGQgeW91IGFkZCBt
+b3JlIGJhY2sgdHJhY2UgcG9pbnRzPyBTbyB0aGF0Cj4+Pj4gd2Ugc2VlIHdoYXQgaXMgc2V0dGlu
+ZyB0aGUgWE5LSUNLRUQgYml0Pwo+Pj4+Cj4+Pgo+Pj4gSSBoYXZlIGFkZGVkIChtYXliZSB0b28g
+bXVjaCkgYmFjayB0cmFjZSBwb2ludHMuIEJ1dCBhcyBsYXN0IHRpbWUsIEknbSBub3QgYWJsZSB0
+byBzZWUgKGFsbW9zdCkgYW55dGhpbmcgaW4gaXQgOy0pCj4+PiBQcmV2aW91cyB4bnBvZF9zdXNw
+ZW5kX3RocmVhZCAob24gbGluZSAzNzEzLCBwcm9iYWJseSBjYXVzZWQgYnkgcnRfbXV0ZXhfYXF1
+aXJlKSBzZWVtcyB0byBiZSBmaW5lIChmb3IgbWU7LSkgKS4KPj4+Cj4+Cj4+IENvdWxkIHlvdSBw
+bGVhc2UgaGVscCBtZSB3aXRoIGFuYWx5c2lzLCB3aGF0IGlzIGhhcHBlbmluZyBpbiB0aGUgdHJh
+Y2UgbG9nPwo+PiBJIG9ubHkgc2VlIGF0IHRoZSBlbmQgb25seSBwZWFjZXMgb2YgbG9nLCB3aGlj
+aCBhcmUgYWxyZWFkeSBjb250YWluZWQgc29tZXdoZXJlIGJlZm9yZS4KPj4gRm9yIGV4YW1wbGUg
+bGluZXMgMzgzMi0zOTkzIGFyZSB0aGUgc2FtZSBhcyAyOTAxLTMwNjIuCj4+IEFsc28gMzY5Ny0z
+ODYxIGFuZCAzMDY1LTMyMjkuCj4+IEFsc28gMzU5Ni0zNjkyIGFuZCAyOTM1LTMwNTgKPj4gQWxz
+byAzMDY1LTM1NTAgYW5kIDI0MDItMjg4Nwo+Pgo+PiBUaGVyZSBhcmUgYWxzbyBzdXNwaWNpb3Vz
+IGxpbmVzIHdpdGggImRldmljZV9ub3RfYXZhaWxhYmxlIiBhbmQgImlwaXBlX2hhbmRsZV9leGNl
+cHRpb24iLCBidXQgdGhleSBzZWVtIHRvIGJlIHJlZ3VsYXJseSBhcHBlYXJpbmcuCj4+Cj4KPlBs
+ZWFzZSBhZGQgdGhlc2UgYml0cyB0byB5b3VyIHRyYWNlIHNldHVwOgo+Cj5kaWZmIC0tZ2l0IGEv
+a3NyYy9udWNsZXVzL3NoYWRvdy5jIGIva3NyYy9udWNsZXVzL3NoYWRvdy5jCj5pbmRleCAxMzg2
+NWEzLi5jY2M1NGE4IDEwMDY0NAo+LS0tIGEva3NyYy9udWNsZXVzL3NoYWRvdy5jCj4rKysgYi9r
+c3JjL251Y2xldXMvc2hhZG93LmMKPkBAIC0yNTE2LDYgKzI1MTYsMTAgQEAgaW50IGRvX2xvc3lz
+Y2FsbF9ldmVudCh1bnNpZ25lZCBldmVudCwgCj5ydGhhbF9waXBlbGluZV9zdGFnZV90ICpzdGFn
+ZSwKPiAgCQkgKiBXZSBtYXkgaGF2ZSBnYWluZWQgYSBzaGFkb3cgVENCIGZyb20gdGhlIHN5c2Nh
+bGwgd2UKPiAgCQkgKiBqdXN0IGludm9rZWQsIHNvIG1ha2Ugc3VyZSB0byBmZXRjaCBpdC4KPiAg
+CQkgKi8KPisJCWlmIChfX3huX2ludGVycnVwdGVkX3AocmVncykpIHsKPisJCQl4bnRyYWNlX3Nw
+ZWNpYWwoMHg0NCwgdGhyZWFkLT5pbmZvKTsKPisJCQl4bnRyYWNlX3NwZWNpYWwoMHg1NSwgc2ln
+bmFsX3BlbmRpbmcoY3VycmVudCkpOwo+KwkJfQo+ICAJCXRocmVhZCA9IHhuc2hhZG93X3RocmVh
+ZChjdXJyZW50KTsKPiAgCQlpZiAoc2lnbmFsX3BlbmRpbmcoY3VycmVudCkpIHsKPiAgCQkJc2ln
+cyA9IDE7Cj4KPgo+VElBLAoKSSBoYXZlIGFwcGxpZWQgdGhlIHBhdGNoIGFuZCBoZXJlIGlzIHRo
+ZSB0cmFjZSBsb2cuIEl0IHRvb2sgYSB3aGlsZSBiZWNhdXNlIHNvbWUgY2hhbmdlIEkgbWFkZSBj
+YXVzZWQgbGVzc2VyIHByb2JhYmlsaXR5IG9mIHRoZSBwcm9ibGVtLgpTaG9ydCB2ZXJzaW9uOgo6
+ICAgKyAoMHg0NCkJMHgwMDAwMDAwYyAgICAtMwkgIDAuMDk3ICBsb3N5c2NhbGxfZXZlbnQrMHgy
+NzAgKGlwaXBlX3N5c2NhbGxfaG9vaysweDg5KQo6ICAgKyAoMHg1NSkJMHgwMDAwMDAwMCAgICAt
+MwkgIDAuMTE5ICBsb3N5c2NhbGxfZXZlbnQrMHgyOTIgKGlwaXBlX3N5c2NhbGxfaG9vaysweDg5
+KQpMb25nIHZlcnNpb24gaXMgaW4gdGhlIGF0dGFjaG1lbnQuCgpQZXRyCi0tLS0tLS0tLS0tLS0t
+IG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBbiBlbWJlZGRlZCBhbmQgY2hhcnNldC11bnNwZWNp
+ZmllZCB0ZXh0IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBmcmVlemUxMy50eHQKVVJMOiA8aHR0cDov
+L3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE0MDUwNi9h
+YWQ2ZjFhZi9hdHRhY2htZW50LnR4dD4K
