@@ -1,13 +1,14 @@
-Message-ID: <536A6B76.5070503@cantastic.org>
-Date: Wed, 07 May 2014 19:20:54 +0200
-From: =?UTF-8?B?UmFsZiBSw7ZzY2g=?= <xenomai@cantastic.org>
+Message-ID: <536A7341.9050007@xenomai.org>
+Date: Wed, 07 May 2014 19:54:09 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <53661901.8090400@cantastic.org> <53666383.9010302@xenomai.org>
  <536741B1.8010800@cantastic.org> <53676D14.4050502@xenomai.org>
  <536775E4.3080309@cantastic.org> <536779B2.9090506@xenomai.org>
-In-Reply-To: <536779B2.9090506@xenomai.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+ <536A6B76.5070503@cantastic.org>
+In-Reply-To: <536A6B76.5070503@cantastic.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai] Testing on Freescale i.MX6
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,141 +18,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?UTF-8?B?UmFsZiBSw7ZzY2g=?= <xenomai@cantastic.org>, xenomai@xenomai.org
 
-CkFtIDA1LjA1LjIwMTQgMTM6NDQsIHNjaHJpZWIgR2lsbGVzIENoYW50ZXBlcmRyaXg6Cj4gT24g
-MDUvMDUvMjAxNCAwMToyOCBQTSwgUmFsZiBSb2VzY2ggd3JvdGU6Cj4+IE9uIE1vbiBNYXkgMDUg
-MjAxNCAxMjo1MTowMCBHTVQrMDIwMCwgR2lsbGVzIENoYW50ZXBlcmRyaXgKPj4gPGdpbGxlcy5j
-aGFudGVwZXJkcml4QHhlbm9tYWkub3JnPiAgd3JvdGU6Cj4+PiBPbiAwNS8wNS8yMDE0IDA5OjQ1
-IEFNLCBSYWxmIFJvZXNjaCB3cm90ZToKPj4+PiBPbiBTdW4gTWF5IDA0IDIwMTQgMTc6NTc6NTUg
-R01UKzAyMDAgKENFU1QpLCBHaWxsZXMgQ2hhbnRlcGVyZHJpeAo+Pj4+IDxnaWxsZXMuY2hhbnRl
-cGVyZHJpeEB4ZW5vbWFpLm9yZz4gIHdyb3RlOgo+Pj4+PiBPbiAwNS8wNC8yMDE0IDEyOjQwIFBN
-LCBSYWxmIFJvZXNjaCB3cm90ZToKPj4+Pj4+IEhpLAo+Pj4+Pj4KPj4+Pj4+IGJhc2VkIG9uIHlv
-dXIgc3VnZ2VzdGlvbnMgZnJvbSB0aHJlYWQgIltYZW5vbWFpXSBpcGlwZS1jb3JlLTMuMTAgCj4+
-Pj4+PiBwYXRjaAo+Pj4+Pj4gZm9yIGFybSIKPj4+Pj4+IEkgc3RhcnRlZCB0ZXN0aW5nIFhlbm9t
-YWkgb24gYW4gaS5NWDYgYm9hcmQgWzFdLgo+Pj4+Pj4KPj4+Pj4+ICAgICAqIGNoZWNrZWQgb3V0
-IGJyYW5jaCBpbXhfMy4xMC4xN18xLjAuMF9nYSBmcm9tIAo+Pj4+Pj4gbGludXgtMi42LWlteC5n
-aXQgWzJdCj4+Pj4+PiAgICAgKiBtZXJnZWQgdmFuaWxsYSB2My4xMC4zMiB0YWcKPj4+Pj4+ICAg
-ICAgIHJlc29sdmVkIDMgY29uZmxpY3RzOgo+Pj4+Pj4gICAgICAgZHJpdmVycy9uZXQvY2FuL2Zs
-ZXhjYW4uYwo+Pj4+Pj4gICAgICAgZHJpdmVycy91c2IvaG9zdC9laGNpLmgKPj4+Pj4+ICAgICAg
-IHNvdW5kL3NvYy9jb2RlY3Mvd204OTYyLmMKPj4+Pj4+ICAgICAqIGFwcGxpZWQgaXBpcGUtdjMu
-MTAuMzIucGF0Y2gKPj4+Pj4+ICAgICAgIHJlc29sdmVkIDQgY29uZmxpY3RzOgo+Pj4+Pj4gICAg
-ICAgYXJjaC9hcm0vbWFjaC1pbXgvY2xrLWlteDZxLmMKPj4+Pj4+ICAgICAgIGFyY2gvYXJtL21h
-Y2gtaW14L21hY2gtaW14NnEuYwo+Pj4+Pj4gICAgICAgYXJjaC9hcm0vbWFjaC1pbXgvbW0taW14
-MjcuYwo+Pj4+Pj4gICAgICAgYXJjaC9hcm0vbWFjaC1pbXgvbW0taW14My5jCj4+Pj4+PiAgICAg
-KiBhcHBsaWVkIHhlbm9tYWktMi42IHN1cHBvcnQgKHByZXBhcmUta2VybmVsLnNoKQo+Pj4+Pj4K
-Pj4+Pj4+IE15IGJveCBib290cyB3aXRob3V0IGVycm9ycyBhbmQgc2VlbXMgdG8gYmUgcXVpZXQg
-c3RhYmxlIGF0IHRoZSAKPj4+Pj4+IGZpcnN0Cj4+Pj4+PiBnbGFuY2UuCj4+Pj4+PiBMaW51eCBh
-cm0gMy4xMC4zMi14ZW5vbWFpLWFybXY3LXgxICMyNCBTTVAgU3VuIE1heSA0IDEyOjE3OjEwIAo+
-Pj4+Pj4gQ0VTVCAyMDE0Cj4+Pj4+PiBhcm12N2wgR05VL0xpbnV4Cj4+Pj4+Pgo+Pj4+Pj4gVGhl
-IGZpcnN0IHRoaW5nIEkgb2JzZXJ2ZWQgaXMgYSBzeXN0ZW0gdGltZSBwcm9ibGVtOgo+Pj4+Pj4g
-dGhlIFJUQyBhbmQgc3lzdGVtIHRpbWUgY2xvY2tzIGdldCBvdXQgb2YgcGhhc2UgdmVyeSBxdWlj
-a2x5Lgo+Pj4+Pj4gSSBkbyBjb21wYXJlIHRoZSB0aW1lcnMgKGVuZCAtIHN0YXJ0KSBvbiBjb25z
-b2xlIGJ5IGNhbGxpbmc6Cj4+Pj4+PiAgICAgICAtIGh3Y2xvY2smJiAgZGF0ZSAoc3RhcnQpCj4+
-Pj4+PiAgICAgICAtIHdhaXQgYW4gaG91ciBvciBtb3JlCj4+Pj4+PiAgICAgICAtIGh3Y2xvY2sm
-JiAgZGF0ZSAoZW5kKQo+Pj4+Pj4gVGhlIGh3Y2xvY2sgdGltZSBpcyBhbHdheXMgby5rLiBidXQg
-dGhlIHN5c3RlbSB0aW1lIHJlcG9ydGVkIGJ5IAo+Pj4+Pj4gZGF0ZSBpcwo+Pj4+Pj4gcm91Z2hs
-eSAyNSUgZmFzdGVyLgo+Pj4+Pj4gRG8geW91IGhhdmUgYW4gaWRlYSB3aGF0IGNvdWxkIGdvIHdy
-b25nIGhlcmU/Cj4+Pj4+IFRoZSB0aW1lciBmcmVxdWVuY3kuIERpZCB5b3Ugbm90IGZvcmdldCB0
-byBkaXNhYmxlIAo+Pj4+PiBDT05GSUdfQ1BVX0ZSRVE/IERvCj4+Pj4+IHlvdSBoYXZlIHRoZSBz
-YW1lIGlzc3VlIHdpdGhvdXQgdGhlIEktcGlwZSBwYXRjaD8KPj4+Pj4KPj4+Pj4KPj4+PiBUaGFu
-a3MgR2lsbGVzLCBJIGhhZCBub3QgZGlzYWJsZWQgdGhlIENPTkZJR19DUFVfRlJFUS4KPj4+PiBB
-ZnRlciBkaXNhYmxpbmcgSSBoYWQgYWxzbyB0byBkaXNhYmxlIENPTkZJR19QTSwgYmVjYXVzZSBJ
-IGdvdCBhIAo+Pj4+IGxvdCBvZgo+Pj4+IHVucmVzb2x2ZWQgbGlua2VyIGVycm9ycy4KPj4+PiBN
-b3JlIGZpeGVzICBoYWQgdG8gYmUgbWFkZSBpbiB2YXJpb3VzIG1vZHVsZXMgd2hlcmUgQ09ORklH
-X1BNIHdhcyBub3QKPj4+PiB0YWtlbiBpbnRvIGFjY291bnQuCj4+Pj4gSW4gdGhlIGVuZCBJIGhh
-ZCBhIGJvb3RhYmxlIGtlcm5lbCwgd2hlcmUgdGhlICJvdXQgb2YgcGhhc2Ugb2YgdGltZXIKPj4+
-PiBwcm9ibGVtIiAgaGFzIGJlZW4gcmVzb2x2ZWQuCj4+Pj4gQm90aCB0aW1lcnMga2VlcCBpbiBz
-eW5jIG5vdy4KPj4+Pgo+Pj4+IFRoZSBrZXJuZWwgd2l0aG91dCBJLXBpcGUgcGF0Y2ggZGlkIHdv
-cmsgY29ycmVjdGx5LCBzb3JyeSBmb3Igbm90Cj4+Pj4gbWVudGlvbmluZyB0aGF0IGJlZm9yZS4K
-Pj4+Pgo+Pj4+IEkgaGF2ZSBzb21lIG1vcmUgcXVlc3Rpb25zIHJlZ2FyZGluZyB0aW1lciBmcmVx
-dWVuY3k6Cj4+Pj4KPj4+PiAgICAgKiBJIHByZWZlciB0byBsZWF2ZSBDT05GSUdfQ1BVX0ZSRVEg
-ZW5hYmxlZCwKPj4+PiAgICAgICBiZWNhdXNlIGluIHRoaXMgY2FzZSBJIGNhbiB1c2UgdGhlIENQ
-VUZyZXEgZ292ZXJub3IgCj4+Pj4gKGNwdWZyZXF1dGlscwo+Pj4+ICAgICAgIHBhY2thZ2UpCj4+
-Pj4gICAgICAgdG8gdXNlIHRoZSBoaWdoZXN0IGZyZXF1ZW5jeSwgaS5lLiAicGVyZm9ybWFuY2Ui
-Cj4+Pj4gICAgICogaWYgdGhlIGdvdmVybmVyIGlzIHNldCB0byAicGVyZm9ybWFuY2UiIGEgZnJl
-cXVlbmN5IHN3aXRjaCAKPj4+PiBzaG91ZCBub3QKPj4+PiAgICAgICBiZSBwb3NzaWJsZQo+Pj4+
-ICAgICAgIChiZWNhdXNlIHRoZSBwcm9jZXNzb3IgaXMgZml4ZWQgdG8gdGhlIGhpZ2ggcmF0ZSkK
-Pj4+PiAgICAgKiB3aXRob3V0IGdvdmVybmVyIEkgY2FuIG5vdCB1c2UgdGhlIGhpZ2hlc3QgcmF0
-ZSBvZiB0aGUgCj4+Pj4gcHJvY2Vzc29yOgo+Pj4+ICAgICAgIC0gdGhlIGZyZXF1ZW5jeSAobm93
-KSB3aXRob3V0IENPTkZJR19DUFVfRlJFUSBpcyA3OTJNSHoKPj4+PiAgICAgICAtIHdoZW4gQ09O
-RklHX0NQVV9GUkVRIGlzIGVuYWJsZWQgKGJlZm9yZSkgYW5kIGdvdmVybmVyIHNldCB0bwo+Pj4+
-ICAgICAgIHBlcmZvcm1hbmNlIGl0IGlzIDk5Nk1Iego+Pj4+Cj4+Pj4gSWYgSSBjb21wYXJlIHRo
-aXMgYm90aCBmcmVxdWVuY2llcyAoNzkyTUh6IHZzLiA5OTZNSHopIEkgZXN0aW1hdGUgCj4+Pj4g
-dGhlcmUKPj4+PiBpcyBhIHdyb25nIHNjYWxpbmcgZmFjdG9yIHJlc3BvbnNpYmxlIGZvciB0aGUg
-Im91dCBvZiBwaGFzZSIgcHJvYmxlbS4KPj4+IExvb2sgYXQgdGhlIG14NiBwYXRjaCBmb3IgMy4w
-LjQzLCBpdCBzb2x2ZXMgYSBzaW1pbGFyIGlzc3VlLiBXZSBzdXBwb3J0Cj4+PiBtYWlubGluZSwg
-YW5kIGZyZWVzY2FsZSAzLjAuMzUsIG5vdCBmcmVlc2NhbGUgMy4xMCwgc28sIHlvdSBtYXkgaGF2
-ZSBhCj4+PiBsb3Qgb2YgaXNzdWVzIHdpdGggdGhpcyB2ZXJzaW9uIHdoaWNoIHdlcmUgc29sdmVk
-IGZvciAzLjAuNDMgYnV0IGFyZSAKPj4+IG5vdAo+Pj4gaW4gdGhlIHBhdGNoIGZvciBtYWlubGlu
-ZSAzLjEwLiBJZiBJIHJlbWVtYmVyIGNvcnJlY3RseSwgdGhlcmUgd2VyZQo+Pj4gbXVsdGlwbGUg
-c3VjaCBpc3N1ZXMgc3VjaCBhcyBpZGxlIHRocmVhZCBhbmQgYnJvYWRjYXN0IHRpbWVyLgo+Pj4K
-Pj4gQmVmb3JlIGdvaW5nIGRlZXBlciBpbnRvIHRoaXMsIEkgd291bGQgbGlrZSB0byBkbyBzb21l
-IHBlcmZvcm1hbmNlIAo+PiBjaGVja3MuCj4+IENvdWxkIHlvdSBwbGVhc2UgZ2l2ZSBtZSBhbiBh
-ZHZpc2UgZm9yIGxhdGVuY3kgbWVhc3VyZW1lbnRzIGFuZCBzb21lCj4+IGluZm9ybWF0aW9uIHdo
-aWNoIHJlc3VsdCB5b3Ugd291bGQgZXhwZWN0IGZvciB0aGlzIFF1YWRjb3JlIENQVT8KPj4gKEkg
-aGF2ZSByZWFkIGFib3V0IGhpZ2ggbGF0ZW5jaWVzIGNhdXNlZCBieSBjYWNoZSBpc3N1ZXMgZm9y
-IHRoaXMgdHlwZQo+PiBvZiBjcHUpCj4KPiBVbmZvcnR1bmF0ZWx5LCBJIGhhdmUgbm90IGV4cGVy
-aWVuY2VkIHRoZSBoaWdoIGxhdGVuY2llcyBteXNlbGYsIAo+IHByb2JhYmx5IGJlY2F1c2UgSSB0
-ZXN0ZWQgdGhlIHN5c3RlbSB3aXRob3V0IGRpc3BsYXkuIEFueXdheSwgZnJvbSAKPiB3aGF0IEkg
-dW5kZXJzdG9vZCwgaWYgeW91IHdhbnQgZ29vZCBsYXRlbmNpZXMsIHlvdSBoYXZlIHRvIGRpc2Fi
-bGUgdGhlIAo+IEwyIGNhY2hlIHdyaXRlLWFsbG9jYXRlIHBvbGljeS4KPgp3aGljaCBpcyBkZWZh
-dWx0IGluID49IDMuMTA/Cj4+Cj4+IEJUVywgSSBkbyBub3QgdW5kZXJzdGFuZCAibm90IGZyZWVz
-Y2FsZSAzLjEwIi4KPj4gVGhlcmUgaXMgYWxyZWFkeSBhIGxvdCBvZiBpLXBpcGUgd29yayBkb25l
-IGluIGFyY2gvYXJtL21hY2gtaW14Lwo+PiAobWFjaC1pbXg2cS5jLCBjbGstaW14NnEuYywgLi4u
-IGZvciBleGFtcGxlKQo+PiB3aGljaCBpcyBmcmVlc2NhbGUsIGlzbid0IGl0Pwo+Cj4gbWFpbmxp
-bmUgbGludXggPSB0aGUgbGludXggZnJvbSBrZXJuZWwub3JnICh3aGljaCBoYXMgc3VwcG9ydCBm
-b3IgaW14NikKPiBmcmVlc2NhbGUgbGludXggPSB0aGUgbGludXggZm9ya2VkIGJ5IGZyZWVzY2Fs
-ZSAod2hpY2gsIGlmIEkgCj4gdW5kZXJzdGFuZCBjb3JyZWN0bHksIHlvdSB3YW50IHRvIHVzZSkK
-Pgo+IGZyZWVzY2FsZSBsaW5lIGlzIGZvcmtlZCwgaXQgaGFzIHNvbWUgY2hhbmdlcyB3aGljaCBh
-cmUgbm90IGluIAo+IG1haW5saW5lLCBhbmQgc28gYXJlIG5vdCBwYXRjaGVkIGJ5IHRoZSBwYXRj
-aCBmb3IgbWFpbmxpbmUuCj4KWzFdCllvdSBjb252aW5jZWQgbWUgdG8gc3dpdGNoIHRvIHRoZSBs
-YXRlc3QgaXBpcGUtYXZhaWxhYmxlIHN0YWJsZSBicmFuY2g6IAozLjE0LgoodG8gYmUgcHJlY2lz
-ZTogSSB1c2UgdGhlIGFybXY3LW11bHRpcGxhdGZvcm0gYnJhbmNoIGZyb20gUm9iZXJ0IE5lbHNv
-biAKd2l0aCAzLjE0LjMgdGFnKQphbmQgbWVyZ2VkIGluIHlvdXIgcmF3L2lwaXBlLTMuMTQuMCBi
-cmFuY2guClRoZSBzeXN0ZW0gdGltZSBkcmlmdHMgYXdheSBpbiB0aGUgc2FtZSBtYW5uZXIgSSBk
-ZXNjcmliZWQgaW4gbXkgCnByZXZpb3VzIG1haWxzLgoKSSBmb3VuZCBhIGhhY2sgd2hpY2ggc29s
-dmVzIG15IHByb2JsZW06CgpkaWZmIC0tZ2l0IGEvYXJjaC9hcm0va2VybmVsL2lwaXBlX3RzYy5j
-IGIvYXJjaC9hcm0va2VybmVsL2lwaXBlX3RzYy5jCmluZGV4IDRlYjUwNTAuLmY3NTlhMjAgMTAw
-NjQ0Ci0tLSBhL2FyY2gvYXJtL2tlcm5lbC9pcGlwZV90c2MuYworKysgYi9hcmNoL2FybS9rZXJu
-ZWwvaXBpcGVfdHNjLmMKQEAgLTEzMiw2ICsxMzIsMTEgQEAgdm9pZCBfX2luaXQgX19pcGlwZV90
-c2NfcmVnaXN0ZXIoc3RydWN0IApfX2lwaXBlX3RzY2luZm8gKmluZm8pCiAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAodW5zaWduZWQgbG9uZykodHNjX2FyZWEgKyAweDgwKSk7CiAgICAgICAg
-IGhhcmRfbG9jYWxfaXJxX3Jlc3RvcmUoZmxhZ3MpOwoKKyNpZmRlZiBDT05GSUdfQ1BVX0ZSRVFf
-R09WX1BFUkZPUk1BTkNFCisgICAgICAgaWYgKHJlZ2lzdGVyZWQpCisgICAgICAgICAgICAgICB0
-c2NfaW5mby5mcmVxID0gNDk4MDAwMDAwOworI2VuZGlmCisKICAgICAgICAgcHJpbnRrKEtFUk5f
-SU5GTyAiSS1waXBlLCAldS4lMDN1IE1IeiBjbG9ja3NvdXJjZVxuIiwKICAgICAgICAgICAgICAg
-IHRzY19pbmZvLmZyZXEgLyAxMDAwMDAwLCAodHNjX2luZm8uZnJlcSAlIDEwMDAwMDApIC8gMTAw
-MCk7CiAgICAgICAgIGlmICghcmVnaXN0ZXJlZCkKCk15IHN5c3RlbSBpcyBmaXhlZCB0byBwZXJm
-b3JtYW5jZSAoZ292ZXJuZXIsIGNwdWZyZXEtc2V0KSwgc28gdGhlIENQVSBpcyAKMTAwJSB3b3Jr
-aW5nIG9uIG1heC4gOTk2TUh6LgpUaGUgZGF0ZSBhbmQgaHdjbG9jayBhcmUgaW4gc3luYyBub3cu
-CgpbMl0KSSdtIGN1cnJlbnRseSBiZW5jaG1hcmsgdGhlIDMuMTQgc3lzdGVtIGJ5IDIgcHJvY2Vz
-c2VzOgogIC0gY3ljbGljdGVzdCAgLWw1MDAwMDAwMCAgLXA5OSAtbiAtaSA0MDAKICAtIGRkIGlm
-PS9kZXYvbW1jYmxrMHAyCgpJIGhhdmUgc2VlbiBvbmUgaHVuZyB0YXNrIHRpbWVvdXQgYXQgdGhl
-IGNvbnNvbGU6ClsgMjE2MS45Mjc0NThdIElORk86IHRhc2sga3dvcmtlci91ODoyOjYyIGJsb2Nr
-ZWQgZm9yIG1vcmUgdGhhbiAxMjAgc2Vjb25kcy4KWyAyMTYxLjkzNDI2M10gICAgICAgTm90IHRh
-aW50ZWQgMy4xNC4zLXhlbm9tYWktYXJtdjcteDUgIzUKWyAyMTYxLjkzOTYyNF0gImVjaG8gMCA+
-IC9wcm9jL3N5cy9rZXJuZWwvaHVuZ190YXNrX3RpbWVvdXRfc2VjcyIgCmRpc2FibGVzIHRoaXMg
-bWVzc2FnZS4KWyAyMTYxLjk0NzUxMF0ga3dvcmtlci91ODoyICAgIEQgYzA4MjgyZTQgICAgIDAg
-ICAgNjIgICAgICAyIDB4MDAwMDAwMDAKWyAyMTYxLjk1MzkyMV0gV29ya3F1ZXVlOiBrbW1jZCBt
-bWNfcmVzY2FuClsgMjE2MS45NTc4NDBdIFs8YzA4MjgyZTQ+XSAoX19zY2hlZHVsZSkgZnJvbSBb
-PGMwNjdmYjkwPl0gCihfX21tY19jbGFpbV9ob3N0KzB4OTAvMHgxYjgpClsgMjE2MS45NjU2OTZd
-IFs8YzA2N2ZiOTA+XSAoX19tbWNfY2xhaW1faG9zdCkgZnJvbSBbPGMwNjg2N2NjPl0gCihtbWNf
-c2RfZGV0ZWN0KzB4MWMvMHg3MCkKWyAyMTYxLjk3MzczMF0gWzxjMDY4NjdjYz5dIChtbWNfc2Rf
-ZGV0ZWN0KSBmcm9tIFs8YzA2ODIwZjA+XSAKKG1tY19yZXNjYW4rMHgxNzQvMHgyZTgpClsgMjE2
-MS45ODE0MzBdIFs8YzA2ODIwZjA+XSAobW1jX3Jlc2NhbikgZnJvbSBbPGMwMDQxNTUwPl0gCihw
-cm9jZXNzX29uZV93b3JrKzB4MTQ4LzB4M2VjKQpbIDIxNjEuOTg5MzgzXSBbPGMwMDQxNTUwPl0g
-KHByb2Nlc3Nfb25lX3dvcmspIGZyb20gWzxjMDA0MjRlMD5dIAood29ya2VyX3RocmVhZCsweDEz
-Yy8weDQwNCkKWyAyMTYxLjk5NzYwMl0gWzxjMDA0MjRlMD5dICh3b3JrZXJfdGhyZWFkKSBmcm9t
-IFs8YzAwNDdjMWM+XSAKKGt0aHJlYWQrMHhkNC8weGVjKQpbIDIxNjIuMDA0ODUyXSBbPGMwMDQ3
-YzFjPl0gKGt0aHJlYWQpIGZyb20gWzxjMDAwZTUyMD5dIAoocmV0X2Zyb21fZm9yaysweDE4LzB4
-MzgpCgpJbiBLZXJuZWwgMy4xMCAoRnJlZXNjYWxlKSBJIGRpZCBub3Qgb2JzZXJ2ZSB0aGlzIHR5
-cGUgb2YgZXJyb3IgKGkgaGF2ZSAKdGVzdGVkIGZvciBhYm91dCAyIGRheXMpLgpEbyB5b3Uga25v
-dyBob3cgbXVjaCB0aGUgbWF4LiBsYXRlbmN5IGNvdWxkIGJlIGludm9sdmVkIHdoZW4gdGhpcyBz
-b3J0IApvZiBlcnJvciBpcyB0cmlnZ2VyZWQ/CgpbM10KQlRXIGkgaGF2ZSBhdHRhY2hlZCBhbiBv
-dGhlciBwYXRjaCB3aGljaCBtaWdodCBiZSBoZWxwZnVsLgoKLS0KUmFsZgoKCi0tLS0tLS0tLS0t
-LS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNj
-cnViYmVkLi4uCk5hbWU6IDAwMDEtaS1waXBlLWNvbXBpbGVyLWZpeGVzLWZvci1pbXgucGF0Y2gK
-VHlwZTogdGV4dC94LXBhdGNoClNpemU6IDE0OTYgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpV
-Ukw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRz
-LzIwMTQwNTA3Lzc2M2M1MTJlL2F0dGFjaG1lbnQuYmluPgo=
+On 05/07/2014 07:20 PM, Ralf Rösch wrote:
+>
+> Am 05.05.2014 13:44, schrieb Gilles Chanteperdrix:
+>> Unfortunately, I have not experienced the high latencies myself,
+>> probably because I tested the system without display. Anyway, from
+>> what I understood, if you want good latencies, you have to disable the
+>> L2 cache write-allocate policy.
+>>
+> which is default in >= 3.10?
+
+It is modified in the git for 3.10, but the patch has not been generated 
+I believe.
+
+> I found a hack which solves my problem:
+>
+> diff --git a/arch/arm/kernel/ipipe_tsc.c b/arch/arm/kernel/ipipe_tsc.c
+> index 4eb5050..f759a20 100644
+> --- a/arch/arm/kernel/ipipe_tsc.c
+> +++ b/arch/arm/kernel/ipipe_tsc.c
+> @@ -132,6 +132,11 @@ void __init __ipipe_tsc_register(struct
+> __ipipe_tscinfo *info)
+>                              (unsigned long)(tsc_area + 0x80));
+>           hard_local_irq_restore(flags);
+>
+> +#ifdef CONFIG_CPU_FREQ_GOV_PERFORMANCE
+> +       if (registered)
+> +               tsc_info.freq = 498000000;
+> +#endif
+> +
+>           printk(KERN_INFO "I-pipe, %u.%03u MHz clocksource\n",
+>                  tsc_info.freq / 1000000, (tsc_info.freq % 1000000) / 1000);
+>           if (!registered)
+
+To do the same thing cleanly, you should call ipipe_tsc_register again 
+when the frequency changes, unfortunately, it does not fix the timer 
+frequency, so, you will experience a lot of useless timer interrupts.
+IOW, the problem is not really solved. The best workaround I found for 
+the freescale kernel 3.0 is to start the processor directly with the 
+target frequency (people want fast boots usually, so booting with the 
+highest frequency makes more sense anyway), this also avoids having to 
+enable cpufreq. Which is why I told you to look at this patch for the 
+solution to your problem.
+
+> In Kernel 3.10 (Freescale) I did not observe this type of error (i have
+> tested for about 2 days).
+> Do you know how much the max. latency could be involved when this sort
+> of error is triggered?
+
+This error probably has nothing to do with latency (interrupt latency or 
+scheduling latency, as returned by cyclictest or the latency test as 
+what we mean on this list when we say latency without precising latency 
+of what). You may want to look at the freescale kernel to see if it does 
+not have any patch regarding mmc.
+
+>
+> [3]
+> BTW i have attached an other patch which might be helpful.
+
+Thanks, will merge.
+
+
+
+-- 
+					    Gilles.
+
