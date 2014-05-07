@@ -1,14 +1,15 @@
-Message-ID: <53538D60.8040107@xenomai.org>
-Date: Sun, 20 Apr 2014 11:03:28 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Wed, 07 May 2014 15:13:10 +0200
+From: =?utf-8?q?Petr_Cervenka?= <grugh@centrum.cz>
+References: <20140502141307.B6A14EC0@centrum.cz>,
+ <53639AC8.1000507@xenomai.org>, <20140506101735.3A0BEBEB@centrum.cz>,
+ <5368A3A2.1010302@xenomai.org>,
+ <20140506112918.F5E14FAA@centrum.cz> <5368DC2C.5000505@xenomai.org>
+In-Reply-To: <5368DC2C.5000505@xenomai.org>
 MIME-Version: 1.0
-References: <7dad12a6.21b0a.14574613527.Coremail.ericvic@163.com>
- <535110C3.40500@xenomai.org>
- <59ece04.26b88.1457d86db18.Coremail.ericvic@163.com>
-In-Reply-To: <59ece04.26b88.1457d86db18.Coremail.ericvic@163.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] imx6q xenomai ipipe-3.0-imx6q
+Message-Id: <20140507151310.0F980ADD@centrum.cz>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Subject: Re: [Xenomai] =?utf-8?q?non-blocking_rt=5Ftask=5Fsuspend=28NULL=29?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,33 +18,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: eric <ericvic@163.com>
-Cc: huang.c.h@lynuc.cn, liu.h.f@lynuc.cn, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?utf-8?q?Philippe_Gerum?= <rpm@xenomai.org>, =?utf-8?q?Gilles_Chanteperdrix?= <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Le 20/04/2014 07:06, eric a écrit :
-> So if my program use lots of memory operations  for a long time it maybe
-> gives non real-time activities opportunity to thrash the cache?
-
-It is unrelated, but on a multi-core processor even when one core is
-running a real-time task, other cores can thrash the cache at will, or
-slow down the real-time task by using a shared ressource (for instance
-DDR) and starving the core where the real-time task runs. By default the
-L2 cache is shared between all cores, you can try and reserve parts of
-the cache for each core (check the l2x0 registers documentation to see
-how), I tried this on omap4, but it results on worse latencies,
-situation may be different on imx6 though. Another problem is that since
-the L1 cache is per-core, I believe, and we disable L2 write allocate,
-reading on one core memory written on another core results in accesses
-at the DDR speed, and not at the cache speed.
-
-All this to say that Xenomai focuses on trying to schedule your driver
-interrupts and application threads in a deterministic fashion but it is
-your job to make sure that these interrupts and threads do not take too
-long a time to execute, because if they do, yes, your application will
-not meet its deadlines, but it is not Xenomai's fault.
-
-
-
--- 
-Gilles.
-
+PiBPZDogUGhpbGlwcGUgR2VydW0gPHJwbUB4ZW5vbWFpLm9yZz4KPj4gCj4+IEhlcmUgaXQgaXMu
+IEl0J3MgZnVsbCBvZiBtb2R1bGVzIGFuZCBvdGhlciBwZXJoYXBzIG5vdCBzbyByZWFsLXRpbWUg
+Cj4+IHNldHRpbmdzLCBiZWNhdXNlIGl0IHdhcyBkZXJpdmVkIGZyb20gS3VidW50dSBrZXJuZWwg
+Y29uZmlnIGZpbGUuCj4+IAo+Cj5UaGFua3MuIFRoZSBpc3N1ZSBzZWVtcyB0byBoYXBwZW4gYXMg
+YSByZXN1bHQgb2YgYSByZWxheCAtPiBoYXJkZW4gdHJhbnNpdGlvbiByYWNpbmcgd2l0aCBhIHNp
+Z25hbCByZWNlaXB0LiBJbiBvcmRlciB0byBoZWxwIG1lIHJ1bGluZyBvdXQgc29tZSBhc3N1bXB0
+aW9ucywgY291bGQgeW91IHBsZWFzZSBhcHBseSB0aGUgcGF0Y2ggYmVsb3csIGFuZCBjb25maXJt
+IHRoYXQgbm8gam9iIGNvbnRyb2wgaXMgaW52b2x2ZWQgKFNJR0NPTlQvU0lHU1RPUCkgaW4geW91
+ciBhcHBsaWNhdGlvbj8KPgo+S25vd2luZyB3aGV0aGVyIGFueSBvZiB0aGUgdHdvIHdhcm5pbmdz
+IGFkZGVkIGJ5IHRoaXMgcGF0Y2ggaXMgaXNzdWVkIHdoZW4gdGhlIGJ1ZyBoYXBwZW5zIHdvdWxk
+IGFsc28gaGVscCBzb2x2aW5nIHRoZSBpc3N1ZSwgVElBLgo+Cj5kaWZmIC0tZ2l0IGEva3NyYy9u
+dWNsZXVzL3BvZC5jIGIva3NyYy9udWNsZXVzL3BvZC5jCj5pbmRleCAwYTJlZTE5Li45ZmI3OTdm
+IDEwMDY0NAo+LS0tIGEva3NyYy9udWNsZXVzL3BvZC5jCj4rKysgYi9rc3JjL251Y2xldXMvcG9k
+LmMKPkBAIC0xMzc5LDE1ICsxMzc5LDE3IEBAIHZvaWQgeG5wb2Rfc3VzcGVuZF90aHJlYWQoeG50
+aHJlYWRfdCAqdGhyZWFkLCB4bmZsYWdzX3QgbWFzaywKPiAJCSAqIGNvbnRleHQsIHRvIGNvbGxl
+Y3QgYW5kIGFjdCB1cG9uIHRoZSBwZW5kaW5nIExpbnV4Cj4gCQkgKiBzaWduYWwuCj4gCQkgKi8K
+Pi0JCWlmICgobWFzayAmIFhOUkVMQVgpID09IDAgJiYKPi0JCSAgICB4bnRocmVhZF90ZXN0X2lu
+Zm8odGhyZWFkLCBYTktJQ0tFRCkpIHsKPi0JCQlpZiAod2NoYW4pIHsKPi0JCQkJdGhyZWFkLT53
+Y2hhbiA9IHdjaGFuOwo+LQkJCQl4bnN5bmNoX2ZvcmdldF9zbGVlcGVyKHRocmVhZCk7Cj4rCQlp
+ZiAoeG50aHJlYWRfdGVzdF9pbmZvKHRocmVhZCwgWE5LSUNLRUQpKSB7Cj4rCQkJaWYgKChtYXNr
+ICYgWE5SRUxBWCkgPT0gMCkgewo+KwkJCQlpZiAod2NoYW4pIHsKPisJCQkJCXRocmVhZC0+d2No
+YW4gPSB3Y2hhbjsKPisJCQkJCXhuc3luY2hfZm9yZ2V0X3NsZWVwZXIodGhyZWFkKTsKPisJCQkJ
+fQo+KwkJCQl4bnRocmVhZF9jbGVhcl9pbmZvKHRocmVhZCwgWE5STUlEIHwgWE5USU1FTyk7Cj4r
+CQkJCXhudGhyZWFkX3NldF9pbmZvKHRocmVhZCwgWE5CUkVBSyk7Cj4rCQkJCWdvdG8gdW5sb2Nr
+X2FuZF9leGl0Owo+IAkJCX0KPi0JCQl4bnRocmVhZF9jbGVhcl9pbmZvKHRocmVhZCwgWE5STUlE
+IHwgWE5USU1FTyk7Cj4tCQkJeG50aHJlYWRfc2V0X2luZm8odGhyZWFkLCBYTkJSRUFLKTsKPi0J
+CQlnb3RvIHVubG9ja19hbmRfZXhpdDsKPisJCQlXQVJOX09OKDEpOwo+IAkJfQo+ICNlbmRpZiAv
+KiBDT05GSUdfWEVOT19PUFRfUEVSVkFTSVZFICovCj4gCj5kaWZmIC0tZ2l0IGEva3NyYy9udWNs
+ZXVzL3NoYWRvdy5jIGIva3NyYy9udWNsZXVzL3NoYWRvdy5jCj5pbmRleCAzOGMxNDIzLi5mYzU5
+MmEyIDEwMDY0NAo+LS0tIGEva3NyYy9udWNsZXVzL3NoYWRvdy5jCj4rKysgYi9rc3JjL251Y2xl
+dXMvc2hhZG93LmMKPkBAIC0yNjk2LDYgKzI2OTYsOCBAQCBzdGF0aWMgaW5saW5lIHZvaWQgZG9f
+c2lnd2FrZV9ldmVudChzdHJ1Y3QgdGFza19zdHJ1Y3QgKnApCj4gCQl9Cj4gCX0KPiAKPisJV0FS
+Tl9PTighc2lnbmFsX3BlbmRpbmcocCkpOwo+Kwo+IAkvKgo+IAkgKiBJZiBhIHJlbGF4ZWQgdGhy
+ZWFkIGlzIGdldHRpbmcgYSBzaWduYWwgd2hpbGUgcnVubmluZywgd2UKPiAJICogZm9yY2UgaXQg
+b3V0IG9mIFJQSSwgc28gdGhhdCBpdCB3b24ndCBrZWVwIGEgYm9vc3RlZAo+LS0gCgpGaW5hbGx5
+LCBJIHdhcyBhYmxlIHRvIGNhdGNoIHRoZSB3YXJuaW5nKHMpLiBJIGdvdCAzOCBvZiB0aGVzZSBi
+ZWZvcmUgdGFzayBlbmRlZDoKClsgMTEwOS4zMzY3MjZdIC0tLS0tLS0tLS0tLVsgY3V0IGhlcmUg
+XS0tLS0tLS0tLS0tLQpbIDExMDkuMzM2NzM3XSBXQVJOSU5HOiBhdCBrZXJuZWwveGVub21haS9u
+dWNsZXVzL3BvZC5jOjEzOTIgeG5wb2Rfc3VzcGVuZF90aHJlYWQrMHgxN2QvMHg1YTAoKQpbIDEx
+MDkuMzM2NzQ2XSBIYXJkd2FyZSBuYW1lOiBYN1NCQQpbIDExMDkuMzM2NzU1XSBNb2R1bGVzIGxp
+bmtlZCBpbjogZnIwMV9ydGRtKE8pIG5ldGNvbnNvbGUgY29uZmlnZnMgaWdiIGRjYSBlMTAwMGUg
+ZTEwMDAgcjgxNjkgcnRfZTEwMDAoTykgcnRfcjgxNjkoTykgcnRwYWNrZXQoTykgcnRuZXQoTykg
+Y29yZXRlbXAgcHNtb3VzZSBtaWNyb2NvZGUgc2VyaW9fcmF3IHNocGNocCBscGNfaWNoIGkzMjAw
+X2VkYWMgdmlkZW8gZWRhY19jb3JlIGZsb3BweQpbIDExMDkuMzM2OTA4XSBQaWQ6IDc4NiwgY29t
+bTogQVNZTkNfVEFTS18xODY5IFRhaW50ZWQ6IEcgICAgICAgICAgIE8gMy41LjctZGVidWcgIzM4
+ClsgMTEwOS4zMzY5MTddIENhbGwgVHJhY2U6ClsgMTEwOS4zMzY5MzNdICBbPGZmZmZmZmZmODEw
+M2NkY2Y+XSB3YXJuX3Nsb3dwYXRoX2NvbW1vbisweDdmLzB4YzAKWyAxMTA5LjMzNjk0OV0gIFs8
+ZmZmZmZmZmY4MTAzY2UyYT5dIHdhcm5fc2xvd3BhdGhfbnVsbCsweDFhLzB4MjAKWyAxMTA5LjMz
+Njk2NV0gIFs8ZmZmZmZmZmY4MTEwYjA4ZD5dIHhucG9kX3N1c3BlbmRfdGhyZWFkKzB4MTdkLzB4
+NWEwClsgMTEwOS4zMzY5ODFdICBbPGZmZmZmZmZmODExMTcwNTQ+XSB4bnNoYWRvd19yZWxheCsw
+eGY0LzB4MjUwClsgMTEwOS4zMzY5OTddICBbPGZmZmZmZmZmODEwY2M3M2M+XSA/IF9faXBpcGVf
+cmVzdG9yZV9oZWFkKzB4N2MvMHgxMDAKWyAxMTA5LjMzNzAxM10gIFs8ZmZmZmZmZmY4MTExODFk
+Yj5dIHhuc2hhZG93X2hhcmRlbisweDMwYi8weDM0MApbIDExMDkuMzM3MDI5XSAgWzxmZmZmZmZm
+ZjgxMTE4M2UwPl0gbG9zeXNjYWxsX2V2ZW50KzB4YjAvMHgyZjAKWyAxMTA5LjMzNzA0NV0gIFs8
+ZmZmZmZmZmY4MTBkMDgyOT5dIGlwaXBlX3N5c2NhbGxfaG9vaysweDg5LzB4ZDAKWyAxMTA5LjMz
+NzA2MV0gIFs8ZmZmZmZmZmY4MTBjYmM2OD5dIF9faXBpcGVfbm90aWZ5X3N5c2NhbGwrMHgxNTgv
+MHgzNDAKWyAxMTA5LjMzNzA3Nl0gIFs8ZmZmZmZmZmY4MTAyMTY3YT5dIF9faXBpcGVfc3lzY2Fs
+bF9yb290KzB4NGEvMHgxZjAKWyAxMTA5LjMzNzA5Ml0gIFs8ZmZmZmZmZmY4MTM2N2JhYT5dIF9f
+aXBpcGVfc3lzY2FsbF9yb290X3RodW5rKzB4MzUvMHg2NwpbIDExMDkuMzM3MTA4XSAgWzxmZmZm
+ZmZmZjgxNjgyMjE3Pl0gPyBzeXN0ZW1fY2FsbF9hZnRlcl9zd2FwZ3MrMHg1NC8weDZkClsgMTEw
+OS4zMzcxMTddIC0tLVsgZW5kIHRyYWNlIDlmYzVmYTY2YTc0NzkzMTEgXS0tLQoKVGhlIHRyYWNl
+IGxvZyBpcyBpbiB0aGUgYXR0YWNobWVudC4KClBldHIKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFy
+dCAtLS0tLS0tLS0tLS0tLQpBbiBlbWJlZGRlZCBhbmQgY2hhcnNldC11bnNwZWNpZmllZCB0ZXh0
+IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBmcmVlemUxNC50eHQKVVJMOiA8aHR0cDovL3d3dy54ZW5v
+bWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE0MDUwNy8zN2EwNzk1Ny9h
+dHRhY2htZW50LnR4dD4K
