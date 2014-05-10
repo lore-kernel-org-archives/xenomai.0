@@ -1,12 +1,15 @@
-Message-Id: <FF4AEA86-A68E-499B-8F05-D9AA5398C5CC@gmail.com>
-From: Andreas Glatz <andi.glatz@gmail.com>
-In-Reply-To: <mailman.3.1399716001.21151.xenomai@xenomai.org>
-Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
+Message-ID: <536E4FCD.2080102@xenomai.org>
+Date: Sat, 10 May 2014 18:11:57 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <531A29CC.4040201@xenomai.org> <533FF394.1020405@xenomai.org>
+ <535A3B92.5070206@siemens.com> <535A4E5F.9060109@xenomai.org>
+ <535FC7A8.3060508@siemens.com> <5367F922.6070808@xenomai.org>
+ <53686F9C.1020207@siemens.com>
+In-Reply-To: <53686F9C.1020207@siemens.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Mime-Version: 1.0 (Apple Message framework v936)
-Date: Sat, 10 May 2014 15:27:59 +0100
-References: <mailman.3.1399716001.21151.xenomai@xenomai.org>
-Subject: Re: [Xenomai] New Xenomai kernels for testing
+Subject: Re: [Xenomai] RTDM rework (2)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,45 +18,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Hi Michael,
+On 05/06/2014 07:14 AM, Jan Kiszka wrote:
+> On 2014-05-05 22:48, Gilles Chanteperdrix wrote:
+>> On 04/29/2014 05:39 PM, Jan Kiszka wrote:
+>>> On 2014-04-25 14:00, Gilles Chanteperdrix wrote:
+>>>> On 04/25/2014 12:40 PM, Jan Kiszka wrote:
+>>>>> On 2014-04-05 14:14, Gilles Chanteperdrix wrote:
+>>>>>> On 03/07/2014 09:19 PM, Gilles Chanteperdrix wrote:
+>>>>>>>
+>>>>>>> Hi,
+>>>>>>>
+>>>>>>> here comes a second attempt at introducing a file descriptor support for
+>>>>>>> other purposes than RTDM drivers.
+>>>>>>>
+>>>>>>> This time, the file descriptors are called rtdm_fd and are part of the
+>>>>>>> RTDM API, but can be used by the POSIX personality. The actual RB-tree
+>>>>>>> where they are stored is part of the xnsys_ppd structure, as this way it
+>>>>>>> can be used by one of the RTDM and POSIX personalities, even if the
+>>>>>>> current process is not bound to the other personality.
+>>>>>>>
+>>>>>>> I have posted the patches to the timerbench, switchtest, rtdm, xddp,
+>>>>>>> iddp and bufp drivers to allow seeing the API changes.
+>>>>>>
+>>>>>> Hi Jan,
+>>>>>>
+>>>>>> ping?
+>>>>>>
+>>>>>> I have a pile of code needing to be rebased on these patches, I would
+>>>>>> very much like to get all this merged before it bitrots too much.
+>>>>>
+>>>>> Finally looking into them now. Do you happen to have them in git
+>>>>> somewhere? Or what was the revision they once applied to?
+>>>>
+>>>> Branch for-forge-rtdm-rework in xenomai-gch.git.
+>>>
+>>> Thanks, worked through this now. I'm fine with the general approach. We
+>>> should prepare it for merge.
+>>>
+>>> Some minor things I stumbled over while reading:
+>>>
+>>> - rtdm_context_user_p (I personally still prefer something like
+>>>   "is_user") and rtdm_context_device (to_device?) are apparently public
+>>>   APIs and, thus, need documentation
+>>> - there are still things (arguments, functions etc.) called "context"
+>>>   that are of type rtdm_fd, thus should rather be called "fd", no?
+>>
+>> Hi Jan,
+>>
+>> I have started cleaning up the patches, however, about the last remark,
+>> do you propose to rename rtdm_private_to_context to rtdm_private_to_fd
+>> for instance? I was thinking that rtdm_fd was the new context, so we
+>> could keep the context everywhere? Keeping the old API names would limit
+>> the need for wrappers.
+> 
+> We can still keep (undocumented) legacy wrappers for a while, but it
+> would be better to call the new API after what it is really translating.
 
->
->> Something completely unrelated, do LinuxCNC/MachineKit users use
->> Comedi/Analogy? If yes, we would be interested in users willing to  
->> test
->> ports of Comedi drivers to the Analogy framework.
->
-> This has come up every now and then, but these disparate attempts  
-> have not found their way into the main codebase; recently there was  
-> another stab at the issue: http://c-416.ahl.uni-linz.ac.at:8080/gitweb/?p=linuxcnc/.git;a=commitdiff;h=ffe5844c526ee4762e0cf9f294b660ae9abfdfea
->
-> I think data acquisition is very much in scope for machinekit; its  
-> HAL 'virtual circuit' subsystem does make such things much more  
-> enduser-friendly in use
->
-> I'd be happy to give that a try even just to show how it can be  
-> done, and others could build on it; I just would have to locate a  
-> piece of hardware which I could use for such an experiment; I dont  
-> own any of the - seemingly mostly PC - peripherals listed on the  
-> comedi site; any suggestion for the 'hello world' type driver with  
-> common hardware? is there any non-PC (eg ARM embedded) driver I  
-> could start with?
+Hi Jan,
 
-In my recent quest to get to grips with Analogy I found the 'fake'  
-driver
+I have pushed a new version which addresses your comments in the
+"for-forge-rtdm-rework" branch.
 
-http://git.xenomai.org/xenomai-2.6.git/tree/ksrc/drivers/analogy/testing
+You can ignore the "whitespace cleanup" commit, it is just there to
+allow me to simply commit without whitespace issues, it will be removed
+later on.
 
-quite instructive, which also doesn't require any real hardware since  
-it emulates 'fake' hardware... this obviously also has the advantage  
-that it provides a testbench for the user-space interface on all  
-platforms.
+Note that analogy has not been updated to the API change, I will address
+this later, if you agree with the current version.
 
-A.
+Regards.
 
-
-
-
+-- 
+                                                                Gilles.
 
