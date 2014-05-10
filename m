@@ -1,13 +1,12 @@
-Message-ID: <536E1962.30008@xenomai.org>
-Date: Sat, 10 May 2014 14:19:46 +0200
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
-References: <CAMbo_3DjWPb2xt27WAR6MF6bLHf-QZM-n-VduNTugx34cQ0LPg@mail.gmail.com>
- <536DF390.9000604@xenomai.org>
-In-Reply-To: <536DF390.9000604@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Message-Id: <FF4AEA86-A68E-499B-8F05-D9AA5398C5CC@gmail.com>
+From: Andreas Glatz <andi.glatz@gmail.com>
+In-Reply-To: <mailman.3.1399716001.21151.xenomai@xenomai.org>
+Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai on v3.14
+Mime-Version: 1.0 (Apple Message framework v936)
+Date: Sat, 10 May 2014 15:27:59 +0100
+References: <mailman.3.1399716001.21151.xenomai@xenomai.org>
+Subject: Re: [Xenomai] New Xenomai kernels for testing
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,27 +15,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Brian Morel <brianmorel99@gmail.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 05/10/2014 11:38 AM, Philippe Gerum wrote:
-> On 05/10/2014 04:35 AM, Brian Morel wrote:
->> I want to start working on Xenomai & I-pipe on kernel 3.14 for arm
->> (beagle
->> bone black).  I was hoping for a little advise on which git
->> repositories to
->> use for both Xenomai & I-Pipe.  It looks like I would need the I-Pipe
->> patch
->> from either the main I-Pipe repo. or one of the named repos.
+Hi Michael,
+
 >
-> ipipe-3.14 has just landed in git://git.xenomai.org/ipipe.git, with the
-> latest ARM bits merged. The I-pipe support for ARM usually brews in this
-> tree: git://git.xenomai.org/ipipe-gch.git, then gets merged in our
-> mainline tree as mentioned earlier.
+>> Something completely unrelated, do LinuxCNC/MachineKit users use
+>> Comedi/Analogy? If yes, we would be interested in users willing to  
+>> test
+>> ports of Comedi drivers to the Analogy framework.
 >
+> This has come up every now and then, but these disparate attempts  
+> have not found their way into the main codebase; recently there was  
+> another stab at the issue: http://c-416.ahl.uni-linz.ac.at:8080/gitweb/?p=linuxcnc/.git;a=commitdiff;h=ffe5844c526ee4762e0cf9f294b660ae9abfdfea
+>
+> I think data acquisition is very much in scope for machinekit; its  
+> HAL 'virtual circuit' subsystem does make such things much more  
+> enduser-friendly in use
+>
+> I'd be happy to give that a try even just to show how it can be  
+> done, and others could build on it; I just would have to locate a  
+> piece of hardware which I could use for such an experiment; I dont  
+> own any of the - seemingly mostly PC - peripherals listed on the  
+> comedi site; any suggestion for the 'hello world' type driver with  
+> common hardware? is there any non-PC (eg ARM embedded) driver I  
+> could start with?
 
-Make sure to disable CONFIG_CONTEXT_TRACKING for now. We are still 
-investigating an issue with this feature.
+In my recent quest to get to grips with Analogy I found the 'fake'  
+driver
 
--- 
-Philippe.
+http://git.xenomai.org/xenomai-2.6.git/tree/ksrc/drivers/analogy/testing
+
+quite instructive, which also doesn't require any real hardware since  
+it emulates 'fake' hardware... this obviously also has the advantage  
+that it provides a testbench for the user-space interface on all  
+platforms.
+
+A.
+
+
+
+
 
