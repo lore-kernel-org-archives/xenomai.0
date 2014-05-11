@@ -1,15 +1,12 @@
-Message-ID: <536E4FCD.2080102@xenomai.org>
-Date: Sat, 10 May 2014 18:11:57 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <531A29CC.4040201@xenomai.org> <533FF394.1020405@xenomai.org>
- <535A3B92.5070206@siemens.com> <535A4E5F.9060109@xenomai.org>
- <535FC7A8.3060508@siemens.com> <5367F922.6070808@xenomai.org>
- <53686F9C.1020207@siemens.com>
-In-Reply-To: <53686F9C.1020207@siemens.com>
+In-Reply-To: <536E1962.30008@xenomai.org>
+References: <CAMbo_3DjWPb2xt27WAR6MF6bLHf-QZM-n-VduNTugx34cQ0LPg@mail.gmail.com>
+ <536DF390.9000604@xenomai.org> <536E1962.30008@xenomai.org>
+Date: Sat, 10 May 2014 20:07:56 -0400
+Message-ID: <CAMbo_3Av1qCUpXk1osvwczvu5OtCzyge3wxSgsfbOZcYq786uw@mail.gmail.com>
+From: Brian Morel <brianmorel99@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RTDM rework (2)
+Subject: Re: [Xenomai] Xenomai on v3.14
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,79 +15,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 05/06/2014 07:14 AM, Jan Kiszka wrote:
-> On 2014-05-05 22:48, Gilles Chanteperdrix wrote:
->> On 04/29/2014 05:39 PM, Jan Kiszka wrote:
->>> On 2014-04-25 14:00, Gilles Chanteperdrix wrote:
->>>> On 04/25/2014 12:40 PM, Jan Kiszka wrote:
->>>>> On 2014-04-05 14:14, Gilles Chanteperdrix wrote:
->>>>>> On 03/07/2014 09:19 PM, Gilles Chanteperdrix wrote:
->>>>>>>
->>>>>>> Hi,
->>>>>>>
->>>>>>> here comes a second attempt at introducing a file descriptor support for
->>>>>>> other purposes than RTDM drivers.
->>>>>>>
->>>>>>> This time, the file descriptors are called rtdm_fd and are part of the
->>>>>>> RTDM API, but can be used by the POSIX personality. The actual RB-tree
->>>>>>> where they are stored is part of the xnsys_ppd structure, as this way it
->>>>>>> can be used by one of the RTDM and POSIX personalities, even if the
->>>>>>> current process is not bound to the other personality.
->>>>>>>
->>>>>>> I have posted the patches to the timerbench, switchtest, rtdm, xddp,
->>>>>>> iddp and bufp drivers to allow seeing the API changes.
->>>>>>
->>>>>> Hi Jan,
->>>>>>
->>>>>> ping?
->>>>>>
->>>>>> I have a pile of code needing to be rebased on these patches, I would
->>>>>> very much like to get all this merged before it bitrots too much.
->>>>>
->>>>> Finally looking into them now. Do you happen to have them in git
->>>>> somewhere? Or what was the revision they once applied to?
->>>>
->>>> Branch for-forge-rtdm-rework in xenomai-gch.git.
->>>
->>> Thanks, worked through this now. I'm fine with the general approach. We
->>> should prepare it for merge.
->>>
->>> Some minor things I stumbled over while reading:
->>>
->>> - rtdm_context_user_p (I personally still prefer something like
->>>   "is_user") and rtdm_context_device (to_device?) are apparently public
->>>   APIs and, thus, need documentation
->>> - there are still things (arguments, functions etc.) called "context"
->>>   that are of type rtdm_fd, thus should rather be called "fd", no?
+I cloned the ipipe.git repository & checked out ipipe-3.14 .  I tried
+running the genpatches.sh script, but it appears that tag v3.14 doesn't
+exist in the repository.  I tried the same process for 3.8 & it worked
+fine.  I assume this is because the stable tree isn't there, but my git foo
+isn't good, so I don't know how to add it.  Any advice would be great.
+
+Thanks, Brian
+
+
+On Sat, May 10, 2014 at 8:19 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+
+> On 05/10/2014 11:38 AM, Philippe Gerum wrote:
+>
+>> On 05/10/2014 04:35 AM, Brian Morel wrote:
 >>
->> Hi Jan,
+>>> I want to start working on Xenomai & I-pipe on kernel 3.14 for arm
+>>> (beagle
+>>> bone black).  I was hoping for a little advise on which git
+>>> repositories to
+>>> use for both Xenomai & I-Pipe.  It looks like I would need the I-Pipe
+>>> patch
+>>> from either the main I-Pipe repo. or one of the named repos.
+>>>
 >>
->> I have started cleaning up the patches, however, about the last remark,
->> do you propose to rename rtdm_private_to_context to rtdm_private_to_fd
->> for instance? I was thinking that rtdm_fd was the new context, so we
->> could keep the context everywhere? Keeping the old API names would limit
->> the need for wrappers.
-> 
-> We can still keep (undocumented) legacy wrappers for a while, but it
-> would be better to call the new API after what it is really translating.
-
-Hi Jan,
-
-I have pushed a new version which addresses your comments in the
-"for-forge-rtdm-rework" branch.
-
-You can ignore the "whitespace cleanup" commit, it is just there to
-allow me to simply commit without whitespace issues, it will be removed
-later on.
-
-Note that analogy has not been updated to the API change, I will address
-this later, if you agree with the current version.
-
-Regards.
-
--- 
-                                                                Gilles.
-
+>> ipipe-3.14 has just landed in git://git.xenomai.org/ipipe.git, with the
+>> latest ARM bits merged. The I-pipe support for ARM usually brews in this
+>> tree: git://git.xenomai.org/ipipe-gch.git, then gets merged in our
+>> mainline tree as mentioned earlier.
+>>
+>>
+> Make sure to disable CONFIG_CONTEXT_TRACKING for now. We are still
+> investigating an issue with this feature.
+>
+> --
+> Philippe.
+>
