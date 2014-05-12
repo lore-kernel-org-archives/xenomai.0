@@ -1,15 +1,16 @@
-Message-ID: <536FD8BC.6020502@xenomai.org>
-Date: Sun, 11 May 2014 22:08:28 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Mon, 12 May 2014 14:37:36 +0200
+From: =?utf-8?q?Petr_Cervenka?= <grugh@centrum.cz>
+References: <20140502141307.B6A14EC0@centrum.cz>,
+ <53639AC8.1000507@xenomai.org>, <20140506101735.3A0BEBEB@centrum.cz>,
+ <5368A3A2.1010302@xenomai.org>, <20140506112918.F5E14FAA@centrum.cz>,
+ <5368DC2C.5000505@xenomai.org>,
+ <20140507151310.0F980ADD@centrum.cz> <536BA891.3060605@xenomai.org>
+In-Reply-To: <536BA891.3060605@xenomai.org>
 MIME-Version: 1.0
-References: <531A29CC.4040201@xenomai.org> <533FF394.1020405@xenomai.org>
- <535A3B92.5070206@siemens.com> <535A4E5F.9060109@xenomai.org>
- <535FC7A8.3060508@siemens.com> <5367F922.6070808@xenomai.org>
- <53686F9C.1020207@siemens.com> <536E4FCD.2080102@xenomai.org>
-In-Reply-To: <536E4FCD.2080102@xenomai.org>
+Message-Id: <20140512143736.8105A76F@centrum.cz>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RTDM rework (2)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] =?utf-8?q?non-blocking_rt=5Ftask=5Fsuspend=28NULL=29?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,80 +19,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: =?utf-8?q?Philippe_Gerum?= <rpm@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 05/10/2014 06:11 PM, Gilles Chanteperdrix wrote:
-> On 05/06/2014 07:14 AM, Jan Kiszka wrote:
->> On 2014-05-05 22:48, Gilles Chanteperdrix wrote:
->>> On 04/29/2014 05:39 PM, Jan Kiszka wrote:
->>>> On 2014-04-25 14:00, Gilles Chanteperdrix wrote:
->>>>> On 04/25/2014 12:40 PM, Jan Kiszka wrote:
->>>>>> On 2014-04-05 14:14, Gilles Chanteperdrix wrote:
->>>>>>> On 03/07/2014 09:19 PM, Gilles Chanteperdrix wrote:
->>>>>>>>
->>>>>>>> Hi,
->>>>>>>>
->>>>>>>> here comes a second attempt at introducing a file descriptor support for
->>>>>>>> other purposes than RTDM drivers.
->>>>>>>>
->>>>>>>> This time, the file descriptors are called rtdm_fd and are part of the
->>>>>>>> RTDM API, but can be used by the POSIX personality. The actual RB-tree
->>>>>>>> where they are stored is part of the xnsys_ppd structure, as this way it
->>>>>>>> can be used by one of the RTDM and POSIX personalities, even if the
->>>>>>>> current process is not bound to the other personality.
->>>>>>>>
->>>>>>>> I have posted the patches to the timerbench, switchtest, rtdm, xddp,
->>>>>>>> iddp and bufp drivers to allow seeing the API changes.
->>>>>>>
->>>>>>> Hi Jan,
->>>>>>>
->>>>>>> ping?
->>>>>>>
->>>>>>> I have a pile of code needing to be rebased on these patches, I would
->>>>>>> very much like to get all this merged before it bitrots too much.
->>>>>>
->>>>>> Finally looking into them now. Do you happen to have them in git
->>>>>> somewhere? Or what was the revision they once applied to?
->>>>>
->>>>> Branch for-forge-rtdm-rework in xenomai-gch.git.
->>>>
->>>> Thanks, worked through this now. I'm fine with the general approach. We
->>>> should prepare it for merge.
->>>>
->>>> Some minor things I stumbled over while reading:
->>>>
->>>> - rtdm_context_user_p (I personally still prefer something like
->>>>   "is_user") and rtdm_context_device (to_device?) are apparently public
->>>>   APIs and, thus, need documentation
->>>> - there are still things (arguments, functions etc.) called "context"
->>>>   that are of type rtdm_fd, thus should rather be called "fd", no?
->>>
->>> Hi Jan,
->>>
->>> I have started cleaning up the patches, however, about the last remark,
->>> do you propose to rename rtdm_private_to_context to rtdm_private_to_fd
->>> for instance? I was thinking that rtdm_fd was the new context, so we
->>> could keep the context everywhere? Keeping the old API names would limit
->>> the need for wrappers.
->>
->> We can still keep (undocumented) legacy wrappers for a while, but it
->> would be better to call the new API after what it is really translating.
+> Od: Philippe Gerum <rpm@xenomai.org>
+>
+>
+>Thanks. Could you drop the previous instrumentation patches, and give a try at this one? It fixes a flaw in the logic for maintaining the thread information bits, which may have caused the issue you observed: 
+>
+>diff --git a/ksrc/nucleus/pod.c b/ksrc/nucleus/pod.c
+>index 0a2ee19..22fa91d 100644
+>--- a/ksrc/nucleus/pod.c
+>+++ b/ksrc/nucleus/pod.c
+>@@ -1391,7 +1391,8 @@ void xnpod_suspend_thread(xnthread_t *thread, xnflags_t mask,
+> 		}
+> #endif /* CONFIG_XENO_OPT_PERVASIVE */
 > 
-> Hi Jan,
+>-		xnthread_clear_info(thread, XNRMID | XNTIMEO | XNBREAK | XNWAKEN | XNROBBED);
+>+		xnthread_clear_info(thread, XNRMID | XNTIMEO | XNBREAK | \
+>+				    XNWAKEN | XNROBBED | XNKICKED);
+> 	}
 > 
-> I have pushed a new version which addresses your comments in the
-> "for-forge-rtdm-rework" branch.
-> 
-> You can ignore the "whitespace cleanup" commit, it is just there to
-> allow me to simply commit without whitespace issues, it will be removed
-> later on.
-> 
-> Note that analogy has not been updated to the API change, I will address
-> this later, if you agree with the current version.
+> 	/* Don't start the timer for a thread indefinitely delayed by
+>
 
-I finally also pushed the analogy changes.
+I applied the new patch and I was not able to reproduce the -EINTR problem to this moment. But one of the machines I tried during long term test over the weekend got frozen. But it could be also from different reason. What do you think?
 
--- 
-                                                                Gilles.
+Petr
 
