@@ -1,16 +1,10 @@
-Message-ID: <53738A80.3070606@xenomai.org>
-Date: Wed, 14 May 2014 17:23:44 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <531A29CC.4040201@xenomai.org> <533FF394.1020405@xenomai.org>
- <535A3B92.5070206@siemens.com> <535A4E5F.9060109@xenomai.org>
- <535FC7A8.3060508@siemens.com> <5367F922.6070808@xenomai.org>
- <53686F9C.1020207@siemens.com> <536E4FCD.2080102@xenomai.org>
- <53737E1A.8060209@siemens.com>
-In-Reply-To: <53737E1A.8060209@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RTDM rework (2)
+From: "=?gb18030?B?yKu3vc67tcS9tcHZ?=" <853121005@qq.com>
+Mime-Version: 1.0
+Date: Thu, 15 May 2014 11:35:20 +0800
+Message-ID: <tencent_7AED40845243A5DB53A290D0@qq.com>
+Content-Type: text/plain; charset="gb18030"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Xenomai consulting
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,41 +13,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
 
-On 05/14/2014 04:30 PM, Jan Kiszka wrote:
-> Hi Gilles,
->
-> On 2014-05-10 18:11, Gilles Chanteperdrix wrote:
->> Hi Jan,
->>
->> I have pushed a new version which addresses your comments in the
->> "for-forge-rtdm-rework" branch.
->>
->> You can ignore the "whitespace cleanup" commit, it is just there to
->> allow me to simply commit without whitespace issues, it will be removed
->> later on.
->>
->> Note that analogy has not been updated to the API change, I will address
->> this later, if you agree with the current version.
->
-> Looks good.
->
-> Minor note on rtdm_device::open/socket doc: They are running
-> non-real-time context, and the documentation should mention this clearly
-> (compare to the regular file ops with their two variants).
->
-> I can't look at the implementation, unfortunately.
-
-Ok, one change you may have missed: the close callback now returns void. 
-Since the close callback is now invoked when the reference count reaches 
-0, it is not always possible to return the error to the user. The 
-automatic periodic invocation of close when it returns EAGAIN is also 
-removed: it is possible to get the same result by using 
-rtdm_fd_lock/rtdm_fd_unlock, so for the sake of simplicity, only this 
-solution was kept.
-
--- 
-					    Gilles.
-
+RGVhciBmcmllbmSjug0KICAgICBJIGFtIHNvIGdsYWQgdG8gdXNlIHRoZSBYZW5vbWFpIGluIG15
+IGRldmVsb3BtZW50IGJvYXJkLk15IGRldmVsb3BtZW50IGJvYXJkIGlzIFplZGJvYXJkLFplZGJv
+YXJkIGJlbG9uZ3MgdG8gdGhlIFhpbGlueCBjb21wYW55J3MgenlucSBzZXJpZXMgYW5kIGkgc2Vl
+IHRoZSBYZW5vbWFpIGhhcyB0aGUgenlucSBwYXRjaC5UaGUgbmFtZSBvZiBwYXRjaCBhcmUgaXBp
+cGUtY29yZS0zLjgtenlucS1wcmUucGF0Y2ggYW5kIGlwaXBlLWNvcmUtMy44LXp5bnEtcG9zdC5w
+YXRjaC4NCiAgICAgVGhlIG9mZmljaWFsIFplZGJvYXJkIG9ubHkgcHJvdmlkZXMgMy42IHZlcnNp
+b24gb2YgdGhlIExpbnV4IGtlcm5lbKOsc28gaSBkb24ndCBoYXZlIHRoZSAzLjggdmVyc2lvbiBv
+ZiB0aGUgTGludXggS2VybmVsIG9mIFplZGJvYXJkLldoZW4gSSBhbSB0cnlpbmcgdG8gcGF0Y2gg
+dGhlIDMuNiBrZXJuZWwgdXNpbmcgaXBpcGUtY29yZS0zLjgtenlucS1wcmUucGF0Y2gsaXQgdGVs
+bHMgbWUgdGhhdCBwcmVwYXJlLWtlcm5lbC5zaDogVW5hYmxlIHRvIHBhdGNoIGtlcm5lbCAzLjYu
+MC1kaWdpbGVudC0xMy4wMSB3aXRoIGlwaXBlLWNvcmUtMy44LXp5bnEtcHJlLnBhdGNoLg0KICAg
+ICBQbGVhc2UgdGVsbCBtZSB3aGF0J3MgZGlmZmVyZW50IGJldHdlZW50IHRoZXNlIHR3byBwYXRj
+aCxob3cgc2hvdWxkIEkgc2xvdmUgdGhpcyBwcm9ibGVtLg0KICAgICBUaGFuayB5b3UgdmVyeSBt
+dWNoLgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBh
+dHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiA4RkJBODRDQkBBQzUwQzczQS5GODM1NzQ1
+My5wbmcKVHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtClNpemU6IDEyNjYxNSBieXRlcwpE
+ZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWls
+L3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNDA1MTUvMzIyYzg0NDIvYXR0YWNobWVudC5vYmo+Cg==
