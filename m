@@ -1,13 +1,13 @@
-Message-ID: <53750A00.4020209@xenomai.org>
-Date: Thu, 15 May 2014 20:40:00 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <53751703.7060107@siemens.com>
+Date: Thu, 15 May 2014 21:35:31 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 References: <531A29CC.4040201@xenomai.org> <533FF394.1020405@xenomai.org>
  <535A3B92.5070206@siemens.com> <535A4E5F.9060109@xenomai.org>
  <535FC7A8.3060508@siemens.com> <5367F922.6070808@xenomai.org>
  <53686F9C.1020207@siemens.com> <536E4FCD.2080102@xenomai.org>
- <53737E1A.8060209@siemens.com>
-In-Reply-To: <53737E1A.8060209@siemens.com>
+ <53737E1A.8060209@siemens.com> <53750A00.4020209@xenomai.org>
+In-Reply-To: <53750A00.4020209@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] RTDM rework (2)
@@ -19,38 +19,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 05/14/2014 04:30 PM, Jan Kiszka wrote:
-> Hi Gilles,
-> 
-> On 2014-05-10 18:11, Gilles Chanteperdrix wrote:
->> Hi Jan,
+On 2014-05-15 20:40, Gilles Chanteperdrix wrote:
+> On 05/14/2014 04:30 PM, Jan Kiszka wrote:
+>> Hi Gilles,
 >>
->> I have pushed a new version which addresses your comments in the
->> "for-forge-rtdm-rework" branch.
+>> On 2014-05-10 18:11, Gilles Chanteperdrix wrote:
+>>> Hi Jan,
+>>>
+>>> I have pushed a new version which addresses your comments in the
+>>> "for-forge-rtdm-rework" branch.
+>>>
+>>> You can ignore the "whitespace cleanup" commit, it is just there to
+>>> allow me to simply commit without whitespace issues, it will be removed
+>>> later on.
+>>>
+>>> Note that analogy has not been updated to the API change, I will address
+>>> this later, if you agree with the current version.
 >>
->> You can ignore the "whitespace cleanup" commit, it is just there to
->> allow me to simply commit without whitespace issues, it will be removed
->> later on.
+>> Looks good.
 >>
->> Note that analogy has not been updated to the API change, I will address
->> this later, if you agree with the current version.
+>> Minor note on rtdm_device::open/socket doc: They are running
+>> non-real-time context, and the documentation should mention this clearly
+>> (compare to the regular file ops with their two variants).
+>>
+>> I can't look at the implementation, unfortunately.
 > 
-> Looks good.
-> 
-> Minor note on rtdm_device::open/socket doc: They are running
-> non-real-time context, and the documentation should mention this clearly
-> (compare to the regular file ops with their two variants).
-> 
-> I can't look at the implementation, unfortunately.
+> I have submitted the pull request in order to move forward, but we can
+> still do some changes afterward.
 
-I have submitted the pull request in order to move forward, but we can
-still do some changes afterward.
+Ack.
 
-Regards.
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
