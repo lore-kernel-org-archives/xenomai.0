@@ -1,10 +1,12 @@
+Message-ID: <5374BA15.70607@xenomai.org>
+Date: Thu, 15 May 2014 14:59:01 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Thu, 15 May 2014 18:13:57 +0530
-Message-ID: <CA+1cARygZOufPbY--pwZZsSpfyjha1GxiaaTJ_+Zy3VMc4J8cQ@mail.gmail.com>
-From: Digesh patel <digpeshark@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] error while patching xenomai
+References: <CA+1cARygZOufPbY--pwZZsSpfyjha1GxiaaTJ_+Zy3VMc4J8cQ@mail.gmail.com>
+In-Reply-To: <CA+1cARygZOufPbY--pwZZsSpfyjha1GxiaaTJ_+Zy3VMc4J8cQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] error while patching xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,14 +15,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Digesh patel <digpeshark@gmail.com>, xenomai@xenomai.org
 
-SGksCiBpIGFtIGdldHRpbmcgZXJyb3Igd2hpbGUgcGF0Y2hpbmcgeGVub21haSAyLjQuNCBwYXRj
-aCB0byBsaW51eCAyLjYuMjUKZm9yIHBvd2VycGMuIGkgYW0gdXNpbmcgdGhpcyBwYXRjaCBmaWxl
-IG9mIHhlbm9tYWkKCmFkZW9zLWlwaXBlLTIuNi4yMC1wb3dlcnBjLTEuOC0wMS5wYXRjaAoKYW5k
-IGkgYW0gZ2l2aW5nIHlvdSBzY3JlZW5zaG90LnBsZWFzZSBoZWxwIG1lIG91dC4KClJlZ2FyZHMs
-CkRpZ2VzaCBQYXRlbAotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBu
-b24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiB4ZW5vbWFpZXJyb3IucG5n
-ClR5cGU6IGltYWdlL3BuZwpTaXplOiAxNjU5MjMgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpV
-Ukw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRz
-LzIwMTQwNTE1LzBjMDVhOGNmL2F0dGFjaG1lbnQucG5nPgo=
+On 05/15/2014 02:43 PM, Digesh patel wrote:
+> Hi,
+>   i am getting error while patching xenomai 2.4.4 patch to linux 2.6.25
+> for powerpc. i am using this patch file of xenomai
+>
+> adeos-ipipe-2.6.20-powerpc-1.8-01.patch
+>
+> and i am giving you screenshot.please help me out.
+
+Xenomai version 2.4.4 is antediluvian, please use Xenomai 2.6.3
+For linux 2.6.25, you need a patch for... linux 2.6.25, not a patch for 
+linux 2.6.20.
+
+-- 
+					    Gilles.
+
