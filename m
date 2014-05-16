@@ -1,14 +1,10 @@
-Message-ID: <537629EA.6040300@xenomai.org>
-Date: Fri, 16 May 2014 17:08:26 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <53765654.8010509@ruggedcom.com>
+Date: Fri, 16 May 2014 14:17:56 -0400
+From: Makarand Pradhan <makarandpradhan@ruggedcom.com>
 MIME-Version: 1.0
-References: <E1WlE09-0006CW-3k@sd-51317.dedibox.fr>
- <53762667.4070009@xenomai.org>
-In-Reply-To: <53762667.4070009@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] [Xenomai-git] Philippe Gerum : cobalt/shadow: drop
- spurious assertion
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] RT_HEAP physical address
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,50 +13,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/16/2014 04:53 PM, Gilles Chanteperdrix wrote:
-> On 05/16/2014 11:00 AM, git repository hosting wrote:
->> Module: xenomai-forge
->> Branch: next
->> Commit: fa0ad5d64caa346d29906bf602558396fc8220cd
->> URL:
->> http://git.xenomai.org/?p=xenomai-forge.git;a=commit;h=fa0ad5d64caa346d29906bf602558396fc8220cd
->>
->>
->> Author: Philippe Gerum <rpm@xenomai.org>
->> Date:   Fri May 16 11:01:40 2014 +0200
->>
->> cobalt/shadow: drop spurious assertion
->>
->> ---
->>
->>   kernel/cobalt/shadow.c |    2 --
->>   1 file changed, 2 deletions(-)
->>
->> diff --git a/kernel/cobalt/shadow.c b/kernel/cobalt/shadow.c
->> index 58a3820..c76c577 100644
->> --- a/kernel/cobalt/shadow.c
->> +++ b/kernel/cobalt/shadow.c
->> @@ -118,8 +118,6 @@ static struct xnshadow_process
->> *__process_hash_search(struct mm_struct *mm)
->>       unsigned bucket = process_hash_crunch(mm);
->>       struct xnshadow_process *p;
->>
->> -    atomic_only();
->> -
->>       hlist_for_each_entry(p, &process_hash[bucket], hlink)
->>           if (p->mm == mm)
->>               return p;
->
-> Euh cette assertion me parait valide, il faut forcément le lock pour
-> parcourir le hash.
->
->
+Hi All,
 
-Nope, wrong lock being tested with atomic_only() since your changes on 
-the hash table locking.
+I am running on MPC8360(powerpc) linux 3.0, xenomai 2.6.3.
 
--- 
-Philippe.
+I am trying to get the physical address of a heap using rt_heap_inquire. 
+All the same, I'm getting a null pointer. Can you pl point out if I'm 
+doing something wrong?
+
+Code:
+
+#include <rtdk.h>
+#include <stdio.h>
+#include <sys/mman.h>
+#include <native/heap.h>
+#include <native/task.h>
+
+void task1_func(void *arg)
+{
+         RT_HEAP heap;
+         RT_HEAP_INFO info;
+
+         rt_printf("Running\n");
+
+         int rc = rt_heap_create(&heap, "TEST", 1024, H_DMA);
+
+         rt_printf("Heap allocated: heap: %p, rc: %i\n", heap.mapbase, rc);
+
+         if (rt_heap_inquire(&heap, &info) == 0)
+         {
+                 rt_printf("task1: heap: %p, phy: %x\n", heap.mapbase, 
+info.phys_addr);
+         }
+         else
+         {
+                 rt_printf("Could not inquire\n");
+         }
+
+}
+
+int main(int argc, char **argv)
+{
+         RT_TASK task1;
+
+         mlockall(MCL_CURRENT|MCL_FUTURE);
+
+         /* Perform auto-init of rt_print buffers if the task doesn't do 
+so */
+         rt_print_auto_init(1);
+
+         /* Initialise the rt_print buffer for this task explicitly */
+         rt_print_init(4096, "Task 1");
+
+         rt_task_spawn(&task1, "T1", 0, 11, 0, task1_func, NULL);
+
+         return 0;
+}
+
+O/P:
+root@ruggedcom:~# ./a.out
+Running
+Heap allocated: heap: 0x48073000, rc: 0
+task1: heap: 0x48073000, phy: 0
+root@ruggedcom:~#
+
+Thanks and Rgds,
+Makarand.
+
 
