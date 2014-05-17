@@ -1,12 +1,16 @@
+References: <1398944548.9186.YahooMailNeo@web171603.mail.ir2.yahoo.com>
+ <53624421.8090903@xenomai.org>
+ <1398954230.40374.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+ <536356E2.30308@xenomai.org>
+Message-ID: <1400336435.71762.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+Date: Sat, 17 May 2014 15:20:35 +0100 (BST)
+From: Matthias Schneider <ma30002000@yahoo.de>
+In-Reply-To: <536356E2.30308@xenomai.org>
 MIME-Version: 1.0
-Sender: mfornero@gmail.com
-In-Reply-To: <5352BA1D.7070707@xenomai.org>
-References: <5352BA1D.7070707@xenomai.org>
-Date: Sun, 20 Apr 2014 14:22:46 -0400
-Message-ID: <CADVgf9kfAGkqjmZ96cPY5gZyRLr2vAu-+5uwMEpdCBDy6+U_BQ@mail.gmail.com>
-From: Matthew Fornero <mfornero.lists@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Pre/Post patches
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Issue in __threadobj_unlock_sched (forge/mercury)
+Reply-To: Matthias Schneider <ma30002000@yahoo.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,30 +19,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Looks like Xilinx hasn't merged 3.14 into their tree yet. There is
-some support for Zynq in mainline, but I'm not sure how functional it
-is (I've always run from the Xilinx tree). I'm still aiming for a 3.10
-build (-pre/-post patches) sometime soon, but I've been completely out
-of bandwidth the last month or so.
-
--Matt
-
-On Sat, Apr 19, 2014 at 2:02 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
->
-> Hi all,
->
-> I am currently validating the I-pipe patch for Linux 3.14 on armv4 and
-> armv5, but it should already work for armv6 and armv7 processors, it is
-> available as a branch for-ipipe-3.14.0 in ipipe-gch git. Could you have
-> a look at it on BeagleBone, Raspberry and Zynq? For the SOCs supported
-> by mainline, please simply send patches to the for-ipipe-3.14.0 branch.
->
-> Regards.
->
-> --
-> Gilles.
+----- Original Message -----=0A=0A> From: Philippe Gerum <rpm@xenomai.org>=
+=0A> To: Matthias Schneider <ma30002000@yahoo.de>; "xenomai@xenomai.org" <x=
+enomai@xenomai.org>=0A> Cc: =0A> Sent: Friday, May 2, 2014 10:27 AM=0A> Sub=
+ject: Re: [Xenomai] Issue in __threadobj_unlock_sched (forge/mercury)=0A> =
+=0A> On 05/01/2014 04:23 PM, Matthias Schneider wrote:=0A> =0A>>  b) thread=
+obj_lock_sched() saves prio and policy and sets it to=0A>>  SCHED_RT/thread=
+obj_lock_prio=0A> =0A> Forcing SCHED_RT in threadobj_lock() is the core iss=
+ue. Doing so allows =0A> SCHED_OTHER callers to hold that lock: does it mak=
+e sense? Maybe it's =0A> handy so that client code does not have to care, o=
+n the other hand, this =0A> very much sounds like introducing priority inve=
+rsion by design.=0A> =0A> What would be the use case for holding the sched =
+lock over SCHED_OTHER?=0A> =0A> =0A> -- =0A> Philippe.=0A> =0A=0AThere are =
+some points I would like to raise about this issue:=0A=0Aa) the policy acti=
+ve before holding the "scheduler lock" is actually reapplied,=A0=0Abut the =
+threadobj info about this is left inconsistent=0Ab) independent from wether=
+ SCHED_OTHER is a use case, SCHED_RR and SCHED_RT/SCHED_FIFO=A0=0Adefinitel=
+y are.=0Ac) In my recently published FreeRTOS prototype, the "main" thread =
+calling=A0=0ATaskSchedulerStart is actually a SCHED_OTHER thread that takes=
+ the scheduler=A0=0Alock=0A=0ANevertheless, please have a look at the code =
+again, it seems like a simple bug=A0=0Ato me.=0A=0AConsider the following:=
+=0A=0Acurrent task is SCHED_RR, prio 5=0A=0Athreadobj_lock_sched()=0A=A0-> =
+SCHED_RT, prio 99=0A=0Athreadobj_unlock_sched()=0A=A0-> SCHED_RR, prio 5=0A=
+=0Athreadobj_lock_sched()=0A=A0-> SCHED_RT, prio 99=0A=0Athreadobj_unlock_s=
+ched()=0A=A0-> SCHED_RT(!), prio 5=0A=0ARegards,=0AMatthias
 
