@@ -1,13 +1,13 @@
-Message-ID: <5383406C.4070902@xenomai.org>
-Date: Mon, 26 May 2014 15:23:56 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <537B2D63.9030709@xenomai.org>
+Date: Tue, 20 May 2014 12:24:35 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAO0fa7ZiofUS3wsbx89uYsnt6icuv+DVcDbiEfVyG5DUeprj2w@mail.gmail.com>	<5382E8B1.8070402@xenomai.org>
- <CAO0fa7YQ0TxiAhbmFmt+41o+rugoLXKjXxtHygpthNOiu8gd9w@mail.gmail.com>
-In-Reply-To: <CAO0fa7YQ0TxiAhbmFmt+41o+rugoLXKjXxtHygpthNOiu8gd9w@mail.gmail.com>
+References: <537A5F9B.4040308@xenomai.org> <537B015E.5070107@xenomai.org>
+ <537B27C9.9020908@xenomai.org> <537B2A5B.3090100@xenomai.org>
+In-Reply-To: <537B2A5B.3090100@xenomai.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] gdb / threads on beaglebone black
+Subject: Re: [Xenomai] timer drift
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,39 +16,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Drew <pythondrew@gmail.com>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-On 05/26/2014 02:50 PM, Drew wrote:
+On 05/20/2014 12:11 PM, Philippe Gerum wrote:
+> On 05/20/2014 12:00 PM, Philippe Gerum wrote:
+>> On 05/20/2014 09:16 AM, Gilles Chanteperdrix wrote:
+>>> On 05/19/2014 09:46 PM, Gilles Chanteperdrix wrote:
+>>>>
+>>>> Hi,
+>>>>
+>>>> when running the latency test modified to use timerfds on forge, I
+>>>> noticed that we have a clock vs timer drift issue (on forge, not on 2.6,
+>>>> and only since recent changes).
+>>>>
+>>>> What the latency test does is create a periodic timer, and when waking
+>>>> up at each tick, compare the actual wake-up time, with the expected
+>>>> wake-up time. The problem is that, on the timer side, the computation is
+>>>> more precise, because it is the sum of short durations computed with
+>>>> xnarch_llmulshft, whereas on the clock side, we pass larger and larger
+>>>> values to xnarch_llmulshft, so at some point, the error due to the
+>>>> approximation begins to be within the range of observable differences (a
+>>>> few micro-seconds after hours of tests). I have verified that replacing
+>>>> xnarch_llmulshft with xnarch_nodiv_llimd avoids the issue. And I believe
+>>>> mainline does not have the same issue because they always pass small
+>>>> durations to the multiplication + shift operation.
+>>>
+>>> The question being: what do we do to avoid this issue?
+>>>
+>>>
+>>
+>> IIUC, assuming clock_gettime() delivers ns2tsc(N * period_ns), we may
+>> have to fix the timer interval update code in xnclock_tick() which
+>> produces N * (ns2tsc(period_ns)). Aligning both could be the right path,
+>> maybe compensating for the overhead using the clock gravity?
+>>
 >
-> On Mon, May 26, 2014 at 3:09 AM, Philippe Gerum <rpm@xenomai.org
-> <mailto:rpm@xenomai.org>> wrote:
+> s/clock gravity/timer gravity/ which would then depend on the timer
+> being periodic or not. We'd need to calibrate this adjustement cost on
+> low end architectures, only to make sure this is worth the burden.
 >
->
->     Any change with this?
->
->     - pause();
->     + for (;;)
->     +    pause();
->
->     --
->     Philippe.
->
->
-> I get the "thread exited" messages before the "hello, world" is
-> printed.. that's before the pause() call and even before the tasks have
-> been started..
+The overhead is a multiplication followed by the computation of ns2tsc, 
+which is an llmulshft, so only takes a few nanoseconds. We have the 
+"arith" test which measures llmulshft. The worst case I have is on 
+at91rm9200 a few hundreds of nanoseconds, with latency in the 200us range.
 
-Do not trust stdio printouts for debugging in a dual kernel system, they 
-may be delayed in different ways, despite your termios are set to 
-canonical mode.
-
-In addition, testing return codes of syscalls would be a good idea, e.g. 
-rt_task_start(), assuming rt_task_create() did succeed since GDB told 
-you about two new threads.
-
-PS: please keep the list posted.
+I think it is best to leave the gravity configuration to the user, as we 
+have always done. Maybe having a "per timer-class" gravity would make 
+sense (for user vs kernel thread vs kernel timer and periodic vs 
+one-shot), but it seems it would make the tuning complicated.
 
 -- 
-Philippe.
+					    Gilles.
 
