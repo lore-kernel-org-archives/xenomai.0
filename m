@@ -1,14 +1,13 @@
-Message-ID: <53820380.8080106@xenomai.org>
-Date: Sun, 25 May 2014 16:51:44 +0200
+Message-ID: <537B2A5B.3090100@xenomai.org>
+Date: Tue, 20 May 2014 12:11:39 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <1400785908.61926.YahooMailNeo@web171606.mail.ir2.yahoo.com>
- <537E4DBE.5060406@xenomai.org> <537E4E01.2030108@xenomai.org>
- <1401017215.32791.YahooMailNeo@web171603.mail.ir2.yahoo.com>
-In-Reply-To: <1401017215.32791.YahooMailNeo@web171603.mail.ir2.yahoo.com>
+References: <537A5F9B.4040308@xenomai.org> <537B015E.5070107@xenomai.org>
+ <537B27C9.9020908@xenomai.org>
+In-Reply-To: <537B27C9.9020908@xenomai.org>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] threadobj_set_schedparam and SCHED_OTHER on mercury
+Subject: Re: [Xenomai] timer drift
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,96 +16,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-On 05/25/2014 01:26 PM, Matthias Schneider wrote:
->
->
->
->
->
-> ----- Original Message -----
->> From: Philippe Gerum <rpm@xenomai.org>
->> To: Matthias Schneider <ma30002000@yahoo.de>; "xenomai@xenomai.org" <xenomai@xenomai.org>
->> Cc:
->> Sent: Thursday, May 22, 2014 9:20 PM
->> Subject: Re: [Xenomai] threadobj_set_schedparam and SCHED_OTHER on mercury
->>
->> On 05/22/2014 09:19 PM, Philippe Gerum wrote:
->>>   On 05/22/2014 09:11 PM, Matthias Schneider wrote:
->>>>   Hi,
->>>>
->>>>   Since commit
->>>>     2d102939333201169493688dd91258164bd9737c
->>>>   copperplate: more robustness for threadobj_set_schedparam()
->>>>
->>>>   threadobj_set_schedparam() seems no longer to allow
->>>>   SCHED_OTHER on mercury, due to prepare_rr_corespec() always
->>>>   returning SCHED_FIFO.
->>>>
->>>>   i.e. threadobj_set_schedparam( prio 0, SCHED_OTHER) does not work
->>>>   anymore.
->>>>
+On 05/20/2014 12:00 PM, Philippe Gerum wrote:
+> On 05/20/2014 09:16 AM, Gilles Chanteperdrix wrote:
+>> On 05/19/2014 09:46 PM, Gilles Chanteperdrix wrote:
 >>>
->>>   This should help. With those latest changes, the issue with the priority
->>>   range available for SCHED_RR with Cobalt should be fixed.
+>>> Hi,
 >>>
->>>   diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
->>>   index 8792927..dc5c905 100644
->>>   --- a/lib/copperplate/threadobj.c
->>>   +++ b/lib/copperplate/threadobj.c
->>>   @@ -1486,7 +1486,9 @@ int threadobj_set_schedparam(struct threadobj
->>>   *thobj, int policy,
->>>         if (thobj->schedlock_depth > 0)
->>>             return __bt(-EPERM);
+>>> when running the latency test modified to use timerfds on forge, I
+>>> noticed that we have a clock vs timer drift issue (on forge, not on 2.6,
+>>> and only since recent changes).
 >>>
->>>   -    _policy = prepare_rr_corespec(thobj, policy, param_ex);
->>>   +    _policy = policy;
->>>   +    if (rr == SCHED_RR)
->>>   +        _policy = prepare_rr_corespec(thobj, policy, param_ex);
->>>         /*
->>>          * NOTE: if the current thread suddently starves as a result
->>>          * of switching itself to a scheduling class with no runtime
->>>
+>>> What the latency test does is create a periodic timer, and when waking
+>>> up at each tick, compare the actual wake-up time, with the expected
+>>> wake-up time. The problem is that, on the timer side, the computation is
+>>> more precise, because it is the sum of short durations computed with
+>>> xnarch_llmulshft, whereas on the clock side, we pass larger and larger
+>>> values to xnarch_llmulshft, so at some point, the error due to the
+>>> approximation begins to be within the range of observable differences (a
+>>> few micro-seconds after hours of tests). I have verified that replacing
+>>> xnarch_llmulshft with xnarch_nodiv_llimd avoids the issue. And I believe
+>>> mainline does not have the same issue because they always pass small
+>>> durations to the multiplication + shift operation.
 >>
->> Typo.
+>> The question being: what do we do to avoid this issue?
 >>
->> diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
->> index 8792927..4515c9e 100644
->> --- a/lib/copperplate/threadobj.c
->> +++ b/lib/copperplate/threadobj.c
->> @@ -1486,7 +1486,9 @@ int threadobj_set_schedparam(struct threadobj
->> *thobj, int policy,
->>        if (thobj->schedlock_depth > 0)
->>            return __bt(-EPERM);
->>
->> -    _policy = prepare_rr_corespec(thobj, policy, param_ex);
->> +    _policy = policy;
->> +    if (policy == SCHED_RR)
->>
->> +        _policy = prepare_rr_corespec(thobj, policy, param_ex);
->>        /*
->>         * NOTE: if the current thread suddently starves as a result
->>         * of switching itself to a scheduling class with no runtime
->>
->> --
->> Philippe.
 >>
 >
-> The patch fixes my issue on mercury. I have not yet had the chance to
-> verify cobalt. Are the number of priorities for SCHED_RT and SCHED_RR
-> now both 257 on cobalt?
+> IIUC, assuming clock_gettime() delivers ns2tsc(N * period_ns), we may
+> have to fix the timer interval update code in xnclock_tick() which
+> produces N * (ns2tsc(period_ns)). Aligning both could be the right path,
+> maybe compensating for the overhead using the clock gravity?
 >
 
-1..257 for SCHED_COBALT, 1..255 for SCHED_RR and SCHED_FIFO. Mercury 
-still maps SCHED_RT to SCHED_COBALT, but will downgrade to SCHED_FIFO 
-soon. Internal servers on highest priority levels will be switched to 
-SCHED_COBALT in the same move.
-
-> Thanks for the quick fix,
->
-
-You are welcome. I'll review the second freertos drop this coming week.
+s/clock gravity/timer gravity/ which would then depend on the timer 
+being periodic or not. We'd need to calibrate this adjustement cost on 
+low end architectures, only to make sure this is worth the burden.
 
 -- 
 Philippe.
