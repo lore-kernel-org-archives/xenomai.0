@@ -1,11 +1,12 @@
-Message-ID: <1403028924.23153.YahooMailNeo@web171605.mail.ir2.yahoo.com>
-Date: Tue, 17 Jun 2014 19:15:24 +0100
-From: Matthias Schneider <ma30002000@yahoo.de>
+Message-ID: <537B6293.9010608@xenomai.org>
+Date: Tue, 20 May 2014 16:11:31 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+References: <537B607E.1090800@free.fr>
+In-Reply-To: <537B607E.1090800@free.fr>
+Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] I2C RTDM driver
-Reply-To: Matthias Schneider <ma30002000@yahoo.de>
+Subject: Re: [Xenomai] which stable ipipe version and kernel ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,40 +15,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@free.fr>, xenomai@xenomai.org
 
-Hi all,
+On 05/20/2014 04:02 PM, St=E9phane ANCELOT wrote:
+> Hi,
+>
+>   I need building a stable 3.x kernel ia64 bits, which ipipe to use ?
+>
 
-in the spirit of
+If you really mean Itanium, then there will be no support for this=20
+configuration:
 
-http://www.xenomai.org/pipermail/xenomai/2006-November/006455.html
+http://xenomai.org/index.php/Other_Hardware_Support#ia64
 
-I would like to contribute my I2C RTDM driver to xenomai and ask for a revi=
-ew.
-It is based on the Linux 3.14 i2c framework, porting the omap i2c driver (t=
-ested on
-beaglebone black).
+--=20
+Philippe.
 
-The following points mentioned in the above post have been addressed:
-
-* usage of existing linux kernel structures when available
-* combined address+request command
-
-* ahead-of-time allocation via special IOCTL
-
-The framework itself is contained in a single file "rti2c-dev.c", while mod=
-ifications to=A0
-drivers when porting to rtdm should be minimal. A readme file is included i=
-n the patch as always,
-
-thanks in advance for your comments,
-
-Matthias Schneider
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: 0001-Initial-i2c-commit.patch.gz
-Type: application/x-gzip
-Size: 20005 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140617/b68ffcf=
-0/attachment.bin>
