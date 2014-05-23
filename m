@@ -1,13 +1,9 @@
-Message-ID: <537FA0A3.301@xenomai.org>
-Date: Fri, 23 May 2014 21:25:23 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAE2JnQzDaSfwwuuq+voM+ZqPLHoqmjitsa4XzRpqcoukNJGrsg@mail.gmail.com>
-In-Reply-To: <CAE2JnQzDaSfwwuuq+voM+ZqPLHoqmjitsa4XzRpqcoukNJGrsg@mail.gmail.com>
+From: Manu S Madhav <manusmad@gmail.com>
+Date: Fri, 23 May 2014 17:43:51 -0400
+Message-ID: <CAJX3k=V+ns3H49G+5HuoMjv6+16yeRLXzr=D6dryyQiuVoQ_dA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai on linux-3.8.13 core ARM Cortex A9 - ARMv7
- (v7l) SoC Samsung Exynos 4412
+Subject: [Xenomai] Troubleshooting Analogy DIO
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,38 +12,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Alexandre Donisete Bensi <adbensi@gmail.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 05/23/2014 09:08 PM, Alexandre Donisete Bensi wrote:
-> Hi!
-> 
->  I am trying to install xenomai on ARM Cortex A9 - ARMv7 (v7l) SoC
-> Samsung Exynos 4412 on linux-3.8.13.23 board OdroidU2/U3. To port
-> xenomai to this board I need to add some functions to hardware timer
-> and interrupt handler according
+Hello all,
 
-No.
+I am running Ubuntu Precise (12.04) with kernel version 3.4.6 and
+xenomai-2.6.2.1. I have a NI PCIe 6259 which I am trying to configure for
+Digital I/O. Currently, the code itself is non-RT, I am trying first to
+figure out how to do I/O as well as obtain counter / quadrature information
+from my DAQ card.
 
-> http://www.xenomai.org/index.php/I-pipe-core:ArmPorting
-> 
->  But mach-exynos directory is different and I cannot find the files
-> referenced :(
-> 
-> root@odroid:/usr/src/linux-3.8.13.23/arch/arm/mach-exynos#
-> clock-exynos4210.c  clock-exynos4212.c  clock-exynos4.c
-> mach-hkdk4412.c  mach-smdk4x12.c  mach-exynos4-dt.c
-> 
-> I confess that I am with many doubts. All attempts I made on this
-> platform end as:
-> checking file mm/vmalloc.c
-> prepare-kernel.sh: Unable to patch kernel 3.8.13.23 with
-> ipipe-core-3.8.13-arm-3.patch.
-> 
->  Is there any documentation that is closest to my case?
+Using Analogy, and with a bit of reading, I was able to get analog input
+and output up and running without too much trouble, but digital I/O is
+completely evading me. I am just trying to turn on all digital outputs to 1
+using synchronous instruction to the DIO subdevice (#2, in my case). Size
+of the subdevice is 4 (32 bits).
 
-You have the documentation, you only do not read it carefully. The patch
-for 3.8.13 is for 3.8.13, not for 3.8.13.23.
+None of the following attempts worked. From the mailing list archives, I
+found a suggestion to compile xenomai libs with --fno-omit-frame-pointer,
+and that also didn't help. Any suggestions would be appreciated.
 
--- 
-                                                                Gilles.
 
+*First try (Using command-line insn_bits)*
+
+********************
+insn_bits -v -d analogy0 -s 2 0xffffffff 0xffffffff
+
+insn_bits: device analogy0 opened (fd=0)
+insn_bits: basic descriptor retrieved
+     subdevices count = 14
+     read subdevice index = 0
+     write subdevice index = 0
+insn_bits: complex descriptor retrieved
+insn_bits: selected subdevice index = 2
+insn_bits: mask = 0xffffffff
+insn_bits: value = 0xffffffff
+insn_bits: result = 0x0
+********************
+
+*Second try (Using a4l_sync_dio)*
+
+********************
+// dsc = is a4l_desc_t , previously configured
+ int subd_DIO = 2;
+
+uint32_t mask = 0xffffffff;
+uint32_t buf = 0xffffffff;
+a4l_sync_dio(&dsc, idx_subd_DIO, &mask, &buf);
+
+********************
+
+Again, even when I am getting a return of 0 (success), I am not measuring a
+digital 1 at the physical pins.
+
+*Third try (Using a4l_send_insn)*:
+
+********************
+// dsc = is a4l_desc_t , previously configured
+int subd_DIO = 2;
+unsigned char values[16];
+
+    a4l_insn_t insn;
+    insn.type = A4L_INSN_BITS;
+    insn.idx_subd = idx_subd_DIO;
+    insn.data = values;
+    values[0] = 0xff;
+    values[1] = 0xff;
+    insn.data_size = 2 * sizeof(uint32_t);
+
+    a4l_snd_insn(&dsc, &insn);
+
+********************
+
+Manu S Madhav
