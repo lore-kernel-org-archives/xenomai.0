@@ -1,14 +1,12 @@
-Message-ID: <5380FAB2.5060809@xenomai.org>
-Date: Sat, 24 May 2014 22:01:54 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1400958355.32393.YahooMailNeo@web171605.mail.ir2.yahoo.com>
- <5380F4E9.3010100@xenomai.org>
- <1400961335.63138.YahooMailNeo@web171605.mail.ir2.yahoo.com>
-In-Reply-To: <1400961335.63138.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+In-Reply-To: <oq8uprt339.fsf@merlin.sez.to>
+References: <CAJX3k=V+ns3H49G+5HuoMjv6+16yeRLXzr=D6dryyQiuVoQ_dA@mail.gmail.com>
+ <oq8uprt339.fsf@merlin.sez.to>
+From: Manu S Madhav <manusmad@gmail.com>
+Date: Sat, 24 May 2014 16:22:14 -0400
+Message-ID: <CAJX3k=X=SOD3P503WM226Qf9VLzMLrRC_3R91DYsBtkwLY5wVA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Question about scheduling and signals
+Subject: Re: [Xenomai] Troubleshooting Analogy DIO
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,56 +15,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Paul Janzen <pcj@xenomai.sez.to>
+Cc: xenomai@xenomai.org
 
-On 05/24/2014 09:55 PM, Matthias Schneider wrote:
-> ----- Original Message -----
-> 
->> From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->> To: Matthias Schneider <ma30002000@yahoo.de>; "xenomai@xenomai.org" <xenomai@xenomai.org>
->> Cc: 
->> Sent: Saturday, May 24, 2014 9:37 PM
->> Subject: Re: [Xenomai] Question about scheduling and signals
->>
->> On 05/24/2014 09:05 PM, Matthias Schneider wrote:
->>>  Hi all,
->>>
->>>  currently I am trying to make the following FreeRTOS test case run on 
->>>  forge/mercury on linux preempt_rt:
->>>
->>>
->>>  //Task 1, prio 1 / SCHED_FIFO
->>>  for(;;) {
->>>    (*pulCounter)++;
->>>    if( *pulCounter >= priMAX_COUNT )
->>>       vTaskSuspend(NULL); // -> wait for signal SIGRESM
->>>  }
->>>
->>>  //Task 2, prio 0 / SCHED_OTHER
->>>  vTaskSuspendAll(); //-> sched_lock
->>>  vTaskResume(xLimitedIncrementHandle); //-> sends SIGRESM
->>>  xTaskResumeAll(); //-> sched_unlock, seems not to unlock the waiting 
->> task
->>>                    // right away (because signal is not yet delivered?)
->>
->> At this point, task 1 wakes up, increments ulCounter again, then suspend
->> again, so now ulCounter == priMAX_COUNT + 1
-> 
-> 
-> Why priMAX_COUNT + 1? Shouldnt vTaskSuspend be triggered when 
-> *pulCounter == priMAX_COUNT (which is actually is once task 1 gets
-> scheduled while task 2 is raising abort - at least my debugger tells me 
-> it is).
+Thank you, Paul,
 
-The task1 first suspends when pulCounter == priMAX_COUNT, right?
-Then you wake it up, so, since there is a for loop, it will do
+I was under the impression that a4l_config_subd was used for asynchronous
+instructions only. DIO is up and running now - thank you!
 
->>>    (*pulCounter)++;
->>>    if( *pulCounter >= priMAX_COUNT )
->>>       vTaskSuspend(NULL); // -> wait for signal SIGRESM
+One more question: Is anyone aware of an analogy implementation for using
+the DAQ counter for quadrature encoding? E.g. by using the
+A4L_INSN_CONFIG_GPCT_QUADRATURE_ENCODER
+instruction. I saw a couple of threads where someone successfully armed the
+counter, but was unable to read information from it. I am going to try and
+implement it this weekend, just wondering if there is already a working
+solution.
 
-So, now task 1 is suspended again, and *pulCounter == priMAX_COUNT + 1
+Gilles: I will upgrade to the newest version of Xenomai. Thank you for your
+suggestion.
 
--- 
-                                                                Gilles.
+---
+Manu Madhav
 
+
+On Sat, May 24, 2014 at 2:59 PM, Paul Janzen <pcj@xenomai.sez.to> wrote:
+
+> Manu S Madhav <manusmad@gmail.com> writes:
+>
+> > Using Analogy, and with a bit of reading, I was able to get analog input
+> > and output up and running without too much trouble, but digital I/O is
+> > completely evading me. I am just trying to turn on all digital outputs
+> to 1
+> > using synchronous instruction to the DIO subdevice (#2, in my case). Size
+> > of the subdevice is 4 (32 bits).
+>
+> Before writing to the DIO device, you have to configure each line that
+> you want to be a digital output as an output, otherwise it stays a
+> digital input:
+>
+> for (i=0; i<num_channels; i++) {
+>     err = a4l_config_subd(dsc, subd_DIO, A4L_INSN_CONFIG_DIO_OUTPUT, i);
+>     if (err < 0) [...]
+> }
+>
+> -- Paul
+>
+>
+>
+>
+>
