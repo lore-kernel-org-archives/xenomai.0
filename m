@@ -1,10 +1,12 @@
-Message-ID: <5380C520.8010506@xenomai.org>
-Date: Sat, 24 May 2014 18:13:20 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+References: <CAJX3k=V+ns3H49G+5HuoMjv6+16yeRLXzr=D6dryyQiuVoQ_dA@mail.gmail.com>
+From: Paul Janzen <pcj@xenomai.sez.to>
+Date: Sat, 24 May 2014 11:59:38 -0700
+In-Reply-To: <CAJX3k=V+ns3H49G+5HuoMjv6+16yeRLXzr=D6dryyQiuVoQ_dA@mail.gmail.com> (Manu S.
+ Madhav's message of "Fri, 23 May 2014 17:43:51 -0400")
+Message-ID: <oq8uprt339.fsf@merlin.sez.to>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [GIT PULL] ipipe for 3.14 latest fixes
+Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai] Troubleshooting Analogy DIO
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,41 +15,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Manu S Madhav <manusmad@gmail.com>
+Cc: xenomai@xenomai.org
 
-Note that I only disabled context tracking on ARM, because
-I do not know whether it is broken on other architectures.
-Maybe we could had a BUG_ON(hard_irqs_disabled()) to the
-context_trackig_user_enter/context_tracking_user_exit functions
-to be able to detect if other platforms have the same issue.
+Manu S Madhav <manusmad@gmail.com> writes:
 
-The following changes since commit a7adc69ef0473e88b4c9678408cd53800d08f0f5:
+> Using Analogy, and with a bit of reading, I was able to get analog input
+> and output up and running without too much trouble, but digital I/O is
+> completely evading me. I am just trying to turn on all digital outputs to 1
+> using synchronous instruction to the DIO subdevice (#2, in my case). Size
+> of the subdevice is 4 (32 bits).
 
-  arm/ipipe: export smp_on_up (2014-05-10 11:22:05 +0200)
+Before writing to the DIO device, you have to configure each line that
+you want to be a digital output as an output, otherwise it stays a
+digital input:
 
-are available in the git repository at:
+for (i=0; i<num_channels; i++) {
+    err = a4l_config_subd(dsc, subd_DIO, A4L_INSN_CONFIG_DIO_OUTPUT, i);
+    if (err < 0) [...]
+}
 
-  git://git.xenomai.org/ipipe-gch.git for-ipipe-3.14.0
+-- Paul
 
-for you to fetch changes up to 2322859c85e71b183fd79b2185e7d89090f6fa74:
 
-  arm/fcse: pass mm to services instead of fcse pid (2014-05-22 16:52:29 +0200)
 
-----------------------------------------------------------------
-Gilles Chanteperdrix (4):
-      arm/ipipe: avoid calling irq_enter/irq_exit for IPIs
-      arm/ipipe: forbid context tracking with I-pipe
-      arm/fcse: always set fcse_large_process
-      arm/fcse: pass mm to services instead of fcse pid
 
- arch/arm/Kconfig                   |    2 +-
- arch/arm/include/asm/fcse.h        |   74 +++++++++++++++++++++++-----------------
- arch/arm/include/asm/mmu_context.h |   40 ++++++++--------------
- arch/arm/kernel/smp.c              |    8 ++---
- arch/arm/mm/fcse.c                 |   51 ++++++++++++++-------------
- 5 files changed, 88 insertions(+), 87 deletions(-)
-
--- 
-                                                                Gilles.
 
