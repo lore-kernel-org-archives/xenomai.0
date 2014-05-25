@@ -1,13 +1,11 @@
-Message-ID: <537B2A5B.3090100@xenomai.org>
-Date: Tue, 20 May 2014 12:11:39 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: "Stoidner, Christoph" <c.stoidner@arvero.de>
+Date: Sun, 25 May 2014 19:59:19 +0000
+Message-ID: <6b0caf4dfe7d407988717a23fb855097@EX132MBOX1B.de2.local>
+Content-Language: de-DE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <537A5F9B.4040308@xenomai.org> <537B015E.5070107@xenomai.org>
- <537B27C9.9020908@xenomai.org>
-In-Reply-To: <537B27C9.9020908@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] timer drift
+Subject: [Xenomai] Using Preempt RT with I-Pipe/Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,44 +14,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/20/2014 12:00 PM, Philippe Gerum wrote:
-> On 05/20/2014 09:16 AM, Gilles Chanteperdrix wrote:
->> On 05/19/2014 09:46 PM, Gilles Chanteperdrix wrote:
->>>
->>> Hi,
->>>
->>> when running the latency test modified to use timerfds on forge, I
->>> noticed that we have a clock vs timer drift issue (on forge, not on 2.6,
->>> and only since recent changes).
->>>
->>> What the latency test does is create a periodic timer, and when waking
->>> up at each tick, compare the actual wake-up time, with the expected
->>> wake-up time. The problem is that, on the timer side, the computation is
->>> more precise, because it is the sum of short durations computed with
->>> xnarch_llmulshft, whereas on the clock side, we pass larger and larger
->>> values to xnarch_llmulshft, so at some point, the error due to the
->>> approximation begins to be within the range of observable differences (a
->>> few micro-seconds after hours of tests). I have verified that replacing
->>> xnarch_llmulshft with xnarch_nodiv_llimd avoids the issue. And I believe
->>> mainline does not have the same issue because they always pass small
->>> durations to the multiplication + shift operation.
->>
->> The question being: what do we do to avoid this issue?
->>
->>
->
-> IIUC, assuming clock_gettime() delivers ns2tsc(N * period_ns), we may
-> have to fix the timer interval update code in xnclock_tick() which
-> produces N * (ns2tsc(period_ns)). Aligning both could be the right path,
-> maybe compensating for the overhead using the clock gravity?
->
-
-s/clock gravity/timer gravity/ which would then depend on the timer 
-being periodic or not. We'd need to calibrate this adjustement cost on 
-low end architectures, only to make sure this is worth the burden.
-
--- 
-Philippe.
+Hi at all,=0A=
+=0A=
+I need some sort of real time behaviour in secondary domain, so I am trying=
+ to merge Preempt RT patch with I-Pipe/Xenomai. Since Preempt RT as well as=
+ I-Pipe doing some specific changes to kernel's spinlock handling (mostly i=
+n  "include/linux/spinlock.h") this becomes a bit of tricky. The challenge =
+seems to combine Preemp RT's "rt_spin_lock" with I-Pipe's "ipipe_spinlock".=
+  =0A=
+=0A=
+My first approach was to instrument I-Pipe's "PICK_SPINLOCK" macros with Pr=
+eempt RT's "rt_spin_lock" calls. In detail that means I have added calls of=
+ rt_spin_lock to all PICK_SPINLOCK macros for each spinlock type  that is n=
+ot an I-Pipe spinlock. However I am not sure if that is the best solution a=
+nd if it is correct for all situations. =0A=
+=0A=
+Has someone experiences how to merge these spinlocks or what to consider at=
+ all when using Preempt RT with I-Pipe/Xenomai?=0A=
+=0A=
+I am grateful for each hint according to that theme.=0A=
+=0A=
+For Information: Currently I am working with kernel Kernel 3.10.18 and Xeno=
+mai 2.6.3=0A=
+=0A=
+Thanks and regards,=0A=
+Christoph=0A=
 
