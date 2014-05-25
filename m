@@ -1,14 +1,14 @@
+Message-ID: <53820380.8080106@xenomai.org>
+Date: Sun, 25 May 2014 16:51:44 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+MIME-Version: 1.0
 References: <1400785908.61926.YahooMailNeo@web171606.mail.ir2.yahoo.com>
  <537E4DBE.5060406@xenomai.org> <537E4E01.2030108@xenomai.org>
-Message-ID: <1401017215.32791.YahooMailNeo@web171603.mail.ir2.yahoo.com>
-Date: Sun, 25 May 2014 12:26:55 +0100 (BST)
-From: Matthias Schneider <ma30002000@yahoo.de>
-In-Reply-To: <537E4E01.2030108@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
+ <1401017215.32791.YahooMailNeo@web171603.mail.ir2.yahoo.com>
+In-Reply-To: <1401017215.32791.YahooMailNeo@web171603.mail.ir2.yahoo.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] threadobj_set_schedparam and SCHED_OTHER on mercury
-Reply-To: Matthias Schneider <ma30002000@yahoo.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,45 +17,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-=0A=0A=0A=0A=0A----- Original Message -----=0A> From: Philippe Gerum <rpm@x=
-enomai.org>=0A> To: Matthias Schneider <ma30002000@yahoo.de>; "xenomai@xeno=
-mai.org" <xenomai@xenomai.org>=0A> Cc: =0A> Sent: Thursday, May 22, 2014 9:=
-20 PM=0A> Subject: Re: [Xenomai] threadobj_set_schedparam and SCHED_OTHER o=
-n mercury=0A> =0A> On 05/22/2014 09:19 PM, Philippe Gerum wrote:=0A>>  On 0=
-5/22/2014 09:11 PM, Matthias Schneider wrote:=0A>>>  Hi,=0A>>> =0A>>>  Sinc=
-e commit=0A>>> =A0  2d102939333201169493688dd91258164bd9737c=0A>>>  copperp=
-late: more robustness for threadobj_set_schedparam()=0A>>> =0A>>>  threadob=
-j_set_schedparam() seems no longer to allow=0A>>>  SCHED_OTHER on mercury, =
-due to prepare_rr_corespec() always=0A>>>  returning SCHED_FIFO.=0A>>> =0A>=
->>  i.e. threadobj_set_schedparam( prio 0, SCHED_OTHER) does not work=0A>>>=
-  anymore.=0A>>> =0A>> =0A>>  This should help. With those latest changes, =
-the issue with the priority=0A>>  range available for SCHED_RR with Cobalt =
-should be fixed.=0A>> =0A>>  diff --git a/lib/copperplate/threadobj.c b/lib=
-/copperplate/threadobj.c=0A>>  index 8792927..dc5c905 100644=0A>>  --- a/li=
-b/copperplate/threadobj.c=0A>>  +++ b/lib/copperplate/threadobj.c=0A>>  @@ =
--1486,7 +1486,9 @@ int threadobj_set_schedparam(struct threadobj=0A>>  *tho=
-bj, int policy,=0A>> =A0 =A0 =A0  if (thobj->schedlock_depth > 0)=0A>> =A0 =
-=A0 =A0 =A0 =A0  return __bt(-EPERM);=0A>> =0A>>  -=A0 =A0 _policy =3D prep=
-are_rr_corespec(thobj, policy, param_ex);=0A>>  +=A0 =A0 _policy =3D policy=
-;=0A>>  +=A0 =A0 if (rr =3D=3D SCHED_RR)=0A>>  +=A0 =A0 =A0 =A0 _policy =3D=
- prepare_rr_corespec(thobj, policy, param_ex);=0A>> =A0 =A0 =A0  /*=0A>> =
-=A0 =A0 =A0 =A0 * NOTE: if the current thread suddently starves as a result=
-=0A>> =A0 =A0 =A0 =A0 * of switching itself to a scheduling class with no r=
-untime=0A>> =0A> =0A> Typo.=0A> =0A> diff --git a/lib/copperplate/threadobj=
-.c b/lib/copperplate/threadobj.c=0A> index 8792927..4515c9e 100644=0A> --- =
-a/lib/copperplate/threadobj.c=0A> +++ b/lib/copperplate/threadobj.c=0A> @@ =
--1486,7 +1486,9 @@ int threadobj_set_schedparam(struct threadobj =0A> *thob=
-j, int policy,=0A> =A0 =A0=A0=A0 if (thobj->schedlock_depth > 0)=0A> =A0 =
-=A0=A0=A0 =A0=A0=A0 return __bt(-EPERM);=0A> =0A> -=A0=A0=A0 _policy =3D pr=
-epare_rr_corespec(thobj, policy, param_ex);=0A> +=A0=A0=A0 _policy =3D poli=
-cy;=0A> +=A0=A0=A0 if (policy =3D=3D SCHED_RR)=0A> =0A> +=A0=A0=A0 =A0=A0=
-=A0 _policy =3D prepare_rr_corespec(thobj, policy, param_ex);=0A> =A0 =A0=
-=A0=A0 /*=0A> =A0 =A0=A0=A0  * NOTE: if the current thread suddently starve=
-s as a result=0A> =A0 =A0=A0=A0  * of switching itself to a scheduling clas=
-s with no runtime=0A> =0A> -- =0A> Philippe.=0A> =0A=0AThe patch fixes my i=
-ssue on mercury. I have not yet had the chance to=A0=0Averify cobalt. Are t=
-he number of priorities for SCHED_RT and SCHED_RR=A0=0Anow both 257 on coba=
-lt?=0A=0AThanks for the quick fix,=0A=0Aregards,=0AMatthias
+On 05/25/2014 01:26 PM, Matthias Schneider wrote:
+>
+>
+>
+>
+>
+> ----- Original Message -----
+>> From: Philippe Gerum <rpm@xenomai.org>
+>> To: Matthias Schneider <ma30002000@yahoo.de>; "xenomai@xenomai.org" <xenomai@xenomai.org>
+>> Cc:
+>> Sent: Thursday, May 22, 2014 9:20 PM
+>> Subject: Re: [Xenomai] threadobj_set_schedparam and SCHED_OTHER on mercury
+>>
+>> On 05/22/2014 09:19 PM, Philippe Gerum wrote:
+>>>   On 05/22/2014 09:11 PM, Matthias Schneider wrote:
+>>>>   Hi,
+>>>>
+>>>>   Since commit
+>>>>     2d102939333201169493688dd91258164bd9737c
+>>>>   copperplate: more robustness for threadobj_set_schedparam()
+>>>>
+>>>>   threadobj_set_schedparam() seems no longer to allow
+>>>>   SCHED_OTHER on mercury, due to prepare_rr_corespec() always
+>>>>   returning SCHED_FIFO.
+>>>>
+>>>>   i.e. threadobj_set_schedparam( prio 0, SCHED_OTHER) does not work
+>>>>   anymore.
+>>>>
+>>>
+>>>   This should help. With those latest changes, the issue with the priority
+>>>   range available for SCHED_RR with Cobalt should be fixed.
+>>>
+>>>   diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
+>>>   index 8792927..dc5c905 100644
+>>>   --- a/lib/copperplate/threadobj.c
+>>>   +++ b/lib/copperplate/threadobj.c
+>>>   @@ -1486,7 +1486,9 @@ int threadobj_set_schedparam(struct threadobj
+>>>   *thobj, int policy,
+>>>         if (thobj->schedlock_depth > 0)
+>>>             return __bt(-EPERM);
+>>>
+>>>   -    _policy = prepare_rr_corespec(thobj, policy, param_ex);
+>>>   +    _policy = policy;
+>>>   +    if (rr == SCHED_RR)
+>>>   +        _policy = prepare_rr_corespec(thobj, policy, param_ex);
+>>>         /*
+>>>          * NOTE: if the current thread suddently starves as a result
+>>>          * of switching itself to a scheduling class with no runtime
+>>>
+>>
+>> Typo.
+>>
+>> diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
+>> index 8792927..4515c9e 100644
+>> --- a/lib/copperplate/threadobj.c
+>> +++ b/lib/copperplate/threadobj.c
+>> @@ -1486,7 +1486,9 @@ int threadobj_set_schedparam(struct threadobj
+>> *thobj, int policy,
+>>        if (thobj->schedlock_depth > 0)
+>>            return __bt(-EPERM);
+>>
+>> -    _policy = prepare_rr_corespec(thobj, policy, param_ex);
+>> +    _policy = policy;
+>> +    if (policy == SCHED_RR)
+>>
+>> +        _policy = prepare_rr_corespec(thobj, policy, param_ex);
+>>        /*
+>>         * NOTE: if the current thread suddently starves as a result
+>>         * of switching itself to a scheduling class with no runtime
+>>
+>> --
+>> Philippe.
+>>
+>
+> The patch fixes my issue on mercury. I have not yet had the chance to
+> verify cobalt. Are the number of priorities for SCHED_RT and SCHED_RR
+> now both 257 on cobalt?
+>
+
+1..257 for SCHED_COBALT, 1..255 for SCHED_RR and SCHED_FIFO. Mercury 
+still maps SCHED_RT to SCHED_COBALT, but will downgrade to SCHED_FIFO 
+soon. Internal servers on highest priority levels will be switched to 
+SCHED_COBALT in the same move.
+
+> Thanks for the quick fix,
+>
+
+You are welcome. I'll review the second freertos drop this coming week.
+
+-- 
+Philippe.
 
