@@ -1,17 +1,13 @@
-References: <1400958355.32393.YahooMailNeo@web171605.mail.ir2.yahoo.com>
- <5380F4E9.3010100@xenomai.org>
- <1400961335.63138.YahooMailNeo@web171605.mail.ir2.yahoo.com>
- <5380FAB2.5060809@xenomai.org>
- <1400964626.89274.YahooMailNeo@web171601.mail.ir2.yahoo.com>
- <53810C71.7090007@xenomai.org>
-Message-ID: <1401005131.89995.YahooMailNeo@web171602.mail.ir2.yahoo.com>
-Date: Sun, 25 May 2014 09:05:31 +0100 (BST)
+References: <1400785908.61926.YahooMailNeo@web171606.mail.ir2.yahoo.com>
+ <537E4DBE.5060406@xenomai.org> <537E4E01.2030108@xenomai.org>
+Message-ID: <1401017215.32791.YahooMailNeo@web171603.mail.ir2.yahoo.com>
+Date: Sun, 25 May 2014 12:26:55 +0100 (BST)
 From: Matthias Schneider <ma30002000@yahoo.de>
-In-Reply-To: <53810C71.7090007@xenomai.org>
+In-Reply-To: <537E4E01.2030108@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Question about scheduling and signals
+Subject: Re: [Xenomai] threadobj_set_schedparam and SCHED_OTHER on mercury
 Reply-To: Matthias Schneider <ma30002000@yahoo.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -21,41 +17,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-=0A=0A=0A=0A=0A----- Original Message -----=0A> From: Gilles Chanteperdrix =
-<gilles.chanteperdrix@xenomai.org>=0A> To: Matthias Schneider <ma30002000@y=
-ahoo.de>; "xenomai@xenomai.org" <xenomai@xenomai.org>=0A> Cc: =0A> Sent: Sa=
-turday, May 24, 2014 11:17 PM=0A> Subject: Re: [Xenomai] Question about sch=
-eduling and signals=0A> =0A> On 05/24/2014 10:50 PM, Matthias Schneider wro=
-te:=0A>>  ----- Original Message -----=0A>> =0A>>>  From: Gilles Chanteperd=
-rix <gilles.chanteperdrix@xenomai.org>=0A>>>  On 05/24/2014 09:55 PM, Matth=
-ias Schneider wrote:=0A>>>> =A0 ----- Original Message -----=0A>>>>> =A0 Fr=
-om: Gilles Chanteperdrix =0A> <gilles.chanteperdrix@xenomai.org>=0A>>  [...=
-]=0A>>>> =0A>>>> =A0 Why priMAX_COUNT + 1? Shouldnt vTaskSuspend be trigger=
-ed when =0A>>>> =A0 *pulCounter =3D=3D priMAX_COUNT (which is actually is o=
-nce task 1 gets=0A>>>> =A0 scheduled while task 2 is raising abort - at lea=
-st my debugger =0A> tells me =0A>>>> =A0 it is).=0A>>> =0A>>>  The task1 fi=
-rst suspends when pulCounter =3D=3D priMAX_COUNT, right?=0A>>>  Then you wa=
-ke it up, so, since there is a for loop, it will do=0A>>> =0A>>>>>> =A0 =A0=
-  (*pulCounter)++;=0A>>>>>> =A0 =A0  if( *pulCounter >=3D priMAX_COUNT )=0A=
->>>>>> =A0 =A0 =A0 =A0 vTaskSuspend(NULL); // -> wait for signal SIGRESM=0A=
->>> =0A>>>  So, now task 1 is suspended again, and *pulCounter =3D=3D priMA=
-X_COUNT + 1=0A>> =0A>> =0A>> =0A>>  You are right, I forgot to include an e=
-ssential piece of code in my =0A>>  first snippet(sorry about that):=0A>> =
-=0A>>  //Task 1, prio 1 / SCHED_FIFO=0A>> =0A>>  vTaskSuspend(NULL); // for=
-got this in my first snippet=0A>>  for(;;) {=0A>> =0A>> =A0  (*pulCounter)+=
-+;=0A>> =A0  if( *pulCounter >=3D priMAX_COUNT )=0A>> =A0 =A0 =A0 vTaskSusp=
-end(NULL);=0A>>  }=0A>> =0A>>  //Task 2, prio 0 / SCHED_OTHER=0A>>  vTaskSu=
-spendAll();=0A>>  vTaskResume(xLimitedIncrementHandle);=0A>>  xTaskResumeAl=
-l(); =0A>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =0A>>  if (ulCounter !=3D pr=
-iMAX_COUNT)=0A>> =A0  raise(SIGABRT);=0A>> =0A>> =0A>>  Now task will block=
- in the first suspend. Task 2 will do its thing,=0A>>  and when task 2's pr=
-iority gets lowered, I would expect task 1 being=0A>>  scheduled right away=
-, increasing the counter up to priMAX_COUNT, before=0A>>  task 2 is schedul=
-ed again when task 1 enters the second vTaskSuspend.=0A>>  However, ulCount=
-er seems to be 0 when SIGABRT is raised.=0A> =0A> Are you running an unipro=
-cessor, or multi-processor system?=0A> =0A=0A=0AIt was an mp system, but wi=
-th processor affinity set and pegged to=A0=0Aa single core (which had so fa=
-r produced the expected results in=A0=0Aother tests).=0A
+=0A=0A=0A=0A=0A----- Original Message -----=0A> From: Philippe Gerum <rpm@x=
+enomai.org>=0A> To: Matthias Schneider <ma30002000@yahoo.de>; "xenomai@xeno=
+mai.org" <xenomai@xenomai.org>=0A> Cc: =0A> Sent: Thursday, May 22, 2014 9:=
+20 PM=0A> Subject: Re: [Xenomai] threadobj_set_schedparam and SCHED_OTHER o=
+n mercury=0A> =0A> On 05/22/2014 09:19 PM, Philippe Gerum wrote:=0A>>  On 0=
+5/22/2014 09:11 PM, Matthias Schneider wrote:=0A>>>  Hi,=0A>>> =0A>>>  Sinc=
+e commit=0A>>> =A0  2d102939333201169493688dd91258164bd9737c=0A>>>  copperp=
+late: more robustness for threadobj_set_schedparam()=0A>>> =0A>>>  threadob=
+j_set_schedparam() seems no longer to allow=0A>>>  SCHED_OTHER on mercury, =
+due to prepare_rr_corespec() always=0A>>>  returning SCHED_FIFO.=0A>>> =0A>=
+>>  i.e. threadobj_set_schedparam( prio 0, SCHED_OTHER) does not work=0A>>>=
+  anymore.=0A>>> =0A>> =0A>>  This should help. With those latest changes, =
+the issue with the priority=0A>>  range available for SCHED_RR with Cobalt =
+should be fixed.=0A>> =0A>>  diff --git a/lib/copperplate/threadobj.c b/lib=
+/copperplate/threadobj.c=0A>>  index 8792927..dc5c905 100644=0A>>  --- a/li=
+b/copperplate/threadobj.c=0A>>  +++ b/lib/copperplate/threadobj.c=0A>>  @@ =
+-1486,7 +1486,9 @@ int threadobj_set_schedparam(struct threadobj=0A>>  *tho=
+bj, int policy,=0A>> =A0 =A0 =A0  if (thobj->schedlock_depth > 0)=0A>> =A0 =
+=A0 =A0 =A0 =A0  return __bt(-EPERM);=0A>> =0A>>  -=A0 =A0 _policy =3D prep=
+are_rr_corespec(thobj, policy, param_ex);=0A>>  +=A0 =A0 _policy =3D policy=
+;=0A>>  +=A0 =A0 if (rr =3D=3D SCHED_RR)=0A>>  +=A0 =A0 =A0 =A0 _policy =3D=
+ prepare_rr_corespec(thobj, policy, param_ex);=0A>> =A0 =A0 =A0  /*=0A>> =
+=A0 =A0 =A0 =A0 * NOTE: if the current thread suddently starves as a result=
+=0A>> =A0 =A0 =A0 =A0 * of switching itself to a scheduling class with no r=
+untime=0A>> =0A> =0A> Typo.=0A> =0A> diff --git a/lib/copperplate/threadobj=
+.c b/lib/copperplate/threadobj.c=0A> index 8792927..4515c9e 100644=0A> --- =
+a/lib/copperplate/threadobj.c=0A> +++ b/lib/copperplate/threadobj.c=0A> @@ =
+-1486,7 +1486,9 @@ int threadobj_set_schedparam(struct threadobj =0A> *thob=
+j, int policy,=0A> =A0 =A0=A0=A0 if (thobj->schedlock_depth > 0)=0A> =A0 =
+=A0=A0=A0 =A0=A0=A0 return __bt(-EPERM);=0A> =0A> -=A0=A0=A0 _policy =3D pr=
+epare_rr_corespec(thobj, policy, param_ex);=0A> +=A0=A0=A0 _policy =3D poli=
+cy;=0A> +=A0=A0=A0 if (policy =3D=3D SCHED_RR)=0A> =0A> +=A0=A0=A0 =A0=A0=
+=A0 _policy =3D prepare_rr_corespec(thobj, policy, param_ex);=0A> =A0 =A0=
+=A0=A0 /*=0A> =A0 =A0=A0=A0  * NOTE: if the current thread suddently starve=
+s as a result=0A> =A0 =A0=A0=A0  * of switching itself to a scheduling clas=
+s with no runtime=0A> =0A> -- =0A> Philippe.=0A> =0A=0AThe patch fixes my i=
+ssue on mercury. I have not yet had the chance to=A0=0Averify cobalt. Are t=
+he number of priorities for SCHED_RT and SCHED_RR=A0=0Anow both 257 on coba=
+lt?=0A=0AThanks for the quick fix,=0A=0Aregards,=0AMatthias
 
