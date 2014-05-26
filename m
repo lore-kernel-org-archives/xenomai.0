@@ -1,13 +1,14 @@
-Message-ID: <537B2D63.9030709@xenomai.org>
-Date: Tue, 20 May 2014 12:24:35 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Stoidner, Christoph" <c.stoidner@arvero.de>
+Date: Mon, 26 May 2014 14:11:30 +0000
+Message-ID: <a5ef5b1b612543268a99d3a6f921fd6c@EX132MBOX1B.de2.local>
+References: <6b0caf4dfe7d407988717a23fb855097@EX132MBOX1B.de2.local>,
+ <53832095.10901@xenomai.org>
+In-Reply-To: <53832095.10901@xenomai.org>
+Content-Language: de-DE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <537A5F9B.4040308@xenomai.org> <537B015E.5070107@xenomai.org>
- <537B27C9.9020908@xenomai.org> <537B2A5B.3090100@xenomai.org>
-In-Reply-To: <537B2A5B.3090100@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] timer drift
+Subject: Re: [Xenomai] Using Preempt RT with I-Pipe/Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,55 +17,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/20/2014 12:11 PM, Philippe Gerum wrote:
-> On 05/20/2014 12:00 PM, Philippe Gerum wrote:
->> On 05/20/2014 09:16 AM, Gilles Chanteperdrix wrote:
->>> On 05/19/2014 09:46 PM, Gilles Chanteperdrix wrote:
->>>>
->>>> Hi,
->>>>
->>>> when running the latency test modified to use timerfds on forge, I
->>>> noticed that we have a clock vs timer drift issue (on forge, not on 2.6,
->>>> and only since recent changes).
->>>>
->>>> What the latency test does is create a periodic timer, and when waking
->>>> up at each tick, compare the actual wake-up time, with the expected
->>>> wake-up time. The problem is that, on the timer side, the computation is
->>>> more precise, because it is the sum of short durations computed with
->>>> xnarch_llmulshft, whereas on the clock side, we pass larger and larger
->>>> values to xnarch_llmulshft, so at some point, the error due to the
->>>> approximation begins to be within the range of observable differences (a
->>>> few micro-seconds after hours of tests). I have verified that replacing
->>>> xnarch_llmulshft with xnarch_nodiv_llimd avoids the issue. And I believe
->>>> mainline does not have the same issue because they always pass small
->>>> durations to the multiplication + shift operation.
->>>
->>> The question being: what do we do to avoid this issue?
->>>
->>>
->>
->> IIUC, assuming clock_gettime() delivers ns2tsc(N * period_ns), we may
->> have to fix the timer interval update code in xnclock_tick() which
->> produces N * (ns2tsc(period_ns)). Aligning both could be the right path,
->> maybe compensating for the overhead using the clock gravity?
->>
->
-> s/clock gravity/timer gravity/ which would then depend on the timer
-> being periodic or not. We'd need to calibrate this adjustement cost on
-> low end architectures, only to make sure this is worth the burden.
->
-The overhead is a multiplication followed by the computation of ns2tsc, 
-which is an llmulshft, so only takes a few nanoseconds. We have the 
-"arith" test which measures llmulshft. The worst case I have is on 
-at91rm9200 a few hundreds of nanoseconds, with latency in the 200us range.
-
-I think it is best to leave the gravity configuration to the user, as we 
-have always done. Maybe having a "per timer-class" gravity would make 
-sense (for user vs kernel thread vs kernel timer and periodic vs 
-one-shot), but it seems it would make the tuning complicated.
-
--- 
-					    Gilles.
+Hi Philippe,=0A=
+=0A=
+thanks for the fast response! =0A=
+=0A=
+I will try to solve the spinlock conflicts according to your description an=
+d post my results here later on.=0A=
+=0A=
+Regards,=0A=
+Christoph=0A=
+=0A=
+________________________________________=0A=
+Von: Philippe Gerum <rpm@xenomai.org>=0A=
+Gesendet: Montag, 26. Mai 2014 13:08=0A=
+An: Stoidner, Christoph; xenomai@xenomai.org=0A=
+Betreff: Re: [Xenomai] Using Preempt RT with I-Pipe/Xenomai=0A=
+=0A=
+On 05/25/2014 09:59 PM, Stoidner, Christoph wrote:=0A=
+> Hi at all,=0A=
+>=0A=
+> I need some sort of real time behaviour in secondary domain, so I am tryi=
+ng to merge Preempt RT patch with I-Pipe/Xenomai. Since Preempt RT as well =
+as I-Pipe doing some specific changes to kernel's spinlock handling (mostly=
+ in  "include/linux/spinlock.h") this becomes a bit of tricky. The challeng=
+e seems to combine Preemp RT's "rt_spin_lock" with I-Pipe's "ipipe_spinlock=
+".=0A=
+>=0A=
+> My first approach was to instrument I-Pipe's "PICK_SPINLOCK" macros with =
+Preempt RT's "rt_spin_lock" calls. In detail that means I have added calls =
+of rt_spin_lock to all PICK_SPINLOCK macros for each spinlock type  that is=
+ not an I-Pipe spinlock. However I am not sure if that is the best solution=
+ and if it is correct for all situations.=0A=
+>=0A=
+> Has someone experiences how to merge these spinlocks or what to consider =
+at all when using Preempt RT with I-Pipe/Xenomai?=0A=
+>=0A=
+=0A=
+Fixing up ipipe_lock.h to switch the regular locks (i.e. neither=0A=
+ipipe/raw) to the sleeping rt_ spinlock variant is pretty much all you=0A=
+should have to do these days.=0A=
+=0A=
+My last experience merging I-pipe+preempt-rt dates back to kernel 2.6.x,=0A=
+so a few more conflicts might have popped up since then though. This=0A=
+said, I did not see any showstopper in recent kernels that would prevent=0A=
+such combo from working.=0A=
+=0A=
+e.g.:=0A=
+=0A=
++#ifdef PREEMPT_RT=0A=
++ #define __regular_spin_lock_irqsave(lock, flags)              \=0A=
++       do { rt_spin_lock(std_spinlock(lock)); flags =3D 0; } while (0) /* =
+can't=0A=
+discard flags */=0A=
++#else=0A=
++#define __regular_spin_lock_irqsave(lock, flags)               \=0A=
++       __real_raw_spin_lock_irqsave(&std_spinlock(lock)->rlock, flags)=0A=
++#endif=0A=
+=0A=
+#define PICK_SPINLOCK_IRQSAVE(lock, flags)                              \=
+=0A=
+        do {                                                            \=
+=0A=
+                if (ipipe_spinlock_p(lock))                             \=
+=0A=
+                        (flags) =3D __ipipe_spin_lock_irqsave(ipipe_spinloc=
+k(lock)); \=0A=
+                else if (std_spinlock_raw_p(lock))                         =
+     \=0A=
+                        __real_raw_spin_lock_irqsave(std_spinlock_raw(lock)=
+, flags); \=0A=
+                else if (std_spinlock_p(lock))                          \=
+=0A=
+-                       __real_raw_spin_lock_irqsave(&std_spinlock(lock)->r=
+lock, flags); \=0A=
++                       __regular_spin_lock_irqsave(lock, flags); \=0A=
+                else __bad_lock_type();                                 \=
+=0A=
+        } while (0)=0A=
+=0A=
+and so on for all other helpers defining a preempt-rt specific variant.=0A=
+=0A=
+--=0A=
+Philippe.=0A=
 
