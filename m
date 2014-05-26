@@ -1,12 +1,20 @@
-Message-ID: <5382E8B1.8070402@xenomai.org>
-Date: Mon, 26 May 2014 09:09:37 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <53831D85.9040905@xenomai.org>
+Date: Mon, 26 May 2014 12:55:01 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAO0fa7ZiofUS3wsbx89uYsnt6icuv+DVcDbiEfVyG5DUeprj2w@mail.gmail.com>
-In-Reply-To: <CAO0fa7ZiofUS3wsbx89uYsnt6icuv+DVcDbiEfVyG5DUeprj2w@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] gdb / threads on beaglebone black
+References: <CAE2JnQzDaSfwwuuq+voM+ZqPLHoqmjitsa4XzRpqcoukNJGrsg@mail.gmail.com>
+ <537FA0A3.301@xenomai.org>
+ <CAE2JnQyzqxUv+JSu=L1f+Kqxt0txxBxf3xnCBHvSeQVMgfdt=g@mail.gmail.com>
+ <CAE2JnQy_seXdtaf4vM90VhLK7ypzJw=k96Rfs2SV0-LJSoaORw@mail.gmail.com>
+ <5380A6E8.3080902@xenomai.org>
+ <CAE2JnQycQRAks3B60=T7-2P5PTheuzBvQJimsQm97+4q96AV=A@mail.gmail.com>
+ <5380B4FD.6070504@xenomai.org>
+ <CAE2JnQyLRYY+PUnKLJy9_CpeF2ZVmX2KFNjuAuJGzeZiaJnUVA@mail.gmail.com>
+In-Reply-To: <CAE2JnQyLRYY+PUnKLJy9_CpeF2ZVmX2KFNjuAuJGzeZiaJnUVA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Xenomai on linux-3.8.13 core ARM Cortex A9 - ARMv7
+ (v7l) SoC Samsung Exynos 4412
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,49 +23,191 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Drew <pythondrew@gmail.com>, xenomai@xenomai.org
+To: Alexandre Donisete Bensi <adbensi@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 05/26/2014 03:49 AM, Drew wrote:
-> I'm seeing unexpected behavior running under gdb on a beaglebone black
-> using a machinekit debian SD image:
+On 05/26/2014 03:10 AM, Alexandre Donisete Bensi wrote:
+> 2014-05-24 12:04 GMT-03:00 Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org>:
+>> On 05/24/2014 05:00 PM, Alexandre Donisete Bensi wrote:
+>>> 2014-05-24 11:04 GMT-03:00 Gilles Chanteperdrix
+>>> <gilles.chanteperdrix@xenomai.org>:
+>>>> On 05/24/2014 03:55 PM, Alexandre Donisete Bensi wrote:
+>>>>> 2014-05-23 22:06 GMT-03:00 Alexandre Donisete Bensi <adbensi@gmail.com>:
+>>>>>> 2014-05-23 16:25 GMT-03:00 Gilles Chanteperdrix
+>>>>>> <gilles.chanteperdrix@xenomai.org>:
+>>>>>>> On 05/23/2014 09:08 PM, Alexandre Donisete Bensi wrote:
+>>>>>>>> Hi!
+>>>>>>>>
+>>>>>>>>   I am trying to install xenomai on ARM Cortex A9 - ARMv7 (v7l) SoC
+>>>>>>>> Samsung Exynos 4412 on linux-3.8.13.23 board OdroidU2/U3. To port
+>>>>>>>> xenomai to this board I need to add some functions to hardware timer
+>>>>>>>> and interrupt handler according
+>>>>>>>
+>>>>>>> No.
+>>>>>>>
+>>>>>>>> http://www.xenomai.org/index.php/I-pipe-core:ArmPorting
+>>>>>>>>
+>>>>>>>>   But mach-exynos directory is different and I cannot find the files
+>>>>>>>> referenced :(
+>>>>>>>>
+>>>>>>>> root@odroid:/usr/src/linux-3.8.13.23/arch/arm/mach-exynos#
+>>>>>>>> clock-exynos4210.c  clock-exynos4212.c  clock-exynos4.c
+>>>>>>>> mach-hkdk4412.c  mach-smdk4x12.c  mach-exynos4-dt.c
+>>>>>>>>
+>>>>>>>> I confess that I am with many doubts. All attempts I made on this
+>>>>>>>> platform end as:
+>>>>>>>> checking file mm/vmalloc.c
+>>>>>>>> prepare-kernel.sh: Unable to patch kernel 3.8.13.23 with
+>>>>>>>> ipipe-core-3.8.13-arm-3.patch.
+>>>>>>>>
+>>>>>>>>   Is there any documentation that is closest to my case?
+>>>>>>>
+>>>>>>> You have the documentation, you only do not read it carefully. The patch
+>>>>>>> for 3.8.13 is for 3.8.13, not for 3.8.13.23.
+>>>>>>>
+>>>>>>
+>>>>>> Thanks Gilles. I learned another...
+>>>>>>
+>>>>>> The path was successfully applied,
+>>>>>> I had the error below with make on kernel (from kernel.org). I
+>>>>>> accepted all the default options with make oldconfig.
+>>>>>>
+>>>>>> I am post my config file, I must pay attention to some specific option?
+>>>>>> Config File : http://paste.debian.net/101508/
+>>>>>>
+>>>>>> Error:
+>>>>>> make -j4 concluido
+>>>>>>    WRAP    arch/arm/include/generated/asm/auxvec.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/bitsperlong.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/cputime.h
+>>>>>>    CHK     include/generated/uapi/linux/version.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/current.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/emergency-restart.h
+>>>>>>    UPD     include/generated/uapi/linux/version.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/errno.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/exec.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/ioctl.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/ipcbuf.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/irq_regs.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/kdebug.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/local.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/local64.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/msgbuf.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/param.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/parport.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/poll.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/sections.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/segment.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/sembuf.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/serial.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/shmbuf.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/siginfo.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/sizes.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/socket.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/sockios.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/termbits.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/termios.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/timex.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/trace_clock.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/types.h
+>>>>>>    WRAP    arch/arm/include/generated/asm/unaligned.h
+>>>>>>    CHK     include/generated/utsrelease.h
+>>>>>>    UPD     include/generated/utsrelease.h
+>>>>>>    HOSTCC  scripts/kallsyms
+>>>>>>    CC      scripts/mod/empty.o
+>>>>>>    HOSTCC  scripts/mod/mk_elfconfig
+>>>>>>    HOSTCC  scripts/pnmtologo
+>>>>>>    MKELF   scripts/mod/elfconfig.h
+>>>>>>    HOSTCC  scripts/mod/file2alias.o
+>>>>>>    HOSTCC  scripts/conmakehash
+>>>>>>    HOSTCC  scripts/bin2c
+>>>>>>    HOSTCC  scripts/sortextable
+>>>>>>    HOSTCC  scripts/mod/modpost.o
+>>>>>>    HOSTCC  scripts/mod/sumversion.o
+>>>>>>    Generating include/generated/mach-types.h
+>>>>>>    CC      kernel/bounds.s
+>>>>>>    GEN     include/generated/bounds.h
+>>>>>>    CC      arch/arm/kernel/asm-offsets.s
+>>>>>> In file included from include/linux/ipipe.h:33:0,
+>>>>>>                   from include/linux/sched.h:25,
+>>>>>>                   from arch/arm/kernel/asm-offsets.c:13:
+>>>>>> include/linux/ipipe.h: In function â__ipipe_hrclock_okâ:
+>>>>>> /usr/src/linux-3.8.13/arch/arm/include/asm/ipipe.h:99:30: error:
+>>>>>> â__ipipe_hrtimer_freqâ undeclared (first use in this function)
+>>>>>>   #define __ipipe_hrclock_freq __ipipe_hrtimer_freq
+>>>>>>                                ^
+>>>>>> include/linux/ipipe.h:114:9: note: in expansion of macro â__ipipe_hrclock_freqâ
+>>>>>>    return __ipipe_hrclock_freq != 0;
+>>>>>>           ^
+>>>>>> /usr/src/linux-3.8.13/arch/arm/include/asm/ipipe.h:99:30: note: each
+>>>>>> undeclared identifier is reported only once for each function it
+>>>>>> appears in
+>>>>>>   #define __ipipe_hrclock_freq __ipipe_hrtimer_freq
+>>>>>>                                ^
+>>>>>> include/linux/ipipe.h:114:9: note: in expansion of macro â__ipipe_hrclock_freqâ
+>>>>>>    return __ipipe_hrclock_freq != 0;
+>>>>>>           ^
+>>>>>> make[1]: *** [arch/arm/kernel/asm-offsets.s] Error 1
+>>>>>> make: *** [prepare0] Error 2
+>>>>>> make: *** Waiting for unfinished jobs....
+>>>>>>    HOSTLD  scripts/mod/modpost
+>>>>>
+>>>>> I changed my config file as other platforms like Allwinner A10 and
+>>>>> Raspberry and I am confident that the problem can be
+>>>>> _ipipe_hrtimer_freq on the files:
+>>>>
+>>>> Allwinner A10 is not supported by the I-pipe patch for 3.8.13
+>>>> Raspberry Pi is not supported by the I-pipe patch for 3.8.13, and is not
+>>>> a cortex a9 anyway.
+>>>
+>>> I have other versions of kernel and Ipipe working with these Boards.
+>>> Just checked the menuconfig options between boards to determine if it
+>>> was not my fault. This lesson I have assimilated. Thanks for
+>>> responding;
+>>>
+>>>>> ./arch/arm/kernel/ipipe.c
+>>>>> ./arch/arm/include/asm/ipipe.h
+>>>>> ./include/linux/ipipe_tickdev.h
+>>>>> ./kernel/ipipe/timer.c
+>>>>>
+>>>>> I could not do much because my ipipe versions differ greatly.
+>>>>>
+>>>>> How to know the correct value of __ipipe_hrtimer_freq = t->freq; to
+>>>>> fix (or this is not the way?)
+>>>>
+>>>> You have to carefully read the documentation and do what it says. How
+>>>> many time are you going to make me repeat this?
+>>>>
+>>>
+>>> I prefer to know what is happening than make You repeat it, sorry
+>>> about that. You can be sure, I've read but did not understand how to
+>>> support the platform. The path was applied without error, the problem
+>>> now is to build Kernel.
+>>
+>> What part of "You should also ensure that the symbol
+>> "CONFIG_IPIPE_ARM_KUSER_TSC" gets selected." do you not understand?
+>>
 >
-> http://www.machinekit.net/deb/rootfs/wheezy/debian-7.4-machinekit-armhf-2014-05-09-4gb.img.xz
+> The kernel with XENOMAI stops after the message: "Uncompressing
+> Linux... done, booting the kernel"
+> I try Troubleshooting: "enable CONFIG_DEBUG_LL and CONFIG_EARLY_PRINTK
+> add 'earlyprintk' to the kernel parameters"
+> and nothing... I try  building the Kernel without Xenomai path and I
+> found that the problem is just with earlyprintk.
 >
-> I'm curious if the behavior repeats on other platforms, and what I might be
-> doing wrong. My understanding is that xenomai should work OK under GDB as
-> long as you don't mind the mode switching.
+> If the earlyprintk is removed from kernel parameters the system load
+> the kernel without xenomai.
+> I think the same happens with kernel-Xenomai, but without earlyprintk
+> I am not know what prevents kernel Xenomai to continue.
 >
-> The code is at
->
-> http://pastebin.com/MUgLAbGX
->
-> It is a modified version of
-> xenomai-2.6/examples/native/trivial-periodic.c
->
-> I build and run in gdb:
->
-> cd xenomai-2.6/examples/native
-> export MY_CFLAGS="-g"
-> make trivial-periodic
-> gdb ./trivial-periodic
-> run
->
-> At this point, I get two "New Thread" messages, two "Thread Exited"
-> messages, a 3 second pause, then "hello world" and nothing else.
->
-> Outside of gdb, the program works as expected.
->
-> I'm confused why the threads have exited before I have even called
-> rt_task_start on either of them. This has been reproduced by another
-> machinekit user; he suggested I try the Xenomai list.
->
+> I would like to patch it (may be wrong point in the debug-macro.S).
+> Please, I need Help, I'm out of ideas.
 
-Any change with this?
-
-- pause();
-+ for (;;)
-+    pause();
+If the SOC to which you are porting has several UARTs, verify that 
+either in the menu, or in the code in debug-macro.S, you are writing to 
+the right UART.
 
 -- 
-Philippe.
+					    Gilles.
 
