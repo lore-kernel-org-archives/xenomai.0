@@ -1,20 +1,12 @@
-Message-ID: <53831D85.9040905@xenomai.org>
-Date: Mon, 26 May 2014 12:55:01 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <53832095.10901@xenomai.org>
+Date: Mon, 26 May 2014 13:08:05 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAE2JnQzDaSfwwuuq+voM+ZqPLHoqmjitsa4XzRpqcoukNJGrsg@mail.gmail.com>
- <537FA0A3.301@xenomai.org>
- <CAE2JnQyzqxUv+JSu=L1f+Kqxt0txxBxf3xnCBHvSeQVMgfdt=g@mail.gmail.com>
- <CAE2JnQy_seXdtaf4vM90VhLK7ypzJw=k96Rfs2SV0-LJSoaORw@mail.gmail.com>
- <5380A6E8.3080902@xenomai.org>
- <CAE2JnQycQRAks3B60=T7-2P5PTheuzBvQJimsQm97+4q96AV=A@mail.gmail.com>
- <5380B4FD.6070504@xenomai.org>
- <CAE2JnQyLRYY+PUnKLJy9_CpeF2ZVmX2KFNjuAuJGzeZiaJnUVA@mail.gmail.com>
-In-Reply-To: <CAE2JnQyLRYY+PUnKLJy9_CpeF2ZVmX2KFNjuAuJGzeZiaJnUVA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Xenomai on linux-3.8.13 core ARM Cortex A9 - ARMv7
- (v7l) SoC Samsung Exynos 4412
+References: <6b0caf4dfe7d407988717a23fb855097@EX132MBOX1B.de2.local>
+In-Reply-To: <6b0caf4dfe7d407988717a23fb855097@EX132MBOX1B.de2.local>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Using Preempt RT with I-Pipe/Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,191 +15,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Alexandre Donisete Bensi <adbensi@gmail.com>
-Cc: xenomai@xenomai.org
+To: "Stoidner, Christoph" <c.stoidner@arvero.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/26/2014 03:10 AM, Alexandre Donisete Bensi wrote:
-> 2014-05-24 12:04 GMT-03:00 Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org>:
->> On 05/24/2014 05:00 PM, Alexandre Donisete Bensi wrote:
->>> 2014-05-24 11:04 GMT-03:00 Gilles Chanteperdrix
->>> <gilles.chanteperdrix@xenomai.org>:
->>>> On 05/24/2014 03:55 PM, Alexandre Donisete Bensi wrote:
->>>>> 2014-05-23 22:06 GMT-03:00 Alexandre Donisete Bensi <adbensi@gmail.com>:
->>>>>> 2014-05-23 16:25 GMT-03:00 Gilles Chanteperdrix
->>>>>> <gilles.chanteperdrix@xenomai.org>:
->>>>>>> On 05/23/2014 09:08 PM, Alexandre Donisete Bensi wrote:
->>>>>>>> Hi!
->>>>>>>>
->>>>>>>>   I am trying to install xenomai on ARM Cortex A9 - ARMv7 (v7l) SoC
->>>>>>>> Samsung Exynos 4412 on linux-3.8.13.23 board OdroidU2/U3. To port
->>>>>>>> xenomai to this board I need to add some functions to hardware timer
->>>>>>>> and interrupt handler according
->>>>>>>
->>>>>>> No.
->>>>>>>
->>>>>>>> http://www.xenomai.org/index.php/I-pipe-core:ArmPorting
->>>>>>>>
->>>>>>>>   But mach-exynos directory is different and I cannot find the files
->>>>>>>> referenced :(
->>>>>>>>
->>>>>>>> root@odroid:/usr/src/linux-3.8.13.23/arch/arm/mach-exynos#
->>>>>>>> clock-exynos4210.c  clock-exynos4212.c  clock-exynos4.c
->>>>>>>> mach-hkdk4412.c  mach-smdk4x12.c  mach-exynos4-dt.c
->>>>>>>>
->>>>>>>> I confess that I am with many doubts. All attempts I made on this
->>>>>>>> platform end as:
->>>>>>>> checking file mm/vmalloc.c
->>>>>>>> prepare-kernel.sh: Unable to patch kernel 3.8.13.23 with
->>>>>>>> ipipe-core-3.8.13-arm-3.patch.
->>>>>>>>
->>>>>>>>   Is there any documentation that is closest to my case?
->>>>>>>
->>>>>>> You have the documentation, you only do not read it carefully. The patch
->>>>>>> for 3.8.13 is for 3.8.13, not for 3.8.13.23.
->>>>>>>
->>>>>>
->>>>>> Thanks Gilles. I learned another...
->>>>>>
->>>>>> The path was successfully applied,
->>>>>> I had the error below with make on kernel (from kernel.org). I
->>>>>> accepted all the default options with make oldconfig.
->>>>>>
->>>>>> I am post my config file, I must pay attention to some specific option?
->>>>>> Config File : http://paste.debian.net/101508/
->>>>>>
->>>>>> Error:
->>>>>> make -j4 concluido
->>>>>>    WRAP    arch/arm/include/generated/asm/auxvec.h
->>>>>>    WRAP    arch/arm/include/generated/asm/bitsperlong.h
->>>>>>    WRAP    arch/arm/include/generated/asm/cputime.h
->>>>>>    CHK     include/generated/uapi/linux/version.h
->>>>>>    WRAP    arch/arm/include/generated/asm/current.h
->>>>>>    WRAP    arch/arm/include/generated/asm/emergency-restart.h
->>>>>>    UPD     include/generated/uapi/linux/version.h
->>>>>>    WRAP    arch/arm/include/generated/asm/errno.h
->>>>>>    WRAP    arch/arm/include/generated/asm/exec.h
->>>>>>    WRAP    arch/arm/include/generated/asm/ioctl.h
->>>>>>    WRAP    arch/arm/include/generated/asm/ipcbuf.h
->>>>>>    WRAP    arch/arm/include/generated/asm/irq_regs.h
->>>>>>    WRAP    arch/arm/include/generated/asm/kdebug.h
->>>>>>    WRAP    arch/arm/include/generated/asm/local.h
->>>>>>    WRAP    arch/arm/include/generated/asm/local64.h
->>>>>>    WRAP    arch/arm/include/generated/asm/msgbuf.h
->>>>>>    WRAP    arch/arm/include/generated/asm/param.h
->>>>>>    WRAP    arch/arm/include/generated/asm/parport.h
->>>>>>    WRAP    arch/arm/include/generated/asm/poll.h
->>>>>>    WRAP    arch/arm/include/generated/asm/sections.h
->>>>>>    WRAP    arch/arm/include/generated/asm/segment.h
->>>>>>    WRAP    arch/arm/include/generated/asm/sembuf.h
->>>>>>    WRAP    arch/arm/include/generated/asm/serial.h
->>>>>>    WRAP    arch/arm/include/generated/asm/shmbuf.h
->>>>>>    WRAP    arch/arm/include/generated/asm/siginfo.h
->>>>>>    WRAP    arch/arm/include/generated/asm/sizes.h
->>>>>>    WRAP    arch/arm/include/generated/asm/socket.h
->>>>>>    WRAP    arch/arm/include/generated/asm/sockios.h
->>>>>>    WRAP    arch/arm/include/generated/asm/termbits.h
->>>>>>    WRAP    arch/arm/include/generated/asm/termios.h
->>>>>>    WRAP    arch/arm/include/generated/asm/timex.h
->>>>>>    WRAP    arch/arm/include/generated/asm/trace_clock.h
->>>>>>    WRAP    arch/arm/include/generated/asm/types.h
->>>>>>    WRAP    arch/arm/include/generated/asm/unaligned.h
->>>>>>    CHK     include/generated/utsrelease.h
->>>>>>    UPD     include/generated/utsrelease.h
->>>>>>    HOSTCC  scripts/kallsyms
->>>>>>    CC      scripts/mod/empty.o
->>>>>>    HOSTCC  scripts/mod/mk_elfconfig
->>>>>>    HOSTCC  scripts/pnmtologo
->>>>>>    MKELF   scripts/mod/elfconfig.h
->>>>>>    HOSTCC  scripts/mod/file2alias.o
->>>>>>    HOSTCC  scripts/conmakehash
->>>>>>    HOSTCC  scripts/bin2c
->>>>>>    HOSTCC  scripts/sortextable
->>>>>>    HOSTCC  scripts/mod/modpost.o
->>>>>>    HOSTCC  scripts/mod/sumversion.o
->>>>>>    Generating include/generated/mach-types.h
->>>>>>    CC      kernel/bounds.s
->>>>>>    GEN     include/generated/bounds.h
->>>>>>    CC      arch/arm/kernel/asm-offsets.s
->>>>>> In file included from include/linux/ipipe.h:33:0,
->>>>>>                   from include/linux/sched.h:25,
->>>>>>                   from arch/arm/kernel/asm-offsets.c:13:
->>>>>> include/linux/ipipe.h: In function â__ipipe_hrclock_okâ:
->>>>>> /usr/src/linux-3.8.13/arch/arm/include/asm/ipipe.h:99:30: error:
->>>>>> â__ipipe_hrtimer_freqâ undeclared (first use in this function)
->>>>>>   #define __ipipe_hrclock_freq __ipipe_hrtimer_freq
->>>>>>                                ^
->>>>>> include/linux/ipipe.h:114:9: note: in expansion of macro â__ipipe_hrclock_freqâ
->>>>>>    return __ipipe_hrclock_freq != 0;
->>>>>>           ^
->>>>>> /usr/src/linux-3.8.13/arch/arm/include/asm/ipipe.h:99:30: note: each
->>>>>> undeclared identifier is reported only once for each function it
->>>>>> appears in
->>>>>>   #define __ipipe_hrclock_freq __ipipe_hrtimer_freq
->>>>>>                                ^
->>>>>> include/linux/ipipe.h:114:9: note: in expansion of macro â__ipipe_hrclock_freqâ
->>>>>>    return __ipipe_hrclock_freq != 0;
->>>>>>           ^
->>>>>> make[1]: *** [arch/arm/kernel/asm-offsets.s] Error 1
->>>>>> make: *** [prepare0] Error 2
->>>>>> make: *** Waiting for unfinished jobs....
->>>>>>    HOSTLD  scripts/mod/modpost
->>>>>
->>>>> I changed my config file as other platforms like Allwinner A10 and
->>>>> Raspberry and I am confident that the problem can be
->>>>> _ipipe_hrtimer_freq on the files:
->>>>
->>>> Allwinner A10 is not supported by the I-pipe patch for 3.8.13
->>>> Raspberry Pi is not supported by the I-pipe patch for 3.8.13, and is not
->>>> a cortex a9 anyway.
->>>
->>> I have other versions of kernel and Ipipe working with these Boards.
->>> Just checked the menuconfig options between boards to determine if it
->>> was not my fault. This lesson I have assimilated. Thanks for
->>> responding;
->>>
->>>>> ./arch/arm/kernel/ipipe.c
->>>>> ./arch/arm/include/asm/ipipe.h
->>>>> ./include/linux/ipipe_tickdev.h
->>>>> ./kernel/ipipe/timer.c
->>>>>
->>>>> I could not do much because my ipipe versions differ greatly.
->>>>>
->>>>> How to know the correct value of __ipipe_hrtimer_freq = t->freq; to
->>>>> fix (or this is not the way?)
->>>>
->>>> You have to carefully read the documentation and do what it says. How
->>>> many time are you going to make me repeat this?
->>>>
->>>
->>> I prefer to know what is happening than make You repeat it, sorry
->>> about that. You can be sure, I've read but did not understand how to
->>> support the platform. The path was applied without error, the problem
->>> now is to build Kernel.
->>
->> What part of "You should also ensure that the symbol
->> "CONFIG_IPIPE_ARM_KUSER_TSC" gets selected." do you not understand?
->>
+On 05/25/2014 09:59 PM, Stoidner, Christoph wrote:
+> Hi at all,
 >
-> The kernel with XENOMAI stops after the message: "Uncompressing
-> Linux... done, booting the kernel"
-> I try Troubleshooting: "enable CONFIG_DEBUG_LL and CONFIG_EARLY_PRINTK
-> add 'earlyprintk' to the kernel parameters"
-> and nothing... I try  building the Kernel without Xenomai path and I
-> found that the problem is just with earlyprintk.
+> I need some sort of real time behaviour in secondary domain, so I am trying to merge Preempt RT patch with I-Pipe/Xenomai. Since Preempt RT as well as I-Pipe doing some specific changes to kernel's spinlock handling (mostly in  "include/linux/spinlock.h") this becomes a bit of tricky. The challenge seems to combine Preemp RT's "rt_spin_lock" with I-Pipe's "ipipe_spinlock".
 >
-> If the earlyprintk is removed from kernel parameters the system load
-> the kernel without xenomai.
-> I think the same happens with kernel-Xenomai, but without earlyprintk
-> I am not know what prevents kernel Xenomai to continue.
+> My first approach was to instrument I-Pipe's "PICK_SPINLOCK" macros with Preempt RT's "rt_spin_lock" calls. In detail that means I have added calls of rt_spin_lock to all PICK_SPINLOCK macros for each spinlock type  that is not an I-Pipe spinlock. However I am not sure if that is the best solution and if it is correct for all situations.
 >
-> I would like to patch it (may be wrong point in the debug-macro.S).
-> Please, I need Help, I'm out of ideas.
+> Has someone experiences how to merge these spinlocks or what to consider at all when using Preempt RT with I-Pipe/Xenomai?
+>
 
-If the SOC to which you are porting has several UARTs, verify that 
-either in the menu, or in the code in debug-macro.S, you are writing to 
-the right UART.
+Fixing up ipipe_lock.h to switch the regular locks (i.e. neither 
+ipipe/raw) to the sleeping rt_ spinlock variant is pretty much all you 
+should have to do these days.
+
+My last experience merging I-pipe+preempt-rt dates back to kernel 2.6.x, 
+so a few more conflicts might have popped up since then though. This 
+said, I did not see any showstopper in recent kernels that would prevent 
+such combo from working.
+
+e.g.:
+
++#ifdef PREEMPT_RT
++ #define __regular_spin_lock_irqsave(lock, flags)		\
++	do { rt_spin_lock(std_spinlock(lock)); flags = 0; } while (0) /* can't 
+discard flags */
++#else
++#define __regular_spin_lock_irqsave(lock, flags)		\
++	__real_raw_spin_lock_irqsave(&std_spinlock(lock)->rlock, flags)
++#endif
+
+#define PICK_SPINLOCK_IRQSAVE(lock, flags)				\
+	do {								\
+		if (ipipe_spinlock_p(lock))				\
+			(flags) = __ipipe_spin_lock_irqsave(ipipe_spinlock(lock)); \
+		else if (std_spinlock_raw_p(lock))				\
+			__real_raw_spin_lock_irqsave(std_spinlock_raw(lock), flags); \
+		else if (std_spinlock_p(lock))				\
+-			__real_raw_spin_lock_irqsave(&std_spinlock(lock)->rlock, flags); \
++			__regular_spin_lock_irqsave(lock, flags); \
+		else __bad_lock_type();					\
+	} while (0)
+
+and so on for all other helpers defining a preempt-rt specific variant.
 
 -- 
-					    Gilles.
+Philippe.
 
