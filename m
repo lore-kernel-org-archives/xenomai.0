@@ -1,5 +1,5 @@
-Message-ID: <538641DD.4030903@xenomai.org>
-Date: Wed, 28 May 2014 22:06:53 +0200
+Message-ID: <538645E1.3000604@xenomai.org>
+Date: Wed, 28 May 2014 22:24:01 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CAO0fa7ZiofUS3wsbx89uYsnt6icuv+DVcDbiEfVyG5DUeprj2w@mail.gmail.com>	<5382E8B1.8070402@xenomai.org>	<CAO0fa7YQ0TxiAhbmFmt+41o+rugoLXKjXxtHygpthNOiu8gd9w@mail.gmail.com>	<5383406C.4070902@xenomai.org>	<CAO0fa7YavfJxxLW6h3Wm8CRmS2+yb9Uhv5RDfsv04+pcpvorFg@mail.gmail.com>	<CAO0fa7byLgJQ2_sLDtJLmjsf=oh2NF7k37qnWWxmwhZW6N1ksw@mail.gmail.com>	<CAO0fa7YGSCmPducStbh7sM=HJtPYq86iO1e2ZAaKyjUjzPMEUA@mail.gmail.com>	<5385F190.7050303@xenomai.org>	<C528C59E-AFE8-4810-AC6F-E58A2C1DA47D@mah.priv.at>	<538622C8.6000906@xenomai.org>
@@ -38,13 +38,16 @@ On 05/28/2014 09:19 PM, Drew wrote:
 > xnshadow_sys_trace (which seems debugger related to me..) defaults its
 > error to -ENOSYS...
 > 
+The problem is syscall restarting by calling the syscall
+sys_restart_syscall. When it appeared in entry.S, I made the assumption
+that it would only be used for Linux syscall, that Xenomai syscall would
+never have anything else than current_thread_info()->restart_block.fn
+equal to "do_not_restart_syscall". This seems to be right most of the
+time, except when running under gdb, where the kernel may want to
+restart xenomai syscalls.
 
-If you enable CONFIG_IPIPE_DEBUG_INTERNAL, do you see the following message:
-
-[  292.460803] kernel BUG at arch/arm/kernel/ipipe.c:445!
-
-(the line number may be a bit different as I am testing Xenomai on Linux
-3.14).
+This implies reworking entry.S somehow. I do not see how yet, but I am
+on it.
 
 -- 
                                                                 Gilles.
