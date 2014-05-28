@@ -1,5 +1,7 @@
+Message-ID: <5386505E.2030904@xenomai.org>
+Date: Wed, 28 May 2014 23:08:46 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <538648DB.1000008@xenomai.org>
 References: <CAO0fa7ZiofUS3wsbx89uYsnt6icuv+DVcDbiEfVyG5DUeprj2w@mail.gmail.com>
  <5382E8B1.8070402@xenomai.org>
  <CAO0fa7YQ0TxiAhbmFmt+41o+rugoLXKjXxtHygpthNOiu8gd9w@mail.gmail.com>
@@ -12,10 +14,10 @@ References: <CAO0fa7ZiofUS3wsbx89uYsnt6icuv+DVcDbiEfVyG5DUeprj2w@mail.gmail.com>
  <538622C8.6000906@xenomai.org>
  <E8636526-7C80-4789-99F1-C570732F6928@mah.priv.at>
  <538648DB.1000008@xenomai.org>
-Date: Wed, 28 May 2014 17:01:06 -0400
-Message-ID: <CAO0fa7aDo1fzGfvYUt89-vMrt9oksJhQdGSdfN8LMBzRc_FtVQ@mail.gmail.com>
-From: Drew <pythondrew@gmail.com>
+ <CAO0fa7aDo1fzGfvYUt89-vMrt9oksJhQdGSdfN8LMBzRc_FtVQ@mail.gmail.com>
+In-Reply-To: <CAO0fa7aDo1fzGfvYUt89-vMrt9oksJhQdGSdfN8LMBzRc_FtVQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] gdb / threads on beaglebone black
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -25,10 +27,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Drew <pythondrew@gmail.com>, Philippe Gerum <rpm@xenomai.org>
 Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I've only been using the machinekit pre-built kernel so rebuilding might
-take me a little while figure out.
+On 05/28/2014 11:01 PM, Drew wrote:
+> I've only been using the machinekit pre-built kernel so rebuilding might
+> take me a little while figure out.
+> 
+> Gilles: you think you have this bug in a corner (entry.S?)
 
-Gilles: you think you have this bug in a corner (entry.S?)
+I can reproduce the bug. It is most certainly related to system call
+restarting, but I am not quite sure of what happens yet. My BUG_ON
+trigs, but I do not understand why, and the reason of the BUG_ON is not
+what causes the -ENOSYS. I can not really use the I-pipe tracer, because
+everything happens in assembly code with very few function calls.
+
+So, it may be a while before I produce a fix.
+
+-- 
+                                                                Gilles.
+
