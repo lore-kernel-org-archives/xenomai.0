@@ -1,12 +1,10 @@
-Message-ID: <5387289F.2090404@xenomai.org>
-Date: Thu, 29 May 2014 14:31:27 +0200
+Message-ID: <5387293B.8080400@xenomai.org>
+Date: Thu, 29 May 2014 14:34:03 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <OFBAF613A3.27D3BC8A-ONC1257CE7.003515C1-C1257CE7.0042F1F4@selex-es.com>
-In-Reply-To: <OFBAF613A3.27D3BC8A-ONC1257CE7.003515C1-C1257CE7.0042F1F4@selex-es.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] User Space Interrupt not working
+Subject: [Xenomai] please pull latest ipipe fixes
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,34 +13,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: matteo.semmoloni@selex-es.com, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 05/29/2014 02:11 PM, matteo.semmoloni@selex-es.com wrote:
-> 
-> 
-> Hi all,
-> 
-> I've pached (succefullly...I hope so) linux kernel 3.8 with Xenomai 2.6.3.
-> 
-> I've two issue about interrupt handled in userspace: the first one is
-> related to asynchronous notifications from kernelspace to userspace, the
-> second one related to creation of interrupt in userspace.
+The following changes since commit a7adc69ef0473e88b4c9678408cd53800d08f0f5:
 
-This interface is deprecated, not recommended for new developments.
-Please implement an RTDM driver and unblock the task in the "read" or an
-"ioctl" call.
+  arm/ipipe: export smp_on_up (2014-05-10 11:22:05 +0200)
 
-> 1) I've have an application that must be triggered by an IRQ; if I create
-> interrupt in kernel space it works properly and interrupt service routine
-> is fired. In this case, if I create a task at userspace, bind it to kernal
-> space interrupt and waiting for it, it doesn't work; userspace task is
-> always blocked at rt_intr_wait() function. An unexpected behaviour occurs
-> during debugging: when task switches to secondary mode adding a breakpoint,
-> task is released with error ENOSYS( -38) returned by rt_intr_wait().
+are available in the git repository at:
 
-Are you running on the ARM platform? If yes, you need the following patch:
-http://www.xenomai.org/pipermail/xenomai/2014-May/031025.html
+  git://git.xenomai.org/ipipe-gch.git for-ipipe-3.14.0
 
+for you to fetch changes up to 4cbe7685083be26834850e62fb16802eea3610ef:
+
+  arm/ipipe: Add support for Ti da850 board (2014-05-29 14:29:53 +0200)
+
+----------------------------------------------------------------
+Gilles Chanteperdrix (5):
+      arm/ipipe: avoid calling irq_enter/irq_exit for IPIs
+      arm/ipipe: forbid context tracking with I-pipe
+      arm/fcse: always set fcse_large_process
+      arm/fcse: pass mm to services instead of fcse pid
+      arm/ipipe: fix syscall restarting
+
+Peter Howard (2):
+      dma: edma: fix incorrect SG list handling
+      arm/ipipe: Add support for Ti da850 board
+
+ arch/arm/Kconfig                   |    2 +-
+ arch/arm/include/asm/fcse.h        |   74 +++++++++++++++++++++++-----------------
+ arch/arm/include/asm/mmu_context.h |   40 ++++++++--------------
+ arch/arm/kernel/entry-common.S     |    2 +-
+ arch/arm/kernel/ipipe.c            |    4 ---
+ arch/arm/kernel/smp.c              |    8 ++---
+ arch/arm/mach-davinci/Kconfig      |    1 +
+ arch/arm/mach-davinci/cp_intc.c    |    1 +
+ arch/arm/mach-davinci/time.c       |   46 +++++++++++++++++++++++++
+ arch/arm/mm/fcse.c                 |   51 ++++++++++++++-------------
+ drivers/dma/edma.c                 |    6 ++--
+ drivers/gpio/gpio-davinci.c        |    3 +-
+ 12 files changed, 143 insertions(+), 95 deletions(-)
 
 -- 
                                                                 Gilles.
