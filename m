@@ -1,12 +1,12 @@
-Message-ID: <53875672.4030608@xenomai.org>
-Date: Thu, 29 May 2014 17:46:58 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <53875E0E.4080701@xenomai.org>
+Date: Thu, 29 May 2014 18:19:26 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <53765654.8010509@ruggedcom.com>
-In-Reply-To: <53765654.8010509@ruggedcom.com>
-Content-Type: text/plain; charset=UTF-8
+References: <1401378135.12445.YahooMailNeo@web171606.mail.ir2.yahoo.com>
+In-Reply-To: <1401378135.12445.YahooMailNeo@web171606.mail.ir2.yahoo.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RT_HEAP physical address
+Subject: Re: [Xenomai] rtdm_mutex_init on forge
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,36 +15,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Makarand Pradhan <makarandpradhan@ruggedcom.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/16/2014 08:17 PM, Makarand Pradhan wrote:
-> Hi All,
-> 
-> I am running on MPC8360(powerpc) linux 3.0, xenomai 2.6.3.
-> 
-> I am trying to get the physical address of a heap using rt_heap_inquire. 
-> All the same, I'm getting a null pointer. Can you pl point out if I'm 
-> doing something wrong?
-> 
-> Code:
-> 
-> #include <rtdk.h>
-> #include <stdio.h>
-> #include <sys/mman.h>
-> #include <native/heap.h>
-> #include <native/task.h>
-> 
-> void task1_func(void *arg)
+On 05/29/2014 05:42 PM, Matthias Schneider wrote:
+> Hi all,
+>
+> I have a question about rtdm_mutex_init in forge. BUG_ON is
+> triggered each time I create an rtdm_mutex. This seems to be
+> due to a check in xnsynch_init, while apparently some
+> implementation is still missing in rtdm_mutex_init():
+>
+> void rtdm_mutex_init(rtdm_mutex_t *mutex)
 > {
->          RT_HEAP heap;
->          RT_HEAP_INFO info;
-> 
->          rt_printf("Running\n");
-> 
->          int rc = rt_heap_create(&heap, "TEST", 1024, H_DMA);
+>          spl_t s;
+>
+>          /* Make atomic for re-initialisation support */
+>          xnlock_get_irqsave(&nklock, s);
+>
+>          xnsynch_init(&mutex->synch_base,
+>                       XNSYNCH_PRIO | XNSYNCH_PIP | XNSYNCH_OWNER, NULL);
+>
+>          xnlock_put_irqrestore(&nklock, s);
+> }
+>
+>
+> void xnsynch_init(struct xnsynch *synch, int flags, atomic_long_t *fastlock)
+> {
+>          if (flags & XNSYNCH_PIP)
+>                  flags |= XNSYNCH_PRIO | XNSYNCH_OWNER;  /* Obviously... */
+>
+>          synch->status = flags & ~XNSYNCH_CLAIMED;
+>          synch->owner = NULL;
+>          synch->cleanup = NULL;  /* Only works for PIP-enabled objects. */
+>          synch->wprio = -1;
+>          INIT_LIST_HEAD(&synch->pendq);
+>
+>          if (flags & XNSYNCH_OWNER) {
+>                  BUG_ON(fastlock == NULL); // <---------- Obviously this is
+>                                            //             always occurs for an
+>                                            //             rtdm_mutex.
+>                  synch->fastlock = fastlock;
+>                  atomic_long_set(fastlock, XN_NO_HANDLE);
+>          } else
+>                  synch->fastlock = NULL;
+> }
+>
+> At the moment I am not sure if the atomic_long_t counter needs be added to
+> rtdm_mutex or the flags need to be changed. Thanks for your help,
+>
 
-H_SINGLE is missing here.
-
+RTDM mutexes cannot and do not have to provide fast locking memory, the 
+assertion I have added to xnsynch_init() is broken. Will fix.
 -- 
-                                                                Gilles.
+Philippe.
 
