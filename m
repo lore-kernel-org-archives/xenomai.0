@@ -1,13 +1,10 @@
-References: <1400788012.41259.YahooMailNeo@web171603.mail.ir2.yahoo.com>
-Message-ID: <1401734780.6508.YahooMailNeo@web171606.mail.ir2.yahoo.com>
-Date: Mon, 2 Jun 2014 19:46:20 +0100 (BST)
-From: Matthias Schneider <ma30002000@yahoo.de>
-In-Reply-To: <1400788012.41259.YahooMailNeo@web171603.mail.ir2.yahoo.com>
+Message-ID: <538CDE00.9000707@xenomai.org>
+Date: Mon, 02 Jun 2014 22:26:40 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] FreeRTOS skin #2
-Reply-To: Matthias Schneider <ma30002000@yahoo.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] [GIT PULL] various cleanups
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,86 +13,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
------ Original Message -----
+The following changes since commit 0750a1e6877fba81269eb4b9f091190971ede117:
 
-> From: Matthias Schneider <ma30002000@yahoo.de>
-> To: "xenomai@xenomai.org" <xenomai@xenomai.org>
-> Cc: =
+  cobalt: add missing include files (2014-06-02 08:47:23 +0200)
 
-> Sent: Thursday, May 22, 2014 9:46 PM
-> Subject: [Xenomai] FreeRTOS skin #2
-> =
+are available in the git repository at:
 
-> Hi all,
-> =
+  git://git.xenomai.org/xenomai-gch.git for-forge
 
-> after having rework extensively the FreeRTOS skin patch I feel ready=A0
-> for the second round of review comments. I hope no one will mind me=A0
-> starting a new thread for discussing it. I have tried to address all=A0
-> of the mentioned issues so far, plus many more.
-> =
+for you to fetch changes up to a10143cfa13bf25fd0c5ce84f163f88ab6f3358b:
 
-> Among them:
-> =
+  testsuite/switchtest: remove struct typedefs (2014-06-02 22:24:40 +0200)
 
-> * reworked alignment macros
-> * #define portLONG long
-> * remapped error codes
-> * reworked scheduler start and stop completely as suggested
-> * reworked Scheduler.queued_task, .state and .num_tasks
-> * added new (internal) scheduler state taskSCHEDULER_SUSPENDING
-> * many other improvements and simplifications
-> * only take tasklist_lock for short time
-> =
+----------------------------------------------------------------
+Gilles Chanteperdrix (4):
+      cobalt: remove condattr and mutexattr wrappers
+      cobalt: sleep upon program termination to flush rt_printfs
+      testsuite/mutex-torture: remove call to sched_yield which breaks timings
+      testsuite/switchtest: remove struct typedefs
 
-> Like suggested, I have gone for the simpler implementation of the task=A0
-> scheduler functionality and I added warnings and checks in case unsupport=
-ed
-> use cases are triggered (e.g. holding the scheduler lock on mp systems, e=
-tc.)
-> This still needs to be reflected in the docu.
-> =
+ include/cobalt/uapi/syscall.h       |   15 +-
+ include/cobalt/uapi/thread.h        |   12 +-
+ kernel/cobalt/posix/Makefile        |    2 -
+ kernel/cobalt/posix/cond.c          |   28 +-
+ kernel/cobalt/posix/cond.h          |   22 +-
+ kernel/cobalt/posix/cond_attr.c     |  396 ----------------------------
+ kernel/cobalt/posix/mutex.c         |   35 +--
+ kernel/cobalt/posix/mutex.h         |   30 +--
+ kernel/cobalt/posix/mutex_attr.c    |  554 ---------------------------------------
+ kernel/cobalt/posix/syscall.c       |   14 -
+ kernel/cobalt/trace/cobalt-posix.h  |    4 +-
+ kernel/drivers/testing/switchtest.c |   74 +++---
+ lib/alchemy/cond.c                  |    8 +-
+ lib/alchemy/mutex.c                 |   10 +-
+ lib/boilerplate/hash.c              |   22 +-
+ lib/cobalt/cobalt.wrappers          |   14 -
+ lib/cobalt/cond.c                   |   55 ++--
+ lib/cobalt/init.c                   |    9 +-
+ lib/cobalt/internal.h               |    4 +
+ lib/cobalt/mutex.c                  |   77 ++----
+ lib/copperplate/clockobj.c          |   10 +-
+ lib/copperplate/heapobj-malloc.c    |   10 +-
+ lib/copperplate/heapobj-pshared.c   |   22 +-
+ lib/copperplate/registry.c          |   34 +--
+ lib/copperplate/threadobj.c         |   18 +-
+ lib/copperplate/timerobj.c          |   20 +-
+ lib/copperplate/traceobj.c          |   20 +-
+ lib/psos/pt.c                       |   10 +-
+ lib/vxworks/memPartLib.c            |   10 +-
+ lib/vxworks/semLib.c                |   10 +-
+ lib/vxworks/taskLib.c               |   10 +-
+ testsuite/unit/mutex-torture.c      |    1 -
+ 32 files changed, 235 insertions(+), 1325 deletions(-)
+ delete mode 100644 kernel/cobalt/posix/cond_attr.c
+ delete mode 100644 kernel/cobalt/posix/mutex_attr.c
 
-> I have not yet addressed the issues of=A0
-> =
+-- 
+                                                                Gilles.
 
-> * vPortEnterCritical()/vPortExitCritical()
-> =A0 since they are used extensively in the demo code (which is completely=
-=A0
-> =A0 hardware independent), but this can still be easily adapted.
-> =
-
-> * starting thread priority inheritance (need to start a new=A0
-> =A0 discussion thread)
-> =
-
-> * there is still a workaround for the cobalt priorities in the patch...
-> =
-
-> Regards,
-> Matthias
-> =
-
-> p.s. Thank you a lot for your responsiveness addressing issues reported=
-=A0
-> by me, including all the refactoring that is making my life easier!
-
-
-Please find enclosed a new version of the FreeRTOS skin. It adapts to the=
-=A0
-latest changes in forge/next and also removes the previously included=A0
-workarounds - thanks to the changes done based on the first review round
-they were no longer necessary.
-
-Regards,
-Matthias
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: 0001-Initial-Freertos-commit-no.-3.patch.gz
-Type: application/x-gzip
-Size: 34384 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140602/7a47798=
-6/attachment.bin>
