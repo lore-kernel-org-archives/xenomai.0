@@ -1,10 +1,12 @@
-Message-ID: <538CDE00.9000707@xenomai.org>
-Date: Mon, 02 Jun 2014 22:26:40 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <538F43D9.7020809@nta-inc.net>
+Date: Wed, 04 Jun 2014 11:05:45 -0500
+From: Jeff Webb <jeff.webb@nta-inc.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <537D35BD.1030302@nta-inc.net>
+In-Reply-To: <537D35BD.1030302@nta-inc.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [GIT PULL] various cleanups
+Subject: Re: [Xenomai] RTDM driver for Xilinx Zynq PS UART
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,64 +15,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-The following changes since commit 0750a1e6877fba81269eb4b9f091190971ede117:
+On 05/21/2014 06:24 PM, Jeff Webb wrote:
 
-  cobalt: add missing include files (2014-06-02 08:47:23 +0200)
+> Has anyone written an RTDM driver for the Xilinx Zynq PS UART?
 
-are available in the git repository at:
+ From the lack of response, I assume the answer to this question is 'no'.  Given that, can someone please comment on what I have written below regarding the process of porting a linux serial driver to RDTM?
 
-  git://git.xenomai.org/xenomai-gch.git for-forge
+> If not, I assume the best way to obtain one would be to start with the
+> Xilinx-provided linux driver (xilinx_uartps.c) and port it to RTDM.
+> Is there a "HOWTO" or other documentation for the porting process?
+> Without further direction, I was going to compare an existing pair
+> of RTDM drivers (e.g. mpc52xx_uart.c and rt_mpc52xx_uart.c) to see
+> what changes were made and try to do something similar for the Xilinx
+> driver.  In the end, I would like to have a driver that is as
+> compatible with the RTDM 16550 driver as much as possible.
+>
+>
+> I will try to digest the information here:
+>
+>    http://www.xenomai.org/documentation/trunk/html/api/group__rtdm.html
+>    http://www.xenomai.org/documentation/trunk/html/api/group__rtserial.html
+>
+> and look at the simple RTDM example here:
+>
+>    xenomai-2.6.3/examples/rtdm/driver-api
+>
+> This mailing-list thread also looks informative:
+>
+>    http://www.xenomai.org/pipermail/xenomai/2010-August/021220.html
+>
+> Any advice would be appreciated.
+>
+> Thanks,
+>
+> -Jeff
+>
+>
+>
 
-for you to fetch changes up to a10143cfa13bf25fd0c5ce84f163f88ab6f3358b:
-
-  testsuite/switchtest: remove struct typedefs (2014-06-02 22:24:40 +0200)
-
-----------------------------------------------------------------
-Gilles Chanteperdrix (4):
-      cobalt: remove condattr and mutexattr wrappers
-      cobalt: sleep upon program termination to flush rt_printfs
-      testsuite/mutex-torture: remove call to sched_yield which breaks timings
-      testsuite/switchtest: remove struct typedefs
-
- include/cobalt/uapi/syscall.h       |   15 +-
- include/cobalt/uapi/thread.h        |   12 +-
- kernel/cobalt/posix/Makefile        |    2 -
- kernel/cobalt/posix/cond.c          |   28 +-
- kernel/cobalt/posix/cond.h          |   22 +-
- kernel/cobalt/posix/cond_attr.c     |  396 ----------------------------
- kernel/cobalt/posix/mutex.c         |   35 +--
- kernel/cobalt/posix/mutex.h         |   30 +--
- kernel/cobalt/posix/mutex_attr.c    |  554 ---------------------------------------
- kernel/cobalt/posix/syscall.c       |   14 -
- kernel/cobalt/trace/cobalt-posix.h  |    4 +-
- kernel/drivers/testing/switchtest.c |   74 +++---
- lib/alchemy/cond.c                  |    8 +-
- lib/alchemy/mutex.c                 |   10 +-
- lib/boilerplate/hash.c              |   22 +-
- lib/cobalt/cobalt.wrappers          |   14 -
- lib/cobalt/cond.c                   |   55 ++--
- lib/cobalt/init.c                   |    9 +-
- lib/cobalt/internal.h               |    4 +
- lib/cobalt/mutex.c                  |   77 ++----
- lib/copperplate/clockobj.c          |   10 +-
- lib/copperplate/heapobj-malloc.c    |   10 +-
- lib/copperplate/heapobj-pshared.c   |   22 +-
- lib/copperplate/registry.c          |   34 +--
- lib/copperplate/threadobj.c         |   18 +-
- lib/copperplate/timerobj.c          |   20 +-
- lib/copperplate/traceobj.c          |   20 +-
- lib/psos/pt.c                       |   10 +-
- lib/vxworks/memPartLib.c            |   10 +-
- lib/vxworks/semLib.c                |   10 +-
- lib/vxworks/taskLib.c               |   10 +-
- testsuite/unit/mutex-torture.c      |    1 -
- 32 files changed, 235 insertions(+), 1325 deletions(-)
- delete mode 100644 kernel/cobalt/posix/cond_attr.c
- delete mode 100644 kernel/cobalt/posix/mutex_attr.c
-
--- 
-                                                                Gilles.
 
