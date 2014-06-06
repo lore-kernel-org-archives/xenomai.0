@@ -1,12 +1,15 @@
-Message-ID: <53905120.2040902@xenomai.org>
-Date: Thu, 05 Jun 2014 13:14:40 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <539182C0.5090405@control.lth.se>
+Date: Fri, 06 Jun 2014 10:58:40 +0200
+From: Anders Blomdell <anders.blomdell@control.lth.se>
 MIME-Version: 1.0
-References: <CAC66z96GX9uNm_cgzV_RSPQbep4RnwMaTwUW7qLsvfofweBkMw@mail.gmail.com>
-In-Reply-To: <CAC66z96GX9uNm_cgzV_RSPQbep4RnwMaTwUW7qLsvfofweBkMw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+References: <CAMbo_3DjWPb2xt27WAR6MF6bLHf-QZM-n-VduNTugx34cQ0LPg@mail.gmail.com>
+ <536DF390.9000604@xenomai.org> <536E1962.30008@xenomai.org>
+ <CAMbo_3Av1qCUpXk1osvwczvu5OtCzyge3wxSgsfbOZcYq786uw@mail.gmail.com>
+ <536F796F.7070007@xenomai.org>
+In-Reply-To: <536F796F.7070007@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] System hangs
+Subject: Re: [Xenomai] Xenomai on v3.14
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,25 +18,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: yogesh garg <yogesh.garg1983@gmail.com>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Brian Morel <brianmorel99@gmail.com>, Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 06/05/2014 10:42 AM, yogesh garg wrote:
-> Hi Everyone,
-> I am using rt_heap_create() in my init_module(). rt_heap_create is
-> returning 0(success).
-> But after this API my system gets hang.
 
-What version of Xenomai, what architecture ?
 
+On 2014-05-11 15:21, Gilles Chanteperdrix wrote:
+> On 05/11/2014 02:07 AM, Brian Morel wrote:
+>> I cloned the ipipe.git repository & checked out ipipe-3.14 .  I tried
+>> running the genpatches.sh script, but it appears that tag v3.14 doesn't
+>> exist in the repository.  I tried the same process for 3.8 & it worked
+>> fine.  I assume this is because the stable tree isn't there, but my git foo
+>> isn't good, so I don't know how to add it.  Any advice would be great.
 > 
-> something like
+> Note that you can work directly with the ipipe git instead of generating
+> patches, simply run prepare-kernel.sh from the ipipe git,
+> prepare-kernel.sh will detect that the kernel already contains the ipipe
+> bits and will not try and apply an I-pipe patch. This makes testing
+> changes to the I-pipe kernel a lot easier.
+> 
+> 
+Is this a reasonable patch if one (still) wants to use genpatches.sh?
 
-We do not need "something like", we need a self contained example that
-we can run to reproduce the issue you have.
-
-Also note that using skins in kernel-space has been deprecated for a
-long time now.
-
--- 
-                                                                Gilles.
+diff --git a/scripts/ipipe/genpatches.sh b/scripts/ipipe/genpatches.sh
+index 489ae6c..fe9eb0e3 100755
+--- a/scripts/ipipe/genpatches.sh
++++ b/scripts/ipipe/genpatches.sh
+@@ -62,6 +62,8 @@ BEGIN {
+     driver_arch["clk/mxs/clk-imx28.c"]="arm"
+     driver_arch["clocksource/arm_arch_timer.c"]="arm"
+     driver_arch["clocksource/mxs_timer.c"]="arm"
++    driver_arch["dma/edma.c"]="arm"
++    driver_arch["gpio/gpio-davinci.c"]="arm"
+     driver_arch["gpio/gpio-mxc.c"]="arm"
+     driver_arch["gpio/gpio-mxs.c"]="arm"
 
