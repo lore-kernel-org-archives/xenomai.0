@@ -1,15 +1,12 @@
-Message-ID: <537B4AFD.1020404@xenomai.org>
-Date: Tue, 20 May 2014 14:30:53 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <539322FA.5030004@xenomai.org>
+Date: Sat, 07 Jun 2014 16:34:34 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <537A5F9B.4040308@xenomai.org> <537B015E.5070107@xenomai.org>
- <537B27C9.9020908@xenomai.org> <537B2A5B.3090100@xenomai.org>
- <537B2D63.9030709@xenomai.org> <537B49EA.8020005@xenomai.org>
- <537B49AE.6000903@xenomai.org>
-In-Reply-To: <537B49AE.6000903@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <20140606135912.GJ5765@lukather> <20140606140031.GK5765@lukather>
+In-Reply-To: <20140606140031.GK5765@lukather>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] timer drift
+Subject: Re: [Xenomai] Xenomai on Atmel SAMA5D3 with a 3.14 kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,79 +15,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Maxime Ripard <maxime.ripard@free-electrons.com>
+Cc: Michael Opdenacker <michael@free-electrons.com>, Thomas Petazzoni <thomas@free-electrons.com>, Boris Brezillon <boris@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, xenomai@xenomai.org, =?UTF-8?B?QW50b2luZSBUw6luYXJ0?= <antoine@free-electrons.com>
 
-On 05/20/2014 02:25 PM, Gilles Chanteperdrix wrote:
-> On 05/20/2014 02:26 PM, Philippe Gerum wrote:
->> On 05/20/2014 12:24 PM, Gilles Chanteperdrix wrote:
->>> On 05/20/2014 12:11 PM, Philippe Gerum wrote:
->>>> On 05/20/2014 12:00 PM, Philippe Gerum wrote:
->>>>> On 05/20/2014 09:16 AM, Gilles Chanteperdrix wrote:
->>>>>> On 05/19/2014 09:46 PM, Gilles Chanteperdrix wrote:
->>>>>>>
->>>>>>> Hi,
->>>>>>>
->>>>>>> when running the latency test modified to use timerfds on forge, I
->>>>>>> noticed that we have a clock vs timer drift issue (on forge, not on
->>>>>>> 2.6,
->>>>>>> and only since recent changes).
->>>>>>>
->>>>>>> What the latency test does is create a periodic timer, and when
->>>>>>> waking
->>>>>>> up at each tick, compare the actual wake-up time, with the expected
->>>>>>> wake-up time. The problem is that, on the timer side, the
->>>>>>> computation is
->>>>>>> more precise, because it is the sum of short durations computed with
->>>>>>> xnarch_llmulshft, whereas on the clock side, we pass larger and
->>>>>>> larger
->>>>>>> values to xnarch_llmulshft, so at some point, the error due to the
->>>>>>> approximation begins to be within the range of observable
->>>>>>> differences (a
->>>>>>> few micro-seconds after hours of tests). I have verified that
->>>>>>> replacing
->>>>>>> xnarch_llmulshft with xnarch_nodiv_llimd avoids the issue. And I
->>>>>>> believe
->>>>>>> mainline does not have the same issue because they always pass small
->>>>>>> durations to the multiplication + shift operation.
->>>>>>
->>>>>> The question being: what do we do to avoid this issue?
->>>>>>
->>>>>>
->>>>>
->>>>> IIUC, assuming clock_gettime() delivers ns2tsc(N * period_ns), we may
->>>>> have to fix the timer interval update code in xnclock_tick() which
->>>>> produces N * (ns2tsc(period_ns)). Aligning both could be the right
->>>>> path,
->>>>> maybe compensating for the overhead using the clock gravity?
->>>>>
->>>>
->>>> s/clock gravity/timer gravity/ which would then depend on the timer
->>>> being periodic or not. We'd need to calibrate this adjustement cost on
->>>> low end architectures, only to make sure this is worth the burden.
->>>>
->>> The overhead is a multiplication followed by the computation of ns2tsc,
->>> which is an llmulshft, so only takes a few nanoseconds. We have the
->>> "arith" test which measures llmulshft. The worst case I have is on
->>> at91rm9200 a few hundreds of nanoseconds, with latency in the 200us
->>> range.
->>>
->>> I think it is best to leave the gravity configuration to the user, as we
->>> have always done. Maybe having a "per timer-class" gravity would make
->>> sense (for user vs kernel thread vs kernel timer and periodic vs
->>> one-shot), but it seems it would make the tuning complicated.
->>>
->>
->> With Cobalt, timers now have a thread affinity.
->>
-> You mean gravity?
->
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-I mean we do have an optional thread affinity assigned to each timer, 
-which is currently used to figure out the best CPU affinity for such 
-timer. We could use this information for determining the most 
-appropriate timer gravity, directly from __xntimer_init(), for any timer 
-for which a thread affinity has been given.
+On 06/06/2014 04:00 PM, Maxime Ripard wrote:
+> On Fri, Jun 06, 2014 at 03:59:12PM +0200, Maxime Ripard wrote:
+>> Hi Gilles,
+>> 
+>> I've been experimenting these days with the i-pipe 3.14 kernel, 
+>> and current xenomai master branch on the Atmel SAMA5D3 SoC.
+>> 
+>> There's a few issues there, the first one being that 
+>> at91_ipipe_early_init crashes because of a NULL pointer 
+>> dereference. This is due to the clk_get_rate call on the clock 
+>> returned by clk_get(NULL, "mck").
+>> 
+>> This clk_get call cannot since 3.14 because the clock code has 
+>> been rewritten, and you can't use clkdev anymore.
+>> 
+>> This is quite simple to fix, and after actually fixing it, you 
+>> get a more interesting issue: either the timers or the
+>> interrupts don't work at all.
+>> 
+>> The first symptom is that it get stuck at the delay loop 
+>> calibration. Setting the loops per jiffy in the command line
+>> make the boot go further, until the switch to the ipipe_tsc 
+>> clocksource. This actually makes me think that it's more the 
+>> timers that are broken rather than the interrupts. Changing the 
+>> timer counter block doesn't solve anything.
+>> 
+>> Do you have an idea of what could be going on?
+> 
+> 
+> Actually, the boot seem just to be *much* slower, so maybe the 
+> timers are working after all, but it's just yet another issue with 
+> the clocks.
+> 
+Does __ipipe_tsc_update get called in Linux timer interrupt?
 
--- 
-Philippe.
+- -- 
+                                                                Gilles.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+Comment: Using GnuPG with Icedove - http://www.enigmail.net/
+
+iD8DBQFTkyL6GpcgE6m/fboRAgY7AJ9hrv0rlm8Ro3QtkPzGo8PkI7PuiwCgiByo
+aRY9b5jrrJWATnnoji9ybpY=
+=1K3F
+-----END PGP SIGNATURE-----
 
