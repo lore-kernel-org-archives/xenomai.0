@@ -1,9 +1,9 @@
-Message-ID: <539322FA.5030004@xenomai.org>
-Date: Sat, 07 Jun 2014 16:34:34 +0200
+Message-ID: <5394652C.3030101@xenomai.org>
+Date: Sun, 08 Jun 2014 15:29:16 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20140606135912.GJ5765@lukather> <20140606140031.GK5765@lukather>
-In-Reply-To: <20140606140031.GK5765@lukather>
+References: <20140606135912.GJ5765@lukather>
+In-Reply-To: <20140606135912.GJ5765@lukather>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Xenomai on Atmel SAMA5D3 with a 3.14 kernel
@@ -21,40 +21,16 @@ Cc: Michael Opdenacker <michael@free-electrons.com>, Thomas Petazzoni <thomas@fr
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 06/06/2014 04:00 PM, Maxime Ripard wrote:
-> On Fri, Jun 06, 2014 at 03:59:12PM +0200, Maxime Ripard wrote:
->> Hi Gilles,
->> 
->> I've been experimenting these days with the i-pipe 3.14 kernel, 
->> and current xenomai master branch on the Atmel SAMA5D3 SoC.
->> 
->> There's a few issues there, the first one being that 
->> at91_ipipe_early_init crashes because of a NULL pointer 
->> dereference. This is due to the clk_get_rate call on the clock 
->> returned by clk_get(NULL, "mck").
->> 
->> This clk_get call cannot since 3.14 because the clock code has 
->> been rewritten, and you can't use clkdev anymore.
->> 
->> This is quite simple to fix, and after actually fixing it, you 
->> get a more interesting issue: either the timers or the
->> interrupts don't work at all.
->> 
->> The first symptom is that it get stuck at the delay loop 
->> calibration. Setting the loops per jiffy in the command line
->> make the boot go further, until the switch to the ipipe_tsc 
->> clocksource. This actually makes me think that it's more the 
->> timers that are broken rather than the interrupts. Changing the 
->> timer counter block doesn't solve anything.
->> 
->> Do you have an idea of what could be going on?
+On 06/06/2014 03:59 PM, Maxime Ripard wrote:
+> Hi Gilles,
 > 
-> 
-> Actually, the boot seem just to be *much* slower, so maybe the 
-> timers are working after all, but it's just yet another issue with 
-> the clocks.
-> 
-Does __ipipe_tsc_update get called in Linux timer interrupt?
+> I've been experimenting these days with the i-pipe 3.14 kernel,
+> and current xenomai master branch on the Atmel SAMA5D3 SoC.
+
+Maybe the cortex A5 has some integrated timers, like A9, which would
+be certainly more interesting to use than a TC. The TC is a 16 bits
+free-running counter which we have to run at a low frequency (as close
+as possible to 1 MHz) to avoid it to wrap too fast.
 
 - -- 
                                                                 Gilles.
@@ -62,8 +38,8 @@ Does __ipipe_tsc_update get called in Linux timer interrupt?
 Version: GnuPG v1.4.12 (GNU/Linux)
 Comment: Using GnuPG with Icedove - http://www.enigmail.net/
 
-iD8DBQFTkyL6GpcgE6m/fboRAgY7AJ9hrv0rlm8Ro3QtkPzGo8PkI7PuiwCgiByo
-aRY9b5jrrJWATnnoji9ybpY=
-=1K3F
+iD8DBQFTlGUsGpcgE6m/fboRAvsAAJ9+uXUZ65m6ugesmxrtcftEusWiBACfV9H3
+JcUDQU0g2fnyiaALPJU6uos=
+=2Hdm
 -----END PGP SIGNATURE-----
 
