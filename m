@@ -1,12 +1,10 @@
-Message-ID: <5394652C.3030101@xenomai.org>
-Date: Sun, 08 Jun 2014 15:29:16 +0200
+Message-ID: <5395D9B1.9030305@xenomai.org>
+Date: Mon, 09 Jun 2014 17:58:41 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20140606135912.GJ5765@lukather>
-In-Reply-To: <20140606135912.GJ5765@lukather>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai on Atmel SAMA5D3 with a 3.14 kernel
+Subject: [Xenomai] [GIT PULL] fix null pointer dereference with FCSE
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,31 +13,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: Michael Opdenacker <michael@free-electrons.com>, Thomas Petazzoni <thomas@free-electrons.com>, Boris Brezillon <boris@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, xenomai@xenomai.org, =?UTF-8?B?QW50b2luZSBUw6luYXJ0?= <antoine@free-electrons.com>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+The following changes since commit 692101a5be6afadde30db54b0d8baa4699891231:
 
-On 06/06/2014 03:59 PM, Maxime Ripard wrote:
-> Hi Gilles,
-> 
-> I've been experimenting these days with the i-pipe 3.14 kernel,
-> and current xenomai master branch on the Atmel SAMA5D3 SoC.
+  Merge remote-tracking branch 'gilles/for-ipipe-3.14.0' into ipipe-3.14 (2014-05-29 14:53:58 +0200)
 
-Maybe the cortex A5 has some integrated timers, like A9, which would
-be certainly more interesting to use than a TC. The TC is a 16 bits
-free-running counter which we have to run at a low frequency (as close
-as possible to 1 MHz) to avoid it to wrap too fast.
+are available in the git repository at:
 
-- -- 
+
+  git://git.xenomai.org/ipipe-gch.git for-ipipe-3.14.0
+
+for you to fetch changes up to bbd8f8f171f2af32953e66a02d9f7162291b8970:
+
+  arm/fcse: fix NULL pointer dereference (2014-06-09 17:39:45 +0200)
+
+----------------------------------------------------------------
+Gilles Chanteperdrix (1):
+      arm/fcse: fix NULL pointer dereference
+
+ arch/arm/include/asm/mmu_context.h |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+-- 
                                                                 Gilles.
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-Comment: Using GnuPG with Icedove - http://www.enigmail.net/
-
-iD8DBQFTlGUsGpcgE6m/fboRAvsAAJ9+uXUZ65m6ugesmxrtcftEusWiBACfV9H3
-JcUDQU0g2fnyiaALPJU6uos=
-=2Hdm
------END PGP SIGNATURE-----
 
