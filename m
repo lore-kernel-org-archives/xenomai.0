@@ -1,8 +1,8 @@
-Resent-Message-ID: <20140612074411.GE18962@lukather>
+Resent-Message-ID: <20140612074411.GF18962@lukather>
 Resent-To: xenomai@xenomai.org
-Date: Tue, 10 Jun 2014 11:10:28 +0200
+Date: Tue, 10 Jun 2014 11:40:57 +0200
 From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Message-ID: <20140610091028.GH9791@lukather>
+Message-ID: <20140610094057.GJ9791@lukather>
 References: <20140606135912.GJ5765@lukather> <20140606140031.GK5765@lukather>
  <539322FA.5030004@xenomai.org>
 MIME-Version: 1.0
@@ -61,7 +61,18 @@ On Sat, Jun 07, 2014 at 04:34:34PM +0200, Gilles Chanteperdrix wrote:
 > > 
 > Does __ipipe_tsc_update get called in Linux timer interrupt?
 
-Yes, it does.
+Here is what's happening: http://pastebin.com/m2mz66pU
+
+You can see that at line 35, the timer interrupt (a spurious one?)
+gets called, and calls __ipipe_tsc_update. At that point,
+ipipe_tsc_value seems to be NULL, and hence __ipipe_tsc_update
+returns.
+
+The thing is, the timer interrupt doesn't seem to be called again. The
+fact that it was actually called once makes me think that it's rather
+the timer clock that is not running... I will dig into it.
+
+Maxime
 
 -- 
 Maxime Ripard, Free Electrons
@@ -73,4 +84,4 @@ Name: signature.asc
 Type: application/pgp-signature
 Size: 819 bytes
 Desc: Digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140610/74ed7cfb/attachment.sig>
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140610/74ddf006/attachment.sig>
