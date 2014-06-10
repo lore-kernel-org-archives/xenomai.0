@@ -1,9 +1,12 @@
+Message-ID: <53976142.2070005@xenomai.org>
+Date: Tue, 10 Jun 2014 21:49:22 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Tue, 10 Jun 2014 18:02:06 +0430
-Message-ID: <CAKKWdtcgvyU+1MDS=aqKWaYeg6EK2ZexKvds2mHFzqhEv5E-Vw@mail.gmail.com>
-From: ali hagigat <hagigatali@gmail.com>
+References: <CAKKWdtcgvyU+1MDS=aqKWaYeg6EK2ZexKvds2mHFzqhEv5E-Vw@mail.gmail.com>
+In-Reply-To: <CAKKWdtcgvyU+1MDS=aqKWaYeg6EK2ZexKvds2mHFzqhEv5E-Vw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] creating a user space task by RTDM library
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] creating a user space task by RTDM library
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,9 +15,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: ali hagigat <hagigatali@gmail.com>, xenomai <xenomai@xenomai.org>
 
-Regarding xenomai 2.6.3, how rtdm_task_init() can be used in user
-space? and the types like rtdm_task_t. Compiling with rtdm/rtdm.h or
-rtdm/rtdm_driver.h produces errors.
+On 06/10/2014 03:32 PM, ali hagigat wrote:
+> Regarding xenomai 2.6.3, how rtdm_task_init() can be used in user
+> space? and the types like rtdm_task_t. Compiling with rtdm/rtdm.h or
+> rtdm/rtdm_driver.h produces errors.
+
+RTDM is a kernel-space only skin.
+
+
+-- 
+                                                                Gilles.
 
