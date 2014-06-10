@@ -1,10 +1,13 @@
-Message-ID: <5396CD6D.8060806@axelsw.it>
-Date: Tue, 10 Jun 2014 11:18:37 +0200
-From: Marco Tessore <marco.tessore@axelsw.it>
+Message-ID: <5396D469.7060701@xenomai.org>
+Date: Tue, 10 Jun 2014 11:48:25 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+References: <20140606135912.GJ5765@lukather> <20140606140031.GK5765@lukather>
+ <539322FA.5030004@xenomai.org> <20140610094057.GJ9791@lukather>
+In-Reply-To: <20140610094057.GJ9791@lukather>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Gdb freezes when stepping through rt_task_spawn.
+Subject: Re: [Xenomai] Xenomai on Atmel SAMA5D3 with a 3.14 kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,17 +16,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Maxime Ripard <maxime.ripard@free-electrons.com>
+Cc: Michael Opdenacker <michael@free-electrons.com>, Thomas Petazzoni <thomas@free-electrons.com>, Boris Brezillon <boris@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, xenomai@xenomai.org, =?UTF-8?B?QW50b2luZSBUw6luYXJ0?= <antoine@free-electrons.com>
 
-Hello,
-I have a problem, you've probably already dealt with in the past:
-when I debug with gdb / gdbserver, if I execute step by step while I 
-invoke the call rt_task_spawn, gdb freezes with no chance of recovery.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Since I have seen that you have already faced the problem a few years 
-ago, I was wondering if you had found a solution.
+On 06/10/2014 11:40 AM, Maxime Ripard wrote:
+> On Sat, Jun 07, 2014 at 04:34:34PM +0200, Gilles Chanteperdrix
+> wrote:
+>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+>> 
+>> On 06/06/2014 04:00 PM, Maxime Ripard wrote:
+>>> On Fri, Jun 06, 2014 at 03:59:12PM +0200, Maxime Ripard wrote:
+>>>> Hi Gilles,
+>>>> 
+>>>> I've been experimenting these days with the i-pipe 3.14
+>>>> kernel, and current xenomai master branch on the Atmel
+>>>> SAMA5D3 SoC.
+>>>> 
+>>>> There's a few issues there, the first one being that 
+>>>> at91_ipipe_early_init crashes because of a NULL pointer 
+>>>> dereference. This is due to the clk_get_rate call on the
+>>>> clock returned by clk_get(NULL, "mck").
+>>>> 
+>>>> This clk_get call cannot since 3.14 because the clock code
+>>>> has been rewritten, and you can't use clkdev anymore.
+>>>> 
+>>>> This is quite simple to fix, and after actually fixing it,
+>>>> you get a more interesting issue: either the timers or the 
+>>>> interrupts don't work at all.
+>>>> 
+>>>> The first symptom is that it get stuck at the delay loop 
+>>>> calibration. Setting the loops per jiffy in the command line 
+>>>> make the boot go further, until the switch to the ipipe_tsc 
+>>>> clocksource. This actually makes me think that it's more the
+>>>>  timers that are broken rather than the interrupts. Changing
+>>>> the timer counter block doesn't solve anything.
+>>>> 
+>>>> Do you have an idea of what could be going on?
+>>> 
+>>> 
+>>> Actually, the boot seem just to be *much* slower, so maybe the
+>>>  timers are working after all, but it's just yet another issue
+>>> with the clocks.
+>>> 
+>> Does __ipipe_tsc_update get called in Linux timer interrupt?
+> 
+> Here is what's happening: http://pastebin.com/m2mz66pU
+> 
+> You can see that at line 35, the timer interrupt (a spurious one?) 
+> gets called, and calls __ipipe_tsc_update. At that point, 
+> ipipe_tsc_value seems to be NULL, and hence __ipipe_tsc_update 
+> returns.
+> 
+> The thing is, the timer interrupt doesn't seem to be called again.
+> The fact that it was actually called once makes me think that it's
+> rather the timer clock that is not running... I will dig into it.
 
-kind regards
-Marco Tessore
+If you have CONFIG_NO_HZ enabled, try to turn it off.
 
+
+- -- 
+                                                                Gilles.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+Comment: Using GnuPG with Icedove - http://www.enigmail.net/
+
+iD8DBQFTltRpGpcgE6m/fboRAosdAKCakVEIzo8EFCOdul4jF4T15U6mFgCfe/0J
+gRIPB/0xWXk4/UiUyrn10N8=
+=HcDt
+-----END PGP SIGNATURE-----
 
