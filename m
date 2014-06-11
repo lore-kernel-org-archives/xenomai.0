@@ -1,12 +1,12 @@
-Message-ID: <5397644B.9060806@xenomai.org>
-Date: Tue, 10 Jun 2014 22:02:19 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <5396CD6D.8060806@axelsw.it>
-In-Reply-To: <5396CD6D.8060806@axelsw.it>
+In-Reply-To: <53976142.2070005@xenomai.org>
+References: <CAKKWdtcgvyU+1MDS=aqKWaYeg6EK2ZexKvds2mHFzqhEv5E-Vw@mail.gmail.com>
+ <53976142.2070005@xenomai.org>
+Date: Wed, 11 Jun 2014 12:55:50 +0430
+Message-ID: <CAKKWdtepxXzy+xy-hxJV8bXBsa=QC9Z_9YsDr7Y1z4nDN+6X0A@mail.gmail.com>
+From: ali hagigat <hagigatali@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Gdb freezes when stepping through rt_task_spawn.
+Subject: Re: [Xenomai] creating a user space task by RTDM library
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,21 +15,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marco Tessore <marco.tessore@axelsw.it>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 06/10/2014 11:18 AM, Marco Tessore wrote:
-> Hello,
-> I have a problem, you've probably already dealt with in the past:
-> when I debug with gdb / gdbserver, if I execute step by step while I 
-> invoke the call rt_task_spawn, gdb freezes with no chance of recovery.
-> 
-> Since I have seen that you have already faced the problem a few years 
-> ago, I was wondering if you had found a solution.
+On 6/11/14, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+> On 06/10/2014 03:32 PM, ali hagigat wrote:
+>> Regarding xenomai 2.6.3, how rtdm_task_init() can be used in user
+>> space? and the types like rtdm_task_t. Compiling with rtdm/rtdm.h or
+>> rtdm/rtdm_driver.h produces errors.
+>
+> RTDM is a kernel-space only skin.
+>
+>
+> --
+>                                                                 Gilles.
+>
 
-Did you try xenomai 2.6 git? An issue was fixed very recently with
-regard to gdb (it is actually the latest commit on this branch).
-
-
--- 
-                                                                Gilles.
+The RTDM documentation and the code comments report that
+rtdm_task_init() can be used in user space.
 
