@@ -1,14 +1,16 @@
-Message-ID: <537B4FF6.7090708@xenomai.org>
-Date: Tue, 20 May 2014 14:52:06 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5398A61D.3030204@xenomai.org>
+Date: Wed, 11 Jun 2014 20:55:25 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <efafe9af.0000172c.00000011@dmerrill_win764.PERF.PERFORMANCESOFTWARE>	<52558563.2010408@xenomai.org>	<8fed609f.0000172c.00000017@dmerrill_win764.PERF.PERFORMANCESOFTWARE>	<525587A2.5000507@xenomai.org>
- <73cb019f.0000172c.0000001c@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
- <8a1928a6.00000970.00000009@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
-In-Reply-To: <8a1928a6.00000970.00000009@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <20140606135912.GJ5765@lukather> <20140606140031.GK5765@lukather>
+ <539322FA.5030004@xenomai.org> <20140610094057.GJ9791@lukather>
+ <5396D469.7060701@xenomai.org> <20140610095422.GK9791@lukather>
+ <5396D780.4020704@xenomai.org> <20140611092532.GE4254@lukather>
+ <53989CEF.3080205@xenomai.org>
+In-Reply-To: <53989CEF.3080205@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] t_suspend and XNBREAK
+Subject: Re: [Xenomai] Xenomai on Atmel SAMA5D3 with a 3.14 kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,78 +19,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Daniel Merrill <daniel.merrill@psware.com>, xenomai@xenomai.org
+To: Maxime Ripard <maxime.ripard@free-electrons.com>
+Cc: Michael Opdenacker <michael@free-electrons.com>, Thomas Petazzoni <thomas@free-electrons.com>, Boris Brezillon <boris@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, xenomai@xenomai.org, =?UTF-8?B?QW50b2luZSBUw6luYXJ0?= <antoine@free-electrons.com>
 
-On 10/16/2013 08:30 PM, Daniel Merrill wrote:
->
->
-> -----Original Message-----
-> From: xenomai-bounces@xenomai.org [mailto:xenomai-bounces@xenomai.org] On
-> Behalf Of Daniel Merrill
-> Sent: Wednesday, October 09, 2013 10:02 AM
-> To: 'Philippe Gerum'; xenomai@xenomai.org
-> Subject: Re: [Xenomai] t_suspend and XNBREAK
->
-> On 10/09/2013 06:37 PM, Daniel Merrill wrote:
->> On 10/09/2013 06:29 PM, Daniel Merrill wrote:
->>> All,
->>>
->>>
->>>
->>> I'm hoping maybe someone can shed a little more light on the issue we
->>> see occasionally. Occasionally our code using the psos+ skin will
->>> fail a
->>> t_suspend(0) with error code -4, which I found to be EINTR and
->>> appears to be set if the XNBREAK flag is set. After digging around in
->>> the documentation I found some references that seem to indicate that
->>> this means the thread was forcibly unblocked for some reason. Is
->>> there some way to diagnose what caused this (I'm having trouble
->>> pinpointing anything)? It appears when debugging that the thread
->>> never really suspends at all but returns immediately from the call.
->>> Does anyone have some pointers on what might be a good place to start
->>> looking for
->> the culprit? Thanks in advance.
->>
->> Are you tracing the application with GDB?
->>
->> We are using GDB to diagnose problems, can this cause the issue?
->
-> It should not, but one of the reasons for a thread to get forcibly
-> unblocked is to receive a regular linux signal when blocked in primary
-> mode. Since GDB does send quite a few signals to the application when
-> single-stepping/breakpointing the code, this information may be useful to
-> know. In short, GDB/ptracing might magnify a bug in this area.
->
-> If this issue also happens with no ptracing, then some other source kicked
-> the thread out of wait state, and we'd have to instrument the code to know
-> who does this.
->
-> I believe we do see it more often when we are using GDB, I do know of one
-> specific example that happens in gdb but does not happen if we run with no
-> debugger. In that particular case it doesn't matter if we are single
-> stepping or not, with breakpoints or without, the mere fact that gdb is
-> attached seems to activate the issue. We haven't been able to tell if it
-> is gdb itself that is directly causing the issue or if attaching gdb is
-> causing some other side effect (maybe timing related) that then causes the
-> problem to appear.
->
-> So I've been playing around trying to pinpoint the issue, It does appear
-> only to be caused by GDB, which is unfortunate cause it makes it harder
-> for us to find issues with our platform, but we can live with it if we
-> have to. My question now is this. Is there any way to clear the XNBREAK?
-> It seems that once the issue happens no thread will suspend correctly and
-> in our case we have a few that get stuck in an infinite loop since they
-> were depending on the suspend to keep them from doing so. Thanks Again.
->
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-You may want to try out the patch below, fixing a recent issue. Although 
-I could not reproduce the bug you observed (it's most likely very 
-timing-dependent), there are a lot of similarities between both issues:
+On 06/11/2014 08:16 PM, Gilles Chanteperdrix wrote:
+> On 06/11/2014 11:25 AM, Maxime Ripard wrote:
+>> On Tue, Jun 10, 2014 at 12:01:36PM +0200, Gilles Chanteperdrix 
+>> wrote:
+>>> If you compile the kernel without I-pipe and Xenomai support
+>>> and enable the tcb_clksrc clocksource driver does it work?
+> 
+>> Yep, with the exact same config, except for CONFIG_IPIPE and 
+>> CONFIG_XENOMAI being disabled, it boots fine.
+> 
+> Read again, I am not insterested in exactly the same config, I am 
+> interested in the a config with tcb_clksrc clocksource, which is 
+> disabled by CONFIG_IPIPE. Only if you enable this clocksource do
+> you get to use the atmel_tclib code.
 
-http://git.xenomai.org/xenomai-2.6.git/commit/?id=589882956280d5cb4fdc181a5fcd5ae1188ab6ed
+The corresponding config option is:
+CONFIG_ATMEL_TCB_CLKSRC
 
-HTH,
+- -- 
+                                                                Gilles.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+Comment: Using GnuPG with Icedove - http://www.enigmail.net/
 
--- 
-Philippe.
+iD8DBQFTmKYdGpcgE6m/fboRAjAeAJ9TgL0dxVm0pUl+jOCber1VGy5K7QCdFTRS
+L55laOAlOFDmhzGeYx7o5mw=
+=1JO0
+-----END PGP SIGNATURE-----
 
