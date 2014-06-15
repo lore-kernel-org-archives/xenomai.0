@@ -1,13 +1,13 @@
-Message-ID: <539DA336.5040204@xenomai.org>
-Date: Sun, 15 Jun 2014 15:44:22 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <CAKKWdtcgvyU+1MDS=aqKWaYeg6EK2ZexKvds2mHFzqhEv5E-Vw@mail.gmail.com>	<53976142.2070005@xenomai.org>	<CAKKWdtepxXzy+xy-hxJV8bXBsa=QC9Z_9YsDr7Y1z4nDN+6X0A@mail.gmail.com>	<53989D82.3090903@xenomai.org>
- <CAKKWdtfp5XzXHX1MsuqxZH_or_+4yxiTp0s3zc0r+oqHAjw9GA@mail.gmail.com>
-In-Reply-To: <CAKKWdtfp5XzXHX1MsuqxZH_or_+4yxiTp0s3zc0r+oqHAjw9GA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] creating a user space task by RTDM library
+Content-Type: text/plain; charset=windows-1252
+Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.2\))
+From: Konstantin Schauwecker <hi@konstantin-schauwecker.de>
+In-Reply-To: <539D96FB.5040300@xenomai.org>
+Date: Sun, 15 Jun 2014 16:31:51 +0200
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <647F5D52-A9A5-4B6E-B608-E143A94BFBB0@konstantin-schauwecker.de>
+References: <539CCDDC.7000809@konstantin-schauwecker.de>
+ <539D96FB.5040300@xenomai.org>
+Subject: Re: [Xenomai] Missing patch for Zynq
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,53 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 06/15/2014 03:42 PM, ali hagigat wrote:
-> On 6/11/14, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
->> On 06/11/2014 10:25 AM, ali hagigat wrote:
->>> On 6/11/14, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>> wrote:
->>>> On 06/10/2014 03:32 PM, ali hagigat wrote:
->>>>> Regarding xenomai 2.6.3, how rtdm_task_init() can be used in user
->>>>> space? and the types like rtdm_task_t. Compiling with rtdm/rtdm.h or
->>>>> rtdm/rtdm_driver.h produces errors.
->>>>
->>>> RTDM is a kernel-space only skin.
->>>>
->>>>
->>>> --
->>>>                                                                 Gilles.
->>>>
->>>
->>> The RTDM documentation and the code comments report that
->>> rtdm_task_init() can be used in user space.
->>>
->> The documentation says that a "User space task" is a valid context to
->> call rtdm_task_init, but this means that a user-space task, currently
->> executing kernel code, is a valid context, not that the function may be
->> called from user-space. Really, RTDM is an API for writing drivers
->> residing in kernel-space, it makes no sense to use it in user-space.
->>
->> --
->>                                                                 Gilles.
->>
-> 
-> How a user-space task can execute kernel code? I wonder if you could
-> write a short example. Thank you. (besides when a kernel code executes
-> the context is not user any more, the context is kernel)
-> 
+Yes, that is what I was referring to. The mentioned patch=20
+ipipe-core-3.8.13-arm-1.patch
+does not exist in the xenomai 2.6.3 release, or in earlier releases. =
+There is a different patch, labelled
+ipipe-core-3.8.13-arm-3.patch
+which does however not match the Xilinx kernel.
 
-Every time a user-space task executes a syscall, some kernel-code is
-executed on behalf of the user task. From Xenomai point of view, this
-makes a difference whether the task is a kernel-space task or a
-user-space task. For instance:
-- current is valid
-- xnshadow_thread(current) is non NULL.
+I think its ok now. I manually merged the changes that couldn=92t be =
+applied automatically, which was a bit of work. It does compile and I =
+hope that I didn=92t make a mistake.
 
-This is the last answer I give to this stupid thread.
+On 15.06.2014, at 14:52, Gilles Chanteperdrix =
+<gilles.chanteperdrix@xenomai.org> wrote:
 
--- 
-                                                                Gilles.
+> On 06/15/2014 12:34 AM, Konstantin Schauwecker wrote:
+>> Hi all,
+>>=20
+>> I was trying to get xenomai running on my zynq board. Unfortunately=20=
+
+>> there seems to be a patch missing in the current 2.6.3 release.=20
+>=20
+> See:
+> http://www.wiki.xilinx.com/Xenomai+for+Zynq
+>=20
+>=20
+> --=20
+>                                                                Gilles.
+
 
