@@ -1,10 +1,12 @@
-Message-ID: <539CCDDC.7000809@konstantin-schauwecker.de>
-Date: Sun, 15 Jun 2014 00:34:04 +0200
-From: Konstantin Schauwecker <hi@konstantin-schauwecker.de>
+Message-ID: <539D96FB.5040300@xenomai.org>
+Date: Sun, 15 Jun 2014 14:52:11 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <539CCDDC.7000809@konstantin-schauwecker.de>
+In-Reply-To: <539CCDDC.7000809@konstantin-schauwecker.de>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Missing patch for Zynq
+Subject: Re: [Xenomai] Missing patch for Zynq
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,24 +15,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Konstantin Schauwecker <hi@konstantin-schauwecker.de>, xenomai@xenomai.org
 
-Hi all,
+On 06/15/2014 12:34 AM, Konstantin Schauwecker wrote:
+> Hi all,
+> 
+> I was trying to get xenomai running on my zynq board. Unfortunately 
+> there seems to be a patch missing in the current 2.6.3 release. 
 
-I was trying to get xenomai running on my zynq board. Unfortunately 
-there seems to be a patch missing in the current 2.6.3 release. 
-According to the installation instructions, I should apply patch
+See:
+http://www.wiki.xilinx.com/Xenomai+for+Zynq
 
-pipe-core-3.8.13-arm-1.patch
 
-Unfortunately, that patch is nowhere to be found. There's a patch called 
-ipipe-core-3.8.13-arm-3.patch, but that fails on several files.
-
-Older versions of xenomai don't seem to support zynq, so I'm kind of 
-stuck. I tried googling for that file, but it seems to be non-existent.
-
-Does anybode have an idea where I could find it?
-
-Thanks,
-Konstantin
+-- 
+                                                                Gilles.
 
