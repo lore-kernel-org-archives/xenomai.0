@@ -1,14 +1,13 @@
-Message-ID: <539DAFDD.9050808@xenomai.org>
-Date: Sun, 15 Jun 2014 16:38:21 +0200
+Message-ID: <539F3F60.5040304@xenomai.org>
+Date: Mon, 16 Jun 2014 21:02:56 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <539CCDDC.7000809@konstantin-schauwecker.de>
- <539D96FB.5040300@xenomai.org>
- <647F5D52-A9A5-4B6E-B608-E143A94BFBB0@konstantin-schauwecker.de>
-In-Reply-To: <647F5D52-A9A5-4B6E-B608-E143A94BFBB0@konstantin-schauwecker.de>
+References: <E1WwZye-0002zC-2B@sd-51317.dedibox.fr>
+In-Reply-To: <E1WwZye-0002zC-2B@sd-51317.dedibox.fr>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Missing patch for Zynq
+Subject: Re: [Xenomai] [Xenomai-git] Philippe Gerum : cobalt/posix: drop
+ pthread_make_periodic_np/ wait_period_np services
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,18 +16,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Konstantin Schauwecker <hi@konstantin-schauwecker.de>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 06/15/2014 04:31 PM, Konstantin Schauwecker wrote:
-> Yes, that is what I was referring to. The mentioned patch 
-> ipipe-core-3.8.13-arm-1.patch
-> does not exist in the xenomai 2.6.3 release, or in earlier releases. There is a different patch, labelled
-> ipipe-core-3.8.13-arm-3.patch
-> which does however not match the Xilinx kernel.
+On 06/16/2014 06:41 PM, git repository hosting wrote:
+> Module: xenomai-forge
+> Branch: next
+> Commit: a4a6ff9a9c9614d3e8ac860386fa3b168c649af0
+> URL:    http://git.xenomai.org/?p=xenomai-forge.git;a=commit;h=a4a6ff9a9c9614d3e8ac860386fa3b168c649af0
+> 
+> Author: Philippe Gerum <rpm@xenomai.org>
+> Date:   Mon Jun 16 18:39:44 2014 +0200
+> 
+> cobalt/posix: drop pthread_make_periodic_np/wait_period_np services
+> 
+> We have no more in-tree users of these calls.
+> 
+> With the introduction of services to support real-time signals, those
+> two non-portable calls have become redundant. Instead, Cobalt-based
+> applications should create a periodic timer using the timer_create()
+> call, and wait for release points via sigwaitinfo(), checking for
+> overruns by looking at the siginfo.si_overrun field.
+> 
+> Alternatively, applications may include a timer source in a
+> synchronous multiplexing operation, by passing a file descriptor
+> returned by the timerfd() service to a select() call.
 
-ipipe-core-3.8.13-arm-1.patch did not match the Xilinx kernel either, it
-is a patch for mainline Linux. That is what the -pre and -post patches
-are there for.
+Actually, read is more direct than select + read, and it allows to get
+the count of overruns too.
 
 
 -- 
