@@ -1,12 +1,11 @@
-Message-ID: <537B015E.5070107@xenomai.org>
-Date: Tue, 20 May 2014 09:16:46 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <1403028924.23153.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+Date: Tue, 17 Jun 2014 19:15:24 +0100
+From: Matthias Schneider <ma30002000@yahoo.de>
 MIME-Version: 1.0
-References: <537A5F9B.4040308@xenomai.org>
-In-Reply-To: <537A5F9B.4040308@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] timer drift
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] I2C RTDM driver
+Reply-To: Matthias Schneider <ma30002000@yahoo.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,31 +14,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/19/2014 09:46 PM, Gilles Chanteperdrix wrote:
-> 
-> Hi,
-> 
-> when running the latency test modified to use timerfds on forge, I
-> noticed that we have a clock vs timer drift issue (on forge, not on 2.6,
-> and only since recent changes).
-> 
-> What the latency test does is create a periodic timer, and when waking
-> up at each tick, compare the actual wake-up time, with the expected
-> wake-up time. The problem is that, on the timer side, the computation is
-> more precise, because it is the sum of short durations computed with
-> xnarch_llmulshft, whereas on the clock side, we pass larger and larger
-> values to xnarch_llmulshft, so at some point, the error due to the
-> approximation begins to be within the range of observable differences (a
-> few micro-seconds after hours of tests). I have verified that replacing
-> xnarch_llmulshft with xnarch_nodiv_llimd avoids the issue. And I believe
-> mainline does not have the same issue because they always pass small
-> durations to the multiplication + shift operation.
+Hi all,
 
-The question being: what do we do to avoid this issue?
+in the spirit of
 
+http://www.xenomai.org/pipermail/xenomai/2006-November/006455.html
 
--- 
-                                                                Gilles.
+I would like to contribute my I2C RTDM driver to xenomai and ask for a revi=
+ew.
+It is based on the Linux 3.14 i2c framework, porting the omap i2c driver (t=
+ested on
+beaglebone black).
 
+The following points mentioned in the above post have been addressed:
+
+* usage of existing linux kernel structures when available
+* combined address+request command
+
+* ahead-of-time allocation via special IOCTL
+
+The framework itself is contained in a single file "rti2c-dev.c", while mod=
+ifications to=A0
+drivers when porting to rtdm should be minimal. A readme file is included i=
+n the patch as always,
+
+thanks in advance for your comments,
+
+Matthias Schneider
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: 0001-Initial-i2c-commit.patch.gz
+Type: application/x-gzip
+Size: 20005 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140617/b68ffcf=
+0/attachment.bin>
