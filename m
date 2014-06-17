@@ -1,16 +1,14 @@
-Message-ID: <539FEFF0.6020107@xenomai.org>
-Date: Tue, 17 Jun 2014 09:36:16 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <539FFD87.2030302@xenomai.org>
+Date: Tue, 17 Jun 2014 10:34:15 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <E1WwZye-0002zC-2B@sd-51317.dedibox.fr>
- <539F3F60.5040304@xenomai.org> <539F4283.8020602@xenomai.org>
- <539F5E35.8080706@xenomai.org> <539FED01.2040609@xenomai.org>
- <539FED92.5020604@xenomai.org>
-In-Reply-To: <539FED92.5020604@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Philippe Gerum : cobalt/posix: drop
- pthread_make_periodic_np/ wait_period_np services
+References: <539CCDDC.7000809@konstantin-schauwecker.de>
+ <539D96FB.5040300@xenomai.org>
+ <647F5D52-A9A5-4B6E-B608-E143A94BFBB0@konstantin-schauwecker.de>
+In-Reply-To: <647F5D52-A9A5-4B6E-B608-E143A94BFBB0@konstantin-schauwecker.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Missing patch for Zynq
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,80 +17,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
+To: Konstantin Schauwecker <hi@konstantin-schauwecker.de>, xenomai@xenomai.org
 
-On 06/17/2014 09:26 AM, Gilles Chanteperdrix wrote:
-> On 06/17/2014 09:23 AM, Philippe Gerum wrote:
->> On 06/16/2014 11:14 PM, Gilles Chanteperdrix wrote:
->>> On 06/16/2014 09:16 PM, Philippe Gerum wrote:
->>>> On 06/16/2014 09:02 PM, Gilles Chanteperdrix wrote:
->>>>> On 06/16/2014 06:41 PM, git repository hosting wrote:
->>>>>> Module: xenomai-forge
->>>>>> Branch: next
->>>>>> Commit: a4a6ff9a9c9614d3e8ac860386fa3b168c649af0
->>>>>> URL:    http://git.xenomai.org/?p=xenomai-forge.git;a=commit;h=a4a6ff9a9c9614d3e8ac860386fa3b168c649af0
->>>>>>
->>>>>> Author: Philippe Gerum <rpm@xenomai.org>
->>>>>> Date:   Mon Jun 16 18:39:44 2014 +0200
->>>>>>
->>>>>> cobalt/posix: drop pthread_make_periodic_np/wait_period_np services
->>>>>>
->>>>>> We have no more in-tree users of these calls.
->>>>>>
->>>>>> With the introduction of services to support real-time signals, those
->>>>>> two non-portable calls have become redundant. Instead, Cobalt-based
->>>>>> applications should create a periodic timer using the timer_create()
->>>>>> call, and wait for release points via sigwaitinfo(), checking for
->>>>>> overruns by looking at the siginfo.si_overrun field.
->>>>>>
->>>>>> Alternatively, applications may include a timer source in a
->>>>>> synchronous multiplexing operation, by passing a file descriptor
->>>>>> returned by the timerfd() service to a select() call.
->>>>>
->>>>> Actually, read is more direct than select + read, and it allows to get
->>>>> the count of overruns too.
->>>>>
->>>>>
->>>>
->>>> As mentioned in the log, the illustration given is about synchronous
->>>> multiplexing, e.g. waiting for a release point in a timeline _and_ other
->>>> I/O event at the same time, not about single-sourced wait on a timer.
->>>> Otherwise you would just don't care a dime about using select(), I guess.
->>>>
->>> timerfd_create / read is a strict replacement for
->>> pthread_make_periodic_np/pthread_wait_period_np. Adding a call to select
->>> simply adds some overhead that was not here in the first place. It
->>> should be made clear in the documentation that calling select is not
->>> necessary, otherwise users reading the documentation may assume that
->>> they have to call select, and suddenly observe a larger latency and at
->>> best complain, or at worst decide to stay with the old API.
->>>
->>
->> Which documentation mentioning select + read are you referring to?
->>
-> +- `pthread_make_periodic_np()` and `pthread_wait_np()` have been
-> +removed from the API.
-> +
-> +.Rationale
-> +**********************************************************************
-> +With the introduction of services to support
-> +<<real-time-signals,real-time signals>>, those two non-portable calls
-> +have become redundant. Instead, Cobalt-based applications should
-> +create a periodic timer using the `timer_create()` call, and wait for
-> +release points via `sigwaitinfo()`, checking for overruns by looking
-> +at the `siginfo.si_overrun` field. Alternatively, applications may
-> +include a timer source in a synchronous multiplexing operation, by
-> +passing a file descriptor returned by the `timerfd()` service to a
-> +`select()` call.
-> +**********************************************************************
->
->
+On 06/15/2014 04:31 PM, Konstantin Schauwecker wrote:
+> Yes, that is what I was referring to. The mentioned patch 
+> ipipe-core-3.8.13-arm-1.patch
+> does not exist in the xenomai 2.6.3 release, or in earlier releases. There is a different patch, labelled
+> ipipe-core-3.8.13-arm-3.patch
+> which does however not match the Xilinx kernel.
+> 
+> I think its ok now. I manually merged the changes that couldn’t be applied automatically, which was a bit of work. It does compile and I hope that I didn’t make a mistake.
 
-There is no mention of the timerfd+read combo in this excerpt, what is 
-mentioned is including a timerfd in synchronous multiplexing of multiple 
-event sources. You seem to choke on "Alternatively", which is 
-misleading, in should read "In addition" or something along. I'll fix this.
+The I-pipe patches you can find in the Adeos project download area or 
+in Xenomai sources are patches for the mainline kernel. For people who 
+do not work with the mainline kernel, but with vendor forks, these 
+patches do not apply. You get conflicts because the I-pipe patch and 
+the vendor fork modified the same files.
+
+Releasing an I-pipe patch adapted to each of these vendor forks would 
+mean that we would need to regenerate these patches when the I-pipe 
+patch evolves, or that the patches for vendor forks would bitrot 
+rapidly.
+
+Instead, we use pre and post patches. The -pre patch restores the 
+conflicting files to the state of the mainline kernel, so that the 
+I-pipe patch applies. The -post patch merges correctly the mainline 
+changes with the vendor fork changes, and adds the support specific to 
+the vendor fork (in the case of Zynq, that would be the support for the 
+Zynq processor).
+
+The advantage of -pre and -post patches is that in theory, we can 
+update the I-pipe patch without changing them.
+
+Anyway, the main problem with the installation procedure documented in 
+the ksrc/arch/arm/README file is not the patch name, the problem is 
+that the commit given in the documentation 
+(6a0bedad60e2bca8d9b50bf81b9895e29e31a6d7) is based on a 3.8.0 kernel, 
+whereas the I-pipe patch is for Linux 3.8.13. However, the following 
+procedure seems to work without conflicts:
+
+git clone git://github.com/Xilinx/linux-xlnx.git
+cd linux-xlnx
+git checkout 6a0bedad60e2bca8d9b50bf81b9895e29e31a6d7
+git remote add stable git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+git fetch stable
+git merge v3.8.13 
+(accept the merge commit)
+patch -p1 < ../xenomai-2.6.3/ksrc/arch/arm/patches/zynq/ipipe-core-3.8-zynq-pre.patch
+patch -p1 < ../xenomai-2.6.3/ksrc/arch/arm/patches/ipipe-core-3.8.13-arm-3.patch 
+patch -p1 < ../xenomai-2.6.3/ksrc/arch/arm/patches/zynq/ipipe-core-3.8-zynq-post.patch
+
 
 -- 
-Philippe.
+                                                                Gilles.
 
