@@ -1,14 +1,12 @@
-Message-ID: <539FFD87.2030302@xenomai.org>
-Date: Tue, 17 Jun 2014 10:34:15 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Jean Rodriguez" <j.rodriguez@caustier.com>
+Date: Tue, 17 Jun 2014 17:00:19 +0200
+Message-ID: <006d01cf8a3c$dee76050$9cb620f0$@caustier.com>
 MIME-Version: 1.0
-References: <539CCDDC.7000809@konstantin-schauwecker.de>
- <539D96FB.5040300@xenomai.org>
- <647F5D52-A9A5-4B6E-B608-E143A94BFBB0@konstantin-schauwecker.de>
-In-Reply-To: <647F5D52-A9A5-4B6E-B608-E143A94BFBB0@konstantin-schauwecker.de>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Missing patch for Zynq
+Content-Language: fr
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Some Information About compilation Xenomai and RT Patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,57 +15,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Konstantin Schauwecker <hi@konstantin-schauwecker.de>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 06/15/2014 04:31 PM, Konstantin Schauwecker wrote:
-> Yes, that is what I was referring to. The mentioned patch 
-> ipipe-core-3.8.13-arm-1.patch
-> does not exist in the xenomai 2.6.3 release, or in earlier releases. There is a different patch, labelled
-> ipipe-core-3.8.13-arm-3.patch
-> which does however not match the Xilinx kernel.
-> 
-> I think its ok now. I manually merged the changes that couldn’t be applied automatically, which was a bit of work. It does compile and I hope that I didn’t make a mistake.
+Hi guys,
 
-The I-pipe patches you can find in the Adeos project download area or 
-in Xenomai sources are patches for the mainline kernel. For people who 
-do not work with the mainline kernel, but with vendor forks, these 
-patches do not apply. You get conflicts because the I-pipe patch and 
-the vendor fork modified the same files.
+I=92m trying to compile kernel 3.8 with the last xenomai source.
 
-Releasing an I-pipe patch adapted to each of these vendor forks would 
-mean that we would need to regenerate these patches when the I-pipe 
-patch evolves, or that the patches for vendor forks would bitrot 
-rapidly.
+I want to know some precisions about preempt option. 
 
-Instead, we use pre and post patches. The -pre patch restores the 
-conflicting files to the state of the mainline kernel, so that the 
-I-pipe patch applies. The -post patch merges correctly the mainline 
-changes with the vendor fork changes, and adds the support specific to 
-the vendor fork (in the case of Zynq, that would be the support for the 
-Zynq processor).
+Is it useless to patch the kernel with with Xenomai and also with RT patch
+from kernel.org?
 
-The advantage of -pre and -post patches is that in theory, we can 
-update the I-pipe patch without changing them.
+Because With RT patch I can choose on menuconfig  Preemption Model 5 choice=
+s
+(No preempt, Voluntary and low latency , preemptible kernel or fully
+preemptivekernel)
 
-Anyway, the main problem with the installation procedure documented in 
-the ksrc/arch/arm/README file is not the patch name, the problem is 
-that the commit given in the documentation 
-(6a0bedad60e2bca8d9b50bf81b9895e29e31a6d7) is based on a 3.8.0 kernel, 
-whereas the I-pipe patch is for Linux 3.8.13. However, the following 
-procedure seems to work without conflicts:
+But if I patch only with xenomai I have just 3 choices of preemptive (No
+preempt, Voluntary and low latency)
 
-git clone git://github.com/Xilinx/linux-xlnx.git
-cd linux-xlnx
-git checkout 6a0bedad60e2bca8d9b50bf81b9895e29e31a6d7
-git remote add stable git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
-git fetch stable
-git merge v3.8.13 
-(accept the merge commit)
-patch -p1 < ../xenomai-2.6.3/ksrc/arch/arm/patches/zynq/ipipe-core-3.8-zynq-pre.patch
-patch -p1 < ../xenomai-2.6.3/ksrc/arch/arm/patches/ipipe-core-3.8.13-arm-3.patch 
-patch -p1 < ../xenomai-2.6.3/ksrc/arch/arm/patches/zynq/ipipe-core-3.8-zynq-post.patch
+If patch first with RT and after xenomai I have a lot of Hunk message
+(warning and error) but if  I Patch first with xenomai and after RT -> no
+problem
+
+ 
+
+So my question are they compatible together? Or perhaps choosing fully
+preemptive will turn my system unstable.
+
+ 
+
+My goal is to catch Interruption with a small latency (50-10 =B5s) with a l=
+ow
+processor charge
+
+Board  Arbor card
+<http://www.arbor.com.tw/product/product.aspx?Product_Name=3DEmETX-i2900&os=
+_id
+=3D1&version=3D+Default> EmETX-i2900  with ATOM N450
+
+ 
+
+ 
+
+Thanks for your future response
+
+ 
+
+ 
+
+Kind regards,
+
+ 
+
+Jean Rodriguez
+
+Ing=E9nieur R&D Informatique
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
 
 
--- 
-                                                                Gilles.
 
+---
+Ce courrier =E9lectronique ne contient aucun virus ou logiciel malveillant =
+parce que la protection avast! Antivirus est active.
+http://www.avast.com
