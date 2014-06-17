@@ -1,12 +1,17 @@
-From: "Jean Rodriguez" <j.rodriguez@caustier.com>
-Date: Tue, 17 Jun 2014 17:00:19 +0200
-Message-ID: <006d01cf8a3c$dee76050$9cb620f0$@caustier.com>
+Date: Tue, 17 Jun 2014 19:11:53 +0200
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Message-ID: <20140617171153.GC3665@lukather>
+References: <20140610094057.GJ9791@lukather> <5396D469.7060701@xenomai.org>
+ <20140610095422.GK9791@lukather> <5396D780.4020704@xenomai.org>
+ <20140611092532.GE4254@lukather> <53989CEF.3080205@xenomai.org>
+ <20140612075401.GH4254@lukather> <539966B7.3080900@xenomai.org>
+ <20140612150313.GA3448@lukather> <539B4A85.7030302@xenomai.org>
 MIME-Version: 1.0
-Content-Language: fr
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Some Information About compilation Xenomai and RT Patches
+Content-Disposition: inline
+In-Reply-To: <539B4A85.7030302@xenomai.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai on Atmel SAMA5D3 with a 3.14 kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,76 +20,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Michael Opdenacker <michael@free-electrons.com>, Thomas Petazzoni <thomas@free-electrons.com>, Boris Brezillon <boris@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, xenomai@xenomai.org, Antoine =?iso-8859-1?Q?T=E9nart?= <antoine@free-electrons.com>
 
-Hi guys,
+On Fri, Jun 13, 2014 at 09:01:25PM +0200, Gilles Chanteperdrix wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+> 
+> On 06/12/2014 05:03 PM, Maxime Ripard wrote:
+> > On Thu, Jun 12, 2014 at 10:37:11AM +0200, Gilles Chanteperdrix
+> > wrote:
+> >> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+> >> 
+> >> On 06/12/2014 09:54 AM, Maxime Ripard wrote:
+> >>> On Wed, Jun 11, 2014 at 08:16:15PM +0200, Gilles Chanteperdrix 
+> >>> wrote:
+> >>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+> >>>> 
+> >>>> On 06/11/2014 11:25 AM, Maxime Ripard wrote:
+> >>>>> On Tue, Jun 10, 2014 at 12:01:36PM +0200, Gilles
+> >>>>> Chanteperdrix wrote:
+> >>>>>> If you compile the kernel without I-pipe and Xenomai
+> >>>>>> support and enable the tcb_clksrc clocksource driver does
+> >>>>>> it work?
+> >>>>> 
+> >>>>> Yep, with the exact same config, except for CONFIG_IPIPE
+> >>>>> and CONFIG_XENOMAI being disabled, it boots fine.
+> >>>>> 
+> >>>> Read again, I am not insterested in exactly the same config,
+> >>>> I am interested in the a config with tcb_clksrc clocksource,
+> >>>> which is disabled by CONFIG_IPIPE. Only if you enable this
+> >>>> clocksource do you get to use the atmel_tclib code.
+> >>> 
+> >>> Let me rephrase then. It works with the exact same config, with
+> >>>  CONFIG_IPIPE and CONFIG_XENOMAI disabled, and 
+> >>> CONFIG_ATMEL_TCB_CLKSRC enabled.
+> >> 
+> >> Then I would tend to think that the clocksource is not your
+> >> problem and repeat that you should check everything else in the
+> >> porting guide.
+> > 
+> > Ok. I will.
+> > 
+> Looking rapidly at the code, at least the irq controller and pic
+> muting need fixing.
 
-I=92m trying to compile kernel 3.8 with the last xenomai source.
+Yep, we've been adapting the irq controller code for the AIC5
+yesterday, and it indeed boots up to the userspace.
 
-I want to know some precisions about preempt option. 
+However, during heavy loads, the system just hangs. I'll take a look
+at this and the pic muting next week.
 
-Is it useless to patch the kernel with with Xenomai and also with RT patch
-from kernel.org?
+Maxime 
 
-Because With RT patch I can choose on menuconfig  Preemption Model 5 choice=
-s
-(No preempt, Voluntary and low latency , preemptible kernel or fully
-preemptivekernel)
-
-But if I patch only with xenomai I have just 3 choices of preemptive (No
-preempt, Voluntary and low latency)
-
-If patch first with RT and after xenomai I have a lot of Hunk message
-(warning and error) but if  I Patch first with xenomai and after RT -> no
-problem
-
- 
-
-So my question are they compatible together? Or perhaps choosing fully
-preemptive will turn my system unstable.
-
- 
-
-My goal is to catch Interruption with a small latency (50-10 =B5s) with a l=
-ow
-processor charge
-
-Board  Arbor card
-<http://www.arbor.com.tw/product/product.aspx?Product_Name=3DEmETX-i2900&os=
-_id
-=3D1&version=3D+Default> EmETX-i2900  with ATOM N450
-
- 
-
- 
-
-Thanks for your future response
-
- 
-
- 
-
-Kind regards,
-
- 
-
-Jean Rodriguez
-
-Ing=E9nieur R&D Informatique
-
- 
-
- 
-
- 
-
- 
-
- 
-
-
-
----
-Ce courrier =E9lectronique ne contient aucun virus ou logiciel malveillant =
-parce que la protection avast! Antivirus est active.
-http://www.avast.com
+-- 
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 819 bytes
+Desc: Digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140617/9b010d45/attachment.sig>
