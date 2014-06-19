@@ -1,12 +1,12 @@
-Message-ID: <537C74F2.10207@free.fr>
-Date: Wed, 21 May 2014 11:42:10 +0200
-From: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@free.fr>
+Message-ID: <53A2EE7D.5040205@xenomai.org>
+Date: Thu, 19 Jun 2014 16:06:53 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <537B607E.1090800@free.fr> <537B6293.9010608@xenomai.org>
-In-Reply-To: <537B6293.9010608@xenomai.org>
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] which stable ipipe version and kernel ?
+References: <53A2C543.8060706@geensyde.fr> <53A2DC06.10005@geensyde.fr>
+In-Reply-To: <53A2DC06.10005@geensyde.fr>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Fwd: Periodic high latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,23 +15,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
-
-No sorry, I made a mistake, it is an x86 - 64 bits platform
+To: thierry mallard <thierry.mallard@geensyde.fr>, xenomai@xenomai.org
 
 
-On 20/05/2014 16:11, Philippe Gerum wrote:
-> On 05/20/2014 04:02 PM, St=E9phane ANCELOT wrote:
->> Hi,
->>
->>   I need building a stable 3.x kernel ia64 bits, which ipipe to use ?
->>
+Hi,
+
+On 06/19/2014 02:48 PM, thierry mallard wrote:
 >
-> If you really mean Itanium, then there will be no support for this=20
-> configuration:
+> Hi,
 >
-> http://xenomai.org/index.php/Other_Hardware_Support#ia64
->
+> I have installed xenomai 2.6.3 with a kernel 2.6.38.8 on my dell laptop
+> using adeos-ipipe-2.6.38.8-x86-2.11-03.patch.
 
+If using a more recent kernel is an option, then you may want to 
+consider switching to 3.8+.
+
+> CPU is i5-3230M.
+>
+>
+> When running xeno latency, I get the following results.
+> What can be the cause of the high latencies that I get periodically?
+>
+> RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
+> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat
+> best|--lat worst
+> RTD|     17.600|     42.573|     60.172|       0|     0| 17.600|     60.172
+> RTD|     17.699|     45.817|    379.512|       3|     0| 17.600|    379.512
+
+This could be a SMI issue:
+
+http://www.xenomai.org/documentation/xenomai-2.6/html/TROUBLESHOOTING/#_the_latency_test_shows_high_latencies
+
+As a first step, you should check the boot log for SMI-related messages 
+from Xenomai, such as:
+
+http://www.xenomai.org/documentation/xenomai-2.6/html/TROUBLESHOOTING/#SMI
+
+-- 
+Philippe.
 
