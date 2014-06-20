@@ -1,8 +1,9 @@
 From: "Stoidner, Christoph" <c.stoidner@arvero.de>
-Date: Fri, 20 Jun 2014 09:02:46 +0000
-Message-ID: <b9cc483bf98d4ce2a161d788d7d7abc0@EX132MBOX1B.de2.local>
-References: <006d01cf8a3c$dee76050$9cb620f0$@caustier.com>
-In-Reply-To: <006d01cf8a3c$dee76050$9cb620f0$@caustier.com>
+Date: Fri, 20 Jun 2014 08:50:36 +0000
+Message-ID: <b65281510a414af5a70462b6897b8777@EX132MBOX1B.de2.local>
+References: <006d01cf8a3c$dee76050$9cb620f0$@caustier.com>,
+ <be428e33f9f5482aa36cbc1654ec2db2@EX132MBOX1B.de2.local>
+In-Reply-To: <be428e33f9f5482aa36cbc1654ec2db2@EX132MBOX1B.de2.local>
 Content-Language: de-DE
 Content-Type: text/plain; charset="Windows-1252"
 Content-Transfer-Encoding: quoted-printable
