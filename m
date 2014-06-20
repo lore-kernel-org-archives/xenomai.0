@@ -1,13 +1,10 @@
-Message-ID: <53A3F82D.5090401@xenomai.org>
-Date: Fri, 20 Jun 2014 11:00:29 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <53A3FAB0.4050100@axelsw.it>
+Date: Fri, 20 Jun 2014 11:11:12 +0200
+From: Marco Tessore <marco.tessore@axelsw.it>
 MIME-Version: 1.0
-References: <006d01cf8a3c$dee76050$9cb620f0$@caustier.com>
-In-Reply-To: <006d01cf8a3c$dee76050$9cb620f0$@caustier.com>
-Content-Type: text/plain; charset="windows-1252"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Some Information About compilation Xenomai and RT
-	Patches
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Kernel freezes in __ipipe_sync_stage
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,111 +13,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jean Rodriguez <j.rodriguez@caustier.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 06/17/2014 05:00 PM, Jean Rodriguez wrote:
-> Hi guys,
->
-> I=92m trying to compile kernel 3.8 with the last xenomai source.
->
-> I want to know some precisions about preempt option.
->
-> Is it useless to patch the kernel with with Xenomai and also with RT patch
-> from kernel.org?
+Good morning,
+I am a fairly new programmer to kernel code developement, and recently I 
+deal with the development of applications and device drivers using the 
+Linux / Ipipe / Xenomai platform;
+I have a problem with a kernel installed on devices that we have in 
+production, set up by another programmer.
 
-Combining both makes sense only if your use case involves response time=20
-requirements when running regular linux activities, in addition to the=20
-real-time duties offloaded to the Xenomai co-kernel. In most cases where=20
-a dual kernel solution applies, there is no requirement for full=20
-preemption (-rt) on the regular linux side though.
+Please allow me to describe the problem:
+the problem is essentially that the kernel rarely, but often enough to 
+be a problem,
+seems to freeze at boot, and from what I have seen with a debugger 
+hardware - specifically the Lauterbach T32 -
+it seems that the stalemate is due to the ipipe code.
 
->
-> Because With RT patch I can choose on menuconfig  Preemption Model 5 choi=
-ces
-> (No preempt, Voluntary and low latency , preemptible kernel or fully
-> preemptivekernel)
->
-> But if I patch only with xenomai I have just 3 choices of preemptive (No
-> preempt, Voluntary and low latency)
->
+The kernel is version 2.6.31 for ARM architecture - specifically a 
+Freescale iMX257, ARM926EJ-S - with Xenomai 2.5.6 and a not very recent 
+ipipe patch, of which I did not know the version, i presume the one 
+included in the xenomai archive.
+The stalling seems to occur in the function __ ipipe_sync_stage, in 
+kernel/ipipe/core.c, and can occur at various times during the system boot.
 
-Those choices affect the regular linux kernel behavior only, not=20
-Xenomai. When the Xenomai co-kernel is present, there is no need for=20
-additional preemption models, the linux kernel is inherently preemptible=20
-by Xenomai activities at any time.
+As an example, I describe the stack that I could observe during one of 
+these stall conditions:
 
-> If patch first with RT and after xenomai I have a lot of Hunk message
-> (warning and error) but if  I Patch first with xenomai and after RT -> no
-> problem
->
->
->
-> So my question are they compatible together? Or perhaps choosing fully
-> preemptive will turn my system unstable.
->
-
-Combining both is possible, and such configuration is actually used by=20
-some projects. However, a combo patch merging preempt-rt and the I-pipe=20
-has to be specifically crafted for the target kernel.
-
->
->
-> My goal is to catch Interruption with a small latency (50-10 =B5s) with a=
- low
-> processor charge
-
-Since there is no one-fits-it-all solution, I would suggest to benchmark=20
-each configuration separately for your use case, and see which one best=20
-fits the bill, taking into account the pros and cons of each approach in=20
-the long run for your project.
-
->
-> Board  Arbor card
-> <http://www.arbor.com.tw/product/product.aspx?Product_Name=3DEmETX-i2900&=
-os_id
-> =3D1&version=3D+Default> EmETX-i2900  with ATOM N450
->
->
->
->
->
-> Thanks for your future response
->
->
->
->
->
-> Kind regards,
->
->
->
-> Jean Rodriguez
->
-> Ing=E9nieur R&D Informatique
->
->
->
->
->
->
->
->
->
->
->
->
->
-> ---
-> Ce courrier =E9lectronique ne contient aucun virus ou logiciel malveillan=
-t parce que la protection avast! Antivirus est active.
-> http://www.avast.com
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
+__ipipe_mach_get_tsc
+xntimer_tick_aperiodic
+xintr_clock_handler
+__ipipe_sync_stage
+ipipe_suspend_domain
+__ipipe_walk_pipeline
+__ipipe_restore_pipeline
+xnarc_next_htick_shot
+clockevents_program_event
+tick_dev_program_event
+tick_program_event
+hrtimer_interrupt
+mxc_timer_interrupt
+handle_IRQ_event
+handle_level_irq
+asm_do_IRQ
+__ipipe_sync_stage  <-- loop
+ipipe_suspend_domain
+__ipipe_walk_pipeline
+__ipipe_restore_pipeline_head
+xnpod_enable_timesource
+xnpod_init
+__native_skin_init
+do_one_initcall
+kernel_init
 
 
---=20
-Philippe.
+The problem seems to occur within the first call to the function 
+__ipipe_sync_stage (as indicated by the arrow),
+in particular it seems that we never match the exit condition of the 
+innermost "while" loop:
+((submask = p-> irqpend_lomask [level])! = 0).
+
+It seems that after the reset of p->irqpend_lomask[level], during the 
+execution of interrupt service routine, timer interrupt I think,
+it seems that the flag, or some other flags in the variable returns set, 
+and this seems to cause the lock.
+
+Given that, although I had an idea of the general mechanisms that drive 
+ipipe, I am not able to grasp the implementation details,
+in particular I cannot state when and where that flags are set, I 
+presume when hw interrupt occours.
+
+I was wondering if you could give me an idea of what could cause 
+stalling or if you had any suggestions on how to get out, making
+advancing the kernel in a clean state.
+
+Thank you in advance for any suggestions you could give me,
+kind regards
+Marco Tessore
 
