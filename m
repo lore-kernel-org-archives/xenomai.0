@@ -1,13 +1,13 @@
-Message-ID: <53A3E8FE.5020005@xenomai.org>
-Date: Fri, 20 Jun 2014 09:55:42 +0200
+Message-ID: <53A3F82D.5090401@xenomai.org>
+Date: Fri, 20 Jun 2014 11:00:29 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <1400788012.41259.YahooMailNeo@web171603.mail.ir2.yahoo.com>
- <1401734780.6508.YahooMailNeo@web171606.mail.ir2.yahoo.com>
-In-Reply-To: <1401734780.6508.YahooMailNeo@web171606.mail.ir2.yahoo.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] FreeRTOS skin #2
+References: <006d01cf8a3c$dee76050$9cb620f0$@caustier.com>
+In-Reply-To: <006d01cf8a3c$dee76050$9cb620f0$@caustier.com>
+Content-Type: text/plain; charset="windows-1252"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Some Information About compilation Xenomai and RT
+	Patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,70 +16,111 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jean Rodriguez <j.rodriguez@caustier.com>, xenomai@xenomai.org
 
-On 06/02/2014 08:46 PM, Matthias Schneider wrote:
+On 06/17/2014 05:00 PM, Jean Rodriguez wrote:
+> Hi guys,
+>
+> I=92m trying to compile kernel 3.8 with the last xenomai source.
+>
+> I want to know some precisions about preempt option.
+>
+> Is it useless to patch the kernel with with Xenomai and also with RT patch
+> from kernel.org?
 
-> Please find enclosed a new version of the FreeRTOS skin. It adapts to the
-> latest changes in forge/next and also removes the previously included
-> workarounds - thanks to the changes done based on the first review round
-> they were no longer necessary.
+Combining both makes sense only if your use case involves response time=20
+requirements when running regular linux activities, in addition to the=20
+real-time duties offloaded to the Xenomai co-kernel. In most cases where=20
+a dual kernel solution applies, there is no requirement for full=20
+preemption (-rt) on the regular linux side though.
+
+>
+> Because With RT patch I can choose on menuconfig  Preemption Model 5 choi=
+ces
+> (No preempt, Voluntary and low latency , preemptible kernel or fully
+> preemptivekernel)
+>
+> But if I patch only with xenomai I have just 3 choices of preemptive (No
+> preempt, Voluntary and low latency)
 >
 
-Thanks. Here we go:
+Those choices affect the regular linux kernel behavior only, not=20
+Xenomai. When the Xenomai co-kernel is present, there is no need for=20
+additional preemption models, the linux kernel is inherently preemptible=20
+by Xenomai activities at any time.
 
-* vTaskStartScheduler()
+> If patch first with RT and after xenomai I have a lot of Hunk message
+> (warning and error) but if  I Patch first with xenomai and after RT -> no
+> problem
+>
+>
+>
+> So my question are they compatible together? Or perhaps choosing fully
+> preemptive will turn my system unstable.
+>
 
-Dropping the task_list lock then yielding is superfluous, the caller 
-will wait on the condvar for the scheduler state to switch to SUSPENDING 
-anyway, implicitly releasing this lock before going to sleep.
+Combining both is possible, and such configuration is actually used by=20
+some projects. However, a combo patch merging preempt-rt and the I-pipe=20
+has to be specifically crafted for the target kernel.
 
-* vTaskDelay()
+>
+>
+> My goal is to catch Interruption with a small latency (50-10 =B5s) with a=
+ low
+> processor charge
 
-Cobalt wraps sched_yield(), so you likely want to call 
-__RT(sched_yield()) to pick the proper implementation depending on the 
-underlying real-time core.
+Since there is no one-fits-it-all solution, I would suggest to benchmark=20
+each configuration separately for your use case, and see which one best=20
+fits the bill, taking into account the pros and cons of each approach in=20
+the long run for your project.
 
-* __xTaskGenericCreate()
+>
+> Board  Arbor card
+> <http://www.arbor.com.tw/product/product.aspx?Product_Name=3DEmETX-i2900&=
+os_id
+> =3D1&version=3D+Default> EmETX-i2900  with ATOM N450
+>
+>
+>
+>
+>
+> Thanks for your future response
+>
+>
+>
+>
+>
+> Kind regards,
+>
+>
+>
+> Jean Rodriguez
+>
+> Ing=E9nieur R&D Informatique
+>
+>
+>
+>
+>
+>
+>
+>
+>
+>
+>
+>
+>
+> ---
+> Ce courrier =E9lectronique ne contient aucun virus ou logiciel malveillan=
+t parce que la protection avast! Antivirus est active.
+> http://www.avast.com
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+>
 
-- It looks like the mutex attribute initialized locally is a left over 
-from a previous implementation.
 
-- Drawing unique identifier labels should be done using a name 
-generator, e.g.
-
-static DEFINE_NAME_GENERATOR(task_namegen, struct freertos_task, name);
-...
-	generate_name(task->name, name, &task_namegen);
-
-The open-coded method also used by other emulators is racy.
-
-* vPortEnter/ExitCritical()
-
-- wouldn't these calls better emulated by threadobj_lock_sched() 
-assuming they stand for a global serialization mechanism?
-
-* Task registry support
-
-The code looks outdated, using fsobstacks is recommended. The registry 
-helpers in lib/alchemy/alarm.c illustrate a basic usage.
-
-* vTaskSuspendAll()
-
-Running check_processors() there may switch the caller to linux mode
-at each invocation, due to calling sysconf/sched_getaffinity indirectly. 
-I would rather assume that the CPU affinity is not allowed to change 
-once started, and determine whether a task is bound to more than a 
-single CPU in the trampoline code. Then vTaskSuspendAll() may do a 
-simple flag-based test for checking the consistency, still allowing 
-different freertos tasks to be pinned on distinct CPUs though. At any 
-rate, this would be an acceptable restriction, since freertos does not 
-seem to be SMP-capable in its reference implementation anyway.
-
-Next time, I'll start reviewing other parts of the emulator.
-
-HTH,
-
--- 
+--=20
 Philippe.
 
