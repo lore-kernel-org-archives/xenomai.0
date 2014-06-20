@@ -1,13 +1,14 @@
-Message-ID: <537C7F76.5090000@xenomai.org>
-Date: Wed, 21 May 2014 12:27:02 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <53A4201D.8020507@xenomai.org>
+Date: Fri, 20 Jun 2014 13:50:53 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <537B607E.1090800@free.fr> <537B6293.9010608@xenomai.org>
- <537C74F2.10207@free.fr>
-In-Reply-To: <537C74F2.10207@free.fr>
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] which stable ipipe version and kernel ?
+References: <006d01cf8a3c$dee76050$9cb620f0$@caustier.com>
+ <b9cc483bf98d4ce2a161d788d7d7abc0@EX132MBOX1B.de2.local>
+In-Reply-To: <b9cc483bf98d4ce2a161d788d7d7abc0@EX132MBOX1B.de2.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Some Information About compilation Xenomai and RT
+	Patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,36 +17,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@free.fr>
-Cc: xenomai@xenomai.org
+To: "Stoidner, Christoph" <c.stoidner@arvero.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/21/2014 11:42 AM, St=E9phane ANCELOT wrote:
-> No sorry, I made a mistake, it is an x86 - 64 bits platform
->
->
+On 06/20/2014 11:02 AM, Stoidner, Christoph wrote:
+> My pending problem which I hope to solve soon is the fast context
+> switch extension (FCSE) that allows better latency times on ARM9. In
+> "guaranteed" mode it crashs when using addresses above 32MB.
 
-Then this one will do,=20
-http://download.gna.org/adeos/patches/v3.x/x86/ipipe-core-3.10.32-x86-2.pat=
-ch.=20
-3.14 is currently in the testing stage at=20
-git://git.xenomai.org/ipipe.git, but not released yet.
+What do you mean it crashes? Normally, an mmap call that would return
+addresses above 32MB simply fails, because you can not use addresses
+above 32MB in guaranteed mode.
 
-> On 20/05/2014 16:11, Philippe Gerum wrote:
->> On 05/20/2014 04:02 PM, St=E9phane ANCELOT wrote:
->>> Hi,
->>>
->>>   I need building a stable 3.x kernel ia64 bits, which ipipe to use ?
->>>
->>
->> If you really mean Itanium, then there will be no support for this
->> configuration:
->>
->> http://xenomai.org/index.php/Other_Hardware_Support#ia64
->>
->
->
-
-
---=20
-Philippe.
+-- 
+                                                                Gilles.
 
