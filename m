@@ -1,5 +1,5 @@
-Message-ID: <53A7F604.7010709@xenomai.org>
-Date: Mon, 23 Jun 2014 11:40:20 +0200
+Message-ID: <53A7F900.4020103@xenomai.org>
+Date: Mon, 23 Jun 2014 11:53:04 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <006d01cf8a3c$dee76050$9cb620f0$@caustier.com>
@@ -34,9 +34,7 @@ On 06/23/2014 11:33 AM, Stoidner, Christoph wrote:
 > also when the process at all consumes less than 32MB RAM. E.g.
 > busybox shell command "ls" is enough to get the segfault.
 
-with the glibc versions I have been testing with the FCSE patch since it
-exists, when brk fails, the glibc uses mmap to allocate memory, and
-everything continues.
+Could you test the I-pipe git branch ipipe-3.14, unmodified?
 
 -- 
                                                                 Gilles.
