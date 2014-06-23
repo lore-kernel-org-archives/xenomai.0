@@ -1,14 +1,16 @@
-From: "Lim Tao Ming (SIMTech)" <tmlim@simtech.a-star.edu.sg>
-Date: Thu, 22 May 2014 10:40:23 +0000
-Message-ID: <EF7485C1EA725C47A37C7090FD7DDF78442128BC@S3-EXCHMB05.shared-svc.local>
-References: <mailman.3.1398938401.5042.xenomai@xenomai.org>
-In-Reply-To: <mailman.3.1398938401.5042.xenomai@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+References: <1400788012.41259.YahooMailNeo@web171603.mail.ir2.yahoo.com>
+ <1401734780.6508.YahooMailNeo@web171606.mail.ir2.yahoo.com>
+ <53A3E8FE.5020005@xenomai.org>
+ <1403519510.94410.YahooMailNeo@web171601.mail.ir2.yahoo.com>
+Message-ID: <1403555262.58217.YahooMailNeo@web171601.mail.ir2.yahoo.com>
+Date: Mon, 23 Jun 2014 21:27:42 +0100
+From: Matthias Schneider <ma30002000@yahoo.de>
+In-Reply-To: <1403519510.94410.YahooMailNeo@web171601.mail.ir2.yahoo.com>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Xenomai Digest, Vol 25,
- Issue 1 ( ipipe-core-3.10 patch for arm)
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] FreeRTOS skin #2
+Reply-To: Matthias Schneider <ma30002000@yahoo.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,40 +19,227 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-> Hello,
->
-> I saw from your past discussion that there is a patch for kernel=20
-> version 3.10 but was not released. It just so happened that the=20
-> provided kernel source code with support for my hardware is always=20
-> released with version sublevel=3D0 (i.e. 3.10 but not 3.10.18 or=20
-> 3.10.32). Can I get this patch from you to try out xenomai? BTW I am a=20
-> newbie at this and I've tried patching the 3.10 source code using the=20
-> 3.10.18 and 3.10.32 patches without success.
+----- Original Message -----
 
-A simple solution is to apply the 3.10.18 stable patch to your vendor kerne=
-l based on 3.10.0, then apply the I-pipe patch.
+> From: Matthias Schneider <ma30002000@yahoo.de>
+> To: Philippe Gerum <rpm@xenomai.org>; "xenomai@xenomai.org" <xenomai@xeno=
+mai.org>
+> Cc: =
 
---=20
-					    Gilles.
+> Sent: Monday, June 23, 2014 12:31 PM
+> Subject: Re: [Xenomai] FreeRTOS skin #2
+> =
 
-Hello again,
+> ----- Original Message ----- =
 
-Sorry for not giving more info earlier... I am using the Atmel's SAMA5D3 AR=
-M hardware.
+>>  From: Philippe Gerum <rpm@xenomai.org> =
 
-I've tried your suggestion (thanks!) and it patched successfully but the co=
-mpilation now says that AT91 is not supported. So I thought I should look a=
-t the patches provided by the latest xenomai stable release
+>>  To: Matthias Schneider <ma30002000@yahoo.de>; =
 
-FYI the hardware's supported linux kernel versions are 2.6.39, 3.4.9, 3.6.9=
-, 3.10, 3.15 and xenomai's supported ones are 3.4.6, 3.5.7, 3.8.13. I tried=
- with kernel version 3.4.9, did a reverse patch to the base 3.4, patch it t=
-o 3.4.6 and used the xenomai I-pipe patch for 3.4.6. Unfortunately the xeno=
-mai failed to patch vmalloc.c. Am I doing things correctly and do you have =
-any suggestions to resolve this?=20
+> "xenomai@xenomai.org" <xenomai@xenomai.org> =
 
-Thanks and best regards
-TM
+>>  Cc: =
 
+>>  Sent: Friday, June 20, 2014 9:55 AM =
+
+>>  Subject: Re: [Xenomai] FreeRTOS skin #2 =
+
+>> =
+
+>>  On 06/02/2014 08:46 PM, Matthias Schneider wrote: =
+
+>> =
+
+>> =
+
+>>>  Please find enclosed a new version of the FreeRTOS skin. It adapts to =
+
+> the =
+
+>>>  latest changes in forge/next and also removes the previously included =
+
+>>>  workarounds - thanks to the changes done based on the first review =
+
+> round =
+
+>>>  they were no longer necessary. =
+
+>>> =
+
+>> =
+
+>>  Thanks. Here we go: =
+
+>> =
+
+>>  * vTaskStartScheduler() =
+
+>> =
+
+>>  Dropping the task_list lock then yielding is superfluous, the caller =
+
+>>  will wait on the condvar for the scheduler state to switch to SUSPENDIN=
+G =
+
+>>  anyway, implicitly releasing this lock before going to sleep. =
+
+> =
+
+> Done. =
+
+> =
+
+>> =
+
+>>  * vTaskDelay() =
+
+>> =
+
+>>  Cobalt wraps sched_yield(), so you likely want to call =
+
+>>  __RT(sched_yield()) to pick the proper implementation depending on the =
+
+>>  underlying real-time core. =
+
+> Done. =
+
+> =A0 =
+
+>>  * __xTaskGenericCreate() =
+
+>> =
+
+>>  - It looks like the mutex attribute initialized locally is a left over =
+
+>>  from a previous implementation. =
+
+>> =
+
+>>  - Drawing unique identifier labels should be done using a name =
+
+>>  generator, e.g. =
+
+>> =
+
+>>  static DEFINE_NAME_GENERATOR(task_namegen, struct freertos_task, name); =
+
+>>  ... =
+
+>> =A0 =A0  generate_name(task->name, name, &task_namegen); =
+
+>>  The open-coded method also used by other emulators is racy. =
+
+> Done. =
+
+> Note that some freertos specific code remains to make duplicated task nam=
+es =
+
+> unique.
+> =A0 =
+
+>>  * vPortEnter/ExitCritical() =
+
+>> =
+
+>>  - wouldn't these calls better emulated by threadobj_lock_sched() =
+
+>>  assuming they stand for a global serialization mechanism? =
+
+> Unfortunately, this seems cause some test cases in the demo to fail. =
+
+> Since these tests are rather time consuming to investigate, I would like =
+
+> to leave this item open until all other issues have been addressed. We =
+
+> had also talked about other options concerning this subject as well =
+
+> (removing the function or leaving it empty), so I still need some =
+
+> time to think about it. =
+
+>>  * Task registry support =
+
+>> =
+
+>>  The code looks outdated, using fsobstacks is recommended. The registry =
+
+>>  helpers in lib/alchemy/alarm.c illustrate a basic usage. =
+
+> Done. =
+
+> =
+
+>> =
+
+>>  * vTaskSuspendAll() =
+
+>> =
+
+>>  Running check_processors() there may switch the caller to linux mode =
+
+>>  at each invocation, due to calling sysconf/sched_getaffinity indirectly=
+. =
+
+>>  I would rather assume that the CPU affinity is not allowed to change =
+
+>>  once started, and determine whether a task is bound to more than a =
+
+>>  single CPU in the trampoline code. Then vTaskSuspendAll() may do a =
+
+>>  simple flag-based test for checking the consistency, still allowing =
+
+>>  different freertos tasks to be pinned on distinct CPUs though. At any =
+
+>>  rate, this would be an acceptable restriction, since freertos does not =
+
+>>  seem to be SMP-capable in its reference implementation anyway. =
+
+> Ok, reading the affinity information once and caching it makes sense to =
+
+> avoid the switches to secondary mode. However, vTaskSuspendAll() / =
+
+> vTaskResumeAll() only works as expected when all tasks are pinned to a=A0
+> single cpu, storing this information on a by-task basis will not be suffi=
+cient.=A0
+> Now if there is one place to retrieve this information, which would it be=
+? =
+
+> I can think of freertos_init() / freertos_scheduler_init() or =
+
+> vTaskStartScheduler(). However,=A0 freertos_init() would probably not be =
+
+> able to allow setting process cpu affinity programatically at the =
+
+> beginning of main() if I am not mistaken. =
+
+>>  Next time, I'll start reviewing other parts of the emulator. =
+
+> Great, thanks in advance for all the input.. =
+
+> =
+
+>>  HTH, =
+
+>> =
+
+>>  -- =
+
+>>  Philippe. =
+
+>> =
+
+
+
+Please find enclosed a revised patch.
+
+Matthias
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: 0001-Initial-Freertos-commit-no.-4.patch.gz
+Type: application/x-gzip
+Size: 34354 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140623/2a04404=
+8/attachment.bin>
