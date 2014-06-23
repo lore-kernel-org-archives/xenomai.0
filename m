@@ -1,14 +1,17 @@
-Date: Mon, 23 Jun 2014 13:18:23 +0200
-From: Arnaud Degroote <arnaud.degroote@isae.fr>
-Message-ID: <20140623111823.GA5715@dmia-degroote.isae.fr>
-References: <20140623090857.GA4043@dmia-degroote.isae.fr>
- <53A7F1E4.2050603@xenomai.org>
+Date: Mon, 23 Jun 2014 16:05:59 +0200
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Message-ID: <20140623140559.GE19730@lukather>
+References: <20140610094057.GJ9791@lukather> <5396D469.7060701@xenomai.org>
+ <20140610095422.GK9791@lukather> <5396D780.4020704@xenomai.org>
+ <20140611092532.GE4254@lukather> <53989CEF.3080205@xenomai.org>
+ <20140612075401.GH4254@lukather> <539966B7.3080900@xenomai.org>
+ <20140612150313.GA3448@lukather> <539B4A85.7030302@xenomai.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <53A7F1E4.2050603@xenomai.org>
+In-Reply-To: <539B4A85.7030302@xenomai.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Support of Beagleboard xm rev C on 3.14-ipipe
+Subject: Re: [Xenomai] Xenomai on Atmel SAMA5D3 with a 3.14 kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,37 +21,71 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: Michael Opdenacker <michael@free-electrons.com>, Thomas Petazzoni <thomas@free-electrons.com>, Boris Brezillon <boris@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, xenomai@xenomai.org, Antoine =?iso-8859-1?Q?T=E9nart?= <antoine@free-electrons.com>
 
-On 23/Jun - 11:22, Gilles Chanteperdrix wrote:
-> On 06/23/2014 11:08 AM, Arnaud Degroote wrote:
-> > Hi list,
-> > 
-> > I'm trying to deploy a 3.14 kernel on my BeagleBoard XM rev C but got
-> > several issues. So, first question, it is supposed to be supported or am
-> > I somewhere in a grey zone ?
-> > 
-> > Let describe more precisely the configuration and the symptom.
-> > - linux-ipipe branch ipipe-3.14
-> > - xenomai 2.6.3 + some patches from 2.6 branch (including
-> > 	d1d00e0acd29bb5f9023494a883a7fa0def40917 
-> > 	41cb1f73814d1094e0ea75ccbbd23ff01280787e
-> > 	7a48019268d7e1157ebb072b88f6683425f0c7c5
-> > 	f00d22eca6277e780c19a5d5ecd2ed0e23dabafe
-> > 	)
+On Fri, Jun 13, 2014 at 09:01:25PM +0200, Gilles Chanteperdrix wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
 > 
-> It is supposed to work, could you try again with the xenomai 2.6 git?
-> 
+> On 06/12/2014 05:03 PM, Maxime Ripard wrote:
+> > On Thu, Jun 12, 2014 at 10:37:11AM +0200, Gilles Chanteperdrix
+> > wrote:
+> >> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+> >> 
+> >> On 06/12/2014 09:54 AM, Maxime Ripard wrote:
+> >>> On Wed, Jun 11, 2014 at 08:16:15PM +0200, Gilles Chanteperdrix 
+> >>> wrote:
+> >>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+> >>>> 
+> >>>> On 06/11/2014 11:25 AM, Maxime Ripard wrote:
+> >>>>> On Tue, Jun 10, 2014 at 12:01:36PM +0200, Gilles
+> >>>>> Chanteperdrix wrote:
+> >>>>>> If you compile the kernel without I-pipe and Xenomai
+> >>>>>> support and enable the tcb_clksrc clocksource driver does
+> >>>>>> it work?
+> >>>>> 
+> >>>>> Yep, with the exact same config, except for CONFIG_IPIPE
+> >>>>> and CONFIG_XENOMAI being disabled, it boots fine.
+> >>>>> 
+> >>>> Read again, I am not insterested in exactly the same config,
+> >>>> I am interested in the a config with tcb_clksrc clocksource,
+> >>>> which is disabled by CONFIG_IPIPE. Only if you enable this
+> >>>> clocksource do you get to use the atmel_tclib code.
+> >>> 
+> >>> Let me rephrase then. It works with the exact same config, with
+> >>>  CONFIG_IPIPE and CONFIG_XENOMAI disabled, and 
+> >>> CONFIG_ATMEL_TCB_CLKSRC enabled.
+> >> 
+> >> Then I would tend to think that the clocksource is not your
+> >> problem and repeat that you should check everything else in the
+> >> porting guide.
+> > 
+> > Ok. I will.
+> > 
+> Looking rapidly at the code, at least the irq controller and pic
+> muting need fixing.
 
-Hi Gilles,
+Ok, so, a bit of news on this one.
 
-I just tested against 2.6-git and observe the same behaviours.
+After fixing the irq controller to work on the AIC5, and disabling the
+pic muting, I get almost 100% of the time a system freeze when running:
+http://git.free-electrons.com/training-materials/tree/lab-data/realtime/rttest/data/rttest.c
 
-Best regards,
+The TCB timer is still ticking, at a rate around 1Hz, while, when the
+system hangs, the PIT interrupt isn't firing anymore (which explains
+the freeze). So there's probably something wrong related to the ipipe
+I guess, or the interrupt being masked and not unmasked at some point.
+
+Maxime
+
+-- 
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
 -------------- next part --------------
 A non-text attachment was scrubbed...
 Name: signature.asc
 Type: application/pgp-signature
-Size: 490 bytes
+Size: 819 bytes
 Desc: Digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140623/07dee95d/attachment.sig>
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140623/04d18955/attachment.sig>
