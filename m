@@ -1,10 +1,12 @@
-Message-ID: <537D35BD.1030302@nta-inc.net>
-Date: Wed, 21 May 2014 18:24:45 -0500
-From: Jeff Webb <jeff.webb@nta-inc.net>
+Message-ID: <53A7F1E4.2050603@xenomai.org>
+Date: Mon, 23 Jun 2014 11:22:44 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <20140623090857.GA4043@dmia-degroote.isae.fr>
+In-Reply-To: <20140623090857.GA4043@dmia-degroote.isae.fr>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] RTDM driver for Xilinx Zynq PS UART
+Subject: Re: [Xenomai] Support of Beagleboard xm rev C on 3.14-ipipe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,27 +15,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Arnaud Degroote <arnaud.degroote@isae.fr>, xenomai@xenomai.org
 
-Has anyone written an RTDM driver for the Xilinx Zynq PS UART?  If not, I assume the best way to obtain one would be to start with the Xilinx-provided linux driver (xilinx_uartps.c) and port it to RTDM.  Is there a "HOWTO" or other documentation for the porting process?  Without further direction, I was going to compare an existing pair of RTDM drivers (e.g. mpc52xx_uart.c and rt_mpc52xx_uart.c) to see what changes were made and try to do something similar for the Xilinx driver.  In the end, I would like to have a driver that is as compatible with the RTDM 16550 driver as much as possible.
+On 06/23/2014 11:08 AM, Arnaud Degroote wrote:
+> Hi list,
+> 
+> I'm trying to deploy a 3.14 kernel on my BeagleBoard XM rev C but got
+> several issues. So, first question, it is supposed to be supported or am
+> I somewhere in a grey zone ?
+> 
+> Let describe more precisely the configuration and the symptom.
+> - linux-ipipe branch ipipe-3.14
+> - xenomai 2.6.3 + some patches from 2.6 branch (including
+> 	d1d00e0acd29bb5f9023494a883a7fa0def40917 
+> 	41cb1f73814d1094e0ea75ccbbd23ff01280787e
+> 	7a48019268d7e1157ebb072b88f6683425f0c7c5
+> 	f00d22eca6277e780c19a5d5ecd2ed0e23dabafe
+> 	)
 
-I will try to digest the information here:
+It is supposed to work, could you try again with the xenomai 2.6 git?
 
-   http://www.xenomai.org/documentation/trunk/html/api/group__rtdm.html
-   http://www.xenomai.org/documentation/trunk/html/api/group__rtserial.html
 
-and look at the simple RTDM example here:
-
-   xenomai-2.6.3/examples/rtdm/driver-api
-
-This mailing-list thread also looks informative:
-
-   http://www.xenomai.org/pipermail/xenomai/2010-August/021220.html
-
-Any advice would be appreciated.
-
-Thanks,
-
--Jeff
-
+-- 
+                                                                Gilles.
 
