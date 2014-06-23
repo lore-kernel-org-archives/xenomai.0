@@ -1,13 +1,18 @@
-Message-ID: <537AC178.5050706@zultron.com>
-Date: Mon, 19 May 2014 21:44:08 -0500
-From: John Morris <john@zultron.com>
+Message-ID: <53A8BB25.20107@xenomai.org>
+Date: Tue, 24 Jun 2014 01:41:25 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <537A8E29.1070000@zultron.com>
- <20140519230910.GF17765@csclub.uwaterloo.ca>
-In-Reply-To: <20140519230910.GF17765@csclub.uwaterloo.ca>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <006d01cf8a3c$dee76050$9cb620f0$@caustier.com>
+ <b9cc483bf98d4ce2a161d788d7d7abc0@EX132MBOX1B.de2.local>,
+ <53A4201D.8020507@xenomai.org>
+ <39ed57fee9f445d995e8d17a267c2fa0@EX132MBOX1B.de2.local>,
+ <53A7F900.4020103@xenomai.org>
+ <d54dc4eae894479c9a58f8d173d1c7cb@EX132MBOX1B.de2.local>
+In-Reply-To: <d54dc4eae894479c9a58f8d173d1c7cb@EX132MBOX1B.de2.local>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] Add armhf arch to Debian packaging
+Subject: Re: [Xenomai] Some Information About compilation Xenomai and RT
+	Patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,30 +21,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Stoidner, Christoph" <c.stoidner@arvero.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/19/2014 06:09 PM, Lennart Sorensen wrote:
-> On Mon, May 19, 2014 at 06:05:13PM -0500, John Morris wrote:
->> A non-text attachment was scrubbed...
->> Name: 0001-Add-armhf-arch-to-Debian-packaging.patch
->> Type: text/x-patch
->> Size: 1388 bytes
->> Desc: not available
->> URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140519/afa36b83/attachment.bin>
->
-> Pretty sure the xenomai-2.6 git tree already has that (although added
-> after 2.6.3 was released).
->
-> commit b10527ed14399a6485f69b935988d9d5211066d0
-> Author: Paul Corner <paul_c@tuxcnc.org>
-> Date:   Sun Feb 2 22:54:42 2014 +0000
->
->      debian: add armhf architecture
->
->      for the benefit of platforms that use this flavour of arm.
+On 06/23/2014 12:04 PM, Stoidner, Christoph wrote:
+> 
+> Original ipipe-3.10.18 without Preempt-RT works without any problem.
+> The problem occurs only in combination of my Preempt-RT merge and
+> enabled FCSE in guaranteed mode.
+> 
+> Since unmodified ipipe-3.10 does not show the problem I assume
+> unmodified ipipe-3.14 also does not show the problem. Or do you think
+> 3.14 brings some more details?
 
-Ah ha, thanks for pointing that out.  I checked one of Gilles's branches 
-and missed it somehow.
+I definitely fixed some FCSE issues in the ipipe-3.14 branch, mostly
+when FCSE is enabled without CONFIG_IPIPE. Now if ipipe-3.10.18 has no
+issues, whereas mixing Prempt-rt in makes some issues appear, I would
+suggest looking carefully at the changes introduced by the preempt-rt
+patch with regard to mm handling.
 
-	John
+-- 
+                                                                Gilles.
 
