@@ -1,14 +1,19 @@
-Message-ID: <53A91AC0.30801@xenomai.org>
-Date: Tue, 24 Jun 2014 08:29:20 +0200
+Message-ID: <53A91C9E.1060401@xenomai.org>
+Date: Tue, 24 Jun 2014 08:37:18 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20140623090857.GA4043@dmia-degroote.isae.fr>
- <53A7F1E4.2050603@xenomai.org> <20140623111823.GA5715@dmia-degroote.isae.fr>
- <53A8BC0C.2010608@xenomai.org> <20140624062309.GA9564@dmia-degroote.isae.fr>
-In-Reply-To: <20140624062309.GA9564@dmia-degroote.isae.fr>
+References: <006d01cf8a3c$dee76050$9cb620f0$@caustier.com>
+ <b9cc483bf98d4ce2a161d788d7d7abc0@EX132MBOX1B.de2.local>,
+ <53A4201D.8020507@xenomai.org>
+ <39ed57fee9f445d995e8d17a267c2fa0@EX132MBOX1B.de2.local>,
+ <53A7F900.4020103@xenomai.org>
+ <d54dc4eae894479c9a58f8d173d1c7cb@EX132MBOX1B.de2.local>
+ <53A8BB25.20107@xenomai.org>
+In-Reply-To: <53A8BB25.20107@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Support of Beagleboard xm rev C on 3.14-ipipe
+Subject: Re: [Xenomai] Some Information About compilation Xenomai and RT
+	Patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,60 +22,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Arnaud Degroote <arnaud.degroote@isae.fr>
-Cc: xenomai@xenomai.org
+To: "Stoidner, Christoph" <c.stoidner@arvero.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+On 06/24/2014 01:41 AM, Gilles Chanteperdrix wrote:
+> On 06/23/2014 12:04 PM, Stoidner, Christoph wrote:
+>>
+>> Original ipipe-3.10.18 without Preempt-RT works without any problem.
+>> The problem occurs only in combination of my Preempt-RT merge and
+>> enabled FCSE in guaranteed mode.
+>>
+>> Since unmodified ipipe-3.10 does not show the problem I assume
+>> unmodified ipipe-3.14 also does not show the problem. Or do you think
+>> 3.14 brings some more details?
+> 
+> I definitely fixed some FCSE issues in the ipipe-3.14 branch, mostly
+> when FCSE is enabled without CONFIG_IPIPE. Now if ipipe-3.10.18 has no
+> issues, whereas mixing Prempt-rt in makes some issues appear, I would
+> suggest looking carefully at the changes introduced by the preempt-rt
+> patch with regard to mm handling.
+> 
+Something else, if what you had trouble with is the spinlock merge, you
+should maybe double check that ipipe_spinlocks work as expected, because
+the FCSE code uses an ipipe_spinlock, and if this spinlock ends up as a
+sleeping spinlock, things could get messy.
 
-On 06/24/2014 08:23 AM, Arnaud Degroote wrote:
-> On 24/Jun - 01:45, Gilles Chanteperdrix wrote:
->> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
->> 
->> On 06/23/2014 01:18 PM, Arnaud Degroote wrote:
->>> On 23/Jun - 11:22, Gilles Chanteperdrix wrote:
->>>> On 06/23/2014 11:08 AM, Arnaud Degroote wrote:
->>>>> Hi list,
->>>>> 
->>>>> I'm trying to deploy a 3.14 kernel on my BeagleBoard XM rev
->>>>> C but got several issues. So, first question, it is
->>>>> supposed to be supported or am I somewhere in a grey zone
->>>>> ?
->>>>> 
->>>>> Let describe more precisely the configuration and the
->>>>> symptom. - linux-ipipe branch ipipe-3.14 - xenomai 2.6.3 +
->>>>> some patches from 2.6 branch (including 
->>>>> d1d00e0acd29bb5f9023494a883a7fa0def40917 
->>>>> 41cb1f73814d1094e0ea75ccbbd23ff01280787e 
->>>>> 7a48019268d7e1157ebb072b88f6683425f0c7c5 
->>>>> f00d22eca6277e780c19a5d5ecd2ed0e23dabafe )
->>>> 
->>>> It is supposed to work, could you try again with the xenomai
->>>> 2.6 git?
->>>> 
->>> 
->>> Hi Gilles,
->>> 
->>> I just tested against 2.6-git and observe the same behaviours.
->>> 
->>> Best regards,
->>> 
->> Could you post your configuration?
-> 
-> Sure, see the attached defconfig. It is basically yocto base arm
-> kernel + xenomai (and some kernel hacking option).
-> 
-> 
-Could you try to turn off CONFIG_NO_HZ ?
-
-- -- 
+-- 
                                                                 Gilles.
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-Comment: Using GnuPG with Icedove - http://www.enigmail.net/
-
-iD8DBQFTqRrAGpcgE6m/fboRApeEAJ9mI5VV0YuiU1IH/BfEmVBqDNYq2ACfS9c5
-RItJouyETkDmVqkCxtp0hb4=
-=uL+y
------END PGP SIGNATURE-----
 
