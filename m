@@ -1,13 +1,16 @@
-Message-ID: <53BEC6E9.7010609@xenomai.org>
-Date: Thu, 10 Jul 2014 19:01:29 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <53AA8A35.7000506@xenomai.org>
+Date: Wed, 25 Jun 2014 10:37:09 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CANKLDmuVD8_RKc37dKsVsfJhqpa-YyuiLaf8gMuBq0ZHSfB2Bw@mail.gmail.com>	<53BE4B0F.6030508@xenomai.org>
- <CANKLDmuzb51aCMut6s_swBmt5PE-x28YNhjJsDcOsfUnqzPqzg@mail.gmail.com>
-In-Reply-To: <CANKLDmuzb51aCMut6s_swBmt5PE-x28YNhjJsDcOsfUnqzPqzg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <20140623090857.GA4043@dmia-degroote.isae.fr>
+ <53A7F1E4.2050603@xenomai.org> <20140623111823.GA5715@dmia-degroote.isae.fr>
+ <53A8BC0C.2010608@xenomai.org> <20140624062309.GA9564@dmia-degroote.isae.fr>
+ <53A91AC0.30801@xenomai.org> <20140624122129.GA18908@dmia-degroote.isae.fr>
+ <53A9C41C.6020700@xenomai.org> <20140625081129.GA31341@dmia-degroote.isae.fr>
+In-Reply-To: <20140625081129.GA31341@dmia-degroote.isae.fr>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Suspend-to-RAM of a Xenomai system
+Subject: Re: [Xenomai] Support of Beagleboard xm rev C on 3.14-ipipe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,69 +19,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henri Roosen <henriroosen@gmail.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Arnaud Degroote <arnaud.degroote@isae.fr>
+Cc: xenomai@xenomai.org
 
-On 07/10/2014 12:00 PM, Henri Roosen wrote:
->
-> FIQ's should be disabled by the additional call to
-> local_fiq_disable_hw() we added. Or is there an
-> ipipe_stall_pipeline_xxxx() function that should be called for that instead?
->
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-FIQ control is not part of the generic i-pipe API.
+On 06/25/2014 10:11 AM, Arnaud Degroote wrote:
+> On 24/Jun - 20:31, Gilles Chanteperdrix wrote:
+>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+>> 
+>> On 06/24/2014 02:21 PM, Arnaud Degroote wrote:
+>>> On 24/Jun - 08:29, Gilles Chanteperdrix wrote:
+>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+>>>> 
+>>>> On 06/24/2014 08:23 AM, Arnaud Degroote wrote:
+>>>>> On 24/Jun - 01:45, Gilles Chanteperdrix wrote:
+>>>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+>>>>>> 
+>>>>>> On 06/23/2014 01:18 PM, Arnaud Degroote wrote:
+>>>>>>> On 23/Jun - 11:22, Gilles Chanteperdrix wrote:
+>>>>>>>> On 06/23/2014 11:08 AM, Arnaud Degroote wrote:
+>>>>>>>>> Hi list,
+>>>>>>>>> 
+>>>>>>>>> I'm trying to deploy a 3.14 kernel on my
+>>>>>>>>> BeagleBoard XM rev C but got several issues. So,
+>>>>>>>>> first question, it is supposed to be supported or
+>>>>>>>>> am I somewhere in a grey zone ?
+>>>>>>>>> 
+>>>>>>>>> Let describe more precisely the configuration and
+>>>>>>>>> the symptom. - linux-ipipe branch ipipe-3.14 -
+>>>>>>>>> xenomai 2.6.3 + some patches from 2.6 branch
+>>>>>>>>> (including d1d00e0acd29bb5f9023494a883a7fa0def40917
+>>>>>>>>>  41cb1f73814d1094e0ea75ccbbd23ff01280787e 
+>>>>>>>>> 7a48019268d7e1157ebb072b88f6683425f0c7c5 
+>>>>>>>>> f00d22eca6277e780c19a5d5ecd2ed0e23dabafe )
+>>>>>>>> 
+>>>>>>>> It is supposed to work, could you try again with the 
+>>>>>>>> xenomai 2.6 git?
+>>>>>>>> 
+>>>>>>> 
+>>>>>>> Hi Gilles,
+>>>>>>> 
+>>>>>>> I just tested against 2.6-git and observe the same 
+>>>>>>> behaviours.
+>>>>>>> 
+>>>>>>> Best regards,
+>>>>>>> 
+>>>>>> Could you post your configuration?
+>>>>> 
+>>>>> Sure, see the attached defconfig. It is basically yocto
+>>>>> base arm kernel + xenomai (and some kernel hacking
+>>>>> option).
+>>>>> 
+>>>>> 
+>>>> Could you try to turn off CONFIG_NO_HZ ?
+>>> 
+>>> Without CONFIG_NO_HZ, it hangs repeatably during the boot (in
+>>> the same place than with CONFIG_NO_HZ without
+>>> CONFIG_DEBUG_LOCK_ALLOC, so this last option is more a timing
+>>> workaround than a "real fix"). See the attached defconfig and
+>>> boot log.
+>> 
+>> Do you have the same problem if you boot using NFS instead of an
+>> SD card?
+>> 
+> 
+> Using root on nfs does not seem to change the problem. It still
+> hangs in the same place.
 
->     Anyway, you could double-check that the Xenomai timer is involved by
->     enabling the nucleus but leaving all API skins unloaded/disabled. In
->     that case, Xenomai 2.x does not grab the host timer, so it won't
->     emulate the host kernel tick.
->
->
-> Based on your suggestion I did more tests. The problem triggers only
-> when a Xenomai module is loaded. Without the module loaded there is no
-> problem. I stripped down the module, it now only calls rt_task_create()
-> and rt_task_set_periodic() at module init, rt_task_delete() at module
-> exit. This reproduces the problem. However, if we leave out the call
-> to rt_task_set_periodic() the problem cannot be reproduced.
->
-> So does the rt_task_set_periodic() call lead to grabbing the host timer?
+Ok, could you disable FTRACE, then enable the I-pipe debugs except the
+I-pipe tracer? And enable all the xenomai debugs?
 
-This is done earlier when turning on the services of the first API to 
-connect to the system (posix, native etc.) So this happens upon 
-modprobing the fist API module, or during the machine boot up if such 
-API is built in the kernel.
 
-If the Xenomai system timer is different from the regular kernel clock 
-event source, then calling rt_task_set_periodic() causes a stream of 
-IRQs different from the host timer IRQ to arrive.
+- -- 
+                                                                Gilles.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+Comment: Using GnuPG with Icedove - http://www.enigmail.net/
 
-You can check the Xenomai system timer state and source looking at 
-/proc/xenomai/timer.
-
-> Any hints on how to workaround this problem when going into suspend-to-RAM?
-
-Why some IRQ would still be pending while reaching WFI is unclear to me 
-(read: I have no idea why), but maybe you could try checking the current 
-assumptions by disabling the Xenomai time source very impolitely, by 
-calling xnpod_disable_timesource(), then switching it back using 
-xnpod_enable_timesource() when exiting the suspended state.
-
-No guarantee that this will work flawlessly around a suspended state, as 
-a matter of fact these services are currently used only during Xenomai 
-boot up and shutdown phases. I suspect that if Xenomai does not share 
-the clock chip with the host kernel, Xenomai software timers depending 
-on this clock event source will remain stuck. You could probably work 
-around this by calling ipipe_trigger_irq(XNARCH_TIMER_IRQ) right after 
-xnpod_enable_timesource() though.
-
-In short, the corresponding and simplified sequence would be:
-
-xnpod_disable_timesource();
-hard_local_irq_disable();
-wfi
-xnpod_enable_timesource();
-ipipe_trigger_irq(XNARCH_TIMER_IRQ);
-
--- 
-Philippe.
+iD8DBQFTqoo1GpcgE6m/fboRAh6HAJ0T0cQUaipC53whtPykFN48wT1rnACglwsp
+V90ty6elTHBd6gP38lRoMTI=
+=JFOc
+-----END PGP SIGNATURE-----
 
