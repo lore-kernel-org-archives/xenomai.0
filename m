@@ -1,16 +1,17 @@
-References: <1404677764.4624.YahooMailNeo@web171603.mail.ir2.yahoo.com>
- <53B9BC6A.9070501@xenomai.org>
- <1404835832.96010.YahooMailNeo@web171606.mail.ir2.yahoo.com>
- <53BD10C2.60109@xenomai.org>
-Message-ID: <1404942153.53492.YahooMailNeo@web171605.mail.ir2.yahoo.com>
-Date: Wed, 9 Jul 2014 22:42:33 +0100
-From: Matthias Schneider <ma30002000@yahoo.de>
-In-Reply-To: <53BD10C2.60109@xenomai.org>
+Message-ID: <53ABFF21.8010700@xenomai.org>
+Date: Thu, 26 Jun 2014 13:08:17 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Issue with cobalt_monitor_wait()
-Reply-To: Matthias Schneider <ma30002000@yahoo.de>
+References: <20140623111823.GA5715@dmia-degroote.isae.fr>
+ <53A8BC0C.2010608@xenomai.org> <20140624062309.GA9564@dmia-degroote.isae.fr>
+ <53A91AC0.30801@xenomai.org> <20140624122129.GA18908@dmia-degroote.isae.fr>
+ <53A9C41C.6020700@xenomai.org> <20140625081129.GA31341@dmia-degroote.isae.fr>
+ <53AA8A35.7000506@xenomai.org> <20140625094715.GA26690@dmia-degroote.isae.fr>
+ <53AB4BE3.2070302@xenomai.org> <20140626075607.GA32691@dmia-degroote.isae.fr>
+In-Reply-To: <20140626075607.GA32691@dmia-degroote.isae.fr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Support of Beagleboard xm rev C on 3.14-ipipe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,90 +20,177 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Arnaud Degroote <arnaud.degroote@isae.fr>
+Cc: xenomai@xenomai.org
 
------ Original Message -----=0A=0A> From: Philippe Gerum <rpm@xenomai.org>=
-=0A> To: Matthias Schneider <ma30002000@yahoo.de>; "xenomai@xenomai.org" <x=
-enomai@xenomai.org>=0A> Cc: =0A> Sent: Wednesday, July 9, 2014 11:52 AM=0A>=
- Subject: Re: [Xenomai] Issue with cobalt_monitor_wait()=0A> =0A> On 07/08/=
-2014 06:10 PM, Matthias Schneider wrote:=0A>>  ----- Original Message -----=
-=0A>> =0A>>>  From: Philippe Gerum <rpm@xenomai.org>=0A>>>  To: Matthias Sc=
-hneider <ma30002000@yahoo.de>; =0A> "xenomai@xenomai.org" <xenomai@xenomai.=
-org>=0A>>>  Cc:=0A>>>  Sent: Sunday, July 6, 2014 11:15 PM=0A>>>  Subject: =
-Re: [Xenomai] Issue with cobalt_monitor_wait()=0A>>> =0A>>>  On 07/06/2014 =
-10:16 PM, Matthias Schneider wrote:=0A>>> =0A>>>  [snip]=0A>>> =0A>>>> =A0 =
- On thing I do not understand is:=0A>>>> =0A>>>> =A0  in kernel cobalt_moni=
-tor_wait(), the synch object is unlocked via=0A>>>> =A0  xnsynch_release().=
- What happens if this synchobj was locked via=0A>>>> =A0  mon->gate.fastloc=
-k ? Shouldnt that also be released?=0A>>>> =0A>>> =0A>>>  xnsynch_release()=
- handles fastlocks as well.=0A>>> =0A>>> =0A>>>> =A0  What other reason cou=
-ld there be if the synch object was released=0A>>>> =A0  via xnsynch_releas=
-e, xnsynch_acquire was interrupted for=0A>>>> =A0  xnsynch_release to block=
-?=0A>>>> =0A>>> =0A>>>  Since the issue seems to be easily reproducible, co=
-uld you send a=0A>>>  self-contained piece of code illustrating it?=0A>>> =
-=0A>>>  Also, please mention if you are seeing this issue only when running=
- =0A> your=0A>>>  app over GDB, or if it currently happens without any debu=
-gger attached.=0A>>> =0A>>>  TIA,=0A>> =0A>> =0A>>  It seems I have not des=
-cribed the problematic scenario completely -=0A>> =0A>>  there were two oth=
-er threads that call called syncobj_lock()=0A>>  / cobalt_monitor_enter() a=
-t about the same time. (Actually there=0A>>  are three concurrent on the qu=
-eue that is being tested, two receive=0A>>  operation and one send operatio=
-n). I am pretty sure that the issue is=0A>>  extremely timing dependent.=0A=
->> =0A>>  Anyway, the testcase would be=0A>> =0A>>  queue_test_receive_peek=
-_multiple_tasks()=0A>> =0A> =0A> I could not reproduce the issue yet, but c=
-ould you check if this patch =0A> has any influence on this bug? TIA,=0A> =
-=0A> diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/sysca=
-ll.c=0A> index d921d81..3856794 100644=0A> --- a/kernel/cobalt/posix/syscal=
-l.c=0A> +++ b/kernel/cobalt/posix/syscall.c=0A> @@ -156,7 +156,7 @@ static =
-struct xnsyscall cobalt_syscalls[] =3D {=0A> =A0 =A0=A0=A0 SKINCALL_DEF(sc_=
-cobalt_monitor_enter, cobalt_monitor_enter, primary),=0A> =A0 =A0=A0=A0 SKI=
-NCALL_DEF(sc_cobalt_monitor_wait, cobalt_monitor_wait, =0A> nonrestartable)=
-,=0A> =A0 =A0=A0=A0 SKINCALL_DEF(sc_cobalt_monitor_sync, cobalt_monitor_syn=
-c, =0A> nonrestartable),=0A> -=A0=A0=A0 SKINCALL_DEF(sc_cobalt_monitor_exit=
-, cobalt_monitor_exit, primary),=0A> +=A0=A0=A0 SKINCALL_DEF(sc_cobalt_moni=
-tor_exit, cobalt_monitor_exit, nonrestartable),=0A> =A0 =A0=A0=A0 SKINCALL_=
-DEF(sc_cobalt_event_init, cobalt_event_init, current),=0A> =A0 =A0=A0=A0 SK=
-INCALL_DEF(sc_cobalt_event_destroy, cobalt_event_destroy, current),=0A> =A0=
- =A0=A0=A0 SKINCALL_DEF(sc_cobalt_event_wait, cobalt_event_wait, primary),=
-=0A> diff --git a/lib/cobalt/internal.c b/lib/cobalt/internal.c=0A> index e=
-0d990d..6c1331d 100644=0A> --- a/lib/cobalt/internal.c=0A> +++ b/lib/cobalt=
-/internal.c=0A> @@ -230,6 +230,7 @@ int cobalt_monitor_exit(cobalt_monitor_=
-t *mon)=0A> =A0 =A0=A0=A0 struct cobalt_monitor_data *datp;=0A> =A0 =A0=A0=
-=A0 unsigned long status;=0A> =A0 =A0=A0=A0 xnhandle_t cur;=0A> +=A0=A0=A0 =
-int ret;=0A> =0A> =A0 =A0=A0=A0 __sync_synchronize();=0A> =0A> @@ -246,9 +2=
-47,13 @@ int cobalt_monitor_exit(cobalt_monitor_t *mon)=0A> =A0 =A0=A0=A0 i=
-f (xnsynch_fast_release(&datp->owner, cur))=0A> =A0 =A0=A0=A0 =A0=A0=A0 ret=
-urn 0;=0A> =A0 syscall:=0A> -=A0=A0=A0 return XENOMAI_SKINCALL1(__cobalt_mu=
-xid,=0A> -=A0=A0=A0 =A0=A0=A0 =A0=A0=A0 =A0=A0=A0  sc_cobalt_monitor_exit,=
-=0A> -=A0=A0=A0 =A0=A0=A0 =A0=A0=A0 =A0=A0=A0  mon);=0A> +=A0=A0=A0 do=0A> =
-+=A0=A0=A0 =A0=A0=A0 ret =3D XENOMAI_SKINCALL1(__cobalt_muxid,=0A> +=A0=A0=
-=A0 =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 sc_cobalt_monitor_exit,=0A> +=
-=A0=A0=A0 =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 mon);=0A> +=A0=A0=A0 whil=
-e (ret =3D=3D -EINTR);=0A> +=0A> +=A0=A0=A0 return ret;=0A> =A0 }=0A> =0A> =
-=A0 int cobalt_monitor_wait(cobalt_monitor_t *mon, int event,=0A> =0A=0A=0A=
-Hm, it seems when I run into the issue, cobalt_monitor_exit() isnt=A0=0Acal=
-led at all...=A0=0A=0AHaving compiled the cobalt kernel without optimizatio=
-n,=0AI noticed that cobalt_monitor_wait() actually sets u_ret =3D -EINTR an=
-d=0Aapparently cobalt_monitor_enter_inner() seems to work, thus setting ret=
-=0Ato 0. However, in internal.c:cobalt_monitor_wait (in user mode),=0A=A0bo=
-th ret and opret seem=A0to be set to -EINTR. This=A0would explain that=0Ath=
-e second call of internal.c:cobalt_monitor_wait=A0to cobalt_monitor_enter=
-=A0=0Awill block indefinitely since the sync object is=A0already locked.=A0=
-=0A=0AInvestigating what else happens on the way back to user mode, it seem=
-s=A0=0Athat the return code is changed from 0 to -EINTR by the following st=
-ack:=0A=0A#0  __xn_error_return (regs=3D0xde0fffb0, v=3D-4) at arch/arm/xen=
-omai/include/asm/xenomai/syscall.h:62=0A#1  prepare_for_signal (p=3D<optimi=
-zed out>, thread=3Dthread@entry=3D0xde702e08, regs=3Dregs@entry=3D0xde0fffb=
-0, sysflags=3Dsysflags@entry=3D134) at kernel/xenomai/shadow.c:1842=0A#2  0=
-xc00c68a8 in handle_head_syscall (regs=3D0xde0fffb0, ipd=3D0xc07d63c0 <xnar=
-ch_machdata>) at kernel/xenomai/shadow.c:1996=0A#3  ipipe_syscall_hook (ipd=
-=3D0xc07d63c0 <xnarch_machdata>, regs=3D0xde0fffb0) at kernel/xenomai/shado=
-w.c:2164=0A#4  0xc00959a8 in __ipipe_notify_syscall (regs=3Dregs@entry=3D0x=
-de0fffb0) at kernel/ipipe/core.c:982=0A#5  0xc0015c90 in __ipipe_syscall_ro=
-ot (scno=3D<optimized out>, regs=3D0xde0fffb0) at arch/arm/kernel/ipipe.c:4=
-17=0A=0AApperently, the assumption of internal.c:cobalt_monitor_wait that a=
-=0Asyscall return -EINTR indicates a failure to re-lock the sync object=0Ad=
-oes not hold in this case. There are probably other cases where=0Athe same =
-scenario may occur=0A=0AUnfortunately I do not yet know how to resolve this=
- issue...=0A=0ARegards,=0AMatthias
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 06/26/2014 09:56 AM, Arnaud Degroote wrote:
+> On 26/Jun - 00:23, Gilles Chanteperdrix wrote:
+>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+>> 
+>> On 06/25/2014 11:47 AM, Arnaud Degroote wrote:
+>>> On 25/Jun - 10:37, Gilles Chanteperdrix wrote:
+>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+>>>> 
+>>>> On 06/25/2014 10:11 AM, Arnaud Degroote wrote:
+>>>>> On 24/Jun - 20:31, Gilles Chanteperdrix wrote:
+>>>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+>>>>>> 
+>>>>>> On 06/24/2014 02:21 PM, Arnaud Degroote wrote:
+>>>>>>> On 24/Jun - 08:29, Gilles Chanteperdrix wrote:
+>>>>>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+>>>>>>>> 
+>>>>>>>> On 06/24/2014 08:23 AM, Arnaud Degroote wrote:
+>>>>>>>>> On 24/Jun - 01:45, Gilles Chanteperdrix wrote:
+>>>>>>>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+>>>>>>>>>> 
+>>>>>>>>>> On 06/23/2014 01:18 PM, Arnaud Degroote wrote:
+>>>>>>>>>>> On 23/Jun - 11:22, Gilles Chanteperdrix wrote:
+>>>>>>>>>>>> On 06/23/2014 11:08 AM, Arnaud Degroote
+>>>>>>>>>>>> wrote:
+>>>>>>>>>>>>> Hi list,
+>>>>>>>>>>>>> 
+>>>>>>>>>>>>> I'm trying to deploy a 3.14 kernel on my 
+>>>>>>>>>>>>> BeagleBoard XM rev C but got several
+>>>>>>>>>>>>> issues. So, first question, it is supposed
+>>>>>>>>>>>>> to be supported or am I somewhere in a grey
+>>>>>>>>>>>>> zone ?
+>>>>>>>>>>>>> 
+>>>>>>>>>>>>> Let describe more precisely the
+>>>>>>>>>>>>> configuration and the symptom. -
+>>>>>>>>>>>>> linux-ipipe branch ipipe-3.14 - xenomai
+>>>>>>>>>>>>> 2.6.3 + some patches from 2.6 branch
+>>>>>>>>>>>>> (including 
+>>>>>>>>>>>>> d1d00e0acd29bb5f9023494a883a7fa0def40917 
+>>>>>>>>>>>>> 41cb1f73814d1094e0ea75ccbbd23ff01280787e 
+>>>>>>>>>>>>> 7a48019268d7e1157ebb072b88f6683425f0c7c5 
+>>>>>>>>>>>>> f00d22eca6277e780c19a5d5ecd2ed0e23dabafe )
+>>>>>>>>>>>> 
+>>>>>>>>>>>> It is supposed to work, could you try again
+>>>>>>>>>>>> with the xenomai 2.6 git?
+>>>>>>>>>>>> 
+>>>>>>>>>>> 
+>>>>>>>>>>> Hi Gilles,
+>>>>>>>>>>> 
+>>>>>>>>>>> I just tested against 2.6-git and observe the
+>>>>>>>>>>> same behaviours.
+>>>>>>>>>>> 
+>>>>>>>>>>> Best regards,
+>>>>>>>>>>> 
+>>>>>>>>>> Could you post your configuration?
+>>>>>>>>> 
+>>>>>>>>> Sure, see the attached defconfig. It is basically 
+>>>>>>>>> yocto base arm kernel + xenomai (and some kernel 
+>>>>>>>>> hacking option).
+>>>>>>>>> 
+>>>>>>>>> 
+>>>>>>>> Could you try to turn off CONFIG_NO_HZ ?
+>>>>>>> 
+>>>>>>> Without CONFIG_NO_HZ, it hangs repeatably during the
+>>>>>>> boot (in the same place than with CONFIG_NO_HZ without
+>>>>>>>  CONFIG_DEBUG_LOCK_ALLOC, so this last option is more
+>>>>>>> a timing workaround than a "real fix"). See the
+>>>>>>> attached defconfig and boot log.
+>>>>>> 
+>>>>>> Do you have the same problem if you boot using NFS
+>>>>>> instead of an SD card?
+>>>>>> 
+>>>>> 
+>>>>> Using root on nfs does not seem to change the problem. It 
+>>>>> still hangs in the same place.
+>>>> 
+>>>> Ok, could you disable FTRACE, then enable the I-pipe debugs 
+>>>> except the I-pipe tracer? And enable all the xenomai debugs?
+>>>> 
+>>> 
+>>> Without FTRACE, the kernel seems to boot successfully quite
+>>> often (I won't say always still). Moreover, the clocktest now
+>>> terminates. Still, the latency hangs, without much debug
+>>> information (maybe I miss some options in the kernel
+>>> configuration or at runtime). At this moment,
+>>> /proc/xenomai/sched shows
+>>> 
+>>> root@beagleboard:~# cat /proc/xenomai/sched CPU  PID    CLASS
+>>> PRI TIMEOUT   TIMEBASE   STAT       NAME 0  0      idle    -1
+>>> - master     R          ROOT 0  391    rt       0      - master
+>>> X          switchtest 0  392    rt       0      - master     X
+>>> switchtest 0  405    rt       0      - master     X
+>>> display-393 0  406    rt      99      481us master     Dt
+>>> sampling-393 0  0      rt       1      - master     Wl
+>>> rtk1/0 0  0      rt       1      - master     Wl         rtk2/0
+>>> 0  0      rt       1      - master     Wlf        rtk3/0 0  0
+>>> rt       1      - master     Wlf        rtk4/0 0  0      rt
+>>> 1      - master     Wlf        rtk5/0 0  0      rt       1
+>>> - master     Wlf        rtk6/0 0  0      rt       1      - 
+>>> master     Wl         rtk1/0 0  0      rt       1      - master
+>>> Wl         rtk2/0 0  0      rt       1      - master     Wlf
+>>> rtk3/0 0  0      rt       1      - master     Wlf        rtk4/0
+>>> 0  0      rt       1      - master     Wlf        rtk5/0 0  0
+>>> rt       1      - master     Wlf        rtk6/0 0  417    rt
+>>> 1      - master     Wl         rtup0-7 0  419    rt       1
+>>> - master     Wl         rtup0-7 0  420    rt       1      - 
+>>> master     Wl         rtup0-8 0  421    rt       1      - 
+>>> master     Wl         rtup0-8 0  422    rt       1      - 
+>>> master     Wl         rtup_ufpp0-9 0  423    rt       1      - 
+>>> master     Wl         rtup_ufpp0-9 0  424    rt       1      - 
+>>> master     Wl         rtup_ufpp0-10 0  426    rt       1
+>>> - master     Wl         rtup_ufpp0-10 0  427    rt       1
+>>> - master     X          rtus0-11 0  428    rt       1      - 
+>>> master     X          rtus0-11 0  429    rt       1      - 
+>>> master     X          rtus0-12 0  430    rt       1      - 
+>>> master     X          rtus0-12 0  432    rt       1      - 
+>>> master     X          rtus_ufps0-13 0  433    rt       1
+>>> - master     X          rtus_ufps0-13 0  434    rt       1
+>>> - master     X          rtus_ufps0-14 0  435    rt       1
+>>> - master     X          rtus_ufps0-14 0  436    rt       1
+>>> - master     X          rtuo0-15 0  437    rt       1      - 
+>>> master     X          rtuo0-15 0  438    rt       1      - 
+>>> master     X          rtuo0-16 0  439    rt       1      - 
+>>> master     X          rtuo0-16 0  440    rt       1      - 
+>>> master     X          rtuo_ufpp0-17 0  441    rt       1
+>>> - master     X          rtuo_ufpp0-17 0  442    rt       1
+>>> - master     Wl         rtuo_ufpp0-18 0  443    rt       1
+>>> - master     X          rtuo_ufpp0-18 0  444    rt       1
+>>> - master     Wl         rtuo_ufps0-19 0  445    rt       1
+>>> - master     X          rtuo_ufps0-19 0  446    rt       1
+>>> - master     Wl         rtuo_ufps0-20 0  447    rt       1
+>>> - master     X          rtuo_ufps0-20 0  448    rt       1
+>>> - master     Wl         rtuo_ufpp_ufps0-21 0  450    rt
+>>> 1 -         master     X          rtuo_ufpp_ufps0-21 0  451
+>>> rt 1      -         master     Wl         rtuo_ufpp_ufps0-22 0
+>>> 452 rt       1      -         master     X
+>>> rtuo_ufpp_ufps0-22
+>> 
+>> You are not just running latency, you are running latency and
+>> switchtest.
+>> 
+>> Could you try and run the latency test alone? Please proceed one
+>> step at a time.
+> 
+> Yes, sorry for that, I use xeno-regression-test directly.
+> 
+> latency seems to work properly. switchtest with the default
+> argument hangs quite fast. switchtest -s 1000 seems to survive long
+> time.
+> 
+> Concerning your previous mail, any easy way to test GP timer I'm
+> not aware about or must I write some kind of test kernel module ?
+> 
+If the latency test works, the GP timer works, no need to test it.
+
+switchtest is another story. Does switchtest hang, or does the system
+completely freeze?
+
+- -- 
+                                                                Gilles.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+Comment: Using GnuPG with Icedove - http://www.enigmail.net/
+
+iD8DBQFTq/8gGpcgE6m/fboRAgdJAJ9k6eNKf4PPg8D7FnPBTkyhjpHQwQCdENSi
+J7NFzAo9wo+TVn3nlGEUbUM=
+=LFtL
+-----END PGP SIGNATURE-----
 
