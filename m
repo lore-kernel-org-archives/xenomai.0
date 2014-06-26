@@ -1,12 +1,16 @@
-Message-ID: <53C65367.1050301@xenomai.org>
-Date: Wed, 16 Jul 2014 12:26:47 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <53AC1615.2010606@grinta.net>
+Date: Thu, 26 Jun 2014 14:46:13 +0200
+From: Daniele Nicolodi <daniele@grinta.net>
 MIME-Version: 1.0
-References: <53C550DF.4090500@axelsw.it>
-In-Reply-To: <53C550DF.4090500@axelsw.it>
+References: <5294A4C3.9090404@grinta.net> <5294A711.2010700@xenomai.org>
+ <5294A933.5050300@grinta.net> <5294AAB4.5030707@xenomai.org>
+ <5294AC3E.4040009@grinta.net> <5294AFBE.9060404@xenomai.org>
+ <5294B125.2060501@grinta.net> <5294B36D.5060202@xenomai.org>
+ <529530A5.30209@xenomai.org>
+In-Reply-To: <529530A5.30209@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Question about rtdm_mmap_to user
+Subject: Re: [Xenomai] cgit repository modification times
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,69 +19,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marco Tessore <marco.tessore@axelsw.it>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 07/15/2014 06:03 PM, Marco Tessore wrote:
-> Good morning,
-> I would like to share a buffer between user space task and kernel space 
-> realtime driver.
-> 
-> I used the function rtdm_mmap_to user in the following way:
-> 
-> In the driver, in the function myDriver_ioctl_rt I have the code:
-> 
->         spild->agg_write_frame_buffer allocated with kalloc
-> 
->          ret = rtdm_mmap_to_user( user_info,
->                  spild->agg_write_frame_buffer,
->                  agg_fun_local.data_size,
->                  PROT_READ|PROT_WRITE ,
->                  &tmpPtr,
->                  NULL,
->                  NULL
->          );
->          agg_fun_local.data_buffer = (uint8_t *) tmpPtr;
-> 
->          rtdm_printk("mmap = %X\n", (unsigned) 
-> agg_fun_local.data_buffer); // print the returned address
-> 
->          if (ret)
->          {
->              rtdm_printk("mmap error1\n");
-> 
->              kfree(spild->agg_write_frame_buffer);
->              return ret;
->          }
-> 
->          // check data
->          spild->agg_write_frame_buffer[0] = 0xBE;
->          spild->agg_write_frame_buffer[1] = 0xEF;
-> 
->          // then returned the agg_fun_local structure to userspace
-> 
-> In the user space process I have the following code:
->      ret = rt_dev_ioctl( device, IOCTL_MYDRIVER, &agg_fun );
->      if (ret)
->      {
->          printf("PREP_AGG_WRITE failed, ret = %X", (int) ret);
->      }
-> 
->      printf("USER = Address = %X\n", (unsigned) agg_fun.data_buffer);
->      printf("USER check %X%X\n", pAggFun->data_buffer[0], 
-> agg_fun.data_buffer[1]);
-> 
-> I have verified that the address in userspace is the same of the one 
-> returned by the rtdm_mmap_to_user.
-> The problem is that in the process I cannot see the check data written 
-> in the driver.
-> 
-> Is there something wrong in my code?
-> Are there some constraints tha I haven't took into account?
+On 27/11/2013 00:37, Gilles Chanteperdrix wrote:
+> On 11/26/2013 03:42 PM, Gilles Chanteperdrix wrote:
+>> On 11/26/2013 03:33 PM, Daniele Nicolodi wrote:
+>>> On 26/11/2013 15:27, Gilles Chanteperdrix wrote:
+>>>> On 11/26/2013 03:12 PM, Daniele Nicolodi wrote:
+>>>>> On 26/11/2013 15:05, Gilles Chanteperdrix wrote:
+>>>>>> On 11/26/2013 02:59 PM, Daniele Nicolodi wrote:
+>>>>>>> On 26/11/2013 14:50, Gilles Chanteperdrix wrote:
+>>>>>>>> On 11/26/2013 02:40 PM, Daniele Nicolodi wrote:
+>>>>>>>>> Hello,
+>>>>>>>>>
+>>>>>>>>> I've noticed that the new cgit web interface to the git repositories
+>>>>>>>>> does not display the correct modification times for the repository in
+>>>>>>>>> the repository list.  I don't know what may cause this, the displayed
+>>>>>>>>> times seems completely arbitrary to me.
+>>>>>>>>
+>>>>>>>> Maybe that is because the time displayed in the repository list is not
+>>>>>>>> the modification time, but the idle time, as the title line indicates?
+>>>>>>>
+>>>>>>> Sorry, wrong choice of words on my side. I believe that the idle time is
+>>>>>>> defined as (current time) - (modification time). Isn't it?
+>>>>>>
+>>>>>>>
+>>>>>>> Still, for example, the xenomai-force repository has two branches:
+>>>>>>> "master" and "next", for which cgit shows an "Age" (which I believe
+>>>>>>> should be interpreted in the same way as "Idle") of respectively 24
+>>>>>>> hours and 3 weeks.  The "Idle" field in the repository list reports 11 days.
+>>>>>>
+>>>>>> It seems you are mixing the time when the last push occurred with the
+>>>>>> time when the last commit occurred, with git the two are not necessarily
+>>>>>> correlated. If you look at other projects using cgit, kernel.org for
+>>>>>> instance, you will find the same disparities.
+>>>>>>
+>>>>>> In the case of Xenomai, most of the repositories appear to have been
+>>>>>> pushed 11 days ago because this is the time when the repositories were
+>>>>>> cloned from the old xenomai server to the new xenomai server.
+>>>>>
+>>>>> I know, but how is it possible that a changeset has been pushed before
+>>>>> being committed?
+>>>>
+>>>> Indeed, that is strange, I will look at it. Maybe we miss some hooks
+>>>> (like git-update-server).
+>>>
+>>> I think it is due to the fact that only the master branch of each
+>>> repository is looked at.  I checked on gnome.org cgit instance and it
+>>> shows the same behavior.  I don't know if it is configurable.
+>>
+>> Seems a fix exists:
+>> http://article.gmane.org/gmane.comp.version-control.cgit/1059
+>>
+>> Will try tonight.
+>>
+> It should work now.
 
-On which platform do you do this? If on ARM with a VIVT cache, you have
-to flush the cache after writing one side for the other side to see the
-change, or map the region with writecombine.
 
--- 
-                                                                Gilles.
+Hello,
+
+it seems that the generation of the cgit index page broke down recently,
+the last update time is 2014-06-21 05:18:50.
+
+Cheers,
+Daniele
+
 
