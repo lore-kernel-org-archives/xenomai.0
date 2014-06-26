@@ -1,14 +1,16 @@
-Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
-From: Jan Jaap Kempenaar <janjaapkempenaar@gmail.com>
-In-Reply-To: <53C65420.6040608@xenomai.org>
-Date: Thu, 17 Jul 2014 09:48:18 +0200
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <0106E84F-4693-4A95-8219-298D9E932C17@gmail.com>
-References: <FEB36BE3-3DA6-4594-9064-213B66B059ED@gmail.com>
- <53C65420.6040608@xenomai.org>
-Subject: Re: [Xenomai] modprobe cannot find RTDM kernel module during boot
-	sequence
+Message-ID: <53AC5700.5010604@xenomai.org>
+Date: Thu, 26 Jun 2014 19:23:12 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <5294A4C3.9090404@grinta.net> <5294A711.2010700@xenomai.org>
+ <5294A933.5050300@grinta.net> <5294AAB4.5030707@xenomai.org>
+ <5294AC3E.4040009@grinta.net> <5294AFBE.9060404@xenomai.org>
+ <5294B125.2060501@grinta.net> <5294B36D.5060202@xenomai.org>
+ <529530A5.30209@xenomai.org> <53AC1615.2010606@grinta.net>
+In-Reply-To: <53AC1615.2010606@grinta.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] cgit repository modification times
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,32 +19,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Daniele Nicolodi <daniele@grinta.net>, xenomai@xenomai.org
 
-Hello,
+On 06/26/2014 02:46 PM, Daniele Nicolodi wrote:
+> On 27/11/2013 00:37, Gilles Chanteperdrix wrote:
+>> On 11/26/2013 03:42 PM, Gilles Chanteperdrix wrote:
+>>> On 11/26/2013 03:33 PM, Daniele Nicolodi wrote:
+>>>> On 26/11/2013 15:27, Gilles Chanteperdrix wrote:
+>>>>> On 11/26/2013 03:12 PM, Daniele Nicolodi wrote:
+>>>>>> On 26/11/2013 15:05, Gilles Chanteperdrix wrote:
+>>>>>>> On 11/26/2013 02:59 PM, Daniele Nicolodi wrote:
+>>>>>>>> On 26/11/2013 14:50, Gilles Chanteperdrix wrote:
+>>>>>>>>> On 11/26/2013 02:40 PM, Daniele Nicolodi wrote:
+>>>>>>>>>> Hello,
+>>>>>>>>>>
+>>>>>>>>>> I've noticed that the new cgit web interface to the git repositories
+>>>>>>>>>> does not display the correct modification times for the repository in
+>>>>>>>>>> the repository list.  I don't know what may cause this, the displayed
+>>>>>>>>>> times seems completely arbitrary to me.
+>>>>>>>>>
+>>>>>>>>> Maybe that is because the time displayed in the repository list is not
+>>>>>>>>> the modification time, but the idle time, as the title line indicates?
+>>>>>>>>
+>>>>>>>> Sorry, wrong choice of words on my side. I believe that the idle time is
+>>>>>>>> defined as (current time) - (modification time). Isn't it?
+>>>>>>>
+>>>>>>>>
+>>>>>>>> Still, for example, the xenomai-force repository has two branches:
+>>>>>>>> "master" and "next", for which cgit shows an "Age" (which I believe
+>>>>>>>> should be interpreted in the same way as "Idle") of respectively 24
+>>>>>>>> hours and 3 weeks.  The "Idle" field in the repository list reports 11 days.
+>>>>>>>
+>>>>>>> It seems you are mixing the time when the last push occurred with the
+>>>>>>> time when the last commit occurred, with git the two are not necessarily
+>>>>>>> correlated. If you look at other projects using cgit, kernel.org for
+>>>>>>> instance, you will find the same disparities.
+>>>>>>>
+>>>>>>> In the case of Xenomai, most of the repositories appear to have been
+>>>>>>> pushed 11 days ago because this is the time when the repositories were
+>>>>>>> cloned from the old xenomai server to the new xenomai server.
+>>>>>>
+>>>>>> I know, but how is it possible that a changeset has been pushed before
+>>>>>> being committed?
+>>>>>
+>>>>> Indeed, that is strange, I will look at it. Maybe we miss some hooks
+>>>>> (like git-update-server).
+>>>>
+>>>> I think it is due to the fact that only the master branch of each
+>>>> repository is looked at.  I checked on gnome.org cgit instance and it
+>>>> shows the same behavior.  I don't know if it is configurable.
+>>>
+>>> Seems a fix exists:
+>>> http://article.gmane.org/gmane.comp.version-control.cgit/1059
+>>>
+>>> Will try tonight.
+>>>
+>> It should work now.
+> 
+> 
+> Hello,
+> 
+> it seems that the generation of the cgit index page broke down recently,
+> the last update time is 2014-06-21 05:18:50.
 
-Thank you for your reply.
+Indeed, it should be fixed now.
 
->=20
-> You should not use kernel 3.2.21, the I-piep patch is known to contain =
-a
-> bug. Please update to a more recent patch.
->=20
-
-We are trying newer kernel versions, however have not been able yet to =
-create one that runs the xeno-test stable.
-However, would there be a possibility that the issue mentioned here is =
-solved with a newer kernel version/adeos patch?
-
-> Some versions of modprobe try to insmod the module directly first, and
-> if that fails take the dependencies into account. If the module =
-appears
-> in lsmod, I believe you can safely ignore this warning.
-
-After boot(and login as root), when performing the lsmod, the module is =
-also not loaded. However when we perform the "modprobe rt_module" then, =
-the module gets loaded properly.
-
-Regards,
-Jan Jaap=
+-- 
+                                                                Gilles.
 
