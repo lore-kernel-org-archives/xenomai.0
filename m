@@ -1,12 +1,12 @@
-Message-ID: <53C67030.8040709@xenomai.org>
-Date: Wed, 16 Jul 2014 14:29:36 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <53AC2986.5050808@xenomai.org>
+Date: Thu, 26 Jun 2014 16:09:10 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <freemail.20140716141642.14849.3@fmxmldata05.freemail.hu>
-In-Reply-To: <freemail.20140716141642.14849.3@fmxmldata05.freemail.hu>
-Content-Type: text/plain; charset=UTF-8
+References: <CAEeRa+SS+Kwnf_L_zi5tWJ81Le8rVWbZM_hQWSdaBR-1TAcnwg@mail.gmail.com>
+In-Reply-To: <CAEeRa+SS+Kwnf_L_zi5tWJ81Le8rVWbZM_hQWSdaBR-1TAcnwg@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Memory paging trouble
+Subject: Re: [Xenomai] Safe to use GCC atomics within Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,17 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paal Tamas <paal_to@freemail.hu>, xenomai@xenomai.org
+To: Stefan S <smarzlys@gmail.com>, xenomai@xenomai.org
 
-On 07/16/2014 02:16 PM, Paal Tamas wrote:
-> Gilles, Hopefully this time it will be better.
+On 06/26/2014 02:17 PM, Stefan S wrote:
+> Hi all,
+>
+> GCC 4.6.3 (included in Ubuntu 12.04 LTS) supports atomic builtins.
+> I would like to know whether it is safe to use the following builtins:
+>
+> * type __sync_fetch_and_or (type *ptr, type value, ...)
+> * __sync_synchronize (...)
+> * type __sync_lock_test_and_set (type *ptr, type value, ...)
+> (Definitions taken from
+> https://gcc.gnu.org/onlinedocs/gcc-4.1.2/gcc/Atomic-Builtins.html)
+>
+> I know that in "asm/xenomai/atomic.h", there are some Xenomai specific
+> defintions but not for the first one.
+>
+> My configuration:
+>
+> * Xenomai 2.6.3 with ipipe-core-3.10.32-x86-2 patch on a vanilla kernel
+> * x86_64, Intel core i5
+> * Ubuntu 12.04.4 LTS
 
-No, it is not, see:
-http://www.xenomai.org/pipermail/xenomai/2014-July/031316.html
-
-Please send a plain text mail.
-
+I'm using gcc 4.8.2 (fedora) on x86 platforms currently, but I had no 
+issue with using the atomic builtins of the 4.6.x series some time ago 
+(Xenomai 3 depends on those builtins). So you should be ok.
 
 -- 
-                                                                Gilles.
+Philippe.
 
