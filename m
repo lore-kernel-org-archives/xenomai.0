@@ -1,6 +1,6 @@
-Date: Mon, 30 Jun 2014 10:16:30 +0200
+Date: Mon, 30 Jun 2014 10:26:20 +0200
 From: Arnaud Degroote <arnaud.degroote@isae.fr>
-Message-ID: <20140630081629.GA3230@dmia-degroote.isae.fr>
+Message-ID: <20140630082620.GA3314@dmia-degroote.isae.fr>
 References: <20140625081129.GA31341@dmia-degroote.isae.fr>
  <53AA8A35.7000506@xenomai.org>
  <20140625094715.GA26690@dmia-degroote.isae.fr>
@@ -54,21 +54,21 @@ On 27/Jun - 18:27, Gilles Chanteperdrix wrote:
 > > if it does not progress. But counters from /proc/xenomai/stat
 > > stops incrementing at some point.
 > > 
-> You are running switchtest alone, after booting, nothing else is
-> running in the background, right? If yes, then that would mean that an
-> error in FP handling was detected. Do you get a message in the kernel
-> logs, or a message by switchtest itself?
 
-Well, there is a few thing in the background running (such as dhclient,
-nfsd, sshd, ...). I disabled them all but the behaviour does not change. 
+Related to my previous mail, I'm able to reduce threadspec to 
 
-I try to run switchtest --no-fpu and I observe the same behaviour (i.e.
-it hangs after a number of context switch), so I don't think it is FP
-related.
+rtk0 rtk0  rtup0
+
+or 
+
+rtk0  rtup0 rtup0
+
+Both demonstrates some quick hang. Other pattern may block too, I don't
+try the full combinatorial.
 -------------- next part --------------
 A non-text attachment was scrubbed...
 Name: signature.asc
 Type: application/pgp-signature
 Size: 490 bytes
 Desc: Digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140630/cf102509/attachment.sig>
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140630/90e2a5f8/attachment.sig>
