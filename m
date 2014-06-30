@@ -1,20 +1,15 @@
-Date: Mon, 30 Jun 2014 14:01:35 +0200
-From: Arnaud Degroote <arnaud.degroote@isae.fr>
-Message-ID: <20140630120135.GA4552@dmia-degroote.isae.fr>
-References: <20140626075607.GA32691@dmia-degroote.isae.fr>
- <53ABFF21.8010700@xenomai.org>
- <20140626111949.GA4486@dmia-degroote.isae.fr>
- <53AC5810.7040806@xenomai.org>
- <20140627072229.GA14771@dmia-degroote.isae.fr>
- <53AD9B7F.5030701@xenomai.org>
- <20140630082620.GA3314@dmia-degroote.isae.fr>
- <53B126EE.6020306@xenomai.org>
- <20140630091310.GA4019@dmia-degroote.isae.fr>
- <53B13914.2010706@xenomai.org>
+Message-ID: <53B1531F.4040504@xenomai.org>
+Date: Mon, 30 Jun 2014 14:07:59 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <53B13914.2010706@xenomai.org>
-Content-Type: text/plain; charset="us-ascii"
+References: <20140626075607.GA32691@dmia-degroote.isae.fr>
+ <53ABFF21.8010700@xenomai.org> <20140626111949.GA4486@dmia-degroote.isae.fr>
+ <53AC5810.7040806@xenomai.org> <20140627072229.GA14771@dmia-degroote.isae.fr>
+ <53AD9B7F.5030701@xenomai.org> <20140630082620.GA3314@dmia-degroote.isae.fr>
+ <53B126EE.6020306@xenomai.org> <20140630091310.GA4019@dmia-degroote.isae.fr>
+ <53B13914.2010706@xenomai.org> <20140630120135.GA4552@dmia-degroote.isae.fr>
+In-Reply-To: <20140630120135.GA4552@dmia-degroote.isae.fr>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Support of Beagleboard xm rev C on 3.14-ipipe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -25,93 +20,107 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Arnaud Degroote <arnaud.degroote@isae.fr>
 Cc: xenomai@xenomai.org
 
-On 30/Jun - 12:16, Gilles Chanteperdrix wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 06/30/2014 02:01 PM, Arnaud Degroote wrote:
+> On 30/Jun - 12:16, Gilles Chanteperdrix wrote:
+>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+>> 
+>> On 06/30/2014 11:13 AM, Arnaud Degroote wrote:
+>>> On 30/Jun - 10:59, Gilles Chanteperdrix wrote:
+>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+>>>> 
+>>>> On 06/30/2014 10:26 AM, Arnaud Degroote wrote:
+>>>>> On 27/Jun - 18:27, Gilles Chanteperdrix wrote:
+>>>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+>>>>>> 
+>>>>>> On 06/27/2014 09:22 AM, Arnaud Degroote wrote:
+>>>>>>> On 26/Jun - 19:27, Gilles Chanteperdrix wrote:
+>>>>>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+>>>>>>>> 
+>>>>>>>> On 06/26/2014 01:19 PM, Arnaud Degroote wrote:
+>>>>>>>>> On 26/Jun - 13:08, Gilles Chanteperdrix wrote:
+>>>>>>>>>> switchtest is another story. Does switchtest
+>>>>>>>>>> hang, or does the system completely freeze?
+>>>>>>>>> 
+>>>>>>>>> switchtest hangs, but the system is still
+>>>>>>>>> responsive. I can ctrl-c it and restart it. On C-c,
+>>>>>>>>> it prints "properly" a number of ctx switches done
+>>>>>>>>> (which is far from other "normal" values).
+>>>>>>>>> 
+>>>>>>>> You mean it is as if switchtest had continued
+>>>>>>>> switching contexts but had not printed anything? Do
+>>>>>>>> you see counters incrementing in /proc/xenomai/stat
+>>>>>>>> ?
+>>>>>>> 
+>>>>>>> I just meant that switchtest seems to respond properly
+>>>>>>> to C-c, even if it does not progress. But counters from
+>>>>>>>  /proc/xenomai/stat stops incrementing at some point.
+>>>>>>> 
+>>>>> 
+>>>>> Related to my previous mail, I'm able to reduce threadspec
+>>>>> to
+>>>>> 
+>>>>> rtk0 rtk0  rtup0
+>>>>> 
+>>>>> or
+>>>>> 
+>>>>> rtk0  rtup0 rtup0
+>>>>> 
+>>>>> Both demonstrates some quick hang. Other pattern may block
+>>>>> too, I don't try the full combinatorial.
+>>>>> 
+>>>> Could you test rtk0 alone?
+>>>> 
+>>>> It would mean there is an issue with the context switch. Are
+>>>> you running with the xenomai git?
+>>> 
+>>> It fails with 'rtk0 rtk0 rtk0' (really quickly). With 'rtk0
+>>> rtk0' it seems to work.
+>>> 
+>>> I'm using xenomai-2.6 git 
+>>> (4eb593df1eb89a47f1bc3423cea44c345d22ee3e).
+>>> 
+>> Ok, I just tested your configuration on my omap3 board, and
+>> despite the config having a lot of stuff enabled that you
+>> probably do not want, and may even cause issues (like memory
+>> compaction), I did not observe any problem. I only had to enable
+>> CONFIG_PINCTRL_SINGLE to have the serial console.
 > 
-> On 06/30/2014 11:13 AM, Arnaud Degroote wrote:
-> > On 30/Jun - 10:59, Gilles Chanteperdrix wrote:
-> >> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
-> >> 
-> >> On 06/30/2014 10:26 AM, Arnaud Degroote wrote:
-> >>> On 27/Jun - 18:27, Gilles Chanteperdrix wrote:
-> >>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
-> >>>> 
-> >>>> On 06/27/2014 09:22 AM, Arnaud Degroote wrote:
-> >>>>> On 26/Jun - 19:27, Gilles Chanteperdrix wrote:
-> >>>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
-> >>>>>> 
-> >>>>>> On 06/26/2014 01:19 PM, Arnaud Degroote wrote:
-> >>>>>>> On 26/Jun - 13:08, Gilles Chanteperdrix wrote:
-> >>>>>>>> switchtest is another story. Does switchtest hang,
-> >>>>>>>> or does the system completely freeze?
-> >>>>>>> 
-> >>>>>>> switchtest hangs, but the system is still responsive.
-> >>>>>>> I can ctrl-c it and restart it. On C-c, it prints
-> >>>>>>> "properly" a number of ctx switches done (which is far
-> >>>>>>> from other "normal" values).
-> >>>>>>> 
-> >>>>>> You mean it is as if switchtest had continued switching 
-> >>>>>> contexts but had not printed anything? Do you see
-> >>>>>> counters incrementing in /proc/xenomai/stat ?
-> >>>>> 
-> >>>>> I just meant that switchtest seems to respond properly to
-> >>>>> C-c, even if it does not progress. But counters from 
-> >>>>> /proc/xenomai/stat stops incrementing at some point.
-> >>>>> 
-> >>> 
-> >>> Related to my previous mail, I'm able to reduce threadspec to
-> >>> 
-> >>> rtk0 rtk0  rtup0
-> >>> 
-> >>> or
-> >>> 
-> >>> rtk0  rtup0 rtup0
-> >>> 
-> >>> Both demonstrates some quick hang. Other pattern may block too,
-> >>> I don't try the full combinatorial.
-> >>> 
-> >> Could you test rtk0 alone?
-> >> 
-> >> It would mean there is an issue with the context switch. Are you 
-> >> running with the xenomai git?
-> > 
-> > It fails with 'rtk0 rtk0 rtk0' (really quickly). With 'rtk0 rtk0'
-> > it seems to work.
-> > 
-> > I'm using xenomai-2.6 git
-> > (4eb593df1eb89a47f1bc3423cea44c345d22ee3e).
-> > 
-> Ok, I just tested your configuration on my omap3 board, and despite
-> the config having a lot of stuff enabled that you probably do not
-> want, and may even cause issues (like memory compaction), I did not
-> observe any problem. I only had to enable CONFIG_PINCTRL_SINGLE to
-> have the serial console.
+> I can also confirm that the image (kernel + userland) works
+> perfectly on my gumstix overo (I just changed uboot).
+> 
+> CPU: ARMv7 Processor [411fc083] revision 3 (ARMv7), cr=10c53c7d 
+> Machine: Gumstix Overo OMAP3430/3530 ES3.1 (l2cache iva sgx neon
+> isp )
+> 
+> 
+> (except the two oops described previously in this tread).
 
-I can also confirm that the image (kernel + userland) works perfectly on
-my gumstix overo (I just changed uboot).
+Which two oops?
 
-CPU: ARMv7 Processor [411fc083] revision 3 (ARMv7), cr=10c53c7d
-Machine: Gumstix Overo
-OMAP3430/3530 ES3.1 (l2cache iva sgx neon isp )
+> 
+> So, it may be related to this specific board ?
+> 
+> CPU: ARMv7 Processor [413fc082] revision 2 (ARMv7), cr=10c53c7d 
+> Machine: OMAP3 Beagle Board OMAP3630 ES1.2 (l2cache iva sgx neon
+> isp 192mhz_clk )
 
+Have you checked that the exact same kernel configuration, only
+without CONFIG_IPIPE and CONFIG_XENOMAI runs correctly under load?
 
-(except the two oops described previously in this tread).
+- -- 
+                                                                Gilles.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+Comment: Using GnuPG with Icedove - http://www.enigmail.net/
 
-So, it may be related to this specific board ?
+iD8DBQFTsVMfGpcgE6m/fboRAtcJAKCbXq6XWN5xLlzVevVgwY4IhwK1LwCfcqxE
+XcdmKxxg4T1IbUwL7gVMCdU=
+=jUeq
+-----END PGP SIGNATURE-----
 
-CPU: ARMv7 Processor [413fc082] revision 2 (ARMv7), cr=10c53c7d
-Machine: OMAP3 Beagle Board
-OMAP3630 ES1.2 (l2cache iva sgx neon isp 192mhz_clk )
-
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 490 bytes
-Desc: Digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140630/c9b05919/attachment.sig>
