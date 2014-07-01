@@ -1,13 +1,7 @@
-Message-ID: <53B27E5B.10507@xenomai.org>
-Date: Tue, 01 Jul 2014 11:24:43 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <7016-53b1af80-3d5-7f54e300@12077259>
- <53B1B529.9040106@xenomai.org> <20140701083910.GA28764@dmia-degroote.isae.fr>
-In-Reply-To: <20140701083910.GA28764@dmia-degroote.isae.fr>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Support of Beagleboard xm rev C on 3.14-ipipe
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Date: Tue,  1 Jul 2014 12:27:01 +0200
+Message-Id: <1404210421-17081-1-git-send-email-maxime.ripard@free-electrons.com>
+Subject: [Xenomai] [PATCH] AT91: SAMA5D3: Adapt Ipipe for AIC5
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,140 +10,153 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Arnaud Degroote <arnaud.degroote@isae.fr>
-Cc: xenomai@xenomai.org
+To: gilles.chanteperdrix@xenomai.org
+Cc: Thomas Petazzoni <thomas@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Boris Brezillon <boris@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, xenomai@xenomai.org
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+In the latest generation of Atmel SoCs, the interrupt controller changed. Adapt
+the existing code to take this into account.
 
-On 07/01/2014 10:39 AM, Arnaud Degroote wrote:
-> On 30/Jun - 21:06, Gilles Chanteperdrix wrote:
->> On 06/30/2014 08:41 PM, DEGROOTE Arnaud wrote:
->>> 
->>> On Monday, June 30, 2014 18:13 CEST, Gilles Chanteperdrix
->>> <gilles.chanteperdrix@xenomai.org> wrote:
->>> 
->>> On 06/30/2014 06:06 PM, Arnaud Degroote wrote:
->>>>>> On 30/Jun - 17:48, Gilles Chanteperdrix wrote:
->>>>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
->>>>>>> 
->>>>>>> On 06/30/2014 05:45 PM, Arnaud Degroote wrote:
->>>>>>>> On 30/Jun - 17:26, Gilles Chanteperdrix wrote:
->>>>>>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
->>>>>>>>> 
->>>>>>>>> On 06/30/2014 05:18 PM, Arnaud Degroote wrote:
->>>>>>>>>> On 30/Jun - 14:37, Arnaud Degroote wrote: [snip]
->>>>>>>>>>>> Have you checked that the exact same kernel 
->>>>>>>>>>>> configuration, only without CONFIG_IPIPE and
->>>>>>>>>>>>  CONFIG_XENOMAI runs correctly under load?
->>>>>>>>>>> 
->>>>>>>>>>> The system seems to hang even without
->>>>>>>>>>> CONFIG_IPIPE. The linux-yocto kernel seems to
->>>>>>>>>>> work properly (it looks like a 3.14rc8), I will
->>>>>>>>>>> check precisely against linux kernel v3.14.
->>>>>>>>>> 
->>>>>>>>>> Some additional information
->>>>>>>>>> 
->>>>>>>>>> linux mainstream kernel on tag v3.14 runs fine on
->>>>>>>>>> the platform. The system hangs with ipipe branch
->>>>>>>>>> ipipe-3.14 (without xenomai stuff, and without
->>>>>>>>>> CONFIG_IPIPE).
->>>>>>>>> 
->>>>>>>>> In the two cases the configuration is exactly the
->>>>>>>>> same?
->>>>>>>>> 
->>>>>>>> Yes, there are no semantic difference. The only diff
->>>>>>>> are
->>>>>>>> 
->>>>>>>> CONFIG_LOCALVERSION
->>>>>>>> 
->>>>>>>> and the ipipe kernel has the extra line
->>>>>>>> 
->>>>>>>> # CONFIG_IPIPE is not set
->>>>>>>> 
->>>>>>> If you have a rootfs without hardfp (based on the
->>>>>>> codesourcery toolchain for instance), could you try to
->>>>>>> boot without CONFIG_VFP?
->>>>>> 
->>>>>> I don't have such toolchain for the moment, but I can try
->>>>>> to hack
->>> 
->>>>>> my current yocto toolchain to test without hardfp.
->>> 
->>> The codesourcery toolchain is available for download, already
->>> compiled.
->>> 
->>>>>> Still, I have compiled a kernel without CONFIG_VFP but it
->>>>>> still hangs in the same place, so I don't think it is
->>>>>> related to the current issue.
->>> 
->>> If you are running a rootfs with hardfp with a kernel without 
->>> CONFIG_VFP, the system should not finish booting.
->>> 
->>>> Yes obviously, but at the moment, I don't arrive to the call
->>>> to /sbin/init
->>> 
->>> Where does the system hang exactly? We were talking about a
->>> hang when running switchtest. How do you produce the hang on a
->>> system without CONFIG_XENOMAI, since obviously you can not run
->>> switchtest?
->>> 
->>>> Yes, sorry, I was not very precise.  I get the same behaviour
->>>> than described in the beginning of the thread, i.e. the
->>>> kernel hangs during the boot (and nothing happens after
->>>> that). As I said previously, the hang happens with
->>>> linux-ipipe without CONFIG_IPIPE. The various change of
->>>> configuration makes it "work" by accident.
->>> 
->>>> An hanging kernel boot msg is available on my mail of 24
->>>> June, 14:21 CEST. I cannont reproduce it at the moment, as
->>>> I'm not anymore at work.
->> 
->> As I said in an earlier mail, please do not mix everything, and
->> try and debug one issue at the time.
->> 
->> From your configuration I gather you do not use the serial
->> console (CONFIG_PINCTRL_SINGLE is missing), could you enable the
->> serial console to try and obtain more information about this
->> kernel freeze?
-> 
-> I'm already using the serial console. PINCTRL_SINGLE is not
-> necessary for beagleboard xM AFAIU.
+Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+---
+Hi,
 
-Finding a reproducible freeze location is relatively easy, enable
-CONFIG_DEBUG_LL, and put calls to printascii in the initialization
-functions, starting with init/main.c, and refining inside these
-functions when you know a bit more.
+This patch is not meant to be merged as is.
 
->> 
->> Or alternatively, could you restore the configuration options
->> which "get the system working", so that we can go back to what we
->> were testing: the configuration where switchtest hangs, without
->> CONFIG_IPIPE, and generate some load with the hackbench test, to
->> try and simulate a bit what switchtest is doing. I am also
->> interested by the same configuration with CONFIG_XENOMAI, but
->> without CONFIG_VFP, and running the switchtest rtk0 rtk0 test.
-> 
-> I don't have any working configuration with linux-ipipe without 
-> CONFIG_IPIPE, it always hang during the boot, through I don't try
-> yet with CONFIG_IPIPE, without CONFIG_XENOMAI. Does it make any
-> sense to do some test in this configuration ?
-> 
-> Otherwise, I will build a toolchain without hardfp to do the last
-> test.
+While enough to get the board to boot, it still has stability issues.
 
-As I said, you can install the codesourcery toolchain, you do not need
-to build it. Anyway, let us wait to know in what function the freeze
-occurs.
+Whenever the system has booted, it can stay idle without any (spotted) issue.
+However, as soon as we do something with the board, soon, the linux timer
+doesn't get any interrupt anymore.
 
-- -- 
-                                                                Gilles.
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-Comment: Using GnuPG with Icedove - http://www.enigmail.net/
+This has been tested with the program found at this URL:
+http://git.free-electrons.com/training-materials/tree/lab-data/realtime/rttest/data/rttest.c
 
-iD8DBQFTsn5bGpcgE6m/fboRArF2AJ4jH6yzQLrDOeFodbKJedQAJxKtEQCcCIHk
-bvRDa6k0hp8SA3zlnO0um8w=
-=rUNd
------END PGP SIGNATURE-----
+That basically just poll on the clock and sleeps.
+
+Maxime
+
+ arch/arm/mach-at91/at91sam926x_time.c |  2 --
+ arch/arm/mach-at91/irq.c              | 47 +++++++++++++++++++++++++++++++----
+ 2 files changed, 42 insertions(+), 7 deletions(-)
+
+diff --git a/arch/arm/mach-at91/at91sam926x_time.c b/arch/arm/mach-at91/at91sam926x_time.c
+index 1f7ad837c05d..2a78267da445 100644
+--- a/arch/arm/mach-at91/at91sam926x_time.c
++++ b/arch/arm/mach-at91/at91sam926x_time.c
+@@ -274,8 +274,6 @@ void __init at91sam926x_pit_init(void)
+ 	pit_clkevt.mult = div_sc(pit_rate, NSEC_PER_SEC, pit_clkevt.shift);
+ 	pit_clkevt.cpumask = cpumask_of(0);
+ 	clockevents_register_device(&pit_clkevt);
+-
+-	at91_pic_muter_register();
+ }
+ 
+ void __init at91sam926x_ioremap_pit(u32 addr)
+diff --git a/arch/arm/mach-at91/irq.c b/arch/arm/mach-at91/irq.c
+index a18f229d5d27..f0be89b0ecba 100644
+--- a/arch/arm/mach-at91/irq.c
++++ b/arch/arm/mach-at91/irq.c
+@@ -202,7 +202,7 @@ static void at91_aic_mask_irq(struct irq_data *d)
+ 	hard_cond_local_irq_restore(flags);
+ }
+ 
+-static void __maybe_unused at91_aic5_mask_irq(struct irq_data *d)
++static inline void at91_aic5_hard_mask_irq(struct irq_data *d)
+ {
+ 	/* Disable interrupt on AIC5 */
+ 	at91_aic_write(AT91_AIC5_SSR, d->hwirq & AT91_AIC5_INTSEL_MSK);
+@@ -211,6 +211,16 @@ static void __maybe_unused at91_aic5_mask_irq(struct irq_data *d)
+ 	clear_backup(d->hwirq);
+ }
+ 
++static void at91_aic5_mask_irq(struct irq_data *d)
++{
++	unsigned long flags;
++
++	flags = hard_cond_local_irq_save();
++	at91_aic5_hard_mask_irq(d);
++	ipipe_lock_irq(d->irq);
++	hard_cond_local_irq_restore(flags);
++}
++
+ static inline void at91_aic_hard_unmask_irq(struct irq_data *d)
+ {
+ 	/* Enable interrupt on AIC */
+@@ -229,7 +239,7 @@ static void at91_aic_unmask_irq(struct irq_data *d)
+ 	hard_cond_local_irq_restore(flags);
+ }
+ 
+-static void __maybe_unused at91_aic5_unmask_irq(struct irq_data *d)
++static inline void at91_aic5_hard_unmask_irq(struct irq_data *d)
+ {
+ 	/* Enable interrupt on AIC5 */
+ 	at91_aic_write(AT91_AIC5_SSR, d->hwirq & AT91_AIC5_INTSEL_MSK);
+@@ -238,6 +248,16 @@ static void __maybe_unused at91_aic5_unmask_irq(struct irq_data *d)
+ 	set_backup(d->hwirq);
+ }
+ 
++static void at91_aic5_unmask_irq(struct irq_data *d)
++{
++	unsigned long flags;
++
++	flags = hard_cond_local_irq_save();
++	at91_aic5_hard_unmask_irq(d);
++	ipipe_unlock_irq(d->irq);
++	hard_cond_local_irq_restore(flags);
++}
++
+ static void at91_aic_eoi(struct irq_data *d)
+ {
+ 	/*
+@@ -247,6 +267,11 @@ static void at91_aic_eoi(struct irq_data *d)
+ 	at91_aic_write(AT91_AIC_EOICR, 0);
+ }
+ 
++static void __maybe_unused at91_aic5_eoi(struct irq_data *d)
++{
++	at91_aic_write(AT91_AIC5_EOICR, 0);
++}
++
+ #ifdef CONFIG_IPIPE
+ static void at91_aic_hold_irq(struct irq_data *d)
+ {
+@@ -258,13 +283,20 @@ static void at91_aic_release_irq(struct irq_data *d)
+ {
+ 	at91_aic_hard_unmask_irq(d);
+ }
+-#endif /* CONFIG_IPIPE */
+ 
+-static void __maybe_unused at91_aic5_eoi(struct irq_data *d)
++static void at91_aic5_hold_irq(struct irq_data *d)
+ {
+-	at91_aic_write(AT91_AIC5_EOICR, 0);
++	at91_aic5_hard_mask_irq(d);
++	at91_aic5_eoi(d);
+ }
+ 
++static void at91_aic5_release_irq(struct irq_data *d)
++{
++	at91_aic5_hard_unmask_irq(d);
++}
++
++#endif /* CONFIG_IPIPE */
++
+ static unsigned long *at91_extern_irq;
+ 
+ u32 at91_get_extern_irq(void)
+@@ -529,6 +561,11 @@ int __init at91_aic5_of_init(struct device_node *node,
+ 	at91_aic_chip.irq_eoi		= at91_aic5_eoi;
+ 	at91_aic_irq_ops.map		= at91_aic5_irq_map;
+ 
++#ifdef CONFIG_IPIPE
++	at91_aic_chip.irq_hold		= at91_aic5_hold_irq;
++	at91_aic_chip.irq_release	= at91_aic5_release_irq;
++#endif
++
+ 	err = at91_aic_of_common_init(node, parent);
+ 	if (err)
+ 		return err;
+-- 
+2.0.0
+
 
