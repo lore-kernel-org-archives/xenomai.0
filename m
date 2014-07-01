@@ -1,17 +1,14 @@
-References: <1400788012.41259.YahooMailNeo@web171603.mail.ir2.yahoo.com>
- <1401734780.6508.YahooMailNeo@web171606.mail.ir2.yahoo.com>
- <53A3E8FE.5020005@xenomai.org>
- <1403519510.94410.YahooMailNeo@web171601.mail.ir2.yahoo.com>
- <1403555262.58217.YahooMailNeo@web171601.mail.ir2.yahoo.com>
-Message-ID: <1404233289.69461.YahooMailNeo@web171605.mail.ir2.yahoo.com>
-Date: Tue, 1 Jul 2014 17:48:09 +0100
-From: Matthias Schneider <ma30002000@yahoo.de>
-In-Reply-To: <1403555262.58217.YahooMailNeo@web171601.mail.ir2.yahoo.com>
+Message-ID: <53B30A78.40605@xenomai.org>
+Date: Tue, 01 Jul 2014 21:22:32 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] FreeRTOS skin #2
-Reply-To: Matthias Schneider <ma30002000@yahoo.de>
+References: <7016-53b1af80-3d5-7f54e300@12077259>
+ <53B1B529.9040106@xenomai.org> <20140701083910.GA28764@dmia-degroote.isae.fr>
+ <53B27E5B.10507@xenomai.org> <20140701155123.GA5547@dmia-degroote.isae.fr>
+In-Reply-To: <20140701155123.GA5547@dmia-degroote.isae.fr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Support of Beagleboard xm rev C on 3.14-ipipe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,284 +17,139 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Matthias Schneider <ma30002000@yahoo.de>, Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Arnaud Degroote <arnaud.degroote@isae.fr>
+Cc: xenomai@xenomai.org
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 07/01/2014 05:51 PM, Arnaud Degroote wrote:
+> On 01/Jul - 11:24, Gilles Chanteperdrix wrote:
+>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+>> 
+>> On 07/01/2014 10:39 AM, Arnaud Degroote wrote:
+>>> On 30/Jun - 21:06, Gilles Chanteperdrix wrote:
+>>>> On 06/30/2014 08:41 PM, DEGROOTE Arnaud wrote:
+>>>>> 
+>>>>> On Monday, June 30, 2014 18:13 CEST, Gilles Chanteperdrix 
+>>>>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>>>> 
+>>>>> On 06/30/2014 06:06 PM, Arnaud Degroote wrote:
+>>>>>>>> On 30/Jun - 17:48, Gilles Chanteperdrix wrote:
+>>>>>>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+>>>>>>>>> 
+>>>>>>>>> On 06/30/2014 05:45 PM, Arnaud Degroote wrote:
+>>>>>>>>>> On 30/Jun - 17:26, Gilles Chanteperdrix wrote:
+>>>>>>>>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+>>>>>>>>>>> 
+>>>>>>>>>>> On 06/30/2014 05:18 PM, Arnaud Degroote wrote:
+>>>>>>>>>>>> On 30/Jun - 14:37, Arnaud Degroote wrote:
+>>>>>>>>>>>> [snip]
+>>>>>>>>>>>>>> Have you checked that the exact same
+>>>>>>>>>>>>>> kernel configuration, only without
+>>>>>>>>>>>>>> CONFIG_IPIPE and CONFIG_XENOMAI runs
+>>>>>>>>>>>>>> correctly under load?
+>>>>>>>>>>>>> 
+>>>>>>>>>>>>> The system seems to hang even without 
+>>>>>>>>>>>>> CONFIG_IPIPE. The linux-yocto kernel seems
+>>>>>>>>>>>>> to work properly (it looks like a 3.14rc8),
+>>>>>>>>>>>>> I will check precisely against linux kernel
+>>>>>>>>>>>>> v3.14.
+>>>>>>>>>>>> 
+>>>>>>>>>>>> Some additional information
+>>>>>>>>>>>> 
+>>>>>>>>>>>> linux mainstream kernel on tag v3.14 runs
+>>>>>>>>>>>> fine on the platform. The system hangs with
+>>>>>>>>>>>> ipipe branch ipipe-3.14 (without xenomai
+>>>>>>>>>>>> stuff, and without CONFIG_IPIPE).
+>>>>>>>>>>> 
+>>>>>>>>>>> In the two cases the configuration is exactly
+>>>>>>>>>>> the same?
+>>>>>>>>>>> 
+>>>>>>>>>> Yes, there are no semantic difference. The only
+>>>>>>>>>> diff are
+>>>>>>>>>> 
+>>>>>>>>>> CONFIG_LOCALVERSION
+>>>>>>>>>> 
+>>>>>>>>>> and the ipipe kernel has the extra line
+>>>>>>>>>> 
+>>>>>>>>>> # CONFIG_IPIPE is not set
+>>>>>>>>>> 
+>>>>>>>>> If you have a rootfs without hardfp (based on the 
+>>>>>>>>> codesourcery toolchain for instance), could you try
+>>>>>>>>> to boot without CONFIG_VFP?
+>>>>>>>> 
+>>>>>>>> I don't have such toolchain for the moment, but I can
+>>>>>>>> try to hack
+>>>>> 
+>>>>>>>> my current yocto toolchain to test without hardfp.
+>>>>> 
+>>>>> The codesourcery toolchain is available for download,
+>>>>> already compiled.
+>>>>> 
+>>>>>>>> Still, I have compiled a kernel without CONFIG_VFP
+>>>>>>>> but it still hangs in the same place, so I don't
+>>>>>>>> think it is related to the current issue.
+>>>>> 
+>>>>> If you are running a rootfs with hardfp with a kernel
+>>>>> without CONFIG_VFP, the system should not finish booting.
+>>>>> 
+>>>>>> Yes obviously, but at the moment, I don't arrive to the
+>>>>>> call to /sbin/init
+>>>>> 
+>>>>> Where does the system hang exactly? We were talking about
+>>>>> a hang when running switchtest. How do you produce the hang
+>>>>> on a system without CONFIG_XENOMAI, since obviously you can
+>>>>> not run switchtest?
+>>>>> 
+>>>>>> Yes, sorry, I was not very precise.  I get the same
+>>>>>> behaviour than described in the beginning of the thread,
+>>>>>> i.e. the kernel hangs during the boot (and nothing
+>>>>>> happens after that). As I said previously, the hang
+>>>>>> happens with linux-ipipe without CONFIG_IPIPE. The
+>>>>>> various change of configuration makes it "work" by
+>>>>>> accident.
+>>>>> 
+>>>>>> An hanging kernel boot msg is available on my mail of 24 
+>>>>>> June, 14:21 CEST. I cannont reproduce it at the moment,
+>>>>>> as I'm not anymore at work.
+>>>> 
+>>>> As I said in an earlier mail, please do not mix everything,
+>>>> and try and debug one issue at the time.
+>>>> 
+>>>> From your configuration I gather you do not use the serial 
+>>>> console (CONFIG_PINCTRL_SINGLE is missing), could you enable
+>>>> the serial console to try and obtain more information about
+>>>> this kernel freeze?
+>>> 
+>>> I'm already using the serial console. PINCTRL_SINGLE is not 
+>>> necessary for beagleboard xM AFAIU.
+>> 
+>> Finding a reproducible freeze location is relatively easy,
+>> enable CONFIG_DEBUG_LL, and put calls to printascii in the
+>> initialization functions, starting with init/main.c, and refining
+>> inside these functions when you know a bit more.
+> 
+> Sorry, I get a bit busy today. So the hang seems to be:
+> 
+> - omap_hsmmc_probe - omap_hsmmc_reg_get - omap_hsmmc_set_power -
+> omap_hsmmc1_after_set_reg - msleep(100) <- it never returns
+> 
+> I don't get time yet to go deeper in the call stack, but maybe it
+> will already give you some input.
+> 
+So this would point to a (Linux) timer issue. Could you put a call to
+printascii in the timer interrupt to check that it is still ticking?
+Do you still have CONFIG_NO_HZ disabled?
+
+- -- 
+                                                                Gilles.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+Comment: Using GnuPG with Icedove - http://www.enigmail.net/
+
+iD8DBQFTswp4GpcgE6m/fboRAoRMAJ97aPqicrU0miCJfrfrSm0Fh75TWgCdGd1K
+mb6wLDE8ObnrKgVbKL2htYU=
+=LQ8A
+-----END PGP SIGNATURE-----
 
------ Original Message -----
-
-> From: Matthias Schneider <ma30002000@yahoo.de>
-> To: Philippe Gerum <rpm@xenomai.org>; "xenomai@xenomai.org" <xenomai@xeno=
-mai.org>
-> Cc: =
-
-> Sent: Monday, June 23, 2014 10:27 PM
-> Subject: Re: [Xenomai] FreeRTOS skin #2
-> =
-
-> ----- Original Message -----
-> =
-
->>  From: Matthias Schneider <ma30002000@yahoo.de>
->>  To: Philippe Gerum <rpm@xenomai.org>; "xenomai@xenomai.org" =
-
-> <xenomai@xenomai.org>
->>  Cc: =
-
->>  Sent: Monday, June 23, 2014 12:31 PM
->>  Subject: Re: [Xenomai] FreeRTOS skin #2
->> =
-
->>  ----- Original Message ----- =
-
->>> =A0 From: Philippe Gerum <rpm@xenomai.org> =
-
->>> =A0 To: Matthias Schneider <ma30002000@yahoo.de>; =
-
->>  "xenomai@xenomai.org" <xenomai@xenomai.org> =
-
->>> =A0 Cc: =
-
->>> =A0 Sent: Friday, June 20, 2014 9:55 AM =
-
->>> =A0 Subject: Re: [Xenomai] FreeRTOS skin #2 =
-
->>> =
-
->>> =A0 On 06/02/2014 08:46 PM, Matthias Schneider wrote: =
-
->>> =
-
->>> =
-
->>>> =A0 Please find enclosed a new version of the FreeRTOS skin. It adapts =
-
-> to =
-
->>  the =
-
->>>> =A0 latest changes in forge/next and also removes the previously =
-
-> included =
-
->>>> =A0 workarounds - thanks to the changes done based on the first review =
-
-> =
-
->>  round =
-
->>>> =A0 they were no longer necessary. =
-
->>>> =
-
->>> =
-
->>> =A0 Thanks. Here we go: =
-
->>> =
-
->>> =A0 * vTaskStartScheduler() =
-
->>> =
-
->>> =A0 Dropping the task_list lock then yielding is superfluous, the calle=
-r =
-
->>> =A0 will wait on the condvar for the scheduler state to switch to =
-
-> SUSPENDING =
-
->>> =A0 anyway, implicitly releasing this lock before going to sleep. =
-
->> =
-
->>  Done. =
-
->> =
-
->>> =
-
->>> =A0 * vTaskDelay() =
-
->>> =
-
->>> =A0 Cobalt wraps sched_yield(), so you likely want to call =
-
->>> =A0 __RT(sched_yield()) to pick the proper implementation depending on =
-the =
-
-> =
-
->>> =A0 underlying real-time core. =
-
->>  Done. =
-
->>  =A0 =
-
->>> =A0 * __xTaskGenericCreate() =
-
->>> =
-
->>> =A0 - It looks like the mutex attribute initialized locally is a left o=
-ver =
-
-> =
-
->>> =A0 from a previous implementation. =
-
->>> =
-
->>> =A0 - Drawing unique identifier labels should be done using a name =
-
->>> =A0 generator, e.g. =
-
->>> =
-
->>> =A0 static DEFINE_NAME_GENERATOR(task_namegen, struct freertos_task, =
-
-> name); =
-
->>> =A0 ... =
-
->>>  =A0 =A0=A0 generate_name(task->name, name, &task_namegen); =
-
->>> =A0 The open-coded method also used by other emulators is racy. =
-
->>  Done. =
-
->>  Note that some freertos specific code remains to make duplicated task n=
-ames =
-
-> =
-
->>  unique.
->>  =A0 =
-
->>> =A0 * vPortEnter/ExitCritical() =
-
->>> =
-
->>> =A0 - wouldn't these calls better emulated by threadobj_lock_sched() =
-
->>> =A0 assuming they stand for a global serialization mechanism? =
-
->>  Unfortunately, this seems cause some test cases in the demo to fail. =
-
->>  Since these tests are rather time consuming to investigate, I would lik=
-e =
-
->>  to leave this item open until all other issues have been addressed. We =
-
->>  had also talked about other options concerning this subject as well =
-
->>  (removing the function or leaving it empty), so I still need some =
-
->>  time to think about it. =
-
->>> =A0 * Task registry support =
-
->>> =
-
->>> =A0 The code looks outdated, using fsobstacks is recommended. The regis=
-try =
-
-> =
-
->>> =A0 helpers in lib/alchemy/alarm.c illustrate a basic usage. =
-
->>  Done. =
-
->> =
-
->>> =
-
->>> =A0 * vTaskSuspendAll() =
-
->>> =
-
->>> =A0 Running check_processors() there may switch the caller to linux mod=
-e =
-
->>> =A0 at each invocation, due to calling sysconf/sched_getaffinity =
-
-> indirectly. =
-
->>> =A0 I would rather assume that the CPU affinity is not allowed to chang=
-e =
-
->>> =A0 once started, and determine whether a task is bound to more than a =
-
->>> =A0 single CPU in the trampoline code. Then vTaskSuspendAll() may do a =
-
->>> =A0 simple flag-based test for checking the consistency, still allowing =
-
->>> =A0 different freertos tasks to be pinned on distinct CPUs though. At a=
-ny =
-
->>> =A0 rate, this would be an acceptable restriction, since freertos does =
-not =
-
-> =
-
->>> =A0 seem to be SMP-capable in its reference implementation anyway. =
-
->>  Ok, reading the affinity information once and caching it makes sense to =
-
->>  avoid the switches to secondary mode. However, vTaskSuspendAll() / =
-
->>  vTaskResumeAll() only works as expected when all tasks are pinned to a=
-=A0
->>  single cpu, storing this information on a by-task basis will not be =
-
-> sufficient.=A0
->>  Now if there is one place to retrieve this information, which would it =
-be? =
-
->>  I can think of freertos_init() / freertos_scheduler_init() or =
-
->>  vTaskStartScheduler(). However,=A0 freertos_init() would probably not b=
-e =
-
->>  able to allow setting process cpu affinity programatically at the =
-
->>  beginning of main() if I am not mistaken. =
-
->>> =A0 Next time, I'll start reviewing other parts of the emulator. =
-
->>  Great, thanks in advance for all the input.. =
-
->> =
-
->>> =A0 HTH, =
-
->>> =
-
->>> =A0 -- =
-
->>> =A0 Philippe. =
-
->>> =
-
-> =
-
-> =
-
-> Please find enclosed a revised patch.
-> =
-
-> Matthias
-
-
-Please find enclosed another calling the check_processors() only when start=
-ing
-the scheduler and remembering its output. It is also adapted to the latest =
-changes.
-Any comments will be appreciated.
-
-Matthias
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: 0001-Initial-Freertos-commit-no.-5.patch.gz
-Type: application/gzip
-Size: 34306 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140701/e7483da=
-c/attachment.bin>
