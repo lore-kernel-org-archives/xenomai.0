@@ -1,14 +1,16 @@
-Date: Tue, 1 Jul 2014 16:15:36 +0200
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Message-ID: <20140701141536.GN28647@lukather>
-References: <1404210421-17081-1-git-send-email-maxime.ripard@free-electrons.com>
- <53B294A7.5010803@xenomai.org>
+Date: Tue, 1 Jul 2014 17:51:23 +0200
+From: Arnaud Degroote <arnaud.degroote@isae.fr>
+Message-ID: <20140701155123.GA5547@dmia-degroote.isae.fr>
+References: <7016-53b1af80-3d5-7f54e300@12077259>
+ <53B1B529.9040106@xenomai.org>
+ <20140701083910.GA28764@dmia-degroote.isae.fr>
+ <53B27E5B.10507@xenomai.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <53B294A7.5010803@xenomai.org>
+In-Reply-To: <53B27E5B.10507@xenomai.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] AT91: SAMA5D3: Adapt Ipipe for AIC5
+Subject: Re: [Xenomai] Support of Beagleboard xm rev C on 3.14-ipipe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,82 +20,125 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Thomas Petazzoni <thomas@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Boris Brezillon <boris@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, xenomai@xenomai.org
+Cc: xenomai@xenomai.org
 
-Hi Gilles,
-
-On Tue, Jul 01, 2014 at 12:59:51PM +0200, Gilles Chanteperdrix wrote:
-> On 07/01/2014 12:27 PM, Maxime Ripard wrote:
-> > -
-> > -	at91_pic_muter_register();
-> >  }
+On 01/Jul - 11:24, Gilles Chanteperdrix wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
 > 
-> Obviously, some if (soc_is_foo()) missing here.
-
-Right.
-
-> > +static void __maybe_unused at91_aic5_eoi(struct irq_data *d)
-> > +{
-> > +	at91_aic_write(AT91_AIC5_EOICR, 0);
-> > +}
+> On 07/01/2014 10:39 AM, Arnaud Degroote wrote:
+> > On 30/Jun - 21:06, Gilles Chanteperdrix wrote:
+> >> On 06/30/2014 08:41 PM, DEGROOTE Arnaud wrote:
+> >>> 
+> >>> On Monday, June 30, 2014 18:13 CEST, Gilles Chanteperdrix
+> >>> <gilles.chanteperdrix@xenomai.org> wrote:
+> >>> 
+> >>> On 06/30/2014 06:06 PM, Arnaud Degroote wrote:
+> >>>>>> On 30/Jun - 17:48, Gilles Chanteperdrix wrote:
+> >>>>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+> >>>>>>> 
+> >>>>>>> On 06/30/2014 05:45 PM, Arnaud Degroote wrote:
+> >>>>>>>> On 30/Jun - 17:26, Gilles Chanteperdrix wrote:
+> >>>>>>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+> >>>>>>>>> 
+> >>>>>>>>> On 06/30/2014 05:18 PM, Arnaud Degroote wrote:
+> >>>>>>>>>> On 30/Jun - 14:37, Arnaud Degroote wrote: [snip]
+> >>>>>>>>>>>> Have you checked that the exact same kernel 
+> >>>>>>>>>>>> configuration, only without CONFIG_IPIPE and
+> >>>>>>>>>>>>  CONFIG_XENOMAI runs correctly under load?
+> >>>>>>>>>>> 
+> >>>>>>>>>>> The system seems to hang even without
+> >>>>>>>>>>> CONFIG_IPIPE. The linux-yocto kernel seems to
+> >>>>>>>>>>> work properly (it looks like a 3.14rc8), I will
+> >>>>>>>>>>> check precisely against linux kernel v3.14.
+> >>>>>>>>>> 
+> >>>>>>>>>> Some additional information
+> >>>>>>>>>> 
+> >>>>>>>>>> linux mainstream kernel on tag v3.14 runs fine on
+> >>>>>>>>>> the platform. The system hangs with ipipe branch
+> >>>>>>>>>> ipipe-3.14 (without xenomai stuff, and without
+> >>>>>>>>>> CONFIG_IPIPE).
+> >>>>>>>>> 
+> >>>>>>>>> In the two cases the configuration is exactly the
+> >>>>>>>>> same?
+> >>>>>>>>> 
+> >>>>>>>> Yes, there are no semantic difference. The only diff
+> >>>>>>>> are
+> >>>>>>>> 
+> >>>>>>>> CONFIG_LOCALVERSION
+> >>>>>>>> 
+> >>>>>>>> and the ipipe kernel has the extra line
+> >>>>>>>> 
+> >>>>>>>> # CONFIG_IPIPE is not set
+> >>>>>>>> 
+> >>>>>>> If you have a rootfs without hardfp (based on the
+> >>>>>>> codesourcery toolchain for instance), could you try to
+> >>>>>>> boot without CONFIG_VFP?
+> >>>>>> 
+> >>>>>> I don't have such toolchain for the moment, but I can try
+> >>>>>> to hack
+> >>> 
+> >>>>>> my current yocto toolchain to test without hardfp.
+> >>> 
+> >>> The codesourcery toolchain is available for download, already
+> >>> compiled.
+> >>> 
+> >>>>>> Still, I have compiled a kernel without CONFIG_VFP but it
+> >>>>>> still hangs in the same place, so I don't think it is
+> >>>>>> related to the current issue.
+> >>> 
+> >>> If you are running a rootfs with hardfp with a kernel without 
+> >>> CONFIG_VFP, the system should not finish booting.
+> >>> 
+> >>>> Yes obviously, but at the moment, I don't arrive to the call
+> >>>> to /sbin/init
+> >>> 
+> >>> Where does the system hang exactly? We were talking about a
+> >>> hang when running switchtest. How do you produce the hang on a
+> >>> system without CONFIG_XENOMAI, since obviously you can not run
+> >>> switchtest?
+> >>> 
+> >>>> Yes, sorry, I was not very precise.  I get the same behaviour
+> >>>> than described in the beginning of the thread, i.e. the
+> >>>> kernel hangs during the boot (and nothing happens after
+> >>>> that). As I said previously, the hang happens with
+> >>>> linux-ipipe without CONFIG_IPIPE. The various change of
+> >>>> configuration makes it "work" by accident.
+> >>> 
+> >>>> An hanging kernel boot msg is available on my mail of 24
+> >>>> June, 14:21 CEST. I cannont reproduce it at the moment, as
+> >>>> I'm not anymore at work.
+> >> 
+> >> As I said in an earlier mail, please do not mix everything, and
+> >> try and debug one issue at the time.
+> >> 
+> >> From your configuration I gather you do not use the serial
+> >> console (CONFIG_PINCTRL_SINGLE is missing), could you enable the
+> >> serial console to try and obtain more information about this
+> >> kernel freeze?
+> > 
+> > I'm already using the serial console. PINCTRL_SINGLE is not
+> > necessary for beagleboard xM AFAIU.
 > 
-> You want to make that inline, so that the hold callback ends-up doing
-> just two register writes without any function calls, improving interrupt
-> latency.
-> 
-> > +
-> >  #ifdef CONFIG_IPIPE
-> >  static void at91_aic_hold_irq(struct irq_data *d)
-> >  {
-> > @@ -258,13 +283,20 @@ static void at91_aic_release_irq(struct irq_data *d)
-> >  {
-> >  	at91_aic_hard_unmask_irq(d);
-> >  }
-> > -#endif /* CONFIG_IPIPE */
-> >  
-> > -static void __maybe_unused at91_aic5_eoi(struct irq_data *d)
-> > +static void at91_aic5_hold_irq(struct irq_data *d)
-> >  {
-> > -	at91_aic_write(AT91_AIC5_EOICR, 0);
-> > +	at91_aic5_hard_mask_irq(d);
-> > +	at91_aic5_eoi(d);
-> >  }
-> >  
-> > +static void at91_aic5_release_irq(struct irq_data *d)
-> > +{
-> > +	at91_aic5_hard_unmask_irq(d);
-> > +}
-> 
-> The ->release callback is called with irqs on, so you may want to call
-> hard_local_irq_save / hard_local_irq_restore to make it atomic (note
-> that the old at91s are also broken by the addition of the call to
-> set_backup). Alternatively, you may move the clear_backup/set_bakcup
-> calls to the linux mask/unmask routines, so that the register writes
-> remain atomic, and you can avoid the save/restore and function calls and
-> improve the interrupt latency.
+> Finding a reproducible freeze location is relatively easy, enable
+> CONFIG_DEBUG_LL, and put calls to printascii in the initialization
+> functions, starting with init/main.c, and refining inside these
+> functions when you know a bit more.
 
-Ok, so, with the changes you mentionned, I can't make the system crash
-anymore (or at least, not as easily as it used to be).
+Sorry, I get a bit busy today. So the hang seems to be:
 
-But:
-  - whenever the program mentionned above calls exit(), it
-    stalls. However, ctrl+c makes the program exit properly, and
-    everything seems fine otherwise
-  - whenever we don't link it against xenomai, it just hangs. I've not
-    figured out why yet
+- omap_hsmmc_probe
+ - omap_hsmmc_reg_get
+  - omap_hsmmc_set_power
+   - omap_hsmmc1_after_set_reg
+    - msleep(100) <- it never returns
 
-With CONFIG_XENOMAI and CONFIG_IPIPE disabled, it works fine.
-
-Maxime
-
--- 
-Maxime Ripard, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+I don't get time yet to go deeper in the call stack, but maybe it will
+already give you some input.
 -------------- next part --------------
 A non-text attachment was scrubbed...
 Name: signature.asc
 Type: application/pgp-signature
-Size: 819 bytes
+Size: 490 bytes
 Desc: Digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140701/abc294fd/attachment.sig>
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140701/e2337c88/attachment.sig>
