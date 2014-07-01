@@ -1,13 +1,12 @@
-Message-ID: <53B30D96.60500@xenomai.org>
-Date: Tue, 01 Jul 2014 21:35:50 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <53B30DF0.80301@grandegger.com>
+Date: Tue, 01 Jul 2014 21:37:20 +0200
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-References: <1404210421-17081-1-git-send-email-maxime.ripard@free-electrons.com>
- <53B294A7.5010803@xenomai.org> <20140701141536.GN28647@lukather>
-In-Reply-To: <20140701141536.GN28647@lukather>
-Content-Type: text/plain; charset=UTF-8
+References: <A7F7E9DFC6DD4132AD68D2EE9D2A451A@pc2012PC>
+In-Reply-To: <A7F7E9DFC6DD4132AD68D2EE9D2A451A@pc2012PC>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] AT91: SAMA5D3: Adapt Ipipe for AIC5
+Subject: Re: [Xenomai] CAN bus on beaglebone black
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,77 +15,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: Thomas Petazzoni <thomas@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Boris Brezillon <boris@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, xenomai@xenomai.org
+To: Marko Roganovic <marko.roganovic@pupin.rs>, xenomai@xenomai.org
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+On 07/01/2014 10:30 AM, Marko Roganovic wrote:
+> Dear Xenomai users and developers,
+> 
+> 
+> 
+> I am relatively new to Xenomai, and we are working on a project that uses Beaglebone black platform (3.8.13xenomai kernel). The idea is to port our code that runs on x86 platform and RTAI Linux interface, to Beaglebone black. In a process we decided to switch from RTAI to Xenomai. Most of the job is done relatively with no problems, but now we are facing the challenge how to connect our proprietary hardware to this new Beaglebone black platform. The idea is to use CAN bus, since it best suits real time constraints that we must meet. 
+> 
+> 
+> 
+> As I understood, in rtcan core within Xenomai, there is no support for c_can (d_can) driver which is used on Beaglebone black (we tried kernel driver and it worked with our hardware fine). So I am interested if someone is working on porting this driver to rtcan (or has ported it already). Any help is appreciated.
 
-On 07/01/2014 04:15 PM, Maxime Ripard wrote:
-> Hi Gilles,
-> 
-> On Tue, Jul 01, 2014 at 12:59:51PM +0200, Gilles Chanteperdrix
-> wrote:
->> On 07/01/2014 12:27 PM, Maxime Ripard wrote:
->>> - -	at91_pic_muter_register(); }
->> 
->> Obviously, some if (soc_is_foo()) missing here.
-> 
-> Right.
-> 
->>> +static void __maybe_unused at91_aic5_eoi(struct irq_data *d) 
->>> +{ +	at91_aic_write(AT91_AIC5_EOICR, 0); +}
->> 
->> You want to make that inline, so that the hold callback ends-up
->> doing just two register writes without any function calls,
->> improving interrupt latency.
->> 
->>> + #ifdef CONFIG_IPIPE static void at91_aic_hold_irq(struct
->>> irq_data *d) { @@ -258,13 +283,20 @@ static void
->>> at91_aic_release_irq(struct irq_data *d) { 
->>> at91_aic_hard_unmask_irq(d); } -#endif /* CONFIG_IPIPE */
->>> 
->>> -static void __maybe_unused at91_aic5_eoi(struct irq_data *d) 
->>> +static void at91_aic5_hold_irq(struct irq_data *d) { -
->>> at91_aic_write(AT91_AIC5_EOICR, 0); +
->>> at91_aic5_hard_mask_irq(d); +	at91_aic5_eoi(d); }
->>> 
->>> +static void at91_aic5_release_irq(struct irq_data *d) +{ +
->>> at91_aic5_hard_unmask_irq(d); +}
->> 
->> The ->release callback is called with irqs on, so you may want to
->> call hard_local_irq_save / hard_local_irq_restore to make it
->> atomic (note that the old at91s are also broken by the addition
->> of the call to set_backup). Alternatively, you may move the
->> clear_backup/set_bakcup calls to the linux mask/unmask routines,
->> so that the register writes remain atomic, and you can avoid the
->> save/restore and function calls and improve the interrupt
->> latency.
-> 
-> Ok, so, with the changes you mentionned, I can't make the system
-> crash anymore (or at least, not as easily as it used to be).
-> 
-> But: - whenever the program mentionned above calls exit(), it 
-> stalls. However, ctrl+c makes the program exit properly, and 
-> everything seems fine otherwise - whenever we don't link it against
-> xenomai, it just hangs. I've not figured out why yet
-> 
-> With CONFIG_XENOMAI and CONFIG_IPIPE disabled, it works fine.
+Yes, the c_can linux kernel driver needs to be ported to rtcan. This
+should be rather straight forward. I have done it some time ago for the
+Flexcan controller.
 
-My answer was wrong, you probably need to keep the
-set_backup/clear_backup calls in he ->hold and ->release callbacks, as
-the linux interrupt may expect the backup areas to be in sync. Did you
-do this, or did you go for the alternative?
+Wolfgang.
 
-
-- -- 
-                                                                Gilles.
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-Comment: Using GnuPG with Icedove - http://www.enigmail.net/
-
-iD8DBQFTsw2WGpcgE6m/fboRAktjAJ0Q0VTNOiDoA8A9leqjBSe988weEgCeL+xY
-CK/e7XIvKMVFtI7qi1B1vZM=
-=6llR
------END PGP SIGNATURE-----
 
