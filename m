@@ -1,12 +1,13 @@
-Message-ID: <53B434F4.6060203@axelsw.it>
-Date: Wed, 02 Jul 2014 18:36:04 +0200
-From: Marco Tessore <marco.tessore@axelsw.it>
+Message-ID: <53B44431.2050401@xenomai.org>
+Date: Wed, 02 Jul 2014 19:41:05 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <53A3FAB0.4050100@axelsw.it> <53A4207F.9040801@xenomai.org>
  <53A9AA38.3090005@axelsw.it> <53A9B0FB.1070809@xenomai.org>
  <53AA7F39.90706@axelsw.it> <53AA8AC3.7020100@xenomai.org>
-In-Reply-To: <53AA8AC3.7020100@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+ <53B434F4.6060203@axelsw.it>
+In-Reply-To: <53B434F4.6060203@axelsw.it>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Kernel freezes in __ipipe_sync_stage
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,197 +18,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
+To: Marco Tessore <marco.tessore@axelsw.it>, Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-Good morning,
+On 07/02/2014 06:36 PM, Marco Tessore wrote:
+> ipipe_mach_allow_hwtimer_uaccess(MX25_AIPS1_BASE_ADDR_VIRT,MX25_AIPS2_BASE_ADDR_VIRT);
+>      return 0;
+> }
+> 
+> postcore_initcall(post_cpu_init);
+> #endif /* CONFIG_IPIPE */
+> 
+> 
+> the question that I kindly ask is: what should do the function 
+> ipipe_mach_allow_hwtimer_uaccess?
 
-Il 25/06/2014 10:39, Philippe Gerum ha scritto:
-> On 06/25/2014 09:50 AM, Marco Tessore wrote:
->> Il 24/06/2014 19:10, Philippe Gerum ha scritto:
->>> On 06/24/2014 06:41 PM, Marco Tessore wrote:
->>>> Hi,
->>>>
->>>> Il 20/06/2014 13:52, Gilles Chanteperdrix ha scritto:
->>>>> On 06/20/2014 11:11 AM, Marco Tessore wrote:
->>>>>> The kernel is version 2.6.31 for ARM architecture - specifically a
->>>>> Do you have the same problem with a recent I-pipe patches, like 
->>>>> one for
->>>>> 3.8 or 3.10 kernel?
->>>>>
->>>>
->>>> I managed to do some tests on 3.10 kernel but on onother board with
->>>> imx28 CPU, actually it happens that that kernel freezes too,
->>>> but I haven't debugged it with the jtag debugger.
->>>>
->>>> I have, instead, some information on the original problem, that is the
->>>> one that worried me more:
->>>>
->>>> In summary:
->>>> I have a board based on imx25, with kernel 2.6.31, Xenomai 2.5.6 and
->>>> ipipe patch 1.16-02.
->>>>
->>>> Rarely, but often enough to be a problem, the kernel freezes at boot.
->>>> Thanks to a JTAG debugger I'm able to observe the kernel in the
->>>> following situation:
->>>> I'm in an infinite loop with the following stack trace:
->>>> __ipipe_set_irqpending
->>>> xnintr_host_tick (__ipipe_propagate_irq)
->>>> xnintr_clock_handler
->>>> __ipipe_sync_stage    <- (1)
->>>> ipipe_suspend_domain
->>>> __ipipe_walk_pipeline
->>>> __ipipe_restore_pipeline_head
->>>> xnarch_next_tick_shot
->>>> clockevents_program_event
->>>> tick_dev_program_event
->>>> hrtimer_interrupt
->>>> mxc_interrupt
->>>> handle_IRQ_event
->>>> handle_level_irq
->>>> asm_do_IRQ
->>>> __ipipe_sync_stage <- (2)
->>>> ipipe_suspend_domain
->>>> __ipipe_walk_pipeline
->>>> __ipipe_restore_pipeline_head
->>>> xnpod_enable_timesource
->>>> xnpod_init
->>>> __native_skin_init
->>>> ...
->>>> ...
->>>>
->>>> Specifically, it happens that the first call to __ipipe_sync_stage, 
->>>> the
->>>> one marked with the number (2), is working on a stage that I can not
->>>> determine,
->>>> let's say for convenience stage S1, I think is the Linux secondary
->>>> domain but I'm not sure,
->>>> so the function invokes the interrupt handler of the system timer.
->>>> Continuing in the stack trace, I have a nested call to
->>>> __ipipe_sync_stage, indicated with (1),
->>>> but this call works on another stage, for convenience domain S2,
->>>> in turn this function invokes a handler for the timer irq, which at a
->>>> certain point invokes the __ipipe_propagate_irq which raises the flags
->>>> for the stage S1,
->>>> thus making the first call to __ipipe_sync_stage (2) fails to get 
->>>> out of
->>>> their while loops.
->>>>
->>>> I should add that I do not see hardware interrupt for the timer in
->>>> function __ipipe_grab_IRQ.
->>>> I have no idea how the cycle is triggered,but when the kernel is 
->>>> locked,
->>>> the kernel is located in the software exclusively infinite loop
->>>> described above.
->>>>
->>>>
->>>> In the hope that you could help me understand what is going on,
->>>> I would have liked groped a patch like this:
->>>> - Store, for each level of nesting of __ipipe_sync_stage, the irq 
->>>> number
->>>> currently running and on behalf of which stage.
->>>> - Patch the function __ipipe_set_irqpending in such a way as not to 
->>>> set
->>>> the flags for the pair (irq, stage) if the pair is already present at
->>>> some level in the current stack trace, that is,
->>>> - if the function __ipipe_sync_stage is executing the handler for a
->>>> stage, and then he had reset the flags in irqpend_himask and
->>>> irqpend_lomask, it does not expect the handler goes to raise again the
->>>> same flag for the same stage.
->>>>
->>>> What do you think about this?
->>>>
->>>> Thank you very much for any kind of advice you could give me
->>>>
->>>
->>> You mentioned random lockups during boot. Does you board ever lock up
->>> when passing xeno_hal.disable=1 on the kernel command line?
->>>
->> Yes, I mentioned random lockups, but always the kernel enters in the
->> infinite loop described above.
->> Following your suggestion I tried to pass parameter xeno_hal.disable=1
->> but kernel sayed
->> "Unknown boot option `xeno_hal.disable=1': ignoring"
->>
->
-> This is because you are running an outdated Xenomai 2.5.x release. A 
-> work around is to build all the Xenomai skins as modules in the kernel 
-> (native, posix, vxworks etc), refraining from modloading them during 
-> the boot process.
->
->> What is supposed to do this option anyway? If it would disable HAL, does
->> not this inhibits xenomai realtime services?
->>
->
-> This is exactly what we want. When the real-time services commence, 
-> control of the hardware timer is handed over to Xenomai, which enables 
-> pipelining of the clock source events to the co-kernel. We need to 
-> know in this path is involved.
->
->> What about the patch,described above, that I would apply? say, don't
->> permit that the interrupt handlers called in __ipipe_sync_stage raise a
->> couple (stage, irq) already handled in the current stack?
->>
->
-> This won't work, this breaks an aspect of the pipeline core logic. 
-> This would be papering over the issue, not fixing it, opening a can of 
-> worms down the road. We are not chasing a bug in the core logic at 
-> this point, we are more likely chasing a bug in the SoC-specific code 
-> which binds the hw timer to the pipeline.
->
-> First step is to determine if the system experiences an IRQ storm of 
-> some sort from the timer chip, and why so. By focusing on the IRQ 
-> replay loop which basically resyncs the current interrupt state with 
-> the past events logged, you may be looking at rays from an ancient sun.
->
->> Thank you
->> Marco Tessore
->>
->>
->
->
-still trying to investigate the problem, I re-applied the patch ipipe on 
-a clean kernel and compared with the problematic one,
-obviously by matching the same versions of kernel, ipipe patch, xenomai.
+As the name suggests, this function allows access to the hardware timer
+registers from user-space. Xenomai user-space libraries require this,
+unless you compile xenomai with --disable-arm-tsc, but this will
+increase (greatly) the latency of services such as rt_timer_tsc or
+clock_gettime(CLOCK_MONOTONIC) by requiring a system call.
 
-I noticed a difference between the defective one and the one just obtained:
-the defective kernel has the following block of code at the end of the file
-/arch/arm/mach-mx25/devices.c
-
-il blocco:
-#ifdef CONFIG_IPIPE
-static int post_cpu_init(void)
-{
-ipipe_mach_allow_hwtimer_uaccess(MX25_AIPS1_BASE_ADDR_VIRT,MX25_AIPS2_BASE_ADDR_VIRT);
-     return 0;
-}
-
-postcore_initcall(post_cpu_init);
-#endif /* CONFIG_IPIPE */
+And it probably has nothing to do with your problem.
 
 
-the question that I kindly ask is: what should do the function 
-ipipe_mach_allow_hwtimer_uaccess?
-
-
-In order to reconnect to the previous email:
-- I analyzed interrupts: the timer ones seem to me fairly regular
-- Occasionally we have bursts of the NAND memory interrupt, I think it 
-is normal
-- I am still experiencing occasional blocks of the kernel, but does not 
-occur interrupt flood, neither from the timer and nand memory,
-    for at least one second before the deadlock - seen with an oscilloscope.
-
-
-Now I'm trying a kernel where I commented the code block above;
-I hope they do not occur more blocks, but I'd like to know what is the 
-function ipipe_mach_allow_hwtimer_uaccess,
-since the block was entered by the person who produced the kernel I'm 
-debugging,
-the block is not present in the ipipe patch attached to the distribution 
-of Xenomai,
-I do not know why it was inserted.
-
-Thank you very much
-kind regards
-Marco Tessore
+-- 
+                                                                Gilles.
 
