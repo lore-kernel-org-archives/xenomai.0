@@ -1,12 +1,18 @@
-Message-ID: <53B30DF0.80301@grandegger.com>
-Date: Tue, 01 Jul 2014 21:37:20 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
+Date: Wed, 2 Jul 2014 13:41:42 +0200
+From: Arnaud Degroote <arnaud.degroote@isae.fr>
+Message-ID: <20140702114142.GA13439@dmia-degroote.isae.fr>
+References: <7016-53b1af80-3d5-7f54e300@12077259>
+ <53B1B529.9040106@xenomai.org>
+ <20140701083910.GA28764@dmia-degroote.isae.fr>
+ <53B27E5B.10507@xenomai.org>
+ <20140701155123.GA5547@dmia-degroote.isae.fr>
+ <53B30A78.40605@xenomai.org>
 MIME-Version: 1.0
-References: <A7F7E9DFC6DD4132AD68D2EE9D2A451A@pc2012PC>
-In-Reply-To: <A7F7E9DFC6DD4132AD68D2EE9D2A451A@pc2012PC>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Disposition: inline
+In-Reply-To: <53B30A78.40605@xenomai.org>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] CAN bus on beaglebone black
+Subject: Re: [Xenomai] Support of Beagleboard xm rev C on 3.14-ipipe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,23 +21,152 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marko Roganovic <marko.roganovic@pupin.rs>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 07/01/2014 10:30 AM, Marko Roganovic wrote:
-> Dear Xenomai users and developers,
+On 01/Jul - 21:22, Gilles Chanteperdrix wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
 > 
+> On 07/01/2014 05:51 PM, Arnaud Degroote wrote:
+> > On 01/Jul - 11:24, Gilles Chanteperdrix wrote:
+> >> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+> >> 
+> >> On 07/01/2014 10:39 AM, Arnaud Degroote wrote:
+> >>> On 30/Jun - 21:06, Gilles Chanteperdrix wrote:
+> >>>> On 06/30/2014 08:41 PM, DEGROOTE Arnaud wrote:
+> >>>>> 
+> >>>>> On Monday, June 30, 2014 18:13 CEST, Gilles Chanteperdrix 
+> >>>>> <gilles.chanteperdrix@xenomai.org> wrote:
+> >>>>> 
+> >>>>> On 06/30/2014 06:06 PM, Arnaud Degroote wrote:
+> >>>>>>>> On 30/Jun - 17:48, Gilles Chanteperdrix wrote:
+> >>>>>>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+> >>>>>>>>> 
+> >>>>>>>>> On 06/30/2014 05:45 PM, Arnaud Degroote wrote:
+> >>>>>>>>>> On 30/Jun - 17:26, Gilles Chanteperdrix wrote:
+> >>>>>>>>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+> >>>>>>>>>>> 
+> >>>>>>>>>>> On 06/30/2014 05:18 PM, Arnaud Degroote wrote:
+> >>>>>>>>>>>> On 30/Jun - 14:37, Arnaud Degroote wrote:
+> >>>>>>>>>>>> [snip]
+> >>>>>>>>>>>>>> Have you checked that the exact same
+> >>>>>>>>>>>>>> kernel configuration, only without
+> >>>>>>>>>>>>>> CONFIG_IPIPE and CONFIG_XENOMAI runs
+> >>>>>>>>>>>>>> correctly under load?
+> >>>>>>>>>>>>> 
+> >>>>>>>>>>>>> The system seems to hang even without 
+> >>>>>>>>>>>>> CONFIG_IPIPE. The linux-yocto kernel seems
+> >>>>>>>>>>>>> to work properly (it looks like a 3.14rc8),
+> >>>>>>>>>>>>> I will check precisely against linux kernel
+> >>>>>>>>>>>>> v3.14.
+> >>>>>>>>>>>> 
+> >>>>>>>>>>>> Some additional information
+> >>>>>>>>>>>> 
+> >>>>>>>>>>>> linux mainstream kernel on tag v3.14 runs
+> >>>>>>>>>>>> fine on the platform. The system hangs with
+> >>>>>>>>>>>> ipipe branch ipipe-3.14 (without xenomai
+> >>>>>>>>>>>> stuff, and without CONFIG_IPIPE).
+> >>>>>>>>>>> 
+> >>>>>>>>>>> In the two cases the configuration is exactly
+> >>>>>>>>>>> the same?
+> >>>>>>>>>>> 
+> >>>>>>>>>> Yes, there are no semantic difference. The only
+> >>>>>>>>>> diff are
+> >>>>>>>>>> 
+> >>>>>>>>>> CONFIG_LOCALVERSION
+> >>>>>>>>>> 
+> >>>>>>>>>> and the ipipe kernel has the extra line
+> >>>>>>>>>> 
+> >>>>>>>>>> # CONFIG_IPIPE is not set
+> >>>>>>>>>> 
+> >>>>>>>>> If you have a rootfs without hardfp (based on the 
+> >>>>>>>>> codesourcery toolchain for instance), could you try
+> >>>>>>>>> to boot without CONFIG_VFP?
+> >>>>>>>> 
+> >>>>>>>> I don't have such toolchain for the moment, but I can
+> >>>>>>>> try to hack
+> >>>>> 
+> >>>>>>>> my current yocto toolchain to test without hardfp.
+> >>>>> 
+> >>>>> The codesourcery toolchain is available for download,
+> >>>>> already compiled.
+> >>>>> 
+> >>>>>>>> Still, I have compiled a kernel without CONFIG_VFP
+> >>>>>>>> but it still hangs in the same place, so I don't
+> >>>>>>>> think it is related to the current issue.
+> >>>>> 
+> >>>>> If you are running a rootfs with hardfp with a kernel
+> >>>>> without CONFIG_VFP, the system should not finish booting.
+> >>>>> 
+> >>>>>> Yes obviously, but at the moment, I don't arrive to the
+> >>>>>> call to /sbin/init
+> >>>>> 
+> >>>>> Where does the system hang exactly? We were talking about
+> >>>>> a hang when running switchtest. How do you produce the hang
+> >>>>> on a system without CONFIG_XENOMAI, since obviously you can
+> >>>>> not run switchtest?
+> >>>>> 
+> >>>>>> Yes, sorry, I was not very precise.  I get the same
+> >>>>>> behaviour than described in the beginning of the thread,
+> >>>>>> i.e. the kernel hangs during the boot (and nothing
+> >>>>>> happens after that). As I said previously, the hang
+> >>>>>> happens with linux-ipipe without CONFIG_IPIPE. The
+> >>>>>> various change of configuration makes it "work" by
+> >>>>>> accident.
+> >>>>> 
+> >>>>>> An hanging kernel boot msg is available on my mail of 24 
+> >>>>>> June, 14:21 CEST. I cannont reproduce it at the moment,
+> >>>>>> as I'm not anymore at work.
+> >>>> 
+> >>>> As I said in an earlier mail, please do not mix everything,
+> >>>> and try and debug one issue at the time.
+> >>>> 
+> >>>> From your configuration I gather you do not use the serial 
+> >>>> console (CONFIG_PINCTRL_SINGLE is missing), could you enable
+> >>>> the serial console to try and obtain more information about
+> >>>> this kernel freeze?
+> >>> 
+> >>> I'm already using the serial console. PINCTRL_SINGLE is not 
+> >>> necessary for beagleboard xM AFAIU.
+> >> 
+> >> Finding a reproducible freeze location is relatively easy,
+> >> enable CONFIG_DEBUG_LL, and put calls to printascii in the
+> >> initialization functions, starting with init/main.c, and refining
+> >> inside these functions when you know a bit more.
+> > 
+> > Sorry, I get a bit busy today. So the hang seems to be:
+> > 
+> > - omap_hsmmc_probe - omap_hsmmc_reg_get - omap_hsmmc_set_power -
+> > omap_hsmmc1_after_set_reg - msleep(100) <- it never returns
+> > 
+> > I don't get time yet to go deeper in the call stack, but maybe it
+> > will already give you some input.
+> > 
+> So this would point to a (Linux) timer issue. Could you put a call to
+> printascii in the timer interrupt to check that it is still ticking?
+> Do you still have CONFIG_NO_HZ disabled?
 > 
-> 
-> I am relatively new to Xenomai, and we are working on a project that uses Beaglebone black platform (3.8.13xenomai kernel). The idea is to port our code that runs on x86 platform and RTAI Linux interface, to Beaglebone black. In a process we decided to switch from RTAI to Xenomai. Most of the job is done relatively with no problems, but now we are facing the challenge how to connect our proprietary hardware to this new Beaglebone black platform. The idea is to use CAN bus, since it best suits real time constraints that we must meet. 
-> 
-> 
-> 
-> As I understood, in rtcan core within Xenomai, there is no support for c_can (d_can) driver which is used on Beaglebone black (we tried kernel driver and it worked with our hardware fine). So I am interested if someone is working on porting this driver to rtcan (or has ported it already). Any help is appreciated.
+Hi Gilles, 
 
-Yes, the c_can linux kernel driver needs to be ported to rtcan. This
-should be rather straight forward. I have done it some time ago for the
-Flexcan controller.
+the attached patch seems to make the platform "works" (i.e. it does not
+hang at boot, and switchtest works too). Through, to be frank, I don't
+have any idea what is the ramification of the change, and even if it
+supposed to be correct in the ipipe case. 
 
-Wolfgang.
-
-
+I tested it also on my gumstix overo and I don't see regression in
+xeno-regression-test.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: omap2_timer.diff
+Type: text/x-diff
+Size: 1316 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140702/f0b94636/attachment.diff>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 490 bytes
+Desc: Digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140702/f0b94636/attachment.sig>
