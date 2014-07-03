@@ -1,10 +1,20 @@
-Message-ID: <53B512BB.9040908@ma-info.de>
-Date: Thu, 03 Jul 2014 10:22:19 +0200
-From: Frede Florian <florian.frede@ma-info.de>
+Date: Thu, 3 Jul 2014 10:38:07 +0200
+From: Arnaud Degroote <arnaud.degroote@isae.fr>
+Message-ID: <20140703083807.GA10654@dmia-degroote.isae.fr>
+References: <7016-53b1af80-3d5-7f54e300@12077259>
+ <53B1B529.9040106@xenomai.org>
+ <20140701083910.GA28764@dmia-degroote.isae.fr>
+ <53B27E5B.10507@xenomai.org>
+ <20140701155123.GA5547@dmia-degroote.isae.fr>
+ <53B30A78.40605@xenomai.org>
+ <20140702114142.GA13439@dmia-degroote.isae.fr>
+ <53B44879.5020203@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Disposition: inline
+In-Reply-To: <53B44879.5020203@xenomai.org>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Xenomai on PhyCore/Board
+Subject: Re: [Xenomai] Support of Beagleboard xm rev C on 3.14-ipipe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,27 +23,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hello,
+On 02/Jul - 19:59, Gilles Chanteperdrix wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+> 
+> 
+> Well, this sucks, posted writes increase the timer programming latency.
+> 
+> Does the latency test run correctly with this patch?
 
-We started a new real time project. For this project we decided to 
-compare the PREEMPT_RT and Xenomai on our future hardware. For this we 
-got two developer board from Phytec.
+Yes, the latency test seems to work properly. 
 
-  * Linux-phyCORE-AM335x-Kit
-    (https://www.osadl.org/Profile-of-system-in-rack-7-slot-5.qa-profile-r7s5.0.html)
-  * phyBOARD-Wega-AM335x
-    (https://www.osadl.org/Profile-of-system-in-rack-8-slot-8.qa-profile-r8s8.0.html)
+I need to investigate a bit more, because the kernel without the patch
+seems to work properly with a different uboot (the one for my gumstix)
+while it hangs with the uboot for my beagleboard. 
 
-Now I have the Problem that I can not compile a running Linux with 
-Xenomai on this board. The supplier delivers patches for Kernel 3.2 for 
-the board  and on the linked page I get patches for the Kernel 3.12.19.
-
-  * Is there a possibility to run Xenomai on one on this kernel versions?
-  * I am really no expert in writing patches for a Kernel so I need some
-    help or a HowTo. Where can I find that help?
-
-Thanks for helping a Xenomai beginner.
-
-Florian
+Best regards,
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 490 bytes
+Desc: Digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140703/b947d875/attachment.sig>
