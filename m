@@ -1,17 +1,10 @@
-Message-ID: <53AB007F.8040101@xenomai.org>
-Date: Wed, 25 Jun 2014 19:01:51 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <20140623090857.GA4043@dmia-degroote.isae.fr>
- <53A7F1E4.2050603@xenomai.org> <20140623111823.GA5715@dmia-degroote.isae.fr>
- <53A8BC0C.2010608@xenomai.org> <20140624062309.GA9564@dmia-degroote.isae.fr>
- <53A91AC0.30801@xenomai.org> <20140624122129.GA18908@dmia-degroote.isae.fr>
- <53A9C41C.6020700@xenomai.org> <20140625081129.GA31341@dmia-degroote.isae.fr>
- <53AA8A35.7000506@xenomai.org> <20140625094715.GA26690@dmia-degroote.isae.fr>
-In-Reply-To: <20140625094715.GA26690@dmia-degroote.isae.fr>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Support of Beagleboard xm rev C on 3.14-ipipe
+From: Michael Haberler <mail17@mah.priv.at>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <01C12D13-C7D5-4DDD-8ED3-4359E6FBE665@mah.priv.at>
+Date: Thu, 3 Jul 2014 10:56:22 -0400
+Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
+Subject: [Xenomai] arm & 64bit atomics
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,104 +13,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Arnaud Degroote <arnaud.degroote@isae.fr>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+we found this: =
+http://stackoverflow.com/questions/9857760/can-an-arm-interrupt-occur-in-m=
+id-instruction and are considering which impact that has on machinekit, =
+which uses doubles in memory shared between threads, relying on updates =
+being atomic
 
-On 06/25/2014 11:47 AM, Arnaud Degroote wrote:
-> On 25/Jun - 10:37, Gilles Chanteperdrix wrote:
->> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
->> 
->> On 06/25/2014 10:11 AM, Arnaud Degroote wrote:
->>> On 24/Jun - 20:31, Gilles Chanteperdrix wrote:
->>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
->>>> 
->>>> On 06/24/2014 02:21 PM, Arnaud Degroote wrote:
->>>>> On 24/Jun - 08:29, Gilles Chanteperdrix wrote:
->>>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
->>>>>> 
->>>>>> On 06/24/2014 08:23 AM, Arnaud Degroote wrote:
->>>>>>> On 24/Jun - 01:45, Gilles Chanteperdrix wrote:
->>>>>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
->>>>>>>> 
->>>>>>>> On 06/23/2014 01:18 PM, Arnaud Degroote wrote:
->>>>>>>>> On 23/Jun - 11:22, Gilles Chanteperdrix wrote:
->>>>>>>>>> On 06/23/2014 11:08 AM, Arnaud Degroote wrote:
->>>>>>>>>>> Hi list,
->>>>>>>>>>> 
->>>>>>>>>>> I'm trying to deploy a 3.14 kernel on my 
->>>>>>>>>>> BeagleBoard XM rev C but got several issues.
->>>>>>>>>>> So, first question, it is supposed to be
->>>>>>>>>>> supported or am I somewhere in a grey zone ?
->>>>>>>>>>> 
->>>>>>>>>>> Let describe more precisely the configuration
->>>>>>>>>>> and the symptom. - linux-ipipe branch
->>>>>>>>>>> ipipe-3.14 - xenomai 2.6.3 + some patches from
->>>>>>>>>>> 2.6 branch (including
->>>>>>>>>>> d1d00e0acd29bb5f9023494a883a7fa0def40917 
->>>>>>>>>>> 41cb1f73814d1094e0ea75ccbbd23ff01280787e 
->>>>>>>>>>> 7a48019268d7e1157ebb072b88f6683425f0c7c5 
->>>>>>>>>>> f00d22eca6277e780c19a5d5ecd2ed0e23dabafe )
->>>>>>>>>> 
->>>>>>>>>> It is supposed to work, could you try again with
->>>>>>>>>> the xenomai 2.6 git?
->>>>>>>>>> 
->>>>>>>>> 
->>>>>>>>> Hi Gilles,
->>>>>>>>> 
->>>>>>>>> I just tested against 2.6-git and observe the same
->>>>>>>>>  behaviours.
->>>>>>>>> 
->>>>>>>>> Best regards,
->>>>>>>>> 
->>>>>>>> Could you post your configuration?
->>>>>>> 
->>>>>>> Sure, see the attached defconfig. It is basically
->>>>>>> yocto base arm kernel + xenomai (and some kernel
->>>>>>> hacking option).
->>>>>>> 
->>>>>>> 
->>>>>> Could you try to turn off CONFIG_NO_HZ ?
->>>>> 
->>>>> Without CONFIG_NO_HZ, it hangs repeatably during the boot
->>>>> (in the same place than with CONFIG_NO_HZ without 
->>>>> CONFIG_DEBUG_LOCK_ALLOC, so this last option is more a
->>>>> timing workaround than a "real fix"). See the attached
->>>>> defconfig and boot log.
->>>> 
->>>> Do you have the same problem if you boot using NFS instead of
->>>> an SD card?
->>>> 
->>> 
->>> Using root on nfs does not seem to change the problem. It
->>> still hangs in the same place.
->> 
->> Ok, could you disable FTRACE, then enable the I-pipe debugs
->> except the I-pipe tracer? And enable all the xenomai debugs?
->> 
-> 
-> Without FTRACE, the kernel seems to boot successfully quite often
-> (I won't say always still). Moreover, the clocktest now terminates.
-> Still, the latency hangs, without much debug information (maybe I
-> miss some options in the kernel configuration or at runtime). At
-> this moment, /proc/xenomai/sched shows
+I wonder if this topic has come up in the Xenomai context?
 
-Probably something wrong with the timer used by Xenomai. You should
-check that the timer used by Xenomai (normally the GPtimer 3) is
-correctly working (that is, that you see its value decreasing after
-having programmed it).
+specifically - can it happen that an RT thread is rescheduled in the =
+middle of a 64bit store?
 
+also, I found that for older ARM's there are kernel mode helpers to =
+support 64bit atomics =
+(https://www.kernel.org/doc/Documentation/arm/kernel_user_helpers.txt) - =
+I assume those work fine with Xenomai?
 
-- -- 
-                                                                Gilles.
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-Comment: Using GnuPG with Icedove - http://www.enigmail.net/
+sorry about the fuzzy question - still trying to figure if/how this =
+affects us
 
-iD8DBQFTqwB/GpcgE6m/fboRAkrKAJ96jy1oLQOGvP59wR6QBa3DLmZNbwCcCVRh
-S5IO0rzRLrqAoATbsyFJ3+o=
-=MsL4
------END PGP SIGNATURE-----
+- Michael=
 
