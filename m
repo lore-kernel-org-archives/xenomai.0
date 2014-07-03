@@ -1,15 +1,9 @@
-Message-ID: <53B44879.5020203@xenomai.org>
-Date: Wed, 02 Jul 2014 19:59:21 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <7016-53b1af80-3d5-7f54e300@12077259>
- <53B1B529.9040106@xenomai.org> <20140701083910.GA28764@dmia-degroote.isae.fr>
- <53B27E5B.10507@xenomai.org> <20140701155123.GA5547@dmia-degroote.isae.fr>
- <53B30A78.40605@xenomai.org> <20140702114142.GA13439@dmia-degroote.isae.fr>
-In-Reply-To: <20140702114142.GA13439@dmia-degroote.isae.fr>
+Date: Thu, 3 Jul 2014 10:11:29 +0200
+Message-ID: <CAKc2Hpb0S50P=9iWvw3z9NexHmyZEjuAU=7SGyT77EPpub_D2A@mail.gmail.com>
+From: Kim De Mey <kim.demey@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Support of Beagleboard xm rev C on 3.14-ipipe
+Subject: [Xenomai] Xenomai-forge: Deadlock in finalize_thread()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,165 +12,116 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Arnaud Degroote <arnaud.degroote@isae.fr>
-Cc: xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hello,
 
-On 07/02/2014 01:41 PM, Arnaud Degroote wrote:
-> On 01/Jul - 21:22, Gilles Chanteperdrix wrote:
->> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
->> 
->> On 07/01/2014 05:51 PM, Arnaud Degroote wrote:
->>> On 01/Jul - 11:24, Gilles Chanteperdrix wrote:
->>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
->>>> 
->>>> On 07/01/2014 10:39 AM, Arnaud Degroote wrote:
->>>>> On 30/Jun - 21:06, Gilles Chanteperdrix wrote:
->>>>>> On 06/30/2014 08:41 PM, DEGROOTE Arnaud wrote:
->>>>>>> 
->>>>>>> On Monday, June 30, 2014 18:13 CEST, Gilles
->>>>>>> Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>>>>>> wrote:
->>>>>>> 
->>>>>>> On 06/30/2014 06:06 PM, Arnaud Degroote wrote:
->>>>>>>>>> On 30/Jun - 17:48, Gilles Chanteperdrix wrote:
->>>>>>>>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
->>>>>>>>>>> 
->>>>>>>>>>> On 06/30/2014 05:45 PM, Arnaud Degroote wrote:
->>>>>>>>>>>> On 30/Jun - 17:26, Gilles Chanteperdrix
->>>>>>>>>>>> wrote:
->>>>>>>>>>>>> -----BEGIN PGP SIGNED MESSAGE----- Hash:
->>>>>>>>>>>>> SHA1
->>>>>>>>>>>>> 
->>>>>>>>>>>>> On 06/30/2014 05:18 PM, Arnaud Degroote
->>>>>>>>>>>>> wrote:
->>>>>>>>>>>>>> On 30/Jun - 14:37, Arnaud Degroote
->>>>>>>>>>>>>> wrote: [snip]
->>>>>>>>>>>>>>>> Have you checked that the exact same 
->>>>>>>>>>>>>>>> kernel configuration, only without 
->>>>>>>>>>>>>>>> CONFIG_IPIPE and CONFIG_XENOMAI runs 
->>>>>>>>>>>>>>>> correctly under load?
->>>>>>>>>>>>>>> 
->>>>>>>>>>>>>>> The system seems to hang even without 
->>>>>>>>>>>>>>> CONFIG_IPIPE. The linux-yocto kernel
->>>>>>>>>>>>>>> seems to work properly (it looks like a
->>>>>>>>>>>>>>> 3.14rc8), I will check precisely
->>>>>>>>>>>>>>> against linux kernel v3.14.
->>>>>>>>>>>>>> 
->>>>>>>>>>>>>> Some additional information
->>>>>>>>>>>>>> 
->>>>>>>>>>>>>> linux mainstream kernel on tag v3.14
->>>>>>>>>>>>>> runs fine on the platform. The system
->>>>>>>>>>>>>> hangs with ipipe branch ipipe-3.14
->>>>>>>>>>>>>> (without xenomai stuff, and without
->>>>>>>>>>>>>> CONFIG_IPIPE).
->>>>>>>>>>>>> 
->>>>>>>>>>>>> In the two cases the configuration is
->>>>>>>>>>>>> exactly the same?
->>>>>>>>>>>>> 
->>>>>>>>>>>> Yes, there are no semantic difference. The
->>>>>>>>>>>> only diff are
->>>>>>>>>>>> 
->>>>>>>>>>>> CONFIG_LOCALVERSION
->>>>>>>>>>>> 
->>>>>>>>>>>> and the ipipe kernel has the extra line
->>>>>>>>>>>> 
->>>>>>>>>>>> # CONFIG_IPIPE is not set
->>>>>>>>>>>> 
->>>>>>>>>>> If you have a rootfs without hardfp (based on
->>>>>>>>>>> the codesourcery toolchain for instance), could
->>>>>>>>>>> you try to boot without CONFIG_VFP?
->>>>>>>>>> 
->>>>>>>>>> I don't have such toolchain for the moment, but I
->>>>>>>>>> can try to hack
->>>>>>> 
->>>>>>>>>> my current yocto toolchain to test without
->>>>>>>>>> hardfp.
->>>>>>> 
->>>>>>> The codesourcery toolchain is available for download, 
->>>>>>> already compiled.
->>>>>>> 
->>>>>>>>>> Still, I have compiled a kernel without
->>>>>>>>>> CONFIG_VFP but it still hangs in the same place,
->>>>>>>>>> so I don't think it is related to the current
->>>>>>>>>> issue.
->>>>>>> 
->>>>>>> If you are running a rootfs with hardfp with a kernel 
->>>>>>> without CONFIG_VFP, the system should not finish
->>>>>>> booting.
->>>>>>> 
->>>>>>>> Yes obviously, but at the moment, I don't arrive to
->>>>>>>> the call to /sbin/init
->>>>>>> 
->>>>>>> Where does the system hang exactly? We were talking
->>>>>>> about a hang when running switchtest. How do you
->>>>>>> produce the hang on a system without CONFIG_XENOMAI,
->>>>>>> since obviously you can not run switchtest?
->>>>>>> 
->>>>>>>> Yes, sorry, I was not very precise.  I get the same 
->>>>>>>> behaviour than described in the beginning of the
->>>>>>>> thread, i.e. the kernel hangs during the boot (and
->>>>>>>> nothing happens after that). As I said previously,
->>>>>>>> the hang happens with linux-ipipe without
->>>>>>>> CONFIG_IPIPE. The various change of configuration
->>>>>>>> makes it "work" by accident.
->>>>>>> 
->>>>>>>> An hanging kernel boot msg is available on my mail of
->>>>>>>> 24 June, 14:21 CEST. I cannont reproduce it at the
->>>>>>>> moment, as I'm not anymore at work.
->>>>>> 
->>>>>> As I said in an earlier mail, please do not mix
->>>>>> everything, and try and debug one issue at the time.
->>>>>> 
->>>>>> From your configuration I gather you do not use the
->>>>>> serial console (CONFIG_PINCTRL_SINGLE is missing), could
->>>>>> you enable the serial console to try and obtain more
->>>>>> information about this kernel freeze?
->>>>> 
->>>>> I'm already using the serial console. PINCTRL_SINGLE is not
->>>>>  necessary for beagleboard xM AFAIU.
->>>> 
->>>> Finding a reproducible freeze location is relatively easy, 
->>>> enable CONFIG_DEBUG_LL, and put calls to printascii in the 
->>>> initialization functions, starting with init/main.c, and
->>>> refining inside these functions when you know a bit more.
->>> 
->>> Sorry, I get a bit busy today. So the hang seems to be:
->>> 
->>> - omap_hsmmc_probe - omap_hsmmc_reg_get - omap_hsmmc_set_power
->>> - omap_hsmmc1_after_set_reg - msleep(100) <- it never returns
->>> 
->>> I don't get time yet to go deeper in the call stack, but maybe
->>> it will already give you some input.
->>> 
->> So this would point to a (Linux) timer issue. Could you put a
->> call to printascii in the timer interrupt to check that it is
->> still ticking? Do you still have CONFIG_NO_HZ disabled?
->> 
-> Hi Gilles,
-> 
-> the attached patch seems to make the platform "works" (i.e. it does
-> not hang at boot, and switchtest works too). Through, to be frank,
-> I don't have any idea what is the ramification of the change, and
-> even if it supposed to be correct in the ipipe case.
-> 
-> I tested it also on my gumstix overo and I don't see regression in 
-> xeno-regression-test.
+I've encountered a deadlock in the finalize_thread() call in threadobj.c
 
-Well, this sucks, posted writes increase the timer programming latency.
+I can easy reproduce the problem with a simple test case where I have
+a psos task which in a loop creates, starts and deletes another psos
+task.
+The created tasks have a priority lower or equal to the priority of
+the task that creates it.
 
-Does the latency test run correctly with this patch?
+When running the test case, some of the tasks don't get deleted
+properly (the majority does), they are still visible when doing "ps"
+command.
+When attaching gdb I notice that these tasks are stuck on
+__pthread_mutex_lock() called from threadobj_lock() >
+finalize_thread().
 
-- -- 
-                                                                Gilles.
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-Comment: Using GnuPG with Icedove - http://www.enigmail.net/
+See gdb debug information below:
+(gdb) info thread
+  Id   Target Id         Frame
+  9    Thread 18694      0x00edf280 in __pthread_mutex_lock
+(mutex=<optimized out>) at pthread_mutex_lock.c:293
+  8    Thread 18572      0x00edf280 in __pthread_mutex_lock
+(mutex=<optimized out>) at pthread_mutex_lock.c:293
+  7    Thread 18355      0x00edf280 in __pthread_mutex_lock
+(mutex=<optimized out>) at pthread_mutex_lock.c:293
+  6    Thread 18201      0x00edf280 in __pthread_mutex_lock
+(mutex=<optimized out>) at pthread_mutex_lock.c:293
+  5    Thread 18110      0x00edf280 in __pthread_mutex_lock
+(mutex=<optimized out>) at pthread_mutex_lock.c:293
+  4    Thread 18037      0x00edf280 in __pthread_mutex_lock
+(mutex=<optimized out>) at pthread_mutex_lock.c:293
+* 3    Thread 17943      0x00edf280 in __pthread_mutex_lock
+(mutex=<optimized out>) at pthread_mutex_lock.c:293
+  2    Thread 17734      clock_nanosleep (clock_id=<optimized out>,
+flags=<optimized out>, req=<optimized out>, rem=<optimized out>)
+    at ../sysdeps/unix/sysv/linux/clock_nanosleep.c:51
+  1    Thread 17733      clock_nanosleep (clock_id=<optimized out>,
+flags=<optimized out>, req=<optimized out>, rem=<optimized out>)
+    at ../sysdeps/unix/sysv/linux/clock_nanosleep.c:51
+(gdb) bt
+#0  0x00edf280 in __pthread_mutex_lock (mutex=<optimized out>) at
+pthread_mutex_lock.c:293
+#1  0x00ec0304 in threadobj_lock () from
+/repo/kdemey/buildroot-cgroups/output/host/usr/mips64-buildroot-linux-gnu/sysroot/usr/lib/libcopperplate.so.0
+#2  0x00ec0404 in finalize_thread () from
+/repo/kdemey/buildroot-cgroups/output/host/usr/mips64-buildroot-linux-gnu/sysroot/usr/lib/libcopperplate.so.0
+#3  0x00edc10c in __nptl_deallocate_tsd () at pthread_create.c:154
+#4  0x00edd838 in start_thread (arg=<optimized out>) at pthread_create.c:304
+#5  0x00ff7f4c in __thread_start () from
+output/host/usr/mips64-buildroot-linux-gnu/sysroot/lib32/libc.so.6
+Backtrace stopped: frame did not save the PC
 
-iD8DBQFTtEh5GpcgE6m/fboRAmo+AJ9vbiNx/IyfvCZP+Cxvy77J9habowCfWPp3
-paWYuiMDOKabQikMrVuu3Gs=
-=zXqr
------END PGP SIGNATURE-----
+What I think that goes wrong is that the lock which is taken in
+threadobj_notify_entry() is not released before threadobj_start()
+continues at wait_on_barrier(thobj, __THREAD_S_ACTIVE). As there is a
+t_delete() done right after t_start() returns in my test case, this
+could mean that the thread gets in finalize_thread() after the
+pthread_cancel() and blocks there on the threadobj_lock() as the
+threadobj_unlock() from threadobj_notify_entry() was possibly not yet
+called.
+Does this scenario sound plausible?
+
+As a quick test I removed the lock & unlock in the
+threadobj_notify_entry() and the deadlock on __pthread_mutex_lock() no
+longer occurs. So this could mean that it is indeed this lock causing
+the deadlock.
+However when I do this change another deadlock occurs. This time on
+destroy_thread() > uninit_thread() > pthread_cond_destroy() >
+__lll_lock_wait()
+I think pthread_cond_destroy() blocks if there is still a thread
+blocked on the condition variable. I am unsure about this though. And
+also when looking I don't see what could still be blocking on it. So I
+am a bit stuck here.
+
+Here is some gdb debugging info in the case that I removed the lock in
+threadobj_notify_entry():
+(gdb) info thread
+  Id   Target Id         Frame
+  5    Thread 16596      __lll_lock_wait (futex=<optimized out>,
+private=<optimized out>) at
+../nptl/sysdeps/unix/sysv/linux/lowlevellock.c:46
+  4    Thread 16494      __lll_lock_wait (futex=<optimized out>,
+private=<optimized out>) at
+../nptl/sysdeps/unix/sysv/linux/lowlevellock.c:46
+* 3    Thread 15944      __lll_lock_wait (futex=<optimized out>,
+private=<optimized out>) at
+../nptl/sysdeps/unix/sysv/linux/lowlevellock.c:46
+  2    Thread 15798      clock_nanosleep (clock_id=<optimized out>,
+flags=<optimized out>, req=<optimized out>, rem=<optimized out>)
+    at ../sysdeps/unix/sysv/linux/clock_nanosleep.c:51
+  1    Thread 15797      clock_nanosleep (clock_id=<optimized out>,
+flags=<optimized out>, req=<optimized out>, rem=<optimized out>)
+    at ../sysdeps/unix/sysv/linux/clock_nanosleep.c:51
+(gdb) bt
+#0  __lll_lock_wait (futex=<optimized out>, private=<optimized out>)
+at ../nptl/sysdeps/unix/sysv/linux/lowlevellock.c:46
+#1  0x00d11298 in __pthread_cond_destroy (cond=0xcc21d0) at
+pthread_cond_destroy.c:33
+#2  0x00cef12c in uninit_thread () from
+/repo/kdemey/buildroot-cgroups/output/host/usr/mips64-buildroot-linux-gnu/sysroot/usr/lib/libcopperplate.so.0
+#3  0x00cef494 in finalize_thread () from
+/repo/kdemey/buildroot-cgroups/output/host/usr/mips64-buildroot-linux-gnu/sysroot/usr/lib/libcopperplate.so.0
+#4  0x00d0b10c in __nptl_deallocate_tsd () at pthread_create.c:154
+#5  0x00d0c838 in start_thread (arg=<optimized out>) at pthread_create.c:304
+#6  0x00e26f4c in __thread_start () from
+output/host/usr/mips64-buildroot-linux-gnu/sysroot/lib32/libc.so.6
+Backtrace stopped: frame did not save the PC
+
+Any insight on these issues?
 
