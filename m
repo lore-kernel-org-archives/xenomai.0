@@ -1,22 +1,15 @@
-Date: Fri, 4 Jul 2014 09:19:39 +0200
-From: Arnaud Degroote <arnaud.degroote@isae.fr>
-Message-ID: <20140704071939.GA12028@dmia-degroote.isae.fr>
-References: <7016-53b1af80-3d5-7f54e300@12077259>
- <53B1B529.9040106@xenomai.org>
- <20140701083910.GA28764@dmia-degroote.isae.fr>
- <53B27E5B.10507@xenomai.org>
- <20140701155123.GA5547@dmia-degroote.isae.fr>
- <53B30A78.40605@xenomai.org>
- <20140702114142.GA13439@dmia-degroote.isae.fr>
- <53B44879.5020203@xenomai.org>
- <20140703083807.GA10654@dmia-degroote.isae.fr>
- <53B54DEA.9020306@xenomai.org>
+Date: Fri, 4 Jul 2014 11:27:36 +0200
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Message-ID: <20140704092736.GC13487@lukather>
+References: <1404210421-17081-1-git-send-email-maxime.ripard@free-electrons.com>
+ <53B294A7.5010803@xenomai.org> <20140701141536.GN28647@lukather>
+ <53B30D96.60500@xenomai.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <53B54DEA.9020306@xenomai.org>
+In-Reply-To: <53B30D96.60500@xenomai.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Support of Beagleboard xm rev C on 3.14-ipipe
+Subject: Re: [Xenomai] [PATCH] AT91: SAMA5D3: Adapt Ipipe for AIC5
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,53 +19,81 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: Thomas Petazzoni <thomas@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Boris Brezillon <boris@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, xenomai@xenomai.org
 
-On 03/Jul - 14:34, Gilles Chanteperdrix wrote:
+On Tue, Jul 01, 2014 at 09:35:50PM +0200, Gilles Chanteperdrix wrote:
 > -----BEGIN PGP SIGNED MESSAGE-----
 > Hash: SHA1
 > 
-> On 07/03/2014 10:38 AM, Arnaud Degroote wrote:
-> > On 02/Jul - 19:59, Gilles Chanteperdrix wrote:
-> >> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+> On 07/01/2014 04:15 PM, Maxime Ripard wrote:
+> > Hi Gilles,
+> > 
+> > On Tue, Jul 01, 2014 at 12:59:51PM +0200, Gilles Chanteperdrix
+> > wrote:
+> >> On 07/01/2014 12:27 PM, Maxime Ripard wrote:
+> >>> - -	at91_pic_muter_register(); }
 > >> 
+> >> Obviously, some if (soc_is_foo()) missing here.
+> > 
+> > Right.
+> > 
+> >>> +static void __maybe_unused at91_aic5_eoi(struct irq_data *d) 
+> >>> +{ +	at91_aic_write(AT91_AIC5_EOICR, 0); +}
 > >> 
-> >> Well, this sucks, posted writes increase the timer programming
+> >> You want to make that inline, so that the hold callback ends-up
+> >> doing just two register writes without any function calls,
+> >> improving interrupt latency.
+> >> 
+> >>> + #ifdef CONFIG_IPIPE static void at91_aic_hold_irq(struct
+> >>> irq_data *d) { @@ -258,13 +283,20 @@ static void
+> >>> at91_aic_release_irq(struct irq_data *d) { 
+> >>> at91_aic_hard_unmask_irq(d); } -#endif /* CONFIG_IPIPE */
+> >>> 
+> >>> -static void __maybe_unused at91_aic5_eoi(struct irq_data *d) 
+> >>> +static void at91_aic5_hold_irq(struct irq_data *d) { -
+> >>> at91_aic_write(AT91_AIC5_EOICR, 0); +
+> >>> at91_aic5_hard_mask_irq(d); +	at91_aic5_eoi(d); }
+> >>> 
+> >>> +static void at91_aic5_release_irq(struct irq_data *d) +{ +
+> >>> at91_aic5_hard_unmask_irq(d); +}
+> >> 
+> >> The ->release callback is called with irqs on, so you may want to
+> >> call hard_local_irq_save / hard_local_irq_restore to make it
+> >> atomic (note that the old at91s are also broken by the addition
+> >> of the call to set_backup). Alternatively, you may move the
+> >> clear_backup/set_bakcup calls to the linux mask/unmask routines,
+> >> so that the register writes remain atomic, and you can avoid the
+> >> save/restore and function calls and improve the interrupt
 > >> latency.
-> >> 
-> >> Does the latency test run correctly with this patch?
 > > 
-> > Yes, the latency test seems to work properly.
-> 
-> That is strange, because the Xenomai timer also uses non-posted writes.
-> 
+> > Ok, so, with the changes you mentionned, I can't make the system
+> > crash anymore (or at least, not as easily as it used to be).
 > > 
-> > I need to investigate a bit more, because the kernel without the
-> > patch seems to work properly with a different uboot (the one for my
-> > gumstix) while it hangs with the uboot for my beagleboard.
+> > But: - whenever the program mentionned above calls exit(), it 
+> > stalls. However, ctrl+c makes the program exit properly, and 
+> > everything seems fine otherwise - whenever we don't link it against
+> > xenomai, it just hangs. I've not figured out why yet
+> > 
+> > With CONFIG_XENOMAI and CONFIG_IPIPE disabled, it works fine.
 > 
-> Perhaps the u-boot which works implement some workaround for processor
-> errata, which the u-boot which does not work does not implement?
+> My answer was wrong, you probably need to keep the
+> set_backup/clear_backup calls in he ->hold and ->release callbacks, as
+> the linux interrupt may expect the backup areas to be in sync. Did you
+> do this, or did you go for the alternative?
 
-I don't understand where the difference comes from. I tried with
-several variants of u-boot, with the same patchlevel, and it always
-works with 'omap_overo_config' and always hangs with
-'omap_beagle_config'. I carefully read the two board code and make
-several hack in beagle one to reduce diff with overo, but was not able
-yet to reproduce the 'correct behaviour'.
+I went for the alternative. I'm sending you a v2 with what I have so
+far, that shows the behaviour I was describing.
 
-Unfortunately,  I lack time to continue investigation, I will go for the
-'posted' hack for the moment and will open an issue in my job
-bugtracker. I may try also with uboot + dts.
+Maxime
 
-Anyway, thanks a lot for your help Gilles. I will let you know if I make
-significant progress on this issue.
-
-Best regards,
+-- 
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
 -------------- next part --------------
 A non-text attachment was scrubbed...
 Name: signature.asc
 Type: application/pgp-signature
-Size: 490 bytes
+Size: 819 bytes
 Desc: Digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140704/d8b39108/attachment.sig>
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140704/4512e9dc/attachment.sig>
