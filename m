@@ -1,15 +1,7 @@
-Date: Fri, 4 Jul 2014 11:27:36 +0200
 From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Message-ID: <20140704092736.GC13487@lukather>
-References: <1404210421-17081-1-git-send-email-maxime.ripard@free-electrons.com>
- <53B294A7.5010803@xenomai.org> <20140701141536.GN28647@lukather>
- <53B30D96.60500@xenomai.org>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <53B30D96.60500@xenomai.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] AT91: SAMA5D3: Adapt Ipipe for AIC5
+Date: Fri,  4 Jul 2014 11:42:50 +0200
+Message-Id: <1404466970-15874-1-git-send-email-maxime.ripard@free-electrons.com>
+Subject: [Xenomai] [PATCH v2] AT91: SAMA5D3: Adapt Ipipe for AIC5
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,82 +10,148 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Thomas Petazzoni <thomas@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Boris Brezillon <boris@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, xenomai@xenomai.org
+To: gilles.chanteperdrix@xenomai.org
+Cc: Thomas Petazzoni <thomas@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Boris Brezillon <boris@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, xenomai@xenomai.org
 
-On Tue, Jul 01, 2014 at 09:35:50PM +0200, Gilles Chanteperdrix wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
-> 
-> On 07/01/2014 04:15 PM, Maxime Ripard wrote:
-> > Hi Gilles,
-> > 
-> > On Tue, Jul 01, 2014 at 12:59:51PM +0200, Gilles Chanteperdrix
-> > wrote:
-> >> On 07/01/2014 12:27 PM, Maxime Ripard wrote:
-> >>> - -	at91_pic_muter_register(); }
-> >> 
-> >> Obviously, some if (soc_is_foo()) missing here.
-> > 
-> > Right.
-> > 
-> >>> +static void __maybe_unused at91_aic5_eoi(struct irq_data *d) 
-> >>> +{ +	at91_aic_write(AT91_AIC5_EOICR, 0); +}
-> >> 
-> >> You want to make that inline, so that the hold callback ends-up
-> >> doing just two register writes without any function calls,
-> >> improving interrupt latency.
-> >> 
-> >>> + #ifdef CONFIG_IPIPE static void at91_aic_hold_irq(struct
-> >>> irq_data *d) { @@ -258,13 +283,20 @@ static void
-> >>> at91_aic_release_irq(struct irq_data *d) { 
-> >>> at91_aic_hard_unmask_irq(d); } -#endif /* CONFIG_IPIPE */
-> >>> 
-> >>> -static void __maybe_unused at91_aic5_eoi(struct irq_data *d) 
-> >>> +static void at91_aic5_hold_irq(struct irq_data *d) { -
-> >>> at91_aic_write(AT91_AIC5_EOICR, 0); +
-> >>> at91_aic5_hard_mask_irq(d); +	at91_aic5_eoi(d); }
-> >>> 
-> >>> +static void at91_aic5_release_irq(struct irq_data *d) +{ +
-> >>> at91_aic5_hard_unmask_irq(d); +}
-> >> 
-> >> The ->release callback is called with irqs on, so you may want to
-> >> call hard_local_irq_save / hard_local_irq_restore to make it
-> >> atomic (note that the old at91s are also broken by the addition
-> >> of the call to set_backup). Alternatively, you may move the
-> >> clear_backup/set_bakcup calls to the linux mask/unmask routines,
-> >> so that the register writes remain atomic, and you can avoid the
-> >> save/restore and function calls and improve the interrupt
-> >> latency.
-> > 
-> > Ok, so, with the changes you mentionned, I can't make the system
-> > crash anymore (or at least, not as easily as it used to be).
-> > 
-> > But: - whenever the program mentionned above calls exit(), it 
-> > stalls. However, ctrl+c makes the program exit properly, and 
-> > everything seems fine otherwise - whenever we don't link it against
-> > xenomai, it just hangs. I've not figured out why yet
-> > 
-> > With CONFIG_XENOMAI and CONFIG_IPIPE disabled, it works fine.
-> 
-> My answer was wrong, you probably need to keep the
-> set_backup/clear_backup calls in he ->hold and ->release callbacks, as
-> the linux interrupt may expect the backup areas to be in sync. Did you
-> do this, or did you go for the alternative?
+In the latest generation of Atmel SoCs, the interrupt controller changed. Adapt
+the existing code to take this into account.
 
-I went for the alternative. I'm sending you a v2 with what I have so
-far, that shows the behaviour I was describing.
+Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+---
+Hi,
 
-Maxime
+This patch is not meant to be merged as is.
 
+At the moment, its behaviour is still to erratic to be useful.
+
+An application compiled against Xenomai will hang at least on a call to exit
+(while hitting ctrl+c actually make the application stop, leaving the system in
+a stable state), while a linux application will just make the system freeze.
+
+ arch/arm/mach-at91/at91sam926x_time.c |  2 --
+ arch/arm/mach-at91/irq.c              | 51 +++++++++++++++++++++++++++++++----
+ 2 files changed, 46 insertions(+), 7 deletions(-)
+
+diff --git a/arch/arm/mach-at91/at91sam926x_time.c b/arch/arm/mach-at91/at91sam926x_time.c
+index 1f7ad837c05d..2a78267da445 100644
+--- a/arch/arm/mach-at91/at91sam926x_time.c
++++ b/arch/arm/mach-at91/at91sam926x_time.c
+@@ -274,8 +274,6 @@ void __init at91sam926x_pit_init(void)
+ 	pit_clkevt.mult = div_sc(pit_rate, NSEC_PER_SEC, pit_clkevt.shift);
+ 	pit_clkevt.cpumask = cpumask_of(0);
+ 	clockevents_register_device(&pit_clkevt);
+-
+-	at91_pic_muter_register();
+ }
+ 
+ void __init at91sam926x_ioremap_pit(u32 addr)
+diff --git a/arch/arm/mach-at91/irq.c b/arch/arm/mach-at91/irq.c
+index a18f229d5d27..83ce0ddc08fc 100644
+--- a/arch/arm/mach-at91/irq.c
++++ b/arch/arm/mach-at91/irq.c
+@@ -202,13 +202,25 @@ static void at91_aic_mask_irq(struct irq_data *d)
+ 	hard_cond_local_irq_restore(flags);
+ }
+ 
+-static void __maybe_unused at91_aic5_mask_irq(struct irq_data *d)
++static inline void at91_aic5_hard_mask_irq(struct irq_data *d)
+ {
+ 	/* Disable interrupt on AIC5 */
+ 	at91_aic_write(AT91_AIC5_SSR, d->hwirq & AT91_AIC5_INTSEL_MSK);
+ 	at91_aic_write(AT91_AIC5_IDCR, 1);
++}
++
++static void at91_aic5_mask_irq(struct irq_data *d)
++{
++	unsigned long flags;
++
++	flags = hard_cond_local_irq_save();
++	at91_aic5_hard_mask_irq(d);
++
+ 	/* Update ISR cache */
+ 	clear_backup(d->hwirq);
++
++	ipipe_lock_irq(d->irq);
++	hard_cond_local_irq_restore(flags);
+ }
+ 
+ static inline void at91_aic_hard_unmask_irq(struct irq_data *d)
+@@ -229,13 +241,25 @@ static void at91_aic_unmask_irq(struct irq_data *d)
+ 	hard_cond_local_irq_restore(flags);
+ }
+ 
+-static void __maybe_unused at91_aic5_unmask_irq(struct irq_data *d)
++static inline void at91_aic5_hard_unmask_irq(struct irq_data *d)
+ {
+ 	/* Enable interrupt on AIC5 */
+ 	at91_aic_write(AT91_AIC5_SSR, d->hwirq & AT91_AIC5_INTSEL_MSK);
+ 	at91_aic_write(AT91_AIC5_IECR, 1);
++}
++
++static void at91_aic5_unmask_irq(struct irq_data *d)
++{
++	unsigned long flags;
++
++	flags = hard_cond_local_irq_save();
++	at91_aic5_hard_unmask_irq(d);
++
+ 	/* Update ISR cache */
+ 	set_backup(d->hwirq);
++
++	ipipe_unlock_irq(d->irq);
++	hard_cond_local_irq_restore(flags);
+ }
+ 
+ static void at91_aic_eoi(struct irq_data *d)
+@@ -247,6 +271,11 @@ static void at91_aic_eoi(struct irq_data *d)
+ 	at91_aic_write(AT91_AIC_EOICR, 0);
+ }
+ 
++static inline void __maybe_unused at91_aic5_eoi(struct irq_data *d)
++{
++	at91_aic_write(AT91_AIC5_EOICR, 0);
++}
++
+ #ifdef CONFIG_IPIPE
+ static void at91_aic_hold_irq(struct irq_data *d)
+ {
+@@ -258,13 +287,20 @@ static void at91_aic_release_irq(struct irq_data *d)
+ {
+ 	at91_aic_hard_unmask_irq(d);
+ }
+-#endif /* CONFIG_IPIPE */
+ 
+-static void __maybe_unused at91_aic5_eoi(struct irq_data *d)
++static void at91_aic5_hold_irq(struct irq_data *d)
+ {
+-	at91_aic_write(AT91_AIC5_EOICR, 0);
++	at91_aic5_hard_mask_irq(d);
++	at91_aic5_eoi(d);
+ }
+ 
++static void at91_aic5_release_irq(struct irq_data *d)
++{
++	at91_aic5_hard_unmask_irq(d);
++}
++
++#endif /* CONFIG_IPIPE */
++
+ static unsigned long *at91_extern_irq;
+ 
+ u32 at91_get_extern_irq(void)
+@@ -529,6 +565,11 @@ int __init at91_aic5_of_init(struct device_node *node,
+ 	at91_aic_chip.irq_eoi		= at91_aic5_eoi;
+ 	at91_aic_irq_ops.map		= at91_aic5_irq_map;
+ 
++#ifdef CONFIG_IPIPE
++	at91_aic_chip.irq_hold		= at91_aic5_hold_irq;
++	at91_aic_chip.irq_release	= at91_aic5_release_irq;
++#endif
++
+ 	err = at91_aic_of_common_init(node, parent);
+ 	if (err)
+ 		return err;
 -- 
-Maxime Ripard, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 819 bytes
-Desc: Digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140704/4512e9dc/attachment.sig>
+2.0.1
+
+
