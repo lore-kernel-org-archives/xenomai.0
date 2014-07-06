@@ -1,13 +1,15 @@
-References: <1404640109.73994.YahooMailNeo@web171603.mail.ir2.yahoo.com>
- <53B981B8.5070901@xenomai.org>
-Message-ID: <1404668168.16673.YahooMailNeo@web171605.mail.ir2.yahoo.com>
-Date: Sun, 6 Jul 2014 18:36:08 +0100
+References: <1404638402.36454.YahooMailNeo@web171603.mail.ir2.yahoo.com>
+ <53B91595.9060604@xenomai.org>
+ <1404639382.8763.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+ <53B91C45.8090802@xenomai.org> <53B91D72.8030503@xenomai.org>
+Message-ID: <1404673210.38609.YahooMailNeo@web171603.mail.ir2.yahoo.com>
+Date: Sun, 6 Jul 2014 20:00:10 +0100
 From: Matthias Schneider <ma30002000@yahoo.de>
-In-Reply-To: <53B981B8.5070901@xenomai.org>
+In-Reply-To: <53B91D72.8030503@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] issue with cobalt/timer: avoid periodic timer drift
+Subject: Re: [Xenomai] Question about threadobj_irq_prio
 Reply-To: Matthias Schneider <ma30002000@yahoo.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,62 +19,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
------ Original Message -----=0A=0A> From: Gilles Chanteperdrix <gilles.chan=
-teperdrix@xenomai.org>=0A> To: Matthias Schneider <ma30002000@yahoo.de>; "x=
-enomai@xenomai.org" <xenomai@xenomai.org>=0A> Cc: =0A> Sent: Sunday, July 6=
-, 2014 7:04 PM=0A> Subject: Re: [Xenomai] issue with cobalt/timer: avoid pe=
-riodic timer drift=0A> =0A> On 07/06/2014 11:48 AM, Matthias Schneider wrot=
-e:=0A>>  Hi all,=0A>> =0A>>  commit =0A>> =0A>>  2014-06-02 c20fceb147e337e=
-2379b29ecd81b943318c7fbc7 =0A>>  (patch) cobalt/timer: avoid periodic timer=
- drift=0A>> =0A>>  seems to cause an endless kernel loop in one of my=0A>> =
- freertos demos. The issue does not occur when =0A>>  reverting this commit=
-.=0A>> =0A>>  Investigating the issue, can see the following:=0A>> =0A>>  #=
-0=A0 0xc00ba45c in mach_arm_nodiv_llimd (rhs_integ=3D<optimized out>, =0A> =
-frac=3D<optimized out>, op=3D<optimized out>)=0A>> =A0 =A0  at arch/arm/xen=
-omai/include/asm/xenomai/uapi/arith.h:120=0A>>  #1=A0 xnclock_core_ns_to_ti=
-cks (ns=3D0) at kernel/xenomai/clock.c:52=0A>>  #2=A0 0xc00baf34 in xnclock=
-_ns_to_ticks (clock=3D<optimized out>, =0A> ns=3D<optimized out>)=0A>> =A0 =
-=A0  at include/xenomai/cobalt/kernel/clock.h:204=0A>>  #3=A0 xntimer_updat=
-e_date (timer=3D0xde706518) at =0A> include/xenomai/cobalt/kernel/timer.h:2=
-68=0A>>  #4=A0 xnclock_tick (clock=3D0xc06b1138 <nkclock>) at =0A> kernel/x=
-enomai/clock.c:644=0A>>  #5=A0 0xc00bcbcc in xnintr_core_clock_handler () a=
-t kernel/xenomai/intr.c:121=0A>>  #6=A0 0xc0095a98 in dispatch_irq_head (ir=
-q=3D<optimized out>) at =0A> kernel/ipipe/core.c:1179=0A>> =0A>>  This seem=
-s to be the endless loop:=0A>>  642=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
- do {=0A>>  643=A0 =A0 =A0 timer->periodic_ticks +=3D interval_ticks;=0A>> =
- 644=A0 =A0 =A0 xntimer_update_date(timer);=0A>>  645=A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0  } while (xntimerh_date(&timer->aplink) < =0A> now + cl=
-ock->gravity);=0A> =0A> =0A> I do not really understand how interval_ticks =
-can be 0, but please try =0A> the following patch:=0A> =0A> diff --git a/ke=
-rnel/cobalt/clock.c b/kernel/cobalt/clock.c=0A> index a578f89..1107f7a 1006=
-44=0A> --- a/kernel/cobalt/clock.c=0A> +++ b/kernel/cobalt/clock.c=0A> @@ -=
-619,10 +619,9 @@ void xnclock_tick(struct xnclock *clock)=0A> =A0=A0=A0 =A0=
-=A0=A0 =A0=A0=A0  * wait for 250 ms for the user to continue=0A> =A0=A0=A0 =
-=A0=A0=A0 =A0=A0=A0  * program execution.=0A> =A0=A0=A0 =A0=A0=A0 =A0=A0=A0=
-  */=0A> -=A0=A0=A0 =A0=A0=A0 =A0=A0=A0 if (timer->interval_ns > 250000000)=
-=0A> -=A0=A0=A0 =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 goto advance;=0A> -=A0=A0=A0 =
-=A0=A0=A0 =A0=A0=A0 interval_ticks =3D 250000000 /=0A> -=A0=A0=A0 =A0=A0=A0=
- =A0=A0=A0 =A0=A0=A0 (unsigned)timer->interval_ns;=0A> +=A0=A0=A0 =A0=A0=A0=
- =A0=A0=A0 xntimerh_date(&timer->aplink) +=3D=0A> +=A0=A0=A0 =A0=A0=A0 =A0=
-=A0=A0 =A0=A0=A0 xnclock_ns_to_ticks(xntimer_clock(timer),=0A> +=A0=A0=A0 =
-=A0=A0=A0 =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 250000000);=0A> =A0=A0=A0=
- =A0=A0=A0 =A0=A0=A0 goto requeue;=0A> =A0=A0=A0 =A0=A0=A0 }=0A> =A0=A0=A0 =
-fire:=0A> @@ -638,11 +637,11 @@ void xnclock_tick(struct xnclock *clock)=0A=
-> =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 continue;=0A> =A0=A0=A0 advance:=0A> =A0=A0=
-=A0 =A0=A0=A0 interval_ticks =3D 1;=0A> -=A0=A0=A0 requeue:=0A> =0A> =A0=A0=
-=A0 =A0=A0=A0 do {=0A> =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 timer->periodic_ticks =
-+=3D interval_ticks;=0A> =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 xntimer_update_date(=
-timer);=0A> =A0=A0=A0 =A0=A0=A0 } while (xntimerh_date(&timer->aplink) < no=
-w + =0A> clock->gravity);=0A> +=A0=A0=A0 requeue:=0A> #ifdef CONFIG_SMP=0A>=
- =A0=A0=A0 =A0=A0=A0 /*=0A> =A0=A0=A0 =A0=A0=A0  * Make sure to pick the ri=
-ght percpu queue, in case=0A> =0A=0A=0AHi Gilles,=0A=0Athanks for the quick=
- fix, it seems to resolve my problem. Yes,=0Ain fact I was used gdb when th=
-e issues occured.=A0=0A=0AConsidering I entered the=0A=0Aif (unlikely(atomi=
-c_read(&nkclklk) > 0))=0A[...]=0Acode path, a series of division by zeroes =
-I had without a sensible backtrace=0Acould also be explained (I was under t=
-he impression that it is possible to=0Aget a backtrace of a division by zer=
-o exception on arm for some time now,=0Abut it seems not to have worked for=
- me).=0A=0ARegards,=0AMatthias
+----- Original Message -----=0A=0A> From: Philippe Gerum <rpm@xenomai.org>=
+=0A> To: Matthias Schneider <ma30002000@yahoo.de>; "xenomai@xenomai.org" <x=
+enomai@xenomai.org>=0A> Cc: =0A> Sent: Sunday, July 6, 2014 11:57 AM=0A> Su=
+bject: Re: [Xenomai] Question about threadobj_irq_prio=0A> =0A> On 07/06/20=
+14 11:52 AM, Philippe Gerum wrote:=0A>>  On 07/06/2014 11:36 AM, Matthias S=
+chneider wrote:=0A>>>  ----- Original Message -----=0A>>> =0A>>>>  From: Ph=
+ilippe Gerum <rpm@xenomai.org>=0A>>>>  To: Matthias Schneider <ma30002000@y=
+ahoo.de>; =0A> "xenomai@xenomai.org"=0A>>>>  <xenomai@xenomai.org>=0A>>>>  =
+Cc:=0A>>>>  Sent: Sunday, July 6, 2014 11:23 AM=0A>>>>  Subject: Re: [Xenom=
+ai] Question about threadobj_irq_prio=0A>>>> =0A>>>>  On 07/06/2014 11:20 A=
+M, Matthias Schneider wrote:=0A>>>>> =A0  Hi all,=0A>>>>> =0A>>>>> =A0  I w=
+as under the expression that the max cobal scheduling prio =0A> in=0A>>>>> =
+=A0  forge was now 256 and that SCHED_COBALT had been replaced =0A> with=0A=
+>>>>> =A0  SCHED_FIFO. Is this correct?=0A>>>>> =0A>>>> =0A>>>>  Yes.=0A>>>=
+> =0A>>>>> =A0  Anyway,=0A>>>>> =0A>>>>> =A0  threadobj_pkg_init(void) init=
+ializes=0A>>>>> =A0  threadobj_irq_prio =3D =0A> __RT(sched_get_priority_ma=
+x(SCHED_CORE));=0A>>>>> =A0  which is still mapping to 258 - however I woul=
+d rather expect=0A>>>>> =A0  256...=0A>>>>> =0A>>>> =0A>>>>  256 regular FI=
+FO levels, +2 special levels for scheduler lock =0A> (mercury=0A>>>>  only)=
+ and interrupt service emulation (both cores).=0A>>>> =0A>>>> =0A>>>>> =A0 =
+ Thanks for clarification,=0A>>>>> =0A>>>>> =A0  regards,=0A>>>>> =A0  Matt=
+hias=0A>>>>> =0A>>> =0A>>>  I get=0A>>> =0A>>>  threadobj_high_prio =3D 258=
+=0A>>>  threadobj_irq_prio =3D 259=0A>>>  threadobj_agent_prio =3D 258=0A>>=
+> =0A>>>  and=0A>>> =0A>>>  e.g. int psos_task_normalize_priority(unsigned =
+long psos_prio)=0A>>> =0A>>>  clips the prio to threadobj_high_prio. Howeve=
+r it should=0A>>>  clip prio at threadobj_high_prio - 2, shouldnt it?=0A>>>=
+ =0A>> =0A>>  Even 256 explicitly, since pSOS specifies this limit.=0A>> =
+=0A> =0A> No, we can't do that over Mercury, where we only have the limited=
+ 1-97 =0A> range available. So that would be high_prio -2 for Cobalt, but h=
+igh_prio =0A> for Mercury. copperplate should be fixed on the Cobalt side.=
+=0A> =0A> =0A> -- =0A> Philippe.=0A> =0A=0AThanks for the fix..=0AMatthias
 
