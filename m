@@ -1,12 +1,11 @@
-Message-ID: <53B90F6A.30809@xenomai.org>
-Date: Sun, 06 Jul 2014 10:57:14 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <1404638402.36454.YahooMailNeo@web171603.mail.ir2.yahoo.com>
+Date: Sun, 6 Jul 2014 10:20:02 +0100
+From: Matthias Schneider <ma30002000@yahoo.de>
 MIME-Version: 1.0
-References: <CABqyFP_DMH3t3Dp+AZPzXHXQb_j_VHkAjMMuBeLJ-5BTPPfk4g@mail.gmail.com>
-In-Reply-To: <CABqyFP_DMH3t3Dp+AZPzXHXQb_j_VHkAjMMuBeLJ-5BTPPfk4g@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Latency can be negative ?
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Question about threadobj_irq_prio
+Reply-To: Matthias Schneider <ma30002000@yahoo.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,33 +14,12 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ruika You <crazylinuxcnc@gmail.com>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/06/2014 06:19 AM, Ruika You wrote:
-> Dear all,
-> I build xenomai 2.6.3 base on ipipe stable 3.14.0 as linux kernel in my
-> i386 PC. Everything seems work well, until i try to test latency. It is
-> quite strange when negative  value occur. Any idea? My test result as
-> follow:
-
-These are early timer shots, happening a micro-second or so before the 
-ideal date. The pre-calibration for your machine is pessimistic, you 
-should decrease the /proc/xenomai/latency value until the minimum 
-latency never drops below zero, keeping the worst-case as close as 
-possible to zero.
-
-i.e.
-# echo [nanoseconds] > /proc/xenomai/latency
-
-You can refine this value as the latency test runs in another window. 
-Once you are happy with some calibration value, assign it to 
-CONFIG_XENO_OPT_TIMING_SCHEDLAT in your kernel configuration.
-
-Please note that depending on which latency is considered among 
-user-space/kernel task scheduling, and interrupt handler, the most 
-appropriate calibration value may be different. You have to find the 
-best trade-off for your workload.
-
--- 
-Philippe.
+Hi all,=0A=0AI was under the expression that the max cobal scheduling prio =
+in=A0=0Aforge was now 256 and that SCHED_COBALT had been replaced with=0ASC=
+HED_FIFO. Is this correct?=A0=0A=0AAnyway,=0A=0Athreadobj_pkg_init(void) in=
+itializes=0Athreadobj_irq_prio =3D __RT(sched_get_priority_max(SCHED_CORE))=
+;=0Awhich is still mapping to 258 - however I would rather expect=A0=0A256.=
+..=0A=0AThanks for clarification,=0A=0Aregards,=0AMatthias
 
