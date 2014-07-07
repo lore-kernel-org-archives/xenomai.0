@@ -1,5 +1,5 @@
-Message-ID: <53BA90A6.3060402@xenomai.org>
-Date: Mon, 07 Jul 2014 14:20:54 +0200
+Message-ID: <53BA91F0.2070005@xenomai.org>
+Date: Mon, 07 Jul 2014 14:26:24 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <53B512BB.9040908@ma-info.de>,
@@ -35,11 +35,15 @@ On 07/07/2014 02:17 PM, Gilles Chanteperdrix wrote:
 > a reproducible benchmark, and scripts/histo.gp to turn the histogram
 > dumped with -g to a comprehensible graph.
 
-xeno-test is documented here:
-http://www.xenomai.org/documentation/xenomai-2.6/html/xeno-test/index.html
+The following pages:
 
-dohell is documented here:
-http://www.xenomai.org/documentation/xenomai-2.6/html/dohell/index.html
+http://www.xenomai.org/~gch/core-3.10-latencies/
+http://www.xenomai.org/~gch/core-3.8-latencies/
+http://www.xenomai.org/~gch/core-3.5-latencies/
+http://www.xenomai.org/~gch/core-3.4-latencies/
+http://www.xenomai.org/~gch/core-3.2-latencies/
+
+Are made using this method.
 
 -- 
                                                                 Gilles.
