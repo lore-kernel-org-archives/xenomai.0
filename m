@@ -1,13 +1,14 @@
-References: <1403028924.23153.YahooMailNeo@web171605.mail.ir2.yahoo.com>
-Message-ID: <1403722907.95854.YahooMailNeo@web171601.mail.ir2.yahoo.com>
-Date: Wed, 25 Jun 2014 20:01:47 +0100
-From: Matthias Schneider <ma30002000@yahoo.de>
-In-Reply-To: <1403028924.23153.YahooMailNeo@web171605.mail.ir2.yahoo.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+From: "Stoidner, Christoph" <c.stoidner@arvero.de>
+Date: Mon, 7 Jul 2014 10:44:57 +0000
+Message-ID: <4c01854d47444a33a7f360da922b422c@EX132MBOX1B.de2.local>
+References: <53B512BB.9040908@ma-info.de>,
+ <9fc8c769e5b64478942864724e979a74@EX132MBOX1B.de2.local>
+In-Reply-To: <9fc8c769e5b64478942864724e979a74@EX132MBOX1B.de2.local>
+Content-Language: de-DE
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] I2C RTDM driver
-Reply-To: Matthias Schneider <ma30002000@yahoo.de>
+MIME-Version: 1.0
+Subject: Re: [Xenomai] Xenomai on PhyCore/Board
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,72 +17,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
------ Original Message -----
+Hi Florian,=0A=
+=0A=
+we are also doing some latency tests on I-Pipe/Xenomai, pure Linux and Linu=
+x with Preempt RT.=0A=
+=0A=
+Are you interested to share our's and your results?=0A=
+=0A=
+We plan to publish the results when we have formatted them in a comprehensi=
+ble way.=0A=
+=0A=
+Regards,=0A=
+Christoph=0A=
+=0A=
+________________________________________=0A=
+Von: Xenomai <xenomai-bounces@xenomai.org> im Auftrag von Frede Florian <fl=
+orian.frede@ma-info.de>=0A=
+Gesendet: Donnerstag, 3. Juli 2014 10:22=0A=
+An: xenomai@xenomai.org=0A=
+Betreff: [Xenomai] Xenomai on PhyCore/Board=0A=
+=0A=
+Hello,=0A=
+=0A=
+We started a new real time project. For this project we decided to=0A=
+compare the PREEMPT_RT and Xenomai on our future hardware. For this we=0A=
+got two developer board from Phytec.=0A=
+=0A=
+  * Linux-phyCORE-AM335x-Kit=0A=
+    (https://www.osadl.org/Profile-of-system-in-rack-7-slot-5.qa-profile-r7=
+s5.0.html)=0A=
+  * phyBOARD-Wega-AM335x=0A=
+    (https://www.osadl.org/Profile-of-system-in-rack-8-slot-8.qa-profile-r8=
+s8.0.html)=0A=
+=0A=
+Now I have the Problem that I can not compile a running Linux with=0A=
+Xenomai on this board. The supplier delivers patches for Kernel 3.2 for=0A=
+the board  and on the linked page I get patches for the Kernel 3.12.19.=0A=
+=0A=
+  * Is there a possibility to run Xenomai on one on this kernel versions?=
+=0A=
+  * I am really no expert in writing patches for a Kernel so I need some=0A=
+    help or a HowTo. Where can I find that help?=0A=
+=0A=
+Thanks for helping a Xenomai beginner.=0A=
+=0A=
+Florian=0A=
+_______________________________________________=0A=
+Xenomai mailing list=0A=
+Xenomai@xenomai.org=0A=
+http://www.xenomai.org/mailman/listinfo/xenomai=0A=
 
-> From: Matthias Schneider <ma30002000@yahoo.de>
-> To: "xenomai@xenomai.org" <xenomai@xenomai.org>
-> Cc: =
-
-> Sent: Tuesday, June 17, 2014 8:15 PM
-> Subject: [Xenomai] I2C RTDM driver
-> =
-
-> Hi all,
-> =
-
-> in the spirit of
-> =
-
-> http://www.xenomai.org/pipermail/xenomai/2006-November/006455.html
-> =
-
-> I would like to contribute my I2C RTDM driver to xenomai and ask for a re=
-view.
-> It is based on the Linux 3.14 i2c framework, porting the omap i2c driver =
-(tested =
-
-> on
-> beaglebone black).
-> =
-
-> The following points mentioned in the above post have been addressed:
-> =
-
-> * usage of existing linux kernel structures when available
-> * combined address+request command
-> =
-
-> * ahead-of-time allocation via special IOCTL
-> =
-
-> The framework itself is contained in a single file "rti2c-dev.c", =
-
-> while modifications to=A0
-> drivers when porting to rtdm should be minimal. A readme file is included=
- in the =
-
-> patch as always,
-> =
-
-> thanks in advance for your comments,
-> =
-
-> Matthias Schneider
-
-
-Please find attached an updated patch.
-It fixes some problems when compiling as a module, when unloading the=A0
-module and when being interrupted in rtdm_event_timedwait.
-
-Regards,
-Matthias
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: 0001-Initial-i2c-commit-no.2.patch.gz
-Type: application/x-gzip
-Size: 19957 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140625/dcdbcde=
-c/attachment.bin>
