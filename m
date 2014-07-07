@@ -1,11 +1,13 @@
 References: <9584EBE8-001C-41E7-88A1-3B4CF07DD567@gatech.edu>
  <oq7g3pvpk0.fsf@merlin.sez.to>
  <CA30A2D0-9D01-4C5C-AD6F-5B5FD75422C9@gatech.edu>
+ <oq1ttxvnd5.fsf@merlin.sez.to>
+ <9008C96C-A4AD-4B89-9610-F60DAF4CA0E5@gatech.edu>
 From: Paul Janzen <pcj@xenomai.sez.to>
-Date: Sun, 06 Jul 2014 20:50:14 -0700
-In-Reply-To: <CA30A2D0-9D01-4C5C-AD6F-5B5FD75422C9@gatech.edu> (Yogi A.
- Patel's message of "Sun, 6 Jul 2014 23:19:37 -0400")
-Message-ID: <oq1ttxvnd5.fsf@merlin.sez.to>
+Date: Sun, 06 Jul 2014 21:41:48 -0700
+In-Reply-To: <9008C96C-A4AD-4B89-9610-F60DAF4CA0E5@gatech.edu> (Yogi A.
+ Patel's message of "Mon, 7 Jul 2014 00:08:59 -0400")
+Message-ID: <oqvbr9u6er.fsf@merlin.sez.to>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Subject: Re: [Xenomai] Analogy Reference Issue with NI PCIMIO
@@ -22,29 +24,27 @@ Cc: xenomai@xenomai.org
 
 "Yogi A. Patel" <yapatel@gatech.edu> writes:
 
-> I am interfacing with the breakout box for the NI card.
+> Thus, when I plug into AI 2 using a BNC and use Ground mode in
+> software and switch being set to Ground source, it is automatically
+> being ground referenced since the data sheet for that box says the
+> AI sense pin is tied to the internal GND.
 
-This still does not tell me which terminals on the PCI card the
-function generator is connected to.
+No, this breakout box only supports configuring the PCI-6259 input mux
+in differential mode.  The switch just selects whether or not to tie
+the BNC shell (e.g., pin 31) to AI-GND through 5 kohm || 0.1 uf.  In
+your case, since the FG is already ground-referenced, you should set
+the switch to GS, but it should not make a huge difference in either
+case.
 
-For differential mode, to use channel 2, you'd need to connect the
-positive pin to PCI-6259 connector 0 (on the left-hand side) pin 65
-and the negative pin to pin 31 (AI 10).
+I am not sure why you see flatline data in this case.
 
-For ground-referenced mode, you'd connect to 65 and any one of the
-AI-GND terminals (pin 32 is nearby.)
+> In terms of the calibration, does Analogy automagically calibrate
+> the DAQs when loaded or is there a utility or code for a user to
+> calibrate their card?
 
-For common-reference mode, you'd connect to 65 and AI-SENSE (pin 62).
-
-> On a side note - I saw a variable called .calcdac in the analogy
-> driver file. What is that variable for?
-
-On E-series and earlier cards, NI used "calibration DAC's" in order to
-correct for a few percent of offset and gain error in the AI and AO
-circuits.  On M-series cards, these functions are done in software.
-".caldac" is just Analogy's way of tracking what cards have what
-calibration DAC's.
+AFAIK, Analogy does not have soft-calibrate support.  You can either
+root around in the EEPROM device for the most recent saved cal tables
+or use Comedi soft-calibrate to do a run-time calibration.
 
 -- Paul
-
 
