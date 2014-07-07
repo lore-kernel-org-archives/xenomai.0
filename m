@@ -1,12 +1,20 @@
+From: Wojciech Domski <wojciech.domski@gmail.com>
+Message-ID: <53BA78B2.2010802@gmail.com>
+Date: Mon, 07 Jul 2014 12:38:42 +0200
 MIME-Version: 1.0
-In-Reply-To: <53B57361.1000603@xenomai.org>
-References: <CAKc2Hpb0S50P=9iWvw3z9NexHmyZEjuAU=7SGyT77EPpub_D2A@mail.gmail.com>
- <53B57361.1000603@xenomai.org>
-Date: Mon, 7 Jul 2014 09:58:40 +0200
-Message-ID: <CAKc2HpZROnFhxVZo3PWQzAoTYZHvvRCydFqxokKS_bQT2LHYVg@mail.gmail.com>
-From: Kim De Mey <kim.demey@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Xenomai-forge: Deadlock in finalize_thread()
+References: <CACKc53LDHUFyLAy5-=wW7Zy+rmB1gthujCORsY1w4zyzip1bmQ@mail.gmail.com>
+ <53163439.6070608@gmail.com> <532DBBFF.9010900@xenomai.org>
+ <53302093.9090503@gmail.com> <533022B7.9000405@xenomai.org>
+ <533159E0.7090809@gmail.com> <53316570.5060600@xenomai.org>
+ <5331685C.8030100@gmail.com> <53316A3F.1040601@xenomai.org>
+ <53316E59.3000607@gmail.com> <53316F63.1030306@xenomai.org>
+ <53317338.60805@gmail.com> <53317791.3030106@xenomai.org>
+ <CACKc53JTFYsFt1Xbm2m8zdr=uNBGm3m_mQJWJ5vO0Jx+Os_OmQ@mail.gmail.com>
+ <534714A3.7000404@xenomai.org>
+In-Reply-To: <534714A3.7000404@xenomai.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Subject: Re: [Xenomai] Sensoray 626 analogy driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,103 +23,101 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-2014-07-03 17:14 GMT+02:00 Philippe Gerum <rpm@xenomai.org>:
-> On 07/03/2014 10:11 AM, Kim De Mey wrote:
->
->> What I think that goes wrong is that the lock which is taken in
->> threadobj_notify_entry() is not released before threadobj_start()
->> continues at wait_on_barrier(thobj, __THREAD_S_ACTIVE).
->
->
-> Until threadobj_notify_entry() releases that lock, there is no way
-> wait_on_barrier() can exit, since it competes for the same lock.
-> pthread_cond_wait() will grab this lock before returning.
->
-
-Yes, you are right, the wait_on_barrier() can not exit until the
-unlock. I misunderstood this part.
-
->
-> As there is a
->>
->> t_delete() done right after t_start() returns in my test case, this
->> could mean that the thread gets in finalize_thread() after the
->> pthread_cancel() and blocks there on the threadobj_lock() as the
->> threadobj_unlock() from threadobj_notify_entry() was possibly not yet
->> called.
->
->
-> called? do you mean exited instead?
->
-> Until wait_on_barrier() unwinds for the child task, theadobj_start() cannot
-> complete for its parent, so the latter cannot delete the child it has just
-> spawned, until the latter has dropped the lock from
-> threadobj_notify_entry(). So I'm unsure the explanation stands - unless I
-> missed your point entirely.
-
-No, you got my point, the explanation does not stand indeed.
-
->
-> This said, there must be something fishy as the backtrace clearly shows a
-> child thread hanging in the finalizer, waiting for access to its own tcb.
->
-> If you have a simple standalone test case illustrating this bug, please send
-> it along, this would save me some precious time trying to reproduce the
-> issue accurately. Otherwise I'll write one.
-
-I have a very simple test case:
-
-static void worker(u_long a,u_long b,u_long c,u_long d)
-{
-  while(1)
-    tm_wkafter(100);
-}
-
-static void create_delete(u_long a,u_long b,u_long c,u_long d)
-{
-  u_long tid, args[4] = {0,0,0,0};
-  int j;
-
-  for(j =0; j < 1000; j++)
-  {
-    if(t_create("TEST",50,0,0,0,&tid))
-      printf("t_create failed!\n");
-    if(t_start(tid,0, worker, args))
-      printf("t_start failed!\n");
-    if(t_delete(tid))
-      printf("t_delete failed!\n");
-  }
-
-  while (1) tm_wkafter(1000);
-}
-
-int main(int argc, char * const argv[])
-{
-  u_long tid,args[4] = {0,0,0,0};
-  copperplate_init(&argc,&argv);
-
-  t_create("CRDE",50,0,0,0,&tid);
-  t_start(tid,0,create_delete, args);
-
-  while (1) tm_wkafter(1000);
-  return 0;
-}
-
-In my case, running 1000 loops has about 4 to 10 "TEST" threads that hang.
-
->
-> PS: mentioning the exact Xenomai 3 version you are running would always
-> help. Passing --version on the command line of any application built over
-> the copperplate-based APIs returns this information.
->
-
-I was testing with a pull of the repository of 2014-06-06 (rev.
-9137bdfe0b0881d04750c8e92e065657e7a9538e) . I'll pull the latest
-revision and see if the issue still occurs.
-
-> --
-> Philippe.
-
+VyBkbml1IDExLjA0LjIwMTQgMDA6MDEsIEdpbGxlcyBDaGFudGVwZXJkcml4IHBpc3plOgo+IE9u
+IDA0LzEwLzIwMTQgMDI6MjUgUE0sIFdvamNpZWNoIERvbXNraSB3cm90ZToKPj4gMjAxNC0wMy0y
+NSAxMzozMyBHTVQrMDE6MDAgR2lsbGVzIENoYW50ZXBlcmRyaXggPAo+PiBnaWxsZXMuY2hhbnRl
+cGVyZHJpeEB4ZW5vbWFpLm9yZz46Cj4+Cj4+PiBPbiAwMy8yNS8yMDE0IDAxOjE0IFBNLCBXb2pj
+aWVjaCBEb21za2kgd3JvdGU6Cj4+Pj4gVyBkbml1IDI1LjAzLjIwMTQgMTI6NTgsIEdpbGxlcyBD
+aGFudGVwZXJkcml4IHBpc3plOgo+Pj4+PiBPbiAwMy8yNS8yMDE0IDEyOjU0IFBNLCBXb2pjaWVj
+aCBEb21za2kgd3JvdGU6Cj4+Pj4+PiBXIGRuaXUgMjUuMDMuMjAxNCAxMjozNiwgR2lsbGVzIENo
+YW50ZXBlcmRyaXggcGlzemU6Cj4+Pj4+Pj4gT24gMDMvMjUvMjAxNCAxMjoyOCBQTSwgV29qY2ll
+Y2ggRG9tc2tpIHdyb3RlOgo+Pj4+Pj4+PiBXIGRuaXUgMjUuMDMuMjAxNCAxMjoxNiwgR2lsbGVz
+IENoYW50ZXBlcmRyaXggcGlzemU6Cj4+Pj4+Pj4+PiBPbiAwMy8yNS8yMDE0IDExOjI2IEFNLCBX
+b2pjaWVjaCBEb21za2kgd3JvdGU6Cj4+Pj4+Pj4+Pj4gVyBkbml1IDI0LjAzLjIwMTQgMTM6MTks
+IEdpbGxlcyBDaGFudGVwZXJkcml4IHBpc3plOgo+Pj4+Pj4+Pj4+PiBUaGUgc29sdXRpb24gd2hp
+Y2ggd291bGQgYmUgYWNjZXB0YWJsZSBpcyBub3QgdG8gaGF2ZSBidXN5IHdhaXRzLAo+Pj4gZXhj
+ZXB0Cj4+Pj4+Pj4+Pj4+IGZvciB2ZXJ5IHNob3J0IGR1cmF0aW9ucy4gQnV0IGZvciBpbnN0YW5j
+ZSB0cmFuc2ZlcnJpbmcgYSBieXRlIG9uCj4+PiBJMkMKPj4+Pj4+Pj4+Pj4gdGFrZXMgYXJvdW5k
+IDIwdXMgYXQgNDAwIGtIeiwgYSAyMHVzIG1hc2tpbmcgc2VjdGlvbiBpcwo+Pj4gdW5hY2NlcHRh
+YmxlLgo+Pj4+Pj4+Pj4+PiBydGRtX3Rhc2tfYnVzeV9zbGVlcCwgYXMgdGhlIG5hbWUgc3VnZ2Vz
+dHMgaXMgYSBidXN5IHdhaXQgbG9vcCwKPj4+IHNvLCBubywKPj4+Pj4+Pj4+Pj4gaXQgaXMgbm90
+IGFjY2VwdGFibGUgZWl0aGVyLgo+Pj4+Pj4+Pj4+Pgo+Pj4+Pj4+Pj4+PiBVc2UgYSB0aHJlYWQg
+b3IgYSB0aW1lciB0byByZXNjaGVkdWxlIHdoaWxlIHlvdSB3YWl0IGZvciB0aGUgZW5kCj4+PiBv
+ZiB0aGUKPj4+Pj4+Pj4+Pj4gdHJhbnNmZXIsIGluc3RlYWQgb2YgYnVzeSB3YWl0aW5nLgo+Pj4+
+Pj4+Pj4+IERlYXIgR2lsbGVzLAo+Pj4+Pj4+Pj4+Cj4+Pj4+Pj4+Pj4gQXMgeW91IG1lbnRpb25l
+ZCBiZWZvcmUgdGhlIGRyaXZlciBoYXMgZmV3IHBsYWNlcyBsaWtlIHRoaXM6Cj4+Pj4+Pj4+Pj4K
+Pj4+Pj4+Pj4+PiB3aGlsZSghRkxBRzEpOwo+Pj4+Pj4+Pj4+IHdoaWxlKCFGTEFHMik7Cj4+Pj4+
+Pj4+Pj4KPj4+Pj4+Pj4+PiBXb3VsZCBhIHNvbHV0aW9uIG9mIGNyZWF0aW5nIGEgc2VwYXJhdGUg
+dGFzayBmb3IgdGhpcyBwdXJwb3NlIGJlCj4+PiBvaz8KPj4+Pj4+Pj4+PiB0YXNrKCkKPj4+Pj4+
+Pj4+PiB7Cj4+Pj4+Pj4+Pj4gICAgICAgICAgd2hpbGUoIUZMQUcxKTsKPj4+Pj4+Pj4+PiAgICAg
+ICAgICB3aGlsZSghRkxBRzIpOwo+Pj4+Pj4+Pj4+IH0KPj4+Pj4+Pj4+IEkgd2FzIHJhdGhlciB0
+aGlua2luZyBhYm91dCBydGRtX3Rhc2tfc2xlZXAoKSBpbnN0ZWFkLgo+Pj4+Pj4+Pj4KPj4+Pj4+
+Pj4+PiBJbiB0aGUgcGxhY2Ugb2YgdGhvc2UgbG9vcHMgYSBwaWVjZSBvZiBjb2RlIHJlc3BvbnNp
+YmxlIGZvcgo+Pj4gY3JlYXRpbmcgYW5kCj4+Pj4+Pj4+Pj4gam9pbmluZyB0YXNrIHdvdWxkIGJl
+IHB1dCBpbnN0ZWFkOgo+Pj4+Pj4+Pj4+Cj4+Pj4+Pj4+Pj4gcnRkbV90YXNrX2luaXQoKTsKPj4+
+Pj4+Pj4+PiBydGRtX3Rhc2tfam9pbl9ucnQoKTsKPj4+Pj4+Pj4+IFRoaXMgd2lsbCBub3Qgd29y
+ayBmb3IgY29kZSBjdXJyZW50bHkgcnVubmluZyBpbiBpbnRlcnJ1cHQKPj4+IGhhbmRsZXJzLiBB
+bgo+Pj4+Pj4+Pj4gaW50ZXJydXB0IGhhbmRsZXIgY2FuIG5vdCBjYWxsIHJ0ZG1fdGFza19qb2lu
+X25ydCgpLiBZb3Ugd2lsbCByYXRoZXIKPj4+Pj4+Pj4+IGhhdmUgdG8gd2FrZSB1cCB0aGUgdGhy
+ZWFkLCBub3QgcmVlbmFibGluZyB0aGUgaW50ZXJydXB0IGF0IHRoZSBlbmQKPj4+IG9mCj4+Pj4+
+Pj4+PiB0aGUgaGFuZGxlciwgYW5kIHJlZW5hYmxlIHRoZSBpbnRlcnJ1cHQgaW4gdGhlIHRocmVh
+ZCB3aGVuIHRoZSBqb2IKPj4+IGlzCj4+Pj4+Pj4+PiBkb25lLiBPciBhbHRlcm5hdGl2ZWx5LCBm
+aXJlIGEgdGltZXIgaW5zdGVhZCBvZiB3YWtpbmcgdXAgYSB0aHJlYWQuCj4+Pj4+Pj4+Pgo+Pj4+
+Pj4+Pj4KPj4+Pj4+Pj4gRGVhciBHaWxsZXMsCj4+Pj4+Pj4+Cj4+Pj4+Pj4+IElmIHdoYXQgSSBo
+YXZlIHVuZGVyc3Rvb2QgY29ycmVjdGx5LCBiYXNpY2FsbHkgd2hhdCB5b3UgbWVhbiBpcwo+Pj4g
+Y2hhbmdpbmc6Cj4+Pj4+Pj4+IHdoaWxlKCFGTEFHKSA7Cj4+Pj4+Pj4+Cj4+Pj4+Pj4+IGludG8K
+Pj4+Pj4+Pj4KPj4+Pj4+Pj4gd2hpbGUoIUZMQUcpCj4+Pj4+Pj4+ICAgICAgICAgcnRkbV90YXNr
+X3NsZWVwKCk7Cj4+Pj4+Pj4+Cj4+Pj4+Pj4+IFhlbm9tYWkncyBkb2N1bWVudGF0aW9uIHRoYXQg
+cnRkbV90YXNrX3NsZWVwKCkgY2FuIGJlIGFsd2F5cwo+Pj4+Pj4+PiByZXNjaGVkdWxlZC4gSW4g
+bXkgb3Bpbmlvbgo+Pj4+Pj4+PiB0aGlzIHNvbHV0aW9uIGlzIHN1ZmZpY2llbnQgYW5kIG1lZXRz
+IFhlbm9tYWkgcmVxdWlyZW1lbnRzLgo+Pj4+Pj4+IFRoaXMgc29sdXRpb24gd2lsbCBub3Qgd29y
+ayBpZiB0aGUgYnVzeSBsb29wIHdhcyBpbiBhbiBpcnEgaGFuZGxlci4KPj4+IFlvdQo+Pj4+Pj4+
+IGNhbiBub3QgY2FsbCBydGRtX3Rhc2tfc2xlZXAgZnJvbSB0aGUgY29udGV4dCBvZiBhbiBpcnEg
+aGFuZGxlci4KPj4+Pj4+Pgo+Pj4+Pj4+Cj4+Pj4+PiBPaywgbm93IEkgZ2V0IHlvdXIgcG9pbnQu
+Cj4+Pj4+Pgo+Pj4+Pj4gSG93ZXZlciwgd2hhdCBkbyB5b3UgbWVhbiBleGFjdGx5IGJ5IHJlc2No
+ZWR1bGluZyB3aGlsZSB3YWl0aW5nPyBEbyB5b3UKPj4+Pj4+IG1lYW4gc29tZXRoaW5nIGxpa2UK
+Pj4+Pj4+IHB1dHRpbmcgYWxsIGlycSBzZXJ2aWNlcyBpbnRvIGFub3RoZXIgdGhyZWFkIGFuZCBv
+bmx5IGluIGlycSBoYW5kbGVyCj4+Pj4+PiBub3RpZnkgdGhlIHNlcGFyYXRlIHRocmVhZAo+Pj4+
+Pj4gdG8gZG8gdGhlIGpvYiBhY2NvcmRpbmdseT8KPj4+Pj4gV2VsbCwgSSBkbyBub3Qga25vdyBl
+eGFjdGx5LCBJIGhhdmUgbm90IGxvb2tlZCBhdCB0aGUgZGV0YWlscyBvZiB0aGUKPj4+Pj4gZHJp
+dmVyLCB5b3UgYXJlIHN1cHBvc2VkIHRvIGRvIHRoYXQuIEJ1dCB5b3UgbWF5IGJlIGFibGUgdG8g
+c3BsaXQgdGhlCj4+Pj4+IGludGVycnVwdCBjb2RlIGluIHR3byBwYXJ0czogYSBmaXJzdCBwYXJ0
+IHRoYXQgd2lsbCBydW4gaW4gaW50ZXJydXB0Cj4+Pj4+IG1vZGUsIGFuZCBhIHNlY29uZCBwYXJ0
+IHRoYXQgd2lsbCBydW4gYXMgYSB0aHJlYWQuIFRoZSBpcnEgaGFuZGxlciB3b3VsZAo+Pj4+PiB3
+YWtlIHRoZSB0aHJlYWQgdXAgYXQgdGhlIGVuZCBvZiB0aGUgZmlyc3QgcGFydCwgYW5kIHJldHVy
+biB3aXRob3V0Cj4+Pj4+IHJlZW5hYmxpbmcgdGhlIGludGVycnVwdCBhdCBpbnRlcnJ1cHQgY29u
+dHJvbGxlciBsZXZlbC4gVGhlIHRocmVhZCB3b3VsZAo+Pj4+PiBleGVjdXRlLCBzbGVlcCBkdXJp
+bmcgdGhlIEkyQyB0cmFuc2ZlcnMgYXMgbmVlZGVkLCBhbmQgcmVlbmFibGUgdGhlCj4+Pj4+IGlu
+dGVycnVwdCBiZWZvcmUgZ29pbmcgYmFjayB0byBzbGVlcC4KPj4+Pj4KPj4+Pj4KPj4+PiBTbyB3
+b3VsZCBpdCBiZSBhIGdvb2QgcHJhY3Rpc2UgdG8gY3JlYXRlIGEgbmV3IHRhc2sgZm9yIGlycSBz
+ZXJ2aWNlIHdpdGgKPj4+Pgo+Pj4+IHJ0ZG1fdGFza19pbml0KCk7Cj4+Pj4KPj4+PiBpbnNpZGUg
+YXR0YWNoIGZ1bmN0aW9uIGFuZCBqb2luIGl0IHdpdGgKPj4+Pgo+Pj4+IHJ0ZG1fdGFza19qb2lu
+X25ydCgpOwo+Pj4+Cj4+Pj4gaW5zaWRlIGRldGFjaCBmdW5jdGlvbj8KPj4+IEkgZG8gbm90IGtu
+b3cgdGhlIGRldGFpbHMgYWJvdXQgYW5hbG9neSBkcml2ZXJzLCBzbywgYWdhaW4sIGl0IGlzIGxl
+ZnQKPj4+IHRvIHlvdSB0byByZWFkIG90aGVyIGFuYWxvZ3kgZHJpdmVycyBhbmQgc2VlIHdoZXJl
+IGlzIHRoZSBiZXN0IHBsYWNlIHRvCj4+PiBkbyB3aGF0IHlvdSB3YW50IHRvIGRvLgo+Pj4KPj4+
+Cj4+PiAtLQo+Pj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICBHaWxsZXMuCj4+Pgo+PiBEZWFyIEdpbGxlcywKPj4KPj4gSSBo
+YXZlIGFsdGVyZWQgdGhlIGRyaXZlciBhY2NvcmRpbmcgdG8geW91ciBhZHZpY2VzLgo+PiBJZiBJ
+IGhhZCBvbWl0dGVkIHNvbWV0aGluZyBwbGVhc2UgbGV0IG1lIGtub3cuCj4+Cj4+IFBsZWFzZSBm
+aW5kIGEgcGF0Y2ggZW5jbG9zZWQgaW4gdGhlIGF0dGFjaG1lbnQuCj4+Cj4+IEJlc3QgcmVnYXJk
+cywKPj4gV29qY2llY2ggRG9tc2tpCj4+Cj4+IERvbXNraS5wbAo+Pgo+PiBXb2pjaWVjaC5Eb21z
+a2kucGwKPj4gLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCj4+IEEgbm9u
+LXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KPj4gTmFtZTogczYyNl9wYXRjaC5wYXRj
+aAo+PiBUeXBlOiB0ZXh0L3gtcGF0Y2gKPj4gU2l6ZTogMTQxNjU5IGJ5dGVzCj4+IERlc2M6IG5v
+dCBhdmFpbGFibGUKPj4gVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVu
+b21haS9hdHRhY2htZW50cy8yMDE0MDQxMC9lNzE5MTI0Ny9hdHRhY2htZW50LmJpbj4KPiBzY3Jp
+cHRzL2NoZWNrcGF0Y2gucGwgYXR0Y2htZW50LmJpbjoKPgo+IHRvdGFsOiAzMjUgZXJyb3JzLCAz
+OTIgd2FybmluZ3MsIDM5OTEgbGluZXMgY2hlY2tlZAo+Cj4gUGxlYXNlIGZpeCB0aGVzZSBlcnJv
+cnMuCj4KPgoKRGVhciBHaWxsZXMsCgpJbiB0aGUgYXR0YWNobWVudCB5b3Ugd2lsbCBmaW5kIHBh
+dGNoIGZvciB4ZW5vbWFpIGluY2x1ZGluZyBzdXBwb3J0IGZvciAKYW5hbG9neSBTZW5zb3JheSA2
+MjYuCgpNYXkgSSBhc2sgeW91IHRvIGluY2x1ZGUgdGhpcyBwYXRjaCB0byBtYWluIHhlbm9tYWkg
+dHJlZT8KCkJlc3QgcmVnYXJkcywKCldvamNpZWNoIERvbXNraQoKRG9tc2tpLnBsCgpXb2pjaWVj
+aC5Eb21za2kucGwKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5v
+bi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHM2MjYucGF0Y2gKVHlwZTog
+dGV4dC94LXBhdGNoClNpemU6IDE4Njc3OSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDog
+PGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAx
+NDA3MDcvYmE0MzY1NDkvYXR0YWNobWVudC5iaW4+Cg==
