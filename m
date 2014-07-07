@@ -1,9 +1,14 @@
+Message-ID: <53BA8FBF.8060301@xenomai.org>
+Date: Mon, 07 Jul 2014 14:17:03 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Mon, 7 Jul 2014 16:59:48 +0530
-Message-ID: <CAC66z970=X8fWVf1kCB=cuVnwaH5ryWEL3e8zLi=bx+2jVKb=w@mail.gmail.com>
-From: yogesh garg <yogesh.garg1983@gmail.com>
+References: <53B512BB.9040908@ma-info.de>,
+ <9fc8c769e5b64478942864724e979a74@EX132MBOX1B.de2.local>
+ <4c01854d47444a33a7f360da922b422c@EX132MBOX1B.de2.local>
+In-Reply-To: <4c01854d47444a33a7f360da922b422c@EX132MBOX1B.de2.local>
 Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] How to debug xenomai source
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai on PhyCore/Board
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,16 +17,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Stoidner, Christoph" <c.stoidner@arvero.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Everyone,
-I am using Xenomai to create my kernel module. But I am getting some errors.
-To debug more on issues I want to print Xenomai debug messages("
-*trace_mark*").
-Please help me what I need to configure or enable to see *trace_mark *
-messages.
+On 07/07/2014 12:44 PM, Stoidner, Christoph wrote:
+> Hi Florian,
+> 
+> we are also doing some latency tests on I-Pipe/Xenomai, pure Linux and Linux with Preempt RT.
+> 
+> Are you interested to share our's and your results?
+> 
+> We plan to publish the results when we have formatted them in a comprehensible way.
 
-Thanks in advance.
+Note that the latency test has a -g option to output the histogram to a
+file, and that xenomai provides the xeno-test and dohell scripts to run
+a reproducible benchmark, and scripts/histo.gp to turn the histogram
+dumped with -g to a comprehensible graph.
+
+
 -- 
-Regards,
-Yogesh Garg
+                                                                Gilles.
+
