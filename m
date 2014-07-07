@@ -1,15 +1,16 @@
-Message-ID: <53BA91F0.2070005@xenomai.org>
-Date: Mon, 07 Jul 2014 14:26:24 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Mon, 7 Jul 2014 18:02:39 +0200
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Message-ID: <20140707160239.GF13423@lukather>
+References: <1404210421-17081-1-git-send-email-maxime.ripard@free-electrons.com>
+ <53B294A7.5010803@xenomai.org> <20140701141536.GN28647@lukather>
+ <53B30D96.60500@xenomai.org> <20140704092736.GC13487@lukather>
+ <53B7B3BF.3090807@xenomai.org>
 MIME-Version: 1.0
-References: <53B512BB.9040908@ma-info.de>,
- <9fc8c769e5b64478942864724e979a74@EX132MBOX1B.de2.local>
- <4c01854d47444a33a7f360da922b422c@EX132MBOX1B.de2.local>
- <53BA8FBF.8060301@xenomai.org>
-In-Reply-To: <53BA8FBF.8060301@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
+In-Reply-To: <53B7B3BF.3090807@xenomai.org>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai on PhyCore/Board
+Subject: Re: [Xenomai] [PATCH] AT91: SAMA5D3: Adapt Ipipe for AIC5
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,33 +19,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Stoidner, Christoph" <c.stoidner@arvero.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Thomas Petazzoni <thomas@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Boris Brezillon <boris@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, xenomai@xenomai.org
 
-On 07/07/2014 02:17 PM, Gilles Chanteperdrix wrote:
-> On 07/07/2014 12:44 PM, Stoidner, Christoph wrote:
->> Hi Florian,
->>
->> we are also doing some latency tests on I-Pipe/Xenomai, pure Linux and Linux with Preempt RT.
->>
->> Are you interested to share our's and your results?
->>
->> We plan to publish the results when we have formatted them in a comprehensible way.
+On Sat, Jul 05, 2014 at 10:13:51AM +0200, Gilles Chanteperdrix wrote:
+> >>> Ok, so, with the changes you mentionned, I can't make the system
+> >>> crash anymore (or at least, not as easily as it used to be).
+> >>>
+> >>> But: - whenever the program mentionned above calls exit(), it 
+> >>> stalls. However, ctrl+c makes the program exit properly, and 
+> >>> everything seems fine otherwise - whenever we don't link it against
+> >>> xenomai, it just hangs. I've not figured out why yet
+> >>>
+> >>> With CONFIG_XENOMAI and CONFIG_IPIPE disabled, it works fine.
+> >>
+> >> My answer was wrong, you probably need to keep the
+> >> set_backup/clear_backup calls in he ->hold and ->release callbacks, as
+> >> the linux interrupt may expect the backup areas to be in sync. Did you
+> >> do this, or did you go for the alternative?
+> > 
+> > I went for the alternative. I'm sending you a v2 with what I have so
+> > far, that shows the behaviour I was describing.
 > 
-> Note that the latency test has a -g option to output the histogram to a
-> file, and that xenomai provides the xeno-test and dohell scripts to run
-> a reproducible benchmark, and scripts/histo.gp to turn the histogram
-> dumped with -g to a comprehensible graph.
+> Could you try the following patch?
 
-The following pages:
+It actually works much better, thanks!
 
-http://www.xenomai.org/~gch/core-3.10-latencies/
-http://www.xenomai.org/~gch/core-3.8-latencies/
-http://www.xenomai.org/~gch/core-3.5-latencies/
-http://www.xenomai.org/~gch/core-3.4-latencies/
-http://www.xenomai.org/~gch/core-3.2-latencies/
+The above mentionned issues are gone, there's only one last glitch I
+guess. The max latency under load is around a few 100's of ms (while
+idle, it's actually around 200-300us, which seems more reasonable.
 
-Are made using this method.
+Maxime
 
 -- 
-                                                                Gilles.
-
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 819 bytes
+Desc: Digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140707/f7dc479d/attachment.sig>
