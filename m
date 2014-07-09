@@ -1,5 +1,5 @@
-Message-ID: <53BCF270.3010303@xenomai.org>
-Date: Wed, 09 Jul 2014 09:42:40 +0200
+Message-ID: <53BCF35E.1090402@xenomai.org>
+Date: Wed, 09 Jul 2014 09:46:38 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <1400788012.41259.YahooMailNeo@web171603.mail.ir2.yahoo.com>
@@ -23,135 +23,17 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 On 07/01/2014 06:48 PM, Matthias Schneider wrote:
+
 > Please find enclosed another calling the check_processors() only when starting
 > the scheduler and remembering its output. It is also adapted to the latest changes.
 > Any comments will be appreciated.
 >
 
-- clusters allowing key dups are available using the *_dup() call form
-- vTaskEndScheduler() can be simplified, and should not panic if it 
-cannot lock a vanishing thread pulled from the task list.
-
-commit 9239281e4badb56a2449723e0204c597ed3743b1
-Author: Philippe Gerum <rpm@xenomai.org>
-Date:   Wed Jul 9 09:26:55 2014 +0200
-
-     freertos: use cluster with duplicate key support
-
-diff --git a/lib/freertos/task.c b/lib/freertos/task.c
-index f7d99a5..d201711 100644
---- a/lib/freertos/task.c
-+++ b/lib/freertos/task.c
-@@ -407,7 +407,6 @@ static signed portBASE_TYPE 
-__xTaskGenericCreate(struct freertos_task *task,
-  	struct corethread_attributes cta;
-  	struct threadobj_init_data idata;
-  	int ret, cprio;
--	size_t i = 0, id_pos;
-
-  	cprio = convert_freertos_task_priority(uxPriority);
-
-@@ -427,24 +426,7 @@ static signed portBASE_TYPE 
-__xTaskGenericCreate(struct freertos_task *task,
-
-  	generate_name(task->name, (const char *)name, &task_namegen);
-
--	/* since cluster entries must have unique names, we try to append
--	   names that seem to exist already with an id. */
--	for (i = 0; i < TASK_DUPLICATED_NAME_MAX_ID; ++i) {
--		ret = cluster_addobj(&freertos_task_table, task->name, &task->cobj);
--		if (ret != -EEXIST)
--			break;
--		if (i == 0) {
--			id_pos = strlen(task->name);
--			id_pos = (id_pos > TASK_DUPLICATED_NAME_MAX_ID_MAX_POS)
--				? TASK_DUPLICATED_NAME_MAX_ID_MAX_POS
--				: id_pos;	
--		}
--		sprintf(task->name + id_pos, "%1d", i);
--	}
--	if (ret == -EEXIST) {
--		warning("duplicate task name: %s (used > %d times)",
--			task->name, TASK_DUPLICATED_NAME_MAX_ID);
--	}
-+	ret = cluster_addobj_dup(&freertos_task_table, task->name, &task->cobj);
-  	if (__bt(ret)) {
-  		threadobj_uninit(&task->thobj);
-  		return pdFALSE;
-
-commit c867515edfd63ce7abc0b76095e0613ceb8f7f22
-Author: Philippe Gerum <rpm@xenomai.org>
-Date:   Wed Jul 9 09:21:03 2014 +0200
-
-     freertos: fix vTaskEndScheduler()
-
-diff --git a/lib/freertos/task.c b/lib/freertos/task.c
-index 0af799a..f7d99a5 100644
---- a/lib/freertos/task.c
-+++ b/lib/freertos/task.c
-@@ -445,8 +445,7 @@ static signed portBASE_TYPE 
-__xTaskGenericCreate(struct freertos_task *task,
-  		warning("duplicate task name: %s (used > %d times)",
-  			task->name, TASK_DUPLICATED_NAME_MAX_ID);
-  	}
--	if (ret) {
--		__bt(ret);
-+	if (__bt(ret)) {
-  		threadobj_uninit(&task->thobj);
-  		return pdFALSE;
-  	}
-@@ -781,35 +780,33 @@ void vTaskStartScheduler(void) {
-  	CANCEL_RESTORE(svc);
-  }
-
--void vTaskEndScheduler(void) {
-+void vTaskEndScheduler(void)
-+{
-  	struct service svc;
--	struct freertos_task *task, *tmp, *current;
-+	struct freertos_task *task, *current;
-
-  	CANCEL_DEFER(svc);
--	threadobj_lock_sched();
-
-+	current = freertos_task_current();
-  	__RT(pthread_mutex_lock(&freertos_scheduler.tasklist_lock));
-  	freertos_scheduler.state = taskSCHEDULER_SUSPENDING;
--	__RT(pthread_mutex_unlock(&freertos_scheduler.tasklist_lock));
-
--	current = freertos_task_current();
--	if (!pvlist_empty(&freertos_task_list)) {
--		pvlist_for_each_entry_safe(task, tmp, &freertos_task_list, next) {
--			if (task == current)
--				continue;
--
--			if (get_freertos_task(task))
--				threadobj_cancel(&task->thobj);
--			else
--				panic("could not lock task %s", task->name);
--        	}
-+	while (!pvlist_empty(&freertos_task_list)) {
-+		task = pvlist_pop_entry(&freertos_task_list,
-+					struct freertos_task, next);
-+		if (task == current)
-+			continue;
-+		__RT(pthread_mutex_unlock(&freertos_scheduler.tasklist_lock));
-+		if (get_freertos_task(task))
-+			threadobj_cancel(&task->thobj);
-+		__RT(pthread_mutex_lock(&freertos_scheduler.tasklist_lock));
-  	}
-
--	threadobj_unlock_sched();
--	CANCEL_RESTORE(svc);
--
-+	__RT(pthread_mutex_unlock(&freertos_scheduler.tasklist_lock));
-  	threadobj_lock(&current->thobj);
-  	threadobj_cancel(&current->thobj);
-+
-+	CANCEL_RESTORE(svc);
-  }
-
-  portBASE_TYPE xTaskGetSchedulerState(void)
+I don't think checking the registry contents in the testsuite is worth 
+it: the output format from the registry may change over time, leaving 
+tests parsing this output unfixed and outdated (e.g. we would not 
+receive any compilation error in case of mismatch). Besides, the tester 
+may want to disable the registry support at build time.
 
 -- 
 Philippe.
