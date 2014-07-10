@@ -1,17 +1,18 @@
-Message-ID: <53BEC794.6090208@xenomai.org>
-Date: Thu, 10 Jul 2014 19:04:20 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+References: <1404677764.4624.YahooMailNeo@web171603.mail.ir2.yahoo.com>
+ <53B9BC6A.9070501@xenomai.org>
+ <1404835832.96010.YahooMailNeo@web171606.mail.ir2.yahoo.com>
+ <53BD10C2.60109@xenomai.org>
+ <1404942153.53492.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+ <53BE5DC6.9040406@xenomai.org>
+Message-ID: <1405012399.63072.YahooMailNeo@web171605.mail.ir2.yahoo.com>
+Date: Thu, 10 Jul 2014 18:13:19 +0100
+From: Matthias Schneider <ma30002000@yahoo.de>
+In-Reply-To: <53BE5DC6.9040406@xenomai.org>
 MIME-Version: 1.0
-References: <1404210421-17081-1-git-send-email-maxime.ripard@free-electrons.com>
- <53B294A7.5010803@xenomai.org> <20140701141536.GN28647@lukather>
- <53B30D96.60500@xenomai.org> <20140704092736.GC13487@lukather>
- <53B7B3BF.3090807@xenomai.org> <20140707160239.GF13423@lukather>
- <53BAC5C4.5060704@xenomai.org> <20140708125505.GN13423@lukather>
- <53BC2AB5.4050801@xenomai.org> <20140710150540.GE27469@lukather>
-In-Reply-To: <20140710150540.GE27469@lukather>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] AT91: SAMA5D3: Adapt Ipipe for AIC5
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Issue with cobalt_monitor_wait()
+Reply-To: Matthias Schneider <ma30002000@yahoo.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,141 +21,137 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: Thomas Petazzoni <thomas@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Boris Brezillon <boris@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10/07/2014 17:05, Maxime Ripard wrote:
-> On Tue, Jul 08, 2014 at 07:30:29PM +0200, Gilles Chanteperdrix wrote:
->> -----BEGIN PGP SIGNED MESSAGE-----
->> Hash: SHA1
->>
->> On 07/08/2014 02:55 PM, Maxime Ripard wrote:
->>> On Mon, Jul 07, 2014 at 06:07:32PM +0200, Gilles Chanteperdrix
->>> wrote:
->>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
->>>>
->>>> On 07/07/2014 06:02 PM, Maxime Ripard wrote:
->>>>> On Sat, Jul 05, 2014 at 10:13:51AM +0200, Gilles Chanteperdrix 
->>>>> wrote:
->>>>>>>>> Ok, so, with the changes you mentionned, I can't make
->>>>>>>>> the system crash anymore (or at least, not as easily as
->>>>>>>>> it used to be).
->>>>>>>>>
->>>>>>>>> But: - whenever the program mentionned above calls
->>>>>>>>> exit(), it stalls. However, ctrl+c makes the program
->>>>>>>>> exit properly, and everything seems fine otherwise -
->>>>>>>>> whenever we don't link it against xenomai, it just
->>>>>>>>> hangs. I've not figured out why yet
->>>>>>>>>
->>>>>>>>> With CONFIG_XENOMAI and CONFIG_IPIPE disabled, it
->>>>>>>>> works fine.
->>>>>>>>
->>>>>>>> My answer was wrong, you probably need to keep the 
->>>>>>>> set_backup/clear_backup calls in he ->hold and ->release 
->>>>>>>> callbacks, as the linux interrupt may expect the backup
->>>>>>>> areas to be in sync. Did you do this, or did you go for
->>>>>>>> the alternative?
->>>>>>>
->>>>>>> I went for the alternative. I'm sending you a v2 with what
->>>>>>> I have so far, that shows the behaviour I was describing.
->>>>>>
->>>>>> Could you try the following patch?
->>>>>
->>>>> It actually works much better, thanks!
->>>>>
->>>>> The above mentionned issues are gone, there's only one last
->>>>> glitch I guess. The max latency under load is around a few
->>>>> 100's of ms (while idle, it's actually around 200-300us, which
->>>>> seems more reasonable.
->>>>
->>>> 200us or 300us seems high for a last generation cortex.
->>>> milliseconds issues indicate an issue, does the msw column in
->>>> latency increment?
->>>
->>> Ok, so after spending more time running xeno-test and latency
->>>
->>> * xeno-test -l "dohell -s 192.168.0.42 -p 5566 -b
->>> /usr/bin/hackbench 60" - the average latency measured is 37us, with
->>> a max at 53
->>>
->>> * If I just use the same load generator program I was using 
->>> previously (which basically just run hackbench, dohell, do some dd,
->>> output some data through netcat, etc.), and latency, for 45 
->>> minutes, I get an average latency at 35us, and a max latency at
->>> 60.
->>>
->>> So the issue seems to lie in something related to our test
->>> program.
->>>
->>> It's actually using CLOCK_MONOTONIC. When running just Xenomai's 
->>> clocktest program, the drift is OK, but the ToD offset is quite
->>> huge and varies slightly from one run to another. This also happens
->>> using CLOCK_REALTIME.
->>>
->>> From what I understand of the POSIX clocks, gettimeofday is always 
->>> using EPOCH as a starting point, while POSIX clocks can pick
->>> whatever fixed starting point, so an offset might be expected.
->>> What's weird is that it whenever you use the CLOCK_HOST_REALTIME,
->>> which is used by xeno-test, and should be in sync with the Linux
->>> clock, this offset is no longer there.
->>>
->>> That's the only meaningful difference I could spot between the two 
->>> programs (ours vs clocktest).
->>
->> The test you are interested in is latency, not clocktest. The main
->> differences between latency and the test you run are:
->> - - the "period" (which BTW, in your case would only be a real period if
->> you removed the call to clock_gettime at the beginning of the loop,
->> only keeping the one before the loop), which is 1ms in latency case,
->> 100us in your case
-> 
-> I don't really get what you mean here. If we don't call gettime at the
-> beginning of the loop, but only outside, how are we supposed to get
-> the next sleep expiration time?
-
-Look at the code, time1 is not a loop local variable, the next sleep
-expiration date is computed and passed to clock_nanosleep. So, you
-simply have to add the period to this date, and use the new date. This
-is the classical way of using clock_nanosleep for periodic task.
-Re-reading the current time before computing the wake up time introduces
-an error which breaks the periodicity of the task, and makes the use of
-absolute clock_nanosleep useless, a relative sleep would do the same
-thing much more simply.
-
-Another problem with this code is that it does not check for
-clock_nanosleep return value, so does not account correctly for overruns.
-
-> 
->> - - the fact that your function timespec_diff returns unsigned value, so
->> in case of early shot, you will get a very large value instead of a
->> negative ones.
->>
->> As a general rule, we prefer Xenomai users to use the latency test,
->> because this is the one we collectively spent time debugging, so it
->> has more chances to be correct, and if you find a bug, everyone
->> benefits from the fix.
-> 
-> Yes, I don't doubt that latency is much more tested and reliable.
-> 
-> The thing is, as you probably know, we're also a training company, and
-> we're using this script in our training to give an idea of the latency
-> on a regular linux kernel, and then on xenomai. It also have the
-> benefit of being simple enough for the trainees to be able to
-> understand it rather quickly.
-
-It is simple but broken.
-
-> 
-> I don't think latency fits both these criterias, that are quite
-> essential for us. But if you have any better solution that might,
-> we're definitely open to suggestions :)
-
-Xenomai forge's latency is based on timerfd, so will be usable on Linux,
-preempt-rt and xenomai. But that is for the future.
-
-I suggest you fix the issue with negative latencies, and see if it
-avoids the large latencies you observe.
-
--- 
-                                                                Gilles.
+=0A=0A=0A=0A----- Original Message -----=0A> From: Philippe Gerum <rpm@xeno=
+mai.org>=0A> To: Matthias Schneider <ma30002000@yahoo.de>; "xenomai@xenomai=
+.org" <xenomai@xenomai.org>=0A> Cc: =0A> Sent: Thursday, July 10, 2014 11:3=
+2 AM=0A> Subject: Re: [Xenomai] Issue with cobalt_monitor_wait()=0A> =0A> O=
+n 07/09/2014 11:42 PM, Matthias Schneider wrote:=0A>>  ----- Original Messa=
+ge -----=0A>> =0A>>>  From: Philippe Gerum <rpm@xenomai.org>=0A>>>  To: Mat=
+thias Schneider <ma30002000@yahoo.de>; =0A> "xenomai@xenomai.org" <xenomai@=
+xenomai.org>=0A>>>  Cc:=0A>>>  Sent: Wednesday, July 9, 2014 11:52 AM=0A>>>=
+  Subject: Re: [Xenomai] Issue with cobalt_monitor_wait()=0A>>> =0A>>>  On =
+07/08/2014 06:10 PM, Matthias Schneider wrote:=0A>>>> =A0  ----- Original M=
+essage -----=0A>>>> =0A>>>>> =A0  From: Philippe Gerum <rpm@xenomai.org>=0A=
+>>>>> =A0  To: Matthias Schneider <ma30002000@yahoo.de>;=0A>>>  "xenomai@xe=
+nomai.org" <xenomai@xenomai.org>=0A>>>>> =A0  Cc:=0A>>>>> =A0  Sent: Sunday=
+, July 6, 2014 11:15 PM=0A>>>>> =A0  Subject: Re: [Xenomai] Issue with coba=
+lt_monitor_wait()=0A>>>>> =0A>>>>> =A0  On 07/06/2014 10:16 PM, Matthias Sc=
+hneider wrote:=0A>>>>> =0A>>>>> =A0  [snip]=0A>>>>> =0A>>>>>> =A0 =A0  On t=
+hing I do not understand is:=0A>>>>>> =0A>>>>>> =A0 =A0  in kernel cobalt_m=
+onitor_wait(), the synch object is =0A> unlocked via=0A>>>>>> =A0 =A0  xnsy=
+nch_release(). What happens if this synchobj was =0A> locked via=0A>>>>>> =
+=A0 =A0  mon->gate.fastlock ? Shouldnt that also be released?=0A>>>>>> =0A>=
+>>>> =0A>>>>> =A0  xnsynch_release() handles fastlocks as well.=0A>>>>> =0A=
+>>>>> =0A>>>>>> =A0 =A0  What other reason could there be if the synch obje=
+ct =0A> was released=0A>>>>>> =A0 =A0  via xnsynch_release, xnsynch_acquire=
+ was interrupted =0A> for=0A>>>>>> =A0 =A0  xnsynch_release to block?=0A>>>=
+>>> =0A>>>>> =0A>>>>> =A0  Since the issue seems to be easily reproducible,=
+ could you =0A> send a=0A>>>>> =A0  self-contained piece of code illustrati=
+ng it?=0A>>>>> =0A>>>>> =A0  Also, please mention if you are seeing this is=
+sue only when =0A> running=0A>>>  your=0A>>>>> =A0  app over GDB, or if it =
+currently happens without any debugger =0A> attached.=0A>>>>> =0A>>>>> =A0 =
+ TIA,=0A>>>> =0A>>>> =0A>>>> =A0  It seems I have not described the problem=
+atic scenario completely =0A> -=0A>>>> =0A>>>> =A0  there were two other th=
+reads that call called syncobj_lock()=0A>>>> =A0  / cobalt_monitor_enter() =
+at about the same time. (Actually there=0A>>>> =A0  are three concurrent on=
+ the queue that is being tested, two =0A> receive=0A>>>> =A0  operation and=
+ one send operation). I am pretty sure that the =0A> issue is=0A>>>> =A0  e=
+xtremely timing dependent.=0A>>>> =0A>>>> =A0  Anyway, the testcase would b=
+e=0A>>>> =0A>>>> =A0  queue_test_receive_peek_multiple_tasks()=0A>>>> =0A>>=
+> =0A>>>  I could not reproduce the issue yet, but could you check if this =
+patch=0A>>>  has any influence on this bug? TIA,=0A>>> =0A>>>  diff --git a=
+/kernel/cobalt/posix/syscall.c =0A> b/kernel/cobalt/posix/syscall.c=0A>>>  =
+index d921d81..3856794 100644=0A>>>  --- a/kernel/cobalt/posix/syscall.c=0A=
+>>>  +++ b/kernel/cobalt/posix/syscall.c=0A>>>  @@ -156,7 +156,7 @@ static =
+struct xnsyscall cobalt_syscalls[] =3D {=0A>>> =A0 =A0 =A0 =A0 SKINCALL_DEF=
+(sc_cobalt_monitor_enter, cobalt_monitor_enter, =0A> primary),=0A>>> =A0 =
+=A0 =A0 =A0 SKINCALL_DEF(sc_cobalt_monitor_wait, cobalt_monitor_wait,=0A>>>=
+  nonrestartable),=0A>>> =A0 =A0 =A0 =A0 SKINCALL_DEF(sc_cobalt_monitor_syn=
+c, cobalt_monitor_sync,=0A>>>  nonrestartable),=0A>>>  -=A0 =A0 SKINCALL_DE=
+F(sc_cobalt_monitor_exit, cobalt_monitor_exit, =0A> primary),=0A>>>  +=A0 =
+=A0 SKINCALL_DEF(sc_cobalt_monitor_exit, cobalt_monitor_exit, =0A> nonresta=
+rtable),=0A>>> =A0 =A0 =A0 =A0 SKINCALL_DEF(sc_cobalt_event_init, cobalt_ev=
+ent_init, current),=0A>>> =A0 =A0 =A0 =A0 SKINCALL_DEF(sc_cobalt_event_dest=
+roy, cobalt_event_destroy, =0A> current),=0A>>> =A0 =A0 =A0 =A0 SKINCALL_DE=
+F(sc_cobalt_event_wait, cobalt_event_wait, primary),=0A>>>  diff --git a/li=
+b/cobalt/internal.c b/lib/cobalt/internal.c=0A>>>  index e0d990d..6c1331d 1=
+00644=0A>>>  --- a/lib/cobalt/internal.c=0A>>>  +++ b/lib/cobalt/internal.c=
+=0A>>>  @@ -230,6 +230,7 @@ int cobalt_monitor_exit(cobalt_monitor_t *mon)=
+=0A>>> =A0 =A0 =A0 =A0 struct cobalt_monitor_data *datp;=0A>>> =A0 =A0 =A0 =
+=A0 unsigned long status;=0A>>> =A0 =A0 =A0 =A0 xnhandle_t cur;=0A>>>  +=A0=
+ =A0 int ret;=0A>>> =0A>>> =A0 =A0 =A0 =A0 __sync_synchronize();=0A>>> =0A>=
+>>  @@ -246,9 +247,13 @@ int cobalt_monitor_exit(cobalt_monitor_t *mon)=0A>=
+>> =A0 =A0 =A0 =A0 if (xnsynch_fast_release(&datp->owner, cur))=0A>>> =A0 =
+=A0 =A0 =A0 =A0 =A0 return 0;=0A>>> =A0 =A0 syscall:=0A>>>  -=A0 =A0 return=
+ XENOMAI_SKINCALL1(__cobalt_muxid,=0A>>>  -=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+ sc_cobalt_monitor_exit,=0A>>>  -=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0  mon);=0A>=
+>>  +=A0 =A0 do=0A>>>  +=A0 =A0 =A0 =A0 ret =3D XENOMAI_SKINCALL1(__cobalt_=
+muxid,=0A>>>  +=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 sc_cobalt_monitor_ex=
+it,=0A>>>  +=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 mon);=0A>>>  +=A0 =A0 w=
+hile (ret =3D=3D -EINTR);=0A>>>  +=0A>>>  +=A0 =A0 return ret;=0A>>> =A0 =
+=A0 }=0A>>> =0A>>> =A0 =A0 int cobalt_monitor_wait(cobalt_monitor_t *mon, i=
+nt event,=0A>>> =0A>> =0A>> =0A>>  Hm, it seems when I run into the issue, =
+cobalt_monitor_exit() isnt=0A>>  called at all...=0A>> =0A>>  Having compil=
+ed the cobalt kernel without optimization,=0A>>  I noticed that cobalt_moni=
+tor_wait() actually sets u_ret =3D -EINTR and=0A>>  apparently cobalt_monit=
+or_enter_inner() seems to work, thus setting ret=0A>>  to 0. However, in in=
+ternal.c:cobalt_monitor_wait (in user mode),=0A>> =A0  both ret and opret s=
+eem to be set to -EINTR. This would explain that=0A>>  the second call of i=
+nternal.c:cobalt_monitor_wait to cobalt_monitor_enter=0A>>  will block inde=
+finitely since the sync object is already locked.=0A>> =0A>>  Investigating=
+ what else happens on the way back to user mode, it seems=0A>>  that the re=
+turn code is changed from 0 to -EINTR by the following stack:=0A>> =0A>>  #=
+0=A0 __xn_error_return (regs=3D0xde0fffb0, v=3D-4) at =0A> arch/arm/xenomai=
+/include/asm/xenomai/syscall.h:62=0A>>  #1=A0 prepare_for_signal (p=3D<opti=
+mized out>, =0A> thread=3Dthread@entry=3D0xde702e08, regs=3Dregs@entry=3D0x=
+de0fffb0, =0A> sysflags=3Dsysflags@entry=3D134) at kernel/xenomai/shadow.c:=
+1842=0A>>  #2=A0 0xc00c68a8 in handle_head_syscall (regs=3D0xde0fffb0, ipd=
+=3D0xc07d63c0 =0A> <xnarch_machdata>) at kernel/xenomai/shadow.c:1996=0A>> =
+ #3=A0 ipipe_syscall_hook (ipd=3D0xc07d63c0 <xnarch_machdata>, =0A> regs=3D=
+0xde0fffb0) at kernel/xenomai/shadow.c:2164=0A>>  #4=A0 0xc00959a8 in __ipi=
+pe_notify_syscall (regs=3Dregs@entry=3D0xde0fffb0) at =0A> kernel/ipipe/cor=
+e.c:982=0A>>  #5=A0 0xc0015c90 in __ipipe_syscall_root (scno=3D<optimized o=
+ut>, =0A> regs=3D0xde0fffb0) at arch/arm/kernel/ipipe.c:417=0A>> =0A>>  App=
+erently, the assumption of internal.c:cobalt_monitor_wait that a=0A>>  sysc=
+all return -EINTR indicates a failure to re-lock the sync object=0A>>  does=
+ not hold in this case. There are probably other cases where=0A>>  the same=
+ scenario may occur=0A>> =0A>>  Unfortunately I do not yet know how to reso=
+lve this issue...=0A>> =0A> =0A> Actually, you did it. Thanks for the analy=
+sis. As you mentioned, the basic issue =0A> is with relocking the monitor g=
+ate upon EINTR, which is wrong: there must be a =0A> reason why we do this =
+from userland...=0A> The reason is with any blocking Cobalt syscall which m=
+ust be aborted upon Linux =0A> signal receipt, which causes XNBREAK to be p=
+resent in the thread state flags =0A> (handle_sigwake_event -> __xnshadow_k=
+ick()). And we must not hold the gate =0A> lock until the signal handler ha=
+s run.=0A> =0A> When a signal hits the sleeping syscall, we must unwind the=
+ context all way down =0A> the regular Linux syscall path, so that a signal=
+ frame is built for it. As part =0A> of this process, prepare_for_signal() =
+switches the signaled context from primary =0A> to secondary mode.=0A> =0A>=
+ In short, receiving EINTR in kernel space waiting for a monitor means unwi=
+nding =0A> back to the userland call site first, keeping the monitor gate f=
+ree while =0A> running the handler, then grabbing the gate lock anew prior =
+to returning to the =0A> caller.=0A> =0A> Unblocking a thread forcibly can =
+also happen when the latter receives the =0A> internal/special/not-so-hidde=
+n SIGRELS notification (see __cobalt_kill()), in =0A> which case XNBREAK is=
+ raised too. In such a case, we will relock from userland =0A> the same way=
+.=0A> =0A> I need to review the entire machinery for more non-sense of mine=
+, but in the =0A> meantime, could you try this patch?=0A> =0A> TIA,=0A> =0A=
+> diff --git a/kernel/cobalt/posix/monitor.c b/kernel/cobalt/posix/monitor.=
+c=0A> index 0ecaa6a..a61d028 100644=0A> --- a/kernel/cobalt/posix/monitor.c=
+=0A> +++ b/kernel/cobalt/posix/monitor.c=0A> @@ -283,9 +283,11 @@ int cobal=
+t_monitor_wait(struct cobalt_monitor_shadow __user =0A> *u_mon,=0A> =A0=A0=
+=A0 =A0=A0=A0 if (list_empty(&mon->waiters) && =0A> !xnsynch_pended_p(&mon-=
+>drain))=0A> =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 datp->flags &=3D ~COBALT_MONITOR=
+_PENDED;=0A> =0A> -=A0=A0=A0 =A0=A0=A0 if (info & XNBREAK)=0A> +=A0=A0=A0 =
+=A0=A0=A0 if (info & XNBREAK) {=0A> =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 opret =3D=
+ -EINTR;=0A> -=A0=A0=A0 =A0=A0=A0 else if (info & XNTIMEO)=0A> +=A0=A0=A0 =
+=A0=A0=A0 =A0=A0=A0 goto out;=0A> +=A0=A0=A0 =A0=A0=A0 }=0A> +=A0=A0=A0 =A0=
+=A0=A0 if (info & XNTIMEO)=0A> =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 opret =3D -ETI=
+MEDOUT;=0A> =0A> =A0=A0=A0 }=0A> =0A> -- =0A> Philippe.=0A> =0A=0AThanks, c=
+urrent forge/next including the above patch finally passes the test on=0Amy=
+ setup. However I seem to be unable to determine which signal actually inte=
+rrupts=0Athe syscall. debugging all signals with gdb does not show a single=
+ occurance...=0A=0AMatthias=0A
 
