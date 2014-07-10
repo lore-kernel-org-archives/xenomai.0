@@ -1,12 +1,18 @@
+Date: Thu, 10 Jul 2014 17:05:40 +0200
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Message-ID: <20140710150540.GE27469@lukather>
+References: <1404210421-17081-1-git-send-email-maxime.ripard@free-electrons.com>
+ <53B294A7.5010803@xenomai.org> <20140701141536.GN28647@lukather>
+ <53B30D96.60500@xenomai.org> <20140704092736.GC13487@lukather>
+ <53B7B3BF.3090807@xenomai.org> <20140707160239.GF13423@lukather>
+ <53BAC5C4.5060704@xenomai.org> <20140708125505.GN13423@lukather>
+ <53BC2AB5.4050801@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <53BE4B0F.6030508@xenomai.org>
-References: <CANKLDmuVD8_RKc37dKsVsfJhqpa-YyuiLaf8gMuBq0ZHSfB2Bw@mail.gmail.com>
- <53BE4B0F.6030508@xenomai.org>
-Date: Thu, 10 Jul 2014 12:00:36 +0200
-Message-ID: <CANKLDmuzb51aCMut6s_swBmt5PE-x28YNhjJsDcOsfUnqzPqzg@mail.gmail.com>
-From: Henri Roosen <henriroosen@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Suspend-to-RAM of a Xenomai system
+Content-Disposition: inline
+In-Reply-To: <53BC2AB5.4050801@xenomai.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] AT91: SAMA5D3: Adapt Ipipe for AIC5
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,99 +21,147 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Thomas Petazzoni <thomas@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Boris Brezillon <boris@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, xenomai@xenomai.org
 
-On Thu, Jul 10, 2014 at 10:13 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+On Tue, Jul 08, 2014 at 07:30:29PM +0200, Gilles Chanteperdrix wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+> 
+> On 07/08/2014 02:55 PM, Maxime Ripard wrote:
+> > On Mon, Jul 07, 2014 at 06:07:32PM +0200, Gilles Chanteperdrix
+> > wrote:
+> >> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+> >> 
+> >> On 07/07/2014 06:02 PM, Maxime Ripard wrote:
+> >>> On Sat, Jul 05, 2014 at 10:13:51AM +0200, Gilles Chanteperdrix 
+> >>> wrote:
+> >>>>>>> Ok, so, with the changes you mentionned, I can't make
+> >>>>>>> the system crash anymore (or at least, not as easily as
+> >>>>>>> it used to be).
+> >>>>>>> 
+> >>>>>>> But: - whenever the program mentionned above calls
+> >>>>>>> exit(), it stalls. However, ctrl+c makes the program
+> >>>>>>> exit properly, and everything seems fine otherwise -
+> >>>>>>> whenever we don't link it against xenomai, it just
+> >>>>>>> hangs. I've not figured out why yet
+> >>>>>>> 
+> >>>>>>> With CONFIG_XENOMAI and CONFIG_IPIPE disabled, it
+> >>>>>>> works fine.
+> >>>>>> 
+> >>>>>> My answer was wrong, you probably need to keep the 
+> >>>>>> set_backup/clear_backup calls in he ->hold and ->release 
+> >>>>>> callbacks, as the linux interrupt may expect the backup
+> >>>>>> areas to be in sync. Did you do this, or did you go for
+> >>>>>> the alternative?
+> >>>>> 
+> >>>>> I went for the alternative. I'm sending you a v2 with what
+> >>>>> I have so far, that shows the behaviour I was describing.
+> >>>> 
+> >>>> Could you try the following patch?
+> >>> 
+> >>> It actually works much better, thanks!
+> >>> 
+> >>> The above mentionned issues are gone, there's only one last
+> >>> glitch I guess. The max latency under load is around a few
+> >>> 100's of ms (while idle, it's actually around 200-300us, which
+> >>> seems more reasonable.
+> >> 
+> >> 200us or 300us seems high for a last generation cortex.
+> >> milliseconds issues indicate an issue, does the msw column in
+> >> latency increment?
+> > 
+> > Ok, so after spending more time running xeno-test and latency
+> > 
+> > * xeno-test -l "dohell -s 192.168.0.42 -p 5566 -b
+> > /usr/bin/hackbench 60" - the average latency measured is 37us, with
+> > a max at 53
+> > 
+> > * If I just use the same load generator program I was using 
+> > previously (which basically just run hackbench, dohell, do some dd,
+> > output some data through netcat, etc.), and latency, for 45 
+> > minutes, I get an average latency at 35us, and a max latency at
+> > 60.
+> > 
+> > So the issue seems to lie in something related to our test
+> > program.
+> > 
+> > It's actually using CLOCK_MONOTONIC. When running just Xenomai's 
+> > clocktest program, the drift is OK, but the ToD offset is quite
+> > huge and varies slightly from one run to another. This also happens
+> > using CLOCK_REALTIME.
+> > 
+> > From what I understand of the POSIX clocks, gettimeofday is always 
+> > using EPOCH as a starting point, while POSIX clocks can pick
+> > whatever fixed starting point, so an offset might be expected.
+> > What's weird is that it whenever you use the CLOCK_HOST_REALTIME,
+> > which is used by xeno-test, and should be in sync with the Linux
+> > clock, this offset is no longer there.
+> > 
+> > That's the only meaningful difference I could spot between the two 
+> > programs (ours vs clocktest).
+> 
+> The test you are interested in is latency, not clocktest. The main
+> differences between latency and the test you run are:
+> - - the "period" (which BTW, in your case would only be a real period if
+> you removed the call to clock_gettime at the beginning of the loop,
+> only keeping the one before the loop), which is 1ms in latency case,
+> 100us in your case
 
-> On 07/10/2014 09:38 AM, Henri Roosen wrote:
->
->> Hi all,
->>
->> We have the requirement to put our ARM i.MX6 based Xenomai system into the
->> suspend-to-RAM state. Just before entering the mode we put the realtime
->> application in a state such that we don't need to be realtime anymore.
->>
->> The deep sleep mode is working on the system, however doesn't work well
->> with Xenomai:
->>
->> One problem we solved was a hangup when entering suspend-to-RAM state.
->> This
->> we traced down to Xenomai interrupts occurring during suspend mode where
->> interrupts need to be off. The lockup looks similar as described here:
->> http://www.xenomai.org/pipermail/xenomai/2014-January/029898.html.
->> Note: local_irq_disable_hw() cannot be used to disable the interrupts in
->> this case because later in the suspend sequence there are callbacks into
->> Xenomai which use xnlock_get_irqsave/xnlock_put_irqrestore which cannot
->> be
->> called after local_irq_disable_hw() because of inbalance of
->> the IPIPE_STALL_FLAG.
->>
->
-> You would need ipipe_stall_head() to get both the real and virtual
-> interrupt states in sync, which used to be called
-> ipipe_stall_pipeline_head() in the legacy patches.
->
->
-That is how we fixed this problem.
+I don't really get what you mean here. If we don't call gettime at the
+beginning of the loop, but only outside, how are we supposed to get
+the next sleep expiration time?
 
+> - - the fact that your function timespec_diff returns unsigned value, so
+> in case of early shot, you will get a very large value instead of a
+> negative ones.
+> 
+> As a general rule, we prefer Xenomai users to use the latency test,
+> because this is the one we collectively spent time debugging, so it
+> has more chances to be correct, and if you find a bug, everyone
+> benefits from the fix.
 
->> Now after we fixed the problem with disabling interrupts, we run into a
->> problem which isn't solved yet:
->>
->> Normally the system should go dormant on the WFI instruction, which it
->> does
->> almost half the time. The other times it doesn't and directly returns. And
->> that is only when Xenomai is enabled; a system running just an ipipe
->> enalbed kernel works as expected.
->>
->> I was trying to trace it down to Xenomai(-timer) interrupts, but cannot
->> prove it yet. The strange thing is that when I mask all interrupts on the
->> GPC, the wfi instruction still doesn't go dormant. Which doesn't make
->> sense
->> to me. Does anyone know why the wfi doesn't go dormant and/or what the
->> relationship is with Xenomai?
->>
->>
-> I would rather stop the GP timer instead of only masking its IRQ channel,
-> so that the timer can't fire during the short time window between flipping
-> the I bit in the CPSR and masking the GPC sources. Also, WFI also senses
-> FIQs - any chance you have one of those pending?
->
-> FIQ's should be disabled by the additional call to local_fiq_disable_hw()
-we added. Or is there an ipipe_stall_pipeline_xxxx() function that should
-be called for that instead?
+Yes, I don't doubt that latency is much more tested and reliable.
 
-Anyway, you could double-check that the Xenomai timer is involved by
-> enabling the nucleus but leaving all API skins unloaded/disabled. In that
-> case, Xenomai 2.x does not grab the host timer, so it won't emulate the
-> host kernel tick.
->
+The thing is, as you probably know, we're also a training company, and
+we're using this script in our training to give an idea of the latency
+on a regular linux kernel, and then on xenomai. It also have the
+benefit of being simple enough for the trainees to be able to
+understand it rather quickly.
 
-Based on your suggestion I did more tests. The problem triggers only when a
-Xenomai module is loaded. Without the module loaded there is no problem. I
-stripped down the module, it now only calls rt_task_create() and
-rt_task_set_periodic() at module init, rt_task_delete() at module exit.
-This reproduces the problem. However, if we leave out the call
-to rt_task_set_periodic() the problem cannot be reproduced.
+I don't think latency fits both these criterias, that are quite
+essential for us. But if you have any better solution that might,
+we're definitely open to suggestions :)
 
-So does the rt_task_set_periodic() call lead to grabbing the host timer?
-Any hints on how to workaround this problem when going into suspend-to-RAM?
+> As for the question of the clocks:
+> - - for POSIX, CLOCK_REALTIME and gettimeofday use the same time base
+> - - CLOCK_MONOTONIC may use whatever they want, but usually are the time
+> from boot or from the clocksource start;
+> - - CLOCK_HOST_REALTIME should be synchronized with Linux
+> CLOCK_REALTIME, that is the aim of CLOCK_HOST_REALTIME;
+> - - CLOCK_REALTIME in the case of Xenomai is not near Linux
+> CLOCK_REALTIME because the xenomai base time is initialized before
+> your board sets its base, by whatever mean (hwclock, ntp, ntpdate,
+> rdate, etc...), you can avoid that by using clock_settime to set
+> Xenomai clock base, but the clock will drift away from Linux
+> CLOCK_REALTIME anyway, so you will need to call clock_settime from
+> time to time to keep them more or less in sync. This early
+> synchronization is arguably broken, in fact it made sense when xenomai
+> was compiled as a module, and loaded later on, but probably no longer
+> makes sense for built-in configurations, which are now the default.
 
-Thanks!
+Thanks for this explanation :)
 
+Maxime
 
->
->  Any help, suggestions, directions are highly appreciated!
->>
->> Henri.
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> http://www.xenomai.org/mailman/listinfo/xenomai
->>
->>
->
-> --
-> Philippe.
->
+-- 
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 819 bytes
+Desc: Digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140710/d89e634e/attachment.sig>
