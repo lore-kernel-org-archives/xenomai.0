@@ -1,12 +1,12 @@
-Message-ID: <53AC0D05.8050006@xenomai.org>
-Date: Thu, 26 Jun 2014 14:07:33 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <53C11BBC.6020102@xenomai.org>
+Date: Sat, 12 Jul 2014 13:27:56 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAC66z97kU7PZgPdHrJWxpePUtH68Lo5BRG7CgJJXx9gnhqaNVQ@mail.gmail.com>
-In-Reply-To: <CAC66z97kU7PZgPdHrJWxpePUtH68Lo5BRG7CgJJXx9gnhqaNVQ@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <53BF7A2A.7020302@siemens.com>
+In-Reply-To: <53BF7A2A.7020302@siemens.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rt_sem_create problem
+Subject: Re: [Xenomai] Inconsistent traced Linux IRQ state on ARM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,29 +15,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: yogesh garg <yogesh.garg1983@gmail.com>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 06/26/2014 11:49 AM, yogesh garg wrote:
-> Hi,
-> I want to protect my shared data structure in my kernel module. But when I
-> am
-> trying to call rt_sem_create(), my module makes system hang. Without
-> rt_sem_create()
-> call my code works fine.
-> Please help me whats the problem with rt_sem_create().
->
-> Code:-
->      RT_SEM mysem;
->    ret = rt_sem_create(mysem,"dsem",1,S_PRIO);
->    printk(" Return value of sem_create : %d \n",ret);
->
-> ret value is success(0).
->
+On 07/11/2014 07:46 AM, Jan Kiszka wrote:
+> Gilles,
+> 
+> we see an warning about an inconsistency of the Linux IRQ state on ARM
+> with CONFIG_PROVE_LOCKING and, thus, CONFIG_TRACE_IRQFLAGS. I just
+> browsed code and history and stumbled over 11a959bf53 ("ipipe/arm:
+> disable calls to trace_hardirqs_(on|off) from assembly", ipipe-3.4.6),
+> the only obvious related delta between vanilla and the ipipe kernel. Can
+> you comment on both why you disabled it
 
-This is probably not your actual code, but rather some kind of 
-pseudo-code, so don't expect much insight. Except perhaps that you 
-should pay attention to the compiler warning such code must have produced.
+The reason why I disabled it is that:
+1- the spots where these functions are called are spots where hardware
+interrupts may be off, but the root stage not necessary stalled, which
+will may be confusing;
+2- these spots are also deep enough in the assembly code to be called
+for real-time tasks, which again may confuse these functions.
 
+Since I do not really understand the need for enabling this option with
+CONFIG_IPIPE (if you want to debug some Linux critical sections, you
+can do it without CONFIG_IPIPE, if you are after non-virtualized hard
+irq flags, the I-pipe tracer has an option to debug them), I simply took
+the easy way out and removed these calls.
 -- 
-Philippe.
+                                                                Gilles.
 
