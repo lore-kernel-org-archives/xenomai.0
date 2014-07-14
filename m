@@ -1,19 +1,14 @@
-Message-ID: <53C43A52.7070702@xenomai.org>
-Date: Mon, 14 Jul 2014 22:15:14 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <53C44696.2070906@xenomai.org>
+Date: Mon, 14 Jul 2014 17:07:34 -0400
+From: Jorge Ramirez Ortiz <jro@xenomai.org>
 MIME-Version: 1.0
-References: <1400788012.41259.YahooMailNeo@web171603.mail.ir2.yahoo.com>
- <1401734780.6508.YahooMailNeo@web171606.mail.ir2.yahoo.com>
- <53A3E8FE.5020005@xenomai.org>
- <1403519510.94410.YahooMailNeo@web171601.mail.ir2.yahoo.com>
- <1403555262.58217.YahooMailNeo@web171601.mail.ir2.yahoo.com>
- <1404233289.69461.YahooMailNeo@web171605.mail.ir2.yahoo.com>
- <53BCF270.3010303@xenomai.org>
- <1405365539.41980.YahooMailNeo@web171603.mail.ir2.yahoo.com>
-In-Reply-To: <1405365539.41980.YahooMailNeo@web171603.mail.ir2.yahoo.com>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <mailman.653.1404749254.5713.xenomai@xenomai.org>
+ <53C3E6CE.2040306@xenomai.org> <53C42ADE.7040204@gmail.com>
+In-Reply-To: <53C42ADE.7040204@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] FreeRTOS skin #2
+Subject: Re: [Xenomai] analogy: sensory 626 patch [Re: Xenomai Digest, Vol 27,
+ Issue 12]
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,59 +17,241 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Matthias Schneider <ma30002000@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Wojciech Domski <wojciech.domski@gmail.com>, xenomai@xenomai.org
 
-On 07/14/2014 09:18 PM, Matthias Schneider wrote:
-> 
-> 
-> 
-> 
-> ----- Original Message -----
->> From: Philippe Gerum <rpm@xenomai.org>
->> To: Matthias Schneider <ma30002000@yahoo.de>; "xenomai@xenomai.org" <xenomai@xenomai.org>
->> Cc: 
->> Sent: Wednesday, July 9, 2014 9:42 AM
->> Subject: Re: [Xenomai] FreeRTOS skin #2
->>
->> On 07/01/2014 06:48 PM, Matthias Schneider wrote:
->>>  Please find enclosed another calling the check_processors() only when 
->> starting
->>>  the scheduler and remembering its output. It is also adapted to the latest 
->> changes.
->>>  Any comments will be appreciated.
+On 07/14/2014 03:09 PM, Wojciech Domski wrote:
+> W dniu 2014-07-14 16:18, Jorge Ramirez Ortiz pisze:
+>> ---------------------------------------------------------------------- Message: 1 
+>> Date: Mon, 07 Jul 2014 12:38:42 +0200 From: Wojciech Domski <> To: Gilles 
+>> Chanteperdrix <gilles.chanteperdrix@xenomai.org> Cc: xenomai@xenomai.org Subject: 
+>> Re: [Xenomai] Sensoray 626 analogy driver Message-ID: <53BA78B2.2010802@gmail.com> 
+>> Content-Type: text/plain; charset="utf-8"; Format="flowed" W dniu 11.04.2014 
+>> 00:01, Gilles Chanteperdrix pisze:
+>>>>
+>>>> On 04/10/2014 02:25 PM, Wojciech Domski wrote:
+>>>>> 2014-03-25 13:33 GMT+01:00 Gilles Chanteperdrix <
+>>>>> gilles.chanteperdrix@xenomai.org>:
+>>>>>
+>>>>>>
+>>>>>> On 03/25/2014 01:14 PM, Wojciech Domski wrote:
+>>>>>>> W dniu 25.03.2014 12:58, Gilles Chanteperdrix pisze:
+>>>>>>>>
+>>>>>>>> On 03/25/2014 12:54 PM, Wojciech Domski wrote:
+>>>>>>>>> W dniu 25.03.2014 12:36, Gilles Chanteperdrix pisze:
+>>>>>>>>>>
+>>>>>>>>>> On 03/25/2014 12:28 PM, Wojciech Domski wrote:
+>>>>>>>>>>> W dniu 25.03.2014 12:16, Gilles Chanteperdrix pisze:
+>>>>>>>>>>>>
+>>>>>>>>>>>> On 03/25/2014 11:26 AM, Wojciech Domski wrote:
+>>>>>>>>>>>>> W dniu 24.03.2014 13:19, Gilles Chanteperdrix pisze:
+>>>>>>>>>>>>>> The solution which would be acceptable is not to have busy waits,
+>>>>>> except
+>>>>>>>>>>>>>> for very short durations. But for instance transferring a byte on
+>>>>>> I2C
+>>>>>>>>>>>>>> takes around 20us at 400 kHz, a 20us masking section is
+>>>>>> unacceptable.
+>>>>>>>>>>>>>> rtdm_task_busy_sleep, as the name suggests is a busy wait loop,
+>>>>>> so, no,
+>>>>>>>>>>>>>> it is not acceptable either.
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> Use a thread or a timer to reschedule while you wait for the end
+>>>>>> of the
+>>>>>>>>>>>>>> transfer, instead of busy waiting.
+>>>>>>>>>>>>> Dear Gilles,
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> As you mentioned before the driver has few places like this:
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> while(!FLAG1);
+>>>>>>>>>>>>> while(!FLAG2);
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> Would a solution of creating a separate task for this purpose be
+>>>>>> ok?
+>>>>>>>>>>>>> task()
+>>>>>>>>>>>>> {
+>>>>>>>>>>>>>           while(!FLAG1);
+>>>>>>>>>>>>>           while(!FLAG2);
+>>>>>>>>>>>>> }
+>>>>>>>>>>>> I was rather thinking about rtdm_task_sleep() instead.
+>>>>>>>>>>>>
+>>>>>>>>>>>>> In the place of those loops a piece of code responsible for
+>>>>>> creating and
+>>>>>>>>>>>>> joining task would be put instead:
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> rtdm_task_init();
+>>>>>>>>>>>>> rtdm_task_join_nrt();
+>>>>>>>>>>>> This will not work for code currently running in interrupt
+>>>>>> handlers. An
+>>>>>>>>>>>> interrupt handler can not call rtdm_task_join_nrt(). You will rather
+>>>>>>>>>>>> have to wake up the thread, not reenabling the interrupt at the end
+>>>>>> of
+>>>>>>>>>>>> the handler, and reenable the interrupt in the thread when the job
+>>>>>> is
+>>>>>>>>>>>> done. Or alternatively, fire a timer instead of waking up a thread.
+>>>>>>>>>>>>
+>>>>>>>>>>>>
+>>>>>>>>>>> Dear Gilles,
+>>>>>>>>>>>
+>>>>>>>>>>> If what I have understood correctly, basically what you mean is
+>>>>>> changing:
+>>>>>>>>>>> while(!FLAG) ;
+>>>>>>>>>>>
+>>>>>>>>>>> into
+>>>>>>>>>>>
+>>>>>>>>>>> while(!FLAG)
+>>>>>>>>>>>          rtdm_task_sleep();
+>>>>>>>>>>>
+>>>>>>>>>>> Xenomai's documentation that rtdm_task_sleep() can be always
+>>>>>>>>>>> rescheduled. In my opinion
+>>>>>>>>>>> this solution is sufficient and meets Xenomai requirements.
+>>>>>>>>>> This solution will not work if the busy loop was in an irq handler.
+>>>>>> You
+>>>>>>>>>> can not call rtdm_task_sleep from the context of an irq handler.
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>> Ok, now I get your point.
+>>>>>>>>>
+>>>>>>>>> However, what do you mean exactly by rescheduling while waiting? Do you
+>>>>>>>>> mean something like
+>>>>>>>>> putting all irq services into another thread and only in irq handler
+>>>>>>>>> notify the separate thread
+>>>>>>>>> to do the job accordingly?
+>>>>>>>> Well, I do not know exactly, I have not looked at the details of the
+>>>>>>>> driver, you are supposed to do that. But you may be able to split the
+>>>>>>>> interrupt code in two parts: a first part that will run in interrupt
+>>>>>>>> mode, and a second part that will run as a thread. The irq handler would
+>>>>>>>> wake the thread up at the end of the first part, and return without
+>>>>>>>> reenabling the interrupt at interrupt controller level. The thread would
+>>>>>>>> execute, sleep during the I2C transfers as needed, and reenable the
+>>>>>>>> interrupt before going back to sleep.
+>>>>>>>>
+>>>>>>>>
+>>>>>>> So would it be a good practise to create a new task for irq service with
+>>>>>>>
+>>>>>>> rtdm_task_init();
+>>>>>>>
+>>>>>>> inside attach function and join it with
+>>>>>>>
+>>>>>>> rtdm_task_join_nrt();
+>>>>>>>
+>>>>>>> inside detach function?
+>>>>>> I do not know the details about analogy drivers, so, again, it is left
+>>>>>> to you to read other analogy drivers and see where is the best place to
+>>>>>> do what you want to do.
+>>>>>>
+>>>>>>
+>>>>>> -- 
+>>>>>> Gilles.
+>>>>>>
+>>>>> Dear Gilles,
+>>>>>
+>>>>> I have altered the driver according to your advices.
+>>>>> If I had omitted something please let me know.
+>>>>>
+>>>>> Please find a patch enclosed in the attachment.
+>>>>>
+>>>>> Best regards,
+>>>>> Wojciech Domski
+>>>>>
+>>>>> Domski.pl
+>>>>>
+>>>>> Wojciech.Domski.pl
+>>>>> -------------- next part --------------
+>>>>> A non-text attachment was scrubbed...
+>>>>> Name: s626_patch.patch
+>>>>> Type: text/x-patch
+>>>>> Size: 141659 bytes
+>>>>> Desc: not available
+>>>>> URL: 
+>>>>> <http://www.xenomai.org/pipermail/xenomai/attachments/20140410/e7191247/attachment.bin>
+>>>> scripts/checkpatch.pl attchment.bin:
+>>>>
+>>>> total: 325 errors, 392 warnings, 3991 lines checked
+>>>>
+>>>> Please fix these errors.
+>>>>
+>>>>
+>>> Dear Gilles,
+>>>
+>>> In the attachment you will find patch for xenomai including support for
+>>> analogy Sensoray 626.
+>>>
+>>> May I ask you to include this patch to main xenomai tree?
+>>>
+>>> Best regards,
+>>>
+>>> Wojciech Domski
+>>>
+>>> Domski.pl
+>>>
+>>> Wojciech.Domski.pl
 >>>
 >>
->> - clusters allowing key dups are available using the *_dup() call form
->> - vTaskEndScheduler() can be simplified, and should not panic if it 
->> cannot lock a vanishing thread pulled from the task list.
->>  
->> -- 
-> 
->> Philippe.
 >>
-> 
-> The vTaskEndScheduler() patch unfortunately now leads to a frozen
-> vTaskStartScheduler() function when shutting down in some tests.
-> 
-> This is probably due to freertos_scheduler.tasklist_end_cond not being
-> triggered when the list gets empty in vTaskEndScheduler() ? also, 
+>> Hi Wojciech
+>>
+>> I did some changes to the patch that you sent and pushed it to my Xenomai 3 tree 
+>> (branch sensoray) as work in progress; however we have no means to test or 
+>> validate any of the changes.
+>> http://git.xenomai.org/xenomai-jro.git/log/?h=sensoray
+>>
+>> is this something that you can do? ie, do you have access to the sensoray device?
+>>
+>> In any case after reviewing the Comedi implementation in 3.12 staging I think it 
+>> would make sense to base off that newer release instead.
+>>
+>> jro
+>>
+>>
+>>
+> Thank you for committing the driver.
+> I have access to the Sensoray 626 board and I will test the remarks you have 
+> proposed. It will take me sometime, however. First of all I would like to test my 
+> driver with two Sensoray boards. For now, I see that it won't work with more than 
+> one card. It requires some changes to the attach and probe function. After I 
+> implement this functionality I will take a look into the interrupt handling service.
+>
+> Seizing the opportunity, I would like to ask you a question about handling PCI 
+> device. When I'm calling pci_register_driver() and I have two exactly the same PCI 
+> devices will this function call appropriate probe() function two times? If yes, 
+> then is the probe() function an appropriate place to make list of available devices?
+>
+> Wojciech Domski
+>
+> Domski.pl
+>
+> Wojciech.Domski.pl
+>
+>
+invoking pci_register_driver in dev_s626_attach causes the probe interface in the pci 
+driver to be executed for all the devices of the kind described in the pci id table; 
+this is probably the reason why you can only register one.
 
-That condvar is shared between the task finalizer and
-vTaskStartScheduler() instead. If no task terminates after
-vTaskEndScheduler() is called, then we will be missing the trigger
-indeed. The logic needs some fixing. I also just noticed that the
-start_cond variable seems redundant with the purpose of
-threadobj_wait_start().
+It might be easier to follow the approach in analogy/national_instruments/mite.c
 
-> freertos_scheduler.num_tasks seems not to be decremented when removing
-> elemets from the list via pvlist_pop_entry().
-> 
+mite_init registers the driver which ends up calling mite_probe which will create a 
+mite_struct and add it to the list of mite_devices.
+Incidentally if you were wondering, this is the reason why if the pci_register_driver 
+call succeeded the driver can display all the devices in the system.
 
-> Even when calling pthread_cond_signal() at the end of vTaskEndScheduler(),
-> I still get the freeze. Any idea?
-> 
-> 
+the same would need to be done for the s626
+
+on a different note, we are adding a new interface to rtdm to support the busy loops.
+rtdm_busywait_safe(__condition, __busy_delay, __busy_wait)
+
+this should allow you to do things like this
+
+-       while (!MC_TEST(P_MC2, MC2_UPLD_DEBI))
+-               rtdm_task_sleep(2000);
++       ret = rtdm_busywait_safe(!MC_TEST(P_MC2, MC2_UPLD_DEBI), BUSY_DELAY, BUSY_SLEEP);
++       if (ret)
++               __a4l_err( "error waiting");
+
+
+
+
+
 
 -- 
-Philippe.
+jro
+
 
