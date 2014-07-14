@@ -1,14 +1,12 @@
-Message-ID: <53C38040.4040802@siemens.com>
-Date: Mon, 14 Jul 2014 09:01:20 +0200
+Message-ID: <53C38058.4030903@siemens.com>
+Date: Mon, 14 Jul 2014 09:01:44 +0200
 From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <E1X5FGA-00080E-2w@sd-51317.dedibox.fr>
- <53C2B020.6050209@xenomai.org>
-In-Reply-To: <53C2B020.6050209@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : arch/x86: Fix section
- mismatch warning for mach_x86_c1e_disable
+References: <53BF7A2A.7020302@siemens.com> <53C11BBC.6020102@xenomai.org>
+In-Reply-To: <53C11BBC.6020102@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Inconsistent traced Linux IRQ state on ARM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,28 +15,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 2014-07-13 18:13, Gilles Chanteperdrix wrote:
-> Le 10/07/2014 16:23, git repository hosting a écrit :
->> Module: xenomai-jki
->> Branch: for-forge
->> Commit: dcac4e7a3e7ccf19e4b38169e7c89eb88c821483
->> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=dcac4e7a3e7ccf19e4b38169e7c89eb88c821483
+On 2014-07-12 13:27, Gilles Chanteperdrix wrote:
+> On 07/11/2014 07:46 AM, Jan Kiszka wrote:
+>> Gilles,
 >>
->> Author: Jan Kiszka <jan.kiszka@siemens.com>
->> Date:   Wed Jul  9 17:50:30 2014 +0200
->>
->> arch/x86: Fix section mismatch warning for mach_x86_c1e_disable
->>
->> mach_x86_c1e_disable is called from non-__init function mach_x86_init,
->> thus can't be tagged as __init. mach_x86_init can't be converted as it
->> is referenced by the persistent xnarch_machdesc structure.
+>> we see an warning about an inconsistency of the Linux IRQ state on ARM
+>> with CONFIG_PROVE_LOCKING and, thus, CONFIG_TRACE_IRQFLAGS. I just
+>> browsed code and history and stumbled over 11a959bf53 ("ipipe/arm:
+>> disable calls to trace_hardirqs_(on|off) from assembly", ipipe-3.4.6),
+>> the only obvious related delta between vanilla and the ipipe kernel. Can
+>> you comment on both why you disabled it
 > 
-> Well, it seems to me that mach_x86_init truly is an init function, is
-> not there any other way to fix this?
+> The reason why I disabled it is that:
+> 1- the spots where these functions are called are spots where hardware
+> interrupts may be off, but the root stage not necessary stalled, which
+> will may be confusing;
+> 2- these spots are also deep enough in the assembly code to be called
+> for real-time tasks, which again may confuse these functions.
 
-I do not see any due the pointed out conflict around that data structure.
+It's ok to remove Linux tracing from the heart of those functions if
+they are used in RT context as well. But then we should fix up the state
+when handing over to Linux again. Apparently, we are missing at least
+one fix-up here.
+
+> 
+> Since I do not really understand the need for enabling this option with
+> CONFIG_IPIPE (if you want to debug some Linux critical sections, you
+> can do it without CONFIG_IPIPE, if you are after non-virtualized hard
+> irq flags, the I-pipe tracer has an option to debug them), I simply took
+> the easy way out and removed these calls.
+
+The need for not breaking the kernels debugging infrastructure is being
+able to analyze kernel components that use both real-time and plain
+Linux locking and interrupt infrastructure. We do have such use cases.
+It also helped in the past on x86 to validate the I-pipe patch itself.
 
 Jan
 
