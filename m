@@ -1,13 +1,13 @@
-Message-ID: <53C3C6F9.3070408@xenomai.org>
-Date: Mon, 14 Jul 2014 14:03:05 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <53C3E6CE.2040306@xenomai.org>
+Date: Mon, 14 Jul 2014 10:18:54 -0400
+From: Jorge Ramirez Ortiz <jro@xenomai.org>
 MIME-Version: 1.0
-References: <53BF7A2A.7020302@siemens.com> <53C11BBC.6020102@xenomai.org>
- <53C38058.4030903@siemens.com>
-In-Reply-To: <53C38058.4030903@siemens.com>
-Content-Type: text/plain; charset=UTF-8
+References: <mailman.653.1404749254.5713.xenomai@xenomai.org>
+In-Reply-To: <mailman.653.1404749254.5713.xenomai@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Inconsistent traced Linux IRQ state on ARM
+Subject: [Xenomai] analogy: sensory 626 patch [Re: Xenomai Digest, Vol 27,
+	Issue 12]
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,50 +16,185 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org, wojciech.domski@gmail.com
 
-On 07/14/2014 09:01 AM, Jan Kiszka wrote:
-> On 2014-07-12 13:27, Gilles Chanteperdrix wrote:
->> On 07/11/2014 07:46 AM, Jan Kiszka wrote:
->>> Gilles,
+---------------------------------------------------------------------- Message: 1 
+Date: Mon, 07 Jul 2014 12:38:42 +0200 From: Wojciech Domski <> To: Gilles 
+Chanteperdrix <gilles.chanteperdrix@xenomai.org> Cc: xenomai@xenomai.org Subject: Re: 
+[Xenomai] Sensoray 626 analogy driver Message-ID: <53BA78B2.2010802@gmail.com> 
+Content-Type: text/plain; charset="utf-8"; Format="flowed" W dniu 11.04.2014 00:01, 
+Gilles Chanteperdrix pisze:
+>> On 04/10/2014 02:25 PM, Wojciech Domski wrote:
+>>> 2014-03-25 13:33 GMT+01:00 Gilles Chanteperdrix <
+>>> gilles.chanteperdrix@xenomai.org>:
 >>>
->>> we see an warning about an inconsistency of the Linux IRQ state on ARM
->>> with CONFIG_PROVE_LOCKING and, thus, CONFIG_TRACE_IRQFLAGS. I just
->>> browsed code and history and stumbled over 11a959bf53 ("ipipe/arm:
->>> disable calls to trace_hardirqs_(on|off) from assembly", ipipe-3.4.6),
->>> the only obvious related delta between vanilla and the ipipe kernel. Can
->>> you comment on both why you disabled it
+>>>> On 03/25/2014 01:14 PM, Wojciech Domski wrote:
+>>>>> W dniu 25.03.2014 12:58, Gilles Chanteperdrix pisze:
+>>>>>> On 03/25/2014 12:54 PM, Wojciech Domski wrote:
+>>>>>>> W dniu 25.03.2014 12:36, Gilles Chanteperdrix pisze:
+>>>>>>>> On 03/25/2014 12:28 PM, Wojciech Domski wrote:
+>>>>>>>>> W dniu 25.03.2014 12:16, Gilles Chanteperdrix pisze:
+>>>>>>>>>> On 03/25/2014 11:26 AM, Wojciech Domski wrote:
+>>>>>>>>>>> W dniu 24.03.2014 13:19, Gilles Chanteperdrix pisze:
+>>>>>>>>>>>> The solution which would be acceptable is not to have busy waits,
+>>>> except
+>>>>>>>>>>>> for very short durations. But for instance transferring a byte on
+>>>> I2C
+>>>>>>>>>>>> takes around 20us at 400 kHz, a 20us masking section is
+>>>> unacceptable.
+>>>>>>>>>>>> rtdm_task_busy_sleep, as the name suggests is a busy wait loop,
+>>>> so, no,
+>>>>>>>>>>>> it is not acceptable either.
+>>>>>>>>>>>>
+>>>>>>>>>>>> Use a thread or a timer to reschedule while you wait for the end
+>>>> of the
+>>>>>>>>>>>> transfer, instead of busy waiting.
+>>>>>>>>>>> Dear Gilles,
+>>>>>>>>>>>
+>>>>>>>>>>> As you mentioned before the driver has few places like this:
+>>>>>>>>>>>
+>>>>>>>>>>> while(!FLAG1);
+>>>>>>>>>>> while(!FLAG2);
+>>>>>>>>>>>
+>>>>>>>>>>> Would a solution of creating a separate task for this purpose be
+>>>> ok?
+>>>>>>>>>>> task()
+>>>>>>>>>>> {
+>>>>>>>>>>>           while(!FLAG1);
+>>>>>>>>>>>           while(!FLAG2);
+>>>>>>>>>>> }
+>>>>>>>>>> I was rather thinking about rtdm_task_sleep() instead.
+>>>>>>>>>>
+>>>>>>>>>>> In the place of those loops a piece of code responsible for
+>>>> creating and
+>>>>>>>>>>> joining task would be put instead:
+>>>>>>>>>>>
+>>>>>>>>>>> rtdm_task_init();
+>>>>>>>>>>> rtdm_task_join_nrt();
+>>>>>>>>>> This will not work for code currently running in interrupt
+>>>> handlers. An
+>>>>>>>>>> interrupt handler can not call rtdm_task_join_nrt(). You will rather
+>>>>>>>>>> have to wake up the thread, not reenabling the interrupt at the end
+>>>> of
+>>>>>>>>>> the handler, and reenable the interrupt in the thread when the job
+>>>> is
+>>>>>>>>>> done. Or alternatively, fire a timer instead of waking up a thread.
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>> Dear Gilles,
+>>>>>>>>>
+>>>>>>>>> If what I have understood correctly, basically what you mean is
+>>>> changing:
+>>>>>>>>> while(!FLAG) ;
+>>>>>>>>>
+>>>>>>>>> into
+>>>>>>>>>
+>>>>>>>>> while(!FLAG)
+>>>>>>>>>          rtdm_task_sleep();
+>>>>>>>>>
+>>>>>>>>> Xenomai's documentation that rtdm_task_sleep() can be always
+>>>>>>>>> rescheduled. In my opinion
+>>>>>>>>> this solution is sufficient and meets Xenomai requirements.
+>>>>>>>> This solution will not work if the busy loop was in an irq handler.
+>>>> You
+>>>>>>>> can not call rtdm_task_sleep from the context of an irq handler.
+>>>>>>>>
+>>>>>>>>
+>>>>>>> Ok, now I get your point.
+>>>>>>>
+>>>>>>> However, what do you mean exactly by rescheduling while waiting? Do you
+>>>>>>> mean something like
+>>>>>>> putting all irq services into another thread and only in irq handler
+>>>>>>> notify the separate thread
+>>>>>>> to do the job accordingly?
+>>>>>> Well, I do not know exactly, I have not looked at the details of the
+>>>>>> driver, you are supposed to do that. But you may be able to split the
+>>>>>> interrupt code in two parts: a first part that will run in interrupt
+>>>>>> mode, and a second part that will run as a thread. The irq handler would
+>>>>>> wake the thread up at the end of the first part, and return without
+>>>>>> reenabling the interrupt at interrupt controller level. The thread would
+>>>>>> execute, sleep during the I2C transfers as needed, and reenable the
+>>>>>> interrupt before going back to sleep.
+>>>>>>
+>>>>>>
+>>>>> So would it be a good practise to create a new task for irq service with
+>>>>>
+>>>>> rtdm_task_init();
+>>>>>
+>>>>> inside attach function and join it with
+>>>>>
+>>>>> rtdm_task_join_nrt();
+>>>>>
+>>>>> inside detach function?
+>>>> I do not know the details about analogy drivers, so, again, it is left
+>>>> to you to read other analogy drivers and see where is the best place to
+>>>> do what you want to do.
+>>>>
+>>>>
+>>>> --
+>>>>                                                                   Gilles.
+>>>>
+>>> Dear Gilles,
+>>>
+>>> I have altered the driver according to your advices.
+>>> If I had omitted something please let me know.
+>>>
+>>> Please find a patch enclosed in the attachment.
+>>>
+>>> Best regards,
+>>> Wojciech Domski
+>>>
+>>> Domski.pl
+>>>
+>>> Wojciech.Domski.pl
+>>> -------------- next part --------------
+>>> A non-text attachment was scrubbed...
+>>> Name: s626_patch.patch
+>>> Type: text/x-patch
+>>> Size: 141659 bytes
+>>> Desc: not available
+>>> URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140410/e7191247/attachment.bin>
+>> scripts/checkpatch.pl attchment.bin:
 >>
->> The reason why I disabled it is that:
->> 1- the spots where these functions are called are spots where hardware
->> interrupts may be off, but the root stage not necessary stalled, which
->> will may be confusing;
->> 2- these spots are also deep enough in the assembly code to be called
->> for real-time tasks, which again may confuse these functions.
-> 
-> It's ok to remove Linux tracing from the heart of those functions if
-> they are used in RT context as well. But then we should fix up the state
-> when handing over to Linux again. Apparently, we are missing at least
-> one fix-up here.
-> 
+>> total: 325 errors, 392 warnings, 3991 lines checked
 >>
->> Since I do not really understand the need for enabling this option with
->> CONFIG_IPIPE (if you want to debug some Linux critical sections, you
->> can do it without CONFIG_IPIPE, if you are after non-virtualized hard
->> irq flags, the I-pipe tracer has an option to debug them), I simply took
->> the easy way out and removed these calls.
-> 
-> The need for not breaking the kernels debugging infrastructure is being
-> able to analyze kernel components that use both real-time and plain
-> Linux locking and interrupt infrastructure. We do have such use cases.
-> It also helped in the past on x86 to validate the I-pipe patch itself.
+>> Please fix these errors.
+>>
+>>
+> Dear Gilles,
+>
+> In the attachment you will find patch for xenomai including support for
+> analogy Sensoray 626.
+>
+> May I ask you to include this patch to main xenomai tree?
+>
+> Best regards,
+>
+> Wojciech Domski
+>
+> Domski.pl
+>
+> Wojciech.Domski.pl
+>
 
-Any patch will be welcome. But do not take too long, because the I-pipe
-patch for Linux 3.14, and following that Xenomai 2.6.4 are to be
-released soon.
+
+Hi Wojciech
+
+I did some changes to the patch that you sent and pushed it to my Xenomai 3 tree 
+(branch sensoray) as work in progress; however we have no means to test or validate 
+any of the changes.
+http://git.xenomai.org/xenomai-jro.git/log/?h=sensoray
+
+is this something that you can do? ie, do you have access to the sensoray device?
+
+In any case after reviewing the Comedi implementation in 3.12 staging I think it 
+would make sense to base off that newer release instead.
+
+jro
+
 
 
 -- 
-                                                                Gilles.
+jro
+
 
