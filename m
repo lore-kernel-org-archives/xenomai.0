@@ -1,10 +1,14 @@
-Message-ID: <53C2E129.7080607@xenomai.org>
-Date: Sun, 13 Jul 2014 21:42:33 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <53C38040.4040802@siemens.com>
+Date: Mon, 14 Jul 2014 09:01:20 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Jorge Ramirez-Ortiz appointed Analogy maintainer
+References: <E1X5FGA-00080E-2w@sd-51317.dedibox.fr>
+ <53C2B020.6050209@xenomai.org>
+In-Reply-To: <53C2B020.6050209@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : arch/x86: Fix section
+ mismatch warning for mach_x86_c1e_disable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,24 +17,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
-Cc: Jorge Ramirez-Ortiz <jro@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
 
+On 2014-07-13 18:13, Gilles Chanteperdrix wrote:
+> Le 10/07/2014 16:23, git repository hosting a écrit :
+>> Module: xenomai-jki
+>> Branch: for-forge
+>> Commit: dcac4e7a3e7ccf19e4b38169e7c89eb88c821483
+>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=dcac4e7a3e7ccf19e4b38169e7c89eb88c821483
+>>
+>> Author: Jan Kiszka <jan.kiszka@siemens.com>
+>> Date:   Wed Jul  9 17:50:30 2014 +0200
+>>
+>> arch/x86: Fix section mismatch warning for mach_x86_c1e_disable
+>>
+>> mach_x86_c1e_disable is called from non-__init function mach_x86_init,
+>> thus can't be tagged as __init. mach_x86_init can't be converted as it
+>> is referenced by the persistent xnarch_machdesc structure.
+> 
+> Well, it seems to me that mach_x86_init truly is an init function, is
+> not there any other way to fix this?
 
-I'm pleased to announce that Jorge Ramirez-Ortiz is appointed Analogy
-maintainer for our project, taking over this job from Alexis Berlemont,
-who is too short on time for contributing this year.  I'm taking this
-opportunity to thank Alex for the outstanding work he did, on creating a
-sane real-time stack for supporting acquisition cards.
+I do not see any due the pointed out conflict around that data structure.
 
-Jorge is currently ramping up on the task, by getting Analogy in shape
-for Xenomai 3.
-
-Please make sure to Cc: him on Analogy-related issues when posting to
-this list.
-
-Happy hacking,
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
