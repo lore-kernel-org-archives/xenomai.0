@@ -1,11 +1,10 @@
-From: Jan Jaap Kempenaar <janjaapkempenaar@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <FEB36BE3-3DA6-4594-9064-213B66B059ED@gmail.com>
-Date: Tue, 15 Jul 2014 17:45:34 +0200
-Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
-Subject: [Xenomai] modprobe cannot find RTDM kernel module during boot
-	sequence
+Message-ID: <53C550DF.4090500@axelsw.it>
+Date: Tue, 15 Jul 2014 18:03:43 +0200
+From: Marco Tessore <marco.tessore@axelsw.it>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Question about rtdm_mmap_to user
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,48 +15,66 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hello,
+Good morning,
+I would like to share a buffer between user space task and kernel space 
+realtime driver.
 
-We have a setup for controlling robots consisting of a Gumstix Overo =
-Fire and an FPGA. These devices are connected using a GPMC.
-In order be able to exchange data with the FPGA we wrote a small kernel =
-module according to the RTDM, this kernel modules compiles and functions =
-as expected. However loading the module is a problem:
+I used the function rtdm_mmap_to user in the following way:
 
-We copied the module to:
-/lib/modules/3.2.21/kernel/drivers/gpmc/rt_gpmc_module.ko
-Then as root performed:
-depmod -a
+In the driver, in the function myDriver_ioctl_rt I have the code:
 
-After these two actions we are able to load the module using:
-modprobe rt_gpmc_module
+        spild->agg_write_frame_buffer allocated with kalloc
 
-Also:
-modprobe --list
-will list the .ko file.
+         ret = rtdm_mmap_to_user( user_info,
+                 spild->agg_write_frame_buffer,
+                 agg_fun_local.data_size,
+                 PROT_READ|PROT_WRITE ,
+                 &tmpPtr,
+                 NULL,
+                 NULL
+         );
+         agg_fun_local.data_buffer = (uint8_t *) tmpPtr;
 
-Now for ease of use, we want to load the particular kernel module at =
-boot. To achieve this we added rt_gpmc_module to the /etc/modules file.
-However when setting the /etc/init.d/module-init-tools to Verbose, the =
-modprobe command gives the following error:
-FATAL: Module rt_gpmc_module not found
+         rtdm_printk("mmap = %X\n", (unsigned) 
+agg_fun_local.data_buffer); // print the returned address
 
-Adding modprobe --list in front, shows that rt_gpmc_module.ko is in the =
-mod probe listing.
+         if (ret)
+         {
+             rtdm_printk("mmap error1\n");
 
-In order to verify that nothing is wrong with the kernel module boot =
-loading, a version was created as a "normal" none RTDM driver. This =
-module loads at boot as it should.
+             kfree(spild->agg_write_frame_buffer);
+             return ret;
+         }
 
-This brings me to the question, how can one load a RTDM kernel module =
-driver at boot time, using the /etc/modules feature?
-Or does it require a different approach.
+         // check data
+         spild->agg_write_frame_buffer[0] = 0xBE;
+         spild->agg_write_frame_buffer[1] = 0xEF;
 
-Any advice is much appreciated.
+         // then returned the agg_fun_local structure to userspace
 
-System:
-Xenomai 2.6.3
-Linux 3.2.21
-Gumstix Overo Fire
-Custom FPGA base board.=
+In the user space process I have the following code:
+     ret = rt_dev_ioctl( device, IOCTL_MYDRIVER, &agg_fun );
+     if (ret)
+     {
+         printf("PREP_AGG_WRITE failed, ret = %X", (int) ret);
+     }
+
+     printf("USER = Address = %X\n", (unsigned) agg_fun.data_buffer);
+     printf("USER check %X%X\n", pAggFun->data_buffer[0], 
+agg_fun.data_buffer[1]);
+
+I have verified that the address in userspace is the same of the one 
+returned by the rtdm_mmap_to_user.
+The problem is that in the process I cannot see the check data written 
+in the driver.
+
+Is there something wrong in my code?
+Are there some constraints tha I haven't took into account?
+
+Thank you very much
+Best regards
+Marco Tessore
+
+
+
 
