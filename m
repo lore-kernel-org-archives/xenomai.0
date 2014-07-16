@@ -1,14 +1,15 @@
-Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
-From: Michael Haberler <mail17@mah.priv.at>
-In-Reply-To: <528CCE14.2040505@xenomai.org>
-Date: Wed, 16 Jul 2014 09:24:57 -0600
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <EA93FD47-509E-441A-AFCF-38882E2DC609@mah.priv.at>
-References: <A4FA4D76-58FD-4DB4-AE7F-5B2D3D20FF35@mah.priv.at>
- <528CCE14.2040505@xenomai.org>
-Subject: Re: [Xenomai] integrate event signaled by RT thread into non-RT
-	event loops (poll, select, eventfd..)?
+Message-ID: <53C6CC9B.4040009@xenomai.org>
+Date: Wed, 16 Jul 2014 15:03:55 -0400
+From: Jorge Ramirez Ortiz <jro@xenomai.org>
+MIME-Version: 1.0
+References: <mailman.653.1404749254.5713.xenomai@xenomai.org>
+ <53C3E6CE.2040306@xenomai.org> <53C42ADE.7040204@gmail.com>
+ <53C44696.2070906@xenomai.org> <53C44EE9.3040000@xenomai.org>
+In-Reply-To: <53C44EE9.3040000@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] sensoray 626 patch  [Re: Xenomai Digest, Vol 27,
+	Issue 12]
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,52 +18,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Wojciech Domski <wojciech.domski@gmail.com>, xenomai@xenomai.org
 
 
-Am 20.11.2013 um 07:58 schrieb Gilles Chanteperdrix =
-<gilles.chanteperdrix@xenomai.org>:
+>>>  Thank you for committing the driver.
+>>>  I have access to the Sensoray 626 board and I will test the remarks you have
+>>>  proposed. It will take me sometime, however. First of all I would like to test my
+>>>  driver with two Sensoray boards. For now, I see that it won't work with more than
+>>>  one card. It requires some changes to the attach and probe function. After I
+>>>  implement this functionality I will take a look into the interrupt handling 
+>>> service.
+>>>
+>>>  Seizing the opportunity, I would like to ask you a question about handling PCI
+>>>  device. When I'm calling pci_register_driver() and I have two exactly the same PCI
+>>>  devices will this function call appropriate probe() function two times? If yes,
+>>>  then is the probe() function an appropriate place to make list of available 
+>>> devices?
+>>>
+>>>  Wojciech Domski
+>>>
+>>>  Domski.pl
+>>>
+>>>  Wojciech.Domski.pl
+>>>
+>>
+>>  invoking pci_register_driver in dev_s626_attach causes the probe interface in the
+>>  pci driver to be executed for all the devices of the kind described in the pci id
+>>  table; this is probably the reason why you can only register one.
+>>
+>
+> of course, in case it was not clear, you can only register the pci driver once
+>
+>>  It might be easier to follow the approach in analogy/national_instruments/mite.c
 
-> On 11/20/2013 03:33 PM, Michael Haberler wrote:
->> I'm looking for a simple method to post an event from an RT thread so
->> a userland non-RT thread can wait for, and pick it up via a file
->> descriptor (without switching the originating thread to primary
->> domain, of course)
->>=20
->> event context can be minimal since the userland handler can figure;
->> actual data transfer not required - event number or mask a plus
->>=20
->> purpose would be integration into existing event loops; only
->> RT->userland signalling needed
->>=20
->> if it's possible from a kernel RT context, it's a plus
->>=20
->> ---
->>=20
->> one scheme I thought of was: using rt_event services, monitor the
->> event flag in a userland shadow thread and post to an eventfd whose
->> other side could be integrated into an event loop. Making sense?
->>=20
->> thanks in advance,
->>=20
->> Michael
->>=20
->> ps: this needs to be portable across RT kernel variants; my approach
->> for RTAI would be to use rt_request_srq() and post to an eventfd from
->> the Linux context
->=20
-> You may use XDDP IPC for that, see:
-> =
-http://www.xenomai.org/documentation/xenomai-2.6/html/api/xddp-echo_8c-exa=
-mple.html
 
-in the RT thread, I'd need to do a non-blocking read of the XDDP socket =
-or test in some way if a message is present (man 2 recvfrom indicates by =
-default it blocks until data available)
+please have a look to the changes I pushed (untested). let me know if it helps with 
+your issues.
+http://git.xenomai.org/xenomai-jro.git/log/?h=sensoray
 
-what would be the right/fastest way to do this - do the recvfrom() with =
-the MSG_DONTWAIT option?
+[note that this driver is still very much work in progress but I thought you'll need 
+it sooner rather than later]
 
-- Michael
+>>
+>>  mite_init registers the driver which ends up calling mite_probe which will create a
+>>  mite_struct and add it to the list of mite_devices.
+>>  Incidentally if you were wondering, this is the reason why if the
+>>  pci_register_driver call succeeded the driver can display all the devices in the
+>>  system.
+>>
+>>  the same would need to be done for the s626
+>>
+>>  on a different note, we are adding a new interface to rtdm to support the busy 
+>> loops.
+>>  rtdm_busywait_safe(__condition, __busy_delay, __busy_wait)
+>>
+>>  this should allow you to do things like this
+>>
+>>  -       while (!MC_TEST(P_MC2, MC2_UPLD_DEBI))
+>>  -               rtdm_task_sleep(2000);
+>>  +       ret = rtdm_busywait_safe(!MC_TEST(P_MC2, MC2_UPLD_DEBI), BUSY_DELAY,
+>>  BUSY_SLEEP);
+>>  +       if (ret)
+>>  +               __a4l_err( "error waiting");
+>>
+>>
+>
+
+-- 
+jro
 
 
