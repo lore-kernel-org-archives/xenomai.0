@@ -1,16 +1,13 @@
-Message-ID: <53AC1615.2010606@grinta.net>
-Date: Thu, 26 Jun 2014 14:46:13 +0200
-From: Daniele Nicolodi <daniele@grinta.net>
+Message-ID: <53C65420.6040608@xenomai.org>
+Date: Wed, 16 Jul 2014 12:29:52 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <5294A4C3.9090404@grinta.net> <5294A711.2010700@xenomai.org>
- <5294A933.5050300@grinta.net> <5294AAB4.5030707@xenomai.org>
- <5294AC3E.4040009@grinta.net> <5294AFBE.9060404@xenomai.org>
- <5294B125.2060501@grinta.net> <5294B36D.5060202@xenomai.org>
- <529530A5.30209@xenomai.org>
-In-Reply-To: <529530A5.30209@xenomai.org>
+References: <FEB36BE3-3DA6-4594-9064-213B66B059ED@gmail.com>
+In-Reply-To: <FEB36BE3-3DA6-4594-9064-213B66B059ED@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] cgit repository modification times
+Subject: Re: [Xenomai] modprobe cannot find RTDM kernel module during boot
+ sequence
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,69 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Jaap Kempenaar <janjaapkempenaar@gmail.com>, xenomai@xenomai.org
 
-On 27/11/2013 00:37, Gilles Chanteperdrix wrote:
-> On 11/26/2013 03:42 PM, Gilles Chanteperdrix wrote:
->> On 11/26/2013 03:33 PM, Daniele Nicolodi wrote:
->>> On 26/11/2013 15:27, Gilles Chanteperdrix wrote:
->>>> On 11/26/2013 03:12 PM, Daniele Nicolodi wrote:
->>>>> On 26/11/2013 15:05, Gilles Chanteperdrix wrote:
->>>>>> On 11/26/2013 02:59 PM, Daniele Nicolodi wrote:
->>>>>>> On 26/11/2013 14:50, Gilles Chanteperdrix wrote:
->>>>>>>> On 11/26/2013 02:40 PM, Daniele Nicolodi wrote:
->>>>>>>>> Hello,
->>>>>>>>>
->>>>>>>>> I've noticed that the new cgit web interface to the git repositories
->>>>>>>>> does not display the correct modification times for the repository in
->>>>>>>>> the repository list.  I don't know what may cause this, the displayed
->>>>>>>>> times seems completely arbitrary to me.
->>>>>>>>
->>>>>>>> Maybe that is because the time displayed in the repository list is not
->>>>>>>> the modification time, but the idle time, as the title line indicates?
->>>>>>>
->>>>>>> Sorry, wrong choice of words on my side. I believe that the idle time is
->>>>>>> defined as (current time) - (modification time). Isn't it?
->>>>>>
->>>>>>>
->>>>>>> Still, for example, the xenomai-force repository has two branches:
->>>>>>> "master" and "next", for which cgit shows an "Age" (which I believe
->>>>>>> should be interpreted in the same way as "Idle") of respectively 24
->>>>>>> hours and 3 weeks.  The "Idle" field in the repository list reports 11 days.
->>>>>>
->>>>>> It seems you are mixing the time when the last push occurred with the
->>>>>> time when the last commit occurred, with git the two are not necessarily
->>>>>> correlated. If you look at other projects using cgit, kernel.org for
->>>>>> instance, you will find the same disparities.
->>>>>>
->>>>>> In the case of Xenomai, most of the repositories appear to have been
->>>>>> pushed 11 days ago because this is the time when the repositories were
->>>>>> cloned from the old xenomai server to the new xenomai server.
->>>>>
->>>>> I know, but how is it possible that a changeset has been pushed before
->>>>> being committed?
->>>>
->>>> Indeed, that is strange, I will look at it. Maybe we miss some hooks
->>>> (like git-update-server).
->>>
->>> I think it is due to the fact that only the master branch of each
->>> repository is looked at.  I checked on gnome.org cgit instance and it
->>> shows the same behavior.  I don't know if it is configurable.
->>
->> Seems a fix exists:
->> http://article.gmane.org/gmane.comp.version-control.cgit/1059
->>
->> Will try tonight.
->>
-> It should work now.
+On 07/15/2014 05:45 PM, Jan Jaap Kempenaar wrote:
+> Hello,
+> 
+> We have a setup for controlling robots consisting of a Gumstix Overo Fire and an FPGA. These devices are connected using a GPMC.
+> In order be able to exchange data with the FPGA we wrote a small kernel module according to the RTDM, this kernel modules compiles and functions as expected. However loading the module is a problem:
+> 
+> We copied the module to:
+> /lib/modules/3.2.21/kernel/drivers/gpmc/rt_gpmc_module.ko
+
+You should not use kernel 3.2.21, the I-piep patch is known to contain a
+bug. Please update to a more recent patch.
+
+> Then as root performed:
+> depmod -a
+> 
+> After these two actions we are able to load the module using:
+> modprobe rt_gpmc_module
+> 
+> Also:
+> modprobe --list
+> will list the .ko file.
+> 
+> Now for ease of use, we want to load the particular kernel module at boot. To achieve this we added rt_gpmc_module to the /etc/modules file.
+> However when setting the /etc/init.d/module-init-tools to Verbose, the modprobe command gives the following error:
+> FATAL: Module rt_gpmc_module not found
+
+Some versions of modprobe try to insmod the module directly first, and
+if that fails take the dependencies into account. If the module appears
+in lsmod, I believe you can safely ignore this warning.
 
 
-Hello,
-
-it seems that the generation of the cgit index page broke down recently,
-the last update time is 2014-06-21 05:18:50.
-
-Cheers,
-Daniele
-
+-- 
+                                                                Gilles.
 
