@@ -1,16 +1,17 @@
-Message-ID: <53AC5700.5010604@xenomai.org>
-Date: Thu, 26 Jun 2014 19:23:12 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Thu, 17 Jul 2014 12:18:07 +0200
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Message-ID: <20140717101807.GC20328@lukather>
+References: <20140704092736.GC13487@lukather> <53B7B3BF.3090807@xenomai.org>
+ <20140707160239.GF13423@lukather> <53BAC5C4.5060704@xenomai.org>
+ <20140708125505.GN13423@lukather> <53BC2AB5.4050801@xenomai.org>
+ <20140710150540.GE27469@lukather> <53BEC794.6090208@xenomai.org>
+ <20140716161801.GA20328@lukather> <53C6D6DA.3060303@xenomai.org>
 MIME-Version: 1.0
-References: <5294A4C3.9090404@grinta.net> <5294A711.2010700@xenomai.org>
- <5294A933.5050300@grinta.net> <5294AAB4.5030707@xenomai.org>
- <5294AC3E.4040009@grinta.net> <5294AFBE.9060404@xenomai.org>
- <5294B125.2060501@grinta.net> <5294B36D.5060202@xenomai.org>
- <529530A5.30209@xenomai.org> <53AC1615.2010606@grinta.net>
-In-Reply-To: <53AC1615.2010606@grinta.net>
-Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
+In-Reply-To: <53C6D6DA.3060303@xenomai.org>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] cgit repository modification times
+Subject: Re: [Xenomai] [PATCH] AT91: SAMA5D3: Adapt Ipipe for AIC5
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,71 +20,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Daniele Nicolodi <daniele@grinta.net>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Thomas Petazzoni <thomas@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Boris Brezillon <boris@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, xenomai@xenomai.org
 
-On 06/26/2014 02:46 PM, Daniele Nicolodi wrote:
-> On 27/11/2013 00:37, Gilles Chanteperdrix wrote:
->> On 11/26/2013 03:42 PM, Gilles Chanteperdrix wrote:
->>> On 11/26/2013 03:33 PM, Daniele Nicolodi wrote:
->>>> On 26/11/2013 15:27, Gilles Chanteperdrix wrote:
->>>>> On 11/26/2013 03:12 PM, Daniele Nicolodi wrote:
->>>>>> On 26/11/2013 15:05, Gilles Chanteperdrix wrote:
->>>>>>> On 11/26/2013 02:59 PM, Daniele Nicolodi wrote:
->>>>>>>> On 26/11/2013 14:50, Gilles Chanteperdrix wrote:
->>>>>>>>> On 11/26/2013 02:40 PM, Daniele Nicolodi wrote:
->>>>>>>>>> Hello,
->>>>>>>>>>
->>>>>>>>>> I've noticed that the new cgit web interface to the git repositories
->>>>>>>>>> does not display the correct modification times for the repository in
->>>>>>>>>> the repository list.  I don't know what may cause this, the displayed
->>>>>>>>>> times seems completely arbitrary to me.
->>>>>>>>>
->>>>>>>>> Maybe that is because the time displayed in the repository list is not
->>>>>>>>> the modification time, but the idle time, as the title line indicates?
->>>>>>>>
->>>>>>>> Sorry, wrong choice of words on my side. I believe that the idle time is
->>>>>>>> defined as (current time) - (modification time). Isn't it?
->>>>>>>
->>>>>>>>
->>>>>>>> Still, for example, the xenomai-force repository has two branches:
->>>>>>>> "master" and "next", for which cgit shows an "Age" (which I believe
->>>>>>>> should be interpreted in the same way as "Idle") of respectively 24
->>>>>>>> hours and 3 weeks.  The "Idle" field in the repository list reports 11 days.
->>>>>>>
->>>>>>> It seems you are mixing the time when the last push occurred with the
->>>>>>> time when the last commit occurred, with git the two are not necessarily
->>>>>>> correlated. If you look at other projects using cgit, kernel.org for
->>>>>>> instance, you will find the same disparities.
->>>>>>>
->>>>>>> In the case of Xenomai, most of the repositories appear to have been
->>>>>>> pushed 11 days ago because this is the time when the repositories were
->>>>>>> cloned from the old xenomai server to the new xenomai server.
->>>>>>
->>>>>> I know, but how is it possible that a changeset has been pushed before
->>>>>> being committed?
->>>>>
->>>>> Indeed, that is strange, I will look at it. Maybe we miss some hooks
->>>>> (like git-update-server).
->>>>
->>>> I think it is due to the fact that only the master branch of each
->>>> repository is looked at.  I checked on gnome.org cgit instance and it
->>>> shows the same behavior.  I don't know if it is configurable.
->>>
->>> Seems a fix exists:
->>> http://article.gmane.org/gmane.comp.version-control.cgit/1059
->>>
->>> Will try tonight.
->>>
->> It should work now.
+On Wed, Jul 16, 2014 at 09:47:38PM +0200, Gilles Chanteperdrix wrote:
+> >>> I don't think latency fits both these criterias, that are
+> >>> quite essential for us. But if you have any better solution
+> >>> that might, we're definitely open to suggestions :)
+> >> 
+> >> Xenomai forge's latency is based on timerfd, so will be usable on
+> >> Linux, preempt-rt and xenomai. But that is for the future.
+> > 
+> > Ah, good to know.
+> > 
+> >> I suggest you fix the issue with negative latencies, and see if
+> >> it avoids the large latencies you observe.
+> > 
+> > So, I tested it today with the latency calibration disabled.
+> > 
+> > It doesn't change anything. I slightly modified it to dump the
+> > time1 and time2 variables to see if we're observing negative
+> > latencies.
+> > 
+> > The code is here: http://code.bulix.org/y7f8tc-86530?raw And here
+> > is the output of a single run:
+> > http://code.bulix.org/ciamlo-86531?raw
+> > 
+> > So, if you look at it, we can see that we have around half a dozen
+> > of these huge latency spikes, while we gather 180k samples, but
+> > these spikes are not actually caused by some negative latencies.
+> > There actually is such a different of a few 100's of ms between our
+> > two timespec structures.
+> > 
+> > And it's not due to an error reported by any of the clock
+> > functions either.
 > 
-> 
-> Hello,
-> 
-> it seems that the generation of the cgit index page broke down recently,
-> the last update time is 2014-06-21 05:18:50.
+> Ok, you do not call pthread_setschedparam to make the task run with
+> the SCHED_FIFO policy, do you set the policy by running the program
+> with chrt? Because starting with Xenomai 2.6.0, threads with the
+> SCHED_OTHER policy automatically return to secondary mode after a
+> primary mode syscall, so your task is essentially a plain linux task.
+> If you do run the program with chrt, I suggest checking in
+> /proc/xenomai/stat or /proc/xenomai/sched that the task runs with the
+> intended priority.
 
-Indeed, it should be fixed now.
+/me hides...
+
+Yes, it was just that stupid mistake... Erm. I guess I owe you a drink
+if we ever meet :)
+
+And now, I indeed get some negative latency values.
+
+Which brings an extra question about this. Is the timer calibration
+supposed to get a minimum latency to 0 (meaning that with a properly
+calibrated timer, we would only get positive latencies), or that the
+average latency should be around 0 (which would mean that negative
+latencies would actually be frequent, but would break the
+clock_nanosleep documented behaviour).
+
+I'm actually seeing the former, but trying the latter only brings us
+quite close to having the calibration disabled entirely.
+
+Thanks,
+Maxime
 
 -- 
-                                                                Gilles.
-
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 819 bytes
+Desc: Digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140717/c915c09c/attachment.sig>
