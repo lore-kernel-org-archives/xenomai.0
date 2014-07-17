@@ -1,17 +1,16 @@
-Date: Thu, 17 Jul 2014 13:59:15 +0200
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Message-ID: <20140717115915.GD20328@lukather>
-References: <20140707160239.GF13423@lukather> <53BAC5C4.5060704@xenomai.org>
- <20140708125505.GN13423@lukather> <53BC2AB5.4050801@xenomai.org>
- <20140710150540.GE27469@lukather> <53BEC794.6090208@xenomai.org>
- <20140716161801.GA20328@lukather> <53C6D6DA.3060303@xenomai.org>
- <20140717101807.GC20328@lukather> <53C7AB52.609@xenomai.org>
+From: Wojciech Domski <wojciech.domski@gmail.com>
+Message-ID: <53C81CFD.30908@gmail.com>
+Date: Thu, 17 Jul 2014 20:59:09 +0200
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <53C7AB52.609@xenomai.org>
-Content-Type: text/plain; charset="us-ascii"
+References: <mailman.653.1404749254.5713.xenomai@xenomai.org>
+ <53C3E6CE.2040306@xenomai.org> <53C42ADE.7040204@gmail.com>
+ <53C44696.2070906@xenomai.org> <53C44EE9.3040000@xenomai.org>
+ <53C6CC9B.4040009@xenomai.org>
+In-Reply-To: <53C6CC9B.4040009@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] AT91: SAMA5D3: Adapt Ipipe for AIC5
+Subject: Re: [Xenomai] sensoray 626 patch  [Re: Xenomai Digest, Vol 27,
+	Issue 12]
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,41 +19,101 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Thomas Petazzoni <thomas@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Boris Brezillon <boris@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, xenomai@xenomai.org
+To: Jorge Ramirez Ortiz <jro@xenomai.org>, xenomai@xenomai.org
 
-On Thu, Jul 17, 2014 at 12:54:10PM +0200, Gilles Chanteperdrix wrote:
-> > Which brings an extra question about this. Is the timer
-> > calibration supposed to get a minimum latency to 0 (meaning that
-> > with a properly calibrated timer, we would only get positive
-> > latencies), or that the average latency should be around 0 (which
-> > would mean that negative latencies would actually be frequent, but
-> > would break the clock_nanosleep documented behaviour).
-> > 
-> > I'm actually seeing the former, but trying the latter only brings
-> > us quite close to having the calibration disabled entirely.
-> 
-> The calibration is left entirely to the user, so, you choose what is
-> best for your application. But indeed, if your application relies on
-> clock_nanosleep documented behaviour (should never wake-up early
-> except in case of signal), you want to set /proc/xenomai/latency value
-> to the minimum value measured by the latency test, minus a safety margin.
+W dniu 2014-07-16 21:03, Jorge Ramirez Ortiz pisze:
+>
+>>>>  Thank you for committing the driver.
+>>>>  I have access to the Sensoray 626 board and I will test the 
+>>>> remarks you have
+>>>>  proposed. It will take me sometime, however. First of all I would 
+>>>> like to test my
+>>>>  driver with two Sensoray boards. For now, I see that it won't work 
+>>>> with more than
+>>>>  one card. It requires some changes to the attach and probe 
+>>>> function. After I
+>>>>  implement this functionality I will take a look into the interrupt 
+>>>> handling service.
+>>>>
+>>>>  Seizing the opportunity, I would like to ask you a question about 
+>>>> handling PCI
+>>>>  device. When I'm calling pci_register_driver() and I have two 
+>>>> exactly the same PCI
+>>>>  devices will this function call appropriate probe() function two 
+>>>> times? If yes,
+>>>>  then is the probe() function an appropriate place to make list of 
+>>>> available devices?
+>>>>
+>>>>  Wojciech Domski
+>>>>
+>>>>  Domski.pl
+>>>>
+>>>>  Wojciech.Domski.pl
+>>>>
+>>>
+>>>  invoking pci_register_driver in dev_s626_attach causes the probe 
+>>> interface in the
+>>>  pci driver to be executed for all the devices of the kind described 
+>>> in the pci id
+>>>  table; this is probably the reason why you can only register one.
+>>>
+>>
+>> of course, in case it was not clear, you can only register the pci 
+>> driver once
+>>
+>>>  It might be easier to follow the approach in 
+>>> analogy/national_instruments/mite.c
+>
+>
+> please have a look to the changes I pushed (untested). let me know if 
+> it helps with your issues.
+> http://git.xenomai.org/xenomai-jro.git/log/?h=sensoray
+>
+> [note that this driver is still very much work in progress but I 
+> thought you'll need it sooner rather than later]
+>
+>>>
+>>>  mite_init registers the driver which ends up calling mite_probe 
+>>> which will create a
+>>>  mite_struct and add it to the list of mite_devices.
+>>>  Incidentally if you were wondering, this is the reason why if the
+>>>  pci_register_driver call succeeded the driver can display all the 
+>>> devices in the
+>>>  system.
+>>>
+>>>  the same would need to be done for the s626
+>>>
+>>>  on a different note, we are adding a new interface to rtdm to 
+>>> support the busy loops.
+>>>  rtdm_busywait_safe(__condition, __busy_delay, __busy_wait)
+>>>
+>>>  this should allow you to do things like this
+>>>
+>>>  -       while (!MC_TEST(P_MC2, MC2_UPLD_DEBI))
+>>>  -               rtdm_task_sleep(2000);
+>>>  +       ret = rtdm_busywait_safe(!MC_TEST(P_MC2, MC2_UPLD_DEBI), 
+>>> BUSY_DELAY,
+>>>  BUSY_SLEEP);
+>>>  +       if (ret)
+>>>  +               __a4l_err( "error waiting");
+>>>
+>>>
+>>
+>
+Today I have tested the driver against working with multiple Sensoray 
+626 cards.
+However, there are still some issues with I have to deal with.
 
-Ok, thanks!
+The patch which you have Jorge delivered was of much help to me. 
+However, there were some issues which I had to fix. Really minor stuff.
 
-I guess you can add my Tested-by tag to your patch, if that makes any
-sense for Xenomai.
+As for the irq service I didn't have time to check it because I'm 
+running Xenomai 2.6.3.
 
-Maxime
+Wojciech Domski
 
--- 
-Maxime Ripard, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 819 bytes
-Desc: Digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140717/7bb489d7/attachment.sig>
+Domski.pl
+
+Wojciech.Domski.pl
+
+
