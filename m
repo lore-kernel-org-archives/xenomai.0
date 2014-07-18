@@ -1,10 +1,10 @@
+Date: Fri, 18 Jul 2014 10:25:13 +0200 (CEST)
+From: Pierre Ficheux <pierre.ficheux@openwide.fr>
+Message-ID: <1546174838.19906925.1405671913876.JavaMail.root@openwide.fr>
 MIME-Version: 1.0
-Sender: justinhartubc@gmail.com
-Date: Thu, 17 Jul 2014 23:07:33 -0700
-Message-ID: <CAFgu5KVLOB46vh85KV47RT0b4YBsAW_KkLBGRbY_TWhRyrgGMw@mail.gmail.com>
-From: Justin Hart <justin.hart@mech.ubc.ca>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] Large clock drift, keyboard issues
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Xenomai support for DM8148
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,31 +15,20 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi everyone,
+Hi all,
 
-I'm experiencing a problem with a kernel I recently patched with Xenomai.
- I'm a bit new to Xenomai, so I apologize if this is a silly question or
-the wrong list.  Basically, the clock on the machine that we have xenomai
-running on runs very fast.  Additionally, after using the system to control
-our Barrett WAM, We have keyboard issues, wherein a single keystroke will
-yield a long line of characters.  For example, typing "hello" would give
-you "hellooooooooooooooooooooooooo."
+I'm looking for experiment about using Xenomai with TI DM8148 and "standard" TI kernel (2.6.37).
 
-Here's my output from xeno clocktest
+It seems standard ADEOS patch does not apply correctly to the TI kernel.
 
-== Tested clock: 0 (CLOCK_REALTIME)
-CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
---- -------------------- ---------------- ---------- --------------
-  0          674175352.5      -498134.813          0            0.0
-  1          674175353.8      -498133.887          0            0.0
-  2          674175451.3      -498135.134          0            0.0
-  3          674175466.0      -498135.222          0            0.0
+thx by advance,
 
-Is there anywhere that I should start my search, with regards to fixing
-this?  This is especially important to my group, as our controller for the
-WAM interpolates over time, meaning that the arm lurches and jumps with
-respect to the clock running incorrectly.
+http://processors.wiki.ti.com/index.php/DM814x_Overview
+http://software-dl.ti.com/dsps/dsps_public_sw/psp/LinuxPSP/DM814x_04_01/04_01_00_07/index_FDS.html
 
-Thanks!
+-- 
+Pierre FICHEUX -/- CTO OW/OWI, France -\- pierre.ficheux@openwide.fr
+                                         http://ingenierie.openwide.fr
+                                         http://www.linuxembedded.fr
+I would love to change the world, but they won't give me the source code
 
-Justin
