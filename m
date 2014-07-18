@@ -1,11 +1,14 @@
+Message-ID: <53C97AC3.9010506@xenomai.org>
+Date: Fri, 18 Jul 2014 21:51:31 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Sender: hiddeate2m@gmail.com
-Date: Mon, 4 Aug 2014 14:10:46 +0200
-Message-ID: <CAMi4Dw02AiGx9ZQFcc3aesJCKkaKdkJ+3V+jPiOuReeC=o5L0A@mail.gmail.com>
-From: "Hidde Verstoep (E2M)" <hverstoep@e2mtechnologies.eu>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Shared interrupts
+References: <53C9627E.4010102@zultron.com> <53C974FA.5030308@xenomai.org>
+ <53C97A17.8090906@zultron.com>
+In-Reply-To: <53C97A17.8090906@zultron.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Debian packages for testing:  Xenomai 2.6.3,
+ Linux 3.8.13, x86 and Beaglebone
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,36 +17,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: John Morris <john@zultron.com>, xenomai@xenomai.org
 
-SGVsbG8sCgpJIGhhdmUgYSBjb21wdXRlciB3aGVyZSwgd2hlbiBydW5uaW5nIGEga2VybmVsIHdp
-dGggWGVub21haSwgYSBsb3Qgb2YKZGV2aWNlcyBzaGFyZSBvbmUgaW50ZXJydXB0IChzZWUgeGVu
-b21haS5sb2cpLiBJIHdhbnQgdG8gdXNlIGV0aDAgd2l0aApSVG5ldCAoSSBhbHJlYWR5IGhhdmUg
-YSB3b3JraW5nIGRyaXZlciksIGJ1dCBJIGFsc28gd2FudCB0byBrZWVwIGhhdmluZwphY2Nlc3Mg
-dG8gbXkgZ3JhcGhpY2FsIGludGVyZmFjZSBhbmQgVVNCLiBUaGVzZSBkZXZpY2VzIGFyZSBhbGwg
-b24gdGhlIHNhbWUKaW50ZXJydXB0LiBBcyBmYXIgYXMgSSBrbm93IElSUSBzaGFyaW5nIGlzIG5v
-dCBwb3NzaWJsZSBiZXR3ZWVuIHRoZSBMaW51eAphbmQgWGVub21haSBkb21haW4sIHNvIHRoaXMg
-aXMgYSBwcm9ibGVtLgoKT24gYSByZWd1bGFyIExpbnV4IGtlcm5lbCB0aGUgZGV2aWNlcyBhcmUg
-c3ByZWFkIGRpZmZlcmVudGx5IGFtb25nIHRoZQppbnRlcnJ1cHRzIChzZWUgbGludXgubG9nKS4g
-SSBiZWxpZXZlIHRoaXMgaXMgZHVlIHRvIE1TSSAoY29ycmVjdCBtZSBpZiBJJ20Kd3JvbmcpLiBo
-dHRwOi8vd3d3Lnhlbm9tYWkub3JnL2luZGV4LnBocC9Db25maWd1cmluZ194ODZfa2VybmVscyBj
-bGVhcmx5CnN0YXRlcyB0aGF0IEkgaGF2ZSB0byBkaXNhYmxlIHRoaXMuIEhvd2V2ZXIsIHRoZSBs
-aW5rZWQgZGlzY3Vzc2lvbiBpcyBub3QKZW50aXJlbHkgY2xlYXIgdG8gbWUuIERvZXMgTVNJIG9u
-bHkgY2F1c2UgaXNzdWVzIGZvciBhIFhlbm9tYWkgZGV2aWNlCmRyaXZlciBhbmQgZm9yIHRoZSBk
-ZXZpY2UgaXQgY29udHJvbHMgb3IgZm9yIExpbnV4IGRldmljZSBkcml2ZXJzIGFuZCB0aGUKcmVz
-dCBvZiB0aGUgc3lzdGVtIGFzIHdlbGw/IElmIE1TSSBvbmx5IGNhdXNlcyBpc3N1ZXMgZm9yIFhl
-bm9tYWkgZGV2aWNlCmRyaXZlcnMsIGNvdWxkIEkgZW5hYmxlIENPTkZJR19NU0kgYW5kIG1ha2Ug
-c3VyZSB0aGUgWGVub21haSBkZXZpY2UgZHJpdmVycwoobGlrZSB0aGUgb25lIGZvciBldGgwKSBk
-b24ndCB1c2UgTVNJPyBPciB3b3VsZCB0aGlzIGhhdmUgb3RoZXIKY29uc2VxdWVuY2VzIGFzIHdl
-bGw/CgpJZiBub3QgaW4gdGhlIGFib3ZlIHdheSwgaXMgdGhlcmUgYW5vdGhlciB3YXkgdG8gc29s
-dmUgbXkgaXNzdWU/IElzIHRoZXJlCmFueSBtb3JlIGluZm9ybWF0aW9uIEkgc2hvdWxkIHByb3Zp
-ZGU/CgpLaW5kIHJlZ2FyZHMsCkhpZGRlIFZlcnN0b2VwCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFy
-dCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5h
-bWU6IGxpbnV4LmxvZwpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTogMTIzOSBi
-eXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlw
-ZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNDA4MDQvYTg0YjRjZTYvYXR0YWNobWVudC5v
-Ymo+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0
-dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHhlbm9tYWkubG9nClR5cGU6IGFwcGxpY2F0
-aW9uL29jdGV0LXN0cmVhbQpTaXplOiA3MTggYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6
-IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIw
-MTQwODA0L2E4NGI0Y2U2L2F0dGFjaG1lbnQtMDAwMS5vYmo+Cg==
+On 07/18/2014 09:48 PM, John Morris wrote:
+> On 07/18/2014 02:26 PM, Gilles Chanteperdrix wrote:
+>> On 07/18/2014 08:07 PM, John Morris wrote:
+>>> I've built new Xenomai kernel packages for the Machinekit project.  As
+>>> the subject says, they're based on Xenomai 2.6.3 and Linux 3.8.13 and
+>>> run on the x86 architectures (mostly vanilla with the Debian config) and
+>>> Beaglebone (Robert C Nelson's patches and config).
+>>>
+>>> They are based on the upstream Debian packaging, completely different
+>>> from my previous packages, which were based on the awful make-kpkg
+>>> stuff.  These promise to be much more maintainable.
+>>>
+>>> RTAI kernels are also included in the new packaging.
+>>>
+>>> To install:
+>>>
+>>> # configure the Debian archive
+>>> sudo sh -c \
+>>>       "sudo apt-key adv --keyserver hkp://keys.gnupg.net \
+>>>           --recv-key 73571BB9; \
+>>>       echo 'deb http://deb.dovetail-automata.com wheezy main' > \
+>>>           /etc/apt/sources.list.d/machinekit.list"
+>>
+>> If you are interested, you can make a debian package which adds the key
+>> to the keyring. See:
+>> http://www.xenomai.org/debian/pool/main/x/xenomai-keyring/
+> 
+> Hi Gilles,
+> 
+> I actually did this last time around, and even copied your code.  What's 
+> the advantage of putting the key in a package over directly importing 
+> the key with the above 'apt-key' command?
+
+If a user wants to remove a key, he simply removes the package instead
+of having to know the apt-key command (which most user never even use,
+as the debian project keys are installed with such a package).
+
+-- 
+                                                                Gilles.
+
