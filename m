@@ -1,17 +1,10 @@
-Message-ID: <53C84C7B.3060903@xenomai.org>
-Date: Fri, 18 Jul 2014 00:21:47 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20140707160239.GF13423@lukather> <53BAC5C4.5060704@xenomai.org>
- <20140708125505.GN13423@lukather> <53BC2AB5.4050801@xenomai.org>
- <20140710150540.GE27469@lukather> <53BEC794.6090208@xenomai.org>
- <20140716161801.GA20328@lukather> <53C6D6DA.3060303@xenomai.org>
- <20140717101807.GC20328@lukather> <53C7AB52.609@xenomai.org>
- <20140717115915.GD20328@lukather>
-In-Reply-To: <20140717115915.GD20328@lukather>
+Sender: justinhartubc@gmail.com
+Date: Thu, 17 Jul 2014 23:07:33 -0700
+Message-ID: <CAFgu5KVLOB46vh85KV47RT0b4YBsAW_KkLBGRbY_TWhRyrgGMw@mail.gmail.com>
+From: Justin Hart <justin.hart@mech.ubc.ca>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] AT91: SAMA5D3: Adapt Ipipe for AIC5
+Subject: [Xenomai] Large clock drift, keyboard issues
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,50 +13,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: Thomas Petazzoni <thomas@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Boris Brezillon <boris@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi everyone,
 
-On 07/17/2014 01:59 PM, Maxime Ripard wrote:
-> On Thu, Jul 17, 2014 at 12:54:10PM +0200, Gilles Chanteperdrix
-> wrote:
->>> Which brings an extra question about this. Is the timer 
->>> calibration supposed to get a minimum latency to 0 (meaning
->>> that with a properly calibrated timer, we would only get
->>> positive latencies), or that the average latency should be
->>> around 0 (which would mean that negative latencies would
->>> actually be frequent, but would break the clock_nanosleep
->>> documented behaviour).
->>> 
->>> I'm actually seeing the former, but trying the latter only
->>> brings us quite close to having the calibration disabled
->>> entirely.
->> 
->> The calibration is left entirely to the user, so, you choose what
->> is best for your application. But indeed, if your application
->> relies on clock_nanosleep documented behaviour (should never
->> wake-up early except in case of signal), you want to set
->> /proc/xenomai/latency value to the minimum value measured by the
->> latency test, minus a safety margin.
-> 
-> Ok, thanks!
-> 
-> I guess you can add my Tested-by tag to your patch, if that makes
-> any sense for Xenomai.
+I'm experiencing a problem with a kernel I recently patched with Xenomai.
+ I'm a bit new to Xenomai, so I apologize if this is a silly question or
+the wrong list.  Basically, the clock on the machine that we have xenomai
+running on runs very fast.  Additionally, after using the system to control
+our Barrett WAM, We have keyboard issues, wherein a single keystroke will
+yield a long line of characters.  For example, typing "hello" would give
+you "hellooooooooooooooooooooooooo."
 
-We do not consistently use the signed-off mechanism, but I have added
-your Tested-by anyway, thanks.
+Here's my output from xeno clocktest
 
-- -- 
-                                                                Gilles.
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-Comment: Using GnuPG with Icedove - http://www.enigmail.net/
+== Tested clock: 0 (CLOCK_REALTIME)
+CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
+--- -------------------- ---------------- ---------- --------------
+  0          674175352.5      -498134.813          0            0.0
+  1          674175353.8      -498133.887          0            0.0
+  2          674175451.3      -498135.134          0            0.0
+  3          674175466.0      -498135.222          0            0.0
 
-iD8DBQFTyEx6GpcgE6m/fboRArMCAJ4396+Bx1OWjJarJtUYFANN2qs7VACfbkNK
-0t/vZA4zO0W8kfv6cVGVA48=
-=OODg
------END PGP SIGNATURE-----
+Is there anywhere that I should start my search, with regards to fixing
+this?  This is especially important to my group, as our controller for the
+WAM interpolates over time, meaning that the arm lurches and jumps with
+respect to the clock running incorrectly.
 
+Thanks!
+
+Justin
