@@ -1,19 +1,12 @@
-References: <AE39D2A4-ECC3-481B-AF3B-8A67FA23D2BF@tuebingen.mpg.de>
- <44BE6908-E639-421F-B556-E7B3871402CF@gmail.com>
- <67B7E374-C4D2-4F83-BA40-B289B15867B9@tuebingen.mpg.de>
- <53E3B5E3.3090006@xenomai.org> <oqtx5om90q.fsf@merlin.sez.to>
- <53E3CD23.5040909@xenomai.org> <53E3D084.2000506@tuebingen.mpg.de>
- <53E3D2FF.5000407@xenomai.org> <53E3D50D.7060701@tuebingen.mpg.de>
- <53E3D712.3070801@xenomai.org> <web-589558@tuebingen.mpg.de>
- <53E47905.5070402@xenomai.org>
-From: Paul Janzen <pcj@xenomai.sez.to>
-Date: Fri, 08 Aug 2014 10:21:59 -0700
-In-Reply-To: <53E47905.5070402@xenomai.org> (Philippe Gerum's message of "Fri,
- 08 Aug 2014 09:15:17 +0200")
-Message-ID: <oqoavunbgo.fsf@merlin.sez.to>
+Message-ID: <53CA82C0.8060907@xenomai.org>
+Date: Sat, 19 Jul 2014 10:37:52 -0400
+From: Jorge Ramirez Ortiz <jro@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Subject: Re: [Xenomai] real-time guarantee issues on xenomai 2.6.2.1
+References: <83E500F4-2D9E-4853-B6FD-FCFBDC0050E8@gatech.edu>
+In-Reply-To: <83E500F4-2D9E-4853-B6FD-FCFBDC0050E8@gatech.edu>
+Content-Type: text/plain; charset="windows-1252"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] NI PCIe-1433
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,17 +15,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Philippe Gerum <rpm@xenomai.org> writes:
+On 07/18/2014 01:06 PM, Yogi A. Patel wrote:
+> Hi -
+>
+> We=92re interested in using the NI PCIe-1433 to capture data from a camer=
+a and pull into our software.
+>
+> Has anyone used Analogy to control one of these cards?
+>
+> Yogi
 
-> Ok, instead of this patch, please disable CONFIG_CONTEXT_TRACKING_FORCE
-> from your Kconfig, the issue should go away. Since 3.14 we switch this
-> option off automatically, as it is incompatible with interrupt
-> pipelining in many cases, and solely useful for debugging a very
-> specific portion of the kernel itself.
+Hi Yogi
 
-This option does not exist in 3.4.x, where I see the problem.
+wouldnt this hardware fit better under a V4L2 driver? I am not familiar wit=
+h this=20
+particular model but I'd assume you'll be capturing video frames at some gi=
+ven fps so=20
+you'll need to queue a number of dma'able buffers to handle those transfers=
+? I wonder=20
+if this device has an MMU to map the buffer pages so transfers happen under=
+ the hood.=20
+I couldnt find any documents about the device's internals anywhere so I am =
+not sure=20
+how could we drive this development.
 
--- Paul
+
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+>
+
+
+--=20
+jro
+
 
