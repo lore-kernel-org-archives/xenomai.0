@@ -1,12 +1,14 @@
-Message-ID: <53FF908C.5070503@xenomai.org>
-Date: Thu, 28 Aug 2014 22:26:52 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Thu, 24 Jul 2014 20:18:26 +0200
+Message-ID: <3303073.PYsVqjQGKk@indiana>
+In-Reply-To: <7090484.11r8mI5aN1@riemann>
+References: <1705234.5kun8kYdZP@riemann> <53A471AB.3030904@xenomai.org>
+ <7090484.11r8mI5aN1@riemann>
 MIME-Version: 1.0
-References: <CAKKWdteuWLz2YAhnsQZo9wH7T6o5F62du7MdZ+fZg6+A+JqBZQ@mail.gmail.com>
-In-Reply-To: <CAKKWdteuWLz2YAhnsQZo9wH7T6o5F62du7MdZ+fZg6+A+JqBZQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] a question about domains
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] POSIX application running under xenomai -- what do
+	wrapped functions do?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,23 +17,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>, xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 08/09/2014 04:45 PM, ali hagigat wrote:
-> I wonder if anybody can answer this and i apprecite in advance.
-> Nothing can change the current domain! as far as i looked in the code.
-> How is that possible?
-> does xnpod_schedule() can set a new current domain for a CPU?
-> It seems that current domian is set to "root" and keeps that forever.
-> Only some functions temporarily change "current domain" to "head" but
-> immediately it returns to "root" or "current domain".
-
-To anyone wondering about this interpretation: it does not make sense.
-For an explanation of the Adeos domain concept, see:
-
-http://xenomai.org/2014/06/life-with-adeos/
-http://www.opersys.com/ftp/pub/Adeos/adeos.pdf
-
--- 
-                                                                Gilles.
-
+SGkgU3RldmUsCgpFbCBEaW1hcnRzLCAyMiBkZSBqdWxpb2wgZGUgMjAxNCwgYSBsZXMgMDI6MTc6
+MTksIFN0ZXZlIE0uIFJvYmJpbnMgdmEgCmVzY3JpdXJlOgoKWy4uLl0KPiAKPiA+IEluIGNhc2Ug
+dGhpcyBhcHBsaWVzLCBpZiB5b3Ugd2FudCB0byBleGNoYW5nZSBhIHN0cmVhbSBvZiBkYXRhIGJl
+dHdlZW4KPiA+IHRoZSBydCBhbmQgbm9uLXJ0IHdvcmxkLCB0aGVuIHlvdSBtYXkgd2FudCB0byBo
+YXZlIGEgbG9vayBhdCB0aGUKPiA+IFJURE0tYmFzZWQgWEREUCBJUEMsCj4gPiBodHRwOi8vd3d3
+Lnhlbm9tYWkub3JnL2RvY3VtZW50YXRpb24veGVub21haS0yLjYvaHRtbC9hcGkvZ3JvdXBfX3J0
+aXBjLmh0bQo+ID4gbCwgd2l0aCBzYW1wbGUgY29kZSBpbiBleGFtcGxlcy9ydGRtL3Byb2ZpbGVz
+L2lwYy4KPiA+IFRoaXMgZmVhdHVyZSBhbGxvd3MgYSBub24tcnQgdGhyZWFkIHJlYWRpbmcvd3Jp
+dGluZyB0byBhIHBzZXVkby1kZXZpY2UKPiA+IGZyb20gL2Rldi9ydHAqIHRvIGV4Y2hhbmdlIG1l
+c3NhZ2VzIHdpdGggYSBydCB0aHJlYWQgcmVhZGluZy93cml0aW5nIHRvCj4gPiBhIFJURE0gc29j
+a2V0LiBUaGUgcnQgc2lkZSBuZXZlciBsZWF2ZXMgcHJpbWFyeSBtb2RlIHdoZW4gZG9pbmcgc28s
+IGFuZAo+ID4gdGhlIG5vbiBydCBwcm9ncmFtIGRvZXMgbm90IGV2ZW4gaGF2ZSB0byBsaW5rIGFn
+YWluc3QgWGVub21haSBsaWJyYXJpZXMuCj4gCj4gWWVhaCwgdGhhdCBzb3VuZHMgbGlrZSB3aGF0
+IEkgd2FudC4gIFdlIGFyZSBzdHVjayB3aXRoIFhlbm9tYWkgMi41LjYgZm9yCj4gbm93LCBzbyBJ
+IHdlbnQgYW5kIGxvb2tlZCBpbiB0aGUgZG9jcyBmb3IgdGhhdCB2ZXJzaW9uLiAgSXQgbG9va3Mg
+bGlrZSB0aGUKPiBNZXNzYWdlIFBpcGUgc2VydmljZXMgWzFdIHdvdWxkIGJlIGEgZmFpcmx5IGRp
+cmVjdCByZXBsYWNlbWVudCBmb3Igb3VyCj4gZXhpc3RpbmcgRklGTyBjb2RlLiAgSG93IGRvZXMg
+dGhlIE1lc3NhZ2UgUGlwZSBjb21wYXJlIHRvIHlvdXIgc3VnZ2VzdGlvbgo+IG9mIFJlYWwgVGlt
+ZSBJUEM/IEkgZG8gc2VlIGFuIGVudHJ5IGZvciB0aGUgUmVhbCBUaW1lIElQQyBkZXZpY2VzIGlu
+IHRoZQo+IDIuNSBkb2NzIFsyXSwgYWxiZWl0IGEgYml0IHNwYXJzZSBvbiBkZXRhaWxzLiAgQ2Fu
+IEkgc2ltcGx5IHVzZSB0aGUgMi42Cj4gZG9jcyBhcyBhIHJlZmVyZW5jZT8KPiAKCmlmIHlvdSB3
+YW50LCBsb29rIHRoaXM6CgpodHRwczovL2dpdGh1Yi5jb20vaW9jcm9ibGFiL2NwcDRlYwoKaXQn
+cyBvdXIgcHJvamVjdCB0aGF0IGhhcyBhIHJ0LXRocmVhZCB0aGF0IGludGVyY2hhbmdlIGluZm9y
+bWF0aW9uIHdpdGggYSBub24tCnJ0IHBhcnQgd2l0aCB4ZGRwLgoKTGVvCgoKLS0gCi0tCkxpbnV4
+IFVzZXIgMTUyNjkyICAgICBQR1A6IDA1RjRBN0E5NDlBMkQ5QUEKQ2F0YWxvbmlhCi0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KQTogQmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhl
+IG9yZGVyIGluIHdoaWNoIHBlb3BsZSBub3JtYWxseSByZWFkIHRleHQuClE6IFdoeSBpcyB0b3At
+cG9zdGluZyBzdWNoIGEgYmFkIHRoaW5nPwpBOiBUb3AtcG9zdGluZy4KUTogV2hhdCBpcyB0aGUg
+bW9zdCBhbm5veWluZyB0aGluZyBpbiBlLW1haWw/Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAt
+LS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6
+IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiA4MTkg
+Ynl0ZXMKRGVzYzogVGhpcyBpcyBhIGRpZ2l0YWxseSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6
+IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIw
+MTQwNzI0L2JmMWRiOGFiL2F0dGFjaG1lbnQuc2lnPgo=
