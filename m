@@ -1,17 +1,13 @@
-From: "Poole Jr, Donald R." <donald.poole@swri.org>
-Date: Thu, 28 Aug 2014 15:12:27 +0000
-Message-ID: <D024AFFD.53F9%donald.poole@swri.org>
-References: <CACreCV+9seA7yp8gmjvOb6CQ7-Fbt-HyQ6YAoB_dqtmqmyvy7Q@mail.gmail.com>
- <53FDFD27.2010207@xenomai.org>
- <CACreCV+cQTO-5iFCCvC15VxNzXuvKkLN+_gUTex-r3Y1cByUkw@mail.gmail.com>
- <53FF33CE.10303@xenomai.org>
-In-Reply-To: <53FF33CE.10303@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-1"
-Content-ID: <19E4BDF3BB92C940A6FF8023EDC8E6DE@sw.pvt>
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <53D0CEE7.6010208@xenomai.org>
+Date: Thu, 24 Jul 2014 11:16:23 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] ODROID-U3 porting problems
+References: <19C66D276CD97349B3ED15358BC387930904DECABF@Mailprodapp3.brooks.com>
+In-Reply-To: <19C66D276CD97349B3ED15358BC387930904DECABF@Mailprodapp3.brooks.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Latency Test Results (xeno-test) on Xilinx Zynq XC702
+ Board with Xenomai 2.6.3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,46 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: GP Orcullo <kinsamanka@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Botev, Roumen" <roumen.botev@brooks.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 8/28/14, 8:51 AM, "Gilles Chanteperdrix"
-<gilles.chanteperdrix@xenomai.org> wrote:
+On 07/21/2014 08:50 PM, Botev, Roumen wrote:
+> Hello, All,
+> 
+> I am running Xenomai's out of the box battery of tests (xeno-test) on a Xilinx Zynq XC702 evaluation board.
+> 
+> I am new to Xenomai and I am wondering if these results look good to people having more experience in running Xenomai on a Cortex-A9 hardware. In particular, I had higher expectations of the average and worst case latency numbers - I was expecting < 10 usec worst latency for the highest priority user mode task. Here is the summary of the latency test (the full output of the test is attached to this message):
+> 
+> RTT|  00:15:04  (periodic user-mode task, 1000 us period, priority 99)
+> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+> . . . . . . . . . .
+> ---|-----------|-----------|-----------|--------|------|-------------------------
+> RTS|      3.675|     14.049|     35.913|       0|     0|    00:15:04/00:15:04
+> 
 
->On 08/28/2014 03:45 PM, GP Orcullo wrote:
->> On Wed, Aug 27, 2014 at 11:45 PM, Gilles Chanteperdrix
->>> So, this is a cortex a9. On Cortex a9, Xenomai tries to use the global
->>> timer for tsc emulation. Are you sure this processor has a global
->>>timer?
->>> Again, running the "tsc" program will help you see if the tsc emulation
->>> is working correctly.
->>=20
->> AFAIK, the exynos soc doesn't use twd - they have a multi-core timer
->> instead. There is one global timer and a local timer for each core.
->>=20
->> BTW, is it necessary that there should be an ipipe timer for each core
->> or a single
->> "global" one will do?
->
->The global timer is not the same thing as the twd, and I was talking
->about using the global timer as a clock source (for tsc emulation), not
->as a timer, the advantage being that you would have a much better
->resolution. Xenomai indeed requires local timer support (for which it
->uses twd on cortex a9), that is one timer per core.
->
->--=20
->                                                                Gilles.
->
->_______________________________________________
->Xenomai mailing list
->Xenomai@xenomai.org
->http://www.xenomai.org/mailman/listinfo/xenomai
+Figures look ok particularly in dual core mode, regarding the scheduling
+latency of a userland thread over a 1Khz period. A large part of such
+latency is induced by cache effects, including those entailed by
+switching memory contexts.
 
-Gemi - Is your work on patching the Odroid-U3 kernel available on github
-or elsewhere?  I would really like to have my U3 running Xenomai in this
-manner as well.  I=B9ve been working to achieve the same thing, but I
-appears that you have made far better progress.
+- scheduling latency for kernel threads (latency -t1) should show lower
+figures, although these threads should be reserved to running
+driver/RTDM tasks (i.e. not application level stuff)
 
--Donald
+- the lower the sampling frequency, the higher the latency, as the
+regular linux system has more time to tread on a larger address space,
+which in turn makes the real-time code a more frequent victim of cache
+eviction. Running with -p 100 should get you different results (although
+this may not apply to your use case anyway, just for kicks).
 
+-- 
+Philippe.
 
