@@ -1,13 +1,12 @@
-Message-ID: <53FF7649.30907@xenomai.org>
-Date: Thu, 28 Aug 2014 20:34:49 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Thu, 24 Jul 2014 09:56:03 -0400
+Message-ID: <20140724135603.GD17765@csclub.uwaterloo.ca>
+References: <53D0AC77.8070606@ma-info.de>
 MIME-Version: 1.0
-References: <CACreCV+9seA7yp8gmjvOb6CQ7-Fbt-HyQ6YAoB_dqtmqmyvy7Q@mail.gmail.com>	<53FDFD27.2010207@xenomai.org>	<CACreCV+cQTO-5iFCCvC15VxNzXuvKkLN+_gUTex-r3Y1cByUkw@mail.gmail.com>	<53FF33CE.10303@xenomai.org>	<D024AFFD.53F9%donald.poole@swri.org>	<CACreCV+8qTgd6y0UuRmMQEhX_mM4PfxP2yjANerZ07SmwkmkEg@mail.gmail.com>	<53FF5B81.7030408@xenomai.org>
- <CACreCVJ+2nEakHkkZgL=c+u7rW8S2tY-3qTWyw=AtkCH39n=rw@mail.gmail.com>
-In-Reply-To: <CACreCVJ+2nEakHkkZgL=c+u7rW8S2tY-3qTWyw=AtkCH39n=rw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ODROID-U3 porting problems
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <53D0AC77.8070606@ma-info.de>
+Subject: Re: [Xenomai] How to use Xenomai in Eclipse
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,36 +15,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: GP Orcullo <kinsamanka@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Frede Florian <florian.frede@ma-info.de>
+Cc: xenomai@xenomai.org
 
-On 08/28/2014 07:05 PM, GP Orcullo wrote:
-> On Fri, Aug 29, 2014 at 12:40 AM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
->> On 08/28/2014 06:34 PM, GP Orcullo wrote:
->>> So far it passes all the regression tests except for the switchtest.
->>
->> What error do you get with switchtest ? If pthread_create fails with
->> resource unavailable error, see:
->>
->> http://xenomai.org/troubleshooting-a-dual-kernel-configuration/#pthread_create_Resource_temporarily_unavailable
->>
->> If this is another error, please post the error message and kernel log here.
->>
->> --
->>                                                                 Gilles.
+On Thu, Jul 24, 2014 at 08:49:27AM +0200, Frede Florian wrote:
+> Hello,
 > 
-> Running "switchtest rtk0" fails with "Xenomai: suspending kernel
-> thread f00bb710 ('rtk1/0') at 0xc0020c8c after exception #0x0"
+> We plan to use Xenomai in our new project. So now I tried to prepare
+> a Eclipse-Project with Xenomai. First I compiled the Debian packages
+> from Xenomai 2.6.3
+> <http://www.xenomai.org/index.php/Building_Debian_packages> for my
+> System.  After that I install the libxenomai1 and libxenomai-dev
 > 
-> The address is traced to the I-pipe timer interrupt call-back. I think
-> I maybe missing some spinlocks somewhere.
+> After that I have create a new empty project. There I can include
+> the Xenomailib (#include <xenomai/native/task.h>).
+> 
+> First issue: While compiling the code with Eclipse I get an*fatal
+> error: nucleus/sched.h: file or directory not found*...
+> 
+> I try to find a answer in the endless world wide web :-) but I
+> didn't found a solution.
+> 
+> Second issue: When I change to the compiler for my target platform
+> (arm-cortexa8-linux-gnueabihf-gcc) I can not include the Xenomai
+> library?
+> 
+> I use following Software on my System: Eclipse Version: Luna Release
+> (4.4.0), Debian GNU/Linux 7.6 (wheezy), Xenomai 2.6.3,
+> OSELAS.Toolchain-2013.12.2 <http://www.pengutronix.de/oselas/toolchain/download/OSELAS.Toolchain-2013.12.2.tar.bz2>
 
-If you are using per-cpu hardware timers, no spinlock is needed, since
-each cpu accesses its own timer. If you are using the same (hardware)
-timer on several cpus, then it is not going to work anyway, Xenomai
-wants one hardware timer per cpu.
+You usually have to explicitly specify /usr/include/xenomai as an include
+directory when working with xenomai, given the xenomai files don't put
+the xenomai part of the path in the #include statements.
+
+Of course if cross compiling you would have to have the header files
+for your target in the correct place and add that to the include path.
+
+Using pkg-config would pretty much just take care of it for you of course.
+
+For example:
+root@omap5:~# pkg-config --cflags libxenomai_native
+-D_GNU_SOURCE -D_REENTRANT -D__XENO__ -I/usr/include/xenomai  
+
+So you would make sure your makefile had:
+
+CFLAGS += $(shell pkg-config --cflags libxenomai_native)
+LIBS += $(shell pkg-config --libs libxenomai_native)
+
+I can't remember the syntax for using pkg-config for cross compiling at
+the moment, but I remember there is one.  I almost never cross compile
+so I don't remember it.
 
 -- 
-                                                                Gilles.
+Len Sorensen
 
