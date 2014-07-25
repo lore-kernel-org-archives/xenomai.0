@@ -1,11 +1,14 @@
-From: "Yogi A. Patel" <yapatel@gatech.edu>
-Message-Id: <83E500F4-2D9E-4853-B6FD-FCFBDC0050E8@gatech.edu>
-Date: Fri, 18 Jul 2014 13:06:41 -0400
-Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
-Content-Type: text/plain;
-	charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] NI PCIe-1433
+Message-ID: <53D274F6.30005@gmail.com>
+Date: Fri, 25 Jul 2014 17:17:10 +0200
+From: Stefan Smarzly <smarzlys@gmail.com>
+MIME-Version: 1.0
+References: <1705234.5kun8kYdZP@riemann> <7090484.11r8mI5aN1@riemann>
+ <53D01D0F.8030202@xenomai.org> <1927199.3ixLvlnsCr@riemann>
+In-Reply-To: <1927199.3ixLvlnsCr@riemann>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] POSIX application running under xenomai -- what do
+ wrapped functions do?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,14 +17,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai@xenomai.org, "Steve M. Robbins" <steve@sumost.ca>
 
-Hi -
 
-We=92re interested in using the NI PCIe-1433 to capture data from a =
-camera and pull into our software.
+Am 25.07.2014 16:54, schrieb Steve M. Robbins:
+> On July 23, 2014 10:37:35 PM Philippe Gerum wrote:
+>
+>> RTIPC/xddp and the Message pipe services are based on the very same code
+>> in the Xenomai core, it's only a matter of differing interfaces. Over
+>> 2.5.6, I would go for the pipes, since the xddp driver in that release
+>> might lack a couple of fixes which were merged into 2.6.
+> OK, we are now looking a bit more closely at the 2.5 Message Pipe docs and my colleague noticed a small quirk.
+>
+> For rt_pipe_read(), the doc [1] says:
+>
+> 		Environments:
+>
+> 		This service can be called from:
+>
+> 		 *    Kernel module initialization/cleanup code
+> 		 *    Interrupt service routine only if timeout is equal to TM_NONBLOCK.
+>
+> 		 *    Kernel-based task
+> 		 *    User-space task (switches to primary mode)
+>
+> So a literal reading of the last two bullet points suggest that a call from kernel-based task never switches to primary mode while a call from the user-space task always does.  Naively that seems surprising.  Is it accurate?
 
-Has anyone used Analogy to control one of these cards?
+As far as I know there is not a mode switch for RT kernel code at all. 
+When running a kernel module, you do not have to invoke any syscalls as 
+the user space occasionally has to do. You are already in kernel space. 
+Thus, it should be primary mode by default.
+This is what I am thinking. Maybe one of the officials can correct this 
+information.
 
-Yogi
+> Secondly, for a user-space task: will it mode switch if there is data available?  If we use TM_NONBLOCK in a user space task, can we avoid the mode switch?
+
+The task will enter primary mode as soon as you are calling this 
+function independent of the flag set to TM_NONBLOCK or not. Otherwise it 
+could not test whether data is available at all. And by the way: You 
+want to have a task to stay in primary mode as best as you can. 
+Otherwise, you do not have any real-time guarantee anymore. So, if the 
+task is already in primary mode, there won't be any mode switch.
+
+> Finally, the function rt_pipe_receive() is pretty similar to rt_pipe_read() so much so that I would guess one is implemented using the other.  Thus I'm a bit surprised that its "Environments" documentation [2] differs from the previous in that it doesn't list "User-space task".  Is that accurate?
+
+I do not know, but I think, it should work for both. At least it does 
+for RT queues.
+
+>
+> [1] http://www.xenomai.org/documentation/xenomai-2.5/html/api/group__pipe.html#g62cb64807c2c843f8e8eebb2dc3a7d4e
+> [2] http://www.xenomai.org/documentation/xenomai-2.5/html/api/group__pipe.html#g731e5ef18007dcd58a9346bea66abbc6
+>
+> Thanks,
+> -Steve
+>
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+
+I hope I could help.
+Stefan.
 
