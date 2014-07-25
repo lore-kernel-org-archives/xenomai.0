@@ -1,12 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <201408291738.57701.paul_c@tuxcnc.org>
-References: <CAEGbdifyuoCnxOnSfo7gXY0Ra1yUcJQY-7HXto5EvsjXEGXFNw@mail.gmail.com>
- <201408291738.57701.paul_c@tuxcnc.org>
-Date: Fri, 29 Aug 2014 16:18:38 -0400
-Message-ID: <CAEGbdifk+KmF+X8_qER1yVenG0Mi6DoeR2KvU=1R50=MfF6Uug@mail.gmail.com>
-From: Matthew Lindner <mattlindn@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Linux ATA driver issues and lockups
+Message-Id: <1D528D51-ACBB-4794-87A2-250E8E61D81B@gmail.com>
+From: Andreas Glatz <andi.glatz@gmail.com>
+In-Reply-To: <mailman.3.1406196001.31160.xenomai@xenomai.org>
+Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
+Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0 (Apple Message framework v936)
+Date: Fri, 25 Jul 2014 10:34:44 +0200
+References: <mailman.3.1406196001.31160.xenomai@xenomai.org>
+Subject: Re: [Xenomai] Latency Test Results (xeno-test) on Xilinx Zynq XC702
+	Board with Xenomai 2.6.3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,45 +16,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paul <paul_c@tuxcnc.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Fri, Aug 29, 2014 at 12:38 PM, Paul <paul_c@tuxcnc.org> wrote:
-> On Thursday 28 August 2014, Matthew Lindner wrote:
->> We are using an Advantech-PCM9389 board running Linux 3.10.32 with
->> Xenomai 2.6.3. Regularly there is an error that occurs. Sometimes
->> operation continues as normal, sometimes the operating system freezes
->> (with no panic).
->  <snip>
->> Has anyone experienced things similar to this?
+
+>
+> Message: 5
+> Date: Thu, 24 Jul 2014 11:16:23 +0200
+> From: Philippe Gerum <rpm@xenomai.org>
+> To: "Botev, Roumen" <roumen.botev@brooks.com>,  "xenomai@xenomai.org"
+> 	<xenomai@xenomai.org>
+> Subject: Re: [Xenomai] Latency Test Results (xeno-test) on Xilinx Zynq
+> 	XC702 Board with Xenomai 2.6.3
+> Message-ID: <53D0CEE7.6010208@xenomai.org>
+> Content-Type: text/plain; charset=ISO-8859-1
+>
+> On 07/21/2014 08:50 PM, Botev, Roumen wrote:
+>> Hello, All,
 >>
->> Jul 29 04:34:09 delta kernel: ata1.00: exception Emask 0x0 SAct 0x0
->> SErr 0x0 action 0x6 frozen
->> Jul 29 04:34:09 delta kernel: ata1.00: BMDMA stat 0x24
->> Jul 29 04:34:09 delta kernel: ata1.00: failed command: WRITE DMA
->> Jul 29 04:34:09 delta kernel: ata1.00: cmd
->> ca/00:10:68:11:40/00:00:00:00:00/e0 tag 0 dma 8192 out
->> Jul 29 04:34:09 delta kernel:         res
->> 50/00:00:68:11:40/00:00:00:00:00/e0 Emask 0x2 (HSM violation)
->> Jul 29 04:34:09 delta kernel: ata1.00: status: { DRDY }
+>> I am running Xenomai's out of the box battery of tests (xeno-test)  
+>> on a Xilinx Zynq XC702 evaluation board.
+>>
+>> I am new to Xenomai and I am wondering if these results look good  
+>> to people having more experience in running Xenomai on a Cortex-A9  
+>> hardware. In particular, I had higher expectations of the average  
+>> and worst case latency numbers - I was expecting < 10 usec worst  
+>> latency for the highest priority user mode task. Here is the  
+>> summary of the latency test (the full output of the test is  
+>> attached to this message):
+>>
+>> RTT|  00:15:04  (periodic user-mode task, 1000 us period, priority  
+>> 99)
+>> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat  
+>> best|--lat worst
+>> . . . . . . . . . .
+>> ---| 
+>> -----------| 
+>> -----------|-----------|--------|------|-------------------------
+>> RTS|      3.675|     14.049|     35.913|       0|     0|     
+>> 00:15:04/00:15:04
+>>
 >
-> Experienced similar problems with a couple of drives, one an SD card (if
-> that makes any difference). Replaced the drives with known good ones
-> and the problem disappeared.
+> Figures look ok particularly in dual core mode, regarding the  
+> scheduling
+> latency of a userland thread over a 1Khz period. A large part of such
+> latency is induced by cache effects, including those entailed by
+> switching memory contexts.
 >
-> What you may have is a drive that is in the early stages of failure. I'd
-> recommend backing up any important data and replacing it. If you must
-> use the old drive, save it for non-critical applications.
->
->
-> Regards, Paul.
 
 
-That's not it unfortunately. The board only uses CF cards and even
-brand new cards (only a few weeks of use) see the problem. It's also
-seen across cards. We're rather baffled by the issue. So far we've
-seen it in our own compiled kernel (with minimal changes from a stock
-Ubuntu kernel) but have not seen it on the stock Ubuntu kernel itself.
+I tried the test on an omap4460 (A9; 2x1GHz) with Linux 3.14.1 and  
+Xenomai 2.6.3 and got similar results:
 
-Matthew Lindner
+RTT|  00:15:04  (periodic user-mode task, 1000 us period, priority 99)
+RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|-- 
+lat worst
+RTD|     10.428|     14.131|     19.923|       0|     0|       
+6.943|     27.980
+Load script terminated, terminating checked scripts
+---| 
+-----------| 
+-----------|-----------|--------|------|-------------------------
+RTS|      6.943|     14.483|     27.980|       0|     0|     
+00:15:04/00:15:04
+
+So does it makes sense to try and further optimise the cache access  
+for bringing down the latency or is it as good as it can get?
+
+Andreas
+
 
