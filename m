@@ -1,12 +1,11 @@
-Message-ID: <53D78CDB.80304@xenomai.org>
-Date: Tue, 29 Jul 2014 14:00:27 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Reitinger, Peter" <preitinger@carl-valentin.de>
+Date: Tue, 29 Jul 2014 13:59:32 +0000
+Message-ID: <c0432fe8fb61494588e50b7c7cbf5b17@CVEX13.valentin-carl.de>
+Content-Language: de-DE
 MIME-Version: 1.0
-References: <07fa8167a92741288291537ce8719ca3@CVEX13.valentin-carl.de>
-In-Reply-To: <07fa8167a92741288291537ce8719ca3@CVEX13.valentin-carl.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Little fault in installation instructions for arm
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Cross compiling include path
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,19 +14,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Reitinger, Peter" <preitinger@carl-valentin.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/29/2014 11:58 AM, Reitinger, Peter wrote:
-> Dear xenomai people,
-> 
-> in README.INSTALL 3.4 Building for ARM, it is:
-> $xenomai_root/configure CFLAGS="-march=armv4t" LDFLAGS="-march=armv4t" \
->   --build=i686-pc-linux-gnu --host=arm-none-linux-gnueabi-
-> 
-> But probably it should be ... --host=arm-none-linux-gnueabi instead? (without trailing "-")
+Hi dear xenomai people,
 
-Indeed, will fix, thanks.
+sorry that I have so many question, but there is already another one... ;-)
 
--- 
-                                                                Gilles.
+I have seen that my output for cflags is as follows:
 
+hico@debian:dimm-am335x:~/workspace/Xenomai/xenomai_from_git/staging_dir/us=
+r/xenomai/bin$ xeno-config --skin=3Dnative --cflags
+-I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -D__XENO__
+
+But it should be -I${staging_dir}/usr/xenomai/include as I guess for cross =
+compilation.
+Is it -I/usr... because I have made a mis-configuration in any step before?=
+ Of course, I can simply fix it by adapting my Makefile and add the right i=
+nclude directory, but I would like to prevent later problems as early as po=
+ssible...
+
+Kind regards
