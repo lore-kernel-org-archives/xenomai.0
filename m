@@ -1,15 +1,11 @@
+From: "Reitinger, Peter" <preitinger@carl-valentin.de>
+Date: Tue, 29 Jul 2014 09:58:15 +0000
+Message-ID: <07fa8167a92741288291537ce8719ca3@CVEX13.valentin-carl.de>
+Content-Language: de-DE
 MIME-Version: 1.0
-In-Reply-To: <53C83BFE.9080404@xenomai.org>
-References: <CAPD=XXg6e79f5-ew6pO9Wp4NN3EamKcmv7pxAPT234q2XS7Ljw@mail.gmail.com>
- <53C82ABD.6060901@xenomai.org>
- <CAPD=XXh-pek-pKJS3xb0EWBXvFW3gwK5ze0aXeYEkLcZCqJwiA@mail.gmail.com>
- <53C83BFE.9080404@xenomai.org>
-Date: Fri, 18 Jul 2014 19:22:40 +0200
-Message-ID: <CAPD=XXiqhd7H53bQ_aX8VZKNu=o7SYgNughS6+jWcvL=fuEyKw@mail.gmail.com>
-From: Matteo Sommariva <msommariva@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Strange switches to secondary mode with POSIX skin
+Subject: [Xenomai] Little fault in installation instructions for arm
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,23 +14,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-Cc: xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Ok, thank you for your help!
+Dear xenomai people,
 
-Matteo
+in README.INSTALL 3.4 Building for ARM, it is:
+$xenomai_root/configure CFLAGS=3D"-march=3Darmv4t" LDFLAGS=3D"-march=3Darmv=
+4t" \
+  --build=3Di686-pc-linux-gnu --host=3Darm-none-linux-gnueabi-
 
+But probably it should be ... --host=3Darm-none-linux-gnueabi instead? (wit=
+hout trailing "-")
 
-Il gioved=C3=AC 17 luglio 2014, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> ha scritto:
-
-> On 07/17/2014 10:45 PM, Matteo Sommariva wrote:
-> > 1 for the main thread and 1 for the created thread. Is still something
-> > wrong?
->
-> No, pthread_create uses plain Linux services, so switches to secondary
-> mode, and the created thread also changes mode when starting.
->
-> --
->                                                                 Gilles.
->
+Kind regards,
+Peter Reitinger
