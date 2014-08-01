@@ -1,17 +1,12 @@
+Message-ID: <53DBA8D7.9040505@xenomai.org>
+Date: Fri, 01 Aug 2014 10:48:55 -0400
+From: Jorge Ramirez Ortiz <jro@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <53DAA390.7040406@xenomai.org>
-References: <mailman.653.1404749254.5713.xenomai@xenomai.org>
- <53C3E6CE.2040306@xenomai.org> <53C42ADE.7040204@gmail.com>
- <53C44696.2070906@xenomai.org> <53C44EE9.3040000@xenomai.org>
- <53C6CC9B.4040009@xenomai.org> <53C81CFD.30908@gmail.com>
- <53C82A08.50100@xenomai.org>
- <CACKc53LL5C2AUTjd6cah1JyoDD5BMGeg5RQjsDjX9_FNvqdAJQ@mail.gmail.com>
- <53DAA390.7040406@xenomai.org>
-Date: Fri, 1 Aug 2014 13:33:04 +0200
-Message-ID: <CACKc53LQ5pCL14tVodDbMjyexPoYcaLi-PFzFOGT=VNGhR6FpQ@mail.gmail.com>
-From: Wojciech Domski <wojciech.domski@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <mailman.653.1404749254.5713.xenomai@xenomai.org>	<53C3E6CE.2040306@xenomai.org>	<53C42ADE.7040204@gmail.com>	<53C44696.2070906@xenomai.org>	<53C44EE9.3040000@xenomai.org>	<53C6CC9B.4040009@xenomai.org>	<53C81CFD.30908@gmail.com>	<53C82A08.50100@xenomai.org>	<CACKc53LL5C2AUTjd6cah1JyoDD5BMGeg5RQjsDjX9_FNvqdAJQ@mail.gmail.com>	<53DAA390.7040406@xenomai.org>
+ <CACKc53LQ5pCL14tVodDbMjyexPoYcaLi-PFzFOGT=VNGhR6FpQ@mail.gmail.com>
+In-Reply-To: <CACKc53LQ5pCL14tVodDbMjyexPoYcaLi-PFzFOGT=VNGhR6FpQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] sensoray 626 patch [Re: Xenomai Digest, Vol 27,
 	Issue 12]
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -22,68 +17,141 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jorge Ramirez Ortiz <jro@xenomai.org>
+To: Wojciech Domski <wojciech.domski@gmail.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-RGVhciBKb3JnZSwKCkluIGF0dGFjaG1lbnQgeW91IGNhbiBmaW5kIHRoZSBkdW1wIGZpbGUuIEkg
-Y3JlYXRlZCBpdCB3aXRoIHN0cmFjZS4gSSBob3BlCnRoaXMgaXMgd2hhdCB5b3UgbWVhbnQuCgpB
-bHNvIEkgZm9yZ290IHRvIHRlbGwgb25lIG1vcmUgdGhpbmcuIFdoZW4gSSB0cnkgdG8gcmVsaW5r
-IHMxIHRvIGEwIEkgZ2V0CnRoaXMgbWVzc2FnZSBmcm9tIHRoZSBkcml2ZXI6ClM2MjYgMDAwMDow
-MjowNS4wOiBCQVIgMDogY2FuJ3QgcmVzZXJ2ZSBbbWVtIDB4ZjdiMDAwMDAtMHhmN2IwMDFmZl0K
-VGhpcyBpcyB0aGUgcmVzdWx0IG9mIHBjaV9yZXF1ZXN0X3JlZ2lvbnMoKSBmdW5jdGlvbiBpbiBh
-dHRhY2guCgpIZXJlIGlzIGFsc28gdGhlIHNhbXBsZSBhcHBsaWNhdGlvbiB3aGljaCBJIGhhdmUg
-d3JpdHRlbiB0byB0ZXN0IGl0LgoKdHM2MjYgKiBzNjI2OwogIHRzNjI2ICogczYyNl8yOwoKICBw
-cmludGYoIk9wZW5pbmcgYTAgd2l0aCBzMFxuIik7CiAgczYyNiA9IHM2MjZfaW5pdCgiUzYyNiIs
-ICJhbmFsb2d5MCIpOwogICAgczYyNl9zZXRfb3B0aW9ucyhzNjI2KTsKICAgICBzNjI2X3NldF9i
-dXMoczYyNiwgMik7CiAgICAgczYyNl9zZXRfc2xvdChzNjI2LCA0KTsKICAgICBzNjI2X29wZW4o
-czYyNik7CgogICAgIHByaW50ZigiT3BlbmluZyBhMSB3aXRoIHMxXG4iKTsKICBzNjI2XzIgPSBz
-NjI2X2luaXQoIlM2MjYiLCAiYW5hbG9neTEiKTsKICAgIHM2MjZfc2V0X29wdGlvbnMoczYyNl8y
-KTsKICAgICBzNjI2X3NldF9idXMoczYyNl8yLCAyKTsKICAgICBzNjI2X3NldF9zbG90KHM2MjZf
-MiwgNSk7CiAgICAgczYyNl9vcGVuKHM2MjZfMik7CgogICAgIHByaW50ZigiQ2xvc2luZyBhMCB3
-aXRoIHMwXG4iKTsKICAgIHM2MjZfY2xvc2UoIHM2MjYpOwogICAgczYyNl9kZWluaXQoIHM2MjYp
-OwogICAgczYyNiA9IE5VTEw7CgogICAgcHJpbnRmKCJDbG9zaW5nIGExIHdpdGggczFcbiIpOwog
-ICAgczYyNl9jbG9zZSggczYyNl8yKTsKICAgIHM2MjZfZGVpbml0KCBzNjI2XzIpOwogICAgczYy
-Nl8yID0gTlVMTDsKCiAgcHJpbnRmKCJPcGVuaW5nIGEwIHdpdGggczFcbiIpOwogIHM2MjYgPSBz
-NjI2X2luaXQoIlM2MjYiLCAiYW5hbG9neTAiKTsKICAgIHM2MjZfc2V0X29wdGlvbnMoczYyNik7
-CiAgICAgczYyNl9zZXRfYnVzKHM2MjYsIDIpOwogICAgIHM2MjZfc2V0X3Nsb3QoczYyNiwgNSk7
-CiAgICAgczYyNl9vcGVuKHM2MjYpOwoKICAgIHByaW50ZigiQ2xvc2luZyBhMCB3aXRoIHMxXG4i
-KTsKICAgIHM2MjZfY2xvc2UoIHM2MjYpOwogICAgczYyNl9kZWluaXQoIHM2MjYpOwogICAgczYy
-NiA9IE5VTEw7CgpCZXN0IHJlZ2FyZHMsCldvamNpZWNoIERvbXNraQoKCjIwMTQtMDctMzEgMjI6
-MTQgR01UKzAyOjAwIEpvcmdlIFJhbWlyZXogT3J0aXogPGpyb0B4ZW5vbWFpLm9yZz46Cgo+IC0t
-LS0tQkVHSU4gUEdQIFNJR05FRCBNRVNTQUdFLS0tLS0KPiBIYXNoOiBTSEExCj4KPiBPbiAwNy8z
-MS8yMDE0IDA1OjIyIEFNLCBXb2pjaWVjaCBEb21za2kgd3JvdGU6Cj4gIEkgcHJlcGFyZWQgdGhl
-IGRyaXZlciB0byB3b3JrIHdlbGwgd2l0aCBtdWx0aXBsZSBTZW5zb3JheSA2MjYgYW5kIEkgdGVz
-dGVkCj4gIGl0IHdpdGggdHdvIG9mIHRob3NlLiBJIGhhdmUgYSBwcm9ibGVtLCBob3dldmVyLgo+
-ICBJIHN1c3BlY3QgdGhhdCB0aGUgYW5hbG9neSBpbnRlcmZhY2UgZG9lc24ndCBwbGF5IGFsb25n
-IHdpdGggdGhlIGRyaXZlcgo+IGJ1dAo+ICBJJ20gbm90IGNlcnRhaW4gYWJvdXQgdGhhdC4gSGVy
-ZSB3aGF0J3MgaGFwcGVuaW5nLgo+ICBJIGhhdmUgdHdvIHM2MjYgY2FyZHM6IHMwIGFuZCBzMS4g
-Rm9yIHRoZSBzYWtlIG9mIGNvbnZlcnNhdGlvbiBsZXQncwo+IGFzc3VtZQo+ICB0aGF0IGFuYWxv
-Z3kgZGV2aWNlIGFuYWxvZ3kwIGlzIGEwIGFuZCBzbyBvbi4KPiAgV2hlbiBJIGxpbmsgczAgdG8g
-YTAsIHVubGluaywgbGluayBzMSB0byBhMSwgdW5saW5rIGV2ZXJ5dGhpbmcgd29ya3MgZmluZSwK
-PiAgaG93ZXZlci4gT25jZSBtb3JlIHdoZW4gSSBsaW5rIHMwIGJ1dCB0aGlzIHRpbWUgdG8gYTEg
-c29tZXRoaW5nIGdvZXMKPiB3cm9uZy4KPiAgSSBnZXQgLTE2IGVycm9yIGZyb20gYTRsX3N5c19h
-dHRhY2goKSB3aGljaCBpcwo+Cj4gIE5vIHN1Y2ggZGV2aWNlCj4KPiAgV2hhdCBpcyB0aGUgcmVh
-c29uIG9mIHRoaXMgaGFwcGVuaW5nPyBJIGRvIGNsZWFuIGV2ZXJ5dGhpbmcgZXZlcnkgdGltZQo+
-IHdoZW4KPiAgSSByZWxlYXNlIHM2MjYuCj4gIEhlcmUgaXMgd2hhdCBJIGRvIHdoZW4gSSB3YW50
-IHRvIG9wZW4gbXkgZGV2aWNlOgo+Cj4gIGE0bF9zeXNfb3BlbigpOwo+ICBhNGxfc3lzX2F0dGFj
-aCgpOwo+ICBhNGxfb3BlbigpOwo+ICBydF9kZXZfb3BlbigpOwo+ICBhNGxfZmlsbF9kZXNjKCk7
-Cj4KPiAgV2hlbiBJIGNsb3NlIHRoZSBzNjI2IEkgZG86Cj4KPiAgcnRfZGV2X2Nsb3NlKCk7Cj4g
-IGE0bF9jbG9zZSgpOwo+ICBhNGxfc3lzX2RldGFjaCgpOwo+ICBhNGxfc3lzX2Nsb3NlKCk7Cj4K
-PiAgQmVzdCByZWdhcmRzLAo+ICBXb2pjaWVjaCBEb21za2kKPgo+IC0gLS0tLS0tLS0tLS0tLS0t
-LS0tCj4KPiBwbGVhc2UgY291bGQgeW91IHNlbmQgdGhlIGRyaXZlciBhbmQgdGhlIGtlcm5lbCB0
-cmFjZXMgZm9yIHRoZSBleHBlcmltZW50Pwo+Cj4KPiAtIC0tCj4ganJvCj4KPiAtLS0tLUJFR0lO
-IFBHUCBTSUdOQVRVUkUtLS0tLQo+IFZlcnNpb246IEdudVBHIHYxLjQuMTEgKEdOVS9MaW51eCkK
-PiBDb21tZW50OiBVc2luZyBHbnVQRyB3aXRoIFRodW5kZXJiaXJkIC0gaHR0cDovL3d3dy5lbmln
-bWFpbC5uZXQvCj4KPiBpUUVjQkFFQkFnQUdCUUpUMnFPUUFBb0pFQ0RjeTJJSmthZ1JuSDBILzNq
-M1ZnQ3U4S1NVZk9CWXpDN01jRnhnCj4gbXkraFc2aStGRk5uM2twSkoyL0VRdG1nL3BGR2Rlbkl3
-ZC9VdThYSmh3YUxmVDBtdFA2N2I4R0R1RC9Cc1BHcAo+IGxWeXVGZXpuZXc2Z04rdXNHblFlNDhz
-RVVDbnBhZGx3SS9aSWpjWmhKcW1jVnp3VXc5OTFSdkEzMmw2Wjl4My8KPiBiaVl2OU4wUWlhRXBw
-M2MwcldBQXBuSGV0c3VuN3JGeEd1emdBcTJwQithZGVXQ09TVHRPcFlFYWRvN3FPckV4Cj4gRnlC
-ajhHaDFzYzdrTUxueW1sL1VYZ0xCdnhzYVNVWHE4MXQxUXdhT09aUzRUUUx0Zy9Ic3RITWxUdnFy
-UzZrMgo+IFdzYmhtUzVxcW1LQklLZUVqV1VsNmQ1UzNUS2ZXK1hqYVkzSlZGbE44cDZFUFMzTFVs
-NVNreHF6SC9aYXZmdz0KPiA9K2hJNgo+IC0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQo+Ci0t
-LS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1l
-bnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGR1bXAKVHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3Ry
-ZWFtClNpemU6IDE3OCBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly93d3cu
-eGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNDA4MDEvYzc0Nzdk
-ZTgvYXR0YWNobWVudC5vYmo+Cg==
+On 08/01/2014 07:33 AM, Wojciech Domski wrote:
+> Dear Jorge,
+>
+> In attachment you can find the dump file. I created it with strace. I hope
+> this is what you meant.
+
+I actually meant the kernel traces.
+Please when compiling the analogy drivers if you could set the analogy driver and 
+core debug level thresolds to 10 that would be all.
+Then attach the output of $dmesg to your email.
+
+
+>
+> Also I forgot to tell one more thing. When I try to relink s1 to a0 I get
+> this message from the driver:
+> S626 0000:02:05.0: BAR 0: can't reserve [mem 0xf7b00000-0xf7b001ff]
+
+maybe you didnt release the device properly. Please could you send the code as well?
+
+
+> This is the result of pci_request_regions() function in attach.
+>
+> Here is also the sample application which I have written to test it.
+>
+> ts626 * s626;
+>    ts626 * s626_2;
+>
+>    printf("Opening a0 with s0\n");
+>    s626 = s626_init("S626", "analogy0");
+>      s626_set_options(s626);
+>       s626_set_bus(s626, 2);
+>       s626_set_slot(s626, 4);
+>       s626_open(s626);
+>
+>       printf("Opening a1 with s1\n");
+>    s626_2 = s626_init("S626", "analogy1");
+>      s626_set_options(s626_2);
+>       s626_set_bus(s626_2, 2);
+>       s626_set_slot(s626_2, 5);
+>       s626_open(s626_2);
+>
+>       printf("Closing a0 with s0\n");
+>      s626_close( s626);
+>      s626_deinit( s626);
+>      s626 = NULL;
+>
+>      printf("Closing a1 with s1\n");
+>      s626_close( s626_2);
+>      s626_deinit( s626_2);
+>      s626_2 = NULL;
+>
+>    printf("Opening a0 with s1\n");
+>    s626 = s626_init("S626", "analogy0");
+>      s626_set_options(s626);
+>       s626_set_bus(s626, 2);
+>       s626_set_slot(s626, 5);
+>       s626_open(s626);
+>
+>      printf("Closing a0 with s1\n");
+>      s626_close( s626);
+>      s626_deinit( s626);
+>      s626 = NULL;
+>
+> Best regards,
+> Wojciech Domski
+>
+>
+> 2014-07-31 22:14 GMT+02:00 Jorge Ramirez Ortiz <jro@xenomai.org>:
+>
+>> -----BEGIN PGP SIGNED MESSAGE-----
+>> Hash: SHA1
+>>
+>> On 07/31/2014 05:22 AM, Wojciech Domski wrote:
+>>   I prepared the driver to work well with multiple Sensoray 626 and I tested
+>>   it with two of those. I have a problem, however.
+>>   I suspect that the analogy interface doesn't play along with the driver
+>> but
+>>   I'm not certain about that. Here what's happening.
+>>   I have two s626 cards: s0 and s1. For the sake of conversation let's
+>> assume
+>>   that analogy device analogy0 is a0 and so on.
+>>   When I link s0 to a0, unlink, link s1 to a1, unlink everything works fine,
+>>   however. Once more when I link s0 but this time to a1 something goes
+>> wrong.
+>>   I get -16 error from a4l_sys_attach() which is
+>>
+>>   No such device
+>>
+>>   What is the reason of this happening? I do clean everything every time
+>> when
+>>   I release s626.
+>>   Here is what I do when I want to open my device:
+>>
+>>   a4l_sys_open();
+>>   a4l_sys_attach();
+>>   a4l_open();
+>>   rt_dev_open();
+>>   a4l_fill_desc();
+>>
+>>   When I close the s626 I do:
+>>
+>>   rt_dev_close();
+>>   a4l_close();
+>>   a4l_sys_detach();
+>>   a4l_sys_close();
+>>
+>>   Best regards,
+>>   Wojciech Domski
+>>
+>> - ------------------
+>>
+>> please could you send the driver and the kernel traces for the experiment?
+>>
+>>
+>> - --
+>> jro
+>>
+>> -----BEGIN PGP SIGNATURE-----
+>> Version: GnuPG v1.4.11 (GNU/Linux)
+>> Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+>>
+>> iQEcBAEBAgAGBQJT2qOQAAoJECDcy2IJkagRnH0H/3j3VgCu8KSUfOBYzC7McFxg
+>> my+hW6i+FFNn3kpJJ2/EQtmg/pFGdenIwd/Uu8XJhwaLfT0mtP67b8GDuD/BsPGp
+>> lVyuFeznew6gN+usGnQe48sEUCnpadlwI/ZIjcZhJqmcVzwUw991RvA32l6Z9x3/
+>> biYv9N0QiaEpp3c0rWAApnHetsun7rFxGuzgAq2pB+adeWCOSTtOpYEado7qOrEx
+>> FyBj8Gh1sc7kMLnyml/UXgLBvxsaSUXq81t1QwaOOZS4TQLtg/HstHMlTvqrS6k2
+>> WsbhmS5qqmKBIKeEjWUl6d5S3TKfW+XjaY3JVFlN8p6EPS3LUl5SkxqzH/Zavfw=
+>> =+hI6
+>> -----END PGP SIGNATURE-----
+>>
+>
+
+-- 
+jro
+
