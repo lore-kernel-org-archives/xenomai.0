@@ -1,12 +1,13 @@
-Message-ID: <53DFB5A3.2000107@xenomai.org>
-Date: Mon, 04 Aug 2014 18:32:35 +0200
+Message-ID: <53DFB87A.7060304@xenomai.org>
+Date: Mon, 04 Aug 2014 18:44:42 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAMi4Dw02AiGx9ZQFcc3aesJCKkaKdkJ+3V+jPiOuReeC=o5L0A@mail.gmail.com>
-In-Reply-To: <CAMi4Dw02AiGx9ZQFcc3aesJCKkaKdkJ+3V+jPiOuReeC=o5L0A@mail.gmail.com>
+References: <431b7669858a4c3584ec344ec4b5a752@CVEX13.valentin-carl.de>
+In-Reply-To: <431b7669858a4c3584ec344ec4b5a752@CVEX13.valentin-carl.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Shared interrupts
+Subject: Re: [Xenomai] RTNet, CONFIG_XENO_DRIVERS_16550A, Kernel 3.14,
+ preempt_rt patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,55 +16,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Hidde Verstoep (E2M)" <hverstoep@e2mtechnologies.eu>, xenomai@xenomai.org
+To: "Reitinger, Peter" <preitinger@carl-valentin.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/04/2014 02:10 PM, Hidde Verstoep (E2M) wrote:
-> Hello,
+On 08/04/2014 02:42 PM, Reitinger, Peter wrote:
+> Dear Xenomai people,
 > 
-> I have a computer where, when running a kernel with Xenomai, a lot of
-> devices share one interrupt (see xenomai.log). I want to use eth0 with
-> RTnet (I already have a working driver), but I also want to keep having
-> access to my graphical interface and USB. These devices are all on the same
-> interrupt. As far as I know IRQ sharing is not possible between the Linux
-> and Xenomai domain, so this is a problem.
+> I read about RTNet 0.9.13 that it supports only Linux Kernels up to 3.2.
+> Is this still up-to-date? Or is there a new version (maybe not yet released) that is compatible with a newer Linux kernel, preferrable 3.14 or above?
 > 
-> On a regular Linux kernel the devices are spread differently among the
-> interrupts (see linux.log). I believe this is due to MSI (correct me if I'm
-> wrong). http://www.xenomai.org/index.php/Configuring_x86_kernels clearly
-> states that I have to disable this.
+> I had problems to use rt_dev_send and receive, but now I noticed that in my kernel config CONFIG_XENO_DRIVERS_16550A has not been set. Is CONFIG_XENO_DRIVERS_16550A required for usage of rt_dev_send? If yes, is CONFIG_XENO_DRIVERS_16550A compatible with kernel 3.14.0?
 
-This information is outdated unfortunately. A new web site is brewing,
-at this chance we'll fix it.
+This driver does not depend on the linux driver stack, but on RTDM which
+is fine over 3.14, provided you pull the Xenomai code from our
+maintenance git tree (git.xenomai.org/xenomai-2.6) since this is a
+recent kernel for which Xenomai 2.6.3 had no support.
 
- However, the linked discussion is not
-> entirely clear to me. Does MSI only cause issues for a Xenomai device
-> driver and for the device it controls or for Linux device drivers and the
-> rest of the system as well? If MSI only causes issues for Xenomai device
-> drivers, could I enable CONFIG_MSI and make sure the Xenomai device drivers
-> (like the one for eth0) don't use MSI? Or would this have other
-> consequences as well?
 > 
-> If not in the above way, is there another way to solve my issue? Is there
-> any more information I should provide?
+> Is there a relation between RTNet and CONFIG_XENO_DRIVERS_16550A?
+
+This driver controls a common 8250/16650 UART, not a NIC. It represents
+a named/character device, not a protocol device exposing a socket-based
+access point, so CONFIG_XENO_DRIVERS_16550A is unrelated to
+rt_dev_send() either.
+
+> 
+> I also wonder if it is possible to use the RT_PREEMPT patch on 3.14 together with xenomai? Do I have to do a 3-way merge to achieve this goal? I mean patch xenomai onto vanilla kernel 3.14. and then merge the patch for preempt_rt or in the other order?
+
+Yes, that's perfectly possible and some projects are already running
+such combos with success. The best approach for merging is preempt-rt
+first, then I-pipe. You may want to search for older posts on this
+mailing list which discuss this issue.
+
+> 
+> Many thanks in advance also for former help...
+> 
+> Kind regards
+> Peter Reitinger
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
 > 
 
-Basically, enabling MSI should be fine with Xenomai (*), provided no
-real-time code (i.e. running in "primary" mode) ever attempts to
-request/free/mask/unmask an MSI descriptor. However, MSIs may be
-received by real-time handlers.
-
-This rule is enforced at API level by the upcoming Xenomai 3, but
-enabling MSI with Xenomai 2 is already possible, by carefully invoking
-services like rtdm_irq_request/free/enable/disable() from a plain linux
-context (typically on behalf of module_init/exit routines), and not from
-a RTDM task.
-
-This is in essence what should be checked on the RTnet side.
-
-(*) the distance from "should be" to "is" is due to the fact that I did
-not check with recent x86 kernels yet, however a quick look at the
-related kernel code in 3.14 did not reveal any obvious showstopper, so
-there is hope.
 
 -- 
 Philippe.
