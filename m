@@ -1,22 +1,13 @@
+Message-ID: <53E0B37B.2070905@xenomai.org>
+Date: Tue, 05 Aug 2014 12:35:39 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <CACKc53+jJ9tq-5oHN65V5o-tTU5L67ZiwKQ5eyFW0C=4HRyYqA@mail.gmail.com>
-References: <mailman.653.1404749254.5713.xenomai@xenomai.org>
- <53C3E6CE.2040306@xenomai.org> <53C42ADE.7040204@gmail.com>
- <53C44696.2070906@xenomai.org> <53C44EE9.3040000@xenomai.org>
- <53C6CC9B.4040009@xenomai.org> <53C81CFD.30908@gmail.com>
- <53C82A08.50100@xenomai.org>
- <CACKc53LL5C2AUTjd6cah1JyoDD5BMGeg5RQjsDjX9_FNvqdAJQ@mail.gmail.com>
- <53DAA390.7040406@xenomai.org>
- <CACKc53LQ5pCL14tVodDbMjyexPoYcaLi-PFzFOGT=VNGhR6FpQ@mail.gmail.com>
- <53DBA8D7.9040505@xenomai.org>
- <CACKc53+jJ9tq-5oHN65V5o-tTU5L67ZiwKQ5eyFW0C=4HRyYqA@mail.gmail.com>
-Date: Tue, 5 Aug 2014 12:01:33 +0200
-Message-ID: <CACKc53KpB1=-HciLvY-E_u4FDO72LGBSwtSV19G_h5_iT8e-LQ@mail.gmail.com>
-From: Wojciech Domski <wojciech.domski@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] sensoray 626 patch [Re: Xenomai Digest, Vol 27,
-	Issue 12]
+References: <CAKc2Hpb0S50P=9iWvw3z9NexHmyZEjuAU=7SGyT77EPpub_D2A@mail.gmail.com>	<53B57361.1000603@xenomai.org>	<CAKc2HpZROnFhxVZo3PWQzAoTYZHvvRCydFqxokKS_bQT2LHYVg@mail.gmail.com>	<53BC20E5.6090607@xenomai.org>	<CAKc2HpbWrU7_1JG4_K9+P_3H8Vs5-xq6W7aZ4ELjVNB+ReOD0A@mail.gmail.com>	<53BD0AA6.30901@xenomai.org>	<CAKc2Hpaaqi69CSgJZc54kqAYNVdPyTS_D0hnXjKAKLDb41BSuw@mail.gmail.com>	<53BD4EBC.5010601@xenomai.org>	<CAKc2HpbbN+kY9h55iYGqTk4c9bxDEb-OZ2orN07wKuyi42KndA@mail.gmail.com>	<CAKc2HpZ_VHevyV-Eh3jL5FhWub1LZjO=p3xBgesYdAgubN2H7Q@mail.gmail.com>	<53D62F5B.5040208@xenomai.org>	<CAKc2HpZOrT=VJnwi5q0W1FmPHQjDYHBpjpNjp+NUAn=txDU3UA@mail.gmail.com>	<53D6C634.3040700@xenomai.org>	<CAKc2HpZZRA-364=tTdK94bUc3a2kK05xDMu3=YNgMzZp0XNEzg@mail.gmail.com>	<53DFBD97.4000001@xenomai.org>
+ <CAKc2HpYWmoGQmF6gcA3W5QDPZYX6DAU0Cyt0E5+XWF3p=KdPcw@mail.gmail.com>
+In-Reply-To: <CAKc2HpYWmoGQmF6gcA3W5QDPZYX6DAU0Cyt0E5+XWF3p=KdPcw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai-forge: Deadlock in finalize_thread()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,221 +16,256 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jorge Ramirez Ortiz <jro@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Kim De Mey <kim.demey@gmail.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T2ssIHRoZXJlIHdhcyBhIHByb2JsZW0gd2l0aCBjbG9zaW5nIHRoZSBkZXNjcmlwdG9yIG9uIHRo
-ZSBzaWRlIG9mIEFQSSAobmV3CmZpbGUgaW4gYXR0YWNobWVudCkuIEkgaGF2ZSByZXNvbHZlZCBp
-dCBidXQgbm93IEkgaGF2ZSBwcm9ibGVtIHdpdGggSVJRLgpIZXJlIGlzIHdoYXQgZG1lc2cgc2F5
-czoKClsgIDEwMy45NDI0MzFdIEFuYWxvZ3k6IGE0bF9hZGRfZHJ2OiBuYW1lPVM2MjYKWyAgMTAz
-Ljk0MjQzNF0gQW5hbG9neTogYTRsX2xjdF9kcnY6IG5hbWU9UzYyNgpbICAxMDMuOTQyNDUwXSBB
-bmFsb2d5OiBQcm9iaW5nIGZvciBzNjI2ClsgIDEwMy45NDI0NjldIEFuYWxvZ3k6IFByb2Jpbmcg
-Zm9yIHM2MjYKWyAgMTE1Ljc2NDk0MV0gQW5hbG9neTogYTRsX2xjdF9kcnY6IG5hbWU9UzYyNgpb
-ICAxMTUuNzY0OTQ1XSBBbmFsb2d5OiBTNjI2OiBBdHRhY2hpbmcgczYyNgpbICAxMTUuNzY0OTQ3
-XSBBbmFsb2d5OiBTNjI2OiBEZXNpcmVkIEJ1czogMiwgU2xvdDogNApbICAxMTUuNzY0OTQ5XSBB
-bmFsb2d5OiBTNjI2OiBIYXMgQnVzOiAyLCBTbG90OiA0ClsgIDExNS43NjQ5NTFdIEFuYWxvZ3k6
-IFM2MjY6IFBDSSBkZXYgPSBmZmZmODgwMjExYzcyMDAwClsgIDExNS43NjQ5NTJdIEFuYWxvZ3k6
-IFM2MjY6IFBDSSBzZXQgbWFzdGVyClsgIDExNS43NjQ5NjBdIEFuYWxvZ3k6IFM2MjY6IFBDSSBy
-ZWdpb24gcmVxdWVzdApbICAxMTUuNzY0OTY0XSBBbmFsb2d5OiBTNjI2OiBQQ0kgaW9yZW1hcApb
-ICAxMTUuNzY0OTk3XSBBbmFsb2d5OiBTNjI2OiBkaXNhYmxlIG1hc3RlciBpbnRlcnJ1cHQKWyAg
-MTE1Ljc2NDk5OF0gQW5hbG9neTogUzYyNjogRE1BClsgIDExNS43NjUwMDRdIEFuYWxvZ3k6IFM2
-MjY6IFJURE0gaXJxClsgIDExNS43NjUwMTZdIEFuYWxvZ3k6IFM2MjY6IFJURE0gaXJxIHJlcXVl
-c3QKWyAgMTE1Ljc2NTAyN10gQW5hbG9neTogUzYyNjogc3ViZGV2aWNlcyBhbGxvY2F0aW9uClsg
-IDExNS43NjUwMzFdIEFuYWxvZ3k6IFM2MjY6IGNhcmQgaW5pdGlhbGl6YXRpb24KWyAgMTE1Ljc4
-MDUxM10gQW5hbG9neTogUzYyNjogRHJpdmVyIHJlYWR5ClsgIDExNS43ODA1MTZdIEFuYWxvZ3k6
-IGE0bF9zZXR1cF90cmFuc2ZlcjogbmJfc3ViZD02ClsgIDExOS42MjA1NzBdIEFuYWxvZ3k6IGE0
-bF9sY3RfZHJ2OiBuYW1lPVM2MjYKWyAgMTE5LjYyMDU3NV0gQW5hbG9neTogUzYyNjogQXR0YWNo
-aW5nIHM2MjYKWyAgMTE5LjYyMDU3OV0gQW5hbG9neTogUzYyNjogRGVzaXJlZCBCdXM6IDIsIFNs
-b3Q6IDUKWyAgMTE5LjYyMDU4MV0gQW5hbG9neTogUzYyNjogSGFzIEJ1czogMiwgU2xvdDogNQpb
-ICAxMTkuNjIwNTgzXSBBbmFsb2d5OiBTNjI2OiBQQ0kgZGV2ID0gZmZmZjg4MDIxMWM3MzAwMApb
-ICAxMTkuNjIwNTg0XSBBbmFsb2d5OiBTNjI2OiBQQ0kgc2V0IG1hc3RlcgpbICAxMTkuNjIwNTky
-XSBBbmFsb2d5OiBTNjI2OiBQQ0kgcmVnaW9uIHJlcXVlc3QKWyAgMTE5LjYyMDU5Nl0gQW5hbG9n
-eTogUzYyNjogUENJIGlvcmVtYXAKWyAgMTE5LjYyMDYzMF0gQW5hbG9neTogUzYyNjogZGlzYWJs
-ZSBtYXN0ZXIgaW50ZXJydXB0ClsgIDExOS42MjA2MzJdIEFuYWxvZ3k6IFM2MjY6IERNQQpbICAx
-MTkuNjIwNjM1XSBBbmFsb2d5OiBTNjI2OiBSVERNIGlycQpbICAxMTkuNjIwNjQ0XSBBbmFsb2d5
-OiBTNjI2OiBSVERNIGlycSByZXF1ZXN0ClsgIDExOS42MjA2NTVdIEFuYWxvZ3k6IFM2MjY6IHN1
-YmRldmljZXMgYWxsb2NhdGlvbgpbICAxMTkuNjIwNjU5XSBBbmFsb2d5OiBTNjI2OiBjYXJkIGlu
-aXRpYWxpemF0aW9uClsgIDExOS42MzYxMzVdIEFuYWxvZ3k6IFM2MjY6IERyaXZlciByZWFkeQpb
-ICAxMTkuNjM2MTM5XSBBbmFsb2d5OiBhNGxfc2V0dXBfdHJhbnNmZXI6IG5iX3N1YmQ9NgpbICAx
-MjEuOTA4Mjg0XSBBbmFsb2d5OiBhNGxfcHJlY2xlYW51cF90cmFuc2Zlcjogc3ViZFswXS0+c3Rh
-dHVzPTB4MDAwMDAwMDAKWyAgMTIxLjkwODI4N10gQW5hbG9neTogYTRsX3ByZWNsZWFudXBfdHJh
-bnNmZXI6IHN1YmRbMV0tPnN0YXR1cz0weDAwMDAwMDAwClsgIDEyMS45MDgyODldIEFuYWxvZ3k6
-IGE0bF9wcmVjbGVhbnVwX3RyYW5zZmVyOiBzdWJkWzJdLT5zdGF0dXM9MHgwMDAwMDAwMApbICAx
-MjEuOTA4MjkwXSBBbmFsb2d5OiBhNGxfcHJlY2xlYW51cF90cmFuc2Zlcjogc3ViZFszXS0+c3Rh
-dHVzPTB4MDAwMDAwMDAKWyAgMTIxLjkwODI5MV0gQW5hbG9neTogYTRsX3ByZWNsZWFudXBfdHJh
-bnNmZXI6IHN1YmRbNF0tPnN0YXR1cz0weDAwMDAwMDAwClsgIDEyMS45MDgyOTNdIEFuYWxvZ3k6
-IGE0bF9wcmVjbGVhbnVwX3RyYW5zZmVyOiBzdWJkWzVdLT5zdGF0dXM9MHgwMDAwMDAwMApbICAx
-MjEuOTA4Mjk4XSBBbmFsb2d5OiBTNjI2OiBEZXRhY2hpbmcgczYyNgpbICAxMjEuOTA4MzAwXSBB
-bmFsb2d5OiBTNjI2OiBDbGVhbmluZyBwcml2YXRlClsgIDEyMS45MDgzMjJdIEFuYWxvZ3k6IFM2
-MjY6IEhhbmRsaW5nIGlycQpbICAxMjIuMTExNjYzXSBBbmFsb2d5OiBTNjI2OiBSZWxlYXNpbmcg
-UENJIHJlZ2lvbnMKWyAgMTIyLjExMTY3MF0gQW5hbG9neTogUzYyNjogUmVtb3ZpbmcgcHJpdmF0
-ZQpbICAxMjIuMTExNjcxXSBBbmFsb2d5OiBTNjI2OiBEZXRhY2hpbmcgY29tcGxldGVkClsgIDEy
-NC4wODE2ODddIEFuYWxvZ3k6IGE0bF9wcmVjbGVhbnVwX3RyYW5zZmVyOiBzdWJkWzBdLT5zdGF0
-dXM9MHgwMDAwMDAwMApbICAxMjQuMDgxNjkxXSBBbmFsb2d5OiBhNGxfcHJlY2xlYW51cF90cmFu
-c2Zlcjogc3ViZFsxXS0+c3RhdHVzPTB4MDAwMDAwMDAKWyAgMTI0LjA4MTY5Ml0gQW5hbG9neTog
-YTRsX3ByZWNsZWFudXBfdHJhbnNmZXI6IHN1YmRbMl0tPnN0YXR1cz0weDAwMDAwMDAwClsgIDEy
-NC4wODE2OTRdIEFuYWxvZ3k6IGE0bF9wcmVjbGVhbnVwX3RyYW5zZmVyOiBzdWJkWzNdLT5zdGF0
-dXM9MHgwMDAwMDAwMApbICAxMjQuMDgxNjk1XSBBbmFsb2d5OiBhNGxfcHJlY2xlYW51cF90cmFu
-c2Zlcjogc3ViZFs0XS0+c3RhdHVzPTB4MDAwMDAwMDAKWyAgMTI0LjA4MTY5Nl0gQW5hbG9neTog
-YTRsX3ByZWNsZWFudXBfdHJhbnNmZXI6IHN1YmRbNV0tPnN0YXR1cz0weDAwMDAwMDAwClsgIDEy
-NC4wODE3MDJdIEFuYWxvZ3k6IFM2MjY6IERldGFjaGluZyBzNjI2ClsgIDEyNC4wODE3MDRdIEFu
-YWxvZ3k6IFM2MjY6IENsZWFuaW5nIHByaXZhdGUKWyAgMTI0LjA4MTcyNl0gQW5hbG9neTogUzYy
-NjogSGFuZGxpbmcgaXJxClsgIDEyNC4yODM4NDhdIEFuYWxvZ3k6IFM2MjY6IFJlbGVhc2luZyBQ
-Q0kgcmVnaW9ucwpbICAxMjQuMjgzODU1XSBBbmFsb2d5OiBTNjI2OiBSZW1vdmluZyBwcml2YXRl
-ClsgIDEyNC4yODM4NTZdIEFuYWxvZ3k6IFM2MjY6IERldGFjaGluZyBjb21wbGV0ZWQKWyAgMTI3
-LjM3Njg4Ml0gQW5hbG9neTogYTRsX2xjdF9kcnY6IG5hbWU9UzYyNgpbICAxMjcuMzc2ODg3XSBB
-bmFsb2d5OiBTNjI2OiBBdHRhY2hpbmcgczYyNgpbICAxMjcuMzc2ODg4XSBBbmFsb2d5OiBTNjI2
-OiBEZXNpcmVkIEJ1czogMiwgU2xvdDogNQpbICAxMjcuMzc2ODkwXSBBbmFsb2d5OiBTNjI2OiBI
-YXMgQnVzOiAyLCBTbG90OiA1ClsgIDEyNy4zNzY4OTNdIEFuYWxvZ3k6IFM2MjY6IFBDSSBkZXYg
-PSBmZmZmODgwMjExYzczMDAwClsgIDEyNy4zNzY4OTRdIEFuYWxvZ3k6IFM2MjY6IFBDSSBzZXQg
-bWFzdGVyClsgIDEyNy4zNzY5MDFdIEFuYWxvZ3k6IFM2MjY6IFBDSSByZWdpb24gcmVxdWVzdApb
-ICAxMjcuMzc2OTA1XSBBbmFsb2d5OiBTNjI2OiBQQ0kgaW9yZW1hcApbICAxMjcuMzc2OTYxXSBB
-bmFsb2d5OiBTNjI2OiBkaXNhYmxlIG1hc3RlciBpbnRlcnJ1cHQKWyAgMTI3LjM3Njk2Ml0gQW5h
-bG9neTogUzYyNjogRE1BClsgIDEyNy4zNzY5NjhdIEFuYWxvZ3k6IFM2MjY6IFJURE0gaXJxClsg
-IDEyNy4zNzY5ODNdIEFuYWxvZ3k6IFM2MjY6IFJURE0gaXJxIHJlcXVlc3QKWyAgMTI3LjM3Njk5
-Ml0gQW5hbG9neTogYTRsX2Fzc2lnbl9kcml2ZXI6IGNhbGwoZHJ2LT5hdHRhY2gpIGZhaWxlZAoo
-cmV0PS0xNikKWyAgMTI3LjM3Njk5NF0gQW5hbG9neTogYTRsX3JlcXVlc3RfaXJxOiBJUlEgcmVn
-aXN0cmF0aW9uIGZhaWxlZAoKCgoyMDE0LTA4LTA1IDExOjIwIEdNVCswMjowMCBXb2pjaWVjaCBE
-b21za2kgPHdvamNpZWNoLmRvbXNraUBnbWFpbC5jb20+OgoKPiBJIGRpZCByZWNvbXBpbGUgeGVu
-b19hbmFsb2d5IGtlcm5lbCBtb2R1bGUgd2l0aCB0aHJlc2hvbGRzIGJvdGggc2V0IHRvIDEwCj4g
-c28gbm93IGV2ZXJ5dGhpbmcgc2hvdWxkIGJlIG9rLgo+IEhlcmUgaXMgdGhlIGRtZXNnIG91dHB1
-dDoKPgo+IFsgIDExMC44OTkxNTBdIEFuYWxvZ3k6IGE0bF9hZGRfZHJ2OiBuYW1lPVM2MjYKPiBb
-ICAxMTAuODk5MTU0XSBBbmFsb2d5OiBhNGxfbGN0X2RydjogbmFtZT1TNjI2Cj4gWyAgMTEwLjg5
-OTE2OF0gQW5hbG9neTogUHJvYmluZyBmb3IgczYyNgo+IFsgIDExMC44OTkxODVdIEFuYWxvZ3k6
-IFByb2JpbmcgZm9yIHM2MjYKPiBbICAxMTkuNzAzMzQzXSBBbmFsb2d5OiBhNGxfbGN0X2Rydjog
-bmFtZT1TNjI2Cj4gWyAgMTE5LjcwMzM0N10gQW5hbG9neTogUzYyNjogQXR0YWNoaW5nIHM2MjYK
-PiBbICAxMTkuNzAzMzQ5XSBBbmFsb2d5OiBTNjI2OiBEZXNpcmVkIEJ1czogMiwgU2xvdDogNAo+
-IFsgIDExOS43MDMzNTFdIEFuYWxvZ3k6IFM2MjY6IEhhcyBCdXM6IDIsIFNsb3Q6IDQKPiBbICAx
-MTkuNzAzMzUzXSBBbmFsb2d5OiBTNjI2OiBQQ0kgZGV2ID0gZmZmZjg4MDIxMWM3MjAwMAo+IFsg
-IDExOS43MDMzNTRdIEFuYWxvZ3k6IFM2MjY6IFBDSSBzZXQgbWFzdGVyCj4gWyAgMTE5LjcwMzM2
-MV0gQW5hbG9neTogUzYyNjogUENJIHJlZ2lvbiByZXF1ZXN0Cj4gWyAgMTE5LjcwMzM2Nl0gQW5h
-bG9neTogUzYyNjogUENJIGlvcmVtYXAKPiBbICAxMTkuNzAzMzk4XSBBbmFsb2d5OiBTNjI2OiBk
-aXNhYmxlIG1hc3RlciBpbnRlcnJ1cHQKPiBbICAxMTkuNzAzNDAwXSBBbmFsb2d5OiBTNjI2OiBE
-TUEKPiBbICAxMTkuNzAzNDA1XSBBbmFsb2d5OiBTNjI2OiBSVERNIGlycQo+IFsgIDExOS43MDM0
-MTddIEFuYWxvZ3k6IFM2MjY6IFJURE0gaXJxIHJlcXVlc3QKPiBbICAxMTkuNzAzNDI4XSBBbmFs
-b2d5OiBTNjI2OiBzdWJkZXZpY2VzIGFsbG9jYXRpb24KPiBbICAxMTkuNzAzNDMyXSBBbmFsb2d5
-OiBTNjI2OiBjYXJkIGluaXRpYWxpemF0aW9uCj4gWyAgMTE5LjcxODkwMl0gQW5hbG9neTogUzYy
-NjogRHJpdmVyIHJlYWR5Cj4gWyAgMTE5LjcxODkwNV0gQW5hbG9neTogYTRsX3NldHVwX3RyYW5z
-ZmVyOiBuYl9zdWJkPTYKPiBbICAxMTkuNzE5MDM5XSBBbmFsb2d5OiBhNGxfbGN0X2RydjogbmFt
-ZT1TNjI2Cj4gWyAgMTE5LjcxOTA0MV0gQW5hbG9neTogUzYyNjogQXR0YWNoaW5nIHM2MjYKPiBb
-ICAxMTkuNzE5MDQyXSBBbmFsb2d5OiBTNjI2OiBEZXNpcmVkIEJ1czogMiwgU2xvdDogNQo+IFsg
-IDExOS43MTkwNDRdIEFuYWxvZ3k6IFM2MjY6IEhhcyBCdXM6IDIsIFNsb3Q6IDUKPiBbICAxMTku
-NzE5MDQ1XSBBbmFsb2d5OiBTNjI2OiBQQ0kgZGV2ID0gZmZmZjg4MDIxMWM3MzAwMAo+IFsgIDEx
-OS43MTkwNDZdIEFuYWxvZ3k6IFM2MjY6IFBDSSBzZXQgbWFzdGVyCj4gWyAgMTE5LjcxOTA1M10g
-QW5hbG9neTogUzYyNjogUENJIHJlZ2lvbiByZXF1ZXN0Cj4gWyAgMTE5LjcxOTA1NV0gQW5hbG9n
-eTogUzYyNjogUENJIGlvcmVtYXAKPiBbICAxMTkuNzE5MDY3XSBBbmFsb2d5OiBTNjI2OiBkaXNh
-YmxlIG1hc3RlciBpbnRlcnJ1cHQKPiBbICAxMTkuNzE5MDY4XSBBbmFsb2d5OiBTNjI2OiBETUEK
-PiBbICAxMTkuNzE5MDcxXSBBbmFsb2d5OiBTNjI2OiBSVERNIGlycQo+IFsgIDExOS43MTkwODBd
-IEFuYWxvZ3k6IFM2MjY6IFJURE0gaXJxIHJlcXVlc3QKPiBbICAxMTkuNzE5MDg3XSBBbmFsb2d5
-OiBTNjI2OiBzdWJkZXZpY2VzIGFsbG9jYXRpb24KPiBbICAxMTkuNzE5MDkwXSBBbmFsb2d5OiBT
-NjI2OiBjYXJkIGluaXRpYWxpemF0aW9uCj4gWyAgMTE5LjczNDU5Nl0gQW5hbG9neTogUzYyNjog
-RHJpdmVyIHJlYWR5Cj4gWyAgMTE5LjczNDU5OF0gQW5hbG9neTogYTRsX3NldHVwX3RyYW5zZmVy
-OiBuYl9zdWJkPTYKPiBbICAxMTkuNzM0NzM1XSBBbmFsb2d5OiBhNGxfcHJlY2xlYW51cF90cmFu
-c2Zlcjogc3ViZFswXS0+c3RhdHVzPTB4MDAwMDAwMDAKPiBbICAxMTkuNzM0NzM2XSBBbmFsb2d5
-OiBhNGxfcHJlY2xlYW51cF90cmFuc2Zlcjogc3ViZFsxXS0+c3RhdHVzPTB4MDAwMDAwMDAKPiBb
-ICAxMTkuNzM0NzM4XSBBbmFsb2d5OiBhNGxfcHJlY2xlYW51cF90cmFuc2Zlcjogc3ViZFsyXS0+
-c3RhdHVzPTB4MDAwMDAwMDAKPiBbICAxMTkuNzM0NzM5XSBBbmFsb2d5OiBhNGxfcHJlY2xlYW51
-cF90cmFuc2Zlcjogc3ViZFszXS0+c3RhdHVzPTB4MDAwMDAwMDAKPiBbICAxMTkuNzM0NzQwXSBB
-bmFsb2d5OiBhNGxfcHJlY2xlYW51cF90cmFuc2Zlcjogc3ViZFs0XS0+c3RhdHVzPTB4MDAwMDAw
-MDAKPiBbICAxMTkuNzM0NzQyXSBBbmFsb2d5OiBhNGxfcHJlY2xlYW51cF90cmFuc2Zlcjogc3Vi
-ZFs1XS0+c3RhdHVzPTB4MDAwMDAwMDAKPiBbICAxMTkuNzM0NzQ1XSBBbmFsb2d5OiBTNjI2OiBE
-ZXRhY2hpbmcgczYyNgo+IFsgIDExOS43MzQ3NDddIEFuYWxvZ3k6IFM2MjY6IENsZWFuaW5nIHBy
-aXZhdGUKPiBbICAxMTkuNzM0NzY3XSBBbmFsb2d5OiBTNjI2OiBIYW5kbGluZyBpcnEKPiBbICAx
-MTkuOTM4MTQwXSBBbmFsb2d5OiBTNjI2OiBSZWxlYXNpbmcgUENJIHJlZ2lvbnMKPiBbICAxMTku
-OTM4MTQ3XSBBbmFsb2d5OiBTNjI2OiBSZW1vdmluZyBwcml2YXRlCj4gWyAgMTE5LjkzODE0OV0g
-QW5hbG9neTogUzYyNjogRGV0YWNoaW5nIGNvbXBsZXRlZAo+IFsgIDExOS45MzgyNzZdIEFuYWxv
-Z3k6IGE0bF9sY3RfZHJ2OiBuYW1lPVM2MjYKPiBbICAxMTkuOTM4Mjc4XSBBbmFsb2d5OiBTNjI2
-OiBBdHRhY2hpbmcgczYyNgo+IFsgIDExOS45MzgyODBdIEFuYWxvZ3k6IFM2MjY6IERlc2lyZWQg
-QnVzOiAyLCBTbG90OiA1Cj4gWyAgMTE5LjkzODI4Ml0gQW5hbG9neTogUzYyNjogSGFzIEJ1czog
-MiwgU2xvdDogNQo+IFsgIDExOS45MzgyODNdIEFuYWxvZ3k6IFM2MjY6IFBDSSBkZXYgPSBmZmZm
-ODgwMjExYzczMDAwCj4gWyAgMTE5LjkzODI4NV0gQW5hbG9neTogUzYyNjogUENJIHNldCBtYXN0
-ZXIKPiBbICAxMTkuOTM4MjkyXSBBbmFsb2d5OiBTNjI2OiBQQ0kgcmVnaW9uIHJlcXVlc3QKPiBb
-ICAxMTkuOTM4Mjk4XSBTNjI2IDAwMDA6MDI6MDUuMDogQkFSIDA6IGNhbid0IHJlc2VydmUgW21l
-bQo+IDB4ZjdiMDAwMDAtMHhmN2IwMDFmZl0KPiBbICAxMTkuOTM4Mjk5XSBBbmFsb2d5OiBDYW4n
-dCByZXF1ZXN0IHJlZ2lvbnMKPiBbICAxMTkuOTM4MzAxXSBBbmFsb2d5OiBhNGxfYXNzaWduX2Ry
-aXZlcjogY2FsbChkcnYtPmF0dGFjaCkgZmFpbGVkCj4gKHJldD0tMTIpCj4gWyAgMTIwLjE0MjQ3
-Nl0gWGVub21haTogUlRETTogY2xvc2luZyBmaWxlIGRlc2NyaXB0b3IgMy4KPgo+IEFsc28gaW4g
-dGhlIGF0dGFjaG1lbnQgaXMgdGhlIHBhdGNoIGZvciB0aGUgeGVub21haSAyLjYuMyBmb3Igc3Vw
-cG9ydCBvZgo+IG11bHRpcGxlIHM2MjYgY2FyZHMuIEFsc28gSSBoYXZlIGF0dGFjaGVkIHRoZSBz
-aW1wbGUgdGVzdGluZyBwcm9ncmFtCj4gKGFwcC5jKSBhbmQgQVBJIHdoaWNoIEkndmUgd3JpdHRl
-biB0byBtYWtlIHRoZSBpbnRlcmFjdGlvbiB3aXRoIHM2MjYgZWFzaWVyLgo+Cj4gUGxlYXNlIGxl
-dCBtZSBrbm93IGlmIHlvdSBjb21lIHVwIHdpdGggc29tZXRoaW5nLgo+Cj4KPiAyMDE0LTA4LTAx
-IDE2OjQ4IEdNVCswMjowMCBKb3JnZSBSYW1pcmV6IE9ydGl6IDxqcm9AeGVub21haS5vcmc+Ogo+
-Cj4gT24gMDgvMDEvMjAxNCAwNzozMyBBTSwgV29qY2llY2ggRG9tc2tpIHdyb3RlOgo+Pgo+Pj4g
-RGVhciBKb3JnZSwKPj4+Cj4+PiBJbiBhdHRhY2htZW50IHlvdSBjYW4gZmluZCB0aGUgZHVtcCBm
-aWxlLiBJIGNyZWF0ZWQgaXQgd2l0aCBzdHJhY2UuIEkKPj4+IGhvcGUKPj4+IHRoaXMgaXMgd2hh
-dCB5b3UgbWVhbnQuCj4+Pgo+Pgo+PiBJIGFjdHVhbGx5IG1lYW50IHRoZSBrZXJuZWwgdHJhY2Vz
-Lgo+PiBQbGVhc2Ugd2hlbiBjb21waWxpbmcgdGhlIGFuYWxvZ3kgZHJpdmVycyBpZiB5b3UgY291
-bGQgc2V0IHRoZSBhbmFsb2d5Cj4+IGRyaXZlciBhbmQgY29yZSBkZWJ1ZyBsZXZlbCB0aHJlc29s
-ZHMgdG8gMTAgdGhhdCB3b3VsZCBiZSBhbGwuCj4+IFRoZW4gYXR0YWNoIHRoZSBvdXRwdXQgb2Yg
-JGRtZXNnIHRvIHlvdXIgZW1haWwuCj4+Cj4+Cj4+Cj4+Cj4+PiBBbHNvIEkgZm9yZ290IHRvIHRl
-bGwgb25lIG1vcmUgdGhpbmcuIFdoZW4gSSB0cnkgdG8gcmVsaW5rIHMxIHRvIGEwIEkgZ2V0Cj4+
-PiB0aGlzIG1lc3NhZ2UgZnJvbSB0aGUgZHJpdmVyOgo+Pj4gUzYyNiAwMDAwOjAyOjA1LjA6IEJB
-UiAwOiBjYW4ndCByZXNlcnZlIFttZW0gMHhmN2IwMDAwMC0weGY3YjAwMWZmXQo+Pj4KPj4KPj4g
-bWF5YmUgeW91IGRpZG50IHJlbGVhc2UgdGhlIGRldmljZSBwcm9wZXJseS4gUGxlYXNlIGNvdWxk
-IHlvdSBzZW5kIHRoZQo+PiBjb2RlIGFzIHdlbGw/Cj4+Cj4+Cj4+Cj4+ICBUaGlzIGlzIHRoZSBy
-ZXN1bHQgb2YgcGNpX3JlcXVlc3RfcmVnaW9ucygpIGZ1bmN0aW9uIGluIGF0dGFjaC4KPj4+Cj4+
-PiBIZXJlIGlzIGFsc28gdGhlIHNhbXBsZSBhcHBsaWNhdGlvbiB3aGljaCBJIGhhdmUgd3JpdHRl
-biB0byB0ZXN0IGl0Lgo+Pj4KPj4+IHRzNjI2ICogczYyNjsKPj4+ICAgIHRzNjI2ICogczYyNl8y
-Owo+Pj4KPj4+ICAgIHByaW50ZigiT3BlbmluZyBhMCB3aXRoIHMwXG4iKTsKPj4+ICAgIHM2MjYg
-PSBzNjI2X2luaXQoIlM2MjYiLCAiYW5hbG9neTAiKTsKPj4+ICAgICAgczYyNl9zZXRfb3B0aW9u
-cyhzNjI2KTsKPj4+ICAgICAgIHM2MjZfc2V0X2J1cyhzNjI2LCAyKTsKPj4+ICAgICAgIHM2MjZf
-c2V0X3Nsb3QoczYyNiwgNCk7Cj4+PiAgICAgICBzNjI2X29wZW4oczYyNik7Cj4+Pgo+Pj4gICAg
-ICAgcHJpbnRmKCJPcGVuaW5nIGExIHdpdGggczFcbiIpOwo+Pj4gICAgczYyNl8yID0gczYyNl9p
-bml0KCJTNjI2IiwgImFuYWxvZ3kxIik7Cj4+PiAgICAgIHM2MjZfc2V0X29wdGlvbnMoczYyNl8y
-KTsKPj4+ICAgICAgIHM2MjZfc2V0X2J1cyhzNjI2XzIsIDIpOwo+Pj4gICAgICAgczYyNl9zZXRf
-c2xvdChzNjI2XzIsIDUpOwo+Pj4gICAgICAgczYyNl9vcGVuKHM2MjZfMik7Cj4+Pgo+Pj4gICAg
-ICAgcHJpbnRmKCJDbG9zaW5nIGEwIHdpdGggczBcbiIpOwo+Pj4gICAgICBzNjI2X2Nsb3NlKCBz
-NjI2KTsKPj4+ICAgICAgczYyNl9kZWluaXQoIHM2MjYpOwo+Pj4gICAgICBzNjI2ID0gTlVMTDsK
-Pj4+Cj4+PiAgICAgIHByaW50ZigiQ2xvc2luZyBhMSB3aXRoIHMxXG4iKTsKPj4+ICAgICAgczYy
-Nl9jbG9zZSggczYyNl8yKTsKPj4+ICAgICAgczYyNl9kZWluaXQoIHM2MjZfMik7Cj4+PiAgICAg
-IHM2MjZfMiA9IE5VTEw7Cj4+Pgo+Pj4gICAgcHJpbnRmKCJPcGVuaW5nIGEwIHdpdGggczFcbiIp
-Owo+Pj4gICAgczYyNiA9IHM2MjZfaW5pdCgiUzYyNiIsICJhbmFsb2d5MCIpOwo+Pj4gICAgICBz
-NjI2X3NldF9vcHRpb25zKHM2MjYpOwo+Pj4gICAgICAgczYyNl9zZXRfYnVzKHM2MjYsIDIpOwo+
-Pj4gICAgICAgczYyNl9zZXRfc2xvdChzNjI2LCA1KTsKPj4+ICAgICAgIHM2MjZfb3BlbihzNjI2
-KTsKPj4+Cj4+PiAgICAgIHByaW50ZigiQ2xvc2luZyBhMCB3aXRoIHMxXG4iKTsKPj4+ICAgICAg
-czYyNl9jbG9zZSggczYyNik7Cj4+PiAgICAgIHM2MjZfZGVpbml0KCBzNjI2KTsKPj4+ICAgICAg
-czYyNiA9IE5VTEw7Cj4+Pgo+Pj4gQmVzdCByZWdhcmRzLAo+Pj4gV29qY2llY2ggRG9tc2tpCj4+
-Pgo+Pj4KPj4+IDIwMTQtMDctMzEgMjI6MTQgR01UKzAyOjAwIEpvcmdlIFJhbWlyZXogT3J0aXog
-PGpyb0B4ZW5vbWFpLm9yZz46Cj4+Pgo+Pj4gIC0tLS0tQkVHSU4gUEdQIFNJR05FRCBNRVNTQUdF
-LS0tLS0KPj4+PiBIYXNoOiBTSEExCj4+Pj4KPj4+PiBPbiAwNy8zMS8yMDE0IDA1OjIyIEFNLCBX
-b2pjaWVjaCBEb21za2kgd3JvdGU6Cj4+Pj4gICBJIHByZXBhcmVkIHRoZSBkcml2ZXIgdG8gd29y
-ayB3ZWxsIHdpdGggbXVsdGlwbGUgU2Vuc29yYXkgNjI2IGFuZCBJCj4+Pj4gdGVzdGVkCj4+Pj4g
-ICBpdCB3aXRoIHR3byBvZiB0aG9zZS4gSSBoYXZlIGEgcHJvYmxlbSwgaG93ZXZlci4KPj4+PiAg
-IEkgc3VzcGVjdCB0aGF0IHRoZSBhbmFsb2d5IGludGVyZmFjZSBkb2Vzbid0IHBsYXkgYWxvbmcg
-d2l0aCB0aGUKPj4+PiBkcml2ZXIKPj4+PiBidXQKPj4+PiAgIEknbSBub3QgY2VydGFpbiBhYm91
-dCB0aGF0LiBIZXJlIHdoYXQncyBoYXBwZW5pbmcuCj4+Pj4gICBJIGhhdmUgdHdvIHM2MjYgY2Fy
-ZHM6IHMwIGFuZCBzMS4gRm9yIHRoZSBzYWtlIG9mIGNvbnZlcnNhdGlvbiBsZXQncwo+Pj4+IGFz
-c3VtZQo+Pj4+ICAgdGhhdCBhbmFsb2d5IGRldmljZSBhbmFsb2d5MCBpcyBhMCBhbmQgc28gb24u
-Cj4+Pj4gICBXaGVuIEkgbGluayBzMCB0byBhMCwgdW5saW5rLCBsaW5rIHMxIHRvIGExLCB1bmxp
-bmsgZXZlcnl0aGluZyB3b3Jrcwo+Pj4+IGZpbmUsCj4+Pj4gICBob3dldmVyLiBPbmNlIG1vcmUg
-d2hlbiBJIGxpbmsgczAgYnV0IHRoaXMgdGltZSB0byBhMSBzb21ldGhpbmcgZ29lcwo+Pj4+IHdy
-b25nLgo+Pj4+ICAgSSBnZXQgLTE2IGVycm9yIGZyb20gYTRsX3N5c19hdHRhY2goKSB3aGljaCBp
-cwo+Pj4+Cj4+Pj4gICBObyBzdWNoIGRldmljZQo+Pj4+Cj4+Pj4gICBXaGF0IGlzIHRoZSByZWFz
-b24gb2YgdGhpcyBoYXBwZW5pbmc/IEkgZG8gY2xlYW4gZXZlcnl0aGluZyBldmVyeSB0aW1lCj4+
-Pj4gd2hlbgo+Pj4+ICAgSSByZWxlYXNlIHM2MjYuCj4+Pj4gICBIZXJlIGlzIHdoYXQgSSBkbyB3
-aGVuIEkgd2FudCB0byBvcGVuIG15IGRldmljZToKPj4+Pgo+Pj4+ICAgYTRsX3N5c19vcGVuKCk7
-Cj4+Pj4gICBhNGxfc3lzX2F0dGFjaCgpOwo+Pj4+ICAgYTRsX29wZW4oKTsKPj4+PiAgIHJ0X2Rl
-dl9vcGVuKCk7Cj4+Pj4gICBhNGxfZmlsbF9kZXNjKCk7Cj4+Pj4KPj4+PiAgIFdoZW4gSSBjbG9z
-ZSB0aGUgczYyNiBJIGRvOgo+Pj4+Cj4+Pj4gICBydF9kZXZfY2xvc2UoKTsKPj4+PiAgIGE0bF9j
-bG9zZSgpOwo+Pj4+ICAgYTRsX3N5c19kZXRhY2goKTsKPj4+PiAgIGE0bF9zeXNfY2xvc2UoKTsK
-Pj4+Pgo+Pj4+ICAgQmVzdCByZWdhcmRzLAo+Pj4+ICAgV29qY2llY2ggRG9tc2tpCj4+Pj4KPj4+
-PiAtIC0tLS0tLS0tLS0tLS0tLS0tLQo+Pj4+Cj4+Pj4gcGxlYXNlIGNvdWxkIHlvdSBzZW5kIHRo
-ZSBkcml2ZXIgYW5kIHRoZSBrZXJuZWwgdHJhY2VzIGZvciB0aGUKPj4+PiBleHBlcmltZW50Pwo+
-Pj4+Cj4+Pj4KPj4+PiAtIC0tCj4+Pj4ganJvCj4+Pj4KPj4+PiAtLS0tLUJFR0lOIFBHUCBTSUdO
-QVRVUkUtLS0tLQo+Pj4+IFZlcnNpb246IEdudVBHIHYxLjQuMTEgKEdOVS9MaW51eCkKPj4+PiBD
-b21tZW50OiBVc2luZyBHbnVQRyB3aXRoIFRodW5kZXJiaXJkIC0gaHR0cDovL3d3dy5lbmlnbWFp
-bC5uZXQvCj4+Pj4KPj4+PiBpUUVjQkFFQkFnQUdCUUpUMnFPUUFBb0pFQ0RjeTJJSmthZ1JuSDBI
-LzNqM1ZnQ3U4S1NVZk9CWXpDN01jRnhnCj4+Pj4gbXkraFc2aStGRk5uM2twSkoyL0VRdG1nL3BG
-R2Rlbkl3ZC9VdThYSmh3YUxmVDBtdFA2N2I4R0R1RC9Cc1BHcAo+Pj4+IGxWeXVGZXpuZXc2Z04r
-dXNHblFlNDhzRVVDbnBhZGx3SS9aSWpjWmhKcW1jVnp3VXc5OTFSdkEzMmw2Wjl4My8KPj4+PiBi
-aVl2OU4wUWlhRXBwM2MwcldBQXBuSGV0c3VuN3JGeEd1emdBcTJwQithZGVXQ09TVHRPcFlFYWRv
-N3FPckV4Cj4+Pj4gRnlCajhHaDFzYzdrTUxueW1sL1VYZ0xCdnhzYVNVWHE4MXQxUXdhT09aUzRU
-UUx0Zy9Ic3RITWxUdnFyUzZrMgo+Pj4+IFdzYmhtUzVxcW1LQklLZUVqV1VsNmQ1UzNUS2ZXK1hq
-YVkzSlZGbE44cDZFUFMzTFVsNVNreHF6SC9aYXZmdz0KPj4+PiA9K2hJNgo+Pj4+IC0tLS0tRU5E
-IFBHUCBTSUdOQVRVUkUtLS0tLQo+Pj4+Cj4+Pj4KPj4+Cj4+IC0tCj4+IGpybwo+Pgo+Cj4KLS0t
-LS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVu
-dCB3YXMgc2NydWJiZWQuLi4KTmFtZTogYXBwLmMKVHlwZTogdGV4dC94LWNzcmMKU2l6ZTogMjU3
-NyBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcv
-cGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNDA4MDUvY2NkYTc5ZWMvYXR0YWNobWVu
-dC5jPgo=
+On 08/05/2014 09:37 AM, Kim De Mey wrote:
+> 2014-08-04 19:06 GMT+02:00 Philippe Gerum <rpm@xenomai.org>:
+>> On 07/29/2014 09:31 AM, Kim De Mey wrote:
+>>> 2014-07-28 23:52 GMT+02:00 Philippe Gerum <rpm@xenomai.org>:
+>>>> On 07/28/2014 05:18 PM, Kim De Mey wrote:
+>>>>> 2014-07-28 13:09 GMT+02:00 Philippe Gerum <rpm@xenomai.org>:
+>>>>>> On 07/23/2014 10:31 AM, Kim De Mey wrote:
+>>>>>>> 2014-07-09 17:05 GMT+02:00 Kim De Mey <kim.demey@gmail.com>:
+>>>>>>>>
+>>>>>>>> 2014-07-09 16:16 GMT+02:00 Philippe Gerum <rpm@xenomai.org>:
+>>>>>>>>> On 07/09/2014 12:23 PM, Kim De Mey wrote:
+>>>>>>>>>>
+>>>>>>>>>> 2014-07-09 11:25 GMT+02:00 Philippe Gerum <rpm@xenomai.org>:
+>>>>>>>>>>>
+>>>>>>>>>>> On 07/09/2014 10:09 AM, Kim De Mey wrote:
+>>>>>>>>>>>
+>>>>>>>>>>>> Newer version --dump-config output:
+>>>>>>>>>>>> ...
+>>>>>>>>>>>> CONFIG_XENO_COMPILER="gcc version 4.7.0 (Cavium Inc. Version:
+>>>>>>>>>>>> SDK_3_1_0 build 27) "
+>>>>>>>>>>>> ...
+>>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>> Thanks. I can't reproduce this issue yet, so posting the current gdb
+>>>>>>>>>>> backtraces for all the threads still shown by "info threads" after a
+>>>>>>>>>>> deadlock would help.
+>>>>>>>>>>>
+>>>>>>>>>>> TIA,
+>>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> Below backtraces of all the threads. It is a case with two "worker"
+>>>>>>>>>> tasks in deadlock. The "main" and "create_delete" tasks continued to
+>>>>>>>>>> their "tm_wkafter" loop.
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> (gdb) thread a a bt
+>>>>>>>>>>
+>>>>>>>>>> Thread 4 (Thread 9406):
+>>>>>>>>>> #0  0x77cc2d94 in __pthread_mutex_lock_full (mutex=0x77b03300) at
+>>>>>>>>>> pthread_mutex_lock.c:321
+>>>>>>>>>> #1  0x77cc7e64 in __GI___pthread_mutex_lock (mutex=0x77b03300) at
+>>>>>>>>>> pthread_mutex_lock.c:55
+>>>>>>>>>> #2  0x77cf91e0 in threadobj_lock () from
+>>>>>>>>>>
+>>>>>>>>>> /repo/kdemey/buildroot-sdk31/output/host/usr/mips64-buildroot-linux-gnu/sysroot/usr/lib/libcopperplate.so.0
+>>>>>>>>>> #3  0x77cf92e4 in finalize_thread () from
+>>>>>>>>>>
+>>>>>>>>>> /repo/kdemey/buildroot-sdk31/output/host/usr/mips64-buildroot-linux-gnu/sysroot/usr/lib/libcopperplate.so.0
+>>>>>>>>>> #4  0x77cc5704 in __nptl_deallocate_tsd () at pthread_create.c:156
+>>>>>>>>>> #5  0x77cc5940 in start_thread (arg=0x75dff490) at pthread_create.c:315
+>>>>>>>>>> #6  0x77bf1bbc in __thread_start () from
+>>>>>>>>>> output/host/usr/mips64-buildroot-linux-gnu/sysroot/lib32/libc.so.6
+>>>>>>>>>> Backtrace stopped: frame did not save the PC
+>>>>>>>>>>
+>>>>>>>>>> Thread 3 (Thread 31145):
+>>>>>>>>>> #0  0x77cc2d94 in __pthread_mutex_lock_full (mutex=0x77b030b8) at
+>>>>>>>>>> pthread_mutex_lock.c:321
+>>>>>>>>>> #1  0x77cc7e64 in __GI___pthread_mutex_lock (mutex=0x77b030b8) at
+>>>>>>>>>> pthread_mutex_lock.c:55
+>>>>>>>>>> #2  0x77cf91e0 in threadobj_lock () from
+>>>>>>>>>>
+>>>>>>>>>> /repo/kdemey/buildroot-sdk31/output/host/usr/mips64-buildroot-linux-gnu/sysroot/usr/lib/libcopperplate.so.0
+>>>>>>>>>> #3  0x77cf92e4 in finalize_thread () from
+>>>>>>>>>>
+>>>>>>>>>> /repo/kdemey/buildroot-sdk31/output/host/usr/mips64-buildroot-linux-gnu/sysroot/usr/lib/libcopperplate.so.0
+>>>>>>>>>> #4  0x77cc5704 in __nptl_deallocate_tsd () at pthread_create.c:156
+>>>>>>>>>> #5  0x77cc5940 in start_thread (arg=0x766ff490) at pthread_create.c:315
+>>>>>>>>>> #6  0x77bf1bbc in __thread_start () from
+>>>>>>>>>> output/host/usr/mips64-buildroot-linux-gnu/sysroot/lib32/libc.so.6
+>>>>>>>>>> Backtrace stopped: frame did not save the PC
+>>>>>>>>>>
+>>>>>>>>>> Thread 2 (Thread 6970):
+>>>>>>>>>> #0  clock_nanosleep (clock_id=<optimized out>, flags=<optimized out>,
+>>>>>>>>>> req=<optimized out>, rem=<optimized out>)
+>>>>>>>>>>      at ../sysdeps/unix/sysv/linux/clock_nanosleep.c:50
+>>>>>>>>>> #1  0x77cfa0bc in threadobj_sleep () from
+>>>>>>>>>>
+>>>>>>>>>> /repo/kdemey/buildroot-sdk31/output/host/usr/mips64-buildroot-linux-gnu/sysroot/usr/lib/libcopperplate.so.0
+>>>>>>>>>> #2  0x77d2af08 in tm_wkafter () from
+>>>>>>>>>>
+>>>>>>>>>> /repo/kdemey/buildroot-sdk31/output/host/usr/mips64-buildroot-linux-gnu/sysroot/usr/lib/libpsos.so.0
+>>>>>>>>>> #3  0x10000b64 in create_delete (a=0, b=0, c=0, d=0) at
+>>>>>>>>>> delete_child_hangs.c:31
+>>>>>>>>>> #4  0x77d296fc in task_trampoline () from
+>>>>>>>>>>
+>>>>>>>>>> /repo/kdemey/buildroot-sdk31/output/host/usr/mips64-buildroot-linux-gnu/sysroot/usr/lib/libpsos.so.0
+>>>>>>>>>> #5  0x77cf7d84 in thread_trampoline () from
+>>>>>>>>>>
+>>>>>>>>>> /repo/kdemey/buildroot-sdk31/output/host/usr/mips64-buildroot-linux-gnu/sysroot/usr/lib/libcopperplate.so.0
+>>>>>>>>>> #6  0x77cc592c in start_thread (arg=0x77a00490) at pthread_create.c:310
+>>>>>>>>>> #7  0x77bf1bbc in __thread_start () from
+>>>>>>>>>> output/host/usr/mips64-buildroot-linux-gnu/sysroot/lib32/libc.so.6
+>>>>>>>>>> Backtrace stopped: frame did not save the PC
+>>>>>>>>>>
+>>>>>>>>>> Thread 1 (Thread 6969):
+>>>>>>>>>> #0  clock_nanosleep (clock_id=<optimized out>, flags=<optimized out>,
+>>>>>>>>>> req=<optimized out>, rem=<optimized out>)
+>>>>>>>>>>      at ../sysdeps/unix/sysv/linux/clock_nanosleep.c:50
+>>>>>>>>>> #1  0x77cfa0bc in threadobj_sleep () from
+>>>>>>>>>>
+>>>>>>>>>> /repo/kdemey/buildroot-sdk31/output/host/usr/mips64-buildroot-linux-gnu/sysroot/usr/lib/libcopperplate.so.0
+>>>>>>>>>> #2  0x77d2af08 in tm_wkafter () from
+>>>>>>>>>>
+>>>>>>>>>> /repo/kdemey/buildroot-sdk31/output/host/usr/mips64-buildroot-linux-gnu/sysroot/usr/lib/libpsos.so.0
+>>>>>>>>>> #3  0x10000c00 in main (argc=1, argv=0x10011030) at
+>>>>>>>>>> delete_child_hangs.c:43
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Ok, unless we've entered the twilight zone, the only reason I could see this
+>>>>>>>>> happening would be that the thread prologue somehow gets hit by an async
+>>>>>>>>> cancellation signal while holding its own lock. If so, then the patch below
+>>>>>>>>> would cause an assertion to trigger in such circumstance. You will have to
+>>>>>>>>> turn on --enable-assert in your configuration, leaving debugging entirely
+>>>>>>>>> off not to significantly affect the current timings.
+>>>>>>>>>
+>>>>>>>>> diff --git a/include/boilerplate/lock.h b/include/boilerplate/lock.h
+>>>>>>>>> index 6f0218c..b704987 100644
+>>>>>>>>> --- a/include/boilerplate/lock.h
+>>>>>>>>> +++ b/include/boilerplate/lock.h
+>>>>>>>>> @@ -206,7 +206,7 @@ int __check_cancel_type(const char *locktype);
+>>>>>>>>>  #define read_unlock_safe(__lock, __state)      \
+>>>>>>>>>         __do_unlock_safe(__lock, __state)
+>>>>>>>>>
+>>>>>>>>> -#ifdef CONFIG_XENO_DEBUG
+>>>>>>>>> +#ifndef NDEBUG
+>>>>>>>>>  #define mutex_type_attribute PTHREAD_MUTEX_ERRORCHECK
+>>>>>>>>>  #else
+>>>>>>>>>  #define mutex_type_attribute PTHREAD_MUTEX_NORMAL
+>>>>>>>>> diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
+>>>>>>>>> index 05bb6cb..6547460 100644
+>>>>>>>>> --- a/lib/copperplate/threadobj.c
+>>>>>>>>> +++ b/lib/copperplate/threadobj.c
+>>>>>>>>> @@ -1310,6 +1310,7 @@ int threadobj_cancel(struct threadobj *thobj)
+>>>>>>>>>  static void finalize_thread(void *p) /* thobj->lock free */
+>>>>>>>>>  {
+>>>>>>>>>         struct threadobj *thobj = p;
+>>>>>>>>> +       int ret;
+>>>>>>>>>
+>>>>>>>>>         if (thobj == NULL || thobj == THREADOBJ_IRQCONTEXT)
+>>>>>>>>>                 return;
+>>>>>>>>> @@ -1343,7 +1344,9 @@ static void finalize_thread(void *p) /* thobj->lock
+>>>>>>>>> free */
+>>>>>>>>>          * waiting for us to start, pending on
+>>>>>>>>>          * wait_on_barrier(). Instead, hand it over to this thread.
+>>>>>>>>>          */
+>>>>>>>>> -       threadobj_lock(thobj);
+>>>>>>>>> +       ret = threadobj_lock(thobj);
+>>>>>>>>> +       assert(ret == 0);
+>>>>>>>>> +       (void)ret;
+>>>>>>>>>         if ((thobj->status & __THREAD_S_SAFE) == 0) {
+>>>>>>>>>                 threadobj_unlock(thobj);
+>>>>>>>>>                 destroy_thread(thobj);
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> And...the assert kicks in!
+>>>>>>>>
+>>>>>>>> threadobj.c:1348: finalize_thread: Assertion `ret == 0' failed.
+>>>>>>>
+>>>>>>>
+>>>>>>> Philippe,
+>>>>>>>
+>>>>>>> Could you explain this case of the async cancellation signal? I don't
+>>>>>>> fully understand how this happens or why it causes the issue.
+>>>>>>>
+>>>>>>> I also tested once with CONFIG_XENO_ASYNC_CANCEL OFF and then the
+>>>>>>> issue doesn't occur anymore.
+>>>>>>>
+>>>>>>>
+>>>>>>
+>>>>>> I have not been able to reproduce this race yet, but still the following patch would make sense:
+>>>>>>
+>>>>>> diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
+>>>>>> index 05bb6cb..48aa032 100644
+>>>>>> --- a/lib/copperplate/threadobj.c
+>>>>>> +++ b/lib/copperplate/threadobj.c
+>>>>>> @@ -1045,9 +1045,11 @@ static int wait_on_barrier(struct threadobj *thobj, int mask)
+>>>>>>                 if (status & mask)
+>>>>>>                         break;
+>>>>>>                 oldstate = thobj->cancel_state;
+>>>>>> +               push_cleanup_lock(&thobj->lock);
+>>>>>>                 __threadobj_tag_unlocked(thobj);
+>>>>>>                 __RT(pthread_cond_wait(&thobj->barrier, &thobj->lock));
+>>>>>>                 __threadobj_tag_locked(thobj);
+>>>>>> +               pop_cleanup_lock(&thobj->lock);
+>>>>>>                 thobj->cancel_state = oldstate;
+>>>>>>         }
+>>>>>>
+>>>>>> @@ -1243,9 +1245,11 @@ static void cancel_sync(struct threadobj *thobj) /* thobj->lock held */
+>>>>>>          */
+>>>>>>         while (thobj->status & __THREAD_S_WARMUP) {
+>>>>>>                 oldstate = thobj->cancel_state;
+>>>>>> +               push_cleanup_lock(&thobj->lock);
+>>>>>>                 __threadobj_tag_unlocked(thobj);
+>>>>>>                 __RT(pthread_cond_wait(&thobj->barrier, &thobj->lock));
+>>>>>>                 __threadobj_tag_locked(thobj);
+>>>>>> +               pop_cleanup_lock(&thobj->lock);
+>>>>>>                 thobj->cancel_state = oldstate;
+>>>>>>         }
+>>>>>>
+>>>>>
+>>>>> I have tried this patch but it does not seem to make any difference.
+>>>>> The threads are still deadlocked at the same location.
+>>>>>
+>>>>> I've only tested this on my setup with the old toolchain/kernel so
+>>>>> far. I'll check also with the newer version.
+>>>>>
+>>>>
+>>>> Ok, thanks for testing. I would not bother testing with another
+>>>> toolchain, I don't buy the toolchain bug in this case. This looks like a
+>>>> common race due to the async nature of the cancellation event which is
+>>>> released while the caller holds its own lock without proper cleanup
+>>>> actions. I'll dig deeper.
+>>>>
+>>>
+>>> Okay, in case there is anything you want me to try out, don't hesitate
+>>> to tell me.
+>>>
+>>> Thanks a lot already!
+>>>
+>>>
+>>
+>> I could reproduce the issue eventually on your exact test code, by
+>> dropping the cpu affinity from the test options (--cpu-affinity) on a
+>> multi-core system. The patch below should paper over the current
+>> manifestation of this bug, but the root issue which bites here lives way
+>> below this API layer, and is clearly SMP-related. Are you running a
+>> multi-core board?
+> 
+> I have tried the test with your patch and the issue no longer occurs.
+> Yes, I am indeed running a multi-core board (cpu: Cavium Octeon II - 8
+> cores).
+> The issue does not occur if I run the board with only 1 core activated.
+> 
+
+It looks like something may be wrong in the way glibc handles the
+cancellability state of threads in SMP mode. Unless I'm completely
+off-base reading the glibc code, this issue opens a nasty race with code
+running SMP with async cancellation enabled, solely relying on
+pthread_setcancelstate() to turn it off temporarily. Granted, async
+cancellation is inherently unsafe, but still, something looks wrong.
+
+Anyway, please pull
+http://git.xenomai.org/xenomai-forge.git/commit/?h=next&id=7c4162315b8b970f9b82d53ddec8c910e15ff81a,
+and let's see how this goes.
+
+Thanks,
+
+-- 
+Philippe.
+
