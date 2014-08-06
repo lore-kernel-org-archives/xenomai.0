@@ -1,12 +1,9 @@
-Message-ID: <53E14B37.2040202@xenomai.org>
-Date: Tue, 05 Aug 2014 23:23:03 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <B89CCBE86D4F62448EE4F6367C6D3C891DACCB0F@USMLVA0EM24MSX.ww017.siemens.net>
-In-Reply-To: <B89CCBE86D4F62448EE4F6367C6D3C891DACCB0F@USMLVA0EM24MSX.ww017.siemens.net>
+Date: Wed, 6 Aug 2014 10:49:00 +0430
+Message-ID: <CAKKWdteA+WMhSbLED3XFH6+5ej7Dm3H1ThqZ1+spEDM0_krX9A@mail.gmail.com>
+From: ali hagigat <hagigatali@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Question regarding rt_sem_p
+Subject: [Xenomai] a question about irqloop
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,20 +12,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "PRADHAN, MAKARAND (RC-CA)" <makarand.pradhan@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-On 08/05/2014 10:33 PM, PRADHAN, MAKARAND (RC-CA) wrote:
-> Hi All,
-> 
-> I am facing a unique problem related to Semaphores and would appreciate any suggestions that you may have.
-> 
-> My system:
-> CPU: DRA7xx (Arch: arm. Texas Inst, OMAP based SOC with Dual Core A-15s)
-> Linux: 3.12-1
+ipipe-core-3.5.7-x86-4.patch
+xenomai-2.6.3
+Fedora13
 
-Do you have the same problem with the for-ipipe-3.14.0 branch from
-ipipe-gch git, running with xenomai 2.6 git head?
+I executed the following script:
+irqloop
 
--- 
-                                                                Gilles.
+Automatic bug reporting tool reports "kernel crash" after one minute!
+and when i execute:
+irqloop -t 3
+
+Computer freezes
 
