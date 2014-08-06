@@ -1,12 +1,12 @@
-Message-ID: <53E20956.6020005@xenomai.org>
-Date: Wed, 06 Aug 2014 12:54:14 +0200
+Message-ID: <53E2173C.2000906@xenomai.org>
+Date: Wed, 06 Aug 2014 13:53:32 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAKKWdteA+WMhSbLED3XFH6+5ej7Dm3H1ThqZ1+spEDM0_krX9A@mail.gmail.com>
-In-Reply-To: <CAKKWdteA+WMhSbLED3XFH6+5ej7Dm3H1ThqZ1+spEDM0_krX9A@mail.gmail.com>
+References: <1895ce785954408ea34df562146523a3@CVEX13.valentin-carl.de>
+In-Reply-To: <1895ce785954408ea34df562146523a3@CVEX13.valentin-carl.de>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] a question about irqloop
+Subject: Re: [Xenomai] CONFIG_ARCH_HAS_CPUFREQ
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,23 +15,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>, xenomai <xenomai@xenomai.org>
+To: "Reitinger, Peter" <preitinger@carl-valentin.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/06/2014 08:19 AM, ali hagigat wrote:
-> ipipe-core-3.5.7-x86-4.patch
-> xenomai-2.6.3
-> Fedora13
+On 08/05/2014 10:49 AM, Reitinger, Peter wrote:
+> Dear Xenomai people,
 > 
-> I executed the following script:
-> irqloop
-> 
-> Automatic bug reporting tool reports "kernel crash" after one minute!
-> and when i execute:
-> irqloop -t 3
-> 
-> Computer freezes
+> I think that CONFIG_ARCH_HAS_CPUFREQ is no problem with Xenomai (differently to CONFIG_CPUFREQ which I know to be a problem from the
+> "1. Kernel configuration" in the "TROUBLESHOUTING GUIDE".
+> Am I right?
 
-http://www.xenomai.org/index.php/Request_for_information
+As its name indicates, this symbol means that the ARCHitecture for which
+you compile HAS CPUFREQ support.
 
 -- 
                                                                 Gilles.
