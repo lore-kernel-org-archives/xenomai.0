@@ -1,13 +1,16 @@
-Message-ID: <53CA5CBB.4050703@xenomai.org>
-Date: Sat, 19 Jul 2014 13:55:39 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <53E3D2FF.5000407@xenomai.org>
+Date: Thu, 07 Aug 2014 21:26:55 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAFgu5KVLOB46vh85KV47RT0b4YBsAW_KkLBGRbY_TWhRyrgGMw@mail.gmail.com>	<53C8F3A2.1030208@xenomai.org>
- <CAFgu5KUSwYe-7Vv_-f0QRXvykF1XtK-maNaOvNta3DFiCLmm5A@mail.gmail.com>
-In-Reply-To: <CAFgu5KUSwYe-7Vv_-f0QRXvykF1XtK-maNaOvNta3DFiCLmm5A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+References: <AE39D2A4-ECC3-481B-AF3B-8A67FA23D2BF@tuebingen.mpg.de>
+ <44BE6908-E639-421F-B556-E7B3871402CF@gmail.com>
+ <67B7E374-C4D2-4F83-BA40-B289B15867B9@tuebingen.mpg.de>
+ <53E3B5E3.3090006@xenomai.org> <oqtx5om90q.fsf@merlin.sez.to>
+ <53E3CD23.5040909@xenomai.org> <53E3D084.2000506@tuebingen.mpg.de>
+In-Reply-To: <53E3D084.2000506@tuebingen.mpg.de>
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Large clock drift, keyboard issues
+Subject: Re: [Xenomai] real-time guarantee issues on xenomai 2.6.2.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,40 +19,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Justin Hart <justin.hart@mech.ubc.ca>
-Cc: xenomai@xenomai.org
+To: Ludovic Righetti <ludovic.righetti@tuebingen.mpg.de>, Paul Janzen <pcj@xenomai.sez.to>, xenomai@xenomai.org
 
-On 07/18/2014 10:46 PM, Justin Hart wrote:
-> Hey!  Thanks for helping me out!
+On 08/07/2014 09:16 PM, Ludovic Righetti wrote:
 > 
-> It's Core i7.  I fiddled with my kernel a bit, and I'm not sure if I've
-> made the problem go away or not.  We haven't seen the issue, and I get
-> better output from xeno clocktest now.  Before I was running with the
-> generic x86_64 CPU setting.  I switched to the Core 2 setting.  I went
-> through a few guides and turned some other kernel switches.
-> 
-> Here's my xeno clocktest now.
-> 
-> == Tested clock: 0 (CLOCK_REALTIME)
-> CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
-> --- -------------------- ---------------- ---------- --------------
->   0           -2659643.6          -62.539          0            0.00
->   1           -2659643.4          -62.530          0            0.0
->   2           -2659643.5          -62.537          0            0.0
->   3           -2659643.3          -62.539          0            0.0
->   4           -2659643.3          -62.522          0            0.0
->   5           -2659643.6          -62.520          0            0.0
->   6           -2659643.5          -62.510          0            0.0
->   7           -2659643.4          -62.540          0            0.0
-> 
-> Here's the output of cat /proc/xenomai/timer
-> 
-> status=on+watchdog:setup=74:clock=127588759197708:timerdev=lapic:clockdev=tsc
+>> This is more likely a I-pipe issue (3.4.6/x86 is outdated, although 1 ms
+>> is really above usual issues), a kernel configuration issue (e.g.
+>> CONFIG_CPU_FREQ, or other latency killer), or maybe a SMI problem. Or
+>> maybe an issue induced by a graphic card driver if you happen to run
+>> with a GUI.
+>>
+> we have the same issue (same machine Alexander described - xeno 2.6.3 /
+> kernel 3.8.13 ipipe patch from the xenomai tar)
+> below the xeno latency output when I run with a watch -n .1 cat
+> /proc/xenomai/stat and no X-windows server. I do not have the problem
+> without the watch command and with running a x-window (ubuntu 12.04
+> desktop) although I get latency spikes when opening open gl windows
+> (which I know is normal).
 
-Yes lapic + tsc is the best configuration on x86. A 62ppm drift seems a
-bit high, but I guess it is due to the fact that the kernel refines the
-tsc frequency, and xenomai uses the frequency before refinement.
+I suspect you could run any loop, like cat /proc/interrupts, and see the
+same issue. Are you running with a frame buffer in the no-x mode?
+
+> 
+> CONFIG_CPU_FREQ, CPU_IDLE, ACPI_PROCESSOR, INPUT_PCSPKR are disabled in
+> my kernel config. Not sure if there could be other latency killers I
+> should disable.
+> 
+> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat
+> best|--lat worst
+> RTD|     -2.413|     -0.799|    141.488|       1|     0|     -2.413|   
+> 141.488
+> RTD|     -2.423|     -0.494|    477.758|      15|     0|     -2.423|   
+> 477.758
+> RTD|     -2.440|     -0.564|    286.563|      23|     0|     -2.440|   
+> 477.758
+> RTD|     -2.389|     -0.858|    118.116|      24|     0|     -2.440|   
+> 477.758
+> RTD|     -2.376|     -0.980|     71.960|      24|     0|     -2.440|   
+> 477.758
+> RTD|     -2.375|     -0.671|    100.248|      24|     0|     -2.440|   
+> 477.758
+> RTD|     -2.382|     -0.872|    184.203|      26|     0|     -2.440|   
+> 477.758
+> RTD|     -2.383|     -0.739|    260.341|      33|     0|     -2.440|   
+> 477.758
+> RTD|     -2.380|     -0.760|    711.203|      41|     0|     -2.440|   
+> 711.203
+> RTD|     -2.314|     -0.658|   1664.493|      63|     0|     -2.440|  
+> 1664.493
+> RTD|     -2.413|     -0.838|    134.240|      65|     0|     -2.440|  
+> 1664.493
+> RTD|     -2.435|     -0.661|    381.385|      68|     0|     -2.440|  
+> 1664.493
+> RTD|     -2.317|     -0.872|     93.973|      68|     0|     -2.440|  
+> 1664.493
+> RTD|     -2.316|     -0.568|   2756.048|     100|     0|     -2.440|  
+> 2756.048
+> RTD|     -2.387|     -0.870|    117.891|     102|     0|     -2.440|  
+> 2756.048
+> RTD|     -2.319|     -0.950|     66.645|     102|     0|     -2.440|  
+> 2756.048
+> RTD|     -2.384|     -0.864|     86.956|     102|     0|     -2.440|  
+> 2756.048
+> RTD|     -2.385|     -0.878|     73.840|     102|     0|     -2.440|  
+> 2756.048
+> RTD|     -2.380|     -1.000|     42.325|     102|     0|     -2.440|  
+> 2756.048
+> 
+> best wishes
+> ludovic
+
 
 -- 
-                                                                Gilles.
+Philippe.
 
