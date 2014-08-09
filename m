@@ -1,9 +1,9 @@
-From: Paul Janzen <pcj@xenomai.sez.to>
-Date: Fri, 8 Aug 2014 11:44:35 -0700
-Message-ID: <oqegwqn4xu.fsf@merlin.sez.to>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Subject: [Xenomai] [PATCH] hal/x86: Export symbol rthal_c1e_disable
+Date: Sat, 9 Aug 2014 19:15:21 +0430
+Message-ID: <CAKKWdteuWLz2YAhnsQZo9wH7T6o5F62du7MdZ+fZg6+A+JqBZQ@mail.gmail.com>
+From: ali hagigat <hagigatali@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] a question about domains
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,23 +12,13 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
----
- ksrc/arch/x86/c1e.c |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
-
-diff --git a/ksrc/arch/x86/c1e.c b/ksrc/arch/x86/c1e.c
-index a5bdc34..984c039 100644
---- a/ksrc/arch/x86/c1e.c
-+++ b/ksrc/arch/x86/c1e.c
-@@ -79,4 +79,5 @@ void rthal_c1e_disable(void)
- 	}
- }
- 
-+EXPORT_SYMBOL_GPL(rthal_c1e_disable);
- #endif
--- 
-1.7.1
-
+I wonder if anybody can answer this and i apprecite in advance.
+Nothing can change the current domain! as far as i looked in the code.
+How is that possible?
+does xnpod_schedule() can set a new current domain for a CPU?
+It seems that current domian is set to "root" and keeps that forever.
+Only some functions temporarily change "current domain" to "head" but
+immediately it returns to "root" or "current domain".
 
