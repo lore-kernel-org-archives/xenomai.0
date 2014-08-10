@@ -1,9 +1,12 @@
+Message-ID: <53E7691A.7090605@xenomai.org>
+Date: Sun, 10 Aug 2014 14:44:10 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Sat, 9 Aug 2014 19:15:21 +0430
-Message-ID: <CAKKWdteuWLz2YAhnsQZo9wH7T6o5F62du7MdZ+fZg6+A+JqBZQ@mail.gmail.com>
-From: ali hagigat <hagigatali@gmail.com>
+References: <oqegwqn4xu.fsf@merlin.sez.to>
+In-Reply-To: <oqegwqn4xu.fsf@merlin.sez.to>
 Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] a question about domains
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] hal/x86: Export symbol rthal_c1e_disable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,13 +15,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: Paul Janzen <pcj@xenomai.sez.to>, xenomai@xenomai.org
 
-I wonder if anybody can answer this and i apprecite in advance.
-Nothing can change the current domain! as far as i looked in the code.
-How is that possible?
-does xnpod_schedule() can set a new current domain for a CPU?
-It seems that current domian is set to "root" and keeps that forever.
-Only some functions temporarily change "current domain" to "head" but
-immediately it returns to "root" or "current domain".
+On 08/08/2014 08:44 PM, Paul Janzen wrote:
+> ---
+>  ksrc/arch/x86/c1e.c |    1 +
+>  1 files changed, 1 insertions(+), 0 deletions(-)
+> 
+> diff --git a/ksrc/arch/x86/c1e.c b/ksrc/arch/x86/c1e.c
+> index a5bdc34..984c039 100644
+> --- a/ksrc/arch/x86/c1e.c
+> +++ b/ksrc/arch/x86/c1e.c
+> @@ -79,4 +79,5 @@ void rthal_c1e_disable(void)
+>  	}
+>  }
+>  
+> +EXPORT_SYMBOL_GPL(rthal_c1e_disable);
+>  #endif
+> 
+
+Merged, thanks.
+
+-- 
+                                                                Gilles.
 
