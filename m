@@ -1,12 +1,12 @@
-Message-ID: <53E929D2.2020000@xenomai.org>
-Date: Mon, 11 Aug 2014 22:38:42 +0200
+Message-ID: <53E92A8D.8030505@xenomai.org>
+Date: Mon, 11 Aug 2014 22:41:49 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAEGbdifdQKFYEr-bu6SnxaecvhcJx6KZp8G3nPttHi=SbvYFWA@mail.gmail.com>
-In-Reply-To: <CAEGbdifdQKFYEr-bu6SnxaecvhcJx6KZp8G3nPttHi=SbvYFWA@mail.gmail.com>
+References: <CAEGbdidABiixUba3TiheYcLx1Swh5TrTbt_FtenZsExq7weUYg@mail.gmail.com>
+In-Reply-To: <CAEGbdidABiixUba3TiheYcLx1Swh5TrTbt_FtenZsExq7weUYg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RTCan Initialization patch
+Subject: Re: [Xenomai] C++ std::thread and xenomai pthread
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,16 +17,18 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Matthew Lindner <mattlindn@gmail.com>, xenomai@xenomai.org
 
-On 08/11/2014 05:37 PM, Matthew Lindner wrote:
-> What was wrong with this patch? It never got applied.
-> 
-> http://www.xenomai.org/pipermail/xenomai/2014-March/030379.html
+On 08/11/2014 05:33 PM, Matthew Lindner wrote:
+> Has anyone experimented with using std::thread from the C++ STL library? I
+> am curious if it automatically incorporates the xenomai pthread API layer
+> or whether it bypasses that and accesses the linux pthread library.
 
-The patch was probably simply forgotten,
+If the call to pthread_create (for instance), is in the libstdc++
+library, and this library is dynamic, then the library needs to be
+recompiled to use Xenomai's __wrap_pthread_create instead of
+pthread_create. If the library is static, then you can wrap
+pthread_create to __wrap_pthread_create when linking the library with
+your program.
 
-Please submit it with a proper commit message with git format-patch and
-git send-email, and I will merge it. The original mail unchanged fails
-to apply in addition to not containing a proper commit message.
 
 -- 
                                                                 Gilles.
