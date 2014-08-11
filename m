@@ -1,9 +1,9 @@
 MIME-Version: 1.0
-Date: Mon, 11 Aug 2014 11:33:31 -0400
-Message-ID: <CAEGbdidABiixUba3TiheYcLx1Swh5TrTbt_FtenZsExq7weUYg@mail.gmail.com>
+Date: Mon, 11 Aug 2014 11:37:08 -0400
+Message-ID: <CAEGbdifdQKFYEr-bu6SnxaecvhcJx6KZp8G3nPttHi=SbvYFWA@mail.gmail.com>
 From: Matthew Lindner <mattlindn@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] C++ std::thread and xenomai pthread
+Subject: [Xenomai] RTCan Initialization patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,8 +14,9 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Has anyone experimented with using std::thread from the C++ STL library? I
-am curious if it automatically incorporates the xenomai pthread API layer
-or whether it bypasses that and accesses the linux pthread library.
+What was wrong with this patch? It never got applied.
+
+http://www.xenomai.org/pipermail/xenomai/2014-March/030379.html
 
 Matthew
+
