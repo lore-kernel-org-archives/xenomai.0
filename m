@@ -1,12 +1,12 @@
-Message-ID: <53EA690E.50101@xenomai.org>
-Date: Tue, 12 Aug 2014 21:20:46 +0200
+Message-ID: <53EA69C7.8080908@xenomai.org>
+Date: Tue, 12 Aug 2014 21:23:51 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <D36F9745-B497-4700-8BDC-92281227E1D4@gatech.edu>
-In-Reply-To: <D36F9745-B497-4700-8BDC-92281227E1D4@gatech.edu>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Parallel Computing?
+References: <49d17c437c8f4a26b2f7539403af05c4@CVEX13.valentin-carl.de>
+In-Reply-To: <49d17c437c8f4a26b2f7539403af05c4@CVEX13.valentin-carl.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] (slave) SPI driver for Am3354...?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,29 +15,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Yogi A. Patel" <yapatel@gatech.edu>, xenomai@xenomai.org
+To: "Reitinger, Peter" <preitinger@carl-valentin.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/12/2014 08:56 PM, Yogi A. Patel wrote:
-> Hi -
+On 08/12/2014 11:14 AM, Reitinger, Peter wrote:
+> Dear Xenomai people,
 > 
-> I am interested in using Xenomai with multiple cores. When I run “cat
-> /proc/cpuinfo | grep “model name” I see that there are two CPUs
-> listed.
-> 
-> My system using data acquisition from a NI DAQ (using ANALOGY
-> driver), processes it with some model, and then provides some output
-> through the NI DAQ.
-> 
-> I would like to make the system faster (both real-time and
-> computation) by off loading the acquisition and data processing parts
-> to one CPU and then letting the user interactions and the GUI
-> (Qt-based) processed by the other CPU.
-> 
-> Is this possible? If so, any examples on how to do this?
+> as we like to avoid to re-invent the wheel when possible, I'd like to
+> ask you if there is a mature spi driver as rtdm driver which enables
+> usage of McSPI in slave mode and combined with dma. (A big preloaded
+> byte array shall be clocked to the master in an FPGA in eventually
+> varying clock speed requested by it up to maximal speed of 48MHz.) Or
+> do you think it is a better idea to use the standard Linux SPI
+> protocol driver with RT-Preempt patch? I've seen there is the project
+> https://github.com/nradulovic/xdrv-spi/. Can anybody recommend it?
 
-Xenomai never migrates a thread running in primary mode, so the job of
-deciding on which cpu to run a task is left to Linux. So, simply use
-sched_setaffinity to decide on which cpu to run a thread.
+I can not really recommend this driver, but it is there, you have the
+source, so what do you need to ask the mailing list before testing it?
 
 -- 
                                                                 Gilles.
