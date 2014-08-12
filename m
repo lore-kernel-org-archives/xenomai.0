@@ -1,12 +1,11 @@
-From: "Botev, Roumen" <roumen.botev@brooks.com>
-Date: Mon, 21 Jul 2014 14:50:58 -0400
-Message-ID: <19C66D276CD97349B3ED15358BC387930904DECABF@Mailprodapp3.brooks.com>
-Content-Language: en-US
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Latency Test Results (xeno-test) on Xilinx Zynq XC702
- Board with Xenomai 2.6.3
+From: "Yogi A. Patel" <yapatel@gatech.edu>
+Message-Id: <D36F9745-B497-4700-8BDC-92281227E1D4@gatech.edu>
+Date: Tue, 12 Aug 2014 14:56:21 -0400
+Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
+Content-Type: text/plain;
+	charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Parallel Computing?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,38 +14,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hello, All,
+Hi -
 
-I am running Xenomai's out of the box battery of tests (xeno-test) on a Xilinx Zynq XC702 evaluation board.
+I am interested in using Xenomai with multiple cores. When I run =93cat =
+/proc/cpuinfo | grep =93model name=94 I see that there are two CPUs =
+listed.
 
-I am new to Xenomai and I am wondering if these results look good to people having more experience in running Xenomai on a Cortex-A9 hardware. In particular, I had higher expectations of the average and worst case latency numbers - I was expecting < 10 usec worst latency for the highest priority user mode task. Here is the summary of the latency test (the full output of the test is attached to this message):
+My system using data acquisition from a NI DAQ (using ANALOGY driver), =
+processes it with some model, and then provides some output through the =
+NI DAQ.
 
-RTT|  00:15:04  (periodic user-mode task, 1000 us period, priority 99)
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
-. . . . . . . . . .
----|-----------|-----------|-----------|--------|------|-------------------------
-RTS|      3.675|     14.049|     35.913|       0|     0|    00:15:04/00:15:04
+I would like to make the system faster (both real-time and computation) =
+by off loading the acquisition and data processing parts to one CPU and =
+then letting the user interactions and the GUI (Qt-based) processed by =
+the other CPU.
 
-Any comments and/or insights are appreciated.
+Is this possible? If so, any examples on how to do this?
 
-Best regards,
+Yogi
 
-Roumen
-
-
-
-
-_____________________________________________________________________
-This email message, including any attachments, may contain confidential and
-proprietary information for the sole use of the intended recipient.  If you are
-not the intended recipient, you are hereby notified that any use, copying or
-dissemination of this message is strictly prohibited.  If you received this
-message in error, please notify Brooks Automation, Inc. immediately by reply
-email or by calling Brooks US Headquarters at +1 978-262-2400. Then delete this
-message from your system, without making any copy or distribution.  Thank you.
--------------- next part --------------
-An embedded and charset-unspecified text was scrubbed...
-Name: LatencyTest-Zynq XC702 - pw22.txt
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140721/40c5b922/attachment.txt>
