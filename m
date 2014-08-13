@@ -1,11 +1,10 @@
-Message-ID: <53EB604D.60603@xenomai.org>
-Date: Wed, 13 Aug 2014 14:55:41 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <53EBC4D9.9040402@xenomai.org>
+Date: Wed, 13 Aug 2014 22:04:41 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CANWkrRN=ExZ4qgcXp8+d2NOzBHUvWb2u6Zu8twmr8Vo2VZnnqg@mail.gmail.com>
- <53EB5F9D.8000905@xenomai.org>
-In-Reply-To: <53EB5F9D.8000905@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1
+In-Reply-To: <CANWkrRN=ExZ4qgcXp8+d2NOzBHUvWb2u6Zu8twmr8Vo2VZnnqg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] RTDM !xnpod_unblockable_p() question
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,40 +17,28 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Michael Smith <2michael.smith@gmail.com>, xenomai@xenomai.org
 
-On 08/13/2014 02:52 PM, Philippe Gerum wrote:
-> On 08/13/2014 02:28 PM, Michael Smith wrote:
->> Hi
->> I have been struggling with this problem for days on end, but there is just
->> not enough information in the code
->> or documentation for me to solve it.
->> I am calling rtdm_mutex_lock() inside a device driver module. It is called
->> by my PCI probe function as
->> the driver is initializing.
->> I keep on getting the error message:
->> Xenomai: assertion failed at kernel/xenomai/skins/rtdm/drvlib.c:1534
->> (!xnpod_unblockable_p())
->> And the resultant -EPERM error message from the return of the function.
->>
->> I know these checks were inserted to stop any call from an incorrect
->> context. But as far as the documentation states
->> it can be called from a kernel module.
-> 
-> The doc (2.6) reads:
-> 
->  * This service can be called from:
->  *
->  * - Kernel-based task
->  * - User-space task (RT)
-> 
-> The generic "kernel module" context is not mentioned. You get -EPERM
-> because you cannot call this from a probe() routine, which runs in
-> secondary/pure linux mode. Acquiring a RTDM mutex requires the caller to
-> run in real-time mode.
-> 
+On 08/13/2014 02:28 PM, Michael Smith wrote:
+> but there is just not enough information in the code
+> or documentation for me to solve it.
 
-By "kernel based task", the doc always implicitly means kernel-based
-_Xenomai_ task, e.g. RTDM driver task. Such one always runs in primary mode.
+Actually, the information can very well be found in the source code.
+
+#define xnpod_unblockable_p() \
+    (xnpod_asynch_p() || xnthread_test_state(xnpod_current_thread(), XNROOT))
+
+If you had digged a bit, you would have found that the failing test was
+!xnthread_test_state(xnpod_current_thread(), XNROOT)
+
+Which clearly means that you were calling rtdm_mutex_lock() from the 
+context of the root thread and that the root thread is unblockable.
+
+Now, if you do not understand what the root thread is, or why it can 
+not be suspended from Xenomai's scheduler point of view, clearly, there 
+are a thing or two you have not taken the time to understand about 
+Xenomai. So, please do not reverse the roles: you are the one who has 
+not read enough documentation, please do not accuse us of not having 
+written enough.
 
 -- 
-Philippe.
+                                                                Gilles.
 
