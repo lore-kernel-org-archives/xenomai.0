@@ -1,9 +1,12 @@
+Message-ID: <53F30622.4050605@xenomai.org>
+Date: Tue, 19 Aug 2014 10:09:06 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Tue, 19 Aug 2014 11:45:54 +0430
-Message-ID: <CAKKWdtfZm+F3M+VtD2zG=JMun1GYtNDOAbzYvVUDXxq5B8qsMw@mail.gmail.com>
-From: ali hagigat <hagigatali@gmail.com>
+References: <CAKKWdtfZm+F3M+VtD2zG=JMun1GYtNDOAbzYvVUDXxq5B8qsMw@mail.gmail.com>
+In-Reply-To: <CAKKWdtfZm+F3M+VtD2zG=JMun1GYtNDOAbzYvVUDXxq5B8qsMw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] a question about interrupts
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] a question about interrupts
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,17 +15,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: ali hagigat <hagigatali@gmail.com>, xenomai <xenomai@xenomai.org>
 
-Is the following statements are true?
+On 08/19/2014 09:15 AM, ali hagigat wrote:
+> Is the following statements are true?
+> 
+> If there are some Xenoma threads and an interrupt happens and it has
+> no head handling. The execuation of the Xenomai threads are stopped
+> and that interrupt is played.
 
-If there are some Xenoma threads and an interrupt happens and it has
-no head handling. The execuation of the Xenomai threads are stopped
-and that interrupt is played. It can be an interrupt handled by
-Xenomai root domain or just a regular Linux interrupt routine. So for
-the most of the interrupts they can delay Xenomai real-time threads if
-they are not masked.
-(the interrupt is logged but soon after that it is executed by synch process!)
-so Xenomai real-time interrupts and non-real-time interrupts are both
-executed any time.
+No.
+
+Ali, the aim of this mailing list is to help people with actual projects
+using Xenomai, which does not seem to be your case. You have been asking
+questions for monthes (if not years) on this mailing list, which show
+that you have not read or understood the documentation we provide. I am
+sorry, but unless you start a real project and have real questions about
+issues you have using xenomai, I will stop answering your questions.
+
+-- 
+                                                                Gilles.
 
