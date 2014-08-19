@@ -1,14 +1,12 @@
-Message-ID: <53CF5DFB.3000309@zultron.com>
-Date: Wed, 23 Jul 2014 02:02:19 -0500
-From: John Morris <john@zultron.com>
+Message-ID: <53F29D86.7010809@ebus.com>
+Date: Mon, 18 Aug 2014 17:42:46 -0700
+From: Doug Brunner <dbrunner@ebus.com>
 MIME-Version: 1.0
-References: <53C9627E.4010102@zultron.com> <53C974FA.5030308@xenomai.org>
- <53C97A17.8090906@zultron.com> <53C97AC3.9010506@xenomai.org>
-In-Reply-To: <53C97AC3.9010506@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <53F12A7C.90509@ebus.com> <53F1E305.1000300@xenomai.org>
+In-Reply-To: <53F1E305.1000300@xenomai.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Debian packages for testing:  Xenomai 2.6.3,
- Linux 3.8.13, x86 and Beaglebone
+Subject: Re: [Xenomai] I-pipe patches for x86
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,79 +15,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-
-
-On 07/18/2014 02:51 PM, Gilles Chanteperdrix wrote:
-> On 07/18/2014 09:48 PM, John Morris wrote:
->> On 07/18/2014 02:26 PM, Gilles Chanteperdrix wrote:
->>> On 07/18/2014 08:07 PM, John Morris wrote:
->>>> I've built new Xenomai kernel packages for the Machinekit project.  As
->>>> the subject says, they're based on Xenomai 2.6.3 and Linux 3.8.13 and
->>>> run on the x86 architectures (mostly vanilla with the Debian config) and
->>>> Beaglebone (Robert C Nelson's patches and config).
->>>>
->>>> They are based on the upstream Debian packaging, completely different
->>>> from my previous packages, which were based on the awful make-kpkg
->>>> stuff.  These promise to be much more maintainable.
->>>>
->>>> RTAI kernels are also included in the new packaging.
->>>>
->>>> To install:
->>>>
->>>> # configure the Debian archive
->>>> sudo sh -c \
->>>>        "sudo apt-key adv --keyserver hkp://keys.gnupg.net \
->>>>            --recv-key 73571BB9; \
->>>>        echo 'deb http://deb.dovetail-automata.com wheezy main' > \
->>>>            /etc/apt/sources.list.d/machinekit.list"
->>>
->>> If you are interested, you can make a debian package which adds the key
->>> to the keyring. See:
->>> http://www.xenomai.org/debian/pool/main/x/xenomai-keyring/
+On 08/18/2014 04:27 AM, Gilles Chanteperdrix wrote:
+> On 08/18/2014 12:19 AM, Doug Brunner wrote:
+>> Hi all,
 >>
->> Hi Gilles,
+>> I'm in the midst of upgrading the software stack for an embedded
+>> controller based on a WinSystems PPM-LX800 (was previously Xeno 2.6.1
+>> and Linux 3.2). I see there are I-pipe patches out for 3.10.32 and 3.14,
+>> as well as the 3.8.13 included with Xenomai 2.6.3. This is going in a
+>> road vehicle and so the priority is on stability over the security
+>> offered by the newer Linux (it should only rarely be connected to a
+>> network and never to the Internet.) What's your impression of the
+>> stability of the newer versions vs. 3.8?
 >>
->> I actually did this last time around, and even copied your code.  What's
->> the advantage of putting the key in a package over directly importing
->> the key with the above 'apt-key' command?
+>> Thanks,
+>>       Doug Brunner
+> Hi Doug,
 >
-> If a user wants to remove a key, he simply removes the package instead
-> of having to know the apt-key command (which most user never even use,
-> as the debian project keys are installed with such a package).
+> as maintainers, we try and test each version, and fix the issues we find
+> until delivery. So, from our point of view, they are all equally stable,
+> and it is difficult to answer your question. One detail however: you
+> will not be able to run Xenomai 2.6.3 on Linux 3.14, you will need the
+> upcoming Xenomai 2.6.4 for that. Xenomai 2.6.4 is expected to be
+> delivered in the next few weeks.
+>
+> Regards.
+>
+Thanks Gilles, sounds like it will be worth waiting for 2.6.4 before 
+making another transition. From the maintainers' perspective I was 
+thinking mostly of "did 3.10/3.14 seem more troublesome/likely to break 
+than 3.8 when you were writing and testing it?". I take it from your 
+reply that it didn't, and I didn't see any reports of issues in the list 
+archives...so when 2.6.4 is ready I will give it and 3.14 a go.
 
-Updated instructions:
+I also saw your tip on the CS5536 boot param and the benchmark results 
+in your other email. Thanks for that, seems to work fine on my system.
 
-# install the Dovetail Automata signing key package
-wget 
-http://deb.dovetail-automata.com/pool/main/d/dovetail-automata-keyring/dovetail-automata-keyring_0.1-1~wheezy1_all.deb
-dpkg -i dovetail-automata-keyring_0.1-1~wheezy1_all.deb
-
-# configure the archive and update package indexes
-echo 'deb http://deb.dovetail-automata.com wheezy main' > \
-     /etc/apt/sources.list.d/machinekit.list"
-sudo apt-get update
-
-# install the Xenomai kernel and headers; pick the command
-# applicable to your situation
-#
-# amd64 architecture:
-apt-get install \
-     linux-image-xenomai.x86-amd64 \
-     linux-headers-xenomai.x86-amd64
-# i386 architecture:
-apt-get install \
-     linux-image-xenomai.x86-i686-pae \
-     linux-headers-xenomai.x86-i686-pae
-# Beaglebone:
-apt-get install \
-     linux-image-xenomai.beaglebone-omap \
-     linux-headers-xenomai.beaglebone-omap
-
-If you have an r8168 NIC in your PC, see 
-/etc/modprobe.d/r816x_blacklist.conf to enable that driver and disable 
-the r8169.
-
-	John
+     --Doug Brunner
 
