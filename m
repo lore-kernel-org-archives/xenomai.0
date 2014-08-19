@@ -1,16 +1,12 @@
-Message-ID: <53F3B4D0.9080908@xenomai.org>
-Date: Tue, 19 Aug 2014 22:34:24 +0200
+Resent-To: xenomai@xenomai.org
+Resent-Message-ID: <53F3C9CE.5070405@xenomai.org>
+Message-ID: <53F3C9BF.6040405@xenomai.org>
+Date: Wed, 20 Aug 2014 00:03:43 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <mailman.1.1408010401.9958.xenomai@xenomai.org>
- <e3bdea6dcdb84852972a720789331cb2@CVEX13.valentin-carl.de>,
- <53EE2CD3.507@xenomai.org>
- <8a9221baf06e4cf8b7ad859fab3af388@CVEX13.valentin-carl.de>
-In-Reply-To: <8a9221baf06e4cf8b7ad859fab3af388@CVEX13.valentin-carl.de>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] access SPI and DMA hardware from application
- ("external abort...")
+Subject: [Xenomai] [GIT PULL] ipipe patch for Linux 3.14
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,36 +15,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Reitinger, Peter" <preitinger@carl-valentin.de>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
 
-On 08/19/2014 02:13 PM, Reitinger, Peter wrote:
-> Hello,
-> 
-> so I am not up-to-date that it is no longer recommended to do as much
-> in user space as possible?
+This concludes my tests of the I-pipe kernel for 3.14. For benchmark 
+results, see:
 
-It has never been recommended. Maybe by people developing micro-kernels,
-but Linux is not a micro-kernel.
+http://xenomai.org/2014/08/benchmarks-xenomai-dual-kernel-over-linux-3-14/
 
-> I see here a relation to the fact that
-> interrupt api is going to be removed (or is already removed in 3.0)?
+The following changes since commit 4946c5cd6f59101a274232a456690fd76cedf6af:
 
-The user-space interrupt API were removed from 3.0 (but replaced by the
-UDD framework, see recent commits in the xenomai-forge repository),
-because they were a sure way to shoot one-self in the foot. But also
-note that the kernel-space API were removed from xenomai-forge, because
-moving everything to kernel-space is not recommended either.
+  ipipe/genpatches.sh: fixup for arm-based drivers (2014-07-03 11:01:26 +0200)
 
-> 
-> But, it is correct that all kernel-space sources have to be GPL?
+are available in the git repository at:
 
-Yes, but normally, a driver is dumb (if you read the excellent "Linux
-device drivers", I believe the advice is "no policy in kernel-space"),
-so there is nothing to hide. Do you really think that an SPI controller
-driver is worth hiding?
+  git://git.xenomai.org/ipipe-gch for-ipipe-3.14.0
 
-Please no top-posting, nor private mails (I usually ignore private mails).
+for you to fetch changes up to 45c827b5b23a8f2f47fc97d6bb84b5b8456cf863:
+
+  at91_ipipe: look for a 5MHz clock instead of 1MHz if TC has 32 bits (2014-08-16 18:32:23 +0200)
+
+----------------------------------------------------------------
+Anders Blomdell (1):
+      ipipe: fix genpatches.sh
+
+Gilles Chanteperdrix (8):
+      arm/fcse: avoid compilation error without FCSE
+      arm/ipipe: automatically start a timer to refresh tsc
+      at91/ipipe: rework at91_ipipe again
+      ipipe/at91: re-add the 1ms margin to the timer programming time
+      arm/ipipe: remove calls to __ipipe_tsc_update
+      at91/ipipe: adapt to AIC5
+      ipipe/genpatches.sh: move the 8250 serial debug to the noarch section
+      at91_ipipe: look for a 5MHz clock instead of 1MHz if TC has 32 bits
+
+ arch/arm/common/timer-sp.c            |    4 +-
+ arch/arm/include/asm/fcse.h           |   12 ++--
+ arch/arm/kernel/ipipe_tsc.c           |   40 ++++++++---
+ arch/arm/kernel/smp.c                 |    2 -
+ arch/arm/kernel/smp_twd.c             |    7 +-
+ arch/arm/mach-at91/at91_ipipe.c       |  135 ++++++++++++++++++++----------------
+ arch/arm/mach-at91/at91_ipipe.h       |    9 +--
+ arch/arm/mach-at91/at91rm9200_time.c  |    5 +-
+ arch/arm/mach-at91/at91sam926x_time.c |    5 +-
+ arch/arm/mach-at91/at91x40_time.c     |    3 +-
+ arch/arm/mach-at91/gpio.c             |   19 +++--
+ arch/arm/mach-at91/irq.c              |   51 ++++++++++++--
+ arch/arm/mach-davinci/time.c          |    3 -
+ arch/arm/mach-imx/time.c              |    2 -
+ arch/arm/mach-ixp4xx/common.c         |    4 +-
+ arch/arm/mach-omap2/timer.c           |   15 ++--
+ arch/arm/mach-pxa/time.c              |    3 +-
+ arch/arm/mach-sa1100/time.c           |    5 +-
+ arch/arm/mach-spear/time.c            |    4 --
+ scripts/ipipe/genpatches.sh           |    4 +-
+ 20 files changed, 192 insertions(+), 140 deletions(-)
 
 -- 
                                                                 Gilles.
