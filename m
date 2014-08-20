@@ -1,12 +1,14 @@
-Resent-To: xenomai@xenomai.org
-Resent-Message-ID: <53F3C9CE.5070405@xenomai.org>
-Message-ID: <53F3C9BF.6040405@xenomai.org>
-Date: Wed, 20 Aug 2014 00:03:43 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+In-Reply-To: <53F332AD.20009@xenomai.org>
+References: <CAKKWdtfZm+F3M+VtD2zG=JMun1GYtNDOAbzYvVUDXxq5B8qsMw@mail.gmail.com>
+ <53F30622.4050605@xenomai.org>
+ <CAKKWdtcS_Mz0vd3EMkEgGQuB98NwQbNfo5XGDmGMm3r-HBcz6g@mail.gmail.com>
+ <53F332AD.20009@xenomai.org>
+Date: Wed, 20 Aug 2014 14:20:56 +0430
+Message-ID: <CAKKWdtfwAzVhj6dD5gmbs-1MMaA+EABrB1KNeGapKe99EOoSWw@mail.gmail.com>
+From: ali hagigat <hagigatali@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [GIT PULL] ipipe patch for Linux 3.14
+Subject: Re: [Xenomai] a question about interrupts
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,61 +17,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai <xenomai@xenomai.org>
 
-This concludes my tests of the I-pipe kernel for 3.14. For benchmark 
-results, see:
+> I have no problem helping beginners getting up to speed, in a few weeks
+> or a few months. But you have been a beginner for two years now, so,
+> trying and answering you seems pointless. Yes the question you asked is
+> fundamental, but it is so fundamental that you should have understood
+> the answer by yourself within the few weeks of using Xenomai:
+> - either by reading the documentation
+> - or by reading the code (this is free software, you have all the code)
+> - or by using common sense.
+>
+> Now, if you have been unable to progress by any of these 3 means during
+> 2 years, chances are you will never progress, so I am sorry, but again,
+> trying and helping you seems pointless.
+>
+> --
+>                                                                 Gilles.
+>
 
-http://xenomai.org/2014/08/benchmarks-xenomai-dual-kernel-over-linux-3-14/
-
-The following changes since commit 4946c5cd6f59101a274232a456690fd76cedf6af:
-
-  ipipe/genpatches.sh: fixup for arm-based drivers (2014-07-03 11:01:26 +0200)
-
-are available in the git repository at:
-
-  git://git.xenomai.org/ipipe-gch for-ipipe-3.14.0
-
-for you to fetch changes up to 45c827b5b23a8f2f47fc97d6bb84b5b8456cf863:
-
-  at91_ipipe: look for a 5MHz clock instead of 1MHz if TC has 32 bits (2014-08-16 18:32:23 +0200)
-
-----------------------------------------------------------------
-Anders Blomdell (1):
-      ipipe: fix genpatches.sh
-
-Gilles Chanteperdrix (8):
-      arm/fcse: avoid compilation error without FCSE
-      arm/ipipe: automatically start a timer to refresh tsc
-      at91/ipipe: rework at91_ipipe again
-      ipipe/at91: re-add the 1ms margin to the timer programming time
-      arm/ipipe: remove calls to __ipipe_tsc_update
-      at91/ipipe: adapt to AIC5
-      ipipe/genpatches.sh: move the 8250 serial debug to the noarch section
-      at91_ipipe: look for a 5MHz clock instead of 1MHz if TC has 32 bits
-
- arch/arm/common/timer-sp.c            |    4 +-
- arch/arm/include/asm/fcse.h           |   12 ++--
- arch/arm/kernel/ipipe_tsc.c           |   40 ++++++++---
- arch/arm/kernel/smp.c                 |    2 -
- arch/arm/kernel/smp_twd.c             |    7 +-
- arch/arm/mach-at91/at91_ipipe.c       |  135 ++++++++++++++++++++----------------
- arch/arm/mach-at91/at91_ipipe.h       |    9 +--
- arch/arm/mach-at91/at91rm9200_time.c  |    5 +-
- arch/arm/mach-at91/at91sam926x_time.c |    5 +-
- arch/arm/mach-at91/at91x40_time.c     |    3 +-
- arch/arm/mach-at91/gpio.c             |   19 +++--
- arch/arm/mach-at91/irq.c              |   51 ++++++++++++--
- arch/arm/mach-davinci/time.c          |    3 -
- arch/arm/mach-imx/time.c              |    2 -
- arch/arm/mach-ixp4xx/common.c         |    4 +-
- arch/arm/mach-omap2/timer.c           |   15 ++--
- arch/arm/mach-pxa/time.c              |    3 +-
- arch/arm/mach-sa1100/time.c           |    5 +-
- arch/arm/mach-spear/time.c            |    4 --
- scripts/ipipe/genpatches.sh           |    4 +-
- 20 files changed, 192 insertions(+), 140 deletions(-)
-
--- 
-                                                                Gilles.
+Hello, thank you for the answer. 2 years to understand a technology
+mixed with Linux kernel, while knowing Linux kernel is a prerequisite.
+Is that much for anyone really? Kernel with 63000 files several Giga
+bytes code after compile!!
 
