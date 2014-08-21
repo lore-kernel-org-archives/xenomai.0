@@ -1,16 +1,11 @@
-Message-ID: <53F630B0.7020003@xenomai.org>
-Date: Thu, 21 Aug 2014 19:47:28 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Steve Hartmann <shartmann@cnt.canon.com>
+Date: Thu, 21 Aug 2014 20:04:27 +0000
+Message-ID: <D01BBA98.18467%shartmann@cnt.canon.com>
+Content-Language: en-US
 MIME-Version: 1.0
-References: <D36F9745-B497-4700-8BDC-92281227E1D4@gatech.edu>
- <53EA690E.50101@xenomai.org>
- <62F8D98A-B570-40B9-80D2-E06866C75693@gatech.edu>
- <53F04C0A.1050303@xenomai.org>
- <72378704-FEF6-466B-A5EA-595F0B6F708E@gatech.edu>
-In-Reply-To: <72378704-FEF6-466B-A5EA-595F0B6F708E@gatech.edu>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Parallel Computing?
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] ENOMEM returned from rt_task_create and rt_sem_create
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,25 +14,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Yogi A. Patel" <yapatel@gatech.edu>, Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/21/2014 07:21 PM, Yogi A. Patel wrote:
-> Hi -
-> 
-> I have been trying to figure this out - and had a similar question.
-> 
-> When configuring the kernel, there is an option to “enable max number
-> of cpus”. When I enable this, the compile fails and said that there
-> was an error in “gatekeeper with set_num_cpus”.
-> 
-> Has anyone else experienced a similar error?
+Hi folks,
 
-Your post is to vague for us you answer. Please paste here the exact
-error message.
+I am using linux 3.2.21 + xenomai 2.6.2.1 on intel core i7.  This is a user=
+ land application.
 
-Also, please stop top-posting.
+This code I am having issues with was working pretty well until I added som=
+e more semaphores.  As it runs right now, it will call rt_sem_create 544 ti=
+mes, then call a single rt_task_create.  There are also about 15 mutexes cr=
+eated also.  I didn't count it, but somewhere around 520 or so semaphores, =
+I start getting ENOMEM returned from both of these methods.
 
--- 
-                                                                Gilles.
+Is there a way I can increase whatever memory pool these are pulling from? =
+ It is feasible to rewrite the code so I use less semaphores, but if it is =
+not detrimental, I would like to just raise whatever limit it is that I am =
+running into.
 
+Thanks,
+
+
+Steve
