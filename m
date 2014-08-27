@@ -1,10 +1,13 @@
-Message-ID: <53FE1832.7080808@nta-inc.net>
-Date: Wed, 27 Aug 2014 12:41:06 -0500
-From: Jeff Webb <jeff.webb@nta-inc.net>
+Message-ID: <53FE2A10.6090000@xenomai.org>
+Date: Wed, 27 Aug 2014 20:57:20 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+References: <CAKKWdtdznD6Tgu++e99cNmYT3TA0pjyNBqoR9k2kkn_E5Lab3Q@mail.gmail.com>	<53FC6F4B.7080107@xenomai.org>	<1409053253.79352.YahooMailNeo@web142601.mail.bf1.yahoo.com>	<53FC98FF.4050006@xenomai.org>
+ <CAKKWdtf29M31YWGn-f5jntHi4R18sJpR3SrNXh2AmA_-BLo-Bg@mail.gmail.com>
+In-Reply-To: <CAKKWdtf29M31YWGn-f5jntHi4R18sJpR3SrNXh2AmA_-BLo-Bg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Xenomai-3: RTDM with Mercury?
+Subject: Re: [Xenomai] trigger!!
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,15 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: ali hagigat <hagigatali@gmail.com>
+Cc: xenomai <xenomai@xenomai.org>
 
- From the recent traffic on the mailing list, and the website makeover, it sounds like Xenomai 3 is close to maturity, so I am trying to become familiar with the new technology.  I am very interested in the idea of having one code base that can be used in Linux, PREEMPT-RT, and dual-kernel applications.  Even with Xenomai 2, I have moved close to this goal by using the POSIX skin and using compiler directives to build my code as a standard linux application, or a real-time Xenomai version.
+On 08/27/2014 04:47 PM, ali hagigat wrote:
+> Sorry to ask it again but the file, /proc/ipipe/trace/trigger, can be
+> written only once.
 
-The main thing I am missing now is a unified interface to hardware devices, and it sounds like Xenomai 3 might be able to provide that.  From the introduction on the web site ( http://xenomai.org/introducing-xenomai-3/ ), it sounds like I should be able to use RTDM drivers with the standard linux kernel through the Mercury core.  How does this work?  Figure 3 shows a "native RTDM" block.  Is this block a kernel module that translates RTDM-specific calls into standard linux calls?  Does the translation happen at compile time or run-time?  Is there documentation on how I can write an RTDM driver that will work with both the Cobalt and Mercury cores?  For starters, can I access the 16550 RTDM driver from mercury?
+>From looking at the code, I do not think so. It seems to me you can
+write to the file as many times as you want.
 
-I apologize if all of this is documented, and I've just missed it.  I also realize that Xenomai 3 is a work in progress and you haven't gotten to everything yet.  The documentation you have is very good, and I appreciate all the work you have put into it.
+> The documentation says:
+> "Write an empty string to disable the trigger, "
+> As far as I tested,  writing empty string to the file , trigger,
+> returns with error
 
-Thanks,
+The code agrees with this conclusion.
 
-Jeff
+> and frozen log continue to become updated
+> After the initial write I can not write to this file any more even if I do:
+> echo 0 > /proc/ipipe/trace/enable
+> 
+
+Why not trying and writing the name of a function which has no chance of
+being triggered, such as "start_kernel" ?
+
+-- 
+                                                                Gilles.
 
