@@ -1,11 +1,11 @@
 From: "Yogi A. Patel" <yapatel@gatech.edu>
 Mime-Version: 1.0 (1.0)
-Message-Id: <443DA8ED-FBAA-4DE6-814A-317E04D56407@gatech.edu>
-Date: Tue, 26 Aug 2014 23:22:45 -0400
+Message-Id: <D48D4F6E-CCC5-43D0-9826-BC522A8A750E@gatech.edu>
+Date: Tue, 26 Aug 2014 23:31:27 -0400
 Content-Type: text/plain;
 	charset=us-ascii
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Overrun error
+Subject: [Xenomai] Computing real time benchmarks
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,30 +18,13 @@ To: xenomai@xenomai.org
 
 Hi -
 
-I have ubuntu 14.04 running kernel 3.8 patched with xenomai 2.6.3.
+I am interested in computing the real time performance (computation time, pe=
+riod, jitter) of my application while it is running and display it within th=
+e application.
 
-I have the kernel configured with:
+Is there a "smart" way to do this without imposing a large burden on the sys=
+tems performance?
 
-Processor type -> core 2/newer xenon
-Preemption model -> low-latency desktop
-ACPI -> Processor (disabled)
-
-When I run the latency test, things are great (for hours at a time). Average=
- latencies are 1-1.3us and no overruns.
-
-These latency results remain even when I run my own real time software.=20
-
-However, the moment I open Firefox or chrome, I start seeing overruns.
-
-This is confusing - I would think applications like web browsers would not h=
-ave any reason to cause overruns.
-
-It's very likely I don't understand how the overruns occur in such a situati=
-on and what causes an overrun.
-
-Has anyone else seen similar issues?
-
-Also, when reading the output of the latency test, why do the overrun values=
- never go back to zero between printouts of the latency test?
+Thanks!
 
 Yogi
