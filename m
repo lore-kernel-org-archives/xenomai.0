@@ -1,12 +1,13 @@
-Message-ID: <53FD899D.4080609@xenomai.org>
-Date: Wed, 27 Aug 2014 09:32:45 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Reitinger, Peter" <preitinger@carl-valentin.de>
+Date: Wed, 27 Aug 2014 07:48:39 +0000
+Message-ID: <860f4c66b4b34363a35ca81ac139eaba@CVEX13.valentin-carl.de>
+References: <mailman.981.1409108395.5713.xenomai@xenomai.org>
+In-Reply-To: <mailman.981.1409108395.5713.xenomai@xenomai.org>
+Content-Language: de-DE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <443DA8ED-FBAA-4DE6-814A-317E04D56407@gatech.edu>
-In-Reply-To: <443DA8ED-FBAA-4DE6-814A-317E04D56407@gatech.edu>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Overrun error
+Subject: Re: [Xenomai] SPI tx underflow interrupt not available
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,53 +16,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Yogi A. Patel" <yapatel@gatech.edu>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/27/2014 05:22 AM, Yogi A. Patel wrote:
-> Hi -
-> 
-> I have ubuntu 14.04 running kernel 3.8 patched with xenomai 2.6.3.
-> 
-> I have the kernel configured with:
-> 
-> Processor type -> core 2/newer xenon Preemption model -> low-latency
-> desktop ACPI -> Processor (disabled)
-> 
-> When I run the latency test, things are great (for hours at a time).
-> Average latencies are 1-1.3us and no overruns.
-> 
-> These latency results remain even when I run my own real time
-> software.
-> 
-> However, the moment I open Firefox or chrome, I start seeing
-> overruns.
-> 
-> This is confusing - I would think applications like web browsers
-> would not have any reason to cause overruns.
-
-What graphic driver do you use? What version of the I-pipe patch? If
-Intel, ipipe-core-3.8.13-x86-4.patch contains a fix for latency issues
-observed on this hardware.
-
-> 
-> It's very likely I don't understand how the overruns occur in such a
-> situation and what causes an overrun.
-> 
-> Has anyone else seen similar issues?
-
-Yes, this happens from time to time, and a "generic" workaround is even
-in our troubleshooting guide:
-http://xenomai.org/troubleshooting-a-dual-kernel-configuration/#the_latency_test_shows_high_latencies
-
-> 
-> Also, when reading the output of the latency test, why do the overrun
-> values never go back to zero between printouts of the latency test?
-
-Because the count of overruns is cumulative, as are all the counters 
-after the count of overruns (msw, lat best, lat worst). When you have 
-observed overruns, you usually want the information to stick, so that 
-you see it when you stop the test.
-
--- 
-                                                                Gilles.
+On 08/26/2014 04:24 PM, Reitinger, Peter wrote:=0A=
+> Dear Xenomai people,=0A=
+>=0A=
+>=0A=
+> I am currently trying to write an SPI slave rtdm driver with fifo and dma=
+ support. I would like to receive an interrupt if there is an underflow in =
+the tx fifo.=0A=
+>=0A=
+> Therefore I try to request the related hardware interrupt (which is irq 1=
+25 at my emtrion board which has EDMA and 2 McSPI interfaces where I am try=
+ing McSPI1).=0A=
+=0A=
+Are you sure the irq number is 125? If 125 is a "physical" irq number,=0A=
+it is almost probably not the number you should pass to=0A=
+rtdm_irq_request. Have you tried requesting it as a Linux interrupt?=0A=
+=0A=
+=0A=
+=0A=
+>=0A=
+> Unfortunately it seems that interrupt 125 is reserved by another linux=0A=
+driver because a list of /proc/irq/125 shows:=0A=
+>=0A=
+> root@dimm-am335x:/proc# ls /proc/irq/125=0A=
+> 53100000.sham  spurious=0A=
+=0A=
+Have you tried grepping "sham" in the kernel sources?=0A=
+=0A=
+No, I am absolutely unsure if 125 is the right number because I am relative=
+ly new in programming interrupts in the kernel. So I feel I have to read a =
+lot about interrupts in linux? So I have to combine original linux kernel f=
+unction calls and xenomai function calls to get interrupts working? Sorry t=
+hat I have so few experience there... If you have a quick help in mind even=
+ though it is not directly related to Xenomai, you would help me a lot... :=
+-/=0A=
+=0A=
+Thx, I will try to grep for sham. I am afraid there might be a lot of hits.=
+..=0A=
+=0A=
+Kind Regards,=0A=
+Peter Reitinger=
 
