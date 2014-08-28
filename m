@@ -1,12 +1,12 @@
-Message-ID: <53FF8E93.6060704@xenomai.org>
-Date: Thu, 28 Aug 2014 22:18:27 +0200
+Message-ID: <53FF908C.5070503@xenomai.org>
+Date: Thu, 28 Aug 2014 22:26:52 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAEGbdifyuoCnxOnSfo7gXY0Ra1yUcJQY-7HXto5EvsjXEGXFNw@mail.gmail.com>
-In-Reply-To: <CAEGbdifyuoCnxOnSfo7gXY0Ra1yUcJQY-7HXto5EvsjXEGXFNw@mail.gmail.com>
+References: <CAKKWdteuWLz2YAhnsQZo9wH7T6o5F62du7MdZ+fZg6+A+JqBZQ@mail.gmail.com>
+In-Reply-To: <CAKKWdteuWLz2YAhnsQZo9wH7T6o5F62du7MdZ+fZg6+A+JqBZQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Linux ATA driver issues and lockups
+Subject: Re: [Xenomai] a question about domains
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,21 +15,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Matthew Lindner <mattlindn@gmail.com>, xenomai@xenomai.org
+To: ali hagigat <hagigatali@gmail.com>, xenomai <xenomai@xenomai.org>
 
-On 08/28/2014 10:09 PM, Matthew Lindner wrote:
-> We are using an Advantech-PCM9389 board running Linux 3.10.32 with
-> Xenomai 2.6.3. Regularly there is an error that occurs. Sometimes
-> operation continues as normal, sometimes the operating system freezes
-> (with no panic). We have narrowed it down that when compiling a Linux
-> 3.10.32 kernel there are no issues but when Xenomai patches are
-> applied and Xenomai suggested kernel settings are changed these errors
-> start occurring.
+On 08/09/2014 04:45 PM, ali hagigat wrote:
+> I wonder if anybody can answer this and i apprecite in advance.
+> Nothing can change the current domain! as far as i looked in the code.
+> How is that possible?
+> does xnpod_schedule() can set a new current domain for a CPU?
+> It seems that current domian is set to "root" and keeps that forever.
+> Only some functions temporarily change "current domain" to "head" but
+> immediately it returns to "root" or "current domain".
 
-What happens if kernel configuration is changed but Xenomai and I-pipe
-patches not applied?
-If the system still works, what happens if you enable CONFIG_IPIPE and
-not CONFIG_XENOMAI ?
+To anyone wondering about this interpretation: it does not make sense.
+For an explanation of the Adeos domain concept, see:
+
+http://xenomai.org/2014/06/life-with-adeos/
+http://www.opersys.com/ftp/pub/Adeos/adeos.pdf
 
 -- 
                                                                 Gilles.
