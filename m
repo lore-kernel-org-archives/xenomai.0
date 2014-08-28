@@ -1,12 +1,12 @@
-Message-ID: <53FF292E.2010507@xenomai.org>
-Date: Thu, 28 Aug 2014 15:05:50 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <53FE1832.7080808@nta-inc.net>
-In-Reply-To: <53FE1832.7080808@nta-inc.net>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Xenomai-3: RTDM with Mercury?
+In-Reply-To: <53FDFD27.2010207@xenomai.org>
+References: <CACreCV+9seA7yp8gmjvOb6CQ7-Fbt-HyQ6YAoB_dqtmqmyvy7Q@mail.gmail.com>
+ <53FDFD27.2010207@xenomai.org>
+Date: Thu, 28 Aug 2014 21:45:27 +0800
+Message-ID: <CACreCV+cQTO-5iFCCvC15VxNzXuvKkLN+_gUTex-r3Y1cByUkw@mail.gmail.com>
+From: GP Orcullo <kinsamanka@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] ODROID-U3 porting problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,68 +15,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeff Webb <jeff.webb@nta-inc.net>, Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 08/27/2014 07:41 PM, Jeff Webb wrote:
-> From the recent traffic on the mailing list, and the website makeover,
-> it sounds like Xenomai 3 is close to maturity, so I am trying to become
-> familiar with the new technology.  I am very interested in the idea of
-> having one code base that can be used in Linux, PREEMPT-RT, and
-> dual-kernel applications.  Even with Xenomai 2, I have moved close to
-> this goal by using the POSIX skin and using compiler directives to build
-> my code as a standard linux application, or a real-time Xenomai version.
-> 
-> The main thing I am missing now is a unified interface to hardware
-> devices, and it sounds like Xenomai 3 might be able to provide that. 
-> From the introduction on the web site (
-> http://xenomai.org/introducing-xenomai-3/ ), it sounds like I should be
-> able to use RTDM drivers with the standard linux kernel through the
-> Mercury core.  How does this work?  Figure 3 shows a "native RTDM"
-> block.  Is this block a kernel module that translates RTDM-specific
-> calls into standard linux calls?
+On Wed, Aug 27, 2014 at 11:45 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On 08/27/2014 03:49 PM, GP Orcullo wrote:
+>> Hi,
+>>
+>> I'm in the process of porting xenomai to Samsung Exynos 4420 based
+>> ODROID-U3 board. I've followed the online manual and I was able to finish
+>> up to the interrupt controller part.
+>>
+>> So far everything works when booting the board with CONFIG_IPIPE and
+>> CONFIG_XENOMAI enabled. However, running the latency test gives the
+>> following results:
+>>
+>> root@odroidu3:~# /usr/lib/xenomai/testsuite/latency -t 0 -T5
+>> == Sampling period: 1000 us
+>> == Test mode: periodic user-mode task
+>> == All results in microseconds
+>> warming up...
+>> RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99)
+>> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+>> RTD|-1054607.854|-555107.854|-416666.667|       0|
+>> 0|-1054607.854|-416666.667
+>> RTD|-2054607.854|-1555107.854|-416666.667|       0|
+>> 0|-2054607.854|-416666.667
+>> RTD|1240359.443|1739859.443|-416666.667|       0|     0|1240359.443|-416666.667
+>> RTD| 240359.443| 739859.443|-416666.667|       0|     0| 240359.443|-416666.667
+>> ---|-----------|-----------|-----------|--------|------|-------------------------
+>> RTS| 240359.443|-2055107.854|-416666.667|       0|     0|    00:00:05/00:00:05
+>
+> I would say you have a problem with the tsc emulation. Have you tried to
+> run the "tsc" program?
+>
+>
 
-Yes, basically.
+Thanks for the tip! The problem was due to wrong physical address value.
 
-  Does the translation happen at compile
-> time or run-time?
+>> [    0.000000] Linux version 3.8.13.11-xen (gemi@odroidu3) (gcc version 4.6.3 (Debian 4.6.3-14) ) #34 SMP PREEMPT Wed Aug 27 20:22:46 SGT 2014 ()
+>
+> 3.8.13 is a bit old, I would advise you to use 3.14 if you plan to get
+> your changes merged.
+>
 
-Compile-time.
+Unfortunately this is the only stable version available. A newer version is
+being worked on but it is based on 3.16. This will do for the time being,
+I'm just using this as a test bed for machinekit.
 
-  Is there documentation on how I can write an RTDM
-> driver that will work with both the Cobalt and Mercury cores?
+>> [    0.000000] Kernel was built at commit id ''
+>> [    0.000000] CPU: ARMv7 Processor [413fc090] revision 0 (ARMv7), cr=10c5387d
+>
+> So, this is a cortex a9. On Cortex a9, Xenomai tries to use the global
+> timer for tsc emulation. Are you sure this processor has a global timer?
+> Again, running the "tsc" program will help you see if the tsc emulation
+> is working correctly.
 
-Not yet, but the rule of thumb is to avoid the legacy
-RTDM_EXECUTE_ATOMICALLY() construct (or the newest
-cobalt_atomic_enter/leave the same way) to keep compatibility.
+AFAIK, the exynos soc doesn't use twd - they have a multi-core timer
+instead. There is one global timer and a local timer for each core.
 
-rtdm_waitqueues have been introduced to support the patterns where
-RTDM_EXECUTE_ATOMICALLY() was usually involved in.
-This is discussed at
-http://xenomai.org/migrating-from-xenomai-2-x-to-3-x/#Driver_API
+BTW, is it necessary that there should be an ipipe timer for each core
+or a single
+"global" one will do?
 
-  For
-> starters, can I access the 16550 RTDM driver from mercury?
-> 
+>
+>
+> --
+>                                                                 Gilles.
 
-16550 should be mercury-ready, I don't see any non-portable pattern in
-this code. But I never tried it in a single kernel configuration, see below.
-
-> I apologize if all of this is documented, and I've just missed it.  I
-> also realize that Xenomai 3 is a work in progress and you haven't gotten
-> to everything yet.  The documentation you have is very good, and I
-> appreciate all the work you have put into it.
-> 
-
-Thanks. Regarding RTDM over Mercury, Wolfgang (Grandegger) published a
-proof-of-concept implementation which dates back to 2008 or so, but
-since we never received any feedback, I'm assuming that the current user
-base of this code is either small, reserved or terribly shy.
-
-In any case, it has not been reworked over Xenomai 3 yet, at the very
-least for supporting the latest RTDM API changes/features. However, this
-is certainly high on the todo list now, as we direly need this component
-to close the loop.
-
--- 
-Philippe.
+Gemi
 
