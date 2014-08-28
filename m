@@ -1,11 +1,12 @@
-Message-ID: <53FF93A3.8070101@xenomai.org>
-Date: Thu, 28 Aug 2014 22:40:03 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Thu, 28 Aug 2014 16:47:59 -0400
+Message-ID: <20140828204759.GB17690@csclub.uwaterloo.ca>
 References: <20140828203532.GA17690@csclub.uwaterloo.ca>
-In-Reply-To: <20140828203532.GA17690@csclub.uwaterloo.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ <53FF93A3.8070101@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <53FF93A3.8070101@xenomai.org>
 Subject: Re: [Xenomai] Xenomai/Ipipe on arm with LPAE enabled not booting
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,27 +16,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 08/28/2014 10:35 PM, Lennart Sorensen wrote:
-> So I did some experiments on 3.12 kernel on an omap5726.
+On Thu, Aug 28, 2014 at 10:40:03PM +0200, Gilles Chanteperdrix wrote:
+> Chances are high that the kernel starts booting, but encounters a 
+> problem before enabling the console. In order to get the traces, see:
 > 
-> Xenomai/ipipe seems to work great (after all it managed to pass the
-> xenomai test suite).
-> 
-> LPAE+KVM also works great.
-> 
-> However if you enable LPAE (with or without KVM) while ipipe is enabled
-> (with or without xenomai enabled), then the kernel never boots (no
-> console messages at all).
-> 
-> Any ideas where to start on debugging this problem?
+> http://xenomai.org/2014/06/porting-xenomai-to-a-new-arm-soc/#The_kernel_stops_after_the_message_8220Uncompressing_Linux8230_done_booting_the_kernel8221
 
-Chances are high that the kernel starts booting, but encounters a 
-problem before enabling the console. In order to get the traces, see:
+Unfortunately the serial port is NOT 8250 on the omap5, although it is
+a 16750 supposely, just driven by another driver (this is changing in
+the future fortunately).
 
-http://xenomai.org/2014/06/porting-xenomai-to-a-new-arm-soc/#The_kernel_stops_after_the_message_8220Uncompressing_Linux8230_done_booting_the_kernel8221
+I will give it a try though.
+
+It didn't occur to me to look at the porting docs given "it already
+works". :)
 
 -- 
-                                                                Gilles.
+Len Sorensen
 
