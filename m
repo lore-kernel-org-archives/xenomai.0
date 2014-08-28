@@ -1,12 +1,16 @@
-Message-ID: <53FFADFD.7030407@nta-inc.net>
-Date: Thu, 28 Aug 2014 17:32:29 -0500
-From: Jeff Webb <jeff.webb@nta-inc.net>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Thu, 28 Aug 2014 19:16:25 -0400
+Message-ID: <20140828231625.GF17690@csclub.uwaterloo.ca>
+References: <20140828203532.GA17690@csclub.uwaterloo.ca>
+ <53FF93A3.8070101@xenomai.org>
+ <20140828220153.GE17690@csclub.uwaterloo.ca>
+ <53FFA96E.2090904@xenomai.org>
 MIME-Version: 1.0
-References: <53FE1832.7080808@nta-inc.net> <53FF292E.2010507@xenomai.org>
-In-Reply-To: <53FF292E.2010507@xenomai.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai-3: RTDM with Mercury?
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <53FFA96E.2090904@xenomai.org>
+Subject: Re: [Xenomai] Xenomai/Ipipe on arm with LPAE enabled not booting -
+ now with crash message
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,72 +19,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 08/28/2014 08:05 AM, Philippe Gerum wrote:
-> On 08/27/2014 07:41 PM, Jeff Webb wrote:
->>  From the recent traffic on the mailing list, and the website makeover,
->> it sounds like Xenomai 3 is close to maturity, so I am trying to become
->> familiar with the new technology.  I am very interested in the idea of
->> having one code base that can be used in Linux, PREEMPT-RT, and
->> dual-kernel applications.  Even with Xenomai 2, I have moved close to
->> this goal by using the POSIX skin and using compiler directives to build
->> my code as a standard linux application, or a real-time Xenomai version.
->>
->> The main thing I am missing now is a unified interface to hardware
->> devices, and it sounds like Xenomai 3 might be able to provide that.
->>  From the introduction on the web site (
->> http://xenomai.org/introducing-xenomai-3/ ), it sounds like I should be
->> able to use RTDM drivers with the standard linux kernel through the
->> Mercury core.  How does this work?  Figure 3 shows a "native RTDM"
->> block.  Is this block a kernel module that translates RTDM-specific
->> calls into standard linux calls?
->
-> Yes, basically.
->
->    Does the translation happen at compile
->> time or run-time?
->
-> Compile-time.
->
->    Is there documentation on how I can write an RTDM
->> driver that will work with both the Cobalt and Mercury cores?
->
-> Not yet, but the rule of thumb is to avoid the legacy
-> RTDM_EXECUTE_ATOMICALLY() construct (or the newest
-> cobalt_atomic_enter/leave the same way) to keep compatibility.
->
-> rtdm_waitqueues have been introduced to support the patterns where
-> RTDM_EXECUTE_ATOMICALLY() was usually involved in.
-> This is discussed at
-> http://xenomai.org/migrating-from-xenomai-2-x-to-3-x/#Driver_API
->
->    For
->> starters, can I access the 16550 RTDM driver from mercury?
->>
->
-> 16550 should be mercury-ready, I don't see any non-portable pattern in
-> this code. But I never tried it in a single kernel configuration, see below.
->
->> I apologize if all of this is documented, and I've just missed it.  I
->> also realize that Xenomai 3 is a work in progress and you haven't gotten
->> to everything yet.  The documentation you have is very good, and I
->> appreciate all the work you have put into it.
->>
->
-> Thanks. Regarding RTDM over Mercury, Wolfgang (Grandegger) published a
-> proof-of-concept implementation which dates back to 2008 or so, but
-> since we never received any feedback, I'm assuming that the current user
-> base of this code is either small, reserved or terribly shy.
->
-> In any case, it has not been reworked over Xenomai 3 yet, at the very
-> least for supporting the latest RTDM API changes/features. However, this
-> is certainly high on the todo list now, as we direly need this component
-> to close the loop.
->
+On Fri, Aug 29, 2014 at 12:13:02AM +0200, Gilles Chanteperdrix wrote:
+> On 08/29/2014 12:01 AM, Lennart Sorensen wrote:
+> > [   91.861761] PC is at _raw_spin_lock_irqsave+0x10/0x4c
+> > [   91.872209] LR is at _raw_spin_lock_irqsave+0xc/0x4c
+> > [   91.882479] pc : [<c0455c98>]    lr : [<c0455c94>]    psr: 20000153
+> > [   91.882479] sp : ee8f5dc0  ip : 20000153  fp : c0d97760
+> > [   91.906198] r10: 00000000  r9 : c006a46c  r8 : ee8f5e04
+> > [   91.916997] r7 : 00000000  r6 : ee83ba40  r5 : c0743af4  r4 : 00000000
+> > [   91.930451] r3 : c06c8b88  r2 : 00905000  r1 : 00000001  r0 : 00000000
+> 
+> You have to disassemble _raw_spin_lock_irqsave to see what is at offset
+> 0x10, and where it can come from.
 
-Thanks, Philippe.  That explanation clears things up.  I think Xenomai is headed in a great direction.
+I will give that a try next week when i am back at work.
 
--Jeff
-
+-- 
+Len Sorensen
 
