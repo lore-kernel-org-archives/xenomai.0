@@ -1,12 +1,14 @@
-Message-ID: <53FE46B5.4010001@mitre.org>
-Date: Wed, 27 Aug 2014 16:59:33 -0400
-From: Jeffrey Melville <jmelville@mitre.org>
+From: Asier Tamayo <asier.tamayo@onaedm.com>
+Date: Thu, 28 Aug 2014 09:57:21 +0000
+Message-ID: <4F6C25B906613147991AA0B688C61D1F41FB2C69@SRVEXCHANGE.ona-electroerosion.com>
+References: <4F6C25B906613147991AA0B688C61D1F41FAFB78@SRVEXCHANGE.ona-electroerosion.com>
+ <53FDBF06.4000502@xenomai.org>
+In-Reply-To: <53FDBF06.4000502@xenomai.org>
+Content-Language: es-ES
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <53F4B4DA.6050703@mitre.org> <53F4F273.7090104@xenomai.org>
-In-Reply-To: <53F4F273.7090104@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rtdm_iomap_to_user caching followup
+Subject: Re: [Xenomai] Migrating from Xenomai to PREEMPT_RT
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,38 +17,163 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 8/20/2014 3:09 PM, Gilles Chanteperdrix wrote:
-> On 08/20/2014 04:46 PM, Jeffrey Melville wrote:
->> All,
->>
->> There was a patch applied back in January 2013 to disable caching with
->> memory areas mapped with rtdm_iomap_to_user.
->> (http://www.xenomai.org/pipermail/xenomai/2013-January/027370.html)
->>
->> Henri Roosen followed up in September 2013 to say that he still saw
->> caching behavior with rtdm_iomap_to_user. The original patch didn't
->> cover the ifdef LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,16) &&
->> defined(CONFIG_MMU). He submitted two patch options but I didn't see any
->> responses.
->> (http://www.xenomai.org/pipermail/xenomai/2013-September/029211.html)
->
->
-> I believe this has been merged with commit
-> http://git.xenomai.org/xenomai-2.6.git/commit/?id=1b8fb14e486ac0604e44067a0f1f89dc14153e95
->
-> Could you try xenomai 2.6 git to see if you still have the issue?
->
-Gilles,
+Dear Philippe,
 
-Thanks for your response. My mistake, I thought I had already looked at 
-the 2.6 git head. The commit you mentioned is the right one. I tested 
-the 2.6 git on my hardware and didn't have any lockup issues. Yocto 
-actually still mistakenly applied my old patch against the kmem wrapper 
-(which I'm not using anywhere). I need to remove that from my build but 
-otherwise everything looks good for now.
+Thank you for your support.
 
-Cheers,
-Jeff
+> - moving to Yocto means changing the whole environment, unless you go
+> for Denx's ELDK, which is Yocto-based _and_ Xenomai-enabled, in which
+> case you would not have to port your application.
+>=20
+Sadly, ELDK doesn't have x86 among its support architectures. Surely, they =
+can add it, but at a cost.
+
+> - moving to straight preempt-rt means changing your programming model
+> from dual kernel to single kernel, porting your application from
+> Xenomai's "native" API to POSIX, and porting your drivers to a single
+> kernel system. A native incarnation of RTDM does exist, but we did not
+> receive any feedback since it was released (many) years ago, so rough
+> edges may exist.
+>=20
+Which are the "philosophical" changes in changing my programming model from=
+ dual kernel to single kernel? Should I expect many problems in porting the=
+ native API to POSIX? Should I try another solution instead of using the na=
+tive incarnation of RTDM in preempt-rt? Which one?
+
+> - upgrading Elinos to Xenomai 2.6.x means updating your kernel - which
+> is something you have to do for other reasons anyway - and building a
+> drop in replacement of the Xenomai libraries and tools in user-space,
+> for replacing the legacy ones shipped with Elinos. Kernel-wise, the
+> requirement is to have an I-pipe patch available for your kernel version
+> of choice. The upcoming Xenomai 2.6.4 supports kernel 3.14.
+>=20
+If I'm not confused, applying the I-pipe patch to the ELinOS kernel would a=
+dd the Xenomai support, but I'm not sure if the ELK tool (Embedded Linux Ko=
+nfigurator) will show me that option. I'll ask Sysgo about this. While they=
+ answer, has anyone got any experience doing something similar?
+
+> Mercury (i.e. single kernel Xenomai 3 configuration) would allow you to
+> move to preempt-rt without having to switch APIs from Xenomai 2.x
+> "native" to POSIX.
+>=20
+Is the real-time performance (latency, jitter...) different in the single a=
+nd in the double kernel approaches? If the performance depends on the RT ap=
+proach (i.e., preempt-rt performance in the Mercury architecture and Xenoma=
+i v2 performance in the Cobalt one), are there any benchmarks comparisons b=
+etween them? The ones I have found are quite outdated.
+
+If I use the Mercury architecture, do I need to patch my ELinOS distributio=
+n (already with PREEMPT_RT patch) in any way? From the documentation, I ass=
+ume I don't have to, but I need to be sure about this point.
+
+Best regards,
+
+Asier Tamayo=20
+=20
+
+> -----Mensaje original-----
+> De: Philippe Gerum [mailto:rpm@xenomai.org]
+> Enviado el: mi=E9rcoles, 27 de agosto de 2014 13:15
+> Para: Asier Tamayo; xenomai@xenomai.org
+> Asunto: Re: [Xenomai] Migrating from Xenomai to PREEMPT_RT
+>=20
+> On 08/27/2014 10:45 AM, Asier Tamayo wrote:
+>=20
+> > Full story:
+> > I have been using Xenomai for some time and must say I am really happy
+> with the results (latencies, ease of programming, clear separation betwee=
+n
+> the RT and non-RT parts...). My board is an Atom N270 based one, and runs
+> a kernel 2.6.34 compiled with Sysgo's ELinOS 5.2 tool. I have mainly used
+> the native skin, as well as some RTDM drivers.
+> >
+> > Now, I have to start using a new AMD G-Series T52R based board, and
+> kernel 2.6.34 shows some problems with it. Therefore, I have to update th=
+e
+> kernel to a newer one, but ELinOS has dropped the Xenomai support. As far
+> as I can think, I now have three options: try to install Xenomai in ELinO=
+S
+> by myself, start using another tool or leave Xenomai and use the
+> PREEMPT_RT patch. The first option may be very error prone (in fact, I
+> have already updated once the Xenomai version in ELinOS, but the tool had
+> Xenomai support integrated previously in it). The second solution would
+> surely put me in the Yocto path, which I think can be the correct one, bu=
+t
+> the learning step might require too much time from me.
+> >
+>=20
+> Actually, updating your Elinos base to Xenomai 2.6.x would likely be
+> much less error prone than any other option, although I agree that
+> moving to Yocto is likely the best long term option.
+>=20
+> Looking at the involved components:
+>=20
+> - moving to Yocto means changing the whole environment, unless you go
+> for Denx's ELDK, which is Yocto-based _and_ Xenomai-enabled, in which
+> case you would not have to port your application.
+>=20
+> - moving to straight preempt-rt means changing your programming model
+> from dual kernel to single kernel, porting your application from
+> Xenomai's "native" API to POSIX, and porting your drivers to a single
+> kernel system. A native incarnation of RTDM does exist, but we did not
+> receive any feedback since it was released (many) years ago, so rough
+> edges may exist.
+>=20
+> - upgrading Elinos to Xenomai 2.6.x means updating your kernel - which
+> is something you have to do for other reasons anyway - and building a
+> drop in replacement of the Xenomai libraries and tools in user-space,
+> for replacing the legacy ones shipped with Elinos. Kernel-wise, the
+> requirement is to have an I-pipe patch available for your kernel version
+> of choice. The upcoming Xenomai 2.6.4 supports kernel 3.14.
+>=20
+> > So, maybe the right solution would be to leave Xenomai and embrace the
+> PREEMPT_RT patch, which is already supported by ELinOS. Has anyone got an=
+y
+> experience with it? Which difficulties should I expect to find in the
+> migration process? Any special problems with RTDM, shared memory...?
+> >
+> > Has anyone got information about latencies and performance comparison
+> between Xenomai and PREEMPT_RT patch? I have found some in
+> https://www.osadl.org/fileadmin/dam/rtlws/12/Brown.pdf, but would like to
+> have as much as possible to make the choice.
+> >
+> > Is Xenomai 3 changing my situation in any way? Maybe using the Mercury
+> architecture, in which I do not need to patch the kernel?
+>=20
+> Mercury (i.e. single kernel Xenomai 3 configuration) would allow you to
+> move to preempt-rt without having to switch APIs from Xenomai 2.x
+> "native" to POSIX.
+>=20
+> >
+> > What do you think about the issue?
+> >
+> > [From Xenomai 3 FAQ - http://xenomai.org/introducing-xenomai-3/:
+> >     Q: I can run POSIX based applications directly over a PREEMPT_RT
+> kernel on my target system, so what is the point of running Xenomai 3?
+> >     A: If your application is already fully POSIXish, and the
+> performances requirements are met, then there is likely no point.(...)]
+> >
+>=20
+> This is fairly straightforward:
+>=20
+> Xenomai 3 can either supplement the host kernel with a small co-kernel
+> for delivering real-time performances (aka "Cobalt" configuration), or
+> fully rely on the underlying kernel if it is deemed real-time already
+> (aka "Mercury").
+>=20
+> In the latter case, if preempt-rt is available on your hardware/kernel
+> combo, meets your real-time performance requirements, then you do not
+> need Xenomai 3 to write POSIX apps, since the glibc provides for this API=
+.
+>=20
+> However, if your app is not POSIXish but based on an API Xenomai
+> emulates/implements, then you may want to use Xenomai 3 compared to
+> converting this app to POSIX, which is quite often an error prone
+> process. Xenomai 2.x "native" API is available with Xenomai 3, including
+> for a single kernel configuration (e.g. preempt-rt).
+>=20
+> --
+> Philippe.
 
