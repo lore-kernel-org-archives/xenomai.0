@@ -1,14 +1,10 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Thu, 24 Jul 2014 20:18:26 +0200
-Message-ID: <3303073.PYsVqjQGKk@indiana>
-In-Reply-To: <7090484.11r8mI5aN1@riemann>
-References: <1705234.5kun8kYdZP@riemann> <53A471AB.3030904@xenomai.org>
- <7090484.11r8mI5aN1@riemann>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Thu, 28 Aug 2014 16:35:32 -0400
+Message-ID: <20140828203532.GA17690@csclub.uwaterloo.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] POSIX application running under xenomai -- what do
-	wrapped functions do?
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [Xenomai] Xenomai/Ipipe on arm with LPAE enabled not booting
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,37 +15,19 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-SGkgU3RldmUsCgpFbCBEaW1hcnRzLCAyMiBkZSBqdWxpb2wgZGUgMjAxNCwgYSBsZXMgMDI6MTc6
-MTksIFN0ZXZlIE0uIFJvYmJpbnMgdmEgCmVzY3JpdXJlOgoKWy4uLl0KPiAKPiA+IEluIGNhc2Ug
-dGhpcyBhcHBsaWVzLCBpZiB5b3Ugd2FudCB0byBleGNoYW5nZSBhIHN0cmVhbSBvZiBkYXRhIGJl
-dHdlZW4KPiA+IHRoZSBydCBhbmQgbm9uLXJ0IHdvcmxkLCB0aGVuIHlvdSBtYXkgd2FudCB0byBo
-YXZlIGEgbG9vayBhdCB0aGUKPiA+IFJURE0tYmFzZWQgWEREUCBJUEMsCj4gPiBodHRwOi8vd3d3
-Lnhlbm9tYWkub3JnL2RvY3VtZW50YXRpb24veGVub21haS0yLjYvaHRtbC9hcGkvZ3JvdXBfX3J0
-aXBjLmh0bQo+ID4gbCwgd2l0aCBzYW1wbGUgY29kZSBpbiBleGFtcGxlcy9ydGRtL3Byb2ZpbGVz
-L2lwYy4KPiA+IFRoaXMgZmVhdHVyZSBhbGxvd3MgYSBub24tcnQgdGhyZWFkIHJlYWRpbmcvd3Jp
-dGluZyB0byBhIHBzZXVkby1kZXZpY2UKPiA+IGZyb20gL2Rldi9ydHAqIHRvIGV4Y2hhbmdlIG1l
-c3NhZ2VzIHdpdGggYSBydCB0aHJlYWQgcmVhZGluZy93cml0aW5nIHRvCj4gPiBhIFJURE0gc29j
-a2V0LiBUaGUgcnQgc2lkZSBuZXZlciBsZWF2ZXMgcHJpbWFyeSBtb2RlIHdoZW4gZG9pbmcgc28s
-IGFuZAo+ID4gdGhlIG5vbiBydCBwcm9ncmFtIGRvZXMgbm90IGV2ZW4gaGF2ZSB0byBsaW5rIGFn
-YWluc3QgWGVub21haSBsaWJyYXJpZXMuCj4gCj4gWWVhaCwgdGhhdCBzb3VuZHMgbGlrZSB3aGF0
-IEkgd2FudC4gIFdlIGFyZSBzdHVjayB3aXRoIFhlbm9tYWkgMi41LjYgZm9yCj4gbm93LCBzbyBJ
-IHdlbnQgYW5kIGxvb2tlZCBpbiB0aGUgZG9jcyBmb3IgdGhhdCB2ZXJzaW9uLiAgSXQgbG9va3Mg
-bGlrZSB0aGUKPiBNZXNzYWdlIFBpcGUgc2VydmljZXMgWzFdIHdvdWxkIGJlIGEgZmFpcmx5IGRp
-cmVjdCByZXBsYWNlbWVudCBmb3Igb3VyCj4gZXhpc3RpbmcgRklGTyBjb2RlLiAgSG93IGRvZXMg
-dGhlIE1lc3NhZ2UgUGlwZSBjb21wYXJlIHRvIHlvdXIgc3VnZ2VzdGlvbgo+IG9mIFJlYWwgVGlt
-ZSBJUEM/IEkgZG8gc2VlIGFuIGVudHJ5IGZvciB0aGUgUmVhbCBUaW1lIElQQyBkZXZpY2VzIGlu
-IHRoZQo+IDIuNSBkb2NzIFsyXSwgYWxiZWl0IGEgYml0IHNwYXJzZSBvbiBkZXRhaWxzLiAgQ2Fu
-IEkgc2ltcGx5IHVzZSB0aGUgMi42Cj4gZG9jcyBhcyBhIHJlZmVyZW5jZT8KPiAKCmlmIHlvdSB3
-YW50LCBsb29rIHRoaXM6CgpodHRwczovL2dpdGh1Yi5jb20vaW9jcm9ibGFiL2NwcDRlYwoKaXQn
-cyBvdXIgcHJvamVjdCB0aGF0IGhhcyBhIHJ0LXRocmVhZCB0aGF0IGludGVyY2hhbmdlIGluZm9y
-bWF0aW9uIHdpdGggYSBub24tCnJ0IHBhcnQgd2l0aCB4ZGRwLgoKTGVvCgoKLS0gCi0tCkxpbnV4
-IFVzZXIgMTUyNjkyICAgICBQR1A6IDA1RjRBN0E5NDlBMkQ5QUEKQ2F0YWxvbmlhCi0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KQTogQmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhl
-IG9yZGVyIGluIHdoaWNoIHBlb3BsZSBub3JtYWxseSByZWFkIHRleHQuClE6IFdoeSBpcyB0b3At
-cG9zdGluZyBzdWNoIGEgYmFkIHRoaW5nPwpBOiBUb3AtcG9zdGluZy4KUTogV2hhdCBpcyB0aGUg
-bW9zdCBhbm5veWluZyB0aGluZyBpbiBlLW1haWw/Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAt
-LS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6
-IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiA4MTkg
-Ynl0ZXMKRGVzYzogVGhpcyBpcyBhIGRpZ2l0YWxseSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6
-IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIw
-MTQwNzI0L2JmMWRiOGFiL2F0dGFjaG1lbnQuc2lnPgo=
+So I did some experiments on 3.12 kernel on an omap5726.
+
+Xenomai/ipipe seems to work great (after all it managed to pass the
+xenomai test suite).
+
+LPAE+KVM also works great.
+
+However if you enable LPAE (with or without KVM) while ipipe is enabled
+(with or without xenomai enabled), then the kernel never boots (no
+console messages at all).
+
+Any ideas where to start on debugging this problem?
+
+-- 
+Len Sorensen
+
