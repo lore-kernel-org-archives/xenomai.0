@@ -1,11 +1,12 @@
-From: "Yogi A. Patel" <yapatel@gatech.edu>
-Mime-Version: 1.0 (1.0)
-Message-Id: <B77BA3CE-F753-4865-A2AD-37EE4888E465@gatech.edu>
-Date: Thu, 28 Aug 2014 15:49:09 -0400
-Content-Type: text/plain;
-	charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Low-latency desktop setting
+Message-ID: <53FF8AC7.5090301@xenomai.org>
+Date: Thu, 28 Aug 2014 22:02:15 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <B77BA3CE-F753-4865-A2AD-37EE4888E465@gatech.edu>
+In-Reply-To: <B77BA3CE-F753-4865-A2AD-37EE4888E465@gatech.edu>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Low-latency desktop setting
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,18 +15,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Yogi A. Patel" <yapatel@gatech.edu>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-In configuring the kernel (after patching with xenomai), there is an option t=
-o change the preemption model to "low-latency desktop".
+On 08/28/2014 09:49 PM, Yogi A. Patel wrote:
+> In configuring the kernel (after patching with xenomai), there is an
+> option to change the preemption model to "low-latency desktop".
+> 
+> Is this a setting that should be set? Or should it be left to the
+> default preemption mode??
+> 
+> How does this setting affect the real-time performance of a xenomai
+> enabled kernel?
 
-Is this a setting that should be set? Or should it be left to the default pr=
-eemption mode??
+This option is about Linux preemption, it affects how often Linux is
+willing to preempt itself, in the throughput/latency fight, it gives
+advantage to (Linux) latency at the expense of througput. It does not
+affect Xenomai directly, but rather indirectly: it creates a code with a
+lower "density", by littering the Linux kernel execution with checks for
+the need of rescheduling, so that Linux has a larger pollution effect on
+caches. In my experience, you get slightly lower Linux latencies by
+turning CONFIG_PREEMPT off (selecting CONFIG_PREEMPT_NONE).
 
-How does this setting affect the real-time performance of a xenomai enabled k=
-ernel?
+-- 
+                                                                Gilles.
 
---
-Yogi A. Patel
-(828) 291.6715
-yapatel.org | @yapatel525
