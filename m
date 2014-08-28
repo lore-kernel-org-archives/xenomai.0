@@ -1,12 +1,14 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Thu, 24 Jul 2014 09:56:03 -0400
-Message-ID: <20140724135603.GD17765@csclub.uwaterloo.ca>
-References: <53D0AC77.8070606@ma-info.de>
+Message-ID: <53FF7ECB.6040708@xenomai.org>
+Date: Thu, 28 Aug 2014 21:11:07 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <53D0AC77.8070606@ma-info.de>
-Subject: Re: [Xenomai] How to use Xenomai in Eclipse
+References: <E1X5FGA-00080E-2w@sd-51317.dedibox.fr>
+ <53C2B020.6050209@xenomai.org> <53FF6AF5.5010300@siemens.com>
+In-Reply-To: <53FF6AF5.5010300@siemens.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : arch/x86: Fix section
+ mismatch warning for mach_x86_c1e_disable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,57 +17,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Frede Florian <florian.frede@ma-info.de>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: xenomai@xenomai.org
 
-On Thu, Jul 24, 2014 at 08:49:27AM +0200, Frede Florian wrote:
-> Hello,
+On 08/28/2014 07:46 PM, Jan Kiszka wrote:
+> On 2014-07-13 18:13, Gilles Chanteperdrix wrote:
+>> Le 10/07/2014 16:23, git repository hosting a écrit :
+>>> Module: xenomai-jki
+>>> Branch: for-forge
+>>> Commit: dcac4e7a3e7ccf19e4b38169e7c89eb88c821483
+>>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=dcac4e7a3e7ccf19e4b38169e7c89eb88c821483
+>>>
+>>> Author: Jan Kiszka <jan.kiszka@siemens.com>
+>>> Date:   Wed Jul  9 17:50:30 2014 +0200
+>>>
+>>> arch/x86: Fix section mismatch warning for mach_x86_c1e_disable
+>>>
+>>> mach_x86_c1e_disable is called from non-__init function mach_x86_init,
+>>> thus can't be tagged as __init. mach_x86_init can't be converted as it
+>>> is referenced by the persistent xnarch_machdesc structure.
+>>
+>> Well, it seems to me that mach_x86_init truly is an init function, is
+>> not there any other way to fix this?
 > 
-> We plan to use Xenomai in our new project. So now I tried to prepare
-> a Eclipse-Project with Xenomai. First I compiled the Debian packages
-> from Xenomai 2.6.3
-> <http://www.xenomai.org/index.php/Building_Debian_packages> for my
-> System.  After that I install the libxenomai1 and libxenomai-dev
-> 
-> After that I have create a new empty project. There I can include
-> the Xenomailib (#include <xenomai/native/task.h>).
-> 
-> First issue: While compiling the code with Eclipse I get an*fatal
-> error: nucleus/sched.h: file or directory not found*...
-> 
-> I try to find a answer in the endless world wide web :-) but I
-> didn't found a solution.
-> 
-> Second issue: When I change to the compiler for my target platform
-> (arm-cortexa8-linux-gnueabihf-gcc) I can not include the Xenomai
-> library?
-> 
-> I use following Software on my System: Eclipse Version: Luna Release
-> (4.4.0), Debian GNU/Linux 7.6 (wheezy), Xenomai 2.6.3,
-> OSELAS.Toolchain-2013.12.2 <http://www.pengutronix.de/oselas/toolchain/download/OSELAS.Toolchain-2013.12.2.tar.bz2>
+> Ping (due to lack of alternatives).
 
-You usually have to explicitly specify /usr/include/xenomai as an include
-directory when working with xenomai, given the xenomai files don't put
-the xenomai part of the path in the #include statements.
+It is fine by me.
 
-Of course if cross compiling you would have to have the header files
-for your target in the correct place and add that to the include path.
-
-Using pkg-config would pretty much just take care of it for you of course.
-
-For example:
-root@omap5:~# pkg-config --cflags libxenomai_native
--D_GNU_SOURCE -D_REENTRANT -D__XENO__ -I/usr/include/xenomai  
-
-So you would make sure your makefile had:
-
-CFLAGS += $(shell pkg-config --cflags libxenomai_native)
-LIBS += $(shell pkg-config --libs libxenomai_native)
-
-I can't remember the syntax for using pkg-config for cross compiling at
-the moment, but I remember there is one.  I almost never cross compile
-so I don't remember it.
 
 -- 
-Len Sorensen
+                                                                Gilles.
 
