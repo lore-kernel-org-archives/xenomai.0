@@ -1,5 +1,5 @@
-Message-ID: <53FF96B7.4040305@xenomai.org>
-Date: Thu, 28 Aug 2014 22:53:11 +0200
+Message-ID: <53FF982B.2040203@xenomai.org>
+Date: Thu, 28 Aug 2014 22:59:23 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <20140828203532.GA17690@csclub.uwaterloo.ca>
@@ -27,8 +27,15 @@ On 08/28/2014 10:51 PM, Lennart Sorensen wrote:
 > 
 > Yeah I guess I could do that, but then I have to use eclipse because it
 > is ti's debugger.  But I will if I have to.
-> 
-I understand the feeling about CCS. Maybe you can try openocd?
+
+Yet another solution is to enable early printk via the "DCC" channel,
+which should normally get the early printks to be sent to the JTAG. You
+can then ask your JTAG to display the messages.
+
+The openocd command seems to be "target_request debugmsgs charmsg". I
+have never tried this on TI processors, but I have tried it on other
+processors with other JTAG, which shows that at least, on Linux side, it
+works.
 
 -- 
                                                                 Gilles.
