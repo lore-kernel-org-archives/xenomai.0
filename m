@@ -1,13 +1,15 @@
-Message-ID: <53D0CEE7.6010208@xenomai.org>
-Date: Thu, 24 Jul 2014 11:16:23 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <19C66D276CD97349B3ED15358BC387930904DECABF@Mailprodapp3.brooks.com>
-In-Reply-To: <19C66D276CD97349B3ED15358BC387930904DECABF@Mailprodapp3.brooks.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Latency Test Results (xeno-test) on Xilinx Zynq XC702
- Board with Xenomai 2.6.3
+In-Reply-To: <D024AFFD.53F9%donald.poole@swri.org>
+References: <CACreCV+9seA7yp8gmjvOb6CQ7-Fbt-HyQ6YAoB_dqtmqmyvy7Q@mail.gmail.com>
+ <53FDFD27.2010207@xenomai.org>
+ <CACreCV+cQTO-5iFCCvC15VxNzXuvKkLN+_gUTex-r3Y1cByUkw@mail.gmail.com>
+ <53FF33CE.10303@xenomai.org> <D024AFFD.53F9%donald.poole@swri.org>
+Date: Fri, 29 Aug 2014 00:34:19 +0800
+Message-ID: <CACreCV+8qTgd6y0UuRmMQEhX_mM4PfxP2yjANerZ07SmwkmkEg@mail.gmail.com>
+From: GP Orcullo <kinsamanka@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] ODROID-U3 porting problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,37 +18,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Botev, Roumen" <roumen.botev@brooks.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Poole Jr, Donald R." <donald.poole@swri.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/21/2014 08:50 PM, Botev, Roumen wrote:
-> Hello, All,
-> 
-> I am running Xenomai's out of the box battery of tests (xeno-test) on a Xilinx Zynq XC702 evaluation board.
-> 
-> I am new to Xenomai and I am wondering if these results look good to people having more experience in running Xenomai on a Cortex-A9 hardware. In particular, I had higher expectations of the average and worst case latency numbers - I was expecting < 10 usec worst latency for the highest priority user mode task. Here is the summary of the latency test (the full output of the test is attached to this message):
-> 
-> RTT|  00:15:04  (periodic user-mode task, 1000 us period, priority 99)
-> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
-> . . . . . . . . . .
-> ---|-----------|-----------|-----------|--------|------|-------------------------
-> RTS|      3.675|     14.049|     35.913|       0|     0|    00:15:04/00:15:04
-> 
-
-Figures look ok particularly in dual core mode, regarding the scheduling
-latency of a userland thread over a 1Khz period. A large part of such
-latency is induced by cache effects, including those entailed by
-switching memory contexts.
-
-- scheduling latency for kernel threads (latency -t1) should show lower
-figures, although these threads should be reserved to running
-driver/RTDM tasks (i.e. not application level stuff)
-
-- the lower the sampling frequency, the higher the latency, as the
-regular linux system has more time to tread on a larger address space,
-which in turn makes the real-time code a more frequent victim of cache
-eviction. Running with -p 100 should get you different results (although
-this may not apply to your use case anyway, just for kicks).
-
--- 
-Philippe.
-
+T24gVGh1LCBBdWcgMjgsIDIwMTQgYXQgMTE6MTIgUE0sIFBvb2xlIEpyLCBEb25hbGQgUi4KPGRv
+bmFsZC5wb29sZUBzd3JpLm9yZz4gd3JvdGU6Cj4gT24gOC8yOC8xNCwgODo1MSBBTSwgIkdpbGxl
+cyBDaGFudGVwZXJkcml4Igo+IDxnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZz4gd3Jv
+dGU6Cj4KPj5PbiAwOC8yOC8yMDE0IDAzOjQ1IFBNLCBHUCBPcmN1bGxvIHdyb3RlOgo+Pj4gT24g
+V2VkLCBBdWcgMjcsIDIwMTQgYXQgMTE6NDUgUE0sIEdpbGxlcyBDaGFudGVwZXJkcml4Cj4+Pj4g
+U28sIHRoaXMgaXMgYSBjb3J0ZXggYTkuIE9uIENvcnRleCBhOSwgWGVub21haSB0cmllcyB0byB1
+c2UgdGhlIGdsb2JhbAo+Pj4+IHRpbWVyIGZvciB0c2MgZW11bGF0aW9uLiBBcmUgeW91IHN1cmUg
+dGhpcyBwcm9jZXNzb3IgaGFzIGEgZ2xvYmFsCj4+Pj50aW1lcj8KPj4+PiBBZ2FpbiwgcnVubmlu
+ZyB0aGUgInRzYyIgcHJvZ3JhbSB3aWxsIGhlbHAgeW91IHNlZSBpZiB0aGUgdHNjIGVtdWxhdGlv
+bgo+Pj4+IGlzIHdvcmtpbmcgY29ycmVjdGx5Lgo+Pj4KPj4+IEFGQUlLLCB0aGUgZXh5bm9zIHNv
+YyBkb2Vzbid0IHVzZSB0d2QgLSB0aGV5IGhhdmUgYSBtdWx0aS1jb3JlIHRpbWVyCj4+PiBpbnN0
+ZWFkLiBUaGVyZSBpcyBvbmUgZ2xvYmFsIHRpbWVyIGFuZCBhIGxvY2FsIHRpbWVyIGZvciBlYWNo
+IGNvcmUuCj4+Pgo+Pj4gQlRXLCBpcyBpdCBuZWNlc3NhcnkgdGhhdCB0aGVyZSBzaG91bGQgYmUg
+YW4gaXBpcGUgdGltZXIgZm9yIGVhY2ggY29yZQo+Pj4gb3IgYSBzaW5nbGUKPj4+ICJnbG9iYWwi
+IG9uZSB3aWxsIGRvPwo+Pgo+PlRoZSBnbG9iYWwgdGltZXIgaXMgbm90IHRoZSBzYW1lIHRoaW5n
+IGFzIHRoZSB0d2QsIGFuZCBJIHdhcyB0YWxraW5nCj4+YWJvdXQgdXNpbmcgdGhlIGdsb2JhbCB0
+aW1lciBhcyBhIGNsb2NrIHNvdXJjZSAoZm9yIHRzYyBlbXVsYXRpb24pLCBub3QKPj5hcyBhIHRp
+bWVyLCB0aGUgYWR2YW50YWdlIGJlaW5nIHRoYXQgeW91IHdvdWxkIGhhdmUgYSBtdWNoIGJldHRl
+cgo+PnJlc29sdXRpb24uIFhlbm9tYWkgaW5kZWVkIHJlcXVpcmVzIGxvY2FsIHRpbWVyIHN1cHBv
+cnQgKGZvciB3aGljaCBpdAo+PnVzZXMgdHdkIG9uIGNvcnRleCBhOSksIHRoYXQgaXMgb25lIHRp
+bWVyIHBlciBjb3JlLgo+Pgo+Pi0tCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEdpbGxlcy4KPj4KPj5fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+Plhlbm9tYWkgbWFpbGluZyBsaXN0
+Cj4+WGVub21haUB4ZW5vbWFpLm9yZwo+Pmh0dHA6Ly93d3cueGVub21haS5vcmcvbWFpbG1hbi9s
+aXN0aW5mby94ZW5vbWFpCj4KPiBHZW1pIC0gSXMgeW91ciB3b3JrIG9uIHBhdGNoaW5nIHRoZSBP
+ZHJvaWQtVTMga2VybmVsIGF2YWlsYWJsZSBvbiBnaXRodWIKPiBvciBlbHNld2hlcmU/ICBJIHdv
+dWxkIHJlYWxseSBsaWtlIHRvIGhhdmUgbXkgVTMgcnVubmluZyBYZW5vbWFpIGluIHRoaXMKPiBt
+YW5uZXIgYXMgd2VsbC4gIEnCuXZlIGJlZW4gd29ya2luZyB0byBhY2hpZXZlIHRoZSBzYW1lIHRo
+aW5nLCBidXQgSQo+IGFwcGVhcnMgdGhhdCB5b3UgaGF2ZSBtYWRlIGZhciBiZXR0ZXIgcHJvZ3Jl
+c3MuCj4KPiAtRG9uYWxkCj4KCkkgZG9uJ3QgaGF2ZSBnaXQgYWNjZXNzIGF0IHRoZSBtb21lbnQg
+YnV0IGF0dGFjaGVkIGFyZSB0aGUgcHJlIGFuZCBwb3N0IHBhdGNoZXMuCgpUaGV5IGFwcGx5IHRv
+IHRoZSBmb2xsb3dpbmcgdHJlZToKaHR0cHM6Ly9naXRodWIuY29tL2hhcmRrZXJuZWwvbGludXgv
+dHJlZS80ZDQwMTQwYjQ0OTE3YmU3ZmEzNDRjYzgyNDJiOGVkMGYzZTg5ZTk3CnVzaW5nIHRoZSBp
+cGlwZS1jb3JlLTMuOC4xMy1hcm0tMy5wYXRjaAoKU28gZmFyIGl0IHBhc3NlcyBhbGwgdGhlIHJl
+Z3Jlc3Npb24gdGVzdHMgZXhjZXB0IGZvciB0aGUgc3dpdGNodGVzdC4KCi1HZW1pCi0tLS0tLS0t
+LS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2Fz
+IHNjcnViYmVkLi4uCk5hbWU6IG9kcm9pZHUzLnRhci5iejIKVHlwZTogYXBwbGljYXRpb24veC1i
+emlwMgpTaXplOiAyNDE4MSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly93
+d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNDA4MjkvYzY0
+NjU5NzMvYXR0YWNobWVudC5iaW4+Cg==
