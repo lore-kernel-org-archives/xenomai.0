@@ -1,14 +1,12 @@
+Message-ID: <53FF5B81.7030408@xenomai.org>
+Date: Thu, 28 Aug 2014 18:40:33 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <D024AFFD.53F9%donald.poole@swri.org>
-References: <CACreCV+9seA7yp8gmjvOb6CQ7-Fbt-HyQ6YAoB_dqtmqmyvy7Q@mail.gmail.com>
- <53FDFD27.2010207@xenomai.org>
- <CACreCV+cQTO-5iFCCvC15VxNzXuvKkLN+_gUTex-r3Y1cByUkw@mail.gmail.com>
- <53FF33CE.10303@xenomai.org> <D024AFFD.53F9%donald.poole@swri.org>
-Date: Fri, 29 Aug 2014 00:34:19 +0800
-Message-ID: <CACreCV+8qTgd6y0UuRmMQEhX_mM4PfxP2yjANerZ07SmwkmkEg@mail.gmail.com>
-From: GP Orcullo <kinsamanka@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <CACreCV+9seA7yp8gmjvOb6CQ7-Fbt-HyQ6YAoB_dqtmqmyvy7Q@mail.gmail.com>	<53FDFD27.2010207@xenomai.org>	<CACreCV+cQTO-5iFCCvC15VxNzXuvKkLN+_gUTex-r3Y1cByUkw@mail.gmail.com>	<53FF33CE.10303@xenomai.org>	<D024AFFD.53F9%donald.poole@swri.org>
+ <CACreCV+8qTgd6y0UuRmMQEhX_mM4PfxP2yjANerZ07SmwkmkEg@mail.gmail.com>
+In-Reply-To: <CACreCV+8qTgd6y0UuRmMQEhX_mM4PfxP2yjANerZ07SmwkmkEg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] ODROID-U3 porting problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -18,46 +16,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Poole Jr, Donald R." <donald.poole@swri.org>
+To: GP Orcullo <kinsamanka@gmail.com>, "Poole Jr, Donald R." <donald.poole@swri.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gVGh1LCBBdWcgMjgsIDIwMTQgYXQgMTE6MTIgUE0sIFBvb2xlIEpyLCBEb25hbGQgUi4KPGRv
-bmFsZC5wb29sZUBzd3JpLm9yZz4gd3JvdGU6Cj4gT24gOC8yOC8xNCwgODo1MSBBTSwgIkdpbGxl
-cyBDaGFudGVwZXJkcml4Igo+IDxnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZz4gd3Jv
-dGU6Cj4KPj5PbiAwOC8yOC8yMDE0IDAzOjQ1IFBNLCBHUCBPcmN1bGxvIHdyb3RlOgo+Pj4gT24g
-V2VkLCBBdWcgMjcsIDIwMTQgYXQgMTE6NDUgUE0sIEdpbGxlcyBDaGFudGVwZXJkcml4Cj4+Pj4g
-U28sIHRoaXMgaXMgYSBjb3J0ZXggYTkuIE9uIENvcnRleCBhOSwgWGVub21haSB0cmllcyB0byB1
-c2UgdGhlIGdsb2JhbAo+Pj4+IHRpbWVyIGZvciB0c2MgZW11bGF0aW9uLiBBcmUgeW91IHN1cmUg
-dGhpcyBwcm9jZXNzb3IgaGFzIGEgZ2xvYmFsCj4+Pj50aW1lcj8KPj4+PiBBZ2FpbiwgcnVubmlu
-ZyB0aGUgInRzYyIgcHJvZ3JhbSB3aWxsIGhlbHAgeW91IHNlZSBpZiB0aGUgdHNjIGVtdWxhdGlv
-bgo+Pj4+IGlzIHdvcmtpbmcgY29ycmVjdGx5Lgo+Pj4KPj4+IEFGQUlLLCB0aGUgZXh5bm9zIHNv
-YyBkb2Vzbid0IHVzZSB0d2QgLSB0aGV5IGhhdmUgYSBtdWx0aS1jb3JlIHRpbWVyCj4+PiBpbnN0
-ZWFkLiBUaGVyZSBpcyBvbmUgZ2xvYmFsIHRpbWVyIGFuZCBhIGxvY2FsIHRpbWVyIGZvciBlYWNo
-IGNvcmUuCj4+Pgo+Pj4gQlRXLCBpcyBpdCBuZWNlc3NhcnkgdGhhdCB0aGVyZSBzaG91bGQgYmUg
-YW4gaXBpcGUgdGltZXIgZm9yIGVhY2ggY29yZQo+Pj4gb3IgYSBzaW5nbGUKPj4+ICJnbG9iYWwi
-IG9uZSB3aWxsIGRvPwo+Pgo+PlRoZSBnbG9iYWwgdGltZXIgaXMgbm90IHRoZSBzYW1lIHRoaW5n
-IGFzIHRoZSB0d2QsIGFuZCBJIHdhcyB0YWxraW5nCj4+YWJvdXQgdXNpbmcgdGhlIGdsb2JhbCB0
-aW1lciBhcyBhIGNsb2NrIHNvdXJjZSAoZm9yIHRzYyBlbXVsYXRpb24pLCBub3QKPj5hcyBhIHRp
-bWVyLCB0aGUgYWR2YW50YWdlIGJlaW5nIHRoYXQgeW91IHdvdWxkIGhhdmUgYSBtdWNoIGJldHRl
-cgo+PnJlc29sdXRpb24uIFhlbm9tYWkgaW5kZWVkIHJlcXVpcmVzIGxvY2FsIHRpbWVyIHN1cHBv
-cnQgKGZvciB3aGljaCBpdAo+PnVzZXMgdHdkIG9uIGNvcnRleCBhOSksIHRoYXQgaXMgb25lIHRp
-bWVyIHBlciBjb3JlLgo+Pgo+Pi0tCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEdpbGxlcy4KPj4KPj5fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+Plhlbm9tYWkgbWFpbGluZyBsaXN0
-Cj4+WGVub21haUB4ZW5vbWFpLm9yZwo+Pmh0dHA6Ly93d3cueGVub21haS5vcmcvbWFpbG1hbi9s
-aXN0aW5mby94ZW5vbWFpCj4KPiBHZW1pIC0gSXMgeW91ciB3b3JrIG9uIHBhdGNoaW5nIHRoZSBP
-ZHJvaWQtVTMga2VybmVsIGF2YWlsYWJsZSBvbiBnaXRodWIKPiBvciBlbHNld2hlcmU/ICBJIHdv
-dWxkIHJlYWxseSBsaWtlIHRvIGhhdmUgbXkgVTMgcnVubmluZyBYZW5vbWFpIGluIHRoaXMKPiBt
-YW5uZXIgYXMgd2VsbC4gIEnCuXZlIGJlZW4gd29ya2luZyB0byBhY2hpZXZlIHRoZSBzYW1lIHRo
-aW5nLCBidXQgSQo+IGFwcGVhcnMgdGhhdCB5b3UgaGF2ZSBtYWRlIGZhciBiZXR0ZXIgcHJvZ3Jl
-c3MuCj4KPiAtRG9uYWxkCj4KCkkgZG9uJ3QgaGF2ZSBnaXQgYWNjZXNzIGF0IHRoZSBtb21lbnQg
-YnV0IGF0dGFjaGVkIGFyZSB0aGUgcHJlIGFuZCBwb3N0IHBhdGNoZXMuCgpUaGV5IGFwcGx5IHRv
-IHRoZSBmb2xsb3dpbmcgdHJlZToKaHR0cHM6Ly9naXRodWIuY29tL2hhcmRrZXJuZWwvbGludXgv
-dHJlZS80ZDQwMTQwYjQ0OTE3YmU3ZmEzNDRjYzgyNDJiOGVkMGYzZTg5ZTk3CnVzaW5nIHRoZSBp
-cGlwZS1jb3JlLTMuOC4xMy1hcm0tMy5wYXRjaAoKU28gZmFyIGl0IHBhc3NlcyBhbGwgdGhlIHJl
-Z3Jlc3Npb24gdGVzdHMgZXhjZXB0IGZvciB0aGUgc3dpdGNodGVzdC4KCi1HZW1pCi0tLS0tLS0t
-LS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2Fz
-IHNjcnViYmVkLi4uCk5hbWU6IG9kcm9pZHUzLnRhci5iejIKVHlwZTogYXBwbGljYXRpb24veC1i
-emlwMgpTaXplOiAyNDE4MSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly93
-d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNDA4MjkvYzY0
-NjU5NzMvYXR0YWNobWVudC5iaW4+Cg==
+On 08/28/2014 06:34 PM, GP Orcullo wrote:
+> So far it passes all the regression tests except for the switchtest.
+
+What error do you get with switchtest ? If pthread_create fails with
+resource unavailable error, see:
+
+http://xenomai.org/troubleshooting-a-dual-kernel-configuration/#pthread_create_Resource_temporarily_unavailable
+
+If this is another error, please post the error message and kernel log here.
+
+-- 
+                                                                Gilles.
+
