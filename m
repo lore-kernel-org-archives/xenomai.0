@@ -1,13 +1,13 @@
-Message-Id: <1D528D51-ACBB-4794-87A2-250E8E61D81B@gmail.com>
-From: Andreas Glatz <andi.glatz@gmail.com>
-In-Reply-To: <mailman.3.1406196001.31160.xenomai@xenomai.org>
-Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
-Content-Transfer-Encoding: 7bit
-Mime-Version: 1.0 (Apple Message framework v936)
-Date: Fri, 25 Jul 2014 10:34:44 +0200
-References: <mailman.3.1406196001.31160.xenomai@xenomai.org>
-Subject: Re: [Xenomai] Latency Test Results (xeno-test) on Xilinx Zynq XC702
-	Board with Xenomai 2.6.3
+MIME-Version: 1.0
+In-Reply-To: <CACreCV+cQTO-5iFCCvC15VxNzXuvKkLN+_gUTex-r3Y1cByUkw@mail.gmail.com>
+References: <CACreCV+9seA7yp8gmjvOb6CQ7-Fbt-HyQ6YAoB_dqtmqmyvy7Q@mail.gmail.com>
+ <53FDFD27.2010207@xenomai.org>
+ <CACreCV+cQTO-5iFCCvC15VxNzXuvKkLN+_gUTex-r3Y1cByUkw@mail.gmail.com>
+Date: Fri, 29 Aug 2014 20:13:47 -0300
+Message-ID: <CAE2JnQygkVKbDCYKRfRuq7uEQrVbnbiiPgcETF8Js2cXVB6gUg@mail.gmail.com>
+From: Alexandre Donisete Bensi <adbensi@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] ODROID-U3 porting problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,72 +16,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: GP Orcullo <kinsamanka@gmail.com>
+Cc: xenomai@xenomai.org
 
-
->
-> Message: 5
-> Date: Thu, 24 Jul 2014 11:16:23 +0200
-> From: Philippe Gerum <rpm@xenomai.org>
-> To: "Botev, Roumen" <roumen.botev@brooks.com>,  "xenomai@xenomai.org"
-> 	<xenomai@xenomai.org>
-> Subject: Re: [Xenomai] Latency Test Results (xeno-test) on Xilinx Zynq
-> 	XC702 Board with Xenomai 2.6.3
-> Message-ID: <53D0CEE7.6010208@xenomai.org>
-> Content-Type: text/plain; charset=ISO-8859-1
->
-> On 07/21/2014 08:50 PM, Botev, Roumen wrote:
->> Hello, All,
+2014-08-28 10:45 GMT-03:00 GP Orcullo <kinsamanka@gmail.com>:
+> On Wed, Aug 27, 2014 at 11:45 PM, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+>> On 08/27/2014 03:49 PM, GP Orcullo wrote:
+>>> Hi,
+>>>
+>>> I'm in the process of porting xenomai to Samsung Exynos 4420 based
+>>> ODROID-U3 board. I've followed the online manual and I was able to finish
+>>> up to the interrupt controller part.
+>>>
+>>> So far everything works when booting the board with CONFIG_IPIPE and
+>>> CONFIG_XENOMAI enabled. However, running the latency test gives the
+>>> following results:
+>>>
+>>> root@odroidu3:~# /usr/lib/xenomai/testsuite/latency -t 0 -T5
+>>> == Sampling period: 1000 us
+>>> == Test mode: periodic user-mode task
+>>> == All results in microseconds
+>>> warming up...
+>>> RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99)
+>>> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+>>> RTD|-1054607.854|-555107.854|-416666.667|       0|
+>>> 0|-1054607.854|-416666.667
+>>> RTD|-2054607.854|-1555107.854|-416666.667|       0|
+>>> 0|-2054607.854|-416666.667
+>>> RTD|1240359.443|1739859.443|-416666.667|       0|     0|1240359.443|-416666.667
+>>> RTD| 240359.443| 739859.443|-416666.667|       0|     0| 240359.443|-416666.667
+>>> ---|-----------|-----------|-----------|--------|------|-------------------------
+>>> RTS| 240359.443|-2055107.854|-416666.667|       0|     0|    00:00:05/00:00:05
 >>
->> I am running Xenomai's out of the box battery of tests (xeno-test)  
->> on a Xilinx Zynq XC702 evaluation board.
+>> I would say you have a problem with the tsc emulation. Have you tried to
+>> run the "tsc" program?
 >>
->> I am new to Xenomai and I am wondering if these results look good  
->> to people having more experience in running Xenomai on a Cortex-A9  
->> hardware. In particular, I had higher expectations of the average  
->> and worst case latency numbers - I was expecting < 10 usec worst  
->> latency for the highest priority user mode task. Here is the  
->> summary of the latency test (the full output of the test is  
->> attached to this message):
->>
->> RTT|  00:15:04  (periodic user-mode task, 1000 us period, priority  
->> 99)
->> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat  
->> best|--lat worst
->> . . . . . . . . . .
->> ---| 
->> -----------| 
->> -----------|-----------|--------|------|-------------------------
->> RTS|      3.675|     14.049|     35.913|       0|     0|     
->> 00:15:04/00:15:04
 >>
 >
-> Figures look ok particularly in dual core mode, regarding the  
-> scheduling
-> latency of a userland thread over a 1Khz period. A large part of such
-> latency is induced by cache effects, including those entailed by
-> switching memory contexts.
+> Thanks for the tip! The problem was due to wrong physical address value.
+>
+>>> [    0.000000] Linux version 3.8.13.11-xen (gemi@odroidu3) (gcc version 4.6.3 (Debian 4.6.3-14) ) #34 SMP PREEMPT Wed Aug 27 20:22:46 SGT 2014 ()
+>>
+>> 3.8.13 is a bit old, I would advise you to use 3.14 if you plan to get
+>> your changes merged.
+>>
+>
+> Unfortunately this is the only stable version available. A newer version is
+> being worked on but it is based on 3.16. This will do for the time being,
+> I'm just using this as a test bed for machinekit.
 >
 
+Hello Kinsa!
 
-I tried the test on an omap4460 (A9; 2x1GHz) with Linux 3.14.1 and  
-Xenomai 2.6.3 and got similar results:
+ I had problems upgrading to 3:14 but at the time there was no
+specific dtbs for U3, but now they have, even the new uboot to work
+correctly with newest kernel : D
 
-RTT|  00:15:04  (periodic user-mode task, 1000 us period, priority 99)
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|-- 
-lat worst
-RTD|     10.428|     14.131|     19.923|       0|     0|       
-6.943|     27.980
-Load script terminated, terminating checked scripts
----| 
------------| 
------------|-----------|--------|------|-------------------------
-RTS|      6.943|     14.483|     27.980|       0|     0|     
-00:15:04/00:15:04
+ If you wish to still I have the binaries for this release, I am
+currently running the 3.8 with another realtime kernel, I'm using EMMC
+16G with the last LinuxCNC, we can exchange images ;)
 
-So does it makes sense to try and further optimise the cache access  
-for bringing down the latency or is it as good as it can get?
+ Your card is the U3+ version?
+ http://forum.odroid.com/viewtopic.php?f=80&t=4570
 
-Andreas
-
+ I would like to join to your efforts, allows me?
 
