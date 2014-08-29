@@ -1,16 +1,11 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Thu, 28 Aug 2014 19:16:25 -0400
-Message-ID: <20140828231625.GF17690@csclub.uwaterloo.ca>
-References: <20140828203532.GA17690@csclub.uwaterloo.ca>
- <53FF93A3.8070101@xenomai.org>
- <20140828220153.GE17690@csclub.uwaterloo.ca>
- <53FFA96E.2090904@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <53FFA96E.2090904@xenomai.org>
-Subject: Re: [Xenomai] Xenomai/Ipipe on arm with LPAE enabled not booting -
- now with crash message
+From: "Yogi A. Patel" <yapatel@gatech.edu>
+Message-Id: <7DEE8379-159F-470A-B22D-01B16FBEECB3@gatech.edu>
+Date: Thu, 28 Aug 2014 22:13:36 -0400
+Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
+Content-Type: text/plain;
+	charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Analogy PCI Slot issues?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,24 +14,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Fri, Aug 29, 2014 at 12:13:02AM +0200, Gilles Chanteperdrix wrote:
-> On 08/29/2014 12:01 AM, Lennart Sorensen wrote:
-> > [   91.861761] PC is at _raw_spin_lock_irqsave+0x10/0x4c
-> > [   91.872209] LR is at _raw_spin_lock_irqsave+0xc/0x4c
-> > [   91.882479] pc : [<c0455c98>]    lr : [<c0455c94>]    psr: 20000153
-> > [   91.882479] sp : ee8f5dc0  ip : 20000153  fp : c0d97760
-> > [   91.906198] r10: 00000000  r9 : c006a46c  r8 : ee8f5e04
-> > [   91.916997] r7 : 00000000  r6 : ee83ba40  r5 : c0743af4  r4 : 00000000
-> > [   91.930451] r3 : c06c8b88  r2 : 00905000  r1 : 00000001  r0 : 00000000
-> 
-> You have to disassemble _raw_spin_lock_irqsave to see what is at offset
-> 0x10, and where it can come from.
+Hi -
 
-I will give that a try next week when i am back at work.
+We=92ve been using analogy_config to load our NI DAQ cards for quite =
+some time. Recently, we ran into a strange issue and can=92t figure out =
+what the problem is.
 
--- 
-Len Sorensen
+The DAQ card we have is PCI-6036E. We use analogy_ni_pcimio. We have =
+other machines that work with this DAQ and the same analogy driver.
+
+We run $ sudo analogy_config analogy0 analogy_ni_pcimio 0x1,0a=20
+
+and get: $ analogy_config: attach failed err=3D-2 ERROR: Analogy device =
+loading failed.
+
+We run $ sudo analogy_config analogy0 analogy_ni_pcimio 0x1,0a=20
+
+and still get: $ analogy_config: attach failed err=3D-2 ERROR: Analogy =
+device loading failed.
+
+dmesg shows:
+
+[  185.109375]  [<ffffffff81d45c52>] start_kernel+0x418/0x423
+[  185.109378]  [<ffffffff81d45643>] ? repair_env_string+0x5c/0x5c
+[  185.109381]  [<ffffffff81d4532c>] =
+x86_64_start_reservations+0x130/0x133
+[  185.109384]  [<ffffffff81d4544a>] x86_64_start_kernel+0x11b/0x11e
+[  185.109386] ---[ end trace 58713d25bdf2b468 ]---
+[  220.695488] Xenomai: RTDM: closing file descriptor 0.
+[  258.008414] Analogy: a4l_assign_driver: call(drv->attach) failed =
+(ret=3D-2)
+[  596.236449] Analogy: a4l_assign_driver: call(drv->attach) failed =
+(ret=3D-2)
+
+Is it possible that the issue is because the device number has a letter =
+in it? This is the first time I am seeing a DAQ card being assigned a =
+letter for the device number.
+
+Any help appreciated - thank you!
+
+Yogi
 
