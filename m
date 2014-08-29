@@ -1,13 +1,16 @@
-Message-ID: <54006F81.4020303@xenomai.org>
-Date: Fri, 29 Aug 2014 08:18:09 -0400
-From: Jorge Ramirez Ortiz <jro@xenomai.org>
 MIME-Version: 1.0
-References: <7DEE8379-159F-470A-B22D-01B16FBEECB3@gatech.edu>
- <3C04D010-D511-4D3D-A90E-474B71DA6425@gatech.edu>
-In-Reply-To: <3C04D010-D511-4D3D-A90E-474B71DA6425@gatech.edu>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Analogy PCI Slot issues?
+In-Reply-To: <CAEGbdicZrgw-jNGnanSRh96Gy9Hfr1xsYJq8sQFLDyWg8hvnuQ@mail.gmail.com>
+References: <CAEGbdifyuoCnxOnSfo7gXY0Ra1yUcJQY-7HXto5EvsjXEGXFNw@mail.gmail.com>
+ <53FF8E93.6060704@xenomai.org>
+ <CAEGbdif6aQxxZQnjkTGMizuCCZkGUED73XtKt1cOvX3o3vUMVg@mail.gmail.com>
+ <53FF9C43.5080706@xenomai.org>
+ <CAEGbdie+U8zP4-CPfW6v3kh1LHz2NNVh+t7YW6tiXwPJ_ohgHg@mail.gmail.com>
+ <CAEGbdicZrgw-jNGnanSRh96Gy9Hfr1xsYJq8sQFLDyWg8hvnuQ@mail.gmail.com>
+Date: Fri, 29 Aug 2014 11:35:25 -0400
+Message-ID: <CAEGbdif9bXEF+cjR_qiXgH0ZZ4vb-RjNgFkyZz3muB2jtoVfkQ@mail.gmail.com>
+From: Matthew Lindner <mattlindn@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Linux ATA driver issues and lockups
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,38 +19,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+On Fri, Aug 29, 2014 at 11:33 AM, Matthew Lindner <mattlindn@gmail.com> wrote:
+> On Fri, Aug 29, 2014 at 9:00 AM, Matthew Lindner <mattlindn@gmail.com> wrote:
+>> On Thu, Aug 28, 2014 at 5:16 PM, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>> On 08/28/2014 11:15 PM, Matthew Lindner wrote:
+>>>> I have not tried those. What do you mean by "if kernel configuration
+>>>> is changed"?
+>>>
+>>> whatever you mean by "suggesting kernel settings are changed".
+>>>
+>>>
+>>
+>> The suggestions here:
+>> http://xenomai.org/2014/06/configuring-for-x86-based-dual-kernels/
+>
+> Things have changed. Apparently this issue is not related to Xenomai
+> or the I-pipe. I was just able to generate the error on my
+> self-compiled 3.10.32 kernel (with settings created from taking
+> ubuntu's older 3.8.0 kernel and using makedefconfig with linux stock
+> 3.10.32 kernel). Now I have the fun time of tracking down if this is
+> hardware related or our kernel related. Trying testing now with 3.8.0
+> stock kernel.
 
-On 08/28/2014 10:40 PM, Yogi A. Patel wrote:
-> Forgot to add - the lspci output shows the following for the NI DAQ:
-> 
-> 01:0a.0 Unassigned class [ff00]: National Instruments PCI-6036E
+Just realized I had been hitting "reply" instead of "reply all".
+Responding to this so the info is on the mailing list.
 
-could you provide the Xenomai version and the whole output of dmesg and lspci when
-the error occurs as well as /proc/analogy/devices and /proc/analogy/drivers?
-
-> 
-> Yogi
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
-> 
-
-- -- 
-jro
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-
-iQEcBAEBAgAGBQJUAG+BAAoJECDcy2IJkagRrXEH/1Gx2+z9rAbrss/qq8wpFB1z
-+P4TI1WKpl+T7UjSmq1VCqbF7uNsJuJU02gEwfRFRecZz98dDckFxeJ87B6nbIfS
-cod/9B8yDyYBeCS3Ag498PqQoGxWWdrtl0F1YoZLd9DHjRQTO5GNnKrnnfP19fnE
-0XvGSAV72oYGeYjy9kKyepXWiFzhdUw+l0eD6Vn/Y5O93ecGphYOfYSbg5loD6nS
-FsYQKW1LSz/wonbfHjCOol1jLmWrUXu0QmucmARaHK+x3aDQkoCom2ywzqCDuC7j
-WVFWkdAwo1Xa3JcrUwVE6wvaaywilTfL5Li23xJYaWpQAYeiPsWh7fR7ln/0vyI=
-=k1Sh
------END PGP SIGNATURE-----
+Matthew Lindner
 
