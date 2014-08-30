@@ -1,15 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <53FF7649.30907@xenomai.org>
+In-Reply-To: <CAE2JnQygkVKbDCYKRfRuq7uEQrVbnbiiPgcETF8Js2cXVB6gUg@mail.gmail.com>
 References: <CACreCV+9seA7yp8gmjvOb6CQ7-Fbt-HyQ6YAoB_dqtmqmyvy7Q@mail.gmail.com>
  <53FDFD27.2010207@xenomai.org>
  <CACreCV+cQTO-5iFCCvC15VxNzXuvKkLN+_gUTex-r3Y1cByUkw@mail.gmail.com>
- <53FF33CE.10303@xenomai.org> <D024AFFD.53F9%donald.poole@swri.org>
- <CACreCV+8qTgd6y0UuRmMQEhX_mM4PfxP2yjANerZ07SmwkmkEg@mail.gmail.com>
- <53FF5B81.7030408@xenomai.org>
- <CACreCVJ+2nEakHkkZgL=c+u7rW8S2tY-3qTWyw=AtkCH39n=rw@mail.gmail.com>
- <53FF7649.30907@xenomai.org>
-Date: Sat, 30 Aug 2014 08:17:27 +0800
-Message-ID: <CACreCVKEyocU22ns2dURJxB-=mhTPqtEw62oEOo+edB4ZLDK9w@mail.gmail.com>
+ <CAE2JnQygkVKbDCYKRfRuq7uEQrVbnbiiPgcETF8Js2cXVB6gUg@mail.gmail.com>
+Date: Sat, 30 Aug 2014 08:50:15 +0800
+Message-ID: <CACreCV+D1CxY9+84Csy1k1NkpGqPV8aZ1qW3pp5sOdWwSx6x-w@mail.gmail.com>
 From: GP Orcullo <kinsamanka@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Subject: Re: [Xenomai] ODROID-U3 porting problems
@@ -21,103 +17,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Alexandre Donisete Bensi <adbensi@gmail.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Aug 29, 2014 at 2:34 AM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On 08/28/2014 07:05 PM, GP Orcullo wrote:
->> On Fri, Aug 29, 2014 at 12:40 AM, Gilles Chanteperdrix
+On Sat, Aug 30, 2014 at 7:13 AM, Alexandre Donisete Bensi
+<adbensi@gmail.com> wrote:
+> 2014-08-28 10:45 GMT-03:00 GP Orcullo <kinsamanka@gmail.com>:
+>> On Wed, Aug 27, 2014 at 11:45 PM, Gilles Chanteperdrix
 >> <gilles.chanteperdrix@xenomai.org> wrote:
->>> On 08/28/2014 06:34 PM, GP Orcullo wrote:
->>>> So far it passes all the regression tests except for the switchtest.
+>>> On 08/27/2014 03:49 PM, GP Orcullo wrote:
+>>>> Hi,
+>>>>
+>>>> I'm in the process of porting xenomai to Samsung Exynos 4420 based
+>>>> ODROID-U3 board. I've followed the online manual and I was able to finish
+>>>> up to the interrupt controller part.
+>>>>
+>>>> So far everything works when booting the board with CONFIG_IPIPE and
+>>>> CONFIG_XENOMAI enabled. However, running the latency test gives the
+>>>> following results:
+>>>>
+>>>> root@odroidu3:~# /usr/lib/xenomai/testsuite/latency -t 0 -T5
+>>>> == Sampling period: 1000 us
+>>>> == Test mode: periodic user-mode task
+>>>> == All results in microseconds
+>>>> warming up...
+>>>> RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99)
+>>>> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+>>>> RTD|-1054607.854|-555107.854|-416666.667|       0|
+>>>> 0|-1054607.854|-416666.667
+>>>> RTD|-2054607.854|-1555107.854|-416666.667|       0|
+>>>> 0|-2054607.854|-416666.667
+>>>> RTD|1240359.443|1739859.443|-416666.667|       0|     0|1240359.443|-416666.667
+>>>> RTD| 240359.443| 739859.443|-416666.667|       0|     0| 240359.443|-416666.667
+>>>> ---|-----------|-----------|-----------|--------|------|-------------------------
+>>>> RTS| 240359.443|-2055107.854|-416666.667|       0|     0|    00:00:05/00:00:05
 >>>
->>> What error do you get with switchtest ? If pthread_create fails with
->>> resource unavailable error, see:
+>>> I would say you have a problem with the tsc emulation. Have you tried to
+>>> run the "tsc" program?
 >>>
->>> http://xenomai.org/troubleshooting-a-dual-kernel-configuration/#pthread_create_Resource_temporarily_unavailable
 >>>
->>> If this is another error, please post the error message and kernel log here.
->>>
->>> --
->>>                                                                 Gilles.
 >>
->> Running "switchtest rtk0" fails with "Xenomai: suspending kernel
->> thread f00bb710 ('rtk1/0') at 0xc0020c8c after exception #0x0"
+>> Thanks for the tip! The problem was due to wrong physical address value.
 >>
->> The address is traced to the I-pipe timer interrupt call-back. I think
->> I maybe missing some spinlocks somewhere.
+>>>> [    0.000000] Linux version 3.8.13.11-xen (gemi@odroidu3) (gcc version 4.6.3 (Debian 4.6.3-14) ) #34 SMP PREEMPT Wed Aug 27 20:22:46 SGT 2014 ()
+>>>
+>>> 3.8.13 is a bit old, I would advise you to use 3.14 if you plan to get
+>>> your changes merged.
+>>>
+>>
+>> Unfortunately this is the only stable version available. A newer version is
+>> being worked on but it is based on 3.16. This will do for the time being,
+>> I'm just using this as a test bed for machinekit.
+>>
 >
-> If you are using per-cpu hardware timers, no spinlock is needed, since
-> each cpu accesses its own timer. If you are using the same (hardware)
-> timer on several cpus, then it is not going to work anyway, Xenomai
-> wants one hardware timer per cpu.
+> Hello Kinsa!
 >
-> --
->                                                                 Gilles.
+>  I had problems upgrading to 3:14 but at the time there was no
+> specific dtbs for U3, but now they have, even the new uboot to work
+> correctly with newest kernel : D
+>
+>  If you wish to still I have the binaries for this release, I am
+> currently running the 3.8 with another realtime kernel, I'm using EMMC
+> 16G with the last LinuxCNC, we can exchange images ;)
+>
+>  Your card is the U3+ version?
+>  http://forum.odroid.com/viewtopic.php?f=80&t=4570
+>
+>  I would like to join to your efforts, allows me?
 
-I'm using the mct per-cpu hw timers and it's actually similar to
-smp_twd except that the base address is different for each cpu. The
-code where switch test fails is on the tick acknowledgement:
+Sure, any help is welcome :)
 
-[  224.612412] Xenomai: suspending kernel thread f00d7710 ('rtk1/3')
-at 0xc0020c8c after exception #0x0
+I have the U3+.
 
-static void mct_tick_ack(void)
-{
-c0020c6c:       e92d4008        push    {r3, lr}
-        struct mct_clock_event_device *mevt = this_cpu_ptr(&percpu_mct_tick);
-c0020c70:       eb092cf5        bl      c026c04c <debug_smp_processor_id>
-c0020c74:       e3022908        movw    r2, #10504      ; 0x2908
-c0020c78:       e34c2064        movt    r2, #49252      ; 0xc064
-c0020c7c:       e30b3570        movw    r3, #46448      ; 0xb570
-c0020c80:       e34c3061        movt    r3, #49249      ; 0xc061
-
-        exynos4_mct_write(0x1, mevt->base + MCT_L_INT_CSTAT_OFFSET);
-c0020c84:       e7922100        ldr     r2, [r2, r0, lsl #2]
-c0020c88:       e3a00001        mov     r0, #1
-c0020c8c:       e0823003        add     r3, r2, r3
-c0020c90:       e5931004        ldr     r1, [r3, #4]
-c0020c94:       e2811030        add     r1, r1, #48     ; 0x30
-}
-c0020c98:       e8bd4008        pop     {r3, lr}
-
-static void mct_tick_ack(void)
-{
-        struct mct_clock_event_device *mevt = this_cpu_ptr(&percpu_mct_tick);
-
-        exynos4_mct_write(0x1, mevt->base + MCT_L_INT_CSTAT_OFFSET);
-c0020c9c:       eaffff8a        b       c0020acc <exynos4_mct_write>
-
-
-Writing to the mct registers is a bit slow I think this is the reason
-why the switch test fails:
-
-static void exynos4_mct_write(unsigned int value, void *addr)
-{
-       void __iomem *stat_addr;
-       u32 mask;
-       u32 i;
-
-       writel_relaxed(value, addr);
-
-       /* ... */
-
-       /* Wait maximum 1 ms until written values are applied */
-       for (i = 0; i < loops_per_jiffy / 1000 * HZ; i++)
-              if (readl_relaxed(stat_addr) & mask) {
-                     writel_relaxed(mask, stat_addr);
-              return;
-       }
-
-       panic("MCT hangs after writing %d (addr:0x%08x)\n", value, (u32)addr);
-}
-
-Is it possible to use a different set of hw timers per cpu other than
-the local timers?
-
-I don't have access to the docs so I'm not sure where the ARM
-architected timer is or if still exists.
-
-- Gemi
+I don't have access to github at the moment, I will post it up next week.
 
