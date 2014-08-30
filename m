@@ -1,14 +1,14 @@
-MIME-Version: 1.0
-In-Reply-To: <CAE2JnQygkVKbDCYKRfRuq7uEQrVbnbiiPgcETF8Js2cXVB6gUg@mail.gmail.com>
-References: <CACreCV+9seA7yp8gmjvOb6CQ7-Fbt-HyQ6YAoB_dqtmqmyvy7Q@mail.gmail.com>
- <53FDFD27.2010207@xenomai.org>
- <CACreCV+cQTO-5iFCCvC15VxNzXuvKkLN+_gUTex-r3Y1cByUkw@mail.gmail.com>
- <CAE2JnQygkVKbDCYKRfRuq7uEQrVbnbiiPgcETF8Js2cXVB6gUg@mail.gmail.com>
-Date: Sat, 30 Aug 2014 08:50:15 +0800
-Message-ID: <CACreCV+D1CxY9+84Csy1k1NkpGqPV8aZ1qW3pp5sOdWwSx6x-w@mail.gmail.com>
-From: GP Orcullo <kinsamanka@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] ODROID-U3 porting problems
+Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
+From: "Yogi A. Patel" <yapatel@gatech.edu>
+In-Reply-To: <oq1trzkztv.fsf@merlin.sez.to>
+Date: Fri, 29 Aug 2014 21:01:08 -0400
+Message-Id: <9BDC8606-00F8-4532-9EDD-D78BADC08E9C@gatech.edu>
+References: <7DEE8379-159F-470A-B22D-01B16FBEECB3@gatech.edu>
+ <oq1trzkztv.fsf@merlin.sez.to>
+Content-Type: text/plain;
+	charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Analogy PCI Slot issues?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,77 +17,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Alexandre Donisete Bensi <adbensi@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Paul Janzen <pcj@xenomai.sez.to>
+Cc: xenomai@xenomai.org
 
-On Sat, Aug 30, 2014 at 7:13 AM, Alexandre Donisete Bensi
-<adbensi@gmail.com> wrote:
-> 2014-08-28 10:45 GMT-03:00 GP Orcullo <kinsamanka@gmail.com>:
->> On Wed, Aug 27, 2014 at 11:45 PM, Gilles Chanteperdrix
->> <gilles.chanteperdrix@xenomai.org> wrote:
->>> On 08/27/2014 03:49 PM, GP Orcullo wrote:
->>>> Hi,
->>>>
->>>> I'm in the process of porting xenomai to Samsung Exynos 4420 based
->>>> ODROID-U3 board. I've followed the online manual and I was able to finish
->>>> up to the interrupt controller part.
->>>>
->>>> So far everything works when booting the board with CONFIG_IPIPE and
->>>> CONFIG_XENOMAI enabled. However, running the latency test gives the
->>>> following results:
->>>>
->>>> root@odroidu3:~# /usr/lib/xenomai/testsuite/latency -t 0 -T5
->>>> == Sampling period: 1000 us
->>>> == Test mode: periodic user-mode task
->>>> == All results in microseconds
->>>> warming up...
->>>> RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99)
->>>> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
->>>> RTD|-1054607.854|-555107.854|-416666.667|       0|
->>>> 0|-1054607.854|-416666.667
->>>> RTD|-2054607.854|-1555107.854|-416666.667|       0|
->>>> 0|-2054607.854|-416666.667
->>>> RTD|1240359.443|1739859.443|-416666.667|       0|     0|1240359.443|-416666.667
->>>> RTD| 240359.443| 739859.443|-416666.667|       0|     0| 240359.443|-416666.667
->>>> ---|-----------|-----------|-----------|--------|------|-------------------------
->>>> RTS| 240359.443|-2055107.854|-416666.667|       0|     0|    00:00:05/00:00:05
->>>
->>> I would say you have a problem with the tsc emulation. Have you tried to
->>> run the "tsc" program?
->>>
->>>
->>
->> Thanks for the tip! The problem was due to wrong physical address value.
->>
->>>> [    0.000000] Linux version 3.8.13.11-xen (gemi@odroidu3) (gcc version 4.6.3 (Debian 4.6.3-14) ) #34 SMP PREEMPT Wed Aug 27 20:22:46 SGT 2014 ()
->>>
->>> 3.8.13 is a bit old, I would advise you to use 3.14 if you plan to get
->>> your changes merged.
->>>
->>
->> Unfortunately this is the only stable version available. A newer version is
->> being worked on but it is based on 3.16. This will do for the time being,
->> I'm just using this as a test bed for machinekit.
->>
->
-> Hello Kinsa!
->
->  I had problems upgrading to 3:14 but at the time there was no
-> specific dtbs for U3, but now they have, even the new uboot to work
-> correctly with newest kernel : D
->
->  If you wish to still I have the binaries for this release, I am
-> currently running the 3.8 with another realtime kernel, I'm using EMMC
-> 16G with the last LinuxCNC, we can exchange images ;)
->
->  Your card is the U3+ version?
->  http://forum.odroid.com/viewtopic.php?f=80&t=4570
->
->  I would like to join to your efforts, allows me?
+> What happens if you use "1,10" or "0x1,0x0a=94?=20
 
-Sure, any help is welcome :)
+I=92ve tried 0x1, 0x0a, and 0xa - but no luck. All result in same error. =
+I have not tried 1,10. I=92ll see if I can and get back to you guys.
 
-I have the U3+.
+For now - not providing a bus address works perfectly.
 
-I don't have access to github at the moment, I will post it up next week.
+Yogi
+
+On Aug 29, 2014, at 12:47 PM, Paul Janzen <pcj@xenomai.sez.to> wrote:
+
+> "Yogi A. Patel" <yapatel@gatech.edu> writes:
+>=20
+>> We run $ sudo analogy_config analogy0 analogy_ni_pcimio 0x1,0a=20
+>>=20
+>> and get: $ analogy_config: attach failed err=3D-2 ERROR: Analogy =
+device loading failed.
+>=20
+> What happens if you use "1,10" or "0x1,0x0a"?=20
+>=20
+> analogy_config uses strtoul to parse options, and "0a" is not a format
+> that strtoul will recognize.
+>=20
+> (It would try to parse it as octal, because it starts with a leading
+> 0, but "a" is not a valid octal digit.)
+>=20
+> -- Paul
 
