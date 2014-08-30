@@ -1,14 +1,13 @@
-Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
-From: "Yogi A. Patel" <yapatel@gatech.edu>
-In-Reply-To: <oq1trzkztv.fsf@merlin.sez.to>
-Date: Fri, 29 Aug 2014 21:01:08 -0400
-Message-Id: <9BDC8606-00F8-4532-9EDD-D78BADC08E9C@gatech.edu>
-References: <7DEE8379-159F-470A-B22D-01B16FBEECB3@gatech.edu>
- <oq1trzkztv.fsf@merlin.sez.to>
-Content-Type: text/plain;
-	charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Analogy PCI Slot issues?
+Message-ID: <540124B3.9000706@xenomai.org>
+Date: Sat, 30 Aug 2014 03:11:15 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <CACreCV+9seA7yp8gmjvOb6CQ7-Fbt-HyQ6YAoB_dqtmqmyvy7Q@mail.gmail.com>	<53FDFD27.2010207@xenomai.org>	<CACreCV+cQTO-5iFCCvC15VxNzXuvKkLN+_gUTex-r3Y1cByUkw@mail.gmail.com>	<53FF33CE.10303@xenomai.org>	<D024AFFD.53F9%donald.poole@swri.org>	<CACreCV+8qTgd6y0UuRmMQEhX_mM4PfxP2yjANerZ07SmwkmkEg@mail.gmail.com>	<53FF5B81.7030408@xenomai.org>	<CACreCVJ+2nEakHkkZgL=c+u7rW8S2tY-3qTWyw=AtkCH39n=rw@mail.gmail.com>	<53FF7649.30907@xenomai.org>
+ <CACreCVKEyocU22ns2dURJxB-=mhTPqtEw62oEOo+edB4ZLDK9w@mail.gmail.com>
+In-Reply-To: <CACreCVKEyocU22ns2dURJxB-=mhTPqtEw62oEOo+edB4ZLDK9w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] ODROID-U3 porting problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,34 +16,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paul Janzen <pcj@xenomai.sez.to>
-Cc: xenomai@xenomai.org
+To: GP Orcullo <kinsamanka@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-> What happens if you use "1,10" or "0x1,0x0a=94?=20
+On 08/30/2014 02:17 AM, GP Orcullo wrote:
+> On Fri, Aug 29, 2014 at 2:34 AM, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+>> On 08/28/2014 07:05 PM, GP Orcullo wrote:
+>>> On Fri, Aug 29, 2014 at 12:40 AM, Gilles Chanteperdrix
+>>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>>> On 08/28/2014 06:34 PM, GP Orcullo wrote:
+>>>>> So far it passes all the regression tests except for the switchtest.
+>>>>
+>>>> What error do you get with switchtest ? If pthread_create fails with
+>>>> resource unavailable error, see:
+>>>>
+>>>> http://xenomai.org/troubleshooting-a-dual-kernel-configuration/#pthread_create_Resource_temporarily_unavailable
+>>>>
+>>>> If this is another error, please post the error message and kernel log here.
+>>>>
+>>>> --
+>>>>                                                                 Gilles.
+>>>
+>>> Running "switchtest rtk0" fails with "Xenomai: suspending kernel
+>>> thread f00bb710 ('rtk1/0') at 0xc0020c8c after exception #0x0"
+>>>
+>>> The address is traced to the I-pipe timer interrupt call-back. I think
+>>> I maybe missing some spinlocks somewhere.
+>>
+>> If you are using per-cpu hardware timers, no spinlock is needed, since
+>> each cpu accesses its own timer. If you are using the same (hardware)
+>> timer on several cpus, then it is not going to work anyway, Xenomai
+>> wants one hardware timer per cpu.
+>>
+>> --
+>>                                                                 Gilles.
+> 
+> I'm using the mct per-cpu hw timers and it's actually similar to
+> smp_twd except that the base address is different for each cpu. The
+> code where switch test fails is on the tick acknowledgement:
+> 
+> [  224.612412] Xenomai: suspending kernel thread f00d7710 ('rtk1/3')
+> at 0xc0020c8c after exception #0x0
+> 
+> static void mct_tick_ack(void)
+> {
+> c0020c6c:       e92d4008        push    {r3, lr}
+>         struct mct_clock_event_device *mevt = this_cpu_ptr(&percpu_mct_tick);
+> c0020c70:       eb092cf5        bl      c026c04c <debug_smp_processor_id>
+> c0020c74:       e3022908        movw    r2, #10504      ; 0x2908
+> c0020c78:       e34c2064        movt    r2, #49252      ; 0xc064
+> c0020c7c:       e30b3570        movw    r3, #46448      ; 0xb570
+> c0020c80:       e34c3061        movt    r3, #49249      ; 0xc061
+> 
+>         exynos4_mct_write(0x1, mevt->base + MCT_L_INT_CSTAT_OFFSET);
+> c0020c84:       e7922100        ldr     r2, [r2, r0, lsl #2]
+> c0020c88:       e3a00001        mov     r0, #1
+> c0020c8c:       e0823003        add     r3, r2, r3
+> c0020c90:       e5931004        ldr     r1, [r3, #4]
+> c0020c94:       e2811030        add     r1, r1, #48     ; 0x30
+> }
+> c0020c98:       e8bd4008        pop     {r3, lr}
+> 
+> static void mct_tick_ack(void)
+> {
+>         struct mct_clock_event_device *mevt = this_cpu_ptr(&percpu_mct_tick);
+> 
+>         exynos4_mct_write(0x1, mevt->base + MCT_L_INT_CSTAT_OFFSET);
+> c0020c9c:       eaffff8a        b       c0020acc <exynos4_mct_write>
+> 
+> 
+> Writing to the mct registers is a bit slow I think this is the reason
+> why the switch test fails:
 
-I=92ve tried 0x1, 0x0a, and 0xa - but no luck. All result in same error. =
-I have not tried 1,10. I=92ll see if I can and get back to you guys.
+No, the problem is using smp_processor_id() over a xenomai kernel
+thread, it can not work.
 
-For now - not providing a bus address works perfectly.
+Normally, this should not happen. arch/arm/include/asm/percpu.h defines
+__my_cpu_offset not to use smp_processor_id(), so this_cpu_ptr should
+not use smp_processor_id. You have to figure out why __my_cpu_offset
+does not get defined in arch/arm/include/asm/percpu.h
 
-Yogi
-
-On Aug 29, 2014, at 12:47 PM, Paul Janzen <pcj@xenomai.sez.to> wrote:
-
-> "Yogi A. Patel" <yapatel@gatech.edu> writes:
->=20
->> We run $ sudo analogy_config analogy0 analogy_ni_pcimio 0x1,0a=20
->>=20
->> and get: $ analogy_config: attach failed err=3D-2 ERROR: Analogy =
-device loading failed.
->=20
-> What happens if you use "1,10" or "0x1,0x0a"?=20
->=20
-> analogy_config uses strtoul to parse options, and "0a" is not a format
-> that strtoul will recognize.
->=20
-> (It would try to parse it as octal, because it starts with a leading
-> 0, but "a" is not a valid octal digit.)
->=20
-> -- Paul
+-- 
+                                                                Gilles.
 
