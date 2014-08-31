@@ -1,20 +1,10 @@
+Date: Sun, 31 Aug 2014 10:37:24 +0800 (CST)
+From: =?GBK?B?s8Lq2A==?= <cxmicrowave@126.com>
 MIME-Version: 1.0
-In-Reply-To: <5401357D.8060400@xenomai.org>
-References: <CACreCV+9seA7yp8gmjvOb6CQ7-Fbt-HyQ6YAoB_dqtmqmyvy7Q@mail.gmail.com>
- <53FDFD27.2010207@xenomai.org>
- <CACreCV+cQTO-5iFCCvC15VxNzXuvKkLN+_gUTex-r3Y1cByUkw@mail.gmail.com>
- <53FF33CE.10303@xenomai.org> <D024AFFD.53F9%donald.poole@swri.org>
- <CACreCV+8qTgd6y0UuRmMQEhX_mM4PfxP2yjANerZ07SmwkmkEg@mail.gmail.com>
- <53FF5B81.7030408@xenomai.org>
- <CACreCVJ+2nEakHkkZgL=c+u7rW8S2tY-3qTWyw=AtkCH39n=rw@mail.gmail.com>
- <53FF7649.30907@xenomai.org>
- <CACreCVKEyocU22ns2dURJxB-=mhTPqtEw62oEOo+edB4ZLDK9w@mail.gmail.com>
- <5401357D.8060400@xenomai.org>
-Date: Sat, 30 Aug 2014 10:40:29 +0800
-Message-ID: <CACreCVJu5wNzYnyfw2_1KO9-3Zc=iHup+U08+CKXHOou=ePgMw@mail.gmail.com>
-From: GP Orcullo <kinsamanka@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] ODROID-U3 porting problems
+Message-ID: <e88aa0f.b4e.14829ec9942.Coremail.cxmicrowave@126.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Question about the ISHIELD Option
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,29 +13,13 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Aug 30, 2014 9:22 AM, "Gilles Chanteperdrix" <
-gilles.chanteperdrix@xenomai.org> wrote:
->
-> On 08/30/2014 02:17 AM, GP Orcullo wrote:
-> > static void mct_tick_ack(void)
-> > {
-> >         struct mct_clock_event_device *mevt =
-this_cpu_ptr(&percpu_mct_tick);
->
-> You have to use __this_cpu_ptr instead of this_cpu_ptr here.
->
-> --
->                                                                 Gilles.
-
-Thanks!
-
-Problem solved.
-
-Next step is to upgrade to a newer kernel.
-
-Cheers,
-
-Gemi
+MaGiRnJvbSB0aGUgcmVsZWFzZSBub3RlLCBpdCBzZWVtcyB0aGF0IGZyb20gVjIuNSBSQzEsIHRo
+ZSBpbnRlcnJ1cHQgc2hpZWxkIHN1cHBvcnQgKGZvcm1lciBDT05GSUdfWEVOT19PUFRfSVNISUVM
+RCkgaXMgcmVtb3ZlZC4gSXMgdGhpcyBmdW5jdGlvbiBzdWJzdGl0dXRlZCBieSBzb21lIG90aGVy
+IGNvbmZpZ3VyYXRpb24/CjKholdoZW4gSSBzZXQgdGhlIFdBUk5TVyBvcHRpb24sIHRoZSBwcm9n
+cmFtIHJlY2VpdmVkIGEgU0lHWENQVSB3aGVuIGNhbGxpbmcgdGhlIHJ0X2Rldl9zb2NrZXQncyBz
+eXN0ZW0gY2FsbCBmcm9tIGEgcnQgdGFzaywgZG9lcyB0aGlzIG1lYW4gdGhlIHByb2dyYW0gaXMg
+c3dpdGNoZWQgdG8gbGludXggZG9tYWluPyBJIGFtIHVzaW5nIHJ0bmV0IDAuOS4xMy4gCkNhbiBh
+bnlvbmUgaGVscCBtZT8KVGhhbmtzIHZlcnkgbXVjaC4=
