@@ -1,10 +1,12 @@
-From: Paul <paul_c@tuxcnc.org>
-Date: Sun, 7 Sep 2014 23:37:47 +0100
+Message-ID: <5405CDDD.6000103@xenomai.org>
+Date: Tue, 02 Sep 2014 16:02:05 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Message-Id: <201409072337.48129.paul_c@tuxcnc.org>
-Content-Type: text/plain; charset="us-ascii"
+References: <CAKKWdtd=5ACjSnQ+hG7eqdZRwx9Ks-ZJ0puqvv6_uapuJZiMAw@mail.gmail.com>
+In-Reply-To: <CAKKWdtd=5ACjSnQ+hG7eqdZRwx9Ks-ZJ0puqvv6_uapuJZiMAw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PATCH]
+Subject: Re: [Xenomai] The mouse does not move!
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,26 +15,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: ali hagigat <hagigatali@gmail.com>, xenomai <xenomai@xenomai.org>
 
+On 09/02/2014 03:26 PM, ali hagigat wrote:
+>(...). But the mouse of the computer gets very slow
+> and it can barely move and when it is moved to the left , it seems it
+> moves to the right!
 
-Doing compile/install on a minimal system, hit upon a minor problem when 
-executing:
+As usual, RTFM:
+http://xenomai.org/2014/06/what-if-xenomai-and-linux-devices-share-the-same-irq/
 
- make devices
- /bin/bash: line 25: sudo: command not found
+-- 
+                                                                Gilles.
 
-Small fix required as per attached patch.
-
-
-Regards, Paul.
-
-
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: 0001-Minor-fix-for-missing-variable-reference.patch
-Type: text/x-diff
-Size: 707 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140907/fd967876/attachment.patch>
