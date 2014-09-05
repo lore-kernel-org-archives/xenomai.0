@@ -1,13 +1,10 @@
-Message-ID: <542976B2.30804@xenomai.org>
-Date: Mon, 29 Sep 2014 17:11:46 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Fri, 5 Sep 2014 14:43:46 -0400
+Message-ID: <20140905184346.GN17690@csclub.uwaterloo.ca>
 MIME-Version: 1.0
-References: <5423F8E3.3060006@xenomai.org>
- <D04EDD17.190CB%shartmann@cnt.canon.com>
-In-Reply-To: <D04EDD17.190CB%shartmann@cnt.canon.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Announce] Xenomai 2.6.4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [Xenomai] How to get debug symbols in xenomai libraries
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,26 +13,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Steve Hartmann <shartmann@cnt.canon.com>, Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 09/29/2014 04:59 PM, Steve Hartmann wrote:
-> Just FYI, When following the directions to build debian packages, the
-> debian packages are named with 2.6.3 filenames rather than the expected
-> 2.6.4.
+I tried using --enable-debug with configure and it claims it did it,
+but according to gdb, the resulting libraries do not have debug symbols.
 
-Yes, we are not going to update the instructions every time we release
-an new version. Which is why the instructions say:
+I see -g added to the gcc line all over the place, except when libtool
+does the final linking where for some reason it has disappeared (while
+all other options appear to have made it through).
 
-This howto was written for Xenomai 2.6.3, please use the latest stable
-Xenomai release and adapt the version numbers accordingly.
+This is on powerpc.
 
-Then, when building the kernel:
-
-We use Xenomai 2.6.3 and Linux 3.10.32 on x86 in the following example,
-please adapt it to the versions and architectures you want to install.
-
-Do you see a way to make the instructions more clear?
+Any ideas?
 
 -- 
-                                                                Gilles.
+Len Sorensen
 
