@@ -1,13 +1,15 @@
-Message-ID: <540A1DA7.8090906@xenomai.org>
-Date: Fri, 05 Sep 2014 22:31:35 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Fri, 5 Sep 2014 16:54:04 -0400
+Message-ID: <20140905205404.GP17690@csclub.uwaterloo.ca>
 References: <20140905184346.GN17690@csclub.uwaterloo.ca>
- <540A0A92.2000405@xenomai.org> <20140905191447.GO17690@csclub.uwaterloo.ca>
+ <540A0A92.2000405@xenomai.org>
+ <20140905191447.GO17690@csclub.uwaterloo.ca>
  <540A19DC.10507@xenomai.org> <540A1B2C.2050309@xenomai.org>
-In-Reply-To: <540A1B2C.2050309@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ <540A1DA7.8090906@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <540A1DA7.8090906@xenomai.org>
 Subject: Re: [Xenomai] How to get debug symbols in xenomai libraries
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,53 +19,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 09/05/2014 10:21 PM, Gilles Chanteperdrix wrote:
-> On 09/05/2014 10:15 PM, Gilles Chanteperdrix wrote:
->> On 09/05/2014 09:14 PM, Lennart Sorensen wrote:
->>> On Fri, Sep 05, 2014 at 09:10:10PM +0200, Gilles Chanteperdrix wrote:
->>>> On 09/05/2014 08:43 PM, Lennart Sorensen wrote:
->>>>> I tried using --enable-debug with configure and it claims it did it,
->>>>> but according to gdb, the resulting libraries do not have debug symbols.
->>>>>
->>>>> I see -g added to the gcc line all over the place, except when libtool
->>>>> does the final linking where for some reason it has disappeared (while
->>>>> all other options appear to have made it through).
->>>>>
->>>>> This is on powerpc.
->>>
->>> I should have said 'this is armhf'.  Too many systems in use.
->>>
->>>>> Any ideas?
->>>>>
->>>> run the "file" utility on the library to see whether or not it has
->>>> debugging information.
->>>
->>> file says 'dynamically linked, not stripped'.
->>>
->>> gdb says 'no debug symbols' for the xenomai libraries, but it does see
->>> them for libc and others.
->>>
->> Confirmed, I have the same problem, even on arm soft float and x86. Will
->> try and understand what happens.
->>
-> No, in fact the libraries have the debug symbols, only file does not
-> print it. But the crossed gcc finds them.
+On Fri, Sep 05, 2014 at 10:31:35PM +0200, Gilles Chanteperdrix wrote:
+> Just tried a fresh build with minimal flags, simply:
 > 
+> configure --enable-debug CFLAGS="-fomit-frame-pointer"
+> --host=arm-linux-gnueabihf
+> make
+> arm-linux-gnueabihf-gdb src/skins/common/.libs/libxenomai.so.0.0.0
+> 
+> and gdb says it can find symbols. (-fomit-frame-pointer is needed with
+> the toolchain I use, otherwise gcc complains that it can not use the r7
+> register).
 
-Just tried a fresh build with minimal flags, simply:
+I tried adding that option, and still gdb says no symbols.
 
-configure --enable-debug CFLAGS="-fomit-frame-pointer"
---host=arm-linux-gnueabihf
-make
-arm-linux-gnueabihf-gdb src/skins/common/.libs/libxenomai.so.0.0.0
-
-and gdb says it can find symbols. (-fomit-frame-pointer is needed with
-the toolchain I use, otherwise gcc complains that it can not use the r7
-register).
+Toolchain is debian wheezy's gcc 4.6, and everything is natively compiled.
 
 -- 
-                                                                Gilles.
+Len Sorensen
 
