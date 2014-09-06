@@ -1,17 +1,10 @@
-Message-ID: <540A2BB3.7020502@xenomai.org>
-Date: Fri, 05 Sep 2014 23:31:31 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <540A6F6A.807@logilin.fr>
+Date: Sat, 06 Sep 2014 04:20:26 +0200
+From: Christophe Blaess <mailist@logilin.fr>
 MIME-Version: 1.0
-References: <20140905191447.GO17690@csclub.uwaterloo.ca>
- <540A19DC.10507@xenomai.org> <540A1B2C.2050309@xenomai.org>
- <540A1DA7.8090906@xenomai.org> <20140905205404.GP17690@csclub.uwaterloo.ca>
- <540A23A6.8040205@xenomai.org> <20140905210335.GQ17690@csclub.uwaterloo.ca>
- <540A2563.1050304@xenomai.org> <20140905211515.GR17690@csclub.uwaterloo.ca>
- <540A286C.2050803@xenomai.org> <20140905213028.GS17690@csclub.uwaterloo.ca>
-In-Reply-To: <20140905213028.GS17690@csclub.uwaterloo.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] How to get debug symbols in xenomai libraries
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Subject: [Xenomai] [PATCH] Histogram option for cyclictest
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,28 +13,13 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 09/05/2014 11:30 PM, Lennart Sorensen wrote:
-> On Fri, Sep 05, 2014 at 11:17:32PM +0200, Gilles Chanteperdrix wrote:
->> You do not need to run "make install"
->> Just run configure --enable-debug
->> Then make
->> Then try gdb on the compiled libxenomai.so.0.0.0
->>
->> There are two layers of Makefileries, thee aim is to find where the
->> problem is coming from, not to use this as a solution.
-> 
-> Well we can give that a try.
-> 
-> Of course I hate libtool.  It's stupid .libs thing makes it so annying
-> to find the actual library.
-> 
-
-It is:
-src/skins/common/.libs/libxenomai.so.0.0.0
-
--- 
-                                                                Gilles.
-
+SGVsbG8sCgpUaGlzIHNtYWxsIHBhdGNoIGFnYWluc3QgWGVub21haSAyLjYuMyBhZGRzIHRoZSAi
+aGlzdG9ncmFtIiBvcHRpb24gdG8gCnRoZSBjeWNsaWN0ZXN0IHRvb2wuClRoZSBjb2RlIGNvbWVz
+IG1vc3RseSBmcm9tIENsYXJrIFdpbGxpYW0ncyBydC10ZXN0cyB2ZXJzaW9uIG9mIHRoaXMgcHJv
+Z3JhbS4KCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4
+dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBhZGQtaGlzdG9ncmFtLW9wdGlvbi10
+by1jeWNsaWN0ZXN0LnBhdGNoClR5cGU6IHRleHQveC1wYXRjaApTaXplOiA2MjIyIGJ5dGVzCkRl
+c2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwv
+eGVub21haS9hdHRhY2htZW50cy8yMDE0MDkwNi9hYjU1MTNkYi9hdHRhY2htZW50LmJpbj4K
