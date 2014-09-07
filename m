@@ -1,13 +1,13 @@
-Message-ID: <540C8C3F.2010801@gatech.edu>
-Date: Sun, 07 Sep 2014 12:47:59 -0400
-From: "Yogi A. Patel" <yapatel@gatech.edu>
+Message-ID: <540C8EF5.4090104@xenomai.org>
+Date: Sun, 07 Sep 2014 18:59:33 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <540C85F1.4070809@gatech.edu> <540C89BC.9030508@xenomai.org>
- <540C8A35.8090804@gatech.edu> <540C8BD0.2090604@xenomai.org>
-In-Reply-To: <540C8BD0.2090604@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+References: <5408A860.3020002@gatech.edu> <5408ADA2.1000401@xenomai.org>
+ <5408C529.4080202@gatech.edu> <5408C74B.2010706@xenomai.org>
+In-Reply-To: <5408C74B.2010706@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] mlockall and dlopenskins?
+Subject: Re: [Xenomai] Error compiling on P4 machine
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,35 +16,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
+To: "Yogi A. Patel" <yapatel@gatech.edu>, xenomai@xenomai.org
 
-On 09/07/2014 12:46 PM, Gilles Chanteperdrix wrote:
-> On 09/07/2014 06:39 PM, Yogi A. Patel wrote:
->> On 09/07/2014 12:37 PM, Gilles Chanteperdrix wrote:
->>> On 09/07/2014 06:21 PM, Yogi A. Patel wrote:
->>> The section named: MLOCKALL AND STACK SIZE says: As part of its
->>> initialization, Xenomai libraries call mlockall to commit and lock the
->>> whole application memory. How can that be made more clear?
->> It might be clearer if that statement was in or referenced to by the
->> section titled "BEFORE VERSION 2.6.3".
-> The documentation is meant to be used the other way around: you read the
-> mlockall section, and find a link to what happened before 2.6.3.
->
-> If you are interested in the exhaustive changes between versions, the
-> information is available in the git logs and release announcements.
->
-> For instance, version 2.6.3 announcement, here:
-> http://www.xenomai.org/pipermail/xenomai/2013-October/029289.html
-> says:
->
-> Jan Kiszka (29):
->        Invoke mlockall on every skin library initialization
->        posix: Control auto-shadowing via environment variable
->        Remove mlockall alert handler
->        Drop --enable-dlopen, disable optimized TLS support by default
->        posix: Skip auto-shadowing if current thread is already shadowed
->
-> And I find that the title of the section makes it pretty clear that this
-> information concerns what happened before version 2.6.3.
-Thanks for the info and pointing me to the resources, Gilles,
+On 09/04/2014 10:10 PM, Gilles Chanteperdrix wrote:
+> On 09/04/2014 10:01 PM, Yogi A. Patel wrote:
+>> Using
+>>
+>> Xenomai 2.6.3 and ipipe-core-3.8.13-x86-4.patch
+>>
+> This combination works for me.
+> 
+This was a (failed) attempt to make you realize that you should give us
+all the information allowing to reproduce your issue, otherwise there is
+not much we can do. The missing information here is the kernel
+configuration.
+
+-- 
+                                                                Gilles.
 
