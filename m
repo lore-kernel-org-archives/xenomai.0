@@ -1,10 +1,10 @@
-Message-ID: <540C89BC.9030508@xenomai.org>
-Date: Sun, 07 Sep 2014 18:37:16 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <540C8A35.8090804@gatech.edu>
+Date: Sun, 07 Sep 2014 12:39:17 -0400
+From: "Yogi A. Patel" <yapatel@gatech.edu>
 MIME-Version: 1.0
-References: <540C85F1.4070809@gatech.edu>
-In-Reply-To: <540C85F1.4070809@gatech.edu>
-Content-Type: text/plain; charset=UTF-8
+References: <540C85F1.4070809@gatech.edu> <540C89BC.9030508@xenomai.org>
+In-Reply-To: <540C89BC.9030508@xenomai.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] mlockall and dlopenskins?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,40 +15,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Yogi A. Patel" <yapatel@gatech.edu>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
 
-On 09/07/2014 06:21 PM, Yogi A. Patel wrote:
-> Hi -
-> 
-> I used to provide --enable-posix-auto-mlockall --enable-dlopen-skins as 
-> options to the configure script when compiling user space support. 
-> However in 2.6.3 I get a warning saying those are unrecognized options.
-> 
-> Now. I was looking online at the documentation and found the following:
-> 
+On 09/07/2014 12:37 PM, Gilles Chanteperdrix wrote:
+> On 09/07/2014 06:21 PM, Yogi A. Patel wrote:
+> The section named: MLOCKALL AND STACK SIZE says: As part of its 
+> initialization, Xenomai libraries call mlockall to commit and lock the 
+> whole application memory. How can that be made more clear? 
 
-The title of the section is:
+It might be clearer if that statement was in or referenced to by the 
+section titled "BEFORE VERSION 2.6.3".
 
-BEFORE VERSION 2.6.3
+What about the --enable-dlopen-skins warning? Are all skins compiled by 
+default now? I'm not experiencing any problems so far, but I would 
+rather understand what's going on than accept it blindly.
 
-> /Xenomai libraries only invoked mlockall if a special option was passed 
-> to the configure script when compiling Xenomai user-space support. So, 
-> applications which did not want to depend on this configuration had to 
-> call mlockall by themselves, before using any Xenomai service, by using://
-> //
-> //mlockall(MCL_CURRENT | MCL_FUTURE);/
-
-
-The section named:
-
-MLOCKALL AND STACK SIZE
-
-says:
-As part of its initialization, Xenomai libraries call mlockall to commit
-and lock the whole application memory.
-
-How can that be made more clear?
-
--- 
-                                                                Gilles.
+Thanks, Gilles.
 
