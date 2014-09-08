@@ -1,15 +1,18 @@
-Message-ID: <540DA12E.1030607@siemens.com>
-Date: Mon, 08 Sep 2014 14:29:34 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Date: Mon, 08 Sep 2014 15:55:14 +0200
+From: Wolfgang Grandegger <wg@grandegger.com>
+In-Reply-To: <540DA12E.1030607@siemens.com>
 References: <540D4E9A.4090203@siemens.com>
  <5d07f986ca9ee2f6e65fe10f16a1bf29@grandegger.com>
  <540D77EB.10602@siemens.com> <540D8759.6050300@xenomai.org>
-In-Reply-To: <540D8759.6050300@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Flexcan driver build broken since 3.11 - also in
-	upstream?
+ <540DA12E.1030607@siemens.com>
+Message-ID: <6c3ae139b47ea3cfa021dff83f10cc52@grandegger.com>
+Subject: Re: [Xenomai]
+	=?utf-8?q?Flexcan_driver_build_broken_since_3=2E11_-_al?=
+	=?utf-8?q?so_in_upstream=3F?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,48 +21,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Wolfgang Grandegger <wg@grandegger.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2014-09-08 12:39, Gilles Chanteperdrix wrote:
-> On 09/08/2014 11:33 AM, Jan Kiszka wrote:
->> On 2014-09-08 11:25, Wolfgang Grandegger wrote:
->>> On Mon, 08 Sep 2014 08:37:14 +0200, Jan Kiszka <jan.kiszka@siemens.com>
->>> wrote:
->>>> Hi all,
+On Mon, 08 Sep 2014 14:29:34 +0200, Jan Kiszka <jan.kiszka@siemens.com>
+wrote:
+> On 2014-09-08 12:39, Gilles Chanteperdrix wrote:
+>> On 09/08/2014 11:33 AM, Jan Kiszka wrote:
+>>> On 2014-09-08 11:25, Wolfgang Grandegger wrote:
+>>>> On Mon, 08 Sep 2014 08:37:14 +0200, Jan Kiszka
+<jan.kiszka@siemens.com>
+>>>> wrote:
+>>>>> Hi all,
+>>>>>
+>>>>> just noticed a build breakage in Xenomai 2:
+ksrc/drivers/can/flexcan.c
+>>>>> is looking for linux/can/platform/flexcan.h which was removed in
+>>>>> baffd2e8d9. But both the Xenomai driver and upstream's flexcan.c
+still
+>>>>> use the flexcan_platform_data structure which I do not find anywhere
+>>>>> in
+>>>>> the kernel. Does anyone know what happened there?
 >>>>
->>>> just noticed a build breakage in Xenomai 2: ksrc/drivers/can/flexcan.c
->>>> is looking for linux/can/platform/flexcan.h which was removed in
->>>> baffd2e8d9. But both the Xenomai driver and upstream's flexcan.c still
->>>> use the flexcan_platform_data structure which I do not find anywhere in
->>>> the kernel. Does anyone know what happened there?
+>>>> I just cloned Linus's kernel tree and do *not* see that any CAN
+driver
+>>>> is
+>>>> still including "linux/can/platform/flexcan":
+>>>>
+>>>> $ grep -r '/platform/flexcan.h' linux/drivers/net/can/
+>>>> $
+>>>>
+>>>> Will have a closer look later today.
 >>>
->>> I just cloned Linus's kernel tree and do *not* see that any CAN driver is
->>> still including "linux/can/platform/flexcan":
->>>
->>> $ grep -r '/platform/flexcan.h' linux/drivers/net/can/
->>> $
->>>
->>> Will have a closer look later today.
->>
->> Also try "git grep flexcan_platform_data" - confuses me...
+>>> Also try "git grep flexcan_platform_data" - confuses me...
+>> 
+>> Well, the driver never uses the contents of the pointer to this
+>> structure, so, it does not really need the structure to be defined...
 > 
-> Well, the driver never uses the contents of the pointer to this
-> structure, so, it does not really need the structure to be defined...
-
-Indeed, dead code...
-
-> Or am I missing something? Anyway, it would seem the driver has been
-> converted to device tree:
+> Indeed, dead code...
 > 
-> Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
+>> Or am I missing something? Anyway, it would seem the driver has been
+>> converted to device tree:
+>> 
+>> Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
+>> 
 > 
+> Then we need to convert the RT driver as well, right?
 
-Then we need to convert the RT driver as well, right?
+Yes... while still being compatible with old(er) kernel versions.
+And there are various other improvements and most likely bug fixes.
+Unfortunately I do currently not have Flexcan hardware at hand.
 
-Jan
+Wolfgang.
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
 
