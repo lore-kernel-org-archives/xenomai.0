@@ -1,13 +1,20 @@
-Message-ID: <540F6B15.2070201@xenomai.org>
-Date: Tue, 09 Sep 2014 23:03:17 +0200
+Message-ID: <540F6B9D.3020109@xenomai.org>
+Date: Tue, 09 Sep 2014 23:05:33 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAPRPZsBD_5ufxFAhPCFqRf9YZSm1FhqfcmL+MTbhJ=1Sb7ED_g@mail.gmail.com>	<CAPRPZsBsOmiaWPJmPR9RK0uv_BXbw_s43rarKOvVoGfN2gWZjQ@mail.gmail.com>	<CAPRPZsCnAJH_-070SbSMB+Q_dQwf+FYfKpmp1wzwtz=zMA2bcA@mail.gmail.com>	<5357C92F.2060206@xenomai.org>	<CAPRPZsAvxx9XVB5MYi65m1FPaz2p7Rgh7+M4U357exJBbo0kHQ@mail.gmail.com>	<535828F6.6050308@xenomai.org>	<CAPRPZsA4ZQEm1a+2TV6s2wvD2_M53RrL4zLz0sJgLKEF8ALo1w@mail.gmail.com>	<53583DF7.3080700@xenomai.org>	<CAPRPZsB8a=gN=U14qn_tpfksg3T8yW+M8pZGhOkT-jPDuU8L0w@mail.gmail.com>	<CAPRPZsAyTQN936=phnT+NzvT7w_UxnY1ppQDucCjh39neOYn6g@mail.gmail.com>	<CAPRPZsB4+68QpNZ7sBCa6-wssNizkrBpG7vB_6q-cJXvCzkihg@mail.gmail.com>
- <CAPRPZsCji_p56+CC+a6ueywq39piA=70RaTPP3Xtz62NL_nhcQ@mail.gmail.com>
-In-Reply-To: <CAPRPZsCji_p56+CC+a6ueywq39piA=70RaTPP3Xtz62NL_nhcQ@mail.gmail.com>
+References: <AE39D2A4-ECC3-481B-AF3B-8A67FA23D2BF@tuebingen.mpg.de>	<44BE6908-E639-421F-B556-E7B3871402CF@gmail.com>	<67B7E374-C4D2-4F83-BA40-B289B15867B9@tuebingen.mpg.de>	<53E3B5E3.3090006@xenomai.org>
+ <oqtx5om90q.fsf@merlin.sez.to>	<53E3CD23.5040909@xenomai.org>
+ <53E3D084.2000506@tuebingen.mpg.de>	<53E3D2FF.5000407@xenomai.org>
+ <53E3D50D.7060701@tuebingen.mpg.de>	<53E3D712.3070801@xenomai.org>
+ <web-589558@tuebingen.mpg.de>	<53E47905.5070402@xenomai.org>
+ <oqoavunbgo.fsf@merlin.sez.to>	<53E5081C.8050807@xenomai.org>
+ <oqiom2n8ex.fsf@merlin.sez.to>	<53E7964B.6080200@xenomai.org>
+ <oq8umvm0fr.fsf@merlin.sez.to>	<53E8FC9C.90508@xenomai.org>
+ <oq38d2ncql.fsf@merlin.sez.to>
+In-Reply-To: <oq38d2ncql.fsf@merlin.sez.to>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Reading /proc/xenomai/stat causes high latencies
+Subject: Re: [Xenomai] real-time guarantee issues on xenomai 2.6.2.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,44 +23,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Paul Janzen <pcj@xenomai.sez.to>
+Cc: xenomai@xenomai.org
 
-On 04/25/2014 12:44 PM, Jeroen Van den Keybus wrote:
-> For testing, I've removed the locks from the vfile system. Then the
-> high latencies reliably disappear.
+On 08/11/2014 07:43 PM, Paul Janzen wrote:
+> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
 > 
-> To test, I made two xeno_nucleus modules: one with the xnlock_get/put_
-> in place and one with dummies. Subsequently, I use a program that
-> simply opens and reads the stat file 1,000 times.
+>> What about combining the 2, like:
+>>
+>> 	} else {
+>> 		xnarch_memory_barrier();
+>> 		cpu_relax();
+>> 	}
 > 
-> With locks:
-> 
-> RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
-> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
-> RTD|     -2.575|     -2.309|      9.286|       0|     0|     -2.575|      9.286
-> RTD|     -2.364|     -2.276|      1.600|       0|     0|     -2.575|      9.286
-> RTD|     -2.482|     -2.274|      2.165|       0|     0|     -2.575|      9.286
-> RTD|     -2.368|    135.261|   1478.154|   13008|     0|     -2.575|   1478.154
-> RTD|     -2.368|     -2.272|      2.602|   13008|     0|     -2.575|   1478.154
-> RTD|     -2.499|     -2.272|      6.933|   13008|     0|     -2.575|   1478.154
-> 
-> Without locks:
-> 
-> RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
-> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
-> RTD|     -2.503|     -2.270|      3.310|       0|     0|     -2.503|      3.310
-> RTD|     -2.418|     -2.284|     -1.646|       0|     0|     -2.503|      3.310
-> RTD|     -2.496|     -2.275|      4.630|       0|     0|     -2.503|      4.630
-> RTD|     -2.374|     -2.285|     -1.458|       0|     0|     -2.503|      4.630
-> RTD|     -2.452|     -2.273|      3.559|       0|     0|     -2.503|      4.630
-> RTD|     -2.370|     -2.285|     -1.518|       0|     0|     -2.503|      4.630
-> RTD|     -2.458|     -2.274|      4.203|       0|     0|     -2.503|      4.630
-> 
-> I'll now have a closer look into the vfile system but if the locks are
-> malfunctioning, I'm clueless.
+> No, this does not help either.
 
-Answering with a "little" delay, could you try the following patch?
+
+Could you try the following patch?
 
 diff --git a/include/asm-generic/bits/pod.h b/include/asm-generic/bits/pod.h
 index a6be0dc..cfb0c71 100644
@@ -100,28 +86,6 @@ index c8e0363..066c12f 100644
  	}
  
  	if (ret < 0) {
-
-
-> 
-> 
-> BTW I found that unloading and loading xeno_nucleus didn't work due to
-> a missing rthal_free_ptdkey call in xnshadow_cleanup. I used the
-> following patch to fix that. (The ability to swap out xenomai modules
-> is a real lifesaver when debugging. Thanks!)
-> 
-> --- /home/vdkeybus/work/xenomai/ksrc/nucleus/shadow.c   2014-04-16
-> 22:46:19.018851844 +0200
-> +++ shadow.c    2014-04-25 09:43:49.838735832 +0200
-> @@ -3139,6 +3139,8 @@ void xnshadow_cleanup(void)
->         }
-> 
->         rthal_apc_free(lostage_apc);
-> +
-> +       rthal_free_ptdkey(nkmmptd);
->         rthal_free_ptdkey(nkerrptd);
->         rthal_free_ptdkey(nkthrptd);
-
-Merged, thanks.
 
 
 -- 
