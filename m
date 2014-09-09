@@ -1,24 +1,13 @@
+Message-ID: <540F6B15.2070201@xenomai.org>
+Date: Tue, 09 Sep 2014 23:03:17 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <53EE6E07.7090104@xenomai.org>
-References: <mailman.653.1404749254.5713.xenomai@xenomai.org>
- <53C3E6CE.2040306@xenomai.org> <53C42ADE.7040204@gmail.com>
- <53C44696.2070906@xenomai.org> <53C44EE9.3040000@xenomai.org>
- <53C6CC9B.4040009@xenomai.org> <53C81CFD.30908@gmail.com>
- <53C82A08.50100@xenomai.org>
- <CACKc53LL5C2AUTjd6cah1JyoDD5BMGeg5RQjsDjX9_FNvqdAJQ@mail.gmail.com>
- <53DAA390.7040406@xenomai.org>
- <CACKc53LQ5pCL14tVodDbMjyexPoYcaLi-PFzFOGT=VNGhR6FpQ@mail.gmail.com>
- <53DBA8D7.9040505@xenomai.org>
- <CACKc53+jJ9tq-5oHN65V5o-tTU5L67ZiwKQ5eyFW0C=4HRyYqA@mail.gmail.com>
- <CACKc53KpB1=-HciLvY-E_u4FDO72LGBSwtSV19G_h5_iT8e-LQ@mail.gmail.com>
- <53E96D0E.7060505@xenomai.org> <53EE6E07.7090104@xenomai.org>
-Date: Tue, 9 Sep 2014 11:31:04 +0200
-Message-ID: <CACKc53Jm2ZkEfuP9Y=Zf9kOB_uKyQiWAhWCX25iuW0KG4ZDScw@mail.gmail.com>
-From: Wojciech Domski <wojciech.domski@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] sensoray 626 patch [Re: Xenomai Digest, Vol 27,
-	Issue 12]
+References: <CAPRPZsBD_5ufxFAhPCFqRf9YZSm1FhqfcmL+MTbhJ=1Sb7ED_g@mail.gmail.com>	<CAPRPZsBsOmiaWPJmPR9RK0uv_BXbw_s43rarKOvVoGfN2gWZjQ@mail.gmail.com>	<CAPRPZsCnAJH_-070SbSMB+Q_dQwf+FYfKpmp1wzwtz=zMA2bcA@mail.gmail.com>	<5357C92F.2060206@xenomai.org>	<CAPRPZsAvxx9XVB5MYi65m1FPaz2p7Rgh7+M4U357exJBbo0kHQ@mail.gmail.com>	<535828F6.6050308@xenomai.org>	<CAPRPZsA4ZQEm1a+2TV6s2wvD2_M53RrL4zLz0sJgLKEF8ALo1w@mail.gmail.com>	<53583DF7.3080700@xenomai.org>	<CAPRPZsB8a=gN=U14qn_tpfksg3T8yW+M8pZGhOkT-jPDuU8L0w@mail.gmail.com>	<CAPRPZsAyTQN936=phnT+NzvT7w_UxnY1ppQDucCjh39neOYn6g@mail.gmail.com>	<CAPRPZsB4+68QpNZ7sBCa6-wssNizkrBpG7vB_6q-cJXvCzkihg@mail.gmail.com>
+ <CAPRPZsCji_p56+CC+a6ueywq39piA=70RaTPP3Xtz62NL_nhcQ@mail.gmail.com>
+In-Reply-To: <CAPRPZsCji_p56+CC+a6ueywq39piA=70RaTPP3Xtz62NL_nhcQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Reading /proc/xenomai/stat causes high latencies
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,129 +16,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jorge Ramirez Ortiz <jro@xenomai.org>
+To: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-RGVhciBKb3JnZSwKClllcywgdGhpcyBmaXggc29sdmVkIHRoZSBwcm9ibGVtLiBOb3csIGV2ZXJ5
-dGhpbmcgd29ya3MganVzdCBmaW5lLiBQbGVhc2UKZmluZCBhdHRhY2hlZCBhIFNlbnNvcmF5IDYy
-NiBkcml2ZXIuIEl0IGlzIGNsZWFuZWQgYW5kIHRlc3RlZCB0byB3b3JrIHdpdGgKdHdvIGNhcmRz
-LiBUaGVyZSBzaG91bGRuJ3QgYmUgYW55IHByb2JsZW0gd2l0aCBtb3JlIGNhcmRzIHN1cHBvcnQu
-Ckhvd2V2ZXIsIEkgd291bGQgbGlrZSB0byBhc2sgeW91IGZvciBhIGZhdm91ci4gSXMgaXQgcG9z
-c2libGUgZm9yIHlvdSB0bwpwdXQgdGhpcyBwYXRjaCB0byBYZW5vbWFpIDIgdHJlZSA/CgpBbHNv
-IGFzIHlvdSBjb3VsZCBub3RpY2UgYmVmb3JlIEkndmUgd3JpdHRlbiBhIHBpZWNlIG9mIEFQSSBm
-b3IgdXNpbmcgdGhlClNlbnNvcmF5IDYyNiBjYXJkLiBJcyBpcyBwb3NzaWJsZSB0byBhZGQgdGhp
-cyBhbHNvIHRvIFhlbm9tYWkgYnV0IHRvCmV4YW1wbGUgc2VjdGlvbiBvciBzb21ldGhpbmcgc2lt
-aWxhciwgb2YgY291cnNlPwoKQmVzdCByZWdhcmRzLApXb2pjaWVjaCBEb21za2kKCjIwMTQtMDgt
-MTUgMjI6MzEgR01UKzAyOjAwIEpvcmdlIFJhbWlyZXogT3J0aXogPGpyb0B4ZW5vbWFpLm9yZz46
-Cgo+IC0tLS0tQkVHSU4gUEdQIFNJR05FRCBNRVNTQUdFLS0tLS0KPiBIYXNoOiBTSEExCj4KPiBP
-biAwOC8xMS8yMDE0IDA5OjI1IFBNLCBKb3JnZSBSYW1pcmV6IE9ydGl6IHdyb3RlOgo+ID4gT24g
-MDgvMDUvMjAxNCAwNjowMSBBTSwgV29qY2llY2ggRG9tc2tpIHdyb3RlOgo+ID4+IE9rLCB0aGVy
-ZSB3YXMgYSBwcm9ibGVtIHdpdGggY2xvc2luZyB0aGUgZGVzY3JpcHRvciBvbiB0aGUgc2lkZSBv
-ZiBBUEkKPiAobmV3Cj4gPj4gZmlsZSBpbiBhdHRhY2htZW50KS4gSSBoYXZlIHJlc29sdmVkIGl0
-IGJ1dCBub3cgSSBoYXZlIHByb2JsZW0gd2l0aCBJUlEuCj4gPj4gSGVyZSBpcyB3aGF0IGRtZXNn
-IHNheXM6Cj4gPgo+ID4+IFsgIDEwMy45NDI0MzFdIEFuYWxvZ3k6IGE0bF9hZGRfZHJ2OiBuYW1l
-PVM2MjYKPiA+PiBbICAxMDMuOTQyNDM0XSBBbmFsb2d5OiBhNGxfbGN0X2RydjogbmFtZT1TNjI2
-Cj4gPj4gWyAgMTAzLjk0MjQ1MF0gQW5hbG9neTogUHJvYmluZyBmb3IgczYyNgo+ID4+IFsgIDEw
-My45NDI0NjldIEFuYWxvZ3k6IFByb2JpbmcgZm9yIHM2MjYKPiA+PiBbICAxMTUuNzY0OTQxXSBB
-bmFsb2d5OiBhNGxfbGN0X2RydjogbmFtZT1TNjI2Cj4gPj4gWyAgMTE1Ljc2NDk0NV0gQW5hbG9n
-eTogUzYyNjogQXR0YWNoaW5nIHM2MjYKPiA+PiBbICAxMTUuNzY0OTQ3XSBBbmFsb2d5OiBTNjI2
-OiBEZXNpcmVkIEJ1czogMiwgU2xvdDogNAo+ID4+IFsgIDExNS43NjQ5NDldIEFuYWxvZ3k6IFM2
-MjY6IEhhcyBCdXM6IDIsIFNsb3Q6IDQKPiA+PiBbICAxMTUuNzY0OTUxXSBBbmFsb2d5OiBTNjI2
-OiBQQ0kgZGV2ID0gZmZmZjg4MDIxMWM3MjAwMAo+ID4+IFsgIDExNS43NjQ5NTJdIEFuYWxvZ3k6
-IFM2MjY6IFBDSSBzZXQgbWFzdGVyCj4gPj4gWyAgMTE1Ljc2NDk2MF0gQW5hbG9neTogUzYyNjog
-UENJIHJlZ2lvbiByZXF1ZXN0Cj4gPj4gWyAgMTE1Ljc2NDk2NF0gQW5hbG9neTogUzYyNjogUENJ
-IGlvcmVtYXAKPiA+PiBbICAxMTUuNzY0OTk3XSBBbmFsb2d5OiBTNjI2OiBkaXNhYmxlIG1hc3Rl
-ciBpbnRlcnJ1cHQKPiA+PiBbICAxMTUuNzY0OTk4XSBBbmFsb2d5OiBTNjI2OiBETUEKPiA+PiBb
-ICAxMTUuNzY1MDA0XSBBbmFsb2d5OiBTNjI2OiBSVERNIGlycQo+ID4+IFsgIDExNS43NjUwMTZd
-IEFuYWxvZ3k6IFM2MjY6IFJURE0gaXJxIHJlcXVlc3QKPiA+PiBbICAxMTUuNzY1MDI3XSBBbmFs
-b2d5OiBTNjI2OiBzdWJkZXZpY2VzIGFsbG9jYXRpb24KPiA+PiBbICAxMTUuNzY1MDMxXSBBbmFs
-b2d5OiBTNjI2OiBjYXJkIGluaXRpYWxpemF0aW9uCj4gPj4gWyAgMTE1Ljc4MDUxM10gQW5hbG9n
-eTogUzYyNjogRHJpdmVyIHJlYWR5Cj4gPj4gWyAgMTE1Ljc4MDUxNl0gQW5hbG9neTogYTRsX3Nl
-dHVwX3RyYW5zZmVyOiBuYl9zdWJkPTYKPiA+PiBbICAxMTkuNjIwNTcwXSBBbmFsb2d5OiBhNGxf
-bGN0X2RydjogbmFtZT1TNjI2Cj4gPj4gWyAgMTE5LjYyMDU3NV0gQW5hbG9neTogUzYyNjogQXR0
-YWNoaW5nIHM2MjYKPiA+PiBbICAxMTkuNjIwNTc5XSBBbmFsb2d5OiBTNjI2OiBEZXNpcmVkIEJ1
-czogMiwgU2xvdDogNQo+ID4+IFsgIDExOS42MjA1ODFdIEFuYWxvZ3k6IFM2MjY6IEhhcyBCdXM6
-IDIsIFNsb3Q6IDUKPiA+PiBbICAxMTkuNjIwNTgzXSBBbmFsb2d5OiBTNjI2OiBQQ0kgZGV2ID0g
-ZmZmZjg4MDIxMWM3MzAwMAo+ID4+IFsgIDExOS42MjA1ODRdIEFuYWxvZ3k6IFM2MjY6IFBDSSBz
-ZXQgbWFzdGVyCj4gPj4gWyAgMTE5LjYyMDU5Ml0gQW5hbG9neTogUzYyNjogUENJIHJlZ2lvbiBy
-ZXF1ZXN0Cj4gPj4gWyAgMTE5LjYyMDU5Nl0gQW5hbG9neTogUzYyNjogUENJIGlvcmVtYXAKPiA+
-PiBbICAxMTkuNjIwNjMwXSBBbmFsb2d5OiBTNjI2OiBkaXNhYmxlIG1hc3RlciBpbnRlcnJ1cHQK
-PiA+PiBbICAxMTkuNjIwNjMyXSBBbmFsb2d5OiBTNjI2OiBETUEKPiA+PiBbICAxMTkuNjIwNjM1
-XSBBbmFsb2d5OiBTNjI2OiBSVERNIGlycQo+ID4+IFsgIDExOS42MjA2NDRdIEFuYWxvZ3k6IFM2
-MjY6IFJURE0gaXJxIHJlcXVlc3QKPiA+PiBbICAxMTkuNjIwNjU1XSBBbmFsb2d5OiBTNjI2OiBz
-dWJkZXZpY2VzIGFsbG9jYXRpb24KPiA+PiBbICAxMTkuNjIwNjU5XSBBbmFsb2d5OiBTNjI2OiBj
-YXJkIGluaXRpYWxpemF0aW9uCj4gPj4gWyAgMTE5LjYzNjEzNV0gQW5hbG9neTogUzYyNjogRHJp
-dmVyIHJlYWR5Cj4gPj4gWyAgMTE5LjYzNjEzOV0gQW5hbG9neTogYTRsX3NldHVwX3RyYW5zZmVy
-OiBuYl9zdWJkPTYKPiA+PiBbICAxMjEuOTA4Mjg0XSBBbmFsb2d5OiBhNGxfcHJlY2xlYW51cF90
-cmFuc2ZlcjoKPiBzdWJkWzBdLT5zdGF0dXM9MHgwMDAwMDAwMAo+ID4+IFsgIDEyMS45MDgyODdd
-IEFuYWxvZ3k6IGE0bF9wcmVjbGVhbnVwX3RyYW5zZmVyOgo+IHN1YmRbMV0tPnN0YXR1cz0weDAw
-MDAwMDAwCj4gPj4gWyAgMTIxLjkwODI4OV0gQW5hbG9neTogYTRsX3ByZWNsZWFudXBfdHJhbnNm
-ZXI6Cj4gc3ViZFsyXS0+c3RhdHVzPTB4MDAwMDAwMDAKPiA+PiBbICAxMjEuOTA4MjkwXSBBbmFs
-b2d5OiBhNGxfcHJlY2xlYW51cF90cmFuc2ZlcjoKPiBzdWJkWzNdLT5zdGF0dXM9MHgwMDAwMDAw
-MAo+ID4+IFsgIDEyMS45MDgyOTFdIEFuYWxvZ3k6IGE0bF9wcmVjbGVhbnVwX3RyYW5zZmVyOgo+
-IHN1YmRbNF0tPnN0YXR1cz0weDAwMDAwMDAwCj4gPj4gWyAgMTIxLjkwODI5M10gQW5hbG9neTog
-YTRsX3ByZWNsZWFudXBfdHJhbnNmZXI6Cj4gc3ViZFs1XS0+c3RhdHVzPTB4MDAwMDAwMDAKPiA+
-PiBbICAxMjEuOTA4Mjk4XSBBbmFsb2d5OiBTNjI2OiBEZXRhY2hpbmcgczYyNgo+ID4+IFsgIDEy
-MS45MDgzMDBdIEFuYWxvZ3k6IFM2MjY6IENsZWFuaW5nIHByaXZhdGUKPiA+PiBbICAxMjEuOTA4
-MzIyXSBBbmFsb2d5OiBTNjI2OiBIYW5kbGluZyBpcnEKPiA+PiBbICAxMjIuMTExNjYzXSBBbmFs
-b2d5OiBTNjI2OiBSZWxlYXNpbmcgUENJIHJlZ2lvbnMKPiA+PiBbICAxMjIuMTExNjcwXSBBbmFs
-b2d5OiBTNjI2OiBSZW1vdmluZyBwcml2YXRlCj4gPj4gWyAgMTIyLjExMTY3MV0gQW5hbG9neTog
-UzYyNjogRGV0YWNoaW5nIGNvbXBsZXRlZAo+ID4+IFsgIDEyNC4wODE2ODddIEFuYWxvZ3k6IGE0
-bF9wcmVjbGVhbnVwX3RyYW5zZmVyOgo+IHN1YmRbMF0tPnN0YXR1cz0weDAwMDAwMDAwCj4gPj4g
-WyAgMTI0LjA4MTY5MV0gQW5hbG9neTogYTRsX3ByZWNsZWFudXBfdHJhbnNmZXI6Cj4gc3ViZFsx
-XS0+c3RhdHVzPTB4MDAwMDAwMDAKPiA+PiBbICAxMjQuMDgxNjkyXSBBbmFsb2d5OiBhNGxfcHJl
-Y2xlYW51cF90cmFuc2ZlcjoKPiBzdWJkWzJdLT5zdGF0dXM9MHgwMDAwMDAwMAo+ID4+IFsgIDEy
-NC4wODE2OTRdIEFuYWxvZ3k6IGE0bF9wcmVjbGVhbnVwX3RyYW5zZmVyOgo+IHN1YmRbM10tPnN0
-YXR1cz0weDAwMDAwMDAwCj4gPj4gWyAgMTI0LjA4MTY5NV0gQW5hbG9neTogYTRsX3ByZWNsZWFu
-dXBfdHJhbnNmZXI6Cj4gc3ViZFs0XS0+c3RhdHVzPTB4MDAwMDAwMDAKPiA+PiBbICAxMjQuMDgx
-Njk2XSBBbmFsb2d5OiBhNGxfcHJlY2xlYW51cF90cmFuc2ZlcjoKPiBzdWJkWzVdLT5zdGF0dXM9
-MHgwMDAwMDAwMAo+ID4+IFsgIDEyNC4wODE3MDJdIEFuYWxvZ3k6IFM2MjY6IERldGFjaGluZyBz
-NjI2Cj4gPj4gWyAgMTI0LjA4MTcwNF0gQW5hbG9neTogUzYyNjogQ2xlYW5pbmcgcHJpdmF0ZQo+
-ID4+IFsgIDEyNC4wODE3MjZdIEFuYWxvZ3k6IFM2MjY6IEhhbmRsaW5nIGlycQo+ID4+IFsgIDEy
-NC4yODM4NDhdIEFuYWxvZ3k6IFM2MjY6IFJlbGVhc2luZyBQQ0kgcmVnaW9ucwo+ID4+IFsgIDEy
-NC4yODM4NTVdIEFuYWxvZ3k6IFM2MjY6IFJlbW92aW5nIHByaXZhdGUKPiA+PiBbICAxMjQuMjgz
-ODU2XSBBbmFsb2d5OiBTNjI2OiBEZXRhY2hpbmcgY29tcGxldGVkCj4gPj4gWyAgMTI3LjM3Njg4
-Ml0gQW5hbG9neTogYTRsX2xjdF9kcnY6IG5hbWU9UzYyNgo+ID4+IFsgIDEyNy4zNzY4ODddIEFu
-YWxvZ3k6IFM2MjY6IEF0dGFjaGluZyBzNjI2Cj4gPj4gWyAgMTI3LjM3Njg4OF0gQW5hbG9neTog
-UzYyNjogRGVzaXJlZCBCdXM6IDIsIFNsb3Q6IDUKPiA+PiBbICAxMjcuMzc2ODkwXSBBbmFsb2d5
-OiBTNjI2OiBIYXMgQnVzOiAyLCBTbG90OiA1Cj4gPj4gWyAgMTI3LjM3Njg5M10gQW5hbG9neTog
-UzYyNjogUENJIGRldiA9IGZmZmY4ODAyMTFjNzMwMDAKPiA+PiBbICAxMjcuMzc2ODk0XSBBbmFs
-b2d5OiBTNjI2OiBQQ0kgc2V0IG1hc3Rlcgo+ID4+IFsgIDEyNy4zNzY5MDFdIEFuYWxvZ3k6IFM2
-MjY6IFBDSSByZWdpb24gcmVxdWVzdAo+ID4+IFsgIDEyNy4zNzY5MDVdIEFuYWxvZ3k6IFM2MjY6
-IFBDSSBpb3JlbWFwCj4gPj4gWyAgMTI3LjM3Njk2MV0gQW5hbG9neTogUzYyNjogZGlzYWJsZSBt
-YXN0ZXIgaW50ZXJydXB0Cj4gPj4gWyAgMTI3LjM3Njk2Ml0gQW5hbG9neTogUzYyNjogRE1BCj4g
-Pj4gWyAgMTI3LjM3Njk2OF0gQW5hbG9neTogUzYyNjogUlRETSBpcnEKPiA+PiBbICAxMjcuMzc2
-OTgzXSBBbmFsb2d5OiBTNjI2OiBSVERNIGlycSByZXF1ZXN0Cj4gPj4gWyAgMTI3LjM3Njk5Ml0g
-QW5hbG9neTogYTRsX2Fzc2lnbl9kcml2ZXI6IGNhbGwoZHJ2LT5hdHRhY2gpIGZhaWxlZAo+ID4K
-PiA+Cj4gPiB0aGUgSVJRIGxpbmUgaXMgYWxyZWFkeSBpbiB1c2UgYXMgcGVyIHRoZSByZXR1cm4g
-Y29kZSAoRUJVU1kpLgo+ID4gaXQgY291bGQgYmUgdGhhdCB0aGUgcHJldmlvdXMgY2FsbCB0byBy
-dGRtX2lycV9mcmVlIGZhaWxlZC4KPiA+Cj4gPiBjb3VsZCB5b3UgdHJ5IGFnYWluIGFmdGVyIGFw
-cGx5aW5nIHRoaXMgcGF0Y2ggcGxlYXNlID8KPiA+Cj4gPgo+IGh0dHA6Ly9naXQueGVub21haS5v
-cmcveGVub21haS1qcm8uZ2l0L2NvbW1pdC8/aD1mb3ItZm9yZ2UmaWQ9NDRlNGRiMDk1ZmI2OTA3
-MDVlMzExYWFlZTM3OGQ2NmU4NGEzODFkYgo+ID4KPiA+Cj4KPiB0aGlzIGlzIHRoZSBmaXggdGhh
-dCB5b3UgcHJvYmFibHkgbmVlZDoKPgo+IGh0dHA6Ly9naXQueGVub21haS5vcmcveGVub21haS1q
-cm8uZ2l0L2NvbW1pdC8/aD1mb3ItZm9yZ2UmaWQ9OTllYzBlMTEyMmYyN2MwYTRiNmIwYTNkMWYz
-ZDhhZmY2NDk4YTg3Nwo+Cj4gcGxlYXNlIGxldCBtZSBrbm93IGlmIGl0IGFkZHJlc3NlcyB5b3Vy
-IHByb2JsZW0uCj4gLS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0KPiBWZXJzaW9uOiBHbnVQ
-RyB2MS40LjExIChHTlUvTGludXgpCj4KPiBpUUVjQkFFQkFnQUdCUUpUN200SEFBb0pFQ0RjeTJJ
-SmthZ1JDQTBJQUlmdlJ2cmZhTEZqYkV4QUhaR1krMUxPCj4gQjdocE96emx6c1VQRDIxUno4eHl1
-VkFzTUxmUDZJMytvZ09RZ0FqZTFBTHkwNERiVkZsdUw3R1R5WUhWSXRSbgo+IHd6amNjcVBIbU9l
-UlFKUjFMNXArZEdYenJKdm0zV3hUZVp3WDdrbGFmLy82eWdXcGovRGQwUlRYbDJUaVlBWG0KPiBT
-OXFrRUwwRktYRitQTjBMNVNjblNQQTFvZWNzSG9EeDFKWHR3Y1FXNlQ2UmtpRjhFd3VMSVJqMlRk
-aTVBMTNpCj4gZXZ0Zm5jWW9CWG40N2dOUTlSWVBNVmZSNUdoVmQ4eHlOWFBKR0lEdFNOZG5ZR1hT
-bnUxRkNoVENkKzR6a2Yrcgo+IDl5Mk13Z0NQM0JKaFd1T3BBL05nTmxTOXJlWUQ1QThKUk5zWE9O
-dlBMTUhKdndGQ25pUjRuMUhiTDJFeCtEdz0KPiA9OE5NKwo+IC0tLS0tRU5EIFBHUCBTSUdOQVRV
-UkUtLS0tLQo+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10
-ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHM2MjZfY2xlYW5lZC5wYXRjaApU
-eXBlOiB0ZXh0L3gtcGF0Y2gKU2l6ZTogMTQ0NTUzIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUK
-VVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50
-cy8yMDE0MDkwOS9iZGZkYTk0Yy9hdHRhY2htZW50LmJpbj4KLS0tLS0tLS0tLS0tLS0gbmV4dCBw
-YXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4K
-TmFtZTogUzYyNkFQSS5jClR5cGU6IHRleHQveC1jc3JjClNpemU6IDg4MjEgYnl0ZXMKRGVzYzog
-bm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5v
-bWFpL2F0dGFjaG1lbnRzLzIwMTQwOTA5L2JkZmRhOTRjL2F0dGFjaG1lbnQuYz4KLS0tLS0tLS0t
-LS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMg
-c2NydWJiZWQuLi4KTmFtZTogUzYyNkFQSS5oClR5cGU6IHRleHQveC1jaGRyClNpemU6IDMxNDcg
-Ynl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3Bp
-cGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTQwOTA5L2JkZmRhOTRjL2F0dGFjaG1lbnQu
-aD4K
+On 04/25/2014 12:44 PM, Jeroen Van den Keybus wrote:
+> For testing, I've removed the locks from the vfile system. Then the
+> high latencies reliably disappear.
+> 
+> To test, I made two xeno_nucleus modules: one with the xnlock_get/put_
+> in place and one with dummies. Subsequently, I use a program that
+> simply opens and reads the stat file 1,000 times.
+> 
+> With locks:
+> 
+> RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
+> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+> RTD|     -2.575|     -2.309|      9.286|       0|     0|     -2.575|      9.286
+> RTD|     -2.364|     -2.276|      1.600|       0|     0|     -2.575|      9.286
+> RTD|     -2.482|     -2.274|      2.165|       0|     0|     -2.575|      9.286
+> RTD|     -2.368|    135.261|   1478.154|   13008|     0|     -2.575|   1478.154
+> RTD|     -2.368|     -2.272|      2.602|   13008|     0|     -2.575|   1478.154
+> RTD|     -2.499|     -2.272|      6.933|   13008|     0|     -2.575|   1478.154
+> 
+> Without locks:
+> 
+> RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
+> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+> RTD|     -2.503|     -2.270|      3.310|       0|     0|     -2.503|      3.310
+> RTD|     -2.418|     -2.284|     -1.646|       0|     0|     -2.503|      3.310
+> RTD|     -2.496|     -2.275|      4.630|       0|     0|     -2.503|      4.630
+> RTD|     -2.374|     -2.285|     -1.458|       0|     0|     -2.503|      4.630
+> RTD|     -2.452|     -2.273|      3.559|       0|     0|     -2.503|      4.630
+> RTD|     -2.370|     -2.285|     -1.518|       0|     0|     -2.503|      4.630
+> RTD|     -2.458|     -2.274|      4.203|       0|     0|     -2.503|      4.630
+> 
+> I'll now have a closer look into the vfile system but if the locks are
+> malfunctioning, I'm clueless.
+
+Answering with a "little" delay, could you try the following patch?
+
+diff --git a/include/asm-generic/bits/pod.h b/include/asm-generic/bits/pod.h
+index a6be0dc..cfb0c71 100644
+--- a/include/asm-generic/bits/pod.h
++++ b/include/asm-generic/bits/pod.h
+@@ -248,6 +248,7 @@ void __xnlock_spin(xnlock_t *lock /*, */ XNLOCK_DBG_CONTEXT_ARGS)
+ 			cpu_relax();
+ 			xnlock_dbg_spinning(lock, cpu, &spin_limit /*, */
+ 					    XNLOCK_DBG_PASS_CONTEXT);
++			xnarch_memory_barrier();
+ 		} while(atomic_read(&lock->owner) != ~0);
+ }
+ EXPORT_SYMBOL_GPL(__xnlock_spin);
+diff --git a/include/asm-generic/system.h b/include/asm-generic/system.h
+index 25bd83f..7a8c4d0 100644
+--- a/include/asm-generic/system.h
++++ b/include/asm-generic/system.h
+@@ -378,6 +378,8 @@ static inline void xnlock_put(xnlock_t *lock)
+ 	xnarch_memory_barrier();
+ 
+ 	atomic_set(&lock->owner, ~0);
++
++	xnarch_memory_barrier();
+ }
+ 
+ static inline spl_t
+diff --git a/ksrc/nucleus/vfile.c b/ksrc/nucleus/vfile.c
+index c8e0363..066c12f 100644
+--- a/ksrc/nucleus/vfile.c
++++ b/ksrc/nucleus/vfile.c
+@@ -279,6 +279,15 @@ redo:
+ 			data += vfile->datasz;
+ 			it->nrdata++;
+ 		}
++#ifdef CONFIG_SMP
++		{
++			/* Leave some time for other cpus to get the lock */
++			xnticks_t wakeup = xnarch_get_cpu_tsc();
++			wakeup += xnarch_ns_to_tsc(1000);
++			while ((xnsticks_t)(xnarch_get_cpu_tsc() - wakeup) < 0)
++				cpu_relax();
++		}
++#endif
+ 	}
+ 
+ 	if (ret < 0) {
+
+
+> 
+> 
+> BTW I found that unloading and loading xeno_nucleus didn't work due to
+> a missing rthal_free_ptdkey call in xnshadow_cleanup. I used the
+> following patch to fix that. (The ability to swap out xenomai modules
+> is a real lifesaver when debugging. Thanks!)
+> 
+> --- /home/vdkeybus/work/xenomai/ksrc/nucleus/shadow.c   2014-04-16
+> 22:46:19.018851844 +0200
+> +++ shadow.c    2014-04-25 09:43:49.838735832 +0200
+> @@ -3139,6 +3139,8 @@ void xnshadow_cleanup(void)
+>         }
+> 
+>         rthal_apc_free(lostage_apc);
+> +
+> +       rthal_free_ptdkey(nkmmptd);
+>         rthal_free_ptdkey(nkerrptd);
+>         rthal_free_ptdkey(nkthrptd);
+
+Merged, thanks.
+
+
+-- 
+                                                                Gilles.
+
