@@ -1,11 +1,12 @@
-Message-ID: <540E9981.1000903@web.de>
-Date: Tue, 09 Sep 2014 08:09:05 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
+In-Reply-To: <540E9981.1000903@web.de>
 References: <CAMoEH9VtdHc6usxhhYGVn74ssWC_6CQSPzK0mLSQ4Wmog3KG5A@mail.gmail.com>
-In-Reply-To: <CAMoEH9VtdHc6usxhhYGVn74ssWC_6CQSPzK0mLSQ4Wmog3KG5A@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <540E9981.1000903@web.de>
+Date: Mon, 8 Sep 2014 23:28:21 -0700
+Message-ID: <CAMoEH9Wg_SpjcK64Y18f6+jWV-2ce31VxCf9+mw7c4zhhGqmtA@mail.gmail.com>
+From: Nicholas Rotella <nrotella@usc.edu>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] Xenomai and usb4rt IRQ issues
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,157 +16,191 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Nicholas Rotella <nrotella@usc.edu>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: xenomai@xenomai.org
 
-T24gMjAxNC0wOC0yNyAwNDo1OSwgTmljaG9sYXMgUm90ZWxsYSB3cm90ZToKPiBIaSBhbGwsCj4g
-Cj4gSSBoYXZlIHNvbWUgaXNzdWVzIGdldHRpbmcgcmVhbC10aW1lIFVTQiB3b3JraW5nIHdpdGgg
-bXkgZGV2aWNlLCBhbgo+IGluZXJ0aWFsIHNlbnNvciB3aGljaCBub3JtYWxseSB1c2VzIHRoZSBu
-b24tUlQgY2RjLWFjbSBkcml2ZXIuICBJJ20KPiBydW5uaW5nIFVidW50dSAxMi4wNCAobGludXgg
-a2VybmVsIHZlcnNpb24gMy44LjEzKSB3aXRoIFhlbm9tYWkgMi42LjMuCj4gSSBrbm93IHRoYXQg
-dGhpcyBpcyB0aGUgWGVub21haSBtYWlsaW5nIGxpc3Qgc28gSSdtIG5vdCBzdXJlIGlmIGFueW9u
-ZQo+IGlzIHZlcnkgZmFtaWxpYXIgd2l0aCB0aGUgdXNiNHJ0IHByb2plY3QgKGNsb25lZCBmcm9t
-Cj4gaHR0cDovL2dpdC5raXN6a2Eub3JnLz9wPXVzYjRydC5naXQ7YT1zdW1tYXJ5IGFuZCB3b3Jr
-aW5nIG9mZiB0aGUKPiBjZGMtYWNtIGJyYW5jaCkgYnV0IEkgdGhvdWdodCBpdCB3YXMgd29ydGgg
-YSB0cnkgKGFueXdheSB0aGUgaXNzdWUgbWF5Cj4gYmUgbW9yZSBnZW5lcmFsKS4KPiAKPiBTaG9y
-dCBzdG9yeSBpcyB0aGlzOiBJIGFtIGFibGUgdG8gY29tcGlsZSB1c2I0cnQsIGxvYWQgdGhlIGRy
-aXZlcnMsCj4gb3BlbiBhIHJlYWwtdGltZSBVU0IgcG9ydCB2aWEgdGhlIHJ0X2NkY19hY20gbW9k
-dWxlIGFuZCB3cml0ZSB0byB0aGUKPiBkZXZpY2UuICBJdCByZXNwb25kcywgYnV0IEkgYW0gbmV2
-ZXIgYWJsZSB0byByZWFkIGRhdGEgZnJvbSBpdC4gIEknbQo+IHN1cmUgaXQncyBzZW5kaW5nIGRh
-dGEgYmVjYXVzZSBJUlFzIGFyZSB0cmlnZ2VyZWQgYW5kIG5vdGhpbmcgZWxzZQo+IHNoYXJlcyB0
-aGlzIGludGVycnVwdCBsaW5lLgo+IAo+IExvbmcgc3RvcnkgaXMgdGhpczogSSBhbSBhYmxlIHRv
-IGxvYWQgdGhlIGNvcnJlY3QgbW9kdWxlcyBhbmQgYmluZAo+IHRoZW0gdG8gYSBVSENJLWNvbXBh
-dGlibGUgVVNCIGNhcmQgKFVTQiAxLjEpLCBteSBkZXZpY2UgaXMgcmVjb2duaXplZAo+IGFuZCB0
-aGUgcnRfY2RjX2FjbSBkcml2ZXIgZ2V0cyBsb2FkZWQgcHJvcGVybHksIGNyZWF0aW5nIHJ0c2Vy
-MCAoYXMKPiBjb25maXJtZWQgYnkgY2hlY2tpbmcgL3Byb2MveGVub21haS9ydGRtL3J0c2VyMC9p
-bmZvcm1hdGlvbikuICBJIGNhbgo+IHRoZW4gdXNlIFJUIHNlcmlhbAo+IChodHRwOi8vd3d3Lnhl
-bm9tYWkub3JnL2RvY3VtZW50YXRpb24vdHJ1bmsvaHRtbC9hcGkvZ3JvdXBfX3J0c2VyaWFsLmh0
-bWwpCj4gY29tbWFuZHMgdG8gaW50ZXJhY3Qgd2l0aCB0aGUgdmlydHVhbCBzZXJpYWwgZGV2aWNl
-LiAgSSBjYW4gb3BlbiB0aGUKPiBwb3J0IGFuZCBzZW5kIGNvbW1hbmRzLCB3aGljaCBJJ20gc3Vy
-ZSB0aGUgZGV2aWNlIGlzIHJlY2VpdmluZy4KPiBIb3dldmVyLCBJIHJlY2VpdmUgbm8gZGF0YSB3
-aGVuIEkgdHJ5IHRvIHJlYWQgZnJvbSB0aGUgZGV2aWNlLiAgSSBjYW4KPiBwdXQgdGhpcyBkZXZp
-Y2UgaW50byBhICJzdHJlYW1pbmciIG1vZGUgaW4gd2hpY2ggaXQgc2VuZHMgcGFja2V0cyBpbgo+
-IGFuIHVuaW50ZXJydXB0ZWQgZmFzaGlvbiBhbmQsIGJ5IHdhdGNoaW5nIC9wcm9jL3hlbm9tYWkv
-aXJxLCBJIGNhbiBzZWUKPiB0aGF0IHBhY2tldHMgYXJlIGNvbWluZyBpbiBmcm9tIHRoZSBkZXZp
-Y2UgKHRoZSBydF91aGNpIGRyaXZlcidzIElSUQo+IGNvdW50IGluY3JlYXNlcyBzdGVhZGlseSku
-ICBNeSBzdXNwaWNpb24gaXMgdGhhdCB0aGVyZSBpcyBzb21laG93IGFuCj4gSVJRIG1pc21hdGNo
-IHdoaWNoIGNhdXNlcyB0aGUgdXNiNHJ0IGRyaXZlcnMgdG8gbWlzcyB0aGUgSVJRcyBpc3N1ZWQK
-PiBieSB0aGUgZGV2aWNlIHdoZW4gZGF0YSBpcyByZWFkeSBmb3IgcmVhZGluZywgYnV0IEkgYW0g
-bm90IHN1cmUuCj4gCj4gQW55IHRob3VnaHRzIG9yIGFkdmljZSBvbiBob3cgdG8gcHJvY2VlZCB3
-b3VsZCBiZSBtdWNoIGFwcHJlY2lhdGVkLgo+IFRoZSBmb2xsb3dpbmcgaXMgYSBwb3J0aW9uIG9m
-IHRoZSBzY3JpcHQgSSB1c2UgdG8gY29tcGlsZSBhbmQgYnJpbmcgdXAKPiB0aGUgdXNiNHJ0IGRy
-aXZlcnMgKGFmdGVyIHVuYmluZGluZyB0aGUgbm9uLVJUIGRyaXZlcnMgZnJvbSBkZXZpY2VzCj4g
-d2hpY2ggd291bGQgb3RoZXJ3aXNlIHNoYXJlIHRoZSBzYW1lIElSUSBsaW5lIHRoYXQgdXNiNHJ0
-IHVzZXMpOgo+IAo+IGdpdCBjbG9uZSBnaXQ6Ly9naXQua2lzemthLm9yZy91c2I0cnQuZ2l0Cj4g
-Z2l0IGNoZWNrb3V0IGNkYy1hY20KPiBjZCAvdXNyL3NyYy91c2I0cnQKPiAuL2NvbmZpZ3VyZSAt
-LWVuYWJsZS1kcnYtY2RjLWFjbSAtLWRpc2FibGUtYmFuZHctcmVjbGFtCj4gLS13aXRoLXhlbm8t
-dXNlci1kaXI9L3Vzci8KPiBtYWtlICYmIG1ha2UgaW5zdGFsbAo+IGVjaG8gLW4gIjAwMDA6MDU6
-MDAuMCIgPiAvc3lzL2J1cy9wY2kvZHJpdmVycy91aGNpX2hjZC91bmJpbmQKPiBlY2hvIC1uICIw
-MDAwOjAwOjFhLjAiID4gL3N5cy9idXMvcGNpL2RyaXZlcnMvZWhjaS1wY2kvdW5iaW5kCj4gc2xl
-ZXAgMQo+IGluc21vZCAvdXNyL2xvY2FsL3VzYjRydC9tb2R1bGVzL3J0X3VzYmNvcmUua28KPiBz
-bGVlcCAxCj4gaW5zbW9kIC91c3IvbG9jYWwvdXNiNHJ0L21vZHVsZXMvcnRfdWhjaV9oY2Qua28g
-aXJxPTE2Cj4gaW5zbW9kIC91c3IvbG9jYWwvdXNiNHJ0L21vZHVsZXMvcnRfY2RjX2FjbS5rbyB2
-ZW5kb3I9MHgxOTliCj4gcHJvZHVjdD0weDMwNjUgc3RhcnRfaW5kZXg9MAo+IAo+IFRoZSBmb2xs
-b3dpbmcgaXMgdGhlIHBvcnRpb24gb2YgbXkgc3lzdGVtbG9nIHBlcnRhaW5pbmcgdG8gdGhlIGxv
-YWRpbmcKPiBvZiB0aGUgdXNiNHJ0IGRyaXZlcnM6Cj4gCj4gWzIzNDA3LjEwNDQ5Ml0gKioqKioq
-KioqKiBSZWFsdGltZSBVU0ItQ29yZSBNb2R1bGUgMC4wLjUgKioqKioqKioqKioKPiBbMjM0MDcu
-MTA0NDk0XSBSVC1VU0JDT1JFOiBNYXggMTYgQ29udHJvbGxlcgo+IFsyMzQwNy4xMDQ0OTVdIFJU
-LVVTQkNPUkU6IE1heCAxMjggVVNCLURldmljZXMKPiBbMjM0MDcuMTA0NDk2XSBSVC1VU0JDT1JF
-OiBDb21tb24gZGVidWdnaW5nOiBkaXNhYmxlZAo+IFsyMzQwNy4xMDQ0OTddIFJULVVTQkNPUkU6
-IFF1ZXVlIGhlYWQgZGVidWdnaW5nOiBkaXNhYmxlZAo+IFsyMzQwNy4xMDQ0OThdIFJULVVTQkNP
-UkU6IFRyYW5zZmVyIGRlc2NyaXB0b3IgZGVidWdnaW5nOiBkaXNhYmxlZAo+IFsyMzQwNy4xMDQ0
-OThdIFJULVVTQkNPUkU6IFRpbWUgZGVidWdnaW5nOiBkaXNhYmxlZAo+IFsyMzQwNy4xMDQ1MDNd
-IFJULVVTQkNPUkU6IENvbnRyb2wtVVJCIEAgMHhmZmZmODgwM2I1NDI5MjAwIHdpdGggIDgKPiBC
-eXRlIFBhY2tldC1TaXplCj4gWzIzNDA3LjEwNDUwNF0gUlQtVVNCQ09SRTogQ29udHJvbC1VUkIg
-QCAweGZmZmY4ODAzYjU0MjhlMDAgd2l0aCAxNgo+IEJ5dGUgUGFja2V0LVNpemUKPiBbMjM0MDcu
-MTA0NTA1XSBSVC1VU0JDT1JFOiBDb250cm9sLVVSQiBAIDB4ZmZmZjg4MDNiNTQyYTIwMCB3aXRo
-IDMyCj4gQnl0ZSBQYWNrZXQtU2l6ZQo+IFsyMzQwNy4xMDQ1MDZdIFJULVVTQkNPUkU6IENvbnRy
-b2wtVVJCIEAgMHhmZmZmODgwM2I1NDJiMDAwIHdpdGggNjQKPiBCeXRlIFBhY2tldC1TaXplCj4g
-WzIzNDA3LjEwNDUwN10gUlQtVVNCQ09SRTogSW5pdGlhbGl6ZSBIdWItTGlzdAo+IFsyMzQwNy4x
-MDQ1MDddIFJULVVTQkNPUkU6IEluaXRpYWxpemUgQ29udHJvbGxlci1MaXN0Cj4gWzIzNDA3LjEw
-NDUwOF0gUlQtVVNCQ09SRTogTG9hZGluZyBDb21wbGV0ZWQgKDExNTIgQnl0ZSBhbGxvY2F0ZWQp
-Cj4gWzIzNDA4LjEwMzI3OV0gKioqKioqKioqIFJlYWx0aW1lIERyaXZlciBmb3IgVW5pdmVyc2Fs
-IEhvc3QgQ29udHJvbGxlcgo+IDAuMC41ICoqKioqKioqKioKPiBbMjM0MDguMTAzMjgzXSBSVC1V
-SEMtRHJpdmVyOiBTZWFyY2hpbmcgZm9yIFVuaXZlcnNhbC1Ib3N0LUNvbnRyb2xsZXIKPiBbMjM0
-MDguMTAzMjg0XSBSVC1VSEMtRHJpdmVyOiAtPiBVc2Ugb25seSBIQyB3aXRoIElSUSAxNgo+IFsy
-MzQwOC4xMDMyODhdIFVTQiBVbml2ZXJzYWwgSG9zdCBDb250cm9sbGVyIGZvdW5kIDogVmVuZG9y
-ID0gMHgxMTA2LAo+IERldmljZSA9IDB4MzAzOCwgSVJRID0gMTYsIElPLVBvcnQgPSAweDAwMDAy
-MDIwICgzMiBCeXRlcykKPiBbMjM0MDguMTAzMjkwXSBSVC1VSEMtRHJpdmVyOiBSZXF1ZXN0IElP
-LVBvcnQgQCAweDAwMDAyMDIwICgzMiBCeXRlKQo+IGZvciBVSENbMF0gLi4uIFtPS10KPiBbMjM0
-MDguMTAzMjkyXSBSVC1VSEMtRHJpdmVyOiBSZXF1ZXN0IFJURE0gSVJRIDE2IC4uLiBbT0tdCj4g
-WzIzNDA4LjEwMzM0OV0gUlQtVVNCQ09SRTogUmVnaXN0ZXIgSG9zdC1Db250cm9sbGVyIERyaXZl
-cgo+IFsyMzQwOC4xMDMzNTBdIFJULVVTQkNPUkU6IEhvc3QtQ29udHJvbGxlciBhZGRlZCB0byBV
-U0ItQ29udHJvbGxlci1MaXN0Cj4gWzIzNDA4LjU0ODY0Nl0gUlQtVVNCQ09SRTogUmVnaXN0ZXJp
-bmcgQ1RSTC1VUkIgKDggQnl0ZSkgQCBIb3N0LUNvbnRyb2xsZXIgMAo+IFsyMzQwOC41NDk4MTld
-IDAwMDowMC0wMDA6IFNldHRpbmcgQWRkcmVzcyAxCj4gWzIzNDA4LjU0OTg4NV0gMDAwOjAwLTAw
-MTogU3dpdGNoIHRvIFVSQiB3aXRoIDY0IEJ5dGUgUGFja2V0LVNpemUKPiBbMjM0MDguNTgwNzM2
-XSAwMDA6MDAtMDAxOiBNYW51ZmFjdHVyZXIgOiBNaWNyb1N0cmFpbiwgSW5jLgo+IFsyMzQwOC41
-ODEwMTBdIDAwMDowMC0wMDE6IFByb2R1Y3QgOiAzRE0tR1gzLTI1IE9yaWVudGF0aW9uIFNlbnNv
-cgo+IFsyMzQwOC41ODEyMDVdIDAwMDowMC0wMDE6IERldmljZSAxIGNvbmZpZ3VyZWQKPiBbMjM0
-MDguNTgxMjA2XSAtLS0gRFVNUCBVU0ItREVWSUNFIEAgZmZmZmZmZmZhMDU3NzNiOCAtLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tCj4gWzIzNDA4LjU4MTIwN10gIE51bWJlciAgICAgICAgICA6IDEK
-PiBbMjM0MDguNTgxMjA4XSAgVmVuZG9yICAgICAgICAgIDogMHgxOTliCj4gWzIzNDA4LjU4MTIw
-OV0gIFByb2R1Y3QgICAgICAgICA6IDB4MzA2NQo+IFsyMzQwOC41ODEyMTBdICBSb290LUh1Yi1Q
-b3J0ICAgOiAweDAwCj4gWzIzNDA4LjU4MTIxMF0gIENsYXNzICAgICAgICAgICA6IDB4MDIKPiBb
-MjM0MDguNTgxMjExXSAgU3ViY2xhc3MgICAgICAgIDogMHgwMAo+IFsyMzQwOC41ODEyMTJdICBQ
-cm90b2NvbCAgICAgICAgOiAweDAwCj4gWzIzNDA4LjU4MTIxM10gIEluIHVzZSAgICAgICAgICA6
-IG5vCj4gWzIzNDA4LjU4MTIxNF0gIFN0YXR1cyAgICAgICAgICA6IDB4MDAKPiBbMjM0MDguNTgx
-MjE0XSAgU3BlZWQgICAgICAgICAgIDogMHgwMgo+IFsyMzQwOC41ODEyMTVdICBIb3N0LUNvbnRy
-b2xsZXIgQCAweGZmZmY4ODAzZjUzODE4ODAKPiBbMjM0MDguNTgxMjE2XQo+IFsyMzQwOC41ODEy
-MTddICBFbmRwb2ludCAgICAgICAgIC0tLTAgLS0tMSAtLS0yIC0tLTMgLS0tNCAtLS01IC0tLTYK
-PiAtLS03IC0tLTggLS0tOSAtLTEwIC0tMTEgLS0xMiAtLTEzIC0tMTQgLS0xNQo+IFsyMzQwOC41
-ODEyMThdICBDdHJsLU1hc2sgSU4gICAgICAgIFggICAgLSAgICAtICAgIC0gICAgLSAgICAtICAg
-IC0KPiAtICAgIC0gICAgLSAgICAtICAgIC0gICAgLSAgICAtICAgIC0gICAgLQo+IFsyMzQwOC41
-ODEyMjBdICBDdHJsLU1hc2sgT1VUICAgICAgIFggICAgLSAgICAtICAgIC0gICAgLSAgICAtICAg
-IC0KPiAtICAgIC0gICAgLSAgICAtICAgIC0gICAgLSAgICAtICAgIC0gICAgLQo+IFsyMzQwOC41
-ODEyMjJdICBCdWxrLU1hc2sgSU4gICAgICAgIC0gICAgWCAgICAtICAgIC0gICAgLSAgICAtICAg
-IC0KPiAtICAgIC0gICAgLSAgICAtICAgIC0gICAgLSAgICAtICAgIC0gICAgLQo+IFsyMzQwOC41
-ODEyMjRdICBCdWxrLU1hc2sgT1VUICAgICAgIC0gICAgLSAgICAtICAgIFggICAgLSAgICAtICAg
-IC0KPiAtICAgIC0gICAgLSAgICAtICAgIC0gICAgLSAgICAtICAgIC0gICAgLQo+IFsyMzQwOC41
-ODEyMjVdICBJbnQtTWFzayBJTiAgICAgICAgIC0gICAgLSAgICBYICAgIC0gICAgLSAgICAtICAg
-IC0KPiAtICAgIC0gICAgLSAgICAtICAgIC0gICAgLSAgICAtICAgIC0gICAgLQo+IFsyMzQwOC41
-ODEyMjddICBJbnQtTWFzayBPVVQgICAgICAgIC0gICAgLSAgICAtICAgIC0gICAgLSAgICAtICAg
-IC0KPiAtICAgIC0gICAgLSAgICAtICAgIC0gICAgLSAgICAtICAgIC0gICAgLQo+IFsyMzQwOC41
-ODEyMjldICBJc28tTWFzayBJTiAgICAgICAgIC0gICAgLSAgICAtICAgIC0gICAgLSAgICAtICAg
-IC0KPiAtICAgIC0gICAgLSAgICAtICAgIC0gICAgLSAgICAtICAgIC0gICAgLQo+IFsyMzQwOC41
-ODEyMzBdICBJc28tTWFzayBPVVQgICAgICAgIC0gICAgLSAgICAtICAgIC0gICAgLSAgICAtICAg
-IC0KPiAtICAgIC0gICAgLSAgICAtICAgIC0gICAgLSAgICAtICAgIC0gICAgLQo+IFsyMzQwOC41
-ODEyMzJdICBUb2dnbGUtTWFzayBJTiAgICAgIC0gICAgLSAgICAtICAgIC0gICAgLSAgICAtICAg
-IC0KPiAtICAgIC0gICAgLSAgICAtICAgIC0gICAgLSAgICAtICAgIC0gICAgLQo+IFsyMzQwOC41
-ODEyMzRdICBUb2dnbGUtTWFzayBPVVQgICAgIC0gICAgLSAgICAtICAgIC0gICAgLSAgICAtICAg
-IC0KPiAtICAgIC0gICAgLSAgICAtICAgIC0gICAgLSAgICAtICAgIC0gICAgLQo+IFsyMzQwOC41
-ODEyMzZdICBNYXgtUGFja2V0IElOICAgIDAwNjQgMDA2NCAwMDA4IDAwMDAgMDAwMCAwMDAwIDAw
-MDAKPiAwMDAwIDAwMDAgMDAwMCAwMDAwIDAwMDAgMDAwMCAwMDAwIDAwMDAgMDAwMAo+IFsyMzQw
-OC41ODEyMzddICBNYXgtUGFja2V0IE9VVCAgIDAwNjQgMDAwMCAwMDAwIDAwNjQgMDAwMCAwMDAw
-IDAwMDAKPiAwMDAwIDAwMDAgMDAwMCAwMDAwIDAwMDAgMDAwMCAwMDAwIDAwMDAgMDAwMAo+IFsy
-MzQwOC41ODEyMzhdIC0tLSBFTkQgVVNCLURFVklDRSAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LQo+IFsyMzQwOC41ODEyMzldIC0tLSBMSVNUIFVTQi1ERVZJQ0VTIC0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0KPiBbMjM0MDguNTgxMjQwXSAgTm8gSENEIFZFTkRPUiAgIFBST0QgIENMUyBTQ0xT
-IFBST1QgLT5DVFJMIENUUkwtPgo+IC0+QlVMSyBCVUxLLT4gIC0+SU5UICBJTlQtPiAtPklTT0Mg
-SVNPQy0+IFNUQVRFIFNQRUVEIFVTRUQKPiBbMjM0MDguNTgxMjQyXSAwMDEgMDAwIDB4MTk5YiAw
-eDMwNjUgMHgwMiAweDAwIDB4MDAgMHgwMDAxIDB4MDAwMQo+IDB4MDAwMiAweDAwMDggMHgwMDA0
-IDB4MDAwMCAweDAwMDAgMHgwMDAwIDAwMDAwIDAwMDAyICAgIC0KPiBbMjM0MDguNTgxMjQ0XSAt
-LS0gRU5EIFVTQi1ERVZJQ0VTIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4gWzIzNDA4LjU4
-MTI1OF0gUlQtVUhDLURyaXZlcjogTG9hZGluZyBDb21wbGV0ZWQgKDQ4IEJ5dGUgYWxsb2NhdGVk
-KQo+IFsyMzQwOC41ODIyNDVdIC0tLSBMSVNUIFVTQi1ERVZJQ0VTIC0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0KPiBbMjM0MDguNTgyMjQ4XSAgTm8gSENEIFZFTkRPUiAgIFBST0QgIENMUyBTQ0xT
-IFBST1QgLT5DVFJMIENUUkwtPgo+IC0+QlVMSyBCVUxLLT4gIC0+SU5UICBJTlQtPiAtPklTT0Mg
-SVNPQy0+IFNUQVRFIFNQRUVEIFVTRUQKPiBbMjM0MDguNTgyMjUxXSAwMDEgMDAwIDB4MTk5YiAw
-eDMwNjUgMHgwMiAweDAwIDB4MDAgMHgwMDAxIDB4MDAwMQo+IDB4MDAwMiAweDAwMDggMHgwMDA0
-IDB4MDAwMCAweDAwMDAgMHgwMDAwIDAwMDAwIDAwMDAyICAgIFgKPiBbMjM0MDguNTgyMjU0XSAt
-LS0gRU5EIFVTQi1ERVZJQ0VTIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4gWzIzNDA4LjU4
-MjI1NV0gcnRfY2RjX2FjbVswXTogZGV2aWNlIGZvdW5kLCB2ZW5kb3I9MHgxOTliLCBwcm9kdWN0
-PTB4MzA2NQo+IAo+IEkgY2FuIHByb3ZpZGUgbW9yZSBkZXRhaWxlZCBpbmZvIGZvciBkZWJ1Z2dp
-bmcgaWYgaXQgaGVscHMuICBUaGVyZSBpcwoKRG9lcyB0aGlzIGlzc3VlIHBlcnNpc3Q/Cgo+IGFs
-c28gdGhpcyB3YXJuaW5nIHdoZW4gSSBjb21waWxlIHVzYjRydCB3aGljaCBzZWVtcyBhIGxpdHRs
-ZQo+IHN1c3BpY2lvdXM6Cj4gCj4gL3Vzci9zcmMvdXNiNHJ0L2hvc3QvcnRfdWhjaS5jOiBJbiBm
-dW5jdGlvbiDigJhydF9pcnFfaGFuZGxlcuKAmToKPiAvdXNyL3NyYy91c2I0cnQvaG9zdC9ydF91
-aGNpLmM6ODU0OjEyOiB3YXJuaW5nOiDigJhwX3Rk4oCZIG1heSBiZSB1c2VkCj4gdW5pbml0aWFs
-aXplZCBpbiB0aGlzIGZ1bmN0aW9uIFstV3VuaW5pdGlhbGl6ZWRdCj4gL3Vzci9zcmMvdXNiNHJ0
-L2hvc3QvcnRfdWhjaS5jOjk2ODo5OiBub3RlOiDigJhwX3Rk4oCZIHdhcyBkZWNsYXJlZCBoZXJl
-CgpUaGlzIGlzIGhhcm1sZXNzIChidXQgd2lsbCBiZSBzaWxlbmNlZCBzb29uKTogcF90ZCBpcyBu
-ZXZlciB0b3VjaGVkIGluCmNhc2UgaXQgcmVtYWluZWQgdW5pbml0aWFsaXplZC4KCkphbgoKCi0t
-LS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1l
-bnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24v
-cGdwLXNpZ25hdHVyZQpTaXplOiAxOTggYnl0ZXMKRGVzYzogT3BlblBHUCBkaWdpdGFsIHNpZ25h
-dHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFj
-aG1lbnRzLzIwMTQwOTA5LzFiM2JhMjdmL2F0dGFjaG1lbnQuc2lnPgo=
+Hi Jan,
+
+Thanks for your reply.  The issue was solved by restricting the system
+ram to 4Gb, something I had overlooked previously.  I suppose the IRQs
+were being handled properly all along but the data was being copied
+into a portion of memory which wasn't accessible due to the memory
+limit.  Everything works great now.  Looking forward to your updated
+driver!
+
+- Nick
+
+On Mon, Sep 8, 2014 at 11:09 PM, Jan Kiszka <jan.kiszka@web.de> wrote:
+> On 2014-08-27 04:59, Nicholas Rotella wrote:
+>> Hi all,
+>>
+>> I have some issues getting real-time USB working with my device, an
+>> inertial sensor which normally uses the non-RT cdc-acm driver.  I'm
+>> running Ubuntu 12.04 (linux kernel version 3.8.13) with Xenomai 2.6.3.
+>> I know that this is the Xenomai mailing list so I'm not sure if anyone
+>> is very familiar with the usb4rt project (cloned from
+>> http://git.kiszka.org/?p=3Dusb4rt.git;a=3Dsummary and working off the
+>> cdc-acm branch) but I thought it was worth a try (anyway the issue may
+>> be more general).
+>>
+>> Short story is this: I am able to compile usb4rt, load the drivers,
+>> open a real-time USB port via the rt_cdc_acm module and write to the
+>> device.  It responds, but I am never able to read data from it.  I'm
+>> sure it's sending data because IRQs are triggered and nothing else
+>> shares this interrupt line.
+>>
+>> Long story is this: I am able to load the correct modules and bind
+>> them to a UHCI-compatible USB card (USB 1.1), my device is recognized
+>> and the rt_cdc_acm driver gets loaded properly, creating rtser0 (as
+>> confirmed by checking /proc/xenomai/rtdm/rtser0/information).  I can
+>> then use RT serial
+>> (http://www.xenomai.org/documentation/trunk/html/api/group__rtserial.htm=
+l)
+>> commands to interact with the virtual serial device.  I can open the
+>> port and send commands, which I'm sure the device is receiving.
+>> However, I receive no data when I try to read from the device.  I can
+>> put this device into a "streaming" mode in which it sends packets in
+>> an uninterrupted fashion and, by watching /proc/xenomai/irq, I can see
+>> that packets are coming in from the device (the rt_uhci driver's IRQ
+>> count increases steadily).  My suspicion is that there is somehow an
+>> IRQ mismatch which causes the usb4rt drivers to miss the IRQs issued
+>> by the device when data is ready for reading, but I am not sure.
+>>
+>> Any thoughts or advice on how to proceed would be much appreciated.
+>> The following is a portion of the script I use to compile and bring up
+>> the usb4rt drivers (after unbinding the non-RT drivers from devices
+>> which would otherwise share the same IRQ line that usb4rt uses):
+>>
+>> git clone git://git.kiszka.org/usb4rt.git
+>> git checkout cdc-acm
+>> cd /usr/src/usb4rt
+>> ./configure --enable-drv-cdc-acm --disable-bandw-reclam
+>> --with-xeno-user-dir=3D/usr/
+>> make && make install
+>> echo -n "0000:05:00.0" > /sys/bus/pci/drivers/uhci_hcd/unbind
+>> echo -n "0000:00:1a.0" > /sys/bus/pci/drivers/ehci-pci/unbind
+>> sleep 1
+>> insmod /usr/local/usb4rt/modules/rt_usbcore.ko
+>> sleep 1
+>> insmod /usr/local/usb4rt/modules/rt_uhci_hcd.ko irq=3D16
+>> insmod /usr/local/usb4rt/modules/rt_cdc_acm.ko vendor=3D0x199b
+>> product=3D0x3065 start_index=3D0
+>>
+>> The following is the portion of my systemlog pertaining to the loading
+>> of the usb4rt drivers:
+>>
+>> [23407.104492] ********** Realtime USB-Core Module 0.0.5 ***********
+>> [23407.104494] RT-USBCORE: Max 16 Controller
+>> [23407.104495] RT-USBCORE: Max 128 USB-Devices
+>> [23407.104496] RT-USBCORE: Common debugging: disabled
+>> [23407.104497] RT-USBCORE: Queue head debugging: disabled
+>> [23407.104498] RT-USBCORE: Transfer descriptor debugging: disabled
+>> [23407.104498] RT-USBCORE: Time debugging: disabled
+>> [23407.104503] RT-USBCORE: Control-URB @ 0xffff8803b5429200 with  8
+>> Byte Packet-Size
+>> [23407.104504] RT-USBCORE: Control-URB @ 0xffff8803b5428e00 with 16
+>> Byte Packet-Size
+>> [23407.104505] RT-USBCORE: Control-URB @ 0xffff8803b542a200 with 32
+>> Byte Packet-Size
+>> [23407.104506] RT-USBCORE: Control-URB @ 0xffff8803b542b000 with 64
+>> Byte Packet-Size
+>> [23407.104507] RT-USBCORE: Initialize Hub-List
+>> [23407.104507] RT-USBCORE: Initialize Controller-List
+>> [23407.104508] RT-USBCORE: Loading Completed (1152 Byte allocated)
+>> [23408.103279] ********* Realtime Driver for Universal Host Controller
+>> 0.0.5 **********
+>> [23408.103283] RT-UHC-Driver: Searching for Universal-Host-Controller
+>> [23408.103284] RT-UHC-Driver: -> Use only HC with IRQ 16
+>> [23408.103288] USB Universal Host Controller found : Vendor =3D 0x1106,
+>> Device =3D 0x3038, IRQ =3D 16, IO-Port =3D 0x00002020 (32 Bytes)
+>> [23408.103290] RT-UHC-Driver: Request IO-Port @ 0x00002020 (32 Byte)
+>> for UHC[0] ... [OK]
+>> [23408.103292] RT-UHC-Driver: Request RTDM IRQ 16 ... [OK]
+>> [23408.103349] RT-USBCORE: Register Host-Controller Driver
+>> [23408.103350] RT-USBCORE: Host-Controller added to USB-Controller-List
+>> [23408.548646] RT-USBCORE: Registering CTRL-URB (8 Byte) @ Host-Controll=
+er 0
+>> [23408.549819] 000:00-000: Setting Address 1
+>> [23408.549885] 000:00-001: Switch to URB with 64 Byte Packet-Size
+>> [23408.580736] 000:00-001: Manufacturer : MicroStrain, Inc.
+>> [23408.581010] 000:00-001: Product : 3DM-GX3-25 Orientation Sensor
+>> [23408.581205] 000:00-001: Device 1 configured
+>> [23408.581206] --- DUMP USB-DEVICE @ ffffffffa05773b8 ------------------=
+-------
+>> [23408.581207]  Number          : 1
+>> [23408.581208]  Vendor          : 0x199b
+>> [23408.581209]  Product         : 0x3065
+>> [23408.581210]  Root-Hub-Port   : 0x00
+>> [23408.581210]  Class           : 0x02
+>> [23408.581211]  Subclass        : 0x00
+>> [23408.581212]  Protocol        : 0x00
+>> [23408.581213]  In use          : no
+>> [23408.581214]  Status          : 0x00
+>> [23408.581214]  Speed           : 0x02
+>> [23408.581215]  Host-Controller @ 0xffff8803f5381880
+>> [23408.581216]
+>> [23408.581217]  Endpoint         ---0 ---1 ---2 ---3 ---4 ---5 ---6
+>> ---7 ---8 ---9 --10 --11 --12 --13 --14 --15
+>> [23408.581218]  Ctrl-Mask IN        X    -    -    -    -    -    -
+>> -    -    -    -    -    -    -    -    -
+>> [23408.581220]  Ctrl-Mask OUT       X    -    -    -    -    -    -
+>> -    -    -    -    -    -    -    -    -
+>> [23408.581222]  Bulk-Mask IN        -    X    -    -    -    -    -
+>> -    -    -    -    -    -    -    -    -
+>> [23408.581224]  Bulk-Mask OUT       -    -    -    X    -    -    -
+>> -    -    -    -    -    -    -    -    -
+>> [23408.581225]  Int-Mask IN         -    -    X    -    -    -    -
+>> -    -    -    -    -    -    -    -    -
+>> [23408.581227]  Int-Mask OUT        -    -    -    -    -    -    -
+>> -    -    -    -    -    -    -    -    -
+>> [23408.581229]  Iso-Mask IN         -    -    -    -    -    -    -
+>> -    -    -    -    -    -    -    -    -
+>> [23408.581230]  Iso-Mask OUT        -    -    -    -    -    -    -
+>> -    -    -    -    -    -    -    -    -
+>> [23408.581232]  Toggle-Mask IN      -    -    -    -    -    -    -
+>> -    -    -    -    -    -    -    -    -
+>> [23408.581234]  Toggle-Mask OUT     -    -    -    -    -    -    -
+>> -    -    -    -    -    -    -    -    -
+>> [23408.581236]  Max-Packet IN    0064 0064 0008 0000 0000 0000 0000
+>> 0000 0000 0000 0000 0000 0000 0000 0000 0000
+>> [23408.581237]  Max-Packet OUT   0064 0000 0000 0064 0000 0000 0000
+>> 0000 0000 0000 0000 0000 0000 0000 0000 0000
+>> [23408.581238] --- END USB-DEVICE --------------------------
+>> [23408.581239] --- LIST USB-DEVICES -------------------------
+>> [23408.581240]  No HCD VENDOR   PROD  CLS SCLS PROT ->CTRL CTRL->
+>> ->BULK BULK->  ->INT  INT-> ->ISOC ISOC-> STATE SPEED USED
+>> [23408.581242] 001 000 0x199b 0x3065 0x02 0x00 0x00 0x0001 0x0001
+>> 0x0002 0x0008 0x0004 0x0000 0x0000 0x0000 00000 00002    -
+>> [23408.581244] --- END USB-DEVICES --------------------------
+>> [23408.581258] RT-UHC-Driver: Loading Completed (48 Byte allocated)
+>> [23408.582245] --- LIST USB-DEVICES -------------------------
+>> [23408.582248]  No HCD VENDOR   PROD  CLS SCLS PROT ->CTRL CTRL->
+>> ->BULK BULK->  ->INT  INT-> ->ISOC ISOC-> STATE SPEED USED
+>> [23408.582251] 001 000 0x199b 0x3065 0x02 0x00 0x00 0x0001 0x0001
+>> 0x0002 0x0008 0x0004 0x0000 0x0000 0x0000 00000 00002    X
+>> [23408.582254] --- END USB-DEVICES --------------------------
+>> [23408.582255] rt_cdc_acm[0]: device found, vendor=3D0x199b, product=3D0=
+x3065
+>>
+>> I can provide more detailed info for debugging if it helps.  There is
+>
+> Does this issue persist?
+>
+>> also this warning when I compile usb4rt which seems a little
+>> suspicious:
+>>
+>> /usr/src/usb4rt/host/rt_uhci.c: In function =E2=80=98rt_irq_handler=E2=
+=80=99:
+>> /usr/src/usb4rt/host/rt_uhci.c:854:12: warning: =E2=80=98p_td=E2=80=99 m=
+ay be used
+>> uninitialized in this function [-Wuninitialized]
+>> /usr/src/usb4rt/host/rt_uhci.c:968:9: note: =E2=80=98p_td=E2=80=99 was d=
+eclared here
+>
+> This is harmless (but will be silenced soon): p_td is never touched in
+> case it remained uninitialized.
+>
+> Jan
+>
+>
+
