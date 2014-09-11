@@ -1,12 +1,10 @@
-Message-ID: <54116C52.8000803@xenomai.org>
-Date: Thu, 11 Sep 2014 11:33:06 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <54118122.3010106@siemens.com>
+Date: Thu, 11 Sep 2014 13:01:54 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <54115FD0.1030303@siemens.com>
-In-Reply-To: <54115FD0.1030303@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] ipipe: Comment in __ipipe_handle_exception
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] [PULL] ipipe 3.14
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,32 +13,355 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-On 09/11/2014 10:39 AM, Jan Kiszka wrote:
-> Hi Philippe,
-> 
-> in 2338107647 I found this:
-> 
-> @@ -383,6 +380,8 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
->  			local_irq_disable();
->  	}
->  
-> +	/*
-> +	 * XXX: We don't trace page faults (yet?). */
->  	if (vector == ex_do_page_fault)
->  		cr2 = native_read_cr2();
->  
-> 
-> What is the background? Any open issue?
-> 
+Please merge "x86/ipipe: Fix CPU hotplug with I-pipe enabled" into 3.14
+and also consider the stable update to 3.14.18 (with trivial conflict
+in an ARM uapi header).
 
-The current interposition we do via std_extable is not aware of trace_*
-hooks in entry*.S, so we end up bypassing the trace encapsulation
-entirely in __ipipe_handle_exception. Nothing bad, it just needs some
-work to do this cleanly. This is for x86_64, ia32 might be slightly
-different, but the issue should apply the same way.
+The following changes since commit d91334d2f138626eab2601643aa474e2ebb5296a:
 
--- 
-Philippe.
+  arm/ipipe: fix fastcall return after domain migration (2014-09-08 12:03:0=
+9 +0200)
+
+are available in the git repository at:
+
+  git://git.xenomai.org/ipipe-jki for-upstream/3.14
+
+for you to fetch changes up to 7f91b81b93801f04f9b0d5d20ca7a1408a02ad32:
+
+  arm/ipipe: Resolve trival merge conflict (2014-09-11 10:47:20 +0200)
+
+----------------------------------------------------------------
+Alan Stern (2):
+      USB: OHCI: fix bugs in debug routines
+      USB: OHCI: don't lose track of EDs when a controller dies
+
+Alex Deucher (3):
+      drm/radeon: add new KV pci id
+      drm/radeon: add new bonaire pci ids
+      drm/radeon: add additional SI pci ids
+
+Alexander Usyskin (3):
+      mei: start disconnect request timer consistently
+      mei: reset client state on queued connect request
+      mei: nfc: fix memory leak in error path
+
+Andrey Utkin (1):
+      nfs3_list_one_acl(): check get_acl() result with IS_ERR_OR_NULL
+
+Andy Lutomirski (1):
+      x86_64/vsyscall: Fix warn_bad_vsyscall log output
+
+Arnd Bergmann (2):
+      crypto: ux500 - make interrupt mode plausible
+      hpsa: fix non-x86 builds
+
+Axel Lin (6):
+      hwmon: (sis5595) Prevent overflow problem when writing large limits
+      hwmon: (amc6821) Fix possible race condition bug
+      hwmon: (gpio-fan) Prevent overflow problem when writing large limits
+      hwmon: (ads1015) Fix off-by-one for valid channel index checking
+      hwmon: (ads1015) Fix out-of-bounds array access
+      hwmon: (dme1737) Prevent overflow problem when writing large limits
+
+Baruch Siach (1):
+      ARM: 8097/1: unistd.h: relocate comments back to place
+
+Brian W Hart (1):
+      powerpc/powernv: Update dev->dma_mask in pci_set_dma_mask() path
+
+Bryan O'Donoghue (1):
+      USB: ehci-pci: USB host controller support for Intel Quark X1000
+
+Christoph Schulz (1):
+      x86: don't exclude low BIOS area when allocating address space for no=
+n-PCI cards
+
+Chuck Lever (1):
+      svcrdma: Select NFSv4.1 backchannel transport based on forward channel
+
+Clemens Ladisch (2):
+      ALSA: virtuoso: add Xonar Essence STX II support
+      ALSA: usb-audio: fix BOSS ME-25 MIDI regression
+
+Daniel Bristot de Oliveira (1):
+      sched: Fix sched_setparam() policy =3D=3D -1 logic
+
+Darrick J. Wong (2):
+      jbd2: fix infinite loop when recovering corrupt journal blocks
+      jbd2: fix descriptor block size handling errors with journal_csum
+
+Dave Chiluk (1):
+      stable_kernel_rules: Add pointer to netdev-FAQ for network patches
+
+David Henningsson (1):
+      ALSA: hda - Add mute LED pin quirk for HP 15 touchsmart
+
+David Vrabel (3):
+      xen/events/fifo: ensure all bitops are properly aligned even on x86
+      x86/xen: use vmap() to map grant table pages in PVH guests
+      x86/xen: resume timer irqs early
+
+Dmitry Monakhov (1):
+      ext4: update i_disksize coherently with block allocation on error path
+
+Filipe Manana (2):
+      Btrfs: fix csum tree corruption, duplicate and outdated checksums
+      Btrfs: read lock extent buffer while walking backrefs
+
+Greg Kroah-Hartman (2):
+      USB: fix build error with CONFIG_PM_RUNTIME disabled
+      Linux 3.14.18
+
+Guenter Roeck (2):
+      hwmon: (lm78) Fix overflow problems seen when writing large temperatu=
+re limits
+      hwmon: (lm85) Fix various errors on attribute writes
+
+Hans de Goede (1):
+      xhci: Treat not finding the event_seg on COMP_STOP the same as COMP_S=
+TOP_INVAL
+
+Holger Paradies (1):
+      staging/rtl8188eu: add 0df6:0076 Sitecom Europe B.V.
+
+Huang Rui (1):
+      usb: xhci: amd chipset also needs short TX quirk
+
+Hui Wang (2):
+      ALSA: hda - fix an external mic jack problem on a HP machine
+      ALSA: hda - restore the gpio led after resume
+
+James Forshaw (1):
+      USB: whiteheat: Added bounds checking for bulk command response
+
+Jan Kara (1):
+      isofs: Fix unbounded recursion when processing relocated directories
+
+Jan Kiszka (3):
+      x86/ipipe: Fix CPU hotplug with I-pipe enabled
+      Merge tag 'v3.14.18' into for-upstream/3.14
+      arm/ipipe: Resolve trival merge conflict
+
+Jason Gunthorpe (1):
+      tpm: Add missing tpm_do_selftest to ST33 I2C driver
+
+Ja=9Aa Bartelj (1):
+      USB: ftdi_sio: Added PID for new ekey device
+
+Jeremy Vial (1):
+      ARM: OMAP3: Fix choice of omap3_restore_es function in OMAP34XX rev3.=
+1.2 case.
+
+Jiri Kosina (2):
+      HID: logitech: perform bounds checking on device_id early enough
+      HID: fix a couple of off-by-ones
+
+Johan Hovold (1):
+      USB: ftdi_sio: add Basic Micro ATOM Nano USB2Serial PID
+
+Kinglong Mee (1):
+      NFSD: Decrease nfsd_users in nfsd_startup_generic fail
+
+Larry Finger (1):
+      staging: r8188eu: Add new USB ID
+
+Liu Bo (2):
+      Btrfs: fix compressed write corruption on enospc
+      Btrfs: fix crash on endio of reading corrupted block
+
+Mark Einon (1):
+      staging: et131x: Fix errors caused by phydev->addr accesses before in=
+itialisation
+
+Matt Fleming (1):
+      x86/efi: Enforce CONFIG_RELOCATABLE for EFI boot stub
+
+Michael S. Tsirkin (1):
+      kvm: iommu: fix the third parameter of kvm_iommu_put_pages (CVE-2014-=
+3601)
+
+Nadav Amit (1):
+      KVM: x86: Inter-privilege level ret emulation is not implemeneted
+
+Oleg Nesterov (1):
+      vm_is_stack: use for_each_thread() rather then buggy while_each_threa=
+d()
+
+Oliver Neukum (1):
+      USB: devio: fix issue with log flooding
+
+Paolo Bonzini (2):
+      KVM: x86: always exit on EOIs for interrupts listed in the IOAPIC red=
+ir table
+      Revert "KVM: x86: Increase the number of fixed MTRR regs to 10"
+
+Patrick Riphagen (2):
+      USB: serial: ftdi_sio: Annotate the current Xsens PID assignments
+      USB: serial: ftdi_sio: Add support for new Xsens devices
+
+Paul S McSpadden (1):
+      ALSA: usb-audio: Adjust Gamecom 780 volume level
+
+Peter Chen (1):
+      usb: ehci: using wIndex + 1 for hub port
+
+Peter Hurley (1):
+      serial: core: Preserve termios c_cflag for console resume
+
+Pratyush Anand (1):
+      USB: Fix persist resume of some SS USB devices
+
+Roger Quadros (1):
+      usb: hub: Prevent hub autosuspend if usbcore.autosuspend is -1
+
+Russell King (1):
+      drm: omapdrm: fix compiler errors
+
+Simone Gotti (1):
+      ACPI / PCI: Fix sysfs acpi_index and label errors
+
+Stephen M. Cameron (1):
+      hpsa: fix bad -ENOMEM return value in hpsa_big_passthru_ioctl
+
+Steven Rostedt (1):
+      debugfs: Fix corrupted loop in debugfs_remove_recursive
+
+Suman Anna (1):
+      ARM: dts: AM4372: Correct mailbox node data
+
+Takashi Iwai (3):
+      ALSA: hda/ca0132 - Don't try loading firmware at resume when already =
+failed
+      ALSA: hda/realtek - Avoid setting wrong COEF on ALC269 & co
+      Btrfs: Fix memory corruption by ulist_add_merge() on 32bit arch
+
+Theodore Ts'o (2):
+      ext4: fix ext4_discard_allocated_blocks() if we can't allocate the pa=
+ struct
+      ext4: fix BUG_ON in mb_free_blocks()
+
+Tony Lindgren (1):
+      ARM: OMAP2+: hwmod: Rearm wake-up interrupts for DT when MUSB is idled
+
+Trond Myklebust (2):
+      NFSv3: Fix another acl regression
+      NFSv4: Fix problems with close in the presence of a delegation
+
+Tyrel Datwyler (1):
+      powerpc/pci: Reorder pci bus/bridge unregistration during PHB removal
+
+Vidya Sagar (1):
+      PCI: Configure ASPM when enabling device
+
+Wanpeng Li (1):
+      KVM: nVMX: fix "acknowledge interrupt on exit" when APICv is in use
+
+Wolfram Sang (1):
+      drivers/i2c/busses: use correct type for dma_map/unmap
+
+ Documentation/sound/alsa/ALSA-Configuration.txt |  4 +-
+ Documentation/stable_kernel_rules.txt           |  3 ++
+ Makefile                                        |  2 +-
+ arch/arm/boot/dts/am4372.dtsi                   |  3 --
+ arch/arm/include/asm/unistd.h                   | 10 ++++
+ arch/arm/include/uapi/asm/unistd.h              | 11 ----
+ arch/arm/mach-omap2/control.c                   |  3 +-
+ arch/arm/mach-omap2/omap_hwmod.c                |  4 ++
+ arch/powerpc/platforms/powernv/pci-ioda.c       |  1 +
+ arch/powerpc/platforms/pseries/pci_dlpar.c      |  4 +-
+ arch/x86/Kconfig                                |  1 +
+ arch/x86/include/asm/kvm_host.h                 |  2 +-
+ arch/x86/kernel/irq.c                           |  2 +
+ arch/x86/kernel/resource.c                      |  8 +--
+ arch/x86/kernel/vsyscall_64.c                   |  8 +--
+ arch/x86/kvm/emulate.c                          |  4 ++
+ arch/x86/kvm/irq.c                              |  2 +-
+ arch/x86/kvm/lapic.c                            | 52 ++++++++++++++-----
+ arch/x86/pci/i386.c                             |  4 ++
+ arch/x86/xen/grant-table.c                      | 10 ++--
+ arch/x86/xen/time.c                             |  2 +-
+ drivers/char/tpm/tpm_i2c_stm_st33.c             |  1 +
+ drivers/crypto/ux500/cryp/cryp_core.c           | 25 +++++----
+ drivers/gpu/drm/omapdrm/omap_dmm_tiler.c        |  6 ++-
+ drivers/gpu/drm/omapdrm/omap_gem.c              | 10 ++--
+ drivers/gpu/drm/omapdrm/omap_plane.c            |  4 +-
+ drivers/gpu/drm/radeon/cik.c                    |  1 +
+ drivers/hid/hid-cherry.c                        |  2 +-
+ drivers/hid/hid-kye.c                           |  2 +-
+ drivers/hid/hid-lg.c                            |  4 +-
+ drivers/hid/hid-logitech-dj.c                   | 13 +++--
+ drivers/hid/hid-monterey.c                      |  2 +-
+ drivers/hid/hid-petalynx.c                      |  2 +-
+ drivers/hid/hid-sunplus.c                       |  2 +-
+ drivers/hwmon/ads1015.c                         |  4 +-
+ drivers/hwmon/amc6821.c                         | 17 ++++---
+ drivers/hwmon/dme1737.c                         | 33 ++++++------
+ drivers/hwmon/gpio-fan.c                        |  2 +-
+ drivers/hwmon/lm78.c                            |  2 +-
+ drivers/hwmon/lm85.c                            |  9 ++--
+ drivers/hwmon/sis5595.c                         |  2 +-
+ drivers/i2c/busses/i2c-at91.c                   |  4 +-
+ drivers/misc/mei/client.c                       |  2 +
+ drivers/misc/mei/nfc.c                          | 11 ++--
+ drivers/pci/pci-label.c                         | 18 ++++---
+ drivers/pci/pci.c                               | 12 ++---
+ drivers/scsi/hpsa.c                             |  6 +--
+ drivers/staging/et131x/et131x.c                 | 68 ++++++++++-----------=
+----
+ drivers/staging/rtl8188eu/os_dep/usb_intf.c     |  2 +
+ drivers/tty/serial/serial_core.c                |  3 ++
+ drivers/usb/core/devio.c                        |  2 +-
+ drivers/usb/core/hub.c                          | 49 +++++++++++++++++-
+ drivers/usb/host/ehci-hub.c                     |  2 +-
+ drivers/usb/host/ehci-pci.c                     | 25 +++++++++
+ drivers/usb/host/ohci-dbg.c                     |  9 ++--
+ drivers/usb/host/ohci-hcd.c                     | 10 ++--
+ drivers/usb/host/ohci-q.c                       | 46 ++++++++++-------
+ drivers/usb/host/xhci-pci.c                     |  4 ++
+ drivers/usb/host/xhci-ring.c                    |  3 +-
+ drivers/usb/serial/ftdi_sio.c                   |  5 ++
+ drivers/usb/serial/ftdi_sio_ids.h               | 20 ++++++--
+ drivers/usb/serial/whiteheat.c                  |  7 ++-
+ drivers/xen/events/events_fifo.c                |  5 +-
+ fs/btrfs/backref.c                              | 14 ++---
+ fs/btrfs/extent_io.c                            |  1 +
+ fs/btrfs/file-item.c                            |  2 +-
+ fs/btrfs/inode.c                                | 12 +++++
+ fs/btrfs/ulist.h                                | 15 ++++++
+ fs/debugfs/inode.c                              | 33 +++++++++---
+ fs/ext4/inode.c                                 | 10 +++-
+ fs/ext4/mballoc.c                               | 26 +++++++++-
+ fs/ext4/super.c                                 |  5 +-
+ fs/isofs/inode.c                                | 15 +++---
+ fs/isofs/isofs.h                                | 23 +++++++--
+ fs/isofs/rock.c                                 | 39 ++++++++++----
+ fs/jbd2/commit.c                                | 21 ++++----
+ fs/jbd2/journal.c                               | 56 +++++++++++++-------
+ fs/jbd2/recovery.c                              | 33 +++++++-----
+ fs/jbd2/revoke.c                                |  6 +--
+ fs/nfs/nfs3acl.c                                |  7 ++-
+ fs/nfs/nfs4proc.c                               | 17 +++++--
+ fs/nfsd/nfs4callback.c                          |  3 +-
+ fs/nfsd/nfssvc.c                                |  5 +-
+ include/drm/drm_pciids.h                        |  7 +++
+ include/linux/jbd2.h                            | 30 +++++++++--
+ include/linux/sunrpc/svc_xprt.h                 |  1 +
+ kernel/sched/core.c                             |  5 +-
+ mm/util.c                                       |  9 ++--
+ net/sunrpc/svcsock.c                            |  2 +
+ net/sunrpc/xprt.c                               |  2 +-
+ net/sunrpc/xprtrdma/svc_rdma_transport.c        |  1 +
+ sound/pci/Kconfig                               |  4 +-
+ sound/pci/hda/patch_ca0132.c                    |  7 ++-
+ sound/pci/hda/patch_realtek.c                   | 28 ++++++++--
+ sound/pci/hda/patch_sigmatel.c                  | 12 +++++
+ sound/pci/oxygen/virtuoso.c                     |  1 +
+ sound/pci/oxygen/xonar_pcm179x.c                | 12 ++++-
+ sound/usb/quirks-table.h                        | 29 +++++++++++
+ sound/usb/quirks.c                              |  2 +-
+ virt/kvm/ioapic.c                               |  7 ++-
+ virt/kvm/iommu.c                                | 19 +++----
+ 101 files changed, 770 insertions(+), 347 deletions(-)
 
