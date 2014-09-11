@@ -1,13 +1,13 @@
-Message-ID: <54119F52.4080403@xenomai.org>
-Date: Thu, 11 Sep 2014 15:10:42 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Thu, 11 Sep 2014 15:21:05 -0400
+Message-ID: <20140911192105.GI17690@csclub.uwaterloo.ca>
+References: <5411959A.1050803@free.fr>
 MIME-Version: 1.0
-References: <54115FD0.1030303@siemens.com> <54116C52.8000803@xenomai.org>
- <541184E5.7090505@siemens.com>
-In-Reply-To: <541184E5.7090505@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ipipe: Comment in __ipipe_handle_exception
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5411959A.1050803@free.fr>
+Subject: Re: [Xenomai] arm platform
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,43 +16,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: =?utf-8?B?U3TDqXBoYW5l?= ANCELOT <sancelot@free.fr>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 09/11/2014 01:17 PM, Jan Kiszka wrote:
-> On 2014-09-11 11:33, Philippe Gerum wrote:
->> On 09/11/2014 10:39 AM, Jan Kiszka wrote:
->>> Hi Philippe,
->>>
->>> in 2338107647 I found this:
->>>
->>> @@ -383,6 +380,8 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
->>>  			local_irq_disable();
->>>  	}
->>>  
->>> +	/*
->>> +	 * XXX: We don't trace page faults (yet?). */
->>>  	if (vector == ex_do_page_fault)
->>>  		cr2 = native_read_cr2();
->>>  
->>>
->>> What is the background? Any open issue?
->>>
->>
->> The current interposition we do via std_extable is not aware of trace_*
->> hooks in entry*.S, so we end up bypassing the trace encapsulation
->> entirely in __ipipe_handle_exception. Nothing bad, it just needs some
->> work to do this cleanly. This is for x86_64, ia32 might be slightly
->> different, but the issue should apply the same way.
+On Thu, Sep 11, 2014 at 02:29:14PM +0200, Stéphane ANCELOT wrote:
+> Some long life intel processor (Pentium M family,celeron M..) , are
+> at end of line, however, today, it looks like long life means 3years
+> for intel.
 > 
-> Which tracing are you referring to? There are at least three in the
-> assembly entries (ftrace, Linux IRQSOFF tracing, I-pipe tracing). And I
-> unfortunately still don't get how those relate to the reading of CR2.
-> 
-> Jan
-> 
+> I know some people are using arm here, is there a difference ?
+> if you can give me some providers, also.
 
-CONFIG_TRACING, for ftrace.
+I believe TI and Freescale often give 10 year promised life of some of
+their processors.
 
 -- 
-Philippe.
+Len Sorensen
 
