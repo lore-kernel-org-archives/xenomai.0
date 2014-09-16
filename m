@@ -1,20 +1,14 @@
-From: "PRADHAN, MAKARAND (RC-CA)" <makarand.pradhan@siemens.com>
-Date: Mon, 15 Sep 2014 15:09:43 +0000
-Message-ID: <B89CCBE86D4F62448EE4F6367C6D3C891DAD9670@USMLVA0EM24MSX.ww017.siemens.net>
-References: <B89CCBE86D4F62448EE4F6367C6D3C891DACCB0F@USMLVA0EM24MSX.ww017.siemens.net>
- <53E14B37.2040202@xenomai.org>
- <1410537098.19920.YahooMailNeo@web142606.mail.bf1.yahoo.com>
- <B89CCBE86D4F62448EE4F6367C6D3C891DAD9615@USMLVA0EM24MSX.ww017.siemens.net>
- <B89CCBE86D4F62448EE4F6367C6D3C891DAD962F@USMLVA0EM24MSX.ww017.siemens.net>
- <54135D7D.30104@xenomai.org> <20140914024450.GK17690@csclub.uwaterloo.ca>
- <54150B08.5070603@xenomai.org> <54154658.7030006@xenomai.org>
- <5415AEB4.5020701@xenomai.org>
-In-Reply-To: <5415AEB4.5020701@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <54181A7C.7070000@xenomai.org>
+Date: Tue, 16 Sep 2014 13:09:48 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Question regarding rt_sem_p
+References: <CAPRPZsBD_5ufxFAhPCFqRf9YZSm1FhqfcmL+MTbhJ=1Sb7ED_g@mail.gmail.com>	<CAPRPZsBsOmiaWPJmPR9RK0uv_BXbw_s43rarKOvVoGfN2gWZjQ@mail.gmail.com>	<CAPRPZsCnAJH_-070SbSMB+Q_dQwf+FYfKpmp1wzwtz=zMA2bcA@mail.gmail.com>	<5357C92F.2060206@xenomai.org>	<CAPRPZsAvxx9XVB5MYi65m1FPaz2p7Rgh7+M4U357exJBbo0kHQ@mail.gmail.com>	<535828F6.6050308@xenomai.org>	<CAPRPZsA4ZQEm1a+2TV6s2wvD2_M53RrL4zLz0sJgLKEF8ALo1w@mail.gmail.com>	<53583DF7.3080700@xenomai.org>	<CAPRPZsB8a=gN=U14qn_tpfksg3T8yW+M8pZGhOkT-jPDuU8L0w@mail.gmail.com>	<CAPRPZsAyTQN936=phnT+NzvT7w_UxnY1ppQDucCjh39neOYn6g@mail.gmail.com>	<CAPRPZsB4+68QpNZ7sBCa6-wssNizkrBpG7vB_6q-cJXvCzkihg@mail.gmail.com>
+ <CAPRPZsCji_p56+CC+a6ueywq39piA=70RaTPP3Xtz62NL_nhcQ@mail.gmail.com>
+ <540F6B15.2070201@xenomai.org> <54112EFA.4080901@web.de>
+In-Reply-To: <54112EFA.4080901@web.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Reading /proc/xenomai/stat causes high latencies
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,83 +17,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Philippe Gerum <rpm@xenomai.org>, Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+To: Jan Kiszka <jan.kiszka@web.de>, Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
-
-I've tried the commit and it seems to work. Am running more tests.
-
-Thanks everyone.
-
-Warm Rgds,
-Makarand.
-
------Original Message-----
-From: Xenomai [mailto:xenomai-bounces@xenomai.org] On Behalf Of Gilles Chan=
-teperdrix
-Sent: Sunday, September 14, 2014 11:05 AM
-To: Philippe Gerum; Lennart Sorensen
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai] Question regarding rt_sem_p
-
-On 09/14/2014 09:40 AM, Philippe Gerum wrote:
-> On 09/14/2014 05:27 AM, Gilles Chanteperdrix wrote:
->> On 09/14/2014 04:44 AM, Lennart Sorensen wrote:
->>> On Fri, Sep 12, 2014 at 10:54:21PM +0200, Gilles Chanteperdrix wrote:
->>>> On 09/12/2014 10:52 PM, PRADHAN, MAKARAND (RC-CA) wrote:
->>>>> Small correction:
->>>>>
->>>>> The ipipe patch that we are using is derived from ipipe-3.12.0 branch=
-.
->>>>
->>>> This means a patch that has not even been tested. It just fixes
->>>> merge conflicts, and has been compile checked, it has not run on
->>>> real hardware. The one which has been tested on real hardware is
->>>> the I-pipe patch for 3.14.0 or 3.14.17.
+On 09/11/2014 07:11 AM, Jan Kiszka wrote:
+> On 2014-09-09 23:03, Gilles Chanteperdrix wrote:
+>> On 04/25/2014 12:44 PM, Jeroen Van den Keybus wrote:
+>>> For testing, I've removed the locks from the vfile system. Then the
+>>> high latencies reliably disappear.
 >>>
->>> Well 3.12 did pass the xenomai testsuite.
+>>> To test, I made two xeno_nucleus modules: one with the xnlock_get/put_
+>>> in place and one with dummies. Subsequently, I use a program that
+>>> simply opens and reads the stat file 1,000 times.
 >>>
->>> Unfortunately TI isn't quite done moving their patches to the 3.14
->>> branch yet, so we are still stuck at 3.12 (And the 3.8 branch was
->>> way too unstable to use for anything at all even before considering xen=
-omai).
->>> Problem with new chips is that they aren't merged into the official
->>> kernel yet, so jumping to a new kernel version isn't trivial.
+>>> With locks:
 >>>
->>> I will be checking if the 3.14 branch has enough to boot on Monday
->>> (A lot of stuff was merged in yesterday so it might be getting close no=
-w).
+>>> RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
+>>> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+>>> RTD|     -2.575|     -2.309|      9.286|       0|     0|     -2.575|      9.286
+>>> RTD|     -2.364|     -2.276|      1.600|       0|     0|     -2.575|      9.286
+>>> RTD|     -2.482|     -2.274|      2.165|       0|     0|     -2.575|      9.286
+>>> RTD|     -2.368|    135.261|   1478.154|   13008|     0|     -2.575|   1478.154
+>>> RTD|     -2.368|     -2.272|      2.602|   13008|     0|     -2.575|   1478.154
+>>> RTD|     -2.499|     -2.272|      6.933|   13008|     0|     -2.575|   1478.154
 >>>
->> I am almost sure I fixed an issue with user-space getting -EINTR with
->> gdb. I simply did not want to look for the commit if you still have
->> the issue with 3.14. If 3.14 does not boot, it looks like I will have
->> to search the commit anyway.
+>>> Without locks:
+>>>
+>>> RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
+>>> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+>>> RTD|     -2.503|     -2.270|      3.310|       0|     0|     -2.503|      3.310
+>>> RTD|     -2.418|     -2.284|     -1.646|       0|     0|     -2.503|      3.310
+>>> RTD|     -2.496|     -2.275|      4.630|       0|     0|     -2.503|      4.630
+>>> RTD|     -2.374|     -2.285|     -1.458|       0|     0|     -2.503|      4.630
+>>> RTD|     -2.452|     -2.273|      3.559|       0|     0|     -2.503|      4.630
+>>> RTD|     -2.370|     -2.285|     -1.518|       0|     0|     -2.503|      4.630
+>>> RTD|     -2.458|     -2.274|      4.203|       0|     0|     -2.503|      4.630
+>>>
+>>> I'll now have a closer look into the vfile system but if the locks are
+>>> malfunctioning, I'm clueless.
 >>
->
-> Could be this one, which also fixed a spurious assertion trigger:
-> http://git.xenomai.org/ipipe.git/commit/?h=3Dipipe-3.14&id=3Dd7a5e4762535=
-f
-> 55bfff8eafbf1c1dde214d09bd6
->
-Indeed, that is the one.
+>> Answering with a "little" delay, could you try the following patch?
+>>
+>> diff --git a/include/asm-generic/bits/pod.h b/include/asm-generic/bits/pod.h
+>> index a6be0dc..cfb0c71 100644
+>> --- a/include/asm-generic/bits/pod.h
+>> +++ b/include/asm-generic/bits/pod.h
+>> @@ -248,6 +248,7 @@ void __xnlock_spin(xnlock_t *lock /*, */ XNLOCK_DBG_CONTEXT_ARGS)
+>>  			cpu_relax();
+>>  			xnlock_dbg_spinning(lock, cpu, &spin_limit /*, */
+>>  					    XNLOCK_DBG_PASS_CONTEXT);
+>> +			xnarch_memory_barrier();
+>>  		} while(atomic_read(&lock->owner) != ~0);
+>>  }
+>>  EXPORT_SYMBOL_GPL(__xnlock_spin);
+>> diff --git a/include/asm-generic/system.h b/include/asm-generic/system.h
+>> index 25bd83f..7a8c4d0 100644
+>> --- a/include/asm-generic/system.h
+>> +++ b/include/asm-generic/system.h
+>> @@ -378,6 +378,8 @@ static inline void xnlock_put(xnlock_t *lock)
+>>  	xnarch_memory_barrier();
+>>  
+>>  	atomic_set(&lock->owner, ~0);
+>> +
+>> +	xnarch_memory_barrier();
+> 
+> That's pretty heavy-weighted now (it was already due to the first memory
+> barrier). Maybe it's better to look at some ticket lock mechanism like
+> Linux uses for fairness. At least on x86 (and other strictly ordered
+> archs), those require no memory barriers on release.
 
---
+Maybe I can use atomic_cmpxchg(cpu, ~0), at least it will be only one
+big barrier instead of two, I believe this is what the original xnlock
+code did, I do not remember why it got changed to the current bogus
+implemenation, it even allows a cheap check for invalid unlock. I am not
+too fond of such an invasive change as changing the locks implementation
+completely in 2.6. Especially since the issue we have is a corner case
+(the problem is caused by /proc/xenomai/stat which quickly locks and
+unlocks the nklock).
+
+
+-- 
                                                                 Gilles.
-
-_______________________________________________
-Xenomai mailing list
-Xenomai@xenomai.org
-http://www.xenomai.org/mailman/listinfo/xenomai
-
-This message and any attachments are solely for the use of intended recipie=
-nts. The information contained herein may include trade secrets, protected =
-health or personal information, privileged or otherwise confidential inform=
-ation. Unauthorized review, forwarding, printing, copying, distributing, or=
- using such information is strictly prohibited and may be unlawful. If you =
-are not an intended recipient, you are hereby notified that you received th=
-is email in error, and that any review, dissemination, distribution or copy=
-ing of this email and any attachment is strictly prohibited. If you have re=
-ceived this email in error, please contact the sender and delete the messag=
-e and any attachment from your system. Thank you for your cooperation
 
