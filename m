@@ -1,5 +1,5 @@
-Message-ID: <541ACBDC.9050208@xenomai.org>
-Date: Thu, 18 Sep 2014 14:11:08 +0200
+Message-ID: <541ACD66.50902@xenomai.org>
+Date: Thu, 18 Sep 2014 14:17:42 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CAPRPZsBD_5ufxFAhPCFqRf9YZSm1FhqfcmL+MTbhJ=1Sb7ED_g@mail.gmail.com>	<CAPRPZsBsOmiaWPJmPR9RK0uv_BXbw_s43rarKOvVoGfN2gWZjQ@mail.gmail.com>	<CAPRPZsCnAJH_-070SbSMB+Q_dQwf+FYfKpmp1wzwtz=zMA2bcA@mail.gmail.com>	<5357C92F.2060206@xenomai.org>	<CAPRPZsAvxx9XVB5MYi65m1FPaz2p7Rgh7+M4U357exJBbo0kHQ@mail.gmail.com>	<535828F6.6050308@xenomai.org>	<CAPRPZsA4ZQEm1a+2TV6s2wvD2_M53RrL4zLz0sJgLKEF8ALo1w@mail.gmail.com>	<53583DF7.3080700@xenomai.org>	<CAPRPZsB8a=gN=U14qn_tpfksg3T8yW+M8pZGhOkT-jPDuU8L0w@mail.gmail.com>	<CAPRPZsAyTQN936=phnT+NzvT7w_UxnY1ppQDucCjh39neOYn6g@mail.gmail.com>	<CAPRPZsB4+68QpNZ7sBCa6-wssNizkrBpG7vB_6q-cJXvCzkihg@mail.gmail.com>
@@ -126,7 +126,15 @@ On 09/18/2014 01:59 PM, Jan Kiszka wrote:
 > Therefore you need at least a (must cheaper) compiler barrier on those
 > archs. See also linux/Documentation/memory-barriers.txt on this and more.
 
-I have answered that, please read the mail completely.
+quick answer: I do not believe an SMP architecture can enforce stores
+ordering accross multiple cpus, with cpus local caches and such. And the
+fact that the patch I sent fixed the issue on x86 tend to prove me right.
+
+The only reason to not put the barrier after the atomic_set would be
+some kind of "optimistic unlocking" optimization, where we let the store
+pending up to the next barrier, believing that such a barrier should
+happen inevitably. This improves the spinlock overhead on one cpu, at
+the expense of the spinning time of the other cpus in the contended case.
 
 
 -- 
