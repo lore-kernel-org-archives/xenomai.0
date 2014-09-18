@@ -1,15 +1,18 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Thu, 18 Sep 2014 09:53:46 -0400
-Message-ID: <20140918135346.GN17690@csclub.uwaterloo.ca>
-References: <20140905184346.GN17690@csclub.uwaterloo.ca>
- <201409052226.00161.paul_c@tuxcnc.org>
- <540B091C.8060604@xenomai.org>
- <201409061616.46205.paul_c@tuxcnc.org>
+Message-ID: <541B04E6.5010808@siemens.com>
+Date: Thu, 18 Sep 2014 18:14:30 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <201409061616.46205.paul_c@tuxcnc.org>
-Subject: Re: [Xenomai] How to get debug symbols in xenomai libraries
+References: <CAPRPZsBD_5ufxFAhPCFqRf9YZSm1FhqfcmL+MTbhJ=1Sb7ED_g@mail.gmail.com>	<CAPRPZsCnAJH_-070SbSMB+Q_dQwf+FYfKpmp1wzwtz=zMA2bcA@mail.gmail.com>	<5357C92F.2060206@xenomai.org>	<CAPRPZsAvxx9XVB5MYi65m1FPaz2p7Rgh7+M4U357exJBbo0kHQ@mail.gmail.com>	<535828F6.6050308@xenomai.org>	<CAPRPZsA4ZQEm1a+2TV6s2wvD2_M53RrL4zLz0sJgLKEF8ALo1w@mail.gmail.com>	<53583DF7.3080700@xenomai.org>	<CAPRPZsB8a=gN=U14qn_tpfksg3T8yW+M8pZGhOkT-jPDuU8L0w@mail.gmail.com>	<CAPRPZsAyTQN936=phnT+NzvT7w_UxnY1ppQDucCjh39neOYn6g@mail.gmail.com>	<CAPRPZsB4+68QpNZ7sBCa6-wssNizkrBpG7vB_6q-cJXvCzkihg@mail.gmail.com>
+ <CAPRPZsCji_p56+CC+a6ueywq39piA=70RaTPP3Xtz62NL_nhcQ@mail.gmail.com>
+ <540F6B15.2070201@xenomai.org> <54112EFA.4080901@web.de>
+ <541130D0.50409@web.de> <541AC62F.2050003@xenomai.org>
+ <541AC933.9090600@siemens.com> <541ACD66.50902@xenomai.org>
+ <541ACE05.1050305@siemens.com> <541AD8A2.30500@xenomai.org>
+ <541ADD8A.7020804@siemens.com> <541AE1CD.7090008@xenomai.org>
+In-Reply-To: <541AE1CD.7090008@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Reading /proc/xenomai/stat causes high latencies
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,171 +21,168 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paul <paul_c@tuxcnc.org>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Sat, Sep 06, 2014 at 04:16:45PM +0100, Paul wrote:
-> On Saturday 06 September 2014, Gilles Chanteperdrix wrote:
-> > On 09/05/2014 11:25 PM, Paul wrote:
-> > > On Friday 05 September 2014, Gilles Chanteperdrix wrote:
-> > >> On 09/05/2014 11:15 PM, Lennart Sorensen wrote:
-> > >>> On Fri, Sep 05, 2014 at 11:04:35PM +0200, Gilles Chanteperdrix
-> > >
-> > > wrote:
-> > >>>> On 09/05/2014 11:03 PM, Lennart Sorensen wrote:
-> > >>>>> On Fri, Sep 05, 2014 at 10:57:10PM +0200, Gilles Chanteperdrix
-> > >
-> > > wrote:
-> > >>>>>> On 09/05/2014 10:54 PM, Lennart Sorensen wrote:
-> > >>>>>>> On Fri, Sep 05, 2014 at 10:31:35PM +0200, Gilles
-> > >>>>>>> Chanteperdrix
-> > >
-> > > wrote:
-> > >>>>>>>> Just tried a fresh build with minimal flags, simply:
-> > >>>>>>>>
-> > >>>>>>>> configure --enable-debug CFLAGS="-fomit-frame-pointer"
-> > >>>>>>>> --host=arm-linux-gnueabihf
-> > >>>>>>>> make
-> > >>>>>>>> arm-linux-gnueabihf-gdb
-> > >>>>>>>> src/skins/common/.libs/libxenomai.so.0.0.0
-> > >>>>>>>>
-> > >>>>>>>> and gdb says it can find symbols. (-fomit-frame-pointer is
-> > >>>>>>>> needed with the toolchain I use, otherwise gcc complains
-> > >>>>>>>> that it can not use the r7 register).
-> > >>>>>>>
-> > >>>>>>> I tried adding that option, and still gdb says no symbols.
-> > >>>>>>>
-> > >>>>>>> Toolchain is debian wheezy's gcc 4.6, and everything is
-> > >>>>>>> natively compiled.
-> > >>>>>>
-> > >>>>>> Do you build the package manually, like I just did? Or do you
-> > >>>>>> use the debian/rules stuff?
-> > >>>>>
-> > >>>>> I use the debian/rules, but I set
-> > >>>>> DEB_CFLAGS_APPEND=-fomit-frame-pointer and I added
-> > >>>>> --enable-debug to the configure line in debian/rules and I set
-> > >>>>> DEB_BUILD_OPTIONS=nostrip
-> > >>>>
-> > >>>> Could you try a manual build?
-> > >>>
-> > >>> That makes installing such a pain and the gcc lines had all the
-> > >>> right arguments (-g -fomit-frame-pointer etc).  And we did want
-> > >>> to debug with as close to the normal runtime build as possible.
-> > >>
-> > >> You do not need to run "make install"
-> > >> Just run configure --enable-debug
-> > >> Then make
-> > >> Then try gdb on the compiled libxenomai.so.0.0.0
-> > >>
-> > >> There are two layers of Makefileries, thee aim is to find where
-> > >> the problem is coming from, not to use this as a solution.
-> > >
-> > > dh_strip in debian/rules is the guilty party here - It is
-> > > responsible for stripping debug symbols from binary executables and
-> > > libraries.
-> >
-> > I am not sure this is the issue, since Lennart passes the "nostrip"
-> > directive, and says that the file utility says that the libraries are
-> > not stripped.
+On 2014-09-18 15:44, Gilles Chanteperdrix wrote:
+> On 09/18/2014 03:26 PM, Jan Kiszka wrote:
+>> On 2014-09-18 15:05, Gilles Chanteperdrix wrote:
+>>> On 09/18/2014 02:20 PM, Jan Kiszka wrote:
+>>>> On 2014-09-18 14:17, Gilles Chanteperdrix wrote:
+>>>>> On 09/18/2014 01:59 PM, Jan Kiszka wrote:
+>>>>>> On 2014-09-18 13:46, Gilles Chanteperdrix wrote:
+>>>>>>> On 09/11/2014 07:19 AM, Jan Kiszka wrote:
+>>>>>>>> On 2014-09-11 07:11, Jan Kiszka wrote:
+>>>>>>>>> On 2014-09-09 23:03, Gilles Chanteperdrix wrote:
+>>>>>>>>>> On 04/25/2014 12:44 PM, Jeroen Van den Keybus wrote:
+>>>>>>>>>>> For testing, I've removed the locks from the vfile system.
+>>>>>>>>>>> Then the high latencies reliably disappear.
+>>>>>>>>>>>
+>>>>>>>>>>> To test, I made two xeno_nucleus modules: one with the
+>>>>>>>>>>> xnlock_get/put_ in place and one with dummies. Subsequently,
+>>>>>>>>>>> I use a program that simply opens and reads the stat file
+>>>>>>>>>>> 1,000 times.
+>>>>>>>>>>>
+>>>>>>>>>>> With locks:
+>>>>>>>>>>>
+>>>>>>>>>>> RTT|  00:00:01  (periodic user-mode task, 100 us period,
+>>>>>>>>>>> priority 99) RTH|----lat min|----lat avg|----lat
+>>>>>>>>>>> max|-overrun|---msw|---lat best|--lat worst RTD|     -2.575|
+>>>>>>>>>>> -2.309|      9.286|       0|     0|     -2.575|      9.286
+>>>>>>>>>>> RTD|     -2.364|     -2.276|      1.600|       0|     0|
+>>>>>>>>>>> -2.575|      9.286 RTD|     -2.482|     -2.274|      2.165|
+>>>>>>>>>>> 0|     0|     -2.575|      9.286 RTD|     -2.368|    135.261|
+>>>>>>>>>>> 1478.154|   13008|     0|     -2.575|   1478.154 RTD|
+>>>>>>>>>>> -2.368|     -2.272|      2.602|   13008|     0|     -2.575|
+>>>>>>>>>>> 1478.154 RTD|     -2.499|     -2.272|      6.933|   13008|
+>>>>>>>>>>> 0|     -2.575|   1478.154
+>>>>>>>>>>>
+>>>>>>>>>>> Without locks:
+>>>>>>>>>>>
+>>>>>>>>>>> RTT|  00:00:01  (periodic user-mode task, 100 us period,
+>>>>>>>>>>> priority 99) RTH|----lat min|----lat avg|----lat
+>>>>>>>>>>> max|-overrun|---msw|---lat best|--lat worst RTD|     -2.503|
+>>>>>>>>>>> -2.270|      3.310|       0|     0|     -2.503|      3.310
+>>>>>>>>>>> RTD|     -2.418|     -2.284|     -1.646|       0|     0|
+>>>>>>>>>>> -2.503|      3.310 RTD|     -2.496|     -2.275|      4.630|
+>>>>>>>>>>> 0|     0|     -2.503|      4.630 RTD|     -2.374|     -2.285|
+>>>>>>>>>>> -1.458|       0|     0|     -2.503|      4.630 RTD|
+>>>>>>>>>>> -2.452|     -2.273|      3.559|       0|     0|     -2.503|
+>>>>>>>>>>> 4.630 RTD|     -2.370|     -2.285|     -1.518|       0|
+>>>>>>>>>>> 0|     -2.503|      4.630 RTD|     -2.458|     -2.274|
+>>>>>>>>>>> 4.203|       0|     0|     -2.503|      4.630
+>>>>>>>>>>>
+>>>>>>>>>>> I'll now have a closer look into the vfile system but if the
+>>>>>>>>>>> locks are malfunctioning, I'm clueless.
+>>>>>>>>>>
+>>>>>>>>>> Answering with a "little" delay, could you try the following
+>>>>>>>>>> patch?
+>>>>>>>>>>
+>>>>>>>>>> diff --git a/include/asm-generic/bits/pod.h
+>>>>>>>>>> b/include/asm-generic/bits/pod.h index a6be0dc..cfb0c71 100644
+>>>>>>>>>> --- a/include/asm-generic/bits/pod.h +++
+>>>>>>>>>> b/include/asm-generic/bits/pod.h @@ -248,6 +248,7 @@ void
+>>>>>>>>>> __xnlock_spin(xnlock_t *lock /*, */ XNLOCK_DBG_CONTEXT_ARGS)
+>>>>>>>>>> cpu_relax(); xnlock_dbg_spinning(lock, cpu, &spin_limit /*, */
+>>>>>>>>>> XNLOCK_DBG_PASS_CONTEXT); +			xnarch_memory_barrier(); }
+>>>>>>>>>> while(atomic_read(&lock->owner) != ~0); }
+>>>>>>>>>> EXPORT_SYMBOL_GPL(__xnlock_spin); diff --git
+>>>>>>>>>> a/include/asm-generic/system.h b/include/asm-generic/system.h
+>>>>>>>>>> index 25bd83f..7a8c4d0 100644 ---
+>>>>>>>>>> a/include/asm-generic/system.h +++
+>>>>>>>>>> b/include/asm-generic/system.h @@ -378,6 +378,8 @@ static
+>>>>>>>>>> inline void xnlock_put(xnlock_t *lock)
+>>>>>>>>>> xnarch_memory_barrier();
+>>>>>>>>>>
+>>>>>>>>>> atomic_set(&lock->owner, ~0); + +	xnarch_memory_barrier();
+>>>>>>>>>
+>>>>>>>>> That's pretty heavy-weighted now (it was already due to the first
+>>>>>>>>> memory barrier). Maybe it's better to look at some ticket lock
+>>>>>>>>> mechanism like Linux uses for fairness. At least on x86 (and
+>>>>>>>>> other strictly ordered archs), those require no memory barriers
+>>>>>>>>> on release.
+>>>>>>>
+>>>>>>>> In fact, memory barriers aren't needed on strictly ordered archs
+>>>>>>>> already today, independent of the spinlock granting algorithm. So
+>>>>>>>> there are two optimization possibilities:
+>>>>>>>
+>>>>>>>> - ticket-based granting - arch-specific (thus optimized) core
+>>>>>>>
+>>>>>>> Ok, no answer, so I will try to be more clear.
+>>>>>>>
+>>>>>>> I do not pretend to understand how memory barriers work at a low
+>>>>>>> level, this is a shame, I know, and am sorry for that. My "high level"
+>>>>>>> view, is that memory barriers on SMP systems act as synchronization
+>>>>>>> points, meaning that when a CPU issues a barrier, it will "see" the
+>>>>>>> state of the other CPUs at the time of their last barrier. This means
+>>>>>>> that for a CPU to see a store that occured on another CPU, there must
+>>>>>>> have been two barriers: a barrier after the store on one cpu, and a
+>>>>>>> barrier after that before the read on the other cpu. This view of
+>>>>>>> things seems to be corroborated by the fact that the patch works, and
+>>>>>>> by the following sentence in Documentation/memory-barriers.txt:
+>>>>>>>
+>>>>>>>  (*) There is no guarantee that a CPU will see the correct order of
+>>>>>>> effects from a second CPU's accesses, even _if_ the second CPU uses a
+>>>>>>> memory barrier, unless the first CPU _also_ uses a matching memory
+>>>>>>> barrier (see the subsection on "SMP Barrier Pairing").
+>>>>>>
+>>>>>> [quick answer]
+>>>>>>
+>>>>>> ...or the architecture refrains from reordering write requests, like x86
+>>>>>> does. What may happen, though, is that the compiler reorders the writes.
+>>>>>> Therefore you need at least a (must cheaper) compiler barrier on those
+>>>>>> archs. See also linux/Documentation/memory-barriers.txt on this and more.
+>>>>>
+>>>>> quick answer: I do not believe an SMP architecture can enforce stores
+>>>>> ordering accross multiple cpus, with cpus local caches and such. And the
+>>>>> fact that the patch I sent fixed the issue on x86 tend to prove me right.
+>>>>
+>>>> It's not wrong, it's just (costly, on larger machines) overkill as the
+>>>> other cores either see the lock release and all prior changes committed
+>>>> or the lock taken (and the prior changes do not matter then). They will
+>>>> never see later changes committed before the lock being visible as free.
+>>>
+>>> I agree. But this is true on all architectures, not just on strictly
+>>> ordered ones, this is just due to how barriers work on SMP systems, as I
+>>> explained.
+>>>
+>>>> That's architecturally guaranteed, and that's why you have no memory
+>>>> barriers in x86 spinlock release operations.
+>>>
+>>> I disagree, as explained in the paragraph just below the one you quote,
+>>> I believe this is an optimization, which is almost valid on any
+>>> architecture. Almost valid, because if the cpu which has done the unlock
+>>> does another lock without any time for a barrier in between to
+>>> synchronize cpus, we have a problem, because the other cpus will never
+>>> see the spinlock as free. With ticket spinlocks, you just add a store on
+>>> the cpu which spins, and you have to add a barrier after that, if you
+>>> want the barrier before the read on the cpu which will acquire the lock
+>>> to see that the spinlock is contended. So I do not see how this requires
+>>> less barriers.
+>>
+>> Ticket locks prevent unfair starvation without the closing barrier as
+>> they grant the next ticket to the next waiter, not the current holder.
+>> See the Linux implementation.
 > 
-> Apologies - Missed the bit about passing nostrip via DEB_BUILD_OPTIONS.
+> Whether to put the closing barrier after the last store is orthogonal,
+> to whether implementing ticket locks or not. This is all a question of
+> tradeoffs.
 > 
-> > Anyway, packages like libc6 have debug symbols in a separate package
-> > from the main binary package. Is this complicated to achieve?
+> Without the barrier after the last store, you increase the spinning time
+> due to time taken for the store to be visible on other cpus, but you
+> optimize the overhead of unlocking.
 > 
-> Very simple to achieve. The bulk of it is a cut'n'paste job in 
-> debian/control plus a couple of lines in debian/rules. Please see 
-> attached patch.
+> With ticket spinlocks you avoid the starvation situation, at the expense
+> of increasing the overhread of spinlock operations.
 > 
-> 
-> Regards, Paul.
-> 
+> I do not know which is worse. I suspect all this does not make much of a
+> difference, and what dominates is the duration of spinlock sections anyway.
 
-> From 2680ee4171ef29770a6aa275aa2576c20cc7bd79 Mon Sep 17 00:00:00 2001
-> From: Paul Corner <paul_c@tuxcnc.org>
-> Date: Sat, 6 Sep 2014 16:08:39 +0100
-> Subject: [PATCH] Add debug packages to debian for library and runtime
->  packages.
-> 
-> ---
->  debian/control | 29 +++++++++++++++++++++++++++++
->  debian/rules   |  6 ++++--
->  2 files changed, 33 insertions(+), 2 deletions(-)
-> 
-> diff --git a/debian/control b/debian/control
-> index 56fe0b1..a15adbe 100644
-> --- a/debian/control
-> +++ b/debian/control
-> @@ -24,6 +24,21 @@ Description: Xenomai runtime utilities
->   This package contains the runtime programs and the testsuite for the Xenomai
->   realtime system.
->  
-> +Package: xenomai-runtime-dbg
-> +Section: debug
-> +Architecture: amd64 arm armeb armel armhf i386 powerpc powerpcspe
-> +Depends: xenomai-runtime (=${binary:Version}), ${misc:Depends}
-> +Description: debugging symbols for Xenomai runtime utilities
-> + Xenomai is a real-time development framework cooperating with the Linux
-> + kernel in order to provide a pervasive, interface-agnostic, hard real-time
-> + support to user-space applications, seamlessly integrated into the GNU/Linux
-> + environment. Xenomai provides its own API and emulation layers ("skins") to
-> + make migration from other RTOS easier. Examples are: pSOS+, VxWorks, VRTX,
-> + uiTRON, RTAI, POSIX.
-> + .
-> + This package contains the debug symbols for the runtime programs and testsuite
-> + for Xenomai realtime system.
-> +
->  Package: xenomai-kernel-source
->  Section: kernel
->  Architecture: all
-> @@ -62,6 +77,20 @@ Description: Shared libraries for Xenomai
->   .
->   This package contains the shared libraries.
->  
-> +Package: libxenomai1-dbg
-> +Section: debug
-> +Architecture: amd64 arm armeb armel armhf i386 powerpc powerpcspe
-> +Depends: libxenomai1 (=${binary:Version}), ${misc:Depends}
-> +Description: Debugging symbols for libxenomai1
-> + Xenomai is a real-time development framework cooperating with the Linux
-> + kernel in order to provide a pervasive, interface-agnostic, hard real-time
-> + support to user-space applications, seamlessly integrated into the GNU/Linux
-> + environment. Xenomai provides its own API and emulation layers ("skins") to
-> + make migration from other RTOS easier. Examples are: pSOS+, VxWorks, VRTX,
-> + uiTRON, RTAI, POSIX.
-> + .
-> + This package contains the debug symbols for libxenomai1.
-> +
->  Package: libxenomai-dev
->  Section: libdevel
->  Architecture: amd64 arm armeb armel armhf i386 powerpc powerpcspe
-> diff --git a/debian/rules b/debian/rules
-> index a91958f..edcd265 100755
-> --- a/debian/rules
-> +++ b/debian/rules
-> @@ -16,7 +16,8 @@ DEB_BUILD_GNU_TYPE=$(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
->  CONFIG_OPTS = --prefix=/usr \
->              --includedir=/usr/include/xenomai \
->              --mandir=/usr/share/man \
-> -	    --with-testdir=/usr/lib/xenomai/testsuite
-> +	    --with-testdir=/usr/lib/xenomai/testsuite \
-> +	    --enable-debug
->  
->  ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
->  	CONFIG_OPTS += --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
-> @@ -99,7 +100,8 @@ binary-arch: build install
->  	dh_installdocs -s -A CREDITS README.INSTALL TROUBLESHOOTING
->  	dh_link -s
->  	dh_installchangelogs -s
-> -	dh_strip -s
-> +	dh_strip -pxenomai-runtime --dbg-package=xenomai-runtime-dbg
-> +	dh_strip -plibxenomai1 --dbg-package=libxenomai1-dbg
->  	dh_compress -s
->  	dh_fixperms -s
->  	dh_makeshlibs -s
+I think the way classic Linux spinlock did this on x86 provide the answer.
 
-That seems to work great.  Thanks.
+Jan
 
 -- 
-Len Sorensen
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
