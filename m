@@ -1,6 +1,6 @@
-Message-ID: <541B26FE.6000507@xenomai.org>
-Date: Thu, 18 Sep 2014 20:39:58 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <541B2E02.7030009@siemens.com>
+Date: Thu, 18 Sep 2014 21:09:54 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 References: <CAPRPZsBD_5ufxFAhPCFqRf9YZSm1FhqfcmL+MTbhJ=1Sb7ED_g@mail.gmail.com>	<5357C92F.2060206@xenomai.org>	<CAPRPZsAvxx9XVB5MYi65m1FPaz2p7Rgh7+M4U357exJBbo0kHQ@mail.gmail.com>	<535828F6.6050308@xenomai.org>	<CAPRPZsA4ZQEm1a+2TV6s2wvD2_M53RrL4zLz0sJgLKEF8ALo1w@mail.gmail.com>	<53583DF7.3080700@xenomai.org>	<CAPRPZsB8a=gN=U14qn_tpfksg3T8yW+M8pZGhOkT-jPDuU8L0w@mail.gmail.com>	<CAPRPZsAyTQN936=phnT+NzvT7w_UxnY1ppQDucCjh39neOYn6g@mail.gmail.com>	<CAPRPZsB4+68QpNZ7sBCa6-wssNizkrBpG7vB_6q-cJXvCzkihg@mail.gmail.com>
  <CAPRPZsCji_p56+CC+a6ueywq39piA=70RaTPP3Xtz62NL_nhcQ@mail.gmail.com>
@@ -22,10 +22,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 09/18/2014 06:28 PM, Gilles Chanteperdrix wrote:
+On 2014-09-18 18:28, Gilles Chanteperdrix wrote:
 > On 09/18/2014 06:14 PM, Jan Kiszka wrote:
 >> On 2014-09-18 15:44, Gilles Chanteperdrix wrote:
 >>> On 09/18/2014 03:26 PM, Jan Kiszka wrote:
@@ -191,15 +191,29 @@ On 09/18/2014 06:28 PM, Gilles Chanteperdrix wrote:
 > barrier" optimization has in fact chances of being detrimental. And
 > finally, due to the way spinlocks are split, Linux has scalability
 > issues that Xenomai can not even begin to imagine tackling.
+> 
+> Anyway, the discussion is kind of moot, because as I said, we are not
+> going to change the spinlock implementation in 2.6. What we are
+> discussing here is whether to put the barrier after the atomic_set, or
+> whether to put that barrier where it is really needed: in the snapshot
+> code, and what to do for forge. I also agree that the barrier before the
+> atomic_set in xnlock_put is not needed on x86 and proposed an
+> architecture macro to replace it with a compiler barrier in that case.
 
-Finally, in the eternal worst case vs average case fight, the worst case
-worth optimizing is the contended case in our case, and I believe adding
-the barrier after atomic_set in xnlock_put is what optimizes this worst
-case best, because, again, it reduces the time between the unlock and
-its visibility on the spinning cpu. That is at least something Linux
-does not have to care about, because the worst case is not what it is
-optimized for.
+Yes, seems reasonable.
+
+> 
+> I also proposed to replace the atomic_set with a cmpxchg, cmpxchg has
+> two barriers on ARM, but I guess on x86 it is only one barrier, this
+> would solve the architecture dependency nicely.
+
+That saves an abstraction but I have no clue if "mfence" is equally
+expensive as "lock cmpxchg". If it is, that's fine, but I suspect it's
+not (due to the cacheline "lock").
+
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
