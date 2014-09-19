@@ -1,17 +1,9 @@
-Message-ID: <541C0ACA.10307@xenomai.org>
-Date: Fri, 19 Sep 2014 12:51:54 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAPRPZsBD_5ufxFAhPCFqRf9YZSm1FhqfcmL+MTbhJ=1Sb7ED_g@mail.gmail.com>	<CAPRPZsBsOmiaWPJmPR9RK0uv_BXbw_s43rarKOvVoGfN2gWZjQ@mail.gmail.com>	<CAPRPZsCnAJH_-070SbSMB+Q_dQwf+FYfKpmp1wzwtz=zMA2bcA@mail.gmail.com>	<5357C92F.2060206@xenomai.org>	<CAPRPZsAvxx9XVB5MYi65m1FPaz2p7Rgh7+M4U357exJBbo0kHQ@mail.gmail.com>	<535828F6.6050308@xenomai.org>	<CAPRPZsA4ZQEm1a+2TV6s2wvD2_M53RrL4zLz0sJgLKEF8ALo1w@mail.gmail.com>	<53583DF7.3080700@xenomai.org>	<CAPRPZsB8a=gN=U14qn_tpfksg3T8yW+M8pZGhOkT-jPDuU8L0w@mail.gmail.com>	<CAPRPZsAyTQN936=phnT+NzvT7w_UxnY1ppQDucCjh39neOYn6g@mail.gmail.com>	<CAPRPZsB4+68QpNZ7sBCa6-wssNizkrBpG7vB_6q-cJXvCzkihg@mail.gmail.com>
- <CAPRPZsCji_p56+CC+a6ueywq39piA=70RaTPP3Xtz62NL_nhcQ@mail.gmail.com>
- <540F6B15.2070201@xenomai.org> <54112EFA.4080901@web.de>
- <541130D0.50409@web.de> <541AC62F.2050003@xenomai.org>
- <541AC933.9090600@siemens.com> <541B3ED6.8090606@xenomai.org>
- <541B8F91.9050603@xenomai.org>
-In-Reply-To: <541B8F91.9050603@xenomai.org>
+Date: Fri, 19 Sep 2014 17:03:46 +0530
+Message-ID: <CALe7ZU0q+9ymAuFSJ=dCkh_+o=pzLrRe0qj31w+WVPjKUpP5Fw@mail.gmail.com>
+From: JAY KOTHARI <jaikothari10@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Reading /proc/xenomai/stat causes high latencies
+Subject: [Xenomai] problem with rt_task_wait_period
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,54 +12,115 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 09/19/2014 04:06 AM, Gilles Chanteperdrix wrote:
-> On 09/18/2014 10:21 PM, Gilles Chanteperdrix wrote:
->> On 09/18/2014 01:59 PM, Jan Kiszka wrote:
->>> On 2014-09-18 13:46, Gilles Chanteperdrix wrote:
->>>>  (*) There is no guarantee that a CPU will see the correct order of
->>>> effects from a second CPU's accesses, even _if_ the second CPU uses a
->>>> memory barrier, unless the first CPU _also_ uses a matching memory
->>>> barrier (see the subsection on "SMP Barrier Pairing").
->>>
->>> [quick answer]
->>>
->>> ...or the architecture refrains from reordering write requests, like x86
->>> does. What may happen, though, is that the compiler reorders the writes.
->>> Therefore you need at least a (must cheaper) compiler barrier on those
->>> archs. See also linux/Documentation/memory-barriers.txt on this and more.
->>
->> The passage you quote is quoted from memory-barriers.txt, and I find it
->> makes it pretty clear that the two barriers are needed for cache
->> synchronization in the general case. Now, I read more in
->> memory-barriers, and I do not find easily details about what the fact
->> that x86 is "strictly ordered" means, and how it relaxes the constraints
->> on what rules. Maybe you would care to give us the exact passage where
->> this is mentioned? Also, I would welcome any detail about how SMP cache
->> synchronization actually works on x86.
-> 
-> Ok, I have read a few things, it would seem recent x86 architectures
-> (nehalem, sandy bridge and probably haswell) use the MESIF cache
-> coherence protocol, with a twist for haswell since it introduced
-> transactional memory. A cache coherence protocol ensures in theory
-> transparently the same view of cache on all cpus. MESIF itself is
-> derived from the MESI cache coherence protocol, which is said (by
-> wikipedia article) to have some performance issues which are generally
-> compensated by adding a store buffer, which in turn requires memory
-> barriers for a store on one cpu to be visible in the cache (and so on
-> other cpus). I did not find any indication that memory barriers are
-> still needed for this case (which is exactly the case we are interested
-> in) with MESIF, but no indication that they are not needed either.
+Hi,
+    I am using rt_task_wait_period in calculating jitter for two of my
+task.But it works perfectly for one task while it shows error in
+second real time task.I am writing code.Please tell me where am I
+going wrong
 
-Thinking more about this, the store buffer is there for timing reasons
-(because getting the cache line from another cpu takes time), so I
-suspect the barrier does not in fact really flush the buffer, but wait
-for it to drain, which means issuing the barrier will not, in fact,
-change the timing for the visibility of the last store on a distant cpu,
-it will simply stall the current cpu.
+#include<stdio.h>
+#include<signal.h>
+#include<unistd.h>
+#include<sys/mman.h>
+//#include <native/sem.h>
 
--- 
-                                                                Gilles.
+#include<native/task.h>
+#include<native/timer.h>
+#include<native/pipe.h>
+
+#define TASK_MODE       (T_FPU|T_CPU(0))
+#define TASK_STKSZ      4096
+#define u_NSEC          1000000
+
+#define SETUP_TICK_NSEC         1000000
+
+#define PERIOD_1        (u_NSEC*1)
+#define PERIOD_2        (u_NSEC*2)
+
+#define ONE_SHOT_MODE   1
+
+void rt_task_1(void *cookie)
+{       unsigned long overrun1_t;
+        int ret;
+        int err;
+        RTIME systime1=0,systime2=0,expected=0;
+        systime2= rt_timer_read();
+        ret = rt_task_set_periodic(&task_desc1, TM_NOW, PERIOD_1);
+        if(ret<0)
+        {
+        printf("error1 in rt_task_set_periodic()  %d ...\n",ret); return ;
+        }
+
+        expected= systime2 + PERIOD_2;
+        err=rt_task_wait_period(&overrun1_t);
+      printf("overrun1=%lu\n",overrun1_t);
+        if(err<0)
+        {perror("task wait error\n");
+        }
+        systime1 = rt_timer_read();
+      printf("actual system time after first task1 wake-up....value
+%llu \n",systime1);
+      printf(" task1 time%lld \n", systime1-systime2);
+
+      printf("jitter after task1.....%lld\n",systime1-expected);
+        expected=systime1;
+}
+
+void rt_task_2(void *cookie)
+{
+int overrun2_t;
+int ret,ret1;
+        printf("\t task 2 started  \t\n");
+        int err,i;
+        RTIME systime1=0,systime2=0,expected=0;
+        systime2= rt_timer_read();
+        ret1 = rt_task_set_periodic(&task_desc1, TM_NOW, PERIOD_2);
+        if(ret<0)
+        {
+        printf("error2 in rt_task_set_periodic()  %d ...\n",ret); return ;
+        }
+                expected= systime2 +PERIOD_2;
+                err=rt_task_wait_period(&overrun2_t);
+if(err<0)
+{perror("task 2 wait error\n");
+ }
+
+        systime1 = rt_timer_read();
+printf("jitter after task2.....%lld\n",systime1-expected);
+
+//      printf("\ttask 2 ended\t\n");
+//        rt_sem_v(&sem_desc);
+
+}
+void catch_signal(int sig)
+{printf("task is completed\n");
+}
+int main(int argc,char* argv[])
+{
+        int ret;
+        signal(SIGTERM,catch_signal);
+        signal(SIGINT,catch_signal);
+
+        mlockall(MCL_CURRENT | MCL_FUTURE);
+
+#if ONE_SHOT_MODE == 1
+                ret = rt_timer_set_mode(TM_ONESHOT);//sets timer MODE
+                printf("timer base in one-shot mode  ***********");
+#else
+                ret = rt_timer_set_mode(SETUP_TICK_NSEC);
+                printf("timer base in periodic mode  *********");
+#endif
+
+      ret=rt_task_create(&task_desc1,"rt_task_1",TASK_STKSZ,5,TASK_MODE);
+        rt_task_start(&task_desc1,&rt_task_1,NULL);
+   pause();
+          ret = rt_task_delete(&task_desc1);
+    ret=rt_task_create(&task_desc2,"rt_task_2",TASK_STKSZ,4,TASK_MODE);
+        rt_task_start(&task_desc2,&rt_task_2,NULL);
+    pause();
+        ret = rt_task_delete(&task_desc2);
+
+}
 
