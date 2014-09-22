@@ -1,10 +1,10 @@
-Message-ID: <5420A09E.60105@xenomai.org>
-Date: Tue, 23 Sep 2014 00:20:14 +0200
+Message-ID: <5420A0EC.9080501@xenomai.org>
+Date: Tue, 23 Sep 2014 00:21:32 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] I-pipe 3.10 pull request
+Subject: [Xenomai] I-pipe 3.8 pull request
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,28 +16,31 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-The following changes since commit 8e940c2c151bcf2d065ccbc2adbf0c90b209b7d3:
+The following changes since commit cceb73f645d139a3ad15c7ddcd371ef408b37cf5:
 
-  arm/ipipe: bump core revision level (2014-09-22 18:21:44 +0200)
+  Merge remote-tracking branch 'gilles/ipipe-3.8' into ipipe-3.8 (2014-04-01 10:23:21 +0200)
 
 are available in the git repository at:
 
-  git://git.xenomai.org/ipipe-gch.git for-ipipe-3.10
 
-for you to fetch changes up to 0caa54772542da89f7e4aca845c1af04522db4b4:
+  git://git.xenomai.org/ipipe-gch.git for-ipipe-3.8
 
-  arm/ipipe: bump core revision level (2014-09-23 00:16:43 +0200)
+for you to fetch changes up to b932bbfdc2bb7d3d9f3a46194e788f601b1a9e26:
+
+  ipipe-core-3.8.13-arm-4 (2014-09-23 00:15:41 +0200)
 
 ----------------------------------------------------------------
-Gilles Chanteperdrix (3):
+Gilles Chanteperdrix (4):
       arm/ipipe: fix ipipe_syscall_root with mayday and EABI
+      arm/ipipe: fix syscall restarting
       arm/fcse: avoid compilation error without FCSE
-      arm/ipipe: bump core revision level
+      ipipe-core-3.8.13-arm-4
 
- arch/arm/include/asm/fcse.h  |   12 ++++----
- arch/arm/include/asm/ipipe.h |    8 +++---
- arch/arm/kernel/ipipe.c      |   67 +++++++++++++++++++++++++++++++++------------
- 3 files changed, 59 insertions(+), 28 deletions(-)
+ arch/arm/include/asm/fcse.h    |   12 ++++----
+ arch/arm/include/asm/ipipe.h   |    8 ++---
+ arch/arm/kernel/entry-common.S |    2 +-
+ arch/arm/kernel/ipipe.c        |   69 ++++++++++++++++++++++++++++++-------------
+ 4 files changed, 59 insertions(+), 32 deletions(-)
 
 -- 
                                                                 Gilles.
