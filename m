@@ -1,5 +1,5 @@
-Message-ID: <54207DBE.5000008@xenomai.org>
-Date: Mon, 22 Sep 2014 21:51:26 +0200
+Message-ID: <54208009.5040504@xenomai.org>
+Date: Mon, 22 Sep 2014 22:01:13 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CAFvTJFEsnycSeft7DEeRFXFTXb8E8xLbzFANk2HVt50ikd14gQ@mail.gmail.com>	<54206D56.7040509@xenomai.org>
@@ -35,10 +35,25 @@ On 09/22/2014 09:49 PM, Sam Hajian wrote:
 > CONFIG_SLUB_DEBUG. to confirm that when I had this flag off the null
 > pointer dereference was gone. But ran into other problem with invalid
 > paging request.
+> 
+> [    5.309728] Unable to handle kernel paging request at virtual
+> address 5f3f1c00
+> [    5.324624] pgd = c0003000, hw pgd = c0003000
+> [    5.333678] [5f3f1c00] *pgd=80000080005003, *pmd=00000000
+> 
+>> ipipe_pin_range_globally probably has never been used with 3 level page
+>> tables, which are enabled by LPAIE. In order to see if this is the only
+>> problem, you can try and return at the beginning of
+>> ipipe_pin_range_globally. You will not be able to run xenomai correctly
+>> with this, but if the system boots normally, it means that indeed, like
+>> you think, the problem is in that function.
+>>
+> I tried that but the same problem it dies very early (null pointer
+> dereference at virtual add 0x0) even before getting to
+> ipip_pin_range_globally probably in debug code.
 
-How is that different to what I said? You turned off a debug option
-(CONFIG_SLUB_DEBUG) and made a bug disappear.
-
+Then you are back to square 1: you have to debug the oops with
+disassembler and register values.
 
 -- 
                                                                 Gilles.
