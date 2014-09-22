@@ -1,19 +1,10 @@
-Message-ID: <32c249ed15617ee541d507ced422ddce.squirrel@wandercraft.eu>
-In-Reply-To: <541FFE67.9060608@xenomai.org>
-References: <CALe7ZU0q+9ymAuFSJ=dCkh_+o=pzLrRe0qj31w+WVPjKUpP5Fw@mail.gmail.com>
- <541C16C3.9070101@xenomai.org>
- <CALe7ZU36HSdTihuwJ7_CBBD+eCyecPr2DvmWyGTxeonRiajmVQ@mail.gmail.com>
- <541C1B95.5070408@xenomai.org>
- <4faca0bdd03570d3af0d0af9940fe7c7.squirrel@wandercraft.eu>
- <541C5F77.8050909@xenomai.org> <541C6471.8000602@xenomai.org>
- <41b71c7608a9631ec757eb9618d34269.squirrel@wandercraft.eu>
- <541FFE67.9060608@xenomai.org>
-Date: Mon, 22 Sep 2014 13:19:25 +0200
+Message-ID: <083fe1b44c93cedd866b85dcaa7bc4ae.squirrel@wandercraft.eu>
+Date: Mon, 22 Sep 2014 18:29:06 +0200
 From: huy-cong.vu@wandercraft.eu
 MIME-Version: 1.0
 Content-Type: text/plain;charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] clock_gettime cause runaway thread
+Subject: [Xenomai]  clock_gettime cause runaway thread
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,8 +13,7 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: JAY KOTHARI <jaikothari10@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
 > On 09/22/2014 12:25 PM, huy-cong.vu@wandercraft.eu wrote:
 >>> On 09/19/2014 06:53 PM, Philippe Gerum wrote:
@@ -119,5 +109,7 @@ And which are the flags need to be passing to the compiler to get a good
 mixes?
 
 Huy Cong VU
+
+Ps: Same question but with a new thread, like Gilles advice
 
 
