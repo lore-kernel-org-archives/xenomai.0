@@ -1,11 +1,11 @@
-Message-ID: <54206A49.1070005@xenomai.org>
-Date: Mon, 22 Sep 2014 20:28:25 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Mon, 22 Sep 2014 14:33:05 -0400
+Message-ID: <20140922183305.GB13317@csclub.uwaterloo.ca>
 References: <CAFvTJFEsnycSeft7DEeRFXFTXb8E8xLbzFANk2HVt50ikd14gQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 In-Reply-To: <CAFvTJFEsnycSeft7DEeRFXFTXb8E8xLbzFANk2HVt50ikd14gQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] kernel panic with IPIPE and LPAE on ARM OMAP5 board
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,11 +15,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sam Hajian <saeid.hajian@gmail.com>, xenomai@xenomai.org
+To: Sam Hajian <saeid.hajian@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 09/22/2014 07:57 PM, Sam Hajian wrote:
-> Hi,
-> 
+On Mon, Sep 22, 2014 at 01:57:03PM -0400, Sam Hajian wrote:
 > I am using ipipe-3.14 on ARM OMAP5 with dual core Cortex A15. When used
 > IPIPE and LPAE turn on in kernel I get kernel exception. This is after
 > fixing a compile issue in "arch/arm/mm/fault.c" to include
@@ -30,11 +29,11 @@ On 09/22/2014 07:57 PM, Sam Hajian wrote:
 > invalid paging request as shown in second log below, which I think is the
 > real problem. Any suggestion/help?
 
-Disassemble the code at the address where the error happens, look for
-registers values in the oops, and understand why the error happens. Like
-you would do for any oops.
+Yeah I saw the same thing.
 
+It seems something in the memory setup isn't right when IPIPE is enabled
+at the same time as LPAE.  You get a null pointer dererence.
 
 -- 
-                                                                Gilles.
+Len Sroensen
 
