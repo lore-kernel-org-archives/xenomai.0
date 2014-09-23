@@ -1,12 +1,14 @@
-Message-ID: <ed538941c12a055ad7c08a1a45488e88.squirrel@wandercraft.eu>
-In-Reply-To: <083fe1b44c93cedd866b85dcaa7bc4ae.squirrel@wandercraft.eu>
-References: <083fe1b44c93cedd866b85dcaa7bc4ae.squirrel@wandercraft.eu>
-Date: Tue, 23 Sep 2014 10:09:35 +0200
-From: huy-cong.vu@wandercraft.eu
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] clock_gettime cause runaway thread
+In-Reply-To: <54208009.5040504@xenomai.org>
+References: <CAFvTJFEsnycSeft7DEeRFXFTXb8E8xLbzFANk2HVt50ikd14gQ@mail.gmail.com>
+ <54206D56.7040509@xenomai.org>
+ <CAFvTJFGhGfuficFeDLxnDZQT=gSnmtn95933_zi16YSbD8Q9uQ@mail.gmail.com>
+ <54208009.5040504@xenomai.org>
+Date: Tue, 23 Sep 2014 14:52:47 -0400
+Message-ID: <CAFvTJFFJ=t9CXofcKhHbJVK6HnJ4-YmUt966TKXbx8MpM-zGJg@mail.gmail.com>
+From: Sam Hajian <saeid.hajian@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] kernel panic with IPIPE and LPAE on ARM OMAP5 board
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,118 +17,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
 
->> On 09/22/2014 12:25 PM, huy-cong.vu@wandercraft.eu wrote:
->>>> On 09/19/2014 06:53 PM, Philippe Gerum wrote:
->>>>> On 09/19/2014 06:11 PM, huy-cong.vu@wandercraft.eu wrote:
->>>>>> Hello everyone,
->>>>>> I'm currently working with Xenomai in my company's project using
->>>>>> RTNet
->>>>>> as
->>>>>> realtime ethernet driver to communicate with Elmo card via EtherCAT
->>>>>> protocol and SOEM as master library.
->>>>>>
->>>>>> I'm using Linux 3.8.13 patched with Xenomai 2.6.3.
->>>>>>
->>>>>> I'm debugging a simple test which is a cycle of send & receive data
->>>>>> with a
->>>>>> frequency of 1 kHz. The test runs fine for a quite long time (30
->>>>>> mins
->>>>>> in
->>>>>> average), but still throws runaway thread after a certain time.
->>>>>>
->>>>>> My loop is a periodic thread:
->>>>>>
->>>>>> rt_task_set_periodic(rt_task_self(), TM_NOW, 1000000);
->>>>>> while(1){
->>>>>> rt_task_wait_period();
->>>>>> ec_send_processdata();     //SOEM function
->>>>>> ec_receive_processdata();  //SOEM function
->>>>>> }
->>>>>>
->>>>>> With SIGDEBUG & gdb, the error seems to start from clock_gettime
->>>>>> (when
->>>>>> ec_receive_processdata is called) with CLOCK_MONOTONIC, change to
->>>>>> CLOCK_REALTIME reproduces the same issue. My processor is x86_64, I
->>>>>> heard
->>>>>> that the High Resolution Timer of Linux kernel is not supported for
->>>>>> processor 64 bits, this could be the reason for such behavior?
->>>>>>
->>>>>
->>>>> I never heard about the restriction you are referring to.
->>>>>
->>>>
->>>> If you are referring to the deadlock issue when calling the regular
->>>> glibc services such as gettimeofday/clock_gettime from rt mode, then
->>>> this is not a 64bit specific issue. You need to call the
->>>> clock_gettime()
->>>> service from the Xenomai POSIX API, asking for CLOCK_HOST_REALTIME.
->>>>
->>>> --
->>>> Philippe.
->>>>
->>>
->>> Hello,
->>> I tried to call clock_gettime() with CLOCK_HOST_REALTIME, but my
->>> hardware
->>> fall directly into error. If I understand correctly,
->>> CLOCK_HOST_REALTIME
->>> is called from the POSIX skin, a.k.a secondary mode,
->>
->> The POSIX skin does not imply secondary mode, quite the contrary: it
->> aims at running POSIX services in primary mode. Secondary mode means
->> regular linux mode, not controlled by the Xenomai co-kernel.
->>
->>  while my application
->>
->> No, it runs from primary mode. It has been designed with that intent in
->> mind, precisely because the way gettimeofday/clock_gettime are
->> implemented over the vsyscall mechanism makes them incompatible with any
->> usage from primary mode.
->>
->>> need to run at primary mode, that's why it stops running right away.
->>> Using
->>> CLOCK_MONOTONIC & CLOCK_REALTIME was fine. What is the main difference
->>> between these timers?
->>
->> CLOCK_REALTIME served by the POSIX skin uses the Xenomai idea of time
->> (epoch). This is not in sync with the epoch used by the regular kernel,
->> hence HOST_REALTIME. CLOCK_MONOTONIC served by the POSIX skin is the
->> same as rt_timer_tsc(), i.e. a raw tick count maintained by some high
->> precision timer we use on the hardware platform, monotonically
->> increasing.
->>
->> You should really make sure to use the right clock_gettime(), i.e. the
->> one from libpthread_rt.
->> http://xenomai.org/2014/08/porting-a-linux-application-to-xenomai-dual-kernel/
->>
->> --
->> Philippe.
->>
->
-> Thanks Philippe,
-> I'm following the porting guide that you suggest. One small question: Is
-> this possible to mix between POSIX & native skin of Xenomai? Because most
-> of my app's code is in native skin, but some services are only accessible
-> via POSIX skins (like setschedparam). Is there a risk in mixing these 2?
-> And which are the flags need to be passing to the compiler to get a good
-> mixes?
->
-> Huy Cong VU
->
-> Ps: Same question but with a new thread, like Gilles advice
->
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
+> Then you are back to square 1: you have to debug the oops with
+> disassembler and register values.
 >
 
-Using the clock_gettime() with Xenomai POSIX skill solved the issue.
-Thanks for your help.
+I found the location of the null pointer dereference in debug code and
+managed to avoid it, here
 
-Huy Cong VU
+static noinline struct kmem_cache_node *free_debug_processing(
+        struct kmem_cache *s, struct page *page, void *object,
+        unsigned long addr, unsigned long *flags)
+{
+        struct kmem_cache_node *n = get_node(s, page_to_nid(page));
+        spin_lock_irqsave(&n->list_lock, *flags); // if "n" is null
+jump to fail code, slad_unlock and return
+        slab_lock(page);
 
+Now the issue shows up in  __ipipe_pin_range_globally where it can not
+handle kernel paging request. If try to return without doing anything
+in this code, there system will just pause and no message or kernel
+panic. Do you have any suggestion to make this code (
+__ipipe_pin_range_globally) working with 3 level page table.
+
+[    5.187539] SMP: Total of 2 processors activated.
+[    5.197301] CPU: All CPU(s) started in SVC mode.
+[    5.208879] devtmpfs: initialized
+[    5.228559] VFP support v0.3: implementor 41 architecture 4 part 30
+variant f rev 0
+[    5.255349] Unable to handle kernel paging request at virtual
+address 4f3f1c00
+[    5.270246] pgd = c0003000, hw pgd = c0003000
+[    5.279301] [4f3f1c00] *pgd=80000080005003, *pmd=00000000
+[    5.290515] Internal error: Oops: a06 [#1] SMP ARM
+[    5.300434] Modules linked in:
+[    5.306824] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 3.12-1-am5726
+#1 Debian 3.12.27-0.1RR5
+[    5.324176] task: ee8f0000 ti: ee8f4000 task.ti: ee8f4000
+[    5.335341] PC is at __ipipe_pin_range_globally+0xd8/0x12c
+[    5.346675] LR is at 0xafff1ffe
+[    5.353234] pc : [<c001c438>]    lr : [<afff1ffe>]    psr: 80000013
+[    5.353234] sp : ee8f5d80  ip : ee83b018  fp : c06ca4f4
+[    5.376955] r10: c0d8c760  r9 : 00000c00  r8 : 00000018
+[    5.387758] r7 : 00000000  r6 : fffff000  r5 : 00000000  r4 : c0007000
+[    5.401216] r3 : 4f3f1c00  r2 : 4f3f1000  r1 : 00000000  r0 : ae8d4003
 
