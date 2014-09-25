@@ -1,10 +1,10 @@
-Message-ID: <542437D3.4080605@xenomai.org>
-Date: Thu, 25 Sep 2014 17:42:11 +0200
+Message-ID: <54243915.3020808@xenomai.org>
+Date: Thu, 25 Sep 2014 17:47:33 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <d5e7531ec6454715adde3750c412a062@CVEX13.valentin-carl.de>
- <5424316B.3040002@xenomai.org>
-In-Reply-To: <5424316B.3040002@xenomai.org>
+ <5424316B.3040002@xenomai.org> <542437D3.4080605@xenomai.org>
+In-Reply-To: <542437D3.4080605@xenomai.org>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] bad syscall <167772715>/ Segmentation fault during
@@ -19,31 +19,40 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "Reitinger, Peter" <preitinger@carl-valentin.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 09/25/2014 05:14 PM, Philippe Gerum wrote:
-> On 09/25/2014 04:52 PM, Reitinger, Peter wrote:
->> Dear Xenomai people,
+On 09/25/2014 05:42 PM, Philippe Gerum wrote:
+> On 09/25/2014 05:14 PM, Philippe Gerum wrote:
+>> On 09/25/2014 04:52 PM, Reitinger, Peter wrote:
+>>> Dear Xenomai people,
+>>>
+>>> I have recently tried to migrate from 2.x to 3.x, but when I tried to run xeno-test, I get the following output:
+>>>
+>>>
 >>
->> I have recently tried to migrate from 2.x to 3.x, but when I tried to run xeno-test, I get the following output:
+>> [snip]
 >>
+>>> [   94.434282] [Xenomai] bad syscall <167772715>
+>>> Segmentation fault
+>>> root@dimm-am335x:/usr/xenomai/bin#
+>>>
+>>>
+>>>
+>>> Probably I just forgot one or another little thing to adapt...?
+>>>
+>>
+>> This is not a Xenomai 3 syscall signature, but a Xenomai 2.x's. Could
+>> you provide the output of /usr/xenomai/bin/version -a?
 >>
 > 
-> [snip]
-> 
->> [   94.434282] [Xenomai] bad syscall <167772715>
->> Segmentation fault
->> root@dimm-am335x:/usr/xenomai/bin#
->>
->>
->>
->> Probably I just forgot one or another little thing to adapt...?
->>
-> 
-> This is not a Xenomai 3 syscall signature, but a Xenomai 2.x's. Could
-> you provide the output of /usr/xenomai/bin/version -a?
+> Never mind, I can reproduce on igep, this looks like arm-specific. I'll
+> follow up on this. Thanks.
 > 
 
-Never mind, I can reproduce on igep, this looks like arm-specific. I'll
-follow up on this. Thanks.
+Ok, the watchdog fired while running the quata scheduling test, which is
+legitimate with the default 4s threshold. What went wrong is that some
+of the watchdog bits were not updated to the new syscall format.
+Raising CONFIG_XENO_OPT_WATCHDOG_TIMEOUT to a larger value will prevent
+the trigger (or disabling CONFIG_XENO_OPT_WATCHDOG as well), while I'm
+fixing this.
 
 -- 
 Philippe.
