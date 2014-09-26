@@ -1,12 +1,12 @@
-Message-ID: <54256C35.2060404@xenomai.org>
-Date: Fri, 26 Sep 2014 15:37:57 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5425EA22.2080007@xenomai.org>
+Date: Sat, 27 Sep 2014 00:35:14 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAC66z95hCikALdDS5s=s=9GDxGmMMg-YfH98yUjiuWb54X6ZVg@mail.gmail.com>
-In-Reply-To: <CAC66z95hCikALdDS5s=s=9GDxGmMMg-YfH98yUjiuWb54X6ZVg@mail.gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] GPL issue for kernel module
+References: <CALe7ZU3AWFPpFAuvYwEeehuG2Qg_mLDfuko2=Z4KKEaMC7FRmg@mail.gmail.com>
+In-Reply-To: <CALe7ZU3AWFPpFAuvYwEeehuG2Qg_mLDfuko2=Z4KKEaMC7FRmg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Non-real time method using real time api
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,37 +15,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: yogesh garg <yogesh.garg1983@gmail.com>, xenomai@xenomai.org
+To: JAY KOTHARI <jaikothari10@gmail.com>, xenomai <xenomai@xenomai.org>
 
-On 09/26/2014 02:51 PM, yogesh garg wrote:
-> Hi Everyone,
-> 
-> I am trying to use xenomai to create my kernel module.
-> But when I am trying to compile my module under Non GPL license,
-> compiler is throwing error for macros which are export as
-> EXPORT_SYMBHOL_GPL.
-> My doubt is, it is mandatory for kernel module, which is using Xenomai
-> skins,
-> to build as GPL license ?
-> 
+On 09/25/2014 01:57 PM, JAY KOTHARI wrote:
+> Sir,
+> How can I use real time api(or real time task) in non-real time method?
 
-The kernel code implementing Xenomai is covered by the licensing terms
-of the Linux kernel, nothing more, nothing less. As a matter of fact,
-this code has to know about the kernel internals to operate, and has
-been implemented for running as part of the Linux kernel since day one.
-In short: the kernel code implementing core Xenomai services is
-definitely a derived work of the Linux kernel, the same way the I-pipe
-patch it uses is also a derived work.
+The word real-time is overloaded, so, let us try to define some terms.
 
-Implementing your application in kernel space is clearly a very, very
-bad idea, really (no fault recovery, fairly hostile programming
-environment, licensing issues for 3rd parties, potential kernel
-corruption by application, kernel bloat etc). These kernel APIs are gone
-in Xenomai 3.x for these reasons.
+A task or thread with a shadow is a user-space thread which can be
+scheduled by Xenomai scheduler. Such a task is created with
+rt_task_shadow or rt_task_create when using the native skin. When using
+the posix skin, the main thread (the one which runs the "main" function)
+is automatically shadowed during initialization, and all threads created
+with the (wrapped) pthread_create service are shadowed.
 
-Moving your apps to userland would solve your licensing issue, and many
-more.
+When a thread with a shadow is scheduled by Xenomai scheduler, this
+user-space thread is said to run in primary mode. When this thread is
+scheduled by Linux scheduler, it is said to run in secondary mode. A
+task without a shadow, on the other hand, can only be scheduled by the
+Linux scheduler.
+
+Most Xenomai services are only available to threads with a shadow. Some
+services cause threads with a shadow to switch to primary mode, some
+other services cause them to switch to secondary mode.
+
+Now that these terms are defined, could you explain us what you are
+trying to do using them instead of the "real-time" word?
 
 -- 
-Philippe.
+                                                                Gilles.
 
