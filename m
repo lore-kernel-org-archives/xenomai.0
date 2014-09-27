@@ -1,13 +1,9 @@
-Message-ID: <54271A6B.3020603@xenomai.org>
-Date: Sat, 27 Sep 2014 22:13:31 +0200
+Message-ID: <542724CE.6010701@xenomai.org>
+Date: Sat, 27 Sep 2014 22:57:50 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CABVE6k3zmPJBYMGvN9H_GVNyBT=WJFGgpBmJiDzw6=H3NekwTw@mail.gmail.com>
- <542706E2.50403@xenomai.org>
- <CABVE6k2OdJ8X6DBsjpb18Wj+goAcSqtdHrsTGNLtYbJY1tDH8g@mail.gmail.com>
- <542713D8.5070809@xenomai.org>
- <CABVE6k2_tu_9qM3LvZ5W1rfdfAuuDMFg+OcT8cM4WxrPK=fsKg@mail.gmail.com>
-In-Reply-To: <CABVE6k2_tu_9qM3LvZ5W1rfdfAuuDMFg+OcT8cM4WxrPK=fsKg@mail.gmail.com>
+In-Reply-To: <CABVE6k3zmPJBYMGvN9H_GVNyBT=WJFGgpBmJiDzw6=H3NekwTw@mail.gmail.com>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai] error about patch
@@ -19,41 +15,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?SGFzcmV0IFNhcsSxeWVy?= <hsrtsryr@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: =?UTF-8?B?SGFzcmV0IFNhcsSxeWVy?= <hsrtsryr@gmail.com>, Xenomai@xenomai.org
 
-On 09/27/2014 10:03 PM, Hasret Sarıyer wrote:
-> 2014-09-27 22:45 GMT+03:00 Gilles Chanteperdrix <
-> gilles.chanteperdrix@xenomai.org>:
+On 09/27/2014 08:45 PM, Hasret Sarıyer wrote:
+> I used this guide <http://xenomai.org/2014/06/building-debian-packages/> for
+> installation xenomai. And until I run a command, everything was nice. But
+> when I run this command, I get an error message.
 > 
->> On 09/27/2014 08:53 PM, Hasret Sarıyer wrote:
->>> It said that "Package `xenomai-kernel-sources' is not installed." But
->> there
->>> is a folder(it's name is xenomai-kernel-sources) under usr/src
->>
->> Well, then you missed one step in the installation guide:
->>
->> Building a Xenomai patched Linux kernel package
->> prerequisites
->> Install xenomai-kernel-sources
->>
->> Please keep the conversation on the mailing list.
+> The command is :
+> linux-3.10.32$ /usr/src/xenomai-kernel-sources/scripts/prepare-kernel.sh
+> --linux=. --adeos=/usr/src/ipipe-core-3.10.32-x86-2.patch
 > 
-> Prerequisites contains three steps.
+> The output şs :
+> 
+> bash: /usr/src/xenomai-kernel-sources/scripts/prepare-kernel.sh: No such
+> file or directory
 
-One of them being "Install xenomai-kernel-sources". Did you do it, what
-was the problem if it did not succeed?
+Ok, got it. The package is named xenomai-kernel-source, not
+xenomai-kernel-sources. Will fix the documentation, thanks for the report.
 
-> When I run last command,it said that
-> "Cannot write to `linux-3.10.32.tar.xz'".
-
-Probably because you do not have write access to /usr/src. Use a
-directory where you have the right to write then. Like $HOME/src. It is
-strange, since you used that same directory in the wget step above. Wget
-did not fail to write the I-pipe patch?
-
-Also note that linux 3.10.32 is just an example, you can use a more
-recent version if you want, or one that is shipped with xenomai.
 
 -- 
                                                                 Gilles.
