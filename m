@@ -1,14 +1,10 @@
-Message-ID: <5426E8C8.10207@xenomai.org>
-Date: Sat, 27 Sep 2014 18:41:44 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CABVE6k2Cwx00+g5zTbSqZHTJOqOT6XRPr98KFjOzjpZU=jHW7g@mail.gmail.com>
- <5426DE0A.6070802@xenomai.org>
- <CABVE6k00qZRn+QURJcF4JcJygMB59NrjLKhbPhanTMd5pnsn7g@mail.gmail.com>
-In-Reply-To: <CABVE6k00qZRn+QURJcF4JcJygMB59NrjLKhbPhanTMd5pnsn7g@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Xenomai: /dev/rtheap is missing
+From: =?UTF-8?Q?Hasret_Sar=C4=B1yer?= <hsrtsryr@gmail.com>
+Date: Sat, 27 Sep 2014 21:45:25 +0300
+Message-ID: <CABVE6k3zmPJBYMGvN9H_GVNyBT=WJFGgpBmJiDzw6=H3NekwTw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] error about patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,19 +13,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?SGFzcmV0IFNhcsSxeWVy?= <hsrtsryr@gmail.com>
-Cc: Xenomai@xenomai.org
+To: Xenomai@xenomai.org
 
-On 09/27/2014 06:40 PM, Hasret Sarıyer wrote:
-> My PC is Ubuntu 12.04. This tutorial is for debian. Some commands contain a
-> "debian" word.Should I replace "ubuntu"?
+I used this guide <http://xenomai.org/2014/06/building-debian-packages/> fo=
+r
+installation xenomai. And until I run a command, everything was nice. But
+when I run this command, I get an error message.
 
-ubuntu is a derivative of debian. The debian instructions should work
-just fine.
+The command is :
+linux-3.10.32$ /usr/src/xenomai-kernel-sources/scripts/prepare-kernel.sh
+--linux=3D. --adeos=3D/usr/src/ipipe-core-3.10.32-x86-2.patch
 
-Please do not top-post.
+The output =C5=9Fs :
 
-
--- 
-                                                                Gilles.
-
+bash: /usr/src/xenomai-kernel-sources/scripts/prepare-kernel.sh: No such
+file or directory
