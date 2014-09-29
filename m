@@ -1,15 +1,14 @@
-Message-ID: <54295B10.8020907@xenomai.org>
-Date: Mon, 29 Sep 2014 15:13:52 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Steve Hartmann <shartmann@cnt.canon.com>
+Date: Mon, 29 Sep 2014 14:59:55 +0000
+Message-ID: <D04EDD17.190CB%shartmann@cnt.canon.com>
+References: <5423F8E3.3060006@xenomai.org>
+In-Reply-To: <5423F8E3.3060006@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <86930665C790464BBD9977AAD1EE17D7@mex06.mlsrvr.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <CALe7ZU3shAd1y2yWjEgnSJjHkVOmJ5o5bfd3P+Xpm04+oNMhdg@mail.gmail.com>
- <54284361.3080403@xenomai.org> <54284A7B.90803@xenomai.org>
- <CALe7ZU0PyJAu4dhC4_EQ0UMQQdCXvPSth4sWnxKSXz_ZdiDV6g@mail.gmail.com>
- <542949C1.80507@xenomai.org>
-In-Reply-To: <542949C1.80507@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] passing SMI parameter in kernel command line
+Subject: Re: [Xenomai] [Announce] Xenomai 2.6.4
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,49 +17,146 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: JAY KOTHARI <jaikothari10@gmail.com>, xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-On 09/29/2014 02:00 PM, Gilles Chanteperdrix wrote:
-> On 09/29/2014 05:55 AM, JAY KOTHARI wrote:
->> On 9/28/14, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
->>> On 09/28/2014 07:20 PM, Gilles Chanteperdrix wrote:
->>>> On 09/28/2014 05:23 AM, JAY KOTHARI wrote:
->>>>> Sir,
->>>>>      In troubleshooting guide I have read to pass xenomai.smi=1
->>>>> in parameter to kernel command line.
->>>>>      I am not able to get kernel command line.
->>>>>
->>>>> What I tried
->>>>> 1)to pass this parameter at boot time.
->>>>
->>>> Yes, that is what "passing a parameter to kernel command line means".
->>>>
->>>>> 2)I tried to change parameter in:
->>>>>          sys/module/xeno_hal/parameters
->>>>
->>>> Xenomai 3 does not have a xeno_hal module, so I guess you are not using
->>>> Xenomai 2.x, in which case you misread the troubleshooting guide.
->>>>
->>> Sorry, you are using Xenomai 2.x if you have a xeno_hal module.
->>>
->>> --
->>>                                                                 Gilles.
->>>
->> Sorry it was my mistake.I am using 2.x and I set xeno_hal.smi=1 as I
->> have latency issues. But after passing this parameter in kernel
->> command line still I have latency issue.
->> When I dmesg I found
->>  [    0.479595] Xenomai: SMI workaround failed!
->> I think this means my bios is not allowing me to disable SMI source.
->> Then how to make my latency low as possible. 
-> 
-> Under what condition does this high latency happens (what else is
-> running on the system)? What version of Xenomai are you using?
-> Have you tried disabling individual SMI sources like the documentation says?
+Just FYI, When following the directions to build debian packages, the
+debian packages are named with 2.6.3 filenames rather than the expected
+2.6.4.
 
-Also, what version of the I-pipe patch do you use?
+Regards,
 
+Steven
 
--- 
-                                                                Gilles.
+On 9/25/14 6:13 AM, "Gilles Chanteperdrix"
+<gilles.chanteperdrix@xenomai.org> wrote:
+
+>Hi,
+>
+>I have just made available Xenomai 2.6.4 at the usual address:
+>http://download.gna.org/xenomai/stable/xenomai-2.6.4.tar.bz2
+>
+>This release mainly fixes bugs, and do not add many new functionalities,
+>I guess because we are busy preparing xenomai 3.0:
+>- support for I-pipe patch for 3.14 with a performance improvement on
+>ARM Cortex A9, and support for the OMAP L138 processor;
+>- disabling of C1E state on recent Intel processors
+>- support for powerpc SPE
+>- various improvements of the Debian packaging, notably support for the
+>armhf architecture and addition of a debug package
+>- clarification of the licenses, now every source file should have a
+>license header
+>- removal of the docbook documentation, as this documentation is now
+>available on the website
+>
+>Thanks for all contributions.
+>Regards.
+>
+>The shotlog follows:
+>Alexandre Coffignal (1):
+>      rtcan_flexcan: fix devtype_data initialization
+>
+>Christophe Blaess (1):
+>      tests/cyclictest: add histogram option
+>
+>Erhart Robert (CC-DA/ESR3) (1):
+>      analogy: fix fault in proc read callback
+>
+>Gilles Chanteperdrix (32):
+>      doc: fix asciidoc documentation cross-references
+>      doc: regenerate
+>      license: provide for missing headers
+>      licenses: jumbo update
+>      hal/arm: avoid using VFP instructions on SOCs without VFP
+>      skins/posix: make hardcoded constants configurable
+>      arm/hal: fix compilation with old kernels
+>      drivers/flexcan: avoid unaligned access
+>      debian: add pkg-config files to libxenomai-dev package
+>      skins/psos+: align message queues buffers
+>      tests: fix typo supress -> suppress
+>      nucleus/synch: fix rescnt imbalance on slow mutexes
+>      hal/arm: adapt context switch to Linux 3.11+
+>      debian: do not remove/regenerate configure file
+>      debian: add support for powerpcspe
+>      hal/arm: open code xnarch_atomic_clear_mask
+>      posix: fix 2.4 config file
+>      hal/x86: add C1E state workaround
+>      bootstrap
+>      README.INSTALL: fix ARM instructions
+>      doc/install: ixp4xx has a kuser tsc now
+>      ksrc: use curr as name for current thread variable
+>      ksrc: fix dereference of dangling pointer
+>      analogy: fix undefined referencces
+>      arm: fix compilation issue with --enable-debug
+>      doc: remove docbook documentation
+>      vfile/snapshot: avoid starvation by spinning 1us after every
+>iteration
+>      xnlock: add missing barriers
+>      hal/arm: update Freescale Linux fork patch
+>      hal: upgrade I-pipe patches
+>      build: bump version number and bootstrap
+>      doc: regenerate
+>
+>Henri Roosen (1):
+>      wrappers/arm: map I/O ranges without cache
+>
+>Jan Kiszka (2):
+>      x86: Remove bogus test for x86-32 around xsave assembly
+>      posix: Flush print buffer on fclose
+>
+>Lars Steubesand (1):
+>      rtipc/iddp: fix inverted arguments to __iddp_alloc_mbuf()
+>
+>Paul Corner (6):
+>      Use devices target to install udev rules in libxenomai1 package.
+>This also installs device nodes in /dev for systems not running udev.
+>      debian: Include /dev in the list of directories for libxenomai1
+>      debian: add armhf architecture
+>      Trivial spelling correction for the word 'implicitly'
+>      debian: Add debug packages for library and runtime.
+>      build: Minor fix for missing variable reference.
+>
+>Paul Janzen (1):
+>      hal/x86: Export symbol rthal_c1e_disable
+>
+>Philippe Gerum (19):
+>      powerpc: sanitize SPE handling
+>      posix, vrtx: catch unexpected sync errors with thread trampoline
+>      psos: fix auto-cleanup support
+>      psos/rn: fix bad interrupt state during cleanup
+>      native: fix interrupt state corruption in auto-cleanup
+>      vxworks: fix interrupt state corruption in auto-cleanup
+>      asm-generic/wrappers: assume generic hardirq supported for v3.12+
+>      nucleus/seqlock: fix seqlock initializer
+>      hal/powerpc: fixup fpu save/restore helpers for v3.12+
+>      hal/x86: fixup reference to fpu info for v3.13+
+>      native/task: silence UMR warning
+>      hal/x86: fix wrong conditional
+>      asm-generic/wrappers: fix wrong conditional
+>      analogy/device: sanitize device release handler
+>      nucleus/thread: fix leakage of XNKICKED status
+>      rtipc/xddp: fixup XDDP documentation
+>      rtdm: fix mapping address translation for MMU-less platforms
+>      rtipc: fix address reset in connect()
+>      rtipc: fix error code for send through non-connected socket
+>
+>Romain Naour (2):
+>      arm: enable armv5tej support
+>      posix: fix build failure when HAVE_OPEN64 is undefined.
+>
+>Stefan Roese (1):
+>      hal/arm: Add Zynq v3.5.7 patches
+>
+>Wolfgang Grandegger (1):
+>      rtcan: add missing license terms
+>
+>
+>
+>--=20
+>                                                                Gilles.
+>
+>_______________________________________________
+>Xenomai mailing list
+>Xenomai@xenomai.org
+>http://www.xenomai.org/mailman/listinfo/xenomai
+
 
