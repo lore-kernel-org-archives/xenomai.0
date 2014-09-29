@@ -1,12 +1,13 @@
-Message-ID: <5408F478.2080307@ebus.com>
-Date: Thu, 04 Sep 2014 16:23:36 -0700
-From: Doug Brunner <dbrunner@ebus.com>
 MIME-Version: 1.0
-References: <5408CA67.1090308@ebus.com> <5408CC25.1000503@xenomai.org>
-In-Reply-To: <5408CC25.1000503@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Vector logo
+In-Reply-To: <54284A7B.90803@xenomai.org>
+References: <CALe7ZU3shAd1y2yWjEgnSJjHkVOmJ5o5bfd3P+Xpm04+oNMhdg@mail.gmail.com>
+ <54284361.3080403@xenomai.org> <54284A7B.90803@xenomai.org>
+Date: Mon, 29 Sep 2014 09:25:12 +0530
+Message-ID: <CALe7ZU0PyJAu4dhC4_EQ0UMQQdCXvPSth4sWnxKSXz_ZdiDV6g@mail.gmail.com>
+From: JAY KOTHARI <jaikothari10@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] passing SMI parameter in kernel command line
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,16 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-On 09/04/2014 01:31 PM, Gilles Chanteperdrix wrote:
-> On 09/04/2014 10:24 PM, Doug Brunner wrote:
->> Does there exist a vector version of the Xenomai logo? I'd like to cut it out of vinyl to put on our control boxes.
-> Will one of these two do?
-> http://xenomai.org/~gch/Xenomai.svg
-> http://xenomai.org/~gch/Xenomai-embedded.svg
->
-Perfect, thanks.
-
-    --Doug Brunner
-
+T24gOS8yOC8xNCwgR2lsbGVzIENoYW50ZXBlcmRyaXggPGdpbGxlcy5jaGFudGVwZXJkcml4QHhl
+bm9tYWkub3JnPiB3cm90ZToKPiBPbiAwOS8yOC8yMDE0IDA3OjIwIFBNLCBHaWxsZXMgQ2hhbnRl
+cGVyZHJpeCB3cm90ZToKPj4gT24gMDkvMjgvMjAxNCAwNToyMyBBTSwgSkFZIEtPVEhBUkkgd3Jv
+dGU6Cj4+PiBTaXIsCj4+PiAgICAgIEluIHRyb3VibGVzaG9vdGluZyBndWlkZSBJIGhhdmUgcmVh
+ZCB0byBwYXNzIHhlbm9tYWkuc21pPTEKPj4+IGluIHBhcmFtZXRlciB0byBrZXJuZWwgY29tbWFu
+ZCBsaW5lLgo+Pj4gICAgICBJIGFtIG5vdCBhYmxlIHRvIGdldCBrZXJuZWwgY29tbWFuZCBsaW5l
+Lgo+Pj4KPj4+IFdoYXQgSSB0cmllZAo+Pj4gMSl0byBwYXNzIHRoaXMgcGFyYW1ldGVyIGF0IGJv
+b3QgdGltZS4KPj4KPj4gWWVzLCB0aGF0IGlzIHdoYXQgInBhc3NpbmcgYSBwYXJhbWV0ZXIgdG8g
+a2VybmVsIGNvbW1hbmQgbGluZSBtZWFucyIuCj4+Cj4+PiAyKUkgdHJpZWQgdG8gY2hhbmdlIHBh
+cmFtZXRlciBpbjoKPj4+ICAgICAgICAgIHN5cy9tb2R1bGUveGVub19oYWwvcGFyYW1ldGVycwo+
+Pgo+PiBYZW5vbWFpIDMgZG9lcyBub3QgaGF2ZSBhIHhlbm9faGFsIG1vZHVsZSwgc28gSSBndWVz
+cyB5b3UgYXJlIG5vdCB1c2luZwo+PiBYZW5vbWFpIDIueCwgaW4gd2hpY2ggY2FzZSB5b3UgbWlz
+cmVhZCB0aGUgdHJvdWJsZXNob290aW5nIGd1aWRlLgo+Pgo+IFNvcnJ5LCB5b3UgYXJlIHVzaW5n
+IFhlbm9tYWkgMi54IGlmIHlvdSBoYXZlIGEgeGVub19oYWwgbW9kdWxlLgo+Cj4gLS0KPiAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgR2lsbGVzLgo+ClNvcnJ5IGl0IHdhcyBteSBtaXN0YWtlLkkgYW0gdXNpbmcgMi54IGFuZCBJ
+IHNldCB4ZW5vX2hhbC5zbWk9MSBhcyBJCmhhdmUgbGF0ZW5jeSBpc3N1ZXMuIEJ1dCBhZnRlciBw
+YXNzaW5nIHRoaXMgcGFyYW1ldGVyIGluIGtlcm5lbApjb21tYW5kIGxpbmUgc3RpbGwgSSBoYXZl
+IGxhdGVuY3kgaXNzdWUuCldoZW4gSSBkbWVzZyBJIGZvdW5kCiBbICAgIDAuNDc5NTk1XSBYZW5v
+bWFpOiBTTUkgd29ya2Fyb3VuZCBmYWlsZWQhCkkgdGhpbmsgdGhpcyBtZWFucyBteSBiaW9zIGlz
+IG5vdCBhbGxvd2luZyBtZSB0byBkaXNhYmxlIFNNSSBzb3VyY2UuClRoZW4gaG93IHRvIG1ha2Ug
+bXkgbGF0ZW5jeSBsb3cgYXMgcG9zc2libGUuIEkgaGF2ZSBhdHRhY2hlZCBteSBzY3JlZW4Kc2hv
+dC4KClRoYW5rIFlvdQotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBu
+b24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBsYXRlbmN5LnBuZwpUeXBl
+OiBpbWFnZS9wbmcKU2l6ZTogMTE2MDg1IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8
+aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE0
+MDkyOS82Y2YwODk5NC9hdHRhY2htZW50LnBuZz4K
