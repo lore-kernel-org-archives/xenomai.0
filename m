@@ -1,13 +1,14 @@
+Message-ID: <542949C1.80507@xenomai.org>
+Date: Mon, 29 Sep 2014 14:00:01 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
+References: <CALe7ZU3shAd1y2yWjEgnSJjHkVOmJ5o5bfd3P+Xpm04+oNMhdg@mail.gmail.com>
+ <54284361.3080403@xenomai.org> <54284A7B.90803@xenomai.org>
+ <CALe7ZU0PyJAu4dhC4_EQ0UMQQdCXvPSth4sWnxKSXz_ZdiDV6g@mail.gmail.com>
+In-Reply-To: <CALe7ZU0PyJAu4dhC4_EQ0UMQQdCXvPSth4sWnxKSXz_ZdiDV6g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Date: Mon, 29 Sep 2014 11:26:39 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
-In-Reply-To: <CANdzn7OYs4n0qjvpdKXM72cZM=AMy_1sBEVP7_P8S-56FJot3A@mail.gmail.com>
-References: <CANdzn7OYs4n0qjvpdKXM72cZM=AMy_1sBEVP7_P8S-56FJot3A@mail.gmail.com>
-Message-ID: <0d060e3cb01fa61faf28a22cf770bfd7@grandegger.com>
-Subject: Re: [Xenomai] Xenomai and CAN
+Subject: Re: [Xenomai] passing SMI parameter in kernel command line
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,30 +17,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jason Sarantopoulos <jasonsaras@gmail.com>
-Cc: xenomai@xenomai.org
+To: JAY KOTHARI <jaikothari10@gmail.com>, xenomai <xenomai@xenomai.org>
 
-On Mon, 29 Sep 2014 11:52:37 +0300, Jason Sarantopoulos
-<jasonsaras@gmail.com> wrote:
-> Hi,
-> 
-> I want to use the xeno-drivers and use the programs
-> /usr/xenomai/bin/rtcansend and rtcanrecv in order to communication via
-> CANbus. I got a PCAN-PCI card, ubuntu 12.04 32bit, xenomai: 2.6.3 and
-> kernel: 3.8.13.
-> 
-> My question is: should I make a special configuration before building
-the
-> kernel or should I just enable: "Real Time subsystem>Drivers>CAN
-drivers>
-> RT-Socket CAN" from menuconfig? The PCI support is already enabled.
-> 
-> Bear in mind that I copied the config file from my current vanilla
-kernel
-> 3.11.0-26-generic inside linux-3.8.13 directory.
+On 09/29/2014 05:55 AM, JAY KOTHARI wrote:
+> On 9/28/14, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+>> On 09/28/2014 07:20 PM, Gilles Chanteperdrix wrote:
+>>> On 09/28/2014 05:23 AM, JAY KOTHARI wrote:
+>>>> Sir,
+>>>>      In troubleshooting guide I have read to pass xenomai.smi=1
+>>>> in parameter to kernel command line.
+>>>>      I am not able to get kernel command line.
+>>>>
+>>>> What I tried
+>>>> 1)to pass this parameter at boot time.
+>>>
+>>> Yes, that is what "passing a parameter to kernel command line means".
+>>>
+>>>> 2)I tried to change parameter in:
+>>>>          sys/module/xeno_hal/parameters
+>>>
+>>> Xenomai 3 does not have a xeno_hal module, so I guess you are not using
+>>> Xenomai 2.x, in which case you misread the troubleshooting guide.
+>>>
+>> Sorry, you are using Xenomai 2.x if you have a xeno_hal module.
+>>
+>> --
+>>                                                                 Gilles.
+>>
+> Sorry it was my mistake.I am using 2.x and I set xeno_hal.smi=1 as I
+> have latency issues. But after passing this parameter in kernel
+> command line still I have latency issue.
+> When I dmesg I found
+>  [    0.479595] Xenomai: SMI workaround failed!
+> I think this means my bios is not allowing me to disable SMI source.
+> Then how to make my latency low as possible. 
 
-Only the Linux or Xenomai CAN driver can grab the device. If Linux already
-occupies the device you can unbind it before loading the Xenomai driver.
+Under what condition does this high latency happens (what else is
+running on the system)? What version of Xenomai are you using?
+Have you tried disabling individual SMI sources like the documentation says?
 
-Wolfgang.
+I have attached my screen
+> shot.
+
+The output of the latency test is plain text, you do not need a
+screeshot to show it!
+
+-- 
+                                                                Gilles.
 
