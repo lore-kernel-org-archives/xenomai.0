@@ -1,16 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <D04F37C7.19109%shartmann@cnt.canon.com>
-References: <5423F8E3.3060006@xenomai.org>
- <D04EDD17.190CB%shartmann@cnt.canon.com>
- <542976B2.30804@xenomai.org>
- <D04F0E52.190EE%shartmann@cnt.canon.com>
- <5429CAF1.9070603@xenomai.org>
- <D04F37C7.19109%shartmann@cnt.canon.com>
-Date: Tue, 30 Sep 2014 12:11:54 +0300
-Message-ID: <CANdzn7N5jkkLfN=EMe+Y8yrZGKL_Sn0aPUoonAdL4Ey5SXUekA@mail.gmail.com>
-From: Jason Sarantopoulos <jasonsaras@gmail.com>
+In-Reply-To: <2193EAD1-45DF-4E12-8FFD-34AC726315E9@mah.priv.at>
+References: <CABVE6k1dDnGUBQSRCDCAcgbnY-eFP422WCwTzZWQPKiD997E-w@mail.gmail.com>
+ <2193EAD1-45DF-4E12-8FFD-34AC726315E9@mah.priv.at>
+From: =?UTF-8?Q?Hasret_Sar=C4=B1yer?= <hsrtsryr@gmail.com>
+Date: Tue, 30 Sep 2014 12:47:32 +0300
+Message-ID: <CABVE6k1OG+SyDBJuUzJfS8sXi3PO8E2VuHcF6HF126A7j-yLYg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] [Announce] Xenomai 2.6.4
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Xenomai: binding failed: Operation not permitted.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,17 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Steve Hartmann <shartmann@cnt.canon.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Michael Haberler <mail17@mah.priv.at>
+Cc: Xenomai <Xenomai@xenomai.org>
 
->Yes, we are not going to update the instructions every time we release
->an new version.
+2014-09-30 10:10 GMT+03:00 Michael Haberler <mail17@mah.priv.at>:
 
-You could export some variables, defining the versions in the beginning,
-and the rest of the instructions will be always the same. Just a proposal,
-I do not know.
-
-Regards
-
--- 
-*Jason Sarantopoulos*
+>
+> http://xenomai.org/troubleshooting-a-dual-kernel-configuration/#binding_f=
+ailed_Operation_not_permitted
+>
+> -m
+> Am 30.09.2014 um 00:34 schrieb Hasret Sar=C4=B1yer <hsrtsryr@gmail.com>:
+>
+> > I installed xenomai using this guide
+> > <http://xenomai.org/2014/06/building-debian-packages/>. And there are
+> some
+> > examples under xenomai2.6/examples/rtdm/driver-api folder. I
+> > copied /driver-api folder to desktop. I executed tut02-skeleton-app fil=
+e,
+> > the output was *Xenomai: binding failed: Operation not permitted.*
+> > _______________________________________________
+> > Xenomai mailing list
+> > Xenomai@xenomai.org
+> > http://www.xenomai.org/mailman/listinfo/xenomai
+>
+>
+I try to use rtdm modules. Which command should be executed on terminal?
+For nucleus, it is xeno_nucleus.xenomai_gid=3D<gid>.
