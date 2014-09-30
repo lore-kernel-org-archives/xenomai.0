@@ -1,10 +1,12 @@
-MIME-Version: 1.0
-Date: Tue, 30 Sep 2014 13:31:34 +0800
-Message-ID: <CACreCVKF=VQuWhaxkAPTOAaDui0aze+Vc4MOq+vby+2eBRx1iA@mail.gmail.com>
-From: GP Orcullo <kinsamanka@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Switchtest failures on ODROIDU3
+Content-Type: text/plain; charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
+From: Michael Haberler <mail17@mah.priv.at>
+In-Reply-To: <CABVE6k1dDnGUBQSRCDCAcgbnY-eFP422WCwTzZWQPKiD997E-w@mail.gmail.com>
+Date: Tue, 30 Sep 2014 09:10:45 +0200
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <2193EAD1-45DF-4E12-8FFD-34AC726315E9@mah.priv.at>
+References: <CABVE6k1dDnGUBQSRCDCAcgbnY-eFP422WCwTzZWQPKiD997E-w@mail.gmail.com>
+Subject: Re: [Xenomai] Xenomai: binding failed: Operation not permitted.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,26 +15,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?utf-8?Q?Hasret_Sar=C4=B1yer?= <hsrtsryr@gmail.com>
+Cc: Xenomai <Xenomai@xenomai.org>
 
-SGksCgpSdW5uaW5nIHRoZSBzd2l0Y2h0ZXN0IGZvciBleHRlbmRlZCBwZXJpb2RzICg+MTAgbWlu
-cykgY2F1c2VzIHRoZQptYWNoaW5lIHRvIGxvY2t1cC4KCkknbSBydW5uaW5nIGEgbW9kaWZpZWQg
-eGVuby1yZWdyZXNzaW9uLXRlc3Qgd2hpY2ggY29udGFpbnMgb25seSB0aGUKZm9sbG93aW5nIHRl
-c3RzOgoKY2hlY2tfYWxpdmUgL3Vzci9saWIveGVub21haS90ZXN0c3VpdGUvc3dpdGNodGVzdApj
-aGVja19hbGl2ZSAvdXNyL2xpYi94ZW5vbWFpL3Rlc3RzdWl0ZS9zd2l0Y2h0ZXN0IC1zIDEwMDAK
-Y2hlY2tfYWxpdmUgL3Vzci9saWIveGVub21haS90ZXN0c3VpdGUvbGF0ZW5jeSAkezErIiRAIn0K
-ClRoZSBzY3JpcHQgaXMgaW52b2tlZCB3aXRoIHRoZSBmb2xsb3dpbmcgYXJndW1lbnRzOgoKbm9o
-dXAgc3VkbyAuL3hlbm8tcmVncmVzc2lvbi10ZXN0IC1sCiIvdXNyL2xpYi94ZW5vbWFpL3Rlc3Rz
-dWl0ZS9kb2hlbGwgLW0gL21lZGlhL3dvcmsgMzYwMDAiIC10IDIgPgovZGV2L251bGwgJiB0b3Ag
-LWQwLjUKClRoZSBrZXJuZWwgZHVtcHMgdGhlIE9PUFMgaW5mb3JtYXRpb24gaW50ZXJtaXR0ZW50
-bHkgc28gaXQncyBkaWZmaWN1bHQKdG8gZGlhZ25vc2UgdGhlIGlzc3VlLgoKQXR0YWNoZWQgaXMg
-dGhlIGtlcm5lbCBjb25maWcgYW5kIHRoZSBsb2dmaWxlLgoKVGhhbmtzLAoKR1AgT3JjdWxsbwot
-LS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2ht
-ZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBjb25maWcuZ3oKVHlwZTogYXBwbGljYXRpb24veC1n
-emlwClNpemU6IDE4NzE4IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3
-dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE0MDkzMC9iNmM4
-OTJkZS9hdHRhY2htZW50LmJpbj4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0t
-LS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogZG1lc2cuY2Fw
-ClR5cGU6IGFwcGxpY2F0aW9uL3ZuZC50Y3BkdW1wLnBjYXAKU2l6ZTogMzg3NTAgYnl0ZXMKRGVz
-Yzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94
-ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTQwOTMwL2I2Yzg5MmRlL2F0dGFjaG1lbnQuY2FwPgo=
+h=
+ttp://xenomai.org/troubleshooting-a-dual-kernel-configuration/#binding_fai=
+led_Operation_not_permitted
+
+-m
+Am 30.09.2014 um 00:34 schrieb Hasret Sar=C4=B1yer <hsrtsryr@gmail.com>:
+
+> I installed xenomai using this guide
+> <http://xenomai.org/2014/06/building-debian-packages/>. And there are =
+some
+> examples under xenomai2.6/examples/rtdm/driver-api folder. I
+> copied /driver-api folder to desktop. I executed tut02-skeleton-app =
+file,
+> the output was *Xenomai: binding failed: Operation not permitted.*
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+
+
