@@ -1,12 +1,10 @@
-Message-ID: <540A0A92.2000405@xenomai.org>
-Date: Fri, 05 Sep 2014 21:10:10 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20140905184346.GN17690@csclub.uwaterloo.ca>
-In-Reply-To: <20140905184346.GN17690@csclub.uwaterloo.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] How to get debug symbols in xenomai libraries
+Date: Tue, 30 Sep 2014 13:31:34 +0800
+Message-ID: <CACreCVKF=VQuWhaxkAPTOAaDui0aze+Vc4MOq+vby+2eBRx1iA@mail.gmail.com>
+From: GP Orcullo <kinsamanka@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Switchtest failures on ODROIDU3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,23 +13,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 09/05/2014 08:43 PM, Lennart Sorensen wrote:
-> I tried using --enable-debug with configure and it claims it did it,
-> but according to gdb, the resulting libraries do not have debug symbols.
-> 
-> I see -g added to the gcc line all over the place, except when libtool
-> does the final linking where for some reason it has disappeared (while
-> all other options appear to have made it through).
-> 
-> This is on powerpc.
-> 
-> Any ideas?
-> 
-run the "file" utility on the library to see whether or not it has
-debugging information.
-
--- 
-                                                                Gilles.
-
+SGksCgpSdW5uaW5nIHRoZSBzd2l0Y2h0ZXN0IGZvciBleHRlbmRlZCBwZXJpb2RzICg+MTAgbWlu
+cykgY2F1c2VzIHRoZQptYWNoaW5lIHRvIGxvY2t1cC4KCkknbSBydW5uaW5nIGEgbW9kaWZpZWQg
+eGVuby1yZWdyZXNzaW9uLXRlc3Qgd2hpY2ggY29udGFpbnMgb25seSB0aGUKZm9sbG93aW5nIHRl
+c3RzOgoKY2hlY2tfYWxpdmUgL3Vzci9saWIveGVub21haS90ZXN0c3VpdGUvc3dpdGNodGVzdApj
+aGVja19hbGl2ZSAvdXNyL2xpYi94ZW5vbWFpL3Rlc3RzdWl0ZS9zd2l0Y2h0ZXN0IC1zIDEwMDAK
+Y2hlY2tfYWxpdmUgL3Vzci9saWIveGVub21haS90ZXN0c3VpdGUvbGF0ZW5jeSAkezErIiRAIn0K
+ClRoZSBzY3JpcHQgaXMgaW52b2tlZCB3aXRoIHRoZSBmb2xsb3dpbmcgYXJndW1lbnRzOgoKbm9o
+dXAgc3VkbyAuL3hlbm8tcmVncmVzc2lvbi10ZXN0IC1sCiIvdXNyL2xpYi94ZW5vbWFpL3Rlc3Rz
+dWl0ZS9kb2hlbGwgLW0gL21lZGlhL3dvcmsgMzYwMDAiIC10IDIgPgovZGV2L251bGwgJiB0b3Ag
+LWQwLjUKClRoZSBrZXJuZWwgZHVtcHMgdGhlIE9PUFMgaW5mb3JtYXRpb24gaW50ZXJtaXR0ZW50
+bHkgc28gaXQncyBkaWZmaWN1bHQKdG8gZGlhZ25vc2UgdGhlIGlzc3VlLgoKQXR0YWNoZWQgaXMg
+dGhlIGtlcm5lbCBjb25maWcgYW5kIHRoZSBsb2dmaWxlLgoKVGhhbmtzLAoKR1AgT3JjdWxsbwot
+LS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2ht
+ZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBjb25maWcuZ3oKVHlwZTogYXBwbGljYXRpb24veC1n
+emlwClNpemU6IDE4NzE4IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3
+dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE0MDkzMC9iNmM4
+OTJkZS9hdHRhY2htZW50LmJpbj4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0t
+LS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogZG1lc2cuY2Fw
+ClR5cGU6IGFwcGxpY2F0aW9uL3ZuZC50Y3BkdW1wLnBjYXAKU2l6ZTogMzg3NTAgYnl0ZXMKRGVz
+Yzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94
+ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTQwOTMwL2I2Yzg5MmRlL2F0dGFjaG1lbnQuY2FwPgo=
