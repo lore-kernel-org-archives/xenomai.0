@@ -1,13 +1,12 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Fri, 5 Sep 2014 15:14:47 -0400
-Message-ID: <20140905191447.GO17690@csclub.uwaterloo.ca>
-References: <20140905184346.GN17690@csclub.uwaterloo.ca>
- <540A0A92.2000405@xenomai.org>
+Message-ID: <542A945E.9000904@xenomai.org>
+Date: Tue, 30 Sep 2014 13:30:38 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <540A0A92.2000405@xenomai.org>
-Subject: Re: [Xenomai] How to get debug symbols in xenomai libraries
+References: <CACreCVKF=VQuWhaxkAPTOAaDui0aze+Vc4MOq+vby+2eBRx1iA@mail.gmail.com>
+In-Reply-To: <CACreCVKF=VQuWhaxkAPTOAaDui0aze+Vc4MOq+vby+2eBRx1iA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Switchtest failures on ODROIDU3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,32 +15,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: GP Orcullo <kinsamanka@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Sep 05, 2014 at 09:10:10PM +0200, Gilles Chanteperdrix wrote:
-> On 09/05/2014 08:43 PM, Lennart Sorensen wrote:
-> > I tried using --enable-debug with configure and it claims it did it,
-> > but according to gdb, the resulting libraries do not have debug symbols.
-> > 
-> > I see -g added to the gcc line all over the place, except when libtool
-> > does the final linking where for some reason it has disappeared (while
-> > all other options appear to have made it through).
-> > 
-> > This is on powerpc.
+On 09/30/2014 07:31 AM, GP Orcullo wrote:
+> Hi,
+> 
+> Running the switchtest for extended periods (>10 mins) causes the
+> machine to lockup.
+> 
+> I'm running a modified xeno-regression-test which contains only the
+> following tests:
+> 
+> check_alive /usr/lib/xenomai/testsuite/switchtest
+> check_alive /usr/lib/xenomai/testsuite/switchtest -s 1000
+> check_alive /usr/lib/xenomai/testsuite/latency ${1+"$@"}
+> 
+> The script is invoked with the following arguments:
+> 
+> nohup sudo ./xeno-regression-test -l
+> "/usr/lib/xenomai/testsuite/dohell -m /media/work 36000" -t 2 >
+> /dev/null & top -d0.5
+> 
+> The kernel dumps the OOPS information intermittently so it's difficult
+> to diagnose the issue.
+> 
+> Attached is the kernel config and the logfile.
 
-I should have said 'this is armhf'.  Too many systems in use.
-
-> > Any ideas?
-> > 
-> run the "file" utility on the library to see whether or not it has
-> debugging information.
-
-file says 'dynamically linked, not stripped'.
-
-gdb says 'no debug symbols' for the xenomai libraries, but it does see
-them for libc and others.
+Ok, this is an exynos. Sorry, but I have never seen the patch for
+exynos, so I do not know what is inside. You should direct your
+questions to whoever provided you with this support.
 
 -- 
-Len Sorensen
+                                                                Gilles.
 
