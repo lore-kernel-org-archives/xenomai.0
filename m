@@ -1,13 +1,15 @@
-Message-ID: <542A9F17.7090802@xenomai.org>
-Date: Tue, 30 Sep 2014 14:16:23 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CACreCVKF=VQuWhaxkAPTOAaDui0aze+Vc4MOq+vby+2eBRx1iA@mail.gmail.com>	<542A945E.9000904@xenomai.org>
- <CACreCVK_Xd79uaHpzODKMQHMVrH58KvsKuBQ5kRsOhM++BXT4w@mail.gmail.com>
-In-Reply-To: <CACreCVK_Xd79uaHpzODKMQHMVrH58KvsKuBQ5kRsOhM++BXT4w@mail.gmail.com>
+In-Reply-To: <542A97C7.8000701@xenomai.org>
+References: <CABVE6k1dDnGUBQSRCDCAcgbnY-eFP422WCwTzZWQPKiD997E-w@mail.gmail.com>
+ <2193EAD1-45DF-4E12-8FFD-34AC726315E9@mah.priv.at>
+ <CABVE6k1OG+SyDBJuUzJfS8sXi3PO8E2VuHcF6HF126A7j-yLYg@mail.gmail.com>
+ <542A97C7.8000701@xenomai.org>
+From: =?UTF-8?Q?Hasret_Sar=C4=B1yer?= <hsrtsryr@gmail.com>
+Date: Tue, 30 Sep 2014 17:56:24 +0300
+Message-ID: <CABVE6k2L1Rh5R0E7L6TPFJ8ri7yFX02HGaRR+7WYSReZM9xKFQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Switchtest failures on ODROIDU3
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Xenomai: binding failed: Operation not permitted.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,57 +18,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: GP Orcullo <kinsamanka@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <Xenomai@xenomai.org>
 
-On 09/30/2014 02:04 PM, GP Orcullo wrote:
-> On Sep 30, 2014 7:30 PM, "Gilles Chanteperdrix" <
-> gilles.chanteperdrix@xenomai.org> wrote:
->>
->> On 09/30/2014 07:31 AM, GP Orcullo wrote:
->>> Hi,
->>>
->>> Running the switchtest for extended periods (>10 mins) causes the
->>> machine to lockup.
->>>
->>> I'm running a modified xeno-regression-test which contains only the
->>> following tests:
->>>
->>> check_alive /usr/lib/xenomai/testsuite/switchtest
->>> check_alive /usr/lib/xenomai/testsuite/switchtest -s 1000
->>> check_alive /usr/lib/xenomai/testsuite/latency ${1+"$@"}
->>>
->>> The script is invoked with the following arguments:
->>>
->>> nohup sudo ./xeno-regression-test -l
->>> "/usr/lib/xenomai/testsuite/dohell -m /media/work 36000" -t 2 >
->>> /dev/null & top -d0.5
->>>
->>> The kernel dumps the OOPS information intermittently so it's difficult
->>> to diagnose the issue.
->>>
->>> Attached is the kernel config and the logfile.
->>
->> Ok, this is an exynos. Sorry, but I have never seen the patch for
->> exynos, so I do not know what is inside. You should direct your
->> questions to whoever provided you with this support.
-> 
-> I'm in the process of porting xenomai to run on exynos.
-> 
-> The ipipe-core-3.8.13-arm-3.patch applies cleanly to the 3.8.13.11 kernel
-> used by the odroid U3 board.
-> 
-> Attached is the ipipe patch that I've made.
-> 
-> I was just wondering what would cause switchtest to fail. The error that I
-> can see is that the system is running out of memory and I don't know
-> exactly what is causing this.
+2014-09-30 14:45 GMT+03:00 Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org>:
 
-Certainly not switchtest as it does not do any memory allocation.
-However, the dohell script has a loop creating a large file and removing
-it. So, could you try and run the dohell script with an unpatched kernel
-and see if you have the error?
+> On 09/30/2014 11:47 AM, Hasret Sar=C4=B1yer wrote:
+> > 2014-09-30 10:10 GMT+03:00 Michael Haberler <mail17@mah.priv.at>:
+> >
+> >>
+> >>
+> http://xenomai.org/troubleshooting-a-dual-kernel-configuration/#binding_f=
+ailed_Operation_not_permitted
+> >>
+> >> -m
+> >> Am 30.09.2014 um 00:34 schrieb Hasret Sar=C4=B1yer <hsrtsryr@gmail.com=
+>:
+> >>
+> >>> I installed xenomai using this guide
+> >>> <http://xenomai.org/2014/06/building-debian-packages/>. And there are
+> >> some
+> >>> examples under xenomai2.6/examples/rtdm/driver-api folder. I
+> >>> copied /driver-api folder to desktop. I executed tut02-skeleton-app
+> file,
+> >>> the output was *Xenomai: binding failed: Operation not permitted.*
+> >>
+> >>
+> > I try to use rtdm modules. Which command should be executed on terminal=
+?
+> > For nucleus, it is xeno_nucleus.xenomai_gid=3D<gid>.
+>
+> This is not a command to be executed on terminal, this is an option to
+> add to the kernel command line.
+>
+> Also, first things first, could you try and run the "latency" test as
+> root, to see if everything is working, or if you still have the missing
+> /dev/rtheap issue?
+>
+> --
+>
 
--- 
-                                                                Gilles.
 
+
+I did all step on this guide
+<http://xenomai.org/2014/06/building-debian-packages/>. And I expexted that
+xenomai was ready to use.
+
+>                         Gilles.
+>
