@@ -1,10 +1,14 @@
-Message-ID: <5431959D.8060504@xenomai.org>
-Date: Sun, 05 Oct 2014 21:01:49 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai] [ANNOUNCE] Xenomai 3.0-rc1
+In-Reply-To: <542A9F17.7090802@xenomai.org>
+References: <CACreCVKF=VQuWhaxkAPTOAaDui0aze+Vc4MOq+vby+2eBRx1iA@mail.gmail.com>
+ <542A945E.9000904@xenomai.org>
+ <CACreCVK_Xd79uaHpzODKMQHMVrH58KvsKuBQ5kRsOhM++BXT4w@mail.gmail.com>
+ <542A9F17.7090802@xenomai.org>
+Date: Wed, 1 Oct 2014 07:32:48 +0800
+Message-ID: <CACreCV+sFAWEzADAD+q6ZitVLcwuKGq1WguvfaXtoX_P9KkkUQ@mail.gmail.com>
+From: GP Orcullo <kinsamanka@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Switchtest failures on ODROIDU3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,41 +17,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
+On Sep 30, 2014 8:16 PM, "Gilles Chanteperdrix" <
+gilles.chanteperdrix@xenomai.org> wrote:
+>
+> On 09/30/2014 02:04 PM, GP Orcullo wrote:
+> > On Sep 30, 2014 7:30 PM, "Gilles Chanteperdrix" <
+> > gilles.chanteperdrix@xenomai.org> wrote:
+> >>
+> >> On 09/30/2014 07:31 AM, GP Orcullo wrote:
+> >>> Hi,
+> >>>
+> >>> Running the switchtest for extended periods (>10 mins) causes the
+> >>> machine to lockup.
+> >>>
+> >>> I'm running a modified xeno-regression-test which contains only the
+> >>> following tests:
+> >>>
+> >>> check_alive /usr/lib/xenomai/testsuite/switchtest
+> >>> check_alive /usr/lib/xenomai/testsuite/switchtest -s 1000
+> >>> check_alive /usr/lib/xenomai/testsuite/latency ${1+"$@"}
+> >>>
+> >>> The script is invoked with the following arguments:
+> >>>
+> >>> nohup sudo ./xeno-regression-test -l
+> >>> "/usr/lib/xenomai/testsuite/dohell -m /media/work 36000" -t 2 >
+> >>> /dev/null & top -d0.5
+> >>>
+> >>> The kernel dumps the OOPS information intermittently so it's difficult
+> >>> to diagnose the issue.
+> >>>
+> >>> Attached is the kernel config and the logfile.
+> >>
+> >> Ok, this is an exynos. Sorry, but I have never seen the patch for
+> >> exynos, so I do not know what is inside. You should direct your
+> >> questions to whoever provided you with this support.
+> >
+> > I'm in the process of porting xenomai to run on exynos.
+> >
+> > The ipipe-core-3.8.13-arm-3.patch applies cleanly to the 3.8.13.11
+kernel
+> > used by the odroid U3 board.
+> >
+> > Attached is the ipipe patch that I've made.
+> >
+> > I was just wondering what would cause switchtest to fail. The error
+that I
+> > can see is that the system is running out of memory and I don't know
+> > exactly what is causing this.
+>
+> Certainly not switchtest as it does not do any memory allocation.
+> However, the dohell script has a loop creating a large file and removing
+> it. So, could you try and run the dohell script with an unpatched kernel
+> and see if you have the error?
+>
 
-We are pleased to announce the official release of Xenomai 3.0-rc1,
-which starts the candidate release cycle for Xenomai 3.
+Running dohell on a patched and unpatched kernel doesn't trigger the lockup.
 
-Xenomai 3 is the new architecture of our real-time framework,
-which can run its APIs side-by-side with Linux as a co-kernel system
-delivering very low latencies, or natively over unmodified Linux
-kernels. In the latter case, the mainline kernel can be supplemented by
-the preempt-rt patch to meet stricter real-time requirements.
+Running switchtest without dohell works OK.
 
-The dual kernel configuration is currently supported over arm 32bit,
-powerpc32, powerpc64, x86_32, x86_64 and blackfin, with a port to
-aarch64 planned on Q1-2015. The single/native kernel configuration runs
-on any CPU architecture Linux supports.
+What's the best way to tackle this issue?
 
-= What's new in Xenomai 3?
-
-http://xenomai.org/introducing-xenomai-3/
-
-= How to migrate from Xenomai 2.x?
-
-http://xenomai.org/migrating-from-xenomai-2-x-to-3-x/
-
-= Where is the code?
-
-http://git.xenomai.org/xenomai-3.git/
-http://download.gna.org/xenomai/testing/latest/xenomai-3.0-rc1.tar.bz2
-
-Thanks to all Xenomai contributors, and to the companies who made this
-possible, mainly by directly funding the development of some of the
-Xenomai 3 features, or giving access to the latest hardware.
-
--- 
-Philippe.
-
-
+> --
+>                                                                 Gilles.
