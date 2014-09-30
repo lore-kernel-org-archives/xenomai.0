@@ -1,12 +1,13 @@
-Content-Type: text/plain; charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
-From: Michael Haberler <mail17@mah.priv.at>
-In-Reply-To: <CABVE6k1dDnGUBQSRCDCAcgbnY-eFP422WCwTzZWQPKiD997E-w@mail.gmail.com>
-Date: Tue, 30 Sep 2014 09:10:45 +0200
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <2193EAD1-45DF-4E12-8FFD-34AC726315E9@mah.priv.at>
-References: <CABVE6k1dDnGUBQSRCDCAcgbnY-eFP422WCwTzZWQPKiD997E-w@mail.gmail.com>
-Subject: Re: [Xenomai] Xenomai: binding failed: Operation not permitted.
+MIME-Version: 1.0
+In-Reply-To: <CANdzn7PYpjy-4h5upYf=39L-t+5dSQ0W1h6oW+UOHGJ+2=XJcg@mail.gmail.com>
+References: <CANdzn7OYs4n0qjvpdKXM72cZM=AMy_1sBEVP7_P8S-56FJot3A@mail.gmail.com>
+ <0d060e3cb01fa61faf28a22cf770bfd7@grandegger.com>
+ <CANdzn7PYpjy-4h5upYf=39L-t+5dSQ0W1h6oW+UOHGJ+2=XJcg@mail.gmail.com>
+Date: Tue, 30 Sep 2014 10:48:22 +0300
+Message-ID: <CANdzn7OmiO_7T2bQN-VH=hwBAnz7TRQBtyn=hZaknB5CfxZRTw@mail.gmail.com>
+From: Jason Sarantopoulos <jasonsaras@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Xenomai and CAN
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,26 +16,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?Q?Hasret_Sar=C4=B1yer?= <hsrtsryr@gmail.com>
-Cc: Xenomai <Xenomai@xenomai.org>
+To: Wolfgang Grandegger <wg@grandegger.com>
+Cc: xenomai@xenomai.org
 
-h=
-ttp://xenomai.org/troubleshooting-a-dual-kernel-configuration/#binding_fai=
-led_Operation_not_permitted
+Hi again,
 
--m
-Am 30.09.2014 um 00:34 schrieb Hasret Sar=C4=B1yer <hsrtsryr@gmail.com>:
+I recompiled the kernel to see if I didn't configure it right in the last
+time by not adding the PEAK drivers. This time when I boot to the RT kernel
+I got this message before the login:
+[-1.539543] Xenomai: xnitr_irq_handler: IRQ18 not handled. Disabling IRQ
+line.
 
-> I installed xenomai using this guide
-> <http://xenomai.org/2014/06/building-debian-packages/>. And there are =
-some
-> examples under xenomai2.6/examples/rtdm/driver-api folder. I
-> copied /driver-api folder to desktop. I executed tut02-skeleton-app =
-file,
-> the output was *Xenomai: binding failed: Operation not permitted.*
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
+And when I log in, my mouse is extremely laggy and bearly moves.
 
+I do not have much experience in RT kernels. Is this an IRQ conflict issue?
 
+Regards.
+
+-- 
+*Jason Sarantopoulos*
