@@ -1,14 +1,16 @@
-From: Brian Eley <Brian.Eley@pason.com>
-Date: Fri, 17 Oct 2014 19:31:37 +0000
-Message-ID: <1CDD098F4EDCFE4790DD5E4B0D5FFC5A01CECD3B1D@exchmbx1.int.pason.com>
-References: <1CDD098F4EDCFE4790DD5E4B0D5FFC5A01CECAF9EF@exchmbx1.int.pason.com>
- <54413268.3080206@xenomai.org>
-In-Reply-To: <54413268.3080206@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Xenomai 2.6 Kernel Panic Caused by IO Permissions
+In-Reply-To: <542BB31F.8070803@xenomai.org>
+References: <CACreCVKF=VQuWhaxkAPTOAaDui0aze+Vc4MOq+vby+2eBRx1iA@mail.gmail.com>
+ <542A945E.9000904@xenomai.org>
+ <CACreCVK_Xd79uaHpzODKMQHMVrH58KvsKuBQ5kRsOhM++BXT4w@mail.gmail.com>
+ <542A9F17.7090802@xenomai.org>
+ <CACreCV+sFAWEzADAD+q6ZitVLcwuKGq1WguvfaXtoX_P9KkkUQ@mail.gmail.com>
+ <542BB31F.8070803@xenomai.org>
+Date: Wed, 1 Oct 2014 17:12:08 +0800
+Message-ID: <CACreCVK8axcEwipeOTxXp7cwAXz8jGOPqEG9j2dp8zosCZFrjA@mail.gmail.com>
+From: GP Orcullo <kinsamanka@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Switchtest failures on ODROIDU3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,58 +19,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-> -----Original Message-----
-> From: Philippe Gerum [mailto:rpm@xenomai.org]
-> Sent: October 17, 2014 9:15
-> To: Brian Eley; xenomai@xenomai.org
-> Subject: Re: [Xenomai] Xenomai 2.6 Kernel Panic Caused by IO Permissions
->=20
-> On 09/29/2014 10:57 PM, Brian Eley wrote:
-> > Hi All,
+On Oct 1, 2014 3:54 PM, "Gilles Chanteperdrix" <
+gilles.chanteperdrix@xenomai.org> wrote:
+>
+> On 10/01/2014 01:32 AM, GP Orcullo wrote:
+> > On Sep 30, 2014 8:16 PM, "Gilles Chanteperdrix" <
+> > gilles.chanteperdrix@xenomai.org> wrote:
+> >>
+> >> On 09/30/2014 02:04 PM, GP Orcullo wrote:
+> >>> On Sep 30, 2014 7:30 PM, "Gilles Chanteperdrix" <
+> >>> gilles.chanteperdrix@xenomai.org> wrote:
+> >>>>
+> >>>> On 09/30/2014 07:31 AM, GP Orcullo wrote:
+> >>>>> Hi,
+> >>>>>
+> >>>>> Running the switchtest for extended periods (>10 mins) causes the
+> >>>>> machine to lockup.
+> >>>>>
+> >>>>> I'm running a modified xeno-regression-test which contains only the
+> >>>>> following tests:
+> >>>>>
+> >>>>> check_alive /usr/lib/xenomai/testsuite/switchtest
+> >>>>> check_alive /usr/lib/xenomai/testsuite/switchtest -s 1000
+> >>>>> check_alive /usr/lib/xenomai/testsuite/latency ${1+"$@"}
+> >>>>>
+> >>>>> The script is invoked with the following arguments:
+> >>>>>
+> >>>>> nohup sudo ./xeno-regression-test -l
+> >>>>> "/usr/lib/xenomai/testsuite/dohell -m /media/work 36000" -t 2 >
+> >>>>> /dev/null & top -d0.5
+> >>>>>
+> >>>>> The kernel dumps the OOPS information intermittently so it's
+difficult
+> >>>>> to diagnose the issue.
+> >>>>>
+> >>>>> Attached is the kernel config and the logfile.
+> >>>>
+> >>>> Ok, this is an exynos. Sorry, but I have never seen the patch for
+> >>>> exynos, so I do not know what is inside. You should direct your
+> >>>> questions to whoever provided you with this support.
+> >>>
+> >>> I'm in the process of porting xenomai to run on exynos.
+> >>>
+> >>> The ipipe-core-3.8.13-arm-3.patch applies cleanly to the 3.8.13.11
+> > kernel
+> >>> used by the odroid U3 board.
+> >>>
+> >>> Attached is the ipipe patch that I've made.
+> >>>
+> >>> I was just wondering what would cause switchtest to fail. The error
+> > that I
+> >>> can see is that the system is running out of memory and I don't know
+> >>> exactly what is causing this.
+> >>
+> >> Certainly not switchtest as it does not do any memory allocation.
+> >> However, the dohell script has a loop creating a large file and
+removing
+> >> it. So, could you try and run the dohell script with an unpatched
+kernel
+> >> and see if you have the error?
+> >>
 > >
-> > I've been trying out Xenomai 2.6 for several weeks for use in an embedd=
-ed
-> system. Xenomai has been working great, but I can make it crash (Kernel
-> Panic) in a repeatable way by starting and stopping processes that use IO
-> Permissions (for directly accessing IO ports from user space). Interestin=
-gly,
-> the process with IO permissions doesn't need to use Xenomai to cause the
-> panic.
+> > Running dohell on a patched and unpatched kernel doesn't trigger the
+lockup.
 > >
-> > I believe I have found the root cause, and I have come up with a potent=
-ial
-> fix for the issue, but because I am an embedded systems designer with ver=
-y
-> little kernel programming experience, I would really like to leave it to =
-the
-> Xenomai team to decide on and implement a proper fix.
-> >
-> > Following is a description of my setup along with crash dumps, instruct=
-ions
-> for reproducing, my analysis of the crash, and a patch I used to fix the
-> problem on my test system.
-> >
->=20
-> Your analysis, and the related fix are both correct. I merged the latter =
-in the
-> mainline repo, along with additional protection for the FPU fixup code ex=
-actly
-> for the same reason. Thanks for this thorough investigation, and sorry fo=
-r the
-> late reply.
->=20
-> http://git.xenomai.org/ipipe.git/commit/?h=3Dipipe-
-> 3.14&id=3D1b59795aaf0ae26b7d024c6311a9788b5256ec7e
->=20
+> > Running switchtest without dohell works OK.
+>
+> Is the problem a lockup, or an OOM?
+>
+
+It's a lockup.
+
+The OOM message is the only one that I've captured so far.  Most of the
+time the kernel doesn't spew any messages before the lockup.
+
+The lockups are repeatable but generating any error messages isn't.
+
+>
 > --
-> Philippe.
-
-Hi Philippe,
-
-I'm very happy that you've put in a fix. Many thanks!
-
-Brian
-
-
+>                                                                 Gilles.
