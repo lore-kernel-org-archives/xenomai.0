@@ -1,12 +1,18 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Wed, 1 Oct 2014 17:36:11 -0400
-Message-ID: <20141001213611.GI4435@csclub.uwaterloo.ca>
-References: <CANgF67Q+ZneJM-osJT07NS45AWaZEPetHjUL5EBc5SvW0Dc7rQ@mail.gmail.com>
+Message-ID: <542C748E.7080706@xenomai.org>
+Date: Wed, 01 Oct 2014 23:39:26 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANgF67Q+ZneJM-osJT07NS45AWaZEPetHjUL5EBc5SvW0Dc7rQ@mail.gmail.com>
-Subject: Re: [Xenomai] nucleus/sched.h: No such file or directory
+References: <20141001142416.GA4435@csclub.uwaterloo.ca>
+ <542C165E.6060809@xenomai.org> <20141001150206.GB4435@csclub.uwaterloo.ca>
+ <542C1DA3.8080306@xenomai.org> <20141001154641.GC4435@csclub.uwaterloo.ca>
+ <20141001155252.GD4435@csclub.uwaterloo.ca>
+ <20141001160219.GE4435@csclub.uwaterloo.ca> <542C3A89.7000307@xenomai.org>
+ <20141001174029.GF4435@csclub.uwaterloo.ca> <542C3DF7.90804@xenomai.org>
+ <20141001175437.GG4435@csclub.uwaterloo.ca>
+In-Reply-To: <20141001175437.GG4435@csclub.uwaterloo.ca>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] I-pipe error when requesting irq that is on omap gpio
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,30 +21,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: agnes jurek <agnessjurek@gmail.com>
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
 Cc: xenomai@xenomai.org
 
-On Thu, Oct 02, 2014 at 12:27:34AM +0300, agnes jurek wrote:
-> I tried to write simple code myself using xenomai rtdm module. When I added
-> "
-> #include <xenomai/rtdm/rtdm.h>", compilation  was ok. But when I added "
-> #include <xenomai/native/task.h>", I got an error message. It said that
-> "/usr/include/xenomai/native/task.h:25:27: fatal error: nucleus/sched.h: No
-> such file or directory
-> compilation terminated."
+On 10/01/2014 07:54 PM, Lennart Sorensen wrote:
+> On Wed, Oct 01, 2014 at 07:46:31PM +0200, Gilles Chanteperdrix wrote:
+>> Are you sure you are not simply getting an interrupt and failing to
+>> clear the interrupt condition?
+> 
+> I won't claim to be sure yet.
 
-Xenomai unfortunately requires you to add /usr/include/xenomai to your
-includes, which does mean you don't have to put xenomai/ in your #include
-statements though.
+Well, what is on the other end of the GPIO ? If this is a button, you
+may want to set the interrupt type to edge, otherwise the interrupt will
+remain asserted as long as you press the button, and you will get an
+interrupt storm. If it is another GPIO, then you should reset that GPIO
+state in the irq handler.
 
-# pkg-config --cflags libxenomai_rtdm libxenomai_native
--D_GNU_SOURCE -D_REENTRANT -D__XENO__ -I/usr/include/xenomai  
-
-# pkg-config --libs libxenomai_rtdm libxenomai_native
--lrtdm -lnative -lxenomai -lpthread -lrt  
-
-pkg-config is handy, and worth using.
+Also, it may actually be simpler to write an RTDM driver than to use the
+deprecated, error-prone rtintr API.
 
 -- 
-Len Sorensen
+                                                                Gilles.
 
