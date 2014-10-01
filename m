@@ -1,11 +1,12 @@
-From: "Mallik, Udayan (GSFC-5640)" <udayan.mallik-1@nasa.gov>
-Date: Fri, 17 Oct 2014 14:44:20 +0000
-Message-ID: <A83EBA0226A300439B44DB00FD90D6560F2C18@NDMSMBX402.ndc.nasa.gov>
-Content-Language: en-US
+Message-ID: <542BB9E7.7050008@xenomai.org>
+Date: Wed, 01 Oct 2014 10:23:03 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Menuconfig
+References: <CABaOOZ1C-Yo+SPfbxk35kYavnugGK0yZQ3nYivpritw6wtxO1A@mail.gmail.com>
+In-Reply-To: <CABaOOZ1C-Yo+SPfbxk35kYavnugGK0yZQ3nYivpritw6wtxO1A@mail.gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Can not compile mertcury
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,25 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Stratiyenko Roman <picoworm@gmail.com>, xenomai@xenomai.org
 
-I am installing Xenomai-2.6.4 on my Linux box with Linux-3.10.32.
+On 10/01/2014 09:35 AM, Stratiyenko Roman wrote:
+> Hello,
+> 
+> Today I downloaded latest xenomai 3 from git.
+> I want to try mercury version
+> I did ./configure --with-core=mercury
+> after make, I have error compiling testsuite
+> 
+> ../../lib/copperplate/.libs/libcopperplate.so: undefined reference to
+> `timer_create'
+> ../../lib/copperplate/.libs/libcopperplate.so: undefined reference to
+> `timer_delete'
+> ../../lib/copperplate/.libs/libcopperplate.so: undefined reference to
+> `timer_settime'
+> collect2: error: ld returned 1 exit status
+> 
+> What am I doing wrong?
+> 
 
+Nothing, a dependency on librt seems to be unresolved in your case.
+Please pull the updates from the -next branch and try again. Feedback
+welcome.
 
+Thanks,
 
-I disabled all but the MSI switch (I could not change this one!) under menu=
-config and my installation ran into a Kernel Panic mode "kernel panic not s=
-yncing: timer does not work through Interrupt remapped IO-APIC."
+-- 
+Philippe.
 
-
-
-Today I read more about Xenomai and it seems to need some of the switches i=
-t told me to disable.
-
-
-
-Should I fiddle with Menuconfig at all?
-
-
-
-Udayan Mallik
