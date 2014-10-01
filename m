@@ -1,21 +1,12 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Wed, 1 Oct 2014 17:43:15 -0400
-Message-ID: <20141001214315.GJ4435@csclub.uwaterloo.ca>
-References: <20141001150206.GB4435@csclub.uwaterloo.ca>
- <542C1DA3.8080306@xenomai.org>
- <20141001154641.GC4435@csclub.uwaterloo.ca>
- <20141001155252.GD4435@csclub.uwaterloo.ca>
- <20141001160219.GE4435@csclub.uwaterloo.ca>
- <542C3A89.7000307@xenomai.org>
- <20141001174029.GF4435@csclub.uwaterloo.ca>
- <542C3DF7.90804@xenomai.org>
- <20141001175437.GG4435@csclub.uwaterloo.ca>
- <542C748E.7080706@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <542C748E.7080706@xenomai.org>
-Subject: Re: [Xenomai] I-pipe error when requesting irq that is on omap gpio
+In-Reply-To: <20141001213611.GI4435@csclub.uwaterloo.ca>
+References: <CANgF67Q+ZneJM-osJT07NS45AWaZEPetHjUL5EBc5SvW0Dc7rQ@mail.gmail.com>
+ <20141001213611.GI4435@csclub.uwaterloo.ca>
+Date: Thu, 2 Oct 2014 00:46:22 +0300
+Message-ID: <CANgF67SoFqOZtcC87Wy04RT5ARqK2+H8w+b79Yvf3d_QcnqAjQ@mail.gmail.com>
+From: agnes jurek <agnessjurek@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] nucleus/sched.h: No such file or directory
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,34 +15,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
 Cc: xenomai@xenomai.org
 
-On Wed, Oct 01, 2014 at 11:39:26PM +0200, Gilles Chanteperdrix wrote:
-> Well, what is on the other end of the GPIO ? If this is a button, you
-> may want to set the interrupt type to edge, otherwise the interrupt will
-> remain asserted as long as you press the button, and you will get an
-> interrupt storm. If it is another GPIO, then you should reset that GPIO
-> state in the irq handler.
+2014-10-02 0:36 GMT+03:00 Lennart Sorensen <lsorense@csclub.uwaterloo.ca>:
 
-No it is a marvell switch chip.  And it is in fact level triggered.
-And it does clear when handled.
+> On Thu, Oct 02, 2014 at 12:27:34AM +0300, agnes jurek wrote:
+> > I tried to write simple code myself using xenomai rtdm module. When I
+> added
+> > "
+> > #include <xenomai/rtdm/rtdm.h>", compilation  was ok. But when I added "
+> > #include <xenomai/native/task.h>", I got an error message. It said that
+> > "/usr/include/xenomai/native/task.h:25:27: fatal error: nucleus/sched.h:
+> No
+> > such file or directory
+> > compilation terminated."
+>
+> Xenomai unfortunately requires you to add /usr/include/xenomai to your
+> includes, which does mean you don't have to put xenomai/ in your #include
+> statements though.
+>
+> # pkg-config --cflags libxenomai_rtdm libxenomai_native
+> -D_GNU_SOURCE -D_REENTRANT -D__XENO__ -I/usr/include/xenomai
+>
+> # pkg-config --libs libxenomai_rtdm libxenomai_native
+> -lrtdm -lnative -lxenomai -lpthread -lrt
+>
+> pkg-config is handy, and worth using.
+>
+> --
+> Len Sorensen
+>
 
-And I could probably get a button hooked up for testing, and just use
-the debouncing feature in the gpio system to make it more manageable.
 
-I am still not convinced the gpio-omap doesn't have a problem, but maybe
-it is OK.
-
-> Also, it may actually be simpler to write an RTDM driver than to use the
-> deprecated, error-prone rtintr API.
-
-Fair enough.  May have to consider that.  At the moment the system is
-polling the switch chip given the IRQ isn't working yet, so idially we
-want it working, but it isn't preventing things from working completely.
-
-I will have a look at the rtdm stuff.
-
--- 
-Len Sorensen
-
+@Lennart, you said "you don't have to put xenomai/ in your #include
+statements though.". But when I added  "#include <rtdm/rtdm.h>" and
+"-lrtdm" on linking, I got error. If I add "#include
+<xenomai/rtdm/rtdm.h>", it is ok.
