@@ -1,18 +1,12 @@
+Message-ID: <542D54C0.3070001@xenomai.org>
+Date: Thu, 02 Oct 2014 15:36:00 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <542BC753.8000605@xenomai.org>
-References: <CACreCVKF=VQuWhaxkAPTOAaDui0aze+Vc4MOq+vby+2eBRx1iA@mail.gmail.com>
- <542A945E.9000904@xenomai.org>
- <CACreCVK_Xd79uaHpzODKMQHMVrH58KvsKuBQ5kRsOhM++BXT4w@mail.gmail.com>
- <542A9F17.7090802@xenomai.org>
- <CACreCV+sFAWEzADAD+q6ZitVLcwuKGq1WguvfaXtoX_P9KkkUQ@mail.gmail.com>
- <542BB31F.8070803@xenomai.org>
- <CACreCVK8axcEwipeOTxXp7cwAXz8jGOPqEG9j2dp8zosCZFrjA@mail.gmail.com>
- <542BC753.8000605@xenomai.org>
-Date: Thu, 2 Oct 2014 21:27:24 +0800
-Message-ID: <CACreCVJvfuMeRCVdE6NTPK=frJ3_-PL-TDrZy9U5fLAW7gWjcg@mail.gmail.com>
-From: GP Orcullo <kinsamanka@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <CACreCVKF=VQuWhaxkAPTOAaDui0aze+Vc4MOq+vby+2eBRx1iA@mail.gmail.com>	<542A945E.9000904@xenomai.org>	<CACreCVK_Xd79uaHpzODKMQHMVrH58KvsKuBQ5kRsOhM++BXT4w@mail.gmail.com>	<542A9F17.7090802@xenomai.org>	<CACreCV+sFAWEzADAD+q6ZitVLcwuKGq1WguvfaXtoX_P9KkkUQ@mail.gmail.com>	<542BB31F.8070803@xenomai.org>	<CACreCVK8axcEwipeOTxXp7cwAXz8jGOPqEG9j2dp8zosCZFrjA@mail.gmail.com>	<542BC753.8000605@xenomai.org>
+ <CACreCVJvfuMeRCVdE6NTPK=frJ3_-PL-TDrZy9U5fLAW7gWjcg@mail.gmail.com>
+In-Reply-To: <CACreCVJvfuMeRCVdE6NTPK=frJ3_-PL-TDrZy9U5fLAW7gWjcg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Switchtest failures on ODROIDU3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -22,188 +16,141 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: GP Orcullo <kinsamanka@gmail.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gV2VkLCBPY3QgMSwgMjAxNCBhdCA1OjIwIFBNLCBHaWxsZXMgQ2hhbnRlcGVyZHJpeAo8Z2ls
-bGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmc+IHdyb3RlOgo+IE9uIDEwLzAxLzIwMTQgMTE6
-MTIgQU0sIEdQIE9yY3VsbG8gd3JvdGU6Cj4+IE9uIE9jdCAxLCAyMDE0IDM6NTQgUE0sICJHaWxs
-ZXMgQ2hhbnRlcGVyZHJpeCIgPAo+PiBnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZz4g
-d3JvdGU6Cj4+Pgo+Pj4gT24gMTAvMDEvMjAxNCAwMTozMiBBTSwgR1AgT3JjdWxsbyB3cm90ZToK
-Pj4+PiBPbiBTZXAgMzAsIDIwMTQgODoxNiBQTSwgIkdpbGxlcyBDaGFudGVwZXJkcml4IiA8Cj4+
-Pj4gZ2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmc+IHdyb3RlOgo+Pj4+Pgo+Pj4+PiBP
-biAwOS8zMC8yMDE0IDAyOjA0IFBNLCBHUCBPcmN1bGxvIHdyb3RlOgo+Pj4+Pj4gT24gU2VwIDMw
-LCAyMDE0IDc6MzAgUE0sICJHaWxsZXMgQ2hhbnRlcGVyZHJpeCIgPAo+Pj4+Pj4gZ2lsbGVzLmNo
-YW50ZXBlcmRyaXhAeGVub21haS5vcmc+IHdyb3RlOgo+Pj4+Pj4+Cj4+Pj4+Pj4gT24gMDkvMzAv
-MjAxNCAwNzozMSBBTSwgR1AgT3JjdWxsbyB3cm90ZToKPj4+Pj4+Pj4gSGksCj4+Pj4+Pj4+Cj4+
-Pj4+Pj4+IFJ1bm5pbmcgdGhlIHN3aXRjaHRlc3QgZm9yIGV4dGVuZGVkIHBlcmlvZHMgKD4xMCBt
-aW5zKSBjYXVzZXMgdGhlCj4+Pj4+Pj4+IG1hY2hpbmUgdG8gbG9ja3VwLgo+Pj4+Pj4+Pgo+Pj4+
-Pj4+PiBJJ20gcnVubmluZyBhIG1vZGlmaWVkIHhlbm8tcmVncmVzc2lvbi10ZXN0IHdoaWNoIGNv
-bnRhaW5zIG9ubHkgdGhlCj4+Pj4+Pj4+IGZvbGxvd2luZyB0ZXN0czoKPj4+Pj4+Pj4KPj4+Pj4+
-Pj4gY2hlY2tfYWxpdmUgL3Vzci9saWIveGVub21haS90ZXN0c3VpdGUvc3dpdGNodGVzdAo+Pj4+
-Pj4+PiBjaGVja19hbGl2ZSAvdXNyL2xpYi94ZW5vbWFpL3Rlc3RzdWl0ZS9zd2l0Y2h0ZXN0IC1z
-IDEwMDAKPj4+Pj4+Pj4gY2hlY2tfYWxpdmUgL3Vzci9saWIveGVub21haS90ZXN0c3VpdGUvbGF0
-ZW5jeSAkezErIiRAIn0KPj4+Pj4+Pj4KPj4+Pj4+Pj4gVGhlIHNjcmlwdCBpcyBpbnZva2VkIHdp
-dGggdGhlIGZvbGxvd2luZyBhcmd1bWVudHM6Cj4+Pj4+Pj4+Cj4+Pj4+Pj4+IG5vaHVwIHN1ZG8g
-Li94ZW5vLXJlZ3Jlc3Npb24tdGVzdCAtbAo+Pj4+Pj4+PiAiL3Vzci9saWIveGVub21haS90ZXN0
-c3VpdGUvZG9oZWxsIC1tIC9tZWRpYS93b3JrIDM2MDAwIiAtdCAyID4KPj4+Pj4+Pj4gL2Rldi9u
-dWxsICYgdG9wIC1kMC41Cj4+Pj4+Pj4+Cj4+Pj4+Pj4+IFRoZSBrZXJuZWwgZHVtcHMgdGhlIE9P
-UFMgaW5mb3JtYXRpb24gaW50ZXJtaXR0ZW50bHkgc28gaXQncwo+PiBkaWZmaWN1bHQKPj4+Pj4+
-Pj4gdG8gZGlhZ25vc2UgdGhlIGlzc3VlLgo+Pj4+Pj4+Pgo+Pj4+Pj4+PiBBdHRhY2hlZCBpcyB0
-aGUga2VybmVsIGNvbmZpZyBhbmQgdGhlIGxvZ2ZpbGUuCj4+Pj4+Pj4KPj4+Pj4+PiBPaywgdGhp
-cyBpcyBhbiBleHlub3MuIFNvcnJ5LCBidXQgSSBoYXZlIG5ldmVyIHNlZW4gdGhlIHBhdGNoIGZv
-cgo+Pj4+Pj4+IGV4eW5vcywgc28gSSBkbyBub3Qga25vdyB3aGF0IGlzIGluc2lkZS4gWW91IHNo
-b3VsZCBkaXJlY3QgeW91cgo+Pj4+Pj4+IHF1ZXN0aW9ucyB0byB3aG9ldmVyIHByb3ZpZGVkIHlv
-dSB3aXRoIHRoaXMgc3VwcG9ydC4KPj4+Pj4+Cj4+Pj4+PiBJJ20gaW4gdGhlIHByb2Nlc3Mgb2Yg
-cG9ydGluZyB4ZW5vbWFpIHRvIHJ1biBvbiBleHlub3MuCj4+Pj4+Pgo+Pj4+Pj4gVGhlIGlwaXBl
-LWNvcmUtMy44LjEzLWFybS0zLnBhdGNoIGFwcGxpZXMgY2xlYW5seSB0byB0aGUgMy44LjEzLjEx
-Cj4+Pj4ga2VybmVsCj4+Pj4+PiB1c2VkIGJ5IHRoZSBvZHJvaWQgVTMgYm9hcmQuCj4+Pj4+Pgo+
-Pj4+Pj4gQXR0YWNoZWQgaXMgdGhlIGlwaXBlIHBhdGNoIHRoYXQgSSd2ZSBtYWRlLgo+Pj4+Pj4K
-Pj4+Pj4+IEkgd2FzIGp1c3Qgd29uZGVyaW5nIHdoYXQgd291bGQgY2F1c2Ugc3dpdGNodGVzdCB0
-byBmYWlsLiBUaGUgZXJyb3IKPj4+PiB0aGF0IEkKPj4+Pj4+IGNhbiBzZWUgaXMgdGhhdCB0aGUg
-c3lzdGVtIGlzIHJ1bm5pbmcgb3V0IG9mIG1lbW9yeSBhbmQgSSBkb24ndCBrbm93Cj4+Pj4+PiBl
-eGFjdGx5IHdoYXQgaXMgY2F1c2luZyB0aGlzLgo+Pj4+Pgo+Pj4+PiBDZXJ0YWlubHkgbm90IHN3
-aXRjaHRlc3QgYXMgaXQgZG9lcyBub3QgZG8gYW55IG1lbW9yeSBhbGxvY2F0aW9uLgo+Pj4+PiBI
-b3dldmVyLCB0aGUgZG9oZWxsIHNjcmlwdCBoYXMgYSBsb29wIGNyZWF0aW5nIGEgbGFyZ2UgZmls
-ZSBhbmQKPj4gcmVtb3ZpbmcKPj4+Pj4gaXQuIFNvLCBjb3VsZCB5b3UgdHJ5IGFuZCBydW4gdGhl
-IGRvaGVsbCBzY3JpcHQgd2l0aCBhbiB1bnBhdGNoZWQKPj4ga2VybmVsCj4+Pj4+IGFuZCBzZWUg
-aWYgeW91IGhhdmUgdGhlIGVycm9yPwo+Pj4+Pgo+Pj4+Cj4+Pj4gUnVubmluZyBkb2hlbGwgb24g
-YSBwYXRjaGVkIGFuZCB1bnBhdGNoZWQga2VybmVsIGRvZXNuJ3QgdHJpZ2dlciB0aGUKPj4gbG9j
-a3VwLgo+Pj4+Cj4+Pj4gUnVubmluZyBzd2l0Y2h0ZXN0IHdpdGhvdXQgZG9oZWxsIHdvcmtzIE9L
-Lgo+Pj4KPj4+IElzIHRoZSBwcm9ibGVtIGEgbG9ja3VwLCBvciBhbiBPT00/Cj4+Pgo+Pgo+PiBJ
-dCdzIGEgbG9ja3VwLgo+Pgo+PiBUaGUgT09NIG1lc3NhZ2UgaXMgdGhlIG9ubHkgb25lIHRoYXQg
-SSd2ZSBjYXB0dXJlZCBzbyBmYXIuICBNb3N0IG9mIHRoZQo+PiB0aW1lIHRoZSBrZXJuZWwgZG9l
-c24ndCBzcGV3IGFueSBtZXNzYWdlcyBiZWZvcmUgdGhlIGxvY2t1cC4KPj4KPj4gVGhlIGxvY2t1
-cHMgYXJlIHJlcGVhdGFibGUgYnV0IGdlbmVyYXRpbmcgYW55IGVycm9yIG1lc3NhZ2VzIGlzbid0
-Lgo+Cj4gQXJlIHlvdSBydW5uaW5nIHRoZSB0ZXN0cyBvbiB0aGUgc2VyaWFsIGNvbnNvbGUsIG9y
-IHdpdGggc3NoPyBEbyB5b3UKPiBoYXZlIHVubG9ja2VkIGNvbnRleHQgc3dpdGNoIGVuYWJsZWQ/
-IEhhdmUgeW91IHRyaWVkIGVuYWJsaW5nIHNvbWUgZGVidWcKPiBvcHRpb25zPwo+CgpJJ20gdXNp
-bmcgdGhlIHNlcmlhbCBjb25zb2xlIHRvIGxvZyB0aGUga2VybmVsIG1lc3NhZ2VzIGFuZCBzc2gg
-dG8gcnVuCnRoZSBjb21tYW5kLiBVc2luZyBwdXJlbHkgdGhlIHNlcmlhbCBjb25zb2xlIGhhcyB0
-aGUgc2FtZSByZXN1bHRzLgoKSXMgdGhpcyB0aGUgY29udGV4dCBzd2l0Y2g/OiAiQ09ORklHX1hF
-Tk9fSFdfVU5MT0NLRURfU1dJVENIPXkiCgpJIHdpbGwgdHJ5IHBsYXlpbmcgYWdhaW4gd2l0aCB0
-aGUgZGVidWcgb3B0aW9ucyBhbmQgc2VlIGlmIEkgY2FuIGdldApzb21ldGhpbmcgdXNlZnVsLgoK
-PiBBbHNvIG5vdGUgdGhhdCB4ZW5vLXJlZ3Jlc3Npb24tdGVzdCBwdXRzIHRoZSBzeXN0ZW0gdW5k
-ZXIgYSBsb3Qgb2YKPiBzdHJlc3MsIHNvIGl0IG1heSBoYXBwZW4gdGhhdCB0aGVyZSBpcyBubyBv
-dXRwdXQgZm9yIHNvbWUgdGltZSAoc2V2ZXJhbAo+IG1pbnV0ZXMpLCBub3JtYWxseSB0aGUgdGVz
-dCBzaG91bGQgc3RvcCBieSBpdHNlbGYgaWYgdGhlcmUgaXMgbm8gb3V0cHV0Cj4gZm9yIHNvbWV0
-aGluZyBsaWtlIDMwIG1pbnV0ZXMuIFNvLCBJIHdvdWxkIHJlY29tbWVuZCBub3QgcmVkaXJlY3Rp
-bmcKPiB4ZW5vLXRlc3Qgb3V0cHV0IHRvIHNlZSBpZiB0aGVyZSBpcyBhbnkgZXJyb3IgYmVmb3Jl
-IHRoZSBsb2NrdXAsIGFuZAo+IHdoZW4geW91IHNlZSB0aGUgbG9ja3VwLCBsZWF2ZSB0aGUgc3lz
-dGVtIGZvciAzMCBtaW51dGVzIHRvIHNlZSBpZiBpdAo+IGRvZXMgbm90IHJlc3RhcnQgb3IgaWYg
-eGVuby1yZWdyZXNzaW9uLXRlc3QgY2FuIGV4aXQgZ3JhY2VmdWxseS4KPgoKVGhpcyBpcyBhIHRv
-dGFsIGxvY2t1cC4gVGhlcmUncyBhIGhlYXJ0YmVhdCBsZWQgdGhhdCBkaWVzIHdoZW4gaXQgb2Nj
-dXJzLgoKQXR0YWNoZWQgaXMgb25lIGVycm9yIGxvZyB0aGF0IEkgaGFkIGNhcHR1cmVkIHByZXZp
-b3VzbHkgYW5kIHRoaXMgb25lCmhhZCB0aGUgQ09ORklHX0NQVV9JRExFIGVuYWJsZWQuIEkndmUg
-bG9zdCB0cmFjayBvbiB3aGljaCBrZXJuZWwgdGhpcwp0cmFjZSBjYW1lIGZyb20gYnV0IG1heWJl
-IHRoZSBlcnJvciBsb29rcyBmYW1pbGlhci4KCj4gLS0KPiAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgR2lsbGVzLgoKLS0gCkdQ
-IE9yY3VsbG8KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tClsgNDYxOS43
-NzUwMDBdIEtlcm5lbCBwYW5pYyAtIG5vdCBzeW5jaW5nOiBBdHRlbXB0ZWQgdG8ga2lsbCBpbml0
-ISBleGl0Y29kZT0weDAwMDAwMDBiClsgNDYxOS43NzUwMDBdICBQUiAgTkkgIFZJUlQgIFJFUyAg
-U0hSIFMgICVDUFUgJU1FTSAgICBUSU1FKyAgQ09NTUFORCAgICAgICAgICAgClsgNDYxOS43NzUw
-MDBdIFs8YzAwMTRhOTQ+XSAodW53aW5kX2JhY2t0cmFjZSsweDAvMHhmOCkgZnJvbSBbPGMwMmZk
-NzEwPl0gKHBhbmljKzB4OGMvMHgxZTQpClsgNDYxOS43NzUwMDBdIFs8YzAyZmQ3MTA+XSAocGFu
-aWMrMHg4Yy8weDFlNCkgZnJvbSBbPGMwMDI4ZmE4Pl0gKGRvX2V4aXQrMHg3NzAvMHg4MjgpClsg
-NDYxOS43NzUwMDBdIFs8YzAwMjhmYTg+XSAoZG9fZXhpdCsweDc3MC8weDgyOCkgZnJvbSBbPGMw
-MDI5MWFjPl0gKGRvX2dyb3VwX2V4aXQrMHgzYy8weGIwKQpbIDQ2MTkuNzc1MDAwXSBbPGMwMDI5
-MWFjPl0gKGRvX2dyb3VwX2V4aXQrMHgzYy8weGIwKSBmcm9tIFs8YzAwMzJmMDA+XSAoZ2V0X3Np
-Z25hbF90b19kZWxpdmVyKzB4MWM0LzB4NTMwKQpbIDQ2MTkuNzc1MDAwXSBbPGMwMDMyZjAwPl0g
-KGdldF9zaWduYWxfdG9fZGVsaXZlcisweDFjNC8weDUzMCkgZnJvbSBbPGMwMDExMjVjPl0gKGRv
-X3NpZ25hbCsweDdjLzB4NDgwKQpbIDQ2MTkuNzc1MDAwXSBbPGMwMDExMjVjPl0gKGRvX3NpZ25h
-bCsweDdjLzB4NDgwKSBmcm9tIFs8YzAwMTFhZmM+XSAoZG9fd29ya19wZW5kaW5nKzB4NjgvMHhh
-OCkKWyA0NjE5Ljc3NTAwMF0gWzxjMDAxMWFmYz5dIChkb193b3JrX3BlbmRpbmcrMHg2OC8weGE4
-KSBmcm9tIFs8YzAwMGUzNDA+XSAod29ya19wZW5kaW5nKzB4Yy8weDIwKQpbIDQ2MTkuNzc1MDAw
-XSBDUFUxOiBzdG9wcGluZyAgIDAgICAgMCBTICAgMC4wICAwLjAgICAwOjAwLjAwIGt0aHJlYWRk
-ICAgICAgICAgIApbIDQ2MTkuNzc1MDAwXSBbPGMwMDE0YTk0Pl0gKHVud2luZF9iYWNrdHJhY2Ur
-MHgwLzB4ZjgpIGZyb20gWzxjMDAxMzQzOD5dIChoYW5kbGVfSVBJKzB4MTIwLzB4MTRjKQpbIDQ2
-MTkuNzc1MDAwXSBbPGMwMDEzNDM4Pl0gKGhhbmRsZV9JUEkrMHgxMjAvMHgxNGMpIGZyb20gWzxj
-MDAwODU1Yz5dIChnaWNfaGFuZGxlX2lycSsweDYwLzB4NjgpClsgNDYxOS43NzUwMDBdIFs8YzAw
-MDg1NWM+XSAoZ2ljX2hhbmRsZV9pcnErMHg2MC8weDY4KSBmcm9tIFs8YzAwMGRmMDA+XSAoX19p
-cnFfc3ZjKzB4NDAvMHg3MCkKWyA0NjE5Ljc3NTAwMF0gRXhjZXB0aW9uIHN0YWNrKDB4YzIxMTNk
-ODggdG8gMHhjMjExM2RkMCkwMC4wMCBrd29ya2VyL3U6MEggICAgICAKWyA0NjE5Ljc3NTAwMF0g
-M2Q4MDogICAgICAgICAgICAgICAgICAgZTZjNjBkMTAgMDAwMWZmZmYgMDAwMDAwMDEgMDA3OTc0
-NzQgZTQwODkwMDggMDA3OTc0NzQKWyA0NjE5Ljc3NTAwMF0gM2RhMDogMDAwMDhlYjIgZTZjNjBk
-MTAgYzIxMTNlNTggZTZiOGMwMjUgMDAwMDAwMDMgYzIxMTNmMDAgZmY1NTVhNWEgYzIxMTNkZDAK
-WyA0NjE5Ljc3NTAwMF0gM2RjMDogYzAwZDQzYzggYzAwZDQzZjAgNjAwMDAwNTMgZmZmZmZmZmYw
-MC4wMCByY3VfYmggICAgICAgICAgICAKWyA0NjE5Ljc3NTAwMF0gWzxjMDAwZGYwMD5dIChfX2ly
-cV9zdmMrMHg0MC8weDcwKSBmcm9tIFs8YzAwZDQzZjA+XSAoX19kX2xvb2t1cCsweDY0LzB4MTc4
-KQpbIDQ2MTkuNzc1MDAwXSBbPGMwMGQ0M2YwPl0gKF9fZF9sb29rdXArMHg2NC8weDE3OCkgZnJv
-bSBbPGMwMGM4ODAwPl0gKGxvb2t1cF9mYXN0KzB4MTQwLzB4MjdjKSAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgIApbIDQ2MTkuNzc1MDAwXSBbPGMwMGM4ODAwPl0gKGxv
-b2t1cF9mYXN0KzB4MTQwLzB4MjdjKSBmcm9tIFs8YzAwYzk3ZTg+XSAobGlua19wYXRoX3dhbGsr
-MHgxNzgvMHg4YTApICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApbIDQ2MTku
-Nzc1MDAwXSBbPGMwMGM5N2U4Pl0gKGxpbmtfcGF0aF93YWxrKzB4MTc4LzB4OGEwKSBmcm9tIFs8
-YzAwY2E2NGM+XSAocGF0aF9sb29rdXBhdCsweDU0LzB4Nzc0KSAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgIApbIDQ2MTkuNzc1MDAwXSBbPGMwMGNhNjRjPl0gKHBhdGhfbG9va3Vw
-YXQrMHg1NC8weDc3NCkgZnJvbSBbPGMwMGNhZDhjPl0gKGZpbGVuYW1lX2xvb2t1cCsweDIwLzB4
-NjApICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApbIDQ2MTkuNzc1MDAwXSBb
-PGMwMGNhZDhjPl0gKGZpbGVuYW1lX2xvb2t1cCsweDIwLzB4NjApIGZyb20gWzxjMDBjY2RhOD5d
-ICh1c2VyX3BhdGhfYXRfZW1wdHkrMHg1MC8weDdjKSAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgIApbIDQ2MTkuNzc1MDAwXSBbPGMwMGNjZGE4Pl0gKHVzZXJfcGF0aF9hdF9lbXB0eSsw
-eDUwLzB4N2MpIGZyb20gWzxjMDBjY2RlOD5dICh1c2VyX3BhdGhfYXQrMHgxNC8weDFjKSAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApbIDQ2MTkuNzc1MDAwXSBbPGMwMGNjZGU4
-Pl0gKHVzZXJfcGF0aF9hdCsweDE0LzB4MWMpIGZyb20gWzxjMDBkZWZlYz5dIChzeXNfbGdldHhh
-dHRyKzB4MzAvMHg4MCkgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApb
-IDQ2MTkuNzc1MDAwXSBbPGMwMGRlZmVjPl0gKHN5c19sZ2V0eGF0dHIrMHgzMC8weDgwKSBmcm9t
-IFs8YzAwMGUzMDA+XSAocmV0X2Zhc3Rfc3lzY2FsbCsweDAvMHgzMCkgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIApbIDQ2MTkuNzc1MDAwXSBDUFUzOiBzdG9wcGluZyAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApbIDQ2MTkuNzc1
-MDAwXSBbPGMwMDE0YTk0Pl0gKHVud2luZF9iYWNrdHJhY2UrMHgwLzB4ZjgpIGZyb20gWzxjMDAx
-MzQzOD5dIChoYW5kbGVfSVBJKzB4MTIwLzB4MTRjKSAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgIApbIDQ2MTkuNzc1MDAwXSBbPGMwMDEzNDM4Pl0gKGhhbmRsZV9JUEkrMHgx
-MjAvMHgxNGMpIGZyb20gWzxjMDAwODU1Yz5dIChnaWNfaGFuZGxlX2lycSsweDYwLzB4NjgpICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApbIDQ2MTkuNzc1MDAwXSBbPGMw
-MDA4NTVjPl0gKGdpY19oYW5kbGVfaXJxKzB4NjAvMHg2OCkgZnJvbSBbPGMwMDBkZjAwPl0gKF9f
-aXJxX3N2YysweDQwLzB4NzApICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgIApbIDQ2MTkuNzc1MDAwXSBFeGNlcHRpb24gc3RhY2soMHhlNjc3N2VlOCB0byAweGU2Nzc3
-ZjMwKSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIApbIDQ2MTkuNzc1MDAwXSA3ZWUwOiAgICAgICAg
-ICAgICAgICAgICAwMDAwMDAwMSBhMDAwMDA1MyBjMDBjOTI0NCAwMDAwMDAwMCBlNzAwMTQ4MCBj
-MjNlZDAwMCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApbIDQ2
-MTkuNzc1MDAwXSA3ZjAwOiA0MjY5MDVjMyBjMjNlODAwMCAwMDAwMDBkMCBjMjNlZDAwMCA0MjY5
-MDVjNyAwMDAyMDFmMCAwMTBiMzAwMCBlNjc3N2YzMCAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgIApbIDQ2MTkuNzc1MDAwXSA3ZjIwOiBjMDBjOTI0NCBjMDBiYTM3
-OCAyMDAwMDA1MyBmZmZmZmZmZiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApbIDQ2MTkuNzc1MDAw
-XSBbPGMwMDBkZjAwPl0gKF9faXJxX3N2YysweDQwLzB4NzApIGZyb20gWzxjMDBiYTM3OD5dIChr
-bWVtX2NhY2hlX2FsbG9jKzB4NmMvMHhlNCkgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgIApbIDQ2MTkuNzc1MDAwXSBbPGMwMGJhMzc4Pl0gKGttZW1fY2FjaGVfYWxsb2Mr
-MHg2Yy8weGU0KSBmcm9tIFs8YzAwYzkyNDQ+XSAoZ2V0bmFtZV9mbGFncysweDIwLzB4MTE4KSAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApbIDQ2MTkuNzc1MDAwXSBbPGMwMGM5
-MjQ0Pl0gKGdldG5hbWVfZmxhZ3MrMHgyMC8weDExOCkgZnJvbSBbPGMwMGJmMmQ0Pl0gKGRvX3N5
-c19vcGVuKzB4YjQvMHgxNzQpICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-IApbIDQ2MTkuNzc1MDAwXSBbPGMwMGJmMmQ0Pl0gKGRvX3N5c19vcGVuKzB4YjQvMHgxNzQpIGZy
-b20gWzxjMDAwZTMwMD5dIChyZXRfZmFzdF9zeXNjYWxsKzB4MC8weDMwKSAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgIApbIDQ2MTkuNzc1MDAwXSBDUFUyOiBzdG9wcGluZyAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApbIDQ2MTku
-Nzc1MDAwXSBbPGMwMDE0YTk0Pl0gKHVud2luZF9iYWNrdHJhY2UrMHgwLzB4ZjgpIGZyb20gWzxj
-MDAxMzQzOD5dIChoYW5kbGVfSVBJKzB4MTIwLzB4MTRjKSAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgIApbIDQ2MTkuNzc1MDAwXSBbPGMwMDEzNDM4Pl0gKGhhbmRsZV9JUEkr
-MHgxMjAvMHgxNGMpIGZyb20gWzxjMDAwODU1Yz5dIChnaWNfaGFuZGxlX2lycSsweDYwLzB4Njgp
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApbIDQ2MTkuNzc1MDAwXSBb
-PGMwMDA4NTVjPl0gKGdpY19oYW5kbGVfaXJxKzB4NjAvMHg2OCkgZnJvbSBbPGMwMDBkZjAwPl0g
-KF9faXJxX3N2YysweDQwLzB4NzApICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgIApbIDQ2MTkuNzc1MDAwXSBFeGNlcHRpb24gc3RhY2soMHhlNzA2ZmY0MCB0byAweGU3
-MDZmZjg4KSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApbIDQ2MTkuNzc1MDAwXSBmZjQwOiBlNzA2
-ZmY4OCAzYjlhY2EwMCBhM2Q1NjBmMCAwMDAwMDQzMyBhM2E3NmMzMCAwMDAwMDQzMyBjMTRkODNm
-MCAwMDAwMDAwMCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApb
-IDQ2MTkuNzc1MDAwXSBmZjYwOiBjMDQ1YTM4MCA0MTNmYzA5MCBjMDQ1NGY5MCAwMDAwMDAwMCAw
-MDAwMDAxOCBlNzA2ZmY4OCBjMDA1NzkwMCBjMDI1NWI2NCAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIApbIDQ2MTkuNzc1MDAwXSBmZjgwOiA2MDAwMDA1MyBmZmZm
-ZmZmZiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApbIDQ2MTkuNzc1
-MDAwXSBbPGMwMDBkZjAwPl0gKF9faXJxX3N2YysweDQwLzB4NzApIGZyb20gWzxjMDI1NWI2ND5d
-IChjcHVpZGxlX3dyYXBfZW50ZXIrMHg0OC8weDk0KSAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgIApbIDQ2MTkuNzc1MDAwXSBbPGMwMjU1YjY0Pl0gKGNwdWlkbGVfd3JhcF9l
-bnRlcisweDQ4LzB4OTQpIGZyb20gWzxjMDI1NTg2Yz5dIChjcHVpZGxlX2VudGVyX3N0YXRlKzB4
-MTQvMHg2OCkgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApbIDQ2MTkuNzc1MDAwXSBbPGMw
-MjU1ODZjPl0gKGNwdWlkbGVfZW50ZXJfc3RhdGUrMHgxNC8weDY4KSBmcm9tIFs8YzAyNTU5NTQ+
-XSAoY3B1aWRsZV9pZGxlX2NhbGwrMHg5NC8weDEwMCkgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgIApbIDQ2MTkuNzc1MDAwXSBbPGMwMjU1OTU0Pl0gKGNwdWlkbGVfaWRsZV9jYWxsKzB4OTQv
-MHgxMDApIGZyb20gWzxjMDAwZjVlMD5dIChjcHVfaWRsZSsweDkwLzB4ZWMpICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIApbIDQ2MTkuNzc1MDAwXSBbPGMwMDBmNWUwPl0g
-KGNwdV9pZGxlKzB4OTAvMHhlYykgZnJvbSBbPDQwMmZhOTI4Pl0gKDB4NDAyZmE5MjgpICAK
+On 10/02/2014 03:27 PM, GP Orcullo wrote:
+> On Wed, Oct 1, 2014 at 5:20 PM, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+>> On 10/01/2014 11:12 AM, GP Orcullo wrote:
+>>> On Oct 1, 2014 3:54 PM, "Gilles Chanteperdrix" <
+>>> gilles.chanteperdrix@xenomai.org> wrote:
+>>>>
+>>>> On 10/01/2014 01:32 AM, GP Orcullo wrote:
+>>>>> On Sep 30, 2014 8:16 PM, "Gilles Chanteperdrix" <
+>>>>> gilles.chanteperdrix@xenomai.org> wrote:
+>>>>>>
+>>>>>> On 09/30/2014 02:04 PM, GP Orcullo wrote:
+>>>>>>> On Sep 30, 2014 7:30 PM, "Gilles Chanteperdrix" <
+>>>>>>> gilles.chanteperdrix@xenomai.org> wrote:
+>>>>>>>>
+>>>>>>>> On 09/30/2014 07:31 AM, GP Orcullo wrote:
+>>>>>>>>> Hi,
+>>>>>>>>>
+>>>>>>>>> Running the switchtest for extended periods (>10 mins) causes the
+>>>>>>>>> machine to lockup.
+>>>>>>>>>
+>>>>>>>>> I'm running a modified xeno-regression-test which contains only the
+>>>>>>>>> following tests:
+>>>>>>>>>
+>>>>>>>>> check_alive /usr/lib/xenomai/testsuite/switchtest
+>>>>>>>>> check_alive /usr/lib/xenomai/testsuite/switchtest -s 1000
+>>>>>>>>> check_alive /usr/lib/xenomai/testsuite/latency ${1+"$@"}
+>>>>>>>>>
+>>>>>>>>> The script is invoked with the following arguments:
+>>>>>>>>>
+>>>>>>>>> nohup sudo ./xeno-regression-test -l
+>>>>>>>>> "/usr/lib/xenomai/testsuite/dohell -m /media/work 36000" -t 2 >
+>>>>>>>>> /dev/null & top -d0.5
+>>>>>>>>>
+>>>>>>>>> The kernel dumps the OOPS information intermittently so it's
+>>> difficult
+>>>>>>>>> to diagnose the issue.
+>>>>>>>>>
+>>>>>>>>> Attached is the kernel config and the logfile.
+>>>>>>>>
+>>>>>>>> Ok, this is an exynos. Sorry, but I have never seen the patch for
+>>>>>>>> exynos, so I do not know what is inside. You should direct your
+>>>>>>>> questions to whoever provided you with this support.
+>>>>>>>
+>>>>>>> I'm in the process of porting xenomai to run on exynos.
+>>>>>>>
+>>>>>>> The ipipe-core-3.8.13-arm-3.patch applies cleanly to the 3.8.13.11
+>>>>> kernel
+>>>>>>> used by the odroid U3 board.
+>>>>>>>
+>>>>>>> Attached is the ipipe patch that I've made.
+>>>>>>>
+>>>>>>> I was just wondering what would cause switchtest to fail. The error
+>>>>> that I
+>>>>>>> can see is that the system is running out of memory and I don't know
+>>>>>>> exactly what is causing this.
+>>>>>>
+>>>>>> Certainly not switchtest as it does not do any memory allocation.
+>>>>>> However, the dohell script has a loop creating a large file and
+>>> removing
+>>>>>> it. So, could you try and run the dohell script with an unpatched
+>>> kernel
+>>>>>> and see if you have the error?
+>>>>>>
+>>>>>
+>>>>> Running dohell on a patched and unpatched kernel doesn't trigger the
+>>> lockup.
+>>>>>
+>>>>> Running switchtest without dohell works OK.
+>>>>
+>>>> Is the problem a lockup, or an OOM?
+>>>>
+>>>
+>>> It's a lockup.
+>>>
+>>> The OOM message is the only one that I've captured so far.  Most of the
+>>> time the kernel doesn't spew any messages before the lockup.
+>>>
+>>> The lockups are repeatable but generating any error messages isn't.
+>>
+>> Are you running the tests on the serial console, or with ssh? Do you
+>> have unlocked context switch enabled? Have you tried enabling some debug
+>> options?
+>>
+> 
+> I'm using the serial console to log the kernel messages and ssh to run
+> the command. Using purely the serial console has the same results.
+
+The main point was to avoid redirecting standard error to /dev/null to
+see any application error message. Doing this on the serial console may
+be a better idea that on ssh, because it means you are less likely to
+miss a message that would be sent just prior to the system dying.
+
+> 
+> Is this the context switch?: "CONFIG_XENO_HW_UNLOCKED_SWITCH=y"
+
+Yes, please try to disable it if you have it enabled.
+
+> 
+> I will try playing again with the debug options and see if I can get
+> something useful.
+> 
+>> Also note that xeno-regression-test puts the system under a lot of
+>> stress, so it may happen that there is no output for some time (several
+>> minutes), normally the test should stop by itself if there is no output
+>> for something like 30 minutes. So, I would recommend not redirecting
+>> xeno-test output to see if there is any error before the lockup, and
+>> when you see the lockup, leave the system for 30 minutes to see if it
+>> does not restart or if xeno-regression-test can exit gracefully.
+>>
+> 
+> This is a total lockup. There's a heartbeat led that dies when it occurs.
+
+Well the heartbeat led does not prove anything: some Linux kernel
+activity can very well prevent it from being toggled. Say if for
+instance it is toggled by a thread and the activity that hogs the kernel
+is a softirq that never ends.
+
+> 
+> Attached is one error log that I had captured previously and this one
+> had the CONFIG_CPU_IDLE enabled. I've lost track on which kernel this
+> trace came from but maybe the error looks familiar.
+
+This trace misses an important information: the reason for the error.
+So, please capture the serial console to a file, and post the complete
+file, from boot up to the error.
+
+Anyway, you did not answered my question: did you try to leave the
+system on for say 30 minutes of 1 hour after the lockup to see if it
+does not recover?
+
+
+-- 
+                                                                Gilles.
+
