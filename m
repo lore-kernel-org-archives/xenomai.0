@@ -1,21 +1,14 @@
-Date: Fri, 3 Oct 2014 09:20:59 +0200
+Date: Fri, 3 Oct 2014 09:24:19 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141003072059.GA2450@sisyphus.hd.free.fr>
-References: <542A9F17.7090802@xenomai.org>
- <CACreCV+sFAWEzADAD+q6ZitVLcwuKGq1WguvfaXtoX_P9KkkUQ@mail.gmail.com>
- <542BB31F.8070803@xenomai.org>
- <CACreCVK8axcEwipeOTxXp7cwAXz8jGOPqEG9j2dp8zosCZFrjA@mail.gmail.com>
- <542BC753.8000605@xenomai.org>
- <CACreCVJvfuMeRCVdE6NTPK=frJ3_-PL-TDrZy9U5fLAW7gWjcg@mail.gmail.com>
- <542D54C0.3070001@xenomai.org>
- <CACreCVLXpS5coAa3M4-pwWxYLzjiMZTr++_k8zOuyFVKhAfKWQ@mail.gmail.com>
- <542D87AA.6000607@xenomai.org>
- <CACreCVK=dt7Cj87FohsCLxpmGRXcUvuKS6Ki_=-yyxUW3L1oqQ@mail.gmail.com>
+Message-ID: <20141003072419.GB2450@sisyphus.hd.free.fr>
+References: <DUB121-W77031E5D3C1CE7CEB386981B90@phx.gbl>
+ <542D65B0.3080002@xenomai.org>
+ <DUB121-W1275BB81DE6E0C94AEE64981A60@phx.gbl>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CACreCVK=dt7Cj87FohsCLxpmGRXcUvuKS6Ki_=-yyxUW3L1oqQ@mail.gmail.com>
-Subject: Re: [Xenomai] Switchtest failures on ODROIDU3
+In-Reply-To: <DUB121-W1275BB81DE6E0C94AEE64981A60@phx.gbl>
+Subject: Re: [Xenomai] Xenomai on Cortex R (or Rreal Time) family
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,35 +17,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: GP Orcullo <kinsamanka@gmail.com>
+To: mobin Motallebizadeh <mobin.seven@live.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Oct 03, 2014 at 11:35:33AM +0800, GP Orcullo wrote:
-> The system managed to dump some error messages.
+On Fri, Oct 03, 2014 at 03:50:10AM +0000, mobin Motallebizadeh wrote:
 >
+>
+>
+>
+> > On 10/02/2014 04:28 PM, mobin Motallebizadeh wrote:
+> > >  Hi
+> > > can I build xenomai for armv7-r architecture?
+> > > I can't see this mentioned anywhere (surprisingly!)
+> > > Is it same as other MMU-less archs(nios II ,e.g.)?
+> >
+> > The first question to ask is: do you have a Linux kernel for this
+> > processor? because Xenomai needs Linux to run.
+> >
+> >
+>
+> there's uClinux which can support xenomai (as u mentioned in docs) and cortex-r family is limited to.
 
-> [  407.688809] INFO: rcu_preempt detected stalls on CPUs/tasks: { 3} (detected by 0, t=12002 jiffies, g=22447, c=22446, q=113448)
-> [  407.694560] Task dump for CPU 3:
-> [  407.697763] switchtest      R running      0  3979   3640 0x00000002
-> [  407.704111] [<c0453ddc>] (__schedule+0x1fc/0x5f8) from [<00000010>] (0x10)
-> [  587.714458] INFO: rcu_preempt detected stalls on CPUs/tasks: { 3} (detected by 2, t=48007 jiffies, g=22447, c=22446, q=443504)
-> [  587.720205] Task dump for CPU 3:
-> [  587.723407] switchtest      R running      0  3979   3640 0x00000002
-> [  587.729755] [<c0453ddc>] (__schedule+0x1fc/0x5f8) from [<00000010>] (0x10)
-> [  767.740128] INFO: rcu_preempt detected stalls on CPUs/tasks: { 3} (detected by 2, t=84012 jiffies, g=22447, c=22446, q=1136198)
-> [  767.745964] Task dump for CPU 3:
-> [  767.749167] switchtest      R running      0  3979   3640 0x00000002
-> [  767.755515] [<c0453ddc>] (__schedule+0x1fc/0x5f8) from [<00000010>] (0x10)
-> [  782.763027] ------------[ cut here ]------------
-> [  782.763099] WARNING: at include/linux/ipipe_domain.h:212 __ipipe_dispatch_irq+0x35c/0x5a0()
-> [  782.770380] Modules linked in: nfsv3 nfsv4 nfsd exportfs nfs_acl auth_rpcgss nfs lockd sunrpc vfat fat smsc95xx usbnet mii gpio_keys
-> [  782.782218] [<c0015624>] (unwind_backtrace+0x0/0xf8) from [<c0026118>] (warn_slowpath_common+0x4c/0x64)
-> [  782.791606] [<c0026118>] (warn_slowpath_common+0x4c/0x64) from [<c002614c>] (warn_slowpath_null+0x1c/0x24)
-> [  782.801232] [<c002614c>] (warn_slowpath_null+0x1c/0x24) from [<c00886ac>] (__ipipe_dispatch_irq+0x35c/0x5a0)
-> [  782.811035] [<c00886ac>] (__ipipe_dispatch_irq+0x35c/0x5a0) from [<c00200c8>] (combiner_handle_cascade_irq+0x80/0xf4)
-> [  782.821620] [<c00200c8>] (combiner_handle_cascade_irq+0x80/0xf4) from [<c0019110>] (__ipipe_ack_irq+0xc/0x10)
-
-This is bad, can I see the code of the "combiner_handle_cascade_irq" function?
+If it is not the mainline Linux, and it does not share code with the
+ARM Linux port, then as Philippe indicated a new port of the I-pipe
+patch is needed, but that is doable.
 
 --
 					    Gilles.
