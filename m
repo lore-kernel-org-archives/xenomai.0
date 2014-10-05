@@ -1,21 +1,10 @@
+Date: Mon, 6 Oct 2014 00:27:51 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141005222751.GM14975@sisyphus.hd.free.fr>
 MIME-Version: 1.0
-In-Reply-To: <20141005220404.GL14975@sisyphus.hd.free.fr>
-References: <20141003085757.GI2450@sisyphus.hd.free.fr>
- <CACreCV+0uY+j2ZSGP7xUpQQ7_J=3tgtC+5UXxfqxd852719xXg@mail.gmail.com>
- <542EA6A2.306@xenomai.org>
- <CACreCVKe_nw=6p1xQkbziPne4cW74kx0EtUWG0kC4roS7+w+yw@mail.gmail.com>
- <20141003191454.GF9452@sisyphus.hd.free.fr>
- <CACreCVLi=QT72p0pca76_7tsJn+TazdQjyy7NHW_NwfxCYbuKA@mail.gmail.com>
- <20141003224829.GA6850@sisyphus.hd.free.fr>
- <CACreCV+TDzXxX=e7MpscYcGn1sTTye9N-mED0iPfqVB9Zm4xdQ@mail.gmail.com>
- <20141004113116.GC7596@sisyphus.hd.free.fr>
- <CACreCV+ok_Ogd3iFPGNS3n640hdLQC3C_Pyzz=w80St-7buXWQ@mail.gmail.com>
- <20141005220404.GL14975@sisyphus.hd.free.fr>
-Date: Mon, 6 Oct 2014 06:24:53 +0800
-Message-ID: <CACreCVJFa6FB=3WR_OuMvACeYOWaA035T4KK7dFg8vHhyqkz8w@mail.gmail.com>
-From: GP Orcullo <kinsamanka@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Switchtest failures on ODROIDU3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [Xenomai] AVX/SSE2 routines
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,89 +13,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On Mon, Oct 6, 2014 at 6:04 AM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On Mon, Oct 06, 2014 at 06:00:23AM +0800, GP Orcullo wrote:
->> On Sat, Oct 4, 2014 at 7:31 PM, Gilles Chanteperdrix
->> <gilles.chanteperdrix@xenomai.org> wrote:
->> > On Sat, Oct 04, 2014 at 06:26:33PM +0800, GP Orcullo wrote:
->> >> On Sat, Oct 4, 2014 at 6:48 AM, Gilles Chanteperdrix
->> >> <gilles.chanteperdrix@xenomai.org> wrote:
->> >> > On Sat, Oct 04, 2014 at 06:45:08AM +0800, GP Orcullo wrote:
->> >> >> On Sat, Oct 4, 2014 at 3:14 AM, Gilles Chanteperdrix
->> >> >> <gilles.chanteperdrix@xenomai.org> wrote:
->> >> >> > On Fri, Oct 03, 2014 at 11:28:52PM +0800, GP Orcullo wrote:
->> >> >> >> I've added BUG_ON(!hard_irqs_disabled()) to the code and got the
->> >> >> >> kernel to oops at startup.
->> >> >> >>
->> >> >> >> Where shall I start looking for the offending code?
->> >> >> >
->> >> >> > The thing is, all the tracepoints you have are late after the
->> >> >> > fault. A better strategy is to replace BUG_ON(!hard_irqs_disabled)
->> >> >> > with:
->> >> >> >
->> >> >> > if (!hard_irqs_disabled()) {
->> >> >> >    ipipe_trace_panic_freeze();
->> >> >> >    ipipe_trace_panic_dump();
->> >> >> >    BUG();
->> >> >> > }
->> >> >> >
->> >> >>
->> >> >> The results are almost similar.
->> >> >>
->> >> >
->> >> >> [   15.550769] Unable to handle kernel NULL pointer dereference at virtual address 0000000c
->> >> >
->> >>
->> >> This is due to user error - I've mixed up the module versions...
->> >>
->> >> > This is not caused by the code above. This is another bug.
->> >> >
->> >> > With the code above, you should see a line
->> >> > "BUG" or something.
->> >> >
->> >>
->> >> Getting this kernel to print any messages before lockup is very
->> >> difficult. Is there another way of debugging it beside using jtag?
->> >>
->> >
->> > I generally use printk or the I-pipe tracer in some creative way
->> > (trigger a trace freeze on some condition then BUG()). You could for
->> > instance check whether the Linux timer irq is still running by
->> > putting a printascii(".") there every HZ ticks. If it is not running
->> > check the same with the Xenomai timer irq, then finally the I-pipe
->> > timer ack function. On x86 we have the NMI watchdog to help with
->> > lockups, maybe someone could implement a similar functionality with
->> > FIQ on ARM.
->> >
->>
->>
->> The cause of the lockups is due to CONFIG_PREEMPT. The board is
->> running for more than 6 hrs now after disabling it.
->>
->> Thanks for all your help!
->
-> Xenomai runs fine with CONFIG_PREEMPT. The reason why CONFIG_PREEMPT
-> may be an issue is if you are using "preempt_disable" or
-> "preempt_enable", which use current, in a place where you
-> should not (on the context of a kernel-space thread for
-> instance). This happens for instance when using a plain Linux
-> spinlock in real-time code.
->
-> But this should not happen.
->
-> --
->                                             Gilles.
+Hi Jan,
 
-Before disabling CONFIG_PREEMPT, I've been seeing this line:
+I noticed two problems with the fp_regs_set routine. First, in
+kernel-space, it does not set all the values of the "vec" array,
+it only sets the first one, before running the series of vmovupd
+instructions. I believe this issue can be avoided with the following
+patch:
 
-[  123.982550] hrtimer: interrupt took 280933 ns
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/fptest.h b/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/fptest.h
+index d6a9a68..d406cc3 100644
+--- a/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/fptest.h
++++ b/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/fptest.h
+@@ -39,7 +39,7 @@ static inline void fp_regs_set(int features, unsigned int val)
+			"vmovupd %0,%%ymm5;"
+			"vmovupd %0,%%ymm6;"
+			"vmovupd %0,%%ymm7;"
+-			: : "m" (vec[0]));
++			: : "m"(vec[0]), "m"(vec[1]), "m"(vec[2]), "m"(vec[3]));
+	} else if (features & __COBALT_HAVE_SSE2) {
+		__asm__ __volatile__(
+			"movupd %0,%%xmm0;"
+@@ -50,7 +50,7 @@ static inline void fp_regs_set(int features, unsigned int val)
+			"movupd %0,%%xmm5;"
+			"movupd %0,%%xmm6;"
+			"movupd %0,%%xmm7;"
+-			: : "m" (vec[0]));
++			: : "m"(vec[0]), "m"(vec[1]), "m"(vec[2]), "m"(vec[3]));
+	}
+ }
 
-Is this normal?
+The other issue is that in user-space, when compiling with -Os, the
+following code is generated for fp_regs_set:
 
--- 
-GP Orcullo
+0000000000000000 <fp_regs_set>:
+       0:       89 74 24 dc             mov    %esi,-0x24(%rsp)
+       4:       89 f6                   mov    %esi,%esi
+       6:       48 c7 44 24 e8 00 00    movq   $0x0,-0x18(%rsp)
+       d:       00 00
+       f:       48 89 74 24 e0          mov    %rsi,-0x20(%rsp)
+      14:       48 89 74 24 f0          mov    %rsi,-0x10(%rsp)
+      19:       48 c7 44 24 f8 00 00    movq   $0x0,-0x8(%rsp)
+      20:       00 00
+      22:       db 44 24 dc             fildl  -0x24(%rsp)
+      26:       db 44 24 dc             fildl  -0x24(%rsp)
+      2a:       db 44 24 dc             fildl  -0x24(%rsp)
+      2e:       db 44 24 dc             fildl  -0x24(%rsp)
+      32:       db 44 24 dc             fildl  -0x24(%rsp)
+      36:       db 44 24 dc             fildl  -0x24(%rsp)
+      3a:       db 44 24 dc             fildl  -0x24(%rsp)
+      3e:       db 44 24 dc             fildl  -0x24(%rsp)
+      42:       40 f6 c7 02             test   $0x2,%dil
+      46:       74 31                   je     79 <fp_regs_set+0x79>
+      48:       c5 fd 10 44 24 e0       vmovupd -0x20(%rsp),%ymm0
+      4e:       c5 fd 10 4c 24 e0       vmovupd -0x20(%rsp),%ymm1
+      54:       c5 fd 10 54 24 e0       vmovupd -0x20(%rsp),%ymm2
+      5a:       c5 fd 10 5c 24 e0       vmovupd -0x20(%rsp),%ymm3
+      60:       c5 fd 10 64 24 e0       vmovupd -0x20(%rsp),%ymm4
+      66:       c5 fd 10 6c 24 e0       vmovupd -0x20(%rsp),%ymm5
+      6c:       c5 fd 10 74 24 e0       vmovupd -0x20(%rsp),%ymm6
+      72:       c5 fd 10 7c 24 e0       vmovupd -0x20(%rsp),%ymm7
+      78:       c3                      retq
+      79:       40 80 e7 01             and    $0x1,%dil
+      7d:       74 30                   je     af <fp_regs_set+0xaf>
+      7f:       66 0f 10 44 24 e0       movupd -0x20(%rsp),%xmm0
+      85:       66 0f 10 4c 24 e0       movupd -0x20(%rsp),%xmm1
+      8b:       66 0f 10 54 24 e0       movupd -0x20(%rsp),%xmm2
+      91:       66 0f 10 5c 24 e0       movupd -0x20(%rsp),%xmm3
+      97:       66 0f 10 64 24 e0       movupd -0x20(%rsp),%xmm4
+      9d:       66 0f 10 6c 24 e0       movupd -0x20(%rsp),%xmm5
+      a3:       66 0f 10 74 24 e0       movupd -0x20(%rsp),%xmm6
+      a9:       66 0f 10 7c 24 e0       movupd -0x20(%rsp),%xmm7
+      af:       c3                      retq
+
+Unless I missed some details, a negative offset of the rsp does not
+make sense. I have not found a workaround for this issue (other than
+not using the -Os option), however I believe, somehow, something is
+missing to the assembly to tell gcc that it should allocate this
+space on stack, because we are using it.
+
+Any ideas?
+
+Regards.
+
+--
+					    Gilles.
 
