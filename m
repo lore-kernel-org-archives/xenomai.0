@@ -1,11 +1,18 @@
 MIME-Version: 1.0
-In-Reply-To: <542A9F17.7090802@xenomai.org>
-References: <CACreCVKF=VQuWhaxkAPTOAaDui0aze+Vc4MOq+vby+2eBRx1iA@mail.gmail.com>
- <542A945E.9000904@xenomai.org>
- <CACreCVK_Xd79uaHpzODKMQHMVrH58KvsKuBQ5kRsOhM++BXT4w@mail.gmail.com>
- <542A9F17.7090802@xenomai.org>
-Date: Wed, 1 Oct 2014 07:32:48 +0800
-Message-ID: <CACreCV+sFAWEzADAD+q6ZitVLcwuKGq1WguvfaXtoX_P9KkkUQ@mail.gmail.com>
+In-Reply-To: <20141004113116.GC7596@sisyphus.hd.free.fr>
+References: <20141003072059.GA2450@sisyphus.hd.free.fr>
+ <CACreCVLij_wUhe3pkpd7fjHKQV0=+NZf3a_EXoWzJu5v9Oon-Q@mail.gmail.com>
+ <20141003085757.GI2450@sisyphus.hd.free.fr>
+ <CACreCV+0uY+j2ZSGP7xUpQQ7_J=3tgtC+5UXxfqxd852719xXg@mail.gmail.com>
+ <542EA6A2.306@xenomai.org>
+ <CACreCVKe_nw=6p1xQkbziPne4cW74kx0EtUWG0kC4roS7+w+yw@mail.gmail.com>
+ <20141003191454.GF9452@sisyphus.hd.free.fr>
+ <CACreCVLi=QT72p0pca76_7tsJn+TazdQjyy7NHW_NwfxCYbuKA@mail.gmail.com>
+ <20141003224829.GA6850@sisyphus.hd.free.fr>
+ <CACreCV+TDzXxX=e7MpscYcGn1sTTye9N-mED0iPfqVB9Zm4xdQ@mail.gmail.com>
+ <20141004113116.GC7596@sisyphus.hd.free.fr>
+Date: Mon, 6 Oct 2014 06:00:23 +0800
+Message-ID: <CACreCV+ok_Ogd3iFPGNS3n640hdLQC3C_Pyzz=w80St-7buXWQ@mail.gmail.com>
 From: GP Orcullo <kinsamanka@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Subject: Re: [Xenomai] Switchtest failures on ODROIDU3
@@ -18,67 +25,69 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Sep 30, 2014 8:16 PM, "Gilles Chanteperdrix" <
-gilles.chanteperdrix@xenomai.org> wrote:
+On Sat, Oct 4, 2014 at 7:31 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On Sat, Oct 04, 2014 at 06:26:33PM +0800, GP Orcullo wrote:
+>> On Sat, Oct 4, 2014 at 6:48 AM, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org> wrote:
+>> > On Sat, Oct 04, 2014 at 06:45:08AM +0800, GP Orcullo wrote:
+>> >> On Sat, Oct 4, 2014 at 3:14 AM, Gilles Chanteperdrix
+>> >> <gilles.chanteperdrix@xenomai.org> wrote:
+>> >> > On Fri, Oct 03, 2014 at 11:28:52PM +0800, GP Orcullo wrote:
+>> >> >> I've added BUG_ON(!hard_irqs_disabled()) to the code and got the
+>> >> >> kernel to oops at startup.
+>> >> >>
+>> >> >> Where shall I start looking for the offending code?
+>> >> >
+>> >> > The thing is, all the tracepoints you have are late after the
+>> >> > fault. A better strategy is to replace BUG_ON(!hard_irqs_disabled)
+>> >> > with:
+>> >> >
+>> >> > if (!hard_irqs_disabled()) {
+>> >> >    ipipe_trace_panic_freeze();
+>> >> >    ipipe_trace_panic_dump();
+>> >> >    BUG();
+>> >> > }
+>> >> >
+>> >>
+>> >> The results are almost similar.
+>> >>
+>> >
+>> >> [   15.550769] Unable to handle kernel NULL pointer dereference at virtual address 0000000c
+>> >
+>>
+>> This is due to user error - I've mixed up the module versions...
+>>
+>> > This is not caused by the code above. This is another bug.
+>> >
+>> > With the code above, you should see a line
+>> > "BUG" or something.
+>> >
+>>
+>> Getting this kernel to print any messages before lockup is very
+>> difficult. Is there another way of debugging it beside using jtag?
+>>
 >
-> On 09/30/2014 02:04 PM, GP Orcullo wrote:
-> > On Sep 30, 2014 7:30 PM, "Gilles Chanteperdrix" <
-> > gilles.chanteperdrix@xenomai.org> wrote:
-> >>
-> >> On 09/30/2014 07:31 AM, GP Orcullo wrote:
-> >>> Hi,
-> >>>
-> >>> Running the switchtest for extended periods (>10 mins) causes the
-> >>> machine to lockup.
-> >>>
-> >>> I'm running a modified xeno-regression-test which contains only the
-> >>> following tests:
-> >>>
-> >>> check_alive /usr/lib/xenomai/testsuite/switchtest
-> >>> check_alive /usr/lib/xenomai/testsuite/switchtest -s 1000
-> >>> check_alive /usr/lib/xenomai/testsuite/latency ${1+"$@"}
-> >>>
-> >>> The script is invoked with the following arguments:
-> >>>
-> >>> nohup sudo ./xeno-regression-test -l
-> >>> "/usr/lib/xenomai/testsuite/dohell -m /media/work 36000" -t 2 >
-> >>> /dev/null & top -d0.5
-> >>>
-> >>> The kernel dumps the OOPS information intermittently so it's difficult
-> >>> to diagnose the issue.
-> >>>
-> >>> Attached is the kernel config and the logfile.
-> >>
-> >> Ok, this is an exynos. Sorry, but I have never seen the patch for
-> >> exynos, so I do not know what is inside. You should direct your
-> >> questions to whoever provided you with this support.
-> >
-> > I'm in the process of porting xenomai to run on exynos.
-> >
-> > The ipipe-core-3.8.13-arm-3.patch applies cleanly to the 3.8.13.11
-kernel
-> > used by the odroid U3 board.
-> >
-> > Attached is the ipipe patch that I've made.
-> >
-> > I was just wondering what would cause switchtest to fail. The error
-that I
-> > can see is that the system is running out of memory and I don't know
-> > exactly what is causing this.
+> I generally use printk or the I-pipe tracer in some creative way
+> (trigger a trace freeze on some condition then BUG()). You could for
+> instance check whether the Linux timer irq is still running by
+> putting a printascii(".") there every HZ ticks. If it is not running
+> check the same with the Xenomai timer irq, then finally the I-pipe
+> timer ack function. On x86 we have the NMI watchdog to help with
+> lockups, maybe someone could implement a similar functionality with
+> FIQ on ARM.
 >
-> Certainly not switchtest as it does not do any memory allocation.
-> However, the dohell script has a loop creating a large file and removing
-> it. So, could you try and run the dohell script with an unpatched kernel
-> and see if you have the error?
->
-
-Running dohell on a patched and unpatched kernel doesn't trigger the lockup.
-
-Running switchtest without dohell works OK.
-
-What's the best way to tackle this issue?
-
 > --
->                                                                 Gilles.
+>                                             Gilles.
+
+
+The cause of the lockups is due to CONFIG_PREEMPT. The board is
+running for more than 6 hrs now after disabling it.
+
+Thanks for all your help!
+
+-- 
+GP Orcullo
+
