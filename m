@@ -1,21 +1,12 @@
-Date: Mon, 6 Oct 2014 00:30:51 +0200
+Date: Mon, 6 Oct 2014 01:12:09 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141005223051.GN14975@sisyphus.hd.free.fr>
-References: <542EA6A2.306@xenomai.org>
- <CACreCVKe_nw=6p1xQkbziPne4cW74kx0EtUWG0kC4roS7+w+yw@mail.gmail.com>
- <20141003191454.GF9452@sisyphus.hd.free.fr>
- <CACreCVLi=QT72p0pca76_7tsJn+TazdQjyy7NHW_NwfxCYbuKA@mail.gmail.com>
- <20141003224829.GA6850@sisyphus.hd.free.fr>
- <CACreCV+TDzXxX=e7MpscYcGn1sTTye9N-mED0iPfqVB9Zm4xdQ@mail.gmail.com>
- <20141004113116.GC7596@sisyphus.hd.free.fr>
- <CACreCV+ok_Ogd3iFPGNS3n640hdLQC3C_Pyzz=w80St-7buXWQ@mail.gmail.com>
- <20141005220404.GL14975@sisyphus.hd.free.fr>
- <CACreCVJFa6FB=3WR_OuMvACeYOWaA035T4KK7dFg8vHhyqkz8w@mail.gmail.com>
+Message-ID: <20141005231208.GO14975@sisyphus.hd.free.fr>
+References: <5431959D.8060504@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CACreCVJFa6FB=3WR_OuMvACeYOWaA035T4KK7dFg8vHhyqkz8w@mail.gmail.com>
-Subject: Re: [Xenomai] Switchtest failures on ODROIDU3
+In-Reply-To: <5431959D.8060504@xenomai.org>
+Subject: Re: [Xenomai] [ANNOUNCE] Xenomai 3.0-rc1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,40 +15,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: GP Orcullo <kinsamanka@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Mon, Oct 06, 2014 at 06:24:53AM +0800, GP Orcullo wrote:
-> On Mon, Oct 6, 2014 at 6:04 AM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
-> > On Mon, Oct 06, 2014 at 06:00:23AM +0800, GP Orcullo wrote:
-> >> The cause of the lockups is due to CONFIG_PREEMPT. The board is
-> >> running for more than 6 hrs now after disabling it.
-> >>
-> >> Thanks for all your help!
-> >
-> > Xenomai runs fine with CONFIG_PREEMPT. The reason why CONFIG_PREEMPT
-> > may be an issue is if you are using "preempt_disable" or
-> > "preempt_enable", which use current, in a place where you
-> > should not (on the context of a kernel-space thread for
-> > instance). This happens for instance when using a plain Linux
-> > spinlock in real-time code.
-> >
-> > But this should not happen.
-> >
+On Sun, Oct 05, 2014 at 09:01:49PM +0200, Philippe Gerum wrote:
 >
-> Before disabling CONFIG_PREEMPT, I've been seeing this line:
+> We are pleased to announce the official release of Xenomai 3.0-rc1,
+> which starts the candidate release cycle for Xenomai 3.
 >
-> [  123.982550] hrtimer: interrupt took 280933 ns
+> Xenomai 3 is the new architecture of our real-time framework,
+> which can run its APIs side-by-side with Linux as a co-kernel system
+> delivering very low latencies, or natively over unmodified Linux
+> kernels. In the latter case, the mainline kernel can be supplemented by
+> the preempt-rt patch to meet stricter real-time requirements.
 >
-> Is this normal?
+> The dual kernel configuration is currently supported over arm 32bit,
+> powerpc32, powerpc64, x86_32, x86_64 and blackfin, with a port to
+> aarch64 planned on Q1-2015. The single/native kernel configuration runs
+> on any CPU architecture Linux supports.
+>
+> = What's new in Xenomai 3?
+>
+> http://xenomai.org/introducing-xenomai-3/
+>
+> = How to migrate from Xenomai 2.x?
+>
+> http://xenomai.org/migrating-from-xenomai-2-x-to-3-x/
+>
+> = Where is the code?
+>
+> http://git.xenomai.org/xenomai-3.git/
+> http://download.gna.org/xenomai/testing/latest/xenomai-3.0-rc1.tar.bz2
+>
+> Thanks to all Xenomai contributors, and to the companies who made this
+> possible, mainly by directly funding the development of some of the
+> Xenomai 3 features, or giving access to the latest hardware.
 >
 
-It means that Linux was interrupted by Xenomai during its timer
-interrupt, and that Xenomai interrupted it for 280us. This may
-happens with switchtest if it has a really long chain of context
-switches. If you want to check what happened, enable the I-pipe
-tracer, and trigger a trace freeze right before this message.
+Those who wish a quick test run of xeno-test on Xenomai 3 co-kernel
+on x86_64 may try and use the pre-built bzImage and initrd available
+here:
+
+http://xenomai.org/live-initramfs/3.0-rc1/
+
+You will find an example configuration file for booting with
+syslinux. The way to make bootable usb keys with syslinux is
+described here:
+
+http://www.syslinux.org/wiki/index.php/HowTos
+
+However, be warned: this initrd launches a telnet and ssh servers
+with an empty root password, so do not use it on an hostile network,
+and of course not on a machine with an interface with a public IP
+address.
 
 --
 					    Gilles.
