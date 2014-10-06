@@ -1,16 +1,17 @@
-Date: Mon, 6 Oct 2014 23:17:27 +0600
-From: Alexey Shaposhnikov <canisdirusleidy@yandex.ru>
-Message-ID: <20141006231727.0dbc8d26@warrawoona.sti>
-In-Reply-To: <20141005135208.GC20179@sisyphus.hd.free.fr>
+Message-ID: <5432D2D7.4080807@xenomai.org>
+Date: Mon, 06 Oct 2014 19:35:19 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
 References: <20141004125236.655cdb65@warrawoona.sti>
  <20141004111706.GA7596@sisyphus.hd.free.fr>
  <20141005120601.112acc4e@warrawoona.sti>
  <20141005135208.GC20179@sisyphus.hd.free.fr>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+ <20141006231727.0dbc8d26@warrawoona.sti>
+In-Reply-To: <20141006231727.0dbc8d26@warrawoona.sti>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Porting ipipe to vendor specific kernel. Newbie
- question.
+	question.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,63 +20,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Alexey Shaposhnikov <canisdirusleidy@yandex.ru>, Xenomai <xenomai@xenomai.org>
 
-On Sun, 5 Oct 2014 15:52:08 +0200
-Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+On 10/06/2014 07:17 PM, Alexey Shaposhnikov wrote:
+> ./scripts/ipipe/genpatches.sh v3.4.103
+> reference: v3.4.103, kernel version: 3.4.6
 
-> > Already tried this. But in result the script parse every driver code change
-> > since 3.4.6 and make over four hundreds errors about missing architecture
-> > for files like usb/serial/whiteheat.c
-> 
-> That is because genpatches.sh uses the stable kernel as a base for the
-> patch by default. You have to pass as argument to genpatches.sh the
-> hash of the commit you want it to use as base if you do not want
-> that default behaviour.
+You are generating I-pipe patches for the diff between v3.4.103 and
+v3.4.6. This is probably not what you want to do.
 
-Maybe I was misunderstood due to my terrible English... Current linux-sunxi
-kernel is based on 3.4.103 mainstream kernel, so I trying to port ipipe core
-patch from 3.4.6 for 3.4.103. For this I:
+If you want to generate I-pipe patch for 3.4.6 branch, then simply run
+genpatches.sh v3.4.6 or genpatches.sh with no argument.
 
-a)got sources from repository: "git clone -b legacy/core-3.4
-git://git.xenomai.org/ipipe.git"
-b)run genpatches.sh with this command: "./scripts/ipipe/genpatches.sh v3.4.103"
-and get this:
+But these patches are available here:
+http://download.gna.org/adeos/patches/v3.x/arm/older/
 
-===
-./scripts/ipipe/genpatches.sh v3.4.103
-reference: v3.4.103, kernel version: 3.4.6
-Error unknown architecture for driver acpi/ac.c
-ipipe-core-3.4.6-h8300-.patch
-ipipe-core-3.4.6-avr32-.patch
-ipipe-core-3.4.6-frv-.patch
-ipipe-core-3.4.6-parisc-.patch
-ipipe-core-3.4.6-score-.patch
-ipipe-core-3.4.6-powerpc-4.patch
-ipipe-core-3.4.6-microblaze-.patch
-ipipe-core-3.4.6-xtensa-.patch
-ipipe-core-3.4.6-um-.patch
-ipipe-core-3.4.6-unicore32-.patch
-ipipe-core-3.4.6-ia64-.patch
-ipipe-core-3.4.6-arm-4.patch
-ipipe-core-3.4.6-s390-.patch
-ipipe-core-3.4.6-cris-.patch
-ipipe-core-3.4.6-x86-4.patch
-ipipe-core-3.4.6-sparc-.patch
-ipipe-core-3.4.6-tile-.patch
-ipipe-core-3.4.6-mips-.patch
-ipipe-core-3.4.6-alpha-.patch
-ipipe-core-3.4.6-sh-.patch
-ipipe-core-3.4.6-mn10300-.patch
-ipipe-core-3.4.6-m32r-.patch
-ipipe-core-3.4.6-m68k-.patch
-ipipe-core-3.4.6-blackfin-4.patch
-===
-(If use script from ipipe-3.14 branch then it not make all those crippled
-patches, but generate four hundreds errors about missing architecture)
+What I would do if I were you is:
 
-So I'm definitely doing something wrong, but can't figure what.
+git checkout -b my-3.4 legacy/core-3.4
+git merge v3.4.103
+
+Fix the conflicts.
+
+genpatches.sh v3.4.103, in order to generate patches for the 3.4.103 branch.
+
+Then git merge sun-xi
+
+Fix the conflicts and get the port running
+
+Then follow:
+http://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc/#Working_with_vendor_forks
+
+To generate pre- and post- patches for the patches for 3.4.103 generated
+above.
+
+Alternatively,
+
+run genpatches.sh sun-xi
+
+in order to generate an all-in-one adeos patch for the sun-xi kernel. It
+may also make sense since the kernel 3.4 is a bit old now (more than 2
+years), so we are not going to include a new version of it in a next
+release of xenomai.
 
 -- 
-Alexey Shaposhnikov
+                                                                Gilles.
 
