@@ -1,11 +1,12 @@
-From: Steve Hartmann <shartmann@cnt.canon.com>
-Date: Tue, 7 Oct 2014 20:16:39 +0000
-Message-ID: <D059B455.193D3%shartmann@cnt.canon.com>
-Content-Language: en-US
+Date: Tue, 7 Oct 2014 22:36:50 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141007203650.GC1685@sisyphus.hd.free.fr>
+References: <D059B455.193D3%shartmann@cnt.canon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] SIGXCPU on pthread_mutex_unlock()
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <D059B455.193D3%shartmann@cnt.canon.com>
+Subject: Re: [Xenomai] SIGXCPU on pthread_mutex_unlock()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,23 +15,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Steve Hartmann <shartmann@cnt.canon.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Hi folks,
+On Tue, Oct 07, 2014 at 08:16:39PM +0000, Steve Hartmann wrote:
+> Hi folks,
+>
+> I'm having an issue I hope someone here might be able to shed some light on.
+>
+> I am running Xenomai 2.6.4 on linux 3.4.6.  The application has a very large source base which was not originally designed for xenomai.   I am using xenomai because of some new requirements and the addition of EtherLabs Ethercat master.
+> So in one of the original threads, which is running at PRI 0,  I have two mutexes which when unlocked throw a SIGXCPU signal.  These mutexes are only locked/unlocked in this same thread.  I have seen this happen when a mutex which is not locked has an unlock attempt.  This is not the case for this issue.
+>
+> What could I be doing which would cause a pthread_mutex_unlock to throw the SIGXCPU signal?  Any suggestions for troubleshooting techniques?
 
-I'm having an issue I hope someone here might be able to shed some light on=
-.
+When you receive the SIGXCPU signal, you should check the reason as
+demonstrated in the examples/native/sigdebug.c program.
 
-I am running Xenomai 2.6.4 on linux 3.4.6.  The application has a very larg=
-e source base which was not originally designed for xenomai.   I am using x=
-enomai because of some new requirements and the addition of EtherLabs Ether=
-cat master.
-So in one of the original threads, which is running at PRI 0,  I have two m=
-utexes which when unlocked throw a SIGXCPU signal.  These mutexes are only =
-locked/unlocked in this same thread.  I have seen this happen when a mutex =
-which is not locked has an unlock attempt.  This is not the case for this i=
-ssue.
+Regards.
 
-What could I be doing which would cause a pthread_mutex_unlock to throw the=
- SIGXCPU signal?  Any suggestions for troubleshooting techniques?
+--
+					    Gilles.
 
