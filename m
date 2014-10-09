@@ -1,15 +1,21 @@
-Date: Thu, 9 Oct 2014 04:36:00 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141009023600.GE30368@sisyphus.hd.free.fr>
-References: <D059B455.193D3%shartmann@cnt.canon.com>
- <20141007203650.GC1685@sisyphus.hd.free.fr>
- <20141007204510.GD1685@sisyphus.hd.free.fr>
- <D05AE639.193F6%shartmann@cnt.canon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <D05AE639.193F6%shartmann@cnt.canon.com>
-Subject: Re: [Xenomai] SIGXCPU on pthread_mutex_unlock()
+In-Reply-To: <20141005223051.GN14975@sisyphus.hd.free.fr>
+References: <542EA6A2.306@xenomai.org>
+ <CACreCVKe_nw=6p1xQkbziPne4cW74kx0EtUWG0kC4roS7+w+yw@mail.gmail.com>
+ <20141003191454.GF9452@sisyphus.hd.free.fr>
+ <CACreCVLi=QT72p0pca76_7tsJn+TazdQjyy7NHW_NwfxCYbuKA@mail.gmail.com>
+ <20141003224829.GA6850@sisyphus.hd.free.fr>
+ <CACreCV+TDzXxX=e7MpscYcGn1sTTye9N-mED0iPfqVB9Zm4xdQ@mail.gmail.com>
+ <20141004113116.GC7596@sisyphus.hd.free.fr>
+ <CACreCV+ok_Ogd3iFPGNS3n640hdLQC3C_Pyzz=w80St-7buXWQ@mail.gmail.com>
+ <20141005220404.GL14975@sisyphus.hd.free.fr>
+ <CACreCVJFa6FB=3WR_OuMvACeYOWaA035T4KK7dFg8vHhyqkz8w@mail.gmail.com>
+ <20141005223051.GN14975@sisyphus.hd.free.fr>
+Date: Thu, 9 Oct 2014 18:02:36 +0800
+Message-ID: <CACreCVLQsaq01vsNA_V_bu9_NyMCTwZTiZJo2sFXJHgaaVjQVg@mail.gmail.com>
+From: GP Orcullo <kinsamanka@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Switchtest failures on ODROIDU3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,77 +24,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Steve Hartmann <shartmann@cnt.canon.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On Wed, Oct 08, 2014 at 06:48:00PM +0000, Steve Hartmann wrote:
+On Mon, Oct 6, 2014 at 6:30 AM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
 >
+> It means that Linux was interrupted by Xenomai during its timer
+> interrupt, and that Xenomai interrupted it for 280us. This may
+> happens with switchtest if it has a really long chain of context
+> switches. If you want to check what happened, enable the I-pipe
+> tracer, and trigger a trace freeze right before this message.
 >
-> On 10/7/14 3:45 PM, "Gilles Chanteperdrix"
-> <gilles.chanteperdrix@xenomai.org> wrote:
->
-> >On Tue, Oct 07, 2014 at 10:36:50PM +0200, Gilles Chanteperdrix wrote:
-> >> On Tue, Oct 07, 2014 at 08:16:39PM +0000, Steve Hartmann wrote:
-> >> > Hi folks,
-> >> >
-> >> > I'm having an issue I hope someone here might be able to shed some
-> >>light on.
-> >> >
-> >> > I am running Xenomai 2.6.4 on linux 3.4.6.  The application has a
-> >>very large source base which was not originally designed for xenomai.
-> >>I am using xenomai because of some new requirements and the addition of
-> >>EtherLabs Ethercat master.
-> >> > So in one of the original threads, which is running at PRI 0,  I have
-> >>two mutexes which when unlocked throw a SIGXCPU signal.  These mutexes
-> >>are only locked/unlocked in this same thread.  I have seen this happen
-> >>when a mutex which is not locked has an unlock attempt.  This is not the
-> >>case for this issue.
-> >> >
-> >> > What could I be doing which would cause a pthread_mutex_unlock to
-> >>throw the SIGXCPU signal?  Any suggestions for troubleshooting
-> >>techniques?
-> >>
-> >> When you receive the SIGXCPU signal, you should check the reason as
-> >> demonstrated in the examples/native/sigdebug.c program.
-> >
-> >Or see:
-> >http://xenomai.org/2014/06/finding-spurious-relaxes/
-> >
->
-> Thanks for the hints.  I probably would have found it myself had I been
-> searching for SIGDEBUG instead of SIGXCPU.
->
-> Anyway, the reason I am getting a SIGDEBUG_RESCNT_IMBALANCE.  I did a
-> search and saw there were some changes between 2.6.2.1 and 2.6.4 regarding
-> the rescnt imbalance.  I just so happen to have two machines running this
-> same code - one on 2.6.2.1 and one on 2.6.4.  Only the one on 2.6.4
-> machine is throwing this signal.  Either the xenomai change introduced a
-> new bug, or the change in xenomai has exposed a bug in our code.
+> --
+>                                             Gilles.
 
-Indeed.
+One more piece to the puzzle: disabling CONFIG_IPIPE_DEBUG_INTERNAL
+causes the system to lockup.
 
->  I have reviewed our code and it seems to be correct.  I even
-> threw in an extra pthread_mutex_trylock (for troubleshooting) just
-> before the pthread_mutex_unlock and checked the return code just
-> to make sure that it is locked.  There are no instances where the
-> extra trylock() actually succeeded, which made me more confident
-> that our code is correct.  The mutex is not recursive.
-
-The imbalance is not in the mutex lock count, it is an imbalance in
-a reference counter Xenomai maintains for tasks running with the
-SCHED_OTHER scheduling policy when then lock and unlock
-mutexes. Now, as you said, this imbalance means that either we have
-a bug in Xenomai, or the application does something which does not
-work with Xenomai, because this reference counter has some
-shortcomings. One of them being that it does not work correctly if
-you change scheduling policy (from SCHED_OTHER to SCHED_FIFO or
-SCHED_RR or the other way around) while holding a mutex.
-
-A way to know for sure is to reduce your test case to a simple
-self-contained test case that we can run to reproduce the issue.
-
-Regards.
-
---
-					    Gilles.
+-- 
+GP Orcullo
 
