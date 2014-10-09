@@ -1,5 +1,5 @@
-Message-ID: <54368845.7050503@xenomai.org>
-Date: Thu, 09 Oct 2014 15:06:13 +0200
+Message-ID: <5436A64B.90705@xenomai.org>
+Date: Thu, 09 Oct 2014 17:14:19 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <542EA6A2.306@xenomai.org>	<CACreCVKe_nw=6p1xQkbziPne4cW74kx0EtUWG0kC4roS7+w+yw@mail.gmail.com>	<20141003191454.GF9452@sisyphus.hd.free.fr>	<CACreCVLi=QT72p0pca76_7tsJn+TazdQjyy7NHW_NwfxCYbuKA@mail.gmail.com>	<20141003224829.GA6850@sisyphus.hd.free.fr>	<CACreCV+TDzXxX=e7MpscYcGn1sTTye9N-mED0iPfqVB9Zm4xdQ@mail.gmail.com>	<20141004113116.GC7596@sisyphus.hd.free.fr>	<CACreCV+ok_Ogd3iFPGNS3n640hdLQC3C_Pyzz=w80St-7buXWQ@mail.gmail.com>	<20141005220404.GL14975@sisyphus.hd.free.fr>	<CACreCVJFa6FB=3WR_OuMvACeYOWaA035T4KK7dFg8vHhyqkz8w@mail.gmail.com>	<20141005223051.GN14975@sisyphus.hd.free.fr>	<CACreCVLQsaq01vsNA_V_bu9_NyMCTwZTiZJo2sFXJHgaaVjQVg@mail.gmail.com>	<54365E17.3020102@xenomai.org>	<CACreCV+QtwuhhGeFpnuLP-6Y1FfLCQHqNkrzyfwgqEgrxXU9eQ@mail.gmail.com>	<5436607B.7090609@xenomai.org>
@@ -73,9 +73,18 @@ On 10/09/2014 01:06 PM, GP Orcullo wrote:
 > that would somehow suppress the problem?
 > 
 
-Basically, you can grep IPIPE_DEBUG_INTERNAL in the sources, and try and
-apply the diffs hunk by hunk. As a wild guess, I would start with the
-one in arch/arm/asm/percpu.h.
+Quite frankly, I would go the other way: check that every piece of code
+which may be executed over real-time context does not use any Linux
+code. That does not include a lot of code, actually all that is covered
+by the porting guide:
+- the interrupt controller callbacks (note that the GIC handles some SOC
+specific callabcks, so if you have some, you need to check them)
+- the chained interrupt demux handlers
+- the timer and tsc management functions.
+- some workaround specific code that hooks in the iowrite/writel
+functions, such as the L2 cache synchronization on omap4.
+
+And it seems that is all, so, there should not be a lot of code to check.
 
 -- 
                                                                 Gilles.
