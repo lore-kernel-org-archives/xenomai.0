@@ -1,10 +1,13 @@
+Date: Sun, 12 Oct 2014 06:56:16 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141012045616.GA13181@sisyphus.hd.free.fr>
+References: <CABVE6k1pNP4bPc4VTtUuT7Po4Qxfaj7DqEzfgNdLMto=AbKVtQ@mail.gmail.com>
 MIME-Version: 1.0
-From: =?UTF-8?Q?Hasret_Sar=C4=B1yer?= <hsrtsryr@gmail.com>
-Date: Sun, 12 Oct 2014 04:30:59 +0300
-Message-ID: <CABVE6k1pNP4bPc4VTtUuT7Po4Qxfaj7DqEzfgNdLMto=AbKVtQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] configuration kernel
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CABVE6k1pNP4bPc4VTtUuT7Po4Qxfaj7DqEzfgNdLMto=AbKVtQ@mail.gmail.com>
+Subject: Re: [Xenomai] configuration kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,42 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <Xenomai@xenomai.org>
+To: Hasret =?utf-8?Q?Sar=C4=B1yer?= <hsrtsryr@gmail.com>
+Cc: Xenomai <Xenomai@xenomai.org>
 
-IllvdSBzaG91bGQgKm5vdCogZGlzYWJsZSBwb3dlciBtYW5hZ2VtZW50IGdsb2JhbGx5LCB0aGUg
-b25seSBjb25maWd1cmF0aW9uDQpvcHRpb25zIHdoaWNoIHNob3VsZCBiZSBkaXNhYmxlZCBpbiB0
-aGlzIGFyZWEgYXJlOg0KDQogICAtIENPTkZJR19BUE0NCiAgIC0gQ09ORklHX0FDUElfUFJPQ0VT
-U09SDQoNCiIgaXMgc2FpZCBJbiAiDQpodHRwOi8veGVub21haS5vcmcvMjAxNC8wNi9jb25maWd1
-cmluZy1mb3IteDg2LWJhc2VkLWR1YWwta2VybmVscy8jQkVXQVJFX29mX2ludGVybmV0X2FyY2hp
-dmVzIg0KZ3VpZGUuIEkgZGlzYWJsZWQgQUNQSS4gSSBkb24ndCBrbm93IHdoZXJlIEFQTSBpcy4N
-Cg0KDQoNCuKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKU
-gOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKU
-gOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKU
-gOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUkCDilIINCiAg4pSCIOKUgiAgICBb
-Kl0gU3VzcGVuZCB0byBSQU0gYW5kIHN0YW5kYnkgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgIOKUgg0K4pSCDQogIOKUgiDilIIgICAgWypdIEhpYmVybmF0aW9uIChha2EgJ3N1c3Bl
-bmQgdG8gZGlzaycpICAgICAgICAgICAgICAgICAgICAgICAgICDilIINCuKUgg0KICDilIIg4pSC
-ICAgICgpICBEZWZhdWx0IHJlc3VtZSBwYXJ0aXRpb24gICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAg4pSCDQrilIINCiAg4pSCIOKUgiAgICBbIF0gT3Bwb3J0dW5pc3RpYyBzbGVl
-cCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIOKUgg0K4pSCDQogIOKU
-giDilIIgICAgWyBdIFVzZXIgc3BhY2Ugd2FrZXVwIHNvdXJjZXMgaW50ZXJmYWNlICAgICAgICAg
-ICAgICAgICAgICAgICAgICDilIINCuKUgg0KICDilIIg4pSCICAgIFsqXSBSdW4tdGltZSBQTSBj
-b3JlIGZ1bmN0aW9uYWxpdHkgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg4pSCDQrilIIN
-CiAg4pSCIOKUgiAgICBbKl0gUG93ZXIgTWFuYWdlbWVudCBEZWJ1ZyBTdXBwb3J0ICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIOKUgg0K4pSCDQogIOKUgiDilIIgICAgWypdICAgRXh0cmEg
-UE0gYXR0cmlidXRlcyBpbiBzeXNmcyBmb3IgbG93LWxldmVsIGRlYnVnZ2luZy90ZXN0aW7ilIIN
-CuKUgg0KICDilIIg4pSCICAgIFsgXSAgIFRlc3Qgc3VzcGVuZC9yZXN1bWUgYW5kIHdha2VhbGFy
-bSBkdXJpbmcgYm9vdHVwICAgICAgICAgICAg4pSCDQrilIINCiAg4pSCIOKUgiAgICBbKl0gU3Vz
-cGVuZC9yZXN1bWUgZXZlbnQgdHJhY2luZyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-IOKUgg0K4pSCDQogIOKUgiDilIIgICAgWyBdIEFDUEkgKEFkdmFuY2VkIENvbmZpZ3VyYXRpb24g
-YW5kIFBvd2VyIEludGVyZmFjZSkgU3VwcG9ydCAgLS3ilIINCuKUgg0KICDilIIg4pSCICAgIFsq
-XSBTRkkgKFNpbXBsZSBGaXJtd2FyZSBJbnRlcmZhY2UpIFN1cHBvcnQgIC0tLT4gICAgICAgICAg
-ICAgICAg4pSCDQrilIINCiAg4pSCIOKUgiAgICAgICAgQ1BVIEZyZXF1ZW5jeSBzY2FsaW5nICAt
-LS0+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIOKUgg0K4pSCDQogIOKUgiDilIIg
-ICAgLSotIENQVSBpZGxlIFBNIHN1cHBvcnQgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICDilIINCuKUgg0KICDilIIg4pSCICAgIFsqXSAgIFN1cHBvcnQgbXVsdGlwbGUg
-Y3B1aWRsZSBkcml2ZXJzICAgICAgICAgICAgICAgICAgICAgICAgICAg4pSCDQrilIINCiAg4pSC
-IOKUgiAgICBbKl0gQ3B1aWRsZSBEcml2ZXIgZm9yIEludGVsIFByb2Nlc3NvcnMgICAgICAgICAg
-ICAgICAgICAgICAgICAgIOKUgg0K4pSCDQogIOKUgiDilIIgICAgICAgIE1lbW9yeSBwb3dlciBz
-YXZpbmdzICAtLS0+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICDilIINCuKUgg0K
-ICDilIIg4pSCDQo=
+On Sun, Oct 12, 2014 at 04:30:59AM +0300, Hasret Sarıyer wrote:
+> "You should *not* disable power management globally, the only configuration
+> options which should be disabled in this area are:
+> 
+>    - CONFIG_APM
+>    - CONFIG_ACPI_PROCESSOR
+> 
+> " is said In "
+> http://xenomai.org/2014/06/configuring-for-x86-based-dual-kernels/#BEWARE_of_internet_archives"
+> guide. I disabled ACPI. I don't know where APM is.
+
+It seems CONFIG_APM disappeared from kernel configuration. Also,
+once again, you do not read the documentation correctly. It
+says to disable CONFIG_ACPI_PROCESSOR, and explicitly to NOT disable
+CONFIG_ACPI.
+
+-- 
+					    Gilles.
+
