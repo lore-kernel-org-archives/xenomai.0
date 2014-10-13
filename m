@@ -1,12 +1,12 @@
-Date: Mon, 13 Oct 2014 07:58:01 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141013055801.GD13181@sisyphus.hd.free.fr>
-References: <CALe7ZU1=q_ukbypJT3cVe3njGuOWMF-6z-_sJtQyzAV5a2W1WQ@mail.gmail.com>
+From: =?iso-8859-1?Q?H=E4nel-Baas=2C_Alexander?=
+ <alexander.haenel-baas@sieb-meyer.de>
+Date: Mon, 13 Oct 2014 08:47:05 +0000
+Message-ID: <9BA84827B30CBE4996725F98F7DC9123428E2849@SMExchange01.siebmeyer.org>
+Content-Language: de-DE
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALe7ZU1=q_ukbypJT3cVe3njGuOWMF-6z-_sJtQyzAV5a2W1WQ@mail.gmail.com>
-Subject: Re: [Xenomai] Installng xenomai on laptop
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Threadnames not equal?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,24 +15,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: JAY KOTHARI <jaikothari10@gmail.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Oct 13, 2014 at 10:48:40AM +0530, JAY KOTHARI wrote:
->    I want xenomai on laptop(dell i3 2.2GHz processor). Can anyone suggest
-> me which options I need to configure while patching xenomai to my linux so
-> that I get maximum performance . I am afraid of power management options
-> and heating problems if I make wrong choice. Please let me know safe
-> options which to be touched for laptop which would optimize performance of
-> xenomai without causing any damage.
+Hi,
 
-A laptop is not different from any other x86, so the general x86
-instructions apply. As for the maximum (real-time, I suppose)
-performances, they depend on your application. For instance I find
-that disabling CONFIG_PREEMPT generally improves real-time latency,
-though your application may need to enable CONFIG_PREEMPT for good
-latency when in secondary mode.
+i have a main thread witch creates 3 other threads, this other thread was n=
+amed
+with:  pthread_setname_np(hThread, "myName");.
 
--- 
-					    Gilles.
+Ps shows:
+
+-sh(581)--{WrapperThread}(641) --+--{Frameworktest}(644)
+                                                                      |--{H=
+ello}(642)
+                                                                      |--{T=
+imerThread}(643)
+
+In /proc/xenomai/stat:
+PID  NAME
+641 Hello
+643 Hello
+644 WrapperThread
+
+I'm a little confused about that. Has anyone an idea what's going wrong her=
+e?
+
+Kernel 3.14, xenomai 2.6 git with posix skin and busybox v1.20.2.
+
+--
+
+Alexander H=E4nel-Baas
 
