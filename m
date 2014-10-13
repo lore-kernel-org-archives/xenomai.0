@@ -1,12 +1,12 @@
-From: =?iso-8859-1?Q?H=E4nel-Baas=2C_Alexander?=
- <alexander.haenel-baas@sieb-meyer.de>
-Date: Mon, 13 Oct 2014 08:47:05 +0000
-Message-ID: <9BA84827B30CBE4996725F98F7DC9123428E2849@SMExchange01.siebmeyer.org>
-Content-Language: de-DE
+Message-ID: <543B96FA.5090608@xenomai.org>
+Date: Mon, 13 Oct 2014 11:10:18 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Threadnames not equal?
+References: <9BA84827B30CBE4996725F98F7DC9123428E2849@SMExchange01.siebmeyer.org>
+In-Reply-To: <9BA84827B30CBE4996725F98F7DC9123428E2849@SMExchange01.siebmeyer.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Threadnames not equal?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,34 +15,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?UTF-8?B?IkjDpG5lbC1CYWFzLCBBbGV4YW5kZXIi?= <alexander.haenel-baas@sieb-meyer.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+On 10/13/2014 10:47 AM, Hänel-Baas, Alexander wrote:
+> Hi,
+> 
+> i have a main thread witch creates 3 other threads, this other thread was named
+> with:  pthread_setname_np(hThread, "myName");.
 
-i have a main thread witch creates 3 other threads, this other thread was n=
-amed
-with:  pthread_setname_np(hThread, "myName");.
+Yes, Xenomai implemented pthread_set_name_np which is inconsistent with
+the usual naming of pthread functions, then glibc added
+pthread_setname_np. This is unfortunate. This was corrected in Xenomai
+3.0, this will be backpored in Xenomai 2.6, but in the mean time, please
+use the Xenomai function.
 
-Ps shows:
-
--sh(581)--{WrapperThread}(641) --+--{Frameworktest}(644)
-                                                                      |--{H=
-ello}(642)
-                                                                      |--{T=
-imerThread}(643)
-
-In /proc/xenomai/stat:
-PID  NAME
-641 Hello
-643 Hello
-644 WrapperThread
-
-I'm a little confused about that. Has anyone an idea what's going wrong her=
-e?
-
-Kernel 3.14, xenomai 2.6 git with posix skin and busybox v1.20.2.
-
---
-
-Alexander H=E4nel-Baas
+-- 
+                                                                Gilles.
 
