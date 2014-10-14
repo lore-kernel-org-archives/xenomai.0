@@ -1,13 +1,12 @@
-Message-ID: <543CD595.5060406@xenomai.org>
-Date: Tue, 14 Oct 2014 09:49:41 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+In-Reply-To: <CABVE6k1FMjKKskUnBO-pDg1O6KnEU0xQrEXkkO7RZwAZtCxkJg@mail.gmail.com>
 References: <CABVE6k0wMQ-qzuvgueGY0AVOdRJZ5Vgq2JX8q=w_WG65GD5CRw@mail.gmail.com>
  <20141014045037.GA10453@sisyphus.hd.free.fr>
  <CABVE6k1FMjKKskUnBO-pDg1O6KnEU0xQrEXkkO7RZwAZtCxkJg@mail.gmail.com>
-In-Reply-To: <CABVE6k1FMjKKskUnBO-pDg1O6KnEU0xQrEXkkO7RZwAZtCxkJg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Date: Tue, 14 Oct 2014 10:06:56 +0200
+Message-ID: <CAPRPZsCMZTGSLZ62n0qqwGjejQ+KudrgD=NbbFx_e9p6J2MicQ@mail.gmail.com>
+From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Subject: Re: [Xenomai] Xenomai: /dev/rtheap is missing
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,80 +16,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?SGFzcmV0IFNhcsSxeWVy?= <hsrtsryr@gmail.com>
+To: =?UTF-8?Q?Hasret_Sar=C4=B1yer?= <hsrtsryr@gmail.com>
 Cc: Xenomai <Xenomai@xenomai.org>
 
-On 10/14/2014 09:11 AM, Hasret Sarıyer wrote:
-> 2014-10-14 7:50 GMT+03:00 Gilles Chanteperdrix <
-> gilles.chanteperdrix@xenomai.org>:
-> 
->> On Tue, Oct 14, 2014 at 03:18:22AM +0300, Hasret Sarıyer wrote:
->>> I installed xenomai 2.6.4 and linux kernel 3.14.17 without any error
->> using
->>> below guide.
->>>
->>>
->> http://xenomai.org/2014/06/building-debian-packages/#Building_a_Xenomai_patched_Linux_kernel_package
->>>
->>> Kernel Configuration :
->>>
->>> * `Real-time sub-system`
->>>    * ENABLE `Xenomai`
->>>  * `Power management and ACPI options`
->>>    * `ACPI (Advanced Configuration and Power Interface) Support`
->>>      * DISABLE `Processor`
->>>    * `CPU Frequency scaling`
->>>      * DISABLE `CPU Frequency scaling`
->>>  * `Processor Type and Features`
->>>    * SET `Processor family`
->>
->> There are other options to change. I already gave you the link to
->> the page with the list. Besides, the reliable way to refer to options
->> is by their name in the .config, the particular positions in the
->> menus changes over time, the config options names are stable.
->>
->>>
->>> Processor family is x86. "uname -a"'s command output is
->>> "3.16.0-031600-generic #201408031935 SMP Sun Aug 3 23:36:11 UTC 2014
->>> x86_64 x86_64 x86_64 GNU/Linux"
->>
->> So, you patched a 3.14.17 kernel, uname tells you that you are
->> running a 3.16.0 kernel and you you need to send a mail to the
->> xenomai mailing list to ask what you did wrong. Seriously?
->>
->>>
->>>
->>> After these steps, is the xenomai ready for use? When I run below code,
->> the
->>> output was there.
->>>
->>> $/usr/share/libxenomai-dev/examples/native/
->>> $sudo make
->>> $sudo ./trivial-periodic
->>>
->>> Xenomai: /dev/rtheap is missing
->>> (chardev, major=10 minor=254)
->>
->> As I already told you, and as is documented in the installation
->> instructions, the first program to run to check that Xenomai works
->> correctly is the latency test (but I guess you would get an error
->> with latency too, if not running on a Xenomai patched kernel).
->>
->> --
->>                                             Gilles.
->>
-> 
-> 
 > There are below i-pipe verison under Xenomai 2.6.4 patches folder. So, I
 > installed kernel 3.14.17.
-> 
+>
 > ipipe-core-3.10.32-x86-4.patch
 > ipipe-core-3.8.13-x86-4.patch
 > ipipe-core-3.14.17-x86-4.patch
-> 
+>
 
-Ok. I am done helping you. You will no longer receive any answer from me.
 
--- 
-                                                                Gilles.
+The point the previous posters are trying to make is that you did _*build_*
+the 3.14 kernel, but you apparently aren't _*running_* it (which is what
+'uname' tells you, BTW the build date is there as well, Aug. 3, a dead
+giveaway). You are just rebooting into your original 3.16 kernel which has
+no Xenomai support of course.
 
+If you can't spot this right away, I'm afraid you may not be ready for this
+yet and I would advise you to get acquainted with building a Linux kernel
+from kernel.org first (and selecting that kernel to boot) before even
+attempting to patch it.
+
+Most importantly, by 'getting acquainted' I mean that you should thoroughly
+understand what you are doing and not just follow steps from an online
+guide.
+
+
+J.
+
+_______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+>
