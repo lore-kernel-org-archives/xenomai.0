@@ -1,12 +1,17 @@
-Message-ID: <543E644F.5060302@xenomai.org>
-Date: Wed, 15 Oct 2014 14:10:55 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <543e62fc.e28b420a.34c9.ffffef12@mx.google.com>
-In-Reply-To: <543e62fc.e28b420a.34c9.ffffef12@mx.google.com>
+From: ZIV-Alberto Ozalla Cantabrana <alberto.ozalla@cgglobal.com>
+Date: Wed, 15 Oct 2014 13:12:27 +0000
+Message-ID: <543E72BB.50707@cgglobal.com>
+References: <543E4B9F.60602@cgglobal.com> <543E5380.3080700@cgglobal.com> 
+ <543E567C.4070800@xenomai.org>
+In-Reply-To: <543E567C.4070800@xenomai.org>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Xenomai Digest, Vol 30, Issue 24
+Content-ID: <AF430E5A41C21D49A666D5BC31463727@cgglobal.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: Re: [Xenomai] First call to rt_timer_tsc() causes an unexpected
+ switch to secondary mode.
+Reply-To: alberto.ozalla@cgglobal.com
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,30 +20,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "crazylinuxcnc@gmail.com" <crazylinuxcnc@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "gilles.chanteperdrix@xenomai.org" <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10/15/2014 02:05 PM, crazylinuxcnc@gmail.com wrote:
-> sorry I try to answer this topic 
-> 1. problem when compiling xenomai-2.6.3 and linux-3.14.17
-> 
-> I think I reply directly to the digest.
-> 
-> I will reply to the original mail.
-
-Ok, but please read my mail about your answer. Actually if using the
-I-pipe git works whereas using the I-pipe patch does not work, we have
-an issue in the I-pipe patch generation and we would like to know it.
-And know the circonstances in which you had this issue.
-
-Because as far as we are concerned, using the I-pipe git or the I-pipe
-patch should yield the same result.
-
-I believe François' issue is rather that he is trying to use the I-pipe
-patch for Linux 3.14 with Xenomai 2.6.3, which is not supposed to work.
-
-Please do not drop the list from the CC
-(and do not top post).
-
--- 
-                                                                Gilles.
+DQpPbiAxNS8xMC8xNCAxMzoxMSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6DQo+IE9uIDEw
+LzE1LzIwMTQgMTI6NTkgUE0sIFpJVi1BbGJlcnRvIE96YWxsYSBDYW50YWJyYW5hIHdyb3RlOg0K
+Pj4gRGVhciBjb2xsZWFndWVzLA0KPj4NCj4+IEkgZmFjZSBhbiB1bmV4cGVjdGVkIHN3aXRjaCB0
+byBzZWNvbmRhcnkgbW9kZSBhZnRlciB0aGUgdmVyeSBmaXJzdCBjYWxsIHRvIHJ0X3RpbWVyX3Rz
+YygpIGludG8gYSByZWFsLXRpbWUgdGFzayBjcmVhdGVkIGJ5IFhlbm9tYWkuDQo+PiBUaGlzIHVu
+ZXhwZWN0ZWQgc3dpdGNoICBvbmx5IGFyaXNlcyBpZiBpdCBpcyB0aGUgdmVyeSBmaXJzdCBjYWxs
+IHRvIHJ0X3RpbWVyX3RzYygpLg0KPiBIaSwNCj4NCj4gSSBzZWUgdHdvIHBvc3NpYmxlIHJlYXNv
+bnMgZm9yIHRoYXQ6DQo+IC0gZWl0aGVyIG9uLWRlbWFuZCBtYXBwaW5nIG9mIGxpYnJhcnkgdGV4
+dCBwYWdlDQo+IC0gb3IgZmlyc3QgYWNjZXNzIHRvIHRoZSBoYXJkd2FyZSByZWdpc3Rlci4NCj4N
+Cj4gSW4gb3JkZXIgdG8gZmluZCB3aGljaCBpcyB0aGUgcmVhc29uLg0KPg0KPiBDb3VsZCB5b3Ug
+cmVwbGFjZSB0aGUgY2FsbCB0byBydF90aW1lcl90c2MoKSB3aXRoIGEgY2FsbCB0byBfX3huX3Jk
+dHNjKCkNCj4gYWZ0ZXIgaW5jbHVkaW5nIGFzbS94ZW5vbWFpL3RzYy5oID8NCj4NCj4NCkhlbGxv
+LA0KDQpUaGFua3MgZm9yIHRoZSBmYXN0IHJlc3BvbnNlLg0KDQpVbmZvcnR1bmF0ZWx5IHJlcGxh
+Y2luZyB0aGUgY2FsbCB0byBydF90aW1lcl90c2MoKSB3aXRoIGEgY2FsbCB0byANCl9feG5fcmR0
+c2MoKSBkb2VzIG5vdCBzb2x2ZSB0aGUgcHJvYmxlbS4NCg0KQW5vdGhlciBjbHVlIGlzIHRoYXQg
+UEYgdmFsdWUgaW5jcmVhc2VzIGF0IHRoZSBzYW1lIHRpbWUgYXMgTVNXLg0KDQoNCkNQVSAgUElE
+ICAgIE1TVyAgICAgICAgQ1NXICAgICAgICBQRiAgICBTVEFUICAgICAgICVDUFUgIE5BTUUNCiAg
+IDAgIDAgICAgICAwICAgICAgICAgIDExNTk0NTcxICAgMCAgICAgMDA1MDAwODAgICA5Ni4zIFJP
+T1QvMA0KICAgMCAgMTY5MCAgIDEgICAgICAgICAgNTMzOSAgICAgICAxICAgICAwMDMwMDE4NCAg
+ICAxLjAgVGVzdF9UYXNrDQoNCkl0IHNlZW1zIHRvIGJlIGEgZmlyc3QgYWNjZXNzIHRvIHRoZSBo
+YXJkd2FyZSByZWdpc3Rlci4NCg0KTm90ZTogSSB1c2UgYSBjYWxsIHRvIG1sb2NrYWxsKE1DTF9D
+VVJSRU5UfE1DTF9GVVRVUkUpIGJlZm9yZSBjcmVhdGluZyANCnRoZSB0YXNrLg0KDQotLSANClNh
+bHVkb3MsDQpBbGJlcnRvIE96YWxsYQ0KDQpDRyBESVNDTEFJTUVSOiBUaGlzIGVtYWlsIGNvbnRh
+aW5zIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbi4gSXQgaXMgaW50ZW5kZWQgZXhjbHVzaXZlbHkg
+Zm9yIHRoZSBhZGRyZXNzZWVzLiBJZiB5b3UgYXJlIG5vdCBhbiBhZGRyZXNzZWUsIHlvdSBtdXN0
+IG5vdCBzdG9yZSwgdHJhbnNtaXQgb3IgZGlzY2xvc2UgaXRzIGNvbnRlbnRzLiBJbnN0ZWFkIHBs
+ZWFzZSBub3RpZnkgdGhlIHNlbmRlciBpbW1lZGlhdGVseTsgYW5kIHBlcm1hbmVudGx5IGRlbGV0
+ZSB0aGlzIGUtbWFpbCBmcm9tIHlvdXIgY29tcHV0ZXIgc3lzdGVtcy4gV2UgaGF2ZSB0YWtlbiBy
+ZWFzb25hYmxlIHByZWNhdXRpb25zIHRvIGVuc3VyZSB0aGF0IG5vIHZpcnVzZXMgYXJlIHByZXNl
+bnQuIEhvd2V2ZXIsIHlvdSBtdXN0IGNoZWNrIHRoaXMgZW1haWwgYW5kIHRoZSBhdHRhY2htZW50
+cywgZm9yIHZpcnVzZXMuIFdlIGFjY2VwdCBubyBsaWFiaWxpdHkgd2hhdHNvZXZlciwgZm9yIGFu
+eSBkZXRyaW1lbnQgY2F1c2VkIGJ5IGFueSB0cmFuc21pdHRlZCB2aXJ1cy4NCg==
 
