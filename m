@@ -1,17 +1,14 @@
-From: ZIV-Alberto Ozalla Cantabrana <alberto.ozalla@cgglobal.com>
-Date: Wed, 15 Oct 2014 13:12:27 +0000
-Message-ID: <543E72BB.50707@cgglobal.com>
-References: <543E4B9F.60602@cgglobal.com> <543E5380.3080700@cgglobal.com> 
- <543E567C.4070800@xenomai.org>
-In-Reply-To: <543E567C.4070800@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <AF430E5A41C21D49A666D5BC31463727@cgglobal.com>
-Content-Transfer-Encoding: base64
+Message-ID: <543E73AC.8030802@xenomai.org>
+Date: Wed, 15 Oct 2014 15:16:28 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+References: <543E4B9F.60602@cgglobal.com> <543E5380.3080700@cgglobal.com>
+ <543E567C.4070800@xenomai.org> <543E72BB.50707@cgglobal.com>
+In-Reply-To: <543E72BB.50707@cgglobal.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] First call to rt_timer_tsc() causes an unexpected
  switch to secondary mode.
-Reply-To: alberto.ozalla@cgglobal.com
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,39 +17,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "gilles.chanteperdrix@xenomai.org" <gilles.chanteperdrix@xenomai.org>
+To: alberto.ozalla@cgglobal.com
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-DQpPbiAxNS8xMC8xNCAxMzoxMSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6DQo+IE9uIDEw
-LzE1LzIwMTQgMTI6NTkgUE0sIFpJVi1BbGJlcnRvIE96YWxsYSBDYW50YWJyYW5hIHdyb3RlOg0K
-Pj4gRGVhciBjb2xsZWFndWVzLA0KPj4NCj4+IEkgZmFjZSBhbiB1bmV4cGVjdGVkIHN3aXRjaCB0
-byBzZWNvbmRhcnkgbW9kZSBhZnRlciB0aGUgdmVyeSBmaXJzdCBjYWxsIHRvIHJ0X3RpbWVyX3Rz
-YygpIGludG8gYSByZWFsLXRpbWUgdGFzayBjcmVhdGVkIGJ5IFhlbm9tYWkuDQo+PiBUaGlzIHVu
-ZXhwZWN0ZWQgc3dpdGNoICBvbmx5IGFyaXNlcyBpZiBpdCBpcyB0aGUgdmVyeSBmaXJzdCBjYWxs
-IHRvIHJ0X3RpbWVyX3RzYygpLg0KPiBIaSwNCj4NCj4gSSBzZWUgdHdvIHBvc3NpYmxlIHJlYXNv
-bnMgZm9yIHRoYXQ6DQo+IC0gZWl0aGVyIG9uLWRlbWFuZCBtYXBwaW5nIG9mIGxpYnJhcnkgdGV4
-dCBwYWdlDQo+IC0gb3IgZmlyc3QgYWNjZXNzIHRvIHRoZSBoYXJkd2FyZSByZWdpc3Rlci4NCj4N
-Cj4gSW4gb3JkZXIgdG8gZmluZCB3aGljaCBpcyB0aGUgcmVhc29uLg0KPg0KPiBDb3VsZCB5b3Ug
-cmVwbGFjZSB0aGUgY2FsbCB0byBydF90aW1lcl90c2MoKSB3aXRoIGEgY2FsbCB0byBfX3huX3Jk
-dHNjKCkNCj4gYWZ0ZXIgaW5jbHVkaW5nIGFzbS94ZW5vbWFpL3RzYy5oID8NCj4NCj4NCkhlbGxv
-LA0KDQpUaGFua3MgZm9yIHRoZSBmYXN0IHJlc3BvbnNlLg0KDQpVbmZvcnR1bmF0ZWx5IHJlcGxh
-Y2luZyB0aGUgY2FsbCB0byBydF90aW1lcl90c2MoKSB3aXRoIGEgY2FsbCB0byANCl9feG5fcmR0
-c2MoKSBkb2VzIG5vdCBzb2x2ZSB0aGUgcHJvYmxlbS4NCg0KQW5vdGhlciBjbHVlIGlzIHRoYXQg
-UEYgdmFsdWUgaW5jcmVhc2VzIGF0IHRoZSBzYW1lIHRpbWUgYXMgTVNXLg0KDQoNCkNQVSAgUElE
-ICAgIE1TVyAgICAgICAgQ1NXICAgICAgICBQRiAgICBTVEFUICAgICAgICVDUFUgIE5BTUUNCiAg
-IDAgIDAgICAgICAwICAgICAgICAgIDExNTk0NTcxICAgMCAgICAgMDA1MDAwODAgICA5Ni4zIFJP
-T1QvMA0KICAgMCAgMTY5MCAgIDEgICAgICAgICAgNTMzOSAgICAgICAxICAgICAwMDMwMDE4NCAg
-ICAxLjAgVGVzdF9UYXNrDQoNCkl0IHNlZW1zIHRvIGJlIGEgZmlyc3QgYWNjZXNzIHRvIHRoZSBo
-YXJkd2FyZSByZWdpc3Rlci4NCg0KTm90ZTogSSB1c2UgYSBjYWxsIHRvIG1sb2NrYWxsKE1DTF9D
-VVJSRU5UfE1DTF9GVVRVUkUpIGJlZm9yZSBjcmVhdGluZyANCnRoZSB0YXNrLg0KDQotLSANClNh
-bHVkb3MsDQpBbGJlcnRvIE96YWxsYQ0KDQpDRyBESVNDTEFJTUVSOiBUaGlzIGVtYWlsIGNvbnRh
-aW5zIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbi4gSXQgaXMgaW50ZW5kZWQgZXhjbHVzaXZlbHkg
-Zm9yIHRoZSBhZGRyZXNzZWVzLiBJZiB5b3UgYXJlIG5vdCBhbiBhZGRyZXNzZWUsIHlvdSBtdXN0
-IG5vdCBzdG9yZSwgdHJhbnNtaXQgb3IgZGlzY2xvc2UgaXRzIGNvbnRlbnRzLiBJbnN0ZWFkIHBs
-ZWFzZSBub3RpZnkgdGhlIHNlbmRlciBpbW1lZGlhdGVseTsgYW5kIHBlcm1hbmVudGx5IGRlbGV0
-ZSB0aGlzIGUtbWFpbCBmcm9tIHlvdXIgY29tcHV0ZXIgc3lzdGVtcy4gV2UgaGF2ZSB0YWtlbiBy
-ZWFzb25hYmxlIHByZWNhdXRpb25zIHRvIGVuc3VyZSB0aGF0IG5vIHZpcnVzZXMgYXJlIHByZXNl
-bnQuIEhvd2V2ZXIsIHlvdSBtdXN0IGNoZWNrIHRoaXMgZW1haWwgYW5kIHRoZSBhdHRhY2htZW50
-cywgZm9yIHZpcnVzZXMuIFdlIGFjY2VwdCBubyBsaWFiaWxpdHkgd2hhdHNvZXZlciwgZm9yIGFu
-eSBkZXRyaW1lbnQgY2F1c2VkIGJ5IGFueSB0cmFuc21pdHRlZCB2aXJ1cy4NCg==
+On 10/15/2014 03:12 PM, ZIV-Alberto Ozalla Cantabrana wrote:
+> 
+> On 15/10/14 13:11, Gilles Chanteperdrix wrote:
+>> On 10/15/2014 12:59 PM, ZIV-Alberto Ozalla Cantabrana wrote:
+>>> Dear colleagues,
+>>>
+>>> I face an unexpected switch to secondary mode after the very first call to rt_timer_tsc() into a real-time task created by Xenomai.
+>>> This unexpected switch  only arises if it is the very first call to rt_timer_tsc().
+>> Hi,
+>>
+>> I see two possible reasons for that:
+>> - either on-demand mapping of library text page
+>> - or first access to the hardware register.
+>>
+>> In order to find which is the reason.
+>>
+>> Could you replace the call to rt_timer_tsc() with a call to __xn_rdtsc()
+>> after including asm/xenomai/tsc.h ?
+>>
+>>
+> Hello,
+> 
+> Thanks for the fast response.
+> 
+> Unfortunately replacing the call to rt_timer_tsc() with a call to 
+> __xn_rdtsc() does not solve the problem.
+
+The intent was not to solve the problem, but to investigate it.
+
+> 
+> Another clue is that PF value increases at the same time as MSW.
+> 
+> 
+> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+>    0  0      0          11594571   0     00500080   96.3 ROOT/0
+>    0  1690   1          5339       1     00300184    1.0 Test_Task
+> 
+> It seems to be a first access to the hardware register.
+
+It would seem so. I will prepare a piece of code tonight that does not
+rely on any external symbol, just to be sure.
+
+> 
+> Note: I use a call to mlockall(MCL_CURRENT|MCL_FUTURE) before creating 
+> the task.
+
+I do not believe mlockall applies to register mapped from /dev/mem, only
+to memory mappings
+
+
+-- 
+                                                                Gilles.
 
