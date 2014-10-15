@@ -1,9 +1,12 @@
+Message-ID: <543E9BAE.2010808@xenomai.org>
+Date: Wed, 15 Oct 2014 18:07:10 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Wed, 15 Oct 2014 18:42:50 +0300
-Message-ID: <CABaOOZ2YOda_cUS-tskNxDZ6sNekMqnPnbu6p8Qp4kvjRzDMyA@mail.gmail.com>
-From: Stratiyenko Roman <picoworm@gmail.com>
+References: <CABaOOZ2YOda_cUS-tskNxDZ6sNekMqnPnbu6p8Qp4kvjRzDMyA@mail.gmail.com>
+In-Reply-To: <CABaOOZ2YOda_cUS-tskNxDZ6sNekMqnPnbu6p8Qp4kvjRzDMyA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] Manual context switch from userspace
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Manual context switch from userspace
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,18 +15,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Stratiyenko Roman <picoworm@gmail.com>, xenomai@xenomai.org
 
-hello,
+On 10/15/2014 05:42 PM, Stratiyenko Roman wrote:
+> hello,
+> 
+> Can anyone suggest how to solve next problem?
+> 
+> I need to use the context switch (ucontext.h glibc function) in xenomai
+> task. But the problem is the swapcontext() make a kernel call that switches
+> system to secondary mode, so I can't achive hard real time.
+> 
+> What can I do to switch context without switch to secondary mode?
 
-Can anyone suggest how to solve next problem?
+I would understand the need for using context switches if they were not
+going through kernel mode, but if they go through kernel mode, there is
+absolutely nothing to gain, you can use threads directly, this will have
+the same overhead.
 
-I need to use the context switch (ucontext.h glibc function) in xenomai
-task. But the problem is the swapcontext() make a kernel call that switches
-system to secondary mode, so I can't achive hard real time.
+Besides, with such context switches you have risks of interrupting
+threads at the wrong time, and cause deadlocks.
 
-What can I do to switch context without switch to secondary mode?
-Thanks in advance
+-- 
+                                                                Gilles.
 
-Best regards,
-Roman
