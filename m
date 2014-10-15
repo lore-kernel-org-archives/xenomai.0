@@ -1,13 +1,12 @@
-Message-ID: <543E567C.4070800@xenomai.org>
-Date: Wed, 15 Oct 2014 13:11:56 +0200
+Message-ID: <543E581C.3040207@xenomai.org>
+Date: Wed, 15 Oct 2014 13:18:52 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <543E4B9F.60602@cgglobal.com> <543E5380.3080700@cgglobal.com>
-In-Reply-To: <543E5380.3080700@cgglobal.com>
+References: <543e4671.a479420a.486e.ffffd5b3@mx.google.com>
+In-Reply-To: <543e4671.a479420a.486e.ffffd5b3@mx.google.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] First call to rt_timer_tsc() causes an unexpected
- switch to secondary mode.
+Subject: Re: [Xenomai] Xenomai Digest, Vol 30, Issue 24
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,25 +15,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: alberto.ozalla@cgglobal.com, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "crazylinuxcnc@gmail.com" <crazylinuxcnc@gmail.com>, xenomai@xenomai.org
 
-On 10/15/2014 12:59 PM, ZIV-Alberto Ozalla Cantabrana wrote:
+On 10/15/2014 12:03 PM, crazylinuxcnc@gmail.com wrote:
+> Please try steps as follow:
+> 1. download linux kernel source code
+> 2. check out version 3.14.17
+> 3.git remote add ipipe git://git.xenomai.org/ipipe.git
+> 4. git pull ipipe ipipe-3.14
+> 5.$(xenomai source directory)/scripts/prepare-kernel.sh
+> 6.start to configure and compile your kernel
 > 
-> Dear colleagues,
-> 
-> I face an unexpected switch to secondary mode after the very first call to rt_timer_tsc() into a real-time task created by Xenomai.
-> This unexpected switch  only arises if it is the very first call to rt_timer_tsc().
+> I hope it helps.
 
 Hi,
 
-I see two possible reasons for that:
-- either on-demand mapping of library text page
-- or first access to the hardware register.
+Do not get me wrong, I am glad to not be the only one to answer
+questions on this list. However, when answering mails, please try and
+have a little respect for netiquette:
+- do not answer digest mails, answer the mail sent by the original
+poster, if you prefer to receive digest mails, you can still answer the
+original mail by downloading the mailbox here:
+http://www.xenomai.org/pipermail/xenomai/
+(in the "downloadable version" column)
+- do not top post.
 
-In order to find which is the reason.
+As for the contents of your answer, if you had issues with I-pipe
+patches that were solved by downloading the I-pipe git, we would
+consider this a bug of the way we generate I-pipe patches and would like
+you to describe the particular issue you had.
 
-Could you replace the call to rt_timer_tsc() with a call to __xn_rdtsc()
-after including asm/xenomai/tsc.h ?
+Thanks for your contribution.
+Regards.
 
 
 -- 
