@@ -1,13 +1,14 @@
-Date: Wed, 15 Oct 2014 20:59:15 +0200
+Date: Wed, 15 Oct 2014 22:03:20 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141015185915.GA30661@sisyphus.hd.free.fr>
-References: <543E3D59.4000604@univ-amu.fr>
+Message-ID: <20141015200320.GB30661@sisyphus.hd.free.fr>
+References: <543E4B9F.60602@cgglobal.com> <543E5380.3080700@cgglobal.com>
+ <543E567C.4070800@xenomai.org> <543E72BB.50707@cgglobal.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <543E3D59.4000604@univ-amu.fr>
-Subject: Re: [Xenomai] problem when compiling xenomai-2.6.3 and linux-3.14.17
+In-Reply-To: <543E72BB.50707@cgglobal.com>
+Subject: Re: [Xenomai] First call to rt_timer_tsc() causes an unexpected
+ switch to secondary mode.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,31 +17,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <Gilles.Chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: ZIV-Alberto Ozalla Cantabrana <alberto.ozalla@cgglobal.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, Oct 15, 2014 at 11:24:41AM +0200, François Touchard wrote:
+On Wed, Oct 15, 2014 at 01:12:27PM +0000, ZIV-Alberto Ozalla Cantabrana wrote:
+> 
+> On 15/10/14 13:11, Gilles Chanteperdrix wrote:
+> > On 10/15/2014 12:59 PM, ZIV-Alberto Ozalla Cantabrana wrote:
+> >> Dear colleagues,
+> >>
+> >> I face an unexpected switch to secondary mode after the very first call to rt_timer_tsc() into a real-time task created by Xenomai.
+> >> This unexpected switch  only arises if it is the very first call to rt_timer_tsc().
+> > Hi,
+> >
+> > I see two possible reasons for that:
+> > - either on-demand mapping of library text page
+> > - or first access to the hardware register.
+> >
+> > In order to find which is the reason.
+> >
+> > Could you replace the call to rt_timer_tsc() with a call to __xn_rdtsc()
+> > after including asm/xenomai/tsc.h ?
+> >
+> >
 > Hello,
-> when compiling linux-3.14.17 patched with ipipe-core-3.14.17
-> x86-4.patch, I get the following error :
-> [...]
-> CC kernel/xenomai/nucleus/pod.o
-> In file included from kernel/xenomai/nucleus/pod.c:48:
-> /usr/src/kernels/linux-3.14.17-xeno/arch/x86/include/asm/xenomai/bits/pod.h:
-> In function ‘xnarch_switch_to’:
-> /usr/src/kernels/linux-3.14.17-xeno/arch/x86/include/asm/xenomai/bits/pod.h:90:
-> erreur: ‘struct task_struct’ has no member named ‘fpu_counter’
-> make[3]: *** [kernel/xenomai/nucleus/pod.o] Erreur 1
-> make[2]: *** [kernel/xenomai/nucleus] Erreur 2
-> make[1]: *** [kernel/xenomai] Erreur 2
-> make: *** [kernel] Erreur 2
 > 
-> My machine is an old Dell Optiplex GX520 with a Pentium4 at 3.20 GHz
-> I attach my .config file
-> Thanks in advance for your help
-> Francois Touchard
+> Thanks for the fast response.
 > 
-test test test
+> Unfortunately replacing the call to rt_timer_tsc() with a call to 
+> __xn_rdtsc() does not solve the problem.
+> 
+> Another clue is that PF value increases at the same time as MSW.
+> 
+> 
+> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+>    0  0      0          11594571   0     00500080   96.3 ROOT/0
+>    0  1690   1          5339       1     00300184    1.0 Test_Task
+> 
+> It seems to be a first access to the hardware register.
+> 
+> Note: I use a call to mlockall(MCL_CURRENT|MCL_FUTURE) before creating 
+> the task.
+> 
+
+I just tried on omap3, which is pretty close to beagle bone, and did
+not observe the same issue. Could you try and add the following code
+to your test:
+
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <asm/xenomai/syscall.h>
+
+void tsc_init(void)
+{
+	struct __xn_tscinfo tscinfo;
+	unsigned long phys_addr;
+	unsigned page_size;
+	int fd;
+
+	XENOMAI_SYSCALL2(__xn_sys_arch, XENOMAI_SYSARCH_TSCINFO, &tscinfo);
+	fd = open("/dev/mem", O_RDONLY | O_SYNC);
+	page_size = sysconf(_SC_PAGESIZE);
+	phys_addr = (unsigned long) tscinfo.counter;
+	tsc_vaddr = mmap(NULL, page_size, PROT_READ, MAP_SHARED,
+		    fd, phys_addr & ~(page_size - 1))
+		+ (phys_addr & (page_size - 1));
+	close(fd);
+
+	rdtsc = (typeof(rdtsc))(0xffff1004 -
+				((*(unsigned *)(0xffff0ffc) + 3) << 5));
+}
+
+static inline unsigned long long my_rdtsc(void)
+{
+	return rdtsc(tsc_vaddr);
+}
+
+Call tsc_init at the beginning of your program, then replace the
+first call to rt_timer_tsc() with a call to my_rdtsc(), and see if
+you still get the page fault?
+
 -- 
 					    Gilles.
 
