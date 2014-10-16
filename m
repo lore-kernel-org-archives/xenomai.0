@@ -1,13 +1,14 @@
-Date: Thu, 16 Oct 2014 19:43:09 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141016174309.GD30661@sisyphus.hd.free.fr>
-References: <1413464642.48297.YahooMailNeo@web141701.mail.bf1.yahoo.com>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Thu, 16 Oct 2014 14:17:11 -0400
+Message-ID: <20141016181711.GB24110@csclub.uwaterloo.ca>
+References: <543E4B9F.60602@cgglobal.com> <543E5380.3080700@cgglobal.com>
+ <543F70C5.1090005@xenomai.org> <543F7ED2.2080201@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1413464642.48297.YahooMailNeo@web141701.mail.bf1.yahoo.com>
-Subject: Re: [Xenomai] RTDM problem with Advantech PCM-3680I
+In-Reply-To: <543F7ED2.2080201@xenomai.org>
+Subject: Re: [Xenomai] First call to rt_timer_tsc() causes an unexpected
+ switch to secondary mode.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,71 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?Q?R=C3=B3bert?= Marc <rob_marc2003@yahoo.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thu, Oct 16, 2014 at 06:04:02AM -0700, Róbert Marc wrote:
-> Dear Xenomai community,
+On Thu, Oct 16, 2014 at 10:16:18AM +0200, Gilles Chanteperdrix wrote:
+> Also, vfpv3-d16 looks suspicious to me: you may be uselessly limiting
+> the number of vfp registers available to the compiler. If cat
+> /proc/cpuinfo tells you vfpv3 and not vfpv3-d16, you can use
+> -mfpu=vfpv3, if it tells you neon, you can use -mfpu=neon. I am almost
+> sure the beaglebone processor has 32 double vfp registers, not 16.
+> 
+> This page:
+> http://www.ti.com/product/AM3358/datasheet
+> 
+> Seems to imply that the beaglebone processor has NEON.
 
-Hi,
+Neon is mandetory on Cortex-A8.  Only Cortex-A9 made it optional
+(unfortunately) and I believe nvidia was pretty much the only one to
+not include Neon.  Of course non Cortex designs don't have it either
+(Marvell JP4 cores for example), but those are pretty rare.  I have no
+idea if qualcomm's designs have it or not.
 
+> And this page:
+> http://en.wikipedia.org/wiki/ARM_architecture#Floating-point_.28VFP.29
 > 
-> I am experiencing problems with my Advantech card under Xenomai.
-> Please note that the card (Advantech PCM-3680I) functions
-> perfectly under non-RT Linux (Ubuntu 12.04). I can send and
-> receive messages.  Although the modules are loaded the devices
-> can't be seen. See details below.
+> Seems to imply that since it is a cortex a8, it has 32 double vfp
+> registers and not 16.
 > 
-> 
-> Here are some technical details:
-> 
-> rtos@rtos-pc-104:~$ sudo rtcanconfig rtcan0 -b 1000000 -v start
-> mode: start (0x1)
-> Can't get interface index for rtcan0, code = -19
-> 
-> 
-> >>  what is error code -19?
-
-http://xenomai.org/2014/06/resolving-error-codes/
-
-> 
-> 
-> rtos@rtos-pc-104:~$ lsmod | grep adv
-> xeno_can_adv_pci       12730  0 
-> advcan                             707511  4 
-> xeno_can_sja1000       17366  1 xeno_can_adv_pci
-> xeno_can                         28373  2 xeno_can_adv_pci,xeno_can_sja1000
-> 
-> 
-> >> drivers are loaded 
-> 
-> 
-> rtos@rtos-pc-104:~$ dmesg | grep CAN
-> [    4.341607] RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development Team
-> [    4.372061] RTCAN SJA1000 driver initialized
-> [    4.405671] ADV-PCI-CAN 0000:01:04.0: RTCAN Registering card
-> [    4.405697] ADV-PCI-CAN 0000:01:04.0: RTCAN detected Advantech PCI card at slot #4
-> [    4.405712] ADV-PCI-CAN: Initializing device 13fe:c002:c002
-> [    4.405731] ADV-PCI-CAN: base_addr=0001ef00 conf_addr=  (null) irq=16 ocr=0xfa cdr=0xc0
-> [    4.405811] RTCAN: unregistered rtcan0
-> [    4.405836] ADV-PCI-CAN: probe of 0000:01:04.0 failed with error -5
-> [    4.494279] CAN Communication Driver.
-> [    4.514136] Advantech CAN Port CAN Driver (c) Oct  3 2014 15:12:52
-> [    4.514202] Advanteh PCI CAN devie c002 found( 2 CAN port)
-> 
-> 
-> >> conf_addr=  (null) might be the problem???
-
-Well from these traces, the rtcan0 device is registered, then
-unregistered, no need to go further, rtcanconfig will not be able to
-find it, this explains the ENODEV.
-
-conf_addr set to null should not be the problem, as the driver code
-sets it to NULL, then never uses it. See:
-http://git.xenomai.org/xenomai-2.6.git/tree/ksrc/drivers/can/sja1000/rtcan_adv_pci.c
-
-Maybe the full traces contain the reason for unregistering rtcan0?
+> It would seem among arm processors of the "A" family and the armv7
+> architecture, only cortex A5 and cortex A7 may have 16 double vfp
+> registers (the atmel sama5d3 for instance is in this case).
 
 -- 
-					    Gilles.
+Len Sorensen
 
