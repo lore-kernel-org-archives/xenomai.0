@@ -1,14 +1,16 @@
-Message-ID: <543F7ED2.2080201@xenomai.org>
-Date: Thu, 16 Oct 2014 10:16:18 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: ZIV-Alberto Ozalla Cantabrana <alberto.ozalla@cgglobal.com>
+Date: Thu, 16 Oct 2014 08:33:39 +0000
+Message-ID: <543F82E2.3040403@cgglobal.com>
+References: <543E4B9F.60602@cgglobal.com> <543E5380.3080700@cgglobal.com> 
+ <543F70C5.1090005@xenomai.org> <543F7ED2.2080201@xenomai.org>
+In-Reply-To: <543F7ED2.2080201@xenomai.org>
+Content-Language: en-US
 MIME-Version: 1.0
-References: <543E4B9F.60602@cgglobal.com> <543E5380.3080700@cgglobal.com>
- <543F70C5.1090005@xenomai.org>
-In-Reply-To: <543F70C5.1090005@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] First call to rt_timer_tsc() causes an unexpected
  switch to secondary mode.
+Reply-To: alberto.ozalla@cgglobal.com
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,49 +19,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: alberto.ozalla@cgglobal.com, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "gilles.chanteperdrix@xenomai.org" <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10/16/2014 09:16 AM, Gilles Chanteperdrix wrote:
-> On 10/15/2014 12:59 PM, ZIV-Alberto Ozalla Cantabrana wrote:
->> 'CFLAGS=-Os -pipe -D_REENTRANT -fomit-frame-pointer -march=armv7-a
->> -mtune=cortex-a8  -mfpu=vfpv3-d16 -finline-functions
->> -finline-limit=50 -ffast-math -include
->> /home/aozalla/pro/npcp/toolchain/include/builtin_redefines.h
->> -DMAX_PCI_SLOTS=8 -fPIC -DPIC -DNO_LARGEFILE_SOURCE
->> -U_LARGEFILE_SOURCE -U_LARGE_FILES -U_FILE_OFFSET_BITS'
-> 
-> As a side note, if you have a modern toolchain which compiles by default
-> for thumb2, by passing -march=armv7-a you disable compilation for thumb,
-> and from my experience thumb2 code results in better latencies than ARM
-> code. Also -Os -finline-functions is a bit strange: the advantage of
-> using -Os is that it inline less functions, so it looks like a strange
-> way to ask for -O2. Also note that according to my tests, you get better
-> latencies on ARM with -Os than with -O2. Finally, I do not know what
-> builtin_redefines.h does but beware: xenomai uses gcc builtin functions
-> for atomic instructions by default now.
-> 
-
-Also, vfpv3-d16 looks suspicious to me: you may be uselessly limiting
-the number of vfp registers available to the compiler. If cat
-/proc/cpuinfo tells you vfpv3 and not vfpv3-d16, you can use
--mfpu=vfpv3, if it tells you neon, you can use -mfpu=neon. I am almost
-sure the beaglebone processor has 32 double vfp registers, not 16.
-
-This page:
-http://www.ti.com/product/AM3358/datasheet
-
-Seems to imply that the beaglebone processor has NEON.
-
-And this page:
-http://en.wikipedia.org/wiki/ARM_architecture#Floating-point_.28VFP.29
-
-Seems to imply that since it is a cortex a8, it has 32 double vfp
-registers and not 16.
-
-It would seem among arm processors of the "A" family and the armv7
-architecture, only cortex A5 and cortex A7 may have 16 double vfp
-registers (the atmel sama5d3 for instance is in this case).
-
--- 
-                                                                Gilles.
-
+DQpPbiAxNi8xMC8xNCAxMDoxNiwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6DQoNCk9uIDEw
+LzE2LzIwMTQgMDk6MTYgQU0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOg0KDQoNCk9uIDEw
+LzE1LzIwMTQgMTI6NTkgUE0sIFpJVi1BbGJlcnRvIE96YWxsYSBDYW50YWJyYW5hIHdyb3RlOg0K
+DQoNCidDRkxBR1M9LU9zIC1waXBlIC1EX1JFRU5UUkFOVCAtZm9taXQtZnJhbWUtcG9pbnRlciAt
+bWFyY2g9YXJtdjctYQ0KLW10dW5lPWNvcnRleC1hOCAgLW1mcHU9dmZwdjMtZDE2IC1maW5saW5l
+LWZ1bmN0aW9ucw0KLWZpbmxpbmUtbGltaXQ9NTAgLWZmYXN0LW1hdGggLWluY2x1ZGUNCi9ob21l
+L2FvemFsbGEvcHJvL25wY3AvdG9vbGNoYWluL2luY2x1ZGUvYnVpbHRpbl9yZWRlZmluZXMuaA0K
+LURNQVhfUENJX1NMT1RTPTggLWZQSUMgLURQSUMgLUROT19MQVJHRUZJTEVfU09VUkNFDQotVV9M
+QVJHRUZJTEVfU09VUkNFIC1VX0xBUkdFX0ZJTEVTIC1VX0ZJTEVfT0ZGU0VUX0JJVFMnDQoNCg0K
+DQpBcyBhIHNpZGUgbm90ZSwgaWYgeW91IGhhdmUgYSBtb2Rlcm4gdG9vbGNoYWluIHdoaWNoIGNv
+bXBpbGVzIGJ5IGRlZmF1bHQNCmZvciB0aHVtYjIsIGJ5IHBhc3NpbmcgLW1hcmNoPWFybXY3LWEg
+eW91IGRpc2FibGUgY29tcGlsYXRpb24gZm9yIHRodW1iLA0KYW5kIGZyb20gbXkgZXhwZXJpZW5j
+ZSB0aHVtYjIgY29kZSByZXN1bHRzIGluIGJldHRlciBsYXRlbmNpZXMgdGhhbiBBUk0NCmNvZGUu
+IEFsc28gLU9zIC1maW5saW5lLWZ1bmN0aW9ucyBpcyBhIGJpdCBzdHJhbmdlOiB0aGUgYWR2YW50
+YWdlIG9mDQp1c2luZyAtT3MgaXMgdGhhdCBpdCBpbmxpbmUgbGVzcyBmdW5jdGlvbnMsIHNvIGl0
+IGxvb2tzIGxpa2UgYSBzdHJhbmdlDQp3YXkgdG8gYXNrIGZvciAtTzIuIEFsc28gbm90ZSB0aGF0
+IGFjY29yZGluZyB0byBteSB0ZXN0cywgeW91IGdldCBiZXR0ZXINCmxhdGVuY2llcyBvbiBBUk0g
+d2l0aCAtT3MgdGhhbiB3aXRoIC1PMi4gRmluYWxseSwgSSBkbyBub3Qga25vdyB3aGF0DQpidWls
+dGluX3JlZGVmaW5lcy5oIGRvZXMgYnV0IGJld2FyZTogeGVub21haSB1c2VzIGdjYyBidWlsdGlu
+IGZ1bmN0aW9ucw0KZm9yIGF0b21pYyBpbnN0cnVjdGlvbnMgYnkgZGVmYXVsdCBub3cuDQoNCg0K
+DQoNCkFsc28sIHZmcHYzLWQxNiBsb29rcyBzdXNwaWNpb3VzIHRvIG1lOiB5b3UgbWF5IGJlIHVz
+ZWxlc3NseSBsaW1pdGluZw0KdGhlIG51bWJlciBvZiB2ZnAgcmVnaXN0ZXJzIGF2YWlsYWJsZSB0
+byB0aGUgY29tcGlsZXIuIElmIGNhdA0KL3Byb2MvY3B1aW5mbyB0ZWxscyB5b3UgdmZwdjMgYW5k
+IG5vdCB2ZnB2My1kMTYsIHlvdSBjYW4gdXNlDQotbWZwdT12ZnB2MywgaWYgaXQgdGVsbHMgeW91
+IG5lb24sIHlvdSBjYW4gdXNlIC1tZnB1PW5lb24uIEkgYW0gYWxtb3N0DQpzdXJlIHRoZSBiZWFn
+bGVib25lIHByb2Nlc3NvciBoYXMgMzIgZG91YmxlIHZmcCByZWdpc3RlcnMsIG5vdCAxNi4NCg0K
+VGhpcyBwYWdlOg0KaHR0cDovL3d3dy50aS5jb20vcHJvZHVjdC9BTTMzNTgvZGF0YXNoZWV0DQoN
+ClNlZW1zIHRvIGltcGx5IHRoYXQgdGhlIGJlYWdsZWJvbmUgcHJvY2Vzc29yIGhhcyBORU9OLg0K
+DQpBbmQgdGhpcyBwYWdlOg0KaHR0cDovL2VuLndpa2lwZWRpYS5vcmcvd2lraS9BUk1fYXJjaGl0
+ZWN0dXJlI0Zsb2F0aW5nLXBvaW50Xy4yOFZGUC4yOQ0KDQpTZWVtcyB0byBpbXBseSB0aGF0IHNp
+bmNlIGl0IGlzIGEgY29ydGV4IGE4LCBpdCBoYXMgMzIgZG91YmxlIHZmcA0KcmVnaXN0ZXJzIGFu
+ZCBub3QgMTYuDQoNCkl0IHdvdWxkIHNlZW0gYW1vbmcgYXJtIHByb2Nlc3NvcnMgb2YgdGhlICJB
+IiBmYW1pbHkgYW5kIHRoZSBhcm12Nw0KYXJjaGl0ZWN0dXJlLCBvbmx5IGNvcnRleCBBNSBhbmQg
+Y29ydGV4IEE3IG1heSBoYXZlIDE2IGRvdWJsZSB2ZnANCnJlZ2lzdGVycyAodGhlIGF0bWVsIHNh
+bWE1ZDMgZm9yIGluc3RhbmNlIGlzIGluIHRoaXMgY2FzZSkuDQoNCg0KDQpUaGFua3MgZm9yIHlv
+dXIgc3VwcG9ydC4NCg0KV2UgbW92ZWQgb25lIHN0ZXAgYWhlYWQ6DQoNCiAgKiAgIFhlbm9tYWkg
+dXBkYXRlZCBmcm9tIDIuNi4zLmdpdCB0byAyLjYuNA0KICAqICAgTGludXggdXBkYXRlZCBmcm9t
+IDMuMTQuOSB0byAzLjE0LjE3DQoNClRoZSBwcm9ibGVtIGhhcyBnb25lIGF3YXkuIEFuZCBJIGhv
+cGUgZm9yIGdvb2QuDQoNCkFueXdheSwgZHVyaW5nIHRoaXMgZXZlbmluZyBJIHdpbGwgcmVjb3Zl
+ciBmb3JtZXIgc2l0dWF0aW9uIChmb3JtZXIgdmVyc2lvbnMgb2YgWGVub21haSBhbmQgTGludXgp
+IGFuZCB0cnkgdGhlIHRlc3QgeW91IHBvaW50ZWQgb3V0ICh1aXNuZyB0c2NfaW5pdCBhbmQgbXlf
+cmR0c2MpLg0KDQoNCi0tDQpTYWx1ZG9zLA0KQWxiZXJ0byBPemFsbGENCg0KQ0cgRElTQ0xBSU1F
+UjogVGhpcyBlbWFpbCBjb250YWlucyBjb25maWRlbnRpYWwgaW5mb3JtYXRpb24uIEl0IGlzIGlu
+dGVuZGVkIGV4Y2x1c2l2ZWx5IGZvciB0aGUgYWRkcmVzc2Vlcy4gSWYgeW91IGFyZSBub3QgYW4g
+YWRkcmVzc2VlLCB5b3UgbXVzdCBub3Qgc3RvcmUsIHRyYW5zbWl0IG9yIGRpc2Nsb3NlIGl0cyBj
+b250ZW50cy4gSW5zdGVhZCBwbGVhc2Ugbm90aWZ5IHRoZSBzZW5kZXIgaW1tZWRpYXRlbHk7IGFu
+ZCBwZXJtYW5lbnRseSBkZWxldGUgdGhpcyBlLW1haWwgZnJvbSB5b3VyIGNvbXB1dGVyIHN5c3Rl
+bXMuIFdlIGhhdmUgdGFrZW4gcmVhc29uYWJsZSBwcmVjYXV0aW9ucyB0byBlbnN1cmUgdGhhdCBu
+byB2aXJ1c2VzIGFyZSBwcmVzZW50LiBIb3dldmVyLCB5b3UgbXVzdCBjaGVjayB0aGlzIGVtYWls
+IGFuZCB0aGUgYXR0YWNobWVudHMsIGZvciB2aXJ1c2VzLiBXZSBhY2NlcHQgbm8gbGlhYmlsaXR5
+IHdoYXRzb2V2ZXIsIGZvciBhbnkgZGV0cmltZW50IGNhdXNlZCBieSBhbnkgdHJhbnNtaXR0ZWQg
+dmlydXMuDQo=
