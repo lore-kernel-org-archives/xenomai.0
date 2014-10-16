@@ -1,12 +1,11 @@
-Date: Wed, 15 Oct 2014 22:03:20 +0200
+Message-ID: <543F70C5.1090005@xenomai.org>
+Date: Thu, 16 Oct 2014 09:16:21 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141015200320.GB30661@sisyphus.hd.free.fr>
-References: <543E4B9F.60602@cgglobal.com> <543E5380.3080700@cgglobal.com>
- <543E567C.4070800@xenomai.org> <543E72BB.50707@cgglobal.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <543E72BB.50707@cgglobal.com>
+References: <543E4B9F.60602@cgglobal.com> <543E5380.3080700@cgglobal.com>
+In-Reply-To: <543E5380.3080700@cgglobal.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] First call to rt_timer_tsc() causes an unexpected
  switch to secondary mode.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,86 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ZIV-Alberto Ozalla Cantabrana <alberto.ozalla@cgglobal.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: alberto.ozalla@cgglobal.com, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, Oct 15, 2014 at 01:12:27PM +0000, ZIV-Alberto Ozalla Cantabrana wrote:
-> 
-> On 15/10/14 13:11, Gilles Chanteperdrix wrote:
-> > On 10/15/2014 12:59 PM, ZIV-Alberto Ozalla Cantabrana wrote:
-> >> Dear colleagues,
-> >>
-> >> I face an unexpected switch to secondary mode after the very first call to rt_timer_tsc() into a real-time task created by Xenomai.
-> >> This unexpected switch  only arises if it is the very first call to rt_timer_tsc().
-> > Hi,
-> >
-> > I see two possible reasons for that:
-> > - either on-demand mapping of library text page
-> > - or first access to the hardware register.
-> >
-> > In order to find which is the reason.
-> >
-> > Could you replace the call to rt_timer_tsc() with a call to __xn_rdtsc()
-> > after including asm/xenomai/tsc.h ?
-> >
-> >
-> Hello,
-> 
-> Thanks for the fast response.
-> 
-> Unfortunately replacing the call to rt_timer_tsc() with a call to 
-> __xn_rdtsc() does not solve the problem.
-> 
-> Another clue is that PF value increases at the same time as MSW.
-> 
-> 
-> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
->    0  0      0          11594571   0     00500080   96.3 ROOT/0
->    0  1690   1          5339       1     00300184    1.0 Test_Task
-> 
-> It seems to be a first access to the hardware register.
-> 
-> Note: I use a call to mlockall(MCL_CURRENT|MCL_FUTURE) before creating 
-> the task.
-> 
+On 10/15/2014 12:59 PM, ZIV-Alberto Ozalla Cantabrana wrote:
+> 'CFLAGS=-Os -pipe -D_REENTRANT -fomit-frame-pointer -march=armv7-a
+> -mtune=cortex-a8  -mfpu=vfpv3-d16 -finline-functions
+> -finline-limit=50 -ffast-math -include
+> /home/aozalla/pro/npcp/toolchain/include/builtin_redefines.h
+> -DMAX_PCI_SLOTS=8 -fPIC -DPIC -DNO_LARGEFILE_SOURCE
+> -U_LARGEFILE_SOURCE -U_LARGE_FILES -U_FILE_OFFSET_BITS'
 
-I just tried on omap3, which is pretty close to beagle bone, and did
-not observe the same issue. Could you try and add the following code
-to your test:
-
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <asm/xenomai/syscall.h>
-
-void tsc_init(void)
-{
-	struct __xn_tscinfo tscinfo;
-	unsigned long phys_addr;
-	unsigned page_size;
-	int fd;
-
-	XENOMAI_SYSCALL2(__xn_sys_arch, XENOMAI_SYSARCH_TSCINFO, &tscinfo);
-	fd = open("/dev/mem", O_RDONLY | O_SYNC);
-	page_size = sysconf(_SC_PAGESIZE);
-	phys_addr = (unsigned long) tscinfo.counter;
-	tsc_vaddr = mmap(NULL, page_size, PROT_READ, MAP_SHARED,
-		    fd, phys_addr & ~(page_size - 1))
-		+ (phys_addr & (page_size - 1));
-	close(fd);
-
-	rdtsc = (typeof(rdtsc))(0xffff1004 -
-				((*(unsigned *)(0xffff0ffc) + 3) << 5));
-}
-
-static inline unsigned long long my_rdtsc(void)
-{
-	return rdtsc(tsc_vaddr);
-}
-
-Call tsc_init at the beginning of your program, then replace the
-first call to rt_timer_tsc() with a call to my_rdtsc(), and see if
-you still get the page fault?
+As a side note, if you have a modern toolchain which compiles by default
+for thumb2, by passing -march=armv7-a you disable compilation for thumb,
+and from my experience thumb2 code results in better latencies than ARM
+code. Also -Os -finline-functions is a bit strange: the advantage of
+using -Os is that it inline less functions, so it looks like a strange
+way to ask for -O2. Also note that according to my tests, you get better
+latencies on ARM with -Os than with -O2. Finally, I do not know what
+builtin_redefines.h does but beware: xenomai uses gcc builtin functions
+for atomic instructions by default now.
 
 -- 
-					    Gilles.
+                                                                Gilles.
 
