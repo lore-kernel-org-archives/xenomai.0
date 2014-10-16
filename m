@@ -1,12 +1,13 @@
-Date: Thu, 16 Oct 2014 19:32:00 +0200
+Date: Thu, 16 Oct 2014 19:43:09 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141016173200.GC30661@sisyphus.hd.free.fr>
-References: <1413460213.12609.YahooMailNeo@web121502.mail.ne1.yahoo.com>
+Message-ID: <20141016174309.GD30661@sisyphus.hd.free.fr>
+References: <1413464642.48297.YahooMailNeo@web141701.mail.bf1.yahoo.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <1413460213.12609.YahooMailNeo@web121502.mail.ne1.yahoo.com>
-Subject: Re: [Xenomai] undefined reference of rt_timer_read()
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1413464642.48297.YahooMailNeo@web141701.mail.bf1.yahoo.com>
+Subject: Re: [Xenomai] RTDM problem with Advantech PCM-3680I
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,50 +16,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Arsalan Shahid <arsalan_shahid116@yahoo.com>
+To: =?utf-8?Q?R=C3=B3bert?= Marc <rob_marc2003@yahoo.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thu, Oct 16, 2014 at 04:50:13AM -0700, Arsalan Shahid wrote:
-> Hi 
+On Thu, Oct 16, 2014 at 06:04:02AM -0700, Róbert Marc wrote:
+> Dear Xenomai community,
 
 Hi,
 
 > 
-> I pray that this message finds you in the Best of Health & Happiness
-
-Thanks, but you do not need to be so formal, a simple "hi" will do.
-
-> I am using NATIVE skin of Xenomai along with OpenMP. Xenomai works
-> perfectly fine with NATIVE skin when we use it along OpenMP. But
-> In my codes when ever I tried to access any Function of Native
-> skin I get an error in compilation. I used rt_timer_read() as
-> shown below.
+> I am experiencing problems with my Advantech card under Xenomai.
+> Please note that the card (Advantech PCM-3680I) functions
+> perfectly under non-RT Linux (Ubuntu 12.04). I can send and
+> receive messages.  Although the modules are loaded the devices
+> can't be seen. See details below.
 > 
-> RTIME now;
-> now = rt_timer_read();
 > 
-> code.c:(.text+0x33): undefined reference to `rt_timer_read'
-> code.c:(.text+0x49): undefined reference to `rt_timer_ticks2ns'
+> Here are some technical details:
+> 
+> rtos@rtos-pc-104:~$ sudo rtcanconfig rtcan0 -b 1000000 -v start
+> mode: start (0x1)
+> Can't get interface index for rtcan0, code = -19
+> 
+> 
+> >>  what is error code -19?
 
-I believe the problem to be in the way you compile your program. You
-should obtain the correct flag with the "xeno-config" program,
-documented here:
-http://www.xenomai.org/documentation/xenomai-2.6/html/xeno-config/
-
-Also beware of gcc link order beginners trap: the order of arguments
-on gcc command line matters:
-https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html
+http://xenomai.org/2014/06/resolving-error-codes/
 
 > 
-> Same is the case when I call used rt_printf. Another thing which
-> comes while compiling Xenomai application occurs when I give
-> command line option (-lrtdk). Without this code is compiled but
-> with this it gives error.
+> 
+> rtos@rtos-pc-104:~$ lsmod | grep adv
+> xeno_can_adv_pci       12730  0 
+> advcan                             707511  4 
+> xeno_can_sja1000       17366  1 xeno_can_adv_pci
+> xeno_can                         28373  2 xeno_can_adv_pci,xeno_can_sja1000
+> 
+> 
+> >> drivers are loaded 
+> 
+> 
+> rtos@rtos-pc-104:~$ dmesg | grep CAN
+> [    4.341607] RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development Team
+> [    4.372061] RTCAN SJA1000 driver initialized
+> [    4.405671] ADV-PCI-CAN 0000:01:04.0: RTCAN Registering card
+> [    4.405697] ADV-PCI-CAN 0000:01:04.0: RTCAN detected Advantech PCI card at slot #4
+> [    4.405712] ADV-PCI-CAN: Initializing device 13fe:c002:c002
+> [    4.405731] ADV-PCI-CAN: base_addr=0001ef00 conf_addr=  (null) irq=16 ocr=0xfa cdr=0xc0
+> [    4.405811] RTCAN: unregistered rtcan0
+> [    4.405836] ADV-PCI-CAN: probe of 0000:01:04.0 failed with error -5
+> [    4.494279] CAN Communication Driver.
+> [    4.514136] Advantech CAN Port CAN Driver (c) Oct  3 2014 15:12:52
+> [    4.514202] Advanteh PCI CAN devie c002 found( 2 CAN port)
+> 
+> 
+> >> conf_addr=  (null) might be the problem???
 
-For -lrtdk, see:
-http://www.xenomai.org/pipermail/xenomai/2012-January/025149.html
+Well from these traces, the rtcan0 device is registered, then
+unregistered, no need to go further, rtcanconfig will not be able to
+find it, this explains the ENODEV.
 
-Regards.
+conf_addr set to null should not be the problem, as the driver code
+sets it to NULL, then never uses it. See:
+http://git.xenomai.org/xenomai-2.6.git/tree/ksrc/drivers/can/sja1000/rtcan_adv_pci.c
+
+Maybe the full traces contain the reason for unregistering rtcan0?
 
 -- 
 					    Gilles.
