@@ -1,9 +1,12 @@
+Date: Thu, 16 Oct 2014 19:32:00 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141016173200.GC30661@sisyphus.hd.free.fr>
+References: <1413460213.12609.YahooMailNeo@web121502.mail.ne1.yahoo.com>
 MIME-Version: 1.0
-Date: Wed, 1 Oct 2014 10:35:11 +0300
-Message-ID: <CABaOOZ1C-Yo+SPfbxk35kYavnugGK0yZQ3nYivpritw6wtxO1A@mail.gmail.com>
-From: Stratiyenko Roman <picoworm@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] Can not compile mertcury
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1413460213.12609.YahooMailNeo@web121502.mail.ne1.yahoo.com>
+Subject: Re: [Xenomai] undefined reference of rt_timer_read()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,24 +15,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Arsalan Shahid <arsalan_shahid116@yahoo.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello,
+On Thu, Oct 16, 2014 at 04:50:13AM -0700, Arsalan Shahid wrote:
+> Hi 
 
-Today I downloaded latest xenomai 3 from git.
-I want to try mercury version
-I did ./configure --with-core=mercury
-after make, I have error compiling testsuite
+Hi,
 
-../../lib/copperplate/.libs/libcopperplate.so: undefined reference to
-`timer_create'
-../../lib/copperplate/.libs/libcopperplate.so: undefined reference to
-`timer_delete'
-../../lib/copperplate/.libs/libcopperplate.so: undefined reference to
-`timer_settime'
-collect2: error: ld returned 1 exit status
+> 
+> I pray that this message finds you in the Best of Health & Happiness
 
-What am I doing wrong?
+Thanks, but you do not need to be so formal, a simple "hi" will do.
 
-Best regards,
-Roman
+> I am using NATIVE skin of Xenomai along with OpenMP. Xenomai works
+> perfectly fine with NATIVE skin when we use it along OpenMP. But
+> In my codes when ever I tried to access any Function of Native
+> skin I get an error in compilation. I used rt_timer_read() as
+> shown below.
+> 
+> RTIME now;
+> now = rt_timer_read();
+> 
+> code.c:(.text+0x33): undefined reference to `rt_timer_read'
+> code.c:(.text+0x49): undefined reference to `rt_timer_ticks2ns'
+
+I believe the problem to be in the way you compile your program. You
+should obtain the correct flag with the "xeno-config" program,
+documented here:
+http://www.xenomai.org/documentation/xenomai-2.6/html/xeno-config/
+
+Also beware of gcc link order beginners trap: the order of arguments
+on gcc command line matters:
+https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html
+
+> 
+> Same is the case when I call used rt_printf. Another thing which
+> comes while compiling Xenomai application occurs when I give
+> command line option (-lrtdk). Without this code is compiled but
+> with this it gives error.
+
+For -lrtdk, see:
+http://www.xenomai.org/pipermail/xenomai/2012-January/025149.html
+
+Regards.
+
+-- 
+					    Gilles.
+
