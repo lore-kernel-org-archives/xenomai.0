@@ -1,12 +1,11 @@
-Message-ID: <542BB9E7.7050008@xenomai.org>
-Date: Wed, 01 Oct 2014 10:23:03 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Fri, 17 Oct 2014 16:59:38 +0200 (CEST)
+From: Harsha Sathyanarayana <harsha.sathyanarayana@eleves.ec-nantes.fr>
+Message-ID: <173837943.16227992.1413557978674.JavaMail.zimbra@eleves.ec-nantes.fr>
+In-Reply-To: <793728679.16223225.1413557251226.JavaMail.zimbra@eleves.ec-nantes.fr>
 MIME-Version: 1.0
-References: <CABaOOZ1C-Yo+SPfbxk35kYavnugGK0yZQ3nYivpritw6wtxO1A@mail.gmail.com>
-In-Reply-To: <CABaOOZ1C-Yo+SPfbxk35kYavnugGK0yZQ3nYivpritw6wtxO1A@mail.gmail.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Can not compile mertcury
+Subject: [Xenomai] Regarding the patch for Raspberry pi linux 3.14.y Kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,33 +14,8 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Stratiyenko Roman <picoworm@gmail.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 10/01/2014 09:35 AM, Stratiyenko Roman wrote:
-> Hello,
-> 
-> Today I downloaded latest xenomai 3 from git.
-> I want to try mercury version
-> I did ./configure --with-core=mercury
-> after make, I have error compiling testsuite
-> 
-> ../../lib/copperplate/.libs/libcopperplate.so: undefined reference to
-> `timer_create'
-> ../../lib/copperplate/.libs/libcopperplate.so: undefined reference to
-> `timer_delete'
-> ../../lib/copperplate/.libs/libcopperplate.so: undefined reference to
-> `timer_settime'
-> collect2: error: ld returned 1 exit status
-> 
-> What am I doing wrong?
-> 
-
-Nothing, a dependency on librt seems to be unresolved in your case.
-Please pull the updates from the -next branch and try again. Feedback
-welcome.
-
-Thanks,
-
--- 
-Philippe.
+Hello Guys
+I wanted to compile the linux raspberry pi 3.14.y kernel with xenomai, I would like to know which one is the right appropriate patch, Since Raspberry pi is quite common, it it possible to release it along with the Raspberry PI release 
 
