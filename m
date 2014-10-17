@@ -1,15 +1,13 @@
-Message-ID: <544145EE.6050702@xenomai.org>
-Date: Fri, 17 Oct 2014 18:38:06 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+References: <1413460213.12609.YahooMailNeo@web121502.mail.ne1.yahoo.com>
+ <20141016173200.GC30661@sisyphus.hd.free.fr>
+Message-ID: <1413567684.37999.YahooMailNeo@web121505.mail.ne1.yahoo.com>
+Date: Fri, 17 Oct 2014 10:41:24 -0700
+From: Arsalan Shahid <arsalan_shahid116@yahoo.com>
+In-Reply-To: <20141016173200.GC30661@sisyphus.hd.free.fr>
 MIME-Version: 1.0
-References: <543E4B9F.60602@cgglobal.com> <543E5380.3080700@cgglobal.com>
- <543E567C.4070800@xenomai.org> <543E72BB.50707@cgglobal.com>
- <20141015200320.GB30661@sisyphus.hd.free.fr> <544144F5.5000802@cgglobal.com>
-In-Reply-To: <544144F5.5000802@cgglobal.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] First call to rt_timer_tsc() causes an unexpected
- switch to secondary mode.
+Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai] undefined reference of rt_timer_read()
+Reply-To: Arsalan Shahid <arsalan_shahid116@yahoo.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,102 +16,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: alberto.ozalla@cgglobal.com
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10/17/2014 06:33 PM, ZIV-Alberto Ozalla Cantabrana wrote:
+Thanks for your prompt response. 
+
+Gilles, I compiled my code with OpenMP + Xenomai as 
+
+> xeno-config --skin=--xeno-cflags
+> xeno-config --skin=--xeno-ldflags
+> export CFLAGS=`xeno-config --xeno-cflags`
+> export LDFLAGS=`xeno-config --xeno-ldflags`
+> gcc -fopenmp $CFLAGS $LDFLAGS  -lnative -lrtdk  code.c -o code
+
+For -lrtdk I understood the point. But I think I am compiling the code correctly. What do you say ? 
+
+Also, I am doing all this in my virtual machine using VmWare. Do you think this can be an issue to access rt_ functions of NATIVE skin due to their RT design ? 
+
+Thanks & Regards 
+Arsalan Shahid 
+
+
+
+On Thursday, October 16, 2014 10:32 PM, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+ 
+
+
+On Thu, Oct 16, 2014 at 04:50:13AM -0700, Arsalan Shahid wrote:
+> Hi 
+
+Hi,
+
 > 
-> On 15/10/14 22:03, Gilles Chanteperdrix wrote:
->> On Wed, Oct 15, 2014 at 01:12:27PM +0000, ZIV-Alberto Ozalla Cantabrana wrote:
->>> On 15/10/14 13:11, Gilles Chanteperdrix wrote:
->>>> On 10/15/2014 12:59 PM, ZIV-Alberto Ozalla Cantabrana wrote:
->>>>> Dear colleagues,
->>>>>
->>>>> I face an unexpected switch to secondary mode after the very first call to rt_timer_tsc() into a real-time task created by Xenomai.
->>>>> This unexpected switch  only arises if it is the very first call to rt_timer_tsc().
->>>> Hi,
->>>>
->>>> I see two possible reasons for that:
->>>> - either on-demand mapping of library text page
->>>> - or first access to the hardware register.
->>>>
->>>> In order to find which is the reason.
->>>>
->>>> Could you replace the call to rt_timer_tsc() with a call to __xn_rdtsc()
->>>> after including asm/xenomai/tsc.h ?
->>>>
->>>>
->>> Hello,
->>>
->>> Thanks for the fast response.
->>>
->>> Unfortunately replacing the call to rt_timer_tsc() with a call to
->>> __xn_rdtsc() does not solve the problem.
->>>
->>> Another clue is that PF value increases at the same time as MSW.
->>>
->>>
->>> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
->>>     0  0      0          11594571   0     00500080   96.3 ROOT/0
->>>     0  1690   1          5339       1     00300184    1.0 Test_Task
->>>
->>> It seems to be a first access to the hardware register.
->>>
->>> Note: I use a call to mlockall(MCL_CURRENT|MCL_FUTURE) before creating
->>> the task.
->>>
->> I just tried on omap3, which is pretty close to beagle bone, and did
->> not observe the same issue. Could you try and add the following code
->> to your test:
->>
->> #include <fcntl.h>
->> #include <sys/mman.h>
->> #include <asm/xenomai/syscall.h>
->>
->> void tsc_init(void)
->> {
->> 	struct __xn_tscinfo tscinfo;
->> 	unsigned long phys_addr;
->> 	unsigned page_size;
->> 	int fd;
->>
->> 	XENOMAI_SYSCALL2(__xn_sys_arch, XENOMAI_SYSARCH_TSCINFO, &tscinfo);
->> 	fd = open("/dev/mem", O_RDONLY | O_SYNC);
->> 	page_size = sysconf(_SC_PAGESIZE);
->> 	phys_addr = (unsigned long) tscinfo.counter;
->> 	tsc_vaddr = mmap(NULL, page_size, PROT_READ, MAP_SHARED,
->> 		    fd, phys_addr & ~(page_size - 1))
->> 		+ (phys_addr & (page_size - 1));
->> 	close(fd);
->>
->> 	rdtsc = (typeof(rdtsc))(0xffff1004 -
->> 				((*(unsigned *)(0xffff0ffc) + 3) << 5));
->> }
->>
->> static inline unsigned long long my_rdtsc(void)
->> {
->> 	return rdtsc(tsc_vaddr);
->> }
->>
->> Call tsc_init at the beginning of your program, then replace the
->> first call to rt_timer_tsc() with a call to my_rdtsc(), and see if
->> you still get the page fault?
->>
-> Hi all,
+> I pray that this message finds you in the Best of Health & Happiness
+
+Thanks, but you do not need to be so formal, a simple "hi" will do.
+
+> I am using NATIVE skin of Xenomai along with OpenMP. Xenomai works
+> perfectly fine with NATIVE skin when we use it along OpenMP. But
+> In my codes when ever I tried to access any Function of Native
+> skin I get an error in compilation. I used rt_timer_read() as
+> shown below.
 > 
-> It works fine.
-> There are neither mode switches, nor page faults.
+> RTIME now;
+> now = rt_timer_read();
 > 
-> I will spend the weekend thinking about it.
+> code.c:(.text+0x33): undefined reference to `rt_timer_read'
+> code.c:(.text+0x49): undefined reference to `rt_timer_ticks2ns'
+
+I believe the problem to be in the way you compile your program. You
+should obtain the correct flag with the "xeno-config" program,
+documented here:
+http://www.xenomai.org/documentation/xenomai-2.6/html/xeno-config/
+
+Also beware of gcc link order beginners trap: the order of arguments
+on gcc command line matters:
+https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html
+
 > 
-> Thanks a lot, Gilles.
-> 
-It is exactly the same thing as what libxenomai does, the only
-difference being that libxenomai may be mapped on demand, but this is
-doubtful since libxenomai initializations are done before main runs, so
-it should have been mapped already. Are you sure the kernel you are
-running still has the issue when using rt_timer_tsc()?
+> Same is the case when I call used rt_printf. Another thing which
+> comes while compiling Xenomai application occurs when I give
+> command line option (-lrtdk). Without this code is compiled but
+> with this it gives error.
+
+For -lrtdk, see:
+http://www.xenomai.org/pipermail/xenomai/2012-January/025149.html
+
+
+Regards.
 
 -- 
-                                                                Gilles.
-
+                        Gilles.
