@@ -1,14 +1,13 @@
-Date: Fri, 17 Oct 2014 20:23:09 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141017182309.GL30661@sisyphus.hd.free.fr>
-References: <793728679.16223225.1413557251226.JavaMail.zimbra@eleves.ec-nantes.fr>
- <173837943.16227992.1413557978674.JavaMail.zimbra@eleves.ec-nantes.fr>
+From: Lowell Gilbert <kludge@be-well.ilk.org>
+References: <A83EBA0226A300439B44DB00FD90D6560F2C18@NDMSMBX402.ndc.nasa.gov>
+Date: Fri, 17 Oct 2014 14:30:38 -0400
+In-Reply-To: <A83EBA0226A300439B44DB00FD90D6560F2C18@NDMSMBX402.ndc.nasa.gov>
+ (Udayan Mallik's message of "Fri, 17 Oct 2014 14:44:20 +0000")
+Message-ID: <44iojio8fl.fsf@lowell-desk.lan>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <173837943.16227992.1413557978674.JavaMail.zimbra@eleves.ec-nantes.fr>
-Subject: Re: [Xenomai] Regarding the patch for Raspberry pi linux 3.14.y
- Kernel
+Content-Type: text/plain
+Subject: Re: [Xenomai] Menuconfig
+Reply-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,43 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Harsha Sathyanarayana <harsha.sathyanarayana@eleves.ec-nantes.fr>
-Cc: xenomai@xenomai.org
+To: "Mallik, Udayan (GSFC-5640)" <udayan.mallik-1@nasa.gov>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Oct 17, 2014 at 04:59:38PM +0200, Harsha Sathyanarayana wrote:
-> Hello Guys I wanted to compile the linux raspberry pi 3.14.y
-> kernel with xenomai, I would like to know which one is the right
-> appropriate patch, 
+"Mallik, Udayan (GSFC-5640)" <udayan.mallik-1@nasa.gov> writes:
 
-Support for Raspberry is not integrated in the mainline Adeos I-pipe
-patch, because the I-pipe patch only exists for mainline kernel. It
-exists as a supplementary patch for some versions of Raspberry
-specific kernels you will find out by reading
-ksrc/arch/arm/patches/README in xenomai sources.
+> I am installing Xenomai-2.6.4 on my Linux box with Linux-3.10.32.
 
-> Since Raspberry pi is quite common, it it
-> possible to release it along with the Raspberry PI release
+on a PC-type machine, most likely...
 
-I do not really understand what you mean by that. But if there exist
-a Raspberry Pi SDK release, it is certainly not maintained by the
-Xenomai project, so I do not see what talking about what this
-release should contain makes on the Xenomai mailing list. And if you
-mean that we should wait for such release to release Xenomai, then
-the answer is no, we are not going to do that, we support several
-SOC, from several architecture, and we are not going to synchronize
-with every SOC-specific distribution du jour for every SOC.
+Do you have a kernel working with the ipipe extensions before adding
+Xenomai? 
 
-But if you want to be able to download the latest version of
-Xenomai, apply it on the latest ARM kernel supported by this
-version, and have it working with the Raspberry Pi, then you should
-work to get enough of the Raspberry Pi support merged into the
-mainline kernel for it to be usable in your project, then submit
-patches to the Xenomai mailing list to add support for Raspberry Pi
-to the mainline I-pipe patch. Once a SOC is supported by the
-mainline I-pipe patch, it is ported to next versions. As long as it
-only exists as a separate patch for a SOC-specific fork, we depend
-on others to generate and test new versions of that patch.
+> I disabled all but the MSI switch (I could not change this one!) under
+> menuconfig and my installation ran into a Kernel Panic mode "kernel
+> panic not syncing: timer does not work through Interrupt remapped
+> IO-APIC."
 
--- 
-					    Gilles.
+MSI is unlikely to be relevant if you're not launching any
+Xenomai-enabled processes before the panic.
+
+> Today I read more about Xenomai and it seems to need some of the switches it told me to disable.
+
+Can you be more specific? Which switches, why you think that, etc.?
+
+> Should I fiddle with Menuconfig at all?
+
+What happens if you don't?
+
+I assume you started from a kernel codebase and configuration that
+worked before you started on any of the Xenomai work. You really want
+that as a baseline before starting to change things.
 
