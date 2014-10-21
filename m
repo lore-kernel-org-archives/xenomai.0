@@ -1,13 +1,11 @@
-Message-ID: <542BC753.8000605@xenomai.org>
-Date: Wed, 01 Oct 2014 11:20:19 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Steve Hartmann <shartmann@cnt.canon.com>
+Date: Tue, 21 Oct 2014 21:48:55 +0000
+Message-ID: <D06C3EF5.19661%shartmann@cnt.canon.com>
+Content-Language: en-US
 MIME-Version: 1.0
-References: <CACreCVKF=VQuWhaxkAPTOAaDui0aze+Vc4MOq+vby+2eBRx1iA@mail.gmail.com>	<542A945E.9000904@xenomai.org>	<CACreCVK_Xd79uaHpzODKMQHMVrH58KvsKuBQ5kRsOhM++BXT4w@mail.gmail.com>	<542A9F17.7090802@xenomai.org>	<CACreCV+sFAWEzADAD+q6ZitVLcwuKGq1WguvfaXtoX_P9KkkUQ@mail.gmail.com>	<542BB31F.8070803@xenomai.org>
- <CACreCVK8axcEwipeOTxXp7cwAXz8jGOPqEG9j2dp8zosCZFrjA@mail.gmail.com>
-In-Reply-To: <CACreCVK8axcEwipeOTxXp7cwAXz8jGOPqEG9j2dp8zosCZFrjA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Switchtest failures on ODROIDU3
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Troubleshooting general protection faults
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,98 +14,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: GP Orcullo <kinsamanka@gmail.com>
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 10/01/2014 11:12 AM, GP Orcullo wrote:
-> On Oct 1, 2014 3:54 PM, "Gilles Chanteperdrix" <
-> gilles.chanteperdrix@xenomai.org> wrote:
->>
->> On 10/01/2014 01:32 AM, GP Orcullo wrote:
->>> On Sep 30, 2014 8:16 PM, "Gilles Chanteperdrix" <
->>> gilles.chanteperdrix@xenomai.org> wrote:
->>>>
->>>> On 09/30/2014 02:04 PM, GP Orcullo wrote:
->>>>> On Sep 30, 2014 7:30 PM, "Gilles Chanteperdrix" <
->>>>> gilles.chanteperdrix@xenomai.org> wrote:
->>>>>>
->>>>>> On 09/30/2014 07:31 AM, GP Orcullo wrote:
->>>>>>> Hi,
->>>>>>>
->>>>>>> Running the switchtest for extended periods (>10 mins) causes the
->>>>>>> machine to lockup.
->>>>>>>
->>>>>>> I'm running a modified xeno-regression-test which contains only the
->>>>>>> following tests:
->>>>>>>
->>>>>>> check_alive /usr/lib/xenomai/testsuite/switchtest
->>>>>>> check_alive /usr/lib/xenomai/testsuite/switchtest -s 1000
->>>>>>> check_alive /usr/lib/xenomai/testsuite/latency ${1+"$@"}
->>>>>>>
->>>>>>> The script is invoked with the following arguments:
->>>>>>>
->>>>>>> nohup sudo ./xeno-regression-test -l
->>>>>>> "/usr/lib/xenomai/testsuite/dohell -m /media/work 36000" -t 2 >
->>>>>>> /dev/null & top -d0.5
->>>>>>>
->>>>>>> The kernel dumps the OOPS information intermittently so it's
-> difficult
->>>>>>> to diagnose the issue.
->>>>>>>
->>>>>>> Attached is the kernel config and the logfile.
->>>>>>
->>>>>> Ok, this is an exynos. Sorry, but I have never seen the patch for
->>>>>> exynos, so I do not know what is inside. You should direct your
->>>>>> questions to whoever provided you with this support.
->>>>>
->>>>> I'm in the process of porting xenomai to run on exynos.
->>>>>
->>>>> The ipipe-core-3.8.13-arm-3.patch applies cleanly to the 3.8.13.11
->>> kernel
->>>>> used by the odroid U3 board.
->>>>>
->>>>> Attached is the ipipe patch that I've made.
->>>>>
->>>>> I was just wondering what would cause switchtest to fail. The error
->>> that I
->>>>> can see is that the system is running out of memory and I don't know
->>>>> exactly what is causing this.
->>>>
->>>> Certainly not switchtest as it does not do any memory allocation.
->>>> However, the dohell script has a loop creating a large file and
-> removing
->>>> it. So, could you try and run the dohell script with an unpatched
-> kernel
->>>> and see if you have the error?
->>>>
->>>
->>> Running dohell on a patched and unpatched kernel doesn't trigger the
-> lockup.
->>>
->>> Running switchtest without dohell works OK.
->>
->> Is the problem a lockup, or an OOM?
->>
-> 
-> It's a lockup.
-> 
-> The OOM message is the only one that I've captured so far.  Most of the
-> time the kernel doesn't spew any messages before the lockup.
-> 
-> The lockups are repeatable but generating any error messages isn't.
+Hi All,
 
-Are you running the tests on the serial console, or with ssh? Do you
-have unlocked context switch enabled? Have you tried enabling some debug
-options?
+I am having a really strange and hard to troubleshoot problem on multiple s=
+ystems and hope that someone here could maybe throw some tips my way.  I am=
+ running Xenomai 2.6.4 on linux 3.4.6, amd64.  I am also using the Etherlab=
+s ethercat stack out of their stable-1.5 branch.   From time to time, the s=
+ystem suddenly goes into a state where most programs, including bash, will =
+immediately crash, which means we notice this when we can no longer ssh int=
+o the machine - ssh still answers, but bash crashes, so it hangs up immedia=
+tely.  Even sudo will crash.  The frequency of this problem has been anywhe=
+re between 24 hours and 30 days.  Most of the time, our application continu=
+es to run, although I have seen times when it has segfaulted when this issu=
+e occurs.  I have found the following messages in dmesg kernel ring buffer =
+when attempting to run bash(via ssh) and sudo:
 
-Also note that xeno-regression-test puts the system under a lot of
-stress, so it may happen that there is no output for some time (several
-minutes), normally the test should stop by itself if there is no output
-for something like 30 minutes. So, I would recommend not redirecting
-xeno-test output to see if there is any error before the lockup, and
-when you see the lockup, leave the system for 30 minutes to see if it
-does not restart or if xeno-regression-test can exit gracefully.
+[453435.329099] sshd[20571] general protection ip:7fa242dca6f3 sp:7fff272c9=
+d40 error:0 in libcrypto.so.1.0.0[7fa242cc5000+1ca000]
+[453669.290896] sudo[20578]: segfault at 0 ip           (null) sp 00007ffff=
+97d89c8 error 14 in sudo[400000+1a000]
+[453711.410834] sudo[20581]: segfault at 0 ip           (null) sp 00007fffe=
+07e36f8 error 14 in sudo[400000+1a000]
 
--- 
-                                                                Gilles.
+The only recovery I have found is to reboot the machine.
 
+Thanks,
+
+Steven
