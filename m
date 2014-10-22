@@ -1,15 +1,14 @@
-From: Steve Hartmann <shartmann@cnt.canon.com>
-Date: Wed, 22 Oct 2014 11:17:38 +0000
-Message-ID: <D06CFB35.19680%shartmann@cnt.canon.com>
-References: <D06C2B92.195DA%shartmann@cnt.canon.com>
- <20141022051722.GB29673@sisyphus.hd.free.fr>
-In-Reply-To: <20141022051722.GB29673@sisyphus.hd.free.fr>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <EB0CE179247EDB44905D0AC883D3DB4F@mex06.mlsrvr.com>
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: Re: [Xenomai] /proc/xenomai/sched
+Sender: hiddeate2m@gmail.com
+In-Reply-To: <D06CF843.1966B%shartmann@cnt.canon.com>
+References: <D06C3EF5.19661%shartmann@cnt.canon.com>
+ <20141022050529.GA29673@sisyphus.hd.free.fr>
+ <D06CF843.1966B%shartmann@cnt.canon.com>
+Date: Wed, 22 Oct 2014 13:53:14 +0200
+Message-ID: <CAMi4Dw2XGkYPh=pU+FCWCRjGTpxBL5Ex5CFeW-W-gqGpFO6Ubw@mail.gmail.com>
+From: "Hidde Verstoep (E2M)" <hverstoep@e2mtechnologies.eu>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Troubleshooting general protection faults
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,41 +17,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Steve Hartmann <shartmann@cnt.canon.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-
-
-On 10/22/14 12:17 AM, "Gilles Chanteperdrix"
-<gilles.chanteperdrix@xenomai.org> wrote:
-
->On Tue, Oct 21, 2014 at 08:29:26PM +0000, Steve Hartmann wrote:
->>=20
->>=20
->> On 10/21/14 3:11 PM, "Steve Hartmann" <shartmann@cnt.canon.com> wrote:
->>=20
->> >Can someone please point me in the direction of a writeup of how to
->> >interpret /proc/xenomai/sched?  I have searched around, but cannot find
->> >what I am looking for.  Specifically, I want to know what it means
->>when I
->> >see a "D" in the "STAT" column, and what the number in the "TIMEOUT"
->> >column means.
->> >
->> >I did find one post that said the "D" means "Delayed (without any other
->> >wait condition).". Maybe I'm just dense, but I'm not positive on what
->> >that means.  I think it might mean that the task should be running, but
->> >it is delayed because it could not be scheduled because of some reason
->> >perhaps another higher priority task is bumping it?  Or am I way off
->>base?
->> >
->> >Also, in xenomai 2.4.7, the TIMEOUT column is expressed in a number
->>with
->> >no units; what is the unit?
+On Wed, Oct 22, 2014 at 1:09 PM, Steve Hartmann <shartmann@cnt.canon.com> wrote:
 >
->Probably nanoseconds. Would need to check the sources to see that.
+> On 10/22/14 12:05 AM, "Gilles Chanteperdrix"
+> <gilles.chanteperdrix@xenomai.org> wrote:
+>
+>>On Tue, Oct 21, 2014 at 09:48:55PM +0000, Steve Hartmann wrote:
+>>> Hi All,
+>>>
+>>> I am having a really strange and hard to troubleshoot problem on
+>>> multiple systems and hope that someone here could maybe throw some
+>>> tips my way.  I am running Xenomai 2.6.4 on linux 3.4.6, amd64.
+>>
+>>Do you observe the same behaviour with the I-pipe patch for Linux
+>>3.14.17 that comes with Xenomai 2.6.4?
+>>
+>>--
+>>                                           Gilles.
+>
+> Unfortunately there is no patched version of the e1000e driver for
+> Etherlabs Ethercat stack for that linux version, so I have not tried it.
+> I will look into the effort level to do the e1000e port myself.  Did you
+> mention that version because it addresses an issue similar to mine?
 
-Thanks of the reply Gilles!  Do you know what it is that the "TIMEOUT"
-columns means?  I.E. What is it measuring?
+In case you start porting the Etherlabs e1000e driver and it is too
+much effort: you could try to write a driver for Etherlabs that uses
+the RTnet network stack. You could base this new Etherlabs driver on
+the existing Etherlabs driver ("generic.c") that uses the linux
+network stack.
 
+RTnet generally works well with Xenomai and it has a lot drivers
+(including one for e1000e). So, this might also be interesting if you
+need support for other network cards in the future. I'm not sure
+though whether RTnet works with 3.14.17, but perhaps somebody else
+could tell you that.
 
+Hidde Verstoep
 
