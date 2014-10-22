@@ -1,15 +1,15 @@
 From: Steve Hartmann <shartmann@cnt.canon.com>
-Date: Wed, 22 Oct 2014 11:09:30 +0000
-Message-ID: <D06CF843.1966B%shartmann@cnt.canon.com>
-References: <D06C3EF5.19661%shartmann@cnt.canon.com>
- <20141022050529.GA29673@sisyphus.hd.free.fr>
-In-Reply-To: <20141022050529.GA29673@sisyphus.hd.free.fr>
+Date: Wed, 22 Oct 2014 11:17:38 +0000
+Message-ID: <D06CFB35.19680%shartmann@cnt.canon.com>
+References: <D06C2B92.195DA%shartmann@cnt.canon.com>
+ <20141022051722.GB29673@sisyphus.hd.free.fr>
+In-Reply-To: <20141022051722.GB29673@sisyphus.hd.free.fr>
 Content-Language: en-US
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <DE85428DADA42147ABBD6D6EB80234FB@mex06.mlsrvr.com>
+Content-ID: <EB0CE179247EDB44905D0AC883D3DB4F@mex06.mlsrvr.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Troubleshooting general protection faults
+Subject: Re: [Xenomai] /proc/xenomai/sched
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,25 +22,37 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
 
-On 10/22/14 12:05 AM, "Gilles Chanteperdrix"
+
+On 10/22/14 12:17 AM, "Gilles Chanteperdrix"
 <gilles.chanteperdrix@xenomai.org> wrote:
 
->On Tue, Oct 21, 2014 at 09:48:55PM +0000, Steve Hartmann wrote:
->> Hi All,
+>On Tue, Oct 21, 2014 at 08:29:26PM +0000, Steve Hartmann wrote:
 >>=20
->> I am having a really strange and hard to troubleshoot problem on
->> multiple systems and hope that someone here could maybe throw some
->> tips my way.  I am running Xenomai 2.6.4 on linux 3.4.6, amd64.
+>>=20
+>> On 10/21/14 3:11 PM, "Steve Hartmann" <shartmann@cnt.canon.com> wrote:
+>>=20
+>> >Can someone please point me in the direction of a writeup of how to
+>> >interpret /proc/xenomai/sched?  I have searched around, but cannot find
+>> >what I am looking for.  Specifically, I want to know what it means
+>>when I
+>> >see a "D" in the "STAT" column, and what the number in the "TIMEOUT"
+>> >column means.
+>> >
+>> >I did find one post that said the "D" means "Delayed (without any other
+>> >wait condition).". Maybe I'm just dense, but I'm not positive on what
+>> >that means.  I think it might mean that the task should be running, but
+>> >it is delayed because it could not be scheduled because of some reason
+>> >perhaps another higher priority task is bumping it?  Or am I way off
+>>base?
+>> >
+>> >Also, in xenomai 2.4.7, the TIMEOUT column is expressed in a number
+>>with
+>> >no units; what is the unit?
 >
->Do you observe the same behaviour with the I-pipe patch for Linux
->3.14.17 that comes with Xenomai 2.6.4?
->
->--=20
->					    Gilles.
+>Probably nanoseconds. Would need to check the sources to see that.
 
-Unfortunately there is no patched version of the e1000e driver for
-Etherlabs Ethercat stack for that linux version, so I have not tried it.
-I will look into the effort level to do the e1000e port myself.  Did you
-mention that version because it addresses an issue similar to mine?
+Thanks of the reply Gilles!  Do you know what it is that the "TIMEOUT"
+columns means?  I.E. What is it measuring?
+
 
 
