@@ -1,13 +1,16 @@
-Message-ID: <544FA001.6070305@xenomai.org>
-Date: Tue, 28 Oct 2014 14:54:09 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Mon, 27 Oct 2014 19:47:21 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141027184721.GA17539@sisyphus.hd.free.fr>
+References: <314E5ECDAA86314791309FA670550F89C674EE64@SINTEFEXMBX05.sintef.no>
+ <20141027133114.GB13005@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C674F1D1@SINTEFEXMBX05.sintef.no>
 MIME-Version: 1.0
-References: <544F6117.7070101@bmwedler.de> <544F6988.1030005@xenomai.org>
- <544F9DB1.1050504@bmwedler.de>
-In-Reply-To: <544F9DB1.1050504@bmwedler.de>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Using pipes in 3.0rc
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <314E5ECDAA86314791309FA670550F89C674F1D1@SINTEFEXMBX05.sintef.no>
+Subject: Re: [Xenomai] Compiling drivers for Xenomai 2.6.4 on Beaglebone
+	Black
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,74 +19,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Registrierungen <regist@bmwedler.de>, xenomai@xenomai.org
+To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10/28/2014 02:44 PM, Registrierungen wrote:
-> Thanks for your support.
+On Mon, Oct 27, 2014 at 04:40:02PM +0000, Terje Frøysa wrote:
+> Hello Gilles,
+> Thanks for your quick reply!
 > 
-> Unfortainly it din'twork for me.
-> I patched and recompiled and installed xenomai and my app,
-> but i have still the same error.
+> I fully understand that you answer for pages outside your "patch".
+> However, I downloaded Xenomai 2.6.4 from you sourcery:
+> http://download.gna.org/xenomai/stable/latest/
 > 
-> Have you got another idea, or need some other informations from my side?
+> When trying to apply the recipes in http://xenomai.org/installing-xenomai-2-x/
+> I run into problems as the xenomai-2.6.4/ksrc/arm/patches contains more than the one patch ("adeos-ipipe-2.6.20-arm-*").
+> It has also subdirectories with pre/post patches for Beaglebone, RPi and other SoC's not mentioned in your receipe.
+> 
+> Although I would like to rely solely on the Xenomai recipe I have to take advices from others to try get it all right.
 
-You may want to trace your app with gdb, configuring with
---enable-debug=full, then single-stepping in rt_pipe_create() to
-pinpoint the failing call in there.
+These additional patches are documented in
+ksrc/arch/arm/patches/README, I referenced that file in xenomai
+2.6.4 to README.INSTALL, but I guess they should also be referenced
+in the website instructions.
 
 > 
-> Sascha
+> I guess I just have two questions for you:
 > 
-> Am 28.10.2014 11:01, schrieb Philippe Gerum:
->> On 10/28/2014 10:25 AM, Registrierungen wrote:
->>> Hello,
->>>
->>> i try to switch with my working project from Xenomai 2.6 to 3.0rc
->>> Cobaltusing the native/alchemy skin.
->>>
->>> Creating tasks,etc. seems to works fine.
->>>
->>> If i try to open a pipe from the realtime taks using rt_pipe_create it
->>> returns with the error -88.
->> This is -ENOTSOCK, you can check all error codes there:
->> /usr/include/asm-generic/errno-base.h
->> /usr/include/asm-generic/errno.h
->>
->> ENOTSOCK is not raised by the alchemy API, so this must be a syscall
->> taking the wrong route to the glibc in the core lib.
->> Please try this patch:
->>
->> diff --git a/lib/alchemy/pipe.c b/lib/alchemy/pipe.c
->> index 93da9be..439a00f 100644
->> --- a/lib/alchemy/pipe.c
->> +++ b/lib/alchemy/pipe.c
->> @@ -166,8 +166,8 @@ int rt_pipe_create(RT_PIPE *pipe,
->>       }
->>         if (poolsize > 0) {
->> -        ret = setsockopt(pcb->sock, SOL_XDDP, XDDP_POOLSZ,
->> -                 &poolsize, sizeof(poolsize));
->> +        ret = __RT(setsockopt(pcb->sock, SOL_XDDP, XDDP_POOLSZ,
->> +                      &poolsize, sizeof(poolsize)));
->>           if (ret)
->>               goto fail_sockopt;
->>       }
->> @@ -181,7 +181,7 @@ int rt_pipe_create(RT_PIPE *pipe,
->>       memset(&saddr, 0, sizeof(saddr));
->>       saddr.sipc_family = AF_RTIPC;
->>       saddr.sipc_port = minor;
->> -    ret = bind(sock, (struct sockaddr *)&saddr, sizeof(saddr));
->> +    ret = __RT(bind(sock, (struct sockaddr *)&saddr, sizeof(saddr)));
->>       if (ret)
->>           goto fail_sockopt;
->>  
->>> Has anything changed handling pipes in 3.0?
->> All user-visible changes are reported here:
->> http://localhost/xenomai/migrating-from-xenomai-2-x-to-3-x/
->>
-> 
-> 
+> Q1. Is the correct absolute path to the Xenomai includefiles: /usr/xenomai/include ?
 
+It depends on the options you pass to xenomai user-space configure
+script, notably --prefix and --includedir, and of the DESTDIR
+variable you pass to the "make install" command, when
+cross-compiling.
+
+> 
+> Q2. What is the correct absolute path to the file:  linux/ipipe.h ?
+
+It depends on the path where you compiled Linux. This file resides
+in Linux sources, in the include subdirectory.
 
 -- 
-Philippe.
+					    Gilles.
 
