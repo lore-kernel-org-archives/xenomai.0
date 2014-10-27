@@ -1,12 +1,11 @@
+From: =?iso-8859-1?Q?Terje_Fr=F8ysa?= <Terje.Froysa@sintef.no>
+Date: Mon, 27 Oct 2014 13:21:00 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C674EE64@SINTEFEXMBX05.sintef.no>
+Content-Language: en-US
 MIME-Version: 1.0
-In-Reply-To: <20141025193130.GK24291@sisyphus.hd.free.fr>
-References: <F49CEE8C-11F1-4620-8BB8-9222CAAE0CC3@yahoo.com>
- <20141025193130.GK24291@sisyphus.hd.free.fr>
-Date: Sun, 26 Oct 2014 10:29:48 +0530
-Message-ID: <CAC-NLwzZLWO50StNVf3379drvdH-oPedDnWOwDZK+s1HeXDtGQ@mail.gmail.com>
-From: ashwin damle <ashwindamle@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Broadcom BCM 2835
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Compiling drivers for Xenomai 2.6.4 on Beaglebone Black
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,39 +14,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: erfanjeddy@yahoo.com
-Cc: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+Dear Sirs,
 
-Probably, you will find this useful.
+I have successfully installed the Xenomai 2.6.4 on a Beaglebone Black (Linu=
+x 3.8.13-bone67) by following the these recipes :
+http://elinux.org/Talk:EBC_Xenomai
+http://elinux.org/EBC_Installing_Kernel_Source
 
-*http://www.blaess.fr/christophe/2013/02/15/raspberry-pi-interruptions-gpio-avec-rtdm/
-<http://www.blaess.fr/christophe/2013/02/15/raspberry-pi-interruptions-gpio-avec-rtdm/>*
+I can run the latency and klatency tests without problems.
+The exercises from Nijmegen (http://www.cs.ru.nl/lab/xenomai/) compiles and=
+ runs nicely.
 
-Thanks.
-Ashwin
+My problem now is the lack of drivers under Xenomai.
+I found the following:
+https://github.com/nradulovic/xdrv-spi
+https://github.com/nradulovic/xdrv-16c750a
+According to README these drivers are designed for AM335X and Xenomai 2.6.2=
+.1
 
-On 26 October 2014 01:01, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+The problem seem to be that the Makefiles stems from quite a different Xeno=
+mai environment.
+The ${LINUX_SRC} is not defined and the -Iinclude/xenomai does not exist.
 
-> On Sat, Oct 25, 2014 at 10:53:52PM +0330, Erfanjeddy wrote:
-> > I need to know is it possible to use Xenomai on raspberry pi B+ which
-> has a Broadcom BCM2835 SOC.
->
-> You can find here:
-> http://xenomai.org/embedded-hardware/#ARM
->
-> The list of ARM SOCs and eval boards supported by Xenomai.
->
-> --
->                                             Gilles.
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
+Trying to mend this makes only the problems escalate.
+
+Question:
+Is it possible to make these drivers comply with the Xenomai 2.6.4 environm=
+ent on the BBB?
+
+Best regards
+Terje Froysa
 
 
-Support the
+
+Smail: Terje Fr=F8ysa, SINTEF ICT (Information and Communication Technology=
+), N-7465 Trondheim, Norway.
+Email: terje.froysa@sintef.no<blocked::mailto:terje.froysa@sintef.no> <mail=
+to:terje.froysa@sintef.no<blocked::mailto:terje.froysa@sintef.no>>
+Phone: +47 930 03603
+Company: Independent R&D, see <http://www.sintef.no/<blocked::http://www.si=
+ntef.no/>
+
