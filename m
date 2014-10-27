@@ -1,14 +1,15 @@
-Date: Mon, 27 Oct 2014 14:31:14 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141027133114.GB13005@sisyphus.hd.free.fr>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Mon, 27 Oct 2014 16:40:02 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C674F1D1@SINTEFEXMBX05.sintef.no>
 References: <314E5ECDAA86314791309FA670550F89C674EE64@SINTEFEXMBX05.sintef.no>
-MIME-Version: 1.0
+ <20141027133114.GB13005@sisyphus.hd.free.fr>
+In-Reply-To: <20141027133114.GB13005@sisyphus.hd.free.fr>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C674EE64@SINTEFEXMBX05.sintef.no>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] Compiling drivers for Xenomai 2.6.4 on Beaglebone
-	Black
+ Black
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,50 +18,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Oct 27, 2014 at 01:21:00PM +0000, Terje Frøysa wrote:
-> Dear Sirs,
-> 
-> I have successfully installed the Xenomai 2.6.4 on a Beaglebone Black (Linux 3.8.13-bone67) by following the these recipes :
-> http://elinux.org/Talk:EBC_Xenomai
-> http://elinux.org/EBC_Installing_Kernel_Source
-
-Well, the official Xenomai installation instructions are here:
-http://xenomai.org/installing-xenomai-2-x/
-
-This is the only page we maintain and we know about.
-
-> 
-> I can run the latency and klatency tests without problems.
-> The exercises from Nijmegen (http://www.cs.ru.nl/lab/xenomai/) compiles and runs nicely.
-
-Again, this page is not maintained by us, we do not know if what it
-contains compiles with Xenomai, and we do not particularly try to
-avoid breaking the examples it contains.
-
-> 
-> My problem now is the lack of drivers under Xenomai. I found the
-> following: https://github.com/nradulovic/xdrv-spi
-> https://github.com/nradulovic/xdrv-16c750a According to README
-> these drivers are designed for AM335X and Xenomai 2.6.2.1
-> 
-> The problem seem to be that the Makefiles stems from quite a different Xenomai environment.
-> The ${LINUX_SRC} is not defined and the -Iinclude/xenomai does not exist.
-> 
-> Trying to mend this makes only the problems escalate.
-> 
-> Question:
-> Is it possible to make these drivers comply with the Xenomai 2.6.4 environment on the BBB?
-
-There should be no difference between 2.6.2.1 and 2.6.4 that could
-break building drivers. I suspect the problem is rather that you
-should pass the right variables to this driver Makefile to indicate
-where you have the patched Linux kernel, or that this driver is
-meant to be cross-compiled and you are trying to compile it on
-target, or vice versa.
-
--- 
-					    Gilles.
+SGVsbG8gR2lsbGVzLA0KVGhhbmtzIGZvciB5b3VyIHF1aWNrIHJlcGx5IQ0KDQpJIGZ1bGx5IHVu
+ZGVyc3RhbmQgdGhhdCB5b3UgYW5zd2VyIGZvciBwYWdlcyBvdXRzaWRlIHlvdXIgInBhdGNoIi4N
+Ckhvd2V2ZXIsIEkgZG93bmxvYWRlZCBYZW5vbWFpIDIuNi40IGZyb20geW91IHNvdXJjZXJ5Og0K
+aHR0cDovL2Rvd25sb2FkLmduYS5vcmcveGVub21haS9zdGFibGUvbGF0ZXN0Lw0KDQpXaGVuIHRy
+eWluZyB0byBhcHBseSB0aGUgcmVjaXBlcyBpbiBodHRwOi8veGVub21haS5vcmcvaW5zdGFsbGlu
+Zy14ZW5vbWFpLTIteC8NCkkgcnVuIGludG8gcHJvYmxlbXMgYXMgdGhlIHhlbm9tYWktMi42LjQv
+a3NyYy9hcm0vcGF0Y2hlcyBjb250YWlucyBtb3JlIHRoYW4gdGhlIG9uZSBwYXRjaCAoImFkZW9z
+LWlwaXBlLTIuNi4yMC1hcm0tKiIpLg0KSXQgaGFzIGFsc28gc3ViZGlyZWN0b3JpZXMgd2l0aCBw
+cmUvcG9zdCBwYXRjaGVzIGZvciBCZWFnbGVib25lLCBSUGkgYW5kIG90aGVyIFNvQydzIG5vdCBt
+ZW50aW9uZWQgaW4geW91ciByZWNlaXBlLg0KDQpBbHRob3VnaCBJIHdvdWxkIGxpa2UgdG8gcmVs
+eSBzb2xlbHkgb24gdGhlIFhlbm9tYWkgcmVjaXBlIEkgaGF2ZSB0byB0YWtlIGFkdmljZXMgZnJv
+bSBvdGhlcnMgdG8gdHJ5IGdldCBpdCBhbGwgcmlnaHQuDQoNCkkgZ3Vlc3MgSSBqdXN0IGhhdmUg
+dHdvIHF1ZXN0aW9ucyBmb3IgeW91Og0KDQpRMS4gSXMgdGhlIGNvcnJlY3QgYWJzb2x1dGUgcGF0
+aCB0byB0aGUgWGVub21haSBpbmNsdWRlZmlsZXM6IC91c3IveGVub21haS9pbmNsdWRlID8NCg0K
+UTIuIFdoYXQgaXMgdGhlIGNvcnJlY3QgYWJzb2x1dGUgcGF0aCB0byB0aGUgZmlsZTogIGxpbnV4
+L2lwaXBlLmggPw0KDQpCZXN0IHJlZ2FyZHMNClRlcmplDQoNCg0KLS0tLS1PcmlnaW5hbCBNZXNz
+YWdlLS0tLS0NCkZyb206IEdpbGxlcyBDaGFudGVwZXJkcml4IFttYWlsdG86Z2lsbGVzLmNoYW50
+ZXBlcmRyaXhAeGVub21haS5vcmddIA0KU2VudDogMjcuIG9rdG9iZXIgMjAxNCAxNDozMQ0KVG86
+IFRlcmplIEZyw7h5c2ENCkNjOiB4ZW5vbWFpQHhlbm9tYWkub3JnDQpTdWJqZWN0OiBSZTogW1hl
+bm9tYWldIENvbXBpbGluZyBkcml2ZXJzIGZvciBYZW5vbWFpIDIuNi40IG9uIEJlYWdsZWJvbmUg
+QmxhY2sNCg0KT24gTW9uLCBPY3QgMjcsIDIwMTQgYXQgMDE6MjE6MDBQTSArMDAwMCwgVGVyamUg
+RnLDuHlzYSB3cm90ZToNCj4gRGVhciBTaXJzLA0KPiANCj4gSSBoYXZlIHN1Y2Nlc3NmdWxseSBp
+bnN0YWxsZWQgdGhlIFhlbm9tYWkgMi42LjQgb24gYSBCZWFnbGVib25lIEJsYWNrIChMaW51eCAz
+LjguMTMtYm9uZTY3KSBieSBmb2xsb3dpbmcgdGhlIHRoZXNlIHJlY2lwZXMgOg0KPiBodHRwOi8v
+ZWxpbnV4Lm9yZy9UYWxrOkVCQ19YZW5vbWFpDQo+IGh0dHA6Ly9lbGludXgub3JnL0VCQ19JbnN0
+YWxsaW5nX0tlcm5lbF9Tb3VyY2UNCg0KV2VsbCwgdGhlIG9mZmljaWFsIFhlbm9tYWkgaW5zdGFs
+bGF0aW9uIGluc3RydWN0aW9ucyBhcmUgaGVyZToNCmh0dHA6Ly94ZW5vbWFpLm9yZy9pbnN0YWxs
+aW5nLXhlbm9tYWktMi14Lw0KDQpUaGlzIGlzIHRoZSBvbmx5IHBhZ2Ugd2UgbWFpbnRhaW4gYW5k
+IHdlIGtub3cgYWJvdXQuDQoNCj4gDQo+IEkgY2FuIHJ1biB0aGUgbGF0ZW5jeSBhbmQga2xhdGVu
+Y3kgdGVzdHMgd2l0aG91dCBwcm9ibGVtcy4NCj4gVGhlIGV4ZXJjaXNlcyBmcm9tIE5pam1lZ2Vu
+IChodHRwOi8vd3d3LmNzLnJ1Lm5sL2xhYi94ZW5vbWFpLykgY29tcGlsZXMgYW5kIHJ1bnMgbmlj
+ZWx5Lg0KDQpBZ2FpbiwgdGhpcyBwYWdlIGlzIG5vdCBtYWludGFpbmVkIGJ5IHVzLCB3ZSBkbyBu
+b3Qga25vdyBpZiB3aGF0IGl0IGNvbnRhaW5zIGNvbXBpbGVzIHdpdGggWGVub21haSwgYW5kIHdl
+IGRvIG5vdCBwYXJ0aWN1bGFybHkgdHJ5IHRvIGF2b2lkIGJyZWFraW5nIHRoZSBleGFtcGxlcyBp
+dCBjb250YWlucy4NCg0KPiANCj4gTXkgcHJvYmxlbSBub3cgaXMgdGhlIGxhY2sgb2YgZHJpdmVy
+cyB1bmRlciBYZW5vbWFpLiBJIGZvdW5kIHRoZQ0KPiBmb2xsb3dpbmc6IGh0dHBzOi8vZ2l0aHVi
+LmNvbS9ucmFkdWxvdmljL3hkcnYtc3BpDQo+IGh0dHBzOi8vZ2l0aHViLmNvbS9ucmFkdWxvdmlj
+L3hkcnYtMTZjNzUwYSBBY2NvcmRpbmcgdG8gUkVBRE1FIHRoZXNlIA0KPiBkcml2ZXJzIGFyZSBk
+ZXNpZ25lZCBmb3IgQU0zMzVYIGFuZCBYZW5vbWFpIDIuNi4yLjENCj4gDQo+IFRoZSBwcm9ibGVt
+IHNlZW0gdG8gYmUgdGhhdCB0aGUgTWFrZWZpbGVzIHN0ZW1zIGZyb20gcXVpdGUgYSBkaWZmZXJl
+bnQgWGVub21haSBlbnZpcm9ubWVudC4NCj4gVGhlICR7TElOVVhfU1JDfSBpcyBub3QgZGVmaW5l
+ZCBhbmQgdGhlIC1JaW5jbHVkZS94ZW5vbWFpIGRvZXMgbm90IGV4aXN0Lg0KPiANCj4gVHJ5aW5n
+IHRvIG1lbmQgdGhpcyBtYWtlcyBvbmx5IHRoZSBwcm9ibGVtcyBlc2NhbGF0ZS4NCj4gDQo+IFF1
+ZXN0aW9uOg0KPiBJcyBpdCBwb3NzaWJsZSB0byBtYWtlIHRoZXNlIGRyaXZlcnMgY29tcGx5IHdp
+dGggdGhlIFhlbm9tYWkgMi42LjQgZW52aXJvbm1lbnQgb24gdGhlIEJCQj8NCg0KVGhlcmUgc2hv
+dWxkIGJlIG5vIGRpZmZlcmVuY2UgYmV0d2VlbiAyLjYuMi4xIGFuZCAyLjYuNCB0aGF0IGNvdWxk
+IGJyZWFrIGJ1aWxkaW5nIGRyaXZlcnMuIEkgc3VzcGVjdCB0aGUgcHJvYmxlbSBpcyByYXRoZXIg
+dGhhdCB5b3Ugc2hvdWxkIHBhc3MgdGhlIHJpZ2h0IHZhcmlhYmxlcyB0byB0aGlzIGRyaXZlciBN
+YWtlZmlsZSB0byBpbmRpY2F0ZSB3aGVyZSB5b3UgaGF2ZSB0aGUgcGF0Y2hlZCBMaW51eCBrZXJu
+ZWwsIG9yIHRoYXQgdGhpcyBkcml2ZXIgaXMgbWVhbnQgdG8gYmUgY3Jvc3MtY29tcGlsZWQgYW5k
+IHlvdSBhcmUgdHJ5aW5nIHRvIGNvbXBpbGUgaXQgb24gdGFyZ2V0LCBvciB2aWNlIHZlcnNhLg0K
+DQotLSANCgkJCQkJICAgIEdpbGxlcy4NCg==
 
