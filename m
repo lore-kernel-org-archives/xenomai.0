@@ -1,16 +1,13 @@
-Date: Mon, 27 Oct 2014 19:47:21 +0100
+Date: Tue, 28 Oct 2014 15:11:05 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141027184721.GA17539@sisyphus.hd.free.fr>
-References: <314E5ECDAA86314791309FA670550F89C674EE64@SINTEFEXMBX05.sintef.no>
- <20141027133114.GB13005@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C674F1D1@SINTEFEXMBX05.sintef.no>
+Message-ID: <20141028141105.GA10660@sisyphus.hd.free.fr>
+References: <544F6117.7070101@bmwedler.de> <544F6988.1030005@xenomai.org>
+ <544F9DB1.1050504@bmwedler.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C674F1D1@SINTEFEXMBX05.sintef.no>
-Subject: Re: [Xenomai] Compiling drivers for Xenomai 2.6.4 on Beaglebone
-	Black
+In-Reply-To: <544F9DB1.1050504@bmwedler.de>
+Subject: Re: [Xenomai] Using pipes in 3.0rc
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,43 +16,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Registrierungen <regist@bmwedler.de>
+Cc: xenomai@xenomai.org
 
-On Mon, Oct 27, 2014 at 04:40:02PM +0000, Terje Frøysa wrote:
-> Hello Gilles,
-> Thanks for your quick reply!
+On Tue, Oct 28, 2014 at 02:44:17PM +0100, Registrierungen wrote:
+> Thanks for your support.
 > 
-> I fully understand that you answer for pages outside your "patch".
-> However, I downloaded Xenomai 2.6.4 from you sourcery:
-> http://download.gna.org/xenomai/stable/latest/
+> Unfortainly it din'twork for me.
+> I patched and recompiled and installed xenomai and my app,
+> but i have still the same error.
 > 
-> When trying to apply the recipes in http://xenomai.org/installing-xenomai-2-x/
-> I run into problems as the xenomai-2.6.4/ksrc/arm/patches contains more than the one patch ("adeos-ipipe-2.6.20-arm-*").
-> It has also subdirectories with pre/post patches for Beaglebone, RPi and other SoC's not mentioned in your receipe.
-> 
-> Although I would like to rely solely on the Xenomai recipe I have to take advices from others to try get it all right.
+> Have you got another idea, or need some other informations from my side?
 
-These additional patches are documented in
-ksrc/arch/arm/patches/README, I referenced that file in xenomai
-2.6.4 to README.INSTALL, but I guess they should also be referenced
-in the website instructions.
-
-> 
-> I guess I just have two questions for you:
-> 
-> Q1. Is the correct absolute path to the Xenomai includefiles: /usr/xenomai/include ?
-
-It depends on the options you pass to xenomai user-space configure
-script, notably --prefix and --includedir, and of the DESTDIR
-variable you pass to the "make install" command, when
-cross-compiling.
-
-> 
-> Q2. What is the correct absolute path to the file:  linux/ipipe.h ?
-
-It depends on the path where you compiled Linux. This file resides
-in Linux sources, in the include subdirectory.
+Just a stupid question, you are sure you have RTIPC and XDDP enabled
+in kernel configuration, right?
 
 -- 
 					    Gilles.
