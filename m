@@ -1,11 +1,14 @@
+Message-ID: <54509195.2030006@xenomai.org>
+Date: Wed, 29 Oct 2014 08:04:53 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <CADLCHMKk6-tiB=_6T85Z60Vf3ToURF6WRqYMBO46xyTLsuuFUg@mail.gmail.com>
-References: <CADLCHMKk6-tiB=_6T85Z60Vf3ToURF6WRqYMBO46xyTLsuuFUg@mail.gmail.com>
-Date: Mon, 3 Nov 2014 09:03:15 +0100
-Message-ID: <CAPRPZsAjU+9NboMvmbafY62hBEw4Sm=wA1Pf-BHP2989E1Dy1g@mail.gmail.com>
-From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Write a hard real time usb driver
+References: <544F6117.7070101@bmwedler.de> <544F6988.1030005@xenomai.org>
+ <544F9DB1.1050504@bmwedler.de> <544FA001.6070305@xenomai.org>
+ <54508FB3.8080600@bmwedler.de>
+In-Reply-To: <54508FB3.8080600@bmwedler.de>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Using pipes in 3.0rc
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,35 +17,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Seda Seda <seda9seda9@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Registrierungen <regist@bmwedler.de>, xenomai@xenomai.org
 
-> I try to write a hard real time usb driver. I communicate my device  using
-> open(), read() etc. My device is a gpio module.
+On 10/29/2014 07:56 AM, Registrierungen wrote:
+> Addendum:
+> I am using a x64 Kernel.
+> Does it matter?
+
+No, it does not. Do you plan to debug with gdb as I suggested?
+
+> 
+> 
+> Am 28.10.2014 14:54, schrieb Philippe Gerum:
+>> On 10/28/2014 02:44 PM, Registrierungen wrote:
+>>> Thanks for your support.
+>>>
+>>> Unfortainly it din'twork for me.
+>>> I patched and recompiled and installed xenomai and my app,
+>>> but i have still the same error.
+>>>
+>>> Have you got another idea, or need some other informations from my side?
+>> You may want to trace your app with gdb, configuring with
+>> --enable-debug=full, then single-stepping in rt_pipe_create() to
+>> pinpoint the failing call in there.
+>>
+>>> Sascha
+>>>
+>>> Am 28.10.2014 11:01, schrieb Philippe Gerum:
+>>>> On 10/28/2014 10:25 AM, Registrierungen wrote:
+>>>>> Hello,
+>>>>>
+>>>>> i try to switch with my working project from Xenomai 2.6 to 3.0rc
+>>>>> Cobaltusing the native/alchemy skin.
+>>>>>
+>>>>> Creating tasks,etc. seems to works fine.
+>>>>>
+>>>>> If i try to open a pipe from the realtime taks using rt_pipe_create it
+>>>>> returns with the error -88.
+>>>> This is -ENOTSOCK, you can check all error codes there:
+>>>> /usr/include/asm-generic/errno-base.h
+>>>> /usr/include/asm-generic/errno.h
+>>>>
+>>>> ENOTSOCK is not raised by the alchemy API, so this must be a syscall
+>>>> taking the wrong route to the glibc in the core lib.
+>>>> Please try this patch:
+>>>>
+>>>> diff --git a/lib/alchemy/pipe.c b/lib/alchemy/pipe.c
+>>>> index 93da9be..439a00f 100644
+>>>> --- a/lib/alchemy/pipe.c
+>>>> +++ b/lib/alchemy/pipe.c
+>>>> @@ -166,8 +166,8 @@ int rt_pipe_create(RT_PIPE *pipe,
+>>>>       }
+>>>>         if (poolsize > 0) {
+>>>> -        ret = setsockopt(pcb->sock, SOL_XDDP, XDDP_POOLSZ,
+>>>> -                 &poolsize, sizeof(poolsize));
+>>>> +        ret = __RT(setsockopt(pcb->sock, SOL_XDDP, XDDP_POOLSZ,
+>>>> +                      &poolsize, sizeof(poolsize)));
+>>>>           if (ret)
+>>>>               goto fail_sockopt;
+>>>>       }
+>>>> @@ -181,7 +181,7 @@ int rt_pipe_create(RT_PIPE *pipe,
+>>>>       memset(&saddr, 0, sizeof(saddr));
+>>>>       saddr.sipc_family = AF_RTIPC;
+>>>>       saddr.sipc_port = minor;
+>>>> -    ret = bind(sock, (struct sockaddr *)&saddr, sizeof(saddr));
+>>>> +    ret = __RT(bind(sock, (struct sockaddr *)&saddr, sizeof(saddr)));
+>>>>       if (ret)
+>>>>           goto fail_sockopt;
+>>>>  
+>>>>> Has anything changed handling pipes in 3.0?
+>>>> All user-visible changes are reported here:
+>>>> http://localhost/xenomai/migrating-from-xenomai-2-x-to-3-x/
+>>>>
+>>>
+>>
+> 
 
 
-I assume you want to control an USB host controller using a GPIO interface ?
+-- 
+Philippe.
 
-
-> I am coding a kernel module
-> to communicate the device using xenomai on real time. But I am not sure
-> that this way is reasonable. If I should going on this way, what should I
-> implement? Could you give me some example or link to write hard real time
-> usb driver for* physical* device?
-
-
-I cannot help you with that, but one important issue to consider is that
-the USB protocol itself operates with small, hardware controlled time slots
-of 1 ms (USB1.x) or 125 usec (USB2.0). You may therefore need a significant
-amount of software to properly distribute real-time traffic in these -
-essentially asynchronous - slots. The latency of a real-time process
-waiting for USB data can therefore also be as large as the time slot
-duration. If your real-time requirements are modest, you may be able to
-live with that. Still, count on a major software effort: just have a look
-at the Linux USB driver framework.
-
-Alternatively, you could check if you can synchronize your real-time
-process with the USB controller frame rate.
-
-
-Jeroen.
