@@ -1,14 +1,10 @@
-Date: Thu, 6 Nov 2014 12:47:35 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141106114734.GA28321@sisyphus.hd.free.fr>
-References: <20141105205917.GA28595@sisyphus.hd.free.fr>
- <637400768.107888843.1415271440604.JavaMail.root@zimbra90-e16.priv.proxad.net>
+From: "Steve M. Robbins" <steve@sumost.ca>
+Date: Wed, 29 Oct 2014 11:11:22 -0500
+Message-ID: <94331816.zv1NYeHro4@riemann>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <637400768.107888843.1415271440604.JavaMail.root@zimbra90-e16.priv.proxad.net>
-Subject: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 +
- adeos-ipipe-3.0.43-mx6q-1.18-14 -> very slow boot
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+Subject: [Xenomai] Message Pipe services behaviour
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,78 +13,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: tbultel@free.fr
-Cc: xenomai@xenomai.org
+To: Xenomai@xenomai.org
 
-On Thu, Nov 06, 2014 at 11:57:20AM +0100, tbultel@free.fr wrote:
-> Hi Gilles,
-> I can't afford going on that commit, it is a too old kernel and my BSP
-> patch does not apply on it.
-> Meanwhile, I have fixed the slowness issue, I had not payed enough
-> attention to some rejections when applying the ipipe patch.
-> 
-> But this leads to the reason why I was interested in taking your latest
-> ipipe patch.
-> We used to work with the previous one, which was in 3 pieces (pre-x-post).
+Hi,
 
-Yes, it is one piece now, because only mx6 users use the I-pipe
-patch for Linux 3.0, so this reduces the maintenance cost.
+I will apologize in advance that this question concerns Xenomai 2.5.6.  I do 
+realize it is an old version, but that is what our vendor provides so that is 
+what I am using.
 
-I am surprised to hear that you are using this I-pipe patch as I had
-heard it caused over-heating issue with your setup.
+A while back I was asking about replacing a linux FIFO-based queue used to 
+send messages from a real time task to a linux process.  The recommendation 
+[1] was that the Message Pipe Service would serve nicely.  I recently 
+implemented it and the messages are flowing, but I have questions about some 
+observed behaviours.
 
-> 
-> We are facing random kernel crashes when using the eth intensively.
-> (ping -i 0.01 -s 65000)
-> That crashs happen with both ipipe patches versions.
-> 
-> That random freeze only happen on some machines ( 3 machines on a total
-> of 17 are impacted), that first had let us think about an hardware bug.
-> (There are no CPU revs differences between those machines)
-> But after some testing, the crash does not happen with a non-patched
-> 3.0.35_4.1.0 kernel, or with a patched kernel that has CONFIG_IPIPE
-> disabled.
-> The freeze sometimes gives a backtrace on the serial port, sometimes not.
-> See a backtrace sample below. It has rarely the same shape.
-> 
-> By doing some code re-reading, and performing some dichotomy,
-> I found out that removing the mb() call in bufdesc_read_status() ....
-> 
-> static inline unsigned short bufdesc_read_status(struct bufdesc *bdp)
-> {
-> #if 0
-> #ifdef CONFIG_ARCH_MX6
-> 	mb();
-> #endif /* CONFIG_ARCH_MX6 */
-> #endif /* 0 */
-> 	return bdp->cbd_sc;
-> 
-> }
-> 
-> ... makes the freeze less reproducible (a machine that froze in less
-> than 10 secs stayed alive for 2h30)
-> 
-> I noticed that the call mb() is not done on more recent kernels.
-> It is introduced by the Ipipe patch.
-> I do not understand neither why it makes the freeze happen,
+Our real time task runs at 250 Hz and produces a small number of messages 
+(usually about 2, but up to 10) each iteration.  Each message is about 120 
+bytes.  I use rt_pipe_write() with P_NORMAL.  On the linux side, the process 
+does a loop with select() and read().  
 
-I believe I know why this happens. In order to workaround some
-hardware issue, the imx6 idle loop is issuing calls to mb(), and
-they cause starvation if a non-idle cpu is attempting to call mb().
-The first fix that was posted on the lakml is to add a bunch of
-"nops" in front of the mb() in the idle loop, I have not followed
-how this got fixed finally. I would not be surprised if the fix for
-this issue has not been backported to 3.0 kernels.
+Initially, messages are flowing, but after some time, rt_pipe_write() begins to 
+return -ENOMEM intermittently but more and more often as time passes.  The 
+first thing I tried was changing the poolsize of rt_pipe_create() from 0 to 
+1000*sizeof(message_structure).  The problem remained.
 
-> nor why it is part of the ipipe patch.
+Next, I put in code to count the number of calls to rt_pipe_write() and the 
+number of reads().  There is a growing gap that leads me to believe that the 
+reader is not keeping up with the writer.
 
-It is part of the patch because it was passed in the tree I used
-when starting working on imx6. Ironically, I believe it is a fix for
-an eth lockup issue. Anyway, I do not believe this patch itself is a
-problem, inserting a mb() should not cause any lockup, unless this
-read_status function is called in a tight loop, which would cause
-the issue mentioned above.
+In the old FIFO-based code, we had a suspicion of the similar problem.  Since 
+the linux process is not real time, we expect multiple messages to be waiting.  
+To avoid running through the select/read loop once for each message, our old 
+FIFO-based code opened the file in nonblocking mode and did a read into a buffer 
+that could hold up to 100 messages.  We generally would read 5-7 at a time, 
+not 100, so this proved that the reader could keep up when reading in batches.
 
--- 
-					    Gilles.
+Using this same technique with the /dev/rtpN end of a Message Pipe never reads 
+more than 1 message.  I tried both blocking and non-blocking modes but got the 
+same result.  So this is my main question: knowing that there are likely many 
+messages in the pipe, how do I read them in a batch?
+
+
+
+
+The description about is simplified.  I'm not sure whether this matters, but 
+I'll give some more context.  
+
+In the actual code, we have three queues with messages of different sizes: 
+approximately 120, 150, and 1500 bytes.  In each iteration, the real time task 
+generates exactly one of the largest message,  generally about 2 of the 
+smallest, and generally none of the middle size.  But the small and middle 
+sizes can have anywhere from 0 to maybe 10 on any one iteration.  
+
+The linux process has multiple threads.  The main thread uses a select() loop 
+that waits for input on the small and medium sized queues as well as a timer 
+and a UDP socket.  The loop code handles all those inputs as they occur.  Both 
+the small and middle queue use the read-in-batches technique but both only 
+read 1 message each pass.
+
+The largest queue is handled by a different thread that also uses a select() 
+loop, but the large queue is the only input handled.  The read-in-batch 
+technique is not used here.
+
+When I created the pipes with poolsize=0, all three queues would eventually 
+begin to return -ENOMEM.  After switching to poolsize=1000*sizeof(message), it 
+seems to be only the middle-sized message that fails to allocate.  That's not 
+a conclusive observation, but if the other two are failing to allocate it is 
+much less often than the middle one which eventally gets stuffed up and always 
+fails.  This is quite surprising to me.
+
+I will admit that I did look through the code for the pipe [2,3] but wasn't 
+able to discover the answer to my first question.   Any tips gratefully 
+appreciated!
+
+Thanks,
+-Steve
+
+
+[1] http://www.xenomai.org/pipermail/xenomai/2014-July/031365.html
+[2] 
+http://git.xenomai.org/xenomai-2.5.git/tree/ksrc/skins/native/pipe.c?id=v2.5.6
+[3] http://git.xenomai.org/xenomai-2.5.git/tree/ksrc/nucleus/pipe.c?id=v2.5.6
+
+
+
 
