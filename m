@@ -1,11 +1,9 @@
-Message-ID: <54579D7A.2010800@bmwedler.de>
-Date: Mon, 03 Nov 2014 16:21:30 +0100
+Message-ID: <54509629.8080107@bmwedler.de>
+Date: Wed, 29 Oct 2014 08:24:25 +0100
 From: Registrierungen <regist@bmwedler.de>
 MIME-Version: 1.0
-References: <54509406.4000600@bmwedler.de> <54509629.8080107@bmwedler.de>
- <54577374.9010609@bmwedler.de> <5457811D.2030502@xenomai.org>
- <5457818E.80806@xenomai.org>
-In-Reply-To: <5457818E.80806@xenomai.org>
+References: <54509406.4000600@bmwedler.de>
+In-Reply-To: <54509406.4000600@bmwedler.de>
 Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Using pipes in 3.0rc
@@ -17,33 +15,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
-
-I tried with rc2, but now it returns with error 3 (not -3) ?
+To: xenomai@xenomai.org
 
 
-Am 03.11.2014 14:22, schrieb Philippe Gerum:
-> On 11/03/2014 02:20 PM, Philippe Gerum wrote:
->> On 11/03/2014 01:22 PM, Registrierungen wrote:
->>> Sorry for the late feedback.
->>>
->>> I found the source where it goes wrong:
->>>
->>>      if (poolsize > 0) {
->>>          ret = __RT(setsockopt(sock, SOL_XDDP, XDDP_POOLSZ,
->>>                        &poolsize, sizeof(poolsize)));
->>>          if (ret)
->>>              goto fail_sockopt;
->>>      }
->>>
->>> Hope there could be found a solution for me.
->>>
->> The solution was given a few days ago:
->>
->> http://www.xenomai.org/pipermail/xenomai/2014-October/032054.html
->>
-> Those patches are present in -rc2, released a couple of days ago. You
-> should not bother with -rc1 anymore.
+
+Sure. i compiled xenomai as your suggestion.
+Ive got a a little problem with my eclipse debug enviroment.
+It still does not debug into the xenomai files at moment. so i will fix
+it first and come back with new informations.
+
+
+Am 29.10.2014 08:04, schrieb Philippe Gerum:
+> On 10/29/2014 07:56 AM, Registrierungen wrote:
+>> Addendum:
+>> I am using a x64 Kernel.
+>> Does it matter?
+> No, it does not. Do you plan to debug with gdb as I suggested?
 >
+
 
 
