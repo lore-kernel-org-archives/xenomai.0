@@ -1,18 +1,21 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Mon, 3 Nov 2014 16:21:53 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C6762910@SINTEFEXMBX05.sintef.no>
-References: <314E5ECDAA86314791309FA670550F89C6762243@SINTEFEXMBX05.sintef.no>
- <20141103122602.GB7705@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C67627E4@SINTEFEXMBX05.sintef.no>
- <20141103153617.GD9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C6762872@SINTEFEXMBX05.sintef.no>
- <20141103160223.GE9327@sisyphus.hd.free.fr>
-In-Reply-To: <20141103160223.GE9327@sisyphus.hd.free.fr>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Xenoma 2.6.4 missing posix/xeno_config.h ?
+In-Reply-To: <20141029061655.GA14496@sisyphus.hd.free.fr>
+References: <20141005223051.GN14975@sisyphus.hd.free.fr>
+ <CACreCVLQsaq01vsNA_V_bu9_NyMCTwZTiZJo2sFXJHgaaVjQVg@mail.gmail.com>
+ <54365E17.3020102@xenomai.org>
+ <CACreCV+QtwuhhGeFpnuLP-6Y1FfLCQHqNkrzyfwgqEgrxXU9eQ@mail.gmail.com>
+ <5436607B.7090609@xenomai.org>
+ <CACreCV+HdWC9Deysy2miL2NZ65RFVRRk87uG9rBaUBrn=hhqag@mail.gmail.com>
+ <5436A64B.90705@xenomai.org>
+ <CACreCVJUPiiX_7733g1EWZCVmUH0oFWhLknhKB2K8se1fi4a1g@mail.gmail.com>
+ <20141022062825.GC29673@sisyphus.hd.free.fr>
+ <CACreCVJSytzK85ANWmwWjctBpJfEr1b916R6dNPmSGugN_vRLA@mail.gmail.com>
+ <20141029061655.GA14496@sisyphus.hd.free.fr>
+Date: Wed, 29 Oct 2014 15:24:52 +0800
+Message-ID: <CACreCVL2OyGYeWSOPAxR3rWG_RWiN3BAcPck1VyTMjyrASyNoQ@mail.gmail.com>
+From: GP Orcullo <kinsamanka@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Switchtest failures on ODROIDU3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,39 +25,40 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-VGhhbmtzIGFnYWluIGZvciB5b3VyIHF1aWNrIHJlcGxpZXMgOi0pDQoNClllcywgSSBoYXZlIHRo
-ZSBmaWxlcyBpbiBxdWVzdGlvbiBpbiB0aGUgL3Vzci9pbmNsdWRlIGRpcmVjdG9yeS4NCg0KZGVi
-aWFuQGJlYWdsZWJvbmU6L3Vzci9pbmNsdWRlJCBscyAtbCBzdCoNCjoNCi1ydy1yLS1yLS0gMSBy
-b290IHJvb3QgIDg1MzYgT2N0IDE3IDAyOjQwIHN0ZGludC5oDQotcnctci0tci0tIDEgcm9vdCBy
-b290IDMxNTI1IE9jdCAxNyAwMjo0MSBzdGRpby5oDQotcnctci0tci0tIDEgcm9vdCByb290ICAy
-ODczIE9jdCAxNyAwMjo0MCBzdGRpb19leHQuaA0KLXJ3LXItLXItLSAxIHJvb3Qgcm9vdCAzNDI1
-NCBPY3QgMTcgMDI6NDAgc3RkbGliLmgNCi1ydy1yLS1yLS0gMSByb290IHJvb3QgMjI2MTIgT2N0
-IDE3IDAyOjQxIHN0cmluZy5oDQo6DQoNClRoZSB0aW1lLmggcmVmZXJzIHRoZSBjbG9ja2lkX3Qs
-IGJ1dCBubyBmaWxlIGluIHRoZSAvdXNyL2luY2x1ZGUgKGFuZCBzdWJkaXJlY3RvcmllcykgaG9s
-ZHMgYSBkZWZpbml0aW9uLg0KDQpUaGUgdHlwZXMuaCBmaWxlIGRlZmluZXMgdGhlIF9fY2xvY2tp
-ZF90LCBidXQgSSBjYW4ndCBmaW5kIHRoZSAnY2xvY2tpZF90JyBkZWZpbmVkIGFueXdoZXJlOg0K
-DQovKiBDbG9jayBJRCB1c2VkIGluIGNsb2NrIGFuZCB0aW1lciBmdW5jdGlvbnMuICAqLw0KX19T
-VERfVFlQRSBfX0NMT0NLSURfVF9UWVBFIF9fY2xvY2tpZF90Ow0KDQpUZXJqZQ0KDQotLS0tLU9y
-aWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogR2lsbGVzIENoYW50ZXBlcmRyaXggW21haWx0bzpn
-aWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZ10gDQpTZW50OiAzLiBub3ZlbWJlciAyMDE0
-IDE3OjAyDQpUbzogVGVyamUgRnLDuHlzYQ0KQ2M6IHhlbm9tYWlAeGVub21haS5vcmcNClN1Ympl
-Y3Q6IFJlOiBbWGVub21haV0gWGVub21hIDIuNi40IG1pc3NpbmcgcG9zaXgveGVub19jb25maWcu
-aCA/DQoNCk9uIE1vbiwgTm92IDAzLCAyMDE0IGF0IDA0OjAwOjAzUE0gKzAwMDAsIFRlcmplIEZy
-w7h5c2Egd3JvdGU6DQo+IFRoYW5rcyBhZ2FpbiENCj4gDQo+IEFzIGZhciBhcyBJIHVuZGVyc3Rh
-bmQgSSBoYXZlIGdsaWJjIHYyLjEzIGluc3RhbGxlZDoNCj4gDQo+IGRlYmlhbkBiZWFnbGVib25l
-Oi9saWIkIGxkZCAtLXZlcnNpb24NCj4gbGRkIChEZWJpYW4gRUdMSUJDIDIuMTMtMzgrZGViN3U2
-KSAyLjEzIENvcHlyaWdodCAoQykgMjAxMSBGcmVlIA0KPiBTb2Z0d2FyZSBGb3VuZGF0aW9uLCBJ
-bmMuDQo+IFRoaXMgaXMgZnJlZSBzb2Z0d2FyZTsgc2VlIHRoZSBzb3VyY2UgZm9yIGNvcHlpbmcg
-Y29uZGl0aW9ucy4gIFRoZXJlIA0KPiBpcyBOTyB3YXJyYW50eTsgbm90IGV2ZW4gZm9yIE1FUkNI
-QU5UQUJJTElUWSBvciBGSVRORVNTIEZPUiBBIFBBUlRJQ1VMQVIgUFVSUE9TRS4NCj4gV3JpdHRl
-biBieSBSb2xhbmQgTWNHcmF0aCBhbmQgVWxyaWNoIERyZXBwZXIuDQo+IA0KPiBEbyBJIG5lZWQg
-dG8gaW5zdGFsbCBhbnl0aGluZyBtb3JlIHRoYW4gdGhpcz8NCg0KWWVzLCB5b3UgaGF2ZSBnbGli
-YyBpbnN0YWxsZWQsIG90aGVyd2lzZSB5b3VyIHN5c3RlbSB3b3VsZCBub3QgYm9vdCwgYnV0IHRo
-aXMgZG9lcyBub3QgZ2FyYW50ZWUgdGhhdCB5b3UgaGF2ZSBnbGliYyBfaGVhZGVyc18gaW5zdGFs
-bGVkLg0KZ2xpYmMgaGVhZGVycyBpbmNsdWRlIHN1Y2ggZmlsZXMgYXMgL3Vzci9pbmNsdWRlL3N0
-ZGlvLmggb3IgL3Vzci9pbmNsdWRlL3N0ZGxpYi5oIGFuZCBhcmUgbWFuZGF0b3J5IGZvciBjb21w
-aWxpbmcgcHJvZ3JhbXMgdXNpbmcgdGhlIGdsaWJjLiBnbGliYyBpdHNlbGYgaXMgb25seSBuZWVk
-ZWQgdG8gcnVuIHN1Y2ggcHJvZ3JhbXMuDQoNCi0tIA0KCQkJCQkgICAgR2lsbGVzLg0K
+On Wed, Oct 29, 2014 at 2:16 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On Wed, Oct 29, 2014 at 09:23:16AM +0800, GP Orcullo wrote:
+>> Exynos is not using the arm global timers.
+>
+> I do not understand what you mean... You said you had problems
+> when the global timer was shared with Linux, this patches tries to
+> address that by not remapping the global timer for xenomai, and
+> sharing the mapping defined by Linux. And now you say Exynos is not
+> using the global timers? You will have to explain a bit more than
+> that... I quote what you said:
+>
+>> >> The problem was traced to the tsc emulation,  the counter somehow gets
+>> >> messed up when the global timer is shared with Linux.
+>
+>
+
+Sorry, I was referring to the global timer that exynos uses - MCT,
+multi core timer.
+
+>>
+>> I'm still experiencing some intermittent "rcu_preempt detected stalls".
+>>
+>> Maybe I'm dealing with more than one issue here.
+>>
+>
+> I would tend to prefer solving them one by one, and from where I
+> stand the global timer issue is not solved.
+>
+> --
+>                                             Gilles.
+
+-- 
+GP Orcullo
 
