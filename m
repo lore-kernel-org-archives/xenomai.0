@@ -1,13 +1,14 @@
-Message-ID: <54523FFA.8020707@siemens.com>
-Date: Thu, 30 Oct 2014 14:41:14 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <54525594.5040407@xenomai.org>
+Date: Thu, 30 Oct 2014 16:13:24 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <5451FFA4.5030805@ma-info.de>
- <20141030091631.GD11210@sisyphus.hd.free.fr>
-In-Reply-To: <20141030091631.GD11210@sisyphus.hd.free.fr>
+References: <544F6117.7070101@bmwedler.de> <544F6988.1030005@xenomai.org>
+ <544F9DB1.1050504@bmwedler.de> <544FA001.6070305@xenomai.org>
+ <54508FB3.8080600@bmwedler.de> <54509195.2030006@xenomai.org>
+In-Reply-To: <54509195.2030006@xenomai.org>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] i-Pipi patch 3.14
+Subject: Re: [Xenomai] Using pipes in 3.0rc
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,38 +17,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Frede Florian <florian.frede@ma-info.de>
-Cc: xenomai@xenomai.org
+To: Registrierungen <regist@bmwedler.de>, xenomai@xenomai.org
 
-On 2014-10-30 10:16, Gilles Chanteperdrix wrote:
-> On Thu, Oct 30, 2014 at 10:06:44AM +0100, Frede Florian wrote:
->> Hello,
->>
->> I tried to patch the Kernel 3.14.22 and there is two new lines in
->> the file fs/exec.c
->>
->> tsk->mm->vmacache_seqnum = 0;
->> vmacache_flush(tsk);
->>
->> I am not sure if the line from the iPipe patch should placed before
->> or after this lines...
->>
->> +    ipipe_mm_switch_unprotect(flags);
+On 10/29/2014 08:04 AM, Philippe Gerum wrote:
+> On 10/29/2014 07:56 AM, Registrierungen wrote:
+>> Addendum:
+>> I am using a x64 Kernel.
+>> Does it matter?
 > 
-> We do not have enough information to understand what you
-> are talking about. Show us the conflict as obtained with git merge
-> or with patch --merge to give us more information.
+> No, it does not. Do you plan to debug with gdb as I suggested?
 
-I've resolved the conflict with the vma caching that was back-ported to
-3.14.x in ipipe-jki.git [1] (for-upstream/3.14 branch). Kernel works
-fine so far, but I didn't look into the details, if that caching thing
-affects us in the RT domain as well and requires more work.
+This is what you need to enable pipes with Alchemy:
 
-Jan
+https://git.xenomai.org/xenomai-3.git/commit/?h=next&id=eb69a837eaab4cd6639772503c789de0a52906c0
+https://git.xenomai.org/xenomai-3.git/commit/?h=next&id=caf0a0b4a3f279e3e4bd42e6b62bc09fab4fba94
 
-[1] http://git.xenomai.org/ipipe-jki.git
+> 
+>>
+>>
+>> Am 28.10.2014 14:54, schrieb Philippe Gerum:
+>>> On 10/28/2014 02:44 PM, Registrierungen wrote:
+>>>> Thanks for your support.
+>>>>
+>>>> Unfortainly it din'twork for me.
+>>>> I patched and recompiled and installed xenomai and my app,
+>>>> but i have still the same error.
+>>>>
+>>>> Have you got another idea, or need some other informations from my side?
+>>> You may want to trace your app with gdb, configuring with
+>>> --enable-debug=full, then single-stepping in rt_pipe_create() to
+>>> pinpoint the failing call in there.
+>>>
+>>>> Sascha
+>>>>
+>>>> Am 28.10.2014 11:01, schrieb Philippe Gerum:
+>>>>> On 10/28/2014 10:25 AM, Registrierungen wrote:
+>>>>>> Hello,
+>>>>>>
+>>>>>> i try to switch with my working project from Xenomai 2.6 to 3.0rc
+>>>>>> Cobaltusing the native/alchemy skin.
+>>>>>>
+>>>>>> Creating tasks,etc. seems to works fine.
+>>>>>>
+>>>>>> If i try to open a pipe from the realtime taks using rt_pipe_create it
+>>>>>> returns with the error -88.
+>>>>> This is -ENOTSOCK, you can check all error codes there:
+>>>>> /usr/include/asm-generic/errno-base.h
+>>>>> /usr/include/asm-generic/errno.h
+>>>>>
+>>>>> ENOTSOCK is not raised by the alchemy API, so this must be a syscall
+>>>>> taking the wrong route to the glibc in the core lib.
+>>>>> Please try this patch:
+>>>>>
+>>>>> diff --git a/lib/alchemy/pipe.c b/lib/alchemy/pipe.c
+>>>>> index 93da9be..439a00f 100644
+>>>>> --- a/lib/alchemy/pipe.c
+>>>>> +++ b/lib/alchemy/pipe.c
+>>>>> @@ -166,8 +166,8 @@ int rt_pipe_create(RT_PIPE *pipe,
+>>>>>       }
+>>>>>         if (poolsize > 0) {
+>>>>> -        ret = setsockopt(pcb->sock, SOL_XDDP, XDDP_POOLSZ,
+>>>>> -                 &poolsize, sizeof(poolsize));
+>>>>> +        ret = __RT(setsockopt(pcb->sock, SOL_XDDP, XDDP_POOLSZ,
+>>>>> +                      &poolsize, sizeof(poolsize)));
+>>>>>           if (ret)
+>>>>>               goto fail_sockopt;
+>>>>>       }
+>>>>> @@ -181,7 +181,7 @@ int rt_pipe_create(RT_PIPE *pipe,
+>>>>>       memset(&saddr, 0, sizeof(saddr));
+>>>>>       saddr.sipc_family = AF_RTIPC;
+>>>>>       saddr.sipc_port = minor;
+>>>>> -    ret = bind(sock, (struct sockaddr *)&saddr, sizeof(saddr));
+>>>>> +    ret = __RT(bind(sock, (struct sockaddr *)&saddr, sizeof(saddr)));
+>>>>>       if (ret)
+>>>>>           goto fail_sockopt;
+>>>>>  
+>>>>>> Has anything changed handling pipes in 3.0?
+>>>>> All user-visible changes are reported here:
+>>>>> http://localhost/xenomai/migrating-from-xenomai-2-x-to-3-x/
+>>>>>
+>>>>
+>>>
+>>
+> 
+> 
+
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
