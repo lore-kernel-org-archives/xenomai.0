@@ -1,15 +1,13 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Mon, 27 Oct 2014 16:40:02 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C674F1D1@SINTEFEXMBX05.sintef.no>
-References: <314E5ECDAA86314791309FA670550F89C674EE64@SINTEFEXMBX05.sintef.no>
- <20141027133114.GB13005@sisyphus.hd.free.fr>
-In-Reply-To: <20141027133114.GB13005@sisyphus.hd.free.fr>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <54523FFA.8020707@siemens.com>
+Date: Thu, 30 Oct 2014 14:41:14 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Compiling drivers for Xenomai 2.6.4 on Beaglebone
- Black
+References: <5451FFA4.5030805@ma-info.de>
+ <20141030091631.GD11210@sisyphus.hd.free.fr>
+In-Reply-To: <20141030091631.GD11210@sisyphus.hd.free.fr>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] i-Pipi patch 3.14
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,59 +16,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Frede Florian <florian.frede@ma-info.de>
+Cc: xenomai@xenomai.org
 
-SGVsbG8gR2lsbGVzLA0KVGhhbmtzIGZvciB5b3VyIHF1aWNrIHJlcGx5IQ0KDQpJIGZ1bGx5IHVu
-ZGVyc3RhbmQgdGhhdCB5b3UgYW5zd2VyIGZvciBwYWdlcyBvdXRzaWRlIHlvdXIgInBhdGNoIi4N
-Ckhvd2V2ZXIsIEkgZG93bmxvYWRlZCBYZW5vbWFpIDIuNi40IGZyb20geW91IHNvdXJjZXJ5Og0K
-aHR0cDovL2Rvd25sb2FkLmduYS5vcmcveGVub21haS9zdGFibGUvbGF0ZXN0Lw0KDQpXaGVuIHRy
-eWluZyB0byBhcHBseSB0aGUgcmVjaXBlcyBpbiBodHRwOi8veGVub21haS5vcmcvaW5zdGFsbGlu
-Zy14ZW5vbWFpLTIteC8NCkkgcnVuIGludG8gcHJvYmxlbXMgYXMgdGhlIHhlbm9tYWktMi42LjQv
-a3NyYy9hcm0vcGF0Y2hlcyBjb250YWlucyBtb3JlIHRoYW4gdGhlIG9uZSBwYXRjaCAoImFkZW9z
-LWlwaXBlLTIuNi4yMC1hcm0tKiIpLg0KSXQgaGFzIGFsc28gc3ViZGlyZWN0b3JpZXMgd2l0aCBw
-cmUvcG9zdCBwYXRjaGVzIGZvciBCZWFnbGVib25lLCBSUGkgYW5kIG90aGVyIFNvQydzIG5vdCBt
-ZW50aW9uZWQgaW4geW91ciByZWNlaXBlLg0KDQpBbHRob3VnaCBJIHdvdWxkIGxpa2UgdG8gcmVs
-eSBzb2xlbHkgb24gdGhlIFhlbm9tYWkgcmVjaXBlIEkgaGF2ZSB0byB0YWtlIGFkdmljZXMgZnJv
-bSBvdGhlcnMgdG8gdHJ5IGdldCBpdCBhbGwgcmlnaHQuDQoNCkkgZ3Vlc3MgSSBqdXN0IGhhdmUg
-dHdvIHF1ZXN0aW9ucyBmb3IgeW91Og0KDQpRMS4gSXMgdGhlIGNvcnJlY3QgYWJzb2x1dGUgcGF0
-aCB0byB0aGUgWGVub21haSBpbmNsdWRlZmlsZXM6IC91c3IveGVub21haS9pbmNsdWRlID8NCg0K
-UTIuIFdoYXQgaXMgdGhlIGNvcnJlY3QgYWJzb2x1dGUgcGF0aCB0byB0aGUgZmlsZTogIGxpbnV4
-L2lwaXBlLmggPw0KDQpCZXN0IHJlZ2FyZHMNClRlcmplDQoNCg0KLS0tLS1PcmlnaW5hbCBNZXNz
-YWdlLS0tLS0NCkZyb206IEdpbGxlcyBDaGFudGVwZXJkcml4IFttYWlsdG86Z2lsbGVzLmNoYW50
-ZXBlcmRyaXhAeGVub21haS5vcmddIA0KU2VudDogMjcuIG9rdG9iZXIgMjAxNCAxNDozMQ0KVG86
-IFRlcmplIEZyw7h5c2ENCkNjOiB4ZW5vbWFpQHhlbm9tYWkub3JnDQpTdWJqZWN0OiBSZTogW1hl
-bm9tYWldIENvbXBpbGluZyBkcml2ZXJzIGZvciBYZW5vbWFpIDIuNi40IG9uIEJlYWdsZWJvbmUg
-QmxhY2sNCg0KT24gTW9uLCBPY3QgMjcsIDIwMTQgYXQgMDE6MjE6MDBQTSArMDAwMCwgVGVyamUg
-RnLDuHlzYSB3cm90ZToNCj4gRGVhciBTaXJzLA0KPiANCj4gSSBoYXZlIHN1Y2Nlc3NmdWxseSBp
-bnN0YWxsZWQgdGhlIFhlbm9tYWkgMi42LjQgb24gYSBCZWFnbGVib25lIEJsYWNrIChMaW51eCAz
-LjguMTMtYm9uZTY3KSBieSBmb2xsb3dpbmcgdGhlIHRoZXNlIHJlY2lwZXMgOg0KPiBodHRwOi8v
-ZWxpbnV4Lm9yZy9UYWxrOkVCQ19YZW5vbWFpDQo+IGh0dHA6Ly9lbGludXgub3JnL0VCQ19JbnN0
-YWxsaW5nX0tlcm5lbF9Tb3VyY2UNCg0KV2VsbCwgdGhlIG9mZmljaWFsIFhlbm9tYWkgaW5zdGFs
-bGF0aW9uIGluc3RydWN0aW9ucyBhcmUgaGVyZToNCmh0dHA6Ly94ZW5vbWFpLm9yZy9pbnN0YWxs
-aW5nLXhlbm9tYWktMi14Lw0KDQpUaGlzIGlzIHRoZSBvbmx5IHBhZ2Ugd2UgbWFpbnRhaW4gYW5k
-IHdlIGtub3cgYWJvdXQuDQoNCj4gDQo+IEkgY2FuIHJ1biB0aGUgbGF0ZW5jeSBhbmQga2xhdGVu
-Y3kgdGVzdHMgd2l0aG91dCBwcm9ibGVtcy4NCj4gVGhlIGV4ZXJjaXNlcyBmcm9tIE5pam1lZ2Vu
-IChodHRwOi8vd3d3LmNzLnJ1Lm5sL2xhYi94ZW5vbWFpLykgY29tcGlsZXMgYW5kIHJ1bnMgbmlj
-ZWx5Lg0KDQpBZ2FpbiwgdGhpcyBwYWdlIGlzIG5vdCBtYWludGFpbmVkIGJ5IHVzLCB3ZSBkbyBu
-b3Qga25vdyBpZiB3aGF0IGl0IGNvbnRhaW5zIGNvbXBpbGVzIHdpdGggWGVub21haSwgYW5kIHdl
-IGRvIG5vdCBwYXJ0aWN1bGFybHkgdHJ5IHRvIGF2b2lkIGJyZWFraW5nIHRoZSBleGFtcGxlcyBp
-dCBjb250YWlucy4NCg0KPiANCj4gTXkgcHJvYmxlbSBub3cgaXMgdGhlIGxhY2sgb2YgZHJpdmVy
-cyB1bmRlciBYZW5vbWFpLiBJIGZvdW5kIHRoZQ0KPiBmb2xsb3dpbmc6IGh0dHBzOi8vZ2l0aHVi
-LmNvbS9ucmFkdWxvdmljL3hkcnYtc3BpDQo+IGh0dHBzOi8vZ2l0aHViLmNvbS9ucmFkdWxvdmlj
-L3hkcnYtMTZjNzUwYSBBY2NvcmRpbmcgdG8gUkVBRE1FIHRoZXNlIA0KPiBkcml2ZXJzIGFyZSBk
-ZXNpZ25lZCBmb3IgQU0zMzVYIGFuZCBYZW5vbWFpIDIuNi4yLjENCj4gDQo+IFRoZSBwcm9ibGVt
-IHNlZW0gdG8gYmUgdGhhdCB0aGUgTWFrZWZpbGVzIHN0ZW1zIGZyb20gcXVpdGUgYSBkaWZmZXJl
-bnQgWGVub21haSBlbnZpcm9ubWVudC4NCj4gVGhlICR7TElOVVhfU1JDfSBpcyBub3QgZGVmaW5l
-ZCBhbmQgdGhlIC1JaW5jbHVkZS94ZW5vbWFpIGRvZXMgbm90IGV4aXN0Lg0KPiANCj4gVHJ5aW5n
-IHRvIG1lbmQgdGhpcyBtYWtlcyBvbmx5IHRoZSBwcm9ibGVtcyBlc2NhbGF0ZS4NCj4gDQo+IFF1
-ZXN0aW9uOg0KPiBJcyBpdCBwb3NzaWJsZSB0byBtYWtlIHRoZXNlIGRyaXZlcnMgY29tcGx5IHdp
-dGggdGhlIFhlbm9tYWkgMi42LjQgZW52aXJvbm1lbnQgb24gdGhlIEJCQj8NCg0KVGhlcmUgc2hv
-dWxkIGJlIG5vIGRpZmZlcmVuY2UgYmV0d2VlbiAyLjYuMi4xIGFuZCAyLjYuNCB0aGF0IGNvdWxk
-IGJyZWFrIGJ1aWxkaW5nIGRyaXZlcnMuIEkgc3VzcGVjdCB0aGUgcHJvYmxlbSBpcyByYXRoZXIg
-dGhhdCB5b3Ugc2hvdWxkIHBhc3MgdGhlIHJpZ2h0IHZhcmlhYmxlcyB0byB0aGlzIGRyaXZlciBN
-YWtlZmlsZSB0byBpbmRpY2F0ZSB3aGVyZSB5b3UgaGF2ZSB0aGUgcGF0Y2hlZCBMaW51eCBrZXJu
-ZWwsIG9yIHRoYXQgdGhpcyBkcml2ZXIgaXMgbWVhbnQgdG8gYmUgY3Jvc3MtY29tcGlsZWQgYW5k
-IHlvdSBhcmUgdHJ5aW5nIHRvIGNvbXBpbGUgaXQgb24gdGFyZ2V0LCBvciB2aWNlIHZlcnNhLg0K
-DQotLSANCgkJCQkJICAgIEdpbGxlcy4NCg==
+On 2014-10-30 10:16, Gilles Chanteperdrix wrote:
+> On Thu, Oct 30, 2014 at 10:06:44AM +0100, Frede Florian wrote:
+>> Hello,
+>>
+>> I tried to patch the Kernel 3.14.22 and there is two new lines in
+>> the file fs/exec.c
+>>
+>> tsk->mm->vmacache_seqnum = 0;
+>> vmacache_flush(tsk);
+>>
+>> I am not sure if the line from the iPipe patch should placed before
+>> or after this lines...
+>>
+>> +    ipipe_mm_switch_unprotect(flags);
+> 
+> We do not have enough information to understand what you
+> are talking about. Show us the conflict as obtained with git merge
+> or with patch --merge to give us more information.
+
+I've resolved the conflict with the vma caching that was back-ported to
+3.14.x in ipipe-jki.git [1] (for-upstream/3.14 branch). Kernel works
+fine so far, but I didn't look into the details, if that caching thing
+affects us in the RT domain as well and requires more work.
+
+Jan
+
+[1] http://git.xenomai.org/ipipe-jki.git
+
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
