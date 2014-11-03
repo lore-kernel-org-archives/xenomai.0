@@ -1,13 +1,11 @@
-Message-ID: <545745F1.4070108@xenomai.org>
-Date: Mon, 03 Nov 2014 10:08:01 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: =?iso-8859-1?Q?Terje_Fr=F8ysa?= <Terje.Froysa@sintef.no>
+Date: Mon, 3 Nov 2014 11:44:47 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C6762243@SINTEFEXMBX05.sintef.no>
+Content-Language: en-US
 MIME-Version: 1.0
-References: <94331816.zv1NYeHro4@riemann>
- <208C6975C932E94F86239FEA59CCA632DCD4269B@AUSMXMBX02.mrws.biz>
-In-Reply-To: <208C6975C932E94F86239FEA59CCA632DCD4269B@AUSMXMBX02.mrws.biz>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Message Pipe services behaviour
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Xenoma 2.6.4 missing posix/xeno_config.h ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,47 +14,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: dietmar.schindler@manroland-web.com, Xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/03/2014 09:54 AM, dietmar.schindler@manroland-web.com wrote:
->> Von: Steve M. Robbins
->> Gesendet: Mittwoch, 29. Oktober 2014 17:11
->> ...
->> To avoid running through the select/read loop once for each message, our old
->> FIFO-based code opened the file in nonblocking mode and did a read into a buffer
->> that could hold up to 100 messages.  We generally would read 5-7 at a time,
->> not 100, so this proved that the reader could keep up when reading in batches.
->>
->> Using this same technique with the /dev/rtpN end of a Message Pipe never reads
->> more than 1 message.  I tried both blocking and non-blocking modes but got the
->> same result.  So this is my main question: knowing that there are likely many
->> messages in the pipe, how do I read them in a batch?
-> 
-> As far as I can see, read() from a Xenomai message pipe by design never returns more than one message at a time.
+Dear forum,
 
-Clearly, but from the description, it seems like pulling all messages in
-a loop from a non-blocking file descriptor only returns a single
-message, although more messages are pending read, according to FIONREAD.
+The file xenomai/posix/stdio.h
+includes a file named xeno_config.h
 
-> --
-> Regards,
-> Dietmar Schindler
-> ________________________________
-> manroland web systems GmbH -- Managing Director: Joern Gossé
-> Registered Office: Augsburg -- Trade Register: AG Augsburg -- HRB-No.: 26816 -- VAT: DE281389840
-> 
-> Confidentiality note:
-> This eMail and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you are not the intended recipient, you are hereby notified that any use or dissemination of this communication is strictly prohibited. If you have received this eMail in error, then please delete this eMail.
-> 
-> ! Please consider your environmental responsibility before printing this eMail !
-> ________________________________
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
-> 
+This file does not exist in my newly installed 2.6.4 Xenomai environment.
+
+Listing from make:
+
+debian@beaglebone:~/rtdm_dht11-app$ make
+gcc -Wall -g -I/lib/modules/3.8.13-bone67/source/include/xenomai -I/lib/mod=
+ules/3.8.13-bone67/source/include/xenomai/posix -I/lib/modules/3.8.13-bone6=
+7/source/arch/arm/mach-omap2 -c rtdm_dht11-app.c  -o rtdm_dht11-app.o
+
+In file included from rtdm_dht11-app.c:46:0:
+/lib/modules/3.8.13-bone67/source/include/xenomai/posix/stdio.h:30:25: fata=
+l error: xeno_config.h: No such file or directory
+compilation terminated.
+
+Please advice
+
+Best regards
+Terje Froysa
 
 
--- 
-Philippe.
+Smail: Terje Fr=F8ysa, SINTEF ICT (Information and Communication Technology=
+), N-7465 Trondheim, Norway.
+Email: terje.froysa@sintef.no<blocked::mailto:terje.froysa@sintef.no> <mail=
+to:terje.froysa@sintef.no<blocked::mailto:terje.froysa@sintef.no>>
+Phone: +47 930 03603,
+Company: Independent R&D, see <http://www.sintef.no/<blocked::http://www.si=
+ntef.no/>
 
