@@ -1,22 +1,16 @@
-Date: Mon, 3 Nov 2014 18:27:46 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141103172746.GK9327@sisyphus.hd.free.fr>
-References: <20141103160223.GE9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C6762910@SINTEFEXMBX05.sintef.no>
- <20141103162457.GF9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C676297E@SINTEFEXMBX05.sintef.no>
- <20141103164433.GG9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C67629F0@SINTEFEXMBX05.sintef.no>
- <20141103170220.GH9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C6762A5E@SINTEFEXMBX05.sintef.no>
- <20141103171338.GI9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C6762AC3@SINTEFEXMBX05.sintef.no>
+Date: Mon, 3 Nov 2014 12:37:47 -0600
+From: "Steve M. Robbins" <steve@sumost.ca>
+Message-ID: <20141103183747.GB15262@sumost.ca>
+References: <94331816.zv1NYeHro4@riemann> <20141031200007.GC378@sumost.ca>
+ <5454ADDF.4040604@xenomai.org> <6071747.2uXMl1ZSO0@riemann>
+ <54573A6D.1030201@xenomai.org> <20141103155947.GA15262@sumost.ca>
+ <5457AD81.7090200@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C6762AC3@SINTEFEXMBX05.sintef.no>
-Subject: Re: [Xenomai] Xenoma 2.6.4 missing posix/xeno_config.h ?
+In-Reply-To: <5457AD81.7090200@xenomai.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Message Pipe services behaviour
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,20 +19,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai@xenomai.org
 
-On Mon, Nov 03, 2014 at 05:25:52PM +0000, Terje Frøysa wrote:
-> Thanks Gilles,
-> I am truly grateful for your patience.
-> 
-> The kernel headers as well as the -l (that I overlooked) is now taken away.
-> However, I guess I still am missing a library path as I now end up with three undefined references.
+On Mon, Nov 03, 2014 at 05:29:53PM +0100, Philippe Gerum wrote:
 
-That is because you are using the native API, not the posix API, so
-you should pass --skin=native to xeno-config. If you are using both
-the posix and native skins, you need to add flags for both.
+> Just to make sure we are on the same page, as Dietmar mentioned in an
+> earlier mail, read() as implemented by the rt-pipe driver only returns
+> _one_ message at a time, although > 1 could be pending. One has to
+> iterate over a read() loop using a non-blocking fd on the /dev/rtp
+> device to get them all.
 
--- 
-					    Gilles.
+Aha!  Thanks (and to Dietmar).  I completely missed this fact.  I'll
+go re-write the read as a loop and see if it works better.  I should read
+until the read() returns 0 (bytes read)?
 
+Thanks,
+-Steve
+
+
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 173 bytes
+Desc: Digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20141103/ee00a96d/attachment.sig>
