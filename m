@@ -1,6 +1,6 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Mon, 3 Nov 2014 16:40:15 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C676297E@SINTEFEXMBX05.sintef.no>
+Date: Mon, 3 Nov 2014 17:44:33 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141103164433.GG9327@sisyphus.hd.free.fr>
 References: <314E5ECDAA86314791309FA670550F89C6762243@SINTEFEXMBX05.sintef.no>
  <20141103122602.GB7705@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C67627E4@SINTEFEXMBX05.sintef.no>
@@ -9,11 +9,12 @@ References: <314E5ECDAA86314791309FA670550F89C6762243@SINTEFEXMBX05.sintef.no>
  <20141103160223.GE9327@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C6762910@SINTEFEXMBX05.sintef.no>
  <20141103162457.GF9327@sisyphus.hd.free.fr>
-In-Reply-To: <20141103162457.GF9327@sisyphus.hd.free.fr>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <314E5ECDAA86314791309FA670550F89C676297E@SINTEFEXMBX05.sintef.no>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <314E5ECDAA86314791309FA670550F89C676297E@SINTEFEXMBX05.sintef.no>
 Subject: Re: [Xenomai] Xenoma 2.6.4 missing posix/xeno_config.h ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -23,56 +24,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-VGhhdCdzIGNvcnJlY3QuDQoNClRoZSAvdXNyL2luY2x1ZGUvdGltZS5oIGhvbGRzIHRoaXMgY29k
-ZSwgaGVuY2UgdGhlIGNsb2NraWRfdCBzaG91bGQgYmUgZGVmaW5lZC4NCg0KQ2FuIHRoZSBmaWxl
-cyBpbiB0aGUgL3Vzci9pbmxjdWRlIGRpcmVjdG9yeSBiZSBvdmVyc2hhZG93ZWQgYnkgc29tZSBv
-dGhlciBpbmNsdWRlIGZpbGVzPw0KDQpUaGUgTWFrZWZpbGUgaGFzIGdyb3duIHF1aXRlIGNvbXBs
-ZXg6DQoNCktTUkMgOj0gL2xpYi9tb2R1bGVzLyQoc2hlbGwgdW5hbWUgLXIpL3NvdXJjZQ0KDQpY
-RU5PX0RFU1RESVI6PS8NClhFTk9fQ09ORklHOj0kKFhFTk9fREVTVERJUikvdXNyL3hlbm9tYWkv
-YmluL3hlbm8tY29uZmlnDQpYRU5PX1BPU0lYX0NGTEFHUzo9JChzaGVsbCBERVNURElSPSQoWEVO
-T19ERVNURElSKSAkKFhFTk9fQ09ORklHKSAtLXNraW49cG9zaXggLS1jZmxhZ3MpDQpYRU5PX1BP
-U0lYX0xJQlM6PSQoc2hlbGwgREVTVERJUj0kKFhFTk9fREVTVERJUikgJChYRU5PX0NPTkZJRykg
-LS1za2luPXBvc2l4IC0tbGRmbGFncykNCg0KIyBkZWZpbmUgYW55IGNvbXBpbGUtdGltZSBmbGFn
-cw0KQ0ZMQUdTID0gLVdhbGwgLWcgJChYRU5PX1BPU0lYX0NGTEFHUykNCg0KSU5DTFVERVMgPSAt
-SSQoS1NSQykvaW5jbHVkZS94ZW5vbWFpIC1JJChLU1JDKS9pbmNsdWRlL3hlbm9tYWkvcG9zaXgg
-LUkkKEtTUkMpL2FyY2gvYXJtL21hY2gtb21hcDINCg0KIyBkZWZpbmUgbGlicmFyeSBwYXRocyBp
-biBhZGRpdGlvbiB0byAvdXNyL2xpYg0KIyAgIGlmIEkgd2FudGVkIHRvIGluY2x1ZGUgbGlicmFy
-aWVzIG5vdCBpbiAvdXNyL2xpYiBJJ2Qgc3BlY2lmeQ0KIyAgIHRoZWlyIHBhdGggdXNpbmcgLUxw
-YXRoLCBzb21ldGhpbmcgbGlrZToNCiNMRkxBR1MgPSAtTC9ob21lL25ld2hhbGwvbGliICAtTC4u
-L2xpYg0KDQojIGRlZmluZSBhbnkgbGlicmFyaWVzIHRvIGxpbmsgaW50byBleGVjdXRhYmxlOg0K
-IyAgIGlmIEkgd2FudCB0byBsaW5rIGluIGxpYnJhcmllcyAobGlieC5zbyBvciBsaWJ4LmEpIEkg
-dXNlIHRoZSAtbGxpYm5hbWUNCiMgICBvcHRpb24sIHNvbWV0aGluZyBsaWtlICh0aGlzIHdpbGwg
-bGluayBpbiBsaWJteWxpYi5zbyBhbmQgbGlibS5zbzoNCkxJQlMgPSAtbCQoWEVOT19QT1NJWF9M
-SUJTKQ0KDQoNCg0KDQoNCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEdpbGxl
-cyBDaGFudGVwZXJkcml4IFttYWlsdG86Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmdd
-IA0KU2VudDogMy4gbm92ZW1iZXIgMjAxNCAxNzoyNQ0KVG86IFRlcmplIEZyw7h5c2ENCkNjOiB4
-ZW5vbWFpQHhlbm9tYWkub3JnDQpTdWJqZWN0OiBSZTogW1hlbm9tYWldIFhlbm9tYSAyLjYuNCBt
-aXNzaW5nIHBvc2l4L3hlbm9fY29uZmlnLmggPw0KDQpPbiBNb24sIE5vdiAwMywgMjAxNCBhdCAw
-NDoyMTo1M1BNICswMDAwLCBUZXJqZSBGcsO4eXNhIHdyb3RlOg0KPiBUaGFua3MgYWdhaW4gZm9y
-IHlvdXIgcXVpY2sgcmVwbGllcyA6LSkNCj4gDQo+IFllcywgSSBoYXZlIHRoZSBmaWxlcyBpbiBx
-dWVzdGlvbiBpbiB0aGUgL3Vzci9pbmNsdWRlIGRpcmVjdG9yeS4NCj4gDQo+IGRlYmlhbkBiZWFn
-bGVib25lOi91c3IvaW5jbHVkZSQgbHMgLWwgc3QqDQo+IDoNCj4gLXJ3LXItLXItLSAxIHJvb3Qg
-cm9vdCAgODUzNiBPY3QgMTcgMDI6NDAgc3RkaW50LmgNCj4gLXJ3LXItLXItLSAxIHJvb3Qgcm9v
-dCAzMTUyNSBPY3QgMTcgMDI6NDEgc3RkaW8uaA0KPiAtcnctci0tci0tIDEgcm9vdCByb290ICAy
-ODczIE9jdCAxNyAwMjo0MCBzdGRpb19leHQuaA0KPiAtcnctci0tci0tIDEgcm9vdCByb290IDM0
-MjU0IE9jdCAxNyAwMjo0MCBzdGRsaWIuaA0KPiAtcnctci0tci0tIDEgcm9vdCByb290IDIyNjEy
-IE9jdCAxNyAwMjo0MSBzdHJpbmcuaA0KPiA6DQo+IA0KPiBUaGUgdGltZS5oIHJlZmVycyB0aGUg
-Y2xvY2tpZF90LCBidXQgbm8gZmlsZSBpbiB0aGUgL3Vzci9pbmNsdWRlIChhbmQgc3ViZGlyZWN0
-b3JpZXMpIGhvbGRzIGEgZGVmaW5pdGlvbi4NCj4gDQo+IFRoZSB0eXBlcy5oIGZpbGUgZGVmaW5l
-cyB0aGUgX19jbG9ja2lkX3QsIGJ1dCBJIGNhbid0IGZpbmQgdGhlICdjbG9ja2lkX3QnIGRlZmlu
-ZWQgYW55d2hlcmU6DQo+IA0KPiAvKiBDbG9jayBJRCB1c2VkIGluIGNsb2NrIGFuZCB0aW1lciBm
-dW5jdGlvbnMuICAqLyBfX1NURF9UWVBFIA0KPiBfX0NMT0NLSURfVF9UWVBFIF9fY2xvY2tpZF90
-Ow0KDQpUaGlzIGlzIG5vcm1hbGx5IGRlZmluZWQgaW4gL3Vzci9pbmNsdWRlL3RpbWUuaA0KDQoj
-aWYgIWRlZmluZWQgX19jbG9ja2lkX3RfZGVmaW5lZCAmJiBcDQogICAoKGRlZmluZWQgX1RJTUVf
-SCAmJiBkZWZpbmVkIF9fVVNFX1BPU0lYMTk5MzA5KSB8fCBkZWZpbmVkIF9fbmVlZF9jbG9ja2lk
-X3QpDQojIGRlZmluZSBfX2Nsb2NraWRfdF9kZWZpbmVkICAgIDENCg0KIyBpbmNsdWRlIDxiaXRz
-L3R5cGVzLmg+DQoNCi8qIENsb2NrIElEIHVzZWQgaW4gY2xvY2sgYW5kIHRpbWVyIGZ1bmN0aW9u
-cy4gICovIHR5cGVkZWYgX19jbG9ja2lkX3QgY2xvY2tpZF90Ow0KDQojZW5kaWYgLyogY2xvY2tp
-ZF90IG5vdCBkZWZpbmVkIGFuZCA8dGltZS5oPiBvciBuZWVkIGNsb2NraWRfdC4gICovICN1bmRl
-ZiAgX19jbG9ja2lkX3RpbWVfdA0KDQpBbmQgeGVub21haSdzIHRpbWUuaCBkb2VzICNpbmNsdWRl
-X25leHQgPHRpbWUuaD4gd2hpY2ggc2hvdWxkIGluY2x1ZGUgdGhhdCBmaWxlIGFuZCBnZXQgdGhl
-IGRlZmluaXRpb24uDQoNCi0tIA0KCQkJCQkgICAgR2lsbGVzLg0K
+On Mon, Nov 03, 2014 at 04:40:15PM +0000, Terje Frøysa wrote:
+> That's correct.
+> 
+> The /usr/include/time.h holds this code, hence the clockid_t should be defined.
+> 
+> Can the files in the /usr/inlcude directory be overshadowed by some other include files?
+
+No. But some compilation flags may disable these types, which are
+defined only for some versions of the posix standard.
+
+
+> 
+> The Makefile has grown quite complex:
+> 
+> KSRC := /lib/modules/$(shell uname -r)/source
+> 
+> XENO_DESTDIR:=/
+> XENO_CONFIG:=$(XENO_DESTDIR)/usr/xenomai/bin/xeno-config
+> XENO_POSIX_CFLAGS:=$(shell DESTDIR=$(XENO_DESTDIR) $(XENO_CONFIG) --skin=posix --cflags)
+> XENO_POSIX_LIBS:=$(shell DESTDIR=$(XENO_DESTDIR) $(XENO_CONFIG) --skin=posix --ldflags)
+> 
+> # define any compile-time flags
+> CFLAGS = -Wall -g $(XENO_POSIX_CFLAGS)
+> 
+> INCLUDES = -I$(KSRC)/include/xenomai -I$(KSRC)/include/xenomai/posix -I$(KSRC)/arch/arm/mach-omap2
+
+You do not need to include $(KSRC)/include/xenomai and
+-I$(KSRC)/include/xenomai/posix, these directories are for building
+kernel modules only, not for building applications.
+
+> 
+> # define library paths in addition to /usr/lib
+> #   if I wanted to include libraries not in /usr/lib I'd specify
+> #   their path using -Lpath, something like:
+> #LFLAGS = -L/home/newhall/lib  -L../lib
+> 
+> # define any libraries to link into executable:
+> #   if I want to link in libraries (libx.so or libx.a) I use the -llibname
+> #   option, something like (this will link in libmylib.so and libm.so:
+> LIBS = -l$(XENO_POSIX_LIBS)
+
+Just LIBS=$(XENO_POSIX_LIBS) without the -l
+
+Coud you show us the complete Makefile so that we see all the flags
+you pass to gcc?
+
+-- 
+					    Gilles.
 
