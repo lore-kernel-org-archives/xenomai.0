@@ -1,6 +1,6 @@
-Date: Mon, 3 Nov 2014 19:53:12 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141103185312.GC13799@sisyphus.hd.free.fr>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Mon, 3 Nov 2014 19:28:09 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C6762D14@SINTEFEXMBX05.sintef.no>
 References: <20141103162457.GF9327@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C676297E@SINTEFEXMBX05.sintef.no>
  <20141103164433.GG9327@sisyphus.hd.free.fr>
@@ -11,11 +11,12 @@ References: <20141103162457.GF9327@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C6762AC3@SINTEFEXMBX05.sintef.no>
  <20141103172746.GK9327@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C6762C3E@SINTEFEXMBX05.sintef.no>
-MIME-Version: 1.0
+ <20141103185312.GC13799@sisyphus.hd.free.fr>
+In-Reply-To: <20141103185312.GC13799@sisyphus.hd.free.fr>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C6762C3E@SINTEFEXMBX05.sintef.no>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] Xenoma 2.6.4 missing posix/xeno_config.h ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -25,37 +26,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
+To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Nov 03, 2014 at 06:42:54PM +0000, Terje Frøysa wrote:
-> Thanks again Gilles!
-> 
-> I am now trying to compile an application using only native calls and using --skin=native
-> The reference to rt_task_shadow  is now found, but the rt_dev_open and rt_dev_close are still missing.
-> I expect that the code should reside in the librtdm files, but have no documentation on this.
-
-Same answer, rt_dev_open/rt_dev_close are part of the rtdm skin, so
-you have to run xeno-config with the --skin=rtdm to get the flags
-for this skin. xeno-config is documented, try xeno-config --help to
-see the available skin.
-
-
-> Can you recommend a document that can lecture me in this subject?
-> I have tried to find such documentation, but the information is scattered and the examples cannot easily be put together (by novices) without conflicts.
-> I have downloaded the:
-> "Xenomai Native skin API.pdf" 
-> "Xenomai Posix skin Api.pdf" 
-> "Xenomai nanokernel API.pdf"
-> "Xenomai_RTDM-and-Applications.pdf"
-> "Xenomai RTDM skin API.pdf"
-> 
-> I find a lot of doxygen generated html-files, but they don’t give me the pedagogical contextual fill-ins.
-> I really dislike bothering people with such basic questions....
-
-There is no documentation per-se, but the behaviour of xeno-config
-is consistent enough that you should be able to guess what to do...
-
--- 
-					    Gilles.
+VGhhbmsgeW91IHZlcnkgbXVjaCBHaWxsZXMsDQoNCkkgbm93IGdvdCBpdCBhbGwgd29ya2luZyEN
+ClRoYW5rcyBmb3IgeW91ciBwYXRpZW50IGFuZCBxdWljayByZXBsaWVzLg0KDQpIb3BlIEkgd2ls
+bCBtYWtlIGl0IG9uIG15IG93biBmcm9tIG5vdyA7LSkNCg0KQmVzdCByZWdhcmRzDQpUZXJqZQ0K
+DQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogR2lsbGVzIENoYW50ZXBlcmRyaXgg
+W21haWx0bzpnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZ10gDQpTZW50OiAzLiBub3Zl
+bWJlciAyMDE0IDE5OjUzDQpUbzogVGVyamUgRnLDuHlzYQ0KQ2M6IHhlbm9tYWlAeGVub21haS5v
+cmcNClN1YmplY3Q6IFJlOiBbWGVub21haV0gWGVub21hIDIuNi40IG1pc3NpbmcgcG9zaXgveGVu
+b19jb25maWcuaCA/DQoNCk9uIE1vbiwgTm92IDAzLCAyMDE0IGF0IDA2OjQyOjU0UE0gKzAwMDAs
+IFRlcmplIEZyw7h5c2Egd3JvdGU6DQo+IFRoYW5rcyBhZ2FpbiBHaWxsZXMhDQo+IA0KPiBJIGFt
+IG5vdyB0cnlpbmcgdG8gY29tcGlsZSBhbiBhcHBsaWNhdGlvbiB1c2luZyBvbmx5IG5hdGl2ZSBj
+YWxscyBhbmQgDQo+IHVzaW5nIC0tc2tpbj1uYXRpdmUgVGhlIHJlZmVyZW5jZSB0byBydF90YXNr
+X3NoYWRvdyAgaXMgbm93IGZvdW5kLCBidXQgdGhlIHJ0X2Rldl9vcGVuIGFuZCBydF9kZXZfY2xv
+c2UgYXJlIHN0aWxsIG1pc3NpbmcuDQo+IEkgZXhwZWN0IHRoYXQgdGhlIGNvZGUgc2hvdWxkIHJl
+c2lkZSBpbiB0aGUgbGlicnRkbSBmaWxlcywgYnV0IGhhdmUgbm8gZG9jdW1lbnRhdGlvbiBvbiB0
+aGlzLg0KDQpTYW1lIGFuc3dlciwgcnRfZGV2X29wZW4vcnRfZGV2X2Nsb3NlIGFyZSBwYXJ0IG9m
+IHRoZSBydGRtIHNraW4sIHNvIHlvdSBoYXZlIHRvIHJ1biB4ZW5vLWNvbmZpZyB3aXRoIHRoZSAt
+LXNraW49cnRkbSB0byBnZXQgdGhlIGZsYWdzIGZvciB0aGlzIHNraW4uIHhlbm8tY29uZmlnIGlz
+IGRvY3VtZW50ZWQsIHRyeSB4ZW5vLWNvbmZpZyAtLWhlbHAgdG8gc2VlIHRoZSBhdmFpbGFibGUg
+c2tpbi4NCg0KDQo+IENhbiB5b3UgcmVjb21tZW5kIGEgZG9jdW1lbnQgdGhhdCBjYW4gbGVjdHVy
+ZSBtZSBpbiB0aGlzIHN1YmplY3Q/DQo+IEkgaGF2ZSB0cmllZCB0byBmaW5kIHN1Y2ggZG9jdW1l
+bnRhdGlvbiwgYnV0IHRoZSBpbmZvcm1hdGlvbiBpcyBzY2F0dGVyZWQgYW5kIHRoZSBleGFtcGxl
+cyBjYW5ub3QgZWFzaWx5IGJlIHB1dCB0b2dldGhlciAoYnkgbm92aWNlcykgd2l0aG91dCBjb25m
+bGljdHMuDQo+IEkgaGF2ZSBkb3dubG9hZGVkIHRoZToNCj4gIlhlbm9tYWkgTmF0aXZlIHNraW4g
+QVBJLnBkZiIgDQo+ICJYZW5vbWFpIFBvc2l4IHNraW4gQXBpLnBkZiIgDQo+ICJYZW5vbWFpIG5h
+bm9rZXJuZWwgQVBJLnBkZiINCj4gIlhlbm9tYWlfUlRETS1hbmQtQXBwbGljYXRpb25zLnBkZiIN
+Cj4gIlhlbm9tYWkgUlRETSBza2luIEFQSS5wZGYiDQo+IA0KPiBJIGZpbmQgYSBsb3Qgb2YgZG94
+eWdlbiBnZW5lcmF0ZWQgaHRtbC1maWxlcywgYnV0IHRoZXkgZG9u4oCZdCBnaXZlIG1lIHRoZSBw
+ZWRhZ29naWNhbCBjb250ZXh0dWFsIGZpbGwtaW5zLg0KPiBJIHJlYWxseSBkaXNsaWtlIGJvdGhl
+cmluZyBwZW9wbGUgd2l0aCBzdWNoIGJhc2ljIHF1ZXN0aW9ucy4uLi4NCg0KVGhlcmUgaXMgbm8g
+ZG9jdW1lbnRhdGlvbiBwZXItc2UsIGJ1dCB0aGUgYmVoYXZpb3VyIG9mIHhlbm8tY29uZmlnIGlz
+IGNvbnNpc3RlbnQgZW5vdWdoIHRoYXQgeW91IHNob3VsZCBiZSBhYmxlIHRvIGd1ZXNzIHdoYXQg
+dG8gZG8uLi4NCg0KLS0gDQoJCQkJCSAgICBHaWxsZXMuDQo=
 
