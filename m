@@ -1,9 +1,7 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Mon, 3 Nov 2014 17:25:52 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C6762AC3@SINTEFEXMBX05.sintef.no>
-References: <20141103153617.GD9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C6762872@SINTEFEXMBX05.sintef.no>
- <20141103160223.GE9327@sisyphus.hd.free.fr>
+Date: Mon, 3 Nov 2014 18:27:46 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141103172746.GK9327@sisyphus.hd.free.fr>
+References: <20141103160223.GE9327@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C6762910@SINTEFEXMBX05.sintef.no>
  <20141103162457.GF9327@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C676297E@SINTEFEXMBX05.sintef.no>
@@ -12,11 +10,12 @@ References: <20141103153617.GD9327@sisyphus.hd.free.fr>
  <20141103170220.GH9327@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C6762A5E@SINTEFEXMBX05.sintef.no>
  <20141103171338.GI9327@sisyphus.hd.free.fr>
-In-Reply-To: <20141103171338.GI9327@sisyphus.hd.free.fr>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <314E5ECDAA86314791309FA670550F89C6762AC3@SINTEFEXMBX05.sintef.no>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <314E5ECDAA86314791309FA670550F89C6762AC3@SINTEFEXMBX05.sintef.no>
 Subject: Re: [Xenomai] Xenoma 2.6.4 missing posix/xeno_config.h ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -26,37 +25,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
+To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-VGhhbmtzIEdpbGxlcywNCkkgYW0gdHJ1bHkgZ3JhdGVmdWwgZm9yIHlvdXIgcGF0aWVuY2UuDQoN
-ClRoZSBrZXJuZWwgaGVhZGVycyBhcyB3ZWxsIGFzIHRoZSAtbCAodGhhdCBJIG92ZXJsb29rZWQp
-IGlzIG5vdyB0YWtlbiBhd2F5Lg0KSG93ZXZlciwgSSBndWVzcyBJIHN0aWxsIGFtIG1pc3Npbmcg
-YSBsaWJyYXJ5IHBhdGggYXMgSSBub3cgZW5kIHVwIHdpdGggdGhyZWUgdW5kZWZpbmVkIHJlZmVy
-ZW5jZXMuDQoNCkJlc3QgcmVnYXJkcw0KVGVyamUNCg0KZGViaWFuQGJlYWdsZWJvbmU6fi9ydGRt
-X2RodDExLWFwcCQgbWFrZQ0KZ2NjIC1XYWxsIC1nIC1JLy91c3IveGVub21haS9pbmNsdWRlIC1E
-X0dOVV9TT1VSQ0UgLURfUkVFTlRSQU5UIC1EX19YRU5PX18gLUkvL3Vzci94ZW5vbWFpL2luY2x1
-ZGUvcG9zaXggLW8gbXljYyBydGRtX2RodDExLWFwcC5vICAtV2wsQC8vdXNyL3hlbm9tYWkvbGli
-L3Bvc2l4LndyYXBwZXJzIC1MLy91c3IveGVub21haS9saWIgLWxwdGhyZWFkX3J0IC1seGVub21h
-aSAtbHB0aHJlYWQgLWxydA0KcnRkbV9kaHQxMS1hcHAubzogSW4gZnVuY3Rpb24gYG1haW4nOg0K
-L2hvbWUvZGViaWFuL3J0ZG1fZGh0MTEtYXBwL3J0ZG1fZGh0MTEtYXBwLmM6NzU6IHVuZGVmaW5l
-ZCByZWZlcmVuY2UgdG8gYHJ0X3Rhc2tfc2hhZG93Jw0KL2hvbWUvZGViaWFuL3J0ZG1fZGh0MTEt
-YXBwL3J0ZG1fZGh0MTEtYXBwLmM6ODQ6IHVuZGVmaW5lZCByZWZlcmVuY2UgdG8gYHJ0X2Rldl9v
-cGVuJw0KL2hvbWUvZGViaWFuL3J0ZG1fZGh0MTEtYXBwL3J0ZG1fZGh0MTEtYXBwLmM6OTQ6IHVu
-ZGVmaW5lZCByZWZlcmVuY2UgdG8gYHJ0X2Rldl9jbG9zZScNCmNvbGxlY3QyOiBsZCByZXR1cm5l
-ZCAxIGV4aXQgc3RhdHVzDQptYWtlOiAqKiogW215Y2NdIEVycm9yIDENCg0KLS0tLS1PcmlnaW5h
-bCBNZXNzYWdlLS0tLS0NCkZyb206IEdpbGxlcyBDaGFudGVwZXJkcml4IFttYWlsdG86Z2lsbGVz
-LmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmddIA0KU2VudDogMy4gbm92ZW1iZXIgMjAxNCAxODox
-NA0KVG86IFRlcmplIEZyw7h5c2ENCkNjOiB4ZW5vbWFpQHhlbm9tYWkub3JnDQpTdWJqZWN0OiBS
-ZTogW1hlbm9tYWldIFhlbm9tYSAyLjYuNCBtaXNzaW5nIHBvc2l4L3hlbm9fY29uZmlnLmggPw0K
-DQpPbiBNb24sIE5vdiAwMywgMjAxNCBhdCAwNToxMToxOFBNICswMDAwLCBUZXJqZSBGcsO4eXNh
-IHdyb3RlDQo+IFRoYW5rcyBHaWxsZXMsDQo+IA0KPiBSZWFsbHkgaGVscGZ1bCBhZHZpY2UhDQo+
-IE5vdyBJIG9ubHkgaGF2ZSB0byBmaW5kIG91dCB3aHkgdGhlIGxpbmtlciBkb2Vzbid0IGZpbmQg
-dGhlIA0KPiBwb3NpeC53cmFwcGVycyBJdCBpcyBjZXJ0YWlubHkgdGhlcmUuLiBjYW4gaXQgYmUg
-ZHVlIHRvIHRoZSAvLyBpbiB0aGU6IC1sLVdsLEAvL3Vzci94ZW5vbWFpL2xpYi9wb3NpeC53cmFw
-cGVycyA/DQoNCk5vLCBhcyBJIGFscmVhZHkgdG9sZCB5b3UgdHdvIG1haWxzIGFnbyAtbCQoWEVO
-T19QT1NJWF9MSUJTKSBpcyB3cm9uZy4gSXQgc2hvdWxkIGJlIG9ubHkgJChYRU5PX1BPU0lYX0xJ
-QlMpIChub3RlIGJ5IHRoZSB3YXkgdGhhdCBpbiB0aGUgc2FtZSBtYWlsLCBJIGFsc28gYWxyZWFk
-eSB0b2xkIHlvdSB0byByZW1vdmUgdGhlIGluY2x1ZGUgZGlyZWN0aXZlcyBmb3Iga2VybmVsIGhl
-YWRlcnMpLg0KDQotLSANCgkJCQkJICAgIEdpbGxlcy4NCg==
+On Mon, Nov 03, 2014 at 05:25:52PM +0000, Terje Frøysa wrote:
+> Thanks Gilles,
+> I am truly grateful for your patience.
+> 
+> The kernel headers as well as the -l (that I overlooked) is now taken away.
+> However, I guess I still am missing a library path as I now end up with three undefined references.
+
+That is because you are using the native API, not the posix API, so
+you should pass --skin=native to xeno-config. If you are using both
+the posix and native skins, you need to add flags for both.
+
+-- 
+					    Gilles.
 
