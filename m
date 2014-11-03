@@ -1,23 +1,13 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Mon, 3 Nov 2014 17:11:18 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C6762A5E@SINTEFEXMBX05.sintef.no>
-References: <20141103122602.GB7705@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C67627E4@SINTEFEXMBX05.sintef.no>
- <20141103153617.GD9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C6762872@SINTEFEXMBX05.sintef.no>
- <20141103160223.GE9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C6762910@SINTEFEXMBX05.sintef.no>
- <20141103162457.GF9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C676297E@SINTEFEXMBX05.sintef.no>
- <20141103164433.GG9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C67629F0@SINTEFEXMBX05.sintef.no>
- <20141103170220.GH9327@sisyphus.hd.free.fr>
-In-Reply-To: <20141103170220.GH9327@sisyphus.hd.free.fr>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <5457B76B.9040609@siemens.com>
+Date: Mon, 03 Nov 2014 18:12:11 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Xenoma 2.6.4 missing posix/xeno_config.h ?
+References: <CADLCHMKk6-tiB=_6T85Z60Vf3ToURF6WRqYMBO46xyTLsuuFUg@mail.gmail.com>
+ <CAPRPZsAjU+9NboMvmbafY62hBEw4Sm=wA1Pf-BHP2989E1Dy1g@mail.gmail.com>
+In-Reply-To: <CAPRPZsAjU+9NboMvmbafY62hBEw4Sm=wA1Pf-BHP2989E1Dy1g@mail.gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Write a hard real time usb driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,36 +16,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
+To: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>, Seda Seda <seda9seda9@gmail.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-VGhhbmtzIEdpbGxlcywNCg0KUmVhbGx5IGhlbHBmdWwgYWR2aWNlIQ0KTm93IEkgb25seSBoYXZl
-IHRvIGZpbmQgb3V0IHdoeSB0aGUgbGlua2VyIGRvZXNuJ3QgZmluZCB0aGUgcG9zaXgud3JhcHBl
-cnMNCkl0IGlzIGNlcnRhaW5seSB0aGVyZS4uIGNhbiBpdCBiZSBkdWUgdG8gdGhlIC8vIGluIHRo
-ZTogLWwtV2wsQC8vdXNyL3hlbm9tYWkvbGliL3Bvc2l4LndyYXBwZXJzID8NCg0KVGVyamUNCg0K
-ZGViaWFuQGJlYWdsZWJvbmU6fi9ydGRtX2RodDExLWFwcCQgbWFrZQ0KZ2NjIC1XYWxsIC1nIC1J
-Ly91c3IveGVub21haS9pbmNsdWRlIC1EX0dOVV9TT1VSQ0UgLURfUkVFTlRSQU5UIC1EX19YRU5P
-X18gLUkvL3Vzci94ZW5vbWFpL2luY2x1ZGUvcG9zaXggLWMgcnRkbV9kaHQxMS1hcHAuYyAgLW8g
-ciAgICAgICAgICAgICAgICAgICAgIHRkbV9kaHQxMS1hcHAubw0KcnRkbV9kaHQxMS1hcHAuYzog
-SW4gZnVuY3Rpb24gJ21haW4nOg0KcnRkbV9kaHQxMS1hcHAuYzo1OToxMDogd2FybmluZzogdW51
-c2VkIHZhcmlhYmxlICdzaXplJyBbLVd1bnVzZWQtdmFyaWFibGVdDQpydGRtX2RodDExLWFwcC5j
-OjU4Ojc6IHdhcm5pbmc6IHVudXNlZCB2YXJpYWJsZSAnYnVmJyBbLVd1bnVzZWQtdmFyaWFibGVd
-DQpnY2MgLVdhbGwgLWcgLUkvL3Vzci94ZW5vbWFpL2luY2x1ZGUgLURfR05VX1NPVVJDRSAtRF9S
-RUVOVFJBTlQgLURfX1hFTk9fXyAtSS8vdXNyL3hlbm9tYWkvaW5jbHVkZS9wb3NpeCAtbyBteWNj
-IHJ0ZG1fZGh0MTEtYXBwLm8gICAgICAgICAgICAgICAgICAgICAgIC1sLVdsLEAvL3Vzci94ZW5v
-bWFpL2xpYi9wb3NpeC53cmFwcGVycyAtTC8vdXNyL3hlbm9tYWkvbGliIC1scHRocmVhZF9ydCAt
-bHhlbm9tYWkgLWxwdGhyZWFkIC1scnQNCi91c3IvYmluL2xkOiBjYW5ub3QgZmluZCAtbC1XbCxA
-Ly91c3IveGVub21haS9saWIvcG9zaXgud3JhcHBlcnMNCmNvbGxlY3QyOiBsZCByZXR1cm5lZCAx
-IGV4aXQgc3RhdHVzDQptYWtlOiAqKiogW215Y2NdIEVycm9yIDENCg0KZGViaWFuQGJlYWdsZWJv
-bmU6fi9ydGRtX2RodDExLWFwcCQgY2QgLy91c3IveGVub21haS9saWINCmRlYmlhbkBiZWFnbGVi
-b25lOi8vdXNyL3hlbm9tYWkvbGliJCBscyBwb3NpKg0KcG9zaXgud3JhcHBlcnMNCg0KLS0tLS1P
-cmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEdpbGxlcyBDaGFudGVwZXJkcml4IFttYWlsdG86
-Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmddIA0KU2VudDogMy4gbm92ZW1iZXIgMjAx
-NCAxODowMg0KVG86IFRlcmplIEZyw7h5c2ENCkNjOiB4ZW5vbWFpQHhlbm9tYWkub3JnDQpTdWJq
-ZWN0OiBSZTogW1hlbm9tYWldIFhlbm9tYSAyLjYuNCBtaXNzaW5nIHBvc2l4L3hlbm9fY29uZmln
-LmggPw0KDQpPbiBNb24sIE5vdiAwMywgMjAxNCBhdCAwNDo1ODo1MlBNICswMDAwLCBUZXJqZSBG
-csO4eXNhIHdyb3RlOg0KPiBUaGFua3MhDQo+IA0KPiBIZXJlIGlzIHRoZSBjb21wbGV0ZSBNYWtl
-ZmlsZToNCg0KUGxlYXNlIHJlbW92ZSB0aGUgaW5jbHVkZSBkaXJlY3RpdmUgZm9yIGtlcm5lbC1z
-cGFjZSBoZWFkZXJzLiBJIHRoaW5rIGl0IHNob3VsZCBmaXggdGhlIGlzc3VlLg0KDQotLSANCgkJ
-CQkJICAgIEdpbGxlcy4NCg==
+On 2014-11-03 09:03, Jeroen Van den Keybus wrote:
+>> I try to write a hard real time usb driver. I communicate my device  using
+>> open(), read() etc. My device is a gpio module.
+> 
+> 
+> I assume you want to control an USB host controller using a GPIO interface ?
+> 
+> 
+>> I am coding a kernel module
+>> to communicate the device using xenomai on real time. But I am not sure
+>> that this way is reasonable. If I should going on this way, what should I
+>> implement? Could you give me some example or link to write hard real time
+>> usb driver for* physical* device?
+> 
+> 
+> I cannot help you with that, but one important issue to consider is that
+> the USB protocol itself operates with small, hardware controlled time slots
+> of 1 ms (USB1.x) or 125 usec (USB2.0). You may therefore need a significant
+> amount of software to properly distribute real-time traffic in these -
+> essentially asynchronous - slots. The latency of a real-time process
+> waiting for USB data can therefore also be as large as the time slot
+> duration. If your real-time requirements are modest, you may be able to
+> live with that. Still, count on a major software effort: just have a look
+> at the Linux USB driver framework.
+> 
+> Alternatively, you could check if you can synchronize your real-time
+> process with the USB controller frame rate.
+> 
+
+FWIW, we still don't have USB 2.0 support (though I vaguely remember
+previous efforts in that direction), but at least a framework for 1.1
+devices with Xenomai 2.6.x. It is in successful use for industrial
+sensors. Code is available here:
+
+http://git.kiszka.org/?p=usb4rt.git;a=summary
+
+As the targeted sensors generate data streams only with 1 ms period, the
+1.1 limitation was not an issue so far.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
