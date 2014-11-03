@@ -1,14 +1,20 @@
-Message-ID: <5457AD81.7090200@xenomai.org>
-Date: Mon, 03 Nov 2014 17:29:53 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Mon, 3 Nov 2014 16:40:15 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C676297E@SINTEFEXMBX05.sintef.no>
+References: <314E5ECDAA86314791309FA670550F89C6762243@SINTEFEXMBX05.sintef.no>
+ <20141103122602.GB7705@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C67627E4@SINTEFEXMBX05.sintef.no>
+ <20141103153617.GD9327@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C6762872@SINTEFEXMBX05.sintef.no>
+ <20141103160223.GE9327@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C6762910@SINTEFEXMBX05.sintef.no>
+ <20141103162457.GF9327@sisyphus.hd.free.fr>
+In-Reply-To: <20141103162457.GF9327@sisyphus.hd.free.fr>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <94331816.zv1NYeHro4@riemann> <20141031200007.GC378@sumost.ca>
- <5454ADDF.4040604@xenomai.org> <6071747.2uXMl1ZSO0@riemann>
- <54573A6D.1030201@xenomai.org> <20141103155947.GA15262@sumost.ca>
-In-Reply-To: <20141103155947.GA15262@sumost.ca>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Message Pipe services behaviour
+Subject: Re: [Xenomai] Xenoma 2.6.4 missing posix/xeno_config.h ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,67 +23,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Steve M. Robbins" <steve@sumost.ca>
-Cc: Xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/03/2014 04:59 PM, Steve M. Robbins wrote:
-> On Mon, Nov 03, 2014 at 09:18:53AM +0100, Philippe Gerum wrote:
->> On 11/02/2014 01:53 AM, Steve M. Robbins wrote:
->>> On November 1, 2014 10:54:39 AM Philippe Gerum wrote:
->>
->>>> Perhaps the rt side sends a large burst of data once in a while causing
->>>> the overflow? In this case, you could not detect the issue looming from
->>>> the nrt side until it happens, since the rt side has higher priority
->>>> (i.e. rt would cause ENOMEM even before nrt had a chance to resume
->>>> execution).
->>>
->>> OK, I understand the theory.  However, I don't believe that is my case.  The 
->>> message queue is transporting fault information and through user actions I can 
->>> set it up to send 2 messages per cycle and using the FIFO code, the nrt side 
->>> is indeed reading 2 messages.  Using message queues, I can see that there are 
->>> multiple messages outstanding but it reads only one.
->>>
->>
->> Ok, so if no message gets lost, if you can see FIONREAD increase until
->> ENOMEM is raised, and if throttling the rt side only delays the issue
->> without solving it, the only explanation would be that a notification of
->> input availability is lost by the poll handler backing select() in the
->> rt-pipe driver. That would cause the messages to pile up on the rt side,
->> with too few deliveries to nrt.
-> 
-> I want to emphasize that FIONREAD is being done on the nrt side, after
-> the select() and just prior to the actual read() call.  Thus the nrt
-> side is seeing N > 1 messages available on the file descriptor, but
-> read() only reads 1, even though the fd is nonblocking and the read
-> buffer is sized for 100 messages.
-
-Just to make sure we are on the same page, as Dietmar mentioned in an
-earlier mail, read() as implemented by the rt-pipe driver only returns
-_one_ message at a time, although > 1 could be pending. One has to
-iterate over a read() loop using a non-blocking fd on the /dev/rtp
-device to get them all. I'm likely beating a dead horse here this said.
-
-  So it seems to me there is somehow
-> a disconnect between the "available bytes" as seen by read() versus
-> FIONREAD.  I admit to being naive about the kernel but that seems
-> like something that should not be possible.
-> 
-> 
-> Given that, I don't understand what you're saying about notification
-> of input availability being lost.  It may be true that the select()
-> doesn't fire as often as it should, but the nrt side does wake up
-> prior to the queue being completely full and still will only read 1
-> message.  Are you saying that missing a notification would affect the
-> "available bytes" seen by read() on the nrt side?  But still the
-> FIONREAD would tell us the truth?
-
-FIONREAD value and select() events are not synchronized, FIONREAD is
-maintained in the rt-send and nrt-read handlers. FIONREAD always tells
-the truth. On the other hand, if for some reason a wake up event is
-missed, select() would be wrong. I don't have any evidence that such bug
-happens looking at the code, but would something go wrong there, then it
-might explain the behaviour you observed.
-
--- 
-Philippe.
+VGhhdCdzIGNvcnJlY3QuDQoNClRoZSAvdXNyL2luY2x1ZGUvdGltZS5oIGhvbGRzIHRoaXMgY29k
+ZSwgaGVuY2UgdGhlIGNsb2NraWRfdCBzaG91bGQgYmUgZGVmaW5lZC4NCg0KQ2FuIHRoZSBmaWxl
+cyBpbiB0aGUgL3Vzci9pbmxjdWRlIGRpcmVjdG9yeSBiZSBvdmVyc2hhZG93ZWQgYnkgc29tZSBv
+dGhlciBpbmNsdWRlIGZpbGVzPw0KDQpUaGUgTWFrZWZpbGUgaGFzIGdyb3duIHF1aXRlIGNvbXBs
+ZXg6DQoNCktTUkMgOj0gL2xpYi9tb2R1bGVzLyQoc2hlbGwgdW5hbWUgLXIpL3NvdXJjZQ0KDQpY
+RU5PX0RFU1RESVI6PS8NClhFTk9fQ09ORklHOj0kKFhFTk9fREVTVERJUikvdXNyL3hlbm9tYWkv
+YmluL3hlbm8tY29uZmlnDQpYRU5PX1BPU0lYX0NGTEFHUzo9JChzaGVsbCBERVNURElSPSQoWEVO
+T19ERVNURElSKSAkKFhFTk9fQ09ORklHKSAtLXNraW49cG9zaXggLS1jZmxhZ3MpDQpYRU5PX1BP
+U0lYX0xJQlM6PSQoc2hlbGwgREVTVERJUj0kKFhFTk9fREVTVERJUikgJChYRU5PX0NPTkZJRykg
+LS1za2luPXBvc2l4IC0tbGRmbGFncykNCg0KIyBkZWZpbmUgYW55IGNvbXBpbGUtdGltZSBmbGFn
+cw0KQ0ZMQUdTID0gLVdhbGwgLWcgJChYRU5PX1BPU0lYX0NGTEFHUykNCg0KSU5DTFVERVMgPSAt
+SSQoS1NSQykvaW5jbHVkZS94ZW5vbWFpIC1JJChLU1JDKS9pbmNsdWRlL3hlbm9tYWkvcG9zaXgg
+LUkkKEtTUkMpL2FyY2gvYXJtL21hY2gtb21hcDINCg0KIyBkZWZpbmUgbGlicmFyeSBwYXRocyBp
+biBhZGRpdGlvbiB0byAvdXNyL2xpYg0KIyAgIGlmIEkgd2FudGVkIHRvIGluY2x1ZGUgbGlicmFy
+aWVzIG5vdCBpbiAvdXNyL2xpYiBJJ2Qgc3BlY2lmeQ0KIyAgIHRoZWlyIHBhdGggdXNpbmcgLUxw
+YXRoLCBzb21ldGhpbmcgbGlrZToNCiNMRkxBR1MgPSAtTC9ob21lL25ld2hhbGwvbGliICAtTC4u
+L2xpYg0KDQojIGRlZmluZSBhbnkgbGlicmFyaWVzIHRvIGxpbmsgaW50byBleGVjdXRhYmxlOg0K
+IyAgIGlmIEkgd2FudCB0byBsaW5rIGluIGxpYnJhcmllcyAobGlieC5zbyBvciBsaWJ4LmEpIEkg
+dXNlIHRoZSAtbGxpYm5hbWUNCiMgICBvcHRpb24sIHNvbWV0aGluZyBsaWtlICh0aGlzIHdpbGwg
+bGluayBpbiBsaWJteWxpYi5zbyBhbmQgbGlibS5zbzoNCkxJQlMgPSAtbCQoWEVOT19QT1NJWF9M
+SUJTKQ0KDQoNCg0KDQoNCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEdpbGxl
+cyBDaGFudGVwZXJkcml4IFttYWlsdG86Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmdd
+IA0KU2VudDogMy4gbm92ZW1iZXIgMjAxNCAxNzoyNQ0KVG86IFRlcmplIEZyw7h5c2ENCkNjOiB4
+ZW5vbWFpQHhlbm9tYWkub3JnDQpTdWJqZWN0OiBSZTogW1hlbm9tYWldIFhlbm9tYSAyLjYuNCBt
+aXNzaW5nIHBvc2l4L3hlbm9fY29uZmlnLmggPw0KDQpPbiBNb24sIE5vdiAwMywgMjAxNCBhdCAw
+NDoyMTo1M1BNICswMDAwLCBUZXJqZSBGcsO4eXNhIHdyb3RlOg0KPiBUaGFua3MgYWdhaW4gZm9y
+IHlvdXIgcXVpY2sgcmVwbGllcyA6LSkNCj4gDQo+IFllcywgSSBoYXZlIHRoZSBmaWxlcyBpbiBx
+dWVzdGlvbiBpbiB0aGUgL3Vzci9pbmNsdWRlIGRpcmVjdG9yeS4NCj4gDQo+IGRlYmlhbkBiZWFn
+bGVib25lOi91c3IvaW5jbHVkZSQgbHMgLWwgc3QqDQo+IDoNCj4gLXJ3LXItLXItLSAxIHJvb3Qg
+cm9vdCAgODUzNiBPY3QgMTcgMDI6NDAgc3RkaW50LmgNCj4gLXJ3LXItLXItLSAxIHJvb3Qgcm9v
+dCAzMTUyNSBPY3QgMTcgMDI6NDEgc3RkaW8uaA0KPiAtcnctci0tci0tIDEgcm9vdCByb290ICAy
+ODczIE9jdCAxNyAwMjo0MCBzdGRpb19leHQuaA0KPiAtcnctci0tci0tIDEgcm9vdCByb290IDM0
+MjU0IE9jdCAxNyAwMjo0MCBzdGRsaWIuaA0KPiAtcnctci0tci0tIDEgcm9vdCByb290IDIyNjEy
+IE9jdCAxNyAwMjo0MSBzdHJpbmcuaA0KPiA6DQo+IA0KPiBUaGUgdGltZS5oIHJlZmVycyB0aGUg
+Y2xvY2tpZF90LCBidXQgbm8gZmlsZSBpbiB0aGUgL3Vzci9pbmNsdWRlIChhbmQgc3ViZGlyZWN0
+b3JpZXMpIGhvbGRzIGEgZGVmaW5pdGlvbi4NCj4gDQo+IFRoZSB0eXBlcy5oIGZpbGUgZGVmaW5l
+cyB0aGUgX19jbG9ja2lkX3QsIGJ1dCBJIGNhbid0IGZpbmQgdGhlICdjbG9ja2lkX3QnIGRlZmlu
+ZWQgYW55d2hlcmU6DQo+IA0KPiAvKiBDbG9jayBJRCB1c2VkIGluIGNsb2NrIGFuZCB0aW1lciBm
+dW5jdGlvbnMuICAqLyBfX1NURF9UWVBFIA0KPiBfX0NMT0NLSURfVF9UWVBFIF9fY2xvY2tpZF90
+Ow0KDQpUaGlzIGlzIG5vcm1hbGx5IGRlZmluZWQgaW4gL3Vzci9pbmNsdWRlL3RpbWUuaA0KDQoj
+aWYgIWRlZmluZWQgX19jbG9ja2lkX3RfZGVmaW5lZCAmJiBcDQogICAoKGRlZmluZWQgX1RJTUVf
+SCAmJiBkZWZpbmVkIF9fVVNFX1BPU0lYMTk5MzA5KSB8fCBkZWZpbmVkIF9fbmVlZF9jbG9ja2lk
+X3QpDQojIGRlZmluZSBfX2Nsb2NraWRfdF9kZWZpbmVkICAgIDENCg0KIyBpbmNsdWRlIDxiaXRz
+L3R5cGVzLmg+DQoNCi8qIENsb2NrIElEIHVzZWQgaW4gY2xvY2sgYW5kIHRpbWVyIGZ1bmN0aW9u
+cy4gICovIHR5cGVkZWYgX19jbG9ja2lkX3QgY2xvY2tpZF90Ow0KDQojZW5kaWYgLyogY2xvY2tp
+ZF90IG5vdCBkZWZpbmVkIGFuZCA8dGltZS5oPiBvciBuZWVkIGNsb2NraWRfdC4gICovICN1bmRl
+ZiAgX19jbG9ja2lkX3RpbWVfdA0KDQpBbmQgeGVub21haSdzIHRpbWUuaCBkb2VzICNpbmNsdWRl
+X25leHQgPHRpbWUuaD4gd2hpY2ggc2hvdWxkIGluY2x1ZGUgdGhhdCBmaWxlIGFuZCBnZXQgdGhl
+IGRlZmluaXRpb24uDQoNCi0tIA0KCQkJCQkgICAgR2lsbGVzLg0K
 
