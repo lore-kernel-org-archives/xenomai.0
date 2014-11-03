@@ -1,9 +1,7 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Mon, 3 Nov 2014 18:42:54 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C6762C3E@SINTEFEXMBX05.sintef.no>
-References: <20141103160223.GE9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C6762910@SINTEFEXMBX05.sintef.no>
- <20141103162457.GF9327@sisyphus.hd.free.fr>
+Date: Mon, 3 Nov 2014 19:53:12 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141103185312.GC13799@sisyphus.hd.free.fr>
+References: <20141103162457.GF9327@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C676297E@SINTEFEXMBX05.sintef.no>
  <20141103164433.GG9327@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C67629F0@SINTEFEXMBX05.sintef.no>
@@ -12,11 +10,12 @@ References: <20141103160223.GE9327@sisyphus.hd.free.fr>
  <20141103171338.GI9327@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C6762AC3@SINTEFEXMBX05.sintef.no>
  <20141103172746.GK9327@sisyphus.hd.free.fr>
-In-Reply-To: <20141103172746.GK9327@sisyphus.hd.free.fr>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <314E5ECDAA86314791309FA670550F89C6762C3E@SINTEFEXMBX05.sintef.no>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <314E5ECDAA86314791309FA670550F89C6762C3E@SINTEFEXMBX05.sintef.no>
 Subject: Re: [Xenomai] Xenoma 2.6.4 missing posix/xeno_config.h ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -26,46 +25,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
+To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-VGhhbmtzIGFnYWluIEdpbGxlcyENCg0KSSBhbSBub3cgdHJ5aW5nIHRvIGNvbXBpbGUgYW4gYXBw
-bGljYXRpb24gdXNpbmcgb25seSBuYXRpdmUgY2FsbHMgYW5kIHVzaW5nIC0tc2tpbj1uYXRpdmUN
-ClRoZSByZWZlcmVuY2UgdG8gcnRfdGFza19zaGFkb3cgIGlzIG5vdyBmb3VuZCwgYnV0IHRoZSBy
-dF9kZXZfb3BlbiBhbmQgcnRfZGV2X2Nsb3NlIGFyZSBzdGlsbCBtaXNzaW5nLg0KSSBleHBlY3Qg
-dGhhdCB0aGUgY29kZSBzaG91bGQgcmVzaWRlIGluIHRoZSBsaWJydGRtIGZpbGVzLCBidXQgaGF2
-ZSBubyBkb2N1bWVudGF0aW9uIG9uIHRoaXMuDQoNCkNhbiB5b3UgcmVjb21tZW5kIGEgZG9jdW1l
-bnQgdGhhdCBjYW4gbGVjdHVyZSBtZSBpbiB0aGlzIHN1YmplY3Q/DQpJIGhhdmUgdHJpZWQgdG8g
-ZmluZCBzdWNoIGRvY3VtZW50YXRpb24sIGJ1dCB0aGUgaW5mb3JtYXRpb24gaXMgc2NhdHRlcmVk
-IGFuZCB0aGUgZXhhbXBsZXMgY2Fubm90IGVhc2lseSBiZSBwdXQgdG9nZXRoZXIgKGJ5IG5vdmlj
-ZXMpIHdpdGhvdXQgY29uZmxpY3RzLg0KSSBoYXZlIGRvd25sb2FkZWQgdGhlOg0KIlhlbm9tYWkg
-TmF0aXZlIHNraW4gQVBJLnBkZiIgDQoiWGVub21haSBQb3NpeCBza2luIEFwaS5wZGYiIA0KIlhl
-bm9tYWkgbmFub2tlcm5lbCBBUEkucGRmIg0KIlhlbm9tYWlfUlRETS1hbmQtQXBwbGljYXRpb25z
-LnBkZiINCiJYZW5vbWFpIFJURE0gc2tpbiBBUEkucGRmIg0KDQpJIGZpbmQgYSBsb3Qgb2YgZG94
-eWdlbiBnZW5lcmF0ZWQgaHRtbC1maWxlcywgYnV0IHRoZXkgZG9u4oCZdCBnaXZlIG1lIHRoZSBw
-ZWRhZ29naWNhbCBjb250ZXh0dWFsIGZpbGwtaW5zLg0KSSByZWFsbHkgZGlzbGlrZSBib3RoZXJp
-bmcgcGVvcGxlIHdpdGggc3VjaCBiYXNpYyBxdWVzdGlvbnMuLi4uDQoNCkJlc3QgcmVnYXJkcw0K
-VGVyamUNCg0KDQpkZWJpYW5AYmVhZ2xlYm9uZTp+L3J0ZG1fZGh0MTEtYXBwJCBtYWtlDQpnY2Mg
-LVdhbGwgLWcgLUkvL3Vzci94ZW5vbWFpL2luY2x1ZGUgLURfR05VX1NPVVJDRSAtRF9SRUVOVFJB
-TlQgLURfX1hFTk9fXyAtbyBteWNjIHJ0ZG1fZGh0MTEtYXBwLm8gIC1sbmF0aXZlIC1MLy91c3Iv
-eGVub21haS9saWIgLWx4ZW5vbWFpIC1scHRocmVhZCAtbHJ0DQpydGRtX2RodDExLWFwcC5vOiBJ
-biBmdW5jdGlvbiBgbWFpbic6DQovaG9tZS9kZWJpYW4vcnRkbV9kaHQxMS1hcHAvcnRkbV9kaHQx
-MS1hcHAuYzo4NDogdW5kZWZpbmVkIHJlZmVyZW5jZSB0byBgcnRfZGV2X29wZW4nDQovaG9tZS9k
-ZWJpYW4vcnRkbV9kaHQxMS1hcHAvcnRkbV9kaHQxMS1hcHAuYzo5NDogdW5kZWZpbmVkIHJlZmVy
-ZW5jZSB0byBgcnRfZGV2X2Nsb3NlJw0KY29sbGVjdDI6IGxkIHJldHVybmVkIDEgZXhpdCBzdGF0
-dXMNCm1ha2U6ICoqKiBbbXljY10gRXJyb3IgMQ0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0t
-LQ0KRnJvbTogR2lsbGVzIENoYW50ZXBlcmRyaXggW21haWx0bzpnaWxsZXMuY2hhbnRlcGVyZHJp
-eEB4ZW5vbWFpLm9yZ10gDQpTZW50OiAzLiBub3ZlbWJlciAyMDE0IDE4OjI4DQpUbzogVGVyamUg
-RnLDuHlzYQ0KQ2M6IHhlbm9tYWlAeGVub21haS5vcmcNClN1YmplY3Q6IFJlOiBbWGVub21haV0g
-WGVub21hIDIuNi40IG1pc3NpbmcgcG9zaXgveGVub19jb25maWcuaCA/DQoNCk9uIE1vbiwgTm92
-IDAzLCAyMDE0IGF0IDA1OjI1OjUyUE0gKzAwMDAsIFRlcmplIEZyw7h5c2Egd3JvdGU6DQo+IFRo
-YW5rcyBHaWxsZXMsDQo+IEkgYW0gdHJ1bHkgZ3JhdGVmdWwgZm9yIHlvdXIgcGF0aWVuY2UuDQo+
-IA0KPiBUaGUga2VybmVsIGhlYWRlcnMgYXMgd2VsbCBhcyB0aGUgLWwgKHRoYXQgSSBvdmVybG9v
-a2VkKSBpcyBub3cgdGFrZW4gYXdheS4NCj4gSG93ZXZlciwgSSBndWVzcyBJIHN0aWxsIGFtIG1p
-c3NpbmcgYSBsaWJyYXJ5IHBhdGggYXMgSSBub3cgZW5kIHVwIHdpdGggdGhyZWUgdW5kZWZpbmVk
-IHJlZmVyZW5jZXMuDQoNClRoYXQgaXMgYmVjYXVzZSB5b3UgYXJlIHVzaW5nIHRoZSBuYXRpdmUg
-QVBJLCBub3QgdGhlIHBvc2l4IEFQSSwgc28geW91IHNob3VsZCBwYXNzIC0tc2tpbj1uYXRpdmUg
-dG8geGVuby1jb25maWcuIElmIHlvdSBhcmUgdXNpbmcgYm90aCB0aGUgcG9zaXggYW5kIG5hdGl2
-ZSBza2lucywgeW91IG5lZWQgdG8gYWRkIGZsYWdzIGZvciBib3RoLg0KDQotLSANCgkJCQkJICAg
-IEdpbGxlcy4NCg==
+On Mon, Nov 03, 2014 at 06:42:54PM +0000, Terje Frøysa wrote:
+> Thanks again Gilles!
+> 
+> I am now trying to compile an application using only native calls and using --skin=native
+> The reference to rt_task_shadow  is now found, but the rt_dev_open and rt_dev_close are still missing.
+> I expect that the code should reside in the librtdm files, but have no documentation on this.
+
+Same answer, rt_dev_open/rt_dev_close are part of the rtdm skin, so
+you have to run xeno-config with the --skin=rtdm to get the flags
+for this skin. xeno-config is documented, try xeno-config --help to
+see the available skin.
+
+
+> Can you recommend a document that can lecture me in this subject?
+> I have tried to find such documentation, but the information is scattered and the examples cannot easily be put together (by novices) without conflicts.
+> I have downloaded the:
+> "Xenomai Native skin API.pdf" 
+> "Xenomai Posix skin Api.pdf" 
+> "Xenomai nanokernel API.pdf"
+> "Xenomai_RTDM-and-Applications.pdf"
+> "Xenomai RTDM skin API.pdf"
+> 
+> I find a lot of doxygen generated html-files, but they don’t give me the pedagogical contextual fill-ins.
+> I really dislike bothering people with such basic questions....
+
+There is no documentation per-se, but the behaviour of xeno-config
+is consistent enough that you should be able to guess what to do...
+
+-- 
+					    Gilles.
 
