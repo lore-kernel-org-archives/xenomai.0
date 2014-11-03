@@ -1,21 +1,19 @@
+Date: Mon, 3 Nov 2014 17:24:57 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141103162457.GF9327@sisyphus.hd.free.fr>
+References: <314E5ECDAA86314791309FA670550F89C6762243@SINTEFEXMBX05.sintef.no>
+ <20141103122602.GB7705@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C67627E4@SINTEFEXMBX05.sintef.no>
+ <20141103153617.GD9327@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C6762872@SINTEFEXMBX05.sintef.no>
+ <20141103160223.GE9327@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C6762910@SINTEFEXMBX05.sintef.no>
 MIME-Version: 1.0
-In-Reply-To: <20141029061655.GA14496@sisyphus.hd.free.fr>
-References: <20141005223051.GN14975@sisyphus.hd.free.fr>
- <CACreCVLQsaq01vsNA_V_bu9_NyMCTwZTiZJo2sFXJHgaaVjQVg@mail.gmail.com>
- <54365E17.3020102@xenomai.org>
- <CACreCV+QtwuhhGeFpnuLP-6Y1FfLCQHqNkrzyfwgqEgrxXU9eQ@mail.gmail.com>
- <5436607B.7090609@xenomai.org>
- <CACreCV+HdWC9Deysy2miL2NZ65RFVRRk87uG9rBaUBrn=hhqag@mail.gmail.com>
- <5436A64B.90705@xenomai.org>
- <CACreCVJUPiiX_7733g1EWZCVmUH0oFWhLknhKB2K8se1fi4a1g@mail.gmail.com>
- <20141022062825.GC29673@sisyphus.hd.free.fr>
- <CACreCVJSytzK85ANWmwWjctBpJfEr1b916R6dNPmSGugN_vRLA@mail.gmail.com>
- <20141029061655.GA14496@sisyphus.hd.free.fr>
-Date: Wed, 29 Oct 2014 15:24:52 +0800
-Message-ID: <CACreCVL2OyGYeWSOPAxR3rWG_RWiN3BAcPck1VyTMjyrASyNoQ@mail.gmail.com>
-From: GP Orcullo <kinsamanka@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Switchtest failures on ODROIDU3
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <314E5ECDAA86314791309FA670550F89C6762910@SINTEFEXMBX05.sintef.no>
+Subject: Re: [Xenomai] Xenoma 2.6.4 missing posix/xeno_config.h ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,41 +22,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, Oct 29, 2014 at 2:16 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On Wed, Oct 29, 2014 at 09:23:16AM +0800, GP Orcullo wrote:
->> Exynos is not using the arm global timers.
->
-> I do not understand what you mean... You said you had problems
-> when the global timer was shared with Linux, this patches tries to
-> address that by not remapping the global timer for xenomai, and
-> sharing the mapping defined by Linux. And now you say Exynos is not
-> using the global timers? You will have to explain a bit more than
-> that... I quote what you said:
->
->> >> The problem was traced to the tsc emulation,  the counter somehow gets
->> >> messed up when the global timer is shared with Linux.
->
->
+On Mon, Nov 03, 2014 at 04:21:53PM +0000, Terje Frøysa wrote:
+> Thanks again for your quick replies :-)
+> 
+> Yes, I have the files in question in the /usr/include directory.
+> 
+> debian@beaglebone:/usr/include$ ls -l st*
+> :
+> -rw-r--r-- 1 root root  8536 Oct 17 02:40 stdint.h
+> -rw-r--r-- 1 root root 31525 Oct 17 02:41 stdio.h
+> -rw-r--r-- 1 root root  2873 Oct 17 02:40 stdio_ext.h
+> -rw-r--r-- 1 root root 34254 Oct 17 02:40 stdlib.h
+> -rw-r--r-- 1 root root 22612 Oct 17 02:41 string.h
+> :
+> 
+> The time.h refers the clockid_t, but no file in the /usr/include (and subdirectories) holds a definition.
+> 
+> The types.h file defines the __clockid_t, but I can't find the 'clockid_t' defined anywhere:
+> 
+> /* Clock ID used in clock and timer functions.  */
+> __STD_TYPE __CLOCKID_T_TYPE __clockid_t;
 
-Sorry, I was referring to the global timer that exynos uses - MCT,
-multi core timer.
+This is normally defined in /usr/include/time.h
 
->>
->> I'm still experiencing some intermittent "rcu_preempt detected stalls".
->>
->> Maybe I'm dealing with more than one issue here.
->>
->
-> I would tend to prefer solving them one by one, and from where I
-> stand the global timer issue is not solved.
->
-> --
->                                             Gilles.
+#if !defined __clockid_t_defined && \
+   ((defined _TIME_H && defined __USE_POSIX199309) || defined __need_clockid_t)
+# define __clockid_t_defined    1
+
+# include <bits/types.h>
+
+/* Clock ID used in clock and timer functions.  */
+typedef __clockid_t clockid_t;
+
+#endif /* clockid_t not defined and <time.h> or need clockid_t.  */
+#undef  __clockid_time_t
+
+And xenomai's time.h does #include_next <time.h> which should
+include that file and get the definition.
 
 -- 
-GP Orcullo
+					    Gilles.
 
