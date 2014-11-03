@@ -1,11 +1,12 @@
-From: =?iso-8859-1?Q?Terje_Fr=F8ysa?= <Terje.Froysa@sintef.no>
-Date: Mon, 3 Nov 2014 11:44:47 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C6762243@SINTEFEXMBX05.sintef.no>
-Content-Language: en-US
+Message-ID: <54577374.9010609@bmwedler.de>
+Date: Mon, 03 Nov 2014 13:22:12 +0100
+From: Registrierungen <regist@bmwedler.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Xenoma 2.6.4 missing posix/xeno_config.h ?
+References: <54509406.4000600@bmwedler.de> <54509629.8080107@bmwedler.de>
+In-Reply-To: <54509629.8080107@bmwedler.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Using pipes in 3.0rc
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,38 +15,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Dear forum,
+Sorry for the late feedback.
 
-The file xenomai/posix/stdio.h
-includes a file named xeno_config.h
+I found the source where it goes wrong:
 
-This file does not exist in my newly installed 2.6.4 Xenomai environment.
+     if (poolsize > 0) {
+         ret = __RT(setsockopt(sock, SOL_XDDP, XDDP_POOLSZ,
+                       &poolsize, sizeof(poolsize)));
+         if (ret)
+             goto fail_sockopt;
+     }
 
-Listing from make:
-
-debian@beaglebone:~/rtdm_dht11-app$ make
-gcc -Wall -g -I/lib/modules/3.8.13-bone67/source/include/xenomai -I/lib/mod=
-ules/3.8.13-bone67/source/include/xenomai/posix -I/lib/modules/3.8.13-bone6=
-7/source/arch/arm/mach-omap2 -c rtdm_dht11-app.c  -o rtdm_dht11-app.o
-
-In file included from rtdm_dht11-app.c:46:0:
-/lib/modules/3.8.13-bone67/source/include/xenomai/posix/stdio.h:30:25: fata=
-l error: xeno_config.h: No such file or directory
-compilation terminated.
-
-Please advice
-
-Best regards
-Terje Froysa
+Hope there could be found a solution for me.
 
 
-Smail: Terje Fr=F8ysa, SINTEF ICT (Information and Communication Technology=
-), N-7465 Trondheim, Norway.
-Email: terje.froysa@sintef.no<blocked::mailto:terje.froysa@sintef.no> <mail=
-to:terje.froysa@sintef.no<blocked::mailto:terje.froysa@sintef.no>>
-Phone: +47 930 03603,
-Company: Independent R&D, see <http://www.sintef.no/<blocked::http://www.si=
-ntef.no/>
+
+
+Am 29.10.2014 08:24, schrieb Registrierungen:
+>
+>
+> Sure. i compiled xenomai as your suggestion.
+> Ive got a a little problem with my eclipse debug enviroment.
+> It still does not debug into the xenomai files at moment. so i will fix
+> it first and come back with new informations.
+>
+>
+> Am 29.10.2014 08:04, schrieb Philippe Gerum:
+>> On 10/29/2014 07:56 AM, Registrierungen wrote:
+>>> Addendum:
+>>> I am using a x64 Kernel.
+>>> Does it matter?
+>> No, it does not. Do you plan to debug with gdb as I suggested?
+>>
+>
+>
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+
 
