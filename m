@@ -1,22 +1,14 @@
-Date: Mon, 3 Nov 2014 18:13:38 +0100
+Date: Mon, 3 Nov 2014 18:14:57 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141103171338.GI9327@sisyphus.hd.free.fr>
-References: <20141103153617.GD9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C6762872@SINTEFEXMBX05.sintef.no>
- <20141103160223.GE9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C6762910@SINTEFEXMBX05.sintef.no>
- <20141103162457.GF9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C676297E@SINTEFEXMBX05.sintef.no>
- <20141103164433.GG9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C67629F0@SINTEFEXMBX05.sintef.no>
- <20141103170220.GH9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C6762A5E@SINTEFEXMBX05.sintef.no>
+Message-ID: <20141103171457.GJ9327@sisyphus.hd.free.fr>
+References: <CADLCHMKk6-tiB=_6T85Z60Vf3ToURF6WRqYMBO46xyTLsuuFUg@mail.gmail.com>
+ <CAPRPZsAjU+9NboMvmbafY62hBEw4Sm=wA1Pf-BHP2989E1Dy1g@mail.gmail.com>
+ <5457B76B.9040609@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C6762A5E@SINTEFEXMBX05.sintef.no>
-Subject: Re: [Xenomai] Xenoma 2.6.4 missing posix/xeno_config.h ?
+In-Reply-To: <5457B76B.9040609@siemens.com>
+Subject: Re: [Xenomai] Write a hard real time usb driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,20 +17,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Nov 03, 2014 at 05:11:18PM +0000, Terje Frøysa wrote:
-> Thanks Gilles,
+On Mon, Nov 03, 2014 at 06:12:11PM +0100, Jan Kiszka wrote:
+> On 2014-11-03 09:03, Jeroen Van den Keybus wrote:
+> >> I try to write a hard real time usb driver. I communicate my device  using
+> >> open(), read() etc. My device is a gpio module.
+> > 
+> > 
+> > I assume you want to control an USB host controller using a GPIO interface ?
+> > 
+> > 
+> >> I am coding a kernel module
+> >> to communicate the device using xenomai on real time. But I am not sure
+> >> that this way is reasonable. If I should going on this way, what should I
+> >> implement? Could you give me some example or link to write hard real time
+> >> usb driver for* physical* device?
+> > 
+> > 
+> > I cannot help you with that, but one important issue to consider is that
+> > the USB protocol itself operates with small, hardware controlled time slots
+> > of 1 ms (USB1.x) or 125 usec (USB2.0). You may therefore need a significant
+> > amount of software to properly distribute real-time traffic in these -
+> > essentially asynchronous - slots. The latency of a real-time process
+> > waiting for USB data can therefore also be as large as the time slot
+> > duration. If your real-time requirements are modest, you may be able to
+> > live with that. Still, count on a major software effort: just have a look
+> > at the Linux USB driver framework.
+> > 
+> > Alternatively, you could check if you can synchronize your real-time
+> > process with the USB controller frame rate.
+> > 
 > 
-> Really helpful advice!
-> Now I only have to find out why the linker doesn't find the posix.wrappers
-> It is certainly there.. can it be due to the // in the: -l-Wl,@//usr/xenomai/lib/posix.wrappers ?
+> FWIW, we still don't have USB 2.0 support (though I vaguely remember
+> previous efforts in that direction),
 
-No, as I already told you two mails ago -l$(XENO_POSIX_LIBS) is
-wrong. It should be only $(XENO_POSIX_LIBS)
-(note by the way that in the same mail, I also already told you to
-remove the include directives for kernel headers).
+There is one here:
+http://sourceforge.net/projects/usb20rt.berlios/
+
+Have not looked at the code though.
 
 -- 
 					    Gilles.
