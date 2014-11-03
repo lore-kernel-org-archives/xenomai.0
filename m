@@ -1,23 +1,14 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Mon, 3 Nov 2014 19:28:09 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C6762D14@SINTEFEXMBX05.sintef.no>
-References: <20141103162457.GF9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C676297E@SINTEFEXMBX05.sintef.no>
- <20141103164433.GG9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C67629F0@SINTEFEXMBX05.sintef.no>
- <20141103170220.GH9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C6762A5E@SINTEFEXMBX05.sintef.no>
- <20141103171338.GI9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C6762AC3@SINTEFEXMBX05.sintef.no>
- <20141103172746.GK9327@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C6762C3E@SINTEFEXMBX05.sintef.no>
- <20141103185312.GC13799@sisyphus.hd.free.fr>
-In-Reply-To: <20141103185312.GC13799@sisyphus.hd.free.fr>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Xenoma 2.6.4 missing posix/xeno_config.h ?
+In-Reply-To: <5457B9DA.5020407@siemens.com>
+References: <CADLCHMKk6-tiB=_6T85Z60Vf3ToURF6WRqYMBO46xyTLsuuFUg@mail.gmail.com>
+ <CAPRPZsAjU+9NboMvmbafY62hBEw4Sm=wA1Pf-BHP2989E1Dy1g@mail.gmail.com>
+ <5457B76B.9040609@siemens.com> <20141103171457.GJ9327@sisyphus.hd.free.fr>
+ <5457B9DA.5020407@siemens.com>
+From: =?UTF-8?Q?Hasret_Sar=C4=B1yer?= <hsrtsryr@gmail.com>
+Date: Mon, 3 Nov 2014 21:30:07 +0200
+Message-ID: <CABVE6k2AzFNxyf0oYWuROBf-4c+kaj4g_sEEGgQYZYkksmAxAw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Write a hard real time usb driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,39 +17,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-VGhhbmsgeW91IHZlcnkgbXVjaCBHaWxsZXMsDQoNCkkgbm93IGdvdCBpdCBhbGwgd29ya2luZyEN
-ClRoYW5rcyBmb3IgeW91ciBwYXRpZW50IGFuZCBxdWljayByZXBsaWVzLg0KDQpIb3BlIEkgd2ls
-bCBtYWtlIGl0IG9uIG15IG93biBmcm9tIG5vdyA7LSkNCg0KQmVzdCByZWdhcmRzDQpUZXJqZQ0K
-DQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogR2lsbGVzIENoYW50ZXBlcmRyaXgg
-W21haWx0bzpnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZ10gDQpTZW50OiAzLiBub3Zl
-bWJlciAyMDE0IDE5OjUzDQpUbzogVGVyamUgRnLDuHlzYQ0KQ2M6IHhlbm9tYWlAeGVub21haS5v
-cmcNClN1YmplY3Q6IFJlOiBbWGVub21haV0gWGVub21hIDIuNi40IG1pc3NpbmcgcG9zaXgveGVu
-b19jb25maWcuaCA/DQoNCk9uIE1vbiwgTm92IDAzLCAyMDE0IGF0IDA2OjQyOjU0UE0gKzAwMDAs
-IFRlcmplIEZyw7h5c2Egd3JvdGU6DQo+IFRoYW5rcyBhZ2FpbiBHaWxsZXMhDQo+IA0KPiBJIGFt
-IG5vdyB0cnlpbmcgdG8gY29tcGlsZSBhbiBhcHBsaWNhdGlvbiB1c2luZyBvbmx5IG5hdGl2ZSBj
-YWxscyBhbmQgDQo+IHVzaW5nIC0tc2tpbj1uYXRpdmUgVGhlIHJlZmVyZW5jZSB0byBydF90YXNr
-X3NoYWRvdyAgaXMgbm93IGZvdW5kLCBidXQgdGhlIHJ0X2Rldl9vcGVuIGFuZCBydF9kZXZfY2xv
-c2UgYXJlIHN0aWxsIG1pc3NpbmcuDQo+IEkgZXhwZWN0IHRoYXQgdGhlIGNvZGUgc2hvdWxkIHJl
-c2lkZSBpbiB0aGUgbGlicnRkbSBmaWxlcywgYnV0IGhhdmUgbm8gZG9jdW1lbnRhdGlvbiBvbiB0
-aGlzLg0KDQpTYW1lIGFuc3dlciwgcnRfZGV2X29wZW4vcnRfZGV2X2Nsb3NlIGFyZSBwYXJ0IG9m
-IHRoZSBydGRtIHNraW4sIHNvIHlvdSBoYXZlIHRvIHJ1biB4ZW5vLWNvbmZpZyB3aXRoIHRoZSAt
-LXNraW49cnRkbSB0byBnZXQgdGhlIGZsYWdzIGZvciB0aGlzIHNraW4uIHhlbm8tY29uZmlnIGlz
-IGRvY3VtZW50ZWQsIHRyeSB4ZW5vLWNvbmZpZyAtLWhlbHAgdG8gc2VlIHRoZSBhdmFpbGFibGUg
-c2tpbi4NCg0KDQo+IENhbiB5b3UgcmVjb21tZW5kIGEgZG9jdW1lbnQgdGhhdCBjYW4gbGVjdHVy
-ZSBtZSBpbiB0aGlzIHN1YmplY3Q/DQo+IEkgaGF2ZSB0cmllZCB0byBmaW5kIHN1Y2ggZG9jdW1l
-bnRhdGlvbiwgYnV0IHRoZSBpbmZvcm1hdGlvbiBpcyBzY2F0dGVyZWQgYW5kIHRoZSBleGFtcGxl
-cyBjYW5ub3QgZWFzaWx5IGJlIHB1dCB0b2dldGhlciAoYnkgbm92aWNlcykgd2l0aG91dCBjb25m
-bGljdHMuDQo+IEkgaGF2ZSBkb3dubG9hZGVkIHRoZToNCj4gIlhlbm9tYWkgTmF0aXZlIHNraW4g
-QVBJLnBkZiIgDQo+ICJYZW5vbWFpIFBvc2l4IHNraW4gQXBpLnBkZiIgDQo+ICJYZW5vbWFpIG5h
-bm9rZXJuZWwgQVBJLnBkZiINCj4gIlhlbm9tYWlfUlRETS1hbmQtQXBwbGljYXRpb25zLnBkZiIN
-Cj4gIlhlbm9tYWkgUlRETSBza2luIEFQSS5wZGYiDQo+IA0KPiBJIGZpbmQgYSBsb3Qgb2YgZG94
-eWdlbiBnZW5lcmF0ZWQgaHRtbC1maWxlcywgYnV0IHRoZXkgZG9u4oCZdCBnaXZlIG1lIHRoZSBw
-ZWRhZ29naWNhbCBjb250ZXh0dWFsIGZpbGwtaW5zLg0KPiBJIHJlYWxseSBkaXNsaWtlIGJvdGhl
-cmluZyBwZW9wbGUgd2l0aCBzdWNoIGJhc2ljIHF1ZXN0aW9ucy4uLi4NCg0KVGhlcmUgaXMgbm8g
-ZG9jdW1lbnRhdGlvbiBwZXItc2UsIGJ1dCB0aGUgYmVoYXZpb3VyIG9mIHhlbm8tY29uZmlnIGlz
-IGNvbnNpc3RlbnQgZW5vdWdoIHRoYXQgeW91IHNob3VsZCBiZSBhYmxlIHRvIGd1ZXNzIHdoYXQg
-dG8gZG8uLi4NCg0KLS0gDQoJCQkJCSAgICBHaWxsZXMuDQo=
+Thanks your help.
 
+2014-11-03 19:22 GMT+02:00 Jan Kiszka <jan.kiszka@siemens.com>:
+
+> On 2014-11-03 18:14, Gilles Chanteperdrix wrote:
+> > On Mon, Nov 03, 2014 at 06:12:11PM +0100, Jan Kiszka wrote:
+> >> On 2014-11-03 09:03, Jeroen Van den Keybus wrote:
+> >>>> I try to write a hard real time usb driver. I communicate my device
+> using
+> >>>> open(), read() etc. My device is a gpio module.
+> >>>
+> >>>
+> >>> I assume you want to control an USB host controller using a GPIO
+> interface ?
+> >>>
+> >>>
+> >>>> I am coding a kernel module
+> >>>> to communicate the device using xenomai on real time. But I am not
+> sure
+> >>>> that this way is reasonable. If I should going on this way, what
+> should I
+> >>>> implement? Could you give me some example or link to write hard real
+> time
+> >>>> usb driver for* physical* device?
+> >>>
+> >>>
+> >>> I cannot help you with that, but one important issue to consider is
+> that
+> >>> the USB protocol itself operates with small, hardware controlled time
+> slots
+> >>> of 1 ms (USB1.x) or 125 usec (USB2.0). You may therefore need a
+> significant
+> >>> amount of software to properly distribute real-time traffic in these -
+> >>> essentially asynchronous - slots. The latency of a real-time process
+> >>> waiting for USB data can therefore also be as large as the time slot
+> >>> duration. If your real-time requirements are modest, you may be able to
+> >>> live with that. Still, count on a major software effort: just have a
+> look
+> >>> at the Linux USB driver framework.
+> >>>
+> >>> Alternatively, you could check if you can synchronize your real-time
+> >>> process with the USB controller frame rate.
+> >>>
+> >>
+> >> FWIW, we still don't have USB 2.0 support (though I vaguely remember
+> >> previous efforts in that direction),
+> >
+> > There is one here:
+> > http://sourceforge.net/projects/usb20rt.berlios/
+> >
+> > Have not looked at the code though.
+>
+> Yeah, that's the one I recalled. Seems dead, unfortunately.
+>
+> Jan
+>
+> --
+> Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+> Corporate Competence Center Embedded Linux
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+>
