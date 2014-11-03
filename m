@@ -1,12 +1,12 @@
-Message-ID: <54573A6D.1030201@xenomai.org>
-Date: Mon, 03 Nov 2014 09:18:53 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: <dietmar.schindler@manroland-web.com>
+Date: Mon, 3 Nov 2014 08:54:24 +0000
+Message-ID: <208C6975C932E94F86239FEA59CCA632DCD4269B@AUSMXMBX02.mrws.biz>
+References: <94331816.zv1NYeHro4@riemann>
+In-Reply-To: <94331816.zv1NYeHro4@riemann>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <94331816.zv1NYeHro4@riemann> <20141031200007.GC378@sumost.ca>
- <5454ADDF.4040604@xenomai.org> <6071747.2uXMl1ZSO0@riemann>
-In-Reply-To: <6071747.2uXMl1ZSO0@riemann>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Message Pipe services behaviour
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,41 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Steve M. Robbins" <steve@sumost.ca>
-Cc: Xenomai@xenomai.org
+To: Xenomai@xenomai.org
 
-On 11/02/2014 01:53 AM, Steve M. Robbins wrote:
-> On November 1, 2014 10:54:39 AM Philippe Gerum wrote:
-
->> Perhaps the rt side sends a large burst of data once in a while causing
->> the overflow? In this case, you could not detect the issue looming from
->> the nrt side until it happens, since the rt side has higher priority
->> (i.e. rt would cause ENOMEM even before nrt had a chance to resume
->> execution).
-> 
-> OK, I understand the theory.  However, I don't believe that is my case.  The 
-> message queue is transporting fault information and through user actions I can 
-> set it up to send 2 messages per cycle and using the FIFO code, the nrt side 
-> is indeed reading 2 messages.  Using message queues, I can see that there are 
-> multiple messages outstanding but it reads only one.
-> 
-
-Ok, so if no message gets lost, if you can see FIONREAD increase until
-ENOMEM is raised, and if throttling the rt side only delays the issue
-without solving it, the only explanation would be that a notification of
-input availability is lost by the poll handler backing select() in the
-rt-pipe driver. That would cause the messages to pile up on the rt side,
-with too few deliveries to nrt.
-
-Only for the purpose of checking this, could you try read()ing the large
-message queue directly, then in a second attempt, enabling SIGIO on the
-rtp fildes to get the messages asynchronously, instead of sensing them
-via select()? The idea would be to check whether getting rid of select()
-improves the situation.
-
-NOTE: I'm assuming that the rt side only uses rt_pipe_write(), and never
-rt_pipe_stream() which does packet coalescence by design.
-
--- 
-Philippe.
+PiBWb246IFN0ZXZlIE0uIFJvYmJpbnMNCj4gR2VzZW5kZXQ6IE1pdHR3b2NoLCAyOS4gT2t0b2Jl
+ciAyMDE0IDE3OjExDQo+IC4uLg0KPiBUbyBhdm9pZCBydW5uaW5nIHRocm91Z2ggdGhlIHNlbGVj
+dC9yZWFkIGxvb3Agb25jZSBmb3IgZWFjaCBtZXNzYWdlLCBvdXIgb2xkDQo+IEZJRk8tYmFzZWQg
+Y29kZSBvcGVuZWQgdGhlIGZpbGUgaW4gbm9uYmxvY2tpbmcgbW9kZSBhbmQgZGlkIGEgcmVhZCBp
+bnRvIGEgYnVmZmVyDQo+IHRoYXQgY291bGQgaG9sZCB1cCB0byAxMDAgbWVzc2FnZXMuICBXZSBn
+ZW5lcmFsbHkgd291bGQgcmVhZCA1LTcgYXQgYSB0aW1lLA0KPiBub3QgMTAwLCBzbyB0aGlzIHBy
+b3ZlZCB0aGF0IHRoZSByZWFkZXIgY291bGQga2VlcCB1cCB3aGVuIHJlYWRpbmcgaW4gYmF0Y2hl
+cy4NCj4NCj4gVXNpbmcgdGhpcyBzYW1lIHRlY2huaXF1ZSB3aXRoIHRoZSAvZGV2L3J0cE4gZW5k
+IG9mIGEgTWVzc2FnZSBQaXBlIG5ldmVyIHJlYWRzDQo+IG1vcmUgdGhhbiAxIG1lc3NhZ2UuICBJ
+IHRyaWVkIGJvdGggYmxvY2tpbmcgYW5kIG5vbi1ibG9ja2luZyBtb2RlcyBidXQgZ290IHRoZQ0K
+PiBzYW1lIHJlc3VsdC4gIFNvIHRoaXMgaXMgbXkgbWFpbiBxdWVzdGlvbjoga25vd2luZyB0aGF0
+IHRoZXJlIGFyZSBsaWtlbHkgbWFueQ0KPiBtZXNzYWdlcyBpbiB0aGUgcGlwZSwgaG93IGRvIEkg
+cmVhZCB0aGVtIGluIGEgYmF0Y2g/DQoNCkFzIGZhciBhcyBJIGNhbiBzZWUsIHJlYWQoKSBmcm9t
+IGEgWGVub21haSBtZXNzYWdlIHBpcGUgYnkgZGVzaWduIG5ldmVyIHJldHVybnMgbW9yZSB0aGFu
+IG9uZSBtZXNzYWdlIGF0IGEgdGltZS4NCi0tDQpSZWdhcmRzLA0KRGlldG1hciBTY2hpbmRsZXIN
+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQptYW5yb2xhbmQgd2ViIHN5c3RlbXMg
+R21iSCAtLSBNYW5hZ2luZyBEaXJlY3RvcjogSm9lcm4gR29zc8OpDQpSZWdpc3RlcmVkIE9mZmlj
+ZTogQXVnc2J1cmcgLS0gVHJhZGUgUmVnaXN0ZXI6IEFHIEF1Z3NidXJnIC0tIEhSQi1Oby46IDI2
+ODE2IC0tIFZBVDogREUyODEzODk4NDANCg0KQ29uZmlkZW50aWFsaXR5IG5vdGU6DQpUaGlzIGVN
+YWlsIGFuZCBhbnkgZmlsZXMgdHJhbnNtaXR0ZWQgd2l0aCBpdCBhcmUgY29uZmlkZW50aWFsIGFu
+ZCBpbnRlbmRlZCBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGluZGl2aWR1YWwgb3IgZW50aXR5
+IHRvIHdob20gdGhleSBhcmUgYWRkcmVzc2VkLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQg
+cmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0aGF0IGFueSB1c2Ugb3IgZGlzc2Vt
+aW5hdGlvbiBvZiB0aGlzIGNvbW11bmljYXRpb24gaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYg
+eW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlTWFpbCBpbiBlcnJvciwgdGhlbiBwbGVhc2UgZGVsZXRl
+IHRoaXMgZU1haWwuDQoNCiEgUGxlYXNlIGNvbnNpZGVyIHlvdXIgZW52aXJvbm1lbnRhbCByZXNw
+b25zaWJpbGl0eSBiZWZvcmUgcHJpbnRpbmcgdGhpcyBlTWFpbCAhDQpfX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXw0K
 
