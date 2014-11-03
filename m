@@ -1,13 +1,9 @@
-Message-ID: <54508FB3.8080600@bmwedler.de>
-Date: Wed, 29 Oct 2014 07:56:51 +0100
-From: Registrierungen <regist@bmwedler.de>
 MIME-Version: 1.0
-References: <544F6117.7070101@bmwedler.de> <544F6988.1030005@xenomai.org>
- <544F9DB1.1050504@bmwedler.de> <544FA001.6070305@xenomai.org>
-In-Reply-To: <544FA001.6070305@xenomai.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Using pipes in 3.0rc
+Date: Mon, 3 Nov 2014 02:10:46 +0200
+Message-ID: <CADLCHMKk6-tiB=_6T85Z60Vf3ToURF6WRqYMBO46xyTLsuuFUg@mail.gmail.com>
+From: Seda Seda <seda9seda9@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] Write a hard real time usb driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,74 +12,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Addendum:
-I am using a x64 Kernel.
-Does it matter?
+Hello everyone,
 
-
-Am 28.10.2014 14:54, schrieb Philippe Gerum:
-> On 10/28/2014 02:44 PM, Registrierungen wrote:
->> Thanks for your support.
->>
->> Unfortainly it din'twork for me.
->> I patched and recompiled and installed xenomai and my app,
->> but i have still the same error.
->>
->> Have you got another idea, or need some other informations from my side?
-> You may want to trace your app with gdb, configuring with
-> --enable-debug=full, then single-stepping in rt_pipe_create() to
-> pinpoint the failing call in there.
->
->> Sascha
->>
->> Am 28.10.2014 11:01, schrieb Philippe Gerum:
->>> On 10/28/2014 10:25 AM, Registrierungen wrote:
->>>> Hello,
->>>>
->>>> i try to switch with my working project from Xenomai 2.6 to 3.0rc
->>>> Cobaltusing the native/alchemy skin.
->>>>
->>>> Creating tasks,etc. seems to works fine.
->>>>
->>>> If i try to open a pipe from the realtime taks using rt_pipe_create it
->>>> returns with the error -88.
->>> This is -ENOTSOCK, you can check all error codes there:
->>> /usr/include/asm-generic/errno-base.h
->>> /usr/include/asm-generic/errno.h
->>>
->>> ENOTSOCK is not raised by the alchemy API, so this must be a syscall
->>> taking the wrong route to the glibc in the core lib.
->>> Please try this patch:
->>>
->>> diff --git a/lib/alchemy/pipe.c b/lib/alchemy/pipe.c
->>> index 93da9be..439a00f 100644
->>> --- a/lib/alchemy/pipe.c
->>> +++ b/lib/alchemy/pipe.c
->>> @@ -166,8 +166,8 @@ int rt_pipe_create(RT_PIPE *pipe,
->>>        }
->>>          if (poolsize > 0) {
->>> -        ret = setsockopt(pcb->sock, SOL_XDDP, XDDP_POOLSZ,
->>> -                 &poolsize, sizeof(poolsize));
->>> +        ret = __RT(setsockopt(pcb->sock, SOL_XDDP, XDDP_POOLSZ,
->>> +                      &poolsize, sizeof(poolsize)));
->>>            if (ret)
->>>                goto fail_sockopt;
->>>        }
->>> @@ -181,7 +181,7 @@ int rt_pipe_create(RT_PIPE *pipe,
->>>        memset(&saddr, 0, sizeof(saddr));
->>>        saddr.sipc_family = AF_RTIPC;
->>>        saddr.sipc_port = minor;
->>> -    ret = bind(sock, (struct sockaddr *)&saddr, sizeof(saddr));
->>> +    ret = __RT(bind(sock, (struct sockaddr *)&saddr, sizeof(saddr)));
->>>        if (ret)
->>>            goto fail_sockopt;
->>>   
->>>> Has anything changed handling pipes in 3.0?
->>> All user-visible changes are reported here:
->>> http://localhost/xenomai/migrating-from-xenomai-2-x-to-3-x/
->>>
->>
->
-
+I try to write a hard real time usb driver. I communicate my device  using
+open(), read() etc. My device is a gpio module.I am coding a kernel module
+to communicate the device using xenomai on real time. But I am not sure
+that this way is reasonable. If I should going on this way, what should I
+implement? Could you give me some example or link to write hard real time
+usb driver for* physical* device? I wrote a driver for virtual device, it
+was ok.
