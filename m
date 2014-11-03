@@ -1,12 +1,12 @@
-From: <dietmar.schindler@manroland-web.com>
-Date: Mon, 3 Nov 2014 08:54:24 +0000
-Message-ID: <208C6975C932E94F86239FEA59CCA632DCD4269B@AUSMXMBX02.mrws.biz>
-References: <94331816.zv1NYeHro4@riemann>
-In-Reply-To: <94331816.zv1NYeHro4@riemann>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <545745F1.4070108@xenomai.org>
+Date: Mon, 03 Nov 2014 10:08:01 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
+References: <94331816.zv1NYeHro4@riemann>
+ <208C6975C932E94F86239FEA59CCA632DCD4269B@AUSMXMBX02.mrws.biz>
+In-Reply-To: <208C6975C932E94F86239FEA59CCA632DCD4269B@AUSMXMBX02.mrws.biz>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai] Message Pipe services behaviour
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,34 +16,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai@xenomai.org
+To: dietmar.schindler@manroland-web.com, Xenomai@xenomai.org
 
-PiBWb246IFN0ZXZlIE0uIFJvYmJpbnMNCj4gR2VzZW5kZXQ6IE1pdHR3b2NoLCAyOS4gT2t0b2Jl
-ciAyMDE0IDE3OjExDQo+IC4uLg0KPiBUbyBhdm9pZCBydW5uaW5nIHRocm91Z2ggdGhlIHNlbGVj
-dC9yZWFkIGxvb3Agb25jZSBmb3IgZWFjaCBtZXNzYWdlLCBvdXIgb2xkDQo+IEZJRk8tYmFzZWQg
-Y29kZSBvcGVuZWQgdGhlIGZpbGUgaW4gbm9uYmxvY2tpbmcgbW9kZSBhbmQgZGlkIGEgcmVhZCBp
-bnRvIGEgYnVmZmVyDQo+IHRoYXQgY291bGQgaG9sZCB1cCB0byAxMDAgbWVzc2FnZXMuICBXZSBn
-ZW5lcmFsbHkgd291bGQgcmVhZCA1LTcgYXQgYSB0aW1lLA0KPiBub3QgMTAwLCBzbyB0aGlzIHBy
-b3ZlZCB0aGF0IHRoZSByZWFkZXIgY291bGQga2VlcCB1cCB3aGVuIHJlYWRpbmcgaW4gYmF0Y2hl
-cy4NCj4NCj4gVXNpbmcgdGhpcyBzYW1lIHRlY2huaXF1ZSB3aXRoIHRoZSAvZGV2L3J0cE4gZW5k
-IG9mIGEgTWVzc2FnZSBQaXBlIG5ldmVyIHJlYWRzDQo+IG1vcmUgdGhhbiAxIG1lc3NhZ2UuICBJ
-IHRyaWVkIGJvdGggYmxvY2tpbmcgYW5kIG5vbi1ibG9ja2luZyBtb2RlcyBidXQgZ290IHRoZQ0K
-PiBzYW1lIHJlc3VsdC4gIFNvIHRoaXMgaXMgbXkgbWFpbiBxdWVzdGlvbjoga25vd2luZyB0aGF0
-IHRoZXJlIGFyZSBsaWtlbHkgbWFueQ0KPiBtZXNzYWdlcyBpbiB0aGUgcGlwZSwgaG93IGRvIEkg
-cmVhZCB0aGVtIGluIGEgYmF0Y2g/DQoNCkFzIGZhciBhcyBJIGNhbiBzZWUsIHJlYWQoKSBmcm9t
-IGEgWGVub21haSBtZXNzYWdlIHBpcGUgYnkgZGVzaWduIG5ldmVyIHJldHVybnMgbW9yZSB0aGFu
-IG9uZSBtZXNzYWdlIGF0IGEgdGltZS4NCi0tDQpSZWdhcmRzLA0KRGlldG1hciBTY2hpbmRsZXIN
-Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQptYW5yb2xhbmQgd2ViIHN5c3RlbXMg
-R21iSCAtLSBNYW5hZ2luZyBEaXJlY3RvcjogSm9lcm4gR29zc8OpDQpSZWdpc3RlcmVkIE9mZmlj
-ZTogQXVnc2J1cmcgLS0gVHJhZGUgUmVnaXN0ZXI6IEFHIEF1Z3NidXJnIC0tIEhSQi1Oby46IDI2
-ODE2IC0tIFZBVDogREUyODEzODk4NDANCg0KQ29uZmlkZW50aWFsaXR5IG5vdGU6DQpUaGlzIGVN
-YWlsIGFuZCBhbnkgZmlsZXMgdHJhbnNtaXR0ZWQgd2l0aCBpdCBhcmUgY29uZmlkZW50aWFsIGFu
-ZCBpbnRlbmRlZCBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGluZGl2aWR1YWwgb3IgZW50aXR5
-IHRvIHdob20gdGhleSBhcmUgYWRkcmVzc2VkLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQg
-cmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0aGF0IGFueSB1c2Ugb3IgZGlzc2Vt
-aW5hdGlvbiBvZiB0aGlzIGNvbW11bmljYXRpb24gaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYg
-eW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlTWFpbCBpbiBlcnJvciwgdGhlbiBwbGVhc2UgZGVsZXRl
-IHRoaXMgZU1haWwuDQoNCiEgUGxlYXNlIGNvbnNpZGVyIHlvdXIgZW52aXJvbm1lbnRhbCByZXNw
-b25zaWJpbGl0eSBiZWZvcmUgcHJpbnRpbmcgdGhpcyBlTWFpbCAhDQpfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fXw0K
+On 11/03/2014 09:54 AM, dietmar.schindler@manroland-web.com wrote:
+>> Von: Steve M. Robbins
+>> Gesendet: Mittwoch, 29. Oktober 2014 17:11
+>> ...
+>> To avoid running through the select/read loop once for each message, our old
+>> FIFO-based code opened the file in nonblocking mode and did a read into a buffer
+>> that could hold up to 100 messages.  We generally would read 5-7 at a time,
+>> not 100, so this proved that the reader could keep up when reading in batches.
+>>
+>> Using this same technique with the /dev/rtpN end of a Message Pipe never reads
+>> more than 1 message.  I tried both blocking and non-blocking modes but got the
+>> same result.  So this is my main question: knowing that there are likely many
+>> messages in the pipe, how do I read them in a batch?
+> 
+> As far as I can see, read() from a Xenomai message pipe by design never returns more than one message at a time.
+
+Clearly, but from the description, it seems like pulling all messages in
+a loop from a non-blocking file descriptor only returns a single
+message, although more messages are pending read, according to FIONREAD.
+
+> --
+> Regards,
+> Dietmar Schindler
+> ________________________________
+> manroland web systems GmbH -- Managing Director: Joern Gossé
+> Registered Office: Augsburg -- Trade Register: AG Augsburg -- HRB-No.: 26816 -- VAT: DE281389840
+> 
+> Confidentiality note:
+> This eMail and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you are not the intended recipient, you are hereby notified that any use or dissemination of this communication is strictly prohibited. If you have received this eMail in error, then please delete this eMail.
+> 
+> ! Please consider your environmental responsibility before printing this eMail !
+> ________________________________
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+> 
+
+
+-- 
+Philippe.
 
