@@ -1,12 +1,14 @@
-Message-ID: <54509629.8080107@bmwedler.de>
-Date: Wed, 29 Oct 2014 08:24:25 +0100
-From: Registrierungen <regist@bmwedler.de>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Mon, 3 Nov 2014 15:34:47 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C67627E4@SINTEFEXMBX05.sintef.no>
+References: <314E5ECDAA86314791309FA670550F89C6762243@SINTEFEXMBX05.sintef.no>
+ <20141103122602.GB7705@sisyphus.hd.free.fr>
+In-Reply-To: <20141103122602.GB7705@sisyphus.hd.free.fr>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <54509406.4000600@bmwedler.de>
-In-Reply-To: <54509406.4000600@bmwedler.de>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Using pipes in 3.0rc
+Subject: Re: [Xenomai] Xenoma 2.6.4 missing posix/xeno_config.h ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,23 +17,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-
-
-Sure. i compiled xenomai as your suggestion.
-Ive got a a little problem with my eclipse debug enviroment.
-It still does not debug into the xenomai files at moment. so i will fix
-it first and come back with new informations.
-
-
-Am 29.10.2014 08:04, schrieb Philippe Gerum:
-> On 10/29/2014 07:56 AM, Registrierungen wrote:
->> Addendum:
->> I am using a x64 Kernel.
->> Does it matter?
-> No, it does not. Do you plan to debug with gdb as I suggested?
->
-
-
+VGhhbmtzIGZvciB5b3VyIHRpcCENCg0KSSB0cmllZCBvdXQgdGhlIHN1Z2dlc3RlZCBjb21waWxh
+dGlvbiBmbGFncyBhbmQgbm93IGFsbCBmaWxlcyB3ZXJlIGZvdW5kLg0KDQpIb3dldmVyIEkgZW5k
+ZWQgd2l0aCBtYW55ICJ1bmtub3duIHR5cGUgbmFtZXMiOg0KLy91c3IveGVub21haS9pbmNsdWRl
+L3Bvc2l4L3RpbWUuaDoxMTQ6MjU6IGVycm9yOiB1bmtub3duIHR5cGUgbmFtZSAnY2xvY2tpZF90
+Jw0KLy91c3IveGVub21haS9pbmNsdWRlL3Bvc2l4L3RpbWUuaDoxMzM6NTogZXJyb3I6IHVua25v
+d24gdHlwZSBuYW1lICd0aW1lcl90Jw0KLy91c3IveGVub21haS9pbmNsdWRlL3Bvc2l4L3N5cy9z
+ZWxlY3QuaDozMjozOTogZXJyb3I6IHVua25vd24gdHlwZSBuYW1lICdmZF9zZXQnDQovL3Vzci94
+ZW5vbWFpL2luY2x1ZGUvcG9zaXgvc3lzL3NvY2tldC5oOjM5OjI3OiBlcnJvcjogdW5rbm93biB0
+eXBlIG5hbWUgJ3NvY2tsZW5fdCcNCg0KV2hhdCBtYXkgY2F1c2UgdGhlc2UgbWlzc2luZyB0eXBl
+ZGVmcyB3aGVuIG5vIGZpbGVzIGFyZSBtaXNzaW5nPw0KDQpCZXN0IHJlZ2FyZHMNClRlcmplDQoN
+Ci0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBb
+bWFpbHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXSANClNlbnQ6IDMuIG5vdmVt
+YmVyIDIwMTQgMTM6MjYNClRvOiBUZXJqZSBGcsO4eXNhDQpDYzogeGVub21haUB4ZW5vbWFpLm9y
+Zw0KU3ViamVjdDogUmU6IFtYZW5vbWFpXSBYZW5vbWEgMi42LjQgbWlzc2luZyBwb3NpeC94ZW5v
+X2NvbmZpZy5oID8NCg0KT24gTW9uLCBOb3YgMDMsIDIwMTQgYXQgMTE6NDQ6NDdBTSArMDAwMCwg
+VGVyamUgRnLDuHlzYSB3cm90ZToNCj4gRGVhciBmb3J1bSwNCj4gDQo+IFRoZSBmaWxlIHhlbm9t
+YWkvcG9zaXgvc3RkaW8uaA0KPiBpbmNsdWRlcyBhIGZpbGUgbmFtZWQgeGVub19jb25maWcuaA0K
+PiANCj4gVGhpcyBmaWxlIGRvZXMgbm90IGV4aXN0IGluIG15IG5ld2x5IGluc3RhbGxlZCAyLjYu
+NCBYZW5vbWFpIGVudmlyb25tZW50Lg0KPiANCj4gTGlzdGluZyBmcm9tIG1ha2U6DQo+IA0KPiBk
+ZWJpYW5AYmVhZ2xlYm9uZTp+L3J0ZG1fZGh0MTEtYXBwJCBtYWtlIGdjYyAtV2FsbCAtZyANCj4g
+LUkvbGliL21vZHVsZXMvMy44LjEzLWJvbmU2Ny9zb3VyY2UvaW5jbHVkZS94ZW5vbWFpIA0KPiAt
+SS9saWIvbW9kdWxlcy8zLjguMTMtYm9uZTY3L3NvdXJjZS9pbmNsdWRlL3hlbm9tYWkvcG9zaXgg
+DQo+IC1JL2xpYi9tb2R1bGVzLzMuOC4xMy1ib25lNjcvc291cmNlL2FyY2gvYXJtL21hY2gtb21h
+cDIgLWMgDQo+IHJ0ZG1fZGh0MTEtYXBwLmMgIC1vIHJ0ZG1fZGh0MTEtYXBwLm8NCj4gDQo+IElu
+IGZpbGUgaW5jbHVkZWQgZnJvbSBydGRtX2RodDExLWFwcC5jOjQ2OjA6DQo+IC9saWIvbW9kdWxl
+cy8zLjguMTMtYm9uZTY3L3NvdXJjZS9pbmNsdWRlL3hlbm9tYWkvcG9zaXgvc3RkaW8uaDozMDoy
+NTogDQo+IGZhdGFsIGVycm9yOiB4ZW5vX2NvbmZpZy5oOiBObyBzdWNoIGZpbGUgb3IgZGlyZWN0
+b3J5IGNvbXBpbGF0aW9uIHRlcm1pbmF0ZWQuDQoNCllvdXIgY29tcGlsYXRpb24gZmxhZ3MgYXJl
+IG9idmlvdXNseSBpbmNvcnJlY3QsIHRvIG9idGFpbiB0aGUgY29ycmVjdCBvbmVzLCBzZWU6DQoN
+Cmh0dHA6Ly94ZW5vbWFpLm9yZy8yMDE0LzA4L3BvcnRpbmctYS1saW51eC1hcHBsaWNhdGlvbi10
+by14ZW5vbWFpLWR1YWwta2VybmVsLyNDb21waWxhdGlvbl9mbGFncw0KDQpSZWdhcmRzLg0KDQot
+LSANCgkJCQkJICAgIEdpbGxlcy4NCg==
 
