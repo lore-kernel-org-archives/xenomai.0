@@ -1,21 +1,14 @@
-Date: Wed, 29 Oct 2014 08:26:29 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141029072629.GB14496@sisyphus.hd.free.fr>
-References: <54365E17.3020102@xenomai.org>
- <CACreCV+QtwuhhGeFpnuLP-6Y1FfLCQHqNkrzyfwgqEgrxXU9eQ@mail.gmail.com>
- <5436607B.7090609@xenomai.org>
- <CACreCV+HdWC9Deysy2miL2NZ65RFVRRk87uG9rBaUBrn=hhqag@mail.gmail.com>
- <5436A64B.90705@xenomai.org>
- <CACreCVJUPiiX_7733g1EWZCVmUH0oFWhLknhKB2K8se1fi4a1g@mail.gmail.com>
- <20141022062825.GC29673@sisyphus.hd.free.fr>
- <CACreCVJSytzK85ANWmwWjctBpJfEr1b916R6dNPmSGugN_vRLA@mail.gmail.com>
- <20141029061655.GA14496@sisyphus.hd.free.fr>
- <CACreCVL2OyGYeWSOPAxR3rWG_RWiN3BAcPck1VyTMjyrASyNoQ@mail.gmail.com>
+Message-ID: <5457B9DA.5020407@siemens.com>
+Date: Mon, 03 Nov 2014 18:22:34 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACreCVL2OyGYeWSOPAxR3rWG_RWiN3BAcPck1VyTMjyrASyNoQ@mail.gmail.com>
-Subject: Re: [Xenomai] Switchtest failures on ODROIDU3
+References: <CADLCHMKk6-tiB=_6T85Z60Vf3ToURF6WRqYMBO46xyTLsuuFUg@mail.gmail.com>
+ <CAPRPZsAjU+9NboMvmbafY62hBEw4Sm=wA1Pf-BHP2989E1Dy1g@mail.gmail.com>
+ <5457B76B.9040609@siemens.com> <20141103171457.GJ9327@sisyphus.hd.free.fr>
+In-Reply-To: <20141103171457.GJ9327@sisyphus.hd.free.fr>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Write a hard real time usb driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,34 +17,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: GP Orcullo <kinsamanka@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, Oct 29, 2014 at 03:24:52PM +0800, GP Orcullo wrote:
-> On Wed, Oct 29, 2014 at 2:16 PM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
-> > On Wed, Oct 29, 2014 at 09:23:16AM +0800, GP Orcullo wrote:
-> >> Exynos is not using the arm global timers.
-> >
-> > I do not understand what you mean... You said you had problems
-> > when the global timer was shared with Linux, this patches tries to
-> > address that by not remapping the global timer for xenomai, and
-> > sharing the mapping defined by Linux. And now you say Exynos is not
-> > using the global timers? You will have to explain a bit more than
-> > that... I quote what you said:
-> >
-> >> >> The problem was traced to the tsc emulation,  the counter somehow gets
-> >> >> messed up when the global timer is shared with Linux.
-> >
-> >
+On 2014-11-03 18:14, Gilles Chanteperdrix wrote:
+> On Mon, Nov 03, 2014 at 06:12:11PM +0100, Jan Kiszka wrote:
+>> On 2014-11-03 09:03, Jeroen Van den Keybus wrote:
+>>>> I try to write a hard real time usb driver. I communicate my device  using
+>>>> open(), read() etc. My device is a gpio module.
+>>>
+>>>
+>>> I assume you want to control an USB host controller using a GPIO interface ?
+>>>
+>>>
+>>>> I am coding a kernel module
+>>>> to communicate the device using xenomai on real time. But I am not sure
+>>>> that this way is reasonable. If I should going on this way, what should I
+>>>> implement? Could you give me some example or link to write hard real time
+>>>> usb driver for* physical* device?
+>>>
+>>>
+>>> I cannot help you with that, but one important issue to consider is that
+>>> the USB protocol itself operates with small, hardware controlled time slots
+>>> of 1 ms (USB1.x) or 125 usec (USB2.0). You may therefore need a significant
+>>> amount of software to properly distribute real-time traffic in these -
+>>> essentially asynchronous - slots. The latency of a real-time process
+>>> waiting for USB data can therefore also be as large as the time slot
+>>> duration. If your real-time requirements are modest, you may be able to
+>>> live with that. Still, count on a major software effort: just have a look
+>>> at the Linux USB driver framework.
+>>>
+>>> Alternatively, you could check if you can synchronize your real-time
+>>> process with the USB controller frame rate.
+>>>
+>>
+>> FWIW, we still don't have USB 2.0 support (though I vaguely remember
+>> previous efforts in that direction),
 > 
-> Sorry, I was referring to the global timer that exynos uses - MCT,
-> multi core timer.
+> There is one here:
+> http://sourceforge.net/projects/usb20rt.berlios/
+> 
+> Have not looked at the code though.
 
-Ok, but Xenomai on cortex A9 enables the global timer as soon as the
-local timer is enabled. How do you get around this, you do not
-enable the TWD code on exynos ?
+Yeah, that's the one I recalled. Seems dead, unfortunately.
+
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
