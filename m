@@ -1,15 +1,16 @@
-Date: Mon, 3 Nov 2014 09:59:47 -0600
-From: "Steve M. Robbins" <steve@sumost.ca>
-Message-ID: <20141103155947.GA15262@sumost.ca>
-References: <94331816.zv1NYeHro4@riemann> <20141031200007.GC378@sumost.ca>
- <5454ADDF.4040604@xenomai.org> <6071747.2uXMl1ZSO0@riemann>
- <54573A6D.1030201@xenomai.org>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Mon, 3 Nov 2014 16:00:03 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C6762872@SINTEFEXMBX05.sintef.no>
+References: <314E5ECDAA86314791309FA670550F89C6762243@SINTEFEXMBX05.sintef.no>
+ <20141103122602.GB7705@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C67627E4@SINTEFEXMBX05.sintef.no>
+ <20141103153617.GD9327@sisyphus.hd.free.fr>
+In-Reply-To: <20141103153617.GD9327@sisyphus.hd.free.fr>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <54573A6D.1030201@xenomai.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Message Pipe services behaviour
+Subject: Re: [Xenomai] Xenoma 2.6.4 missing posix/xeno_config.h ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,85 +19,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Nov 03, 2014 at 09:18:53AM +0100, Philippe Gerum wrote:
-> On 11/02/2014 01:53 AM, Steve M. Robbins wrote:
-> > On November 1, 2014 10:54:39 AM Philippe Gerum wrote:
-> 
-> >> Perhaps the rt side sends a large burst of data once in a while causing
-> >> the overflow? In this case, you could not detect the issue looming from
-> >> the nrt side until it happens, since the rt side has higher priority
-> >> (i.e. rt would cause ENOMEM even before nrt had a chance to resume
-> >> execution).
-> > 
-> > OK, I understand the theory.  However, I don't believe that is my case.  The 
-> > message queue is transporting fault information and through user actions I can 
-> > set it up to send 2 messages per cycle and using the FIFO code, the nrt side 
-> > is indeed reading 2 messages.  Using message queues, I can see that there are 
-> > multiple messages outstanding but it reads only one.
-> > 
-> 
-> Ok, so if no message gets lost, if you can see FIONREAD increase until
-> ENOMEM is raised, and if throttling the rt side only delays the issue
-> without solving it, the only explanation would be that a notification of
-> input availability is lost by the poll handler backing select() in the
-> rt-pipe driver. That would cause the messages to pile up on the rt side,
-> with too few deliveries to nrt.
+VGhhbmtzIGFnYWluIQ0KDQpBcyBmYXIgYXMgSSB1bmRlcnN0YW5kIEkgaGF2ZSBnbGliYyB2Mi4x
+MyBpbnN0YWxsZWQ6DQoNCmRlYmlhbkBiZWFnbGVib25lOi9saWIkIGxkZCAtLXZlcnNpb24NCmxk
+ZCAoRGViaWFuIEVHTElCQyAyLjEzLTM4K2RlYjd1NikgMi4xMw0KQ29weXJpZ2h0IChDKSAyMDEx
+IEZyZWUgU29mdHdhcmUgRm91bmRhdGlvbiwgSW5jLg0KVGhpcyBpcyBmcmVlIHNvZnR3YXJlOyBz
+ZWUgdGhlIHNvdXJjZSBmb3IgY29weWluZyBjb25kaXRpb25zLiAgVGhlcmUgaXMgTk8NCndhcnJh
+bnR5OyBub3QgZXZlbiBmb3IgTUVSQ0hBTlRBQklMSVRZIG9yIEZJVE5FU1MgRk9SIEEgUEFSVElD
+VUxBUiBQVVJQT1NFLg0KV3JpdHRlbiBieSBSb2xhbmQgTWNHcmF0aCBhbmQgVWxyaWNoIERyZXBw
+ZXIuDQoNCkRvIEkgbmVlZCB0byBpbnN0YWxsIGFueXRoaW5nIG1vcmUgdGhhbiB0aGlzPw0KDQpU
+ZXJqZQ0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogR2lsbGVzIENoYW50ZXBl
+cmRyaXggW21haWx0bzpnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZ10gDQpTZW50OiAz
+LiBub3ZlbWJlciAyMDE0IDE2OjM2DQpUbzogVGVyamUgRnLDuHlzYQ0KQ2M6IHhlbm9tYWlAeGVu
+b21haS5vcmcNClN1YmplY3Q6IFJlOiBbWGVub21haV0gWGVub21hIDIuNi40IG1pc3NpbmcgcG9z
+aXgveGVub19jb25maWcuaCA/DQoNCk9uIE1vbiwgTm92IDAzLCAyMDE0IGF0IDAzOjM0OjQ3UE0g
+KzAwMDAsIFRlcmplIEZyw7h5c2Egd3JvdGU6DQo+IFRoYW5rcyBmb3IgeW91ciB0aXAhDQo+IA0K
+PiBJIHRyaWVkIG91dCB0aGUgc3VnZ2VzdGVkIGNvbXBpbGF0aW9uIGZsYWdzIGFuZCBub3cgYWxs
+IGZpbGVzIHdlcmUgZm91bmQuDQo+IA0KPiBIb3dldmVyIEkgZW5kZWQgd2l0aCBtYW55ICJ1bmtu
+b3duIHR5cGUgbmFtZXMiOg0KPiAvL3Vzci94ZW5vbWFpL2luY2x1ZGUvcG9zaXgvdGltZS5oOjEx
+NDoyNTogZXJyb3I6IHVua25vd24gdHlwZSBuYW1lICdjbG9ja2lkX3QnDQo+IC8vdXNyL3hlbm9t
+YWkvaW5jbHVkZS9wb3NpeC90aW1lLmg6MTMzOjU6IGVycm9yOiB1bmtub3duIHR5cGUgbmFtZSAn
+dGltZXJfdCcNCj4gLy91c3IveGVub21haS9pbmNsdWRlL3Bvc2l4L3N5cy9zZWxlY3QuaDozMjoz
+OTogZXJyb3I6IHVua25vd24gdHlwZSBuYW1lICdmZF9zZXQnDQo+IC8vdXNyL3hlbm9tYWkvaW5j
+bHVkZS9wb3NpeC9zeXMvc29ja2V0Lmg6Mzk6Mjc6IGVycm9yOiB1bmtub3duIHR5cGUgbmFtZSAn
+c29ja2xlbl90Jw0KPiANCj4gV2hhdCBtYXkgY2F1c2UgdGhlc2UgbWlzc2luZyB0eXBlZGVmcyB3
+aGVuIG5vIGZpbGVzIGFyZSBtaXNzaW5nPw0KDQpIYXZlIHlvdSBpbnN0YWxsZWQgdGhlIGdsaWJj
+IGhlYWRlcnM/IFRoZXNlIHR5cGVzIGFyZSBkZWZpbmVkIGluIGdsaWJjIGhlYWRlcnMuDQoNCi0t
+IA0KCQkJCQkgICAgR2lsbGVzLg0K
 
-I want to emphasize that FIONREAD is being done on the nrt side, after
-the select() and just prior to the actual read() call.  Thus the nrt
-side is seeing N > 1 messages available on the file descriptor, but
-read() only reads 1, even though the fd is nonblocking and the read
-buffer is sized for 100 messages.  So it seems to me there is somehow
-a disconnect between the "available bytes" as seen by read() versus
-FIONREAD.  I admit to being naive about the kernel but that seems
-like something that should not be possible.
-
-
-Given that, I don't understand what you're saying about notification
-of input availability being lost.  It may be true that the select()
-doesn't fire as often as it should, but the nrt side does wake up
-prior to the queue being completely full and still will only read 1
-message.  Are you saying that missing a notification would affect the
-"available bytes" seen by read() on the nrt side?  But still the
-FIONREAD would tell us the truth?
-
-
-
-> Only for the purpose of checking this, could you try read()ing the large
-> message queue directly, then in a second attempt, enabling SIGIO on the
-> rtp fildes to get the messages asynchronously, instead of sensing them
-> via select()? The idea would be to check whether getting rid of select()
-> improves the situation.
-
-I'll check into doing that.
-
-
-
-> NOTE: I'm assuming that the rt side only uses rt_pipe_write(), and never
-> rt_pipe_stream() which does packet coalescence by design.
-
-Yes, that's correct.  The only calls the rt side makes are: rt_pipe_create()
-and rt_pipe_write().
-
-The only calls the nrt side makes is open(), ioctl(FIONREAD), and read().
-I am presently opening with O_RDONLY | O_NONBLOCK.  I have also tried
-O_RDWR | O_NONBLOCK and saw the same results.
-
-Also: the nrt side is a "mostly pure" linux program that does NOT call
-wrapped versions of select(), etc.  It does, however, link with a
-vendor library that links with xenomai libs and the vendor library
-does somehow make the thread in question appear as a xenomai task.
-Apart from a couple of mode switches (presumably when intializing the
-vendor lib), it runs exclusively in linux mode.
-
--Steve
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 173 bytes
-Desc: Digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20141103/84a8c58f/attachment.sig>
