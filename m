@@ -1,15 +1,16 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Mon, 3 Nov 2014 16:00:03 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C6762872@SINTEFEXMBX05.sintef.no>
+Date: Mon, 3 Nov 2014 17:02:23 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141103160223.GE9327@sisyphus.hd.free.fr>
 References: <314E5ECDAA86314791309FA670550F89C6762243@SINTEFEXMBX05.sintef.no>
  <20141103122602.GB7705@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C67627E4@SINTEFEXMBX05.sintef.no>
  <20141103153617.GD9327@sisyphus.hd.free.fr>
-In-Reply-To: <20141103153617.GD9327@sisyphus.hd.free.fr>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <314E5ECDAA86314791309FA670550F89C6762872@SINTEFEXMBX05.sintef.no>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <314E5ECDAA86314791309FA670550F89C6762872@SINTEFEXMBX05.sintef.no>
 Subject: Re: [Xenomai] Xenoma 2.6.4 missing posix/xeno_config.h ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -19,33 +20,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-VGhhbmtzIGFnYWluIQ0KDQpBcyBmYXIgYXMgSSB1bmRlcnN0YW5kIEkgaGF2ZSBnbGliYyB2Mi4x
-MyBpbnN0YWxsZWQ6DQoNCmRlYmlhbkBiZWFnbGVib25lOi9saWIkIGxkZCAtLXZlcnNpb24NCmxk
-ZCAoRGViaWFuIEVHTElCQyAyLjEzLTM4K2RlYjd1NikgMi4xMw0KQ29weXJpZ2h0IChDKSAyMDEx
-IEZyZWUgU29mdHdhcmUgRm91bmRhdGlvbiwgSW5jLg0KVGhpcyBpcyBmcmVlIHNvZnR3YXJlOyBz
-ZWUgdGhlIHNvdXJjZSBmb3IgY29weWluZyBjb25kaXRpb25zLiAgVGhlcmUgaXMgTk8NCndhcnJh
-bnR5OyBub3QgZXZlbiBmb3IgTUVSQ0hBTlRBQklMSVRZIG9yIEZJVE5FU1MgRk9SIEEgUEFSVElD
-VUxBUiBQVVJQT1NFLg0KV3JpdHRlbiBieSBSb2xhbmQgTWNHcmF0aCBhbmQgVWxyaWNoIERyZXBw
-ZXIuDQoNCkRvIEkgbmVlZCB0byBpbnN0YWxsIGFueXRoaW5nIG1vcmUgdGhhbiB0aGlzPw0KDQpU
-ZXJqZQ0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogR2lsbGVzIENoYW50ZXBl
-cmRyaXggW21haWx0bzpnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZ10gDQpTZW50OiAz
-LiBub3ZlbWJlciAyMDE0IDE2OjM2DQpUbzogVGVyamUgRnLDuHlzYQ0KQ2M6IHhlbm9tYWlAeGVu
-b21haS5vcmcNClN1YmplY3Q6IFJlOiBbWGVub21haV0gWGVub21hIDIuNi40IG1pc3NpbmcgcG9z
-aXgveGVub19jb25maWcuaCA/DQoNCk9uIE1vbiwgTm92IDAzLCAyMDE0IGF0IDAzOjM0OjQ3UE0g
-KzAwMDAsIFRlcmplIEZyw7h5c2Egd3JvdGU6DQo+IFRoYW5rcyBmb3IgeW91ciB0aXAhDQo+IA0K
-PiBJIHRyaWVkIG91dCB0aGUgc3VnZ2VzdGVkIGNvbXBpbGF0aW9uIGZsYWdzIGFuZCBub3cgYWxs
-IGZpbGVzIHdlcmUgZm91bmQuDQo+IA0KPiBIb3dldmVyIEkgZW5kZWQgd2l0aCBtYW55ICJ1bmtu
-b3duIHR5cGUgbmFtZXMiOg0KPiAvL3Vzci94ZW5vbWFpL2luY2x1ZGUvcG9zaXgvdGltZS5oOjEx
-NDoyNTogZXJyb3I6IHVua25vd24gdHlwZSBuYW1lICdjbG9ja2lkX3QnDQo+IC8vdXNyL3hlbm9t
-YWkvaW5jbHVkZS9wb3NpeC90aW1lLmg6MTMzOjU6IGVycm9yOiB1bmtub3duIHR5cGUgbmFtZSAn
-dGltZXJfdCcNCj4gLy91c3IveGVub21haS9pbmNsdWRlL3Bvc2l4L3N5cy9zZWxlY3QuaDozMjoz
-OTogZXJyb3I6IHVua25vd24gdHlwZSBuYW1lICdmZF9zZXQnDQo+IC8vdXNyL3hlbm9tYWkvaW5j
-bHVkZS9wb3NpeC9zeXMvc29ja2V0Lmg6Mzk6Mjc6IGVycm9yOiB1bmtub3duIHR5cGUgbmFtZSAn
-c29ja2xlbl90Jw0KPiANCj4gV2hhdCBtYXkgY2F1c2UgdGhlc2UgbWlzc2luZyB0eXBlZGVmcyB3
-aGVuIG5vIGZpbGVzIGFyZSBtaXNzaW5nPw0KDQpIYXZlIHlvdSBpbnN0YWxsZWQgdGhlIGdsaWJj
-IGhlYWRlcnM/IFRoZXNlIHR5cGVzIGFyZSBkZWZpbmVkIGluIGdsaWJjIGhlYWRlcnMuDQoNCi0t
-IA0KCQkJCQkgICAgR2lsbGVzLg0K
+On Mon, Nov 03, 2014 at 04:00:03PM +0000, Terje Frøysa wrote:
+> Thanks again!
+> 
+> As far as I understand I have glibc v2.13 installed:
+> 
+> debian@beaglebone:/lib$ ldd --version
+> ldd (Debian EGLIBC 2.13-38+deb7u6) 2.13
+> Copyright (C) 2011 Free Software Foundation, Inc.
+> This is free software; see the source for copying conditions.  There is NO
+> warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+> Written by Roland McGrath and Ulrich Drepper.
+> 
+> Do I need to install anything more than this?
+
+Yes, you have glibc installed, otherwise your system would not boot,
+but this does not garantee that you have glibc _headers_ installed.
+glibc headers include such files as /usr/include/stdio.h or
+/usr/include/stdlib.h and are mandatory for compiling programs using
+the glibc. glibc itself is only needed to run such programs.
+
+-- 
+					    Gilles.
 
