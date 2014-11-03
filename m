@@ -1,6 +1,6 @@
-Date: Mon, 3 Nov 2014 18:02:20 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141103170220.GH9327@sisyphus.hd.free.fr>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Mon, 3 Nov 2014 17:11:18 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C6762A5E@SINTEFEXMBX05.sintef.no>
 References: <20141103122602.GB7705@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C67627E4@SINTEFEXMBX05.sintef.no>
  <20141103153617.GD9327@sisyphus.hd.free.fr>
@@ -11,11 +11,12 @@ References: <20141103122602.GB7705@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C676297E@SINTEFEXMBX05.sintef.no>
  <20141103164433.GG9327@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C67629F0@SINTEFEXMBX05.sintef.no>
-MIME-Version: 1.0
+ <20141103170220.GH9327@sisyphus.hd.free.fr>
+In-Reply-To: <20141103170220.GH9327@sisyphus.hd.free.fr>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C67629F0@SINTEFEXMBX05.sintef.no>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] Xenoma 2.6.4 missing posix/xeno_config.h ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -25,17 +26,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
+To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Nov 03, 2014 at 04:58:52PM +0000, Terje Frøysa wrote:
-> Thanks!
-> 
-> Here is the complete Makefile:
-
-Please remove the include directive for kernel-space headers. I
-think it should fix the issue.
-
--- 
-					    Gilles.
+VGhhbmtzIEdpbGxlcywNCg0KUmVhbGx5IGhlbHBmdWwgYWR2aWNlIQ0KTm93IEkgb25seSBoYXZl
+IHRvIGZpbmQgb3V0IHdoeSB0aGUgbGlua2VyIGRvZXNuJ3QgZmluZCB0aGUgcG9zaXgud3JhcHBl
+cnMNCkl0IGlzIGNlcnRhaW5seSB0aGVyZS4uIGNhbiBpdCBiZSBkdWUgdG8gdGhlIC8vIGluIHRo
+ZTogLWwtV2wsQC8vdXNyL3hlbm9tYWkvbGliL3Bvc2l4LndyYXBwZXJzID8NCg0KVGVyamUNCg0K
+ZGViaWFuQGJlYWdsZWJvbmU6fi9ydGRtX2RodDExLWFwcCQgbWFrZQ0KZ2NjIC1XYWxsIC1nIC1J
+Ly91c3IveGVub21haS9pbmNsdWRlIC1EX0dOVV9TT1VSQ0UgLURfUkVFTlRSQU5UIC1EX19YRU5P
+X18gLUkvL3Vzci94ZW5vbWFpL2luY2x1ZGUvcG9zaXggLWMgcnRkbV9kaHQxMS1hcHAuYyAgLW8g
+ciAgICAgICAgICAgICAgICAgICAgIHRkbV9kaHQxMS1hcHAubw0KcnRkbV9kaHQxMS1hcHAuYzog
+SW4gZnVuY3Rpb24gJ21haW4nOg0KcnRkbV9kaHQxMS1hcHAuYzo1OToxMDogd2FybmluZzogdW51
+c2VkIHZhcmlhYmxlICdzaXplJyBbLVd1bnVzZWQtdmFyaWFibGVdDQpydGRtX2RodDExLWFwcC5j
+OjU4Ojc6IHdhcm5pbmc6IHVudXNlZCB2YXJpYWJsZSAnYnVmJyBbLVd1bnVzZWQtdmFyaWFibGVd
+DQpnY2MgLVdhbGwgLWcgLUkvL3Vzci94ZW5vbWFpL2luY2x1ZGUgLURfR05VX1NPVVJDRSAtRF9S
+RUVOVFJBTlQgLURfX1hFTk9fXyAtSS8vdXNyL3hlbm9tYWkvaW5jbHVkZS9wb3NpeCAtbyBteWNj
+IHJ0ZG1fZGh0MTEtYXBwLm8gICAgICAgICAgICAgICAgICAgICAgIC1sLVdsLEAvL3Vzci94ZW5v
+bWFpL2xpYi9wb3NpeC53cmFwcGVycyAtTC8vdXNyL3hlbm9tYWkvbGliIC1scHRocmVhZF9ydCAt
+bHhlbm9tYWkgLWxwdGhyZWFkIC1scnQNCi91c3IvYmluL2xkOiBjYW5ub3QgZmluZCAtbC1XbCxA
+Ly91c3IveGVub21haS9saWIvcG9zaXgud3JhcHBlcnMNCmNvbGxlY3QyOiBsZCByZXR1cm5lZCAx
+IGV4aXQgc3RhdHVzDQptYWtlOiAqKiogW215Y2NdIEVycm9yIDENCg0KZGViaWFuQGJlYWdsZWJv
+bmU6fi9ydGRtX2RodDExLWFwcCQgY2QgLy91c3IveGVub21haS9saWINCmRlYmlhbkBiZWFnbGVi
+b25lOi8vdXNyL3hlbm9tYWkvbGliJCBscyBwb3NpKg0KcG9zaXgud3JhcHBlcnMNCg0KLS0tLS1P
+cmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEdpbGxlcyBDaGFudGVwZXJkcml4IFttYWlsdG86
+Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmddIA0KU2VudDogMy4gbm92ZW1iZXIgMjAx
+NCAxODowMg0KVG86IFRlcmplIEZyw7h5c2ENCkNjOiB4ZW5vbWFpQHhlbm9tYWkub3JnDQpTdWJq
+ZWN0OiBSZTogW1hlbm9tYWldIFhlbm9tYSAyLjYuNCBtaXNzaW5nIHBvc2l4L3hlbm9fY29uZmln
+LmggPw0KDQpPbiBNb24sIE5vdiAwMywgMjAxNCBhdCAwNDo1ODo1MlBNICswMDAwLCBUZXJqZSBG
+csO4eXNhIHdyb3RlOg0KPiBUaGFua3MhDQo+IA0KPiBIZXJlIGlzIHRoZSBjb21wbGV0ZSBNYWtl
+ZmlsZToNCg0KUGxlYXNlIHJlbW92ZSB0aGUgaW5jbHVkZSBkaXJlY3RpdmUgZm9yIGtlcm5lbC1z
+cGFjZSBoZWFkZXJzLiBJIHRoaW5rIGl0IHNob3VsZCBmaXggdGhlIGlzc3VlLg0KDQotLSANCgkJ
+CQkJICAgIEdpbGxlcy4NCg==
 
