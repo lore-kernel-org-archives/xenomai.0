@@ -1,18 +1,12 @@
+Date: Tue, 4 Nov 2014 14:30:14 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141104133014.GA16558@sisyphus.hd.free.fr>
+References: <297545433.13742.1415102393951.JavaMail.zimbra@wandercraft.eu>
 MIME-Version: 1.0
-In-Reply-To: <20141028153440.GA11779@sisyphus.hd.free.fr>
-References: <CABaOOZ2YOda_cUS-tskNxDZ6sNekMqnPnbu6p8Qp4kvjRzDMyA@mail.gmail.com>
- <543E9BAE.2010808@xenomai.org> <543E9CF5.6080400@xenomai.org>
- <CABaOOZ1Hb5YYBXt2jtyTZWVnA03EGohaVChzEJ0X9=od2=SeNw@mail.gmail.com>
- <543F8974.4070400@xenomai.org>
- <CABaOOZ0aEf8F3EzW=w4R1OgK0SGzE9VnDAJHV+swmSc3EF9O-w@mail.gmail.com>
- <543F900D.3050500@xenomai.org>
- <CABaOOZ0gmn2XnoF+pzPVWEU0Fh7WfafJduk5qUnknp5pk8V2bQ@mail.gmail.com>
- <20141028153440.GA11779@sisyphus.hd.free.fr>
-Date: Wed, 29 Oct 2014 10:51:18 +0200
-Message-ID: <CABaOOZ2osGiOCjErFgg0cq0mz4MP-e7d+32ayQmxJn0fONvaew@mail.gmail.com>
-From: Stratiyenko Roman <picoworm@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Manual context switch from userspace
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <297545433.13742.1415102393951.JavaMail.zimbra@wandercraft.eu>
+Subject: Re: [Xenomai] Serial realtime communication
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,48 +15,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Huy Cong Vu <huy-cong.vu@wandercraft.eu>
+Cc: xenomai@xenomai.org
 
-Thanks a lot, I already found simple solution at:
+On Tue, Nov 04, 2014 at 12:59:53PM +0100, Huy Cong Vu wrote:
+> Hello everyone, 
+> I have a Linux thread which read/write to a device connected by
+> usb port & I would like to bring it to Xenomai realtime by using
+> rtdm library.
 
-http://www.1024cores.net/home/lock-free-algorithms/tricks/fibers
+There is no support for this in Xenomai sources, you will have to
+use external libraries, but please do not ask support for these
+libraries on this mailing list: since it is code we do not maintain,
+it will be hard for us to support it.
 
-So as I guess, compiler knows what registers are in use now, CPU, FPU etc,
-so compiler stores the registers into local memory, only then it switch
-Program Counter and Stack Pointer register,
+> What I wonder is the difference between the functions of rtdm & those of POSIX Xenomai skins, if the goal is only to bring the realtime properties to the process. 
+> For example, rt_dev_open() (of rtdm) & open() (of POSIX Xenomai). When I use open() of POSIX Xenomai, it works fine, but with rt_dev_open(), it returns -19 as output, with the same port address: 
+> #define ENODEV 19 /* No such device */ 
 
-I think this way is most fastest way to switch between tasks, compiler save
-only those registers that are used in this moment.
+That is simple: the posix skin open calls rt_dev_open, and if that
+fails with -ENODEV (or -ENOSYS), calls the plain Linux open, as can
+be seen here: 
 
+http://git.xenomai.org/xenomai-2.6.git/tree/src/skins/posix/rtdm.c#n63
 
-2014-10-28 17:34 GMT+02:00 Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org>:
+The difference is that the POSIX skin is supposed to allow you
+to work both with Xenomai services and with Linux services. When
+your program wants to open a non real-time device, it can still use
+open instead of having to use __real_open. This allows compiling the
+same program for xenomai or not with minimal changes.
 
-> On Fri, Oct 17, 2014 at 12:04:35PM +0300, Stratiyenko Roman wrote:
-> > Thank you for helping. I replaced swapcontext with longjmp. All works
-> good.
-> > No switch to secondary mode.
-> >
-> > As about using threads, I do not fully understand how scheduler works.
-> > Maybe after I will get more experience in multithreading, I will do as
-> you
-> > recommend.
->
-> Well, this comes late, but I have found a library libtask:
-> http://swtch.com/libtask/
->
-> which does a bit what you want to do, exposing a thread-like API.
-> What may be interesting for you is that they provide replacements of
-> makecontext and setcontext for OSes which have no native support for
-> it, and this does not rely on any system call as far as I can tell,
-> it will not switch to secondary mode. So you can probably use it on
-> Linux and bypass the glibc versions. Note however that their context
-> switching code does not switch the FPU registers, this may be a
-> performance advantage if you do not use the FPU, but it means it
-> will not work if you want to switch context in the middle of a
-> computation using FPU registers.
->
-> --
->                                             Gilles.
->
+> And then, I don't really understand the purpose of making a serial communication become "realtime", which means that making the read() procedure more deterministically? 
+
+Well, to make a serial communication become "realtime", you first
+need an RTDM based driver. And yes, once you have an RTDM driver,
+when a task is suspended by "read", it is handled by Xenomai
+real-time scheduler. This way, it can not experience unbounded waits
+dues to the fact that Linux scheduler does not guarantee bounded
+latencies.
+
+-- 
+					    Gilles.
+
