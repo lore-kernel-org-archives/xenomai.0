@@ -1,17 +1,9 @@
-Date: Mon, 3 Nov 2014 16:22:37 -0600
-From: "Steve M. Robbins" <steve@sumost.ca>
-Message-ID: <20141103222237.GC15262@sumost.ca>
-References: <94331816.zv1NYeHro4@riemann> <20141031200007.GC378@sumost.ca>
- <5454ADDF.4040604@xenomai.org> <6071747.2uXMl1ZSO0@riemann>
- <54573A6D.1030201@xenomai.org> <20141103155947.GA15262@sumost.ca>
- <5457AD81.7090200@xenomai.org> <20141103183747.GB15262@sumost.ca>
- <5457DF1C.4060209@xenomai.org>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <5457DF1C.4060209@xenomai.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Message Pipe services behaviour
+Date: Tue, 4 Nov 2014 11:57:58 +0200
+Message-ID: <CADLCHM+eyrDUh4fBdTEk4TrDzsPmnGghaH-07XT=zFLxojtS4g@mail.gmail.com>
+From: Seda Seda <seda9seda9@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] Communicate to a device
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,36 +12,12 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, Nov 03, 2014 at 09:01:32PM +0100, Philippe Gerum wrote:
-> On 11/03/2014 07:37 PM, Steve M. Robbins wrote:
-> > On Mon, Nov 03, 2014 at 05:29:53PM +0100, Philippe Gerum wrote:
-> > 
-> >> Just to make sure we are on the same page, as Dietmar mentioned in an
-> >> earlier mail, read() as implemented by the rt-pipe driver only returns
-> >> _one_ message at a time, although > 1 could be pending. One has to
-> >> iterate over a read() loop using a non-blocking fd on the /dev/rtp
-> >> device to get them all.
-> > 
-> > Aha!  Thanks (and to Dietmar).  I completely missed this fact.  I'll
-> > go re-write the read as a loop and see if it works better.  I should read
-> > until the read() returns 0 (bytes read)?
-> > 
-> 
-> Until you get -1 with errno == EWOULDBLOCK. Zero would rather mean that
-> the other end of pipe has been disconnected, just like with a regular FIFO.
+I have a non real time device. I communicated it using syscall
+functions.Now, I am writing a kernel module and an user space
+application. When I attach device to pc, ttyACM0 file creates under /dev.
 
-Yes, that seems to work.  The loop is reading about 2 messages on
-average as expected and no more filling up the heap.
-
-Thanks!
--Steve
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 173 bytes
-Desc: Digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20141103/1e452982/attachment.sig>
+When I install my module as device name is "ttyACM0", I see a driver
+in proc/rtdm/named_devices file. But when I write "/dev/ttyACM0" and
+install module, I get an error. It says that "Cannot allocate memory".
