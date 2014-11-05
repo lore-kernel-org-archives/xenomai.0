@@ -1,12 +1,11 @@
-Date: Wed, 5 Nov 2014 19:42:32 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141105184232.GA24737@sisyphus.hd.free.fr>
-References: <545A2CC1.3080909@selex-es.com>
+Message-ID: <545A8AD7.1060300@free.fr>
+Date: Wed, 05 Nov 2014 21:38:47 +0100
+From: Thierry Bultel <tbultel@free.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <545A2CC1.3080909@selex-es.com>
-Subject: Re: [Xenomai] An explanation on cyclictest results and other...
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] IMX kernel 3.0.35_4.1.0 + adeos-ipipe-3.0.43-mx6q-1.18-14
+ -> very slow boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,21 +14,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pampolini Matteo <matteo.pampolini@selex-es.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org, "jean-Baptiste, TREDEZ (GE Healthcare,
+ non-ge)" <Jean-baptiste.tredez@basystemes.fr>
 
-On Wed, Nov 05, 2014 at 02:57:21PM +0100, Pampolini Matteo wrote:
-> 2) Before realizing that Xenomai provides its own enhanced version of cyclictest (sigh!) I took
-> the one from rt-tests package and recompiled it by using Xenomai POSIX skin. In my understanding
-> they should give similar results, but while I get an average latency of 1 with the Xenomai provided
-> one, I get 16 with the latter one! What am I doing wrong?
+Hi,
+I have applied the adeos-ipipe-3.0.43-mx6q-1.18-14.patch provided with
+xenomai-2.6.4 ,
+onto the rel_imx_3.0.35_4.1.0 kernel
 
-You are making the assumption, that recompiling an application to
-use xenomai posix skin will magically get it working in primary mode
-on Xenomai co-kernel. This assumption is generally wrong, see:
+When CONFIG_IPIPE is enabled, the kernel is very slow to boot. Once it
+is booted, it seems all right.
+It boots fast when CONFIG_IPIPE is disabled
 
-http://xenomai.org/2014/08/porting-a-linux-application-to-xenomai-dual-kernel/
+I have CONFIG_CPU_FREQ disabled.
 
--- 
-					    Gilles.
+It hangs for about 45 seconds after the
+"console [tty0] enabled, bootconsole disabled" message
+
+It is very slow to shutdown, too.
+
+Where I can look to find the issue please ?
+
+Best regards
+Thierry
+
 
