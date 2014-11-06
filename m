@@ -1,11 +1,14 @@
-From: =?iso-8859-1?Q?Terje_Fr=F8ysa?= <Terje.Froysa@sintef.no>
-Date: Thu, 6 Nov 2014 16:00:46 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C6765D87@SINTEFEXMBX05.sintef.no>
-Content-Language: en-US
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Thu, 6 Nov 2014 11:04:57 -0500
+Message-ID: <20141106160457.GP24110@csclub.uwaterloo.ca>
+References: <20141106125217.GC29228@sisyphus.hd.free.fr>
+ <2121666186.108134765.1415284907675.JavaMail.root@zimbra90-e16.priv.proxad.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Applying the xeno-16550A driver on Beaglebone Black
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2121666186.108134765.1415284907675.JavaMail.root@zimbra90-e16.priv.proxad.net>
+Subject: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 +
+ adeos-ipipe-3.0.43-mx6q-1.18-14 -> very slow boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,49 +17,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: tbultel@free.fr
+Cc: xenomai@xenomai.org
 
-Dear Forum,
-I need a confirmation on my understanding of the xeno-16550A install.
+On Thu, Nov 06, 2014 at 03:41:47PM +0100, tbultel@free.fr wrote:
+> Gilles, we do not have CONFIG_ARM_ERRATA_754327 enabled
+> It is -not- enabled in the evaluation kernel that is provided by the 
+> manufacturer.
+> That errata is said to be for CPU revs < r2p0
+> 
+> I am a little bit puzzled about the naming conventions for the CPU revision,
+> uboot says rev1.2, the kernel says
+> 
+> Processor	: ARMv7 Processor rev 10 (v7l)
+> ...
+> 
+> CPU implementer	: 0x41
+> CPU architecture: 7
+> CPU variant	: 0x2
+> CPU part	: 0xc09
+> CPU revision	: 10
+> 
+> how can I do the matching ?
+> 
+> Meanwhile, we noticed that compared to the evaluation kernel, we were missing
+> CONFIG_ARM_ERRATA_754322 and CONFIG_PL310_ERRATA_769419
+> 
+> Adding them helps a lot, but the freeze still happens on one machine
+> 
+> We are currently trying with 754322 + 769419 + 754327 + 5 nops in fec ... 
+> but not sure if we need 754327.
+> 
+> Regards
+> Thierry
+> 
+> PS: Regarding the thermal issue, we have changed our supplier, we now have
+> a dissipator that is big enough (it is the AMOS820 from Via Embedded)
 
-I have been studying the following URL's:
-http://xenomai.org/serial-16550a-driver/
-https://www.marshut.net/ihwimw/fail-to-load-the-xeno-16550a-real-time-seria=
-l-port-driver-on-beaglebone-black.html
+I am not sure how to read the A9 revision.  I have this on a system:
 
-I have already enabled the in-kernel compile of the xeno-16550A and both io=
--port and memory mapped access.
-Thus, I guess the Xenomai " In-Kernel Driver Setup" will apply.
+processor       : 0
+model name      : ARMv7 Processor rev 2 (v7l)
+Features        : swp half thumb fastmult vfp edsp thumbee neon vfpv3 tls vfpv4 idiva idivt vfpd32 lpae 
+CPU implementer : 0x41
+CPU architecture: 7
+CPU variant     : 0x2
+CPU part        : 0xc0f
+CPU revision    : 2
 
-By reading Gilles advices of the second URL, I guess I have to
+That's an A15, and on it the variant is the number after r, and the
+revision is the number after p, so this one is r2p2 as far as I know.
 
+Another one I have is:
 
-=B7         disable the  OMAP serial driver by turning off CONFIG_SERIAL_OM=
-AP in kernel configuration and
+processor       : 0
+model name      : ARMv7 Processor rev 3 (v7l)
+Features        : swp half thumb fastmult vfp edsp neon vfpv3 tls vfpv4 idiva idivt vfpd32 lpae 
+CPU implementer : 0x41
+CPU architecture: 7
+CPU variant     : 0x2
+CPU part        : 0xc0f
+CPU revision    : 3
 
-=B7         turn on CONFIG_SERIAL_8250 and observe that the console will ch=
-ange name from /dev/ttyO2 to /dev/ttyS2.
+That should be an r2p3 (also an A15).
 
-=B7         re-compile the kernel
+Quite how revision 10 converts I am not sure.
 
-Beside this I need to know where I should enter the xeno-16550 configuratio=
-n statements:
-xeno_16550A.mem=3D0x48xxxxxxx, etc...
-Can enter the parameters such that I can specify all parameters:
-xeno_16550A.mem=3D<addr>[,...] irq=3D<no>[,...] baud_base=3D<val>[,...] tx_=
-fifo=3D<val>[,...] start_index=3D<val>[,...]
+Looking at some freescale documents on the imx6, it appears the core is
+in fact expected to be r2p10, so it appears it really is as simple as
+it appears.  That of course means you are way past r2p0 and hence the
+errata should not apply.
 
-As the xeon_16550A is a RTDM driver, I guess the device files will appear a=
-s "rtserX" under the /proc/xenomai/rtdm ?
-
-Best regards
-Terje Froysa
-
-Smail: Terje Fr=F8ysa, SINTEF ICT (Information and Communication Technology=
-), N-7465 Trondheim, Norway.
-Email: terje.froysa@sintef.no<blocked::mailto:terje.froysa@sintef.no> <mail=
-to:terje.froysa@sintef.no<blocked::mailto:terje.froysa@sintef.no>>
-Phone: +47 930 03603
-Company: Independent R&D, see <http://www.sintef.no/<blocked::http://www.si=
-ntef.no/>
+-- 
+Len Sorensen
 
