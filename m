@@ -1,12 +1,11 @@
-Message-ID: <54512440.3000806@xenomai.org>
-Date: Wed, 29 Oct 2014 18:30:40 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: =?iso-8859-1?Q?Terje_Fr=F8ysa?= <Terje.Froysa@sintef.no>
+Date: Thu, 6 Nov 2014 16:00:46 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C6765D87@SINTEFEXMBX05.sintef.no>
+Content-Language: en-US
 MIME-Version: 1.0
-References: <94331816.zv1NYeHro4@riemann>
-In-Reply-To: <94331816.zv1NYeHro4@riemann>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Message Pipe services behaviour
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Applying the xeno-16550A driver on Beaglebone Black
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,61 +14,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Steve M. Robbins" <steve@sumost.ca>, Xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10/29/2014 05:11 PM, Steve M. Robbins wrote:
+Dear Forum,
+I need a confirmation on my understanding of the xeno-16550A install.
 
-> In the old FIFO-based code, we had a suspicion of the similar problem.  Since 
-> the linux process is not real time, we expect multiple messages to be waiting.  
-> To avoid running through the select/read loop once for each message, our old 
-> FIFO-based code opened the file in nonblocking mode and did a read into a buffer 
-> that could hold up to 100 messages.  We generally would read 5-7 at a time, 
-> not 100, so this proved that the reader could keep up when reading in batches.
-> 
-> Using this same technique with the /dev/rtpN end of a Message Pipe never reads 
-> more than 1 message.  I tried both blocking and non-blocking modes but got the 
-> same result.  So this is my main question: knowing that there are likely many 
-> messages in the pipe, how do I read them in a batch?
-> 
+I have been studying the following URL's:
+http://xenomai.org/serial-16550a-driver/
+https://www.marshut.net/ihwimw/fail-to-load-the-xeno-16550a-real-time-seria=
+l-port-driver-on-beaglebone-black.html
 
-Reading with O_NONBLOCK set on /dev/rtp should do the trick. If it does
-not, this could mean that your rt side is filling up the pool too fast
-compared to the scheduling opportunities for the nrt side. The latter
-won't run until the rt activity becomes quiescent long enough.
+I have already enabled the in-kernel compile of the xeno-16550A and both io=
+-port and memory mapped access.
+Thus, I guess the Xenomai " In-Kernel Driver Setup" will apply.
 
-You can track how many bytes are readable on the nrt side by using
-ioctl(.., FIONREAD, &some_int), to make sure this value does increase
-over time until ENOMEM is received. Otherwise there must be a leak of
-consumed message buffers.
+By reading Gilles advices of the second URL, I guess I have to
 
-[snip]
 
-> When I created the pipes with poolsize=0, all three queues would eventually 
-> begin to return -ENOMEM.  After switching to poolsize=1000*sizeof(message), it 
-> seems to be only the middle-sized message that fails to allocate.  That's not 
-> a conclusive observation, but if the other two are failing to allocate it is 
-> much less often than the middle one which eventally gets stuffed up and always 
-> fails.  This is quite surprising to me.
+=B7         disable the  OMAP serial driver by turning off CONFIG_SERIAL_OM=
+AP in kernel configuration and
 
-poolsize=0 means to pull the buffer memory from the main Xenomai heap,
-the size of which is given by CONFIG_XENO_OPT_SYS_HEAPSZ in your
-Kconfig. Otherwise, some kernel memory is pulled from the regular linux
-allocator for this purpose.
+=B7         turn on CONFIG_SERIAL_8250 and observe that the console will ch=
+ange name from /dev/ttyO2 to /dev/ttyS2.
 
-So if ENOMEM is received with poolsize=0, this means that a memory
-shortage happens due to the pressure on the Xenomai main/system heap,
-which is always bad news. I would recommend to use a local pool (i.e.
-poolsz > 0) to prevent a consumption peak on the pipe from affecting the
-whole Xenomai system.
+=B7         re-compile the kernel
 
-You can read /proc/xenomai/heap while your test runs, to observe how
-heaps behave.
+Beside this I need to know where I should enter the xeno-16550 configuratio=
+n statements:
+xeno_16550A.mem=3D0x48xxxxxxx, etc...
+Can enter the parameters such that I can specify all parameters:
+xeno_16550A.mem=3D<addr>[,...] irq=3D<no>[,...] baud_base=3D<val>[,...] tx_=
+fifo=3D<val>[,...] start_index=3D<val>[,...]
 
-Also, a memory leak was fixed in the 2.6 time frame, but it would bite
-only when closing the file descriptor to the pipe. This said, you may
-want to patch it in, to save some hair pulling sessions in the future:
-http://git.xenomai.org/xenomai-2.6.git/commit/?id=ef8be4e4e58489479c2245a87b1dbd04d331dca9
+As the xeon_16550A is a RTDM driver, I guess the device files will appear a=
+s "rtserX" under the /proc/xenomai/rtdm ?
 
--- 
-Philippe.
+Best regards
+Terje Froysa
+
+Smail: Terje Fr=F8ysa, SINTEF ICT (Information and Communication Technology=
+), N-7465 Trondheim, Norway.
+Email: terje.froysa@sintef.no<blocked::mailto:terje.froysa@sintef.no> <mail=
+to:terje.froysa@sintef.no<blocked::mailto:terje.froysa@sintef.no>>
+Phone: +47 930 03603
+Company: Independent R&D, see <http://www.sintef.no/<blocked::http://www.si=
+ntef.no/>
 
