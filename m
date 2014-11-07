@@ -1,18 +1,14 @@
-Message-ID: <5463882B.4060104@free.fr>
-Date: Wed, 12 Nov 2014 17:17:47 +0100
-From: Thierry Bultel <tbultel@free.fr>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Fri, 7 Nov 2014 15:21:15 -0500
+Message-ID: <20141107202115.GT24110@csclub.uwaterloo.ca>
+References: <20141001142416.GA4435@csclub.uwaterloo.ca>
+ <20141107182600.GS24110@csclub.uwaterloo.ca>
+ <545D12D2.2020104@xenomai.org>
 MIME-Version: 1.0
-References: <20141110123657.GJ17476@sisyphus.hd.free.fr>
- <54626A2E.6020307@free.fr> <20141111200358.GL17476@sisyphus.hd.free.fr>
- <54635DD7.9090800@free.fr> <20141112133447.GO17476@sisyphus.hd.free.fr>
- <54636E3F.1070207@free.fr> <20141112143026.GT17476@sisyphus.hd.free.fr>
- <54637AD2.3080507@free.fr> <20141112152940.GX17476@sisyphus.hd.free.fr>
- <54638058.10509@free.fr> <20141112155528.GY17476@sisyphus.hd.free.fr>
-In-Reply-To: <20141112155528.GY17476@sisyphus.hd.free.fr>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 +
- adeos-ipipe-3.0.43-mx6q-1.18-14 -> very slow boot
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <545D12D2.2020104@xenomai.org>
+Subject: Re: [Xenomai] I-pipe error when requesting irq that is on omap gpio
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,106 +17,109 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: nicolas Mabire <nicolas.mabire@basystemes.fr>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Le 12/11/2014 16:55, Gilles Chanteperdrix a écrit :
-> On Wed, Nov 12, 2014 at 04:44:24PM +0100, Thierry Bultel wrote:
->> Le 12/11/2014 16:29, Gilles Chanteperdrix a écrit :
->>> On Wed, Nov 12, 2014 at 04:20:50PM +0100, Thierry Bultel wrote:
->>>> Le 12/11/2014 15:30, Gilles Chanteperdrix a écrit :
->>>>> On Wed, Nov 12, 2014 at 03:27:11PM +0100, Thierry Bultel wrote:
->>>>>> Le 12/11/2014 14:34, Gilles Chanteperdrix a écrit :
->>>>>>> On Wed, Nov 12, 2014 at 02:17:11PM +0100, Thierry Bultel wrote:
->>>>>>>> Le 11/11/2014 21:03, Gilles Chanteperdrix a écrit :
->>>>>>>>> On Tue, Nov 11, 2014 at 08:57:34PM +0100, Thierry Bultel wrote:
->>>>>>>>>> Le 10/11/2014 13:36, Gilles Chanteperdrix a écrit :
->>>>>>>>>>> You can use printascii in the timer interrupt acknowledge routine to
->>>>>>>>>>> print a character every HZ ticks, this will give bad latency, but
->>>>>>>>>>> should work.
->>>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>> For unknown reason, the kernel gets stuck after
->>>>>>>>>> "console [tty0] enabled, bootconsole disabled" if I use printascii
->>>>>>>>>> in do_local_timer().
->>>>>>>>>> earlyprintk seems broken as well.
->>>>>>>>>
->>>>>>>>> Without doing this, does earlyprintk work?
->>>>>>>>
->>>>>>>> No it does not. In fact, this kernel is strange with early debug.
->>>>>>>> Namely, even without earlyprintk, when it comes to disable the
->>>>>>>> bootconsole to use the normal one, it uses then re-prints everything
->>>>>>>> was printed before, making think that it has restarted from the
->>>>>>>> beginning.
->>>>>>>>
->>>>>>>> I confirm that calling printascii in do_local_timer() leads to a
->>>>>>>> kernel panic. Same thing if I use __ipipe_serial_debug instead.
->>>>>>>> I have used a counter (one per cpu) to start logging after 30000
->>>>>>>> ticks and it crashes after that delay.
->>>>>>>
->>>>>>> Having looked at the sources, I do not find a debug-macro.S for
->>>>>>> imx6. So, I doubt printascii can work at all. Maybe a first step is
->>>>>>> to implement this missing support.
->>>>>>
->>>>>> I think that the implementation is in arch/arm/plat-mxc/include
->>>>>> /mach/debug-macro.S
->>>>>
->>>>> And the debug UART you are using is UART2 ?
->>>>>
->>>> Yes,
->>>> and I have found out why the logs before the console switch were
->>>> displayed twice. This is because the BSP directly calls
->>>>
->>>> early_console_setup(UART2_BASE_ADDR, uart_clk);
->>>>
->>>> removing it does not make earlyprintk or printascii work better,
->>>> unfortunately.
->>>
->>> Do you get the "Uncompressing kernel..." message on the console?
->>>
->> This is all what I get when adding earlyprintk=serial,ttymxc1,115200
->> to the bootargs:
->>
->>
->> Uncompressing Linux... done, booting the kernel.
->> Linux version 3.0.43_4.1.0 (localuser@thierry-desktop) (gcc version
->> 4.7.3 (Buildroot 2014.02-rc3-g7ebc513) ) #20 SMP PREEMPT Wed Nov 12
->> 16:10:51 CET 2014
->> CPU: ARMv7 Processor [412fc09a] revision 10 (ARMv7), cr=10c53c7d
->> CPU: VIPT nonaliasing data cache, VIPT aliasing instruction cache
->> Machine: Freescale i.MX 6Quad VAB-820 Board
->> bootconsole [earlycon0] enabled
->> Memory policy: ECC disabled, Data cache writealloc
->> CPU identified as i.MX6Q, silicon rev 1.2
->>
->> <nothing after>
->
-> Your problem seems to be that a static mapping for the UART2
-> registers is missing: printascii only works so long as the MMU is
-> not enabled.
->
-> Please try the following patch:
-> diff --git a/arch/arm/mach-mx6/mm.c b/arch/arm/mach-mx6/mm.c
-> index ad66a94..789d265 100644
-> --- a/arch/arm/mach-mx6/mm.c
-> +++ b/arch/arm/mach-mx6/mm.c
-> @@ -56,6 +56,11 @@ static struct map_desc mx6_io_desc[] __initdata = {
->   	.pfn = __phys_to_pfn(ARM_PERIPHBASE),
->   	.length = ARM_PERIPHBASE_SIZE,
->   	.type = MT_DEVICE},
-> +	{
-> +	.virtual = IMX_IO_ADDRESS(MX6Q_UART2_BASE_ADDR),
-> +	.pfn = __phys_to_pfn(MX6Q_UART2_BASE_ADDR),
-> +	.length = 4096,
-> +	.type = MT_DEVICE},
->   };
->
->   static void mx6_set_cpu_type(void)
->
->
-Many thanks Gilles, that solves both my call to printascii and 
-earlyprintk in bootargs.
-I keep trying to reproduce the freeze
+On Fri, Nov 07, 2014 at 07:43:30PM +0100, Philippe Gerum wrote:
+> On 11/07/2014 07:26 PM, Lennart Sorensen wrote:
+> > On Wed, Oct 01, 2014 at 10:24:16AM -0400, Lennart Sorensen wrote:
+> >> I tried using an omap-gpio as an interrupt in xenomai and got this message when registering it:
+> >>
+> >> [58531.105521] I-pipe: Detected illicit call from head domain 'Xenomai'
+> >> [58531.105521]         into a regular Linux service
+> >> [58531.105538] CPU: 0 PID: 9816 Comm: StartTask Tainted: G           O 3.12-1-am5726 #1 Debian 3.12.27-0.1RR6
+> >> [58531.105558] [<c0016410>] (unwind_backtrace+0x0/0xf8) from [<c001286c>] (show_stack+0x10/0x14)
+> >> [58531.105577] [<c001286c>] (show_stack+0x10/0x14) from [<c0440784>] (dump_stack+0x70/0x8c)
+> >> [58531.105594] [<c0440784>] (dump_stack+0x70/0x8c) from [<c001a55c>] (ipipe_test_and_stall_root+0x8/0x8c)
+> >> [58531.105611] [<c001a55c>] (ipipe_test_and_stall_root+0x8/0x8c) from [<c04449c4>] (_raw_spin_lock_irqsave+0xc/0x4c)
+> >> [58531.105626] [<c04449c4>] (_raw_spin_lock_irqsave+0xc/0x4c) from [<c0016238>] (unwind_frame+0x2c4/0x49c)
+> >> [58531.105641] [<c0016238>] (unwind_frame+0x2c4/0x49c) from [<c0016490>] (unwind_backtrace+0x80/0xf8)
+> >> [58531.105657] [<c0016490>] (unwind_backtrace+0x80/0xf8) from [<c001286c>] (show_stack+0x10/0x14)
+> >> [58531.105673] [<c001286c>] (show_stack+0x10/0x14) from [<c0440784>] (dump_stack+0x70/0x8c)
+> >> [58531.105689] [<c0440784>] (dump_stack+0x70/0x8c) from [<c0040060>] (warn_slowpath_common+0x68/0x8c)
+> >> [58531.105705] [<c0040060>] (warn_slowpath_common+0x68/0x8c) from [<c00400a0>] (warn_slowpath_null+0x1c/0x24)
+> >> [58531.105721] [<c00400a0>] (warn_slowpath_null+0x1c/0x24) from [<c001a308>] (ipipe_set_irq_affinity+0x98/0xd8)
+> >> [58531.105783] [<c001a308>] (ipipe_set_irq_affinity+0x98/0xd8) from [<bf0a689c>] (xnintr_attach+0x2c/0x39c [xeno_nucleus])
+> >> [58531.105907] [<bf0a689c>] (xnintr_attach+0x2c/0x39c [xeno_nucleus]) from [<bf1510cc>] (rt_intr_create+0x258/0x4cc [xeno_native])
+> >> [58531.106009] [<bf1510cc>] (rt_intr_create+0x258/0x4cc [xeno_native]) from [<bf132de8>] (__rt_intr_create+0x9c/0x124 [xeno_native])
+> >> [58531.106124] [<bf132de8>] (__rt_intr_create+0x9c/0x124 [xeno_native]) from [<bf0c2658>] (hisyscall_event+0x184/0x34c [xeno_nucleus])
+> >> [58531.106198] [<bf0c2658>] (hisyscall_event+0x184/0x34c [xeno_nucleus]) from [<c00afb9c>] (ipipe_syscall_hook+0x68/0xa8)
+> >> [58531.106216] [<c00afb9c>] (ipipe_syscall_hook+0x68/0xa8) from [<c00ae698>] (__ipipe_notify_syscall+0x170/0x408)
+> >> [58531.106233] [<c00ae698>] (__ipipe_notify_syscall+0x170/0x408) from [<c000eefc>] (pipeline_syscall+0x8/0x24)
+> >> [58531.106336] [<bf0a689c>] (xnintr_attach+0x2c/0x39c [xeno_nucleus]) from [<bf1510cc>] (rt_intr_create+0x258/0x4cc [xeno_native])
+> >> [58531.106434] [<bf1510cc>] (rt_intr_create+0x258/0x4cc [xeno_native]) from [<bf132de8>] (__rt_intr_create+0x9c/0x124 [xeno_native])
+> >> [58531.106538] [<bf132de8>] (__rt_intr_create+0x9c/0x124 [xeno_native]) from [<bf0c2658>] (hisyscall_event+0x184/0x34c [xeno_nucleus])
+> >> [58531.106609] [<bf0c2658>] (hisyscall_event+0x184/0x34c [xeno_nucleus]) from [<c00afb9c>] (ipipe_syscall_hook+0x68/0xa8)
+> >> [58531.106626] [<c00afb9c>] (ipipe_syscall_hook+0x68/0xa8) from [<c00ae698>] (__ipipe_notify_syscall+0x170/0x408)
+> >> [58531.106641] [<c00ae698>] (__ipipe_notify_syscall+0x170/0x408) from [<c000eefc>] (pipeline_syscall+0x8/0x24)
+> >> [58531.106652] ---[ end trace dff1d3990fff1b03 ]---
+> >> [58531.106718] ------------[ cut here ]------------
+> >> [58531.106729] WARNING: CPU: 0 PID: 9816 at /tmp/linux/linux-3.12.27.rr1/arch/arm/kernel/ipipe.c:158 ipipe_set_irq_affinity+0x98/0xd8(
+> >> )
+> >> [58531.106738] Modules linked in: 8021q garp stp mrp llc l2tp_eth l2tp_netlink l2tp_core ip_gre ip_tunnel gre macvlan ti_pru_eth rcksa
+> >> pi_layer2(O) iptable_nat nf_conntrack_ipv4 nf_defrag_ipv4 nf_nat_ipv4 nf_nat nf_conntrack dummy xeno_posix xeno_rtdm xeno_native xeno_
+> >> nucleus max6369_wdt iptable_filter ip_tables x_tables xhci_hcd dwc3 ahci_platform omap_aes phy_omap_usb2 phy_omap_pipe3 phy_omap_contr
+> >> ol dwc3_omap lm75 [last unloaded: xfrm_user]
+> >> [58531.106980] CPU: 0 PID: 9816 Comm: StartTask Tainted: G           O 3.12-1-am5726 #1 Debian 3.12.27-0.1RR6
+> >> [58531.106990] [<c0016410>] (unwind_backtrace+0x0/0xf8) from [<c001286c>] (show_stack+0x10/0x14)
+> >> [58531.106998] [<c001286c>] (show_stack+0x10/0x14) from [<c0440784>] (dump_stack+0x70/0x8c)
+> >> [58531.107007] [<c0440784>] (dump_stack+0x70/0x8c) from [<c0040060>] (warn_slowpath_common+0x68/0x8c)
+> >> [58531.107016] [<c0040060>] (warn_slowpath_common+0x68/0x8c) from [<c00400a0>] (warn_slowpath_null+0x1c/0x24)
+> >> [58531.107025] [<c00400a0>] (warn_slowpath_null+0x1c/0x24) from [<c001a308>] (ipipe_set_irq_affinity+0x98/0xd8)
+> >> [58531.107034] [<c001a308>] (ipipe_set_irq_affinity+0x98/0xd8) from [<bf0a689c>] (xnintr_attach+0x2c/0x39c [xeno_nucleus])
+> >>
+> >> I saw ipipe patches in the gpio-omap.c but maybe something is still
+> >> missing.
+> >>
+> >> Any ideas?
+> >>
+> >> Of course it may be that our code is used to running on an older xenomai
+> >> where it first called request_irq and then xenomai took over the irq
+> >> handling.  I wish the person that wrote that code still worked here to
+> >> explain why that was done.
+> >>
+> >> If I don't use the gpio irq but instead use an irq that is one level
+> >> lower, then I get no such error message (although the pin isn't setup
+> >> properly either then so it doesn't actually work either).
+> > 
+> > I discovered that if I comment out:
+> > 
+> > #ifdef CONFIG_SMP
+> >         xnarch_set_irq_affinity(intr->irq, nkaffinity);
+> > #endif /* CONFIG_SMP */
+> > 
+> > I stop getting the huge backtrace and warning about calling a linux
+> > service from xenomai.
+> 
+> For this particular issue, Xenomai 2.x is deadly wrong. Creating,
+> deleting, enabling or disabling an IRQ channel must be done from
+> secondary mode. The syscall mode bits for these native API calls are
+> wrong, should be as follows instead:
+> 
+> diff --git a/ksrc/skins/native/syscall.c b/ksrc/skins/native/syscall.c
+> index 950b092..dff7f4d 100644
+> --- a/ksrc/skins/native/syscall.c
+> +++ b/ksrc/skins/native/syscall.c
+> @@ -4145,12 +4145,12 @@ static xnsysent_t __systab[] = {
+>  	[__native_alarm_stop] = {&__rt_alarm_stop, __xn_exec_any},
+>  	[__native_alarm_wait] = {&__rt_alarm_wait, __xn_exec_primary},
+>  	[__native_alarm_inquire] = {&__rt_alarm_inquire, __xn_exec_any},
+> -	[__native_intr_create] = {&__rt_intr_create, __xn_exec_any},
+> +	[__native_intr_create] = {&__rt_intr_create, __xn_exec_lostage},
+>  	[__native_intr_bind] = {&__rt_intr_bind, __xn_exec_conforming},
+> -	[__native_intr_delete] = {&__rt_intr_delete, __xn_exec_any},
+> +	[__native_intr_delete] = {&__rt_intr_delete, __xn_exec_lostage},
+>  	[__native_intr_wait] = {&__rt_intr_wait, __xn_exec_primary},
+> -	[__native_intr_enable] = {&__rt_intr_enable, __xn_exec_any},
+> -	[__native_intr_disable] = {&__rt_intr_disable, __xn_exec_any},
+> +	[__native_intr_enable] = {&__rt_intr_enable, __xn_exec_lostage},
+> +	[__native_intr_disable] = {&__rt_intr_disable, __xn_exec_lostage},
+>  	[__native_intr_inquire] = {&__rt_intr_inquire, __xn_exec_any},
+>  	[__native_pipe_create] = {&__rt_pipe_create, __xn_exec_lostage},
+>  	[__native_pipe_bind] = {&__rt_pipe_bind, __xn_exec_conforming},
 
-Thierry
+Oh nifty.  Will give that a try then.
+
+-- 
+Len Sorensen
 
