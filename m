@@ -1,17 +1,10 @@
-Message-ID: <54611E86.4010903@web.de>
-Date: Mon, 10 Nov 2014 21:22:30 +0100
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <545CC287.908@selex-es.com>
+Date: Fri, 7 Nov 2014 14:00:55 +0100
+From: Pampolini Matteo <matteo.pampolini@selex-es.com>
 MIME-Version: 1.0
-References: <20141110155634.GM17476@sisyphus.hd.free.fr>
- <54610426.4080707@siemens.com> <20141110194606.GO17476@sisyphus.hd.free.fr>
- <5461182E.1060201@web.de> <20141110200028.GQ17476@sisyphus.hd.free.fr>
- <546119F2.4080709@web.de> <20141110200632.GR17476@sisyphus.hd.free.fr>
- <54611BB7.1090500@web.de> <20141110201409.GS17476@sisyphus.hd.free.fr>
- <54611D4E.6090308@web.de> <20141110201851.GT17476@sisyphus.hd.free.fr>
-In-Reply-To: <20141110201851.GT17476@sisyphus.hd.free.fr>
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] "inconsistent lock state" on boot-up
+Subject: [Xenomai] Xenomai 2.X on Freescale QorIQ T2080 processor
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,29 +13,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2014-11-10 21:18, Gilles Chanteperdrix wrote:
-> On Mon, Nov 10, 2014 at 09:17:18PM +0100, Jan Kiszka wrote:
->> That's why we support this on x86.
-> =
+Hello there,
 
-> But at what cost? =
+do you know if all around the world someone is working to port Xenomai 2.X =
+on Freescale QorIQ T2080 processor?
+Because this processor does not appear in the list of supported ones?
 
+If yes, would it be possible to know which patch is used? And if no, may yo=
+u please point me in the right direction
+to create it by myself and then give it back to community?
 
-The last times I touched that arch: none. It's apparently mature and
-doesn't break on updates. Not sure if Philippe stumbled over something
-the past years, though.
+Many thanks in advance for your answer,
 
-Jan
+Matteo
+This email and any attachments are confidential to the intended recipient a=
+nd may also be privileged. If you are not the intended recipient please del=
+ete it from your system and notify the sender. You should not copy it or us=
+e it for any purpose nor disclose or distribute its contents to any other p=
+erson.
+Questa e-mail e tutti i suoi allegati sono da intendersi inviati in via ris=
+ervata all'effettivo destinatario e possono essere soggetti a restrizioni l=
+egali. Se non siete l'effettivo destinatario o avete ricevuto il messaggio =
+per errore siete pregati di cancellarlo dal vostro sistema e di avvisare il=
+ mittente. E' vietata la duplicazione, l'uso a qualsiasi titolo, la divulga=
+zione o la distribuzione dei contenuti di questa e-mail a qualunque altro s=
+oggetto.
 
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 198 bytes
-Desc: OpenPGP digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20141110/381ad6f=
-2/attachment.sig>
+Prima di stampare questa comunicazione consideratene, per favore, l'impatto=
+ ambientale
+Please consider the environment before printing this email
