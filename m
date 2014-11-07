@@ -1,10 +1,13 @@
-Message-ID: <5451FFA4.5030805@ma-info.de>
-Date: Thu, 30 Oct 2014 10:06:44 +0100
-From: Frede Florian <florian.frede@ma-info.de>
+Date: Fri, 7 Nov 2014 09:22:40 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141107082240.GB6724@sisyphus.hd.free.fr>
+References: <CALe7ZU13j0JPCHCXUeog=p8wc+0Cg-swwYW9ULKwSAQ9XYEz9g@mail.gmail.com>
+ <20141107081517.GA6724@sisyphus.hd.free.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] i-Pipi patch 3.14
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20141107081517.GA6724@sisyphus.hd.free.fr>
+Subject: Re: [Xenomai] error: unknow type name 'RT_PIPE_MSG'
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,20 +16,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: JAY KOTHARI <jaikothari10@gmail.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-Hello,
+On Fri, Nov 07, 2014 at 09:15:17AM +0100, Gilles Chanteperdrix wrote:
+> On Fri, Nov 07, 2014 at 12:06:05PM +0530, JAY KOTHARI wrote:
+> > Hello,
+> >        I am using real time pipe. I have also included the
+> > <native/pipe.h>. But RT_PIPE_MSG is not known. Why could this be
+> > error. I am using xenomai 2..6.3 in my system.
+> 
+> Please show us:
+> - the code you are trying to compile (reduce it to a simple,
+> self-contained, example if possible)
+> - the command you run to compile it
+> - all the messages printed during compilation.
 
-I tried to patch the Kernel 3.14.22 and there is two new lines in the 
-file fs/exec.c
+Forget it, see Philippe answer.
 
-tsk->mm->vmacache_seqnum = 0;
-vmacache_flush(tsk);
-
-I am not sure if the line from the iPipe patch should placed before or 
-after this lines...
-
-+    ipipe_mm_switch_unprotect(flags);
-
-Thanks Florian
+-- 
+					    Gilles.
 
