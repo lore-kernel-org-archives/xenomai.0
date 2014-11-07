@@ -1,10 +1,13 @@
-Date: Fri, 7 Nov 2014 10:48:43 +0100 (CET)
-From: tbultel@free.fr
-Message-ID: <1260200250.109080355.1415353723657.JavaMail.root@zimbra90-e16.priv.proxad.net>
-In-Reply-To: <20141106160821.GE30908@sisyphus.hd.free.fr>
+Date: Fri, 7 Nov 2014 10:52:22 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141107095222.GD6724@sisyphus.hd.free.fr>
+References: <20141106160821.GE30908@sisyphus.hd.free.fr>
+ <1260200250.109080355.1415353723657.JavaMail.root@zimbra90-e16.priv.proxad.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1260200250.109080355.1415353723657.JavaMail.root@zimbra90-e16.priv.proxad.net>
 Subject: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 +
  adeos-ipipe-3.0.43-mx6q-1.18-14 -> very slow boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,93 +18,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: tbultel@free.fr
 Cc: xenomai@xenomai.org
 
+On Fri, Nov 07, 2014 at 10:48:43AM +0100, tbultel@free.fr wrote:
+> 
+> 
+> ----- Mail original -----
+> > De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+> > À: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+> > Cc: tbultel@free.fr, xenomai@xenomai.org
+> > Envoyé: Jeudi 6 Novembre 2014 17:08:21
+> > Objet: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 + adeos-ipipe-3.0.43-mx6q-1.18-14 -> very slow boot
+> > 
+> > On Thu, Nov 06, 2014 at 11:04:57AM -0500, Lennart Sorensen wrote:
+> > > On Thu, Nov 06, 2014 at 03:41:47PM +0100, tbultel@free.fr wrote:
+> > > > Gilles, we do not have CONFIG_ARM_ERRATA_754327 enabled
+> > > > It is -not- enabled in the evaluation kernel that is provided by
+> > > > the
+> > > > manufacturer.
+> > > > That errata is said to be for CPU revs < r2p0
+> > > > 
+> > > > I am a little bit puzzled about the naming conventions for the
+> > > > CPU revision,
+> > > > uboot says rev1.2, the kernel says
+> > > > 
+> > > > Processor	: ARMv7 Processor rev 10 (v7l)
+> > > > ...
+> > > > 
+> > > > CPU implementer	: 0x41
+> > > > CPU architecture: 7
+> > > > CPU variant	: 0x2
+> > > > CPU part	: 0xc09
+> > > > CPU revision	: 10
+> > > > 
+> > > > how can I do the matching ?
+> > > > 
+> > > > Meanwhile, we noticed that compared to the evaluation kernel, we
+> > > > were missing
+> > > > CONFIG_ARM_ERRATA_754322 and CONFIG_PL310_ERRATA_769419
+> > > > 
+> > > > Adding them helps a lot, but the freeze still happens on one
+> > > > machine
+> > > > 
+> > > > We are currently trying with 754322 + 769419 + 754327 + 5 nops in
+> > > > fec ...
+> > > > but not sure if we need 754327.
+> > > > 
+> > > > Regards
+> > > > Thierry
+> > > > 
+> > > > PS: Regarding the thermal issue, we have changed our supplier, we
+> > > > now have
+> > > > a dissipator that is big enough (it is the AMOS820 from Via
+> > > > Embedded)
+> > > 
+> > > I am not sure how to read the A9 revision.  I have this on a
+> > > system:
+> > 
+> > I have found the method I gave in ARM documentation. I am pretty
+> > sure this is how it works.
+> > 
+> > --
+> > 					    Gilles.
+> > 
+> 
+> 
+> Gille, 
+> we agree that as we have a r2p10, the 754327 does not apply.
+> Thus the only erratas I was missing are CONFIG_ARM_ERRATA_754322 and CONFIG_PL310_ERRATA_769419,
+> that are in ./arch/arm/configs/imx6_defconfig
+> They are now part of my config.
+> Unfortunately, the network stress test still makes the freeze happen with CONFIG_IPIPE enabled
+> 
+> How come can that freeze only happen on -some- machines (they all have the same CPU rev), 
+> and that the time they stay up is dependent on them ?
+> If the freeze was reproducible without CONFIG_IPIPE, we could easily say that it is simply
+> an hardware bug but unfortunately with is not the case.
+> 
+> A new info: the machine that freezes the most also freezes with ethernet fec unplugged.
+> All these machines work fine with CONFIG_IPIPE disabled.
 
+Well, you told me that you had freezes because of the mb() in the
+FEC code, all that I can tell you is that the bug I know related to
+mb() would probably be fixed by adding nops before the mb(). It is
+not clear to me, have you tried that?
 
------ Mail original -----
-> De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-> =C3=80: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-> Cc: tbultel@free.fr, xenomai@xenomai.org
-> Envoy=C3=A9: Jeudi 6 Novembre 2014 17:08:21
-> Objet: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 + adeos-ipipe-3.0.43-mx6q-1.=
-18-14 -> very slow boot
->=20
-> On Thu, Nov 06, 2014 at 11:04:57AM -0500, Lennart Sorensen wrote:
-> > On Thu, Nov 06, 2014 at 03:41:47PM +0100, tbultel@free.fr wrote:
-> > > Gilles, we do not have CONFIG_ARM_ERRATA_754327 enabled
-> > > It is -not- enabled in the evaluation kernel that is provided by
-> > > the
-> > > manufacturer.
-> > > That errata is said to be for CPU revs < r2p0
-> > >=20
-> > > I am a little bit puzzled about the naming conventions for the
-> > > CPU revision,
-> > > uboot says rev1.2, the kernel says
-> > >=20
-> > > Processor=09: ARMv7 Processor rev 10 (v7l)
-> > > ...
-> > >=20
-> > > CPU implementer=09: 0x41
-> > > CPU architecture: 7
-> > > CPU variant=09: 0x2
-> > > CPU part=09: 0xc09
-> > > CPU revision=09: 10
-> > >=20
-> > > how can I do the matching ?
-> > >=20
-> > > Meanwhile, we noticed that compared to the evaluation kernel, we
-> > > were missing
-> > > CONFIG_ARM_ERRATA_754322 and CONFIG_PL310_ERRATA_769419
-> > >=20
-> > > Adding them helps a lot, but the freeze still happens on one
-> > > machine
-> > >=20
-> > > We are currently trying with 754322 + 769419 + 754327 + 5 nops in
-> > > fec ...
-> > > but not sure if we need 754327.
-> > >=20
-> > > Regards
-> > > Thierry
-> > >=20
-> > > PS: Regarding the thermal issue, we have changed our supplier, we
-> > > now have
-> > > a dissipator that is big enough (it is the AMOS820 from Via
-> > > Embedded)
-> >=20
-> > I am not sure how to read the A9 revision.  I have this on a
-> > system:
->=20
-> I have found the method I gave in ARM documentation. I am pretty
-> sure this is how it works.
->=20
-> --
-> =09=09=09=09=09    Gilles.
->=20
-
-
-Gille,=20
-we agree that as we have a r2p10, the 754327 does not apply.
-Thus the only erratas I was missing are CONFIG_ARM_ERRATA_754322 and CONFIG=
-_PL310_ERRATA_769419,
-that are in ./arch/arm/configs/imx6_defconfig
-They are now part of my config.
-Unfortunately, the network stress test still makes the freeze happen with C=
-ONFIG_IPIPE enabled
-
-How come can that freeze only happen on -some- machines (they all have the =
-same CPU rev),=20
-and that the time they stay up is dependent on them ?
-If the freeze was reproducible without CONFIG_IPIPE, we could easily say th=
-at it is simply
-an hardware bug but unfortunately with is not the case.
-
-A new info: the machine that freezes the most also freezes with ethernet fe=
-c unplugged.
-All these machines work fine with CONFIG_IPIPE disabled.
-
-Regards
-Thierry
-
+-- 
+					    Gilles.
 
