@@ -1,19 +1,17 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Wed, 12 Nov 2014 14:52:54 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C676EBE1@SINTEFEXMBX05.sintef.no>
-References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
- <20141111140230.GA17476@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
- <314E5ECDAA86314791309FA670550F89C676E884@SINTEFEXMBX05.sintef.no>
- <20141112134531.GP17476@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C676EB35@SINTEFEXMBX05.sintef.no>
- <20141112145117.GV17476@sisyphus.hd.free.fr>
-In-Reply-To: <20141112145117.GV17476@sisyphus.hd.free.fr>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: "Registrierungen" <regist@bmwedler.de>
+References: <54509406.4000600@bmwedler.de> <54509629.8080107@bmwedler.de>
+ <54577374.9010609@bmwedler.de> <5457811D.2030502@xenomai.org>
+ <5457818E.80806@xenomai.org> <54579D7A.2010800@bmwedler.de>
+ <5457A482.7040900@xenomai.org>
+In-Reply-To: <5457A482.7040900@xenomai.org>
+Date: Fri, 7 Nov 2014 12:12:22 +0100
+Message-ID: <0a3d01cffa7b$b8b9f5f0$2a2de1d0$@bmwedler.de>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] xeno_16550A driver install problems.
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Language: de
+Subject: Re: [Xenomai] Using pipes in 3.0rc
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,31 +20,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: 'Philippe Gerum' <rpm@xenomai.org>, xenomai@xenomai.org
 
-T2sgR2lsbGVzLA0KDQpUaGFua3MhDQoNClRlcmplDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0t
-LS0tDQpGcm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFpbHRvOmdpbGxlcy5jaGFudGVwZXJk
-cml4QHhlbm9tYWkub3JnXSANClNlbnQ6IDEyLiBub3ZlbWJlciAyMDE0IDE1OjUxDQpUbzogVGVy
-amUgRnLDuHlzYQ0KQ2M6IFhlbm9tYWlAeGVub21haS5vcmcNClN1YmplY3Q6IFJlOiBbWGVub21h
-aV0geGVub18xNjU1MEEgZHJpdmVyIGluc3RhbGwgcHJvYmxlbXMuDQoNCk9uIFdlZCwgTm92IDEy
-LCAyMDE0IGF0IDAyOjMyOjQwUE0gKzAwMDAsIFRlcmplIEZyw7h5c2Egd3JvdGU6DQo+IFRoYW5r
-cyBmb3IgeW91ciBxdWljayByZXBseSBHaWxsZXMsDQo+IA0KPiAtIENoYW5naW5nIG9tYXAtc2Vy
-aWFsIGRyaXZlciBpcyBub3QgYSB0ZW1wdGluZyBzb2x1dGlvbi4NCj4gLSBJJ2xsIHRyeSBvdXQg
-eW91ciA4MjUwIHN1Z2dlc3Rpb24uDQo+IC0gSSBoYXZlIG5vdCBmaWd1cmVkIG91dCBob3cgdG8g
-IiBhcnJhbmdlIGZvciB0aGUgY2xvY2tzIHRvIGJlIHN0YXJ0ZWQiLCB3b3VsZCB0aGF0IGJlIHdy
-aXRpbmcgYSBrZXJuZWwgbW9kdWxlIHRoYXQgaW5pdGlhdGVzIHRoZSBVQVJUIGNsb2NrIHN5c3Rl
-bXM/DQo+IA0KPiBJZiBub3QgdGhlIDgyNTAgc3VnZ2VzdGlvbiB3b3JrcywgSSBiZWdpbiB0byBi
-ZWxpZXZlIHRoYXQgSSBoYXZlIHRvIGFiYW5kb24gdGhlIHhlbm9fMTY1MEEgZHJpdmVyLg0KPiBE
-byB5b3Uga25vdyBhbnlib2R5IHRoYXQgaGF2ZSBzdWNjZWVkZWQgaW4gcnVubmluZyB0aGUgeGVu
-b18xNjU1MEEgZHJpdmVyIHVuZGVyIHN1Y2ggY2lyY3Vtc3RhbmNlcz8NCg0KSSBqdXN0IGhhZCBh
-IHF1aWNrIGxvb2sgYXQgdGhlIG9tYXAtc2VyaWFsLmMgZHJpdmVyIGFuZDoNCi0gaXQgZG9lcyBu
-b3QgZG8gYW55dGhpbmcgdGhhdCBJIGNhbiBzZWUgdG8gZW5hYmxlIGl0cyBjbG9ja3MNCi0gaXQg
-ZG9lcyBOT1QgIHVzZSBieXRlIGFjY2VzcyBidXQgd29yZCBhY2Nlc3MsIHRoYXQgaXMsIGl0cyBy
-ZWdpc3RlcnMgYXJlIDE2IGJpdHMgd2lkZS4NCg0KVW5mb3J0dW5hdGVseSwgYXMgZmFyIGFzIEkg
-Y2FuIHRlbGwsIHRoZSB4ZW5vXzE2NTUwQSBkcml2ZXIgb25seSBzdXBwb3J0cyBieXRlIGFjY2Vz
-cy4gU28sIGlmIHlvdSB3YW50IGl0IHRvIHdvcmssIHlvdSBoYXZlIHRvIG1vZGlmeSB0aGUgZHJp
-dmVyIHRvIGFjY2VwdCBhICJyZWdzaGlmdCIgcGFyYW1ldGVyIGFwcGxpZWQgdG8gYWxsIG9mZnNl
-dHMgYW5kIHVzZSB0aGUgY29ycmVzcG9uZGluZyByZWFkdyBpZiByZWdzaGlmdCBpcyAyIG9yIHJl
-YWRsIGlmIHJlZ3NoaWZ0IGlzIDQuDQoNCi0tIA0KCQkJCQkgICAgR2lsbGVzLg0K
+It works now!=20
+Thanks for your support.
+
+Sascha
+
+-----Urspr=FCngliche Nachricht-----
+Von: Philippe Gerum [mailto:rpm@xenomai.org]=20
+Gesendet: Montag, 3. November 2014 16:52
+An: Registrierungen; xenomai@xenomai.org
+Betreff: Re: [Xenomai] Using pipes in 3.0rc
+
+On 11/03/2014 04:21 PM, Registrierungen wrote:
+> I tried with rc2, but now it returns with error 3 (not -3) ?
+
+http://xenomai.org/migrating-from-xenomai-2-x-to-3-x/#Message_pipes
+
+>=20
+>=20
+> Am 03.11.2014 14:22, schrieb Philippe Gerum:
+>> On 11/03/2014 02:20 PM, Philippe Gerum wrote:
+>>> On 11/03/2014 01:22 PM, Registrierungen wrote:
+>>>> Sorry for the late feedback.
+>>>>
+>>>> I found the source where it goes wrong:
+>>>>
+>>>>      if (poolsize > 0) {
+>>>>          ret =3D __RT(setsockopt(sock, SOL_XDDP, XDDP_POOLSZ,
+>>>>                        &poolsize, sizeof(poolsize)));
+>>>>          if (ret)
+>>>>              goto fail_sockopt;
+>>>>      }
+>>>>
+>>>> Hope there could be found a solution for me.
+>>>>
+>>> The solution was given a few days ago:
+>>>
+>>> http://www.xenomai.org/pipermail/xenomai/2014-October/032054.html
+>>>
+>> Those patches are present in -rc2, released a couple of days ago. You =
+
+>> should not bother with -rc1 anymore.
+>>
+>=20
+>=20
+
+
+--
+Philippe.
+
 
