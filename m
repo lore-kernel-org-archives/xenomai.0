@@ -1,18 +1,16 @@
-Date: Wed, 12 Nov 2014 15:51:17 +0100
+Date: Fri, 7 Nov 2014 10:59:14 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141112145117.GV17476@sisyphus.hd.free.fr>
-References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
- <20141111140230.GA17476@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
- <314E5ECDAA86314791309FA670550F89C676E884@SINTEFEXMBX05.sintef.no>
- <20141112134531.GP17476@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C676EB35@SINTEFEXMBX05.sintef.no>
+Message-ID: <20141107095914.GE6724@sisyphus.hd.free.fr>
+References: <20141106160821.GE30908@sisyphus.hd.free.fr>
+ <1260200250.109080355.1415353723657.JavaMail.root@zimbra90-e16.priv.proxad.net>
+ <20141107095222.GD6724@sisyphus.hd.free.fr>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C676EB35@SINTEFEXMBX05.sintef.no>
-Subject: Re: [Xenomai] xeno_16550A driver install problems.
+In-Reply-To: <20141107095222.GD6724@sisyphus.hd.free.fr>
+Subject: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 +
+ adeos-ipipe-3.0.43-mx6q-1.18-14 -> very slow boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,29 +19,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: tbultel@free.fr
+Cc: xenomai@xenomai.org
 
-On Wed, Nov 12, 2014 at 02:32:40PM +0000, Terje Frøysa wrote:
-> Thanks for your quick reply Gilles,
-> 
-> - Changing omap-serial driver is not a tempting solution.
-> - I'll try out your 8250 suggestion.
-> - I have not figured out how to " arrange for the clocks to be started", would that be writing a kernel module that initiates the UART clock systems?
-> 
-> If not the 8250 suggestion works, I begin to believe that I have to abandon the xeno_1650A driver.
-> Do you know anybody that have succeeded in running the xeno_16550A driver under such circumstances?
+On Fri, Nov 07, 2014 at 10:52:22AM +0100, Gilles Chanteperdrix wrote:
+> On Fri, Nov 07, 2014 at 10:48:43AM +0100, tbultel@free.fr wrote:
+> > 
+> > 
+> > ----- Mail original -----
+> > > De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+> > > À: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+> > > Cc: tbultel@free.fr, xenomai@xenomai.org
+> > > Envoyé: Jeudi 6 Novembre 2014 17:08:21
+> > > Objet: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 + adeos-ipipe-3.0.43-mx6q-1.18-14 -> very slow boot
+> > > 
+> > > On Thu, Nov 06, 2014 at 11:04:57AM -0500, Lennart Sorensen wrote:
+> > > > On Thu, Nov 06, 2014 at 03:41:47PM +0100, tbultel@free.fr wrote:
+> > > > > Gilles, we do not have CONFIG_ARM_ERRATA_754327 enabled
+> > > > > It is -not- enabled in the evaluation kernel that is provided by
+> > > > > the
+> > > > > manufacturer.
+> > > > > That errata is said to be for CPU revs < r2p0
+> > > > > 
+> > > > > I am a little bit puzzled about the naming conventions for the
+> > > > > CPU revision,
+> > > > > uboot says rev1.2, the kernel says
+> > > > > 
+> > > > > Processor	: ARMv7 Processor rev 10 (v7l)
+> > > > > ...
+> > > > > 
+> > > > > CPU implementer	: 0x41
+> > > > > CPU architecture: 7
+> > > > > CPU variant	: 0x2
+> > > > > CPU part	: 0xc09
+> > > > > CPU revision	: 10
+> > > > > 
+> > > > > how can I do the matching ?
+> > > > > 
+> > > > > Meanwhile, we noticed that compared to the evaluation kernel, we
+> > > > > were missing
+> > > > > CONFIG_ARM_ERRATA_754322 and CONFIG_PL310_ERRATA_769419
+> > > > > 
+> > > > > Adding them helps a lot, but the freeze still happens on one
+> > > > > machine
+> > > > > 
+> > > > > We are currently trying with 754322 + 769419 + 754327 + 5 nops in
+> > > > > fec ...
+> > > > > but not sure if we need 754327.
+> > > > > 
+> > > > > Regards
+> > > > > Thierry
+> > > > > 
+> > > > > PS: Regarding the thermal issue, we have changed our supplier, we
+> > > > > now have
+> > > > > a dissipator that is big enough (it is the AMOS820 from Via
+> > > > > Embedded)
+> > > > 
+> > > > I am not sure how to read the A9 revision.  I have this on a
+> > > > system:
+> > > 
+> > > I have found the method I gave in ARM documentation. I am pretty
+> > > sure this is how it works.
+> > > 
+> > > --
+> > > 					    Gilles.
+> > > 
+> > 
+> > 
+> > Gille, 
+> > we agree that as we have a r2p10, the 754327 does not apply.
 
-I just had a quick look at the omap-serial.c driver and:
-- it does not do anything that I can see to enable its clocks
-- it does NOT  use byte access but word access, that is, its registers
-are 16 bits wide.
-
-Unfortunately, as far as I can tell, the xeno_16550A driver only
-supports byte access. So, if you want it to work, you have to modify
-the driver to accept a "regshift" parameter applied to all offsets
-and use the corresponding readw if regshift is 2 or readl if
-regshift is 4.
+Nothing says that the starvation due to calling mb in a tight loop
+is related to errata 754327, it just happens that the workaround for
+this erratum triggers this bug, because it results in calling mb in
+a tight loop.
 
 -- 
 					    Gilles.
