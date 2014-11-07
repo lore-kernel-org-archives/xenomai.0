@@ -1,18 +1,14 @@
 From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Wed, 12 Nov 2014 14:16:31 -0500
-Message-ID: <20141112191631.GJ24110@csclub.uwaterloo.ca>
-References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
- <20141111140230.GA17476@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
- <314E5ECDAA86314791309FA670550F89C676E884@SINTEFEXMBX05.sintef.no>
- <20141112134531.GP17476@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C676EB35@SINTEFEXMBX05.sintef.no>
+Date: Fri, 7 Nov 2014 15:24:05 -0500
+Message-ID: <20141107202405.GU24110@csclub.uwaterloo.ca>
+References: <20141001142416.GA4435@csclub.uwaterloo.ca>
+ <20141107182600.GS24110@csclub.uwaterloo.ca>
+ <545D12D2.2020104@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C676EB35@SINTEFEXMBX05.sintef.no>
-Subject: Re: [Xenomai] xeno_16550A driver install problems.
+In-Reply-To: <545D12D2.2020104@xenomai.org>
+Subject: Re: [Xenomai] I-pipe error when requesting irq that is on omap gpio
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,27 +17,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Wed, Nov 12, 2014 at 02:32:40PM +0000, Terje Frøysa wrote:
-> Thanks for your quick reply Gilles,
+On Fri, Nov 07, 2014 at 07:43:30PM +0100, Philippe Gerum wrote:
+> For this particular issue, Xenomai 2.x is deadly wrong. Creating,
+> deleting, enabling or disabling an IRQ channel must be done from
+> secondary mode. The syscall mode bits for these native API calls are
+> wrong, should be as follows instead:
 > 
-> - Changing omap-serial driver is not a tempting solution.
-> - I'll try out your 8250 suggestion.
-> - I have not figured out how to " arrange for the clocks to be started", would that be writing a kernel module that initiates the UART clock systems?
-> 
-> If not the 8250 suggestion works, I begin to believe that I have to abandon the xeno_1650A driver.
-> Do you know anybody that have succeeded in running the xeno_16550A driver under such circumstances?
+> diff --git a/ksrc/skins/native/syscall.c b/ksrc/skins/native/syscall.c
+> index 950b092..dff7f4d 100644
+> --- a/ksrc/skins/native/syscall.c
+> +++ b/ksrc/skins/native/syscall.c
+> @@ -4145,12 +4145,12 @@ static xnsysent_t __systab[] = {
+>  	[__native_alarm_stop] = {&__rt_alarm_stop, __xn_exec_any},
+>  	[__native_alarm_wait] = {&__rt_alarm_wait, __xn_exec_primary},
+>  	[__native_alarm_inquire] = {&__rt_alarm_inquire, __xn_exec_any},
+> -	[__native_intr_create] = {&__rt_intr_create, __xn_exec_any},
+> +	[__native_intr_create] = {&__rt_intr_create, __xn_exec_lostage},
+>  	[__native_intr_bind] = {&__rt_intr_bind, __xn_exec_conforming},
+> -	[__native_intr_delete] = {&__rt_intr_delete, __xn_exec_any},
+> +	[__native_intr_delete] = {&__rt_intr_delete, __xn_exec_lostage},
+>  	[__native_intr_wait] = {&__rt_intr_wait, __xn_exec_primary},
+> -	[__native_intr_enable] = {&__rt_intr_enable, __xn_exec_any},
+> -	[__native_intr_disable] = {&__rt_intr_disable, __xn_exec_any},
+> +	[__native_intr_enable] = {&__rt_intr_enable, __xn_exec_lostage},
+> +	[__native_intr_disable] = {&__rt_intr_disable, __xn_exec_lostage},
+>  	[__native_intr_inquire] = {&__rt_intr_inquire, __xn_exec_any},
+>  	[__native_pipe_create] = {&__rt_pipe_create, __xn_exec_lostage},
+>  	[__native_pipe_bind] = {&__rt_pipe_bind, __xn_exec_conforming},
 
-We just switched from using omap-serial to 8250-omap, and find it much
-more stable.  I wonder if that would also allow doing what you are trying
-to do.  I believe it just got merged to go into 3.19, but I applied it
-with minimal other patched needed to 3.14 and with a few more patches
-to 3.12.
+I get the impression this might also be important:
 
-Being a core 8250 driver would after all likely make doing 16550 stuff
-easier.
+Index: linux-3.12.31.rr1/arch/arm/mach-omap2/timer.c
+===================================================================
+--- linux-3.12.31.rr1.orig/arch/arm/mach-omap2/timer.c  2014-11-07 10:10:47.736200170 -0500
++++ linux-3.12.31.rr1/arch/arm/mach-omap2/timer.c       2014-11-07 11:42:03.807512821 -0500
+@@ -824,7 +824,8 @@
+                omap2_sync32k_clocksource_init();                       \
+        if (cpu_is_omap34xx())                                          \
+                omap3_pic_muter_register();                             \
+-       else if (cpu_is_omap44xx() || soc_is_omap54xx())                \
++       else if (cpu_is_omap44xx() || soc_is_omap54xx()                 \
++                || soc_is_dra7xx())                                    \
+                omap4_pic_muter_register();                             \
+ }
+ #endif
+
+The dra7xx (am57xx) we are using is very much like the omap54xx, and
+use the same gpio system, so this call probably should be getting done.
+
+Does that seem plausible?
 
 -- 
 Len Sorensen
