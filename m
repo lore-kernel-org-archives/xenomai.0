@@ -1,13 +1,12 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Tue, 11 Nov 2014 10:37:45 -0500
-Message-ID: <20141111153745.GX24110@csclub.uwaterloo.ca>
-References: <CAJt3u5nf_epaPjW=dAjqGMq85dgRYqwn-MKcRGFWby+MXtvong@mail.gmail.com>
- <20141111110937.GY17476@sisyphus.hd.free.fr>
+Date: Fri, 7 Nov 2014 17:43:22 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141107164322.GC11524@sisyphus.hd.free.fr>
+References: <46e9aebbd25e45f8a3bb4732562bb97f@SI-MBX1019.de.bosch.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20141111110937.GY17476@sisyphus.hd.free.fr>
-Subject: Re: [Xenomai] USB3.0 drivers for xenomai
+In-Reply-To: <46e9aebbd25e45f8a3bb4732562bb97f@SI-MBX1019.de.bosch.com>
+Subject: Re: [Xenomai] Perf makes kernel panic
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,25 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "Ren Yuan (DC-IA/EAN3)" <Yuan.Ren@boschrexroth.nl>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, Nov 11, 2014 at 12:09:37PM +0100, Gilles Chanteperdrix wrote:
-> First of all, if you are starting to work with xenomai, you should
-> not install an old version such as 2.6.2.1, you should install the
-> latest stable version, which is 2.6.4.
+On Fri, Nov 07, 2014 at 04:28:57PM +0000, Ren Yuan (DC-IA/EAN3) wrote:
+> Hi,
 > 
-> As for support for USB 3.0 drivers, to my knowledge, there are none.
-> Note however that most USB3.0 devices are USB2.0 compatible, and if
-> you are after latency and not bandwidth, it should not matter that
-> much. If you are after bandwidth, then why looking for a Xenomai
-> driver?
+> I've encountered a problem to use perf to get the performance of
+> our code on Linux kernel(3.14) with Xenomai(2.6.4) on ARM based
+> board.
 
-Well USB3 is full duplex and can generate interrupt messages, while USB2
-is half duplex and polled.
+Depending on what you want to measure, do not expect precise
+measurements with Xenomai running.
 
-Those might be good reasons to want USB3.
+> When I use perf on Linux kernel with Xenomai, even a simple test without any xenomai tasks running reports an error "Unable to handle kernel NULL pointer dereference at virtual address 00000000".
+> But if use perf on Linux kernel without Xenomai, it works.
+
+The question is: is the configuration exactly the same in the two
+cases, only has xenomai disabled.
+
+> Could anyone give me some advices how to fix it? Any help would be appreciated.
+
+Well, debug this like you would debug any oops, disassemble vmlinux
+at address 0xc001371c at look at what is there, use addr2line to see
+to what line of code corresponds to the bug, then try and understand
+what happens. The oops gives you all the registers values, and the
+whole call stack, this should make the job easy.
 
 -- 
-Len Sorensen
+					    Gilles.
 
