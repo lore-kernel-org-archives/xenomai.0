@@ -1,14 +1,16 @@
-Date: Thu, 13 Nov 2014 14:19:51 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141113131951.GU4656@sisyphus.hd.free.fr>
-References: <CALTC7XJqCSDfPR8bx4VKLdUQtNgKG5yuWW4CNJSnc_hjJ9Aqyw@mail.gmail.com>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Fri, 7 Nov 2014 16:26:20 -0500
+Message-ID: <20141107212620.GV24110@csclub.uwaterloo.ca>
+References: <20141001142416.GA4435@csclub.uwaterloo.ca>
+ <20141107182600.GS24110@csclub.uwaterloo.ca>
+ <545D12D2.2020104@xenomai.org>
+ <20141107202405.GU24110@csclub.uwaterloo.ca>
+ <20141107203235.GF17476@sisyphus.hd.free.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CALTC7XJqCSDfPR8bx4VKLdUQtNgKG5yuWW4CNJSnc_hjJ9Aqyw@mail.gmail.com>
-Subject: Re: [Xenomai] Call to clock_gettime from xenomai blocking for more
- than 2 seconds
+In-Reply-To: <20141107203235.GF17476@sisyphus.hd.free.fr>
+Subject: Re: [Xenomai] I-pipe error when requesting irq that is on omap gpio
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,66 +19,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Cris Almaraz <cristina.almaraz@gmail.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Thu, Nov 13, 2014 at 02:01:58PM +0100, Cris Almaraz wrote:
-> Hi all,
+On Fri, Nov 07, 2014 at 09:32:35PM +0100, Gilles Chanteperdrix wrote:
+> On Fri, Nov 07, 2014 at 03:24:05PM -0500, Lennart Sorensen wrote:
+> > On Fri, Nov 07, 2014 at 07:43:30PM +0100, Philippe Gerum wrote:
+> > > For this particular issue, Xenomai 2.x is deadly wrong. Creating,
+> > > deleting, enabling or disabling an IRQ channel must be done from
+> > > secondary mode. The syscall mode bits for these native API calls are
+> > > wrong, should be as follows instead:
+> > > 
+> > > diff --git a/ksrc/skins/native/syscall.c b/ksrc/skins/native/syscall.c
+> > > index 950b092..dff7f4d 100644
+> > > --- a/ksrc/skins/native/syscall.c
+> > > +++ b/ksrc/skins/native/syscall.c
+> > > @@ -4145,12 +4145,12 @@ static xnsysent_t __systab[] = {
+> > >  	[__native_alarm_stop] = {&__rt_alarm_stop, __xn_exec_any},
+> > >  	[__native_alarm_wait] = {&__rt_alarm_wait, __xn_exec_primary},
+> > >  	[__native_alarm_inquire] = {&__rt_alarm_inquire, __xn_exec_any},
+> > > -	[__native_intr_create] = {&__rt_intr_create, __xn_exec_any},
+> > > +	[__native_intr_create] = {&__rt_intr_create, __xn_exec_lostage},
+> > >  	[__native_intr_bind] = {&__rt_intr_bind, __xn_exec_conforming},
+> > > -	[__native_intr_delete] = {&__rt_intr_delete, __xn_exec_any},
+> > > +	[__native_intr_delete] = {&__rt_intr_delete, __xn_exec_lostage},
+> > >  	[__native_intr_wait] = {&__rt_intr_wait, __xn_exec_primary},
+> > > -	[__native_intr_enable] = {&__rt_intr_enable, __xn_exec_any},
+> > > -	[__native_intr_disable] = {&__rt_intr_disable, __xn_exec_any},
+> > > +	[__native_intr_enable] = {&__rt_intr_enable, __xn_exec_lostage},
+> > > +	[__native_intr_disable] = {&__rt_intr_disable, __xn_exec_lostage},
+> > >  	[__native_intr_inquire] = {&__rt_intr_inquire, __xn_exec_any},
+> > >  	[__native_pipe_create] = {&__rt_pipe_create, __xn_exec_lostage},
+> > >  	[__native_pipe_bind] = {&__rt_pipe_bind, __xn_exec_conforming},
+> > 
+> > I get the impression this might also be important:
+> > 
+> > Index: linux-3.12.31.rr1/arch/arm/mach-omap2/timer.c
+> > ===================================================================
+> > --- linux-3.12.31.rr1.orig/arch/arm/mach-omap2/timer.c  2014-11-07 10:10:47.736200170 -0500
+> > +++ linux-3.12.31.rr1/arch/arm/mach-omap2/timer.c       2014-11-07 11:42:03.807512821 -0500
+> > @@ -824,7 +824,8 @@
+> >                 omap2_sync32k_clocksource_init();                       \
+> >         if (cpu_is_omap34xx())                                          \
+> >                 omap3_pic_muter_register();                             \
+> > -       else if (cpu_is_omap44xx() || soc_is_omap54xx())                \
+> > +       else if (cpu_is_omap44xx() || soc_is_omap54xx()                 \
+> > +                || soc_is_dra7xx())                                    \
+> >                 omap4_pic_muter_register();                             \
+> >  }
+> >  #endif
+> > 
+> > The dra7xx (am57xx) we are using is very much like the omap54xx, and
+> > use the same gpio system, so this call probably should be getting done.
+> > 
+> > Does that seem plausible?
 > 
-> 
-> 
-> Xenomai version 2.6.3 . Native skin.
-> 
-> CentOS 6.4
-> 
-> 
-> 
-> I am having some problems with a Xenomai task and the clock_gettime
-> function. My application is launching several Xenomai tasks in parallel and
-> some of them need to access the current time. For that, I’ve been using the
-> clock_gettime(CLOCK_REALTIME,..) function, but I noticed that if the
-> application is running during several minutes, sometimes the Xenomai
-> watchdog is triggered from the clock_gettime call, as it is taking more
-> than 2 seconds to be executed. The behavior is not always the same,
-> sometimes the watchdog is triggered after 5 mins, 10 mins… and even when
-> the delay is not long enough to trigger the 2 seconds watchdog, I’ve seen
-> in the logs that there are some unexpected delays in the application.
-> 
-> 
-> 
-> I’ve read about a similar issue in the Xenomai mailing list, but it was
-> reported as fixed with Xenomai 2.6. Is there any chance that it is still
-> happening or is the problem somewhere else? Any ideas and workarounds are
-> welcome.
+> This call enables "PIC muting". "PIC muting" means disabling non
+> real-time interrupts when in the Xenomai domain, i.e. when executing
+> real-time code. The I-pipe can work without that (as it does on many
+> platforms). So, if you suspect you have IRQ handling issues, you may
+> prefer to disable it, you do not want to suspect it of being the
+> cause of the issues you have.
 
-The short story.
-Yes, it is fixed. But you can not use clock_gettime(CLOCK_REALTIME)
-from a thread running in primary mode, this can not be made to work. 
+Well enabling it made no difference.  It wasn't there before.
 
-You have to compile for the Xenomai posix skin and use
-clock_gettime(CLOCK_HOST_REALTIME). The problem if you do that, is
-that all your calls to posix functions will be replaced with Xenomai
-posix skin calls. So, since there is currently no solution to read
-the CLOCK_HOST_REALTIME from the native skin in Xenomai 2.x, and
-there is no plan to change it, in your code, use the function
+The syscall.c change got rid of the complaint about calling linux services
+from xenomai domain so that seems like an improvement.
 
-__wrap_clock_gettime(CLOCK_HOST_REALTIME, &ts);
+I still get the warning about set_affinity not being supported (which
+is true of course).
 
-And DO NOT use xeno-config --skin=posix --ldflags to obtain the
-LDFLAGS, simply pass the -L /path/to/libdir -lpthread_rt.so part as
-LDFLAGS. Do not pass the -Wl,--wrap.
-
-Another way would be to dlopen libpthread_rt.so and dlsym
-__wrap_clock_gettime.
-
-Finally, if you do not mind that Xenomai clock drifts compared to
-Linux clock, you can use rt_timer_read and add the wallclock offset,
-computed at program start, to obtain the wallclock time. Actually,
-there is a way to set the rt_timer_read wallclock_offset, but it
-involves the posix skin again.
-
-These shortcomings are fixed in Xenomai 3.x.
+I still get the lockup, but I am not sure the realtime irq handler is
+doing its job properly yet so still investigating that.  At least the
+ugly warning is gone now.
 
 -- 
-					    Gilles.
+Len Sorensen
 
