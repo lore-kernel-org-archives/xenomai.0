@@ -1,17 +1,12 @@
-Date: Fri, 7 Nov 2014 10:37:39 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141107093739.GC6724@sisyphus.hd.free.fr>
-References: <545B9297.2090003@cgglobal.com>
- <20141106153738.GC30908@sisyphus.hd.free.fr>
- <545B994D.1080008@cgglobal.com>
- <20141106155503.GD30908@sisyphus.hd.free.fr>
- <545BA5D0.7010907@cgglobal.com> <545BD88B.3030700@xenomai.org>
- <545C9001.7070508@cgglobal.com>
+Date: Fri, 7 Nov 2014 10:48:43 +0100 (CET)
+From: tbultel@free.fr
+Message-ID: <1260200250.109080355.1415353723657.JavaMail.root@zimbra90-e16.priv.proxad.net>
+In-Reply-To: <20141106160821.GE30908@sisyphus.hd.free.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <545C9001.7070508@cgglobal.com>
-Subject: Re: [Xenomai] rt_task_sleep_until() miss release point?
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 +
+ adeos-ipipe-3.0.43-mx6q-1.18-14 -> very slow boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,63 +15,93 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ZIV-Alberto Ozalla Cantabrana <alberto.ozalla@cgglobal.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Fri, Nov 07, 2014 at 09:25:21AM +0000, ZIV-Alberto Ozalla Cantabrana wrote:
-> 
-> On 06/11/14 21:22, Philippe Gerum wrote:
-> > On 11/06/2014 05:46 PM, ZIV-Alberto Ozalla Cantabrana wrote:
-> >> Hi,
-> >>
-> >> These are the simplest examples:
-> >> There are no MSW for Test_Task.
-> >> The goal is to increment counter_ms each millisecond.
-> >>
-> >> Given that:
-> >> 1000000 nanoseconds = 24000 tsc.
-> >> 1 tsc = 41 ns
-> >>
-> > Is rt_timer_ns2tsc(1000000) actually returning 24000 on your platform?
-> > Yes.
-> >> void Test_Task(void *arg)
-> >> {
-> >>     rt_task_set_mode(0, 0, NULL);
-> > This is useless and not recommended. A newly created task always starts
-> > in primary mode.
-> >
-> > Ok. I will delete it.
-> >>      while (1) {
-> >>
-> >>              unsigned long long before = counter_ms;
-> >>              usleep(1000000);    // 1 second.
-> > Although this would rather cause higher count values, this non-rt main
-> > using a non-rt sleep service won't give you an accurate delay for the
-> > measurement.
-> >
-> > It is only an example.
 
-The problem is that so far, you have not been able to provide a
-correct example which provides a proof of what you are saying. It
-does not mean that what you say is wrong, just that we have reasons
-to doubt it.
 
-Anyway, I do not think you can assume that
-rt_timer_tsc2ns(rt_timer_tsc()) is the same thing as
-rt_timer_read(), I would say the first is equivalent to POSIX
-CLOCK_MONOTONIC whereas the second is equivalent to CLOCK_REALTIME,
-so, there is an offset between the two.
+----- Mail original -----
+> De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+> =C3=80: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+> Cc: tbultel@free.fr, xenomai@xenomai.org
+> Envoy=C3=A9: Jeudi 6 Novembre 2014 17:08:21
+> Objet: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 + adeos-ipipe-3.0.43-mx6q-1.=
+18-14 -> very slow boot
+>=20
+> On Thu, Nov 06, 2014 at 11:04:57AM -0500, Lennart Sorensen wrote:
+> > On Thu, Nov 06, 2014 at 03:41:47PM +0100, tbultel@free.fr wrote:
+> > > Gilles, we do not have CONFIG_ARM_ERRATA_754327 enabled
+> > > It is -not- enabled in the evaluation kernel that is provided by
+> > > the
+> > > manufacturer.
+> > > That errata is said to be for CPU revs < r2p0
+> > >=20
+> > > I am a little bit puzzled about the naming conventions for the
+> > > CPU revision,
+> > > uboot says rev1.2, the kernel says
+> > >=20
+> > > Processor=09: ARMv7 Processor rev 10 (v7l)
+> > > ...
+> > >=20
+> > > CPU implementer=09: 0x41
+> > > CPU architecture: 7
+> > > CPU variant=09: 0x2
+> > > CPU part=09: 0xc09
+> > > CPU revision=09: 10
+> > >=20
+> > > how can I do the matching ?
+> > >=20
+> > > Meanwhile, we noticed that compared to the evaluation kernel, we
+> > > were missing
+> > > CONFIG_ARM_ERRATA_754322 and CONFIG_PL310_ERRATA_769419
+> > >=20
+> > > Adding them helps a lot, but the freeze still happens on one
+> > > machine
+> > >=20
+> > > We are currently trying with 754322 + 769419 + 754327 + 5 nops in
+> > > fec ...
+> > > but not sure if we need 754327.
+> > >=20
+> > > Regards
+> > > Thierry
+> > >=20
+> > > PS: Regarding the thermal issue, we have changed our supplier, we
+> > > now have
+> > > a dissipator that is big enough (it is the AMOS820 from Via
+> > > Embedded)
+> >=20
+> > I am not sure how to read the A9 revision.  I have this on a
+> > system:
+>=20
+> I have found the method I gave in ARM documentation. I am pretty
+> sure this is how it works.
+>=20
+> --
+> =09=09=09=09=09    Gilles.
+>=20
 
-What rt_task_sleep_until expects, is what rt_timer_read() returns
 
-To check that, right after the call to rt_task_sleep_until, call
-rt_timer_read (and not rt_timer_tsc), and see if it is near t2. You
-can use rt_printf in a real-time task to avoid switches to secondary
-mode.
+Gille,=20
+we agree that as we have a r2p10, the 754327 does not apply.
+Thus the only erratas I was missing are CONFIG_ARM_ERRATA_754322 and CONFIG=
+_PL310_ERRATA_769419,
+that are in ./arch/arm/configs/imx6_defconfig
+They are now part of my config.
+Unfortunately, the network stress test still makes the freeze happen with C=
+ONFIG_IPIPE enabled
 
-Also, are you running the native skin timer in periodic or aperiodic
-mode?
+How come can that freeze only happen on -some- machines (they all have the =
+same CPU rev),=20
+and that the time they stay up is dependent on them ?
+If the freeze was reproducible without CONFIG_IPIPE, we could easily say th=
+at it is simply
+an hardware bug but unfortunately with is not the case.
 
--- 
-					    Gilles.
+A new info: the machine that freezes the most also freezes with ethernet fe=
+c unplugged.
+All these machines work fine with CONFIG_IPIPE disabled.
+
+Regards
+Thierry
+
 
