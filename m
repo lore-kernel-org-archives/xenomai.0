@@ -1,15 +1,10 @@
-Date: Thu, 13 Nov 2014 16:10:22 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141113151022.GE4656@sisyphus.hd.free.fr>
-References: <20141113145115.GD4656@sisyphus.hd.free.fr>
- <435455364.116826974.1415891011051.JavaMail.root@zimbra90-e16.priv.proxad.net>
+Message-ID: <545DC1E8.3060705@web.de>
+Date: Sat, 08 Nov 2014 08:10:32 +0100
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <435455364.116826974.1415891011051.JavaMail.root@zimbra90-e16.priv.proxad.net>
-Subject: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 +
- adeos-ipipe-3.0.43-mx6q-1.18-14 -> very slow boot
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] [PULL] forge: Fix for udd driver build
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,133 +13,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: tbultel@free.fr
-Cc: nicolas Mabire <nicolas.mabire@basystemes.fr>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Thu, Nov 13, 2014 at 04:03:31PM +0100, tbultel@free.fr wrote:
-> 
-> 
-> ----- Mail original -----
-> > De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-> > À: tbultel@free.fr
-> > Cc: xenomai@xenomai.org, "nicolas Mabire" <nicolas.mabire@basystemes.fr>
-> > Envoyé: Jeudi 13 Novembre 2014 15:51:15
-> > Objet: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 + adeos-ipipe-3.0.43-mx6q-1.18-14 -> very slow boot
-> > 
-> > On Thu, Nov 13, 2014 at 03:44:34PM +0100, tbultel@free.fr wrote:
-> > > 
-> > > 
-> > > ----- Mail original -----
-> > > > De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-> > > > À: "Thierry Bultel" <tbultel@free.fr>
-> > > > Cc: xenomai@xenomai.org, "Lennart Sorensen"
-> > > > <lsorense@csclub.uwaterloo.ca>, "nicolas Mabire"
-> > > > <nicolas.mabire@basystemes.fr>
-> > > > Envoyé: Mardi 11 Novembre 2014 21:03:58
-> > > > Objet: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 +
-> > > > adeos-ipipe-3.0.43-mx6q-1.18-14 -> very slow boot
-> > > > 
-> > > > On Tue, Nov 11, 2014 at 08:57:34PM +0100, Thierry Bultel wrote:
-> > > > > Le 10/11/2014 13:36, Gilles Chanteperdrix a écrit :
-> > > > > >You can use printascii in the timer interrupt acknowledge
-> > > > > >routine
-> > > > > >to
-> > > > > >print a character every HZ ticks, this will give bad latency,
-> > > > > >but
-> > > > > >should work.
-> > > > > >
-> > > > > 
-> > > > > For unknown reason, the kernel gets stuck after
-> > > > > "console [tty0] enabled, bootconsole disabled" if I use
-> > > > > printascii
-> > > > > in do_local_timer().
-> > > > > earlyprintk seems broken as well.
-> > > > 
-> > > > Without doing this, does earlyprintk work?
-> > > > 
-> > > > > >If this is indeed the broadcast timer, it should never tick,
-> > > > > >because
-> > > > > >we should never switch to broadcast mode.
-> > > > > 
-> > > > > I have found out why it was ticking.
-> > > > > This is due to tick_broadcast_switch_to_oneshot() in
-> > > > > kernel/time/tick-broadcast.c
-> > > > > 
-> > > > > This sets the oneshot mode to the time, and leads to a call of
-> > > > > mxc_set_mode()
-> > > > > 
-> > > > > In that function, there is that comment:
-> > > > > 	if (mode != clockevent_mode) {
-> > > > > 		/* Set event time into far-far future */
-> > > > > 		if (timer_is_v2())
-> > > > > 
-> > > > > ... and I estimate "far-far future" to be about 20 minutes.
-> > > > > 
-> > > > > As a correction, I have made that change to
-> > > > > tick_broadcast_switch_to_oneshot():
-> > > > > 
-> > > > > @@ -603,11 +610,21 @@ void tick_broadcast_setup_oneshot(struct
-> > > > > clock_event_device *bc)
-> > > > >  {
-> > > > >         int cpu = smp_processor_id();
-> > > > > 
-> > > > > +#if defined(CONFIG_IPIPE) && defined(CONFIG_SMP)
-> > > > > +       printk(KERN_ALERT "%s cpu %d -> dev %s
-> > > > > IGNORED\n",__PRETTY_FUNCTION__, cpu, bc->name);
-> > > > > +       return;
-> > > > > +#endif
-> > > > > 
-> > > > > ... and that makes the job, the iMX Timer is no longer armed.
-> > > > > What do you think about it ?
-> > > > > 
-> > > > > Still currently stress-testing to see if things are getting
-> > > > > better.
-> > > > 
-> > > > I am afraid this should not change anything. This timer ticking
-> > > > is
-> > > > not a problem by itself, it is a problem if the twd gets
-> > > > disabled.
-> > > > 
-> > > 
-> > > Unfortunately, you were right.
-> > > Even with that fix, we have 2 fail cases
-> > > 
-> > > I have added 4 leds to the GPIOs, and toggle them in
-> > > do_local_timer, each 100 ticks
-> > > for being human visible. I found it more convenient at keeps my
-> > > console clean.
-> > > 
-> > > 1) on one machine, the freeze does not make a backtrace on the
-> > > serial console
-> > >  a) in most cases, the leds do not blink, no more interrupts
-> > >  b) in one case, a single one kept blinking for a while before
-> > >  stopping
-> > 
-> > 
-> > do_local_timer is a bit to high level, try putting it in
-> > twd_timer_ack. Also, try setting the Linux timer to periodic
-> > (disable HIGHRES_TIMERS), this should make Xenomai timer tick
-> > periodically, not matter what happens on linux side.
-> 
-> I can try that, but that would break my linux application that relies on it.
-
-I mean for testing. Does the application exit in error, or does not
-work very correctly?
-
-> > Do you have unlocked context switch enabled? If yes, turn it off.
-> 
-> I can't: 
->  #error "Xenomai: ARM SMP systems require unlocked context switch prior to Linux 3.8"
-
-Oh yeah, there is that too. I completely forgot about that.
-
-We would need to backport the changes that have been made for
-switching contexts, but that is not a small change.
-
-Is there anyway you can run your tests without the specific hardware
-of your board, say with a recent mainline kernel? Just to see if the
-bug is gone with what we have made since then, or if it is still there?
-
--- 
-					    Gilles.
-
+VGhlIGZvbGxvd2luZyBjaGFuZ2VzIHNpbmNlIGNvbW1pdCA5OTc0ZjEzNTkzOTQ4ODhhZDNhM2I3
+NWNkYmQ2NzIzNGZiZThmYjkzOgoKICBjb2JhbHQvcG9zaXgvdGhyZWFkOiBmaXggcHRocmVhZF9n
+ZXRzY2hlZHBhcmFtKCkgZm9yIFJSIHRocmVhZHMgKDIwMTQtMTEtMDYgMTA6MTk6MzMgKzAxMDAp
+CgphcmUgYXZhaWxhYmxlIGluIHRoZSBnaXQgcmVwb3NpdG9yeSBhdDoKCiAgZ2l0Oi8vZ2l0Lnhl
+bm9tYWkub3JnL3hlbm9tYWktamtpLmdpdCBmb3ItZm9yZ2UKCmZvciB5b3UgdG8gZmV0Y2ggY2hh
+bmdlcyB1cCB0byBlYmExYmFiOWUzMDQyOTViNDczMTRjOTA3OWFhNjI4ZGFkZDkxN2UyOgoKICBk
+cml2ZXJzL3VkZDogRml4IG1vZHVsYXIgYnVpbGQgKDIwMTQtMTEtMDggMDc6Mzk6NDAgKzAxMDAp
+CgotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tCkphbiBLaXN6a2EgKDEpOgogICAgICBkcml2ZXJzL3VkZDogRml4IG1vZHVsYXIg
+YnVpbGQKCiBrZXJuZWwvY29iYWx0L3Bvc2l4L3NpZ25hbC5jIHwgMSArCiBrZXJuZWwvZHJpdmVy
+cy91ZGQvdWRkLmMgICAgIHwgMiArLQogMiBmaWxlcyBjaGFuZ2VkLCAyIGluc2VydGlvbnMoKyks
+IDEgZGVsZXRpb24oLSkKCmRpZmYgLS1naXQgYS9rZXJuZWwvY29iYWx0L3Bvc2l4L3NpZ25hbC5j
+IGIva2VybmVsL2NvYmFsdC9wb3NpeC9zaWduYWwuYwppbmRleCA4M2YwM2ZkLi45NjkyM2JlIDEw
+MDY0NAotLS0gYS9rZXJuZWwvY29iYWx0L3Bvc2l4L3NpZ25hbC5jCisrKyBiL2tlcm5lbC9jb2Jh
+bHQvcG9zaXgvc2lnbmFsLmMKQEAgLTU4MCw2ICs1ODAsNyBAQCBvdXQ6CiAKIAlyZXR1cm4gcmV0
+OwogfQorRVhQT1JUX1NZTUJPTF9HUEwoX19jb2JhbHRfc2lncXVldWUpOwogCiBDT0JBTFRfU1lT
+Q0FMTChzaWdxdWV1ZSwgY29uZm9ybWluZywKIAkgICAgICAgaW50LCAocGlkX3QgcGlkLCBpbnQg
+c2lnLApkaWZmIC0tZ2l0IGEva2VybmVsL2RyaXZlcnMvdWRkL3VkZC5jIGIva2VybmVsL2RyaXZl
+cnMvdWRkL3VkZC5jCmluZGV4IDlhNmVhOWYuLmU1YTEyYTEgMTAwNjQ0Ci0tLSBhL2tlcm5lbC9k
+cml2ZXJzL3VkZC91ZGQuYworKysgYi9rZXJuZWwvZHJpdmVycy91ZGQvdWRkLmMKQEAgLTQ3Niw3
+ICs0NzYsNyBAQCB2b2lkIHVkZF9ub3RpZnlfZXZlbnQoc3RydWN0IHVkZF9kZXZpY2UgKnVkZCkK
+IAogCWlmICh1ci0+c2lnbmZ5LnBpZCA+IDApIHsKIAkJc2l2YWwuc2l2YWxfaW50ID0gYXRvbWlj
+X3JlYWQoJnVyLT5ldmVudCk7Ci0JCWNvYmFsdF9zaWdxdWV1ZSh1ci0+c2lnbmZ5LnBpZCwgdXIt
+PnNpZ25meS5zaWcsICZzaXZhbCk7CisJCV9fY29iYWx0X3NpZ3F1ZXVlKHVyLT5zaWduZnkucGlk
+LCB1ci0+c2lnbmZ5LnNpZywgJnNpdmFsKTsKIAl9CiB9CiBFWFBPUlRfU1lNQk9MX0dQTCh1ZGRf
+bm90aWZ5X2V2ZW50KTsKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpB
+IG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MK
+VHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAxOTggYnl0ZXMKRGVzYzogT3Bl
+blBHUCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVy
+bWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTQxMTA4LzY2ZmEzMjU4L2F0dGFjaG1lbnQuc2ln
+Pgo=
