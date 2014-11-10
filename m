@@ -1,17 +1,14 @@
-Message-ID: <546A477B.4020602@siemens.com>
-Date: Mon, 17 Nov 2014 20:07:39 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: "Stoidner, Christoph" <c.stoidner@arvero.de>
+Date: Mon, 10 Nov 2014 12:33:40 +0000
+Message-ID: <c9fed148f1f54c4aaa2aaa5d7b107f24@EX132MBOX1B.de2.local>
+References: <04e5e7e2fab241a5916e4e48f9d9b325@EX132MBOX1B.de2.local>,
+ <20141109155351.GH17476@sisyphus.hd.free.fr>,
+ <28083d9b9cc34fce9a6d308e8d12fbc6@EX132MBOX1B.de2.local>
+In-Reply-To: <28083d9b9cc34fce9a6d308e8d12fbc6@EX132MBOX1B.de2.local>
+Content-Language: de-DE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20141110202326.GU17476@sisyphus.hd.free.fr>
- <54612002.6010102@web.de> <20141110203747.GV17476@sisyphus.hd.free.fr>
- <5461232E.5000006@web.de> <20141110205512.GW17476@sisyphus.hd.free.fr>
- <20141110215846.GX17476@sisyphus.hd.free.fr>
- <20141112172738.GD17476@sisyphus.hd.free.fr> <546A26C0.1050309@siemens.com>
- <20141117165924.GM26613@sisyphus.hd.free.fr> <546A2C50.3060204@siemens.com>
- <20141117173330.GR26613@sisyphus.hd.free.fr>
-In-Reply-To: <20141117173330.GR26613@sisyphus.hd.free.fr>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] "inconsistent lock state" on boot-up
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -21,201 +18,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2014-11-17 18:33, Gilles Chanteperdrix wrote:
-> On Mon, Nov 17, 2014 at 06:11:44PM +0100, Jan Kiszka wrote:
->> On 2014-11-17 17:59, Gilles Chanteperdrix wrote:
->>> On Mon, Nov 17, 2014 at 05:48:00PM +0100, Jan Kiszka wrote:
->>>> On 2014-11-12 18:27, Gilles Chanteperdrix wrote:
->>>>> We do not need trace_hardirqs_on and trace_hardirqs_off for the
->>>>> particular case of IRQs: they are already handled by
->>>>> __ipipe_do_sync_stage. 
->>>>
->>>> That was the key: Simply disabling the instrumentations in the
->>>> CONFIG_IPIPE removes all lock state inconsistencies, at least this far:
->>>>
->>>> diff --git a/arch/arm/kernel/entry-header.S b/arch/arm/kernel/entry-header.S
->>>> index d32f8bd..d8e0b2c 100644
->>>> --- a/arch/arm/kernel/entry-header.S
->>>> +++ b/arch/arm/kernel/entry-header.S
->>>> @@ -195,7 +195,7 @@
->>>>  #ifdef CONFIG_IPIPE_DEBUG_INTERNAL
->>>>  	bl	__ipipe_bugon_irqs_enabled
->>>>  #endif
->>>> -#ifdef CONFIG_TRACE_IRQFLAGS
->>>> +#if defined(CONFIG_TRACE_IRQFLAGS) && !defined(CONFIG_IPIPE)
->>>>  	@ The parent context IRQs must have been enabled to get here in
->>>>  	@ the first place, so there's no point checking the PSR I bit.
->>>>  	bl	trace_hardirqs_on
->>>> @@ -203,7 +203,7 @@
->>>>  	.else
->>>>  	@ IRQs off again before pulling preserved data off the stack
->>>>  	disable_irq_notrace
->>>> -#ifdef CONFIG_TRACE_IRQFLAGS
->>>> +#if defined(CONFIG_TRACE_IRQFLAGS) && !defined(CONFIG_IPIPE)
->>>>  	tst	\rpsr, #PSR_I_BIT
->>>>  	bleq	trace_hardirqs_on
->>>>  	tst	\rpsr, #PSR_I_BIT
->>>>
->>>> Will send a patch.
->>>
->>> Will this work for other paths in entry.S, such as exceptions or
->>> syscalls?
->>
->> Do they all come along that code? Then we need to differentiate, likely
->> via a separate macro parameter.
->>
->> Just noticed that there is also svc_enter, and that should be handled in
->> the same way. And it's likely also shared across the board.
-> 
-> There are 4 macros:
-> svc_enter
-> svc_exit
-> when entering/exiting svc mode (whether from irq, data abort,
-> prefetch abort), that means reentering the
-> irq/exception path when already in kerne-mode
-> 
-> usr_enter
-> usr_exit
-> when entering/exiting usr mode (whether from irq, data abort,
-> prefetch abort, or syscall), which is entered from user mode.
-> 
-> All these paths call trace_hardirqs_on/trace_hardirqs_off
-> I have not checked the details on the how and when and if, but since
-> you are the one working on this, I suggest you do.
-> 
-> If there is a need to call the real
-> trace_hardirqs_on/trace_hardirqs_off in some cases, I would very
-> much prefer replacing the bl trace_hard_irqs* with a bl
-> __ipipe_trace_hardirqs* sorting out the details in C, in
-> arch/arm/kernel/ipipe.c, than doing this in assembly files with
-> complicated #if conditions, or retrieval of the current domain
-> in assembly.
-> 
-
-OK, here is another proposal: filter out tracing in kernel IRQ exit path
-(that is required as we may have interrupted Linux with virtual IRQs
-off), but otherwise rely on domain filtering in the respective tracing
-functions:
-
-diff --git a/arch/arm/include/asm/assembler.h b/arch/arm/include/asm/assembler.h
-index 102adcb..e285269 100644
---- a/arch/arm/include/asm/assembler.h
-+++ b/arch/arm/include/asm/assembler.h
-@@ -130,7 +130,7 @@
- #endif
- 
- 	.macro asm_trace_hardirqs_off
--#if defined(CONFIG_TRACE_IRQFLAGS) && !defined(CONFIG_IPIPE)
-+#if defined(CONFIG_TRACE_IRQFLAGS)
- 	stmdb   sp!, {r0-r3, ip, lr}
- 	bl	trace_hardirqs_off
- 	ldmia	sp!, {r0-r3, ip, lr}
-@@ -138,7 +138,7 @@
- 	.endm
- 
- 	.macro asm_trace_hardirqs_on_cond, cond
--#if defined(CONFIG_TRACE_IRQFLAGS) && !defined(CONFIG_IPIPE)
-+#if defined(CONFIG_TRACE_IRQFLAGS)
- 	/*
- 	 * actually the registers should be pushed and pop'd conditionally, but
- 	 * after bl the flags are certainly clobbered
-diff --git a/arch/arm/kernel/entry-header.S b/arch/arm/kernel/entry-header.S
-index d32f8bd..cf2772a 100644
---- a/arch/arm/kernel/entry-header.S
-+++ b/arch/arm/kernel/entry-header.S
-@@ -195,7 +195,7 @@
- #ifdef CONFIG_IPIPE_DEBUG_INTERNAL
- 	bl	__ipipe_bugon_irqs_enabled
- #endif
--#ifdef CONFIG_TRACE_IRQFLAGS
-+#if defined(CONFIG_TRACE_IRQFLAGS) && !defined(CONFIG_IPIPE)
- 	@ The parent context IRQs must have been enabled to get here in
- 	@ the first place, so there's no point checking the PSR I bit.
- 	bl	trace_hardirqs_on
-@@ -285,7 +285,7 @@
- #ifdef CONFIG_IPIPE_DEBUG_INTERNAL
- 	bl	__ipipe_bugon_irqs_enabled
- #endif
--#ifdef CONFIG_TRACE_IRQFLAGS
-+#if defined(CONFIG_TRACE_IRQFLAGS) && !defined(CONFIG_IPIPE)
- 	@ The parent context IRQs must have been enabled to get here in
- 	@ the first place, so there's no point checking the PSR I bit.
- 	bl	trace_hardirqs_on
-diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
-index e24bb30..2e9043b 100644
---- a/kernel/locking/lockdep.c
-+++ b/kernel/locking/lockdep.c
-@@ -2559,6 +2559,9 @@ static void __trace_hardirqs_on_caller(unsigned long ip)
- 
- void trace_hardirqs_on_caller(unsigned long ip)
- {
-+	if (!ipipe_root_p)
-+		return;
-+
- 	time_hardirqs_on(CALLER_ADDR0, ip);
- 
- 	if (unlikely(!debug_locks || current->lockdep_recursion))
-@@ -2690,8 +2693,12 @@ void trace_softirqs_on(unsigned long ip)
-  */
- void trace_softirqs_off(unsigned long ip)
- {
--	struct task_struct *curr = current;
-+	struct task_struct *curr;
-+
-+	if (!ipipe_root_p)
-+		return;
- 
-+	curr = current;
- 	if (unlikely(!debug_locks || current->lockdep_recursion))
- 		return;
- 
-diff --git a/kernel/trace/trace_irqsoff.c b/kernel/trace/trace_irqsoff.c
-index 2aefbee..c3ec43f 100644
---- a/kernel/trace/trace_irqsoff.c
-+++ b/kernel/trace/trace_irqsoff.c
-@@ -486,28 +486,28 @@ inline void print_irqtrace_events(struct task_struct *curr)
-  */
- void trace_hardirqs_on(void)
- {
--	if (!preempt_trace() && irq_trace())
-+	if (ipipe_root_p && !preempt_trace() && irq_trace())
- 		stop_critical_timing(CALLER_ADDR0, CALLER_ADDR1);
- }
- EXPORT_SYMBOL(trace_hardirqs_on);
- 
- void trace_hardirqs_off(void)
- {
--	if (!preempt_trace() && irq_trace())
-+	if (ipipe_root_p && !preempt_trace() && irq_trace())
- 		start_critical_timing(CALLER_ADDR0, CALLER_ADDR1);
- }
- EXPORT_SYMBOL(trace_hardirqs_off);
- 
- void trace_hardirqs_on_caller(unsigned long caller_addr)
- {
--	if (!preempt_trace() && irq_trace())
-+	if (ipipe_root_p && !preempt_trace() && irq_trace())
- 		stop_critical_timing(CALLER_ADDR0, caller_addr);
- }
- EXPORT_SYMBOL(trace_hardirqs_on_caller);
- 
- void trace_hardirqs_off_caller(unsigned long caller_addr)
- {
--	if (!preempt_trace() && irq_trace())
-+	if (ipipe_root_p && !preempt_trace() && irq_trace())
- 		start_critical_timing(CALLER_ADDR0, caller_addr);
- }
- EXPORT_SYMBOL(trace_hardirqs_off_caller);
-
-
-This works for ARM so far, need to revalidate x86, but it should work based on the concept. Comments?
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+=0A=
+Hi again,=0A=
+=0A=
+now I have disabled CONFIG_XENOMAI but still enabled CONFIG_IPIPE. The erro=
+r messages on boot-up is still given.=0A=
+=0A=
+Since no one else has reported that problem I assume it happens only on a s=
+pecific architecture (for me: i.MX28 =3D> ARMv5). Is there something ARMv5 =
+architecture specific in ipipe's locking mechanism?=0A=
+=0A=
+Regards,=0A=
+Christoph=0A=
+=0A=
+________________________________________=0A=
+Von: Xenomai <xenomai-bounces@xenomai.org> im Auftrag von Stoidner, Christo=
+ph <c.stoidner@arvero.de>=0A=
+Gesendet: Montag, 10. November 2014 10:08=0A=
+An: xenomai@xenomai.org=0A=
+Betreff: Re: [Xenomai] "inconsistent lock state" on boot-up=0A=
+=0A=
+Hi Gilles,=0A=
+=0A=
+> Do you have the same message with exactly the same kernel=0A=
+> configuration, only with CONFIG_XENOMAI and CONFIG_IPIPE disabled?=0A=
+=0A=
+When CONFIG_XENOMAI and CONFIG_IPIPE are disabled the message does not=0A=
+appear on boot-up.=0A=
+=0A=
+> Do you have FCSE enabled? If yes, did you try disabling it? same=0A=
+> with unlocked context switch.=0A=
+=0A=
+FCSE is already disabled at all.=0A=
+=0A=
+Do you have an idea how to overcome the problem?=0A=
+=0A=
+Regards,=0A=
+Christoph=0A=
+=0A=
+________________________________________=0A=
+Von: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>=0A=
+Gesendet: Sonntag, 9. November 2014 16:53=0A=
+An: Stoidner, Christoph=0A=
+Cc: xenomai@xenomai.org=0A=
+Betreff: Re: [Xenomai] "inconsistent lock state" on boot-up=0A=
+=0A=
+On Sun, Nov 09, 2014 at 10:07:54AM +0000, Stoidner, Christoph wrote:=0A=
+> Hi at all,=0A=
+>=0A=
+> I am using linux 3.10.32 and ipipe-core-3.10.32-arm-4.patch on a=0A=
+> Freescale i.MX28.=0A=
+>=0A=
+> When booting the kernel the message "inconsistent lock state" is=0A=
+> given (see below). Does anyone have an idea why this happens? With=0A=
+> kernel 3.10.18 and according ipipe it is the same. With linux=0A=
+> 3.4.6 and ipipe 3.4.6-arm-4 the message does not appear.=0A=
+=0A=
+Do you have the same message with exactly the same kernel=0A=
+configuration, only with CONFIG_XENOMAI and CONFIG_IPIPE disabled?=0A=
+=0A=
+>=0A=
+> I am very interested to understand if these message could lead to=0A=
+> any problems, since I have I unpredictable crashes of my=0A=
+> xenomai-based application program (e.g. with "segmentation fault"=0A=
+> or "scheduling while atomic" messages).=0A=
+=0A=
+Do you have FCSE enabled? If yes, did you try disabling it? same=0A=
+with unlocked context switch.=0A=
+=0A=
+--=0A=
+                                            Gilles.=0A=
+=0A=
+_______________________________________________=0A=
+Xenomai mailing list=0A=
+Xenomai@xenomai.org=0A=
+http://www.xenomai.org/mailman/listinfo/xenomai=0A=
 
