@@ -1,13 +1,14 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Tue, 11 Nov 2014 14:12:25 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
+Date: Tue, 11 Nov 2014 15:16:18 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141111141618.GC17476@sisyphus.hd.free.fr>
 References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
  <20141111140230.GA17476@sisyphus.hd.free.fr>
-In-Reply-To: <20141111140230.GA17476@sisyphus.hd.free.fr>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
 Subject: Re: [Xenomai] xeno_16550A driver install problems.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,49 +18,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
 Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-R29vZCBxdWVzdGlvbiBHaWxsZXMsDQoNCkkgaGF2ZSBiZWVuIHN0dWR5aW5nIHRoZSBVUkzigJlz
-IGJlbG93IGFuZCBqdXN0IGNvcGllZCB0aGUgcmVjaXBlcyBhcyB0aGV5IChlc3BlY2lhbGx5IHRo
-ZSBsYXN0IG9uZSkgaW5kaWNhdGVzIHRoYXQgdGhlIGluc3RhbGxhdGlvbiBpcyBmZWFzaWJsZSBv
-biBhIGJiYi4NCldoZW4gcmVtb3Zpbmcgb25lIGRyaXZlciAoc2VyaWFsODI1OSkgYW5kIGFkZGlu
-ZyBhbm90aGVyICh4ZW5vXzE2NTUwQSkgSSBzYXcgbm8gaW5kaWNhdGlvbnMgdGhhdCB0aGlzIHdv
-dWxkIGFmZmVjdCB0aGUgY2xvY2sgc3VwcG9ydCBmb3IgdGhlIFVBUlRTLg0KQ2FuIHRoZSBsYWNr
-IG9mIGNsb2NrIGVuYWJsZSBmb3IgdGhlIGludGVyZmFjZSBkb21haW4gcmVzdWx0IGluIHRoZSBi
-b290LWNyYXNoPw0KKFRoZSBjb25zb2xlIFVBUlQgd29ya3MgdGhvdWdoLCBzbyBhdCBsZWFzdCB0
-aGUgY2xvY2sgY29tbW9uIHRvIHRoZSBVQVJUUyBpcyBlbmFibGVkKS4NCg0KVGVyamUNCg0KVVJM
-J3M6DQpodHRwOi8veGVub21haS5vcmcvc2VyaWFsLTE2NTUwYS1kcml2ZXIvDQpodHRwczovL3d3
-dy5tYXJzaHV0Lm5ldC9paHdpbXcvZmFpbC10by1sb2FkLXRoZS14ZW5vLTE2NTUwYS1yZWFsLXRp
-bWUtc2VyaWFsLXBvcnQtZHJpdmVyLW9uLWJlYWdsZWJvbmUtYmxhY2suaHRtbA0KDQoNCi0tLS0t
-T3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFpbHRv
-OmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXSANClNlbnQ6IDExLiBub3ZlbWJlciAy
-MDE0IDE1OjAzDQpUbzogVGVyamUgRnLDuHlzYQ0KQ2M6IFhlbm9tYWlAeGVub21haS5vcmcNClN1
-YmplY3Q6IFJlOiBbWGVub21haV0geGVub18xNjU1MEEgZHJpdmVyIGluc3RhbGwgcHJvYmxlbXMu
-DQoNCk9uIFR1ZSwgTm92IDExLCAyMDE0IGF0IDAxOjMxOjMzUE0gKzAwMDAsIFRlcmplIEZyw7h5
-c2Egd3JvdGU6DQo+IERlYXIgZm9ydW0sDQo+IA0KPiBJIGhhdmUgc3RydWdnbGVkIGZvciA0IGRh
-eXMgYW5kIEkgYW0gb3V0IG9mIGlkZWFzL3N1Z2dlc3Rpb25zIG9uIGhvdyB0byBtYWtlIHRoaXMg
-eGVub18xNjU1MEEgZHJpdmVyIHdvcmsuDQo+IA0KPiBJIGhhdmUgc3VjY2Vzc2Z1bGx5IGluc3Rh
-bGxlZCB0aGUgWGVub21haSAyLjYuNCBhbmQgdGhlIERlYmlhbiAzLjguMTMuDQo+IFNlbGYtZGV2
-ZWxvcGVkIFJURE0gZHJpdmVyIGlzIHdvcmtpbmcgc2F0aXNmYWN0b3J5Lg0KPiBCdXQgaW5zdGFs
-bGluZyB0aGUgeGVub18xNjU1MEEgZHJpdmVyIChrZXJuZWwgaW5zdGFsbCkgaXMgZ2l2aW5nIG1l
-IGEgaGVhZGFjaGUuDQo+IA0KPiBGaXJzdCBhIGZpZ2h0IHRvIGZpbmQgdGhlIGNvcnJlY3Qgc3lu
-dGF4IGZvciB0aGUgdUVudi50eHQga2VybmVsIHBhcmFtZXRlcnMgKGV4YW1wbGUgc2hvdyBzZXR0
-aW5nIG9mIG9ubHkgb25lIHBhcmFtZXRlcik6DQo+IGNtZGxpbmU9eGVub18xNjU1MEEubWVtPTB4
-NDgwMjIwMDEsMHg0ODAyNDAwMCwweDQ4MWE2MDAwLDB4NDgxYTgwMDAsMHg0ODFhYTAwMCBcDQo+
-ICAgICAgICAgeGVub18xNjU1MEEuaXJxPTczLDc0LDQ0LDQ1LDQ2IFwNCj4gICAgICAgICB4ZW5v
-XzE2NTUwQS5iYXVkX2Jhc2U9MTE1MjAwLDExNTIwMCwxMTUyMDAsMTE1MjAwLDExNTIwMCBcDQo+
-ICAgICAgICAgeGVub18xNjU1MEEudHhfZmlmbz02NCw2NCw2NCw2NCw2NCBcDQo+ICAgICAgICAg
-eGVub18xNjU1MEEuc3RhcnRfaW5kZXg9MQ0KPiBUaGUga2VybmVsIHBhcmFtZXRlcnMgaXMgY29y
-cmVjdGx5IHN0b3JlZCBpbiB0aGUgL3N5cy9tb2R1bGUveGVub18xNjU1MEEvcGFyYW1ldGVycy4N
-Cj4gVGhlIERlYmlhbiBib290cyBhcyBsb25nIGFzIHRoZSBpcnE9MCwwLDAsMCwwDQo+IA0KPiBC
-VVQsIGF0IHRoZSBtb21lbnQgSSBzcGVjaWZ5IGNvcnJlY3QgaXJxIG51bWJlcnMsIHRoZSBib290
-LXByb2Nlc3MgY3Jhc2hlcyAoc2VlIGJvb3QtbG9nIGJlbG93KS4NCj4gDQo+IEkgaGF2ZSBkaXNh
-YmxlZCB0aGUgQ09ORklHX1NFUklBTF9PTUFQIHdpdGhvdXQgcmVzdWx0Lg0KPiBJIGhhdmUgZGlz
-YWJsZWQgdGhlIHNlcmlhbDgyNTAgZHJpdmVyIHRoYXQgb2NjdXBpZXMgdGhlIHR0eVN4IFVBUlRT
-LCBidXQgdGhlIGtlcm5lbCBzdGlsbCBjcmFzaGVzIGFzIHNvb24gYXMgdGhlIGlycSBpcyBzZXQg
-PD4gMC4NCg0KQW5vdGhlciBxdWVzdGlvbjogdXN1YWxseSwgZWFjaCBkZXZpY2UgcmVxdWlyZXMg
-aXRzICJpbnRlcmZhY2UgY2xvY2siIHRvIGJlIGVuYWJsZWQgaW4gb3JkZXIgdG8gYWNjZXNzIGl0
-cyByZWdpc3RlcnMsIGlzIHRoZSBpbnRlcmZhY2UgY2xvY2sgZm9yIHRoZSBzZXJpYWwgZGV2aWNl
-IHlvdSB3YW50IHRvIHVzZSBlbmFibGVkPw0KDQotLSANCgkJCQkJICAgIEdpbGxlcy4NCg==
+On Tue, Nov 11, 2014 at 02:12:25PM +0000, Terje Frøysa wrote:
+> Good question Gilles,
+> 
+> I have been studying the URL’s below and just copied the recipes
+> as they (especially the last one) indicates that the installation
+> is feasible on a bbb. When removing one driver (serial8259) and
+> adding another (xeno_16550A) I saw no indications that this would
+> affect the clock support for the UARTS.
+
+With the move to DT and everything I have no idea if the clocks are
+enabled by DT, or if there is code in the driver to do that. You
+would have to check
+
+> Can the lack of clock
+> enable for the interface domain result in the boot-crash?
+
+Yes.
+
+> (The console UART works though, so at least the clock common to the
+> UARTS is enabled).
+
+I would believe each UART has its own interface clock. 
+
+Also note that the interface clock is not the only clock needed, you
+also need the "functional clock" for the device to work correctly.
+
+-- 
+					    Gilles.
 
