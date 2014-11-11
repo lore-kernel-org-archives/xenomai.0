@@ -1,6 +1,6 @@
-Date: Tue, 11 Nov 2014 14:49:57 +0100
+Date: Tue, 11 Nov 2014 15:02:30 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141111134957.GZ17476@sisyphus.hd.free.fr>
+Message-ID: <20141111140230.GA17476@sisyphus.hd.free.fr>
 References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -41,10 +41,10 @@ On Tue, Nov 11, 2014 at 01:31:33PM +0000, Terje Frøysa wrote:
 > 
 > I have disabled the CONFIG_SERIAL_OMAP without result.
 > I have disabled the serial8250 driver that occupies the ttySx UARTS, but the kernel still crashes as soon as the irq is set <> 0.
-> 
 
-The xeno_16550A driver uses byte access, have you checked the AM33xx
-TRM to check that this is valid?
+Another question: usually, each device requires its "interface
+clock" to be enabled in order to access its registers, is the
+interface clock for the serial device you want to use enabled?
 
 -- 
 					    Gilles.
