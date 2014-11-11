@@ -1,12 +1,13 @@
-Date: Tue, 11 Nov 2014 12:09:37 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141111110937.GY17476@sisyphus.hd.free.fr>
-References: <CAJt3u5nf_epaPjW=dAjqGMq85dgRYqwn-MKcRGFWby+MXtvong@mail.gmail.com>
+Message-ID: <5461FD66.4000703@selex-es.com>
+Date: Tue, 11 Nov 2014 13:13:26 +0100
+From: Pampolini Matteo <matteo.pampolini@selex-es.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJt3u5nf_epaPjW=dAjqGMq85dgRYqwn-MKcRGFWby+MXtvong@mail.gmail.com>
-Subject: Re: [Xenomai] USB3.0 drivers for xenomai
+References: <545A2CC1.3080909@selex-es.com>
+ <4044_1415212954_545A6F9A_4044_2177_1_20141105184232.GA24737@sisyphus.hd.free.fr>
+In-Reply-To: <4044_1415212954_545A6F9A_4044_2177_1_20141105184232.GA24737@sisyphus.hd.free.fr>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] An explanation on cyclictest results and other...
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,30 +16,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Madan Sondur <sondur.madan23@gmail.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, Nov 11, 2014 at 09:03:27AM +0530, Madan Sondur wrote:
-> Hi all,
-> 
-> Are there any USB 3.0 drivers for xenomai 2.6.2.1. If so where can i get
-> them and how to install ? Can you please help?
-> 
-> Below is my system configuration:
-> 
-> Core i7 processor with Gigabyte motherboard having USB 3.0 using Intel
-> Chipset 8 series. I have installed xenomai 2.6.2.1 on Ubuntu 12.04 64bit.
+Hi Gilles,
 
-First of all, if you are starting to work with xenomai, you should
-not install an old version such as 2.6.2.1, you should install the
-latest stable version, which is 2.6.4.
+many thanks for your reply and sorry for the delay of mine.
 
-As for support for USB 3.0 drivers, to my knowledge, there are none.
-Note however that most USB3.0 devices are USB2.0 compatible, and if
-you are after latency and not bandwidth, it should not matter that
-much. If you are after bandwidth, then why looking for a Xenomai
-driver?
+I had a look at the page you pointed me at and now things are more clear
+to me,
+though I still have to study...
 
--- 
-					    Gilles.
+And what about SMP support (my first question), is it supported for
+PowerPC 32
+in the version I'm using?
+
+Regards, Matteo
+
+On 05/11/2014 19:42, Gilles Chanteperdrix wrote:
+> On Wed, Nov 05, 2014 at 02:57:21PM +0100, Pampolini Matteo wrote:
+>> 2) Before realizing that Xenomai provides its own enhanced version of cy=
+clictest (sigh!) I took
+>> the one from rt-tests package and recompiled it by using Xenomai POSIX s=
+kin. In my understanding
+>> they should give similar results, but while I get an average latency of =
+1 with the Xenomai provided
+>> one, I get 16 with the latter one! What am I doing wrong?
+> You are making the assumption, that recompiling an application to
+> use xenomai posix skin will magically get it working in primary mode
+> on Xenomai co-kernel. This assumption is generally wrong, see:
+>
+> http://xenomai.org/2014/08/porting-a-linux-application-to-xenomai-dual-ke=
+rnel/
+>
+
+This email and any attachments are confidential to the intended recipient a=
+nd may also be privileged. If you are not the intended recipient please del=
+ete it from your system and notify the sender. You should not copy it or us=
+e it for any purpose nor disclose or distribute its contents to any other p=
+erson.
+Questa e-mail e tutti i suoi allegati sono da intendersi inviati in via ris=
+ervata all'effettivo destinatario e possono essere soggetti a restrizioni l=
+egali. Se non siete l'effettivo destinatario o avete ricevuto il messaggio =
+per errore siete pregati di cancellarlo dal vostro sistema e di avvisare il=
+ mittente. E' vietata la duplicazione, l'uso a qualsiasi titolo, la divulga=
+zione o la distribuzione dei contenuti di questa e-mail a qualunque altro s=
+oggetto.
+
+Prima di stampare questa comunicazione consideratene, per favore, l'impatto=
+ ambientale
+Please consider the environment before printing this email
 
