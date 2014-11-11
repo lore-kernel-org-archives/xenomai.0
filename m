@@ -1,14 +1,15 @@
-Date: Tue, 11 Nov 2014 15:16:18 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141111141618.GC17476@sisyphus.hd.free.fr>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Tue, 11 Nov 2014 14:18:14 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C676CE68@SINTEFEXMBX05.sintef.no>
 References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
  <20141111140230.GA17476@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
-MIME-Version: 1.0
+ <20141111141618.GC17476@sisyphus.hd.free.fr>
+In-Reply-To: <20141111141618.GC17476@sisyphus.hd.free.fr>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] xeno_16550A driver install problems.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -18,35 +19,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Tue, Nov 11, 2014 at 02:12:25PM +0000, Terje Frøysa wrote:
-> Good question Gilles,
-> 
-> I have been studying the URL’s below and just copied the recipes
-> as they (especially the last one) indicates that the installation
-> is feasible on a bbb. When removing one driver (serial8259) and
-> adding another (xeno_16550A) I saw no indications that this would
-> affect the clock support for the UARTS.
-
-With the move to DT and everything I have no idea if the clocks are
-enabled by DT, or if there is code in the driver to do that. You
-would have to check
-
-> Can the lack of clock
-> enable for the interface domain result in the boot-crash?
-
-Yes.
-
-> (The console UART works though, so at least the clock common to the
-> UARTS is enabled).
-
-I would believe each UART has its own interface clock. 
-
-Also note that the interface clock is not the only clock needed, you
-also need the "functional clock" for the device to work correctly.
-
--- 
-					    Gilles.
+VGhhbmtzIEdpbGxlcywNCg0KSSdsbCBjaGVjayBvdXQgeW91ciBzdWdnZXN0aW9ucy4NCg0KVGVy
+amUNCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEdpbGxlcyBDaGFudGVwZXJk
+cml4IFttYWlsdG86Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmddIA0KU2VudDogMTEu
+IG5vdmVtYmVyIDIwMTQgMTU6MTYNClRvOiBUZXJqZSBGcsO4eXNhDQpDYzogWGVub21haUB4ZW5v
+bWFpLm9yZw0KU3ViamVjdDogUmU6IFtYZW5vbWFpXSB4ZW5vXzE2NTUwQSBkcml2ZXIgaW5zdGFs
+bCBwcm9ibGVtcy4NCg0KT24gVHVlLCBOb3YgMTEsIDIwMTQgYXQgMDI6MTI6MjVQTSArMDAwMCwg
+VGVyamUgRnLDuHlzYSB3cm90ZToNCj4gR29vZCBxdWVzdGlvbiBHaWxsZXMsDQo+IA0KPiBJIGhh
+dmUgYmVlbiBzdHVkeWluZyB0aGUgVVJM4oCZcyBiZWxvdyBhbmQganVzdCBjb3BpZWQgdGhlIHJl
+Y2lwZXMgYXMgDQo+IHRoZXkgKGVzcGVjaWFsbHkgdGhlIGxhc3Qgb25lKSBpbmRpY2F0ZXMgdGhh
+dCB0aGUgaW5zdGFsbGF0aW9uIGlzIA0KPiBmZWFzaWJsZSBvbiBhIGJiYi4gV2hlbiByZW1vdmlu
+ZyBvbmUgZHJpdmVyIChzZXJpYWw4MjU5KSBhbmQgYWRkaW5nIA0KPiBhbm90aGVyICh4ZW5vXzE2
+NTUwQSkgSSBzYXcgbm8gaW5kaWNhdGlvbnMgdGhhdCB0aGlzIHdvdWxkIGFmZmVjdCB0aGUgDQo+
+IGNsb2NrIHN1cHBvcnQgZm9yIHRoZSBVQVJUUy4NCg0KV2l0aCB0aGUgbW92ZSB0byBEVCBhbmQg
+ZXZlcnl0aGluZyBJIGhhdmUgbm8gaWRlYSBpZiB0aGUgY2xvY2tzIGFyZSBlbmFibGVkIGJ5IERU
+LCBvciBpZiB0aGVyZSBpcyBjb2RlIGluIHRoZSBkcml2ZXIgdG8gZG8gdGhhdC4gWW91IHdvdWxk
+IGhhdmUgdG8gY2hlY2sNCg0KPiBDYW4gdGhlIGxhY2sgb2YgY2xvY2sNCj4gZW5hYmxlIGZvciB0
+aGUgaW50ZXJmYWNlIGRvbWFpbiByZXN1bHQgaW4gdGhlIGJvb3QtY3Jhc2g/DQoNClllcy4NCg0K
+PiAoVGhlIGNvbnNvbGUgVUFSVCB3b3JrcyB0aG91Z2gsIHNvIGF0IGxlYXN0IHRoZSBjbG9jayBj
+b21tb24gdG8gdGhlIA0KPiBVQVJUUyBpcyBlbmFibGVkKS4NCg0KSSB3b3VsZCBiZWxpZXZlIGVh
+Y2ggVUFSVCBoYXMgaXRzIG93biBpbnRlcmZhY2UgY2xvY2suIA0KDQpBbHNvIG5vdGUgdGhhdCB0
+aGUgaW50ZXJmYWNlIGNsb2NrIGlzIG5vdCB0aGUgb25seSBjbG9jayBuZWVkZWQsIHlvdSBhbHNv
+IG5lZWQgdGhlICJmdW5jdGlvbmFsIGNsb2NrIiBmb3IgdGhlIGRldmljZSB0byB3b3JrIGNvcnJl
+Y3RseS4NCg0KLS0gDQoJCQkJCSAgICBHaWxsZXMuDQo=
 
