@@ -1,12 +1,13 @@
-Date: Tue, 11 Nov 2014 15:02:30 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141111140230.GA17476@sisyphus.hd.free.fr>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Tue, 11 Nov 2014 14:03:44 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C676CDF8@SINTEFEXMBX05.sintef.no>
 References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
-MIME-Version: 1.0
+ <20141111134957.GZ17476@sisyphus.hd.free.fr>
+In-Reply-To: <20141111134957.GZ17476@sisyphus.hd.free.fr>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] xeno_16550A driver install problems.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,36 +17,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Tue, Nov 11, 2014 at 01:31:33PM +0000, Terje Frøysa wrote:
-> Dear forum,
-> 
-> I have struggled for 4 days and I am out of ideas/suggestions on how to make this xeno_16550A driver work.
-> 
-> I have successfully installed the Xenomai 2.6.4 and the Debian 3.8.13.
-> Self-developed RTDM driver is working satisfactory.
-> But installing the xeno_16550A driver (kernel install) is giving me a headache.
-> 
-> First a fight to find the correct syntax for the uEnv.txt kernel parameters (example show setting of only one parameter):
-> cmdline=xeno_16550A.mem=0x48022001,0x48024000,0x481a6000,0x481a8000,0x481aa000 \
->         xeno_16550A.irq=73,74,44,45,46 \
->         xeno_16550A.baud_base=115200,115200,115200,115200,115200 \
->         xeno_16550A.tx_fifo=64,64,64,64,64 \
->         xeno_16550A.start_index=1
-> The kernel parameters is correctly stored in the /sys/module/xeno_16550A/parameters.
-> The Debian boots as long as the irq=0,0,0,0,0
-> 
-> BUT, at the moment I specify correct irq numbers, the boot-process crashes (see boot-log below).
-> 
-> I have disabled the CONFIG_SERIAL_OMAP without result.
-> I have disabled the serial8250 driver that occupies the ttySx UARTS, but the kernel still crashes as soon as the irq is set <> 0.
-
-Another question: usually, each device requires its "interface
-clock" to be enabled in order to access its registers, is the
-interface clock for the serial device you want to use enabled?
-
--- 
-					    Gilles.
+VGhhbmtzIGZvciB5b3VyIHF1aWNrIHJlcGx5IEdpbGxlcywNCg0KVGhlIEFNMzM1WCBVQVJUUyBh
+cmUgMTY1NTAgY29tcGxpYW50IGFuZCBhcyBmYXIgYXMgSSBjYW4gdGVsbCBmcm9tIHRoZSBUUk0s
+IHRoZSByZWdpc3RlcnMgYWNjb21tb2RhdGVzICBieXRlIGFjY2Vzc2VzLg0KVGhlIGFkZHJlc3Mg
+bWFwIGlzIG1vZHVsbyA0IGJ5dGVzIHRob3VnaCwgYXMgaW4gYSB0eXBpY2FsIDMyLWJpdCBlbnZp
+cm9ubWVudC4NCg0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogR2lsbGVzIENo
+YW50ZXBlcmRyaXggW21haWx0bzpnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZ10gDQpT
+ZW50OiAxMS4gbm92ZW1iZXIgMjAxNCAxNDo1MA0KVG86IFRlcmplIEZyw7h5c2ENCkNjOiBYZW5v
+bWFpQHhlbm9tYWkub3JnDQpTdWJqZWN0OiBSZTogW1hlbm9tYWldIHhlbm9fMTY1NTBBIGRyaXZl
+ciBpbnN0YWxsIHByb2JsZW1zLg0KDQpPbiBUdWUsIE5vdiAxMSwgMjAxNCBhdCAwMTozMTozM1BN
+ICswMDAwLCBUZXJqZSBGcsO4eXNhIHdyb3RlOg0KPiBEZWFyIGZvcnVtLA0KPiANCj4gSSBoYXZl
+IHN0cnVnZ2xlZCBmb3IgNCBkYXlzIGFuZCBJIGFtIG91dCBvZiBpZGVhcy9zdWdnZXN0aW9ucyBv
+biBob3cgdG8gbWFrZSB0aGlzIHhlbm9fMTY1NTBBIGRyaXZlciB3b3JrLg0KPiANCj4gSSBoYXZl
+IHN1Y2Nlc3NmdWxseSBpbnN0YWxsZWQgdGhlIFhlbm9tYWkgMi42LjQgYW5kIHRoZSBEZWJpYW4g
+My44LjEzLg0KPiBTZWxmLWRldmVsb3BlZCBSVERNIGRyaXZlciBpcyB3b3JraW5nIHNhdGlzZmFj
+dG9yeS4NCj4gQnV0IGluc3RhbGxpbmcgdGhlIHhlbm9fMTY1NTBBIGRyaXZlciAoa2VybmVsIGlu
+c3RhbGwpIGlzIGdpdmluZyBtZSBhIGhlYWRhY2hlLg0KPiANCj4gRmlyc3QgYSBmaWdodCB0byBm
+aW5kIHRoZSBjb3JyZWN0IHN5bnRheCBmb3IgdGhlIHVFbnYudHh0IGtlcm5lbCBwYXJhbWV0ZXJz
+IChleGFtcGxlIHNob3cgc2V0dGluZyBvZiBvbmx5IG9uZSBwYXJhbWV0ZXIpOg0KPiBjbWRsaW5l
+PXhlbm9fMTY1NTBBLm1lbT0weDQ4MDIyMDAxLDB4NDgwMjQwMDAsMHg0ODFhNjAwMCwweDQ4MWE4
+MDAwLDB4NDgxYWEwMDAgXA0KPiAgICAgICAgIHhlbm9fMTY1NTBBLmlycT03Myw3NCw0NCw0NSw0
+NiBcDQo+ICAgICAgICAgeGVub18xNjU1MEEuYmF1ZF9iYXNlPTExNTIwMCwxMTUyMDAsMTE1MjAw
+LDExNTIwMCwxMTUyMDAgXA0KPiAgICAgICAgIHhlbm9fMTY1NTBBLnR4X2ZpZm89NjQsNjQsNjQs
+NjQsNjQgXA0KPiAgICAgICAgIHhlbm9fMTY1NTBBLnN0YXJ0X2luZGV4PTENCj4gVGhlIGtlcm5l
+bCBwYXJhbWV0ZXJzIGlzIGNvcnJlY3RseSBzdG9yZWQgaW4gdGhlIC9zeXMvbW9kdWxlL3hlbm9f
+MTY1NTBBL3BhcmFtZXRlcnMuDQo+IFRoZSBEZWJpYW4gYm9vdHMgYXMgbG9uZyBhcyB0aGUgaXJx
+PTAsMCwwLDAsMA0KPiANCj4gQlVULCBhdCB0aGUgbW9tZW50IEkgc3BlY2lmeSBjb3JyZWN0IGly
+cSBudW1iZXJzLCB0aGUgYm9vdC1wcm9jZXNzIGNyYXNoZXMgKHNlZSBib290LWxvZyBiZWxvdyku
+DQo+IA0KPiBJIGhhdmUgZGlzYWJsZWQgdGhlIENPTkZJR19TRVJJQUxfT01BUCB3aXRob3V0IHJl
+c3VsdC4NCj4gSSBoYXZlIGRpc2FibGVkIHRoZSBzZXJpYWw4MjUwIGRyaXZlciB0aGF0IG9jY3Vw
+aWVzIHRoZSB0dHlTeCBVQVJUUywgYnV0IHRoZSBrZXJuZWwgc3RpbGwgY3Jhc2hlcyBhcyBzb29u
+IGFzIHRoZSBpcnEgaXMgc2V0IDw+IDAuDQo+IA0KDQpUaGUgeGVub18xNjU1MEEgZHJpdmVyIHVz
+ZXMgYnl0ZSBhY2Nlc3MsIGhhdmUgeW91IGNoZWNrZWQgdGhlIEFNMzN4eCBUUk0gdG8gY2hlY2sg
+dGhhdCB0aGlzIGlzIHZhbGlkPw0KDQotLSANCgkJCQkJICAgIEdpbGxlcy4NCg==
 
