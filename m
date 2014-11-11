@@ -1,13 +1,13 @@
-Message-ID: <5461FD66.4000703@selex-es.com>
-Date: Tue, 11 Nov 2014 13:13:26 +0100
+Message-ID: <5461FDC0.20007@selex-es.com>
+Date: Tue, 11 Nov 2014 13:14:56 +0100
 From: Pampolini Matteo <matteo.pampolini@selex-es.com>
 MIME-Version: 1.0
-References: <545A2CC1.3080909@selex-es.com>
- <4044_1415212954_545A6F9A_4044_2177_1_20141105184232.GA24737@sisyphus.hd.free.fr>
-In-Reply-To: <4044_1415212954_545A6F9A_4044_2177_1_20141105184232.GA24737@sisyphus.hd.free.fr>
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+References: <545CC287.908@selex-es.com>
+ <24286_1415392335_545D2C4D_24286_8089_1_545D2CD9.1030404@xenomai.org>
+In-Reply-To: <24286_1415392335_545D2C4D_24286_8089_1_545D2CD9.1030404@xenomai.org>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] An explanation on cyclictest results and other...
+Subject: Re: [Xenomai] Xenomai 2.X on Freescale QorIQ T2080 processor
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,38 +16,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Gilles,
+Hi Philippe,
 
-many thanks for your reply and sorry for the delay of mine.
-
-I had a look at the page you pointed me at and now things are more clear
-to me,
-though I still have to study...
-
-And what about SMP support (my first question), is it supported for
-PowerPC 32
-in the version I'm using?
+many many thanks for your quick and exhaustive reply, I will start
+working on this,
+in case of troubles I will ask again for your kind help.
 
 Regards, Matteo
 
-On 05/11/2014 19:42, Gilles Chanteperdrix wrote:
-> On Wed, Nov 05, 2014 at 02:57:21PM +0100, Pampolini Matteo wrote:
->> 2) Before realizing that Xenomai provides its own enhanced version of cy=
-clictest (sigh!) I took
->> the one from rt-tests package and recompiled it by using Xenomai POSIX s=
-kin. In my understanding
->> they should give similar results, but while I get an average latency of =
-1 with the Xenomai provided
->> one, I get 16 with the latter one! What am I doing wrong?
-> You are making the assumption, that recompiling an application to
-> use xenomai posix skin will magically get it working in primary mode
-> on Xenomai co-kernel. This assumption is generally wrong, see:
+On 07/11/2014 21:34, Philippe Gerum wrote:
+> On 11/07/2014 02:00 PM, Pampolini Matteo wrote:
+>> Hello there,
+>>
+>> do you know if all around the world someone is working to port Xenomai
+>> 2.X on Freescale QorIQ T2080 processor?
+>> Because this processor does not appear in the list of supported ones?
+>>
+>> If yes, would it be possible to know which patch is used? And if no, may
+>> you please point me in the right direction
+>> to create it by myself and then give it back to community?
+>>
+> You did not mention which kernel release was of interest, so I'll assume
+> 3.14. This patch is the right starting point for 3.14:
 >
-> http://xenomai.org/2014/08/porting-a-linux-application-to-xenomai-dual-ke=
-rnel/
+> http://download.gna.org/adeos/patches/v3.x/powerpc/ipipe-core-3.14.17-pow=
+erpc-4.patch
+>
+> Then add the few commits that piled up in the I-pipe git tree since tag
+> "ipipe-core-3.14.17-powerpc-4", which the patch mentioned above
+> corresponds to: http://git.xenomai.org/ipipe.git/log/?h=3Dipipe-3.14
+> Or wait until drop -5 appears in the download area, they will be included=
+.
+>
+> Then have a look at the PIC code for making it aware of the interrupt
+> pipeline, this beast likely sports a MPIC (just a guess), in which case
+> the work to support the "generic" MPIC is done already. Having a look at
+> the error interrupt handling for freescale's PIC chips in sysdev/ may be
+> a good idea too.
+>
+> Another interesting part is in head_fsl_booke.S, in case this platform
+> has additional exception vectors which might need to be pipelined.
+>
+> There will be other issues, but this is a starting point.
 >
 
 This email and any attachments are confidential to the intended recipient a=
