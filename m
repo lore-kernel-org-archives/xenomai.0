@@ -1,16 +1,13 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Tue, 11 Nov 2014 14:18:14 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C676CE68@SINTEFEXMBX05.sintef.no>
-References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
- <20141111140230.GA17476@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
- <20141111141618.GC17476@sisyphus.hd.free.fr>
-In-Reply-To: <20141111141618.GC17476@sisyphus.hd.free.fr>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Tue, 11 Nov 2014 10:37:45 -0500
+Message-ID: <20141111153745.GX24110@csclub.uwaterloo.ca>
+References: <CAJt3u5nf_epaPjW=dAjqGMq85dgRYqwn-MKcRGFWby+MXtvong@mail.gmail.com>
+ <20141111110937.GY17476@sisyphus.hd.free.fr>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] xeno_16550A driver install problems.
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20141111110937.GY17476@sisyphus.hd.free.fr>
+Subject: Re: [Xenomai] USB3.0 drivers for xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,29 +17,24 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-VGhhbmtzIEdpbGxlcywNCg0KSSdsbCBjaGVjayBvdXQgeW91ciBzdWdnZXN0aW9ucy4NCg0KVGVy
-amUNCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEdpbGxlcyBDaGFudGVwZXJk
-cml4IFttYWlsdG86Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmddIA0KU2VudDogMTEu
-IG5vdmVtYmVyIDIwMTQgMTU6MTYNClRvOiBUZXJqZSBGcsO4eXNhDQpDYzogWGVub21haUB4ZW5v
-bWFpLm9yZw0KU3ViamVjdDogUmU6IFtYZW5vbWFpXSB4ZW5vXzE2NTUwQSBkcml2ZXIgaW5zdGFs
-bCBwcm9ibGVtcy4NCg0KT24gVHVlLCBOb3YgMTEsIDIwMTQgYXQgMDI6MTI6MjVQTSArMDAwMCwg
-VGVyamUgRnLDuHlzYSB3cm90ZToNCj4gR29vZCBxdWVzdGlvbiBHaWxsZXMsDQo+IA0KPiBJIGhh
-dmUgYmVlbiBzdHVkeWluZyB0aGUgVVJM4oCZcyBiZWxvdyBhbmQganVzdCBjb3BpZWQgdGhlIHJl
-Y2lwZXMgYXMgDQo+IHRoZXkgKGVzcGVjaWFsbHkgdGhlIGxhc3Qgb25lKSBpbmRpY2F0ZXMgdGhh
-dCB0aGUgaW5zdGFsbGF0aW9uIGlzIA0KPiBmZWFzaWJsZSBvbiBhIGJiYi4gV2hlbiByZW1vdmlu
-ZyBvbmUgZHJpdmVyIChzZXJpYWw4MjU5KSBhbmQgYWRkaW5nIA0KPiBhbm90aGVyICh4ZW5vXzE2
-NTUwQSkgSSBzYXcgbm8gaW5kaWNhdGlvbnMgdGhhdCB0aGlzIHdvdWxkIGFmZmVjdCB0aGUgDQo+
-IGNsb2NrIHN1cHBvcnQgZm9yIHRoZSBVQVJUUy4NCg0KV2l0aCB0aGUgbW92ZSB0byBEVCBhbmQg
-ZXZlcnl0aGluZyBJIGhhdmUgbm8gaWRlYSBpZiB0aGUgY2xvY2tzIGFyZSBlbmFibGVkIGJ5IERU
-LCBvciBpZiB0aGVyZSBpcyBjb2RlIGluIHRoZSBkcml2ZXIgdG8gZG8gdGhhdC4gWW91IHdvdWxk
-IGhhdmUgdG8gY2hlY2sNCg0KPiBDYW4gdGhlIGxhY2sgb2YgY2xvY2sNCj4gZW5hYmxlIGZvciB0
-aGUgaW50ZXJmYWNlIGRvbWFpbiByZXN1bHQgaW4gdGhlIGJvb3QtY3Jhc2g/DQoNClllcy4NCg0K
-PiAoVGhlIGNvbnNvbGUgVUFSVCB3b3JrcyB0aG91Z2gsIHNvIGF0IGxlYXN0IHRoZSBjbG9jayBj
-b21tb24gdG8gdGhlIA0KPiBVQVJUUyBpcyBlbmFibGVkKS4NCg0KSSB3b3VsZCBiZWxpZXZlIGVh
-Y2ggVUFSVCBoYXMgaXRzIG93biBpbnRlcmZhY2UgY2xvY2suIA0KDQpBbHNvIG5vdGUgdGhhdCB0
-aGUgaW50ZXJmYWNlIGNsb2NrIGlzIG5vdCB0aGUgb25seSBjbG9jayBuZWVkZWQsIHlvdSBhbHNv
-IG5lZWQgdGhlICJmdW5jdGlvbmFsIGNsb2NrIiBmb3IgdGhlIGRldmljZSB0byB3b3JrIGNvcnJl
-Y3RseS4NCg0KLS0gDQoJCQkJCSAgICBHaWxsZXMuDQo=
+On Tue, Nov 11, 2014 at 12:09:37PM +0100, Gilles Chanteperdrix wrote:
+> First of all, if you are starting to work with xenomai, you should
+> not install an old version such as 2.6.2.1, you should install the
+> latest stable version, which is 2.6.4.
+> 
+> As for support for USB 3.0 drivers, to my knowledge, there are none.
+> Note however that most USB3.0 devices are USB2.0 compatible, and if
+> you are after latency and not bandwidth, it should not matter that
+> much. If you are after bandwidth, then why looking for a Xenomai
+> driver?
+
+Well USB3 is full duplex and can generate interrupt messages, while USB2
+is half duplex and polled.
+
+Those might be good reasons to want USB3.
+
+-- 
+Len Sorensen
 
