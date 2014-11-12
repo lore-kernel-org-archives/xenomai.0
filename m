@@ -1,20 +1,21 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Wed, 12 Nov 2014 20:35:00 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C676F464@SINTEFEXMBX05.sintef.no>
+Date: Wed, 12 Nov 2014 21:39:22 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141112203922.GJ17476@sisyphus.hd.free.fr>
 References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
  <20141111140230.GA17476@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
  <314E5ECDAA86314791309FA670550F89C676E884@SINTEFEXMBX05.sintef.no>
  <20141112134531.GP17476@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C676EB35@SINTEFEXMBX05.sintef.no>
- <20141112191631.GJ24110@csclub.uwaterloo.ca>
- <314E5ECDAA86314791309FA670550F89C676F324@SINTEFEXMBX05.sintef.no>
- <20141112203045.GI17476@sisyphus.hd.free.fr>
-In-Reply-To: <20141112203045.GI17476@sisyphus.hd.free.fr>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <20141112145117.GV17476@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C676EBE1@SINTEFEXMBX05.sintef.no>
+ <20141112151305.GW17476@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C676F428@SINTEFEXMBX05.sintef.no>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <314E5ECDAA86314791309FA670550F89C676F428@SINTEFEXMBX05.sintef.no>
 Subject: Re: [Xenomai] xeno_16550A driver install problems.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -24,22 +25,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
+To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
 Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-VGhhbmtzIEdpbGxlcywNCg0KT2xkIGhhcmR3YXJlL2Zpcm13YXJlIG1hbiA7LSkNClRlcmplDQoN
-Ci0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBb
-bWFpbHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXSANClNlbnQ6IDEyLiBub3Zl
-bWJlciAyMDE0IDIxOjMxDQpUbzogVGVyamUgRnLDuHlzYQ0KQ2M6IExlbm5hcnQgU29yZW5zZW47
-IFhlbm9tYWlAeGVub21haS5vcmcNClN1YmplY3Q6IFJlOiBbWGVub21haV0geGVub18xNjU1MEEg
-ZHJpdmVyIGluc3RhbGwgcHJvYmxlbXMuDQoNCk9uIFdlZCwgTm92IDEyLCAyMDE0IGF0IDA3OjUx
-OjM2UE0gKzAwMDAsIFRlcmplIEZyw7h5c2Egd3JvdGU6DQo+IEkgaGF2ZSBhbHNvIGJlZW4gc2Vh
-cmNoaW5nIGZvciBhIHVzZXIncyBtYW51YWwgb3Igc29tZSBjLWNvZGUgZXhhbXBsZXMgDQo+IHV0
-aWxpemluZyB0aGUgb21hcF91YXJ0IGluIGEgbW9yZSBlbGV2YXRlZCBmYXNoaW9uLCBidXQgSSBm
-aW5kIG9ubHkgbm92aWNlIGV4YW1wbGVzIG9yIHB5dGhvbiBzY3JpcHRzLg0KDQpZb3UgYXJlIHNl
-YXJjaGluZyB0aGUgd3Jvbmcgd2F5LiBvbWFwLXNlcmlhbCBpcyBhIHNlcmlhbCBkcml2ZXIsIGFu
-ZCBhbGwgc2VyaWFsIGRyaXZlcnMgc3VwcG9ydCB0aGUgc2FtZSBBUEkuIFRoZSByZWZlcmVuY2Ug
-Zm9yIExpbnV4IHNlcmlhbCBkcml2ZXJzIGlzIGhlcmU6DQoNCmh0dHA6Ly93d3cudGxkcC5vcmcv
-SE9XVE8vU2VyaWFsLVByb2dyYW1taW5nLUhPV1RPLw0KDQotLSANCgkJCQkJICAgIEdpbGxlcy4N
-Cg==
+On Wed, Nov 12, 2014 at 08:33:41PM +0000, Terje Frøysa wrote:
+> Hello again Gilles,
+> 
+> Before patching, I just have to check:
+> 
+> The batch below refers to a path in the xenomai-2.6.4 directory:
+>  /ksrc/drivers/serial/16550A_io.h
+> 
+> There also exist a corresponding source at the Linux kernel directory:
+> bb-kernel/KERNEL/drivers/xenomai/serial/16550A_io.h
+> 
+> Since the xeno_16550A is enabled in the kernel make menuconfig or included as a loadable module in the kernel,
+> I would assume that the patch is to be applied in the kernel source?
+> (and then rebuild the kernel?)
+
+
+If you have used prepare-kernel.sh to generate the kernel sources,
+the second is a symbolic link to the first, so you just patch the
+first, recompile the kernel, and try and boot it. If it is not a
+symbolic link, then yes, you need to apply the patch to the kernel
+sources, patch will not find the file and tell you to enter the file
+name manually.
+
+-- 
+					    Gilles.
 
