@@ -1,22 +1,19 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Wed, 12 Nov 2014 14:35:59 -0500
-Message-ID: <20141112193559.GK24110@csclub.uwaterloo.ca>
-References: <20141112133447.GO17476@sisyphus.hd.free.fr>
- <54636E3F.1070207@free.fr>
- <20141112143026.GT17476@sisyphus.hd.free.fr>
- <54637AD2.3080507@free.fr>
- <20141112152940.GX17476@sisyphus.hd.free.fr>
- <54638058.10509@free.fr>
- <20141112185301.GH24110@csclub.uwaterloo.ca>
- <20141112190652.GE17476@sisyphus.hd.free.fr>
- <20141112191307.GI24110@csclub.uwaterloo.ca>
- <20141112192823.GF17476@sisyphus.hd.free.fr>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Wed, 12 Nov 2014 19:51:36 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C676F324@SINTEFEXMBX05.sintef.no>
+References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
+ <20141111140230.GA17476@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
+ <314E5ECDAA86314791309FA670550F89C676E884@SINTEFEXMBX05.sintef.no>
+ <20141112134531.GP17476@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C676EB35@SINTEFEXMBX05.sintef.no>
+ <20141112191631.GJ24110@csclub.uwaterloo.ca>
+In-Reply-To: <20141112191631.GJ24110@csclub.uwaterloo.ca>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20141112192823.GF17476@sisyphus.hd.free.fr>
-Subject: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 +
- adeos-ipipe-3.0.43-mx6q-1.18-14 -> very slow boot
+Subject: Re: [Xenomai] xeno_16550A driver install problems.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,24 +22,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Thierry Bultel <tbultel@free.fr>, nicolas Mabire <nicolas.mabire@basystemes.fr>, xenomai@xenomai.org
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Wed, Nov 12, 2014 at 08:28:23PM +0100, Gilles Chanteperdrix wrote:
-> On Wed, Nov 12, 2014 at 02:13:07PM -0500, Lennart Sorensen wrote:
-> > On Wed, Nov 12, 2014 at 08:06:52PM +0100, Gilles Chanteperdrix wrote:
-> > > Thierry uses the documented syntax.
-> > 
-> > Nifty.  Never seen that syntax before.  I should check it out.
-> 
-> Well, if you look at the code, what is passed to earlyprintk is not
-> used to setup the early console, not even what is passed to console,
-> the early console uses printascii, which behaviour is chosen at
-> compilation time.
-
-Oh.  omap explicitly has a CONFIG for which port to use for debug,
-so I think that controls it.
-
--- 
-Len Sorensen
+SGVsbG8gTGVuLA0KDQpUaGFua3MgZm9yIHlvdXIgaW5wdXQuDQpJIGhhdmUgYWxyZWFkeSBjb25z
+aWRlcmVkIHVzaW5nIHN0YW5kYXJkIExpbnV4IHNlcmlhbCBkcml2ZXJzLg0KVGhlIERlYmlhbiAz
+LjguMTMtYm9uZTY3IGlzIGN1cnJlbnRseSBzdXBwb3J0aW5nIHRoZSBvbWFwX3VhcnQgZHJpdmVy
+IHdoaWxlIHRoZSA4MjUwIGlzIHBhcmtlZCBvbiBhIHNpZGUtdHJhY2suDQpBY2NvcmRpbmcgdG8g
+Ui5DLk5lbHNvbiBpdCBpcyBub3Qgc3RyYWlnaHQgZm9yd2FyZCB0byBzd2l0Y2ggZHJpdmVyIChz
+ZWUgaGlzIGNvbW1lbnRzIGJlbG93KS4NCkkgZG9uJ3Qga25vdyBpZiB0aGUgODI1MC1zZXJpYWwg
+ZHJpdmVyIGlzIHRoZSBzYW1lIGFzIHRoZSA4MjUwLW9tYXAgeW91IGFyZSByZWZlcnJpbmcsDQpi
+dXQgaWYgeW91IGhhdmUgc3VjY2VlZGVkIHdpdGggdGhlIChhbikgODI1MC1vbWFwIGRyaXZlciBJ
+IGFtIHZlcnkgaW50ZXJlc3RlZCBpbiBsZWFybmluZyBob3cgeW91IGRpZCBpdC4NCg0KSSBoYXZl
+IGFsc28gYmVlbiBzZWFyY2hpbmcgZm9yIGEgdXNlcidzIG1hbnVhbCBvciBzb21lIGMtY29kZSBl
+eGFtcGxlcyB1dGlsaXppbmcgdGhlIG9tYXBfdWFydCBpbiBhIG1vcmUgZWxldmF0ZWQgZmFzaGlv
+biwgDQpidXQgSSBmaW5kIG9ubHkgbm92aWNlIGV4YW1wbGVzIG9yIHB5dGhvbiBzY3JpcHRzLg0K
+DQpCZXN0IHJlZ2FyZHMNClRlcmplIEZyb3lzYQ0KDQpRdW90aW5nIFJvYmVydCBDIE5lbHNvbjoN
+CiJUbyB1dGlsaXplIHRoZSA4MjUwIGRyaXZlciwgeW91IHdpbGwgYWxzbyBuZWVkIHRvIGNoYW5n
+ZSB0aGUgKi5kdHMgZmlsZS4NClNlYXJjaDogaHR0cDovL3d3dy5zcGluaWNzLm5ldC9saXN0cy9s
+aW51eC1vbWFwLw0KWW91J2xsIGZpbmQgYWxsIHRoZSBwYXRjaGVzIHJlcXVpcmVkIHRvIG1ha2Ug
+aXQgd29yayBvbiBtYWlubGluZSwgc28geW91J2xsIGFsc28gaGF2ZSBsb3RzIG9mIGZ1biBiYWNr
+cG9ydGluZyB0aGF0IHRob3NlLi4iDQoNCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZy
+b206IExlbm5hcnQgU29yZW5zZW4gW21haWx0bzpsc29yZW5zZUBjc2NsdWIudXdhdGVybG9vLmNh
+XSANClNlbnQ6IDEyLiBub3ZlbWJlciAyMDE0IDIwOjE3DQpUbzogVGVyamUgRnLDuHlzYQ0KQ2M6
+IEdpbGxlcyBDaGFudGVwZXJkcml4OyBYZW5vbWFpQHhlbm9tYWkub3JnDQpTdWJqZWN0OiBSZTog
+W1hlbm9tYWldIHhlbm9fMTY1NTBBIGRyaXZlciBpbnN0YWxsIHByb2JsZW1zLg0KDQpPbiBXZWQs
+IE5vdiAxMiwgMjAxNCBhdCAwMjozMjo0MFBNICswMDAwLCBUZXJqZSBGcsO4eXNhIHdyb3RlOg0K
+PiBUaGFua3MgZm9yIHlvdXIgcXVpY2sgcmVwbHkgR2lsbGVzLA0KPiANCj4gLSBDaGFuZ2luZyBv
+bWFwLXNlcmlhbCBkcml2ZXIgaXMgbm90IGEgdGVtcHRpbmcgc29sdXRpb24uDQo+IC0gSSdsbCB0
+cnkgb3V0IHlvdXIgODI1MCBzdWdnZXN0aW9uLg0KPiAtIEkgaGF2ZSBub3QgZmlndXJlZCBvdXQg
+aG93IHRvICIgYXJyYW5nZSBmb3IgdGhlIGNsb2NrcyB0byBiZSBzdGFydGVkIiwgd291bGQgdGhh
+dCBiZSB3cml0aW5nIGEga2VybmVsIG1vZHVsZSB0aGF0IGluaXRpYXRlcyB0aGUgVUFSVCBjbG9j
+ayBzeXN0ZW1zPw0KPiANCj4gSWYgbm90IHRoZSA4MjUwIHN1Z2dlc3Rpb24gd29ya3MsIEkgYmVn
+aW4gdG8gYmVsaWV2ZSB0aGF0IEkgaGF2ZSB0byBhYmFuZG9uIHRoZSB4ZW5vXzE2NTBBIGRyaXZl
+ci4NCj4gRG8geW91IGtub3cgYW55Ym9keSB0aGF0IGhhdmUgc3VjY2VlZGVkIGluIHJ1bm5pbmcg
+dGhlIHhlbm9fMTY1NTBBIGRyaXZlciB1bmRlciBzdWNoIGNpcmN1bXN0YW5jZXM/DQoNCldlIGp1
+c3Qgc3dpdGNoZWQgZnJvbSB1c2luZyBvbWFwLXNlcmlhbCB0byA4MjUwLW9tYXAsIGFuZCBmaW5k
+IGl0IG11Y2ggbW9yZSBzdGFibGUuICBJIHdvbmRlciBpZiB0aGF0IHdvdWxkIGFsc28gYWxsb3cg
+ZG9pbmcgd2hhdCB5b3UgYXJlIHRyeWluZyB0byBkby4gIEkgYmVsaWV2ZSBpdCBqdXN0IGdvdCBt
+ZXJnZWQgdG8gZ28gaW50byAzLjE5LCBidXQgSSBhcHBsaWVkIGl0IHdpdGggbWluaW1hbCBvdGhl
+ciBwYXRjaGVkIG5lZWRlZCB0byAzLjE0IGFuZCB3aXRoIGEgZmV3IG1vcmUgcGF0Y2hlcyB0byAz
+LjEyLg0KDQpCZWluZyBhIGNvcmUgODI1MCBkcml2ZXIgd291bGQgYWZ0ZXIgYWxsIGxpa2VseSBt
+YWtlIGRvaW5nIDE2NTUwIHN0dWZmIGVhc2llci4NCg0KLS0NCkxlbiBTb3JlbnNlbg0K
 
