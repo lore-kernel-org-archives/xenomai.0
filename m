@@ -1,21 +1,18 @@
-Date: Wed, 12 Nov 2014 15:13:26 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141112141326.GS17476@sisyphus.hd.free.fr>
-References: <20141111155212.GZ24110@csclub.uwaterloo.ca>
- <20141111155447.GE17476@sisyphus.hd.free.fr>
- <20141111155642.GA24110@csclub.uwaterloo.ca>
- <20141111160236.GF17476@sisyphus.hd.free.fr>
- <20141111161744.GB24110@csclub.uwaterloo.ca>
- <CAJt3u5=nBbiqOZ6kFsXujHtbGyz6GhQO10F-=rpc0WpXFj+zZw@mail.gmail.com>
- <20141111171242.GG17476@sisyphus.hd.free.fr>
- <CAJt3u5ky2PPjNrpsasy1FY3VjaHwkYGuW1FK=fH_x6uRD9eoow@mail.gmail.com>
- <20141111172750.GH17476@sisyphus.hd.free.fr>
- <20141112042511.GG24110@csclub.uwaterloo.ca>
+Message-ID: <54636E3F.1070207@free.fr>
+Date: Wed, 12 Nov 2014 15:27:11 +0100
+From: Thierry Bultel <tbultel@free.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20141112042511.GG24110@csclub.uwaterloo.ca>
-Subject: Re: [Xenomai] USB3.0 drivers for xenomai
+References: <20141107095222.GD6724@sisyphus.hd.free.fr>
+ <586279251.109308096.1415364479248.JavaMail.root@zimbra90-e16.priv.proxad.net>
+ <20141107195807.GD17476@sisyphus.hd.free.fr> <545FA90B.4040407@free.fr>
+ <20141110123657.GJ17476@sisyphus.hd.free.fr> <54626A2E.6020307@free.fr>
+ <20141111200358.GL17476@sisyphus.hd.free.fr> <54635DD7.9090800@free.fr>
+ <20141112133447.GO17476@sisyphus.hd.free.fr>
+In-Reply-To: <20141112133447.GO17476@sisyphus.hd.free.fr>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 +
+ adeos-ipipe-3.0.43-mx6q-1.18-14 -> very slow boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,28 +21,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: nicolas Mabire <nicolas.mabire@basystemes.fr>, xenomai@xenomai.org
 
-On Tue, Nov 11, 2014 at 11:25:11PM -0500, Lennart Sorensen wrote:
-> On Tue, Nov 11, 2014 at 06:27:50PM +0100, Gilles Chanteperdrix wrote:
-> > Throughput and latency are generally mutually exclusive. You can not
-> > have both. And with Xenomai on USB 3.0 you will not get either,
-> > because I do not know any USB 3.0 driver for Xenomai. So, if you
-> > just expect the driver to happen if you do not write it, you can
-> > expect it a long time.
-> 
-> Certainly USB defines high priority transfers (like interrupt messages)
-> which have timing promises, but are very small and have limited bandwidth,
-> and then they define bulk transfers which do not have latency promises,
-> but get high bandwidth.  So even USB says you can have one or the other,
-> but probably not both.
+Le 12/11/2014 14:34, Gilles Chanteperdrix a écrit :
+> On Wed, Nov 12, 2014 at 02:17:11PM +0100, Thierry Bultel wrote:
+>> Le 11/11/2014 21:03, Gilles Chanteperdrix a écrit :
+>>> On Tue, Nov 11, 2014 at 08:57:34PM +0100, Thierry Bultel wrote:
+>>>> Le 10/11/2014 13:36, Gilles Chanteperdrix a écrit :
+>>>>> You can use printascii in the timer interrupt acknowledge routine to
+>>>>> print a character every HZ ticks, this will give bad latency, but
+>>>>> should work.
+>>>>>
+>>>>
+>>>> For unknown reason, the kernel gets stuck after
+>>>> "console [tty0] enabled, bootconsole disabled" if I use printascii
+>>>> in do_local_timer().
+>>>> earlyprintk seems broken as well.
+>>>
+>>> Without doing this, does earlyprintk work?
+>>
+>> No it does not. In fact, this kernel is strange with early debug.
+>> Namely, even without earlyprintk, when it comes to disable the
+>> bootconsole to use the normal one, it uses then re-prints everything
+>> was printed before, making think that it has restarted from the
+>> beginning.
+>>
+>> I confirm that calling printascii in do_local_timer() leads to a
+>> kernel panic. Same thing if I use __ipipe_serial_debug instead.
+>> I have used a counter (one per cpu) to start logging after 30000
+>> ticks and it crashes after that delay.
+>
+> Having looked at the sources, I do not find a debug-macro.S for
+> imx6. So, I doubt printascii can work at all. Maybe a first step is
+> to implement this missing support.
 
-Which brings me back to my original question: Linux is probably much
-better suited than Xenomai for high throughput, so, why go through
-all the trouble of writing a Xenomai driver to have high throughput
-storage, whereas what Xenomai is made for is low latency?
+I think that the implementation is in arch/arm/plat-mxc/include
+/mach/debug-macro.S
+>
+>>> Also, are you running with all I-pipe and Xenomai debugs?
+>>
+>> That is how I am running now. For now, I am unable to reproduce the
+>> freeze. Still testing.
+>
+> Bad news...
+>
 
--- 
-					    Gilles.
 
