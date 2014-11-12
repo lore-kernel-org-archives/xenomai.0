@@ -1,16 +1,17 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Wed, 12 Nov 2014 14:32:40 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C676EB35@SINTEFEXMBX05.sintef.no>
+Date: Wed, 12 Nov 2014 15:39:20 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141112143920.GU17476@sisyphus.hd.free.fr>
 References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
  <20141111140230.GA17476@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
  <314E5ECDAA86314791309FA670550F89C676E884@SINTEFEXMBX05.sintef.no>
  <20141112134531.GP17476@sisyphus.hd.free.fr>
-In-Reply-To: <20141112134531.GP17476@sisyphus.hd.free.fr>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <314E5ECDAA86314791309FA670550F89C676EB35@SINTEFEXMBX05.sintef.no>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <314E5ECDAA86314791309FA670550F89C676EB35@SINTEFEXMBX05.sintef.no>
 Subject: Re: [Xenomai] xeno_16550A driver install problems.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -20,68 +21,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
 Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-VGhhbmtzIGZvciB5b3VyIHF1aWNrIHJlcGx5IEdpbGxlcywNCg0KLSBDaGFuZ2luZyBvbWFwLXNl
-cmlhbCBkcml2ZXIgaXMgbm90IGEgdGVtcHRpbmcgc29sdXRpb24uDQotIEknbGwgdHJ5IG91dCB5
-b3VyIDgyNTAgc3VnZ2VzdGlvbi4NCi0gSSBoYXZlIG5vdCBmaWd1cmVkIG91dCBob3cgdG8gIiBh
-cnJhbmdlIGZvciB0aGUgY2xvY2tzIHRvIGJlIHN0YXJ0ZWQiLCB3b3VsZCB0aGF0IGJlIHdyaXRp
-bmcgYSBrZXJuZWwgbW9kdWxlIHRoYXQgaW5pdGlhdGVzIHRoZSBVQVJUIGNsb2NrIHN5c3RlbXM/
-DQoNCklmIG5vdCB0aGUgODI1MCBzdWdnZXN0aW9uIHdvcmtzLCBJIGJlZ2luIHRvIGJlbGlldmUg
-dGhhdCBJIGhhdmUgdG8gYWJhbmRvbiB0aGUgeGVub18xNjUwQSBkcml2ZXIuDQpEbyB5b3Uga25v
-dyBhbnlib2R5IHRoYXQgaGF2ZSBzdWNjZWVkZWQgaW4gcnVubmluZyB0aGUgeGVub18xNjU1MEEg
-ZHJpdmVyIHVuZGVyIHN1Y2ggY2lyY3Vtc3RhbmNlcz8NCg0KQmVzdCByZWdhcmRzDQpUZXJqZQ0K
-DQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogR2lsbGVzIENoYW50ZXBlcmRyaXgg
-W21haWx0bzpnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZ10gDQpTZW50OiAxMi4gbm92
-ZW1iZXIgMjAxNCAxNDo0Ng0KVG86IFRlcmplIEZyw7h5c2ENCkNjOiBYZW5vbWFpQHhlbm9tYWku
-b3JnDQpTdWJqZWN0OiBSZTogW1hlbm9tYWldIHhlbm9fMTY1NTBBIGRyaXZlciBpbnN0YWxsIHBy
-b2JsZW1zLg0KDQpPbiBXZWQsIE5vdiAxMiwgMjAxNCBhdCAxMjo1MDoyMFBNICswMDAwLCBUZXJq
-ZSBGcsO4eXNhIHdyb3RlOg0KPiBJIGhhdmUgbm93IGNhcmVmdWxseSBjaGVja2VkIHlvdXIgc3Vn
-Z2VzdGlvbnMgYW5kIG90aGVyIHN1Z2dlc3Rpb25zIEkgcmVjZWl2ZWQgZnJvbSBDaGFybGVzIFN0
-ZWlua3VlaGxlciBhdCBiZWFnbGVib2FyZCBmb3J1bS4NCj4gDQo+IFRoZSBVQVJUcyBhcHBlYXJz
-IHRvIGJlIGJ5dGUgYWNjZXNzaWJsZSBhbmQgdGhlIFVBUlQgY2xvY2sgc3lzdGVtIGlzIHJ1bm5p
-bmc6DQoNCkl0IG1ha2VzIHNlbnNlIHRoYXQgdGhlIGNsb2NrcyBhcmUgcnVubmluZyB3aGVuIHRo
-ZSBvbWFwX3NlcmlhbCBkcml2ZXIgaXMgcnVubmluZy4gTXkgcXVlc3Rpb24gd2FzIHRvIGtub3cg
-d2hldGhlciB0aGV5IHdlcmUgcnVubmluZyB3aXRob3V0IHRoZSBkcml2ZXIuDQoNCj4gDQo+IA0K
-PiANCj4g4oCiICAgICAgICAgICAgICAgICAgICBJIGhhdmUgY2hlY2tlZCB0aGF0IHRoZSBVQVJU
-IGR0Ym8gYXJlIGxvYWRlZCBhdCBib290LXRpbWUgKGJ5IHVFbnYudHh0KQ0KPiANCj4g4oCiICAg
-ICAgICAgICAgICAgICAgICBJIGhhdmUgYnVpbHQgIChhbmQgYm9vdGVkKSB0aGUga2VybmVsIHdp
-dGggdGhlIHhlbm9fMTY1NTBBIGFzIGxvYWRhYmxlIG1vZHVsZS4NCj4gDQo+IOKAoiAgICAgICAg
-ICAgICAgICAgICAgSSBoYXZlIGNoZWNrZWQgdGhlIGZ1bmN0aW9uYWxpdHkgb2YgdGhlIC9kZXYv
-dHR5T3ggYnkgcnVubmluZyBwaHlzaWNhbCBsb29wLWJhY2sgZGF0YSB0cmFmZmljLg0KPiBUaGUg
-c3VkbyBjYXQgL3Byb2MvdHR5L2RyaXZlci9PTUFQLVNFUklBTCByZXBvcnRzIHRoZSBjb3JyZWN0
-IGFtb3VudCBvZiB0cmFmZmljIGFuZCB0aGUgc2VudCBkYXRhIGlzIGVjaG9lZCBjb3JyZWN0bHkg
-aW4gYW5vdGhlciB0ZXJtaW5hbCB3aW5kb3cuDQo+IA0KPiDigKIgICAgICAgICAgICAgICAgICAg
-IEkgaGF2ZSBjcmF3bGVkIHRoZSAvcHJvYy9kZXZpY2UtdHJlZS9vY3Avc2VyaWFsKiBhbmQgY2Fu
-bm90IGZpbmQgYW55IGRpc2NyZXBhbmNpZXMuDQo+IA0KPiANCj4gDQo+IEV2ZXJ5dGhpbmcgc2Vl
-bSBjb3JyZWN0Lg0KPiANCj4gQnV0IHRoZSBVQVJUcyBhcmUgbm93IG9jY3VwaWVkIGJ5IHRoZSBv
-bWFwX3NlcmlhbCBkcml2ZXIuDQo+IA0KPiBBY2NvcmRpbmcgdG8gWGVub21haSAoaHR0cDovL3hl
-bm9tYWkub3JnL3NlcmlhbC0xNjU1MGEtZHJpdmVyLykgdGhlIGRyaXZlciBzaG91bGQgbm93IGJl
-IGRpc2FibGVkIGJ5IHRoZSBzZXRzZXJpYWwgY29tbWFuZC4NCj4gDQo+IEkgY2FuJ3QgZ2V0IHRo
-aXMgY29tbWFuZCB3b3JraW5nLiBJdCByZXBvcnRzIHRoZSBzZXJpYWwgcG9ydCBidXQgY2hhbmdp
-bmcgaXQgcmVzdWx0cyBpbiBlcnJvciAocmVnYXJkbGVzcyBvZiB0aGUgdHR5TyAtbnVtYmVyKToN
-Cj4gDQo+IA0KPiANCj4gZGViaWFuQGJlYWdsZWJvbmU6fiQgc2V0c2VyaWFsIC9kZXYvdHR5TzIN
-Cj4gDQo+IC9kZXYvdHR5TzIsIFVBUlQ6IHVuZGVmaW5lZCwgUG9ydDogMHgwMDAwLCBJUlE6IDc0
-DQo+IA0KPiANCj4gDQo+IGRlYmlhbkBiZWFnbGVib25lOi9ib290JCBzdWRvIHNldHNlcmlhbCAv
-ZGV2L3R0eU8yIHVhcnQgbm9uZQ0KPiANCj4gQ2Fubm90IHNldCBzZXJpYWwgaW5mbzogSW52YWxp
-ZCBhcmd1bWVudA0KPiANCj4gDQo+IA0KPiBDb25zZXF1ZW50bHksIEkgY2Fubm90IGxvYWQgdGhl
-IHhlbm9fMTY1NTBBLmtvIG1vZHVsZSBieSBtb2Rwcm9iZS4NCj4gDQo+IEkgaGF2ZSBicm93c2Vk
-IHRoZSBuZXQgZm9yIHRoZSBzYW1lIHByb2JsZW0sIGJ1dCBoYXZlIG5vdCBmb3VuZCByZWxldmFu
-dCBzdWJqZWN0cy4NCg0KQXQgZmlyc3Qgc2lnaHQsIEkgd291bGQgc2F5IHRoYXQgdGhlIG9tYXBf
-c2VyaWFsIGRyaXZlciBkb2VzIG5vdCBpbXBsZW1lbnQgdGhlIG5lY2Vzc2FyeSBzdXBwb3J0IChw
-cm9iYWJseSBzb21lIGlvY3RscyksIGZvciB3aGF0IHNldHNlcmlhbCBpcyB0cnlpbmcgdG8gZG8u
-DQoNCkkgc2VlIHNldmVyYWwgd2F5cyBvdXQ6DQotIGltcGxlbWVudCB0aGUgbWlzc2luZyBzdXBw
-b3J0IGluIG9tYXAgc2VyaWFsIHNvIHRoYXQgeW91IGNhbiB1c2UgdGhlICJzZXRzZXJpYWwgbm9u
-ZSIgY29tbWFuZDsNCi0gdHJ5IGFuZCB1c2UgdGhlIDgyNTAgZHJpdmVyIGluc3RlYWQgb2YgdGhl
-IG9tYXBfc2VyaWFsIGRyaXZlciwgc2luY2UgdGhlIG9tYXAgc2VyaWFsIGRldmljZXMgYXJlIDgy
-NTAgY29tcGF0aWJsZSwgdGhpcyBkcml2ZXIgc3VwcG9ydHMgdGhlIG5lY2Vzc2FyeSBpb2N0bHMg
-Zm9yIHRoZSAic2V0c2VyaWFsIG5vbmUiIGNvbW1hbmQgdG8gd29yay4gQXQgc29tZSBwb2ludCBp
-biB0aW1lLCBJIGtub3cgdXNpbmcgdGhpcyBzZXJpYWwgZHJpdmVyIGZvciB0aGUga2VybmVsIGNv
-bnNvbGUgd29ya2VkLCBidXQgSSBkbyBub3Qga25vdyBpZiBpdCB3YXMgYnkgY2hhbmNlICh1LWJv
-b3QgZW5hYmxlcyB0aGUgY2xvY2ssIHNvIHRoZSBkcml2ZXIgZG9lcyBub3QgaGF2ZSB0byBlbmFi
-bGUgaXQpLCBhbmQgaWYgaXQgc3RpbGwgd29ya3M7DQotIGRvIG5vdCBlbmFibGUgYW55IHVhcnQg
-aW4gdGhlIGtlcm5lbCBjb25maWd1cmF0aW9uLCBuZWl0aGVyIG9tYXBfc2VyaWFsLCBub3IgODI1
-MCwgYW5kIGFycmFuZ2UgZm9yIHRoZSBjbG9ja3MgdG8gYmUgc3RhcnRlZCBiZWZvcmUgbG9hZGlu
-ZyB0aGUgeGVub18xNjU1MGEgZHJpdmVyLg0KDQotLSANCgkJCQkJICAgIEdpbGxlcy4NCg==
+On Wed, Nov 12, 2014 at 02:32:40PM +0000, Terje Frøysa wrote:
+> Thanks for your quick reply Gilles,
+> 
+> - Changing omap-serial driver is not a tempting solution.
+> - I'll try out your 8250 suggestion.
+> - I have not figured out how to " arrange for the clocks to be started", would that be writing a kernel module that initiates the UART clock systems?
+
+That would be look at omap-serial.c to see how it does it, and do
+the same thing in a piece of code which registers a phony DT driver
+matching the same string as omap-serial. It does not need to be a
+kernel module, it can be put in the kernel itself.
+
+> If not the 8250 suggestion works, I begin to believe that I have
+> to abandon the xeno_1650A driver.
+
+As you wish, but any of the three proposition takes one day maximum,
+this is not a lot of work.
+
+> Do you know anybody that have succeeded in running the xeno_16550A
+> driver under such circumstances?
+
+I have no idea.
+
+-- 
+					    Gilles.
 
