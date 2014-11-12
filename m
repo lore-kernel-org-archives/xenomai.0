@@ -1,21 +1,11 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Tue, 11 Nov 2014 23:25:11 -0500
-Message-ID: <20141112042511.GG24110@csclub.uwaterloo.ca>
-References: <20141111154611.GD17476@sisyphus.hd.free.fr>
- <20141111155212.GZ24110@csclub.uwaterloo.ca>
- <20141111155447.GE17476@sisyphus.hd.free.fr>
- <20141111155642.GA24110@csclub.uwaterloo.ca>
- <20141111160236.GF17476@sisyphus.hd.free.fr>
- <20141111161744.GB24110@csclub.uwaterloo.ca>
- <CAJt3u5=nBbiqOZ6kFsXujHtbGyz6GhQO10F-=rpc0WpXFj+zZw@mail.gmail.com>
- <20141111171242.GG17476@sisyphus.hd.free.fr>
- <CAJt3u5ky2PPjNrpsasy1FY3VjaHwkYGuW1FK=fH_x6uRD9eoow@mail.gmail.com>
- <20141111172750.GH17476@sisyphus.hd.free.fr>
+Message-ID: <54631EB1.1050900@sigmatek.at>
+Date: Wed, 12 Nov 2014 09:47:45 +0100
+From: Johann Obermayr <johann.obermayr@sigmatek.at>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20141111172750.GH17476@sisyphus.hd.free.fr>
-Subject: Re: [Xenomai] USB3.0 drivers for xenomai
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] rtdm_nrtsig_pend FAQ
+Reply-To: johann.obermayr@sigmatek.at
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,22 +14,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Tue, Nov 11, 2014 at 06:27:50PM +0100, Gilles Chanteperdrix wrote:
-> Throughput and latency are generally mutually exclusive. You can not
-> have both. And with Xenomai on USB 3.0 you will not get either,
-> because I do not know any USB 3.0 driver for Xenomai. So, if you
-> just expect the driver to happen if you do not write it, you can
-> expect it a long time.
+Hello,
 
-Certainly USB defines high priority transfers (like interrupt messages)
-which have timing promises, but are very small and have limited bandwidth,
-and then they define bulk transfers which do not have latency promises,
-but get high bandwidth.  So even USB says you can have one or the other,
-but probably not both.
+we use rtdm_nrtsig_pend follow.
 
--- 
-Len Sorensen
+static rtdm_nrtsig_t wait_domain_nrt;
+static DECLARE_WAIT_QUEUE_HEAD(wait_domain_wq);
+
+void period_update()
+{
+         wait_domain_pend_count++;
+         rtdm_nrtsig_pend(&wait_domain_nrt);
+}
+
+static void wait_domain_nrt_handler(rtdm_nrtsig_t nrt_sig, void *arg)
+{
+     wait_domain_call_count++;
+     //wakeup wait_domain
+     wait_domain_wakeup = 1;
+     wake_up_interruptible(&wait_domain_wq);
+}
+
+
+period_update is called every millisecond.
+this is on imx6 hardware with kernel 3.0.x and xenomai 2.6.2.1.
+
+Why wait_domain_call_count can be smaller that wait_domain_pend_count.
+The difference between the counters is growing.
+
+Why ?
+
+Best Regards
+   Johann
+
 
