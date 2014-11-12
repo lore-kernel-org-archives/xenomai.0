@@ -1,5 +1,5 @@
 MIME-Version: 1.0
-In-Reply-To: <CAEbDrgm5FLeitoXn+b=bCtQwgDU8=auC8fu2xNA8Ba0U2gQ0JA@mail.gmail.com>
+In-Reply-To: <CAJt3u5=zvsT0B9ecQLpG0JcGmGQ_EzeNtHZj8DYo0pqa0rxvaQ@mail.gmail.com>
 References: <20141111153745.GX24110@csclub.uwaterloo.ca>
  <20141111154611.GD17476@sisyphus.hd.free.fr>
  <20141111155212.GZ24110@csclub.uwaterloo.ca>
@@ -14,9 +14,10 @@ References: <20141111153745.GX24110@csclub.uwaterloo.ca>
  <CAPRPZsCeJ1WtZneoKP1SYo5uzmwWyXGtn0EU45i2gb8VgDUhQQ@mail.gmail.com>
  <CAJt3u5mVofHe6X3FfNO3RHmMusqiCd8gbf2WuTD=LNs1gsS98A@mail.gmail.com>
  <CAEbDrgm5FLeitoXn+b=bCtQwgDU8=auC8fu2xNA8Ba0U2gQ0JA@mail.gmail.com>
-Date: Wed, 12 Nov 2014 17:02:09 +0100
-Message-ID: <CAPRPZsDa6RwXW2e5mkppxpR488jHs1oOGh_Hyk8w6XfFh2Zv-w@mail.gmail.com>
-From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
+ <CAJt3u5=zvsT0B9ecQLpG0JcGmGQ_EzeNtHZj8DYo0pqa0rxvaQ@mail.gmail.com>
+Date: Wed, 12 Nov 2014 21:32:53 +0530
+Message-ID: <CAJt3u5n3L8h0bb8sYn2hc2CuLqciMF6rQ4DDDfJDK42z+FmWvA@mail.gmail.com>
+From: Madan Sondur <sondur.madan23@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Subject: Re: [Xenomai] USB3.0 drivers for xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -28,12 +29,44 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gregory Dymarek <gregd72002@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Are you designing another wireless HDMI standard? Low latency and high
-> throughput :)
+On 12 Nov 2014 21:30, "Madan Sondur" <sondur.madan23@gmail.com> wrote:
 >
+> separate hw for tx and rx lead into each board having different clocks
+for adc and dac which could bring rf related problems.  The latency
+required should be within 100us max and should be consistent,  so that this
+delay can be a compensated in baseband processing.
+>
+> On 12 Nov 2014 21:18, "Gregory Dymarek" <gregd72002@gmail.com> wrote:
+>>
+>> Are you designing another wireless HDMI standard? Low latency and high
+>> throughput :)
 
-Why is low latency so important on a HDMI interface ? As long as the video
-and the audio arrive synchronized, I imagine you can live with some
-latency, not ?
+Yes something like that.  But not HDMI.
+>>
+>> How low do you want the latency to be? Why not to separate TX from RX
+>> and use different hardware for each?
+>>
+>>
+>> On 12 November 2014 15:23, Madan Sondur <sondur.madan23@gmail.com> wrote:
+>> > My requirement is basically for RF board which uses USB3.0 as
+interface for
+>> > the PC. The best way to check USB3.0 throughput is to use data transfer
+>> > check through SSDs. Th RF driver itself will have some latencies on
+its own
+>> > before the USB3.0 driver is used. The RF tx needs to send bursts of
+data as
+>> > quickly as possible hence low latency is required.  Where as for RF rx
+>> > needs  consistent stream of data at high throughputs. Example 2Gbps.
+>> >
+>> > Madan
+>> > _______________________________________________
+>> > Xenomai mailing list
+>> > Xenomai@xenomai.org
+>> > http://www.xenomai.org/mailman/listinfo/xenomai
+>>
+>> _______________________________________________
+>> Xenomai mailing list
+>> Xenomai@xenomai.org
+>> http://www.xenomai.org/mailman/listinfo/xenomai
