@@ -1,6 +1,6 @@
-Date: Wed, 12 Nov 2014 21:01:25 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141112200125.GG17476@sisyphus.hd.free.fr>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Wed, 12 Nov 2014 20:08:10 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C676F3A9@SINTEFEXMBX05.sintef.no>
 References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
  <20141111140230.GA17476@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
@@ -9,11 +9,12 @@ References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
  <314E5ECDAA86314791309FA670550F89C676EB35@SINTEFEXMBX05.sintef.no>
  <20141112191631.GJ24110@csclub.uwaterloo.ca>
  <314E5ECDAA86314791309FA670550F89C676F324@SINTEFEXMBX05.sintef.no>
-MIME-Version: 1.0
+ <20141112200125.GG17476@sisyphus.hd.free.fr>
+In-Reply-To: <20141112200125.GG17476@sisyphus.hd.free.fr>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C676F324@SINTEFEXMBX05.sintef.no>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] xeno_16550A driver install problems.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -23,41 +24,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
+To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
 Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Wed, Nov 12, 2014 at 07:51:36PM +0000, Terje Frøysa wrote:
-> Hello Len,
-> 
-> Thanks for your input.
-> I have already considered using standard Linux serial drivers.
-> The Debian 3.8.13-bone67 is currently supporting the omap_uart driver while the 8250 is parked on a side-track.
-> According to R.C.Nelson it is not straight forward to switch driver (see his comments below).
-> I don't know if the 8250-serial driver is the same as the 8250-omap you are referring,
-> but if you have succeeded with the (an) 8250-omap driver I am very interested in learning how you did it.
-
-Have you tried the patch I sent? Because without this patch the
-xeno_16550A can not work on omap: omap serial uses 2 bytes wide
-reads on 4 bytes wide registers (I think 4 bytes wide reads work
-just as well, and maybe byte access, but the point is, each
-registers occupies 4 bytes, so the offsets must be multiplied by 4),
-whereas xeno_16550A uses byte access to invalid offsets, and cause
-the abort you observe.
-
-If you start using xeno_16550A, you will not have to care about
-omap-serial or 8250.
-
-> 
-> I have also been searching for a user's manual or some c-code
-> examples utilizing the omap_uart in a more elevated fashion, but I
-> find only novice examples or python scripts.
-
-The xeno_16550A ioctl API is documented here:
-http://www.xenomai.org/documentation/xenomai-head/html/api/group__rtserial.html
-
-This is not very complicated.
-
-
--- 
-					    Gilles.
+VGhhbmtzIGEgbG90IGZvciB5b3Ugc3VwcG9ydCBHaWxsZXMsDQoNCkkgaGF2ZSBub3QgaGF2ZSB0
+aW1lIHRvIGRvIGFueSBwcmFjdGljYWwgc3cgd29yayBzaW5jZSBJIHJlY2VpdmVkIHlvdXIgcGF0
+Y2guDQpJZiB0aGUgcGF0Y2hlZCB4ZW5vXzE2NTUwQSBkb2VzIG5vdCByZXF1aXJlIGZ1cnRoZXIg
+bGFib3IgaW4gcHJvdmlkaW5nIFVBUlQgY2xvY2tzIGl0IGlzIG9mIGdyZWF0IGludGVyZXN0Lg0K
+DQpJIGhhdmUgc3BlbnQgZmFyIG1vcmUgaG91cnMgdGhhbiBlc3RpbWF0ZWQgZm9yIHRoaXMgd29y
+ayBzbyBJIGhhdmUgdG8gZGlzY3VzcyB0aGUgZnVydGhlciBzdHJhdGVneSB3aXRoIG15IGNvbGxl
+YWd1ZXMuDQoNCkJlc3QgcmVnYXJkcw0KVGVyamUNCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0t
+LS0NCkZyb206IEdpbGxlcyBDaGFudGVwZXJkcml4IFttYWlsdG86Z2lsbGVzLmNoYW50ZXBlcmRy
+aXhAeGVub21haS5vcmddIA0KU2VudDogMTIuIG5vdmVtYmVyIDIwMTQgMjE6MDENClRvOiBUZXJq
+ZSBGcsO4eXNhDQpDYzogTGVubmFydCBTb3JlbnNlbjsgWGVub21haUB4ZW5vbWFpLm9yZw0KU3Vi
+amVjdDogUmU6IFtYZW5vbWFpXSB4ZW5vXzE2NTUwQSBkcml2ZXIgaW5zdGFsbCBwcm9ibGVtcy4N
+Cg0KT24gV2VkLCBOb3YgMTIsIDIwMTQgYXQgMDc6NTE6MzZQTSArMDAwMCwgVGVyamUgRnLDuHlz
+YSB3cm90ZToNCj4gSGVsbG8gTGVuLA0KPiANCj4gVGhhbmtzIGZvciB5b3VyIGlucHV0Lg0KPiBJ
+IGhhdmUgYWxyZWFkeSBjb25zaWRlcmVkIHVzaW5nIHN0YW5kYXJkIExpbnV4IHNlcmlhbCBkcml2
+ZXJzLg0KPiBUaGUgRGViaWFuIDMuOC4xMy1ib25lNjcgaXMgY3VycmVudGx5IHN1cHBvcnRpbmcg
+dGhlIG9tYXBfdWFydCBkcml2ZXIgd2hpbGUgdGhlIDgyNTAgaXMgcGFya2VkIG9uIGEgc2lkZS10
+cmFjay4NCj4gQWNjb3JkaW5nIHRvIFIuQy5OZWxzb24gaXQgaXMgbm90IHN0cmFpZ2h0IGZvcndh
+cmQgdG8gc3dpdGNoIGRyaXZlciAoc2VlIGhpcyBjb21tZW50cyBiZWxvdykuDQo+IEkgZG9uJ3Qg
+a25vdyBpZiB0aGUgODI1MC1zZXJpYWwgZHJpdmVyIGlzIHRoZSBzYW1lIGFzIHRoZSA4MjUwLW9t
+YXAgDQo+IHlvdSBhcmUgcmVmZXJyaW5nLCBidXQgaWYgeW91IGhhdmUgc3VjY2VlZGVkIHdpdGgg
+dGhlIChhbikgODI1MC1vbWFwIGRyaXZlciBJIGFtIHZlcnkgaW50ZXJlc3RlZCBpbiBsZWFybmlu
+ZyBob3cgeW91IGRpZCBpdC4NCg0KSGF2ZSB5b3UgdHJpZWQgdGhlIHBhdGNoIEkgc2VudD8gQmVj
+YXVzZSB3aXRob3V0IHRoaXMgcGF0Y2ggdGhlIHhlbm9fMTY1NTBBIGNhbiBub3Qgd29yayBvbiBv
+bWFwOiBvbWFwIHNlcmlhbCB1c2VzIDIgYnl0ZXMgd2lkZSByZWFkcyBvbiA0IGJ5dGVzIHdpZGUg
+cmVnaXN0ZXJzIChJIHRoaW5rIDQgYnl0ZXMgd2lkZSByZWFkcyB3b3JrIGp1c3QgYXMgd2VsbCwg
+YW5kIG1heWJlIGJ5dGUgYWNjZXNzLCBidXQgdGhlIHBvaW50IGlzLCBlYWNoIHJlZ2lzdGVycyBv
+Y2N1cGllcyA0IGJ5dGVzLCBzbyB0aGUgb2Zmc2V0cyBtdXN0IGJlIG11bHRpcGxpZWQgYnkgNCks
+IHdoZXJlYXMgeGVub18xNjU1MEEgdXNlcyBieXRlIGFjY2VzcyB0byBpbnZhbGlkIG9mZnNldHMs
+IGFuZCBjYXVzZSB0aGUgYWJvcnQgeW91IG9ic2VydmUuDQoNCklmIHlvdSBzdGFydCB1c2luZyB4
+ZW5vXzE2NTUwQSwgeW91IHdpbGwgbm90IGhhdmUgdG8gY2FyZSBhYm91dCBvbWFwLXNlcmlhbCBv
+ciA4MjUwLg0KDQo+IA0KPiBJIGhhdmUgYWxzbyBiZWVuIHNlYXJjaGluZyBmb3IgYSB1c2VyJ3Mg
+bWFudWFsIG9yIHNvbWUgYy1jb2RlIGV4YW1wbGVzIA0KPiB1dGlsaXppbmcgdGhlIG9tYXBfdWFy
+dCBpbiBhIG1vcmUgZWxldmF0ZWQgZmFzaGlvbiwgYnV0IEkgZmluZCBvbmx5IA0KPiBub3ZpY2Ug
+ZXhhbXBsZXMgb3IgcHl0aG9uIHNjcmlwdHMuDQoNClRoZSB4ZW5vXzE2NTUwQSBpb2N0bCBBUEkg
+aXMgZG9jdW1lbnRlZCBoZXJlOg0KaHR0cDovL3d3dy54ZW5vbWFpLm9yZy9kb2N1bWVudGF0aW9u
+L3hlbm9tYWktaGVhZC9odG1sL2FwaS9ncm91cF9fcnRzZXJpYWwuaHRtbA0KDQpUaGlzIGlzIG5v
+dCB2ZXJ5IGNvbXBsaWNhdGVkLg0KDQoNCi0tIA0KCQkJCQkgICAgR2lsbGVzLg0K
 
