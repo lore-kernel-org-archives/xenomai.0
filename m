@@ -1,12 +1,13 @@
-Message-ID: <546323F9.9040608@xenomai.org>
-Date: Wed, 12 Nov 2014 10:10:17 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5463264B.3090503@sigmatek.at>
+Date: Wed, 12 Nov 2014 10:20:11 +0100
+From: Johann Obermayr <johann.obermayr@sigmatek.at>
 MIME-Version: 1.0
-References: <54631EB1.1050900@sigmatek.at>
-In-Reply-To: <54631EB1.1050900@sigmatek.at>
-Content-Type: text/plain; charset=windows-1252
+References: <54631EB1.1050900@sigmatek.at> <546323F9.9040608@xenomai.org>
+In-Reply-To: <546323F9.9040608@xenomai.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] rtdm_nrtsig_pend FAQ
+Reply-To: johann.obermayr@sigmatek.at
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,44 +16,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: johann.obermayr@sigmatek.at, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/12/2014 09:47 AM, Johann Obermayr wrote:
-> Hello,
-> 
-> we use rtdm_nrtsig_pend follow.
-> 
-> static rtdm_nrtsig_t wait_domain_nrt;
-> static DECLARE_WAIT_QUEUE_HEAD(wait_domain_wq);
-> 
-> void period_update()
-> {
->         wait_domain_pend_count++;
->         rtdm_nrtsig_pend(&wait_domain_nrt);
-> }
-> 
-> static void wait_domain_nrt_handler(rtdm_nrtsig_t nrt_sig, void *arg)
-> {
->     wait_domain_call_count++;
->     //wakeup wait_domain
->     wait_domain_wakeup = 1;
->     wake_up_interruptible(&wait_domain_wq);
-> }
-> 
-> 
-> period_update is called every millisecond.
-> this is on imx6 hardware with kernel 3.0.x and xenomai 2.6.2.1.
-> 
-> Why wait_domain_call_count can be smaller that wait_domain_pend_count.
-> The difference between the counters is growing.
-> 
-> Why ?
-> 
+Am 12.11.2014 um 10:10 schrieb Philippe Gerum:
+> nrt signals are based on I-pipe virtual irqs, which do not pile up:
+> there is a single signal pending until the irq can be delivered to the
+> handler, regardless of how many times it has been triggered.
+i know, if there is a big cpu load some virtual irqs can be lost, but we 
+have cpu load smaller that 10 percent.
 
-nrt signals are based on I-pipe virtual irqs, which do not pile up:
-there is a single signal pending until the irq can be delivered to the
-handler, regardless of how many times it has been triggered.
 
--- 
-Philippe.
+
 
