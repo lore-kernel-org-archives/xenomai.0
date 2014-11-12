@@ -1,20 +1,19 @@
-Date: Wed, 12 Nov 2014 16:13:05 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141112151305.GW17476@sisyphus.hd.free.fr>
-References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
- <20141111140230.GA17476@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
- <314E5ECDAA86314791309FA670550F89C676E884@SINTEFEXMBX05.sintef.no>
- <20141112134531.GP17476@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C676EB35@SINTEFEXMBX05.sintef.no>
- <20141112145117.GV17476@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C676EBE1@SINTEFEXMBX05.sintef.no>
+Message-ID: <54637AD2.3080507@free.fr>
+Date: Wed, 12 Nov 2014 16:20:50 +0100
+From: Thierry Bultel <tbultel@free.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
+References: <20141107095222.GD6724@sisyphus.hd.free.fr>
+ <586279251.109308096.1415364479248.JavaMail.root@zimbra90-e16.priv.proxad.net>
+ <20141107195807.GD17476@sisyphus.hd.free.fr> <545FA90B.4040407@free.fr>
+ <20141110123657.GJ17476@sisyphus.hd.free.fr> <54626A2E.6020307@free.fr>
+ <20141111200358.GL17476@sisyphus.hd.free.fr> <54635DD7.9090800@free.fr>
+ <20141112133447.GO17476@sisyphus.hd.free.fr> <54636E3F.1070207@free.fr>
+ <20141112143026.GT17476@sisyphus.hd.free.fr>
+In-Reply-To: <20141112143026.GT17476@sisyphus.hd.free.fr>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C676EBE1@SINTEFEXMBX05.sintef.no>
-Subject: Re: [Xenomai] xeno_16550A driver install problems.
+Subject: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 +
+ adeos-ipipe-3.0.43-mx6q-1.18-14 -> very slow boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,83 +22,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: nicolas Mabire <nicolas.mabire@basystemes.fr>, xenomai@xenomai.org
 
-On Wed, Nov 12, 2014 at 02:52:54PM +0000, Terje Frøysa wrote:
-> Ok Gilles,
-> 
-> Thanks!
-> 
-> Terje
+Le 12/11/2014 15:30, Gilles Chanteperdrix a écrit :
+> On Wed, Nov 12, 2014 at 03:27:11PM +0100, Thierry Bultel wrote:
+>> Le 12/11/2014 14:34, Gilles Chanteperdrix a écrit :
+>>> On Wed, Nov 12, 2014 at 02:17:11PM +0100, Thierry Bultel wrote:
+>>>> Le 11/11/2014 21:03, Gilles Chanteperdrix a écrit :
+>>>>> On Tue, Nov 11, 2014 at 08:57:34PM +0100, Thierry Bultel wrote:
+>>>>>> Le 10/11/2014 13:36, Gilles Chanteperdrix a écrit :
+>>>>>>> You can use printascii in the timer interrupt acknowledge routine to
+>>>>>>> print a character every HZ ticks, this will give bad latency, but
+>>>>>>> should work.
+>>>>>>>
+>>>>>>
+>>>>>> For unknown reason, the kernel gets stuck after
+>>>>>> "console [tty0] enabled, bootconsole disabled" if I use printascii
+>>>>>> in do_local_timer().
+>>>>>> earlyprintk seems broken as well.
+>>>>>
+>>>>> Without doing this, does earlyprintk work?
+>>>>
+>>>> No it does not. In fact, this kernel is strange with early debug.
+>>>> Namely, even without earlyprintk, when it comes to disable the
+>>>> bootconsole to use the normal one, it uses then re-prints everything
+>>>> was printed before, making think that it has restarted from the
+>>>> beginning.
+>>>>
+>>>> I confirm that calling printascii in do_local_timer() leads to a
+>>>> kernel panic. Same thing if I use __ipipe_serial_debug instead.
+>>>> I have used a counter (one per cpu) to start logging after 30000
+>>>> ticks and it crashes after that delay.
+>>>
+>>> Having looked at the sources, I do not find a debug-macro.S for
+>>> imx6. So, I doubt printascii can work at all. Maybe a first step is
+>>> to implement this missing support.
+>>
+>> I think that the implementation is in arch/arm/plat-mxc/include
+>> /mach/debug-macro.S
+>
+> And the debug UART you are using is UART2 ?
+>
+Yes,
+and I have found out why the logs before the console switch were 
+displayed twice. This is because the BSP directly calls
 
-Please try the (completely untested, not even compiled) following
-patch. It should add two parameter to the xeno_16650 module,
-allowing to change the register shift and register width. For
-omap-serial, you want regshift=2 and regwidth=2
+early_console_setup(UART2_BASE_ADDR, uart_clk);
 
-diff --git a/ksrc/drivers/serial/16550A_io.h b/ksrc/drivers/serial/16550A_io.h
-index 92d21a5..bf05498 100644
---- a/ksrc/drivers/serial/16550A_io.h
-+++ b/ksrc/drivers/serial/16550A_io.h
-@@ -33,6 +33,13 @@ static unsigned long mem[MAX_DEVICES];
- static void *mapped_io[MAX_DEVICES];
- compat_module_param_array(mem, ulong, MAX_DEVICES, 0400);
- MODULE_PARM_DESC(mem, "I/O memory addresses of the serial devices");
-+static unsigned regshift = 0;
-+module_param(regshift, uint, 0400);
-+MODULE_PARM_DESC(regshift, "Register shift to be used");
-+static unsigned regwidth = 1;
-+module_param(regwidth, uint, 0400);
-+MODULE_PARM_DESC(regwidth, "Register width to be used (1, 2 or 4)");
-+
- #endif /* CONFIG_XENO_DRIVERS_16550A_MMIO || CONFIG_XENO_DRIVERS_16550A_ANY */
- 
- #ifdef CONFIG_XENO_DRIVERS_16550A_PIO
-@@ -164,7 +171,19 @@ rt_16550_reg_in(io_mode_t io_mode, unsigned long base, int off)
- 	case MODE_PIO:
- 		return inb(base + off);
- 	default: /* MODE_MMIO */
--		return readb((void *)base + off);
-+		switch (regwidth) {
-+		case 1:
-+			readb((void *)base + (off << regshift));
-+			break;
-+		case 2:
-+			readw((void *)base + (off << regshift));
-+			break;
-+		case 4:
-+			readl((void *)base + (off << regshift));
-+			break;
-+		default:
-+			BUG();
-+		}
- 	}
- }
- 
-@@ -176,7 +195,19 @@ rt_16550_reg_out(io_mode_t io_mode, unsigned long base, int off, u8 val)
- 		outb(val, base + off);
- 		break;
- 	case MODE_MMIO:
--		writeb(val, (void *)base + off);
-+		switch (regwidth) {
-+		case 1:
-+			writeb(val, (void *)base + (off << regshift));
-+			break;
-+		case 2:
-+			writew(val, (void *)base + (off << regshift));
-+			break;
-+		case 4:
-+			writel(val, (void *)base + (off << regshift));
-+			break;
-+		default:
-+			BUG();
-+		}
- 		break;
- 	}
- }
-
-
--- 
-					    Gilles.
+removing it does not make earlyprintk or printascii work better, 
+unfortunately.
 
