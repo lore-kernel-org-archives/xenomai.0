@@ -1,12 +1,26 @@
-Date: Wed, 12 Nov 2014 17:44:11 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141112164411.GB17476@sisyphus.hd.free.fr>
-References: <54631EB1.1050900@sigmatek.at>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <54631EB1.1050900@sigmatek.at>
-Subject: Re: [Xenomai] rtdm_nrtsig_pend FAQ
+In-Reply-To: <CAJt3u5mD-yy-uvJM-d3yDrLoD6_YUeG5vaJErzm_MofpXFqT=Q@mail.gmail.com>
+References: <20141111153745.GX24110@csclub.uwaterloo.ca>
+ <20141111154611.GD17476@sisyphus.hd.free.fr>
+ <20141111155212.GZ24110@csclub.uwaterloo.ca>
+ <20141111155447.GE17476@sisyphus.hd.free.fr>
+ <20141111155642.GA24110@csclub.uwaterloo.ca>
+ <20141111160236.GF17476@sisyphus.hd.free.fr>
+ <20141111161744.GB24110@csclub.uwaterloo.ca>
+ <CAJt3u5=nBbiqOZ6kFsXujHtbGyz6GhQO10F-=rpc0WpXFj+zZw@mail.gmail.com>
+ <20141112042250.GF24110@csclub.uwaterloo.ca>
+ <CAPRPZsAHXt9cFWeduwziZ=iTpDg7KikrMw+HEuTi5eJ72gkztA@mail.gmail.com>
+ <20141112141040.GR17476@sisyphus.hd.free.fr>
+ <CAPRPZsCeJ1WtZneoKP1SYo5uzmwWyXGtn0EU45i2gb8VgDUhQQ@mail.gmail.com>
+ <CAJt3u5mVofHe6X3FfNO3RHmMusqiCd8gbf2WuTD=LNs1gsS98A@mail.gmail.com>
+ <CAEbDrgm5FLeitoXn+b=bCtQwgDU8=auC8fu2xNA8Ba0U2gQ0JA@mail.gmail.com>
+ <CAPRPZsDa6RwXW2e5mkppxpR488jHs1oOGh_Hyk8w6XfFh2Zv-w@mail.gmail.com>
+ <CAJt3u5mD-yy-uvJM-d3yDrLoD6_YUeG5vaJErzm_MofpXFqT=Q@mail.gmail.com>
+Date: Wed, 12 Nov 2014 18:01:52 +0100
+Message-ID: <CAPRPZsB4H-_=YRnjUFv9W7HFv1jC4yyhiVh3hMKjO-YHQH-a3g@mail.gmail.com>
+From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] USB3.0 drivers for xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,43 +29,13 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Johann Obermayr <johann.obermayr@sigmatek.at>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Madan Sondur <sondur.madan23@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, Nov 12, 2014 at 09:47:45AM +0100, Johann Obermayr wrote:
-> Hello,
-> 
-> we use rtdm_nrtsig_pend follow.
-> 
-> static rtdm_nrtsig_t wait_domain_nrt;
-> static DECLARE_WAIT_QUEUE_HEAD(wait_domain_wq);
-> 
-> void period_update()
-> {
->         wait_domain_pend_count++;
->         rtdm_nrtsig_pend(&wait_domain_nrt);
-> }
-> 
-> static void wait_domain_nrt_handler(rtdm_nrtsig_t nrt_sig, void *arg)
-> {
->     wait_domain_call_count++;
->     //wakeup wait_domain
->     wait_domain_wakeup = 1;
->     wake_up_interruptible(&wait_domain_wq);
-> }
-> 
-> 
-> period_update is called every millisecond.
-> this is on imx6 hardware with kernel 3.0.x and xenomai 2.6.2.1.
+> Yes i agree, but this is not for audio video or HDMI interface. The
+> requirement is for achieving high data throughput on air for a given
+> spectrum of bandwidth.
+>
 
->From what Thierry said, I suspect the patch for this kernel has a
-missing call to irq_exit. So, I would ask you to do the same as
-Thierry, please enable the I-pipe tracer, set a sufficient number of
-back trace points such as 10000, and trigger a trace when you detect
-that you have "lost" a notification (wait_dommain_pend_count > wait_domain_call_count + 1)
-
-Then send the trace to the mailing list.
-
--- 
-					    Gilles.
-
+Is it essential that this operates over USB ? I mean, can't you consider
+other means of getting data in and out of your PC system ?
