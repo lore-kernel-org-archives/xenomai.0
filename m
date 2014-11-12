@@ -1,12 +1,23 @@
-Message-ID: <545D2CD9.1030404@xenomai.org>
-Date: Fri, 07 Nov 2014 21:34:33 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Wed, 12 Nov 2014 21:32:45 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C676F580@SINTEFEXMBX05.sintef.no>
+References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
+ <20141111140230.GA17476@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
+ <314E5ECDAA86314791309FA670550F89C676E884@SINTEFEXMBX05.sintef.no>
+ <20141112134531.GP17476@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C676EB35@SINTEFEXMBX05.sintef.no>
+ <20141112145117.GV17476@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C676EBE1@SINTEFEXMBX05.sintef.no>
+ <20141112151305.GW17476@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C676F428@SINTEFEXMBX05.sintef.no>
+ <20141112203922.GJ17476@sisyphus.hd.free.fr>
+In-Reply-To: <20141112203922.GJ17476@sisyphus.hd.free.fr>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <545CC287.908@selex-es.com>
-In-Reply-To: <545CC287.908@selex-es.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 2.X on Freescale QorIQ T2080 processor
+Subject: Re: [Xenomai] xeno_16550A driver install problems.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,41 +26,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pampolini Matteo <matteo.pampolini@selex-es.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 11/07/2014 02:00 PM, Pampolini Matteo wrote:
-> Hello there,
-> 
-> do you know if all around the world someone is working to port Xenomai
-> 2.X on Freescale QorIQ T2080 processor?
-> Because this processor does not appear in the list of supported ones?
-> 
-> If yes, would it be possible to know which patch is used? And if no, may
-> you please point me in the right direction
-> to create it by myself and then give it back to community?
-> 
-
-You did not mention which kernel release was of interest, so I'll assume
-3.14. This patch is the right starting point for 3.14:
-
-http://download.gna.org/adeos/patches/v3.x/powerpc/ipipe-core-3.14.17-powerpc-4.patch
-
-Then add the few commits that piled up in the I-pipe git tree since tag
-"ipipe-core-3.14.17-powerpc-4", which the patch mentioned above
-corresponds to: http://git.xenomai.org/ipipe.git/log/?h=ipipe-3.14
-Or wait until drop -5 appears in the download area, they will be included.
-
-Then have a look at the PIC code for making it aware of the interrupt
-pipeline, this beast likely sports a MPIC (just a guess), in which case
-the work to support the "generic" MPIC is done already. Having a look at
-the error interrupt handling for freescale's PIC chips in sysdev/ may be
-a good idea too.
-
-Another interesting part is in head_fsl_booke.S, in case this platform
-has additional exception vectors which might need to be pipelined.
-
-There will be other issues, but this is a starting point.
-
--- 
-Philippe.
+VGhhbmtzIGFnYWluIEdpbGxlcywNCg0KWW91IGFyZSwgb2YgY291cnNlLCByaWdodC4NCkkgdXNl
+ZCB0aGUgcHJlcGFyZS1rZXJuZWwuc2ggYW5kICBhdCBteSBrZXJuZWwgc291cmNlIEkgZmluZCB0
+aGUgZmlsZXMgc3ltYm9saWNhbGx5IGxpbmtlZCB0byB0aGUgeGVub21haSBlbnZpcm9ubWVudC4N
+Cmxyd3hyd3hyd3ggMSBkZWJpYW4gICAxMDAyICAgIDU4IE9jdCAyOCAxMDozNCAxNjU1MEFfaW8u
+aCAtPiAvaG9tZS9kZWJpYW4veGVub21haS0yLjYuNC9rc3JjL2RyaXZlcnMvc2VyaWFsLzE2NTUw
+QV9pby5oDQoNCllvdSBoYXZlIG1hZGUgaXQgdmVyeSBjbGVhciENClRoYW5rIHlvdSENCg0KQmVl
+c3QgcmVnYXJkcw0KVGVyamUNCg0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTog
+R2lsbGVzIENoYW50ZXBlcmRyaXggW21haWx0bzpnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFp
+Lm9yZ10gDQpTZW50OiAxMi4gbm92ZW1iZXIgMjAxNCAyMTozOQ0KVG86IFRlcmplIEZyw7h5c2EN
+CkNjOiBYZW5vbWFpQHhlbm9tYWkub3JnDQpTdWJqZWN0OiBSZTogW1hlbm9tYWldIHhlbm9fMTY1
+NTBBIGRyaXZlciBpbnN0YWxsIHByb2JsZW1zLg0KDQpPbiBXZWQsIE5vdiAxMiwgMjAxNCBhdCAw
+ODozMzo0MVBNICswMDAwLCBUZXJqZSBGcsO4eXNhIHdyb3RlOg0KPiBIZWxsbyBhZ2FpbiBHaWxs
+ZXMsDQo+IA0KPiBCZWZvcmUgcGF0Y2hpbmcsIEkganVzdCBoYXZlIHRvIGNoZWNrOg0KPiANCj4g
+VGhlIGJhdGNoIGJlbG93IHJlZmVycyB0byBhIHBhdGggaW4gdGhlIHhlbm9tYWktMi42LjQgZGly
+ZWN0b3J5Og0KPiAgL2tzcmMvZHJpdmVycy9zZXJpYWwvMTY1NTBBX2lvLmgNCj4gDQo+IFRoZXJl
+IGFsc28gZXhpc3QgYSBjb3JyZXNwb25kaW5nIHNvdXJjZSBhdCB0aGUgTGludXgga2VybmVsIGRp
+cmVjdG9yeToNCj4gYmIta2VybmVsL0tFUk5FTC9kcml2ZXJzL3hlbm9tYWkvc2VyaWFsLzE2NTUw
+QV9pby5oDQo+IA0KPiBTaW5jZSB0aGUgeGVub18xNjU1MEEgaXMgZW5hYmxlZCBpbiB0aGUga2Vy
+bmVsIG1ha2UgbWVudWNvbmZpZyBvciANCj4gaW5jbHVkZWQgYXMgYSBsb2FkYWJsZSBtb2R1bGUg
+aW4gdGhlIGtlcm5lbCwgSSB3b3VsZCBhc3N1bWUgdGhhdCB0aGUgcGF0Y2ggaXMgdG8gYmUgYXBw
+bGllZCBpbiB0aGUga2VybmVsIHNvdXJjZT8NCj4gKGFuZCB0aGVuIHJlYnVpbGQgdGhlIGtlcm5l
+bD8pDQoNCg0KSWYgeW91IGhhdmUgdXNlZCBwcmVwYXJlLWtlcm5lbC5zaCB0byBnZW5lcmF0ZSB0
+aGUga2VybmVsIHNvdXJjZXMsIHRoZSBzZWNvbmQgaXMgYSBzeW1ib2xpYyBsaW5rIHRvIHRoZSBm
+aXJzdCwgc28geW91IGp1c3QgcGF0Y2ggdGhlIGZpcnN0LCByZWNvbXBpbGUgdGhlIGtlcm5lbCwg
+YW5kIHRyeSBhbmQgYm9vdCBpdC4gSWYgaXQgaXMgbm90IGEgc3ltYm9saWMgbGluaywgdGhlbiB5
+ZXMsIHlvdSBuZWVkIHRvIGFwcGx5IHRoZSBwYXRjaCB0byB0aGUga2VybmVsIHNvdXJjZXMsIHBh
+dGNoIHdpbGwgbm90IGZpbmQgdGhlIGZpbGUgYW5kIHRlbGwgeW91IHRvIGVudGVyIHRoZSBmaWxl
+IG5hbWUgbWFudWFsbHkuDQoNCi0tIA0KCQkJCQkgICAgR2lsbGVzLg0K
 
