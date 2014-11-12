@@ -1,16 +1,12 @@
-Date: Wed, 12 Nov 2014 14:45:31 +0100
+Date: Wed, 12 Nov 2014 15:08:51 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141112134531.GP17476@sisyphus.hd.free.fr>
-References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
- <20141111140230.GA17476@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
- <314E5ECDAA86314791309FA670550F89C676E884@SINTEFEXMBX05.sintef.no>
+Message-ID: <20141112140851.GQ17476@sisyphus.hd.free.fr>
+References: <CADLCHMKp3ohhHQrstXOyf0ys1ev3CY=KQScYhvB=P9ANqy8agA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C676E884@SINTEFEXMBX05.sintef.no>
-Subject: Re: [Xenomai] xeno_16550A driver install problems.
+In-Reply-To: <CADLCHMKp3ohhHQrstXOyf0ys1ev3CY=KQScYhvB=P9ANqy8agA@mail.gmail.com>
+Subject: Re: [Xenomai] Using RTDM module
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,75 +15,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Seda Seda <seda9seda9@gmail.com>
+Cc: xenomai@xenomai.org
 
-On Wed, Nov 12, 2014 at 12:50:20PM +0000, Terje Frøysa wrote:
-> I have now carefully checked your suggestions and other suggestions I received from Charles Steinkuehler at beagleboard forum.
-> 
-> The UARTs appears to be byte accessible and the UART clock system is running:
+On Wed, Nov 12, 2014 at 01:29:23AM +0200, Seda Seda wrote:
+> Hello, I have a gpio module device and it creates dev/ttyACM0 file when I
+> attach to my pc using a mini usb cable.Also I don't have source of
+> devices.
 
-It makes sense that the clocks are running when the omap_serial driver
-is running. My question was to know whether they were running
-without the driver.
+I do not know what you mean by "I don't have source of devices", but
+the sources of the driver which creates /dev/ttyACM0 are well known,
+it is the drivers/usb/class/cdc-acm.c file in kernel sources, which
+implements the driver for the USB communication device class.
 
-> 
-> 
-> 
-> •                    I have checked that the UART dtbo are loaded at boot-time (by uEnv.txt)
-> 
-> •                    I have built  (and booted) the kernel with the xeno_16550A as loadable module.
-> 
-> •                    I have checked the functionality of the /dev/ttyOx by running physical loop-back data traffic.
-> The sudo cat /proc/tty/driver/OMAP-SERIAL reports the correct amount of traffic and the sent data is echoed correctly in another terminal window.
-> 
-> •                    I have crawled the /proc/device-tree/ocp/serial* and cannot find any discrepancies.
-> 
-> 
-> 
-> Everything seem correct.
-> 
-> But the UARTs are now occupied by the omap_serial driver.
-> 
-> According to Xenomai (http://xenomai.org/serial-16550a-driver/) the driver should now be disabled by the setserial command.
-> 
-> I can't get this command working. It reports the serial port but changing it results in error (regardless of the ttyO -number):
-> 
-> 
-> 
-> debian@beaglebone:~$ setserial /dev/ttyO2
-> 
-> /dev/ttyO2, UART: undefined, Port: 0x0000, IRQ: 74
-> 
-> 
-> 
-> debian@beaglebone:/boot$ sudo setserial /dev/ttyO2 uart none
-> 
-> Cannot set serial info: Invalid argument
-> 
-> 
-> 
-> Consequently, I cannot load the xeno_16550A.ko module by modprobe.
-> 
-> I have browsed the net for the same problem, but have not found relevant subjects.
 
-At first sight, I would say that the omap_serial driver does not
-implement the necessary support (probably some ioctls), for what
-setserial is trying to do.
+> I want to code a rtdm driver for this device. To communicate with
+> the device on real time, what should I do?
 
-I see several ways out:
-- implement the missing support in omap serial so that you can use
-the "setserial none" command;
-- try and use the 8250 driver instead of the omap_serial driver,
-since the omap serial devices are 8250 compatible, this driver
-supports the necessary ioctls for the "setserial none" command to
-work. At some point in time, I know using this serial driver for the
-kernel console worked, but I do not know if it was by chance (u-boot
-enables the clock, so the driver does not have to enable it), and if
-it still works;
-- do not enable any uart in the kernel configuration, neither
-omap_serial, nor 8250, and arrange for the clocks to be started
-before loading the xeno_16550a driver.
+First you have to get the communication with this USB device to work
+in real-time. For that you would use either of the two known USB
+stacks for Xenomai:
+
+http://sourceforge.net/projects/usb4rt.berlios/
+http://sourceforge.net/projects/usb20rt.berlios/
+
+And "port" the cdc-acm.c code to that stack, if it is not already
+part of it.
+
+When you have that working, I suppose you want a driver which sends
+commands and receive answers from the ttyACM driver, to drive the
+GPIOs (but you did not say). It is possible with RTDM using the 
+rt_dev_open/rt_dev_close/rt_dev_read/rt_dev_write from a kernel
+module.
+
+Now, there is something I do not understand, from a previous post,
+you said you already had a driver which created a ttyACM0 device,
+but that that driver returned you a "Cannot allocate memory", which
+is ENOMEM. 
+
+But since you did not tell us what returns ENOMEM, if
+happens when loading the module, or when opening it, or when writing
+to it, my answer to you was that we did not have enough information.
+
+Maybe you could follow up on that question instead of coming with a
+completely new question? Answering questions you are asked with
+other completely unrelated questions makes me want to simply ignore
+your mails.
 
 -- 
 					    Gilles.
