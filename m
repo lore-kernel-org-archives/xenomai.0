@@ -1,6 +1,6 @@
-Date: Wed, 12 Nov 2014 15:39:20 +0100
+Date: Wed, 12 Nov 2014 15:51:17 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141112143920.GU17476@sisyphus.hd.free.fr>
+Message-ID: <20141112145117.GV17476@sisyphus.hd.free.fr>
 References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
  <20141111140230.GA17476@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
@@ -30,22 +30,20 @@ On Wed, Nov 12, 2014 at 02:32:40PM +0000, Terje Frøysa wrote:
 > - Changing omap-serial driver is not a tempting solution.
 > - I'll try out your 8250 suggestion.
 > - I have not figured out how to " arrange for the clocks to be started", would that be writing a kernel module that initiates the UART clock systems?
+> 
+> If not the 8250 suggestion works, I begin to believe that I have to abandon the xeno_1650A driver.
+> Do you know anybody that have succeeded in running the xeno_16550A driver under such circumstances?
 
-That would be look at omap-serial.c to see how it does it, and do
-the same thing in a piece of code which registers a phony DT driver
-matching the same string as omap-serial. It does not need to be a
-kernel module, it can be put in the kernel itself.
+I just had a quick look at the omap-serial.c driver and:
+- it does not do anything that I can see to enable its clocks
+- it does NOT  use byte access but word access, that is, its registers
+are 16 bits wide.
 
-> If not the 8250 suggestion works, I begin to believe that I have
-> to abandon the xeno_1650A driver.
-
-As you wish, but any of the three proposition takes one day maximum,
-this is not a lot of work.
-
-> Do you know anybody that have succeeded in running the xeno_16550A
-> driver under such circumstances?
-
-I have no idea.
+Unfortunately, as far as I can tell, the xeno_16550A driver only
+supports byte access. So, if you want it to work, you have to modify
+the driver to accept a "regshift" parameter applied to all offsets
+and use the corresponding readw if regshift is 2 or readl if
+regshift is 4.
 
 -- 
 					    Gilles.
