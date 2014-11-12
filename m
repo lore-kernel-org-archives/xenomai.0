@@ -1,25 +1,22 @@
+Date: Wed, 12 Nov 2014 17:15:47 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141112161547.GA17476@sisyphus.hd.free.fr>
+References: <20141110123657.GJ17476@sisyphus.hd.free.fr>
+ <54626A2E.6020307@free.fr>
+ <20141111200358.GL17476@sisyphus.hd.free.fr>
+ <54635DD7.9090800@free.fr>
+ <20141112133447.GO17476@sisyphus.hd.free.fr>
+ <54636E3F.1070207@free.fr>
+ <20141112143026.GT17476@sisyphus.hd.free.fr>
+ <54637AD2.3080507@free.fr>
+ <20141112152940.GX17476@sisyphus.hd.free.fr>
+ <54638058.10509@free.fr>
 MIME-Version: 1.0
-In-Reply-To: <CAPRPZsDa6RwXW2e5mkppxpR488jHs1oOGh_Hyk8w6XfFh2Zv-w@mail.gmail.com>
-References: <20141111153745.GX24110@csclub.uwaterloo.ca>
- <20141111154611.GD17476@sisyphus.hd.free.fr>
- <20141111155212.GZ24110@csclub.uwaterloo.ca>
- <20141111155447.GE17476@sisyphus.hd.free.fr>
- <20141111155642.GA24110@csclub.uwaterloo.ca>
- <20141111160236.GF17476@sisyphus.hd.free.fr>
- <20141111161744.GB24110@csclub.uwaterloo.ca>
- <CAJt3u5=nBbiqOZ6kFsXujHtbGyz6GhQO10F-=rpc0WpXFj+zZw@mail.gmail.com>
- <20141112042250.GF24110@csclub.uwaterloo.ca>
- <CAPRPZsAHXt9cFWeduwziZ=iTpDg7KikrMw+HEuTi5eJ72gkztA@mail.gmail.com>
- <20141112141040.GR17476@sisyphus.hd.free.fr>
- <CAPRPZsCeJ1WtZneoKP1SYo5uzmwWyXGtn0EU45i2gb8VgDUhQQ@mail.gmail.com>
- <CAJt3u5mVofHe6X3FfNO3RHmMusqiCd8gbf2WuTD=LNs1gsS98A@mail.gmail.com>
- <CAEbDrgm5FLeitoXn+b=bCtQwgDU8=auC8fu2xNA8Ba0U2gQ0JA@mail.gmail.com>
- <CAPRPZsDa6RwXW2e5mkppxpR488jHs1oOGh_Hyk8w6XfFh2Zv-w@mail.gmail.com>
-Date: Wed, 12 Nov 2014 21:42:14 +0530
-Message-ID: <CAJt3u5mD-yy-uvJM-d3yDrLoD6_YUeG5vaJErzm_MofpXFqT=Q@mail.gmail.com>
-From: Madan Sondur <sondur.madan23@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] USB3.0 drivers for xenomai
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <54638058.10509@free.fr>
+Subject: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 +
+ adeos-ipipe-3.0.43-mx6q-1.18-14 -> very slow boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -28,24 +25,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
-Cc: xenomai@xenomai.org
+To: Thierry Bultel <tbultel@free.fr>
+Cc: nicolas Mabire <nicolas.mabire@basystemes.fr>, xenomai@xenomai.org
 
-On 12 Nov 2014 21:34, "Jeroen Van den Keybus" <jeroen.vandenkeybus@gmail.com>
-wrote:
->
-> Are you designing another wireless HDMI standard? Low latency and high
-> > throughput :)
-> >
->
-> Why is low latency so important on a HDMI interface ? As long as the video
-> and the audio arrive synchronized, I imagine you can live with some
-> latency, not ?
+On Wed, Nov 12, 2014 at 04:44:24PM +0100, Thierry Bultel wrote:
+> CPU: ARMv7 Processor [412fc09a] revision 10 (ARMv7), cr=10c53c7d
 
-Yes i agree, but this is not for audio video or HDMI interface. The
-requirement is for achieving high data throughput on air for a given
-spectrum of bandwidth.
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
+BTW:
+41 2 fc09 a
+so this is an arm cortex a9 r2p10.
+
+-- 
+					    Gilles.
+
