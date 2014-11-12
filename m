@@ -1,15 +1,17 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Wed, 12 Nov 2014 12:50:20 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C676E884@SINTEFEXMBX05.sintef.no>
-References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
- <20141111140230.GA17476@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
-Content-Language: en-US
+Message-ID: <54635DD7.9090800@free.fr>
+Date: Wed, 12 Nov 2014 14:17:11 +0100
+From: Thierry Bultel <tbultel@free.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] xeno_16550A driver install problems.
+References: <20141107095222.GD6724@sisyphus.hd.free.fr>
+ <586279251.109308096.1415364479248.JavaMail.root@zimbra90-e16.priv.proxad.net>
+ <20141107195807.GD17476@sisyphus.hd.free.fr> <545FA90B.4040407@free.fr>
+ <20141110123657.GJ17476@sisyphus.hd.free.fr> <54626A2E.6020307@free.fr>
+ <20141111200358.GL17476@sisyphus.hd.free.fr>
+In-Reply-To: <20141111200358.GL17476@sisyphus.hd.free.fr>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 +
+ adeos-ipipe-3.0.43-mx6q-1.18-14 -> very slow boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,84 +21,81 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+Cc: nicolas Mabire <nicolas.mabire@basystemes.fr>, xenomai@xenomai.org
 
-SSBoYXZlIG5vdyBjYXJlZnVsbHkgY2hlY2tlZCB5b3VyIHN1Z2dlc3Rpb25zIGFuZCBvdGhlciBz
-dWdnZXN0aW9ucyBJIHJlY2VpdmVkIGZyb20gQ2hhcmxlcyBTdGVpbmt1ZWhsZXIgYXQgYmVhZ2xl
-Ym9hcmQgZm9ydW0uDQoNClRoZSBVQVJUcyBhcHBlYXJzIHRvIGJlIGJ5dGUgYWNjZXNzaWJsZSBh
-bmQgdGhlIFVBUlQgY2xvY2sgc3lzdGVtIGlzIHJ1bm5pbmc6DQoNCg0KDQrigKIgICAgICAgICAg
-ICAgICAgICAgIEkgaGF2ZSBjaGVja2VkIHRoYXQgdGhlIFVBUlQgZHRibyBhcmUgbG9hZGVkIGF0
-IGJvb3QtdGltZSAoYnkgdUVudi50eHQpDQoNCuKAoiAgICAgICAgICAgICAgICAgICAgSSBoYXZl
-IGJ1aWx0ICAoYW5kIGJvb3RlZCkgdGhlIGtlcm5lbCB3aXRoIHRoZSB4ZW5vXzE2NTUwQSBhcyBs
-b2FkYWJsZSBtb2R1bGUuDQoNCuKAoiAgICAgICAgICAgICAgICAgICAgSSBoYXZlIGNoZWNrZWQg
-dGhlIGZ1bmN0aW9uYWxpdHkgb2YgdGhlIC9kZXYvdHR5T3ggYnkgcnVubmluZyBwaHlzaWNhbCBs
-b29wLWJhY2sgZGF0YSB0cmFmZmljLg0KVGhlIHN1ZG8gY2F0IC9wcm9jL3R0eS9kcml2ZXIvT01B
-UC1TRVJJQUwgcmVwb3J0cyB0aGUgY29ycmVjdCBhbW91bnQgb2YgdHJhZmZpYyBhbmQgdGhlIHNl
-bnQgZGF0YSBpcyBlY2hvZWQgY29ycmVjdGx5IGluIGFub3RoZXIgdGVybWluYWwgd2luZG93Lg0K
-DQrigKIgICAgICAgICAgICAgICAgICAgIEkgaGF2ZSBjcmF3bGVkIHRoZSAvcHJvYy9kZXZpY2Ut
-dHJlZS9vY3Avc2VyaWFsKiBhbmQgY2Fubm90IGZpbmQgYW55IGRpc2NyZXBhbmNpZXMuDQoNCg0K
-DQpFdmVyeXRoaW5nIHNlZW0gY29ycmVjdC4NCg0KQnV0IHRoZSBVQVJUcyBhcmUgbm93IG9jY3Vw
-aWVkIGJ5IHRoZSBvbWFwX3NlcmlhbCBkcml2ZXIuDQoNCkFjY29yZGluZyB0byBYZW5vbWFpICho
-dHRwOi8veGVub21haS5vcmcvc2VyaWFsLTE2NTUwYS1kcml2ZXIvKSB0aGUgZHJpdmVyIHNob3Vs
-ZCBub3cgYmUgZGlzYWJsZWQgYnkgdGhlIHNldHNlcmlhbCBjb21tYW5kLg0KDQpJIGNhbid0IGdl
-dCB0aGlzIGNvbW1hbmQgd29ya2luZy4gSXQgcmVwb3J0cyB0aGUgc2VyaWFsIHBvcnQgYnV0IGNo
-YW5naW5nIGl0IHJlc3VsdHMgaW4gZXJyb3IgKHJlZ2FyZGxlc3Mgb2YgdGhlIHR0eU8gLW51bWJl
-cik6DQoNCg0KDQpkZWJpYW5AYmVhZ2xlYm9uZTp+JCBzZXRzZXJpYWwgL2Rldi90dHlPMg0KDQov
-ZGV2L3R0eU8yLCBVQVJUOiB1bmRlZmluZWQsIFBvcnQ6IDB4MDAwMCwgSVJROiA3NA0KDQoNCg0K
-ZGViaWFuQGJlYWdsZWJvbmU6L2Jvb3QkIHN1ZG8gc2V0c2VyaWFsIC9kZXYvdHR5TzIgdWFydCBu
-b25lDQoNCkNhbm5vdCBzZXQgc2VyaWFsIGluZm86IEludmFsaWQgYXJndW1lbnQNCg0KDQoNCkNv
-bnNlcXVlbnRseSwgSSBjYW5ub3QgbG9hZCB0aGUgeGVub18xNjU1MEEua28gbW9kdWxlIGJ5IG1v
-ZHByb2JlLg0KDQpJIGhhdmUgYnJvd3NlZCB0aGUgbmV0IGZvciB0aGUgc2FtZSBwcm9ibGVtLCBi
-dXQgaGF2ZSBub3QgZm91bmQgcmVsZXZhbnQgc3ViamVjdHMuDQoNClRoZXJlIGFyZSBubyBzaGFy
-ZWQgaXJxJ3MgaW4gbXkgcHJvYmxlbSAoY2xvc2VzdCBzdWJqZWN0IEkgZm91bmQpLg0KDQoNCg0K
-RG8geW91IGhhdmUgYW55IGlkZWEgZm9yIGEgc29sdXRpb24/DQoNCg0KDQpCZXN0IHJlZ2FyZHMN
-Cg0KVGVyamUgRnJveXNhDQoNCg0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTog
-VGVyamUgRnLDuHlzYQ0KU2VudDogMTEuIG5vdmVtYmVyIDIwMTQgMTU6MTINClRvOiAnR2lsbGVz
-IENoYW50ZXBlcmRyaXgnDQpDYzogWGVub21haUB4ZW5vbWFpLm9yZw0KU3ViamVjdDogUkU6IFtY
-ZW5vbWFpXSB4ZW5vXzE2NTUwQSBkcml2ZXIgaW5zdGFsbCBwcm9ibGVtcy4NCg0KDQoNCkdvb2Qg
-cXVlc3Rpb24gR2lsbGVzLA0KDQoNCg0KSSBoYXZlIGJlZW4gc3R1ZHlpbmcgdGhlIFVSTOKAmXMg
-YmVsb3cgYW5kIGp1c3QgY29waWVkIHRoZSByZWNpcGVzIGFzIHRoZXkgKGVzcGVjaWFsbHkgdGhl
-IGxhc3Qgb25lKSBpbmRpY2F0ZXMgdGhhdCB0aGUgaW5zdGFsbGF0aW9uIGlzIGZlYXNpYmxlIG9u
-IGEgYmJiLg0KDQpXaGVuIHJlbW92aW5nIG9uZSBkcml2ZXIgKHNlcmlhbDgyNTkpIGFuZCBhZGRp
-bmcgYW5vdGhlciAoeGVub18xNjU1MEEpIEkgc2F3IG5vIGluZGljYXRpb25zIHRoYXQgdGhpcyB3
-b3VsZCBhZmZlY3QgdGhlIGNsb2NrIHN1cHBvcnQgZm9yIHRoZSBVQVJUUy4NCg0KQ2FuIHRoZSBs
-YWNrIG9mIGNsb2NrIGVuYWJsZSBmb3IgdGhlIGludGVyZmFjZSBkb21haW4gcmVzdWx0IGluIHRo
-ZSBib290LWNyYXNoPw0KDQooVGhlIGNvbnNvbGUgVUFSVCB3b3JrcyB0aG91Z2gsIHNvIGF0IGxl
-YXN0IHRoZSBjbG9jayBjb21tb24gdG8gdGhlIFVBUlRTIGlzIGVuYWJsZWQpLg0KDQoNCg0KVGVy
-amUNCg0KDQoNClVSTCdzOg0KDQpodHRwOi8veGVub21haS5vcmcvc2VyaWFsLTE2NTUwYS1kcml2
-ZXIvDQoNCmh0dHBzOi8vd3d3Lm1hcnNodXQubmV0L2lod2ltdy9mYWlsLXRvLWxvYWQtdGhlLXhl
-bm8tMTY1NTBhLXJlYWwtdGltZS1zZXJpYWwtcG9ydC1kcml2ZXItb24tYmVhZ2xlYm9uZS1ibGFj
-ay5odG1sDQoNCg0KDQoNCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCg0KRnJvbTogR2ls
-bGVzIENoYW50ZXBlcmRyaXggW21haWx0bzpnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9y
-Z10NCg0KU2VudDogMTEuIG5vdmVtYmVyIDIwMTQgMTU6MDMNCg0KVG86IFRlcmplIEZyw7h5c2EN
-Cg0KQ2M6IFhlbm9tYWlAeGVub21haS5vcmc8bWFpbHRvOlhlbm9tYWlAeGVub21haS5vcmc+DQoN
-ClN1YmplY3Q6IFJlOiBbWGVub21haV0geGVub18xNjU1MEEgZHJpdmVyIGluc3RhbGwgcHJvYmxl
-bXMuDQoNCg0KDQpPbiBUdWUsIE5vdiAxMSwgMjAxNCBhdCAwMTozMTozM1BNICswMDAwLCBUZXJq
-ZSBGcsO4eXNhIHdyb3RlOg0KDQo+IERlYXIgZm9ydW0sDQoNCj4NCg0KPiBJIGhhdmUgc3RydWdn
-bGVkIGZvciA0IGRheXMgYW5kIEkgYW0gb3V0IG9mIGlkZWFzL3N1Z2dlc3Rpb25zIG9uIGhvdyB0
-byBtYWtlIHRoaXMgeGVub18xNjU1MEEgZHJpdmVyIHdvcmsuDQoNCj4NCg0KPiBJIGhhdmUgc3Vj
-Y2Vzc2Z1bGx5IGluc3RhbGxlZCB0aGUgWGVub21haSAyLjYuNCBhbmQgdGhlIERlYmlhbiAzLjgu
-MTMuDQoNCj4gU2VsZi1kZXZlbG9wZWQgUlRETSBkcml2ZXIgaXMgd29ya2luZyBzYXRpc2ZhY3Rv
-cnkuDQoNCj4gQnV0IGluc3RhbGxpbmcgdGhlIHhlbm9fMTY1NTBBIGRyaXZlciAoa2VybmVsIGlu
-c3RhbGwpIGlzIGdpdmluZyBtZSBhIGhlYWRhY2hlLg0KDQo+DQoNCj4gRmlyc3QgYSBmaWdodCB0
-byBmaW5kIHRoZSBjb3JyZWN0IHN5bnRheCBmb3IgdGhlIHVFbnYudHh0IGtlcm5lbCBwYXJhbWV0
-ZXJzIChleGFtcGxlIHNob3cgc2V0dGluZyBvZiBvbmx5IG9uZSBwYXJhbWV0ZXIpOg0KDQo+IGNt
-ZGxpbmU9eGVub18xNjU1MEEubWVtPTB4NDgwMjIwMDEsMHg0ODAyNDAwMCwweDQ4MWE2MDAwLDB4
-NDgxYTgwMDAsMHg0ODFhYTAwMCBcDQoNCj4gICAgICAgICB4ZW5vXzE2NTUwQS5pcnE9NzMsNzQs
-NDQsNDUsNDYgXA0KDQo+ICAgICAgICAgeGVub18xNjU1MEEuYmF1ZF9iYXNlPTExNTIwMCwxMTUy
-MDAsMTE1MjAwLDExNTIwMCwxMTUyMDAgXA0KDQo+ICAgICAgICAgeGVub18xNjU1MEEudHhfZmlm
-bz02NCw2NCw2NCw2NCw2NCBcDQoNCj4gICAgICAgICB4ZW5vXzE2NTUwQS5zdGFydF9pbmRleD0x
-DQoNCj4gVGhlIGtlcm5lbCBwYXJhbWV0ZXJzIGlzIGNvcnJlY3RseSBzdG9yZWQgaW4gdGhlIC9z
-eXMvbW9kdWxlL3hlbm9fMTY1NTBBL3BhcmFtZXRlcnMuDQoNCj4gVGhlIERlYmlhbiBib290cyBh
-cyBsb25nIGFzIHRoZSBpcnE9MCwwLDAsMCwwDQoNCj4NCg0KPiBCVVQsIGF0IHRoZSBtb21lbnQg
-SSBzcGVjaWZ5IGNvcnJlY3QgaXJxIG51bWJlcnMsIHRoZSBib290LXByb2Nlc3MgY3Jhc2hlcyAo
-c2VlIGJvb3QtbG9nIGJlbG93KS4NCg0KPg0KDQo+IEkgaGF2ZSBkaXNhYmxlZCB0aGUgQ09ORklH
-X1NFUklBTF9PTUFQIHdpdGhvdXQgcmVzdWx0Lg0KDQo+IEkgaGF2ZSBkaXNhYmxlZCB0aGUgc2Vy
-aWFsODI1MCBkcml2ZXIgdGhhdCBvY2N1cGllcyB0aGUgdHR5U3ggVUFSVFMsIGJ1dCB0aGUga2Vy
-bmVsIHN0aWxsIGNyYXNoZXMgYXMgc29vbiBhcyB0aGUgaXJxIGlzIHNldCA8PiAwLg0KDQoNCg0K
-QW5vdGhlciBxdWVzdGlvbjogdXN1YWxseSwgZWFjaCBkZXZpY2UgcmVxdWlyZXMgaXRzICJpbnRl
-cmZhY2UgY2xvY2siIHRvIGJlIGVuYWJsZWQgaW4gb3JkZXIgdG8gYWNjZXNzIGl0cyByZWdpc3Rl
-cnMsIGlzIHRoZSBpbnRlcmZhY2UgY2xvY2sgZm9yIHRoZSBzZXJpYWwgZGV2aWNlIHlvdSB3YW50
-IHRvIHVzZSBlbmFibGVkPw0KDQoNCg0KLS0NCg0KICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-R2lsbGVzLg0K
+Le 11/11/2014 21:03, Gilles Chanteperdrix a écrit :
+> On Tue, Nov 11, 2014 at 08:57:34PM +0100, Thierry Bultel wrote:
+>> Le 10/11/2014 13:36, Gilles Chanteperdrix a écrit :
+>>> You can use printascii in the timer interrupt acknowledge routine to
+>>> print a character every HZ ticks, this will give bad latency, but
+>>> should work.
+>>>
+>>
+>> For unknown reason, the kernel gets stuck after
+>> "console [tty0] enabled, bootconsole disabled" if I use printascii
+>> in do_local_timer().
+>> earlyprintk seems broken as well.
+>
+> Without doing this, does earlyprintk work?
+
+No it does not. In fact, this kernel is strange with early debug.
+Namely, even without earlyprintk, when it comes to disable the 
+bootconsole to use the normal one, it uses then re-prints everything was 
+printed before, making think that it has restarted from the beginning.
+
+I confirm that calling printascii in do_local_timer() leads to a kernel 
+panic. Same thing if I use __ipipe_serial_debug instead.
+I have used a counter (one per cpu) to start logging after 30000 ticks 
+and it crashes after that delay.
+
+>
+>>> If this is indeed the broadcast timer, it should never tick, because
+>>> we should never switch to broadcast mode.
+>>
+>> I have found out why it was ticking.
+>> This is due to tick_broadcast_switch_to_oneshot() in
+>> kernel/time/tick-broadcast.c
+>>
+>> This sets the oneshot mode to the time, and leads to a call of
+>> mxc_set_mode()
+>>
+>> In that function, there is that comment:
+>> 	if (mode != clockevent_mode) {
+>> 		/* Set event time into far-far future */
+>> 		if (timer_is_v2())
+>>
+>> ... and I estimate "far-far future" to be about 20 minutes.
+>>
+>> As a correction, I have made that change to
+>> tick_broadcast_switch_to_oneshot():
+>>
+>> @@ -603,11 +610,21 @@ void tick_broadcast_setup_oneshot(struct
+>> clock_event_device *bc)
+>>   {
+>>          int cpu = smp_processor_id();
+>>
+>> +#if defined(CONFIG_IPIPE) && defined(CONFIG_SMP)
+>> +       printk(KERN_ALERT "%s cpu %d -> dev %s
+>> IGNORED\n",__PRETTY_FUNCTION__, cpu, bc->name);
+>> +       return;
+>> +#endif
+>>
+>> ... and that makes the job, the iMX Timer is no longer armed.
+>> What do you think about it ?
+>>
+>> Still currently stress-testing to see if things are getting better.
+>
+> I am afraid this should not change anything. This timer ticking is
+> not a problem by itself, it is a problem if the twd gets disabled.
+>
+> Note that we discovered in another thread that CONFIG_TRACE_IRQFLAGS
+> should not be enabled. So, if it is enabled, you should disable it.
+>
+> Also, are you running with all I-pipe and Xenomai debugs?
+
+That is how I am running now. For now, I am unable to reproduce the 
+freeze. Still testing.
+
+>
+
+
