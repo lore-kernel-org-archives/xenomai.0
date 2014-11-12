@@ -1,16 +1,19 @@
-Date: Fri, 7 Nov 2014 10:59:14 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141107095914.GE6724@sisyphus.hd.free.fr>
-References: <20141106160821.GE30908@sisyphus.hd.free.fr>
- <1260200250.109080355.1415353723657.JavaMail.root@zimbra90-e16.priv.proxad.net>
- <20141107095222.GD6724@sisyphus.hd.free.fr>
-MIME-Version: 1.0
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Wed, 12 Nov 2014 14:52:54 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C676EBE1@SINTEFEXMBX05.sintef.no>
+References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
+ <20141111140230.GA17476@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
+ <314E5ECDAA86314791309FA670550F89C676E884@SINTEFEXMBX05.sintef.no>
+ <20141112134531.GP17476@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C676EB35@SINTEFEXMBX05.sintef.no>
+ <20141112145117.GV17476@sisyphus.hd.free.fr>
+In-Reply-To: <20141112145117.GV17476@sisyphus.hd.free.fr>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20141107095222.GD6724@sisyphus.hd.free.fr>
-Subject: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 +
- adeos-ipipe-3.0.43-mx6q-1.18-14 -> very slow boot
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: Re: [Xenomai] xeno_16550A driver install problems.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,81 +22,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: tbultel@free.fr
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Fri, Nov 07, 2014 at 10:52:22AM +0100, Gilles Chanteperdrix wrote:
-> On Fri, Nov 07, 2014 at 10:48:43AM +0100, tbultel@free.fr wrote:
-> > 
-> > 
-> > ----- Mail original -----
-> > > De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-> > > À: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-> > > Cc: tbultel@free.fr, xenomai@xenomai.org
-> > > Envoyé: Jeudi 6 Novembre 2014 17:08:21
-> > > Objet: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 + adeos-ipipe-3.0.43-mx6q-1.18-14 -> very slow boot
-> > > 
-> > > On Thu, Nov 06, 2014 at 11:04:57AM -0500, Lennart Sorensen wrote:
-> > > > On Thu, Nov 06, 2014 at 03:41:47PM +0100, tbultel@free.fr wrote:
-> > > > > Gilles, we do not have CONFIG_ARM_ERRATA_754327 enabled
-> > > > > It is -not- enabled in the evaluation kernel that is provided by
-> > > > > the
-> > > > > manufacturer.
-> > > > > That errata is said to be for CPU revs < r2p0
-> > > > > 
-> > > > > I am a little bit puzzled about the naming conventions for the
-> > > > > CPU revision,
-> > > > > uboot says rev1.2, the kernel says
-> > > > > 
-> > > > > Processor	: ARMv7 Processor rev 10 (v7l)
-> > > > > ...
-> > > > > 
-> > > > > CPU implementer	: 0x41
-> > > > > CPU architecture: 7
-> > > > > CPU variant	: 0x2
-> > > > > CPU part	: 0xc09
-> > > > > CPU revision	: 10
-> > > > > 
-> > > > > how can I do the matching ?
-> > > > > 
-> > > > > Meanwhile, we noticed that compared to the evaluation kernel, we
-> > > > > were missing
-> > > > > CONFIG_ARM_ERRATA_754322 and CONFIG_PL310_ERRATA_769419
-> > > > > 
-> > > > > Adding them helps a lot, but the freeze still happens on one
-> > > > > machine
-> > > > > 
-> > > > > We are currently trying with 754322 + 769419 + 754327 + 5 nops in
-> > > > > fec ...
-> > > > > but not sure if we need 754327.
-> > > > > 
-> > > > > Regards
-> > > > > Thierry
-> > > > > 
-> > > > > PS: Regarding the thermal issue, we have changed our supplier, we
-> > > > > now have
-> > > > > a dissipator that is big enough (it is the AMOS820 from Via
-> > > > > Embedded)
-> > > > 
-> > > > I am not sure how to read the A9 revision.  I have this on a
-> > > > system:
-> > > 
-> > > I have found the method I gave in ARM documentation. I am pretty
-> > > sure this is how it works.
-> > > 
-> > > --
-> > > 					    Gilles.
-> > > 
-> > 
-> > 
-> > Gille, 
-> > we agree that as we have a r2p10, the 754327 does not apply.
-
-Nothing says that the starvation due to calling mb in a tight loop
-is related to errata 754327, it just happens that the workaround for
-this erratum triggers this bug, because it results in calling mb in
-a tight loop.
-
--- 
-					    Gilles.
+T2sgR2lsbGVzLA0KDQpUaGFua3MhDQoNClRlcmplDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0t
+LS0tDQpGcm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFpbHRvOmdpbGxlcy5jaGFudGVwZXJk
+cml4QHhlbm9tYWkub3JnXSANClNlbnQ6IDEyLiBub3ZlbWJlciAyMDE0IDE1OjUxDQpUbzogVGVy
+amUgRnLDuHlzYQ0KQ2M6IFhlbm9tYWlAeGVub21haS5vcmcNClN1YmplY3Q6IFJlOiBbWGVub21h
+aV0geGVub18xNjU1MEEgZHJpdmVyIGluc3RhbGwgcHJvYmxlbXMuDQoNCk9uIFdlZCwgTm92IDEy
+LCAyMDE0IGF0IDAyOjMyOjQwUE0gKzAwMDAsIFRlcmplIEZyw7h5c2Egd3JvdGU6DQo+IFRoYW5r
+cyBmb3IgeW91ciBxdWljayByZXBseSBHaWxsZXMsDQo+IA0KPiAtIENoYW5naW5nIG9tYXAtc2Vy
+aWFsIGRyaXZlciBpcyBub3QgYSB0ZW1wdGluZyBzb2x1dGlvbi4NCj4gLSBJJ2xsIHRyeSBvdXQg
+eW91ciA4MjUwIHN1Z2dlc3Rpb24uDQo+IC0gSSBoYXZlIG5vdCBmaWd1cmVkIG91dCBob3cgdG8g
+IiBhcnJhbmdlIGZvciB0aGUgY2xvY2tzIHRvIGJlIHN0YXJ0ZWQiLCB3b3VsZCB0aGF0IGJlIHdy
+aXRpbmcgYSBrZXJuZWwgbW9kdWxlIHRoYXQgaW5pdGlhdGVzIHRoZSBVQVJUIGNsb2NrIHN5c3Rl
+bXM/DQo+IA0KPiBJZiBub3QgdGhlIDgyNTAgc3VnZ2VzdGlvbiB3b3JrcywgSSBiZWdpbiB0byBi
+ZWxpZXZlIHRoYXQgSSBoYXZlIHRvIGFiYW5kb24gdGhlIHhlbm9fMTY1MEEgZHJpdmVyLg0KPiBE
+byB5b3Uga25vdyBhbnlib2R5IHRoYXQgaGF2ZSBzdWNjZWVkZWQgaW4gcnVubmluZyB0aGUgeGVu
+b18xNjU1MEEgZHJpdmVyIHVuZGVyIHN1Y2ggY2lyY3Vtc3RhbmNlcz8NCg0KSSBqdXN0IGhhZCBh
+IHF1aWNrIGxvb2sgYXQgdGhlIG9tYXAtc2VyaWFsLmMgZHJpdmVyIGFuZDoNCi0gaXQgZG9lcyBu
+b3QgZG8gYW55dGhpbmcgdGhhdCBJIGNhbiBzZWUgdG8gZW5hYmxlIGl0cyBjbG9ja3MNCi0gaXQg
+ZG9lcyBOT1QgIHVzZSBieXRlIGFjY2VzcyBidXQgd29yZCBhY2Nlc3MsIHRoYXQgaXMsIGl0cyBy
+ZWdpc3RlcnMgYXJlIDE2IGJpdHMgd2lkZS4NCg0KVW5mb3J0dW5hdGVseSwgYXMgZmFyIGFzIEkg
+Y2FuIHRlbGwsIHRoZSB4ZW5vXzE2NTUwQSBkcml2ZXIgb25seSBzdXBwb3J0cyBieXRlIGFjY2Vz
+cy4gU28sIGlmIHlvdSB3YW50IGl0IHRvIHdvcmssIHlvdSBoYXZlIHRvIG1vZGlmeSB0aGUgZHJp
+dmVyIHRvIGFjY2VwdCBhICJyZWdzaGlmdCIgcGFyYW1ldGVyIGFwcGxpZWQgdG8gYWxsIG9mZnNl
+dHMgYW5kIHVzZSB0aGUgY29ycmVzcG9uZGluZyByZWFkdyBpZiByZWdzaGlmdCBpcyAyIG9yIHJl
+YWRsIGlmIHJlZ3NoaWZ0IGlzIDQuDQoNCi0tIA0KCQkJCQkgICAgR2lsbGVzLg0K
 
