@@ -1,14 +1,13 @@
-Date: Thu, 13 Nov 2014 17:33:00 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141113163300.GM4656@sisyphus.hd.free.fr>
-References: <54631EB1.1050900@sigmatek.at>
- <20141112164411.GB17476@sisyphus.hd.free.fr>
- <5464DCAA.6060004@sigmatek.at>
+Message-ID: <54650689.8020005@xenomai.org>
+Date: Thu, 13 Nov 2014 14:29:13 -0500
+From: Jorge Ramirez Ortiz <jro@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5464DCAA.6060004@sigmatek.at>
-Subject: Re: [Xenomai] rtdm_nrtsig_pend FAQ
+References: <CAKKWdtdaDJkSOhS7WaiRo5t0+NnCSV4-DQJcFB3iYOPGZ=z-Gg@mail.gmail.com>
+ <201411121225.22847.paul_c@tuxcnc.org>
+In-Reply-To: <201411121225.22847.paul_c@tuxcnc.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] DAC and CAN
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,65 +16,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Johann Obermayr <johann.obermayr@sigmatek.at>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Thu, Nov 13, 2014 at 05:30:34PM +0100, Johann Obermayr wrote:
-> Am 12.11.2014 um 17:44 schrieb Gilles Chanteperdrix:
-> >On Wed, Nov 12, 2014 at 09:47:45AM +0100, Johann Obermayr wrote:
-> >>Hello,
-> >>
-> >>we use rtdm_nrtsig_pend follow.
-> >>
-> >>static rtdm_nrtsig_t wait_domain_nrt;
-> >>static DECLARE_WAIT_QUEUE_HEAD(wait_domain_wq);
-> >>
-> >>void period_update()
-> >>{
-> >>         wait_domain_pend_count++;
-> >>         rtdm_nrtsig_pend(&wait_domain_nrt);
-> >>}
-> >>
-> >>static void wait_domain_nrt_handler(rtdm_nrtsig_t nrt_sig, void *arg)
-> >>{
-> >>     wait_domain_call_count++;
-> >>     //wakeup wait_domain
-> >>     wait_domain_wakeup = 1;
-> >>     wake_up_interruptible(&wait_domain_wq);
-> >>}
-> >>
-> >>
-> >>period_update is called every millisecond.
-> >>this is on imx6 hardware with kernel 3.0.x and xenomai 2.6.2.1.
-> >>From what Thierry said, I suspect the patch for this kernel has a
-> >missing call to irq_exit. So, I would ask you to do the same as
-> >Thierry, please enable the I-pipe tracer, set a sufficient number of
-> >back trace points such as 10000, and trigger a trace when you detect
-> >that you have "lost" a notification (wait_dommain_pend_count > wait_domain_call_count + 1)
-> >
-> >Then send the trace to the mailing list.
-> >
-> Hi,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 11/12/2014 07:25 AM, Paul wrote:
+> On Wednesday 12 November 2014, ali hagigat wrote:
+>> I am trying to setup a real time system by a x86-32bits-intel-core 2
+>> quad computer and Xenomai. I need a DAC card (data acquisition card
+>> for making analog/digital signals/pulses) probably plugged into PCI
+>> bus and also a CAN controller, again plugged into PCI bus to send
+>> some reports to another. (is there any other way besides PCI bus?) I
+>> wonder if anybody can direct me what hardware i can buy to work
+>> probably. I need the name of the boards and their distributors and
+>> their related links.
 > 
-> witch function i must use to make a i-pipe trace ?
-> here i am in a xenomai irq handle
+> What conversion speeds do you need for ADC/DAC ?
+> How many channels ?
+> Are you willing/able to write drivers for unsupported hardware ?
+> Do you have a sizable budget ?
 > 
-> void period_update()
-> {
->     ......
->     else if (wait_domain_pend_count > 100000 &&
-> wait_domain_pend_count != wait_domain_call_count) {
->             // dotrace
+> A starting point for a moderately slow PCI analogue/digital acquisition 
+> card that has support under the Xenomai analogy framework is 
+> http://www.sensoray.com/products/626.htm
+
+Support for 626 has not been delivered yet (will be done soon) - there is support for
+s526.
+If you need software calibration support on Xenomai you could use NI M-6221
+
+http://sine.ni.com/nips/cds/view/p/lang/en/nid/14132
+
+I have seen some of these cards on ebay reasonably priced.
+
 > 
->      }
-> }
+> 
+> 
+> 
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+> 
 
-ipipe_trace_freeze. Requires a numeric argument, which has no
-particular meaning, it just gets printed in the trace.
+- -- 
+jro
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-The I-pipe tracer is documented here:
-http://xenomai.org/2014/06/using-the-i-pipe-tracer/
-
--- 
-					    Gilles.
+iQEcBAEBAgAGBQJUZQaJAAoJECDcy2IJkagRssUH/iUlRDbnC+zp0+DrYfIh5yes
+rW2BVYBJULJu/a0ZC1plqsp+C9THoSlRcFbzYOComm1r1zQM50vlsi623ad7G0G9
+kAUFyp964y0x3EqCQLv6xLrvFmhRBMrI5u6joDXOuZZ1Z5hJHsK21HeVjGnbnT+7
+adzNZ5XrlqmBrGH5HukqvlNge2rf2hk7dw7tdp+c1rW09DxviT1PFFM5t52lEm2s
+xZYP4tNvMl4QpRhavFvkHRcCi3vQ+SOKI774LuCPDPmBUkD16aJMH9C7Bf75cq2u
+IbAArp6cYYYIJLlpt1aGPx2Y2G/lRDdZSPHDfVdjWGfGHYn0Quz+wcCrC8ZgrTs=
+=JwVV
+-----END PGP SIGNATURE-----
 
