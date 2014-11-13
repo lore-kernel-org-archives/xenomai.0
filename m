@@ -1,6 +1,6 @@
-Date: Thu, 13 Nov 2014 08:56:16 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141113075616.GA4656@sisyphus.hd.free.fr>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Thu, 13 Nov 2014 08:01:24 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C676FD4C@SINTEFEXMBX05.sintef.no>
 References: <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
  <314E5ECDAA86314791309FA670550F89C676E884@SINTEFEXMBX05.sintef.no>
  <20141112134531.GP17476@sisyphus.hd.free.fr>
@@ -11,11 +11,12 @@ References: <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
  <314E5ECDAA86314791309FA670550F89C676FC45@SINTEFEXMBX05.sintef.no>
  <20141113072118.GL17476@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C676FCFC@SINTEFEXMBX05.sintef.no>
-MIME-Version: 1.0
+ <20141113075616.GA4656@sisyphus.hd.free.fr>
+In-Reply-To: <20141113075616.GA4656@sisyphus.hd.free.fr>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C676FCFC@SINTEFEXMBX05.sintef.no>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] xeno_16550A driver install problems.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -25,31 +26,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Thu, Nov 13, 2014 at 07:53:13AM +0000, Terje Frøysa wrote:
-> Thanks Gilles,
-> 
-> Patch ran without problems now. Checked source and found it correctly patched.
-> 
-> I am going to compile a new kernel.
-> I have three UARTS.
-> I am tempted to do as follows:
-> 
-> 1. Disable the 8250 (It is not applicable anyhow in current version)
-> 2. Enable omap_uart on UART 1
-> 3. Install xeno_16550A in kernel.
-> 4. Apply kernel parameters for UART 2 and 4 for the xeno_16550A.
-> 5. If successful, try the cross-link between UART 2 and 4.
-> 
-> If you see some caveats regarding my plan, please tell.
-
-Well, this is risky, I would:
-- enable neither omap_uart nor 8250 in kernel configuration
-- plug UART2 to the PC with a USB-serial cable if the PC does not
-have a serial port.
-
--- 
-					    Gilles.
+T2sgR2lsbGVzLA0KDQpJIGhhdmUgdGhlIGRlYnVnLXBvcnQgY29ubmVjdGVkIHRvIHRoZSBQQyB2
+aWEgYSBzZXBhcmF0ZSBzZXJpYWwtdG8tVVNCIGNvbnZlcnRlci4NCkknbGwgdHJ5IG91dCB5b3Vy
+IHN1Z2dlc3RlZCBjb25maWd1cmF0aW9uLCB0aGVuIHdpdGggeGVub18xNjU1MEEgb24gYWxsICgx
+LDIsNCkgVUFSVHMuDQoNClRlcmplDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9t
+OiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFpbHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9t
+YWkub3JnXSANClNlbnQ6IDEzLiBub3ZlbWJlciAyMDE0IDA4OjU2DQpUbzogVGVyamUgRnLDuHlz
+YQ0KQ2M6IFhlbm9tYWlAeGVub21haS5vcmcNClN1YmplY3Q6IFJlOiBbWGVub21haV0geGVub18x
+NjU1MEEgZHJpdmVyIGluc3RhbGwgcHJvYmxlbXMuDQoNCk9uIFRodSwgTm92IDEzLCAyMDE0IGF0
+IDA3OjUzOjEzQU0gKzAwMDAsIFRlcmplIEZyw7h5c2Egd3JvdGU6DQo+IFRoYW5rcyBHaWxsZXMs
+DQo+IA0KPiBQYXRjaCByYW4gd2l0aG91dCBwcm9ibGVtcyBub3cuIENoZWNrZWQgc291cmNlIGFu
+ZCBmb3VuZCBpdCBjb3JyZWN0bHkgcGF0Y2hlZC4NCj4gDQo+IEkgYW0gZ29pbmcgdG8gY29tcGls
+ZSBhIG5ldyBrZXJuZWwuDQo+IEkgaGF2ZSB0aHJlZSBVQVJUUy4NCj4gSSBhbSB0ZW1wdGVkIHRv
+IGRvIGFzIGZvbGxvd3M6DQo+IA0KPiAxLiBEaXNhYmxlIHRoZSA4MjUwIChJdCBpcyBub3QgYXBw
+bGljYWJsZSBhbnlob3cgaW4gY3VycmVudCB2ZXJzaW9uKSANCj4gMi4gRW5hYmxlIG9tYXBfdWFy
+dCBvbiBVQVJUIDEgMy4gSW5zdGFsbCB4ZW5vXzE2NTUwQSBpbiBrZXJuZWwuDQo+IDQuIEFwcGx5
+IGtlcm5lbCBwYXJhbWV0ZXJzIGZvciBVQVJUIDIgYW5kIDQgZm9yIHRoZSB4ZW5vXzE2NTUwQS4N
+Cj4gNS4gSWYgc3VjY2Vzc2Z1bCwgdHJ5IHRoZSBjcm9zcy1saW5rIGJldHdlZW4gVUFSVCAyIGFu
+ZCA0Lg0KPiANCj4gSWYgeW91IHNlZSBzb21lIGNhdmVhdHMgcmVnYXJkaW5nIG15IHBsYW4sIHBs
+ZWFzZSB0ZWxsLg0KDQpXZWxsLCB0aGlzIGlzIHJpc2t5LCBJIHdvdWxkOg0KLSBlbmFibGUgbmVp
+dGhlciBvbWFwX3VhcnQgbm9yIDgyNTAgaW4ga2VybmVsIGNvbmZpZ3VyYXRpb24NCi0gcGx1ZyBV
+QVJUMiB0byB0aGUgUEMgd2l0aCBhIFVTQi1zZXJpYWwgY2FibGUgaWYgdGhlIFBDIGRvZXMgbm90
+IGhhdmUgYSBzZXJpYWwgcG9ydC4NCg0KLS0gDQoJCQkJCSAgICBHaWxsZXMuDQo=
 
