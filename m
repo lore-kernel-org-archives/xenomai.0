@@ -1,9 +1,7 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Thu, 13 Nov 2014 07:53:13 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C676FCFC@SINTEFEXMBX05.sintef.no>
-References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
- <20141111140230.GA17476@sisyphus.hd.free.fr>
- <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
+Date: Thu, 13 Nov 2014 08:56:16 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141113075616.GA4656@sisyphus.hd.free.fr>
+References: <314E5ECDAA86314791309FA670550F89C676CE2D@SINTEFEXMBX05.sintef.no>
  <314E5ECDAA86314791309FA670550F89C676E884@SINTEFEXMBX05.sintef.no>
  <20141112134531.GP17476@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C676EB35@SINTEFEXMBX05.sintef.no>
@@ -12,11 +10,12 @@ References: <314E5ECDAA86314791309FA670550F89C676CD2D@SINTEFEXMBX05.sintef.no>
  <20141112151305.GW17476@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C676FC45@SINTEFEXMBX05.sintef.no>
  <20141113072118.GL17476@sisyphus.hd.free.fr>
-In-Reply-To: <20141113072118.GL17476@sisyphus.hd.free.fr>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <314E5ECDAA86314791309FA670550F89C676FCFC@SINTEFEXMBX05.sintef.no>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <314E5ECDAA86314791309FA670550F89C676FCFC@SINTEFEXMBX05.sintef.no>
 Subject: Re: [Xenomai] xeno_16550A driver install problems.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -26,29 +25,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
 Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-VGhhbmtzIEdpbGxlcywNCg0KUGF0Y2ggcmFuIHdpdGhvdXQgcHJvYmxlbXMgbm93LiBDaGVja2Vk
-IHNvdXJjZSBhbmQgZm91bmQgaXQgY29ycmVjdGx5IHBhdGNoZWQuDQoNCkkgYW0gZ29pbmcgdG8g
-Y29tcGlsZSBhIG5ldyBrZXJuZWwuDQpJIGhhdmUgdGhyZWUgVUFSVFMuDQpJIGFtIHRlbXB0ZWQg
-dG8gZG8gYXMgZm9sbG93czoNCg0KMS4gRGlzYWJsZSB0aGUgODI1MCAoSXQgaXMgbm90IGFwcGxp
-Y2FibGUgYW55aG93IGluIGN1cnJlbnQgdmVyc2lvbikNCjIuIEVuYWJsZSBvbWFwX3VhcnQgb24g
-VUFSVCAxDQozLiBJbnN0YWxsIHhlbm9fMTY1NTBBIGluIGtlcm5lbC4NCjQuIEFwcGx5IGtlcm5l
-bCBwYXJhbWV0ZXJzIGZvciBVQVJUIDIgYW5kIDQgZm9yIHRoZSB4ZW5vXzE2NTUwQS4NCjUuIElm
-IHN1Y2Nlc3NmdWwsIHRyeSB0aGUgY3Jvc3MtbGluayBiZXR3ZWVuIFVBUlQgMiBhbmQgNC4NCg0K
-SWYgeW91IHNlZSBzb21lIGNhdmVhdHMgcmVnYXJkaW5nIG15IHBsYW4sIHBsZWFzZSB0ZWxsLg0K
-DQpUZXJqZQ0KDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBHaWxsZXMgQ2hh
-bnRlcGVyZHJpeCBbbWFpbHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXSANClNl
-bnQ6IDEzLiBub3ZlbWJlciAyMDE0IDA4OjIxDQpUbzogVGVyamUgRnLDuHlzYQ0KQ2M6IFhlbm9t
-YWlAeGVub21haS5vcmcNClN1YmplY3Q6IFJlOiBbWGVub21haV0geGVub18xNjU1MEEgZHJpdmVy
-IGluc3RhbGwgcHJvYmxlbXMuDQoNCk9uIFRodSwgTm92IDEzLCAyMDE0IGF0IDA3OjE4OjAwQU0g
-KzAwMDAsIFRlcmplIEZyw7h5c2Egd3JvdGU6DQo+IEhlbGxvIEdpbGxlcywNCj4gDQo+IFRyaWVk
-IG91dCB0aGUgcGF0Y2gsIGJ1dCBnb3QgYW4gZXJyb3IgbWVzc2FnZSBmcm9tIHBhdGNoIChzZWUg
-YmV0d2VlbiAtLS0tIGxpbmVzIGJlbG93KS4NCj4gSSBoYXZlIGNvcGllZCB5b3VyIHBhdGNoIGlu
-IGJvdGggYSBXaW5kb3dzIGFuZCBVYnVudHUgZW52aXJvbm1lbnQgdG8gYXNzdXJlIHRoZXJlIGFy
-ZSBubyBsaW5lLXRlcm1pbmF0aW5nIHByb2JsZW1zLg0KPiBJIGFtIG5vdCBhbiBleHBlcmllbmNl
-ZCAicGF0Y2hlciIsIGhlbmNlIEkgaGF2ZSBkaWZmaWN1bHRpZXMgd2l0aCBwaW5wb2ludGluZyB0
-aGUgcHJvYmxlbS4NCg0KT2ssIHNlbmRpbmcgaXQgYXMgYXR0YWNobWVudC4NCg0KLS0gDQoJCQkJ
-CSAgICBHaWxsZXMuDQo=
+On Thu, Nov 13, 2014 at 07:53:13AM +0000, Terje Frøysa wrote:
+> Thanks Gilles,
+> 
+> Patch ran without problems now. Checked source and found it correctly patched.
+> 
+> I am going to compile a new kernel.
+> I have three UARTS.
+> I am tempted to do as follows:
+> 
+> 1. Disable the 8250 (It is not applicable anyhow in current version)
+> 2. Enable omap_uart on UART 1
+> 3. Install xeno_16550A in kernel.
+> 4. Apply kernel parameters for UART 2 and 4 for the xeno_16550A.
+> 5. If successful, try the cross-link between UART 2 and 4.
+> 
+> If you see some caveats regarding my plan, please tell.
+
+Well, this is risky, I would:
+- enable neither omap_uart nor 8250 in kernel configuration
+- plug UART2 to the PC with a USB-serial cable if the PC does not
+have a serial port.
+
+-- 
+					    Gilles.
 
