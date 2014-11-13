@@ -1,15 +1,22 @@
-Date: Fri, 7 Nov 2014 21:32:35 +0100
+Date: Thu, 13 Nov 2014 09:02:29 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141107203235.GF17476@sisyphus.hd.free.fr>
-References: <20141001142416.GA4435@csclub.uwaterloo.ca>
- <20141107182600.GS24110@csclub.uwaterloo.ca>
- <545D12D2.2020104@xenomai.org>
- <20141107202405.GU24110@csclub.uwaterloo.ca>
+Message-ID: <20141113080229.GB4656@sisyphus.hd.free.fr>
+References: <314E5ECDAA86314791309FA670550F89C676E884@SINTEFEXMBX05.sintef.no>
+ <20141112134531.GP17476@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C676EB35@SINTEFEXMBX05.sintef.no>
+ <20141112145117.GV17476@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C676EBE1@SINTEFEXMBX05.sintef.no>
+ <20141112151305.GW17476@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C676FC45@SINTEFEXMBX05.sintef.no>
+ <20141113072118.GL17476@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C676FCFC@SINTEFEXMBX05.sintef.no>
+ <20141113075616.GA4656@sisyphus.hd.free.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <20141107202405.GU24110@csclub.uwaterloo.ca>
-Subject: Re: [Xenomai] I-pipe error when requesting irq that is on omap gpio
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20141113075616.GA4656@sisyphus.hd.free.fr>
+Subject: Re: [Xenomai] xeno_16550A driver install problems.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,66 +25,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: xenomai@xenomai.org
+To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Fri, Nov 07, 2014 at 03:24:05PM -0500, Lennart Sorensen wrote:
-> On Fri, Nov 07, 2014 at 07:43:30PM +0100, Philippe Gerum wrote:
-> > For this particular issue, Xenomai 2.x is deadly wrong. Creating,
-> > deleting, enabling or disabling an IRQ channel must be done from
-> > secondary mode. The syscall mode bits for these native API calls are
-> > wrong, should be as follows instead:
+On Thu, Nov 13, 2014 at 08:56:16AM +0100, Gilles Chanteperdrix wrote:
+> On Thu, Nov 13, 2014 at 07:53:13AM +0000, Terje Frøysa wrote:
+> > Thanks Gilles,
 > > 
-> > diff --git a/ksrc/skins/native/syscall.c b/ksrc/skins/native/syscall.c
-> > index 950b092..dff7f4d 100644
-> > --- a/ksrc/skins/native/syscall.c
-> > +++ b/ksrc/skins/native/syscall.c
-> > @@ -4145,12 +4145,12 @@ static xnsysent_t __systab[] = {
-> >  	[__native_alarm_stop] = {&__rt_alarm_stop, __xn_exec_any},
-> >  	[__native_alarm_wait] = {&__rt_alarm_wait, __xn_exec_primary},
-> >  	[__native_alarm_inquire] = {&__rt_alarm_inquire, __xn_exec_any},
-> > -	[__native_intr_create] = {&__rt_intr_create, __xn_exec_any},
-> > +	[__native_intr_create] = {&__rt_intr_create, __xn_exec_lostage},
-> >  	[__native_intr_bind] = {&__rt_intr_bind, __xn_exec_conforming},
-> > -	[__native_intr_delete] = {&__rt_intr_delete, __xn_exec_any},
-> > +	[__native_intr_delete] = {&__rt_intr_delete, __xn_exec_lostage},
-> >  	[__native_intr_wait] = {&__rt_intr_wait, __xn_exec_primary},
-> > -	[__native_intr_enable] = {&__rt_intr_enable, __xn_exec_any},
-> > -	[__native_intr_disable] = {&__rt_intr_disable, __xn_exec_any},
-> > +	[__native_intr_enable] = {&__rt_intr_enable, __xn_exec_lostage},
-> > +	[__native_intr_disable] = {&__rt_intr_disable, __xn_exec_lostage},
-> >  	[__native_intr_inquire] = {&__rt_intr_inquire, __xn_exec_any},
-> >  	[__native_pipe_create] = {&__rt_pipe_create, __xn_exec_lostage},
-> >  	[__native_pipe_bind] = {&__rt_pipe_bind, __xn_exec_conforming},
+> > Patch ran without problems now. Checked source and found it correctly patched.
+> > 
+> > I am going to compile a new kernel.
+> > I have three UARTS.
+> > I am tempted to do as follows:
+> > 
+> > 1. Disable the 8250 (It is not applicable anyhow in current version)
+> > 2. Enable omap_uart on UART 1
+> > 3. Install xeno_16550A in kernel.
+> > 4. Apply kernel parameters for UART 2 and 4 for the xeno_16550A.
+> > 5. If successful, try the cross-link between UART 2 and 4.
+> > 
+> > If you see some caveats regarding my plan, please tell.
 > 
-> I get the impression this might also be important:
-> 
-> Index: linux-3.12.31.rr1/arch/arm/mach-omap2/timer.c
-> ===================================================================
-> --- linux-3.12.31.rr1.orig/arch/arm/mach-omap2/timer.c  2014-11-07 10:10:47.736200170 -0500
-> +++ linux-3.12.31.rr1/arch/arm/mach-omap2/timer.c       2014-11-07 11:42:03.807512821 -0500
-> @@ -824,7 +824,8 @@
->                 omap2_sync32k_clocksource_init();                       \
->         if (cpu_is_omap34xx())                                          \
->                 omap3_pic_muter_register();                             \
-> -       else if (cpu_is_omap44xx() || soc_is_omap54xx())                \
-> +       else if (cpu_is_omap44xx() || soc_is_omap54xx()                 \
-> +                || soc_is_dra7xx())                                    \
->                 omap4_pic_muter_register();                             \
->  }
->  #endif
-> 
-> The dra7xx (am57xx) we are using is very much like the omap54xx, and
-> use the same gpio system, so this call probably should be getting done.
-> 
-> Does that seem plausible?
+> Well, this is risky, I would:
+> - enable neither omap_uart nor 8250 in kernel configuration
+> - plug UART2 to the PC with a USB-serial cable if the PC does not
+> have a serial port.
 
-This call enables "PIC muting". "PIC muting" means disabling non
-real-time interrupts when in the Xenomai domain, i.e. when executing
-real-time code. The I-pipe can work without that (as it does on many
-platforms). So, if you suspect you have IRQ handling issues, you may
-prefer to disable it, you do not want to suspect it of being the
-cause of the issues you have.
+And first test the PC <-> board serial link with a kernel with a
+working omap-serial, with UART2 plugged to the PC. To be sure that
+the PC side is working.
 
 -- 
 					    Gilles.
