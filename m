@@ -1,6 +1,6 @@
-Date: Thu, 13 Nov 2014 09:02:29 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141113080229.GB4656@sisyphus.hd.free.fr>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Thu, 13 Nov 2014 08:20:16 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C676FDC4@SINTEFEXMBX05.sintef.no>
 References: <314E5ECDAA86314791309FA670550F89C676E884@SINTEFEXMBX05.sintef.no>
  <20141112134531.GP17476@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C676EB35@SINTEFEXMBX05.sintef.no>
@@ -11,11 +11,12 @@ References: <314E5ECDAA86314791309FA670550F89C676E884@SINTEFEXMBX05.sintef.no>
  <20141113072118.GL17476@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C676FCFC@SINTEFEXMBX05.sintef.no>
  <20141113075616.GA4656@sisyphus.hd.free.fr>
-MIME-Version: 1.0
+ <20141113080229.GB4656@sisyphus.hd.free.fr>
+In-Reply-To: <20141113080229.GB4656@sisyphus.hd.free.fr>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20141113075616.GA4656@sisyphus.hd.free.fr>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] xeno_16550A driver install problems.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -25,36 +26,89 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Thu, Nov 13, 2014 at 08:56:16AM +0100, Gilles Chanteperdrix wrote:
-> On Thu, Nov 13, 2014 at 07:53:13AM +0000, Terje Frøysa wrote:
-> > Thanks Gilles,
-> > 
-> > Patch ran without problems now. Checked source and found it correctly patched.
-> > 
-> > I am going to compile a new kernel.
-> > I have three UARTS.
-> > I am tempted to do as follows:
-> > 
-> > 1. Disable the 8250 (It is not applicable anyhow in current version)
-> > 2. Enable omap_uart on UART 1
-> > 3. Install xeno_16550A in kernel.
-> > 4. Apply kernel parameters for UART 2 and 4 for the xeno_16550A.
-> > 5. If successful, try the cross-link between UART 2 and 4.
-> > 
-> > If you see some caveats regarding my plan, please tell.
-> 
-> Well, this is risky, I would:
-> - enable neither omap_uart nor 8250 in kernel configuration
-> - plug UART2 to the PC with a USB-serial cable if the PC does not
-> have a serial port.
-
-And first test the PC <-> board serial link with a kernel with a
-working omap-serial, with UART2 plugged to the PC. To be sure that
-the PC side is working.
-
--- 
-					    Gilles.
+T2sgR2lsbGVzLA0KDQpXb3JrZWQgdW50aWwgZW5hYmxlZCB4ZW5vXzE2NTUwQSBieSBrZXJuZWwg
+cGFyYW1ldGVycy4NCkNhbiB5b3Ugc2VlIGFueXRoaW5nIHdyb25nIGhlcmU/DQpBbSBJIGJvdW5k
+IGZvciBjbG9jay13b3JrIHByb2dyYW1taW5nIG5vdz8NCg0KVGVyamUNCi0tLS0tLS0gZXBpY3Jp
+c2lzOiAtLS0tLS0tDQpTeXN0ZW0gdXAtYW5kLWdvIHdpdGhvdXQgdHR5T1sxLDIsNF0gYW5kIHR0
+eVNbMC00XQ0KL3N5cy9tb2R1bGUveGVub18xNjU1MEEgcHJlc2VudC4NCk5ldyBwYXJhbWV0ZXJz
+IHJlZ3NoaWZ0ICgwKSBhbmQgcmVnd2lkdGggKDEpIGluIHBsYWNlOg0KDQpkZWJpYW5AYmVhZ2xl
+Ym9uZTovc3lzL21vZHVsZS94ZW5vXzE2NTUwQS9wYXJhbWV0ZXJzJCBscyAtbA0KdG90YWwgMA0K
+LXItLS0tLS0tLSAxIHJvb3Qgcm9vdCA0MDk2IE5vdiAxMyAwODowOSBiYXVkX2Jhc2UNCi1yLS0t
+LS0tLS0gMSByb290IHJvb3QgNDA5NiBOb3YgMTMgMDg6MDkgaXJxDQotci0tLS0tLS0tIDEgcm9v
+dCByb290IDQwOTYgTm92IDEzIDA4OjA5IG1lbQ0KLXItLS0tLS0tLSAxIHJvb3Qgcm9vdCA0MDk2
+IE5vdiAxMyAwODowOSByZWdzaGlmdA0KLXItLS0tLS0tLSAxIHJvb3Qgcm9vdCA0MDk2IE5vdiAx
+MyAwODowOSByZWd3aWR0aA0KLXItLS0tLS0tLSAxIHJvb3Qgcm9vdCA0MDk2IE5vdiAxMyAwODow
+OSBzdGFydF9pbmRleA0KLXItLS0tLS0tLSAxIHJvb3Qgcm9vdCA0MDk2IE5vdiAxMyAwODowOSB0
+eF9maWZvDQoNCk5leHQsIGVudGVyIGtlcm5lbCBwYXJhbWV0ZXJzIGZvciB1YXJ0cyBpbiB1RW52
+LnR4dDoNCiMgICAgICAgICAgICAgICAgICAgICAgICAgVUFSVDEgICAgICBVQVJUMiAgICAgIFVB
+UlQ0DQpjbWRsaW5lPXhlbm9fMTY1NTBBLm1lbT0weDQ4MDIyMDAwLDB4NDgwMjQwMDAsMHg0ODFh
+ODAwMCBcDQogICAgICAgIHhlbm9fMTY1NTBBLmlycT03Myw3NCw0NSBcDQogICAgICAgIHhlbm9f
+MTY1NTBBLmJhdWRfYmFzZT0xMTUyMDAsMTE1MjAwLDExNTIwMCBcDQogICAgICAgIHhlbm9fMTY1
+NTBBLnR4X2ZpZm89NjQsNjQsNjQsNjQgXA0KICAgICAgICB4ZW5vXzE2NTUwQS5zdGFydF9pbmRl
+eD0xDQoNCnJlYm9vdGVkLCBidXQgY3Jhc2hlZDoNClsgICAgMi40ODc0MjldIFVuaGFuZGxlZCBm
+YXVsdDogZXh0ZXJuYWwgYWJvcnQgb24gbm9uLWxpbmVmZXRjaCAoMHgxMDI4KSBhdCAweGZhMDIy
+MDAyDQpbICAgIDIuNDk1NDQ2XSBJbnRlcm5hbCBlcnJvcjogOiAxMDI4IFsjMV0gU01QIFRIVU1C
+Mg0KWyAgICAyLjUwMDQ1MV0gTW9kdWxlcyBsaW5rZWQgaW46DQpbICAgIDIuNTAzNjQyXSBDUFU6
+IDAgICAgTm90IHRhaW50ZWQgICgzLjguMTMtYm9uZTY3ICMxNikNClsgICAgMi41MDkwMTVdIFBD
+IGlzIGF0IHJ0XzE2NTUwX2luaXQrMHgxMGMvMHgyNzANClsgICAgMi41MTM2NjddIExSIGlzIGF0
+IF9yYXdfcmVhZF91bmxvY2srMHg3LzB4OA0KWyAgICAyLjUxODIxNV0gcGMgOiBbPGMwODg0ZmRj
+Pl0gICAgbHIgOiBbPGMwNTMxYzMzPl0gICAgcHNyOiA2MDAwMDAzMw0KWyAgICAyLjUxODIxNV0g
+c3AgOiBkZTg3MWYyMCAgaXAgOiBmZmZmZmZmZiAgZnAgOiBjMDkyNmE4OA0KWyAgICAyLjUzMDE5
+M10gcjEwOiBmYTAyMjAwMCAgcjkgOiBjMDkyNmE4OCAgcjggOiAwMDAwMDAwMA0KWyAgICAyLjUz
+NTY1MF0gcjcgOiBjMGEwOWU4YyAgcjYgOiBkZDk0ODM4MCAgcjUgOiBjMGEwOWYxMCAgcjQgOiAw
+MDAwMDAwMA0KWyAgICAyLjU0MjQ2NF0gcjMgOiAwMDAwMDAwMCAgcjIgOiAwMDAwMDAwMiAgcjEg
+OiA0ODAyMmZmZiAgcjAgOiBmYTAyMjAwMA0KWyAgICAyLjU0OTI4NF0gRmxhZ3M6IG5aQ3YgIElS
+UXMgb24gIEZJUXMgb24gIE1vZGUgU1ZDXzMyICBJU0EgVGh1bWIgIFNlZ21lbnQga2VybmVsDQpb
+ICAgIDIuNTU3MDkzXSBDb250cm9sOiA1MGM1Mzg3ZCAgVGFibGU6IDlkOTU4MDE5ICBEQUM6IDAw
+MDAwMDE1DQpbICAgIDIuNTYzMDg2XSBQcm9jZXNzIHN3YXBwZXIvMCAocGlkOiAxLCBzdGFjayBs
+aW1pdCA9IDB4ZGU4NzAyNDApDQpbICAgIDIuNTY5MzQ5XSBTdGFjazogKDB4ZGU4NzFmMjAgdG8g
+MHhkZTg3MjAwMCkNClsgICAgMi41NzM4OTZdIDFmMjA6IDAwMDAwMDAwIGMwODkwM2ZjIGRlODcw
+MDAwIGMwOTM0NDQwIDAwMDAwMDAwIGMwODg0ZWQxIDAwMDAwMTBlIGMwOGE0OTBjDQpbICAgIDIu
+NTgyNDMwXSAxZjQwOiAwMDAwMDAwMCBjMDAwODczZiAwMDAwMDAwNiAwMDAwMDAwNiBjMDhlYjk5
+OCBjMDg5MDNmOCBjMDg5MDNmYyAwMDAwMDAwNg0KWyAgICAyLjU5MDk2M10gMWY2MDogYzA4OTAz
+ZGMgYzA5MzQ0NDAgYzA4NjYxYzkgYzA4YTQ5MGMgMDAwMDAwMDAgYzA4NjY2YjMgMDAwMDAwMDYg
+MDAwMDAwMDYNClsgICAgMi41OTk1MDRdIDFmODA6IGMwODY2MWM5IGMwZTI3ZDAwIDAwMDAwMDAw
+IGMwNTI3ZmMxIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwDQpbICAgIDIuNjA4
+MDMxXSAxZmEwOiAwMDAwMDAwMCBjMDUyN2ZjNyAwMDAwMDAwMCBjMDAwY2I1YiAwMDAwMDAwMCAw
+MDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMA0KWyAgICAyLjYxNjU3MF0gMWZjMDogMDAwMDAwMDAg
+MDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAgMDAw
+MDAwMDANClsgICAgMi42MjUxMDldIDFmZTA6IDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAw
+MDAwMDAwIDAwMDAwMDEzIDAwMDAwMDAwIDJkMGYwMWNlIDMzMzg0NTQxDQpbICAgIDIuNjMzNjY5
+XSBbPGMwODg0ZmRjPl0gKHJ0XzE2NTUwX2luaXQrMHgxMGMvMHgyNzApIGZyb20gWzxjMDAwODcz
+Zj5dIChkb19vbmVfaW5pdGNhbGwrMHgxZi8weGY4KQ0KWyAgICAyLjY0MzA0MV0gWzxjMDAwODcz
+Zj5dIChkb19vbmVfaW5pdGNhbGwrMHgxZi8weGY4KSBmcm9tIFs8YzA4NjY2YjM+XSAoa2VybmVs
+X2luaXRfZnJlZWFibGUrMHhjNy8weDE1YykNClsgICAgMi42NTI5NjJdIFs8YzA4NjY2YjM+XSAo
+a2VybmVsX2luaXRfZnJlZWFibGUrMHhjNy8weDE1YykgZnJvbSBbPGMwNTI3ZmM3Pl0gKGtlcm5l
+bF9pbml0KzB4Ny8weDk4KQ0KWyAgICAyLjY2MjQxM10gWzxjMDUyN2ZjNz5dIChrZXJuZWxfaW5p
+dCsweDcvMHg5OCkgZnJvbSBbPGMwMDBjYjViPl0gKHJldF9mcm9tX2ZvcmsrMHgxMy8weDM4KQ0K
+WyAgICAyLjY3MTEzMV0gQ29kZTogZjhkNyAzMGM0IGZhMDIgZjIwMyAoZjgxYSkgMzAwMg0KWyAg
+ICAyLjY3NjE3NV0gLS0tWyBlbmQgdHJhY2UgYTBiNTE1Y2Y2MDc5ZjQ2ZiBdLS0tDQpbICAgIDIu
+NjgxMjYzXSBLZXJuZWwgcGFuaWMgLSBub3Qgc3luY2luZzogQXR0ZW1wdGVkIHRvIGtpbGwgaW5p
+dCEgZXhpdGNvZGU9MHgwMDAwMDAwYg0KDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpG
+cm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFpbHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhl
+bm9tYWkub3JnXSANClNlbnQ6IDEzLiBub3ZlbWJlciAyMDE0IDA5OjAyDQpUbzogVGVyamUgRnLD
+uHlzYQ0KQ2M6IFhlbm9tYWlAeGVub21haS5vcmcNClN1YmplY3Q6IFJlOiBbWGVub21haV0geGVu
+b18xNjU1MEEgZHJpdmVyIGluc3RhbGwgcHJvYmxlbXMuDQoNCk9uIFRodSwgTm92IDEzLCAyMDE0
+IGF0IDA4OjU2OjE2QU0gKzAxMDAsIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOg0KPiBPbiBU
+aHUsIE5vdiAxMywgMjAxNCBhdCAwNzo1MzoxM0FNICswMDAwLCBUZXJqZSBGcsO4eXNhIHdyb3Rl
+Og0KPiA+IFRoYW5rcyBHaWxsZXMsDQo+ID4gDQo+ID4gUGF0Y2ggcmFuIHdpdGhvdXQgcHJvYmxl
+bXMgbm93LiBDaGVja2VkIHNvdXJjZSBhbmQgZm91bmQgaXQgY29ycmVjdGx5IHBhdGNoZWQuDQo+
+ID4gDQo+ID4gSSBhbSBnb2luZyB0byBjb21waWxlIGEgbmV3IGtlcm5lbC4NCj4gPiBJIGhhdmUg
+dGhyZWUgVUFSVFMuDQo+ID4gSSBhbSB0ZW1wdGVkIHRvIGRvIGFzIGZvbGxvd3M6DQo+ID4gDQo+
+ID4gMS4gRGlzYWJsZSB0aGUgODI1MCAoSXQgaXMgbm90IGFwcGxpY2FibGUgYW55aG93IGluIGN1
+cnJlbnQgdmVyc2lvbikgDQo+ID4gMi4gRW5hYmxlIG9tYXBfdWFydCBvbiBVQVJUIDEgMy4gSW5z
+dGFsbCB4ZW5vXzE2NTUwQSBpbiBrZXJuZWwuDQo+ID4gNC4gQXBwbHkga2VybmVsIHBhcmFtZXRl
+cnMgZm9yIFVBUlQgMiBhbmQgNCBmb3IgdGhlIHhlbm9fMTY1NTBBLg0KPiA+IDUuIElmIHN1Y2Nl
+c3NmdWwsIHRyeSB0aGUgY3Jvc3MtbGluayBiZXR3ZWVuIFVBUlQgMiBhbmQgNC4NCj4gPiANCj4g
+PiBJZiB5b3Ugc2VlIHNvbWUgY2F2ZWF0cyByZWdhcmRpbmcgbXkgcGxhbiwgcGxlYXNlIHRlbGwu
+DQo+IA0KPiBXZWxsLCB0aGlzIGlzIHJpc2t5LCBJIHdvdWxkOg0KPiAtIGVuYWJsZSBuZWl0aGVy
+IG9tYXBfdWFydCBub3IgODI1MCBpbiBrZXJuZWwgY29uZmlndXJhdGlvbg0KPiAtIHBsdWcgVUFS
+VDIgdG8gdGhlIFBDIHdpdGggYSBVU0Itc2VyaWFsIGNhYmxlIGlmIHRoZSBQQyBkb2VzIG5vdCBo
+YXZlIA0KPiBhIHNlcmlhbCBwb3J0Lg0KDQpBbmQgZmlyc3QgdGVzdCB0aGUgUEMgPC0+IGJvYXJk
+IHNlcmlhbCBsaW5rIHdpdGggYSBrZXJuZWwgd2l0aCBhIHdvcmtpbmcgb21hcC1zZXJpYWwsIHdp
+dGggVUFSVDIgcGx1Z2dlZCB0byB0aGUgUEMuIFRvIGJlIHN1cmUgdGhhdCB0aGUgUEMgc2lkZSBp
+cyB3b3JraW5nLg0KDQotLSANCgkJCQkJICAgIEdpbGxlcy4NCg==
 
