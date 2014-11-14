@@ -1,21 +1,15 @@
-Date: Fri, 14 Nov 2014 10:06:10 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141114090610.GY4656@sisyphus.hd.free.fr>
-References: <20141111160236.GF17476@sisyphus.hd.free.fr>
- <20141111161744.GB24110@csclub.uwaterloo.ca>
- <CAJt3u5=nBbiqOZ6kFsXujHtbGyz6GhQO10F-=rpc0WpXFj+zZw@mail.gmail.com>
- <20141112042250.GF24110@csclub.uwaterloo.ca>
- <CAPRPZsAHXt9cFWeduwziZ=iTpDg7KikrMw+HEuTi5eJ72gkztA@mail.gmail.com>
- <20141112141040.GR17476@sisyphus.hd.free.fr>
- <CAPRPZsCeJ1WtZneoKP1SYo5uzmwWyXGtn0EU45i2gb8VgDUhQQ@mail.gmail.com>
- <CAJt3u5mVofHe6X3FfNO3RHmMusqiCd8gbf2WuTD=LNs1gsS98A@mail.gmail.com>
- <CAEbDrgm5FLeitoXn+b=bCtQwgDU8=auC8fu2xNA8Ba0U2gQ0JA@mail.gmail.com>
- <20141114090212.GX4656@sisyphus.hd.free.fr>
+Message-ID: <5465D11B.1060808@sigmatek.at>
+Date: Fri, 14 Nov 2014 10:53:31 +0100
+From: Johann Obermayr <johann.obermayr@sigmatek.at>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20141114090212.GX4656@sisyphus.hd.free.fr>
-Subject: Re: [Xenomai] USB3.0 drivers for xenomai
+References: <54631EB1.1050900@sigmatek.at>
+ <20141112164411.GB17476@sisyphus.hd.free.fr> <5464DCAA.6060004@sigmatek.at>
+ <20141113163300.GM4656@sisyphus.hd.free.fr>
+In-Reply-To: <20141113163300.GM4656@sisyphus.hd.free.fr>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="windows-1252"; Format="flowed"
+Subject: Re: [Xenomai] rtdm_nrtsig_pend FAQ
+Reply-To: johann.obermayr@sigmatek.at
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,57 +18,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gregory Dymarek <gregd72002@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Fri, Nov 14, 2014 at 10:02:12AM +0100, Gilles Chanteperdrix wrote:
-> On Wed, Nov 12, 2014 at 03:44:14PM +0000, Gregory Dymarek wrote:
-> > Are you designing another wireless HDMI standard? Low latency and high
-> > throughput :)
-> 
-> Let us explain why you can not have the lowest latency with highest
-> throughput with usual processor/hardware design (maybe some other
-> designs exist allowing that, but with the range of processors with
-> caches and MMU supported by Xenomai in the mix, I very much doubt
-> it). 
-> 
-> The usual way of sending data with hardware connected to a processor
-> with low latency is this. We split the data to send into "chunks" of
-> data. Then, for each chunk, pass the chunk to the hardware. When the
-> chunk is done transmitting, the hardware sends an irq to the
-> processor, which can program the next chunk, etc...
-> 
-> If we define the latency as the time separating data being ready to
-> be sent, and data having been sent. What is the worst case latency
-> of this solution ? The worst case is when another chunk of data has
-> just been programmed, in that case, the worst case latency is:
-> worst case time to send one chunk + worst case irq latency.
-> 
-> Can this solution have the best possible throughput ? No, because
-> there is a time during which the hardware does not send any data:
-> that is the time separating the irq being signalled by hardware and
-> the irq being handled by the processor.
-> 
-> Now, the usual way of sending data for best throughput is to pass
-> several chunks of data to the hardware, so that when the first chunk
-> is finished, it has another chunk ready to start sending. How many
-> chunks of data do you need to send to the hardware ? Well, N must be
-> such that the N * best case time to send one chunk is more than the
-> worst case irq latency.
-> 
-> Now, what is the worst case latency of this solution ? The worst
-> case is when N chunks have just been programmed. In that case the
-> worst case latency is:
-> (N + 1) * worst case time to send one chunk + worst case irq latency.
-> 
-> If chunks are of fixed size, and the underlying bus/protocol
-> deterministic that is around:
-> time to send one chunk + 2 * worst case irq latency.
+Am 13.11.2014 um 17:33 schrieb Gilles Chanteperdrix:
+> On Thu, Nov 13, 2014 at 05:30:34PM +0100, Johann Obermayr wrote:
+>> Am 12.11.2014 um 17:44 schrieb Gilles Chanteperdrix:
+>>> On Wed, Nov 12, 2014 at 09:47:45AM +0100, Johann Obermayr wrote:
+>>>> Hello,
+>>>>
+>>>> we use rtdm_nrtsig_pend follow.
+>>>>
+>>>> static rtdm_nrtsig_t wait_domain_nrt;
+>>>> static DECLARE_WAIT_QUEUE_HEAD(wait_domain_wq);
+>>>>
+>>>> void period_update()
+>>>> {
+>>>>          wait_domain_pend_count++;
+>>>>          rtdm_nrtsig_pend(&wait_domain_nrt);
+>>>> }
+>>>>
+>>>> static void wait_domain_nrt_handler(rtdm_nrtsig_t nrt_sig, void *arg)
+>>>> {
+>>>>      wait_domain_call_count++;
+>>>>      //wakeup wait_domain
+>>>>      wait_domain_wakeup =3D 1;
+>>>>      wake_up_interruptible(&wait_domain_wq);
+>>>> }
+>>>>
+>>>>
+>>>> period_update is called every millisecond.
+>>>> this is on imx6 hardware with kernel 3.0.x and xenomai 2.6.2.1.
+>>> >From what Thierry said, I suspect the patch for this kernel has a
+>>> missing call to irq_exit. So, I would ask you to do the same as
+>>> Thierry, please enable the I-pipe tracer, set a sufficient number of
+>>> back trace points such as 10000, and trigger a trace when you detect
+>>> that you have "lost" a notification (wait_dommain_pend_count > wait_dom=
+ain_call_count + 1)
+>>>
+>>> Then send the trace to the mailing list.
+>>>
+>> Hi,
+>>
+>> witch function i must use to make a i-pipe trace ?
+>> here i am in a xenomai irq handle
+>>
+>> void period_update()
+>> {
+>>      ......
+>>      else if (wait_domain_pend_count > 100000 &&
+>> wait_domain_pend_count !=3D wait_domain_call_count) {
+>>              // dotrace
+>>
+>>       }
+>> }
+> ipipe_trace_freeze. Requires a numeric argument, which has no
+> particular meaning, it just gets printed in the trace.
+>
+> The I-pipe tracer is documented here:
+> http://xenomai.org/2014/06/using-the-i-pipe-tracer/
+>
+Hello,
 
-And of course, the other obvious conclusion is that the better the
-worst case irq latency, the better latency you get with maximum
-throughput. 
+here is the trace
 
--- 
-					    Gilles.
-
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: frozen.zip
+Type: application/zip
+Size: 10590 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20141114/36700ef=
+8/attachment.zip>
