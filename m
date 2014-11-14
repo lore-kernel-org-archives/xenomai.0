@@ -1,6 +1,6 @@
-Date: Fri, 14 Nov 2014 13:47:13 +0100
+Date: Fri, 14 Nov 2014 14:05:18 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141114124713.GM4656@sisyphus.hd.free.fr>
+Message-ID: <20141114130518.GN4656@sisyphus.hd.free.fr>
 References: <54631EB1.1050900@sigmatek.at>
  <20141112164411.GB17476@sisyphus.hd.free.fr>
  <5464DCAA.6060004@sigmatek.at>
@@ -25,99 +25,6 @@ To: Johann Obermayr <johann.obermayr@sigmatek.at>
 Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
 On Fri, Nov 14, 2014 at 01:37:46PM +0100, Johann Obermayr wrote:
-> Am 14.11.2014 um 11:20 schrieb Gilles Chanteperdrix:
-> >On Fri, Nov 14, 2014 at 10:53:31AM +0100, Johann Obermayr wrote:
-> >>Am 13.11.2014 um 17:33 schrieb Gilles Chanteperdrix:
-> >>>On Thu, Nov 13, 2014 at 05:30:34PM +0100, Johann Obermayr wrote:
-> >>>>Am 12.11.2014 um 17:44 schrieb Gilles Chanteperdrix:
-> >>>>>On Wed, Nov 12, 2014 at 09:47:45AM +0100, Johann Obermayr wrote:
-> >>>>>>Hello,
-> >>>>>>
-> >>>>>>we use rtdm_nrtsig_pend follow.
-> >>>>>>
-> >>>>>>static rtdm_nrtsig_t wait_domain_nrt;
-> >>>>>>static DECLARE_WAIT_QUEUE_HEAD(wait_domain_wq);
-> >>>>>>
-> >>>>>>void period_update()
-> >>>>>>{
-> >>>>>>         wait_domain_pend_count++;
-> >>>>>>         rtdm_nrtsig_pend(&wait_domain_nrt);
-> >>>>>>}
-> >>>>>>
-> >>>>>>static void wait_domain_nrt_handler(rtdm_nrtsig_t nrt_sig, void *arg)
-> >>>>>>{
-> >>>>>>     wait_domain_call_count++;
-> >>>>>>     //wakeup wait_domain
-> >>>>>>     wait_domain_wakeup = 1;
-> >>>>>>     wake_up_interruptible(&wait_domain_wq);
-> >>>>>>}
-> >>>>>>
-> >>>>>>
-> >>>>>>period_update is called every millisecond.
-> >>>>>>this is on imx6 hardware with kernel 3.0.x and xenomai 2.6.2.1.
-> >>>>>>From what Thierry said, I suspect the patch for this kernel has a
-> >>>>>missing call to irq_exit. So, I would ask you to do the same as
-> >>>>>Thierry, please enable the I-pipe tracer, set a sufficient number of
-> >>>>>back trace points such as 10000, and trigger a trace when you detect
-> >>>>>that you have "lost" a notification (wait_dommain_pend_count > wait_domain_call_count + 1)
-> >>>>>
-> >>>>>Then send the trace to the mailing list.
-> >>>>>
-> >>>>Hi,
-> >>>>
-> >>>>witch function i must use to make a i-pipe trace ?
-> >>>>here i am in a xenomai irq handle
-> >>>>
-> >>>>void period_update()
-> >>>>{
-> >>>>     ......
-> >>>>     else if (wait_domain_pend_count > 100000 &&
-> >>>>wait_domain_pend_count != wait_domain_call_count) {
-> >>>>             // dotrace
-> >>>>
-> >>>>      }
-> >>>>}
-> >>>ipipe_trace_freeze. Requires a numeric argument, which has no
-> >>>particular meaning, it just gets printed in the trace.
-> >>>
-> >>>The I-pipe tracer is documented here:
-> >>>http://xenomai.org/2014/06/using-the-i-pipe-tracer/
-> >>>
-> >>Hello,
-> >>
-> >>here is the trace
-> >Your trace show several things:
-> >- period_update in your program does not correspond to the sources
-> >you showed:
-> >
-> >:   +*func                -759    0.500  period_update+0x10 [sigmatek_lrt] (timer+0xb0 [sigmatek_lrt])
-> >:   +*func                -759    1.000  lrtdrv_monitoring_start_timed+0x10 [sigmatek_lrt] (period_update+0x34 [sigmatek_lrt])
-> >:   +*func                -758    0.750  rtdm_event_signal+0x10 (period_update+0x180 [sigmatek_lrt])
-> >:|  #*func                -757    0.500  xnsynch_flush+0x10 (rtdm_event_signal+0x50)
-> >:|  #*func                -756    0.500  __ipipe_restore_pipeline_head+0x10 (rtdm_event_signal+0xa8)
-> >:   +*func                -756    0.500  __rtdm_synch_flush+0x10 (period_update+0x18c [sigmatek_lrt])
-> >:|  #*func                -755    0.500  xnsynch_flush+0x10 (__rtdm_synch_flush+0x54)
-> >:|  #*func                -755    0.750  __ipipe_restore_pipeline_head+0x10 (__rtdm_synch_flush+0xc8)
-> >:   +*func                -754    0.500  rtdm_event_signal+0x10 (period_update+0x180 [sigmatek_lrt])
-> >:|  #*func                -754    0.500  xnsynch_flush+0x10 (rtdm_event_signal+0x50)
-> >:|  #*func                -753    0.500  __ipipe_restore_pipeline_head+0x10 (rtdm_event_signal+0xa8)
-> >:   +*func                -753    0.250  __rtdm_synch_flush+0x10 (period_update+0x18c [sigmatek_lrt])
-> >:|  #*func                -752    1.000  xnsynch_flush+0x10 (__rtdm_synch_flush+0x54)
-> >:|  #*func                -751    0.250  xnpod_resume_thread+0x10 (xnsynch_flush+0xa4)
-> >:|  #*[ 1065] WD-Trigg 1  -751    0.750  xnpod_resume_thread+0x54 (xnsynch_flush+0xa4)
-> >:|  #*func                -750    0.500  __xnpod_schedule+0x14 (__rtdm_synch_flush+0x84)
-> >:|  #*[   -1] -<?>-   99  -750    0.250  __xnpod_schedule+0x50 (__rtdm_synch_flush+0x84)
-> >:|  #*func                -750    0.750  xnsched_pick_next+0x10 (__xnpod_schedule+0xa0)
-> >:|  #*func                -749    0.500  __ipipe_restore_pipeline_head+0x10 (__rtdm_synch_flush+0xc8)
-> >:   +*func                -748    0.750  ipipe_trigger_irq+0x10 (period_update+0x224 [sigmatek_lrt])
-> >:|  +*func                -748    0.500  __ipipe_handle_irq+0x14 (ipipe_trigger_irq+0x64)
-> >
-> >
-> >Before calling nrt_pend, period_update calls rtdm_event_signal,
-> >which could reschedule and cause the nrt_pend to be delayed (but
-> >that does not happen in that case).
-> Yes, it starts some RT tasks. This tasks need 30-100 us.
-> 
 > >- period update is called more often than every millisecond:
 > >
 > >:   +*func                -759    0.500  period_update+0x10 [sigmatek_lrt] (timer+0xb0 [sigmatek_lrt])
@@ -127,10 +34,23 @@ On Fri, Nov 14, 2014 at 01:37:46PM +0100, Johann Obermayr wrote:
 > 
 > which can not be, because it is triggerd by a FPGA hardware IRQ
 > every millisecond.
+
+So, bugs in FPGA never happen? As far as I know the P in
+FPGA means "programmable". I do not see how the trace could be wrong
+on this. You can read a counter in your FPGA every time
+period_update is called, if you do not trust the processor clock.
+
 > 
 > >- you have a massive latency, which is causing your real-time job to
 > >occupy the CPU all the time, and never let Linux run.
 > It looks as if a mmcqd task (micro SD card) will stop calling software irq.
+
+I am not sure there is a big latency here, the system maybe just
+returns to user-space which does its job, and the time spent in
+user-space gets accounted before the last function which was called
+before the return to user-space. I need to read this part of the
+trace again to see where the virq should have been triggered.
+
 > 
 > >:|  #*[ 1065] WD-Trigg 1  -722    0.500  __xnpod_schedule+0x50 (xnpod_suspend_thread+0x220)
 > >:|  #*func                -722    0.750  xnsched_pick_next+0x10 (__xnpod_schedule+0xa0)
@@ -146,32 +66,11 @@ On Fri, Nov 14, 2014 at 01:37:46PM +0100, Johann Obermayr wrote:
 > >:|   #func                -714    0.750  __ipipe_walk_pipeline+0x10 (__ipipe_dispatch_wired_nocheck+0xa4)
 > >:|   #func                -714! 674.750  __ipipe_exit_irq+0x10 (__ipipe_grab_irq+0x60)
 > >:|   #func                 -39    0.500  __ipipe_grab_irq+0x10 (__irq_svc+0x40)
-> >
-> >I believe this latency issue is due to the L2 cache write-allocate
-> >bit that was fixed in the latest I-pipe patch. Please upgrade the
-> >I-pipe patch, check/fix the issues above, and post another trace if
-> >you still have the issue.
-> >
-> 
-> i test it with the new patches.
-> 
-> 
-> 
-> Here is the period_update function
 
-This does not help much. This does not show how period_update is
-activated, and notably, you do not answer my question of how
-period_update can be called 3 times in the same millisecond whereas
-it is supposed to be called only once. We do not see your complete
-application sources, which can make us doubt about it.
-
-So, please write a simple example, doing what your original
-period_update did, triggered by a periodic thread, or a kernel
-timer. A simple example that we can run on our machines if need be,
-without any reference to code we do not have.
-
-Run only that, and only that on the system, and tell us if you still
-observe the problem. 
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
 
 -- 
 					    Gilles.
