@@ -1,12 +1,13 @@
-Message-ID: <5468842E.205@xenomai.org>
-Date: Sun, 16 Nov 2014 12:02:06 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5468C910.2010200@xenomai.org>
+Date: Sun, 16 Nov 2014 10:56:00 -0500
+From: Jorge Ramirez Ortiz <jro@xenomai.org>
 MIME-Version: 1.0
-References: <54687601.5020805@free.fr>
-In-Reply-To: <54687601.5020805@free.fr>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Some questions and issues about Xenomai 3
+References: <CAKKWdtdaDJkSOhS7WaiRo5t0+NnCSV4-DQJcFB3iYOPGZ=z-Gg@mail.gmail.com>	<201411121225.22847.paul_c@tuxcnc.org>	<54650689.8020005@xenomai.org>
+ <CAKKWdtf_-vVbcmPgXyyAdL2ODPHaDkQteN3dEhTHSzojcwgRZQ@mail.gmail.com>
+In-Reply-To: <CAKKWdtf_-vVbcmPgXyyAdL2ODPHaDkQteN3dEhTHSzojcwgRZQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] DAC and CAN
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,80 +16,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thierry Bultel <tbultel@free.fr>, xenomai@xenomai.org
+To: ali hagigat <hagigatali@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 11/16/2014 11:01 AM, Thierry Bultel wrote:
-> Hi,
-> I am currently attempting to port my application from xenomai-2.6.(3/4)
-> to xenomai-3-rc2
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 11/15/2014 09:13 AM, ali hagigat wrote:
+> On 11/13/14, Jorge Ramirez Ortiz <jro@xenomai.org> wrote:
+>> -----BEGIN PGP SIGNED MESSAGE-----
+>> Hash: SHA1
+>>
+>> On 11/12/2014 07:25 AM, Paul wrote:
+>>> On Wednesday 12 November 2014, ali hagigat wrote:
+>>>> I am trying to setup a real time system by a x86-32bits-intel-core 2
+>>>> quad computer and Xenomai. I need a DAC card (data acquisition card
+>>>> for making analog/digital signals/pulses) pWojciech Domski <wojciech.domski@gmail.com>robably plugged into PCI
+>>>> bus and also a CAN controller, again plugged into PCI bus to send
+>>>> some reports to another. (is there any other way besides PCI bus?) I
+>>>> wonder if anybody can direct me what hardware i can buy to work
+>>>> probably. I need the name of the boards and their distributors and
+>>>> their related links.
+>>>
+>>> What conversion speeds do you need for ADC/DAC ?
+>>> How many channels ?
+>>> Are you willing/able to write drivers for unsupported hardware ?
+>>> Do you have a sizable budget ?
+>>>
+>>> A starting point for a moderately slow PCI analogue/digital acquisition
+>>> card that has support under the Xenomai analogy framework is
+>>> http://www.sensoray.com/products/626.htm
+>>
+>> Support for 626 has not been delivered yet (will be done soon) - there is
+>> support for
+>> s526.
+>> If you need software calibration support on Xenomai you could use NI M-6221
+>>
+>> http://sine.ni.com/nips/cds/view/p/lang/en/nid/14132
+>>
+>> I have seen some of these cards on ebay reasonably priced.
+>>
 > 
-> My application uses the canfestival package, which uses rt_socket_can.
-> The distribution is buildroot, and I have hacked it a little to support
-> the build of mercury, because it is not supported yet.
-> 
-> For info, I have basically added this:
-> XENOMAI_CONF_OPT += --with-core=mercury
-> XENOMAI_CONF_OPT += --enable-smp
-> XENOMAI_CONF_OPT += --enable-pshared
-> XENOMAI_CONF_OPT += --enable-registry
-> 
-> I am encountering several issues:
-> 
-> 1) xeno-config
-> a) it says an error with posix skin
-> localuser@thierry-desktop ~/workspace/agv (STD_ITG_15.03)*$
-> /nous/BASYSTEMES/buildroot/buildroot_agv_v15_amos820/host/usr/arm-buildroot-linux-gnueabihf/sysroot/usr/bin/xeno-config
-> --skin=posix --cflags
-> unknown RTOS skin: posix
+> thank you for the note. i probably use this system for the motor
+> control. i suppose this board is driven by
+> ksrc/drivers/analogy/national_instruments/pcimio.c
 
-Building for the posix skin over the Mercury core basically means
-building on top of the glibc, therefore calling xeno-config is useless
-as you need no Xenomai-specific flags from us.
+yes
 
-Retrieving build flags via xeno-config for Mercury is useful for
-non-POSIX APIS, e.g. psos, vxworks, alchemy: in this case, there are
-some Xenomai-specific flags required for building over the relevant
-emulator/interface.
+> There are some issues with this driver like when DMA is enabled
+> XXX_EV_CONVERT does not work and so on...
 
-This said, maybe this script should accept --posix/--skin=posix and
-deliver no particular cflags in this case, instead of bailing out on
-error. This might help generic build machinery.
+if you find issues with the driver please let me know and I can try and fix them.
+our testing capabilities are limited.
+do you have a a use case I can use to reproduce this issue?
+
+> Did you test other drivers like mite.c or ni_660x.c?
+
+not sure I understand. mite is used by the NI pci devices so it is tested.
+
+> Which one is more reliable and complete?
+
+It is hard to say as I said, we dont have a board farm where can run a CI loop and
+rely on contributors to report issues.
+all I can say is that we do have a 6221 that I can use to try and address bugs that
+you report.
+
+Also I will be integrating this week the sensoray 626 driver contributed by
+wojciech.domski@gmail.com.
+Maybe you could consider this one too since I believe it should have had quite a
+real-life test cycle
+
 
 > 
-> b) --compat fails, and is not mentioned in the Usage
+> do you have any experience using a CAN controller for a PC?
 > 
 
---compat is for enabling the 2.6.x compatibility mode the 3.x transition
-kit provides (aka libtrank); as 2.6.x only supports dual kernel mode,
---compat only makes sense when one targets the Cobalt core in 3.x. IOW,
-You cannot use --compat to transition from a dual kernel to a native
-kernel (i.e. Mercury) configuration. The main reason for this, is that a
-number of 2.6.x API features are dual kernel specific.
+I have used CAN controllers in the printing and automotive industry. what do you want
+to do?
 
-> 
-> 2) I have read in the manual that rtcan.h has been renamed to can.h
-> But after the install step, can.h is not installed in the staging.
-> buildroot was using "make install-user" for doing so. Changing to "make
-> install" does not help.
+- -- 
+jro
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-> 
-> 3) More general question, about rtcan:
-> prepare_kernel.sh seems definitively needed for Cobalt kernel only. So
-> how can the rtcan drivers be built in the PREEMPT_RT kernel ?
-> Sorry for my dummy question.
-> 
-
-rtcan has not been ported to Mercury, so you won't find any of the
-relevant files installed for a Mercury build. At the moment, the
-assumption is that rtcan is basically a dual kernel specific replacement
-for the native CAN stack available from the mainline kernel. So an
-application running in a single kernel configuration should/could use
-the native CAN stack instead of rtcan.
-
-Of course this is a broad and general statement that likely does not
-account for rtcan-specific details/features. This may need to be
-discussed with current rtcan users.
-
--- 
-Philippe.
+iQEcBAEBAgAGBQJUaMkNAAoJECDcy2IJkagRom4H/3yMt0QiwbCf92f3+oTblSiE
+qI1ClFkjtNmtlx5G5qVjgiGhOLY0Cni+M3eS7ZARqCFI3VkEoUp77ZpIDpzDnvHS
+UtZvQ2yLkNSWcZjUBs+EXCUmEiOAnz1PPIaAE1VEEqBYejRCqVMNscpNQJZZD4CN
+9Htn6fHKvq53xADjwdZ/A1d+S04m+Kbz0w+kTVEnia0iKOlk1CAcY2JvRnNn4PDD
+VcLRqnhG6UsxB8eOpjhAIfjW1LsXp0kDhhopaDgGLTKfXZs6QpRvNW47nMKTdiLD
+a9BMyVCl6oR7ELrEpzdKXNGiOi6qTMlbPmP6D4gxdJ+q+bUuxn9eO3WOjPMm5eQ=
+=nI3J
+-----END PGP SIGNATURE-----
 
