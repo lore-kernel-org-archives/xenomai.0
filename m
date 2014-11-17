@@ -1,18 +1,12 @@
-Date: Mon, 17 Nov 2014 11:22:36 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141117102236.GE23508@sisyphus.hd.free.fr>
-References: <04e5e7e2fab241a5916e4e48f9d9b325@EX132MBOX1B.de2.local>
- <20141109155351.GH17476@sisyphus.hd.free.fr>
- <28083d9b9cc34fce9a6d308e8d12fbc6@EX132MBOX1B.de2.local>
- <20141110124308.GK17476@sisyphus.hd.free.fr>
- <b258eccb6b124aaf91fd1b35c9ccbf30@EX132MBOX1B.de2.local>
- <20141111174652.GK17476@sisyphus.hd.free.fr>
- <6f2c7097b3eb4473844743b8b495f5e0@EX132MBOX1B.de2.local>
+Date: Mon, 17 Nov 2014 11:43:39 +0100 (CET)
+From: tbultel@free.fr
+Message-ID: <1895952308.121592546.1416221019422.JavaMail.root@zimbra90-e16.priv.proxad.net>
+In-Reply-To: <20141117101217.GD23508@sisyphus.hd.free.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6f2c7097b3eb4473844743b8b495f5e0@EX132MBOX1B.de2.local>
-Subject: Re: [Xenomai] "inconsistent lock state" on boot-up
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 +
+ adeos-ipipe-3.0.43-mx6q-1.18-14 -> very slow boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,46 +15,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Stoidner, Christoph" <c.stoidner@arvero.de>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: nicolas Mabire <nicolas.mabire@basystemes.fr>, xenomai@xenomai.org
 
-On Mon, Nov 17, 2014 at 10:01:40AM +0000, Stoidner, Christoph wrote:
-> 
-> Hi,
-> 
-> > you are completely right, we have implemented our own skin. Using
-> > the debugging functionality mentioned above we have identified a
-> > function-call that leads to exact the behaviour as described in your post.
-> >
-> > Hopefully solving that issue solves our application crash.
-> 
-> Now the problem "scheduling while atomic" does not occur anymore
-> within API calls of our own skin. However, after some run-time
-> (about 5 minutes or more) it seems to appear in gatekeeper-thread
-> (see below).
-> 
-> What is not clear to me is the ipipe_raise_irq() call in backtrace
-> below. I could not identify any according call from within
-> gatekeeper_thread(). Do I overlook something?
-> 
-> What I also do not understand is the timestamp of kernel message.
-> As mentioned the messages do appear about 5 minutes after kernel
-> start. However the message's timestamp are from about 40 seconds
-> after boot? Could it happen that messages are delayed? Or is the
-> timestamp wrong?
 
-This would probably mean an issue with the tsc emulation, have you
-tried running the "tsc" program, from xenomai regression testsuite
-with the -w option ? I remember than the imx28 tsc emulation is a
-bit weird, the hardware sometimes returns wrong values, and the
-support answer was "read it twice, until you get twice the same
-value". But I never found this really satisfactory: what if reading
-it twice returns the same wrong value twice ? 
 
-The tsc test should see if the tsc wrapping is doing fine. You can
-try to run it several time, or even in parallel to your tests, to
-see if it does not detect any problem.
+----- Mail original -----
+> De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+> =C3=80: "Thierry Bultel" <tbultel@free.fr>
+> Cc: xenomai@xenomai.org, "nicolas Mabire" <nicolas.mabire@basystemes.fr>
+> Envoy=C3=A9: Lundi 17 Novembre 2014 11:12:17
+> Objet: Re: [Xenomai] IMX kernel 3.0.35_4.1.0 + adeos-ipipe-3.0.43-mx6q-1.=
+18-14 -> very slow boot
+>=20
+> On Sun, Nov 16, 2014 at 09:44:57PM +0100, Thierry Bultel wrote:
+> > Le 14/11/2014 11:28, Gilles Chanteperdrix a =C3=A9crit :
+> > >On Fri, Nov 14, 2014 at 11:15:00AM +0100, tbultel@free.fr wrote:
+> > >>Gilles, it has taken time (about 3 hours), but I finally got
+> > >>a backtrace with IPIPE_DEBUG: (I have disabled
+> > >>CONFIG_IPIPE_TRACE_VMALLOC)
+> > >
+> > >Normally CONFIG_IPIPE_TRACE_VMALLOC is required on ARM. kmalloc
+> > >fails
+> > >to allocate large enough areas, which causes the kernel to fail
+> > >booting.
+> > >
+> > >>
+> > >>Before the trace went to the serial console, I saw that there
+> > >>were no more timer irq
+> > >>on 2 CPUs (my ssh session froze). Some 3 or 4 seconds later it
+> > >>came up.
+> > >>Not clear to me why there are only 100 points, because I have
+> > >>CONFIG_IPIPE_TRACE_SHIFT=3D14
+> > >
+> > >You have to write the number of back_trace_points you want to
+> > >/proc/ipipe/trace/back_trace_points
+> > >
+> > >Also your trace contains a lot of writing to the console, you
+> > >should
+> > >move the ipipe_trace_panic_freeze to before any console output.
+> > >
+> > >Also note that the UART being slow, a lot of trace points will
+> > >take
+> > >a lot of time to print out.
+> > >
+> > >You may want to enable the tracer verbose mode to have the
+> > >timestamps.
+> > >
+> >=20
+> > FYI, the kernel without IPIPE but with the PREEMPT_RT patch freezes
+> > as well, when flooding with ping, and mostly when started after a
+> > poweroff.
+> > I have not been able (yet) to freeze it after a reboot.
+> > I will consider looking deeper in the bootloader.
+>=20
+> Is it still with the 3.0 kernel, or with something more current?
+>=20
+> --
 
--- 
-					    Gilles.
+still with the 3.0.35-4.1.0 + official preempt-rt patch for 3.0.35
+(I had to deal with some little rejections)
+
+
+> =09=09=09=09=09    Gilles.
+>=20
 
