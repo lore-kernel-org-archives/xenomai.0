@@ -1,27 +1,18 @@
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Mon, 17 Nov 2014 16:47:34 -0500
+Message-ID: <20141117214734.GW24110@csclub.uwaterloo.ca>
+References: <20141001142416.GA4435@csclub.uwaterloo.ca>
+ <20141107182600.GS24110@csclub.uwaterloo.ca>
+ <545D12D2.2020104@xenomai.org>
+ <20141117191237.GS24110@csclub.uwaterloo.ca>
+ <20141117201435.GH31920@sisyphus.hd.free.fr>
+ <20141117202425.GU24110@csclub.uwaterloo.ca>
+ <20141117202754.GI31920@sisyphus.hd.free.fr>
 MIME-Version: 1.0
-In-Reply-To: <CANKLDmu3e_gtg-ouqGpX1GzamHDfS5NVywM6DTLin7W4roTGLA@mail.gmail.com>
-References: <20141119151244.GC825@sisyphus.hd.free.fr>
- <CANKLDms+QDBcQ6qvK3KfMByLpsfkbt8jTOc8PEZ5VJ9q90SQKA@mail.gmail.com>
- <20141119154950.GD825@sisyphus.hd.free.fr>
- <CANKLDmtXvOEuu0aADjJ=ctjE1PQC_v2jt26PhyYri2q2p7r48Q@mail.gmail.com>
- <20141120082019.GH7011@sisyphus.hd.free.fr>
- <CANKLDmthksKWg3H1md+8xPNU0fbgEM2Q9+W2o+sx=7p=6tsNow@mail.gmail.com>
- <20141120090344.GJ7011@sisyphus.hd.free.fr>
- <CANKLDmt==uLHy8_1pZTDVtJZfhLPDviMUPekUFQdADRZZpX8iw@mail.gmail.com>
- <CANKLDmt4OApxTx-41pf40P0_5DUsxNSaNh+QtTL4fO52_adXjQ@mail.gmail.com>
- <CANKLDmsoet+Z-7eEuXhNJ6QSt9Dh4Sktur0MGCZBtwdBB073AQ@mail.gmail.com>
- <20141120184516.GC4545@sisyphus.hd.free.fr>
- <546EF065.9070206@xenomai.org>
- <CANKLDmuD4evzObPYqd64rfmNLD9NPqS3EZrSUZy_84mL44bpGg@mail.gmail.com>
- <546EF4BF.6070302@xenomai.org>
- <CANKLDmv=GhPfCjFcgjYUv+6geDeY3VX0WUsxjnqqeiRD5YB__g@mail.gmail.com>
- <CANKLDmtgVkgu61k_1zBZ3+FBYJ-zttTheNRW96bRw4_DCHQ_Lw@mail.gmail.com>
- <CANKLDmu3e_gtg-ouqGpX1GzamHDfS5NVywM6DTLin7W4roTGLA@mail.gmail.com>
-Date: Mon, 24 Nov 2014 09:43:25 +0100
-Message-ID: <CANKLDmtdtw-SuLpVm7YT=eWWH=ZOFnHFJOPHzm0D6PwjbdNfgA@mail.gmail.com>
-From: Henri Roosen <henriroosen@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] problems with ipipe-3.10 on i.MX6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20141117202754.GI31920@sisyphus.hd.free.fr>
+Subject: Re: [Xenomai] I-pipe error when requesting irq that is on omap gpio
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -30,537 +21,179 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Fri, Nov 21, 2014 at 5:12 PM, Henri Roosen <henriroosen@gmail.com> wrote:
+On Mon, Nov 17, 2014 at 09:27:54PM +0100, Gilles Chanteperdrix wrote:
+> On Mon, Nov 17, 2014 at 03:24:25PM -0500, Lennart Sorensen wrote:
+> > On Mon, Nov 17, 2014 at 09:14:35PM +0100, Gilles Chanteperdrix wrote:
+> > > Well, have you tried triggering an I-pipe tracer trace to see what
+> > > happens in the interval?
+> > 
+> > I have never used the tracer. I suppose I should learn how.
+> 
+> It is not very complicated. I have already been told on this list
+> that it was not well documented. I do not think so, but I let you
+> judge of that.
+> 
+> http://xenomai.org/2014/06/using-the-i-pipe-tracer/
 
->
->
-> On Fri, Nov 21, 2014 at 5:11 PM, Henri Roosen <henriroosen@gmail.com>
-> wrote:
->
->>
->>
->> On Fri, Nov 21, 2014 at 12:09 PM, Henri Roosen <henriroosen@gmail.com>
->> wrote:
->>
->>>
->>>
->>> On Fri, Nov 21, 2014 at 9:15 AM, Philippe Gerum <rpm@xenomai.org> wrote:
->>>
->>>> On 11/21/2014 09:03 AM, Henri Roosen wrote:
->>>> >
->>>> > On Fri, Nov 21, 2014 at 8:57 AM, Philippe Gerum <rpm@xenomai.org
->>>> > <mailto:rpm@xenomai.org>> wrote:
->>>> >
->>>> >     On 11/20/2014 07:45 PM, Gilles Chanteperdrix wrote:
->>>> >     > On Thu, Nov 20, 2014 at 05:24:42PM +0100, Henri Roosen wrote:
->>>> >     >> On Thu, Nov 20, 2014 at 10:54 AM, Henri Roosen
->>>> >     <henriroosen@gmail.com <mailto:henriroosen@gmail.com>>
->>>> >     >> wrote:
->>>> >     >>
->>>> >     >>>
->>>> >     >>>
->>>> >     >>> On Thu, Nov 20, 2014 at 10:14 AM, Henri Roosen
->>>> >     <henriroosen@gmail.com <mailto:henriroosen@gmail.com>>
->>>> >     >>> wrote:
->>>> >     >>>
->>>> >     >>>>
->>>> >     >>>>
->>>> >     >>>> On Thu, Nov 20, 2014 at 10:03 AM, Gilles Chanteperdrix <
->>>> >     >>>> gilles.chanteperdrix@xenomai.org
->>>> >     <mailto:gilles.chanteperdrix@xenomai.org>> wrote:
->>>> >     >>>>
->>>> >     >>>>> On Thu, Nov 20, 2014 at 09:52:44AM +0100, Henri Roosen
->>>> wrote:
->>>> >     >>>>>> On Thu, Nov 20, 2014 at 9:20 AM, Gilles Chanteperdrix <
->>>> >     >>>>>> gilles.chanteperdrix@xenomai.org
->>>> >     <mailto:gilles.chanteperdrix@xenomai.org>> wrote:
->>>> >     >>>>>>
->>>> >     >>>>>>> On Thu, Nov 20, 2014 at 09:13:49AM +0100, Henri Roosen
->>>> wrote:
->>>> >     >>>>>>>> On Wed, Nov 19, 2014 at 4:49 PM, Gilles Chanteperdrix <
->>>> >     >>>>>>>> gilles.chanteperdrix@xenomai.org
->>>> >     <mailto:gilles.chanteperdrix@xenomai.org>> wrote:
->>>> >     >>>>>>>>
->>>> >     >>>>>>>>> On Wed, Nov 19, 2014 at 04:43:08PM +0100, Henri Roosen
->>>> wrote:
->>>> >     >>>>>>>>>> On Wed, Nov 19, 2014 at 4:12 PM, Gilles Chanteperdrix <
->>>> >     >>>>>>>>>> gilles.chanteperdrix@xenomai.org
->>>> >     <mailto:gilles.chanteperdrix@xenomai.org>> wrote:
->>>> >     >>>>>>>>>>
->>>> >     >>>>>>>>>>> On Wed, Nov 19, 2014 at 04:11:30PM +0100, Henri Roosen
->>>> >     wrote:
->>>> >     >>>>>>>>>>>> On Wed, Nov 19, 2014 at 4:09 PM, Gilles
->>>> Chanteperdrix <
->>>> >     >>>>>>>>>>>> gilles.chanteperdrix@xenomai.org
->>>> >     <mailto:gilles.chanteperdrix@xenomai.org>> wrote:
->>>> >     >>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>> On Wed, Nov 19, 2014 at 04:03:40PM +0100, Henri
->>>> Roosen
->>>> >     >>>>> wrote:
->>>> >     >>>>>>>>>>>>>> On Wed, Nov 19, 2014 at 3:03 PM, Gilles
->>>> Chanteperdrix <
->>>> >     >>>>>>>>>>>>>> gilles.chanteperdrix@xenomai.org
->>>> >     <mailto:gilles.chanteperdrix@xenomai.org>> wrote:
->>>> >     >>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>>> On Wed, Nov 19, 2014 at 02:33:51PM +0100, Henri
->>>> >     >>>>> Roosen
->>>> >     >>>>>>> wrote:
->>>> >     >>>>>>>>>>>>>>>> On Wed, Nov 19, 2014 at 2:10 PM, Gilles
->>>> >     >>>>> Chanteperdrix <
->>>> >     >>>>>>>>>>>>>>>> gilles.chanteperdrix@xenomai.org
->>>> >     <mailto:gilles.chanteperdrix@xenomai.org>> wrote:
->>>> >     >>>>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>>>>> On Wed, Nov 19, 2014 at 01:56:20PM +0100, Henri
->>>> >     >>>>> Roosen
->>>> >     >>>>>>>>> wrote:
->>>> >     >>>>>>>>>>>>>>>>>> I reworked the driver now and the 'stalled head
->>>> >     >>>>>>> domain'
->>>> >     >>>>>>>>> is
->>>> >     >>>>>>>>>>> not
->>>> >     >>>>>>>>>>>>> there
->>>> >     >>>>>>>>>>>>>>>>>> anymore.
->>>> >     >>>>>>>>>>>>>>>>>> However, the other symptoms did not disappear.
->>>> >     >>>>>>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>>>>>> I currently observe 2 symptoms:
->>>> >     >>>>>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>>>>> As I said, I prefer handle one problem at a
->>>> >     >>>>> time, and
->>>> >     >>>>>>> pass
->>>> >     >>>>>>>>> to
->>>> >     >>>>>>>>>>> the
->>>> >     >>>>>>>>>>>>>>>>> next when we are finished with the current.
->>>> >     >>>>>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>>>>>> Either 1) a stall of the i.MX timer
->>>> >     >>>>>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>>>>> Who cares ? The i.MX timer has no reason to be
->>>> >     >>>>> used,
->>>> >     >>>>>>> the
->>>> >     >>>>>>>>>>> cortex a9
->>>> >     >>>>>>>>>>>>>>>>> local timers should be used. Or are you booting
->>>> a
->>>> >     >>>>>>> kernel
->>>> >     >>>>>>>>>>> compiled
->>>> >     >>>>>>>>>>>>>>>>> without CONFIG_SMP ?
->>>> >     >>>>>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>>>> I compiled without CONFIG_SMP as the symptoms
->>>> >     >>>>> seemed less
->>>> >     >>>>>>>>> random.
->>>> >     >>>>>>>>>>>>>>> However,
->>>> >     >>>>>>>>>>>>>>>> as you said, let's put this on ice for now and
->>>> >     >>>>> focus on
->>>> >     >>>>>>> the
->>>> >     >>>>>>>>> NULL
->>>> >     >>>>>>>>>>>>> pointer
->>>> >     >>>>>>>>>>>>>>>> dereference for now.
->>>> >     >>>>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>>>>>> or 2) a kernel NULL pointer dereference.
->>>> >     >>>>>>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>>>>>> The kernel trace of the NULL pointer
->>>> >     >>>>> dereference is
->>>> >     >>>>>>> as
->>>> >     >>>>>>>>> below:
->>>> >     >>>>>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>>>>> Well the kernel trace is not exactly as below,
->>>> >     >>>>> because
->>>> >     >>>>>>> your
->>>> >     >>>>>>>>>>> mailer
->>>> >     >>>>>>>>>>>>>>>>> wrapped it, which makes it hard to read. Please
->>>> >     >>>>> try to
->>>> >     >>>>>>> get
->>>> >     >>>>>>>>> your
->>>> >     >>>>>>>>>>>>>>>>> mailer not to wrap the trace, or failing that,
->>>> >     >>>>> simply
->>>> >     >>>>>>>>> attach a
->>>> >     >>>>>>>>>>>>> plain
->>>> >     >>>>>>>>>>>>>>>>> text file with the trace.
->>>> >     >>>>>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>>>>>> Unable to handle kernel NULL pointer
->>>> >     >>>>> dereference at
->>>> >     >>>>>>>>> virtual
->>>> >     >>>>>>>>>>>>> address
->>>> >     >>>>>>>>>>>>>>>>> 00000000
->>>> >     >>>>>>>>>>>>>>>>>> pgd = ce230000, hw pgd = ce230000
->>>> >     >>>>>>>>>>>>>>>>>> [00000000] *pgd=1e30d831, *pte=00000000,
->>>> >     >>>>>>> *ppte=00000000
->>>> >     >>>>>>>>>>>>>>>>>> Internal error: Oops: 80000007 [#1] PREEMPT ARM
->>>> >     >>>>>>>>>>>>>>>>>> Modules linked in: platform_imx(O)
->>>> >     >>>>> sigmatek_lrt(O)
->>>> >     >>>>>>>>>>>>>>>>>> CPU: 0 PID: 454 Comm: LRT:454 Tainted: G
->>>> >     >>>>>   W  O
->>>> >     >>>>>>>>>>>>>>>>>> 3.10.32-ipipe-00218-gcf143c6-dirty #100
->>>> >     >>>>>>>>>>>>>>>>>> task: ce00e780 ti: ce2d8000 task.ti: ce2d8000
->>>> >     >>>>>>>>>>>>>>>>>> PC is at 0x0
->>>> >     >>>>>>>>>>>>>>>>>> LR is at __ipipe_do_sync_stage+0x1cc/0x2c8
->>>> >     >>>>>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>>>>> __ipipe_do_sync_stage is jumping to address 0,
->>>> >     >>>>> some
->>>> >     >>>>>>>>> function
->>>> >     >>>>>>>>>>>>> pointer
->>>> >     >>>>>>>>>>>>>>>>> is NULL. You would have to disassemble
->>>> >     >>>>>>>>> __ipipe_do_sync_stage
->>>> >     >>>>>>>>>>> around
->>>> >     >>>>>>>>>>>>>>>>> offset 0x1cc to know what exactly. But it is
->>>> >     >>>>> probably
->>>> >     >>>>>>> an
->>>> >     >>>>>>>>> IRQ
->>>> >     >>>>>>>>>>>>>>>>> handler. You can modify __ipipe_do_sync_stage
->>>> >     >>>>> code to
->>>> >     >>>>>>> emit
->>>> >     >>>>>>>>> a
->>>> >     >>>>>>>>>>> printk
->>>> >     >>>>>>>>>>>>>>>>> with the irq number being currently being
->>>> >     >>>>> processed
->>>> >     >>>>>>> when
->>>> >     >>>>>>>>> its
->>>> >     >>>>>>>>>>>>> handler
->>>> >     >>>>>>>>>>>>>>>>> is NULL. We will know what IRQ number has an
->>>> >     >>>>> issue.
->>>> >     >>>>>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>>>> Please find the log.txt file attached, which
->>>> shows
->>>> >     >>>>> the
->>>> >     >>>>>>> IRQ
->>>> >     >>>>>>>>> number
->>>> >     >>>>>>>>>>>>> that
->>>> >     >>>>>>>>>>>>>>> has
->>>> >     >>>>>>>>>>>>>>>> the issue (150: ethernet) as well as the output
->>>> of
->>>> >     >>>>>>>>>>> /proc/interrupts
->>>> >     >>>>>>>>>>>>> and
->>>> >     >>>>>>>>>>>>>>>> /proc/xenomai/irq
->>>> >     >>>>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>>>> I'll do some more tests to see if it is always
->>>> IRQ
->>>> >     >>>>> 150.
->>>> >     >>>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>>> Ok, if it is always 150, could you show us how the
->>>> >     >>>>> ethernet
->>>> >     >>>>>>>>> driver
->>>> >     >>>>>>>>>>>>>>> does its request_irq ? If it does a set_type or
->>>> >     >>>>> something ?
->>>> >     >>>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>> To request the irq, the following statement is
->>>> called:
->>>> >     >>>>>>>>>>>>>> ret = request_irq(irq, fec_enet_interrupt,
->>>> >     >>>>> IRQF_DISABLED,
->>>> >     >>>>>>>>> pdev->name,
->>>> >     >>>>>>>>>>>>> ndev);
->>>> >     >>>>>>>>>>>>>> I didn't find a set_type.
->>>> >     >>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>> However, I'm not sure if I completely understood
->>>> your
->>>> >     >>>>>>> question.
->>>> >     >>>>>>>>> Is
->>>> >     >>>>>>>>>>> it ok
->>>> >     >>>>>>>>>>>>> if
->>>> >     >>>>>>>>>>>>>> I point you to the file
->>>> >     >>>>>>>>> drivers/net/ethernet/freescale/fec_main.c,
->>>> >     >>>>>>>>>>> line
->>>> >     >>>>>>>>>>>>>> 1983.
->>>> >     >>>>>>>>>>>>>> (
->>>> >     >>>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>
->>>> >     >>>>>>>>>
->>>> >     >>>>>>>
->>>> >     >>>>>
->>>> >
->>>> http://git.xenomai.org/ipipe.git/tree/drivers/net/ethernet/freescale/fec_main.c?h=ipipe-3.10#n1983
->>>> >     >>>>>>>>>>>>>> )
->>>> >     >>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>> Ok, are you using the device tree or not?
->>>> >     >>>>>>>>>>>>>
->>>> >     >>>>>>>>>>>>
->>>> >     >>>>>>>>>>>> Yes, using devicetree
->>>> >     >>>>>>>>>>>
->>>> >     >>>>>>>>>>> You are sure your devicetree has all the necessary
->>>> >     >>>>> parameters for
->>>> >     >>>>>>>>>>> the ethernet interrupt ?
->>>> >     >>>>>>>>>>>
->>>> >     >>>>>>>>>>>
->>>> >     >>>>>>>>>> Yes, should be all in the included imx6qdl.dtsi file.
->>>> Our
->>>> >     >>>>> board .dts
->>>> >     >>>>>>> file
->>>> >     >>>>>>>>>> includes the file and just sets the correct pinctrl,
->>>> phy-mode
->>>> >     >>>>> and
->>>> >     >>>>>>> status
->>>> >     >>>>>>>>> to
->>>> >     >>>>>>>>>> okay, similar to what other boards do.
->>>> >     >>>>>>>>>>
->>>> >     >>>>>>>>>> Ethernet communication is working and we are getting
->>>> >     >>>>> interrupts at
->>>> >     >>>>>>> first,
->>>> >     >>>>>>>>>> just after a while it stops working because of the NULL
->>>> >     pointer
->>>> >     >>>>>>>>> dereference.
->>>> >     >>>>>>>>>> Any suggestion how to trace down this specific handler
->>>> >     getting
->>>> >     >>>>>>> NULL-ed?
->>>> >     >>>>>>>>>
->>>> >     >>>>>>>>> You can try using the I-pipe tracer. Enable the I-pipe
->>>> tracer,
->>>> >     >>>>>>>>> trigger a panic before printing anything when the bug
->>>> >     happens (by
->>>> >     >>>>>>>>> the way, which pointer is NULL, is it the irq handler,
->>>> or the
->>>> >     >>>>>>>>> interrupt acknowledge routine ?). Modify the I-pipe
->>>> tracer to
->>>> >     >>>>> store
->>>> >     >>>>>>>>> the current value of the handler instead of the
->>>> timestamp
->>>> >     in the
->>>> >     >>>>>>>>> I-pipe trace structure, and the function printing the
->>>> >     traces to
->>>> >     >>>>> cast
->>>> >     >>>>>>>>> the timestamp to a pointer and print its value instead
->>>> of
->>>> >     >>>>> computing
->>>> >     >>>>>>>>> a difference. With enough back trace points, it should
->>>> be
->>>> >     clear
->>>> >     >>>>> in
->>>> >     >>>>>>>>> the trace generated which function sets the pointer to
->>>> NULL.
->>>> >     >>>>>>>>>
->>>> >     >>>>>>>>> Alternatively, if you are ready to spend time in your
->>>> >     processor
->>>> >     >>>>>>>>> documentation, you can look for a way to program its
->>>> hardware
->>>> >     >>>>>>>>> breakpoints registers to watch the handler address once
->>>> it has
->>>> >     >>>>> been
->>>> >     >>>>>>>>> set.
->>>> >     >>>>>>>>>
->>>> >     >>>>>>>>> I found out the irq-handler doesn't get NULL-ified.
->>>> >     Instead, the
->>>> >     >>>>> ipd
->>>> >     >>>>>>>> points to the xenomai domain at the moment of handling
->>>> the
->>>> >     irq 150.
->>>> >     >>>>>>>> However, it is only requested and registered in the Linux
->>>> >     domain.
->>>> >     >>>>>>>>
->>>> >     >>>>>>>> I'll use the I-pipe tracer now to make a trace at the
->>>> >     moment the
->>>> >     >>>>> 150
->>>> >     >>>>>>>> interrupt gets handled in the xenomai domain..
->>>> >     >>>>>>>
->>>> >     >>>>>>> Yes, please, do not forget to ask for a large number of
->>>> back
->>>> >     trace
->>>> >     >>>>> points.
->>>> >     >>>>>>>
->>>> >     >>>>>>> Please find attached the ipipetrace.txt file.
->>>> >     >>>>>>
->>>> >     >>>>>>
->>>> >     >>>>>>> --
->>>> >     >>>>>>>                                             Gilles.
->>>> >     >>>>>>>
->>>> >     >>>>>
->>>> >     >>>>>> Unable to handle kernel NULL pointer dereference at virtual
->>>> >     address
->>>> >     >>>>> 00000000
->>>> >     >>>>>> pgd = ce1b0000, hw pgd = ce1b0000
->>>> >     >>>>>> [00000000] *pgd=1e236831, *pte=00000000, *ppte=00000000
->>>> >     >>>>>> --> IRQ handler irq 150 == NULL!! domain Xenomai
->>>> >     >>>>>
->>>> >     >>>>> Please put the panic or trace freeze before printing
->>>> anything and
->>>> >     >>>>> the whole dumping. This will remove a lot of useless stuff
->>>> >     from the
->>>> >     >>>>> trace.
->>>> >     >>>>>
->>>> >     >>>>> Please find attached the ipipetrace_2.txt file (this time I
->>>> >     was able to
->>>> >     >>>> capture it via /proc/ipipe/trace/frozen instead of the
->>>> terminal
->>>> >     logging).
->>>> >     >>>>
->>>> >     >>>
->>>> >     >>> I noticed we have a taskswitch hook set, which might blur the
->>>> trace
->>>> >     >>> results. So if you are interested in a trace without the
->>>> >     taskswitch hook
->>>> >     >>> set, then please find attached ipipetrace_3.txt. Sorry for the
->>>> >     >>> inconvenience.
->>>> >     >>>
->>>> >     >>
->>>> >     >> I was actually wondering how __ipipe_next_irq() could come up
->>>> >     with 150 when
->>>> >     >> in the xenomai domain.
->>>> >     >>
->>>> >     >> I'm not sure, but the code in __ipipe_do_sync_stage() looks a
->>>> bit
->>>> >     strange
->>>> >     >> to me:
->>>> >     >> first p is set to the __ipipe_current_context and ipd to
->>>> >     p->domain. Later
->>>> >     >> in the for-loop, p get updated again to __ipipe_current_context
->>>> >     again (so
->>>> >     >> it is expected to change) but ipd is not updated to be set to
->>>> the
->>>> >     p->domain
->>>> >     >> again.
->>>> >     >> Was that on purpose or is the ipd = p->domain; statement
->>>> missing
->>>> >     inside the
->>>> >     >> for-loop?
->>>> >     >
->>>> >     > Looks strange. Have you tried adding ipd = p->domain under p =
->>>> >     > __ipipe_current_context ?
->>>> >     >
->>>> >
->>>> >     The callee may not switch domain over an interrupt handler. Only
->>>> CPU
->>>> >     migration may happen, which is what this assignment cares about.
->>>> >
->>>> >     rules in IRQ context over sync_stage are:
->>>> >
->>>> >     - no domain migration
->>>> >     - CPU migration possible over the root domain only
->>>> >
->>>> >     Each CPU holds an array of per-domain context areas, each context
->>>> area
->>>> >     backlinks to the domain descriptor.
->>>> >
->>>> >
->>>> > I'll instrument the code to detect domain migration, but I guess that
->>>> is
->>>> > what we are facing.
->>>>
->>>> I don't see how that would be possible with Xenomai. The domain
->>>> migration gates are relax/harden calls in the nucleus, and these can
->>>> only be invoked from regular task contexts. But checking for peace of
->>>> mind won't harm anyway.
->>>>
->>>
->>> I've added the check on p->domain != ipd at the end of the for-loop.
->>> That one triggers in my case.
->>>
->>> More debugging found:
->>> 1) the irq that triggers the domain switch is always irq 164 (0xa4).
->>> This is the irq from our FPGA, fed to the i.MX6 via GPIO interrupt. The
->>> interrupt handler is a primary domain handler, registered
->>> using rtdm_irq_request(). I've added checks on primary domain at entry and
->>> exit of the handler. Those checks never trigger, so the handler always
->>> enters and leaves in primary domain.
->>>
->>> 2) our irq-handler is apparently not called when the switch occurs. I've
->>> added a variable that is set to zero in __ipipe_do_sync_stage() after
->>> __ipipe_next_irq(). Our handler sets it to a non-zero value. The value of
->>> that variable is zero when the switch is detected at the end of the
->>> for-loop.
->>> I've noticed that when not setting the variable to zero, it has the
->>> value that is returned by our handler at a spurous interrupt, which means
->>> the last time our handler was called was not a valid interrupt... not sure
->>> what to conclude from that.
->>>
->>> I'm having trouble interpreting the ipipe-trace to find out what is
->>> really going on. I've added a trace (fr7.txt) that was frozen at the point
->>> where the domain-switch was detected at the end of the for-loop in
->>> __ipipe_do_sync_stage(). Could you help me interpreting this trace to find
->>> out where and why there is a domain switch during the irq handling?
->>>
->>>
->> I've added some more tracing to the ipipe-code:
->>
->> At __ipipe_do_sync_stage()
->> ipipe_trace_begin(0x2222); // at enter
->> ipipe_trace_end(0x2222); // at leave
->> ipipe_trace_begin((irq << 16) | 0x2222); // at for-loop after irq is known
->> ipipe_trace_end((irq << 16) | 0x2222); // at end of for-loop
->>
->> At __ipipe_dispatch_irq()
->> ipipe_trace_begin((irq << 16) | 0x1111); // at enter
->> ipipe_trace_end((irq << 16) | 0x1111); // at leave
->>
->> :~# cat /proc/xenomai/irq
->> IRQ         CPU0
->>  87:     2441549         [timer]
->> 164:     2192094         fpga0:164
->> 1027:      254734         [virtual]
->>
->> ~# cat /proc/interrupts
->>            CPU0
->>  34:          0       GIC  sdma
->>  51:          0       GIC  rtc alarm
->>  54:      50372       GIC  mmc0
->>  59:        693       GIC  IMX-uart
->>  70:        792       GIC  21a8000.i2c
->>  87:     232403       GIC  i.MX Timer Tick
->> 150:     108432       GIC  2188000.ethernet
->> 151:          0       GIC  2188000.ethernet
->> Err:          0
->>
->> This leads to the attached trace fr12.txt.
->>
->> Line 3586: Entry to __ipipe_do_sync_stage()
->> Line 3587: __ipipe_do_sync_stage found pending IRQ 1027
->> Line 3710: Another entry to __ipipe_do_sync_stage()! This is before end
->> of the previous IRQ 1027!
->> Line 3711: __ipipe_do_sync_stage found pending IRQ 164. This is the last
->> entry where the fpga is handled. This is in primary domain.
->> Line 3735: it seems to me the irqhandler_fpga is completed all in primary
->> domain.
->> Line 3790: Here is the end of __ipipe_do_sync_stage() handling IRQ 1027!
->> Line 3792: Switch to secondary domain
->> Line 4012: There is no end logging of __ipipe_do_sync_stage() handling
->> IRQ 164, but the freeze entry shows it is completing irq 164, so at that
->> entry the end would be if there was no freeze. This is in primary domain.
->>
->> These are the interesting entries that occurred to me. So my questions:
->> - Should it be possible at line 3710 to enter again before ending the
->> previous call?
->> - When the end of IRQ 1027 is finally there at line 3790, why is there a
->> switch to secondary? Handling IRQ 164 is not completed yet.
->>
->> Is the failure visible in this trace, or what tracing can I add to trace
->> down the actual problem?
->>
->
-I don't want to be rude or push anyone, as I know everyone has a lot to do
-by himself. But it would really help me forward if someone could have a
-look at the trace I made and answer the questions above.
-If there is no apparent sign in the trace, please point me to some places
-where I can add some extra tracing to get down to the root cause.
+So here is what I got triggering a couple of times on the IRQ.  Not
+entirely sure how to make sense of it, although there is one huge number.
 
-Thanks in advance!
-Henri
+back_trace_points:100
+enable:1
+frozen:I-pipe frozen back-tracing service on 3.12-1-am5726/ipipe release #2
+frozen:------------------------------------------------------------
+frozen:CPU: 0, Freeze: 2415647132 cycles, Trace Points: 100 (+10)
+frozen:Calibrated minimum trace-point overhead: 0.428 us
+frozen: +----- Hard IRQs ('|': locked)
+frozen: |+-- Xenomai
+frozen: ||+- Linux ('*': domain stalled, '+': current, '#': current+stalled)
+frozen: |||			  +---------- Delay flag ('+': > 1 us, '!': > 10 us)
+frozen: |||			  |	   +- NMI noise ('N')
+frozen: |||			  |	   |
+frozen:	  Type	  User Val.   Time    Delay  Function (Parent)
+frozen::    #func                -662	  0.857  arch_cpu_idle_enter+0x10 (cpu_startup_entry+0xb8)
+frozen::    #func                -661	  1.000  ledtrig_cpu+0x10 (arch_cpu_idle_enter+0x1c)
+frozen::    #func                -660	  1.000  led_trigger_event+0x10 (ledtrig_cpu+0x58)
+frozen::    #func                -659+   1.285  _raw_read_lock+0x10 (led_trigger_event+0x30)
+frozen::    #func                -658	  0.857  tick_check_broadcast_expired+0x10 (cpu_startup_entry+0x40)
+frozen::    #func                -657	  1.000  rcu_idle_enter+0x10 (cpu_startup_entry+0x58)
+frozen::    #func                -656	  0.857  ipipe_test_and_stall_root+0x10 (rcu_idle_enter+0x18)
+frozen::    #func                -655	  0.857  ipipe_root_only+0x14 (ipipe_test_and_stall_root+0x18)
+frozen::|   #begin   0x80000001  -654+   1.428  ipipe_root_only+0xb8 (ipipe_test_and_stall_root+0x18)
+frozen::|   #end     0x80000001  -653	  1.000  ipipe_root_only+0xa4 (ipipe_test_and_stall_root+0x18)
+frozen::|   #begin   0x80000001  -652	  1.000  ipipe_test_and_stall_root+0x84 (rcu_idle_enter+0x18)
+frozen::|   #end     0x80000001  -651	  1.000  ipipe_test_and_stall_root+0x70 (rcu_idle_enter+0x18)
+frozen::    #func                -650	  1.000  rcu_eqs_enter_common.isra.47+0x14 (rcu_idle_enter+0x84)
+frozen::    #func                -649	  1.000  arch_cpu_idle+0x10 (cpu_startup_entry+0x5c)
+frozen::|   #begin   0x80000000  -648	  1.000  arch_cpu_idle+0xa4 (cpu_startup_entry+0x5c)
+frozen::|   +func                -647! 555.142  omap_default_idle+0x10 (arch_cpu_idle+0x90)      <-- What ever is that?  That looks huge.
+frozen::|   +end     0x80000000   -92+   1.142  omap_default_idle+0x40 (arch_cpu_idle+0x90)
+frozen::|   +begin   0x90000000   -90	  1.000  __irq_svc+0x44 (omap_default_idle+0x44)
+frozen::|   +func                 -89	  1.000  gic_handle_irq+0x10 (__irq_svc+0x58)
+frozen::|   +func                 -88	  1.000  irq_find_mapping+0x14 (gic_handle_irq+0x30)
+frozen::|   +func                 -87	  1.000  __ipipe_grab_irq+0x10 (gic_handle_irq+0x38)
+frozen::|   +begin   0x0000001b   -86	  1.000  __ipipe_grab_irq+0x50 (gic_handle_irq+0x38)
+frozen::|   +func                 -85	  1.000  __ipipe_dispatch_irq+0x14 (__ipipe_grab_irq+0x74)
+frozen::|   +func                 -84	  1.000  irq_to_desc+0x10 (__ipipe_dispatch_irq+0xd4)
+frozen::|   +func                 -83	  1.000  irq_to_desc+0x10 (__ipipe_dispatch_irq+0xe4)
+frozen::|   +func                 -82+   1.142  __ipipe_ack_hrtimer_irq+0x10 (__ipipe_dispatch_irq+0x70)
+frozen::|   +func                 -81	  0.857  __ipipe_ack_fasteoi_irq+0x10 (__ipipe_ack_hrtimer_irq+0x60)
+frozen::|   +func                 -80	  0.857  gic_hold_irq+0x10 (__ipipe_ack_fasteoi_irq+0x24)
+frozen::|   +func                 -80+   2.428  __ipipe_spin_lock_irqsave+0x10 (gic_hold_irq+0x34)
+frozen::|   #func                 -77+   1.285  __ipipe_spin_unlock_irqrestore+0x10 (gic_hold_irq+0x98)
+frozen::|   +func                 -76	  1.000  arch_itimer_ack_virt+0x10 (__ipipe_ack_hrtimer_irq+0x70)
+frozen::|   +func                 -75	  0.857  __ipipe_end_fasteoi_irq+0x10 (__ipipe_ack_hrtimer_irq+0x88)
+frozen::|   +func                 -74	  1.000  gic_release_irq+0x10 (__ipipe_end_fasteoi_irq+0x2c)
+frozen::|   +func                 -73+   1.142  __ipipe_spin_lock_irqsave+0x10 (gic_release_irq+0x34)
+frozen::|   #func                 -72+   2.000  __ipipe_spin_unlock_irqrestore+0x10 (gic_release_irq+0x74)
+frozen::|  # func                 -70+   1.285  xnintr_clock_handler+0x14 [xeno_nucleus] (__ipipe_dispatch_irq+0x270)
+frozen::|  # func                 -69+   3.571  __xnlock_spin+0x14 [xeno_nucleus] (xnintr_clock_handler+0x420 [xeno_nucleus])
+frozen::|  # func                 -65	  1.000  xntimer_tick_aperiodic+0x14 [xeno_nucleus] (xnintr_clock_handler+0x1e0 [xeno_nucleus])
+frozen::|  # func                 -64	  0.857  xntimer_next_local_shot+0x10 [xeno_nucleus] (xntimer_tick_aperiodic+0x288 [xeno_nucleus])
+frozen::|  # event   tick@-50     -63	  0.857  xntimer_next_local_shot+0xb4 [xeno_nucleus] (xntimer_tick_aperiodic+0x288 [xeno_nucleus])
+frozen::|  # func                 -62	  1.000  ipipe_timer_set+0x10 (xntimer_next_local_shot+0xbc [xeno_nucleus])
+frozen::|  # func                 -61+   1.428  arch_timer_set_next_event_virt+0x10 (ipipe_timer_set+0x7c)
+frozen::|  # func                 -60	  1.000  xnintr_host_tick+0x10 [xeno_nucleus] (xnintr_clock_handler+0x368 [xeno_nucleus])
+frozen::|  # func                 -59+   1.571  __ipipe_set_irq_pending+0x10 (xnintr_host_tick+0x54 [xeno_nucleus])
+frozen::|   +func                 -57+   1.428  __ipipe_do_sync_pipeline+0x14 (__ipipe_dispatch_irq+0x33c)
+frozen::|   +func                 -56+   1.142  __ipipe_do_sync_stage+0x14 (__ipipe_do_sync_pipeline+0x140)
+frozen::|   #end     0x80000000   -55	  1.000  __ipipe_do_sync_stage+0x294 (__ipipe_do_sync_pipeline+0x140)
+frozen::    #func                 -54	  0.857  __ipipe_do_IRQ+0x10 (__ipipe_do_sync_stage+0x1e8)
+frozen::    #func                 -53	  1.000  handle_IRQ+0x10 (__ipipe_do_IRQ+0x40)
+frozen::    #func                 -52	  0.857  irq_enter+0x10 (handle_IRQ+0x54)
+frozen::    #func                 -51	  0.857  rcu_irq_enter+0x10 (irq_enter+0x28)
+frozen::    #func                 -50	  0.857  ipipe_test_and_stall_root+0x10 (rcu_irq_enter+0x18)
+frozen::    #func                 -49	  1.000  ipipe_root_only+0x14 (ipipe_test_and_stall_root+0x18)
+frozen::|   #begin   0x80000001   -48+   1.285  ipipe_root_only+0xb8 (ipipe_test_and_stall_root+0x18)
+frozen::|   #end     0x80000001   -47+   1.142  ipipe_root_only+0xa4 (ipipe_test_and_stall_root+0x18)
+frozen::|   #begin   0x90000000   -46	  0.857  __irq_svc+0x44 (ipipe_root_only+0xa8)
+frozen::|   #func                 -45	  1.000  gic_handle_irq+0x10 (__irq_svc+0x58)
+frozen::|   #func                 -44	  0.857  irq_find_mapping+0x14 (gic_handle_irq+0x30)
+frozen::|   #func                 -43+   1.142  __ipipe_grab_irq+0x10 (gic_handle_irq+0x38)
+frozen::|   #begin   0x0000001b   -42	  0.857  __ipipe_grab_irq+0x50 (gic_handle_irq+0x38)
+frozen::|   #func                 -41	  1.000  __ipipe_dispatch_irq+0x14 (__ipipe_grab_irq+0x74)
+frozen::|   #func                 -40	  1.000  irq_to_desc+0x10 (__ipipe_dispatch_irq+0xd4)
+frozen::|   #func                 -39	  1.000  irq_to_desc+0x10 (__ipipe_dispatch_irq+0xe4)
+frozen::|   #func                 -38	  0.857  __ipipe_ack_hrtimer_irq+0x10 (__ipipe_dispatch_irq+0x70)
+frozen::|   #func                 -37	  1.000  __ipipe_ack_fasteoi_irq+0x10 (__ipipe_ack_hrtimer_irq+0x60)
+frozen::|   #func                 -36	  0.857  gic_hold_irq+0x10 (__ipipe_ack_fasteoi_irq+0x24)
+frozen::|   #func                 -35+   1.142  __ipipe_spin_lock_irqsave+0x10 (gic_hold_irq+0x34)
+frozen::|   #func                 -34+   1.142  __ipipe_spin_unlock_irqrestore+0x10 (gic_hold_irq+0x98)
+frozen::|   #func                 -33	  0.857  arch_itimer_ack_virt+0x10 (__ipipe_ack_hrtimer_irq+0x70)
+frozen::|   #func                 -32	  1.000  __ipipe_end_fasteoi_irq+0x10 (__ipipe_ack_hrtimer_irq+0x88)
+frozen::|   #func                 -31	  0.714  gic_release_irq+0x10 (__ipipe_end_fasteoi_irq+0x2c)
+frozen::|   #func                 -31+   1.285  __ipipe_spin_lock_irqsave+0x10 (gic_release_irq+0x34)
+frozen::|   #func                 -29+   1.857  __ipipe_spin_unlock_irqrestore+0x10 (gic_release_irq+0x74)
+frozen::|  #*func                 -27+   1.142  xnintr_clock_handler+0x14 [xeno_nucleus] (__ipipe_dispatch_irq+0x270)
+frozen::|  #*func                 -26	  0.857  xntimer_tick_aperiodic+0x14 [xeno_nucleus] (xnintr_clock_handler+0x1e0 [xeno_nucleus])
+frozen::|  #*func                 -25	  0.857  xnthread_timeout_handler+0x10 [xeno_nucleus] (xntimer_tick_aperiodic+0x13c [xeno_nucleus])
+frozen::|  #*func                 -25	  1.000  xnpod_resume_thread+0x14 [xeno_nucleus] (xnthread_timeout_handler+0x34 [xeno_nucleus])
+frozen::|  #*[ 5197] MAC Poll 0   -24+   1.285  xnpod_resume_thread+0x124 [xeno_nucleus] (xnthread_timeout_handler+0x34 [xeno_nucleus])
+frozen::|  #*func                 -22	  0.857  xntimer_next_local_shot+0x10 [xeno_nucleus] (xntimer_tick_aperiodic+0x288 [xeno_nucleus])
+frozen::|  #*event   tick@11992   -21	  0.857  xntimer_next_local_shot+0xb4 [xeno_nucleus] (xntimer_tick_aperiodic+0x288 [xeno_nucleus])
+frozen::|  #*func                 -21	  1.000  ipipe_timer_set+0x10 (xntimer_next_local_shot+0xbc [xeno_nucleus])
+frozen::|  #*func                 -20+   1.142  arch_timer_set_next_event_virt+0x10 (ipipe_timer_set+0x7c)
+frozen::|  #*func                 -18+   1.428  __xnpod_schedule+0x14 [xeno_nucleus] (xnintr_clock_handler+0x408 [xeno_nucleus])
+frozen::|  #*[    0] -<?>-   -1   -17	  1.000  __xnpod_schedule+0x194 [xeno_nucleus] (xnintr_clock_handler+0x408 [xeno_nucleus])
+frozen::|  #*func                 -16	  1.000  xnsched_pick_next+0x10 [xeno_nucleus] (__xnpod_schedule+0x328 [xeno_nucleus])
+frozen::|  #*func                 -15	  0.857  omap4_mute_pic+0x10 (__xnpod_schedule+0x714 [xeno_nucleus])
+frozen::|  #*func                 -14+   1.142  gic_mute+0x10 (omap4_mute_pic+0x1c)
+frozen::|  #*func                 -13+   2.000  _get_gpio_irqbank_mask+0x10 (omap4_mute_pic+0x58)
+frozen::|  #*[ 5197] MAC Poll 0   -11+   1.428  __xnpod_schedule+0x604 [xeno_nucleus] (xnpod_suspend_thread+0x494 [xeno_nucleus])
+frozen::|  #*func                 -10+   1.142  __ipipe_restore_head+0x10 (xnpod_suspend_thread+0x1c4 [xeno_nucleus])
+frozen::|  +*end     0x80000000    -8	  1.000  __ipipe_restore_head+0xd8 (xnpod_suspend_thread+0x1c4 [xeno_nucleus])
+frozen::|  +*begin   0x90000000    -7	  1.000  __irq_svc+0x44 (__ipipe_restore_head+0xdc)
+frozen::|  +*func                  -6	  0.857  gic_handle_irq+0x10 (__irq_svc+0x58)
+frozen::|  +*func                  -6	  1.000  irq_find_mapping+0x14 (gic_handle_irq+0x30)
+frozen::|  +*func                  -5	  0.857  __ipipe_grab_irq+0x10 (gic_handle_irq+0x38)
+frozen::|  +*begin   0x00000043    -4	  1.000  __ipipe_grab_irq+0x50 (gic_handle_irq+0x38)
+frozen::|  +*func                  -3	  0.857  __ipipe_dispatch_irq+0x14 (__ipipe_grab_irq+0x74)
+frozen::|  +*func                  -2	  1.000  irq_to_desc+0x10 (__ipipe_dispatch_irq+0xd4)
+frozen::|  +*func                  -1+   1.285  irq_to_desc+0x10 (__ipipe_dispatch_irq+0xe4)
+frozen:<|  +*func                   0	  1.142  gpio_irq_handler+0x14 (__ipipe_dispatch_irq+0x70)
+frozen: |  +*func                   1	  1.571  irq_to_desc+0x10 (gpio_irq_handler+0x38)
+frozen: |  +*func                   2	  1.000  irq_find_mapping+0x14 (gpio_irq_handler+0x190)
+frozen: |  +*begin   0x0000018e     3	  0.857  gpio_irq_handler+0x198 (__ipipe_dispatch_irq+0x70)
+frozen: |  +*func                   4	  0.857  __ipipe_dispatch_irq+0x14 (gpio_irq_handler+0x1a4)
+frozen: |  +*func                   5	  1.000  irq_to_desc+0x10 (__ipipe_dispatch_irq+0xd4)
+frozen: |  +*func                   6	  1.142  irq_to_desc+0x10 (__ipipe_dispatch_irq+0xe4)
+frozen: |  +*func                   7	  1.142  __ipipe_ack_level_irq+0x10 (__ipipe_dispatch_irq+0x70)
+frozen: |  +*func                   8	  0.857  gpio_mask_ack_irq+0x10 (__ipipe_ack_level_irq+0x30)
+frozen: |  +*func                   9	  3.428  __ipipe_spin_lock_irqsave+0x10 (gpio_mask_ack_irq+0x30)
+frozen: |  #*func                  13	  0.000  __ipipe_spin_unlock_irqrestore+0x10 (gpio_mask_ack_irq+0x210)
+max:I-pipe worst-case tracing service on 3.12-1-am5726/ipipe release #2
+max:-------------------------------------------------------------
+max:CPU: 0, Begin: 1137045851 cycles, Trace Points: 3 (-10/+1), Length: 617 us
+max:Calibrated minimum trace-point overhead: 0.428 us
+max: +----- Hard IRQs ('|': locked)
+max: |+-- Xenomai
+max: ||+- Linux ('*': domain stalled, '+': current, '#': current+stalled)
+max: |||			  +---------- Delay flag ('+': > 1 us, '!': > 10 us)
+max: |||			  |	   +- NMI noise ('N')
+max: |||			  |	   |
+max:	  Type	  User Val.   Time    Delay  Function (Parent)
+max:     #func                 -10	  1.000  tick_check_broadcast_expired+0x10 (cpu_startup_entry+0x40)
+max:     #func                  -9	  0.857  rcu_idle_enter+0x10 (cpu_startup_entry+0x58)
+max:     #func                  -8	  0.857  ipipe_test_and_stall_root+0x10 (rcu_idle_enter+0x18)
+max:     #func                  -7	  1.000  ipipe_root_only+0x14 (ipipe_test_and_stall_root+0x18)
+max: |   #begin   0x80000001    -6	  1.285  ipipe_root_only+0xb8 (ipipe_test_and_stall_root+0x18)
+max: |   #end     0x80000001    -5	  1.000  ipipe_root_only+0xa4 (ipipe_test_and_stall_root+0x18)
+max: |   #begin   0x80000001    -4	  1.142  ipipe_test_and_stall_root+0x84 (rcu_idle_enter+0x18)
+max: |   #end     0x80000001    -3	  1.000  ipipe_test_and_stall_root+0x70 (rcu_idle_enter+0x18)
+max:     #func                  -2	  1.000  rcu_eqs_enter_common.isra.47+0x14 (rcu_idle_enter+0x84)
+max:     #func                  -1	  1.000  arch_cpu_idle+0x10 (cpu_startup_entry+0x5c)
+max:>|   #begin   0x80000000     0	  1.000  arch_cpu_idle+0xa4 (cpu_startup_entry+0x5c)
+max::|   +func                   1! 616.428  omap_default_idle+0x10 (arch_cpu_idle+0x90)
+max:<|   +end     0x80000000   617	  1.142  omap_default_idle+0x40 (arch_cpu_idle+0x90)
+max: |   +begin   0x90000000   618	  0.000  __irq_svc+0x44 (omap_default_idle+0x44)
+post_trace_points:10
+pre_trace_points:10
+trigger:gpio_irq_handler+0x0/0x298
+verbose:1
 
+-- 
+Len Sorensen
 
->
->> The missing trace file fr12.txt attached now
->
->
->> Thanks!
->> Henri.
->>
->> Thanks!
->>> Henri
->>>
->>>
->>>> >
->>>> > Is the domain migration visible in the ipipe-trace / how can I trace
->>>> > down to the point where domain migration happens?
->>>> >
->>>>
->>>> The tracer reports the current domain, see the heading line of a trace
->>>> for details about the symbols used.
->>>>
->>>> --
->>>> Philippe.
->>>>
->>>
->>>
->>
->
