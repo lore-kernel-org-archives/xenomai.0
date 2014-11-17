@@ -1,6 +1,7 @@
-Date: Mon, 17 Nov 2014 14:16:42 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141117131642.GB26613@sisyphus.hd.free.fr>
+Message-ID: <5469F90D.4030101@xenomai.org>
+Date: Mon, 17 Nov 2014 14:33:01 +0100
+From: Philippe Gerum <rpm@xenomai.org>
+MIME-Version: 1.0
 References: <04e5e7e2fab241a5916e4e48f9d9b325@EX132MBOX1B.de2.local>
  <20141109155351.GH17476@sisyphus.hd.free.fr>
  <28083d9b9cc34fce9a6d308e8d12fbc6@EX132MBOX1B.de2.local>
@@ -8,13 +9,10 @@ References: <04e5e7e2fab241a5916e4e48f9d9b325@EX132MBOX1B.de2.local>
  <b258eccb6b124aaf91fd1b35c9ccbf30@EX132MBOX1B.de2.local>
  <20141111174652.GK17476@sisyphus.hd.free.fr>
  <6f2c7097b3eb4473844743b8b495f5e0@EX132MBOX1B.de2.local>
- <20141117102236.GE23508@sisyphus.hd.free.fr>
- <586e7083cd014fcfb15447028fa02840@EX132MBOX1B.de2.local>
- <5469DC54.20005@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5469DC54.20005@xenomai.org>
+ <5469E0AD.6060209@xenomai.org> <20141117131004.GA26613@sisyphus.hd.free.fr>
+In-Reply-To: <20141117131004.GA26613@sisyphus.hd.free.fr>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] "inconsistent lock state" on boot-up
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -24,69 +22,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Nov 17, 2014 at 12:30:28PM +0100, Philippe Gerum wrote:
-> On 11/17/2014 12:13 PM, Stoidner, Christoph wrote:
-> > 
-> >>>
-> >>> Now the problem "scheduling while atomic" does not occur anymore
-> >>> within API calls of our own skin. However, after some run-time
-> >>> (about 5 minutes or more) it seems to appear in gatekeeper-thread
-> >>> (see below).
-> >>>
-> >>> What is not clear to me is the ipipe_raise_irq() call in backtrace
-> >>> below. I could not identify any according call from within
-> >>> gatekeeper_thread(). Do I overlook something?
-> >>>
-> >>> What I also do not understand is the timestamp of kernel message.
-> >>> As mentioned the messages do appear about 5 minutes after kernel
-> >>> start. However the message's timestamp are from about 40 seconds
-> >>> after boot? Could it happen that messages are delayed? Or is the
-> >>> timestamp wrong?
-> >>
-> >> This would probably mean an issue with the tsc emulation, have you
-> >> tried running the "tsc" program, from xenomai regression testsuite
-> >> with the -w option ? I remember than the imx28 tsc emulation is a
-> >> bit weird, the hardware sometimes returns wrong values, and the
-> >> support answer was "read it twice, until you get twice the same
-> >> value". But I never found this really satisfactory: what if reading
-> >> it twice returns the same wrong value twice ?
-> >>
-> >> The tsc test should see if the tsc wrapping is doing fine. You can
-> >> try to run it several time, or even in parallel to your tests, to
-> >> see if it does not detect any problem.
-> > 
-> > There are some other kernel message whose's timestamp seems to be correct. E.g. when creating a semaphore (as below):
-> > 
-> > [   17.336237] Xenomai: registered exported object @CGI (semaphores)
-> > [   17.344122] Xenomai: registered exported object LOG (msgx)
-> > 
-> > I would expect these message on program start which would also match the shown timestamp. However these message are also outputted late after 5 minutes run-time, exact same time when "scheduling while atomic" is showed. So now I am assuming the timestamp is valid but messages are delayed shown. However I feel this has nothing to do with my main problem: the program crash. So maybe I should open a new thread for "delayed kernel message or wrong time stamp".
-> > 
-> > Back to topic: Do you have any idea why "scheduling while atomic" is thrown by gatekeeper_thread(), based on the backtrace? Or do you know on which place ipipe_raise_irq() is called from gatekeeper thread respectively if that would be legal/expected?
-> > 
+On 11/17/2014 02:10 PM, Gilles Chanteperdrix wrote:
+> On Mon, Nov 17, 2014 at 12:49:01PM +0100, Philippe Gerum wrote:
+>> On 11/17/2014 11:01 AM, Stoidner, Christoph wrote:
+>>>
+>>> Hi,
+>>>
+>>>> you are completely right, we have implemented our own skin. Using
+>>>> the debugging functionality mentioned above we have identified a
+>>>> function-call that leads to exact the behaviour as described in your post.
+>>>>
+>>>> Hopefully solving that issue solves our application crash.
+>>>
+>>> Now the problem "scheduling while atomic" does not occur anymore within API calls of our own skin. However, after some run-time (about 5 minutes or more) it seems to appear in gatekeeper-thread (see below). 
+>>>
+>>> What is not clear to me is the ipipe_raise_irq() call in backtrace below. I could not identify any according call from within gatekeeper_thread(). Do I overlook something?
+>>>
+>>
+>> You could match the closest routine to the calling PC value (c00aac84)
+>> using add2line on your kernel image.
+>>
+>> e.g. arm-linux-gnueabihf-addr2line -e vmlinux -a c00aac84
 > 
-> You seem to be running a preempt-rt patched kernel, but the Xenomai core
-> acts as if it was built for a regular preemption kernel. This virq is
-> triggered by some code in the Xenomai rescheduling when the caller runs
-> in secondary mode, which the gatekeeper always does. This code is
-> correct, the way it is handled by the APC code in Xenomai due to this
-> apparent build mismatch is not.
+> That would rather be:
+> arm-none-linux-gnueabi-addr2line
+> 
+> imx28 is an armv5 (who said that armv4 and armv5 were no longer in
+> circulation ?).
+> 
+> :-)
+> just nitpicking.
+> 
+> If you have a the multiarch binutils version installed, the default
+> addr2line should work as well.
+> 
 
-Note that if you are looking for low latencies on imx28 (ok, not
-bounded, but much lower on average), you would probably be better
-off using the FCSE extension, it also improves Linux latency. If the
-guaranteed mode has to many restrictions for your use case, use the
-best-effort mode, which still reduces the latency on average.
-
-For instance, on the at91sam9263 I use to test Xenomai on armv5,
-enabling the FCSE in best-effort mode divides hackbench run time by
-2, for the same arguments of hackbench.
-
-http://sisyphus.hd.free.fr/~gilles/pub/fcse/hackbench-fcse-v4.png
+"e.g." precisely stands for this, "to be replaced by the command that
+fits". I'm not building for v4/5 these days.
 
 -- 
-					    Gilles.
+Philippe.
 
