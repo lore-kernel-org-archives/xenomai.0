@@ -1,14 +1,21 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Mon, 17 Nov 2014 14:12:37 -0500
-Message-ID: <20141117191237.GS24110@csclub.uwaterloo.ca>
-References: <20141001142416.GA4435@csclub.uwaterloo.ca>
- <20141107182600.GS24110@csclub.uwaterloo.ca>
- <545D12D2.2020104@xenomai.org>
+Date: Mon, 17 Nov 2014 20:24:17 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141117192417.GA31920@sisyphus.hd.free.fr>
+References: <20141110203747.GV17476@sisyphus.hd.free.fr>
+ <5461232E.5000006@web.de>
+ <20141110205512.GW17476@sisyphus.hd.free.fr>
+ <20141110215846.GX17476@sisyphus.hd.free.fr>
+ <20141112172738.GD17476@sisyphus.hd.free.fr>
+ <546A26C0.1050309@siemens.com>
+ <20141117165924.GM26613@sisyphus.hd.free.fr>
+ <546A2C50.3060204@siemens.com>
+ <20141117173330.GR26613@sisyphus.hd.free.fr>
+ <546A477B.4020602@siemens.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <545D12D2.2020104@xenomai.org>
-Subject: Re: [Xenomai] I-pipe error when requesting irq that is on omap gpio
+In-Reply-To: <546A477B.4020602@siemens.com>
+Subject: Re: [Xenomai] "inconsistent lock state" on boot-up
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,46 +24,103 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Nov 07, 2014 at 07:43:30PM +0100, Philippe Gerum wrote:
-> For this particular issue, Xenomai 2.x is deadly wrong. Creating,
-> deleting, enabling or disabling an IRQ channel must be done from
-> secondary mode. The syscall mode bits for these native API calls are
-> wrong, should be as follows instead:
+On Mon, Nov 17, 2014 at 08:07:39PM +0100, Jan Kiszka wrote:
+> On 2014-11-17 18:33, Gilles Chanteperdrix wrote:
+> > On Mon, Nov 17, 2014 at 06:11:44PM +0100, Jan Kiszka wrote:
+> >> On 2014-11-17 17:59, Gilles Chanteperdrix wrote:
+> >>> On Mon, Nov 17, 2014 at 05:48:00PM +0100, Jan Kiszka wrote:
+> >>>> On 2014-11-12 18:27, Gilles Chanteperdrix wrote:
+> >>>>> We do not need trace_hardirqs_on and trace_hardirqs_off for the
+> >>>>> particular case of IRQs: they are already handled by
+> >>>>> __ipipe_do_sync_stage. 
+> >>>>
+> >>>> That was the key: Simply disabling the instrumentations in the
+> >>>> CONFIG_IPIPE removes all lock state inconsistencies, at least this far:
+> >>>>
+> >>>> diff --git a/arch/arm/kernel/entry-header.S b/arch/arm/kernel/entry-header.S
+> >>>> index d32f8bd..d8e0b2c 100644
+> >>>> --- a/arch/arm/kernel/entry-header.S
+> >>>> +++ b/arch/arm/kernel/entry-header.S
+> >>>> @@ -195,7 +195,7 @@
+> >>>>  #ifdef CONFIG_IPIPE_DEBUG_INTERNAL
+> >>>>  	bl	__ipipe_bugon_irqs_enabled
+> >>>>  #endif
+> >>>> -#ifdef CONFIG_TRACE_IRQFLAGS
+> >>>> +#if defined(CONFIG_TRACE_IRQFLAGS) && !defined(CONFIG_IPIPE)
+> >>>>  	@ The parent context IRQs must have been enabled to get here in
+> >>>>  	@ the first place, so there's no point checking the PSR I bit.
+> >>>>  	bl	trace_hardirqs_on
+> >>>> @@ -203,7 +203,7 @@
+> >>>>  	.else
+> >>>>  	@ IRQs off again before pulling preserved data off the stack
+> >>>>  	disable_irq_notrace
+> >>>> -#ifdef CONFIG_TRACE_IRQFLAGS
+> >>>> +#if defined(CONFIG_TRACE_IRQFLAGS) && !defined(CONFIG_IPIPE)
+> >>>>  	tst	\rpsr, #PSR_I_BIT
+> >>>>  	bleq	trace_hardirqs_on
+> >>>>  	tst	\rpsr, #PSR_I_BIT
+> >>>>
+> >>>> Will send a patch.
+> >>>
+> >>> Will this work for other paths in entry.S, such as exceptions or
+> >>> syscalls?
+> >>
+> >> Do they all come along that code? Then we need to differentiate, likely
+> >> via a separate macro parameter.
+> >>
+> >> Just noticed that there is also svc_enter, and that should be handled in
+> >> the same way. And it's likely also shared across the board.
+> > 
+> > There are 4 macros:
+> > svc_enter
+> > svc_exit
+> > when entering/exiting svc mode (whether from irq, data abort,
+> > prefetch abort), that means reentering the
+> > irq/exception path when already in kerne-mode
+> > 
+> > usr_enter
+> > usr_exit
+> > when entering/exiting usr mode (whether from irq, data abort,
+> > prefetch abort, or syscall), which is entered from user mode.
+> > 
+> > All these paths call trace_hardirqs_on/trace_hardirqs_off
+> > I have not checked the details on the how and when and if, but since
+> > you are the one working on this, I suggest you do.
+> > 
+> > If there is a need to call the real
+> > trace_hardirqs_on/trace_hardirqs_off in some cases, I would very
+> > much prefer replacing the bl trace_hard_irqs* with a bl
+> > __ipipe_trace_hardirqs* sorting out the details in C, in
+> > arch/arm/kernel/ipipe.c, than doing this in assembly files with
+> > complicated #if conditions, or retrieval of the current domain
+> > in assembly.
+> > 
 > 
-> diff --git a/ksrc/skins/native/syscall.c b/ksrc/skins/native/syscall.c
-> index 950b092..dff7f4d 100644
-> --- a/ksrc/skins/native/syscall.c
-> +++ b/ksrc/skins/native/syscall.c
-> @@ -4145,12 +4145,12 @@ static xnsysent_t __systab[] = {
->  	[__native_alarm_stop] = {&__rt_alarm_stop, __xn_exec_any},
->  	[__native_alarm_wait] = {&__rt_alarm_wait, __xn_exec_primary},
->  	[__native_alarm_inquire] = {&__rt_alarm_inquire, __xn_exec_any},
-> -	[__native_intr_create] = {&__rt_intr_create, __xn_exec_any},
-> +	[__native_intr_create] = {&__rt_intr_create, __xn_exec_lostage},
->  	[__native_intr_bind] = {&__rt_intr_bind, __xn_exec_conforming},
-> -	[__native_intr_delete] = {&__rt_intr_delete, __xn_exec_any},
-> +	[__native_intr_delete] = {&__rt_intr_delete, __xn_exec_lostage},
->  	[__native_intr_wait] = {&__rt_intr_wait, __xn_exec_primary},
-> -	[__native_intr_enable] = {&__rt_intr_enable, __xn_exec_any},
-> -	[__native_intr_disable] = {&__rt_intr_disable, __xn_exec_any},
-> +	[__native_intr_enable] = {&__rt_intr_enable, __xn_exec_lostage},
-> +	[__native_intr_disable] = {&__rt_intr_disable, __xn_exec_lostage},
->  	[__native_intr_inquire] = {&__rt_intr_inquire, __xn_exec_any},
->  	[__native_pipe_create] = {&__rt_pipe_create, __xn_exec_lostage},
->  	[__native_pipe_bind] = {&__rt_pipe_bind, __xn_exec_conforming},
+> OK, here is another proposal: filter out tracing in kernel IRQ exit path
+> (that is required as we may have interrupted Linux with virtual IRQs
+> off), but otherwise rely on domain filtering in the respective tracing
+> functions:
 
-Are you sure all 4 of those had to change?  I can see intr_create and
-intr_delete, but intr_enable and disable?  We are seeing insane latency
-from realtime irqs on the omap gpio irqs (a few ms response to an irq).
-Of course it could be the gpio irq is just doing something wrong.
-Not sure yet.  Of course before doing this change we sometimes saw it
-take close to 1s to call the realtime irq handler which made no sense
-at all.  gic interrupts are working as expected and see no delays that
-we are aware of at least.
+The only case where it does not work, is for asymmetric things,
+namely syscalls, and exceptions (page faults) because you
+can enter a syscall or exception in secondary mode (so
+trace_hardirqs_on gets called) and leave in primary mode, in which
+case you will reenter root with the kernel considering that hardirqs
+are off whereas they may not be.
+
+Listen, you have stop trying and testing patches and just say "it
+works, so, take my patch", this will not work. I absolutely require
+of you that you enumerate for each case, what the code does, and why
+it works. I will not accept a patch that was quickly tested and
+appeared to work. I consider that stuff a corner case, and not
+really useful, so, I would very much prefer get it to depend on
+!IPIPE. However, you seem to want and have it working, that is fine
+by me, but in that case do the work well, so that we do not get
+users complaining that it does not work in corner cases.
 
 -- 
-Len Sorensen
+					    Gilles.
 
