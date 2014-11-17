@@ -1,15 +1,14 @@
-From: "Stoidner, Christoph" <c.stoidner@arvero.de>
-Date: Mon, 10 Nov 2014 12:33:40 +0000
-Message-ID: <c9fed148f1f54c4aaa2aaa5d7b107f24@EX132MBOX1B.de2.local>
-References: <04e5e7e2fab241a5916e4e48f9d9b325@EX132MBOX1B.de2.local>,
- <20141109155351.GH17476@sisyphus.hd.free.fr>,
- <28083d9b9cc34fce9a6d308e8d12fbc6@EX132MBOX1B.de2.local>
-In-Reply-To: <28083d9b9cc34fce9a6d308e8d12fbc6@EX132MBOX1B.de2.local>
-Content-Language: de-DE
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Mon, 17 Nov 2014 14:12:37 -0500
+Message-ID: <20141117191237.GS24110@csclub.uwaterloo.ca>
+References: <20141001142416.GA4435@csclub.uwaterloo.ca>
+ <20141107182600.GS24110@csclub.uwaterloo.ca>
+ <545D12D2.2020104@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] "inconsistent lock state" on boot-up
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <545D12D2.2020104@xenomai.org>
+Subject: Re: [Xenomai] I-pipe error when requesting irq that is on omap gpio
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,81 +17,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-=0A=
-Hi again,=0A=
-=0A=
-now I have disabled CONFIG_XENOMAI but still enabled CONFIG_IPIPE. The erro=
-r messages on boot-up is still given.=0A=
-=0A=
-Since no one else has reported that problem I assume it happens only on a s=
-pecific architecture (for me: i.MX28 =3D> ARMv5). Is there something ARMv5 =
-architecture specific in ipipe's locking mechanism?=0A=
-=0A=
-Regards,=0A=
-Christoph=0A=
-=0A=
-________________________________________=0A=
-Von: Xenomai <xenomai-bounces@xenomai.org> im Auftrag von Stoidner, Christo=
-ph <c.stoidner@arvero.de>=0A=
-Gesendet: Montag, 10. November 2014 10:08=0A=
-An: xenomai@xenomai.org=0A=
-Betreff: Re: [Xenomai] "inconsistent lock state" on boot-up=0A=
-=0A=
-Hi Gilles,=0A=
-=0A=
-> Do you have the same message with exactly the same kernel=0A=
-> configuration, only with CONFIG_XENOMAI and CONFIG_IPIPE disabled?=0A=
-=0A=
-When CONFIG_XENOMAI and CONFIG_IPIPE are disabled the message does not=0A=
-appear on boot-up.=0A=
-=0A=
-> Do you have FCSE enabled? If yes, did you try disabling it? same=0A=
-> with unlocked context switch.=0A=
-=0A=
-FCSE is already disabled at all.=0A=
-=0A=
-Do you have an idea how to overcome the problem?=0A=
-=0A=
-Regards,=0A=
-Christoph=0A=
-=0A=
-________________________________________=0A=
-Von: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>=0A=
-Gesendet: Sonntag, 9. November 2014 16:53=0A=
-An: Stoidner, Christoph=0A=
-Cc: xenomai@xenomai.org=0A=
-Betreff: Re: [Xenomai] "inconsistent lock state" on boot-up=0A=
-=0A=
-On Sun, Nov 09, 2014 at 10:07:54AM +0000, Stoidner, Christoph wrote:=0A=
-> Hi at all,=0A=
->=0A=
-> I am using linux 3.10.32 and ipipe-core-3.10.32-arm-4.patch on a=0A=
-> Freescale i.MX28.=0A=
->=0A=
-> When booting the kernel the message "inconsistent lock state" is=0A=
-> given (see below). Does anyone have an idea why this happens? With=0A=
-> kernel 3.10.18 and according ipipe it is the same. With linux=0A=
-> 3.4.6 and ipipe 3.4.6-arm-4 the message does not appear.=0A=
-=0A=
-Do you have the same message with exactly the same kernel=0A=
-configuration, only with CONFIG_XENOMAI and CONFIG_IPIPE disabled?=0A=
-=0A=
->=0A=
-> I am very interested to understand if these message could lead to=0A=
-> any problems, since I have I unpredictable crashes of my=0A=
-> xenomai-based application program (e.g. with "segmentation fault"=0A=
-> or "scheduling while atomic" messages).=0A=
-=0A=
-Do you have FCSE enabled? If yes, did you try disabling it? same=0A=
-with unlocked context switch.=0A=
-=0A=
---=0A=
-                                            Gilles.=0A=
-=0A=
-_______________________________________________=0A=
-Xenomai mailing list=0A=
-Xenomai@xenomai.org=0A=
-http://www.xenomai.org/mailman/listinfo/xenomai=0A=
+On Fri, Nov 07, 2014 at 07:43:30PM +0100, Philippe Gerum wrote:
+> For this particular issue, Xenomai 2.x is deadly wrong. Creating,
+> deleting, enabling or disabling an IRQ channel must be done from
+> secondary mode. The syscall mode bits for these native API calls are
+> wrong, should be as follows instead:
+> 
+> diff --git a/ksrc/skins/native/syscall.c b/ksrc/skins/native/syscall.c
+> index 950b092..dff7f4d 100644
+> --- a/ksrc/skins/native/syscall.c
+> +++ b/ksrc/skins/native/syscall.c
+> @@ -4145,12 +4145,12 @@ static xnsysent_t __systab[] = {
+>  	[__native_alarm_stop] = {&__rt_alarm_stop, __xn_exec_any},
+>  	[__native_alarm_wait] = {&__rt_alarm_wait, __xn_exec_primary},
+>  	[__native_alarm_inquire] = {&__rt_alarm_inquire, __xn_exec_any},
+> -	[__native_intr_create] = {&__rt_intr_create, __xn_exec_any},
+> +	[__native_intr_create] = {&__rt_intr_create, __xn_exec_lostage},
+>  	[__native_intr_bind] = {&__rt_intr_bind, __xn_exec_conforming},
+> -	[__native_intr_delete] = {&__rt_intr_delete, __xn_exec_any},
+> +	[__native_intr_delete] = {&__rt_intr_delete, __xn_exec_lostage},
+>  	[__native_intr_wait] = {&__rt_intr_wait, __xn_exec_primary},
+> -	[__native_intr_enable] = {&__rt_intr_enable, __xn_exec_any},
+> -	[__native_intr_disable] = {&__rt_intr_disable, __xn_exec_any},
+> +	[__native_intr_enable] = {&__rt_intr_enable, __xn_exec_lostage},
+> +	[__native_intr_disable] = {&__rt_intr_disable, __xn_exec_lostage},
+>  	[__native_intr_inquire] = {&__rt_intr_inquire, __xn_exec_any},
+>  	[__native_pipe_create] = {&__rt_pipe_create, __xn_exec_lostage},
+>  	[__native_pipe_bind] = {&__rt_pipe_bind, __xn_exec_conforming},
+
+Are you sure all 4 of those had to change?  I can see intr_create and
+intr_delete, but intr_enable and disable?  We are seeing insane latency
+from realtime irqs on the omap gpio irqs (a few ms response to an irq).
+Of course it could be the gpio irq is just doing something wrong.
+Not sure yet.  Of course before doing this change we sometimes saw it
+take close to 1s to call the realtime irq handler which made no sense
+at all.  gic interrupts are working as expected and see no delays that
+we are aware of at least.
+
+-- 
+Len Sorensen
 
