@@ -1,13 +1,17 @@
-From: "Stoidner, Christoph" <c.stoidner@arvero.de>
-Date: Mon, 10 Nov 2014 09:08:47 +0000
-Message-ID: <28083d9b9cc34fce9a6d308e8d12fbc6@EX132MBOX1B.de2.local>
-References: <04e5e7e2fab241a5916e4e48f9d9b325@EX132MBOX1B.de2.local>,
- <20141109155351.GH17476@sisyphus.hd.free.fr>
-In-Reply-To: <20141109155351.GH17476@sisyphus.hd.free.fr>
-Content-Language: de-DE
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <5469E0AD.6060209@xenomai.org>
+Date: Mon, 17 Nov 2014 12:49:01 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
+References: <04e5e7e2fab241a5916e4e48f9d9b325@EX132MBOX1B.de2.local>
+ <20141109155351.GH17476@sisyphus.hd.free.fr>
+ <28083d9b9cc34fce9a6d308e8d12fbc6@EX132MBOX1B.de2.local>
+ <20141110124308.GK17476@sisyphus.hd.free.fr>
+ <b258eccb6b124aaf91fd1b35c9ccbf30@EX132MBOX1B.de2.local>,
+ <20141111174652.GK17476@sisyphus.hd.free.fr>
+ <6f2c7097b3eb4473844743b8b495f5e0@EX132MBOX1B.de2.local>
+In-Reply-To: <6f2c7097b3eb4473844743b8b495f5e0@EX132MBOX1B.de2.local>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] "inconsistent lock state" on boot-up
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,57 +21,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Stoidner, Christoph" <c.stoidner@arvero.de>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-=0A=
-Hi Gilles,=0A=
-=0A=
-> Do you have the same message with exactly the same kernel=0A=
-> configuration, only with CONFIG_XENOMAI and CONFIG_IPIPE disabled?=0A=
-=0A=
-When CONFIG_XENOMAI and CONFIG_IPIPE are disabled the message does not =0A=
-appear on boot-up.=0A=
-=0A=
-> Do you have FCSE enabled? If yes, did you try disabling it? same=0A=
-> with unlocked context switch.=0A=
-=0A=
-FCSE is already disabled at all.=0A=
-=0A=
-Do you have an idea how to overcome the problem?=0A=
-=0A=
-Regards,=0A=
-Christoph=0A=
-=0A=
-________________________________________=0A=
-Von: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>=0A=
-Gesendet: Sonntag, 9. November 2014 16:53=0A=
-An: Stoidner, Christoph=0A=
-Cc: xenomai@xenomai.org=0A=
-Betreff: Re: [Xenomai] "inconsistent lock state" on boot-up=0A=
-=0A=
-On Sun, Nov 09, 2014 at 10:07:54AM +0000, Stoidner, Christoph wrote:=0A=
-> Hi at all,=0A=
->=0A=
-> I am using linux 3.10.32 and ipipe-core-3.10.32-arm-4.patch on a=0A=
-> Freescale i.MX28.=0A=
->=0A=
-> When booting the kernel the message "inconsistent lock state" is=0A=
-> given (see below). Does anyone have an idea why this happens? With=0A=
-> kernel 3.10.18 and according ipipe it is the same. With linux=0A=
-> 3.4.6 and ipipe 3.4.6-arm-4 the message does not appear.=0A=
-=0A=
-Do you have the same message with exactly the same kernel=0A=
-configuration, only with CONFIG_XENOMAI and CONFIG_IPIPE disabled?=0A=
-=0A=
->=0A=
-> I am very interested to understand if these message could lead to=0A=
-> any problems, since I have I unpredictable crashes of my=0A=
-> xenomai-based application program (e.g. with "segmentation fault"=0A=
-> or "scheduling while atomic" messages).=0A=
-=0A=
-Do you have FCSE enabled? If yes, did you try disabling it? same=0A=
-with unlocked context switch.=0A=
-=0A=
---=0A=
-                                            Gilles.=0A=
+On 11/17/2014 11:01 AM, Stoidner, Christoph wrote:
+> 
+> Hi,
+> 
+>> you are completely right, we have implemented our own skin. Using
+>> the debugging functionality mentioned above we have identified a
+>> function-call that leads to exact the behaviour as described in your post.
+>>
+>> Hopefully solving that issue solves our application crash.
+> 
+> Now the problem "scheduling while atomic" does not occur anymore within API calls of our own skin. However, after some run-time (about 5 minutes or more) it seems to appear in gatekeeper-thread (see below). 
+> 
+> What is not clear to me is the ipipe_raise_irq() call in backtrace below. I could not identify any according call from within gatekeeper_thread(). Do I overlook something?
+> 
+
+You could match the closest routine to the calling PC value (c00aac84)
+using add2line on your kernel image.
+
+e.g. arm-linux-gnueabihf-addr2line -e vmlinux -a c00aac84
+
+-- 
+Philippe.
 
