@@ -1,20 +1,20 @@
-Date: Tue, 18 Nov 2014 20:46:54 +0100
+Date: Tue, 18 Nov 2014 21:28:33 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141118194654.GF3177@sisyphus.hd.free.fr>
-References: <20141117202754.GI31920@sisyphus.hd.free.fr>
- <20141117214734.GW24110@csclub.uwaterloo.ca>
- <20141117215458.GM31920@sisyphus.hd.free.fr>
- <20141117221001.GX24110@csclub.uwaterloo.ca>
+Message-ID: <20141118202833.GH3177@sisyphus.hd.free.fr>
+References: <20141117221001.GX24110@csclub.uwaterloo.ca>
  <20141117221542.GN31920@sisyphus.hd.free.fr>
  <20141118152422.GY24110@csclub.uwaterloo.ca>
  <20141118152649.GC26237@sisyphus.hd.free.fr>
  <20141118184843.GZ24110@csclub.uwaterloo.ca>
- <20141118191448.GD3177@sisyphus.hd.free.fr>
- <20141118192530.GC24110@csclub.uwaterloo.ca>
+ <20141118185131.GB3177@sisyphus.hd.free.fr>
+ <20141118185657.GA24110@csclub.uwaterloo.ca>
+ <20141118190014.GC3177@sisyphus.hd.free.fr>
+ <20141118192437.GB24110@csclub.uwaterloo.ca>
+ <20141118192846.GE3177@sisyphus.hd.free.fr>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20141118192530.GC24110@csclub.uwaterloo.ca>
+In-Reply-To: <20141118192846.GE3177@sisyphus.hd.free.fr>
 Subject: Re: [Xenomai] I-pipe error when requesting irq that is on omap gpio
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -27,65 +27,110 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
 Cc: xenomai@xenomai.org
 
-On Tue, Nov 18, 2014 at 02:25:30PM -0500, Lennart Sorensen wrote:
-> On Tue, Nov 18, 2014 at 08:14:48PM +0100, Gilles Chanteperdrix wrote:
-> > On Tue, Nov 18, 2014 at 01:48:43PM -0500, Lennart Sorensen wrote:
-> > > On Tue, Nov 18, 2014 at 04:26:49PM +0100, Gilles Chanteperdrix wrote:
-> > > > Ok, there is already code in the I-pipe for turning off smartidle
-> > > > for other peripherals (like the hardware timer, the omap specific
-> > > > one used on omap3, and SMP omap4 and 5 when in UP mode, not the
-> > > > cortex a9 global timer), so, any patch to toggle this bit with 
-> > > > if (IS_ENABLED(IPIPE))
-> > > > will be accepted.
+On Tue, Nov 18, 2014 at 08:28:46PM +0100, Gilles Chanteperdrix wrote:
+> On Tue, Nov 18, 2014 at 02:24:37PM -0500, Lennart Sorensen wrote:
+> > On Tue, Nov 18, 2014 at 08:00:14PM +0100, Gilles Chanteperdrix wrote:
+> > > On Tue, Nov 18, 2014 at 01:56:57PM -0500, Lennart Sorensen wrote:
+> > > > On Tue, Nov 18, 2014 at 07:51:31PM +0100, Gilles Chanteperdrix wrote:
+> > > > > I would take the simple approach: disable the smartidle in the probe
+> > > > > function for all GPIO banks if IS_ENABLED(CONFIG_IPIPE)
+> > > > > 
+> > > > > Otherwise, the enable_irqdesc/disable_irqdesc functions already
+> > > > > keep track of which bank has real-time irq handlers registered, and
+> > > > > it is already conditionally compiled only if CONFIG_IPIPE is
+> > > > > enabled. So, you can add your code there.
+> > > > 
+> > > > I will consider that after doing my other test.  For me adding one flag
+> > > > to the dtb for our board seems less invasive, but for ipipe overall it
+> > > > would be better to make ipipe turn of smartidle on the IRQ supporting
+> > > > gpio banks.
 > > > 
-> > > I am just adding 'ti,no-idle' to gpio7 in the dtb.  That appears to
-> > > be right.  Building it now to test it.
-> > > 
-> > > The handling is of in omap-hwmod.c, not in gpio-omap.c so not sure how
-> > > to make ipipe know that a given gpio bank is used for irq and should
-> > > not idle.  At least not in a clean manner.
+> > > RT IRQs only, we do not care about NRT IRQS, they can depend on the
+> > > dts parameter. Anyway, if you tell me where the code you are talking
+> > > about can be found, I can propose a patch that you test, and merge
+> > > it if it works for you.
 > > 
-> > I am afraid this parameter can not be found in mainline kernel 3.16.
-> > So, it must be a local addition of the kernel you use.
+> > Hmm, ti,no-idle causes a gpio bank startup failure, so that doesn't work.
+> > 
+> > The code setting it to idle is in arch/arm/mach-omap2/omap_hwmod.c:
+> > 
+> > static void _enable_sysc(struct omap_hwmod *oh)
+> > {
+> >         u8 idlemode, sf;
+> >         u32 v;
+> >         bool clkdm_act;
+> >         struct clockdomain *clkdm;
+> > 
+> >         if (!oh->class->sysc)
+> >                 return;
+> > 
+> >         /*
+> >          * Wait until reset has completed, this is needed as the IP
+> >          * block is reset automatically by hardware in some cases
+> >          * (off-mode for example), and the drivers require the
+> >          * IP to be ready when they access it
+> >          */
+> >         if (oh->flags & HWMOD_CONTROL_OPT_CLKS_IN_RESET)
+> >                 _enable_optional_clocks(oh);
+> >         _wait_softreset_complete(oh);
+> >         if (oh->flags & HWMOD_CONTROL_OPT_CLKS_IN_RESET)
+> >                 _disable_optional_clocks(oh);
+> > 
+> >         v = oh->_sysc_cache;
+> >         sf = oh->class->sysc->sysc_flags;
+> > 
+> >         clkdm = _get_clkdm(oh);
+> >         if (sf & SYSC_HAS_SIDLEMODE) {
+> >                 if (oh->flags & HWMOD_SWSUP_SIDLE ||
+> >                     oh->flags & HWMOD_SWSUP_SIDLE_ACT) {
+> >                         idlemode = HWMOD_IDLEMODE_NO;
+> >                 } else {
+> >                         if (sf & SYSC_HAS_ENAWAKEUP)
+> >                                 _enable_wakeup(oh, &v);
+> >                         if (oh->class->sysc->idlemodes & SIDLE_SMART_WKUP)
+> >                                 idlemode = HWMOD_IDLEMODE_SMART_WKUP; <- this one
+> >                         else
+> >                                 idlemode = HWMOD_IDLEMODE_SMART; <- or this one
+> >                 }
+> > 
+> >                 /*
+> >                  * This is special handling for some IPs like
+> >                  * 32k sync timer. Force them to idle!
+> >                  */
+> >                 clkdm_act = (clkdm && clkdm->flags & CLKDM_ACTIVE_WITH_MPU);
+> >                 if (clkdm_act && !(oh->class->sysc->idlemodes &
+> >                                    (SIDLE_SMART | SIDLE_SMART_WKUP)))
+> >                         idlemode = HWMOD_IDLEMODE_FORCE;
+> > 
+> >                 _set_slave_idlemode(oh, idlemode, &v);
+> >         }
+> > 
+> > The hwmod for the gpio bank in question is in
+> > arch/arm/mach-omap2/omap_hwmod_7xx_data.c:
+> > 
+> > /*
+> >  * 'gpio' class
+> >  *
+> >  */
+> > 
+> > static struct omap_hwmod_class_sysconfig dra7xx_gpio_sysc = {
+> >         .rev_offs       = 0x0000,
+> >         .sysc_offs      = 0x0010,
+> >         .syss_offs      = 0x0114,
+> >         .sysc_flags     = (SYSC_HAS_AUTOIDLE | SYSC_HAS_ENAWAKEUP |
+> >                            SYSC_HAS_SIDLEMODE | SYSC_HAS_SOFTRESET |
+> >                            SYSS_HAS_RESET_STATUS),
+> >         .idlemodes      = (SIDLE_FORCE | SIDLE_NO | SIDLE_SMART |
+> >                            SIDLE_SMART_WKUP),
+> >         .sysc_fields    = &omap_hwmod_sysc_type1,
+> > };
 > 
-> Yeah I am using the ti-linux tree since they are not done merging yet.
-> 
-> Not that it worked anyhow.
+> What if you remove SYSC_HAS_SIDLEMODE here ?
 
-Just something to inform you. The status of Xenomai patches for
-vendor forks are:
-- imx6 using 3.0 fork, somewhat maintained: inexplicable hangups,
-and a situation where it is hard not to suspect the young age of the
-port in the kernel used;
-- beaglebone using 3.8 fork: patch submitted, no feedback, no
-further submission; considered bitroting now
-- raspberry: same as beaglebone
-- zynq: two patches submitted, one for 3.5 and one for 3.8, but
-otherwise same as beaglebone and raspberry.
-
-In my experience, when people choose a kernel version for an
-industrial project, they tend to stick to that version for the
-duration of the project, or even for all the projects they do with
-the same processors. The result is that if they need an I-pipe patch
-for their project, they need it for one kernel version, so their
-contribution is of the "drop and go" kind. Simply because when this
-project is finished, another starts, maybe using a newer processor,
-and so they never get the time to upgrade the patch to a kernel
-version they do not need.
-
-So, it is much better to contribute I-pipe patches to the mainline
-kernel I-pipe branch. Simply because, when I merge them, I
-compile-test them for every following supported mainline kernel
-release. So, even if some kernel change broke the patch without
-breaking compilation (this happens, and not even rarely), you have
-something from which you can start on a current release.
-
-But my vendor fork supports hardware X or Y! Well, then port the
-driver for hardware X or Y to the mainline kernel, this will not
-take monthes to do (assuuming you will not try and get the drivers
-merged into mainline, because THAT would cost you a lot of time,
-there is a reason why vendors keep them in forks and do not try and
-merge them).
+Another thing, what if you remove PM_RUNTIME in the kernel
+configuration completely? On my omap3 and omap4 boards, this results
+in some stupid warnings at boot time, but the system runs just fine.
+And maybe this bypasses all that hwmod awful stuff.
 
 -- 
 					    Gilles.
