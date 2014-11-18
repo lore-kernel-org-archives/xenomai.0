@@ -1,13 +1,21 @@
-Message-ID: <5473636E.6030206@xenomai.org>
-Date: Mon, 24 Nov 2014 11:57:18 -0500
-From: Jorge Ramirez Ortiz <jro@xenomai.org>
+Date: Tue, 18 Nov 2014 20:00:14 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141118190014.GC3177@sisyphus.hd.free.fr>
+References: <20141117202754.GI31920@sisyphus.hd.free.fr>
+ <20141117214734.GW24110@csclub.uwaterloo.ca>
+ <20141117215458.GM31920@sisyphus.hd.free.fr>
+ <20141117221001.GX24110@csclub.uwaterloo.ca>
+ <20141117221542.GN31920@sisyphus.hd.free.fr>
+ <20141118152422.GY24110@csclub.uwaterloo.ca>
+ <20141118152649.GC26237@sisyphus.hd.free.fr>
+ <20141118184843.GZ24110@csclub.uwaterloo.ca>
+ <20141118185131.GB3177@sisyphus.hd.free.fr>
+ <20141118185657.GA24110@csclub.uwaterloo.ca>
 MIME-Version: 1.0
-References: <CAKKWdtfZm+F3M+VtD2zG=JMun1GYtNDOAbzYvVUDXxq5B8qsMw@mail.gmail.com>	<53F30622.4050605@xenomai.org>
- <CAKKWdtfjaZcjX0q0W0kJQSeJiNCssYE21hrbzR4PseXr1MOzfw@mail.gmail.com>
-In-Reply-To: <CAKKWdtfjaZcjX0q0W0kJQSeJiNCssYE21hrbzR4PseXr1MOzfw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai]  a question about interrupts
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20141118185657.GA24110@csclub.uwaterloo.ca>
+Subject: Re: [Xenomai] I-pipe error when requesting irq that is on omap gpio
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,48 +24,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Cc: xenomai@xenomai.org
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
-
-On 11/24/2014 11:38 AM, ali hagigat wrote:
-> Please answer the following questions. I am much appreciated.
+On Tue, Nov 18, 2014 at 01:56:57PM -0500, Lennart Sorensen wrote:
+> On Tue, Nov 18, 2014 at 07:51:31PM +0100, Gilles Chanteperdrix wrote:
+> > I would take the simple approach: disable the smartidle in the probe
+> > function for all GPIO banks if IS_ENABLED(CONFIG_IPIPE)
+> > 
+> > Otherwise, the enable_irqdesc/disable_irqdesc functions already
+> > keep track of which bank has real-time irq handlers registered, and
+> > it is already conditionally compiled only if CONFIG_IPIPE is
+> > enabled. So, you can add your code there.
 > 
-> 1) does ISR(interrupt service routine) have priority over the Xenomai
-> real-time tasks? any ISR defined for root or head domain? are executed
-> in the middle of the real-time tasks?
-> 
-> 2) if there is a linux thread and a regular interrupt happens and then
-> a timer interrupt happnes, means , xnintr_clock_handler(), the
-> xnpod_schedule() function will suspend the linux thread? and the linux
-> thread is suspended with two nested interrupt?
-> 
-> I wonder if you could answer yourself, mailing list is escaping from
-> answering these questions. thank you
-> 
+> I will consider that after doing my other test.  For me adding one flag
+> to the dtb for our board seems less invasive, but for ipipe overall it
+> would be better to make ipipe turn of smartidle on the IRQ supporting
+> gpio banks.
 
+RT IRQs only, we do not care about NRT IRQS, they can depend on the
+dts parameter. Anyway, if you tell me where the code you are talking
+about can be found, I can propose a patch that you test, and merge
+it if it works for you.
 
-hi Ali,
-
-Let me share this with the mailing list.
-I am sure these questions can be resolved in the open - actually I think Gilles
-might have already addressed them.
-
-cheers,
-
-
-- -- 
-jro
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQEcBAEBAgAGBQJUc2NuAAoJECDcy2IJkagR7RAH/34zgxJkOcvjrmU2uQNfhjUC
-rFpY8WlY0hSAs4XrAx9uHN5P6PntcWG61NGkH1dPq73AhGjnIl3pyW7Iv5/Mh58H
-Py5NyvCx6VfGCO5DrnJ3yhTil61Pzgh++W0lVf32hrpUvhyaYoaYkLWSwK5L+Qr2
-YYrKG4UhceJpAOJzEvgblxXlq/oNn6wwYE8kCsHUurYAPs4VKzMQe83pkz8m6ReY
-wXcQ1hKC3lNKE8htEp/5KHpSV+sR/dkCH98bBXaQELlU7GIhvflM6ZuZ593zx36u
-m/RzOQGmlgnvoleL3mIwDMKXjWAYAKk5R4JogSdlzt+DX9a84VFN+6lCqpgkDrs=
-=GA0y
------END PGP SIGNATURE-----
+-- 
+					    Gilles.
 
