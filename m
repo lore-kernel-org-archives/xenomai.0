@@ -1,16 +1,21 @@
-Date: Fri, 28 Nov 2014 10:50:38 +0100
+Date: Tue, 18 Nov 2014 20:28:46 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141128095038.GA3832@hermes>
-References: <54775097.30705@siemens.com> <20141127181823.GK7842@hermes>
- <547772AF.108@siemens.com>
- <20141127191438.GI24110@csclub.uwaterloo.ca>
- <20141127203400.GP7842@hermes> <54778CF6.6000909@siemens.com>
- <20141127231527.GC24076@hermes> <5478430B.9030602@siemens.com>
+Message-ID: <20141118192846.GE3177@sisyphus.hd.free.fr>
+References: <20141117215458.GM31920@sisyphus.hd.free.fr>
+ <20141117221001.GX24110@csclub.uwaterloo.ca>
+ <20141117221542.GN31920@sisyphus.hd.free.fr>
+ <20141118152422.GY24110@csclub.uwaterloo.ca>
+ <20141118152649.GC26237@sisyphus.hd.free.fr>
+ <20141118184843.GZ24110@csclub.uwaterloo.ca>
+ <20141118185131.GB3177@sisyphus.hd.free.fr>
+ <20141118185657.GA24110@csclub.uwaterloo.ca>
+ <20141118190014.GC3177@sisyphus.hd.free.fr>
+ <20141118192437.GB24110@csclub.uwaterloo.ca>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5478430B.9030602@siemens.com>
-Subject: Re: [Xenomai] [pull] forge: Adjust default registry mount point
+In-Reply-To: <20141118192437.GB24110@csclub.uwaterloo.ca>
+Subject: Re: [Xenomai] I-pipe error when requesting irq that is on omap gpio
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,75 +24,107 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Cc: xenomai@xenomai.org
 
-On Fri, Nov 28, 2014 at 10:40:27AM +0100, Jan Kiszka wrote:
-> On 2014-11-28 00:15, Gilles Chanteperdrix wrote:
-> > On Thu, Nov 27, 2014 at 09:43:34PM +0100, Jan Kiszka wrote:
-> >> On 2014-11-27 21:34, Gilles Chanteperdrix wrote:
-> >>> On Thu, Nov 27, 2014 at 02:14:38PM -0500, Lennart Sorensen wrote:
-> >>>> On Thu, Nov 27, 2014 at 07:51:27PM +0100, Jan Kiszka wrote:
-> >>>>> On 2014-11-27 19:18, Gilles Chanteperdrix wrote:
-> >>>>>> According to the filesystem hierarchy standard, /mnt is the standard
-> >>>>>> place for "temporarily mounted filesystems".
-> >>>>>>
-> >>>>>> http://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard
-> >>>>>
-> >>>>> Right, another reason to NOT mess around with it: if something was
-> >>>>> temporarily mounted there, we will create the mountpoint inside that
-> >>>>> filesystem with unforeseeable side effects.
-> >>>>
-> >>>> I always read that as "temporarily mounted there by the admin or some
-> >>>> other human".  Certainly not automatic mounts by software.  There is a
-> >>>> reason /media and such exists on many distributins.
-> >>>
-> >>> I would not venture an "always", autofs for instance, used to mount
-> >>> things under /mnt. and /media has not always existed either, we used
-> >>> /mnt/cdrom.
-> >>
-> >> FHS on /mnt purpose:
-> >>
-> >> "This directory is provided so that the system administrator may
-> >> temporarily mount a filesystem as needed. The content of this directory
-> >> is a local issue and should not affect the manner in which any program
-> >> is run."
-> >>
-> >> I think this makes it crystal clear that Xenomai is not supposed to
-> >> touch it.
+On Tue, Nov 18, 2014 at 02:24:37PM -0500, Lennart Sorensen wrote:
+> On Tue, Nov 18, 2014 at 08:00:14PM +0100, Gilles Chanteperdrix wrote:
+> > On Tue, Nov 18, 2014 at 01:56:57PM -0500, Lennart Sorensen wrote:
+> > > On Tue, Nov 18, 2014 at 07:51:31PM +0100, Gilles Chanteperdrix wrote:
+> > > > I would take the simple approach: disable the smartidle in the probe
+> > > > function for all GPIO banks if IS_ENABLED(CONFIG_IPIPE)
+> > > > 
+> > > > Otherwise, the enable_irqdesc/disable_irqdesc functions already
+> > > > keep track of which bank has real-time irq handlers registered, and
+> > > > it is already conditionally compiled only if CONFIG_IPIPE is
+> > > > enabled. So, you can add your code there.
+> > > 
+> > > I will consider that after doing my other test.  For me adding one flag
+> > > to the dtb for our board seems less invasive, but for ipipe overall it
+> > > would be better to make ipipe turn of smartidle on the IRQ supporting
+> > > gpio banks.
 > > 
-> > Just to add another argument. I just asked a friend who is a
-> > professional sysadmin. He creates directory under /mnt and mount
-> > things under these directories. So, I am not sure the standard is
-> > even applied by the people who should use it.
-> > 
-> > If you read on the last site I sent, under the /media article: 
-> > 
-> > Amid much controversy and consternation on the part of system and
-> > network administrators a directory containing mount points for
-> > removable media has now been created. Funnily enough, it has been
-> > named /media.
-> > 
-> > Are you sure, 100% sure, that every Xenomai user expects to be able
-> > to use /mnt as a mount point? Or that they will create directories
-> > under /mnt like everybody has been doing since Linux exists?
+> > RT IRQs only, we do not care about NRT IRQS, they can depend on the
+> > dts parameter. Anyway, if you tell me where the code you are talking
+> > about can be found, I can propose a patch that you test, and merge
+> > it if it works for you.
 > 
-> I'm both absolutely sure that a) has to be left alone by Xenomai because
-> of requirements of the FHS and the way /mnt is used and b) we should try
-> hard to avoid creating temporary dirs in persistent filesystems.
+> Hmm, ti,no-idle causes a gpio bank startup failure, so that doesn't work.
+> 
+> The code setting it to idle is in arch/arm/mach-omap2/omap_hwmod.c:
+> 
+> static void _enable_sysc(struct omap_hwmod *oh)
+> {
+>         u8 idlemode, sf;
+>         u32 v;
+>         bool clkdm_act;
+>         struct clockdomain *clkdm;
+> 
+>         if (!oh->class->sysc)
+>                 return;
+> 
+>         /*
+>          * Wait until reset has completed, this is needed as the IP
+>          * block is reset automatically by hardware in some cases
+>          * (off-mode for example), and the drivers require the
+>          * IP to be ready when they access it
+>          */
+>         if (oh->flags & HWMOD_CONTROL_OPT_CLKS_IN_RESET)
+>                 _enable_optional_clocks(oh);
+>         _wait_softreset_complete(oh);
+>         if (oh->flags & HWMOD_CONTROL_OPT_CLKS_IN_RESET)
+>                 _disable_optional_clocks(oh);
+> 
+>         v = oh->_sysc_cache;
+>         sf = oh->class->sysc->sysc_flags;
+> 
+>         clkdm = _get_clkdm(oh);
+>         if (sf & SYSC_HAS_SIDLEMODE) {
+>                 if (oh->flags & HWMOD_SWSUP_SIDLE ||
+>                     oh->flags & HWMOD_SWSUP_SIDLE_ACT) {
+>                         idlemode = HWMOD_IDLEMODE_NO;
+>                 } else {
+>                         if (sf & SYSC_HAS_ENAWAKEUP)
+>                                 _enable_wakeup(oh, &v);
+>                         if (oh->class->sysc->idlemodes & SIDLE_SMART_WKUP)
+>                                 idlemode = HWMOD_IDLEMODE_SMART_WKUP; <- this one
+>                         else
+>                                 idlemode = HWMOD_IDLEMODE_SMART; <- or this one
+>                 }
+> 
+>                 /*
+>                  * This is special handling for some IPs like
+>                  * 32k sync timer. Force them to idle!
+>                  */
+>                 clkdm_act = (clkdm && clkdm->flags & CLKDM_ACTIVE_WITH_MPU);
+>                 if (clkdm_act && !(oh->class->sysc->idlemodes &
+>                                    (SIDLE_SMART | SIDLE_SMART_WKUP)))
+>                         idlemode = HWMOD_IDLEMODE_FORCE;
+> 
+>                 _set_slave_idlemode(oh, idlemode, &v);
+>         }
+> 
+> The hwmod for the gpio bank in question is in
+> arch/arm/mach-omap2/omap_hwmod_7xx_data.c:
+> 
+> /*
+>  * 'gpio' class
+>  *
+>  */
+> 
+> static struct omap_hwmod_class_sysconfig dra7xx_gpio_sysc = {
+>         .rev_offs       = 0x0000,
+>         .sysc_offs      = 0x0010,
+>         .syss_offs      = 0x0114,
+>         .sysc_flags     = (SYSC_HAS_AUTOIDLE | SYSC_HAS_ENAWAKEUP |
+>                            SYSC_HAS_SIDLEMODE | SYSC_HAS_SOFTRESET |
+>                            SYSS_HAS_RESET_STATUS),
+>         .idlemodes      = (SIDLE_FORCE | SIDLE_NO | SIDLE_SMART |
+>                            SIDLE_SMART_WKUP),
+>         .sysc_fields    = &omap_hwmod_sysc_type1,
+> };
 
-This is ridiculous. Because the standard changed, and one
-distribution, Debian, decided to follow the new standard, which
-seems to be not widely accepted, and even controversial, you want to
-impose what Debian does to everybody. The distribution I use has
-mount points under /mnt. So, why following Debian and not the
-distribution I use, and what sysadmin have been doing for ages?
-
-You want the mount point to be somewhere else? Fine, put a symbolic
-link.
-
-mkdir /run/xenomai
-ln -s /run/xenomai /mnt/xenomai
+What if you remove SYSC_HAS_SIDLEMODE here ?
 
 -- 
 					    Gilles.
