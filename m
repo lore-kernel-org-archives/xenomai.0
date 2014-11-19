@@ -1,13 +1,14 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Wed, 19 Nov 2014 10:19:57 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C9C3972E@SINTEFEXMBX05.sintef.no>
+Date: Wed, 19 Nov 2014 11:23:52 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141119102352.GC25848@sisyphus.hd.free.fr>
 References: <314E5ECDAA86314791309FA670550F89C9C3743B@SINTEFEXMBX05.sintef.no>
  <20141119082140.GX3177@sisyphus.hd.free.fr>
-In-Reply-To: <20141119082140.GX3177@sisyphus.hd.free.fr>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <314E5ECDAA86314791309FA670550F89C9C3972E@SINTEFEXMBX05.sintef.no>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <314E5ECDAA86314791309FA670550F89C9C3972E@SINTEFEXMBX05.sintef.no>
 Subject: Re: [Xenomai] xnintr_irq_handler: IRQ135 not handled. Disabling IRQ
  line.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,39 +19,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-VGhhbmtzIEdpbGxlcywNCg0KSSB3aWxsIGNoZWNrIGlmIEkgaGF2ZSBzcHVyaW91cyBpbnRlcnJ1
-cHRzLi4NCg0KDQpCeSB0aGUgd2F5Og0KDQpJIHdvdWxkIGxpa2UgdG8gdXNlIHRoZSBmdW5jdGlv
-biAiIHJ0ZG1fY2xvY2tfcmVhZF9tb25vdG9uaWMoKSIgZnJvbSB1c2VyIHNwYWNlLg0KDQpUaGUg
-WGVub21haSBkb3h5Z2VuIEFQSSBzdGF0ZXMgdGhhdCB0aGUgZnVuY3Rpb24gY2FuIGNhbGxlZCBm
-cm9tIFVzZXItc3BhY2UgdGFzayAoUlQsIG5vbi1SVCkgYnV0IG5vdGhpbmcgZWxzZS4NCkkgaGF2
-ZSBnb29nbGVkIGl0LCBidXQgaXQgaXMgZGlmZmljdWx0IHRvIGZpbmQgd2hhdCBpbmNsdWRlZmls
-ZSBhbmQgbGlicmFyeSBpcyBuZWVkZWQuDQoNClBsZWFzZSBhZHZpc2UuDQoNClJlZ2FyZHMNClRl
-cmplDQoNCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEdpbGxlcyBDaGFudGVw
-ZXJkcml4IFttYWlsdG86Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmddIA0KU2VudDog
-MTkuIG5vdmVtYmVyIDIwMTQgMDk6MjINClRvOiBUZXJqZSBGcsO4eXNhDQpDYzogeGVub21haUB4
-ZW5vbWFpLm9yZw0KU3ViamVjdDogUmU6IFtYZW5vbWFpXSB4bmludHJfaXJxX2hhbmRsZXI6IElS
-UTEzNSBub3QgaGFuZGxlZC4gRGlzYWJsaW5nIElSUSBsaW5lLg0KDQpPbiBXZWQsIE5vdiAxOSwg
-MjAxNCBhdCAwODowMDo1M0FNICswMDAwLCBUZXJqZSBGcsO4eXNhIHdyb3RlOg0KPiBEZWFyIGZv
-cnVtLA0KPiANCj4gV2hpbGUgcnVubmluZyBhIGxvbmcgdGVybSB0ZXN0IG9mIG15IGFwcGxpY2F0
-aW9uLCB0aGUgYXBwbGljYXRpb24gdGVybWluYXRlcyB3aXRob3V0IHdhcm5pbmcgYW5kIHRoZSBt
-ZXNzYWdlIGJlbG93IGlzIGxvZ2dlZCBpbiB0aGUgY29uc29sZSB3aW5kb3cuDQo+IFdoYXQgbWF5
-IGJlIHRoZSBjYXVzZSBvZiB0aGlzIGV2ZW50Pw0KDQpZb3VyIGFwcGxpY2F0aW9uIHJlZ2lzdGVy
-cyBhIGhhbmRsZXIgZm9yIElSUSAxMzUsIHdoaWNoIHJldHVybnMgUlRETV9JUlFfTk9ORSwgbWVh
-bmluZyAidGhlIElSUSB3YXMgbm90IGZvciBtZSIuIEFuZCBzaW5jZSB0aGVyZSBpcyBubyBvdGhl
-ciBoYW5kbGVyIHJlZ2lzdGVyZWQgZm9yIHRoaXMgSVJRIHdoaWNoIHJldHVybnMgUlRETV9JUlFf
-SEFORExFRCwgWGVub21haSBjb25zaWRlcnMgeW91ciBkcml2ZXIgaXMgYnVnZ3ksIHNvIGRpc2Fi
-bGVzIHRoZSBJUlEgbGluZSwgdG8gYXZvaWQgdGhlIGJ1Z2d5IGNvZGUgcGF0aCB0aGF0IGlzIHlv
-dXIgaXJxIGhhbmRsZXIsIGJlY2F1c2UgaWYgaW5kZWVkIHlvdXIgaXJxIGhhbmRsZXIgZGlkIG5v
-dCBhY2tub3dsZWRnZSB0aGUgSVJRIGF0IHRoZSBkZXZpY2UgbGV2ZWwsIGFuZCBYZW5vbWFpIGRv
-ZXMgbm90IGRpc2FibGUgdGhlIElSUSBsaW5lLCB0aGUgSVJRIHdpbGwgdHJpZ2dlciBhZ2Fpbiwg
-YW5kIHRoZSBzeXN0ZW0gd2lsbCBlbnRlciBhbiBpbmZpbml0ZSBsb29wIGluIElSUSBtb2RlLCBj
-YXVzaW5nIGEgbG9ja3VwLg0KDQpTbywgcmV0dXJuIFJURE1fSVJRX05PTkUgaW4gYW4gUlRETSBp
-cnEgaGFuZGxlciBzaG91bGQgcmVhbGx5IG1lYW4gdGhhdCB0aGUgSVJRIGlzIGZvciBhbm90aGVy
-IGRyaXZlciBzaGFyaW5nIHRoZSBzYW1lIGxpbmUsIG5vdCB0aGF0IHRoZSBJUlEgd2FzIGFja25v
-d2xlZGdlZCBhdCBkZXZpY2UgbGV2ZWwsIGJ1dCB5b3VyIGhhcmR3YXJlIGdlbmVyYXRlIHNwdXJp
-b3VzIGludGVycnVwdHMgb3IgeW91ciBzb2Z0d2FyZSBoYXMgbm90aGluZyB0byBkbyB0byBoYW5k
-bGUgdGhpcyBpbnRlcnJ1cHQuDQoNCi0tIA0KCQkJCQkgICAgR2lsbGVzLg0K
+On Wed, Nov 19, 2014 at 10:19:57AM +0000, Terje Frøysa wrote:
+> Thanks Gilles,
+> 
+> I will check if I have spurious interrupts..
+
+Check your irq handler to see in which case it returns RTDM_IRQ_NONE.
+
+> 
+> 
+> By the way:
+> 
+> I would like to use the function " rtdm_clock_read_monotonic()" from user space.
+> 
+> The Xenomai doxygen API states that the function can called from User-space task (RT, non-RT) but nothing else.
+> I have googled it, but it is difficult to find what includefile and library is needed.
+
+No, the doxygen documentation says that the function may be called
+from the context of a user-space threads, that is a bit different,
+Philippe considers this a bug in the documentation. Anyway, you can
+not use the RTDM skin in user-space, the RTDM skin is for drivers
+only (RTDM means "Real-Time Drivers Model"). For user-space, you have
+other skins, including the native and posix ones.
+
+With the POSIX skin, to read the monotonic clock, you would use:
+clock_gettime(CLOCK_MONOTONIC, &ts);
+
+-- 
+					    Gilles.
 
