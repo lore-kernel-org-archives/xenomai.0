@@ -1,8 +1,8 @@
-Resent-Message-ID: <20141119115640.GB29491@sisyphus.hd.free.fr>
+Resent-Message-ID: <20141119121246.GD29491@sisyphus.hd.free.fr>
 Resent-To: xenomai@xenomai.org
-Date: Wed, 19 Nov 2014 12:51:36 +0100
+Date: Wed, 19 Nov 2014 13:08:41 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141119115136.GA29491@sisyphus.hd.free.fr>
+Message-ID: <20141119120841.GC29491@sisyphus.hd.free.fr>
 References: <314E5ECDAA86314791309FA670550F89C9C3743B@SINTEFEXMBX05.sintef.no>
  <20141119082140.GX3177@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C9C3972E@SINTEFEXMBX05.sintef.no>
@@ -10,11 +10,13 @@ References: <314E5ECDAA86314791309FA670550F89C9C3743B@SINTEFEXMBX05.sintef.no>
  <314E5ECDAA86314791309FA670550F89C9C397B8@SINTEFEXMBX05.sintef.no>
  <20141119104519.GD25848@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C9C39892@SINTEFEXMBX05.sintef.no>
+ <20141119115136.GA29491@sisyphus.hd.free.fr>
+ <314E5ECDAA86314791309FA670550F89C9C39937@SINTEFEXMBX05.sintef.no>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C9C39892@SINTEFEXMBX05.sintef.no>
+In-Reply-To: <314E5ECDAA86314791309FA670550F89C9C39937@SINTEFEXMBX05.sintef.no>
 Subject: Re: [Xenomai] xnintr_irq_handler: IRQ135 not handled. Disabling IRQ
  line.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -27,39 +29,38 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
 
-On Wed, Nov 19, 2014 at 11:28:06AM +0000, Terje Frøysa wrote:
-> How can I wee better?
+Please keep the conversation on the list. I will simply not answer
+the next mail you send me privately.
 
-I meant "see" better, sorry.
-
+On Wed, Nov 19, 2014 at 12:01:55PM +0000, Terje Frøysa wrote:
+> Ok Gilles, thanks.
 > 
-> I have checked the posix-api.pdf ... It has 37 references to "struct timespec" but no definitions.
-> The Xenomai API have 203 documents referring the "struct timespec", but I simply can't find the definition...?
-> (But, the "nanosecs_abs_t" definition is easy to find though).
-> 
-> Have tested it in my program by (long)time_now =  tp.tv_nsecs.
-> No warning....
+> The glibc confirms that the tv_nsec is a long int (4-bytes in ARM)
+> while the time returned by the driver is 8-byte (utint64_t).
 
-The struct timespec is part of the POSIX standard, and documented by
-the glibc, so since Xenomai uses the glibc definition, there is no
-need to document it in Xenomai documentation.
+Yes tv_nsec is 4 bytes
+but tv_sec is 4 more bytes god damn it
 
-The glibc documentation:
-http://www.gnu.org/software/libc/manual/html_node/Elapsed-Time.html
+1000000000ULL * ts->tv_sec + ts->tv_nsec
 
+will give you an 8 bytes values
 
+The glibc documentation says:
+The struct timespec structure represents an elapsed time. It is declared in time.h and has the following members:
 
-> 
-> The only timespec definition I can find on the web is the open-source:
-> 
-> struct timespec
-> {
->   time_t tv_sec;
->   long tv_nsec;
-> };
+long int tv_sec
 
-So, it turns out the struct has two members and not only one 32 bits
-member. How strange? Does not it fit my anwer?
+    This represents the number of whole seconds of elapsed time.
+long int tv_nsec
+
+    This is the rest of the elapsed time (a fraction of a second), represented as the number of nanoseconds. It is always less than one billion.
+
+Did you even bother to read that documentation?
+
+Are you for real? Or is this a prank?
+
+Please keep the conversation on the list. I will simply not answer
+the next mail you send me privately.
 
 -- 
 					    Gilles.
