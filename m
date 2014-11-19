@@ -1,14 +1,15 @@
-Date: Wed, 19 Nov 2014 11:23:52 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141119102352.GC25848@sisyphus.hd.free.fr>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Wed, 19 Nov 2014 10:43:30 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C9C397B8@SINTEFEXMBX05.sintef.no>
 References: <314E5ECDAA86314791309FA670550F89C9C3743B@SINTEFEXMBX05.sintef.no>
  <20141119082140.GX3177@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C9C3972E@SINTEFEXMBX05.sintef.no>
-MIME-Version: 1.0
+ <20141119102352.GC25848@sisyphus.hd.free.fr>
+In-Reply-To: <20141119102352.GC25848@sisyphus.hd.free.fr>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C9C3972E@SINTEFEXMBX05.sintef.no>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] xnintr_irq_handler: IRQ135 not handled. Disabling IRQ
  line.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -19,35 +20,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, Nov 19, 2014 at 10:19:57AM +0000, Terje Frøysa wrote:
-> Thanks Gilles,
-> 
-> I will check if I have spurious interrupts..
-
-Check your irq handler to see in which case it returns RTDM_IRQ_NONE.
-
-> 
-> 
-> By the way:
-> 
-> I would like to use the function " rtdm_clock_read_monotonic()" from user space.
-> 
-> The Xenomai doxygen API states that the function can called from User-space task (RT, non-RT) but nothing else.
-> I have googled it, but it is difficult to find what includefile and library is needed.
-
-No, the doxygen documentation says that the function may be called
-from the context of a user-space threads, that is a bit different,
-Philippe considers this a bug in the documentation. Anyway, you can
-not use the RTDM skin in user-space, the RTDM skin is for drivers
-only (RTDM means "Real-Time Drivers Model"). For user-space, you have
-other skins, including the native and posix ones.
-
-With the POSIX skin, to read the monotonic clock, you would use:
-clock_gettime(CLOCK_MONOTONIC, &ts);
-
--- 
-					    Gilles.
+VGhhbmtzIEdpbGxlcywNCg0KTXkgZHJpdmVyIGRlbGl2ZXJzICh0byB1c2VyIHNwYWNlKSB0aGUg
+NjQtYml0IHRpbWUgZ2l2ZW4gYnkgcnRkbV9jbG9ja19yZWFkX21vbm90b25pYygpLg0KDQpBcyBm
+YXIgYXMgSSBjYW4gc2VlLCB0aGUgY2xvY2tfZ2V0dGltZShDTE9DS19NT05PVE9OSUMsICZ0cykg
+ZGVsaXZlcnMgdGhlICJzdHJ1Y3QgdGltZXNwZWMiIHdoaWNoIGNvbnRhaW5zICJvbmx5IiBhIDMy
+LWJpdCAobnMpIHRpbWUuDQoNClRoZSB0d28gdGltZXJzIHNlZW0gbm90IGNvbXBhcmFibGUuLi4u
+Pw0KDQpSZWdhcmRzDQpUZXJqZQ0KDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9t
+OiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFpbHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9t
+YWkub3JnXSANClNlbnQ6IDE5LiBub3ZlbWJlciAyMDE0IDExOjI0DQpUbzogVGVyamUgRnLDuHlz
+YQ0KQ2M6IHhlbm9tYWlAeGVub21haS5vcmcNClN1YmplY3Q6IFJlOiBbWGVub21haV0geG5pbnRy
+X2lycV9oYW5kbGVyOiBJUlExMzUgbm90IGhhbmRsZWQuIERpc2FibGluZyBJUlEgbGluZS4NCg0K
+T24gV2VkLCBOb3YgMTksIDIwMTQgYXQgMTA6MTk6NTdBTSArMDAwMCwgVGVyamUgRnLDuHlzYSB3
+cm90ZToNCj4gVGhhbmtzIEdpbGxlcywNCj4gDQo+IEkgd2lsbCBjaGVjayBpZiBJIGhhdmUgc3B1
+cmlvdXMgaW50ZXJydXB0cy4uDQoNCkNoZWNrIHlvdXIgaXJxIGhhbmRsZXIgdG8gc2VlIGluIHdo
+aWNoIGNhc2UgaXQgcmV0dXJucyBSVERNX0lSUV9OT05FLg0KDQo+IA0KPiANCj4gQnkgdGhlIHdh
+eToNCj4gDQo+IEkgd291bGQgbGlrZSB0byB1c2UgdGhlIGZ1bmN0aW9uICIgcnRkbV9jbG9ja19y
+ZWFkX21vbm90b25pYygpIiBmcm9tIHVzZXIgc3BhY2UuDQo+IA0KPiBUaGUgWGVub21haSBkb3h5
+Z2VuIEFQSSBzdGF0ZXMgdGhhdCB0aGUgZnVuY3Rpb24gY2FuIGNhbGxlZCBmcm9tIFVzZXItc3Bh
+Y2UgdGFzayAoUlQsIG5vbi1SVCkgYnV0IG5vdGhpbmcgZWxzZS4NCj4gSSBoYXZlIGdvb2dsZWQg
+aXQsIGJ1dCBpdCBpcyBkaWZmaWN1bHQgdG8gZmluZCB3aGF0IGluY2x1ZGVmaWxlIGFuZCBsaWJy
+YXJ5IGlzIG5lZWRlZC4NCg0KTm8sIHRoZSBkb3h5Z2VuIGRvY3VtZW50YXRpb24gc2F5cyB0aGF0
+IHRoZSBmdW5jdGlvbiBtYXkgYmUgY2FsbGVkIGZyb20gdGhlIGNvbnRleHQgb2YgYSB1c2VyLXNw
+YWNlIHRocmVhZHMsIHRoYXQgaXMgYSBiaXQgZGlmZmVyZW50LCBQaGlsaXBwZSBjb25zaWRlcnMg
+dGhpcyBhIGJ1ZyBpbiB0aGUgZG9jdW1lbnRhdGlvbi4gQW55d2F5LCB5b3UgY2FuIG5vdCB1c2Ug
+dGhlIFJURE0gc2tpbiBpbiB1c2VyLXNwYWNlLCB0aGUgUlRETSBza2luIGlzIGZvciBkcml2ZXJz
+IG9ubHkgKFJURE0gbWVhbnMgIlJlYWwtVGltZSBEcml2ZXJzIE1vZGVsIikuIEZvciB1c2VyLXNw
+YWNlLCB5b3UgaGF2ZSBvdGhlciBza2lucywgaW5jbHVkaW5nIHRoZSBuYXRpdmUgYW5kIHBvc2l4
+IG9uZXMuDQoNCldpdGggdGhlIFBPU0lYIHNraW4sIHRvIHJlYWQgdGhlIG1vbm90b25pYyBjbG9j
+aywgeW91IHdvdWxkIHVzZToNCmNsb2NrX2dldHRpbWUoQ0xPQ0tfTU9OT1RPTklDLCAmdHMpOw0K
+DQotLSANCgkJCQkJICAgIEdpbGxlcy4NCg==
 
