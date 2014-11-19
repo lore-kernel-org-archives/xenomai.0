@@ -1,15 +1,16 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Wed, 19 Nov 2014 10:43:30 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C9C397B8@SINTEFEXMBX05.sintef.no>
+Date: Wed, 19 Nov 2014 11:45:19 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141119104519.GD25848@sisyphus.hd.free.fr>
 References: <314E5ECDAA86314791309FA670550F89C9C3743B@SINTEFEXMBX05.sintef.no>
  <20141119082140.GX3177@sisyphus.hd.free.fr>
  <314E5ECDAA86314791309FA670550F89C9C3972E@SINTEFEXMBX05.sintef.no>
  <20141119102352.GC25848@sisyphus.hd.free.fr>
-In-Reply-To: <20141119102352.GC25848@sisyphus.hd.free.fr>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <314E5ECDAA86314791309FA670550F89C9C397B8@SINTEFEXMBX05.sintef.no>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <314E5ECDAA86314791309FA670550F89C9C397B8@SINTEFEXMBX05.sintef.no>
 Subject: Re: [Xenomai] xnintr_irq_handler: IRQ135 not handled. Disabling IRQ
  line.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -20,36 +21,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-VGhhbmtzIEdpbGxlcywNCg0KTXkgZHJpdmVyIGRlbGl2ZXJzICh0byB1c2VyIHNwYWNlKSB0aGUg
-NjQtYml0IHRpbWUgZ2l2ZW4gYnkgcnRkbV9jbG9ja19yZWFkX21vbm90b25pYygpLg0KDQpBcyBm
-YXIgYXMgSSBjYW4gc2VlLCB0aGUgY2xvY2tfZ2V0dGltZShDTE9DS19NT05PVE9OSUMsICZ0cykg
-ZGVsaXZlcnMgdGhlICJzdHJ1Y3QgdGltZXNwZWMiIHdoaWNoIGNvbnRhaW5zICJvbmx5IiBhIDMy
-LWJpdCAobnMpIHRpbWUuDQoNClRoZSB0d28gdGltZXJzIHNlZW0gbm90IGNvbXBhcmFibGUuLi4u
-Pw0KDQpSZWdhcmRzDQpUZXJqZQ0KDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9t
-OiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFpbHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9t
-YWkub3JnXSANClNlbnQ6IDE5LiBub3ZlbWJlciAyMDE0IDExOjI0DQpUbzogVGVyamUgRnLDuHlz
-YQ0KQ2M6IHhlbm9tYWlAeGVub21haS5vcmcNClN1YmplY3Q6IFJlOiBbWGVub21haV0geG5pbnRy
-X2lycV9oYW5kbGVyOiBJUlExMzUgbm90IGhhbmRsZWQuIERpc2FibGluZyBJUlEgbGluZS4NCg0K
-T24gV2VkLCBOb3YgMTksIDIwMTQgYXQgMTA6MTk6NTdBTSArMDAwMCwgVGVyamUgRnLDuHlzYSB3
-cm90ZToNCj4gVGhhbmtzIEdpbGxlcywNCj4gDQo+IEkgd2lsbCBjaGVjayBpZiBJIGhhdmUgc3B1
-cmlvdXMgaW50ZXJydXB0cy4uDQoNCkNoZWNrIHlvdXIgaXJxIGhhbmRsZXIgdG8gc2VlIGluIHdo
-aWNoIGNhc2UgaXQgcmV0dXJucyBSVERNX0lSUV9OT05FLg0KDQo+IA0KPiANCj4gQnkgdGhlIHdh
-eToNCj4gDQo+IEkgd291bGQgbGlrZSB0byB1c2UgdGhlIGZ1bmN0aW9uICIgcnRkbV9jbG9ja19y
-ZWFkX21vbm90b25pYygpIiBmcm9tIHVzZXIgc3BhY2UuDQo+IA0KPiBUaGUgWGVub21haSBkb3h5
-Z2VuIEFQSSBzdGF0ZXMgdGhhdCB0aGUgZnVuY3Rpb24gY2FuIGNhbGxlZCBmcm9tIFVzZXItc3Bh
-Y2UgdGFzayAoUlQsIG5vbi1SVCkgYnV0IG5vdGhpbmcgZWxzZS4NCj4gSSBoYXZlIGdvb2dsZWQg
-aXQsIGJ1dCBpdCBpcyBkaWZmaWN1bHQgdG8gZmluZCB3aGF0IGluY2x1ZGVmaWxlIGFuZCBsaWJy
-YXJ5IGlzIG5lZWRlZC4NCg0KTm8sIHRoZSBkb3h5Z2VuIGRvY3VtZW50YXRpb24gc2F5cyB0aGF0
-IHRoZSBmdW5jdGlvbiBtYXkgYmUgY2FsbGVkIGZyb20gdGhlIGNvbnRleHQgb2YgYSB1c2VyLXNw
-YWNlIHRocmVhZHMsIHRoYXQgaXMgYSBiaXQgZGlmZmVyZW50LCBQaGlsaXBwZSBjb25zaWRlcnMg
-dGhpcyBhIGJ1ZyBpbiB0aGUgZG9jdW1lbnRhdGlvbi4gQW55d2F5LCB5b3UgY2FuIG5vdCB1c2Ug
-dGhlIFJURE0gc2tpbiBpbiB1c2VyLXNwYWNlLCB0aGUgUlRETSBza2luIGlzIGZvciBkcml2ZXJz
-IG9ubHkgKFJURE0gbWVhbnMgIlJlYWwtVGltZSBEcml2ZXJzIE1vZGVsIikuIEZvciB1c2VyLXNw
-YWNlLCB5b3UgaGF2ZSBvdGhlciBza2lucywgaW5jbHVkaW5nIHRoZSBuYXRpdmUgYW5kIHBvc2l4
-IG9uZXMuDQoNCldpdGggdGhlIFBPU0lYIHNraW4sIHRvIHJlYWQgdGhlIG1vbm90b25pYyBjbG9j
-aywgeW91IHdvdWxkIHVzZToNCmNsb2NrX2dldHRpbWUoQ0xPQ0tfTU9OT1RPTklDLCAmdHMpOw0K
-DQotLSANCgkJCQkJICAgIEdpbGxlcy4NCg==
+On Wed, Nov 19, 2014 at 10:43:30AM +0000, Terje Frøysa wrote:
+> As far as I can see, the clock_gettime(CLOCK_MONOTONIC, &ts)
+> delivers the "struct  timespec" which contains "only" a 32-bit (ns) time.
+
+You wee wrong. Look better at the struct timespec.
+
+-- 
+					    Gilles.
 
