@@ -1,21 +1,23 @@
-Date: Tue, 18 Nov 2014 07:28:56 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141118062856.GU31920@sisyphus.hd.free.fr>
-References: <20141110205512.GW17476@sisyphus.hd.free.fr>
- <20141110215846.GX17476@sisyphus.hd.free.fr>
- <20141112172738.GD17476@sisyphus.hd.free.fr>
- <546A26C0.1050309@siemens.com>
- <20141117165924.GM26613@sisyphus.hd.free.fr>
- <546A2C50.3060204@siemens.com>
- <20141117173330.GR26613@sisyphus.hd.free.fr>
- <546A477B.4020602@siemens.com>
- <20141117192417.GA31920@sisyphus.hd.free.fr>
- <546AE4E5.7060804@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <546AE4E5.7060804@siemens.com>
-Subject: Re: [Xenomai] "inconsistent lock state" on boot-up
+In-Reply-To: <CANKLDmt4OApxTx-41pf40P0_5DUsxNSaNh+QtTL4fO52_adXjQ@mail.gmail.com>
+References: <20141119140311.GB31401@sisyphus.hd.free.fr>
+ <CANKLDmu5V8s2HzBfqPNRWf-KYZOQg8s7ULsHYsLjh7NPv3T4ew@mail.gmail.com>
+ <20141119150924.GB825@sisyphus.hd.free.fr>
+ <CANKLDmse_kMMSOfJFrLi0fw6LLSZNRihTXXWOLhYtfaNUkt8Cw@mail.gmail.com>
+ <20141119151244.GC825@sisyphus.hd.free.fr>
+ <CANKLDms+QDBcQ6qvK3KfMByLpsfkbt8jTOc8PEZ5VJ9q90SQKA@mail.gmail.com>
+ <20141119154950.GD825@sisyphus.hd.free.fr>
+ <CANKLDmtXvOEuu0aADjJ=ctjE1PQC_v2jt26PhyYri2q2p7r48Q@mail.gmail.com>
+ <20141120082019.GH7011@sisyphus.hd.free.fr>
+ <CANKLDmthksKWg3H1md+8xPNU0fbgEM2Q9+W2o+sx=7p=6tsNow@mail.gmail.com>
+ <20141120090344.GJ7011@sisyphus.hd.free.fr>
+ <CANKLDmt==uLHy8_1pZTDVtJZfhLPDviMUPekUFQdADRZZpX8iw@mail.gmail.com>
+ <CANKLDmt4OApxTx-41pf40P0_5DUsxNSaNh+QtTL4fO52_adXjQ@mail.gmail.com>
+Date: Thu, 20 Nov 2014 17:24:42 +0100
+Message-ID: <CANKLDmsoet+Z-7eEuXhNJ6QSt9Dh4Sktur0MGCZBtwdBB073AQ@mail.gmail.com>
+From: Henri Roosen <henriroosen@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] problems with ipipe-3.10 on i.MX6
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,138 +26,308 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, Nov 18, 2014 at 07:19:17AM +0100, Jan Kiszka wrote:
-> On 2014-11-17 20:24, Gilles Chanteperdrix wrote:
-> > On Mon, Nov 17, 2014 at 08:07:39PM +0100, Jan Kiszka wrote:
-> >> On 2014-11-17 18:33, Gilles Chanteperdrix wrote:
-> >>> On Mon, Nov 17, 2014 at 06:11:44PM +0100, Jan Kiszka wrote:
-> >>>> On 2014-11-17 17:59, Gilles Chanteperdrix wrote:
-> >>>>> On Mon, Nov 17, 2014 at 05:48:00PM +0100, Jan Kiszka wrote:
-> >>>>>> On 2014-11-12 18:27, Gilles Chanteperdrix wrote:
-> >>>>>>> We do not need trace_hardirqs_on and trace_hardirqs_off for the
-> >>>>>>> particular case of IRQs: they are already handled by
-> >>>>>>> __ipipe_do_sync_stage. 
-> >>>>>>
-> >>>>>> That was the key: Simply disabling the instrumentations in the
-> >>>>>> CONFIG_IPIPE removes all lock state inconsistencies, at least this far:
-> >>>>>>
-> >>>>>> diff --git a/arch/arm/kernel/entry-header.S b/arch/arm/kernel/entry-header.S
-> >>>>>> index d32f8bd..d8e0b2c 100644
-> >>>>>> --- a/arch/arm/kernel/entry-header.S
-> >>>>>> +++ b/arch/arm/kernel/entry-header.S
-> >>>>>> @@ -195,7 +195,7 @@
-> >>>>>>  #ifdef CONFIG_IPIPE_DEBUG_INTERNAL
-> >>>>>>  	bl	__ipipe_bugon_irqs_enabled
-> >>>>>>  #endif
-> >>>>>> -#ifdef CONFIG_TRACE_IRQFLAGS
-> >>>>>> +#if defined(CONFIG_TRACE_IRQFLAGS) && !defined(CONFIG_IPIPE)
-> >>>>>>  	@ The parent context IRQs must have been enabled to get here in
-> >>>>>>  	@ the first place, so there's no point checking the PSR I bit.
-> >>>>>>  	bl	trace_hardirqs_on
-> >>>>>> @@ -203,7 +203,7 @@
-> >>>>>>  	.else
-> >>>>>>  	@ IRQs off again before pulling preserved data off the stack
-> >>>>>>  	disable_irq_notrace
-> >>>>>> -#ifdef CONFIG_TRACE_IRQFLAGS
-> >>>>>> +#if defined(CONFIG_TRACE_IRQFLAGS) && !defined(CONFIG_IPIPE)
-> >>>>>>  	tst	\rpsr, #PSR_I_BIT
-> >>>>>>  	bleq	trace_hardirqs_on
-> >>>>>>  	tst	\rpsr, #PSR_I_BIT
-> >>>>>>
-> >>>>>> Will send a patch.
-> >>>>>
-> >>>>> Will this work for other paths in entry.S, such as exceptions or
-> >>>>> syscalls?
-> >>>>
-> >>>> Do they all come along that code? Then we need to differentiate, likely
-> >>>> via a separate macro parameter.
-> >>>>
-> >>>> Just noticed that there is also svc_enter, and that should be handled in
-> >>>> the same way. And it's likely also shared across the board.
-> >>>
-> >>> There are 4 macros:
-> >>> svc_enter
-> >>> svc_exit
-> >>> when entering/exiting svc mode (whether from irq, data abort,
-> >>> prefetch abort), that means reentering the
-> >>> irq/exception path when already in kerne-mode
-> >>>
-> >>> usr_enter
-> >>> usr_exit
-> >>> when entering/exiting usr mode (whether from irq, data abort,
-> >>> prefetch abort, or syscall), which is entered from user mode.
-> >>>
-> >>> All these paths call trace_hardirqs_on/trace_hardirqs_off
-> >>> I have not checked the details on the how and when and if, but since
-> >>> you are the one working on this, I suggest you do.
-> >>>
-> >>> If there is a need to call the real
-> >>> trace_hardirqs_on/trace_hardirqs_off in some cases, I would very
-> >>> much prefer replacing the bl trace_hard_irqs* with a bl
-> >>> __ipipe_trace_hardirqs* sorting out the details in C, in
-> >>> arch/arm/kernel/ipipe.c, than doing this in assembly files with
-> >>> complicated #if conditions, or retrieval of the current domain
-> >>> in assembly.
-> >>>
-> >>
-> >> OK, here is another proposal: filter out tracing in kernel IRQ exit path
-> >> (that is required as we may have interrupted Linux with virtual IRQs
-> >> off), but otherwise rely on domain filtering in the respective tracing
-> >> functions:
-> > 
-> > The only case where it does not work, is for asymmetric things,
-> > namely syscalls, and exceptions (page faults) because you
-> > can enter a syscall or exception in secondary mode (so
-> > trace_hardirqs_on gets called) and leave in primary mode, in which
-> > case you will reenter root with the kernel considering that hardirqs
-> > are off whereas they may not be.
-> > 
-> > Listen, you have stop trying and testing patches and just say "it
-> > works, so, take my patch", this will not work. I absolutely require
-> > of you that you enumerate for each case, what the code does, and why
-> > it works. I will not accept a patch that was quickly tested and
-> > appeared to work. I consider that stuff a corner case, and not
-> > really useful, so, I would very much prefer get it to depend on
-> > !IPIPE. However, you seem to want and have it working, that is fine
-> > by me, but in that case do the work well, so that we do not get
-> > users complaining that it does not work in corner cases.
-> 
-> The current changes already return lockdep to usable state, which is an
-> improvement.
+On Thu, Nov 20, 2014 at 10:54 AM, Henri Roosen <henriroosen@gmail.com>
+wrote:
 
-If this causes the kernel to hang and crash in some cases, no this
-is not an improvement over "depends on !IPIPE", which is what I will
-merge unless you provide me with something better. See, you are not
-competing with the current state of the I-pipe, you are competing
-with "depends on !IPIPE".
+>
+>
+> On Thu, Nov 20, 2014 at 10:14 AM, Henri Roosen <henriroosen@gmail.com>
+> wrote:
+>
+>>
+>>
+>> On Thu, Nov 20, 2014 at 10:03 AM, Gilles Chanteperdrix <
+>> gilles.chanteperdrix@xenomai.org> wrote:
+>>
+>>> On Thu, Nov 20, 2014 at 09:52:44AM +0100, Henri Roosen wrote:
+>>> > On Thu, Nov 20, 2014 at 9:20 AM, Gilles Chanteperdrix <
+>>> > gilles.chanteperdrix@xenomai.org> wrote:
+>>> >
+>>> > > On Thu, Nov 20, 2014 at 09:13:49AM +0100, Henri Roosen wrote:
+>>> > > > On Wed, Nov 19, 2014 at 4:49 PM, Gilles Chanteperdrix <
+>>> > > > gilles.chanteperdrix@xenomai.org> wrote:
+>>> > > >
+>>> > > > > On Wed, Nov 19, 2014 at 04:43:08PM +0100, Henri Roosen wrote:
+>>> > > > > > On Wed, Nov 19, 2014 at 4:12 PM, Gilles Chanteperdrix <
+>>> > > > > > gilles.chanteperdrix@xenomai.org> wrote:
+>>> > > > > >
+>>> > > > > > > On Wed, Nov 19, 2014 at 04:11:30PM +0100, Henri Roosen wrote:
+>>> > > > > > > > On Wed, Nov 19, 2014 at 4:09 PM, Gilles Chanteperdrix <
+>>> > > > > > > > gilles.chanteperdrix@xenomai.org> wrote:
+>>> > > > > > > >
+>>> > > > > > > > > On Wed, Nov 19, 2014 at 04:03:40PM +0100, Henri Roosen
+>>> wrote:
+>>> > > > > > > > > > On Wed, Nov 19, 2014 at 3:03 PM, Gilles Chanteperdrix <
+>>> > > > > > > > > > gilles.chanteperdrix@xenomai.org> wrote:
+>>> > > > > > > > > >
+>>> > > > > > > > > > > On Wed, Nov 19, 2014 at 02:33:51PM +0100, Henri
+>>> Roosen
+>>> > > wrote:
+>>> > > > > > > > > > > > On Wed, Nov 19, 2014 at 2:10 PM, Gilles
+>>> Chanteperdrix <
+>>> > > > > > > > > > > > gilles.chanteperdrix@xenomai.org> wrote:
+>>> > > > > > > > > > > >
+>>> > > > > > > > > > > > > On Wed, Nov 19, 2014 at 01:56:20PM +0100, Henri
+>>> Roosen
+>>> > > > > wrote:
+>>> > > > > > > > > > > > > > I reworked the driver now and the 'stalled head
+>>> > > domain'
+>>> > > > > is
+>>> > > > > > > not
+>>> > > > > > > > > there
+>>> > > > > > > > > > > > > > anymore.
+>>> > > > > > > > > > > > > > However, the other symptoms did not disappear.
+>>> > > > > > > > > > > > > >
+>>> > > > > > > > > > > > > > I currently observe 2 symptoms:
+>>> > > > > > > > > > > > >
+>>> > > > > > > > > > > > > As I said, I prefer handle one problem at a
+>>> time, and
+>>> > > pass
+>>> > > > > to
+>>> > > > > > > the
+>>> > > > > > > > > > > > > next when we are finished with the current.
+>>> > > > > > > > > > > > >
+>>> > > > > > > > > > > > > > Either 1) a stall of the i.MX timer
+>>> > > > > > > > > > > > >
+>>> > > > > > > > > > > > > Who cares ? The i.MX timer has no reason to be
+>>> used,
+>>> > > the
+>>> > > > > > > cortex a9
+>>> > > > > > > > > > > > > local timers should be used. Or are you booting a
+>>> > > kernel
+>>> > > > > > > compiled
+>>> > > > > > > > > > > > > without CONFIG_SMP ?
+>>> > > > > > > > > > > > >
+>>> > > > > > > > > > > >
+>>> > > > > > > > > > > > I compiled without CONFIG_SMP as the symptoms
+>>> seemed less
+>>> > > > > random.
+>>> > > > > > > > > > > However,
+>>> > > > > > > > > > > > as you said, let's put this on ice for now and
+>>> focus on
+>>> > > the
+>>> > > > > NULL
+>>> > > > > > > > > pointer
+>>> > > > > > > > > > > > dereference for now.
+>>> > > > > > > > > > > >
+>>> > > > > > > > > > > >
+>>> > > > > > > > > > > > > > or 2) a kernel NULL pointer dereference.
+>>> > > > > > > > > > > > > >
+>>> > > > > > > > > > > > > > The kernel trace of the NULL pointer
+>>> dereference is
+>>> > > as
+>>> > > > > below:
+>>> > > > > > > > > > > > >
+>>> > > > > > > > > > > > > Well the kernel trace is not exactly as below,
+>>> because
+>>> > > your
+>>> > > > > > > mailer
+>>> > > > > > > > > > > > > wrapped it, which makes it hard to read. Please
+>>> try to
+>>> > > get
+>>> > > > > your
+>>> > > > > > > > > > > > > mailer not to wrap the trace, or failing that,
+>>> simply
+>>> > > > > attach a
+>>> > > > > > > > > plain
+>>> > > > > > > > > > > > > text file with the trace.
+>>> > > > > > > > > > > > >
+>>> > > > > > > > > > > > > >
+>>> > > > > > > > > > > > > > Unable to handle kernel NULL pointer
+>>> dereference at
+>>> > > > > virtual
+>>> > > > > > > > > address
+>>> > > > > > > > > > > > > 00000000
+>>> > > > > > > > > > > > > > pgd = ce230000, hw pgd = ce230000
+>>> > > > > > > > > > > > > > [00000000] *pgd=1e30d831, *pte=00000000,
+>>> > > *ppte=00000000
+>>> > > > > > > > > > > > > > Internal error: Oops: 80000007 [#1] PREEMPT ARM
+>>> > > > > > > > > > > > > > Modules linked in: platform_imx(O)
+>>> sigmatek_lrt(O)
+>>> > > > > > > > > > > > > > CPU: 0 PID: 454 Comm: LRT:454 Tainted: G
+>>>   W  O
+>>> > > > > > > > > > > > > > 3.10.32-ipipe-00218-gcf143c6-dirty #100
+>>> > > > > > > > > > > > > > task: ce00e780 ti: ce2d8000 task.ti: ce2d8000
+>>> > > > > > > > > > > > > > PC is at 0x0
+>>> > > > > > > > > > > > > > LR is at __ipipe_do_sync_stage+0x1cc/0x2c8
+>>> > > > > > > > > > > > >
+>>> > > > > > > > > > > > > __ipipe_do_sync_stage is jumping to address 0,
+>>> some
+>>> > > > > function
+>>> > > > > > > > > pointer
+>>> > > > > > > > > > > > > is NULL. You would have to disassemble
+>>> > > > > __ipipe_do_sync_stage
+>>> > > > > > > around
+>>> > > > > > > > > > > > > offset 0x1cc to know what exactly. But it is
+>>> probably
+>>> > > an
+>>> > > > > IRQ
+>>> > > > > > > > > > > > > handler. You can modify __ipipe_do_sync_stage
+>>> code to
+>>> > > emit
+>>> > > > > a
+>>> > > > > > > printk
+>>> > > > > > > > > > > > > with the irq number being currently being
+>>> processed
+>>> > > when
+>>> > > > > its
+>>> > > > > > > > > handler
+>>> > > > > > > > > > > > > is NULL. We will know what IRQ number has an
+>>> issue.
+>>> > > > > > > > > > > > >
+>>> > > > > > > > > > > >
+>>> > > > > > > > > > > > Please find the log.txt file attached, which shows
+>>> the
+>>> > > IRQ
+>>> > > > > number
+>>> > > > > > > > > that
+>>> > > > > > > > > > > has
+>>> > > > > > > > > > > > the issue (150: ethernet) as well as the output of
+>>> > > > > > > /proc/interrupts
+>>> > > > > > > > > and
+>>> > > > > > > > > > > > /proc/xenomai/irq
+>>> > > > > > > > > > > >
+>>> > > > > > > > > > > > I'll do some more tests to see if it is always IRQ
+>>> 150.
+>>> > > > > > > > > > >
+>>> > > > > > > > > > > Ok, if it is always 150, could you show us how the
+>>> ethernet
+>>> > > > > driver
+>>> > > > > > > > > > > does its request_irq ? If it does a set_type or
+>>> something ?
+>>> > > > > > > > > > >
+>>> > > > > > > > > >
+>>> > > > > > > > > > To request the irq, the following statement is called:
+>>> > > > > > > > > > ret = request_irq(irq, fec_enet_interrupt,
+>>> IRQF_DISABLED,
+>>> > > > > pdev->name,
+>>> > > > > > > > > ndev);
+>>> > > > > > > > > > I didn't find a set_type.
+>>> > > > > > > > > >
+>>> > > > > > > > > > However, I'm not sure if I completely understood your
+>>> > > question.
+>>> > > > > Is
+>>> > > > > > > it ok
+>>> > > > > > > > > if
+>>> > > > > > > > > > I point you to the file
+>>> > > > > drivers/net/ethernet/freescale/fec_main.c,
+>>> > > > > > > line
+>>> > > > > > > > > > 1983.
+>>> > > > > > > > > > (
+>>> > > > > > > > > >
+>>> > > > > > > > >
+>>> > > > > > >
+>>> > > > >
+>>> > >
+>>> http://git.xenomai.org/ipipe.git/tree/drivers/net/ethernet/freescale/fec_main.c?h=ipipe-3.10#n1983
+>>> > > > > > > > > > )
+>>> > > > > > > > >
+>>> > > > > > > > > Ok, are you using the device tree or not?
+>>> > > > > > > > >
+>>> > > > > > > >
+>>> > > > > > > > Yes, using devicetree
+>>> > > > > > >
+>>> > > > > > > You are sure your devicetree has all the necessary
+>>> parameters for
+>>> > > > > > > the ethernet interrupt ?
+>>> > > > > > >
+>>> > > > > > >
+>>> > > > > > Yes, should be all in the included imx6qdl.dtsi file. Our
+>>> board .dts
+>>> > > file
+>>> > > > > > includes the file and just sets the correct pinctrl, phy-mode
+>>> and
+>>> > > status
+>>> > > > > to
+>>> > > > > > okay, similar to what other boards do.
+>>> > > > > >
+>>> > > > > > Ethernet communication is working and we are getting
+>>> interrupts at
+>>> > > first,
+>>> > > > > > just after a while it stops working because of the NULL pointer
+>>> > > > > dereference.
+>>> > > > > > Any suggestion how to trace down this specific handler getting
+>>> > > NULL-ed?
+>>> > > > >
+>>> > > > > You can try using the I-pipe tracer. Enable the I-pipe tracer,
+>>> > > > > trigger a panic before printing anything when the bug happens (by
+>>> > > > > the way, which pointer is NULL, is it the irq handler, or the
+>>> > > > > interrupt acknowledge routine ?). Modify the I-pipe tracer to
+>>> store
+>>> > > > > the current value of the handler instead of the timestamp in the
+>>> > > > > I-pipe trace structure, and the function printing the traces to
+>>> cast
+>>> > > > > the timestamp to a pointer and print its value instead of
+>>> computing
+>>> > > > > a difference. With enough back trace points, it should be clear
+>>> in
+>>> > > > > the trace generated which function sets the pointer to NULL.
+>>> > > > >
+>>> > > > > Alternatively, if you are ready to spend time in your processor
+>>> > > > > documentation, you can look for a way to program its hardware
+>>> > > > > breakpoints registers to watch the handler address once it has
+>>> been
+>>> > > > > set.
+>>> > > > >
+>>> > > > > I found out the irq-handler doesn't get NULL-ified. Instead, the
+>>> ipd
+>>> > > > points to the xenomai domain at the moment of handling the irq 150.
+>>> > > > However, it is only requested and registered in the Linux domain.
+>>> > > >
+>>> > > > I'll use the I-pipe tracer now to make a trace at the moment the
+>>> 150
+>>> > > > interrupt gets handled in the xenomai domain..
+>>> > >
+>>> > > Yes, please, do not forget to ask for a large number of back trace
+>>> points.
+>>> > >
+>>> > > Please find attached the ipipetrace.txt file.
+>>> >
+>>> >
+>>> > > --
+>>> > >                                             Gilles.
+>>> > >
+>>>
+>>> > Unable to handle kernel NULL pointer dereference at virtual address
+>>> 00000000
+>>> > pgd = ce1b0000, hw pgd = ce1b0000
+>>> > [00000000] *pgd=1e236831, *pte=00000000, *ppte=00000000
+>>> > --> IRQ handler irq 150 == NULL!! domain Xenomai
+>>>
+>>> Please put the panic or trace freeze before printing anything and
+>>> the whole dumping. This will remove a lot of useless stuff from the
+>>> trace.
+>>>
+>>> Please find attached the ipipetrace_2.txt file (this time I was able to
+>> capture it via /proc/ipipe/trace/frozen instead of the terminal logging).
+>>
+>
+> I noticed we have a taskswitch hook set, which might blur the trace
+> results. So if you are interested in a trace without the taskswitch hook
+> set, then please find attached ipipetrace_3.txt. Sorry for the
+> inconvenience.
+>
 
-> Plus they remove remaining risks to call the tracing
-> functions over the head domain, another improvement over the existing
-> code, for all archs. That this may not catch all migration corner cases
-> yet shouldn't be your worries - if you don't care about lockdep at all.
+I was actually wondering how __ipipe_next_irq() could come up with 150 when
+in the xenomai domain.
 
-As soon as I merge your patch, I am the one maintaining it, this
-means I will start enabling LOCKDEP in my "full debug" configuration
-when validating the I-pipe patch, and I do not want it to crash.
-Besides I am the one answering user requests about the I-pipe patch
-for the ARM architecture, and I do not want to have to deal with
-users reporting weird crashes with LOCKDEP turned on. So, this will
-become my worry, and no, I do not want any case not covered by your
-patch. Besides there are not that many paths in entry.S, so asking
-for a thorough analysis is not asking for something tedious or
-complicated..
+I'm not sure, but the code in __ipipe_do_sync_stage() looks a bit strange
+to me:
+first p is set to the __ipipe_current_context and ipd to p->domain. Later
+in the for-loop, p get updated again to __ipipe_current_context again (so
+it is expected to change) but ipd is not updated to be set to the p->domain
+again.
+Was that on purpose or is the ipd = p->domain; statement missing inside the
+for-loop?
 
-> 
-> However, I will propose properly described and signed-off patches for
-> merge once testing and analysis provide the required confidence in the
-> approach.
 
-Validation by testing is required, but by no means as valuable as a
-good design.
-
--- 
-					    Gilles.
-
+>>
+>>> --
+>>>                                             Gilles.
+>>>
+>>
+>>
+>
