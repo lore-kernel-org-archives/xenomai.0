@@ -1,13 +1,21 @@
-Date: Thu, 20 Nov 2014 20:21:51 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141120192151.GD4545@sisyphus.hd.free.fr>
-References: <C34B698C-EAE2-4FDB-806A-42534A6CBD22@gatech.edu>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Thu, 20 Nov 2014 15:01:33 -0500
+Message-ID: <20141120200133.GN24110@csclub.uwaterloo.ca>
+References: <20141118190014.GC3177@sisyphus.hd.free.fr>
+ <20141118192437.GB24110@csclub.uwaterloo.ca>
+ <20141118192846.GE3177@sisyphus.hd.free.fr>
+ <20141118202833.GH3177@sisyphus.hd.free.fr>
+ <20141118205303.GD24110@csclub.uwaterloo.ca>
+ <20141118205624.GK3177@sisyphus.hd.free.fr>
+ <20141118211713.GL3177@sisyphus.hd.free.fr>
+ <20141118213931.GE24110@csclub.uwaterloo.ca>
+ <20141119171204.GI24110@csclub.uwaterloo.ca>
+ <20141119223848.GF7011@sisyphus.hd.free.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <C34B698C-EAE2-4FDB-806A-42534A6CBD22@gatech.edu>
-Subject: Re: [Xenomai] GPU Processing Question
+In-Reply-To: <20141119223848.GF7011@sisyphus.hd.free.fr>
+Subject: Re: [Xenomai] I-pipe error when requesting irq that is on omap gpio
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,37 +24,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Yogi A. Patel" <yapatel@gatech.edu>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Thu, Nov 20, 2014 at 02:10:10PM -0500, Yogi A. Patel wrote:
-> Hi -
-> 
-> I’m interested in using a GPU processing library (ArrayFire
-> <http://arrayfire.com/>) to run some computationally heavy models
-> in our real-time framework (data acquired->run in model->generate
-> some output via DAQ).
-> 
-> I don’t know much about integrating GPU processing into the loop -
-> and am looking for basic suggestions on the pros/cons when
-> considering hard real-time demand.
-> 
-> Any thoughts from anyone are appreciated. Examples are also
-> appreciated!
+On Wed, Nov 19, 2014 at 11:38:48PM +0100, Gilles Chanteperdrix wrote:
+> I do not know what to say. At software level, it is not really hard
+> to get the I-pipe code to trigger a write to a register when the
+> first RT irq is enabled in a bank and another write when the last RT
+> irq gets disabled, because we keep track of that in the
+> enable_irqdesc/disable_irqdesc callbacks.
 
-Using GPU shaders implies interacting with a Linux GPU driver. So,
-will get the thread using them out of primary mode. So, if you want
-to use them and keep running in primary mode, you will have to port
-GPU drivers to Xenomai RTDM skin. The problem being that a lot of
-GPU drivers are proprietary, so, porting them to RTDM will be
-difficult, I mean very difficult, if not impossible. Among the free
-ones, some drivers do not really execute the shaders on the GPU (was
-surprised by that using Cg shaders with nouveau drivers recently,
-granted, this is probably an old version of the nouveau drivers,
-since it is the Debian stable version, but this is nevertheless
-surprising). And finally a modern GPU driver is something rather
-complex, which makes it even more difficult to get it to use RTDM.
+Sure, but other power management calls to the hardware is allowed to
+change the register too at any time.  By setting the flag I make sure
+the other calls will NEVER enable smartidle.  So making it a dtb option
+means the board maker gets to specify that they want smartidle off for
+a given piece of hardware.  I did want to make it only get changed when
+an IRQ was enabled but that was a mess given it is in a totally different
+part of the code.
+
+> Now, I suspect hwmod is made to be transparent, and called when
+> initializing the bank, way before an irq is enabled, so the
+> behaviour can not really be influenced from enable_irqdesc/disable_irqdesc.
+
+That is certainly true.  It is called when the hardware is probed.
 
 -- 
-					    Gilles.
+Len Sorensen
 
