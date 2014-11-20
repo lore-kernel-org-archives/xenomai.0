@@ -1,21 +1,21 @@
-Date: Wed, 19 Nov 2014 23:38:48 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141119223848.GF7011@sisyphus.hd.free.fr>
-References: <20141118185657.GA24110@csclub.uwaterloo.ca>
- <20141118190014.GC3177@sisyphus.hd.free.fr>
- <20141118192437.GB24110@csclub.uwaterloo.ca>
- <20141118192846.GE3177@sisyphus.hd.free.fr>
- <20141118202833.GH3177@sisyphus.hd.free.fr>
- <20141118205303.GD24110@csclub.uwaterloo.ca>
- <20141118205624.GK3177@sisyphus.hd.free.fr>
- <20141118211713.GL3177@sisyphus.hd.free.fr>
- <20141118213931.GE24110@csclub.uwaterloo.ca>
- <20141119171204.GI24110@csclub.uwaterloo.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20141119171204.GI24110@csclub.uwaterloo.ca>
-Subject: Re: [Xenomai] I-pipe error when requesting irq that is on omap gpio
+In-Reply-To: <20141119154950.GD825@sisyphus.hd.free.fr>
+References: <CANKLDmu4j6KZS+UeQq9GtW1rB9_9m6MX3upWK2vWtNpuO0bKBw@mail.gmail.com>
+ <CANKLDmvyZEPe8Z5Us1fMJ05=ZGOtqJnDHg_-2n_cwo5hD_8bzw@mail.gmail.com>
+ <20141119131004.GG29491@sisyphus.hd.free.fr>
+ <CANKLDmsBnQVgH3o014AYURMTmMHKJ0bTydEr1pVUGP+GFbNnbQ@mail.gmail.com>
+ <20141119140311.GB31401@sisyphus.hd.free.fr>
+ <CANKLDmu5V8s2HzBfqPNRWf-KYZOQg8s7ULsHYsLjh7NPv3T4ew@mail.gmail.com>
+ <20141119150924.GB825@sisyphus.hd.free.fr>
+ <CANKLDmse_kMMSOfJFrLi0fw6LLSZNRihTXXWOLhYtfaNUkt8Cw@mail.gmail.com>
+ <20141119151244.GC825@sisyphus.hd.free.fr>
+ <CANKLDms+QDBcQ6qvK3KfMByLpsfkbt8jTOc8PEZ5VJ9q90SQKA@mail.gmail.com>
+ <20141119154950.GD825@sisyphus.hd.free.fr>
+Date: Thu, 20 Nov 2014 09:13:49 +0100
+Message-ID: <CANKLDmtXvOEuu0aADjJ=ctjE1PQC_v2jt26PhyYri2q2p7r48Q@mail.gmail.com>
+From: Henri Roosen <henriroosen@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] problems with ipipe-3.10 on i.MX6
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,73 +24,186 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, Nov 19, 2014 at 12:12:04PM -0500, Lennart Sorensen wrote:
-> On Tue, Nov 18, 2014 at 04:39:31PM -0500, Lennart Sorensen wrote:
-> > TI seems to be on a 'Get it mainlined' kick lately, so perhaps they are
-> > being more careful as a result.
-> > 
-> > > Anyway, this is not a good solution, this is clearly something that
-> > > nobody tests, thre is no reason to expect it what we would expect to
-> > > dot. 
-> > 
-> > I see this 'hack' in the omap timer code:
-> > 
-> > +#ifdef CONFIG_IPIPE
-> > +       if (ipipe) {
-> > +               u32 l;
-> > +
-> > +               l = __raw_readl(timer->io_base + OMAP_TIMER_OCP_CFG_OFFSET);
-> > +               l = (0x3 << 8) | (l & (1 << 5)) | (0x1 << 3) | (1 << 2);
-> > +               __raw_writel(l, timer->io_base + OMAP_TIMER_OCP_CFG_OFFSET);
-> > +       }
-> > +#endif
-> > 
-> > Sure would be nice if someone had actually defined what those bits are,
-> > although it appears to be setting wakeup on, and idle mode to 'no idle',
-> > and I didn't look up the 5 and 8 bits yet.
-> > 
-> > I was hoping to do something a lot cleaner than that.
-> 
-> Well this works for me:
-> 
-> Index: linux-3.12.31.rr1/arch/arm/mach-omap2/omap_hwmod.c
-> ===================================================================
-> --- linux-3.12.31.rr1.orig/arch/arm/mach-omap2/omap_hwmod.c     2014-11-19 11:32:38.931715225 -0500
-> +++ linux-3.12.31.rr1/arch/arm/mach-omap2/omap_hwmod.c  2014-11-19 12:08:45.575792706 -0500
-> @@ -2587,6 +2587,8 @@
->                         oh->flags |= HWMOD_INIT_NO_RESET;
->                 if (of_find_property(np, "ti,no-idle", NULL))
->                         oh->flags |= HWMOD_INIT_NO_IDLE;
-> +               if (of_find_property(np, "ti,no-smart-idle", NULL))
-> +                       oh->flags |= HWMOD_SWSUP_SIDLE;
->         }
->  
->         oh->_state = _HWMOD_STATE_INITIALIZED;
-> 
-> combined with adding to the dts:
-> 
-> &gpio7 {
-> 	ti,no-smart-idle;
-> };
-> 
-> I think I like that as a simple clean solution.
-> 
-> Now the SYSCONFIG register is 0x0009 (no idle + autoidle) rather than
-> 0x001d (smart idle with wakeup enabled + autoidle)
+On Wed, Nov 19, 2014 at 4:49 PM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
 
-I do not know what to say. At software level, it is not really hard
-to get the I-pipe code to trigger a write to a register when the
-first RT irq is enabled in a bank and another write when the last RT
-irq gets disabled, because we keep track of that in the
-enable_irqdesc/disable_irqdesc callbacks.
+> On Wed, Nov 19, 2014 at 04:43:08PM +0100, Henri Roosen wrote:
+> > On Wed, Nov 19, 2014 at 4:12 PM, Gilles Chanteperdrix <
+> > gilles.chanteperdrix@xenomai.org> wrote:
+> >
+> > > On Wed, Nov 19, 2014 at 04:11:30PM +0100, Henri Roosen wrote:
+> > > > On Wed, Nov 19, 2014 at 4:09 PM, Gilles Chanteperdrix <
+> > > > gilles.chanteperdrix@xenomai.org> wrote:
+> > > >
+> > > > > On Wed, Nov 19, 2014 at 04:03:40PM +0100, Henri Roosen wrote:
+> > > > > > On Wed, Nov 19, 2014 at 3:03 PM, Gilles Chanteperdrix <
+> > > > > > gilles.chanteperdrix@xenomai.org> wrote:
+> > > > > >
+> > > > > > > On Wed, Nov 19, 2014 at 02:33:51PM +0100, Henri Roosen wrote:
+> > > > > > > > On Wed, Nov 19, 2014 at 2:10 PM, Gilles Chanteperdrix <
+> > > > > > > > gilles.chanteperdrix@xenomai.org> wrote:
+> > > > > > > >
+> > > > > > > > > On Wed, Nov 19, 2014 at 01:56:20PM +0100, Henri Roosen
+> wrote:
+> > > > > > > > > > I reworked the driver now and the 'stalled head domain'
+> is
+> > > not
+> > > > > there
+> > > > > > > > > > anymore.
+> > > > > > > > > > However, the other symptoms did not disappear.
+> > > > > > > > > >
+> > > > > > > > > > I currently observe 2 symptoms:
+> > > > > > > > >
+> > > > > > > > > As I said, I prefer handle one problem at a time, and pass
+> to
+> > > the
+> > > > > > > > > next when we are finished with the current.
+> > > > > > > > >
+> > > > > > > > > > Either 1) a stall of the i.MX timer
+> > > > > > > > >
+> > > > > > > > > Who cares ? The i.MX timer has no reason to be used, the
+> > > cortex a9
+> > > > > > > > > local timers should be used. Or are you booting a kernel
+> > > compiled
+> > > > > > > > > without CONFIG_SMP ?
+> > > > > > > > >
+> > > > > > > >
+> > > > > > > > I compiled without CONFIG_SMP as the symptoms seemed less
+> random.
+> > > > > > > However,
+> > > > > > > > as you said, let's put this on ice for now and focus on the
+> NULL
+> > > > > pointer
+> > > > > > > > dereference for now.
+> > > > > > > >
+> > > > > > > >
+> > > > > > > > > > or 2) a kernel NULL pointer dereference.
+> > > > > > > > > >
+> > > > > > > > > > The kernel trace of the NULL pointer dereference is as
+> below:
+> > > > > > > > >
+> > > > > > > > > Well the kernel trace is not exactly as below, because your
+> > > mailer
+> > > > > > > > > wrapped it, which makes it hard to read. Please try to get
+> your
+> > > > > > > > > mailer not to wrap the trace, or failing that, simply
+> attach a
+> > > > > plain
+> > > > > > > > > text file with the trace.
+> > > > > > > > >
+> > > > > > > > > >
+> > > > > > > > > > Unable to handle kernel NULL pointer dereference at
+> virtual
+> > > > > address
+> > > > > > > > > 00000000
+> > > > > > > > > > pgd = ce230000, hw pgd = ce230000
+> > > > > > > > > > [00000000] *pgd=1e30d831, *pte=00000000, *ppte=00000000
+> > > > > > > > > > Internal error: Oops: 80000007 [#1] PREEMPT ARM
+> > > > > > > > > > Modules linked in: platform_imx(O) sigmatek_lrt(O)
+> > > > > > > > > > CPU: 0 PID: 454 Comm: LRT:454 Tainted: G        W  O
+> > > > > > > > > > 3.10.32-ipipe-00218-gcf143c6-dirty #100
+> > > > > > > > > > task: ce00e780 ti: ce2d8000 task.ti: ce2d8000
+> > > > > > > > > > PC is at 0x0
+> > > > > > > > > > LR is at __ipipe_do_sync_stage+0x1cc/0x2c8
+> > > > > > > > >
+> > > > > > > > > __ipipe_do_sync_stage is jumping to address 0, some
+> function
+> > > > > pointer
+> > > > > > > > > is NULL. You would have to disassemble
+> __ipipe_do_sync_stage
+> > > around
+> > > > > > > > > offset 0x1cc to know what exactly. But it is probably an
+> IRQ
+> > > > > > > > > handler. You can modify __ipipe_do_sync_stage code to emit
+> a
+> > > printk
+> > > > > > > > > with the irq number being currently being processed when
+> its
+> > > > > handler
+> > > > > > > > > is NULL. We will know what IRQ number has an issue.
+> > > > > > > > >
+> > > > > > > >
+> > > > > > > > Please find the log.txt file attached, which shows the IRQ
+> number
+> > > > > that
+> > > > > > > has
+> > > > > > > > the issue (150: ethernet) as well as the output of
+> > > /proc/interrupts
+> > > > > and
+> > > > > > > > /proc/xenomai/irq
+> > > > > > > >
+> > > > > > > > I'll do some more tests to see if it is always IRQ 150.
+> > > > > > >
+> > > > > > > Ok, if it is always 150, could you show us how the ethernet
+> driver
+> > > > > > > does its request_irq ? If it does a set_type or something ?
+> > > > > > >
+> > > > > >
+> > > > > > To request the irq, the following statement is called:
+> > > > > > ret = request_irq(irq, fec_enet_interrupt, IRQF_DISABLED,
+> pdev->name,
+> > > > > ndev);
+> > > > > > I didn't find a set_type.
+> > > > > >
+> > > > > > However, I'm not sure if I completely understood your question.
+> Is
+> > > it ok
+> > > > > if
+> > > > > > I point you to the file
+> drivers/net/ethernet/freescale/fec_main.c,
+> > > line
+> > > > > > 1983.
+> > > > > > (
+> > > > > >
+> > > > >
+> > >
+> http://git.xenomai.org/ipipe.git/tree/drivers/net/ethernet/freescale/fec_main.c?h=ipipe-3.10#n1983
+> > > > > > )
+> > > > >
+> > > > > Ok, are you using the device tree or not?
+> > > > >
+> > > >
+> > > > Yes, using devicetree
+> > >
+> > > You are sure your devicetree has all the necessary parameters for
+> > > the ethernet interrupt ?
+> > >
+> > >
+> > Yes, should be all in the included imx6qdl.dtsi file. Our board .dts file
+> > includes the file and just sets the correct pinctrl, phy-mode and status
+> to
+> > okay, similar to what other boards do.
+> >
+> > Ethernet communication is working and we are getting interrupts at first,
+> > just after a while it stops working because of the NULL pointer
+> dereference.
+> > Any suggestion how to trace down this specific handler getting NULL-ed?
+>
+> You can try using the I-pipe tracer. Enable the I-pipe tracer,
+> trigger a panic before printing anything when the bug happens (by
+> the way, which pointer is NULL, is it the irq handler, or the
+> interrupt acknowledge routine ?). Modify the I-pipe tracer to store
+> the current value of the handler instead of the timestamp in the
+> I-pipe trace structure, and the function printing the traces to cast
+> the timestamp to a pointer and print its value instead of computing
+> a difference. With enough back trace points, it should be clear in
+> the trace generated which function sets the pointer to NULL.
+>
+> Alternatively, if you are ready to spend time in your processor
+> documentation, you can look for a way to program its hardware
+> breakpoints registers to watch the handler address once it has been
+> set.
+>
+> I found out the irq-handler doesn't get NULL-ified. Instead, the ipd
+points to the xenomai domain at the moment of handling the irq 150.
+However, it is only requested and registered in the Linux domain.
 
-Now, I suspect hwmod is made to be transparent, and called when
-initializing the bank, way before an irq is enabled, so the
-behaviour can not really be influenced from enable_irqdesc/disable_irqdesc.
+I'll use the I-pipe tracer now to make a trace at the moment the 150
+interrupt gets handled in the xenomai domain..
 
--- 
-					    Gilles.
-
+--
+>                                             Gilles.
+>
