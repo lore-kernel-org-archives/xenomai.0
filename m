@@ -1,21 +1,13 @@
-Date: Tue, 18 Nov 2014 16:26:49 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141118152649.GC26237@sisyphus.hd.free.fr>
-References: <545D12D2.2020104@xenomai.org>
- <20141117191237.GS24110@csclub.uwaterloo.ca>
- <20141117201435.GH31920@sisyphus.hd.free.fr>
- <20141117202425.GU24110@csclub.uwaterloo.ca>
- <20141117202754.GI31920@sisyphus.hd.free.fr>
- <20141117214734.GW24110@csclub.uwaterloo.ca>
- <20141117215458.GM31920@sisyphus.hd.free.fr>
- <20141117221001.GX24110@csclub.uwaterloo.ca>
- <20141117221542.GN31920@sisyphus.hd.free.fr>
- <20141118152422.GY24110@csclub.uwaterloo.ca>
+Message-ID: <546F206A.4060506@web.de>
+Date: Fri, 21 Nov 2014 12:22:18 +0100
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20141118152422.GY24110@csclub.uwaterloo.ca>
-Subject: Re: [Xenomai] I-pipe error when requesting irq that is on omap gpio
+References: <20141121090857.GK4545@sisyphus.hd.free.fr>
+ <546F14BE.1090209@web.de> <20141121111006.GA31011@sisyphus.hd.free.fr>
+In-Reply-To: <20141121111006.GA31011@sisyphus.hd.free.fr>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] RTnet in Xenomai 3, status and future
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,40 +16,104 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: rtnet-developers@lists.sourceforge.net, rtnet-users@lists.sourceforge.net, Xenomai <xenomai@xenomai.org>
 
-On Tue, Nov 18, 2014 at 10:24:22AM -0500, Lennart Sorensen wrote:
-> On Mon, Nov 17, 2014 at 11:15:42PM +0100, Gilles Chanteperdrix wrote:
-> > On Mon, Nov 17, 2014 at 05:10:01PM -0500, Lennart Sorensen wrote:
-> > > Not sure anything there looks that big.  I wonder if the gpio bank is
-> > > just slow to generate the IRQ in the first place for some reason.
-> 
-> And yes it was.
-> 
-> > No, I do not see anything wrong either. One thing that could delay
-> > gpio irq delivery is PIC muting, if it has a bug with this SOC, so I
-> > strongly suggest (once again) that you comment out PIC muting as
-> > long as you have issues. Anyway, I do not think that is the case
-> > here.
-> > 
-> > If the latency is not always off, you should trigger a trace only
-> > when you detect that the latency is to large.
-> 
-> OK, found the problem.  The GPIO bank is by default (in the kernel,
-> not hardware) configured for 'SmartIdle' which apparently means it goes
-> to sleep and first has to wake up, power everything up, start the clock,
-> then measure the state of the pin for a couple of clocks before generating
-> an IRQ.  Turning off idle support entirely on the GPIO bank makes it
-> consistently about 30us response time, so that is great.
+On 2014-11-21 12:10, Gilles Chanteperdrix wrote:
+> On Fri, Nov 21, 2014 at 11:32:30AM +0100, Jan Kiszka wrote:
+>> On 2014-11-21 10:08, Gilles Chanteperdrix wrote:
+>>> Hi,
+>>>
+>>> as some of you may have seen, I have sent the pull request to
+>>> Philippe for the integration of RTnet in Xenomai 3, those of you who
+>>> want will be able to test it when Xenomai 3 next release candidate
+>>> is released. What will be in that release candidate is what was in
+>>> RTnet git, patched up to adapt it to the Linux and Xenomai API
+>>> changes that broke its compilation, and to add the bits and pieces
+>>> to be able to run some tests on the hardware I have (namely, the
+>>> 8139too, r8169, at91_ether and macb drivers).
+>>
+>> For x86, support for e1000e and possibly also igb will be very helpful.
+>> Those NICs dominate the market now, specifically due to their on-chip /
+>> on-board presence. I think those two drives are in better shape than the
+>> legacy ones.
+> =
 
-Ok, there is already code in the I-pipe for turning off smartidle
-for other peripherals (like the hardware timer, the omap specific
-one used on omap3, and SMP omap4 and 5 when in UP mode, not the
-cortex a9 global timer), so, any patch to toggle this bit with 
-if (IS_ENABLED(IPIPE))
-will be accepted.
+> When compiling Xenomai 3 with RTnet on x86 (32 and 64), I enabled
+> all the PCI drivers. So, they all compile as far as I know. I have
+> not tested them of course, but since the rtnet stack has not changed
+> (yet), they should continue to work if they were in a working state.
 
--- 
-					    Gilles.
+Ah, ok, perfect.
 
+> =
+
+> =
+
+>>> - the NAPI will be implemented. The NAPI thread will run with the
+>>> priority of the highest priority waiting thread, and will call
+>>> rt_stack_deliver, in order not to increase the RX latency compared
+>>> to the current solution. This will make porting recent drivers easy
+>>> and has the additional advantage of irq handlers not creating large
+>>> irq masking sections like in the current design, which even borders
+>>> priority inversion if the bulk of the received packets is for RTmac
+>>> vnics or rtnetproxy.
+>>
+>> Will be an interesting feature. However, whenever you share a link for
+>> RT and non-RT packets, you do have an unavoidable prio-inversion risk.
+>> The way to mitigate this is non-RT traffic control.
+> =
+
+> This can only made on the sending side (which the solution I propose
+> for tx queuing should somewhat achieve, BTW). On the receive side,
+> the best we can do is get the NAPI thread to inherit the priority of
+> the highest priority waiter, and reschedule as soon as it delivers a
+> packet to a thread. So, the NAPI thread should not delay high
+> priority tasks not currently waiting for a packet if there is no
+> higher priority thread waiting for a packet.
+> =
+
+>>
+>>>
+>>> Maybe the RTnet drivers contain some modifications for low latency
+>>> like reducing the TX ring length, but I believe putting these
+>>> modifications in the drivers is not a so good idea: =
+
+>>
+>> The key modifications that were needed for drivers so far are:
+>>  - TX/RX time stamping support
+>>  - disabling of IRQ coalescing features for low-latency signaling
+>>  - support for pre-mapping rings (to avoid triggering IOMMU paths
+>>    during runtime)
+> =
+
+> Ok, thanks. Could you point me at a drivers which have these
+> modifications? Particularly the third one, because I believe
+> mainline has RX/TX time stamping as well, and the NAPI should handle
+> the second one.
+
+Regarding time stamping: yes, mainline may have this now. You just need
+to check when it happens. The original philosophy was to have that as
+close to triggering the TX / receiving an RX event as feasible.
+
+Regarding IRQ coalescing: This is a hardware feature that aims at
+optimizing throughput and lowering CPU load. As such, it works against
+the goal of lowering individual event latencies. However, maybe such
+things are controllable in standard drivers today, just not in a
+consistent way.
+
+And regarding premapping: Just look that rt_igb or rt_e1000e. See e.g.
+c05d7bbfba. This change is mandatory for RT, at least for dual-domain
+setups.
+
+Jan
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 198 bytes
+Desc: OpenPGP digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20141121/2c9fda2=
+3/attachment.sig>
