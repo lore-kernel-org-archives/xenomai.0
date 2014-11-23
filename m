@@ -1,6 +1,6 @@
-Date: Sun, 23 Nov 2014 17:22:59 +0100
+Date: Sun, 23 Nov 2014 17:26:33 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141123162259.GC24229@sisyphus.hd.free.fr>
+Message-ID: <20141123162633.GD24229@sisyphus.hd.free.fr>
 References: <C34B698C-EAE2-4FDB-806A-42534A6CBD22@gatech.edu>
  <20141120192151.GD4545@sisyphus.hd.free.fr>
  <ED3D3EA3-E2CF-4D13-AD18-68E75705DD83@gatech.edu>
@@ -60,31 +60,13 @@ On Sun, Nov 23, 2014 at 11:17:44AM -0500, Yogi A. Patel wrote:
 > 
 > I spoke to the company that makes that library and they said that
 > which registers are used by the CUDA application is left up to the
-> nvidia compiler. In addition, there are scientific GPUs that are
-> separate from the GPUs for the graphics pipeline.
+> nvidia compiler.
 
-I never said anything different. What I am telling you is that the
-CUDA or openCL libraries interact with the driver code. The CUDA or
-OpenCL library do not know whether the display is used, so the
-driver is assuming it is used.
-
-What I am telling you is that if you want to bypass these libraries,
-you will have to have the registers documentation. And you will have
-to write to them. Maybe you can do this in user-space in your
-particular case. But the ArrayFire library certainly does not do it.
-
-> 
-> I am having a hard time finding compelling data for/against trying
-> this out so I may just give it a whirl and see what I find.
-
-Well, see the sentence I already quoted: ArrayFire uses CUDA and
-OpenCL as backends, there is no need to say more.
-
-> I know that Xenomai 3 has a tool for profiling when an app jumps
-> out of primary mode. Is there an easy way to do that with v2.6.x?
-
-Of course. 
-https://xenomai.org/2014/06/finding-spurious-relaxes/
+We are not talking about the same registers. You are talking about
+the registers used by the CUDA compiler, on the GPU. I am talking
+about the GPU registers available through PCI express. You will have
+to program these to get the GPU to execute the code compiled by
+CUDA. And the way to program these is to use the nvidia driver.
 
 -- 
 					    Gilles.
