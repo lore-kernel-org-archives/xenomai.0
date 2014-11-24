@@ -1,21 +1,13 @@
-Date: Mon, 24 Nov 2014 16:00:30 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141124150030.GB26532@sisyphus.hd.free.fr>
-References: <20141120184516.GC4545@sisyphus.hd.free.fr>
- <546EF065.9070206@xenomai.org>
- <CANKLDmuD4evzObPYqd64rfmNLD9NPqS3EZrSUZy_84mL44bpGg@mail.gmail.com>
- <546EF4BF.6070302@xenomai.org>
- <CANKLDmv=GhPfCjFcgjYUv+6geDeY3VX0WUsxjnqqeiRD5YB__g@mail.gmail.com>
- <CANKLDmtgVkgu61k_1zBZ3+FBYJ-zttTheNRW96bRw4_DCHQ_Lw@mail.gmail.com>
- <CANKLDmu3e_gtg-ouqGpX1GzamHDfS5NVywM6DTLin7W4roTGLA@mail.gmail.com>
- <CANKLDmtdtw-SuLpVm7YT=eWWH=ZOFnHFJOPHzm0D6PwjbdNfgA@mail.gmail.com>
- <20141124091840.GT24229@sisyphus.hd.free.fr>
- <CANKLDmvygbwdNXvYxPgwCihDCbUBbWHUFVkSYdAfO2e-OwtZjA@mail.gmail.com>
+Message-ID: <5473636E.6030206@xenomai.org>
+Date: Mon, 24 Nov 2014 11:57:18 -0500
+From: Jorge Ramirez Ortiz <jro@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANKLDmvygbwdNXvYxPgwCihDCbUBbWHUFVkSYdAfO2e-OwtZjA@mail.gmail.com>
-Subject: Re: [Xenomai] problems with ipipe-3.10 on i.MX6
+References: <CAKKWdtfZm+F3M+VtD2zG=JMun1GYtNDOAbzYvVUDXxq5B8qsMw@mail.gmail.com>	<53F30622.4050605@xenomai.org>
+ <CAKKWdtfjaZcjX0q0W0kJQSeJiNCssYE21hrbzR4PseXr1MOzfw@mail.gmail.com>
+In-Reply-To: <CAKKWdtfjaZcjX0q0W0kJQSeJiNCssYE21hrbzR4PseXr1MOzfw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai]  a question about interrupts
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,41 +16,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henri Roosen <henriroosen@gmail.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: ali hagigat <hagigatali@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Nov 24, 2014 at 03:56:46PM +0100, Henri Roosen wrote:
-> On Mon, Nov 24, 2014 at 10:18 AM, Gilles Chanteperdrix <
-> gilles.chanteperdrix@xenomai.org> wrote:
-> 
-> > On Mon, Nov 24, 2014 at 09:43:25AM +0100, Henri Roosen wrote:
-> > > I don't want to be rude or push anyone, as I know everyone has a lot to
-> > do
-> > > by himself. But it would really help me forward if someone could have a
-> > > look at the trace I made and answer the questions above.
-> > > If there is no apparent sign in the trace, please point me to some places
-> > > where I can add some extra tracing to get down to the root cause.
-> >
-> > Hi Henri,
-> >
-> > I know I said I would help you, but I am not very familiar with this
-> > code, so Philippe will be much more efficient. But he is busy at the
-> > moment and will not be able to help you before some time.
-> >
-> 
-> Thanks Gilles, I appreciate the update. However the following short
-> question might be something you are familiar with and I would appreciate if
-> you could answer it:
-> In the traces I see gic_mute and gic_unmute, while in between the
-> gic_handle_irq is traced, which triggers our fpga-handler too.
-> 
-> Does that mean we have a problem with the gic-muting? What can I do to
-> verify?
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-No, gic_mute only prevents the secondary mode interrupts from being
-delivered. And since the GPIO irq has a primary mode interrupt, the
-mute function does not mute it. So, everything seems fine so far.
+On 11/24/2014 11:38 AM, ali hagigat wrote:
+> Please answer the following questions. I am much appreciated.
+> 
+> 1) does ISR(interrupt service routine) have priority over the Xenomai
+> real-time tasks? any ISR defined for root or head domain? are executed
+> in the middle of the real-time tasks?
+> 
+> 2) if there is a linux thread and a regular interrupt happens and then
+> a timer interrupt happnes, means , xnintr_clock_handler(), the
+> xnpod_schedule() function will suspend the linux thread? and the linux
+> thread is suspended with two nested interrupt?
+> 
+> I wonder if you could answer yourself, mailing list is escaping from
+> answering these questions. thank you
+> 
 
--- 
-					    Gilles.
+
+hi Ali,
+
+Let me share this with the mailing list.
+I am sure these questions can be resolved in the open - actually I think Gilles
+might have already addressed them.
+
+cheers,
+
+
+- -- 
+jro
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQEcBAEBAgAGBQJUc2NuAAoJECDcy2IJkagR7RAH/34zgxJkOcvjrmU2uQNfhjUC
+rFpY8WlY0hSAs4XrAx9uHN5P6PntcWG61NGkH1dPq73AhGjnIl3pyW7Iv5/Mh58H
+Py5NyvCx6VfGCO5DrnJ3yhTil61Pzgh++W0lVf32hrpUvhyaYoaYkLWSwK5L+Qr2
+YYrKG4UhceJpAOJzEvgblxXlq/oNn6wwYE8kCsHUurYAPs4VKzMQe83pkz8m6ReY
+wXcQ1hKC3lNKE8htEp/5KHpSV+sR/dkCH98bBXaQELlU7GIhvflM6ZuZ593zx36u
+m/RzOQGmlgnvoleL3mIwDMKXjWAYAKk5R4JogSdlzt+DX9a84VFN+6lCqpgkDrs=
+=GA0y
+-----END PGP SIGNATURE-----
 
