@@ -1,8 +1,7 @@
-MIME-Version: 1.0
-In-Reply-To: <20141124091840.GT24229@sisyphus.hd.free.fr>
-References: <CANKLDmt4OApxTx-41pf40P0_5DUsxNSaNh+QtTL4fO52_adXjQ@mail.gmail.com>
- <CANKLDmsoet+Z-7eEuXhNJ6QSt9Dh4Sktur0MGCZBtwdBB073AQ@mail.gmail.com>
- <20141120184516.GC4545@sisyphus.hd.free.fr>
+Date: Mon, 24 Nov 2014 16:00:30 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141124150030.GB26532@sisyphus.hd.free.fr>
+References: <20141120184516.GC4545@sisyphus.hd.free.fr>
  <546EF065.9070206@xenomai.org>
  <CANKLDmuD4evzObPYqd64rfmNLD9NPqS3EZrSUZy_84mL44bpGg@mail.gmail.com>
  <546EF4BF.6070302@xenomai.org>
@@ -11,10 +10,11 @@ References: <CANKLDmt4OApxTx-41pf40P0_5DUsxNSaNh+QtTL4fO52_adXjQ@mail.gmail.com>
  <CANKLDmu3e_gtg-ouqGpX1GzamHDfS5NVywM6DTLin7W4roTGLA@mail.gmail.com>
  <CANKLDmtdtw-SuLpVm7YT=eWWH=ZOFnHFJOPHzm0D6PwjbdNfgA@mail.gmail.com>
  <20141124091840.GT24229@sisyphus.hd.free.fr>
-Date: Mon, 24 Nov 2014 15:56:46 +0100
-Message-ID: <CANKLDmvygbwdNXvYxPgwCihDCbUBbWHUFVkSYdAfO2e-OwtZjA@mail.gmail.com>
-From: Henri Roosen <henriroosen@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+ <CANKLDmvygbwdNXvYxPgwCihDCbUBbWHUFVkSYdAfO2e-OwtZjA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANKLDmvygbwdNXvYxPgwCihDCbUBbWHUFVkSYdAfO2e-OwtZjA@mail.gmail.com>
 Subject: Re: [Xenomai] problems with ipipe-3.10 on i.MX6
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -24,41 +24,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Henri Roosen <henriroosen@gmail.com>
 Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Nov 24, 2014 at 10:18 AM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+On Mon, Nov 24, 2014 at 03:56:46PM +0100, Henri Roosen wrote:
+> On Mon, Nov 24, 2014 at 10:18 AM, Gilles Chanteperdrix <
+> gilles.chanteperdrix@xenomai.org> wrote:
+> 
+> > On Mon, Nov 24, 2014 at 09:43:25AM +0100, Henri Roosen wrote:
+> > > I don't want to be rude or push anyone, as I know everyone has a lot to
+> > do
+> > > by himself. But it would really help me forward if someone could have a
+> > > look at the trace I made and answer the questions above.
+> > > If there is no apparent sign in the trace, please point me to some places
+> > > where I can add some extra tracing to get down to the root cause.
+> >
+> > Hi Henri,
+> >
+> > I know I said I would help you, but I am not very familiar with this
+> > code, so Philippe will be much more efficient. But he is busy at the
+> > moment and will not be able to help you before some time.
+> >
+> 
+> Thanks Gilles, I appreciate the update. However the following short
+> question might be something you are familiar with and I would appreciate if
+> you could answer it:
+> In the traces I see gic_mute and gic_unmute, while in between the
+> gic_handle_irq is traced, which triggers our fpga-handler too.
+> 
+> Does that mean we have a problem with the gic-muting? What can I do to
+> verify?
 
-> On Mon, Nov 24, 2014 at 09:43:25AM +0100, Henri Roosen wrote:
-> > I don't want to be rude or push anyone, as I know everyone has a lot to
-> do
-> > by himself. But it would really help me forward if someone could have a
-> > look at the trace I made and answer the questions above.
-> > If there is no apparent sign in the trace, please point me to some places
-> > where I can add some extra tracing to get down to the root cause.
->
-> Hi Henri,
->
-> I know I said I would help you, but I am not very familiar with this
-> code, so Philippe will be much more efficient. But he is busy at the
-> moment and will not be able to help you before some time.
->
+No, gic_mute only prevents the secondary mode interrupts from being
+delivered. And since the GPIO irq has a primary mode interrupt, the
+mute function does not mute it. So, everything seems fine so far.
 
-Thanks Gilles, I appreciate the update. However the following short
-question might be something you are familiar with and I would appreciate if
-you could answer it:
-In the traces I see gic_mute and gic_unmute, while in between the
-gic_handle_irq is traced, which triggers our fpga-handler too.
+-- 
+					    Gilles.
 
-Does that mean we have a problem with the gic-muting? What can I do to
-verify?
-
-Thanks!
-
-
-> Regards.
->
-> --
->                                             Gilles.
->
