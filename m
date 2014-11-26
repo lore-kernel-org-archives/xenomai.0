@@ -1,12 +1,14 @@
-Date: Wed, 26 Nov 2014 17:09:36 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141126160936.GA6894@sisyphus.hd.free.fr>
+From: =?utf-8?B?SMOkbmVsLUJhYXMsIEFsZXhhbmRlcg==?=
+ <alexander.haenel-baas@sieb-meyer.de>
+Date: Wed, 26 Nov 2014 16:20:57 +0000
+Message-ID: <9BA84827B30CBE4996725F98F7DC9123428F66B5@SMExchange01.siebmeyer.org>
 References: <9BA84827B30CBE4996725F98F7DC9123428F6675@SMExchange01.siebmeyer.org>
-MIME-Version: 1.0
+ <20141126152225.GF24110@csclub.uwaterloo.ca>
+In-Reply-To: <20141126152225.GF24110@csclub.uwaterloo.ca>
+Content-Language: de-DE
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <9BA84827B30CBE4996725F98F7DC9123428F6675@SMExchange01.siebmeyer.org>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] ipipe-arm for kernel 3.12 on ls1021
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,22 +18,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?B?SMOkbmVsLUJhYXMs?= Alexander <alexander.haenel-baas@sieb-meyer.de>
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, Nov 26, 2014 at 03:09:04PM +0000, Hänel-Baas, Alexander wrote:
-> What can I do to see why the kernel isn't starting and make the patch to work?
-
-This is a port to a new platform, so you should read:
-http://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc
-
-And for the answer to this particular question, read:
-http://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc/#Troubleshooting
-
-Also, if you have the choice of the kernel, I would recommend to
-stay away from the 3.12 kernel, the I-pipe branch you took has not
-been validated as real I-pipe branches such as 3.14 or 3.10.
-
--- 
-					    Gilles.
+SGkgTGVubmFydA0KDQpUaGFuayB5b3UgZm9yIHlvdXIgcmVhbGx5IGZhc3QgcmVwbHkuDQoNCkkg
+aGF2ZSBkaXNhYmxlZCBMUEFFIGluIHRoZSBLZXJuZWwgY29uZmlnLCBtb3ZlZCB0aGUgI2VuZGlm
+IGluIC9hcm0vbW0vZmF1bHQuYyB0byBvcmlnaW5hbCBwb3NpdGlvbi4NCg0KWW91IGFyZSByaWdo
+dDogY29tcGlsaW5nIHdhcyBub3cgd2l0aG91dCBhbnkgZXJyb3JzLg0KQnV0IHRoZSBrZXJuZWwg
+ZG9lc24ndCBzdGFydC4NCg0KU2VlIHlvdSB0b21vcnJvdw0KQWxleA0KDQoNCg0KLS0tLS1VcnNw
+csO8bmdsaWNoZSBOYWNocmljaHQtLS0tLQ0KVm9uOiBMZW5uYXJ0IFNvcmVuc2VuIFttYWlsdG86
+bHNvcmVuc2VAY3NjbHViLnV3YXRlcmxvby5jYV0gDQpHZXNlbmRldDogTWl0dHdvY2gsIDI2LiBO
+b3ZlbWJlciAyMDE0IDE2OjIyDQpBbjogSMOkbmVsLUJhYXMsIEFsZXhhbmRlcg0KQ2M6IHhlbm9t
+YWlAeGVub21haS5vcmcNCkJldHJlZmY6IFJlOiBbWGVub21haV0gaXBpcGUtYXJtIGZvciBrZXJu
+ZWwgMy4xMiBvbiBsczEwMjENCg0KT24gV2VkLCBOb3YgMjYsIDIwMTQgYXQgMDM6MDk6MDRQTSAr
+MDAwMCwgSMOkbmVsLUJhYXMsIEFsZXhhbmRlciB3cm90ZToNCj4gSSBuZWVkIGEgaXBpcGUtYXJt
+IHBhdGNoIGZvciBrZXJuZWwtMy4xMi4wLg0KPiANCj4gSSBoYXZlIHRoZSBsYXllcnNjYXBlIGxz
+MTAyMWF0d3IgZnJvbSBmcmVlc2NhbGUgaGVyZSB0aGF0IGNvbWVzIHdpdGggeW9jdG8gc2RrIGFu
+ZCBhIDMuMTIuMCBmcmVlc2NhbGUgZ2l0IGtlcm5lbC4NCj4gQml0YmFrZSB0aGUga2VybmVsIC9y
+b290ZnMgaXMgd29ya2VkIGFscmVhZHkuDQo+IA0KPiBTbyB0aGUgbmV4dCBzdGVwIGlzOiBtYWtl
+IHhlbm9tYWkgb24gaXQhDQo+IEkgZm91bmQgdGhlIGlwaXBlLXJhdy9pcGlwZS0zLjEyLjAgdHJl
+ZSBvbiB5b3VyIGdpdCBzZXJ2ZXIsIG1ha2UgYSBkaWZmIHRvIHZhbmlsbGEgMy4xMi4wIGtlcm5l
+bCBhbmQgZ2V0IG15IGlwaXBlLTMuMTIuMC5wYXRjaC4NCj4gDQo+IE5vdyBJIHBhdGNoZWQgdGhl
+IGZyZWVzY2FsZSBnaXQga2VybmVsICB3aXRoIG15IGlwaXBlLTMuMTIuMCBwYXRjaCB3aXRoIG9u
+bHkgdGhyZWUgZXJyb3JzOg0KPiANCj4gYXJjaC9wb3dlcnBjL2luY2x1ZGUvYXNtL3FlX2ljLmgg
+LT4gZmlsZSBub3QgZm91bmQgDQo+IGFyY2gvcG93ZXJwYy9zeXNkZXYvcWVfbGliL3FlX2ljLmMg
+LT4gZmlsZSBub3QgZm91bmQgDQo+IGFyY2gvcG93ZXJwYy9pbmNsdWRlL2FzbS9xZV9pYy5oIC0+
+IGZpbGUgbm90IGZvdW5kDQo+IA0KPiBQb3dlcnBjIGlzIG5vdCBsYXllcnNjYXAsIHNvIEkgY29t
+bWVudCBvdXQgdGhlc2UgMyBwYXRjaGVzLg0KPiANCj4gRHVyaW5nIHRoZSBjb21waWxhdGlvbiBp
+IGdldCBhbiBlcnJvcjoNCj4gdW5kZWZpbmVkIHJlZmVyZW5jZSB0byBgX19pcGlwZV9waW5fcmFu
+Z2VfZ2xvYmFsbHknDQoNCkRvIHlvdSBoYXZlIExQQUUgZW5hYmxlZD8gIFdoeSB5ZXMgeW91IGRv
+LiAgRG9uJ3QgZG8gdGhhdC4gIEl0IGRvZXNuJ3Qgd29yayAoeWV0KS4gIFR1cm4gb2ZmIExQQUUg
+YW5kIHRoYXQgc2hvdWxkIHNvbHZlIHRoYXQgY29tcGlsZSBwcm9ibGVtLCBhbmQgYWxzbyBnaXZl
+IHlvdSBhIGNoYW5jZSBvZiBhIHdvcmtpbmcgc3lzdGVtLg0KDQo+IEkgZm91bmQgYW4gZW1haWwg
+KDIyIEF1ZyAyMDE0KSB0aGF0IGdpdmVzIG1lIHRoZSBzb2x1dGlvbjoNCj4gSW4gYXJjaC9hcm0v
+bW0vZmF1bHQuYyAgaSBtb3ZlZCB0aGUgI2VuZGlmIGF0IGJvdHRvbSBvZiB0aGUgZmlsZSB0byAN
+Cj4gYWJvdmUgdGhlICNpZmRlZiBDT05GSUdfSVBJUEUNCj4gDQo+IEFuZCBmaW5hbGx5IEkgY2Fu
+IGNvbXBpbGUgdGhlIGtlcm5lbCBhbmQgZHRiLg0KPiANCj4gQnV0IGFmdGVyIHUtYm9vdCBsb2Fk
+IHRoZSBrZXJuZWwgSSBzZWUgb25seSBTdGFydGluZyBrZXJuZWwuLi4NCj4gDQo+IEFuZCBub3Ro
+aW5nIGlzIGhhcHBlbmVkLg0KPiANCj4gTXkgcXVlc3Rpb246DQo+IFdoYXQgY2FuIEkgZG8gdG8g
+c2VlIHdoeSB0aGUga2VybmVsIGlzbid0IHN0YXJ0aW5nIGFuZCBtYWtlIHRoZSBwYXRjaCB0byB3
+b3JrPw0KPiANCj4gSSBhdHRhY2hlZCBteSBjcmVhdGVkIGlwaXBlLTMuMTIuMCBwYXRjaCBhbmQg
+dGhlIGtlcm5lbGNvbmZpZy4NCg0KWW91IGNhbiBub3QgYm9vdCB3aXRoIElQSVBFIGFuZCBMUEFF
+IGF0IHRoZSBzYW1lIHRpbWUgZm9yIG5vdy4gIFdvcmsgaXMgaW4gcHJvZ3Jlc3Mgb24gdGhpcywg
+YnV0IGl0IGlzbid0IGRvbmUgeWV0Lg0KDQotLQ0KTGVuIFNvcmVuc2VuDQo=
 
