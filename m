@@ -1,6 +1,6 @@
-Date: Thu, 27 Nov 2014 23:56:13 +0100
+Date: Fri, 28 Nov 2014 00:15:27 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141127225613.GB24076@hermes>
+Message-ID: <20141127231527.GC24076@hermes>
 References: <54775097.30705@siemens.com> <20141127181823.GK7842@hermes>
  <547772AF.108@siemens.com>
  <20141127191438.GI24110@csclub.uwaterloo.ca>
@@ -53,46 +53,21 @@ On Thu, Nov 27, 2014 at 09:43:34PM +0100, Jan Kiszka wrote:
 > I think this makes it crystal clear that Xenomai is not supposed to
 > touch it.
 
-Extract from:
-http://www.tldp.org/LDP/Linux-Filesystem-Hierarchy/html/mnt.html
+Just to add another argument. I just asked a friend who is a
+professional sysadmin. He creates directory under /mnt and mount
+things under these directories. So, I am not sure the standard is
+even applied by the people who should use it.
 
-This is a generic mount point under which you mount your filesystems
-or devices. Mounting is the process by which you make a filesystem
-available to the system. After mounting your files will be
-accessible under the mount-point. This directory usually contains
-mount points or sub-directories where you mount your floppy and your
-CD. You can also create additional mount-points here if you wish.
-Standard mount points would include /mnt/cdrom and /mnt/floppy.
-There is no limitation to creating a mount-point anywhere on your
-system but by convention and for sheer practicality do not litter
-your file system with mount-points. It should be noted that some
-distributions like Debian allocate /floppy and /cdrom as mount
-points while Redhat and Mandrake puts them in /mnt/floppy and
-/mnt/cdrom respectively.
+If you read on the last site I sent, under the /media article: 
 
-However, it should be noted that as of FSSTND version 2.3 the
-purpose of this directory has changed.
+Amid much controversy and consternation on the part of system and
+network administrators a directory containing mount points for
+removable media has now been created. Funnily enough, it has been
+named /media.
 
-
-  This directory is provided so that the system administrator may temporarily
-  mount a filesystem as needed. The content of this directory is a local issue
-  and should not affect the manner in which any program is run.
-
-  This directory must not be used by installation programs: a suitable temporary
-  directory not in use by the system must be used instead.
-  
-
-So, at the very least, /mnt used to be the generic point used to
-mount filesystems, I was not dreaming. And in fact, checking the
-wikipedia article, I do not see any other directory in the "new"
-standard that can be used as a place where to mount things, to fill
-the role that /mnt used to have.
-
-Unfortunately, I can not access:
-http://www.pathname.com/fhs/
-http://www.pathname.com/fhs/pub/fhs-2.3.html
-
-To check the standard itself (connection times out).
+Are you sure, 100% sure, that every Xenomai user expects to be able
+to use /mnt as a mount point? Or that they will create directories
+under /mnt like everybody has been doing since Linux exists?
 
 -- 
 					    Gilles.
