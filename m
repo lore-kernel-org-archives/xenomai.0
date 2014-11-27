@@ -1,14 +1,11 @@
-Message-ID: <54778CF6.6000909@siemens.com>
-Date: Thu, 27 Nov 2014 21:43:34 +0100
+Message-ID: <54778F5D.1060009@siemens.com>
+Date: Thu, 27 Nov 2014 21:53:49 +0100
 From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <54775097.30705@siemens.com> <20141127181823.GK7842@hermes>
- <547772AF.108@siemens.com> <20141127191438.GI24110@csclub.uwaterloo.ca>
- <20141127203400.GP7842@hermes>
-In-Reply-To: <20141127203400.GP7842@hermes>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [pull] forge: Adjust default registry mount point
+Subject: [Xenomai] [PATCH] x86/ipipe: Fix root state on return from certain
+	exceptions
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,43 +14,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 2014-11-27 21:34, Gilles Chanteperdrix wrote:
-> On Thu, Nov 27, 2014 at 02:14:38PM -0500, Lennart Sorensen wrote:
->> On Thu, Nov 27, 2014 at 07:51:27PM +0100, Jan Kiszka wrote:
->>> On 2014-11-27 19:18, Gilles Chanteperdrix wrote:
->>>> According to the filesystem hierarchy standard, /mnt is the standard
->>>> place for "temporarily mounted filesystems".
->>>>
->>>> http://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard
->>>
->>> Right, another reason to NOT mess around with it: if something was
->>> temporarily mounted there, we will create the mountpoint inside that
->>> filesystem with unforeseeable side effects.
->>
->> I always read that as "temporarily mounted there by the admin or some
->> other human".  Certainly not automatic mounts by software.  There is a
->> reason /media and such exists on many distributins.
-> 
-> I would not venture an "always", autofs for instance, used to mount
-> things under /mnt. and /media has not always existed either, we used
-> /mnt/cdrom.
+do_stack_segment, do_int3 and do_debug disable interrupts of the root
+domain before returning the exception trampoline code. However, I-ipipe
+does not update the root state before returning from exceptions. So we
+erroneously stalled root this way, specifically during gdb sessions. The
+issue was easily triggerable by enabling CONFIG_DEBUG_ATOMIC_SLEEP and
+then trying to debug a program.
 
-FHS on /mnt purpose:
+This now simply disables physical interrupts and leaves the root state
+untouched across exception return.
 
-"This directory is provided so that the system administrator may
-temporarily mount a filesystem as needed. The content of this directory
-is a local issue and should not affect the manner in which any program
-is run."
+Note: There is also conditional_cli, but that's unused by Linux.
 
-I think this makes it crystal clear that Xenomai is not supposed to
-touch it.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
-Jan
+For review. Still not totally sure if there aren't more of such corner
+cases or if this can have some side effect.
 
+ arch/x86/kernel/traps.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
+index c086b59..f78f79c 100644
+--- a/arch/x86/kernel/traps.c
++++ b/arch/x86/kernel/traps.c
+@@ -102,7 +102,16 @@ static inline void conditional_cli(struct pt_regs *regs)
+ static inline void preempt_conditional_cli(struct pt_regs *regs)
+ {
+ 	if (regs->flags & X86_EFLAGS_IF)
+-		local_irq_disable();
++		/*
++		 * I-pipe doesn't virtualize the IRQ flags in the entry code.
++		 * Therefore we cannot call the original local_irq_disable here
++		 * because there will be no pairing IRQ enable for the root
++		 * domain. So just disable interrupts physically.
++		 *
++		 * There is also no I-pipe hard-irq tracing on return from the
++		 * exception, so do not trace here either.
++		 */
++		hard_local_irq_disable_notrace();
+ 	preempt_count_dec();
+ }
+ 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+1.8.4.5
 
