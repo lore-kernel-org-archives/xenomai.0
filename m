@@ -1,27 +1,10 @@
 MIME-Version: 1.0
-In-Reply-To: <54784B16.9050604@xenomai.org>
-References: <20141120184516.GC4545@sisyphus.hd.free.fr>
- <546EF065.9070206@xenomai.org>
- <CANKLDmuD4evzObPYqd64rfmNLD9NPqS3EZrSUZy_84mL44bpGg@mail.gmail.com>
- <546EF4BF.6070302@xenomai.org>
- <CANKLDmv=GhPfCjFcgjYUv+6geDeY3VX0WUsxjnqqeiRD5YB__g@mail.gmail.com>
- <CANKLDmtgVkgu61k_1zBZ3+FBYJ-zttTheNRW96bRw4_DCHQ_Lw@mail.gmail.com>
- <CANKLDmu3e_gtg-ouqGpX1GzamHDfS5NVywM6DTLin7W4roTGLA@mail.gmail.com>
- <CANKLDmtdtw-SuLpVm7YT=eWWH=ZOFnHFJOPHzm0D6PwjbdNfgA@mail.gmail.com>
- <20141124091840.GT24229@sisyphus.hd.free.fr>
- <CANKLDmvygbwdNXvYxPgwCihDCbUBbWHUFVkSYdAfO2e-OwtZjA@mail.gmail.com>
- <20141124150030.GB26532@sisyphus.hd.free.fr>
- <CANKLDmt-uLDmP-PMoPboVEzrZQkACzTXBHASnN+v9Kxhvdb4kg@mail.gmail.com>
- <5473934F.2070208@xenomai.org>
- <CANKLDmtY=zMPFRExqxMMzVmt4_O3X+oCkgbfLk+gUhiUgmHbcg@mail.gmail.com>
- <CANKLDmtP=pa6ZU+BLC79Ynh2EMruhurDYHQQyv=mMJiAiUE5MQ@mail.gmail.com>
- <CANKLDmvyc2HEEcBW193oYpmagMgsYHdyZqamnLA-yxk3u_KNhg@mail.gmail.com>
- <54784B16.9050604@xenomai.org>
-Date: Fri, 28 Nov 2014 11:19:39 +0100
-Message-ID: <CANKLDmt=fBqnmveSdB-cLkKOCAyh4ov_d7NLFK9pUR1RZf5qZw@mail.gmail.com>
-From: Henri Roosen <henriroosen@gmail.com>
+Date: Fri, 28 Nov 2014 12:03:09 +0100
+Message-ID: <CAPozGf=zAFgV=fbinambu1_xEiR3qD7Affppw-i6ZbD4nvJsRw@mail.gmail.com>
+From: John Sini <jhnsini@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] problems with ipipe-3.10 on i.MX6
+Subject: [Xenomai] Section mismatch - Porting Xenomai to linux-xlnx-V14.5
+	zynq SoC
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -30,35 +13,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Fri, Nov 28, 2014 at 11:14 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+Hello,
 
-> On 11/27/2014 08:41 AM, Henri Roosen wrote:
-> > I'm sorry, I don't want to be rude to trigger this again, but
-> > unfortunately I have a customer deadline and this problem is currently a
-> > show stopper. It would be really great if you could give some input to
-> > this issue so we can keep on making progress in solving this.
-> >
->
-> FWIW, I'm not contributing free software as a result of having too much
-> free time. I have customers and contract deadlines to cope with as well
-> right now, and unfortunately, I can't divert the time which would be
-> required for such analysis at the moment.
->
-> Don't get me wrong, I totally understand. I just wanted to explain why I
-am so persistent. And being persistent is the only thing I can do right now
-to get this solved. It seems nobody else but you can help me right now. I
-understand getting support is our risk for choosing free software.
+I am new with Xenomai and I am trying to port it to linux-xlnx-V14.5 zynq
+as suggested on the following site:
 
-If you know any other option for me to get this solved, then please let me
-know. Else, I hope you would still be willing to spend a little free time
-to look into this issue. Any help is appreciated!
+http://www.wiki.xilinx.com/Xenomai+for+Zynq
 
-Thanks,
-Henri
+Patches that I have applied(in the following order)
 
---
-> Philippe.
->
+
+*ipipe-core-3.8-zynq-pre.patch*
+*ipipe-core-3.8-arm-1.patch*
+*ipipe-core-3.8-zynq-post.patch*
+
+
+I have disabled the support of RPMsg ((remoteproc) and of CPU_HOTPLUG
+prior to compiling the kernel(I configured the kernel as suggested on
+the aforementioned website). I get getting the following warnings:
+
+WARNING: vmlinux.o(.text+0x106b4): Section mismatch in reference from
+the function __ipipe_tsc_register() to the variable
+.init.text:__kuser_helper_end
+The function __ipipe_tsc_register() references
+the variable __init __kuser_helper_end.
+This is often because __ipipe_tsc_register lacks a __init
+annotation or the annotation of __kuser_helper_end is wrong.
+
+WARNING: vmlinux.o(.text+0x106b8): Section mismatch in reference from
+the function __ipipe_tsc_register() to the variable
+.init.text:__ipipe_tsc_area_start
+The function __ipipe_tsc_register() references
+the variable __init __ipipe_tsc_area_start.
+This is often because __ipipe_tsc_register lacks a __init
+annotation or the annotation of __ipipe_tsc_area_start is wrong.
+
+WARNING: vmlinux.o(.text+0x2ea760): Section mismatch in reference from
+the function vexpress_sysreg_probe() to the function
+.init.text:vexpress_sysreg_setup()
+The function vexpress_sysreg_probe() references
+the function __init vexpress_sysreg_setup().
+This is often because vexpress_sysreg_probe lacks a __init
+annotation or the annotation of vexpress_sysreg_setup is wrong.
+
+
+Can any of you help me how to fix these warnings? I have seen the same
+problem here:
+
+http://www.xenomai.org/pipermail/xenomai/2013-October/029390.html
+
+But I have disabled all necessary options in the kernel config and
+still get these warnings.
+
+
+Best,
+
+John
