@@ -1,20 +1,18 @@
-Resent-Message-ID: <20141205153945.GD10014@hermes.click-hack.org>
-Resent-To: xenomai@xenomai.org
-Date: Fri, 5 Dec 2014 16:30:07 +0100
+Date: Fri, 28 Nov 2014 13:43:48 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141205153007.GC10014@hermes.click-hack.org>
-References: <CAPM60ws2F-7PFASr0MkZOn5ZqxnG=GnKUx9vwWteTZEUhxP+VQ@mail.gmail.com>
- <84a3d09fccb39bf9e9aec78ea5173d4a.squirrel@xenomai.org>
- <CAPM60wsL3yRb38SdtCeE-ksGE_hPk+=G3XAauAUOUxGVd3o0SQ@mail.gmail.com>
- <CAPM60wtnAtexr73UoY37Y4LGM49e-+hG2YysWSTDLA3o4dbnmQ@mail.gmail.com>
- <20141205001907.GG15711@hermes>
- <CAPM60wsxgmOn0afVpmnKhU5qqLYw7TDARg67RTYmmJCTcjT-kw@mail.gmail.com>
+Message-ID: <20141128124348.GF6395@hermes>
+References: <547772AF.108@siemens.com>
+ <20141127191438.GI24110@csclub.uwaterloo.ca>
+ <20141127203400.GP7842@hermes> <54778CF6.6000909@siemens.com>
+ <20141127231527.GC24076@hermes> <5478430B.9030602@siemens.com>
+ <20141128095038.GA3832@hermes> <547846AC.6070204@siemens.com>
+ <20141128101605.GC3832@hermes>
+ <208C6975C932E94F86239FEA59CCA632DCD4A13E@AUSMXMBX02.mrws.biz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPM60wsxgmOn0afVpmnKhU5qqLYw7TDARg67RTYmmJCTcjT-kw@mail.gmail.com>
-Subject: Re: [Xenomai] xeno_16550A driver install problems.
+In-Reply-To: <208C6975C932E94F86239FEA59CCA632DCD4A13E@AUSMXMBX02.mrws.biz>
+Subject: Re: [Xenomai] [pull] forge: Adjust default registry mount point
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,36 +21,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?Q?C=C3=A9dric?= <freecedric@free.fr>
+To: dietmar.schindler@manroland-web.com
+Cc: xenomai@xenomai.org
 
-On Fri, Dec 05, 2014 at 04:25:22PM +0100, Cédric wrote:
-> Question : On startup, in omap-serial.c, the function "serial_omap_probe"
-> initializes the gpio mux, I don't find initialization of gpio mux in
-> 16550A.h.  Is this normal?
+On Fri, Nov 28, 2014 at 12:26:32PM +0000, dietmar.schindler@manroland-web.com wrote:
+> > Von: Gilles Chanteperdrix
+> > Gesendet: Freitag, 28. November 2014 11:16
+> > ...
+> > In fact, the point is. Putting xenomai mount point under /mnt does
+> > not even break Debian. Because of the new standard, there is little
+> > chance for any Debian package to mount anything on /mnt or under
+> > /mnt.
+> >
+> > It is simply the local admin decision to decide to respect or not
+> > respect the standard. I have been using Debian since 1997 (up to
+> > back a few days, where I finally switched), and ALWAYS mounted
+> > things in /mnt subdirectories. And never had any problems with any
+> > Debian packages (and as I said, I seem to remember that some
+> > versions of the autofs packages had their mount points under /mnt,
+> > at any rate, the autofs mount points changed with debian versions,
+> > so, if you had them in one place and upgrading, it would have been a
+> > PIT to follow what Debian imposed).
+> >
+> > The standard changes the usage of /mnt, but does not provide a
+> > replacement. So, what we are left are choices among directories that
+> > are not specifically made for mounting things. I do not like that
+> > option.
+> >
+> > So yes, when using Xenomai, the user will have to accept to not
+> > follow the standard and create a /mnt/tmp directory for temporary
+> > mounts. But I suspect this is an issue nobody cares about, I mean,
+> > except you and Lennart.
+> 
+> I don't want to add fuel to the fire, but I also care about
+> following (even changing) standards. And I'm afraid I fail to see
+> the problem with choosing another temporary mount point. 
 
-Yes, pinmuxing and selecting gpios is purely specific to the
-platform, and would have nothing to do in a generic driver like 16550A.
+The problem is not why not? The problem is why. A mount point was
+chosen, which is not stupid, documentation and web contents were
+written, people have started getting used to it. So, why changing it
+now ? So from my point of view, Jan patch looks like a patch that
+has been submitted without thinking to the consequences, and changes
+things for bad reasons.
 
-> Two observation:
-> 1 : module bug at line 1162, when read LSR
+> As you
+> cited from
+> http://www.tldp.org/LDP/Linux-Filesystem-Hierarchy/html/mnt.html
+> in your message on 27.11.2014 23:56:
+> 
+>   This directory [/mnt] must not be used by installation programs:
+>   a suitable temporary directory not in use by the system must be
+>   used instead.
+> 
+> So, wouldn't using something like "/tmp/xenomai" conform to the
+> new standard as well as work on old systems?
 
-For the third time: the patch is not sufficient, you need to enable
-the clocks.
-
-> 2: your patch at read/write with regwith but:
->  - in read, you don't return value , and return type is u8
->  - in write, you write a  u8 type value, in omap-serial, the write value
-> type is int.
-
-I do not remmeber the details, but I am almost sure I used the right
-function (readb, readw, readl, writedb, writew, writel) to perform
-the read or the write with the right width to the hardware register.
-This is what matters. Other than that, only 8 bits are useful in the
-registers, so you can safely use u8 as arguments of the functions.
-
-Please do not top post. Please stay on the list.
-
-Regards.
+The sentence you quote does not really apply to xenomai, since
+xenomai is not an "installation program". The standard basically
+says that software installed by the distribution has no business
+messing with /mnt. But Xenomai is not installed by a distribution.
+If distibutions want to change this directory when they make xenomai
+their own package, they will apply patches, they do this all the
+time, and document the difference in
+/usr/share/doc/xenomai/README.Debian
 
 -- 
 					    Gilles.
