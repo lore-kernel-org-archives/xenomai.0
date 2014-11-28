@@ -1,22 +1,18 @@
+From: <dietmar.schindler@manroland-web.com>
+Date: Fri, 28 Nov 2014 12:26:32 +0000
+Message-ID: <208C6975C932E94F86239FEA59CCA632DCD4A13E@AUSMXMBX02.mrws.biz>
+References: <54775097.30705@siemens.com> <20141127181823.GK7842@hermes>
+ <547772AF.108@siemens.com> <20141127191438.GI24110@csclub.uwaterloo.ca>
+ <20141127203400.GP7842@hermes> <54778CF6.6000909@siemens.com>
+ <20141127231527.GC24076@hermes> <5478430B.9030602@siemens.com>
+ <20141128095038.GA3832@hermes> <547846AC.6070204@siemens.com>
+ <20141128101605.GC3832@hermes>
+In-Reply-To: <20141128101605.GC3832@hermes>
+Content-Language: de-DE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <20141201161549.GA28038@hermes>
-References: <20141128111325.GD5069@hermes>
- <CAPozGf=6OQBChvSAfypNH7KpAReg+u6PS3dhEJDtVZ-jrnW7bg@mail.gmail.com>
- <CAPozGfkxmv+7=Q3LXAmOv_eTPZ08XV3SO9SETPomSAs+bbxV0A@mail.gmail.com>
- <CAPozGfk9LizYFbCRKUDS1-mhX+bw3fOpgqzwF6AcH64Pspw4Gg@mail.gmail.com>
- <20141128182141.GB4817@hermes>
- <CAPozGfk-okS5TDn-zPua3uvHkcppm3CpnqAKXYs6-VWVPb4cpg@mail.gmail.com>
- <20141201143957.GH23220@hermes>
- <CAPozGf=ijSmQoUXRf7aG56G47N2DZbHyiL+1nHDEWvmZdhhcYw@mail.gmail.com>
- <20141201152921.GI23220@hermes>
- <CAPozGfndF2nWapRLR+U5MUbieCxS3_oA=62uKXFSMEG0Cue51w@mail.gmail.com>
- <20141201161549.GA28038@hermes>
-Date: Wed, 3 Dec 2014 14:32:12 +0100
-Message-ID: <CAPozGf=LUUqpgqyH_T6=x0JBW2fm0wFj=m_1Vosec0OawkA4Tw@mail.gmail.com>
-From: John Sini <jhnsini@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Section mismatch - Porting Xenomai to
- linux-xlnx-V14.5 zynq SoC
+Subject: Re: [Xenomai] [pull] forge: Adjust default registry mount point
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,76 +21,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Mon, Dec 1, 2014 at 5:15 PM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
-
-> On Mon, Dec 01, 2014 at 04:45:03PM +0100, John Sini wrote:
-> > On Mon, Dec 1, 2014 at 4:29 PM, Gilles Chanteperdrix <
-> > gilles.chanteperdrix@xenomai.org> wrote:
-> >
-> > > On Mon, Dec 01, 2014 at 04:26:47PM +0100, John Sini wrote:
-> > > > On Mon, Dec 1, 2014 at 3:39 PM, Gilles Chanteperdrix <
-> > > > gilles.chanteperdrix@xenomai.org> wrote:
-> > > >
-> > > > > On Mon, Dec 01, 2014 at 03:35:51PM +0100, John Sini wrote:
-> > > > > >  Hi,
-> > > > > >
-> > > > > >
-> > > > > > Thank you for your reply. I have disabled lockdep by disabling
-> > > following
-> > > > > > two options in Kernel configuration :Lock debugging:prove locking
-> > > > > > correctness and  Lock debugging: detect incorrect freeing of live
-> > > locks.
-> > > > > > The problem that i am facing now is:
-> > > > >
-> > > > > Does the exact same .config file work on an unpatched kernel?
-> > > > >
-> > > > > Just checked and I got the same error.
-> > >
-> > > So, before trying and compiling Xenomai with a configuration file,
-> > > please try and get a working configuration for your kernel, without
-> > > Xenomai patch applied.
-> > >
-> > >   Ok, I will do it.
-> >
-> >
-> > > Also, since the Zynq patch is provided by a third party, and not
-> > > part of the patches supported by the mainline I-pipe patch, I do not
-> > > even compile test this patch, so have no working configuration to
-> > > propose.
-> > >
-> > > Maybe the people having proposed the patch could also propose a
-> > > working kernel configuration? That would be nice.
-> >
-> >
-> >
-> >    Can you maybe explain me the errors that *I got i.e. can they be due
-> to
-> > xenomai(kernel panic)*
+> Von: Gilles Chanteperdrix
+> Gesendet: Freitag, 28. November 2014 11:16
+> ...
+> In fact, the point is. Putting xenomai mount point under /mnt does
+> not even break Debian. Because of the new standard, there is little
+> chance for any Debian package to mount anything on /mnt or under
+> /mnt.
 >
-> I do not know what you are talking about. If the same configuration
-> on an unpatched kernel has an issue, then the issue certainly has
-> nothing to do with Xenomai, don't you think ?
+> It is simply the local admin decision to decide to respect or not
+> respect the standard. I have been using Debian since 1997 (up to
+> back a few days, where I finally switched), and ALWAYS mounted
+> things in /mnt subdirectories. And never had any problems with any
+> Debian packages (and as I said, I seem to remember that some
+> versions of the autofs packages had their mount points under /mnt,
+> at any rate, the autofs mount points changed with debian versions,
+> so, if you had them in one place and upgrading, it would have been a
+> PIT to follow what Debian imposed).
 >
+> The standard changes the usage of /mnt, but does not provide a
+> replacement. So, what we are left are choices among directories that
+> are not specifically made for mounting things. I do not like that
+> option.
 >
-  Yeah I do think :) I have just one question concerning this warning that
-I still have(I think it's due to Xenomai as it's about ipipe)
+> So yes, when using Xenomai, the user will have to accept to not
+> follow the standard and create a /mnt/tmp directory for temporary
+> mounts. But I suspect this is an issue nobody cares about, I mean,
+> except you and Lennart.
 
-WARNING: vmlinux.o(.cpuinit.text+0xdc0): Section mismatch in reference from
-the function gt_setup.part.2.constprop.4() to the function
-.init.text:__ipipe_tsc_register()
-The function __cpuinit gt_setup.part.2.constprop.4() references
-a function __init __ipipe_tsc_register().
-If __ipipe_tsc_register is only used by gt_setup.part.2.constprop.4 then
-annotate __ipipe_tsc_register with a matching annotation.
+I don't want to add fuel to the fire, but I also care about following (even=
+ changing) standards. And I'm afraid I fail to see the problem with choosin=
+g another temporary mount point. As you cited from http://www.tldp.org/LDP/=
+Linux-Filesystem-Hierarchy/html/mnt.html in your message on 27.11.2014 23:5=
+6:
 
- - I have already put __init attribute in front of __ipipe_tsc_register
-function in ipipe-core-3.8-arm-1.patch. If I put __init attribute in front
-of the name of  __cpuinit gt_setup function in the same patch - will that
-fix this warning that I have?
+  This directory [/mnt] must not be used by installation programs: a suitab=
+le temporary
+  directory not in use by the system must be used instead.
 
-Best,
-John
+So, wouldn't using something like "/tmp/xenomai" conform to the new standar=
+d as well as work on old systems?
+--
+Best regards,
+Dietmar Schindler
+________________________________
+manroland web systems GmbH -- Managing Director: Joern Gosse
+Registered Office: Augsburg -- Trade Register: AG Augsburg -- HRB-No.: 2681=
+6 -- VAT: DE281389840
+
+Confidentiality note:
+This eMail and any files transmitted with it are confidential and intended =
+solely for the use of the individual or entity to whom they are addressed. =
+If you are not the intended recipient, you are hereby notified that any use=
+ or dissemination of this communication is strictly prohibited. If you have=
+ received this eMail in error, then please delete this eMail.
+
+! Please consider your environmental responsibility before printing this eM=
+ail !
+________________________________
+
