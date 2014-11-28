@@ -1,20 +1,11 @@
-Date: Fri, 28 Nov 2014 17:47:37 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141128164737.GO8051@hermes>
-References: <20141128095038.GA3832@hermes> <547846AC.6070204@siemens.com>
- <20141128101605.GC3832@hermes>
- <208C6975C932E94F86239FEA59CCA632DCD4A13E@AUSMXMBX02.mrws.biz>
- <20141128124348.GF6395@hermes>
- <20141128161818.GU24110@csclub.uwaterloo.ca>
- <20141128162423.GJ8051@hermes>
- <20141128162919.GZ24110@csclub.uwaterloo.ca>
- <20141128164056.GM8051@hermes>
- <20141128164549.GC24110@csclub.uwaterloo.ca>
+From: =?iso-8859-1?Q?Terje_Fr=F8ysa?= <Terje.Froysa@sintef.no>
+Date: Fri, 28 Nov 2014 18:00:27 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C9C4C7FA@SINTEFEXMBX05.sintef.no>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20141128164549.GC24110@csclub.uwaterloo.ca>
-Subject: Re: [Xenomai] [pull] forge: Adjust default registry mount point
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Method for measuring CPU idle time in Xenomai?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,23 +14,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Nov 28, 2014 at 11:45:49AM -0500, Lennart Sorensen wrote:
-> On Fri, Nov 28, 2014 at 05:40:56PM +0100, Gilles Chanteperdrix wrote:
-> > As soon as you start patching the kernel, it does not really make
-> > sense to absolutely pick the same kernel version as Debian, you can
-> > just as well compile a mainline version with a Debian-like
-> > modularized configuration. Actually, I provided exactly that for one
-> > version of Xenomai, but the amount of downloads was ridiculous, so I
-> > do not believe this is what users are after, either.
-> 
-> Ridiculously low I am guessing?
+Dear Sirs,
 
-Yes, something like 10 downloads, probably including the tests I did
-on my side.
+I have now four real time processes running and a mix of rt-tasks and Linux=
+ tasks.
+In a pure Linux environment, CPU idle time can be estimated by:
 
--- 
-					    Gilles.
+awk '{print ($2*100)/$1 " % idle over "$1/60 " min"}' /proc/uptime
+
+Question:
+Will this method apply in an Xenomai environment too?
+If not, is there any method that will apply?
+
+Best regards
+Terje Froysa
+
+Smail: Terje Fr=F8ysa, SINTEF ICT (Information and Communication Technology=
+), N-7465 Trondheim, Norway.
+Email: terje.froysa@sintef.no<blocked::mailto:terje.froysa@sintef.no> <mail=
+to:terje.froysa@sintef.no<blocked::mailto:terje.froysa@sintef.no>>
+Phone: +47 930 03603
+Company: Independent R&D, see <http://www.sintef.no/<blocked::http://www.si=
+ntef.no/>
 
