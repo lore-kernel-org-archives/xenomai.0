@@ -1,13 +1,17 @@
-Message-ID: <54784B16.9050604@xenomai.org>
-Date: Fri, 28 Nov 2014 11:14:46 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Fri, 28 Nov 2014 11:16:05 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141128101605.GC3832@hermes>
+References: <54775097.30705@siemens.com> <20141127181823.GK7842@hermes>
+ <547772AF.108@siemens.com>
+ <20141127191438.GI24110@csclub.uwaterloo.ca>
+ <20141127203400.GP7842@hermes> <54778CF6.6000909@siemens.com>
+ <20141127231527.GC24076@hermes> <5478430B.9030602@siemens.com>
+ <20141128095038.GA3832@hermes> <547846AC.6070204@siemens.com>
 MIME-Version: 1.0
-References: <20141120184516.GC4545@sisyphus.hd.free.fr>	<546EF065.9070206@xenomai.org>	<CANKLDmuD4evzObPYqd64rfmNLD9NPqS3EZrSUZy_84mL44bpGg@mail.gmail.com>	<546EF4BF.6070302@xenomai.org>	<CANKLDmv=GhPfCjFcgjYUv+6geDeY3VX0WUsxjnqqeiRD5YB__g@mail.gmail.com>	<CANKLDmtgVkgu61k_1zBZ3+FBYJ-zttTheNRW96bRw4_DCHQ_Lw@mail.gmail.com>	<CANKLDmu3e_gtg-ouqGpX1GzamHDfS5NVywM6DTLin7W4roTGLA@mail.gmail.com>	<CANKLDmtdtw-SuLpVm7YT=eWWH=ZOFnHFJOPHzm0D6PwjbdNfgA@mail.gmail.com>	<20141124091840.GT24229@sisyphus.hd.free.fr>	<CANKLDmvygbwdNXvYxPgwCihDCbUBbWHUFVkSYdAfO2e-OwtZjA@mail.gmail.com>	<20141124150030.GB26532@sisyphus.hd.free.fr>	<CANKLDmt-uLDmP-PMoPboVEzrZQkACzTXBHASnN+v9Kxhvdb4kg@mail.gmail.com>	<5473934F.2070208@xenomai.org>	<CANKLDmtY=zMPFRExqxMMzVmt4_O3X+oCkgbfLk+gUhiUgmHbcg@mail.gmail.com>	<CANKLDmtP=pa6ZU+BLC79Ynh2EMruhurDYHQQyv=mMJiAiUE5MQ@mail.gmail.com>
- <CANKLDmvyc2HEEcBW193oYpmagMgsYHdyZqamnLA-yxk3u_KNhg@mail.gmail.com>
-In-Reply-To: <CANKLDmvyc2HEEcBW193oYpmagMgsYHdyZqamnLA-yxk3u_KNhg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] problems with ipipe-3.10 on i.MX6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <547846AC.6070204@siemens.com>
+Subject: Re: [Xenomai] [pull] forge: Adjust default registry mount point
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,21 +20,109 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henri Roosen <henriroosen@gmail.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 11/27/2014 08:41 AM, Henri Roosen wrote:
-> I'm sorry, I don't want to be rude to trigger this again, but
-> unfortunately I have a customer deadline and this problem is currently a
-> show stopper. It would be really great if you could give some input to
-> this issue so we can keep on making progress in solving this.
+On Fri, Nov 28, 2014 at 10:55:56AM +0100, Jan Kiszka wrote:
+> On 2014-11-28 10:50, Gilles Chanteperdrix wrote:
+> > On Fri, Nov 28, 2014 at 10:40:27AM +0100, Jan Kiszka wrote:
+> >> On 2014-11-28 00:15, Gilles Chanteperdrix wrote:
+> >>> On Thu, Nov 27, 2014 at 09:43:34PM +0100, Jan Kiszka wrote:
+> >>>> On 2014-11-27 21:34, Gilles Chanteperdrix wrote:
+> >>>>> On Thu, Nov 27, 2014 at 02:14:38PM -0500, Lennart Sorensen wrote:
+> >>>>>> On Thu, Nov 27, 2014 at 07:51:27PM +0100, Jan Kiszka wrote:
+> >>>>>>> On 2014-11-27 19:18, Gilles Chanteperdrix wrote:
+> >>>>>>>> According to the filesystem hierarchy standard, /mnt is the standard
+> >>>>>>>> place for "temporarily mounted filesystems".
+> >>>>>>>>
+> >>>>>>>> http://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard
+> >>>>>>>
+> >>>>>>> Right, another reason to NOT mess around with it: if something was
+> >>>>>>> temporarily mounted there, we will create the mountpoint inside that
+> >>>>>>> filesystem with unforeseeable side effects.
+> >>>>>>
+> >>>>>> I always read that as "temporarily mounted there by the admin or some
+> >>>>>> other human".  Certainly not automatic mounts by software.  There is a
+> >>>>>> reason /media and such exists on many distributins.
+> >>>>>
+> >>>>> I would not venture an "always", autofs for instance, used to mount
+> >>>>> things under /mnt. and /media has not always existed either, we used
+> >>>>> /mnt/cdrom.
+> >>>>
+> >>>> FHS on /mnt purpose:
+> >>>>
+> >>>> "This directory is provided so that the system administrator may
+> >>>> temporarily mount a filesystem as needed. The content of this directory
+> >>>> is a local issue and should not affect the manner in which any program
+> >>>> is run."
+> >>>>
+> >>>> I think this makes it crystal clear that Xenomai is not supposed to
+> >>>> touch it.
+> >>>
+> >>> Just to add another argument. I just asked a friend who is a
+> >>> professional sysadmin. He creates directory under /mnt and mount
+> >>> things under these directories. So, I am not sure the standard is
+> >>> even applied by the people who should use it.
+> >>>
+> >>> If you read on the last site I sent, under the /media article: 
+> >>>
+> >>> Amid much controversy and consternation on the part of system and
+> >>> network administrators a directory containing mount points for
+> >>> removable media has now been created. Funnily enough, it has been
+> >>> named /media.
+> >>>
+> >>> Are you sure, 100% sure, that every Xenomai user expects to be able
+> >>> to use /mnt as a mount point? Or that they will create directories
+> >>> under /mnt like everybody has been doing since Linux exists?
+> >>
+> >> I'm both absolutely sure that a) has to be left alone by Xenomai because
+> >> of requirements of the FHS and the way /mnt is used and b) we should try
+> >> hard to avoid creating temporary dirs in persistent filesystems.
+> > 
+> > This is ridiculous. Because the standard changed, and one
+> > distribution, Debian, decided to follow the new standard, which
+> > seems to be not widely accepted, and even controversial, you want to
+> > impose what Debian does to everybody. The distribution I use has
+> > mount points under /mnt. So, why following Debian and not the
+> > distribution I use, and what sysadmin have been doing for ages?
+> > 
+> > You want the mount point to be somewhere else? Fine, put a symbolic
+> > link.
+> > 
+> > mkdir /run/xenomai
+> > ln -s /run/xenomai /mnt/xenomai
 > 
+> Again, this is not acceptible as /mnt changes all the time and exposes
+> various remote filesystems which will hide that link. /mnt is locally
+> owned, not by the system to which Xenomai belongs, please accept this.
+> You can still define your personal setup differently if the path is not
+> easily fixable there.
 
-FWIW, I'm not contributing free software as a result of having too much
-free time. I have customers and contract deadlines to cope with as well
-right now, and unfortunately, I can't divert the time which would be
-required for such analysis at the moment.
+In fact, the point is. Putting xenomai mount point under /mnt does
+not even break Debian. Because of the new standard, there is little
+chance for any Debian package to mount anything on /mnt or under
+/mnt.
+
+It is simply the local admin decision to decide to respect or not
+respect the standard. I have been using Debian since 1997 (up to
+back a few days, where I finally switched), and ALWAYS mounted
+things in /mnt subdirectories. And never had any problems with any
+Debian packages (and as I said, I seem to remember that some
+versions of the autofs packages had their mount points under /mnt,
+at any rate, the autofs mount points changed with debian versions,
+so, if you had them in one place and upgrading, it would have been a
+PIT to follow what Debian imposed).
+
+The standard changes the usage of /mnt, but does not provide a
+replacement. So, what we are left are choices among directories that
+are not specifically made for mounting things. I do not like that
+option.
+
+So yes, when using Xenomai, the user will have to accept to not
+follow the standard and create a /mnt/tmp directory for temporary
+mounts. But I suspect this is an issue nobody cares about, I mean,
+except you and Lennart.
 
 -- 
-Philippe.
+					    Gilles.
 
