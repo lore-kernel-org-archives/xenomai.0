@@ -1,14 +1,17 @@
-Date: Wed, 10 Dec 2014 11:58:51 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141210105851.GC1524@hermes.click-hack.org>
-References: <CALe7ZU07e_Pi4=jbV9y1zuVd4RAKZGRsuUdQrVqWCjPcmjTkgg@mail.gmail.com>
- <20141210103829.GA1524@hermes.click-hack.org>
- <CALe7ZU0xG7Z1oCfV3uoWV=V1u03P71fSqpnso0B0X9t+eF9Axw@mail.gmail.com>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Fri, 28 Nov 2014 11:09:46 -0500
+Message-ID: <20141128160946.GQ24110@csclub.uwaterloo.ca>
+References: <54775097.30705@siemens.com> <20141127181823.GK7842@hermes>
+ <547772AF.108@siemens.com>
+ <20141127191438.GI24110@csclub.uwaterloo.ca>
+ <20141127203400.GP7842@hermes> <54778CF6.6000909@siemens.com>
+ <20141127231527.GC24076@hermes> <5478430B.9030602@siemens.com>
+ <20141128095038.GA3832@hermes>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CALe7ZU0xG7Z1oCfV3uoWV=V1u03P71fSqpnso0B0X9t+eF9Axw@mail.gmail.com>
-Subject: Re: [Xenomai] /asm/ipipe.h not found
+In-Reply-To: <20141128095038.GA3832@hermes>
+Subject: Re: [Xenomai] [pull] forge: Adjust default registry mount point
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,18 +20,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: JAY KOTHARI <jaikothari10@gmail.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On Wed, Dec 10, 2014 at 04:24:53PM +0530, JAY KOTHARI wrote:
-> I would try with newer version but if this gets fixed then it would be
-> help for me.
+On Fri, Nov 28, 2014 at 10:50:38AM +0100, Gilles Chanteperdrix wrote:
+> This is ridiculous. Because the standard changed, and one
+> distribution, Debian, decided to follow the new standard, which
+> seems to be not widely accepted, and even controversial, you want to
+> impose what Debian does to everybody. The distribution I use has
+> mount points under /mnt. So, why following Debian and not the
+> distribution I use, and what sysadmin have been doing for ages?
 
-If you want this fixed, then provide us with the information we need
-to fix it. If even there is something to fix.
+Feel free to make xenomai mandate creating some new mountpoint somewhere
+else for its use.
 
-https://xenomai.org//asking-for-help/
+> You want the mount point to be somewhere else? Fine, put a symbolic
+> link.
+> 
+> mkdir /run/xenomai
+> ln -s /run/xenomai /mnt/xenomai
+
+And when I do mount /dev/sdf1 /mnt, what will xenomai think?  It sure
+won't like it.
+
+Do NOT put xenomai stuff in /mnt.  If you do, some of us will have to
+maintain permanent patches to fix xenomai and I hate doing that.
 
 -- 
-					    Gilles.
+Len Sorensen
 
