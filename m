@@ -1,6 +1,6 @@
-Date: Fri, 28 Nov 2014 17:35:03 +0100
+Date: Fri, 28 Nov 2014 17:40:56 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141128163503.GL8051@hermes>
+Message-ID: <20141128164056.GM8051@hermes>
 References: <20141127231527.GC24076@hermes> <5478430B.9030602@siemens.com>
  <20141128095038.GA3832@hermes> <547846AC.6070204@siemens.com>
  <20141128101605.GC3832@hermes>
@@ -39,20 +39,15 @@ On Fri, Nov 28, 2014 at 11:29:19AM -0500, Lennart Sorensen wrote:
 > 
 > Getting a kernel chosen in Debian for which there is a working
 > ipipe/xenomai patch is certainly a problem.
-> 
-> Still having the runtime be packaged is quite handy.
 
-It would be handy if the runtime package was built correctly, but
-since you were the first one to use the word "shitty", if there one
-thing shitty it is Debian's debian/rules. This file has essentially
-been unmaintained for years, just modified enough to compile the
-next version, without taking the release notes into account, and
-removing options or compilation flags that were no longer useful.
-The method to provide patches for the kernel has disappeared from
-make-kpkg around Lenny or something. But since no user was paying
-attention, nobody noticed.
+As soon as you start patching the kernel, it does not really make
+sense to absolutely pick the same kernel version as Debian, you can
+just as well compile a mainline version with a Debian-like
+modularized configuration. Actually, I provided exactly that for one
+version of Xenomai, but the amount of downloads was ridiculous, so I
+do not believe this is what users are after, either.
 
-No, really, stay away from Debian's xenomai packages.
+
 
 -- 
 					    Gilles.
