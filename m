@@ -1,11 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <20141128111325.GD5069@hermes>
+Date: Fri, 28 Nov 2014 12:48:31 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141128114831.GA6395@hermes>
 References: <CAPozGf=zAFgV=fbinambu1_xEiR3qD7Affppw-i6ZbD4nvJsRw@mail.gmail.com>
  <20141128111325.GD5069@hermes>
-Date: Fri, 28 Nov 2014 12:19:19 +0100
-Message-ID: <CAPozGfmL+OETXBHp39T8LRUt_9jHRqXjyYbFFeopDyNu0XCadA@mail.gmail.com>
-From: John Sini <jhnsini@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+ <CAPozGfmL+OETXBHp39T8LRUt_9jHRqXjyYbFFeopDyNu0XCadA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPozGfmL+OETXBHp39T8LRUt_9jHRqXjyYbFFeopDyNu0XCadA@mail.gmail.com>
 Subject: Re: [Xenomai] Section mismatch - Porting Xenomai to
  linux-xlnx-V14.5 zynq SoC
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,85 +18,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: John Sini <jhnsini@gmail.com>
 Cc: xenomai@xenomai.org
 
-Hi,
+On Fri, Nov 28, 2014 at 12:19:19PM +0100, John Sini wrote:
+> Hi,
+> 
+> Thanks for your reply.
+> 
+> 
+> These from the following website:
+> 
+> https://github.com/sncn-private/linux-neocortex/commit/b83c15a3fa27931f557f147087bf019a46e81783
 
-Thanks for your reply.
+If you did not top post, it could be made clear to what you are
+replying, my answer contained several answers to your several
+questions. 
+
+I guess you are replying to:
 
 
-These from the following website:
+> > > But I have disabled all necessary options in the kernel config and
+> > > still get these warnings.
+> >
+> > what necessary option?
 
-https://github.com/sncn-private/linux-neocortex/commit/b83c15a3fa27931f557f147087bf019a46e81783
+And no, this patch does not disable the section mismatch detection
+option, so it will not get the warnings to disappear.
 
-On Fri, Nov 28, 2014 at 12:13 PM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+-- 
+					    Gilles.
 
-> On Fri, Nov 28, 2014 at 12:03:09PM +0100, John Sini wrote:
-> > Hello,
-> >
-> > I am new with Xenomai and I am trying to port it to linux-xlnx-V14.5 zynq
-> > as suggested on the following site:
-> >
-> > http://www.wiki.xilinx.com/Xenomai+for+Zynq
-> >
-> > Patches that I have applied(in the following order)
-> >
-> >
-> > *ipipe-core-3.8-zynq-pre.patch*
-> > *ipipe-core-3.8-arm-1.patch*
-> > *ipipe-core-3.8-zynq-post.patch*
-> >
-> >
-> > I have disabled the support of RPMsg ((remoteproc) and of CPU_HOTPLUG
-> > prior to compiling the kernel(I configured the kernel as suggested on
-> > the aforementioned website). I get getting the following warnings:
-> >
-> > WARNING: vmlinux.o(.text+0x106b4): Section mismatch in reference from
-> > the function __ipipe_tsc_register() to the variable
-> > .init.text:__kuser_helper_end
-> > The function __ipipe_tsc_register() references
-> > the variable __init __kuser_helper_end.
-> > This is often because __ipipe_tsc_register lacks a __init
-> > annotation or the annotation of __kuser_helper_end is wrong.
-> >
-> > WARNING: vmlinux.o(.text+0x106b8): Section mismatch in reference from
-> > the function __ipipe_tsc_register() to the variable
-> > .init.text:__ipipe_tsc_area_start
-> > The function __ipipe_tsc_register() references
-> > the variable __init __ipipe_tsc_area_start.
-> > This is often because __ipipe_tsc_register lacks a __init
-> > annotation or the annotation of __ipipe_tsc_area_start is wrong.
->
-> For this, you can do what the warning says, add the __init attribute
-> to the __ipipe_tsc_register function. This has been made in later
-> patches. 3.8 is old, we do not have the necessary resources to
-> maintain all past versions of the I-pipe patch at all times.
->
-> >
-> > WARNING: vmlinux.o(.text+0x2ea760): Section mismatch in reference from
-> > the function vexpress_sysreg_probe() to the function
-> > .init.text:vexpress_sysreg_setup()
-> > The function vexpress_sysreg_probe() references
-> > the function __init vexpress_sysreg_setup().
-> > This is often because vexpress_sysreg_probe lacks a __init
-> > annotation or the annotation of vexpress_sysreg_setup is wrong.
->
-> This probably has nothing to do with Xenomai.
->
-> >
-> >
-> > Can any of you help me how to fix these warnings? I have seen the same
-> > problem here:
-> >
-> > http://www.xenomai.org/pipermail/xenomai/2013-October/029390.html
-> >
-> > But I have disabled all necessary options in the kernel config and
-> > still get these warnings.
->
-> what necessary option?
->
-> --
->                                             Gilles.
->
