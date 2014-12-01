@@ -1,13 +1,13 @@
-Date: Mon, 1 Dec 2014 16:30:57 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141201153057.GJ23220@hermes>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Mon, 1 Dec 2014 15:43:17 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C9C50813@SINTEFEXMBX05.sintef.no>
 References: <314E5ECDAA86314791309FA670550F89C9C4FD8A@SINTEFEXMBX05.sintef.no>
  <20141201151951.GG24110@csclub.uwaterloo.ca>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
 In-Reply-To: <20141201151951.GG24110@csclub.uwaterloo.ca>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] WARNING: at arch/arm/kernel/ipipe.c:157
  ipipe_set_irq_affinity+0x47/0x70()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,29 +18,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+To: 'Lennart Sorensen' <lsorense@csclub.uwaterloo.ca>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Dec 01, 2014 at 10:19:51AM -0500, Lennart Sorensen wrote:
-> On Mon, Dec 01, 2014 at 05:54:36AM +0000, Terje Frøysa wrote:
-> > Occasionally I get the warning listed below on my Beaglebone Black console.
-> > I am running Debian 3.8.13-bone67 with Xenomai 2.6.4
-> > 
-> > I am running four RTDM modules handling interrupts from GPIO pins.
-> > 
-> > As far as I have found, this kind of warnings can be associated with inappropriate calls from user space.
-> > But I cannot find such calls in my code.
-> > The irq is requested by a RTDM kernel module when issuing a device open call from user space.
-> 
-> I just changed the code to not give the warning.  The omap-gpio driver
-> doesn't support setting affinity, and the linux irq driver has no issue
-> with that, so perhaps xenomai/ipipe has no reason to have a problem with
-> it either.
-
-On the other hand, this is just a warning, it does not prevent the
-system from working, and this warning warns us about a real problem:
-we can not set the irq affinity of this driver.
-
--- 
-					    Gilles.
+T2sgTGVuLA0KDQpUaGFua3MgZm9yIHlvdXIgdGlwLg0KVGhlIHdhcm5pbmcgY29tZXMgZXZlcnkg
+bm93IGFuZCB0aGVuLCBidXQgSSBoYXZlIG5ldmVyIGV4cGVyaWVuY2VkIGFueSBjb25zZXF1ZW5j
+ZXMgZnJvbSBpdC4NClNvIHlvdSBtaWdodCBiZSBxdWl0ZSByaWdodC4NCg0KVGVyamUNCg0KLS0t
+LS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IExlbm5hcnQgU29yZW5zZW4gW21haWx0bzps
+c29yZW5zZUBjc2NsdWIudXdhdGVybG9vLmNhXSANClNlbnQ6IDEuIGRlc2VtYmVyIDIwMTQgMTY6
+MjANClRvOiBUZXJqZSBGcsO4eXNhDQpDYzogeGVub21haUB4ZW5vbWFpLm9yZw0KU3ViamVjdDog
+UmU6IFtYZW5vbWFpXSBXQVJOSU5HOiBhdCBhcmNoL2FybS9rZXJuZWwvaXBpcGUuYzoxNTcgaXBp
+cGVfc2V0X2lycV9hZmZpbml0eSsweDQ3LzB4NzAoKQ0KDQpPbiBNb24sIERlYyAwMSwgMjAxNCBh
+dCAwNTo1NDozNkFNICswMDAwLCBUZXJqZSBGcsO4eXNhIHdyb3RlOg0KPiBPY2Nhc2lvbmFsbHkg
+SSBnZXQgdGhlIHdhcm5pbmcgbGlzdGVkIGJlbG93IG9uIG15IEJlYWdsZWJvbmUgQmxhY2sgY29u
+c29sZS4NCj4gSSBhbSBydW5uaW5nIERlYmlhbiAzLjguMTMtYm9uZTY3IHdpdGggWGVub21haSAy
+LjYuNA0KPiANCj4gSSBhbSBydW5uaW5nIGZvdXIgUlRETSBtb2R1bGVzIGhhbmRsaW5nIGludGVy
+cnVwdHMgZnJvbSBHUElPIHBpbnMuDQo+IA0KPiBBcyBmYXIgYXMgSSBoYXZlIGZvdW5kLCB0aGlz
+IGtpbmQgb2Ygd2FybmluZ3MgY2FuIGJlIGFzc29jaWF0ZWQgd2l0aCBpbmFwcHJvcHJpYXRlIGNh
+bGxzIGZyb20gdXNlciBzcGFjZS4NCj4gQnV0IEkgY2Fubm90IGZpbmQgc3VjaCBjYWxscyBpbiBt
+eSBjb2RlLg0KPiBUaGUgaXJxIGlzIHJlcXVlc3RlZCBieSBhIFJURE0ga2VybmVsIG1vZHVsZSB3
+aGVuIGlzc3VpbmcgYSBkZXZpY2Ugb3BlbiBjYWxsIGZyb20gdXNlciBzcGFjZS4NCg0KSSBqdXN0
+IGNoYW5nZWQgdGhlIGNvZGUgdG8gbm90IGdpdmUgdGhlIHdhcm5pbmcuICBUaGUgb21hcC1ncGlv
+IGRyaXZlciBkb2Vzbid0IHN1cHBvcnQgc2V0dGluZyBhZmZpbml0eSwgYW5kIHRoZSBsaW51eCBp
+cnEgZHJpdmVyIGhhcyBubyBpc3N1ZSB3aXRoIHRoYXQsIHNvIHBlcmhhcHMgeGVub21haS9pcGlw
+ZSBoYXMgbm8gcmVhc29uIHRvIGhhdmUgYSBwcm9ibGVtIHdpdGggaXQgZWl0aGVyLg0KDQotLQ0K
+TGVuIFNvcmVuc2VuDQo=
 
