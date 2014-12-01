@@ -1,12 +1,14 @@
-Date: Mon, 1 Dec 2014 08:31:30 +0100
+Date: Mon, 1 Dec 2014 08:34:33 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141201073130.GQ2964@hermes>
-References: <5389961F-2DC1-43AA-8FEA-2BD0D3A61B7E@gmail.com>
+Message-ID: <20141201073433.GR2964@hermes>
+References: <314E5ECDAA86314791309FA670550F89C9C4FD8A@SINTEFEXMBX05.sintef.no>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <5389961F-2DC1-43AA-8FEA-2BD0D3A61B7E@gmail.com>
-Subject: Re: [Xenomai] Performance monitoring question
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <314E5ECDAA86314791309FA670550F89C9C4FD8A@SINTEFEXMBX05.sintef.no>
+Subject: Re: [Xenomai] WARNING: at arch/arm/kernel/ipipe.c:157
+ ipipe_set_irq_affinity+0x47/0x70()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,29 +17,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Mathew Benson <mathew.benson@gmail.com>
-Cc: xenomai@xenomai.org
+To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Sun, Nov 30, 2014 at 10:39:56PM -0600, Mathew Benson wrote:
-> I'm using the native skin. I understand there are things you can
-> do to cause a user space task to fall back to the normal Linux
-> scheduler. How do I know if this has happened? Will RT functions
-> like semaphores fail with an incorrect mode failure?
-
-No, Xenomai automatically switches user-space tasks to primary or
-secondary mode when needed.
-
-> Can I register a callback to be notified?
+On Mon, Dec 01, 2014 at 05:54:36AM +0000, Terje Frøysa wrote:
+> Dear Forum,
 > 
-> I'm asking because I added code to my project fully expecting it
-> to kick it back to normal scheduler or cause timers to fail, but
-> nothing. Everything still seems to be working just fine.
-> Specifically, I'm making ioctl calls to access a webcam. So what
-> can I do to verify that my tasks really are running on the rt
-> scheduler?
+> Occasionally I get the warning listed below on my Beaglebone Black
+> console. I am running Debian 3.8.13-bone67 with Xenomai 2.6.4
+> 
+> I am running four RTDM modules handling interrupts from GPIO pins.
+> 
+> As far as I have found, this kind of warnings can be associated
+> with inappropriate calls from user space. But I cannot find such
+> calls in my code. The irq is requested by a RTDM kernel module
+> when issuing a device open call from user space.
 
-See:
-http://xenomai.org/2014/06/finding-spurious-relaxes/
+Yes, there are several such issues in Xenomai 2.x. Note however that
+the Beaglebone is uniprocessor, whereas ipip_set_irq_affinity is
+called when CONFIG_SMP was enabled. Enabling CONFIG_SMP for an
+uniprocessor is not recommended with Xenomai 2.x, as it gives
+slightly worst performances.
 
 -- 
 					    Gilles.
