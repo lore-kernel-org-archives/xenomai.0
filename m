@@ -1,16 +1,19 @@
-MIME-Version: 1.0
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C9C50321@SINTEFEXMBX05.sintef.no>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Mon, 1 Dec 2014 11:39:55 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C9C503D8@SINTEFEXMBX05.sintef.no>
 References: <314E5ECDAA86314791309FA670550F89C9C4FD8A@SINTEFEXMBX05.sintef.no>
  <20141201073433.GR2964@hermes>
  <314E5ECDAA86314791309FA670550F89C9C5006D@SINTEFEXMBX05.sintef.no>
  <20141201085028.GA21004@hermes>
  <314E5ECDAA86314791309FA670550F89C9C50321@SINTEFEXMBX05.sintef.no>
-Date: Mon, 1 Dec 2014 12:35:18 +0100
-Message-ID: <CAD3Bbm+rTuzSWJ+ikNMDZgi3CW7yO4wUgawQco+C4ChG-rLj8A@mail.gmail.com>
-From: Hidde Verstoep <hverstoep@e2mtechnologies.eu>
-Content-Type: text/plain; charset=UTF-8
+ <CAD3Bbm+rTuzSWJ+ikNMDZgi3CW7yO4wUgawQco+C4ChG-rLj8A@mail.gmail.com>
+In-Reply-To: <CAD3Bbm+rTuzSWJ+ikNMDZgi3CW7yO4wUgawQco+C4ChG-rLj8A@mail.gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] WARNING: at arch/arm/kernel/ipipe.c:157
-	ipipe_set_irq_affinity+0x47/0x70()
+ ipipe_set_irq_affinity+0x47/0x70()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,25 +22,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?Terje_Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
+To: Hidde Verstoep <hverstoep@e2mtechnologies.eu>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-> By the way.. When compiling kernel for Xenomai, I am advised to turn off CPU Frequency scaling "as it is known to cause trouble".
-> When enabled I could inspect and set the CPU clock frequency by the "cpufreq-info" and "cpufreq-set".
-> These tools are no longer available and I don't find any settings in the menuconfig.
->
-> What is the default BBB CPU frequency when frequency scaling is turned off?
-
->From my experience with the BBB and Xenomai:
-The default CPU frequency with frequency scaling turned off is 600
-MHz. This was not acceptable for me since the BBB supports 1000 Mhz.
-So, I left frequency scaling on in the kernel, but set the default
-mode to "performance" (always runs the CPU at max frequency). Issue
-with this is that the mode still gets reset to "ondemand" every now
-and then (I have no clue as to why). So, I configured the kernel with
-frequency scaling on, the default mode set to "performance" and all
-other modes disabled. This seems to work without issues with Xenomai.
-
-Kind regards,
-Hidde Verstoep
+VGhhbmtzIGZvciB0aGUgdGlwIEhpZGRlIQ0KDQpCZXN0IHJlZ2FyZHMNClRlcmplIEZyb3lzYQ0K
+DQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogSGlkZGUgVmVyc3RvZXAgW21haWx0
+bzpodmVyc3RvZXBAZTJtdGVjaG5vbG9naWVzLmV1XSANClNlbnQ6IDEuIGRlc2VtYmVyIDIwMTQg
+MTI6MzUNClRvOiBUZXJqZSBGcsO4eXNhDQpDYzogR2lsbGVzIENoYW50ZXBlcmRyaXg7IHhlbm9t
+YWlAeGVub21haS5vcmcNClN1YmplY3Q6IFJlOiBbWGVub21haV0gV0FSTklORzogYXQgYXJjaC9h
+cm0va2VybmVsL2lwaXBlLmM6MTU3IGlwaXBlX3NldF9pcnFfYWZmaW5pdHkrMHg0Ny8weDcwKCkN
+Cg0KPiBCeSB0aGUgd2F5Li4gV2hlbiBjb21waWxpbmcga2VybmVsIGZvciBYZW5vbWFpLCBJIGFt
+IGFkdmlzZWQgdG8gdHVybiBvZmYgQ1BVIEZyZXF1ZW5jeSBzY2FsaW5nICJhcyBpdCBpcyBrbm93
+biB0byBjYXVzZSB0cm91YmxlIi4NCj4gV2hlbiBlbmFibGVkIEkgY291bGQgaW5zcGVjdCBhbmQg
+c2V0IHRoZSBDUFUgY2xvY2sgZnJlcXVlbmN5IGJ5IHRoZSAiY3B1ZnJlcS1pbmZvIiBhbmQgImNw
+dWZyZXEtc2V0Ii4NCj4gVGhlc2UgdG9vbHMgYXJlIG5vIGxvbmdlciBhdmFpbGFibGUgYW5kIEkg
+ZG9uJ3QgZmluZCBhbnkgc2V0dGluZ3MgaW4gdGhlIG1lbnVjb25maWcuDQo+DQo+IFdoYXQgaXMg
+dGhlIGRlZmF1bHQgQkJCIENQVSBmcmVxdWVuY3kgd2hlbiBmcmVxdWVuY3kgc2NhbGluZyBpcyB0
+dXJuZWQgb2ZmPw0KDQpGcm9tIG15IGV4cGVyaWVuY2Ugd2l0aCB0aGUgQkJCIGFuZCBYZW5vbWFp
+Og0KVGhlIGRlZmF1bHQgQ1BVIGZyZXF1ZW5jeSB3aXRoIGZyZXF1ZW5jeSBzY2FsaW5nIHR1cm5l
+ZCBvZmYgaXMgNjAwIE1Iei4gVGhpcyB3YXMgbm90IGFjY2VwdGFibGUgZm9yIG1lIHNpbmNlIHRo
+ZSBCQkIgc3VwcG9ydHMgMTAwMCBNaHouDQpTbywgSSBsZWZ0IGZyZXF1ZW5jeSBzY2FsaW5nIG9u
+IGluIHRoZSBrZXJuZWwsIGJ1dCBzZXQgdGhlIGRlZmF1bHQgbW9kZSB0byAicGVyZm9ybWFuY2Ui
+IChhbHdheXMgcnVucyB0aGUgQ1BVIGF0IG1heCBmcmVxdWVuY3kpLiBJc3N1ZSB3aXRoIHRoaXMg
+aXMgdGhhdCB0aGUgbW9kZSBzdGlsbCBnZXRzIHJlc2V0IHRvICJvbmRlbWFuZCIgZXZlcnkgbm93
+IGFuZCB0aGVuIChJIGhhdmUgbm8gY2x1ZSBhcyB0byB3aHkpLiBTbywgSSBjb25maWd1cmVkIHRo
+ZSBrZXJuZWwgd2l0aCBmcmVxdWVuY3kgc2NhbGluZyBvbiwgdGhlIGRlZmF1bHQgbW9kZSBzZXQg
+dG8gInBlcmZvcm1hbmNlIiBhbmQgYWxsIG90aGVyIG1vZGVzIGRpc2FibGVkLiBUaGlzIHNlZW1z
+IHRvIHdvcmsgd2l0aG91dCBpc3N1ZXMgd2l0aCBYZW5vbWFpLg0KDQpLaW5kIHJlZ2FyZHMsDQpI
+aWRkZSBWZXJzdG9lcA0K
 
