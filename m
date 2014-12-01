@@ -1,15 +1,16 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Mon, 1 Dec 2014 11:06:58 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C9C50321@SINTEFEXMBX05.sintef.no>
+Date: Mon, 1 Dec 2014 12:16:10 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141201111610.GC23220@hermes>
 References: <314E5ECDAA86314791309FA670550F89C9C4FD8A@SINTEFEXMBX05.sintef.no>
  <20141201073433.GR2964@hermes>
  <314E5ECDAA86314791309FA670550F89C9C5006D@SINTEFEXMBX05.sintef.no>
  <20141201085028.GA21004@hermes>
-In-Reply-To: <20141201085028.GA21004@hermes>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <314E5ECDAA86314791309FA670550F89C9C50321@SINTEFEXMBX05.sintef.no>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <314E5ECDAA86314791309FA670550F89C9C50321@SINTEFEXMBX05.sintef.no>
 Subject: Re: [Xenomai] WARNING: at arch/arm/kernel/ipipe.c:157
  ipipe_set_irq_affinity+0x47/0x70()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -20,33 +21,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-VGhhbmtzIEdpbGxlcywNCg0KVGhlIERlYmlhbi9YZW5vbWFpIHdhcyBzb2xlbHkgY2hvc2VuIGFz
-IGEgc3RhcnQtdXAgc2NlbmFyaW8gc2luY2UgSSBmb3VuZCBhIGdvb2QgcmVjaXBlIG9uIHRoZSBu
-ZXQuDQpJIGFtIGhlYWRpbmcgZm9yIFlvY3RvIGFuZCBMRlMgKExpbnV4IEZyb20gU2NyYXRjaCkg
-Zm9yIGZ1dHVyZSBlbWJlZGRlZCBzeXN0ZW1zLg0KDQpCeSB0aGUgd2F5Li4gV2hlbiBjb21waWxp
-bmcga2VybmVsIGZvciBYZW5vbWFpLCBJIGFtIGFkdmlzZWQgdG8gdHVybiBvZmYgQ1BVIEZyZXF1
-ZW5jeSBzY2FsaW5nICJhcyBpdCBpcyBrbm93biB0byBjYXVzZSB0cm91YmxlIi4NCldoZW4gZW5h
-YmxlZCBJIGNvdWxkIGluc3BlY3QgYW5kIHNldCB0aGUgQ1BVIGNsb2NrIGZyZXF1ZW5jeSBieSB0
-aGUgImNwdWZyZXEtaW5mbyIgYW5kICJjcHVmcmVxLXNldCIuDQpUaGVzZSB0b29scyBhcmUgbm8g
-bG9uZ2VyIGF2YWlsYWJsZSBhbmQgSSBkb24ndCBmaW5kIGFueSBzZXR0aW5ncyBpbiB0aGUgbWVu
-dWNvbmZpZy4NCg0KV2hhdCBpcyB0aGUgZGVmYXVsdCBCQkIgQ1BVIGZyZXF1ZW5jeSB3aGVuIGZy
-ZXF1ZW5jeSBzY2FsaW5nIGlzIHR1cm5lZCBvZmY/DQoNCkJlc3QgcmVnYXJkcw0KVGVyamUNCg0K
-LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEdpbGxlcyBDaGFudGVwZXJkcml4IFtt
-YWlsdG86Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmddIA0KU2VudDogMS4gZGVzZW1i
-ZXIgMjAxNCAwOTo1MA0KVG86IFRlcmplIEZyw7h5c2ENCkNjOiB4ZW5vbWFpQHhlbm9tYWkub3Jn
-DQpTdWJqZWN0OiBSZTogW1hlbm9tYWldIFdBUk5JTkc6IGF0IGFyY2gvYXJtL2tlcm5lbC9pcGlw
-ZS5jOjE1NyBpcGlwZV9zZXRfaXJxX2FmZmluaXR5KzB4NDcvMHg3MCgpDQoNCk9uIE1vbiwgRGVj
-IDAxLCAyMDE0IGF0IDA4OjI2OjM3QU0gKzAwMDAsIFRlcmplIEZyw7h5c2Egd3JvdGU6DQo+IFRo
-YW5rcyBHaWxsZXMsDQo+IA0KPiBJIGRvbid0IGtub3cgd2h5IHRoZSBkZWJpYW4ga2VybmVsIGZv
-ciB0aGUgU2l0YXJhIGhhdmUgU01QIGVuYWJsZWQuDQo+IEl0IHNvdW5kcyBsaWtlIGEgZ29vZCBp
-ZGVhIHRvIHR1cm4gaXQgb2ZmIHRoZW4uLi4NCg0KTm90ZSB0aGF0IGlmIHlvdSB3YW50IHRvIGJl
-IGFibGUgdG8gcmVjb21waWxlIHlvdXIga2VybmVsIGZhc3QsIHlvdSBzaG91bGQgbm90IGJlIHVz
-aW5nIGEgRGViaWFuIGtlcm5lbCBjb25maWd1cmF0aW9uIGFueXdheSwgYnV0IGEgY29uZmlndXJh
-dGlvbiB3aXRoIGp1c3QgdGhlIG9wdGlvbnMgeW91IG5lZWQgZW5hYmxlZC4gVGhpcyBtYWtlcyBh
-IGJpZyBkaWZmZXJlbmNlIG9uIGNvbXBpbGF0aW9uIHRpbWUsIGEgc21hbGwgZGlmZmVyZW5jZSBv
-biBtZW1vcnkgZm9vdHByaW50LCBhbmQgYSBiaWcgZGlmZmVyZW5jZSBvbiByb290IGZpbGUgc3lz
-dGVtIGZvb3RwcmludC4NCg0KLS0gDQoJCQkJCSAgICBHaWxsZXMuDQo=
+On Mon, Dec 01, 2014 at 11:06:58AM +0000, Terje Frøysa wrote:
+> Thanks Gilles,
+> 
+> The Debian/Xenomai was solely chosen as a start-up scenario since I found a good recipe on the net.
+> I am heading for Yocto and LFS (Linux From Scratch) for future embedded systems.
+> 
+> By the way.. When compiling kernel for Xenomai, I am advised to
+> turn off CPU Frequency scaling "as it is known to cause trouble".
+
+Yes, for two reasons: 
+
+- because Xenomai timing system is counting on a fixed tsc (and
+hardware timer) frequency. In the case of beaglebone, the tsc is
+based on the gptimer, so if the gptimer frequency does not change
+when changing the processor OPP, this is probably not an issue 
+
+- because the execution time of real-time tasks change, this remains
+an issue.
+
+
+> When enabled I could inspect and set the CPU clock frequency by
+> the "cpufreq-info" and "cpufreq-set". These tools are no longer
+> available and I don't find any settings in the menuconfig.
+
+These are part of the cpufreq-utils package.
+
+> 
+> What is the default BBB CPU frequency when frequency scaling is turned off?
+
+All bets are off. This depends on the kernel implementation. On
+OMAP3 (which is closed to BBB, normally), last time I checked (and
+that was a long time ago), the kernel does not touch whatever PLL
+settings U-boot did, with regard to cpu frequency.
+
+If the kernel provides an access to the PLL settings in /proc, you
+can check the various PLL frequencies and look-up in the processor
+reference manual to what OPP this corresponds.
+
+-- 
+					    Gilles.
 
