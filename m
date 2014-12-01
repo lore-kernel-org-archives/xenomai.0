@@ -1,16 +1,12 @@
-Date: Fri, 28 Nov 2014 13:10:08 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141128121008.GC6395@hermes>
-References: <20141127203400.GP7842@hermes> <54778CF6.6000909@siemens.com>
- <20141127231527.GC24076@hermes> <5478430B.9030602@siemens.com>
- <20141128095038.GA3832@hermes> <547846AC.6070204@siemens.com>
- <20141128095745.GB3832@hermes> <5478618F.1010506@siemens.com>
- <20141128115537.GB6395@hermes> <54786583.5080205@siemens.com>
+From: =?iso-8859-1?Q?Terje_Fr=F8ysa?= <Terje.Froysa@sintef.no>
+Date: Mon, 1 Dec 2014 05:54:36 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C9C4FD8A@SINTEFEXMBX05.sintef.no>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <54786583.5080205@siemens.com>
-Subject: Re: [Xenomai] [pull] forge: Adjust default registry mount point
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] WARNING: at arch/arm/kernel/ipipe.c:157
+ ipipe_set_irq_affinity+0x47/0x70()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,134 +15,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Nov 28, 2014 at 01:07:31PM +0100, Jan Kiszka wrote:
-> On 2014-11-28 12:55, Gilles Chanteperdrix wrote:
-> > On Fri, Nov 28, 2014 at 12:50:39PM +0100, Jan Kiszka wrote:
-> >> On 2014-11-28 10:57, Gilles Chanteperdrix wrote:
-> >>> On Fri, Nov 28, 2014 at 10:55:56AM +0100, Jan Kiszka wrote:
-> >>>> On 2014-11-28 10:50, Gilles Chanteperdrix wrote:
-> >>>>> On Fri, Nov 28, 2014 at 10:40:27AM +0100, Jan Kiszka wrote:
-> >>>>>> On 2014-11-28 00:15, Gilles Chanteperdrix wrote:
-> >>>>>>> On Thu, Nov 27, 2014 at 09:43:34PM +0100, Jan Kiszka wrote:
-> >>>>>>>> On 2014-11-27 21:34, Gilles Chanteperdrix wrote:
-> >>>>>>>>> On Thu, Nov 27, 2014 at 02:14:38PM -0500, Lennart Sorensen wrote:
-> >>>>>>>>>> On Thu, Nov 27, 2014 at 07:51:27PM +0100, Jan Kiszka wrote:
-> >>>>>>>>>>> On 2014-11-27 19:18, Gilles Chanteperdrix wrote:
-> >>>>>>>>>>>> According to the filesystem hierarchy standard, /mnt is the standard
-> >>>>>>>>>>>> place for "temporarily mounted filesystems".
-> >>>>>>>>>>>>
-> >>>>>>>>>>>> http://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard
-> >>>>>>>>>>>
-> >>>>>>>>>>> Right, another reason to NOT mess around with it: if something was
-> >>>>>>>>>>> temporarily mounted there, we will create the mountpoint inside that
-> >>>>>>>>>>> filesystem with unforeseeable side effects.
-> >>>>>>>>>>
-> >>>>>>>>>> I always read that as "temporarily mounted there by the admin or some
-> >>>>>>>>>> other human".  Certainly not automatic mounts by software.  There is a
-> >>>>>>>>>> reason /media and such exists on many distributins.
-> >>>>>>>>>
-> >>>>>>>>> I would not venture an "always", autofs for instance, used to mount
-> >>>>>>>>> things under /mnt. and /media has not always existed either, we used
-> >>>>>>>>> /mnt/cdrom.
-> >>>>>>>>
-> >>>>>>>> FHS on /mnt purpose:
-> >>>>>>>>
-> >>>>>>>> "This directory is provided so that the system administrator may
-> >>>>>>>> temporarily mount a filesystem as needed. The content of this directory
-> >>>>>>>> is a local issue and should not affect the manner in which any program
-> >>>>>>>> is run."
-> >>>>>>>>
-> >>>>>>>> I think this makes it crystal clear that Xenomai is not supposed to
-> >>>>>>>> touch it.
-> >>>>>>>
-> >>>>>>> Just to add another argument. I just asked a friend who is a
-> >>>>>>> professional sysadmin. He creates directory under /mnt and mount
-> >>>>>>> things under these directories. So, I am not sure the standard is
-> >>>>>>> even applied by the people who should use it.
-> >>>>>>>
-> >>>>>>> If you read on the last site I sent, under the /media article: 
-> >>>>>>>
-> >>>>>>> Amid much controversy and consternation on the part of system and
-> >>>>>>> network administrators a directory containing mount points for
-> >>>>>>> removable media has now been created. Funnily enough, it has been
-> >>>>>>> named /media.
-> >>>>>>>
-> >>>>>>> Are you sure, 100% sure, that every Xenomai user expects to be able
-> >>>>>>> to use /mnt as a mount point? Or that they will create directories
-> >>>>>>> under /mnt like everybody has been doing since Linux exists?
-> >>>>>>
-> >>>>>> I'm both absolutely sure that a) has to be left alone by Xenomai because
-> >>>>>> of requirements of the FHS and the way /mnt is used and b) we should try
-> >>>>>> hard to avoid creating temporary dirs in persistent filesystems.
-> >>>>>
-> >>>>> This is ridiculous. Because the standard changed, and one
-> >>>>> distribution, Debian, decided to follow the new standard, which
-> >>>>> seems to be not widely accepted, and even controversial, you want to
-> >>>>> impose what Debian does to everybody. The distribution I use has
-> >>>>> mount points under /mnt. So, why following Debian and not the
-> >>>>> distribution I use, and what sysadmin have been doing for ages?
-> >>>>>
-> >>>>> You want the mount point to be somewhere else? Fine, put a symbolic
-> >>>>> link.
-> >>>>>
-> >>>>> mkdir /run/xenomai
-> >>>>> ln -s /run/xenomai /mnt/xenomai
-> >>>>
-> >>>> Again, this is not acceptible as /mnt changes all the time and exposes
-> >>>> various remote filesystems which will hide that link.
-> >>>
-> >>> You are missing the point. Yes, Debian does that, but not all
-> >>> distribution. Other distributions do not do that.
-> >>>
-> >>
-> >> SUSE, Ubuntu, Gentoo, Red Hat - it's already standard. But I will change
-> >> my patch to /var/run to avoid surprises with other/older distros.
-> > 
-> > Again, using /mnt/xenomai does not break any distribution following
-> > the standard.
-> > 
-> > Let us try things another way, the possibilities we have are:
-> > - /mnt/xenomai: a solution that used to be standard but ceased to be
-> > with the FHS which did not provide a standard replacement, but does
-> > not break any distribution
-> 
-> I don't remember that this was ever a standard. My distro (SUSE) never
-> used it like this as long as I can remember (~18 year).
+Dear Forum,
 
-You have not read the link I posted it seems:
-http://www.tldp.org/LDP/Linux-Filesystem-Hierarchy/html/mnt.html
+Occasionally I get the warning listed below on my Beaglebone Black console.
+I am running Debian 3.8.13-bone67 with Xenomai 2.6.4
 
-> 
-> > - /run/xenomai: a solution that relies on the existence on the /run
-> > directory, which is not standard, but is going to be, maybe.
-> > - /var/run/xenomai: a solution which does not violate any version of
-> > the standard, but is not standard either, does not make clear that
-> > the directory is a mount point (which /mnt does), breaks the
-> 
-> This is how it's used in practice:
-> 
-> gvfsd-fuse on /var/run/user/1000/gvfs type fuse.gvfsd-fuse
-> (rw,nosuid,nodev,relatime,user_id=1000,group_id=100)
-> 
-> Just to give one example.
-> 
-> > existing documentation, breaks the existing usages of Xenomai 3, and
-> > is longer to type.
-> > 
-> > So, I really find that /mnt/xenomai is the best compromise. There is
-> > no standard solution, at least /mnt/xenomai is a solution that used
-> > to be standard.
-> 
-> No, it remains a current standard (FHS 2.3) *violation*, it has to be
-> stopped.
+I am running four RTDM modules handling interrupts from GPIO pins.
 
-I do not think it is. /mnt is off limit for distributions. Fine,
-xenomai can use it without any risk of breaking any distribution
-then.
+As far as I have found, this kind of warnings can be associated with inappr=
+opriate calls from user space.
+But I cannot find such calls in my code.
+The irq is requested by a RTDM kernel module when issuing a device open cal=
+l from user space.
 
--- 
-					    Gilles.
+Please advice
+Best regards
+Terje Froysa
+
+
+[ 398.167710] RTDM BARO INT (GPIO 60) - open
+[  398.167730] RTDM BARO pin 60 - irq number 188
+[  398.167738] RTDM BARO 60 - request GPIO
+[  398.167757] RTDM BARO 60 - request IRQ 188
+[  398.167768] ------------[ cut here ]------------
+[  398.172673] WARNING: at arch/arm/kernel/ipipe.c:157 ipipe_set_irq_affini=
+ty+0x47/0x70()
+[  398.180951] Modules linked in: g_multi libcomposite imu_rtdm(O) baro_rtd=
+m(O) gyro_rtdm(O) rtgps_1pps(O) omap_rng
+[  398.191733] [<c00117ed>] (unwind_backtrace+0x1/0x9c) from [<c003022b>] (=
+warn_slowpath_common+0x33/0x48)
+[  398.201606] [<c003022b>] (warn_slowpath_common+0x33/0x48) from [<c003025=
+1>] (warn_slowpath_null+0x11/0x14)
+[  398.211701] [<c0030251>] (warn_slowpath_null+0x11/0x14) from [<c001470f>=
+] (ipipe_set_irq_affinity+0x47/0x70)
+[  398.222010] [<c001470f>] (ipipe_set_irq_affinity+0x47/0x70) from [<c0099=
+1b5>] (xnintr_attach+0x21/0x1f0)
+[  398.231936] [<c00991b5>] (xnintr_attach+0x21/0x1f0) from [<c00eea8d>] (r=
+tdm_irq_request+0x25/0x44)
+[  398.241324] [<c00eea8d>] (rtdm_irq_request+0x25/0x44) from [<bf80c153>] =
+(baro_irq_open+0x6a/0xfc [baro_rtdm])
+[  398.251704] [<bf80c153>] (baro_irq_open+0x6a/0xfc [baro_rtdm]) from [<c0=
+0eb531>] (__rt_dev_open+0x61/0xa4)
+[  398.261832] [<c00eb531>] (__rt_dev_open+0x61/0xa4) from [<c00eeca9>] (sy=
+s_rtdm_open+0x3d/0x48)
+[  398.270853] [<c00eeca9>] (sys_rtdm_open+0x3d/0x48) from [<c00a9649>] (lo=
+syscall_event+0x81/0x1e0)
+[  398.280142] [<c00a9649>] (losyscall_event+0x81/0x1e0) from [<c007d169>] =
+(ipipe_syscall_hook+0x2d/0x34)
+[  398.289892] [<c007d169>] (ipipe_syscall_hook+0x2d/0x34) from [<c007bfc7>=
+] (__ipipe_notify_syscall+0x5b/0xb8)
+[  398.300180] [<c007bfc7>] (__ipipe_notify_syscall+0x5b/0xb8) from [<c0014=
+87d>] (__ipipe_syscall_root+0x3d/0x98)
+[  398.310646] [<c001487d>] (__ipipe_syscall_root+0x3d/0x98) from [<c000cbc=
+d>] (local_restart+0x9/0x54)
+[  398.320194] ---[ end trace f174ab8361e31708 ]---
+
+Smail: Terje Fr=F8ysa, SINTEF ICT (Information and Communication Technology=
+), N-7465 Trondheim, Norway.
+Email: terje.froysa@sintef.no<blocked::mailto:terje.froysa@sintef.no> <mail=
+to:terje.froysa@sintef.no<blocked::mailto:terje.froysa@sintef.no>>
+Phone: +47 930 03603,
+Company: Independent R&D, see <http://www.sintef.no/<blocked::http://www.si=
+ntef.no/>
 
