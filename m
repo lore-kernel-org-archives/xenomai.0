@@ -1,13 +1,12 @@
-Date: Mon, 1 Dec 2014 08:29:53 +0100
+Date: Mon, 1 Dec 2014 08:31:30 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141201072953.GP2964@hermes>
-References: <314E5ECDAA86314791309FA670550F89C9C4C7FA@SINTEFEXMBX05.sintef.no>
+Message-ID: <20141201073130.GQ2964@hermes>
+References: <5389961F-2DC1-43AA-8FEA-2BD0D3A61B7E@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C9C4C7FA@SINTEFEXMBX05.sintef.no>
-Subject: Re: [Xenomai] Method for measuring CPU idle time in Xenomai?
+In-Reply-To: <5389961F-2DC1-43AA-8FEA-2BD0D3A61B7E@gmail.com>
+Subject: Re: [Xenomai] Performance monitoring question
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,25 +15,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Mathew Benson <mathew.benson@gmail.com>
+Cc: xenomai@xenomai.org
 
-On Fri, Nov 28, 2014 at 06:00:27PM +0000, Terje Frøysa wrote:
-> Dear Sirs,
-> 
-> I have now four real time processes running and a mix of rt-tasks and Linux tasks.
-> In a pure Linux environment, CPU idle time can be estimated by:
-> 
-> awk '{print ($2*100)/$1 " % idle over "$1/60 " min"}' /proc/uptime
-> 
-> Question:
-> Will this method apply in an Xenomai environment too?
-> If not, is there any method that will apply?
+On Sun, Nov 30, 2014 at 10:39:56PM -0600, Mathew Benson wrote:
+> I'm using the native skin. I understand there are things you can
+> do to cause a user space task to fall back to the normal Linux
+> scheduler. How do I know if this has happened? Will RT functions
+> like semaphores fail with an incorrect mode failure?
 
-I am not sure Linux load average calculations stay valid with
-Xenomai running. For Xenomai tasks, /proc/xenomai/stat will give you
-the cpu consumption, but all linux activities will appear as the
-root task, whether idle or not.
+No, Xenomai automatically switches user-space tasks to primary or
+secondary mode when needed.
+
+> Can I register a callback to be notified?
+> 
+> I'm asking because I added code to my project fully expecting it
+> to kick it back to normal scheduler or cause timers to fail, but
+> nothing. Everything still seems to be working just fine.
+> Specifically, I'm making ioctl calls to access a webcam. So what
+> can I do to verify that my tasks really are running on the rt
+> scheduler?
+
+See:
+http://xenomai.org/2014/06/finding-spurious-relaxes/
 
 -- 
 					    Gilles.
