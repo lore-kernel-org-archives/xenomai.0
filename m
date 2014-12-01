@@ -1,12 +1,13 @@
-Date: Mon, 1 Dec 2014 08:34:33 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141201073433.GR2964@hermes>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Mon, 1 Dec 2014 08:26:37 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C9C5006D@SINTEFEXMBX05.sintef.no>
 References: <314E5ECDAA86314791309FA670550F89C9C4FD8A@SINTEFEXMBX05.sintef.no>
-MIME-Version: 1.0
+ <20141201073433.GR2964@hermes>
+In-Reply-To: <20141201073433.GR2964@hermes>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C9C4FD8A@SINTEFEXMBX05.sintef.no>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] WARNING: at arch/arm/kernel/ipipe.c:157
  ipipe_set_irq_affinity+0x47/0x70()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,28 +18,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Dec 01, 2014 at 05:54:36AM +0000, Terje Frøysa wrote:
-> Dear Forum,
-> 
-> Occasionally I get the warning listed below on my Beaglebone Black
-> console. I am running Debian 3.8.13-bone67 with Xenomai 2.6.4
-> 
-> I am running four RTDM modules handling interrupts from GPIO pins.
-> 
-> As far as I have found, this kind of warnings can be associated
-> with inappropriate calls from user space. But I cannot find such
-> calls in my code. The irq is requested by a RTDM kernel module
-> when issuing a device open call from user space.
-
-Yes, there are several such issues in Xenomai 2.x. Note however that
-the Beaglebone is uniprocessor, whereas ipip_set_irq_affinity is
-called when CONFIG_SMP was enabled. Enabling CONFIG_SMP for an
-uniprocessor is not recommended with Xenomai 2.x, as it gives
-slightly worst performances.
-
--- 
-					    Gilles.
+VGhhbmtzIEdpbGxlcywNCg0KSSBkb24ndCBrbm93IHdoeSB0aGUgZGViaWFuIGtlcm5lbCBmb3Ig
+dGhlIFNpdGFyYSBoYXZlIFNNUCBlbmFibGVkLg0KSXQgc291bmRzIGxpa2UgYSBnb29kIGlkZWEg
+dG8gdHVybiBpdCBvZmYgdGhlbi4uLg0KDQpCZXN0IHJlZ2FyZHMNClRlcmplDQoNCi0tLS0tT3Jp
+Z2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFpbHRvOmdp
+bGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXSANClNlbnQ6IDEuIGRlc2VtYmVyIDIwMTQg
+MDg6MzUNClRvOiBUZXJqZSBGcsO4eXNhDQpDYzogeGVub21haUB4ZW5vbWFpLm9yZw0KU3ViamVj
+dDogUmU6IFtYZW5vbWFpXSBXQVJOSU5HOiBhdCBhcmNoL2FybS9rZXJuZWwvaXBpcGUuYzoxNTcg
+aXBpcGVfc2V0X2lycV9hZmZpbml0eSsweDQ3LzB4NzAoKQ0KDQpPbiBNb24sIERlYyAwMSwgMjAx
+NCBhdCAwNTo1NDozNkFNICswMDAwLCBUZXJqZSBGcsO4eXNhIHdyb3RlOg0KPiBEZWFyIEZvcnVt
+LA0KPiANCj4gT2NjYXNpb25hbGx5IEkgZ2V0IHRoZSB3YXJuaW5nIGxpc3RlZCBiZWxvdyBvbiBt
+eSBCZWFnbGVib25lIEJsYWNrIA0KPiBjb25zb2xlLiBJIGFtIHJ1bm5pbmcgRGViaWFuIDMuOC4x
+My1ib25lNjcgd2l0aCBYZW5vbWFpIDIuNi40DQo+IA0KPiBJIGFtIHJ1bm5pbmcgZm91ciBSVERN
+IG1vZHVsZXMgaGFuZGxpbmcgaW50ZXJydXB0cyBmcm9tIEdQSU8gcGlucy4NCj4gDQo+IEFzIGZh
+ciBhcyBJIGhhdmUgZm91bmQsIHRoaXMga2luZCBvZiB3YXJuaW5ncyBjYW4gYmUgYXNzb2NpYXRl
+ZCB3aXRoIA0KPiBpbmFwcHJvcHJpYXRlIGNhbGxzIGZyb20gdXNlciBzcGFjZS4gQnV0IEkgY2Fu
+bm90IGZpbmQgc3VjaCBjYWxscyBpbiANCj4gbXkgY29kZS4gVGhlIGlycSBpcyByZXF1ZXN0ZWQg
+YnkgYSBSVERNIGtlcm5lbCBtb2R1bGUgd2hlbiBpc3N1aW5nIGEgDQo+IGRldmljZSBvcGVuIGNh
+bGwgZnJvbSB1c2VyIHNwYWNlLg0KDQpZZXMsIHRoZXJlIGFyZSBzZXZlcmFsIHN1Y2ggaXNzdWVz
+IGluIFhlbm9tYWkgMi54LiBOb3RlIGhvd2V2ZXIgdGhhdCB0aGUgQmVhZ2xlYm9uZSBpcyB1bmlw
+cm9jZXNzb3IsIHdoZXJlYXMgaXBpcF9zZXRfaXJxX2FmZmluaXR5IGlzIGNhbGxlZCB3aGVuIENP
+TkZJR19TTVAgd2FzIGVuYWJsZWQuIEVuYWJsaW5nIENPTkZJR19TTVAgZm9yIGFuIHVuaXByb2Nl
+c3NvciBpcyBub3QgcmVjb21tZW5kZWQgd2l0aCBYZW5vbWFpIDIueCwgYXMgaXQgZ2l2ZXMgc2xp
+Z2h0bHkgd29yc3QgcGVyZm9ybWFuY2VzLg0KDQotLSANCgkJCQkJICAgIEdpbGxlcy4NCg==
 
