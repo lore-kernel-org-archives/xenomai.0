@@ -1,14 +1,19 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Mon, 1 Dec 2014 10:19:51 -0500
-Message-ID: <20141201151951.GG24110@csclub.uwaterloo.ca>
-References: <314E5ECDAA86314791309FA670550F89C9C4FD8A@SINTEFEXMBX05.sintef.no>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C9C4FD8A@SINTEFEXMBX05.sintef.no>
-Subject: Re: [Xenomai] WARNING: at arch/arm/kernel/ipipe.c:157
- ipipe_set_irq_affinity+0x47/0x70()
+In-Reply-To: <20141201143957.GH23220@hermes>
+References: <CAPozGf=zAFgV=fbinambu1_xEiR3qD7Affppw-i6ZbD4nvJsRw@mail.gmail.com>
+ <20141128111325.GD5069@hermes>
+ <CAPozGf=6OQBChvSAfypNH7KpAReg+u6PS3dhEJDtVZ-jrnW7bg@mail.gmail.com>
+ <CAPozGfkxmv+7=Q3LXAmOv_eTPZ08XV3SO9SETPomSAs+bbxV0A@mail.gmail.com>
+ <CAPozGfk9LizYFbCRKUDS1-mhX+bw3fOpgqzwF6AcH64Pspw4Gg@mail.gmail.com>
+ <20141128182141.GB4817@hermes>
+ <CAPozGfk-okS5TDn-zPua3uvHkcppm3CpnqAKXYs6-VWVPb4cpg@mail.gmail.com>
+ <20141201143957.GH23220@hermes>
+Date: Mon, 1 Dec 2014 16:26:47 +0100
+Message-ID: <CAPozGf=ijSmQoUXRf7aG56G47N2DZbHyiL+1nHDEWvmZdhhcYw@mail.gmail.com>
+From: John Sini <jhnsini@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Section mismatch - Porting Xenomai to
+ linux-xlnx-V14.5 zynq SoC
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,24 +22,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Mon, Dec 01, 2014 at 05:54:36AM +0000, Terje Frøysa wrote:
-> Occasionally I get the warning listed below on my Beaglebone Black console.
-> I am running Debian 3.8.13-bone67 with Xenomai 2.6.4
-> 
-> I am running four RTDM modules handling interrupts from GPIO pins.
-> 
-> As far as I have found, this kind of warnings can be associated with inappropriate calls from user space.
-> But I cannot find such calls in my code.
-> The irq is requested by a RTDM kernel module when issuing a device open call from user space.
+On Mon, Dec 1, 2014 at 3:39 PM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
 
-I just changed the code to not give the warning.  The omap-gpio driver
-doesn't support setting affinity, and the linux irq driver has no issue
-with that, so perhaps xenomai/ipipe has no reason to have a problem with
-it either.
-
--- 
-Len Sorensen
-
+> On Mon, Dec 01, 2014 at 03:35:51PM +0100, John Sini wrote:
+> >  Hi,
+> >
+> >
+> > Thank you for your reply. I have disabled lockdep by disabling following
+> > two options in Kernel configuration :Lock debugging:prove locking
+> > correctness and  Lock debugging: detect incorrect freeing of live locks.
+> > The problem that i am facing now is:
+>
+> Does the exact same .config file work on an unpatched kernel?
+>
+> Just checked and I got the same error.
