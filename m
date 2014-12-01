@@ -1,15 +1,21 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Mon, 1 Dec 2014 15:43:17 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C9C50813@SINTEFEXMBX05.sintef.no>
-References: <314E5ECDAA86314791309FA670550F89C9C4FD8A@SINTEFEXMBX05.sintef.no>
- <20141201151951.GG24110@csclub.uwaterloo.ca>
-In-Reply-To: <20141201151951.GG24110@csclub.uwaterloo.ca>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Subject: Re: [Xenomai] WARNING: at arch/arm/kernel/ipipe.c:157
- ipipe_set_irq_affinity+0x47/0x70()
+In-Reply-To: <20141201152921.GI23220@hermes>
+References: <CAPozGf=zAFgV=fbinambu1_xEiR3qD7Affppw-i6ZbD4nvJsRw@mail.gmail.com>
+ <20141128111325.GD5069@hermes>
+ <CAPozGf=6OQBChvSAfypNH7KpAReg+u6PS3dhEJDtVZ-jrnW7bg@mail.gmail.com>
+ <CAPozGfkxmv+7=Q3LXAmOv_eTPZ08XV3SO9SETPomSAs+bbxV0A@mail.gmail.com>
+ <CAPozGfk9LizYFbCRKUDS1-mhX+bw3fOpgqzwF6AcH64Pspw4Gg@mail.gmail.com>
+ <20141128182141.GB4817@hermes>
+ <CAPozGfk-okS5TDn-zPua3uvHkcppm3CpnqAKXYs6-VWVPb4cpg@mail.gmail.com>
+ <20141201143957.GH23220@hermes>
+ <CAPozGf=ijSmQoUXRf7aG56G47N2DZbHyiL+1nHDEWvmZdhhcYw@mail.gmail.com>
+ <20141201152921.GI23220@hermes>
+Date: Mon, 1 Dec 2014 16:45:03 +0100
+Message-ID: <CAPozGfndF2nWapRLR+U5MUbieCxS3_oA=62uKXFSMEG0Cue51w@mail.gmail.com>
+From: John Sini <jhnsini@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Section mismatch - Porting Xenomai to
+ linux-xlnx-V14.5 zynq SoC
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,29 +24,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: 'Lennart Sorensen' <lsorense@csclub.uwaterloo.ca>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-T2sgTGVuLA0KDQpUaGFua3MgZm9yIHlvdXIgdGlwLg0KVGhlIHdhcm5pbmcgY29tZXMgZXZlcnkg
-bm93IGFuZCB0aGVuLCBidXQgSSBoYXZlIG5ldmVyIGV4cGVyaWVuY2VkIGFueSBjb25zZXF1ZW5j
-ZXMgZnJvbSBpdC4NClNvIHlvdSBtaWdodCBiZSBxdWl0ZSByaWdodC4NCg0KVGVyamUNCg0KLS0t
-LS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IExlbm5hcnQgU29yZW5zZW4gW21haWx0bzps
-c29yZW5zZUBjc2NsdWIudXdhdGVybG9vLmNhXSANClNlbnQ6IDEuIGRlc2VtYmVyIDIwMTQgMTY6
-MjANClRvOiBUZXJqZSBGcsO4eXNhDQpDYzogeGVub21haUB4ZW5vbWFpLm9yZw0KU3ViamVjdDog
-UmU6IFtYZW5vbWFpXSBXQVJOSU5HOiBhdCBhcmNoL2FybS9rZXJuZWwvaXBpcGUuYzoxNTcgaXBp
-cGVfc2V0X2lycV9hZmZpbml0eSsweDQ3LzB4NzAoKQ0KDQpPbiBNb24sIERlYyAwMSwgMjAxNCBh
-dCAwNTo1NDozNkFNICswMDAwLCBUZXJqZSBGcsO4eXNhIHdyb3RlOg0KPiBPY2Nhc2lvbmFsbHkg
-SSBnZXQgdGhlIHdhcm5pbmcgbGlzdGVkIGJlbG93IG9uIG15IEJlYWdsZWJvbmUgQmxhY2sgY29u
-c29sZS4NCj4gSSBhbSBydW5uaW5nIERlYmlhbiAzLjguMTMtYm9uZTY3IHdpdGggWGVub21haSAy
-LjYuNA0KPiANCj4gSSBhbSBydW5uaW5nIGZvdXIgUlRETSBtb2R1bGVzIGhhbmRsaW5nIGludGVy
-cnVwdHMgZnJvbSBHUElPIHBpbnMuDQo+IA0KPiBBcyBmYXIgYXMgSSBoYXZlIGZvdW5kLCB0aGlz
-IGtpbmQgb2Ygd2FybmluZ3MgY2FuIGJlIGFzc29jaWF0ZWQgd2l0aCBpbmFwcHJvcHJpYXRlIGNh
-bGxzIGZyb20gdXNlciBzcGFjZS4NCj4gQnV0IEkgY2Fubm90IGZpbmQgc3VjaCBjYWxscyBpbiBt
-eSBjb2RlLg0KPiBUaGUgaXJxIGlzIHJlcXVlc3RlZCBieSBhIFJURE0ga2VybmVsIG1vZHVsZSB3
-aGVuIGlzc3VpbmcgYSBkZXZpY2Ugb3BlbiBjYWxsIGZyb20gdXNlciBzcGFjZS4NCg0KSSBqdXN0
-IGNoYW5nZWQgdGhlIGNvZGUgdG8gbm90IGdpdmUgdGhlIHdhcm5pbmcuICBUaGUgb21hcC1ncGlv
-IGRyaXZlciBkb2Vzbid0IHN1cHBvcnQgc2V0dGluZyBhZmZpbml0eSwgYW5kIHRoZSBsaW51eCBp
-cnEgZHJpdmVyIGhhcyBubyBpc3N1ZSB3aXRoIHRoYXQsIHNvIHBlcmhhcHMgeGVub21haS9pcGlw
-ZSBoYXMgbm8gcmVhc29uIHRvIGhhdmUgYSBwcm9ibGVtIHdpdGggaXQgZWl0aGVyLg0KDQotLQ0K
-TGVuIFNvcmVuc2VuDQo=
+On Mon, Dec 1, 2014 at 4:29 PM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
 
+> On Mon, Dec 01, 2014 at 04:26:47PM +0100, John Sini wrote:
+> > On Mon, Dec 1, 2014 at 3:39 PM, Gilles Chanteperdrix <
+> > gilles.chanteperdrix@xenomai.org> wrote:
+> >
+> > > On Mon, Dec 01, 2014 at 03:35:51PM +0100, John Sini wrote:
+> > > >  Hi,
+> > > >
+> > > >
+> > > > Thank you for your reply. I have disabled lockdep by disabling
+> following
+> > > > two options in Kernel configuration :Lock debugging:prove locking
+> > > > correctness and  Lock debugging: detect incorrect freeing of live
+> locks.
+> > > > The problem that i am facing now is:
+> > >
+> > > Does the exact same .config file work on an unpatched kernel?
+> > >
+> > > Just checked and I got the same error.
+>
+> So, before trying and compiling Xenomai with a configuration file,
+> please try and get a working configuration for your kernel, without
+> Xenomai patch applied.
+>
+>   Ok, I will do it.
+
+
+> Also, since the Zynq patch is provided by a third party, and not
+> part of the patches supported by the mainline I-pipe patch, I do not
+> even compile test this patch, so have no working configuration to
+> propose.
+>
+> Maybe the people having proposed the patch could also propose a
+> working kernel configuration? That would be nice.
+
+
+
+   Can you maybe explain me the errors that *I got i.e. can they be due to
+xenomai(kernel panic)*
+
+*   Thanks!*
