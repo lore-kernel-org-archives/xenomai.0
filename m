@@ -1,14 +1,15 @@
-Date: Tue, 2 Dec 2014 10:57:07 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141202095707.GG2076@hermes>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Tue, 2 Dec 2014 10:20:59 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C9C51AB4@SINTEFEXMBX05.sintef.no>
 References: <314E5ECDAA86314791309FA670550F89C9C51961@SINTEFEXMBX05.sintef.no>
  <20141202093346.GE2076@hermes>
  <314E5ECDAA86314791309FA670550F89C9C519EE@SINTEFEXMBX05.sintef.no>
-MIME-Version: 1.0
+ <20141202095707.GG2076@hermes>
+In-Reply-To: <20141202095707.GG2076@hermes>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C9C519EE@SINTEFEXMBX05.sintef.no>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] IRQ155 not handled. Disabling IRQ line
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -18,22 +19,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, Dec 02, 2014 at 09:51:01AM +0000, Terje Frøysa wrote:
-> Well, the code:
-> 	DEBUG_PRINT(KERN_DEBUG "RTDM IMU %d - enable IRQ\n", info->gpio_pin_n);
-> 	err = rtdm_irq_enable(&info->gpio_irq);
-> only exists one place in the driver and is only executed in the kernel-context of  rt_dev_open() from user-space.
-> The irq-device is opened only once before entering the read-loop.
-> 
-> The repeated read calls from the user space (rt_dev_read()) only blocs on the irq semaphore and copies the irq-time back to the user.
-> I don't see how the irq-line can be re-enabled by this code.
-> If the device have been repeatedly opened, the dmesg would have been flooded with log-messages.
-
-What flags do you pass to rtdm_irq_request?
-
--- 
-					    Gilles.
+VGhhbmtzIEdpbGxlcywNCg0KVGhlIGZsYWdzIGFyZSB6ZXJvIChmcm9tIGV4YW1wbGUgY29kZSku
+Li4uIHNob3VsZCBJIGhhdmUgdXNlZCBSVERNX0lSUVRZUEVfRURHRSA/DQoNCmVyciA9IHJ0ZG1f
+aXJxX3JlcXVlc3QoJmluZm8tPmdwaW9faXJxLCBncGlvX2lycV9uLCBpbXVfaXJxX2hhbmRsZXIs
+IDAsIFRISVNfTU9EVUxFLT5uYW1lLCAgTlVMTCk7DQoNClRlcmplDQoNCi0tLS0tT3JpZ2luYWwg
+TWVzc2FnZS0tLS0tDQpGcm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFpbHRvOmdpbGxlcy5j
+aGFudGVwZXJkcml4QHhlbm9tYWkub3JnXSANClNlbnQ6IDIuIGRlc2VtYmVyIDIwMTQgMTA6NTcN
+ClRvOiBUZXJqZSBGcsO4eXNhDQpDYzogeGVub21haUB4ZW5vbWFpLm9yZw0KU3ViamVjdDogUmU6
+IFtYZW5vbWFpXSBJUlExNTUgbm90IGhhbmRsZWQuIERpc2FibGluZyBJUlEgbGluZQ0KDQpPbiBU
+dWUsIERlYyAwMiwgMjAxNCBhdCAwOTo1MTowMUFNICswMDAwLCBUZXJqZSBGcsO4eXNhIHdyb3Rl
+Og0KPiBXZWxsLCB0aGUgY29kZToNCj4gCURFQlVHX1BSSU5UKEtFUk5fREVCVUcgIlJURE0gSU1V
+ICVkIC0gZW5hYmxlIElSUVxuIiwgaW5mby0+Z3Bpb19waW5fbik7DQo+IAllcnIgPSBydGRtX2ly
+cV9lbmFibGUoJmluZm8tPmdwaW9faXJxKTsgb25seSBleGlzdHMgb25lIHBsYWNlIGluIHRoZSAN
+Cj4gZHJpdmVyIGFuZCBpcyBvbmx5IGV4ZWN1dGVkIGluIHRoZSBrZXJuZWwtY29udGV4dCBvZiAg
+cnRfZGV2X29wZW4oKSBmcm9tIHVzZXItc3BhY2UuDQo+IFRoZSBpcnEtZGV2aWNlIGlzIG9wZW5l
+ZCBvbmx5IG9uY2UgYmVmb3JlIGVudGVyaW5nIHRoZSByZWFkLWxvb3AuDQo+IA0KPiBUaGUgcmVw
+ZWF0ZWQgcmVhZCBjYWxscyBmcm9tIHRoZSB1c2VyIHNwYWNlIChydF9kZXZfcmVhZCgpKSBvbmx5
+IGJsb2NzIG9uIHRoZSBpcnEgc2VtYXBob3JlIGFuZCBjb3BpZXMgdGhlIGlycS10aW1lIGJhY2sg
+dG8gdGhlIHVzZXIuDQo+IEkgZG9uJ3Qgc2VlIGhvdyB0aGUgaXJxLWxpbmUgY2FuIGJlIHJlLWVu
+YWJsZWQgYnkgdGhpcyBjb2RlLg0KPiBJZiB0aGUgZGV2aWNlIGhhdmUgYmVlbiByZXBlYXRlZGx5
+IG9wZW5lZCwgdGhlIGRtZXNnIHdvdWxkIGhhdmUgYmVlbiBmbG9vZGVkIHdpdGggbG9nLW1lc3Nh
+Z2VzLg0KDQpXaGF0IGZsYWdzIGRvIHlvdSBwYXNzIHRvIHJ0ZG1faXJxX3JlcXVlc3Q/DQoNCi0t
+IA0KCQkJCQkgICAgR2lsbGVzLg0K
 
