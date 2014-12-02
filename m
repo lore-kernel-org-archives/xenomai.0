@@ -1,15 +1,16 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Tue, 2 Dec 2014 10:20:59 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C9C51AB4@SINTEFEXMBX05.sintef.no>
+Date: Tue, 2 Dec 2014 11:53:44 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141202105344.GH2076@hermes>
 References: <314E5ECDAA86314791309FA670550F89C9C51961@SINTEFEXMBX05.sintef.no>
  <20141202093346.GE2076@hermes>
  <314E5ECDAA86314791309FA670550F89C9C519EE@SINTEFEXMBX05.sintef.no>
  <20141202095707.GG2076@hermes>
-In-Reply-To: <20141202095707.GG2076@hermes>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <314E5ECDAA86314791309FA670550F89C9C51AB4@SINTEFEXMBX05.sintef.no>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <314E5ECDAA86314791309FA670550F89C9C51AB4@SINTEFEXMBX05.sintef.no>
 Subject: Re: [Xenomai] IRQ155 not handled. Disabling IRQ line
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -19,29 +20,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-VGhhbmtzIEdpbGxlcywNCg0KVGhlIGZsYWdzIGFyZSB6ZXJvIChmcm9tIGV4YW1wbGUgY29kZSku
-Li4uIHNob3VsZCBJIGhhdmUgdXNlZCBSVERNX0lSUVRZUEVfRURHRSA/DQoNCmVyciA9IHJ0ZG1f
-aXJxX3JlcXVlc3QoJmluZm8tPmdwaW9faXJxLCBncGlvX2lycV9uLCBpbXVfaXJxX2hhbmRsZXIs
-IDAsIFRISVNfTU9EVUxFLT5uYW1lLCAgTlVMTCk7DQoNClRlcmplDQoNCi0tLS0tT3JpZ2luYWwg
-TWVzc2FnZS0tLS0tDQpGcm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFpbHRvOmdpbGxlcy5j
-aGFudGVwZXJkcml4QHhlbm9tYWkub3JnXSANClNlbnQ6IDIuIGRlc2VtYmVyIDIwMTQgMTA6NTcN
-ClRvOiBUZXJqZSBGcsO4eXNhDQpDYzogeGVub21haUB4ZW5vbWFpLm9yZw0KU3ViamVjdDogUmU6
-IFtYZW5vbWFpXSBJUlExNTUgbm90IGhhbmRsZWQuIERpc2FibGluZyBJUlEgbGluZQ0KDQpPbiBU
-dWUsIERlYyAwMiwgMjAxNCBhdCAwOTo1MTowMUFNICswMDAwLCBUZXJqZSBGcsO4eXNhIHdyb3Rl
-Og0KPiBXZWxsLCB0aGUgY29kZToNCj4gCURFQlVHX1BSSU5UKEtFUk5fREVCVUcgIlJURE0gSU1V
-ICVkIC0gZW5hYmxlIElSUVxuIiwgaW5mby0+Z3Bpb19waW5fbik7DQo+IAllcnIgPSBydGRtX2ly
-cV9lbmFibGUoJmluZm8tPmdwaW9faXJxKTsgb25seSBleGlzdHMgb25lIHBsYWNlIGluIHRoZSAN
-Cj4gZHJpdmVyIGFuZCBpcyBvbmx5IGV4ZWN1dGVkIGluIHRoZSBrZXJuZWwtY29udGV4dCBvZiAg
-cnRfZGV2X29wZW4oKSBmcm9tIHVzZXItc3BhY2UuDQo+IFRoZSBpcnEtZGV2aWNlIGlzIG9wZW5l
-ZCBvbmx5IG9uY2UgYmVmb3JlIGVudGVyaW5nIHRoZSByZWFkLWxvb3AuDQo+IA0KPiBUaGUgcmVw
-ZWF0ZWQgcmVhZCBjYWxscyBmcm9tIHRoZSB1c2VyIHNwYWNlIChydF9kZXZfcmVhZCgpKSBvbmx5
-IGJsb2NzIG9uIHRoZSBpcnEgc2VtYXBob3JlIGFuZCBjb3BpZXMgdGhlIGlycS10aW1lIGJhY2sg
-dG8gdGhlIHVzZXIuDQo+IEkgZG9uJ3Qgc2VlIGhvdyB0aGUgaXJxLWxpbmUgY2FuIGJlIHJlLWVu
-YWJsZWQgYnkgdGhpcyBjb2RlLg0KPiBJZiB0aGUgZGV2aWNlIGhhdmUgYmVlbiByZXBlYXRlZGx5
-IG9wZW5lZCwgdGhlIGRtZXNnIHdvdWxkIGhhdmUgYmVlbiBmbG9vZGVkIHdpdGggbG9nLW1lc3Nh
-Z2VzLg0KDQpXaGF0IGZsYWdzIGRvIHlvdSBwYXNzIHRvIHJ0ZG1faXJxX3JlcXVlc3Q/DQoNCi0t
-IA0KCQkJCQkgICAgR2lsbGVzLg0K
+On Tue, Dec 02, 2014 at 10:20:59AM +0000, Terje Frøysa wrote:
+> Thanks Gilles,
+> 
+> The flags are zero (from example code).... should I have used RTDM_IRQTYPE_EDGE ?
+> 
+> err = rtdm_irq_request(&info->gpio_irq, gpio_irq_n, imu_irq_handler, 0, THIS_MODULE->name,  NULL);
+
+If the IRQ is of a certain type, you certainly want to pass the
+right irq type.
+
+Looking at the code:
+- you only get the message after not returning RTDM_IRQ_HANDLED 1000
+times, so, if you see the message, it is sure that some code is not
+returning RTDM_IRQ_HANDLED, I suggest you check if the interrupt is
+shared, and if another handler is not called
+- the xenomai core skips reenabling the interrupts in that case, so,
+if it gets reenabled, something re-enables it.
+
+Are you sure that you do not register the handler to early, that it
+fires because the hardware is not initialized, then gets disabled by
+Xenomai core. Then later, your driver performs the hardware
+initializations, and re-enables irqs ?
+
+-- 
+					    Gilles.
 
