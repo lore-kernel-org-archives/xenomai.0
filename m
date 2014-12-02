@@ -1,16 +1,17 @@
-Date: Tue, 2 Dec 2014 11:53:44 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141202105344.GH2076@hermes>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Tue, 2 Dec 2014 12:07:50 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C9C51CF0@SINTEFEXMBX05.sintef.no>
 References: <314E5ECDAA86314791309FA670550F89C9C51961@SINTEFEXMBX05.sintef.no>
  <20141202093346.GE2076@hermes>
  <314E5ECDAA86314791309FA670550F89C9C519EE@SINTEFEXMBX05.sintef.no>
  <20141202095707.GG2076@hermes>
  <314E5ECDAA86314791309FA670550F89C9C51AB4@SINTEFEXMBX05.sintef.no>
-MIME-Version: 1.0
+ <20141202105344.GH2076@hermes>
+In-Reply-To: <20141202105344.GH2076@hermes>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C9C51AB4@SINTEFEXMBX05.sintef.no>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] IRQ155 not handled. Disabling IRQ line
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -20,32 +21,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, Dec 02, 2014 at 10:20:59AM +0000, Terje Frøysa wrote:
-> Thanks Gilles,
-> 
-> The flags are zero (from example code).... should I have used RTDM_IRQTYPE_EDGE ?
-> 
-> err = rtdm_irq_request(&info->gpio_irq, gpio_irq_n, imu_irq_handler, 0, THIS_MODULE->name,  NULL);
-
-If the IRQ is of a certain type, you certainly want to pass the
-right irq type.
-
-Looking at the code:
-- you only get the message after not returning RTDM_IRQ_HANDLED 1000
-times, so, if you see the message, it is sure that some code is not
-returning RTDM_IRQ_HANDLED, I suggest you check if the interrupt is
-shared, and if another handler is not called
-- the xenomai core skips reenabling the interrupts in that case, so,
-if it gets reenabled, something re-enables it.
-
-Are you sure that you do not register the handler to early, that it
-fires because the hardware is not initialized, then gets disabled by
-Xenomai core. Then later, your driver performs the hardware
-initializations, and re-enables irqs ?
-
--- 
-					    Gilles.
+VGhhbmtzIEdpbGxlcywNCg0KSSB0aGluayBzZXR0aW5nIHRoZSBJUlEgdHlwZSBtZW5kZWQgdGhl
+IHByb2JsZW0uDQoNCkJlZm9yZSB0aGF0IEkgZGlkIHNvbWUgZGlnZ2luZzoNCkkgY291bGRuJ3Qg
+ZmluZCBhbnkgaW5mb3JtYXRpb24gdGhhdCBpbmRpY2F0ZWQgYSBzaGFyZWQgaW50ZXJydXB0Og0K
+VGhlIC9wcm9jL2ludGVycnVwdHMgZGlkIG5vdCBjb250YWluIHRoZSBJUlExNTUgYW5kIHRoZSAv
+cHJvYy94ZW5vbWFpL2lycSBoZWxkIG9ubHkgb25lIGVudHJ5IGZvciBteSBkcml2ZXIgKGJlbG93
+KS4NClRoZSBleHRlcm5hbCBpbnRlcnJ1cHQgc291cmNlIGlzIGEgUFdNIGdlbmVyYXRlZCBwdWxz
+ZS10cmFpbiBvZiAyMDBIeiwgaS5lLiA1bXMgaW50ZXJ2YWwgc3RhcnRlZCB0aGUgY29kZS1saW5l
+IGJlZm9yZSBlbnRlcmluZyB0aGUgcmVhZC1sb29wLg0KWW91IHNheSB0aGF0IHRoZSBsaW5lIG11
+c3QgaGF2ZSBiZWVuIHVuc2VydmVkIGZvciBhIDEwMDAgZXZlbnRzIGJlZm9yZSBiZWluZyBkaXNh
+YmxlZC4NCkEgMTAwMCBldmVudHMgZnJvbSB3aGVuIGFuZCBhdCB3aGF0IHJhdGUgaWYgRURHRSBu
+b3Qgc3Blc2lmaWVkPyBUaGUgaXJxIGhhbmRsZXIgaGF2ZSBubyBvcHRpb25hbCByZXR1cm5zIGJ1
+dCAiUlRfSU5UUl9IQU5ETEVEIi4NCkhlbmNlLCBJIGNhbm5vdCBpbWFnaW5lIHdoZXJlIHRoZSBu
+b24taGFuZGxlZCByZXR1cm5zIGFyZSBjb21pbmcgZnJvbS4gQXQgNW1zIHJhdGUgdGhpcyB3b3Vs
+ZCByZXF1aXJlIDVzIG9mIHB1bHNlcyB0byByZWFjaCAxMDAwLg0KVGhlIGRpc3RhbmNlIGluIHRp
+bWUgZnJvbSBJUlEgZW5hYmxlIHRvIGRpc2FibGUgdGhlIElSUSBsaW5lIHNlZW0gbGVzcyB0aGFu
+IDR1cy4uDQpbMTk4MzMuOTU4NjY3XSBSVERNIElNVSAyNyAtIGVuYWJsZSBJUlENClsxOTgzOC45
+NjI0NzJdIFhlbm9tYWk6IHhuaW50cl9pcnFfaGFuZGxlcjogSVJRMTU1IG5vdCBoYW5kbGVkLiBE
+aXNhYmxpbmcgSVJRIGxpbmUuDQoNCkhvd2V2ZXIsIEkgY2hhbmdlZCB0aGUgZmxhZ3MgdG8gIlJU
+RE1fSVJRVFlQRV9FREdFIiBhbmQgaXQgc2VlbWVkIHRvIGhhdmUgYSBnb29kIGVmZmVjdC4NCkkg
+ZG9uJ3QgZ2V0IHRoZSBtZXNzYWdlIGFueSBsb25nZXIgDQoNCkJlc3QgcmVnYXJkcw0KVGVyamUN
+Cg0KWyAgNzMxLjg0OTAyNl0gUlRETSBJTVUgSU5UIChHUElPIDI3KSAtIG9wZW4NClsgIDczMS44
+NDkwNDddIFJURE0gSU1VIHBpbiAyNyAtIGlycSBudW1iZXIgMTU1DQpbICA3MzEuODQ5MDU0XSBS
+VERNIElNVSAyNyAtIHJlcXVlc3QgR1BJTw0KWyAgNzMxLjg0OTA3M10gUlRETSBJTVUgMjcgLSBy
+ZXF1ZXN0IElSUSAxNTUNClsgIDczMS44NDkwOTddIFJURE0gSU1VIDI3IC0gc2V0IElSUSB0eXBl
+IFJJU0lOR19FREdFDQpbICA3MzEuODQ5MTEyXSBSVERNIElNVSAyNyAtIGluaXQgc2VtYXBob3Jl
+DQpbICA3MzEuODQ5MTIyXSBSVERNIElNVSAyNyAtIGVuYWJsZSBJUlENCg0KDQovcHJvYy94ZW5v
+bWFpL2lycSA6DQpJUlEgICAgICAgICBDUFUwDQogNjc6ICAgICAgNDk1MjM4ICAgICAgICAgW3Rp
+bWVyXQ0KMTU1OiAgICAgIDI5ODUxMCAgICAgICAgIGltdV9ydGRtDQoxMDMxOiAgICAgICAgICAg
+MCAgICAgICAgIFtzeW5jXQ0KMTAzMjogICAgICAgICAgIDAgICAgICAgICBbdGltZXItaXBpXQ0K
+MTAzMzogICAgICAgICAgIDAgICAgICAgICBbcmVzY2hlZHVsZV0NCjEwMzQ6ICAgICAgICAgICAw
+ICAgICAgICAgW3ZpcnR1YWxdDQoxMDM4OiAgICAgIDI5ODI1MiAgICAgICAgIFt2aXJ0dWFsXQ0K
+DQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogR2lsbGVzIENoYW50ZXBlcmRyaXgg
+W21haWx0bzpnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZ10gDQpTZW50OiAyLiBkZXNl
+bWJlciAyMDE0IDExOjU0DQpUbzogVGVyamUgRnLDuHlzYQ0KQ2M6IHhlbm9tYWlAeGVub21haS5v
+cmcNClN1YmplY3Q6IFJlOiBbWGVub21haV0gSVJRMTU1IG5vdCBoYW5kbGVkLiBEaXNhYmxpbmcg
+SVJRIGxpbmUNCg0KT24gVHVlLCBEZWMgMDIsIDIwMTQgYXQgMTA6MjA6NTlBTSArMDAwMCwgVGVy
+amUgRnLDuHlzYSB3cm90ZToNCj4gVGhhbmtzIEdpbGxlcywNCj4gDQo+IFRoZSBmbGFncyBhcmUg
+emVybyAoZnJvbSBleGFtcGxlIGNvZGUpLi4uLiBzaG91bGQgSSBoYXZlIHVzZWQgUlRETV9JUlFU
+WVBFX0VER0UgPw0KPiANCj4gZXJyID0gcnRkbV9pcnFfcmVxdWVzdCgmaW5mby0+Z3Bpb19pcnEs
+IGdwaW9faXJxX24sIGltdV9pcnFfaGFuZGxlciwgDQo+IDAsIFRISVNfTU9EVUxFLT5uYW1lLCAg
+TlVMTCk7DQoNCklmIHRoZSBJUlEgaXMgb2YgYSBjZXJ0YWluIHR5cGUsIHlvdSBjZXJ0YWlubHkg
+d2FudCB0byBwYXNzIHRoZSByaWdodCBpcnEgdHlwZS4NCg0KTG9va2luZyBhdCB0aGUgY29kZToN
+Ci0geW91IG9ubHkgZ2V0IHRoZSBtZXNzYWdlIGFmdGVyIG5vdCByZXR1cm5pbmcgUlRETV9JUlFf
+SEFORExFRCAxMDAwIHRpbWVzLCBzbywgaWYgeW91IHNlZSB0aGUgbWVzc2FnZSwgaXQgaXMgc3Vy
+ZSB0aGF0IHNvbWUgY29kZSBpcyBub3QgcmV0dXJuaW5nIFJURE1fSVJRX0hBTkRMRUQsIEkgc3Vn
+Z2VzdCB5b3UgY2hlY2sgaWYgdGhlIGludGVycnVwdCBpcyBzaGFyZWQsIGFuZCBpZiBhbm90aGVy
+IGhhbmRsZXIgaXMgbm90IGNhbGxlZA0KLSB0aGUgeGVub21haSBjb3JlIHNraXBzIHJlZW5hYmxp
+bmcgdGhlIGludGVycnVwdHMgaW4gdGhhdCBjYXNlLCBzbywgaWYgaXQgZ2V0cyByZWVuYWJsZWQs
+IHNvbWV0aGluZyByZS1lbmFibGVzIGl0Lg0KDQpBcmUgeW91IHN1cmUgdGhhdCB5b3UgZG8gbm90
+IHJlZ2lzdGVyIHRoZSBoYW5kbGVyIHRvIGVhcmx5LCB0aGF0IGl0IGZpcmVzIGJlY2F1c2UgdGhl
+IGhhcmR3YXJlIGlzIG5vdCBpbml0aWFsaXplZCwgdGhlbiBnZXRzIGRpc2FibGVkIGJ5IFhlbm9t
+YWkgY29yZS4gVGhlbiBsYXRlciwgeW91ciBkcml2ZXIgcGVyZm9ybXMgdGhlIGhhcmR3YXJlIGlu
+aXRpYWxpemF0aW9ucywgYW5kIHJlLWVuYWJsZXMgaXJxcyA/DQoNCi0tIA0KCQkJCQkgICAgR2ls
+bGVzLg0K
 
