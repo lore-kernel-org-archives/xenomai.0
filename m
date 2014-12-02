@@ -1,12 +1,13 @@
-Date: Tue, 2 Dec 2014 10:33:46 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141202093346.GE2076@hermes>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Tue, 2 Dec 2014 09:51:01 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C9C519EE@SINTEFEXMBX05.sintef.no>
 References: <314E5ECDAA86314791309FA670550F89C9C51961@SINTEFEXMBX05.sintef.no>
-MIME-Version: 1.0
+ <20141202093346.GE2076@hermes>
+In-Reply-To: <20141202093346.GE2076@hermes>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C9C51961@SINTEFEXMBX05.sintef.no>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] IRQ155 not handled. Disabling IRQ line
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,27 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, Dec 02, 2014 at 09:28:37AM +0000, Terje Frøysa wrote:
-> Dear forum,
-> 
-> Question:
-> If a driver is deemed buggy and the IRQ disabled, why is it still serving the interrupts?
-> 
-> Running Debian 3.8.13-bone67 and Xenomai 2.6.4
-> 
-> At opening call, my GPIO RTDM IRQ driver enables a GPIO line w/irq.
-> My user-space program issues read-requests to receive a time-stamp for each irq.
-> The irq handler is very compact. It only reads the system time, rises a semaphore if not already up and returns RT_INTR_HANDLED.
-> 
-> When starting (open + loop w/reads),  the dmesg log-message appears:  "IRQ155 not handled. Disabling IRQ line".
-> It appears only once in the start.
-> Never-the-less, the interrupts are still handled and keep coming.
-
-Well, probably because the code re-enables the irq line ?
-
--- 
-					    Gilles.
+V2VsbCwgdGhlIGNvZGU6DQoJREVCVUdfUFJJTlQoS0VSTl9ERUJVRyAiUlRETSBJTVUgJWQgLSBl
+bmFibGUgSVJRXG4iLCBpbmZvLT5ncGlvX3Bpbl9uKTsNCgllcnIgPSBydGRtX2lycV9lbmFibGUo
+JmluZm8tPmdwaW9faXJxKTsNCm9ubHkgZXhpc3RzIG9uZSBwbGFjZSBpbiB0aGUgZHJpdmVyIGFu
+ZCBpcyBvbmx5IGV4ZWN1dGVkIGluIHRoZSBrZXJuZWwtY29udGV4dCBvZiAgcnRfZGV2X29wZW4o
+KSBmcm9tIHVzZXItc3BhY2UuDQpUaGUgaXJxLWRldmljZSBpcyBvcGVuZWQgb25seSBvbmNlIGJl
+Zm9yZSBlbnRlcmluZyB0aGUgcmVhZC1sb29wLg0KDQpUaGUgcmVwZWF0ZWQgcmVhZCBjYWxscyBm
+cm9tIHRoZSB1c2VyIHNwYWNlIChydF9kZXZfcmVhZCgpKSBvbmx5IGJsb2NzIG9uIHRoZSBpcnEg
+c2VtYXBob3JlIGFuZCBjb3BpZXMgdGhlIGlycS10aW1lIGJhY2sgdG8gdGhlIHVzZXIuDQpJIGRv
+bid0IHNlZSBob3cgdGhlIGlycS1saW5lIGNhbiBiZSByZS1lbmFibGVkIGJ5IHRoaXMgY29kZS4N
+CklmIHRoZSBkZXZpY2UgaGF2ZSBiZWVuIHJlcGVhdGVkbHkgb3BlbmVkLCB0aGUgZG1lc2cgd291
+bGQgaGF2ZSBiZWVuIGZsb29kZWQgd2l0aCBsb2ctbWVzc2FnZXMuDQoNClRlcmplDQoNCi0tLS0t
+T3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFpbHRv
+OmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXSANClNlbnQ6IDIuIGRlc2VtYmVyIDIw
+MTQgMTA6MzQNClRvOiBUZXJqZSBGcsO4eXNhDQpDYzogeGVub21haUB4ZW5vbWFpLm9yZw0KU3Vi
+amVjdDogUmU6IFtYZW5vbWFpXSBJUlExNTUgbm90IGhhbmRsZWQuIERpc2FibGluZyBJUlEgbGlu
+ZQ0KDQpPbiBUdWUsIERlYyAwMiwgMjAxNCBhdCAwOToyODozN0FNICswMDAwLCBUZXJqZSBGcsO4
+eXNhIHdyb3RlOg0KPiBEZWFyIGZvcnVtLA0KPiANCj4gUXVlc3Rpb246DQo+IElmIGEgZHJpdmVy
+IGlzIGRlZW1lZCBidWdneSBhbmQgdGhlIElSUSBkaXNhYmxlZCwgd2h5IGlzIGl0IHN0aWxsIHNl
+cnZpbmcgdGhlIGludGVycnVwdHM/DQo+IA0KPiBSdW5uaW5nIERlYmlhbiAzLjguMTMtYm9uZTY3
+IGFuZCBYZW5vbWFpIDIuNi40DQo+IA0KPiBBdCBvcGVuaW5nIGNhbGwsIG15IEdQSU8gUlRETSBJ
+UlEgZHJpdmVyIGVuYWJsZXMgYSBHUElPIGxpbmUgdy9pcnEuDQo+IE15IHVzZXItc3BhY2UgcHJv
+Z3JhbSBpc3N1ZXMgcmVhZC1yZXF1ZXN0cyB0byByZWNlaXZlIGEgdGltZS1zdGFtcCBmb3IgZWFj
+aCBpcnEuDQo+IFRoZSBpcnEgaGFuZGxlciBpcyB2ZXJ5IGNvbXBhY3QuIEl0IG9ubHkgcmVhZHMg
+dGhlIHN5c3RlbSB0aW1lLCByaXNlcyBhIHNlbWFwaG9yZSBpZiBub3QgYWxyZWFkeSB1cCBhbmQg
+cmV0dXJucyBSVF9JTlRSX0hBTkRMRUQuDQo+IA0KPiBXaGVuIHN0YXJ0aW5nIChvcGVuICsgbG9v
+cCB3L3JlYWRzKSwgIHRoZSBkbWVzZyBsb2ctbWVzc2FnZSBhcHBlYXJzOiAgIklSUTE1NSBub3Qg
+aGFuZGxlZC4gRGlzYWJsaW5nIElSUSBsaW5lIi4NCj4gSXQgYXBwZWFycyBvbmx5IG9uY2UgaW4g
+dGhlIHN0YXJ0Lg0KPiBOZXZlci10aGUtbGVzcywgdGhlIGludGVycnVwdHMgYXJlIHN0aWxsIGhh
+bmRsZWQgYW5kIGtlZXAgY29taW5nLg0KDQpXZWxsLCBwcm9iYWJseSBiZWNhdXNlIHRoZSBjb2Rl
+IHJlLWVuYWJsZXMgdGhlIGlycSBsaW5lID8NCg0KLS0gDQoJCQkJCSAgICBHaWxsZXMuDQo=
 
