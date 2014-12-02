@@ -1,6 +1,6 @@
-From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
-Date: Tue, 2 Dec 2014 12:16:08 +0000
-Message-ID: <314E5ECDAA86314791309FA670550F89C9C51D31@SINTEFEXMBX05.sintef.no>
+Date: Tue, 2 Dec 2014 13:17:20 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141202121720.GK2076@hermes>
 References: <314E5ECDAA86314791309FA670550F89C9C51961@SINTEFEXMBX05.sintef.no>
  <20141202093346.GE2076@hermes>
  <314E5ECDAA86314791309FA670550F89C9C519EE@SINTEFEXMBX05.sintef.no>
@@ -9,11 +9,12 @@ References: <314E5ECDAA86314791309FA670550F89C9C51961@SINTEFEXMBX05.sintef.no>
  <20141202105344.GH2076@hermes>
  <314E5ECDAA86314791309FA670550F89C9C51CF0@SINTEFEXMBX05.sintef.no>
  <20141202121320.GI2076@hermes>
-In-Reply-To: <20141202121320.GI2076@hermes>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <314E5ECDAA86314791309FA670550F89C9C51D31@SINTEFEXMBX05.sintef.no>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <314E5ECDAA86314791309FA670550F89C9C51D31@SINTEFEXMBX05.sintef.no>
 Subject: Re: [Xenomai] IRQ155 not handled. Disabling IRQ line
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -23,43 +24,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Tm8sIG5vdCBhcyBmYXIgYXMgSSBjYW4gdGVsbC4NCkkgaGF2ZSB0cmllZCB0byBmaW5kIG91dCBo
-b3cgdG8gdGVsbC4gVGhlIG9ubHkgY2x1ZSBJIGdldCBmcm9tIHRoZSB3ZWIgaXMgdG8gY2hlY2sg
-dGhlIA0KL3Byb2MvaW50ZXJydXB0cw0KL3Byb2MveGVub21haS9pcnENClRoZSBpbnRlcnJ1cHQg
-ZXhpc3RzIG9ubHkgb25jZSBpbiB0aGUgL3Byb2MveGVub21haS9pcnEuDQoNCkFyZSB0aGVyZSBv
-dGhlciBtZWFucyB0byBjaGVjayB0aGlzPw0KDQpCZXN0IHJlZ2FyZHMNClRlcmplDQoNCi0tLS0t
-T3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFpbHRv
-OmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXSANClNlbnQ6IDIuIGRlc2VtYmVyIDIw
-MTQgMTM6MTMNClRvOiBUZXJqZSBGcsO4eXNhDQpDYzogeGVub21haUB4ZW5vbWFpLm9yZw0KU3Vi
-amVjdDogUmU6IFtYZW5vbWFpXSBJUlExNTUgbm90IGhhbmRsZWQuIERpc2FibGluZyBJUlEgbGlu
-ZQ0KDQpPbiBUdWUsIERlYyAwMiwgMjAxNCBhdCAxMjowNzo1MFBNICswMDAwLCBUZXJqZSBGcsO4
-eXNhIHdyb3RlOg0KPiBUaGFua3MgR2lsbGVzLA0KPiANCj4gSSB0aGluayBzZXR0aW5nIHRoZSBJ
-UlEgdHlwZSBtZW5kZWQgdGhlIHByb2JsZW0uDQo+IA0KPiBCZWZvcmUgdGhhdCBJIGRpZCBzb21l
-IGRpZ2dpbmc6DQo+IEkgY291bGRuJ3QgZmluZCBhbnkgaW5mb3JtYXRpb24gdGhhdCBpbmRpY2F0
-ZWQgYSBzaGFyZWQgaW50ZXJydXB0Og0KPiBUaGUgL3Byb2MvaW50ZXJydXB0cyBkaWQgbm90IGNv
-bnRhaW4gdGhlIElSUTE1NSBhbmQgdGhlIC9wcm9jL3hlbm9tYWkvaXJxIGhlbGQgb25seSBvbmUg
-ZW50cnkgZm9yIG15IGRyaXZlciAoYmVsb3cpLg0KPiBUaGUgZXh0ZXJuYWwgaW50ZXJydXB0IHNv
-dXJjZSBpcyBhIFBXTSBnZW5lcmF0ZWQgcHVsc2UtdHJhaW4gb2YgMjAwSHosIGkuZS4gNW1zIGlu
-dGVydmFsIHN0YXJ0ZWQgdGhlIGNvZGUtbGluZSBiZWZvcmUgZW50ZXJpbmcgdGhlIHJlYWQtbG9v
-cC4NCj4gWW91IHNheSB0aGF0IHRoZSBsaW5lIG11c3QgaGF2ZSBiZWVuIHVuc2VydmVkIGZvciBh
-IDEwMDAgZXZlbnRzIGJlZm9yZSBiZWluZyBkaXNhYmxlZC4NCj4gQSAxMDAwIGV2ZW50cyBmcm9t
-IHdoZW4gYW5kIGF0IHdoYXQgcmF0ZSBpZiBFREdFIG5vdCBzcGVzaWZpZWQ/IFRoZSBpcnEgaGFu
-ZGxlciBoYXZlIG5vIG9wdGlvbmFsIHJldHVybnMgYnV0ICJSVF9JTlRSX0hBTkRMRUQiLg0KPiBI
-ZW5jZSwgSSBjYW5ub3QgaW1hZ2luZSB3aGVyZSB0aGUgbm9uLWhhbmRsZWQgcmV0dXJucyBhcmUg
-Y29taW5nIGZyb20uIEF0IDVtcyByYXRlIHRoaXMgd291bGQgcmVxdWlyZSA1cyBvZiBwdWxzZXMg
-dG8gcmVhY2ggMTAwMC4NCj4gVGhlIGRpc3RhbmNlIGluIHRpbWUgZnJvbSBJUlEgZW5hYmxlIHRv
-IGRpc2FibGUgdGhlIElSUSBsaW5lIHNlZW0gbGVzcyB0aGFuIDR1cy4uDQo+IFsxOTgzMy45NTg2
-NjddIFJURE0gSU1VIDI3IC0gZW5hYmxlIElSUSBbMTk4MzguOTYyNDcyXSBYZW5vbWFpOiANCj4g
-eG5pbnRyX2lycV9oYW5kbGVyOiBJUlExNTUgbm90IGhhbmRsZWQuIERpc2FibGluZyBJUlEgbGlu
-ZS4NCj4gDQo+IEhvd2V2ZXIsIEkgY2hhbmdlZCB0aGUgZmxhZ3MgdG8gIlJURE1fSVJRVFlQRV9F
-REdFIiBhbmQgaXQgc2VlbWVkIHRvIGhhdmUgYSBnb29kIGVmZmVjdC4NCj4gSSBkb24ndCBnZXQg
-dGhlIG1lc3NhZ2UgYW55IGxvbmdlcg0KDQpJZiB0aGUgZGVmYXVsdCBpcnEgdHlwZSBpcyBzYXkg
-bGV2ZWwgbG93LCB5b3VyIHB3bSBzaWduYWwgYmVpbmcgbG93IGZvciBmb3IgaW5zdGFuY2UgNW1z
-IGdlbmVyYXRlcyBpbnRlcnJ1cHRzIGR1cmluZyA1bXMsIGFuZCBzaW5jZSB0aGUgaW50ZXJydXB0
-IGNvbmRpdGlvbiAobG93IGxldmVsKSBpcyBzdGlsbCB0cnVlLCB0aGUgaW50ZXJydXB0IHRyaWdn
-ZXJzIG92ZXIgYW5kIG92ZXIgYWdhaW4uDQoNCklzIHRoZSBpbnRlcnJ1cHQgc2hhcmVkIHdpdGgg
-TGludXggPw0KDQotLSANCgkJCQkJICAgIEdpbGxlcy4NCg==
+On Tue, Dec 02, 2014 at 12:16:08PM +0000, Terje Frøysa wrote:
+> No, not as far as I can tell.
+> I have tried to find out how to tell. The only clue I get from the web is to check the 
+> /proc/interrupts
+> /proc/xenomai/irq
+> The interrupt exists only once in the /proc/xenomai/irq.
+> 
+> Are there other means to check this?
+
+That is the way, yes.
+
+Could you post the code of the irq handler you pass to
+rtdm_irq_request ?
+
+-- 
+					    Gilles.
 
