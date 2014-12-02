@@ -1,6 +1,6 @@
-Date: Tue, 2 Dec 2014 13:13:20 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141202121320.GI2076@hermes>
+From: =?utf-8?B?VGVyamUgRnLDuHlzYQ==?= <Terje.Froysa@sintef.no>
+Date: Tue, 2 Dec 2014 12:16:08 +0000
+Message-ID: <314E5ECDAA86314791309FA670550F89C9C51D31@SINTEFEXMBX05.sintef.no>
 References: <314E5ECDAA86314791309FA670550F89C9C51961@SINTEFEXMBX05.sintef.no>
  <20141202093346.GE2076@hermes>
  <314E5ECDAA86314791309FA670550F89C9C519EE@SINTEFEXMBX05.sintef.no>
@@ -8,11 +8,12 @@ References: <314E5ECDAA86314791309FA670550F89C9C51961@SINTEFEXMBX05.sintef.no>
  <314E5ECDAA86314791309FA670550F89C9C51AB4@SINTEFEXMBX05.sintef.no>
  <20141202105344.GH2076@hermes>
  <314E5ECDAA86314791309FA670550F89C9C51CF0@SINTEFEXMBX05.sintef.no>
-MIME-Version: 1.0
+ <20141202121320.GI2076@hermes>
+In-Reply-To: <20141202121320.GI2076@hermes>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <314E5ECDAA86314791309FA670550F89C9C51CF0@SINTEFEXMBX05.sintef.no>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] IRQ155 not handled. Disabling IRQ line
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -22,35 +23,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Terje =?utf-8?Q?Fr=C3=B8ysa?= <Terje.Froysa@sintef.no>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, Dec 02, 2014 at 12:07:50PM +0000, Terje Frøysa wrote:
-> Thanks Gilles,
-> 
-> I think setting the IRQ type mended the problem.
-> 
-> Before that I did some digging:
-> I couldn't find any information that indicated a shared interrupt:
-> The /proc/interrupts did not contain the IRQ155 and the /proc/xenomai/irq held only one entry for my driver (below).
-> The external interrupt source is a PWM generated pulse-train of 200Hz, i.e. 5ms interval started the code-line before entering the read-loop.
-> You say that the line must have been unserved for a 1000 events before being disabled.
-> A 1000 events from when and at what rate if EDGE not spesified? The irq handler have no optional returns but "RT_INTR_HANDLED".
-> Hence, I cannot imagine where the non-handled returns are coming from. At 5ms rate this would require 5s of pulses to reach 1000.
-> The distance in time from IRQ enable to disable the IRQ line seem less than 4us..
-> [19833.958667] RTDM IMU 27 - enable IRQ
-> [19838.962472] Xenomai: xnintr_irq_handler: IRQ155 not handled. Disabling IRQ line.
-> 
-> However, I changed the flags to "RTDM_IRQTYPE_EDGE" and it seemed to have a good effect.
-> I don't get the message any longer 
-
-If the default irq type is say level low, your pwm signal being low
-for for instance 5ms generates interrupts during 5ms, and since the
-interrupt condition (low level) is still true, the interrupt
-triggers over and over again.
-
-Is the interrupt shared with Linux ?
-
--- 
-					    Gilles.
+Tm8sIG5vdCBhcyBmYXIgYXMgSSBjYW4gdGVsbC4NCkkgaGF2ZSB0cmllZCB0byBmaW5kIG91dCBo
+b3cgdG8gdGVsbC4gVGhlIG9ubHkgY2x1ZSBJIGdldCBmcm9tIHRoZSB3ZWIgaXMgdG8gY2hlY2sg
+dGhlIA0KL3Byb2MvaW50ZXJydXB0cw0KL3Byb2MveGVub21haS9pcnENClRoZSBpbnRlcnJ1cHQg
+ZXhpc3RzIG9ubHkgb25jZSBpbiB0aGUgL3Byb2MveGVub21haS9pcnEuDQoNCkFyZSB0aGVyZSBv
+dGhlciBtZWFucyB0byBjaGVjayB0aGlzPw0KDQpCZXN0IHJlZ2FyZHMNClRlcmplDQoNCi0tLS0t
+T3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFpbHRv
+OmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXSANClNlbnQ6IDIuIGRlc2VtYmVyIDIw
+MTQgMTM6MTMNClRvOiBUZXJqZSBGcsO4eXNhDQpDYzogeGVub21haUB4ZW5vbWFpLm9yZw0KU3Vi
+amVjdDogUmU6IFtYZW5vbWFpXSBJUlExNTUgbm90IGhhbmRsZWQuIERpc2FibGluZyBJUlEgbGlu
+ZQ0KDQpPbiBUdWUsIERlYyAwMiwgMjAxNCBhdCAxMjowNzo1MFBNICswMDAwLCBUZXJqZSBGcsO4
+eXNhIHdyb3RlOg0KPiBUaGFua3MgR2lsbGVzLA0KPiANCj4gSSB0aGluayBzZXR0aW5nIHRoZSBJ
+UlEgdHlwZSBtZW5kZWQgdGhlIHByb2JsZW0uDQo+IA0KPiBCZWZvcmUgdGhhdCBJIGRpZCBzb21l
+IGRpZ2dpbmc6DQo+IEkgY291bGRuJ3QgZmluZCBhbnkgaW5mb3JtYXRpb24gdGhhdCBpbmRpY2F0
+ZWQgYSBzaGFyZWQgaW50ZXJydXB0Og0KPiBUaGUgL3Byb2MvaW50ZXJydXB0cyBkaWQgbm90IGNv
+bnRhaW4gdGhlIElSUTE1NSBhbmQgdGhlIC9wcm9jL3hlbm9tYWkvaXJxIGhlbGQgb25seSBvbmUg
+ZW50cnkgZm9yIG15IGRyaXZlciAoYmVsb3cpLg0KPiBUaGUgZXh0ZXJuYWwgaW50ZXJydXB0IHNv
+dXJjZSBpcyBhIFBXTSBnZW5lcmF0ZWQgcHVsc2UtdHJhaW4gb2YgMjAwSHosIGkuZS4gNW1zIGlu
+dGVydmFsIHN0YXJ0ZWQgdGhlIGNvZGUtbGluZSBiZWZvcmUgZW50ZXJpbmcgdGhlIHJlYWQtbG9v
+cC4NCj4gWW91IHNheSB0aGF0IHRoZSBsaW5lIG11c3QgaGF2ZSBiZWVuIHVuc2VydmVkIGZvciBh
+IDEwMDAgZXZlbnRzIGJlZm9yZSBiZWluZyBkaXNhYmxlZC4NCj4gQSAxMDAwIGV2ZW50cyBmcm9t
+IHdoZW4gYW5kIGF0IHdoYXQgcmF0ZSBpZiBFREdFIG5vdCBzcGVzaWZpZWQ/IFRoZSBpcnEgaGFu
+ZGxlciBoYXZlIG5vIG9wdGlvbmFsIHJldHVybnMgYnV0ICJSVF9JTlRSX0hBTkRMRUQiLg0KPiBI
+ZW5jZSwgSSBjYW5ub3QgaW1hZ2luZSB3aGVyZSB0aGUgbm9uLWhhbmRsZWQgcmV0dXJucyBhcmUg
+Y29taW5nIGZyb20uIEF0IDVtcyByYXRlIHRoaXMgd291bGQgcmVxdWlyZSA1cyBvZiBwdWxzZXMg
+dG8gcmVhY2ggMTAwMC4NCj4gVGhlIGRpc3RhbmNlIGluIHRpbWUgZnJvbSBJUlEgZW5hYmxlIHRv
+IGRpc2FibGUgdGhlIElSUSBsaW5lIHNlZW0gbGVzcyB0aGFuIDR1cy4uDQo+IFsxOTgzMy45NTg2
+NjddIFJURE0gSU1VIDI3IC0gZW5hYmxlIElSUSBbMTk4MzguOTYyNDcyXSBYZW5vbWFpOiANCj4g
+eG5pbnRyX2lycV9oYW5kbGVyOiBJUlExNTUgbm90IGhhbmRsZWQuIERpc2FibGluZyBJUlEgbGlu
+ZS4NCj4gDQo+IEhvd2V2ZXIsIEkgY2hhbmdlZCB0aGUgZmxhZ3MgdG8gIlJURE1fSVJRVFlQRV9F
+REdFIiBhbmQgaXQgc2VlbWVkIHRvIGhhdmUgYSBnb29kIGVmZmVjdC4NCj4gSSBkb24ndCBnZXQg
+dGhlIG1lc3NhZ2UgYW55IGxvbmdlcg0KDQpJZiB0aGUgZGVmYXVsdCBpcnEgdHlwZSBpcyBzYXkg
+bGV2ZWwgbG93LCB5b3VyIHB3bSBzaWduYWwgYmVpbmcgbG93IGZvciBmb3IgaW5zdGFuY2UgNW1z
+IGdlbmVyYXRlcyBpbnRlcnJ1cHRzIGR1cmluZyA1bXMsIGFuZCBzaW5jZSB0aGUgaW50ZXJydXB0
+IGNvbmRpdGlvbiAobG93IGxldmVsKSBpcyBzdGlsbCB0cnVlLCB0aGUgaW50ZXJydXB0IHRyaWdn
+ZXJzIG92ZXIgYW5kIG92ZXIgYWdhaW4uDQoNCklzIHRoZSBpbnRlcnJ1cHQgc2hhcmVkIHdpdGgg
+TGludXggPw0KDQotLSANCgkJCQkJICAgIEdpbGxlcy4NCg==
 
