@@ -1,22 +1,10 @@
+Message-ID: <54803595.90308@control.lth.se>
+Date: Thu, 04 Dec 2014 11:21:09 +0100
+From: Anders Blomdell <anders.blomdell@control.lth.se>
 MIME-Version: 1.0
-In-Reply-To: <20141203133450.GC30916@hermes>
-References: <CAPozGfkxmv+7=Q3LXAmOv_eTPZ08XV3SO9SETPomSAs+bbxV0A@mail.gmail.com>
- <CAPozGfk9LizYFbCRKUDS1-mhX+bw3fOpgqzwF6AcH64Pspw4Gg@mail.gmail.com>
- <20141128182141.GB4817@hermes>
- <CAPozGfk-okS5TDn-zPua3uvHkcppm3CpnqAKXYs6-VWVPb4cpg@mail.gmail.com>
- <20141201143957.GH23220@hermes>
- <CAPozGf=ijSmQoUXRf7aG56G47N2DZbHyiL+1nHDEWvmZdhhcYw@mail.gmail.com>
- <20141201152921.GI23220@hermes>
- <CAPozGfndF2nWapRLR+U5MUbieCxS3_oA=62uKXFSMEG0Cue51w@mail.gmail.com>
- <20141201161549.GA28038@hermes>
- <CAPozGf=LUUqpgqyH_T6=x0JBW2fm0wFj=m_1Vosec0OawkA4Tw@mail.gmail.com>
- <20141203133450.GC30916@hermes>
-Date: Wed, 3 Dec 2014 14:36:41 +0100
-Message-ID: <CAPozGfk3hsxN4PRoqgKjubUN6H3kofvAjSzSExaeQrQOpXysUQ@mail.gmail.com>
-From: John Sini <jhnsini@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Section mismatch - Porting Xenomai to
- linux-xlnx-V14.5 zynq SoC
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Script to cleanup linux .config file
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,92 +13,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On Wed, Dec 3, 2014 at 2:34 PM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
-
-> On Wed, Dec 03, 2014 at 02:32:12PM +0100, John Sini wrote:
-> > On Mon, Dec 1, 2014 at 5:15 PM, Gilles Chanteperdrix <
-> > gilles.chanteperdrix@xenomai.org> wrote:
-> >
-> > > On Mon, Dec 01, 2014 at 04:45:03PM +0100, John Sini wrote:
-> > > > On Mon, Dec 1, 2014 at 4:29 PM, Gilles Chanteperdrix <
-> > > > gilles.chanteperdrix@xenomai.org> wrote:
-> > > >
-> > > > > On Mon, Dec 01, 2014 at 04:26:47PM +0100, John Sini wrote:
-> > > > > > On Mon, Dec 1, 2014 at 3:39 PM, Gilles Chanteperdrix <
-> > > > > > gilles.chanteperdrix@xenomai.org> wrote:
-> > > > > >
-> > > > > > > On Mon, Dec 01, 2014 at 03:35:51PM +0100, John Sini wrote:
-> > > > > > > >  Hi,
-> > > > > > > >
-> > > > > > > >
-> > > > > > > > Thank you for your reply. I have disabled lockdep by
-> disabling
-> > > > > following
-> > > > > > > > two options in Kernel configuration :Lock debugging:prove
-> locking
-> > > > > > > > correctness and  Lock debugging: detect incorrect freeing of
-> live
-> > > > > locks.
-> > > > > > > > The problem that i am facing now is:
-> > > > > > >
-> > > > > > > Does the exact same .config file work on an unpatched kernel?
-> > > > > > >
-> > > > > > > Just checked and I got the same error.
-> > > > >
-> > > > > So, before trying and compiling Xenomai with a configuration file,
-> > > > > please try and get a working configuration for your kernel, without
-> > > > > Xenomai patch applied.
-> > > > >
-> > > > >   Ok, I will do it.
-> > > >
-> > > >
-> > > > > Also, since the Zynq patch is provided by a third party, and not
-> > > > > part of the patches supported by the mainline I-pipe patch, I do
-> not
-> > > > > even compile test this patch, so have no working configuration to
-> > > > > propose.
-> > > > >
-> > > > > Maybe the people having proposed the patch could also propose a
-> > > > > working kernel configuration? That would be nice.
-> > > >
-> > > >
-> > > >
-> > > >    Can you maybe explain me the errors that *I got i.e. can they be
-> due
-> > > to
-> > > > xenomai(kernel panic)*
-> > >
-> > > I do not know what you are talking about. If the same configuration
-> > > on an unpatched kernel has an issue, then the issue certainly has
-> > > nothing to do with Xenomai, don't you think ?
-> > >
-> > >
-> >   Yeah I do think :) I have just one question concerning this warning
-> that
-> > I still have(I think it's due to Xenomai as it's about ipipe)
-> >
-> > WARNING: vmlinux.o(.cpuinit.text+0xdc0): Section mismatch in reference
-> from
-> > the function gt_setup.part.2.constprop.4() to the function
-> > .init.text:__ipipe_tsc_register()
-> > The function __cpuinit gt_setup.part.2.constprop.4() references
-> > a function __init __ipipe_tsc_register().
-> > If __ipipe_tsc_register is only used by gt_setup.part.2.constprop.4 then
-> > annotate __ipipe_tsc_register with a matching annotation.
-> >
-> >  - I have already put __init attribute in front of __ipipe_tsc_register
-> > function in ipipe-core-3.8-arm-1.patch. If I put __init attribute in
-> front
-> > of the name of  __cpuinit gt_setup function in the same patch - will that
-> > fix this warning that I have?
->
-> I would say so, probably yes.
->
-> Thank you!
-
-
-  John
+SSBwb3N0IHRoZSBhdHRhY2hlZCBzY3JpcHQgaW4gdGhlIHZhaW4gaG9wZSB0aGF0IGl0IG1pZ2h0
+IGJlIHVzZWZ1bCBmb3Igc29tZW9uZSBlbHNlCihhbmQgcG9zc2libHkgZW5oYW5jZWQgYnkgb3Vy
+IGFsbC1rbm93aW5nIGV4cGVydHMpLiAKClJlZ2FyZHMKCkFuZGVycwotLSAKQW5kZXJzIEJsb21k
+ZWxsICAgICAgICAgICAgICAgICAgRW1haWw6IGFuZGVycy5ibG9tZGVsbEBjb250cm9sLmx0aC5z
+ZQpEZXBhcnRtZW50IG9mIEF1dG9tYXRpYyBDb250cm9sCkx1bmQgVW5pdmVyc2l0eSAgICAgICAg
+ICAgICAgICAgIFBob25lOiAgICArNDYgNDYgMjIyIDQ2MjUKUC5PLiBCb3ggMTE4ICAgICAgICAg
+ICAgICAgICAgICAgRmF4OiAgICAgICs0NiA0NiAxMzgxMTgKU0UtMjIxIDAwIEx1bmQsIFN3ZWRl
+bgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCiMhL2Jpbi9zaAoKd2hp
+bGUgWyAkIyAtZ3QgMCBdIDsgZG8KICAgIGNhc2UgJDEgaW4KICAgICAgICAtLWNsZWFudXApIAog
+ICAgICAgICAgICBDTEVBTlVQPSQxCiAgICAgICAgICAgIHNoaWZ0CiAgICAgICAgICAgIDs7CiAg
+ICAgICAgKikKICAgICAgICAgICAgaWYgWyAhIC16ICIke0NPTkZJR30iIF0gOyB0aGVuCiAgICAg
+ICAgICAgICAgICBlY2hvICJPbmx5IG9uZSBjb25maWcgZmlsZSBhbGxvd2VkIgogICAgICAgICAg
+ICAgICAgZXhpdCAxCiAgICAgICAgICAgIGZpCiAgICAgICAgICAgIENPTkZJRz0kMQogICAgICAg
+ICAgICBzaGlmdAogICAgICAgICAgICA7OwogICAgZXNhYwpkb25lCgppZiBbIC16ICIke0NPTkZJ
+R30iIF0gOyB0aGVuCiAgICBlY2hvICJObyBjb25maWcgZmlsZSBnaXZlbiIgCiAgICBleGl0IDEK
+ZmkKCkJMQUNLTElTVF9PUFRJT05TPSgKICAgIEFDUElfUFJPQ0VTU09SIAogICAgQVBNIAogICAg
+Q09OVEVYVF9UUkFDS0lOR19GT1JDRSAKICAgIENQVV9GUkVRIAogICAgQ1BVX0lETEUgCiAgICBJ
+TlRFTF9JRExFIAogICAgS0dEQiAKIyAgICBDQ19TVEFDS1BST1RFQ1RPUgojICAgIENDX1NUQUNL
+UFJPVEVDVE9SX1NUUk9ORwopCgpSRVNVTFQ9MApmb3IgbyBpbiAke0JMQUNLTElTVF9PUFRJT05T
+WypdfSA7IGRvCiAgaWYgZ3JlcCAtcSAiQ09ORklHXyRvPSIgJHtDT05GSUd9IDsgdGhlbgogICAg
+ZWNobyAiSW52YWxpZCBvcHRpb24gQ09ORklHXyRvIgogICAgUkVTVUxUPTEKICBmaQpkb25lCgpp
+ZiBbICR7UkVTVUxUfSAtbmUgMCAtYSAiJHtDTEVBTlVQfSIgPT0gIi0tY2xlYW51cCIgXSA7IHRo
+ZW4KICAgIEQ9YG1rdGVtcCAtZGAKICAgIGNwICR7Q09ORklHfSAkRC9jb25maWcKICAgIGZvciBv
+IGluICR7QkxBQ0tMSVNUX09QVElPTlNbKl19IDsgZG8KICAgICAgICBpZiBncmVwICAtcSAiQ09O
+RklHXyRvPSIgJHtEfS9jb25maWcgOyB0aGVuCiAgICAgICAgICAgIGVjaG8gIkNsZWFuaW5nICR7
+b30iCiAgICAgICAgICAgIGdyZXAgLXYgIkNPTkZJR18kbz0iICR7RH0vY29uZmlnID4gJHtEfS90
+bXAKICAgICAgICAgICAgbXYgJHtEfS90bXAgJHtEfS9jb25maWcKICAgICAgICBmaQogICAgZG9u
+ZQogICAgbXYgJEQvY29uZmlnICR7Q09ORklHfSAKICAgIHJtZGlyICR7RH0KICAgIGVjaG8gIlJl
+bWVtYmVyIHRvIHJ1biAnbWFrZSBvbGRjb25maWcnIgplbHNlCiAgICBleGl0ICRSRVNVTFQKZmkK
+Cg==
