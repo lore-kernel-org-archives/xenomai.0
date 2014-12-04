@@ -1,10 +1,12 @@
-Message-ID: <54803595.90308@control.lth.se>
-Date: Thu, 04 Dec 2014 11:21:09 +0100
-From: Anders Blomdell <anders.blomdell@control.lth.se>
+Date: Thu, 4 Dec 2014 13:12:24 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141204121224.GA9728@hermes>
+References: <54803595.90308@control.lth.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Script to cleanup linux .config file
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <54803595.90308@control.lth.se>
+Subject: Re: [Xenomai] Script to cleanup linux .config file
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,35 +15,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Anders Blomdell <anders.blomdell@control.lth.se>
+Cc: Xenomai <xenomai@xenomai.org>
 
-SSBwb3N0IHRoZSBhdHRhY2hlZCBzY3JpcHQgaW4gdGhlIHZhaW4gaG9wZSB0aGF0IGl0IG1pZ2h0
-IGJlIHVzZWZ1bCBmb3Igc29tZW9uZSBlbHNlCihhbmQgcG9zc2libHkgZW5oYW5jZWQgYnkgb3Vy
-IGFsbC1rbm93aW5nIGV4cGVydHMpLiAKClJlZ2FyZHMKCkFuZGVycwotLSAKQW5kZXJzIEJsb21k
-ZWxsICAgICAgICAgICAgICAgICAgRW1haWw6IGFuZGVycy5ibG9tZGVsbEBjb250cm9sLmx0aC5z
-ZQpEZXBhcnRtZW50IG9mIEF1dG9tYXRpYyBDb250cm9sCkx1bmQgVW5pdmVyc2l0eSAgICAgICAg
-ICAgICAgICAgIFBob25lOiAgICArNDYgNDYgMjIyIDQ2MjUKUC5PLiBCb3ggMTE4ICAgICAgICAg
-ICAgICAgICAgICAgRmF4OiAgICAgICs0NiA0NiAxMzgxMTgKU0UtMjIxIDAwIEx1bmQsIFN3ZWRl
-bgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCiMhL2Jpbi9zaAoKd2hp
-bGUgWyAkIyAtZ3QgMCBdIDsgZG8KICAgIGNhc2UgJDEgaW4KICAgICAgICAtLWNsZWFudXApIAog
-ICAgICAgICAgICBDTEVBTlVQPSQxCiAgICAgICAgICAgIHNoaWZ0CiAgICAgICAgICAgIDs7CiAg
-ICAgICAgKikKICAgICAgICAgICAgaWYgWyAhIC16ICIke0NPTkZJR30iIF0gOyB0aGVuCiAgICAg
-ICAgICAgICAgICBlY2hvICJPbmx5IG9uZSBjb25maWcgZmlsZSBhbGxvd2VkIgogICAgICAgICAg
-ICAgICAgZXhpdCAxCiAgICAgICAgICAgIGZpCiAgICAgICAgICAgIENPTkZJRz0kMQogICAgICAg
-ICAgICBzaGlmdAogICAgICAgICAgICA7OwogICAgZXNhYwpkb25lCgppZiBbIC16ICIke0NPTkZJ
-R30iIF0gOyB0aGVuCiAgICBlY2hvICJObyBjb25maWcgZmlsZSBnaXZlbiIgCiAgICBleGl0IDEK
-ZmkKCkJMQUNLTElTVF9PUFRJT05TPSgKICAgIEFDUElfUFJPQ0VTU09SIAogICAgQVBNIAogICAg
-Q09OVEVYVF9UUkFDS0lOR19GT1JDRSAKICAgIENQVV9GUkVRIAogICAgQ1BVX0lETEUgCiAgICBJ
-TlRFTF9JRExFIAogICAgS0dEQiAKIyAgICBDQ19TVEFDS1BST1RFQ1RPUgojICAgIENDX1NUQUNL
-UFJPVEVDVE9SX1NUUk9ORwopCgpSRVNVTFQ9MApmb3IgbyBpbiAke0JMQUNLTElTVF9PUFRJT05T
-WypdfSA7IGRvCiAgaWYgZ3JlcCAtcSAiQ09ORklHXyRvPSIgJHtDT05GSUd9IDsgdGhlbgogICAg
-ZWNobyAiSW52YWxpZCBvcHRpb24gQ09ORklHXyRvIgogICAgUkVTVUxUPTEKICBmaQpkb25lCgpp
-ZiBbICR7UkVTVUxUfSAtbmUgMCAtYSAiJHtDTEVBTlVQfSIgPT0gIi0tY2xlYW51cCIgXSA7IHRo
-ZW4KICAgIEQ9YG1rdGVtcCAtZGAKICAgIGNwICR7Q09ORklHfSAkRC9jb25maWcKICAgIGZvciBv
-IGluICR7QkxBQ0tMSVNUX09QVElPTlNbKl19IDsgZG8KICAgICAgICBpZiBncmVwICAtcSAiQ09O
-RklHXyRvPSIgJHtEfS9jb25maWcgOyB0aGVuCiAgICAgICAgICAgIGVjaG8gIkNsZWFuaW5nICR7
-b30iCiAgICAgICAgICAgIGdyZXAgLXYgIkNPTkZJR18kbz0iICR7RH0vY29uZmlnID4gJHtEfS90
-bXAKICAgICAgICAgICAgbXYgJHtEfS90bXAgJHtEfS9jb25maWcKICAgICAgICBmaQogICAgZG9u
-ZQogICAgbXYgJEQvY29uZmlnICR7Q09ORklHfSAKICAgIHJtZGlyICR7RH0KICAgIGVjaG8gIlJl
-bWVtYmVyIHRvIHJ1biAnbWFrZSBvbGRjb25maWcnIgplbHNlCiAgICBleGl0ICRSRVNVTFQKZmkK
-Cg==
+On Thu, Dec 04, 2014 at 11:21:09AM +0100, Anders Blomdell wrote:
+> I post the attached script in the vain hope that it might be useful for someone else
+> (and possibly enhanced by our all-knowing experts). 
+
+I would say the simple option is to disable the options by directly
+patching the Kconfig in the I-pipe patch.
+
+-- 
+					    Gilles.
+
