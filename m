@@ -1,12 +1,13 @@
 From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Wed, 10 Dec 2014 14:02:40 -0500
-Message-ID: <20141210190240.GB24110@csclub.uwaterloo.ca>
+Date: Wed, 10 Dec 2014 14:04:21 -0500
+Message-ID: <20141210190421.GC24110@csclub.uwaterloo.ca>
 References: <20141210183747.GA24110@csclub.uwaterloo.ca>
  <20141210184232.GP1524@hermes.click-hack.org>
+ <20141210190240.GB24110@csclub.uwaterloo.ca>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20141210184232.GP1524@hermes.click-hack.org>
+In-Reply-To: <20141210190240.GB24110@csclub.uwaterloo.ca>
 Subject: Re: [Xenomai] __ipipe_root_status exported GPL only but used to be
  not GPL only and is breaking other code
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -20,27 +21,16 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Wed, Dec 10, 2014 at 07:42:32PM +0100, Gilles Chanteperdrix wrote:
-> On Wed, Dec 10, 2014 at 01:37:47PM -0500, Lennart Sorensen wrote:
-> > I just encountered an issue compiling an external kernel module which
-> > compiled fine with 3.0 kernel but with new kernels I get a linker error
-> > about __ipipe_root_status
-> > 
-> > This used to be just EXPORT_SYMBOL, but not is EXPORT_SYMBOL_GPL which
-> > breaks the compile.  I am pretty sure module does not call anything in
-> > the kernel flagged EXPORT_SYMBOL_GPL, so it must be something ipipe
-> > gets involved with somehow that is making it fail.  I haven't traced
-> > down exactly how it is happening yet.
-> > 
-> > Is there any reason this symbol export was changed in newer versions?
+On Wed, Dec 10, 2014 at 02:02:40PM -0500, Lennart Sorensen wrote:
+> Well it used to.  Or rather it used to not break the rest of the kernel
+> from supporting it.
 > 
-> Xenomai does not support modules with non GPL license.
+> Unfurtunately T1/E1 management software does not exist in free software
+> versions.
 
-Well it used to.  Or rather it used to not break the rest of the kernel
-from supporting it.
-
-Unfurtunately T1/E1 management software does not exist in free software
-versions.
+All the module is trying to do is strat a kthread and then later find
+it to kill it, and it seems having ipipe makes that no longer possible.
+I would call that a wrong change in ipipe.
 
 -- 
 Len Sorensen
