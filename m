@@ -1,19 +1,20 @@
-Message-ID: <5488C149.8020901@nta-inc.net>
-Date: Wed, 10 Dec 2014 15:55:21 -0600
-From: Jeff Webb <jeff.webb@nta-inc.net>
-MIME-Version: 1.0
-References: <20141210184232.GP1524@hermes.click-hack.org>
- <20141210190240.GB24110@csclub.uwaterloo.ca>
- <20141210190509.GR1524@hermes.click-hack.org>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Wed, 10 Dec 2014 17:01:29 -0500
+Message-ID: <20141210220129.GP24110@csclub.uwaterloo.ca>
+References: <20141210190509.GR1524@hermes.click-hack.org>
  <20141210190939.GD24110@csclub.uwaterloo.ca>
  <20141210191350.GT1524@hermes.click-hack.org>
- <20141210191924.GF24110@csclub.uwaterloo.ca> <5488A2BD.3080800@xenomai.org>
- <20141210194405.GH24110@csclub.uwaterloo.ca> <5488A985.2070006@xenomai.org>
+ <20141210191924.GF24110@csclub.uwaterloo.ca>
+ <5488A2BD.3080800@xenomai.org>
+ <20141210194405.GH24110@csclub.uwaterloo.ca>
+ <5488A985.2070006@xenomai.org>
  <20141210201140.GL24110@csclub.uwaterloo.ca>
  <20141210212342.GO24110@csclub.uwaterloo.ca>
-In-Reply-To: <20141210212342.GO24110@csclub.uwaterloo.ca>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+ <5488C149.8020901@nta-inc.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5488C149.8020901@nta-inc.net>
 Subject: Re: [Xenomai] __ipipe_root_status exported GPL only but used to be
  not GPL only and is breaking other code
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -24,63 +25,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jeff Webb <jeff.webb@nta-inc.net>
+Cc: xenomai@xenomai.org
 
-On 12/10/2014 03:23 PM, Lennart Sorensen wrote:
-> On Wed, Dec 10, 2014 at 03:11:40PM -0500, Lennart Sorensen wrote:
->> On Wed, Dec 10, 2014 at 09:13:57PM +0100, Philippe Gerum wrote:
->>> The I-pipe interface was moved to GPL_ONLY to clearly state that such
->>> code intimately depends on the kernel innards, has to know about them to
->>> function, and therefore any client code has to be GPL-compatible to
->>> comply with the kernel license.
->>
->> Well I think most of the interfaces were already GPL only even in 2.6.36
->> from what I can tell, so nothing new there.
->>
->>> The only question that matters is: does __ipipe_root_status belong to
->>> the visible I-pipe API exposed to clients? The answer from the copyright
->>> holder of this particular code is "no".
->>
->> Oh good, because I was having trouble seeing how it was part of the
->> ipipe interface.
->>
->>> Ah, maybe it was a mistake then, something that was overlooked, just
->>> because I-pipe maintainers don't routinely have to rebuild non-GPL
->>> software on top the I-pipe? Yes, most likely it was.
->>
->> I would not expect that to be a normal procedure.  Would be a pain to do.
->>
->>> Could the code be changed to fix this, then? Yes, it sounds reasonable,
->>> and would not change the original intent of moving the API symbols to
->>> GPL_ONLY.
->>>
->>> The issue is non-ambiguous, the solution is straightforward. Let's
->>> relax, there is work ahead.
->>
->> Should I do a test build with it changed to at least confirm if that is
->> the only issue?
->
-> So a test build with just this:
->
-> --- linux-3.12.33.rr1.orig/kernel/ipipe/core.c  2014-12-10 15:16:41.045125486 -0500
-> +++ linux-3.12.33.rr1/kernel/ipipe/core.c       2014-12-10 15:16:43.189141150 -0500
-> @@ -93,7 +93,7 @@
->    */
->   extern unsigned long __ipipe_root_status
->   __attribute__((alias(__stringify(ipipe_percpu))));
-> -EXPORT_SYMBOL_GPL(__ipipe_root_status);
-> +EXPORT_SYMBOL(__ipipe_root_status);
->
->   #endif /* !CONFIG_SMP */
->
-> in fact makes the module compile again.
->
-> So changing the one symbol back to what it was pre 3.2 would certainly
-> help a lot.
->
+On Wed, Dec 10, 2014 at 03:55:21PM -0600, Jeff Webb wrote:
+> I can confirm that this is around the time I started having trouble with the proprietary nvidia module.  In the linux 2.6.?? days, I didn't experience that issue.  It is obviously up to the authors to decide whether or not it is desirable to allow proprietary modules to continue to operate on an I-pipe patched kernel as they do an un-patched kernel.  Since the issue was raised, I thought I would report my experience in case there is a desire to get this configuration working again.
 
-I can confirm that this is around the time I started having trouble with the proprietary nvidia module.  In the linux 2.6.?? days, I didn't experience that issue.  It is obviously up to the authors to decide whether or not it is desirable to allow proprietary modules to continue to operate on an I-pipe patched kernel as they do an un-patched kernel.  Since the issue was raised, I thought I would report my experience in case there is a desire to get this configuration working again.
+Well certainly I do agree with Gilles that if there is a binary blob,
+you can not know if it is going to mess directly with interrupts and
+break ipipe, so the nvidia driver could be a problem (hard to know).
 
--Jeff
+Of course if you have source code and are compiling the module yourself
+then that part should not be a problem.  I wonder if a BSD licenced
+module would even compile with an ipipe enabled kernel
+right now assuming any such thing exists (other than
+./Documentation/blackfin/gptimers-example.c:MODULE_LICENSE("BSD");
+that I spotted).
 
+-- 
+Len Sorensen
 
