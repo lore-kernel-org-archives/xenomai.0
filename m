@@ -1,17 +1,14 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Fri, 28 Nov 2014 11:09:46 -0500
-Message-ID: <20141128160946.GQ24110@csclub.uwaterloo.ca>
-References: <54775097.30705@siemens.com> <20141127181823.GK7842@hermes>
- <547772AF.108@siemens.com>
- <20141127191438.GI24110@csclub.uwaterloo.ca>
- <20141127203400.GP7842@hermes> <54778CF6.6000909@siemens.com>
- <20141127231527.GC24076@hermes> <5478430B.9030602@siemens.com>
- <20141128095038.GA3832@hermes>
+Date: Wed, 10 Dec 2014 12:03:45 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141210110345.GD1524@hermes.click-hack.org>
+References: <CALe7ZU07e_Pi4=jbV9y1zuVd4RAKZGRsuUdQrVqWCjPcmjTkgg@mail.gmail.com>
+ <20141210103829.GA1524@hermes.click-hack.org>
+ <CALe7ZU0xG7Z1oCfV3uoWV=V1u03P71fSqpnso0B0X9t+eF9Axw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20141128095038.GA3832@hermes>
-Subject: Re: [Xenomai] [pull] forge: Adjust default registry mount point
+In-Reply-To: <CALe7ZU0xG7Z1oCfV3uoWV=V1u03P71fSqpnso0B0X9t+eF9Axw@mail.gmail.com>
+Subject: Re: [Xenomai] /asm/ipipe.h not found
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,32 +17,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: JAY KOTHARI <jaikothari10@gmail.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-On Fri, Nov 28, 2014 at 10:50:38AM +0100, Gilles Chanteperdrix wrote:
-> This is ridiculous. Because the standard changed, and one
-> distribution, Debian, decided to follow the new standard, which
-> seems to be not widely accepted, and even controversial, you want to
-> impose what Debian does to everybody. The distribution I use has
-> mount points under /mnt. So, why following Debian and not the
-> distribution I use, and what sysadmin have been doing for ages?
-
-Feel free to make xenomai mandate creating some new mountpoint somewhere
-else for its use.
-
-> You want the mount point to be somewhere else? Fine, put a symbolic
-> link.
+On Wed, Dec 10, 2014 at 04:24:53PM +0530, JAY KOTHARI wrote:
+> On 12/10/14, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+> > On Wed, Dec 10, 2014 at 03:57:44PM +0530, JAY KOTHARI wrote:
+> >> Hello,
+> >>     I am porting linux-3.2.21(xenomai-2.6.2 patched to it) on
+> >> BeagleBoard-XM.
+> >
+> > You do not need to port it, it is already supported.
+> >
+> > Also, why using such old versions ? The latest version of Xenomai is
+> > 2.6.4 and will work with the I-pipe patch for Linux 3.2.21.
+> >
+> >
+> >> zImage is successfully made. But when I am building
+> >> the modules with following command
+> >>
+> >>  $make -j 8 ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi modules
+> >>
+> >>  It shows error:
+> >>   make CONFIG_DEBUG_SECTION_MISMATCH=y
+> >
+> > Yes, this has been reported, and fixed in later patches. That is
+> > what you get by using old patches. Simply turn that off.
+> >
+> I turn it off by this command
+> $make CONFIG_DEBUG_SECTION_MISMATCH=n
 > 
-> mkdir /run/xenomai
-> ln -s /run/xenomai /mnt/xenomai
+> >>
+> >> After this I ran
+> >>  $make CONFIG_DEBUG_SECTION_MISMATCH=y
+> >>
+> >> This lets to another error
+> >> include/linux/ipipe.h :33:23: fatal error:asm/ipipe.h: No such file or
+> >> directory.
+> >> compilation terminated.
+> >>
+> >>       Actually ipipe.h is there in /asm/ipipe.h:I tried to set CFLAG
+> >> and export it but it is not working.Help would be appreciated.
+> >
+> > You do not provide enough information for us to answer that
+> > question. Sorry.
+> >
+> > --
+> > 					
+> >
+> After doing that I got following error
+> make[1]: Nothing to be done for `relocs'.
+>   CHK     include/linux/version.h
+>   CHK     include/generated/utsrelease.h
+>   CC      arch/x86/kernel/asm-offsets.s
+> In file included from include/linux/sched.h:65:0,
+>                  from arch/x86/kernel/asm-offsets.c:9:
+> include/linux/ipipe.h:33:23: fatal error: asm/ipipe.h: No such file or
+> directory
+> compilation terminated.
+> make[1]: *** [arch/x86/kernel/asm-offsets.s] Error 1
+> make: *** [prepare0] Error 2
 
-And when I do mount /dev/sdf1 /mnt, what will xenomai think?  It sure
-won't like it.
-
-Do NOT put xenomai stuff in /mnt.  If you do, some of us will have to
-maintain permanent patches to fix xenomai and I hate doing that.
+Interesting information, but maybe not sufficient to solve your
+issue, you want to compile for beaglebone, but you are compiling a
+kernel for the x86 architecture ? I am afraid it will not work.
 
 -- 
-Len Sorensen
+					    Gilles.
 
