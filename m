@@ -1,17 +1,20 @@
-Date: Fri, 28 Nov 2014 17:11:12 +0100
+Date: Wed, 10 Dec 2014 17:26:25 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141128161112.GH8051@hermes>
-References: <54775097.30705@siemens.com> <20141127181823.GK7842@hermes>
- <547772AF.108@siemens.com>
- <20141127191438.GI24110@csclub.uwaterloo.ca>
- <20141127203400.GP7842@hermes> <54778CF6.6000909@siemens.com>
- <20141127231527.GC24076@hermes>
- <20141128160722.GP24110@csclub.uwaterloo.ca>
+Message-ID: <20141210162625.GL1524@hermes.click-hack.org>
+References: <471986235a5c47e395ece6b3d18830bd@EX132MBOX1A.de2.local>
+ <20141207124041.GS10014@hermes.click-hack.org>
+ <76bf78d4e9644f9394558dc10207fb96@EX132MBOX1A.de2.local>
+ <20141207135204.GT10014@hermes.click-hack.org>
+ <08dc5da0a9d94655819f8094c4ac6c7a@EX132MBOX1A.de2.local>
+ <acbe2f0f37f447bea2205fcafd963830@EX132MBOX1A.de2.local>
+ <3d1763453771465c9d014b3313bc82c6@EX132MBOX1A.de2.local>
+ <20141209205914.GQ30777@hermes.click-hack.org>
+ <2a74ff40de88431da68f4922b415da89@EX132MBOX1A.de2.local>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20141128160722.GP24110@csclub.uwaterloo.ca>
-Subject: Re: [Xenomai] [pull] forge: Adjust default registry mount point
+In-Reply-To: <2a74ff40de88431da68f4922b415da89@EX132MBOX1A.de2.local>
+Subject: Re: [Xenomai] Sleeping function called from invalid context
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,41 +23,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: "Stoidner, Christoph" <c.stoidner@arvero.de>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Nov 28, 2014 at 11:07:22AM -0500, Lennart Sorensen wrote:
-> On Fri, Nov 28, 2014 at 12:15:27AM +0100, Gilles Chanteperdrix wrote:
-> > Just to add another argument. I just asked a friend who is a
-> > professional sysadmin. He creates directory under /mnt and mount
-> > things under these directories. So, I am not sure the standard is
-> > even applied by the people who should use it.
+On Wed, Dec 10, 2014 at 04:23:51PM +0000, Stoidner, Christoph wrote:
 > 
-> Well being the admin, the admin can mount whatever they want in there.
-> That agrees with the standard just fine.
+> >
+> > Anyway, is not it simply a deadlock in your application ?
 > 
-> > If you read on the last site I sent, under the /media article: 
-> > 
-> > Amid much controversy and consternation on the part of system and
-> > network administrators a directory containing mount points for
-> > removable media has now been created. Funnily enough, it has been
-> > named /media.
+> I don't think so. Here is a list of all tasks:
 > 
-> The /media is generally used by auto mounters for removable media.
+> ~ # cat /proc/xenomai/stat 
+> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+>   0  0      0          7452       0     00500080   98.9  ROOT
+>   0  83     196        196        0     00300380    0.0  DOS4
+>   0  81     13         13         0     00300380    0.0  DOS5
+>   0  97     618        830        0     00300380    0.0  @WDG
+>   0  101    751        1127       0     00300380    0.0  HSSR
+>   0  128    1268       2186       0     00300380    0.0  DOS8
+>   0  129    1          1          0     00300380    0.0  @CGI
+>   0  130    7          10         0     00300182    0.0  LOG 
+>   0  131    1          2          0     00300184    0.0  IOXP
+>   0  142    20         42         0     00300380    0.0  KTMR
+>   0  151    1652       1901       0     00300380    0.0  Sdrv
+>   0  152    383        489        0     00300380    0.0  LApp
+>   0  156    0          1          0     00300380    0.0  DOS9
+>   0  0      0          14937556   0     00000000    1.0  IRQ16: [timer]
 > 
-> > Are you sure, 100% sure, that every Xenomai user expects to be able
-> > to use /mnt as a mount point? Or that they will create directories
-> > under /mnt like everybody has been doing since Linux exists?
+> Most of them are in state 00300380, that means:
+>   XNSTARTED
+>   XNMAPPED
+>   XNRELAXED
+>   XNFPU
+>   XNSHADOW
 > 
-> I do use /mnt and I do NOT create directories in it.  I know people that
-> do create directories.  The admin can do whatever they want in there.
+> For a deadlock I would expect all threads must be wait for a semaphore or something else (state flag XNPEND). However all tasks are freezed.
 
-I understand the reasoning, but I like /mnt/xenomai
-
-So, instead of imposing a mount point to everyone, I would suggest
-to keep /mnt/xenomai as the documented default. And add an option to
-the configure script, to allow users which absolutely want to adhere
-to the FHS to choose another mount point.
+Well no, XNRELAXED state means that it is suspended from xenomai
+scheduler point of view, and handled by Linux scheduler. So, if
+there is a deadlock, it happens in secondary mode.
 
 -- 
 					    Gilles.
