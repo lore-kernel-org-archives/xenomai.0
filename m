@@ -1,19 +1,20 @@
-Date: Wed, 10 Dec 2014 20:57:49 +0100
+Date: Wed, 10 Dec 2014 20:59:52 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141210195749.GX1524@hermes.click-hack.org>
-References: <20141210183747.GA24110@csclub.uwaterloo.ca>
- <20141210184232.GP1524@hermes.click-hack.org>
+Message-ID: <20141210195952.GY1524@hermes.click-hack.org>
+References: <20141210184232.GP1524@hermes.click-hack.org>
  <20141210190240.GB24110@csclub.uwaterloo.ca>
  <20141210190509.GR1524@hermes.click-hack.org>
  <20141210190939.GD24110@csclub.uwaterloo.ca>
  <20141210191350.GT1524@hermes.click-hack.org>
  <20141210191924.GF24110@csclub.uwaterloo.ca>
- <20141210194458.GV1524@hermes.click-hack.org>
- <20141210195236.GI24110@csclub.uwaterloo.ca>
+ <20141210192419.GU1524@hermes.click-hack.org>
+ <20141210193946.GG24110@csclub.uwaterloo.ca>
+ <20141210194723.GW1524@hermes.click-hack.org>
+ <20141210195555.GJ24110@csclub.uwaterloo.ca>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20141210195236.GI24110@csclub.uwaterloo.ca>
+In-Reply-To: <20141210195555.GJ24110@csclub.uwaterloo.ca>
 Subject: Re: [Xenomai] __ipipe_root_status exported GPL only but used to be
  not GPL only and is breaking other code
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -27,34 +28,29 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
 Cc: xenomai@xenomai.org
 
-On Wed, Dec 10, 2014 at 02:52:36PM -0500, Lennart Sorensen wrote:
-> On Wed, Dec 10, 2014 at 08:44:58PM +0100, Gilles Chanteperdrix wrote:
-> > And by the way, you are not "reverting a change". The I-pipe
-> > starting with the version for Linux 3.2 was rewritten from scratch
-> > and called "I-pipe core", did not you see the file names changing ?
-> > So, what you have may simply have been a mistake. Or maybe not. 
+On Wed, Dec 10, 2014 at 02:55:55PM -0500, Lennart Sorensen wrote:
+> On Wed, Dec 10, 2014 at 08:47:23PM +0100, Gilles Chanteperdrix wrote:
+> > If you checkout
+> > https://git.xenomai.org/ipipe.git/log/?h=raw-ipipe-3.16
+> > You have all the changes that were made since we started working
+> > with a unique tree. As for the change you are referring to, this is
+> > not a change, as explained in the other answer I just sent.
 > 
-> I never realized changing ipipe to ipipe core was a huge change, and
-> certainly never noticed it was a rewrite.  It seemed to work about the
-> same with xenomai.
+> So I guess the part I would love to know is where did te code for this
+> commit come from:
 > 
-> > And if you want to talk about stupid, using proprietary modules in
-> > products based on Xenomai you redistribute is really stupidly
-> > dangerous, both technically and legally.
+> commit a6118a10918dea6cd9206d2a5127fa1717180fc3
+> Author: Jan Kiszka <jan.kiszka@siemens.com>
+> Date:   Tue Feb 5 21:28:38 2013 +0100
 > 
-> Well to manage T1/E1 ports that was what existed.
+>     ipipe: Import generic and x86 bits based on 3.5.7-x86-3
 > 
-> I don't see a technical problem, we have the sources and are compiling
-> from source.  The modules build and work fine on the kernel without ipipe,
-> so clearly it isn't using any part of ipipe.
+> After all that is the first place I see where the symbol in question
+> has GPL only.
 
-The technical problem is that the I-pipe relies on macro to
-substitute local_irq_save and local_irq_restore in all the code
-running in the linux kernel. So technically, any code which uses
-local_irq_save and local_irq_restore uses the I-pipe, in an I-pipe
-patched kernel. If any code runs which disables the irqs without
-using these macros, because it is shipped pre-compiled, then you may
-just have lost real-time guarantees.
+The first commit is the initial import of the ipipe-core branch for
+3.2 or 3.1. Since this is a rewrite, you will not see a change. Just
+a big patch which adds the new I-pipe core support.
 
 -- 
 					    Gilles.
