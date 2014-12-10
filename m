@@ -1,17 +1,21 @@
-Date: Fri, 28 Nov 2014 12:55:37 +0100
+Date: Wed, 10 Dec 2014 22:58:42 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141128115537.GB6395@hermes>
-References: <547772AF.108@siemens.com>
- <20141127191438.GI24110@csclub.uwaterloo.ca>
- <20141127203400.GP7842@hermes> <54778CF6.6000909@siemens.com>
- <20141127231527.GC24076@hermes> <5478430B.9030602@siemens.com>
- <20141128095038.GA3832@hermes> <547846AC.6070204@siemens.com>
- <20141128095745.GB3832@hermes> <5478618F.1010506@siemens.com>
+Message-ID: <20141210215842.GA1499@hermes.click-hack.org>
+References: <20141210184232.GP1524@hermes.click-hack.org>
+ <20141210190240.GB24110@csclub.uwaterloo.ca>
+ <20141210190509.GR1524@hermes.click-hack.org>
+ <20141210190939.GD24110@csclub.uwaterloo.ca>
+ <20141210191350.GT1524@hermes.click-hack.org>
+ <20141210191924.GF24110@csclub.uwaterloo.ca>
+ <5488A2BD.3080800@xenomai.org>
+ <20141210194405.GH24110@csclub.uwaterloo.ca>
+ <5488A985.2070006@xenomai.org> <5488B2DF.2080004@nta-inc.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5478618F.1010506@siemens.com>
-Subject: Re: [Xenomai] [pull] forge: Adjust default registry mount point
+In-Reply-To: <5488B2DF.2080004@nta-inc.net>
+Subject: Re: [Xenomai] __ipipe_root_status exported GPL only but used to be
+ not GPL only and is breaking other code
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,108 +24,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Jeff Webb <jeff.webb@nta-inc.net>
+Cc: xenomai@xenomai.org
 
-On Fri, Nov 28, 2014 at 12:50:39PM +0100, Jan Kiszka wrote:
-> On 2014-11-28 10:57, Gilles Chanteperdrix wrote:
-> > On Fri, Nov 28, 2014 at 10:55:56AM +0100, Jan Kiszka wrote:
-> >> On 2014-11-28 10:50, Gilles Chanteperdrix wrote:
-> >>> On Fri, Nov 28, 2014 at 10:40:27AM +0100, Jan Kiszka wrote:
-> >>>> On 2014-11-28 00:15, Gilles Chanteperdrix wrote:
-> >>>>> On Thu, Nov 27, 2014 at 09:43:34PM +0100, Jan Kiszka wrote:
-> >>>>>> On 2014-11-27 21:34, Gilles Chanteperdrix wrote:
-> >>>>>>> On Thu, Nov 27, 2014 at 02:14:38PM -0500, Lennart Sorensen wrote:
-> >>>>>>>> On Thu, Nov 27, 2014 at 07:51:27PM +0100, Jan Kiszka wrote:
-> >>>>>>>>> On 2014-11-27 19:18, Gilles Chanteperdrix wrote:
-> >>>>>>>>>> According to the filesystem hierarchy standard, /mnt is the standard
-> >>>>>>>>>> place for "temporarily mounted filesystems".
-> >>>>>>>>>>
-> >>>>>>>>>> http://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard
-> >>>>>>>>>
-> >>>>>>>>> Right, another reason to NOT mess around with it: if something was
-> >>>>>>>>> temporarily mounted there, we will create the mountpoint inside that
-> >>>>>>>>> filesystem with unforeseeable side effects.
-> >>>>>>>>
-> >>>>>>>> I always read that as "temporarily mounted there by the admin or some
-> >>>>>>>> other human".  Certainly not automatic mounts by software.  There is a
-> >>>>>>>> reason /media and such exists on many distributins.
-> >>>>>>>
-> >>>>>>> I would not venture an "always", autofs for instance, used to mount
-> >>>>>>> things under /mnt. and /media has not always existed either, we used
-> >>>>>>> /mnt/cdrom.
-> >>>>>>
-> >>>>>> FHS on /mnt purpose:
-> >>>>>>
-> >>>>>> "This directory is provided so that the system administrator may
-> >>>>>> temporarily mount a filesystem as needed. The content of this directory
-> >>>>>> is a local issue and should not affect the manner in which any program
-> >>>>>> is run."
-> >>>>>>
-> >>>>>> I think this makes it crystal clear that Xenomai is not supposed to
-> >>>>>> touch it.
-> >>>>>
-> >>>>> Just to add another argument. I just asked a friend who is a
-> >>>>> professional sysadmin. He creates directory under /mnt and mount
-> >>>>> things under these directories. So, I am not sure the standard is
-> >>>>> even applied by the people who should use it.
-> >>>>>
-> >>>>> If you read on the last site I sent, under the /media article: 
-> >>>>>
-> >>>>> Amid much controversy and consternation on the part of system and
-> >>>>> network administrators a directory containing mount points for
-> >>>>> removable media has now been created. Funnily enough, it has been
-> >>>>> named /media.
-> >>>>>
-> >>>>> Are you sure, 100% sure, that every Xenomai user expects to be able
-> >>>>> to use /mnt as a mount point? Or that they will create directories
-> >>>>> under /mnt like everybody has been doing since Linux exists?
+On Wed, Dec 10, 2014 at 02:53:51PM -0600, Jeff Webb wrote:
+> On 12/10/2014 02:13 PM, Philippe Gerum wrote:
+> >On 12/10/2014 08:44 PM, Lennart Sorensen wrote:
+> >>On Wed, Dec 10, 2014 at 08:45:01PM +0100, Philippe Gerum wrote:
+> >>>On 12/10/2014 08:19 PM, Lennart Sorensen wrote:
+> >>>>On Wed, Dec 10, 2014 at 08:13:50PM +0100, Gilles Chanteperdrix wrote:
+> >>>>>This is true in user space. Not for kernel modules, see:
+> >>>>>https://git.xenomai.org/ipipe.git/tree/Documentation/stable_api_nonsense.txt?h=ipipe-3.14
 > >>>>
-> >>>> I'm both absolutely sure that a) has to be left alone by Xenomai because
-> >>>> of requirements of the FHS and the way /mnt is used and b) we should try
-> >>>> hard to avoid creating temporary dirs in persistent filesystems.
+> >>>>I can't even figure out how to track down which call is making it
+> >>>>reference that symbol (for which it has zero interest of course).
+> >>>>
+> >>>>I suppose if whoever made the change in ipipe (which unfortunately the
+> >>>>ipipe git tree does not make easy to track down since it isn't like it
+> >>>>is one git tree moving from version to version) does not see the point
+> >>>>in reverting the change, then I will just have to keep a patch around to
+> >>>>do it instead and ignore the advisory on the symbol to get this to work.
+> >>>>I really don't want to do that, but stupid changes sometimes need stupid
+> >>>>fixes.
+> >>>>
+> >>>>This code does NOT use any xenomai or ipipe features.  Other code does.
+> >>>>ipipe should not be breaking it.
+> >>>>
 > >>>
-> >>> This is ridiculous. Because the standard changed, and one
-> >>> distribution, Debian, decided to follow the new standard, which
-> >>> seems to be not widely accepted, and even controversial, you want to
-> >>> impose what Debian does to everybody. The distribution I use has
-> >>> mount points under /mnt. So, why following Debian and not the
-> >>> distribution I use, and what sysadmin have been doing for ages?
-> >>>
-> >>> You want the mount point to be somewhere else? Fine, put a symbolic
-> >>> link.
-> >>>
-> >>> mkdir /run/xenomai
-> >>> ln -s /run/xenomai /mnt/xenomai
+> >>>The stupid guy is me, as the main copyright holder on most of the code
+> >>>you have been using with Xenomai so far. So where do we go from here?
 > >>
-> >> Again, this is not acceptible as /mnt changes all the time and exposes
-> >> various remote filesystems which will hide that link.
-> > 
-> > You are missing the point. Yes, Debian does that, but not all
-> > distribution. Other distributions do not do that.
-> > 
+> >>No one said the guy was stupid.  Just the change.
+> >>
+> >>As far as I can tell, __ipipe_root_status is a number containing some
+> >>status.  It is not a function, it doesn't do anything by itself, so why
+> >>did it need to be changed to GPL only if that causes the entire kernel
+> >>to become GPL only (from what I have been able to tell so far)?
+> >>
+> >>I certainly think having the ipipe functions limited to GPL only seems
+> >>perfectly reasonable.  It is new functionality the kernel didn't have
+> >>before.  I don't think it should make existing kernel functions suddenly
+> >>be GPL only though.
+> >>
+> >>I will do a test build with the symbol changed back to see if that is
+> >>in fact the only thing causing issues for the external module.
+> >>
+> >
+> >The point is about being able to discuss issues without starting useless
+> >rants or flame wars.
+> >
+> >The I-pipe interface was moved to GPL_ONLY to clearly state that such
+> >code intimately depends on the kernel innards, has to know about them to
+> >function, and therefore any client code has to be GPL-compatible to
+> >comply with the kernel license.
+> >
+> >The only question that matters is: does __ipipe_root_status belong to
+> >the visible I-pipe API exposed to clients? The answer from the copyright
+> >holder of this particular code is "no".
+> >
+> >Ah, maybe it was a mistake then, something that was overlooked, just
+> >because I-pipe maintainers don't routinely have to rebuild non-GPL
+> >software on top the I-pipe? Yes, most likely it was.
+> >
+> >Could the code be changed to fix this, then? Yes, it sounds reasonable,
+> >and would not change the original intent of moving the API symbols to
+> >GPL_ONLY.
+> >
+> >The issue is non-ambiguous, the solution is straightforward. Let's
+> >relax, there is work ahead.
+> >
 > 
-> SUSE, Ubuntu, Gentoo, Red Hat - it's already standard. But I will change
-> my patch to /var/run to avoid surprises with other/older distros.
+> I had a similar issue in the past getting an I-pipe patched kernel to work with the proprietary nvidia driver module.  I added the following lines to my build script to get things working on Ubuntu 12.04 (x86-64) with a 3.5.7 kernel:
+> 
+> if [ ${FIX_SYMBOL_EXPORT} = 1 ]; then
+>     sed -i 's/EXPORT_PER_CPU_SYMBOL_GPL(ipipe_percpu);/EXPORT_PER_CPU_SYMBOL(ipipe_percpu);/' kernel/ipipe/core.c
+>     sed -i 's/EXPORT_SYMBOL_GPL(ipipe_restore_root);/EXPORT_SYMBOL(ipipe_restore_root);/' kernel/ipipe/core.c
+>     sed -i 's/EXPORT_SYMBOL_GPL(ipipe_root_only);/EXPORT_SYMBOL(ipipe_root_only);/' kernel/ipipe/core.c
+>     sed -i 's/EXPORT_SYMBOL_GPL(__ipipe_spin_unlock_debug);/EXPORT_SYMBOL(__ipipe_spin_unlock_debug);/' kernel/ipipe/core.c
+> fi
+> 
+> As one would expect, worst-case latencies with the nvidia module loaded are terrible, but this capability can be useful from a code development standpoint on machines that don't work well with the free software nouveau driver.
 
-Again, using /mnt/xenomai does not break any distribution following
-the standard.
-
-Let us try things another way, the possibilities we have are:
-- /mnt/xenomai: a solution that used to be standard but ceased to be
-with the FHS which did not provide a standard replacement, but does
-not break any distribution
-- /run/xenomai: a solution that relies on the existence on the /run
-directory, which is not standard, but is going to be, maybe.
-- /var/run/xenomai: a solution which does not violate any version of
-the standard, but is not standard either, does not make clear that
-the directory is a mount point (which /mnt does), breaks the
-existing documentation, breaks the existing usages of Xenomai 3, and
-is longer to type.
-
-So, I really find that /mnt/xenomai is the best compromise. There is
-no standard solution, at least /mnt/xenomai is a solution that used
-to be standard.
+Well, at some point, we had some performances issues due to the
+intel drivers creating large latencies, so, this may not be related
+to the binary blob, but simply of some other hardware related
+issues.
 
 -- 
 					    Gilles.
