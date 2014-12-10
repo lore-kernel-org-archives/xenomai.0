@@ -1,6 +1,6 @@
-Date: Wed, 10 Dec 2014 20:12:28 +0100
+Date: Wed, 10 Dec 2014 20:13:50 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141210191228.GS1524@hermes.click-hack.org>
+Message-ID: <20141210191350.GT1524@hermes.click-hack.org>
 References: <20141210183747.GA24110@csclub.uwaterloo.ca>
  <20141210184232.GP1524@hermes.click-hack.org>
  <20141210190240.GB24110@csclub.uwaterloo.ca>
@@ -32,16 +32,10 @@ On Wed, Dec 10, 2014 at 02:09:39PM -0500, Lennart Sorensen wrote:
 > and the change in the export of that symbol is causing the problem.
 > 
 > Certainly the mainline kernel does not allow existing calls to get broken
-> by other changes.  Perhaps ipipe should follow the same rule and revert
-> the change to that symbol.
+> by other changes.
 
-The I-pipe messing with task_struct is not involved here. Using
-EXPORT_SYMBOL_GPL instead of EXPORT_SYMBOL is what causes the kernel
-to refuse loading a module not using the GPL license trying to use
-that symbol. That is the purpose of EXPORT_SYMBOL_GPL.
-
-Using EXPORT_SYMBOL_GPL is done by a lot of modules which "follow
-the rules", I-pipe included.
+This is true in user space. Not for kernel modules, see:
+https://git.xenomai.org/ipipe.git/tree/Documentation/stable_api_nonsense.txt?h=ipipe-3.14
 
 -- 
 					    Gilles.
