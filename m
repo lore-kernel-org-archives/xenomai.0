@@ -1,20 +1,20 @@
 From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Wed, 10 Dec 2014 15:05:14 -0500
-Message-ID: <20141210200514.GK24110@csclub.uwaterloo.ca>
-References: <20141210184232.GP1524@hermes.click-hack.org>
+Date: Wed, 10 Dec 2014 15:11:40 -0500
+Message-ID: <20141210201140.GL24110@csclub.uwaterloo.ca>
+References: <20141210183747.GA24110@csclub.uwaterloo.ca>
+ <20141210184232.GP1524@hermes.click-hack.org>
  <20141210190240.GB24110@csclub.uwaterloo.ca>
  <20141210190509.GR1524@hermes.click-hack.org>
  <20141210190939.GD24110@csclub.uwaterloo.ca>
  <20141210191350.GT1524@hermes.click-hack.org>
  <20141210191924.GF24110@csclub.uwaterloo.ca>
- <20141210192419.GU1524@hermes.click-hack.org>
- <20141210193946.GG24110@csclub.uwaterloo.ca>
- <20141210194723.GW1524@hermes.click-hack.org>
- <20141210195555.GJ24110@csclub.uwaterloo.ca>
+ <5488A2BD.3080800@xenomai.org>
+ <20141210194405.GH24110@csclub.uwaterloo.ca>
+ <5488A985.2070006@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20141210195555.GJ24110@csclub.uwaterloo.ca>
+In-Reply-To: <5488A985.2070006@xenomai.org>
 Subject: Re: [Xenomai] __ipipe_root_status exported GPL only but used to be
  not GPL only and is breaking other code
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -25,37 +25,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Wed, Dec 10, 2014 at 02:55:55PM -0500, Lennart Sorensen wrote:
-> On Wed, Dec 10, 2014 at 08:47:23PM +0100, Gilles Chanteperdrix wrote:
-> > If you checkout
-> > https://git.xenomai.org/ipipe.git/log/?h=raw-ipipe-3.16
-> > You have all the changes that were made since we started working
-> > with a unique tree. As for the change you are referring to, this is
-> > not a change, as explained in the other answer I just sent.
-> 
-> So I guess the part I would love to know is where did te code for this
-> commit come from:
-> 
-> commit a6118a10918dea6cd9206d2a5127fa1717180fc3
-> Author: Jan Kiszka <jan.kiszka@siemens.com>
-> Date:   Tue Feb 5 21:28:38 2013 +0100
-> 
->     ipipe: Import generic and x86 bits based on 3.5.7-x86-3
-> 
-> After all that is the first place I see where the symbol in question
-> has GPL only.
+On Wed, Dec 10, 2014 at 09:13:57PM +0100, Philippe Gerum wrote:
+> The point is about being able to discuss issues without starting useless
+> rants or flame wars.
 
-OK, that seems to be in the ipipe-gch tree in the for 3.5.7 branch and
-came from here:
+I was not trying to.  I think I was getting frustrated chasing around
+git trees wondering why I could not figure out where the change came from.
 
-commit 30d88146bf57a0681cca890bc16f38c6d87bed1a
-Author: Philippe Gerum <rpm@xenomai.org>
-Date:   Fri Aug 31 10:32:06 2012 +0200
+> The I-pipe interface was moved to GPL_ONLY to clearly state that such
+> code intimately depends on the kernel innards, has to know about them to
+> function, and therefore any client code has to be GPL-compatible to
+> comply with the kernel license.
 
-    ipipe: introduce generic pipeline support
+Well I think most of the interfaces were already GPL only even in 2.6.36
+from what I can tell, so nothing new there.
+
+> The only question that matters is: does __ipipe_root_status belong to
+> the visible I-pipe API exposed to clients? The answer from the copyright
+> holder of this particular code is "no".
+
+Oh good, because I was having trouble seeing how it was part of the
+ipipe interface.
+
+> Ah, maybe it was a mistake then, something that was overlooked, just
+> because I-pipe maintainers don't routinely have to rebuild non-GPL
+> software on top the I-pipe? Yes, most likely it was.
+
+I would not expect that to be a normal procedure.  Would be a pain to do.
+
+> Could the code be changed to fix this, then? Yes, it sounds reasonable,
+> and would not change the original intent of moving the API symbols to
+> GPL_ONLY.
+> 
+> The issue is non-ambiguous, the solution is straightforward. Let's
+> relax, there is work ahead.
+
+Should I do a test build with it changed to at least confirm if that is
+the only issue?
+
+I tried comparing a 3.1 versino of core.c to a 3.5 version and they are
+certainly changed a lot.  For the symbol here It went from:
+
+/*
+ * Create an alias to the unique root status, so that arch-dep code
+ * may get simple and easy access to this percpu variable.  We also
+ * create an array of pointers to the percpu domain data; this tends
+ * to produce a better code when reaching non-root domains. We make
+ * sure that the early boot code would be able to dereference the
+ * pointer to the root domain data safely by statically initializing
+ * its value (local_irq*() routines depend on this).
+ */
+#if __GNUC__ >= 4
+extern unsigned long __ipipe_root_status
+__attribute__((alias(__stringify(ipipe_percpu_darray))));
+EXPORT_SYMBOL(__ipipe_root_status);
+#else /* __GNUC__ < 4 */
+/*
+ * Work around a GCC 3.x issue making alias symbols unusable as
+ * constant initializers.
+ */
+unsigned long *const __ipipe_root_status_addr =
+        &__raw_get_cpu_var(ipipe_percpu_darray)[IPIPE_ROOT_SLOT].status;
+EXPORT_SYMBOL(__ipipe_root_status_addr);
+#endif /* __GNUC__ < 4 */
+
+and become:
+
+/*
+ * Create an alias to the unique root status, so that arch-dep code
+ * may get fast access to this percpu variable including from
+ * assembly.  A hard-coded assumption is that root.status appears at
+ * offset #0 of the ipipe_percpu struct.
+ */
+extern unsigned long __ipipe_root_status
+__attribute__((alias(__stringify(ipipe_percpu))));
+EXPORT_SYMBOL_GPL(__ipipe_root_status);
+
+
+So certainly cleaner after getting rid of support for old GCC versions
+and such.
 
 -- 
 Len Sorensen
