@@ -1,9 +1,12 @@
+Date: Wed, 10 Dec 2014 11:38:29 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141210103829.GA1524@hermes.click-hack.org>
+References: <CALe7ZU07e_Pi4=jbV9y1zuVd4RAKZGRsuUdQrVqWCjPcmjTkgg@mail.gmail.com>
 MIME-Version: 1.0
-Date: Wed, 10 Dec 2014 15:57:44 +0530
-Message-ID: <CALe7ZU07e_Pi4=jbV9y1zuVd4RAKZGRsuUdQrVqWCjPcmjTkgg@mail.gmail.com>
-From: JAY KOTHARI <jaikothari10@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] /asm/ipipe.h not found
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALe7ZU07e_Pi4=jbV9y1zuVd4RAKZGRsuUdQrVqWCjPcmjTkgg@mail.gmail.com>
+Subject: Re: [Xenomai] /asm/ipipe.h not found
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,29 +15,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: JAY KOTHARI <jaikothari10@gmail.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-Hello,
-    I am porting linux-3.2.21(xenomai-2.6.2 patched to it) on
-BeagleBoard-XM. zImage is successfully made. But when I am building
-the modules with following command
+On Wed, Dec 10, 2014 at 03:57:44PM +0530, JAY KOTHARI wrote:
+> Hello,
+>     I am porting linux-3.2.21(xenomai-2.6.2 patched to it) on
+> BeagleBoard-XM.
 
- $make -j 8 ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi modules
+You do not need to port it, it is already supported.
 
- It shows error:
-  make CONFIG_DEBUG_SECTION_MISMATCH=y
-
-After this I ran
- $make CONFIG_DEBUG_SECTION_MISMATCH=y
-
-This lets to another error
-include/linux/ipipe.h :33:23: fatal error:asm/ipipe.h: No such file or
-directory.
-compilation terminated.
-
-      Actually ipipe.h is there in /asm/ipipe.h:I tried to set CFLAG
-and export it but it is not working.Help would be appreciated.
+Also, why using such old versions ? The latest version of Xenomai is
+2.6.4 and will work with the I-pipe patch for Linux 3.2.21.
 
 
-Jay Kothari
+> zImage is successfully made. But when I am building
+> the modules with following command
+> 
+>  $make -j 8 ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi modules
+> 
+>  It shows error:
+>   make CONFIG_DEBUG_SECTION_MISMATCH=y
+
+Yes, this has been reported, and fixed in later patches. That is
+what you get by using old patches. Simply turn that off.
+
+> 
+> After this I ran
+>  $make CONFIG_DEBUG_SECTION_MISMATCH=y
+> 
+> This lets to another error
+> include/linux/ipipe.h :33:23: fatal error:asm/ipipe.h: No such file or
+> directory.
+> compilation terminated.
+> 
+>       Actually ipipe.h is there in /asm/ipipe.h:I tried to set CFLAG
+> and export it but it is not working.Help would be appreciated.
+
+You do not provide enough information for us to answer that
+question. Sorry.
+
+-- 
+					    Gilles.
 
