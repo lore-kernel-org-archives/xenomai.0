@@ -1,17 +1,19 @@
-Date: Thu, 11 Dec 2014 11:47:13 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141211104713.GC21808@hermes.click-hack.org>
+From: "Stoidner, Christoph" <c.stoidner@arvero.de>
+Date: Thu, 11 Dec 2014 11:17:42 +0000
+Message-ID: <67263b7a47034e2fba906d0b68b3277f@EX132MBOX1A.de2.local>
 References: <8119909587ec45d1ba5696722a1b0945@EX132MBOX1A.de2.local>
  <20141210190114.GQ1524@hermes.click-hack.org>
  <6f637a6b60964c49bbc08e3204c8eae3@EX132MBOX1A.de2.local>
  <20141211100520.GA21808@hermes.click-hack.org>
  <88cb5162a0ca44fb8251aa8161a8d8d8@EX132MBOX1A.de2.local>
  <20141211102249.GB21808@hermes.click-hack.org>
- <14309ee2cb7e45c9a01e6e1504c5bed5@EX132MBOX1A.de2.local>
+ <14309ee2cb7e45c9a01e6e1504c5bed5@EX132MBOX1A.de2.local>,
+ <20141211104713.GC21808@hermes.click-hack.org>
+In-Reply-To: <20141211104713.GC21808@hermes.click-hack.org>
+Content-Language: de-DE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <14309ee2cb7e45c9a01e6e1504c5bed5@EX132MBOX1A.de2.local>
 Subject: Re: [Xenomai] Sleeping function called from invalid context
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -21,51 +23,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Stoidner, Christoph" <c.stoidner@arvero.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thu, Dec 11, 2014 at 10:29:58AM +0000, Stoidner, Christoph wrote:
-> >> >> RT drivers are also not installed on our system.
-> >> >
-> >> > Maybe I look wrong at nucleus/shadow.c, but I see only two reasons
-> >> > for for xnshadow_relax being called for a secondary mode syscall:
-> >> >
-> >> > - a call requiring primary mode was made and the switchback flag is
-> >> > set (which itself can have two reasons, either the fact that the
-> >> > syscall uses it, the only one being currently rt_timer_set_mode, or
-> >> > the fact that the caller runs with the SCHED_OTHER policy and does
-> >> > not hold a mutex)
-> >> >
-> >> > - a call with the adaptive flag was made, handled in primary mode,
-> >> > but returned -ENOSYS, which means the call needs to be retried in
-> >> > secondary mode.
-> >> >
-> >>
-> >> You are right. We have implemented some syscalls the require primary mode (since they could block) but should switch back to secondary. These syscalls are using attributes
-> >>
-> >>     __xn_exec_primary | __xn_exec_switchback
-> >
-> > Well then the tasks blocked with a stack trace like what you showed
-> > are blocked when coming back from such syscalls. Does this happen
-> > often, or are these syscall seldom used?
-> 
-> In this application the switchback syscalls are used rather often. 
-
-Two things to note:
-
-- mode switches do not go without some overhead, it is almost never
-a good idea to force the switchback, since the nucleus will switch
-the target thread to secondary mode when needed anyway, all that you
-risk is to introduce useless mode switches, so, if you do it, you
-must have a good reason for it;
-
-- there is a risk of overflowing the nucleus queue for relax
-requests, you will see a message in the kernel logs when this
-happens if you enable debugging of the nucleus
-(CONFIG_XENO_OPT_DEBUG_NUCLEUS).
-
-
-
--- 
-					    Gilles.
+>>=0A=
+>> In this application the switchback syscalls are used rather often.=0A=
+>=0A=
+>Two things to note:=0A=
+>=0A=
+>- mode switches do not go without some overhead, it is almost never=0A=
+>a good idea to force the switchback, since the nucleus will switch=0A=
+>the target thread to secondary mode when needed anyway, all that you=0A=
+>risk is to introduce useless mode switches, so, if you do it, you=0A=
+>must have a good reason for it;=0A=
+=0A=
+Yes I know. However we need to assure that the task switches back to second=
+ary domain after using skin's call, since otherwise it would affect other l=
+inux tasks which actual have a higher linux-priority. In general we try to =
+simulate something like "priority coupling" since this is marked as depreca=
+ted.=0A=
+=0A=
+>- there is a risk of overflowing the nucleus queue for relax=0A=
+>requests, you will see a message in the kernel logs when this=0A=
+>happens if you enable debugging of the nucleus=0A=
+>(CONFIG_XENO_OPT_DEBUG_NUCLEUS).=0A=
+=0A=
+I have enabled CONFIG_XENO_OPT_DEBUG_NUCLEUS now but I do not see any accor=
+ding message.=0A=
+=0A=
+Regards,=0A=
+Christoph=0A=
 
