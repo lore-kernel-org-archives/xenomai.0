@@ -1,20 +1,16 @@
-Message-ID: <5488D4D8.7010604@nta-inc.net>
-Date: Wed, 10 Dec 2014 17:18:48 -0600
-From: Jeff Webb <jeff.webb@nta-inc.net>
+From: =?utf-8?B?SMOkbmVsLUJhYXMsIEFsZXhhbmRlcg==?=
+ <alexander.haenel-baas@sieb-meyer.de>
+Date: Thu, 11 Dec 2014 06:32:28 +0000
+Message-ID: <9BA84827B30CBE4996725F98F7DC9123428F9EDC@SMExchange01.siebmeyer.org>
+References: <9BA84827B30CBE4996725F98F7DC9123428F9E0E@SMExchange01.siebmeyer.org>
+ <20141210143114.GJ1524@hermes.click-hack.org>
+ <20141210162340.GK1524@hermes.click-hack.org>
+In-Reply-To: <20141210162340.GK1524@hermes.click-hack.org>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20141210190509.GR1524@hermes.click-hack.org>
- <20141210190939.GD24110@csclub.uwaterloo.ca>
- <20141210191350.GT1524@hermes.click-hack.org>
- <20141210191924.GF24110@csclub.uwaterloo.ca> <5488A2BD.3080800@xenomai.org>
- <20141210194405.GH24110@csclub.uwaterloo.ca> <5488A985.2070006@xenomai.org>
- <20141210201140.GL24110@csclub.uwaterloo.ca>
- <20141210212342.GO24110@csclub.uwaterloo.ca> <5488C149.8020901@nta-inc.net>
- <20141210220129.GP24110@csclub.uwaterloo.ca>
-In-Reply-To: <20141210220129.GP24110@csclub.uwaterloo.ca>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] __ipipe_root_status exported GPL only but used to be
- not GPL only and is breaking other code
+Subject: Re: [Xenomai] CPU time limit exceeded SIGXCPU
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,18 +19,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 12/10/2014 04:01 PM, Lennart Sorensen wrote:
-> On Wed, Dec 10, 2014 at 03:55:21PM -0600, Jeff Webb wrote:
->> I can confirm that this is around the time I started having trouble with the proprietary nvidia module.  In the linux 2.6.?? days, I didn't experience that issue.  It is obviously up to the authors to decide whether or not it is desirable to allow proprietary modules to continue to operate on an I-pipe patched kernel as they do an un-patched kernel.  Since the issue was raised, I thought I would report my experience in case there is a desire to get this configuration working again.
->
-> Well certainly I do agree with Gilles that if there is a binary blob,
-> you can not know if it is going to mess directly with interrupts and
-> break ipipe, so the nvidia driver could be a problem (hard to know).
-
-Yes, this is true.  Just to be clear, though, I have used Xenomai with the nvidia module loaded, and it does work well enough to be useful for some applications on some hardware.  I would not recommend this configuration for a critical application, but it may be useful to some people for development and testing.  The open-source nouveau driver is much better behaved, but some video cards don't work well with nouveau.
-
--Jeff
-
+SGkgR2lsbGVzLA0KDQpUaGFua3MgZm9yIHRoZSBhZHZpY2UuDQoNCkkgbG9vayBmb3Igc3dpdGNo
+aW5nIHRoZSBzY2hlZHVsaW5nIHBvbGljeSwgdGhhdOKAmXMgbXkgZ29hbC4NCg0KUmVnYXJkcywN
+CkFsZXgNCg0KLS0tLS1VcnNwcsO8bmdsaWNoZSBOYWNocmljaHQtLS0tLQ0KVm9uOiBHaWxsZXMg
+Q2hhbnRlcGVyZHJpeCBbbWFpbHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXSAN
+Ckdlc2VuZGV0OiBNaXR0d29jaCwgMTAuIERlemVtYmVyIDIwMTQgMTc6MjQNCkFuOiBIw6RuZWwt
+QmFhcywgQWxleGFuZGVyDQpDYzogeGVub21haUB4ZW5vbWFpLm9yZw0KQmV0cmVmZjogUmU6IFtY
+ZW5vbWFpXSBDUFUgdGltZSBsaW1pdCBleGNlZWRlZCBTSUdYQ1BVDQoNCk9uIFdlZCwgRGVjIDEw
+LCAyMDE0IGF0IDAzOjMxOjE0UE0gKzAxMDAsIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOg0K
+PiBPbiBXZWQsIERlYyAxMCwgMjAxNCBhdCAwMjoyMjoxMFBNICswMDAwLCBIw6RuZWwtQmFhcywg
+QWxleGFuZGVyIHdyb3RlOg0KPiA+IEhpLA0KPiA+IA0KPiA+IGkgZ2V0IHRoZSBtZXNzYWdlICJD
+UFUgdGltZSBsaW1pdCBleGNlZWRlZCIgIHdoZW4gbXkgbWFpbiB0aHJlYWQgaXMgc3RhcnRpbmcu
+DQo+ID4gDQo+ID4gVGhlIHRocmVhZCBtb2QgQml0ICJUX1dBUk5TVyIgaXMgbm90IHNldC4NCj4g
+PiB1bGltaXQgLWEgc2hvd3MgY3B1IHRpbWUgaXMgdW5saW1pdGVkLg0KPiA+IA0KPiA+IE5vdyBJ
+IGluc3RhbGxlZCB0aGUgc2lnZGVidWcgaGFuZGxlciBhbmQgZ2V0IHRoZSBtZXNzYWdlOg0KPiA+
+IA0KPiA+IFNJR0RFQlVHIHJlY2VpdmVkLCByZWFzb24gNzx1bmtub3duPg0KPiA+IA0KPiA+IE15
+IHF1ZXN0aW9uIGlzOiB3aHkgaXMgdGhlIHJlYXNvbiB2YWx1ZSA3PyBUaGVzZSB2YWx1ZSBoYXMg
+b25seSBtYXggNiBlbnRyaWVzPw0KPiANCj4gTm8sIGl0IGhhcyA3LiBTZWU6DQo+IA0KPiBodHRw
+czovL2dpdC54ZW5vbWFpLm9yZy94ZW5vbWFpLTIuNi5naXQvdHJlZS9pbmNsdWRlL2FzbS1nZW5l
+cmljL3N5c2NhDQo+IGxsLmg/aWQ9djIuNi40I241Ng0KDQpWYWx1ZSA3IG1lYW5zIHRoYXQgeW91
+ciBhcHBsaWNhdGlvbiBlaXRoZXIgaXMgZG9pbmcgYmFkIHRoaW5ncyB3aGlsZSBob2xkaW5nIGEg
+bXV0ZXggKHN1Y2ggYXMgc3dpdGNoaW5nIHNjaGVkdWxpbmcgcG9saWN5IGZyb20gb3IgdG8gU0NI
+RURfT1RIRVIpLCBvciB0aGF0IHRoZXJlIGlzIHNvbWUgb3RoZXIgdW5rbm93biBpc3N1ZS4gU28s
+IGl0IHdvdWxkIGhlbHAgaWYgeW91IGNvdWxkIHJlZHVjZSB5b3VyIHRlc3QgcHJvZ3JhbSB0byBh
+IHNlbGYtY29udGFpbmVkIHRlc3QgY2FzZSB3aGljaCB3ZSBjYW4gcnVuIHRvIHJlcHJvZHVjZSB0
+aGUgaXNzdWUuDQoNCi0tIA0KCQkJCQkgICAgR2lsbGVzLg0K
 
