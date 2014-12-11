@@ -1,16 +1,14 @@
-From: =?utf-8?B?SMOkbmVsLUJhYXMsIEFsZXhhbmRlcg==?=
- <alexander.haenel-baas@sieb-meyer.de>
-Date: Thu, 11 Dec 2014 06:32:28 +0000
-Message-ID: <9BA84827B30CBE4996725F98F7DC9123428F9EDC@SMExchange01.siebmeyer.org>
-References: <9BA84827B30CBE4996725F98F7DC9123428F9E0E@SMExchange01.siebmeyer.org>
- <20141210143114.GJ1524@hermes.click-hack.org>
- <20141210162340.GK1524@hermes.click-hack.org>
-In-Reply-To: <20141210162340.GK1524@hermes.click-hack.org>
+From: "Stoidner, Christoph" <c.stoidner@arvero.de>
+Date: Thu, 11 Dec 2014 10:00:16 +0000
+Message-ID: <6f637a6b60964c49bbc08e3204c8eae3@EX132MBOX1A.de2.local>
+References: <8119909587ec45d1ba5696722a1b0945@EX132MBOX1A.de2.local>,
+ <20141210190114.GQ1524@hermes.click-hack.org>
+In-Reply-To: <20141210190114.GQ1524@hermes.click-hack.org>
 Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: Re: [Xenomai] CPU time limit exceeded SIGXCPU
+Subject: Re: [Xenomai] Sleeping function called from invalid context
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,29 +20,23 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGkgR2lsbGVzLA0KDQpUaGFua3MgZm9yIHRoZSBhZHZpY2UuDQoNCkkgbG9vayBmb3Igc3dpdGNo
-aW5nIHRoZSBzY2hlZHVsaW5nIHBvbGljeSwgdGhhdOKAmXMgbXkgZ29hbC4NCg0KUmVnYXJkcywN
-CkFsZXgNCg0KLS0tLS1VcnNwcsO8bmdsaWNoZSBOYWNocmljaHQtLS0tLQ0KVm9uOiBHaWxsZXMg
-Q2hhbnRlcGVyZHJpeCBbbWFpbHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXSAN
-Ckdlc2VuZGV0OiBNaXR0d29jaCwgMTAuIERlemVtYmVyIDIwMTQgMTc6MjQNCkFuOiBIw6RuZWwt
-QmFhcywgQWxleGFuZGVyDQpDYzogeGVub21haUB4ZW5vbWFpLm9yZw0KQmV0cmVmZjogUmU6IFtY
-ZW5vbWFpXSBDUFUgdGltZSBsaW1pdCBleGNlZWRlZCBTSUdYQ1BVDQoNCk9uIFdlZCwgRGVjIDEw
-LCAyMDE0IGF0IDAzOjMxOjE0UE0gKzAxMDAsIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOg0K
-PiBPbiBXZWQsIERlYyAxMCwgMjAxNCBhdCAwMjoyMjoxMFBNICswMDAwLCBIw6RuZWwtQmFhcywg
-QWxleGFuZGVyIHdyb3RlOg0KPiA+IEhpLA0KPiA+IA0KPiA+IGkgZ2V0IHRoZSBtZXNzYWdlICJD
-UFUgdGltZSBsaW1pdCBleGNlZWRlZCIgIHdoZW4gbXkgbWFpbiB0aHJlYWQgaXMgc3RhcnRpbmcu
-DQo+ID4gDQo+ID4gVGhlIHRocmVhZCBtb2QgQml0ICJUX1dBUk5TVyIgaXMgbm90IHNldC4NCj4g
-PiB1bGltaXQgLWEgc2hvd3MgY3B1IHRpbWUgaXMgdW5saW1pdGVkLg0KPiA+IA0KPiA+IE5vdyBJ
-IGluc3RhbGxlZCB0aGUgc2lnZGVidWcgaGFuZGxlciBhbmQgZ2V0IHRoZSBtZXNzYWdlOg0KPiA+
-IA0KPiA+IFNJR0RFQlVHIHJlY2VpdmVkLCByZWFzb24gNzx1bmtub3duPg0KPiA+IA0KPiA+IE15
-IHF1ZXN0aW9uIGlzOiB3aHkgaXMgdGhlIHJlYXNvbiB2YWx1ZSA3PyBUaGVzZSB2YWx1ZSBoYXMg
-b25seSBtYXggNiBlbnRyaWVzPw0KPiANCj4gTm8sIGl0IGhhcyA3LiBTZWU6DQo+IA0KPiBodHRw
-czovL2dpdC54ZW5vbWFpLm9yZy94ZW5vbWFpLTIuNi5naXQvdHJlZS9pbmNsdWRlL2FzbS1nZW5l
-cmljL3N5c2NhDQo+IGxsLmg/aWQ9djIuNi40I241Ng0KDQpWYWx1ZSA3IG1lYW5zIHRoYXQgeW91
-ciBhcHBsaWNhdGlvbiBlaXRoZXIgaXMgZG9pbmcgYmFkIHRoaW5ncyB3aGlsZSBob2xkaW5nIGEg
-bXV0ZXggKHN1Y2ggYXMgc3dpdGNoaW5nIHNjaGVkdWxpbmcgcG9saWN5IGZyb20gb3IgdG8gU0NI
-RURfT1RIRVIpLCBvciB0aGF0IHRoZXJlIGlzIHNvbWUgb3RoZXIgdW5rbm93biBpc3N1ZS4gU28s
-IGl0IHdvdWxkIGhlbHAgaWYgeW91IGNvdWxkIHJlZHVjZSB5b3VyIHRlc3QgcHJvZ3JhbSB0byBh
-IHNlbGYtY29udGFpbmVkIHRlc3QgY2FzZSB3aGljaCB3ZSBjYW4gcnVuIHRvIHJlcHJvZHVjZSB0
-aGUgaXNzdWUuDQoNCi0tIA0KCQkJCQkgICAgR2lsbGVzLg0K
+=0A=
+>> > That is strange, are these tasks=0A=
+>> > running with the SCHED_OTHER policy ?=0A=
+>> No, they are running with sched fifo.=0A=
+>=0A=
+>Ok, next, are they using=0A=
+>rt_timer_mode_set=0A=
+>or=0A=
+>RT drivers which return -ENOSYS in their rt handlers ?=0A=
+=0A=
+Assumedly you mean rt_timer_set_mode() instead of rt_timer_mode_set(). This=
+ function is not called since we are using our own skin. Also our own skin =
+does not use xntbase_switch(). Maybe it is interesting to know that our ski=
+n is configured with periodic timing (1ms). =0A=
+=0A=
+RT drivers are also not installed on our system. =0A=
+=0A=
+Regards,=0A=
+Christoph=0A=
 
