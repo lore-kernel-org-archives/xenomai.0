@@ -1,21 +1,10 @@
-Date: Thu, 11 Dec 2014 17:38:07 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141211163807.GD27793@hermes.click-hack.org>
-References: <20141211100520.GA21808@hermes.click-hack.org>
- <88cb5162a0ca44fb8251aa8161a8d8d8@EX132MBOX1A.de2.local>
- <20141211102249.GB21808@hermes.click-hack.org>
- <14309ee2cb7e45c9a01e6e1504c5bed5@EX132MBOX1A.de2.local>
- <20141211104713.GC21808@hermes.click-hack.org>
- <67263b7a47034e2fba906d0b68b3277f@EX132MBOX1A.de2.local>
- <20141211144711.GD21808@hermes.click-hack.org>
- <26e587954f4c46119fa524af7a3a454e@EX132MBOX1A.de2.local>
- <20141211160616.GA27793@hermes.click-hack.org>
- <e8d20d65a12c4549a2a1737501ea48dc@EX132MBOX1A.de2.local>
+Message-ID: <5489D81D.7070003@nta-inc.net>
+Date: Thu, 11 Dec 2014 11:45:01 -0600
+From: Jeff Webb <jeff.webb@nta-inc.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e8d20d65a12c4549a2a1737501ea48dc@EX132MBOX1A.de2.local>
-Subject: Re: [Xenomai] Sleeping function called from invalid context
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] switchtest in Xenomai-3.0-rc2
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,48 +13,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Stoidner, Christoph" <c.stoidner@arvero.de>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On Thu, Dec 11, 2014 at 04:31:38PM +0000, Stoidner, Christoph wrote:
-> >> > Ok, maybe we have some hope with the tracer though. What should
-> >> > trigger a trace is the fact that a relax request has been sent, but
-> >> > that the next linux scheduling point does not wake up the said task.
-> >> > This is all debug code, so it does not need to be clean. You can
-> >> > define a per-cpu variable (if running on SMP systems, otherwise a
-> >> > global variable will do) with the last request posted. And when a
-> >> > linux scheduling happens, test that the newly scheduled task is the
-> >> > task that was passed to the relax, if that is not the case, trigger
-> >> > a trace freeze. The point where the nucleus is informed of a Linux
-> >> > task switch is do_schedule_event(). The trick is that if you have
-> >> > some tasks with a higher priority than the relaxed task, it is
-> >> > normal that the relaxed task is not scheduled immediately, so if you
-> >> > want the condition to hold, you need to run the xenomai tasks which
-> >> > relax with the highest priority. Also, obviously, after the test,
-> >> > the pointer should be reset to NULL, because there are several task
-> >> > queued, and with a global variable you have no way of knowing which
-> >> > is next.
-> >>
-> >> I will do so. Do I have to change the gatekeeper's priority behind the relaxing
-> >> task to assure that the gatekeeper would be scheduled before?
-> >
-> > The gatekeeper is not involved.
-> 
-> Sorry, I wanted to say: "that gatekeeper would NOT be scheduled before?". Otherwise
-> we see possibly the gatekeeper instead of the relaxed task? Or am I wrong?
+In Xenomai-3.0-rc2, doc/asciidoc/TROUBLESHOOTING.COBALT.adoc still says this:
 
-I meant to say the gatekeeper is not involved in the primary to
-secondary mode switches, only in the secondary to primary mode
-switches. But yes, since it runs with the highest priority, it may
-be the one scheduled when back to primary mode. Though I would say
-it is probably very unlikely, since the events activating the
-gatekeeper is a secondary mode event, which by definition could not
-have happened while another task was in primary mode. So what could
-happen is that one task running in secondary mode tries to switch to
-primary mode, at which point, before the gatekeeper is even
-activated, another task running in primary mode is activated
-(perhaps because it is waiting for an interrupt, may it be atimer).
 
--- 
-					    Gilles.
+=== Issues when running the _switchtest_ program
+
+==== pthread_create: Resource temporarily unavailable
+
+The switchtest test creates many kernel threads, this means that the
+options +CONFIG_XENO_OPT_SYS_HEAPSZ+ and
++CONFIG_XENO_OPT_SYS_STACKPOOLSZ+, in your kernel configuration,
+should be configured to large enough values. Try increasing them,
+rebuilding the kernel.
+
+
+but, it looks like CONFIG_XENO_OPT_SYS_STACKPOOLSZ has been removed in Xenomai-3.  Is there another an equivalent variable that I might need to increase, or is increasing CONFIG_XENO_OPT_SYS_HEAPSZ sufficient to get rid of the error below?
+
+$ /usr/lib/xenomai/testsuite/switchtest
+== Testing FPU check routines...
+r0: 1 != 2
+r1: 1 != 2
+r2: 1 != 2
+r3: 1 != 2
+r4: 1 != 2
+r5: 1 != 2
+r6: 1 != 2
+r7: 1 != 2
+ymm0: 1/1 != 2/2
+ymm1: 1/1 != 2/2
+ymm2: 1/1 != 2/2
+ymm3: 1/1 != 2/2
+ymm4: 1/1 != 2/2
+ymm5: 1/1 != 2/2
+ymm6: 1/1 != 2/2
+ymm7: 1/1 != 2/2
+== FPU check routines: OK.
+== Threads: sleeper_ufps0-0 rtk0-1 rtk0-2 rtk_fp0-3 rtk_fp0-4 rtk_fp_ufpp0-5 rtk_fp_ufpp0-6 rtup0-7 rtup0-8 rtup_ufpp0-9 rtup_ufpp0-10 rtus0-11 rtus0-12 rtus_ufps0-13 rtus_ufps0-14 rtuo0-15 rtuo0-16 rtuo_ufpp0-17 rtuo_ufpp0-18 rtuo_ufps0-19 rtuo_ufps0-20 rtuo_ufpp_ufps0-21 rtuo_ufpp_ufps0-22 sleeper_ufps1-0 rtk1-1 rtk1-2 rtk_fp1-3 rtk_fp1-4 rtk_fp_ufpp1-5 rtk_fp_ufpp1-6 rtup1-7 rtup1-8 rtup_ufpp1-9 rtup_ufpp1-10 rtus1-11 rtus1-12 rtus_ufps1-13 rtus_ufps1-14 rtuo1-15 rtuo1-16 rtuo_ufpp1-17 rtuo_ufpp1-18 rtuo_ufps1-19 rtuo_ufps1-20 rtuo_ufpp_ufps1-21 rtuo_ufpp_ufps1-22 sleeper_ufps2-0 rtk2-1 rtk2-2 rtk_fp2-3 rtk_fp2-4 rtk_fp_ufpp2-5 rtk_fp_ufpp2-6 rtup2-7 rtup2-8 rtup_ufpp2-9 rtup_ufpp2-10 rtus2-11 rtus2-12 rtus_ufps2-13 rtus_ufps2-14 rtuo2-15 rtuo2-16 rtuo_ufpp2-17 rtuo_ufpp2-18 rtuo_ufps2-19 rtuo_ufps2-20 rtuo_ufpp_ufps2-21 rtuo_ufpp_ufps2-22 sleeper_ufps3-0 rtk3-1 rtk3-2 rtk_fp3-3 rtk_fp3-4 rtk_fp_ufpp3-5 rtk_fp_ufpp3-6 rtup3-7 rtup3-8 rtup_ufpp3-9 rtup_ufpp3-10 rtus3-11 rtus3-12 rt
+ u
+s_ufps3-13 rtus_ufps3-14 pthread_create: Resource temporarily unavailable
+rtuo3-15 rtuo3-16 rtuo_ufpp3-17 rtuo_ufpp3-18 rtuo_ufps3-19RTT|  393977:40:56
+RTH|---------cpu|ctx switches|-------total
+RTD|           0|           0|           0
+RTD|           1|           0|           0
+RTD|           2|           0|           0
+RTD|           3|           0|           0
+
+
+Thanks,
+
+-Jeff
 
