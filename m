@@ -1,12 +1,24 @@
-Message-ID: <548AAB8A.7060406@xenomai.org>
-Date: Fri, 12 Dec 2014 09:47:06 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: "Stoidner, Christoph" <c.stoidner@arvero.de>
+Date: Fri, 12 Dec 2014 16:42:05 +0000
+Message-ID: <ea7b0e38bbc54fb693aa93e0acd4cb22@EX132MBOX1A.de2.local>
+References: <20141211100520.GA21808@hermes.click-hack.org>
+ <88cb5162a0ca44fb8251aa8161a8d8d8@EX132MBOX1A.de2.local>
+ <20141211102249.GB21808@hermes.click-hack.org>
+ <14309ee2cb7e45c9a01e6e1504c5bed5@EX132MBOX1A.de2.local>
+ <20141211104713.GC21808@hermes.click-hack.org>
+ <67263b7a47034e2fba906d0b68b3277f@EX132MBOX1A.de2.local>
+ <20141211144711.GD21808@hermes.click-hack.org>
+ <26e587954f4c46119fa524af7a3a454e@EX132MBOX1A.de2.local>
+ <20141211160616.GA27793@hermes.click-hack.org>
+ <e8d20d65a12c4549a2a1737501ea48dc@EX132MBOX1A.de2.local>,
+ <20141211163807.GD27793@hermes.click-hack.org>,
+ <609e4e03a401411fa6bc14de1ad4d3a5@EX132MBOX1A.de2.local>
+In-Reply-To: <609e4e03a401411fa6bc14de1ad4d3a5@EX132MBOX1A.de2.local>
+Content-Language: de-DE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <5489D81D.7070003@nta-inc.net>
-In-Reply-To: <5489D81D.7070003@nta-inc.net>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] switchtest in Xenomai-3.0-rc2
+Subject: Re: [Xenomai] Sleeping function called from invalid context
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,37 +27,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeff Webb <jeff.webb@nta-inc.net>, Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 12/11/2014 06:45 PM, Jeff Webb wrote:
-> In Xenomai-3.0-rc2, doc/asciidoc/TROUBLESHOOTING.COBALT.adoc still says
-> this:
-> 
-> 
-> === Issues when running the _switchtest_ program
-> 
-> ==== pthread_create: Resource temporarily unavailable
-> 
-> The switchtest test creates many kernel threads, this means that the
-> options +CONFIG_XENO_OPT_SYS_HEAPSZ+ and
-> +CONFIG_XENO_OPT_SYS_STACKPOOLSZ+, in your kernel configuration,
-> should be configured to large enough values. Try increasing them,
-> rebuilding the kernel.
-> 
-> 
-> but, it looks like CONFIG_XENO_OPT_SYS_STACKPOOLSZ has been removed in
-> Xenomai-3.  Is there another an equivalent variable that I might need to
-> increase, or is increasing CONFIG_XENO_OPT_SYS_HEAPSZ sufficient to get
-> rid of the error below?
-> 
-
-It is sufficient to increase SYS_HEAPSZ, there is no private stack pool
-anymore, since Xenomai kthreads are now fully mapped over regular
-kthreads. i.e. we don't have to allocate stacks for our kernel threads,
-we simply inherit the kernel stack underlying the new regular kthread.
-
-The doc was fixed accordingly. Thanks for the heads up.
-
--- 
-Philippe.
+=0A=
+Hi Gilles,=0A=
+=0A=
+it seems to me as APC interrupts on ipipe got lost. I have added two counte=
+rs: One increments in schedule_linux_call() when a request for a specific a=
+pplication task is queued. Another one is incremented in lostage_handler() =
+when the specific task was waked up. When I output the counter's values aft=
+er tasks have freezed the counter of lostage_handler is exactly one value l=
+ess than schedule_linux_call's counter. =0A=
+=0A=
+And then, when I wake-up APC thread manually all freezed tasks continue for=
+ a moment, until all are freezing again.=0A=
+=0A=
+Do you have any idea what could lead to that behaviour?=0A=
+=0A=
+Regards,=0A=
+Christoph=0A=
 
