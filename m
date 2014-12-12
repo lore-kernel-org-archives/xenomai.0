@@ -1,24 +1,13 @@
-From: "Stoidner, Christoph" <c.stoidner@arvero.de>
-Date: Fri, 12 Dec 2014 16:42:05 +0000
-Message-ID: <ea7b0e38bbc54fb693aa93e0acd4cb22@EX132MBOX1A.de2.local>
-References: <20141211100520.GA21808@hermes.click-hack.org>
- <88cb5162a0ca44fb8251aa8161a8d8d8@EX132MBOX1A.de2.local>
- <20141211102249.GB21808@hermes.click-hack.org>
- <14309ee2cb7e45c9a01e6e1504c5bed5@EX132MBOX1A.de2.local>
- <20141211104713.GC21808@hermes.click-hack.org>
- <67263b7a47034e2fba906d0b68b3277f@EX132MBOX1A.de2.local>
- <20141211144711.GD21808@hermes.click-hack.org>
- <26e587954f4c46119fa524af7a3a454e@EX132MBOX1A.de2.local>
- <20141211160616.GA27793@hermes.click-hack.org>
- <e8d20d65a12c4549a2a1737501ea48dc@EX132MBOX1A.de2.local>,
- <20141211163807.GD27793@hermes.click-hack.org>,
- <609e4e03a401411fa6bc14de1ad4d3a5@EX132MBOX1A.de2.local>
-In-Reply-To: <609e4e03a401411fa6bc14de1ad4d3a5@EX132MBOX1A.de2.local>
-Content-Language: de-DE
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <548B477F.1020500@nta-inc.net>
+Date: Fri, 12 Dec 2014 13:52:31 -0600
+From: Jeff Webb <jeff.webb@nta-inc.net>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Sleeping function called from invalid context
+References: <5489E65F.6000905@nta-inc.net>
+ <20141211213710.GH27793@hermes.click-hack.org>
+In-Reply-To: <20141211213710.GH27793@hermes.click-hack.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] xenomai-3.git next branch build failure
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,24 +16,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-=0A=
-Hi Gilles,=0A=
-=0A=
-it seems to me as APC interrupts on ipipe got lost. I have added two counte=
-rs: One increments in schedule_linux_call() when a request for a specific a=
-pplication task is queued. Another one is incremented in lostage_handler() =
-when the specific task was waked up. When I output the counter's values aft=
-er tasks have freezed the counter of lostage_handler is exactly one value l=
-ess than schedule_linux_call's counter. =0A=
-=0A=
-And then, when I wake-up APC thread manually all freezed tasks continue for=
- a moment, until all are freezing again.=0A=
-=0A=
-Do you have any idea what could lead to that behaviour?=0A=
-=0A=
-Regards,=0A=
-Christoph=0A=
+On 12/11/2014 03:37 PM, Gilles Chanteperdrix wrote:
+> On Thu, Dec 11, 2014 at 12:45:51PM -0600, Jeff Webb wrote:
+>> When trying to compile the 'next' branch of xenomai-3.git under Ubuntu=
+ 14.04, I get this error:
+>>
+>> Making all in autotune
+>> make[2]: Entering directory `/home/webb-ja/deb/xenomai-3.git.test/util=
+s/autotune'
+>> gcc -DHAVE_CONFIG_H -I. -I../../include  -I/home/webb-ja/deb/xenomai-3=
+.git.test/lib/cobalt/arch/x86/include -I/home/webb-ja/deb/xenomai-3.git.t=
+est/kernel/cobalt/arch/x86/include -DNDEBUG -O2 -D_GNU_SOURCE -D_REENTRAN=
+T -pipe -fstrict-aliasing -Wall -Wstrict-prototypes -Wmissing-prototypes =
+-Wno-long-long -Wno-unused-parameter -Werror -D__XENO__ -D__IN_XENO__ -I/=
+home/webb-ja/deb/xenomai-3.git.test/include/cobalt -I../../include    -MT=
+ autotune-autotune.o -MD -MP -MF .deps/autotune-autotune.Tpo -c -o autotu=
+ne-autotune.o `test -f 'autotune.c' || echo './'`autotune.c
+>> autotune.c: In function =E2=80=98main=E2=80=99:
+>> autotune.c:298:9: error: ignoring return value of =E2=80=98daemon=E2=80=
+=99, declared with attribute warn_unused_result [-Werror=3Dunused-result]
+>>     daemon(0, 0);
+>>           ^
+>> cc1: all warnings being treated as errors
+>> make[2]: *** [autotune-autotune.o] Error 1
+>> make[2]: Leaving directory `/home/webb-ja/deb/xenomai-3.git.test/utils=
+/autotune'
+>> make[1]: *** [all-recursive] Error 1
+>> make[1]: Leaving directory `/home/webb-ja/deb/xenomai-3.git.test/utils=
+'
+>> make: *** [all-recursive] Error 1
+>>
+>> I see this sort of thing often due to Ubuntu's default compiler flags =
+settings.  I applied the attached patch to fix it.
+>
+> Yes, thanks. I think Jorge already proposed a similar fix, but I can
+> not find where I put it. So, I will take your patch. Just a note, is
+> the "error" function defined for uclibc ?
+>
+
+Thans, Gilles.  I haven't used uclibc, but it looks like it is defined:
+
+   http://git.uclibc.org/uClibc/tree/include/error.h
+
+I just assumed that error() was okay, since it was used elsewhere in the =
+file.
+
+-Jeff
+
 
