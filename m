@@ -1,12 +1,10 @@
-Message-ID: <548B481E.3050103@nta-inc.net>
-Date: Fri, 12 Dec 2014 13:55:10 -0600
+Message-ID: <548B67E3.1090309@nta-inc.net>
+Date: Fri, 12 Dec 2014 16:10:43 -0600
 From: Jeff Webb <jeff.webb@nta-inc.net>
 MIME-Version: 1.0
-References: <5489D81D.7070003@nta-inc.net> <548AAB8A.7060406@xenomai.org>
-In-Reply-To: <548AAB8A.7060406@xenomai.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] switchtest in Xenomai-3.0-rc2
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Subject: [Xenomai] Add cards parameter to rt_e1000e module?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,41 +13,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 12/12/2014 02:47 AM, Philippe Gerum wrote:
-> On 12/11/2014 06:45 PM, Jeff Webb wrote:
->> In Xenomai-3.0-rc2, doc/asciidoc/TROUBLESHOOTING.COBALT.adoc still says
->> this:
->>
->>
->> === Issues when running the _switchtest_ program
->>
->> ==== pthread_create: Resource temporarily unavailable
->>
->> The switchtest test creates many kernel threads, this means that the
->> options +CONFIG_XENO_OPT_SYS_HEAPSZ+ and
->> +CONFIG_XENO_OPT_SYS_STACKPOOLSZ+, in your kernel configuration,
->> should be configured to large enough values. Try increasing them,
->> rebuilding the kernel.
->>
->>
->> but, it looks like CONFIG_XENO_OPT_SYS_STACKPOOLSZ has been removed in
->> Xenomai-3.  Is there another an equivalent variable that I might need to
->> increase, or is increasing CONFIG_XENO_OPT_SYS_HEAPSZ sufficient to get
->> rid of the error below?
->>
->
-> It is sufficient to increase SYS_HEAPSZ, there is no private stack pool
-> anymore, since Xenomai kthreads are now fully mapped over regular
-> kthreads. i.e. we don't have to allocate stacks for our kernel threads,
-> we simply inherit the kernel stack underlying the new regular kthread.
->
-> The doc was fixed accordingly. Thanks for the heads up.
->
-
-That worked.  Thanks!
-
--Jeff
-
-
+VGhlIHJ0bmV0IHJ0X2UxMDAwZSBtb2R1bGUgZG9lcyBub3QgaW1wbGVtZW50IHRoZSAnY2FyZHMn
+IHBhcmFtZXRlci4gIEkgaGF2ZSBhdHRhY2hlZCBhIHBhdGNoIGZvciB0aGUgJ25leHQnIGJyYW5j
+aCBvZiB4ZW5vbWFpLTMuZ2l0IHRoYXQgYWRkcyB0aGlzIHBhcmFtZXRlciwgYW5kIGl0IHNlZW1z
+IHRvIHdvcmsgZmluZSBvbiBteSBoYXJkd2FyZS4gIFRoZSBjb2RlIHdhcyBwb3J0ZWQgc3RyYWln
+aHQgZnJvbSB0aGUgcnRfZTEwMDAgbW9kdWxlLiAgTXkgbWFjaGluZSBoYXMgdHdvIGUxMDAwZSBj
+YXJkcywgc28gdGhpcyBpcyBhIHVzZWZ1bCBmZWF0dXJlIGZvciBtZS4gIChJIGFjdHVhbGx5IGFw
+cGxpZWQgdGhlIHNhbWUgZml4IHRvIHRoZSBzdGFuZGFyZCBlMTAwMGUgZHJpdmVyLCB3aGljaCBp
+cyBldmVuIG1vcmUgdXNlZnVsIHRvIG1lLCBidXQgSSBrbm93IGl0IHdvdWxkIGJlIGEgbWFpbnRl
+bmFuY2UgbmlnaHRtYXJlIGZvciBYZW5vbWFpIHRvIHN0YXJ0IG1haW50YWluaW5nIHRoYXQgc29y
+dCBvZiBwYXRjaGluZy4uLikKCkkgYW0gdHJ5aW5nIHRvIGxlYXJuIHJ0bmV0LCBidXQgaXQgc2Vl
+bXMgdGhhdCB0aGUgY29kZSBmcm9tIHRoZSBydG5ldCBnaXQgcmVwbyB3b24ndCBjb21waWxlIHdp
+dGggbGludXgtMy4xNC4xNy94ZW5vbWFpLTIuNi40LiAgSSBzYXcgdGhhdCBHaWxsZXMgaGFzIHB1
+bGxlZCB0aGUgcnRuZXQgY29kZSBpbnRvIHRoZSBYZW5vbWFpLTMgZ2l0IHJlcG8sIHNvIGl0IHNl
+ZW1lZCB0byBtZSB0aGF0IGJldGEgdGVzdGluZyB0aGUgWGVub21haS0zIHJ0bmV0IGNvZGUgd291
+bGQgYmUgYSBiZXR0ZXIgdXNlIG9mIG15IHRpbWUgdGhhbiBtZXNzaW5nIHdpdGggdGhlIG9sZCBj
+b2RlIGJhc2UuICBTbyBmYXIsIHNvIGdvb2QuICBNeSBtYWNoaW5lJ3MgcHJpbWFyeSBldGhlcm5l
+dCBpbnRlcmZhY2UgaXMgdXNpbmcgdGhlIHN0YW5kYXJkIGxpbnV4IGUxMDAwZSBkcml2ZXIsIGFu
+ZCB0aGUgc2Vjb25kYXJ5IGV0aGVybmV0IGludGVyZmFjZSBpcyB1cCBhbmQgcnVubmluZyB1bmRl
+ciBydG5ldCB1c2luZyB0aGUgcnRfZTEwMDBlIGRyaXZlci4gIEkgY2FuIHVzZSBydHBpbmcgdG8g
+dGFsayB0byBhbm90aGVyIGxpbnV4IGJveCB0aGF0IGlzIGNvbm5lY3RlZCB2aWEgYSBzd2l0Y2gs
+IHByb3ZpZGVkIEkgcGluZyBpbiB0aGUgcmV2ZXJzZSBkaXJlY3Rpb24gZmlyc3QgdG8gc2V0IHVw
+IHRoZSByb3V0ZSBpbmZvcm1hdGlvbi4KCi1KZWZmCiAgCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFy
+dCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5h
+bWU6IHJ0X2UxMDAwZS5wYXRjaApUeXBlOiB0ZXh0L3gtcGF0Y2gKU2l6ZTogMTQ2MiBieXRlcwpE
+ZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWls
+L3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNDEyMTIvZmYzYzA4MDYvYXR0YWNobWVudC5iaW4+Cg==
