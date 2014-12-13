@@ -1,6 +1,6 @@
-Date: Sat, 13 Dec 2014 00:56:31 +0100
+Date: Sat, 13 Dec 2014 02:03:58 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141212235631.GB11058@hermes.click-hack.org>
+Message-ID: <20141213010358.GD11058@hermes.click-hack.org>
 References: <548B67E3.1090309@nta-inc.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -28,21 +28,16 @@ On Fri, Dec 12, 2014 at 04:10:43PM -0600, Jeff Webb wrote:
 > e1000e driver, which is even more useful to me, but I know it
 > would be a maintenance nightmare for Xenomai to start maintaining
 > that sort of patching...)
-> 
-> I am trying to learn rtnet, but it seems that the code from the
-> rtnet git repo won't compile with linux-3.14.17/xenomai-2.6.4. I
-> saw that Gilles has pulled the rtnet code into the Xenomai-3 git
-> repo, so it seemed to me that beta testing the Xenomai-3 rtnet
-> code would be a better use of my time than messing with the old
-> code base. So far, so good. My machine's primary ethernet
-> interface is using the standard linux e1000e driver, and the
-> secondary ethernet interface is up and running under rtnet using
-> the rt_e1000e driver. I can use rtping to talk to another linux
-> box that is connected via a switch, provided I ping in the reverse
-> direction first to set up the route information.
 
-You can get rtnet to send an arp request to learn the route by using
-the rtroute solicit command.
+I understand the need for the "cards" parameter, but...
+Is not there another way to solve this issue ? I do not know,
+something in /proc or /sys to tell Linux to not load this driver for
+that card? I suppose if we tell Linux to not use its driver for some
+cards, then later loading the rtnet driver will be used for these
+cards? Adding the cards parameter means that the rtnet drivers
+diverge from mainline drivers, and so imply a maintenance cost. On
+the other hand, maybe that is a cheaper one than trying and solving
+the issue globally.
 
 -- 
 					    Gilles.
