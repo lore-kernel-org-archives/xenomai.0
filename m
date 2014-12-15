@@ -1,15 +1,25 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Sat, 13 Dec 2014 12:14:19 -0500
-Message-ID: <20141213171419.GB24110@csclub.uwaterloo.ca>
-References: <548B67E3.1090309@nta-inc.net>
- <20141213010358.GD11058@hermes.click-hack.org>
- <20141213021223.GA24110@csclub.uwaterloo.ca>
- <20141213051151.GE11058@hermes.click-hack.org>
+From: "Stoidner, Christoph" <c.stoidner@arvero.de>
+Date: Mon, 15 Dec 2014 11:42:40 +0000
+Message-ID: <54d4a4e8070b4811bfa13471cce38745@EX132MBOX1A.de2.local>
+References: <20141211100520.GA21808@hermes.click-hack.org>
+ <88cb5162a0ca44fb8251aa8161a8d8d8@EX132MBOX1A.de2.local>
+ <20141211102249.GB21808@hermes.click-hack.org>
+ <14309ee2cb7e45c9a01e6e1504c5bed5@EX132MBOX1A.de2.local>
+ <20141211104713.GC21808@hermes.click-hack.org>
+ <67263b7a47034e2fba906d0b68b3277f@EX132MBOX1A.de2.local>
+ <20141211144711.GD21808@hermes.click-hack.org>
+ <26e587954f4c46119fa524af7a3a454e@EX132MBOX1A.de2.local>
+ <20141211160616.GA27793@hermes.click-hack.org>
+ <e8d20d65a12c4549a2a1737501ea48dc@EX132MBOX1A.de2.local>,
+ <20141211163807.GD27793@hermes.click-hack.org>,
+ <609e4e03a401411fa6bc14de1ad4d3a5@EX132MBOX1A.de2.local>,
+ <ea7b0e38bbc54fb693aa93e0acd4cb22@EX132MBOX1A.de2.local>
+In-Reply-To: <ea7b0e38bbc54fb693aa93e0acd4cb22@EX132MBOX1A.de2.local>
+Content-Language: de-DE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20141213051151.GE11058@hermes.click-hack.org>
-Subject: Re: [Xenomai] Add cards parameter to rt_e1000e module?
+Subject: Re: [Xenomai] Sleeping function called from invalid context
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,26 +29,37 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Sat, Dec 13, 2014 at 06:11:51AM +0100, Gilles Chanteperdrix wrote:
-> As all RTDM drivers, RTnet drivers are just linux drivers. The issue
-> is to have a setup where two cards with the same chip are used by
-> two different drivers. Linux does not have this problem, because it
-> rarely has several drivers for the same chip. The problem with the
-> bind/unbind solution is that the driver that will get all the cards
-> first depends on the drivers initialization order. With the "cards"
-> parameter, you do not have this issue.
-
-Well I remember multiple drivers in the past for the tulip network chip,
-and for a while there where two firewire drivers too.  Also those that
-run xen with pci passthrough have the same issue of preventing linux
-from grabbing a given device.
-
-It would seem that just using bind/unbind and loading all the drivers,
-user space could resolve the issue, but the cards parameter may be more
-convinient, at the expense of having to add that to the driver of course.
-
--- 
-Len Sorensen
+=0A=
+> it seems to me as APC interrupts on ipipe got lost. I have added two coun=
+ters: =0A=
+> One increments in schedule_linux_call() when a request for a specific app=
+lication =0A=
+> task is queued. Another one is incremented in lostage_handler() when the =
+=0A=
+> specific task was waked up. When I output the counter's values after task=
+s have=0A=
+> freezed the counter of lostage_handler is exactly one value less than =0A=
+> schedule_linux_call's counter.=0A=
+>=0A=
+> And then, when I wake-up APC thread manually all freezed tasks continue f=
+or a =0A=
+> moment, until all are freezing again.=0A=
+=0A=
+As said above waking APC thread using=0A=
+=0A=
+  wake_up_process(rthal_apc_servers[smp_processor_id()]);=0A=
+=0A=
+does reactivate all Xenomai threads for scheduling. Incontrast using=0A=
+=0A=
+  rthal_apc_schedule(lostage_apc);=0A=
+=0A=
+does not help. So it seems as APC interrupt is pending but won't be  execut=
+ed.=0A=
+=0A=
+Any idea?=0A=
+=0A=
+Regards,=0A=
+Christoph=0A=
 
