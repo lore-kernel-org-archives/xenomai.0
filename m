@@ -1,13 +1,13 @@
-Date: Wed, 17 Dec 2014 11:31:18 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141217103118.GB7151@hermes.click-hack.org>
-References: <5490A954.8040207@nta-inc.net>
+Message-ID: <548EFE4F.9000800@nta-inc.net>
+Date: Mon, 15 Dec 2014 09:29:19 -0600
+From: Jeff Webb <jeff.webb@nta-inc.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5490A954.8040207@nta-inc.net>
-Subject: Re: [Xenomai] Add "rtroute solicit" support to the rtnet script and
- rtnet.conf
+References: <548B67E3.1090309@nta-inc.net>
+ <20141212235631.GB11058@hermes.click-hack.org> <548EF7BE.5090305@nta-inc.net>
+In-Reply-To: <548EF7BE.5090305@nta-inc.net>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Add cards parameter to rt_e1000e module?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,21 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeff Webb <jeff.webb@nta-inc.net>
-Cc: rtnet-users@lists.sourceforge.net, Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On Tue, Dec 16, 2014 at 03:51:16PM -0600, Jeff Webb wrote:
-> I am using rtnet without rtmac/tdma. I previously sent a patch
-> that allows one to use the "rtnet" script and rtnet.conf in this
-> configuration. I would also like to be able to specify a list of
-> IP addresses in rtnet.conf that are passed along to "rtroute
-> solicit". I have attached patches for the rtnet and
-> xenomai-3.git/next repositories. I think others will find them
-> useful.
+On 12/15/2014 09:01 AM, Jeff Webb wrote:
+> On 12/12/2014 05:56 PM, Gilles Chanteperdrix wrote:
+>> On Fri, Dec 12, 2014 at 04:10:43PM -0600, Jeff Webb wrote:
+>>> The rtnet rt_e1000e module does not implement the 'cards'
+>>> parameter. I have attached a patch for the 'next' branch of
+>>> xenomai-3.git that adds this parameter, and it seems to work fine
+>>> on my hardware. The code was ported straight from the rt_e1000
+>>> module. My machine has two e1000e cards, so this is a useful
+>>> feature for me. (I actually applied the same fix to the standard
+>>> e1000e driver, which is even more useful to me, but I know it
+>>> would be a maintenance nightmare for Xenomai to start maintaining
+>>> that sort of patching...)
+>>>
+>>> I am trying to learn rtnet, but it seems that the code from the
+>>> rtnet git repo won't compile with linux-3.14.17/xenomai-2.6.4. I
+>>> saw that Gilles has pulled the rtnet code into the Xenomai-3 git
+>>> repo, so it seemed to me that beta testing the Xenomai-3 rtnet
+>>> code would be a better use of my time than messing with the old
+>>> code base. So far, so good. My machine's primary ethernet
+>>> interface is using the standard linux e1000e driver, and the
+>>> secondary ethernet interface is up and running under rtnet using
+>>> the rt_e1000e driver. I can use rtping to talk to another linux
+>>> box that is connected via a switch, provided I ping in the reverse
+>>> direction first to set up the route information.
+>>
+>> You can get rtnet to send an arp request to learn the route by using
+>> the rtroute solicit command.
+>>
+>
+> That works great.  Thanks for the ip.
+>
 
-Well, you should probably be using "nomac" if you are not interested
-in tdma.
+Sorry, I meant "tip", not "ip". ;)
 
--- 
-					    Gilles.
+
 
