@@ -1,10 +1,21 @@
-Date: Mon, 15 Dec 2014 13:51:36 +0100
-From: "Mariusz Janiak" <mariuszjaniak@wp.pl>
-Message-ID: <548ed95828a095.41388325@wp.pl>
+Date: Mon, 15 Dec 2014 14:23:15 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141215132315.GK11058@hermes.click-hack.org>
+References: <20141211104713.GC21808@hermes.click-hack.org>
+ <67263b7a47034e2fba906d0b68b3277f@EX132MBOX1A.de2.local>
+ <20141211144711.GD21808@hermes.click-hack.org>
+ <26e587954f4c46119fa524af7a3a454e@EX132MBOX1A.de2.local>
+ <20141211160616.GA27793@hermes.click-hack.org>
+ <e8d20d65a12c4549a2a1737501ea48dc@EX132MBOX1A.de2.local>
+ <20141211163807.GD27793@hermes.click-hack.org>
+ <609e4e03a401411fa6bc14de1ad4d3a5@EX132MBOX1A.de2.local>
+ <ea7b0e38bbc54fb693aa93e0acd4cb22@EX132MBOX1A.de2.local>
+ <54d4a4e8070b4811bfa13471cce38745@EX132MBOX1A.de2.local>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-2"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] RTnet compilation issues with kernel above 3.10
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <54d4a4e8070b4811bfa13471cce38745@EX132MBOX1A.de2.local>
+Subject: Re: [Xenomai] Sleeping function called from invalid context
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,28 +24,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: "Stoidner, Christoph" <c.stoidner@arvero.de>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+On Mon, Dec 15, 2014 at 11:42:40AM +0000, Stoidner, Christoph wrote:
+> 
+> > it seems to me as APC interrupts on ipipe got lost. I have added two counters: 
+> > One increments in schedule_linux_call() when a request for a specific application 
+> > task is queued. Another one is incremented in lostage_handler() when the 
+> > specific task was waked up. When I output the counter's values after tasks have
+> > freezed the counter of lostage_handler is exactly one value less than 
+> > schedule_linux_call's counter.
+> >
+> > And then, when I wake-up APC thread manually all freezed tasks continue for a 
+> > moment, until all are freezing again.
+> 
+> As said above waking APC thread using
+> 
+>   wake_up_process(rthal_apc_servers[smp_processor_id()]);
+> 
+> does reactivate all Xenomai threads for scheduling. Incontrast using
+> 
+>   rthal_apc_schedule(lostage_apc);
+> 
+> does not help. So it seems as APC interrupt is pending but won't be  executed.
+> 
+> Any idea?
 
-I have prepared a patch that should fix the RTnet compilation issues on a k=
-ernel 3.10 and higher, especially the latest supported 3.14.17 by the Xenom=
-ai 2.6.4. It is based on the Anders Blomdell patch
+Do you have the same issue if you run a kernel patched with Xenomai
+and without the PREEMPT_RT patch?
 
-http://sourceforge.net/p/rtnet/mailman/message/32034653/
+-- 
+					    Gilles.
 
-supplemented with missing parts. Patch should be applied to original RTnet =
-git repository. =
-
-
-Best regards,
-Mariusz Janiak =
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: 0001-Fix-compilatin-issues-on-kernel-above-3.10.patch
-Type: text/x-patch
-Size: 46037 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20141215/5e590e5=
-6/attachment.bin>
