@@ -1,19 +1,11 @@
-Message-ID: <5492D80E.3010701@siemens.com>
-Date: Thu, 18 Dec 2014 14:35:10 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Mon, 15 Dec 2014 21:04:32 +0100
+From: "Mariusz Janiak" <mariuszjaniak@wp.pl>
+Message-ID: <548f3ed0cc1f95.52388489@wp.pl>
 MIME-Version: 1.0
-References: <CAMJ=MEdh-vBm1S9cHL7Hj0Ky-RaeGCSw_xauMZoEsuegbArM1w@mail.gmail.com>
- <CAMJ=MEfDQm_ymyL8FULhqMvpwzet4aHMbQFoEjL-sVDsCTg2Hg@mail.gmail.com>
- <549072DC.1030901@xenomai.org>
- <CAMJ=MEfzrJQGYKT41F2hSirn8q0MGt-kWuT2GYQE7YTbSCNG5A@mail.gmail.com>
- <549090FA.7000901@xenomai.org>
- <CAMJ=MEc9UXa4P18kNmPeKH-SziXMj9Grbxagj7Wm_MckHcOC7Q@mail.gmail.com>
- <5492989C.9070106@siemens.com>
- <CAMJ=MEeWPyBFBbjj7_JLENZQ+xBkxbaKGiZBehKCatVa-1owqA@mail.gmail.com>
-In-Reply-To: <CAMJ=MEeWPyBFBbjj7_JLENZQ+xBkxbaKGiZBehKCatVa-1owqA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [xenomai-forge] timer-internal consume a lot of cpu
+Content-Type: text/plain; charset=iso-8859-2
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Subject: Re: [Xenomai] Add cards parameter to rt_e1000e module?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,75 +14,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ronny Meeus <ronny.meeus@gmail.com>
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 2014-12-18 13:28, Ronny Meeus wrote:
-> On Thu, Dec 18, 2014 at 10:04 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->> On 2014-12-18 09:00, Ronny Meeus wrote:
->>>>
->>>> A release of the glibc that fixes this issue. I must admit that I did
->>>> not track this problem lately. Jan likely knows better here.
->>>>
->>>
->>> Jan,
->>>
->>> what version glibc solves the priority inversion issue on conditional variables?
->>> I already tried the glibc 2.18 but the issue is still there.
->>
->> The bug is still not fixed, and discussion stalled again, see
->> https://sourceware.org/bugzilla/show_bug.cgi?id=11588
->>
->> Jan
->>
->> --
->> Siemens AG, Corporate Technology, CT RTC ITP SES-DE
->> Corporate Competence Center Embedded Linux
+> >> Certainly a well behaved driver would not touch a device already handled
+> >> by a linux driver.  It should be possible to just issue an unbind request
+> >> to the linux driver for the desired device and then a bind request to
+> >> the rtnet driver to take over that device.
 > 
-> Philippe, Jan
+> Thanks for sharing this information.  It sounds like that might work.
 > 
-> as long as this issue is not fixed in glibc, it is not OK to use
-> conditional variables
-> in application space for real-time applications in my opinion.
+> > The problem with the
+> > bind/unbind solution is that the driver that will get all the cards
+> > first depends on the drivers initialization order. With the "cards"
+> > parameter, you do not have this issue.
+> 
+> Maybe one could create a script that would attempt to unbind both the rt and non-rt drivers (or check to see which one is bound and then unbind it), and then make the desired "bind" calls.  It would be better if the incorrect binding were not made in the first place, however.  I think the ideal solution would be to have a file that contains device/driver pairs that would keep the kernel from passing the specified devices to any other drivers.  I wonder how hard that would be to implement.
 
-...when combining them with PI mutexes, right. For real-time QEMU/KVM, I
-worked around this by using prio-ceiling mutexes. That is by far not
-optimal, performance-wise, but at least you avoid random lockups or the
-other side effects of that bug.
+The RTnet configuration file rtnet.conf has already instrumentation for binding/unbinding devices. The REBIND_RT_NICS variable has to be set up with the correct NIC PCI addresses. If you have more then one NIC, you can identity PCI address of respective eth's using ethtool
 
-> 
-> Since the pSOS skin uses conditional variables to implement events and realtime
-> priority threads to implement pSOS tasks, it is by definition broken
-> and not useable
-> for any real application.
-> 
-> For example the internal-timer server, sending events to lower priority tasks,
-> will be blocked until all middle prio tasks have completed. We have seen
-> massive load consumed by the internal-timer server due to this.
-> What happens is that the timer thread is blocked on the mutex currently owned
-> by an thread running at normal (lower) priority. Every time a Linux
-> timer expires,
-> a signal is sent to the timer-server which will wake-up the task,
-> return to the c-library
-> which will re-invoke the futex call. In case a high number of timers
-> is used, the overhead
-> of this can be large. Since the timer-server is running at the highest
-> priority (-100) we
-> see all kinds of strange crashes.
-> 
-> The same priority inversion is true for our own drivers since they are
-> running at
-> high prio as well.
-> 
-> Has the replacement of these conditional variables by some other POSIX mechanism
-> (like mutexes) ever been considered?
+ethtool -i eth0
+ethtool -i eth1
 
-Sometimes it is possible to design a algorithm that uses a semaphore for
-event signaling instead. Doesn't work for all cond-var scenarios, though.
+etc.
 
-Jan
+The bus-info field contains device pci addres that you can directly insert to REBIND_RT_NICS. If you don't know which eth menage with physical interface, you can blink LED port of the NIC using, eg.
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+ethtool -p eth0
+
+Best,
+Mariusz
+
+
+
 
