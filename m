@@ -1,14 +1,14 @@
-Date: Tue, 16 Dec 2014 12:16:34 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141216111634.GR11058@hermes.click-hack.org>
+Message-ID: <54905ABD.20304@telecom-paristech.fr>
+Date: Tue, 16 Dec 2014 17:15:57 +0100
+From: Renaud Pacalet <renaud.pacalet@telecom-paristech.fr>
+MIME-Version: 1.0
 References: <548F07F1.7010606@telecom-paristech.fr>
  <20141215161839.GO11058@hermes.click-hack.org>
  <548FDC78.5080600@telecom-paristech.fr>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <548FDC78.5080600@telecom-paristech.fr>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+ <20141216111634.GR11058@hermes.click-hack.org>
+In-Reply-To: <20141216111634.GR11058@hermes.click-hack.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai] I-pipe patch broken for Xilinx Zynq
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -18,35 +18,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: pacalet <renaud.pacalet@telecom-paristech.fr>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Tue, Dec 16, 2014 at 08:17:12AM +0100, pacalet wrote:
-> Would you like me to post the rejects files somewhere?
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
 
-No. The problem is that the ipipe-core-3.8.13-arm-4.patch (and not
--3, as I said, you should be using the latest version), as its name
-indicates, is made for Linux 3.8.13, whereas the xilinx tag is based
-on 3.8.0. So, the correct procedure is:
 
-git checkout -b xenomai-test 6a0bedad
-git remote add stable git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+
+On 12/16/14 12:16, Gilles Chanteperdrix wrote:
+> On Tue, Dec 16, 2014 at 08:17:12AM +0100, pacalet wrote:
+>> Would you like me to post the rejects files somewhere?
+> 
+> No. The problem is that the ipipe-core-3.8.13-arm-4.patch (and not 
+> -3, as I said, you should be using the latest version), as its
+> name indicates, is made for Linux 3.8.13, whereas the xilinx tag is
+> based on 3.8.0. So, the correct procedure is:
+> 
+> git checkout -b xenomai-test 6a0bedad git remote add stable
+> git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+>
+> 
 git fetch stable
-git merge v3.8.13
-patch -p1 < /path/to/ipipe-core-3.8-zynq-pre.patch
-patch -p1 < /path/to/ipipe-core-3.8.13-arm-4.patch
-patch -p1 < /path/to/ipipe-core-3.8-zynq-post.patch
+> git merge v3.8.13 patch -p1 <
+> /path/to/ipipe-core-3.8-zynq-pre.patch patch -p1 <
+> /path/to/ipipe-core-3.8.13-arm-4.patch patch -p1 <
+> /path/to/ipipe-core-3.8-zynq-post.patch
 
-If git fetch stable takes too long, you can use the 3.8.13 patch
-from kernel.org:
-https://www.kernel.org/pub/linux/kernel/v3.x/patch-3.8.13.xz
+Thanks a lot Gilles, I got it now. And it worked like a charm.
 
--- 
-					    Gilles.
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: not available
-Type: application/pgp-signature
-Size: 173 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20141216/dc6afce6/attachment.sig>
+Best regards,
+- -- 
+Télécom ParisTech - LabSoC
+c/o EURECOM, Campus SophiaTech
+Les Templiers, 450 route des Chappes 06410 Biot
+Tel : +33 (0) 4 9300 8402
+Fax : +33 (0) 4 9300 8200
+Web : http://www.telecom-paristech.fr/
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iEYEAREIAAYFAlSQWrwACgkQ6X2qPZD76M9BBwCfe3Ji/koRBA+U1pUSZlmLFAe+
+1l8AoIbKkVwRke+UWSXcc6mrpIu8R/Oa
+=qrzR
+-----END PGP SIGNATURE-----
+
