@@ -1,15 +1,12 @@
-Message-ID: <549090FA.7000901@xenomai.org>
-Date: Tue, 16 Dec 2014 21:07:22 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5490A768.7040605@nta-inc.net>
+Date: Tue, 16 Dec 2014 15:43:04 -0600
+From: Jeff Webb <jeff.webb@nta-inc.net>
 MIME-Version: 1.0
-References: <CAMJ=MEdh-vBm1S9cHL7Hj0Ky-RaeGCSw_xauMZoEsuegbArM1w@mail.gmail.com>
- <CAMJ=MEfDQm_ymyL8FULhqMvpwzet4aHMbQFoEjL-sVDsCTg2Hg@mail.gmail.com>
- <549072DC.1030901@xenomai.org>
- <CAMJ=MEfzrJQGYKT41F2hSirn8q0MGt-kWuT2GYQE7YTbSCNG5A@mail.gmail.com>
-In-Reply-To: <CAMJ=MEfzrJQGYKT41F2hSirn8q0MGt-kWuT2GYQE7YTbSCNG5A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [xenomai-forge] timer-internal consume a lot of cpu
+References: <548f3ed0cc1f95.52388489@wp.pl>
+In-Reply-To: <548f3ed0cc1f95.52388489@wp.pl>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="windows-1252"; Format="flowed"
+Subject: Re: [Xenomai] Add cards parameter to rt_e1000e module?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,60 +15,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ronny Meeus <ronny.meeus@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org, rtnet-users@lists.sourceforge.net
 
-On 12/16/2014 08:41 PM, Ronny Meeus wrote:
-> On Tue, Dec 16, 2014 at 6:58 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->> On 12/16/2014 06:36 PM, Ronny Meeus wrote:
->>> On Sun, Dec 7, 2014 at 5:26 PM, Ronny Meeus <ronny.meeus@gmail.com> wrote:
->>>> Hello
->>>>
->>>> we are using the xenomai-forge implementation.
->>>> We from time to time see an issue that the timer-internal thread is
->>>> consuming a complete core. It is seen when we send broadcast traffic that
->>>> needs to be handled by the Linux kernel (ARP).
->>>>
->>>> The kernel thread's priority handling the packets in the middle between the
->>>> timer-internal thread and the application thread's priority. All threads run
->>>> on the same core.
->>>> If the priority of the timer-internal is lowered below the kernel thread,
->>>> the load disappears immediately.
->>>> So it looks like there is some busy polling on a common resource that is
->>>> currently held by the application thread running at the lowest prio.
->>>>
->>>> I see that the timer lock being used is a mutex with priority inheritance so
->>>> I would expect that the prio of the application is raised as soon as the
->>>> timer-internal thread tries to obtain the mutex.
->>>
->>> After investigating this issue in more detail I have the impression that it has
->>> nothing to do with the mutex used to protect the timer but with the conditional
->>> variable used to implement the psos event interface.
->>>
->>> I found references on the web that explain an issue with the internal mutex used
->>> inside the posix library to implement a conditional variable. See:
->>> https://bugzilla.redhat.com/show_bug.cgi?id=438484
->>> http://marc.info/?t=134688711000002&r=1&w=2
->>>
->>> If this is indeed true, it means that the usage of conditional
->>> variables is not safe
->>> at all (from priority inheritance point of view).
+On 12/15/2014 02:04 PM, Mariusz Janiak wrote:
+>>>> Certainly a well behaved driver would not touch a device already handl=
+ed
+>>>> by a linux driver.  It should be possible to just issue an unbind requ=
+est
+>>>> to the linux driver for the desired device and then a bind request to
+>>>> the rtnet driver to take over that device.
 >>
->> Yes, condvars are known not to work nicely with PI mutexes on the glibc.
-> 
-> Philippe,
-> I do not understand.
-> 
-> We just use the pSOS interface of the xenomai-forge, which internally uses
-> conditional variables.
-> Does this mean that we cannot use the pSOS interface with glibc?
-> 
-> If above statement is correc, what libc should we use to make it work?
-> 
+>> Thanks for sharing this information.  It sounds like that might work.
+>>
+>>> The problem with the
+>>> bind/unbind solution is that the driver that will get all the cards
+>>> first depends on the drivers initialization order. With the "cards"
+>>> parameter, you do not have this issue.
+>>
+>> Maybe one could create a script that would attempt to unbind both the rt=
+ and non-rt drivers (or check to see which one is bound and then unbind it)=
+, and then make the desired "bind" calls.  It would be better if the incorr=
+ect binding were not made in the first place, however.  I think the ideal s=
+olution would be to have a file that contains device/driver pairs that woul=
+d keep the kernel from passing the specified devices to any other drivers. =
+ I wonder how hard that would be to implement.
+>
+> The RTnet configuration file rtnet.conf has already instrumentation for b=
+inding/unbinding devices. The REBIND_RT_NICS variable has to be set up with=
+ the correct NIC PCI addresses. If you have more then one NIC, you can iden=
+tity PCI address of respective eth's using ethtool
+>
+> ethtool -i eth0
+> ethtool -i eth1
+>
+> etc.
+>
+> The bus-info field contains device pci addres that you can directly inser=
+t to REBIND_RT_NICS. If you don't know which eth menage with physical inter=
+face, you can blink LED port of the NIC using, eg.
+>
+> ethtool -p eth0
 
-A release of the glibc that fixes this issue. I must admit that I did
-not track this problem lately. Jan likely knows better here.
+(I am cross-posting this message to rtnet-users from the xenomai mailing li=
+st, since this is even more relevant there.  I apologize to those who recei=
+ve duplicate e-mails.)
 
--- 
-Philippe.
+Thank you again, Mariusz.  All of this information is helpful.  I was follo=
+wing the instructions to start the RTnet core manually (as documented in th=
+e README file), since I am not using RTmac in my application.  I saw some r=
+eferences to REBIND_RT_NICS, but I didn't look into it very closely, since =
+rtnet.conf and the "rtnet" script appeared to associated with RTmac.
 
+After looking at the "rtnet" script, I see that it does indeed use bind/unb=
+ind in exactly the way we were discussing.  The script works very works wel=
+l to switch an interface between standard and real-time networking, but unf=
+ortunately it does not support running without the RTmac layer.  I made som=
+e minor modifications to the script to add this support.  With my modificat=
+ions, if TDMA_MODE =3D "none" (instead of "master" or "slave"), the script =
+skips all of the rtmac/rtcfg/tmda initialization.  I have attached patches =
+for both the rtnet and xenomai-3.git/next repositories.  I hope that they w=
+ill be accepted, since I believe others have asked for this functionality i=
+n the past.
+
+Gilles, it appears that the "cards" parameter may not be needed anymore, un=
+less there are some other situations in which bind/unbind won't work.  I ca=
+n see how that would make maintaining the RT drivers simpler.
+
+-Jeff
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: rtnet-no-tdma-git.patch
+Type: text/x-patch
+Size: 888 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20141216/a7cf8f8=
+a/attachment.bin>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: rtnet-no-tdma-xeno3.patch
+Type: text/x-patch
+Size: 617 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20141216/a7cf8f8=
+a/attachment-0001.bin>
