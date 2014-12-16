@@ -1,13 +1,12 @@
-Message-ID: <549072DC.1030901@xenomai.org>
-Date: Tue, 16 Dec 2014 18:58:52 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <549070E1.7010904@nta-inc.net>
+Date: Tue, 16 Dec 2014 11:50:25 -0600
+From: Jeff Webb <jeff.webb@nta-inc.net>
 MIME-Version: 1.0
-References: <CAMJ=MEdh-vBm1S9cHL7Hj0Ky-RaeGCSw_xauMZoEsuegbArM1w@mail.gmail.com>
- <CAMJ=MEfDQm_ymyL8FULhqMvpwzet4aHMbQFoEjL-sVDsCTg2Hg@mail.gmail.com>
-In-Reply-To: <CAMJ=MEfDQm_ymyL8FULhqMvpwzet4aHMbQFoEjL-sVDsCTg2Hg@mail.gmail.com>
-Content-Type: text/plain; charset=windows-1252
+References: <548ed95828a095.41388325@wp.pl>
+In-Reply-To: <548ed95828a095.41388325@wp.pl>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [xenomai-forge] timer-internal consume a lot of cpu
+Subject: Re: [Xenomai] RTnet compilation issues with kernel above 3.10
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,51 +15,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ronny Meeus <ronny.meeus@gmail.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 12/16/2014 06:36 PM, Ronny Meeus wrote:
-> On Sun, Dec 7, 2014 at 5:26 PM, Ronny Meeus <ronny.meeus@gmail.com> wrote:
->> Hello
->>
->> we are using the xenomai-forge implementation.
->> We from time to time see an issue that the timer-internal thread is
->> consuming a complete core. It is seen when we send broadcast traffic that
->> needs to be handled by the Linux kernel (ARP).
->>
->> The kernel thread's priority handling the packets in the middle between the
->> timer-internal thread and the application thread's priority. All threads run
->> on the same core.
->> If the priority of the timer-internal is lowered below the kernel thread,
->> the load disappears immediately.
->> So it looks like there is some busy polling on a common resource that is
->> currently held by the application thread running at the lowest prio.
->>
->> I see that the timer lock being used is a mutex with priority inheritance so
->> I would expect that the prio of the application is raised as soon as the
->> timer-internal thread tries to obtain the mutex.
-> 
-> After investigating this issue in more detail I have the impression that it has
-> nothing to do with the mutex used to protect the timer but with the conditional
-> variable used to implement the psos event interface.
-> 
-> I found references on the web that explain an issue with the internal mutex used
-> inside the posix library to implement a conditional variable. See:
-> https://bugzilla.redhat.com/show_bug.cgi?id=438484
-> http://marc.info/?t=134688711000002&r=1&w=2
-> 
-> If this is indeed true, it means that the usage of conditional
-> variables is not safe
-> at all (from priority inheritance point of view).
+On 12/15/2014 06:51 AM, Mariusz Janiak wrote:
+> Hi,
+>
+> I have prepared a patch that should fix the RTnet compilation issues on a kernel 3.10 and higher, especially the latest supported 3.14.17 by the Xenomai 2.6.4. It is based on the Anders Blomdell patch
+>
+> http://sourceforge.net/p/rtnet/mailman/message/32034653/
+>
+> supplemented with missing parts. Patch should be applied to original RTnet git repository.
 
-Yes, condvars are known not to work nicely with PI mutexes on the glibc.
+Thank you very much for posting this patch.  I tried it out, and it works for me with Xenomai-2.6.4/Linux-3.14.17/rt_e1000e on x86-64.
 
-> 
-> Did anybody experiences issues like this before?
-> Are there any solutions / workarounds available (for example by avoiding using
-> conditional variables and using PI mutexes instead)?
+-Jeff
 
-Disabling PI for mutexes is the only option.
-
--- 
-Philippe.
 
