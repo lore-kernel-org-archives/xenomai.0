@@ -1,16 +1,21 @@
-Message-ID: <5478A1B9.3020702@xenomai.org>
-Date: Fri, 28 Nov 2014 17:24:25 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Wed, 17 Dec 2014 13:38:59 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141217123859.GA2016@hermes.click-hack.org>
+References: <20141211163807.GD27793@hermes.click-hack.org>
+ <609e4e03a401411fa6bc14de1ad4d3a5@EX132MBOX1A.de2.local>
+ <ea7b0e38bbc54fb693aa93e0acd4cb22@EX132MBOX1A.de2.local>
+ <54d4a4e8070b4811bfa13471cce38745@EX132MBOX1A.de2.local>
+ <20141215132315.GK11058@hermes.click-hack.org>
+ <40a594c20ef2443e9f61bbf12885a3c2@EX132MBOX1A.de2.local>
+ <20141215142021.GL11058@hermes.click-hack.org>
+ <80c7a5eb4be9451eb0f847a58ee91c27@EX132MBOX1A.de2.local>
+ <20141215151954.GN11058@hermes.click-hack.org>
+ <322873cb03ce4d91b6217ebf8e3ef714@EX132MBOX1A.de2.local>
 MIME-Version: 1.0
-References: <54775097.30705@siemens.com> <20141127181823.GK7842@hermes>
- <547772AF.108@siemens.com> <20141127191438.GI24110@csclub.uwaterloo.ca>
- <20141127203400.GP7842@hermes> <54778CF6.6000909@siemens.com>
- <20141127231527.GC24076@hermes> <5478430B.9030602@siemens.com>
- <20141128095038.GA3832@hermes> <20141128160946.GQ24110@csclub.uwaterloo.ca>
-In-Reply-To: <20141128160946.GQ24110@csclub.uwaterloo.ca>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [pull] forge: Adjust default registry mount point
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <322873cb03ce4d91b6217ebf8e3ef714@EX132MBOX1A.de2.local>
+Subject: Re: [Xenomai] Sleeping function called from invalid context
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,38 +24,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: "Stoidner, Christoph" <c.stoidner@arvero.de>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/28/2014 05:09 PM, Lennart Sorensen wrote:
-> On Fri, Nov 28, 2014 at 10:50:38AM +0100, Gilles Chanteperdrix wrote:
->> This is ridiculous. Because the standard changed, and one
->> distribution, Debian, decided to follow the new standard, which
->> seems to be not widely accepted, and even controversial, you want to
->> impose what Debian does to everybody. The distribution I use has
->> mount points under /mnt. So, why following Debian and not the
->> distribution I use, and what sysadmin have been doing for ages?
+On Wed, Dec 17, 2014 at 12:24:23PM +0000, Stoidner, Christoph wrote:
 > 
-> Feel free to make xenomai mandate creating some new mountpoint somewhere
-> else for its use.
-> 
->> You want the mount point to be somewhere else? Fine, put a symbolic
->> link.
->>
->> mkdir /run/xenomai
->> ln -s /run/xenomai /mnt/xenomai
-> 
-> And when I do mount /dev/sdf1 /mnt, what will xenomai think?  It sure
-> won't like it.
-> 
-> Do NOT put xenomai stuff in /mnt.  If you do, some of us will have to
-> maintain permanent patches to fix xenomai and I hate doing that.
-> 
+> After some research I have ended up now in APC'c thread handling
+> (see code snipped below, out of ksrc/arch/generic/hal.c). From my
+> point of view there could be occur the "lost wakeup problem". That
+> means in detail that rthal_kicker() calls wakeup when
+> rthal_apc_thread() has returned from rthal_apc_handler() but not
+> yet called set_current_state(). After that, when kicker has
+> finished, the APC thread calls set_current_state() and goes to
+> sleep. Thus, the wakeup is lost. Or do I overlook something? Maybe
+> we should use a waitqueue here?
 
-Let's make this a configuration variable set by a build switch, and move
-on. Looking over the trenches, I don't think there will be any consensus
-on this anyway.
+Indeed, this looks suspicious. Please try the wait queue.
 
 -- 
-Philippe.
+					    Gilles.
 
