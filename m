@@ -1,21 +1,11 @@
-Date: Wed, 17 Dec 2014 16:46:30 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141217154630.GA2282@hermes.click-hack.org>
-References: <609e4e03a401411fa6bc14de1ad4d3a5@EX132MBOX1A.de2.local>
- <ea7b0e38bbc54fb693aa93e0acd4cb22@EX132MBOX1A.de2.local>
- <54d4a4e8070b4811bfa13471cce38745@EX132MBOX1A.de2.local>
- <20141215132315.GK11058@hermes.click-hack.org>
- <40a594c20ef2443e9f61bbf12885a3c2@EX132MBOX1A.de2.local>
- <20141215142021.GL11058@hermes.click-hack.org>
- <80c7a5eb4be9451eb0f847a58ee91c27@EX132MBOX1A.de2.local>
- <20141215151954.GN11058@hermes.click-hack.org>
- <322873cb03ce4d91b6217ebf8e3ef714@EX132MBOX1A.de2.local>
- <20141217132235.GA4096@hermes.click-hack.org>
+Message-ID: <5491B5E9.4030200@siemens.com>
+Date: Wed, 17 Dec 2014 17:57:13 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20141217132235.GA4096@hermes.click-hack.org>
-Subject: Re: [Xenomai] Sleeping function called from invalid context
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Mayday mechanism broken on x86-64 - simpler approach
+	feasible?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,40 +14,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Stoidner, Christoph" <c.stoidner@arvero.de>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On Wed, Dec 17, 2014 at 02:22:35PM +0100, Gilles Chanteperdrix wrote:
-> On Wed, Dec 17, 2014 at 12:24:23PM +0000, Stoidner, Christoph wrote:
-> > 
-> > After some research I have ended up now in APC'c thread handling (see code snipped below, out of ksrc/arch/generic/hal.c). From my point of view there could be occur the "lost wakeup problem". That means in detail that rthal_kicker() calls wakeup when rthal_apc_thread() has returned from rthal_apc_handler() but not yet called set_current_state(). After that, when kicker has finished, the APC thread calls set_current_state() and goes to sleep. Thus, the wakeup is lost. Or do I overlook something?  Maybe we should use a waitqueue here?
-> > 
-> > 
-> > static int rthal_apc_thread(void *data)
-> > {
-> >     unsigned cpu = (unsigned)(unsigned long)data;
-> > 
-> >     set_cpus_allowed(current, cpumask_of_cpu(cpu));
-> >     sigfillset(&current->blocked);
-> >     current->flags |= PF_NOFREEZE;
-> >     /* Use highest priority here, since some apc handlers might
-> >        require to run as soon as possible after the request has been
-> >        pended. */
-> >     rthal_setsched_root(current, SCHED_FIFO, MAX_RT_PRIO - 1);
-> > 
-> >     while (!kthread_should_stop()) {
-> >         set_current_state(TASK_INTERRUPTIBLE);
-> >         schedule();
-> 
-> You can obtain the same effect as with a wait queue by replacing the
-> schedule() above with:
-> 
-> 	  if (rthal_apc_pending[cpu] == 0)
-> 	     schedule();
-	  else
-	     set_current_state(TASK_RUNNING);
+Hi,
 
+while porting the sigdebug test case to forge I noticed occasional
+crashes of the test after it received a watchdog signal. It turned out
+that the problem is in the way mayday works on x86-64:
+
+1. sp/ip/ax of interrupted thread is saved
+2. ip is set to mayday page
+3. mayday page executes the mayday syscall via the syscall instruction
+4. the syscall restores state on original state on return
+
+That that's the theory. Unfortunately the syscall instructions
+overwrites the cx register with the caller's instruction pointer. We
+could save it but there is no way to restore it on syscall return
+without significant changes to the Linux code in entry_64.S.
+
+x86-32 is fine as it uses the int80 path which does a full state
+recovery - but that is not available for 64-bit (only via ia32 compat,
+but that can be turned off).
+
+I was playing with a different approach: Set a flag that mayday is
+underway, let the interrupt context cause a fault (set ip to 0) and then
+fix that up if we are in mayday mode. Seems to work fine (after fixing
+some x86 ipipe issue) and would simplify the mayday logic apparently. So
+I'm wondering why that approach wasn't chosen initially? IOW, what am I
+missing?
+
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
