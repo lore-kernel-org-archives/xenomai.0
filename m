@@ -1,11 +1,10 @@
-Message-ID: <5491C242.1000505@siemens.com>
-Date: Wed, 17 Dec 2014 18:49:54 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5491CB3F.2050509@xenomai.org>
+Date: Wed, 17 Dec 2014 19:28:15 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <5491B5E9.4030200@siemens.com> <5491BB1B.7020306@xenomai.org>
- <20141217171734.GE2012@hermes.click-hack.org> <5491BF2F.7060706@siemens.com>
- <20141217174546.GI2012@hermes.click-hack.org>
-In-Reply-To: <20141217174546.GI2012@hermes.click-hack.org>
+References: <5491B5E9.4030200@siemens.com> <5491C2CA.7000906@xenomai.org>
+ <5491C179.2000600@siemens.com>
+In-Reply-To: <5491C179.2000600@siemens.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Mayday mechanism broken on x86-64 - simpler approach
@@ -18,48 +17,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 2014-12-17 18:45, Gilles Chanteperdrix wrote:
-> On Wed, Dec 17, 2014 at 06:36:47PM +0100, Jan Kiszka wrote:
->> On 2014-12-17 18:17, Gilles Chanteperdrix wrote:
->>> On Wed, Dec 17, 2014 at 06:19:23PM +0100, Philippe Gerum wrote:
->>>> On 12/17/2014 05:57 PM, Jan Kiszka wrote:
->>>>> Hi,
->>>>>
->>>>> while porting the sigdebug test case to forge I noticed occasional
->>>>> crashes of the test after it received a watchdog signal. It turned out
->>>>> that the problem is in the way mayday works on x86-64:
->>>>>
->>>>> 1. sp/ip/ax of interrupted thread is saved
->>>>> 2. ip is set to mayday page
->>>>> 3. mayday page executes the mayday syscall via the syscall instruction
->>>>> 4. the syscall restores state on original state on return
->>>>>
->>>>> That that's the theory. Unfortunately the syscall instructions
->>>>> overwrites the cx register with the caller's instruction pointer. We
->>>>> could save it but there is no way to restore it on syscall return
->>>>> without significant changes to the Linux code in entry_64.S.
+On 12/17/2014 06:46 PM, Jan Kiszka wrote:
+> On 2014-12-17 18:52, Philippe Gerum wrote:
+>> On 12/17/2014 05:57 PM, Jan Kiszka wrote:
+>>> Hi,
 >>>
->>> Maybe we can restore it in xnarch_fixup_mayday, if nothing touches
->>> it ?
+>>> while porting the sigdebug test case to forge I noticed occasional
+>>> crashes of the test after it received a watchdog signal. It turned out
+>>> that the problem is in the way mayday works on x86-64:
+>>>
+>>> 1. sp/ip/ax of interrupted thread is saved
+>>> 2. ip is set to mayday page
+>>> 3. mayday page executes the mayday syscall via the syscall instruction
+>>> 4. the syscall restores state on original state on return
+>>>
+>>> That that's the theory. Unfortunately the syscall instructions
+>>> overwrites the cx register with the caller's instruction pointer. We
+>>> could save it but there is no way to restore it on syscall return
+>>> without significant changes to the Linux code in entry_64.S.
+>>>
+>>> x86-32 is fine as it uses the int80 path which does a full state
+>>> recovery - but that is not available for 64-bit (only via ia32 compat,
+>>> but that can be turned off).
+>>>
 >>
->> The problem is that cx is mangled again on preparing sysret - we are in
->> a syscall return path at that point, but we need an interrupt/exception
->> path in fact.
+>> The legacy system_call vector is available unconditionally to x86_64.
+>> Xenomai 3 is actually calling int80 unconditionally on mayday traps for
+>> these reasons, i.e. always available and not suffering the long-mode
+>> syscall registers issue.
 > 
-> ARM had a similar issue with the register holding the syscall return
-> value, the fix was to return __xn_reg_rval(regs) in
-> the mayday syscall, is not this fix working for x86? How is cx
-> mangled exactly?
+> Only when setting CONFIG_IA32_EMULATION. That is typcially the case, but
+> not necessarily.
+> 
 
-rcx holds the ip of the context we call from / return to. So the return
-path loads cx with the ip value saved in the register set on the stack.
+I mean: the "safe" Xenomai syscall form (the one that binds a process to
+the real-time core in dual kernel mode) depends on this. Disabling int80
+is not an option in the current Xenomai implementation, mayday feature
+put aside.
 
-Jan
+So this change would also break the Xenomai ABI (which is ok with x3,
+but not an option for 2.6.4).
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
