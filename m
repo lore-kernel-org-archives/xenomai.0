@@ -1,10 +1,13 @@
-Message-ID: <548F07F1.7010606@telecom-paristech.fr>
-Date: Mon, 15 Dec 2014 17:10:25 +0100
-From: Renaud Pacalet <renaud.pacalet@telecom-paristech.fr>
+Message-ID: <5491C179.2000600@siemens.com>
+Date: Wed, 17 Dec 2014 18:46:33 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai] I-pipe patch broken for Xilinx Zynq
+References: <5491B5E9.4030200@siemens.com> <5491C2CA.7000906@xenomai.org>
+In-Reply-To: <5491C2CA.7000906@xenomai.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Mayday mechanism broken on x86-64 - simpler approach
+ feasible?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,38 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
+On 2014-12-17 18:52, Philippe Gerum wrote:
+> On 12/17/2014 05:57 PM, Jan Kiszka wrote:
+>> Hi,
+>>
+>> while porting the sigdebug test case to forge I noticed occasional
+>> crashes of the test after it received a watchdog signal. It turned out
+>> that the problem is in the way mayday works on x86-64:
+>>
+>> 1. sp/ip/ax of interrupted thread is saved
+>> 2. ip is set to mayday page
+>> 3. mayday page executes the mayday syscall via the syscall instruction
+>> 4. the syscall restores state on original state on return
+>>
+>> That that's the theory. Unfortunately the syscall instructions
+>> overwrites the cx register with the caller's instruction pointer. We
+>> could save it but there is no way to restore it on syscall return
+>> without significant changes to the Linux code in entry_64.S.
+>>
+>> x86-32 is fine as it uses the int80 path which does a full state
+>> recovery - but that is not available for 64-bit (only via ia32 compat,
+>> but that can be turned off).
+>>
+> 
+> The legacy system_call vector is available unconditionally to x86_64.
+> Xenomai 3 is actually calling int80 unconditionally on mayday traps for
+> these reasons, i.e. always available and not suffering the long-mode
+> syscall registers issue.
 
-Dear Xenomai developers,
+Only when setting CONFIG_IA32_EMULATION. That is typcially the case, but
+not necessarily.
 
-I ran into troubles when trying to follow the instructions at
-http://www.wiki.xilinx.com/Xenomai+for+Zynq: the
-xenomai-2.6.3/ksrc/arch/arm/patches/ipipe-core-3.8.13-arm-1.patch
-patch mentioned in the instructions is no longer the one distributed
-in http://download.gna.org/xenomai/stable/xenomai-2.6.3.tar.bz2. It
-has been replaced by ipipe-core-3.8.13-arm-3.patch patch which is not
-compatible with the xilinx-v14.5 tag of
-git://github.com/Xilinx/linux-xlnx.git. In order to patch and compile
-the compile Linux kernel I had to download and apply
-http://download.gna.org/adeos/patches/v3.x/arm/older/ipipe-core-3.8-arm-1.patch
-instead.
+Jan
 
-Best regards,
-- -- 
-Télécom ParisTech - LabSoC
-c/o EURECOM, Campus SophiaTech
-Les Templiers, 450 route des Chappes 06410 Biot
-Tel : +33 (0) 4 9300 8402
-Fax : +33 (0) 4 9300 8200
-Web : http://www.telecom-paristech.fr/
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-
-iEYEAREIAAYFAlSPB+8ACgkQ6X2qPZD76M/GHwCeNxh+t/UPT4FkfzDle/apevSK
-THcAn39O72JGMkJ/ZaGs8Ne3UzVQk2Mt
-=6D4A
------END PGP SIGNATURE-----
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
