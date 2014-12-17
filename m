@@ -1,13 +1,13 @@
-Message-ID: <548EFE4F.9000800@nta-inc.net>
-Date: Mon, 15 Dec 2014 09:29:19 -0600
-From: Jeff Webb <jeff.webb@nta-inc.net>
+Date: Wed, 17 Dec 2014 11:59:15 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20141217105915.GC7151@hermes.click-hack.org>
+References: <5490C06F.4080901@nta-inc.net>
+ <20141217102910.GA7151@hermes.click-hack.org>
 MIME-Version: 1.0
-References: <548B67E3.1090309@nta-inc.net>
- <20141212235631.GB11058@hermes.click-hack.org> <548EF7BE.5090305@nta-inc.net>
-In-Reply-To: <548EF7BE.5090305@nta-inc.net>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Add cards parameter to rt_e1000e module?
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20141217102910.GA7151@hermes.click-hack.org>
+Subject: Re: [Xenomai] rtnet issue with xenomai-3.git next branch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,41 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Jeff Webb <jeff.webb@nta-inc.net>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 12/15/2014 09:01 AM, Jeff Webb wrote:
-> On 12/12/2014 05:56 PM, Gilles Chanteperdrix wrote:
->> On Fri, Dec 12, 2014 at 04:10:43PM -0600, Jeff Webb wrote:
->>> The rtnet rt_e1000e module does not implement the 'cards'
->>> parameter. I have attached a patch for the 'next' branch of
->>> xenomai-3.git that adds this parameter, and it seems to work fine
->>> on my hardware. The code was ported straight from the rt_e1000
->>> module. My machine has two e1000e cards, so this is a useful
->>> feature for me. (I actually applied the same fix to the standard
->>> e1000e driver, which is even more useful to me, but I know it
->>> would be a maintenance nightmare for Xenomai to start maintaining
->>> that sort of patching...)
->>>
->>> I am trying to learn rtnet, but it seems that the code from the
->>> rtnet git repo won't compile with linux-3.14.17/xenomai-2.6.4. I
->>> saw that Gilles has pulled the rtnet code into the Xenomai-3 git
->>> repo, so it seemed to me that beta testing the Xenomai-3 rtnet
->>> code would be a better use of my time than messing with the old
->>> code base. So far, so good. My machine's primary ethernet
->>> interface is using the standard linux e1000e driver, and the
->>> secondary ethernet interface is up and running under rtnet using
->>> the rt_e1000e driver. I can use rtping to talk to another linux
->>> box that is connected via a switch, provided I ping in the reverse
->>> direction first to set up the route information.
->>
->> You can get rtnet to send an arp request to learn the route by using
->> the rtroute solicit command.
->>
->
-> That works great.  Thanks for the ip.
->
+On Wed, Dec 17, 2014 at 11:29:10AM +0100, Gilles Chanteperdrix wrote:
+> On Tue, Dec 16, 2014 at 05:29:51PM -0600, Jeff Webb wrote:
+> > I am testing the rtnet functionality in the 'next' branch of xenomai-3.git.  (I now also have Xenomai-2.6.4/rtnet.git running on the same machine for comparison.)  I am able to bring up the real-time interface (rt_e1000e) and use rtping as expected. As mentioned before, I have a primary non-rt ethernet interface running simultaneously (using the e1000e driver).   When I try to remove all the rtnet modules, I am unable to remove rtnet and rtipv4:
+> > 
+> > $ rmmod rtipv4 rtnet
+> > rmmod: ERROR: Module rtipv4 is in use
+> > rmmod: ERROR: Module rtnet is in use by: rtipv4
+> > 
+> > The messages are the same if I try to remove them individually.  This behavior does not occur with Xenomai-2.6.4/rtnet.git.
+> 
+> To avoid nasty side effects, every module which registers an
+> interface (whether rtnet or linux interface) now requires the
+> interface to be down before the module can be removed. The handling
+> of rtnet module counts was significantly reworked when importing
+> into 3.x, it is possible that some bug remains.
 
-Sorry, I meant "tip", not "ip". ;)
+Also note that you need this commits in the I-pipe kernel for
+3.14 for module count to work correctly from xenomai domain:
 
+https://git.xenomai.org/ipipe-gch.git/commit/?h=for-ipipe-3.14.17&id=f009149cf8ca8f956194e4fd852b0d97b7c76886
 
+-- 
+					    Gilles.
 
