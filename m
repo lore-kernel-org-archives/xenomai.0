@@ -1,13 +1,8 @@
-Date: Mon, 15 Dec 2014 17:18:39 +0100
+Resent-Message-ID: <20141217190615.GJ2012@hermes.click-hack.org>
+Resent-To: xenomai@xenomai.org
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141215161839.GO11058@hermes.click-hack.org>
-References: <548F07F1.7010606@telecom-paristech.fr>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <548F07F1.7010606@telecom-paristech.fr>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] I-pipe patch broken for Xilinx Zynq
+Message-ID: <mailman.737.1418843176.6101.xenomai@xenomai.org>
+Subject: [Xenomai] RTnet announce
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,36 +11,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Renaud Pacalet <renaud.pacalet@telecom-paristech.fr>
-Cc: xenomai@xenomai.org
+Date: Wed, 17 Dec 2014 19:06:15 -0000
+To: Xenomai <xenomai@xenomai.org>
 
-On Mon, Dec 15, 2014 at 05:10:25PM +0100, Renaud Pacalet wrote:
-> Dear Xenomai developers,
-> 
-> I ran into troubles when trying to follow the instructions at
-> http://www.wiki.xilinx.com/Xenomai+for+Zynq: the
-> xenomai-2.6.3/ksrc/arch/arm/patches/ipipe-core-3.8.13-arm-1.patch
-> patch mentioned in the instructions is no longer the one distributed
-> in http://download.gna.org/xenomai/stable/xenomai-2.6.3.tar.bz2. It
-> has been replaced by ipipe-core-3.8.13-arm-3.patch patch which is not
-> compatible with the xilinx-v14.5 tag of
-> git://github.com/Xilinx/linux-xlnx.git. In order to patch and compile
-> the compile Linux kernel I had to download and apply
-> http://download.gna.org/adeos/patches/v3.x/arm/older/ipipe-core-3.8-arm-1.patch
-> instead.
+Have some of you have noted, and even started testing, the xenomai 3
+git repository integrates a first port of the RTnet IP stack for
+Xenomai. This was supposed to be tested with the release of the next
+release candidate, with the following note. 
 
-Bad idea, using the latest I-pipe patch for a kernel is recommended,
-a newer release means some things were fixed. For the same reason,
-using xenomai 2.6.3 is not recommended.
+Note that this is a work in progress, so,
 
-Maybe you could show us the errors you get?
+what has been tested and works:
+- the core module, 
+- the IP stack, 
+- the nomac access control policy, 
+- the rtnetproxy addon, 
+- the rtcap addon, 
+tested with the following drivers:
+- r8169 (updated to support the 8136 chip and MSI) tested on x86_64 atom
+- 8139too tested on SMP Pentium 3
+- at91_ether (rebased on Linux 3.16 version, in order to get it to
+compile with latest kernels) tested on at91rm9200
+- macb (same rebase, gaining support for gem driver) tested on
+at91sam9263 and at91sama5d3 (using the newly supported gigabit gem driver)
+this for kernel versions 3.14 and 3.16.
+
+what has changed:
+modules refcounts are now linked to the network interfaces status:
+you can not remove a module as long as the interface it implements
+(whether real-time for a NIC driver or Linux driver for the modules
+which implement Linux net device drivers) is not down. So use 
+ifconfig/rtifconfig to stop the interface before trying and
+unloading modules.
+
+what has not been tested:
+- basically all the other drivers, the PCI/PCIe drivers have been
+compile tested, but that is all. 
+- The PPC drivers have not even been compile tested
+- The UDP protocol, 
+- the AF_PACKET interface.
+- the TDMA access control policy
+
+what is known not to work.
+- not compiling some parts as module. This probably works for the
+rtnet core, but not for much else, compiling as module imposes the
+initialization order due to module dependencies, whereas building
+everything in the kernel means that the initialization order is no
+longer guaranteed
+- the TCP protocol, it does not even compile so has been temporarily
+disabled, this should be fixed shortly
+
+Regards.
 
 -- 
 					    Gilles.
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: not available
-Type: application/pgp-signature
-Size: 173 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20141215/8877ba4f/attachment.sig>
+
