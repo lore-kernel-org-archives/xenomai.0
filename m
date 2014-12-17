@@ -1,6 +1,6 @@
-Message-ID: <5491CC75.8080607@siemens.com>
-Date: Wed, 17 Dec 2014 19:33:25 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5491D196.3040309@xenomai.org>
+Date: Wed, 17 Dec 2014 19:55:18 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <5491B5E9.4030200@siemens.com> <5491C2CA.7000906@xenomai.org>
  <5491C179.2000600@siemens.com> <5491CB3F.2050509@xenomai.org>
@@ -18,9 +18,9 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 2014-12-17 19:32, Jan Kiszka wrote:
+On 12/17/2014 07:32 PM, Jan Kiszka wrote:
 > On 2014-12-17 19:28, Philippe Gerum wrote:
 >> On 12/17/2014 06:46 PM, Jan Kiszka wrote:
 >>> On 2014-12-17 18:52, Philippe Gerum wrote:
@@ -62,13 +62,13 @@ On 2014-12-17 19:32, Jan Kiszka wrote:
 > 
 > Huh? Things worked fine here on X3 when trying out the effect of
 > disabling IA32 emulation. Or do you mean 2.6?
+> 
 
-Can't imagine either: x86-64 does not take 64-bit syscalls via int80, no
-matter if Linux or Xenomai.
-
-Jan
+I meant to tell crap: x86_64 implies vsyscall available, so there is no
+"safe" binding prologue there. Only x86_32 has this, so that legacy
+non-NPTL libc which do not support vsyscall work. So back to the initial
+discussion.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
