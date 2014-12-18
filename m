@@ -1,22 +1,13 @@
-Message-ID: <5492FB8E.2050800@siemens.com>
-Date: Thu, 18 Dec 2014 17:06:38 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Thu, 18 Dec 2014 17:41:26 +0100 (CET)
+From: Huy Cong Vu <huy-cong.vu@wandercraft.eu>
+Message-ID: <1193017267.99526.1418920886509.JavaMail.zimbra@wandercraft.eu>
+In-Reply-To: <530357014.99522.1418920882907.JavaMail.zimbra@wandercraft.eu>
+References: <767554081.97778.1418902240452.JavaMail.zimbra@wandercraft.eu>
+ <20141218140529.GM2012@hermes.click-hack.org>
 MIME-Version: 1.0
-References: <549072DC.1030901@xenomai.org>
- <CAMJ=MEfzrJQGYKT41F2hSirn8q0MGt-kWuT2GYQE7YTbSCNG5A@mail.gmail.com>
- <549090FA.7000901@xenomai.org>
- <CAMJ=MEc9UXa4P18kNmPeKH-SziXMj9Grbxagj7Wm_MckHcOC7Q@mail.gmail.com>
- <5492989C.9070106@siemens.com>
- <CAMJ=MEeWPyBFBbjj7_JLENZQ+xBkxbaKGiZBehKCatVa-1owqA@mail.gmail.com>
- <20141218141248.GN2012@hermes.click-hack.org> <5492EBAC.10502@siemens.com>
- <20141218150435.GP2012@hermes.click-hack.org>
- <CAMJ=MEc2V0P4nLXVwmxn7LNuY92PrPg=TnPa6UJi=0oCRz=w0g@mail.gmail.com>
- <20141218153001.GT2012@hermes.click-hack.org> <5492F43E.6070701@siemens.com>
- <CAMJ=MEf1uFy1uLBK-r0CnL_sZONuxZ5dYUrMq4+cfJvqQEzSOQ@mail.gmail.com>
-In-Reply-To: <CAMJ=MEf1uFy1uLBK-r0CnL_sZONuxZ5dYUrMq4+cfJvqQEzSOQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [xenomai-forge] timer-internal consume a lot of cpu
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Differents switch mode from differents Xenomai skin
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,97 +16,134 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ronny Meeus <ronny.meeus@gmail.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 2014-12-18 16:49, Ronny Meeus wrote:
-> On Thu, Dec 18, 2014 at 4:35 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->> On 2014-12-18 16:30, Gilles Chanteperdrix wrote:
->>> On Thu, Dec 18, 2014 at 04:25:40PM +0100, Ronny Meeus wrote:
->>>> On Thu, Dec 18, 2014 at 4:04 PM, Gilles Chanteperdrix
->>>> <gilles.chanteperdrix@xenomai.org> wrote:
->>>>> On Thu, Dec 18, 2014 at 03:58:52PM +0100, Jan Kiszka wrote:
->>>>>> On 2014-12-18 15:12, Gilles Chanteperdrix wrote:
->>>>>>> Otherwise, have you tried some alternate libc, such as musl:
->>>>>>> http://www.musl-libc.org/
->>>>>>>
->>>>>>> The following blog:
->>>>>>> http://ewontfix.com/
->>>>>>>
->>>>>>> Seems to show that the musl maintainers try and report glibc bugs
->>>>>>> and avoid them in their implementation.
->>>>>>>
->>>>>>> I have not tried xenomai with musl at all, so, maybe it does not
->>>>>>> even compile. But maybe just compiling a testcase for the condvar
->>>>>>> issue with that libc would help know if it has the same issue or
->>>>>>> not.
->>>>>>
->>>>>> Well, like with many of those "light-weight" re-implementations, the are
->>>>>> "small" issues with bits required for real-time:
->>>>>>
->>>>>> http://git.musl-libc.org/cgit/musl/tree/src/thread/pthread_mutexattr_setprotocol.c
->>>>>
->>>>> On the other hand, no implementation with a clear ENOTSUPP is better
->>>>> than a partial and buggy implementation that can not be trusted anyway.
->>>>>
->>>>> --
->>>>>                                             Gilles.
->>>>
->>>> Gilles I agree.
->>>>
->>>> In the meantime I tried it already.
->>>>
->>>> This is indeed the trace I get when running my test application with musl.
->>>> # ./cond_test_arm
->>>> # hread_mutexattr_setprotocol: Not supported
->>>>
->>>> Cobalt is not an option for us either since in that case all Linux
->>>> applications will run in low-priority. Next to that we also have a
->>>> huge priority inversion each time a Linux system call is done.
->>>>
->>>> Do we have other options to fix forge?
->>>
->>> Well, three options have been proposed if I followed this thread
->>> correctly:
->>> - stop using priority inheritance for these internal mutexes, at the
->>> risk of creating priority inversions
->>> - switch to priority ceiling (but what will be the ceiling? 99?)
->>
->> Likely - part of the reason why that is no general solution.
->>
->>> - use cobalt.
->>
->> - use a patched glibc
-> 
-> I tried to apply the patch on glibc 2.20 but it looks like the issue is still
-> present.
 
-You will need to extend to existing condvar users and tell glibc that
-those vars will be used in combination with PI mutexes
-(pthread_condattr_setprotocol_np).
+----- Mail original -----
+> De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+> =C3=80: "Huy Cong Vu" <huy-cong.vu@wandercraft.eu>
+> Cc: xenomai@xenomai.org
+> Envoy=C3=A9: Jeudi 18 D=C3=A9cembre 2014 15:05:29
+> Objet: Re: [Xenomai] Differents switch mode from differents Xenomai skin
 
-> Even if it would be solved with the patch, we force all users
-> of forge to work with a patched version of glibc and to go to 2.20.
-> This might not always be easy.
+> On Thu, Dec 18, 2014 at 12:30:40PM +0100, Huy Cong Vu wrote:
+>> Hello everyone, I recently ran a comparison test between Xemai
+>> native & posix skin, the goal is to see if its possible of using a
+>> full standard posix program instead of inserting some native
+>> functions. I'm not familiar with the Xenomai Posix skin so I may
+>> lack a lot of things, if you can give me some hints, I would be
+>> very grateful. Test run in xenomai 2.6.3 patched in linux 3.8.13.
+>=20
+> You should be using xenomai latest version, which is 2.6.4, not an
+> older version, especially if you have not yet chosen a particular version
+>=20
+>> My program only have 1 task who use the soem library (which use rtdm) to=
+ send a
+>> message broadcast in order to detect EtherCAT slave through a real-time =
+port
+>> RTNet.
+>> I have 2 test files which use native & posix skin respectively. Here som=
+e cuts
+>> of the main() function:
+>> Native:
+>> mlockall(MCL_CURRENT | MCL_FUTURE);
+>> rt_print_auto_init(1);
+>> rt_task_spawn(&rt_task_desc_1,NULL,0,98,T_JOINABLE|T_WARNSW,&mini,NULL);
+>> rt_task_join(&rt_task_desc_1);
+>> rt_task_delete(&rt_task_desc_1);
+>> Posix:
+>> mlockall(MCL_CURRENT | MCL_FUTURE);
+>> pthread_attr_init(&p_attr1);
+>> pthread_attr_setschedpolicy(&p_attr1,SCHED_FIFO);
+>> pthread_attr_setdetachstate(&p_attr1, PTHREAD_CREATE_JOINABLE);
+>> param.sched_priority =3D 98;
+>> pthread_attr_setschedparam(&p_attr1, &param);
+>> pthread_create( &thread1, &p_attr1, (void *) &mini, NULL);
+>> pthread_join(thread1, 0);
+>> pthread_exit(&thread1);
+>> pthread_attr_destroy(&p_attr1);
+>>=20
+>> in mini(): pthread_set_mode_np(0,PTHREAD_PRIMARY|PTHREAD_WARNSW);
+>=20
+> You do not need PTHREAD_PRIMARY, a xenomai thread will always start
+> in primary mode, and anyway the switch to primary or secondary mode
+> will  happen as needed.
+>=20
+>>=20
+>> in which mini() is my task.
+>>=20
+>> I activated WARNSW bit to detect spurious relaxes, according to this:
+>> http://xenomai.org/2014/06/finding-spurious-relaxes/
+>>=20
+>> The mode switch occurs at socket level, but in differents ways:
+>> With native:
+>> Mode switch (reason invoked syscall), aborting. Backtrace:
+>> ./testcase_native[0x40152f]
+>> /lib/x86_64-linux-gnu/libpthread.so.0(+0xfcb0)[0x7eff44375cb0]
+>> /usr/xenomai/lib/librtdm.so.1(rt_dev_socket+0x1d)[0x7eff43d5480d
+>=20
+> rt_dev_socket may cause a switch to secondary mode, yes, this is
+> perfectly normal, only sending and receiving data is guaranteed to
+> not cause a switch to secondary mode.
+>=20
+>>=20
+>> With posix:
+>> Critical errors: Mode switch (reason latency:received SIXCPU for unknown
+>> reason), aborting. Backtrace:
+>=20
+> Unknown reason is suspicious, if you have used the sigdebug example,
+> you should not that there is now an additional reason for receiving
+> SIGXCPU.
+>=20
 
-Yes, that is unhandy.
+You are right, the error I got is error 7, i.e SIGDEBUG_RESCNT_IMBALANCE, k=
+nowing that I don't use a mutex in my app, so maybe it's still an unknown i=
+ssue?
 
-> 
->> - fix upstream glibc - non-trivial, as history shows, but long overdue
-> 
-> Another option is to implement the priority boost in the copperplate lib.
-> Before the signal is done, change the priority to an equal priority as
-> the task signaling the conditional variable (in case the prio or the
-> waiting task is lower).
-> Once the thread is unblocked, restore the original priority (from the
-> thread that receives the signal).
+>> ./testcase_posix[0x401570]
+>> /lib/x86_64-linux-gnu/libpthread.so.0(+0xfcb0)[0x7f40ddb7acb0]
+>> /usr/xenomai/lib/librtdm.so.1(rt_dev_sendmsg+0x16)[0x7f40dd5598f6]
+>>=20
+>> These 2 programs use the same functions call, compiled with same
+>> flags (rtdm, native & posix mixed):
+>=20
+> Most likely, rt_dev_sendmsg is passed a non real-time socket. You
+> can use either native or posix services to create and handle
+> sockets, but you can not mix the call. It meansa socket created with
+> rt_dev_socket (the native service) should be passed to
+> rt_dev_sendmsg, whereas socket created with the posix service
+> (socket) can only be passed to posix services (sendmsg). Is not it
+> what is happening here?
+>=20
 
-That implies you know the prios of the involved threads. Doesn't sound
-like a generic solution either.
+So, does that means that my test in posix skin should not calls rt_dev_send=
+msg?=20
 
-Jan
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+>> The only different is the portion I mentioned above.
+>=20
+> Compiling for the xenomai skin causes changes in the services called
+> even without changing the code. So, for instance, if you use the
+> "socket" service, when compiling for the native skin, it will create
+> a plain linux socket, whereas when compiled for the posix skin, it
+> will try and create an RTDM socket.
+>=20
+
+Even after removing native c & ld flags, it keeps calling this native funct=
+ion, which is a strange behavior, no?
+
+> To help you more, we would need more details, such as for instance a
+> reduced, self-contained test case allowing us to reproduce the issue
+> you observe.
+>=20
+
+I'm working on that one, will post it asap. Thanks for your help.
+
+> --
+> =09=09=09=09=09    Gilles.
+
+--=20
+Huy Cong
+Wandercraft SAS
 
