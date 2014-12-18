@@ -1,19 +1,14 @@
+Message-ID: <5492E634.3040605@nta-inc.net>
+Date: Thu, 18 Dec 2014 08:35:32 -0600
+From: Jeff Webb <jeff.webb@nta-inc.net>
 MIME-Version: 1.0
-In-Reply-To: <5492D80E.3010701@siemens.com>
-References: <CAMJ=MEdh-vBm1S9cHL7Hj0Ky-RaeGCSw_xauMZoEsuegbArM1w@mail.gmail.com>
- <CAMJ=MEfDQm_ymyL8FULhqMvpwzet4aHMbQFoEjL-sVDsCTg2Hg@mail.gmail.com>
- <549072DC.1030901@xenomai.org>
- <CAMJ=MEfzrJQGYKT41F2hSirn8q0MGt-kWuT2GYQE7YTbSCNG5A@mail.gmail.com>
- <549090FA.7000901@xenomai.org>
- <CAMJ=MEc9UXa4P18kNmPeKH-SziXMj9Grbxagj7Wm_MckHcOC7Q@mail.gmail.com>
- <5492989C.9070106@siemens.com>
- <CAMJ=MEeWPyBFBbjj7_JLENZQ+xBkxbaKGiZBehKCatVa-1owqA@mail.gmail.com>
- <5492D80E.3010701@siemens.com>
-From: Ronny Meeus <ronny.meeus@gmail.com>
-Date: Thu, 18 Dec 2014 15:17:21 +0100
-Message-ID: <CAMJ=MEfHzJ7YwxAemH6sg+EvHTLweasNK2TW4s5jYYhe08m+hQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] [xenomai-forge] timer-internal consume a lot of cpu
+References: <5490A954.8040207@nta-inc.net>
+ <20141217103118.GB7151@hermes.click-hack.org>
+In-Reply-To: <20141217103118.GB7151@hermes.click-hack.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Add "rtroute solicit" support to the rtnet script and
+ rtnet.conf
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,46 +17,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>, rtnet-users@lists.sourceforge.net
 
-> Philippe, Jan
->>
->> as long as this issue is not fixed in glibc, it is not OK to use
->> conditional variables
->> in application space for real-time applications in my opinion.
+On 12/17/2014 04:31 AM, Gilles Chanteperdrix wrote:
+> On Tue, Dec 16, 2014 at 03:51:16PM -0600, Jeff Webb wrote:
+>> I am using rtnet without rtmac/tdma. I previously sent a patch
+>> that allows one to use the "rtnet" script and rtnet.conf in this
+>> configuration. I would also like to be able to specify a list of
+>> IP addresses in rtnet.conf that are passed along to "rtroute
+>> solicit". I have attached patches for the rtnet and
+>> xenomai-3.git/next repositories. I think others will find them
+>> useful.
 >
-> ...when combining them with PI mutexes, right. For real-time QEMU/KVM, I
-> worked around this by using prio-ceiling mutexes. That is by far not
-> optimal, performance-wise, but at least you avoid random lockups or the
-> other side effects of that bug.
+> Well, you should probably be using "nomac" if you are not interested
+> in tdma.
 >
 
-Jan, to be clear:
+Thank you for your response.  I appreciate your advice, Gilles, and even more so, since I am new to RTnet.  I am somewhat confused by the rtmac/nomac configuration, since I haven't found a lot of documentation on it.  Something I read indicated that the primary purpose was for use as skeleton when writing new MAC implementations, but it also seems that it is useful for other purposes.  I have a couple questions that might clarify things for me a bit.
 
-We do not use PI mutexes in our application, we just use pSOS primitives.
-Internally in the copperplate lib (see copperplate/syncobj.c), conditional vars
-are used in combination with PI mutexes.
+There are a couple of ASCII-art drawings at the beginning of the README.rtmac file in the rtnet documentation.  The first one seems to indicate that rtnet can be used without rtmac, if all communication is done from RT applications.  I see that with rtmac inserted, standard linux programs can also send information over the real-time interface.  The RTmac.spec document indicates that the rtmac layer wraps data sent through rtmac with an rtmac frame header, and specifies how the non-real-time packets can be tunneled through a real-time network.  My first question is: does the rtmac/nomac configuration still add the rtmac header?  I assumed the answer was "yes", but perhaps I am wrong.
 
-static inline
-int monitor_wait_grant(struct syncobj *sobj,
-                       struct threadobj *current,
-                       const struct timespec *timeout)
-{
-        if (timeout)
-                return -pthread_cond_timedwait(&current->core.grant_sync,
-                                               &sobj->core.lock, timeout);
+My initial RTnet application is to send UDP packets in real-time to a hardware device manufactured by someone else.  Since I am not in control of the receiving device, I cannot have any additional headers added to my packets.  Can I do this without the rtmac module inserted?  Can I do this with rtmac and nomac inserted?  If so, what would be the advantage in my application?  At some point I may need to send/receive TCP and UDP packets for non-real-time configuration purposes, but I don't see any need to communicate from standard linux programs at this time.
 
-        return -pthread_cond_wait(&current->core.grant_sync, &sobj->core.lock);
-}
+Thank you again to everyone for their input.  The documentation is not very clear on how (or even if) rtnet can be used to do what I need.
 
-where sobj->core.lock is a mutex with PI:
+-Jeff
 
-pthread_mutexattr_init(&mattr);
-pthread_mutexattr_settype(&mattr, mutex_type_attribute);
-pthread_mutexattr_setprotocol(&mattr, PTHREAD_PRIO_INHERIT);
-ret = __bt(-pthread_mutexattr_setpshared(&mattr, mutex_scope_attribute));
-
-
-Ronny
 
