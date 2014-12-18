@@ -1,10 +1,22 @@
 MIME-Version: 1.0
-Date: Thu, 18 Dec 2014 17:53:33 +0100
-Message-ID: <CALH4WdbO8pfsUCvUUHVtv_Rzh22-CLxAuRAZ=HzuPWOcvY7KdQ@mail.gmail.com>
-From: Frederik Bayart <frederik.bayart@triphase.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] PATCH : msi patch rtcan_peak_pci
+In-Reply-To: <5492FB8E.2050800@siemens.com>
+References: <549072DC.1030901@xenomai.org>
+ <CAMJ=MEfzrJQGYKT41F2hSirn8q0MGt-kWuT2GYQE7YTbSCNG5A@mail.gmail.com>
+ <549090FA.7000901@xenomai.org>
+ <CAMJ=MEc9UXa4P18kNmPeKH-SziXMj9Grbxagj7Wm_MckHcOC7Q@mail.gmail.com>
+ <5492989C.9070106@siemens.com>
+ <CAMJ=MEeWPyBFBbjj7_JLENZQ+xBkxbaKGiZBehKCatVa-1owqA@mail.gmail.com>
+ <20141218141248.GN2012@hermes.click-hack.org> <5492EBAC.10502@siemens.com>
+ <20141218150435.GP2012@hermes.click-hack.org>
+ <CAMJ=MEc2V0P4nLXVwmxn7LNuY92PrPg=TnPa6UJi=0oCRz=w0g@mail.gmail.com>
+ <20141218153001.GT2012@hermes.click-hack.org> <5492F43E.6070701@siemens.com>
+ <CAMJ=MEf1uFy1uLBK-r0CnL_sZONuxZ5dYUrMq4+cfJvqQEzSOQ@mail.gmail.com>
+ <5492FB8E.2050800@siemens.com>
+From: Ronny Meeus <ronny.meeus@gmail.com>
+Date: Thu, 18 Dec 2014 18:21:39 +0100
+Message-ID: <CAMJ=MEd+dJWSNSace4TLWPOM36OvB+WdxJebQSZFFFNA67NOPQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] [xenomai-forge] timer-internal consume a lot of cpu
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,17 +25,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-SGFsbG8sCgpXZSBoYXZlIGFkZGVkIG1zaSB0byB0aGUgcnRjYW5fcGVha19wY2kgZHJpdmVyCklu
-IGF0dGFjaG1lbnQgYSB6aXAgZmlsZSBjb250YWluaW5nIHRoZSBvbGQgYW5kIHRoZSBuZXcgcnRj
-YW5fcGVha19wY2kuYwphbmQgdGhlIHBhdGNoLgpDYW4gdGhpcyBwYXRjaCBiZSBhcHBsaWVkIHRo
-ZSB0aGUgc291cmNlIHRyZWUgPwoKS2luZCByZWdhcmRzLAoKRnJlZGVyaWsgQmF5YXJ0IHwgU2Vu
-aW9yIHNvZnR3YXJlIGVuZ2luZWVyClRyaXBoYXNlIE5WIHwgUmVzZWFyY2ggUGFyayBab25lIDE3
-MTkgfCBSb21laW5zZSBzdHJhYXQgMTggfCBCLTMwMDEgSGV2ZXJsZWUKVCAgKzMyIDIgNjY5IDA2
-IDA1IHwgRSBmcmVkZXJpay5iYXlhcnRAdHJpcGhhc2UuY29tIHwgVyB3d3cudHJpcGhhc2UuY29t
-Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFj
-aG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHJ0Y2FuX3BlYWtfcGNpLnppcApUeXBlOiBhcHBs
-aWNhdGlvbi96aXAKU2l6ZTogNzM4MiBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0
-dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNDEy
-MTgvZmQxNWVmZjEvYXR0YWNobWVudC56aXA+Cg==
+>
+> That implies you know the prios of the involved threads. Doesn't sound
+> like a generic solution either.
+>
+> Jan
+>
+
+I think Xenomai knows the involved threads.
+
+Philippe,
+is the list of waiting threads not kept in the thread object?
+
+Ronny
+
