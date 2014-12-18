@@ -1,11 +1,17 @@
-From: Alexander Herzog <aherzog@tuebingen.mpg.de>
-Message-Id: <D89759E6-FF44-40AC-82AE-7381A82BA5C7@tuebingen.mpg.de>
-Date: Thu, 18 Dec 2014 09:39:31 +0100
-Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
-Content-Type: text/plain;
-	charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Latency spikes
+Message-ID: <5492989C.9070106@siemens.com>
+Date: Thu, 18 Dec 2014 10:04:28 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
+MIME-Version: 1.0
+References: <CAMJ=MEdh-vBm1S9cHL7Hj0Ky-RaeGCSw_xauMZoEsuegbArM1w@mail.gmail.com>
+ <CAMJ=MEfDQm_ymyL8FULhqMvpwzet4aHMbQFoEjL-sVDsCTg2Hg@mail.gmail.com>
+ <549072DC.1030901@xenomai.org>
+ <CAMJ=MEfzrJQGYKT41F2hSirn8q0MGt-kWuT2GYQE7YTbSCNG5A@mail.gmail.com>
+ <549090FA.7000901@xenomai.org>
+ <CAMJ=MEc9UXa4P18kNmPeKH-SziXMj9Grbxagj7Wm_MckHcOC7Q@mail.gmail.com>
+In-Reply-To: <CAMJ=MEc9UXa4P18kNmPeKH-SziXMj9Grbxagj7Wm_MckHcOC7Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [xenomai-forge] timer-internal consume a lot of cpu
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,27 +20,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Ronny Meeus <ronny.meeus@gmail.com>, Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hi all,
+On 2014-12-18 09:00, Ronny Meeus wrote:
+>>
+>> A release of the glibc that fixes this issue. I must admit that I did
+>> not track this problem lately. Jan likely knows better here.
+>>
+> 
+> Jan,
+> 
+> what version glibc solves the priority inversion issue on conditional variables?
+> I already tried the glibc 2.18 but the issue is still there.
 
-We see latency spikes on our xenomai install whenever we open a window, =
-take a screenshot or perform similar actions. The spikes are especially =
-high (~2000) the moment an opengl window is opened (e.g. glxgears). =
-Outside of these events (e.g. once a window is open) the latencies seem =
-to be stable. The issue remains even, if we switch graphics cards (and =
-graphics drivers) from a nvidia to a radeon card.=20
+The bug is still not fixed, and discussion stalled again, see
+https://sourceware.org/bugzilla/show_bug.cgi?id=11588
 
-We are running Xenomai 2.6.3 on an Intel Xeon E5-2687W v3 310GHz =
-processor and Ubuntu 12.04 (linux kernel version 3.8.13). I went through =
-the troubleshooting section and made sure that the deprecated config =
-flags (CONFIG_CPU_FREQ, CONFIG_CPU_IDLE, CONFIG_KGDB, =
-CONFIG_CONTEXT_TRACKING_FORCE) are disabled. We see the warning =
-'SMI-enabled chipset found, but SMI workaround disabled', but passing =
-'xenomai.smi=3D-1' to the kernel does not fix our issue.
+Jan
 
-I would be thankful for any hint on how I could further debug this =
-issue.
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
-Best regards,
-Alex=
