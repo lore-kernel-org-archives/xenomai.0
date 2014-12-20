@@ -1,11 +1,12 @@
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Sat, 20 Dec 2014 10:33:37 -0500
+Message-ID: <20141220153337.GD24110@csclub.uwaterloo.ca>
+References: <CAFgu5KXBDRLxt4q3PUw9he+4Z97RV0=Q96Y+or7FzEwT3CVZRA@mail.gmail.com>
 MIME-Version: 1.0
-Sender: justinhartubc@gmail.com
-From: Justin Hart <justin.hart@mech.ubc.ca>
-Date: Sat, 20 Dec 2014 00:05:25 -0800
-Message-ID: <CAFgu5KXBDRLxt4q3PUw9he+4Z97RV0=Q96Y+or7FzEwT3CVZRA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Kernel Configuration Woes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFgu5KXBDRLxt4q3PUw9he+4Z97RV0=Q96Y+or7FzEwT3CVZRA@mail.gmail.com>
+Subject: Re: [Xenomai] Kernel Configuration Woes
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,32 +15,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Justin Hart <justin.hart@mech.ubc.ca>
+Cc: xenomai@xenomai.org
 
-SSByZWNlbnRseSByZWJ1aWx0IG15IGtlcm5lbCBhbmQgSSBzZWVtIHRvIGJlIHJ1bm5pbmcgaW50
-byBzb21lIHByb2JsZW1zCnRoYXQgSSBwcmV2aW91c2x5IGVuY291bnRlcmVkIHdpdGggeGVub21h
-aS4gIFVuZm9ydXRuYXRlbHksIEkgY2FuJ3Qgc2VlbSB0bwpmaXggdGhlbS4KCldoZW4gSSBsb2Fk
-IG15IGFwcGxpY2F0aW9uICh3aGljaCBydW5zIGF0IEJhcnJldHQgV0FNKSwgSSBnZXQgdGhlIGZv
-bGxvd2luZwptZXNzYWdlcyBpbiBteSBrZXJuZWwgbG9nLgoKRGVjIDE5IDIzOjU5OjAxIG1hZ251
-bSBrZXJuZWw6IFsgMTIzMi44MzU0NDldIENsb2Nrc291cmNlIHRzYyB1bnN0YWJsZQooZGVsdGEg
-PSAxOTk4MDc2MDI0IG5zKQpEZWMgMTkgMjM6NTk6MDEgbWFnbnVtIGtlcm5lbDogWyAxMjMyLjgz
-NTQ3N10gU3dpdGNoZWQgdG8gY2xvY2tzb3VyY2UKcmVmaW5lZC1qaWZmaWVzCgpBdCB0aGlzIGp1
-bmN0dXJlLCBhIGZldyB0aGluZ3MgaGFwcGVuLCBteSBlbnRpcmUgc3lzdGVtIGdyaW5kcyB0byBh
-IGhhbHQsCm15IHN5c3RlbSBjbG9jayBzdGFydHMgdG8gZHJpZnQgc2lnbmlmaWNhbnRseSwgYW5k
-IHhlbm8tdGVzdCByZXBvcnRzIG1ham9yCmNsb2NrIGRyaWZ0LgoKQ1BVICBUb0Qgb2Zmc2V0IFt1
-c10gVG9EIGRyaWZ0IFt1cy9zXSAgICAgIHdhcnBzIG1heCBkZWx0YSBbdXNdCi0tLSAtLS0tLS0t
-LS0tLS0tLS0tLS0tLSAtLS0tLS0tLS0tLS0tLS0tIC0tLS0tLS0tLS0gLS0tLS0tLS0tLS0tLS0K
-ICAwICAgICAgICAgIDE2NDMyODU1My4wICAgICAgNzAzNDIwNS4wOTUgICAgICAgICAgMCAgICAg
-ICAgICAgIDAuMAogIDEgICAgICAgICAgMTY0MzI5MTMxLjUgICAgICA3MDMzMzg1LjQxNiAgICAg
-ICAgICAwICAgICAgICAgICAgMC4wCiAgMiAgICAgICAgICAxNjQzMjg3OTQuMCAgICAgIDcwMzA3
-NTYuMjk2ICAgICAgICAgIDAgICAgICAgICAgICAwLjAKICAzICAgICAgICAgIDE2NDMyODc4My4z
-ICAgICAgNzAzMDY0Ni45ODAgICAgICAgICAgMCAgICAgICAgICAgIDAuMAoKSSdtIHJ1bm5pbmcg
-a2VybmVsIDMuMTQuMTcsIHhlbm9tYWkgMi42LjQsIGFuZCB0aGUgZGVmYXVsdCBpcGlwZSB0aGF0
-IGNvbWVzCndpdGggMi42LjQKCkF0dGFjaGVkIGlzIG15IC5jb25maWcKCkRvZXMgYW55Ym9keSBo
-YXZlIGFueSBpZGVhIHdoYXQgSSdtIGRvaW5nIHdyb25nPyAgVGhpcyBsb29rcyBwcmV0dHkgY2xv
-c2UKdG8gd2hhdCBJIGhhZCBtYXJrZWQgaW4gbXkgbm90ZXMuCgpKdXN0aW4KLS0tLS0tLS0tLS0t
-LS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2Ny
-dWJiZWQuLi4KTmFtZTogY29uZmlnClR5cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXpl
-OiA5Mzc2NSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly93d3cueGVub21h
-aS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNDEyMjAvMWMxYzdjMzgvYXR0
-YWNobWVudC5vYmo+Cg==
+On Sat, Dec 20, 2014 at 12:05:25AM -0800, Justin Hart wrote:
+> I recently rebuilt my kernel and I seem to be running into some problems
+> that I previously encountered with xenomai.  Unforutnately, I can't seem to
+> fix them.
+> 
+> When I load my application (which runs at Barrett WAM), I get the following
+> messages in my kernel log.
+> 
+> Dec 19 23:59:01 magnum kernel: [ 1232.835449] Clocksource tsc unstable
+> (delta = 1998076024 ns)
+> Dec 19 23:59:01 magnum kernel: [ 1232.835477] Switched to clocksource
+> refined-jiffies
+> 
+> At this juncture, a few things happen, my entire system grinds to a halt,
+> my system clock starts to drift significantly, and xeno-test reports major
+> clock drift.
+> 
+> CPU  ToD offset [us] ToD drift [us/s]      warps max delta [us]
+> --- -------------------- ---------------- ---------- --------------
+>   0          164328553.0      7034205.095          0            0.0
+>   1          164329131.5      7033385.416          0            0.0
+>   2          164328794.0      7030756.296          0            0.0
+>   3          164328783.3      7030646.980          0            0.0
+> 
+> I'm running kernel 3.14.17, xenomai 2.6.4, and the default ipipe that comes
+> with 2.6.4
+> 
+> Attached is my .config
+> 
+> Does anybody have any idea what I'm doing wrong?  This looks pretty close
+> to what I had marked in my notes.
+
+I suspect it would help a lot to know what hardware this is on.
+
+The tsc being unstable seems rather bad, since I can't imagine using
+jiffies is going to give any removely stable for system time.
+
+I am surprised if any modern x86 hardware has bad tsc support, unless
+of course SMI is involved.
+
+I suspect if you figure out why the tsc is being declared unstable, you
+will fix the problem.
+
+-- 
+Len Sorensen
+
