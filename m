@@ -1,14 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <20141219145755.GA7589@hermes.click-hack.org>
-References: <CALH4WdbO8pfsUCvUUHVtv_Rzh22-CLxAuRAZ=HzuPWOcvY7KdQ@mail.gmail.com>
- <20141218174447.GV2012@hermes.click-hack.org>
- <CALH4WdZvLBWyUavA7=UV=RoJEg+Cd3nEELjnQac3uZSkfj8B+A@mail.gmail.com>
- <20141219145755.GA7589@hermes.click-hack.org>
-Date: Fri, 19 Dec 2014 17:46:34 +0100
-Message-ID: <CALH4Wda+Lhe4om2MvWzbrvAEaaME3zFJPXQFirOTVU_1oLGtQg@mail.gmail.com>
-From: Frederik Bayart <frederik.bayart@triphase.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] PATCH : msi patch rtcan_peak_pci
+Sender: justinhartubc@gmail.com
+From: Justin Hart <justin.hart@mech.ubc.ca>
+Date: Sat, 20 Dec 2014 00:05:25 -0800
+Message-ID: <CAFgu5KXBDRLxt4q3PUw9he+4Z97RV0=Q96Y+or7FzEwT3CVZRA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Kernel Configuration Woes
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,76 +16,30 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-On 19 December 2014 at 15:57, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On Fri, Dec 19, 2014 at 12:20:13PM +0100, Frederik Bayart wrote:
->> On 18 December 2014 at 18:44, Gilles Chanteperdrix
->> <gilles.chanteperdrix@xenomai.org> wrote:
->> > On Thu, Dec 18, 2014 at 05:53:33PM +0100, Frederik Bayart wrote:
->> >> Hallo,
->> >>
->> >> We have added msi to the rtcan_peak_pci driver
->> >> In attachment a zip file containing the old and the new rtcan_peak_pci.c
->> >> and the patch.
->> >> Can this patch be applied the the source tree ?
->> >
->> > Please send the patch alone, preferably inline, or as an attachment.
->> > This makes review and comment easier.
->> >
->> > --
->> >                                             Gilles.
->>
->> Gilles,
->>
->> Below the patch. I used  xenomai-3-3.0-rc2.tar because I haven't used
->> git yet but I verified that the
->> driver source didn't changed in git
->> (http://git.xenomai.org/xenomai-3.git/plain/kernel/drivers/can/sja1000/rtcan_peak_pci.c)
->>
->> Frederik
->>
->> --- a/kernel/drivers/can/sja1000/rtcan_peak_pci.c    2014-10-31
->> 15:18:44.000000000 +0100
->> +++ b/kernel/drivers/can/sja1000/rtcan_peak_pci.c    2014-12-18
->> 17:44:21.799350602 +0100
->> @@ -301,6 +301,8 @@
->>      if ((ret = pci_write_config_word(pdev, 0x44, 0)))
->>      goto failure_cleanup;
->>
->> +    pci_enable_msi(pdev);
->> +
->
-> You should get pci_enable_msi return status, and...
->
->>      if (sub_sys_id > 3) {
->>      if ((ret = rtcan_peak_pci_add_chan(pdev, CHANNEL_MASTER,
->>                         &master_dev)))
->> @@ -337,6 +339,8 @@
->>      rtcan_peak_pci_del_chan(board->slave_dev, 0);
->>      rtcan_peak_pci_del_chan(dev, 0);
->>
->> +    pci_disable_msi(pdev);
->> +
->
-> if it failed, do not use pci_disable_msi.
->
-> --
->                                             Gilles.
-
-Is this necessary ? A lot of drivers seems to do this, but this check
-is also done in pci_disable_msi :
-
-void pci_disable_msi(struct pci_dev *dev)
-{
-        if (!pci_msi_enable || !dev || !dev->msi_enabled)
-                return;
-
-        pci_msi_shutdown(dev);
-        free_msi_irqs(dev);
-}
-
-
-dev->msi_enabled is set at the end of pci_enable_msi
-
-Frederik
-
+SSByZWNlbnRseSByZWJ1aWx0IG15IGtlcm5lbCBhbmQgSSBzZWVtIHRvIGJlIHJ1bm5pbmcgaW50
+byBzb21lIHByb2JsZW1zCnRoYXQgSSBwcmV2aW91c2x5IGVuY291bnRlcmVkIHdpdGggeGVub21h
+aS4gIFVuZm9ydXRuYXRlbHksIEkgY2FuJ3Qgc2VlbSB0bwpmaXggdGhlbS4KCldoZW4gSSBsb2Fk
+IG15IGFwcGxpY2F0aW9uICh3aGljaCBydW5zIGF0IEJhcnJldHQgV0FNKSwgSSBnZXQgdGhlIGZv
+bGxvd2luZwptZXNzYWdlcyBpbiBteSBrZXJuZWwgbG9nLgoKRGVjIDE5IDIzOjU5OjAxIG1hZ251
+bSBrZXJuZWw6IFsgMTIzMi44MzU0NDldIENsb2Nrc291cmNlIHRzYyB1bnN0YWJsZQooZGVsdGEg
+PSAxOTk4MDc2MDI0IG5zKQpEZWMgMTkgMjM6NTk6MDEgbWFnbnVtIGtlcm5lbDogWyAxMjMyLjgz
+NTQ3N10gU3dpdGNoZWQgdG8gY2xvY2tzb3VyY2UKcmVmaW5lZC1qaWZmaWVzCgpBdCB0aGlzIGp1
+bmN0dXJlLCBhIGZldyB0aGluZ3MgaGFwcGVuLCBteSBlbnRpcmUgc3lzdGVtIGdyaW5kcyB0byBh
+IGhhbHQsCm15IHN5c3RlbSBjbG9jayBzdGFydHMgdG8gZHJpZnQgc2lnbmlmaWNhbnRseSwgYW5k
+IHhlbm8tdGVzdCByZXBvcnRzIG1ham9yCmNsb2NrIGRyaWZ0LgoKQ1BVICBUb0Qgb2Zmc2V0IFt1
+c10gVG9EIGRyaWZ0IFt1cy9zXSAgICAgIHdhcnBzIG1heCBkZWx0YSBbdXNdCi0tLSAtLS0tLS0t
+LS0tLS0tLS0tLS0tLSAtLS0tLS0tLS0tLS0tLS0tIC0tLS0tLS0tLS0gLS0tLS0tLS0tLS0tLS0K
+ICAwICAgICAgICAgIDE2NDMyODU1My4wICAgICAgNzAzNDIwNS4wOTUgICAgICAgICAgMCAgICAg
+ICAgICAgIDAuMAogIDEgICAgICAgICAgMTY0MzI5MTMxLjUgICAgICA3MDMzMzg1LjQxNiAgICAg
+ICAgICAwICAgICAgICAgICAgMC4wCiAgMiAgICAgICAgICAxNjQzMjg3OTQuMCAgICAgIDcwMzA3
+NTYuMjk2ICAgICAgICAgIDAgICAgICAgICAgICAwLjAKICAzICAgICAgICAgIDE2NDMyODc4My4z
+ICAgICAgNzAzMDY0Ni45ODAgICAgICAgICAgMCAgICAgICAgICAgIDAuMAoKSSdtIHJ1bm5pbmcg
+a2VybmVsIDMuMTQuMTcsIHhlbm9tYWkgMi42LjQsIGFuZCB0aGUgZGVmYXVsdCBpcGlwZSB0aGF0
+IGNvbWVzCndpdGggMi42LjQKCkF0dGFjaGVkIGlzIG15IC5jb25maWcKCkRvZXMgYW55Ym9keSBo
+YXZlIGFueSBpZGVhIHdoYXQgSSdtIGRvaW5nIHdyb25nPyAgVGhpcyBsb29rcyBwcmV0dHkgY2xv
+c2UKdG8gd2hhdCBJIGhhZCBtYXJrZWQgaW4gbXkgbm90ZXMuCgpKdXN0aW4KLS0tLS0tLS0tLS0t
+LS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2Ny
+dWJiZWQuLi4KTmFtZTogY29uZmlnClR5cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXpl
+OiA5Mzc2NSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly93d3cueGVub21h
+aS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNDEyMjAvMWMxYzdjMzgvYXR0
+YWNobWVudC5vYmo+Cg==
