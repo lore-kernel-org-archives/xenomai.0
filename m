@@ -1,6 +1,6 @@
-Date: Sat, 20 Dec 2014 16:54:55 +0100
+Date: Sat, 20 Dec 2014 17:04:08 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141220155455.GA3961@daedalus>
+Message-ID: <20141220160408.GB3961@daedalus>
 References: <CAFgu5KXBDRLxt4q3PUw9he+4Z97RV0=Q96Y+or7FzEwT3CVZRA@mail.gmail.com>
  <20141220153337.GD24110@csclub.uwaterloo.ca>
 MIME-Version: 1.0
@@ -60,16 +60,8 @@ On Sat, Dec 20, 2014 at 10:33:37AM -0500, Lennart Sorensen wrote:
 > I am surprised if any modern x86 hardware has bad tsc support, unless
 > of course SMI is involved.
 
-Very likely the problem is not related to the tsc at all. You have
-to understand that the principle of Xenomai is to stop Linux at some
-point to run the RT threads, then resume Linux at the point where it
-was preempted when the RT threads suspend. So, if the RT threads run
-for too long, Linux will experience some "loss of time", which may
-have some consequences on all sorts of watchdogs, the tsc having
-such a watchdog. The usual advice is to get Xenomai threads to
-suspend every Linux tick. I believe the tsc watchdog has a
-workaround for this issue in the I-pipe patch, but maybe it got
-broken by some upstream code change in 3.14.
+To make it simple: from Linux point of view, Xenomai behaves just as
+an SMI.
 
 -- 
 					    Gilles.
