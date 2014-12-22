@@ -1,21 +1,12 @@
-Message-ID: <5497FE33.30007@xenomai.org>
-Date: Mon, 22 Dec 2014 12:19:15 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Mon, 22 Dec 2014 12:39:01 +0100 (CET)
+From: tbultel@free.fr
+Message-ID: <313558430.28992900.1419248341128.JavaMail.root@zimbra90-e16.priv.proxad.net>
+In-Reply-To: <1390423758.28955749.1419246785381.JavaMail.root@zimbra90-e16.priv.proxad.net>
 MIME-Version: 1.0
-References: <20141210183747.GA24110@csclub.uwaterloo.ca>
- <20141210184232.GP1524@hermes.click-hack.org>
- <20141210190240.GB24110@csclub.uwaterloo.ca>
- <20141210190509.GR1524@hermes.click-hack.org>
- <20141210190939.GD24110@csclub.uwaterloo.ca>
- <20141210191350.GT1524@hermes.click-hack.org>
- <20141210191924.GF24110@csclub.uwaterloo.ca> <5488A2BD.3080800@xenomai.org>
- <20141210194405.GH24110@csclub.uwaterloo.ca> <5488A985.2070006@xenomai.org>
- <5497ED3D.9010304@web.de>
-In-Reply-To: <5497ED3D.9010304@web.de>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] __ipipe_root_status exported GPL only but used to be
- not GPL only and is breaking other code
+Subject: [Xenomai] How to properly steal the interrupt line of a linux
+ device from rtdm driver ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,85 +15,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>, Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 12/22/2014 11:06 AM, Jan Kiszka wrote:
-> On 2014-12-10 21:13, Philippe Gerum wrote:
->> On 12/10/2014 08:44 PM, Lennart Sorensen wrote:
->>> On Wed, Dec 10, 2014 at 08:45:01PM +0100, Philippe Gerum wrote:
->>>> On 12/10/2014 08:19 PM, Lennart Sorensen wrote:
->>>>> On Wed, Dec 10, 2014 at 08:13:50PM +0100, Gilles Chanteperdrix wrote:
->>>>>> This is true in user space. Not for kernel modules, see:
->>>>>> https://git.xenomai.org/ipipe.git/tree/Documentation/stable_api_nonsense.txt?h=ipipe-3.14
->>>>>
->>>>> I can't even figure out how to track down which call is making it
->>>>> reference that symbol (for which it has zero interest of course).
->>>>>
->>>>> I suppose if whoever made the change in ipipe (which unfortunately the
->>>>> ipipe git tree does not make easy to track down since it isn't like it
->>>>> is one git tree moving from version to version) does not see the point
->>>>> in reverting the change, then I will just have to keep a patch around to
->>>>> do it instead and ignore the advisory on the symbol to get this to work.
->>>>> I really don't want to do that, but stupid changes sometimes need stupid
->>>>> fixes.
->>>>>
->>>>> This code does NOT use any xenomai or ipipe features.  Other code does.
->>>>> ipipe should not be breaking it.
->>>>>
->>>>
->>>> The stupid guy is me, as the main copyright holder on most of the code
->>>> you have been using with Xenomai so far. So where do we go from here?
->>>
->>> No one said the guy was stupid.  Just the change.
->>>
->>> As far as I can tell, __ipipe_root_status is a number containing some
->>> status.  It is not a function, it doesn't do anything by itself, so why
->>> did it need to be changed to GPL only if that causes the entire kernel
->>> to become GPL only (from what I have been able to tell so far)?
->>>
->>> I certainly think having the ipipe functions limited to GPL only seems
->>> perfectly reasonable.  It is new functionality the kernel didn't have
->>> before.  I don't think it should make existing kernel functions suddenly
->>> be GPL only though.
->>>
->>> I will do a test build with the symbol changed back to see if that is
->>> in fact the only thing causing issues for the external module.
->>>
->>
->> The point is about being able to discuss issues without starting useless
->> rants or flame wars.
->>
->> The I-pipe interface was moved to GPL_ONLY to clearly state that such
->> code intimately depends on the kernel innards, has to know about them to
->> function, and therefore any client code has to be GPL-compatible to
->> comply with the kernel license.
->>
->> The only question that matters is: does __ipipe_root_status belong to
->> the visible I-pipe API exposed to clients? The answer from the copyright
->> holder of this particular code is "no".
->>
->> Ah, maybe it was a mistake then, something that was overlooked, just
->> because I-pipe maintainers don't routinely have to rebuild non-GPL
->> software on top the I-pipe? Yes, most likely it was.
->>
->> Could the code be changed to fix this, then? Yes, it sounds reasonable,
->> and would not change the original intent of moving the API symbols to
->> GPL_ONLY.
->>
->> The issue is non-ambiguous, the solution is straightforward. Let's
->> relax, there is work ahead.
->>
-> 
-> Lennart, are you on x86 and do you have CONFIG_CMP disabled? Then
-> __ipipe_root_status gets pulled in via arch_local_irq_disable ->
-> ipipe_stall_root. If that is the problem, I think it's more than
-> reasonable to argue that effectively making local_irq_disable GPL-only
-> would be an unwanted restriction over mainline.
-> 
+Hi,
 
-This has been agreed upon.
+On a x86 machine, we historically had an issue due to a conflict on IRQ18,
+between the rtcan_ixx_pci driver and uhci-hcd.
+It was not possible to workaround it, by switching the card to another slot.
 
--- 
-Philippe.
+As the machine has 6 USB ports, and we could afford losing 2 of them, 
+we decided to disable the USB controllerthat uses the IRQ18, by adding:
+
+request_irq(chip->irq_num, fake_irq_handler, 0, "ixxat_irq_requested", chip)
+
+... in the code of the rtcan_ixx_pci driver, before calling rtcan_sja1000_register.
+
+And it worked fine, because the usb driver was loaded later, as kernel module,
+and as the IRQ is not flagged as shared, it does not get it. 
+The "fake" handler does nothing but returns IRQ_NONE.
+
+
+It worked until today, because we now want to boot on USB, and therefore the USB drivers must
+be builtin.
+
+
+Thus, I am attempting to hack a little more, by unregistering all the linux IRQs handlers
+of IRQ18, before registering the fake handler in place.
+
+I have taken __free_irq as a base, and written a free_irq_force(unsigned int irq)
+that does not need a devid, because I want to unregister all devices.
+The function can be summarized as "desc->action = NULL",
+but I kept all the things around.
+
+I checked that the action list is empty after the call, but for some reason, that does not work.
+If I plug an USB keyboard, the IRQ happens again, and I am getting a:
+
+Xenomai: xnintr_shirq_handler: IRQ18 not handled. Disabling IRQ line.
+
+... and the USB keyboard works. My fake handler is not called, either.
+
+I am a little puzzled, and do not understand what I am missing. It sounds just like I modified the wrong action list,
+or if it was cached somewhere else.
+
+Any ideas ?
+Regards
+Thierry
 
