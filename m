@@ -1,21 +1,15 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Mon, 22 Dec 2014 14:08:31 -0500
-Message-ID: <20141222190831.GL24110@csclub.uwaterloo.ca>
-References: <20141210190939.GD24110@csclub.uwaterloo.ca>
- <20141210191350.GT1524@hermes.click-hack.org>
- <20141210191924.GF24110@csclub.uwaterloo.ca>
- <5488A2BD.3080800@xenomai.org>
- <20141210194405.GH24110@csclub.uwaterloo.ca>
- <5488A985.2070006@xenomai.org> <5497ED3D.9010304@web.de>
- <5497FE33.30007@xenomai.org>
- <20141222144612.GJ24110@csclub.uwaterloo.ca>
- <549831F3.8070701@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <549831F3.8070701@xenomai.org>
-Subject: Re: [Xenomai] __ipipe_root_status exported GPL only but used to be
- not GPL only and is breaking other code
+Sender: justinhartubc@gmail.com
+In-Reply-To: <20141220162937.GA12315@daedalus.click-hack.org>
+References: <CAFgu5KXBDRLxt4q3PUw9he+4Z97RV0=Q96Y+or7FzEwT3CVZRA@mail.gmail.com>
+ <20141220153337.GD24110@csclub.uwaterloo.ca> <20141220160408.GB3961@daedalus>
+ <20141220162139.GF24110@csclub.uwaterloo.ca>
+ <20141220162937.GA12315@daedalus.click-hack.org>
+From: Justin Hart <justin.hart@mech.ubc.ca>
+Date: Mon, 22 Dec 2014 11:57:50 -0800
+Message-ID: <CAFgu5KVAKhXC+Tzds-b2P5o6+u+xBwZz_tL5-j2GL6sjbkme4g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Kernel Configuration Woes
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,31 +18,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@web.de>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Mon, Dec 22, 2014 at 04:00:03PM +0100, Philippe Gerum wrote:
-> On 12/22/2014 03:46 PM, Lennart Sorensen wrote:
-> > On Mon, Dec 22, 2014 at 12:19:15PM +0100, Philippe Gerum wrote:
-> >> On 12/22/2014 11:06 AM, Jan Kiszka wrote:
-> >>> Lennart, are you on x86 and do you have CONFIG_CMP disabled? Then
-> >>> __ipipe_root_status gets pulled in via arch_local_irq_disable ->
-> >>> ipipe_stall_root. If that is the problem, I think it's more than
-> >>> reasonable to argue that effectively making local_irq_disable GPL-only
-> >>> would be an unwanted restriction over mainline.
-> >>>
-> >>
-> >> This has been agreed upon.
-> > 
-> > Will the change go in git sometime so I can pull it from there.  I could
-> > change it locally (and did to test it), but would much rather pull the
-> > code cange from the git tree.
-> > 
-> 
-> I'll push the change to the git tree.
+Sorry for the delayed reply!  I was a bit under the weather this weekend.
+I think that you folks have hit on my alternate hypothesis: that I am doing
+something in my program in the real-time thread that is causing problems.
+It's a little weird, because I am linking against libbarrett.  I wrote a
+wrapper to the arm code that gives me a simple simulated arm or the real
+arm, based on how the program is invoked.  When it's not the real arm,
+however, nothing that interacts with xenomai is launched.  I'm going to do
+some testing today and see if I can narrow in on the problem.  I might have
+some more questions.  Thanks for the help so far, though!
 
-Yay!
+On Sat, Dec 20, 2014 at 8:29 AM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
 
--- 
-Len Sorensen
-
+> On Sat, Dec 20, 2014 at 11:21:39AM -0500, Lennart Sorensen wrote:
+> > On Sat, Dec 20, 2014 at 05:04:08PM +0100, Gilles Chanteperdrix wrote:
+> > > To make it simple: from Linux point of view, Xenomai behaves just as
+> > > an SMI.
+> >
+> > Certainly true, but that's the software you control so you can make it
+> > behave itself.
+>
+> Well, the only way to make it behave itself is to not run it at all,
+> because as soon as Xenomai run its threads, it "steals" time to
+> Linux. So, the workaround is to get it to run not too long, but it
+> is not guaranteed to be sufficient to avoid detection, and the other
+> workaround is to disable Linux detection mechanisms.
+>
+> --
+>                                             Gilles.
+>
