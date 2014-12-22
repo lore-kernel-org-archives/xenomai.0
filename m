@@ -1,6 +1,6 @@
-Date: Mon, 22 Dec 2014 13:58:15 +0100
+Date: Mon, 22 Dec 2014 14:50:44 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141222125815.GA1582@daedalus>
+Message-ID: <20141222135044.GM1582@daedalus>
 References: <5497F0D9.1010807@grinta.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -35,14 +35,9 @@ On Mon, Dec 22, 2014 at 11:22:17AM +0100, Daniele Nicolodi wrote:
 > Please, keep me in copy in your answers, for the above reason, I'm
 > currently not receiving mailing list email.
 
-Hi,
-
-the mail I receive come from the xenomai.org IP, that is
-212.83.143.187, could you tell us at which point you see the dedibox
-address? or better, forward me the mail as you receive it (with all
-the headers, in particular the Received lines).
-
-Regards.
+Ok, I have changed our mail server outgoing IP to be xenomai.org
+instead of the server particular IP, please tell us if it resolves
+your issue.
 
 -- 
 					    Gilles.
