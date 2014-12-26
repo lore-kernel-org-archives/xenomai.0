@@ -1,19 +1,10 @@
-Resent-Message-ID: <20141226174652.GG1692@daedalus>
-Resent-To: xenomai@xenomai.org
-Date: Fri, 26 Dec 2014 18:32:37 +0100
+Date: Fri, 26 Dec 2014 19:23:47 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141226173237.GF1692@daedalus>
-References: <45638F48-3A57-4E45-929F-5514BAA38A72@gatech.edu>
- <20141226155843.GB1692@daedalus>
- <616956CF-ECB5-42BD-B1D4-CC8FBCC196DB@gatech.edu>
- <20141226171502.GC1692@daedalus>
- <0F406C82-532C-4D88-8D92-CEE25D5E0D4A@gatech.edu>
+Message-ID: <20141226182347.GJ1692@daedalus>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0F406C82-532C-4D88-8D92-CEE25D5E0D4A@gatech.edu>
-Subject: Re: [Xenomai] Spurious relax test?
+Subject: [Xenomai] unencrypted mails
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,44 +13,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Yogi A. Patel" <yapatel@gatech.edu>
+To: xenomai@xenomai.org
 
-On Fri, Dec 26, 2014 at 12:19:02PM -0500, Yogi A. Patel wrote:
-> 
-> > On Dec 26, 2014, at 12:15, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
-> > 
-> > On Fri, Dec 26, 2014 at 11:55:57AM -0500, Yogi A. Patel wrote:
-> >> 
-> >>> On Dec 26, 2014, at 10:58, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
-> >>> 
-> >>> On Fri, Dec 26, 2014 at 12:46:58AM -0500, Yogi A. Patel wrote:
-> >>>> Hi -
-> >>>> 
-> >>>> I’ve implemented the code provided on the Xenomai website for finding spurious relaxes in Xenomai 2 - however I’m a bit skeptical about whether or not I’ve implemented it correctly since I don’t ever see any output to the terminal.
-> >>>> 
-> >>>> Is there any way to “induce” a relax to test the implementation and know that it is in fact catching any drops to secondary mode?
-> >>> 
-> >>> See examples/native/sigdebug.c
-> >> 
-> >> Thanks, Gilles. I implemented the warning method using the example as a guide.
-> >> 
-> >> It appears to be working - however I’m a bit puzzled by the output here.
-> >> 
-> >> The only error I am getting is: SIGDEBUG received, reason 2: invoked syscall
-> >> rtxi(_Z17rt_switch_warningiP9siginfo_tPv+0x3d)[0x43883d]
-> >> /lib/x86_64-linux-gnu/libpthread.so.0(+0x10340)[0x7f71e54a9340]
-> >> /lib/x86_64-linux-gnu/libpthread.so.0(sem_post+0x2d)[0x7f71e54a790d]
-> >> 
-> >> The application I am testing is a Qt based application - I have a feeling these are all coming from the posting of events to the Qt event stack but can’t tell for sure.
-> >> 
-> >> Is there a way/how can I get more information from the trace?
-> > 
-> > gdb
-> 
-> How exactly does gdb interface with the output above?..
+Hi,
 
-See:
-https://sourceware.org/gdb/current/onlinedocs/gdb/Signals.html#Signals
+the mail logs on xenomai mail server have a lot of warnings due to
+the fact that mails are not sent encrypted to some mail servers. The
+most common reason being:
+(gnutls_handshake): The Diffie-Hellman prime sent by the server is
+not acceptable (not long enough).
+
+I do not know how serious people consider this. So, here comes a
+list of mail servers which have this issue:
+
+163mx01.mxmail.netease.com
+163mx02.mxmail.netease.com
+163mx03.mxmail.netease.com
+digitaldans.com
+mail.devzone.ch
+mail.osadl.org
+mta5.am0.yahoodns.net
+mx-1.mf.surf.net
+mx-a.mf.surf.net
+mx.jetable.org
+mx.speakeasy.net
+ns.firmix.at
+phobos.caltech.edu
+service151.mimecast.com
+service152.mimecast.com
+sitemail.everyone.net
+virtual-smtp-prod01.osg.ufl.edu
+
+Regards.
 
 -- 
 					    Gilles.
