@@ -1,12 +1,14 @@
-Date: Tue, 30 Dec 2014 14:08:32 +0100
+Date: Tue, 30 Dec 2014 14:09:55 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141230130832.GC1966@daedalus>
-References: <C162583A9AFD46C5BE6BF944025F777B@itd206>
+Message-ID: <20141230130955.GD1966@daedalus>
+References: <CA+HFbxBb=jgQc4uL0NQmjndsLQQ6B7Sa5aH9vDLcrtQX0U-+Qw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <C162583A9AFD46C5BE6BF944025F777B@itd206>
-Subject: Re: [Xenomai] Reg:Linux-3.10.32-xen-2.6.3 kernel panic
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CA+HFbxBb=jgQc4uL0NQmjndsLQQ6B7Sa5aH9vDLcrtQX0U-+Qw@mail.gmail.com>
+Subject: Re: [Xenomai] Compilation errors for Linux kernel 3.10.18 +
+ ipipe-core-3.10.18-arm-1.patch + xenomai-3-3.0-rc2.tar.bz2.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,35 +17,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sureshvs <sureshvs@datapatterns.co.in>
-Cc: Srikanth <srikanth.ramarao@datapatterns.co.in>, xenomai@xenomai.org
+To: satya patel <satya087@gmail.com>
+Cc: xenomai@xenomai.org
 
-On Tue, Dec 30, 2014 at 04:34:59PM +0530, Sureshvs wrote:
-> Hi
+On Tue, Dec 30, 2014 at 03:29:35PM +0530, satya patel wrote:
+> Hi,
 > 
->         Arch: powerpc 32bit
->         Target Processor : 8641D
->         Linux kernel:     3.10.32 with SMP
->         Xenomai : 2.6.3
->        Boot parameter    root=/dev/nfs rw nfsroot=10.5.2.26:/opt/fc17fs_sband ip=10.5.2.20:10.5.2.26:10.5.18.4:255.255.255.0:VPX1234:eth0:off console=ttyS0,115200
->     
->         
->       While testing 1553B Linux driver with SMP kernel option enabled we are getting oops message mentioned below.\
-> We are not getting any problem in non-smp mode.
+> I am trying to apply “ipipe-core-3.10.18-arm-1.patch” to Linux kernel
+> 3.10.18. (Arm Platform, with default config file - omap2plus_defconfig)
 > 
->         We are using spin_lock_irqsave  for updating the global status between ISR and task.
->     While debugging we found that  spin_lock_irqsave is giving problem.so kindly help us to solve the problem as  soon as possible.
+> When I apply the patch using Xenomai 2.x
+> (xenomai-2.6-2.6.0-rc5.tar)
 
-Your driver should probably be using the RTDM API and the spinlock
-it provides:
-https://xenomai.org/documentation/xenomai-2.6/html/api/group__rtdmsync.html#ga985473873f9e32af688fe8a23634693d
-
-If you insist on using spin_lock_irqsave, you should note that
-Linux spinlocks are obviously not safe to be called from real-time
-domain, so, you should define the spinlock as ipipe_spinlock_t.
-
-Also note that calling your kernel -xen- may be confusing, as xen is
-something which exists, very distinct from xenomai.
+Why on earth do you use xenomai 2.6.0-rc5, whereas the latest stable
+version is xenomai 2.6.4?
 
 -- 
 					    Gilles.
