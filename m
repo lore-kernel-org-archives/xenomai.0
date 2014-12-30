@@ -1,12 +1,14 @@
-Date: Tue, 30 Dec 2014 13:54:09 +0100
+Date: Tue, 30 Dec 2014 14:01:35 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141230125409.GA1966@daedalus>
-References: <loom.20141230T120758-769@post.gmane.org>
+Message-ID: <20141230130135.GB1966@daedalus>
+References: <CA+HFbxBb=jgQc4uL0NQmjndsLQQ6B7Sa5aH9vDLcrtQX0U-+Qw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <loom.20141230T120758-769@post.gmane.org>
-Subject: Re: [Xenomai] Xenomi with Etherlab: cannot find lrtdk
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CA+HFbxBb=jgQc4uL0NQmjndsLQQ6B7Sa5aH9vDLcrtQX0U-+Qw@mail.gmail.com>
+Subject: Re: [Xenomai] Compilation errors for Linux kernel 3.10.18 +
+ ipipe-core-3.10.18-arm-1.patch + xenomai-3-3.0-rc2.tar.bz2.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,25 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Steve <sdfzztx2@gmail.com>
+To: satya patel <satya087@gmail.com>
 Cc: xenomai@xenomai.org
 
-On Tue, Dec 30, 2014 at 11:12:57AM +0000, Steve wrote:
+On Tue, Dec 30, 2014 at 03:29:35PM +0530, satya patel wrote:
 > Hi,
 > 
-> I am trying to install Xenomai 2.6.2.1 and EtherLab 2.5.1.
-> 
-> I was able to install Xenomai. However, as I install EtherLab, I encountered 
-> the following error at "make install":
-> 
-> /usr/bin/ld: cannot find -lrtdk
-> 
-> (I linked xenomai directory while installing EtherLab)
-> 
-> Does anyone knows how to fix this?
+> I am trying to apply “ipipe-core-3.10.18-arm-1.patch” to Linux kernel
+> 3.10.18. (Arm Platform, with default config file - omap2plus_defconfig)
 
-See:
-https://xenomai.org/release-news/#2011-11-05_Xenomai_260
+omap2plus_defconfig is a bad idea. If you want a kernel which
+compiles fast, and with the least possible run-time overhead, you
+should tailor your configuration to your hardware. Notably,
+omap2plus_defconfig enables CONFIG_SMP, which you may not need if
+you are not compiling for omap4 or omap5.
+
+> 
+> When I apply the patch using Xenomai 2.x (xenomai-2.6-2.6.0-rc5.tar)
+> compilation is successful after following the instructions mentioned in the
+> below link:
+
+This is what you get by not using the latest patch. The latest
+I-pipe patch for Linux 3.10, which you can find on Adeos download
+area, is:
+ 
+ipipe-core-3.10.32-arm-6.patch
 
 -- 
 					    Gilles.
