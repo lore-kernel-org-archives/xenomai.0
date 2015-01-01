@@ -1,15 +1,10 @@
-Date: Tue, 30 Dec 2014 23:38:45 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20141230223845.GB5707@daedalus>
-References: <5490C06F.4080901@nta-inc.net>
- <20141217102910.GA7151@hermes.click-hack.org>
- <20141217105915.GC7151@hermes.click-hack.org>
- <54934E5E.2090203@nta-inc.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <54934E5E.2090203@nta-inc.net>
-Subject: Re: [Xenomai] rtnet issue with xenomai-3.git next branch
+Date: Thu, 1 Jan 2015 20:05:32 +0530
+Message-ID: <CALe7ZU1ONd1p9OFOYfHHh_FfHnmyFc-UuC6kBVQw4gQrCi2KWA@mail.gmail.com>
+From: JAY KOTHARI <jaikothari10@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] cross compiling xenomai application
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,62 +13,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeff Webb <jeff.webb@nta-inc.net>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-On Thu, Dec 18, 2014 at 03:59:58PM -0600, Jeff Webb wrote:
-> On 12/17/2014 04:59 AM, Gilles Chanteperdrix wrote:
-> >On Wed, Dec 17, 2014 at 11:29:10AM +0100, Gilles Chanteperdrix wrote:
-> >>On Tue, Dec 16, 2014 at 05:29:51PM -0600, Jeff Webb wrote:
-> >>>I am testing the rtnet functionality in the 'next' branch of xenomai-3.git.  (I now also have Xenomai-2.6.4/rtnet.git running on the same machine for comparison.)  I am able to bring up the real-time interface (rt_e1000e) and use rtping as expected. As mentioned before, I have a primary non-rt ethernet interface running simultaneously (using the e1000e driver).   When I try to remove all the rtnet modules, I am unable to remove rtnet and rtipv4:
-> >>>
-> >>>$ rmmod rtipv4 rtnet
-> >>>rmmod: ERROR: Module rtipv4 is in use
-> >>>rmmod: ERROR: Module rtnet is in use by: rtipv4
-> >>>
-> >>>The messages are the same if I try to remove them individually.  This behavior does not occur with Xenomai-2.6.4/rtnet.git.
-> >>
-> >>To avoid nasty side effects, every module which registers an
-> >>interface (whether rtnet or linux interface) now requires the
-> >>interface to be down before the module can be removed. The handling
-> >>of rtnet module counts was significantly reworked when importing
-> >>into 3.x, it is possible that some bug remains.
-> >
-> >Also note that you need this commits in the I-pipe kernel for
-> >3.14 for module count to work correctly from xenomai domain:
-> >
-> >https://git.xenomai.org/ipipe-gch.git/commit/?h=for-ipipe-3.14.17&id=f009149cf8ca8f956194e4fd852b0d97b7c76886
-> >
-> 
-> For what its worth, I rebuilt everything using your "for-ipipe-3.14.17" branch that has that commit.  That branch has the same issue, and I think your assessment of the problem is correct.  For instance, this works:
-> 
-> ifconfig eth0 down
-> ifconfig eth1 down
-> rmmod e1000e
-> modprobe rtnet
-> modprobe rtipv4
-> modprobe rt_e1000e
-> rtifconfig rteth1 up 172.18.14.209
-> rtifconfig
-> rtifconfig rteth1 down
-> rmmod rt_e1000e
-> rmmod rtipv4
-> 
-> But, if I actually use the interface, I can no longer remove the rtipv4 module:
-> 
-> modprobe rtipv4
-> modprobe rt_e1000e
-> rtifconfig rteth1 up 172.18.14.209
-> rtifconfig
-> rtroute solicit 172.18.14.210 dev rteth1
-> rtroute
-> rtifconfig rteth1 down
-> rmmod rt_e1000e
-> rmmod rtipv4
+Hi,
+    I am trying to cross compile xenomai user space application with this
+command for Beagle Bone Black
 
-Indeed, I can reproduce this. The driver can be unloaded, but not
-rtipv4.
+arm-linux-gnueabihf-gcc -I/usr/xenomai/include -I/usr/xenomai -D_GNU_SOURCE
+-D_REENTRANT -D__XENO__ -lnative -L/usr/xenomai/lib -L/usr/xenomai/
+-lxenomai -lpthread -lrt -Xlinker -rpath -Xlinker /usr/xenomai/lib
+1_trivial-periodic.c -o 1_trivial-periodic -lnative -lpthread -lxenomai
 
--- 
-					    Gilles.
+But I am facing linking error as follows
 
+
+ In file included from /usr/xenomai/include/nucleus/trace.h:53:0,
+
+from /usr/xenomai/include/nucleus/system.h:27,
+
+from /usr/xenomai/include/asm/xenomai/system.h:128,
+
+from /usr/xenomai/include/nucleus/types.h:36,
+
+from /usr/xenomai/include/nucleus/thread.h:25,
+
+from /usr/xenomai/include/nucleus/sched.h:31,
+
+from /usr/xenomai/include/native/task.h:25,
+
+from 1_trivial-periodic.c:6:
+
+/usr/xenomai/include/asm/xenomai/tsc.h: In function =E2=80=98__xn_rdtsc=E2=
+=80=99:
+
+/usr/xenomai/include/asm/xenomai/tsc.h:37:2: warning: left shift count >=3D
+width of type [enabled by default]
+
+return ((unsigned long)__a) | (((unsigned long)__d) << 32);
+
+^
+
+/opt/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/bin/../lib/gcc/arm-li=
+nux-gnueabihf/4.8.3/../../../../arm-linux-gnueabihf/bin/ld:
+skipping incompatible /usr/xenomai/lib/libnative.so when searching for
+-lnative
+
+/opt/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/bin/../lib/gcc/arm-li=
+nux-gnueabihf/4.8.3/../../../../arm-linux-gnueabihf/bin/ld:
+skipping incompatible /usr/xenomai/lib/libnative.a when searching for
+-lnative
+
+/opt/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/bin/../lib/gcc/arm-li=
+nux-gnueabihf/4.8.3/../../../../arm-linux-gnueabihf/bin/ld:
+cannot find -lnative
+
+/opt/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/bin/../lib/gcc/arm-li=
+nux-gnueabihf/4.8.3/../../../../arm-linux-gnueabihf/bin/ld:
+skipping incompatible /usr/xenomai/lib/libxenomai.so when searching for
+-lxenomai
+
+/opt/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/bin/../lib/gcc/arm-li=
+nux-gnueabihf/4.8.3/../../../../arm-linux-gnueabihf/bin/ld:
+skipping incompatible /usr/xenomai/lib/libxenomai.a when searching for
+-lxenomai
+
+/opt/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/bin/../lib/gcc/arm-li=
+nux-gnueabihf/4.8.3/../../../../arm-linux-gnueabihf/bin/ld:
+cannot find -lxenomai
+
+collect2: error: ld returned 1 exit status
+
+
+
+Can anyone help me who had faced similar problem.What might be I am
+missing?Help would be Appreciated.
+Thank You
+
+Jay Kothari
