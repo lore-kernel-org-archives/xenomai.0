@@ -1,6 +1,6 @@
-Date: Fri, 2 Jan 2015 13:51:33 +0100
+Date: Fri, 2 Jan 2015 13:56:07 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150102125133.GA1492@daedalus>
+Message-ID: <20150102125607.GB1492@daedalus>
 References: <mailman.787.1420134217.6101.xenomai-git@xenomai.org>
  <54A672BA.8090209@web.de> <54A679D5.20903@xenomai.org>
  <54A67CD1.10103@web.de>
@@ -56,35 +56,16 @@ On Fri, Jan 02, 2015 at 12:11:13PM +0100, Jan Kiszka wrote:
 > admin script - to keep away from /mnt. You would have a hard time
 > finding a distro package that writes to /mnt without being explicitly
 > told by the admin.
+> 
 
-And as I explained, the standard sucks. /mnt on the distro I use
-contains the following directories:
-
-cdrecorder
-cdrom
-dvd
-floppy
-hd
-memory
-tmp
-zip                 
-
-and it puts the following text in /mnt/README
-
-The purpose of the /mnt directory is to provide a place for the admin to
-mount block device temporarily.  Any of the subdirectories of /mnt may be
-used, or volumes may even be mounted directly on /mnt (which is the
-traditional way of doing things, though /mnt/tmp is also provided for
-the purpose of mounting any kind of volume temporarily).
-
-See the /media directory also.
-
-IOW: it leaves the choice to the user. What Philippe does is exactly
-the same: let the user choose whether he want to use the non
-standard sotlution that does not suck and that use to be a standard
-practice in Linux world, or the standard solution that sucks.
-
-I thought we agreed this was a sensible solution.
+Also, there are other places where Xenomai does not conform to
+standards that suck. For instance, we do not implement
+PTHREAD_MUTEX_INITIALIZER and PTHREAD_COND_INITIALIZER, which put us
+clearly in violation of the POSIX standard. And this is a violation
+which as more consequences on users porting code to Xenomai.
+Nevertheless I never heard anybody complain about it. So, I am still
+puzzled to see that we are again discussing about something as
+inconsequential as god damn mount point.
 
 -- 
 					    Gilles.
@@ -94,4 +75,4 @@ Name: not available
 Type: application/pgp-signature
 Size: 173 bytes
 Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150102/395319e1/attachment.sig>
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150102/9d547495/attachment.sig>
