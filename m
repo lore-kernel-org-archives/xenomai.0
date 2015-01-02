@@ -1,11 +1,11 @@
-Message-ID: <54A6977F.6050607@web.de>
-Date: Fri, 02 Jan 2015 14:05:03 +0100
+Message-ID: <54A697D0.7010007@web.de>
+Date: Fri, 02 Jan 2015 14:06:24 +0100
 From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
 References: <mailman.787.1420134217.6101.xenomai-git@xenomai.org>
  <54A672BA.8090209@web.de> <54A679D5.20903@xenomai.org>
- <54A67CD1.10103@web.de> <20150102125133.GA1492@daedalus>
-In-Reply-To: <20150102125133.GA1492@daedalus>
+ <54A67CD1.10103@web.de> <20150102125607.GB1492@daedalus>
+In-Reply-To: <20150102125607.GB1492@daedalus>
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] [Xenomai-git] Philippe Gerum: copperplate: add
@@ -21,7 +21,7 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2015-01-02 13:51, Gilles Chanteperdrix wrote:
+On 2015-01-02 13:56, Gilles Chanteperdrix wrote:
 > On Fri, Jan 02, 2015 at 12:11:13PM +0100, Jan Kiszka wrote:
 >> On 2015-01-02 11:58, Philippe Gerum wrote:
 >>> On 01/02/2015 11:28 AM, Jan Kiszka wrote:
@@ -58,56 +58,17 @@ ges.
 >> admin script - to keep away from /mnt. You would have a hard time
 >> finding a distro package that writes to /mnt without being explicitly
 >> told by the admin.
+>>
 > =
 
-> And as I explained, the standard sucks. /mnt on the distro I use
+> Also, there are other places where Xenomai does not conform to
+> standards that suck. For instance, we do not implement
+> PTHREAD_MUTEX_INITIALIZER and PTHREAD_COND_INITIALIZER, which put us
+> clearly in violation of the POSIX standard. And this is a violation
+> which as more consequences on users porting code to Xenomai.
 
-Even if it sucked, it remains the standard that most distros apply.
-
-> contains the following directories:
-
-This is apparently an exception. Debian, Ubuntu, Suse/SLES, Fedora/RHEL,
-Gentoo - they all handle this conformingly and leave /mnt empty when
-installing things. At least today, I cannot comment on the history of
-all of them: Suse does as long as I us it (almost 20 years), Debian at
-least for the past 10 years. This is my concern.
-
-> =
-
-> cdrecorder
-> cdrom
-> dvd
-> floppy
-> hd
-> memory
-> tmp
-> zip                 =
-
-> =
-
-> and it puts the following text in /mnt/README
-> =
-
-> The purpose of the /mnt directory is to provide a place for the admin to
-> mount block device temporarily.  Any of the subdirectories of /mnt may be
-> used, or volumes may even be mounted directly on /mnt (which is the
-> traditional way of doing things, though /mnt/tmp is also provided for
-> the purpose of mounting any kind of volume temporarily).
-> =
-
-> See the /media directory also.
-> =
-
-> IOW: it leaves the choice to the user. What Philippe does is exactly
-> the same: let the user choose whether he want to use the non
-> standard sotlution that does not suck and that use to be a standard
-> practice in Linux world, or the standard solution that sucks.
-> =
-
-> I thought we agreed this was a sensible solution.
-
-No, we didn't agree on the default behavior yet, ie. the one that users
-see if they don't dig into the details and willingly deviate from FHS.
+Sure, but there is at least an implementation-related reason behind it,
+not just legacy naming.
 
 Jan
 
@@ -118,5 +79,5 @@ Name: signature.asc
 Type: application/pgp-signature
 Size: 198 bytes
 Desc: OpenPGP digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150102/118df1d=
-e/attachment.sig>
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150102/47f7dd0=
+6/attachment.sig>
