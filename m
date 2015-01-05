@@ -1,24 +1,19 @@
-Message-ID: <54A93A0F.5090306@web.de>
-Date: Sun, 04 Jan 2015 14:03:11 +0100
-From: Jan Kiszka <jan.kiszka@web.de>
+Date: Mon, 5 Jan 2015 11:30:39 +0100 (CET)
+From: Huy Cong Vu <huy-cong.vu@wandercraft.eu>
+Message-ID: <1544959523.130965.1420453839375.JavaMail.zimbra@wandercraft.eu>
+In-Reply-To: <122317517.130963.1420453826355.JavaMail.zimbra@wandercraft.eu>
+References: <767554081.97778.1418902240452.JavaMail.zimbra@wandercraft.eu>
+ <20141223163535.GA1537@daedalus>
+ <677186930.116031.1419353021115.JavaMail.zimbra@wandercraft.eu>
+ <20141223164659.GB1537@daedalus>
+ <1238414447.116297.1419353922775.JavaMail.zimbra@wandercraft.eu>
+ <20141224002912.GC1537@daedalus>
+ <2022750954.117025.1419413418676.JavaMail.zimbra@wandercraft.eu>
+ <20141224144928.GA2945@daedalus>
 MIME-Version: 1.0
-References: <mailman.787.1420134217.6101.xenomai-git@xenomai.org>
- <54A672BA.8090209@web.de> <54A679D5.20903@xenomai.org>
- <54A67CD1.10103@web.de> <54A69D42.2010408@xenomai.org>
- <54A69BFA.7060405@web.de> <54A6A506.3060504@xenomai.org>
- <54A6A387.4010109@web.de> <20150102141625.GD1492@daedalus>
- <20150102150638.GE1492@daedalus> <54A6C072.7020303@web.de>
- <54A6DE57.6020900@xenomai.org> <54A6DED7.1010900@web.de>
- <54A6EF96.9040607@xenomai.org> <54A6EE3B.3070909@web.de>
- <54A6F202.3080307@xenomai.org> <54A6F14F.7080601@web.de>
- <54A6F79E.4010602@xenomai.org> <54A6F65F.5010405@web.de>
- <54A6FD20.5020601@xenomai.org> <54A71623.8090906@web.de>
- <54A83698.7040304@xenomai.org> <54A84C97.6010404@web.de>
- <54A85743.7000306@xenomai.org>
-In-Reply-To: <54A85743.7000306@xenomai.org>
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] registry daemon mangement
+Subject: Re: [Xenomai] Differents switch mode from differents Xenomai skin
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,331 +22,179 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
-
-On 2015-01-03 21:55, Philippe Gerum wrote:
-> On 01/03/2015 09:09 PM, Jan Kiszka wrote:
->> On 2015-01-03 19:36, Philippe Gerum wrote:
->>> On 01/02/2015 11:05 PM, Jan Kiszka wrote:
->>>> On 2015-01-02 21:18, Philippe Gerum wrote:
->>>>>>>> I'm thinking of the scenario that two unrelated but unnamed sessio=
-ns are
->>>>>>>> started, specifically by different users. In the worst case, user A
->>>>>>>> starts off the sysregd for anon, B joins later and reuses it therf=
-ore,
->>>>>>>> but then A decides to terminate all its processes, including the d=
-aemon.
->>>>>>>>
->>>>>>>
->>>>>>> sysregd deals with such dependencies, A is not in charge of termina=
-ting
->>>>>>> sysregd.
->>>>>>
->>>>>> That is not the point. If the user (or the system) decides to kill a=
-ll
->>>>>> processes of it, it's dead. Also for user B. anon doesn't work well =
-for
->>>>>> the multi-user case. It should rather be "personalized", run in a
->>>>>> per-user namespace.
->>>>>>
->>>>>
->>>>> If the user decides to forcibly kill a central daemon it does not own,
->>>>> which is not even attached its own process group anymore, then well, =
-I'm
->>>>> afraid any option will have a problem. The same way, a client process
->>>>> running FUSE services won't kill the thread that serves the FUSE
->>>>> requests internally.
->>>>
->>>> Actually, the user doesn't have to run amok: Try starting a xenomai
->>>> process that forks off the daemon, then log out from the very same
->>>> session - bang, the daemon is killed. Independent of parallel users.
->>>>
->>>
->>> setsid().
->>
->> Yep, fixes that. Will provide a patch.
->>
-> =
-
-> sysregd already damonizes using daemon(3), no need for extra setsid().
-
-Indeed. But the effect remains, though it's weird.
-
-Anyway, the actual bug was missing ignore of SIGHUP - which is sent as
-soon as the original session is closed.
-
-> =
-
->>>
->>>> But even if that would work, letting a user-instantiated daemon manage=
- a
->>>> system-wide resource (the anon session) is a design mistake IMHO. This
->>>> only works reliably as long as *all* users behave coordinated and
->>>> carefully. That should be avoided if somehow possible.
->>>>
->>>
->>> This is not how sysregd works.
->>
->> Then we must be talking about different things here. Which daemons do
->> you know that provide system-wide services are started on behalf of its
->> user?
-> =
-
-> I really don't understand your question. I'm talking about sysregd and
-> the registry support and never talked about anything else in this
-> thread. There is no other daemon Xenomai-wise than sysregd.
-> =
-
->>
->>>
->>>>>
->>>>> So no, this failure scenario makes no sense. It is no different than
->>>>> asking sysregd to be resilient to machine shutdown.
->>>>
->>>> If the machine shuts down, all the users of the daemon are dead anyway=
- -
->>>> what is your point? But that is not true if only a single user
->>>> terminates something, willingly or unwillingly.
->>>>
->>>
->>> I'm using this comparison because sysregd will never exit, unless the
->>> user forcibly kills this process: this is a daemon, fork+setsid. Killing
->>> this process deliberately and expecting the apps to behave properly
->>> would be as silly as starting a shutdown expecting any app to be
->>> resilient to this action. Or maybe comparing this to killing gvfsd, or
->>> the X server, or the dbus server would make my point clearer.
->>
->> dbus is a good example. As you know, there are two types of daemon
->> instances: those that serve specific sessions (which are per-user, thus
->> the daemon runs under its control) and the one that serves a central
->> resource, the system bus. The latter is not created on demand but
->> properly started as a system service.
->>
->> All I'm proposing here is to follow this common pattern also for the
->> central service "anon session" with sysregd. We should just provide - as
->> reference when needed - some script (or systemd config) to kick off a
->> central instance for this particular session daemon in case multi-user
->> Xenomai operation is desired. That script - or the daemon itself when
->> giving some parameter - would also be able to adjust access rights to
->> the session mount points.
->>
->> But there is more work required to make sysregd compatible with
->> unprivileged operation. I just tried it, and it generated various errors
->> here. Need to dig into them later.
->>
-> =
-
-> sysregd must run with Xenomai application privileges since it connects
-> to the infrastructure.
-
-Sure, that's what I configured.
-
-The problem seems to be related to daemonization, for whatever reason.
-Starting sysregd manually (after tuning /etc/fuse.conf as required -
-which could be avoided by using a central daemon) works fine if it stays
-in foreground (except that it does not properly unmount on termination).
-But if I push it into the background, I get
-
-   0"049.287| WARNING: [main] can't mount registry onto
-/var/run/xenomai/anon/system
-   0"050.669| BUG: [main] initialization failed, EPERM
-
-and
-
-segfault at 7f1ef25bc000 ip 00007f1ef21014d7 sp 00007f1ef25d37b8 error 4
-in libcobalt.so.2.0.0[7f1ef20f5000+1c000]
-sysregd[3667]: segfault at 7f1ef25bc000 ip 00007f1ef21014d7 sp
-00007f1ef25d37b8 error 4 in libcobalt.so.2.0.0[7f1ef20f5000+1c000]
-
-on the kernel console.
-
-> =
-
->>>
->>>>>
->>>>>>>
->>>>>>>> Either the concept is truly multi-user capable, or we can go back =
-to
->>>>>>>> managing the registry daemons centrally.
->>>>>>>
->>>>>>> How do we do this in the Mercury case where we don't want to depend=
- on
->>>>>>> any kernel add-on/driver for exposing internal process data, but we=
- do
->>>>>>> want to expose it through a file system? In addition, how do we do =
-this
->>>>>>> without copying data around?
->>>>>>
->>>>>> This has nothing to do with kernel extensions. It's a matter of mana=
-ging
->>>>>> central user space daemons for shared services - like shared session=
-s.
->>>>>>
->>>>>
->>>>> I noticed that you did not care about answering my basic questions ab=
-out
->>>>> your proposed design. The implementation is there, and works as
->>>>> advertised, including for "anon". Nothing more than advertised, nothi=
-ng
->>>>> less. And of course, yes it does make a lot of sense to ask about the
->>>>> intervention of some central code in the kernel or not. You seem to be
->>>>> Cobalt-centric in your reasoning: fair enough, but the same
->>>>> implementation has to work when we don't provide any kernel bits too.
->>>>
->>>> Here we are discussing the design of the sysregd user space daemon.
->>>> Please explain how the kernel influences which user runs the daemon (a=
-nd
->>>> where it puts its fuse mounts)? I'm really not looking into cobalt
->>>> aspects here.
->>>
->>> - when an application starts, it looks for a sysregd daemon serving its
->>> session, or spawns one if none. Alternatively, one could start sysregd
->>> manually from the shell before launching the application as well.
->>> - sysregd daemonizes, no controlling terminal.
->>> - sysregd creates the main mount point if not present:
->>> /mount-point/<session-name>, then waits for clients on a local domain
->>> socket named after the session.
->>> - some client process connects to the socket endpoint.
->>> - sysregd extracts the client pid from the peer credentials, then
->>> creates a client sub-root within the name space:
->>> /mount-point/<session-name>/<pid>, tells the client about its dedicated
->>> per-process mount point, then listens to I/O events on this socket.
->>> - client mounts its fuse-based fs on the specified directory, for
->>> exporting the registry info it owns. The registry for this client's
->>> data/objects is therefore served by a thread which belongs to this clie=
-nt.
->>>
->>> When the client exits for whatever reason, sysregd detects the close
->>> event on the socket, then forcibly umounts the fuse-fs hierarchy mounted
->>> by the client, so that we don't have stale registry branches in the tree
->>> (fusermount -u).
->>>
->>> So, it's decentralized enough to make sure that a process will only
->>> cause its own data to become stale upon exit, nothing more. No more
->>> process, no more resources available from this process, nothing valuable
->>> to export from this process. Fair enough.
->>
->> Yep, looks good.
->>
->>>
->>> With respect to the design issues:
->>>
->>> - the same implementation works with Cobalt and Mercury. A common option
->>> for centralizing registry services would be to rely on a component
->>> living in kernel space, just like 2.6 does, simply because the resources
->>> to be exposed are maintained there in the legacy architecture. With 3.x,
->>> most of the exportable data is created and maintained in userland, so
->>> asking people running a native kernel to push a dedicated kernel module
->>> only for dealing with a centralized registry is not an option. We
->>> certainly can do this from userland, and FUSE provides a way to keep the
->>> file system semantics for this.
->>
->> I'm not questioning this nor proposing kernel-based centralization. It's
->> just about centralizing the daemon for the system-wide shared anon
->> session when needed.
->>
-> =
-
-> I'm under the impression that we are investing way too much time only to
-> end up with a script doing:
-> =
-
-> sysregd --daemon --root /foo/bar/anon
-
---linger - which is broken. Fix will follow.
-
-See, we are also shaking out remaining bugs, so that is already added
-value of this discussion.
-
-> =
-
->>>
->>> - we don't need to move data around each time a state change happens, to
->>> reflect it into the registry. Instead, each client process which wants
->>> to export data serves them using FUSE. To be even more specific about
->>> this issue, in the "anon" case, clients rooted under this session don't
->>> share anything, so what is displayed comes directly from their own local
->>> memory. I'd rather not broadcast changes to portions of that memory, but
->>> deliver it directly upon request. I'd rather not force all applications
->>> to maintain all their data into a single system-wide heap, where a
->>> central daemon could peek at.
->>
->> But they apparently share a single service that is backing the system
->> mount point at least. There seems to be no technical need for this,
->> though. If I'm not missing anything, every user of the anon session
->> could also have the mount point locally under a user-specific path. That
->> would remove the need for a central anon service. Am I right?
->>
->>>
->>> - sysregd is only performing limited housekeeping chores to keep the
->>> overall hierarchy tidy as processes come and go. If sysregd dies for any
->>> given session, including anon, the fuse-based mount point for each
->>> process is still there, and the registry data from clients is still
->>> accessible.
->>
->> But it will no longer be updated as applications in this session change
->> or not applications join, no? The registry becomes stale.
-> =
-
-> No, the fs is managed by the client process, not sysregd. sysregd will
-> be automatically restarted by the emerging application that discovers
-
-*Emerging* - running applications will still lose the daemon.
-
-> than no sysregd instance is currently serving its session. Sysregd is
-> mainly there to keep the namespace tidy using fusermount as client
-> processes come and go. If it gets forcibly killed by the user, most of
-> the problem will entail running "fusermount -u /foo/bar/session/<pid>"
-> manually, which hardly qualifies as a massive issue.
-> =
-
->>
->>> One would only lose the /system hierarchy giving access to
->>> general information about the session which is maintained by sysregd
->>> directly, any attempt to access it would just fail gracefully with a
->>> "Transport endpoint is not connected" error. The running
->>> application/processes would be unaffected.
->>>
->>> So, although there may be other designs possible for sure, I don't see
->>> any shortcoming in the current implementation that would lead to a
->>> general failure when either an application or sysregd - or even both of
->>> them - exit.
->>
->> A lost service remains a lost service, even if it may not be critical
->> for all its users.
->>
-> =
-
-> Mmf. If one kills the X server deliberately, then he should not complain
-> about losing the desktop.
-
-The difference is that this effect is limited to the user, not affecting
-others on different screens, thus different X servers. Containment.
-
-> If one kills sysregd deliberately despite this
-> is a _daemon_ with real-time group privileges, then he should not
-> complain about losing /foo/bar/session/system, and only that though.
-> =
-
-> I probably don't understand correctly the point you are trying to make,
-> so I'll wait for the patches.
-> =
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
 
-Central service, central daemon. Per-user/session/whatever service,
-local daemons. A standard pattern, nothing more.
 
-I'll look into some Xenomai service script. That could also be used to
-tune other parameters, specifically allowed_group.
+----- Mail original -----
+> De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+> =C3=80: "Huy Cong Vu" <huy-cong.vu@wandercraft.eu>
+> Cc: xenomai@xenomai.org
+> Envoy=C3=A9: Mercredi 24 D=C3=A9cembre 2014 15:49:28
+> Objet: Re: [Xenomai] Differents switch mode from differents Xenomai skin
 
-Jan
+> On Wed, Dec 24, 2014 at 10:30:18AM +0100, Huy Cong Vu wrote:
+>>=20
+>>=20
+>> ----- Mail original -----
+>> > De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+>> > =C3=80: "Huy Cong Vu" <huy-cong.vu@wandercraft.eu>
+>> > Cc: xenomai@xenomai.org
+>> > Envoy=C3=A9: Mercredi 24 D=C3=A9cembre 2014 01:29:12
+>> > Objet: Re: [Xenomai] Differents switch mode from differents Xenomai sk=
+in
+>>=20
+>> > On Tue, Dec 23, 2014 at 05:58:42PM +0100, Huy Cong Vu wrote:
+>> >>=20
+>> >>=20
+>> >> ----- Mail original -----
+>> >> > De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+>> >> > =C3=80: "Huy Cong Vu" <huy-cong.vu@wandercraft.eu>
+>> >> > Cc: xenomai@xenomai.org
+>> >> > Envoy=C3=A9: Mardi 23 D=C3=A9cembre 2014 17:46:59
+>> >> > Objet: Re: [Xenomai] Differents switch mode from differents Xenomai=
+ skin
+>> >>=20
+>> >> > On Tue, Dec 23, 2014 at 05:43:41PM +0100, Huy Cong Vu wrote:
+>> >> >>=20
+>> >> >>=20
+>> >> >> ----- Mail original -----
+>> >> >> > De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+>> >> >> > =C3=80: "Huy Cong Vu" <huy-cong.vu@wandercraft.eu>
+>> >> >> > Cc: xenomai@xenomai.org
+>> >> >> > Envoy=C3=A9: Mardi 23 D=C3=A9cembre 2014 17:35:35
+>> >> >> > Objet: Re: [Xenomai] Differents switch mode from differents Xeno=
+mai skin
+>> >> >>=20
+>> >> >> > On Tue, Dec 23, 2014 at 05:23:07PM +0100, Huy Cong Vu wrote:
+>> >> >> >> void mini( void *ptr )
+>> >> >> >> {
+>> >> >> >>=20
+>> >> >> >>=20
+>> >> >> >> =09uint8_t b;
+>> >> >> >> =09int ret1;
+>> >> >> >> =09int idx;
+>> >> >> >>=20
+>> >> >> >> =09pthread_set_mode_np(0, PTHREAD_WARNSW);
+>> >> >> >>    printf("Starting posix test\n");
+>> >> >> >>=20
+>> >> >> >> =09ec_port =3D malloc(sizeof(ecx_portt*));
+>> >> >> >>=20
+>> >> >> >> =09if (setup_nic(ec_port,"rteth0") > 0) {
+>> >> >> >> =09=09   idx =3D getindex (ec_port);
+>> >> >> >>    =09=09/* setup datagram */
+>> >> >> >> =09=09=09b =3D 0x0000;
+>> >> >> >>    =09=09setupdatagram (ec_port, &(ec_port->txbuf[idx]),0x0009,=
+ idx, 0x0000, 0x0103,
+>> >> >> >>    =09=09sizeof(b), &b );
+>> >> >> >>    =09=09/* send data and wait for answer */
+>> >> >> >>    =09=09wkc =3D srconfirm (ec_port, idx, EC_TIMEOUTRET3);
+>> >> >> >> =09}
+>> >> >> >> =09
+>> >> >> >> }
+>> >> >> >=20
+>> >> >> > Typically, as I already explained, what you do here is wrong: yo=
+u
+>> >> >> > should not arm the PTHREAD_WARNSW bit before call such as malloc=
+ or
+>> >> >> > the calls in setup_nic, which switch to secondary mode.
+>> >> >>=20
+>> >> >> Ok, should I call it laterly? It is just for detect mode switch
+>> >> >> reason in fact
+>> >> >=20
+>> >> > How to use PTHREAD_WARNSW is thoroughly documented, see:
+>> >> > https://xenomai.org/2014/06/finding-spurious-relaxes/
+>> >> >=20
+>> >>=20
+>> >> So perhaps I was misunderstanding this statement?
+>> >> Then, you need to enable the warn_upon_switch capability on a per-thr=
+ead basis.
+>> >> For instance, a POSIX-based application would run this code from the =
+thread to
+>> >> monitor for spurious relaxes:
+>> >>=20
+>> >>     /* Ask Xenomai to warn us upon switches to secondary mode. */
+>> >>     pthread_set_mode_np(0, PTHREAD_WARNSW);
+>> >>=20
+>> >> Does that means that I must put the line into the thread with functio=
+n calls
+>> >> that cause mode switch?
+>> >> I thought it means that I have to put the line in the threads of my p=
+rogram (in
+>> >> my case mini() ).
+>> >=20
+>> > Enabling this bit, causes every switch to secondary mode of the
+>> > thread where you enabled it to send a signal to that thread. I do
+>> > not understand what is so hard to understand about this.
+>>=20
+>> Ok, so I guess I didn't understand this wrongly at least.
+>>=20
+>> Suppose that I remove PTHREAD_WARNSW bit, here what I got in output:
+>> SOEM (Simple Open EtherCAT Master)
+>> Simple test
+>> Starting posix test
+>> Mode switch (reason bad functions call while holding mutex, or other unk=
+nown
+>> issue), aborting. Backtrace:
+>> ./posix_minimal[0x401bf6]
+>> /lib/x86_64-linux-gnu/libpthread.so.0(+0xfcb0)[0x7f94ef972cb0]
+>> /usr/xenomai/lib/libpthread_rt.so.1(__wrap_send+0xd5)[0x7f94efd8f9f5]
+>> ./posix_minimal[0x4017dc]
+>> ./posix_minimal[0x4016ed]
+>> ./posix_minimal[0x4011cd]
+>> /usr/xenomai/lib/libpthread_rt.so.1(+0x5b45)[0x7f94efd8cb45]
+>> /lib/x86_64-linux-gnu/libpthread.so.0(+0x7e9a)[0x7f94ef96ae9a]
+>> /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d)[0x7f94ef28d3fd]
+>> Temps UCT limite expir=C3=A9 (core dumped)
+>>=20
+>> It is the same output as when PTHREAD_WARNSW is active. Could you give m=
+e some
+>> hints why?
+>=20
+> I already gave you some hints. I need to run the test code you sent.
+> But the test code you sent is wrong in the place where it enables
+> the PTHREAD_WARNSW bit.
 
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 198 bytes
-Desc: OpenPGP digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150104/c2660db=
-6/attachment.sig>
+The output of:=20
+ void mini( void *ptr )
+ {
+=20
+ =09uint8_t b;
+ =09int ret1;
+ =09int idx;
+
+        printf("Starting posix test\n");
+=20
+ =09ec_port =3D malloc(sizeof(ecx_portt*));
+=20
+ =09if (setup_nic(ec_port,"rteth0") > 0) {
+ =09=09   idx =3D getindex (ec_port);
+     =09=09   /* setup datagram */
+         =09   b =3D 0x0000;
+    =09           setupdatagram (ec_port, &(ec_port->txbuf[idx]),0x0009, id=
+x, 0x0000, 0x0103,
+    =09           sizeof(b), &b );    =09
+                   /* send data and wait for answer */
+                   pthread_set_mode_np(0, PTHREAD_WARNSW);
+                   wkc =3D srconfirm (ec_port, idx, EC_TIMEOUTRET3);
+        }
+}
+
+and program without any PTHREAD_WARNSW are the same as the last post I gave=
+ you. So we can conclude that it was not setup_nic or malloc which trigger =
+the SIGDEBUG handler.=20
+
+Then, with the native skin, I tried replace rt_task_spawn with rt_task_shad=
+ow, and this problem re-occurs. So perhaps it is not only the difference be=
+tween posix & native but also the way that task is created has an impact on=
+ the mode switch.
+
+>=20
+> --
+> =09=09=09=09=09    Gilles.
+
+--=20
+Huy Cong
+Wandercraft SAS
+
