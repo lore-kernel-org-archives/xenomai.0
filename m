@@ -1,18 +1,11 @@
-Message-ID: <54AD77A0.1010206@siemens.com>
-Date: Wed, 07 Jan 2015 19:14:56 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
-MIME-Version: 1.0
-References: <54A67CD1.10103@web.de> <54A69D42.2010408@xenomai.org>
- <54A69BFA.7060405@web.de> <54A6A506.3060504@xenomai.org>
- <54A6A387.4010109@web.de> <20150102141625.GD1492@daedalus>
- <20150102150638.GE1492@daedalus> <54A6C072.7020303@web.de>
- <20150103194050.GH12052@daedalus> <54A84E6E.2040501@web.de>
- <20150103222509.GA6409@hermes.click-hack.org>
-In-Reply-To: <20150103222509.GA6409@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Philippe Gerum: copperplate: add
- configuration tunable for registry moint point
+From: Kurijn Buys <Kurijn.Buys@open.ac.uk>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 8 Jan 2015 12:00:34 +0000
+Message-ID: <31F55A66-200A-4CDE-872A-1AD01672F9CA@open.ac.uk>
+MIME-Version: 1.0 (Apple Message framework v1283)
+Subject: [Xenomai] externally triggered asynchronous = faster multiple
+	channel acquisition?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,32 +14,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai@xenomai.org
 
-On 2015-01-03 23:25, Gilles Chanteperdrix wrote:
->>>
->>> Alternatively (to the last item), the sysregd could be made suid
->>> root, create the session directory if it does not exist with root
->>> permissions but with the target user as owner, then drop root
->>> privileges and continue as a normal user.
->>
->> Should work, but unless I stumbled over fundamental issues why sysregd
->> is not working as normal user right now, I don't see a technical need
->> for this big hammer for user-managed sessions.
-> 
-> The enormous advantage of using the big hammer (in fact, only if we
-> put the three changes into it), is that it avoids explaining things
-> to the users, and avoids as well questions on the mailing list.
-> Given the number of questions we have had about /dev/rtheap and
-> /dev/rtpipe, this would be a win.
+Hi,
 
-We actually need the big suid-hammer: only root has the permission to
-clean up the mounts of other users. Obsoletes my fusermount -u patch.
+Having experimented with analogy's synchronous acquisition on a Pentium 4 w=
+ith a NI PCI card, using the a4l_sync _read function with success,
+I would like to record multiple channels now.
 
-Jan
+I've managed to do that by simply executing separate synchronous acquisitio=
+n functions for each channel, but that significantly increases the acquisit=
+ion time (compared to 1 channel).
+So I supposed that the best performances could be reached with an asynchron=
+ous acquisition in that case...  Is that correct?
+And is it also possible to acquire data asynchronously by an external fast =
+clocked function (so with the scan counter ".stop_arg" set to 1), or would =
+that slow down the process?
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+I've tried to use the a4l_async_read and a4l_poll functions, basing myself =
+on the cmd_read.c code, but I cannot get it to work right away...
+(But before considering those problems, I thought that it is worth assuring=
+ myself on the first questions!)
+
+Thanks in advance for your advice!
+
+Best regards,
+
+Kurijn
+-- The Open University is incorporated by Royal Charter (RC 000391), an exe=
+mpt charity in England & Wales and a charity registered in Scotland (SC 038=
+302). The Open University is authorised and regulated by the Financial Cond=
+uct Authority.
 
