@@ -1,12 +1,11 @@
-Message-ID: <54B3A339.7040501@xenomai.org>
-Date: Mon, 12 Jan 2015 11:34:33 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Mon, 12 Jan 2015 11:40:33 +0100 (CET)
+From: Adrien Canuel <adrien.canuel@telecom-paristech.fr>
+Message-ID: <1238789666.6212719.1421059233270.JavaMail.zimbra@enst.fr>
+In-Reply-To: <2065498163.6212085.1421059225559.JavaMail.zimbra@enst.fr>
 MIME-Version: 1.0
-References: <E1Y9Fya-0004Me-Ao@sd-51317.xenomai.org>
-In-Reply-To: <E1Y9Fya-0004Me-Ao@sd-51317.xenomai.org>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : sysregd: Install as suid
+Subject: [Xenomai]  Latency test on Zedboard
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,32 +14,11 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, xenomai-git@xenomai.org
+To: xenomai@xenomai.org
 
-On 01/08/2015 05:30 PM, git repository hosting wrote:
-> Module: xenomai-jki
-> Branch: for-forge
-> Commit: 7d56f2b19f987069ef0025f9ce5f8cc52781f340
-> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=7d56f2b19f987069ef0025f9ce5f8cc52781f340
-> 
-> Author: Jan Kiszka <jan.kiszka@siemens.com>
-> Date:   Thu Jan  8 14:30:52 2015 +0100
-> 
-> sysregd: Install as suid
-> 
-> sysregd has to run with root privileges in order to be able to clean up
-> the mounts of unprivileged users.
-> 
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> 
+Hi,
 
-This one assumes root id on "make install", which is not a prerequisite
-for installing a Mercury setup. This leads to sysregd losing root
-privileges on execution, which contradicts the purpose.
-
-We need sudo detection and use for this, just like we do in the top
-level Makefile for creating /dev entries.
-
--- 
-Philippe.
+I have successfully booted linux with Xenomai on the Zedboard from Xilinx, but when I try to launch the latency test, I get the error :
+"Xenomai/Cobalt: low_init(): binding failed: Function not implemented"
+I use the version 3.14.17 of the linux kernel. Can you help me with this ?
 
