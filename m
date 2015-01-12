@@ -1,19 +1,14 @@
-Message-ID: <54B3DB8E.4020805@siemens.com>
-Date: Mon, 12 Jan 2015 15:34:54 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Mon, 12 Jan 2015 15:56:35 +0100 (CET)
+From: Adrien Canuel <adrien.canuel@telecom-paristech.fr>
+Message-ID: <172953270.6511559.1421074595415.JavaMail.zimbra@enst.fr>
+In-Reply-To: <20150112104559.GE25855@hermes.click-hack.org>
+References: <2065498163.6212085.1421059225559.JavaMail.zimbra@enst.fr>
+ <1238789666.6212719.1421059233270.JavaMail.zimbra@enst.fr>
+ <20150112104559.GE25855@hermes.click-hack.org>
 MIME-Version: 1.0
-References: <54A6A387.4010109@web.de> <20150102141625.GD1492@daedalus>
- <20150102150638.GE1492@daedalus> <54A6C072.7020303@web.de>
- <20150103194050.GH12052@daedalus> <54A84E6E.2040501@web.de>
- <20150103222509.GA6409@hermes.click-hack.org> <54AD77A0.1010206@siemens.com>
- <20150112104200.GD25855@hermes.click-hack.org> <54B3ADB8.3010901@siemens.com>
- <20150112113415.GG25855@hermes.click-hack.org> <54B3B715.2000109@siemens.com>
- <54B3DBA9.5040905@xenomai.org>
-In-Reply-To: <54B3DBA9.5040905@xenomai.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Philippe Gerum: copperplate: add
- configuration tunable for registry moint point
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Latency test on Zedboard
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,76 +17,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 2015-01-12 15:35, Philippe Gerum wrote:
-> On 01/12/2015 12:59 PM, Jan Kiszka wrote:
->> On 2015-01-12 12:34, Gilles Chanteperdrix wrote:
->>> On Mon, Jan 12, 2015 at 12:19:20PM +0100, Jan Kiszka wrote:
->>>> On 2015-01-12 11:42, Gilles Chanteperdrix wrote:
->>>>> On Wed, Jan 07, 2015 at 07:14:56PM +0100, Jan Kiszka wrote:
->>>>>> On 2015-01-03 23:25, Gilles Chanteperdrix wrote:
->>>>>>>>>
->>>>>>>>> Alternatively (to the last item), the sysregd could be made suid
->>>>>>>>> root, create the session directory if it does not exist with root
->>>>>>>>> permissions but with the target user as owner, then drop root
->>>>>>>>> privileges and continue as a normal user.
->>>>>>>>
->>>>>>>> Should work, but unless I stumbled over fundamental issues why sysregd
->>>>>>>> is not working as normal user right now, I don't see a technical need
->>>>>>>> for this big hammer for user-managed sessions.
->>>>>>>
->>>>>>> The enormous advantage of using the big hammer (in fact, only if we
->>>>>>> put the three changes into it), is that it avoids explaining things
->>>>>>> to the users, and avoids as well questions on the mailing list.
->>>>>>> Given the number of questions we have had about /dev/rtheap and
->>>>>>> /dev/rtpipe, this would be a win.
->>>>>>
->>>>>> We actually need the big suid-hammer: only root has the permission to
->>>>>> clean up the mounts of other users. Obsoletes my fusermount -u patch.
->>>>>
->>>>> Why does root need to clean up the mounts of other users if each
->>>>> user cleans up its mounts ?
->>>>
->>>> As long as the daemon only runs on behalf of the very same user, this
->>>> works. But this breaks when user A starts a session and B joins it or
->>>> inherits a still running daemon.
->>>
->>> Is it really a case that matters ? As I already said, I believe
->>> running xenomai programs as simple user should be taken into
->>> account, but multiple users for the same session ?
->>
->> If that is not required, we could make the mount point private in $HOME.
->> Then it is clear to the user that sessions cannot be shared. And the
->> namespaces would be isolated automatically.
->>
->> Anon will continue to require a root daemon that has to be started in
->> advance.
->>
-> 
-> Looks ok. Named sessions have been designed as a way to share things
-> between processes composing a larger application, basically. Assuming
-> that all processes sharing a named session must belong to the same uid
-> is part of the original design.
+I had to reconfigure the kernel because for some reason Xenomai wasn't work=
+ing any more.
+Before the kernel was configured to work with only one processor (because o=
+ne processor was always blocked during the boot phase), and I got the bindi=
+ng error when I tried to launch the latency test.
+Now I configure the kernel to work with multiple processor (this time the b=
+oot completed without problem), and the latency test runs well.
+I just had to add some links in the /dev repertory, because the application=
+ needed the /dev/rtdm/memdev-private and /dev/rtdm/memdev-shared devices, a=
+nd I have these two devices directly under the /dev directory (not /dev/rtd=
+m).
 
-OK, then let's sketch a design:
+Adrien
 
-- if sysregd runs as non-root, it uses $HOME/.xenomai as default
-  (open for alternative suggestions as well -
-  DEFAULT_REGISTRY_ROOT/$USER?) registry root, otherwise
-  DEFAULT_REGISTRY_ROOT. Overriding via --root remains unaffected.
+----- Mail original -----
+De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+=C3=80: "Adrien Canuel" <adrien.canuel@telecom-paristech.fr>
+Cc: xenomai@xenomai.org
+Envoy=C3=A9: Lundi 12 Janvier 2015 11:45:59
+Objet: Re: [Xenomai]  Latency test on Zedboard
 
-- remove --shared-registry application option, only provide
-  "sysregd --shared" because we need it for the anon session
+On Mon, Jan 12, 2015 at 11:40:33AM +0100, Adrien Canuel wrote:
+> Hi,
+>=20
+> I have successfully booted linux with Xenomai on the Zedboard from Xilinx=
+, but when I try to launch the latency test, I get the error :
+> "Xenomai/Cobalt: low_init(): binding failed: Function not implemented"
+> I use the version 3.14.17 of the linux kernel. Can you help me with this =
+?
 
-- do not install sysregd with suid
+Either you do not boot a kernel patched with Xenomai, or Xenomai
+initialization failed for some reason. So, in fact, you probably
+have not successfully booted Linux with Xenomai. Please provide the
+boot logs.
 
-Makes sense?
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+--=20
+=09=09=09=09=09    Gilles.
 
