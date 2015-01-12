@@ -1,11 +1,18 @@
-Date: Mon, 12 Jan 2015 11:40:33 +0100 (CET)
-From: Adrien Canuel <adrien.canuel@telecom-paristech.fr>
-Message-ID: <1238789666.6212719.1421059233270.JavaMail.zimbra@enst.fr>
-In-Reply-To: <2065498163.6212085.1421059225559.JavaMail.zimbra@enst.fr>
+Date: Mon, 12 Jan 2015 11:42:00 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150112104200.GD25855@hermes.click-hack.org>
+References: <54A69BFA.7060405@web.de> <54A6A506.3060504@xenomai.org>
+ <54A6A387.4010109@web.de> <20150102141625.GD1492@daedalus>
+ <20150102150638.GE1492@daedalus> <54A6C072.7020303@web.de>
+ <20150103194050.GH12052@daedalus> <54A84E6E.2040501@web.de>
+ <20150103222509.GA6409@hermes.click-hack.org>
+ <54AD77A0.1010206@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai]  Latency test on Zedboard
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <54AD77A0.1010206@siemens.com>
+Subject: Re: [Xenomai] [Xenomai-git] Philippe Gerum: copperplate: add
+ configuration tunable for registry moint point
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,11 +21,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Hi,
+On Wed, Jan 07, 2015 at 07:14:56PM +0100, Jan Kiszka wrote:
+> On 2015-01-03 23:25, Gilles Chanteperdrix wrote:
+> >>>
+> >>> Alternatively (to the last item), the sysregd could be made suid
+> >>> root, create the session directory if it does not exist with root
+> >>> permissions but with the target user as owner, then drop root
+> >>> privileges and continue as a normal user.
+> >>
+> >> Should work, but unless I stumbled over fundamental issues why sysregd
+> >> is not working as normal user right now, I don't see a technical need
+> >> for this big hammer for user-managed sessions.
+> > 
+> > The enormous advantage of using the big hammer (in fact, only if we
+> > put the three changes into it), is that it avoids explaining things
+> > to the users, and avoids as well questions on the mailing list.
+> > Given the number of questions we have had about /dev/rtheap and
+> > /dev/rtpipe, this would be a win.
+> 
+> We actually need the big suid-hammer: only root has the permission to
+> clean up the mounts of other users. Obsoletes my fusermount -u patch.
 
-I have successfully booted linux with Xenomai on the Zedboard from Xilinx, but when I try to launch the latency test, I get the error :
-"Xenomai/Cobalt: low_init(): binding failed: Function not implemented"
-I use the version 3.14.17 of the linux kernel. Can you help me with this ?
+Why does root need to clean up the mounts of other users if each
+user cleans up its mounts ?
+
+-- 
+					    Gilles.
 
