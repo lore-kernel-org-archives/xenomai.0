@@ -1,12 +1,11 @@
-Date: Tue, 13 Jan 2015 21:39:58 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150113203958.GL21032@hermes.click-hack.org>
-References: <CAPozGfnFbPgfhi-ennhT2Ba=HJqs25W3WWVewXjBVbo87D81iQ@mail.gmail.com>
+Message-ID: <BLU177-W51CD73CBF35D42593C1886A0410@phx.gbl>
+From: Rosali Pyun <whimt@hotmail.com>
+Date: Wed, 14 Jan 2015 15:44:12 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPozGfnFbPgfhi-ennhT2Ba=HJqs25W3WWVewXjBVbo87D81iQ@mail.gmail.com>
-Subject: Re: [Xenomai] Negative latencies
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Analogy - Digital input change detection on falling or
+ rising edge (NI PCI6229)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,34 +14,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: John Sini <jhnsini@gmail.com>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, Jan 13, 2015 at 06:01:54PM +0100, John Sini wrote:
-> Hello,
-> 
-> 
-> I was trying to boot linux with Xenomai on the Zedboard from Xilinx. When I
-> run the latency test I get negative values. I tried to calibrate my system
-> by running the following
-> echo 1 > /proc/xenomai/latency
-> 
-> 
-> But then when I run
-> 
-> cat latency - I get 0. I also get 0 if I put 2 or 3ns. If I put 4 i.e.
-> 
-> echo 4 > /proc/xenomai/latency and then do:
-> 
-> cat latency - I get 3.
-> 
-> Is there a possibility to calibrate my system to 1ns? Can the calibration
-> be done without echo 1 > /proc/xenomai/latency somehow in latency.c. Before
-> doing any calibration latency that I get is 9498.
-
-See:
-https://xenomai.org/pipermail/xenomai/2007-May/009063.html
-
--- 
-					    Gilles.
-
+Hello to all=2C
+I am using NI m-series DAQ card (PCI 6229)=2C and I would like to use digit=
+al input channel to detect a change on falling or rising edge.I need to det=
+ect the edge and trigger it to log the exact time.I tried to configure the =
+digital channel using instruction as the following=2C but I received -22 er=
+ror code.
+insn.type      =3D A4L_INSN_CONFIG=3Binsn.idx_subd  =3D SUBD_DIO=3Binsn.cha=
+n_desc =3D 0=3Binsn.data_size =3D sizeof(data[0])*3=3Bdata[0] =3D A4L_INSN_=
+CONFIG_CHANGE_NOTIFY=3Bdata[1]=3D0x01=3Bdata[2]=3D0x01=3Binsn.data      =3D=
+ data=3B
+The DAQ card datasheet states that such functionality is supported=2C but I=
+ read couple of posts on Comedi forum that it is not supported for ni_pcimi=
+o in Comedi.Is it really impossible to use the digital input channel as an =
+interrupt on Analogy driver?
+If anyone has tried it=2C could you give me some tips on configuring it?I a=
+ppreciate any help that I receive.
+Best=2CRosali  		 	   		  =
