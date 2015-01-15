@@ -1,12 +1,12 @@
+From: =?iso-8859-1?Q?H=E4nel-Baas=2C_Alexander?=
+ <alexander.haenel-baas@sieb-meyer.de>
+Date: Thu, 15 Jan 2015 11:09:11 +0000
+Message-ID: <9BA84827B30CBE4996725F98F7DC9123428FAE5D@SMExchange01.siebmeyer.org>
+Content-Language: de-DE
 MIME-Version: 1.0
-Date: Thu, 15 Jan 2015 10:54:02 +0100
-Message-ID: <CAPyMYMH_ekDajGoQ3G-bDuJQ9DCXVKyx+am=R5+_1AdJL-By7g@mail.gmail.com>
-From: Rosali Pyun <dayepyun@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai]
-	=?utf-8?q?Analogy_-_Digital_input_change_detection_on_f?=
-	=?utf-8?q?alling_or_rising_edge_=28NI_PCI6229=29=E2=80=8F?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] arch arm no pci irq
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,37 +15,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, jro@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gMTQvMDEvMTUgMTY6NTgsIEpvcmdlIFJhbWlyZXogT3J0aXogd3JvdGU6Cj4gLS0tLS1CRUdJ
-TiBQR1AgU0lHTkVEIE1FU1NBR0UtLS0tLQo+IEhhc2g6IFNIQTEKPgo+IE9uIDAxLzE0LzIwMTUg
-MTA6NDQgQU0sIFJvc2FsaSBQeXVuIHdyb3RlOgo+PiBIZWxsbyB0byBhbGwsCj4+IEkgYW0gdXNp
-bmcgTkkgbS1zZXJpZXMgREFRIGNhcmQgKFBDSSA2MjI5KSwgYW5kIEkgd291bGQgbGlrZSB0byB1
-c2UgZGlnaXRhbCBpbnB1dCBjaGFubmVsIHRvIGRldGVjdCBhIGNoYW5nZSBvbiBmYWxsaW5nIG9y
-IHJpc2luZyBlZGdlLkkgbmVlZCB0byBkZXRlY3QgdGhlIGVkZ2UgYW5kIHRyaWdnZXIgaXQgdG8g
-bG9nIHRoZSBleGFjdCB0aW1lLkkgdHJpZWQgdG8gY29uZmlndXJlIHRoZSBkaWdpdGFsIGNoYW5u
-ZWwgdXNpbmcgaW5zdHJ1Y3Rpb24gYXMgdGhlIGZvbGxvd2luZywgYnV0IEkgcmVjZWl2ZWQgLTIy
-IGVycm9yIGNvZGUuCj4+IGluc24udHlwZSA9IEE0TF9JTlNOX0NPTkZJRztpbnNuLmlkeF9zdWJk
-ID0gU1VCRF9ESU87aW5zbi5jaGFuX2Rlc2MgPSAwO2luc24uZGF0YV9zaXplID0gc2l6ZW9mKGRh
-dGFbMF0pKjM7ZGF0YVswXSA9IEE0TF9JTlNOX0NPTkZJR19DSEFOR0VfTk9USUZZO2RhdGFbMV09
-MHgwMTtkYXRhWzJdPTB4MDE7aW5zbi5kYXRhID0gZGF0YTsKPgo+Cj4gY291bGQgeW91IHNlbmQg
-YSBjb2RlIHNuaXBwZXQgYW5kIGRldGFpbHMgYWJvdXQgdGhlIHhlbm9tYWkgdmVyc2lvbiB0aGF0
-IHlvdSBhcmUKPiBydW5uaW5nPwo+Cj4KPj4gVGhlIERBUSBjYXJkIGRhdGFzaGVldCBzdGF0ZXMg
-dGhhdCBzdWNoIGZ1bmN0aW9uYWxpdHkgaXMgc3VwcG9ydGVkLCBidXQgSSByZWFkIGNvdXBsZSBv
-ZiBwb3N0cyBvbiBDb21lZGkgZm9ydW0gdGhhdCBpdCBpcyBub3Qgc3VwcG9ydGVkIGZvciBuaV9w
-Y2ltaW8gaW4gQ29tZWRpLklzIGl0IHJlYWxseSBpbXBvc3NpYmxlIHRvIHVzZSB0aGUgZGlnaXRh
-bCBpbnB1dCBjaGFubmVsIGFzIGFuIGludGVycnVwdCBvbiBBbmFsb2d5IGRyaXZlcj8KPj4gSWYg
-YW55b25lIGhhcyB0cmllZCBpdCwgY291bGQgeW91IGdpdmUgbWUgc29tZSB0aXBzIG9uIGNvbmZp
-Z3VyaW5nIGl0P0kgYXBwcmVjaWF0ZSBhbnkgaGVscCB0aGF0IEkgcmVjZWl2ZS4KPj4gQmVzdCxS
-b3NhbGkKPj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
-Pj4gWGVub21haSBtYWlsaW5nIGxpc3QKPj4gWGVub21haUB4ZW5vbWFpLm9yZwo+PiBodHRwOi8v
-d3d3Lnhlbm9tYWkub3JnL21haWxtYW4vbGlzdGluZm8veGVub21haQo+Pgo+Cj4gLSAtLQo+IGpy
-bwoKSSBhbSB1c2luZyB4ZW5vbWFpIDIuNi4zIHdpdGggbGludXgga2VybmVsIDMuOC4xMyBvbiBh
-biB1YnVudHUgMTIuMDQuClBsZWFzZSBzZWUgdGhlIGF0dGFjaG1lbnQgZm9yIGluc3RydWN0aW9u
-IHN0cnVjdHVyZSBJIHVzZWQuCgpJIGNhbiB1c2UgZGlnaXRhbCBjaGFubmVsIGFzIHN0YXRpYyBp
-bnB1dCBhbmQgb3V0cHV0IGNoYW5uZWwuCkkganVzdCBoYXZlIGEgcHJvYmxlbSB0byB1c2UgaXQg
-YXMgaW50ZXJydXB0LgoKQmVzdCwKUm9zYWxpCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0t
-LS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGlu
-c3RydWN0aW9uLmNwcApUeXBlOiB0ZXh0L3gtYysrc3JjClNpemU6IDIzMyBieXRlcwpEZXNjOiBu
-b3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9t
-YWkvYXR0YWNobWVudHMvMjAxNTAxMTUvYWUxZTU3ZWUvYXR0YWNobWVudC5jcHA+Cg==
+Hi
+
+I have the kernel 3.14.17 with xenomai 2.6.4 and my own pci-fpga card that =
+generates interrupts.
+
+When i registry my pci irq with rt_intr_create() than i get the following w=
+arning and no irq was fired.
+
+The same configuration under x86 arch works fine.
+
+Dmesg output:
+sm36500001: ioctl(SM36500001_IOCGIRQ) =3D  385 <- this is the irq number th=
+at i get after i called pci_enable_msi() in the driver
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 766 at arch/arm/kernel/ipipe.c:158 ipipe_set_irq_affin=
+ity+0xa0/0xe0()
+Modules linked in: g3k_036500001(O) g3k_shm(O) udlfb fb_sys_fops cp210x usb=
+serial usb_f_eem g_ether usb_f_rndis u_ether libcomposite configfs evbug
+CPU: 0 PID: 766 Comm: g3t_t_TestPci Tainted: G           O 3.14.17 #1
+Backtrace:
+[<80012f94>] (dump_backtrace) from [<80013130>] (show_stack+0x18/0x1c) r6:0=
+000009e r5:00000009 r4:00000000 r3:00000000
+[<80013118>] (show_stack) from [<80619cc4>] (dump_stack+0x78/0x94)
+[<80619c4c>] (dump_stack) from [<80025764>] (warn_slowpath_common+0x6c/0x90=
+) r4:00000000 r3:bf7c1b3c
+[<800256f8>] (warn_slowpath_common) from [<800257ac>] (warn_slowpath_null+0=
+x24/0x2c) r8:c09c2008 r7:00000000 r6:80888970 r5:c09c2000 r4:808bb4fb
+[<80025788>] (warn_slowpath_null) from [<8001ae64>] (ipipe_set_irq_affinity=
++0xa0/0xe0)
+[<8001adc4>] (ipipe_set_irq_affinity) from [<8009be70>] (xnintr_attach+0x34=
+/0x2f0) r4:8088e500
+[<8009be3c>] (xnintr_attach) from [<800e4318>] (rt_intr_create+0x23c/0x408)=
+ r10:8088e500 r9:00000000 r8:c09c20d0 r7:00000000 r6:80888970 r5:c09c2000 r=
+4:8088e500
+[<800e40dc>] (rt_intr_create) from [<800cb51c>] (__rt_intr_create+0xa4/0x12=
+c) r10:bf3e7080 r9:00000181 r8:beb4a000 r7:c09c2000 r6:00000000 r5:00000000=
+ r4:beb4bfb0
+[<800cb478>] (__rt_intr_create) from [<800b4464>] (hisyscall_event+0x194/0x=
+384) r10:80982730 r9:00000000 r8:beb4bfb0 r7:80980208 r6:00000000 r5:bf3e70=
+80 r4:8094dec0
+[<800b42d0>] (hisyscall_event) from [<8008b338>] (ipipe_syscall_hook+0x64/0=
+x6c) r10:808847a4 r9:8087699c r8:80888970 r7:8094dec0 r6:8095e900 r5:000000=
+00 r4:00001198
+[<8008b2d4>] (ipipe_syscall_hook) from [<8008a078>] (__ipipe_notify_syscall=
++0x124/0x23c) r5:0000119c r4:bf7c1b3c
+[<80089f54>] (__ipipe_notify_syscall) from [<8000f8e0>] (pipeline_syscall+0=
+x8/0x24) r10:00000000 r9:beb4a000 r8:8000f988 r7:000f0042 r6:00000181 r5:00=
+000000 r4:00000000
+---[ end trace a798983a93a8fa82 ]---
+
+Any idias what is going wrong?
+
+regards
+Alexander
+
+
