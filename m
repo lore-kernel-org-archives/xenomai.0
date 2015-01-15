@@ -1,13 +1,12 @@
-Message-ID: <54B69223.2080105@xenomai.org>
-Date: Wed, 14 Jan 2015 10:58:27 -0500
-From: Jorge Ramirez Ortiz <jro@xenomai.org>
 MIME-Version: 1.0
-References: <BLU177-W51CD73CBF35D42593C1886A0410@phx.gbl>
-In-Reply-To: <BLU177-W51CD73CBF35D42593C1886A0410@phx.gbl>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Analogy - Digital input change detection on falling
- or rising edge (NI PCI6229)
+Date: Thu, 15 Jan 2015 10:54:02 +0100
+Message-ID: <CAPyMYMH_ekDajGoQ3G-bDuJQ9DCXVKyx+am=R5+_1AdJL-By7g@mail.gmail.com>
+From: Rosali Pyun <dayepyun@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai]
+	=?utf-8?q?Analogy_-_Digital_input_change_detection_on_f?=
+	=?utf-8?q?alling_or_rising_edge_=28NI_PCI6229=29=E2=80=8F?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,41 +15,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai@xenomai.org, jro@xenomai.org
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
-
-On 01/14/2015 10:44 AM, Rosali Pyun wrote:
-> Hello to all,
-> I am using NI m-series DAQ card (PCI 6229), and I would like to use digital input channel to detect a change on falling or rising edge.I need to detect the edge and trigger it to log the exact time.I tried to configure the digital channel using instruction as the following, but I received -22 error code.
-> insn.type      = A4L_INSN_CONFIG;insn.idx_subd  = SUBD_DIO;insn.chan_desc = 0;insn.data_size = sizeof(data[0])*3;data[0] = A4L_INSN_CONFIG_CHANGE_NOTIFY;data[1]=0x01;data[2]=0x01;insn.data      = data;
-
-
-could you send a code snippet and details about the xenomai version that you are
-running?
-
-
-> The DAQ card datasheet states that such functionality is supported, but I read couple of posts on Comedi forum that it is not supported for ni_pcimio in Comedi.Is it really impossible to use the digital input channel as an interrupt on Analogy driver?
-> If anyone has tried it, could you give me some tips on configuring it?I appreciate any help that I receive.
-> Best,Rosali  		 	   		  
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
-> 
-
-- -- 
-jro
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQEcBAEBAgAGBQJUtpIfAAoJECDcy2IJkagRlp4H/ipgRb62sKzJeVmf1EOOkyYG
-l1VBtvNr+jcLCS5J0BvMj8AvwWICJzEqp76tNgmflFCKEB/jMLaLqXrHsbolN5wv
-OJhgcyBmwr19ODkETjRcBA+KKDMsBDiQ3OahkKZozQTysR46eDTH0sd3LcCRVNxA
-C7ty/BGL/6PlrV3TaHDZgDNHrMKcI6MpsVqt5+evczDGxONGWCFiKMAaPu+y6nc2
-q+ljz1OefqGUIDtcORWb5RPi6xCq+4+iNwc2osywSgWu/UwABqRqSXQ5QgE3n17f
-EUjhs8+ygaZl8fNxj2aN1DkpKABiYmoEC/x78qwrkG+u2jccMLJ2KKvrd30nVDc=
-=DaqH
------END PGP SIGNATURE-----
-
+T24gMTQvMDEvMTUgMTY6NTgsIEpvcmdlIFJhbWlyZXogT3J0aXogd3JvdGU6Cj4gLS0tLS1CRUdJ
+TiBQR1AgU0lHTkVEIE1FU1NBR0UtLS0tLQo+IEhhc2g6IFNIQTEKPgo+IE9uIDAxLzE0LzIwMTUg
+MTA6NDQgQU0sIFJvc2FsaSBQeXVuIHdyb3RlOgo+PiBIZWxsbyB0byBhbGwsCj4+IEkgYW0gdXNp
+bmcgTkkgbS1zZXJpZXMgREFRIGNhcmQgKFBDSSA2MjI5KSwgYW5kIEkgd291bGQgbGlrZSB0byB1
+c2UgZGlnaXRhbCBpbnB1dCBjaGFubmVsIHRvIGRldGVjdCBhIGNoYW5nZSBvbiBmYWxsaW5nIG9y
+IHJpc2luZyBlZGdlLkkgbmVlZCB0byBkZXRlY3QgdGhlIGVkZ2UgYW5kIHRyaWdnZXIgaXQgdG8g
+bG9nIHRoZSBleGFjdCB0aW1lLkkgdHJpZWQgdG8gY29uZmlndXJlIHRoZSBkaWdpdGFsIGNoYW5u
+ZWwgdXNpbmcgaW5zdHJ1Y3Rpb24gYXMgdGhlIGZvbGxvd2luZywgYnV0IEkgcmVjZWl2ZWQgLTIy
+IGVycm9yIGNvZGUuCj4+IGluc24udHlwZSA9IEE0TF9JTlNOX0NPTkZJRztpbnNuLmlkeF9zdWJk
+ID0gU1VCRF9ESU87aW5zbi5jaGFuX2Rlc2MgPSAwO2luc24uZGF0YV9zaXplID0gc2l6ZW9mKGRh
+dGFbMF0pKjM7ZGF0YVswXSA9IEE0TF9JTlNOX0NPTkZJR19DSEFOR0VfTk9USUZZO2RhdGFbMV09
+MHgwMTtkYXRhWzJdPTB4MDE7aW5zbi5kYXRhID0gZGF0YTsKPgo+Cj4gY291bGQgeW91IHNlbmQg
+YSBjb2RlIHNuaXBwZXQgYW5kIGRldGFpbHMgYWJvdXQgdGhlIHhlbm9tYWkgdmVyc2lvbiB0aGF0
+IHlvdSBhcmUKPiBydW5uaW5nPwo+Cj4KPj4gVGhlIERBUSBjYXJkIGRhdGFzaGVldCBzdGF0ZXMg
+dGhhdCBzdWNoIGZ1bmN0aW9uYWxpdHkgaXMgc3VwcG9ydGVkLCBidXQgSSByZWFkIGNvdXBsZSBv
+ZiBwb3N0cyBvbiBDb21lZGkgZm9ydW0gdGhhdCBpdCBpcyBub3Qgc3VwcG9ydGVkIGZvciBuaV9w
+Y2ltaW8gaW4gQ29tZWRpLklzIGl0IHJlYWxseSBpbXBvc3NpYmxlIHRvIHVzZSB0aGUgZGlnaXRh
+bCBpbnB1dCBjaGFubmVsIGFzIGFuIGludGVycnVwdCBvbiBBbmFsb2d5IGRyaXZlcj8KPj4gSWYg
+YW55b25lIGhhcyB0cmllZCBpdCwgY291bGQgeW91IGdpdmUgbWUgc29tZSB0aXBzIG9uIGNvbmZp
+Z3VyaW5nIGl0P0kgYXBwcmVjaWF0ZSBhbnkgaGVscCB0aGF0IEkgcmVjZWl2ZS4KPj4gQmVzdCxS
+b3NhbGkKPj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
+Pj4gWGVub21haSBtYWlsaW5nIGxpc3QKPj4gWGVub21haUB4ZW5vbWFpLm9yZwo+PiBodHRwOi8v
+d3d3Lnhlbm9tYWkub3JnL21haWxtYW4vbGlzdGluZm8veGVub21haQo+Pgo+Cj4gLSAtLQo+IGpy
+bwoKSSBhbSB1c2luZyB4ZW5vbWFpIDIuNi4zIHdpdGggbGludXgga2VybmVsIDMuOC4xMyBvbiBh
+biB1YnVudHUgMTIuMDQuClBsZWFzZSBzZWUgdGhlIGF0dGFjaG1lbnQgZm9yIGluc3RydWN0aW9u
+IHN0cnVjdHVyZSBJIHVzZWQuCgpJIGNhbiB1c2UgZGlnaXRhbCBjaGFubmVsIGFzIHN0YXRpYyBp
+bnB1dCBhbmQgb3V0cHV0IGNoYW5uZWwuCkkganVzdCBoYXZlIGEgcHJvYmxlbSB0byB1c2UgaXQg
+YXMgaW50ZXJydXB0LgoKQmVzdCwKUm9zYWxpCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0t
+LS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGlu
+c3RydWN0aW9uLmNwcApUeXBlOiB0ZXh0L3gtYysrc3JjClNpemU6IDIzMyBieXRlcwpEZXNjOiBu
+b3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9t
+YWkvYXR0YWNobWVudHMvMjAxNTAxMTUvYWUxZTU3ZWUvYXR0YWNobWVudC5jcHA+Cg==
