@@ -1,10 +1,12 @@
-Date: Fri, 16 Jan 2015 10:46:17 +0100 (CET)
-From: Huy Cong Vu <huy-cong.vu@wandercraft.eu>
-Message-ID: <214896079.184274.1421401577183.JavaMail.zimbra@wandercraft.eu>
+Date: Fri, 16 Jan 2015 17:53:18 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150116165318.GC1157@hermes.click-hack.org>
+References: <214896079.184274.1421401577183.JavaMail.zimbra@wandercraft.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] xenomai 3-next kernel boot failed exit signal 15
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <214896079.184274.1421401577183.JavaMail.zimbra@wandercraft.eu>
+Subject: Re: [Xenomai] xenomai 3-next kernel boot failed exit signal 15
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,21 +15,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Huy Cong Vu <huy-cong.vu@wandercraft.eu>
+Cc: xenomai@xenomai.org
 
-SGVsbG8gZXZlcnlvbmUsIApJIHB1bGxlZCB0aGUgeGVub21haSAzIC0gbmV4dCBicmFuY2ggJiBw
-YXRjaCBpbnRvIGxpbnV4IDMuMTQuMTcga2VybmVsIG9uIGFuIHg4NiBJbnRlbC4gVGhlIHN5c3Rl
-bSBmYWlsZWQgdG8gYm9vdCB1cC4gCkhlcmUgYXJlIHRoZSAyIGxpbmVzIGluIGtlcm5lbCBsb2cg
-d2hlbiBmYWlsZWQ6IAprZXJuZWw6IEtlcm5lbCBsb2dnaW5nIChwcm9jKSBzdG9wcGVkLiAKcnN5
-c2xvZ2Q6IFtvcmlnaW4gc29mdHdhcmU9InJzeXNsb2dkIiBzd1ZlcnNpb249IjUuOC42IiB4LXBp
-ZD0iNTgwIiB4LWluZm89Imh0dHA6Ly93d3cucnN5c2xvZy5jb20iXSBleGl0aW5nIG9uIHNpZ25h
-bCAxNS4gCkkgdGhpbmsgSSBmb2xsb3dlZCB0aGUgZ3VpZGUgaW4gIlRST1VCTEVTSE9PVElORyIg
-c2VjdGlvbiAmICJDb25maWd1cmluZyBmb3IgeDg2LWJhc2VkIGR1YWwga2VybmVscyIgYnV0IG1h
-eWJlIEkgbWlzc2VkIHNvbWV0aGluZy4gCkkgYXR0YWNoZWQgdGhlIGtlcm5lbCBjb25maWcgZmls
-ZSwgaWYgYW55MSBjYW4gc2hvdyBtZSB3aGVyZSBJIHdhcyB3cm9uZyBJJ2xsIGJlIHZlcnkgZ3Jh
-dGVmdWwuIAotLSAKCkh1eSBDb25nIApXYW5kZXJjcmFmdCBTQVMgCi0tLS0tLS0tLS0tLS0tIG5l
-eHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVk
-Li4uCk5hbWU6IGtlcm5lbDMuMTQuMTcteGVub21haTMtbmV4dC5jb25maWcKVHlwZTogdGV4dC94
-LW1wc3ViClNpemU6IDkxNDI4IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDov
-L3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1MDExNi9j
-NWE5MmU5Ny9hdHRhY2htZW50LmJpbj4K
+On Fri, Jan 16, 2015 at 10:46:17AM +0100, Huy Cong Vu wrote:
+> Hello everyone, 
+> I pulled the xenomai 3 - next branch & patch into linux 3.14.17 kernel on an x86 Intel. The system failed to boot up. 
+> Here are the 2 lines in kernel log when failed: 
+> kernel: Kernel logging (proc) stopped. 
+> rsyslogd: [origin software="rsyslogd" swVersion="5.8.6" x-pid="580" x-info="http://www.rsyslog.com"] exiting on signal 15. 
+> I think I followed the guide in "TROUBLESHOOTING" section & "Configuring for x86-based dual kernels" but maybe I missed something. 
+> I attached the kernel config file, if any1 can show me where I was wrong I'll be very grateful. 
+
+As explained on this page:
+https://xenomai.org//asking-for-help/
+
+We need much more than two lines of the logs to help you.
+
+-- 
+					    Gilles.
+
