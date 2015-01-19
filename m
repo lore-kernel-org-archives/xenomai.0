@@ -1,12 +1,11 @@
-Date: Fri, 16 Jan 2015 17:53:18 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150116165318.GC1157@hermes.click-hack.org>
-References: <214896079.184274.1421401577183.JavaMail.zimbra@wandercraft.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <214896079.184274.1421401577183.JavaMail.zimbra@wandercraft.eu>
-Subject: Re: [Xenomai] xenomai 3-next kernel boot failed exit signal 15
+In-Reply-To: <74BA8E0B069CA64E8F62901CD1E66D50089C7DB3@TOSBLRMBX02.TOSHIBA-TSIP.COM>
+References: <74BA8E0B069CA64E8F62901CD1E66D50089C7DB3@TOSBLRMBX02.TOSHIBA-TSIP.COM>
+Date: Mon, 19 Jan 2015 11:52:47 +0530
+Message-ID: <CA+HFbxAGWHR_JdXpG7FHwxbGsQD3nzu3u_+etTn5ymjGZP3i9A@mail.gmail.com>
+From: satya patel <satya087@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] needs help
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,23 +14,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Huy Cong Vu <huy-cong.vu@wandercraft.eu>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Jan 16, 2015 at 10:46:17AM +0100, Huy Cong Vu wrote:
-> Hello everyone, 
-> I pulled the xenomai 3 - next branch & patch into linux 3.14.17 kernel on an x86 Intel. The system failed to boot up. 
-> Here are the 2 lines in kernel log when failed: 
-> kernel: Kernel logging (proc) stopped. 
-> rsyslogd: [origin software="rsyslogd" swVersion="5.8.6" x-pid="580" x-info="http://www.rsyslog.com"] exiting on signal 15. 
-> I think I followed the guide in "TROUBLESHOOTING" section & "Configuring for x86-based dual kernels" but maybe I missed something. 
-> I attached the kernel config file, if any1 can show me where I was wrong I'll be very grateful. 
+Hi,
 
-As explained on this page:
-https://xenomai.org//asking-for-help/
+I am trying to compile linux-10.32+ipipe-10.32  with xenomai 3 while
+compilation I am getting below warnings after enabling
+CONFIG_IPIPE_ARM_KUSER_TSC.
 
-We need much more than two lines of the logs to help you.
 
--- 
-					    Gilles.
 
+
+
+WARNING: arch/arm/kernel/built-in.o(.text+0x8988): Section mismatch in
+reference from the function __ipipe_tsc_register() to the variable
+.init.text:__ipipe_tsc_area_start
+
+The function __ipipe_tsc_register() references
+
+the variable __init __ipipe_tsc_area_start.
+
+This is often because __ipipe_tsc_register lacks a __init
+
+annotation or the
+
+annotation of __ipipe_tsc_area_start is wrong.
+
+
+
+Please let me know what might be reason for this warning.
+
+
+
+Regards
+
+satya
