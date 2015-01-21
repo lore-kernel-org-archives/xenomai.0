@@ -1,12 +1,13 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Wed, 21 Jan 2015 14:44:59 +0100
-Message-ID: <15627875.xOGqqJnifV@soho>
-In-Reply-To: <ce8779a9a03f5c7fbe48cf43e334f44c.squirrel@xenomai.org>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Wed, 21 Jan 2015 09:37:38 -0500
+Message-ID: <20150121143737.GH30245@csclub.uwaterloo.ca>
 References: <6773858.JgE1vlCdur@soho> <2621675.LcrfARJh6l@soho>
  <ce8779a9a03f5c7fbe48cf43e334f44c.squirrel@xenomai.org>
+ <15627875.xOGqqJnifV@soho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <15627875.xOGqqJnifV@soho>
 Subject: Re: [Xenomai] Compiling xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,42 +17,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-RWwgRGltZWNyZXMsIDIxIGRlIGdlbmVyIGRlIDIwMTUsIGEgbGVzIDE0OjM1OjU4LCBHaWxsZXMg
-Q2hhbnRlcGVyZHJpeCB2YSAKZXNjcml1cmU6Cj4gTGVvcG9sZCBQYWxvbW8tQXZlbGxhbmVkYSB3
-cm90ZToKPiA+IEVsIERpbWVjcmVzLCAyMSBkZSBnZW5lciBkZSAyMDE1LCBhIGxlcyAxNDoyODow
-MiwgR2lsbGVzIENoYW50ZXBlcmRyaXggdmEKPiA+IAo+ID4gZXNjcml1cmU6Cj4gPj4gTGVvcG9s
-ZCBQYWxvbW8tQXZlbGxhbmVkYSB3cm90ZToKPiA+PiA+IEhpLAo+ID4+ID4gCj4gPj4gPiBJJ20g
-dHJ5aW5nIHRvIGNvbXBpbGUgeGVub21haS0zLnggc2VyaWVzIHVzaW5nIG5leHQgYnJhbmNoIGZy
-b20gZ2l0Lgo+ID4+ID4gCj4gPj4gPiBJJ20gdHJ5aW5nIHRvIHVzZSB0aGUgImRlYmlhbiIgbWV0
-aG9kIHRvIGJ1aWxkIHRoZSBrZXJuZWwsIHVzaW5nIHRoZQo+ID4+ID4gbWFrZS1rcGtnCj4gPj4g
-PiBhbmQgdGhlIGluc3RydWN0aW9ucyBwcm9wb3NlZCBpbiB0aGUgd2ViIHBhZ2UuIEhvd2V2ZXIs
-IEkgZ290IHdpdGggYW4KPiA+PiA+IHN0cmFuZ2UKPiA+PiA+IHByb2JsZW0gbm90IGZvdW5kIGlu
-IDIueC4KPiA+PiA+IAo+ID4+ID4gbWFrZVsyXTogRW50ZXJpbmcgZGlyZWN0b3J5ICcvc3J2L3Bh
-Y2thZ2VzL3hlbm9tYWkvbGludXgtMy4xNicKPiA+PiA+IHNjcmlwdHMva2NvbmZpZy9jb25mIC0t
-b2xkY29uZmlnIEtjb25maWcKPiA+PiA+IGluaXQvS2NvbmZpZzoxOTI2OiBjYW4ndCBvcGVuIGZp
-bGUgImFyY2gveDg2XzY0L3hlbm9tYWkvS2NvbmZpZyIKPiA+PiAKPiA+PiB0aGUgQVJDSCB2YXJp
-YWJsZSBpcyBwcm9iYWJseSBkZWZpbmVkIGluIHRoZSBlbnZpcm9ubWVudCB0byB4ODZfNjQsIGJ1
-dAo+ID4+IGZvciBjb21waWxpbmcgdGhlIGtlcm5lbCwgQVJDSCBzaG91bGQgYmUgeDg2ICh0aGVy
-ZSBhcyBub3QgYmVlbiBhbgo+ID4+IGFyY2gveDg2XzY0Cj4gPj4gZGlyZWN0b3J5IHNpbmNlIHNv
-bWV0aW1lIGVhcmx5IGluIHRoZSAyLjYgYnJhbmNoKS4KPiA+IAo+ID4gQnV0IEkgZGlkbid0IGhh
-dmUgdGhpcyBwcm9ibGVtIGNvbXBpbGluZyAyLjYuNC4gQW55IGlkZWEgdG8gc29sdmUgaXQ/Cj4g
-PiAKPiA+IGV4cG9ydCBBUkNIPXg4NiA/IG9yIGlzIHNvbWV0aGluZyBvZiBzcGVjaWZpYyBvZiB4
-ZW5vbWFpPwo+IAo+IEkgZG8gbm90IGtub3cuIEFub3RoZXIgcG9zc2liaWxpdHkgaXMgdGhhdCBw
-cmVwYXJlLWtlcm5lbC5zaCBpcyBicm9rZW4KPiBmb3IgLS1hcmNoPXg4Nl82NCBvciBzb21ldGhp
-bmcuIERvIHdoYXQgdGhlIG1ha2VmaWxlIGRvLCBzdGVwIGJ5IHN0ZXAKPiB0byB1bmRlcnN0YW5k
-IHdoYXQgaGFwcGVucy4KCml0IGZhaWxzIHdoZW4gSSBleGVjdXRlIHRoZSBkZWJpYW4gY29tbWFu
-ZC4gQnV0IGl0IHdvcmtzIHdoZW4gSSBqdXN0IGV4ZWN1dGUgIAptYWtlIGJ6SW1hZ2UgbW9kdWxl
-cy4KClNvLCBJIGRvbid0IHRoaW5rIHRoYXQgaXQgY291bGQgYmUgcHJlcGFyZS1rZXJuZWwuc2gg
-c2NyaXB0CgoKLS0gCi0tCkxpbnV4IFVzZXIgMTUyNjkyICAgICBHUEc6IDA1RjRBN0E5NDlBMkQ5
-QUEKQ2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KQTogQmVj
-YXVzZSBpdCBtZXNzZXMgdXAgdGhlIG9yZGVyIGluIHdoaWNoIHBlb3BsZSBub3JtYWxseSByZWFk
-IHRleHQuClE6IFdoeSBpcyB0b3AtcG9zdGluZyBzdWNoIGEgYmFkIHRoaW5nPwpBOiBUb3AtcG9z
-dGluZy4KUTogV2hhdCBpcyB0aGUgbW9zdCBhbm5veWluZyB0aGluZyBpbiBlLW1haWw/Ci0tLS0t
-LS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQg
-d2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdw
-LXNpZ25hdHVyZQpTaXplOiA4MTkgYnl0ZXMKRGVzYzogVGhpcyBpcyBhIGRpZ2l0YWxseSBzaWdu
-ZWQgbWVzc2FnZSBwYXJ0LgpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94
-ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTUwMTIxL2U4N2NlNTdlL2F0dGFjaG1lbnQuc2lnPgo=
+On Wed, Jan 21, 2015 at 02:44:59PM +0100, Leopold Palomo-Avellaneda wrote:
+> it fails when I execute the debian command. But it works when I just execute  
+> make bzImage modules.
+> 
+> So, I don't think that it could be prepare-kernel.sh script
+
+Which kernel version and which make-kpkg version?  Could be the make-kpkg
+is too old for the kernel version.
+
+I hadn't noticed xenomai support for 3.16 yet either, only 3.14, but I
+haven't checked lately.
+
+-- 
+Len Sorensen
+
