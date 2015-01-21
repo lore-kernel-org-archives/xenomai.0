@@ -1,14 +1,14 @@
-Message-ID: <54C1127A.4020208@siemens.com>
-Date: Thu, 22 Jan 2015 16:08:42 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Wed, 21 Jan 2015 17:56:24 +0100
+Message-ID: <61823146.fdOxUhZZt6@soho>
+In-Reply-To: <15627875.xOGqqJnifV@soho>
+References: <6773858.JgE1vlCdur@soho>
+ <ce8779a9a03f5c7fbe48cf43e334f44c.squirrel@xenomai.org>
+ <15627875.xOGqqJnifV@soho>
 MIME-Version: 1.0
-References: <1537147.Wm9AbiuW5D@soho>
- <20150122075429.GI16075@hermes.click-hack.org> <2769633.cTWk055Sma@soho>
- <20150122144224.GK30245@csclub.uwaterloo.ca>
-In-Reply-To: <20150122144224.GK30245@csclub.uwaterloo.ca>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai-3 booting problems
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Compiling xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,83 +17,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 2015-01-22 15:42, Lennart Sorensen wrote:
-> On Thu, Jan 22, 2015 at 09:34:11AM +0100, Leopold Palomo-Avellaneda wrote:
->> El Dijous, 22 de gener de 2015, a les 08:54:29, Gilles Chanteperdrix va 
->> escriure:
->>> On Thu, Jan 22, 2015 at 08:47:24AM +0100, Leopold Palomo-Avellaneda wrote:
->>>> Hi,
->>>>
->>>>
->>>> I have compiling a Cobalt kernel. I have followed the web "wikipress"
->>>> [1];-) recommendations. However, my box (a normal desktop computer - Dell
->>>> Optiplex 7010 -) doesn't boot. It throws a message like:
->>>> ....
->>>> timer doesn't work through interrup-remapped IO-apic
->>>>
->>>> ...
->>>>
->>>> enabling noapic in the boot options I'm able to boot. But, I have not make
->>>> any test by now. Some interesting messages:
->>>>
->>>> $ dmesg | grep -i xenomai
->>>> [    0.000000] Linux version 3.16.0-xenomai-3.0.0 (root@soho) (gcc version
->>>> 4.9.1 (Debian 4.9.1-19) ) #1 SMP Wed Jan 21 16:29:36 UTC 2015
->>>> [    0.000000] Command line: BOOT_IMAGE=/boot/vmlinuz-3.16.0-xenomai-3.0.0
->>>> root=UUID=15cfac82-1127-421f-9aed-eaf48247ed4e ro quiet noapic
->>>> [    0.000000] Kernel command line: BOOT_IMAGE=/boot/vmlinuz-3.16.0-
->>>> xenomai-3.0.0 root=UUID=15cfac82-1127-421f-9aed-eaf48247ed4e ro quiet
->>>> noapic [    0.705071] [Xenomai] scheduling class idle registered.
->>>> [    0.705072] [Xenomai] scheduling class rt registered.
->>>> [    0.705090] [Xenomai] disabling automatic C1E state promotion on Intel
->>>> processor
->>>> [    0.705104] [Xenomai] SMI-enabled chipset found, but SMI workaround
->>>> disabled
->>>>
->>>>           (see xenomai.smi parameter). You might encounter
->>>>
->>>> [    0.705284] I-pipe: head domain Xenomai registered.
->>>> [    0.717986] [Xenomai] Cobalt v3.0-rc2 (Exact Zero) [DEBUG]
->>>> [    0.897726] usb usb1: Manufacturer: Linux 3.16.0-xenomai-3.0.0 xhci_hcd
->>>> [    0.898617] usb usb2: Manufacturer: Linux 3.16.0-xenomai-3.0.0 xhci_hcd
->>>> [    0.914114] usb usb3: Manufacturer: Linux 3.16.0-xenomai-3.0.0 ehci_hcd
->>>> [    0.930109] usb usb4: Manufacturer: Linux 3.16.0-xenomai-3.0.0 ehci_hcd
->>>> *** RTnet for Xenomai v3.0-rc2 ***
->>>>
->>>>
->>>> So, can avoid to pass the noapic parameter to the kernel to boot?
->>>
->>> Please post the full boot logs, and the kernel configuration. 
->>
->> Attached.
->>
->>
->>> Does the
->>> kernel work with exactly the same .config but without Xenomai? 
->>
->> I don't know. It's a similar kernel configuration than debian ships with 
->> jessie.
->>
->>> Is
->>> CONFIG_SMP enabled? Because if CONFIG_SMP is enabled, Xenomai will
->>> not work without an APIC.
->>
->> Yes, CONFIG_SMP=y and CONFIG_X86_IO_APIC=y
-> 
-> But your kernel commandline included 'quiet noapic' in the above, which
-> would turn of apic use even if the config could use it.
-
-To make it clearer: NEVER use noapic on a modern x86 system. It neither
-makes sense anymore nor will it work on many of them. It just routes the
-system into rarely tested paths, both in the kernel and possibly also
-the hardware and firmware.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
-
+RWwgRGltZWNyZXMsIDIxIGRlIGdlbmVyIGRlIDIwMTUsIGEgbGVzIDE0OjQ0OjU5LCBMZW9wb2xk
+IFBhbG9tby1BdmVsbGFuZWRhIHZhIAplc2NyaXVyZToKPiBFbCBEaW1lY3JlcywgMjEgZGUgZ2Vu
+ZXIgZGUgMjAxNSwgYSBsZXMgMTQ6MzU6NTgsIEdpbGxlcyBDaGFudGVwZXJkcml4IHZhCj4gCj4g
+ZXNjcml1cmU6Cj4gPiBMZW9wb2xkIFBhbG9tby1BdmVsbGFuZWRhIHdyb3RlOgo+ID4gPiBFbCBE
+aW1lY3JlcywgMjEgZGUgZ2VuZXIgZGUgMjAxNSwgYSBsZXMgMTQ6Mjg6MDIsIEdpbGxlcyBDaGFu
+dGVwZXJkcml4Cj4gPiA+IHZhCj4gPiA+IAo+ID4gPiBlc2NyaXVyZToKPiA+ID4+IExlb3BvbGQg
+UGFsb21vLUF2ZWxsYW5lZGEgd3JvdGU6Cj4gPiA+PiA+IEhpLAo+ID4gPj4gPiAKPiA+ID4+ID4g
+SSdtIHRyeWluZyB0byBjb21waWxlIHhlbm9tYWktMy54IHNlcmllcyB1c2luZyBuZXh0IGJyYW5j
+aCBmcm9tIGdpdC4KPiA+ID4+ID4gCj4gPiA+PiA+IEknbSB0cnlpbmcgdG8gdXNlIHRoZSAiZGVi
+aWFuIiBtZXRob2QgdG8gYnVpbGQgdGhlIGtlcm5lbCwgdXNpbmcgdGhlCj4gPiA+PiA+IG1ha2Ut
+a3BrZwo+ID4gPj4gPiBhbmQgdGhlIGluc3RydWN0aW9ucyBwcm9wb3NlZCBpbiB0aGUgd2ViIHBh
+Z2UuIEhvd2V2ZXIsIEkgZ290IHdpdGggYW4KPiA+ID4+ID4gc3RyYW5nZQo+ID4gPj4gPiBwcm9i
+bGVtIG5vdCBmb3VuZCBpbiAyLnguCj4gPiA+PiA+IAo+ID4gPj4gPiBtYWtlWzJdOiBFbnRlcmlu
+ZyBkaXJlY3RvcnkgJy9zcnYvcGFja2FnZXMveGVub21haS9saW51eC0zLjE2Jwo+ID4gPj4gPiBz
+Y3JpcHRzL2tjb25maWcvY29uZiAtLW9sZGNvbmZpZyBLY29uZmlnCj4gPiA+PiA+IGluaXQvS2Nv
+bmZpZzoxOTI2OiBjYW4ndCBvcGVuIGZpbGUgImFyY2gveDg2XzY0L3hlbm9tYWkvS2NvbmZpZyIK
+PiA+ID4+IAo+ID4gPj4gdGhlIEFSQ0ggdmFyaWFibGUgaXMgcHJvYmFibHkgZGVmaW5lZCBpbiB0
+aGUgZW52aXJvbm1lbnQgdG8geDg2XzY0LCBidXQKPiA+ID4+IGZvciBjb21waWxpbmcgdGhlIGtl
+cm5lbCwgQVJDSCBzaG91bGQgYmUgeDg2ICh0aGVyZSBhcyBub3QgYmVlbiBhbgo+ID4gPj4gYXJj
+aC94ODZfNjQKPiA+ID4+IGRpcmVjdG9yeSBzaW5jZSBzb21ldGltZSBlYXJseSBpbiB0aGUgMi42
+IGJyYW5jaCkuCj4gPiA+IAo+ID4gPiBCdXQgSSBkaWRuJ3QgaGF2ZSB0aGlzIHByb2JsZW0gY29t
+cGlsaW5nIDIuNi40LiBBbnkgaWRlYSB0byBzb2x2ZSBpdD8KPiA+ID4gCj4gPiA+IGV4cG9ydCBB
+UkNIPXg4NiA/IG9yIGlzIHNvbWV0aGluZyBvZiBzcGVjaWZpYyBvZiB4ZW5vbWFpPwo+ID4gCj4g
+PiBJIGRvIG5vdCBrbm93LiBBbm90aGVyIHBvc3NpYmlsaXR5IGlzIHRoYXQgcHJlcGFyZS1rZXJu
+ZWwuc2ggaXMgYnJva2VuCj4gPiBmb3IgLS1hcmNoPXg4Nl82NCBvciBzb21ldGhpbmcuIERvIHdo
+YXQgdGhlIG1ha2VmaWxlIGRvLCBzdGVwIGJ5IHN0ZXAKPiA+IHRvIHVuZGVyc3RhbmQgd2hhdCBo
+YXBwZW5zLgo+IAo+IGl0IGZhaWxzIHdoZW4gSSBleGVjdXRlIHRoZSBkZWJpYW4gY29tbWFuZC4g
+QnV0IGl0IHdvcmtzIHdoZW4gSSBqdXN0IGV4ZWN1dGUKPiBtYWtlIGJ6SW1hZ2UgbW9kdWxlcy4K
+PiAKPiBTbywgSSBkb24ndCB0aGluayB0aGF0IGl0IGNvdWxkIGJlIHByZXBhcmUta2VybmVsLnNo
+IHNjcmlwdAoKV2VsbCwKCnNvbWUgdGVzdDoKCnNjZW5hcmlvOgoKa2VybmVsOiBsaW51eC0zLjE2
+CmlwaXBlLXBhdGNoOiBpcGlwZS1jb3JlLTMuMTYteDg2LTEucGF0Y2ggKGl0J3MgdGhlIHNhbWUg
+aW4gdGhlIGFkZW9zIHJlcG9zIAp0aGF0IHhlbm9tYWkgcmVwbywgSSBjaGVja2VkIGl0IDstKQp4
+ZW5vbWFpLTMuZ2l0LCBjaGVja2VkIHRvZGF5IGJyYW5jaCAibmV4dCIuCmNocm9vdCB3aXRoIGpl
+c3NpZS9zaWQgZW52aXJvbnRtZW50LiB1cGRhdGVkIHRvZGF5LgoKZGVjb21wcmVzcyBrZXJuZWwg
+YW5kIGV4ZWN1dGUgaW4gdGhlIGxpbnV4IGRpcjoKCi4uL3hlbm9tYWktMy5naXQvc2NyaXB0cy9w
+cmVwYXJlLWtlcm5lbC5zaCAtLWxpbnV4PS4gLS0KaXBpcGU9Li4veGVub21haS0zLmdpdC9rZXJu
+ZWwvY29iYWx0L2FyY2gveDg2L3BhdGNoZXMvaXBpcGUtY29yZS0zLjE2LQp4ODYtMS5wYXRjaCAt
+LWFyY2g9eDg2CgoKLSBjb3B5IGFuIG9sZCBjb25maWcgYW5kIGRvOgptYWtlIG9sZGNvbmZpZyAo
+b2spCgotIENPTkNVUlJFTkNZX0xFVkVMPTggQ0xFQU5fU09VUkNFPW5vIGZha2Vyb290IG1ha2Ut
+a3BrZyAtLXZlcmJvc2UgLS1pbml0cmQgLS0KYXBwZW5kLXRvLXZlcnNpb24gLXhlbm9tYWktMy4w
+LjAgLS1yZXZpc2lvbiAxLjAga2VybmVsX2ltYWdlIGtlcm5lbF9oZWFkZXJzCgpmYWlscyB3aXRo
+IHRoaXMgbWVzc2FnZToKbWFrZVsxXTogRW50ZXJpbmcgZGlyZWN0b3J5ICcvc3J2L3BhY2thZ2Vz
+L3hlbm9tYWkvbGludXgtMy4xNicKPT09PT09IG1ha2luZyB0YXJnZXQgZGViaWFuL3N0YW1wL2Nv
+bmYva2VybmVsLWNvbmYgW25ldyBwcmVyZXFzOiBdPT09PT09Cm1ha2UgRVhUUkFWRVJTSU9OPS14
+ZW5vbWFpLTMuMC4wICAgQVJDSD14ODZfNjQgXAogICAgICAgICAgICAgICAgICAgIG9sZGNvbmZp
+ZzsKbWFrZVsyXTogRW50ZXJpbmcgZGlyZWN0b3J5ICcvc3J2L3BhY2thZ2VzL3hlbm9tYWkvbGlu
+dXgtMy4xNicKbWFrZSAtZiBzY3JpcHRzL01ha2VmaWxlLmJ1aWxkIG9iaj1zY3JpcHRzL2Jhc2lj
+CnJtIC1mIC50bXBfcXVpZXRfcmVjb3JkbWNvdW50Cm1ha2UgLWYgc2NyaXB0cy9NYWtlZmlsZS5i
+dWlsZCBvYmo9c2NyaXB0cy9rY29uZmlnIG9sZGNvbmZpZwpzY3JpcHRzL2tjb25maWcvY29uZiAt
+LW9sZGNvbmZpZyBLY29uZmlnCmluaXQvS2NvbmZpZzoxOTI2OiBjYW4ndCBvcGVuIGZpbGUgImFy
+Y2gveDg2XzY0L3hlbm9tYWkvS2NvbmZpZyIKc2NyaXB0cy9rY29uZmlnL01ha2VmaWxlOjMzOiBy
+ZWNpcGUgZm9yIHRhcmdldCAnb2xkY29uZmlnJyBmYWlsZWQKbWFrZVszXTogKioqIFtvbGRjb25m
+aWddIEVycm9yIDEKTWFrZWZpbGU6NTQ1OiByZWNpcGUgZm9yIHRhcmdldCAnb2xkY29uZmlnJyBm
+YWlsZWQKbWFrZVsyXTogKioqIFtvbGRjb25maWddIEVycm9yIDIKbWFrZVsyXTogTGVhdmluZyBk
+aXJlY3RvcnkgJy9zcnYvcGFja2FnZXMveGVub21haS9saW51eC0zLjE2JwpkZWJpYW4vcnVsZXNl
+dC90YXJnZXRzL2NvbW1vbi5tazoxOTQ6IHJlY2lwZSBmb3IgdGFyZ2V0IAonZGViaWFuL3N0YW1w
+L2NvbmYva2VybmVsLWNvbmYnIGZhaWxlZAptYWtlWzFdOiAqKiogW2RlYmlhbi9zdGFtcC9jb25m
+L2tlcm5lbC1jb25mXSBFcnJvciAyCm1ha2VbMV06IExlYXZpbmcgZGlyZWN0b3J5ICcvc3J2L3Bh
+Y2thZ2VzL3hlbm9tYWkvbGludXgtMy4xNicKL3Vzci9zaGFyZS9rZXJuZWwtcGFja2FnZS9ydWxl
+c2V0L21pbmltYWwubWs6OTM6IHJlY2lwZSBmb3IgdGFyZ2V0IAonZGViaWFuL3N0YW1wL2NvbmYv
+bWluaW1hbF9kZWJpYW4nIGZhaWxlZAptYWtlOiAqKiogW2RlYmlhbi9zdGFtcC9jb25mL21pbmlt
+YWxfZGViaWFuXSBFcnJvciAyCkZhaWxlZCB0byBjcmVhdGUgYSAuL2RlYmlhbiBkaXJlY3Rvcnk6
+IEVsIGZpdHhlciBvIGRpcmVjdG9yaSBubyBleGlzdGVpeCBhdCAKL3Vzci9iaW4vbWFrZS1rcGtn
+IGxpbmUgOTY2LgoKCgoKdGhlIGZpbGUgaW5pdC9LY29uZmlnIGhhcyBpbiB0aGF0IGxpbmUKCmlm
+IFhFTk9NQUkKc291cmNlICJhcmNoLyRBUkNIL3hlbm9tYWkvS2NvbmZpZyIKZW5kaWYKCmlmIEkg
+cHV0IGhlcmUgeDg2IChpbnN0ZWFkIG9mICRBUkNIIHRoYXQgd2FzIHg4Nl82NCksIGl0IHNlZW1z
+IGl0IGNvbXBpbGUgYW5kIApidWlsZCB0aGUgcGFja2FnZXMuCgpQbGVhc2UgY291bGQgeW91IHB1
+dCB0aGUgY29udGVudHMgaGVyZSB0aGF0IG1hdGNoIHdpdGggdGhlIGNvbnRlbnRzIG9mIHRoZSAK
+ZGlyZWN0b3J5OiBsaW51eC14Lnkuei9hcmNoPwoKQWxzbywgSSB3b3VsZCBsaWtlIHRvIHNheSwg
+dGhhdCBhIGZvbGRlciB3aXRoIHRoZSBuYW1lIHg4Nl82NCB3YXMgY3JlYXRlZCBieSAKbWFrZS1r
+cGtnLgoKCkJlc3QgcmVnYWRycywKCkxlb3BvbGQKCi0tIAotLQpMaW51eCBVc2VyIDE1MjY5MiAg
+ICAgR1BHOiAwNUY0QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQotLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tCkE6IEJlY2F1c2UgaXQgbWVzc2VzIHVwIHRoZSBvcmRlciBpbiB3aGlj
+aCBwZW9wbGUgbm9ybWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkgaXMgdG9wLXBvc3Rpbmcgc3VjaCBh
+IGJhZCB0aGluZz8KQTogVG9wLXBvc3RpbmcuClE6IFdoYXQgaXMgdGhlIG1vc3QgYW5ub3lpbmcg
+dGhpbmcgaW4gZS1tYWlsPwotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0K
+QSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNj
+ClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogODE5IGJ5dGVzCkRlc2M6IFRo
+aXMgaXMgYSBkaWdpdGFsbHkgc2lnbmVkIG1lc3NhZ2UgcGFydC4KVVJMOiA8aHR0cDovL3d3dy54
+ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1MDEyMS83NmNlMzBk
+MS9hdHRhY2htZW50LnNpZz4K
