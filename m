@@ -1,16 +1,16 @@
-Message-ID: <54C112F9.9000705@siemens.com>
-Date: Thu, 22 Jan 2015 16:10:49 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <2bd7a5437659ad8fbf5f4c5788bebd48.squirrel@xenomai.org>
+In-Reply-To: <20150121152307.GI30245@csclub.uwaterloo.ca>
+References: <6773858.JgE1vlCdur@soho> <2621675.LcrfARJh6l@soho>
+ <ce8779a9a03f5c7fbe48cf43e334f44c.squirrel@xenomai.org>
+ <15627875.xOGqqJnifV@soho> <20150121143737.GH30245@csclub.uwaterloo.ca>
+ <39c2587f04b5da62847e9606b5f88726.squirrel@xenomai.org>
+ <20150121152307.GI30245@csclub.uwaterloo.ca>
+Date: Wed, 21 Jan 2015 16:32:06 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1537147.Wm9AbiuW5D@soho> <2296691.2JpS0rAJbA@soho>
- <20150122114038.GE23461@hermes.click-hack.org> <4743020.6q5RsBy8Ia@soho>
- <54C0F262.6010806@siemens.com> <20150122144930.GL30245@csclub.uwaterloo.ca>
- <20150122145624.GF26731@hermes.click-hack.org> <54C1110C.7090803@siemens.com>
- <20150122150631.GG26731@hermes.click-hack.org>
-In-Reply-To: <20150122150631.GG26731@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai-3 creating debian packages
+Content-Type: text/plain;charset=utf-8
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Compiling xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,42 +19,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2015-01-22 16:06, Gilles Chanteperdrix wrote:
-> On Thu, Jan 22, 2015 at 04:02:36PM +0100, Jan Kiszka wrote:
->> On 2015-01-22 15:56, Gilles Chanteperdrix wrote:
->>> On Thu, Jan 22, 2015 at 09:49:30AM -0500, Lennart Sorensen wrote:
->>>> On Thu, Jan 22, 2015 at 01:51:46PM +0100, Jan Kiszka wrote:
->>>>> See
->>>>> http://git.xenomai.org/xenomai-jki.git/commit/?h=for-forge&id=5d104b1de84c8f4cbfb9d6b79cfaa633ef550e1c
->>>>> for the fix. The bug was the improper variable use in the Kconfig
->>>>> fragment. You only had to revert the whole commit as you were falling
->>>>> back to the obsolete prepare-time patching then, which involved the script.
->>>>
->>>> What a handy change.  That should make multiple architectures in one
->>>> source tree finally possible without merge conflicts in that file.
->>>
->>> Unfortunately not, if you want to work with the I-pipe git, you can
->>> not run prepare-kernel.sh in that directory anyway, otherwise you
->>> could end-up commiting the Xenomai fragments with the I-pipe kernel.
->>
->> You can, we are doing this for ages. You only need to clean up your repo
->> from the additional changes Xenomai introduced (a hand full) before
->> moving HEAD (unless those files aren't affected by the move).
-> 
-> Sorry, but I prefer my obsolete method, I do not have anything to
-> run before using git commands. For me, the source directory
-> should remain untouched, I do not want any noise when I run git
-> status.
 
-That's perfectly fine. We all have different working styles, and each
-has its pros and cons.
+Lennart Sorensen wrote:
+> On Wed, Jan 21, 2015 at 03:40:06PM +0100, Gilles Chanteperdrix wrote:
+>> The I-pipe patches for 3.16 are in the GNA download area.
+>> We have not released a version of Xenomai with it yet, but they exist.
+>
+> Excellent.  Not that I need them any time soon. :)
+>
 
-Jan
+I am just trying to answer clearly your claim, and repeating what has been
+exchanged on another mailing list (which you do not seem to read).
+But the I-pipe patches are in the GNA download area for everyone to see. It
+is all in the open. If you do not know whether the patch exists, simply look
+in the download area before insinuating that the patch does not exist.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+                    Gilles.
+
 
