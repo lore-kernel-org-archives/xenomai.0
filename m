@@ -1,13 +1,12 @@
-Message-ID: <ce8779a9a03f5c7fbe48cf43e334f44c.squirrel@xenomai.org>
-In-Reply-To: <2621675.LcrfARJh6l@soho>
-References: <6773858.JgE1vlCdur@soho>
- <c38d2ac86c6078926fbb8faf3dc2b370.squirrel@xenomai.org>
- <2621675.LcrfARJh6l@soho>
-Date: Wed, 21 Jan 2015 14:35:58 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Wed, 21 Jan 2015 14:44:59 +0100
+Message-ID: <15627875.xOGqqJnifV@soho>
+In-Reply-To: <ce8779a9a03f5c7fbe48cf43e334f44c.squirrel@xenomai.org>
+References: <6773858.JgE1vlCdur@soho> <2621675.LcrfARJh6l@soho>
+ <ce8779a9a03f5c7fbe48cf43e334f44c.squirrel@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Compiling xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,42 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-
-Leopold Palomo-Avellaneda wrote:
-> El Dimecres, 21 de gener de 2015, a les 14:28:02, Gilles Chanteperdrix va
-> escriure:
->> Leopold Palomo-Avellaneda wrote:
->> > Hi,
->> >
->> > I'm trying to compile xenomai-3.x series using next branch from git.
->> >
->> > I'm trying to use the "debian" method to build the kernel, using the
->> > make-kpkg
->> > and the instructions proposed in the web page. However, I got with an
->> > strange
->> > problem not found in 2.x.
->> >
->> > make[2]: Entering directory '/srv/packages/xenomai/linux-3.16'
->> > scripts/kconfig/conf --oldconfig Kconfig
->> > init/Kconfig:1926: can't open file "arch/x86_64/xenomai/Kconfig"
->>
->> the ARCH variable is probably defined in the environment to x86_64, but
->> for compiling the kernel, ARCH should be x86 (there as not been an
->> arch/x86_64
->> directory since sometime early in the 2.6 branch).
->
-> But I didn't have this problem compiling 2.6.4. Any idea to solve it?
->
-> export ARCH=x86 ? or is something of specific of xenomai?
-
-I do not know. Another possibility is that prepare-kernel.sh is broken
-for --arch=x86_64 or something. Do what the makefile do, step by step
-to understand what happens.
-
--- 
-                    Gilles.
-
-
+RWwgRGltZWNyZXMsIDIxIGRlIGdlbmVyIGRlIDIwMTUsIGEgbGVzIDE0OjM1OjU4LCBHaWxsZXMg
+Q2hhbnRlcGVyZHJpeCB2YSAKZXNjcml1cmU6Cj4gTGVvcG9sZCBQYWxvbW8tQXZlbGxhbmVkYSB3
+cm90ZToKPiA+IEVsIERpbWVjcmVzLCAyMSBkZSBnZW5lciBkZSAyMDE1LCBhIGxlcyAxNDoyODow
+MiwgR2lsbGVzIENoYW50ZXBlcmRyaXggdmEKPiA+IAo+ID4gZXNjcml1cmU6Cj4gPj4gTGVvcG9s
+ZCBQYWxvbW8tQXZlbGxhbmVkYSB3cm90ZToKPiA+PiA+IEhpLAo+ID4+ID4gCj4gPj4gPiBJJ20g
+dHJ5aW5nIHRvIGNvbXBpbGUgeGVub21haS0zLnggc2VyaWVzIHVzaW5nIG5leHQgYnJhbmNoIGZy
+b20gZ2l0Lgo+ID4+ID4gCj4gPj4gPiBJJ20gdHJ5aW5nIHRvIHVzZSB0aGUgImRlYmlhbiIgbWV0
+aG9kIHRvIGJ1aWxkIHRoZSBrZXJuZWwsIHVzaW5nIHRoZQo+ID4+ID4gbWFrZS1rcGtnCj4gPj4g
+PiBhbmQgdGhlIGluc3RydWN0aW9ucyBwcm9wb3NlZCBpbiB0aGUgd2ViIHBhZ2UuIEhvd2V2ZXIs
+IEkgZ290IHdpdGggYW4KPiA+PiA+IHN0cmFuZ2UKPiA+PiA+IHByb2JsZW0gbm90IGZvdW5kIGlu
+IDIueC4KPiA+PiA+IAo+ID4+ID4gbWFrZVsyXTogRW50ZXJpbmcgZGlyZWN0b3J5ICcvc3J2L3Bh
+Y2thZ2VzL3hlbm9tYWkvbGludXgtMy4xNicKPiA+PiA+IHNjcmlwdHMva2NvbmZpZy9jb25mIC0t
+b2xkY29uZmlnIEtjb25maWcKPiA+PiA+IGluaXQvS2NvbmZpZzoxOTI2OiBjYW4ndCBvcGVuIGZp
+bGUgImFyY2gveDg2XzY0L3hlbm9tYWkvS2NvbmZpZyIKPiA+PiAKPiA+PiB0aGUgQVJDSCB2YXJp
+YWJsZSBpcyBwcm9iYWJseSBkZWZpbmVkIGluIHRoZSBlbnZpcm9ubWVudCB0byB4ODZfNjQsIGJ1
+dAo+ID4+IGZvciBjb21waWxpbmcgdGhlIGtlcm5lbCwgQVJDSCBzaG91bGQgYmUgeDg2ICh0aGVy
+ZSBhcyBub3QgYmVlbiBhbgo+ID4+IGFyY2gveDg2XzY0Cj4gPj4gZGlyZWN0b3J5IHNpbmNlIHNv
+bWV0aW1lIGVhcmx5IGluIHRoZSAyLjYgYnJhbmNoKS4KPiA+IAo+ID4gQnV0IEkgZGlkbid0IGhh
+dmUgdGhpcyBwcm9ibGVtIGNvbXBpbGluZyAyLjYuNC4gQW55IGlkZWEgdG8gc29sdmUgaXQ/Cj4g
+PiAKPiA+IGV4cG9ydCBBUkNIPXg4NiA/IG9yIGlzIHNvbWV0aGluZyBvZiBzcGVjaWZpYyBvZiB4
+ZW5vbWFpPwo+IAo+IEkgZG8gbm90IGtub3cuIEFub3RoZXIgcG9zc2liaWxpdHkgaXMgdGhhdCBw
+cmVwYXJlLWtlcm5lbC5zaCBpcyBicm9rZW4KPiBmb3IgLS1hcmNoPXg4Nl82NCBvciBzb21ldGhp
+bmcuIERvIHdoYXQgdGhlIG1ha2VmaWxlIGRvLCBzdGVwIGJ5IHN0ZXAKPiB0byB1bmRlcnN0YW5k
+IHdoYXQgaGFwcGVucy4KCml0IGZhaWxzIHdoZW4gSSBleGVjdXRlIHRoZSBkZWJpYW4gY29tbWFu
+ZC4gQnV0IGl0IHdvcmtzIHdoZW4gSSBqdXN0IGV4ZWN1dGUgIAptYWtlIGJ6SW1hZ2UgbW9kdWxl
+cy4KClNvLCBJIGRvbid0IHRoaW5rIHRoYXQgaXQgY291bGQgYmUgcHJlcGFyZS1rZXJuZWwuc2gg
+c2NyaXB0CgoKLS0gCi0tCkxpbnV4IFVzZXIgMTUyNjkyICAgICBHUEc6IDA1RjRBN0E5NDlBMkQ5
+QUEKQ2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KQTogQmVj
+YXVzZSBpdCBtZXNzZXMgdXAgdGhlIG9yZGVyIGluIHdoaWNoIHBlb3BsZSBub3JtYWxseSByZWFk
+IHRleHQuClE6IFdoeSBpcyB0b3AtcG9zdGluZyBzdWNoIGEgYmFkIHRoaW5nPwpBOiBUb3AtcG9z
+dGluZy4KUTogV2hhdCBpcyB0aGUgbW9zdCBhbm5veWluZyB0aGluZyBpbiBlLW1haWw/Ci0tLS0t
+LS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQg
+d2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdw
+LXNpZ25hdHVyZQpTaXplOiA4MTkgYnl0ZXMKRGVzYzogVGhpcyBpcyBhIGRpZ2l0YWxseSBzaWdu
+ZWQgbWVzc2FnZSBwYXJ0LgpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94
+ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTUwMTIxL2U4N2NlNTdlL2F0dGFjaG1lbnQuc2lnPgo=
