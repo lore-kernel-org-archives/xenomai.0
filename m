@@ -1,11 +1,12 @@
-Message-ID: <c38d2ac86c6078926fbb8faf3dc2b370.squirrel@xenomai.org>
-In-Reply-To: <6773858.JgE1vlCdur@soho>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Wed, 21 Jan 2015 14:31:56 +0100
+Message-ID: <2621675.LcrfARJh6l@soho>
+In-Reply-To: <c38d2ac86c6078926fbb8faf3dc2b370.squirrel@xenomai.org>
 References: <6773858.JgE1vlCdur@soho>
-Date: Wed, 21 Jan 2015 14:28:02 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+ <c38d2ac86c6078926fbb8faf3dc2b370.squirrel@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Compiling xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,32 +16,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-
-Leopold Palomo-Avellaneda wrote:
-> Hi,
->
-> I'm trying to compile xenomai-3.x series using next branch from git.
->
-> I'm trying to use the "debian" method to build the kernel, using the
-> make-kpkg
-> and the instructions proposed in the web page. However, I got with an
-> strange
-> problem not found in 2.x.
->
-> make[2]: Entering directory '/srv/packages/xenomai/linux-3.16'
-> scripts/kconfig/conf --oldconfig Kconfig
-> init/Kconfig:1926: can't open file "arch/x86_64/xenomai/Kconfig"
-
-the ARCH variable is probably defined in the environment to x86_64, but
-for compiling the kernel, ARCH should be x86 (there as not been an
-arch/x86_64
-directory since sometime early in the 2.6 branch).
-
-
--- 
-                    Gilles.
-
-
+RWwgRGltZWNyZXMsIDIxIGRlIGdlbmVyIGRlIDIwMTUsIGEgbGVzIDE0OjI4OjAyLCBHaWxsZXMg
+Q2hhbnRlcGVyZHJpeCB2YSAKZXNjcml1cmU6Cj4gTGVvcG9sZCBQYWxvbW8tQXZlbGxhbmVkYSB3
+cm90ZToKPiA+IEhpLAo+ID4gCj4gPiBJJ20gdHJ5aW5nIHRvIGNvbXBpbGUgeGVub21haS0zLngg
+c2VyaWVzIHVzaW5nIG5leHQgYnJhbmNoIGZyb20gZ2l0Lgo+ID4gCj4gPiBJJ20gdHJ5aW5nIHRv
+IHVzZSB0aGUgImRlYmlhbiIgbWV0aG9kIHRvIGJ1aWxkIHRoZSBrZXJuZWwsIHVzaW5nIHRoZQo+
+ID4gbWFrZS1rcGtnCj4gPiBhbmQgdGhlIGluc3RydWN0aW9ucyBwcm9wb3NlZCBpbiB0aGUgd2Vi
+IHBhZ2UuIEhvd2V2ZXIsIEkgZ290IHdpdGggYW4KPiA+IHN0cmFuZ2UKPiA+IHByb2JsZW0gbm90
+IGZvdW5kIGluIDIueC4KPiA+IAo+ID4gbWFrZVsyXTogRW50ZXJpbmcgZGlyZWN0b3J5ICcvc3J2
+L3BhY2thZ2VzL3hlbm9tYWkvbGludXgtMy4xNicKPiA+IHNjcmlwdHMva2NvbmZpZy9jb25mIC0t
+b2xkY29uZmlnIEtjb25maWcKPiA+IGluaXQvS2NvbmZpZzoxOTI2OiBjYW4ndCBvcGVuIGZpbGUg
+ImFyY2gveDg2XzY0L3hlbm9tYWkvS2NvbmZpZyIKPiAKPiB0aGUgQVJDSCB2YXJpYWJsZSBpcyBw
+cm9iYWJseSBkZWZpbmVkIGluIHRoZSBlbnZpcm9ubWVudCB0byB4ODZfNjQsIGJ1dAo+IGZvciBj
+b21waWxpbmcgdGhlIGtlcm5lbCwgQVJDSCBzaG91bGQgYmUgeDg2ICh0aGVyZSBhcyBub3QgYmVl
+biBhbgo+IGFyY2gveDg2XzY0Cj4gZGlyZWN0b3J5IHNpbmNlIHNvbWV0aW1lIGVhcmx5IGluIHRo
+ZSAyLjYgYnJhbmNoKS4KCkJ1dCBJIGRpZG4ndCBoYXZlIHRoaXMgcHJvYmxlbSBjb21waWxpbmcg
+Mi42LjQuIEFueSBpZGVhIHRvIHNvbHZlIGl0PwoKZXhwb3J0IEFSQ0g9eDg2ID8gb3IgaXMgc29t
+ZXRoaW5nIG9mIHNwZWNpZmljIG9mIHhlbm9tYWk/CgpMZW9wb2xkCgotLSAKLS0KTGludXggVXNl
+ciAxNTI2OTIgICAgIEdQRzogMDVGNEE3QTk0OUEyRDlBQQpDYXRhbG9uaWEKLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpBOiBCZWNhdXNlIGl0IG1lc3NlcyB1cCB0aGUgb3Jk
+ZXIgaW4gd2hpY2ggcGVvcGxlIG5vcm1hbGx5IHJlYWQgdGV4dC4KUTogV2h5IGlzIHRvcC1wb3N0
+aW5nIHN1Y2ggYSBiYWQgdGhpbmc/CkE6IFRvcC1wb3N0aW5nLgpROiBXaGF0IGlzIHRoZSBtb3N0
+IGFubm95aW5nIHRoaW5nIGluIGUtbWFpbD8KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0t
+LS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2ln
+bmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDgxOSBieXRl
+cwpEZXNjOiBUaGlzIGlzIGEgZGlnaXRhbGx5IHNpZ25lZCBtZXNzYWdlIHBhcnQuClVSTDogPGh0
+dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTAx
+MjEvMGVkMTFiOGIvYXR0YWNobWVudC5zaWc+Cg==
