@@ -1,10 +1,12 @@
-Date: Fri, 23 Jan 2015 08:52:37 +0100
+Date: Wed, 21 Jan 2015 18:20:06 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150123075237.GL29604@hermes.click-hack.org>
+Message-ID: <20150121172006.GF16075@hermes.click-hack.org>
+References: <1421852743-21535-1-git-send-email-sr@denx.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Subject: [Xenomai] ARM/ipipe patches
+In-Reply-To: <1421852743-21535-1-git-send-email-sr@denx.de>
+Subject: Re: [Xenomai] [PATCH] hal/arm: Add Zynq v3.14.17 patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,29 +15,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Stefan Roese <sr@denx.de>
 Cc: xenomai@xenomai.org
 
-Hi Philippe,
+On Wed, Jan 21, 2015 at 04:05:43PM +0100, Stefan Roese wrote:
+> Xilinx Zynq is already supported in the mainline Xenomai git repository.
+> This patch adds support for the v3.14.17 Linux Kernel with the latest
+> arm-6 i-pipe patch additionally to the already present v3.5 and v3.8
+> support.
 
-You may have missed the discussion between Jan and me, but I am
-opposed to the following commits:
-https://git.xenomai.org/ipipe.git/commit/?h=ipipe-3.14&id=7272c23ff5e1be3bfad58497de132e0336649c34
-https://git.xenomai.org/ipipe.git/commit/?h=ipipe-3.14&id=5ca7ed6c7c0316de5f494b773f3c7c3263aa726b
+It would be nice if Zynq support could be integrated into the
+mainline I-pipe git, is Zynq support still experimental, do people
+still need to use a fork ?
 
-as long as Jan does not provide an explanation on how it fixes all
-the possible paths (which are not numerous) in entry.S. As long as I
-do not have this explanation, I consider these patches of the
-half-baked, "works for me" kind and refuse to have to be the one who
-on a user bug report, after a lengthy discussion, discover that they
-cause some unexpected crashes. And since I am the one maintaining
-the I-pipe pat for ARM, this is what is going to happen if they
-indeed do not fix all the possible pathes in entry.S. The reason why
-I did not make CONFIG_TRACE_IRQFLAGS depend on !IPIPE is because I
-expected Jan to provide this explanation since he never said he
-would not do it.
+> 
+> Signed-off-by: Stefan Roese <sr@denx.de>
+> ---
+> Please note that the arm-6 patch that is referenced in the README
 
-Regards.
+One (the only?) interest of -pre and -post patches is to be able to
+update the I-pipe patch without updating the pre and post patches.
+So, I believe the README should not mention a particular version of
+the I-pipe patch. I would rather say: apply
+ipipe-core-3.1.4.17-arm-*.patch
+Maybe you could say that it has been tested with that version, so
+that people realize that it may be broken if they use a later I-pipe
+release, but not mention this particular version in the README.
+
+Otherwise, looking at the patches themselves: the pre patch reverts
+smp.c and git.c to the mainline version, and the post patch does not
+update them. It means you revert the changes made to these files by
+the fork you use. Is it OK for you ?
 
 -- 
 					    Gilles.
