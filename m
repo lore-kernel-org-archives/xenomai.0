@@ -1,11 +1,18 @@
-From: "Krause, Holger" <holger.krause@sieb-meyer.de>
-Date: Thu, 22 Jan 2015 11:30:08 +0000
-Message-ID: <2DC6992080CF3541B10F42EBF0B5C30342F6386F@SMExchange01.siebmeyer.org>
-Content-Language: de-DE
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Wed, 21 Jan 2015 10:45:28 -0500
+Message-ID: <20150121154528.GJ30245@csclub.uwaterloo.ca>
+References: <6773858.JgE1vlCdur@soho> <2621675.LcrfARJh6l@soho>
+ <ce8779a9a03f5c7fbe48cf43e334f44c.squirrel@xenomai.org>
+ <15627875.xOGqqJnifV@soho>
+ <20150121143737.GH30245@csclub.uwaterloo.ca>
+ <39c2587f04b5da62847e9606b5f88726.squirrel@xenomai.org>
+ <20150121152307.GI30245@csclub.uwaterloo.ca>
+ <2bd7a5437659ad8fbf5f4c5788bebd48.squirrel@xenomai.org>
 MIME-Version: 1.0
-Subject: [Xenomai] Corrupted files when using fwrite() or fprintf()
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2bd7a5437659ad8fbf5f4c5788bebd48.squirrel@xenomai.org>
+Subject: Re: [Xenomai] Compiling xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,64 +21,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello all Xenomai developers.
+On Wed, Jan 21, 2015 at 04:32:06PM +0100, Gilles Chanteperdrix wrote:
+> I am just trying to answer clearly your claim, and repeating what has been
+> exchanged on another mailing list (which you do not seem to read).
+> But the I-pipe patches are in the GNA download area for everyone to see. It
+> is all in the open. If you do not know whether the patch exists, simply look
+> in the download area before insinuating that the patch does not exist.
 
-We run Xenomai 2.6.3 with posix skin activated.
-In one thread with priority 0 - so it runs in secondary mode -=20
-we use file io with fopen, fwrite, fclose instructions.
+Well I did mention I hadn't checked lately.
 
-When writing a file via fwrite or fprintf we get a problem :
-Just one part (the first) of the file has been written. The rest of the=20
-file is missing although the fwrites/fprintfs have been executed.
-
-The sequence is like this:
-
-// Open file
-fopen();
-
-// Write the first part=20
-fwrite();
-
-// Switch the state machine to the next state to prepare the next part
-// to be written to the file.
-// So the system can do other things - other threads come up and so on
-
-// Write the second part
-fwrite()
-
-// Switch the state machine to the next state to prepare the next part
-// to be written to the file.
-// So the system can do other things - other threads come up and so on
-
-...
-
-// Finally close the file
-fclose();
-
-In this situation we get some kind of a timing issue:
-Only the first part of the file has been written - but the file is=20
-closed correctly.
-The statemachine works correctly so all the fwrites haben been executed
-but ony the first fwrite works on the filesytem.
-
-In another thread we use the same mechanism but everythings works there.
-
-When I debug the code everythings works.
-
-When I switch all the threads to linux everything works
-(of course without realtime) - the file is OK.
-
-When I insert a rt_task_sleep() after the fwrites everythings works if=20
-the delay time is big enough (>100ms).
-
-Switching all threads in our system to priority 0 (so that an RT thread=20
-cannot catch the hole CPU time and the system cannot write data to=20
-disk) does not change anything.
-
-Does anybody have similar problems?
-
-Best regards,
-Holger Krause.
+-- 
+Len Sorensen
 
