@@ -1,10 +1,16 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Thu, 22 Jan 2015 16:09:19 +0100
-Message-ID: <3022250.HiL0lpQ0bg@soho>
+Message-ID: <54C112F9.9000705@siemens.com>
+Date: Thu, 22 Jan 2015 16:10:49 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Xenomai-3 booting problems (2)
+References: <1537147.Wm9AbiuW5D@soho> <2296691.2JpS0rAJbA@soho>
+ <20150122114038.GE23461@hermes.click-hack.org> <4743020.6q5RsBy8Ia@soho>
+ <54C0F262.6010806@siemens.com> <20150122144930.GL30245@csclub.uwaterloo.ca>
+ <20150122145624.GF26731@hermes.click-hack.org> <54C1110C.7090803@siemens.com>
+ <20150122150631.GG26731@hermes.click-hack.org>
+In-Reply-To: <20150122150631.GG26731@hermes.click-hack.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai-3 creating debian packages
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,19 +19,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-SGkgYWdhaW4sCgphZnRlciBtYWRlIHRoZSBtb2RpZmljYXRpb25zIHByb3Bvc2VkIGJ5IEphbiBL
-aXN6a2EsIG5vdyBpdCBkb2Vzbid0IGJ1aWx0IGFuZCAKdGhlIG1lc3NhZ2UgaXM6CgpudmlkaWFm
-YjogdW5hYmxlIHRvIHNldHVwIE1UUlIKCkkgY291bGQgdHJ5IHRvIHRlc3QgaW4gYW5vdGhlciBo
-YXJkd2FyZSwgYnV0IHRvbW9ycm93LgoKUmVnYXJkcywKCkxlb3BvbGQKCi0tIAotLQpMaW51eCBV
-c2VyIDE1MjY5MiAgICAgR1BHOiAwNUY0QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQotLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkE6IEJlY2F1c2UgaXQgbWVzc2VzIHVwIHRoZSBv
-cmRlciBpbiB3aGljaCBwZW9wbGUgbm9ybWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkgaXMgdG9wLXBv
-c3Rpbmcgc3VjaCBhIGJhZCB0aGluZz8KQTogVG9wLXBvc3RpbmcuClE6IFdoYXQgaXMgdGhlIG1v
-c3QgYW5ub3lpbmcgdGhpbmcgaW4gZS1tYWlsPwotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0t
-LS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBz
-aWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogODE5IGJ5
-dGVzCkRlc2M6IFRoaXMgaXMgYSBkaWdpdGFsbHkgc2lnbmVkIG1lc3NhZ2UgcGFydC4KVVJMOiA8
-aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1
-MDEyMi8xMmE2N2FhMC9hdHRhY2htZW50LnNpZz4K
+On 2015-01-22 16:06, Gilles Chanteperdrix wrote:
+> On Thu, Jan 22, 2015 at 04:02:36PM +0100, Jan Kiszka wrote:
+>> On 2015-01-22 15:56, Gilles Chanteperdrix wrote:
+>>> On Thu, Jan 22, 2015 at 09:49:30AM -0500, Lennart Sorensen wrote:
+>>>> On Thu, Jan 22, 2015 at 01:51:46PM +0100, Jan Kiszka wrote:
+>>>>> See
+>>>>> http://git.xenomai.org/xenomai-jki.git/commit/?h=for-forge&id=5d104b1de84c8f4cbfb9d6b79cfaa633ef550e1c
+>>>>> for the fix. The bug was the improper variable use in the Kconfig
+>>>>> fragment. You only had to revert the whole commit as you were falling
+>>>>> back to the obsolete prepare-time patching then, which involved the script.
+>>>>
+>>>> What a handy change.  That should make multiple architectures in one
+>>>> source tree finally possible without merge conflicts in that file.
+>>>
+>>> Unfortunately not, if you want to work with the I-pipe git, you can
+>>> not run prepare-kernel.sh in that directory anyway, otherwise you
+>>> could end-up commiting the Xenomai fragments with the I-pipe kernel.
+>>
+>> You can, we are doing this for ages. You only need to clean up your repo
+>> from the additional changes Xenomai introduced (a hand full) before
+>> moving HEAD (unless those files aren't affected by the move).
+> 
+> Sorry, but I prefer my obsolete method, I do not have anything to
+> run before using git commands. For me, the source directory
+> should remain untouched, I do not want any noise when I run git
+> status.
+
+That's perfectly fine. We all have different working styles, and each
+has its pros and cons.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
+
