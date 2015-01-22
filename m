@@ -1,14 +1,13 @@
-Date: Tue, 27 Jan 2015 16:54:39 +0100 (CET)
-From: Huy Cong Vu <huy-cong.vu@wandercraft.eu>
-Message-ID: <383897695.12140.1422374079502.JavaMail.zimbra@wandercraft.eu>
-In-Reply-To: <20150127153903.GD16502@hermes.click-hack.org>
-References: <1942863149.11150.1422371568908.JavaMail.zimbra@wandercraft.eu>
- <20150127153903.GD16502@hermes.click-hack.org>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Thu, 22 Jan 2015 09:34:11 +0100
+Message-ID: <2769633.cTWk055Sma@soho>
+In-Reply-To: <20150122075429.GI16075@hermes.click-hack.org>
+References: <1537147.Wm9AbiuW5D@soho>
+ <20150122075429.GI16075@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Patch rtnet support Intel i217/i218 Ethernet
- Controller
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Xenomai-3 booting problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,71 +19,62 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-
-
------ Mail original -----
-> De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-> =C3=80: "Huy Cong Vu" <huy-cong.vu@wandercraft.eu>
-> Cc: xenomai@xenomai.org
-> Envoy=C3=A9: Mardi 27 Janvier 2015 16:39:03
-> Objet: Re: [Xenomai] Patch rtnet support Intel i217/i218 Ethernet Control=
-ler
-
-> On Tue, Jan 27, 2015 at 04:12:48PM +0100, Huy Cong Vu wrote:
->> Hello Xenomai group,
->> I recently run a test of rtnet on xenomai-3-next on my Intel NUC D54250W=
-YK with
->> the Intel I218V Ethernet Controller.
->> It is patched on linux 3.14.17. Here I attached the patch to make rtnet =
-work
->> with i217/i218 Intel family.
->> Also, I found out that in rtpacket module, the declaration of packet_pro=
-to_drv
->> lack of .device_count attribute, which makes the rtpacket & rtcap module=
-s
->> unable to loaded ( -EINVAL is returned), so I merge it in my patch too.
->> I test on my system and all the following command is now working:
->> modprobe rtnet
->> modprobe rt_e1000e
->> modprobe rtpacket
->> modprobe rtcap
->> rtifconfig rteth0 up
->> ifconfig rteth0 up
->> ifconfig rteth0-mac up
->> But if I used the rteth0 interface, I can't unload rt_e1000e.
->> Could you take a look and see if anything is wrong, and if you find it u=
-seful,
->> merge it in your git repository.
->> Best regards,
->=20
-> In Xenomai 3, you need to deconfigure the interface before you try
-> to unload it.
-
-If I tried to turn off rteth0 interface after using it, I still can't unloa=
-d rt_e1000e.
-For now, this work:=20
-modprobe rt_e1000e
-modprobe rtpacket
-rtifconfig rteth0 up
-rtifconfig rteth0 down
-rmmod rt_e1000e
-rmmod rtpacket
-
-This doesn't work:
-modprobe rt_e1000e
-modprobe rtpacket
-rtifconfig rteth0 up
-//Send datagram through rteth0 interface=20
-rtifconfig rteth0 down
-rmmod rt_e1000e
-
-Do I have to do anything special from application level to deconfigure rtet=
-h0 too?
->=20
-> --
-> =09=09=09=09=09    Gilles.
-
---=20
-Huy Cong
-Wandercraft SAS
-
+RWwgRGlqb3VzLCAyMiBkZSBnZW5lciBkZSAyMDE1LCBhIGxlcyAwODo1NDoyOSwgR2lsbGVzIENo
+YW50ZXBlcmRyaXggdmEgCmVzY3JpdXJlOgo+IE9uIFRodSwgSmFuIDIyLCAyMDE1IGF0IDA4OjQ3
+OjI0QU0gKzAxMDAsIExlb3BvbGQgUGFsb21vLUF2ZWxsYW5lZGEgd3JvdGU6Cj4gPiBIaSwKPiA+
+IAo+ID4gCj4gPiBJIGhhdmUgY29tcGlsaW5nIGEgQ29iYWx0IGtlcm5lbC4gSSBoYXZlIGZvbGxv
+d2VkIHRoZSB3ZWIgIndpa2lwcmVzcyIKPiA+IFsxXTstKSByZWNvbW1lbmRhdGlvbnMuIEhvd2V2
+ZXIsIG15IGJveCAoYSBub3JtYWwgZGVza3RvcCBjb21wdXRlciAtIERlbGwKPiA+IE9wdGlwbGV4
+IDcwMTAgLSkgZG9lc24ndCBib290LiBJdCB0aHJvd3MgYSBtZXNzYWdlIGxpa2U6Cj4gPiAuLi4u
+Cj4gPiB0aW1lciBkb2Vzbid0IHdvcmsgdGhyb3VnaCBpbnRlcnJ1cC1yZW1hcHBlZCBJTy1hcGlj
+Cj4gPiAKPiA+IC4uLgo+ID4gCj4gPiBlbmFibGluZyBub2FwaWMgaW4gdGhlIGJvb3Qgb3B0aW9u
+cyBJJ20gYWJsZSB0byBib290LiBCdXQsIEkgaGF2ZSBub3QgbWFrZQo+ID4gYW55IHRlc3QgYnkg
+bm93LiBTb21lIGludGVyZXN0aW5nIG1lc3NhZ2VzOgo+ID4gCj4gPiAkIGRtZXNnIHwgZ3JlcCAt
+aSB4ZW5vbWFpCj4gPiBbICAgIDAuMDAwMDAwXSBMaW51eCB2ZXJzaW9uIDMuMTYuMC14ZW5vbWFp
+LTMuMC4wIChyb290QHNvaG8pIChnY2MgdmVyc2lvbgo+ID4gNC45LjEgKERlYmlhbiA0LjkuMS0x
+OSkgKSAjMSBTTVAgV2VkIEphbiAyMSAxNjoyOTozNiBVVEMgMjAxNQo+ID4gWyAgICAwLjAwMDAw
+MF0gQ29tbWFuZCBsaW5lOiBCT09UX0lNQUdFPS9ib290L3ZtbGludXotMy4xNi4wLXhlbm9tYWkt
+My4wLjAKPiA+IHJvb3Q9VVVJRD0xNWNmYWM4Mi0xMTI3LTQyMWYtOWFlZC1lYWY0ODI0N2VkNGUg
+cm8gcXVpZXQgbm9hcGljCj4gPiBbICAgIDAuMDAwMDAwXSBLZXJuZWwgY29tbWFuZCBsaW5lOiBC
+T09UX0lNQUdFPS9ib290L3ZtbGludXotMy4xNi4wLQo+ID4geGVub21haS0zLjAuMCByb290PVVV
+SUQ9MTVjZmFjODItMTEyNy00MjFmLTlhZWQtZWFmNDgyNDdlZDRlIHJvIHF1aWV0Cj4gPiBub2Fw
+aWMgWyAgICAwLjcwNTA3MV0gW1hlbm9tYWldIHNjaGVkdWxpbmcgY2xhc3MgaWRsZSByZWdpc3Rl
+cmVkLgo+ID4gWyAgICAwLjcwNTA3Ml0gW1hlbm9tYWldIHNjaGVkdWxpbmcgY2xhc3MgcnQgcmVn
+aXN0ZXJlZC4KPiA+IFsgICAgMC43MDUwOTBdIFtYZW5vbWFpXSBkaXNhYmxpbmcgYXV0b21hdGlj
+IEMxRSBzdGF0ZSBwcm9tb3Rpb24gb24gSW50ZWwKPiA+IHByb2Nlc3Nvcgo+ID4gWyAgICAwLjcw
+NTEwNF0gW1hlbm9tYWldIFNNSS1lbmFibGVkIGNoaXBzZXQgZm91bmQsIGJ1dCBTTUkgd29ya2Fy
+b3VuZAo+ID4gZGlzYWJsZWQKPiA+IAo+ID4gICAgICAgICAgIChzZWUgeGVub21haS5zbWkgcGFy
+YW1ldGVyKS4gWW91IG1pZ2h0IGVuY291bnRlcgo+ID4gCj4gPiBbICAgIDAuNzA1Mjg0XSBJLXBp
+cGU6IGhlYWQgZG9tYWluIFhlbm9tYWkgcmVnaXN0ZXJlZC4KPiA+IFsgICAgMC43MTc5ODZdIFtY
+ZW5vbWFpXSBDb2JhbHQgdjMuMC1yYzIgKEV4YWN0IFplcm8pIFtERUJVR10KPiA+IFsgICAgMC44
+OTc3MjZdIHVzYiB1c2IxOiBNYW51ZmFjdHVyZXI6IExpbnV4IDMuMTYuMC14ZW5vbWFpLTMuMC4w
+IHhoY2lfaGNkCj4gPiBbICAgIDAuODk4NjE3XSB1c2IgdXNiMjogTWFudWZhY3R1cmVyOiBMaW51
+eCAzLjE2LjAteGVub21haS0zLjAuMCB4aGNpX2hjZAo+ID4gWyAgICAwLjkxNDExNF0gdXNiIHVz
+YjM6IE1hbnVmYWN0dXJlcjogTGludXggMy4xNi4wLXhlbm9tYWktMy4wLjAgZWhjaV9oY2QKPiA+
+IFsgICAgMC45MzAxMDldIHVzYiB1c2I0OiBNYW51ZmFjdHVyZXI6IExpbnV4IDMuMTYuMC14ZW5v
+bWFpLTMuMC4wIGVoY2lfaGNkCj4gPiAqKiogUlRuZXQgZm9yIFhlbm9tYWkgdjMuMC1yYzIgKioq
+Cj4gPiAKPiA+IAo+ID4gU28sIGNhbiBhdm9pZCB0byBwYXNzIHRoZSBub2FwaWMgcGFyYW1ldGVy
+IHRvIHRoZSBrZXJuZWwgdG8gYm9vdD8KPiAKPiBQbGVhc2UgcG9zdCB0aGUgZnVsbCBib290IGxv
+Z3MsIGFuZCB0aGUga2VybmVsIGNvbmZpZ3VyYXRpb24uIAoKQXR0YWNoZWQuCgoKPiBEb2VzIHRo
+ZQo+IGtlcm5lbCB3b3JrIHdpdGggZXhhY3RseSB0aGUgc2FtZSAuY29uZmlnIGJ1dCB3aXRob3V0
+IFhlbm9tYWk/IAoKSSBkb24ndCBrbm93LiBJdCdzIGEgc2ltaWxhciBrZXJuZWwgY29uZmlndXJh
+dGlvbiB0aGFuIGRlYmlhbiBzaGlwcyB3aXRoIApqZXNzaWUuCgo+IElzCj4gQ09ORklHX1NNUCBl
+bmFibGVkPyBCZWNhdXNlIGlmIENPTkZJR19TTVAgaXMgZW5hYmxlZCwgWGVub21haSB3aWxsCj4g
+bm90IHdvcmsgd2l0aG91dCBhbiBBUElDLgoKWWVzLCBDT05GSUdfU01QPXkgYW5kIENPTkZJR19Y
+ODZfSU9fQVBJQz15Cgo+IEFsc28sIHBsZWFzZSBkbyBub3QgY29tcGlsZSBSVG5ldCBpbiB0aGUg
+a2VybmVsLCBjb21waWxlIGl0IGFzIGEgbW9kdWxlLgoKaXQncyBhcyBtb2R1bGUuIEkgc2F3IHRo
+YXQgeW91IHNhaWQgdGhhdCBpdCBjb3VsZG4ndCBiZSBpbnRlZ3JhdGVkIGJlY2F1c2UgaXQgCmRv
+ZXNuJ3QgYm9vdC4KCkxlb3BvbGQKCi0tIAotLQpMaW51eCBVc2VyIDE1MjY5MiAgICAgR1BHOiAw
+NUY0QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tCkE6IEJlY2F1c2UgaXQgbWVzc2VzIHVwIHRoZSBvcmRlciBpbiB3aGljaCBwZW9wbGUg
+bm9ybWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkgaXMgdG9wLXBvc3Rpbmcgc3VjaCBhIGJhZCB0aGlu
+Zz8KQTogVG9wLXBvc3RpbmcuClE6IFdoYXQgaXMgdGhlIG1vc3QgYW5ub3lpbmcgdGhpbmcgaW4g
+ZS1tYWlsPwotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4
+dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBrZXJuLmxvZwpUeXBlOiB0ZXh0L3gt
+bG9nClNpemU6IDc0OTg0IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3
+dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1MDEyMi80NWMx
+NjUwNi9hdHRhY2htZW50LmJpbj4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0t
+LS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogY29uZmlnLXhl
+bm9tYWktMy4wLjAKVHlwZTogdGV4dC94LW1wc3ViClNpemU6IDE1NzYzNyBieXRlcwpEZXNjOiBu
+b3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9t
+YWkvYXR0YWNobWVudHMvMjAxNTAxMjIvNDVjMTY1MDYvYXR0YWNobWVudC0wMDAxLmJpbj4K
