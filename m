@@ -1,13 +1,13 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Mon, 26 Jan 2015 15:47:03 +0100
-Message-ID: <1511773.t4MVMy7lsq@soho>
-In-Reply-To: <54C648B7.8040105@xenomai.org>
-References: <129277905.Ag2XebZWbK@soho> <2052908.cWhQn5Pgch@soho>
- <54C648B7.8040105@xenomai.org>
+Message-ID: <54C0AD98.2080900@denx.de>
+Date: Thu, 22 Jan 2015 08:58:16 +0100
+From: Stefan Roese <sr@denx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Packaging Xenomai-3
+References: <1421852743-21535-1-git-send-email-sr@denx.de>
+ <20150121172006.GF16075@hermes.click-hack.org>
+In-Reply-To: <20150121172006.GF16075@hermes.click-hack.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] hal/arm: Add Zynq v3.14.17 patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,89 +16,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-RWwgRGlsbHVucywgMjYgZGUgZ2VuZXIgZGUgMjAxNSwgYSBsZXMgMTU6MDE6MjcsIFBoaWxpcHBl
-IEdlcnVtIHZhIGVzY3JpdXJlOgo+IE9uIDAxLzI2LzIwMTUgMDE6MzkgUE0sIExlb3BvbGQgUGFs
-b21vLUF2ZWxsYW5lZGEgd3JvdGU6Cj4gPiBNYXliZSBJJ20gd3JvbmcuIEJ1dCBhZnRlciByZWFk
-aW5nIHRoaXMgdGhyZWFkIEkgdW5kZXJzdG9vZCB0aGF0IHRvIGhhdmUgYQo+ID4ga2VybmVsIHdp
-dGggYm90aCBwYXRjaGVzIChpLXBpcGUgYW5kIHByZWVtcHRfcnQpIGFuZCwgSSB1bmRlcnN0YW5k
-LAo+ID4gWGVub21haS0zIHdpdGggdGhlIHR3byB2ZXJzaW9ucyBjb3VsZCBiZSBhIHZlcnkgaW50
-ZXJlc3Rpbmcgc3lzdGVtIHRvCj4gPiB3b3JrIG9uLgo+ID4gCj4gPiBGb3IgaW5zdGFuY2UsIEkn
-bSBpbiB0aGUgcm9ib3RpY3MgZmllbGQsIGFuZCBhZnRlciB0aGF0IG1haWxzIEkgdGhvdWdodAo+
-ID4gdGhhdCBpdCBjb3VsZCBiZSBhIGdvb2Qgc29sdXRpb24gdGhhdCBmaXQgdGhlIGNhc2VzIHdo
-ZXJlIHlvdSBoYXZlCj4gPiBzZXZlcmFsIGxvb3BzLCB3aXRoIHNldmVyYWwgcmF0ZXMgd2l0aCBk
-aWZmZXJlbnQgaW1wb3J0YW5jZS4KPiAKPiBZb3UgYXJlIG1pc3NpbmcgYW4gaW1wb3J0YW50IHBv
-aW50OiBYZW5vbWFpIDMgb3ZlciBNZXJjdXJ5IGlzIGFib3V0Cj4gcnVubmluZyBub24tUE9TSVgg
-UlRPUyBBUElzIG92ZXIgYSBuYXRpdmUga2VybmVsICh3aXRoIG9yIHdpdGhvdXQKPiBwcmVlbXB0
-LXJ0LCB0aGlzIGlzIG9ydGhvZ29uYWwgdG8gdGhlIGlzc3VlKS4KCnRoaXMgaXMgYW4gaW50ZXJl
-c3RpbmcgcG9pbnQuCgpbLi4uXQoKPiAKPiBUaGVyZWZvcmUsIHlvdXIgcHJvcG9zYWwgbWFpbmx5
-IGFkZHJlc3NlcyB0aGUgaXNzdWUgb2YgcnVubmluZyBhIG1peGVkCj4gY29uZmlndXJhdGlvbiwg
-d2l0aCBzb21lIE1lcmN1cnktYmFzZWQgYXBwbGljYXRpb24ocykgcG9ydGVkIGZyb20gYQo+IHRy
-YWRpdGlvbmFsIFJUT1MgdG8gbGludXgsIGFuZCBvdGhlciBhcHBsaWNhdGlvbihzKSBydW5uaW5n
-IG92ZXIgQ29iYWx0Cj4gaW4gZHVhbCBrZXJuZWwgbW9kZSwgY29uY3VycmVudGx5IG9uIHRoZSBz
-YW1lIHN5c3RlbS4gUGVvcGxlIHdobyBqdXN0Cj4gd2FudCB0byBydW4gUE9TSVggYXBwcyBvdmVy
-IGEgbmF0aXZlIGtlcm5lbCBkb24ndCBuZWVkIFhlbm9tYWkgMy4gSW4KPiBzaG9ydCwgdGhlIHBv
-dGVudGlhbCB1c2VyIGJhc2UgZm9yIHRoZSBtaXhlZCBzZXR1cCBhcyBkZXNjcmliZWQgaXMgcXVp
-dGUKPiBzbWFsbC4KPiAKPiBXaXRoIHRoYXQgaW4gbWluZCwgdXNpbmcgYSBtaXhlZCBpbnN0YWxs
-YXRpb24gcm9vdCBiZXR3ZWVuIE1lcmN1cnkgYW5kCj4gQ29iYWx0IGFsc28gbWVhbnMgdGhhdCBh
-bnkgMi54IE1ha2VmaWxlIGN1cnJlbnRseSB1c2luZyAieGVuby1jb25maWciCj4gd291bGQgaGF2
-ZSB0byBiZSBmaXhlZCB1cCwgdG8gcmVmbGVjdCB0aGUgbmV3IHN1ZmZpeGVkIHBhdGggb3IgY2Fs
-bAo+IHBrZy1jb25maWcgdG8gcmV0cmlldmUgaXQsIHdoYXRldmVyIGZpdHMuIFdlIGhhdmUgYmVl
-biBhZHZlcnRpc2luZwo+IHhlbm8tY29uZmlnIHNpbmNlIHllYXJzLCBhcyBhIG1lYW4gdG8gc3Rh
-eSBhd2F5IGZyb20gaW5zdGFsbGF0aW9uCj4gc3BlY2lmaWNzLCBzbyB0aGlzIHdvdWxkIGJlIHF1
-aXRlIHdyb25nIHRvIGVuZCB1cCBhc2tpbmcgcGVvcGxlIHRvIHJ1bgo+IHhlbm8tY29uZmlnLWNv
-YmFsdCBvciB4ZW5vLWNvbmZpZy1tZXJjdXJ5LgoKeGVuby1jb25maWcgLS13aXRoLWNvcmU9Y29i
-YWx0L21lcmN1cnkKCmNvdWxkIGJlIGEgc29sdXRpb24uIEJ1dCwgc29tZSBkZWZhdWx0IGNvcmUg
-c2hvdWxkIGJlIGRlZmluZWQuCgo+IEFzIEkgbWVudGlvbmVkIGFscmVhZHksIHdlIHdvbid0IGdv
-IGZvciBzaW5nbGUgYmluYXJpZXMgcnVubmluZyBvdmVyCj4gYm90aCBjb3JlcywgdGhlIHBlcmZv
-cm1hbmNlIGFuZCBtYWludGVuYW5jZSBpbXBhY3Qgd291bGQgYmUgYSBuaWdodG1hcmUuCgpZZXMs
-IHR3byB0eXBlcyBvZiBiaW5hcmllcy4gWW91ciBhcmd1bWVudGF0aW9uIHdhcyBjbGVhci4KCj4g
-U2luY2UgYWxsIG91ciBidWlsZCBzeXN0ZW0gaXMgYXV0b2NvbmZpc2NhdGVkLCB5b3UgY2FuIHBp
-Y2sgYW55IHJvb3QKPiBwcmVmaXggdGhhdCBtYWtlcyBzZW5zZSwgYW5kIGV2ZW4gZmluZSB0dW5l
-IGV2ZXJ5IGluc3RhbGxhdGlvbiBkaXJlY3RvcnkKPiBhbHJlYWR5IChsaWIsIGluY2x1ZGUsIGJp
-biBldGMpLiBUaGlzIG1lYW5zIHRoYXQgaGF2aW5nIG11bHRpcGxlIHJvb3RzCj4gaXMgZGVmaW5p
-dGVseSBhIG5vbi1pc3N1ZSwgYW5kIGRvZXMgbm90IGludHJvZHVjZSBhbnkgbGltaXRhdGlvbi4K
-PiAKPiBJIGRvbid0IGJ1eSB0aGUgInN1ZmZpeCB0byBkaXNhbWJpZ3VhdGUiIGFyZ3VtZW50IGVp
-dGhlcjoKPiAvdXNyL2xpYi9saWJ2eHdvcmtzLW0uc28gaXMgbm90IGNsZWFyZXIgdGhhbgo+IC91
-c3IvbGliL21lcmN1cnkvbGlidnh3b3Jrcy5zbywgb3IKPiAvdXNyL3hlbm9tYWkvbWVyY3VyeS9s
-aWIvbGlidnh3b3Jrcy5zby4gQW5kIHRoaXMgZG9lcyBub3QgZXZlbiB3b3JrCj4gYmV0dGVyIHdp
-dGggL3Vzci9saWIvbGlidnh3b3Jrcy1tZXJjdXJ5LnNvLgo+IAo+IEJlc2lkZXMsIHRoZXJlIGlz
-IG5vIHNob3J0YWdlIG9mIHdheXMgdG8gZmluZCBvdXQgd2hpY2ggWGVub21haQo+IGNvbmZpZ3Vy
-YXRpb24geW91ciBidWlsZCBzeXN0ZW0gYW5kIGV2ZW4geW91ciBhcHBsaWNhdGlvbiBpcyBjdXJy
-ZW50bHkKPiBkZXBlbmRpbmcgb24uIAoKd2VsbCwgSSB1c3VhbGx5IGFzayB0byBsZGQuIFNvLCBp
-ZiBJIGhhdmUgYSBiaW5hcnkgYW5kIEkgcnVuOgoKbGRkIC91c3IvbG9jYWwvbGliL2xpYmNwcDRl
-Yy5zbwoJbGludXgtdmRzby5zby4xICgweDAwMDA3ZmZmZWUwZGMwMDApCglsaWJzb2VtcnQuc28u
-MS4zLjAgPT4gL3Vzci9sb2NhbC9saWIvbGlic29lbXJ0LnNvLjEuMy4wIAooMHgwMDAwN2ZlZWEy
-MzUyMDAwKQoJbGlicnQuc28uMSA9PiAvbGliL3g4Nl82NC1saW51eC1nbnUvbGlicnQuc28uMSAo
-MHgwMDAwN2ZlZWEyMTRhMDAwKQoJbGlibmF0aXZlLnNvLjMgPT4gL3Vzci9saWIvbGlibmF0aXZl
-LnNvLjMgKDB4MDAwMDdmZWVhMWY0MDAwMCkKCWxpYnhlbm9tYWkuc28uMCA9PiAvdXNyL2xpYi9s
-aWJ4ZW5vbWFpLnNvLjAgKDB4MDAwMDdmZWVhMWQzOTAwMCkKCWxpYnB0aHJlYWQuc28uMCA9PiAv
-bGliL3g4Nl82NC1saW51eC1nbnUvbGlicHRocmVhZC5zby4wIAooMHgwMDAwN2ZlZWExYjFjMDAw
-KQoJbGlicHVnaXhtbC5zby4xID0+IC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUvbGlicHVnaXht
-bC5zby4xIAooMHgwMDAwN2ZlZWExOGU3MDAwKQoJbGlicnRkbS5zby4xID0+IC91c3IvbGliL2xp
-YnJ0ZG0uc28uMSAoMHgwMDAwN2ZlZWExNmU1MDAwKQoKZm9yIGV4YW1wbGUsIGlmIEkgaGFkIGxp
-YnZ4d29ya3MtY29iYWx0IHRoZXJlLCBJIGtuZXcgdGhhdCBteSBiaW5hcnkgd2FzIGJ1aWx0IAph
-Z2FpbnN0IHhlbm9tYWkgd2l0aCBjb2JhbHQuCgoKPiBUaGUgb25seSByZXF1aXJlbWVudCBpcyB0
-byBxdWVyeSB0aGUgcmlnaHQgeGVuby1jb25maWcKPiBzY3JpcHQgb3IgYXBwbGljYXRpb24sIHdo
-aWNoIG1heSBiZSBhcyBzaW1wbGUgYXMgc2V0dGluZyB0aGUgUEFUSAo+IHZhcmlhYmxlIGFwcHJv
-cHJpYXRlbHkgZm9yIHlvdXIgc2V0dXA6Cj4gCj4gJCB4ZW5vLWNvbmZpZyAtLWNvcmUKPiBtZXJj
-dXJ5Cj4gJCB4ZW5vLWNvbmZpZyAtLWNmbGFncwoKWy4uLl0KClllcywgSSBsaWtlZC4gSSB0aG91
-Z2h0IHRoYXQgaXQgd2FzIGEgZ29vZCBzb2x1dGlvbiBidXQgSSBkb24ndCBrbm93IGlmIGl0J3Mg
-CmZocywgaWYgZm9sbG93IGRlYmlhbi9mZWRvcmEgcG9saWNpZXMgZm9yIGluc3RhbmNlLiBUaGF0
-J3MgYWxsLiBJdCB3YXMgbXkgCmZpcnN0IGlkZWEgdG8gcHJvcG9zZSB5b3UgYnV0IEkgYXNrZWQg
-YW5kIHRvIHB1dCBsaWJyYXJpZXMgaW4gcGxhY2VzIG5vbi0Kc3RhbmRhcmRzIGlzbid0IGEgZ29v
-ZCBpZGVhLiBJJ20gaW52ZXN0aWdhdGluZyBpdC4gCgpCdXQsIGZvciBpbnN0YW5jZSBpbiBkZWJp
-YW4gbWVudG9ycyBpcmMgdGhleSBmb3VuZCBpdCAiU291bmRzIHN1c3BpY2lvdXMiCgpCZXN0IHJl
-Z2FyZHMsCgpMZW9wb2xkCgotLSAKLS0KTGludXggVXNlciAxNTI2OTIgICAgIEdQRzogMDVGNEE3
-QTk0OUEyRDlBQQpDYXRhbG9uaWEKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LQpBOiBCZWNhdXNlIGl0IG1lc3NlcyB1cCB0aGUgb3JkZXIgaW4gd2hpY2ggcGVvcGxlIG5vcm1h
-bGx5IHJlYWQgdGV4dC4KUTogV2h5IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBiYWQgdGhpbmc/CkE6
-IFRvcC1wb3N0aW5nLgpROiBXaGF0IGlzIHRoZSBtb3N0IGFubm95aW5nIHRoaW5nIGluIGUtbWFp
-bD8KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0
-YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNh
-dGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDgxOSBieXRlcwpEZXNjOiBUaGlzIGlzIGEgZGlnaXRh
-bGx5IHNpZ25lZCBtZXNzYWdlIHBhcnQuClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlw
-ZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTAxMjYvMDI2OTNlNTcvYXR0YWNobWVudC5z
-aWc+Cg==
+On 21.01.2015 18:20, Gilles Chanteperdrix wrote:
+> On Wed, Jan 21, 2015 at 04:05:43PM +0100, Stefan Roese wrote:
+>> Xilinx Zynq is already supported in the mainline Xenomai git repository.
+>> This patch adds support for the v3.14.17 Linux Kernel with the latest
+>> arm-6 i-pipe patch additionally to the already present v3.5 and v3.8
+>> support.
+>
+> It would be nice if Zynq support could be integrated into the
+> mainline I-pipe git, is Zynq support still experimental, do people
+> still need to use a fork ?
+
+At least for v3.14 it might make sense. The Xilinx git repository has 
+quite a lot of patches on top of the kernel.org releases (e.g. v3.14). 
+For even newer kernel versions this is most likely not necessary.
+
+>> Signed-off-by: Stefan Roese <sr@denx.de>
+>> ---
+>> Please note that the arm-6 patch that is referenced in the README
+>
+> One (the only?) interest of -pre and -post patches is to be able to
+> update the I-pipe patch without updating the pre and post patches.
+> So, I believe the README should not mention a particular version of
+> the I-pipe patch. I would rather say: apply
+> ipipe-core-3.1.4.17-arm-*.patch
+
+I was just trying to make things clear here. And also following the 
+other examples in the README. I can surely send a v2 patch with your 
+recommendation to use the ipipe-core-3.1.4.17-arm-*.patch.
+
+> Maybe you could say that it has been tested with that version, so
+> that people realize that it may be broken if they use a later I-pipe
+> release, but not mention this particular version in the README.
+
+Okay. I'll send a v2 later today.
+
+> Otherwise, looking at the patches themselves: the pre patch reverts
+> smp.c and git.c to the mainline version, and the post patch does not
+> update them. It means you revert the changes made to these files by
+> the fork you use. Is it OK for you ?
+
+Yes. This is similar to the v3.8 pre and post patches.
+
+Thanks,
+Stefan
+
+
