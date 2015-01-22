@@ -1,14 +1,16 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Thu, 22 Jan 2015 12:39:10 +0100
-Message-ID: <2296691.2JpS0rAJbA@soho>
-In-Reply-To: <20150122113105.GB23461@hermes.click-hack.org>
-References: <1537147.Wm9AbiuW5D@soho> <1724720.ZWD9XnFxZe@soho>
+Date: Thu, 22 Jan 2015 12:39:32 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150122113932.GD23461@hermes.click-hack.org>
+References: <1537147.Wm9AbiuW5D@soho> <5878976.hoeVIdWPhU@soho>
+ <20150122104813.GA23461@hermes.click-hack.org>
+ <1724720.ZWD9XnFxZe@soho>
  <20150122113105.GB23461@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20150122113105.GB23461@hermes.click-hack.org>
 Subject: Re: [Xenomai] Xenomai-3 creating debian packages (was: Re:
-	Xenomai-3 booting problems)
+ Xenomai-3 booting problems)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,50 +19,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
 Cc: xenomai@xenomai.org
 
-RWwgRGlqb3VzLCAyMiBkZSBnZW5lciBkZSAyMDE1LCBhIGxlcyAxMjozMTowNSwgR2lsbGVzIENo
-YW50ZXBlcmRyaXggdmEgCmVzY3JpdXJlOgo+IE9uIFRodSwgSmFuIDIyLCAyMDE1IGF0IDEyOjE3
-OjE1UE0gKzAxMDAsIExlb3BvbGQgUGFsb21vLUF2ZWxsYW5lZGEgd3JvdGU6Cj4gPiBJIGhhdmUg
-cmVuYW1lZCB0aGUgc3ViamVjdCBhY2NvcmRpbmcgd2l0aCB0aGUgdGhlbWUuCj4gPiAKPiA+IEVs
-IERpam91cywgMjIgZGUgZ2VuZXIgZGUgMjAxNSwgYSBsZXMgMTE6NDg6MTMsIEdpbGxlcyBDaGFu
-dGVwZXJkcml4IHZhCj4gPiAKPiA+IGVzY3JpdXJlOgo+ID4gPiA+ID4gV2VsbCwgdGhlIGZhY3Qg
-dGhhdCB0aGUgY29tcGlsYXRpb24gZXJyb3IgaGFwcGVucyB3aGVuIHRyeWluZyB0bwo+ID4gPiA+
-ID4gY29tcGlsZSBhIFhlbm9tYWkgZmlsZSB3b3VsZCBzZWVtIHRvIGluZGljYXRlIHRoYXQgcHJl
-cGFyZS1rZXJuZWwuc2gKPiA+ID4gPiA+IGhhcyBwdXQgdGhlIHdyb25nIGxpbmsgaW50byBpbml0
-L0tjb25maWcuCj4gPiA+ID4gPiAKPiA+ID4gPiA+IFlvdSBwYXNzIC0tYXJjaD14ODYgdG8gcHJl
-cGFyZS1rZXJuZWwuc2gsIHJpZ2h0LCBub3QgLS1hcmNoPXg4Nl82NCA/Cj4gPiA+ID4gCj4gPiA+
-ID4geWVzLCBJIGhhdmUgdHJpZWQgYm90aCwgYnV0IEkgcHV0IC0tYXJjaD14ODYgb3IgdGhlIGRl
-ZmF1bHQgb3B0aW9uIGFzCj4gPiA+ID4gSQo+ID4gPiA+IHNhaWQgaXQgaW4gbXkgZW1haWwgZnJv
-bSB5ZXN0ZXJkYXkgKCA6LVApCj4gPiA+IAo+ID4gPiBXZWxsLCBtYXliZSB0aGUgZGVmYXVsdCBv
-cHRpb24gZG9lcyBub3Qgd29yaywgc28gcGxlYXNlIHRyeQo+ID4gPiBzcGVjaWZ5aW5nIC0tYXJj
-aD14ODYuIFRoZSBlcnJvciB5b3UgaGF2ZSBpcyBub3QgaW4gdGhlIGNvbXBpbGVkCj4gPiA+IGZp
-bGVzLCBidXQgaW4gdGhlIEtjb25maWcgZmlsZXMuIFNvLCB0aGUgZmFjdCB0aGF0IHlvdSBjYW4g
-Y29tcGlsZQo+ID4gPiBkb2VzIG5vdCByZWFsbHkgcHJvdmUgdGhhdCBwcmVwYXJlLWtlcm5lbC5z
-aCBkaWQgbm90IGZhaWwuCj4gPiAKPiA+IE9rLCBmcm9tIGEgY2xlYW4gc291cmNlcyBJIGhhdmUg
-cnVuIGZyb20gdGhlIGxpbnV4IHRyZWUgc291cmNlczoKPiA+IAo+ID4gJCAuLi94ZW5vbWFpLTMu
-Z2l0L3NjcmlwdHMvcHJlcGFyZS1rZXJuZWwuc2ggLS1saW51eD0uIC0tCj4gPiBpcGlwZT0uLi94
-ZW5vbWFpLTMuZ2l0L2tlcm5lbC9jb2JhbHQvYXJjaC94ODYvcGF0Y2hlcy9pcGlwZS1jb3JlLTMu
-MTYtCj4gPiB4ODYtMS5wYXRjaCAtLWFyY2g9eDg2Cj4gPiAKPiA+ID4gTm93LCBwcmVwYXJlLWtl
-cm5lbC5zaCBhZGRzIHRoZSBzY3JpcHRzL0tjb25maWcuZnJhZyBmaWxlIHRvCj4gPiAKPiA+ID4g
-aW5pdC9LY29uZmlnLiBLY29uZmlnLmZyYWcgY29udGFpbnM6Cj4gPiBJIGRvbid0IHVuZGVyc3Rh
-bmQgdGhhdCBzZW50ZW5jZS4gWWVzLCB0aGUgIEtjb25maWcuZnJhZyBub3csIGNvbnRhaW5zCj4g
-PiB0aGlzOgo+ID4gCj4gPiBzb3VyY2UgImFyY2gvJEFSQ0gveGVub21haS9LY29uZmlnIgo+IAo+
-IEFoIE9LLiBDb3VsZCB5b3UgdHJ5IHRvIHJldmVydCB0aGF0IGNvbW1pdCA/Cj4gCj4gaHR0cDov
-L2dpdC54ZW5vbWFpLm9yZy94ZW5vbWFpLTMuZ2l0L2NvbW1pdC9zY3JpcHRzL0tjb25maWcuZnJh
-Zz9oPW5leHQmaWQ9Mgo+IDZjYzY0MzEzZTJlNjk1YWMyMjdlNWEwMjk5MmM1ZmU3MmRmMmU1ZgoK
-R2lsbGVzLCBJIGRpZCBpdC4gSSBleHBsYWluZWQgaXQgYmVmb3JlLiBBcyBJIGp1c3QgcnVuIHRo
-ZSBzY3JpcHQsIEkgZG9uJ3QgcnVuIAphbnkgYXV0b2NvbmYsIHNvLCBJIHRoZW4gaGF2ZSB0aGlz
-IHBhcnQgYXMgQExJTlVYX0FSQ0hAIHNvIGl0IGRvZXNuJ3Qgd29yay4KCnByZXBhcmUta2VybmVs
-IHNjcmlwdCBkb2Vzbid0IHRvdWNoIChzdWJzdGl0dXRlKSB0aGF0LgoKTGVvcG9sZAoKLS0gCi0t
-CkxpbnV4IFVzZXIgMTUyNjkyICAgICBHUEc6IDA1RjRBN0E5NDlBMkQ5QUEKQ2F0YWxvbmlhCi0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KQTogQmVjYXVzZSBpdCBtZXNzZXMg
-dXAgdGhlIG9yZGVyIGluIHdoaWNoIHBlb3BsZSBub3JtYWxseSByZWFkIHRleHQuClE6IFdoeSBp
-cyB0b3AtcG9zdGluZyBzdWNoIGEgYmFkIHRoaW5nPwpBOiBUb3AtcG9zdGluZy4KUTogV2hhdCBp
-cyB0aGUgbW9zdCBhbm5veWluZyB0aGluZyBpbiBlLW1haWw/Ci0tLS0tLS0tLS0tLS0tIG5leHQg
-cGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4u
-Ck5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXpl
-OiA4MTkgYnl0ZXMKRGVzYzogVGhpcyBpcyBhIGRpZ2l0YWxseSBzaWduZWQgbWVzc2FnZSBwYXJ0
-LgpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1l
-bnRzLzIwMTUwMTIyLzVmMTRmMWQxL2F0dGFjaG1lbnQuc2lnPgo=
+On Thu, Jan 22, 2015 at 12:31:05PM +0100, Gilles Chanteperdrix wrote:
+> On Thu, Jan 22, 2015 at 12:17:15PM +0100, Leopold Palomo-Avellaneda wrote:
+> > I have renamed the subject according with the theme.
+> > 
+> > El Dijous, 22 de gener de 2015, a les 11:48:13, Gilles Chanteperdrix va 
+> > escriure:
+> > > > > 
+> > > > > Well, the fact that the compilation error happens when trying to
+> > > > > compile a Xenomai file would seem to indicate that prepare-kernel.sh
+> > > > > has put the wrong link into init/Kconfig.
+> > > > > 
+> > > > > You pass --arch=x86 to prepare-kernel.sh, right, not --arch=x86_64 ?
+> > > > 
+> > > > yes, I have tried both, but I put --arch=x86 or the default option as I
+> > > > said it in my email from yesterday ( :-P)
+> > > 
+> > > Well, maybe the default option does not work, so please try
+> > > specifying --arch=x86. The error you have is not in the compiled
+> > > files, but in the Kconfig files. So, the fact that you can compile
+> > > does not really prove that prepare-kernel.sh did not fail.
+> > 
+> > Ok, from a clean sources I have run from the linux tree sources:
+> > 
+> > $ ../xenomai-3.git/scripts/prepare-kernel.sh --linux=. --
+> > ipipe=../xenomai-3.git/kernel/cobalt/arch/x86/patches/ipipe-core-3.16-
+> > x86-1.patch --arch=x86 
+> >  
+> > > Now, prepare-kernel.sh adds the scripts/Kconfig.frag file to
+> > > init/Kconfig. Kconfig.frag contains:
+> > 
+> > I don't understand that sentence. Yes, the  Kconfig.frag now, contains this:
+> > 
+> > source "arch/$ARCH/xenomai/Kconfig"
+> 
+> Ah OK. Could you try to revert that commit ?
+> 
+> http://git.xenomai.org/xenomai-3.git/commit/scripts/Kconfig.frag?h=next&id=26cc64313e2e695ac227e5a02992c5fe72df2e5f
+
+You need to revert the whole commit, not just the change in
+Kconfig.frag. The easy way to do this is to go in Xenomai git tree
+and type:
+
+git revert 26cc64313e2e695ac227e5a02992c5fe72df2e5f
+
+Of course, you need to re-run prepare-kernel.sh after that.
+
+-- 
+					    Gilles.
+
