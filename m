@@ -1,18 +1,16 @@
-Message-ID: <54BFCE15.5080805@xenomai.org>
-Date: Wed, 21 Jan 2015 17:04:37 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Thu, 22 Jan 2015 14:58:40 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150122135840.GC26731@hermes.click-hack.org>
+References: <1537147.Wm9AbiuW5D@soho> <2296691.2JpS0rAJbA@soho>
+ <20150122114038.GE23461@hermes.click-hack.org>
+ <4743020.6q5RsBy8Ia@soho> <54C0F262.6010806@siemens.com>
+ <20150122134400.GA26731@hermes.click-hack.org>
+ <54C10043.2060608@siemens.com>
 MIME-Version: 1.0
-References: <6773858.JgE1vlCdur@soho> <2621675.LcrfARJh6l@soho>
- <ce8779a9a03f5c7fbe48cf43e334f44c.squirrel@xenomai.org>
- <15627875.xOGqqJnifV@soho> <20150121143737.GH30245@csclub.uwaterloo.ca>
- <39c2587f04b5da62847e9606b5f88726.squirrel@xenomai.org>
- <20150121152307.GI30245@csclub.uwaterloo.ca>
- <2bd7a5437659ad8fbf5f4c5788bebd48.squirrel@xenomai.org>
- <20150121154528.GJ30245@csclub.uwaterloo.ca>
-In-Reply-To: <20150121154528.GJ30245@csclub.uwaterloo.ca>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Compiling xenomai-3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <54C10043.2060608@siemens.com>
+Subject: Re: [Xenomai] Xenomai-3 creating debian packages
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,28 +19,103 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-On 01/21/2015 04:45 PM, Lennart Sorensen wrote:
-> On Wed, Jan 21, 2015 at 04:32:06PM +0100, Gilles Chanteperdrix wrote:
->> I am just trying to answer clearly your claim, and repeating what has been
->> exchanged on another mailing list (which you do not seem to read).
->> But the I-pipe patches are in the GNA download area for everyone to see. It
->> is all in the open. If you do not know whether the patch exists, simply look
->> in the download area before insinuating that the patch does not exist.
+On Thu, Jan 22, 2015 at 02:50:59PM +0100, Jan Kiszka wrote:
+> On 2015-01-22 14:44, Gilles Chanteperdrix wrote:
+> > On Thu, Jan 22, 2015 at 01:51:46PM +0100, Jan Kiszka wrote:
+> >> On 2015-01-22 12:59, Leopold Palomo-Avellaneda wrote:
+> >>> El Dijous, 22 de gener de 2015, a les 12:40:38, Gilles Chanteperdrix va 
+> >>> escriure:
+> >>>> On Thu, Jan 22, 2015 at 12:39:10PM +0100, Leopold Palomo-Avellaneda wrote:
+> >>>>> El Dijous, 22 de gener de 2015, a les 12:31:05, Gilles Chanteperdrix va
+> >>>>>
+> >>>>> escriure:
+> >>>>>> On Thu, Jan 22, 2015 at 12:17:15PM +0100, Leopold Palomo-Avellaneda 
+> >>> wrote:
+> >>>>>>> I have renamed the subject according with the theme.
+> >>>>>>>
+> >>>>>>> El Dijous, 22 de gener de 2015, a les 11:48:13, Gilles Chanteperdrix
+> >>>>>>> va
+> >>>>>>>
+> >>>>>>> escriure:
+> >>>>>>>>>> Well, the fact that the compilation error happens when trying to
+> >>>>>>>>>> compile a Xenomai file would seem to indicate that
+> >>>>>>>>>> prepare-kernel.sh
+> >>>>>>>>>> has put the wrong link into init/Kconfig.
+> >>>>>>>>>>
+> >>>>>>>>>> You pass --arch=x86 to prepare-kernel.sh, right, not
+> >>>>>>>>>> --arch=x86_64 ?
+> >>>>>>>>>
+> >>>>>>>>> yes, I have tried both, but I put --arch=x86 or the default option
+> >>>>>>>>> as
+> >>>>>>>>> I
+> >>>>>>>>> said it in my email from yesterday ( :-P)
+> >>>>>>>>
+> >>>>>>>> Well, maybe the default option does not work, so please try
+> >>>>>>>> specifying --arch=x86. The error you have is not in the compiled
+> >>>>>>>> files, but in the Kconfig files. So, the fact that you can compile
+> >>>>>>>> does not really prove that prepare-kernel.sh did not fail.
+> >>>>>>>
+> >>>>>>> Ok, from a clean sources I have run from the linux tree sources:
+> >>>>>>>
+> >>>>>>> $ ../xenomai-3.git/scripts/prepare-kernel.sh --linux=. --
+> >>>>>>> ipipe=../xenomai-3.git/kernel/cobalt/arch/x86/patches/ipipe-core-3.16-
+> >>>>>>> x86-1.patch --arch=x86
+> >>>>>>>
+> >>>>>>>> Now, prepare-kernel.sh adds the scripts/Kconfig.frag file to
+> >>>>>>>
+> >>>>>>>> init/Kconfig. Kconfig.frag contains:
+> >>>>>>> I don't understand that sentence. Yes, the  Kconfig.frag now, contains
+> >>>>>>> this:
+> >>>>>>>
+> >>>>>>> source "arch/$ARCH/xenomai/Kconfig"
+> >>>>>>
+> >>>>>> Ah OK. Could you try to revert that commit ?
+> >>>>>>
+> >>>>>> http://git.xenomai.org/xenomai-3.git/commit/scripts/Kconfig.frag?h=next&
+> >>>>>> id=2 6cc64313e2e695ac227e5a02992c5fe72df2e5f
+> >>>>>
+> >>>>> Gilles, I did it. I explained it before. As I just run the script, I don't
+> >>>>> run any autoconf, so, I then have this part as @LINUX_ARCH@ so it doesn't
+> >>>>> work.
+> >>>>>
+> >>>>> prepare-kernel script doesn't touch (substitute) that.
+> >>>>
+> >>>> prepare-kernel.sh before that commit substitutes @LINUX_ARCH@. You
+> >>>> just need to revert the whole commit.
+> >>>
+> >>> Ok, the whole commit touch also the prepare-kernel script. I have tested and 
+> >>> now, I got in linux-tree/init/Kconfig:
+> >>>
+> >>> if XENOMAI
+> >>> source "arch/x86/xenomai/Kconfig"
+> >>> endif
+> >>>
+> >>> so, I'm sorry Jan, but I think that at least in debian platforms it wasn't a 
+> >>> good change.
+> >>
+> >> See
+> >> http://git.xenomai.org/xenomai-jki.git/commit/?h=for-forge&id=5d104b1de84c8f4cbfb9d6b79cfaa633ef550e1c
+> >> for the fix. The bug was the improper variable use in the Kconfig
+> >> fragment. You only had to revert the whole commit as you were falling
+> >> back to the obsolete prepare-time patching then, which involved the script.
+> > 
+> > I do not see what is so obsolete about it. As long as patches are
+> > provided separately for each architecture, the prepare-kernel script
+> > has to know the architecture anyway.
 > 
-> Well I did mention I hadn't checked lately.
-> 
+> The reason is given in the original patch: it allows merging all patches
+> and preparation into a single source tree. There is no technical need to
+> patch the arch in anymore.
 
-That's ok. C'mon guys, please relax a bit. I'm the one who sends the
-patches to the download area, and as a matter of fact, I'm not
-announcing them. So I'll announce them on this mailing list from now on,
-which should help.
-
-We have x3 -rc3 pending, some work remains to release it. Let's use our
-time efficiently.
+Providing separate patches for architectures has a huge advantage:
+if you need to release patch because one bug was fixed for one
+architecture, you only need to release the patch for this
+architecture. Besides, most Xenomai users (as opposed to developers)
+use one architecture at a time.
 
 -- 
-Philippe.
+					    Gilles.
 
