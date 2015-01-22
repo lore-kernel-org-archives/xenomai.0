@@ -1,15 +1,12 @@
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Thu, 22 Jan 2015 09:36:08 +0100
+Message-ID: <6586204.rkkvQf5G2W@soho>
+In-Reply-To: <54C0AEDE.8000909@siemens.com>
+References: <1537147.Wm9AbiuW5D@soho> <54C0AEDE.8000909@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <20150129110253.GB2698@hermes.click-hack.org>
-References: <CAHH_qdB0SL01DFidmSQ96YSOoGxpuNLTWoO87K-q6mEA-fM-Rg@mail.gmail.com>
- <20150129104650.GA2698@hermes.click-hack.org>
- <20150129110253.GB2698@hermes.click-hack.org>
-Date: Thu, 29 Jan 2015 12:45:27 +0100
-Message-ID: <CAHH_qdCPjyHO63YGBOixmAj2rkADQR7QTebC-UFh5oCXFCh2Lg@mail.gmail.com>
-From: Gautier HAOUY <gautier.haouy@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] imx28 linux 3.10.32 + ipipe v7 + GPIO IRQ machine
-	freeze
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Xenomai-3 booting problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,52 +15,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: xenomai@xenomai.org
 
-2015-01-29 12:02 GMT+01:00 Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org>:
-
-> On Thu, Jan 29, 2015 at 11:46:50AM +0100, Gilles Chanteperdrix wrote:
-> > On Thu, Jan 29, 2015 at 09:46:13AM +0100, Gautier HAOUY wrote:
-> > > Hello everyone,
-> > >
-> > > I am kindly requesting your help today as I am facing a complete
-> freeze on
-> > > an Freescale iMX28 based board (armadeus APF28-Dev).
-> > > I have developed a very simple kernel module which registers a GPIO
-> > > interrupt handler, working properly on linux 3.10.32 kernel.
-> > > The same code, compiled on a 3.10.32 + ipipe7 (also tested on ipipe v=
-4)
-> > > patched kernel generates a machine freeze on IRQ reception, without
-> message
-> > > and any other possibility than resetting the board.
-> > >
-> > > I would appreciate any help/hint/procedure I could use to dive into t=
-he
-> > > problem and solve it.
-> > > Hoping to help others afterwards,
-> > > Best regards,
-> > > G0TieR.
-> >
-> > What is the problem exactly. Only applying the I-pipe patch breaks
-> > the GPIOs, or you need to compile the kernel with CONFIG_IPIPE?
->
-> I assume the latter. Please replace the calls to generic_handle_irq
-> with ipipe_handle_demuxed_irq in drivers/gpio/gpio-mxs.c. The change
-> got forgotten when the gpio file moved to drivers/gpio it seems.
->
-> --
->                                             Gilles.
->
-
-=E2=80=8BHi Gilles,
-
-you found it... a simple change I would have liked to have found by myself.
-I guess I missed reading a text file.
-
-Thank you very very much for your help, now GPIO interrupts are properly
-managed either using Linux domain or RTDM on my iMX28.
-
-Best regards,
-Gautier.=E2=80=8B
+RWwgRGlqb3VzLCAyMiBkZSBnZW5lciBkZSAyMDE1LCBhIGxlcyAwOTowMzo0MiwgSmFuIEtpc3pr
+YSB2YSBlc2NyaXVyZToKPiBPbiAyMDE1LTAxLTIyIDA4OjQ3LCBMZW9wb2xkIFBhbG9tby1BdmVs
+bGFuZWRhIHdyb3RlOgo+ID4gSGksCj4gPiAKPiA+IAo+ID4gSSBoYXZlIGNvbXBpbGluZyBhIENv
+YmFsdCBrZXJuZWwuIEkgaGF2ZSBmb2xsb3dlZCB0aGUgd2ViICJ3aWtpcHJlc3MiCj4gPiBbMV07
+LSkgcmVjb21tZW5kYXRpb25zLiBIb3dldmVyLCBteSBib3ggKGEgbm9ybWFsIGRlc2t0b3AgY29t
+cHV0ZXIgLSBEZWxsCj4gPiBPcHRpcGxleCA3MDEwIC0pIGRvZXNuJ3QgYm9vdC4gSXQgdGhyb3dz
+IGEgbWVzc2FnZSBsaWtlOgo+ID4gLi4uLgo+ID4gdGltZXIgZG9lc24ndCB3b3JrIHRocm91Z2gg
+aW50ZXJydXAtcmVtYXBwZWQgSU8tYXBpYwo+IAo+IFNvdW5kcyBsaWtlIGludGVycnVwdCByZW1h
+cHBpbmcgaXMgZW5hYmxlZCBmb3IgeW91ciBzeXN0ZW0uIFRoYXQncyBub3QKPiBzdXBwb3J0ZWQg
+YnkgWGVub21haSAvIEktcGlwZSBzbyBmYXIgKG9uIG15IHRvLWRvIGxpc3QsIGFsb25nIHdpdGgK
+PiB4MkFQSUMgc3VwcG9ydCkuIERpc2FibGUgdGhpcyB2aWEgImludGVsX2lvbW11PW9mZiBpbnRy
+ZW1hcD1vZmYiIGluIHRoZQo+IGtlcm5lbCBjb21tYW5kIGxpbmUgb3IgYnkgY2hhbmdpbmcgdGhl
+IGtlcm5lbCBjb25maWcgdG8gbm90IGluY2x1ZGUKPiBJT01NVSAvIGludGVycnVwdCByZW1hcHBp
+bmcgc3VwcG9ydC4KCkkgaGF2ZSB0aGlzIG9wdGlvbnM6CgokIGdyZXAgSU9NTVUgY29uZmlnLXhl
+bm9tYWktMy4wLjAgCkNPTkZJR19HQVJUX0lPTU1VPXkKQ09ORklHX0NBTEdBUllfSU9NTVU9eQpD
+T05GSUdfQ0FMR0FSWV9JT01NVV9FTkFCTEVEX0JZX0RFRkFVTFQ9eQpDT05GSUdfSU9NTVVfSEVM
+UEVSPXkKQ09ORklHX1ZGSU9fSU9NTVVfVFlQRTE9bQpDT05GSUdfSU9NTVVfQVBJPXkKQ09ORklH
+X0lPTU1VX1NVUFBPUlQ9eQpDT05GSUdfQU1EX0lPTU1VPXkKIyBDT05GSUdfQU1EX0lPTU1VX1NU
+QVRTIGlzIG5vdCBzZXQKQ09ORklHX0FNRF9JT01NVV9WMj15CkNPTkZJR19JTlRFTF9JT01NVT15
+CiMgQ09ORklHX0lOVEVMX0lPTU1VX0RFRkFVTFRfT04gaXMgbm90IHNldApDT05GSUdfSU5URUxf
+SU9NTVVfRkxPUFBZX1dBPXkKIyBDT05GSUdfSU9NTVVfREVCVUcgaXMgbm90IHNldAojIENPTkZJ
+R19JT01NVV9TVFJFU1MgaXMgbm90IHNldAoKCkxlb3BvbGQKCi0tIAotLQpMaW51eCBVc2VyIDE1
+MjY5MiAgICAgR1BHOiAwNUY0QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQotLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tCkE6IEJlY2F1c2UgaXQgbWVzc2VzIHVwIHRoZSBvcmRlciBp
+biB3aGljaCBwZW9wbGUgbm9ybWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkgaXMgdG9wLXBvc3Rpbmcg
+c3VjaCBhIGJhZCB0aGluZz8KQTogVG9wLXBvc3RpbmcuClE6IFdoYXQgaXMgdGhlIG1vc3QgYW5u
+b3lpbmcgdGhpbmcgaW4gZS1tYWlsPwotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0t
+LS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1
+cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogODE5IGJ5dGVzCkRl
+c2M6IFRoaXMgaXMgYSBkaWdpdGFsbHkgc2lnbmVkIG1lc3NhZ2UgcGFydC4KVVJMOiA8aHR0cDov
+L3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1MDEyMi8z
+YTYxNWJmNy9hdHRhY2htZW50LnNpZz4K
