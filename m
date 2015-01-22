@@ -1,16 +1,14 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Wed, 21 Jan 2015 10:23:08 -0500
-Message-ID: <20150121152307.GI30245@csclub.uwaterloo.ca>
-References: <6773858.JgE1vlCdur@soho> <2621675.LcrfARJh6l@soho>
- <ce8779a9a03f5c7fbe48cf43e334f44c.squirrel@xenomai.org>
- <15627875.xOGqqJnifV@soho>
- <20150121143737.GH30245@csclub.uwaterloo.ca>
- <39c2587f04b5da62847e9606b5f88726.squirrel@xenomai.org>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Thu, 22 Jan 2015 12:17:15 +0100
+Message-ID: <1724720.ZWD9XnFxZe@soho>
+In-Reply-To: <20150122104813.GA23461@hermes.click-hack.org>
+References: <1537147.Wm9AbiuW5D@soho> <5878976.hoeVIdWPhU@soho>
+ <20150122104813.GA23461@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <39c2587f04b5da62847e9606b5f88726.squirrel@xenomai.org>
-Subject: Re: [Xenomai] Compiling xenomai-3
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Xenomai-3 creating debian packages (was: Re: Xenomai-3
+	booting problems)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,14 +18,46 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Wed, Jan 21, 2015 at 03:40:06PM +0100, Gilles Chanteperdrix wrote:
-> The I-pipe patches for 3.16 are in the GNA download area.
-> We have not released a version of Xenomai with it yet, but they exist.
-
-Excellent.  Not that I need them any time soon. :)
-
--- 
-Len Sorensen
-
+SSBoYXZlIHJlbmFtZWQgdGhlIHN1YmplY3QgYWNjb3JkaW5nIHdpdGggdGhlIHRoZW1lLgoKRWwg
+RGlqb3VzLCAyMiBkZSBnZW5lciBkZSAyMDE1LCBhIGxlcyAxMTo0ODoxMywgR2lsbGVzIENoYW50
+ZXBlcmRyaXggdmEgCmVzY3JpdXJlOgo+ID4gPiAKPiA+ID4gV2VsbCwgdGhlIGZhY3QgdGhhdCB0
+aGUgY29tcGlsYXRpb24gZXJyb3IgaGFwcGVucyB3aGVuIHRyeWluZyB0bwo+ID4gPiBjb21waWxl
+IGEgWGVub21haSBmaWxlIHdvdWxkIHNlZW0gdG8gaW5kaWNhdGUgdGhhdCBwcmVwYXJlLWtlcm5l
+bC5zaAo+ID4gPiBoYXMgcHV0IHRoZSB3cm9uZyBsaW5rIGludG8gaW5pdC9LY29uZmlnLgo+ID4g
+PiAKPiA+ID4gWW91IHBhc3MgLS1hcmNoPXg4NiB0byBwcmVwYXJlLWtlcm5lbC5zaCwgcmlnaHQs
+IG5vdCAtLWFyY2g9eDg2XzY0ID8KPiA+IAo+ID4geWVzLCBJIGhhdmUgdHJpZWQgYm90aCwgYnV0
+IEkgcHV0IC0tYXJjaD14ODYgb3IgdGhlIGRlZmF1bHQgb3B0aW9uIGFzIEkKPiA+IHNhaWQgaXQg
+aW4gbXkgZW1haWwgZnJvbSB5ZXN0ZXJkYXkgKCA6LVApCj4gCj4gV2VsbCwgbWF5YmUgdGhlIGRl
+ZmF1bHQgb3B0aW9uIGRvZXMgbm90IHdvcmssIHNvIHBsZWFzZSB0cnkKPiBzcGVjaWZ5aW5nIC0t
+YXJjaD14ODYuIFRoZSBlcnJvciB5b3UgaGF2ZSBpcyBub3QgaW4gdGhlIGNvbXBpbGVkCj4gZmls
+ZXMsIGJ1dCBpbiB0aGUgS2NvbmZpZyBmaWxlcy4gU28sIHRoZSBmYWN0IHRoYXQgeW91IGNhbiBj
+b21waWxlCj4gZG9lcyBub3QgcmVhbGx5IHByb3ZlIHRoYXQgcHJlcGFyZS1rZXJuZWwuc2ggZGlk
+IG5vdCBmYWlsLgoKT2ssIGZyb20gYSBjbGVhbiBzb3VyY2VzIEkgaGF2ZSBydW4gZnJvbSB0aGUg
+bGludXggdHJlZSBzb3VyY2VzOgoKJCAuLi94ZW5vbWFpLTMuZ2l0L3NjcmlwdHMvcHJlcGFyZS1r
+ZXJuZWwuc2ggLS1saW51eD0uIC0tCmlwaXBlPS4uL3hlbm9tYWktMy5naXQva2VybmVsL2NvYmFs
+dC9hcmNoL3g4Ni9wYXRjaGVzL2lwaXBlLWNvcmUtMy4xNi0KeDg2LTEucGF0Y2ggLS1hcmNoPXg4
+NiAKIAo+IE5vdywgcHJlcGFyZS1rZXJuZWwuc2ggYWRkcyB0aGUgc2NyaXB0cy9LY29uZmlnLmZy
+YWcgZmlsZSB0bwo+IGluaXQvS2NvbmZpZy4gS2NvbmZpZy5mcmFnIGNvbnRhaW5zOgoKSSBkb24n
+dCB1bmRlcnN0YW5kIHRoYXQgc2VudGVuY2UuIFllcywgdGhlICBLY29uZmlnLmZyYWcgbm93LCBj
+b250YWlucyB0aGlzOgoKc291cmNlICJhcmNoLyRBUkNIL3hlbm9tYWkvS2NvbmZpZyIKCkkgaGF2
+ZSBjaGFuZ2VkIGl0IGluIHhlbm9tYWkgc291cmNlcywgYmVmb3JlIHJ1biB0aGUgcHJlcGFyZS1r
+ZXJuZWwgZWwgc2NyaXB0IAp0byB5b3VyIHByb3Bvc2U6Cgo+IHNvdXJjZSAiYXJjaC9ATElOVVhf
+QVJDSEAveGVub21haS9LY29uZmlnIgo+IAo+IFdpdGggQExJTlVYX0FSQ0hAIGJlaW5nIHN1YnN0
+aXR1dGVkIGJ5IHByZXBhcmUta2VybmVsLnNoLiBDb3VsZCB5b3UKPiBjaGVjayBpbml0L0tjb25m
+aWcgdG8gc2VlIGJ5IHdoYXQgQExJTlVYX0FSQ0hAIGhhcyBiZWVuIHN1YnN0aXR1dGVkCj4gaW4g
+eW91ciBjYXNlPwoKCmJ1dCwgYWZ0ZXIgcnVuIHRoZSBwcmVwYXJlLWtlcm5lbCBzY3JpcHQsIHRo
+ZSB2YXIgc3RpbGwgaGFzLCBpbiBsaW51eCB0cmVlCgpzb3VyY2UgImFyY2gvQExJTlVYX0FSQ0hA
+L3hlbm9tYWkvS2NvbmZpZyIKCj4gSWYgaXQgaXMgeDg2XzY0LCB0aGVuIGl0IGlzIGNsZWFybHkg
+d3JvbmcuIEl0IHNob3VsZCBiZSB4ODYuCgpXYXMgaXQgd2hhdCBkaWQgeW91IHdhbnQgSSB0ZXN0
+ZWQ/CgpMZW9wb2xkCi0tIAotLQpMaW51eCBVc2VyIDE1MjY5MiAgICAgR1BHOiAwNUY0QTdBOTQ5
+QTJEOUFBCkNhdGFsb25pYQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkE6
+IEJlY2F1c2UgaXQgbWVzc2VzIHVwIHRoZSBvcmRlciBpbiB3aGljaCBwZW9wbGUgbm9ybWFsbHkg
+cmVhZCB0ZXh0LgpROiBXaHkgaXMgdG9wLXBvc3Rpbmcgc3VjaCBhIGJhZCB0aGluZz8KQTogVG9w
+LXBvc3RpbmcuClE6IFdoYXQgaXMgdGhlIG1vc3QgYW5ub3lpbmcgdGhpbmcgaW4gZS1tYWlsPwot
+LS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2ht
+ZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9u
+L3BncC1zaWduYXR1cmUKU2l6ZTogODE5IGJ5dGVzCkRlc2M6IFRoaXMgaXMgYSBkaWdpdGFsbHkg
+c2lnbmVkIG1lc3NhZ2UgcGFydC4KVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1h
+aWwveGVub21haS9hdHRhY2htZW50cy8yMDE1MDEyMi8yYWVlMGMyMy9hdHRhY2htZW50LnNpZz4K
