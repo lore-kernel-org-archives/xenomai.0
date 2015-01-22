@@ -1,13 +1,12 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Mon, 26 Jan 2015 23:57:34 +0100
-Message-ID: <8948682.mQUO2NfixP@indiana>
-In-Reply-To: <54C6BF08.3020606@grinta.net>
-References: <129277905.Ag2XebZWbK@soho> <2312262.WiWDxI5CGn@indiana>
- <54C6BF08.3020606@grinta.net>
+Message-ID: <54C0AEDE.8000909@siemens.com>
+Date: Thu, 22 Jan 2015 09:03:42 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Packaging Xenomai-3
+References: <1537147.Wm9AbiuW5D@soho>
+In-Reply-To: <1537147.Wm9AbiuW5D@soho>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai-3 booting problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,53 +15,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, xenomai@xenomai.org
 
-RWwgRGlsbHVucywgMjYgZGUgZ2VuZXIgZGUgMjAxNSwgYSBsZXMgMjM6MjY6MTYsIERhbmllbGUg
-Tmljb2xvZGkgdmEgZXNjcml1cmU6Cj4gT24gMjYvMDEvMTUgMjM6MTcsIExlb3BvbGQgUGFsb21v
-LUF2ZWxsYW5lZGEgd3JvdGU6Cj4gPiBBRkFJSywgbG9va2luZyB0aGUgc291cmNlcyBvZiB0aGUg
-cGFja2FnZSwgdGhlIG5hbWVzIG9mIHRoZSBsaWJyYXJpZXMgYXJlCj4gPiBkaWZmZXJlbnQuIEFu
-ZCBpbnN0YWxsaW5nIGluIG15IGJveCBJIGhhdmU6Cj4gPiAKPiA+IC91c3IvbGliL3g4Nl82NC1s
-aW51eC1nbnUvbGliY3VybC1uc3Muc28uNC4zLjAKPiA+IC91c3IvbGliL3g4Nl82NC1saW51eC1n
-bnUvbGliY3VybC1nbnV0bHMuc28uNC4zLjAKPiA+IC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUv
-bGliY3VybC5zby40LjMuMAo+ID4gCj4gPiB0aGF0IGNvbWVzIGZyb20gbGliY3VybDMtbnNzLCBs
-aWJjdXJsMy1nbnV0bHMgYW5kIGxpYmN1cmwzLiBUaGUgbGFzdCBvbmUKPiA+IChPcGVuU1NMIGZs
-YXZvdXIpCj4gCj4gVGhlIGRpZmZlcmVudCBsaWJyYXJ5IG5hbWVzIGFyZSBjcmVhdGVkIGluIHRo
-ZSBkZWJpYW4gcGFja2FnZSwgbm90IGJ5Cj4gdGhlIHVwc3RyZWFtIGJ1aWxkIHN5c3RlbToKPiBo
-dHRwOi8vYW5vbnNjbS5kZWJpYW4ub3JnL2NnaXQvY29sbGFiLW1haW50L2N1cmwuZ2l0L3RyZWUv
-ZGViaWFuL3J1bGVzCgpPZiBjb3Vyc2UuIEkganVzdCBzYWlkIHRoYXQgdG8gaGF2ZSBjby1pbnN0
-YWxsYWJsZSBpdCByZW5hbWluZyB0aGUgbGlicmFyeSAKaXQncyBhbiBvcHRpb24uCgo+IFRoYXQg
-aXMgd2hhdCBHaWxsZXMgd2FudGVkIHRvIHBvaW50IG91dDogcmVuYW1pbmcgdGhlIHBhY2thZ2Vk
-IGxpYnJhcnkKPiBpcyBkb25lIGJ5IHRoZSBwYWNrYWdpbmcgbWFjaGluZXJ5IHRvIHN1aXRlIHRo
-ZSBkaXN0cmlidXRpb24sIG5vdCB1cHN0cmVhbS4KCkl0J3Mgb25lIG9wdGlvbi4gVGhlIHBhY2th
-Z2Ugc2lnaHRseSAgbW9kaWZpZXMgYW5kIHBhdGNoZWQgdXBzdHJlYW0gY29kZS4gSXQncyAKYSBj
-b21wbGV4IHBhY2thZ2UuIEl0J3Mgbm90IGFuIGVhc3kgam9iLiBJdCdzIHJ1bGVzIGZpbGUgaXMg
-bG9uZy4gQW5kIGl0J3MgYSAKc2Vuc2libGUgcG9pbnQgKHNlY3VyaXR5KSwgc28gSSBjb3VsZCB1
-bmRlcnN0YW5kIHRoYXQgdGhlIG1haW50YWluZXIgd2FudGVkIHRvIApvZmZlciBhbGwgdGhlIHZh
-cmlhbnRzIHRoYXQgdXBzdHJlYW0gcHJvdmlkZXMuIEJ1dCBJIGRvbid0IGtub3cgdGhlIG1haW4g
-cmVhc29uIApmb3IgYWxsIHRoaXMgd29yay4KCj4gPiBJIGFncmVlLiBJIHdvdWxkIGxpa2UgdG8g
-ZmluZCBzb21ldGhpbmcgdGhhdCBjb3VsZCBiZW5lZml0IGFsbCB0aGUgcGFydHMuCj4gPiBJZiB5
-b3UgcHJlZmVyIG5vdCByZW5hbWUsIG5vIHByb2JsZW0uIEkgdGhvdWdoIHRoYXQgaXQgY291bGQg
-YmUgYSBnb29kCj4gPiBpZGVhIGZvciBhbGwuIEFsc28gSSBoYXZlIHRvIHNheSB0aGF0IEkgZG9u
-J3QgdGhpbmsgdGhhdCBpdCBoYXMgc2Vuc2UgdG8KPiA+IGltcGxlbWVudCBpdCBpbiBwYWNrYWdp
-bmcuIFRoaXMga2luZCBvZiBtb2RpZmljYXRpb25zIGhhdmUgdG8gaGF2ZSBhIHZlcnkKPiA+IGdv
-b2QgcmVhc29uIHRvIGRpdmVyZ2UgZnJvbSB1cHN0cmVhbS4KPiAKPiBTZWUgYWJvdmUuCgpJIGNh
-biBzZWUgZXZlcnl0aGluZyB5b3Ugd2FudCwgYnV0IHlvdSBzaG91bGQgaGF2ZSBhIHZlcnkgZ29v
-ZCByZWFzb24gdG8gbWFrZSAKYWxsIHRoaXMgam9iLiBGcm9tIG15IHBvaW50IG9mIHZpZXcgaWYg
-dGhpcyBraW5kIG9mIG1vZGlmaWNhdGlvbnMgYXJlIG1hZGUgYnkgCnVwc3RyZWFtICh0aGlua2lu
-ZyB0aGUgc291cmNlcyB0byBkbyB0aGF0KSwgYWxsIGlzIG1vcmUgZWFzeS4gVGhhdCdzIGFsbC4g
-CgpPZiBjb3Vyc2UgdGhhdCBpZiBjb3VsZCBiZSBkb25lIGluIHBhY2thZ2luZywgYnV0IHRoZW4g
-dGhlIGRpc3RybyB2ZXJzaW9uIGlzIApkaWZmZXJlbnQgdGhhbiB0aGUgb3RoZXJzLCBzbywgZnJv
-bSBteSBwb2ludCBvZiB2aWV3LCB5b3Ugc2hvdWxkIGhhdmUgYSB2ZXJ5IApnb29kIHJlYXNvbiB0
-byBkbyB0aGF0LiBJZiB1cHN0cmVhbSBtYWRlIHRoYXQgY2hhbmdlLCBhbGwgdGhlIGRpc3Ryb3Mg
-Zm9sbG93LgoKTGVvcG9sZAoKLS0gCi0tCkxpbnV4IFVzZXIgMTUyNjkyICAgICBHUEc6IDA1RjRB
-N0E5NDlBMkQ5QUEKQ2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0KQTogQmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhlIG9yZGVyIGluIHdoaWNoIHBlb3BsZSBub3Jt
-YWxseSByZWFkIHRleHQuClE6IFdoeSBpcyB0b3AtcG9zdGluZyBzdWNoIGEgYmFkIHRoaW5nPwpB
-OiBUb3AtcG9zdGluZy4KUTogV2hhdCBpcyB0aGUgbW9zdCBhbm5veWluZyB0aGluZyBpbiBlLW1h
-aWw/Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0
-dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGlj
-YXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiA4MTkgYnl0ZXMKRGVzYzogVGhpcyBpcyBhIGRpZ2l0
-YWxseSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3Bp
-cGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTUwMTI2L2I5OWNmOTMxL2F0dGFjaG1lbnQu
-c2lnPgo=
+On 2015-01-22 08:47, Leopold Palomo-Avellaneda wrote:
+> Hi,
+> 
+> 
+> I have compiling a Cobalt kernel. I have followed the web "wikipress" [1];-) 
+> recommendations. However, my box (a normal desktop computer - Dell Optiplex 
+> 7010 -) doesn't boot. It throws a message like:
+> ....
+> timer doesn't work through interrup-remapped IO-apic
+
+Sounds like interrupt remapping is enabled for your system. That's not
+supported by Xenomai / I-pipe so far (on my to-do list, along with
+x2APIC support). Disable this via "intel_iommu=off intremap=off" in the
+kernel command line or by changing the kernel config to not include
+IOMMU / interrupt remapping support.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
+
