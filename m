@@ -1,6 +1,6 @@
-Date: Thu, 22 Jan 2015 14:58:40 +0100
+Date: Thu, 22 Jan 2015 15:13:46 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150122135840.GC26731@hermes.click-hack.org>
+Message-ID: <20150122141346.GD26731@hermes.click-hack.org>
 References: <1537147.Wm9AbiuW5D@soho> <2296691.2JpS0rAJbA@soho>
  <20150122114038.GE23461@hermes.click-hack.org>
  <4743020.6q5RsBy8Ia@soho> <54C0F262.6010806@siemens.com>
@@ -110,11 +110,10 @@ On Thu, Jan 22, 2015 at 02:50:59PM +0100, Jan Kiszka wrote:
 > and preparation into a single source tree. There is no technical need to
 > patch the arch in anymore.
 
-Providing separate patches for architectures has a huge advantage:
-if you need to release patch because one bug was fixed for one
-architecture, you only need to release the patch for this
-architecture. Besides, most Xenomai users (as opposed to developers)
-use one architecture at a time.
+Just to finish on the subject of the I-pipe maintenance, what some
+find good, others find bad. For my part of instance, I find the git
+based "new" maintenance to be a major PITA for the job of
+maintaining the I-pipe for ARM. Newer does not always mean better.
 
 -- 
 					    Gilles.
