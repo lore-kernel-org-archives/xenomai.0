@@ -1,15 +1,13 @@
-Date: Fri, 6 Feb 2015 17:16:26 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150206161626.GD27277@hermes.click-hack.org>
-References: <54D4D409.2020708@control.lth.se> <54D4D9B2.8090805@xenomai.org>
- <54D4DF0C.2080007@control.lth.se> <54D4E285.9000906@xenomai.org>
- <54D4E44B.4060403@control.lth.se>
- <20150206161215.GC27277@hermes.click-hack.org>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Thu, 22 Jan 2015 11:40:57 +0100
+Message-ID: <5878976.hoeVIdWPhU@soho>
+In-Reply-To: <20150122102455.GC20360@hermes.click-hack.org>
+References: <1537147.Wm9AbiuW5D@soho> <1592000.mUrPdiXucy@soho>
+ <20150122102455.GC20360@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20150206161215.GC27277@hermes.click-hack.org>
-Subject: Re: [Xenomai] Mixing linux and alchemy (cobalt) calls
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Xenomai-3 booting problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,87 +16,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Anders Blomdell <anders.blomdell@control.lth.se>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Fri, Feb 06, 2015 at 05:12:15PM +0100, Gilles Chanteperdrix wrote:
-> On Fri, Feb 06, 2015 at 04:56:59PM +0100, Anders Blomdell wrote:
-> > On 2015-02-06 16:49, Philippe Gerum wrote:
-> > > On 02/06/2015 04:34 PM, Anders Blomdell wrote:
-> > >> On 2015-02-06 16:11, Philippe Gerum wrote:
-> > >>> On 02/06/2015 03:47 PM, Anders Blomdell wrote:
-> > >>>> I have an application that need both realtime and linux sockets, am I correct in assuming that
-> > >>>> withe the alchemy skin I could access them like
-> > >>>>
-> > >>>>   socket(...           // Linux version
-> > >>>>   __real_socket(...    // Linux version
-> > >>>>   __cobalt_socket(...  // Alchemy/cobalt version
-> > >>>>
-> > >>>> while under the cobalt skin, it would be:
-> > >>>>
-> > >>>>   socket(...           // Alchemy/cobalt version
-> > >>>>   __real_socket(...    // Linux version
-> > >>>>   __cobalt_socket(...  // Alchemy/cobalt version
-> > >>>>
-> > >>>
-> > >>> This depends on the LDFLAGS retrieved from xeno-config:
-> > >>>
-> > >>> 1. with --posix mentioned in the xeno-config --ldflags request
-> > >>>
-> > >>> 	socket(...), __cobalt_socket(...) or __RT(socket(...))  => Cobalt
-> > >>> implementation
-> > >>> 	__real_socket(...) or __STD(socket(...)) => glibc service
-> > >>>
-> > >>> 2. without --posix mentioned in the xeno-config --ldflags request
-> > >>>
-> > >>> 	__cobalt_socket(...) or __RT(socket(...))  => Cobalt implementation
-> > >>> 	socket(...) or __STD(socket(...)) => glibc service
-> > >>>
-> > >>> e.g.
-> > >>>
-> > >>> - the application only wants to access the POSIX services implemented by
-> > >>> Cobalt using the regular POSIX names: LDFLAGS should contain the output of:
-> > >>> $ xeno-config --posix --ldflags, or --cobalt --ldflags.
-> > >>>
-> > >>> - the application wants to access the POSIX services implemented by
-> > >>> Cobalt using the regular POSIX names, and the alchemy API: LDFLAGS
-> > >>> should contain the output of:
-> > >>> $ xeno-config --posix --alchemy --ldflags, or --cobalt --alchemy --ldflags.
-> > >>>
-> > >>> - the application wants to access the POSIX services implemented by
-> > >>> Cobalt solely via the explicit POSIX wrappers, and the alchemy API:
-> > >>> LDFLAGS should contain the output of (i.e. omitting --posix):
-> > >>> $ xeno-config --alchemy --ldflags, or --alchemy --ldflags.
-> > >>>
-> > >>> NOTE: using __RT() is preferred to calling __cobalt(), in case an API
-> > >>> stacked over the Cobalt POSIX API redefines its own implementation of
-> > >>> POSIX services over the dual kernel. __RT() would call the stacked
-> > >>> implementation, __cobalt() would force a call to the Cobalt
-> > >>> implementation of the service.
-> > >>>
-> > >> Thanks for the clarification, will sprinkle the code with __STD(...) 
-> > >> and __RT(...), from here on :-).
-> > >>
-> > > 
-> > > That's only required if you want your code to unambiguously route to the
-> > > proper service in case the default symbol wrapping does not fit, or is
-> > > not present. This is typically what libcopperplate does, so that
-> > > non-POSIX apps can link against it, without being required to wrap the
-> > > POSIX symbols in the final executable.
-> > 
-> > More to avoid me shooting myself in the foot when trying to juggle sockets
-> > from two different domains (also makes the code less dependent on the linker
-> > flags given). Already got bitten by 'modprobe rtpacket' not loading properly
-> > and the __wrap_socket picking up the posix version. And of course making the 
-> > code clearly document what belongs where.
-> 
-> Not loading rtpacket should cause __wrap_socket to use the posix
-> version only if you are trying to create a socket type that the
-> rtpacket module implements. Otherwise, this is a bug.
-
-And unless code has changed between 2.x and 3.x in this area, using
-__RT() will result in exactly the same behaviour.
-
--- 
-					    Gilles.
-
+RWwgRGlqb3VzLCAyMiBkZSBnZW5lciBkZSAyMDE1LCBhIGxlcyAxMToyNDo1NSwgR2lsbGVzIENo
+YW50ZXBlcmRyaXggdmEgCmVzY3JpdXJlOgo+IE9uIFRodSwgSmFuIDIyLCAyMDE1IGF0IDExOjE3
+OjQxQU0gKzAxMDAsIExlb3BvbGQgUGFsb21vLUF2ZWxsYW5lZGEgd3JvdGU6Cj4gPiBFbCBEaWpv
+dXMsIDIyIGRlIGdlbmVyIGRlIDIwMTUsIGEgbGVzIDEwOjU2OjM1LCBHaWxsZXMgQ2hhbnRlcGVy
+ZHJpeCB2YQo+ID4gCj4gPiBlc2NyaXVyZToKPiA+ID4gPiA+IFdoYXQgYWJvdXQgdGhlIEFSQ0gg
+cHJvYmxlbSB3aXRoIG1ha2Uta3BrZywgaXMgaXQgc29sdmVkID8KPiA+ID4gPiAKPiA+ID4gPiBB
+cyBJIHNhaWQgeWVzdGVyZGF5IFsxXSwgdGhlcmUncyBhIHF1ZXN0aW9uIG9mIHRoZSBBUkNIIHZh
+ciwgdXNlZCBpbgo+ID4gPiA+IHRoZQo+ID4gPiA+IHByZXBhcmUta2VybmVsIHNjcmlwdC4KPiA+
+ID4gCj4gPiA+IE5vLCB5ZXN0ZXJkYXkgeW91IHNhaWQgdGhhdCB0aGUgcHJlcGFyZS1rZXJuZWwg
+c2NyaXB0IHByb2JhYmx5IHdhcwo+ID4gPiBub3QgdGhlIHByb2JsZW0KPiA+IAo+ID4gSSBzYWlk
+IGEgbG90IG9mIHRoaW5ncyB5ZXN0ZXJkYXkgOi1EIGFuZCB5ZXMsIEkgdGhvdWdodCB0aGF0IHBy
+b2JhYmx5IGl0Cj4gPiB3YXNuJ3QuCj4gPiAKPiA+ID4gYmVjYXVzZSB5b3UgY2FuIGNvbXBpbGUg
+dGhlIHByZXBhcmVkIGtlcm5lbAo+ID4gPiBtYW51YWxseS4gT3IgZGlkIEkgbWlzdW5kZXJzdGFu
+ZD8KPiA+IAo+ID4gWWVzLCBpdCdzIHRydWUuIEkgY2FuIGNvbXBpbGUgdGhlIGtlcm5lbCBtYW51
+YWxseSBidXQgSSBjYW4gY3JlYXRlIHRoZQo+ID4gZGViaWFuIHBhY2thZ2UgaWYgSSBtb2RpZnkg
+dGhlIHJlc3VsdCBvYnRhaW5lZCBieSB0aGUgcHJlcGFyZS1rZXJuZWwKPiA+IHNjcmlwdC4+IAo+
+ID4gPiA+IEFueSBpZGVhIHRvIHNvbHZlIHRoaXM/Cj4gPiA+IAo+ID4gPiBBcyBJIGFscmVhZHkg
+c2FpZCwgeW91IGhhdmUgdG8gZXhlY3V0ZSB3aGF0IG1ha2Uta3BrZyBkb2VzLCBieSBoYW5kLAo+
+ID4gPiBzdGVwIGJ5IHN0ZXAsIHRvIHVuZGVyc3RhbmQgd2hpY2ggc3RlcCBnb2VzIHdyb25nLgo+
+ID4gOgo+ID4gOi1ECj4gPiAKPiA+IEl0J3Mgbm8gZWFzeSwgYXQgbGVhc3QgYnkgbXksIGNoZWNr
+IHdoeSBtYWtlLWtwa2cgZG9lcy4gQnV0LCBJIHRoaW5rIHRoYXQKPiA+IHRoZXJlJ3MgYSBjb2xs
+aXNpb24gd2l0aCB0aGF0IHZhciAoQVJDSCkuIEkgdGhpbmsgdGhhdCBkZWJpYW4gdXNlIHRoYXQg
+dmFyCj4gPiBmb3Igc29tZSBpbnRlcm5hbCBwcm9wb3NlcyBhbmQgaXQncyBkaWZmZXJlbnQgKGlu
+IHRoZSB4ODYgcGxhdGZvcm0geDg2IHZzCj4gPiB4ODZfNjQpLCBvciBoYXMgc29tZSB0cm91Ymxl
+cy4KPiA+IAo+ID4gUmVhbGx5IEkgZG9uJ3Qga25vdyBpZiBpdCdzIGEgbWl4IG9mIHByZXBhcmUt
+a2VybmVsIHByb2JsZW0sIG1ha2Uta3BrZwo+ID4gcHJvYmxlbSBvciB1c2VyIHByb2JsZW0uCj4g
+Cj4gQXMgeW91IHNhaWQsIGlmIHlvdSBjYW4gY29tcGlsZSB0aGUgcHJlcGFyZWQga2VybmVsIG1h
+bnVhbGx5LCBpdCBpcwo+IG5vdCBhIHByZXBhcmUta2VybmVsIHByb2JsZW0uCj4gCj4gPiBJZiB5
+b3Ugc2VlIGNsZWFybHkgdGhhdCBpdCdzIG1ha2Uta3BrZyBwcm9ibGVtLCBJIGNvbmNlbnRyYXRl
+IG15IGVmZm9ydHMKPiA+IG9uCj4gPiB0aGF0Lgo+IAo+IFdlbGwsIHRoZSBmYWN0IHRoYXQgdGhl
+IGNvbXBpbGF0aW9uIGVycm9yIGhhcHBlbnMgd2hlbiB0cnlpbmcgdG8KPiBjb21waWxlIGEgWGVu
+b21haSBmaWxlIHdvdWxkIHNlZW0gdG8gaW5kaWNhdGUgdGhhdCBwcmVwYXJlLWtlcm5lbC5zaAo+
+IGhhcyBwdXQgdGhlIHdyb25nIGxpbmsgaW50byBpbml0L0tjb25maWcuCj4gCj4gWW91IHBhc3Mg
+LS1hcmNoPXg4NiB0byBwcmVwYXJlLWtlcm5lbC5zaCwgcmlnaHQsIG5vdCAtLWFyY2g9eDg2XzY0
+ID8KCnllcywgSSBoYXZlIHRyaWVkIGJvdGgsIGJ1dCBJIHB1dCAtLWFyY2g9eDg2IG9yIHRoZSBk
+ZWZhdWx0IG9wdGlvbiBhcyBJIHNhaWQgCml0IGluIG15IGVtYWlsIGZyb20geWVzdGVyZGF5ICgg
+Oi1QKQoKU2VyaW91c2x5LCBub3cgSSBoYXZlIGNvbXBpbGVkIG1hbnVhbGx5IHRoZSBrZXJuZWwg
+KG1ha2UgYnpJbWFnZSBtb2R1bGVzKSBhbmQgCm5vIGVycm9yLCBidXQgYWZ0ZXIgdGhlIGNvbXBp
+bGF0aW9uIG9uIGludGVyZXN0ZWQgZGlyZWN0b3J5IGhhdmUgYXBwZWFyZWQgaW4gCmFyY2ggZGly
+OiAKbHMgLWwgYXJjaC94ODZfNjQvYm9vdC9iekltYWdlIApscnd4cnd4cnd4IDEgcm9vdCByb290
+IDIyIGdlbiAyMiAxMDozMiBhcmNoL3g4Nl82NC9ib290L2J6SW1hZ2UgLT4gCi4uLy4uL3g4Ni9i
+b290L2J6SW1hZ2UKCk1heWJlIGl0J3Mgc29tZXRoaW5nIHJlbGF0ZWQgdG8gZGViaWFuLgoKTGVv
+cG9sZAotLSAKLS0KTGludXggVXNlciAxNTI2OTIgICAgIEdQRzogMDVGNEE3QTk0OUEyRDlBQQpD
+YXRhbG9uaWEKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpBOiBCZWNhdXNl
+IGl0IG1lc3NlcyB1cCB0aGUgb3JkZXIgaW4gd2hpY2ggcGVvcGxlIG5vcm1hbGx5IHJlYWQgdGV4
+dC4KUTogV2h5IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBiYWQgdGhpbmc/CkE6IFRvcC1wb3N0aW5n
+LgpROiBXaGF0IGlzIHRoZSBtb3N0IGFubm95aW5nIHRoaW5nIGluIGUtbWFpbD8KLS0tLS0tLS0t
+LS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMg
+c2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2ln
+bmF0dXJlClNpemU6IDgxOSBieXRlcwpEZXNjOiBUaGlzIGlzIGEgZGlnaXRhbGx5IHNpZ25lZCBt
+ZXNzYWdlIHBhcnQuClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9t
+YWkvYXR0YWNobWVudHMvMjAxNTAxMjIvYjZlZTVlY2UvYXR0YWNobWVudC5zaWc+Cg==
