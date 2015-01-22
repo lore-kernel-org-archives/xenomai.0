@@ -1,13 +1,12 @@
-Message-ID: <54C10043.2060608@siemens.com>
-Date: Thu, 22 Jan 2015 14:50:59 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Thu, 22 Jan 2015 14:53:35 +0100
+Message-ID: <1688017.JqQC0u81Pn@soho>
+In-Reply-To: <54C0F262.6010806@siemens.com>
+References: <1537147.Wm9AbiuW5D@soho> <4743020.6q5RsBy8Ia@soho>
+ <54C0F262.6010806@siemens.com>
 MIME-Version: 1.0
-References: <1537147.Wm9AbiuW5D@soho> <2296691.2JpS0rAJbA@soho>
- <20150122114038.GE23461@hermes.click-hack.org> <4743020.6q5RsBy8Ia@soho>
- <54C0F262.6010806@siemens.com> <20150122134400.GA26731@hermes.click-hack.org>
-In-Reply-To: <20150122134400.GA26731@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Xenomai-3 creating debian packages
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,99 +16,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: xenomai@xenomai.org
 
-On 2015-01-22 14:44, Gilles Chanteperdrix wrote:
-> On Thu, Jan 22, 2015 at 01:51:46PM +0100, Jan Kiszka wrote:
->> On 2015-01-22 12:59, Leopold Palomo-Avellaneda wrote:
->>> El Dijous, 22 de gener de 2015, a les 12:40:38, Gilles Chanteperdrix va 
->>> escriure:
->>>> On Thu, Jan 22, 2015 at 12:39:10PM +0100, Leopold Palomo-Avellaneda wrote:
->>>>> El Dijous, 22 de gener de 2015, a les 12:31:05, Gilles Chanteperdrix va
->>>>>
->>>>> escriure:
->>>>>> On Thu, Jan 22, 2015 at 12:17:15PM +0100, Leopold Palomo-Avellaneda 
->>> wrote:
->>>>>>> I have renamed the subject according with the theme.
->>>>>>>
->>>>>>> El Dijous, 22 de gener de 2015, a les 11:48:13, Gilles Chanteperdrix
->>>>>>> va
->>>>>>>
->>>>>>> escriure:
->>>>>>>>>> Well, the fact that the compilation error happens when trying to
->>>>>>>>>> compile a Xenomai file would seem to indicate that
->>>>>>>>>> prepare-kernel.sh
->>>>>>>>>> has put the wrong link into init/Kconfig.
->>>>>>>>>>
->>>>>>>>>> You pass --arch=x86 to prepare-kernel.sh, right, not
->>>>>>>>>> --arch=x86_64 ?
->>>>>>>>>
->>>>>>>>> yes, I have tried both, but I put --arch=x86 or the default option
->>>>>>>>> as
->>>>>>>>> I
->>>>>>>>> said it in my email from yesterday ( :-P)
->>>>>>>>
->>>>>>>> Well, maybe the default option does not work, so please try
->>>>>>>> specifying --arch=x86. The error you have is not in the compiled
->>>>>>>> files, but in the Kconfig files. So, the fact that you can compile
->>>>>>>> does not really prove that prepare-kernel.sh did not fail.
->>>>>>>
->>>>>>> Ok, from a clean sources I have run from the linux tree sources:
->>>>>>>
->>>>>>> $ ../xenomai-3.git/scripts/prepare-kernel.sh --linux=. --
->>>>>>> ipipe=../xenomai-3.git/kernel/cobalt/arch/x86/patches/ipipe-core-3.16-
->>>>>>> x86-1.patch --arch=x86
->>>>>>>
->>>>>>>> Now, prepare-kernel.sh adds the scripts/Kconfig.frag file to
->>>>>>>
->>>>>>>> init/Kconfig. Kconfig.frag contains:
->>>>>>> I don't understand that sentence. Yes, the  Kconfig.frag now, contains
->>>>>>> this:
->>>>>>>
->>>>>>> source "arch/$ARCH/xenomai/Kconfig"
->>>>>>
->>>>>> Ah OK. Could you try to revert that commit ?
->>>>>>
->>>>>> http://git.xenomai.org/xenomai-3.git/commit/scripts/Kconfig.frag?h=next&
->>>>>> id=2 6cc64313e2e695ac227e5a02992c5fe72df2e5f
->>>>>
->>>>> Gilles, I did it. I explained it before. As I just run the script, I don't
->>>>> run any autoconf, so, I then have this part as @LINUX_ARCH@ so it doesn't
->>>>> work.
->>>>>
->>>>> prepare-kernel script doesn't touch (substitute) that.
->>>>
->>>> prepare-kernel.sh before that commit substitutes @LINUX_ARCH@. You
->>>> just need to revert the whole commit.
->>>
->>> Ok, the whole commit touch also the prepare-kernel script. I have tested and 
->>> now, I got in linux-tree/init/Kconfig:
->>>
->>> if XENOMAI
->>> source "arch/x86/xenomai/Kconfig"
->>> endif
->>>
->>> so, I'm sorry Jan, but I think that at least in debian platforms it wasn't a 
->>> good change.
->>
->> See
->> http://git.xenomai.org/xenomai-jki.git/commit/?h=for-forge&id=5d104b1de84c8f4cbfb9d6b79cfaa633ef550e1c
->> for the fix. The bug was the improper variable use in the Kconfig
->> fragment. You only had to revert the whole commit as you were falling
->> back to the obsolete prepare-time patching then, which involved the script.
-> 
-> I do not see what is so obsolete about it. As long as patches are
-> provided separately for each architecture, the prepare-kernel script
-> has to know the architecture anyway.
-
-The reason is given in the original patch: it allows merging all patches
-and preparation into a single source tree. There is no technical need to
-patch the arch in anymore.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
-
+RWwgRGlqb3VzLCAyMiBkZSBnZW5lciBkZSAyMDE1LCBhIGxlcyAxMzo1MTo0NiwgSmFuIEtpc3pr
+YSB2YSBlc2NyaXVyZToKPiBPbiAyMDE1LTAxLTIyIDEyOjU5LCBMZW9wb2xkIFBhbG9tby1BdmVs
+bGFuZWRhIHdyb3RlOgo+ID4gRWwgRGlqb3VzLCAyMiBkZSBnZW5lciBkZSAyMDE1LCBhIGxlcyAx
+Mjo0MDozOCwgR2lsbGVzIENoYW50ZXBlcmRyaXggdmEKPiA+IAo+ID4gZXNjcml1cmU6Cj4gPj4g
+T24gVGh1LCBKYW4gMjIsIDIwMTUgYXQgMTI6Mzk6MTBQTSArMDEwMCwgTGVvcG9sZCBQYWxvbW8t
+QXZlbGxhbmVkYSAKd3JvdGU6Cj4gPj4+IEVsIERpam91cywgMjIgZGUgZ2VuZXIgZGUgMjAxNSwg
+YSBsZXMgMTI6MzE6MDUsIEdpbGxlcyBDaGFudGVwZXJkcml4IHZhCj4gPj4+IAo+ID4+PiBlc2Ny
+aXVyZToKPiA+Pj4+IE9uIFRodSwgSmFuIDIyLCAyMDE1IGF0IDEyOjE3OjE1UE0gKzAxMDAsIExl
+b3BvbGQgUGFsb21vLUF2ZWxsYW5lZGEKPiA+IAo+ID4gd3JvdGU6Cj4gPj4+Pj4gSSBoYXZlIHJl
+bmFtZWQgdGhlIHN1YmplY3QgYWNjb3JkaW5nIHdpdGggdGhlIHRoZW1lLgo+ID4+Pj4+IAo+ID4+
+Pj4+IEVsIERpam91cywgMjIgZGUgZ2VuZXIgZGUgMjAxNSwgYSBsZXMgMTE6NDg6MTMsIEdpbGxl
+cyBDaGFudGVwZXJkcml4Cj4gPj4+Pj4gdmEKPiA+Pj4+PiAKPiA+Pj4+PiBlc2NyaXVyZToKPiA+
+Pj4+Pj4+PiBXZWxsLCB0aGUgZmFjdCB0aGF0IHRoZSBjb21waWxhdGlvbiBlcnJvciBoYXBwZW5z
+IHdoZW4gdHJ5aW5nIHRvCj4gPj4+Pj4+Pj4gY29tcGlsZSBhIFhlbm9tYWkgZmlsZSB3b3VsZCBz
+ZWVtIHRvIGluZGljYXRlIHRoYXQKPiA+Pj4+Pj4+PiBwcmVwYXJlLWtlcm5lbC5zaAo+ID4+Pj4+
+Pj4+IGhhcyBwdXQgdGhlIHdyb25nIGxpbmsgaW50byBpbml0L0tjb25maWcuCj4gPj4+Pj4+Pj4g
+Cj4gPj4+Pj4+Pj4gWW91IHBhc3MgLS1hcmNoPXg4NiB0byBwcmVwYXJlLWtlcm5lbC5zaCwgcmln
+aHQsIG5vdAo+ID4+Pj4+Pj4+IC0tYXJjaD14ODZfNjQgPwo+ID4+Pj4+Pj4gCj4gPj4+Pj4+PiB5
+ZXMsIEkgaGF2ZSB0cmllZCBib3RoLCBidXQgSSBwdXQgLS1hcmNoPXg4NiBvciB0aGUgZGVmYXVs
+dCBvcHRpb24KPiA+Pj4+Pj4+IGFzCj4gPj4+Pj4+PiBJCj4gPj4+Pj4+PiBzYWlkIGl0IGluIG15
+IGVtYWlsIGZyb20geWVzdGVyZGF5ICggOi1QKQo+ID4+Pj4+PiAKPiA+Pj4+Pj4gV2VsbCwgbWF5
+YmUgdGhlIGRlZmF1bHQgb3B0aW9uIGRvZXMgbm90IHdvcmssIHNvIHBsZWFzZSB0cnkKPiA+Pj4+
+Pj4gc3BlY2lmeWluZyAtLWFyY2g9eDg2LiBUaGUgZXJyb3IgeW91IGhhdmUgaXMgbm90IGluIHRo
+ZSBjb21waWxlZAo+ID4+Pj4+PiBmaWxlcywgYnV0IGluIHRoZSBLY29uZmlnIGZpbGVzLiBTbywg
+dGhlIGZhY3QgdGhhdCB5b3UgY2FuIGNvbXBpbGUKPiA+Pj4+Pj4gZG9lcyBub3QgcmVhbGx5IHBy
+b3ZlIHRoYXQgcHJlcGFyZS1rZXJuZWwuc2ggZGlkIG5vdCBmYWlsLgo+ID4+Pj4+IAo+ID4+Pj4+
+IE9rLCBmcm9tIGEgY2xlYW4gc291cmNlcyBJIGhhdmUgcnVuIGZyb20gdGhlIGxpbnV4IHRyZWUg
+c291cmNlczoKPiA+Pj4+PiAKPiA+Pj4+PiAkIC4uL3hlbm9tYWktMy5naXQvc2NyaXB0cy9wcmVw
+YXJlLWtlcm5lbC5zaCAtLWxpbnV4PS4gLS0KPiA+Pj4+PiBpcGlwZT0uLi94ZW5vbWFpLTMuZ2l0
+L2tlcm5lbC9jb2JhbHQvYXJjaC94ODYvcGF0Y2hlcy9pcGlwZS1jb3JlLTMuMTYtCj4gPj4+Pj4g
+eDg2LTEucGF0Y2ggLS1hcmNoPXg4Ngo+ID4+Pj4+IAo+ID4+Pj4+PiBOb3csIHByZXBhcmUta2Vy
+bmVsLnNoIGFkZHMgdGhlIHNjcmlwdHMvS2NvbmZpZy5mcmFnIGZpbGUgdG8KPiA+Pj4+PiAKPiA+
+Pj4+Pj4gaW5pdC9LY29uZmlnLiBLY29uZmlnLmZyYWcgY29udGFpbnM6Cj4gPj4+Pj4gSSBkb24n
+dCB1bmRlcnN0YW5kIHRoYXQgc2VudGVuY2UuIFllcywgdGhlICBLY29uZmlnLmZyYWcgbm93LCBj
+b250YWlucwo+ID4+Pj4+IHRoaXM6Cj4gPj4+Pj4gCj4gPj4+Pj4gc291cmNlICJhcmNoLyRBUkNI
+L3hlbm9tYWkvS2NvbmZpZyIKPiA+Pj4+IAo+ID4+Pj4gQWggT0suIENvdWxkIHlvdSB0cnkgdG8g
+cmV2ZXJ0IHRoYXQgY29tbWl0ID8KPiA+Pj4+IAo+ID4+Pj4gaHR0cDovL2dpdC54ZW5vbWFpLm9y
+Zy94ZW5vbWFpLTMuZ2l0L2NvbW1pdC9zY3JpcHRzL0tjb25maWcuZnJhZz9oPW5leHQKPiA+Pj4+
+ICYKPiA+Pj4+IGlkPTIgNmNjNjQzMTNlMmU2OTVhYzIyN2U1YTAyOTkyYzVmZTcyZGYyZTVmCj4g
+Pj4+IAo+ID4+PiBHaWxsZXMsIEkgZGlkIGl0LiBJIGV4cGxhaW5lZCBpdCBiZWZvcmUuIEFzIEkg
+anVzdCBydW4gdGhlIHNjcmlwdCwgSQo+ID4+PiBkb24ndAo+ID4+PiBydW4gYW55IGF1dG9jb25m
+LCBzbywgSSB0aGVuIGhhdmUgdGhpcyBwYXJ0IGFzIEBMSU5VWF9BUkNIQCBzbyBpdAo+ID4+PiBk
+b2Vzbid0Cj4gPj4+IHdvcmsuCj4gPj4+IAo+ID4+PiBwcmVwYXJlLWtlcm5lbCBzY3JpcHQgZG9l
+c24ndCB0b3VjaCAoc3Vic3RpdHV0ZSkgdGhhdC4KPiA+PiAKPiA+PiBwcmVwYXJlLWtlcm5lbC5z
+aCBiZWZvcmUgdGhhdCBjb21taXQgc3Vic3RpdHV0ZXMgQExJTlVYX0FSQ0hALiBZb3UKPiA+PiBq
+dXN0IG5lZWQgdG8gcmV2ZXJ0IHRoZSB3aG9sZSBjb21taXQuCj4gPiAKPiA+IE9rLCB0aGUgd2hv
+bGUgY29tbWl0IHRvdWNoIGFsc28gdGhlIHByZXBhcmUta2VybmVsIHNjcmlwdC4gSSBoYXZlIHRl
+c3RlZAo+ID4gYW5kIG5vdywgSSBnb3QgaW4gbGludXgtdHJlZS9pbml0L0tjb25maWc6Cj4gPiAK
+PiA+IGlmIFhFTk9NQUkKPiA+IHNvdXJjZSAiYXJjaC94ODYveGVub21haS9LY29uZmlnIgo+ID4g
+ZW5kaWYKPiA+IAo+ID4gc28sIEknbSBzb3JyeSBKYW4sIGJ1dCBJIHRoaW5rIHRoYXQgYXQgbGVh
+c3QgaW4gZGViaWFuIHBsYXRmb3JtcyBpdCB3YXNuJ3QKPiA+IGEgZ29vZCBjaGFuZ2UuCj4gCj4g
+U2VlCj4gaHR0cDovL2dpdC54ZW5vbWFpLm9yZy94ZW5vbWFpLWpraS5naXQvY29tbWl0Lz9oPWZv
+ci1mb3JnZSZpZD01ZDEwNGIxZGU4NGM4Zgo+IDRjYmZiOWQ2Yjc5Y2ZhYTYzM2VmNTUwZTFjIGZv
+ciB0aGUgZml4LiBUaGUgYnVnIHdhcyB0aGUgaW1wcm9wZXIgdmFyaWFibGUKPiB1c2UgaW4gdGhl
+IEtjb25maWcKPiBmcmFnbWVudC4gWW91IG9ubHkgaGFkIHRvIHJldmVydCB0aGUgd2hvbGUgY29t
+bWl0IGFzIHlvdSB3ZXJlIGZhbGxpbmcKPiBiYWNrIHRvIHRoZSBvYnNvbGV0ZSBwcmVwYXJlLXRp
+bWUgcGF0Y2hpbmcgdGhlbiwgd2hpY2ggaW52b2x2ZWQgdGhlIHNjcmlwdC4KCk9rLCByZXZlcnRl
+ZCBhbmQgaXQgd29ya3MuIFBsZWFzZSwgY291bGQgeW91IHVwZGF0ZSBpdD8KCj4gPiBOb3csIHRo
+ZSBub2FwaWMgaXNzdWUsIGRvIHlvdSBoYXZlIHNvbWUgaWRlYT8KPiAKPiBJIHByb3ZpZGVkIHNv
+bWUgYW5zd2VycyBhbHJlYWR5Lgo+IAoKWWVzLAoKPiBTb3VuZHMgbGlrZSBpbnRlcnJ1cHQgcmVt
+YXBwaW5nIGlzIGVuYWJsZWQgZm9yIHlvdXIgc3lzdGVtLiBUaGF0J3Mgbm90Cj4gc3VwcG9ydGVk
+IGJ5IFhlbm9tYWkgLyBJLXBpcGUgc28gZmFyIChvbiBteSB0by1kbyBsaXN0LCBhbG9uZyB3aXRo
+Cj4geDJBUElDIHN1cHBvcnQpLiBEaXNhYmxlIHRoaXMgdmlhICJpbnRlbF9pb21tdT1vZmYgaW50
+cmVtYXA9b2ZmIiBpbiB0aGUKPiBrZXJuZWwgY29tbWFuZCBsaW5lIG9yIGJ5IGNoYW5naW5nIHRo
+ZSBrZXJuZWwgY29uZmlnIHRvIG5vdCBpbmNsdWRlCj4gSU9NTVUgLyBpbnRlcnJ1cHQgcmVtYXBw
+aW5nIHN1cHBvcnQuCgpJIGRpc2FibGUgYWxsIElPTU1VIHN1cHBvcnQsIG9yIGp1c3QgdGhlIGlu
+dGVsIElPTU1VIHVzaW5nIERNQSBSZW1hcHBpbmcgCkRldmljZXMgYW5kIHRoZSBTdXBwb3J0IGZv
+ciBJbnRlcnJ1cHQgUmVtYXBwaW5nPwoKClJlZ2FyZHMsCgoKTGVvcG9sZAoKCgotLSAKLS0KTGlu
+dXggVXNlciAxNTI2OTIgICAgIEdQRzogMDVGNEE3QTk0OUEyRDlBQQpDYXRhbG9uaWEKLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpBOiBCZWNhdXNlIGl0IG1lc3NlcyB1cCB0
+aGUgb3JkZXIgaW4gd2hpY2ggcGVvcGxlIG5vcm1hbGx5IHJlYWQgdGV4dC4KUTogV2h5IGlzIHRv
+cC1wb3N0aW5nIHN1Y2ggYSBiYWQgdGhpbmc/CkE6IFRvcC1wb3N0aW5nLgpROiBXaGF0IGlzIHRo
+ZSBtb3N0IGFubm95aW5nIHRoaW5nIGluIGUtbWFpbD8KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0
+IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFt
+ZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDgx
+OSBieXRlcwpEZXNjOiBUaGlzIGlzIGEgZGlnaXRhbGx5IHNpZ25lZCBtZXNzYWdlIHBhcnQuClVS
+TDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMv
+MjAxNTAxMjIvYzA4Njg1ZmUvYXR0YWNobWVudC5zaWc+Cg==
