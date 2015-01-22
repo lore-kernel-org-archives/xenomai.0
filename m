@@ -1,18 +1,16 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Wed, 21 Jan 2015 10:45:28 -0500
-Message-ID: <20150121154528.GJ30245@csclub.uwaterloo.ca>
-References: <6773858.JgE1vlCdur@soho> <2621675.LcrfARJh6l@soho>
- <ce8779a9a03f5c7fbe48cf43e334f44c.squirrel@xenomai.org>
- <15627875.xOGqqJnifV@soho>
- <20150121143737.GH30245@csclub.uwaterloo.ca>
- <39c2587f04b5da62847e9606b5f88726.squirrel@xenomai.org>
- <20150121152307.GI30245@csclub.uwaterloo.ca>
- <2bd7a5437659ad8fbf5f4c5788bebd48.squirrel@xenomai.org>
+Date: Thu, 22 Jan 2015 12:31:05 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150122113105.GB23461@hermes.click-hack.org>
+References: <1537147.Wm9AbiuW5D@soho> <5878976.hoeVIdWPhU@soho>
+ <20150122104813.GA23461@hermes.click-hack.org>
+ <1724720.ZWD9XnFxZe@soho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2bd7a5437659ad8fbf5f4c5788bebd48.squirrel@xenomai.org>
-Subject: Re: [Xenomai] Compiling xenomai-3
+In-Reply-To: <1724720.ZWD9XnFxZe@soho>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai-3 creating debian packages (was: Re:
+ Xenomai-3 booting problems)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,18 +19,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Cc: xenomai@xenomai.org
 
-On Wed, Jan 21, 2015 at 04:32:06PM +0100, Gilles Chanteperdrix wrote:
-> I am just trying to answer clearly your claim, and repeating what has been
-> exchanged on another mailing list (which you do not seem to read).
-> But the I-pipe patches are in the GNA download area for everyone to see. It
-> is all in the open. If you do not know whether the patch exists, simply look
-> in the download area before insinuating that the patch does not exist.
+On Thu, Jan 22, 2015 at 12:17:15PM +0100, Leopold Palomo-Avellaneda wrote:
+> I have renamed the subject according with the theme.
+> 
+> El Dijous, 22 de gener de 2015, a les 11:48:13, Gilles Chanteperdrix va 
+> escriure:
+> > > > 
+> > > > Well, the fact that the compilation error happens when trying to
+> > > > compile a Xenomai file would seem to indicate that prepare-kernel.sh
+> > > > has put the wrong link into init/Kconfig.
+> > > > 
+> > > > You pass --arch=x86 to prepare-kernel.sh, right, not --arch=x86_64 ?
+> > > 
+> > > yes, I have tried both, but I put --arch=x86 or the default option as I
+> > > said it in my email from yesterday ( :-P)
+> > 
+> > Well, maybe the default option does not work, so please try
+> > specifying --arch=x86. The error you have is not in the compiled
+> > files, but in the Kconfig files. So, the fact that you can compile
+> > does not really prove that prepare-kernel.sh did not fail.
+> 
+> Ok, from a clean sources I have run from the linux tree sources:
+> 
+> $ ../xenomai-3.git/scripts/prepare-kernel.sh --linux=. --
+> ipipe=../xenomai-3.git/kernel/cobalt/arch/x86/patches/ipipe-core-3.16-
+> x86-1.patch --arch=x86 
+>  
+> > Now, prepare-kernel.sh adds the scripts/Kconfig.frag file to
+> > init/Kconfig. Kconfig.frag contains:
+> 
+> I don't understand that sentence. Yes, the  Kconfig.frag now, contains this:
+> 
+> source "arch/$ARCH/xenomai/Kconfig"
 
-Well I did mention I hadn't checked lately.
+Ah OK. Could you try to revert that commit ?
+
+http://git.xenomai.org/xenomai-3.git/commit/scripts/Kconfig.frag?h=next&id=26cc64313e2e695ac227e5a02992c5fe72df2e5f
+
 
 -- 
-Len Sorensen
-
+					    Gilles.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 811 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150122/4f17a4cf/attachment.sig>
