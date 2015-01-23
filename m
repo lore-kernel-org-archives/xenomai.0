@@ -1,6 +1,6 @@
-Date: Fri, 23 Jan 2015 11:18:59 +0100
+Date: Fri, 23 Jan 2015 11:24:26 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150123101859.GA6264@hermes.click-hack.org>
+Message-ID: <20150123102426.GB6264@hermes.click-hack.org>
 References: <3022250.HiL0lpQ0bg@soho> <3479927.PcNNIgk0xm@soho>
  <20150123074403.GK29604@hermes.click-hack.org>
  <6556840.cT0vWHhSc4@soho>
@@ -61,16 +61,6 @@ On Fri, Jan 23, 2015 at 10:44:24AM +0100, Leopold Palomo-Avellaneda wrote:
 > The module that failed was the nvidiafb. Not the others. For instance, now I'm 
 > running 3.16 with xenomai 3.0.0 in my graphical desktop with nvidia driver. 
 > It's the nvidia framebuffer that fails. 
-
-AFAIK, nvidiafb is part of the Linux kernel, not of the nvidia
-driver. According to this page:
-http://wiki.gentoo.org/wiki/NVidia/nvidia-drivers
-
-- the MTRR error is due to the fact that you disabled MTRR in the
-kernel configuration, probably because you disabled IOMMU
-- using the nvidiafb module with the nvidia proprietary module is
-not recommended, as they are known to conflict at times.
-
 > 
 > In debian systems, adding 
 > blacklist nvidiafb
@@ -81,8 +71,10 @@ not recommended, as they are known to conflict at times.
 > 
 > xenomai has some kind of issue tracker?
 
-You are using it.
-
+Also, speaking about tracking issues. You did not answer my
+question: all these configurations issues you have have nothing
+specific to xenomai 3. How come you did not reuse the same
+configuration that you used for Xenomai 2.6.4 ?
 
 -- 
 					    Gilles.
@@ -92,4 +84,4 @@ Name: not available
 Type: application/pgp-signature
 Size: 811 bytes
 Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150123/8f333ebb/attachment.sig>
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150123/674d5f12/attachment.sig>
