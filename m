@@ -1,10 +1,15 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Thu, 22 Jan 2015 08:47:24 +0100
-Message-ID: <1537147.Wm9AbiuW5D@soho>
+Date: Fri, 23 Jan 2015 15:08:10 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150123140810.GB9521@hermes.click-hack.org>
+References: <3022250.HiL0lpQ0bg@soho> <6556840.cT0vWHhSc4@soho>
+ <20150123102426.GB6264@hermes.click-hack.org>
+ <33073894.RfSf0qJ9Gn@soho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Xenomai-3 booting problems
+Content-Disposition: inline
+In-Reply-To: <33073894.RfSf0qJ9Gn@soho>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai-3 booting problems (2)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,47 +18,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Cc: xenomai@xenomai.org
 
-SGksCgoKSSBoYXZlIGNvbXBpbGluZyBhIENvYmFsdCBrZXJuZWwuIEkgaGF2ZSBmb2xsb3dlZCB0
-aGUgd2ViICJ3aWtpcHJlc3MiIFsxXTstKSAKcmVjb21tZW5kYXRpb25zLiBIb3dldmVyLCBteSBi
-b3ggKGEgbm9ybWFsIGRlc2t0b3AgY29tcHV0ZXIgLSBEZWxsIE9wdGlwbGV4IAo3MDEwIC0pIGRv
-ZXNuJ3QgYm9vdC4gSXQgdGhyb3dzIGEgbWVzc2FnZSBsaWtlOgouLi4uCnRpbWVyIGRvZXNuJ3Qg
-d29yayB0aHJvdWdoIGludGVycnVwLXJlbWFwcGVkIElPLWFwaWMKCi4uLgoKZW5hYmxpbmcgbm9h
-cGljIGluIHRoZSBib290IG9wdGlvbnMgSSdtIGFibGUgdG8gYm9vdC4gQnV0LCBJIGhhdmUgbm90
-IG1ha2UgYW55IAp0ZXN0IGJ5IG5vdy4gU29tZSBpbnRlcmVzdGluZyBtZXNzYWdlczoKCiQgZG1l
-c2cgfCBncmVwIC1pIHhlbm9tYWkKWyAgICAwLjAwMDAwMF0gTGludXggdmVyc2lvbiAzLjE2LjAt
-eGVub21haS0zLjAuMCAocm9vdEBzb2hvKSAoZ2NjIHZlcnNpb24gCjQuOS4xIChEZWJpYW4gNC45
-LjEtMTkpICkgIzEgU01QIFdlZCBKYW4gMjEgMTY6Mjk6MzYgVVRDIDIwMTUKWyAgICAwLjAwMDAw
-MF0gQ29tbWFuZCBsaW5lOiBCT09UX0lNQUdFPS9ib290L3ZtbGludXotMy4xNi4wLXhlbm9tYWkt
-My4wLjAgCnJvb3Q9VVVJRD0xNWNmYWM4Mi0xMTI3LTQyMWYtOWFlZC1lYWY0ODI0N2VkNGUgcm8g
-cXVpZXQgbm9hcGljClsgICAgMC4wMDAwMDBdIEtlcm5lbCBjb21tYW5kIGxpbmU6IEJPT1RfSU1B
-R0U9L2Jvb3Qvdm1saW51ei0zLjE2LjAtCnhlbm9tYWktMy4wLjAgcm9vdD1VVUlEPTE1Y2ZhYzgy
-LTExMjctNDIxZi05YWVkLWVhZjQ4MjQ3ZWQ0ZSBybyBxdWlldCBub2FwaWMKWyAgICAwLjcwNTA3
-MV0gW1hlbm9tYWldIHNjaGVkdWxpbmcgY2xhc3MgaWRsZSByZWdpc3RlcmVkLgpbICAgIDAuNzA1
-MDcyXSBbWGVub21haV0gc2NoZWR1bGluZyBjbGFzcyBydCByZWdpc3RlcmVkLgpbICAgIDAuNzA1
-MDkwXSBbWGVub21haV0gZGlzYWJsaW5nIGF1dG9tYXRpYyBDMUUgc3RhdGUgcHJvbW90aW9uIG9u
-IEludGVsIApwcm9jZXNzb3IKWyAgICAwLjcwNTEwNF0gW1hlbm9tYWldIFNNSS1lbmFibGVkIGNo
-aXBzZXQgZm91bmQsIGJ1dCBTTUkgd29ya2Fyb3VuZCAKZGlzYWJsZWQKICAgICAgICAgIChzZWUg
-eGVub21haS5zbWkgcGFyYW1ldGVyKS4gWW91IG1pZ2h0IGVuY291bnRlcgpbICAgIDAuNzA1Mjg0
-XSBJLXBpcGU6IGhlYWQgZG9tYWluIFhlbm9tYWkgcmVnaXN0ZXJlZC4KWyAgICAwLjcxNzk4Nl0g
-W1hlbm9tYWldIENvYmFsdCB2My4wLXJjMiAoRXhhY3QgWmVybykgW0RFQlVHXQpbICAgIDAuODk3
-NzI2XSB1c2IgdXNiMTogTWFudWZhY3R1cmVyOiBMaW51eCAzLjE2LjAteGVub21haS0zLjAuMCB4
-aGNpX2hjZApbICAgIDAuODk4NjE3XSB1c2IgdXNiMjogTWFudWZhY3R1cmVyOiBMaW51eCAzLjE2
-LjAteGVub21haS0zLjAuMCB4aGNpX2hjZApbICAgIDAuOTE0MTE0XSB1c2IgdXNiMzogTWFudWZh
-Y3R1cmVyOiBMaW51eCAzLjE2LjAteGVub21haS0zLjAuMCBlaGNpX2hjZApbICAgIDAuOTMwMTA5
-XSB1c2IgdXNiNDogTWFudWZhY3R1cmVyOiBMaW51eCAzLjE2LjAteGVub21haS0zLjAuMCBlaGNp
-X2hjZAoqKiogUlRuZXQgZm9yIFhlbm9tYWkgdjMuMC1yYzIgKioqCgoKU28sIGNhbiBhdm9pZCB0
-byBwYXNzIHRoZSBub2FwaWMgcGFyYW1ldGVyIHRvIHRoZSBrZXJuZWwgdG8gYm9vdD8KClRoYW5r
-cywKCkxlb3BvbGQKCgpbMV0gaHR0cDovL3hlbm9tYWkub3JnLzIwMTQvMDYvY29uZmlndXJpbmct
-Zm9yLXg4Ni1iYXNlZC1kdWFsLWtlcm5lbHMvCgotLSAKLS0KTGludXggVXNlciAxNTI2OTIgICAg
-IEdQRzogMDVGNEE3QTk0OUEyRDlBQQpDYXRhbG9uaWEKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLQpBOiBCZWNhdXNlIGl0IG1lc3NlcyB1cCB0aGUgb3JkZXIgaW4gd2hpY2gg
-cGVvcGxlIG5vcm1hbGx5IHJlYWQgdGV4dC4KUTogV2h5IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBi
-YWQgdGhpbmc/CkE6IFRvcC1wb3N0aW5nLgpROiBXaGF0IGlzIHRoZSBtb3N0IGFubm95aW5nIHRo
-aW5nIGluIGUtbWFpbD8KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEg
-bm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpU
-eXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDgxOSBieXRlcwpEZXNjOiBUaGlz
-IGlzIGEgZGlnaXRhbGx5IHNpZ25lZCBtZXNzYWdlIHBhcnQuClVSTDogPGh0dHA6Ly93d3cueGVu
-b21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTAxMjIvOWMwYjBkYmUv
-YXR0YWNobWVudC5zaWc+Cg==
+On Fri, Jan 23, 2015 at 12:43:05PM +0100, Leopold Palomo-Avellaneda wrote:
+> El Divendres, 23 de gener de 2015, a les 11:24:26, Gilles Chanteperdrix va 
+> escriure:
+> 
+> > > xenomai has some kind of issue tracker?
+> > 
+> > Also, speaking about tracking issues. You did not answer my
+> > question: all these configurations issues you have have nothing
+> > specific to xenomai 3. How come you did not reuse the same
+> > configuration that you used for Xenomai 2.6.4 ?
+> 
+> No Gilles. I think that I wrote it before (as I said ;-)
+> 
+> I copied the same configuration from xenomai-2.6.4 to xenomai-3.0.0. Xenomai 3 
+> introduced some differences. I have attached the diffs.
+
+The CONFIG_XENO* differences and the CONFIG_IPIPE* differences
+are obviously due to Xenomai version change. The rest is not.
+
+> 
+> The fb issue has appeared because I test the kernels in a box without graphic 
+> environtment but today I tested in my box (with graphic environtment). I 
+> prefer the nvidia cards in general for the labs because I have less problems 
+> than the ati ones.
+
+I prefer the Intel ones: the drivers are free, as in free beer, are
+mainlined into all the projects involved (linux, libdrm, mesa,
+libva, xorg, etc..) have a working hardware acceleration with good
+performances (maybe not for bleeding edge games, but OK for usual
+3D needs and for decompressing H264 and displaying video).
+
+> < CONFIG_VFIO_IOMMU_TYPE1=m
+> < CONFIG_VFIO=m
+> < CONFIG_VFIO_PCI=m
+> < CONFIG_VFIO_PCI_VGA=y
+> 5764,5773c5773
+> < CONFIG_IOMMU_API=y
+> < CONFIG_IOMMU_SUPPORT=y
+> < CONFIG_AMD_IOMMU=y
+> < # CONFIG_AMD_IOMMU_STATS is not set
+> < CONFIG_AMD_IOMMU_V2=y
+> < CONFIG_DMAR_TABLE=y
+> < CONFIG_INTEL_IOMMU=y
+> < # CONFIG_INTEL_IOMMU_DEFAULT_ON is not set
+> < CONFIG_INTEL_IOMMU_FLOPPY_WA=y
+> < CONFIG_IRQ_REMAP=y
+> ---
+> > # CONFIG_IOMMU_SUPPORT is not set
+> 6530d6529
+> < # CONFIG_INTEL_TXT is not set
+> 6726d6724
+> < CONFIG_KVM_DEVICE_ASSIGNMENT=y
+
+
+-- 
+					    Gilles.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 811 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150123/7231044f/attachment.sig>
