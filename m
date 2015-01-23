@@ -1,12 +1,13 @@
-Date: Wed, 21 Jan 2015 18:20:06 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150121172006.GF16075@hermes.click-hack.org>
-References: <1421852743-21535-1-git-send-email-sr@denx.de>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Fri, 23 Jan 2015 10:44:24 +0100
+Message-ID: <6556840.cT0vWHhSc4@soho>
+In-Reply-To: <20150123074403.GK29604@hermes.click-hack.org>
+References: <3022250.HiL0lpQ0bg@soho> <3479927.PcNNIgk0xm@soho>
+ <20150123074403.GK29604@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1421852743-21535-1-git-send-email-sr@denx.de>
-Subject: Re: [Xenomai] [PATCH] hal/arm: Add Zynq v3.14.17 patches
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Xenomai-3 booting problems (2)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,38 +16,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Stefan Roese <sr@denx.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Wed, Jan 21, 2015 at 04:05:43PM +0100, Stefan Roese wrote:
-> Xilinx Zynq is already supported in the mainline Xenomai git repository.
-> This patch adds support for the v3.14.17 Linux Kernel with the latest
-> arm-6 i-pipe patch additionally to the already present v3.5 and v3.8
-> support.
-
-It would be nice if Zynq support could be integrated into the
-mainline I-pipe git, is Zynq support still experimental, do people
-still need to use a fork ?
-
-> 
-> Signed-off-by: Stefan Roese <sr@denx.de>
-> ---
-> Please note that the arm-6 patch that is referenced in the README
-
-One (the only?) interest of -pre and -post patches is to be able to
-update the I-pipe patch without updating the pre and post patches.
-So, I believe the README should not mention a particular version of
-the I-pipe patch. I would rather say: apply
-ipipe-core-3.1.4.17-arm-*.patch
-Maybe you could say that it has been tested with that version, so
-that people realize that it may be broken if they use a later I-pipe
-release, but not mention this particular version in the README.
-
-Otherwise, looking at the patches themselves: the pre patch reverts
-smp.c and git.c to the mainline version, and the post patch does not
-update them. It means you revert the changes made to these files by
-the fork you use. Is it OK for you ?
-
--- 
-					    Gilles.
-
+RWwgRGl2ZW5kcmVzLCAyMyBkZSBnZW5lciBkZSAyMDE1LCBhIGxlcyAwODo0NDowMywgR2lsbGVz
+IENoYW50ZXBlcmRyaXggdmEgCmVzY3JpdXJlOgo+IE9uIEZyaSwgSmFuIDIzLCAyMDE1IGF0IDA4
+OjM2OjE0QU0gKzAxMDAsIExlb3BvbGQgUGFsb21vLUF2ZWxsYW5lZGEgd3JvdGU6Cj4gPiBFbCBE
+aWpvdXMsIDIyIGRlIGdlbmVyIGRlIDIwMTUsIGEgbGVzIDE2OjA5OjE5LCBMZW9wb2xkIFBhbG9t
+by1BdmVsbGFuZWRhCj4gPiB2YT4gCj4gPiBlc2NyaXVyZToKPiA+ID4gSGkgYWdhaW4sCj4gPiA+
+IAo+ID4gPiBhZnRlciBtYWRlIHRoZSBtb2RpZmljYXRpb25zIHByb3Bvc2VkIGJ5IEphbiBLaXN6
+a2EsIG5vdyBpdCBkb2Vzbid0Cj4gPiA+IGJ1aWx0Cj4gPiA+IGFuZCB0aGUgbWVzc2FnZSBpczoK
+PiA+ID4gCj4gPiA+IG52aWRpYWZiOiB1bmFibGUgdG8gc2V0dXAgTVRSUgo+ID4gCj4gPiBIaSwK
+PiA+IAo+ID4gcmVtb3ZlZCBudmlkaWFmYi5rbyBtb2R1bGUgKGFuZCBhbGwgdGhlIG52aWRpYSBn
+cmFwaGljcyBzdHVmZikgYW5kIHRoZSBib3gKPiA+IGJvb3RlZC4gSXQgc2VlbXMgdGhhdCBudmlk
+aWFmYiAodGhlIG5vbi1mcmVlIG52aWRpYSBkcml2ZXIpIGRvZXNuJ3QgbGlrZQo+ID4geGVub21h
+aS0zIG9yIHZpY2UtdmVyc2EuCj4gPiAKPiA+IEFyZSB5b3UgYXdhcmUgb2YgdGhpcz8KPiAKPiBX
+ZXJlIHlvdSB0cnlpbmcgdG8gdXNlIHRoZSBudmlkaWEgbW9kdWxlIGNvbXBpbGVkIGZvciB0aGUg
+dmFuaWxsYQo+IGtlcm5lbCwgb3IgZGlkIHlvdSByZWNvbXBpbGUgdGhlIG52aWRpYSBtb2R1bGUg
+Zm9yIHRoZSBYZW5vbWFpCj4ga2VybmVsPyBUaGUgZm9ybWVyIHdpbGwgbm90IHdvcmsuCgp0aGUg
+c2Vjb25kIG9uZS4gVXNpbmcgZGViaWFuIHBhY2thZ2VzLCB3aGVuIHlvdSBpbnN0YWxsIGEgbmV3
+IG9uZSwgaXQgCnJlY29tcGlsZXMgdGhlIG1vZHVsZXMgbmVlZGVkIChpZiB0aGV5IGFyZSBwYWNr
+YWdlZCBka21zKSBTbywgd2hlbiBJIGluc3RhbGxlZCAKdGhlIGRlYmlhbiBwYWNrYWdlLCBhbGwg
+dGhlIG1vZHVsZXMgKHRoYXQgaGFkIHNvdXJjZXMpIHdlcmUgcmVjb21waWxlZC4KCj4gT3RoZXIg
+dGhhbiB0aGF0LCB0aGUgbnZpZGlhIG1vZHVsZSBoYXMgYmVlbiByZXBvcnRlZCB0byB3b3JrIHdp
+dGgKPiBYZW5vbWFpLCBpZiB0aGUgSS1waXBlIHBhdGNoIHlvdSB1c2UgY29udGFpbnMgdGhpcyBw
+YXRjaDoKPiBodHRwczovL2dpdC54ZW5vbWFpLm9yZy9pcGlwZS5naXQvY29tbWl0Lz9oPWlwaXBl
+LTMuMTYmaWQ9YmM1YmVhNmYxMzRkZTJlNTViCj4gYjYwMTQ1NjZjNjJmYTA4M2VkOWM3YgoKClRo
+ZSBtb2R1bGUgdGhhdCBmYWlsZWQgd2FzIHRoZSBudmlkaWFmYi4gTm90IHRoZSBvdGhlcnMuIEZv
+ciBpbnN0YW5jZSwgbm93IEknbSAKcnVubmluZyAzLjE2IHdpdGggeGVub21haSAzLjAuMCBpbiBt
+eSBncmFwaGljYWwgZGVza3RvcCB3aXRoIG52aWRpYSBkcml2ZXIuIApJdCdzIHRoZSBudmlkaWEg
+ZnJhbWVidWZmZXIgdGhhdCBmYWlscy4gCgpJbiBkZWJpYW4gc3lzdGVtcywgYWRkaW5nIApibGFj
+a2xpc3QgbnZpZGlhZmIKCnRvL2V0Yy9tb2Rwcm9iZS5kL252aWRpYS1ibGFja2xpc3RzLW5vdXZl
+YXUuY29uZgoKc29sdmUgdGhlIGlzc3VlLiAKCnhlbm9tYWkgaGFzIHNvbWUga2luZCBvZiBpc3N1
+ZSB0cmFja2VyPwoKTGVvcG9sZAoKLS0gCi0tCkxpbnV4IFVzZXIgMTUyNjkyICAgICBHUEc6IDA1
+RjRBN0E5NDlBMkQ5QUEKQ2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0KQTogQmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhlIG9yZGVyIGluIHdoaWNoIHBlb3BsZSBu
+b3JtYWxseSByZWFkIHRleHQuClE6IFdoeSBpcyB0b3AtcG9zdGluZyBzdWNoIGEgYmFkIHRoaW5n
+PwpBOiBUb3AtcG9zdGluZy4KUTogV2hhdCBpcyB0aGUgbW9zdCBhbm5veWluZyB0aGluZyBpbiBl
+LW1haWw/Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0
+IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBw
+bGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiA4MTkgYnl0ZXMKRGVzYzogVGhpcyBpcyBhIGRp
+Z2l0YWxseSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3Jn
+L3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTUwMTIzLzc0MWM3YzRkL2F0dGFjaG1l
+bnQuc2lnPgo=
