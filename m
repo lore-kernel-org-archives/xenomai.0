@@ -1,10 +1,15 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Fri, 23 Jan 2015 13:09:41 +0100
-Message-ID: <129277905.Ag2XebZWbK@soho>
+Date: Fri, 23 Jan 2015 14:55:07 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150123135507.GA9521@hermes.click-hack.org>
+References: <3022250.HiL0lpQ0bg@soho> <6556840.cT0vWHhSc4@soho>
+ <20150123101859.GA6264@hermes.click-hack.org>
+ <8468176.WAFPJMNP3d@soho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Packaging Xenomai-3
+Content-Disposition: inline
+In-Reply-To: <8468176.WAFPJMNP3d@soho>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai-3 booting problems (2)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,29 +18,130 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Cc: xenomai@xenomai.org
 
-SGksCgpub3cgdGhhdCBJIGhhdmUgc29tZSBrZXJuZWwgdG8gYm9vdCwgSSB3b3VsZCBsaWtlIHRv
-IGFzayBzb21lIGFzcGVjdHMgb2YgClhlbm9tYWktMyBpbiBvcmRlciB0byBwYWNrYWdlIGl0LgoK
-UmVhZGluZyB0aGUgZG9jdW1lbnRhdGlvbiwgbm93IHRoZSBuZXcgbGlieGVub21haSBjb3VsZCB1
-c2UgdHdvIGtpbmQgb2YgCmtlcm5lbHM6IHRoZSBwYXRjaGVkIG9uZSAoQ29iYWx0KSBvciB0aGUg
-cHJlZW1wdF9ydCAoTWVyY3VyeSkuCgoxKSBJcyBpdCBwb3NzaWJsZSB0byBoYXZlIF9vbmx5XyBv
-bmUgbGlicmFyeSAoYmluYXJ5KSB0aGF0IHVzZXMgb25lIG9yIGFub3RoZXIgCmtlcm5lbCBpbiBm
-dW5jdGlvbiB3aGljaCBpcyBydW5uaW5nPwoKMikgSWYgbm90LCBhcyB3ZSBtdXN0IHJlY29tcGls
-ZSB0aGUgbGlicmFyeSwgYWxsIHRoZSBwcm9ncmFtcyBsaW5rZWQgYWdhaW5zdCAKbXVzdCBiZSBy
-ZWNvbXBpbGVkIG9yIGlmIGl0J3MgYmluYXJ5IGNvbXBhdGlibGU/CgozKSBDb21wYXJpbmcgdGhl
-IGZpbGVzIGdlbmVyYXRlZCAoeGVub21haS0yLnggdnMgeGVub21haS0zLngsIGlmIHlvdSBidW1w
-IHRoZSAKc29uYW1lcyBvZiBsaWJhbmFsb2d5LCBsaWJwc29zIGFuZCBsaWJ2eHdvcmtzIHlvdSBj
-b3VsZCBoYXZlIChJIGd1ZXNzKSBib3RoIApiaW5hcnkgdmVyc2lvbnMgaW5zdGFsbGVkIGluIHRo
-ZSBzYW1lIGJveC4KCjQpIFdoeSB0aGUgbGlidnh3b3JrcyBoYXMgbG93ZXIgc29uYW1lIHZlcnNp
-b24gaW4gMi42LjQgdGhhbiBpbiAzLjAuMD8KCgpCZXN0IHJlZ2FyZHMsCgpMZW9wb2xkCgoKCgot
-LSAKLS0KTGludXggVXNlciAxNTI2OTIgICAgIEdQRzogMDVGNEE3QTk0OUEyRDlBQQpDYXRhbG9u
-aWEKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpBOiBCZWNhdXNlIGl0IG1l
-c3NlcyB1cCB0aGUgb3JkZXIgaW4gd2hpY2ggcGVvcGxlIG5vcm1hbGx5IHJlYWQgdGV4dC4KUTog
-V2h5IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBiYWQgdGhpbmc/CkE6IFRvcC1wb3N0aW5nLgpROiBX
-aGF0IGlzIHRoZSBtb3N0IGFubm95aW5nIHRoaW5nIGluIGUtbWFpbD8KLS0tLS0tLS0tLS0tLS0g
-bmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJi
-ZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJl
-ClNpemU6IDgxOSBieXRlcwpEZXNjOiBUaGlzIGlzIGEgZGlnaXRhbGx5IHNpZ25lZCBtZXNzYWdl
-IHBhcnQuClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0
-YWNobWVudHMvMjAxNTAxMjMvYWRhM2E3MDMvYXR0YWNobWVudC5zaWc+Cg==
+On Fri, Jan 23, 2015 at 12:30:02PM +0100, Leopold Palomo-Avellaneda wrote:
+> El Divendres, 23 de gener de 2015, a les 11:18:59, Gilles Chanteperdrix va 
+> escriure:
+> > On Fri, Jan 23, 2015 at 10:44:24AM +0100, Leopold Palomo-Avellaneda wrote:
+> > > El Divendres, 23 de gener de 2015, a les 08:44:03, Gilles Chanteperdrix va
+> > > 
+> > > escriure:
+> > > > On Fri, Jan 23, 2015 at 08:36:14AM +0100, Leopold Palomo-Avellaneda 
+> wrote:
+> > > > > El Dijous, 22 de gener de 2015, a les 16:09:19, Leopold
+> > > > > Palomo-Avellaneda
+> > > > > va>
+> > > > > 
+> > > > > escriure:
+> > > > > > Hi again,
+> > > > > > 
+> > > > > > after made the modifications proposed by Jan Kiszka, now it doesn't
+> > > > > > built
+> > > > > > and the message is:
+> > > > > > 
+> > > > > > nvidiafb: unable to setup MTRR
+> > > > > 
+> > > > > Hi,
+> > > > > 
+> > > > > removed nvidiafb.ko module (and all the nvidia graphics stuff) and the
+> > > > > box
+> > > > > booted. It seems that nvidiafb (the non-free nvidia driver) doesn't
+> > > > > like
+> > > > > xenomai-3 or vice-versa.
+> > > > > 
+> > > > > Are you aware of this?
+> > > > 
+> > > > Were you trying to use the nvidia module compiled for the vanilla
+> > > > kernel, or did you recompile the nvidia module for the Xenomai
+> > > > kernel? The former will not work.
+> > > 
+> > > the second one. Using debian packages, when you install a new one, it
+> > > recompiles the modules needed (if they are packaged dkms) So, when I
+> > > installed the debian package, all the modules (that had sources) were
+> > > recompiled.> 
+> > > > Other than that, the nvidia module has been reported to work with
+> > > > Xenomai, if the I-pipe patch you use contains this patch:
+> > > > https://git.xenomai.org/ipipe.git/commit/?h=ipipe-3.16&id=bc5bea6f134de2
+> > > > e55b b6014566c62fa083ed9c7b
+> > > 
+> > > The module that failed was the nvidiafb. Not the others. For instance, now
+> > > I'm running 3.16 with xenomai 3.0.0 in my graphical desktop with nvidia
+> > > driver. It's the nvidia framebuffer that fails.
+> > 
+> > AFAIK, nvidiafb is part of the Linux kernel, not of the nvidia
+> > driver. According to this page:
+> > http://wiki.gentoo.org/wiki/NVidia/nvidia-drivers
+> 
+> Not exactly. The nvidia driver has two parts: one for the kernel and another 
+> for the X server.
+
+
+> The kernel part has public source (no open source?), and 
+> it's recompiled as module. The other is closed, binary. 
+
+No the kernel part contains some glue with a big pre-compiled
+proprietary binary.
+
+> 
+> AFAIK, the frame buffer is to have console in booting time, or console in 
+> general. It's used when you switch from graphic mode to console mode. But
+
+You are mistaken. The nvidiafb driver is part of the Linux kernel,
+see:
+http://git.xenomai.org/ipipe.git/tree/drivers/video/fbdev/nvidia/Makefile
+
+In this file, you can see the copyright:
+http://git.xenomai.org/ipipe.git/tree/drivers/video/fbdev/nvidia/nvidia.c
+
+Not by Nvidia. Yes nvidiafb is a framebuffer driver, I knew that,
+only by the name. But no, it is not part of the (binary) drivers
+made by nvidia, so it is a third thing in addition to the nvidia.ko
+kernel-space support provided by Nvidia, and the user-space
+distribution (which contains a module for the X server, but also an
+opengl implementation).
+
+And the gentoo page seems to indicate that the framebuffer driver
+may conflict with the nvidia stuff (whether kernel-space or
+user-space does not really matter).
+
+> 
+> > - the MTRR error is due to the fact that you disabled MTRR in the
+> > kernel configuration, probably because you disabled IOMMU
+> 
+> No, I have it activated.
+> 
+> $ grep CONFIG_MTRR /boot/config-3.16.0-xenomai-3.0.0 
+> CONFIG_MTRR=y
+> CONFIG_MTRR_SANITIZER=y
+> CONFIG_MTRR_SANITIZER_ENABLE_DEFAULT=0
+> CONFIG_MTRR_SANITIZER_SPARE_REG_NR_DEFAULT=1
+
+You have not read the page I sent you. It clearly indicates that on
+the amd64 architecture, you have to enable IOMMU to get MTRR working
+with the nvidiafb module. I do not know whether this is true, but
+this is what the page says.
+
+> 
+> 
+> > - using the nvidiafb module with the nvidia proprietary module is
+> > not recommended, as they are known to conflict at times.
+> 
+> It could have conflicts, it's true. Because the two modules try to claim the 
+> same device. I should have the test installing only one and see what happens.
+> 
+
+Obviously.
+
+
+
+-- 
+					    Gilles.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 811 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150123/c323b4f7/attachment.sig>
