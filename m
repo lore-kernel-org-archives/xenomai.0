@@ -1,11 +1,13 @@
-Message-ID: <54C283D9.8020403@xenomai.org>
-Date: Fri, 23 Jan 2015 18:24:41 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Fri, 23 Jan 2015 18:27:39 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150123172739.GA12812@hermes.click-hack.org>
+References: <129277905.Ag2XebZWbK@soho>
+ <20150123155231.GD9521@hermes.click-hack.org>
+ <1882941.jW5kVZFuDr@indiana>
 MIME-Version: 1.0
-References: <129277905.Ag2XebZWbK@soho> <54C27115.7030901@xenomai.org>
- <1498823.b61P0cr1E8@indiana>
-In-Reply-To: <1498823.b61P0cr1E8@indiana>
-Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1882941.jW5kVZFuDr@indiana>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Packaging Xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -19,88 +21,46 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
 Cc: xenomai@xenomai.org
 
-On 01/23/2015 06:02 PM, Leopold Palomo-Avellaneda wrote:
-> El Divendres, 23 de gener de 2015, a les 17:04:37, Philippe Gerum va escriure:
->> On 01/23/2015 01:09 PM, Leopold Palomo-Avellaneda wrote:
->>> Hi,
->>>
->>> now that I have some kernel to boot, I would like to ask some aspects of
->>> Xenomai-3 in order to package it.
->>>
->>> Reading the documentation, now the new libxenomai could use two kind of
->>> kernels: the patched one (Cobalt) or the preempt_rt (Mercury).
->>
->> Mercury does not require preempt-rt. In some cases, one may want the API
->> emulation capabilities without actually having real-time requirements.
+On Fri, Jan 23, 2015 at 05:50:07PM +0100, Leopold Palomo-Avellaneda wrote:
+> El Divendres, 23 de gener de 2015, a les 16:52:31, Gilles Chanteperdrix va 
+> escriure:
+> > On Fri, Jan 23, 2015 at 01:09:41PM +0100, Leopold Palomo-Avellaneda wrote:
+> > > Hi,
+> > > 
+> > > now that I have some kernel to boot, I would like to ask some aspects of
+> > > Xenomai-3 in order to package it.
+> > > 
+> > > Reading the documentation, now the new libxenomai could use two kind of
+> > > kernels: the patched one (Cobalt) or the preempt_rt (Mercury).
+> > 
+> > a preempt_rt kernel is a patched kernel too.
 > 
-> Ops, Philippe  the documentation [1] says that Mercury:
-> 
->> Your kernel should at least provide high resolution timer support 
-> (CONFIG_HIGH_RES_TIMERS), and likely complete preemption (PREEMPT_RT) if your 
-> application requires short and bounded latencies.
-> 
-> if your application .. it's not mandatory, right?. So, you can use it in any 
-> kernel that at least has CONFIG_HIGH_RES_TIMERS
+> Writing the email I thought, both are patches, but I thought preempt_rt was 
+> integrated in mainline.
 
-Yes. Complete preemption is only required to meet real-time requirements.
+No it is not.
 
+>  
+> > > 1) Is it possible to have _only_ one library (binary) that uses one or
+> > > another kernel in function which is running?
+> > 
+> > No, you could want to run a kernel with both patches. So basing the
+> > decision on which patch you are running does not make sense.
 > 
->>> 1) Is it possible to have _only_ one library (binary) that uses one or
->>> another kernel in function which is running?
->>
->> No. Definitely not.
-> 
-> Ok, it's too difficult to have it? Same lib that in runtime select the interface 
-> to use? So, then someone could provide a binary, that depends on the kernel 
-> will work with cobalt or mercury. The packagers would have the life better.
-> 
+> I don't want to run a kernel with both patches. It has no sense. But I could 
+> have binary packages that could work with both kernels. That was my idea.
 
-Sure, but the maintainers would go nuts, which would not help the
-packagers in the end. Not to speak of the crappy performances on low-end
-hardware, due to the extra levels of encapsulation/indirection required.
-I don't see any reasonable way to implement this sanely and efficiently.
-We are chasing micro-second level optimization in some cases in the
-code, for running on CPUs with not-that-fast caches. In this user vs
-packager/maintainer trade-off, user must prevail.
+To the contrary, it has a lot of sense. You get one grade of
+real-time for cobalt task, and another grade of real-time for tasks
+scheduled by Linux.
 
->>
->>> 2) If not, as we must recompile the library, all the programs linked
->>> against must be recompiled or if it's binary compatible?
->>
->> Can't have the same ABI. Two separate builds are required. 
-> 
-> :-( it makes sense if they have different names? -c vc -m or whatever?
-
-The same way we don't have /lib/libc64.so but /lib64/libc.so, I would
-rather suggest to use a different install root.
-
->>
->>> 3) Comparing the files generated (xenomai-2.x vs xenomai-3.x, if you bump
->>> the sonames of libanalogy, libpsos and libvxworks you could have (I
->>> guess) both binary versions installed in the same box.
->>
->> This would make sense, but only for libs. 
-> 
-> of course.
-> 
->> Scripts, includes would conflict.
-> 
-> another package shared is possible? (xenomai-tools, xenomai-scripts, ....)
-> 
-> If you have different library names, pkg-config could solve that.
-> 
-> 
->>> 4) Why the libvxworks has lower soname version in 2.6.4 than in 3.0.0?
->>
->> Because it has been entirely rewritten over the copperplate interface
->> and extended in terms of emulated services.
-> 
-> Ok, so please use another name so that will no confusion.
-> 
-
-Why that? It is still the one and only VxWorks emulator shipped with
-Xenomai.
 
 -- 
-Philippe.
-
+					    Gilles.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 811 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150123/841ae70d/attachment.sig>
