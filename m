@@ -1,11 +1,12 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Fri, 23 Jan 2015 18:02:28 +0100
-Message-ID: <1498823.b61P0cr1E8@indiana>
-In-Reply-To: <54C27115.7030901@xenomai.org>
-References: <129277905.Ag2XebZWbK@soho> <54C27115.7030901@xenomai.org>
+Message-ID: <54C283D9.8020403@xenomai.org>
+Date: Fri, 23 Jan 2015 18:24:41 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <129277905.Ag2XebZWbK@soho> <54C27115.7030901@xenomai.org>
+ <1498823.b61P0cr1E8@indiana>
+In-Reply-To: <1498823.b61P0cr1E8@indiana>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Packaging Xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,59 +16,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
 Cc: xenomai@xenomai.org
 
-RWwgRGl2ZW5kcmVzLCAyMyBkZSBnZW5lciBkZSAyMDE1LCBhIGxlcyAxNzowNDozNywgUGhpbGlw
-cGUgR2VydW0gdmEgZXNjcml1cmU6Cj4gT24gMDEvMjMvMjAxNSAwMTowOSBQTSwgTGVvcG9sZCBQ
-YWxvbW8tQXZlbGxhbmVkYSB3cm90ZToKPiA+IEhpLAo+ID4gCj4gPiBub3cgdGhhdCBJIGhhdmUg
-c29tZSBrZXJuZWwgdG8gYm9vdCwgSSB3b3VsZCBsaWtlIHRvIGFzayBzb21lIGFzcGVjdHMgb2YK
-PiA+IFhlbm9tYWktMyBpbiBvcmRlciB0byBwYWNrYWdlIGl0Lgo+ID4gCj4gPiBSZWFkaW5nIHRo
-ZSBkb2N1bWVudGF0aW9uLCBub3cgdGhlIG5ldyBsaWJ4ZW5vbWFpIGNvdWxkIHVzZSB0d28ga2lu
-ZCBvZgo+ID4ga2VybmVsczogdGhlIHBhdGNoZWQgb25lIChDb2JhbHQpIG9yIHRoZSBwcmVlbXB0
-X3J0IChNZXJjdXJ5KS4KPiAKPiBNZXJjdXJ5IGRvZXMgbm90IHJlcXVpcmUgcHJlZW1wdC1ydC4g
-SW4gc29tZSBjYXNlcywgb25lIG1heSB3YW50IHRoZSBBUEkKPiBlbXVsYXRpb24gY2FwYWJpbGl0
-aWVzIHdpdGhvdXQgYWN0dWFsbHkgaGF2aW5nIHJlYWwtdGltZSByZXF1aXJlbWVudHMuCgpPcHMs
-IFBoaWxpcHBlICB0aGUgZG9jdW1lbnRhdGlvbiBbMV0gc2F5cyB0aGF0IE1lcmN1cnk6Cgo+IFlv
-dXIga2VybmVsIHNob3VsZCBhdCBsZWFzdCBwcm92aWRlIGhpZ2ggcmVzb2x1dGlvbiB0aW1lciBz
-dXBwb3J0IAooQ09ORklHX0hJR0hfUkVTX1RJTUVSUyksIGFuZCBsaWtlbHkgY29tcGxldGUgcHJl
-ZW1wdGlvbiAoUFJFRU1QVF9SVCkgaWYgeW91ciAKYXBwbGljYXRpb24gcmVxdWlyZXMgc2hvcnQg
-YW5kIGJvdW5kZWQgbGF0ZW5jaWVzLgoKaWYgeW91ciBhcHBsaWNhdGlvbiAuLiBpdCdzIG5vdCBt
-YW5kYXRvcnksIHJpZ2h0Py4gU28sIHlvdSBjYW4gdXNlIGl0IGluIGFueSAKa2VybmVsIHRoYXQg
-YXQgbGVhc3QgaGFzIENPTkZJR19ISUdIX1JFU19USU1FUlMKCj4gPiAxKSBJcyBpdCBwb3NzaWJs
-ZSB0byBoYXZlIF9vbmx5XyBvbmUgbGlicmFyeSAoYmluYXJ5KSB0aGF0IHVzZXMgb25lIG9yCj4g
-PiBhbm90aGVyIGtlcm5lbCBpbiBmdW5jdGlvbiB3aGljaCBpcyBydW5uaW5nPwo+IAo+IE5vLiBE
-ZWZpbml0ZWx5IG5vdC4KCk9rLCBpdCdzIHRvbyBkaWZmaWN1bHQgdG8gaGF2ZSBpdD8gU2FtZSBs
-aWIgdGhhdCBpbiBydW50aW1lIHNlbGVjdCB0aGUgaW50ZXJmYWNlIAp0byB1c2U/IFNvLCB0aGVu
-IHNvbWVvbmUgY291bGQgcHJvdmlkZSBhIGJpbmFyeSwgdGhhdCBkZXBlbmRzIG9uIHRoZSBrZXJu
-ZWwgCndpbGwgd29yayB3aXRoIGNvYmFsdCBvciBtZXJjdXJ5LiBUaGUgcGFja2FnZXJzIHdvdWxk
-IGhhdmUgdGhlIGxpZmUgYmV0dGVyLgoKPiAKPiA+IDIpIElmIG5vdCwgYXMgd2UgbXVzdCByZWNv
-bXBpbGUgdGhlIGxpYnJhcnksIGFsbCB0aGUgcHJvZ3JhbXMgbGlua2VkCj4gPiBhZ2FpbnN0IG11
-c3QgYmUgcmVjb21waWxlZCBvciBpZiBpdCdzIGJpbmFyeSBjb21wYXRpYmxlPwo+IAo+IENhbid0
-IGhhdmUgdGhlIHNhbWUgQUJJLiBUd28gc2VwYXJhdGUgYnVpbGRzIGFyZSByZXF1aXJlZC4gCgo6
-LSggaXQgbWFrZXMgc2Vuc2UgaWYgdGhleSBoYXZlIGRpZmZlcmVudCBuYW1lcz8gLWMgdmMgLW0g
-b3Igd2hhdGV2ZXI/Cj4gCj4gPiAzKSBDb21wYXJpbmcgdGhlIGZpbGVzIGdlbmVyYXRlZCAoeGVu
-b21haS0yLnggdnMgeGVub21haS0zLngsIGlmIHlvdSBidW1wCj4gPiB0aGUgc29uYW1lcyBvZiBs
-aWJhbmFsb2d5LCBsaWJwc29zIGFuZCBsaWJ2eHdvcmtzIHlvdSBjb3VsZCBoYXZlIChJCj4gPiBn
-dWVzcykgYm90aCBiaW5hcnkgdmVyc2lvbnMgaW5zdGFsbGVkIGluIHRoZSBzYW1lIGJveC4KPiAK
-PiBUaGlzIHdvdWxkIG1ha2Ugc2Vuc2UsIGJ1dCBvbmx5IGZvciBsaWJzLiAKCm9mIGNvdXJzZS4K
-Cj4gU2NyaXB0cywgaW5jbHVkZXMgd291bGQgY29uZmxpY3QuCgphbm90aGVyIHBhY2thZ2Ugc2hh
-cmVkIGlzIHBvc3NpYmxlPyAoeGVub21haS10b29scywgeGVub21haS1zY3JpcHRzLCAuLi4uKQoK
-SWYgeW91IGhhdmUgZGlmZmVyZW50IGxpYnJhcnkgbmFtZXMsIHBrZy1jb25maWcgY291bGQgc29s
-dmUgdGhhdC4KCgo+ID4gNCkgV2h5IHRoZSBsaWJ2eHdvcmtzIGhhcyBsb3dlciBzb25hbWUgdmVy
-c2lvbiBpbiAyLjYuNCB0aGFuIGluIDMuMC4wPwo+IAo+IEJlY2F1c2UgaXQgaGFzIGJlZW4gZW50
-aXJlbHkgcmV3cml0dGVuIG92ZXIgdGhlIGNvcHBlcnBsYXRlIGludGVyZmFjZQo+IGFuZCBleHRl
-bmRlZCBpbiB0ZXJtcyBvZiBlbXVsYXRlZCBzZXJ2aWNlcy4KCk9rLCBzbyBwbGVhc2UgdXNlIGFu
-b3RoZXIgbmFtZSBzbyB0aGF0IHdpbGwgbm8gY29uZnVzaW9uLgoKClRoYW5rcywKCkxlb3BvbGQK
-CgpbMV0gaHR0cDovL3hlbm9tYWkub3JnL2luc3RhbGxpbmcteGVub21haS0zLXgvI0luc3RhbGxp
-bmdfdGhlX01lcmN1cnlfY29yZQoKLS0gCi0tCkxpbnV4IFVzZXIgMTUyNjkyICAgICBHUEc6IDA1
-RjRBN0E5NDlBMkQ5QUEKQ2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0KQTogQmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhlIG9yZGVyIGluIHdoaWNoIHBlb3BsZSBu
-b3JtYWxseSByZWFkIHRleHQuClE6IFdoeSBpcyB0b3AtcG9zdGluZyBzdWNoIGEgYmFkIHRoaW5n
-PwpBOiBUb3AtcG9zdGluZy4KUTogV2hhdCBpcyB0aGUgbW9zdCBhbm5veWluZyB0aGluZyBpbiBl
-LW1haWw/Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0
-IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBw
-bGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiA4MTkgYnl0ZXMKRGVzYzogVGhpcyBpcyBhIGRp
-Z2l0YWxseSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3Jn
-L3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTUwMTIzLzkxODJlNTMzL2F0dGFjaG1l
-bnQuc2lnPgo=
+On 01/23/2015 06:02 PM, Leopold Palomo-Avellaneda wrote:
+> El Divendres, 23 de gener de 2015, a les 17:04:37, Philippe Gerum va escriure:
+>> On 01/23/2015 01:09 PM, Leopold Palomo-Avellaneda wrote:
+>>> Hi,
+>>>
+>>> now that I have some kernel to boot, I would like to ask some aspects of
+>>> Xenomai-3 in order to package it.
+>>>
+>>> Reading the documentation, now the new libxenomai could use two kind of
+>>> kernels: the patched one (Cobalt) or the preempt_rt (Mercury).
+>>
+>> Mercury does not require preempt-rt. In some cases, one may want the API
+>> emulation capabilities without actually having real-time requirements.
+> 
+> Ops, Philippe  the documentation [1] says that Mercury:
+> 
+>> Your kernel should at least provide high resolution timer support 
+> (CONFIG_HIGH_RES_TIMERS), and likely complete preemption (PREEMPT_RT) if your 
+> application requires short and bounded latencies.
+> 
+> if your application .. it's not mandatory, right?. So, you can use it in any 
+> kernel that at least has CONFIG_HIGH_RES_TIMERS
+
+Yes. Complete preemption is only required to meet real-time requirements.
+
+> 
+>>> 1) Is it possible to have _only_ one library (binary) that uses one or
+>>> another kernel in function which is running?
+>>
+>> No. Definitely not.
+> 
+> Ok, it's too difficult to have it? Same lib that in runtime select the interface 
+> to use? So, then someone could provide a binary, that depends on the kernel 
+> will work with cobalt or mercury. The packagers would have the life better.
+> 
+
+Sure, but the maintainers would go nuts, which would not help the
+packagers in the end. Not to speak of the crappy performances on low-end
+hardware, due to the extra levels of encapsulation/indirection required.
+I don't see any reasonable way to implement this sanely and efficiently.
+We are chasing micro-second level optimization in some cases in the
+code, for running on CPUs with not-that-fast caches. In this user vs
+packager/maintainer trade-off, user must prevail.
+
+>>
+>>> 2) If not, as we must recompile the library, all the programs linked
+>>> against must be recompiled or if it's binary compatible?
+>>
+>> Can't have the same ABI. Two separate builds are required. 
+> 
+> :-( it makes sense if they have different names? -c vc -m or whatever?
+
+The same way we don't have /lib/libc64.so but /lib64/libc.so, I would
+rather suggest to use a different install root.
+
+>>
+>>> 3) Comparing the files generated (xenomai-2.x vs xenomai-3.x, if you bump
+>>> the sonames of libanalogy, libpsos and libvxworks you could have (I
+>>> guess) both binary versions installed in the same box.
+>>
+>> This would make sense, but only for libs. 
+> 
+> of course.
+> 
+>> Scripts, includes would conflict.
+> 
+> another package shared is possible? (xenomai-tools, xenomai-scripts, ....)
+> 
+> If you have different library names, pkg-config could solve that.
+> 
+> 
+>>> 4) Why the libvxworks has lower soname version in 2.6.4 than in 3.0.0?
+>>
+>> Because it has been entirely rewritten over the copperplate interface
+>> and extended in terms of emulated services.
+> 
+> Ok, so please use another name so that will no confusion.
+> 
+
+Why that? It is still the one and only VxWorks emulator shipped with
+Xenomai.
+
+-- 
+Philippe.
+
