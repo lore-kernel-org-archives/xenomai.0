@@ -1,25 +1,13 @@
-Message-ID: <54C27A98.7040704@xenomai.org>
-Date: Fri, 23 Jan 2015 17:45:12 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Fri, 23 Jan 2015 17:50:07 +0100
+Message-ID: <1882941.jW5kVZFuDr@indiana>
+In-Reply-To: <20150123155231.GD9521@hermes.click-hack.org>
+References: <129277905.Ag2XebZWbK@soho>
+ <20150123155231.GD9521@hermes.click-hack.org>
 MIME-Version: 1.0
-References: <549072DC.1030901@xenomai.org>
- <CAMJ=MEfzrJQGYKT41F2hSirn8q0MGt-kWuT2GYQE7YTbSCNG5A@mail.gmail.com>
- <549090FA.7000901@xenomai.org>
- <CAMJ=MEc9UXa4P18kNmPeKH-SziXMj9Grbxagj7Wm_MckHcOC7Q@mail.gmail.com>
- <5492989C.9070106@siemens.com>
- <CAMJ=MEeWPyBFBbjj7_JLENZQ+xBkxbaKGiZBehKCatVa-1owqA@mail.gmail.com>
- <20141218141248.GN2012@hermes.click-hack.org> <5492EBAC.10502@siemens.com>
- <20141218150435.GP2012@hermes.click-hack.org>
- <CAMJ=MEc2V0P4nLXVwmxn7LNuY92PrPg=TnPa6UJi=0oCRz=w0g@mail.gmail.com>
- <20141218153001.GT2012@hermes.click-hack.org> <5492F43E.6070701@siemens.com>
- <CAMJ=MEf1uFy1uLBK-r0CnL_sZONuxZ5dYUrMq4+cfJvqQEzSOQ@mail.gmail.com>
- <5492FB8E.2050800@siemens.com>
- <CAMJ=MEd+dJWSNSace4TLWPOM36OvB+WdxJebQSZFFFNA67NOPQ@mail.gmail.com>
- <CAMJ=MEe9gngFstwRwz9xzxS0pL_r45iCphs1V=ZMGrfgcQooTQ@mail.gmail.com>
-In-Reply-To: <CAMJ=MEe9gngFstwRwz9xzxS0pL_r45iCphs1V=ZMGrfgcQooTQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [xenomai-forge] timer-internal consume a lot of cpu
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Packaging Xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -28,45 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ronny Meeus <ronny.meeus@gmail.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 12/23/2014 06:36 PM, Ronny Meeus wrote:
-> On Thu, Dec 18, 2014 at 6:21 PM, Ronny Meeus <ronny.meeus@gmail.com> wrote:
->>>
->>> That implies you know the prios of the involved threads. Doesn't sound
->>> like a generic solution either.
->>>
->>> Jan
->>>
->>
->> I think Xenomai knows the involved threads.
->>
->> Philippe,
->> is the list of waiting threads not kept in the thread object?
->>
-> 
-> Philippe,
-> any feedback on the discussion from your side?
-> 
-
-Since designing over a blatant glibc bug does not make any sense, the
-only reasonable option is to work around this issue for Mercury
-specifically. Cobalt implements PI-aware condvars properly, with an
-additional optimization which makes them pretty efficient, so I don't
-see the point in changing for a sub-optimal option, only to fix a long
-overdue glibc issue.
-
-I pushed a work around following a brute force approach to the -next
-branch, which applies a static temporary boost to the caller about to
-signal or wait for a PI-enabled condvar. I won't bother for dynamic
-tracking of priorities for this issue, this would introduce nasty races
-and would only work for the syncobj abstraction. Besides, if the thread
-signaling the condvar is the timer manager, the boost would always take
-place anyway.
-
-Hopefully this patch should help fixing the issue on your end.
-
--- 
-Philippe.
-
+RWwgRGl2ZW5kcmVzLCAyMyBkZSBnZW5lciBkZSAyMDE1LCBhIGxlcyAxNjo1MjozMSwgR2lsbGVz
+IENoYW50ZXBlcmRyaXggdmEgCmVzY3JpdXJlOgo+IE9uIEZyaSwgSmFuIDIzLCAyMDE1IGF0IDAx
+OjA5OjQxUE0gKzAxMDAsIExlb3BvbGQgUGFsb21vLUF2ZWxsYW5lZGEgd3JvdGU6Cj4gPiBIaSwK
+PiA+IAo+ID4gbm93IHRoYXQgSSBoYXZlIHNvbWUga2VybmVsIHRvIGJvb3QsIEkgd291bGQgbGlr
+ZSB0byBhc2sgc29tZSBhc3BlY3RzIG9mCj4gPiBYZW5vbWFpLTMgaW4gb3JkZXIgdG8gcGFja2Fn
+ZSBpdC4KPiA+IAo+ID4gUmVhZGluZyB0aGUgZG9jdW1lbnRhdGlvbiwgbm93IHRoZSBuZXcgbGli
+eGVub21haSBjb3VsZCB1c2UgdHdvIGtpbmQgb2YKPiA+IGtlcm5lbHM6IHRoZSBwYXRjaGVkIG9u
+ZSAoQ29iYWx0KSBvciB0aGUgcHJlZW1wdF9ydCAoTWVyY3VyeSkuCj4gCj4gYSBwcmVlbXB0X3J0
+IGtlcm5lbCBpcyBhIHBhdGNoZWQga2VybmVsIHRvby4KCldyaXRpbmcgdGhlIGVtYWlsIEkgdGhv
+dWdodCwgYm90aCBhcmUgcGF0Y2hlcywgYnV0IEkgdGhvdWdodCBwcmVlbXB0X3J0IHdhcyAKaW50
+ZWdyYXRlZCBpbiBtYWlubGluZS4KIAo+ID4gMSkgSXMgaXQgcG9zc2libGUgdG8gaGF2ZSBfb25s
+eV8gb25lIGxpYnJhcnkgKGJpbmFyeSkgdGhhdCB1c2VzIG9uZSBvcgo+ID4gYW5vdGhlciBrZXJu
+ZWwgaW4gZnVuY3Rpb24gd2hpY2ggaXMgcnVubmluZz8KPiAKPiBObywgeW91IGNvdWxkIHdhbnQg
+dG8gcnVuIGEga2VybmVsIHdpdGggYm90aCBwYXRjaGVzLiBTbyBiYXNpbmcgdGhlCj4gZGVjaXNp
+b24gb24gd2hpY2ggcGF0Y2ggeW91IGFyZSBydW5uaW5nIGRvZXMgbm90IG1ha2Ugc2Vuc2UuCgpJ
+IGRvbid0IHdhbnQgdG8gcnVuIGEga2VybmVsIHdpdGggYm90aCBwYXRjaGVzLiBJdCBoYXMgbm8g
+c2Vuc2UuIEJ1dCBJIGNvdWxkIApoYXZlIGJpbmFyeSBwYWNrYWdlcyB0aGF0IGNvdWxkIHdvcmsg
+d2l0aCBib3RoIGtlcm5lbHMuIFRoYXQgd2FzIG15IGlkZWEuCgpMZW9wb2xkCgotLSAKLS0KTGlu
+dXggVXNlciAxNTI2OTIgICAgIEdQRzogMDVGNEE3QTk0OUEyRDlBQQpDYXRhbG9uaWEKLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpBOiBCZWNhdXNlIGl0IG1lc3NlcyB1cCB0
+aGUgb3JkZXIgaW4gd2hpY2ggcGVvcGxlIG5vcm1hbGx5IHJlYWQgdGV4dC4KUTogV2h5IGlzIHRv
+cC1wb3N0aW5nIHN1Y2ggYSBiYWQgdGhpbmc/CkE6IFRvcC1wb3N0aW5nLgpROiBXaGF0IGlzIHRo
+ZSBtb3N0IGFubm95aW5nIHRoaW5nIGluIGUtbWFpbD8KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0
+IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFt
+ZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDgx
+OSBieXRlcwpEZXNjOiBUaGlzIGlzIGEgZGlnaXRhbGx5IHNpZ25lZCBtZXNzYWdlIHBhcnQuClVS
+TDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMv
+MjAxNTAxMjMvZmE5NDAyODcvYXR0YWNobWVudC5zaWc+Cg==
