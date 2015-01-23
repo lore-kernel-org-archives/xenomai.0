@@ -1,13 +1,10 @@
-Date: Fri, 23 Jan 2015 08:44:03 +0100
+Date: Fri, 23 Jan 2015 08:52:37 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150123074403.GK29604@hermes.click-hack.org>
-References: <3022250.HiL0lpQ0bg@soho>
- <3479927.PcNNIgk0xm@soho>
+Message-ID: <20150123075237.GL29604@hermes.click-hack.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3479927.PcNNIgk0xm@soho>
-Subject: Re: [Xenomai] Xenomai-3 booting problems (2)
+Subject: [Xenomai] ARM/ipipe patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,35 +13,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Fri, Jan 23, 2015 at 08:36:14AM +0100, Leopold Palomo-Avellaneda wrote:
-> El Dijous, 22 de gener de 2015, a les 16:09:19, Leopold Palomo-Avellaneda va 
-> escriure:
-> > Hi again,
-> > 
-> > after made the modifications proposed by Jan Kiszka, now it doesn't built
-> > and the message is:
-> > 
-> > nvidiafb: unable to setup MTRR
-> > 
-> 
-> Hi,
-> 
-> removed nvidiafb.ko module (and all the nvidia graphics stuff) and the box 
-> booted. It seems that nvidiafb (the non-free nvidia driver) doesn't like 
-> xenomai-3 or vice-versa.
-> 
-> Are you aware of this?
+Hi Philippe,
 
-Were you trying to use the nvidia module compiled for the vanilla
-kernel, or did you recompile the nvidia module for the Xenomai
-kernel? The former will not work.
+You may have missed the discussion between Jan and me, but I am
+opposed to the following commits:
+https://git.xenomai.org/ipipe.git/commit/?h=ipipe-3.14&id=7272c23ff5e1be3bfad58497de132e0336649c34
+https://git.xenomai.org/ipipe.git/commit/?h=ipipe-3.14&id=5ca7ed6c7c0316de5f494b773f3c7c3263aa726b
 
-Other than that, the nvidia module has been reported to work with
-Xenomai, if the I-pipe patch you use contains this patch:
-https://git.xenomai.org/ipipe.git/commit/?h=ipipe-3.16&id=bc5bea6f134de2e55bb6014566c62fa083ed9c7b
+as long as Jan does not provide an explanation on how it fixes all
+the possible paths (which are not numerous) in entry.S. As long as I
+do not have this explanation, I consider these patches of the
+half-baked, "works for me" kind and refuse to have to be the one who
+on a user bug report, after a lengthy discussion, discover that they
+cause some unexpected crashes. And since I am the one maintaining
+the I-pipe pat for ARM, this is what is going to happen if they
+indeed do not fix all the possible pathes in entry.S. The reason why
+I did not make CONFIG_TRACE_IRQFLAGS depend on !IPIPE is because I
+expected Jan to provide this explanation since he never said he
+would not do it.
+
+Regards.
 
 -- 
 					    Gilles.
