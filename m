@@ -1,12 +1,25 @@
-Message-ID: <54C27115.7030901@xenomai.org>
-Date: Fri, 23 Jan 2015 17:04:37 +0100
+Message-ID: <54C27A98.7040704@xenomai.org>
+Date: Fri, 23 Jan 2015 17:45:12 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <129277905.Ag2XebZWbK@soho>
-In-Reply-To: <129277905.Ag2XebZWbK@soho>
-Content-Type: text/plain; charset=windows-1252
+References: <549072DC.1030901@xenomai.org>
+ <CAMJ=MEfzrJQGYKT41F2hSirn8q0MGt-kWuT2GYQE7YTbSCNG5A@mail.gmail.com>
+ <549090FA.7000901@xenomai.org>
+ <CAMJ=MEc9UXa4P18kNmPeKH-SziXMj9Grbxagj7Wm_MckHcOC7Q@mail.gmail.com>
+ <5492989C.9070106@siemens.com>
+ <CAMJ=MEeWPyBFBbjj7_JLENZQ+xBkxbaKGiZBehKCatVa-1owqA@mail.gmail.com>
+ <20141218141248.GN2012@hermes.click-hack.org> <5492EBAC.10502@siemens.com>
+ <20141218150435.GP2012@hermes.click-hack.org>
+ <CAMJ=MEc2V0P4nLXVwmxn7LNuY92PrPg=TnPa6UJi=0oCRz=w0g@mail.gmail.com>
+ <20141218153001.GT2012@hermes.click-hack.org> <5492F43E.6070701@siemens.com>
+ <CAMJ=MEf1uFy1uLBK-r0CnL_sZONuxZ5dYUrMq4+cfJvqQEzSOQ@mail.gmail.com>
+ <5492FB8E.2050800@siemens.com>
+ <CAMJ=MEd+dJWSNSace4TLWPOM36OvB+WdxJebQSZFFFNA67NOPQ@mail.gmail.com>
+ <CAMJ=MEe9gngFstwRwz9xzxS0pL_r45iCphs1V=ZMGrfgcQooTQ@mail.gmail.com>
+In-Reply-To: <CAMJ=MEe9gngFstwRwz9xzxS0pL_r45iCphs1V=ZMGrfgcQooTQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Packaging Xenomai-3
+Subject: Re: [Xenomai] [xenomai-forge] timer-internal consume a lot of cpu
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,45 +28,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, xenomai@xenomai.org
+To: Ronny Meeus <ronny.meeus@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 01/23/2015 01:09 PM, Leopold Palomo-Avellaneda wrote:
-> Hi,
+On 12/23/2014 06:36 PM, Ronny Meeus wrote:
+> On Thu, Dec 18, 2014 at 6:21 PM, Ronny Meeus <ronny.meeus@gmail.com> wrote:
+>>>
+>>> That implies you know the prios of the involved threads. Doesn't sound
+>>> like a generic solution either.
+>>>
+>>> Jan
+>>>
+>>
+>> I think Xenomai knows the involved threads.
+>>
+>> Philippe,
+>> is the list of waiting threads not kept in the thread object?
+>>
 > 
-> now that I have some kernel to boot, I would like to ask some aspects of 
-> Xenomai-3 in order to package it.
-> 
-> Reading the documentation, now the new libxenomai could use two kind of 
-> kernels: the patched one (Cobalt) or the preempt_rt (Mercury).
-> 
-
-Mercury does not require preempt-rt. In some cases, one may want the API
-emulation capabilities without actually having real-time requirements.
-
-> 1) Is it possible to have _only_ one library (binary) that uses one or another 
-> kernel in function which is running?
-> 
-
-No. Definitely not.
-
-> 2) If not, as we must recompile the library, all the programs linked against 
-> must be recompiled or if it's binary compatible?
+> Philippe,
+> any feedback on the discussion from your side?
 > 
 
-Can't have the same ABI. Two separate builds are required.
+Since designing over a blatant glibc bug does not make any sense, the
+only reasonable option is to work around this issue for Mercury
+specifically. Cobalt implements PI-aware condvars properly, with an
+additional optimization which makes them pretty efficient, so I don't
+see the point in changing for a sub-optimal option, only to fix a long
+overdue glibc issue.
 
-> 3) Comparing the files generated (xenomai-2.x vs xenomai-3.x, if you bump the 
-> sonames of libanalogy, libpsos and libvxworks you could have (I guess) both 
-> binary versions installed in the same box.
-> 
+I pushed a work around following a brute force approach to the -next
+branch, which applies a static temporary boost to the caller about to
+signal or wait for a PI-enabled condvar. I won't bother for dynamic
+tracking of priorities for this issue, this would introduce nasty races
+and would only work for the syncobj abstraction. Besides, if the thread
+signaling the condvar is the timer manager, the boost would always take
+place anyway.
 
-This would make sense, but only for libs. Scripts, includes would conflict.
-
-> 4) Why the libvxworks has lower soname version in 2.6.4 than in 3.0.0?
-> 
-
-Because it has been entirely rewritten over the copperplate interface
-and extended in terms of emulated services.
+Hopefully this patch should help fixing the issue on your end.
 
 -- 
 Philippe.
