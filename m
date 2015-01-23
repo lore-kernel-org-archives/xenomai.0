@@ -1,14 +1,12 @@
-Date: Fri, 23 Jan 2015 11:24:26 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150123102426.GB6264@hermes.click-hack.org>
-References: <3022250.HiL0lpQ0bg@soho> <3479927.PcNNIgk0xm@soho>
- <20150123074403.GK29604@hermes.click-hack.org>
- <6556840.cT0vWHhSc4@soho>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Fri, 23 Jan 2015 12:30:02 +0100
+Message-ID: <8468176.WAFPJMNP3d@soho>
+In-Reply-To: <20150123101859.GA6264@hermes.click-hack.org>
+References: <3022250.HiL0lpQ0bg@soho> <6556840.cT0vWHhSc4@soho>
+ <20150123101859.GA6264@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <6556840.cT0vWHhSc4@soho>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Xenomai-3 booting problems (2)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -18,70 +16,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Fri, Jan 23, 2015 at 10:44:24AM +0100, Leopold Palomo-Avellaneda wrote:
-> El Divendres, 23 de gener de 2015, a les 08:44:03, Gilles Chanteperdrix va 
-> escriure:
-> > On Fri, Jan 23, 2015 at 08:36:14AM +0100, Leopold Palomo-Avellaneda wrote:
-> > > El Dijous, 22 de gener de 2015, a les 16:09:19, Leopold Palomo-Avellaneda
-> > > va> 
-> > > escriure:
-> > > > Hi again,
-> > > > 
-> > > > after made the modifications proposed by Jan Kiszka, now it doesn't
-> > > > built
-> > > > and the message is:
-> > > > 
-> > > > nvidiafb: unable to setup MTRR
-> > > 
-> > > Hi,
-> > > 
-> > > removed nvidiafb.ko module (and all the nvidia graphics stuff) and the box
-> > > booted. It seems that nvidiafb (the non-free nvidia driver) doesn't like
-> > > xenomai-3 or vice-versa.
-> > > 
-> > > Are you aware of this?
-> > 
-> > Were you trying to use the nvidia module compiled for the vanilla
-> > kernel, or did you recompile the nvidia module for the Xenomai
-> > kernel? The former will not work.
-> 
-> the second one. Using debian packages, when you install a new one, it 
-> recompiles the modules needed (if they are packaged dkms) So, when I installed 
-> the debian package, all the modules (that had sources) were recompiled.
-> 
-> > Other than that, the nvidia module has been reported to work with
-> > Xenomai, if the I-pipe patch you use contains this patch:
-> > https://git.xenomai.org/ipipe.git/commit/?h=ipipe-3.16&id=bc5bea6f134de2e55b
-> > b6014566c62fa083ed9c7b
-> 
-> 
-> The module that failed was the nvidiafb. Not the others. For instance, now I'm 
-> running 3.16 with xenomai 3.0.0 in my graphical desktop with nvidia driver. 
-> It's the nvidia framebuffer that fails. 
-> 
-> In debian systems, adding 
-> blacklist nvidiafb
-> 
-> to/etc/modprobe.d/nvidia-blacklists-nouveau.conf
-> 
-> solve the issue. 
-> 
-> xenomai has some kind of issue tracker?
-
-Also, speaking about tracking issues. You did not answer my
-question: all these configurations issues you have have nothing
-specific to xenomai 3. How come you did not reuse the same
-configuration that you used for Xenomai 2.6.4 ?
-
--- 
-					    Gilles.
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: not available
-Type: application/pgp-signature
-Size: 811 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150123/674d5f12/attachment.sig>
+RWwgRGl2ZW5kcmVzLCAyMyBkZSBnZW5lciBkZSAyMDE1LCBhIGxlcyAxMToxODo1OSwgR2lsbGVz
+IENoYW50ZXBlcmRyaXggdmEgCmVzY3JpdXJlOgo+IE9uIEZyaSwgSmFuIDIzLCAyMDE1IGF0IDEw
+OjQ0OjI0QU0gKzAxMDAsIExlb3BvbGQgUGFsb21vLUF2ZWxsYW5lZGEgd3JvdGU6Cj4gPiBFbCBE
+aXZlbmRyZXMsIDIzIGRlIGdlbmVyIGRlIDIwMTUsIGEgbGVzIDA4OjQ0OjAzLCBHaWxsZXMgQ2hh
+bnRlcGVyZHJpeCB2YQo+ID4gCj4gPiBlc2NyaXVyZToKPiA+ID4gT24gRnJpLCBKYW4gMjMsIDIw
+MTUgYXQgMDg6MzY6MTRBTSArMDEwMCwgTGVvcG9sZCBQYWxvbW8tQXZlbGxhbmVkYSAKd3JvdGU6
+Cj4gPiA+ID4gRWwgRGlqb3VzLCAyMiBkZSBnZW5lciBkZSAyMDE1LCBhIGxlcyAxNjowOToxOSwg
+TGVvcG9sZAo+ID4gPiA+IFBhbG9tby1BdmVsbGFuZWRhCj4gPiA+ID4gdmE+Cj4gPiA+ID4gCj4g
+PiA+ID4gZXNjcml1cmU6Cj4gPiA+ID4gPiBIaSBhZ2FpbiwKPiA+ID4gPiA+IAo+ID4gPiA+ID4g
+YWZ0ZXIgbWFkZSB0aGUgbW9kaWZpY2F0aW9ucyBwcm9wb3NlZCBieSBKYW4gS2lzemthLCBub3cg
+aXQgZG9lc24ndAo+ID4gPiA+ID4gYnVpbHQKPiA+ID4gPiA+IGFuZCB0aGUgbWVzc2FnZSBpczoK
+PiA+ID4gPiA+IAo+ID4gPiA+ID4gbnZpZGlhZmI6IHVuYWJsZSB0byBzZXR1cCBNVFJSCj4gPiA+
+ID4gCj4gPiA+ID4gSGksCj4gPiA+ID4gCj4gPiA+ID4gcmVtb3ZlZCBudmlkaWFmYi5rbyBtb2R1
+bGUgKGFuZCBhbGwgdGhlIG52aWRpYSBncmFwaGljcyBzdHVmZikgYW5kIHRoZQo+ID4gPiA+IGJv
+eAo+ID4gPiA+IGJvb3RlZC4gSXQgc2VlbXMgdGhhdCBudmlkaWFmYiAodGhlIG5vbi1mcmVlIG52
+aWRpYSBkcml2ZXIpIGRvZXNuJ3QKPiA+ID4gPiBsaWtlCj4gPiA+ID4geGVub21haS0zIG9yIHZp
+Y2UtdmVyc2EuCj4gPiA+ID4gCj4gPiA+ID4gQXJlIHlvdSBhd2FyZSBvZiB0aGlzPwo+ID4gPiAK
+PiA+ID4gV2VyZSB5b3UgdHJ5aW5nIHRvIHVzZSB0aGUgbnZpZGlhIG1vZHVsZSBjb21waWxlZCBm
+b3IgdGhlIHZhbmlsbGEKPiA+ID4ga2VybmVsLCBvciBkaWQgeW91IHJlY29tcGlsZSB0aGUgbnZp
+ZGlhIG1vZHVsZSBmb3IgdGhlIFhlbm9tYWkKPiA+ID4ga2VybmVsPyBUaGUgZm9ybWVyIHdpbGwg
+bm90IHdvcmsuCj4gPiAKPiA+IHRoZSBzZWNvbmQgb25lLiBVc2luZyBkZWJpYW4gcGFja2FnZXMs
+IHdoZW4geW91IGluc3RhbGwgYSBuZXcgb25lLCBpdAo+ID4gcmVjb21waWxlcyB0aGUgbW9kdWxl
+cyBuZWVkZWQgKGlmIHRoZXkgYXJlIHBhY2thZ2VkIGRrbXMpIFNvLCB3aGVuIEkKPiA+IGluc3Rh
+bGxlZCB0aGUgZGViaWFuIHBhY2thZ2UsIGFsbCB0aGUgbW9kdWxlcyAodGhhdCBoYWQgc291cmNl
+cykgd2VyZQo+ID4gcmVjb21waWxlZC4+IAo+ID4gPiBPdGhlciB0aGFuIHRoYXQsIHRoZSBudmlk
+aWEgbW9kdWxlIGhhcyBiZWVuIHJlcG9ydGVkIHRvIHdvcmsgd2l0aAo+ID4gPiBYZW5vbWFpLCBp
+ZiB0aGUgSS1waXBlIHBhdGNoIHlvdSB1c2UgY29udGFpbnMgdGhpcyBwYXRjaDoKPiA+ID4gaHR0
+cHM6Ly9naXQueGVub21haS5vcmcvaXBpcGUuZ2l0L2NvbW1pdC8/aD1pcGlwZS0zLjE2JmlkPWJj
+NWJlYTZmMTM0ZGUyCj4gPiA+IGU1NWIgYjYwMTQ1NjZjNjJmYTA4M2VkOWM3Ygo+ID4gCj4gPiBU
+aGUgbW9kdWxlIHRoYXQgZmFpbGVkIHdhcyB0aGUgbnZpZGlhZmIuIE5vdCB0aGUgb3RoZXJzLiBG
+b3IgaW5zdGFuY2UsIG5vdwo+ID4gSSdtIHJ1bm5pbmcgMy4xNiB3aXRoIHhlbm9tYWkgMy4wLjAg
+aW4gbXkgZ3JhcGhpY2FsIGRlc2t0b3Agd2l0aCBudmlkaWEKPiA+IGRyaXZlci4gSXQncyB0aGUg
+bnZpZGlhIGZyYW1lYnVmZmVyIHRoYXQgZmFpbHMuCj4gCj4gQUZBSUssIG52aWRpYWZiIGlzIHBh
+cnQgb2YgdGhlIExpbnV4IGtlcm5lbCwgbm90IG9mIHRoZSBudmlkaWEKPiBkcml2ZXIuIEFjY29y
+ZGluZyB0byB0aGlzIHBhZ2U6Cj4gaHR0cDovL3dpa2kuZ2VudG9vLm9yZy93aWtpL05WaWRpYS9u
+dmlkaWEtZHJpdmVycwoKTm90IGV4YWN0bHkuIFRoZSBudmlkaWEgZHJpdmVyIGhhcyB0d28gcGFy
+dHM6IG9uZSBmb3IgdGhlIGtlcm5lbCBhbmQgYW5vdGhlciAKZm9yIHRoZSBYIHNlcnZlci4gVGhl
+IGtlcm5lbCBwYXJ0IGhhcyBwdWJsaWMgc291cmNlIChubyBvcGVuIHNvdXJjZT8pLCBhbmQgCml0
+J3MgcmVjb21waWxlZCBhcyBtb2R1bGUuIFRoZSBvdGhlciBpcyBjbG9zZWQsIGJpbmFyeS4gCgpB
+RkFJSywgdGhlIGZyYW1lIGJ1ZmZlciBpcyB0byBoYXZlIGNvbnNvbGUgaW4gYm9vdGluZyB0aW1l
+LCBvciBjb25zb2xlIGluIApnZW5lcmFsLiBJdCdzIHVzZWQgd2hlbiB5b3Ugc3dpdGNoIGZyb20g
+Z3JhcGhpYyBtb2RlIHRvIGNvbnNvbGUgbW9kZS4gQnV0Cgo+IC0gdGhlIE1UUlIgZXJyb3IgaXMg
+ZHVlIHRvIHRoZSBmYWN0IHRoYXQgeW91IGRpc2FibGVkIE1UUlIgaW4gdGhlCj4ga2VybmVsIGNv
+bmZpZ3VyYXRpb24sIHByb2JhYmx5IGJlY2F1c2UgeW91IGRpc2FibGVkIElPTU1VCgpObywgSSBo
+YXZlIGl0IGFjdGl2YXRlZC4KCiQgZ3JlcCBDT05GSUdfTVRSUiAvYm9vdC9jb25maWctMy4xNi4w
+LXhlbm9tYWktMy4wLjAgCkNPTkZJR19NVFJSPXkKQ09ORklHX01UUlJfU0FOSVRJWkVSPXkKQ09O
+RklHX01UUlJfU0FOSVRJWkVSX0VOQUJMRV9ERUZBVUxUPTAKQ09ORklHX01UUlJfU0FOSVRJWkVS
+X1NQQVJFX1JFR19OUl9ERUZBVUxUPTEKCgo+IC0gdXNpbmcgdGhlIG52aWRpYWZiIG1vZHVsZSB3
+aXRoIHRoZSBudmlkaWEgcHJvcHJpZXRhcnkgbW9kdWxlIGlzCj4gbm90IHJlY29tbWVuZGVkLCBh
+cyB0aGV5IGFyZSBrbm93biB0byBjb25mbGljdCBhdCB0aW1lcy4KCkl0IGNvdWxkIGhhdmUgY29u
+ZmxpY3RzLCBpdCdzIHRydWUuIEJlY2F1c2UgdGhlIHR3byBtb2R1bGVzIHRyeSB0byBjbGFpbSB0
+aGUgCnNhbWUgZGV2aWNlLiBJIHNob3VsZCBoYXZlIHRoZSB0ZXN0IGluc3RhbGxpbmcgb25seSBv
+bmUgYW5kIHNlZSB3aGF0IGhhcHBlbnMuCgo+ID4gSW4gZGViaWFuIHN5c3RlbXMsIGFkZGluZwo+
+ID4gYmxhY2tsaXN0IG52aWRpYWZiCj4gPiAKPiA+IHRvL2V0Yy9tb2Rwcm9iZS5kL252aWRpYS1i
+bGFja2xpc3RzLW5vdXZlYXUuY29uZgo+ID4gCj4gPiBzb2x2ZSB0aGUgaXNzdWUuCj4gPiAKPiA+
+IHhlbm9tYWkgaGFzIHNvbWUga2luZCBvZiBpc3N1ZSB0cmFja2VyPwo+IAo+IFlvdSBhcmUgdXNp
+bmcgaXQuCgpJIGxvdmUgdGhpcyBraW5kIG9mIGlzc3VlIHRyYWNrZXIgOi0pCgoKTGVvcG9sZAoK
+LS0gCi0tCkxpbnV4IFVzZXIgMTUyNjkyICAgICBHUEc6IDA1RjRBN0E5NDlBMkQ5QUEKQ2F0YWxv
+bmlhCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KQTogQmVjYXVzZSBpdCBt
+ZXNzZXMgdXAgdGhlIG9yZGVyIGluIHdoaWNoIHBlb3BsZSBub3JtYWxseSByZWFkIHRleHQuClE6
+IFdoeSBpcyB0b3AtcG9zdGluZyBzdWNoIGEgYmFkIHRoaW5nPwpBOiBUb3AtcG9zdGluZy4KUTog
+V2hhdCBpcyB0aGUgbW9zdCBhbm5veWluZyB0aGluZyBpbiBlLW1haWw/Ci0tLS0tLS0tLS0tLS0t
+IG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnVi
+YmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVy
+ZQpTaXplOiA4MTkgYnl0ZXMKRGVzYzogVGhpcyBpcyBhIGRpZ2l0YWxseSBzaWduZWQgbWVzc2Fn
+ZSBwYXJ0LgpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0
+dGFjaG1lbnRzLzIwMTUwMTIzL2IyNTAzZjM4L2F0dGFjaG1lbnQuc2lnPgo=
