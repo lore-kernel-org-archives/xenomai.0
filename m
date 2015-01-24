@@ -1,13 +1,13 @@
 From: "Leopold Palomo-Avellaneda" <leo@alaxarxa.net>
-Date: Sat, 24 Jan 2015 17:43:55 +0000
-References: <129277905.Ag2XebZWbK@soho> <1498823.b61P0cr1E8@indiana>
- <54C283D9.8020403@xenomai.org>
-In-Reply-To: <54C283D9.8020403@xenomai.org>
+Date: Sat, 24 Jan 2015 17:56:27 +0000
+References: <129277905.Ag2XebZWbK@soho> <1882941.jW5kVZFuDr@indiana>
+ <20150123172739.GA12812@hermes.click-hack.org>
+In-Reply-To: <20150123172739.GA12812@hermes.click-hack.org>
 MIME-Version: 1.0
 Content-Type: Text/Plain;
-  charset="utf-8"
+  charset="iso-8859-15"
 Content-Transfer-Encoding: 7bit
-Message-Id: <201501241743.55843.leo@alaxarxa.net>
+Message-Id: <201501241756.28192.leo@alaxarxa.net>
 Subject: Re: [Xenomai] Packaging Xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,75 +17,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-A Divendres, 23 de gener de 2015, Philippe Gerum va escriure:
-[...]
-
-> >>> 1) Is it possible to have _only_ one library (binary) that uses one or
-> >>> another kernel in function which is running?
-> >> 
-> >> No. Definitely not.
+A Divendres, 23 de gener de 2015, Gilles Chanteperdrix va escriure:
+> On Fri, Jan 23, 2015 at 05:50:07PM +0100, Leopold Palomo-Avellaneda wrote:
+> > El Divendres, 23 de gener de 2015, a les 16:52:31, Gilles Chanteperdrix
+> > va
 > > 
-> > Ok, it's too difficult to have it? Same lib that in runtime select the
-> > interface to use? So, then someone could provide a binary, that depends
-> > on the kernel will work with cobalt or mercury. The packagers would have
-> > the life better.
-> 
-> Sure, but the maintainers would go nuts, which would not help the
-> packagers in the end. Not to speak of the crappy performances on low-end
-> hardware, due to the extra levels of encapsulation/indirection required.
-> I don't see any reasonable way to implement this sanely and efficiently.
-> We are chasing micro-second level optimization in some cases in the
-> code, for running on CPUs with not-that-fast caches. In this user vs
-> packager/maintainer trade-off, user must prevail.
->
-> >>> 2) If not, as we must recompile the library, all the programs linked
-> >>> against must be recompiled or if it's binary compatible?
-> >> 
-> >> Can't have the same ABI. Two separate builds are required.
-> >> 
-> > :-( it makes sense if they have different names? -c vc -m or whatever?
-> 
-> The same way we don't have /lib/libc64.so but /lib64/libc.so, I would
-> rather suggest to use a different install root.
-
-
-So, the situation is that we must have two libraries, that are compiled with 
-two main differences (mercury, cobalt).
-
-To have it in different directories is not an easy task if we want to put in 
-the main distros. Also, ldd should find it, and for it, it should be int the 
-standard ldd paths.
-
-I think that it could be a good idea to add some kind of suffix/prefix to the 
-libraries. So, simply looking the files one can know if they are working with 
-Mercury or Cobalt.
-
-As, they are not binary compatible, and the programs must to be recompile, you 
-can solve it with pkg-config.
-
-The main idea is that we could package xenomai-3, thinking that we could have 
-the two main versions (cobalt, mercury) installed in the same machine.
-
-Are they same the same includes? is it protected with ifdef?
- 
-If yes, then the scripts, includes, could go to a common package and we could 
-have some kind of libxenomai-cobalt (libxenomai-c) and libxenomai-
-mercury(libxenomai-m) for example.
-
+> > escriure:
+> > > On Fri, Jan 23, 2015 at 01:09:41PM +0100, Leopold Palomo-Avellaneda 
+wrote:
+> > > > Hi,
+> > > > 
+> > > > now that I have some kernel to boot, I would like to ask some aspects
+> > > > of Xenomai-3 in order to package it.
+> > > > 
+> > > > Reading the documentation, now the new libxenomai could use two kind
+> > > > of kernels: the patched one (Cobalt) or the preempt_rt (Mercury).
+> > > 
+> > > a preempt_rt kernel is a patched kernel too.
 > > 
-> > Ok, so please use another name so that will no confusion.
+> > Writing the email I thought, both are patches, but I thought preempt_rt
+> > was integrated in mainline.
 > 
-> Why that? It is still the one and only VxWorks emulator shipped with
-> Xenomai.
+> No it is not.
+> 
+> > > > 1) Is it possible to have _only_ one library (binary) that uses one
+> > > > or another kernel in function which is running?
+> > > 
+> > > No, you could want to run a kernel with both patches. So basing the
+> > > decision on which patch you are running does not make sense.
+> > 
+> > I don't want to run a kernel with both patches. It has no sense. But I
+> > could have binary packages that could work with both kernels. That was
+> > my idea.
+> 
+> To the contrary, it has a lot of sense. You get one grade of
+> real-time for cobalt task, and another grade of real-time for tasks
+> scheduled by Linux.
 
-but xenomai-3. We could add libvxworks-c ...
+Maybe ... it could be interesting as an experiment.
 
-It's just a propouse...
+Just for curiosity, have you had the test comparing in mercury and cobalt in 
+the same harware with the same problem?
 
-Best regadrs,
+Best regards,
 
 Leopold
 
