@@ -1,12 +1,14 @@
-Date: Thu, 22 Jan 2015 08:54:29 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150122075429.GI16075@hermes.click-hack.org>
-References: <1537147.Wm9AbiuW5D@soho>
+Message-ID: <54C4B411.3030307@xenomai.org>
+Date: Sun, 25 Jan 2015 10:14:57 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1537147.Wm9AbiuW5D@soho>
-Subject: Re: [Xenomai] Xenomai-3 booting problems
+References: <129277905.Ag2XebZWbK@soho> <1882941.jW5kVZFuDr@indiana>
+ <20150123172739.GA12812@hermes.click-hack.org>
+ <201501241756.28192.leo@alaxarxa.net>
+In-Reply-To: <201501241756.28192.leo@alaxarxa.net>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Packaging Xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,56 +17,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Thu, Jan 22, 2015 at 08:47:24AM +0100, Leopold Palomo-Avellaneda wrote:
-> Hi,
+On 01/24/2015 06:56 PM, Leopold Palomo-Avellaneda wrote:
+> A Divendres, 23 de gener de 2015, Gilles Chanteperdrix va escriure:
+>> On Fri, Jan 23, 2015 at 05:50:07PM +0100, Leopold Palomo-Avellaneda wrote:
+>>> El Divendres, 23 de gener de 2015, a les 16:52:31, Gilles Chanteperdrix
+>>> va
+>>>
+>>> escriure:
+>>>> On Fri, Jan 23, 2015 at 01:09:41PM +0100, Leopold Palomo-Avellaneda 
+> wrote:
+>>>>> Hi,
+>>>>>
+>>>>> now that I have some kernel to boot, I would like to ask some aspects
+>>>>> of Xenomai-3 in order to package it.
+>>>>>
+>>>>> Reading the documentation, now the new libxenomai could use two kind
+>>>>> of kernels: the patched one (Cobalt) or the preempt_rt (Mercury).
+>>>>
+>>>> a preempt_rt kernel is a patched kernel too.
+>>>
+>>> Writing the email I thought, both are patches, but I thought preempt_rt
+>>> was integrated in mainline.
+>>
+>> No it is not.
+>>
+>>>>> 1) Is it possible to have _only_ one library (binary) that uses one
+>>>>> or another kernel in function which is running?
+>>>>
+>>>> No, you could want to run a kernel with both patches. So basing the
+>>>> decision on which patch you are running does not make sense.
+>>>
+>>> I don't want to run a kernel with both patches. It has no sense. But I
+>>> could have binary packages that could work with both kernels. That was
+>>> my idea.
+>>
+>> To the contrary, it has a lot of sense. You get one grade of
+>> real-time for cobalt task, and another grade of real-time for tasks
+>> scheduled by Linux.
 > 
-> 
-> I have compiling a Cobalt kernel. I have followed the web "wikipress" [1];-) 
-> recommendations. However, my box (a normal desktop computer - Dell Optiplex 
-> 7010 -) doesn't boot. It throws a message like:
-> ....
-> timer doesn't work through interrup-remapped IO-apic
-> 
-> ...
-> 
-> enabling noapic in the boot options I'm able to boot. But, I have not make any 
-> test by now. Some interesting messages:
-> 
-> $ dmesg | grep -i xenomai
-> [    0.000000] Linux version 3.16.0-xenomai-3.0.0 (root@soho) (gcc version 
-> 4.9.1 (Debian 4.9.1-19) ) #1 SMP Wed Jan 21 16:29:36 UTC 2015
-> [    0.000000] Command line: BOOT_IMAGE=/boot/vmlinuz-3.16.0-xenomai-3.0.0 
-> root=UUID=15cfac82-1127-421f-9aed-eaf48247ed4e ro quiet noapic
-> [    0.000000] Kernel command line: BOOT_IMAGE=/boot/vmlinuz-3.16.0-
-> xenomai-3.0.0 root=UUID=15cfac82-1127-421f-9aed-eaf48247ed4e ro quiet noapic
-> [    0.705071] [Xenomai] scheduling class idle registered.
-> [    0.705072] [Xenomai] scheduling class rt registered.
-> [    0.705090] [Xenomai] disabling automatic C1E state promotion on Intel 
-> processor
-> [    0.705104] [Xenomai] SMI-enabled chipset found, but SMI workaround 
-> disabled
->           (see xenomai.smi parameter). You might encounter
-> [    0.705284] I-pipe: head domain Xenomai registered.
-> [    0.717986] [Xenomai] Cobalt v3.0-rc2 (Exact Zero) [DEBUG]
-> [    0.897726] usb usb1: Manufacturer: Linux 3.16.0-xenomai-3.0.0 xhci_hcd
-> [    0.898617] usb usb2: Manufacturer: Linux 3.16.0-xenomai-3.0.0 xhci_hcd
-> [    0.914114] usb usb3: Manufacturer: Linux 3.16.0-xenomai-3.0.0 ehci_hcd
-> [    0.930109] usb usb4: Manufacturer: Linux 3.16.0-xenomai-3.0.0 ehci_hcd
-> *** RTnet for Xenomai v3.0-rc2 ***
-> 
-> 
-> So, can avoid to pass the noapic parameter to the kernel to boot?
+> Maybe ... it could be interesting as an experiment.
 
-Please post the full boot logs, and the kernel configuration. Does the kernel
-work with exactly the same .config but without Xenomai? Is
-CONFIG_SMP enabled? Because if CONFIG_SMP is enabled, Xenomai will
-not work without an APIC.
+No, it's not just an experiment. I'm aware of production setups which
+have been running this configuration since 2009. I did the mixed
+ipipe+prempt-rt port for them.
 
-Also, please do not compile RTnet in the kernel, compile it as a module.
+> 
+> Just for curiosity, have you had the test comparing in mercury and cobalt in 
+> the same harware with the same problem?
+> 
+
+Yes, without any issue. Just use two different install roots, one for
+cobalt, the other for mercury.
 
 -- 
-					    Gilles.
+Philippe.
 
