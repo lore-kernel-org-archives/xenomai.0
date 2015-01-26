@@ -1,12 +1,12 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Mon, 26 Jan 2015 23:19:33 +0100
-Message-ID: <1615914.aD85cXCJ54@indiana>
-In-Reply-To: <20150126183217.GM12812@hermes.click-hack.org>
-References: <129277905.Ag2XebZWbK@soho> <2155048.C7RTQC2ILE@indiana>
- <20150126183217.GM12812@hermes.click-hack.org>
+Message-ID: <54C6BF08.3020606@grinta.net>
+Date: Mon, 26 Jan 2015 23:26:16 +0100
+From: Daniele Nicolodi <daniele@grinta.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <129277905.Ag2XebZWbK@soho> <2155048.C7RTQC2ILE@indiana>
+ <20150126182046.GL12812@hermes.click-hack.org> <2312262.WiWDxI5CGn@indiana>
+In-Reply-To: <2312262.WiWDxI5CGn@indiana>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Packaging Xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,30 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-RWwgRGlsbHVucywgMjYgZGUgZ2VuZXIgZGUgMjAxNSwgYSBsZXMgMTk6MzI6MTcsIEdpbGxlcyBD
-aGFudGVwZXJkcml4IHZhIAplc2NyaXVyZToKPiBPbiBNb24sIEphbiAyNiwgMjAxNSBhdCAwNjo0
-NjoyMVBNICswMTAwLCBMZW9wb2xkIFBhbG9tby1BdmVsbGFuZWRhIHdyb3RlOgo+ID4gWzFdCj4g
-PiBodHRwczovL2xpbnRpYW4uZGViaWFuLm9yZy90YWdzL3BhY2thZ2UtbW9kaWZpZXMtbGQuc28t
-c2VhcmNoLXBhdGguaHRtbAo+IAo+IEJlc2lkZXMsIHlvdSBtaXNyZWFkIHRoaXMgZGlyZWN0aXZl
-IGl0IHNheXM6CgphcyBhbHdheXMgLi4uCgo+IFBhY2thZ2VzIGNvbnRhaW5pbmcgc2hhcmVkIGxp
-YnJhcmllcyBzaG91bGQgZWl0aGVyIGluc3RhbGwgdGhlbSBpbnRvCj4gL3Vzci9saWIgb3Igc2hv
-dWxkIHJlcXVpcmUgYmluYXJpZXMgYnVpbHQgYWdhaW5zdCB0aGVtIHRvIHNldCBSUEFUSAo+IHRv
-IGZpbmQgdGhlIGxpYnJhcnkgYXQgcnVuLXRpbWUuCj4gCj4gU28sIGl0IGlzIHBlcm1pdHRlZCBu
-b3QgdG8gaW5zdGFsbCBsaWJyYXJpZXMgdW5kZXIgL3Vzci9saWIgcHJvdmlkZWQKPiB0aGF0IHlv
-dSBlbmNvZGUgdGhlIFJQQVRIIGludG8gYmluYXJpZXMsIGFuZCBkbyBub3QgcmVseSBvbiB0aGUK
-PiBsb2FkZXIgc2VhcmNoIHBhdGguCgp1c2luZyBycGF0aCBpcyBkaXNjb3VyYWdlZCBieSBkZWJp
-YW4gWzFdIChhbmQgYWxzbyBvdGhlcnMgZGlzdHJvcykKCkxlb3BvbGQKClsxXSBodHRwczovL3dp
-a2kuZGViaWFuLm9yZy9ScGF0aElzc3VlCi0tIAotLQpMaW51eCBVc2VyIDE1MjY5MiAgICAgR1BH
-OiAwNUY0QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tCkE6IEJlY2F1c2UgaXQgbWVzc2VzIHVwIHRoZSBvcmRlciBpbiB3aGljaCBwZW9w
-bGUgbm9ybWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkgaXMgdG9wLXBvc3Rpbmcgc3VjaCBhIGJhZCB0
-aGluZz8KQTogVG9wLXBvc3RpbmcuClE6IFdoYXQgaXMgdGhlIG1vc3QgYW5ub3lpbmcgdGhpbmcg
-aW4gZS1tYWlsPwotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24t
-dGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6
-IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogODE5IGJ5dGVzCkRlc2M6IFRoaXMgaXMg
-YSBkaWdpdGFsbHkgc2lnbmVkIG1lc3NhZ2UgcGFydC4KVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFp
-Lm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1MDEyNi9kYmRmNWY4MC9hdHRh
-Y2htZW50LnNpZz4K
+On 26/01/15 23:17, Leopold Palomo-Avellaneda wrote:
+> AFAIK, looking the sources of the package, the names of the libraries are 
+> different. And installing in my box I have:
+> 
+> /usr/lib/x86_64-linux-gnu/libcurl-nss.so.4.3.0
+> /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4.3.0
+> /usr/lib/x86_64-linux-gnu/libcurl.so.4.3.0
+> 
+> that comes from libcurl3-nss, libcurl3-gnutls and libcurl3. The last one  
+> (OpenSSL flavour)
+
+The different library names are created in the debian package, not by
+the upstream build system:
+http://anonscm.debian.org/cgit/collab-maint/curl.git/tree/debian/rules
+
+That is what Gilles wanted to point out: renaming the packaged library
+is done by the packaging machinery to suite the distribution, not upstream.
+
+> I agree. I would like to find something that could benefit all the parts. If you 
+> prefer not rename, no problem. I though that it could be a good idea for all. 
+> Also I have to say that I don't think that it has sense to implement it in 
+> packaging. This kind of modifications have to have a very good reason to 
+> diverge from upstream.
+
+See above.
+
+Cheers,
+Daniele
+
+
