@@ -1,14 +1,12 @@
-Date: Mon, 26 Jan 2015 15:08:26 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150126140826.GI12812@hermes.click-hack.org>
-References: <129277905.Ag2XebZWbK@soho> <8367559.zdLagntR1r@indiana>
- <20150126120824.GF12812@hermes.click-hack.org>
- <2052908.cWhQn5Pgch@soho>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Mon, 26 Jan 2015 15:17:42 +0100
+Message-ID: <1698729.oQQF6krV5a@soho>
+In-Reply-To: <54C64338.8050904@grinta.net>
+References: <129277905.Ag2XebZWbK@soho> <2052908.cWhQn5Pgch@soho>
+ <54C64338.8050904@grinta.net>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <2052908.cWhQn5Pgch@soho>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Packaging Xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -18,96 +16,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, Jan 26, 2015 at 01:39:31PM +0100, Leopold Palomo-Avellaneda wrote:
-> El Dilluns, 26 de gener de 2015, a les 13:08:24, Gilles Chanteperdrix va 
-> escriure:
-> > On Sun, Jan 25, 2015 at 07:43:21PM +0100, Leopold Palomo-Avellaneda wrote:
-> > > El Diumenge, 25 de gener de 2015, a les 19:10:16, Philippe Gerum va 
-> escriure:
-> > > > On 01/25/2015 12:14 PM, Leopold Palomo-Avellaneda wrote:
-> > > > > But I was thinking in performance aspects comparing a system with
-> > > > > cobalt
-> > > > > vs a system with mercury.
-> > > > 
-> > > > Yes, but the results are now outdated (2011). This said, such benchmark
-> > > > hardly reflected a use case. It was more a Xenomai 2.6.x vs 3.x analysis
-> > > > of basic mechanisms (event notification, serialization, buffer exchange
-> > > > etc) for measuring the impact of moving most of the real-time API
-> > > > implementation to user-space, only keeping the core resource management
-> > > > in kernel space. It proved to be positive.
-> > > > 
-> > > > Mercury vs Cobalt was only a by-product of those tests, specifically on
-> > > > x86_32.
-> > > 
-> > > After this thread, I think more firmly that the libs should be renamed in
-> > > the manner that they could be co-installed in the same root, standard
-> > > places.
-> > > 
-> > > Please upstream, could you think about it?
-> > 
-> > This is a decision that upstream should not impose to all users.
-> 
-> Interesting sentence. You are developing a new version with an step forward. 
-> You have reworked libraries and for instance libxenomai, libnative, librtdm 
-> doesn't exists in Xenomai-3. Also you have introduced new ones (libalchemy, 
-> libcobalt, libcopperplate, libtrank. 
-> 
-> You have developed xenomai in two main group of libraries (or use a cobalt 
-> kernel or a mercury kernel) and are you saying that you cannot impose to all 
-> users a suffix or something that the users could have both version co-
-> installed in standards places in their systems?
-
-What I am saying is that Xenomai user-space support is delivered
-with a configure script giving users a choice to install things
-wherever they want. I do not see any reason to hardcode a particular
-choice in xenomai itself.
-
-> 
-> > Only users with your specific needs should do what you want. 
-> 
-> Maybe I'm wrong. But after reading this thread I understood that to have a 
-> kernel with both patches (i-pipe and preempt_rt) and, I understand, Xenomai-3 
-> with the two versions could be a very interesting system to work on.
-
-Sure, but in that case you would have two xenomai build trees, that
-you can configure with different options so that they do not collide
-once installed.
-
-> 
-> For instance, I'm in the robotics field, and after that mails I thought that 
-> it could be a good solution that fit the cases where you have several loops, 
-> with several rates with different importance.
-> 
-> > And
-> > in fact, I believe simply using the configure script options, it is
-> > possible to install libraries in different directories. Maybe even
-> > the --program* options apply to libraries too.
-> 
-> Not really. 
-
-Do you dismiss it because you have tried and it did not work?
-Because if that is the case, we would be interested to see any error
-message you got, and help solve them.
-
-> It's nice if you a have a package.
-
-What has this to do with anything ? A "package" is just a script
-which runs configure with some options chosen to fit a distribution
-then make and make install. If you are the Debian maintainer then it
-is your job to choose the options to pass to configure to fit the
-need of Debian. But there is no reason to hardcode these options in
-the upstream package, so that other distributions can choose other
-options.
-
--- 
-					    Gilles.
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: not available
-Type: application/pgp-signature
-Size: 811 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150126/6459bff5/attachment.sig>
+RWwgRGlsbHVucywgMjYgZGUgZ2VuZXIgZGUgMjAxNSwgYSBsZXMgMTQ6Mzg6MDAsIERhbmllbGUg
+Tmljb2xvZGkgdmEgZXNjcml1cmU6Cj4gSGVsbG8gTGVvcG9sZCwKPiAKPiBpdCBzZWVtcyB0byBt
+ZSB0aGF0IHlvdSBhcmUgbWlzc2luZyBhIGZldyBrZXkgcG9pbnRzLgoKUHJvYmFibHkuIFRoYW5r
+cyBmb3IgaGVscGluZyBtZSB0byB1bmRlcnN0YW5kIGl0LgoKPiBPbiAyNi8wMS8xNSAxMzozOSwg
+TGVvcG9sZCBQYWxvbW8tQXZlbGxhbmVkYSB3cm90ZToKPiA+PiBUaGlzIGlzIGEgZGVjaXNpb24g
+dGhhdCB1cHN0cmVhbSBzaG91bGQgbm90IGltcG9zZSB0byBhbGwgdXNlcnMuCj4gPiAKPiA+IElu
+dGVyZXN0aW5nIHNlbnRlbmNlLiBZb3UgYXJlIGRldmVsb3BpbmcgYSBuZXcgdmVyc2lvbiB3aXRo
+IGFuIHN0ZXAKPiA+IGZvcndhcmQuIFlvdSBoYXZlIHJld29ya2VkIGxpYnJhcmllcyBhbmQgZm9y
+IGluc3RhbmNlIGxpYnhlbm9tYWksCj4gPiBsaWJuYXRpdmUsIGxpYnJ0ZG0gZG9lc24ndCBleGlz
+dHMgaW4gWGVub21haS0zLiBBbHNvIHlvdSBoYXZlIGludHJvZHVjZWQKPiA+IG5ldyBvbmVzIChs
+aWJhbGNoZW15LCBsaWJjb2JhbHQsIGxpYmNvcHBlcnBsYXRlLCBsaWJ0cmFuay4KPiA+IAo+ID4g
+WW91IGhhdmUgZGV2ZWxvcGVkIHhlbm9tYWkgaW4gdHdvIG1haW4gZ3JvdXAgb2YgbGlicmFyaWVz
+IChvciB1c2UgYSBjb2JhbHQKPiA+IGtlcm5lbCBvciBhIG1lcmN1cnkga2VybmVsKSBhbmQgYXJl
+IHlvdSBzYXlpbmcgdGhhdCB5b3UgY2Fubm90IGltcG9zZSB0bwo+ID4gYWxsIHVzZXJzIGEgc3Vm
+Zml4IG9yIHNvbWV0aGluZyB0aGF0IHRoZSB1c2VycyBjb3VsZCBoYXZlIGJvdGggdmVyc2lvbgo+
+ID4gY28tIGluc3RhbGxlZCBpbiBzdGFuZGFyZHMgcGxhY2VzIGluIHRoZWlyIHN5c3RlbXM/Cj4g
+Cj4gVGhlIEFQSXMgcHJvdmlkZWQgYnkgWGVub21haSBvbiB0b3Agb2YgdGhlIHJlZ3VsYXIgTGlu
+dXgga2VybmVsCj4gaW50ZXJmYWNlIGFyZSBvbmx5IGZvciBzbW9vdGhpbmcgdGhlIHBvcnRpbmcg
+b2YgbGVnYWN5IGFwcGxpY2F0aW9uCj4gd3JpdHRlbiB1c2luZyB0aGUgQVBJcyBwZWN1bGlhciB0
+byBvdGhlciBSVE9TIGFuZCB3aGljaCBYZW5vbWFpIGltcGxlbWVudHMuCj4gCj4gSWRlYWxseSBh
+bnkgbmV3IGRldmVsb3BtZW50IHNob3VsZCBiZSBkb25lIHdpdGggdGhlIFBPU0lYIEFQSXMuCj4g
+Cj4gVGhlIGNob2ljZSBiZXR3ZWVuIGNvYmFsdCBvciBtZXJjdXJ5IGlzIGRlbWFuZGVkIGJ5IHRo
+ZSByZWFsIHRpbWUKPiByZXF1aXJlbWVudHMgb2YgdGhlIHNwZWNpZmljIGFwcGxpY2F0aW9uIGFu
+ZCB0aGUgdGFyZ2V0IGhhcmR3YXJlLiBJdAo+IGNhbm5vdCBiZSBhIHVzZXIgY29uZmlndXJhdGlv
+bi4KCkknbSBub3QgdGFsa2luZyBhYm91dCB1c2VyIGNvbmZpZ3VyYXRpb24uIEFGQUlLIHRoZSBp
+ZGVhIGlzIHRoYXQgeW91IGNhbiAKY29tcGlsZSBhbmQgbGluayB5b3VyIGNvZGUgKHdpdGhvdXQg
+YW55IGNoYW5nZSkgYWdhaW4gdGhlIGxpYnJhcnkgYnVpbHQgdG8gCndvcmsgY29iYWx0IG9yIG1l
+cmN1cnkuIE5vIHRoYXQgdGhlIHVzZXIgY29uZmlnIGl0IGluIHJ1bnRpbWUuCgo+ID4+IE9ubHkg
+dXNlcnMgd2l0aCB5b3VyIHNwZWNpZmljIG5lZWRzIHNob3VsZCBkbyB3aGF0IHlvdSB3YW50Lgo+
+ID4gCj4gPiBNYXliZSBJJ20gd3JvbmcuIEJ1dCBhZnRlciByZWFkaW5nIHRoaXMgdGhyZWFkIEkg
+dW5kZXJzdG9vZCB0aGF0IHRvIGhhdmUgYQo+ID4ga2VybmVsIHdpdGggYm90aCBwYXRjaGVzIChp
+LXBpcGUgYW5kIHByZWVtcHRfcnQpIGFuZCwgSSB1bmRlcnN0YW5kLAo+ID4gWGVub21haS0zIHdp
+dGggdGhlIHR3byB2ZXJzaW9ucyBjb3VsZCBiZSBhIHZlcnkgaW50ZXJlc3Rpbmcgc3lzdGVtIHRv
+Cj4gPiB3b3JrIG9uLgo+ID4gCj4gPiBGb3IgaW5zdGFuY2UsIEknbSBpbiB0aGUgcm9ib3RpY3Mg
+ZmllbGQsIGFuZCBhZnRlciB0aGF0IG1haWxzIEkgdGhvdWdodAo+ID4gdGhhdCBpdCBjb3VsZCBi
+ZSBhIGdvb2Qgc29sdXRpb24gdGhhdCBmaXQgdGhlIGNhc2VzIHdoZXJlIHlvdSBoYXZlCj4gPiBz
+ZXZlcmFsIGxvb3BzLCB3aXRoIHNldmVyYWwgcmF0ZXMgd2l0aCBkaWZmZXJlbnQgaW1wb3J0YW5j
+ZS4KPiAKPiBTZXZlcmFsIGxvb3BzIHdpdGggc2V2ZXJhbCByYXRlcyB3aXRoIGRpZmZlcmVudCBp
+bXBvcnRhbmNlIG11c3QgYmUKPiBtYXBwZWQgdG8gdGFza3Mgd2l0aCBkaWZmZXJlbnQgcHJpb3Jp
+dGllcy4gSXQgZG9lcyBub3QgbWFrZSBzZW5zZSB0bwo+IGhhdmUgdGhlbSBtYXBwZWQgdG8gdGhy
+ZWFkcyBydW5uaW5nIGluIGRpZmZlcmVudCBtb2Rlcy4KCnRoaXMgaXMgb25lIG9wdGlvbi4gQnV0
+IG1hbnkgdGltZXMgeW91IHdvcmsgb24gc29mdHdhcmUgcHJvdmlkZXMgYnkgb3RoZXJzIGFuZCAK
+bW9kaWZ5IGl0IGlzIG5vdCBhZmZvcmRhYmxlLgoKPiA+IE5vdCByZWFsbHkuIEl0J3MgbmljZSBp
+ZiB5b3UgYSBoYXZlIGEgcGFja2FnZS4KPiAKPiBJZiB0aGlzIGlmIG9mIHN1Y2ggcHJvbWluZW50
+IGltcG9ydGFuY2UgZm9yIHlvdSwgSSBzdWdnZXN0IGl0IHRvIGNvZGUKPiB0aGlzIHlvdXJzZWxm
+LiBJdCBkb2VzIG5vdCBtYWtlIHNlbnNlIHRvIGFyZ3VlIHdpdGggdXBzdHJlYW0gdGhhdCB0aGlz
+Cj4gZmVhdHVyZSBpcyB1c2VmdWwsIGVzcGVjaWFsbHkgd2l0aCBhcmd1bWVudHMgdGhhdCBzZWVt
+cyB0byBpbmRpY2F0ZSB0aGF0Cj4geW91IGRvIG5vdCBoYXZlIGEgY29tcGxldGUgdW5kZXJzdGFu
+ZGluZyBvZiB0aGUgaXNzdWUsIG5laXRoZXIgdGhhdCB5b3UKPiB0cmllZCBpdCBhbmQgaXQgZWZm
+ZWN0aXZlbHkgc29sdmVzIHNvbWUgcmVhbCBwcm9ibGVtcy4KCk1heWJlIEkgZGlkbid0IGNob29z
+ZSBhIHBlcmZlY3QgcmVmZXJlbmNlIGFib3V0IHdpdGggcm9ib3RpYyBmaWVsZC4gQnV0IEkgCmRv
+bid0IHRoaW5rIHRoYXQgaXQncyBmYWlyIHRvIGRpc3F1YWxpZnlpbmcgbXkgYXJndW1lbnRzIG1l
+IGFib3V0IG15IHByb3Bvc2UuCgotLSAKLS0KTGludXggVXNlciAxNTI2OTIgICAgIEdQRzogMDVG
+NEE3QTk0OUEyRDlBQQpDYXRhbG9uaWEKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLQpBOiBCZWNhdXNlIGl0IG1lc3NlcyB1cCB0aGUgb3JkZXIgaW4gd2hpY2ggcGVvcGxlIG5v
+cm1hbGx5IHJlYWQgdGV4dC4KUTogV2h5IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBiYWQgdGhpbmc/
+CkE6IFRvcC1wb3N0aW5nLgpROiBXaGF0IGlzIHRoZSBtb3N0IGFubm95aW5nIHRoaW5nIGluIGUt
+bWFpbD8KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQg
+YXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBs
+aWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDgxOSBieXRlcwpEZXNjOiBUaGlzIGlzIGEgZGln
+aXRhbGx5IHNpZ25lZCBtZXNzYWdlIHBhcnQuClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcv
+cGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTAxMjYvM2E2NmIwOTIvYXR0YWNobWVu
+dC5zaWc+Cg==
