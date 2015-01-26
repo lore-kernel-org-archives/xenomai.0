@@ -1,12 +1,12 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Mon, 26 Jan 2015 13:39:31 +0100
-Message-ID: <2052908.cWhQn5Pgch@soho>
-In-Reply-To: <20150126120824.GF12812@hermes.click-hack.org>
-References: <129277905.Ag2XebZWbK@soho> <8367559.zdLagntR1r@indiana>
- <20150126120824.GF12812@hermes.click-hack.org>
+Message-ID: <54C64338.8050904@grinta.net>
+Date: Mon, 26 Jan 2015 14:38:00 +0100
+From: Daniele Nicolodi <daniele@grinta.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <129277905.Ag2XebZWbK@soho> <8367559.zdLagntR1r@indiana>
+ <20150126120824.GF12812@hermes.click-hack.org> <2052908.cWhQn5Pgch@soho>
+In-Reply-To: <2052908.cWhQn5Pgch@soho>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai] Packaging Xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,61 +16,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-RWwgRGlsbHVucywgMjYgZGUgZ2VuZXIgZGUgMjAxNSwgYSBsZXMgMTM6MDg6MjQsIEdpbGxlcyBD
-aGFudGVwZXJkcml4IHZhIAplc2NyaXVyZToKPiBPbiBTdW4sIEphbiAyNSwgMjAxNSBhdCAwNzo0
-MzoyMVBNICswMTAwLCBMZW9wb2xkIFBhbG9tby1BdmVsbGFuZWRhIHdyb3RlOgo+ID4gRWwgRGl1
-bWVuZ2UsIDI1IGRlIGdlbmVyIGRlIDIwMTUsIGEgbGVzIDE5OjEwOjE2LCBQaGlsaXBwZSBHZXJ1
-bSB2YSAKZXNjcml1cmU6Cj4gPiA+IE9uIDAxLzI1LzIwMTUgMTI6MTQgUE0sIExlb3BvbGQgUGFs
-b21vLUF2ZWxsYW5lZGEgd3JvdGU6Cj4gPiA+ID4gQnV0IEkgd2FzIHRoaW5raW5nIGluIHBlcmZv
-cm1hbmNlIGFzcGVjdHMgY29tcGFyaW5nIGEgc3lzdGVtIHdpdGgKPiA+ID4gPiBjb2JhbHQKPiA+
-ID4gPiB2cyBhIHN5c3RlbSB3aXRoIG1lcmN1cnkuCj4gPiA+IAo+ID4gPiBZZXMsIGJ1dCB0aGUg
-cmVzdWx0cyBhcmUgbm93IG91dGRhdGVkICgyMDExKS4gVGhpcyBzYWlkLCBzdWNoIGJlbmNobWFy
-awo+ID4gPiBoYXJkbHkgcmVmbGVjdGVkIGEgdXNlIGNhc2UuIEl0IHdhcyBtb3JlIGEgWGVub21h
-aSAyLjYueCB2cyAzLnggYW5hbHlzaXMKPiA+ID4gb2YgYmFzaWMgbWVjaGFuaXNtcyAoZXZlbnQg
-bm90aWZpY2F0aW9uLCBzZXJpYWxpemF0aW9uLCBidWZmZXIgZXhjaGFuZ2UKPiA+ID4gZXRjKSBm
-b3IgbWVhc3VyaW5nIHRoZSBpbXBhY3Qgb2YgbW92aW5nIG1vc3Qgb2YgdGhlIHJlYWwtdGltZSBB
-UEkKPiA+ID4gaW1wbGVtZW50YXRpb24gdG8gdXNlci1zcGFjZSwgb25seSBrZWVwaW5nIHRoZSBj
-b3JlIHJlc291cmNlIG1hbmFnZW1lbnQKPiA+ID4gaW4ga2VybmVsIHNwYWNlLiBJdCBwcm92ZWQg
-dG8gYmUgcG9zaXRpdmUuCj4gPiA+IAo+ID4gPiBNZXJjdXJ5IHZzIENvYmFsdCB3YXMgb25seSBh
-IGJ5LXByb2R1Y3Qgb2YgdGhvc2UgdGVzdHMsIHNwZWNpZmljYWxseSBvbgo+ID4gPiB4ODZfMzIu
-Cj4gPiAKPiA+IEFmdGVyIHRoaXMgdGhyZWFkLCBJIHRoaW5rIG1vcmUgZmlybWx5IHRoYXQgdGhl
-IGxpYnMgc2hvdWxkIGJlIHJlbmFtZWQgaW4KPiA+IHRoZSBtYW5uZXIgdGhhdCB0aGV5IGNvdWxk
-IGJlIGNvLWluc3RhbGxlZCBpbiB0aGUgc2FtZSByb290LCBzdGFuZGFyZAo+ID4gcGxhY2VzLgo+
-ID4gCj4gPiBQbGVhc2UgdXBzdHJlYW0sIGNvdWxkIHlvdSB0aGluayBhYm91dCBpdD8KPiAKPiBU
-aGlzIGlzIGEgZGVjaXNpb24gdGhhdCB1cHN0cmVhbSBzaG91bGQgbm90IGltcG9zZSB0byBhbGwg
-dXNlcnMuCgpJbnRlcmVzdGluZyBzZW50ZW5jZS4gWW91IGFyZSBkZXZlbG9waW5nIGEgbmV3IHZl
-cnNpb24gd2l0aCBhbiBzdGVwIGZvcndhcmQuIApZb3UgaGF2ZSByZXdvcmtlZCBsaWJyYXJpZXMg
-YW5kIGZvciBpbnN0YW5jZSBsaWJ4ZW5vbWFpLCBsaWJuYXRpdmUsIGxpYnJ0ZG0gCmRvZXNuJ3Qg
-ZXhpc3RzIGluIFhlbm9tYWktMy4gQWxzbyB5b3UgaGF2ZSBpbnRyb2R1Y2VkIG5ldyBvbmVzIChs
-aWJhbGNoZW15LCAKbGliY29iYWx0LCBsaWJjb3BwZXJwbGF0ZSwgbGlidHJhbmsuIAoKWW91IGhh
-dmUgZGV2ZWxvcGVkIHhlbm9tYWkgaW4gdHdvIG1haW4gZ3JvdXAgb2YgbGlicmFyaWVzIChvciB1
-c2UgYSBjb2JhbHQgCmtlcm5lbCBvciBhIG1lcmN1cnkga2VybmVsKSBhbmQgYXJlIHlvdSBzYXlp
-bmcgdGhhdCB5b3UgY2Fubm90IGltcG9zZSB0byBhbGwgCnVzZXJzIGEgc3VmZml4IG9yIHNvbWV0
-aGluZyB0aGF0IHRoZSB1c2VycyBjb3VsZCBoYXZlIGJvdGggdmVyc2lvbiBjby0KaW5zdGFsbGVk
-IGluIHN0YW5kYXJkcyBwbGFjZXMgaW4gdGhlaXIgc3lzdGVtcz8KCj4gT25seSB1c2VycyB3aXRo
-IHlvdXIgc3BlY2lmaWMgbmVlZHMgc2hvdWxkIGRvIHdoYXQgeW91IHdhbnQuIAoKTWF5YmUgSSdt
-IHdyb25nLiBCdXQgYWZ0ZXIgcmVhZGluZyB0aGlzIHRocmVhZCBJIHVuZGVyc3Rvb2QgdGhhdCB0
-byBoYXZlIGEgCmtlcm5lbCB3aXRoIGJvdGggcGF0Y2hlcyAoaS1waXBlIGFuZCBwcmVlbXB0X3J0
-KSBhbmQsIEkgdW5kZXJzdGFuZCwgWGVub21haS0zIAp3aXRoIHRoZSB0d28gdmVyc2lvbnMgY291
-bGQgYmUgYSB2ZXJ5IGludGVyZXN0aW5nIHN5c3RlbSB0byB3b3JrIG9uLgoKRm9yIGluc3RhbmNl
-LCBJJ20gaW4gdGhlIHJvYm90aWNzIGZpZWxkLCBhbmQgYWZ0ZXIgdGhhdCBtYWlscyBJIHRob3Vn
-aHQgdGhhdCAKaXQgY291bGQgYmUgYSBnb29kIHNvbHV0aW9uIHRoYXQgZml0IHRoZSBjYXNlcyB3
-aGVyZSB5b3UgaGF2ZSBzZXZlcmFsIGxvb3BzLCAKd2l0aCBzZXZlcmFsIHJhdGVzIHdpdGggZGlm
-ZmVyZW50IGltcG9ydGFuY2UuCgo+IEFuZAo+IGluIGZhY3QsIEkgYmVsaWV2ZSBzaW1wbHkgdXNp
-bmcgdGhlIGNvbmZpZ3VyZSBzY3JpcHQgb3B0aW9ucywgaXQgaXMKPiBwb3NzaWJsZSB0byBpbnN0
-YWxsIGxpYnJhcmllcyBpbiBkaWZmZXJlbnQgZGlyZWN0b3JpZXMuIE1heWJlIGV2ZW4KPiB0aGUg
-LS1wcm9ncmFtKiBvcHRpb25zIGFwcGx5IHRvIGxpYnJhcmllcyB0b28uCgpOb3QgcmVhbGx5LiBJ
-dCdzIG5pY2UgaWYgeW91IGEgaGF2ZSBhIHBhY2thZ2UuCgpMZW9wb2xkCgotLSAKLS0KTGludXgg
-VXNlciAxNTI2OTIgICAgIEdQRzogMDVGNEE3QTk0OUEyRDlBQQpDYXRhbG9uaWEKLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpBOiBCZWNhdXNlIGl0IG1lc3NlcyB1cCB0aGUg
-b3JkZXIgaW4gd2hpY2ggcGVvcGxlIG5vcm1hbGx5IHJlYWQgdGV4dC4KUTogV2h5IGlzIHRvcC1w
-b3N0aW5nIHN1Y2ggYSBiYWQgdGhpbmc/CkE6IFRvcC1wb3N0aW5nLgpROiBXaGF0IGlzIHRoZSBt
-b3N0IGFubm95aW5nIHRoaW5nIGluIGUtbWFpbD8KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0t
-LS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTog
-c2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDgxOSBi
-eXRlcwpEZXNjOiBUaGlzIGlzIGEgZGlnaXRhbGx5IHNpZ25lZCBtZXNzYWdlIHBhcnQuClVSTDog
-PGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAx
-NTAxMjYvZjFmNjg5ODAvYXR0YWNobWVudC5zaWc+Cg==
+Hello Leopold,
+
+it seems to me that you are missing a few key points.
+
+On 26/01/15 13:39, Leopold Palomo-Avellaneda wrote:
+>> This is a decision that upstream should not impose to all users.
+> 
+> Interesting sentence. You are developing a new version with an step forward. 
+> You have reworked libraries and for instance libxenomai, libnative, librtdm 
+> doesn't exists in Xenomai-3. Also you have introduced new ones (libalchemy, 
+> libcobalt, libcopperplate, libtrank. 
+> 
+> You have developed xenomai in two main group of libraries (or use a cobalt 
+> kernel or a mercury kernel) and are you saying that you cannot impose to all 
+> users a suffix or something that the users could have both version co-
+> installed in standards places in their systems?
+
+The APIs provided by Xenomai on top of the regular Linux kernel
+interface are only for smoothing the porting of legacy application
+written using the APIs peculiar to other RTOS and which Xenomai implements.
+
+Ideally any new development should be done with the POSIX APIs.
+
+The choice between cobalt or mercury is demanded by the real time
+requirements of the specific application and the target hardware. It
+cannot be a user configuration.
+
+>> Only users with your specific needs should do what you want. 
+> 
+> Maybe I'm wrong. But after reading this thread I understood that to have a 
+> kernel with both patches (i-pipe and preempt_rt) and, I understand, Xenomai-3 
+> with the two versions could be a very interesting system to work on.
+> 
+> For instance, I'm in the robotics field, and after that mails I thought that 
+> it could be a good solution that fit the cases where you have several loops, 
+> with several rates with different importance.
+
+Several loops with several rates with different importance must be
+mapped to tasks with different priorities. It does not make sense to
+have them mapped to threads running in different modes.
+
+> Not really. It's nice if you a have a package.
+
+If this if of such prominent importance for you, I suggest it to code
+this yourself. It does not make sense to argue with upstream that this
+feature is useful, especially with arguments that seems to indicate that
+you do not have a complete understanding of the issue, neither that you
+tried it and it effectively solves some real problems.
+
+Cheers,
+Daniele
+
+
