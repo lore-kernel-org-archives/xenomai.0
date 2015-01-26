@@ -1,14 +1,12 @@
-Date: Mon, 26 Jan 2015 15:59:43 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150126145943.GK12812@hermes.click-hack.org>
-References: <129277905.Ag2XebZWbK@soho> <2052908.cWhQn5Pgch@soho>
- <20150126140826.GI12812@hermes.click-hack.org>
- <1531214.hYcPgWDQ6s@soho>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Mon, 26 Jan 2015 18:46:21 +0100
+Message-ID: <2155048.C7RTQC2ILE@indiana>
+In-Reply-To: <20150126145943.GK12812@hermes.click-hack.org>
+References: <129277905.Ag2XebZWbK@soho> <1531214.hYcPgWDQ6s@soho>
+ <20150126145943.GK12812@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <1531214.hYcPgWDQ6s@soho>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Packaging Xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -18,33 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Mon, Jan 26, 2015 at 03:56:08PM +0100, Leopold Palomo-Avellaneda wrote:
-> El Dilluns, 26 de gener de 2015, a les 15:08:26, Gilles Chanteperdrix va 
-> escriure:
-> 
-> [...]
-> 
-> > Sure, but in that case you would have two xenomai build trees, that
-> > you can configure with different options so that they do not collide
-> > once installed.
-> 
-> I'm sure that you can install it where do you want. But are you sure that you 
-> can install a library in a path outside the standard place, without touching 
-> ld.so.conf and you can have a program running from an installation?
-
-In Debian wheezy (and I assume any later revision), there is an
-/etc/ld.so.conf.d directory where each package can install its
-file with the directories it wants to add to the search path.
-
--- 
-					    Gilles.
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: not available
-Type: application/pgp-signature
-Size: 811 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150126/900f2883/attachment.sig>
+RWwgRGlsbHVucywgMjYgZGUgZ2VuZXIgZGUgMjAxNSwgYSBsZXMgMTU6NTk6NDMsIEdpbGxlcyBD
+aGFudGVwZXJkcml4IHZhIAplc2NyaXVyZToKPiBPbiBNb24sIEphbiAyNiwgMjAxNSBhdCAwMzo1
+NjowOFBNICswMTAwLCBMZW9wb2xkIFBhbG9tby1BdmVsbGFuZWRhIHdyb3RlOgo+ID4gRWwgRGls
+bHVucywgMjYgZGUgZ2VuZXIgZGUgMjAxNSwgYSBsZXMgMTU6MDg6MjYsIEdpbGxlcyBDaGFudGVw
+ZXJkcml4IHZhCj4gPiBlc2NyaXVyZToKPiA+IAo+ID4gWy4uLl0KPiA+IAo+ID4gPiBTdXJlLCBi
+dXQgaW4gdGhhdCBjYXNlIHlvdSB3b3VsZCBoYXZlIHR3byB4ZW5vbWFpIGJ1aWxkIHRyZWVzLCB0
+aGF0Cj4gPiA+IHlvdSBjYW4gY29uZmlndXJlIHdpdGggZGlmZmVyZW50IG9wdGlvbnMgc28gdGhh
+dCB0aGV5IGRvIG5vdCBjb2xsaWRlCj4gPiA+IG9uY2UgaW5zdGFsbGVkLgo+ID4gCj4gPiBJJ20g
+c3VyZSB0aGF0IHlvdSBjYW4gaW5zdGFsbCBpdCB3aGVyZSBkbyB5b3Ugd2FudC4gQnV0IGFyZSB5
+b3Ugc3VyZSB0aGF0Cj4gPiB5b3UgY2FuIGluc3RhbGwgYSBsaWJyYXJ5IGluIGEgcGF0aCBvdXRz
+aWRlIHRoZSBzdGFuZGFyZCBwbGFjZSwgd2l0aG91dAo+ID4gdG91Y2hpbmcgbGQuc28uY29uZiBh
+bmQgeW91IGNhbiBoYXZlIGEgcHJvZ3JhbSBydW5uaW5nIGZyb20gYW4KPiA+IGluc3RhbGxhdGlv
+bj8KPiBJbiBEZWJpYW4gd2hlZXp5IChhbmQgSSBhc3N1bWUgYW55IGxhdGVyIHJldmlzaW9uKSwg
+dGhlcmUgaXMgYW4KPiAvZXRjL2xkLnNvLmNvbmYuZCBkaXJlY3Rvcnkgd2hlcmUgZWFjaCBwYWNr
+YWdlIGNhbiBpbnN0YWxsIGl0cwo+IGZpbGUgd2l0aCB0aGUgZGlyZWN0b3JpZXMgaXQgd2FudHMg
+dG8gYWRkIHRvIHRoZSBzZWFyY2ggcGF0aC4KClRoYXQncyB0aGUgcG9pbnQgR2lsbGVzLiBEZWJp
+YW4gZG9lc24ndCBhY2NlcHQgdGhhdCBbMV0uIEFsc28sIGZlZG9yYSAKcmVjb21tZW5kcyBpdCBh
+cyBwbHVnaW5zLCBub3QgbGlicmFyaWVzIFsyXS4gT25seSBPcGVuc3VzZSBkb2Vzbid0IHNheSBu
+b3RoaW5nIAphZ2FpbnN0IFszXS4KCkkgZG9uJ3Qgd2FudCB0byBtYWtlIGFueSB1c2VsZXNzIGRp
+c2N1c3Npb24uIEkgdGhvdWdodCB0aGF0IGl0IGNvdWxkIGJlIGEgCnNpbXBsZSBjaGFuZ2UgdG8g
+bWFrZSBhIGNvLWluc3RhbGxhYmxlIHZlcnNpb25zIG9mIHhlbm9tYWkuIEhvd2V2ZXIsIGFzIGl0
+IApzZWVtcyB0aGF0IHRoaXMgY2FzZSBpcyBzdHJhbmdlIGl0IHNlZW1zIHRoYXQgaXQgZG9lc24n
+dCBqdXN0aWZ5IHRoZSAKaW52ZXN0bWVudCBpbiB0aW1lIHRvIGRvIHRoYXQuIEkgcmVhbGx5IHRo
+b3VnaCB0aGF0IGNvdWxkIGJlIHVzZWZ1bC4KClRoYW5rcyBmb3IgeW91ciBwYXRpZW5jZSwKCkxl
+b3BvbGQKCgotLS0tLQpbMV0gaHR0cHM6Ly9saW50aWFuLmRlYmlhbi5vcmcvdGFncy9wYWNrYWdl
+LW1vZGlmaWVzLWxkLnNvLXNlYXJjaC1wYXRoLmh0bWwKWzJdIGh0dHA6Ly9mZWRvcmFwcm9qZWN0
+Lm9yZy93aWtpL1BhY2thZ2luZzpHdWlkZWxpbmVzClszXSBodHRwczovL2VuLm9wZW5zdXNlLm9y
+Zy9vcGVuU1VTRTpQYWNrYWdpbmdfY2hlY2tzCgotLSAKLS0KTGludXggVXNlciAxNTI2OTIgICAg
+IEdQRzogMDVGNEE3QTk0OUEyRDlBQQpDYXRhbG9uaWEKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLQpBOiBCZWNhdXNlIGl0IG1lc3NlcyB1cCB0aGUgb3JkZXIgaW4gd2hpY2gg
+cGVvcGxlIG5vcm1hbGx5IHJlYWQgdGV4dC4KUTogV2h5IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBi
+YWQgdGhpbmc/CkE6IFRvcC1wb3N0aW5nLgpROiBXaGF0IGlzIHRoZSBtb3N0IGFubm95aW5nIHRo
+aW5nIGluIGUtbWFpbD8KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEg
+bm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpU
+eXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDgxOSBieXRlcwpEZXNjOiBUaGlz
+IGlzIGEgZGlnaXRhbGx5IHNpZ25lZCBtZXNzYWdlIHBhcnQuClVSTDogPGh0dHA6Ly93d3cueGVu
+b21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTAxMjYvZjNiM2ZlMWEv
+YXR0YWNobWVudC5zaWc+Cg==
