@@ -1,15 +1,10 @@
-Date: Mon, 26 Jan 2015 19:32:17 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150126183217.GM12812@hermes.click-hack.org>
-References: <129277905.Ag2XebZWbK@soho> <1531214.hYcPgWDQ6s@soho>
- <20150126145943.GK12812@hermes.click-hack.org>
- <2155048.C7RTQC2ILE@indiana>
+Date: Mon, 26 Jan 2015 20:02:41 +0100
+From: Arnaud Degroote <arnaud.degroote@isae.fr>
+Message-ID: <20150126190241.GA10160@bugfree>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2155048.C7RTQC2ILE@indiana>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Packaging Xenomai-3
+Subject: [Xenomai] Porting Xenomai on Odroid-U3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,29 +13,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, Jan 26, 2015 at 06:46:21PM +0100, Leopold Palomo-Avellaneda wrote:
-> [1] https://lintian.debian.org/tags/package-modifies-ld.so-search-path.html
+Hi list,
 
-Besides, you misread this directive it says:
+I'm trying to port Xenomai on Odroid-U3. I read on the list that there
+is a first try by GP Orcullo, so I start from its work.
 
-Packages containing shared libraries should either install them into
-/usr/lib or should require binaries built against them to set RPATH
-to find the library at run-time.
+I'm working on a 3.17.8 kernel on which I ported the Ipipe / Xenomai
+patch. I validated it on two omaps platform where I don't see regression
+against previous version of the patch, so I'm fairly confident that the
+core part is correct. In a second time, I ported the previous effort of
+GP Orcullo. The current state of the effort is available on 
 
-So, it is permitted not to install libraries under /usr/lib provided
-that you encode the RPATH into binaries, and do not rely on the
-loader search path.
+https://github.com/adegroote/linux/tree/linux-stable-xenomai-odroid-3.17.y
 
+I tested without IPIPE, and with IPIPE. Troubles start with the XENOMAI
+option. Basically, the kernel seems to hangs when I load any "skin" (I
+compiled them in modules to be sure). For example, 
+
+modprobe xeno-native
+
+prints
+
+Xenomai: starting native API services.	
+
+but I cannot get back the shell prompt.
+
+>From the Troubleshooting part, I suppose something is wrong with the
+ipipe_timer, but I don't have much idea where to look for. 
+
+Can someone give me some inputs about how to trace / debug this issue
+or/and quickly check if I miss something obvious in my patch.
+
+https://github.com/adegroote/linux/commit/81c6ebeb3127efdceb3e31f9d3f1f400ecbb579f.patch
+
+Thanks in advance. Best regards,
 
 -- 
-					    Gilles.
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: not available
-Type: application/pgp-signature
-Size: 811 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150126/1080b35b/attachment.sig>
+Arnaud Degroote
+ISAE DMIA
+
