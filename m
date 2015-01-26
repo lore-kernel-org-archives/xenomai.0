@@ -1,13 +1,14 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Sun, 25 Jan 2015 19:43:21 +0100
-Message-ID: <8367559.zdLagntR1r@indiana>
-In-Reply-To: <54C53188.4020108@xenomai.org>
+Date: Mon, 26 Jan 2015 13:08:24 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150126120824.GF12812@hermes.click-hack.org>
 References: <129277905.Ag2XebZWbK@soho>
  <2B26277C-0A61-4059-8776-994BFC297530@alaxarxa.net>
- <54C53188.4020108@xenomai.org>
+ <54C53188.4020108@xenomai.org> <8367559.zdLagntR1r@indiana>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Disposition: inline
+In-Reply-To: <8367559.zdLagntR1r@indiana>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Packaging Xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,33 +18,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
 Cc: xenomai@xenomai.org
 
-RWwgRGl1bWVuZ2UsIDI1IGRlIGdlbmVyIGRlIDIwMTUsIGEgbGVzIDE5OjEwOjE2LCBQaGlsaXBw
-ZSBHZXJ1bSB2YSBlc2NyaXVyZToKPiBPbiAwMS8yNS8yMDE1IDEyOjE0IFBNLCBMZW9wb2xkIFBh
-bG9tby1BdmVsbGFuZWRhIHdyb3RlOgo+ID4gQnV0IEkgd2FzIHRoaW5raW5nIGluIHBlcmZvcm1h
-bmNlIGFzcGVjdHMgY29tcGFyaW5nIGEgc3lzdGVtIHdpdGggY29iYWx0Cj4gPiB2cyBhIHN5c3Rl
-bSB3aXRoIG1lcmN1cnkuCj4gCj4gWWVzLCBidXQgdGhlIHJlc3VsdHMgYXJlIG5vdyBvdXRkYXRl
-ZCAoMjAxMSkuIFRoaXMgc2FpZCwgc3VjaCBiZW5jaG1hcmsKPiBoYXJkbHkgcmVmbGVjdGVkIGEg
-dXNlIGNhc2UuIEl0IHdhcyBtb3JlIGEgWGVub21haSAyLjYueCB2cyAzLnggYW5hbHlzaXMKPiBv
-ZiBiYXNpYyBtZWNoYW5pc21zIChldmVudCBub3RpZmljYXRpb24sIHNlcmlhbGl6YXRpb24sIGJ1
-ZmZlciBleGNoYW5nZQo+IGV0YykgZm9yIG1lYXN1cmluZyB0aGUgaW1wYWN0IG9mIG1vdmluZyBt
-b3N0IG9mIHRoZSByZWFsLXRpbWUgQVBJCj4gaW1wbGVtZW50YXRpb24gdG8gdXNlci1zcGFjZSwg
-b25seSBrZWVwaW5nIHRoZSBjb3JlIHJlc291cmNlIG1hbmFnZW1lbnQKPiBpbiBrZXJuZWwgc3Bh
-Y2UuIEl0IHByb3ZlZCB0byBiZSBwb3NpdGl2ZS4KPiAKPiBNZXJjdXJ5IHZzIENvYmFsdCB3YXMg
-b25seSBhIGJ5LXByb2R1Y3Qgb2YgdGhvc2UgdGVzdHMsIHNwZWNpZmljYWxseSBvbgo+IHg4Nl8z
-Mi4KCkFmdGVyIHRoaXMgdGhyZWFkLCBJIHRoaW5rIG1vcmUgZmlybWx5IHRoYXQgdGhlIGxpYnMg
-c2hvdWxkIGJlIHJlbmFtZWQgaW4gdGhlIAptYW5uZXIgdGhhdCB0aGV5IGNvdWxkIGJlIGNvLWlu
-c3RhbGxlZCBpbiB0aGUgc2FtZSByb290LCBzdGFuZGFyZCBwbGFjZXMuCgpQbGVhc2UgdXBzdHJl
-YW0sIGNvdWxkIHlvdSB0aGluayBhYm91dCBpdD8KCkxlb3BvbGQKLS0gCi0tCkxpbnV4IFVzZXIg
-MTUyNjkyICAgICBHUEc6IDA1RjRBN0E5NDlBMkQ5QUEKQ2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KQTogQmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhlIG9yZGVy
-IGluIHdoaWNoIHBlb3BsZSBub3JtYWxseSByZWFkIHRleHQuClE6IFdoeSBpcyB0b3AtcG9zdGlu
-ZyBzdWNoIGEgYmFkIHRoaW5nPwpBOiBUb3AtcG9zdGluZy4KUTogV2hhdCBpcyB0aGUgbW9zdCBh
-bm5veWluZyB0aGluZyBpbiBlLW1haWw/Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0t
-LS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25h
-dHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiA4MTkgYnl0ZXMK
-RGVzYzogVGhpcyBpcyBhIGRpZ2l0YWxseSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6IDxodHRw
-Oi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTUwMTI1
-L2QxZWNhODViL2F0dGFjaG1lbnQuc2lnPgo=
+On Sun, Jan 25, 2015 at 07:43:21PM +0100, Leopold Palomo-Avellaneda wrote:
+> El Diumenge, 25 de gener de 2015, a les 19:10:16, Philippe Gerum va escriure:
+> > On 01/25/2015 12:14 PM, Leopold Palomo-Avellaneda wrote:
+> > > But I was thinking in performance aspects comparing a system with cobalt
+> > > vs a system with mercury.
+> > 
+> > Yes, but the results are now outdated (2011). This said, such benchmark
+> > hardly reflected a use case. It was more a Xenomai 2.6.x vs 3.x analysis
+> > of basic mechanisms (event notification, serialization, buffer exchange
+> > etc) for measuring the impact of moving most of the real-time API
+> > implementation to user-space, only keeping the core resource management
+> > in kernel space. It proved to be positive.
+> > 
+> > Mercury vs Cobalt was only a by-product of those tests, specifically on
+> > x86_32.
+> 
+> After this thread, I think more firmly that the libs should be renamed in the 
+> manner that they could be co-installed in the same root, standard places.
+> 
+> Please upstream, could you think about it?
+
+This is a decision that upstream should not impose to all users.
+Only users with your specific needs should do what you want. And
+in fact, I believe simply using the configure script options, it is
+possible to install libraries in different directories. Maybe even
+the --program* options apply to libraries too.
+
+-- 
+					    Gilles.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 811 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150126/471515b7/attachment.sig>
