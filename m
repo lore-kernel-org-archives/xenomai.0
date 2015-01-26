@@ -1,12 +1,14 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Mon, 26 Jan 2015 15:56:08 +0100
-Message-ID: <1531214.hYcPgWDQ6s@soho>
-In-Reply-To: <20150126140826.GI12812@hermes.click-hack.org>
+Date: Mon, 26 Jan 2015 15:59:43 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150126145943.GK12812@hermes.click-hack.org>
 References: <129277905.Ag2XebZWbK@soho> <2052908.cWhQn5Pgch@soho>
  <20150126140826.GI12812@hermes.click-hack.org>
+ <1531214.hYcPgWDQ6s@soho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Disposition: inline
+In-Reply-To: <1531214.hYcPgWDQ6s@soho>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Packaging Xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,25 +18,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
 Cc: xenomai@xenomai.org
 
-RWwgRGlsbHVucywgMjYgZGUgZ2VuZXIgZGUgMjAxNSwgYSBsZXMgMTU6MDg6MjYsIEdpbGxlcyBD
-aGFudGVwZXJkcml4IHZhIAplc2NyaXVyZToKClsuLi5dCgo+IFN1cmUsIGJ1dCBpbiB0aGF0IGNh
-c2UgeW91IHdvdWxkIGhhdmUgdHdvIHhlbm9tYWkgYnVpbGQgdHJlZXMsIHRoYXQKPiB5b3UgY2Fu
-IGNvbmZpZ3VyZSB3aXRoIGRpZmZlcmVudCBvcHRpb25zIHNvIHRoYXQgdGhleSBkbyBub3QgY29s
-bGlkZQo+IG9uY2UgaW5zdGFsbGVkLgoKSSdtIHN1cmUgdGhhdCB5b3UgY2FuIGluc3RhbGwgaXQg
-d2hlcmUgZG8geW91IHdhbnQuIEJ1dCBhcmUgeW91IHN1cmUgdGhhdCB5b3UgCmNhbiBpbnN0YWxs
-IGEgbGlicmFyeSBpbiBhIHBhdGggb3V0c2lkZSB0aGUgc3RhbmRhcmQgcGxhY2UsIHdpdGhvdXQg
-dG91Y2hpbmcgCmxkLnNvLmNvbmYgYW5kIHlvdSBjYW4gaGF2ZSBhIHByb2dyYW0gcnVubmluZyBm
-cm9tIGFuIGluc3RhbGxhdGlvbj8KIApMZW9wb2xkCgotLSAKLS0KTGludXggVXNlciAxNTI2OTIg
-ICAgIEdQRzogMDVGNEE3QTk0OUEyRDlBQQpDYXRhbG9uaWEKLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLQpBOiBCZWNhdXNlIGl0IG1lc3NlcyB1cCB0aGUgb3JkZXIgaW4gd2hp
-Y2ggcGVvcGxlIG5vcm1hbGx5IHJlYWQgdGV4dC4KUTogV2h5IGlzIHRvcC1wb3N0aW5nIHN1Y2gg
-YSBiYWQgdGhpbmc/CkE6IFRvcC1wb3N0aW5nLgpROiBXaGF0IGlzIHRoZSBtb3N0IGFubm95aW5n
-IHRoaW5nIGluIGUtbWFpbD8KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0t
-CkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFz
-YwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDgxOSBieXRlcwpEZXNjOiBU
-aGlzIGlzIGEgZGlnaXRhbGx5IHNpZ25lZCBtZXNzYWdlIHBhcnQuClVSTDogPGh0dHA6Ly93d3cu
-eGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTAxMjYvZGExNzQ1
-MzkvYXR0YWNobWVudC5zaWc+Cg==
+On Mon, Jan 26, 2015 at 03:56:08PM +0100, Leopold Palomo-Avellaneda wrote:
+> El Dilluns, 26 de gener de 2015, a les 15:08:26, Gilles Chanteperdrix va 
+> escriure:
+> 
+> [...]
+> 
+> > Sure, but in that case you would have two xenomai build trees, that
+> > you can configure with different options so that they do not collide
+> > once installed.
+> 
+> I'm sure that you can install it where do you want. But are you sure that you 
+> can install a library in a path outside the standard place, without touching 
+> ld.so.conf and you can have a program running from an installation?
+
+In Debian wheezy (and I assume any later revision), there is an
+/etc/ld.so.conf.d directory where each package can install its
+file with the directories it wants to add to the search path.
+
+-- 
+					    Gilles.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 811 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150126/900f2883/attachment.sig>
