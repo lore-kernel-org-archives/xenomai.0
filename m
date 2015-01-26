@@ -1,11 +1,13 @@
-Message-ID: <54C648B7.8040105@xenomai.org>
-Date: Mon, 26 Jan 2015 15:01:27 +0100
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
+Date: Mon, 26 Jan 2015 15:08:26 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150126140826.GI12812@hermes.click-hack.org>
 References: <129277905.Ag2XebZWbK@soho> <8367559.zdLagntR1r@indiana>
- <20150126120824.GF12812@hermes.click-hack.org> <2052908.cWhQn5Pgch@soho>
+ <20150126120824.GF12812@hermes.click-hack.org>
+ <2052908.cWhQn5Pgch@soho>
+MIME-Version: 1.0
+Content-Disposition: inline
 In-Reply-To: <2052908.cWhQn5Pgch@soho>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Packaging Xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,123 +18,96 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
 Cc: xenomai@xenomai.org
 
-On 01/26/2015 01:39 PM, Leopold Palomo-Avellaneda wrote:
+On Mon, Jan 26, 2015 at 01:39:31PM +0100, Leopold Palomo-Avellaneda wrote:
+> El Dilluns, 26 de gener de 2015, a les 13:08:24, Gilles Chanteperdrix va 
+> escriure:
+> > On Sun, Jan 25, 2015 at 07:43:21PM +0100, Leopold Palomo-Avellaneda wrote:
+> > > El Diumenge, 25 de gener de 2015, a les 19:10:16, Philippe Gerum va 
+> escriure:
+> > > > On 01/25/2015 12:14 PM, Leopold Palomo-Avellaneda wrote:
+> > > > > But I was thinking in performance aspects comparing a system with
+> > > > > cobalt
+> > > > > vs a system with mercury.
+> > > > 
+> > > > Yes, but the results are now outdated (2011). This said, such benchmark
+> > > > hardly reflected a use case. It was more a Xenomai 2.6.x vs 3.x analysis
+> > > > of basic mechanisms (event notification, serialization, buffer exchange
+> > > > etc) for measuring the impact of moving most of the real-time API
+> > > > implementation to user-space, only keeping the core resource management
+> > > > in kernel space. It proved to be positive.
+> > > > 
+> > > > Mercury vs Cobalt was only a by-product of those tests, specifically on
+> > > > x86_32.
+> > > 
+> > > After this thread, I think more firmly that the libs should be renamed in
+> > > the manner that they could be co-installed in the same root, standard
+> > > places.
+> > > 
+> > > Please upstream, could you think about it?
+> > 
+> > This is a decision that upstream should not impose to all users.
+> 
+> Interesting sentence. You are developing a new version with an step forward. 
+> You have reworked libraries and for instance libxenomai, libnative, librtdm 
+> doesn't exists in Xenomai-3. Also you have introduced new ones (libalchemy, 
+> libcobalt, libcopperplate, libtrank. 
+> 
+> You have developed xenomai in two main group of libraries (or use a cobalt 
+> kernel or a mercury kernel) and are you saying that you cannot impose to all 
+> users a suffix or something that the users could have both version co-
+> installed in standards places in their systems?
 
+What I am saying is that Xenomai user-space support is delivered
+with a configure script giving users a choice to install things
+wherever they want. I do not see any reason to hardcode a particular
+choice in xenomai itself.
+
+> 
+> > Only users with your specific needs should do what you want. 
+> 
 > Maybe I'm wrong. But after reading this thread I understood that to have a 
 > kernel with both patches (i-pipe and preempt_rt) and, I understand, Xenomai-3 
 > with the two versions could be a very interesting system to work on.
+
+Sure, but in that case you would have two xenomai build trees, that
+you can configure with different options so that they do not collide
+once installed.
+
 > 
 > For instance, I'm in the robotics field, and after that mails I thought that 
 > it could be a good solution that fit the cases where you have several loops, 
 > with several rates with different importance.
 > 
+> > And
+> > in fact, I believe simply using the configure script options, it is
+> > possible to install libraries in different directories. Maybe even
+> > the --program* options apply to libraries too.
+> 
+> Not really. 
 
-You are missing an important point: Xenomai 3 over Mercury is about
-running non-POSIX RTOS APIs over a native kernel (with or without
-preempt-rt, this is orthogonal to the issue).
+Do you dismiss it because you have tried and it did not work?
+Because if that is the case, we would be interested to see any error
+message you got, and help solve them.
 
-All projects using mixed dual kernel + native preemption systems I came
-to know wanted:
+> It's nice if you a have a package.
 
-- guaranteed low latency figures from the dual kernel side, regardless
-of the API, regardless of the regular kernel activity, with the least
-possible overhead on the latter.
-- POSIX interface with short and bounded response times from the native
-preemption side, for talking to the regular driver stack.
-
-Non POSIX API with Xenomai either means: 1) the former native API (aka
-"alchemy"), 2) some RTOS emulator such as VxWorks or pSOS. People
-running the former native API already will most likely stay with the
-dual kernel side, which is how they currently run it over Xenomai 2.6,
-unless they move to a pure native preemption system, in which case the
-original point is moot.
-
-Therefore, your proposal mainly addresses the issue of running a mixed
-configuration, with some Mercury-based application(s) ported from a
-traditional RTOS to linux, and other application(s) running over Cobalt
-in dual kernel mode, concurrently on the same system. People who just
-want to run POSIX apps over a native kernel don't need Xenomai 3. In
-short, the potential user base for the mixed setup as described is quite
-small.
-
-With that in mind, using a mixed installation root between Mercury and
-Cobalt also means that any 2.x Makefile currently using "xeno-config"
-would have to be fixed up, to reflect the new suffixed path or call
-pkg-config to retrieve it, whatever fits. We have been advertising
-xeno-config since years, as a mean to stay away from installation
-specifics, so this would be quite wrong to end up asking people to run
-xeno-config-cobalt or xeno-config-mercury.
-
-As I mentioned already, we won't go for single binaries running over
-both cores, the performance and maintenance impact would be a nightmare.
-Since all our build system is autoconfiscated, you can pick any root
-prefix that makes sense, and even fine tune every installation directory
-already (lib, include, bin etc). This means that having multiple roots
-is definitely a non-issue, and does not introduce any limitation.
-
-I don't buy the "suffix to disambiguate" argument either:
-/usr/lib/libvxworks-m.so is not clearer than
-/usr/lib/mercury/libvxworks.so, or
-/usr/xenomai/mercury/lib/libvxworks.so. And this does not even work
-better with /usr/lib/libvxworks-mercury.so.
-
-Besides, there is no shortage of ways to find out which Xenomai
-configuration your build system and even your application is currently
-depending on. The only requirement is to query the right xeno-config
-script or application, which may be as simple as setting the PATH
-variable appropriately for your setup:
-
-$ xeno-config --core
-mercury
-$ xeno-config --cflags
--I/usr/xenomai/mercury/include/mercury -I/usr/xenomai/mercury/include
--D_GNU_SOURCE -D_REENTRANT -D__MERCURY__
-$ latency --dump-config
-CONFIG_MMU=1
-CONFIG_SMP=1
-CONFIG_XENO_ASYNC_CANCEL=1
-CONFIG_XENO_BUILD_ARGS=" '-prefix=/usr/xenomai/mercury'
-'--disable-doc-install' '--enable-async-cancel' '--enable-lores-clock'
-'--enable-debug=full' '--enable-smp' '--enable-tls'
-'--with-core=mercury' '--enable-registry' '--enable-pshared'
-'--enable-condvar-workaround'"
-CONFIG_XENO_BUILD_STRING="x86_64-unknown-linux-gnu"
-CONFIG_XENO_COMPILER="gcc version 4.8.3 20140911 (Red Hat 4.8.3-7) (GCC) "
-CONFIG_XENO_DEBUG=1
-CONFIG_XENO_DEBUG_FULL=1
-CONFIG_XENO_DEFAULT_PERIOD=100000
-CONFIG_XENO_FORTIFY=1
-CONFIG_XENO_HOST_STRING="x86_64-unknown-linux-gnu"
-CONFIG_XENO_MERCURY=1
-CONFIG_XENO_PREFIX="/usr/xenomai/mercury"
-CONFIG_XENO_PSHARED=1
-CONFIG_XENO_REGISTRY=1
-CONFIG_XENO_REGISTRY_ROOT="/var/run/xenomai"
-CONFIG_XENO_REVISION_LEVEL=10
-CONFIG_XENO_SANITY=1
-CONFIG_XENO_TLS_MODEL="initial-exec"
-CONFIG_XENO_UAPI_LEVEL=10
-CONFIG_XENO_VALGRIND_API=1
-CONFIG_XENO_VERSION_MAJOR=2
-CONFIG_XENO_VERSION_MINOR=99
-CONFIG_XENO_VERSION_NAME="Exact Zero"
-CONFIG_XENO_VERSION_STRING="3.0-rc2"
-CONFIG_XENO_WORKAROUND_CONDVAR_PI=1
-CONFIG_XENO_X86_VSYSCALL=1
----
-CONFIG_XENO_ARM_SA1100 is OFF
-CONFIG_XENO_ARM_TSC_TYPE is OFF
-CONFIG_XENO_COBALT is OFF
-CONFIG_XENO_COPPERPLATE_CLOCK_RESTRICTED is OFF
-CONFIG_XENO_CPU_XSC3 is OFF
-CONFIG_XENO_LIBS_DLOPEN is OFF
-CONFIG_XENO_LORES_CLOCK_DISABLED is OFF
-CONFIG_XENO_RAW_CLOCK_ENABLED is OFF
-CONFIG_XENO_TLSF is OFF
+What has this to do with anything ? A "package" is just a script
+which runs configure with some options chosen to fit a distribution
+then make and make install. If you are the Debian maintainer then it
+is your job to choose the options to pass to configure to fit the
+need of Debian. But there is no reason to hardcode these options in
+the upstream package, so that other distributions can choose other
+options.
 
 -- 
-Philippe.
-
+					    Gilles.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 811 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150126/6459bff5/attachment.sig>
