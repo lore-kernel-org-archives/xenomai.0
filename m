@@ -1,12 +1,10 @@
-Message-ID: <54C0AEDE.8000909@siemens.com>
-Date: Thu, 22 Jan 2015 09:03:42 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Tue, 27 Jan 2015 09:19:01 +0100
+From: Richard Cochran <richardcochran@gmail.com>
+Message-ID: <20150127081901.GA5658@localhost.localdomain>
 MIME-Version: 1.0
-References: <1537147.Wm9AbiuW5D@soho>
-In-Reply-To: <1537147.Wm9AbiuW5D@soho>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai-3 booting problems
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [Xenomai] rtdm on mercury
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,27 +13,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 2015-01-22 08:47, Leopold Palomo-Avellaneda wrote:
-> Hi,
-> 
-> 
-> I have compiling a Cobalt kernel. I have followed the web "wikipress" [1];-) 
-> recommendations. However, my box (a normal desktop computer - Dell Optiplex 
-> 7010 -) doesn't boot. It throws a message like:
-> ....
-> timer doesn't work through interrup-remapped IO-apic
+Hallo list,
 
-Sounds like interrupt remapping is enabled for your system. That's not
-supported by Xenomai / I-pipe so far (on my to-do list, along with
-x2APIC support). Disable this via "intel_iommu=off intremap=off" in the
-kernel command line or by changing the kernel config to not include
-IOMMU / interrupt remapping support.
+I have been just getting to know xenomai-3 after a long time of
+xenomai abstinence.  IIRC, there has been some talk in the past of
+supporting rtdm in mercury for both user space and drivers.  But
+looking at the present state, I don't see any sign of this having been
+implemented.
 
-Jan
+Am I missing something?
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+[ background: wanting to write a driver for custom FPGA based hardware
+  device, and the driver should work with and without cobalt.  I have
+  done this before by making the driver code portable to both normal
+  kernel and rtdm.  It would be nice to be able to write a pure rtdm
+  driver and have it "just work" in a plain kernel. ]
+
+Thanks,
+Richard
+
+
 
