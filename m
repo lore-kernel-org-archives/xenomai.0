@@ -1,10 +1,12 @@
-Date: Tue, 27 Jan 2015 09:19:01 +0100
-From: Richard Cochran <richardcochran@gmail.com>
-Message-ID: <20150127081901.GA5658@localhost.localdomain>
+Message-ID: <54C74D86.9030101@xenomai.org>
+Date: Tue, 27 Jan 2015 09:34:14 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Subject: [Xenomai] rtdm on mercury
+References: <20150127081901.GA5658@localhost.localdomain>
+In-Reply-To: <20150127081901.GA5658@localhost.localdomain>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] rtdm on mercury
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,26 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-
-Hallo list,
-
-I have been just getting to know xenomai-3 after a long time of
-xenomai abstinence.  IIRC, there has been some talk in the past of
-supporting rtdm in mercury for both user space and drivers.  But
-looking at the present state, I don't see any sign of this having been
-implemented.
-
-Am I missing something?
-
-[ background: wanting to write a driver for custom FPGA based hardware
-  device, and the driver should work with and without cobalt.  I have
-  done this before by making the driver code portable to both normal
-  kernel and rtdm.  It would be nice to be able to write a pure rtdm
-  driver and have it "just work" in a plain kernel. ]
-
-Thanks,
-Richard
+To: Richard Cochran <richardcochran@gmail.com>, xenomai@xenomai.org
 
 
+Hi Richard,
+
+On 01/27/2015 09:19 AM, Richard Cochran wrote:
+> Hallo list,
+> 
+> I have been just getting to know xenomai-3 after a long time of
+> xenomai abstinence.  IIRC, there has been some talk in the past of
+> supporting rtdm in mercury for both user space and drivers.  But
+> looking at the present state, I don't see any sign of this having been
+> implemented.
+> 
+> Am I missing something?
+> 
+> [ background: wanting to write a driver for custom FPGA based hardware
+>   device, and the driver should work with and without cobalt.  I have
+>   done this before by making the driver code portable to both normal
+>   kernel and rtdm.  It would be nice to be able to write a pure rtdm
+>   driver and have it "just work" in a plain kernel. ]
+> 
+
+This work is still in the planning stage. We had to wait for the dust to
+settle on the RTDM API changes that took place in 3.x. Implementing a
+revised version of the native incarnation of RTDM is next.
+
+-- 
+Philippe.
 
