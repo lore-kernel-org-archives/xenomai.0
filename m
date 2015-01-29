@@ -1,12 +1,12 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Thu, 22 Jan 2015 09:36:08 +0100
-Message-ID: <6586204.rkkvQf5G2W@soho>
-In-Reply-To: <54C0AEDE.8000909@siemens.com>
-References: <1537147.Wm9AbiuW5D@soho> <54C0AEDE.8000909@siemens.com>
+Date: Thu, 29 Jan 2015 13:25:04 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150129122504.GC2698@hermes.click-hack.org>
+References: <CABxGBLT7Y-xmzPYRjgq=XV6Gj0DmqWqOE9efgikWRVwqyT7cpQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Xenomai-3 booting problems
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CABxGBLT7Y-xmzPYRjgq=XV6Gj0DmqWqOE9efgikWRVwqyT7cpQ@mail.gmail.com>
+Subject: Re: [Xenomai] ToD drift on i7-3740QM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,38 +15,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Roland Pastorino <roland@rolandpastorino.com>
 Cc: xenomai@xenomai.org
 
-RWwgRGlqb3VzLCAyMiBkZSBnZW5lciBkZSAyMDE1LCBhIGxlcyAwOTowMzo0MiwgSmFuIEtpc3pr
-YSB2YSBlc2NyaXVyZToKPiBPbiAyMDE1LTAxLTIyIDA4OjQ3LCBMZW9wb2xkIFBhbG9tby1BdmVs
-bGFuZWRhIHdyb3RlOgo+ID4gSGksCj4gPiAKPiA+IAo+ID4gSSBoYXZlIGNvbXBpbGluZyBhIENv
-YmFsdCBrZXJuZWwuIEkgaGF2ZSBmb2xsb3dlZCB0aGUgd2ViICJ3aWtpcHJlc3MiCj4gPiBbMV07
-LSkgcmVjb21tZW5kYXRpb25zLiBIb3dldmVyLCBteSBib3ggKGEgbm9ybWFsIGRlc2t0b3AgY29t
-cHV0ZXIgLSBEZWxsCj4gPiBPcHRpcGxleCA3MDEwIC0pIGRvZXNuJ3QgYm9vdC4gSXQgdGhyb3dz
-IGEgbWVzc2FnZSBsaWtlOgo+ID4gLi4uLgo+ID4gdGltZXIgZG9lc24ndCB3b3JrIHRocm91Z2gg
-aW50ZXJydXAtcmVtYXBwZWQgSU8tYXBpYwo+IAo+IFNvdW5kcyBsaWtlIGludGVycnVwdCByZW1h
-cHBpbmcgaXMgZW5hYmxlZCBmb3IgeW91ciBzeXN0ZW0uIFRoYXQncyBub3QKPiBzdXBwb3J0ZWQg
-YnkgWGVub21haSAvIEktcGlwZSBzbyBmYXIgKG9uIG15IHRvLWRvIGxpc3QsIGFsb25nIHdpdGgK
-PiB4MkFQSUMgc3VwcG9ydCkuIERpc2FibGUgdGhpcyB2aWEgImludGVsX2lvbW11PW9mZiBpbnRy
-ZW1hcD1vZmYiIGluIHRoZQo+IGtlcm5lbCBjb21tYW5kIGxpbmUgb3IgYnkgY2hhbmdpbmcgdGhl
-IGtlcm5lbCBjb25maWcgdG8gbm90IGluY2x1ZGUKPiBJT01NVSAvIGludGVycnVwdCByZW1hcHBp
-bmcgc3VwcG9ydC4KCkkgaGF2ZSB0aGlzIG9wdGlvbnM6CgokIGdyZXAgSU9NTVUgY29uZmlnLXhl
-bm9tYWktMy4wLjAgCkNPTkZJR19HQVJUX0lPTU1VPXkKQ09ORklHX0NBTEdBUllfSU9NTVU9eQpD
-T05GSUdfQ0FMR0FSWV9JT01NVV9FTkFCTEVEX0JZX0RFRkFVTFQ9eQpDT05GSUdfSU9NTVVfSEVM
-UEVSPXkKQ09ORklHX1ZGSU9fSU9NTVVfVFlQRTE9bQpDT05GSUdfSU9NTVVfQVBJPXkKQ09ORklH
-X0lPTU1VX1NVUFBPUlQ9eQpDT05GSUdfQU1EX0lPTU1VPXkKIyBDT05GSUdfQU1EX0lPTU1VX1NU
-QVRTIGlzIG5vdCBzZXQKQ09ORklHX0FNRF9JT01NVV9WMj15CkNPTkZJR19JTlRFTF9JT01NVT15
-CiMgQ09ORklHX0lOVEVMX0lPTU1VX0RFRkFVTFRfT04gaXMgbm90IHNldApDT05GSUdfSU5URUxf
-SU9NTVVfRkxPUFBZX1dBPXkKIyBDT05GSUdfSU9NTVVfREVCVUcgaXMgbm90IHNldAojIENPTkZJ
-R19JT01NVV9TVFJFU1MgaXMgbm90IHNldAoKCkxlb3BvbGQKCi0tIAotLQpMaW51eCBVc2VyIDE1
-MjY5MiAgICAgR1BHOiAwNUY0QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQotLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tCkE6IEJlY2F1c2UgaXQgbWVzc2VzIHVwIHRoZSBvcmRlciBp
-biB3aGljaCBwZW9wbGUgbm9ybWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkgaXMgdG9wLXBvc3Rpbmcg
-c3VjaCBhIGJhZCB0aGluZz8KQTogVG9wLXBvc3RpbmcuClE6IFdoYXQgaXMgdGhlIG1vc3QgYW5u
-b3lpbmcgdGhpbmcgaW4gZS1tYWlsPwotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0t
-LS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1
-cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogODE5IGJ5dGVzCkRl
-c2M6IFRoaXMgaXMgYSBkaWdpdGFsbHkgc2lnbmVkIG1lc3NhZ2UgcGFydC4KVVJMOiA8aHR0cDov
-L3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1MDEyMi8z
-YTYxNWJmNy9hdHRhY2htZW50LnNpZz4K
+On Sun, Jan 25, 2015 at 12:15:39PM +0100, Roland Pastorino wrote:
+> Good morning everyone,
+> 
+> I would like to know if some of you could give me a hint on how to
+> solve my ToD drift problem.
+> This question is similar to this one ->
+> http://comments.gmane.org/gmane.linux.real-time.xenomai.users/19719
+> 
+> Problem:
+> After installing Xenomai and after the first reboot, my ToD drift was
+> around 500000 us/s.
+> After the second reboot, my ToD drift is around 500 us/s which I
+> presume is still too high.
+> I checked the troubleshooting information on Xenomai website but it didn't help.
+> 
+> Machine and configuration:
+> - PC = Thinkpad w530
+> - cpu = i7-3740QM
+> - kernel configuration file is attached. I followed the Xenomai
+> website for the configuration.
+> - cobalt kernel of Xenomai 3
+> - Linux kernel 3.16
+> - ipipe-core-3.16-x86-1.patch
+> - Ubuntu 14.10
+
+Actually, the kernel configuration is not attached. But probably the
+only interesting item is whether CONFIG_CPU_FREQ is missing.
+
+
+-- 
+					    Gilles.
+
