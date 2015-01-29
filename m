@@ -1,13 +1,11 @@
+Date: Thu, 29 Jan 2015 14:04:14 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150129130414.GA4766@hermes.click-hack.org>
+References: <CABxGBLRcHB_V1H-Da-yv5GMaN=_9-tD_K0werwc-SPSGgTRy5g@mail.gmail.com>
 MIME-Version: 1.0
-Sender: roland.pastorino@gmail.com
-In-Reply-To: <20150129122504.GC2698@hermes.click-hack.org>
-References: <CABxGBLT7Y-xmzPYRjgq=XV6Gj0DmqWqOE9efgikWRVwqyT7cpQ@mail.gmail.com>
- <20150129122504.GC2698@hermes.click-hack.org>
-Date: Thu, 29 Jan 2015 14:01:56 +0100
-Message-ID: <CABxGBLQuGarV1rMnWtcG=dgo07AYJdbYrqotnv=YzAvOoTCz_A@mail.gmail.com>
-From: Roland Pastorino <roland@rolandpastorino.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CABxGBLRcHB_V1H-Da-yv5GMaN=_9-tD_K0werwc-SPSGgTRy5g@mail.gmail.com>
 Subject: Re: [Xenomai] ToD drift on i7-3740QM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,40 +15,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Roland Pastorino <roland.pastorino@gmail.com>
 Cc: xenomai@xenomai.org
 
-MjAxNS0wMS0yOSAxMzoyNSBHTVQrMDE6MDAgR2lsbGVzIENoYW50ZXBlcmRyaXgKPGdpbGxlcy5j
-aGFudGVwZXJkcml4QHhlbm9tYWkub3JnPjoKPiBPbiBTdW4sIEphbiAyNSwgMjAxNSBhdCAxMjox
-NTozOVBNICswMTAwLCBSb2xhbmQgUGFzdG9yaW5vIHdyb3RlOgo+PiBHb29kIG1vcm5pbmcgZXZl
-cnlvbmUsCj4+Cj4+IEkgd291bGQgbGlrZSB0byBrbm93IGlmIHNvbWUgb2YgeW91IGNvdWxkIGdp
-dmUgbWUgYSBoaW50IG9uIGhvdyB0bwo+PiBzb2x2ZSBteSBUb0QgZHJpZnQgcHJvYmxlbS4KPj4g
-VGhpcyBxdWVzdGlvbiBpcyBzaW1pbGFyIHRvIHRoaXMgb25lIC0+Cj4+IGh0dHA6Ly9jb21tZW50
-cy5nbWFuZS5vcmcvZ21hbmUubGludXgucmVhbC10aW1lLnhlbm9tYWkudXNlcnMvMTk3MTkKPj4K
-Pj4gUHJvYmxlbToKPj4gQWZ0ZXIgaW5zdGFsbGluZyBYZW5vbWFpIGFuZCBhZnRlciB0aGUgZmly
-c3QgcmVib290LCBteSBUb0QgZHJpZnQgd2FzCj4+IGFyb3VuZCA1MDAwMDAgdXMvcy4KPj4gQWZ0
-ZXIgdGhlIHNlY29uZCByZWJvb3QsIG15IFRvRCBkcmlmdCBpcyBhcm91bmQgNTAwIHVzL3Mgd2hp
-Y2ggSQo+PiBwcmVzdW1lIGlzIHN0aWxsIHRvbyBoaWdoLgo+PiBJIGNoZWNrZWQgdGhlIHRyb3Vi
-bGVzaG9vdGluZyBpbmZvcm1hdGlvbiBvbiBYZW5vbWFpIHdlYnNpdGUgYnV0IGl0IGRpZG4ndCBo
-ZWxwLgo+Pgo+PiBNYWNoaW5lIGFuZCBjb25maWd1cmF0aW9uOgo+PiAtIFBDID0gVGhpbmtwYWQg
-dzUzMAo+PiAtIGNwdSA9IGk3LTM3NDBRTQo+PiAtIGtlcm5lbCBjb25maWd1cmF0aW9uIGZpbGUg
-aXMgYXR0YWNoZWQuIEkgZm9sbG93ZWQgdGhlIFhlbm9tYWkKPj4gd2Vic2l0ZSBmb3IgdGhlIGNv
-bmZpZ3VyYXRpb24uCj4+IC0gY29iYWx0IGtlcm5lbCBvZiBYZW5vbWFpIDMKPj4gLSBMaW51eCBr
-ZXJuZWwgMy4xNgo+PiAtIGlwaXBlLWNvcmUtMy4xNi14ODYtMS5wYXRjaAo+PiAtIFVidW50dSAx
-NC4xMAo+Cj4gQWN0dWFsbHksIHRoZSBrZXJuZWwgY29uZmlndXJhdGlvbiBpcyBub3QgYXR0YWNo
-ZWQuIEJ1dCBwcm9iYWJseSB0aGUKPiBvbmx5IGludGVyZXN0aW5nIGl0ZW0gaXMgd2hldGhlciBD
-T05GSUdfQ1BVX0ZSRVEgaXMgbWlzc2luZy4KPgo+Cj4gLS0KPiAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgIEdpbGxlcy4KCkkndmUgYXR0YWNoZWQgdGhlIGtlcm5l
-bCBjb25maWd1cmF0aW9uIHRoaXMgdGltZS4uLgoKQ09ORklHX0NQVV9GUkVRIGlzIGxpa2UgdGhp
-czoKIyBDUFUgRnJlcXVlbmN5IHNjYWxpbmcKIwojIENPTkZJR19DUFVfRlJFUSBpcyBub3Qgc2V0
-CgpUaGlzIGlzIHRoZSByZXN1bHQgb2YgY29uZmlndXJpbmcgdGhlIGtlcm5lbCB2aWEgJ21ha2Vt
-ZW51Y29uZmlnJy4KQWxzbyBJIG5vdGljZWQgdGhhdCB0aGUgJ2Nsb2NrdGVzdCcgY2FuIGdpdmUg
-ZGlmZmVyZW50IHJlc3VsdHMKKHdpdGhvdXQgcmVib290aW5nIG15IG1hY2hpbmUpLgpGb3IgZXhh
-bXBsZSBub3cgbXkgVG9EIGRyaWZ0IGlzIGFyb3VuZCA2NyB1cy9zIHdoaWNoIGlzIGJldHRlciBi
-dXQKZGlmZmVyZW50IGZyb20gdGhlIHByZXZpb3VzbHkgbWVudGlvbmVkIHJlc3VsdHMuClRoZSBi
-ZXN0IEkgZ290IHdhcyAwLjYgdXMvcy4KCk1hbnkgVGhhbmtzCgotLSAKUm9sYW5kIFBhc3Rvcmlu
-bwotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRh
-Y2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBjb25maWdfdzUzMF8zLjE2LjBfeGVub21haTMu
-MApUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTogMTY1MTk2IGJ5dGVzCkRlc2M6
-IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVu
-b21haS9hdHRhY2htZW50cy8yMDE1MDEyOS83YzRmMDY4MC9hdHRhY2htZW50Lm9iaj4K
+On Thu, Jan 29, 2015 at 01:59:36PM +0100, Roland Pastorino wrote:
+> 2015-01-29 13:25 GMT+01:00 Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org>:
+> > On Sun, Jan 25, 2015 at 12:15:39PM +0100, Roland Pastorino wrote:
+> >> Good morning everyone,
+> >>
+> >> I would like to know if some of you could give me a hint on how to
+> >> solve my ToD drift problem.
+> >> This question is similar to this one ->
+> >> http://comments.gmane.org/gmane.linux.real-time.xenomai.users/19719
+> >>
+> >> Problem:
+> >> After installing Xenomai and after the first reboot, my ToD drift was
+> >> around 500000 us/s.
+> >> After the second reboot, my ToD drift is around 500 us/s which I
+> >> presume is still too high.
+> >> I checked the troubleshooting information on Xenomai website but it didn't help.
+> >>
+> >> Machine and configuration:
+> >> - PC = Thinkpad w530
+> >> - cpu = i7-3740QM
+> >> - kernel configuration file is attached. I followed the Xenomai
+> >> website for the configuration.
+> >> - cobalt kernel of Xenomai 3
+> >> - Linux kernel 3.16
+> >> - ipipe-core-3.16-x86-1.patch
+> >> - Ubuntu 14.10
+> >
+> > Actually, the kernel configuration is not attached. But probably the
+> > only interesting item is whether CONFIG_CPU_FREQ is missing.
+> >
+> >
+> > --
+> >                                             Gilles.
+> 
+> I've attached the kernel configuration this time...
+> 
+> CONFIG_CPU_FREQ is like this:
+> # CPU Frequency scaling
+> #
+> # CONFIG_CPU_FREQ is not set
+> 
+> This is the result of configuring the kernel via 'makemenuconfig'.
+> Also I noticed that the 'clocktest' can give different results
+> (without rebooting my machine).
+> For example now my ToD drift is around 67 us/s which is better but
+> different from the previously mentioned results.
+> The best I got was 0.6 us/s.
+
+Linux and Xenomai do not necessarily use the same clock source, and
+when they use the same, do not necessarily use the same frequency,
+especially when Linux has NTP running. So, unless you launch
+clocktest to watch CLOCK_HOST_REALTIME, a difference is expected.
+But 500us/s is abnormal, something is off. You need to look at the
+frequencies used by Linux and Xenomai, and see which one is off.
+
+
+-- 
+					    Gilles.
+
