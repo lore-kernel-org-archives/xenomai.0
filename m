@@ -1,12 +1,14 @@
-Date: Thu, 29 Jan 2015 13:28:37 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150129122837.GD2698@hermes.click-hack.org>
-References: <1421920667-437-1-git-send-email-sr@denx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1421920667-437-1-git-send-email-sr@denx.de>
-Subject: Re: [Xenomai] [PATCH v2] hal/arm: Add Zynq v3.14.17 patches
+Sender: roland.pastorino@gmail.com
+In-Reply-To: <20150129122504.GC2698@hermes.click-hack.org>
+References: <CABxGBLT7Y-xmzPYRjgq=XV6Gj0DmqWqOE9efgikWRVwqyT7cpQ@mail.gmail.com>
+ <20150129122504.GC2698@hermes.click-hack.org>
+Date: Thu, 29 Jan 2015 14:01:56 +0100
+Message-ID: <CABxGBLQuGarV1rMnWtcG=dgo07AYJdbYrqotnv=YzAvOoTCz_A@mail.gmail.com>
+From: Roland Pastorino <roland@rolandpastorino.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] ToD drift on i7-3740QM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,21 +17,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Stefan Roese <sr@denx.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Thu, Jan 22, 2015 at 10:57:47AM +0100, Stefan Roese wrote:
-> Xilinx Zynq is already supported in the mainline Xenomai git repository.
-> This patch adds support for the v3.14.17 Linux Kernel additionally to the
-> already present v3.5 and v3.8 support.
-> 
-> This version was tested with the following ipipe core arm patch:
-> - ipipe-core-3.14.17-arm-4.patch
-> 
-> Signed-off-by: Stefan Roese <sr@denx.de>
-
-Merged, thanks.
-
--- 
-					    Gilles.
-
+MjAxNS0wMS0yOSAxMzoyNSBHTVQrMDE6MDAgR2lsbGVzIENoYW50ZXBlcmRyaXgKPGdpbGxlcy5j
+aGFudGVwZXJkcml4QHhlbm9tYWkub3JnPjoKPiBPbiBTdW4sIEphbiAyNSwgMjAxNSBhdCAxMjox
+NTozOVBNICswMTAwLCBSb2xhbmQgUGFzdG9yaW5vIHdyb3RlOgo+PiBHb29kIG1vcm5pbmcgZXZl
+cnlvbmUsCj4+Cj4+IEkgd291bGQgbGlrZSB0byBrbm93IGlmIHNvbWUgb2YgeW91IGNvdWxkIGdp
+dmUgbWUgYSBoaW50IG9uIGhvdyB0bwo+PiBzb2x2ZSBteSBUb0QgZHJpZnQgcHJvYmxlbS4KPj4g
+VGhpcyBxdWVzdGlvbiBpcyBzaW1pbGFyIHRvIHRoaXMgb25lIC0+Cj4+IGh0dHA6Ly9jb21tZW50
+cy5nbWFuZS5vcmcvZ21hbmUubGludXgucmVhbC10aW1lLnhlbm9tYWkudXNlcnMvMTk3MTkKPj4K
+Pj4gUHJvYmxlbToKPj4gQWZ0ZXIgaW5zdGFsbGluZyBYZW5vbWFpIGFuZCBhZnRlciB0aGUgZmly
+c3QgcmVib290LCBteSBUb0QgZHJpZnQgd2FzCj4+IGFyb3VuZCA1MDAwMDAgdXMvcy4KPj4gQWZ0
+ZXIgdGhlIHNlY29uZCByZWJvb3QsIG15IFRvRCBkcmlmdCBpcyBhcm91bmQgNTAwIHVzL3Mgd2hp
+Y2ggSQo+PiBwcmVzdW1lIGlzIHN0aWxsIHRvbyBoaWdoLgo+PiBJIGNoZWNrZWQgdGhlIHRyb3Vi
+bGVzaG9vdGluZyBpbmZvcm1hdGlvbiBvbiBYZW5vbWFpIHdlYnNpdGUgYnV0IGl0IGRpZG4ndCBo
+ZWxwLgo+Pgo+PiBNYWNoaW5lIGFuZCBjb25maWd1cmF0aW9uOgo+PiAtIFBDID0gVGhpbmtwYWQg
+dzUzMAo+PiAtIGNwdSA9IGk3LTM3NDBRTQo+PiAtIGtlcm5lbCBjb25maWd1cmF0aW9uIGZpbGUg
+aXMgYXR0YWNoZWQuIEkgZm9sbG93ZWQgdGhlIFhlbm9tYWkKPj4gd2Vic2l0ZSBmb3IgdGhlIGNv
+bmZpZ3VyYXRpb24uCj4+IC0gY29iYWx0IGtlcm5lbCBvZiBYZW5vbWFpIDMKPj4gLSBMaW51eCBr
+ZXJuZWwgMy4xNgo+PiAtIGlwaXBlLWNvcmUtMy4xNi14ODYtMS5wYXRjaAo+PiAtIFVidW50dSAx
+NC4xMAo+Cj4gQWN0dWFsbHksIHRoZSBrZXJuZWwgY29uZmlndXJhdGlvbiBpcyBub3QgYXR0YWNo
+ZWQuIEJ1dCBwcm9iYWJseSB0aGUKPiBvbmx5IGludGVyZXN0aW5nIGl0ZW0gaXMgd2hldGhlciBD
+T05GSUdfQ1BVX0ZSRVEgaXMgbWlzc2luZy4KPgo+Cj4gLS0KPiAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgIEdpbGxlcy4KCkkndmUgYXR0YWNoZWQgdGhlIGtlcm5l
+bCBjb25maWd1cmF0aW9uIHRoaXMgdGltZS4uLgoKQ09ORklHX0NQVV9GUkVRIGlzIGxpa2UgdGhp
+czoKIyBDUFUgRnJlcXVlbmN5IHNjYWxpbmcKIwojIENPTkZJR19DUFVfRlJFUSBpcyBub3Qgc2V0
+CgpUaGlzIGlzIHRoZSByZXN1bHQgb2YgY29uZmlndXJpbmcgdGhlIGtlcm5lbCB2aWEgJ21ha2Vt
+ZW51Y29uZmlnJy4KQWxzbyBJIG5vdGljZWQgdGhhdCB0aGUgJ2Nsb2NrdGVzdCcgY2FuIGdpdmUg
+ZGlmZmVyZW50IHJlc3VsdHMKKHdpdGhvdXQgcmVib290aW5nIG15IG1hY2hpbmUpLgpGb3IgZXhh
+bXBsZSBub3cgbXkgVG9EIGRyaWZ0IGlzIGFyb3VuZCA2NyB1cy9zIHdoaWNoIGlzIGJldHRlciBi
+dXQKZGlmZmVyZW50IGZyb20gdGhlIHByZXZpb3VzbHkgbWVudGlvbmVkIHJlc3VsdHMuClRoZSBi
+ZXN0IEkgZ290IHdhcyAwLjYgdXMvcy4KCk1hbnkgVGhhbmtzCgotLSAKUm9sYW5kIFBhc3Rvcmlu
+bwotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRh
+Y2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBjb25maWdfdzUzMF8zLjE2LjBfeGVub21haTMu
+MApUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTogMTY1MTk2IGJ5dGVzCkRlc2M6
+IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVu
+b21haS9hdHRhY2htZW50cy8yMDE1MDEyOS83YzRmMDY4MC9hdHRhY2htZW50Lm9iaj4K
