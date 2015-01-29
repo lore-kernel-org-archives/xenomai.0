@@ -1,12 +1,12 @@
-Date: Thu, 29 Jan 2015 13:25:04 +0100
+Date: Thu, 29 Jan 2015 13:28:37 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150129122504.GC2698@hermes.click-hack.org>
-References: <CABxGBLT7Y-xmzPYRjgq=XV6Gj0DmqWqOE9efgikWRVwqyT7cpQ@mail.gmail.com>
+Message-ID: <20150129122837.GD2698@hermes.click-hack.org>
+References: <1421920667-437-1-git-send-email-sr@denx.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CABxGBLT7Y-xmzPYRjgq=XV6Gj0DmqWqOE9efgikWRVwqyT7cpQ@mail.gmail.com>
-Subject: Re: [Xenomai] ToD drift on i7-3740QM
+In-Reply-To: <1421920667-437-1-git-send-email-sr@denx.de>
+Subject: Re: [Xenomai] [PATCH v2] hal/arm: Add Zynq v3.14.17 patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,37 +15,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Roland Pastorino <roland@rolandpastorino.com>
+To: Stefan Roese <sr@denx.de>
 Cc: xenomai@xenomai.org
 
-On Sun, Jan 25, 2015 at 12:15:39PM +0100, Roland Pastorino wrote:
-> Good morning everyone,
+On Thu, Jan 22, 2015 at 10:57:47AM +0100, Stefan Roese wrote:
+> Xilinx Zynq is already supported in the mainline Xenomai git repository.
+> This patch adds support for the v3.14.17 Linux Kernel additionally to the
+> already present v3.5 and v3.8 support.
 > 
-> I would like to know if some of you could give me a hint on how to
-> solve my ToD drift problem.
-> This question is similar to this one ->
-> http://comments.gmane.org/gmane.linux.real-time.xenomai.users/19719
+> This version was tested with the following ipipe core arm patch:
+> - ipipe-core-3.14.17-arm-4.patch
 > 
-> Problem:
-> After installing Xenomai and after the first reboot, my ToD drift was
-> around 500000 us/s.
-> After the second reboot, my ToD drift is around 500 us/s which I
-> presume is still too high.
-> I checked the troubleshooting information on Xenomai website but it didn't help.
-> 
-> Machine and configuration:
-> - PC = Thinkpad w530
-> - cpu = i7-3740QM
-> - kernel configuration file is attached. I followed the Xenomai
-> website for the configuration.
-> - cobalt kernel of Xenomai 3
-> - Linux kernel 3.16
-> - ipipe-core-3.16-x86-1.patch
-> - Ubuntu 14.10
+> Signed-off-by: Stefan Roese <sr@denx.de>
 
-Actually, the kernel configuration is not attached. But probably the
-only interesting item is whether CONFIG_CPU_FREQ is missing.
-
+Merged, thanks.
 
 -- 
 					    Gilles.
