@@ -1,14 +1,14 @@
+Message-ID: <54D0A0C2.3050905@xenomai.org>
+Date: Tue, 03 Feb 2015 11:19:46 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Sender: roland.pastorino@gmail.com
-In-Reply-To: <CABxGBLTCDi_3ZBr_96PhyhPry9tNCWyvwWSzcaA4CxfKpJbrRQ@mail.gmail.com>
-References: <CABxGBLRcHB_V1H-Da-yv5GMaN=_9-tD_K0werwc-SPSGgTRy5g@mail.gmail.com>
- <20150129130414.GA4766@hermes.click-hack.org>
- <CABxGBLTCDi_3ZBr_96PhyhPry9tNCWyvwWSzcaA4CxfKpJbrRQ@mail.gmail.com>
-Date: Tue, 3 Feb 2015 09:09:48 +0100
-Message-ID: <CABxGBLTo8kRfPeRzW3EiQRPJWuHgoY7K6+aaH8uWppeR_Y+=bQ@mail.gmail.com>
-From: Roland Pastorino <roland@rolandpastorino.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] ToD drift on i7-3740QM
+References: <CAEMXjGyps7NpBUYgC4j4TrVKbiAZsceiuQ71TymDtXz-a3fqbA@mail.gmail.com>
+ <54CCAA6D.4030007@xenomai.org>
+ <CAEMXjGyNHrnCRXjVQq8FaWAVdzN1x3079QT0J_bCx_8VfNoQxA@mail.gmail.com>
+In-Reply-To: <CAEMXjGyNHrnCRXjVQq8FaWAVdzN1x3079QT0J_bCx_8VfNoQxA@mail.gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] POSIX skin, task crashes Linux when run as RT task
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,125 +17,155 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Steve B <sbattazzo@gmail.com>, xenomai@xenomai.org
 
-2015-01-30 12:15 GMT+01:00 Roland Pastorino <roland@rolandpastorino.com>:
-> 2015-01-29 14:04 GMT+01:00 Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org>:
->> On Thu, Jan 29, 2015 at 01:59:36PM +0100, Roland Pastorino wrote:
->>> 2015-01-29 13:25 GMT+01:00 Gilles Chanteperdrix
->>> <gilles.chanteperdrix@xenomai.org>:
->>> > On Sun, Jan 25, 2015 at 12:15:39PM +0100, Roland Pastorino wrote:
->>> >> Good morning everyone,
->>> >>
->>> >> I would like to know if some of you could give me a hint on how to
->>> >> solve my ToD drift problem.
->>> >> This question is similar to this one ->
->>> >> http://comments.gmane.org/gmane.linux.real-time.xenomai.users/19719
->>> >>
->>> >> Problem:
->>> >> After installing Xenomai and after the first reboot, my ToD drift was
->>> >> around 500000 us/s.
->>> >> After the second reboot, my ToD drift is around 500 us/s which I
->>> >> presume is still too high.
->>> >> I checked the troubleshooting information on Xenomai website but it didn't help.
->>> >>
->>> >> Machine and configuration:
->>> >> - PC = Thinkpad w530
->>> >> - cpu = i7-3740QM
->>> >> - kernel configuration file is attached. I followed the Xenomai
->>> >> website for the configuration.
->>> >> - cobalt kernel of Xenomai 3
->>> >> - Linux kernel 3.16
->>> >> - ipipe-core-3.16-x86-1.patch
->>> >> - Ubuntu 14.10
->>> >
->>> > Actually, the kernel configuration is not attached. But probably the
->>> > only interesting item is whether CONFIG_CPU_FREQ is missing.
->>> >
->>> >
->>> > --
->>> >                                             Gilles.
+On 02/02/2015 10:12 PM, Steve B wrote:
+> On Sat, Jan 31, 2015 at 2:11 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+> 
+>> On 01/31/2015 12:52 AM, Steve B wrote:
+>>> Hello,
 >>>
->>> I've attached the kernel configuration this time...
->>>
->>> CONFIG_CPU_FREQ is like this:
->>> # CPU Frequency scaling
->>> #
->>> # CONFIG_CPU_FREQ is not set
->>>
->>> This is the result of configuring the kernel via 'makemenuconfig'.
->>> Also I noticed that the 'clocktest' can give different results
->>> (without rebooting my machine).
->>> For example now my ToD drift is around 67 us/s which is better but
->>> different from the previously mentioned results.
->>> The best I got was 0.6 us/s.
+>>> I have a task running at 100Hz on a Beaglebone Black that seems to crash
+>>> sporadically when I set its parameters to SCHED_FIFO with any priority,
+>> and
 >>
->> Linux and Xenomai do not necessarily use the same clock source, and
->> when they use the same, do not necessarily use the same frequency,
->> especially when Linux has NTP running. So, unless you launch
->> clocktest to watch CLOCK_HOST_REALTIME, a difference is expected.
->> But 500us/s is abnormal, something is off. You need to look at the
->> frequencies used by Linux and Xenomai, and see which one is off.
+>> AFAICT, this should be the basic issue to investigate. Is there any
+>> feedback on the kernel console? any crash report? Or is it just locking
+>> up hard?
 >>
 >>
->> --
->>                                             Gilles.
->
-> I see the point.
-> If I run the 'clocktest' with CLOCK_HOST_REALTIME, I get this:
->
-> == Tested clock: 8 (CLOCK_HOST_REALTIME)
-> CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
-> --- -------------------- ---------------- ---------- --------------
->   0         -339532135.1       122526.008          0            0.0
->   1         -339532070.5       121839.520          0            0.0
->   2         -339532420.1       122929.781          0            0.0
->   3         -339531750.8       123088.126          0            0.0
->
-> The drift is still way off.
-> CLOCK_REALTIME gives:
->
-> == Tested clock: 0 (CLOCK_REALTIME)
-> CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
-> --- -------------------- ---------------- ---------- --------------
->   0         -302580987.5       330900.325          0            0.0
->   1         -302580653.8       330346.234          0            0.0
->   2         -302580710.2       329623.634          0            0.0
->   3         -302580359.1       329730.306          0            0.0
->
-> I verified that NTP is running.
-> $ sudo service ntp service
-> * NTP server is running
->
-> As you mentioned the Linux and/or Xenomai frequencies is/are probably off.
-> I have to mention that my Linux clock (=date) can run faster or slower
-> than the wall-clock time.
-> Could you please tell me where I should start searching for a
-> solution? Linux kernel sources, ipipe patch?
->
-> Many Thanks.
->
-> Roland Pastorino
+> I tried 'dmesg -w' in another telnet session, the only kernel message I saw
+> after starting up my application was that one of my serial ports had a
+> buffer overrun once (I don't believe this is related). No messages at the
+> time of the crash. I would say it's mostly locking up hard as it takes a
+> very long and indeterminate amount of time to CTRL-C out of the
+> application, and my other telnet sessions don't respond well (or at all) to
+> inputs on the command line. The application still gives some printouts, but
+> about a hundred or to a thousand times slower than nominal.
+> 
 
-I give you more insight into the problem.
-I prepared a Linux kernel 3.14.17 with Xenomai 3 (instead of the 3.16
-I was using until now) in order to see if the problem disappeared.
-The kernel configuration is based on the one provided with Ubuntu
-14.04 for kernel 3.13.
-With kernel 3.14.17 the problem remains. The only different is that
-the wifi on my PC now works.
+A typical issue is an error reported by some blocking call - for
+instance when reading data from some RT device - going unnoticed by the
+application, which then iterates and so on. Normally, this causes a hard
+lockup due to the RT scheduling priority, but if your work loop also
+switches mode due to plain linux calls, then the system might just be
+brought to a crawl instead.
 
-Then I prepared a Linux kernel 3.16 without Xenomai in order to see if
-something was wrong with my compilation process.
-The kernel configuration is based on the one provided with Ubuntu
-14.10 for kernel 3.16.
-This kernel works perfectly.
+That would explain why the Xenomai watchdog does not trigger either,
+since you do frequent transitions to secondary/linux mode, the real-time
+core does not detect the lockup condition which is N secs spent in
+primary/rt mode without transition to linux (N=4 by default).
 
-I welcome any comment/idea on how to proceed with the issue searching.
+> 
+>>> it does not produce the crash when I set it to SCHED_OTHER.
+>>> However when I set it to SCHED_OTHER the jitter is much larger, so we
+>>> really want to get it running stable on SCHED_FIFO if possible.
+>>
+>> As expected, SCHED_OTHER won't give you any rt guarantee, hence the
+>> jitter. A SCHED_OTHER thread driven by Xenomai is allowed to wait for
+>> Xenomai resources (e.g. pending on a sema4, waiting on a condvar,
+>> blocking on a message queue), but won't be able to compete with
+>> SCHED_FIFO threads for the CPU.
+>>
+>>> Jitter is not currently measured precisely, but the difference is such
+>> that
+>>> it can be eyeballed on an oscilloscope watching the messages go back and
+>>> forth.
+>>> Looking at /proc/xenomai/stat this task tends to draw up to about 30% of
+>>> CPU at full load.
+>>>
+>>
+>> You mean when running into the SCHED_OTHER class? If so, the mode
+>> switches might explain such load only if the thread calls a Xenomai
+>> service from its work loop, which forces the transition to primary mode,
+>> which is required for competing for Xenomai resources.
+>>
+>>
+> I am using some XDDP writes as well as writes to non-RTDM hardware, so I
+> suppose that I will get a handful of mode switches no matter which type of
+> thread it is.
+> 
 
-Best Regards
+Ok.
 
-Roland Pastorino
+> More information is needed to better understand the issue, including
+>> details about what the work loop is actually doing (see
+>> http://xenomai.org/asking-for-help/).
+>>
+>> Enabling CONFIG_XENO_OPT_WATCHDOG might help detecting runaway threads
+>> which belong to Xenomai's SCHED_FIFO class, but this won't apply to your
+>> test with SCHED_OTHER.
+>>
+>> Maybe CONFIG_LOCKUP_DETECTOR might trigger in case a linux-driven thread
+>> overconsumes the CPU (i.e. either a Xenomai SCHED_OTHER thread in linux
+>> mode, or a regular pthread).
+>>
+>> It is definitely possible that your workload overconsumes CPU depending
+>> on the available CPU horsepower on your platform, but we can't be sure
+>> until we know more about your setup. This said, mode switching is a
+>> costly operation, especially with Xenomai 2.x (compared to 3.x). So the
+>> design should use only a very few of them in a normal work cycle if
+>> absolutely required, and preferably none, unless the later is paced at a
+>> reasonably slow rate in the timeline.
+>>
+>>
+> I am seeing mode switches for that thread increasing at a rate of about 100
+> for each time I look at /proc/xenomai/stat by hand (less than one second),
+> so it seems like it's on the order of a couple or a few per cycle actually.
+> I've been hoping to eliminate those somehow.
+> 
+
+In case you did not spot them all yet:
+http://xenomai.org/2014/06/finding-spurious-relaxes/
+
+> 
+>> There are ways to exchange messages between a plain regular pthread and
+>> a Xenomai SCHED_FIFO thread without involving any mode switch (see the
+>> XDDP protocol from the RTIPC driver). Other ways exist to share
+>> resources and/or synchronize between Xenomai SCHED_OTHER and SCHED_FIFO
+>> threads, at the expense of mode switches for the former. The best pick
+>> depends on the nature of your workload.
+>>
+>> I actually found XDDP to be very handy for another part of my application,
+> but I hadn't thought of using it for the part where the main thread puts
+> its messages out to hardware. I may look into it for this as well, but I
+> have been thinking that porting the driver to RTDM is the actual best
+> solution if it turns out the mode switches are part of the critical path.
+> 
+
+A dedicated RTDM driver is definitely the way to go for driving a device
+in pure rt mode.
+
+> I'm not sure yet how much I can disclose about what our main working thread
+> is doing aside from "a whole lot of floating point operations." It is
+> actually a bit of a black box to me as well currently. I understand that I
+> can get the best help if I'm able to provide more info, but since I'm not
+> sure, I was first hoping to just get some generic troubleshooting
+> strategies so I can know where to look.
+> 
+
+Before anything else, I would definitely make sure that each and every
+call to a blocking service in any rt work loop is checked for error
+condition.
+
+> My top suspicion now is that the main thread is occasionally hogging CPU
+> and some percentage of the time it's enough to throw off Linux, but I am
+> just trying to figure out if there's some way I can prove or disprove that
+> easily. It seems to be independent of whether or not my other (non-RT)
+> threads are even running at all.
+>
+
+This is my understanding as well.
+
+> 
+> At any rate, thanks very much for the suggestions!
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+> 
+
+
+-- 
+Philippe.
 
