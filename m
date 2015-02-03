@@ -1,13 +1,14 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Thu, 22 Jan 2015 10:52:31 +0100
-Message-ID: <2271076.0trCLgX2Zk@soho>
-In-Reply-To: <20150122085701.GA20360@hermes.click-hack.org>
-References: <1537147.Wm9AbiuW5D@soho> <2769633.cTWk055Sma@soho>
- <20150122085701.GA20360@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Xenomai-3 booting problems
+Sender: roland.pastorino@gmail.com
+In-Reply-To: <CABxGBLTCDi_3ZBr_96PhyhPry9tNCWyvwWSzcaA4CxfKpJbrRQ@mail.gmail.com>
+References: <CABxGBLRcHB_V1H-Da-yv5GMaN=_9-tD_K0werwc-SPSGgTRy5g@mail.gmail.com>
+ <20150129130414.GA4766@hermes.click-hack.org>
+ <CABxGBLTCDi_3ZBr_96PhyhPry9tNCWyvwWSzcaA4CxfKpJbrRQ@mail.gmail.com>
+Date: Tue, 3 Feb 2015 09:09:48 +0100
+Message-ID: <CABxGBLTo8kRfPeRzW3EiQRPJWuHgoY7K6+aaH8uWppeR_Y+=bQ@mail.gmail.com>
+From: Roland Pastorino <roland@rolandpastorino.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] ToD drift on i7-3740QM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,75 +20,122 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-RWwgRGlqb3VzLCAyMiBkZSBnZW5lciBkZSAyMDE1LCBhIGxlcyAwOTo1NzowMSwgR2lsbGVzIENo
-YW50ZXBlcmRyaXggdmEgCmVzY3JpdXJlOgo+IE9uIFRodSwgSmFuIDIyLCAyMDE1IGF0IDA5OjM0
-OjExQU0gKzAxMDAsIExlb3BvbGQgUGFsb21vLUF2ZWxsYW5lZGEgd3JvdGU6Cj4gPiBFbCBEaWpv
-dXMsIDIyIGRlIGdlbmVyIGRlIDIwMTUsIGEgbGVzIDA4OjU0OjI5LCBHaWxsZXMgQ2hhbnRlcGVy
-ZHJpeCB2YQo+ID4gCj4gPiBlc2NyaXVyZToKPiA+ID4gT24gVGh1LCBKYW4gMjIsIDIwMTUgYXQg
-MDg6NDc6MjRBTSArMDEwMCwgTGVvcG9sZCBQYWxvbW8tQXZlbGxhbmVkYSAKd3JvdGU6Cj4gPiA+
-ID4gSGksCj4gPiA+ID4gCj4gPiA+ID4gCj4gPiA+ID4gSSBoYXZlIGNvbXBpbGluZyBhIENvYmFs
-dCBrZXJuZWwuIEkgaGF2ZSBmb2xsb3dlZCB0aGUgd2ViICJ3aWtpcHJlc3MiCj4gPiA+ID4gWzFd
-Oy0pIHJlY29tbWVuZGF0aW9ucy4gSG93ZXZlciwgbXkgYm94IChhIG5vcm1hbCBkZXNrdG9wIGNv
-bXB1dGVyIC0KPiA+ID4gPiBEZWxsCj4gPiA+ID4gT3B0aXBsZXggNzAxMCAtKSBkb2Vzbid0IGJv
-b3QuIEl0IHRocm93cyBhIG1lc3NhZ2UgbGlrZToKPiA+ID4gPiAuLi4uCj4gPiA+ID4gdGltZXIg
-ZG9lc24ndCB3b3JrIHRocm91Z2ggaW50ZXJydXAtcmVtYXBwZWQgSU8tYXBpYwo+ID4gPiA+IAo+
-ID4gPiA+IC4uLgo+ID4gPiA+IAo+ID4gPiA+IGVuYWJsaW5nIG5vYXBpYyBpbiB0aGUgYm9vdCBv
-cHRpb25zIEknbSBhYmxlIHRvIGJvb3QuIEJ1dCwgSSBoYXZlIG5vdAo+ID4gPiA+IG1ha2UKPiA+
-ID4gPiBhbnkgdGVzdCBieSBub3cuIFNvbWUgaW50ZXJlc3RpbmcgbWVzc2FnZXM6Cj4gPiA+ID4g
-Cj4gPiA+ID4gJCBkbWVzZyB8IGdyZXAgLWkgeGVub21haQo+ID4gPiA+IFsgICAgMC4wMDAwMDBd
-IExpbnV4IHZlcnNpb24gMy4xNi4wLXhlbm9tYWktMy4wLjAgKHJvb3RAc29obykgKGdjYwo+ID4g
-PiA+IHZlcnNpb24KPiA+ID4gPiA0LjkuMSAoRGViaWFuIDQuOS4xLTE5KSApICMxIFNNUCBXZWQg
-SmFuIDIxIDE2OjI5OjM2IFVUQyAyMDE1Cj4gPiA+ID4gWyAgICAwLjAwMDAwMF0gQ29tbWFuZCBs
-aW5lOgo+ID4gPiA+IEJPT1RfSU1BR0U9L2Jvb3Qvdm1saW51ei0zLjE2LjAteGVub21haS0zLjAu
-MAo+ID4gPiA+IHJvb3Q9VVVJRD0xNWNmYWM4Mi0xMTI3LTQyMWYtOWFlZC1lYWY0ODI0N2VkNGUg
-cm8gcXVpZXQgbm9hcGljCj4gPiA+ID4gWyAgICAwLjAwMDAwMF0gS2VybmVsIGNvbW1hbmQgbGlu
-ZTogQk9PVF9JTUFHRT0vYm9vdC92bWxpbnV6LTMuMTYuMC0KPiA+ID4gPiB4ZW5vbWFpLTMuMC4w
-IHJvb3Q9VVVJRD0xNWNmYWM4Mi0xMTI3LTQyMWYtOWFlZC1lYWY0ODI0N2VkNGUgcm8gcXVpZXQK
-PiA+ID4gPiBub2FwaWMgWyAgICAwLjcwNTA3MV0gW1hlbm9tYWldIHNjaGVkdWxpbmcgY2xhc3Mg
-aWRsZSByZWdpc3RlcmVkLgo+ID4gPiA+IFsgICAgMC43MDUwNzJdIFtYZW5vbWFpXSBzY2hlZHVs
-aW5nIGNsYXNzIHJ0IHJlZ2lzdGVyZWQuCj4gPiA+ID4gWyAgICAwLjcwNTA5MF0gW1hlbm9tYWld
-IGRpc2FibGluZyBhdXRvbWF0aWMgQzFFIHN0YXRlIHByb21vdGlvbiBvbgo+ID4gPiA+IEludGVs
-Cj4gPiA+ID4gcHJvY2Vzc29yCj4gPiA+ID4gWyAgICAwLjcwNTEwNF0gW1hlbm9tYWldIFNNSS1l
-bmFibGVkIGNoaXBzZXQgZm91bmQsIGJ1dCBTTUkgd29ya2Fyb3VuZAo+ID4gPiA+IGRpc2FibGVk
-Cj4gPiA+ID4gCj4gPiA+ID4gICAgICAgICAgIChzZWUgeGVub21haS5zbWkgcGFyYW1ldGVyKS4g
-WW91IG1pZ2h0IGVuY291bnRlcgo+ID4gPiA+IAo+ID4gPiA+IFsgICAgMC43MDUyODRdIEktcGlw
-ZTogaGVhZCBkb21haW4gWGVub21haSByZWdpc3RlcmVkLgo+ID4gPiA+IFsgICAgMC43MTc5ODZd
-IFtYZW5vbWFpXSBDb2JhbHQgdjMuMC1yYzIgKEV4YWN0IFplcm8pIFtERUJVR10KPiA+ID4gPiBb
-ICAgIDAuODk3NzI2XSB1c2IgdXNiMTogTWFudWZhY3R1cmVyOiBMaW51eCAzLjE2LjAteGVub21h
-aS0zLjAuMAo+ID4gPiA+IHhoY2lfaGNkCj4gPiA+ID4gWyAgICAwLjg5ODYxN10gdXNiIHVzYjI6
-IE1hbnVmYWN0dXJlcjogTGludXggMy4xNi4wLXhlbm9tYWktMy4wLjAKPiA+ID4gPiB4aGNpX2hj
-ZAo+ID4gPiA+IFsgICAgMC45MTQxMTRdIHVzYiB1c2IzOiBNYW51ZmFjdHVyZXI6IExpbnV4IDMu
-MTYuMC14ZW5vbWFpLTMuMC4wCj4gPiA+ID4gZWhjaV9oY2QKPiA+ID4gPiBbICAgIDAuOTMwMTA5
-XSB1c2IgdXNiNDogTWFudWZhY3R1cmVyOiBMaW51eCAzLjE2LjAteGVub21haS0zLjAuMAo+ID4g
-PiA+IGVoY2lfaGNkCj4gPiA+ID4gKioqIFJUbmV0IGZvciBYZW5vbWFpIHYzLjAtcmMyICoqKgo+
-ID4gPiA+IAo+ID4gPiA+IAo+ID4gPiA+IFNvLCBjYW4gYXZvaWQgdG8gcGFzcyB0aGUgbm9hcGlj
-IHBhcmFtZXRlciB0byB0aGUga2VybmVsIHRvIGJvb3Q/Cj4gPiA+IAo+ID4gPiBQbGVhc2UgcG9z
-dCB0aGUgZnVsbCBib290IGxvZ3MsIGFuZCB0aGUga2VybmVsIGNvbmZpZ3VyYXRpb24uCj4gPiAK
-PiA+IEF0dGFjaGVkLgo+ID4gCj4gPiA+IERvZXMgdGhlCj4gPiA+IGtlcm5lbCB3b3JrIHdpdGgg
-ZXhhY3RseSB0aGUgc2FtZSAuY29uZmlnIGJ1dCB3aXRob3V0IFhlbm9tYWk/Cj4gPiAKPiA+IEkg
-ZG9uJ3Qga25vdy4gSXQncyBhIHNpbWlsYXIga2VybmVsIGNvbmZpZ3VyYXRpb24gdGhhbiBkZWJp
-YW4gc2hpcHMgd2l0aAo+ID4gamVzc2llLgo+IAo+IE9rLiBJZiB5b3UgaGF2ZSBjb21waWxlZCBY
-ZW5vbWFpIDIuNiBnaXQgd2l0aCBMaW51eCAzLjE2LjAsIHdoeSBkbwo+IHlvdSBub3QgdXNlIHRo
-ZSBzYW1lIGNvbmZpZ3VyYXRpb24gPwoKSSB1c2VkIHRoZSBzYW1lIGZpbGUuIEkgYXR0YWNoZWQg
-dGhlIDIuNi40IGNvbmZpZy4gSG93ZXZlciwgdGhlcmUncyBzb21lIHNtYWxsIApkaWZmZXJlbmNl
-cy4gRm9yIGluc3RhbmNlLCBJUElQRV9MRUdBQ1kgaXMgZGlzYWJsZWQgaW4geGVub21haS0zLCBu
-b3QgaW4gMi4KIAo+IFdoYXQgYWJvdXQgdGhlIEFSQ0ggcHJvYmxlbSB3aXRoIG1ha2Uta3BrZywg
-aXMgaXQgc29sdmVkID8KCkFzIEkgc2FpZCB5ZXN0ZXJkYXkgWzFdLCB0aGVyZSdzIGEgcXVlc3Rp
-b24gb2YgdGhlIEFSQ0ggdmFyLCB1c2VkIGluIHRoZSAKcHJlcGFyZS1rZXJuZWwgc2NyaXB0LgoK
-QW55IGlkZWEgdG8gc29sdmUgdGhpcz8KCkxlb3BvbGQKCi0tIAoKWzFdIGh0dHA6Ly93d3cueGVu
-b21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvMjAxNS1KYW51YXJ5LzAzMjk1OC5odG1sCi0tIAot
-LQpMaW51eCBVc2VyIDE1MjY5MiAgICAgR1BHOiAwNUY0QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQot
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkE6IEJlY2F1c2UgaXQgbWVzc2Vz
-IHVwIHRoZSBvcmRlciBpbiB3aGljaCBwZW9wbGUgbm9ybWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkg
-aXMgdG9wLXBvc3Rpbmcgc3VjaCBhIGJhZCB0aGluZz8KQTogVG9wLXBvc3RpbmcuClE6IFdoYXQg
-aXMgdGhlIG1vc3QgYW5ub3lpbmcgdGhpbmcgaW4gZS1tYWlsPwotLS0tLS0tLS0tLS0tLSBuZXh0
-IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4u
-LgpOYW1lOiBjb25maWcteGVub21haS0yLjYuNApUeXBlOiB0ZXh0L3gtbXBzdWIKU2l6ZTogMTU3
-NDk5IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9y
-Zy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1MDEyMi9mZmMzYzg4Yy9hdHRhY2ht
-ZW50LmJpbj4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRl
-eHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBh
-cHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDgxOSBieXRlcwpEZXNjOiBUaGlzIGlzIGEg
-ZGlnaXRhbGx5IHNpZ25lZCBtZXNzYWdlIHBhcnQuClVSTDogPGh0dHA6Ly93d3cueGVub21haS5v
-cmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTAxMjIvZmZjM2M4OGMvYXR0YWNo
-bWVudC5zaWc+Cg==
+2015-01-30 12:15 GMT+01:00 Roland Pastorino <roland@rolandpastorino.com>:
+> 2015-01-29 14:04 GMT+01:00 Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org>:
+>> On Thu, Jan 29, 2015 at 01:59:36PM +0100, Roland Pastorino wrote:
+>>> 2015-01-29 13:25 GMT+01:00 Gilles Chanteperdrix
+>>> <gilles.chanteperdrix@xenomai.org>:
+>>> > On Sun, Jan 25, 2015 at 12:15:39PM +0100, Roland Pastorino wrote:
+>>> >> Good morning everyone,
+>>> >>
+>>> >> I would like to know if some of you could give me a hint on how to
+>>> >> solve my ToD drift problem.
+>>> >> This question is similar to this one ->
+>>> >> http://comments.gmane.org/gmane.linux.real-time.xenomai.users/19719
+>>> >>
+>>> >> Problem:
+>>> >> After installing Xenomai and after the first reboot, my ToD drift was
+>>> >> around 500000 us/s.
+>>> >> After the second reboot, my ToD drift is around 500 us/s which I
+>>> >> presume is still too high.
+>>> >> I checked the troubleshooting information on Xenomai website but it didn't help.
+>>> >>
+>>> >> Machine and configuration:
+>>> >> - PC = Thinkpad w530
+>>> >> - cpu = i7-3740QM
+>>> >> - kernel configuration file is attached. I followed the Xenomai
+>>> >> website for the configuration.
+>>> >> - cobalt kernel of Xenomai 3
+>>> >> - Linux kernel 3.16
+>>> >> - ipipe-core-3.16-x86-1.patch
+>>> >> - Ubuntu 14.10
+>>> >
+>>> > Actually, the kernel configuration is not attached. But probably the
+>>> > only interesting item is whether CONFIG_CPU_FREQ is missing.
+>>> >
+>>> >
+>>> > --
+>>> >                                             Gilles.
+>>>
+>>> I've attached the kernel configuration this time...
+>>>
+>>> CONFIG_CPU_FREQ is like this:
+>>> # CPU Frequency scaling
+>>> #
+>>> # CONFIG_CPU_FREQ is not set
+>>>
+>>> This is the result of configuring the kernel via 'makemenuconfig'.
+>>> Also I noticed that the 'clocktest' can give different results
+>>> (without rebooting my machine).
+>>> For example now my ToD drift is around 67 us/s which is better but
+>>> different from the previously mentioned results.
+>>> The best I got was 0.6 us/s.
+>>
+>> Linux and Xenomai do not necessarily use the same clock source, and
+>> when they use the same, do not necessarily use the same frequency,
+>> especially when Linux has NTP running. So, unless you launch
+>> clocktest to watch CLOCK_HOST_REALTIME, a difference is expected.
+>> But 500us/s is abnormal, something is off. You need to look at the
+>> frequencies used by Linux and Xenomai, and see which one is off.
+>>
+>>
+>> --
+>>                                             Gilles.
+>
+> I see the point.
+> If I run the 'clocktest' with CLOCK_HOST_REALTIME, I get this:
+>
+> == Tested clock: 8 (CLOCK_HOST_REALTIME)
+> CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
+> --- -------------------- ---------------- ---------- --------------
+>   0         -339532135.1       122526.008          0            0.0
+>   1         -339532070.5       121839.520          0            0.0
+>   2         -339532420.1       122929.781          0            0.0
+>   3         -339531750.8       123088.126          0            0.0
+>
+> The drift is still way off.
+> CLOCK_REALTIME gives:
+>
+> == Tested clock: 0 (CLOCK_REALTIME)
+> CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
+> --- -------------------- ---------------- ---------- --------------
+>   0         -302580987.5       330900.325          0            0.0
+>   1         -302580653.8       330346.234          0            0.0
+>   2         -302580710.2       329623.634          0            0.0
+>   3         -302580359.1       329730.306          0            0.0
+>
+> I verified that NTP is running.
+> $ sudo service ntp service
+> * NTP server is running
+>
+> As you mentioned the Linux and/or Xenomai frequencies is/are probably off.
+> I have to mention that my Linux clock (=date) can run faster or slower
+> than the wall-clock time.
+> Could you please tell me where I should start searching for a
+> solution? Linux kernel sources, ipipe patch?
+>
+> Many Thanks.
+>
+> Roland Pastorino
+
+I give you more insight into the problem.
+I prepared a Linux kernel 3.14.17 with Xenomai 3 (instead of the 3.16
+I was using until now) in order to see if the problem disappeared.
+The kernel configuration is based on the one provided with Ubuntu
+14.04 for kernel 3.13.
+With kernel 3.14.17 the problem remains. The only different is that
+the wifi on my PC now works.
+
+Then I prepared a Linux kernel 3.16 without Xenomai in order to see if
+something was wrong with my compilation process.
+The kernel configuration is based on the one provided with Ubuntu
+14.10 for kernel 3.16.
+This kernel works perfectly.
+
+I welcome any comment/idea on how to proceed with the issue searching.
+
+Best Regards
+
+Roland Pastorino
+
