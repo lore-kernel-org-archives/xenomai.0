@@ -1,15 +1,14 @@
-Message-ID: <54D0E961.4060705@xenomai.org>
-Date: Tue, 03 Feb 2015 16:29:37 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <5491B5E9.4030200@siemens.com> <5491C2CA.7000906@xenomai.org>
- <5491C179.2000600@siemens.com> <5491CB3F.2050509@xenomai.org>
- <5491CC27.6080909@siemens.com> <5491D196.3040309@xenomai.org>
-In-Reply-To: <5491D196.3040309@xenomai.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Mayday mechanism broken on x86-64 - simpler approach
- feasible?
+In-Reply-To: <54D0A0C2.3050905@xenomai.org>
+References: <CAEMXjGyps7NpBUYgC4j4TrVKbiAZsceiuQ71TymDtXz-a3fqbA@mail.gmail.com>
+ <54CCAA6D.4030007@xenomai.org>
+ <CAEMXjGyNHrnCRXjVQq8FaWAVdzN1x3079QT0J_bCx_8VfNoQxA@mail.gmail.com>
+ <54D0A0C2.3050905@xenomai.org>
+Date: Tue, 3 Feb 2015 08:58:42 -0800
+Message-ID: <CAEMXjGxgqgM3HG-nwVAkQUSM-ub3BT22YtsLMq-A9coPPzDOHQ@mail.gmail.com>
+From: Steve B <sbattazzo@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] POSIX skin, task crashes Linux when run as RT task
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,68 +17,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 12/17/2014 07:55 PM, Philippe Gerum wrote:
-> On 12/17/2014 07:32 PM, Jan Kiszka wrote:
->> On 2014-12-17 19:28, Philippe Gerum wrote:
->>> On 12/17/2014 06:46 PM, Jan Kiszka wrote:
->>>> On 2014-12-17 18:52, Philippe Gerum wrote:
->>>>> On 12/17/2014 05:57 PM, Jan Kiszka wrote:
->>>>>> Hi,
->>>>>>
->>>>>> while porting the sigdebug test case to forge I noticed occasional
->>>>>> crashes of the test after it received a watchdog signal. It turned out
->>>>>> that the problem is in the way mayday works on x86-64:
->>>>>>
->>>>>> 1. sp/ip/ax of interrupted thread is saved
->>>>>> 2. ip is set to mayday page
->>>>>> 3. mayday page executes the mayday syscall via the syscall instruction
->>>>>> 4. the syscall restores state on original state on return
->>>>>>
->>>>>> That that's the theory. Unfortunately the syscall instructions
->>>>>> overwrites the cx register with the caller's instruction pointer. We
->>>>>> could save it but there is no way to restore it on syscall return
->>>>>> without significant changes to the Linux code in entry_64.S.
->>>>>>
->>>>>> x86-32 is fine as it uses the int80 path which does a full state
->>>>>> recovery - but that is not available for 64-bit (only via ia32 compat,
->>>>>> but that can be turned off).
->>>>>>
->>>>>
->>>>> The legacy system_call vector is available unconditionally to x86_64.
->>>>> Xenomai 3 is actually calling int80 unconditionally on mayday traps for
->>>>> these reasons, i.e. always available and not suffering the long-mode
->>>>> syscall registers issue.
->>>>
->>>> Only when setting CONFIG_IA32_EMULATION. That is typcially the case, but
->>>> not necessarily.
->>>>
->>>
->>> I mean: the "safe" Xenomai syscall form (the one that binds a process to
->>> the real-time core in dual kernel mode) depends on this. Disabling int80
->>> is not an option in the current Xenomai implementation, mayday feature
->>> put aside.
->>
->> Huh? Things worked fine here on X3 when trying out the effect of
->> disabling IA32 emulation. Or do you mean 2.6?
->>
-> 
-> I meant to tell crap: x86_64 implies vsyscall available, so there is no
-> "safe" binding prologue there. Only x86_32 has this, so that legacy
-> non-NPTL libc which do not support vsyscall work. So back to the initial
-> discussion.
-> 
+A typical issue is an error reported by some blocking call - for
+> instance when reading data from some RT device - going unnoticed by the
+> application, which then iterates and so on. Normally, this causes a hard
+> lockup due to the RT scheduling priority, but if your work loop also
+> switches mode due to plain linux calls, then the system might just be
+> brought to a crawl instead.
+>
+> That would explain why the Xenomai watchdog does not trigger either,
+> since you do frequent transitions to secondary/linux mode, the real-time
+> core does not detect the lockup condition which is N secs spent in
+> primary/rt mode without transition to linux (N=4 by default).
+>
+>
 
-As I mentioned earlier, I'd rather fix the MAYDAY implementation for
-x86_64 instead of forking the implementation between MMU-enabled and
-MMU-less architectures, also affecting powerpc, arm and x86_32 in the
-same move. Fortunately, the current implementation allows very specific
-tweaks to be applied on a per-architecture basis. This one fixes the
-issue for Cobalt on x86_64, and could be easily backported to 2.6.x:
+> Before anything else, I would definitely make sure that each and every
+> call to a blocking service in any rt work loop is checked for error
+> condition.
+>
+>
+After re-distributing the part of the main work loop that I suspected was
+doing the mode switches (moved to another thread which I tried both
+SCHED_FIFO and SCHED_OTHER), all of the mode switches just went along to
+the other thread, the main loop does about 10 during initialization and
+then never increases.
+Interestingly this freed things up at crash time just enough to get this
+sort of message on my dmesg:
+"[sched_delayed] sched: RT throttling activated"
 
-http://git.xenomai.org/xenomai-3.git/commit/?h=next&id=6db20901963d634b9786467c711c2ba526db48a2
+If I just prevent that routine from running, thus getting rid of all the
+recurring mode switches, the crash still happens.
 
--- 
-Philippe.
+The blocking call error thing is interesting. I do have some supplementary
+threads (all SCHED_FIFO) that are reading off of the hardware with blocking
+calls and feeding messages to the main work thread to be processed.
+Interestingly these blocking reads (to non-RTDM devices) are not causing
+any mode switches, so my assumption was that these threads are actually
+keeping in secondary mode once they get started.
+However it looks like the reads are rigged to report when the return value
+is less than zero, which I have not seen happen so far.
 
+> My top suspicion now is that the main thread is occasionally hogging CPU
+> > and some percentage of the time it's enough to throw off Linux, but I am
+> > just trying to figure out if there's some way I can prove or disprove
+> that
+> > easily. It seems to be independent of whether or not my other (non-RT)
+> > threads are even running at all.
+> >
+>
+> This is my understanding as well.
+>
+
+Since my blocking reads are set up to report errors and exit program, and I
+still see the problem when I eliminate all of the mode switches, it seems
+this points to the work loop not leaving enough time for Linux to do what
+it needs to do.. how we can fix that is another issue. Thanks for all of
+the info, this has been very educational!
+
+Steve
