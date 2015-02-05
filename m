@@ -1,11 +1,12 @@
-Date: Thu, 5 Feb 2015 12:50:20 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150205115020.GA32156@hermes.click-hack.org>
-References: <54D350CA.90801@control.lth.se>
+Message-ID: <54D37739.9020306@control.lth.se>
+Date: Thu, 05 Feb 2015 14:59:21 +0100
+From: Anders Blomdell <anders.blomdell@control.lth.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <54D350CA.90801@control.lth.se>
+References: <54D350CA.90801@control.lth.se>
+ <20150205115020.GA32156@hermes.click-hack.org>
+In-Reply-To: <20150205115020.GA32156@hermes.click-hack.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] xenomai-3/next: modprobe rtpacket fails with -EINVAL
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,51 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Anders Blomdell <anders.blomdell@control.lth.se>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Thu, Feb 05, 2015 at 12:15:22PM +0100, Anders Blomdell wrote:
-> AFAICT there are two ways to fix it, either change kernel/cobalt/rtdm/device.c:
-> 
->        if (drv->device_count <= 0)
->                 return -EINVAL;
-> to:
->        if (drv->device_count <= 0 ||
-> 	   (drv->device_count == 0 && 
-> 	    (drv->device_flags & RTDM_DEVICE_TYPE_MASK) != RTDM_PROTOCOL_DEVICE)))
->                 return -EINVAL;    
-> 
-> or change kernel/drivers/net/stack/packet/af_packet.c:
-> 
->   static struct rtdm_driver packet_proto_drv = {
->     .profile_info =     RTDM_PROFILE_INFO(packet,
->                                         RTDM_CLASS_NETWORK,
->                                         RTDM_SUBCLASS_RTNET,
->                                         RTNET_RTDM_VER),
->     .device_flags =     RTDM_PROTOCOL_DEVICE,
->     .context_size =     sizeof(struct rtsocket),
->     ...
->   }
-> 
-> to:
-> 
->   static struct rtdm_driver packet_proto_drv = {
->     .profile_info =     RTDM_PROFILE_INFO(packet,
->                                         RTDM_CLASS_NETWORK,
->                                         RTDM_SUBCLASS_RTNET,
->                                         RTNET_RTDM_VER),
->     .device_flags =     RTDM_PROTOCOL_DEVICE,
->     .device_count =     1,
->     .context_size =     sizeof(struct rtsocket),
->     ...
->   }
-> 
-> Since the second change is what 'rtdm_driver raw_packet_proto_drv', and the code looks
-> prettier, I guess that the second way is the preferred one?
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-I received a patch for this issue, I simply need to merge it. Thanks
-for the reminder.
+On 2015-02-05 12:50, Gilles Chanteperdrix wrote:
+> I received a patch for this issue, I simply need to merge it. Thanks
+> for the reminder.
 
--- 
-					    Gilles.
+OK, ".device_count =     1," works for me now. 
+
+BTW: is it the expected behaviour that when rtpacket is not loaded, socket()
+will default to __real_socket()?
+
+/Anders
+
+
+- -- 
+Anders Blomdell                  Email: anders.blomdell@control.lth.se
+Department of Automatic Control
+Lund University                  Phone:    +46 46 222 4625
+P.O. Box 118                     Fax:      +46 46 138118
+SE-221 00 Lund, Sweden
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQEcBAEBAgAGBQJU03c3AAoJENZYyvaDG8NcdOIH/1KOtrLaXGVOz/UR6qCTHH4w
+DXiEcVaYyZfsxWFYGlaYLJX4eEyaDyUgwwzxu9btZK20C380GJvXBujNQRo/fCzT
+y/lM/4mDzuWqUpdSWhEfklVM9W90pSB1nUO2FpxTtNdVYJRGrZa5MhltobrmyZKw
+WXIVU9Hs47d1WevvXRbHMM1WFHh6kMcbmjYzJ596B2zAFs1qRQjQb/QaxhlCITbq
+5enzxCaqXQTC1saBCcNKhg+dLviGOqUVIHJvr5PRSp+nRgTP5QKqcXbu3p0NxSf/
+mHViajS7f/muPbCFFOvAytiF/bRb5qXcnqpKybpWkSihozy7vMA7GVh+Dc3BAi4=
+=5r/d
+-----END PGP SIGNATURE-----
 
