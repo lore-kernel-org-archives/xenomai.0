@@ -1,8 +1,9 @@
 MIME-Version: 1.0
-In-Reply-To: <54D2612B.8080803@xenomai.org>
+In-Reply-To: <CAFW_w4hpvDyytRcD4Tg_9Qy1i5gnt8sUcSBLiOqLoWCg_TFLSQ@mail.gmail.com>
 References: <54D2612B.8080803@xenomai.org>
-Date: Thu, 5 Feb 2015 09:27:42 +0900
-Message-ID: <CAFW_w4hpvDyytRcD4Tg_9Qy1i5gnt8sUcSBLiOqLoWCg_TFLSQ@mail.gmail.com>
+ <CAFW_w4hpvDyytRcD4Tg_9Qy1i5gnt8sUcSBLiOqLoWCg_TFLSQ@mail.gmail.com>
+Date: Thu, 5 Feb 2015 11:40:33 +0900
+Message-ID: <CAFW_w4ii=MOrd0Urve0zf+CAefwy6Kd=kCCb9rNzN7e3m=cXtA@mail.gmail.com>
 From: Hiroshi Shinji <hiroshi.shinji@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
@@ -19,40 +20,53 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-Hi, Philippe
+Hi,
 
-I tried to download their files from
-http://download.gna.org/adeos/patches/v3.x/ ,
-but I could not get them because Apache server say that I don't have permis=
-sion.
-
-Please change their permission.
+Now, I can download the files.
 
 Thank you.
 
-
-2015-02-05 3:12 GMT+09:00 Philippe Gerum <rpm@xenomai.org>:
+2015-02-05 9:27 GMT+09:00 Hiroshi Shinji <hiroshi.shinji@gmail.com>:
+> Hi, Philippe
 >
-> A new patch series is available from
-> http://download.gna.org/adeos/patches/v3.x/
+> I tried to download their files from
+> http://download.gna.org/adeos/patches/v3.x/ ,
+> but I could not get them because Apache server say that I don't have perm=
+ission.
 >
-> arm/ipipe-core-3.16-arm-3.patch
-> blackfin/ipipe-core-3.16-blackfin-2.patch
-> powerpc/ipipe-core-3.16-powerpc-2.patch
-> x86/ipipe-core-3.16-x86-2.patch
+> Please change their permission.
 >
-> GIT clone:
-> git://git.xenomai.org/ipipe.git
-> https://git.xenomai.org/ipipe.git
-> http://git.xenomai.org/ipipe.git
+> Thank you.
+>
+>
+> 2015-02-05 3:12 GMT+09:00 Philippe Gerum <rpm@xenomai.org>:
+>>
+>> A new patch series is available from
+>> http://download.gna.org/adeos/patches/v3.x/
+>>
+>> arm/ipipe-core-3.16-arm-3.patch
+>> blackfin/ipipe-core-3.16-blackfin-2.patch
+>> powerpc/ipipe-core-3.16-powerpc-2.patch
+>> x86/ipipe-core-3.16-x86-2.patch
+>>
+>> GIT clone:
+>> git://git.xenomai.org/ipipe.git
+>> https://git.xenomai.org/ipipe.git
+>> http://git.xenomai.org/ipipe.git
+>>
+>> --
+>> Philippe.
+>>
+>> _______________________________________________
+>> Xenomai mailing list
+>> Xenomai@xenomai.org
+>> http://www.xenomai.org/mailman/listinfo/xenomai
+>
+>
 >
 > --
-> Philippe.
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
+> =E5=AE=8D=E9=81=93 =E6=B4=8B
+> hiroshi.shinji@gmail.com
 
 
 
