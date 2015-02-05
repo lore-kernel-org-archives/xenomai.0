@@ -1,19 +1,18 @@
-Message-ID: <54D3920E.7060706@xenomai.org>
-Date: Thu, 05 Feb 2015 16:53:50 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <1928985868.3780.1423040133670.JavaMail.zimbra@wandercraft.eu>
- <54D1E2AA.40000@xenomai.org>
- <2118665101.4111.1423048074765.JavaMail.zimbra@wandercraft.eu>
- <735225138.4138.1423050050231.JavaMail.zimbra@wandercraft.eu>
- <54D21CCE.5000607@xenomai.org>
- <498604834.10542.1423145127729.JavaMail.zimbra@wandercraft.eu>
- <54D38147.8010503@xenomai.org>
- <1533670141.11145.1423150163559.JavaMail.zimbra@wandercraft.eu>
-In-Reply-To: <1533670141.11145.1423150163559.JavaMail.zimbra@wandercraft.eu>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Xenomai 3 - no skin detected in program
+Sender: roland.pastorino@gmail.com
+In-Reply-To: <20150204092032.GA24041@hermes.click-hack.org>
+References: <CABxGBLRcHB_V1H-Da-yv5GMaN=_9-tD_K0werwc-SPSGgTRy5g@mail.gmail.com>
+ <20150129130414.GA4766@hermes.click-hack.org>
+ <CABxGBLTCDi_3ZBr_96PhyhPry9tNCWyvwWSzcaA4CxfKpJbrRQ@mail.gmail.com>
+ <CABxGBLTo8kRfPeRzW3EiQRPJWuHgoY7K6+aaH8uWppeR_Y+=bQ@mail.gmail.com>
+ <20150203112313.GA11351@hermes.click-hack.org>
+ <CABxGBLSagE9USfik+mgG=y1OW81c8D_b7P1ET7rYmvwUyfijDA@mail.gmail.com>
+ <20150204092032.GA24041@hermes.click-hack.org>
+Date: Thu, 5 Feb 2015 22:28:36 +0100
+Message-ID: <CABxGBLRkH_PK39_JLJ2nrU=Y6JQvtG56bkxkwqy5mtD-XQ_6tA@mail.gmail.com>
+From: Roland Pastorino <roland@rolandpastorino.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] ToD drift on i7-3740QM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,96 +21,185 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Huy Cong Vu <huy-cong.vu@wandercraft.eu>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 02/05/2015 04:29 PM, Huy Cong Vu wrote:
-> 
-> 
-> ----- Mail original -----
->> De: "Philippe Gerum" <rpm@xenomai.org>
->> À: "Huy Cong Vu" <huy-cong.vu@wandercraft.eu>
->> Cc: xenomai@xenomai.org
->> Envoyé: Jeudi 5 Février 2015 15:42:15
->> Objet: Re: [Xenomai] Xenomai 3 - no skin detected in program
-> 
->> On 02/05/2015 03:05 PM, Huy Cong Vu wrote:
->>>
->>>
->>> ----- Mail original -----
->>>> De: "Philippe Gerum" <rpm@xenomai.org>
->>>> À: "Huy Cong Vu" <huy-cong.vu@wandercraft.eu>
->>>> Cc: xenomai@xenomai.org
->>>> Envoyé: Mercredi 4 Février 2015 14:21:18
->>>> Objet: Re: [Xenomai] Xenomai 3 - no skin detected in program
->>>
->>>> On 02/04/2015 12:40 PM, Huy Cong Vu wrote:
->>>>>
->>>>>
->>>>> ----- Mail original -----
->>>>>> De: "Huy Cong Vu" <huy-cong.vu@wandercraft.eu>
->>>>>> À: "Philippe Gerum" <rpm@xenomai.org>
->>>>>> Cc: xenomai@xenomai.org
->>>>>> Envoyé: Mercredi 4 Février 2015 12:07:54
->>>>>> Objet: Re: [Xenomai] Xenomai 3 - no skin detected in program
->>>>>
->>>>>> ----- Mail original -----
->>>>>>> De: "Philippe Gerum" <rpm@xenomai.org>
->>>>>>> À: "Huy Cong Vu" <huy-cong.vu@wandercraft.eu>, xenomai@xenomai.org
->>>>>>> Envoyé: Mercredi 4 Février 2015 10:13:14
->>>>>>> Objet: Re: [Xenomai] Xenomai 3 - no skin detected in program
->>>>>>
->>>>>>> On 02/04/2015 09:55 AM, Huy Cong Vu wrote:
->>>>>>>> Hello everyone,
->>>>>>>> I recently try to run an application compiled in native skin of Xenomai 3. When
->>>>>>>> trying to run the binary, these line appeared:
->>>>>>>> WARNING: [main] no skin detected in program
->>>>>>>> BUG: [main] initialization failed, EINVAL
->>>>>>>> I know that this is a cooperplate_init() warning when trying to initialize
->>>>>>>> native skin, but I don't understand the reason why:
->>>>>>>> if (pvlist_empty(&skins)){
->>>>>>>> warning("no skin detected in program");
->>>>>>>> ret = -EINVAL;
->>>>>>>> goto fail;
->>>>>>>> }
->>>>>>>
->>>>>>> It seems that your application was not linked against libalchemy.so.
->>>>>>> When API libraries are properly linked in, internal constructor routines
->>>>>>> populate this list. POSIX support is built-in within the Cobalt
->>>>>>> interface, so it won't appear here though.
->>>>>>>
->>>>> I change the order of the linker flags, now my app is linked against
->>>>> libalchemy.so, but this message shown up:
->>>>> symbol lookup error: /usr/xenomai/lib/libcopperplate.so.0: undefined symbol:
->>>>> main
->>>>>
->>>>> I guess that it stills a problem due to the linker flag, am I right?
->>>>>
->>>>
->>>> Yes. You seem to be using a set of flags with fine-grained tuning, some
->>>> of which might have an adverse effect on your linking stage. You should
->>>> start with the set output by xeno-config --ldflags --alchemy which are
->>>> known to work, then tune gradually as appropriate.
->>>>
->>>
->>> Hi Philippe,
->>>
->>> I'm getting close to it, but it still left some undefined reference for rtdm
->>> functions.
->>>
+2015-02-04 10:20 GMT+01:00 Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org>:
+> On Tue, Feb 03, 2015 at 10:55:40PM +0100, Roland Pastorino wrote:
+>> 2015-02-03 12:23 GMT+01:00 Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org>:
+>> > On Tue, Feb 03, 2015 at 09:09:48AM +0100, Roland Pastorino wrote:
+>> >> 2015-01-30 12:15 GMT+01:00 Roland Pastorino <roland@rolandpastorino.com>:
+>> >> > 2015-01-29 14:04 GMT+01:00 Gilles Chanteperdrix
+>> >> > <gilles.chanteperdrix@xenomai.org>:
+>> >> >> On Thu, Jan 29, 2015 at 01:59:36PM +0100, Roland Pastorino wrote:
+>> >> >>> 2015-01-29 13:25 GMT+01:00 Gilles Chanteperdrix
+>> >> >>> <gilles.chanteperdrix@xenomai.org>:
+>> >> >>> > On Sun, Jan 25, 2015 at 12:15:39PM +0100, Roland Pastorino wrote:
+>> >> >>> >> Good morning everyone,
+>> >> >>> >>
+>> >> >>> >> I would like to know if some of you could give me a hint on how to
+>> >> >>> >> solve my ToD drift problem.
+>> >> >>> >> This question is similar to this one ->
+>> >> >>> >> http://comments.gmane.org/gmane.linux.real-time.xenomai.users/19719
+>> >> >>> >>
+>> >> >>> >> Problem:
+>> >> >>> >> After installing Xenomai and after the first reboot, my ToD drift was
+>> >> >>> >> around 500000 us/s.
+>> >> >>> >> After the second reboot, my ToD drift is around 500 us/s which I
+>> >> >>> >> presume is still too high.
+>> >> >>> >> I checked the troubleshooting information on Xenomai website but it didn't help.
+>> >> >>> >>
+>> >> >>> >> Machine and configuration:
+>> >> >>> >> - PC = Thinkpad w530
+>> >> >>> >> - cpu = i7-3740QM
+>> >> >>> >> - kernel configuration file is attached. I followed the Xenomai
+>> >> >>> >> website for the configuration.
+>> >> >>> >> - cobalt kernel of Xenomai 3
+>> >> >>> >> - Linux kernel 3.16
+>> >> >>> >> - ipipe-core-3.16-x86-1.patch
+>> >> >>> >> - Ubuntu 14.10
+>> >> >>> >
+>> >> >>> > Actually, the kernel configuration is not attached. But probably the
+>> >> >>> > only interesting item is whether CONFIG_CPU_FREQ is missing.
+>> >> >>> >
+>> >> >>> >
+>> >> >>> > --
+>> >> >>> >                                             Gilles.
+>> >> >>>
+>> >> >>> I've attached the kernel configuration this time...
+>> >> >>>
+>> >> >>> CONFIG_CPU_FREQ is like this:
+>> >> >>> # CPU Frequency scaling
+>> >> >>> #
+>> >> >>> # CONFIG_CPU_FREQ is not set
+>> >> >>>
+>> >> >>> This is the result of configuring the kernel via 'makemenuconfig'.
+>> >> >>> Also I noticed that the 'clocktest' can give different results
+>> >> >>> (without rebooting my machine).
+>> >> >>> For example now my ToD drift is around 67 us/s which is better but
+>> >> >>> different from the previously mentioned results.
+>> >> >>> The best I got was 0.6 us/s.
+>> >> >>
+>> >> >> Linux and Xenomai do not necessarily use the same clock source, and
+>> >> >> when they use the same, do not necessarily use the same frequency,
+>> >> >> especially when Linux has NTP running. So, unless you launch
+>> >> >> clocktest to watch CLOCK_HOST_REALTIME, a difference is expected.
+>> >> >> But 500us/s is abnormal, something is off. You need to look at the
+>> >> >> frequencies used by Linux and Xenomai, and see which one is off.
+>> >> >>
+>> >> >>
+>> >> >> --
+>> >> >>                                             Gilles.
+>> >> >
+>> >> > I see the point.
+>> >> > If I run the 'clocktest' with CLOCK_HOST_REALTIME, I get this:
+>> >> >
+>> >> > == Tested clock: 8 (CLOCK_HOST_REALTIME)
+>> >> > CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
+>> >> > --- -------------------- ---------------- ---------- --------------
+>> >> >   0         -339532135.1       122526.008          0            0.0
+>> >> >   1         -339532070.5       121839.520          0            0.0
+>> >> >   2         -339532420.1       122929.781          0            0.0
+>> >> >   3         -339531750.8       123088.126          0            0.0
+>> >> >
+>> >> > The drift is still way off.
+>> >> > CLOCK_REALTIME gives:
+>> >> >
+>> >> > == Tested clock: 0 (CLOCK_REALTIME)
+>> >> > CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
+>> >> > --- -------------------- ---------------- ---------- --------------
+>> >> >   0         -302580987.5       330900.325          0            0.0
+>> >> >   1         -302580653.8       330346.234          0            0.0
+>> >> >   2         -302580710.2       329623.634          0            0.0
+>> >> >   3         -302580359.1       329730.306          0            0.0
+>> >> >
+>> >> > I verified that NTP is running.
+>> >> > $ sudo service ntp service
+>> >> > * NTP server is running
+>> >> >
+>> >> > As you mentioned the Linux and/or Xenomai frequencies is/are probably off.
+>> >> > I have to mention that my Linux clock (=date) can run faster or slower
+>> >> > than the wall-clock time.
+>> >> > Could you please tell me where I should start searching for a
+>> >> > solution? Linux kernel sources, ipipe patch?
+>> >> >
+>> >> > Many Thanks.
+>> >> >
+>> >> > Roland Pastorino
+>> >>
+>> >> I give you more insight into the problem.
+>> >> I prepared a Linux kernel 3.14.17 with Xenomai 3 (instead of the 3.16
+>> >> I was using until now) in order to see if the problem disappeared.
+>> >> The kernel configuration is based on the one provided with Ubuntu
+>> >> 14.04 for kernel 3.13.
+>> >> With kernel 3.14.17 the problem remains. The only different is that
+>> >> the wifi on my PC now works.
+>> >>
+>> >> Then I prepared a Linux kernel 3.16 without Xenomai in order to see if
+>> >> something was wrong with my compilation process.
+>> >> The kernel configuration is based on the one provided with Ubuntu
+>> >> 14.10 for kernel 3.16.
+>> >> This kernel works perfectly.
+>> >>
+>> >> I welcome any comment/idea on how to proceed with the issue searching.
+>> >
+>> > As I said, you need to look at the frequencies used by Linux and
+>> > Xenomai, and see which one is off.
+>> >
+>> > --
+>> >                                             Gilles.
 >>
->> rtdm_socket() is a kernel-space API for inter-driver calls, socket() is
->> what you need for creating a RTDM socket endpoint in your application.
->> The Cobalt implementation will be used provided the linker is passed the
->> proper flags (which you Makefile does).
-> 
-> So that means I will always end up in calling socket() for all skins (alchemy or cobalt) and let the linker flags differs it in kernel space?
+>> Here goes the 'look into the frequencies'.
+>>
+>> The two commands that I used:
+>> $ cat /sys/devices/system/clocksource/clocksource0/available_clocksource
+>> $ cat /sys/devices/system/clocksource/clocksource0/current_clocksource
+>>
+>> Vanilla Ubuntu 14.10 kernel 3.16
+>> |_ available clock sources -> tsc, hpet, acpi_pm
+>> |_ current clock source -> tsc
+>>
+>> Ubuntu 14.10  kernel 3.14.17 + Xenomai 3 (cobalt)
+>> |_ available clock sources -> refined-jiffies, jiffies, tsc
+>> |_ current clock source -> refined-jiffies
+>>
+>> Then I figured out with 'dmesg' that the kernel gives the following
+>> errors/warnings during boot-up:
+>> [    0.577663] [Xenomai] SMI-enabled chipset found, but SMI workaround disabled
+>>           (see xenomai.smi parameter). You might encounter high latencies!
+>> [    3.841168] Clocksource tsc unstable (delta = 139968530 ns)
+>> [    3.868256] Switched to clocksource refined-jiffies
+>>
+>> It is therefore clear that my clock drift problem comes from the fact
+>> that the Linux kernel is not able to use
+>> the TSC clock source.
+>
+> No. Any clocksource should work.
+>
+>> I will try to figure out why the clock source switches to refined-jiffies.
+>> Would you have any advice on this matter?
+>
+> Normally, there is some code in the I-pipe to prevent this from
+> happening, I do not remember the details.
+>
+> --
+>                                             Gilles.
 
-The API layers for x3 are described here:
-http://xenomai.org/start-here/#How_does_Xenomai_deliver_real-time
+I've had a look at the I-pipe code but it will take me some time to
+understand it and then modify it (if necessary).
+In the meantime I found that I can pass the clocksource as a kernel
+option in the GRUB configuration file.
 
-alchemy is one of the non-POSIX APIs.
+GRUB_CMDLINE_LINUX="clocksource=tsc"
+
+I still get the "Clocksource tsc unstable" message at boot-up but the
+clocksource does not switch to "refined-jiffies".
+As a consequence, the "clocktest" program gives ToD drift of maximum
+500 us/s and minimum 0.2 us/s.
+I have seen also some rare pathological latencies (= several hundreds of us).
 
 -- 
-Philippe.
+Roland Pastorino
 
