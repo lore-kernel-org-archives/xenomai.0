@@ -1,15 +1,16 @@
-Date: Thu, 5 Feb 2015 15:05:27 +0100 (CET)
-From: Huy Cong Vu <huy-cong.vu@wandercraft.eu>
-Message-ID: <498604834.10542.1423145127729.JavaMail.zimbra@wandercraft.eu>
-In-Reply-To: <54D21CCE.5000607@xenomai.org>
+Message-ID: <54D38147.8010503@xenomai.org>
+Date: Thu, 05 Feb 2015 15:42:15 +0100
+From: Philippe Gerum <rpm@xenomai.org>
+MIME-Version: 1.0
 References: <1928985868.3780.1423040133670.JavaMail.zimbra@wandercraft.eu>
  <54D1E2AA.40000@xenomai.org>
  <2118665101.4111.1423048074765.JavaMail.zimbra@wandercraft.eu>
  <735225138.4138.1423050050231.JavaMail.zimbra@wandercraft.eu>
  <54D21CCE.5000607@xenomai.org>
-MIME-Version: 1.0
+ <498604834.10542.1423145127729.JavaMail.zimbra@wandercraft.eu>
+In-Reply-To: <498604834.10542.1423145127729.JavaMail.zimbra@wandercraft.eu>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai] Xenomai 3 - no skin detected in program
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -19,67 +20,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Huy Cong Vu <huy-cong.vu@wandercraft.eu>
 Cc: xenomai@xenomai.org
 
-CgotLS0tLSBNYWlsIG9yaWdpbmFsIC0tLS0tCj4gRGU6ICJQaGlsaXBwZSBHZXJ1bSIgPHJwbUB4
-ZW5vbWFpLm9yZz4KPiDDgDogIkh1eSBDb25nIFZ1IiA8aHV5LWNvbmcudnVAd2FuZGVyY3JhZnQu
-ZXU+Cj4gQ2M6IHhlbm9tYWlAeGVub21haS5vcmcKPiBFbnZvecOpOiBNZXJjcmVkaSA0IEbDqXZy
-aWVyIDIwMTUgMTQ6MjE6MTgKPiBPYmpldDogUmU6IFtYZW5vbWFpXSBYZW5vbWFpIDMgLSBubyBz
-a2luIGRldGVjdGVkIGluIHByb2dyYW0KCj4gT24gMDIvMDQvMjAxNSAxMjo0MCBQTSwgSHV5IENv
-bmcgVnUgd3JvdGU6Cj4+IAo+PiAKPj4gLS0tLS0gTWFpbCBvcmlnaW5hbCAtLS0tLQo+Pj4gRGU6
-ICJIdXkgQ29uZyBWdSIgPGh1eS1jb25nLnZ1QHdhbmRlcmNyYWZ0LmV1Pgo+Pj4gw4A6ICJQaGls
-aXBwZSBHZXJ1bSIgPHJwbUB4ZW5vbWFpLm9yZz4KPj4+IENjOiB4ZW5vbWFpQHhlbm9tYWkub3Jn
-Cj4+PiBFbnZvecOpOiBNZXJjcmVkaSA0IEbDqXZyaWVyIDIwMTUgMTI6MDc6NTQKPj4+IE9iamV0
-OiBSZTogW1hlbm9tYWldIFhlbm9tYWkgMyAtIG5vIHNraW4gZGV0ZWN0ZWQgaW4gcHJvZ3JhbQo+
-PiAKPj4+IC0tLS0tIE1haWwgb3JpZ2luYWwgLS0tLS0KPj4+PiBEZTogIlBoaWxpcHBlIEdlcnVt
-IiA8cnBtQHhlbm9tYWkub3JnPgo+Pj4+IMOAOiAiSHV5IENvbmcgVnUiIDxodXktY29uZy52dUB3
-YW5kZXJjcmFmdC5ldT4sIHhlbm9tYWlAeGVub21haS5vcmcKPj4+PiBFbnZvecOpOiBNZXJjcmVk
-aSA0IEbDqXZyaWVyIDIwMTUgMTA6MTM6MTQKPj4+PiBPYmpldDogUmU6IFtYZW5vbWFpXSBYZW5v
-bWFpIDMgLSBubyBza2luIGRldGVjdGVkIGluIHByb2dyYW0KPj4+Cj4+Pj4gT24gMDIvMDQvMjAx
-NSAwOTo1NSBBTSwgSHV5IENvbmcgVnUgd3JvdGU6Cj4+Pj4+IEhlbGxvIGV2ZXJ5b25lLAo+Pj4+
-PiBJIHJlY2VudGx5IHRyeSB0byBydW4gYW4gYXBwbGljYXRpb24gY29tcGlsZWQgaW4gbmF0aXZl
-IHNraW4gb2YgWGVub21haSAzLiBXaGVuCj4+Pj4+IHRyeWluZyB0byBydW4gdGhlIGJpbmFyeSwg
-dGhlc2UgbGluZSBhcHBlYXJlZDoKPj4+Pj4gV0FSTklORzogW21haW5dIG5vIHNraW4gZGV0ZWN0
-ZWQgaW4gcHJvZ3JhbQo+Pj4+PiBCVUc6IFttYWluXSBpbml0aWFsaXphdGlvbiBmYWlsZWQsIEVJ
-TlZBTAo+Pj4+PiBJIGtub3cgdGhhdCB0aGlzIGlzIGEgY29vcGVycGxhdGVfaW5pdCgpIHdhcm5p
-bmcgd2hlbiB0cnlpbmcgdG8gaW5pdGlhbGl6ZQo+Pj4+PiBuYXRpdmUgc2tpbiwgYnV0IEkgZG9u
-J3QgdW5kZXJzdGFuZCB0aGUgcmVhc29uIHdoeToKPj4+Pj4gaWYgKHB2bGlzdF9lbXB0eSgmc2tp
-bnMpKXsKPj4+Pj4gd2FybmluZygibm8gc2tpbiBkZXRlY3RlZCBpbiBwcm9ncmFtIik7Cj4+Pj4+
-IHJldCA9IC1FSU5WQUw7Cj4+Pj4+IGdvdG8gZmFpbDsKPj4+Pj4gfQo+Pj4+Cj4+Pj4gSXQgc2Vl
-bXMgdGhhdCB5b3VyIGFwcGxpY2F0aW9uIHdhcyBub3QgbGlua2VkIGFnYWluc3QgbGliYWxjaGVt
-eS5zby4KPj4+PiBXaGVuIEFQSSBsaWJyYXJpZXMgYXJlIHByb3Blcmx5IGxpbmtlZCBpbiwgaW50
-ZXJuYWwgY29uc3RydWN0b3Igcm91dGluZXMKPj4+PiBwb3B1bGF0ZSB0aGlzIGxpc3QuIFBPU0lY
-IHN1cHBvcnQgaXMgYnVpbHQtaW4gd2l0aGluIHRoZSBDb2JhbHQKPj4+PiBpbnRlcmZhY2UsIHNv
-IGl0IHdvbid0IGFwcGVhciBoZXJlIHRob3VnaC4KPj4+Pgo+PiBJIGNoYW5nZSB0aGUgb3JkZXIg
-b2YgdGhlIGxpbmtlciBmbGFncywgbm93IG15IGFwcCBpcyBsaW5rZWQgYWdhaW5zdAo+PiBsaWJh
-bGNoZW15LnNvLCBidXQgdGhpcyBtZXNzYWdlIHNob3duIHVwOgo+PiBzeW1ib2wgbG9va3VwIGVy
-cm9yOiAvdXNyL3hlbm9tYWkvbGliL2xpYmNvcHBlcnBsYXRlLnNvLjA6IHVuZGVmaW5lZCBzeW1i
-b2w6Cj4+IG1haW4KPj4gCj4+IEkgZ3Vlc3MgdGhhdCBpdCBzdGlsbHMgYSBwcm9ibGVtIGR1ZSB0
-byB0aGUgbGlua2VyIGZsYWcsIGFtIEkgcmlnaHQ/Cj4+IAo+IAo+IFllcy4gWW91IHNlZW0gdG8g
-YmUgdXNpbmcgYSBzZXQgb2YgZmxhZ3Mgd2l0aCBmaW5lLWdyYWluZWQgdHVuaW5nLCBzb21lCj4g
-b2Ygd2hpY2ggbWlnaHQgaGF2ZSBhbiBhZHZlcnNlIGVmZmVjdCBvbiB5b3VyIGxpbmtpbmcgc3Rh
-Z2UuIFlvdSBzaG91bGQKPiBzdGFydCB3aXRoIHRoZSBzZXQgb3V0cHV0IGJ5IHhlbm8tY29uZmln
-IC0tbGRmbGFncyAtLWFsY2hlbXkgd2hpY2ggYXJlCj4ga25vd24gdG8gd29yaywgdGhlbiB0dW5l
-IGdyYWR1YWxseSBhcyBhcHByb3ByaWF0ZS4KPiAKCkhpIFBoaWxpcHBlLCAKCkknbSBnZXR0aW5n
-IGNsb3NlIHRvIGl0LCBidXQgaXQgc3RpbGwgbGVmdCBzb21lIHVuZGVmaW5lZCByZWZlcmVuY2Ug
-Zm9yIHJ0ZG0gZnVuY3Rpb25zLiAKCkkgcHJlcGFyZWQgYSBtaW5pbWFsIHRlc3QgY2FzZSBhdHRh
-Y2hlZCBpbiB0aGlzIGVtYWlsLCB3aGljaCBoYXZlIG9ubHkgMSBjYWxsIHRvIHJ0ZG1fc29ja2V0
-LiBUaGUgY2FsbCB0byBsZGZsYWdzIGluY2x1ZGUgb25seSAtLWNvYmFsdCwgSSBkb24ndCBrbm93
-IGlmIGl0cyBlbm91Z2guIEFuZCBJIGNhbid0IGZpbmQgYSB0ZXN0c3VpdGUgZmlsZSBpbiBhbGNo
-ZW15IHNhbXBsZSBsaXN0IHRoYXQgaGF2ZSBydGRtIGNhbGxzLgoKQ2FuIHlvdSB0YWtlIGEgbG9v
-ayBhbmQgdGVsbCBtZSB3aGVyZSBJIHdhcyB3cm9uZz8gCgpUaGFua3MsCiAKCj4gLS0KPiBQaGls
-aXBwZS4KCi0tIApIdXkgQ29uZwpXYW5kZXJjcmFmdCBTQVMKLS0tLS0tLS0tLS0tLS0gbmV4dCBw
-YXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4K
-TmFtZTogTWFrZWZpbGUKVHlwZTogdGV4dC94LW1ha2VmaWxlClNpemU6IDU2MCBieXRlcwpEZXNj
-OiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hl
-bm9tYWkvYXR0YWNobWVudHMvMjAxNTAyMDUvZjgyZDMyNDEvYXR0YWNobWVudC5iaW4+Ci0tLS0t
-LS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQg
-d2FzIHNjcnViYmVkLi4uCk5hbWU6IHJ0ZG1fbWluaW1hbC5jClR5cGU6IHRleHQveC1jKytzcmMK
-U2l6ZTogOTA3IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3dy54ZW5v
-bWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1MDIwNS9mODJkMzI0MS9h
-dHRhY2htZW50LmM+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5v
-bi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHJ0ZG1fbWluaW1hbC5oClR5
-cGU6IHRleHQveC1jaGRyClNpemU6IDMxOSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDog
-PGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAx
-NTAyMDUvZjgyZDMyNDEvYXR0YWNobWVudC5oPgo=
+On 02/05/2015 03:05 PM, Huy Cong Vu wrote:
+> 
+> 
+> ----- Mail original -----
+>> De: "Philippe Gerum" <rpm@xenomai.org>
+>> À: "Huy Cong Vu" <huy-cong.vu@wandercraft.eu>
+>> Cc: xenomai@xenomai.org
+>> Envoyé: Mercredi 4 Février 2015 14:21:18
+>> Objet: Re: [Xenomai] Xenomai 3 - no skin detected in program
+> 
+>> On 02/04/2015 12:40 PM, Huy Cong Vu wrote:
+>>>
+>>>
+>>> ----- Mail original -----
+>>>> De: "Huy Cong Vu" <huy-cong.vu@wandercraft.eu>
+>>>> À: "Philippe Gerum" <rpm@xenomai.org>
+>>>> Cc: xenomai@xenomai.org
+>>>> Envoyé: Mercredi 4 Février 2015 12:07:54
+>>>> Objet: Re: [Xenomai] Xenomai 3 - no skin detected in program
+>>>
+>>>> ----- Mail original -----
+>>>>> De: "Philippe Gerum" <rpm@xenomai.org>
+>>>>> À: "Huy Cong Vu" <huy-cong.vu@wandercraft.eu>, xenomai@xenomai.org
+>>>>> Envoyé: Mercredi 4 Février 2015 10:13:14
+>>>>> Objet: Re: [Xenomai] Xenomai 3 - no skin detected in program
+>>>>
+>>>>> On 02/04/2015 09:55 AM, Huy Cong Vu wrote:
+>>>>>> Hello everyone,
+>>>>>> I recently try to run an application compiled in native skin of Xenomai 3. When
+>>>>>> trying to run the binary, these line appeared:
+>>>>>> WARNING: [main] no skin detected in program
+>>>>>> BUG: [main] initialization failed, EINVAL
+>>>>>> I know that this is a cooperplate_init() warning when trying to initialize
+>>>>>> native skin, but I don't understand the reason why:
+>>>>>> if (pvlist_empty(&skins)){
+>>>>>> warning("no skin detected in program");
+>>>>>> ret = -EINVAL;
+>>>>>> goto fail;
+>>>>>> }
+>>>>>
+>>>>> It seems that your application was not linked against libalchemy.so.
+>>>>> When API libraries are properly linked in, internal constructor routines
+>>>>> populate this list. POSIX support is built-in within the Cobalt
+>>>>> interface, so it won't appear here though.
+>>>>>
+>>> I change the order of the linker flags, now my app is linked against
+>>> libalchemy.so, but this message shown up:
+>>> symbol lookup error: /usr/xenomai/lib/libcopperplate.so.0: undefined symbol:
+>>> main
+>>>
+>>> I guess that it stills a problem due to the linker flag, am I right?
+>>>
+>>
+>> Yes. You seem to be using a set of flags with fine-grained tuning, some
+>> of which might have an adverse effect on your linking stage. You should
+>> start with the set output by xeno-config --ldflags --alchemy which are
+>> known to work, then tune gradually as appropriate.
+>>
+> 
+> Hi Philippe, 
+> 
+> I'm getting close to it, but it still left some undefined reference for rtdm functions. 
+>
+
+rtdm_socket() is a kernel-space API for inter-driver calls, socket() is
+what you need for creating a RTDM socket endpoint in your application.
+The Cobalt implementation will be used provided the linker is passed the
+proper flags (which you Makefile does).
+
+> I prepared a minimal test case attached in this email, which have only 1 call to rtdm_socket. The call to ldflags include only --cobalt, I don't know if its enough. And I can't find a testsuite file in alchemy sample list that have rtdm calls.
+
+--cobalt is an alias to --posix, those switches are interchangeable. The
+Makefile looks ok. See demo/posix/cobalt for examples using RTDM sockets
+for communicating with the real-time IPC driver.
+
+> 
+> Can you take a look and tell me where I was wrong? 
+> 
+> Thanks,
+>  
+> 
+>> --
+>> Philippe.
+> 
+
+
+-- 
+Philippe.
+
