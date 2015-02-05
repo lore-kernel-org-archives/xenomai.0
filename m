@@ -1,13 +1,18 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Thu, 22 Jan 2015 11:17:41 +0100
-Message-ID: <1592000.mUrPdiXucy@soho>
-In-Reply-To: <20150122095635.GB20360@hermes.click-hack.org>
-References: <1537147.Wm9AbiuW5D@soho> <2271076.0trCLgX2Zk@soho>
- <20150122095635.GB20360@hermes.click-hack.org>
+Date: Thu, 5 Feb 2015 16:29:23 +0100 (CET)
+From: Huy Cong Vu <huy-cong.vu@wandercraft.eu>
+Message-ID: <1533670141.11145.1423150163559.JavaMail.zimbra@wandercraft.eu>
+In-Reply-To: <54D38147.8010503@xenomai.org>
+References: <1928985868.3780.1423040133670.JavaMail.zimbra@wandercraft.eu>
+ <54D1E2AA.40000@xenomai.org>
+ <2118665101.4111.1423048074765.JavaMail.zimbra@wandercraft.eu>
+ <735225138.4138.1423050050231.JavaMail.zimbra@wandercraft.eu>
+ <54D21CCE.5000607@xenomai.org>
+ <498604834.10542.1423145127729.JavaMail.zimbra@wandercraft.eu>
+ <54D38147.8010503@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Xenomai-3 booting problems
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Xenomai 3 - no skin detected in program
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,39 +21,138 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-RWwgRGlqb3VzLCAyMiBkZSBnZW5lciBkZSAyMDE1LCBhIGxlcyAxMDo1NjozNSwgR2lsbGVzIENo
-YW50ZXBlcmRyaXggdmEgCmVzY3JpdXJlOgo+ID4gPiBXaGF0IGFib3V0IHRoZSBBUkNIIHByb2Js
-ZW0gd2l0aCBtYWtlLWtwa2csIGlzIGl0IHNvbHZlZCA/Cj4gPiAKPiA+IEFzIEkgc2FpZCB5ZXN0
-ZXJkYXkgWzFdLCB0aGVyZSdzIGEgcXVlc3Rpb24gb2YgdGhlIEFSQ0ggdmFyLCB1c2VkIGluIHRo
-ZQo+ID4gcHJlcGFyZS1rZXJuZWwgc2NyaXB0Lgo+IAo+IE5vLCB5ZXN0ZXJkYXkgeW91IHNhaWQg
-dGhhdCB0aGUgcHJlcGFyZS1rZXJuZWwgc2NyaXB0IHByb2JhYmx5IHdhcwo+IG5vdCB0aGUgcHJv
-YmxlbSAKCkkgc2FpZCBhIGxvdCBvZiB0aGluZ3MgeWVzdGVyZGF5IDotRCBhbmQgeWVzLCBJIHRo
-b3VnaHQgdGhhdCBwcm9iYWJseSBpdCAKd2Fzbid0LgoKPiBiZWNhdXNlIHlvdSBjYW4gY29tcGls
-ZSB0aGUgcHJlcGFyZWQga2VybmVsCj4gbWFudWFsbHkuIE9yIGRpZCBJIG1pc3VuZGVyc3RhbmQ/
-CgpZZXMsIGl0J3MgdHJ1ZS4gSSBjYW4gY29tcGlsZSB0aGUga2VybmVsIG1hbnVhbGx5IGJ1dCBJ
-IGNhbiBjcmVhdGUgdGhlIGRlYmlhbiAKcGFja2FnZSBpZiBJIG1vZGlmeSB0aGUgcmVzdWx0IG9i
-dGFpbmVkIGJ5IHRoZSBwcmVwYXJlLWtlcm5lbCBzY3JpcHQuCgo+ID4gQW55IGlkZWEgdG8gc29s
-dmUgdGhpcz8KPiAKPiBBcyBJIGFscmVhZHkgc2FpZCwgeW91IGhhdmUgdG8gZXhlY3V0ZSB3aGF0
-IG1ha2Uta3BrZyBkb2VzLCBieSBoYW5kLAo+IHN0ZXAgYnkgc3RlcCwgdG8gdW5kZXJzdGFuZCB3
-aGljaCBzdGVwIGdvZXMgd3JvbmcuCgo6LUQgCgpJdCdzIG5vIGVhc3ksIGF0IGxlYXN0IGJ5IG15
-LCBjaGVjayB3aHkgbWFrZS1rcGtnIGRvZXMuIEJ1dCwgSSB0aGluayB0aGF0IAp0aGVyZSdzIGEg
-Y29sbGlzaW9uIHdpdGggdGhhdCB2YXIgKEFSQ0gpLiBJIHRoaW5rIHRoYXQgZGViaWFuIHVzZSB0
-aGF0IHZhciBmb3IgCnNvbWUgaW50ZXJuYWwgcHJvcG9zZXMgYW5kIGl0J3MgZGlmZmVyZW50IChp
-biB0aGUgeDg2IHBsYXRmb3JtIHg4NiB2cyB4ODZfNjQpLCAKb3IgaGFzIHNvbWUgdHJvdWJsZXMu
-CgpSZWFsbHkgSSBkb24ndCBrbm93IGlmIGl0J3MgYSBtaXggb2YgcHJlcGFyZS1rZXJuZWwgcHJv
-YmxlbSwgbWFrZS1rcGtnIHByb2JsZW0gCm9yIHVzZXIgcHJvYmxlbS4KCklmIHlvdSBzZWUgY2xl
-YXJseSB0aGF0IGl0J3MgbWFrZS1rcGtnIHByb2JsZW0sIEkgY29uY2VudHJhdGUgbXkgZWZmb3J0
-cyBvbiAKdGhhdC4gCgpMZW9wb2xkCgoKCgotLSAKLS0KTGludXggVXNlciAxNTI2OTIgICAgIEdQ
-RzogMDVGNEE3QTk0OUEyRDlBQQpDYXRhbG9uaWEKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLQpBOiBCZWNhdXNlIGl0IG1lc3NlcyB1cCB0aGUgb3JkZXIgaW4gd2hpY2ggcGVv
-cGxlIG5vcm1hbGx5IHJlYWQgdGV4dC4KUTogV2h5IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBiYWQg
-dGhpbmc/CkE6IFRvcC1wb3N0aW5nLgpROiBXaGF0IGlzIHRoZSBtb3N0IGFubm95aW5nIHRoaW5n
-IGluIGUtbWFpbD8KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9u
-LXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBl
-OiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDgxOSBieXRlcwpEZXNjOiBUaGlzIGlz
-IGEgZGlnaXRhbGx5IHNpZ25lZCBtZXNzYWdlIHBhcnQuClVSTDogPGh0dHA6Ly93d3cueGVub21h
-aS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTAxMjIvMzUwNTkxZDMvYXR0
-YWNobWVudC5zaWc+Cg==
+
+
+----- Mail original -----
+> De: "Philippe Gerum" <rpm@xenomai.org>
+> =C3=80: "Huy Cong Vu" <huy-cong.vu@wandercraft.eu>
+> Cc: xenomai@xenomai.org
+> Envoy=C3=A9: Jeudi 5 F=C3=A9vrier 2015 15:42:15
+> Objet: Re: [Xenomai] Xenomai 3 - no skin detected in program
+
+> On 02/05/2015 03:05 PM, Huy Cong Vu wrote:
+>>=20
+>>=20
+>> ----- Mail original -----
+>>> De: "Philippe Gerum" <rpm@xenomai.org>
+>>> =C3=80: "Huy Cong Vu" <huy-cong.vu@wandercraft.eu>
+>>> Cc: xenomai@xenomai.org
+>>> Envoy=C3=A9: Mercredi 4 F=C3=A9vrier 2015 14:21:18
+>>> Objet: Re: [Xenomai] Xenomai 3 - no skin detected in program
+>>=20
+>>> On 02/04/2015 12:40 PM, Huy Cong Vu wrote:
+>>>>
+>>>>
+>>>> ----- Mail original -----
+>>>>> De: "Huy Cong Vu" <huy-cong.vu@wandercraft.eu>
+>>>>> =C3=80: "Philippe Gerum" <rpm@xenomai.org>
+>>>>> Cc: xenomai@xenomai.org
+>>>>> Envoy=C3=A9: Mercredi 4 F=C3=A9vrier 2015 12:07:54
+>>>>> Objet: Re: [Xenomai] Xenomai 3 - no skin detected in program
+>>>>
+>>>>> ----- Mail original -----
+>>>>>> De: "Philippe Gerum" <rpm@xenomai.org>
+>>>>>> =C3=80: "Huy Cong Vu" <huy-cong.vu@wandercraft.eu>, xenomai@xenomai.=
+org
+>>>>>> Envoy=C3=A9: Mercredi 4 F=C3=A9vrier 2015 10:13:14
+>>>>>> Objet: Re: [Xenomai] Xenomai 3 - no skin detected in program
+>>>>>
+>>>>>> On 02/04/2015 09:55 AM, Huy Cong Vu wrote:
+>>>>>>> Hello everyone,
+>>>>>>> I recently try to run an application compiled in native skin of Xen=
+omai 3. When
+>>>>>>> trying to run the binary, these line appeared:
+>>>>>>> WARNING: [main] no skin detected in program
+>>>>>>> BUG: [main] initialization failed, EINVAL
+>>>>>>> I know that this is a cooperplate_init() warning when trying to ini=
+tialize
+>>>>>>> native skin, but I don't understand the reason why:
+>>>>>>> if (pvlist_empty(&skins)){
+>>>>>>> warning("no skin detected in program");
+>>>>>>> ret =3D -EINVAL;
+>>>>>>> goto fail;
+>>>>>>> }
+>>>>>>
+>>>>>> It seems that your application was not linked against libalchemy.so.
+>>>>>> When API libraries are properly linked in, internal constructor rout=
+ines
+>>>>>> populate this list. POSIX support is built-in within the Cobalt
+>>>>>> interface, so it won't appear here though.
+>>>>>>
+>>>> I change the order of the linker flags, now my app is linked against
+>>>> libalchemy.so, but this message shown up:
+>>>> symbol lookup error: /usr/xenomai/lib/libcopperplate.so.0: undefined s=
+ymbol:
+>>>> main
+>>>>
+>>>> I guess that it stills a problem due to the linker flag, am I right?
+>>>>
+>>>
+>>> Yes. You seem to be using a set of flags with fine-grained tuning, some
+>>> of which might have an adverse effect on your linking stage. You should
+>>> start with the set output by xeno-config --ldflags --alchemy which are
+>>> known to work, then tune gradually as appropriate.
+>>>
+>>=20
+>> Hi Philippe,
+>>=20
+>> I'm getting close to it, but it still left some undefined reference for =
+rtdm
+>> functions.
+>>
+>=20
+> rtdm_socket() is a kernel-space API for inter-driver calls, socket() is
+> what you need for creating a RTDM socket endpoint in your application.
+> The Cobalt implementation will be used provided the linker is passed the
+> proper flags (which you Makefile does).
+
+So that means I will always end up in calling socket() for all skins (alche=
+my or cobalt) and let the linker flags differs it in kernel space?
+My app is then compilable. But now I have 2 differents behaviors with 2 ski=
+ns in the same app:
+
+ret1 =3D setsockopt();
+ret2 =3D ioctl();
+ret3 =3D bind();
+
+cobalt (posix): ret1 =3D -1, ret2 =3D ret3 =3D 0;
+alchemy (native): ret1 =3D 0, ret2 =3D ret3 =3D -1;
+
+I put some #define NATIVE or POSIX in my app + xeno-config --alchemy or --c=
+obalt to set flags.
+Is there a known issue related to this, or it only occurs in my case?=20
+=20
+>=20
+>> I prepared a minimal test case attached in this email, which have only 1=
+ call to
+>> rtdm_socket. The call to ldflags include only --cobalt, I don't know if =
+its
+>> enough. And I can't find a testsuite file in alchemy sample list that ha=
+ve rtdm
+>> calls.
+>=20
+> --cobalt is an alias to --posix, those switches are interchangeable. The
+> Makefile looks ok. See demo/posix/cobalt for examples using RTDM sockets
+> for communicating with the real-time IPC driver.
+>=20
+>>=20
+>> Can you take a look and tell me where I was wrong?
+>>=20
+>> Thanks,
+>> =20
+>>=20
+>>> --
+>>> Philippe.
+>>=20
+>=20
+>=20
+> --
+> Philippe.
+
+--=20
+Huy Cong
+Wandercraft SAS
+
