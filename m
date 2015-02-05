@@ -1,5 +1,5 @@
-Message-ID: <54D390C7.60008@xenomai.org>
-Date: Thu, 05 Feb 2015 16:48:23 +0100
+Message-ID: <54D3920E.7060706@xenomai.org>
+Date: Thu, 05 Feb 2015 16:53:50 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <1928985868.3780.1423040133670.JavaMail.zimbra@wandercraft.eu>
@@ -107,65 +107,10 @@ On 02/05/2015 04:29 PM, Huy Cong Vu wrote:
 > 
 > So that means I will always end up in calling socket() for all skins (alchemy or cobalt) and let the linker flags differs it in kernel space?
 
-You should have a look at the related documentation to understand
-how/when the Xenomai/cobalt implementation of a POSIX service (e.g.
-socket, ioctl, setsockopt and friends) overrides the original glibc call:
+The API layers for x3 are described here:
+http://xenomai.org/start-here/#How_does_Xenomai_deliver_real-time
 
-http://xenomai.org/2014/08/porting-a-linux-application-to-xenomai-dual-kernel/#Under_the_hood_the_8211wrap_flag
-
-> My app is then compilable. But now I have 2 differents behaviors with 2 skins in the same app:
-> 
-> ret1 = setsockopt();
-> ret2 = ioctl();
-> ret3 = bind();
-> 
-> cobalt (posix): ret1 = -1, ret2 = ret3 = 0;
-> alchemy (native): ret1 = 0, ret2 = ret3 = -1;
->
-
-There is no information I could use here. Which RTDM driver is
-implementing the address family and protocol mentioned in the socket()
-call, which socket option and ioctl request codes are you passing to
-this RTDM driver via the setsockopt() and ioctl() calls, what is the
-errno value for each failing call?
-
-> I put some #define NATIVE or POSIX in my app + xeno-config --alchemy or --cobalt to set flags.
-
-The whole thing has been designed in a way that should prevent such kind
-of ugly #ifdefery. Definitely not the way to go.
-
-> Is there a known issue related to this, or it only occurs in my case? 
->  
-
-There is no known issue regarding RTDM sockets and their usage. Again,
-you have access to several examples in demo/posix/cobalt illustrating
-RTDM socket usage. You may want to have look there first.
-
->>
->>> I prepared a minimal test case attached in this email, which have only 1 call to
->>> rtdm_socket. The call to ldflags include only --cobalt, I don't know if its
->>> enough. And I can't find a testsuite file in alchemy sample list that have rtdm
->>> calls.
->>
->> --cobalt is an alias to --posix, those switches are interchangeable. The
->> Makefile looks ok. See demo/posix/cobalt for examples using RTDM sockets
->> for communicating with the real-time IPC driver.
->>
->>>
->>> Can you take a look and tell me where I was wrong?
->>>
->>> Thanks,
->>>  
->>>
->>>> --
->>>> Philippe.
->>>
->>
->>
->> --
->> Philippe.
-> 
-
+alchemy is one of the non-POSIX APIs.
 
 -- 
 Philippe.
