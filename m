@@ -1,15 +1,15 @@
-Date: Thu, 22 Jan 2015 11:24:55 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150122102455.GC20360@hermes.click-hack.org>
-References: <1537147.Wm9AbiuW5D@soho> <2271076.0trCLgX2Zk@soho>
- <20150122095635.GB20360@hermes.click-hack.org>
- <1592000.mUrPdiXucy@soho>
+Message-ID: <54D4D464.1000906@control.lth.se>
+Date: Fri, 06 Feb 2015 15:49:08 +0100
+From: Anders Blomdell <anders.blomdell@control.lth.se>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <1592000.mUrPdiXucy@soho>
-Content-Type: text/plain; charset="us-ascii"
+References: <54D49E26.6090705@control.lth.se>
+ <20150206110711.GA23751@hermes.click-hack.org>
+ <54D4A442.3090802@control.lth.se>
+ <20150206141226.GA27277@hermes.click-hack.org>
+In-Reply-To: <20150206141226.GA27277@hermes.click-hack.org>
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai-3 booting problems
+Subject: Re: [Xenomai] Support for SIOCGIFNAME in rtnet
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,64 +18,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thu, Jan 22, 2015 at 11:17:41AM +0100, Leopold Palomo-Avellaneda wrote:
-> El Dijous, 22 de gener de 2015, a les 10:56:35, Gilles Chanteperdrix va 
-> escriure:
-> > > > What about the ARCH problem with make-kpkg, is it solved ?
-> > > 
-> > > As I said yesterday [1], there's a question of the ARCH var, used in the
-> > > prepare-kernel script.
-> > 
-> > No, yesterday you said that the prepare-kernel script probably was
-> > not the problem 
+On 2015-02-06 15:12, Gilles Chanteperdrix wrote:
+> On Fri, Feb 06, 2015 at 12:23:46PM +0100, Anders Blomdell wrote:
+>> On 2015-02-06 12:07, Gilles Chanteperdrix wrote:
+>>> On Fri, Feb 06, 2015 at 11:57:42AM +0100, Anders Blomdell wrote:
+>>>> A patch that I would find useful.
+>>>
+>>> Indeed, can we avoid strncpy ?
+>> In favour of what? I blatantly stole that line from the SIOCGIFCONF a few
+>> line above :-)
 > 
-> I said a lot of things yesterday :-D and yes, I thought that probably it 
-> wasn't.
-> 
-> > because you can compile the prepared kernel
-> > manually. Or did I misunderstand?
-> 
-> Yes, it's true. I can compile the kernel manually but I can create the debian 
-> package if I modify the result obtained by the prepare-kernel script.
-> 
-> > > Any idea to solve this?
-> > 
-> > As I already said, you have to execute what make-kpkg does, by hand,
-> > step by step, to understand which step goes wrong.
-> 
-> :-D 
-> 
-> It's no easy, at least by my, check why make-kpkg does. But, I think that 
-> there's a collision with that var (ARCH). I think that debian use that var for 
-> some internal proposes and it's different (in the x86 platform x86 vs x86_64), 
-> or has some troubles.
-> 
-> Really I don't know if it's a mix of prepare-kernel problem, make-kpkg problem 
-> or user problem.
+> strlcpy. 
+Ok, change the line above my patch as well?
 
-As you said, if you can compile the prepared kernel manually, it is
-not a prepare-kernel problem.
-
-> 
-> If you see clearly that it's make-kpkg problem, I concentrate my efforts on 
-> that. 
-
-Well, the fact that the compilation error happens when trying to
-compile a Xenomai file would seem to indicate that prepare-kernel.sh
-has put the wrong link into init/Kconfig.
-
-You pass --arch=x86 to prepare-kernel.sh, right, not --arch=x86_64 ?
+/Anders
 
 
 -- 
-					    Gilles.
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: not available
-Type: application/pgp-signature
-Size: 811 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150122/0f2d63d7/attachment.sig>
+Anders Blomdell                  Email: anders.blomdell@control.lth.se
+Department of Automatic Control
+Lund University                  Phone:    +46 46 222 4625
+P.O. Box 118                     Fax:      +46 46 138118
+SE-221 00 Lund, Sweden
+
+
