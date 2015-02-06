@@ -1,16 +1,12 @@
-Date: Fri, 6 Feb 2015 16:03:11 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150206150311.GB27277@hermes.click-hack.org>
-References: <54D49E26.6090705@control.lth.se>
- <20150206110711.GA23751@hermes.click-hack.org>
- <54D4A442.3090802@control.lth.se>
- <20150206141226.GA27277@hermes.click-hack.org>
- <54D4D464.1000906@control.lth.se>
+Message-ID: <54D4D9B2.8090805@xenomai.org>
+Date: Fri, 06 Feb 2015 16:11:46 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <54D4D464.1000906@control.lth.se>
-Subject: Re: [Xenomai] Support for SIOCGIFNAME in rtnet
+References: <54D4D409.2020708@control.lth.se>
+In-Reply-To: <54D4D409.2020708@control.lth.se>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Mixing linux and alchemy (cobalt) calls
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,25 +15,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Anders Blomdell <anders.blomdell@control.lth.se>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Anders Blomdell <anders.blomdell@control.lth.se>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Fri, Feb 06, 2015 at 03:49:08PM +0100, Anders Blomdell wrote:
-> On 2015-02-06 15:12, Gilles Chanteperdrix wrote:
-> > On Fri, Feb 06, 2015 at 12:23:46PM +0100, Anders Blomdell wrote:
-> >> On 2015-02-06 12:07, Gilles Chanteperdrix wrote:
-> >>> On Fri, Feb 06, 2015 at 11:57:42AM +0100, Anders Blomdell wrote:
-> >>>> A patch that I would find useful.
-> >>>
-> >>> Indeed, can we avoid strncpy ?
-> >> In favour of what? I blatantly stole that line from the SIOCGIFCONF a few
-> >> line above :-)
-> > 
-> > strlcpy. 
-> Ok, change the line above my patch as well?
+On 02/06/2015 03:47 PM, Anders Blomdell wrote:
+> I have an application that need both realtime and linux sockets, am I correct in assuming that
+> withe the alchemy skin I could access them like
+> 
+>   socket(...           // Linux version
+>   __real_socket(...    // Linux version
+>   __cobalt_socket(...  // Alchemy/cobalt version
+> 
+> while under the cobalt skin, it would be:
+> 
+>   socket(...           // Alchemy/cobalt version
+>   __real_socket(...    // Linux version
+>   __cobalt_socket(...  // Alchemy/cobalt version
+> 
 
-I will do it, thanks.
+This depends on the LDFLAGS retrieved from xeno-config:
+
+1. with --posix mentioned in the xeno-config --ldflags request
+
+	socket(...), __cobalt_socket(...) or __RT(socket(...))  => Cobalt
+implementation
+	__real_socket(...) or __STD(socket(...)) => glibc service
+
+2. without --posix mentioned in the xeno-config --ldflags request
+
+	__cobalt_socket(...) or __RT(socket(...))  => Cobalt implementation
+	socket(...) or __STD(socket(...)) => glibc service
+
+e.g.
+
+- the application only wants to access the POSIX services implemented by
+Cobalt using the regular POSIX names: LDFLAGS should contain the output of:
+$ xeno-config --posix --ldflags, or --cobalt --ldflags.
+
+- the application wants to access the POSIX services implemented by
+Cobalt using the regular POSIX names, and the alchemy API: LDFLAGS
+should contain the output of:
+$ xeno-config --posix --alchemy --ldflags, or --cobalt --alchemy --ldflags.
+
+- the application wants to access the POSIX services implemented by
+Cobalt solely via the explicit POSIX wrappers, and the alchemy API:
+LDFLAGS should contain the output of (i.e. omitting --posix):
+$ xeno-config --alchemy --ldflags, or --alchemy --ldflags.
+
+NOTE: using __RT() is preferred to calling __cobalt(), in case an API
+stacked over the Cobalt POSIX API redefines its own implementation of
+POSIX services over the dual kernel. __RT() would call the stacked
+implementation, __cobalt() would force a call to the Cobalt
+implementation of the service.
 
 -- 
-					    Gilles.
+Philippe.
 
