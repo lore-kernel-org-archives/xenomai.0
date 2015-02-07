@@ -1,13 +1,14 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Thu, 22 Jan 2015 11:40:57 +0100
-Message-ID: <5878976.hoeVIdWPhU@soho>
-In-Reply-To: <20150122102455.GC20360@hermes.click-hack.org>
-References: <1537147.Wm9AbiuW5D@soho> <1592000.mUrPdiXucy@soho>
- <20150122102455.GC20360@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Xenomai-3 booting problems
+In-Reply-To: <54D0A0C2.3050905@xenomai.org>
+References: <CAEMXjGyps7NpBUYgC4j4TrVKbiAZsceiuQ71TymDtXz-a3fqbA@mail.gmail.com>
+ <54CCAA6D.4030007@xenomai.org>
+ <CAEMXjGyNHrnCRXjVQq8FaWAVdzN1x3079QT0J_bCx_8VfNoQxA@mail.gmail.com>
+ <54D0A0C2.3050905@xenomai.org>
+Date: Fri, 6 Feb 2015 16:31:27 -0800
+Message-ID: <CAEMXjGzdbv4F5eNAiLs51xJj+3qRtpRaCgm40SDF-n3nZ=stzQ@mail.gmail.com>
+From: Steve B <sbattazzo@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] POSIX skin, task crashes Linux when run as RT task
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,58 +17,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-RWwgRGlqb3VzLCAyMiBkZSBnZW5lciBkZSAyMDE1LCBhIGxlcyAxMToyNDo1NSwgR2lsbGVzIENo
-YW50ZXBlcmRyaXggdmEgCmVzY3JpdXJlOgo+IE9uIFRodSwgSmFuIDIyLCAyMDE1IGF0IDExOjE3
-OjQxQU0gKzAxMDAsIExlb3BvbGQgUGFsb21vLUF2ZWxsYW5lZGEgd3JvdGU6Cj4gPiBFbCBEaWpv
-dXMsIDIyIGRlIGdlbmVyIGRlIDIwMTUsIGEgbGVzIDEwOjU2OjM1LCBHaWxsZXMgQ2hhbnRlcGVy
-ZHJpeCB2YQo+ID4gCj4gPiBlc2NyaXVyZToKPiA+ID4gPiA+IFdoYXQgYWJvdXQgdGhlIEFSQ0gg
-cHJvYmxlbSB3aXRoIG1ha2Uta3BrZywgaXMgaXQgc29sdmVkID8KPiA+ID4gPiAKPiA+ID4gPiBB
-cyBJIHNhaWQgeWVzdGVyZGF5IFsxXSwgdGhlcmUncyBhIHF1ZXN0aW9uIG9mIHRoZSBBUkNIIHZh
-ciwgdXNlZCBpbgo+ID4gPiA+IHRoZQo+ID4gPiA+IHByZXBhcmUta2VybmVsIHNjcmlwdC4KPiA+
-ID4gCj4gPiA+IE5vLCB5ZXN0ZXJkYXkgeW91IHNhaWQgdGhhdCB0aGUgcHJlcGFyZS1rZXJuZWwg
-c2NyaXB0IHByb2JhYmx5IHdhcwo+ID4gPiBub3QgdGhlIHByb2JsZW0KPiA+IAo+ID4gSSBzYWlk
-IGEgbG90IG9mIHRoaW5ncyB5ZXN0ZXJkYXkgOi1EIGFuZCB5ZXMsIEkgdGhvdWdodCB0aGF0IHBy
-b2JhYmx5IGl0Cj4gPiB3YXNuJ3QuCj4gPiAKPiA+ID4gYmVjYXVzZSB5b3UgY2FuIGNvbXBpbGUg
-dGhlIHByZXBhcmVkIGtlcm5lbAo+ID4gPiBtYW51YWxseS4gT3IgZGlkIEkgbWlzdW5kZXJzdGFu
-ZD8KPiA+IAo+ID4gWWVzLCBpdCdzIHRydWUuIEkgY2FuIGNvbXBpbGUgdGhlIGtlcm5lbCBtYW51
-YWxseSBidXQgSSBjYW4gY3JlYXRlIHRoZQo+ID4gZGViaWFuIHBhY2thZ2UgaWYgSSBtb2RpZnkg
-dGhlIHJlc3VsdCBvYnRhaW5lZCBieSB0aGUgcHJlcGFyZS1rZXJuZWwKPiA+IHNjcmlwdC4+IAo+
-ID4gPiA+IEFueSBpZGVhIHRvIHNvbHZlIHRoaXM/Cj4gPiA+IAo+ID4gPiBBcyBJIGFscmVhZHkg
-c2FpZCwgeW91IGhhdmUgdG8gZXhlY3V0ZSB3aGF0IG1ha2Uta3BrZyBkb2VzLCBieSBoYW5kLAo+
-ID4gPiBzdGVwIGJ5IHN0ZXAsIHRvIHVuZGVyc3RhbmQgd2hpY2ggc3RlcCBnb2VzIHdyb25nLgo+
-ID4gOgo+ID4gOi1ECj4gPiAKPiA+IEl0J3Mgbm8gZWFzeSwgYXQgbGVhc3QgYnkgbXksIGNoZWNr
-IHdoeSBtYWtlLWtwa2cgZG9lcy4gQnV0LCBJIHRoaW5rIHRoYXQKPiA+IHRoZXJlJ3MgYSBjb2xs
-aXNpb24gd2l0aCB0aGF0IHZhciAoQVJDSCkuIEkgdGhpbmsgdGhhdCBkZWJpYW4gdXNlIHRoYXQg
-dmFyCj4gPiBmb3Igc29tZSBpbnRlcm5hbCBwcm9wb3NlcyBhbmQgaXQncyBkaWZmZXJlbnQgKGlu
-IHRoZSB4ODYgcGxhdGZvcm0geDg2IHZzCj4gPiB4ODZfNjQpLCBvciBoYXMgc29tZSB0cm91Ymxl
-cy4KPiA+IAo+ID4gUmVhbGx5IEkgZG9uJ3Qga25vdyBpZiBpdCdzIGEgbWl4IG9mIHByZXBhcmUt
-a2VybmVsIHByb2JsZW0sIG1ha2Uta3BrZwo+ID4gcHJvYmxlbSBvciB1c2VyIHByb2JsZW0uCj4g
-Cj4gQXMgeW91IHNhaWQsIGlmIHlvdSBjYW4gY29tcGlsZSB0aGUgcHJlcGFyZWQga2VybmVsIG1h
-bnVhbGx5LCBpdCBpcwo+IG5vdCBhIHByZXBhcmUta2VybmVsIHByb2JsZW0uCj4gCj4gPiBJZiB5
-b3Ugc2VlIGNsZWFybHkgdGhhdCBpdCdzIG1ha2Uta3BrZyBwcm9ibGVtLCBJIGNvbmNlbnRyYXRl
-IG15IGVmZm9ydHMKPiA+IG9uCj4gPiB0aGF0Lgo+IAo+IFdlbGwsIHRoZSBmYWN0IHRoYXQgdGhl
-IGNvbXBpbGF0aW9uIGVycm9yIGhhcHBlbnMgd2hlbiB0cnlpbmcgdG8KPiBjb21waWxlIGEgWGVu
-b21haSBmaWxlIHdvdWxkIHNlZW0gdG8gaW5kaWNhdGUgdGhhdCBwcmVwYXJlLWtlcm5lbC5zaAo+
-IGhhcyBwdXQgdGhlIHdyb25nIGxpbmsgaW50byBpbml0L0tjb25maWcuCj4gCj4gWW91IHBhc3Mg
-LS1hcmNoPXg4NiB0byBwcmVwYXJlLWtlcm5lbC5zaCwgcmlnaHQsIG5vdCAtLWFyY2g9eDg2XzY0
-ID8KCnllcywgSSBoYXZlIHRyaWVkIGJvdGgsIGJ1dCBJIHB1dCAtLWFyY2g9eDg2IG9yIHRoZSBk
-ZWZhdWx0IG9wdGlvbiBhcyBJIHNhaWQgCml0IGluIG15IGVtYWlsIGZyb20geWVzdGVyZGF5ICgg
-Oi1QKQoKU2VyaW91c2x5LCBub3cgSSBoYXZlIGNvbXBpbGVkIG1hbnVhbGx5IHRoZSBrZXJuZWwg
-KG1ha2UgYnpJbWFnZSBtb2R1bGVzKSBhbmQgCm5vIGVycm9yLCBidXQgYWZ0ZXIgdGhlIGNvbXBp
-bGF0aW9uIG9uIGludGVyZXN0ZWQgZGlyZWN0b3J5IGhhdmUgYXBwZWFyZWQgaW4gCmFyY2ggZGly
-OiAKbHMgLWwgYXJjaC94ODZfNjQvYm9vdC9iekltYWdlIApscnd4cnd4cnd4IDEgcm9vdCByb290
-IDIyIGdlbiAyMiAxMDozMiBhcmNoL3g4Nl82NC9ib290L2J6SW1hZ2UgLT4gCi4uLy4uL3g4Ni9i
-b290L2J6SW1hZ2UKCk1heWJlIGl0J3Mgc29tZXRoaW5nIHJlbGF0ZWQgdG8gZGViaWFuLgoKTGVv
-cG9sZAotLSAKLS0KTGludXggVXNlciAxNTI2OTIgICAgIEdQRzogMDVGNEE3QTk0OUEyRDlBQQpD
-YXRhbG9uaWEKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpBOiBCZWNhdXNl
-IGl0IG1lc3NlcyB1cCB0aGUgb3JkZXIgaW4gd2hpY2ggcGVvcGxlIG5vcm1hbGx5IHJlYWQgdGV4
-dC4KUTogV2h5IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBiYWQgdGhpbmc/CkE6IFRvcC1wb3N0aW5n
-LgpROiBXaGF0IGlzIHRoZSBtb3N0IGFubm95aW5nIHRoaW5nIGluIGUtbWFpbD8KLS0tLS0tLS0t
-LS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMg
-c2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2ln
-bmF0dXJlClNpemU6IDgxOSBieXRlcwpEZXNjOiBUaGlzIGlzIGEgZGlnaXRhbGx5IHNpZ25lZCBt
-ZXNzYWdlIHBhcnQuClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9t
-YWkvYXR0YWNobWVudHMvMjAxNTAxMjIvYjZlZTVlY2UvYXR0YWNobWVudC5zaWc+Cg==
+> >> I actually found XDDP to be very handy for another part of my
+> application,
+> > but I hadn't thought of using it for the part where the main thread puts
+> > its messages out to hardware. I may look into it for this as well, but I
+> > have been thinking that porting the driver to RTDM is the actual best
+> > solution if it turns out the mode switches are part of the critical path.
+> >
+>
+> A dedicated RTDM driver is definitely the way to go for driving a device
+> in pure rt mode.
+>
+>
+>
+Phillippe, thanks for the help on trying to track this issue down!
+I built a simple Xenomai application to over consume CPU sporadically, and
+found that if I set it to 100% CPU it would trigger the watchdog as it was
+supposed to, so my main work thread taking up a lot of CPU could not alone
+be the root cause for this. In the minimum configuration of my real
+software where I was getting the issue, the only other things running were
+threads to listen to a UART and to listen to the CAN bus, which I was doing
+with the regular old Linux device drivers because RTDM ones did not seem to
+be available.
+I was able to reproduce the crash with my simple CPU-burner application by
+adding the UART and CAN bus routines to it, and I was able to make it not
+crash by taking away the sporadic deadline misses. So I came to the
+conclusion that the combination of the deadline miss and the UART/CAN
+receiver loops was somehow causing my issue. Unfortunately I'm not exactly
+sure how to pinpoint it any deeper than that.
+
+I bit the bullet and spent a couple days to port the Beaglebone Black CAN
+bus driver to work with RTDM, and after switching to that my problem seems
+to have been solved.
+I would like to offer to contribute my device driver to Xenomai if anybody
+is interested in having it. Will check with my employer/customer and make
+sure there isn't any red tape I have to go through and then I will start a
+new thread on that later.
+
+Steve
