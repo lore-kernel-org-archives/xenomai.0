@@ -1,13 +1,12 @@
-Date: Sun, 8 Feb 2015 18:38:49 +0100
+Date: Sun, 8 Feb 2015 18:42:39 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150208173849.GA2014@hermes.click-hack.org>
-References: <6740-54d79d80-97-750d4f00@265280780>
+Message-ID: <20150208174239.GB2014@hermes.click-hack.org>
+References: <CAAg8yo2U6Djk+myWxLJ+rBqEfoy0z3pZhZQMbPDUyi17jH-B+w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <6740-54d79d80-97-750d4f00@265280780>
-Subject: Re: [Xenomai] The latency test hangs
+In-Reply-To: <CAAg8yo2U6Djk+myWxLJ+rBqEfoy0z3pZhZQMbPDUyi17jH-B+w@mail.gmail.com>
+Subject: Re: [Xenomai] Compatibility of PCAN PCI Express Four Channel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,51 +15,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Dauphin Alexandre <alexandre.dauphin@ecole.ensicaen.fr>
+To: Zhe Su <zhesu@usc.edu>
 Cc: xenomai@xenomai.org
 
-On Sun, Feb 08, 2015 at 06:30:43PM +0100, Dauphin Alexandre wrote:
+On Sat, Feb 07, 2015 at 05:23:33PM -0800, Zhe Su wrote:
+> Dear all,
 > 
-> Hello,
-> 
-> My probleme is that i can't launch any latency tests , they always hang .
-> I work with a Imx6 quad core board ( arm architecture ) , my kernel version is :
-> 
-> # cat /proc/version
-> Linux version 3.0.43 (root@modx6sdk) (gcc version 4.7.1 20120402 (prerelease) (crosstool-NG linaro-1.13.1-2012.04-20120426 - Linaro GCC 2012.04) )
-> 
-> there , is the xenomai configuration i used :
-> # /usr/xenomai/bin/xeno-config
-> xeno-config --verbose
->         --version="2.6.4"
->         --cc="arm-linux-gnueabi-gcc"
->         --arch="arm"
->         --prefix="/usr/xenomai"
->         --xeno-cflags="-I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -D__XENO__"
->         --xeno-ldflags="-L/usr/xenomai/lib -lxenomai -lpthread -lrt "
->         --posix-cflags=""
->         --posix-ldflags="-Wl,@/usr/xenomai/lib/posix.wrappers -L/usr/xenomai/lib -lpthread_rt -lxenomai -lpthread -lrt "
->         --library-dir="/usr/xenomai/lib"
-> 
-> Whene i run some latency test , it always hangs after "warming up..." and nothing append then..
-> 
-> # /usr/xenomai/bin/latency -p 1000
-> == Sampling period: 120000 us
-> == Test mode: periodic user-mode task
-> == All results in microseconds
-> warming up...
+> I am running xenomai 2.6.3 on Ubuntu 12.04, and I would like use a
+> four-channel PCI express CAN board manufactured by PEAK system. The exact
+> model name and number are PCAN-PCI Express Four Channel galvanic isolated
+> IPEH-003040. I am wondering if xenomai 2.6.3 rtcan driver will be
+> compatible with this board?
 
-I do not see how this is possible, if you pass -p 1000, you should
-read: Sampling period: 1000 us.
+To check whether your board is compatible, get its ids with lspci.
 
-> 
-> I tried to change the periode ,but it doesn't make any changes.
-> 
-> # /usr/xenomai/bin/latency -p 120000 -T 600
+Then look at:
+https://git.xenomai.org/xenomai-jro.git/tree/kernel/drivers/can/sja1000/rtcan_peak_pci.c#n73
 
-with -p 120000 you request for a 2 minutes sampling period. I am not
-sure this can even work, I would say latency can not work with a
-period larger than 1s.
+To see if the pci ids of your card are supported. If they are not,
+you may be able to get the driver working for your board by adding
+you board's ids to the peak_pci_tbl array, if the board is
+compatible with the driver.
 
 -- 
 					    Gilles.
