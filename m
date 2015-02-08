@@ -1,10 +1,10 @@
+from: "Dauphin Alexandre" <alexandre.dauphin@ecole.ensicaen.fr>
+message-id: <6740-54d79d80-97-750d4f00@265280780>
+date: Sun, 08 Feb 2015 18:30:43 +0100
 MIME-Version: 1.0
-Sender: szhe.bme@gmail.com
-Date: Sat, 7 Feb 2015 17:23:33 -0800
-Message-ID: <CAAg8yo2U6Djk+myWxLJ+rBqEfoy0z3pZhZQMbPDUyi17jH-B+w@mail.gmail.com>
-From: Zhe Su <zhesu@usc.edu>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] Compatibility of PCAN PCI Express Four Channel
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] The latency test hangs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,19 +15,39 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Dear all,
-
-I am running xenomai 2.6.3 on Ubuntu 12.04, and I would like use a
-four-channel PCI express CAN board manufactured by PEAK system. The exact
-model name and number are PCAN-PCI Express Four Channel galvanic isolated
-IPEH-003040. I am wondering if xenomai 2.6.3 rtcan driver will be
-compatible with this board?
-
-Your advice and help will be highly appreciated!
-
--- 
-Zhe Su (Harry Su), Ph.D. student
-Research Assistant
-Medical Device Development Facility
-Department of Biomedical Engineering
-University of Southern California
+CkhlbGxvLAoKTXkgcHJvYmxlbWUgaXMgdGhhdCBpIGNhbid0IGxhdW5jaCBhbnkgbGF0ZW5jeSB0
+ZXN0cyAsIHRoZXkgYWx3YXlzIGhhbmcgLgpJIHdvcmsgd2l0aCBhIElteDYgcXVhZCBjb3JlIGJv
+YXJkICggYXJtIGFyY2hpdGVjdHVyZSApICwgbXkga2VybmVsIHZlcnNpb24gaXMgOgoKIyBjYXQg
+L3Byb2MvdmVyc2lvbgpMaW51eCB2ZXJzaW9uIDMuMC40MyAocm9vdEBtb2R4NnNkaykgKGdjYyB2
+ZXJzaW9uIDQuNy4xIDIwMTIwNDAyIChwcmVyZWxlYXNlKSAoY3Jvc3N0b29sLU5HIGxpbmFyby0x
+LjEzLjEtMjAxMi4wNC0yMDEyMDQyNiAtIExpbmFybyBHQ0MgMjAxMi4wNCkgKQoKdGhlcmUgLCBp
+cyB0aGUgeGVub21haSBjb25maWd1cmF0aW9uIGkgdXNlZCA6CiMgL3Vzci94ZW5vbWFpL2Jpbi94
+ZW5vLWNvbmZpZwp4ZW5vLWNvbmZpZyAtLXZlcmJvc2UKwqDCoMKgwqDCoMKgwqAgLS12ZXJzaW9u
+PSIyLjYuNCIKwqDCoMKgwqDCoMKgwqAgLS1jYz0iYXJtLWxpbnV4LWdudWVhYmktZ2NjIgrCoMKg
+wqDCoMKgwqDCoCAtLWFyY2g9ImFybSIKwqDCoMKgwqDCoMKgwqAgLS1wcmVmaXg9Ii91c3IveGVu
+b21haSIKwqDCoMKgwqDCoMKgwqAgLS14ZW5vLWNmbGFncz0iLUkvdXNyL3hlbm9tYWkvaW5jbHVk
+ZSAtRF9HTlVfU09VUkNFIC1EX1JFRU5UUkFOVCAtRF9fWEVOT19fIgrCoMKgwqDCoMKgwqDCoCAt
+LXhlbm8tbGRmbGFncz0iLUwvdXNyL3hlbm9tYWkvbGliIC1seGVub21haSAtbHB0aHJlYWQgLWxy
+dCAiCsKgwqDCoMKgwqDCoMKgIC0tcG9zaXgtY2ZsYWdzPSIiCsKgwqDCoMKgwqDCoMKgIC0tcG9z
+aXgtbGRmbGFncz0iLVdsLEAvdXNyL3hlbm9tYWkvbGliL3Bvc2l4LndyYXBwZXJzIC1ML3Vzci94
+ZW5vbWFpL2xpYiAtbHB0aHJlYWRfcnQgLWx4ZW5vbWFpIC1scHRocmVhZCAtbHJ0ICIKwqDCoMKg
+wqDCoMKgwqAgLS1saWJyYXJ5LWRpcj0iL3Vzci94ZW5vbWFpL2xpYiIKCldoZW5lIGkgcnVuIHNv
+bWUgbGF0ZW5jeSB0ZXN0ICwgaXQgYWx3YXlzIGhhbmdzIGFmdGVyICJ3YXJtaW5nIHVwLi4uIiBh
+bmQgbm90aGluZyBhcHBlbmQgdGhlbi4uCgojIC91c3IveGVub21haS9iaW4vbGF0ZW5jeSAtcCAx
+MDAwCj09IFNhbXBsaW5nIHBlcmlvZDogMTIwMDAwIHVzCj09IFRlc3QgbW9kZTogcGVyaW9kaWMg
+dXNlci1tb2RlIHRhc2sKPT0gQWxsIHJlc3VsdHMgaW4gbWljcm9zZWNvbmRzCndhcm1pbmcgdXAu
+Li4KCkkgdHJpZWQgdG8gY2hhbmdlIHRoZSBwZXJpb2RlICxidXQgaXQgZG9lc24ndCBtYWtlIGFu
+eSBjaGFuZ2VzLgoKIyAvdXNyL3hlbm9tYWkvYmluL2xhdGVuY3kgLXAgMTIwMDAwIC1UIDYwMAo9
+PSBTYW1wbGluZyBwZXJpb2Q6IDEyMDAwMCB1cwo9PSBUZXN0IG1vZGU6IHBlcmlvZGljIHVzZXIt
+bW9kZSB0YXNrCj09IEFsbCByZXN1bHRzIGluIG1pY3Jvc2Vjb25kcwp3YXJtaW5nIHVwLi4uCi0t
+LXwtLS0tLS0tLS0tLXwtLS0tLS0tLS0tLXwtLS0tLS0tLS0tLXwtLS0tLS0tLXwtLS0tLS18LS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpSVFN8wqAgMjUyNTIuNTI1fMKgwqDCoMKgwqAgMC4wMDB8
+IC0yNTI1Mi41MjZ8wqDCoMKgwqDCoMKgIDB8wqDCoMKgwqAgMHzCoMKgwqAgMDA6MTA6MDAvMDA6
+MTA6MDAKCkluIG15IGNvbmZpZ3VyYXRpb24gLCBDT05GSUdfQ1BVX0ZSRVHCoCAsIENPTkZJR19D
+UFVfSURMRSBhbmQgQ09ORklHX0tHRELCoCBhcmUgZGlzYWJsZSA7CgpJIGRvbid0IGtub3cgd2hh
+dCBpcyB3cm9uZyB3aXRoIG15IGNvbmZpZ3VyYXRpb24gYW5kIGkgdGhhbmsgeW91IGEgbG90IGZv
+ciB5b3VyIGhlbHAuCgpUaGFua3MgeW91LApBbGV4Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAt
+LS0tLS0tLS0tLS0tLQpBbiBlbWJlZGRlZCBhbmQgY2hhcnNldC11bnNwZWNpZmllZCB0ZXh0IHdh
+cyBzY3J1YmJlZC4uLgpOYW1lOiBtb2R4Nl9kZWZvbmZpZy50eHQKVVJMOiA8aHR0cDovL3d3dy54
+ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1MDIwOC9jZDIwNGNh
+Zi9hdHRhY2htZW50LnR4dD4K
