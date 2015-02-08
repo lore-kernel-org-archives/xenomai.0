@@ -1,12 +1,13 @@
-Date: Sun, 8 Feb 2015 18:42:39 +0100
+Date: Sun, 8 Feb 2015 19:54:48 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150208174239.GB2014@hermes.click-hack.org>
-References: <CAAg8yo2U6Djk+myWxLJ+rBqEfoy0z3pZhZQMbPDUyi17jH-B+w@mail.gmail.com>
+Message-ID: <20150208185448.GD2014@hermes.click-hack.org>
+References: <20150208173849.GA2014@hermes.click-hack.org>
+ <2e77-54d7af80-c1-61088680@169838476>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAAg8yo2U6Djk+myWxLJ+rBqEfoy0z3pZhZQMbPDUyi17jH-B+w@mail.gmail.com>
-Subject: Re: [Xenomai] Compatibility of PCAN PCI Express Four Channel
+In-Reply-To: <2e77-54d7af80-c1-61088680@169838476>
+Subject: Re: [Xenomai] The latency test hangs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,27 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Zhe Su <zhesu@usc.edu>
-Cc: xenomai@xenomai.org
+To: Dauphin Alexandre <alexandre.dauphin@ecole.ensicaen.fr>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Sat, Feb 07, 2015 at 05:23:33PM -0800, Zhe Su wrote:
-> Dear all,
+On Sun, Feb 08, 2015 at 07:48:18PM +0100, Dauphin Alexandre wrote:
 > 
-> I am running xenomai 2.6.3 on Ubuntu 12.04, and I would like use a
-> four-channel PCI express CAN board manufactured by PEAK system. The exact
-> model name and number are PCAN-PCI Express Four Channel galvanic isolated
-> IPEH-003040. I am wondering if xenomai 2.6.3 rtcan driver will be
-> compatible with this board?
+> Thanks you for your answer.
+> I knows that 120000 is too long. But when i tried sampling with 10
+> us
 
-To check whether your board is compatible, get its ids with lspci.
+Sampling with 10us should cause a lockup, and trigger the watchdog.
 
-Then look at:
-https://git.xenomai.org/xenomai-jro.git/tree/kernel/drivers/can/sja1000/rtcan_peak_pci.c#n73
+> ,100us or 1000us.
+> It's the same result , nothing append.
 
-To see if the pci ids of your card are supported. If they are not,
-you may be able to get the driver working for your board by adding
-you board's ids to the peak_pci_tbl array, if the board is
-compatible with the driver.
+100us or 1000us should be fine, have you tried waiting a few seconds
+before interrupting the test? "warming up" means that nothing
+happens for some 1s.
+
+Please stay on the list.
 
 -- 
 					    Gilles.
