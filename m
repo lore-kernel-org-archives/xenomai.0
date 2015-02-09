@@ -1,16 +1,20 @@
-Message-ID: <54DCD68F.5020005@siemens.com>
-Date: Thu, 12 Feb 2015 17:36:31 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <54D8E83F.6020601@control.lth.se>
+Date: Mon, 09 Feb 2015 18:02:55 +0100
+From: Anders Blomdell <anders.blomdell@control.lth.se>
 MIME-Version: 1.0
-References: <5491B5E9.4030200@siemens.com> <5491C2CA.7000906@xenomai.org>
- <5491C179.2000600@siemens.com> <5491CB3F.2050509@xenomai.org>
- <5491CC27.6080909@siemens.com> <5491D196.3040309@xenomai.org>
- <54D0E961.4060705@xenomai.org>
-In-Reply-To: <54D0E961.4060705@xenomai.org>
+References: <54D4D409.2020708@control.lth.se> <54D4D9B2.8090805@xenomai.org>
+ <54D4DF0C.2080007@control.lth.se> <54D4E285.9000906@xenomai.org>
+ <54D4E44B.4060403@control.lth.se>
+ <20150206161215.GC27277@hermes.click-hack.org>
+ <20150206161626.GD27277@hermes.click-hack.org>
+ <54D8D7D5.2060000@control.lth.se>
+ <20150209155716.GE3200@hermes.click-hack.org>
+ <54D8DC0B.3070107@control.lth.se>
+ <20150209162409.GF3200@hermes.click-hack.org>
+In-Reply-To: <20150209162409.GF3200@hermes.click-hack.org>
 Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Mayday mechanism broken on x86-64 - simpler approach
- feasible?
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Mixing linux and alchemy (cobalt) calls
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,76 +23,151 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 2015-02-03 16:29, Philippe Gerum wrote:
-> On 12/17/2014 07:55 PM, Philippe Gerum wrote:
->> On 12/17/2014 07:32 PM, Jan Kiszka wrote:
->>> On 2014-12-17 19:28, Philippe Gerum wrote:
->>>> On 12/17/2014 06:46 PM, Jan Kiszka wrote:
->>>>> On 2014-12-17 18:52, Philippe Gerum wrote:
->>>>>> On 12/17/2014 05:57 PM, Jan Kiszka wrote:
->>>>>>> Hi,
+On 2015-02-09 17:24, Gilles Chanteperdrix wrote:
+> On Mon, Feb 09, 2015 at 05:10:51PM +0100, Anders Blomdell wrote:
+>> On 2015-02-09 16:57, Gilles Chanteperdrix wrote:
+>>> On Mon, Feb 09, 2015 at 04:52:53PM +0100, Anders Blomdell wrote:
+>>>> On 2015-02-06 17:16, Gilles Chanteperdrix wrote:
+>>>>> On Fri, Feb 06, 2015 at 05:12:15PM +0100, Gilles Chanteperdrix wrote:
+>>>>>> On Fri, Feb 06, 2015 at 04:56:59PM +0100, Anders Blomdell wrote:
+>>>>>>> On 2015-02-06 16:49, Philippe Gerum wrote:
+>>>>>>>> On 02/06/2015 04:34 PM, Anders Blomdell wrote:
+>>>>>>>>> On 2015-02-06 16:11, Philippe Gerum wrote:
+>>>>>>>>>> On 02/06/2015 03:47 PM, Anders Blomdell wrote:
+>>>>>>>>>>> I have an application that need both realtime and linux sockets, am I correct in assuming that
+>>>>>>>>>>> withe the alchemy skin I could access them like
+>>>>>>>>>>>
+>>>>>>>>>>>   socket(...           // Linux version
+>>>>>>>>>>>   __real_socket(...    // Linux version
+>>>>>>>>>>>   __cobalt_socket(...  // Alchemy/cobalt version
+>>>>>>>>>>>
+>>>>>>>>>>> while under the cobalt skin, it would be:
+>>>>>>>>>>>
+>>>>>>>>>>>   socket(...           // Alchemy/cobalt version
+>>>>>>>>>>>   __real_socket(...    // Linux version
+>>>>>>>>>>>   __cobalt_socket(...  // Alchemy/cobalt version
+>>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> This depends on the LDFLAGS retrieved from xeno-config:
+>>>>>>>>>>
+>>>>>>>>>> 1. with --posix mentioned in the xeno-config --ldflags request
+>>>>>>>>>>
+>>>>>>>>>> 	socket(...), __cobalt_socket(...) or __RT(socket(...))  => Cobalt
+>>>>>>>>>> implementation
+>>>>>>>>>> 	__real_socket(...) or __STD(socket(...)) => glibc service
+>>>>>>>>>>
+>>>>>>>>>> 2. without --posix mentioned in the xeno-config --ldflags request
+>>>>>>>>>>
+>>>>>>>>>> 	__cobalt_socket(...) or __RT(socket(...))  => Cobalt implementation
+>>>>>>>>>> 	socket(...) or __STD(socket(...)) => glibc service
+>>>>>>>>>>
+>>>>>>>>>> e.g.
+>>>>>>>>>>
+>>>>>>>>>> - the application only wants to access the POSIX services implemented by
+>>>>>>>>>> Cobalt using the regular POSIX names: LDFLAGS should contain the output of:
+>>>>>>>>>> $ xeno-config --posix --ldflags, or --cobalt --ldflags.
+>>>>>>>>>>
+>>>>>>>>>> - the application wants to access the POSIX services implemented by
+>>>>>>>>>> Cobalt using the regular POSIX names, and the alchemy API: LDFLAGS
+>>>>>>>>>> should contain the output of:
+>>>>>>>>>> $ xeno-config --posix --alchemy --ldflags, or --cobalt --alchemy --ldflags.
+>>>>>>>>>>
+>>>>>>>>>> - the application wants to access the POSIX services implemented by
+>>>>>>>>>> Cobalt solely via the explicit POSIX wrappers, and the alchemy API:
+>>>>>>>>>> LDFLAGS should contain the output of (i.e. omitting --posix):
+>>>>>>>>>> $ xeno-config --alchemy --ldflags, or --alchemy --ldflags.
+>>>>>>>>>>
+>>>>>>>>>> NOTE: using __RT() is preferred to calling __cobalt(), in case an API
+>>>>>>>>>> stacked over the Cobalt POSIX API redefines its own implementation of
+>>>>>>>>>> POSIX services over the dual kernel. __RT() would call the stacked
+>>>>>>>>>> implementation, __cobalt() would force a call to the Cobalt
+>>>>>>>>>> implementation of the service.
+>>>>>>>>>>
+>>>>>>>>> Thanks for the clarification, will sprinkle the code with __STD(...) 
+>>>>>>>>> and __RT(...), from here on :-).
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> That's only required if you want your code to unambiguously route to the
+>>>>>>>> proper service in case the default symbol wrapping does not fit, or is
+>>>>>>>> not present. This is typically what libcopperplate does, so that
+>>>>>>>> non-POSIX apps can link against it, without being required to wrap the
+>>>>>>>> POSIX symbols in the final executable.
 >>>>>>>
->>>>>>> while porting the sigdebug test case to forge I noticed occasional
->>>>>>> crashes of the test after it received a watchdog signal. It turned out
->>>>>>> that the problem is in the way mayday works on x86-64:
->>>>>>>
->>>>>>> 1. sp/ip/ax of interrupted thread is saved
->>>>>>> 2. ip is set to mayday page
->>>>>>> 3. mayday page executes the mayday syscall via the syscall instruction
->>>>>>> 4. the syscall restores state on original state on return
->>>>>>>
->>>>>>> That that's the theory. Unfortunately the syscall instructions
->>>>>>> overwrites the cx register with the caller's instruction pointer. We
->>>>>>> could save it but there is no way to restore it on syscall return
->>>>>>> without significant changes to the Linux code in entry_64.S.
->>>>>>>
->>>>>>> x86-32 is fine as it uses the int80 path which does a full state
->>>>>>> recovery - but that is not available for 64-bit (only via ia32 compat,
->>>>>>> but that can be turned off).
->>>>>>>
+>>>>>>> More to avoid me shooting myself in the foot when trying to juggle sockets
+>>>>>>> from two different domains (also makes the code less dependent on the linker
+>>>>>>> flags given). Already got bitten by 'modprobe rtpacket' not loading properly
+>>>>>>> and the __wrap_socket picking up the posix version. And of course making the 
+>>>>>>> code clearly document what belongs where.
 >>>>>>
->>>>>> The legacy system_call vector is available unconditionally to x86_64.
->>>>>> Xenomai 3 is actually calling int80 unconditionally on mayday traps for
->>>>>> these reasons, i.e. always available and not suffering the long-mode
->>>>>> syscall registers issue.
+>>>>>> Not loading rtpacket should cause __wrap_socket to use the posix
+>>>>>> version only if you are trying to create a socket type that the
+>>>>>> rtpacket module implements. Otherwise, this is a bug.
 >>>>>
->>>>> Only when setting CONFIG_IA32_EMULATION. That is typcially the case, but
->>>>> not necessarily.
->>>>>
+>>>>> And unless code has changed between 2.x and 3.x in this area, using
+>>>>> __RT() will result in exactly the same behaviour.
 >>>>
->>>> I mean: the "safe" Xenomai syscall form (the one that binds a process to
->>>> the real-time core in dual kernel mode) depends on this. Disabling int80
->>>> is not an option in the current Xenomai implementation, mayday feature
->>>> put aside.
+>>>> You might be right, but AFAICT, on 2.6.2.1 'int __rt_dev_socket(...)' 
+>>>> (ksrc/skins/rtdm/core.c) calls 'struct rtdm_device *get_protocol_device(...)' 
+>>>> (ksrc/skins/rtdm/device.c), while in xenomai3/next 'COBALT_IMPL(int, socket,...)'
+>>>> does a 'XENOMAI_SYSCALL3(sc_cobalt_socket, ...)' and then does a failover to
+>>>> '_STD(socket, ...)' in case of -ENOSYS (which is what I believe an unloaded rt_packet.ko
+>>>> gives as a result).
+>>>>
+>>>> Am I missing something obvious?
 >>>
->>> Huh? Things worked fine here on X3 when trying out the effect of
->>> disabling IA32 emulation. Or do you mean 2.6?
+>>> You are comparing user-space code with kernel space code. In xenomai
+>>> 2.6, the user-space code you should be looking at is
+>>> src/skins/posix/rtdm.c
+>> Even from native mode (which is what I use in 2.6)?
+> 
+> In that case, you should look at src/skins/rtdm/core.c
+> The services rt_dev_socket belongs to the rtdm skin not to native
+> skin.
+I stand humbly corrected.
+
+> 
+>>
+>>> And in that code __wrap_socket falls back to __real_socket if the
+>>> kernel-space code returns one of the known errors.
 >>>
->>
->> I meant to tell crap: x86_64 implies vsyscall available, so there is no
->> "safe" binding prologue there. Only x86_32 has this, so that legacy
->> non-NPTL libc which do not support vsyscall work. So back to the initial
->> discussion.
->>
+>>> Now the real question is: what arguments do you pass to the cobalt
+>>> rt socket call? If these arguments are the one corresponding to the
+>>> socket protocol implemented by the rtpacket module, the behaviour
+>>> you observe is normal, otherwise, this is a bug.
+>> I don't say it's a bug, but to me it seems like alchemy differs from
+>> the old native skin in this case.
 > 
-> As I mentioned earlier, I'd rather fix the MAYDAY implementation for
-> x86_64 instead of forking the implementation between MMU-enabled and
-> MMU-less architectures, also affecting powerpc, arm and x86_32 in the
-> same move. Fortunately, the current implementation allows very specific
-> tweaks to be applied on a per-architecture basis. This one fixes the
-> issue for Cobalt on x86_64, and could be easily backported to 2.6.x:
-> 
-> http://git.xenomai.org/xenomai-3.git/commit/?h=next&id=6db20901963d634b9786467c711c2ba526db48a2
+> Well, not really, the native skin never had a socket call anyway,
+> and alchemy does not either. It is just that the rtdm skin
+> disappeared, so now you use the cobalt service instead of the rtdm
+> skin.
+# /usr/xenomai/bin/xeno-config --version
+3.0-rc2
+# usr/xenomai/bin/xeno-config --help
+Usage xeno-config OPTIONS
+Options :
+        --help
+        --v,--verbose
+        --version
+        --cc
+        --ccld
+        --arch
+        --prefix
+        --[skin=]posix/cobalt|vxworks|psos|alchemy|rtdm|smokey
 
-Looks almost good - except for the detail that some bits of the
-instruction pointer are lost on return from the syscall (int vs. long
-return type). Patches in the making.
+--rtdm is there, bug?
 
-Jan
+Is there any way to check if a returned filedescriptor is a __RT or __STD one?
 
+/Anders
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Anders Blomdell                  Email: anders.blomdell@control.lth.se
+Department of Automatic Control
+Lund University                  Phone:    +46 46 222 4625
+P.O. Box 118                     Fax:      +46 46 138118
+SE-221 00 Lund, Sweden
+
 
