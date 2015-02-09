@@ -1,16 +1,12 @@
-Message-ID: <54E4E166.5030701@siemens.com>
-Date: Wed, 18 Feb 2015 20:00:54 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <54D9140E.20109@xenomai.org>
+Date: Mon, 09 Feb 2015 21:09:50 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <54E4D14E.1060104@siemens.com>
- <20150218175507.GD30317@hermes.click-hack.org> <54E4D61B.1020006@siemens.com>
- <20150218181334.GE30317@hermes.click-hack.org> <54E4D835.1040204@siemens.com>
- <20150218182632.GG30317@hermes.click-hack.org> <54E4DDEA.3060909@siemens.com>
- <20150218184943.GH30317@hermes.click-hack.org>
-In-Reply-To: <20150218184943.GH30317@hermes.click-hack.org>
+References: <CAEMXjGxixe5fgX-7uijpcGkNoPzoZcocJxEK-D+VqBdopx4puQ@mail.gmail.com>
+In-Reply-To: <CAEMXjGxixe5fgX-7uijpcGkNoPzoZcocJxEK-D+VqBdopx4puQ@mail.gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] arm: Late delivery of pending Linux signals?
+Subject: Re: [Xenomai] Bosch CCAN/DCAN driver for RTDM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,72 +15,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Steve B <sbattazzo@gmail.com>, xenomai <xenomai@xenomai.org>
 
-On 2015-02-18 19:49, Gilles Chanteperdrix wrote:
-> On Wed, Feb 18, 2015 at 07:46:02PM +0100, Jan Kiszka wrote:
->> On 2015-02-18 19:26, Gilles Chanteperdrix wrote:
->>> On Wed, Feb 18, 2015 at 07:21:41PM +0100, Jan Kiszka wrote:
->>>> On 2015-02-18 19:13, Gilles Chanteperdrix wrote:
->>>>> On Wed, Feb 18, 2015 at 07:12:43PM +0100, Jan Kiszka wrote:
->>>>>> On 2015-02-18 18:55, Gilles Chanteperdrix wrote:
->>>>>>> On Wed, Feb 18, 2015 at 06:52:14PM +0100, Jan Kiszka wrote:
->>>>>>>> Hi Gilles,
->>>>>>>>
->>>>>>>> I noticed on ARM (AM335 TI board) that the SIGDEBUG if the related test
->>>>>>>> apparently only gets delivered to the receiver after it invokes a
->>>>>>>> syscall, not on return from its secondary mode migration. Therefore the
->>>>>>>> page fault test of the sigdebug smokey test fails (tested with Xenomai
->>>>>>>> 3), and I bet the watchdog test as well. Is this a known limitation?
->>>>>>>
->>>>>>> Xenomai 2.6 sigdebug works fine on omap3 (very near from an
->>>>>>
->>>>>> Will try 2.6 next.
->>>>>>
->>>>>>> arm33xx). That being said, the AM3xx port is not part of the main
->>>>>>> line I-pipe, and based on a non mainline kernel, so it is difficult
->>>>>>> for me to answer this question.
->>>>>>
->>>>>> Then I'm possibly not building all recommended bits - I'm on 3.14 I-pipe
->>>>>> upstream. That seems to work fine in general. Which version are you
->>>>>> referring to?
->>>>>
->>>>> The one documented in arm/patches/README
->>>>
->>>> https://github.com/RobertCNelson/linux-dev/commits/am33x-v3.8? There is
->>>> nothing explicitly stated regarding the AM3xx board, just that reference
->>>> in the context of the Beaglebone.
->>>>
->>>> Anyway, I thought that syscall and exception handling should not be
->>>> dependent on board patches, should they?
->>>
->>> If you had been using a Linux fork (which I assumed you did,
->>> because you mentioned a processor which is not mainline officially),
->>> it would have been very possible for the Linux fork you used to
->>> break the changes in entry.S due to a bad conflict resolution.
->>> Linux forks very often tend to push changes in generic code even
->>> though they should not.
->>
->> The TI AM335x (Cortex-A8) comes with full mainline support, even for
->> 3.14. That's probably why vanilla I-pipe 3.14 works for us.
->>
->> Against all odds, I just got Debian installed into an Integrator/CP
->> machine model. Let's see if I can debug the issue that way. But I will
->> keep porting I-pipe to the Versatile Express in mind.
+On 02/09/2015 06:42 PM, Steve B wrote:
+> Hello,
+> I have put together a quick port of the Linux driver for CCAN/DCAN to work
+> with RTDM, thanks to Wolfgang Grandegger's Flexcan driver port as an
+> example.
 > 
-> If you have an ARM board, why going over all these contorsions? Why
-> not simply enabling the I-pipe tracer and looking at what happens
-> when you observe the problem you observe ?
+> It's not thoroughly/formally tested, but it works with rtcansend and
+> rtcanrecv, and works well with my application sending and receiving a few
+> hundred frames per second at 500k baud, which I think is a good enough
+> initial test for me.
+> I can also give the "rtt" test a shot when I have time.
+> 
+> Is there anyone out there who would like to test this? I am wondering what
+> is the procedure to submit, should I create a patch and attach? I haven't
+> looked at how to add it into the kernel build process, I have just built it
+> in its own separate place so far.
+> 
 
-Because it's easier to debug than to trace such an issue. Emulation, and
-even more virtualization, is more handy than real hw. E.g., this
-particular board has the nice feature of not booting up automatically
-when being power-cycled.
-
-Jan
+Posting the patch to this list is fine.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
