@@ -1,14 +1,14 @@
-Message-ID: <54EB4E70.2000009@siemens.com>
-Date: Mon, 23 Feb 2015 16:59:44 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <54E776E2.2030501@siemens.com>
- <20150220183829.GA2356@hermes.click-hack.org> <54E78227.6000700@siemens.com>
- <54E84C3C.8070204@xenomai.org>
-In-Reply-To: <54E84C3C.8070204@xenomai.org>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain;
+ charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ipipe: issues with ARM exception handling
+Date: Tue, 10 Feb 2015 16:04:51 +0100
+From: Wolfgang Grandegger <wg@grandegger.com>
+In-Reply-To: <loom.20150210T153230-142@post.gmane.org>
+References: <CAEMXjGxixe5fgX-7uijpcGkNoPzoZcocJxEK-D+VqBdopx4puQ@mail.gmail.com>
+ <loom.20150210T153230-142@post.gmane.org>
+Message-ID: <421c45d170f050857f0863b592dc2faa@grandegger.com>
+Subject: Re: [Xenomai] Bosch CCAN/DCAN driver for RTDM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,87 +17,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Alfred Koegel <akoegel@gmx.de>
 
-On 2015-02-21 10:13, Philippe Gerum wrote:
-> On 02/20/2015 07:51 PM, Jan Kiszka wrote:
->> On 2015-02-20 19:38, Gilles Chanteperdrix wrote:
->>> On Fri, Feb 20, 2015 at 07:03:14PM +0100, Jan Kiszka wrote:
->>>> Hi Gilles,
->>>>
->>>> analyzing a lockdep warning on 3.16 with I-pipe enabled, I dug deeper
->>>> into the hard and virtual interrupt state management during exception
->>>> handling on ARM. I think there are several issues:
->>>>
->>>> - ipipe_fault_entry should not fiddle with the root irq state if run
->>>>   over head, only when invoked over root.
->>>> - ipipe_fault_exit must not change the root state unless we entered over
->>>>   head and are about to leave over root - see x86. The current code may
->>>>   keep root incorrectly stalled after an exception, though this will
->>>>   probably be fixed up again in practice quickly.
->>>> - do_sect_fault is only called by do_DataAbort and do_PrefetchAbort,
->>>>   in both cases already wrapped in ipipe_fault_entry/exit, thus it
->>>>   shouldn't invoke them once again.
->>>>
->>>> Room for optimization:
->>>> - ipipe_fault_entry is always called with hard IRQs off from
->>>>   do_page_fault and do_translation_fault. I suspect this applies to the
->>>>   remaining callers (do_DataAbort and do_PrefetchAbort ) as well. Thus
->>>>   the hard IRQ state is actually known at compile time, right?
->>
->> To follow up on this: do_DataAbort and do_PrefetchAbort are always
->> invoked with hard IRQs disable when a regular exception takes us there.
->> Only the ghost syscall cmpxchg simulates do_DataAbort without adjusting
->> hardware interrupt. It's probably easier to adjust that than to account
->> for hw irqs being potentially on an fault entry.
->>
->>>>
->>>> I can hack up patches, but I'd like to confirm first that I'm not
->>>> missing anything subtle or ARM-specific here.
->>>
->>> Just to explain the original hack.
->>>
->>> Some time ago, the faults handlers were executed irqs on ARM. The
->>> irqs were enabled in entry.S before executing the handlers.
->>>
->>> At some point, this was removed in entry.S and fault handlers
->>> started to be executed irqs off. On ARM, all faults relax to be
->>> handled in secondary mode, actually there is an exception, the FPU,
->>> but it goes through a completely different path which had always
->>> been executed irqs off until recently where the irqs are reenabled
->>> when accessing user-space to be able to handle faults without
->>> lockups. 
->>>
->>> My concern was that the code thus executed could have assertion
->>> about the root domain being stalled which would be fail, so I added
->>> code which stalled root and enabled hardware irqs on fault entry and
->>> unstalled root and disabled hardware irqs on fault exit (which
->>> always happen on root domain). This should have worked even if a fault
->>> had happened to be handled in head domain, because then the
->>> operation would have been a nop (simply stall/then unstall). 
->>>
->>> But Philippe found this dumb approach to fail when working on LPAE,
->>> IIRC. IIRC, namely, if the root domain happens to be stalled when
->>> entering a fault over head domain, it would end up unstalled after
->>> the operation. So, I believe the code he added saves the stall state
->>> on fault entry and restores it on fault exit. I have checked
->>> Philippe's code details at the time and did not find anything wrong.
->>
->> I suspect the LPAE scenario takes the do_page_fault path? Then it should
+Hi Steve,
+
+On Tue, 10 Feb 2015 14:38:32 +0000 (UTC), Alfred Koegel <akoegel@gmx.de>
+wrote:
+> Steve B <sbattazzo <at> gmail.com> writes:
 > 
-> It takes the do_translation_fault path, where the page table fixups will
-> happen.
+>> 
+>> Hello,
+>> I have put together a quick port of the Linux driver for CCAN/DCAN to
+>> work
+>> with RTDM, thanks to Wolfgang Grandegger's Flexcan driver port as an
+>> example.
+>> 
+>> It's not thoroughly/formally tested, but it works with rtcansend and
+>> rtcanrecv, and works well with my application sending and receiving a
+few
+>> hundred frames per second at 500k baud, which I think is a good enough
+>> initial test for me.
+>> I can also give the "rtt" test a shot when I have time.
+>> 
+>> Is there anyone out there who would like to test this? I am wondering
+>> what
+>> is the procedure to submit, should I create a patch and attach? I
+haven't
+>> looked at how to add it into the kernel build process, I have just
+built
+>> it
+>> in its own separate place so far.
 
-For kernel space addresses, the fixup happens directly, indeed. But here
-we need no fiddling with the root IRQ state at all as no sensitive
-kernel functions are called.
+Unfortunately I don't have hardware at hand to test the driver but I could
+assist in getting it included into:
 
-User space will end up in do_page_fault.
+"http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/drivers/can/c_can"
 
-Jan
+With a proper Kconfig it should automatically be visible to the kernel and
+the kernel could then be built as usual. Therefore a patch for the Xenomai
+tree would be nice but as a first step don't hesitate to just send you
+current version.
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Thanks,
+
+Wolfgang.
+
 
