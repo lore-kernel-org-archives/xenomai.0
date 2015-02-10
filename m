@@ -1,19 +1,9 @@
-Date: Mon, 9 Feb 2015 17:24:09 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150209162409.GF3200@hermes.click-hack.org>
-References: <54D4D409.2020708@control.lth.se> <54D4D9B2.8090805@xenomai.org>
- <54D4DF0C.2080007@control.lth.se> <54D4E285.9000906@xenomai.org>
- <54D4E44B.4060403@control.lth.se>
- <20150206161215.GC27277@hermes.click-hack.org>
- <20150206161626.GD27277@hermes.click-hack.org>
- <54D8D7D5.2060000@control.lth.se>
- <20150209155716.GE3200@hermes.click-hack.org>
- <54D8DC0B.3070107@control.lth.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <54D8DC0B.3070107@control.lth.se>
-Subject: Re: [Xenomai] Mixing linux and alchemy (cobalt) calls
+Date: Tue, 10 Feb 2015 16:00:30 +0000
+Message-ID: <CAKJ14NfOzcES_Zk5do9TdhO8N_PayoqXJjg9P1hXaAS7BX0_+A@mail.gmail.com>
+From: Andreas Glatz <andi.glatz@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] The latency test hang
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,125 +12,137 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Anders Blomdell <anders.blomdell@control.lth.se>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Dauphin Alexandre <alexandre.dauphin@ecole.ensicaen.fr>
+Cc: xenomai@xenomai.org
 
-On Mon, Feb 09, 2015 at 05:10:51PM +0100, Anders Blomdell wrote:
-> On 2015-02-09 16:57, Gilles Chanteperdrix wrote:
-> > On Mon, Feb 09, 2015 at 04:52:53PM +0100, Anders Blomdell wrote:
-> >> On 2015-02-06 17:16, Gilles Chanteperdrix wrote:
-> >>> On Fri, Feb 06, 2015 at 05:12:15PM +0100, Gilles Chanteperdrix wrote:
-> >>>> On Fri, Feb 06, 2015 at 04:56:59PM +0100, Anders Blomdell wrote:
-> >>>>> On 2015-02-06 16:49, Philippe Gerum wrote:
-> >>>>>> On 02/06/2015 04:34 PM, Anders Blomdell wrote:
-> >>>>>>> On 2015-02-06 16:11, Philippe Gerum wrote:
-> >>>>>>>> On 02/06/2015 03:47 PM, Anders Blomdell wrote:
-> >>>>>>>>> I have an application that need both realtime and linux sockets, am I correct in assuming that
-> >>>>>>>>> withe the alchemy skin I could access them like
-> >>>>>>>>>
-> >>>>>>>>>   socket(...           // Linux version
-> >>>>>>>>>   __real_socket(...    // Linux version
-> >>>>>>>>>   __cobalt_socket(...  // Alchemy/cobalt version
-> >>>>>>>>>
-> >>>>>>>>> while under the cobalt skin, it would be:
-> >>>>>>>>>
-> >>>>>>>>>   socket(...           // Alchemy/cobalt version
-> >>>>>>>>>   __real_socket(...    // Linux version
-> >>>>>>>>>   __cobalt_socket(...  // Alchemy/cobalt version
-> >>>>>>>>>
-> >>>>>>>>
-> >>>>>>>> This depends on the LDFLAGS retrieved from xeno-config:
-> >>>>>>>>
-> >>>>>>>> 1. with --posix mentioned in the xeno-config --ldflags request
-> >>>>>>>>
-> >>>>>>>> 	socket(...), __cobalt_socket(...) or __RT(socket(...))  => Cobalt
-> >>>>>>>> implementation
-> >>>>>>>> 	__real_socket(...) or __STD(socket(...)) => glibc service
-> >>>>>>>>
-> >>>>>>>> 2. without --posix mentioned in the xeno-config --ldflags request
-> >>>>>>>>
-> >>>>>>>> 	__cobalt_socket(...) or __RT(socket(...))  => Cobalt implementation
-> >>>>>>>> 	socket(...) or __STD(socket(...)) => glibc service
-> >>>>>>>>
-> >>>>>>>> e.g.
-> >>>>>>>>
-> >>>>>>>> - the application only wants to access the POSIX services implemented by
-> >>>>>>>> Cobalt using the regular POSIX names: LDFLAGS should contain the output of:
-> >>>>>>>> $ xeno-config --posix --ldflags, or --cobalt --ldflags.
-> >>>>>>>>
-> >>>>>>>> - the application wants to access the POSIX services implemented by
-> >>>>>>>> Cobalt using the regular POSIX names, and the alchemy API: LDFLAGS
-> >>>>>>>> should contain the output of:
-> >>>>>>>> $ xeno-config --posix --alchemy --ldflags, or --cobalt --alchemy --ldflags.
-> >>>>>>>>
-> >>>>>>>> - the application wants to access the POSIX services implemented by
-> >>>>>>>> Cobalt solely via the explicit POSIX wrappers, and the alchemy API:
-> >>>>>>>> LDFLAGS should contain the output of (i.e. omitting --posix):
-> >>>>>>>> $ xeno-config --alchemy --ldflags, or --alchemy --ldflags.
-> >>>>>>>>
-> >>>>>>>> NOTE: using __RT() is preferred to calling __cobalt(), in case an API
-> >>>>>>>> stacked over the Cobalt POSIX API redefines its own implementation of
-> >>>>>>>> POSIX services over the dual kernel. __RT() would call the stacked
-> >>>>>>>> implementation, __cobalt() would force a call to the Cobalt
-> >>>>>>>> implementation of the service.
-> >>>>>>>>
-> >>>>>>> Thanks for the clarification, will sprinkle the code with __STD(...) 
-> >>>>>>> and __RT(...), from here on :-).
-> >>>>>>>
-> >>>>>>
-> >>>>>> That's only required if you want your code to unambiguously route to the
-> >>>>>> proper service in case the default symbol wrapping does not fit, or is
-> >>>>>> not present. This is typically what libcopperplate does, so that
-> >>>>>> non-POSIX apps can link against it, without being required to wrap the
-> >>>>>> POSIX symbols in the final executable.
-> >>>>>
-> >>>>> More to avoid me shooting myself in the foot when trying to juggle sockets
-> >>>>> from two different domains (also makes the code less dependent on the linker
-> >>>>> flags given). Already got bitten by 'modprobe rtpacket' not loading properly
-> >>>>> and the __wrap_socket picking up the posix version. And of course making the 
-> >>>>> code clearly document what belongs where.
-> >>>>
-> >>>> Not loading rtpacket should cause __wrap_socket to use the posix
-> >>>> version only if you are trying to create a socket type that the
-> >>>> rtpacket module implements. Otherwise, this is a bug.
-> >>>
-> >>> And unless code has changed between 2.x and 3.x in this area, using
-> >>> __RT() will result in exactly the same behaviour.
-> >>
-> >> You might be right, but AFAICT, on 2.6.2.1 'int __rt_dev_socket(...)' 
-> >> (ksrc/skins/rtdm/core.c) calls 'struct rtdm_device *get_protocol_device(...)' 
-> >> (ksrc/skins/rtdm/device.c), while in xenomai3/next 'COBALT_IMPL(int, socket,...)'
-> >> does a 'XENOMAI_SYSCALL3(sc_cobalt_socket, ...)' and then does a failover to
-> >> '_STD(socket, ...)' in case of -ENOSYS (which is what I believe an unloaded rt_packet.ko
-> >> gives as a result).
-> >>
-> >> Am I missing something obvious?
-> > 
-> > You are comparing user-space code with kernel space code. In xenomai
-> > 2.6, the user-space code you should be looking at is
-> > src/skins/posix/rtdm.c
-> Even from native mode (which is what I use in 2.6)?
+>>
+>> Hello,
+>>
+>> My probleme is that i can't launch any latency tests , they always hang .
+>> I work with a Imx6 quad core board ( arm architecture ) , my kernel
+>> version is :
+>>
+>> # cat /proc/version
+>> Linux version 3.0.43 (root@modx6sdk) (gcc version 4.7.1 20120402
+>> (prerelease) (crosstool-NG linaro-1.13.1-2012.04-20120426 - Linaro GCC
+>> 2012.04) )
+>>
+>> there , is the xenomai configuration i used :
+>> # /usr/xenomai/bin/xeno-config
+>> xeno-config --verbose
+>> ??????? --version="2.6.4"
+>> ??????? --cc="arm-linux-gnueabi-gcc"
+>> ??????? --arch="arm"
+>> ??????? --prefix="/usr/xenomai"
+>> ??????? --xeno-cflags="-I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT
+>> -D__XENO__"
+>> ??????? --xeno-ldflags="-L/usr/xenomai/lib -lxenomai -lpthread -lrt "
+>> ??????? --posix-cflags=""
+>> ??????? --posix-ldflags="-Wl,@/usr/xenomai/lib/posix.wrappers
+>> -L/usr/xenomai/lib -lpthread_rt -lxenomai -lpthread -lrt "
+>> ??????? --library-dir="/usr/xenomai/lib"
+>>
+>> Whene i run some latency test , it always hangs after "warming up..." and
+>> nothing append then..
+>>
+>> # /usr/xenomai/bin/latency -p 1000
+>> == Sampling period: 120000 us
+>> == Test mode: periodic user-mode task
+>> == All results in microseconds
+>> warming up...
+>
+> This works on my imx6 quadcore board with the following output (see my
+> configuration after the output)
+>
+[...]
+> root@imx6q-pbab01:~/tmp# cat /proc/version
+> Linux version 3.14.17-fslc+g6c6f90b (andreas@gorse) (gcc version 4.8.2
+> (GCC) ) #3 SMP PREEMPT Wed Nov 26 13:05:24 GMT 2014
+> root@imx6q-pbab01:~/tmp# cat /proc/xenomai/version
+> 2.6.4
+> root@imx6q-pbab01:~/tmp# cat /proc/ipipe/version
+> 4
+>
+>
+>>
+>> I tried to change the periode ,but it doesn't make any changes.
+>>
+>> # /usr/xenomai/bin/latency -p 120000 -T 600
+>> == Sampling period: 120000 us
+>> == Test mode: periodic user-mode task
+>> == All results in microseconds
+>> warming up...
+>>
+>> ---|-----------|-----------|-----------|--------|------|-------------------------
+>> RTS|? 25252.525|????? 0.000| -25252.526|?????? 0|???? 0|???
+>> 00:10:00/00:10:00
+>
+> Works too on my board:
+>
+[...]
+>
+>
+>
+>>
+>> In my configuration , CONFIG_CPU_FREQ? , CONFIG_CPU_IDLE and CONFIG_KGDB?
+>> are disable ;
+>>
+>> I don't know what is wrong with my configuration and i thank you a lot for
+>> your help.
+>
+> Does any other xenomai test run on your board?
+>
+> e.g. xeno-regression-test -t 0
+>
+>
+>
+> Whene I cross compiled and run on the board some programes with native API,
+> it works.
+>
+> The latency and klatency test hangs forever ( i tried to wait a long time
+> with period 1000us)
+>
+> the regression test gave me this :
+>
+> # ./xeno-regression-test -t 0
+> Started child 1546: /bin/sh /usr/xenomai/bin/xeno-test-run-wrapper
+> ./xeno-regression-test -t 0
+> + echo 0
+> + /usr/xenomai/bin/arith
+> mul: 0x79364d93, shft: 26
+> integ: 30, frac: 0x4d9364d9364d9364
+>
+[...]
+> + /usr/xenomai/bin/clocktest -T 30
+> == Tested clock: 0 (CLOCK_REALTIME)
+> CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
+> --- -------------------- ---------------- ---------- --------------
+>   0   -946684806505700.6            0.000          0            0.0
+>   1   -946684806505700.2            0.000          0            0.0
+>   2   -946684806505700.1            0.015          0            0.0
+>   3   -946684806505700.2            0.011          0            0.0
+> + /usr/xenomai/bin/cond-torture-native
+> simple_condwait
+>  ... and its stay blocked here.
+>
+> My ipipe version is old in comparison with yours Andreas , this may be a
+> problem.
+>
+> # cat /proc/ipipe/version
+> 1.18-13
 
-In that case, you should look at src/skins/rtdm/core.c
-The services rt_dev_socket belongs to the rtdm skin not to native
-skin.
+Yes, it could be an incompatibility problem. Why not try 3.14.x
+instead of 3.0.x? Originally I had an SDK based on the 3.0.x kernel
+however it didn't have hard float support. That's why I went from
+3.0.x directly to 3.14.x kernel using the newest stable xenomai. In my
+case I had detailed instructions how to build the plain kernel without
+xenomai [1] and full hardware support. The only thing left then was to
+pull the corresponding changes from the ipipe.git, recompile the
+kernel and cross-compile xenomai 2.6.4. If that's an option in your
+case than I'd do this since I find the 3.14.x kernel series very
+stable on ARM7.
 
-> 
-> > And in that code __wrap_socket falls back to __real_socket if the
-> > kernel-space code returns one of the known errors.
-> > 
-> > Now the real question is: what arguments do you pass to the cobalt
-> > rt socket call? If these arguments are the one corresponding to the
-> > socket protocol implemented by the rtpacket module, the behaviour
-> > you observe is normal, otherwise, this is a bug.
-> I don't say it's a bug, but to me it seems like alchemy differs from
-> the old native skin in this case.
+Andreas
 
-Well, not really, the native skin never had a socket call anyway,
-and alchemy does not either. It is just that the rtdm skin
-disappeared, so now you use the cobalt service instead of the rtdm
-skin.
-
--- 
-					    Gilles.
+[1] http://phytec.com/wiki/index.php?title=PhyFLEX-i.MX6_Linux_Quickstart_PD14.1.0_EA2_Yocto#Building_the_BSP
 
