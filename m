@@ -1,14 +1,11 @@
-Date: Fri, 20 Feb 2015 23:57:12 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150220225712.GE2356@hermes.click-hack.org>
-References: <44bnkqho7e.fsf@lowell-desk.lan>
- <20150218220804.GR30317@hermes.click-hack.org>
- <44pp9633yh.fsf@lowell-desk.lan> <447fvc5q6z.fsf@be-well.ilk.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <447fvc5q6z.fsf@be-well.ilk.org>
-Subject: Re: [Xenomai] interrupt service
+From: Alfred Koegel <akoegel@gmx.de>
+Date: Tue, 10 Feb 2015 14:38:32 +0000 (UTC)
+Message-ID: <loom.20150210T153230-142@post.gmane.org>
+References: <CAEMXjGxixe5fgX-7uijpcGkNoPzoZcocJxEK-D+VqBdopx4puQ@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Bosch CCAN/DCAN driver for RTDM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,39 +14,8 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lowell Gilbert <kludge@be-well.ilk.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Fri, Feb 20, 2015 at 02:38:12PM -0500, Lowell Gilbert wrote:
-> Lowell Gilbert <kludge@be-well.ilk.org> writes:
-> 
-> > Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
-> >
-> >> On Wed, Feb 18, 2015 at 05:03:33PM -0500, Lowell Gilbert wrote:
-> >>> Hi.
-> >>> 
-> >>> I have a kernel task created with rtdm_task_init(). I can wake it up
-> >>> from my ioctl handler in non-RT, but not from inside my ISR, which was
-> >>> hooked with rtdm_irq_request(). I tried it with a semaphore, with an
-> >>> event, and then with just rtdm_task_unblock(). I'm probably doing
-> >>> something silly here; are there any obvious places to look?
-> >>
-> >> Are you sure the irq handler is actually called ?
-> >
-> > Yes.
-> >
-> > [I increment a variable every time the IRQ runs, just to be sure.]
-> 
-> The mailing list stripped my code, so I'll attach it inline.
+U3RldmUgQiA8c2JhdHRhenpvIDxhdD4gZ21haWwuY29tPiB3cml0ZXM6Cgo+IAo+IEhlbGxvLAo+IEkgaGF2ZSBwdXQgdG9nZXRoZXIgYSBxdWljayBwb3J0IG9mIHRoZSBMaW51eCBkcml2ZXIgZm9yIENDQU4vRENBTiB0byB3b3JrCj4gd2l0aCBSVERNLCB0aGFua3MgdG8gV29sZmdhbmcgR3JhbmRlZ2dlcidzIEZsZXhjYW4gZHJpdmVyIHBvcnQgYXMgYW4KPiBleGFtcGxlLgo+IAo+IEl0J3Mgbm90IHRob3JvdWdobHkvZm9ybWFsbHkgdGVzdGVkLCBidXQgaXQgd29ya3Mgd2l0aCBydGNhbnNlbmQgYW5kCj4gcnRjYW5yZWN2LCBhbmQgd29ya3Mgd2VsbCB3aXRoIG15IGFwcGxpY2F0aW9uIHNlbmRpbmcgYW5kIHJlY2VpdmluZyBhIGZldwo+IGh1bmRyZWQgZnJhbWVzIHBlciBzZWNvbmQgYXQgNTAwayBiYXVkLCB3aGljaCBJIHRoaW5rIGlzIGEgZ29vZCBlbm91Z2gKPiBpbml0aWFsIHRlc3QgZm9yIG1lLgo+IEkgY2FuIGFsc28gZ2l2ZSB0aGUgInJ0dCIgdGVzdCBhIHNob3Qgd2hlbiBJIGhhdmUgdGltZS4KPiAKPiBJcyB0aGVyZSBhbnlvbmUgb3V0IHRoZXJlIHdobyB3b3VsZCBsaWtlIHRvIHRlc3QgdGhpcz8gSSBhbSB3b25kZXJpbmcgd2hhdAo+IGlzIHRoZSBwcm9jZWR1cmUgdG8gc3VibWl0LCBzaG91bGQgSSBjcmVhdGUgYSBwYXRjaCBhbmQgYXR0YWNoPyBJIGhhdmVuJ3QKPiBsb29rZWQgYXQgaG93IHRvIGFkZCBpdCBpbnRvIHRoZSBrZXJuZWwgYnVpbGQgcHJvY2VzcywgSSBoYXZlIGp1c3QgYnVpbHQgaXQKPiBpbiBpdHMgb3duIHNlcGFyYXRlIHBsYWNlIHNvIGZhci4KPiAKPiBTdGV2ZQo+IAoKSGVsbG8gU3RldmUsCkkgaW50ZW5kZWQgdG8gZG8gYSBwb3J0IGEgZmV3IG1vbnRocyBhZ28sIGJlY2F1c2UgaSBzdGFydGVkIGEgcHJvamVjdCB3aXRoIGEgIApBdG9t4oSiIEU2NDAgY3B1LiBUaGUgaW50ZXJuYWwgY2FuIGNvbnRyb2xsZXIgaXMgYSBjbG9uZSBvZiB0aGUgQk9TQ0ggY2Nhbgptb2R1bGUgYW5kIHlvdXIgZHJpdmVyIHNob3VsZCBydW4gb24gdGhpcyBoYXJkd2FyZSBhcyB3ZWxsLiBJZiB5b3UgY2FuIHBvc3QKbWUgdGhlIHBhdGNoIGkgY2FuIHRyeSB0byBnZXQgaXQgZ29pbmcgb24gbXkgaGFyZHdhcmUgKHRoZSBwcm9qZWN0IGlzIGZyb3plbgphdCB0aGUgbW9tZW50IGR1ZSB0byBvdGhlciBoYXJkd2FyZSByZWxhdGVkIHByb2JsZW1zKS4KQWxmcmVk
 
-It does not strip it, it puts it on a server that can be accessed
-with http, so that only the people who want to see it download it,
-instead of forcibly sending it to all the subscribers.
-
-Will look at your code later. But at a quick glance I see nothing
-wrong.
-
-
--- 
-					    Gilles.
 
