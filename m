@@ -1,12 +1,13 @@
+Date: Wed, 11 Feb 2015 21:22:28 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150211202228.GA6103@hermes.click-hack.org>
+References: <1942863149.11150.1422371568908.JavaMail.zimbra@wandercraft.eu>
 MIME-Version: 1.0
-In-Reply-To: <54DB7292.9040700@siemens.com>
-References: <CALe7ZU0uhfwq6jGHFfsO_9pcfKYrCstRDxaPi3WO-wamK0ThPA@mail.gmail.com>
- <54DB6A71.9080002@xenomai.org> <54DB7292.9040700@siemens.com>
-Date: Wed, 11 Feb 2015 21:40:28 +0530
-Message-ID: <CALe7ZU1Opub-ukaRURF9Bt2rqWO3KvQ=dE+UG=vmWUMFzR-1Zw@mail.gmail.com>
-From: JAY KOTHARI <jaikothari10@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Power management frame work in RTDM xenomai
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1942863149.11150.1422371568908.JavaMail.zimbra@wandercraft.eu>
+Subject: Re: [Xenomai] Patch rtnet support Intel i217/i218 Ethernet
+	Controller
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,33 +16,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: Huy Cong Vu <huy-cong.vu@wandercraft.eu>
+Cc: xenomai@xenomai.org
 
-Thank you for reply it helped me
+On Tue, Jan 27, 2015 at 04:12:48PM +0100, Huy Cong Vu wrote:
+> Could you take a look and see if anything is wrong, and if you find it useful, merge it in your git repository. 
 
-Jay Kothari
+Merged, thanks.
 
-On 2/11/15, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> On 2015-02-11 15:42, Philippe Gerum wrote:
->> On 02/11/2015 02:48 PM, JAY KOTHARI wrote:
->>> Hello,
->>>         I am using power management frame work with RTDM. If my
->>> process is in suspended state and am requesting irq in RTDM or open
->>> call from rt_dev_open then will it resume the device????
->>> My user api rt_dev_open is unable to find the RTDM for it. Is there
->>> any other approach of power management in RTDM???
->>
->> There is absolutely no support for PM in Xenomai, including with RTDM.
->
-> Yes, because there is no need, at least for typical use cases (like this
-> one). Just invoke the related Linux service calls during device
-> activation like a normal Linux driver would do. That's fine as the
-> device is opened in Linux context.
->
-> Jan
->
-> --
-> Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-> Corporate Competence Center Embedded Linux
->
+-- 
+					    Gilles.
 
