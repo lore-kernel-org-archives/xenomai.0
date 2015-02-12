@@ -1,19 +1,14 @@
-Message-ID: <54DCE6D6.7060305@siemens.com>
-Date: Thu, 12 Feb 2015 18:45:58 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Thu, 12 Feb 2015 19:43:37 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150212184337.GA10928@hermes.click-hack.org>
+References: <trinity-718930e5-2f32-4c34-98da-532709fb9429-1423747391055@3capp-webde-bs58>
 MIME-Version: 1.0
-References: <5491B5E9.4030200@siemens.com> <5491C2CA.7000906@xenomai.org>
- <5491C179.2000600@siemens.com> <5491CB3F.2050509@xenomai.org>
- <5491CC27.6080909@siemens.com> <5491D196.3040309@xenomai.org>
- <54D0E961.4060705@xenomai.org> <54DCD68F.5020005@siemens.com>
- <54DCDC98.5070402@siemens.com> <54DCDDC7.5060700@xenomai.org>
- <54DCDFD5.9090202@siemens.com> <54DCE07F.5020902@xenomai.org>
- <54DCE08F.6050304@siemens.com>
-In-Reply-To: <54DCE08F.6050304@siemens.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Mayday mechanism broken on x86-64 - simpler approach
- feasible?
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <trinity-718930e5-2f32-4c34-98da-532709fb9429-1423747391055@3capp-webde-bs58>
+Subject: Re: [Xenomai] application start is slower with xenomai 2.6.4 than
+ 2.4.10
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,72 +17,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: JK.Behnke@web.de
+Cc: xenomai@xenomai.org
 
-On 2015-02-12 18:19, Jan Kiszka wrote:
-> On 2015-02-12 18:18, Philippe Gerum wrote:
->> On 02/12/2015 06:16 PM, Jan Kiszka wrote:
->>> On 2015-02-12 18:07, Philippe Gerum wrote:
->>>> On 02/12/2015 06:02 PM, Jan Kiszka wrote:
->>>>> On 2015-02-12 17:36, Jan Kiszka wrote:
->>>>>>> As I mentioned earlier, I'd rather fix the MAYDAY implementation for
->>>>>>> x86_64 instead of forking the implementation between MMU-enabled and
->>>>>>> MMU-less architectures, also affecting powerpc, arm and x86_32 in the
->>>>>>> same move. Fortunately, the current implementation allows very specific
->>>>>>> tweaks to be applied on a per-architecture basis. This one fixes the
->>>>>>> issue for Cobalt on x86_64, and could be easily backported to 2.6.x:
->>>>>>>
->>>>>>> http://git.xenomai.org/xenomai-3.git/commit/?h=next&id=6db20901963d634b9786467c711c2ba526db48a2
->>>>>>
->>>>>> Looks almost good - except for the detail that some bits of the
->>>>>> instruction pointer are lost on return from the syscall (int vs. long
->>>>>> return type). Patches in the making.
->>>>>
->>>>> Will take longer - I need to convert all cobalt syscalls.
->>>>>
->>>>> We have a sleeping bug there, though likely not seen in practice, with
->>>>> syscalls returning values > INT_MAX (size_t...). The problem is that
->>>>> handle_head/root_syscall only forwarded 32-bits so far.
->>>>>
->>>>
->>>> You mean this, and all the implications of it?
->>>>
->>>> diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscall.c
->>>> index 6a9a02c..99b86a4 100644
->>>> --- a/kernel/cobalt/posix/syscall.c
->>>> +++ b/kernel/cobalt/posix/syscall.c
->>>> @@ -73,9 +73,9 @@
->>>>  /* Shorthand for oneway trap - does not return to call site. */
->>>>  #define __xn_exec_oneway    __xn_exec_norestart
->>>>
->>>> -typedef int (*cobalt_syshand)(unsigned long arg1, unsigned long arg2,
->>>> -			      unsigned long arg3, unsigned long arg4,
->>>> -			      unsigned long arg5);
->>>> +typedef long (*cobalt_syshand)(unsigned long arg1, unsigned long arg2,
->>>> +			       unsigned long arg3, unsigned long arg4,
->>>> +			       unsigned long arg5);
->>>>
->>>>  static void prepare_for_signal(struct task_struct *p,
->>>>  			       struct xnthread *thread,
->>>>
->>>
->>> Exactly.
->>>
->>> Just done with the mechanics, crossing fingers it won't break things subtly.
->>>
->>
->> Ok. While we are at it, we should get rid of the syscall return type in
->> the COBALT_SYSCALL[_DECL] macro helpers, this is pointless.
+On Thu, Feb 12, 2015 at 02:23:11PM +0100, JK.Behnke@web.de wrote:
+> Hello,
 > 
-> Jep, that's what I did - hard-wired it to long.
+> I noticed that running the same xenomai application against xenomai 2.6.4
+> is significantly slower on start up, than it was with xenomai 2.4.10.
+> Calling my xenomai application 100 times by a bash script takes about 
+> 1 sec on xenomai 2.4.10. On xenomai 2.6.4 however it takes about
+> 20 secs.
+
+On what hardware? What architecture?
+
+> Even if I strip down my application to the absolut minimum of xenomai 
+> calls like this
+
+As you may know, everything is loaded on demand, so the application
+start time does not depend on the application size.
+
 > 
-> First tests look good, just need to split things up into 3 or 4 patches now.
+> main()
+> {
+>   mlockall(...);
+>   rt_task_shadow(...);
+> }
+> 
+> I get the same behaviour.
+> 
+> I have tested this on the same hardware (x86, atom). The only difference 
+> is the Linux kernel (2.6.30.8 vs 3.14.17) version and the xenomai version
+> (2.4.10 vs 2.6.4).
+> 
+> I once mistakenly linked my xenomai 2.4.10 application against libxenomai
+> and also got the same behaviour (slower startup).
+> So I suspect this has something to do with libxenomai I need to link 
+> against, when building xenomai applications using xenomai 2.6.4.
+> 
+> Is there a kind of additional setup behind the scenes in xenomai 2.6.4?
 
-Done, see my for-forge branch.
-
-Jan
+The code source is available, so you can check what happens at
+startup and even time it. I am afraid people who care about start
+time with Xenomai are not numerous.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
