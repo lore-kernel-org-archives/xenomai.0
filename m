@@ -1,13 +1,16 @@
 MIME-Version: 1.0
-Message-ID: <trinity-8d5f476b-ccb9-4fa2-93e5-eea8f12f5c68-1423813608538@3capp-webde-bs11>
-From: JK.Behnke@web.de
+In-Reply-To: <3f27a9331a6514bb01d05d67fca0da4f@grandegger.com>
+References: <CAEMXjGxz2YZFL0mqpq=8c9ojUvNdw6mUSOy8cQCd5HYWHz06fQ@mail.gmail.com>
+ <CAEMXjGzwez_k+3Qo-_ZJ4FvbOtLV2MjR0aV_tkeiRdGGaq4MAQ@mail.gmail.com>
+ <CAEMXjGxtHB43N5oWL58F2y5rOH-yMycNaWtr+EDs009y1QJUcw@mail.gmail.com>
+ <CAEMXjGykL_xTAteJ=Bz10jjL0xr9Uw1YBJpV=sV43Fkw=GAwug@mail.gmail.com>
+ <9cf75cdcc753b7abfa0763ebd5ae1d91@grandegger.com>
+ <3f27a9331a6514bb01d05d67fca0da4f@grandegger.com>
+Date: Thu, 12 Feb 2015 23:53:49 -0800
+Message-ID: <CAEMXjGyDGUf6nGNGfibgv0NzRD=EdFfKBwa2DiS17caskPzsaw@mail.gmail.com>
+From: Steve B <sbattazzo@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Date: Fri, 13 Feb 2015 08:46:48 +0100
-In-Reply-To: <20150212184337.GA10928@hermes.click-hack.org>
-References: <trinity-718930e5-2f32-4c34-98da-532709fb9429-1423747391055@3capp-webde-bs58>,
- <20150212184337.GA10928@hermes.click-hack.org>
-Subject: Re: [Xenomai] application start is slower with xenomai 2.6.4 than
- 2.4.10
+Subject: Re: [Xenomai] 16550 serial driver on Beaglebone Black
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,70 +19,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@grandegger.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Hello Gilles,
+On Thu, Feb 12, 2015 at 11:14 PM, Wolfgang Grandegger <wg@grandegger.com>
+wrote:
 
-thanks for your quick response.
-
->> Hello,
->>
->> I noticed that running the same xenomai application against xenomai 2.6.4
->> is significantly slower on start up, than it was with xenomai 2.4.10.
->> Calling my xenomai application 100 times by a bash script takes about
->> 1 sec on xenomai 2.4.10. On xenomai 2.6.4 however it takes about
->> 20 secs.
+> On Fri, 13 Feb 2015 08:10:23 +0100, Wolfgang Grandegger
+> <wg@grandegger.com> wrote:
+> ...
+> > Maybe unbinding the Linux device from the driver as shown below (for
+> > another
+> > device) already helps:
+> >
+> > # echo f0002400.serial \
+> >    /sys/devices/f000.soc5200/f0002400.serial/driver/unbind
 >
->On what hardware? What architecture?
-It's a Kontron nano-ETX module with an Intel Atom Z510 1,1 GHz.
-Mass storage is a 16 GB SSD attached via SATA.
-
-
->> Even if I strip down my application to the absolut minimum of xenomai
->> calls like this
+> Oops, the redirection ">" is missing!
 >
->As you may know, everything is loaded on demand, so the application
->start time does not depend on the application size.
-
-I didn't mean the application size. I just wanted to rule out other
-xenomai calls like rt_dev_open, rt_dev_read, etc. to be responsible for
-the additional delay.
-
->>
->> main()
->> {
->>   mlockall(...);
->>   rt_task_shadow(...);
->> }
->>
->> I get the same behaviour.
->>
->> I have tested this on the same hardware (x86, atom). The only difference
->> is the Linux kernel (2.6.30.8 vs 3.14.17) version and the xenomai version
->> (2.4.10 vs 2.6.4).
->>
->> I once mistakenly linked my xenomai 2.4.10 application against libxenomai
->> and also got the same behaviour (slower startup).
->> So I suspect this has something to do with libxenomai I need to link
->> against, when building xenomai applications using xenomai 2.6.4.
->>
->> Is there a kind of additional setup behind the scenes in xenomai 2.6.4?
+> Wolfgang,
 >
->The code source is available, so you can check what happens at
->startup and even time it. I am afraid people who care about start
->time with Xenomai are not numerous.
->--
->Gilles.
+>
+>
+Thanks Wolfgang, I will give that a try. Otherwise I think it looks
+promising that just playing with the device tree settings may be enough to
+get the peripheral clock and power enabled without actually binding the
+driver!
 
-I have no experience with xenomai sources.
-Can you please point me out at which source file(s) to look at.
-How can I debug the startup timing?
-
-Thanks in advance.
-
-Regards
-Jochen
-
-
-
+Steve
