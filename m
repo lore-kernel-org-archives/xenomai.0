@@ -1,14 +1,11 @@
-Date: Thu, 12 Feb 2015 19:43:37 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150212184337.GA10928@hermes.click-hack.org>
-References: <trinity-718930e5-2f32-4c34-98da-532709fb9429-1423747391055@3capp-webde-bs58>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <trinity-718930e5-2f32-4c34-98da-532709fb9429-1423747391055@3capp-webde-bs58>
-Subject: Re: [Xenomai] application start is slower with xenomai 2.6.4 than
- 2.4.10
+In-Reply-To: <CAEMXjGxz2YZFL0mqpq=8c9ojUvNdw6mUSOy8cQCd5HYWHz06fQ@mail.gmail.com>
+References: <CAEMXjGxz2YZFL0mqpq=8c9ojUvNdw6mUSOy8cQCd5HYWHz06fQ@mail.gmail.com>
+Date: Thu, 12 Feb 2015 16:51:08 -0800
+Message-ID: <CAEMXjGzwez_k+3Qo-_ZJ4FvbOtLV2MjR0aV_tkeiRdGGaq4MAQ@mail.gmail.com>
+From: Steve B <sbattazzo@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] 16550 serial driver on Beaglebone Black
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,50 +14,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: JK.Behnke@web.de
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>, Terje.Frosya@sintef.no
 
-On Thu, Feb 12, 2015 at 02:23:11PM +0100, JK.Behnke@web.de wrote:
-> Hello,
-> 
-> I noticed that running the same xenomai application against xenomai 2.6.4
-> is significantly slower on start up, than it was with xenomai 2.4.10.
-> Calling my xenomai application 100 times by a bash script takes about 
-> 1 sec on xenomai 2.4.10. On xenomai 2.6.4 however it takes about
-> 20 secs.
+Hello Gilles,
+I tried your patch to 16550A_io.h from the discussion with Terje Frosya in
+November and I believe I can see why it didn't work.
 
-On what hardware? What architecture?
+I added a couple of printk statements to verify that the driver is reading
+and writing to the intended addresses, and here's what I got:
 
-> Even if I strip down my application to the absolut minimum of xenomai 
-> calls like this
+[   40.594119] xeno_16550A: Init IO at address 0x481AA000
+[   40.594159] xeno_16550A: Writing: FA1AA004. Regwidth 2 Regshift 2
+[   40.594169] xeno_16550A: Reading: FA1AA008. Regwidth 2 Regshift 2
+[   40.594183] Unhandled fault: external abort on non-linefetch (0x1028) at
+0xfa1aa008
 
-As you may know, everything is loaded on demand, so the application
-start time does not depend on the application size.
+It looks like the regshift is operating on the most significant byte of the
+base address rather than the least significant! Perhaps it's something to
+do with the endianness, but I still haven't wrapped my brain around why. Of
+course it makes sense that you are getting a segfault because the code is
+trying to read/write entirely the wrong address.
 
-> 
-> main()
-> {
->   mlockall(...);
->   rt_task_shadow(...);
-> }
-> 
-> I get the same behaviour.
-> 
-> I have tested this on the same hardware (x86, atom). The only difference 
-> is the Linux kernel (2.6.30.8 vs 3.14.17) version and the xenomai version
-> (2.4.10 vs 2.6.4).
-> 
-> I once mistakenly linked my xenomai 2.4.10 application against libxenomai
-> and also got the same behaviour (slower startup).
-> So I suspect this has something to do with libxenomai I need to link 
-> against, when building xenomai applications using xenomai 2.6.4.
-> 
-> Is there a kind of additional setup behind the scenes in xenomai 2.6.4?
+Any thoughts?
 
-The code source is available, so you can check what happens at
-startup and even time it. I am afraid people who care about start
-time with Xenomai are not numerous.
+PS, Terje I think I saw on a Google Groups thread elsewhere that you had
+given up on this and found a different solution, but I am including you on
+this in case you may be curious about it.
 
--- 
-					    Gilles.
+Thanks,
 
+Steve
+
+
+On Wed, Feb 11, 2015 at 8:02 PM, Steve B <sbattazzo@gmail.com> wrote:
+
+> Hello all,
+> Was there ever a resolution to running the 16550 driver on Beaglebone
+> Black? I see that there was a discussion on this in November but I don't
+> see anything saying that somebody got it to work.
+>
+> Thanks,
+>
+> Steve
+>
