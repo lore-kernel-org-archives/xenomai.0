@@ -1,16 +1,13 @@
+Message-ID: <54DDD826.7020509@siemens.com>
+Date: Fri, 13 Feb 2015 11:55:34 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <3f27a9331a6514bb01d05d67fca0da4f@grandegger.com>
-References: <CAEMXjGxz2YZFL0mqpq=8c9ojUvNdw6mUSOy8cQCd5HYWHz06fQ@mail.gmail.com>
- <CAEMXjGzwez_k+3Qo-_ZJ4FvbOtLV2MjR0aV_tkeiRdGGaq4MAQ@mail.gmail.com>
- <CAEMXjGxtHB43N5oWL58F2y5rOH-yMycNaWtr+EDs009y1QJUcw@mail.gmail.com>
- <CAEMXjGykL_xTAteJ=Bz10jjL0xr9Uw1YBJpV=sV43Fkw=GAwug@mail.gmail.com>
- <9cf75cdcc753b7abfa0763ebd5ae1d91@grandegger.com>
- <3f27a9331a6514bb01d05d67fca0da4f@grandegger.com>
-Date: Thu, 12 Feb 2015 23:53:49 -0800
-Message-ID: <CAEMXjGyDGUf6nGNGfibgv0NzRD=EdFfKBwa2DiS17caskPzsaw@mail.gmail.com>
-From: Steve B <sbattazzo@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] 16550 serial driver on Beaglebone Black
+References: <mailman.178.1423763115.27969.xenomai-git@xenomai.org>
+In-Reply-To: <mailman.178.1423763115.27969.xenomai-git@xenomai.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [Xenomai-git] Philippe Gerum : cobalt/x86: exclude
+ %rsp from mayday fixup
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,31 +16,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Grandegger <wg@grandegger.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-On Thu, Feb 12, 2015 at 11:14 PM, Wolfgang Grandegger <wg@grandegger.com>
-wrote:
+On 2015-02-12 18:45, xenomai-git-request@xenomai.org wrote:
+> Module: xenomai-3
+> Branch: next
+> Commit: 667a361408e34b69ea761dcaf0ec8d8081d18cb3
+> URL:    http://git.xenomai.org/?p=xenomai-3.git;a=commit;h=667a361408e34b69ea761dcaf0ec8d8081d18cb3
+> 
+> Author: Philippe Gerum <rpm@xenomai.org>
+> Date:   Thu Feb 12 18:39:02 2015 +0100
+> 
+> cobalt/x86: exclude %rsp from mayday fixup
+> 
+> ---
+> 
+>  kernel/cobalt/arch/x86/mayday.c |    3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/kernel/cobalt/arch/x86/mayday.c b/kernel/cobalt/arch/x86/mayday.c
+> index 62c5eea..22a9196 100644
+> --- a/kernel/cobalt/arch/x86/mayday.c
+> +++ b/kernel/cobalt/arch/x86/mayday.c
+> @@ -204,11 +204,12 @@ void xnarch_fixup_mayday(struct xnarchtcb *tcb, struct pt_regs *regs)
+>  		test_thread_flag(TIF_IA32)) {
+>  		regs->ip = tcb->mayday.ip;
+>  		regs->ax = tcb->mayday.ax;
+> +		regs->sp = tcb->mayday.sp;
+>  	} else
+>  		regs->ax = tcb->mayday.ip;
+>  #else
+>  	regs->ip = tcb->mayday.ip;
+>  	regs->ax = tcb->mayday.ax;
+> -#endif
+>  	regs->sp = tcb->mayday.sp;
+> +#endif
+>  }
 
-> On Fri, 13 Feb 2015 08:10:23 +0100, Wolfgang Grandegger
-> <wg@grandegger.com> wrote:
-> ...
-> > Maybe unbinding the Linux device from the driver as shown below (for
-> > another
-> > device) already helps:
-> >
-> > # echo f0002400.serial \
-> >    /sys/devices/f000.soc5200/f0002400.serial/driver/unbind
->
-> Oops, the redirection ">" is missing!
->
-> Wolfgang,
->
->
->
-Thanks Wolfgang, I will give that a try. Otherwise I think it looks
-promising that just playing with the device tree settings may be enough to
-get the peripheral clock and power enabled without actually binding the
-driver!
+That makes me wonder why we have to save/restore at all? In the end, the
+syscall triggered by the ia32 trampoline code doesn't push anything to
+the user's stack, does it?
 
-Steve
+But I'm also confused that my tests without this patch were still
+successful...
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
+
