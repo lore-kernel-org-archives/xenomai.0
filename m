@@ -1,6 +1,6 @@
-Message-ID: <54DDE419.5030502@siemens.com>
-Date: Fri, 13 Feb 2015 12:46:33 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <54DDE4B8.2020902@xenomai.org>
+Date: Fri, 13 Feb 2015 12:49:12 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <mailman.178.1423763115.27969.xenomai-git@xenomai.org>
  <54DDD826.7020509@siemens.com>
@@ -17,9 +17,9 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 2015-02-13 11:55, Jan Kiszka wrote:
+On 02/13/2015 11:55 AM, Jan Kiszka wrote:
 > On 2015-02-12 18:45, xenomai-git-request@xenomai.org wrote:
 >> Module: xenomai-3
 >> Branch: next
@@ -59,16 +59,21 @@ On 2015-02-13 11:55, Jan Kiszka wrote:
 > syscall triggered by the ia32 trampoline code doesn't push anything to
 > the user's stack, does it?
 > 
+
+Saving %esp in this case is a leftover from the legacy implementation
+still available in 2.x, which allows invoking the mayday trap using the
+sysenter mechanism. We had to save/restore %esp in this case, since we
+could not run the syscall epilogue for fixing up the stack prior to
+returning to userland. I'll remove this in -rc4, but after some tests.
+int80 already saves all we need on stack, so no need to plan for this.
+
 > But I'm also confused that my tests without this patch were still
 > successful...
+> 
 
-...because it makes no difference in practice. It seems that the
-kernel's signal path saves and restores userspace sp, overwriting the
-fixup so far (at least on x86-64).
-
-Jan
+Because %rsp is saved in per_cpu(old_rsp), not restored from the stack
+when entering via the syscall instruction in long mode. This saved us.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
