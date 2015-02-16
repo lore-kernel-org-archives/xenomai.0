@@ -1,6 +1,6 @@
-Message-ID: <54E22AEB.1010508@siemens.com>
-Date: Mon, 16 Feb 2015 18:37:47 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <54E22C35.1070904@xenomai.org>
+Date: Mon, 16 Feb 2015 18:43:17 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <5491B5E9.4030200@siemens.com> <5491C2CA.7000906@xenomai.org>
  <5491C179.2000600@siemens.com> <5491CB3F.2050509@xenomai.org>
@@ -9,7 +9,8 @@ References: <5491B5E9.4030200@siemens.com> <5491C2CA.7000906@xenomai.org>
  <54DCDC98.5070402@siemens.com> <54DCDDC7.5060700@xenomai.org>
  <54DCDFD5.9090202@siemens.com> <54DCE07F.5020902@xenomai.org>
  <54DCE08F.6050304@siemens.com> <54DCE6D6.7060305@siemens.com>
-In-Reply-To: <54DCE6D6.7060305@siemens.com>
+ <54E22AEB.1010508@siemens.com>
+In-Reply-To: <54E22AEB.1010508@siemens.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Mayday mechanism broken on x86-64 - simpler approach
@@ -22,25 +23,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 2015-02-12 18:45, Jan Kiszka wrote:
->>> Ok. While we are at it, we should get rid of the syscall return type in
->>> the COBALT_SYSCALL[_DECL] macro helpers, this is pointless.
+On 02/16/2015 06:37 PM, Jan Kiszka wrote:
+> On 2015-02-12 18:45, Jan Kiszka wrote:
+>>>> Ok. While we are at it, we should get rid of the syscall return type in
+>>>> the COBALT_SYSCALL[_DECL] macro helpers, this is pointless.
+>>>
+>>> Jep, that's what I did - hard-wired it to long.
+>>>
+>>> First tests look good, just need to split things up into 3 or 4 patches now.
 >>
->> Jep, that's what I did - hard-wired it to long.
->>
->> First tests look good, just need to split things up into 3 or 4 patches now.
+>> Done, see my for-forge branch.
 > 
-> Done, see my for-forge branch.
+> BTW, we should also clean up the 32-bit syscall macros in the same way,
+> just to be consistent (on issue to fix over there). Can do when I ran
+> out of bugs (or need some distraction).
+> 
 
-BTW, we should also clean up the 32-bit syscall macros in the same way,
-just to be consistent (on issue to fix over there). Can do when I ran
-out of bugs (or need some distraction).
+Ack.
 
-Jan
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
