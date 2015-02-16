@@ -1,11 +1,13 @@
-in-reply-to: <CAKJ14NfmnDYyO9suJeMj=w5sb2e7HDUV5mubWr3cJPv2O1RF+g@mail.gmail.com>
-from: "Dauphin Alexandre" <alexandre.dauphin@ecole.ensicaen.fr>
-message-id: <685a-54d8dc80-1c3-58dc9780@95024903>
-date: Mon, 09 Feb 2015 17:13:11 +0100
+Message-ID: <54E240EB.2050904@siemens.com>
+Date: Mon, 16 Feb 2015 20:11:39 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] =?utf-8?q?Xenomai_Digest=2C_Vol_34=2C_Issue_10?=
+References: <54E22A50.4070106@siemens.com> <54E22D82.9020105@xenomai.org>
+ <54E22E5E.7080003@siemens.com> <54E23C6B.2020103@siemens.com>
+In-Reply-To: <54E23C6B.2020103@siemens.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PULL] ipipe: fixes for 3.14
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,224 +16,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Andreas Glatz <andi.glatz@gmail.com>, xenomai@xenomai.org, gilles.chanteperdrix@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
+On 2015-02-16 19:52, Jan Kiszka wrote:
+> On 2015-02-16 18:52, Jan Kiszka wrote:
+>> On 2015-02-16 18:48, Philippe Gerum wrote:
+>>> On 02/16/2015 06:35 PM, Jan Kiszka wrote:
+>>>> The following changes since commit 00d8a6f2e95453f61ae97b6587dba03bc91c7e1a:
+>>>>
+>>>>   arm/ipipe: Resolve trival merge conflicts (2015-01-14 17:00:22 +0100)
+>>>>
+>>>> are available in the git repository at:
+>>>>
+>>>>   git://git.xenomai.org/ipipe-jki 
+>>>>
+>>>> for you to fetch changes up to f982e48ce99e1bc9e71eac21830adac2db265c98:
+>>>>
+>>>>   x86/ipipe: Restore invocation of ipipe_unlock_irq from startup_ioapic_irq (2015-02-16 18:22:21 +0100)
+>>>>
+>>>> All patches apply to 3.16 as well but weren't tested there yet. Still
+>>>> analyzing strange
+>>>>
+>>>> traps: (systemd)[1420] trap invalid opcode ip:7f4d138f612b sp:7fff4fd8f568 error:0 in libpthread-2.19.so[7f4d138e5000+18000]
+>>>>
+>>>> on the target under 3.14...
+>>>>
+>>>
+>>> Register trashing on the fast call path (system_call_after_gs) maybe.
+>>> Forcing CONFIG_IPIPE_LEGACY there might help ruling this out.
+>>
+>> That's without any Xenomai configured. But I will check.
+> 
+> This is where it traps in libpthread:
+> 
+>    1112b:       c7 f8 00 00 00 00       xbeginq 11131 <__lll_lock_elision+0x51>
+> 
+> For some reason, glibc starts to believe it could use RTM on that
+> machine - although this is clearly not available (Haswell i7, thus a
+> buggy CPU). Need to understand which feature check goes wrong, and why
+> only on I-pipe enabled kernels.
+> 
+> The good news is that I still have a similar and unresolved report from
+> early customer tests. That could solve their issues as well (they
+> caused massive domain migrations).
 
-=C2=A0>
-> Hello,
->
-> My probleme is that i can't launch any latency tests , they always ha=
-ng .
-> I work with a Imx6 quad core board ( arm architecture ) , my kernel v=
-ersion is :
->
-> # cat /proc/version
-> Linux version 3.0.43 (root@modx6sdk) (gcc version 4.7.1 20120402 (pre=
-release) (crosstool-NG linaro-1.13.1-2012.04-20120426 - Linaro GCC 2012=
-.04) )
->
-> there , is the xenomai configuration i used :
-> # /usr/xenomai/bin/xeno-config
-> xeno-config --verbose
-> ??????? --version=3D"2.6.4"
-> ??????? --cc=3D"arm-linux-gnueabi-gcc"
-> ??????? --arch=3D"arm"
-> ??????? --prefix=3D"/usr/xenomai"
-> ??????? --xeno-cflags=3D"-I/usr/xenomai/include -D=5FGNU=5FSOURCE -D=5F=
-REENTRANT -D=5F=5FXENO=5F=5F"
-> ??????? --xeno-ldflags=3D"-L/usr/xenomai/lib -lxenomai -lpthread -lrt=
- "
-> ??????? --posix-cflags=3D""
-> ??????? --posix-ldflags=3D"-Wl,@/usr/xenomai/lib/posix.wrappers -L/us=
-r/xenomai/lib -lpthread=5Frt -lxenomai -lpthread -lrt "
-> ??????? --library-dir=3D"/usr/xenomai/lib"
->
-> Whene i run some latency test , it always hangs after "warming up..."=
- and nothing append then..
->
-> # /usr/xenomai/bin/latency -p 1000
-> =3D=3D Sampling period: 120000 us
-> =3D=3D Test mode: periodic user-mode task
-> =3D=3D All results in microseconds
-> warming up...
+Wait - we were already one step further: a potential trigger for this
+behaviour is a nullified pthread mutex. The decision to take the TSX
+path is based on field in that struct, and 0 means transactional. Guess
+I need a better reproduction case than some systemd service.
 
-This works on my imx6 quadcore board with the following output (see my
-configuration after the output)
+Jan
 
-root@imx6q-pbab01:~/tmp# /usr/local/bin/latency -p 1000
-=3D=3D Sampling period: 1000 us
-=3D=3D Test mode: periodic user-mode task
-=3D=3D All results in microseconds
-warming up...
-RTT| 00:00:01 (periodic user-mode task, 1000 us period, priority 99)
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--l=
-at worst
-RTD| 11.515| 30.878| 51.626| 0| 0| 11.515| 51.626
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
-RTD| 10.065| 30.843| 52.919| 0| 0| 10.065| 52.919
-RTD| 10.095| 30.540| 51.767| 0| 0| 10.065| 52.919
-RTD| 20.101| 31.338| 56.363| 0| 0| 10.065| 56.363
-RTD| 11.267| 31.070| 57.196| 0| 0| 10.065| 57.196
-RTD| 11.368| 28.328| 48.202| 0| 0| 10.065| 57.196
-RTD| 11.262| 24.580| 57.979| 0| 0| 10.065| 57.979
-RTD| 11.621| 24.404| 44.404| 0| 0| 10.065| 57.979
-RTD| 10.919| 24.787| 44.368| 0| 0| 10.065| 57.979
-RTD| 11.297| 24.999| 49.681| 0| 0| 10.065| 57.979
-RTD| 11.898| 24.661| 42.373| 0| 0| 10.065| 57.979
-RTD| 11.878| 28.681| 50.040| 0| 0| 10.065| 57.979
-RTD| 20.555| 30.797| 60.893| 0| 0| 10.065| 60.893
-RTD| 21.474| 31.181| 58.646| 0| 0| 10.065| 60.893
-^C---|-----------|-----------|-----------|--------|------|-------------=
-------------
-RTS| 10.065| 28.363| 60.893| 0| 0| 00:00:15/00:00:15
-root@imx6q-pbab01:~/tmp# cat /proc/version
-Linux version 3.14.17-fslc+g6c6f90b (andreas@gorse) (gcc version 4.8.2
-(GCC) ) #3 SMP PREEMPT Wed Nov 26 13:05:24 GMT 2014
-root@imx6q-pbab01:~/tmp# cat /proc/xenomai/version
-2.6.4
-root@imx6q-pbab01:~/tmp# cat /proc/ipipe/version
-4
-
-
->
-> I tried to change the periode ,but it doesn't make any changes.
->
-> # /usr/xenomai/bin/latency -p 120000 -T 600
-> =3D=3D Sampling period: 120000 us
-> =3D=3D Test mode: periodic user-mode task
-> =3D=3D All results in microseconds
-> warming up...
-> ---|-----------|-----------|-----------|--------|------|-------------=
-------------
-> RTS|? 25252.525|????? 0.000| -25252.526|?????? 0|???? 0|??? 00:10:00/=
-00:10:00
-
-Works too on my board:
-
-root@imx6q-pbab01:~/tmp# /usr/xenomai/bin/latency -p 120000 -T 600
--sh: /usr/xenomai/bin/latency: No such file or directory
-root@imx6q-pbab01:~/tmp# /usr/local/bin/latency -p 120000 -T 600
-=3D=3D Sampling period: 120000 us
-=3D=3D Test mode: periodic user-mode task
-=3D=3D All results in microseconds
-warming up...
-RTT| 00:00:01 (periodic user-mode task, 120000 us period, priority 99)
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--l=
-at worst
-RTD| 43.005| 48.494| 54.626| 0| 0| 43.005| 54.626
-RTD| 41.348| 49.893| 63.641| 0| 0| 41.348| 63.641
-RTD| 40.863| 49.121| 59.176| 0| 0| 40.863| 63.641
-RTD| 40.843| 45.722| 55.141| 0| 0| 40.843| 63.641
-RTD| 42.929| 51.747| 64.328| 0| 0| 40.843| 64.328
-RTD| 43.616| 49.873| 58.813| 0| 0| 40.843| 64.328
-RTD| 40.050| 52.313| 61.272| 0| 0| 40.050| 64.328
-RTD| 39.792| 48.010| 61.909| 0| 0| 39.792| 64.328
-RTD| 45.717| 57.247| 66.479| 0| 0| 39.792| 66.479
-^C---|-----------|-----------|-----------|--------|------|-------------=
-------------
-RTS| 39.792| 50.267| 66.479| 0| 0| 00:00:09/00:10:00
-root@imx6q-pbab01:~/tmp#
-
-
-
->
-> In my configuration , CONFIG=5FCPU=5FFREQ? , CONFIG=5FCPU=5FIDLE and =
-CONFIG=5FKGDB? are disable ;
->
-> I don't know what is wrong with my configuration and i thank you a lo=
-t for your help.
-
-Does any other xenomai test run on your board?
-
-e.g. xeno-regression-test -t 0
-
-
-Andreas
-
-
->
-> Thanks you,
-> Alex
-=C2=A0Whene I cross compiled and run on the board some programes with n=
-ative API, it works.
-
-The latency and klatency test hangs forever ( i tried to wait a long ti=
-me with period 1000us)
-
-the regression test gave me this :
-
-# ./xeno-regression-test -t 0
-Started child 1546: /bin/sh /usr/xenomai/bin/xeno-test-run-wrapper ./xe=
-no-regression-test -t 0
-+ echo 0
-+ /usr/xenomai/bin/arith
-mul: 0x79364d93, shft: 26
-integ: 30, frac: 0x4d9364d9364d9364
-
-signed positive operation: 0x03ffffffffffffff * 1000000000 / 33000000
-inline calibration: 0x0000000000000000: 42.939 ns, rejected 0/10000
-inlined llimd: 0x79364d9364d9362f: 1644.080 ns, rejected 2/10000
-inlined llmulshft: 0x79364d92ffffffe1: 32.903 ns, rejected 0/10000
-inlined nodiv=5Fllimd: 0x79364d9364d9362f: 47.979 ns, rejected 1/10000
-=
-
-out of line calibration: 0x0000000000000000: 47.998 ns, rejected 0/1000=
-0
-out of line llimd: 0x79364d9364d9362f: 1609.945 ns, rejected 2/10000
-out of line llmulshft: 0x79364d92ffffffe1: 25.243 ns, rejected 0/10000
-=
-
-out of line nodiv=5Fllimd: 0x79364d9364d9362f: 60.286 ns, rejected 0/10=
-000
-
-signed negative operation: 0xfc00000000000001 * 1000000000 / 33000000
-inline calibration: 0x0000000000000000: 42.933 ns, rejected 0/10000
-inlined llimd: 0x86c9b26c9b26c9d1: 1644.240 ns, rejected 2/10000
-inlined llmulshft: 0x86c9b26d0000001e: 32.839 ns, rejected 0/10000
-inlined nodiv=5Fllimd: 0x86c9b26c9b26c9d1: 50.592 ns, rejected 0/10000
-=
-
-out of line calibration: 0x0000000000000000: 74.068 ns, rejected 0/1000=
-0
-out of line llimd: 0x86c9b26c9b26c9d1: 1590.549 ns, rejected 2/10000
-out of line llmulshft: 0xd45d172d0000001e: -2.697 ns, rejected 0/10000
-=
-
-out of line nodiv=5Fllimd: 0x86c9b26c9b26c9d1: 24.437 ns, rejected 0/10=
-000
-
-unsigned operation: 0x03ffffffffffffff * 1000000000 / 33000000
-inline calibration: 0x0000000000000000: 42.935 ns, rejected 1/10000
-inlined nodiv=5Fullimd: 0x79364d9364d9362f: 50.513 ns, rejected 0/10000=
-
-out of line calibration: 0x0000000000000000: 47.987 ns, rejected 0/1000=
-0
-out of line nodiv=5Fullimd: 0x79364d9364d9362f: 38.685 ns, rejected 0/1=
-0000
-+ /usr/xenomai/bin/clocktest -C 42 -T 30
-=3D=3D Tested clock: 42 (CLOCK=5FHOST=5FREALTIME)
-CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
---- -------------------- ---------------- ---------- --------------
-  0                  1.2            0.000          0            0.0
-  1                  1.0            0.000          0            0.0
-  2                  1.3            0.013          0            0.0
-  3                  0.9           -0.013          0            0.0
-+ /usr/xenomai/bin/clocktest -T 30
-=3D=3D Tested clock: 0 (CLOCK=5FREALTIME)
-CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
---- -------------------- ---------------- ---------- --------------
-  0   -946684806505700.6            0.000          0            0.0
-  1   -946684806505700.2            0.000          0            0.0
-  2   -946684806505700.1            0.015          0            0.0
-  3   -946684806505700.2            0.011          0            0.0
-+ /usr/xenomai/bin/cond-torture-native
-simple=5Fcondwait
- ... and its stay blocked here.
-
-My ipipe version is old in comparison with yours Andreas , this may be =
-a problem.
-
-# cat /proc/ipipe/version
-1.18-13
-
-thanks you a lot!!
