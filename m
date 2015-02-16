@@ -1,12 +1,11 @@
-Date: Mon, 16 Feb 2015 14:44:11 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150216134411.GE1914@hermes.click-hack.org>
-References: <OFBD514703.37474029-ONC1257DEE.0048DE4B-C1257DEE.004A4BE3@leica-geosystems.com>
+From: "Hays, Arthur (NIH/NEI) [E]" <art@lsr.nei.nih.gov>
+Date: Mon, 16 Feb 2015 16:18:04 +0000
+Message-ID: <7E7E1F635323E543B04E7D69A4E262E7159C6AC4@msgb08.nih.gov>
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <OFBD514703.37474029-ONC1257DEE.0048DE4B-C1257DEE.004A4BE3@leica-geosystems.com>
-Subject: Re: [Xenomai] Event handling, Xenomai: watchdog triggered
+Subject: [Xenomai] Porting from QNX?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,36 +14,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Camera.Geomatics@leica-geosystems.com
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: "Hays, Arthur (NIH/NEI) [E]" <art@lsr.nei.nih.gov>
 
-On Mon, Feb 16, 2015 at 02:31:30PM +0100, Camera.Geomatics@leica-geosystems.com wrote:
-> Hi,
-> 
-> I am testing HW interrupt latencies with an Altera Development board using 
-> the 3.10 Kernel and 2.6 xenomai toggling a FPGA Pin. I have a RTDM Modul 
-> handling the interrupt generated from a FPGA timer and a user Space real 
-> time program.
-> 
-> To synchronize Interrupt handler and IOCTL function rt_event_wait and 
-> rt_event_signal are used. 
-> 
-> When I run the program with 10kHz I get the message Xenomai: watchdog 
-> triggered -- signaling runaway thread after several seconds. I get the 
-> right signals for several seconds on my oszilloscope.
-> 
-> Is there a better way to synchronize irq and ioctl in a RTDM Modul?
-> 
-> When I disable the irq function and toggle the FPGA Pins via IOCTL 
-> controlled from the user space task (rt_task_wait_period) a 10kHz 
-> frequency is working.
+Our application for laboratory automation and experimental control (for neu=
+rophysiology labs) runs on QNX on commodity x86 motherboards (when we can f=
+ind ones that don't have the SMM issue).  We do this because our users are =
+on tight grant money at universities.
 
-Are you sure this is not an level vs edge irq issue ? For instance,
-if the FPGA generates a square signal and the irq type is set to
-level, the signal will remain asserted for as long as the FPGA keeps
-the same level and the kernel will call the handler during all that
-time.
+With QNX we measure typical 4usec and worst case maximum 6usec latency from=
+ #INTA asserted on the PCI bus to entry of a service routine in user space.=
+  This is when disk i/o, display updating, network activity all present.
 
--- 
-					    Gilles.
+We also execute another routine scheduled by a timer every 1msec that may i=
+nvolve updating the display and network communication to other machines.  T=
+he jitter for this routine is not crucial.
+
+QNX has discontinued self-hosting on x86- they are embedded only now.  Phot=
+on/PhAB is no longer supported.  So we are looking to port to another envir=
+onment that is self-hosted on x86 perhaps using Qt instead of Photon.
+
+>From what I've read on Xenomai the typical latency to entry of a routine in=
+ user space initiated by a hardware IRQ would stay the same as with QNX, bu=
+t the maximum would be on the order of 20-40usec on x86?
+
+Would the routine that is scheduled every 1msec be able to update displays =
+and use TCP/IP?
+
+Any advice would be appreciated.
+
+Thanks,
+
+Art Hays
+National Institutes of Health
+National Eye Institute
+Bethesda, MD  20892
+
+
+
+
+
+
 
