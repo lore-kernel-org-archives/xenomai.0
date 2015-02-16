@@ -1,16 +1,11 @@
-Date: Mon, 16 Feb 2015 11:48:31 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150216104831.GD1914@hermes.click-hack.org>
-References: <CALe7ZU0Y4hb0d7ANK9gitLLaQnGFiH8LpH3ZaTQ5MHLCYjAf=w@mail.gmail.com>
- <20150216092513.GA1914@hermes.click-hack.org>
- <CALe7ZU0i4UUABx=xQH1jXy9ak+hXkKPz+0d0qYQoQ=zqA780OA@mail.gmail.com>
- <20150216100128.GC1914@hermes.click-hack.org>
- <CALe7ZU1MyQpVzY_+7zMWydeSUvQXAU2AD2Xx2jxf_3TKRBX9-A@mail.gmail.com>
+From: Camera.Geomatics@leica-geosystems.com
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALe7ZU1MyQpVzY_+7zMWydeSUvQXAU2AD2Xx2jxf_3TKRBX9-A@mail.gmail.com>
-Subject: Re: [Xenomai] rtdm_irq_request not registering irq
+Sender: Hannes.Wachter@leica-geosystems.com
+Message-ID: <OFBD514703.37474029-ONC1257DEE.0048DE4B-C1257DEE.004A4BE3@leica-geosystems.com>
+Date: Mon, 16 Feb 2015 14:31:30 +0100
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Event handling, Xenomai: watchdog triggered
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,47 +14,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: JAY KOTHARI <jaikothari10@gmail.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Mon, Feb 16, 2015 at 04:10:56PM +0530, JAY KOTHARI wrote:
-> On 2/16/15, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
-> > On Mon, Feb 16, 2015 at 03:22:07PM +0530, JAY KOTHARI wrote:
-> >> I am using beaglebone black with Linux 3.8.13 and Xenomai 2.6.3.
-> >
-> > There is no reason to use Xenomai 2.6.3, you should be using xenomai
-> > 2.6.4. Both releases are ABI compatible.
-> >
-> >> In
-> >> the original Linux driver (without RTDM driver) they are implementing
-> >> same irq_number for request_irq API. So I believe the same irq number
-> >> must work for rtdm_irq_request in my RTDM driver.
-> >>
-> >> I looked into /proc/xenomai/irq my irq is shown registered but its not
-> >> working.
-> >>
-> >> How I use to  request_irq and rtrm_irq_request together to solve this
-> >> approach?? Do you mean I request irq with both api??
-> >> Then how do I implement irq handler and get argument like
-> >> dev_id(request_irq) or void * arg(rtdm_irq_request)????
-> >
-> > Please, no top posting. No need for bazillions of question marks
-> > either.
-> >
-> Sorry for it.
-> 
-> > Yes, I mean request the irq with both API, pass a dummy handler to
-> > request_irq, it will never be called anyway if the handler
-> > registered with rtdm_irq_request do not return XN_ISR_PROPAGATE.
-> >
-> 
-> Again I have query about rtdm_irq_request. As my RTDM driver is not
-> getting interrupted then how will it go into handler of
-> rtdm_irq_request and return XN_ISR_PROPAGATE? Interrupt is registered
-> in /proc/xenomai/isr but not responding.
+Hi,
 
-You have misunderstood my answer. Please read it again.
+I am testing HW interrupt latencies with an Altera Development board using=
+=20
+the 3.10 Kernel and 2.6 xenomai toggling a FPGA Pin. I have a RTDM Modul=20
+handling the interrupt generated from a FPGA timer and a user Space real=20
+time program.
 
--- 
-					    Gilles.
+To synchronize Interrupt handler and IOCTL function rt_event_wait and=20
+rt_event_signal are used.=20
+
+When I run the program with 10kHz I get the message Xenomai: watchdog=20
+triggered -- signaling runaway thread after several seconds. I get the=20
+right signals for several seconds on my oszilloscope.
+
+Is there a better way to synchronize irq and ioctl in a RTDM Modul?
+
+When I disable the irq function and toggle the FPGA Pins via IOCTL=20
+controlled from the user space task (rt_task_wait_period) a 10kHz=20
+frequency is working.
+
+Best Regards
+Hannes
+
 
