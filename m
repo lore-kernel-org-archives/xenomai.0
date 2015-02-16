@@ -1,20 +1,12 @@
-Message-ID: <54E22C35.1070904@xenomai.org>
-Date: Mon, 16 Feb 2015 18:43:17 +0100
+Message-ID: <54E22D82.9020105@xenomai.org>
+Date: Mon, 16 Feb 2015 18:48:50 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <5491B5E9.4030200@siemens.com> <5491C2CA.7000906@xenomai.org>
- <5491C179.2000600@siemens.com> <5491CB3F.2050509@xenomai.org>
- <5491CC27.6080909@siemens.com> <5491D196.3040309@xenomai.org>
- <54D0E961.4060705@xenomai.org> <54DCD68F.5020005@siemens.com>
- <54DCDC98.5070402@siemens.com> <54DCDDC7.5060700@xenomai.org>
- <54DCDFD5.9090202@siemens.com> <54DCE07F.5020902@xenomai.org>
- <54DCE08F.6050304@siemens.com> <54DCE6D6.7060305@siemens.com>
- <54E22AEB.1010508@siemens.com>
-In-Reply-To: <54E22AEB.1010508@siemens.com>
+References: <54E22A50.4070106@siemens.com>
+In-Reply-To: <54E22A50.4070106@siemens.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Mayday mechanism broken on x86-64 - simpler approach
- feasible?
+Subject: Re: [Xenomai] [PULL] ipipe: fixes for 3.14
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,24 +17,29 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 02/16/2015 06:37 PM, Jan Kiszka wrote:
-> On 2015-02-12 18:45, Jan Kiszka wrote:
->>>> Ok. While we are at it, we should get rid of the syscall return type in
->>>> the COBALT_SYSCALL[_DECL] macro helpers, this is pointless.
->>>
->>> Jep, that's what I did - hard-wired it to long.
->>>
->>> First tests look good, just need to split things up into 3 or 4 patches now.
->>
->> Done, see my for-forge branch.
+On 02/16/2015 06:35 PM, Jan Kiszka wrote:
+> The following changes since commit 00d8a6f2e95453f61ae97b6587dba03bc91c7e1a:
 > 
-> BTW, we should also clean up the 32-bit syscall macros in the same way,
-> just to be consistent (on issue to fix over there). Can do when I ran
-> out of bugs (or need some distraction).
+>   arm/ipipe: Resolve trival merge conflicts (2015-01-14 17:00:22 +0100)
+> 
+> are available in the git repository at:
+> 
+>   git://git.xenomai.org/ipipe-jki 
+> 
+> for you to fetch changes up to f982e48ce99e1bc9e71eac21830adac2db265c98:
+> 
+>   x86/ipipe: Restore invocation of ipipe_unlock_irq from startup_ioapic_irq (2015-02-16 18:22:21 +0100)
+> 
+> All patches apply to 3.16 as well but weren't tested there yet. Still
+> analyzing strange
+> 
+> traps: (systemd)[1420] trap invalid opcode ip:7f4d138f612b sp:7fff4fd8f568 error:0 in libpthread-2.19.so[7f4d138e5000+18000]
+> 
+> on the target under 3.14...
 > 
 
-Ack.
-
+Register trashing on the fast call path (system_call_after_gs) maybe.
+Forcing CONFIG_IPIPE_LEGACY there might help ruling this out.
 
 -- 
 Philippe.
