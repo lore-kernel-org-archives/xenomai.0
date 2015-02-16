@@ -1,6 +1,6 @@
-Message-ID: <54E222D2.4010201@siemens.com>
-Date: Mon, 16 Feb 2015 18:03:14 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <54E227F5.7070700@xenomai.org>
+Date: Mon, 16 Feb 2015 18:25:09 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <7E7E1F635323E543B04E7D69A4E262E7159C6AC4@msgb08.nih.gov>
 In-Reply-To: <7E7E1F635323E543B04E7D69A4E262E7159C6AC4@msgb08.nih.gov>
@@ -17,7 +17,7 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "Hays, Arthur (NIH/NEI) [E]" <art@lsr.nei.nih.gov>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2015-02-16 17:18, Hays, Arthur (NIH/NEI) [E] wrote:
+On 02/16/2015 05:18 PM, Hays, Arthur (NIH/NEI) [E] wrote:
 > Our application for laboratory automation and experimental control (for neurophysiology labs) runs on QNX on commodity x86 motherboards (when we can find ones that don't have the SMM issue).  We do this because our users are on tight grant money at universities.
 > 
 > With QNX we measure typical 4usec and worst case maximum 6usec latency from #INTA asserted on the PCI bus to entry of a service routine in user space.  This is when disk i/o, display updating, network activity all present.
@@ -26,30 +26,69 @@ On 2015-02-16 17:18, Hays, Arthur (NIH/NEI) [E] wrote:
 > 
 > QNX has discontinued self-hosting on x86- they are embedded only now.  Photon/PhAB is no longer supported.  So we are looking to port to another environment that is self-hosted on x86 perhaps using Qt instead of Photon.
 > 
-> From what I've read on Xenomai the typical latency to entry of a routine in user space initiated by a hardware IRQ would stay the same as with QNX, but the maximum would be on the order of 20-40usec on x86?
+>>From what I've read on Xenomai the typical latency to entry of a routine in user space initiated by a hardware IRQ would stay the same as with QNX, but the maximum would be on the order of 20-40usec on x86?
 
-Depends on your hardware, SMP vs. UP, the RT workload (how hot caches
-are kept) etc. In general, SMP first of all increases latencies (also on
-classic RTOSes) but you may benefit from it by isolating RT and non-RT
-workloads on separate cores. From the numbers, I suspect you are on UP
-so far.
+This range looks reasonable for a common atom-based dual core (64bit
+mode), hammered with lots of disk i/o and VM activity. This is also
+matching the results for an oldish 1.6Ghz centrino-based board, fitted
+with a PIIX controller. Worst-case latencies below 15 us have been
+observed on some high-end hardware, YMMV.
 
-Give it a try on your box, first via standard benchmarks (low effort),
-then mimicking your workload by starting to port essential parts over.
+To sum up, it's really difficult if not impossible for me to discuss
+typical worst-case latencies on x86, several issues may have a
+significant influence there, which depend on the hardware.
 
-BTW, if you extension card is MSI/MSI-X capable, better use that path
-instead of legacy INTx - saves quite a few cycles and reduces contention
-points, both in hardware and software.
+This said, leaving aside the obnoxious SMI/SMM issue and the usual
+recommendations about bus mastering, power management and so on, the
+following observations also hold true:
+
+- the more CPU cores, the more latency due to internal contention on
+real-time resources. However, this only affects cores actually running
+real-time load with Xenomai, e.g. a 64-way machine with Xenomai
+configured to use only two of the CPU cores for handling real-time
+duties should not experience more (rt) contention than a dual core
+system fully dedicated to real-time.
+
+- if the real-time load is implemented as a periodically-triggered work
+loop, the longest the period, the highest the latency. Hot caches are
+helping us when the regular linux activities are not allowed to trash
+them for too long between two real-time events to process. Typically,
+you should observe "latency -p 100" giving better results than "latency
+-p 1000" with Xenomai.
+
+- graphic acceleration does not always play well with worst-case latency
+requirements. Whether the graphic card, with and without acceleration,
+involves [un]acceptable latency would be among the first things I would
+check.
 
 > 
 > Would the routine that is scheduled every 1msec be able to update displays and use TCP/IP?
+> 
 
-Sure, that's a standard Linux task, maybe run with Linux real-time prio
-and CONFIG_PREEMPT to boost it a bit over the rest as needed.
+Yes, definitely not an issue. Provided the GPU _and_ its driver plays nice.
 
-Jan
+> Any advice would be appreciated.
+> 
+> Thanks,
+> 
+> Art Hays
+> National Institutes of Health
+> National Eye Institute
+> Bethesda, MD  20892
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+> 
+
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
