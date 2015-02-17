@@ -1,12 +1,20 @@
-Date: Mon, 16 Feb 2015 21:44:38 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150216204438.GH1914@hermes.click-hack.org>
-References: <54E24FED.8050906@mperpetuo.com>
+Message-ID: <54E31EDD.4070000@xenomai.org>
+Date: Tue, 17 Feb 2015 11:58:37 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <54E24FED.8050906@mperpetuo.com>
-Subject: Re: [Xenomai] ARMv8 (ARM64) port of Xenomai
+References: <5491B5E9.4030200@siemens.com> <5491C2CA.7000906@xenomai.org>
+ <5491C179.2000600@siemens.com> <5491CB3F.2050509@xenomai.org>
+ <5491CC27.6080909@siemens.com> <5491D196.3040309@xenomai.org>
+ <54D0E961.4060705@xenomai.org> <54DCD68F.5020005@siemens.com>
+ <54DCDC98.5070402@siemens.com> <54DCDDC7.5060700@xenomai.org>
+ <54DCDFD5.9090202@siemens.com> <54DCE07F.5020902@xenomai.org>
+ <54DCE08F.6050304@siemens.com> <54DCE6D6.7060305@siemens.com>
+ <54E22AEB.1010508@siemens.com> <54E22C35.1070904@xenomai.org>
+In-Reply-To: <54E22C35.1070904@xenomai.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Mayday mechanism broken on x86-64 - simpler approach
+ feasible?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,28 +23,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gary Gitelson <gary@mperpetuo.com>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On Mon, Feb 16, 2015 at 12:15:41PM -0800, Gary Gitelson wrote:
-> Hi,
+On 02/16/2015 06:43 PM, Philippe Gerum wrote:
+> On 02/16/2015 06:37 PM, Jan Kiszka wrote:
+>> On 2015-02-12 18:45, Jan Kiszka wrote:
+>>>>> Ok. While we are at it, we should get rid of the syscall return type in
+>>>>> the COBALT_SYSCALL[_DECL] macro helpers, this is pointless.
+>>>>
+>>>> Jep, that's what I did - hard-wired it to long.
+>>>>
+>>>> First tests look good, just need to split things up into 3 or 4 patches now.
+>>>
+>>> Done, see my for-forge branch.
+>>
+>> BTW, we should also clean up the 32-bit syscall macros in the same way,
+>> just to be consistent (on issue to fix over there). Can do when I ran
+>> out of bugs (or need some distraction).
+>>
 > 
->     There is an excellent guide for porting Xenomai to other ARM-based SOCs.
-> But this seems to assume that they are 32-bit ARM SOCs, based on ARMv7 or
-> lower.  Is there active work, or a guide or assistance, on porting to SOCs
-> based on ARMv8 architectures (specifically, in my case, the Qualcomm
-> MSM8994).
+> Ack.
+> 
+> 
 
-No, everything needs to be done for armv8.
-
->  I assume that almost everything in the arch/arm portion of the
-> kernel would need to exist in the arch/arm64 subtree, but I am not sure
-> exactly what is involved here.
->     Any assistance, or leads on existing work, would be much appreciated.
-
-Linaro donated an ARMv8 board, I will start working on the I-pipe
-port soon, but can not promise it will be finished rapidly.
+Don't bother with this, I'm doing the conversion.
 
 -- 
-					    Gilles.
+Philippe.
 
