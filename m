@@ -1,15 +1,13 @@
-Message-ID: <54E37A1F.4020405@siemens.com>
-Date: Tue, 17 Feb 2015 18:27:59 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Tue, 17 Feb 2015 12:33:14 -0500
+Message-ID: <20150217173314.GI30245@csclub.uwaterloo.ca>
+References: <CALe7ZU0Y4hb0d7ANK9gitLLaQnGFiH8LpH3ZaTQ5MHLCYjAf=w@mail.gmail.com>
+ <20150216092513.GA1914@hermes.click-hack.org>
 MIME-Version: 1.0
-References: <54E22A50.4070106@siemens.com> <54E22D82.9020105@xenomai.org>
- <54E22E5E.7080003@siemens.com> <54E23C6B.2020103@siemens.com>
- <54E240EB.2050904@siemens.com> <54E24672.3000402@xenomai.org>
- <54E24FD8.9020605@siemens.com> <54E354F9.30703@siemens.com>
-In-Reply-To: <54E354F9.30703@siemens.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PULL] ipipe: fixes for 3.14
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20150216092513.GA1914@hermes.click-hack.org>
+Subject: Re: [Xenomai] rtdm_irq_request not registering irq
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,29 +16,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: JAY KOTHARI <jaikothari10@gmail.com>, xenomai <xenomai@xenomai.org>
 
-On 2015-02-17 15:49, Jan Kiszka wrote:
-> Retested and, although I could have sworn that !CONFIG_IPIPE doesn't
-> cause this effect, it does on 3.14.28. And checking CPU features again,
-> there is both "hle" and "rtm" - in contrast to a newer 3.18 kernel where
-> those are gone (same distro, same hardware).
+On Mon, Feb 16, 2015 at 10:25:13AM +0100, Gilles Chanteperdrix wrote:
+> On Mon, Feb 16, 2015 at 10:28:51AM +0530, JAY KOTHARI wrote:
+> > Hello,
+> >          I am requesting interrupt with rtdm_irq_request. API works
+> > without error but not irq is not working. When I look into dmesg I get
+> > back-trace of this API but no error. I even looked in /proc/interrupts
+> > but no sign of registration. What might be wrong with this API for
+> > me??
 > 
-> So this is not an I-pipe issue, it's something related to the kernel or
-> its configuration. Need to study again where the microcode comes from. I
-> thought it was pulled from /lib/firmware/somewhere, thus would be shared
-> between all kernels on the same rootfs.
+> You will not see an interrupt registered with rtdm_irq_request in
+> /proc/interrupts, /proc/interrupts lists interrupts registered with
+> request_irq. An interrupt registered with rtdm_irq_request appears
+> in /proc/xenomai/irq.
+> 
+> Does exactly the same irq number work when requesting it with
+> request_irq ?
+> 
+> If no, then you may have made an error in the irq number: Linux irqs
+> are now remapped and the irq number passed to request_irq may not be
+> the same as the hardware irq number you would expect.
+> 
+> If yes, then are you running xenomai on an arm platform? If yes, we
+> have a very old bug which has been fixed only recently, normally,
+> requesting the irq both with request_irq and rtrm_irq_request should
+> avoid this bug.
 
-Just to close the topic: We had early microcode loading disabled in the
-kernel, likely due to some historic reasons (there was a crash once).
-That caused systemd to load libpthread before the microcode fix that
-disables RTM was loaded. Once the microcode came in, the RTM
-instructions suddenly start to cause #UD. Nice. Not sure yet if this
-explains the issues in the customer application - we will see later.
-
-Jan
+Is there a git commit number for that fix?  I am curious if that would
+make some things work better for us.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Len Sorensen
 
