@@ -1,20 +1,15 @@
-Message-ID: <54E31EDD.4070000@xenomai.org>
-Date: Tue, 17 Feb 2015 11:58:37 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <54E354F9.30703@siemens.com>
+Date: Tue, 17 Feb 2015 15:49:29 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <5491B5E9.4030200@siemens.com> <5491C2CA.7000906@xenomai.org>
- <5491C179.2000600@siemens.com> <5491CB3F.2050509@xenomai.org>
- <5491CC27.6080909@siemens.com> <5491D196.3040309@xenomai.org>
- <54D0E961.4060705@xenomai.org> <54DCD68F.5020005@siemens.com>
- <54DCDC98.5070402@siemens.com> <54DCDDC7.5060700@xenomai.org>
- <54DCDFD5.9090202@siemens.com> <54DCE07F.5020902@xenomai.org>
- <54DCE08F.6050304@siemens.com> <54DCE6D6.7060305@siemens.com>
- <54E22AEB.1010508@siemens.com> <54E22C35.1070904@xenomai.org>
-In-Reply-To: <54E22C35.1070904@xenomai.org>
+References: <54E22A50.4070106@siemens.com> <54E22D82.9020105@xenomai.org>
+ <54E22E5E.7080003@siemens.com> <54E23C6B.2020103@siemens.com>
+ <54E240EB.2050904@siemens.com> <54E24672.3000402@xenomai.org>
+ <54E24FD8.9020605@siemens.com>
+In-Reply-To: <54E24FD8.9020605@siemens.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Mayday mechanism broken on x86-64 - simpler approach
- feasible?
+Subject: Re: [Xenomai] [PULL] ipipe: fixes for 3.14
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,31 +18,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-On 02/16/2015 06:43 PM, Philippe Gerum wrote:
-> On 02/16/2015 06:37 PM, Jan Kiszka wrote:
->> On 2015-02-12 18:45, Jan Kiszka wrote:
->>>>> Ok. While we are at it, we should get rid of the syscall return type in
->>>>> the COBALT_SYSCALL[_DECL] macro helpers, this is pointless.
+On 2015-02-16 21:15, Jan Kiszka wrote:
+> On 2015-02-16 20:35, Philippe Gerum wrote:
+>> On 02/16/2015 08:11 PM, Jan Kiszka wrote:
+>>> On 2015-02-16 19:52, Jan Kiszka wrote:
+>>>> On 2015-02-16 18:52, Jan Kiszka wrote:
+>>>>> On 2015-02-16 18:48, Philippe Gerum wrote:
+>>>>>> On 02/16/2015 06:35 PM, Jan Kiszka wrote:
+>>>>>>> The following changes since commit 00d8a6f2e95453f61ae97b6587dba03bc91c7e1a:
+>>>>>>>
+>>>>>>>   arm/ipipe: Resolve trival merge conflicts (2015-01-14 17:00:22 +0100)
+>>>>>>>
+>>>>>>> are available in the git repository at:
+>>>>>>>
+>>>>>>>   git://git.xenomai.org/ipipe-jki 
+>>>>>>>
+>>>>>>> for you to fetch changes up to f982e48ce99e1bc9e71eac21830adac2db265c98:
+>>>>>>>
+>>>>>>>   x86/ipipe: Restore invocation of ipipe_unlock_irq from startup_ioapic_irq (2015-02-16 18:22:21 +0100)
+>>>>>>>
+>>>>>>> All patches apply to 3.16 as well but weren't tested there yet. Still
+>>>>>>> analyzing strange
+>>>>>>>
+>>>>>>> traps: (systemd)[1420] trap invalid opcode ip:7f4d138f612b sp:7fff4fd8f568 error:0 in libpthread-2.19.so[7f4d138e5000+18000]
+>>>>>>>
+>>>>>>> on the target under 3.14...
+>>>>>>>
+>>>>>>
+>>>>>> Register trashing on the fast call path (system_call_after_gs) maybe.
+>>>>>> Forcing CONFIG_IPIPE_LEGACY there might help ruling this out.
+>>>>>
+>>>>> That's without any Xenomai configured. But I will check.
 >>>>
->>>> Jep, that's what I did - hard-wired it to long.
+>>>> This is where it traps in libpthread:
 >>>>
->>>> First tests look good, just need to split things up into 3 or 4 patches now.
+>>>>    1112b:       c7 f8 00 00 00 00       xbeginq 11131 <__lll_lock_elision+0x51>
+>>>>
+>>>> For some reason, glibc starts to believe it could use RTM on that
+>>>> machine - although this is clearly not available (Haswell i7, thus a
+>>>> buggy CPU). Need to understand which feature check goes wrong, and why
+>>>> only on I-pipe enabled kernels.
+>>>>
+>>>> The good news is that I still have a similar and unresolved report from
+>>>> early customer tests. That could solve their issues as well (they
+>>>> caused massive domain migrations).
 >>>
->>> Done, see my for-forge branch.
+>>> Wait - we were already one step further: a potential trigger for this
+>>> behaviour is a nullified pthread mutex. The decision to take the TSX
+>>> path is based on field in that struct, and 0 means transactional. Guess
+>>> I need a better reproduction case than some systemd service.
 >>
->> BTW, we should also clean up the 32-bit syscall macros in the same way,
->> just to be consistent (on issue to fix over there). Can do when I ran
->> out of bugs (or need some distraction).
->>
+>> Which glibc release are you running?
 > 
-> Ack.
-> 
-> 
+> 2.19.
 
-Don't bother with this, I'm doing the conversion.
+Retested and, although I could have sworn that !CONFIG_IPIPE doesn't
+cause this effect, it does on 3.14.28. And checking CPU features again,
+there is both "hle" and "rtm" - in contrast to a newer 3.18 kernel where
+those are gone (same distro, same hardware).
+
+So this is not an I-pipe issue, it's something related to the kernel or
+its configuration. Need to study again where the microcode comes from. I
+thought it was pulled from /lib/firmware/somewhere, thus would be shared
+between all kernels on the same rootfs.
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
