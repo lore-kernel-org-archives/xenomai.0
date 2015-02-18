@@ -1,6 +1,6 @@
-Date: Wed, 18 Feb 2015 21:56:06 +0100
+Date: Wed, 18 Feb 2015 22:00:12 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150218205606.GO30317@hermes.click-hack.org>
+Message-ID: <20150218210012.GP30317@hermes.click-hack.org>
 References: <20150218181334.GE30317@hermes.click-hack.org>
  <54E4D835.1040204@siemens.com>
  <20150218182632.GG30317@hermes.click-hack.org>
@@ -42,25 +42,13 @@ On Wed, Feb 18, 2015 at 09:49:56PM +0100, Jan Kiszka wrote:
 > interrupt controllers. Well, with the exception of SoCs that have
 > additional interrupt controllers - like the NVIDIA Tegra124, which I'm
 > currently looking at for other purposes.
-
-As far as I understood versatile is a platform which accepts several
-processor modules, which cover a large part of the ranges of all
-ARM cores made by ARM.
-
 > 
 > "Mostly" because sshd is dying for unknown reasons. Same rootfs, same
 > emulator but newer kernel without I-pipe, and it works fine. One after
 > the other.
-> 
-> BTW, I noticed that LPAE build is broken. Trivial to fix (missing
-> argument to cpu_switch_mm), but maybe there is more behind it as it was
-> not used so far. Anything mm-related that one has to look at carefully
-> on ARM(v7)?
 
-For LPAE support you need that commit:
-https://git.xenomai.org/ipipe.git/commit/?h=ipipe-3.16&id=653ee8e622fe2ab7ff2fda1a0d14100d01bbf2e5
-
-at least.
+That is the joys of of not using real hardware. The I-pipe uses some
+registers or configure others that may not be implemented in the emulator.
 
 -- 
 					    Gilles.
