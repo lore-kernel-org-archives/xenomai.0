@@ -1,21 +1,20 @@
+Date: Wed, 18 Feb 2015 20:05:49 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150218190549.GI30317@hermes.click-hack.org>
+References: <54E4D14E.1060104@siemens.com>
+ <20150218175507.GD30317@hermes.click-hack.org>
+ <54E4D61B.1020006@siemens.com>
+ <20150218181334.GE30317@hermes.click-hack.org>
+ <54E4D835.1040204@siemens.com>
+ <20150218182632.GG30317@hermes.click-hack.org>
+ <54E4DDEA.3060909@siemens.com>
+ <20150218184943.GH30317@hermes.click-hack.org>
+ <54E4E166.5030701@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <20150218064715.GD17681@hermes.click-hack.org>
-References: <CAEMXjGzwez_k+3Qo-_ZJ4FvbOtLV2MjR0aV_tkeiRdGGaq4MAQ@mail.gmail.com>
- <CAEMXjGxtHB43N5oWL58F2y5rOH-yMycNaWtr+EDs009y1QJUcw@mail.gmail.com>
- <CAEMXjGykL_xTAteJ=Bz10jjL0xr9Uw1YBJpV=sV43Fkw=GAwug@mail.gmail.com>
- <9cf75cdcc753b7abfa0763ebd5ae1d91@grandegger.com>
- <3f27a9331a6514bb01d05d67fca0da4f@grandegger.com>
- <CAEMXjGyDGUf6nGNGfibgv0NzRD=EdFfKBwa2DiS17caskPzsaw@mail.gmail.com>
- <CAEMXjGymm-vZz-0enXbMy1MAm+f+_2EbhwK9xpZbC=pskDeqQQ@mail.gmail.com>
- <CAEMXjGyV=pJMa=ivg89R_bsQyDsfTvn4YwiYSF6RhfwFnU26QQ@mail.gmail.com>
- <20150217182752.GC17681@hermes.click-hack.org>
- <CAEMXjGxoC_ZXcdY+P1O8RO-yiHQA3nw76i1Py42gq6jSbDDMvw@mail.gmail.com>
- <20150218064715.GD17681@hermes.click-hack.org>
-Date: Wed, 18 Feb 2015 11:02:40 -0800
-Message-ID: <CAEMXjGxpuChBHg9bHLGBgag9BPNPDUYUjCWuXAbii_LRiKm0-Q@mail.gmail.com>
-From: Steve B <sbattazzo@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] 16550 serial driver on Beaglebone Black
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <54E4E166.5030701@siemens.com>
+Subject: Re: [Xenomai] arm: Late delivery of pending Linux signals?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,154 +23,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On Tue, Feb 17, 2015 at 10:47 PM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+On Wed, Feb 18, 2015 at 08:00:54PM +0100, Jan Kiszka wrote:
+> On 2015-02-18 19:49, Gilles Chanteperdrix wrote:
+> > On Wed, Feb 18, 2015 at 07:46:02PM +0100, Jan Kiszka wrote:
+> >> On 2015-02-18 19:26, Gilles Chanteperdrix wrote:
+> >>> On Wed, Feb 18, 2015 at 07:21:41PM +0100, Jan Kiszka wrote:
+> >>>> On 2015-02-18 19:13, Gilles Chanteperdrix wrote:
+> >>>>> On Wed, Feb 18, 2015 at 07:12:43PM +0100, Jan Kiszka wrote:
+> >>>>>> On 2015-02-18 18:55, Gilles Chanteperdrix wrote:
+> >>>>>>> On Wed, Feb 18, 2015 at 06:52:14PM +0100, Jan Kiszka wrote:
+> >>>>>>>> Hi Gilles,
+> >>>>>>>>
+> >>>>>>>> I noticed on ARM (AM335 TI board) that the SIGDEBUG if the related test
+> >>>>>>>> apparently only gets delivered to the receiver after it invokes a
+> >>>>>>>> syscall, not on return from its secondary mode migration. Therefore the
+> >>>>>>>> page fault test of the sigdebug smokey test fails (tested with Xenomai
+> >>>>>>>> 3), and I bet the watchdog test as well. Is this a known limitation?
+> >>>>>>>
+> >>>>>>> Xenomai 2.6 sigdebug works fine on omap3 (very near from an
+> >>>>>>
+> >>>>>> Will try 2.6 next.
+> >>>>>>
+> >>>>>>> arm33xx). That being said, the AM3xx port is not part of the main
+> >>>>>>> line I-pipe, and based on a non mainline kernel, so it is difficult
+> >>>>>>> for me to answer this question.
+> >>>>>>
+> >>>>>> Then I'm possibly not building all recommended bits - I'm on 3.14 I-pipe
+> >>>>>> upstream. That seems to work fine in general. Which version are you
+> >>>>>> referring to?
+> >>>>>
+> >>>>> The one documented in arm/patches/README
+> >>>>
+> >>>> https://github.com/RobertCNelson/linux-dev/commits/am33x-v3.8? There is
+> >>>> nothing explicitly stated regarding the AM3xx board, just that reference
+> >>>> in the context of the Beaglebone.
+> >>>>
+> >>>> Anyway, I thought that syscall and exception handling should not be
+> >>>> dependent on board patches, should they?
+> >>>
+> >>> If you had been using a Linux fork (which I assumed you did,
+> >>> because you mentioned a processor which is not mainline officially),
+> >>> it would have been very possible for the Linux fork you used to
+> >>> break the changes in entry.S due to a bad conflict resolution.
+> >>> Linux forks very often tend to push changes in generic code even
+> >>> though they should not.
+> >>
+> >> The TI AM335x (Cortex-A8) comes with full mainline support, even for
+> >> 3.14. That's probably why vanilla I-pipe 3.14 works for us.
+> >>
+> >> Against all odds, I just got Debian installed into an Integrator/CP
+> >> machine model. Let's see if I can debug the issue that way. But I will
+> >> keep porting I-pipe to the Versatile Express in mind.
+> > 
+> > If you have an ARM board, why going over all these contorsions? Why
+> > not simply enabling the I-pipe tracer and looking at what happens
+> > when you observe the problem you observe ?
+> 
+> Because it's easier to debug than to trace such an issue. Emulation, and
+> even more virtualization, is more handy than real hw. E.g., this
+> particular board has the nice feature of not booting up automatically
+> when being power-cycled.
 
-> On Tue, Feb 17, 2015 at 02:58:40PM -0800, Steve B wrote:
-> > On Tue, Feb 17, 2015 at 10:27 AM, Gilles Chanteperdrix <
-> > gilles.chanteperdrix@xenomai.org> wrote:
-> >
-> > > On Tue, Feb 17, 2015 at 10:22:32AM -0800, Steve B wrote:
-> > > > On Fri, Feb 13, 2015 at 4:40 PM, Steve B <sbattazzo@gmail.com>
-> wrote:
-> > > >
-> > > > >
-> > > > > On Thu, Feb 12, 2015 at 11:53 PM, Steve B <sbattazzo@gmail.com>
-> wrote:
-> > > > >
-> > > > >>
-> > > > >>
-> > > > >> On Thu, Feb 12, 2015 at 11:14 PM, Wolfgang Grandegger <
-> > > wg@grandegger.com>
-> > > > >> wrote:
-> > > > >>
-> > > > >>> On Fri, 13 Feb 2015 08:10:23 +0100, Wolfgang Grandegger
-> > > > >>> <wg@grandegger.com> wrote:
-> > > > >>> ...
-> > > > >>> > Maybe unbinding the Linux device from the driver as shown below
-> > > (for
-> > > > >>> > another
-> > > > >>> > device) already helps:
-> > > > >>> >
-> > > > >>> > # echo f0002400.serial \
-> > > > >>> >    /sys/devices/f000.soc5200/f0002400.serial/driver/unbind
-> > > > >>>
-> > > > >>> Oops, the redirection ">" is missing!
-> > > > >>>
-> > > > >>> Wolfgang,
-> > > > >>>
-> > > > >>>
-> > > > >>>
-> > > > >> Thanks Wolfgang, I will give that a try. Otherwise I think it
-> looks
-> > > > >> promising that just playing with the device tree settings may be
-> > > enough to
-> > > > >> get the peripheral clock and power enabled without actually
-> binding
-> > > the
-> > > > >> driver!
-> > > > >>
-> > > > >> Steve
-> > > > >>
-> > > > >
-> > > > > Hmm, unfortunately this one didn't work. I think it un-did the
-> clock
-> > > > > enable.
-> > > > >
-> > > > > By doing something ugly as I mentioned before with the device tree
-> I
-> > > can
-> > > > > get the driver running and the register reads/writes seem OK, but
-> for
-> > > some
-> > > > > reason I'm not seeing any IRQs, so I can't get any bytes out on TX.
-> > > > >
-> > > > > I tried adding the right IRQ number into my "sacrificed" UART's
-> device
-> > > > > tree entry and that caused some other issue entirely.
-> > > > >
-> > > >
-> > > > Hello all, in case anybody is curious I have an update.
-> > > >
-> > > > I still haven't found/verified a proper way to load the driver with
-> the
-> > > > device tree such that the pinmux and clock enable happen as they
-> need to,
-> > > > but I think maybe I should build an of_match_table into the driver so
-> > > that
-> > > > the device tree can connect the dots with compatible =
-> "ti,xeno_16550A"
-> > > or
-> > > > something to that effect (as I think Gilles was hinting at last
-> week).
-> > > >
-> > > > Also I realized that I was naively trying to invoke the modprobe of
-> > > > xeno_16550A using the actual hardware IRQ number that I see in the
-> AM335X
-> > > > TRM and the device tree for this UART, which is not the IRQ number
-> that's
-> > > > in the OS. Fixing that to the correct IRQ number, I was able to send
-> > > > something out on the UART once before totally locking up my CPU, so I
-> > > think
-> > > > I'm stuck in the ISR somehow. But at least it's some progress!
-> > >
-> > > What I was saying was that you should use the same compatible string
-> > > as the one used by the TI driver (otherwise you will not match the
-> > > device tree data). And put this in a file, compiled as a separate
-> > > module. Not xeno_16550A. I makes no sense to have this in the
-> > > xeno_16550A module. You can probably get the irq module
-> > > automatically via DT.
-> > >
-> > > --
-> > >                                             Gilles.
-> > >
-> >
-> > OK, but wouldn't there be a problem that it has the same string as the
-> > non-RT driver?
-> > What about giving it its own compatible string and updating the device
-> tree
-> > to look for that one?
-> > I want to keep most of my UARTs in the non-RT domain and use the RT
-> driver
-> > on just one UART in my particular application,
->
-> As Wolfgang said, you can bind/unbind device to a particular driver.
->
-> >
-> >
-> > Also, after taking a look at the code, I have found a couple of extra
-> > things needed to make this compatible with TI's UART on the Beaglebone
-> > Black (and presumably OMAP devices as well):
-> > According to AM335x TRM, the DLH and DLL registers need to be set to zero
-> > when setting up the FIFO (writing to FCR).
-> >
-> > Also, with the xeno_16550A driver as-is, the driver gets stuck in the
-> > while(1) loop in the ISR after a TX is initiated once, freezing my OS.
-> > This is because the operation that masks the TX interrupt is not done
-> until
-> > that loop has been cleared.
-> > But with this UART the TX interrupt stays active as long as the TX fifo
-> is
-> > not full beyond a certain threshold.
-> > I have solved this by masking the TX interrupt and posting the
-> > rtdm_event_signal(&ctx->out_event) when ctx->out_npend goes to zero
-> within
-> > the tx_interrupt function instead of outside of that while(1) loop. Is
-> > there any reason why I should not be doing it that way?
->
-> All this make it clear that you need another driver for the TI UART
-> (as I said already twice), say xeno_ti16550A.You just have to
-> arrange to factor the common code and not copy/paste it.
->
-> --
->                                             Gilles.
->
+I would tend to think that having to port the I-pipe to a virtual
+board consumes useless time, and useless maintenance time (because
+once you add the support for a board it takes time to maintain it),
+as is installing a debian distribution for that virtual board.
+During all that time you would have had the time to fix the bug 10
+times using printk and the I-pipe tracer. And also, ARM processors
+have a nice feature called JTAG, which is much more reliable than
+hoping that a virtual hardware will have the same behaviour than
+real hardware.
 
-OK, thanks for the help.
-For now I will run keeping my changes local, and when I have some time I
-will clean it up the right way and push it back if somebody wants it.
+-- 
+					    Gilles.
 
-Steve
