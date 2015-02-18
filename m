@@ -1,13 +1,10 @@
-Message-ID: <54E4A983.2000306@free.fr>
-Date: Wed, 18 Feb 2015 16:02:27 +0100
-From: =?windows-1252?Q?St=E9phane_ANCELOT?= <sancelot@free.fr>
+Message-ID: <54E4D14E.1060104@siemens.com>
+Date: Wed, 18 Feb 2015 18:52:14 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <54E456AE.8070003@free.fr>
- <20150218092420.GA25957@hermes.click-hack.org>
-In-Reply-To: <20150218092420.GA25957@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset=iso-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] AMD G/R serie
+Subject: [Xenomai] arm: Late delivery of pending Linux signals?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,19 +14,19 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 18/02/2015 10:24, Gilles Chanteperdrix wrote:
-> On Wed, Feb 18, 2015 at 10:09:02AM +0100, St??phane ANCELOT wrote:
->> Hi,
->> Is xenomai available for those platforms?
->>
->> AMD G or R series
-> What architectures are these beasts ? If x86, then yes, Xenomai
-> should work, and if it does not, it should not be hard to get it to work.
->
-These are AMD embedded series, perenity is well defined . And seems to 
-have better 3D graphics performance.
+Hi Gilles,
 
+I noticed on ARM (AM335 TI board) that the SIGDEBUG if the related test
+apparently only gets delivered to the receiver after it invokes a
+syscall, not on return from its secondary mode migration. Therefore the
+page fault test of the sigdebug smokey test fails (tested with Xenomai
+3), and I bet the watchdog test as well. Is this a known limitation?
 
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
