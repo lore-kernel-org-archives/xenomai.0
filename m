@@ -1,6 +1,6 @@
-Date: Wed, 18 Feb 2015 19:23:29 +0100
+Date: Wed, 18 Feb 2015 19:26:32 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150218182329.GF30317@hermes.click-hack.org>
+Message-ID: <20150218182632.GG30317@hermes.click-hack.org>
 References: <54E4D14E.1060104@siemens.com>
  <20150218175507.GD30317@hermes.click-hack.org>
  <54E4D61B.1020006@siemens.com>
@@ -52,18 +52,16 @@ On Wed, Feb 18, 2015 at 07:21:41PM +0100, Jan Kiszka wrote:
 > https://github.com/RobertCNelson/linux-dev/commits/am33x-v3.8? There is
 > nothing explicitly stated regarding the AM3xx board, just that reference
 > in the context of the Beaglebone.
-
-No idea, I do not have a beaglebone, I just accept patches for it.
-
 > 
 > Anyway, I thought that syscall and exception handling should not be
 > dependent on board patches, should they?
-> 
-> BTW, do you have recommended QEMU setup? Does the vexpress work (despite
-> not being listed)? The integratorcp model doesn't like me, while I have
-> vexpress even in KVM running (but guest debugging is still worked on).
 
-No idea, I do not use QEMU.
+If you had been using a Linux fork (which I assumed you did,
+because you mentioned a processor which is not mainline officially),
+it would have been very possible for the Linux fork you used to
+break the changes in entry.S due to a bad conflict resolution.
+Linux forks very often tend to push changes in generic code even
+though they should not.
 
 -- 
 					    Gilles.
