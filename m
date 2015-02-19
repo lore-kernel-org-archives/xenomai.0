@@ -1,9 +1,10 @@
-Message-ID: <54E5F030.6060403@xenomai.org>
-Date: Thu, 19 Feb 2015 15:16:16 +0100
+Message-ID: <54E5F180.9010504@xenomai.org>
+Date: Thu, 19 Feb 2015 15:21:52 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <CANWkrRN54ohRTAuyfySuc_hqZWB=cA277imt8uAQhfR5bVr5ig@mail.gmail.com>
-In-Reply-To: <CANWkrRN54ohRTAuyfySuc_hqZWB=cA277imt8uAQhfR5bVr5ig@mail.gmail.com>
+ <54E5F030.6060403@xenomai.org>
+In-Reply-To: <54E5F030.6060403@xenomai.org>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai] Compiling issue Xenomai 3.0 rc3
@@ -17,23 +18,28 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Michael Smith <2michael.smith@gmail.com>, xenomai@xenomai.org
 
-On 02/19/2015 02:40 PM, Michael Smith wrote:
-> Hi. I'm having trouble compiling the newest release (Xenomai 3.0-rc3).
-> With the error
+On 02/19/2015 03:16 PM, Philippe Gerum wrote:
+> On 02/19/2015 02:40 PM, Michael Smith wrote:
+>> Hi. I'm having trouble compiling the newest release (Xenomai 3.0-rc3).
+>> With the error
+>>
+>> autotune.c: In function ‘main’:
+>> autotune.c:298:16: error: ignoring return value of ‘daemon’, declared with
+>> attribute warn_unused_result [-Werror=unused-result]
+>>           daemon(0, 0);
+>>
+>> Is there an way to override the -Werror flags so it doesn't break on
+>> warnings without editing the make files?
+>> Or is the policy on Xenomai to always compile cleanly without warnings.
 > 
-> autotune.c: In function ‘main’:
-> autotune.c:298:16: error: ignoring return value of ‘daemon’, declared with
-> attribute warn_unused_result [-Werror=unused-result]
->           daemon(0, 0);
+> There is a strong policy to always compile without any warning. It
+> turned out that none of the libc headers I'm building against over 7 CPU
+> architectures sets the warn_unused_result attribute on the daemon()
+> routine yet.
 > 
-> Is there an way to override the -Werror flags so it doesn't break on
-> warnings without editing the make files?
-> Or is the policy on Xenomai to always compile cleanly without warnings.
 
-There is a strong policy to always compile without any warning. It
-turned out that none of the libc headers I'm building against over 7 CPU
-architectures sets the warn_unused_result attribute on the daemon()
-routine yet.
+The reason is due to a weak FORTIFY_LEVEL in some cases, others just
+don't even plan for enabling __wur on daemon().
 
 -- 
 Philippe.
