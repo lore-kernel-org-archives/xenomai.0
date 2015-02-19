@@ -1,13 +1,10 @@
-From: Lowell Gilbert <kludge@be-well.ilk.org>
-References: <44bnkqho7e.fsf@lowell-desk.lan>
- <20150218220804.GR30317@hermes.click-hack.org>
-Date: Wed, 18 Feb 2015 23:44:38 -0500
-In-Reply-To: <20150218220804.GR30317@hermes.click-hack.org> (Gilles
- Chanteperdrix's message of "Wed, 18 Feb 2015 23:08:04 +0100")
-Message-ID: <44pp9633yh.fsf@lowell-desk.lan>
 MIME-Version: 1.0
-Content-Type: text/plain
-Subject: Re: [Xenomai] interrupt service
+Date: Thu, 19 Feb 2015 15:40:35 +0200
+Message-ID: <CANWkrRN54ohRTAuyfySuc_hqZWB=cA277imt8uAQhfR5bVr5ig@mail.gmail.com>
+From: Michael Smith <2michael.smith@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Compiling issue Xenomai 3.0 rc3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,23 +13,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
+Hi. I'm having trouble compiling the newest release (Xenomai 3.0-rc3).
+With the error
 
-> On Wed, Feb 18, 2015 at 05:03:33PM -0500, Lowell Gilbert wrote:
->> Hi.
->> 
->> I have a kernel task created with rtdm_task_init(). I can wake it up
->> from my ioctl handler in non-RT, but not from inside my ISR, which was
->> hooked with rtdm_irq_request(). I tried it with a semaphore, with an
->> event, and then with just rtdm_task_unblock(). I'm probably doing
->> something silly here; are there any obvious places to look?
->
-> Are you sure the irq handler is actually called ?
+autotune.c: In function =E2=80=98main=E2=80=99:
+autotune.c:298:16: error: ignoring return value of =E2=80=98daemon=E2=80=99=
+, declared with
+attribute warn_unused_result [-Werror=3Dunused-result]
+          daemon(0, 0);
 
-Yes.
+Is there an way to override the -Werror flags so it doesn't break on
+warnings without editing the make files?
+Or is the policy on Xenomai to always compile cleanly without warnings.
+Is this maybe my compilation method, but then again I did compile Xenomai
+3.0-rc2 without an issue.
+But I assume when a release is done it does compile cleanly.
 
-[I increment a variable every time the IRQ runs, just to be sure.]
-
+Thanks
+Michael
