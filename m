@@ -1,17 +1,14 @@
-Date: Tue, 10 Feb 2015 11:46:01 +0100 (CET)
-From: Huy Cong Vu <huy-cong.vu@wandercraft.eu>
-Message-ID: <591131357.26954.1423565161829.JavaMail.zimbra@wandercraft.eu>
-In-Reply-To: <1196678867.12503.1422375100449.JavaMail.zimbra@wandercraft.eu>
-References: <1942863149.11150.1422371568908.JavaMail.zimbra@wandercraft.eu>
- <20150127153903.GD16502@hermes.click-hack.org>
- <383897695.12140.1422374079502.JavaMail.zimbra@wandercraft.eu>
- <20150127160045.GE16502@hermes.click-hack.org>
- <1196678867.12503.1422375100449.JavaMail.zimbra@wandercraft.eu>
+Date: Fri, 20 Feb 2015 06:22:15 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150220052215.GB16978@hermes.click-hack.org>
+References: <CAAg8yo2U6Djk+myWxLJ+rBqEfoy0z3pZhZQMbPDUyi17jH-B+w@mail.gmail.com>
+ <20150208174239.GB2014@hermes.click-hack.org>
+ <CAAg8yo2Nx-PFM3Fm5bjeCfROrNq5yaicx-ewcQnj9qfVNHFErA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Patch rtnet support Intel i217/i218 Ethernet
- Controller
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAAg8yo2Nx-PFM3Fm5bjeCfROrNq5yaicx-ewcQnj9qfVNHFErA@mail.gmail.com>
+Subject: Re: [Xenomai] Compatibility of PCAN PCI Express Four Channel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,138 +17,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Zhe Su <zhesu@usc.edu>
 Cc: xenomai@xenomai.org
 
+On Thu, Feb 19, 2015 at 04:05:22PM -0800, Zhe Su wrote:
+> Dear Gilles and Konrad,
+> 
+> Thanks for your reply. As you suggested, I confirmed the ids of
+> four-channel PCI express CAN board is in the rtcan_peak_pci.c file. I just
+> got my new four-channel PCI express CAN board yesterday; however, none of
+> the channel is working on my xenomai.  It did recognize there is a
+> PEAK-System Device plugged in the PCI express slot, but it is not working
+> with the can driver. Here are the results of the comparison between a
+> two-channel PEAK-System PCI CAN board and a four-channel PEAK-System PCI
+> express CAN board.
+> 
+> lspci -nn
+> 02:00.0 Network controller [0280]: PEAK-System Technik GmbH PCAN-PCI
+> CAN-Bus controller [001c:0001] (rev 02)
+> 22:00.0 Network controller [0280]: PEAK-System Technik GmbH Device
+> [001c:0003] (rev 02)
+> 
+> lspci -v
+> 
+> 02:00.0 Network controller: PEAK-System Technik GmbH PCAN-PCI CAN-Bus
+> controller (rev 02)
+>     Subsystem: PEAK-System Technik GmbH 2 Channel CAN Bus SJC1000
+> (Optically Isolated)
+>     Flags: medium devsel, IRQ 28
+>     Memory at f3ee0000 (32-bit, non-prefetchable) [size=64K]
+>     Memory at f3ef0000 (32-bit, non-prefetchable) [size=64K]
+>     Kernel driver in use: PEAK-PCI-CAN
+>     Kernel modules: xeno_can_peak_pci
+> 
+> 22:00.0 Network controller: PEAK-System Technik GmbH Device 0003 (rev 02)
+>     Subsystem: PEAK-System Technik GmbH Device 0014
+>     Flags: bus master, fast devsel, latency 0, IRQ 11
+>     Memory at dffe0000 (32-bit, non-prefetchable) [size=64K]
+>     Memory at dfff0000 (32-bit, non-prefetchable) [size=64K]
+>     Expansion ROM at <unassigned>
+>     Capabilities: <access denied>
+> 
+> Any help will be highly appreciated.
 
+Neither of these two commands is showing the pci ids.
 
------ Mail original -----
-> De: "Huy Cong Vu" <huy-cong.vu@wandercraft.eu>
-> =C3=80: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-> Cc: xenomai@xenomai.org
-> Envoy=C3=A9: Mardi 27 Janvier 2015 17:11:40
-> Objet: Re: [Xenomai] Patch rtnet support Intel i217/i218 Ethernet Control=
-ler
+Try lspci -n
 
-> ----- Mail original -----
->> De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
->> =C3=80: "Huy Cong Vu" <huy-cong.vu@wandercraft.eu>
->> Cc: xenomai@xenomai.org
->> Envoy=C3=A9: Mardi 27 Janvier 2015 17:00:45
->> Objet: Re: [Xenomai] Patch rtnet support Intel i217/i218 Ethernet Contro=
-ller
->=20
->> On Tue, Jan 27, 2015 at 04:54:39PM +0100, Huy Cong Vu wrote:
->>>=20
->>>=20
->>> ----- Mail original -----
->>> > De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
->>> > =C3=80: "Huy Cong Vu" <huy-cong.vu@wandercraft.eu>
->>> > Cc: xenomai@xenomai.org
->>> > Envoy=C3=A9: Mardi 27 Janvier 2015 16:39:03
->>> > Objet: Re: [Xenomai] Patch rtnet support Intel i217/i218 Ethernet Con=
-troller
->>>=20
->>> > On Tue, Jan 27, 2015 at 04:12:48PM +0100, Huy Cong Vu wrote:
->>> >> Hello Xenomai group,
->>> >> I recently run a test of rtnet on xenomai-3-next on my Intel NUC D54=
-250WYK with
->>> >> the Intel I218V Ethernet Controller.
->>> >> It is patched on linux 3.14.17. Here I attached the patch to make rt=
-net work
->>> >> with i217/i218 Intel family.
->>> >> Also, I found out that in rtpacket module, the declaration of packet=
-_proto_drv
->>> >> lack of .device_count attribute, which makes the rtpacket & rtcap mo=
-dules
->>> >> unable to loaded ( -EINVAL is returned), so I merge it in my patch t=
-oo.
->>> >> I test on my system and all the following command is now working:
->>> >> modprobe rtnet
->>> >> modprobe rt_e1000e
->>> >> modprobe rtpacket
->>> >> modprobe rtcap
->>> >> rtifconfig rteth0 up
->>> >> ifconfig rteth0 up
->>> >> ifconfig rteth0-mac up
->>> >> But if I used the rteth0 interface, I can't unload rt_e1000e.
->>> >> Could you take a look and see if anything is wrong, and if you find =
-it useful,
->>> >> merge it in your git repository.
->>> >> Best regards,
->>> >=20
->>> > In Xenomai 3, you need to deconfigure the interface before you try
->>> > to unload it.
->>>=20
->>> If I tried to turn off rteth0 interface after using it, I still can't u=
-nload
->>> rt_e1000e.
->>> For now, this work:
->>> modprobe rt_e1000e
->>> modprobe rtpacket
->>> rtifconfig rteth0 up
->>> rtifconfig rteth0 down
->>> rmmod rt_e1000e
->>> rmmod rtpacket
->>>=20
->>> This doesn't work:
->>> modprobe rt_e1000e
->>> modprobe rtpacket
->>> rtifconfig rteth0 up
->>> //Send datagram through rteth0 interface
->>> rtifconfig rteth0 down
->>> rmmod rt_e1000e
->>>=20
-
-This patch helps.=20
-
-diff --git a/kernel/drivers/net/stack/packet/af_packet.c b/kernel/drivers/n=
-et/stack/packet/af_packet.c
-index dd862fe..6a9f183 100644
---- a/kernel/drivers/net/stack/packet/af_packet.c
-+++ b/kernel/drivers/net/stack/packet/af_packet.c
-@@ -456,6 +456,7 @@ rt_packet_sendmsg(struct rtdm_fd *fd, const struct msgh=
-dr *msg, int msg_flags)
-     }
-=20
-  out:
-+    rtdev_dereference(rtdev);
-     return ret;
-=20
-  err:
-
-Now it seems ok to unload all modules for me.
-
->>> Do I have to do anything special from application level to deconfigure =
-rteth0
->>> too?
->>=20
->> No, rtifconfig down should be enough. Note that the module count
->> handling requires some patches in the I-pipe kernel. Since it was
->> reworked, it is entirely possible that there are some glitches with
->> it, or that some necessary change in rt_e1000e.c is missing.
->>=20
->> Also, since the multiple modules system will not fly for building
->> rtnet and its modules into the kernel, this will be reworked.
->>=20
->> Other than that, does rtnet work for you ?
->=20
-> Yes, except this problem, my test with rtnet runs fine.
->=20
->>=20
->> --
->> =09=09=09=09=09    Gilles.
->=20
-> --
-> Huy Cong
-> Wandercraft SAS
->=20
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
-
---=20
-Huy Cong
-Wandercraft SAS
+-- 
+					    Gilles.
 
