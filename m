@@ -1,14 +1,14 @@
-Message-ID: <54E7917F.101@xenomai.org>
-Date: Fri, 20 Feb 2015 20:56:47 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Fri, 20 Feb 2015 23:57:12 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150220225712.GE2356@hermes.click-hack.org>
+References: <44bnkqho7e.fsf@lowell-desk.lan>
+ <20150218220804.GR30317@hermes.click-hack.org>
+ <44pp9633yh.fsf@lowell-desk.lan> <447fvc5q6z.fsf@be-well.ilk.org>
 MIME-Version: 1.0
-References: <E1YOpt4-0000oo-4D@sd-51317.xenomai.org>
- <54E765A4.20909@xenomai.org> <54E76A59.4060000@siemens.com>
-In-Reply-To: <54E76A59.4060000@siemens.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt/posix/syscall:
- Exclude sc_cobalt_get_current from debug warnings
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <447fvc5q6z.fsf@be-well.ilk.org>
+Subject: Re: [Xenomai] interrupt service
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,47 +17,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org, xenomai-git@xenomai.org
+To: Lowell Gilbert <kludge@be-well.ilk.org>
+Cc: xenomai@xenomai.org
 
-On 02/20/2015 06:09 PM, Jan Kiszka wrote:
-> On 2015-02-20 17:49, Philippe Gerum wrote:
->> On 02/20/2015 04:53 PM, git repository hosting wrote:
->>> Module: xenomai-jki
->>> Branch: for-forge
->>> Commit: fc2d70475f4f86da30e68a569e7641982f4dd8e1
->>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=fc2d70475f4f86da30e68a569e7641982f4dd8e1
->>>
->>> Author: Jan Kiszka <jan.kiszka@siemens.com>
->>> Date:   Fri Feb 20 16:50:15 2015 +0100
->>>
->>> cobalt/posix/syscall: Exclude sc_cobalt_get_current from debug warnings
->>>
->>> This syscall is used for probing the context, thus may be triggered by
->>> non-RT threads as well which we should not report as potential error.
->>>
->>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>>
->>
->> This would mean that sc_cobalt_get_current is considered valid from any
->> process, including those which did not issue sc_cobalt_bind in the first
->> place.
->>
->> Do we depend on this today, or are we granting an extended access with
->> this patch?
+On Fri, Feb 20, 2015 at 02:38:12PM -0500, Lowell Gilbert wrote:
+> Lowell Gilbert <kludge@be-well.ilk.org> writes:
 > 
-> This is just to silence a warning you get, e.g., with the smokey fork test.
+> > Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
+> >
+> >> On Wed, Feb 18, 2015 at 05:03:33PM -0500, Lowell Gilbert wrote:
+> >>> Hi.
+> >>> 
+> >>> I have a kernel task created with rtdm_task_init(). I can wake it up
+> >>> from my ioctl handler in non-RT, but not from inside my ISR, which was
+> >>> hooked with rtdm_irq_request(). I tried it with a semaphore, with an
+> >>> event, and then with just rtdm_task_unblock(). I'm probably doing
+> >>> something silly here; are there any obvious places to look?
+> >>
+> >> Are you sure the irq handler is actually called ?
+> >
+> > Yes.
+> >
+> > [I increment a variable every time the IRQ runs, just to be sure.]
 > 
-> I don't think it should be illegal to call such a service, even prior to
-> binding to the interface. It is already robust against it, isn't it?
-> 
+> The mailing list stripped my code, so I'll attach it inline.
 
-Illegal maybe not, but definitely unexpected. I mean that this is a
-Cobalt service, so I would expect the userland code not to issue any
-Cobalt syscall until the initial binding took place.
+It does not strip it, it puts it on a server that can be accessed
+with http, so that only the people who want to see it download it,
+instead of forcibly sending it to all the subscribers.
 
-The fork sequence seems to depart from this assumption due to some code
-running on behalf of the atfork handlers in libcobalt, right?
+Will look at your code later. But at a quick glance I see nothing
+wrong.
+
 
 -- 
-Philippe.
+					    Gilles.
 
