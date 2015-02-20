@@ -1,11 +1,21 @@
-From: Alfred Koegel <akoegel@gmx.de>
-Date: Tue, 10 Feb 2015 14:38:32 +0000 (UTC)
-Message-ID: <loom.20150210T153230-142@post.gmane.org>
-References: <CAEMXjGxixe5fgX-7uijpcGkNoPzoZcocJxEK-D+VqBdopx4puQ@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Bosch CCAN/DCAN driver for RTDM
+Date: Fri, 20 Feb 2015 23:58:25 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150220225825.GF2356@hermes.click-hack.org>
+References: <20150208174239.GB2014@hermes.click-hack.org>
+ <CAAg8yo2Nx-PFM3Fm5bjeCfROrNq5yaicx-ewcQnj9qfVNHFErA@mail.gmail.com>
+ <20150220052215.GB16978@hermes.click-hack.org>
+ <CAAg8yo2nAj1Bk+J15jms8goZqFP7SASoo-h9kzORZwZM_5snEw@mail.gmail.com>
+ <20150220062947.GC16978@hermes.click-hack.org>
+ <4E57A2CE-DBB7-49DD-B0A3-78312F35C9DA@gmail.com>
+ <20150220064229.GD16978@hermes.click-hack.org>
+ <CAAg8yo2tTFE_SoAUEJN9bxJJDSQ0jHmwpQKcya9T2KXyTkvPYg@mail.gmail.com>
+ <20150220185710.GC2356@hermes.click-hack.org>
+ <CAJ2xAYE+R749=YPOdcMkDX6jdBB=dNtKj9Mu0uKR5SygKzqC8g@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJ2xAYE+R749=YPOdcMkDX6jdBB=dNtKj9Mu0uKR5SygKzqC8g@mail.gmail.com>
+Subject: Re: [Xenomai] Compatibility of PCAN PCI Express Four Channel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,8 +24,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Konrad Banachowicz <konradb3@gmail.com>
+Cc: Zhe Su <szhe.bme@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-U3RldmUgQiA8c2JhdHRhenpvIDxhdD4gZ21haWwuY29tPiB3cml0ZXM6Cgo+IAo+IEhlbGxvLAo+IEkgaGF2ZSBwdXQgdG9nZXRoZXIgYSBxdWljayBwb3J0IG9mIHRoZSBMaW51eCBkcml2ZXIgZm9yIENDQU4vRENBTiB0byB3b3JrCj4gd2l0aCBSVERNLCB0aGFua3MgdG8gV29sZmdhbmcgR3JhbmRlZ2dlcidzIEZsZXhjYW4gZHJpdmVyIHBvcnQgYXMgYW4KPiBleGFtcGxlLgo+IAo+IEl0J3Mgbm90IHRob3JvdWdobHkvZm9ybWFsbHkgdGVzdGVkLCBidXQgaXQgd29ya3Mgd2l0aCBydGNhbnNlbmQgYW5kCj4gcnRjYW5yZWN2LCBhbmQgd29ya3Mgd2VsbCB3aXRoIG15IGFwcGxpY2F0aW9uIHNlbmRpbmcgYW5kIHJlY2VpdmluZyBhIGZldwo+IGh1bmRyZWQgZnJhbWVzIHBlciBzZWNvbmQgYXQgNTAwayBiYXVkLCB3aGljaCBJIHRoaW5rIGlzIGEgZ29vZCBlbm91Z2gKPiBpbml0aWFsIHRlc3QgZm9yIG1lLgo+IEkgY2FuIGFsc28gZ2l2ZSB0aGUgInJ0dCIgdGVzdCBhIHNob3Qgd2hlbiBJIGhhdmUgdGltZS4KPiAKPiBJcyB0aGVyZSBhbnlvbmUgb3V0IHRoZXJlIHdobyB3b3VsZCBsaWtlIHRvIHRlc3QgdGhpcz8gSSBhbSB3b25kZXJpbmcgd2hhdAo+IGlzIHRoZSBwcm9jZWR1cmUgdG8gc3VibWl0LCBzaG91bGQgSSBjcmVhdGUgYSBwYXRjaCBhbmQgYXR0YWNoPyBJIGhhdmVuJ3QKPiBsb29rZWQgYXQgaG93IHRvIGFkZCBpdCBpbnRvIHRoZSBrZXJuZWwgYnVpbGQgcHJvY2VzcywgSSBoYXZlIGp1c3QgYnVpbHQgaXQKPiBpbiBpdHMgb3duIHNlcGFyYXRlIHBsYWNlIHNvIGZhci4KPiAKPiBTdGV2ZQo+IAoKSGVsbG8gU3RldmUsCkkgaW50ZW5kZWQgdG8gZG8gYSBwb3J0IGEgZmV3IG1vbnRocyBhZ28sIGJlY2F1c2UgaSBzdGFydGVkIGEgcHJvamVjdCB3aXRoIGEgIApBdG9t4oSiIEU2NDAgY3B1LiBUaGUgaW50ZXJuYWwgY2FuIGNvbnRyb2xsZXIgaXMgYSBjbG9uZSBvZiB0aGUgQk9TQ0ggY2Nhbgptb2R1bGUgYW5kIHlvdXIgZHJpdmVyIHNob3VsZCBydW4gb24gdGhpcyBoYXJkd2FyZSBhcyB3ZWxsLiBJZiB5b3UgY2FuIHBvc3QKbWUgdGhlIHBhdGNoIGkgY2FuIHRyeSB0byBnZXQgaXQgZ29pbmcgb24gbXkgaGFyZHdhcmUgKHRoZSBwcm9qZWN0IGlzIGZyb3plbgphdCB0aGUgbW9tZW50IGR1ZSB0byBvdGhlciBoYXJkd2FyZSByZWxhdGVkIHByb2JsZW1zKS4KQWxmcmVk
+On Fri, Feb 20, 2015 at 08:09:51PM +0100, Konrad Banachowicz wrote:
+> As I wrote earlier the 4 channel card is not supported in
+> mainline(xenomai) driver.
+> The patch i mentioned add the support. It should work with latest
+> xenomai 2.6.x .
 
+Sorry, I just assumed Zhe Su had applied the patch.
+
+-- 
+					    Gilles.
 
