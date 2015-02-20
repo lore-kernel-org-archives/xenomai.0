@@ -1,15 +1,12 @@
-From: Lowell Gilbert <kludge@be-well.ilk.org>
-References: <44bnkqho7e.fsf@lowell-desk.lan>
- <20150218220804.GR30317@hermes.click-hack.org>
- <44pp9633yh.fsf@lowell-desk.lan>
-Date: Fri, 20 Feb 2015 14:38:12 -0500
-In-Reply-To: <44pp9633yh.fsf@lowell-desk.lan> (Lowell Gilbert's message of
- "Wed, 18 Feb 2015 23:44:38 -0500")
-Message-ID: <447fvc5q6z.fsf@be-well.ilk.org>
+Message-ID: <54E78EB8.4060204@xenomai.org>
+Date: Fri, 20 Feb 2015 20:44:56 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+References: <54E776E2.2030501@siemens.com> <54E77A52.4010806@siemens.com>
+In-Reply-To: <54E77A52.4010806@siemens.com>
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] interrupt service
+Subject: Re: [Xenomai] ipipe: issues with ARM exception handling
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,37 +15,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-Lowell Gilbert <kludge@be-well.ilk.org> writes:
-
-> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
->
->> On Wed, Feb 18, 2015 at 05:03:33PM -0500, Lowell Gilbert wrote:
->>> Hi.
->>> 
->>> I have a kernel task created with rtdm_task_init(). I can wake it up
->>> from my ioctl handler in non-RT, but not from inside my ISR, which was
->>> hooked with rtdm_irq_request(). I tried it with a semaphore, with an
->>> event, and then with just rtdm_task_unblock(). I'm probably doing
->>> something silly here; are there any obvious places to look?
+On 02/20/2015 07:17 PM, Jan Kiszka wrote:
+> On 2015-02-20 19:03, Jan Kiszka wrote:
+>> Hi Gilles,
 >>
->> Are you sure the irq handler is actually called ?
->
-> Yes.
->
-> [I increment a variable every time the IRQ runs, just to be sure.]
+>> analyzing a lockdep warning on 3.16 with I-pipe enabled, I dug deeper
+>> into the hard and virtual interrupt state management during exception
+>> handling on ARM. I think there are several issues:
+>>
+>> - ipipe_fault_entry should not fiddle with the root irq state if run
+>>   over head, only when invoked over root.
+>> - ipipe_fault_exit must not change the root state unless we entered over
+>>   head and are about to leave over root - see x86. The current code may
+>>   keep root incorrectly stalled after an exception, though this will
+>>   probably be fixed up again in practice quickly.
+> 
+> And the adjustment of the root irq state after migration has to happen
+> before Linux starts to handle the event. It would basically be a late
+> ipipe_fault_entry.
+> 
+>> - do_sect_fault is only called by do_DataAbort and do_PrefetchAbort,
+>>   in both cases already wrapped in ipipe_fault_entry/exit, thus it
+>>   shouldn't invoke them once again.
+> 
+> Sorry, this was a misinterpretation - do_sect_fault is invoked before
+> ipipe_fault_entry.
+> 
+> What I need to add, though:
+> 
+> - do_DataAbort and do_PrefetchAbort call __ipipe_report_trap after
+>   ipipe_fault_entry, thus with hard IRQs on.
 
-The mailing list stripped my code, so I'll attach it inline.
+This would break LPAE with the Xenomai nucleus as a module on 2.6.x, by
+treading over a non-linear kernel mapping before the page table could be
+fixed up. do_translation_fault() must run via the fsr handler
+indirection before any non-linear access.
 
-According to the statistics that get printed, he bottom half never
-executes, although the top half does.
+-- 
+Philippe.
 
--------------- next part --------------
-An embedded and charset-unspecified text was scrubbed...
-Name: tut02-skeleton-drv.c
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150220/6ada56c5/attachment.c>
--------------- next part --------------
-An embedded and charset-unspecified text was scrubbed...
-Name: tut02-skeleton-app.c
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150220/6ada56c5/attachment-0001.c>
