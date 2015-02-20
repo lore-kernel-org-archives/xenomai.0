@@ -1,12 +1,13 @@
+Message-ID: <54E765A4.20909@xenomai.org>
+Date: Fri, 20 Feb 2015 17:49:40 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <20150219142312.GU30317@hermes.click-hack.org>
-References: <CANWkrRN54ohRTAuyfySuc_hqZWB=cA277imt8uAQhfR5bVr5ig@mail.gmail.com>
- <20150219142312.GU30317@hermes.click-hack.org>
-From: Michael Smith <2michael.smith@gmail.com>
-Date: Fri, 20 Feb 2015 15:16:53 +0200
-Message-ID: <CANWkrRNpkbOsAEgTmf_oddE4Ukdvp6oxeH8-C+k6fapqBh2zLg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Compiling issue Xenomai 3.0 rc3
+References: <E1YOpt4-0000oo-4D@sd-51317.xenomai.org>
+In-Reply-To: <E1YOpt4-0000oo-4D@sd-51317.xenomai.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt/posix/syscall:
+ Exclude sc_cobalt_get_current from debug warnings
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,26 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org, xenomai-git@xenomai.org
 
-On Thu, Feb 19, 2015 at 4:23 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On Thu, Feb 19, 2015 at 03:40:35PM +0200, Michael Smith wrote:
->> Is this maybe my compilation method, but then again I did compile Xenomai
->> 3.0-rc2 without an issue.
->
-> For the record: 3.0-rc2 had exactly the same issue. You probably did
-> not use the same toolchain, that is all.
->
-> --
->                                             Gilles.
+On 02/20/2015 04:53 PM, git repository hosting wrote:
+> Module: xenomai-jki
+> Branch: for-forge
+> Commit: fc2d70475f4f86da30e68a569e7641982f4dd8e1
+> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=fc2d70475f4f86da30e68a569e7641982f4dd8e1
+> 
+> Author: Jan Kiszka <jan.kiszka@siemens.com>
+> Date:   Fri Feb 20 16:50:15 2015 +0100
+> 
+> cobalt/posix/syscall: Exclude sc_cobalt_get_current from debug warnings
+> 
+> This syscall is used for probing the context, thus may be triggered by
+> non-RT threads as well which we should not report as potential error.
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> 
 
-No in fact, I did not change my OS or compiler version (Ubuntu 14.04),
-but it was compiled on different machines.
-Might be that there was differences in default setups.
-I updated the code to the newest git release and it compiles without issues.
-Thanks all.
+This would mean that sc_cobalt_get_current is considered valid from any
+process, including those which did not issue sc_cobalt_bind in the first
+place.
 
-Michael
+Do we depend on this today, or are we granting an extended access with
+this patch?
+
+-- 
+Philippe.
 
