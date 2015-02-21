@@ -1,21 +1,13 @@
-Date: Fri, 20 Feb 2015 23:58:25 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150220225825.GF2356@hermes.click-hack.org>
-References: <20150208174239.GB2014@hermes.click-hack.org>
- <CAAg8yo2Nx-PFM3Fm5bjeCfROrNq5yaicx-ewcQnj9qfVNHFErA@mail.gmail.com>
- <20150220052215.GB16978@hermes.click-hack.org>
- <CAAg8yo2nAj1Bk+J15jms8goZqFP7SASoo-h9kzORZwZM_5snEw@mail.gmail.com>
- <20150220062947.GC16978@hermes.click-hack.org>
- <4E57A2CE-DBB7-49DD-B0A3-78312F35C9DA@gmail.com>
- <20150220064229.GD16978@hermes.click-hack.org>
- <CAAg8yo2tTFE_SoAUEJN9bxJJDSQ0jHmwpQKcya9T2KXyTkvPYg@mail.gmail.com>
- <20150220185710.GC2356@hermes.click-hack.org>
- <CAJ2xAYE+R749=YPOdcMkDX6jdBB=dNtKj9Mu0uKR5SygKzqC8g@mail.gmail.com>
+Message-ID: <54E84C3C.8070204@xenomai.org>
+Date: Sat, 21 Feb 2015 10:13:32 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJ2xAYE+R749=YPOdcMkDX6jdBB=dNtKj9Mu0uKR5SygKzqC8g@mail.gmail.com>
-Subject: Re: [Xenomai] Compatibility of PCAN PCI Express Four Channel
+References: <54E776E2.2030501@siemens.com>
+ <20150220183829.GA2356@hermes.click-hack.org> <54E78227.6000700@siemens.com>
+In-Reply-To: <54E78227.6000700@siemens.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] ipipe: issues with ARM exception handling
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,17 +16,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Konrad Banachowicz <konradb3@gmail.com>
-Cc: Zhe Su <szhe.bme@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Fri, Feb 20, 2015 at 08:09:51PM +0100, Konrad Banachowicz wrote:
-> As I wrote earlier the 4 channel card is not supported in
-> mainline(xenomai) driver.
-> The patch i mentioned add the support. It should work with latest
-> xenomai 2.6.x .
+On 02/20/2015 07:51 PM, Jan Kiszka wrote:
+> On 2015-02-20 19:38, Gilles Chanteperdrix wrote:
+>> On Fri, Feb 20, 2015 at 07:03:14PM +0100, Jan Kiszka wrote:
+>>> Hi Gilles,
+>>>
+>>> analyzing a lockdep warning on 3.16 with I-pipe enabled, I dug deeper
+>>> into the hard and virtual interrupt state management during exception
+>>> handling on ARM. I think there are several issues:
+>>>
+>>> - ipipe_fault_entry should not fiddle with the root irq state if run
+>>>   over head, only when invoked over root.
+>>> - ipipe_fault_exit must not change the root state unless we entered over
+>>>   head and are about to leave over root - see x86. The current code may
+>>>   keep root incorrectly stalled after an exception, though this will
+>>>   probably be fixed up again in practice quickly.
+>>> - do_sect_fault is only called by do_DataAbort and do_PrefetchAbort,
+>>>   in both cases already wrapped in ipipe_fault_entry/exit, thus it
+>>>   shouldn't invoke them once again.
+>>>
+>>> Room for optimization:
+>>> - ipipe_fault_entry is always called with hard IRQs off from
+>>>   do_page_fault and do_translation_fault. I suspect this applies to the
+>>>   remaining callers (do_DataAbort and do_PrefetchAbort ) as well. Thus
+>>>   the hard IRQ state is actually known at compile time, right?
+> 
+> To follow up on this: do_DataAbort and do_PrefetchAbort are always
+> invoked with hard IRQs disable when a regular exception takes us there.
+> Only the ghost syscall cmpxchg simulates do_DataAbort without adjusting
+> hardware interrupt. It's probably easier to adjust that than to account
+> for hw irqs being potentially on an fault entry.
+> 
+>>>
+>>> I can hack up patches, but I'd like to confirm first that I'm not
+>>> missing anything subtle or ARM-specific here.
+>>
+>> Just to explain the original hack.
+>>
+>> Some time ago, the faults handlers were executed irqs on ARM. The
+>> irqs were enabled in entry.S before executing the handlers.
+>>
+>> At some point, this was removed in entry.S and fault handlers
+>> started to be executed irqs off. On ARM, all faults relax to be
+>> handled in secondary mode, actually there is an exception, the FPU,
+>> but it goes through a completely different path which had always
+>> been executed irqs off until recently where the irqs are reenabled
+>> when accessing user-space to be able to handle faults without
+>> lockups. 
+>>
+>> My concern was that the code thus executed could have assertion
+>> about the root domain being stalled which would be fail, so I added
+>> code which stalled root and enabled hardware irqs on fault entry and
+>> unstalled root and disabled hardware irqs on fault exit (which
+>> always happen on root domain). This should have worked even if a fault
+>> had happened to be handled in head domain, because then the
+>> operation would have been a nop (simply stall/then unstall). 
+>>
+>> But Philippe found this dumb approach to fail when working on LPAE,
+>> IIRC. IIRC, namely, if the root domain happens to be stalled when
+>> entering a fault over head domain, it would end up unstalled after
+>> the operation. So, I believe the code he added saves the stall state
+>> on fault entry and restores it on fault exit. I have checked
+>> Philippe's code details at the time and did not find anything wrong.
+> 
+> I suspect the LPAE scenario takes the do_page_fault path? Then it should
 
-Sorry, I just assumed Zhe Su had applied the patch.
+It takes the do_translation_fault path, where the page table fixups will
+happen.
 
 -- 
-					    Gilles.
+Philippe.
 
