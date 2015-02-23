@@ -1,12 +1,12 @@
-Date: Mon, 23 Feb 2015 13:38:49 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150223123849.GA16040@hermes.click-hack.org>
-References: <CANWkrRPBG=3+k4GkcrMEO4fBb=tmvn+XKRR6t8S+p+r_ffm6vg@mail.gmail.com>
+From: =?iso-8859-1?Q?H=E4nel-Baas=2C_Alexander?=
+ <alexander.haenel-baas@sieb-meyer.de>
+Date: Mon, 23 Feb 2015 12:44:21 +0000
+Message-ID: <9BA84827B30CBE4996725F98F7DC912342902DC9@SMExchange01.siebmeyer.org>
+Content-Language: de-DE
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANWkrRPBG=3+k4GkcrMEO4fBb=tmvn+XKRR6t8S+p+r_ffm6vg@mail.gmail.com>
-Subject: Re: [Xenomai] Failed testsuite/latency
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] rt_heap_bind, Error=-11 -> EWOULDBLOCK why?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,29 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Smith <2michael.smith@gmail.com>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Feb 23, 2015 at 02:30:42PM +0200, Michael Smith wrote:
-> Hi.
-> I'm getting an error when trying to run the latency test in Xenomai 3.0.
-> All the other tests seems fine.
-> 
-> My output:
-> 
-> == Sampling period: 100 us
-> == Test mode: periodic user-mode task
-> == All results in microseconds
-> warming up...
-> latency: failed to set periodic, code 9
-> 
-> My architechture is Intel iCore 5.
-> The GIT revision: 52fb91e..
-> Linux kernel: 3.14.28
-> The kernel have been built for architecture i686.
+Hi
 
-Any error on the kernel console ?
+We have a working system with xeno 2.6.4, Kernel 3.14.17 and a Kontron PC T=
+T-Module.
 
--- 
-					    Gilles.
+It is a normal situation: a Pci card with an fpga spends memory and the ker=
+nel driver create the shared mem with rt_crate_heap.
+The userspace program get the memory with rt_bind_heap.
+This works fine.
 
+Now I change only the cpu from TT-Module to a Bytrail-Modul, and now I get =
+the error that the named heap was not found?
+"rt_heap_bind(shmName=3DSLINK4) failed. Error=3D-11"
+
+The kernel says:
+[]sd3:826 map pfn expected mapping type uncached-minus for [mem 0x00050000-=
+0x0005afff], got write-back
+
+I found out, when I add  "nopat" to the kernel cmd line, the rt_heap_bind f=
+unction are lucky.
+But I think this is not the best solution, probably I allocate the memory w=
+ith wrong flags?
+
+Any ideas what must I do?
+
+
+With best regards,
+Alexander H=E4nel-Baas
