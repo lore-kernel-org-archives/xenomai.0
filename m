@@ -1,12 +1,9 @@
 MIME-Version: 1.0
-In-Reply-To: <54E7716B.5000102@mitre.org>
-References: <CALe7ZU2FV4WTd-ACRYwLyz6hC1-7NG3rCqcL3Ke5t=k74DGmeA@mail.gmail.com>
- <54E7716B.5000102@mitre.org>
-Date: Sat, 21 Feb 2015 15:22:39 +0530
-Message-ID: <CALe7ZU1JPecK3Rb4WGNnLxTLkmik0Wo0ZOFbtQqsoK8p7NR=jg@mail.gmail.com>
-From: JAY KOTHARI <jaikothari10@gmail.com>
+From: Michael Smith <2michael.smith@gmail.com>
+Date: Mon, 23 Feb 2015 14:30:42 +0200
+Message-ID: <CANWkrRPBG=3+k4GkcrMEO4fBb=tmvn+XKRR6t8S+p+r_ffm6vg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] rtdm_event_wait not working as expected
+Subject: [Xenomai] Failed testsuite/latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,22 +12,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Thank you Jeff for reply
+Hi.
+I'm getting an error when trying to run the latency test in Xenomai 3.0.
+All the other tests seems fine.
 
-> Are you calling rtdm_event_wait() from a non-RT context? I noticed in my
-> application* that rtdm_event_wait() always returns 0 in non-RT and I
-> needed to ensure rtdm_event_wait() is only called from RT context.
->
+My output:
 
-I am calling from rtdm_event_wait() from function which is in rtdm
-driver real time read function. But its returning 0 with even calling
-rtdm_event_signal().
+== Sampling period: 100 us
+== Test mode: periodic user-mode task
+== All results in microseconds
+warming up...
+latency: failed to set periodic, code 9
 
-> I'm not sure if 0 is the intended return value or not, but the
-> documentation does specify that NRT isn't a valid calling context.
->
-> *Zynq, Kernel 3.8, Xenomai 2.6.4.
->
+My architechture is Intel iCore 5.
+The GIT revision: 52fb91e..
+Linux kernel: 3.14.28
+The kernel have been built for architecture i686.
+
+Regards
+Michael
 
