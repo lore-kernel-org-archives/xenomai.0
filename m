@@ -1,13 +1,13 @@
-Message-ID: <54EB5D02.8080105@xenomai.org>
-Date: Mon, 23 Feb 2015 18:01:54 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <54EB5D10.9050600@siemens.com>
+Date: Mon, 23 Feb 2015 18:02:08 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 References: <54E776E2.2030501@siemens.com> <54E77A52.4010806@siemens.com>
  <54E78EB8.4060204@xenomai.org> <54E78F62.9040505@xenomai.org>
  <54E79086.8030801@xenomai.org> <54EB5021.3030508@siemens.com>
  <54EB5638.3050805@xenomai.org> <20150223163743.GA22377@hermes.click-hack.org>
- <54EB5A45.9000002@siemens.com> <20150223165549.GC22377@hermes.click-hack.org>
-In-Reply-To: <20150223165549.GC22377@hermes.click-hack.org>
+ <54EB5A45.9000002@siemens.com> <20150223165224.GB22377@hermes.click-hack.org>
+In-Reply-To: <20150223165224.GB22377@hermes.click-hack.org>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] ipipe: issues with ARM exception handling
@@ -19,10 +19,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 02/23/2015 05:55 PM, Gilles Chanteperdrix wrote:
+On 2015-02-23 17:52, Gilles Chanteperdrix wrote:
 > On Mon, Feb 23, 2015 at 05:50:13PM +0100, Jan Kiszka wrote:
 >> On 2015-02-23 17:37, Gilles Chanteperdrix wrote:
 >>> On Mon, Feb 23, 2015 at 05:32:56PM +0100, Philippe Gerum wrote:
@@ -143,42 +143,30 @@ On 02/23/2015 05:55 PM, Gilles Chanteperdrix wrote:
 >>
 >> We still need to disable IRQs for root. HW IRQs are likely already on,
 >> right?
+> 
+> Everything is on, hw and sw irqs.
+
+SW IRQs still have to be disabled then, because this is what happens on
+real hw. And we need to ensure the that caller's interrupt state visible
+via the registers to Linux is either updated to reflect the previous
+virtual state or otherwise carried forward so that Linux gets the right
+results.
+
+> 
 >>
 >> And, again, we should refrain from restoring any root irq state on
 >> return - it belongs to Linux (once we migrated and synchronized the state).
 > 
-> The ipipe_fault_exit in my tree is:
-> 
-> static inline void ipipe_fault_exit(unsigned long x)
-> {
-> 	if (!arch_demangle_irq_bits(&x))
-> 		local_irq_enable();
-> 	else
-> 		hard_local_irq_restore(x);
-> }
-> 
-> And I must say I am not sure I understand how it works. To me it
-> seems:
+> I think restoring the root irq state makes sense when the fault
+> handler was entered over root domain.
 
-It mangles both the real and virtual states in one word.
+No, it's wrong, but maybe harmless in most cases (see the other part of
+the thread). We should respect Linux' decision about its IRQ mask, not
+overwrite it.
 
-> hard_local_irq_disable() should always be called in case entry.S
-> expects us to return as we entered: with hw irqs off
-
-Which is what ipipe_fault_exit() does by testing the mangled state. If
-the fault entered with virtual IRQs on, then you must exit with both the
-stall bit and CPSR_I bit cleared.
-
-> And the root state stall bit should only be restored if the fault
-> handler was entered over root domain (otherwise, by relaxing, we
-> synchronized with the root domain, and it does not make sense to
-> stall it upon returning from exception, even if it was stalled at
-> the exception begin).
-> 
-
-You may fault from a kernel context, in which case you do want the
-virtual state to be preserved.
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
