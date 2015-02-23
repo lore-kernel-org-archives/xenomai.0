@@ -1,15 +1,15 @@
-Message-ID: <54EB6E68.3010200@siemens.com>
-Date: Mon, 23 Feb 2015 19:16:08 +0100
+Message-ID: <54EB71B2.9060607@siemens.com>
+Date: Mon, 23 Feb 2015 19:30:10 +0100
 From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <20150223163743.GA22377@hermes.click-hack.org>
- <54EB5A45.9000002@siemens.com> <20150223165549.GC22377@hermes.click-hack.org>
- <54EB5D02.8080105@xenomai.org> <20150223171250.GE22377@hermes.click-hack.org>
- <20150223172146.GG22377@hermes.click-hack.org> <54EB66BB.2060703@siemens.com>
- <20150223175110.GI22377@hermes.click-hack.org> <54EB695C.4000909@siemens.com>
- <20150223180425.GJ22377@hermes.click-hack.org>
- <20150223181124.GK22377@hermes.click-hack.org>
-In-Reply-To: <20150223181124.GK22377@hermes.click-hack.org>
+References: <54E77A52.4010806@siemens.com> <54E78EB8.4060204@xenomai.org>
+ <54E78F62.9040505@xenomai.org> <54E79086.8030801@xenomai.org>
+ <54EB5021.3030508@siemens.com> <54EB5638.3050805@xenomai.org>
+ <20150223163743.GA22377@hermes.click-hack.org> <54EB5A45.9000002@siemens.com>
+ <20150223165224.GB22377@hermes.click-hack.org> <54EB5D10.9050600@siemens.com>
+ <20150223171401.GF22377@hermes.click-hack.org> <54EB657F.4040403@siemens.com>
+ <54EB6836.1060204@siemens.com> <54EB68D7.3010606@siemens.com>
+In-Reply-To: <54EB68D7.3010606@siemens.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] ipipe: issues with ARM exception handling
@@ -21,46 +21,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2015-02-23 19:11, Gilles Chanteperdrix wrote:
-> On Mon, Feb 23, 2015 at 07:04:25PM +0100, Gilles Chanteperdrix wrote:
->> So, finally, I propose:
-> 
-> Mmmm. try again.
-> 
+On 2015-02-23 18:52, Jan Kiszka wrote:
+> On 2015-02-23 18:49, Jan Kiszka wrote:
+>> On 2015-02-23 18:38, Jan Kiszka wrote:
+>>> On 2015-02-23 18:14, Gilles Chanteperdrix wrote:
+>>>> entry.S does not handle virtual irq state. So, if it returns to
+>>>> user-space with the root stage stalled, nothing will unstall it. And
+>>>> you probably get a lockup.
+>>>
+>>> Right, that's a point. I'm seeing this pattern in x86 now as well.
+>>> Comparing further.
+>>>
+>>> What's missing on ARM are flags adjustments in the register set before
+>>> letting Linux inspect that (__fixup_if equivalent). And we should
+>>> probably use ipipe_restore_root_nosync on return.
 >>
->> static inline unsigned long ipipe_fault_entry(void)
->> {
->> 	unsigned long flags;
+>> There is another difference that should be considered carefullly. x86 says
 >>
->> 	local_irq_save(flags);      /* Re-enables hw irqs */
-> 
-> We need the explicit hard_local_irq_enable() here.
-> 
+>>  * If we fault over the root domain, we need to replicate the
+>>  * hw interrupt state into the virtual mask before calling the
+>>  * I-pipe event handler.
 >>
->> 	return flags;
->> }
->>
->> static inline void ipipe_fault_exit(unsigned long x)
->> {
->> 	if (irqs_disabled()) {
->> 		__ipipe_restore_root_nosync(x);
->> 		hard_local_irq_disable();
->> 	}
->> }
+>> and then updates the root state before it calls __ipipe_notify_trap -
+>> why? x86-specific?
 > 
-> We need hard_local_irq_disable() before __ipipe_restore_root_nosync,
-> to avoid the preemption of a Linux interrupt where this should not
-> be possible.
+> The why is referring to the "before calling the I-pipe event handler" -
+> that we have to do this afterwards when we ended up or already were in
+> root is clear.
 
-ipipe_restore_root_nosync?
+It seems this is now - at beast - historic logic of x86. We (no longer?)
+report anything when __ipipe_notify_trap is invoked over the root domain:
 
-But we first need to understand the differences to x86 to be sure that
-we don't miss something. The remaining differences either have to have
-an architecture-specific reason - or one side is still wrong (or
-needlessly complex).
+        /*
+         * We send a notification about all traps raised over a
+         * registered head domain only.
+         */
+        if (__ipipe_root_p)
+                goto out;
+
+Will clean up on x86 soon.
 
 Jan
 
