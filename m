@@ -1,12 +1,14 @@
-Message-ID: <54EB4E8E.8040804@xenomai.org>
-Date: Mon, 23 Feb 2015 17:00:14 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <54EB5021.3030508@siemens.com>
+Date: Mon, 23 Feb 2015 17:06:57 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <CANWkrRPBG=3+k4GkcrMEO4fBb=tmvn+XKRR6t8S+p+r_ffm6vg@mail.gmail.com>
-In-Reply-To: <CANWkrRPBG=3+k4GkcrMEO4fBb=tmvn+XKRR6t8S+p+r_ffm6vg@mail.gmail.com>
+References: <54E776E2.2030501@siemens.com> <54E77A52.4010806@siemens.com>
+ <54E78EB8.4060204@xenomai.org> <54E78F62.9040505@xenomai.org>
+ <54E79086.8030801@xenomai.org>
+In-Reply-To: <54E79086.8030801@xenomai.org>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Failed testsuite/latency
+Subject: Re: [Xenomai] ipipe: issues with ARM exception handling
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,29 +17,116 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Smith <2michael.smith@gmail.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-On 02/23/2015 01:30 PM, Michael Smith wrote:
-> Hi.
-> I'm getting an error when trying to run the latency test in Xenomai 3.0.
-> All the other tests seems fine.
+On 2015-02-20 20:52, Philippe Gerum wrote:
+> On 02/20/2015 08:47 PM, Philippe Gerum wrote:
+>> On 02/20/2015 08:44 PM, Philippe Gerum wrote:
+>>> On 02/20/2015 07:17 PM, Jan Kiszka wrote:
+>>>> On 2015-02-20 19:03, Jan Kiszka wrote:
+>>>>> Hi Gilles,
+>>>>>
+>>>>> analyzing a lockdep warning on 3.16 with I-pipe enabled, I dug deeper
+>>>>> into the hard and virtual interrupt state management during exception
+>>>>> handling on ARM. I think there are several issues:
+>>>>>
+>>>>> - ipipe_fault_entry should not fiddle with the root irq state if run
+>>>>>   over head, only when invoked over root.
+>>>>> - ipipe_fault_exit must not change the root state unless we entered over
+>>>>>   head and are about to leave over root - see x86. The current code may
+>>>>>   keep root incorrectly stalled after an exception, though this will
+>>>>>   probably be fixed up again in practice quickly.
+>>>>
+>>>> And the adjustment of the root irq state after migration has to happen
+>>>> before Linux starts to handle the event. It would basically be a late
+>>>> ipipe_fault_entry.
+>>>>
+>>>>> - do_sect_fault is only called by do_DataAbort and do_PrefetchAbort,
+>>>>>   in both cases already wrapped in ipipe_fault_entry/exit, thus it
+>>>>>   shouldn't invoke them once again.
+>>>>
+>>>> Sorry, this was a misinterpretation - do_sect_fault is invoked before
+>>>> ipipe_fault_entry.
+>>>>
+>>>> What I need to add, though:
+>>>>
+>>>> - do_DataAbort and do_PrefetchAbort call __ipipe_report_trap after
+>>>>   ipipe_fault_entry, thus with hard IRQs on.
+>>>
+>>> This would break LPAE with the Xenomai nucleus as a module on 2.6.x, by
+>>> treading over a non-linear kernel mapping before the page table could be
+>>> fixed up. do_translation_fault() must run via the fsr handler
+>>> indirection before any non-linear access.
+>>>
+>>
+>> Sorry, if you do that _after_ the fault entry notification, then it's ok
+>> in theory. However, I don't understand why we would need to notify when
+>> only a minor fixup is required, that does not entail a mode migration.
+>>
 > 
-> My output:
-> 
-> == Sampling period: 100 us
-> == Test mode: periodic user-mode task
-> == All results in microseconds
-> warming up...
-> latency: failed to set periodic, code 9
-> 
-> My architechture is Intel iCore 5.
-> The GIT revision: 52fb91e..
-> Linux kernel: 3.14.28
-> The kernel have been built for architecture i686.
-> 
+> To be clearer, do you intend to report the minor fault upon
+> do_translation_fault() returning zero, or are you referring to a
+> different context?
 
-The strace output for the failing latency run may help.
+No, I'm just talking about this potential change:
+
+diff --git a/arch/arm/mm/fault.c b/arch/arm/mm/fault.c
+index 38834c6..b42632a 100644
+--- a/arch/arm/mm/fault.c
++++ b/arch/arm/mm/fault.c
+@@ -629,10 +629,10 @@ do_DataAbort(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
+ 	if (!inf->fn(addr, fsr & ~FSR_LNX_PF, regs))
+ 		return;
+ 
+-	irqflags = ipipe_fault_entry();
+-
+ 	if (__ipipe_report_trap(IPIPE_TRAP_UNKNOWN, regs))
+-		goto out;
++		return;
++
++	irqflags = ipipe_fault_entry();
+ 
+ 	printk(KERN_ALERT "Unhandled fault: %s (0x%03x) at 0x%08lx\n",
+ 		inf->name, fsr, addr);
+@@ -642,7 +642,7 @@ do_DataAbort(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
+ 	info.si_code  = inf->code;
+ 	info.si_addr  = (void __user *)addr;
+ 	arm_notify_die("", regs, &info, fsr, 0);
+-out:
++
+ 	ipipe_fault_exit(irqflags);
+ }
+ 
+@@ -669,10 +669,10 @@ do_PrefetchAbort(unsigned long addr, unsigned int ifsr, struct pt_regs *regs)
+ 	if (!inf->fn(addr, ifsr | FSR_LNX_PF, regs))
+ 		return;
+ 
+-	irqflags = ipipe_fault_entry();
+-
+ 	if (__ipipe_report_trap(IPIPE_TRAP_UNKNOWN, regs))
+-		goto out;
++		return;
++
++	irqflags = ipipe_fault_entry();
+ 
+ 	printk(KERN_ALERT "Unhandled prefetch abort: %s (0x%03x) at 0x%08lx\n",
+ 		inf->name, ifsr, addr);
+@@ -682,7 +682,7 @@ do_PrefetchAbort(unsigned long addr, unsigned int ifsr, struct pt_regs *regs)
+ 	info.si_code  = inf->code;
+ 	info.si_addr  = (void __user *)addr;
+ 	arm_notify_die("", regs, &info, ifsr, 0);
+-out:
++
+ 	ipipe_fault_exit(irqflags);
+ }
+ 
+
+This seems more consistent - if not more correct - as it now does the
+reporting with hard irqs off, like in the other cases.
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
