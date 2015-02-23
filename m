@@ -1,14 +1,20 @@
-From: <dietmar.schindler@manroland-web.com>
-Date: Wed, 11 Feb 2015 07:28:58 +0000
-Message-ID: <208C6975C932E94F86239FEA59CCA632DCD5C123@AUSMXMBX02.mrws.biz>
-References: <CAEMXjGxixe5fgX-7uijpcGkNoPzoZcocJxEK-D+VqBdopx4puQ@mail.gmail.com>
- <loom.20150210T153230-142@post.gmane.org>
-In-Reply-To: <loom.20150210T153230-142@post.gmane.org>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Date: Mon, 23 Feb 2015 19:34:43 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150223183443.GM22377@hermes.click-hack.org>
+References: <54EB5D02.8080105@xenomai.org>
+ <20150223171250.GE22377@hermes.click-hack.org>
+ <20150223172146.GG22377@hermes.click-hack.org>
+ <54EB66BB.2060703@siemens.com>
+ <20150223175110.GI22377@hermes.click-hack.org>
+ <54EB695C.4000909@siemens.com>
+ <20150223180425.GJ22377@hermes.click-hack.org>
+ <20150223181124.GK22377@hermes.click-hack.org>
+ <54EB6E68.3010200@siemens.com> <54EB7235.4000401@siemens.com>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Bosch CCAN/DCAN driver for RTDM
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <54EB7235.4000401@siemens.com>
+Subject: Re: [Xenomai] ipipe: issues with ARM exception handling
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,24 +23,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-PiBWb246IEFsZnJlZCBLb2VnZWwNCj4gR2VzZW5kZXQ6IERpZW5zdGFnLCAxMC4gRmVicnVhciAy
-MDE1IDE1OjM5DQo+IC4uLg0KPiBJIGludGVuZGVkIHRvIGRvIGEgcG9ydCBhIGZldyBtb250aHMg
-YWdvLCBiZWNhdXNlIGkgc3RhcnRlZCBhIHByb2plY3Qgd2l0aCBhDQo+IEF0b23ihKIgRTY0MCBj
-cHUuLi4NCg0KT2YgY291cnNlLCBBdG9tIGFsb25lIGlzbid0IGEgdHJhZGVtYXJrIC0gb25seSBJ
-bnRlbMKuIEF0b23ihKIgaXMuDQotLQ0KUmVnYXJkcywNCkRpZXRtYXIgU2NoaW5kbGVyDQpfX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KbWFucm9sYW5kIHdlYiBzeXN0ZW1zIEdtYkgg
-LS0gTWFuYWdpbmcgRGlyZWN0b3I6IEpvZXJuIEdvc3NlDQpSZWdpc3RlcmVkIE9mZmljZTogQXVn
-c2J1cmcgLS0gVHJhZGUgUmVnaXN0ZXI6IEFHIEF1Z3NidXJnIC0tIEhSQi1Oby46IDI2ODE2IC0t
-IFZBVDogREUyODEzODk4NDANCg0KQ29uZmlkZW50aWFsaXR5IG5vdGU6DQpUaGlzIGVNYWlsIGFu
-ZCBhbnkgZmlsZXMgdHJhbnNtaXR0ZWQgd2l0aCBpdCBhcmUgY29uZmlkZW50aWFsIGFuZCBpbnRl
-bmRlZCBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGluZGl2aWR1YWwgb3IgZW50aXR5IHRvIHdo
-b20gdGhleSBhcmUgYWRkcmVzc2VkLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBp
-ZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0aGF0IGFueSB1c2Ugb3IgZGlzc2VtaW5hdGlv
-biBvZiB0aGlzIGNvbW11bmljYXRpb24gaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhh
-dmUgcmVjZWl2ZWQgdGhpcyBlTWFpbCBpbiBlcnJvciwgdGhlbiBwbGVhc2UgZGVsZXRlIHRoaXMg
-ZU1haWwuDQoNCiEgUGxlYXNlIGNvbnNpZGVyIHlvdXIgZW52aXJvbm1lbnRhbCByZXNwb25zaWJp
-bGl0eSBiZWZvcmUgcHJpbnRpbmcgdGhpcyBlTWFpbCAhDQpfX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXw0K
+On Mon, Feb 23, 2015 at 07:32:21PM +0100, Jan Kiszka wrote:
+> On 2015-02-23 19:16, Jan Kiszka wrote:
+> > On 2015-02-23 19:11, Gilles Chanteperdrix wrote:
+> >> On Mon, Feb 23, 2015 at 07:04:25PM +0100, Gilles Chanteperdrix wrote:
+> >>> So, finally, I propose:
+> >>
+> >> Mmmm. try again.
+> >>
+> >>>
+> >>> static inline unsigned long ipipe_fault_entry(void)
+> >>> {
+> >>> 	unsigned long flags;
+> >>>
+> >>> 	local_irq_save(flags);      /* Re-enables hw irqs */
+> >>
+> >> We need the explicit hard_local_irq_enable() here.
+> 
+> And we need to fix up regs->ARM_cpsr according to flags.
+
+No, we have no reason to fix up regs->ARM_cpsr.
+
+It has been saved when entering the exception, and contains the
+state of the calling context. It needs to be restored exactly as it
+is.
+
+-- 
+					    Gilles.
 
