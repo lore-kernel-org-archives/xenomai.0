@@ -1,17 +1,17 @@
-Date: Mon, 23 Feb 2015 18:12:50 +0100
+Date: Mon, 23 Feb 2015 18:14:01 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150223171250.GE22377@hermes.click-hack.org>
+Message-ID: <20150223171401.GF22377@hermes.click-hack.org>
 References: <54E77A52.4010806@siemens.com> <54E78EB8.4060204@xenomai.org>
  <54E78F62.9040505@xenomai.org> <54E79086.8030801@xenomai.org>
  <54EB5021.3030508@siemens.com> <54EB5638.3050805@xenomai.org>
  <20150223163743.GA22377@hermes.click-hack.org>
  <54EB5A45.9000002@siemens.com>
- <20150223165549.GC22377@hermes.click-hack.org>
- <54EB5D02.8080105@xenomai.org>
+ <20150223165224.GB22377@hermes.click-hack.org>
+ <54EB5D10.9050600@siemens.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <54EB5D02.8080105@xenomai.org>
+In-Reply-To: <54EB5D10.9050600@siemens.com>
 Subject: Re: [Xenomai] ipipe: issues with ARM exception handling
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -21,11 +21,11 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Mon, Feb 23, 2015 at 06:01:54PM +0100, Philippe Gerum wrote:
-> On 02/23/2015 05:55 PM, Gilles Chanteperdrix wrote:
+On Mon, Feb 23, 2015 at 06:02:08PM +0100, Jan Kiszka wrote:
+> On 2015-02-23 17:52, Gilles Chanteperdrix wrote:
 > > On Mon, Feb 23, 2015 at 05:50:13PM +0100, Jan Kiszka wrote:
 > >> On 2015-02-23 17:37, Gilles Chanteperdrix wrote:
 > >>> On Mon, Feb 23, 2015 at 05:32:56PM +0100, Philippe Gerum wrote:
@@ -146,45 +146,30 @@ On Mon, Feb 23, 2015 at 06:01:54PM +0100, Philippe Gerum wrote:
 > >>
 > >> We still need to disable IRQs for root. HW IRQs are likely already on,
 > >> right?
+> > 
+> > Everything is on, hw and sw irqs.
+> 
+> SW IRQs still have to be disabled then, because this is what happens on
+> real hw. And we need to ensure the that caller's interrupt state visible
+> via the registers to Linux is either updated to reflect the previous
+> virtual state or otherwise carried forward so that Linux gets the right
+> results.
+> 
+> > 
 > >>
 > >> And, again, we should refrain from restoring any root irq state on
 > >> return - it belongs to Linux (once we migrated and synchronized the state).
 > > 
-> > The ipipe_fault_exit in my tree is:
-> > 
-> > static inline void ipipe_fault_exit(unsigned long x)
-> > {
-> > 	if (!arch_demangle_irq_bits(&x))
-> > 		local_irq_enable();
-> > 	else
-> > 		hard_local_irq_restore(x);
-> > }
-> > 
-> > And I must say I am not sure I understand how it works. To me it
-> > seems:
+> > I think restoring the root irq state makes sense when the fault
+> > handler was entered over root domain.
 > 
-> It mangles both the real and virtual states in one word.
-> 
-> > hard_local_irq_disable() should always be called in case entry.S
-> > expects us to return as we entered: with hw irqs off
-> 
-> Which is what ipipe_fault_exit() does by testing the mangled state. If
-> the fault entered with virtual IRQs on, then you must exit with both the
-> stall bit and CPSR_I bit cleared.
+> No, it's wrong, but maybe harmless in most cases (see the other part of
+> the thread). We should respect Linux' decision about its IRQ mask, not
+> overwrite it.
 
-Absolutely not. Imagine a Linux task, with root unstalled
-experiencing a fault. entry.S is entered root is still unstalled,
-with hardware irqs off. On fault entry, we must reflect this
-hardware irq state on the stall bit and enable hw irqs. Then when
-the fault is handled, undo that, unstall the root stage, disable hw
-irqs and return to entry.S, so that it may resume the execution of
-the Linux task. If it returns quickly to user-space, a stalled root
-at this point would be a disaster, because nothing, certainly not
-entry.S will unstall the root stage.
-
-Then there is the case where Linux re-enables irqs in the course of
-the handler, in that case, we should not return to entry.S with hw
-irqs off.
+entry.S does not handle virtual irq state. So, if it returns to
+user-space with the root stage stalled, nothing will unstall it. And
+you probably get a lockup.
 
 -- 
 					    Gilles.
