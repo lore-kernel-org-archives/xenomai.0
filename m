@@ -1,11 +1,13 @@
-Date: Thu, 05 Mar 2015 13:30:08 +0100
-From: "Mariusz Janiak" <mariuszjaniak@wp.pl>
-Message-ID: <54f84c50d46d43.78129076@wp.pl>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Subject: Re: [Xenomai] status of rtnet
+In-Reply-To: <54EB4E8E.8040804@xenomai.org>
+References: <CANWkrRPBG=3+k4GkcrMEO4fBb=tmvn+XKRR6t8S+p+r_ffm6vg@mail.gmail.com>
+ <54EB4E8E.8040804@xenomai.org>
+From: Bart Vissers <bvissers@e2mtechnologies.eu>
+Date: Tue, 24 Feb 2015 14:28:58 +0100
+Message-ID: <CAB+DZ3=s-pHrt=U_YN5qYo7Vtic9f-WfQQBwK3znBTdN_iVOmw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Failed testsuite/latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,26 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: rtnet-developers@lists.sourceforge.net, Aaron.Wu@analog.com, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Michael Smith <2michael.smith@gmail.com>, xenomai@xenomai.org
 
-> On 2015-03-05 06:51, Wu, Aaron wrote:
-> > Hello,
-> > 
-> >>From http://www.rtnet.org I saw the latest release of rtnet is years ago, latest kernel support is 3.2. What's the status and roadmap of this project? Any plan/schedule to support the newer version of kernel and xenomai?
-> 
-> Fortunately, RTnet has been "adopted" by the Xenomai project (its list
-> is on CC). So the next RTnet release will actually be the next major
-> Xenomai release: 3.0. You can already pick up the latest 3.0-rc of
-> Xenomai to obtain a more recent version than what can be found in the
-> RTnet git.
-
-The second option is to chose Xenomai 2.6.4, kernel 3.14.17, and RTnet git with patch 0001-Fix-compilatin-issues-on-kernel-above-3.10.patch available here
-
-http://sourceforge.net/p/rtnet/mailman/attachment/548fe484eab803.95654079%40wp.pl/1/
-
-Regards,
-Mariusz
-
-
-
+SGksCgpJIHJhbiBpbnRvIHRoZSBleGFjdCBzYW1lIGVycm9yLiBNeSBzZXR1cDoKLSB4ZW5vbWFp
+XzMuMHJjMwotIExpbnV4IGtlcm5lbCAzLjE2Ljcgd2l0aCBpcGlwZS1jb3JlLTMuMTYteDg2LTIu
+cGF0Y2gKSSBvbmx5IGRldmlhdGVkIGZyb20gdGhlIGRlZmF1bHQgYnVpbGQgZ3VpZGUgdG8gYnVp
+bGQgZGViaWFuIHBhY2thZ2VzLgoKQXR0YWNoZWQsIGlzIHRoZSBrZXJuZWwgY29uZmlnLCBkbWVz
+ZyBsb2cgKG5vIGVycm9ycykgYW5kIHN0cmFjZSBvdXRwdXQuCgpCZXN0IHJlZ2FyZHMsCkJhcnQK
+LS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNo
+bWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc3RyYWNlLmxvZwpUeXBlOiBhcHBsaWNhdGlvbi9v
+Y3RldC1zdHJlYW0KU2l6ZTogODkxOSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0
+dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTAy
+MjQvN2M5ZjM3YTcvYXR0YWNobWVudC5vYmo+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0t
+LS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGNv
+bmZpZwpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTogMTM3MzA2IGJ5dGVzCkRl
+c2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwv
+eGVub21haS9hdHRhY2htZW50cy8yMDE1MDIyNC83YzlmMzdhNy9hdHRhY2htZW50LTAwMDEub2Jq
+PgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRh
+Y2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBkbWVzZy5sb2cKVHlwZTogYXBwbGljYXRpb24v
+b2N0ZXQtc3RyZWFtClNpemU6IDUwMTM0IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8
+aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1
+MDIyNC83YzlmMzdhNy9hdHRhY2htZW50LTAwMDIub2JqPgo=
