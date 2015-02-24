@@ -1,12 +1,11 @@
-Message-ID: <54F43A5D.1050704@xenomai.org>
-Date: Mon, 02 Mar 2015 11:24:29 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <54F01C44.9090000@ebus.com>
-In-Reply-To: <54F01C44.9090000@ebus.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Detecting closure of non-RT end of XDDP from userspace
+References: <CAB6vvjmqqX1_NbPLDOmwkd=htsC+z3b99H8BwSYXgRYhXty+=A@mail.gmail.com>
+From: Antoine Hoarau <hoarau.robotics@gmail.com>
+Date: Tue, 24 Feb 2015 12:00:39 +0000
+Message-ID: <CAB6vvjkMFGZJqzu3z-_ySfDmC1di6_8-A_=YyjU4N6PitF9fmA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] rtnet issue with xenomai-3.git next branch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,138 +14,149 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Doug Brunner <dbrunner@ebus.com>, Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 02/27/2015 08:27 AM, Doug Brunner wrote:
-> Hi all,
-> 
-> I have a need for an RT task that communicates with Linux tasks through
-> XDDP to tell when the Linux process has closed /dev/rtpN. In this case the
-> RT task is acting as a server of sorts from which Linux processes retrieve
-> data, and if an ill-behaved Linux process dies, the RT task needs to clean
-> up its connection state in order to not flood the hapless Linux process
-> that connects next with all the data that built up in the XDDP buffers. I
-> would rather avoid implementing a heartbeat mechanism (RT task watches for
-> periodic "I'm alive" signal from Linux process), because of the many
-> moving parts this would introduce.
-> 
-> It looks like the information is there - xnpipe_state::status (please
-> forgive my C++ scoping operator :)) has a bit indicating whether the Linux
-> side is connected, XNPIPE_USER_CONN. I was thinking of adding a function
-> xnpipe_get_status, which retrieves the status word:
-> 
-> int xnpipe_get_status(int minor, unsigned long *out);
-> 
-> The XDDP getsockopt() can then return this information to userspace,
-> mirroring how Linux sockets behave (if I understand correctly):
-> 
-> int err;
-> getsockopt(fd, SOL_SOCKET, SO_ERROR, &err, sizeof(err));
-> if(err == 0) {
->     /* socket is connected on Linux end */
-> }
-> else if(err == EPIPE) {
->     /* socket is not connected on Linux end*/
-> }
-> 
-> One other possibility would be to add a socket option that, when set,
-> causes sendmsg() and recvmsg() to fail with EPIPE if the Linux end of the
-> pipe is not connected.
-> 
-> Does either/both of these seem like a good idea?
-> 
+And I forgot to mention that I need the 'noapic' to be able to boot, but
+that was the case also before the patch.
 
-Yes, I think so. Fixing send/receive seems the most appropriate option,
-since the current implementation is half-baked with respect to this
-issue. In addition, this could be paired with select() for Xenomai 3.x.
+Le Tue Feb 24 2015 at 11:39:44 AM, Antoine Hoarau <hoarau.robotics@gmail.co=
+m>
+a =C3=A9crit :
 
-Actually, the code detects when the nrt peer disconnects and it notifies
-the rt peer accordingly, but only when the latter is currently blocked
-on input. But, if the rt peer attempts to read from the channel _after_
-the nrt side has disconnected, the former is simply put to sleep,
-waiting for the next nrt peer to connect and send data, which is broken.
-
-On the send side, the rt peer is currently allowed to log output before
-the _next_ nrt peer connects to the same channel, at which point the
-logged data can be received. This was a deliberate choice, because
-synchronizing both peers so that channel nrt/rt endpoints are opened in
-any required sequence at application startup, would have been a pain in
-the common case.
-
-We could change this to logging output solely before the _first_ nrt
-peer connects to the channel instead, then returning -EPIPE for any send
-request received after the nrt peer has dropped the connection. However,
-although I'm willing to do it that way in Xenomai 3.x, I'm wary of such
-change in Xenomai 2.6.x for backward compatibility reason, although
-there would be no issue to adapt existing code which currently rely on
-this undocumented behavior.
-
-Here is a patch for 2.6.x implementing both changes. I'd be interested
-to know whether it addresses the issue you mentioned:
-
-diff --git a/include/nucleus/pipe.h b/include/nucleus/pipe.h
-index a4fa785..aec2459 100644
---- a/include/nucleus/pipe.h
-+++ b/include/nucleus/pipe.h
-@@ -54,6 +54,7 @@
- #define XNPIPE_USER_WREAD_READY  0x20
- #define XNPIPE_USER_WSYNC        0x40
- #define XNPIPE_USER_WSYNC_READY  0x80
-+#define XNPIPE_USER_GONE	 0x100
-
- #define XNPIPE_USER_ALL_WAIT \
- (XNPIPE_USER_WREAD|XNPIPE_USER_WSYNC)
-diff --git a/ksrc/nucleus/pipe.c b/ksrc/nucleus/pipe.c
-index 3c4dccf..8422a14 100644
---- a/ksrc/nucleus/pipe.c
-+++ b/ksrc/nucleus/pipe.c
-@@ -438,6 +438,11 @@ ssize_t xnpipe_send(int minor, struct xnpipe_mh
-*mh, size_t size, int flags)
- 		return -EBADF;
- 	}
-
-+	if (testbits(state->status, XNPIPE_USER_GONE)) {
-+		xnlock_put_irqrestore(&nklock, s);
-+		return -EPIPE;
-+	}
-+
- 	inith(xnpipe_m_link(mh));
- 	xnpipe_m_size(mh) = size - sizeof(*mh);
- 	xnpipe_m_rdoff(mh) = 0;
-@@ -528,6 +533,11 @@ ssize_t xnpipe_recv(int minor, struct xnpipe_mh
-**pmh, xnticks_t timeout)
- 		goto unlock_and_exit;
- 	}
-
-+	if (testbits(state->status, XNPIPE_USER_GONE)) {
-+		ret = -EIDRM;
-+		goto unlock_and_exit;
-+	}
-+
- 	curr = xnpod_current_thread();
-
- 	while ((h = getq(&state->inq)) == NULL) {
-@@ -659,7 +669,7 @@ static int xnpipe_open(struct inode *inode, struct
-file *file)
-
- 	__clrbits(state->status,
- 		  XNPIPE_USER_ALL_WAIT | XNPIPE_USER_ALL_READY |
--		  XNPIPE_USER_SIGIO);
-+		  XNPIPE_USER_SIGIO | XNPIPE_USER_GONE);
-
- 	if (!testbits(state->status, XNPIPE_KERN_CONN)) {
- 		if (testbits(file->f_flags, O_NONBLOCK)) {
-@@ -695,6 +705,7 @@ static int xnpipe_release(struct inode *inode,
-struct file *file)
-
- 	xnpipe_dequeue_all(state, XNPIPE_USER_WREAD);
- 	xnpipe_dequeue_all(state, XNPIPE_USER_WSYNC);
-+	__setbits(state->status, XNPIPE_USER_GONE);
-
- 	if (testbits(state->status, XNPIPE_KERN_CONN)) {
- 		/* Unblock waiters. */
-
-
--- 
-Philippe.
-
+> > Please stay on the list.
+> My bad.
+> >Ok, maybe a consequence of the udp module bug. Please try again with
+> >the patch applied, and if you still get the bug, we will investigate
+> >further. Please try and enable frame pointers so as to get more
+> >meaningful stack traces.
+> I tried the patch, rtudp is now correctly loaded, but et rtnet start, the
+> system hangs, and I can't print/see any kernel debug...
+>
+>
+>
+> Le Tue Feb 24 2015 at 10:35:38 AM, Gilles Chanteperdrix <
+> gilles.chanteperdrix@xenomai.org> a =C3=A9crit :
+>
+> On Mon, Feb 23, 2015 at 06:13:39PM +0000, Antoine Hoarau wrote:
+>> > I'm actually not able to test it, but maybe this is a different proble=
+m.
+>> > Here's my script :
+>> >
+>> > cd /usr/xenomai/sbin/
+>> > sudo ./rtifconfig rteth0 down
+>> > sudo rmmod rtipv4
+>> > sudo rmmod rt_e1000e
+>> > sudo rmmod rtnet
+>> > sudo mknod /dev/rtnet c 10 240
+>> > sudo ./rtnet start # 1)
+>> > sudo ./rtifconfig rteth0 up 192.168.100.101 netmask 255.255.255.0 # 2)
+>> > sudo ./rtroute solicit 192.168.100.102 dev rteth0
+>> > sudo ./rtifconfig # 4)
+>> > sudo ./rtroute # 5)
+>> > sudo ./rtping 192.168.100.102 # Stalls
+>> >
+>> > 1) FATAL: Error inserting rtudp (/lib/modules/3.16.0-xenomai-
+>> > 3rc3/kernel/drivers/xenomai/net/stack/ipv4/udp/rtudp.ko): Invalid
+>> argument
+>>
+>> Please try the following patch:
+>> diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+>> b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+>> index d6a7b7d..607bdbe 100644
+>> --- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+>> +++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+>> @@ -2118,6 +2118,7 @@ static struct rtdm_driver tcp_driver =3D {
+>>                                         RTDM_CLASS_NETWORK,
+>>                                         RTDM_SUBCLASS_RTNET,
+>>                                         RTNET_RTDM_VER),
+>> +    .device_count =3D     1,
+>>      .device_flags =3D     RTDM_PROTOCOL_DEVICE,
+>>      .context_size =3D     sizeof(struct tcp_socket),
+>>
+>> diff --git a/kernel/drivers/net/stack/ipv4/udp/udp.c
+>> b/kernel/drivers/net/stack/ipv4/udp/udp.c
+>> index 3966e54..538712a 100644
+>> --- a/kernel/drivers/net/stack/ipv4/udp/udp.c
+>> +++ b/kernel/drivers/net/stack/ipv4/udp/udp.c
+>> @@ -707,6 +707,7 @@ static struct rtdm_driver udp_driver =3D {
+>>                                          RTDM_SUBCLASS_RTNET,
+>>                                          RTNET_RTDM_VER),
+>>      .device_flags =3D     RTDM_PROTOCOL_DEVICE,
+>> +    .device_count =3D     1,
+>>      .context_size =3D     sizeof(struct rtsocket),
+>>
+>>      .protocol_family =3D  PF_INET,
+>>
+>>
+>> >
+>> > dmesg :
+>> >
+>> > [  146.895062] *** RTnet for Xenomai v3.0-rc3 ***
+>> > [  146.895062]
+>> > [  146.895064] RTnet: initialising real-time networking
+>> > [  146.897459] rt_e1000e: Intel(R) PRO/1000 Network Driver - 1.5.1-k-r=
+t
+>> > [  146.897461] rt_e1000e: Copyright(c) 1999 - 2011 Intel Corporation.
+>> > [  146.897475] rt_e1000e 0000:05:00.0: Disabling ASPM L0s
+>> > [  146.897674] rt_e1000e 0000:05:00.0: irq 47 for MSI/MSI-X
+>> > [  146.897677] rt_e1000e 0000:05:00.0: irq 48 for MSI/MSI-X
+>> > [  146.897679] rt_e1000e 0000:05:00.0: irq 49 for MSI/MSI-X
+>> > [  147.008138] RTnet: registered rteth0
+>> > [  147.008141] rt_e1000e: (PCI Express:2.5GT/s:Width x1)
+>> 68:05:ca:32:c9:ab
+>> > [  147.008142] rt_e1000e: Intel(R) PRO/1000 Network Connection
+>> > [  147.008153] rt_e1000e: MAC: 3, PHY: 8, PBA No: E46981-008
+>> >
+>> > 2) dmesg:
+>> > [  308.518107] RTnet: dropping packet in rtnetif_rx()
+>> > [  308.519118] RTnet: dropping packet in rtnetif_rx()
+>> > [  308.520108] RTnet: dropping packet in rtnetif_rx()
+>> > [  308.521119] RTnet: dropping packet in rtnetif_rx()
+>> > [  308.522109] RTnet: dropping packet in rtnetif_rx()
+>> > [  308.523119] RTnet: dropping packet in rtnetif_rx()
+>> >
+>> >
+>> > 3)
+>> > rteth0    Medium: Ethernet  Hardware address: 68:05:CA:32:C9:AB
+>> >           IP address: 192.168.100.101  Broadcast address:
+>> 192.168.100.255
+>> >           UP BROADCAST RUNNING  MTU: 1500
+>> >
+>> > 4)
+>> > Host Routing Table
+>> > Hash Destination HW Address Device
+>> > 26 192.168.100.102 90:E2:BA:26:72:15 rteth0
+>> > 3F 192.168.100.255 FF:FF:FF:FF:FF:FF rteth0
+>> >
+>> > The rtnet.conf :
+>> >
+>> > RT_DRIVER=3D"rt_e1000e"
+>> > REBIND_RT_NICS=3D""
+>> > IPADDR=3D"192.168.100.101"
+>> > NETMASK=3D"255.255.255.0"
+>> > RT_LOOPBACK=3D"yes"
+>> > RT_PROTOCOLS=3D"udp packet"
+>> > RTCAP=3D"no"
+>> > TDMA_MODE=3D"master"
+>> > TDMA_SLAVES=3D"" # this worked in rtnet 0.9.13+xeno 2.4.3
+>> >
+>> > Thank you for your help,
+>> >
+>> > Antoine
+>> >
+>> > EDIT : I just saw there's a kernel bug occuring, please find attached
+>> the
+>> > log
+>>
+>> Ok, maybe a consequence of the udp module bug. Please try again with
+>> the patch applied, and if you still get the bug, we will investigate
+>> further. Please try and enable frame pointers so as to get more
+>> meaningful stack traces.
+>>
+>> Please stay on the list.
+>>
+>> --
+>>                                             Gilles.
+>>
+>
