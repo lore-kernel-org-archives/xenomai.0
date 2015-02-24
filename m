@@ -1,23 +1,10 @@
-Message-ID: <54F01982.20902@optusnet.com.au>
-Date: Fri, 27 Feb 2015 18:15:14 +1100
-From: Tom Evans <tom_usenet@optusnet.com.au>
 MIME-Version: 1.0
-References: <44bnkqho7e.fsf@lowell-desk.lan>
- <20150218220804.GR30317@hermes.click-hack.org>
- <44pp9633yh.fsf@lowell-desk.lan> <447fvc5q6z.fsf@be-well.ilk.org>
- <20150220225712.GE2356@hermes.click-hack.org>
- <448ufmewxt.fsf@be-well.ilk.org>
- <20150224233439.GL14148@hermes.click-hack.org>
- <44siduq7us.fsf@be-well.ilk.org> <54EE07A9.4040702@xenomai.org>
- <444mq9lo5c.fsf@be-well.ilk.org> <44vbipk8m9.fsf@be-well.ilk.org>
- <54EF014A.9000902@xenomai.org> <447fv4sk55.fsf@lowell-desk.lan>
- <54EF5E45.30907@xenomai.org> <44a900eaqu.fsf@lowell-desk.lan>
- <54EF8115.6030200@xenomai.org> <44wq34cmfh.fsf@lowell-desk.lan>
-In-Reply-To: <44wq34cmfh.fsf@lowell-desk.lan>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] interrupt service
-Reply-To: tom_usenet@optusnet.com.au
+From: Antoine Hoarau <hoarau.robotics@gmail.com>
+Date: Tue, 24 Feb 2015 10:39:48 +0000
+Message-ID: <CAB6vvjmqqX1_NbPLDOmwkd=htsC+z3b99H8BwSYXgRYhXty+=A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] rtnet issue with xenomai-3.git next branch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,33 +13,140 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lowell Gilbert <kludge@be-well.ilk.org>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 27/02/15 09:55, Lowell Gilbert wrote:
-> There isn't any useful Linux activity happening there. I just need to
-> keep it from interfering much with the *other* CPU.
-
-You may wish to check this where I remember a problem that may be related:
-
-https://community.freescale.com/thread/328465
-
-Points to:
-
-http://www.arm.com/files/pdf/cachecoherencywhitepaper_6june2011.pdf
-
-Contains:
-
-     Measurements taken on a dual core Cortex-A9 at 1GHz
-     with a 256K L2 cache showed that cache flushing can
-     take of the order of 100us.
-
-If one core flushes the L2 cache and the other core has a miss and goes to try 
-and read from the L2, then I think it can be stalled for all that period. I 
-seem to remember from when I read this that a cache flush can stall the other 
-core even when it doesn't need to access L2.
-
-A driver on the Linux core could lock the whole system up.
-
-Tom
+> Please stay on the list.
+My bad.
+>Ok, maybe a consequence of the udp module bug. Please try again with
+>the patch applied, and if you still get the bug, we will investigate
+>further. Please try and enable frame pointers so as to get more
+>meaningful stack traces.
+I tried the patch, rtudp is now correctly loaded, but et rtnet start, the
+system hangs, and I can't print/see any kernel debug...
 
 
+
+Le Tue Feb 24 2015 at 10:35:38 AM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> a =C3=A9crit :
+
+On Mon, Feb 23, 2015 at 06:13:39PM +0000, Antoine Hoarau wrote:
+> > I'm actually not able to test it, but maybe this is a different problem=
+.
+> > Here's my script :
+> >
+> > cd /usr/xenomai/sbin/
+> > sudo ./rtifconfig rteth0 down
+> > sudo rmmod rtipv4
+> > sudo rmmod rt_e1000e
+> > sudo rmmod rtnet
+> > sudo mknod /dev/rtnet c 10 240
+> > sudo ./rtnet start # 1)
+> > sudo ./rtifconfig rteth0 up 192.168.100.101 netmask 255.255.255.0 # 2)
+> > sudo ./rtroute solicit 192.168.100.102 dev rteth0
+> > sudo ./rtifconfig # 4)
+> > sudo ./rtroute # 5)
+> > sudo ./rtping 192.168.100.102 # Stalls
+> >
+> > 1) FATAL: Error inserting rtudp (/lib/modules/3.16.0-xenomai-
+> > 3rc3/kernel/drivers/xenomai/net/stack/ipv4/udp/rtudp.ko): Invalid
+> argument
+>
+> Please try the following patch:
+> diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+> b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+> index d6a7b7d..607bdbe 100644
+> --- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+> +++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+> @@ -2118,6 +2118,7 @@ static struct rtdm_driver tcp_driver =3D {
+>                                         RTDM_CLASS_NETWORK,
+>                                         RTDM_SUBCLASS_RTNET,
+>                                         RTNET_RTDM_VER),
+> +    .device_count =3D     1,
+>      .device_flags =3D     RTDM_PROTOCOL_DEVICE,
+>      .context_size =3D     sizeof(struct tcp_socket),
+>
+> diff --git a/kernel/drivers/net/stack/ipv4/udp/udp.c
+> b/kernel/drivers/net/stack/ipv4/udp/udp.c
+> index 3966e54..538712a 100644
+> --- a/kernel/drivers/net/stack/ipv4/udp/udp.c
+> +++ b/kernel/drivers/net/stack/ipv4/udp/udp.c
+> @@ -707,6 +707,7 @@ static struct rtdm_driver udp_driver =3D {
+>                                          RTDM_SUBCLASS_RTNET,
+>                                          RTNET_RTDM_VER),
+>      .device_flags =3D     RTDM_PROTOCOL_DEVICE,
+> +    .device_count =3D     1,
+>      .context_size =3D     sizeof(struct rtsocket),
+>
+>      .protocol_family =3D  PF_INET,
+>
+>
+> >
+> > dmesg :
+> >
+> > [  146.895062] *** RTnet for Xenomai v3.0-rc3 ***
+> > [  146.895062]
+> > [  146.895064] RTnet: initialising real-time networking
+> > [  146.897459] rt_e1000e: Intel(R) PRO/1000 Network Driver - 1.5.1-k-rt
+> > [  146.897461] rt_e1000e: Copyright(c) 1999 - 2011 Intel Corporation.
+> > [  146.897475] rt_e1000e 0000:05:00.0: Disabling ASPM L0s
+> > [  146.897674] rt_e1000e 0000:05:00.0: irq 47 for MSI/MSI-X
+> > [  146.897677] rt_e1000e 0000:05:00.0: irq 48 for MSI/MSI-X
+> > [  146.897679] rt_e1000e 0000:05:00.0: irq 49 for MSI/MSI-X
+> > [  147.008138] RTnet: registered rteth0
+> > [  147.008141] rt_e1000e: (PCI Express:2.5GT/s:Width x1)
+> 68:05:ca:32:c9:ab
+> > [  147.008142] rt_e1000e: Intel(R) PRO/1000 Network Connection
+> > [  147.008153] rt_e1000e: MAC: 3, PHY: 8, PBA No: E46981-008
+> >
+> > 2) dmesg:
+> > [  308.518107] RTnet: dropping packet in rtnetif_rx()
+> > [  308.519118] RTnet: dropping packet in rtnetif_rx()
+> > [  308.520108] RTnet: dropping packet in rtnetif_rx()
+> > [  308.521119] RTnet: dropping packet in rtnetif_rx()
+> > [  308.522109] RTnet: dropping packet in rtnetif_rx()
+> > [  308.523119] RTnet: dropping packet in rtnetif_rx()
+> >
+> >
+> > 3)
+> > rteth0    Medium: Ethernet  Hardware address: 68:05:CA:32:C9:AB
+> >           IP address: 192.168.100.101  Broadcast address: 192.168.100.2=
+55
+> >           UP BROADCAST RUNNING  MTU: 1500
+> >
+> > 4)
+> > Host Routing Table
+> > Hash Destination HW Address Device
+> > 26 192.168.100.102 90:E2:BA:26:72:15 rteth0
+> > 3F 192.168.100.255 FF:FF:FF:FF:FF:FF rteth0
+> >
+> > The rtnet.conf :
+> >
+> > RT_DRIVER=3D"rt_e1000e"
+> > REBIND_RT_NICS=3D""
+> > IPADDR=3D"192.168.100.101"
+> > NETMASK=3D"255.255.255.0"
+> > RT_LOOPBACK=3D"yes"
+> > RT_PROTOCOLS=3D"udp packet"
+> > RTCAP=3D"no"
+> > TDMA_MODE=3D"master"
+> > TDMA_SLAVES=3D"" # this worked in rtnet 0.9.13+xeno 2.4.3
+> >
+> > Thank you for your help,
+> >
+> > Antoine
+> >
+> > EDIT : I just saw there's a kernel bug occuring, please find attached t=
+he
+> > log
+>
+> Ok, maybe a consequence of the udp module bug. Please try again with
+> the patch applied, and if you still get the bug, we will investigate
+> further. Please try and enable frame pointers so as to get more
+> meaningful stack traces.
+>
+> Please stay on the list.
+>
+> --
+>                                             Gilles.
+>
