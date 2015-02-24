@@ -1,14 +1,13 @@
-Message-ID: <54F716CC.1010600@xenomai.org>
-Date: Wed, 04 Mar 2015 15:29:32 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Tue, 24 Feb 2015 14:29:11 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150224132911.GA14148@hermes.click-hack.org>
+References: <9BA84827B30CBE4996725F98F7DC912342902FDB@SMExchange01.siebmeyer.org>
 MIME-Version: 1.0
-References: <CAKk99t1N5b0_iQerSxPyKmMTLC8PePTJCO9zzFLdkmt_mDiiVg@mail.gmail.com>	<54F5BE3F.4010008@xenomai.org>	<54F5C020.8090102@xenomai.org>	<CAKk99t14k19FhkgMm1FymkjaKWngMG3FQL8mkm6tBOdth4X7sQ@mail.gmail.com>	<54F5CD4D.8080004@xenomai.org>	<CAKk99t22fhrbc0GwURNJjdUfVfwmBvVyAWYYArVMgJfh4_JF+Q@mail.gmail.com>	<54F5D6C6.40908@xenomai.org>	<CAKk99t13XsRYBA15ws6ZbUsrqe5+b7D1xRM5NGKrUkvrLJWPCw@mail.gmail.com>	<54F5E958.2090701@xenomai.org>	<54F5EA06.4040104@xenomai.org>	<CAKk99t1DtxOFmTpf2ZgJ2coh_tNqMPY4VX0pAdEJZB6oGvko3g@mail.gmail.com>	<54F60A62.3020708@xenomai.org>	<54F60C16.5070500@xenomai.org>	<CAKk99t0qwyG2wuMAvQ7U-Ed_AR7jJ3vK=Ok4dK5kLj1VbrvxUg@mail.gmail.com>	<54F614EF.7040307@xenomai.org>	<CAKk99t0Xh01uxG7jd=oEDD71LBHvTnbCnejwiP2bzGN63Yo-ZA@mail.gmail.com>	<54F6C50F.5040301@xenomai.org>	<CAKk99t1LaQg9HJkXuiXbi09Mhr5H2EXqcmHw5PPTN4=V7mT3Dg@mail.gmail.com>	<54F6EF2E.1090705@xenomai.org>
- <CAKk99t3K=+Eo+Z_+nPEgi6FNWzg8gigZGfMnVW3Ap+XkVb5aTg@mail.gmail.com>
-In-Reply-To: <CAKk99t3K=+Eo+Z_+nPEgi6FNWzg8gigZGfMnVW3Ap+XkVb5aTg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai/cobalt: low_init(): binding failed: Function
- not implemented error issued when trting to run latency app on xeno 3.x-rc3
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <9BA84827B30CBE4996725F98F7DC912342902FDB@SMExchange01.siebmeyer.org>
+Subject: Re: [Xenomai] rt_heap_bind, Error=-11 -> EWOULDBLOCK why?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,99 +16,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Helder Daniel <hdaniel@ualg.pt>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: =?utf-8?B?SMOkbmVsLUJhYXMs?= Alexander <alexander.haenel-baas@sieb-meyer.de>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/04/2015 03:25 PM, Helder Daniel wrote:
-> I reinstalled xenomai with pshared enabled but it still do not work.
-> Second process gives now a segmentation fault when trying to bind.
-> If executed with --no-registry (it will not bind of course) but it does
-> not segment fault also.
+On Tue, Feb 24, 2015 at 01:08:00PM +0000, Hänel-Baas, Alexander wrote:
+> Hi,
 > 
+> Wrong email address and I understand your reply not correctly you are right -> sorry.
+> 
+> Ok, so now I changed the flags to H_SINGLE | H_SHARED | H_DMA | H_NONCACHED. (it is possible? DMA + NONCACHED)
 
-In case of a segfault,  run the application over gdb, so that you can
-provide the backtrace. Building with --enable-debug will help.
+Sure, on architectures without snooping, using cached mapping means
+you have to manually invalidate the cache after a DMA transfer to
+the mapping (or flush it before a DMA transfer from the mapping).
+With uncached mappings, you do not have this problem.
 
-> /usr/xenomai/sbin/version -a
-> Xenomai/mercury v3.0-rc3 -- 
-> Target: i686-pc-linux-gnu
-> Compiler: gcc version 4.7.2 (Debian 4.7.2-5) 
-> Build args:  '--with-core=mercury' '--enable-registry'
-> '--enable-pshared' '--prefix=/usr/xenomai'
 > 
+> By the way, we have 3 shm areas:
+> 2 of them was created from the user space application with the flags: H_SINGLE | H_SHARED | H_NONCACHED
+> 1 of them created from the kernel driver with : H_SINGLE | H_SHARED | H_DMA (contiguous memory for dma)
 > 
-> On 4 March 2015 at 11:40, Philippe Gerum <rpm@xenomai.org
-> <mailto:rpm@xenomai.org>> wrote:
+> I spend my time to check the situation, here my notice:
 > 
->     On 03/04/2015 12:21 PM, Helder Daniel wrote:
->     > Ok.
->     > This way I can recover registry.
->     > I did not find yet when and why registry crashes.
->     > If I found the scenario I'll report it.
->     >
->     > Meanwhile I am having roubles binding to a semaphore created in one
->     > process, from another process.
->     > I used a simple demo app to show what is happening (full source code
->     > attached)
->     >
->     > From one process (creator.c) a semaphore is created and binded by its
->     > registry name "namedSem":
->     >
->     > rt_task_shadow (&task, "creatorTask", 20, 0);
->     > rt_sem_create(&sem, "namedSem", 0, S_FIFO);
->     > rt_sem_bind(&sem, "namedSem", TM_INFINITE);
->     > for (;;) sleep (100);
->     >
->     > So all ok here.
->     >
->     > Now keeping creator.c running in an xterm and trying to bind to this
->     > semaphore from another process (binder.c), from another xterm, it does
->     > not work:
->     >
->     > rt_task_shadow (&task, "binderTask", 20, 0);
->     > rt_sem_bind(&sem, "namedSem", TM_INFINITE);
->     >
->     > rt_sem_bind() never binds to the semaphore "namedSem".
->     > It seams it does not find it.
->     > If a timeout is set:
->     >
->     > err=rt_sem_bind(&sem, "namedSem", TM_INFINITE);
->     >
->     > it returns with error -110 (ETIMEDOUT)
->     >
->     > But the semaphore exists in registry:
->     >
->     > $> cat /var/run/xenomai/anon/4267/alchemy/semaphores/namedSem
->     > =0
->     >
->     > I think on version 2.5.x a named object is global to the system.
->     > So when creating a semaphore named "namedSem" by a process it is
->     visible
->     > for all other processes.
->     >
->     > Maybe in 3.x semaphores (and other objects) are local to processes?
->     > Since they are stored in the registry under the pid of the creator
->     process?
+> ------
+> FLAGS: H_SINGLE | H_SHARED | H_DMA
+> shmMu_initialize: Open or create SHM "SLINK4" with 256 bytes header and 36864 bytes data.
+> createNewHeap: FLAGS_: 0x0700
+> createNewHeap: Heap SLINK4 (Id = 0x9f0f05c6, size=37120, flags=0x00000700, address: f57f0c00) successfully created.
+> allocateHeap: +RTAPI+ rt_heap_alloc( shm = "SLINK4" ) success. Shm-area is at c0051000
+> rtapi_shmInitialize: shm-area SLINK4 (id = 0x9f0f05c6) allocated at c0051000 size = 37120
+> SM. Shared Memory Area SLINK4 at c0051000
 > 
->     With 3.x, --enable-pshared must be passed to enable object sharing
->     between processes. The actual registry is not maintained in kernel space
->     anymore, so the support libraries have to know whether they should
->     maintain it.
+> Ok, the kernel driver creates shm with the name SLINK4 but the user space side doesn't see it:
 > 
->     --
->     Philippe.
-> 
-> 
-> 
-> 
-> -- 
-> Helder Daniel
-> UALG - FCT
-> DEEI
-> 
-> http://w3.ualg.pt/~hdaniel
+> rt_heap_bind(shmName=SLINK4) failed. Error=-11 -> EWOULDBLOCK
+> SHM area (Name SLINK4, Id 0x9f0f05c6)  at (nil) is INVALID!!!
 
+For the third time: that is because the mapping is not uncached, as
+shown by the message you showed us on the kernel console. The
+problem is probably that the mmap method of the driver you use does
+not want to map cached regions.
 
 -- 
-Philippe.
+					    Gilles.
 
