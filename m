@@ -1,21 +1,12 @@
-From: Lowell Gilbert <kludge@be-well.ilk.org>
-References: <44bnkqho7e.fsf@lowell-desk.lan>
- <20150218220804.GR30317@hermes.click-hack.org>
- <44pp9633yh.fsf@lowell-desk.lan> <447fvc5q6z.fsf@be-well.ilk.org>
- <20150220225712.GE2356@hermes.click-hack.org>
- <448ufmewxt.fsf@be-well.ilk.org>
- <20150224233439.GL14148@hermes.click-hack.org>
- <44siduq7us.fsf@be-well.ilk.org> <54EE07A9.4040702@xenomai.org>
- <444mq9lo5c.fsf@be-well.ilk.org> <44vbipk8m9.fsf@be-well.ilk.org>
- <54EF014A.9000902@xenomai.org> <447fv4sk55.fsf@lowell-desk.lan>
- <54EF5E45.30907@xenomai.org>
-Date: Thu, 26 Feb 2015 14:25:13 -0500
-In-Reply-To: <54EF5E45.30907@xenomai.org> (Philippe Gerum's message of "Thu,
- 26 Feb 2015 18:56:21 +0100")
-Message-ID: <44a900eaqu.fsf@lowell-desk.lan>
+Date: Tue, 24 Feb 2015 10:34:34 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150224093434.GA10019@hermes.click-hack.org>
+References: <CAB6vvjn7=j2LpfwVhVAQBPcYiK6a-owoCaFXqY00+JnU2jGm9A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Subject: Re: [Xenomai] interrupt service
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAB6vvjn7=j2LpfwVhVAQBPcYiK6a-owoCaFXqY00+JnU2jGm9A@mail.gmail.com>
+Subject: Re: [Xenomai] rtnet issue with xenomai-3.git next branch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,56 +15,119 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Antoine Hoarau <hoarau.robotics@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Philippe Gerum <rpm@xenomai.org> writes:
+On Mon, Feb 23, 2015 at 06:13:39PM +0000, Antoine Hoarau wrote:
+> I'm actually not able to test it, but maybe this is a different problem.
+> Here's my script :
+> 
+> cd /usr/xenomai/sbin/
+> sudo ./rtifconfig rteth0 down
+> sudo rmmod rtipv4
+> sudo rmmod rt_e1000e
+> sudo rmmod rtnet
+> sudo mknod /dev/rtnet c 10 240
+> sudo ./rtnet start # 1)
+> sudo ./rtifconfig rteth0 up 192.168.100.101 netmask 255.255.255.0 # 2)
+> sudo ./rtroute solicit 192.168.100.102 dev rteth0
+> sudo ./rtifconfig # 4)
+> sudo ./rtroute # 5)
+> sudo ./rtping 192.168.100.102 # Stalls
+> 
+> 1) FATAL: Error inserting rtudp (/lib/modules/3.16.0-xenomai-
+> 3rc3/kernel/drivers/xenomai/net/stack/ipv4/udp/rtudp.ko): Invalid argument
 
-> On 02/26/2015 05:38 PM, Lowell Gilbert wrote:
-> The new task will be pinned to the CPU running rtdm_task_init() by
-> default, which is likely CPU0 as well.
->
-> To check this, I would set the global Xenomai affinity to CPU1 before
-> starting the test, so that your driver task ends up there.
->
-> # echo 2 > /proc/xenomai/affinity
+Please try the following patch:
+diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+index d6a7b7d..607bdbe 100644
+--- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
++++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+@@ -2118,6 +2118,7 @@ static struct rtdm_driver tcp_driver = {
+                                        RTDM_CLASS_NETWORK,
+                                        RTDM_SUBCLASS_RTNET,
+                                        RTNET_RTDM_VER),
++    .device_count =     1,
+     .device_flags =     RTDM_PROTOCOL_DEVICE,
+     .context_size =     sizeof(struct tcp_socket),
+ 
+diff --git a/kernel/drivers/net/stack/ipv4/udp/udp.c b/kernel/drivers/net/stack/ipv4/udp/udp.c
+index 3966e54..538712a 100644
+--- a/kernel/drivers/net/stack/ipv4/udp/udp.c
++++ b/kernel/drivers/net/stack/ipv4/udp/udp.c
+@@ -707,6 +707,7 @@ static struct rtdm_driver udp_driver = {
+                                         RTDM_SUBCLASS_RTNET,
+                                         RTNET_RTDM_VER),
+     .device_flags =     RTDM_PROTOCOL_DEVICE,
++    .device_count =     1,
+     .context_size =     sizeof(struct rtsocket),
+ 
+     .protocol_family =  PF_INET,
 
-Yes, I initialize that already. And give "isolcpus=1" to the kernel so
-that Linux will not schedule anything else on CPU1.
 
-> At least you would have the timing IRQ and the task on a different CPU,
-> leaving some cycles to the latter. This said, 10 us between timer shots
-> is really too fast.
+> 
+> dmesg :
+> 
+> [  146.895062] *** RTnet for Xenomai v3.0-rc3 ***
+> [  146.895062]
+> [  146.895064] RTnet: initialising real-time networking
+> [  146.897459] rt_e1000e: Intel(R) PRO/1000 Network Driver - 1.5.1-k-rt
+> [  146.897461] rt_e1000e: Copyright(c) 1999 - 2011 Intel Corporation.
+> [  146.897475] rt_e1000e 0000:05:00.0: Disabling ASPM L0s
+> [  146.897674] rt_e1000e 0000:05:00.0: irq 47 for MSI/MSI-X
+> [  146.897677] rt_e1000e 0000:05:00.0: irq 48 for MSI/MSI-X
+> [  146.897679] rt_e1000e 0000:05:00.0: irq 49 for MSI/MSI-X
+> [  147.008138] RTnet: registered rteth0
+> [  147.008141] rt_e1000e: (PCI Express:2.5GT/s:Width x1) 68:05:ca:32:c9:ab
+> [  147.008142] rt_e1000e: Intel(R) PRO/1000 Network Connection
+> [  147.008153] rt_e1000e: MAC: 3, PHY: 8, PBA No: E46981-008
+> 
+> 2) dmesg:
+> [  308.518107] RTnet: dropping packet in rtnetif_rx()
+> [  308.519118] RTnet: dropping packet in rtnetif_rx()
+> [  308.520108] RTnet: dropping packet in rtnetif_rx()
+> [  308.521119] RTnet: dropping packet in rtnetif_rx()
+> [  308.522109] RTnet: dropping packet in rtnetif_rx()
+> [  308.523119] RTnet: dropping packet in rtnetif_rx()
+> 
+> 
+> 3)
+> rteth0    Medium: Ethernet  Hardware address: 68:05:CA:32:C9:AB
+>           IP address: 192.168.100.101  Broadcast address: 192.168.100.255
+>           UP BROADCAST RUNNING  MTU: 1500
+> 
+> 4)
+> Host Routing Table
+> Hash Destination HW Address Device
+> 26 192.168.100.102 90:E2:BA:26:72:15 rteth0
+> 3F 192.168.100.255 FF:FF:FF:FF:FF:FF rteth0
+> 
+> The rtnet.conf :
+> 
+> RT_DRIVER="rt_e1000e"
+> REBIND_RT_NICS=""
+> IPADDR="192.168.100.101"
+> NETMASK="255.255.255.0"
+> RT_LOOPBACK="yes"
+> RT_PROTOCOLS="udp packet"
+> RTCAP="no"
+> TDMA_MODE="master"
+> TDMA_SLAVES="" # this worked in rtnet 0.9.13+xeno 2.4.3
+> 
+> Thank you for your help,
+> 
+> Antoine
+> 
+> EDIT : I just saw there's a kernel bug occuring, please find attached the
+> log
 
-Having enough cycles for this isn't my fundamental problem. Running
-everything in the ISR has no trouble keeping up with the 100kHz data
-flow. The problem comes in a *non* real-time task, which is pulling data
-in from an IP socket and pushing it into a queue for the real-time code
-to use synchronously.
+Ok, maybe a consequence of the udp module bug. Please try again with
+the patch applied, and if you still get the bug, we will investigate
+further. Please try and enable frame pointers so as to get more
+meaningful stack traces.
 
-If I could run bare-metal on the second CPU, I would have done so.
-The real-time behaviour is easily characterized, and the periodic work
-can safely be done in 10 us even if all of the data has to be fetched
-from external memory.
+Please stay on the list.
 
->> I had used a counting semaphore (to account for possibly missed
->> interrupts) in an earlier version of this code before changing it to an
->> event when I found that the semaphore didn't work. I also tried a direct
->> call to rtdm_task_unblock(), and that failed also.
-
-> If you look at ksrc/drivers/testing/timerbench.c, you will see a typical
-> use of rtdm events with ISRs, this driver is used when running
-> latency -t2 for instance. I'm convinced the RTDM event API is not the issue.
-
-I think you meant irqbench.c. And yes, I also am quite sure that the
-event API is behaving fine.
-
-I think I have two options to investigate. One is to do all of my work
-in the ISR, but to somehow re-enable enough interrupts to keep CPU0
-doing useful work while the ISR is running on CPU1. The other is to poll
-the hardware state rather than using the interrupt.  Do you see anything
-else I could do?
-
-Thanks again.
-
-Be well.
+-- 
+					    Gilles.
 
