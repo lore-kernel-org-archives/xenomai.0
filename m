@@ -1,15 +1,12 @@
-Date: Fri, 27 Feb 2015 22:21:30 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150227212130.GP434@hermes.click-hack.org>
-References: <54F0CF9E.1040707@siemens.com>
- <20150227202724.GL434@hermes.click-hack.org>
- <54F0D599.8090009@siemens.com>
+Message-ID: <54EC64B3.3040804@xenomai.org>
+Date: Tue, 24 Feb 2015 12:46:59 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <54F0D599.8090009@siemens.com>
-Subject: Re: [Xenomai] [RFC] Consolidated exception prologue/epiloge for x86
- and ARM
+References: <CAHrCD-MN8600EJZefjy42pzoJkjCfnD1jsFEcueLiLYutgpj0w@mail.gmail.com>
+In-Reply-To: <CAHrCD-MN8600EJZefjy42pzoJkjCfnD1jsFEcueLiLYutgpj0w@mail.gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] user_irq
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,31 +15,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Francisco Ramos Landaeta <kiko593@gmail.com>, xenomai@xenomai.org
 
-On Fri, Feb 27, 2015 at 09:37:45PM +0100, Jan Kiszka wrote:
-> On 2015-02-27 21:27, Gilles Chanteperdrix wrote:
-> > On Fri, Feb 27, 2015 at 09:12:14PM +0100, Jan Kiszka wrote:
-> >> Hi,
-> >>
-> >> just pushed a first implementation of the general model that I proposed
-> >> for exception handling. You can find it at
-> >>
-> >> http://git.xenomai.org/ipipe-jki.git/log/?h=queues/trap-rework
-> > 
-> > Also, the clean way to pass virtual + physical flags is to use
-> > arch_mangle_bits. Using two longs (potentially 128 bits then) is
-> > completely useless since one of the longs simply has one significant
-> > bit.
+On 02/24/2015 11:49 AM, Francisco Ramos Landaeta wrote:
+> Hello everybody.
 > 
-> The costs of mangling is higher than using two regs for passing that
-> data as-is, both binary and LOC-wise (tried it). Plus the code is more
-> readable.
+>     I am new in this foro and starting with xenomai. In these first day, I
+> have been learnig about xenomai and execute some examples. Now, I get error
+> number -38 when I execute the example
+> https://xenomai.org/documentation/branches/v2.4.x/html/api/user__irq_8c-example.html#a0,
+> Where can I see the error description I get?
+> 
 
-That is false on ARM. On ARM gcc does not pass structs by values in
-registers. The values get passed on stack.
+You may want to start here:
+http://xenomai.org/troubleshooting-a-dual-kernel-configuration/
 
 -- 
-					    Gilles.
+Philippe.
 
