@@ -1,10 +1,17 @@
+From: Lowell Gilbert <kludge@be-well.ilk.org>
+References: <44bnkqho7e.fsf@lowell-desk.lan>
+ <20150218220804.GR30317@hermes.click-hack.org>
+ <44pp9633yh.fsf@lowell-desk.lan> <447fvc5q6z.fsf@be-well.ilk.org>
+ <20150220225712.GE2356@hermes.click-hack.org>
+ <448ufmewxt.fsf@be-well.ilk.org>
+ <20150224233439.GL14148@hermes.click-hack.org>
+Date: Wed, 25 Feb 2015 11:22:19 -0500
+In-Reply-To: <20150224233439.GL14148@hermes.click-hack.org> (Gilles
+ Chanteperdrix's message of "Wed, 25 Feb 2015 00:34:39 +0100")
+Message-ID: <44siduq7us.fsf@be-well.ilk.org>
 MIME-Version: 1.0
-From: Antoine Hoarau <hoarau.robotics@gmail.com>
-Date: Wed, 25 Feb 2015 13:23:17 +0000
-Message-ID: <CAB6vvj=qpKhxcW=88vo0Gr6CBAd=VH+ann3i=OHkZYnNNkXFpA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] rtnet issue with xenomai-3.git next branch
+Content-Type: text/plain
+Subject: Re: [Xenomai] interrupt service
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,57 +20,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
->You are missing
->CONFIG_XENO_DRIVERS_NET_RTIPV4_ICMP in your kernel configuration.
->ping uses icmp packets, so, if you do not enable icmp, ping is not
->going to work.
+Thanks for the help, even if I'm not making much progress yet.
 
-Now it's working ! Thank you Gilles !
+Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
 
-cd /usr/xenomai/sbin
+> On Tue, Feb 24, 2015 at 06:01:18PM -0500, Lowell Gilbert wrote:
 
-sudo modprobe rtnet #Loaded at startup
-sudo modprobe rt_e1000e #Loaded at startup because e1000e is blacklisted
-sudo modprobe rtudp
+> To have a real basic configuration, you should use Xenomai 2.6.4 and
+> with the latest I-pipe patch for Linux 3.14. Unmodified.
 
-sudo ./rtifconfig rteth0 up 192.168.100.101 netmask 255.255.255.0
-sudo ./rtroute solicit 192.168.100.102 dev rteth0
+I went ahead and did that, just to be sure. Results were the same.
 
-sudo ./rtifconfig
-sudo ./rtroute
-
-# Wait a bit..
-sudo ./rtping 192.168.100.102
-
-
-
-Le mer. 25 f=C3=A9vr. 2015 =C3=A0 13:34, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> a =C3=A9crit :
-
-On Wed, Feb 25, 2015 at 10:47:58AM +0000, Antoine Hoarau wrote:
-> > Attached the strace for rtping.
+>> put the i-pipe TSC code back into smp_twd.c
+>> to get a high-resolution clock.
 >
-> You are missing
-> CONFIG_XENO_DRIVERS_NET_RTIPV4_ICMP in your kernel configuration.
-> ping uses icmp packets, so, if you do not enable icmp, ping is not
-> going to work.
->
-> >
-> > >You need to load rtcap.ko (after the interface) to have the capture
-> > >interface.
-> >
-> > I get :
-> > [  458.000857] RTcap: real-time capturing interface
-> > [  458.000860] RTcap: rteth0 busy, skipping device!
-> > [  458.000861] RTcap: no real-time devices found!
->
-> Probably because you need to load rtcap before setting up the
-> interface.
->
->
-> --
->                                             Gilles.
->
+> The TSC code in smp_twd.c conflicts with Linux global timer driver.
+> Simply enable the global timer driver if you want to use the global
+> timer as tsc.
+
+Got it. Thanks.
+
+
+Philippe Gerum <rpm@xenomai.org> writes:
+
+> -	return 0;
+> +	return RTDM_IRQ_HANDLED;
+
+Yes, that bug crept in when I was building the simplified test case.
+My original driver used the correct return values.
+
+
+I'm still confused by the fact that the thread wakes up fine if it's
+signalled (or unblocked, etc.) from a driver operation. But if the ISR
+tries to do the same, it fails. In fact, if I use rtdm_task_unblock(), I
+get an error (0) returned to the ISR.
+
+
+Be well.
+
