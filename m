@@ -1,19 +1,12 @@
-Date: Mon, 23 Feb 2015 21:46:18 +0100
+Date: Wed, 25 Feb 2015 11:36:04 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150223204618.GT22377@hermes.click-hack.org>
-References: <54E78F62.9040505@xenomai.org> <54E79086.8030801@xenomai.org>
- <54EB5021.3030508@siemens.com> <54EB5638.3050805@xenomai.org>
- <20150223163743.GA22377@hermes.click-hack.org>
- <54EB5A45.9000002@siemens.com>
- <20150223165549.GC22377@hermes.click-hack.org>
- <54EB5D02.8080105@xenomai.org>
- <20150223171250.GE22377@hermes.click-hack.org>
- <54EB90EA.4030401@xenomai.org>
+Message-ID: <20150225103604.GN14148@hermes.click-hack.org>
+References: <CAB6vvj=9Mt0tq-=kNhv+Agr6WTH3j0+3F3kPNcMKspNzXr0NKg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <54EB90EA.4030401@xenomai.org>
-Subject: Re: [Xenomai] ipipe: issues with ARM exception handling
+In-Reply-To: <CAB6vvj=9Mt0tq-=kNhv+Agr6WTH3j0+3F3kPNcMKspNzXr0NKg@mail.gmail.com>
+Subject: Re: [Xenomai] rtnet issue with xenomai-3.git next branch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,41 +15,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Antoine Hoarau <hoarau.robotics@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Mon, Feb 23, 2015 at 09:43:22PM +0100, Philippe Gerum wrote:
-> On 02/23/2015 06:12 PM, Gilles Chanteperdrix wrote:
-> > On Mon, Feb 23, 2015 at 06:01:54PM +0100, Philippe Gerum wrote:
+On Wed, Feb 25, 2015 at 10:23:24AM +0000, Antoine Hoarau wrote:
+> This works:
+> modprobe rtnet
+> modprobe rt_e1000e
+> modprobe rtipv4
+> modprobe rtudp
 > 
-> >>> hard_local_irq_disable() should always be called in case entry.S
-> >>> expects us to return as we entered: with hw irqs off
-> >>
-> >> Which is what ipipe_fault_exit() does by testing the mangled state. If
-> >> the fault entered with virtual IRQs on, then you must exit with both the
-> >> stall bit and CPSR_I bit cleared.
-> > 
-> > Absolutely not. Imagine a Linux task, with root unstalled
-> > experiencing a fault. entry.S is entered root is still unstalled,
-> > with hardware irqs off. On fault entry, we must reflect this
-> > hardware irq state on the stall bit and enable hw irqs. Then when
-> > the fault is handled, undo that, unstall the root stage, disable hw
-> > irqs and return to entry.S, so that it may resume the execution of
-> > the Linux task. If it returns quickly to user-space, a stalled root
-> > at this point would be a disaster, because nothing, certainly not
-> > entry.S will unstall the root stage.
-> > 
-> > Then there is the case where Linux re-enables irqs in the course of
-> > the handler, in that case, we should not return to entry.S with hw
-> > irqs off.
-> > 
+> I get :
 > 
-> Since Linux re-enables hw irqs in the course of the handler
+> [  282.200776] *** RTnet for Xenomai v3.0-rc3 ***
+> [  282.200776]
+> [  282.200778] RTnet: initialising real-time networking
+> [  289.201612] rt_e1000e: Intel(R) PRO/1000 Network Driver - 1.5.1-k-rt
+> [  289.201614] rt_e1000e: Copyright(c) 1999 - 2011 Intel Corporation.
+> [  289.201630] rt_e1000e 0000:05:00.0: Disabling ASPM L0s
+> [  289.201842] rt_e1000e 0000:05:00.0: irq 48 for MSI/MSI-X
+> [  289.201845] rt_e1000e 0000:05:00.0: irq 49 for MSI/MSI-X
+> [  289.201847] rt_e1000e 0000:05:00.0: irq 50 for MSI/MSI-X
+> [  289.317567] RTnet: registered rteth0
+> [  289.317570] rt_e1000e: (PCI Express:2.5GT/s:Width x1) 68:05:ca:32:c9:ab
+> [  289.317571] rt_e1000e: Intel(R) PRO/1000 Network Connection
+> [  289.317582] rt_e1000e: MAC: 3, PHY: 8, PBA No: E46981-008
+> 
+> I can unload/load them without any problems.
+> Then I can do :
+> 
+> ./rtifconfig rteth0 up 192.168.100.101
+> ./rtifconfig
+> 
+> rteth0    Medium: Ethernet  Hardware address: 68:05:CA:32:C9:AB
+>           IP address: 192.168.100.101  Broadcast address: 192.168.100.255
+>           UP BROADCAST RUNNING  MTU: 1500
+> 
+> Then I plug the cable and turn on the slave:
+> [  572.581589] e1000e: rteth0 NIC Link is Up 1000 Mbps Full Duplex, Flow
+> Control: Rx/Tx
+> 
+> I need to 'solicit' it by launching :
+> ./rtroute solicit 192.168.100.102 dev rteth0
+> 
+> I can see the slave:
+> ./rtroute
+> Host Routing Table
+> Hash Destination HW Address Device
+> 26 192.168.100.102 90:E2:BA:26:72:15 rteth0
+> 3F 192.168.100.255 FF:FF:FF:FF:FF:FF rteth0
+> 
+> But I can't ping :
+> 
+> ./rtping 192.168.100.102
+> Real-time PING 192.168.100.102 56(84) bytes of data.
+> ioctl: Inappropriate ioctl for device
 
-in the course of some handlers, as far as I understood, not all of
-them. Which is why I propose to only redisable irqs before returning
-to entry.S if the root domain is stalled on exception exit (because
-this indicates that Linux wants to return to entry.S with irqs off).
+Run this with strace to see which ioctl is failing.
+
+> 
+> And wireshark does not see the rteth0 interface.
+
+You need to load rtcap.ko (after the interface) to have the capture
+interface.
 
 -- 
 					    Gilles.
