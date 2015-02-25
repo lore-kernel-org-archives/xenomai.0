@@ -1,11 +1,13 @@
-MIME-Version: 1.0
+Date: Wed, 25 Feb 2015 13:34:47 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150225123447.GO14148@hermes.click-hack.org>
 References: <CAB6vvj=9Mt0tq-=kNhv+Agr6WTH3j0+3F3kPNcMKspNzXr0NKg@mail.gmail.com>
  <20150225103604.GN14148@hermes.click-hack.org>
-From: Antoine Hoarau <hoarau.robotics@gmail.com>
-Date: Wed, 25 Feb 2015 10:47:58 +0000
-Message-ID: <CAB6vvjmiyCr55EUfTgKW3P5WaZsUZ-5ptAN_C2CGqon5N6cWUA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <CAB6vvjmiyCr55EUfTgKW3P5WaZsUZ-5ptAN_C2CGqon5N6cWUA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAB6vvjmiyCr55EUfTgKW3P5WaZsUZ-5ptAN_C2CGqon5N6cWUA@mail.gmail.com>
 Subject: Re: [Xenomai] rtnet issue with xenomai-3.git next branch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,56 +17,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Antoine Hoarau <hoarau.robotics@gmail.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-QXR0YWNoZWQgdGhlIHN0cmFjZSBmb3IgcnRwaW5nLgoKPllvdSBuZWVkIHRvIGxvYWQgcnRjYXAu
-a28gKGFmdGVyIHRoZSBpbnRlcmZhY2UpIHRvIGhhdmUgdGhlIGNhcHR1cmUKPmludGVyZmFjZS4K
-CkkgZ2V0IDoKWyAgNDU4LjAwMDg1N10gUlRjYXA6IHJlYWwtdGltZSBjYXB0dXJpbmcgaW50ZXJm
-YWNlClsgIDQ1OC4wMDA4NjBdIFJUY2FwOiBydGV0aDAgYnVzeSwgc2tpcHBpbmcgZGV2aWNlIQpb
-ICA0NTguMDAwODYxXSBSVGNhcDogbm8gcmVhbC10aW1lIGRldmljZXMgZm91bmQhCgoKCkxlIG1l
-ci4gMjUgZsOpdnIuIDIwMTUgw6AgMTE6MzYsIEdpbGxlcyBDaGFudGVwZXJkcml4IDwKZ2lsbGVz
-LmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmc+IGEgw6ljcml0IDoKCj4gT24gV2VkLCBGZWIgMjUs
-IDIwMTUgYXQgMTA6MjM6MjRBTSArMDAwMCwgQW50b2luZSBIb2FyYXUgd3JvdGU6Cj4gPiBUaGlz
-IHdvcmtzOgo+ID4gbW9kcHJvYmUgcnRuZXQKPiA+IG1vZHByb2JlIHJ0X2UxMDAwZQo+ID4gbW9k
-cHJvYmUgcnRpcHY0Cj4gPiBtb2Rwcm9iZSBydHVkcAo+ID4KPiA+IEkgZ2V0IDoKPiA+Cj4gPiBb
-ICAyODIuMjAwNzc2XSAqKiogUlRuZXQgZm9yIFhlbm9tYWkgdjMuMC1yYzMgKioqCj4gPiBbICAy
-ODIuMjAwNzc2XQo+ID4gWyAgMjgyLjIwMDc3OF0gUlRuZXQ6IGluaXRpYWxpc2luZyByZWFsLXRp
-bWUgbmV0d29ya2luZwo+ID4gWyAgMjg5LjIwMTYxMl0gcnRfZTEwMDBlOiBJbnRlbChSKSBQUk8v
-MTAwMCBOZXR3b3JrIERyaXZlciAtIDEuNS4xLWstcnQKPiA+IFsgIDI4OS4yMDE2MTRdIHJ0X2Ux
-MDAwZTogQ29weXJpZ2h0KGMpIDE5OTkgLSAyMDExIEludGVsIENvcnBvcmF0aW9uLgo+ID4gWyAg
-Mjg5LjIwMTYzMF0gcnRfZTEwMDBlIDAwMDA6MDU6MDAuMDogRGlzYWJsaW5nIEFTUE0gTDBzCj4g
-PiBbICAyODkuMjAxODQyXSBydF9lMTAwMGUgMDAwMDowNTowMC4wOiBpcnEgNDggZm9yIE1TSS9N
-U0ktWAo+ID4gWyAgMjg5LjIwMTg0NV0gcnRfZTEwMDBlIDAwMDA6MDU6MDAuMDogaXJxIDQ5IGZv
-ciBNU0kvTVNJLVgKPiA+IFsgIDI4OS4yMDE4NDddIHJ0X2UxMDAwZSAwMDAwOjA1OjAwLjA6IGly
-cSA1MCBmb3IgTVNJL01TSS1YCj4gPiBbICAyODkuMzE3NTY3XSBSVG5ldDogcmVnaXN0ZXJlZCBy
-dGV0aDAKPiA+IFsgIDI4OS4zMTc1NzBdIHJ0X2UxMDAwZTogKFBDSSBFeHByZXNzOjIuNUdUL3M6
-V2lkdGggeDEpCj4gNjg6MDU6Y2E6MzI6Yzk6YWIKPiA+IFsgIDI4OS4zMTc1NzFdIHJ0X2UxMDAw
-ZTogSW50ZWwoUikgUFJPLzEwMDAgTmV0d29yayBDb25uZWN0aW9uCj4gPiBbICAyODkuMzE3NTgy
-XSBydF9lMTAwMGU6IE1BQzogMywgUEhZOiA4LCBQQkEgTm86IEU0Njk4MS0wMDgKPiA+Cj4gPiBJ
-IGNhbiB1bmxvYWQvbG9hZCB0aGVtIHdpdGhvdXQgYW55IHByb2JsZW1zLgo+ID4gVGhlbiBJIGNh
-biBkbyA6Cj4gPgo+ID4gLi9ydGlmY29uZmlnIHJ0ZXRoMCB1cCAxOTIuMTY4LjEwMC4xMDEKPiA+
-IC4vcnRpZmNvbmZpZwo+ID4KPiA+IHJ0ZXRoMCAgICBNZWRpdW06IEV0aGVybmV0ICBIYXJkd2Fy
-ZSBhZGRyZXNzOiA2ODowNTpDQTozMjpDOTpBQgo+ID4gICAgICAgICAgIElQIGFkZHJlc3M6IDE5
-Mi4xNjguMTAwLjEwMSAgQnJvYWRjYXN0IGFkZHJlc3M6IDE5Mi4xNjguMTAwLjI1NQo+ID4gICAg
-ICAgICAgIFVQIEJST0FEQ0FTVCBSVU5OSU5HICBNVFU6IDE1MDAKPiA+Cj4gPiBUaGVuIEkgcGx1
-ZyB0aGUgY2FibGUgYW5kIHR1cm4gb24gdGhlIHNsYXZlOgo+ID4gWyAgNTcyLjU4MTU4OV0gZTEw
-MDBlOiBydGV0aDAgTklDIExpbmsgaXMgVXAgMTAwMCBNYnBzIEZ1bGwgRHVwbGV4LCBGbG93Cj4g
-PiBDb250cm9sOiBSeC9UeAo+ID4KPiA+IEkgbmVlZCB0byAnc29saWNpdCcgaXQgYnkgbGF1bmNo
-aW5nIDoKPiA+IC4vcnRyb3V0ZSBzb2xpY2l0IDE5Mi4xNjguMTAwLjEwMiBkZXYgcnRldGgwCj4g
-Pgo+ID4gSSBjYW4gc2VlIHRoZSBzbGF2ZToKPiA+IC4vcnRyb3V0ZQo+ID4gSG9zdCBSb3V0aW5n
-IFRhYmxlCj4gPiBIYXNoIERlc3RpbmF0aW9uIEhXIEFkZHJlc3MgRGV2aWNlCj4gPiAyNiAxOTIu
-MTY4LjEwMC4xMDIgOTA6RTI6QkE6MjY6NzI6MTUgcnRldGgwCj4gPiAzRiAxOTIuMTY4LjEwMC4y
-NTUgRkY6RkY6RkY6RkY6RkY6RkYgcnRldGgwCj4gPgo+ID4gQnV0IEkgY2FuJ3QgcGluZyA6Cj4g
-Pgo+ID4gLi9ydHBpbmcgMTkyLjE2OC4xMDAuMTAyCj4gPiBSZWFsLXRpbWUgUElORyAxOTIuMTY4
-LjEwMC4xMDIgNTYoODQpIGJ5dGVzIG9mIGRhdGEuCj4gPiBpb2N0bDogSW5hcHByb3ByaWF0ZSBp
-b2N0bCBmb3IgZGV2aWNlCj4KPiBSdW4gdGhpcyB3aXRoIHN0cmFjZSB0byBzZWUgd2hpY2ggaW9j
-dGwgaXMgZmFpbGluZy4KPgo+ID4KPiA+IEFuZCB3aXJlc2hhcmsgZG9lcyBub3Qgc2VlIHRoZSBy
-dGV0aDAgaW50ZXJmYWNlLgo+Cj4gWW91IG5lZWQgdG8gbG9hZCBydGNhcC5rbyAoYWZ0ZXIgdGhl
-IGludGVyZmFjZSkgdG8gaGF2ZSB0aGUgY2FwdHVyZQo+IGludGVyZmFjZS4KPgo+IC0tCj4gICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBHaWxsZXMuCj4KLS0tLS0t
-LS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3
-YXMgc2NydWJiZWQuLi4KTmFtZTogc3RyYWNlX3J0cGluZwpUeXBlOiBhcHBsaWNhdGlvbi9vY3Rl
-dC1zdHJlYW0KU2l6ZTogMzE4NyBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6
-Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTAyMjUv
-ODRjMGMwZmUvYXR0YWNobWVudC5vYmo+Cg==
+On Wed, Feb 25, 2015 at 10:47:58AM +0000, Antoine Hoarau wrote:
+> Attached the strace for rtping.
+
+You are missing
+CONFIG_XENO_DRIVERS_NET_RTIPV4_ICMP in your kernel configuration.
+ping uses icmp packets, so, if you do not enable icmp, ping is not
+going to work.
+
+> 
+> >You need to load rtcap.ko (after the interface) to have the capture
+> >interface.
+> 
+> I get :
+> [  458.000857] RTcap: real-time capturing interface
+> [  458.000860] RTcap: rteth0 busy, skipping device!
+> [  458.000861] RTcap: no real-time devices found!
+
+Probably because you need to load rtcap before setting up the
+interface. 
+
+
+-- 
+					    Gilles.
+
