@@ -1,19 +1,12 @@
-From: Lowell Gilbert <kludge@be-well.ilk.org>
-References: <44bnkqho7e.fsf@lowell-desk.lan>
- <20150218220804.GR30317@hermes.click-hack.org>
- <44pp9633yh.fsf@lowell-desk.lan> <447fvc5q6z.fsf@be-well.ilk.org>
- <20150220225712.GE2356@hermes.click-hack.org>
- <448ufmewxt.fsf@be-well.ilk.org>
- <20150224233439.GL14148@hermes.click-hack.org>
- <44siduq7us.fsf@be-well.ilk.org> <54EE07A9.4040702@xenomai.org>
- <444mq9lo5c.fsf@be-well.ilk.org>
-Date: Wed, 25 Feb 2015 16:02:22 -0500
-In-Reply-To: <444mq9lo5c.fsf@be-well.ilk.org> (Lowell Gilbert's message of
- "Wed, 25 Feb 2015 15:41:35 -0500")
-Message-ID: <44vbipk8m9.fsf@be-well.ilk.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-Subject: Re: [Xenomai] interrupt service
+References: <CAB6vvj=qpKhxcW=88vo0Gr6CBAd=VH+ann3i=OHkZYnNNkXFpA@mail.gmail.com>
+ <20150225204657.GC2912@hermes.click-hack.org>
+From: Antoine Hoarau <hoarau.robotics@gmail.com>
+Date: Wed, 25 Feb 2015 21:11:29 +0000
+Message-ID: <CAB6vvjni57FMxwooX7XzQ1SGa_Y0uei0LP-tLqREGsey3ztYug@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] rtnet issue with xenomai-3.git next branch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,21 +15,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Lowell Gilbert <kludge@be-well.ilk.org> writes:
+ I'm just not calling rtnet start (actually it's rtcfg server that hangs
+the computer, if I follow the script).
 
-> Philippe Gerum <rpm@xenomai.org> writes:
+Le mer. 25 f=C3=A9vr. 2015 =C3=A0 21:46, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> a =C3=A9crit :
+
+> On Wed, Feb 25, 2015 at 01:23:17PM +0000, Antoine Hoarau wrote:
+> > >You are missing
+> > >CONFIG_XENO_DRIVERS_NET_RTIPV4_ICMP in your kernel configuration.
+> > >ping uses icmp packets, so, if you do not enable icmp, ping is not
+> > >going to work.
+> >
+> > Now it's working ! Thank you Gilles !
+> >
+> > cd /usr/xenomai/sbin
+> >
+> > sudo modprobe rtnet #Loaded at startup
+> > sudo modprobe rt_e1000e #Loaded at startup because e1000e is blackliste=
+d
+> > sudo modprobe rtudp
+> >
+> > sudo ./rtifconfig rteth0 up 192.168.100.101 netmask 255.255.255.0
+> > sudo ./rtroute solicit 192.168.100.102 dev rteth0
+> >
+> > sudo ./rtifconfig
+> > sudo ./rtroute
+> >
+> > # Wait a bit..
+> > sudo ./rtping 192.168.100.102
 >
->> # echo 1024 > /proc/ipipe/trace/back_trace_points
->>
->> Then run the test. The output of /proc/ipipe/trace/frozen may help in
->> figuring out what happens.
+> Ok, it would be nice to know what is the difference with the rtnet
+> script.
 >
-> I haven't had a chance to look at it yet, but it's in:
+> --
+>                                             Gilles.
 >
->   http://be-well.ilk.org/~lowell/projects/ipipe.trace.output.txt
-
-I've got another one that seems more helpful:
-http://be-well.ilk.org/~lowell/projects/xenomai/ipipe.trace2.output.txt
-
