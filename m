@@ -1,6 +1,6 @@
-Message-ID: <54EFA995.4010402@grinta.net>
-Date: Fri, 27 Feb 2015 00:17:41 +0100
-From: Daniele Nicolodi <daniele@grinta.net>
+Message-ID: <54EFAA88.3020303@xenomai.org>
+Date: Fri, 27 Feb 2015 00:21:44 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <44bnkqho7e.fsf@lowell-desk.lan>
  <20150218220804.GR30317@hermes.click-hack.org>
@@ -15,7 +15,7 @@ References: <44bnkqho7e.fsf@lowell-desk.lan>
  <54EF8115.6030200@xenomai.org> <44wq34cmfh.fsf@lowell-desk.lan>
 In-Reply-To: <44wq34cmfh.fsf@lowell-desk.lan>
 Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] interrupt service
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -25,30 +25,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Lowell Gilbert <kludge@be-well.ilk.org>, xenomai@xenomai.org
 
-Hello Gilbert,
+On 02/26/15 23:55, Lowell Gilbert wrote:
 
-what I'm suggesting is maybe naive, but as the problem seems to origin
-from the frequency of the interrupts, and since you have control over
-the whole stack, can you try to lower the irq rate?
-
-If things start to magically work at at lower rates, at least you would
-have a known working configuration on which base optimization and design
-decisions.
-
-On 26/02/15 23:55, Lowell Gilbert wrote:
->> This is what bothers me. The CPU running the ISR code is likely unable
->> to handle any regular linux activity in this case.
+> I really wouldn't mind letting the kernel get time more frequently; I just
+> need to be sure that my real time task gets at least 8 microseconds out
+> of every fifteen. Would I be able to guarantee that in a polled
+> architecture? What would be involved: short sleeps from a high-priority
+> realtime task?
 > 
-> There isn't any useful Linux activity happening there. I just need to
-> keep it from interfering much with the *other* CPU.
 
-This has been repeated many times now: even if the Linux kernel is not
-doing anything useful, it needs to do some amount of housekeeping to
-ensure that things keep working fine.
+Yes, I'd think so.
 
-Cheers,
-Daniele
+I don't have the context switch time figures in mind on a typical Cortex
+A9 (assuming 1Ghz or close to), but the main issue boils down to cache
+pollution with a dual kernel system in this case. If the real-time task
+sleeps/blocks, then linux may run and cause cache lines used by the rt
+code to be evicted, raising the latency.
 
+Now, with such a fast rate (assuming 15 us), there would not be much
+time for linux to run and pollute the cache anyway. But this is all so
+close to the limit that I can't say that linux could run reliably either.
+
+-- 
+Philippe.
 
