@@ -1,7 +1,4 @@
-Message-ID: <54EF5E45.30907@xenomai.org>
-Date: Thu, 26 Feb 2015 18:56:21 +0100
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
+From: Lowell Gilbert <kludge@be-well.ilk.org>
 References: <44bnkqho7e.fsf@lowell-desk.lan>
  <20150218220804.GR30317@hermes.click-hack.org>
  <44pp9633yh.fsf@lowell-desk.lan> <447fvc5q6z.fsf@be-well.ilk.org>
@@ -11,9 +8,13 @@ References: <44bnkqho7e.fsf@lowell-desk.lan>
  <44siduq7us.fsf@be-well.ilk.org> <54EE07A9.4040702@xenomai.org>
  <444mq9lo5c.fsf@be-well.ilk.org> <44vbipk8m9.fsf@be-well.ilk.org>
  <54EF014A.9000902@xenomai.org> <447fv4sk55.fsf@lowell-desk.lan>
-In-Reply-To: <447fv4sk55.fsf@lowell-desk.lan>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+ <54EF5E45.30907@xenomai.org>
+Date: Thu, 26 Feb 2015 14:25:13 -0500
+In-Reply-To: <54EF5E45.30907@xenomai.org> (Philippe Gerum's message of "Thu,
+ 26 Feb 2015 18:56:21 +0100")
+Message-ID: <44a900eaqu.fsf@lowell-desk.lan>
+MIME-Version: 1.0
+Content-Type: text/plain
 Subject: Re: [Xenomai] interrupt service
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -23,56 +24,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lowell Gilbert <kludge@be-well.ilk.org>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 02/26/2015 05:38 PM, Lowell Gilbert wrote:
-> Philippe Gerum <rpm@xenomai.org> writes:
-> 
->> Your test code in user-space seems to enable the timing IRQ only for a
->> very short time, between the write and read calls to the driver which
->> happen in sequence.
->>
->> Those two interrupts are very close in the time line, i.e. 42 us:
->>
->> :|   +begin   0x90000000   -68	  0.960  __irq_svc+0x44
->> (ipipe_unstall_root+0x88)
->> ...
->> :|  + begin   0x90000000   -26+   1.006  __irq_svc+0x44
->> (__ipipe_restore_head+0xec)
-> 
-> My actual interrupts are (typically) 10 us apart. There are some
+Philippe Gerum <rpm@xenomai.org> writes:
 
-Do you intend to run an interrupt-driven work loop at 100Khz on your
-A9-based, dual core board? If so, your system is most likely handling
-too many interrupts on the CPU running the RTDM task, preventing this
-task to run and therefore increment the counter.
+> On 02/26/2015 05:38 PM, Lowell Gilbert wrote:
+> The new task will be pinned to the CPU running rtdm_task_init() by
+> default, which is likely CPU0 as well.
+>
+> To check this, I would set the global Xenomai affinity to CPU1 before
+> starting the test, so that your driver task ends up there.
+>
+> # echo 2 > /proc/xenomai/affinity
 
-Assuming the interrupt controller for your SoC is a GIC, unless you
-explicitly set the IRQ affinity, the GIC distributor will dispatch your
-timing IRQ to CPU0 by default, like all other SPIs.
+Yes, I initialize that already. And give "isolcpus=1" to the kernel so
+that Linux will not schedule anything else on CPU1.
 
-The new task will be pinned to the CPU running rtdm_task_init() by
-default, which is likely CPU0 as well.
+> At least you would have the timing IRQ and the task on a different CPU,
+> leaving some cycles to the latter. This said, 10 us between timer shots
+> is really too fast.
 
-To check this, I would set the global Xenomai affinity to CPU1 before
-starting the test, so that your driver task ends up there.
+Having enough cycles for this isn't my fundamental problem. Running
+everything in the ISR has no trouble keeping up with the 100kHz data
+flow. The problem comes in a *non* real-time task, which is pulling data
+in from an IP socket and pushing it into a queue for the real-time code
+to use synchronously.
 
-# echo 2 > /proc/xenomai/affinity
+If I could run bare-metal on the second CPU, I would have done so.
+The real-time behaviour is easily characterized, and the periodic work
+can safely be done in 10 us even if all of the data has to be fetched
+from external memory.
 
-At least you would have the timing IRQ and the task on a different CPU,
-leaving some cycles to the latter. This said, 10 us between timer shots
-is really too fast.
+>> I had used a counting semaphore (to account for possibly missed
+>> interrupts) in an earlier version of this code before changing it to an
+>> event when I found that the semaphore didn't work. I also tried a direct
+>> call to rtdm_task_unblock(), and that failed also.
 
-> I had used a counting semaphore (to account for possibly missed
-> interrupts) in an earlier version of this code before changing it to an
-> event when I found that the semaphore didn't work. I also tried a direct
-> call to rtdm_task_unblock(), and that failed also.
-> 
+> If you look at ksrc/drivers/testing/timerbench.c, you will see a typical
+> use of rtdm events with ISRs, this driver is used when running
+> latency -t2 for instance. I'm convinced the RTDM event API is not the issue.
 
-If you look at ksrc/drivers/testing/timerbench.c, you will see a typical
-use of rtdm events with ISRs, this driver is used when running
-latency -t2 for instance. I'm convinced the RTDM event API is not the issue.
+I think you meant irqbench.c. And yes, I also am quite sure that the
+event API is behaving fine.
 
--- 
-Philippe.
+I think I have two options to investigate. One is to do all of my work
+in the ISR, but to somehow re-enable enough interrupts to keep CPU0
+doing useful work while the ISR is running on CPU1. The other is to poll
+the hardware state rather than using the interrupt.  Do you see anything
+else I could do?
+
+Thanks again.
+
+Be well.
 
