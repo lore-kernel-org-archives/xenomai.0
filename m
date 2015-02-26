@@ -1,17 +1,21 @@
-From: Lowell Gilbert <kludge@be-well.ilk.org>
-References: <44siduq7us.fsf@be-well.ilk.org> <54EE07A9.4040702@xenomai.org>
+Message-ID: <54EFA995.4010402@grinta.net>
+Date: Fri, 27 Feb 2015 00:17:41 +0100
+From: Daniele Nicolodi <daniele@grinta.net>
+MIME-Version: 1.0
+References: <44bnkqho7e.fsf@lowell-desk.lan>
+ <20150218220804.GR30317@hermes.click-hack.org>
+ <44pp9633yh.fsf@lowell-desk.lan> <447fvc5q6z.fsf@be-well.ilk.org>
+ <20150220225712.GE2356@hermes.click-hack.org>
+ <448ufmewxt.fsf@be-well.ilk.org>
+ <20150224233439.GL14148@hermes.click-hack.org>
+ <44siduq7us.fsf@be-well.ilk.org> <54EE07A9.4040702@xenomai.org>
  <444mq9lo5c.fsf@be-well.ilk.org> <44vbipk8m9.fsf@be-well.ilk.org>
  <54EF014A.9000902@xenomai.org> <447fv4sk55.fsf@lowell-desk.lan>
  <54EF5E45.30907@xenomai.org> <44a900eaqu.fsf@lowell-desk.lan>
- <20150226201100.GB434@hermes.click-hack.org>
- <441tlce3o1.fsf@lowell-desk.lan>
- <20150226223750.GF434@hermes.click-hack.org>
-Date: Thu, 26 Feb 2015 18:12:23 -0500
-In-Reply-To: <20150226223750.GF434@hermes.click-hack.org> (Gilles
- Chanteperdrix's message of "Thu, 26 Feb 2015 23:37:50 +0100")
-Message-ID: <44sidsclns.fsf@lowell-desk.lan>
-MIME-Version: 1.0
-Content-Type: text/plain
+ <54EF8115.6030200@xenomai.org> <44wq34cmfh.fsf@lowell-desk.lan>
+In-Reply-To: <44wq34cmfh.fsf@lowell-desk.lan>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai] interrupt service
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -23,31 +27,28 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
+Hello Gilbert,
 
-> On Thu, Feb 26, 2015 at 04:58:06PM -0500, Lowell Gilbert wrote:
->> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
->> > So, to be clear, does the ISR run on CPU0 and the thread doing the
->> > reads run on CPU1? If no, does it work if you do it that way? To
->> 
->> The other way around, but that's pretty much what I have set up. CPU0
->> handles work that doesn't need to be real-time, and CPU1 handles only
->> the real-time work.
->
-> That is the part I do not understand. Since the read method is
-> real-time as well as the ISR, you mean you run them on the same cpu?
-> If yes, have you tried running them on different cpus ?
+what I'm suggesting is maybe naive, but as the problem seems to origin
+from the frequency of the interrupts, and since you have control over
+the whole stack, can you try to lower the irq rate?
 
-Sorry, my phrasing was quite misleading there. My network-reading task
-is on CPU0 and the IRQ is on CPU1.
+If things start to magically work at at lower rates, at least you would
+have a known working configuration on which base optimization and design
+decisions.
 
-The network reading is a real-time task because it accesses the RTDM
-device, but it doesn't have any latency requirements. I don't really
-care whether it runs in primary mode, as long as it can manage better
-than 2 megabytes per second of throughput. It has tens of megabytes of
-buffering available to let it get ahead of the real-time work. Also, it
-doesn't need to access the device very often. Instead of writing to the
-device, it maps in a big chunk of kernel memory and writes to that.
+On 26/02/15 23:55, Lowell Gilbert wrote:
+>> This is what bothers me. The CPU running the ISR code is likely unable
+>> to handle any regular linux activity in this case.
+> 
+> There isn't any useful Linux activity happening there. I just need to
+> keep it from interfering much with the *other* CPU.
 
-Be well.
+This has been repeated many times now: even if the Linux kernel is not
+doing anything useful, it needs to do some amount of housekeeping to
+ensure that things keep working fine.
+
+Cheers,
+Daniele
+
 
