@@ -1,10 +1,10 @@
-Message-ID: <54F0D584.1030307@siemens.com>
-Date: Fri, 27 Feb 2015 21:37:24 +0100
+Message-ID: <54F0D599.8090009@siemens.com>
+Date: Fri, 27 Feb 2015 21:37:45 +0100
 From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 References: <54F0CF9E.1040707@siemens.com>
- <20150227202453.GK434@hermes.click-hack.org>
-In-Reply-To: <20150227202453.GK434@hermes.click-hack.org>
+ <20150227202724.GL434@hermes.click-hack.org>
+In-Reply-To: <20150227202724.GL434@hermes.click-hack.org>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [RFC] Consolidated exception prologue/epiloge for x86
@@ -20,7 +20,7 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2015-02-27 21:24, Gilles Chanteperdrix wrote:
+On 2015-02-27 21:27, Gilles Chanteperdrix wrote:
 > On Fri, Feb 27, 2015 at 09:12:14PM +0100, Jan Kiszka wrote:
 >> Hi,
 >>
@@ -29,31 +29,14 @@ On 2015-02-27 21:24, Gilles Chanteperdrix wrote:
 >>
 >> http://git.xenomai.org/ipipe-jki.git/log/?h=queues/trap-rework
 > 
-> NACK. The ARM implementation is broken, re-enabling hardware irqs
-> before stalling root is wrong.
+> Also, the clean way to pass virtual + physical flags is to use
+> arch_mangle_bits. Using two longs (potentially 128 bits then) is
+> completely useless since one of the longs simply has one significant
+> bit.
 
-Ok, will adjust.
-
-> 
-> Besides, I find that
-> 
-> 
-> if (foo) {
->    bar;
-> } else {
->   qux;
-> }
-> 
-> When there is nothing after adds useless indentation.
-> 
-> if (foo) {
->    bar;
->    return;
-> }
-> 
-> qux;
-
-Which function?
+The costs of mangling is higher than using two regs for passing that
+data as-is, both binary and LOC-wise (tried it). Plus the code is more
+readable.
 
 Jan
 
