@@ -1,6 +1,6 @@
-Message-ID: <54EFAA88.3020303@xenomai.org>
-Date: Fri, 27 Feb 2015 00:21:44 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <54F01982.20902@optusnet.com.au>
+Date: Fri, 27 Feb 2015 18:15:14 +1100
+From: Tom Evans <tom_usenet@optusnet.com.au>
 MIME-Version: 1.0
 References: <44bnkqho7e.fsf@lowell-desk.lan>
  <20150218220804.GR30317@hermes.click-hack.org>
@@ -14,9 +14,10 @@ References: <44bnkqho7e.fsf@lowell-desk.lan>
  <54EF5E45.30907@xenomai.org> <44a900eaqu.fsf@lowell-desk.lan>
  <54EF8115.6030200@xenomai.org> <44wq34cmfh.fsf@lowell-desk.lan>
 In-Reply-To: <44wq34cmfh.fsf@lowell-desk.lan>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] interrupt service
+Reply-To: tom_usenet@optusnet.com.au
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,27 +28,31 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Lowell Gilbert <kludge@be-well.ilk.org>, xenomai@xenomai.org
 
-On 02/26/15 23:55, Lowell Gilbert wrote:
+On 27/02/15 09:55, Lowell Gilbert wrote:
+> There isn't any useful Linux activity happening there. I just need to
+> keep it from interfering much with the *other* CPU.
 
-> I really wouldn't mind letting the kernel get time more frequently; I just
-> need to be sure that my real time task gets at least 8 microseconds out
-> of every fifteen. Would I be able to guarantee that in a polled
-> architecture? What would be involved: short sleeps from a high-priority
-> realtime task?
-> 
+You may wish to check this where I remember a problem that may be related:
 
-Yes, I'd think so.
+https://community.freescale.com/thread/328465
 
-I don't have the context switch time figures in mind on a typical Cortex
-A9 (assuming 1Ghz or close to), but the main issue boils down to cache
-pollution with a dual kernel system in this case. If the real-time task
-sleeps/blocks, then linux may run and cause cache lines used by the rt
-code to be evicted, raising the latency.
+Points to:
 
-Now, with such a fast rate (assuming 15 us), there would not be much
-time for linux to run and pollute the cache anyway. But this is all so
-close to the limit that I can't say that linux could run reliably either.
+http://www.arm.com/files/pdf/cachecoherencywhitepaper_6june2011.pdf
 
--- 
-Philippe.
+Contains:
+
+     Measurements taken on a dual core Cortex-A9 at 1GHz
+     with a 256K L2 cache showed that cache flushing can
+     take of the order of 100us.
+
+If one core flushes the L2 cache and the other core has a miss and goes to try 
+and read from the L2, then I think it can be stalled for all that period. I 
+seem to remember from when I read this that a cache flush can stall the other 
+core even when it doesn't need to access L2.
+
+A driver on the Linux core could lock the whole system up.
+
+Tom
+
 
