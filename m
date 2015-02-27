@@ -1,13 +1,13 @@
-Date: Fri, 27 Feb 2015 21:50:04 +0100
+Date: Fri, 27 Feb 2015 22:21:30 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150227205004.GO434@hermes.click-hack.org>
+Message-ID: <20150227212130.GP434@hermes.click-hack.org>
 References: <54F0CF9E.1040707@siemens.com>
- <20150227202453.GK434@hermes.click-hack.org>
- <54F0D584.1030307@siemens.com> <54F0D7E9.2080209@siemens.com>
+ <20150227202724.GL434@hermes.click-hack.org>
+ <54F0D599.8090009@siemens.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <54F0D7E9.2080209@siemens.com>
+In-Reply-To: <54F0D599.8090009@siemens.com>
 Subject: Re: [Xenomai] [RFC] Consolidated exception prologue/epiloge for x86
  and ARM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -21,37 +21,27 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On Fri, Feb 27, 2015 at 09:47:37PM +0100, Jan Kiszka wrote:
-> On 2015-02-27 21:37, Jan Kiszka wrote:
-> > On 2015-02-27 21:24, Gilles Chanteperdrix wrote:
-> >> On Fri, Feb 27, 2015 at 09:12:14PM +0100, Jan Kiszka wrote:
-> >>> Hi,
-> >>>
-> >>> just pushed a first implementation of the general model that I proposed
-> >>> for exception handling. You can find it at
-> >>>
-> >>> http://git.xenomai.org/ipipe-jki.git/log/?h=queues/trap-rework
+On Fri, Feb 27, 2015 at 09:37:45PM +0100, Jan Kiszka wrote:
+> On 2015-02-27 21:27, Gilles Chanteperdrix wrote:
+> > On Fri, Feb 27, 2015 at 09:12:14PM +0100, Jan Kiszka wrote:
+> >> Hi,
 > >>
-> >> NACK. The ARM implementation is broken, re-enabling hardware irqs
-> >> before stalling root is wrong.
+> >> just pushed a first implementation of the general model that I proposed
+> >> for exception handling. You can find it at
+> >>
+> >> http://git.xenomai.org/ipipe-jki.git/log/?h=queues/trap-rework
 > > 
-> > Ok, will adjust.
+> > Also, the clean way to pass virtual + physical flags is to use
+> > arch_mangle_bits. Using two longs (potentially 128 bits then) is
+> > completely useless since one of the longs simply has one significant
+> > bit.
 > 
-> But I need to think about this again first. It seems we are doing this
-> for ages on x86, and I need to understand why it could be a problem on
-> ARM. Can you provide an example that would breaks?
+> The costs of mangling is higher than using two regs for passing that
+> data as-is, both binary and LOC-wise (tried it). Plus the code is more
+> readable.
 
-You are creating a point where a Linux irq can happen which does not
-exist on the mainline kernel.
-
-If you do:
-local_irq_save(flags);
-hard_local_irq_enable();
-
-There is no way a Linux interrupt can squeeze in.
-
-(I mean in the case of exception over root domamin, in the case of
-an exception over head, irqs are enabled anyway).
+That is false on ARM. On ARM gcc does not pass structs by values in
+registers. The values get passed on stack.
 
 -- 
 					    Gilles.
