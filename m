@@ -1,12 +1,16 @@
-Date: Tue, 24 Feb 2015 13:50:27 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150224125027.GA13354@hermes.click-hack.org>
-References: <CAB6vvjmqqX1_NbPLDOmwkd=htsC+z3b99H8BwSYXgRYhXty+=A@mail.gmail.com>
+Message-ID: <54F4B1AB.3030909@xenomai.org>
+Date: Mon, 02 Mar 2015 19:53:31 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAB6vvjmqqX1_NbPLDOmwkd=htsC+z3b99H8BwSYXgRYhXty+=A@mail.gmail.com>
-Subject: Re: [Xenomai] rtnet issue with xenomai-3.git next branch
+References: <54F0CF9E.1040707@siemens.com>
+ <20150227202724.GL434@hermes.click-hack.org> <54F0D599.8090009@siemens.com>
+ <20150227212130.GP434@hermes.click-hack.org>
+ <20150227212439.GQ434@hermes.click-hack.org> <54F4A04A.9050600@siemens.com>
+In-Reply-To: <54F4A04A.9050600@siemens.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [RFC] Consolidated exception prologue/epiloge for x86
+ and ARM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,22 +19,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Antoine Hoarau <hoarau.robotics@gmail.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On Tue, Feb 24, 2015 at 10:39:48AM +0000, Antoine Hoarau wrote:
-> > Please stay on the list.
-> My bad.
-> >Ok, maybe a consequence of the udp module bug. Please try again with
-> >the patch applied, and if you still get the bug, we will investigate
-> >further. Please try and enable frame pointers so as to get more
-> >meaningful stack traces.
-> I tried the patch, rtudp is now correctly loaded, but et rtnet start, the
-> system hangs, and I can't print/see any kernel debug...
+On 03/02/2015 06:39 PM, Jan Kiszka wrote:
+> On 2015-02-27 22:24, Gilles Chanteperdrix wrote:
+>> On Fri, Feb 27, 2015 at 10:21:30PM +0100, Gilles Chanteperdrix wrote:
+>>> On Fri, Feb 27, 2015 at 09:37:45PM +0100, Jan Kiszka wrote:
+>>>> On 2015-02-27 21:27, Gilles Chanteperdrix wrote:
+>>>>> On Fri, Feb 27, 2015 at 09:12:14PM +0100, Jan Kiszka wrote:
+>>>>>> Hi,
+>>>>>>
+>>>>>> just pushed a first implementation of the general model that I proposed
+>>>>>> for exception handling. You can find it at
+>>>>>>
+>>>>>> http://git.xenomai.org/ipipe-jki.git/log/?h=queues/trap-rework
+>>>>>
+>>>>> Also, the clean way to pass virtual + physical flags is to use
+>>>>> arch_mangle_bits. Using two longs (potentially 128 bits then) is
+>>>>> completely useless since one of the longs simply has one significant
+>>>>> bit.
+>>>>
+>>>> The costs of mangling is higher than using two regs for passing that
+>>>> data as-is, both binary and LOC-wise (tried it). Plus the code is more
+>>>> readable.
+>>>
+>>> That is false on ARM. On ARM gcc does not pass structs by values in
+>>> registers. The values get passed on stack.
+>>
+>> Sorry, misread the assembler. They are passed by registers, however
+>> the registers get uselessly saved on stack, then restored to other
+>> registers. 
+>>
+>> struct foo {
+>> 	int x;
+>> 	int y;
+>> };
+>>
+>> int f(struct foo f)
+>> {
+>> 	return f.x + f.y;
+>> }
+>>
+>> Gives, with -Os:
+>> 00000000 <f>:
+>>    0:   b082            sub     sp, #8
+>>    2:   ab02            add     r3, sp, #8
+>>    4:   e903 0003       stmdb   r3, {r0, r1}
+>>    8:   e89d 0009       ldmia.w sp, {r0, r3}
+>>    c:   4418            add     r0, r3
+>>    e:   b002            add     sp, #8
+>>   10:   4770            bx      lr
+>>
+> 
+> Ouch. I missed that this sneaked in.
+> 
+> The complications with the existing mangle functions are that they do
+> not play well with what I need for the existing
+> ipipe_restore_root_nosync. I can open-code the latter (size increases),
 
-Ok, could you try and load the modules manually to check which one
-is causing issues ?
+Unless this is part of a heavily used static inline, this increase
+should be negligible.
+
+> extend the former to alternatively return architectural flags (instead
+> of boolean), or provide another wrapper to convert the virt bit into flags.
+> 
+> Hmm, or - and that's probably cleanest - I simply align
+> ipipe_restore_root_nosync to ipipe_restore_root argument-wise. The
+> latter takes "x" (stall) as boolean, the former as architectural flags.
+> That's highly confusing anyway. And it seems there are no users to break
+> in Xenomai, despite that it is exported to modules.
+> 
+
+It is exported because it was called from some static inline helper
+which was part of an obsolete interface, not because client code should
+use it.
+
+The cleanest approach is not to use ipipe_restore_root_nosync() at all.
+There are only a very few occasions when no syncing the interrupt log
+ever makes sense, and all are now open-coded to make it clear that we
+are doing something very unusual.
+
+ipipe_restore_root_nosync() is confusing enough that people tend to use
+it the wrong way, introducing nasty bugs, so I definitely plan to get
+rid of it.
 
 -- 
-					    Gilles.
+Philippe.
 
