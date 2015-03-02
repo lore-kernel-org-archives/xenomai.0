@@ -1,16 +1,16 @@
-Message-ID: <54F47A0B.7090900@xenomai.org>
-Date: Mon, 02 Mar 2015 15:56:11 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <54F4A04A.9050600@siemens.com>
+Date: Mon, 02 Mar 2015 18:39:22 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <CANWkrRPBG=3+k4GkcrMEO4fBb=tmvn+XKRR6t8S+p+r_ffm6vg@mail.gmail.com>
- <54EB4E8E.8040804@xenomai.org>
- <CAB+DZ3=s-pHrt=U_YN5qYo7Vtic9f-WfQQBwK3znBTdN_iVOmw@mail.gmail.com>
- <54EC8CBD.6000500@xenomai.org>
- <CAB+DZ3=cB3URuV57Pa5g3fHkvuPyeKza_-8UYJkqvP8Ruj45hQ@mail.gmail.com>
-In-Reply-To: <CAB+DZ3=cB3URuV57Pa5g3fHkvuPyeKza_-8UYJkqvP8Ruj45hQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Failed testsuite/latency
+References: <54F0CF9E.1040707@siemens.com>
+ <20150227202724.GL434@hermes.click-hack.org> <54F0D599.8090009@siemens.com>
+ <20150227212130.GP434@hermes.click-hack.org>
+ <20150227212439.GQ434@hermes.click-hack.org>
+In-Reply-To: <20150227212439.GQ434@hermes.click-hack.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [RFC] Consolidated exception prologue/epiloge for x86
+ and ARM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,52 +19,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Bart Vissers <bvissers@e2mtechnologies.eu>
-Cc: Michael Smith <2michael.smith@gmail.com>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 02/25/2015 09:33 AM, Bart Vissers wrote:
-> Hi Philippe,
+On 2015-02-27 22:24, Gilles Chanteperdrix wrote:
+> On Fri, Feb 27, 2015 at 10:21:30PM +0100, Gilles Chanteperdrix wrote:
+>> On Fri, Feb 27, 2015 at 09:37:45PM +0100, Jan Kiszka wrote:
+>>> On 2015-02-27 21:27, Gilles Chanteperdrix wrote:
+>>>> On Fri, Feb 27, 2015 at 09:12:14PM +0100, Jan Kiszka wrote:
+>>>>> Hi,
+>>>>>
+>>>>> just pushed a first implementation of the general model that I proposed
+>>>>> for exception handling. You can find it at
+>>>>>
+>>>>> http://git.xenomai.org/ipipe-jki.git/log/?h=queues/trap-rework
+>>>>
+>>>> Also, the clean way to pass virtual + physical flags is to use
+>>>> arch_mangle_bits. Using two longs (potentially 128 bits then) is
+>>>> completely useless since one of the longs simply has one significant
+>>>> bit.
+>>>
+>>> The costs of mangling is higher than using two regs for passing that
+>>> data as-is, both binary and LOC-wise (tried it). Plus the code is more
+>>> readable.
+>>
+>> That is false on ARM. On ARM gcc does not pass structs by values in
+>> registers. The values get passed on stack.
 > 
-> Before making any changes, I ran xeno-config --info:
-> Xenomai version: Xenomai/cobalt v3.0-rc3 --
-> Linux rtpc 3.16.7-xenomai-3.0-rc3 #1 SMP Mon Feb 23 12:30:46 CET 2015
-> i686 GNU/Linux
-> Kernel parameters: BOOT_IMAGE=/boot/vmlinuz-3.16.7-xenomai-3.0-rc3
-> root=UUID=0925426e-e058-4093-963c-8b7de072e229 ro quiet
-> I-pipe release #2 detected
-> Cobalt core 3.0-rc3 detected
-> Build args: --prefix=/usr --includedir=/usr/include/xenomai
-> --mandir=/usr/share/man --with-testdir=/usr/lib/xenomai/testsuite
-> --build i486-linux-gnu build_alias=i486-linux-gnu
+> Sorry, misread the assembler. They are passed by registers, however
+> the registers get uselessly saved on stack, then restored to other
+> registers. 
 > 
-> namelist did not work, as latency does not contain any symbols. How
-> can I include these when building debian packages?
+> struct foo {
+> 	int x;
+> 	int y;
+> };
 > 
-> Unfortunately, I got compilation errors after applying the patch to
-> xenomai-3.0-rc3: error: ‘XENO_WARNING’ undeclared (first use in this
-> function)
-> So I decided to repeat my steps with the git next branch, 52fb91e...
-> So, same linux kernel, i-pipe patch and kernel config. Also included
-> the printk patch. Output:
+> int f(struct foo f)
+> {
+> 	return f.x + f.y;
+> }
 > 
-> == Sampling period: 100 us
-> == Test mode: periodic user-mode task
-> == All results in microseconds
-> warming up...
-> latency: failed to set periodic, code 9
-> ^C---|-----------|-----------|-----------|--------|------|-------------------------
-> RTS|  10000.000|      0.000| -10000.000|       0|     0|    00:03:26/00:03:26
-> 
-> Notice the ^C. I killed it because it was running indefinitely. This
-> was also the case in my previous attempts.
-> 
+> Gives, with -Os:
+> 00000000 <f>:
+>    0:   b082            sub     sp, #8
+>    2:   ab02            add     r3, sp, #8
+>    4:   e903 0003       stmdb   r3, {r0, r1}
+>    8:   e89d 0009       ldmia.w sp, {r0, r3}
+>    c:   4418            add     r0, r3
+>    e:   b002            add     sp, #8
+>   10:   4770            bx      lr
 > 
 
-Can any of you send me the generated debian package privately? I would
-also need to know the gcc version used.
+Ouch. I missed that this sneaked in.
 
-Thanks,
+The complications with the existing mangle functions are that they do
+not play well with what I need for the existing
+ipipe_restore_root_nosync. I can open-code the latter (size increases),
+extend the former to alternatively return architectural flags (instead
+of boolean), or provide another wrapper to convert the virt bit into flags.
+
+Hmm, or - and that's probably cleanest - I simply align
+ipipe_restore_root_nosync to ipipe_restore_root argument-wise. The
+latter takes "x" (stall) as boolean, the former as architectural flags.
+That's highly confusing anyway. And it seems there are no users to break
+in Xenomai, despite that it is exported to modules.
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
