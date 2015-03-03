@@ -1,14 +1,12 @@
-Message-ID: <54F5CD4D.8080004@xenomai.org>
-Date: Tue, 03 Mar 2015 16:03:41 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Tue, 3 Mar 2015 16:08:01 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150303150801.GB30672@hermes.click-hack.org>
+References: <CAL92PvW2wtJ6xg3D=viNgeC7b3=Fdd_T5FoK4CsHiWnBqQGTFg@mail.gmail.com>
 MIME-Version: 1.0
-References: <CAKk99t1N5b0_iQerSxPyKmMTLC8PePTJCO9zzFLdkmt_mDiiVg@mail.gmail.com>	<54F58A4C.7030006@xenomai.org>	<CAKk99t3_g0ZODEe32KGAzfHckWC=-Gqr6CrFa5yRh-hLF5Ttow@mail.gmail.com>	<54F5BE3F.4010008@xenomai.org>	<54F5C020.8090102@xenomai.org>
- <CAKk99t14k19FhkgMm1FymkjaKWngMG3FQL8mkm6tBOdth4X7sQ@mail.gmail.com>
-In-Reply-To: <CAKk99t14k19FhkgMm1FymkjaKWngMG3FQL8mkm6tBOdth4X7sQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai/cobalt: low_init(): binding failed: Function
- not implemented error issued when trting to run latency app on xeno 3.x-rc3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAL92PvW2wtJ6xg3D=viNgeC7b3=Fdd_T5FoK4CsHiWnBqQGTFg@mail.gmail.com>
+Subject: Re: [Xenomai] booting problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,45 +15,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Helder Daniel <hdaniel@ualg.pt>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: cristian ramos <cristian0084@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 03/03/2015 03:58 PM, Helder Daniel wrote:
+On Tue, Mar 03, 2015 at 11:02:38AM +0000, cristian ramos wrote:
+>    I'm new using Xenomai and would appreciate any help / advice for solving
+> the problem that I have in the booting.
 > 
->     No actually, you don't need that if sysregd still appears in
->     $prefix/sbin as built.
-> 
->     Please send the output of "strace -f" on the latency executable.
-> 
-> Ok. I tried putting sbin in the search path and gave the same error.
-> 
-> I am running these test now on an installation of Mercury (already on an
-> AMD Sempron physical system).
-> 
-> /usr/xenomai/bin/latency runs fine on this installation (the issue with
-> latency not running is with Cobalt installation)
-> 
-> I think I have 2 different problems:
-> 
-> 1) can not use Xenomai registry in Mercury and Cobalt.
-> 
-> 2) actually I can not run anything at all in Cobalt installation
-> (possibly a bad patch)
-> 
-> To test registry in Mercury I tried to run a simple app, that gives the
-> registry daemon error:
-> 
-> ./hello
->    3"002.332| WARNING: [main] cannot connect to registry daemon
->    3"002.425| BUG: [main] initialization failed, EAGAIN
-> 
+>    In the kernel log, I have get the following message, where I can see the
+> problems with: SMI and C1E.
 
-> [pid  4038] execve("NONE/sbin/sysregd", ["sysregd", "--daemon",
-> "--root", "/var/run/xenomai/anon"], [/* 18 vars */]) = -1 ENOENT (No
+The notice about C1E is not a problem. Xenomai disables C1E state to
+get better latency, that is all.
 
-That is the issue with the registry: the installation prefix is invalid.
-I suspect a wrong value passed to --prefix.
+For the SMI problem, see the troubleshooting guide.
 
 -- 
-Philippe.
+					    Gilles.
 
