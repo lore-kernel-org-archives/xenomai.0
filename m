@@ -1,17 +1,18 @@
-Message-ID: <54F5D34A.90005@xenomai.org>
-Date: Tue, 03 Mar 2015 16:29:14 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CANWkrRPBG=3+k4GkcrMEO4fBb=tmvn+XKRR6t8S+p+r_ffm6vg@mail.gmail.com>
- <54EB4E8E.8040804@xenomai.org>
- <CAB+DZ3=s-pHrt=U_YN5qYo7Vtic9f-WfQQBwK3znBTdN_iVOmw@mail.gmail.com>
- <54EC8CBD.6000500@xenomai.org>
- <CAB+DZ3=cB3URuV57Pa5g3fHkvuPyeKza_-8UYJkqvP8Ruj45hQ@mail.gmail.com>
- <54F47A0B.7090900@xenomai.org>
-In-Reply-To: <54F47A0B.7090900@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Failed testsuite/latency
+Sender: had2006@gmail.com
+In-Reply-To: <54F5CD4D.8080004@xenomai.org>
+References: <CAKk99t1N5b0_iQerSxPyKmMTLC8PePTJCO9zzFLdkmt_mDiiVg@mail.gmail.com>
+ <54F58A4C.7030006@xenomai.org>
+ <CAKk99t3_g0ZODEe32KGAzfHckWC=-Gqr6CrFa5yRh-hLF5Ttow@mail.gmail.com>
+ <54F5BE3F.4010008@xenomai.org> <54F5C020.8090102@xenomai.org>
+ <CAKk99t14k19FhkgMm1FymkjaKWngMG3FQL8mkm6tBOdth4X7sQ@mail.gmail.com>
+ <54F5CD4D.8080004@xenomai.org>
+Date: Tue, 3 Mar 2015 15:40:28 +0000
+Message-ID: <CAKk99t22fhrbc0GwURNJjdUfVfwmBvVyAWYYArVMgJfh4_JF+Q@mail.gmail.com>
+From: Helder Daniel <hdaniel@ualg.pt>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Xenomai/cobalt: low_init(): binding failed: Function
+ not implemented error issued when trting to run latency app on xeno 3.x-rc3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,56 +21,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Bart Vissers <bvissers@e2mtechnologies.eu>
-Cc: Michael Smith <2michael.smith@gmail.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 03/02/2015 03:56 PM, Philippe Gerum wrote:
-> On 02/25/2015 09:33 AM, Bart Vissers wrote:
->> Hi Philippe,
->>
->> Before making any changes, I ran xeno-config --info:
->> Xenomai version: Xenomai/cobalt v3.0-rc3 --
->> Linux rtpc 3.16.7-xenomai-3.0-rc3 #1 SMP Mon Feb 23 12:30:46 CET 2015
->> i686 GNU/Linux
->> Kernel parameters: BOOT_IMAGE=/boot/vmlinuz-3.16.7-xenomai-3.0-rc3
->> root=UUID=0925426e-e058-4093-963c-8b7de072e229 ro quiet
->> I-pipe release #2 detected
->> Cobalt core 3.0-rc3 detected
->> Build args: --prefix=/usr --includedir=/usr/include/xenomai
->> --mandir=/usr/share/man --with-testdir=/usr/lib/xenomai/testsuite
->> --build i486-linux-gnu build_alias=i486-linux-gnu
->>
->> namelist did not work, as latency does not contain any symbols. How
->> can I include these when building debian packages?
->>
->> Unfortunately, I got compilation errors after applying the patch to
->> xenomai-3.0-rc3: error: ‘XENO_WARNING’ undeclared (first use in this
->> function)
->> So I decided to repeat my steps with the git next branch, 52fb91e...
->> So, same linux kernel, i-pipe patch and kernel config. Also included
->> the printk patch. Output:
->>
->> == Sampling period: 100 us
->> == Test mode: periodic user-mode task
->> == All results in microseconds
->> warming up...
->> latency: failed to set periodic, code 9
->> ^C---|-----------|-----------|-----------|--------|------|-------------------------
->> RTS|  10000.000|      0.000| -10000.000|       0|     0|    00:03:26/00:03:26
->>
->> Notice the ^C. I killed it because it was running indefinitely. This
->> was also the case in my previous attempts.
->>
->>
-> 
-> Can any of you send me the generated debian package privately? I would
-> also need to know the gcc version used.
-> 
+I did not set --prefix.
+I assumed the default value will be applied: /usr/xenomai
 
-Never mind, I could reproduce this bug eventually. This issue is due to
-some register trashing at work in the pipeline code, not to the Xenomai
-core. More later.
+After install the xenomai tree appears to be intalled on /usr/xenomai:
+
+/usr/xenoami/bin        with latency, ...
+/usr/xenoami/include  with al the API headers
+/usr/xenoami/sbin      with rsysregd, ...
+
+On 3 March 2015 at 15:03, Philippe Gerum <rpm@xenomai.org> wrote:
+
+> On 03/03/2015 03:58 PM, Helder Daniel wrote:
+> >
+> >     No actually, you don't need that if sysregd still appears in
+> >     $prefix/sbin as built.
+> >
+> >     Please send the output of "strace -f" on the latency executable.
+> >
+> > Ok. I tried putting sbin in the search path and gave the same error.
+> >
+> > I am running these test now on an installation of Mercury (already on an
+> > AMD Sempron physical system).
+> >
+> > /usr/xenomai/bin/latency runs fine on this installation (the issue with
+> > latency not running is with Cobalt installation)
+> >
+> > I think I have 2 different problems:
+> >
+> > 1) can not use Xenomai registry in Mercury and Cobalt.
+> >
+> > 2) actually I can not run anything at all in Cobalt installation
+> > (possibly a bad patch)
+> >
+> > To test registry in Mercury I tried to run a simple app, that gives the
+> > registry daemon error:
+> >
+> > ./hello
+> >    3"002.332| WARNING: [main] cannot connect to registry daemon
+> >    3"002.425| BUG: [main] initialization failed, EAGAIN
+> >
+>
+> > [pid  4038] execve("NONE/sbin/sysregd", ["sysregd", "--daemon",
+> > "--root", "/var/run/xenomai/anon"], [/* 18 vars */]) = -1 ENOENT (No
+>
+> That is the issue with the registry: the installation prefix is invalid.
+> I suspect a wrong value passed to --prefix.
+>
+> --
+> Philippe.
+>
+
+
 
 -- 
-Philippe.
+Helder Daniel
+UALG - FCT
+DEEI
 
+http://w3.ualg.pt/~hdaniel
