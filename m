@@ -1,23 +1,10 @@
+Date: Tue, 03 Mar 2015 12:04:05 -0600
+From: drasko.draskovic@gmail.com<info@flipmailer.com>
 MIME-Version: 1.0
-Sender: had2006@gmail.com
-In-Reply-To: <54F5EA06.4040104@xenomai.org>
-References: <CAKk99t1N5b0_iQerSxPyKmMTLC8PePTJCO9zzFLdkmt_mDiiVg@mail.gmail.com>
- <54F58A4C.7030006@xenomai.org>
- <CAKk99t3_g0ZODEe32KGAzfHckWC=-Gqr6CrFa5yRh-hLF5Ttow@mail.gmail.com>
- <54F5BE3F.4010008@xenomai.org> <54F5C020.8090102@xenomai.org>
- <CAKk99t14k19FhkgMm1FymkjaKWngMG3FQL8mkm6tBOdth4X7sQ@mail.gmail.com>
- <54F5CD4D.8080004@xenomai.org>
- <CAKk99t22fhrbc0GwURNJjdUfVfwmBvVyAWYYArVMgJfh4_JF+Q@mail.gmail.com>
- <54F5D6C6.40908@xenomai.org>
- <CAKk99t13XsRYBA15ws6ZbUsrqe5+b7D1xRM5NGKrUkvrLJWPCw@mail.gmail.com>
- <54F5E958.2090701@xenomai.org> <54F5EA06.4040104@xenomai.org>
-Date: Tue, 3 Mar 2015 17:23:58 +0000
-Message-ID: <CAKk99t1DtxOFmTpf2ZgJ2coh_tNqMPY4VX0pAdEJZB6oGvko3g@mail.gmail.com>
-From: Helder Daniel <hdaniel@ualg.pt>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Xenomai/cobalt: low_init(): binding failed: Function
- not implemented error issued when trting to run latency app on xeno 3.x-rc3
+Message-ID: <0.0.3A6.4EE.1D055DBADBE8614.277A@mail4.flipmailer.com>
+Content-Type: text/plain; charset=utf-8
+Subject: [Xenomai] drasko.draskovic@gmail.com has indicated you're a
+	friend(45 mutual friends). Accept?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,40 +13,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-T2suCkF0dGFjaGVkIGlzIHRoZSBjb25maWcubG9nIGdlbmVyYXRlZCBieToKCi4vY29uZmlndXJl
-IC0td2l0aC1jb3JlPW1lcmN1cnkgLS1lbmFibGUtcmVnaXN0cnkKClRoZSBvdXRwdXQgb2YgL3Vz
-ci94ZW5vbWFpL3NiaW4vdmVyc2lvbiAtYSBpczoKClhlbm9tYWkvbWVyY3VyeSB2My4wLXJjMyAt
-LQpUYXJnZXQ6IGk2ODYtcGMtbGludXgtZ251CkNvbXBpbGVyOiBnY2MgdmVyc2lvbiA0LjcuMiAo
-RGViaWFuIDQuNy4yLTUpCkJ1aWxkIGFyZ3M6ICAnLS13aXRoLWNvcmU9bWVyY3VyeScgJy0tZW5h
-YmxlLXJlZ2lzdHJ5JwoKCgoKT24gMyBNYXJjaCAyMDE1IGF0IDE3OjA2LCBQaGlsaXBwZSBHZXJ1
-bSA8cnBtQHhlbm9tYWkub3JnPiB3cm90ZToKCj4gT24gMDMvMDMvMjAxNSAwNjowMyBQTSwgUGhp
-bGlwcGUgR2VydW0gd3JvdGU6Cj4gPiBPbiAwMy8wMy8yMDE1IDA1OjM4IFBNLCBIZWxkZXIgRGFu
-aWVsIHdyb3RlOgo+ID4+Cj4gPj4gT24gMyBNYXJjaCAyMDE1IGF0IDE1OjQ0LCBQaGlsaXBwZSBH
-ZXJ1bSA8cnBtQHhlbm9tYWkub3JnCj4gPj4gPG1haWx0bzpycG1AeGVub21haS5vcmc+PiB3cm90
-ZToKPiA+Pgo+ID4+ICAgICBPbiAwMy8wMy8yMDE1IDA0OjQwIFBNLCBIZWxkZXIgRGFuaWVsIHdy
-b3RlOgo+ID4+ICAgICA+IEkgZGlkIG5vdCBzZXQgLS1wcmVmaXguCj4gPj4gICAgID4gSSBhc3N1
-bWVkIHRoZSBkZWZhdWx0IHZhbHVlIHdpbGwgYmUgYXBwbGllZDogL3Vzci94ZW5vbWFpCj4gPj4K
-PiA+PiAgICAgVGhpcyBpcyB0aGUgY2FzZSwgdW5sZXNzIHNvbWV0aGluZyBnb2VzIHdyb25nIHdo
-aWxlIGNvbmZpZ3VyaW5nLgo+IENhbiB5b3UKPiA+PiAgICAgY2hlY2sgdGhlIHZhbHVlIHJlcG9y
-dGVkIGluIHRoZSBjb25maWcgbG9nIHdoZW4gcnVubmluZyB0aGUKPiBjb25maWd1cmUKPiA+PiAg
-ICAgc2NyaXB0Pwo+ID4+Cj4gPj4KPiA+Pgo+ID4+IHRoaXMgaXMgdGhlIGxhc3QgMjAgbGluZXMg
-b2YgY29uZmlnLmxvZy4gRXhpdCBzdGF0dXMgaXMgMC4KPiA+PiBTTyBpdCBhcHBlYXIgdGhhdCBj
-b25maWd1cmluZyB3YXMgZG9uZSBwcm9wZXJseS4KPiA+Cj4gPiBObywgdGhpcyBkb2VzIG5vdCBw
-cm92ZSB0aGF0IGFsbCBzZXR0aW5ncyB3ZXJlIHNhbmUuICRwcmVmaXggaXMgY2xlYXJseQo+ID4g
-bm90IHJpZ2h0IGluIHRoaXMgY2FzZSwgc2luY2UgQ09ORklHX1hFTk9fUFJFRklYIGJhc2ljYWxs
-eSBtaXJyb3JzIGl0Lgo+ID4KPiA+PiBidXQ6ICNkZWZpbmUgQ09ORklHX1hFTk9fUFJFRklYICJO
-T05FIgo+ID4+IG1heWJlIHRoYXQncyB0aGUgcHJvYmxlbT8KPiA+Cj4gPiBZZXMsIGl0IGlzIGZv
-ciBzdXJlIHRoZSBwcm9ibGVtLiBDT05GSUdfWEVOT19QUkVGSVggaXMgc2V0IHRvIHRoZQo+ID4g
-JHByZWZpeCB2YWx1ZSBmcm9tIHRoZSBhdXRvY29uZiBzY3JpcHQuIFBsZWFzZSBhdHRhY2ggdGhl
-IGZpbGUKPiA+IGNvbmZpZy5sb2cgd2hpY2ggd2FzIGdlbmVyYXRlZCBieSB0aGUgY29uZmlndXJl
-IHNjcmlwdC4KPiA+Cj4KPiBJbiBhZGRpdGlvbiwgcGxlYXNlIHNlbmQgdGhlIG91dHB1dCBvZiAv
-dXNyL3hlbm9tYWkvc2Jpbi92ZXJzaW9uIC1hLgo+Cj4gLS0KPiBQaGlsaXBwZS4KPgoKCgotLSAK
-SGVsZGVyIERhbmllbApVQUxHIC0gRkNUCkRFRUkKCmh0dHA6Ly93My51YWxnLnB0L35oZGFuaWVs
-Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFj
-aG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGNvbmZpZy5sb2cKVHlwZTogYXBwbGljYXRpb24v
-b2N0ZXQtc3RyZWFtClNpemU6IDQ3NzE4IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8
-aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1
-MDMwMy9lMjUwOTUzNC9hdHRhY2htZW50Lm9iaj4K
+Hi,
+
+drasko.draskovic@gmail.com wants to follow you.
+
+****** Is drasko.draskovic@gmail.com you friend? ******
+If Yes please follow the link below:
+http://invites.flipmailer.com/signup_e.html?fullname=&amp;email=xenomai@xenomai.org&amp;invitername=Drasko.draskovic&amp;inviterid=17473118&amp;userid=0&amp;token=0&amp;emailmasterid=03d2c763-1883-4f0f-b81b-c63a42e676c6&amp;from=drasko.draskovic@gmail.com&src=txt_yes
+
+If No please follow the link below:
+http://invites.flipmailer.com/signup_e.html?fullname=&amp;email=xenomai@xenomai.org&amp;invitername=Drasko.draskovic&amp;inviterid=17473118&amp;userid=0&amp;token=0&amp;emailmasterid=03d2c763-1883-4f0f-b81b-c63a42e676c6&amp;from=drasko.draskovic@gmail.com&src=txt_no
+
+
+Follow the link below to remove yourself from all such emails
+http://invites.flipmailer.com/uns_inviter.jsp?email=xenomai@xenomai.org&amp;iid=03d2c763-1883-4f0f-b81b-c63a42e676c6&amp;from=drasko.draskovic@gmail.com
+
+
