@@ -1,10 +1,18 @@
-Date: Tue, 03 Mar 2015 12:04:05 -0600
-From: drasko.draskovic@gmail.com<info@flipmailer.com>
+Message-ID: <54F60911.6040402@xenomai.org>
+Date: Tue, 03 Mar 2015 20:18:41 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Message-ID: <0.0.3A6.4EE.1D055DBADBE8614.277A@mail4.flipmailer.com>
-Content-Type: text/plain; charset=utf-8
-Subject: [Xenomai] drasko.draskovic@gmail.com has indicated you're a
-	friend(45 mutual friends). Accept?
+References: <CANWkrRPBG=3+k4GkcrMEO4fBb=tmvn+XKRR6t8S+p+r_ffm6vg@mail.gmail.com>
+ <54EB4E8E.8040804@xenomai.org>
+ <CAB+DZ3=s-pHrt=U_YN5qYo7Vtic9f-WfQQBwK3znBTdN_iVOmw@mail.gmail.com>
+ <54EC8CBD.6000500@xenomai.org>
+ <CAB+DZ3=cB3URuV57Pa5g3fHkvuPyeKza_-8UYJkqvP8Ruj45hQ@mail.gmail.com>
+ <54F47A0B.7090900@xenomai.org> <54F5D34A.90005@xenomai.org>
+ <54F5D75D.9090009@xenomai.org>
+In-Reply-To: <54F5D75D.9090009@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Failed testsuite/latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,21 +21,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Bart Vissers <bvissers@e2mtechnologies.eu>
+Cc: Michael Smith <2michael.smith@gmail.com>, xenomai@xenomai.org
 
-Hi,
+On 03/03/2015 04:46 PM, Philippe Gerum wrote:
+> On 03/03/2015 04:29 PM, Philippe Gerum wrote:
+>> On 03/02/2015 03:56 PM, Philippe Gerum wrote:
+>>> On 02/25/2015 09:33 AM, Bart Vissers wrote:
+>>>> Hi Philippe,
+>>>>
+>>>> Before making any changes, I ran xeno-config --info:
+>>>> Xenomai version: Xenomai/cobalt v3.0-rc3 --
+>>>> Linux rtpc 3.16.7-xenomai-3.0-rc3 #1 SMP Mon Feb 23 12:30:46 CET 2015
+>>>> i686 GNU/Linux
+>>>> Kernel parameters: BOOT_IMAGE=/boot/vmlinuz-3.16.7-xenomai-3.0-rc3
+>>>> root=UUID=0925426e-e058-4093-963c-8b7de072e229 ro quiet
+>>>> I-pipe release #2 detected
+>>>> Cobalt core 3.0-rc3 detected
+>>>> Build args: --prefix=/usr --includedir=/usr/include/xenomai
+>>>> --mandir=/usr/share/man --with-testdir=/usr/lib/xenomai/testsuite
+>>>> --build i486-linux-gnu build_alias=i486-linux-gnu
+>>>>
+>>>> namelist did not work, as latency does not contain any symbols. How
+>>>> can I include these when building debian packages?
+>>>>
+>>>> Unfortunately, I got compilation errors after applying the patch to
+>>>> xenomai-3.0-rc3: error: ‘XENO_WARNING’ undeclared (first use in this
+>>>> function)
+>>>> So I decided to repeat my steps with the git next branch, 52fb91e...
+>>>> So, same linux kernel, i-pipe patch and kernel config. Also included
+>>>> the printk patch. Output:
+>>>>
+>>>> == Sampling period: 100 us
+>>>> == Test mode: periodic user-mode task
+>>>> == All results in microseconds
+>>>> warming up...
+>>>> latency: failed to set periodic, code 9
+>>>> ^C---|-----------|-----------|-----------|--------|------|-------------------------
+>>>> RTS|  10000.000|      0.000| -10000.000|       0|     0|    00:03:26/00:03:26
+>>>>
+>>>> Notice the ^C. I killed it because it was running indefinitely. This
+>>>> was also the case in my previous attempts.
+>>>>
+>>>>
+>>>
+>>> Can any of you send me the generated debian package privately? I would
+>>> also need to know the gcc version used.
+>>>
+>>
+>> Never mind, I could reproduce this bug eventually. This issue is due to
+>> some register trashing at work in the pipeline code, not to the Xenomai
+>> core. More later.
+>>
+> 
+> This patch will fix this issue.
+> 
+> diff --git a/arch/x86/kernel/entry_32.S b/arch/x86/kernel/entry_32.S
+> index 6e6b88a..e834437 100644
+> --- a/arch/x86/kernel/entry_32.S
+> +++ b/arch/x86/kernel/entry_32.S
+> @@ -517,6 +517,7 @@ sysenter_exit_fast:
+>  	jmp sysenter_exit
+>  sysenter_exit_root:
+>  	call __ipipe_root_sync
+> +	movl PT_EAX(%esp),%eax
+>  	jmp sysenter_exit_check
+>  #endif
+>
 
-drasko.draskovic@gmail.com wants to follow you.
+Now available from the download area:
+http://download.gna.org/adeos/patches/v3.x/x86/ipipe-core-3.16-x86-3.patch
 
-****** Is drasko.draskovic@gmail.com you friend? ******
-If Yes please follow the link below:
-http://invites.flipmailer.com/signup_e.html?fullname=&amp;email=xenomai@xenomai.org&amp;invitername=Drasko.draskovic&amp;inviterid=17473118&amp;userid=0&amp;token=0&amp;emailmasterid=03d2c763-1883-4f0f-b81b-c63a42e676c6&amp;from=drasko.draskovic@gmail.com&src=txt_yes
+and from the Xenomai GIT tree:
+http://git.xenomai.org/xenomai-3.git/commit/?h=next&id=51680b1d9b3b1993011da1ddf56b54c12e59d49d
 
-If No please follow the link below:
-http://invites.flipmailer.com/signup_e.html?fullname=&amp;email=xenomai@xenomai.org&amp;invitername=Drasko.draskovic&amp;inviterid=17473118&amp;userid=0&amp;token=0&amp;emailmasterid=03d2c763-1883-4f0f-b81b-c63a42e676c6&amp;from=drasko.draskovic@gmail.com&src=txt_no
+This patch is a drop in replacement for ipipe-core-3.16-x86-2 which is
+broken in 32bit mode.
 
-
-Follow the link below to remove yourself from all such emails
-http://invites.flipmailer.com/uns_inviter.jsp?email=xenomai@xenomai.org&amp;iid=03d2c763-1883-4f0f-b81b-c63a42e676c6&amp;from=drasko.draskovic@gmail.com
-
+-- 
+Philippe.
 
