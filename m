@@ -1,12 +1,9 @@
-Message-ID: <54F74016.7000400@xenomai.org>
-Date: Wed, 04 Mar 2015 18:25:42 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAEMXjGyiUw52yB3SD1vZT5pwnmAR6Sh_qCgxbc_-RTu1kKRDdA@mail.gmail.com>
-In-Reply-To: <CAEMXjGyiUw52yB3SD1vZT5pwnmAR6Sh_qCgxbc_-RTu1kKRDdA@mail.gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RTDM device driver interrupts over primary mode task?
+Date: Wed, 4 Mar 2015 11:33:46 -0600
+Message-ID: <CA+C+_XTfx6fAC3UvATJULBqogpvAOozwNkop=6Vj+jPYondj9Q@mail.gmail.com>
+From: Mathew Benson <mathew.benson@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] Debugger and secondary mode question
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,21 +12,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Steve B <sbattazzo@gmail.com>, xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/04/2015 05:59 PM, Steve B wrote:
-> Hello,
-> 
-> Is it possible that my hardware interrupts tied to RTDM device drivers are
-> able to pre-empt my high priority task running in primary mode, or do the
-> interrupts get serviced after the task yields the CPU?
-> 
+I fixed all my toolchain problems and am finally back to debugging my
+code.  Thanks for the help earlier.
 
-If taken by the CPU, IRQs hooked by a RTDM driver will preempt any
-real-time task code immediately (in kernel or userland). IRQs hooked by
-regular kernel drivers will be postponed until all rt activity has
-completed on the receiving CPU.
+It looks like gdbserver causes suspended threads to drop back down to
+secondary mode, causing my rt_... calls to return ENOSYS.  Is there
+anything I can do to prevent this?  I expect its unavoidable.
 
--- 
-Philippe.
-
+If I can't stop it, does anybody have any recommendations of how to make
+code resilient to this?  I'm mostly just using mutexes and semaphores in my
+main loop.  Can I mix real time and non-realtime functions with the same
+handle?  In other words, what happens to a rt semaphore when the thread
+transitions back to secondary mode?  Does the handle refer to a non rt
+version now, or is it just inaccessible?
