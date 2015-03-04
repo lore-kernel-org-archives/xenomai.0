@@ -1,10 +1,18 @@
-Message-ID: <54F6CC8E.1090203@xenomai.org>
-Date: Wed, 04 Mar 2015 10:12:46 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Wed, 4 Mar 2015 10:17:30 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150304091730.GD30672@hermes.click-hack.org>
+References: <CA+C+_XRjP-YeDZgOmumU+AMbuUOJEtiuJ7v5U-ijRrTQWv-qrw@mail.gmail.com>
+ <20150303004406.GA30672@hermes.click-hack.org>
+ <CA+C+_XTpLYq94Vxvcz3snmx7hCPbz41FajCQm3Vc=DHvYXue0A@mail.gmail.com>
+ <CA+C+_XQZVy=ryVnWCzXyFCOS+SMfAC8p66-PLWMQuZNOn+hG0w@mail.gmail.com>
+ <CA+C+_XR=BrBzNX4EJpLob1Bmn6uhM6rAfUxS7acPPCUpBM2TVg@mail.gmail.com>
+ <20150303151134.GC30672@hermes.click-hack.org>
+ <CA+C+_XSXyZPLo6OaGp-yEbVJ0H=yUSjXtR22Zn6pAncr_YYjKA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [IPIPE] patch release for kernel 3.14.33/x86, 3.16.0/x86
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+C+_XSXyZPLo6OaGp-yEbVJ0H=yUSjXtR22Zn6pAncr_YYjKA@mail.gmail.com>
+Subject: Re: [Xenomai] gdbserver hangs on rt_task_create()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,22 +21,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Mathew Benson <mathew.benson@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
+On Tue, Mar 03, 2015 at 09:07:23PM -0600, Mathew Benson wrote:
+> I didn't actually build or Xenomai myself.  I used the prebuilt
+> MachineKit.  I will check with the MachineKit maintainers, but is there a
+> way to determine if the patch is applied from the as-built?
 
-A new patch series is available from
-http://download.gna.org/adeos/patches/v3.x/x86/
-
-x86/ipipe-core-3.14.33-x86-8.patch
-x86/ipipe-core-3.16-x86-3.patch
-
-This series fixes a random bug with Xenomai 3 over x86_32 exclusively.
-
-GIT clone:
-git://git.xenomai.org/ipipe.git
-https://git.xenomai.org/ipipe.git
-http://git.xenomai.org/ipipe.git
+uname -a
+cat /proc/ipipe/version
 
 -- 
-Philippe.
+					    Gilles.
 
