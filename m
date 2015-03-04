@@ -1,27 +1,12 @@
+Message-ID: <54F6EF2E.1090705@xenomai.org>
+Date: Wed, 04 Mar 2015 12:40:30 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Sender: had2006@gmail.com
-In-Reply-To: <54F6C50F.5040301@xenomai.org>
-References: <CAKk99t1N5b0_iQerSxPyKmMTLC8PePTJCO9zzFLdkmt_mDiiVg@mail.gmail.com>
- <54F58A4C.7030006@xenomai.org>
- <CAKk99t3_g0ZODEe32KGAzfHckWC=-Gqr6CrFa5yRh-hLF5Ttow@mail.gmail.com>
- <54F5BE3F.4010008@xenomai.org> <54F5C020.8090102@xenomai.org>
- <CAKk99t14k19FhkgMm1FymkjaKWngMG3FQL8mkm6tBOdth4X7sQ@mail.gmail.com>
- <54F5CD4D.8080004@xenomai.org>
- <CAKk99t22fhrbc0GwURNJjdUfVfwmBvVyAWYYArVMgJfh4_JF+Q@mail.gmail.com>
- <54F5D6C6.40908@xenomai.org>
- <CAKk99t13XsRYBA15ws6ZbUsrqe5+b7D1xRM5NGKrUkvrLJWPCw@mail.gmail.com>
- <54F5E958.2090701@xenomai.org> <54F5EA06.4040104@xenomai.org>
- <CAKk99t1DtxOFmTpf2ZgJ2coh_tNqMPY4VX0pAdEJZB6oGvko3g@mail.gmail.com>
- <54F60A62.3020708@xenomai.org> <54F60C16.5070500@xenomai.org>
- <CAKk99t0qwyG2wuMAvQ7U-Ed_AR7jJ3vK=Ok4dK5kLj1VbrvxUg@mail.gmail.com>
- <54F614EF.7040307@xenomai.org>
- <CAKk99t0Xh01uxG7jd=oEDD71LBHvTnbCnejwiP2bzGN63Yo-ZA@mail.gmail.com>
- <54F6C50F.5040301@xenomai.org>
-Date: Wed, 4 Mar 2015 11:21:11 +0000
-Message-ID: <CAKk99t1LaQg9HJkXuiXbi09Mhr5H2EXqcmHw5PPTN4=V7mT3Dg@mail.gmail.com>
-From: Helder Daniel <hdaniel@ualg.pt>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <CAKk99t1N5b0_iQerSxPyKmMTLC8PePTJCO9zzFLdkmt_mDiiVg@mail.gmail.com>	<54F58A4C.7030006@xenomai.org>	<CAKk99t3_g0ZODEe32KGAzfHckWC=-Gqr6CrFa5yRh-hLF5Ttow@mail.gmail.com>	<54F5BE3F.4010008@xenomai.org>	<54F5C020.8090102@xenomai.org>	<CAKk99t14k19FhkgMm1FymkjaKWngMG3FQL8mkm6tBOdth4X7sQ@mail.gmail.com>	<54F5CD4D.8080004@xenomai.org>	<CAKk99t22fhrbc0GwURNJjdUfVfwmBvVyAWYYArVMgJfh4_JF+Q@mail.gmail.com>	<54F5D6C6.40908@xenomai.org>	<CAKk99t13XsRYBA15ws6ZbUsrqe5+b7D1xRM5NGKrUkvrLJWPCw@mail.gmail.com>	<54F5E958.2090701@xenomai.org>	<54F5EA06.4040104@xenomai.org>	<CAKk99t1DtxOFmTpf2ZgJ2coh_tNqMPY4VX0pAdEJZB6oGvko3g@mail.gmail.com>	<54F60A62.3020708@xenomai.org>	<54F60C16.5070500@xenomai.org>	<CAKk99t0qwyG2wuMAvQ7U-Ed_AR7jJ3vK=Ok4dK5kLj1VbrvxUg@mail.gmail.com>	<54F614EF.7040307@xenomai.org>	<CAKk99t0Xh01uxG7jd=oEDD71LBHvTnbCnejwiP2bzGN63Yo-ZA@mail.gmail.com>	<54F6C50F.5040301@xenomai.org>
+ <CAKk99t1LaQg9HJkXuiXbi09Mhr5H2EXqcmHw5PPTN4=V7mT3Dg@mail.gmail.com>
+In-Reply-To: <CAKk99t1LaQg9HJkXuiXbi09Mhr5H2EXqcmHw5PPTN4=V7mT3Dg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Xenomai/cobalt: low_init(): binding failed: Function
  not implemented error issued when trting to run latency app on xeno 3.x-rc3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -32,79 +17,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Helder Daniel <hdaniel@ualg.pt>
 Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-T2suClRoaXMgd2F5IEkgY2FuIHJlY292ZXIgcmVnaXN0cnkuCkkgZGlkIG5vdCBmaW5kIHlldCB3
-aGVuIGFuZCB3aHkgcmVnaXN0cnkgY3Jhc2hlcy4KSWYgSSBmb3VuZCB0aGUgc2NlbmFyaW8gSSds
-bCByZXBvcnQgaXQuCgpNZWFud2hpbGUgSSBhbSBoYXZpbmcgcm91YmxlcyBiaW5kaW5nIHRvIGEg
-c2VtYXBob3JlIGNyZWF0ZWQgaW4gb25lCnByb2Nlc3MsIGZyb20gYW5vdGhlciBwcm9jZXNzLgpJ
-IHVzZWQgYSBzaW1wbGUgZGVtbyBhcHAgdG8gc2hvdyB3aGF0IGlzIGhhcHBlbmluZyAoZnVsbCBz
-b3VyY2UgY29kZQphdHRhY2hlZCkKCkZyb20gb25lIHByb2Nlc3MgKGNyZWF0b3IuYykgYSBzZW1h
-cGhvcmUgaXMgY3JlYXRlZCBhbmQgYmluZGVkIGJ5IGl0cwpyZWdpc3RyeSBuYW1lICJuYW1lZFNl
-bSI6CgpydF90YXNrX3NoYWRvdyAoJnRhc2ssICJjcmVhdG9yVGFzayIsIDIwLCAwKTsKcnRfc2Vt
-X2NyZWF0ZSgmc2VtLCAibmFtZWRTZW0iLCAwLCBTX0ZJRk8pOwpydF9zZW1fYmluZCgmc2VtLCAi
-bmFtZWRTZW0iLCBUTV9JTkZJTklURSk7CmZvciAoOzspIHNsZWVwICgxMDApOwoKU28gYWxsIG9r
-IGhlcmUuCgpOb3cga2VlcGluZyBjcmVhdG9yLmMgcnVubmluZyBpbiBhbiB4dGVybSBhbmQgdHJ5
-aW5nIHRvIGJpbmQgdG8gdGhpcwpzZW1hcGhvcmUgZnJvbSBhbm90aGVyIHByb2Nlc3MgKGJpbmRl
-ci5jKSwgZnJvbSBhbm90aGVyIHh0ZXJtLCBpdCBkb2VzIG5vdAp3b3JrOgoKcnRfdGFza19zaGFk
-b3cgKCZ0YXNrLCAiYmluZGVyVGFzayIsIDIwLCAwKTsKcnRfc2VtX2JpbmQoJnNlbSwgIm5hbWVk
-U2VtIiwgVE1fSU5GSU5JVEUpOwoKcnRfc2VtX2JpbmQoKSBuZXZlciBiaW5kcyB0byB0aGUgc2Vt
-YXBob3JlICJuYW1lZFNlbSIuCkl0IHNlYW1zIGl0IGRvZXMgbm90IGZpbmQgaXQuCklmIGEgdGlt
-ZW91dCBpcyBzZXQ6CgplcnI9cnRfc2VtX2JpbmQoJnNlbSwgIm5hbWVkU2VtIiwgVE1fSU5GSU5J
-VEUpOwoKaXQgcmV0dXJucyB3aXRoIGVycm9yIC0xMTAgKEVUSU1FRE9VVCkKCkJ1dCB0aGUgc2Vt
-YXBob3JlIGV4aXN0cyBpbiByZWdpc3RyeToKCiQ+IGNhdCAvdmFyL3J1bi94ZW5vbWFpL2Fub24v
-NDI2Ny9hbGNoZW15L3NlbWFwaG9yZXMvbmFtZWRTZW0KPTAKCkkgdGhpbmsgb24gdmVyc2lvbiAy
-LjUueCBhIG5hbWVkIG9iamVjdCBpcyBnbG9iYWwgdG8gdGhlIHN5c3RlbS4KU28gd2hlbiBjcmVh
-dGluZyBhIHNlbWFwaG9yZSBuYW1lZCAibmFtZWRTZW0iIGJ5IGEgcHJvY2VzcyBpdCBpcyB2aXNp
-YmxlCmZvciBhbGwgb3RoZXIgcHJvY2Vzc2VzLgoKTWF5YmUgaW4gMy54IHNlbWFwaG9yZXMgKGFu
-ZCBvdGhlciBvYmplY3RzKSBhcmUgbG9jYWwgdG8gcHJvY2Vzc2VzPwpTaW5jZSB0aGV5IGFyZSBz
-dG9yZWQgaW4gdGhlIHJlZ2lzdHJ5IHVuZGVyIHRoZSBwaWQgb2YgdGhlIGNyZWF0b3IgcHJvY2Vz
-cz8KCk1heWJlIHRoaXMgd291bGQgZXhwbGFpbiB3aHkgaXQgaXMgcG9zc2libGUgdG8gYmluZCBm
-cm9tIHRoZSBzYW1lIHByb2Nlc3MKYnV0IG5vdCBmcm9tIGFub3RoZXIgcHJvY2VzcyB3aXRoIHRo
-ZSBzYW1lIGNvZGU6CgpydF9zZW1fYmluZCgmc2VtLCAibmFtZWRTZW0iLCBUTV9JTkZJTklURSk7
-CgpJZiB0aGlzIGlzIHNvIGhvdyB0byBiaW5kIHRvIGFuIG9iamVjdCBleGlzdGluZyBpbiB0aGUg
-eGVub21haSByZWdpc3RyeQooY3JlYXRlZCBieSBhbm90aGVyIHByb2Nlc3MpPwpUaGUgc2Vjb25k
-IGFyZ3VtZW50IG9mIHJ0X3h4eHhfYmluZCgpIHNob3VsZCBpbmNsdWRlIHNvbWV0aGluZyBsaWtl
-IHRoZSBQSUQKb2YgdGhlIGNyZWF0b3IgcHJvY2Vzcz8KClBTOgpJIGFtIHVzaW5nIE1lcmN1cnkg
-c28gbm8gL3Byb2MveGVub21haSBzdXBwb3J0OgoKL3Vzci94ZW5vbWFpL3NiaW4vdmVyc2lvbiAt
-YQpYZW5vbWFpL21lcmN1cnkgdjMuMC1yYzMgLS0KVGFyZ2V0OiBpNjg2LXBjLWxpbnV4LWdudQpD
-b21waWxlcjogZ2NjIHZlcnNpb24gNC43LjIgKERlYmlhbiA0LjcuMi01KQpCdWlsZCBhcmdzOiAg
-Jy0td2l0aC1jb3JlPW1lcmN1cnknICctLWVuYWJsZS1yZWdpc3RyeScKJy0tcHJlZml4PS91c3Iv
-eGVub21haScKCgoKCk9uIDQgTWFyY2ggMjAxNSBhdCAwODo0MCwgUGhpbGlwcGUgR2VydW0gPHJw
-bUB4ZW5vbWFpLm9yZz4gd3JvdGU6Cgo+IE9uIDAzLzAzLzIwMTUgMDk6MzggUE0sIEhlbGRlciBE
-YW5pZWwgd3JvdGU6Cj4gPiBEb25lIHRoYXQ6Cj4gPgo+ID4gJD4gc3VkbyBwa2lsbCBzeXNyZWdk
-Cj4gPgo+ID4gJD4gc3VkbyBwcyBhdXggfCBncmVwIHN5c3JlZ2QKPiA+IHVzZXIgICAgICA0MDQ1
-ICAwLjAgIDAuMSAgIDM3OTYgICA4MDAgcHRzLzEgICAgUysgICAyMDozMCAgIDA6MDAgZ3JlcAo+
-ID4gc3lzcmVnZAo+ID4KPiA+IGFsbCBpbnN0YW5jZXMga2lsbGVkLgo+ID4KPiA+IE5vdyBsYXVu
-Y2g6Cj4gPgo+ID4gJD4gc3VkbyAvdXNyL3hlbm9tYWkvc2Jpbi9zeXNyZWdkIC0tbGluZ2VyIC0t
-ZGFlbW9uaXplCj4gPgo+ID4gJD4gc3VkbyBwcyBhdXggfCBncmVwIHN5c3JlZ2QKPiA+IHJvb3Qg
-ICAgICA0MDIyICAwLjAgIDAuMyAgIDM3NzYgIDE4ODggPyAgICAgICAgU3NsICAyMDoyOCAgIDA6
-MDAKPiA+IC91c3IveGVub21haS9zYmluL3N5c3JlZ2QgLS1saW5nZXIgLS1kYWVtb25pemUKPiA+
-IHVzZXIgICAgICA0MDQ1ICAwLjAgIDAuMSAgIDM3OTYgICA4MDAgcHRzLzEgICAgUysgICAyMDoz
-MCAgIDA6MDAgZ3JlcAo+ID4gc3lzcmVnZAo+ID4KPiA+IERhZW1vbiBydW5uaW5nLgo+ID4KPiA+
-IE5vdyB0cmllZCB0byBydW4gYXBwIGFuZCByZWNlaXZlIHRoZSBzYW1lIGVycm9yOgo+ID4KPiA+
-IC4vaGVsbG8KPiA+IHN5c3JlZ2Q6IGNyZWF0ZV9kaXJlY3RvcnlfcmVjdXJzaXZlKCIvdmFyL3J1
-bi94ZW5vbWFpL2Fub24vc3lzdGVtIik6Cj4gPiBUcmFuc3BvcnQgZW5kcG9pbnQgaXMgbm90IGNv
-bm5lY3RlZAo+ID4gc3lzcmVnZDogY3JlYXRlX2RpcmVjdG9yeV9yZWN1cnNpdmUoIi92YXIvcnVu
-L3hlbm9tYWkvYW5vbi9zeXN0ZW0iKToKPiA+IFRyYW5zcG9ydCBlbmRwb2ludCBpcyBub3QgY29u
-bmVjdGVkCj4gPiBzeXNyZWdkOiBjcmVhdGVfZGlyZWN0b3J5X3JlY3Vyc2l2ZSgiL3Zhci9ydW4v
-eGVub21haS9hbm9uL3N5c3RlbSIpOgo+ID4gVHJhbnNwb3J0IGVuZHBvaW50IGlzIG5vdCBjb25u
-ZWN0ZWQKPiA+ICAgIDMiMDA2LjM4M3wgV0FSTklORzogW21haW5dIGNhbm5vdCBjb25uZWN0IHRv
-IHJlZ2lzdHJ5IGRhZW1vbgo+ID4gICAgMyIwMDYuNTc0fCBCVUc6IFttYWluXSBpbml0aWFsaXph
-dGlvbiBmYWlsZWQsIEVBR0FJTgo+ID4KPgo+IFRoZSBvbmx5IHBsYXVzaWJsZSBzY2VuYXJpbyBm
-b3IgdGhpcyBpc3N1ZSBpcyB0aGF0IHN5c3JlZ2QgZ290IGtpbGxlZAo+IChlLmcuIFNJR0tJTEwg
-b3IgU0lHSFVQLCBub3QgU0lHVEVSTSB3aGljaCBjdXJyZW50bHkgbGVhZHMgdG8gYSBncmFjZWZ1
-bAo+IGV4aXQpIHdoaWxlIGl0IHdhcyBydW5uaW5nLCB3aGljaCBjYXVzZWQgdGhlIEZVU0UtYmFz
-ZWQgYW5vbi9zeXN0ZW0KPiBtb3VudHBvaW50IHRvIGJlIGxlZnQgb3Zlci4KPgo+IFRvIGZpeCB0
-aGlzLCB5b3UgY2FuIHVubW91bnQgdGhlIHN5c3RlbSBtb3VudCBwb2ludCBtYW51YWxseSBiZWZv
-cmUKPiBzdGFydGluZyBzeXNyZWdkIGFnYWluOgo+Cj4gIyBmdXNlcm1vdW50IC11IC92YXIvcnVu
-L3hlbm9tYWkvYW5vbi9zeXN0ZW0KPgo+IFdlIGNhbiBwcm9iYWJseSBkbyBiZXR0ZXIgd2l0aCBn
-cmFjZWZ1bCBleGl0IGFuZCBjbGVhbmluZyB1cCBsZWZ0IG92ZXJzLgo+IEknbGwgbG9vayBhdCB0
-aGlzLgo+Cj4gLS0KPiBQaGlsaXBwZS4KPgoKCgotLSAKSGVsZGVyIERhbmllbApVQUxHIC0gRkNU
-CkRFRUkKCmh0dHA6Ly93My51YWxnLnB0L35oZGFuaWVsCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFy
-dCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5h
-bWU6IHhlbm9tYWlSZWdpc3RyeUNoZWNrLnRhci5negpUeXBlOiBhcHBsaWNhdGlvbi94LWd6aXAK
-U2l6ZTogMTQyNSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly93d3cueGVu
-b21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTAzMDQvMjA3MGUyZWMv
-YXR0YWNobWVudC5iaW4+Cg==
+On 03/04/2015 12:21 PM, Helder Daniel wrote:
+> Ok.
+> This way I can recover registry.
+> I did not find yet when and why registry crashes.
+> If I found the scenario I'll report it.
+> 
+> Meanwhile I am having roubles binding to a semaphore created in one
+> process, from another process.
+> I used a simple demo app to show what is happening (full source code
+> attached)
+> 
+> From one process (creator.c) a semaphore is created and binded by its
+> registry name "namedSem":
+> 
+> rt_task_shadow (&task, "creatorTask", 20, 0); 
+> rt_sem_create(&sem, "namedSem", 0, S_FIFO);
+> rt_sem_bind(&sem, "namedSem", TM_INFINITE);
+> for (;;) sleep (100);
+> 
+> So all ok here.
+> 
+> Now keeping creator.c running in an xterm and trying to bind to this
+> semaphore from another process (binder.c), from another xterm, it does
+> not work:
+> 
+> rt_task_shadow (&task, "binderTask", 20, 0); 
+> rt_sem_bind(&sem, "namedSem", TM_INFINITE);
+> 
+> rt_sem_bind() never binds to the semaphore "namedSem".
+> It seams it does not find it.
+> If a timeout is set:
+> 
+> err=rt_sem_bind(&sem, "namedSem", TM_INFINITE);
+> 
+> it returns with error -110 (ETIMEDOUT)
+> 
+> But the semaphore exists in registry:
+> 
+> $> cat /var/run/xenomai/anon/4267/alchemy/semaphores/namedSem 
+> =0
+> 
+> I think on version 2.5.x a named object is global to the system.
+> So when creating a semaphore named "namedSem" by a process it is visible
+> for all other processes.
+> 
+> Maybe in 3.x semaphores (and other objects) are local to processes?
+> Since they are stored in the registry under the pid of the creator process?
+
+With 3.x, --enable-pshared must be passed to enable object sharing
+between processes. The actual registry is not maintained in kernel space
+anymore, so the support libraries have to know whether they should
+maintain it.
+
+-- 
+Philippe.
+
