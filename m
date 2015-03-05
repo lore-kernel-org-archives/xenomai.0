@@ -1,20 +1,11 @@
+Date: Thu, 05 Mar 2015 13:30:08 +0100
+From: "Mariusz Janiak" <mariuszjaniak@wp.pl>
+Message-ID: <54f84c50d46d43.78129076@wp.pl>
 MIME-Version: 1.0
-Sender: had2006@gmail.com
-In-Reply-To: <54F60EFD.3060800@xenomai.org>
-References: <CANWkrRPBG=3+k4GkcrMEO4fBb=tmvn+XKRR6t8S+p+r_ffm6vg@mail.gmail.com>
- <54EB4E8E.8040804@xenomai.org>
- <CAB+DZ3=s-pHrt=U_YN5qYo7Vtic9f-WfQQBwK3znBTdN_iVOmw@mail.gmail.com>
- <54EC8CBD.6000500@xenomai.org>
- <CAB+DZ3=cB3URuV57Pa5g3fHkvuPyeKza_-8UYJkqvP8Ruj45hQ@mail.gmail.com>
- <54F47A0B.7090900@xenomai.org> <54F5D34A.90005@xenomai.org>
- <54F5D75D.9090009@xenomai.org> <54F60911.6040402@xenomai.org>
- <CAKk99t3vGjuXdBTmRVxTzAZ0=cEg1S9h7ZBQ+Ed7JH4=1JMZcQ@mail.gmail.com>
- <54F60EFD.3060800@xenomai.org>
-Date: Thu, 5 Mar 2015 12:04:07 +0000
-Message-ID: <CAKk99t0SJX9fMe9t27VdmHcOrppdE1gKYUpOVj1G4sRzejRdyw@mail.gmail.com>
-From: Helder Daniel <hdaniel@ualg.pt>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Failed testsuite/latency
+Content-Type: text/plain; charset=iso-8859-2
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Subject: Re: [Xenomai] status of rtnet
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,40 +14,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Michael Smith <2michael.smith@gmail.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: rtnet-developers@lists.sourceforge.net, Aaron.Wu@analog.com, Xenomai <xenomai@xenomai.org>
 
-Just to confirm that latency executable is running on this new patch (even
-in a VMWare image)
+> On 2015-03-05 06:51, Wu, Aaron wrote:
+> > Hello,
+> > 
+> >>From http://www.rtnet.org I saw the latest release of rtnet is years ago, latest kernel support is 3.2. What's the status and roadmap of this project? Any plan/schedule to support the newer version of kernel and xenomai?
+> 
+> Fortunately, RTnet has been "adopted" by the Xenomai project (its list
+> is on CC). So the next RTnet release will actually be the next major
+> Xenomai release: 3.0. You can already pick up the latest 3.0-rc of
+> Xenomai to obtain a more recent version than what can be found in the
+> RTnet git.
 
-On 3 March 2015 at 19:43, Philippe Gerum <rpm@xenomai.org> wrote:
+The second option is to chose Xenomai 2.6.4, kernel 3.14.17, and RTnet git with patch 0001-Fix-compilatin-issues-on-kernel-above-3.10.patch available here
 
-> On 03/03/2015 08:29 PM, Helder Daniel wrote:
-> > Hi,
-> >
-> > I Tried to access the patch as I have the same problem when running
-> > latency on cobalt:
-> >
-> >
-> http://download.gna.org/adeos/patches/v3.x/x86/ipipe-core-3.16-x86-3.patch
-> >
-> > but is not accessible:
-> >
-> > You don't have permission to access
-> > /adeos/patches/v3.x/x86/ipipe-core-3.16-x86-3.patch on this server.
-> >
->
-> It should be accessible now.
->
-> --
-> Philippe.
->
+http://sourceforge.net/p/rtnet/mailman/attachment/548fe484eab803.95654079%40wp.pl/1/
+
+Regards,
+Mariusz
 
 
 
--- 
-Helder Daniel
-UALG - FCT
-DEEI
-
-http://w3.ualg.pt/~hdaniel
