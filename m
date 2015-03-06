@@ -1,4 +1,5 @@
-From: Lowell Gilbert <kludge@be-well.ilk.org>
+In-Reply-To: <20150226201100.GB434@hermes.click-hack.org> (Gilles
+ Chanteperdrix's message of "Thu, 26 Feb 2015 21:11:00 +0100")
 References: <448ufmewxt.fsf@be-well.ilk.org>
  <20150224233439.GL14148@hermes.click-hack.org>
  <44siduq7us.fsf@be-well.ilk.org> <54EE07A9.4040702@xenomai.org>
@@ -6,10 +7,9 @@ References: <448ufmewxt.fsf@be-well.ilk.org>
  <54EF014A.9000902@xenomai.org> <447fv4sk55.fsf@lowell-desk.lan>
  <54EF5E45.30907@xenomai.org> <44a900eaqu.fsf@lowell-desk.lan>
  <20150226201100.GB434@hermes.click-hack.org>
-Date: Fri, 06 Mar 2015 17:57:03 -0500
-In-Reply-To: <20150226201100.GB434@hermes.click-hack.org> (Gilles
- Chanteperdrix's message of "Thu, 26 Feb 2015 21:11:00 +0100")
-Message-ID: <44sidhhgzk.fsf@be-well.ilk.org>
+From: Lowell Gilbert <kludge@be-well.ilk.org>
+Date: Fri, 06 Mar 2015 17:58:25 -0500
+Message-ID: <44r3t1hgxa.fsf@be-well.ilk.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 Subject: Re: [Xenomai] interrupt service
@@ -23,6 +23,8 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
+I meant *without* using /proc/xenomai/affinity. Fixed below:
+
 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
 
 > Another problem may be in handling the /proc/xenomai/affinity, so
@@ -32,7 +34,7 @@ Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
 > whether the IPI is sent by using ipipe_trace_special for instance
 > and checking the tracer trace.
 
-How would I get a kernel task to run on a specific CPU with using
+How would I get a kernel task to run on a specific CPU without using
 /proc/xenomai/affinity? rtdm_task_init() specifically calls out
 ALL_CPUS.
 
