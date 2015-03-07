@@ -1,18 +1,10 @@
-In-Reply-To: <20150226201100.GB434@hermes.click-hack.org> (Gilles
- Chanteperdrix's message of "Thu, 26 Feb 2015 21:11:00 +0100")
-References: <448ufmewxt.fsf@be-well.ilk.org>
- <20150224233439.GL14148@hermes.click-hack.org>
- <44siduq7us.fsf@be-well.ilk.org> <54EE07A9.4040702@xenomai.org>
- <444mq9lo5c.fsf@be-well.ilk.org> <44vbipk8m9.fsf@be-well.ilk.org>
- <54EF014A.9000902@xenomai.org> <447fv4sk55.fsf@lowell-desk.lan>
- <54EF5E45.30907@xenomai.org> <44a900eaqu.fsf@lowell-desk.lan>
- <20150226201100.GB434@hermes.click-hack.org>
-From: Lowell Gilbert <kludge@be-well.ilk.org>
-Date: Fri, 06 Mar 2015 17:58:25 -0500
-Message-ID: <44r3t1hgxa.fsf@be-well.ilk.org>
+Date: Fri, 06 Mar 2015 21:23:07 -0600
+From: drasko.draskovic@gmail.com<info@info-emailer.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Subject: Re: [Xenomai] interrupt service
+Message-ID: <0.0.195.31B.1D0588543F373D2.2593@mail2.info-emailer.com>
+Content-Type: text/plain; charset=utf-8
+Subject: [Xenomai] You have a new notification from
+	drasko.draskovic@gmail.com. View??
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,23 +15,19 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-I meant *without* using /proc/xenomai/affinity. Fixed below:
+Hi,
 
-Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
+drasko.draskovic@gmail.com wants to follow you.
 
-> Another problem may be in handling the /proc/xenomai/affinity, so
-> could you try without using it? Same for isolcpus. If the ISR runs
-> on cpu0 and the tasks run on cpu1, an IPI should be sent in
-> __xnpod_schedule to wake up the task blocked in read, you can check
-> whether the IPI is sent by using ipipe_trace_special for instance
-> and checking the tracer trace.
+****** Is drasko.draskovic@gmail.com you friend? ******
+If Yes please follow the link below:
+http://invites.info-emailer.com/signup_e.html?fullname=&amp;email=xenomai@xenomai.org&amp;invitername=Drasko.draskovic&amp;inviterid=17473118&amp;userid=0&amp;token=0&amp;emailmasterid=8ae7a87e-e109-4cbb-9f7c-9d36cec4c5d9&amp;from=drasko.draskovic@gmail.com&src=txt_yes
 
-How would I get a kernel task to run on a specific CPU without using
-/proc/xenomai/affinity? rtdm_task_init() specifically calls out
-ALL_CPUS.
+If No please follow the link below:
+http://invites.info-emailer.com/signup_e.html?fullname=&amp;email=xenomai@xenomai.org&amp;invitername=Drasko.draskovic&amp;inviterid=17473118&amp;userid=0&amp;token=0&amp;emailmasterid=8ae7a87e-e109-4cbb-9f7c-9d36cec4c5d9&amp;from=drasko.draskovic@gmail.com&src=txt_no
 
-Yes, I could change that code, but it seems like the sort of thing that
-exists -- I just can't find it.
 
-Be well.
+Follow the link below to remove yourself from all such emails
+http://invites.info-emailer.com/uns_inviter.jsp?email=xenomai@xenomai.org&amp;iid=8ae7a87e-e109-4cbb-9f7c-9d36cec4c5d9&amp;from=drasko.draskovic@gmail.com
+
 
