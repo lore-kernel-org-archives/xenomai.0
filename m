@@ -1,9 +1,12 @@
+Date: Sun, 8 Mar 2015 16:38:52 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150308153852.GD5998@hermes.click-hack.org>
+References: <CA+C+_XSBhPvzuLqrUTLzR63-bu0NsvCZ_u17domFcBy0dTZceQ@mail.gmail.com>
 MIME-Version: 1.0
-Date: Sun, 8 Mar 2015 19:14:44 +0530
-Message-ID: <CALe7ZU3FGXS+_LKmdtjSttNE+QnszDtKX4zpxOb2z+Q5JdtTgQ@mail.gmail.com>
-From: JAY KOTHARI <jaikothari10@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] Xenomai: RTDM: closing file descriptor 0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+C+_XSBhPvzuLqrUTLzR63-bu0NsvCZ_u17domFcBy0dTZceQ@mail.gmail.com>
+Subject: Re: [Xenomai] rt_mutex_acquire() timing out
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,15 +15,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: Mathew Benson <mathew.benson@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
-     Even when I am calling rt_dev_close and when I dmesg I get such
-warning. What is reason for such warning?
+On Sat, Mar 07, 2015 at 11:53:28PM -0600, Mathew Benson wrote:
+> I'm running 2.6.3.
 
-Xenomai: RTDM: closing file descriptor 0
+Do you have the same problem with Xenomai 2.6.4?
 
-Can anyone give me reason for it?
-
-Jay Kothari
+-- 
+					    Gilles.
 
