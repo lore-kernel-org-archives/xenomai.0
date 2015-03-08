@@ -1,17 +1,12 @@
-Date: Sun, 8 Mar 2015 16:52:48 +0100
+Date: Sun, 8 Mar 2015 17:32:39 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150308155248.GE5998@hermes.click-hack.org>
-References: <44siduq7us.fsf@be-well.ilk.org> <54EE07A9.4040702@xenomai.org>
- <444mq9lo5c.fsf@be-well.ilk.org> <44vbipk8m9.fsf@be-well.ilk.org>
- <54EF014A.9000902@xenomai.org> <447fv4sk55.fsf@lowell-desk.lan>
- <54EF5E45.30907@xenomai.org> <44a900eaqu.fsf@lowell-desk.lan>
- <20150226201100.GB434@hermes.click-hack.org>
- <44r3t1hgxa.fsf@be-well.ilk.org>
+Message-ID: <20150308163239.GB17373@hermes.click-hack.org>
+References: <CALe7ZU3FGXS+_LKmdtjSttNE+QnszDtKX4zpxOb2z+Q5JdtTgQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <44r3t1hgxa.fsf@be-well.ilk.org>
-Subject: Re: [Xenomai] interrupt service
+In-Reply-To: <CALe7ZU3FGXS+_LKmdtjSttNE+QnszDtKX4zpxOb2z+Q5JdtTgQ@mail.gmail.com>
+Subject: Re: [Xenomai] Xenomai: RTDM: closing file descriptor 0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,30 +15,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lowell Gilbert <kludge@be-well.ilk.org>
-Cc: xenomai@xenomai.org
+To: JAY KOTHARI <jaikothari10@gmail.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-On Fri, Mar 06, 2015 at 05:58:25PM -0500, Lowell Gilbert wrote:
-> I meant *without* using /proc/xenomai/affinity. Fixed below:
+On Sun, Mar 08, 2015 at 07:14:44PM +0530, JAY KOTHARI wrote:
+> Hi,
+>      Even when I am calling rt_dev_close and when I dmesg I get such
+> warning. What is reason for such warning?
 > 
-> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
+> Xenomai: RTDM: closing file descriptor 0
 > 
-> > Another problem may be in handling the /proc/xenomai/affinity, so
-> > could you try without using it? Same for isolcpus. If the ISR runs
-> > on cpu0 and the tasks run on cpu1, an IPI should be sent in
-> > __xnpod_schedule to wake up the task blocked in read, you can check
-> > whether the IPI is sent by using ipipe_trace_special for instance
-> > and checking the tracer trace.
-> 
-> How would I get a kernel task to run on a specific CPU without using
-> /proc/xenomai/affinity? rtdm_task_init() specifically calls out
-> ALL_CPUS.
-> 
-> Yes, I could change that code, but it seems like the sort of thing that
-> exists -- I just can't find it.
+> Can anyone give me reason for it?
 
-The idea is to stop forcing the task to run on a specific CPU to see
-whether the problem you observe comes from there.
+You receive this message because the file descriptor 0 is still
+opened when you exit your application and because you have enabled a
+kernel configuration option (CONFIG_XENO_OPT_DEBUG_RTDM_APPL) to be
+notified about such situations.
 
 -- 
 					    Gilles.
