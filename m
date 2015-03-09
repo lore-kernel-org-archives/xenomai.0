@@ -1,17 +1,18 @@
-Message-Id: <54FDA23B0200005500018D20@iwesmail-ks.iwes.fraunhofer.de>
-Date: Mon, 09 Mar 2015 13:38:03 +0100
-From: <jonas.platte@iwes.fraunhofer.de>
-References: <54FD770A0200005500018D03@iwesmail-ks.iwes.fraunhofer.de>
- <54FD7EBF0200005500018D0E@iwesmail-ks.iwes.fraunhofer.de>
- <54FD7EBF0200005500018D0E@iwesmail-ks.iwes.fraunhofer.de>
- <20150309104447.GD17373@hermes.click-hack.org>
- <54FDA16A0200005500018D13@iwesmail-ks.iwes.fraunhofer.de>
-In-Reply-To: <54FDA16A0200005500018D13@iwesmail-ks.iwes.fraunhofer.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Subject: Re: [Xenomai] rtnet: could not insert 'rtudp': Invalid argument
+From: Lowell Gilbert <kludge@be-well.ilk.org>
+References: <44siduq7us.fsf@be-well.ilk.org> <54EE07A9.4040702@xenomai.org>
+ <444mq9lo5c.fsf@be-well.ilk.org> <44vbipk8m9.fsf@be-well.ilk.org>
+ <54EF014A.9000902@xenomai.org> <447fv4sk55.fsf@lowell-desk.lan>
+ <54EF5E45.30907@xenomai.org> <44a900eaqu.fsf@lowell-desk.lan>
+ <20150226201100.GB434@hermes.click-hack.org>
+ <44r3t1hgxa.fsf@be-well.ilk.org>
+ <20150308155248.GE5998@hermes.click-hack.org>
+Date: Mon, 09 Mar 2015 09:28:12 -0400
+In-Reply-To: <20150308155248.GE5998@hermes.click-hack.org> (Gilles
+ Chanteperdrix's message of "Sun, 8 Mar 2015 16:52:48 +0100")
+Message-ID: <44sideuwpf.fsf@be-well.ilk.org>
+MIME-Version: 1.0
+Content-Type: text/plain
+Subject: Re: [Xenomai] interrupt service
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,68 +21,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jonas Platte <jonas.platte@iwes.fraunhofer.de>, gilles.chanteperdrix@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Alright, that was a quickl< found problem, I didn't expect that. The =
-command that
-makes the system hang is "rtcfg rteth0 server".
+Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
 
->>> <jonas.platte@iwes.fraunhofer.de> 09.03.2015 13:34 >>>
-Thanks a lot! rtnet now works, and (I don't know whether I should find =
-this good or bad)
-I can reproduce the issue Antoine had: When starting rtnet, the system =
-hangs. I guess
-it's a kernel module that gets itself into an endless loop, as all my SSH =
-connections fail
-and trying to open new ones results in a timeout.
+> On Fri, Mar 06, 2015 at 05:58:25PM -0500, Lowell Gilbert wrote:
+>> I meant *without* using /proc/xenomai/affinity. Fixed below:
+>> 
+>> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
+>> 
+>> > Another problem may be in handling the /proc/xenomai/affinity, so
+>> > could you try without using it? Same for isolcpus. If the ISR runs
+>> > on cpu0 and the tasks run on cpu1, an IPI should be sent in
+>> > __xnpod_schedule to wake up the task blocked in read, you can check
+>> > whether the IPI is sent by using ipipe_trace_special for instance
+>> > and checking the tracer trace.
+>> 
+>> How would I get a kernel task to run on a specific CPU without using
+>> /proc/xenomai/affinity? rtdm_task_init() specifically calls out
+>> ALL_CPUS.
+>> 
+>> Yes, I could change that code, but it seems like the sort of thing that
+>> exists -- I just can't find it.
+>
+> The idea is to stop forcing the task to run on a specific CPU to see
+> whether the problem you observe comes from there.
 
-I didn't find anything interesting in /var/log/kernel.log.1 and I don't =
-know where else I
-could find debug info, but by commenting out things and adding some debug =
-echo
-statements, I was able to pin down the issue to the start_master() =
-function. When it's
-not called, I can already "rtping 127.0.0.1" successfully after "rtnet =
-start", which is about
-as far as I came with rtnet on Xenomai 2.6. I will try to find the exact =
-command that
-makes the system hang, and try to get rtping working across two devices =
-afterwards.
+I guess I read more into your statement than was intended.
 
->>> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> 09.03.2015 =
-11:44 >>>
-On Mon, Mar 09, 2015 at 11:06:39AM +0100, jonas.platte@iwes.fraunhofer.de =
-wrote:
->  I have managed to set up rtnet with Xenomai 3.0 with the help of
-> Gilles now, but I am running running into a problem that I haven't
-> had with Xenomai 2.6: When trying to start rtnet, "modprobe rtudp"
-> fails. Rebinding the driver for the ethernet card that's supposed
-> to do the realtime communication works, so the setup isn't
-> completely broken.
->=20
-> I can reproduce the same error message by manually calling "sudo
-> modprobe rtudp" or "sudo insmod
-> /lib/modules/3.14.28/kernel/drivers/xenomai/net/stack/ipv4/udp/rtudp.ko".=
+Yes, I have done that, and the behaviour is similar.
 
->=20
-> dmesg and /var/log/kern.log sadly don't show anything directly
-> related, but I still attached the dmesg output generated when
-> executing "rtnet start", maybe it can give a hint.
->=20
-> If someone could give me a tip on where to find more debug info,
-> that would be nice.
-
-See:
-https://xenomai.org/pipermail/xenomai/2015-February/033377.html=20
-
---=20
-					    Gilles.
-
-
-_______________________________________________
-Xenomai mailing list
-Xenomai@xenomai.org=20
-http://www.xenomai.org/mailman/listinfo/xenomai
-
+Be well.
 
