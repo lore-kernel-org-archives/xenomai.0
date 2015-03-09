@@ -1,14 +1,16 @@
-Date: Mon, 9 Mar 2015 13:13:59 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150309121359.GF17373@hermes.click-hack.org>
-References: <CA+C+_XSBhPvzuLqrUTLzR63-bu0NsvCZ_u17domFcBy0dTZceQ@mail.gmail.com>
- <20150308153852.GD5998@hermes.click-hack.org>
- <39462913-7C37-406F-B15C-F1264410BE46@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Message-Id: <54FDA16A0200005500018D13@iwesmail-ks.iwes.fraunhofer.de>
+Date: Mon, 09 Mar 2015 13:34:34 +0100
+From: <jonas.platte@iwes.fraunhofer.de>
+References: <54FD770A0200005500018D03@iwesmail-ks.iwes.fraunhofer.de>
+ <54FD7EBF0200005500018D0E@iwesmail-ks.iwes.fraunhofer.de>
+ <54FD7EBF0200005500018D0E@iwesmail-ks.iwes.fraunhofer.de>
+ <20150309104447.GD17373@hermes.click-hack.org>
+In-Reply-To: <20150309104447.GD17373@hermes.click-hack.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-In-Reply-To: <39462913-7C37-406F-B15C-F1264410BE46@gmail.com>
-Subject: Re: [Xenomai] rt_mutex_acquire() timing out
+Subject: Re: [Xenomai] rtnet: could not insert 'rtudp': Invalid argument
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,33 +19,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Mathew Benson <mathew.benson@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: gilles.chanteperdrix@xenomai.org
+Cc: xenomai@xenomai.org
 
-On Mon, Mar 09, 2015 at 06:56:08AM -0500, Mathew Benson wrote:
-> I haven't tried yet. To simplify maintenance, I'm trying to stick
-> with whatever software is available in the official apt-get
-> repositories,
+Thanks a lot! rtnet now works, and (I don't know whether I should find =
+this good or bad)
+I can reproduce the issue Antoine had: When starting rtnet, the system =
+hangs. I guess
+it's a kernel module that gets itself into an endless loop, as all my SSH =
+connections fail
+and trying to open new ones results in a timeout.
 
-Bad idea, what is in the official apt-get repositories is crap. And
-not using the latest version in the stable branch is a bad idea too:
-all versions in the same branch are binary compatible, so you do not
-even need to recompile your applications to use the latest stable
-version.
+I didn't find anything interesting in /var/log/kernel.log.1 and I don't =
+know where else I
+could find debug info, but by commenting out things and adding some debug =
+echo
+statements, I was able to pin down the issue to the start_master() =
+function. When it's
+not called, I can already "rtping 127.0.0.1" successfully after "rtnet =
+start", which is about
+as far as I came with rtnet on Xenomai 2.6. I will try to find the exact =
+command that
+makes the system hang, and try to get rtping working across two devices =
+afterwards.
 
-Xenomai sources contain a debian directory allowing you to compile
-the packages from sources.
+>>> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> 09.03.2015 =
+11:44 >>>
+On Mon, Mar 09, 2015 at 11:06:39AM +0100, jonas.platte@iwes.fraunhofer.de =
+wrote:
+>  I have managed to set up rtnet with Xenomai 3.0 with the help of
+> Gilles now, but I am running running into a problem that I haven't
+> had with Xenomai 2.6: When trying to start rtnet, "modprobe rtudp"
+> fails. Rebinding the driver for the ethernet card that's supposed
+> to do the realtime communication works, so the setup isn't
+> completely broken.
+>=20
+> I can reproduce the same error message by manually calling "sudo
+> modprobe rtudp" or "sudo insmod
+> /lib/modules/3.14.28/kernel/drivers/xenomai/net/stack/ipv4/udp/rtudp.ko".=
+
+>=20
+> dmesg and /var/log/kern.log sadly don't show anything directly
+> related, but I still attached the dmesg output generated when
+> executing "rtnet start", maybe it can give a hint.
+>=20
+> If someone could give me a tip on where to find more debug info,
+> that would be nice.
 
 See:
-https://xenomai.org/2014/06/building-debian-packages/
+https://xenomai.org/pipermail/xenomai/2015-February/033377.html=20
 
-> unless I really need to update from source. If you
-> think it will help, I can step up to 2.6.4.
-
-I do not remember all that has been fixed between 2.6.3 and 2.6.4,
-so yes, testing 2.6.4 would allow finding if this issue has been
-fixed or if it is still there.
-
--- 
+--=20
 					    Gilles.
+
 
