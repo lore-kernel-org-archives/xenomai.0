@@ -1,13 +1,13 @@
+Date: Mon, 9 Mar 2015 13:13:59 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150309121359.GF17373@hermes.click-hack.org>
 References: <CA+C+_XSBhPvzuLqrUTLzR63-bu0NsvCZ_u17domFcBy0dTZceQ@mail.gmail.com>
  <20150308153852.GD5998@hermes.click-hack.org>
-Mime-Version: 1.0 (1.0)
-In-Reply-To: <20150308153852.GD5998@hermes.click-hack.org>
-Content-Type: text/plain;
-	charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <39462913-7C37-406F-B15C-F1264410BE46@gmail.com>
-From: Mathew Benson <mathew.benson@gmail.com>
-Date: Mon, 9 Mar 2015 06:56:08 -0500
+ <39462913-7C37-406F-B15C-F1264410BE46@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <39462913-7C37-406F-B15C-F1264410BE46@gmail.com>
 Subject: Re: [Xenomai] rt_mutex_acquire() timing out
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,24 +17,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Mathew Benson <mathew.benson@gmail.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I haven't tried yet.  To simplify maintenance, I'm trying to stick with what=
-ever software is available in the official apt-get repositories, unless I re=
-ally need to update from source.  If you think it will help, I can step up t=
-o 2.6.4.
+On Mon, Mar 09, 2015 at 06:56:08AM -0500, Mathew Benson wrote:
+> I haven't tried yet. To simplify maintenance, I'm trying to stick
+> with whatever software is available in the official apt-get
+> repositories,
 
-Sent from my iPad
+Bad idea, what is in the official apt-get repositories is crap. And
+not using the latest version in the stable branch is a bad idea too:
+all versions in the same branch are binary compatible, so you do not
+even need to recompile your applications to use the latest stable
+version.
 
-> On Mar 8, 2015, at 10:38 AM, Gilles Chanteperdrix <gilles.chanteperdrix@xe=
-nomai.org> wrote:
->=20
->> On Sat, Mar 07, 2015 at 11:53:28PM -0600, Mathew Benson wrote:
->> I'm running 2.6.3.
->=20
-> Do you have the same problem with Xenomai 2.6.4?
->=20
-> --=20
->                        Gilles.
+Xenomai sources contain a debian directory allowing you to compile
+the packages from sources.
+
+See:
+https://xenomai.org/2014/06/building-debian-packages/
+
+> unless I really need to update from source. If you
+> think it will help, I can step up to 2.6.4.
+
+I do not remember all that has been fixed between 2.6.3 and 2.6.4,
+so yes, testing 2.6.4 would allow finding if this issue has been
+fixed or if it is still there.
+
+-- 
+					    Gilles.
 
