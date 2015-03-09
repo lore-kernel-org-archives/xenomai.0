@@ -1,11 +1,12 @@
-Message-Id: <54FDA16A0200005500018D13@iwesmail-ks.iwes.fraunhofer.de>
-Date: Mon, 09 Mar 2015 13:34:34 +0100
+Message-Id: <54FDA23B0200005500018D20@iwesmail-ks.iwes.fraunhofer.de>
+Date: Mon, 09 Mar 2015 13:38:03 +0100
 From: <jonas.platte@iwes.fraunhofer.de>
 References: <54FD770A0200005500018D03@iwesmail-ks.iwes.fraunhofer.de>
  <54FD7EBF0200005500018D0E@iwesmail-ks.iwes.fraunhofer.de>
  <54FD7EBF0200005500018D0E@iwesmail-ks.iwes.fraunhofer.de>
  <20150309104447.GD17373@hermes.click-hack.org>
-In-Reply-To: <20150309104447.GD17373@hermes.click-hack.org>
+ <54FDA16A0200005500018D13@iwesmail-ks.iwes.fraunhofer.de>
+In-Reply-To: <54FDA16A0200005500018D13@iwesmail-ks.iwes.fraunhofer.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
@@ -19,9 +20,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: gilles.chanteperdrix@xenomai.org
+To: Jonas Platte <jonas.platte@iwes.fraunhofer.de>, gilles.chanteperdrix@xenomai.org
 Cc: xenomai@xenomai.org
 
+Alright, that was a quickl< found problem, I didn't expect that. The =
+command that
+makes the system hang is "rtcfg rteth0 server".
+
+>>> <jonas.platte@iwes.fraunhofer.de> 09.03.2015 13:34 >>>
 Thanks a lot! rtnet now works, and (I don't know whether I should find =
 this good or bad)
 I can reproduce the issue Antoine had: When starting rtnet, the system =
@@ -71,5 +77,11 @@ https://xenomai.org/pipermail/xenomai/2015-February/033377.html=20
 
 --=20
 					    Gilles.
+
+
+_______________________________________________
+Xenomai mailing list
+Xenomai@xenomai.org=20
+http://www.xenomai.org/mailman/listinfo/xenomai
 
 
