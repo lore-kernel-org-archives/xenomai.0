@@ -1,15 +1,18 @@
-Message-ID: <54FF0D75.9070904@siemens.com>
-Date: Tue, 10 Mar 2015 16:27:49 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <54FF64AF.5000300@xenomai.org>
+Date: Tue, 10 Mar 2015 22:39:59 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <E1YOpt4-0000oo-4D@sd-51317.xenomai.org>
- <54E765A4.20909@xenomai.org> <54E76A59.4060000@siemens.com>
- <54E7917F.101@xenomai.org>
-In-Reply-To: <54E7917F.101@xenomai.org>
+References: <CAKk99t3_phHv3kUfCZcwr2bqTys3JPL3iaWACLjP+f1yoD_Nag@mail.gmail.com>
+ <54F97594.2060605@xenomai.org>
+ <CAKk99t1AGHj8sOf7Vgy_UZ_+rECP5Vx22cyup--FHsh=RuK2zA@mail.gmail.com>
+ <54F97E05.8010107@xenomai.org>
+ <CAKk99t3FfAff0X0nGzKD+YcVFQWm5aeSRFB4U6No1YSPuS_qpA@mail.gmail.com>
+ <CAKk99t03p_Pc41meo_zzZ0V6X_vjHZRWBeO1aNb+DM2c38pNTg@mail.gmail.com>
+In-Reply-To: <CAKk99t03p_Pc41meo_zzZ0V6X_vjHZRWBeO1aNb+DM2c38pNTg@mail.gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt/posix/syscall:
- Exclude sc_cobalt_get_current from debug warnings
+Subject: Re: [Xenomai] Fwd: Error boilerplate/wrappers.h no found trying to
+ compile RTDM module on 3.x-rc3 cobalt
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,56 +21,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Helder Daniel <hdaniel@ualg.pt>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Am 2015-02-20 um 20:56 schrieb Philippe Gerum:
-> On 02/20/2015 06:09 PM, Jan Kiszka wrote:
->> On 2015-02-20 17:49, Philippe Gerum wrote:
->>> On 02/20/2015 04:53 PM, git repository hosting wrote:
->>>> Module: xenomai-jki
->>>> Branch: for-forge
->>>> Commit: fc2d70475f4f86da30e68a569e7641982f4dd8e1
->>>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=fc2d70475f4f86da30e68a569e7641982f4dd8e1
->>>>
->>>> Author: Jan Kiszka <jan.kiszka@siemens.com>
->>>> Date:   Fri Feb 20 16:50:15 2015 +0100
->>>>
->>>> cobalt/posix/syscall: Exclude sc_cobalt_get_current from debug warnings
->>>>
->>>> This syscall is used for probing the context, thus may be triggered by
->>>> non-RT threads as well which we should not report as potential error.
->>>>
->>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>>>
->>>
->>> This would mean that sc_cobalt_get_current is considered valid from any
->>> process, including those which did not issue sc_cobalt_bind in the first
->>> place.
->>>
->>> Do we depend on this today, or are we granting an extended access with
->>> this patch?
->>
->> This is just to silence a warning you get, e.g., with the smokey fork test.
->>
->> I don't think it should be illegal to call such a service, even prior to
->> binding to the interface. It is already robust against it, isn't it?
->>
+On 03/09/2015 07:57 PM, Helder Daniel wrote:
+> Hi again,
 > 
-> Illegal maybe not, but definitely unexpected. I mean that this is a
-> Cobalt service, so I would expect the userland code not to issue any
-> Cobalt syscall until the initial binding took place.
+> I am sorry to ask help again about this point but I still am no able to
+> compile a kernel module with Xenomai 3.x support.
 > 
-> The fork sequence seems to depart from this assumption due to some code
-> running on behalf of the atfork handlers in libcobalt, right?
+> I made the changes pointed in the previous email:
+> In the module is now being included just:
+> 
+> <rtdm/driver.h>
+> 
+> and the makefile is now:
+> 
+> EXTRA_CFLAGS := $(shell xeno-config --kcflags)
+> all:
+> 
+> make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+> 
 
-[ah, was me who forgot to follow up]
+You need /lib/modules/$(shell uname -r)/build to refer to a kernel tree
+prepared with the Xenomai kernel sources, i.e. scripts/prepare-kernel.sh
+should have run in this source tree at some point. The errors you get
+indicate that no Xenomai code can be found there.
 
-Right. The path that triggers the issue is along
-cobalt_print_init_atfork -> cleanup_buffer -> assert_nrt.
+A basic Makefile for foo_module.ko composed of a single source foo.c,
+and pulling the extra CFLAGS from xeno-config, could look like:
 
-Jan
+$(eval ccflags-y = $(shell xeno-config --kcflags))
+obj-y += foo_module.o
+foo_module-y := foo.o
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
