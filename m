@@ -1,13 +1,10 @@
-Date: Tue, 24 Feb 2015 15:17:09 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150224141709.GB14148@hermes.click-hack.org>
-References: <9BA84827B30CBE4996725F98F7DC91234290300D@SMExchange01.siebmeyer.org>
+Date: Wed, 11 Mar 2015 03:06:40 -0500
+From: drasko.draskovic@gmail.com<info@infoaxe.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <9BA84827B30CBE4996725F98F7DC91234290300D@SMExchange01.siebmeyer.org>
-Subject: Re: [Xenomai] rt_heap_bind, Error=-11 -> EWOULDBLOCK why?
+Message-ID: <0.0.14F.D16.1D05BD189762E46.2554@mail9.infoaxe.net>
+Content-Type: text/plain; charset=utf-8
+Subject: [Xenomai] You have a new notification from
+	drasko.draskovic@gmail.com. View?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,18 +13,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?B?SMOkbmVsLUJhYXMs?= Alexander <alexander.haenel-baas@sieb-meyer.de>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Tue, Feb 24, 2015 at 01:48:24PM +0000, Hänel-Baas, Alexander wrote:
-> Aha
-> I added
-> 
-> vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot)
-> bevor i called remap_pfn_range
+Hi,
 
-Using H_NONCACHED should do the same thing.
+drasko.draskovic@gmail.com wants to follow you.
 
--- 
-					    Gilles.
+****** Is drasko.draskovic@gmail.com you friend? ******
+If Yes please follow the link below:
+http://invites.infoaxe.net/signup_e.html?fullname=&amp;email=xenomai@xenomai.org&amp;invitername=Drasko.draskovic&amp;inviterid=17473118&amp;userid=0&amp;token=0&amp;emailmasterid=ab7e15fd-4dd8-4946-8e86-fee0eea27778&amp;from=drasko.draskovic@gmail.com&src=txt_yes
+
+If No please follow the link below:
+http://invites.infoaxe.net/signup_e.html?fullname=&amp;email=xenomai@xenomai.org&amp;invitername=Drasko.draskovic&amp;inviterid=17473118&amp;userid=0&amp;token=0&amp;emailmasterid=ab7e15fd-4dd8-4946-8e86-fee0eea27778&amp;from=drasko.draskovic@gmail.com&src=txt_no
+
+
+Follow the link below to remove yourself from all such emails
+http://invites.infoaxe.net/uns_inviter.jsp?email=xenomai@xenomai.org&amp;iid=ab7e15fd-4dd8-4946-8e86-fee0eea27778&amp;from=drasko.draskovic@gmail.com
+
 
