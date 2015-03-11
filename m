@@ -1,13 +1,16 @@
-Message-ID: <55005B48.8080302@xenomai.org>
-Date: Wed, 11 Mar 2015 16:12:08 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <55005580.6050702@siemens.com>
-In-Reply-To: <55005580.6050702@siemens.com>
-Content-Type: text/plain; charset=iso-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 3: smokey test sched_tp causes oops when run
-	in gdb
+In-Reply-To: <54FFEA11.5080806@xenomai.org>
+References: <CAEMXjGyiUw52yB3SD1vZT5pwnmAR6Sh_qCgxbc_-RTu1kKRDdA@mail.gmail.com>
+ <54F74016.7000400@xenomai.org>
+ <CAEMXjGzBp69WdL=b1=-V9iyx6ZRd0WX+8JUJ7_9U=P+BQe9m4A@mail.gmail.com>
+ <54FF695C.1030808@xenomai.org>
+ <CAEMXjGwDy4U3nNT79dfuYr2VNhMv=R-v6dvWJRGY2Gxw+wKQEg@mail.gmail.com>
+ <54FFEA11.5080806@xenomai.org>
+Date: Wed, 11 Mar 2015 10:08:17 -0700
+Message-ID: <CAEMXjGyJjTbfvJGKjzidNLr5zoSHN9kH5BP+o9weRW94qRehpw@mail.gmail.com>
+From: Steve B <sbattazzo@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] RTDM device driver interrupts over primary mode task?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,39 +19,96 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai <xenomai@xenomai.org>
 
+On Wed, Mar 11, 2015 at 12:09 AM, Philippe Gerum <rpm@xenomai.org> wrote:
 
-Hi Jan,
+> On 03/11/2015 03:22 AM, Steve B wrote:
+> >
+> >
+> > On Tue, Mar 10, 2015 at 2:59 PM, Philippe Gerum <rpm@xenomai.org
+> > <mailto:rpm@xenomai.org>> wrote:
+> >
+> >     On 03/09/2015 07:18 PM, Steve B wrote:
+> >     >
+> >     >
+> >     > On Wed, Mar 4, 2015 at 9:25 AM, Philippe Gerum <rpm@xenomai.org
+> <mailto:rpm@xenomai.org>
+> >     > <mailto:rpm@xenomai.org <mailto:rpm@xenomai.org>>> wrote:
+> >     >
+> >     >     On 03/04/2015 05:59 PM, Steve B wrote:
+> >     >     > Hello,
+> >     >     >
+> >     >     > Is it possible that my hardware interrupts tied to RTDM
+> device
+> >     >     drivers are
+> >     >     > able to pre-empt my high priority task running in primary
+> >     mode, or
+> >     >     do the
+> >     >     > interrupts get serviced after the task yields the CPU?
+> >     >     >
+> >     >
+> >     >     If taken by the CPU, IRQs hooked by a RTDM driver will preempt
+> any
+> >     >     real-time task code immediately (in kernel or userland). IRQs
+> >     hooked by
+> >     >     regular kernel drivers will be postponed until all rt activity
+> has
+> >     >     completed on the receiving CPU.
+> >     >
+> >     >     --
+> >     >     Philippe.
+> >     >
+> >     >
+> >     > A follow-up question. When this happens, does the execution return
+> to
+> >     > the primary-mode task that was running at the time the IRQ was
+> >     received,
+> >     > or does the scheduler let other runnable tasks have a shot at the
+> >     CPU at
+> >     > that time?
+> >
+> >     This return path is an opportunity for the real-time core to switch
+> to a
+> >     thread with higher priority that might have been resumed by the
+> handler.
+> >     Otherwise, the preempted thread resumes execution.
+> >
+> >     The priority rule enforced can be expressed as: "at any point in
+> time,
+> >     the oldest runnable thread from the highest priority level shall
+> run".
+> >
+> >     --
+> >     Philippe.
+> >
+> >
+> > Thanks, makes sense! I was having an issue where my highest priority
+> > thread was having occasional overruns, and just trying to cover all my
+> > bases. There are a few threads of equal priority but none higher, and
+> > none of them should take as long as the overruns that I'm having. In the
+> > meantime I also found that I still get the overruns if I find a way to
+> > feed spoofed data to the main work thread without the
+> > hardware/peripherals generating those interrupts, so I think I've pinned
+> > it down to being something in that thread itself.
+> >
+>
+> You may want to have a look at /proc/xenomai/stat (or xenomai/sched/stat
+> with 3.x), column MSW, when your application runs, to make sure the
+> worker thread is not unexpectedly switching to relaxed/secondary mode,
+> which would definitely cause some delays.
+>
+> --
+> Philippe.
+>
 
-On 03/11/2015 03:47 PM, Jan Kiszka wrote:
-> Hi Philippe,
-> 
-> just happened to trigger the oops below by running
-> 
-> gdb --args smokey --run=8
-> 
-> That run already has troubles and generates different output than
-> running the test without gdb surveillance, probably due to unexpected
-> mode switches. But the real problem is that running the test again
-> afterwards, with or without gdb, causes the oops. Registers contain
-> suspicious "dead" patterns, thus we access invalid list elements. Do we
-> miss a cleanup when terminating smokey in the gdb session?
-> 
-> [  307.480013]  [<ffffffff8114b20f>] xnsched_tp_set_schedule+0x7f/0x100
-> [  307.480013]  [<ffffffff8117787f>] __cobalt_sched_setconfig_np+0x2ff/0x1020
+Yes, I did see that I eliminated switches to secondary mode in any of my
+tasks (there are a couple at the beginning but no increments in normal
+operation), so I was wondering if there was anything at all that could
+still be pre-empting that task.
+We are using some auto-generated code, and I have actually found that one
+of the math functions is going haywire and taking hundreds of microseconds
+in some cases so I'm pretty sure that's my culprit!
 
-Looks like some TCBs were left in the TP queue of the scheduler slot
-after exit (xnsched->tp). Normally, xnsched_tp_forget() should pull any
-exiting thread which undergoes SCHED_TP from that queue. Now, it looks
-like some code somewhere does not actually share this comfortable
-assumption.
-
-I won't be able to debug until next week, but for sure this needs
-fixing. Btw, I'll push a general fix for the shared heap issue (broken
-inter-process binding to shared objects) when I'm back. Brown paper bag
-issue.
-
--- 
-Philippe.
-
+Steve
