@@ -1,17 +1,18 @@
-Message-ID: <550FD6CA.7080407@web.de>
-Date: Mon, 23 Mar 2015 10:03:06 +0100
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <550319B3.1050902@siemens.com>
+Date: Fri, 13 Mar 2015 18:09:07 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <CAKC9m6dkbD2iwi62YP_O2wRiOUHNp17eoMLYP6okg=PQ0OgjxQ@mail.gmail.com>
- <20150320181308.GA27775@hermes.click-hack.org>
- <CAKC9m6eFoRrFj_QteNeJmcbi+eir0SGzwoCTd2TVzPVuqDsiCQ@mail.gmail.com>
- <20150321131111.GA20203@hermes.click-hack.org>
- <20150321132130.GC20203@hermes.click-hack.org>
- <CAKC9m6ceEi593XX04-dLfQaVYHmQHmwe75oC+d4Qu-t9q1G9_A@mail.gmail.com>
-In-Reply-To: <CAKC9m6ceEi593XX04-dLfQaVYHmQHmwe75oC+d4Qu-t9q1G9_A@mail.gmail.com>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] ARMv8 (ARM64) port of Xenomai
+References: <54EEF08B.6040905@triphase.com>
+ <20150226102010.GA24003@hermes.click-hack.org>
+ <54EF0790.3040607@triphase.com> <54F07AC2.6000902@triphase.com>
+ <54F0D46F.1070006@siemens.com> <54F56C9C.6080507@siemens.com>
+ <CAPRPZsC9mPitPUmXXR6QQfAGN3UMa2u6hkVwjtO4Eoh-NzC7wA@mail.gmail.com>
+ <54FDB495.3060303@triphase.com> <5501FC89.2040205@siemens.com>
+ <20150313163431.GE1497@hermes.click-hack.org>
+In-Reply-To: <20150313163431.GE1497@hermes.click-hack.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] xeno3_rc3 - Watchdog detected hard LOCKUP
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,77 +21,116 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongfei Cheng <hongfei@mperpetuo.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2015-03-23 07:01, Hongfei Cheng wrote:
-> Thank you for the terrific info and timely advice. I'll proceed as you
-> suggested and report back progress regularly.
+On 2015-03-13 17:34, Gilles Chanteperdrix wrote:
+> On Thu, Mar 12, 2015 at 09:52:25PM +0100, Jan Kiszka wrote:
+>> Am 2015-03-09 um 15:56 schrieb Niels Wellens:
+>>> Hi,
+>>>
+>>> We have a few updates on the lockup's that we observed.
+>>>
+>>> Jeroen did a dohell test on his unpatched 3.14.28 kernel and he didn't
+>>> experienced any problems, the system was still working as expected after
+>>> more than 100 hours of operation.
+>>>
+>>> In the meanwhile, I did some further tests on my 3.16.0 ipipe kernel. I
+>>> disabled some services (gdm3, rtkit-daemon, smbd and nmbd) and after 90
+>>> hours of operation (latency + dohell) everything was still working
+>>> flawlessly.  Afterwards I enabled gdm3 and rtkit-daemon services again
+>>> and the lockup didn't occur for another 25hours (test stopped due to
+>>> kernel panic while porting one of my RTDM drivers to xeno 3 ;-) ).
+>>> Then I continued my test where it stopped (only smbd and nmbd services
+>>> disabled, latency + dohell running) and it was running perfectly for 114
+>>> hours, then I enabled smbd and nmbd again and after 3 hours the hard
+>>> lockup occurred again:
+>>>
+>>> Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Initializing cgroup
+>>> subsys cpuset
+>>> Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Initializing cgroup
+>>> subsys cpu
+>>> Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Initializing cgroup
+>>> subsys cpuacct
+>>> Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Linux version
+>>> 3.16.0-ipipe-v0+ (triphase@dev-x10sae) (gcc version 4.9.1 (Debian
+>>> 4.9.1-19) ) #1 SMP Thu Feb 26 12:15:32 CET 2015
+>>> Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Command line:
+>>> BOOT_IMAGE=/boot/vmlinuz-3.16.0-ipipe-v0+
+>>> root=UUID=fc8ecefa-fc73-487f-a045-cffa99c38a11 ro quiet
+>>> ...
+>>> Mar  9 07:35:02 dev-x10sae anacron[26338]: Job `cron.daily' terminated
+>>> Mar  9 07:35:02 dev-x10sae anacron[26338]: Normal exit (1 job run)
+>>> Mar  9 08:17:01 dev-x10sae CRON[25670]: (root) CMD (   cd / && run-parts
+>>> --report /etc/cron.hourly)
+>>> Mar  9 08:30:17 dev-x10sae gnome-session[2611]:
+>>> (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 4961 was not
+>>> found when attempting to remove it
+>>> Mar  9 09:17:01 dev-x10sae CRON[20303]: (root) CMD (   cd / && run-parts
+>>> --report /etc/cron.hourly)
+>>> Mar  9 09:30:17 dev-x10sae gnome-session[2611]:
+>>> (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 4987 was not
+>>> found when attempting to remove it
+>>> Mar  9 10:17:01 dev-x10sae CRON[14576]: (root) CMD (   cd / && run-parts
+>>> --report /etc/cron.hourly)
+>>> Mar  9 10:30:17 dev-x10sae gnome-session[2611]:
+>>> (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 5017 was not
+>>> found when attempting to remove it
+>>> Mar  9 11:17:01 dev-x10sae CRON[30596]: (root) CMD (   cd / && run-parts
+>>> --report /etc/cron.hourly)
+>>> Mar  9 11:20:51 dev-x10sae smbd[11478]: Starting SMB/CIFS daemon: smbd.
+>>> Mar  9 11:20:56 dev-x10sae nmbd[24483]: Starting NetBIOS name server: nmbd.
+>>> Mar  9 11:30:17 dev-x10sae gnome-session[2611]:
+>>> (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 5043 was not
+>>> found when attempting to remove it
+>>> Mar  9 12:17:01 dev-x10sae CRON[6674]: (root) CMD (   cd / && run-parts
+>>> --report /etc/cron.hourly)
+>>> Mar  9 12:30:17 dev-x10sae gnome-session[2611]:
+>>> (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 5075 was not
+>>> found when attempting to remove it
+>>> Mar  9 13:17:01 dev-x10sae CRON[6801]: (root) CMD (   cd / && run-parts
+>>> --report /etc/cron.hourly)
+>>> Mar  9 13:30:17 dev-x10sae gnome-session[2611]:
+>>> (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 5464 was not
+>>> found when attempting to remove it
+>>> Mar  9 14:02:54 dev-x10sae kernel: [422579.748685] Watchdog detected
+>>> hard LOCKUP on cpu 5
+>>> Mar  9 14:02:54 dev-x10sae kernel: [422583.196923] INFO: rcu_sched
+>>> self-detected stall on CPUINFO: rcu_sched self-detected stall on
+>>> CPUINFO: rcu_sched self-detected stall on CPU {
+>>> Mar  9 14:02:54 dev-x10sae kernel: [422583.196927]  {
+>>> Mar  9 14:02:54 dev-x10sae kernel: [422583.196928]  2
+>>> Mar  9 14:02:54 dev-x10sae kernel: [422583.196928]  1
+>>> Mar  9 14:02:54 dev-x10sae kernel: [422583.196929] }
+>>> Mar  9 14:02:54 dev-x10sae kernel: [422583.196930] }
+>>> Mar  9 14:02:54 dev-x10sae kernel: [422583.196930]  (t=5250 jiffies
+>>> g=21756356 c=21756355 q=15258)
+>>> Mar  9 14:02:54 dev-x10sae kernel: [422583.196931]  (t=5250 jiffies
+>>> g=21756356 c=21756355 q=15258)
+>>> Mar  9 14:02:54 dev-x10sae kernel: [422583.196932] sending NMI to all CPUs:
+>>> Mar  9 14:02:54 dev-x10sae kernel: [422583.197098]  { 6}  (t=5250
+>>> jiffies g=21756356 c=21756355 q=15258)
+>>>
+>>> Is it possible that the kernel part of Samba (CIFS?) is holding the page
+>>> allocation spinlock that Jan has mentioned?
+>>
+>> Well, we need to see the backtraces to know more. But even then the
+>> question would what could cause this. If it is some issue in I-pipe or
+>> Xenomai, or if this is a generic issue that would see after a while with
+>> an unpatched kernel as well.
+> 
+> Well, to rule out any already fixed mainline issue, maybe it would
+> make sense to upgrade to the latest in the 3.14 series? This is a
+> double edged sword, since it has a risk to introduce regressions,
+> but maybe worth a try.
 
-Another tip: it can we useful to do early bring-up on QEMU basis. It is
-already in a pretty decent state regarding aarch64, Linaro is hacking on
-it, and vendors like Xilinx do their virtual prototyping on that basis
-as well (in the latter case for the upcoming MPSoC). Probably - I didn't
-try it out myself yet, only planning to do these days - the gdb
-interface also works fine, thus will give you source level debugging.
+If the step from .28 to .33 should start to expose the issue on 3.14 as
+well, we would have a more limited space to search for the reason. But I
+suspect it won't make a difference.
 
 Jan
 
-> =
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
-> Hongfei
-> =
-
-> On Sat, Mar 21, 2015 at 6:21 AM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
->> On Sat, Mar 21, 2015 at 02:11:11PM +0100, Gilles Chanteperdrix wrote:
->>> On Fri, Mar 20, 2015 at 05:06:36PM -0700, Hongfei Cheng wrote:
->>>> Gilles - Thank you for sharing the link and updating us with your sche=
-dule.
->>>>
->>>> I just started to port the I-pipe and Xenomai-3 code for supporting
->>>> the ARMv8 architecture. Based on my limited understanding of Xenomai,
->>>> it appears that the following changes are required in order to get
->>>> Xenomai-3 running on the ARMv8 SoC we plan to use (Qualcomm msm8994):
->>>>
->>>> 1). In vendor kernel tree, add I-pipe support to arm64 generic arch
->>>> code: arch/arm64/boot, arch/arm64/kernel, etc.
->>>> 2). In vendor kernel tree, add I-pipe support to arm64 MMU: arch/arm64=
-/mm
->>>> 3). In vendor kernel tree, add I-pipe support to platform-specific
->>>> device tree: arm(64)/boot/dts/qcom
->>>> 4). In vendor kernel tree, add I-pipe support to SoC and platform
->>>> dependent drivers for arm64: drivers/gpio, drivers/irqchip(?),
->>>> drivers/clocksource(?)
->>>> 5). In xenomai-3 tree, support arm64 in Cobalt kernel: kernel/cobalt/a=
-rch/arm64
->>>>
->>>> Do you (and anyone else who's working on ARMv8) see any critical
->>>> modules missing from my list?
->>>
->>> No, but the contrary, there is no reason to touch boot, kernel, mm.
->>
->> Also, I would do things step by step. First get irq interception
->> working, then timer interception, at that point I would test with
->> rtdm kernel tasks only (without CONFIG_SMP). Then add CONFIG_SMP and
->> get SMP specific stuff working, like IPI interception working, test
->> with rtdm tasks again, testing on the various cores. Then finally
->> add fault/syscall interception, and test with default latency test.
->>
->> I would use xenomai 3.x for testing, it will avoid quite a few
->> complicated things (kernel-space tasks without task_struct, hybrid
->> context switch), and we could leave it at that and decide that
->> xenomai 2.6 will never support armv8.
->>
->> --
->>                                             Gilles.
-
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 181 bytes
-Desc: OpenPGP digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150323/48c7ea9=
-c/attachment.sig>
