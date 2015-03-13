@@ -1,22 +1,17 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Thu, 19 Mar 2015 15:24:15 -0400
-Message-ID: <20150319192415.GJ25508@csclub.uwaterloo.ca>
-References: <20150319144041.GB787@hermes.click-hack.org>
- <20150319155939.GD25508@csclub.uwaterloo.ca>
- <20150319160403.GC787@hermes.click-hack.org>
- <20150319164326.GE25508@csclub.uwaterloo.ca>
- <CAEMXjGyOG8340cOOYJiPgugfka7L01yRGaXgufWDWiURZcVQcw@mail.gmail.com>
- <20150319165400.GE787@hermes.click-hack.org>
- <CAEMXjGxVHjAbLh0jEWF1fJbdVA+1PhiEa1oF9KbNXiEaqCJr8A@mail.gmail.com>
- <20150319180559.GH25508@csclub.uwaterloo.ca>
- <20150319190007.GI25508@csclub.uwaterloo.ca>
- <CAEMXjGzUcnujGyKEbhaBm1EpQ-WrNbM4+sMH1xjU3xVt7cf0ew@mail.gmail.com>
+Date: Fri, 13 Mar 2015 17:34:31 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150313163431.GE1497@hermes.click-hack.org>
+References: <54EEF08B.6040905@triphase.com>
+ <20150226102010.GA24003@hermes.click-hack.org>
+ <54EF0790.3040607@triphase.com> <54F07AC2.6000902@triphase.com>
+ <54F0D46F.1070006@siemens.com> <54F56C9C.6080507@siemens.com>
+ <CAPRPZsC9mPitPUmXXR6QQfAGN3UMa2u6hkVwjtO4Eoh-NzC7wA@mail.gmail.com>
+ <54FDB495.3060303@triphase.com> <5501FC89.2040205@siemens.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEMXjGzUcnujGyKEbhaBm1EpQ-WrNbM4+sMH1xjU3xVt7cf0ew@mail.gmail.com>
-Subject: Re: [Xenomai] Building with hard float: cannot open shared object
- file libpthread_rt.so.1
+In-Reply-To: <5501FC89.2040205@siemens.com>
+Subject: Re: [Xenomai] xeno3_rc3 - Watchdog detected hard LOCKUP
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,50 +20,108 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Steve B <sbattazzo@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thu, Mar 19, 2015 at 12:12:06PM -0700, Steve B wrote:
-> On Thu, Mar 19, 2015 at 12:00 PM, Lennart Sorensen <
-> lsorense@csclub.uwaterloo.ca> wrote:
+On Thu, Mar 12, 2015 at 09:52:25PM +0100, Jan Kiszka wrote:
+> Am 2015-03-09 um 15:56 schrieb Niels Wellens:
+> > Hi,
+> > 
+> > We have a few updates on the lockup's that we observed.
+> > 
+> > Jeroen did a dohell test on his unpatched 3.14.28 kernel and he didn't
+> > experienced any problems, the system was still working as expected after
+> > more than 100 hours of operation.
+> > 
+> > In the meanwhile, I did some further tests on my 3.16.0 ipipe kernel. I
+> > disabled some services (gdm3, rtkit-daemon, smbd and nmbd) and after 90
+> > hours of operation (latency + dohell) everything was still working
+> > flawlessly.  Afterwards I enabled gdm3 and rtkit-daemon services again
+> > and the lockup didn't occur for another 25hours (test stopped due to
+> > kernel panic while porting one of my RTDM drivers to xeno 3 ;-) ).
+> > Then I continued my test where it stopped (only smbd and nmbd services
+> > disabled, latency + dohell running) and it was running perfectly for 114
+> > hours, then I enabled smbd and nmbd again and after 3 hours the hard
+> > lockup occurred again:
+> > 
+> > Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Initializing cgroup
+> > subsys cpuset
+> > Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Initializing cgroup
+> > subsys cpu
+> > Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Initializing cgroup
+> > subsys cpuacct
+> > Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Linux version
+> > 3.16.0-ipipe-v0+ (triphase@dev-x10sae) (gcc version 4.9.1 (Debian
+> > 4.9.1-19) ) #1 SMP Thu Feb 26 12:15:32 CET 2015
+> > Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Command line:
+> > BOOT_IMAGE=/boot/vmlinuz-3.16.0-ipipe-v0+
+> > root=UUID=fc8ecefa-fc73-487f-a045-cffa99c38a11 ro quiet
+> > ...
+> > Mar  9 07:35:02 dev-x10sae anacron[26338]: Job `cron.daily' terminated
+> > Mar  9 07:35:02 dev-x10sae anacron[26338]: Normal exit (1 job run)
+> > Mar  9 08:17:01 dev-x10sae CRON[25670]: (root) CMD (   cd / && run-parts
+> > --report /etc/cron.hourly)
+> > Mar  9 08:30:17 dev-x10sae gnome-session[2611]:
+> > (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 4961 was not
+> > found when attempting to remove it
+> > Mar  9 09:17:01 dev-x10sae CRON[20303]: (root) CMD (   cd / && run-parts
+> > --report /etc/cron.hourly)
+> > Mar  9 09:30:17 dev-x10sae gnome-session[2611]:
+> > (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 4987 was not
+> > found when attempting to remove it
+> > Mar  9 10:17:01 dev-x10sae CRON[14576]: (root) CMD (   cd / && run-parts
+> > --report /etc/cron.hourly)
+> > Mar  9 10:30:17 dev-x10sae gnome-session[2611]:
+> > (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 5017 was not
+> > found when attempting to remove it
+> > Mar  9 11:17:01 dev-x10sae CRON[30596]: (root) CMD (   cd / && run-parts
+> > --report /etc/cron.hourly)
+> > Mar  9 11:20:51 dev-x10sae smbd[11478]: Starting SMB/CIFS daemon: smbd.
+> > Mar  9 11:20:56 dev-x10sae nmbd[24483]: Starting NetBIOS name server: nmbd.
+> > Mar  9 11:30:17 dev-x10sae gnome-session[2611]:
+> > (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 5043 was not
+> > found when attempting to remove it
+> > Mar  9 12:17:01 dev-x10sae CRON[6674]: (root) CMD (   cd / && run-parts
+> > --report /etc/cron.hourly)
+> > Mar  9 12:30:17 dev-x10sae gnome-session[2611]:
+> > (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 5075 was not
+> > found when attempting to remove it
+> > Mar  9 13:17:01 dev-x10sae CRON[6801]: (root) CMD (   cd / && run-parts
+> > --report /etc/cron.hourly)
+> > Mar  9 13:30:17 dev-x10sae gnome-session[2611]:
+> > (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 5464 was not
+> > found when attempting to remove it
+> > Mar  9 14:02:54 dev-x10sae kernel: [422579.748685] Watchdog detected
+> > hard LOCKUP on cpu 5
+> > Mar  9 14:02:54 dev-x10sae kernel: [422583.196923] INFO: rcu_sched
+> > self-detected stall on CPUINFO: rcu_sched self-detected stall on
+> > CPUINFO: rcu_sched self-detected stall on CPU {
+> > Mar  9 14:02:54 dev-x10sae kernel: [422583.196927]  {
+> > Mar  9 14:02:54 dev-x10sae kernel: [422583.196928]  2
+> > Mar  9 14:02:54 dev-x10sae kernel: [422583.196928]  1
+> > Mar  9 14:02:54 dev-x10sae kernel: [422583.196929] }
+> > Mar  9 14:02:54 dev-x10sae kernel: [422583.196930] }
+> > Mar  9 14:02:54 dev-x10sae kernel: [422583.196930]  (t=5250 jiffies
+> > g=21756356 c=21756355 q=15258)
+> > Mar  9 14:02:54 dev-x10sae kernel: [422583.196931]  (t=5250 jiffies
+> > g=21756356 c=21756355 q=15258)
+> > Mar  9 14:02:54 dev-x10sae kernel: [422583.196932] sending NMI to all CPUs:
+> > Mar  9 14:02:54 dev-x10sae kernel: [422583.197098]  { 6}  (t=5250
+> > jiffies g=21756356 c=21756355 q=15258)
+> > 
+> > Is it possible that the kernel part of Samba (CIFS?) is holding the page
+> > allocation spinlock that Jan has mentioned?
 > 
-> > On Thu, Mar 19, 2015 at 02:05:59PM -0400, Lennart Sorensen wrote:
-> > > On Thu, Mar 19, 2015 at 11:00:12AM -0700, Steve B wrote:
-> > > > Yes, that's a good idea, or maybe sqrt(b)*b*b*b*b would even work
-> > better,
-> > > > since it's just a few multiplies and a square root.
-> > >
-> > > The run just passed 165000 instructions for that one call to pow().
-> >
-> > Total came to: 249316 instructions.
-> >
-> > Ouch!
-> >
-> > --
-> > Len Sorensen
-> >
-> 
-> Thanks for looking into it.. that's pretty close to my 3ms figure at 10
-> clocks per instruction.
-> I'm a curious why it's actually a bit better with the non-hf compiler, but
-> I think it may be a moot point. The more important thing is to replace
-> these with alternative ways to compute the same result. Doing everything
-> fixed point could have been a good design choice from the beginning, as
-> well...
+> Well, we need to see the backtraces to know more. But even then the
+> question would what could cause this. If it is some issue in I-pipe or
+> Xenomai, or if this is a generic issue that would see after a while with
+> an unpatched kernel as well.
 
-Well the softfloat would not be 10 cycles per instruction since it isn't
-doing floating point.  It is possible that emulating the FPU in softfloat
-is actually faster for this case on the Cortex-A8.
-
-I am running a count on the number of instructions used with softfloat
-right now.  It is at 130000 and counting.
-
-After that finishes I will do a run with a newer glibc and see if they
-actually made a noticeable improvement.
-
-Good thing I have a decently fast arm to run this on (Using a 1GHz
-Cortex-A15).
+Well, to rule out any already fixed mainline issue, maybe it would
+make sense to upgrade to the latest in the 3.14 series? This is a
+double edged sword, since it has a risk to introduce regressions,
+but maybe worth a try.
 
 -- 
-Len Sorensen
+					    Gilles.
 
