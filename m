@@ -1,30 +1,18 @@
+Date: Fri, 13 Mar 2015 18:12:11 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150313171211.GH1497@hermes.click-hack.org>
+References: <20150226102010.GA24003@hermes.click-hack.org>
+ <54EF0790.3040607@triphase.com> <54F07AC2.6000902@triphase.com>
+ <54F0D46F.1070006@siemens.com> <54F56C9C.6080507@siemens.com>
+ <CAPRPZsC9mPitPUmXXR6QQfAGN3UMa2u6hkVwjtO4Eoh-NzC7wA@mail.gmail.com>
+ <54FDB495.3060303@triphase.com> <5501FC89.2040205@siemens.com>
+ <20150313163431.GE1497@hermes.click-hack.org>
+ <550319B3.1050902@siemens.com>
 MIME-Version: 1.0
-Sender: had2006@gmail.com
-In-Reply-To: <55101373.7010008@xenomai.org>
-References: <CAKk99t1N5b0_iQerSxPyKmMTLC8PePTJCO9zzFLdkmt_mDiiVg@mail.gmail.com>
- <55072D34.1070405@xenomai.org>
- <CAKk99t2ZsNmY4myJAF+H3hWNpHN4bVm255QEsU6Nu+ytG-B0dA@mail.gmail.com>
- <550837E2.9050701@xenomai.org>
- <CAKk99t2eGYME0BsLCjJV7VMm8VU_2okmpd8sYfMb_02sTvOfLQ@mail.gmail.com>
- <55083DA4.3080201@xenomai.org>
- <CAKk99t0pG6HWOucFXDw1-_5-=EGQ7faqA22yVog6Ye6TcGjevA@mail.gmail.com>
- <550850D5.9060207@xenomai.org>
- <CAKk99t0q3iNcah1Us79hJUjjHQCr2rEPu9gukSNjO2a6+Gk3sg@mail.gmail.com>
- <CAKk99t3wP-WLemoO_bbsvE4uwh-Sh-5eGPJrM=6cAc5edyQW5Q@mail.gmail.com>
- <5508600D.4020500@xenomai.org>
- <CAKk99t3xFzLuydH3HoPzWBzjd5DNtC_4Kf3YQuodHDpXTLdsUg@mail.gmail.com>
- <550B0626.5090801@xenomai.org> <550B1584.8040309@xenomai.org>
- <CAKk99t0ndeNODKHf3mmL4GTg9wrOnOcsgf_okqx_-dmNitWkXA@mail.gmail.com>
- <550FF5FB.3090603@xenomai.org>
- <CAKk99t2wHiUC_YCuLVt_4q_OKT_+PCeM3FY1pHSpOoz_faBZ4g@mail.gmail.com>
- <CAKk99t3Z-euF4518Q5WsGFmsxqvwRgvz0bTBQm5pbBCD5d8MwA@mail.gmail.com>
- <55101373.7010008@xenomai.org>
-Date: Mon, 23 Mar 2015 13:55:57 +0000
-Message-ID: <CAKk99t2GwZg27UbANwGrKUujXgcQzSv=djj9zMpX3MXk_5YPLQ@mail.gmail.com>
-From: Helder Daniel <hdaniel@ualg.pt>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Xenomai/cobalt: low_init(): binding failed: Function
- not implemented error issued when trting to run latency app on xeno 3.x-rc3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <550319B3.1050902@siemens.com>
+Subject: Re: [Xenomai] xeno3_rc3 - Watchdog detected hard LOCKUP
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -33,56 +21,118 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 23 March 2015 at 13:21, Philippe Gerum <rpm@xenomai.org> wrote:
+On Fri, Mar 13, 2015 at 06:09:07PM +0100, Jan Kiszka wrote:
+> On 2015-03-13 17:34, Gilles Chanteperdrix wrote:
+> > On Thu, Mar 12, 2015 at 09:52:25PM +0100, Jan Kiszka wrote:
+> >> Am 2015-03-09 um 15:56 schrieb Niels Wellens:
+> >>> Hi,
+> >>>
+> >>> We have a few updates on the lockup's that we observed.
+> >>>
+> >>> Jeroen did a dohell test on his unpatched 3.14.28 kernel and he didn't
+> >>> experienced any problems, the system was still working as expected after
+> >>> more than 100 hours of operation.
+> >>>
+> >>> In the meanwhile, I did some further tests on my 3.16.0 ipipe kernel. I
+> >>> disabled some services (gdm3, rtkit-daemon, smbd and nmbd) and after 90
+> >>> hours of operation (latency + dohell) everything was still working
+> >>> flawlessly.  Afterwards I enabled gdm3 and rtkit-daemon services again
+> >>> and the lockup didn't occur for another 25hours (test stopped due to
+> >>> kernel panic while porting one of my RTDM drivers to xeno 3 ;-) ).
+> >>> Then I continued my test where it stopped (only smbd and nmbd services
+> >>> disabled, latency + dohell running) and it was running perfectly for 114
+> >>> hours, then I enabled smbd and nmbd again and after 3 hours the hard
+> >>> lockup occurred again:
+> >>>
+> >>> Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Initializing cgroup
+> >>> subsys cpuset
+> >>> Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Initializing cgroup
+> >>> subsys cpu
+> >>> Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Initializing cgroup
+> >>> subsys cpuacct
+> >>> Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Linux version
+> >>> 3.16.0-ipipe-v0+ (triphase@dev-x10sae) (gcc version 4.9.1 (Debian
+> >>> 4.9.1-19) ) #1 SMP Thu Feb 26 12:15:32 CET 2015
+> >>> Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Command line:
+> >>> BOOT_IMAGE=/boot/vmlinuz-3.16.0-ipipe-v0+
+> >>> root=UUID=fc8ecefa-fc73-487f-a045-cffa99c38a11 ro quiet
+> >>> ...
+> >>> Mar  9 07:35:02 dev-x10sae anacron[26338]: Job `cron.daily' terminated
+> >>> Mar  9 07:35:02 dev-x10sae anacron[26338]: Normal exit (1 job run)
+> >>> Mar  9 08:17:01 dev-x10sae CRON[25670]: (root) CMD (   cd / && run-parts
+> >>> --report /etc/cron.hourly)
+> >>> Mar  9 08:30:17 dev-x10sae gnome-session[2611]:
+> >>> (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 4961 was not
+> >>> found when attempting to remove it
+> >>> Mar  9 09:17:01 dev-x10sae CRON[20303]: (root) CMD (   cd / && run-parts
+> >>> --report /etc/cron.hourly)
+> >>> Mar  9 09:30:17 dev-x10sae gnome-session[2611]:
+> >>> (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 4987 was not
+> >>> found when attempting to remove it
+> >>> Mar  9 10:17:01 dev-x10sae CRON[14576]: (root) CMD (   cd / && run-parts
+> >>> --report /etc/cron.hourly)
+> >>> Mar  9 10:30:17 dev-x10sae gnome-session[2611]:
+> >>> (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 5017 was not
+> >>> found when attempting to remove it
+> >>> Mar  9 11:17:01 dev-x10sae CRON[30596]: (root) CMD (   cd / && run-parts
+> >>> --report /etc/cron.hourly)
+> >>> Mar  9 11:20:51 dev-x10sae smbd[11478]: Starting SMB/CIFS daemon: smbd.
+> >>> Mar  9 11:20:56 dev-x10sae nmbd[24483]: Starting NetBIOS name server: nmbd.
+> >>> Mar  9 11:30:17 dev-x10sae gnome-session[2611]:
+> >>> (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 5043 was not
+> >>> found when attempting to remove it
+> >>> Mar  9 12:17:01 dev-x10sae CRON[6674]: (root) CMD (   cd / && run-parts
+> >>> --report /etc/cron.hourly)
+> >>> Mar  9 12:30:17 dev-x10sae gnome-session[2611]:
+> >>> (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 5075 was not
+> >>> found when attempting to remove it
+> >>> Mar  9 13:17:01 dev-x10sae CRON[6801]: (root) CMD (   cd / && run-parts
+> >>> --report /etc/cron.hourly)
+> >>> Mar  9 13:30:17 dev-x10sae gnome-session[2611]:
+> >>> (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 5464 was not
+> >>> found when attempting to remove it
+> >>> Mar  9 14:02:54 dev-x10sae kernel: [422579.748685] Watchdog detected
+> >>> hard LOCKUP on cpu 5
+> >>> Mar  9 14:02:54 dev-x10sae kernel: [422583.196923] INFO: rcu_sched
+> >>> self-detected stall on CPUINFO: rcu_sched self-detected stall on
+> >>> CPUINFO: rcu_sched self-detected stall on CPU {
+> >>> Mar  9 14:02:54 dev-x10sae kernel: [422583.196927]  {
+> >>> Mar  9 14:02:54 dev-x10sae kernel: [422583.196928]  2
+> >>> Mar  9 14:02:54 dev-x10sae kernel: [422583.196928]  1
+> >>> Mar  9 14:02:54 dev-x10sae kernel: [422583.196929] }
+> >>> Mar  9 14:02:54 dev-x10sae kernel: [422583.196930] }
+> >>> Mar  9 14:02:54 dev-x10sae kernel: [422583.196930]  (t=5250 jiffies
+> >>> g=21756356 c=21756355 q=15258)
+> >>> Mar  9 14:02:54 dev-x10sae kernel: [422583.196931]  (t=5250 jiffies
+> >>> g=21756356 c=21756355 q=15258)
+> >>> Mar  9 14:02:54 dev-x10sae kernel: [422583.196932] sending NMI to all CPUs:
+> >>> Mar  9 14:02:54 dev-x10sae kernel: [422583.197098]  { 6}  (t=5250
+> >>> jiffies g=21756356 c=21756355 q=15258)
+> >>>
+> >>> Is it possible that the kernel part of Samba (CIFS?) is holding the page
+> >>> allocation spinlock that Jan has mentioned?
+> >>
+> >> Well, we need to see the backtraces to know more. But even then the
+> >> question would what could cause this. If it is some issue in I-pipe or
+> >> Xenomai, or if this is a generic issue that would see after a while with
+> >> an unpatched kernel as well.
+> > 
+> > Well, to rule out any already fixed mainline issue, maybe it would
+> > make sense to upgrade to the latest in the 3.14 series? This is a
+> > double edged sword, since it has a risk to introduce regressions,
+> > but maybe worth a try.
+> 
+> If the step from .28 to .33 should start to expose the issue on 3.14 as
+> well, we would have a more limited space to search for the reason. But I
+> suspect it won't make a difference.
 
-> On 03/23/2015 12:47 PM, Helder Daniel wrote:
-> > PS: I can run also /usr/xenomai/bin/latency
-> >
->
-> Sorry, you lost me. You are trying way too many things in parallel,
-> reporting apparently inconsistent results.
->
+Well there were some fixes around .31 or .32, which definitely
+resolved some NFS stalls on my NFS server (which is not patched with
+I-pipe).
 
-I am sorry.
-I am porting several demos that I developed in 2.5 to version 3.
-Kernel space and userspace. And yes I am trying too many things at once.
-I tried to filter the issues when asking for your help but it seems I don't.
+-- 
+					    Gilles.
 
-If you can run latency, then the Cobalt inits certainly went well.
-
-
-Yes. After reboot: dmesg | grep -i xeno reported that Cobalt inits well.
-
-
-> Or
-> maybe you are running a Mercury version of latency, in which case you
-> might have two Xenomai installations somehow conflicting.
->
-
-I thought also that this might be an installation issue so I deleted
-/usr/xenoami before reinstalling Xenomay (Cobalt) again.
-
-
-> The last time you reported ENODEV when booting Cobalt, you also
-> mentioned that using the latest patch including this change did fix the
-> issue:
->
-> http://git.xenomai.org/ipipe.git/commit/?h=ipipe-3.14&id=02416ccdfe926cc1434dc8e0b1fb03693718c45d
-
-
-Yes. But now I noticed that sometimes Cobalt does not initialize returning
-ENODEV.
-
-
->
-> At this point, it looks like this is a local installation issue, not a
-> Xenomai one.
-
-
-It might. I am gonna reinstall everything from scratch (kernel too), before
-I get back to you again.
-
-Thanks
