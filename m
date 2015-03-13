@@ -1,16 +1,11 @@
-MIME-Version: 1.0
-Sender: had2006@gmail.com
-In-Reply-To: <5509B7D8.2020807@xenomai.org>
-References: <CAKk99t3x2u4GN0D2w_pSBY8jWVRuE1yFki66dYNUfFBSd2GQ6w@mail.gmail.com>
- <CAKk99t2arbqbKke7EdM8accaghhdYstyVFQiysYoYB1LPGjnKA@mail.gmail.com>
- <CAKk99t0-b0bkndpxVDkFq-_pqzpq4FdEzV6nULMHq6bd+JkihQ@mail.gmail.com>
- <5509B7D8.2020807@xenomai.org>
-Date: Wed, 18 Mar 2015 19:04:59 +0000
-Message-ID: <CAKk99t3_aG=3LOCqHpVostRnhhPtZ7XSFLNjT8uJXtrjevTYSA@mail.gmail.com>
-From: Helder Daniel <hdaniel@ualg.pt>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Makefile to use 2 APIs (rtdm and alchemy)
-	simultaneously
+Message-ID: <1426262234.3156.18.camel@triphase.com>
+From: Niels Wellens <niels.wellens@triphase.com>
+Date: Fri, 13 Mar 2015 16:57:14 +0100
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] xeno3_rc3_alchemy What is the effect of rt_task_delete on
+	a RT_SEM?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,41 +14,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Yes
-
-CONFIG_XENO_DRIVERS_RTIPC_XDDP=y
-
-
-On 18 March 2015 at 17:37, Philippe Gerum <rpm@xenomai.org> wrote:
-
-> On 03/18/2015 05:07 PM, Helder Daniel wrote:
-> > I also took a look here:
-> >
-> > http://comments.gmane.org/gmane.linux.real-time.xenomai.users/11767
-> >
-> > I did a: nm -s xddp-echo > symbols
-> >
-> > cat symbols | grep sock
-> >                  U __wrap_setsockopt
-> >                  U __wrap_socket
-> >
-> > So the wrappers seems to be applied.
-> >
->
-> Is CONFIG_XENO_DRIVERS_RTIPC_XDDP enabled in your kernel config?
->
-> --
-> Philippe.
->
-
-
-
--- 
-Helder Daniel
-UALG - FCT
-DEEI
-
-http://w3.ualg.pt/~hdaniel
+SGksCgpXaGlsZSBwb3J0aW5nIG91ciBjb2RlIHRvIHhlbm8zIEkgbm90aWNlZCB0aGF0IG9uZSBv
+ZiBvdXIgdGFza3MgYmxvY2tlZApvbiBhIHNlbWFwaG9yZSBkdXJpbmcgZXhpdCAoY29kZSB3b3Jr
+ZWQgb24geGVubyAyLjYuNCBOYXRpdmUsIHNvbWUgc21hbGwKY2hhbmdlcyB3aGVyZSBuZWVkZWQg
+Zm9yIEFsY2hlbXkgYnV0IG5vdGhpbmcgZnVuZGFtZW50YWwpLiBJdCBzZWVtcyB0aGF0CmRlbGV0
+aW9uIG9mIGEgdGFzayB0aGF0IGlzIHdhaXRpbmcgb24gYSBSVF9TRU0gZG9lc24ndCBkZWNyZW1l
+bnQgdGhlCm53YWl0ZXJzIGZpZWxkIG9mIHRoZSBzZW1hcGhvcmUuIEFmdGVyd2FyZHMsIHdoZW4g
+SSByYWlzZSB0aGUgc2VtYXBob3JlLAp0aGUgbndhaXRlcnMgZGVjcmVtZW50IHdpdGhvdXQgcmVs
+ZWFzaW5nIGFuIGV4aXN0aW5nIHRhc2suIEFyZSB0aGVyZQpzb21lIGNoYW5nZXMgaGVyZSBpbiBY
+ZW5vMz8gSSBsb29rZWQgaW4gdGhlIG1pZ3JhdGlvbiBndWlkZSBidXQgdGhlIG9ubHkKcmVtYXJr
+IGFib3V0IHNlbWFwaG9yZXMgaXMgZm9yIHBvc2l4LgoKUGxlYXNlIGZpbmQgaW4gYXR0YWNobWVu
+dCBhIHNtYWxsIHdvcmtpbmcgZXhhbXBsZSB3aXRoIHNvbWUgY29tbWVudHMgaW4KdGhlIGV4aXQg
+cGFydCBvZiB0aGUgY29kZS4KClRoYW5rcyBpbiBhZHZhbmNlIQpLaW5kIHJlZ2FyZHMsCk5pZWxz
+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFj
+aG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IE1ha2VmaWxlClR5cGU6IHRleHQveC1tYWtlZmls
+ZQpTaXplOiAyMTQwIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3dy54
+ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1MDMxMy84MzMxMGFk
+ZS9hdHRhY2htZW50LmJpbj4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0t
+CkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2VtX3Rlc3QuYwpU
+eXBlOiB0ZXh0L3gtY3NyYwpTaXplOiAzNDQzIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJM
+OiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8y
+MDE1MDMxMy84MzMxMGFkZS9hdHRhY2htZW50LmM+Cg==
