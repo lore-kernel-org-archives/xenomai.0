@@ -1,16 +1,15 @@
+Date: Fri, 13 Mar 2015 17:44:59 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150313164459.GF1497@hermes.click-hack.org>
+References: <CANWkrRPz2B5FgOAVLy5-i+DOFOHf5QDZQoHP28n_oAdaSmYTBw@mail.gmail.com>
+ <5502AEAF.3010003@xenomai.org>
+ <CANWkrRNmZqnN7p2nmNCc_8C8iFUW79E03L1Z62nnx4zWmSJ8Sw@mail.gmail.com>
+ <CANWkrRM3hD_LG-7EQFDxF5U-YS3YJYe8jNyL3cOZqSEL+tqQNg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <550BD231.5020002@web.de>
-References: <CADvZd9Z8LSPRMAJWb1Tp91i4i9N5wLGMxb3_suaDyFRwRiJd-w@mail.gmail.com>
- <CAEMXjGzNnwnrZOG4AFPbgKrJUpdHiuuVRFOAoKNasy-eVJQ0yg@mail.gmail.com>
- <CADvZd9bRzWJKP4ye48T6Jq-Y8wQH=GhpnqsUCcxGo0BMhi0BBg@mail.gmail.com>
- <CADvZd9aGmH0_xsYJ=CVn6813AWCE-B78zYrgh0vNhrBHZU=rfg@mail.gmail.com>
- <CADvZd9ZGNcYTt4WNLPJRL+J+MgLpRPRZsyQ9MY4ammYh+7B5Rg@mail.gmail.com>
- <550BD231.5020002@web.de>
-Date: Fri, 20 Mar 2015 09:02:30 +0100
-Message-ID: <CADvZd9b9vxCGkWKGcdwudCKvMAsFFrZ0t-OHPFn53B4qE+DdDw@mail.gmail.com>
-From: Michael Haberler <haberlerm@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] RT-CAN question (was: CAN bus on beaglebone black)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANWkrRM3hD_LG-7EQFDxF5U-YS3YJYe8jNyL3cOZqSEL+tqQNg@mail.gmail.com>
+Subject: Re: [Xenomai] rtdm/driver.h location - Xenomai 3.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,102 +18,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: xenomai <xenomai@xenomai.org>
+To: Michael Smith <2michael.smith@gmail.com>
+Cc: xenomai@xenomai.org
 
-Jan -
-
-2015-03-20 8:54 GMT+01:00 Jan Kiszka <jan.kiszka@web.de>:
-
-> On 2015-03-20 08:26, Michael Haberler wrote:
-> >>>> As I understand it from a quick and simple question I recently asked
-> of
-> >>>> the list, if you're using the RTDM driver then its interrupt will be
-> among
-> >>>> the few things able to pre-empt your high priority Xenomai task
-> (assuming
-> >>>> you have any running at the time). So if you really don't need the
-> CAN bus
-> >>>> to be "rt-safe" then it may in some cases be better to have it set up
-> with
-> >>>> the regular Linux driver so that the i-pipe doesn't prioritize it
-> over your
-> >>>> RT tasks. That could also depend on how often you have frames coming
-> in and
-> >>>> whether or not you have danger of overrunning the hardware receive
-> buffer
-> >>>> if the interrupt service routine is neglected while your RT task is
-> still
-> >>>> running.
-> >>>>
-> >>>> It could a bit tricky, though (modifications to the driver source), if
-> >>>> you wanted one CAN bus to be non-RT and one to be RT.
-> >>>>
-> >>>>
-> >>>> With the RTDM driver, I'm not sure if it uses a Xenomai system call to
-> >>>> open the socket (but I suspect that it may). If that's the case, then
-> you
-> >>>> can open it from either a primary or secondary mode Xenomai thread,
-> but
-> >>>> maybe not a regular Linux thread (i.e. a totally non-Xenomai
-> application or
-> >>>> a thread opened with __real_pthread_create).
-> >>>>
+On Fri, Mar 13, 2015 at 06:39:03PM +0200, Michael Smith wrote:
+> On Fri, Mar 13, 2015 at 1:42 PM, Michael Smith <2michael.smith@gmail.com> wrote:
+> > On Fri, Mar 13, 2015 at 11:32 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+> >> On 03/13/2015 09:17 AM, Michael Smith wrote:
+> >>> Hi.
+> >>> I am busy porting device drivers over to Xenomai 3.0.
+> >>> At the moment I'm having trouble figuring out the location of
+> >>> rtdm/driver.h.
+> >>> I would assume it should be installed under /usr/include/xenomai, because
+> >>> in my previous Xenomai 2.x build the rtdm/rtdm_driver.h was located there.
+> >>> I can see the file in the Xenomai source code but its not installed under
+> >>> /usr/include/xenomai after Xenomai 3.0 the build and install.
+> >>> I'm using cobalt with an x86_64 architecture.
 > >>>
-> >>> reading the rtcansend.c and rtcanrecv.c source, all the preliminaries
-> >>> (create socket, bind, ioctl etc) are done in a Linux thread. Only the
-> read
-> >>> and write ops are done in an RT thread. Just to check, I added a
-> command
-> >>> line option to do rt_dev_rec*/rt_dev_send* operations from a Linux
-> thread,
-> >>> and that seems to block.
+> >>> Am I missing something? Is there something that I should have setup in the
+> >>> configuration file with the install? I went back and had a look in the
+> >>> Linux kernel
+> >>> build setup under the Xenomai heading, but I could not see any obvious
+> >>> options that I missed.
 > >>>
 > >>
-> >> correction: in this case rt_dev_send fails with EPERM
+> >> In short, Xenomai 3 introduces a split between kernel and userland
+> >> headers, with only a few of them shared in order to expose the ABI. So
+> >> you need to build against a kernel prepared with the Xenomai sources,
+> >> adding the proper extra CFLAGS to your kernel Makefile for building the
+> >> module with the proper -I directives to find them.
 > >>
-> >> This thread suggests it is not possible to call this function from a
-> >> non-Xenomai thread:
-> >> http://sourceforge.net/p/rtnet/mailman/message/19223387/
+> >> Everything under /usr/include/xenomai now belongs to userland
+> >> exclusively, barring the ABI bits (uapi/).
 > >>
-> >> someody else tried the same thing before, looks like he did not get an
-> >> answer: http://www.xenomai.org/pipermail/xenomai/2012-April/025744.html
+> >> See http://www.xenomai.org/pipermail/xenomai/2015-March/033558.html
 > >>
+> >> --
+> >> Philippe.
 > >
-> > the reason for this is obviously the NULL definitions for recvmsg_nrt and
-> > sendmsg_nrt in lines 1017 and 1020 here:
+> > I understand.
+> > Thanks Phillipe.
+> > Will implement it like that.
+> > If I can suggest, maybe to have a note of this somewhere in the
+> > documentation, or
+> > a RTDM example will clarify similar questions in the future.
 > >
-> >
-> https://git.xenomai.org/xenomai-2.6.git/tree/ksrc/drivers/can/rtcan_raw.c#n1017
-> >
-> > To enable non-RT recvmsg/sendmsg, is it OK to just set the recvmsg_nrt
-> and
-> > sendmsg_nrt pointers to rtcan_raw_recvmsg and rtcan_raw_sendmsg as is
-> done
-> > for instance with rtcan_raw_ioctl?
-> >
-> > Or am I violating some fundamental assumption?
->
-> You are: *_nrt handlers must not use any RTDM (or Xenomai) services
-> internally that may block the caller - because they will run over Linux
-> context. But that condition is clearly not fulfilled for blocking
-> recvmsg and probably also sendmsg (to sync on available CAN buffers etc.).
->
-> In general, if you have the need for some use cases to operate a piece
-> of hardware with an RT driver, all users of that hardware have to go
-> that path and at least have to be Xenomai threads - can also be
-> SCHED_OTHER.
->
-> If you have a CAN adapter with multiple controllers that can be operated
-> separately, you may also use different drivers - if both (Linux and
-> RTDM) support to be attached only to a subset of controllers.
->
-> Jan
->
+> > Regards
+> > Michael
+> 
+> I am trying to do a out of tree compile for my RTDM driver.
+> As I include the line $(shell xeno-config --kcflags)) in my make file,
+> it expands to the line -Iarch/$(SRCARCH)/xenomai/include -Iinclude/xenomai.
+> 
+> My problem is my compiler is not finding the $(SRCARCH) variable in
+> the make process.
+> I had a look and its not defined in my environmental variables either.
+> I see the only place it is defined is in linux/Makefile on the top
+> level of the Linux tree.
+> 
+> But does this mean I can only compile a Xenomai driver as part of the
+> full Linux tree?
+> And do I need to re-make the whole kernel tree when I want to compile a custom
+> Xenomai driver?
+> Where would I need to place the RTDM source code if I want to compile
+> it, linux/drivers perhaps?
+> Or can I still do a out of tree compile for a Xenomai driver?
 
-well thanks for the education! obviously a blunder in the making.
+Compilation of kernel modules outside of the kernel sources is
+documented in Documentation/kbuild/modules.txt in kernel sources.
+Since RTDM modules are ordinary kernel modules, these instructions
+apply. 
 
-I guess the dual-driver/controller solution you suggest is the way to go -
-containment by "ships in the night" is fine.
+-- 
+					    Gilles.
 
-Michael
