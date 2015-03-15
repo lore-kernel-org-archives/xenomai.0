@@ -1,12 +1,14 @@
-Message-ID: <5505B174.7020308@xenomai.org>
-Date: Sun, 15 Mar 2015 17:21:08 +0100
+Message-ID: <5505B1BD.4060608@xenomai.org>
+Date: Sun, 15 Mar 2015 17:22:21 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAKk99t1V-yP_QqD1_zZM3of8o7USJirH6kytBtND-+UuuKx6Hw@mail.gmail.com>
-In-Reply-To: <CAKk99t1V-yP_QqD1_zZM3of8o7USJirH6kytBtND-+UuuKx6Hw@mail.gmail.com>
+References: <1426262234.3156.18.camel@triphase.com>
+ <55032CCB.3010607@siemens.com>
+In-Reply-To: <55032CCB.3010607@siemens.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RTDM suport in kernel space over Mercury?
+Subject: Re: [Xenomai] xeno3_rc3_alchemy What is the effect of
+	rt_task_delete on a RT_SEM?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,23 +17,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Helder Daniel <hdaniel@ualg.pt>, "Xenomai@xenomai.org" <xenomai@xenomai.org>, hdaniel@iualg.pt
+To: Jan Kiszka <jan.kiszka@siemens.com>, Niels Wellens <niels.wellens@triphase.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/13/2015 07:40 PM, Helder Daniel wrote:
-> I tried unsuccessfully to compile kernel modules with RTDM suport over
-> Mercury.
+On 03/13/2015 07:30 PM, Jan Kiszka wrote:
+> On 2015-03-13 16:57, Niels Wellens wrote:
+>> Hi,
+>>
+>> While porting our code to xeno3 I noticed that one of our tasks blocked
+>> on a semaphore during exit (code worked on xeno 2.6.4 Native, some small
+>> changes where needed for Alchemy but nothing fundamental). It seems that
+>> deletion of a task that is waiting on a RT_SEM doesn't decrement the
+>> nwaiters field of the semaphore. Afterwards, when I raise the semaphore,
+>> the nwaiters decrement without releasing an existing task. Are there
+>> some changes here in Xeno3? I looked in the migration guide but the only
+>> remark about semaphores is for posix.
+>>
+>> Please find in attachment a small working example with some comments in
+>> the exit part of the code.
 > 
-> That was before I learned that in v3.x /usr/xenomai/include is just for
-> user space.
+> I've pushed two related patches to
+> http://git.xenomai.org/xenomai-jki.git/log/?h=for-forge. The first one
+> fixes the semaphore value after interrupted waiting as you saw it, the
+> second one the reported nwaiters value if the semaphore is positive
+> (unrelated but caught by your test case as well).
 > 
-> So I guess that since the kernel supporting headers are patched to the
-> kernel source tree with ipipe-core patch, RTDM support for kernel space is
-> only available in Cobalt.
+> Thanks for reporting and specifically for preparing the test case that well!
 > 
-> Can you tell me if is this right?
 
-
-Correct, no RTDM support over Mercury yet.
+Merged, thanks.
 
 -- 
 Philippe.
