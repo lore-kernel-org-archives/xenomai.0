@@ -1,14 +1,11 @@
-Message-ID: <5505B1BD.4060608@xenomai.org>
-Date: Sun, 15 Mar 2015 17:22:21 +0100
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
-References: <1426262234.3156.18.camel@triphase.com>
- <55032CCB.3010607@siemens.com>
-In-Reply-To: <55032CCB.3010607@siemens.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xeno3_rc3_alchemy What is the effect of
-	rt_task_delete on a RT_SEM?
+From: "Yogi A. Patel" <yapatel@gatech.edu>
+Date: Sun, 15 Mar 2015 13:36:05 -0400
+Message-Id: <8863A7ED-4603-4043-8777-74B3867F9BDE@gatech.edu>
+Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2070.6\))
+Content-Type: text/plain;
+	charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Graphics Iissues only after loading analogy
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,35 +14,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Niels Wellens <niels.wellens@triphase.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 03/13/2015 07:30 PM, Jan Kiszka wrote:
-> On 2015-03-13 16:57, Niels Wellens wrote:
->> Hi,
->>
->> While porting our code to xeno3 I noticed that one of our tasks blocked
->> on a semaphore during exit (code worked on xeno 2.6.4 Native, some small
->> changes where needed for Alchemy but nothing fundamental). It seems that
->> deletion of a task that is waiting on a RT_SEM doesn't decrement the
->> nwaiters field of the semaphore. Afterwards, when I raise the semaphore,
->> the nwaiters decrement without releasing an existing task. Are there
->> some changes here in Xeno3? I looked in the migration guide but the only
->> remark about semaphores is for posix.
->>
->> Please find in attachment a small working example with some comments in
->> the exit part of the code.
-> 
-> I've pushed two related patches to
-> http://git.xenomai.org/xenomai-jki.git/log/?h=for-forge. The first one
-> fixes the semaphore value after interrupted waiting as you saw it, the
-> second one the reported nwaiters value if the semaphore is positive
-> (unrelated but caught by your test case as well).
-> 
-> Thanks for reporting and specifically for preparing the test case that well!
-> 
+Hi -
 
-Merged, thanks.
+I have multiple systems running Ubuntu 14.04 with Xenomai 2.6.3 or =
+2.6.4. Each system has a PCI/PCIe graphics card and an NI DAQ card.
 
--- 
-Philippe.
+On some machines, the system runs great - however on some of my machines =
+the GUI becomes sluggish ONLY after the DAQ card has been loaded and =
+attached using analogy_config. The mouse and keyboard interactions are =
+affected. I=E2=80=99ve also noticed that dropping to a shell using =
+CTRL+ALT+F1 is affected (the shell is slow to respond).
 
+I=E2=80=99ve seen this on a variety of machines using ATI or Nvidia =
+cards and with both proprietary and open-source drivers. On all of my =
+machines, I have DRM/DKMS enabled for the appropriate graphics drivers =
+and I=E2=80=99ve checked the DMESG and XORG logs - but nothing stands =
+out/reveals why loading the DAQ leads to this behavior.
+
+Has anyone else experienced this?
+
+Yogi A. Patel
+@yapatel525 <https://twitter.com/yapatel525>
