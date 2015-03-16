@@ -1,14 +1,13 @@
+Message-ID: <5506EC14.9070302@xenomai.org>
+Date: Mon, 16 Mar 2015 15:43:32 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <5506A964.2040400@xenomai.org>
-References: <CANWkrRPz2B5FgOAVLy5-i+DOFOHf5QDZQoHP28n_oAdaSmYTBw@mail.gmail.com>
- <5502AEAF.3010003@xenomai.org>
- <CANWkrRNmZqnN7p2nmNCc_8C8iFUW79E03L1Z62nnx4zWmSJ8Sw@mail.gmail.com>
- <5506A964.2040400@xenomai.org>
-From: Michael Smith <2michael.smith@gmail.com>
-Date: Mon, 16 Mar 2015 13:09:09 +0200
-Message-ID: <CANWkrRPtLiabS2Pkjcdz9YR-UV2ORRQ6MDyfXKXr3PH6K4qvGw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] rtdm/driver.h location - Xenomai 3.0
+References: <55005580.6050702@siemens.com>
+In-Reply-To: <55005580.6050702@siemens.com>
+Content-Type: text/plain; charset=iso-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai 3: smokey test sched_tp causes oops when run
+	in gdb
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,61 +16,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On Mon, Mar 16, 2015 at 11:59 AM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On 03/13/2015 12:42 PM, Michael Smith wrote:
->> On Fri, Mar 13, 2015 at 11:32 AM, Philippe Gerum <rpm@xenomai.org> wrote:
->>> On 03/13/2015 09:17 AM, Michael Smith wrote:
->>>> Hi.
->>>> I am busy porting device drivers over to Xenomai 3.0.
->>>> At the moment I'm having trouble figuring out the location of
->>>> rtdm/driver.h.
->>>> I would assume it should be installed under /usr/include/xenomai, because
->>>> in my previous Xenomai 2.x build the rtdm/rtdm_driver.h was located there.
->>>> I can see the file in the Xenomai source code but its not installed under
->>>> /usr/include/xenomai after Xenomai 3.0 the build and install.
->>>> I'm using cobalt with an x86_64 architecture.
->>>>
->>>> Am I missing something? Is there something that I should have setup in the
->>>> configuration file with the install? I went back and had a look in the
->>>> Linux kernel
->>>> build setup under the Xenomai heading, but I could not see any obvious
->>>> options that I missed.
->>>>
->>>
->>> In short, Xenomai 3 introduces a split between kernel and userland
->>> headers, with only a few of them shared in order to expose the ABI. So
->>> you need to build against a kernel prepared with the Xenomai sources,
->>> adding the proper extra CFLAGS to your kernel Makefile for building the
->>> module with the proper -I directives to find them.
->>>
->>> Everything under /usr/include/xenomai now belongs to userland
->>> exclusively, barring the ABI bits (uapi/).
->>>
->>> See http://www.xenomai.org/pipermail/xenomai/2015-March/033558.html
->>>
->>> --
->>> Philippe.
->>
->> I understand.
->> Thanks Phillipe.
->> Will implement it like that.
->> If I can suggest, maybe to have a note of this somewhere in the
->> documentation, or
->> a RTDM example will clarify similar questions in the future.
->>
->
-> This newly added documentation may help:
->
-> http://xenomai.org/building-applications-with-xenomai-3-x/#compiling_a_rtdm-based_module
->
-> --
-> Philippe.
+On 03/11/2015 03:47 PM, Jan Kiszka wrote:
+> Hi Philippe,
+> 
+> just happened to trigger the oops below by running
+> 
+> gdb --args smokey --run=8
+> 
+> That run already has troubles and generates different output than
+> running the test without gdb surveillance, probably due to unexpected
+> mode switches.
 
-Thanks, yes that's perfect.
+Clearly, yes. GDB causes the test program to leave primary mode, which
+changes the scheduling order, and therefore the output which depends on it.
 
-Regards
-Micheal
+ But the real problem is that running the test again
+> afterwards, with or without gdb, causes the oops. Registers contain
+> suspicious "dead" patterns, thus we access invalid list elements. Do we
+> miss a cleanup when terminating smokey in the gdb session?
+> 
+
+I could not reproduce this bug yet.
+
+There is no reason for ptracing the application to have any impact on
+the housekeeping chores when it exits. The backtrace shows that
+xnsched_tp_set_schedule() is walking through tp->threads, which seems to
+link to a stale tcb. xnsched_tp_forget() would then be called twice,
+leading to the fault.
+
+Normally, a thread that undergoes TP scheduling should be automatically
+removed from tp->threads upon exit after this sequence took place:
+
+handle_taskexit_event -> __xnthread_cleanup -> cleanup_tcb ->
+xnsched_forget -> xnsched_tp_forget
+
+For that bug to happen, either this assumption has to be wrong, or
+xnsched_set_policy() is being silly at some point.
+
+Is this 100% reproducible on your end, and does this require the initial
+gdb run to show up, or would that break even when running the sched_tp
+twice without gdb?
+
+-- 
+Philippe.
 
