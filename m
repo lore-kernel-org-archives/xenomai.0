@@ -1,14 +1,16 @@
-Message-ID: <5501FC89.2040205@siemens.com>
-Date: Thu, 12 Mar 2015 21:52:25 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
-MIME-Version: 1.0
-References: <54EEF08B.6040905@triphase.com>	<20150226102010.GA24003@hermes.click-hack.org>	<54EF0790.3040607@triphase.com>	<54F07AC2.6000902@triphase.com>	<54F0D46F.1070006@siemens.com>	<54F56C9C.6080507@siemens.com>
- <CAPRPZsC9mPitPUmXXR6QQfAGN3UMa2u6hkVwjtO4Eoh-NzC7wA@mail.gmail.com>
- <54FDB495.3060303@triphase.com>
-In-Reply-To: <54FDB495.3060303@triphase.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xeno3_rc3 - Watchdog detected hard LOCKUP
+Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2070.6\))
+From: "Yogi A. Patel" <yapatel@gatech.edu>
+In-Reply-To: <20150315214851.GX25508@csclub.uwaterloo.ca>
+Date: Sun, 15 Mar 2015 23:00:48 -0400
+Message-Id: <8F36B2B1-5841-4FE1-9ED7-D76F2B1E7F03@gatech.edu>
+References: <8863A7ED-4603-4043-8777-74B3867F9BDE@gatech.edu>
+ <20150315183757.GJ1497@hermes.click-hack.org>
+ <165AA07D-BD57-40AB-B4B2-6499B278A376@gatech.edu>
+ <20150315214851.GX25508@csclub.uwaterloo.ca>
+Content-Type: text/plain;
+	charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Graphics Iissues only after loading analogy
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,116 +19,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Niels Wellens <niels.wellens@triphase.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Cc: xenomai@xenomai.org
 
-Am 2015-03-09 um 15:56 schrieb Niels Wellens:
-> Hi,
-> 
-> We have a few updates on the lockup's that we observed.
-> 
-> Jeroen did a dohell test on his unpatched 3.14.28 kernel and he didn't
-> experienced any problems, the system was still working as expected after
-> more than 100 hours of operation.
-> 
-> In the meanwhile, I did some further tests on my 3.16.0 ipipe kernel. I
-> disabled some services (gdm3, rtkit-daemon, smbd and nmbd) and after 90
-> hours of operation (latency + dohell) everything was still working
-> flawlessly.  Afterwards I enabled gdm3 and rtkit-daemon services again
-> and the lockup didn't occur for another 25hours (test stopped due to
-> kernel panic while porting one of my RTDM drivers to xeno 3 ;-) ).
-> Then I continued my test where it stopped (only smbd and nmbd services
-> disabled, latency + dohell running) and it was running perfectly for 114
-> hours, then I enabled smbd and nmbd again and after 3 hours the hard
-> lockup occurred again:
-> 
-> Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Initializing cgroup
-> subsys cpuset
-> Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Initializing cgroup
-> subsys cpu
-> Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Initializing cgroup
-> subsys cpuacct
-> Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Linux version
-> 3.16.0-ipipe-v0+ (triphase@dev-x10sae) (gcc version 4.9.1 (Debian
-> 4.9.1-19) ) #1 SMP Thu Feb 26 12:15:32 CET 2015
-> Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Command line:
-> BOOT_IMAGE=/boot/vmlinuz-3.16.0-ipipe-v0+
-> root=UUID=fc8ecefa-fc73-487f-a045-cffa99c38a11 ro quiet
-> ...
-> Mar  9 07:35:02 dev-x10sae anacron[26338]: Job `cron.daily' terminated
-> Mar  9 07:35:02 dev-x10sae anacron[26338]: Normal exit (1 job run)
-> Mar  9 08:17:01 dev-x10sae CRON[25670]: (root) CMD (   cd / && run-parts
-> --report /etc/cron.hourly)
-> Mar  9 08:30:17 dev-x10sae gnome-session[2611]:
-> (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 4961 was not
-> found when attempting to remove it
-> Mar  9 09:17:01 dev-x10sae CRON[20303]: (root) CMD (   cd / && run-parts
-> --report /etc/cron.hourly)
-> Mar  9 09:30:17 dev-x10sae gnome-session[2611]:
-> (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 4987 was not
-> found when attempting to remove it
-> Mar  9 10:17:01 dev-x10sae CRON[14576]: (root) CMD (   cd / && run-parts
-> --report /etc/cron.hourly)
-> Mar  9 10:30:17 dev-x10sae gnome-session[2611]:
-> (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 5017 was not
-> found when attempting to remove it
-> Mar  9 11:17:01 dev-x10sae CRON[30596]: (root) CMD (   cd / && run-parts
-> --report /etc/cron.hourly)
-> Mar  9 11:20:51 dev-x10sae smbd[11478]: Starting SMB/CIFS daemon: smbd.
-> Mar  9 11:20:56 dev-x10sae nmbd[24483]: Starting NetBIOS name server: nmbd.
-> Mar  9 11:30:17 dev-x10sae gnome-session[2611]:
-> (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 5043 was not
-> found when attempting to remove it
-> Mar  9 12:17:01 dev-x10sae CRON[6674]: (root) CMD (   cd / && run-parts
-> --report /etc/cron.hourly)
-> Mar  9 12:30:17 dev-x10sae gnome-session[2611]:
-> (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 5075 was not
-> found when attempting to remove it
-> Mar  9 13:17:01 dev-x10sae CRON[6801]: (root) CMD (   cd / && run-parts
-> --report /etc/cron.hourly)
-> Mar  9 13:30:17 dev-x10sae gnome-session[2611]:
-> (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 5464 was not
-> found when attempting to remove it
-> Mar  9 14:02:54 dev-x10sae kernel: [422579.748685] Watchdog detected
-> hard LOCKUP on cpu 5
-> Mar  9 14:02:54 dev-x10sae kernel: [422583.196923] INFO: rcu_sched
-> self-detected stall on CPUINFO: rcu_sched self-detected stall on
-> CPUINFO: rcu_sched self-detected stall on CPU {
-> Mar  9 14:02:54 dev-x10sae kernel: [422583.196927]  {
-> Mar  9 14:02:54 dev-x10sae kernel: [422583.196928]  2
-> Mar  9 14:02:54 dev-x10sae kernel: [422583.196928]  1
-> Mar  9 14:02:54 dev-x10sae kernel: [422583.196929] }
-> Mar  9 14:02:54 dev-x10sae kernel: [422583.196930] }
-> Mar  9 14:02:54 dev-x10sae kernel: [422583.196930]  (t=5250 jiffies
-> g=21756356 c=21756355 q=15258)
-> Mar  9 14:02:54 dev-x10sae kernel: [422583.196931]  (t=5250 jiffies
-> g=21756356 c=21756355 q=15258)
-> Mar  9 14:02:54 dev-x10sae kernel: [422583.196932] sending NMI to all CPUs:
-> Mar  9 14:02:54 dev-x10sae kernel: [422583.197098]  { 6}  (t=5250
-> jiffies g=21756356 c=21756355 q=15258)
-> 
-> Is it possible that the kernel part of Samba (CIFS?) is holding the page
-> allocation spinlock that Jan has mentioned?
 
-Well, we need to see the backtraces to know more. But even then the
-question would what could cause this. If it is some issue in I-pipe or
-Xenomai, or if this is a generic issue that would see after a while with
-an unpatched kernel as well.
+> On Mar 15, 2015, at 17:48, Lennart Sorensen =
+<lsorense@csclub.uwaterloo.ca> wrote:
+>=20
+> On Sun, Mar 15, 2015 at 03:32:24PM -0400, Yogi A. Patel wrote:
+>>=20
+>>> On Mar 15, 2015, at 14:37, Gilles Chanteperdrix =
+<gilles.chanteperdrix@xenomai.org> wrote:
+>>>=20
+>>> On Sun, Mar 15, 2015 at 01:36:05PM -0400, Yogi A. Patel wrote:
+>>>> Hi -
+>>>>=20
+>>>> I have multiple systems running Ubuntu 14.04 with Xenomai 2.6.3 or =
+2.6.4. Each system has a PCI/PCIe graphics card and an NI DAQ card.
+>>>>=20
+>>>> On some machines, the system runs great - however on some of my =
+machines the GUI becomes sluggish ONLY after the DAQ card has been =
+loaded and attached using analogy_config. The mouse and keyboard =
+interactions are affected. I=E2=80=99ve also noticed that dropping to a =
+shell using CTRL+ALT+F1 is affected (the shell is slow to respond).
+>>>>=20
+>>>> I=E2=80=99ve seen this on a variety of machines using ATI or Nvidia =
+cards and with both proprietary and open-source drivers. On all of my =
+machines, I have DRM/DKMS enabled for the appropriate graphics drivers =
+and I=E2=80=99ve checked the DMESG and XORG logs - but nothing stands =
+out/reveals why loading the DAQ leads to this behavior.
+>>>>=20
+>>>> Has anyone else experienced this?
+>>>=20
+>>> Are you sure this is not the well known irq conflicts issue?
+>>>=20
+>>> --=20
+>>> 					    Gilles.
+>>=20
+>> Hi Gilles -
+>>=20
+>> I just looked into this and you are correct. The ethernet module and =
+the PCI card in question are on the same IRQ line. How do I change the =
+IRQ of one of these devices? I can=E2=80=99t seem to find much on it =
+online besides irqtune (which appears outdated).
+>=20
+> For PCI devices, the only way to change IRQs tends to be to change =
+slots.
+> Traditional PCI used 4 IRQs, which were assigned as IRQ A through D
+> on each slot, in a rotating pattern (most cards only use IRQ A on a
+> given slot, which means slot 1 and 5 would share, 2 and 6 would share,
+> etc).  On board PCI based hardware also gets assigned to those 4 IRQs.
+> Newer machines using an APIC tend to avoid the IRQ sharing entirely,
+> but depends on the design of the hardware.
+>=20
+> --=20
+> Len Sorensen
 
-> 
-> For now I will enable CONFIG_FRAME_POINTER  and connect a serial header
-> (just arrived) in order to have a serial terminal, hopefully this gives
-> some more debugging information.
+Thanks, Giles/Len. It turns out the problem is shared IRQs - this =
+explains the non-deterministic results across various machines.
 
-I finally started some tests here as well with your config, but I don't
-expect results soon (if at all), given your long times to reproduce
-things. I will also make some new patches available soon that target
-very specific corner cases in kernel exception handling. However, these
-patches will apply to both 3.16 and 3.14, so nothing that could easily
-explain your issues.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
-
+Yogi A. Patel
+@yapatel525 <https://twitter.com/yapatel525>
