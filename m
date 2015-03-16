@@ -1,16 +1,15 @@
 MIME-Version: 1.0
-In-Reply-To: <20150313171016.GG1497@hermes.click-hack.org>
-References: <CANWkrRPz2B5FgOAVLy5-i+DOFOHf5QDZQoHP28n_oAdaSmYTBw@mail.gmail.com>
- <5502AEAF.3010003@xenomai.org>
- <CANWkrRNmZqnN7p2nmNCc_8C8iFUW79E03L1Z62nnx4zWmSJ8Sw@mail.gmail.com>
- <CANWkrRM3hD_LG-7EQFDxF5U-YS3YJYe8jNyL3cOZqSEL+tqQNg@mail.gmail.com>
- <CAKk99t3XcTPTD=7VoFsJ=hsZeX7mVAR4dnyecCd_yZ2NiiZzzw@mail.gmail.com>
- <20150313171016.GG1497@hermes.click-hack.org>
-From: Michael Smith <2michael.smith@gmail.com>
-Date: Mon, 16 Mar 2015 08:15:14 +0200
-Message-ID: <CANWkrRN1m3LzvQPScUzOsYoVcoavcroydGQyzck24Va4dyK8dA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] rtdm/driver.h location - Xenomai 3.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Date: Mon, 16 Mar 2015 08:21:35 +0100
+From: Wolfgang Grandegger <wg@grandegger.com>
+In-Reply-To: <65D33F68-CF96-4C36-8135-4C66E9357154@mah.priv.at>
+References: <A7F7E9DFC6DD4132AD68D2EE9D2A451A@pc2012PC>
+ <53B30DF0.80301@grandegger.com>
+ <65D33F68-CF96-4C36-8135-4C66E9357154@mah.priv.at>
+Message-ID: <80cb9cb85bdfb119f4531aea459f74a9@grandegger.com>
+Subject: Re: [Xenomai] CAN bus on beaglebone black
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,50 +18,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Michael Haberler <mail17@mah.priv.at>
+Cc: Andreas Lueger <andreas.lueger@medunigraz.at>, Xenomai <xenomai@xenomai.org>
 
-On Fri, Mar 13, 2015 at 7:10 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On Fri, Mar 13, 2015 at 05:06:06PM +0000, Helder Daniel wrote:
->> I was having the same problem.
->> What I did was (for a one source code file module only to keep it simple):
->>
->> In the source code: #include <rtdm/driver.h>
->>
->> The makefile that I use is:
->>
->> obj-m += modulesource.o
->>
->> $(eval EXTRA_CFLAGS := $(shell xeno-config --kcflags))
->> #or:
->> #$(eval ccflags-y = $(shell xeno-config --kcflags))
->>
->> all:
->> make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
->> clean:
->> make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
->>
->> It assumes that:
->>
->> /lib/modules/3.16.0-ipipe/build -> /usr/src/linux-3.16.0-ipipe/
->>
->> points the full source tree (not just a headers tree like the one created
->> by the debian kbuild)
->
-> Once again, typing:
->
-> make -C /usr/src/linux-3.16.0-ipipe/ M=$(PWD) modules
->
-> is shorter and avoids the need for a symbolic link which requires
-> root privileges.
->
-> --
->                                             Gilles.
+On Sun, 15 Mar 2015 23:50:47 +0100, Michael Haberler <mail17@mah.priv.at>
+wrote:
+>> Am 01.07.2014 um 21:37 schrieb Wolfgang Grandegger <wg@grandegger.com>:
+>> 
+>> On 07/01/2014 10:30 AM, Marko Roganovic wrote:
+>>> Dear Xenomai users and developers,
+>>> 
+>>> 
+>>> 
+>>> I am relatively new to Xenomai, and we are working on a project that
+>>> uses Beaglebone black platform (3.8.13xenomai kernel). The idea is to
+>>> port our code that runs on x86 platform and RTAI Linux interface, to
+>>> Beaglebone black. In a process we decided to switch from RTAI to
+>>> Xenomai. Most of the job is done relatively with no problems, but now
+we
+>>> are facing the challenge how to connect our proprietary hardware to
+this
+>>> new Beaglebone black platform. The idea is to use CAN bus, since it
+best
+>>> suits real time constraints that we must meet.
+>>> 
+>>> 
+>>> 
+>>> As I understood, in rtcan core within Xenomai, there is no support for
+>>> c_can (d_can) driver which is used on Beaglebone black (we tried
+kernel
+>>> driver and it worked with our hardware fine). So I am interested if
+>>> someone is working on porting this driver to rtcan (or has ported it
+>>> already). Any help is appreciated.
+>> 
+>> Yes, the c_can linux kernel driver needs to be ported to rtcan. This
+>> should be rather straight forward. I have done it some time ago for the
+>> Flexcan controller.
+>> 
+>> Wolfgang.
+> 
+> curious - any news/progress on this front?
 
-Thanks Gilles.
-Its a great help.
+Steve recently mentioned that he has done a port:
 
-Regards
-Michael
+http://www.xenomai.org/pipermail/xenomai/2015-February/033164.html
+
+Wolfgang.
 
