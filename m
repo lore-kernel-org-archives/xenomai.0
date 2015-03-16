@@ -1,6 +1,6 @@
-Message-ID: <5506FE94.2000000@siemens.com>
-Date: Mon, 16 Mar 2015 17:02:28 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <55070020.70002@xenomai.org>
+Date: Mon, 16 Mar 2015 17:09:04 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <55005580.6050702@siemens.com> <5506EC14.9070302@xenomai.org>
  <5506F73B.5020103@siemens.com> <5506FE23.60408@siemens.com>
@@ -17,9 +17,9 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 2015-03-16 17:00, Jan Kiszka wrote:
+On 03/16/2015 05:00 PM, Jan Kiszka wrote:
 > On 2015-03-16 16:31, Jan Kiszka wrote:
 >> On 2015-03-16 15:43, Philippe Gerum wrote:
 >>> On 03/11/2015 03:47 PM, Jan Kiszka wrote:
@@ -100,9 +100,6 @@ On 2015-03-16 17:00, Jan Kiszka wrote:
 > 
 > 
 > Breakpoint 1, xnsched_tp_forget (thread=0xffff88003ad07040) at ../kernel/xenomai/sched-tp.c:175
-
-Forgot to print: thread->name is "threadA" here.
-
 > 175     {
 > (gdb) bt
 > #0  xnsched_tp_forget (thread=0xffff88003ad07040) at ../kernel/xenomai/sched-tp.c:175
@@ -110,19 +107,17 @@ Forgot to print: thread->name is "threadA" here.
 > #2  xnsched_set_policy (thread=0xffff88003ad07040, sched_class=0xffffffff81a2bbe0 <xnsched_class_rt>, p=0xffff88003b813e00) at ../kernel/xenomai/sched.c:403
 > #3  0xffffffff8115184f in xnsched_tp_set_schedule (sched=0xffff88003ad07040, gps=0xffff88003ad08080) at ../kernel/xenomai/sched-tp.c:260
 > #4  0xffffffff8117c5df in set_tp_config (len=<optimized out>, config=<optimized out>, cpu=<optimized out>) at ../kernel/xenomai/posix/sched.c:284
-> #5  __cobalt_sched_setconfig_np (cpu=<optimized out>, policy=11, u_config=<optimized out>, len=168, fetch_config=<optimized out>, ack_config=<optimized out>) at ../kernel/xenomai/posix/sched.c:617
-> #6  0xffffffff8117d31c in cobalt_sched_setconfig_np (cpu=<optimized out>, policy=<optimized out>, u_config=<optimized out>, len=<optimized out>) at ../kernel/xenomai/posix/sched.c:639
-> #7  0xffffffff8118475a in handle_root_syscall (ipd=<optimized out>, regs=<optimized out>) at ../kernel/xenomai/posix/syscall.c:1058
-> #8  ipipe_syscall_hook (ipd=<optimized out>, regs=0xffff88003b813f58) at ../kernel/xenomai/posix/syscall.c:1107
-> #9  0xffffffff810fde9f in __ipipe_notify_syscall (regs=<optimized out>) at ../kernel/ipipe/core.c:1006
-> #10 <signal handler called>
-> #11 0x00007f8d2f9d12c0 in ?? ()
-> Backtrace stopped: Cannot access memory at address 0x20040
-> 
-> 
-> Any bell ringing on your side?
-> 
-> Jan
-> 
 
+Yes, this one is the weird one. Normally, we should not find any TCB
+lingering in tp->threads, once threads A, B and C have exited and
+unlinked from it via xnsched_forget().
+
+That call on behalf of xnsched_tp_set_schedule() is aimed at moving all
+threads currently undergoing a TP schedule to the RT class, since we are
+about to change the scheduling data (i.e. time windows and partitions).
+Why tp->threads is not empty when running xnsched_tp_set_schedule() at
+the next program invocation is what needs to be explained.
+
+-- 
+Philippe.
 
