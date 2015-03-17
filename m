@@ -1,15 +1,17 @@
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Tue, 17 Mar 2015 17:34:57 -0400
+Message-ID: <20150317213457.GZ25508@csclub.uwaterloo.ca>
+References: <CAEMXjGwam0jjOrUBgBY_FyFOaT15qHdobMo96G3bEsWx6rEcpA@mail.gmail.com>
+ <20150317180654.GB16113@hermes.click-hack.org>
+ <CAEMXjGxSMGQFfBvUG3VdepA_cRHb=6n1V_pO3QzXtofY2bUuMA@mail.gmail.com>
+ <20150317192431.GY25508@csclub.uwaterloo.ca>
+ <CAEMXjGx6R0HtdJwU5_5AoDN=KV1T9nn5ug-ZwctJzd9B43NYSw@mail.gmail.com>
 MIME-Version: 1.0
-Sender: had2006@gmail.com
-In-Reply-To: <550886B0.2080900@xenomai.org>
-References: <CAKk99t1uNuO81qXKwkQuLTaHLNSydY94H1uOKdODAXsRp0Zfig@mail.gmail.com>
- <550886B0.2080900@xenomai.org>
-Date: Tue, 17 Mar 2015 20:19:04 +0000
-Message-ID: <CAKk99t0bYRLY3C_yNkefQY9ZwOUNT+dOoND27dEwPZTVooaEuw@mail.gmail.com>
-From: Helder Daniel <hdaniel@ualg.pt>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Differences when compiling with g++ support in
- Mercury and Cobalt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEMXjGx6R0HtdJwU5_5AoDN=KV1T9nn5ug-ZwctJzd9B43NYSw@mail.gmail.com>
+Subject: Re: [Xenomai] Building with hard float: cannot open shared object
+ file libpthread_rt.so.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,21 +20,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Steve B <sbattazzo@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Pgo+Cj4gVGhpcyBpcyBhbiBpc3N1ZSB3aXRoIHRoZSB0cmFuc2l0aW9uIGtpdCBpdCBzZWVtcyAo
-YWthIGxpYnRyYW5rLAo+IGluY2x1ZGUvdHJhbmspLCB3aGljaCBwcm92aWRlcyBjb21wYXQgd3Jh
-cHBlcnMgZnJvbSB0aGUgbmF0aXZlIEFQSQo+IGF2YWlsYWJsZSB3aXRoIFhlbm9tYWkgMi54IHRv
-IENvYmFsdCdzIEFsY2hlbXkuCj4KPiBQYXNzaW5nIC0tc2tpbj1uYXRpdmUgb3IgLS1uYXRpdmUg
-dG8geGVuby1jb25maWcgd2l0aCBDb2JhbHQgd2lsbAo+IGF1dG9tYXRpY2FsbHkgZW5hYmxlIHRo
-aXMgY29tcGF0IG1vZGUsIHdoaWxzdCBwYXNzaW5nIC0tc2tpbj1hbGNoZW15IG9yCj4gLS1hbGNo
-ZW15IHdvbid0LiBTb21lIGhlYWRlcnMgaW4gaW5jbHVkZS90cmFuayBhcmUgbGlrZWx5IG5vdCBD
-KysKPiBmcmllbmRseSB5ZXQuCj4KPiBTb21lIHNpbXBsZSB0ZXN0IGNvZGUgd291bGQgaGVscC4K
-Pgo+IEF0dGFjaGVkIGlzIHRoZSBjb2RlIHRoYXQgd2FzIHVzZWQgdG8gdGVzdCB0aGUgbmF0aXZl
-IHNraW4gb24gQ29iYWx0IGFuZApNZXJjdXJ5IHdpdGggZysrCi0tLS0tLS0tLS0tLS0tIG5leHQg
-cGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4u
-Ck5hbWU6IDA5LXBvcnRBY2Nlc3NTeW5jVHdvQXBwc0MrKy50YXIuZ3oKVHlwZTogYXBwbGljYXRp
-b24veC1nemlwClNpemU6IDE5MDcgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRw
-Oi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTUwMzE3
-L2EzNzAwNGUzL2F0dGFjaG1lbnQuYmluPgo=
+On Tue, Mar 17, 2015 at 12:57:43PM -0700, Steve B wrote:
+> Originally some other engineers on my project specified that we use
+> Angstrom Linux which seems to only work with gnueabi.
+> I noticed that the pow() function was causing problems so I looked at the
+> disassembly of the libm.so with that toolchain and it looks suspiciously
+> like soft floating point routines.
+> 
+> So I'm trying to run my simple test program on a Debian distribution which
+> is built with gnueabihf. Seems like the issue is that if I use the
+> -mhard-float option, I can't run with Xenomai, even if I built the Xenomai
+> libraries with -mhard-float enabled.
+> If I don't add in -mhard-float when I compile the program, the pow()
+> function still takes much too long... if I enable -mhard-float and take
+> away the Xenomai libs, then the pow() function executes in a reasonable
+> amount of time.
+> I guess there still may be something wrong in making sure everything is
+> built the same.
+> 
+> Hopefully that makes more sense?
+
+Xenomai runs fine on Debian with hard float, as long as your whole system
+is built that way.  No specifying of -mhard-float, just using what the
+tool chain of the system does by default, and of course on debian armhf,
+that is hard float.
+
+-- 
+Len Sorensen
+
