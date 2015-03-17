@@ -1,12 +1,9 @@
-Message-ID: <5502AEAF.3010003@xenomai.org>
-Date: Fri, 13 Mar 2015 10:32:31 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CANWkrRPz2B5FgOAVLy5-i+DOFOHf5QDZQoHP28n_oAdaSmYTBw@mail.gmail.com>
-In-Reply-To: <CANWkrRPz2B5FgOAVLy5-i+DOFOHf5QDZQoHP28n_oAdaSmYTBw@mail.gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rtdm/driver.h location - Xenomai 3.0
+Date: Tue, 17 Mar 2015 11:56:20 +0100
+Message-ID: <CAPRPZsAaZ1iCH8UDETf7T8OFJoeoUuNoy+qyMkqykNrQK3115w@mail.gmail.com>
+From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] Odd latency test result
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,37 +12,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Smith <2michael.smith@gmail.com>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/13/2015 09:17 AM, Michael Smith wrote:
-> Hi.
-> I am busy porting device drivers over to Xenomai 3.0.
-> At the moment I'm having trouble figuring out the location of
-> rtdm/driver.h.
-> I would assume it should be installed under /usr/include/xenomai, because
-> in my previous Xenomai 2.x build the rtdm/rtdm_driver.h was located there.
-> I can see the file in the Xenomai source code but its not installed under
-> /usr/include/xenomai after Xenomai 3.0 the build and install.
-> I'm using cobalt with an x86_64 architecture.
-> 
-> Am I missing something? Is there something that I should have setup in the
-> configuration file with the install? I went back and had a look in the
-> Linux kernel
-> build setup under the Xenomai heading, but I could not see any obvious
-> options that I missed.
-> 
+Hi,
 
-In short, Xenomai 3 introduces a split between kernel and userland
-headers, with only a few of them shared in order to expose the ABI. So
-you need to build against a kernel prepared with the Xenomai sources,
-adding the proper extra CFLAGS to your kernel Makefile for building the
-module with the proper -I directives to find them.
 
-Everything under /usr/include/xenomai now belongs to userland
-exclusively, barring the ABI bits (uapi/).
+While trying to reproduce the lockup issue, I noticed one of the
+latency tests reports a min. latency of about -20 us (and a max. of 27
+us). /proc/xenomai/latency is set to 1036, so I would've expected that
+the min. latency could be as low as -1.03 us, but not lower.
 
-See http://www.xenomai.org/pipermail/xenomai/2015-March/033558.html
+There were 3 tests running concurrently for 2 days, each running at
+20, 21 and 22 us, so it's possible that weirdness occurred with
+latencies about as large as the task period. No overruns though.
 
--- 
-Philippe.
+Currently not an issue for us, but just to let you know that it happened.
+
+
+J.
 
