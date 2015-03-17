@@ -1,12 +1,12 @@
-Message-ID: <55080A6B.6080103@xenomai.org>
-Date: Tue, 17 Mar 2015 12:05:15 +0100
+Message-ID: <55081474.5010303@xenomai.org>
+Date: Tue, 17 Mar 2015 12:48:04 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAPRPZsAaZ1iCH8UDETf7T8OFJoeoUuNoy+qyMkqykNrQK3115w@mail.gmail.com>
-In-Reply-To: <CAPRPZsAaZ1iCH8UDETf7T8OFJoeoUuNoy+qyMkqykNrQK3115w@mail.gmail.com>
+References: <OF26567F3C.D06FDAD6-ONC1257E0B.002D4442-C1257E0B.002D4CA1@marposs.com>
+In-Reply-To: <OF26567F3C.D06FDAD6-ONC1257E0B.002D4442-C1257E0B.002D4CA1@marposs.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Odd latency test result
+Subject: Re: [Xenomai] Question about Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,25 +15,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: manrico.quadrelli@marposs.com, xenomai@xenomai.org
 
-On 03/17/2015 11:56 AM, Jeroen Van den Keybus wrote:
+On 03/17/2015 09:14 AM, manrico.quadrelli@marposs.com wrote:
 > Hi,
-> 
-> 
-> While trying to reproduce the lockup issue, I noticed one of the
-> latency tests reports a min. latency of about -20 us (and a max. of 27
-> us). /proc/xenomai/latency is set to 1036, so I would've expected that
-> the min. latency could be as low as -1.03 us, but not lower.
-> 
-> There were 3 tests running concurrently for 2 days, each running at
-> 20, 21 and 22 us, so it's possible that weirdness occurred with
-> latencies about as large as the task period. No overruns though.
-> 
-> Currently not an issue for us, but just to let you know that it happened.
-> 
+> I'm interested to implement the new kernel version available from Yocto 
+> released for i.MX6Q (i.e. 3.10.17-1.0.2 or 3.10.53-1.1.0) with Xenomai 
+> extension and RTnet driver.
 
-Are you running with CONFIG_XENO_OPT_TIMER_HEAP or _LIST?
+Xenomai is likely to be the least of your problems on those
+Freescale-originated kernels.
+
+> I would like to know if there is a supported version of patches for 
+> Xenomai for these releases of standard Yocto kernel.
+
+Our patches for 3.10.32 apply almost cleanly to 3.10.17-fsl, but may
+require a few fixups on .53.
+
+> Any advice on which kind of solution can I test?
+> Do you think that Xenomai 3 can solve this problem?
+
+This is not a Xenomai 2 vs 3 issue. 2.x will support a 3.10 kernel the
+same way.
+
+> Do you have an estimated date for the relese of a stable version of Xenami 
+> 3?
+
+When we are happy with the level of testing, and feedback from people
+who are currently helping in raising it.
 
 -- 
 Philippe.
