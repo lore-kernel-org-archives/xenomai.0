@@ -1,13 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <20150317180654.GB16113@hermes.click-hack.org>
-References: <CAEMXjGwam0jjOrUBgBY_FyFOaT15qHdobMo96G3bEsWx6rEcpA@mail.gmail.com>
- <20150317180654.GB16113@hermes.click-hack.org>
-Date: Tue, 17 Mar 2015 11:33:58 -0700
-Message-ID: <CAEMXjGxSMGQFfBvUG3VdepA_cRHb=6n1V_pO3QzXtofY2bUuMA@mail.gmail.com>
-From: Steve B <sbattazzo@gmail.com>
+Sender: had2006@gmail.com
+Date: Tue, 17 Mar 2015 18:35:17 +0000
+Message-ID: <CAKk99t1uNuO81qXKwkQuLTaHLNSydY94H1uOKdODAXsRp0Zfig@mail.gmail.com>
+From: Helder Daniel <hdaniel@ualg.pt>
 Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Building with hard float: cannot open shared object
- file libpthread_rt.so.1
+Subject: [Xenomai] Differences when compiling with g++ support in Mercury
+	and Cobalt
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,60 +14,108 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>, Helder Daniel <hdaniel@ualg.pt>
 
-On Tue, Mar 17, 2015 at 11:06 AM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+I am compiling a small Alchemy App with C++ support, that is perfectly
+compiled in Xenomai 2.5.x.
 
-> On Tue, Mar 17, 2015 at 09:19:29AM -0700, Steve B wrote:
-> > Hello all,
-> >
-> > It has come to my attention that when compiling with
-> arm-linux-gnueabi-gcc
-> > my application is using a libm that seems to be doing soft floating point
-> > routines when I really want to be using hard float.
-> > I built a simple test application for now that does just one math
-> operation
-> > and measures the amount of time taken.
-> >
-> > Switching my compiler to arm-linux-gnueabihf and adding the -mhard-float
-> > flag, I get this error immediately at runtime:
-> > error while loading shared libraries: libpthread_rt.so.1: cannot open
-> > shared object file: No such file or directory
-> >
-> > If I take away the -mhard-float flag, the program runs but the one math
-> > operation (with a corner case argument that I found to take a long time
-> to
-> > compute) takes about 3000 microseconds to run.
-> > If I put the -mhard-float flag back in and take away Xenomai and run as a
-> > regular Linux application, the same operation takes around 60
-> microseconds.
-> >
-> > I also tried building the Xenomai on my target system with the
-> > arm-linux-gnueabihf compiler and the -mhard-float flag at configure time,
-> > but this didn't fix the problem.
-> > Has anybody run across this before?
->
-> The problem is probably that the libc/libm you are using is not
-> using hard floats, the loader will refuse to load a program using
-> hard floats with a soft float library. An intermediate solution may
-> be to use hardware floating point with soft float ABI, by passing
-> -mfloat-abi=softfp to gcc.
->
-> You do not really get to choose the floating points you can use with
-> a given toolchain, the possibilities are fixed when the toolchain is
-> compiled.
->
-> --
->                                             Gilles.
->
+Xenomai Alchemy support is included in source code as:
 
-Thanks! This actually doesn't work at compile time for some reason. The ld
-step complains that the output binary uses VFP register arguments while my
-main.o file does not... does anybody have any hints on this?
+#include <task.h>
+#include <sem.h>
 
-If I do mfloat-abi=hard I can compile and run but my math operation still
-takes too long, which is counter-intuitive to me...
+or as:
 
-Steve
+#include <alchemy/task.h>
+#include <alchemy/sem.h>
+
+and also in Cobalt (but not in Mercury) as:
+
+#include <native/task.h>
+#include <native/sem.h>
+
+In the makefile Xenomai flags are found with:
+
+skin  :=  native
+#or skin  :=  alchemy
+
+CFLAGS  := $(shell xeno-config --skin=$(skin) --cflags)
+LDFLAGS := $(shell xeno-config --skin=$(skin) --ldflags)
+
+If using an ANSI C compiler there is no problem specifying skin as native
+or alchemy in the makefile,
+but when using a C++ compiler:
+
+#use c++ compiler
+CC = g++
+
+using skin := native xeno-config reports correct flags only in Mercury.
+In Cobalt some functions like:
+
+rt_task_set_periodic() and rt_task_spawn ()
+
+are reported as "not declared in this scope"
+Other, such as the one below are found:
+
+rt_task_shadow ()
+rt_task_wait_period()
+rt_task_delete()
+
+rt_sem_create()
+rt_sem_bind()
+rt_sem_delete()
+rt_sem_v()
+rt_sem_p()
+
+Using skin := alchemy both gcc and g++ can found all functions in both
+Mercury and Cobalt.
+
+this might suggest that the native API legacy support is not fully
+operational?
+Because using the API designation of Alchemy all compiles fine.
+
+Also there is a best way to include Alchemy headers in 3.x?
+
+#include <alchemy/task.h> ...
+or just:
+#include <task.h> ...
+
+Any of these forms will be deprecated in the future?
+
+Thanks,
+
+PS:
+skin := native in Mercury is equal to skin := Alchemy in Cobalt (the only
+diff is macros -D__MERCURY__ and -D__COBALT__)
+
+skin := native in Cobalt is very different. It seems to include support not
+only for legacy APIs but also for Mercury and Cobalt at the same time
+-lalchemy -lcobalt (?)
+
+xeno-config output for these cases:
+
+skin := native in Mercury
+g++ -o readport readport.cpp -I/usr/xenomai/include/mercury
+-I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -D__MERCURY__
+-I/usr/xenomai/include/alchemy -lalchemy -Wl,--wrap=main
+-Wl,--dynamic-list=/usr/xenomai/lib/dynlist.ld -L/usr/xenomai/lib
+-lcopperplate -lpthread -lrt -lfuse
+
+
+skin := Alchemy in Cobalt
+g++ -o readport readport.cpp -I/usr/xenomai/include/cobalt
+-I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -D__COBALT__
+-I/usr/xenomai/include/alchemy  -lalchemy -Wl,--wrap=main
+-Wl,--dynamic-list=/usr/xenomai/lib/dynlist.ld -lcopperplate
+-L/usr/xenomai/lib -lcobalt -lpthread -lrt    -lfuse
+
+skin := native in Cobalt
+g++ -o readport readport.cpp -I/usr/xenomai/include/trank -D__XENO_COMPAT__
+-I/usr/xenomai/include/cobalt -I/usr/xenomai/include -D_GNU_SOURCE
+-D_REENTRANT -D__COBALT__ -I/usr/xenomai/include/alchemy -ltrank  -lalchemy
+-Wl,--wrap=main -Wl,--dynamic-list=/usr/xenomai/lib/dynlist.ld
+-lcopperplate -L/usr/xenomai/lib -lcobalt -lpthread -lrt    -lfuse
+
+
+-- 
+Helder
