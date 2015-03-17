@@ -1,11 +1,13 @@
-From: "=?gb18030?B?yum09NfT?=" <zhoupeng1982@qq.com>
-Mime-Version: 1.0
+From: Narasimhaprasad Yedatore Achutha <Narasimhaprasad_A@infosys.com>
+Date: Tue, 17 Mar 2015 14:23:23 +0000
+Message-ID: <CE26B02160B73D4F82E70632544CC6823D2C31E8@chnshlmbx11>
+In-Reply-To: <mailman.439.1426601187.27969.xenomai@xenomai.org>
+Content-Language: en-US
 Content-Type: text/plain;
-	charset="gb18030"
-Content-Transfer-Encoding: base64
-Date: Tue, 17 Mar 2015 21:41:05 +0800
-Message-ID: <tencent_07B7EF291D718FAF2A4D5BBC@qq.com>
-Subject: [Xenomai] I find a way to reduce latency, but I don't know why.
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Subject: Re: [Xenomai] CAN tx successfullness at Xenomai RT SocketCAN
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,18 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
+To: "'xenomai-owner@xenomai.org'" <xenomai-owner@xenomai.org>
+Cc: "'xenomai@xenomai.org'" <xenomai@xenomai.org>
 
-VGhlIHg4NiBtYWNoaW5lIGhhdmUgdHdvIENQVXMsIGFuZCBJIG5lZWQgcGVyaW9kaWMgdGFz
-ayBvbiBDUFUxLgpJbiBvcmRlciB0byByZWR1Y2UgbGF0ZW5jeSwgYSBidXN5IHRhc2sgd2ls
-bCBydW4gb24gQ1BVMi4KCmNwdTFfdGFzawp7CiAgcnRfdGFza193YWl0X3BlcmlvZDsKICBy
-ZWFsX3dvcms7CiAgcnRfc2VtX3YoJmJ1c3lTRU0pOwp9CgpjcHUyX3Rhc2sKewogIHJ0X3Nl
-bV9wKCZidXN5U0VNKTsKICBydF90aW1lcl9zcGluKHNwaW5fbnMpOwp9CgpBbmQgc3Bpbl9u
-cyB3aWxsIGJlIGxvbmcgZW5vdWdoOiBzcGluX25zICsgcmVhbF93b3JrX25zID4gcGVyaW9k
-aWMgY3ljbGUuClllcywgaXQgbWVhbnMgcnRfY29kZSBpcyBhbHdheXMgcnVubmluZyBvbiBD
-UFUxIG9yIENQVTIuCgpJbiBkb2luZyB0aGlzLCB0aGUgY3B1MV90YXNrIHdpbGwgZ2V0IGxv
-dyBsYXRlbmN5IGFuZCBkcmlmdCwgYnV0IHdoeSA/Cgp0aGFua3MsIHpob3U=
+Pls find my query below.
+
+----- Original Message -----
+From: xenomai-owner@xenomai.org [mailto:xenomai-owner@xenomai.org]
+Sent: Tuesday, March 17, 2015 07:36 PM=0ATo: Narasimhaprasad Yedatore Ach=
+utha
+Subject: CAN tx successfullness at Xenomai RT SocketCAN
+
+xenomai mailing list is reserved to subscribers.
 
 
-
+**************** CAUTION - Disclaimer *****************
+This e-mail contains PRIVILEGED AND CONFIDENTIAL INFORMATION intended sol=
+ely 
+for the use of the addressee(s). If you are not the intended recipient, p=
+lease 
+notify the sender by e-mail and delete the original message. Further, you=
+ are not 
+to copy, disclose, or distribute this e-mail or its contents to any other=
+ person and 
+any such actions are unlawful. This e-mail may contain viruses. Infosys h=
+as taken 
+every reasonable precaution to minimize this risk, but is not liable for =
+any damage 
+you may sustain as a result of any virus in this e-mail. You should carry=
+ out your 
+own virus checks before opening the e-mail or attachment. Infosys reserve=
+s the 
+right to monitor and review the content of all messages sent to or from t=
+his e-mail 
+address. Messages sent to or from this e-mail address may be stored on th=
+e 
+Infosys e-mail system.
+***INFOSYS******** End of Disclaimer ********INFOSYS***
 
