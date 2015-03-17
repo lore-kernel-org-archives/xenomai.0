@@ -1,13 +1,15 @@
-Message-ID: <550886B0.2080900@xenomai.org>
-Date: Tue, 17 Mar 2015 20:55:28 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAKk99t1uNuO81qXKwkQuLTaHLNSydY94H1uOKdODAXsRp0Zfig@mail.gmail.com>
-In-Reply-To: <CAKk99t1uNuO81qXKwkQuLTaHLNSydY94H1uOKdODAXsRp0Zfig@mail.gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Differences when compiling with g++ support in
- Mercury and Cobalt
+In-Reply-To: <20150317192431.GY25508@csclub.uwaterloo.ca>
+References: <CAEMXjGwam0jjOrUBgBY_FyFOaT15qHdobMo96G3bEsWx6rEcpA@mail.gmail.com>
+ <20150317180654.GB16113@hermes.click-hack.org>
+ <CAEMXjGxSMGQFfBvUG3VdepA_cRHb=6n1V_pO3QzXtofY2bUuMA@mail.gmail.com>
+ <20150317192431.GY25508@csclub.uwaterloo.ca>
+Date: Tue, 17 Mar 2015 12:57:43 -0700
+Message-ID: <CAEMXjGx6R0HtdJwU5_5AoDN=KV1T9nn5ug-ZwctJzd9B43NYSw@mail.gmail.com>
+From: Steve B <sbattazzo@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Building with hard float: cannot open shared object
+ file libpthread_rt.so.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,83 +18,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Helder Daniel <hdaniel@ualg.pt>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 03/17/2015 07:35 PM, Helder Daniel wrote:
-> I am compiling a small Alchemy App with C++ support, that is perfectly
-> compiled in Xenomai 2.5.x.
-> 
-> #use c++ compiler
-> CC = g++
-> 
-> using skin := native xeno-config reports correct flags only in Mercury.
+On Tue, Mar 17, 2015 at 12:24 PM, Lennart Sorensen <
+lsorense@csclub.uwaterloo.ca> wrote:
 
-[snip]
+> On Tue, Mar 17, 2015 at 11:33:58AM -0700, Steve B wrote:
+> > Thanks! This actually doesn't work at compile time for some reason. The
+> ld
+> > step complains that the output binary uses VFP register arguments while
+> my
+> > main.o file does not... does anybody have any hints on this?
+> >
+> > If I do mfloat-abi=hard I can compile and run but my math operation still
+> > takes too long, which is counter-intuitive to me...
+>
+> Your entire system (all libs you use, etc) and your program all have to
+> be compiled with the same ABI.  So either you use gnueabi or gnueabihf.
+> You don't get to mix and match.
+>
+> So if you use debian or ubuntu armhf, then your system is gnueabihf,
+> and if you use armel, then your system is gnueabi (which uses softfloat
+> for argument passing).
+>
+> Of course if you use a multiarch system you could have libs built and
+> installed for both methods at the same time and each program would load
+> the libraries that matched its ABI.  That's probably too complicated to
+> deal with in general though.
+>
+> But if your libc and such are built with gnueabi, then you can not build
+> a single program with gnueabihf unless it requires no libraries from
+> the system at all (so a staticly linked binary could still run as long
+> as the kernel is built to run both ABIs).
+>
+> ARM has unfortunately gone through a number of ABIs over the years that
+> are not entirely compatible (especially when it comes to floating point
+> where they are pretty much entirely incompatible).
+>
+> --
+> Len Sorensen
+>
 
-> 
-> Using skin := alchemy both gcc and g++ can found all functions in both
-> Mercury and Cobalt.
-> 
-> this might suggest that the native API legacy support is not fully
-> operational?
-> Because using the API designation of Alchemy all compiles fine.
-> 
+Thanks guys,
+Originally some other engineers on my project specified that we use
+Angstrom Linux which seems to only work with gnueabi.
+I noticed that the pow() function was causing problems so I looked at the
+disassembly of the libm.so with that toolchain and it looks suspiciously
+like soft floating point routines.
 
-This is an issue with the transition kit it seems (aka libtrank,
-include/trank), which provides compat wrappers from the native API
-available with Xenomai 2.x to Cobalt's Alchemy.
+So I'm trying to run my simple test program on a Debian distribution which
+is built with gnueabihf. Seems like the issue is that if I use the
+-mhard-float option, I can't run with Xenomai, even if I built the Xenomai
+libraries with -mhard-float enabled.
+If I don't add in -mhard-float when I compile the program, the pow()
+function still takes much too long... if I enable -mhard-float and take
+away the Xenomai libs, then the pow() function executes in a reasonable
+amount of time.
+I guess there still may be something wrong in making sure everything is
+built the same.
 
-Passing --skin=native or --native to xeno-config with Cobalt will
-automatically enable this compat mode, whilst passing --skin=alchemy or
---alchemy won't. Some headers in include/trank are likely not C++
-friendly yet.
-
-Some simple test code would help.
-
-> Also there is a best way to include Alchemy headers in 3.x?
-> 
-> #include <alchemy/task.h> ...
-
-This is the recommended way with Xenomai headers, except for the POSIX
-support which should be referred to by standard file names, given that,
-well, it's a standard.
-
-> or just:
-> #include <task.h> ...
-> 
-> Any of these forms will be deprecated in the future?
-> 
-
-Both will remain available in the future. It's just that using
-<api>/<file>.h will prevent any conflict when it comes to mixing
-multiple APIs in a single application (e.g. task.h could be defined by
-several APIs).
-
-> Thanks,
-> 
-> PS:
-> skin := native in Mercury is equal to skin := Alchemy in Cobalt (the only
-> diff is macros -D__MERCURY__ and -D__COBALT__)
-> 
-> skin := native in Cobalt is very different. It seems to include support not
-> only for legacy APIs but also for Mercury and Cobalt at the same time
-> -lalchemy -lcobalt (?)
-> 
-
-No, native with Cobalt includes support for:
-
-- libtrank (compat wrappers from the transition kit)
-- libalchemy (based on libcopperplate)
-- libcopperplate (built on top of libcobalt)
-- libcobalt (the POSIX interface to the Cobalt core in dual kernel mode)
-
-Native/Alchemy for Mercury includes support for:
-
-- libalchemy (based on libcopperplate)
-- libcopperplate (built on top of the glibc)
-
-Files from include/alchemy are shared between Cobalt and Mercury setups.
-
--- 
-Philippe.
-
+Hopefully that makes more sense?
