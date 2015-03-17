@@ -1,12 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <5502AEAF.3010003@xenomai.org>
-References: <CANWkrRPz2B5FgOAVLy5-i+DOFOHf5QDZQoHP28n_oAdaSmYTBw@mail.gmail.com>
- <5502AEAF.3010003@xenomai.org>
-From: Michael Smith <2michael.smith@gmail.com>
-Date: Fri, 13 Mar 2015 13:42:02 +0200
-Message-ID: <CANWkrRNmZqnN7p2nmNCc_8C8iFUW79E03L1Z62nnx4zWmSJ8Sw@mail.gmail.com>
+In-Reply-To: <20150317180654.GB16113@hermes.click-hack.org>
+References: <CAEMXjGwam0jjOrUBgBY_FyFOaT15qHdobMo96G3bEsWx6rEcpA@mail.gmail.com>
+ <20150317180654.GB16113@hermes.click-hack.org>
+Date: Tue, 17 Mar 2015 11:33:58 -0700
+Message-ID: <CAEMXjGxSMGQFfBvUG3VdepA_cRHb=6n1V_pO3QzXtofY2bUuMA@mail.gmail.com>
+From: Steve B <sbattazzo@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] rtdm/driver.h location - Xenomai 3.0
+Subject: Re: [Xenomai] Building with hard float: cannot open shared object
+ file libpthread_rt.so.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,49 +16,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Fri, Mar 13, 2015 at 11:32 AM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On 03/13/2015 09:17 AM, Michael Smith wrote:
->> Hi.
->> I am busy porting device drivers over to Xenomai 3.0.
->> At the moment I'm having trouble figuring out the location of
->> rtdm/driver.h.
->> I would assume it should be installed under /usr/include/xenomai, because
->> in my previous Xenomai 2.x build the rtdm/rtdm_driver.h was located there.
->> I can see the file in the Xenomai source code but its not installed under
->> /usr/include/xenomai after Xenomai 3.0 the build and install.
->> I'm using cobalt with an x86_64 architecture.
->>
->> Am I missing something? Is there something that I should have setup in the
->> configuration file with the install? I went back and had a look in the
->> Linux kernel
->> build setup under the Xenomai heading, but I could not see any obvious
->> options that I missed.
->>
+On Tue, Mar 17, 2015 at 11:06 AM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+
+> On Tue, Mar 17, 2015 at 09:19:29AM -0700, Steve B wrote:
+> > Hello all,
+> >
+> > It has come to my attention that when compiling with
+> arm-linux-gnueabi-gcc
+> > my application is using a libm that seems to be doing soft floating point
+> > routines when I really want to be using hard float.
+> > I built a simple test application for now that does just one math
+> operation
+> > and measures the amount of time taken.
+> >
+> > Switching my compiler to arm-linux-gnueabihf and adding the -mhard-float
+> > flag, I get this error immediately at runtime:
+> > error while loading shared libraries: libpthread_rt.so.1: cannot open
+> > shared object file: No such file or directory
+> >
+> > If I take away the -mhard-float flag, the program runs but the one math
+> > operation (with a corner case argument that I found to take a long time
+> to
+> > compute) takes about 3000 microseconds to run.
+> > If I put the -mhard-float flag back in and take away Xenomai and run as a
+> > regular Linux application, the same operation takes around 60
+> microseconds.
+> >
+> > I also tried building the Xenomai on my target system with the
+> > arm-linux-gnueabihf compiler and the -mhard-float flag at configure time,
+> > but this didn't fix the problem.
+> > Has anybody run across this before?
 >
-> In short, Xenomai 3 introduces a split between kernel and userland
-> headers, with only a few of them shared in order to expose the ABI. So
-> you need to build against a kernel prepared with the Xenomai sources,
-> adding the proper extra CFLAGS to your kernel Makefile for building the
-> module with the proper -I directives to find them.
+> The problem is probably that the libc/libm you are using is not
+> using hard floats, the loader will refuse to load a program using
+> hard floats with a soft float library. An intermediate solution may
+> be to use hardware floating point with soft float ABI, by passing
+> -mfloat-abi=softfp to gcc.
 >
-> Everything under /usr/include/xenomai now belongs to userland
-> exclusively, barring the ABI bits (uapi/).
->
-> See http://www.xenomai.org/pipermail/xenomai/2015-March/033558.html
+> You do not really get to choose the floating points you can use with
+> a given toolchain, the possibilities are fixed when the toolchain is
+> compiled.
 >
 > --
-> Philippe.
+>                                             Gilles.
+>
 
-I understand.
-Thanks Phillipe.
-Will implement it like that.
-If I can suggest, maybe to have a note of this somewhere in the
-documentation, or
-a RTDM example will clarify similar questions in the future.
+Thanks! This actually doesn't work at compile time for some reason. The ld
+step complains that the output binary uses VFP register arguments while my
+main.o file does not... does anybody have any hints on this?
 
-Regards
-Michael
+If I do mfloat-abi=hard I can compile and run but my math operation still
+takes too long, which is counter-intuitive to me...
 
+Steve
