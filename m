@@ -1,18 +1,11 @@
-Message-ID: <5507366B.7060304@xenomai.org>
-Date: Mon, 16 Mar 2015 21:00:43 +0100
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
-References: <55005580.6050702@siemens.com> <5506EC14.9070302@xenomai.org>
- <5506F73B.5020103@siemens.com> <5506FE23.60408@siemens.com>
- <55070020.70002@xenomai.org> <550707E7.1000107@siemens.com>
- <55070FE3.9050803@siemens.com> <55072DDE.1070103@xenomai.org>
- <55073099.9000208@siemens.com> <550731D5.1090706@xenomai.org>
- <5507329D.1040907@siemens.com>
-In-Reply-To: <5507329D.1040907@siemens.com>
-Content-Type: text/plain; charset=iso-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 3: smokey test sched_tp causes oops when run
-	in gdb
+From: "=?gb18030?B?yum09NfT?=" <zhoupeng1982@qq.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="gb18030"
+Content-Transfer-Encoding: base64
+Date: Tue, 17 Mar 2015 15:14:58 +0800
+Message-ID: <tencent_6C3FD8E83CD0092927B8FE71@qq.com>
+Subject: [Xenomai] How to sync a task to GPS ptp time ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,54 +14,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
 
-On 03/16/2015 08:44 PM, Jan Kiszka wrote:
-> On 2015-03-16 20:41, Philippe Gerum wrote:
->> On 03/16/2015 08:35 PM, Jan Kiszka wrote:
->>> On 2015-03-16 20:24, Philippe Gerum wrote:
->>>> On 03/16/2015 06:16 PM, Jan Kiszka wrote:
->>>>> Don't understand the reason for this multiple calls in details yet, but
->>>>> you can also trigger the bug by invoking pthread_setschedparam_ex twice
->>>>> in smokey's sched-tp.c. Fix pushed to for-forge.
->>>>>
->>>>
->>>> This is what has to be fixed, because guarding would only paper over the
->>>> issue for TP, but the latter would bite the same way with other existing
->>>> or future policies.
->>>
->>> You mean push the guard into xnsched_set_policy, e.g.?
->>>
->>
->> Or fix what might be a signal restart issue so that we don't end up
->> twice in xnsched_set_policy().
-> 
-> Again, already calling pthread_setschedparam_ex twice in a row on the
-> same thread triggers the bug. There is no way around such a guard.
-> 
+SSBuZWVkIGEgcGVyaW9kaWMgdGFzayBydW4gYWNjb3JkaW5nIHRvIEdQUyBwdHAgdGltZSwg
+CmFuZCBuYXRpdmUgc2tpbiB3aWxsIGJlIHVzZWQuCgpBIGxpbnV4IGUxMDAwZSBkcml2ZXIg
+aXMgdXNlZCB0byB0YWxrIHRvIDE1ODggR1BTIG1hc3RlciwKcHRwNGwgcHJvZ3JhbSBjYW4g
+bWFpbnRhaW4gUEhDIGNsb2NrIHN5bmMgdG8gR1BTIHRpbWUuCgpJIHRoaW5rIHJ0X3Rhc2tf
+c2xlZXBfdW50aWwoUlRJTUUgZGF0ZSkgbWF5IGJlIHVzZWQgaWYgSSBjYXJlZnVsbHkgCmNh
+bGN1bGF0ZSAnZGF0ZScgYXMgSSBuZWVkLgoKQnV0IHhlbm9tYWkgaGFzIGl0J3Mgb3duICd3
+YWxsY2xvY2tfb2Zmc2V0Jywgd2hpY2ggaXMgaW5pdCB3aGVuIGJvb3QuCkJlY2F1c2UgVFND
+IGNsb2Nrc291cmNlIGlzIG5vdCB2ZXJ5IGFjY3VyYXRlLCBzbyAnd2FsbGNsb2NrX29mZnNl
+dCcKbmVlZCBhZGp1c3QgZnJlcXVlbnRseSBhY2NvcmRpbmcgdG8gUEhDIGNsb2NrLgoKVGhl
+IGtzcmMvbnVjbGV1cyBwcm92aWRlIGEgZnVuY3Rpb24geG50YmFzZV9hZGp1c3RfdGltZSB3
+aGljaCBjYW4gYmUgCnVzZWQgdG8gYWRqdXN0ICd3YWxsY2xvY2tfb2Zmc2V0JywgYnV0IGhv
+dyBjYW4gSSBkbyBpdCBpbiB1c2Vyc3BhY2U/CgpBbmQgbXkgaWRlYSBmZWFzaWJsZSBvciBu
+b3QgPwoKdGhhbmtzLCB6aG91
 
-Then yes, the proper fix should be pushed to xnsched_set_policy() instead:
-
-diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
-index a6469db..093e3be 100644
---- a/kernel/cobalt/sched.c
-+++ b/kernel/cobalt/sched.c
-@@ -387,9 +387,11 @@ int xnsched_set_policy(struct xnthread *thread,
- 	 * affect the previous class (such as touching thread->rlink
- 	 * for instance).
- 	 */
--	ret = xnsched_declare(sched_class, thread, p);
--	if (ret)
--		return ret;
-+	if (sched_class != thread->base_class) {
-+		ret = xnsched_declare(sched_class, thread, p);
-+		if (ret)
-+			return ret;
-+	}
-
- 	/*
- 	 * As a special case, we may be called from __xnthread_init()
-
--- 
-Philippe.
 
