@@ -1,10 +1,11 @@
-MIME-Version: 1.0
-From: Pavel Anistratov <pavel903@gmail.com>
-Date: Wed, 18 Mar 2015 19:29:20 +0600
-Message-ID: <CAC=FX11y_maa8mAVRzBcymQxUHU+jQYPg7pnRBwM47-8vkPZWA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] irqbench: irqloop device or resource busy
+From: "=?gb18030?B?WmhvdXBlbmc=?=" <zhoupeng1982@qq.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="gb18030"
+Content-Transfer-Encoding: base64
+Date: Wed, 18 Mar 2015 21:36:57 +0800
+Message-ID: <tencent_1311F11F18A4AD717A69CEFD@qq.com>
+Subject: Re: [Xenomai] I find a way to reduce latency, but I don't know why.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,46 +14,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
 
-2015-03-18 13:54 GMT+06:00 Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org>:
-> On Wed, Mar 11, 2015 at 08:48:59PM +0600, Pavel Anistratov wrote:
->> I=E2=80=99m trying to test interrupt handling from parallel port using i=
-rqloop
->> program from irqbench, but when I try to start irqloop I get an error:
->> $ root@debian:/home/user/xenomai-2.6.4/src/testsuite/irqbench# ./irqloop=
- -i 1
->> $ irqloop: error starting test: Device or resource busy
->>
->> I loaded kernel module with modprobe xeno_irqbench command, but the
->> problem seems to occur during the first access command:
->> ioctl(benchdev, RTTST_RTIOC_IRQBENCH_START, &config)
->> How to solve this problem?
->>
->> I=E2=80=99m using the last stable release Xenomai 2.6.4 and Debian 7.8
->> (wheezy) 32-bit with kernel 3.16.0
->
-> Maybe the irq is already occupied by Linux parallel port driver and
-> unloading it would avoid that?
+PiBPbiBUdWUsIE1hciAxNywgMjAxNSBhdCAwOTo0MTowNVBNICswODAwLCDK6bT019Mgd3Jv
+dGU6Cj4gPiBUaGUgeDg2IG1hY2hpbmUgaGF2ZSB0d28gQ1BVcywgYW5kIEkgbmVlZCBwZXJp
+b2RpYyB0YXNrIG9uIENQVTEuCj4gPiBJbiBvcmRlciB0byByZWR1Y2UgbGF0ZW5jeSwgYSBi
+dXN5IHRhc2sgd2lsbCBydW4gb24gQ1BVMi4KPiA+IAo+ID4gY3B1MV90YXNrCj4gPiB7Cj4g
+PiAgIHJ0X3Rhc2tfd2FpdF9wZXJpb2Q7Cj4gPiAgIHJlYWxfd29yazsKPiA+ICAgcnRfc2Vt
+X3YoJmJ1c3lTRU0pOwo+ID4gfQo+ID4gCj4gPiBjcHUyX3Rhc2sKPiA+IHsKPiA+ICAgcnRf
+c2VtX3AoJmJ1c3lTRU0pOwo+ID4gICBydF90aW1lcl9zcGluKHNwaW5fbnMpOwo+ID4gfQo+
+ID4gCj4gPiBBbmQgc3Bpbl9ucyB3aWxsIGJlIGxvbmcgZW5vdWdoOiBzcGluX25zICsgcmVh
+bF93b3JrX25zID4gcGVyaW9kaWMgY3ljbGUuCj4gPiBZZXMsIGl0IG1lYW5zIHJ0X2NvZGUg
+aXMgYWx3YXlzIHJ1bm5pbmcgb24gQ1BVMSBvciBDUFUyLgo+ID4gCj4gPiBJbiBkb2luZyB0
+aGlzLCB0aGUgY3B1MV90YXNrIHdpbGwgZ2V0IGxvdyBsYXRlbmN5IGFuZCBkcmlmdCwgYnV0
+IHdoeSA/Cgo+IFR3byBwb3NzaWJpbGl0aWVzOgo+IC0gdGFzazIgaXMgY2FjaGUgZnJpZW5k
+bHksIHNvIGlmIHRoZSBjYWNoZSBpcyBzaGFyZWQgYmV0d2VlbiB0aGUgdHdvCj4gY3B1cywg
+aXQgcHJldmVudHMgTGludXggZnJvbSBldmljdGluZyB4ZW5vbWFpIGFuZCBJLXBpcGUgY29k
+ZSBmcm9tCj4gdGhlIGNhY2hlLCB3ZSBrbm93IHRoYXQgY2FjaGUgaGFzIGEgYmlnIGluZmx1
+ZW5jZSBvbiBsYXRlbmN5OwoKSSBhZ3JlZSB0aGlzIGlzIHRoZSBiZXN0IGd1ZXNzLCB0aGUg
+STUgQ1BVcyBkbyBzaGFyZSBMMyBjYWNoZSBiZXR3ZWVuIHRoZW0uIAoKSSBhbHNvIHVzZSBy
+dF90aW1lcl9yZWFkKCkgd3JhcCByZWFsX3dvcmsoKSB0byBtZWFzdXJlIHRpbWUgY29uc3Vt
+cHRpb246IAp3aXRob3V0IHRhc2syIHJlYWxfd29yaygpIGV4cGVuZCAyMCB0byAzNnVzLCB3
+aXRoIHRhc2syIHJlYWxfd29yaygpIApleHBlbmQgMjAgdG8gMjJ1cyB0byBjb21wZWx0ZS4g
+CnJlYWxfd29yaygpIG9ubHkgY29udGFpbiBmbG9hdC1wb2ludCBhcml0aG1ldGljLCB0aGUg
+dGltZSBzdGFiaWxpdHkgaXMKaW1wcm92ZWQgb2J2aW91c2x5LgoKSWYgdGhpcyBpcyBjYWNo
+ZSBwcm9ibGVtLCBpcyB0YXNrMiB0aGUgcmlnaHQgd2F5IHRvIGtlZXAgY29kZSBpbiBjYWNo
+ZSA/Cgo+IC0gdGFzazIgcHJldmVudHMgdGhlIGNwdSBmcm9tIGVudGVyaW5nIGlkbGUgbW9k
+ZSwgYW5kIHNvIHBvdGVudGlhbGx5Cj4gcHJldmVudHMgYW55IGxvdyBwb3dlciBvcHRpbWl6
+YXRpb24gZnJvbSBoYXBwZW5pbmcsIGxvdyBwb3dlciBtb2Rlcwo+IGFyZSBnZW5lcmFsbHkg
+bm90IGxhdGVuY3kgZnJpZW5kbHkuCgpDT05GSUdfQ1BVX0ZSRVEgYW5kIENPTkZJR19DUFVf
+SURMRSBpcyBhbHJlYWR5IGRpc2FibGVkLCBzbWkgd29ya2Fyb3VuZAphbHNvIGVuYWJsZWQu
+CkkgaGF2ZSBub3RpY2UgQzFFIG1vZGUgaXMgZGlzYWJsZWQgaW4gWGVub21haSAzLCBidXQg
+bm90IGluIFhlbm9tYWkgMiwKYnV0IEMxRSBpcyB0cmlnZ2VyZWQgYnkgbXdhaXQsIEkgZG9u
+J3QgdGhpbmsgdGhpcyBpcyB0aGUgcHJvYmxlbS4KCj4gTm90ZSBob3dldmVyIHRoYXQgbWVh
+c3VyZW1lbnRzIG9uIGFuIGlkbGUgc3lzdGVtIGRvIG5vdCByZWFsbHkKPiBtYXR0ZXIgbXVj
+aCBmb3IgZmluZGluZyB0aGUgd29yc3QgY2FzZSBsYXRlbmN5LiBSZWFsIG1lYXN1cmVtZW50
+cwo+IHNob3VsZCBsYXN0IGZvciBob3VycyBhbmQgd2l0aCB0aGUgbWFjaGluZSBwdXQgdW5k
+ZXIgbG9hZC4gSSBiZXQKPiB3aXRoIG1lYXN1cmVtZW50cyBkb25lIHRoaXMgd2F5LCB0aGUg
+ZGlmZmVyZW5jZXMgeW91IG9ic2VydmUgd2l0aAo+IHRoZSB0ZXN0cyB5b3UgZG8gd291bGQg
+YmUgbmVnbGlnaWJsZSBjb21wYXJlZCB0byB0aGUgd29yc3QgY2FzZQo+IGxhdGVuY3kuIEFu
+ZCBpZiB0aGVyZSBpcyBhIHJlYWwgZGlmZmVyZW5jZSwgdGhlbiB0aGUgSS1waXBlIHRyYWNl
+cgo+IHdvdWxkIGhlbHAgeW91IGZpbmQgZnJvbSB3aGVyZSBpdCBjb21lcy4KCk9LLCBJIHdp
+bGwgdHJ5IEktcGlwZSB0cmFjZXIu
 
-Yes, in my case the problem was caused by conflict of irqbench.ko and
-parport_pc module in place of irq request command:
-err =3D rtdm_irq_request(&ctx->irq_handle,
-    config->port_irq,
-    rt_irqbench_task_irq, 0,
-    "irqbench", ctx);
-So, I removed the conflict module from the kernel (rmmod parport_pc)
-and it solved the initial problem.
 
-In my case interrupt handler hadn=E2=80=99t worked until I added the comman=
-d
-to enable irq:
-err =3D rtdm_irq_enable(&ctx->irq_handle);
-In the function rt_irqbench_check_irq I deactivate the check (if
-(!(inb(STAT(ctx)) & STAT_BUSY))) since I was directly commuting the
-pin 10 with a ground pin without use of a second computer.
 
---=20
-Pavel
 
