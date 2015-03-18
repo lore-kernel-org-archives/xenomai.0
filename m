@@ -1,22 +1,13 @@
-Date: Fri, 13 Mar 2015 15:04:03 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150313140403.GD1497@hermes.click-hack.org>
-References: <54F97594.2060605@xenomai.org>
- <CAKk99t1AGHj8sOf7Vgy_UZ_+rECP5Vx22cyup--FHsh=RuK2zA@mail.gmail.com>
- <54F97E05.8010107@xenomai.org>
- <CAKk99t3FfAff0X0nGzKD+YcVFQWm5aeSRFB4U6No1YSPuS_qpA@mail.gmail.com>
- <CAKk99t03p_Pc41meo_zzZ0V6X_vjHZRWBeO1aNb+DM2c38pNTg@mail.gmail.com>
- <54FF64AF.5000300@xenomai.org>
- <CAKk99t2159Do6Rj0GSRPkPFcbN-qT9JpWBD1ojmFOHYv7ZKkGg@mail.gmail.com>
- <5500A3DD.2070306@xenomai.org>
- <8dc6116b7b5868d884c9f8c3e3de3c84.squirrel@xenomai.org>
- <CAKk99t0iDYiscgc0w8XthshRbB=BuQvX0t6a31_2Uw+LOayNsQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKk99t0iDYiscgc0w8XthshRbB=BuQvX0t6a31_2Uw+LOayNsQ@mail.gmail.com>
-Subject: Re: [Xenomai] Fwd: Error boilerplate/wrappers.h no found trying to
- compile RTDM module on 3.x-rc3 cobalt
+In-Reply-To: <20150318142119.GF24525@hermes.click-hack.org>
+References: <CACreCVLijm5Wup7aTrRTq=SHBmEUQY5D2pYpXThWXSrGqpcuqw@mail.gmail.com>
+ <20150318142119.GF24525@hermes.click-hack.org>
+Date: Wed, 18 Mar 2015 22:48:10 +0800
+Message-ID: <CACreCV+WajHg9wKp3HpxZ4uVdva5ADAWtOH6DDjPfWzcyNk2YQ@mail.gmail.com>
+From: GP Orcullo <kinsamanka@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Boot failure when CONFIG_XENOMAI is enabled
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,33 +16,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Helder Daniel <hdaniel@ualg.pt>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Mar 13, 2015 at 01:50:07PM +0000, Helder Daniel wrote:
-> Just for a sanity check I installed Xenomai 2.6.4
-> and created kernel-headers-3.14.17 patched with ipipe-core
+On Wed, Mar 18, 2015 at 10:21 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On Wed, Mar 18, 2015 at 10:11:06PM +0800, GP Orcullo wrote:
+>> Hi,
+>>
+>> I'm trying to port xenomai 2.6.4 on an Amlogic S805 board running  a
+>> 3.10.33 non-mainlined kernel.
+>>
+>> The kernel boots with CONFIG_IPIPE enabled but without CONFIG_XENOMAI.
+>> Once CONFIG_XENOMAI is set, the boot fails.
+>>
+>> Attached are the .config and the bootlog files. Turning
+>> CONFIG_SMP_ON_UP off gives a different result.
+>>
+>> Any pointers on where to start looking?
+>
+> here:
+> https://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc/
+>
+> Your diagnostic is not consistent with the kernel messages: the only
+> difference between CONFIG_XENOMAI and !CONFIG_XENOMAI is when
+> xenomai starts, however your kernel crashes before xenomai starts.
+>
+> Your problem is probably, as usual, in the timer handling code, or
+> tsc emulation.
+>
+> Other than that, I would disable the usually not recommended kernel
+> options.
+>
+> --
+>                                             Gilles.
 
-Well, once again: if the kernel-headers package contains symbolic
-link to xenomai sources, then you have to keep xenomai sources (or
-the reduced xenomai-kernel-sources package) around. How did you
-generate the kernel, with prepare-kernel.sh ?
+I think there's a problem with the vendor supplied kernel source.
 
-Does the kernel-header package contain the .config?
+On the xenomai patched kernel, disabling CONFIG_IPIPE and enabling
+CONFIG_SMP_ON_UP gives the following error during compilation:
 
-> 
-> them make /lib/modules/3.14.17-ipipe/build points to the kernel-headers and
-> not the full kernel source.
+In file included from arch/arm/include/generated/asm/irq_regs.h:1:0,
+                 from include/linux/irq.h:26,
+                 from include/linux/ipipe.h:28,
+                 from include/linux/sched.h:25,
+                 from arch/arm/kernel/asm-offsets.c:13:
+include/asm-generic/irq_regs.h: In function =E2=80=98get_irq_regs=E2=80=99:
+include/asm-generic/irq_regs.h:25:2: error: implicit declaration of
+function =E2=80=98ipipe_processor_id=E2=80=99 [-Werror=3Dimplicit-function-=
+declaration]
 
-Well, it is silly to touch that build symbolic link:
-1- the debian packages are supposed to handle that
-2- when building a kernel module you are supposed to pass the path
-to kernel source as a parameter to the make -C command. So, simply
-passing the path to the kernel headers location should avoid having
-to touch the symbolic link.
+I traced the error to this file:
+http://git.xenomai.org/ipipe-gch.git/tree/arch/arm/include/asm/percpu.h?h=
+=3Dfor-ipipe-3.10
 
-as documented in Documentation/kbuild/modules.txt in the kernel sources.
+Porting the changes from for-ipipe-3.14 allowed the compilation to
+proceed - but the resulting kernel is still broken.
 
--- 
-					    Gilles.
+--=20
+GP Orcullo
 
