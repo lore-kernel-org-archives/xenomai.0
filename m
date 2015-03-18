@@ -1,12 +1,13 @@
-Date: Wed, 18 Mar 2015 08:21:26 +0100
+Date: Wed, 18 Mar 2015 08:42:11 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150318072126.GH16113@hermes.click-hack.org>
-References: <87992833e1e7483097a81f9a55c800a6@MUC-S-EX13B.advaoptical.com>
+Message-ID: <20150318074211.GK16113@hermes.click-hack.org>
+References: <tencent_6C3FD8E83CD0092927B8FE71@qq.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <87992833e1e7483097a81f9a55c800a6@MUC-S-EX13B.advaoptical.com>
-Subject: Re: [Xenomai] version connection between xenomai, ipipe and kernel
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <tencent_6C3FD8E83CD0092927B8FE71@qq.com>
+Subject: Re: [Xenomai] How to sync a task to GPS ptp time ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,33 +16,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sagi Maimon <SMaimon@advaoptical.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?utf-8?B?5Lmm5ZGG5a2Q?= <zhoupeng1982@qq.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-On Wed, Mar 18, 2015 at 06:08:30AM +0000, Sagi Maimon wrote:
-> Hi, I have read all xenomai documents, but I still can't
-> understand the version connection between xenomai, ipipe and
-> kernel.
+On Tue, Mar 17, 2015 at 03:14:58PM +0800, 书呆子 wrote:
+> I need a periodic task run according to GPS ptp time, 
+> and native skin will be used.
 > 
-> 1) Does the latest xenomai version (2.6.4), supports all the
-> kernel vanilla versions?
-
-It supports all kernel versions up to the latest ones for which it
-contains a patch. For instance xenomai 2.6.4 contains I-pipe patches
-for version 3.14, so it supports all kernel versions up to 3.14.
-
+> A linux e1000e driver is used to talk to 1588 GPS master,
+> ptp4l program can maintain PHC clock sync to GPS time.
 > 
-> 2) When I choose a xenomai version, How can I find the kernel
-> versions it supports?
-
-Look at the latest I-pipe patch it contains.
-
+> I think rt_task_sleep_until(RTIME date) may be used if I carefully 
+> calculate 'date' as I need.
 > 
-> 3) If there is no Ipipe version that fits my Linux kernel version
-> (I am using Linux version 3.12.21) , what is the ipipe version I
-> can use? Thanks, Sagi
+> But xenomai has it's own 'wallclock_offset', which is init when boot.
+> Because TSC clocksource is not very accurate, so 'wallclock_offset'
+> need adjust frequently according to PHC clock.
+> 
+> The ksrc/nucleus provide a function xntbase_adjust_time which can be 
+> used to adjust 'wallclock_offset', but how can I do it in userspace?
+> 
+> And my idea feasible or not ?
 
-None. You would have to port the I-pipe patch to that version.
+Sure, but you will have to use clock_settime() from the POSIX skin.
 
 -- 
 					    Gilles.
