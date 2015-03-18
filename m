@@ -1,13 +1,13 @@
-Date: Wed, 18 Mar 2015 08:54:01 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150318075401.GM16113@hermes.click-hack.org>
-References: <CAC=FX11g823+4e50Tx4yDkp9ukGp588Qunp5epOFgFDc9EgGew@mail.gmail.com>
+From: Narasimhaprasad Yedatore Achutha <Narasimhaprasad_A@infosys.com>
+Date: Wed, 18 Mar 2015 08:27:06 +0000
+Message-ID: <CE26B02160B73D4F82E70632544CC6823D2C3600@chnshlmbx11>
+In-Reply-To: <20150317181631.GC16113@hermes.click-hack.org>
+Content-Language: en-US
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAC=FX11g823+4e50Tx4yDkp9ukGp588Qunp5epOFgFDc9EgGew@mail.gmail.com>
-Subject: Re: [Xenomai] irqbench: irqloop device or resource busy
+Subject: Re: [Xenomai] CAN tx successfullness at Xenomai RT SocketCAN
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,26 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pavel Anistratov <pavel903@gmail.com>
-Cc: xenomai@xenomai.org
+To: "'gilles.chanteperdrix@xenomai.org'" <gilles.chanteperdrix@xenomai.org>, "'xenomai-owner@xenomai.org'" <xenomai-owner@xenomai.org>, "'xenomai@xenomai.org'" <xenomai@xenomai.org>
 
-On Wed, Mar 11, 2015 at 08:48:59PM +0600, Pavel Anistratov wrote:
-> I’m trying to test interrupt handling from parallel port using irqloop
-> program from irqbench, but when I try to start irqloop I get an error:
-> $ root@debian:/home/user/xenomai-2.6.4/src/testsuite/irqbench# ./irqloop -i 1
-> $ irqloop: error starting test: Device or resource busy
-> 
-> I loaded kernel module with modprobe xeno_irqbench command, but the
-> problem seems to occur during the first access command:
-> ioctl(benchdev, RTTST_RTIOC_IRQBENCH_START, &config)
-> How to solve this problem?
-> 
-> I’m using the last stable release Xenomai 2.6.4 and Debian 7.8
-> (wheezy) 32-bit with kernel 3.16.0
-
-Maybe the irq is already occupied by Linux parallel port driver and
-unloading it would avoid that?
-
--- 
-					    Gilles.
+Hello All
+I'm using RTSocket CAN in my application. Trying figure out how to ensure=
+ the CAN message tranmission succesfulness in my function
+Previuosly I was able to assess the echoed (recv own msg) message with MS=
+G_CONFIRM flag returned by recvmsg() while using just socket CAN function=
+alities.
+However with RT SOcket CAN, the CAN_RAW_RECV_OWN_MSGS is not supported at=
+ rt_dev_setsockopt, and because of this the MSG_CONFIRM isnot being set a=
+t msg flags in the received messages.
+Could please elaborate how do we make sure the tx message successfulness =
+are assesed at RT socket CAN.
+Thanks
+YA
+**************** CAUTION - Disclaimer *****************
+This e-mail contains PRIVILEGED AND CONFIDENTIAL INFORMATION intended sol=
+ely 
+for the use of the addressee(s). If you are not the intended recipient, p=
+lease 
+notify the sender by e-mail and delete the original message. Further, you=
+ are not 
+to copy, disclose, or distribute this e-mail or its contents to any other=
+ person and 
+any such actions are unlawful. This e-mail may contain viruses. Infosys h=
+as taken 
+every reasonable precaution to minimize this risk, but is not liable for =
+any damage 
+you may sustain as a result of any virus in this e-mail. You should carry=
+ out your 
+own virus checks before opening the e-mail or attachment. Infosys reserve=
+s the 
+right to monitor and review the content of all messages sent to or from t=
+his e-mail 
+address. Messages sent to or from this e-mail address may be stored on th=
+e 
+Infosys e-mail system.
+***INFOSYS******** End of Disclaimer ********INFOSYS***
 
