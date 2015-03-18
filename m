@@ -1,16 +1,10 @@
-From: Sagi Maimon <SMaimon@advaoptical.com>
-Date: Wed, 18 Mar 2015 13:06:14 +0000
-Message-ID: <5294e012d14d4d79856ea5a6ee023e26@MUC-S-EX13B.advaoptical.com>
-References: <87992833e1e7483097a81f9a55c800a6@MUC-S-EX13B.advaoptical.com>
- <20150318072126.GH16113@hermes.click-hack.org>
- <a21b188fec9c4279af4f1067d0ac9614@MUC-S-EX13B.advaoptical.com>
- <20150318130225.GA24525@hermes.click-hack.org>
-In-Reply-To: <20150318130225.GA24525@hermes.click-hack.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: Re: [Xenomai] version connection between xenomai, ipipe and kernel
+From: Pavel Anistratov <pavel903@gmail.com>
+Date: Wed, 18 Mar 2015 19:29:20 +0600
+Message-ID: <CAC=FX11y_maa8mAVRzBcymQxUHU+jQYPg7pnRBwM47-8vkPZWA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] irqbench: irqloop device or resource busy
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,53 +13,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Thanks
+2015-03-18 13:54 GMT+06:00 Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org>:
+> On Wed, Mar 11, 2015 at 08:48:59PM +0600, Pavel Anistratov wrote:
+>> I=E2=80=99m trying to test interrupt handling from parallel port using i=
+rqloop
+>> program from irqbench, but when I try to start irqloop I get an error:
+>> $ root@debian:/home/user/xenomai-2.6.4/src/testsuite/irqbench# ./irqloop=
+ -i 1
+>> $ irqloop: error starting test: Device or resource busy
+>>
+>> I loaded kernel module with modprobe xeno_irqbench command, but the
+>> problem seems to occur during the first access command:
+>> ioctl(benchdev, RTTST_RTIOC_IRQBENCH_START, &config)
+>> How to solve this problem?
+>>
+>> I=E2=80=99m using the last stable release Xenomai 2.6.4 and Debian 7.8
+>> (wheezy) 32-bit with kernel 3.16.0
+>
+> Maybe the irq is already occupied by Linux parallel port driver and
+> unloading it would avoid that?
 
------Original Message-----
-From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]=20
-Sent: Wednesday, March 18, 2015 15:02
-To: Sagi Maimon
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai] version connection between xenomai, ipipe and kernel
+Yes, in my case the problem was caused by conflict of irqbench.ko and
+parport_pc module in place of irq request command:
+err =3D rtdm_irq_request(&ctx->irq_handle,
+    config->port_irq,
+    rt_irqbench_task_irq, 0,
+    "irqbench", ctx);
+So, I removed the conflict module from the kernel (rmmod parport_pc)
+and it solved the initial problem.
 
-On Wed, Mar 18, 2015 at 11:43:50AM +0000, Sagi Maimon wrote:
-> Hi
-> One thing is not yet clear to me, and I will appreciate is you clear it u=
-p for me:
->=20
-> The  "xenomai-2.6.4\ksrc\arch\x86\patches" directory contains:
-> ipipe-core-3.8.13-arm.patch
-> ipipe-core-3.10.32-arm.patch
-> ipipe-core-3.14.17-arm.patch
-> So if I understand your answer correctly, the xenomai 2.6.4 supports=20
-> only these three ipipe patches, and since ipipe patch is per Linux kernel=
- version, so xenomai 2.6.4 Only fits Linux versions: 3.8.13,  3.10.32 and 3=
-.14.17.
-
-No.
-
->=20
-> But you wrote : "It supports all kernel versions up to the latest ones=20
-> for which it contains a patch. For instance xenomai 2.6.4 contains=20
-> I-pipe patches for version 3.14, so it supports all kernel versions up=20
-> to 3.14."
-
-Yes, I said that, and it means just what I said. Xenomai 2.6.4 even support=
-s patches for Linux 3.14 that were published after its release (and that yo=
-u are encouraged to use instead of the patches it contains by ksrc/arch/x86=
-/patches/README). The thing is, however that, as stated by the README, we g=
-enerally do not test all past versions, we do not have the resources to do =
-that, so, it may happen that some of them do not work, but if you have this=
- issue and report it, we will try and fix it. It may also happen that some =
-past version has some bug that was fixed in later patches and that we did n=
-ot backport (again, this is a resource problem).
-
-All in all, 3.14 is probably a good choice, since it is a long term support=
- version.
+In my case interrupt handler hadn=E2=80=99t worked until I added the comman=
+d
+to enable irq:
+err =3D rtdm_irq_enable(&ctx->irq_handle);
+In the function rt_irqbench_check_irq I deactivate the check (if
+(!(inb(STAT(ctx)) & STAT_BUSY))) since I was directly commuting the
+pin 10 with a ground pin without use of a second computer.
 
 --=20
-					    Gilles.
+Pavel
 
