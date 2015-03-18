@@ -1,13 +1,13 @@
-Date: Wed, 18 Mar 2015 08:42:11 +0100
+Date: Wed, 18 Mar 2015 08:51:22 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150318074211.GK16113@hermes.click-hack.org>
-References: <tencent_6C3FD8E83CD0092927B8FE71@qq.com>
+Message-ID: <20150318075122.GL16113@hermes.click-hack.org>
+References: <tencent_07B7EF291D718FAF2A4D5BBC@qq.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <tencent_6C3FD8E83CD0092927B8FE71@qq.com>
-Subject: Re: [Xenomai] How to sync a task to GPS ptp time ?
+In-Reply-To: <tencent_07B7EF291D718FAF2A4D5BBC@qq.com>
+Subject: Re: [Xenomai] I find a way to reduce latency, but I don't know why.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,26 +19,43 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: =?utf-8?B?5Lmm5ZGG5a2Q?= <zhoupeng1982@qq.com>
 Cc: xenomai <xenomai@xenomai.org>
 
-On Tue, Mar 17, 2015 at 03:14:58PM +0800, 书呆子 wrote:
-> I need a periodic task run according to GPS ptp time, 
-> and native skin will be used.
+On Tue, Mar 17, 2015 at 09:41:05PM +0800, 书呆子 wrote:
+> The x86 machine have two CPUs, and I need periodic task on CPU1.
+> In order to reduce latency, a busy task will run on CPU2.
 > 
-> A linux e1000e driver is used to talk to 1588 GPS master,
-> ptp4l program can maintain PHC clock sync to GPS time.
+> cpu1_task
+> {
+>   rt_task_wait_period;
+>   real_work;
+>   rt_sem_v(&busySEM);
+> }
 > 
-> I think rt_task_sleep_until(RTIME date) may be used if I carefully 
-> calculate 'date' as I need.
+> cpu2_task
+> {
+>   rt_sem_p(&busySEM);
+>   rt_timer_spin(spin_ns);
+> }
 > 
-> But xenomai has it's own 'wallclock_offset', which is init when boot.
-> Because TSC clocksource is not very accurate, so 'wallclock_offset'
-> need adjust frequently according to PHC clock.
+> And spin_ns will be long enough: spin_ns + real_work_ns > periodic cycle.
+> Yes, it means rt_code is always running on CPU1 or CPU2.
 > 
-> The ksrc/nucleus provide a function xntbase_adjust_time which can be 
-> used to adjust 'wallclock_offset', but how can I do it in userspace?
-> 
-> And my idea feasible or not ?
+> In doing this, the cpu1_task will get low latency and drift, but why ?
 
-Sure, but you will have to use clock_settime() from the POSIX skin.
+Two possibilities:
+- task2 is cache friendly, so if the cache is shared between the two
+cpus, it prevents Linux from evicting xenomai and I-pipe code from
+the cache, we know that cache has a big influence on latency;
+- task2 prevents the cpu from entering idle mode, and so potentially
+prevents any low power optimization from happening, low power modes
+are generally not latency friendly.
+
+Note however that measurements on an idle system do not really
+matter much for finding the worst case latency. Real measurements
+should last for hours and with the machine put under load. I bet
+with measurements done this way, the differences you observe with
+the tests you do would be negligible compared to the worst case
+latency. And if there is a real difference, then the I-pipe tracer
+would help you find from where it comes.
 
 -- 
 					    Gilles.
