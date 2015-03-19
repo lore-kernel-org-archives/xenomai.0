@@ -1,6 +1,6 @@
-Date: Thu, 19 Mar 2015 15:40:41 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150319144041.GB787@hermes.click-hack.org>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Thu, 19 Mar 2015 11:59:39 -0400
+Message-ID: <20150319155939.GD25508@csclub.uwaterloo.ca>
 References: <CAEMXjGwam0jjOrUBgBY_FyFOaT15qHdobMo96G3bEsWx6rEcpA@mail.gmail.com>
  <20150317180654.GB16113@hermes.click-hack.org>
  <CAEMXjGxSMGQFfBvUG3VdepA_cRHb=6n1V_pO3QzXtofY2bUuMA@mail.gmail.com>
@@ -9,10 +9,11 @@ References: <CAEMXjGwam0jjOrUBgBY_FyFOaT15qHdobMo96G3bEsWx6rEcpA@mail.gmail.com>
  <20150317213457.GZ25508@csclub.uwaterloo.ca>
  <CAEMXjGy3J+aFoCNdvugUKDOunzqk=sE3aSybHuL-_xK6qiea7w@mail.gmail.com>
  <20150319140703.GC25508@csclub.uwaterloo.ca>
+ <20150319144041.GB787@hermes.click-hack.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20150319140703.GC25508@csclub.uwaterloo.ca>
+In-Reply-To: <20150319144041.GB787@hermes.click-hack.org>
 Subject: Re: [Xenomai] Building with hard float: cannot open shared object
  file libpthread_rt.so.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -23,37 +24,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On Thu, Mar 19, 2015 at 10:07:03AM -0400, Lennart Sorensen wrote:
-> On Wed, Mar 18, 2015 at 05:42:02PM -0700, Steve B wrote:
-> > Hello again, all.
-> > It turns out that when I ran without Xenomai and with the -mhard-float
-> > option enabled, the pow() function was only returning one of the original
-> > arguments as a result, and thus wasn't working properly!
-> > 
-> > Without the -mhard-float option in my compile, it seems that the gnueabihf
-> > case actually has worse timing than the regular gnueabi, which is kind of
-> > puzzling. This is definitely not a Xenomai issue though so I will check
-> > with some other software folks on site and see if they have any thoughts.
+On Thu, Mar 19, 2015 at 03:40:41PM +0100, Gilles Chanteperdrix wrote:
+> I have used cortex a8 to do some moderate calculations, but only
+> operating on 2Mpixel images got me near the millisecond. Doing
+> things like polynomial fit was taking microseconds.
 > 
-> Well it is possible the FPU is so bad at that function, that the software
-> implementation using intergers only can be faster.
-> 
-> Which CPU are you running this on?  I remember the Cortex-A8 is known for
-> having a horribly slow FPU (neon code generally runs quite a bit faster,
-> which isn't true of later Cortex-A designs, where the FPU is usually
-> faster than neon or at least equal).
+> How is pow implemented anyway, exp(a * ln(b)) or is there a smarter
+> solution ? Is b an integer in your case ? What are the values of a
+> and b ?
 
-I have used cortex a8 to do some moderate calculations, but only
-operating on 2Mpixel images got me near the millisecond. Doing
-things like polynomial fit was taking microseconds.
+Well from what I have read, the VFP FPU on the Cortex-A8 is 1/10 the
+speed of the VFP FPU in the Cortex-A9 and newer.  So very very slow.
 
-How is pow implemented anyway, exp(a * ln(b)) or is there a smarter
-solution ? Is b an integer in your case ? What are the values of a
-and b ?
+Looking at glibc-2.19 in ./sysdeps/ieee754/dbl-64/e_pow.c the
+implementation involves a lot of floating point calculations.  It's 130
+lines long, and I am not having much luck understanding it.  It certainly
+has lots of checking that values aren't too small or too big and would
+cause under or over flow, and various other checks.  It calls log1, and
+exp and various other functions which may themselves be pretty big too.
+So on a slow FPU like a Cortex-A8, it looks like pow() could be very slow.
 
 -- 
-					    Gilles.
+Len Sorensen
 
