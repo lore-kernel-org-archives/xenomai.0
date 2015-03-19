@@ -1,8 +1,7 @@
-Date: Thu, 19 Mar 2015 22:22:04 +0100
+Date: Thu, 19 Mar 2015 22:29:05 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150319212204.GC6571@hermes.click-hack.org>
-References: <CAEMXjGy3J+aFoCNdvugUKDOunzqk=sE3aSybHuL-_xK6qiea7w@mail.gmail.com>
- <20150319140703.GC25508@csclub.uwaterloo.ca>
+Message-ID: <20150319212905.GD6571@hermes.click-hack.org>
+References: <20150319140703.GC25508@csclub.uwaterloo.ca>
  <20150319144041.GB787@hermes.click-hack.org>
  <20150319155939.GD25508@csclub.uwaterloo.ca>
  <20150319160403.GC787@hermes.click-hack.org>
@@ -11,10 +10,11 @@ References: <CAEMXjGy3J+aFoCNdvugUKDOunzqk=sE3aSybHuL-_xK6qiea7w@mail.gmail.com>
  <20150319165400.GE787@hermes.click-hack.org>
  <CAEMXjGxVHjAbLh0jEWF1fJbdVA+1PhiEa1oF9KbNXiEaqCJr8A@mail.gmail.com>
  <20150319200302.GA6571@hermes.click-hack.org>
+ <20150319212204.GC6571@hermes.click-hack.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20150319200302.GA6571@hermes.click-hack.org>
+In-Reply-To: <20150319212204.GC6571@hermes.click-hack.org>
 Subject: Re: [Xenomai] Building with hard float: cannot open shared object
  file libpthread_rt.so.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -28,154 +28,9 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Steve B <sbattazzo@gmail.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On Thu, Mar 19, 2015 at 09:03:02PM +0100, Gilles Chanteperdrix wrote:
-> On Thu, Mar 19, 2015 at 11:00:12AM -0700, Steve B wrote:
-> > On Thu, Mar 19, 2015 at 9:54 AM, Gilles Chanteperdrix <
-> > gilles.chanteperdrix@xenomai.org> wrote:
-> > 
-> > > On Thu, Mar 19, 2015 at 09:49:45AM -0700, Steve B wrote:
-> > > > On Thu, Mar 19, 2015 at 9:43 AM, Lennart Sorensen <
-> > > > lsorense@csclub.uwaterloo.ca> wrote:
-> > > >
-> > > > > On Thu, Mar 19, 2015 at 05:04:03PM +0100, Gilles Chanteperdrix wrote:
-> > > > > > My point was, there may be some pathological values that may involve
-> > > > > > using expm1 or logp1 instead of log or exp, and so to avoid pow
-> > > > > > entirely. Also, I am not sure pow optimizes the case where b is an
-> > > > > > integer. It would be interesting to know the actual values of a and
-> > > > > > b which cause pow to explode.
-> > > > >
-> > > > > Could be.
-> > > > >
-> > > > > For fun I checked how many instructions it took to execute
-> > > > > pow(1.234000,12.200000) to get 13.003041 and according to my gdb run,
-> > > > > it took 1151 instructions.  Now I did not enable optimization for that
-> > > > > build, which might matter.  Those were of course not all floating
-> > > pointer
-> > > > > instructions, but quite a few of them are.
-> > > > >
-> > > > > With -O3, it dropped to 303 instructions.
-> > > > >
-> > > > > I should try the same test on armel to see what difference it shows
-> > > just
-> > > > > because I am curious.  I would have to setup an armel chroot to run
-> > > > > in first.
-> > > > >
-> > > > > --
-> > > > > Len Sorensen
-> > > > >
-> > > >
-> > > > Hi guys,
-> > > > Here are some input values that have caused problems for me:
-> > > >
-> > > > b=0.975800; c= 7.000000;
-> > > > b = -1789009.391544; c = 6.000000;
-> > > > b= 42442350436303.453125; c = 4.500000;
-> > > >
-> > > > (where I am doing a = pow(b,c);)
-> > > > Interestingly the first two took a long time in my actual application but
-> > > > not in my test program where I was just plugging them straight into the
-> > > > pow() function. I guess there may be some difference in compile options
-> > > > that I need to take a look at to see what is going on.
-> > > > And the third one (yeah, that's a huge number!) takes a very long time no
-> > > > matter what, and seems to take much longer with the hf compiler.
-> > > >
-> > > > Let me know if this looks interesting..
-> > > > My original plan was to try to get my algorithm designer to get rid of
-> > > the
-> > > > pow() calls wherever he can, and hopefully that will get us straightened
-> > > > out...
-> > >
-> > > For the first example, b being close to 1, and pow(b,c) being
-> > > exp(c * log(b))
-> > >
-> > > you may want to try exp(c * log1p(b - 1))
-> > >
-> > > Also, since the exponents are integers
-> > > you may want to try the russian peon algorithm
-> > > 4.5 is 9 / 2 so pow(b, 4.5) is sqrt(pow(b, 9))
-> > >
-> > >
-> > > >
-> > > > Steve
-> > >
-> > > --
-> > >                                             Gilles.
-> > >
-> > 
-> > Yes, that's a good idea, or maybe sqrt(b)*b*b*b*b would even work better,
-> > since it's just a few multiplies and a square root.
-> 
-> For b^4, you want to do
-> x = b * b
-> y = x * x
-> 
-> That is only two multiplications (instead of 4). I believe the
-> russian peasant would do it that way. It gives a reduced number of
-> multiplications (it is not optimal though), and that works for any
-> integer power.
-> 
-> Anyway, I do not believe the pow function is supposed to be
-> efficient for integer powers, I do not know if there is another
-> glibc function, but if there is not, the russian peasant is simple
-> and efficient.
-
-The first google hit on russian peasant exponentiation, that is:
-lafstern.org/matt/col3.pdf
-Looks wrong to me.
-
-I had more luck changing language, and found
-http://84.55.172.83/le_nagae/info/exoX/exo2/exo2.html
-
-Whose implementation simplifies to:
-
-double pow_int(double x, unsigned long n)
-{
-	double res = 1.0, p = x;
-	
-	while (n) {
-		if (n & 1)
-			res *= p;
-		p *= p;
-		n >>= 1;
-	}
-
-	return res;
-}
-
-Which can be used as a pow drop-in replacement for integer exponents.
-
-I have checked with the following main:
-
-int main(int argc, const char *argv[])
-{
-	int seed;
-
-	if (argc >= 2)
-		seed = atoi(argv[1]); /* Allow replaying seed */
-	else 
-		seed = time(NULL) ^ getpid();
-
-	srandom(seed);
-	printf("seed: 0x%08x\n", seed);
-
-
-	for (;;) {
-		double f = random();
-		unsigned long n = random();
-
-		if ((pow_int(f, n) != pow(f, n)) / pow_int(f, n) > 1e-6) {
-			fprintf(stderr, "Test failed for f: %g, n: %d\n"
-				"pow_int: %g, pow: %g\n",
-				f, n, pow_int(f, n), pow(f, n));
-			exit(EXIT_FAILURE);
-		}
-	}
-
-	return EXIT_SUCCESS;
-}
-
-That it returns the same value as pow, modulo round off errors, for
-a large number of values. So, is probably right.
+On Thu, Mar 19, 2015 at 10:22:04PM +0100, Gilles Chanteperdrix wrote:
+> 		if ((pow_int(f, n) != pow(f, n)) / pow_int(f, n) > 1e-6) {
+It's                 pow_int(f,n) - pow(f, n)
 
 -- 
 					    Gilles.
