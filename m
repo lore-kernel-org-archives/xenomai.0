@@ -1,14 +1,22 @@
-Message-ID: <550B0626.5090801@xenomai.org>
-Date: Thu, 19 Mar 2015 18:23:50 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Thu, 19 Mar 2015 13:26:15 -0400
+Message-ID: <20150319172615.GF25508@csclub.uwaterloo.ca>
+References: <20150317192431.GY25508@csclub.uwaterloo.ca>
+ <CAEMXjGx6R0HtdJwU5_5AoDN=KV1T9nn5ug-ZwctJzd9B43NYSw@mail.gmail.com>
+ <20150317213457.GZ25508@csclub.uwaterloo.ca>
+ <CAEMXjGy3J+aFoCNdvugUKDOunzqk=sE3aSybHuL-_xK6qiea7w@mail.gmail.com>
+ <20150319140703.GC25508@csclub.uwaterloo.ca>
+ <20150319144041.GB787@hermes.click-hack.org>
+ <20150319155939.GD25508@csclub.uwaterloo.ca>
+ <20150319160403.GC787@hermes.click-hack.org>
+ <20150319164326.GE25508@csclub.uwaterloo.ca>
+ <20150319164831.GD787@hermes.click-hack.org>
 MIME-Version: 1.0
-References: <CAKk99t1N5b0_iQerSxPyKmMTLC8PePTJCO9zzFLdkmt_mDiiVg@mail.gmail.com>	<54F716CC.1010600@xenomai.org>	<CAKk99t14auR=Ez-9k6bSxDQt5iNbTjvYtxeaAyGzMPuwQi_nnQ@mail.gmail.com>	<54F73E7A.2070100@xenomai.org>	<CAKk99t0z4Tq==LTzFK_9cmbrDTZ+RFt2vo=ur56VbVG3sso_iQ@mail.gmail.com>	<5505B14F.4060107@xenomai.org>	<CAKk99t3Gv-3Nz=drk-bOvbYo7EU3F-DSsGA35Z6D6GdF_z00Zg@mail.gmail.com>	<55072D34.1070405@xenomai.org>	<CAKk99t2ZsNmY4myJAF+H3hWNpHN4bVm255QEsU6Nu+ytG-B0dA@mail.gmail.com>	<550837E2.9050701@xenomai.org>	<CAKk99t2eGYME0BsLCjJV7VMm8VU_2okmpd8sYfMb_02sTvOfLQ@mail.gmail.com>	<55083DA4.3080201@xenomai.org>	<CAKk99t0pG6HWOucFXDw1-_5-=EGQ7faqA22yVog6Ye6TcGjevA@mail.gmail.com>	<550850D5.9060207@xenomai.org>	<CAKk99t0q3iNcah1Us79hJUjjHQCr2rEPu9gukSNjO2a6+Gk3sg@mail.gmail.com>	<CAKk99t3wP-WLemoO_bbsvE4uwh-Sh-5eGPJrM=6cAc5edyQW5Q@mail.gmail.com>	<5508600D.4020500@xenomai.org>
- <CAKk99t3xFzLuydH3HoPzWBzjd5DNtC_4Kf3YQuodHDpXTLdsUg@mail.gmail.com>
-In-Reply-To: <CAKk99t3xFzLuydH3HoPzWBzjd5DNtC_4Kf3YQuodHDpXTLdsUg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai/cobalt: low_init(): binding failed: Function
- not implemented error issued when trting to run latency app on xeno 3.x-rc3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20150319164831.GD787@hermes.click-hack.org>
+Subject: Re: [Xenomai] Building with hard float: cannot open shared object
+ file libpthread_rt.so.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,39 +25,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Helder Daniel <hdaniel@ualg.pt>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 03/17/2015 06:19 PM, Helder Daniel wrote:
-> ok
-> 
-> On 17 March 2015 at 17:10, Philippe Gerum <rpm@xenomai.org
-> <mailto:rpm@xenomai.org>> wrote:
-> 
->     On 03/17/2015 06:06 PM, Helder Daniel wrote:
->     > I am sorry I just found now.
->     > It still happens with Mercury (with the configuration described in the
->     > previous email)
->     >
->     > When I compiled another app and try to run it I got the same error:
->     >
->     > root@debian:~/09-portAccessSyncTwoAppsC++# ./writeport
->     > sysregd: create_directory_recursive("/var/run/xenomai/anon/system"):
->     > Transport endpoint is not connected
->     > sysregd: create_directory_recursive("/var/run/xenomai/anon/system"):
->     > Transport endpoint is not connected
->     > sysregd: create_directory_recursive("/var/run/xenomai/anon/system"):
->     > Transport endpoint is not connected
->     >    3"012.188| WARNING: [main] cannot connect to registry daemon
->     >    3"012.188| BUG: [main] initialization failed, EAGAIN
-> 
->     Ok. This one is different from the ENOMEM issue, which is
->     Cobalt-specific. The problem with mounting the anon/system root is a
->     FUSE issue, which still needs a work around it seems.
-> 
+On Thu, Mar 19, 2015 at 05:48:31PM +0100, Gilles Chanteperdrix wrote:
+> 300 or 1000 instructions are executed in a very short time, not in a
+> 3 milliseconds, otherwise it would mean that each instruction takes
+> 10us or so to execute. Typically, in an ideal situation on a 1GHz
+> processor, an instruction takes 1ns to execute, that is an order of
+> magnitude smaller. So, even if the situation is not ideal, that is
+> still far from the numbers reported by Steve. 
 
-The ENOMEM issue is now fixed in -next. I'll tackle the C++ parsing
-problem with libtrank next.
+Well apparently on the Cortex-A8 FPU instructions take 10 or more clock
+cycles to execute, versus 1 in most cases on the Cortex-A9, so 300
+instructions starts to add up.
+
+> So, again, it would be interesting to know the actual values Steve
+> has that cause pow to go crazy.
+
+Yes it would.
 
 -- 
-Philippe.
+Len Sorensen
 
