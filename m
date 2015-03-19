@@ -1,14 +1,9 @@
-Message-ID: <550A7331.4000601@xenomai.org>
-Date: Thu, 19 Mar 2015 07:56:49 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAKk99t3x2u4GN0D2w_pSBY8jWVRuE1yFki66dYNUfFBSd2GQ6w@mail.gmail.com>	<5509B74A.8080302@xenomai.org>
- <CAKk99t26kP+wCRVS07LSAkm3zfF_Xjoo-E6d7Ynn9Cof3vXnug@mail.gmail.com>
-In-Reply-To: <CAKk99t26kP+wCRVS07LSAkm3zfF_Xjoo-E6d7Ynn9Cof3vXnug@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Makefile to use 2 APIs (rtdm and alchemy)
-	simultaneously
+Date: Thu, 19 Mar 2015 10:57:38 +0100
+Message-ID: <CADvZd9Z8LSPRMAJWb1Tp91i4i9N5wLGMxb3_suaDyFRwRiJd-w@mail.gmail.com>
+From: Michael Haberler <haberlerm@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] RT-CAN question (was: CAN bus on beaglebone black)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,41 +12,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Helder Daniel <hdaniel@ualg.pt>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 03/18/2015 09:46 PM, Helder Daniel wrote:
->     XDDP is based on RTDM, so you need POSIX, along with Alchemy for the
->     changes you added, i.e.:
-> 
->     xeno-config --alchemy --posix --ldflags
-> 
-> 
-> ok, thanks
->  
-> 
->     > For the original version POSIX version xeno-config returns the correct
->     > compilation flags specifying rtdm skin or posix skin. It is not needed to
->     > specify both.
-> 
->     Unlike with 2.6.x, mentioning RTDM is pointless with Xenomai 3.x because
->     you always have POSIX implicitly for any application, therefore you have
->     RTDM. Giving --skin=rtdm or --rtdm is a no-op for compat purpose with
->     legacy Makefiles actually.
-> 
->     With 3.x, RTDM implies POSIX I/O calls and the socket interface, which
->     is readily available with libcobalt, which all apps link against.
-> 
-> 
-> Ok, but it is still needed to specifying both:
-> 
-> xeno-config --alchemy --posix --ldflags
-> 
-> to get the all necessary linking flags, right?
-> 
+status:
 
-Yes, both for --cflags and --ldflags.
+I have Steve Batazzo's driver running on the beaglebone, using a stock
+Xenomai kernel from Robert Nelson's repo (linux-image-3.8.13-xenomai-r71
+from http://repos.rcn-ee.net/debian/), current driver out of tree at
+https://github.com/mhaberler/rtcan-bb branch mah
 
--- 
-Philippe.
+I also have a preliminary HAL driver for machinekit which talks to a
+Trinamic motor over RT-CAN just fine (beaglebone for now, x86 once I get a
+CAN PCI card).
 
+I'm working with Steve to get the driver polished and hope we can inject it
+into the Xenomai foodchain eventually, after which it will be eventually
+picked up by Robert's periodic builds, and the whole thing becomes an
+'apt-get install' - affair. But we're not there yet.
+
+
+I have a few questions on RT-CAN (I guess really RTDM):
+
+- can the RTDM API (
+https://xenomai.org/documentation/trunk/html/api/group__userapi.html) be
+used from a normal Posix thread (non-RT) just alike? from the rtcansend*
+utilities src it looks like at least for setup, even if the send/receive
+ops are done in an RT thread.
+
+- socket-CAN and RT-CAN interworking: I assume this is an either-or affair,
+right? (background: for some jobs the RT-CAN features are overkill, and in
+that case something like the python-can binding would be convenient to use)
+
+- in case the above answers are 'yes' and 'no, it's either/or': anybody
+aware of Python bindings for RTDM?
+
+sorry for the noobish questions, climbing the learning curve
+
+- Michael
