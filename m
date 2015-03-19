@@ -1,23 +1,22 @@
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Thu, 19 Mar 2015 13:48:35 -0400
+Message-ID: <20150319174835.GG25508@csclub.uwaterloo.ca>
+References: <20150317192431.GY25508@csclub.uwaterloo.ca>
+ <CAEMXjGx6R0HtdJwU5_5AoDN=KV1T9nn5ug-ZwctJzd9B43NYSw@mail.gmail.com>
+ <20150317213457.GZ25508@csclub.uwaterloo.ca>
+ <CAEMXjGy3J+aFoCNdvugUKDOunzqk=sE3aSybHuL-_xK6qiea7w@mail.gmail.com>
+ <20150319140703.GC25508@csclub.uwaterloo.ca>
+ <20150319144041.GB787@hermes.click-hack.org>
+ <20150319155939.GD25508@csclub.uwaterloo.ca>
+ <20150319160403.GC787@hermes.click-hack.org>
+ <20150319164326.GE25508@csclub.uwaterloo.ca>
+ <CAEMXjGyOG8340cOOYJiPgugfka7L01yRGaXgufWDWiURZcVQcw@mail.gmail.com>
 MIME-Version: 1.0
-Sender: had2006@gmail.com
-In-Reply-To: <20150313140403.GD1497@hermes.click-hack.org>
-References: <54F97594.2060605@xenomai.org>
- <CAKk99t1AGHj8sOf7Vgy_UZ_+rECP5Vx22cyup--FHsh=RuK2zA@mail.gmail.com>
- <54F97E05.8010107@xenomai.org>
- <CAKk99t3FfAff0X0nGzKD+YcVFQWm5aeSRFB4U6No1YSPuS_qpA@mail.gmail.com>
- <CAKk99t03p_Pc41meo_zzZ0V6X_vjHZRWBeO1aNb+DM2c38pNTg@mail.gmail.com>
- <54FF64AF.5000300@xenomai.org>
- <CAKk99t2159Do6Rj0GSRPkPFcbN-qT9JpWBD1ojmFOHYv7ZKkGg@mail.gmail.com>
- <5500A3DD.2070306@xenomai.org>
- <8dc6116b7b5868d884c9f8c3e3de3c84.squirrel@xenomai.org>
- <CAKk99t0iDYiscgc0w8XthshRbB=BuQvX0t6a31_2Uw+LOayNsQ@mail.gmail.com>
- <20150313140403.GD1497@hermes.click-hack.org>
-Date: Fri, 13 Mar 2015 16:27:32 +0000
-Message-ID: <CAKk99t1=U7Df-MZ+TYAr3KbvJjdxm=SZBkm_g6ii-V8p3moQ9A@mail.gmail.com>
-From: Helder Daniel <hdaniel@ualg.pt>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Fwd: Error boilerplate/wrappers.h no found trying to
- compile RTDM module on 3.x-rc3 cobalt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEMXjGyOG8340cOOYJiPgugfka7L01yRGaXgufWDWiURZcVQcw@mail.gmail.com>
+Subject: Re: [Xenomai] Building with hard float: cannot open shared object
+ file libpthread_rt.so.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,65 +25,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Steve B <sbattazzo@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 13 March 2015 at 14:04, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+On Thu, Mar 19, 2015 at 09:49:45AM -0700, Steve B wrote:
+> Hi guys,
+> Here are some input values that have caused problems for me:
+> 
+> b=0.975800; c= 7.000000;
+> b = -1789009.391544; c = 6.000000;
+> b= 42442350436303.453125; c = 4.500000;
 
-> On Fri, Mar 13, 2015 at 01:50:07PM +0000, Helder Daniel wrote:
-> > Just for a sanity check I installed Xenomai 2.6.4
-> > and created kernel-headers-3.14.17 patched with ipipe-core
->
-> Well, once again: if the kernel-headers package contains symbolic
-> link to xenomai sources, then you have to keep xenomai sources (or
-> the reduced xenomai-kernel-sources package) around.
+I am trying the last one right now.  It is still counting instructions.
+It has been at it for many minutes.  According to
+http://developerblog.redhat.com/2015/01/02/improving-math-performance-in-glibc/
+the way it is implemented, it uses a lookup table in many cases, but if
+it determines the loopup table method won't be accurate, then it goes of
+an calculates the solution in multiple steps, which includes calculating
+a 768bit precision result, and then rounding that to a double.  It is
+of course very slow when this happens.  The page mentions improving the
+slowest path of pow by 8 times.  Of course your current glibc won't have
+those improvements yet.  I will post the number of instructions when I
+get it.  I may have to go get lunch first.  It is at 94000 instructions
+so far and I have no idea how much might be left.
 
+Well actually it seems to say glibc 2.18 has those improvements.  I should
+try a run compiled against that (I was using 2.13 from Debian Wheezy)
 
-The Xenomai sources are at: /usr/src/xenomai-3.0-rc3
+> (where I am doing a = pow(b,c);)
+> Interestingly the first two took a long time in my actual application but
+> not in my test program where I was just plugging them straight into the
+> pow() function. I guess there may be some difference in compile options
+> that I need to take a look at to see what is going on.
+> And the third one (yeah, that's a huge number!) takes a very long time no
+> matter what, and seems to take much longer with the hf compiler.
+> 
+> Let me know if this looks interesting..
+> My original plan was to try to get my algorithm designer to get rid of the
+> pow() calls wherever he can, and hopefully that will get us straightened
+> out...
 
+-- 
+Len Sorensen
 
-> How did you
-> generate the kernel, with prepare-kernel.sh ?
->
-
-yes:
-
-/usr/src/xenomai-3.0-rc3/scripts/prepare-kernel.sh
---linux=/usr/src/linux-3.16
---ipipe=/usr/src/xenomai-3.0-rc3/kernel/cobalt/arch/x86/patches/ipipe-core-3.16-x86-3.patch
-
-
-> Does the kernel-header package contain the .config?
-
-
-Yes.
-
-
->
-> >
-> > them make /lib/modules/3.14.17-ipipe/build points to the kernel-headers
-> and
-> > not the full kernel source.
->
-> Well, it is silly to touch that build symbolic link:
-> 1- the debian packages are supposed to handle that
->
-
-Yes
-
-
-> 2- when building a kernel module you are supposed to pass the path
-> to kernel source as a parameter to the make -C command. So, simply
-> passing the path to the kernel headers location should avoid having
-> to touch the symbolic link.
-
-as documented in Documentation/kbuild/modules.txt in the kernel sources.
->
-
-Yes, I could do that I was just testing.
-
-Instead I changed the symbolic link to test if with a standard Makefile,
-the problem is just info that is missing in the headers and are in the
-source tree.
-(But I could test the same modifying the path in the Makefile...)
