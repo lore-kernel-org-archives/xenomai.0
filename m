@@ -1,14 +1,17 @@
 MIME-Version: 1.0
-Sender: had2006@gmail.com
-In-Reply-To: <5509B74A.8080302@xenomai.org>
-References: <CAKk99t3x2u4GN0D2w_pSBY8jWVRuE1yFki66dYNUfFBSd2GQ6w@mail.gmail.com>
- <5509B74A.8080302@xenomai.org>
-Date: Wed, 18 Mar 2015 20:46:46 +0000
-Message-ID: <CAKk99t26kP+wCRVS07LSAkm3zfF_Xjoo-E6d7Ynn9Cof3vXnug@mail.gmail.com>
-From: Helder Daniel <hdaniel@ualg.pt>
+In-Reply-To: <20150317213457.GZ25508@csclub.uwaterloo.ca>
+References: <CAEMXjGwam0jjOrUBgBY_FyFOaT15qHdobMo96G3bEsWx6rEcpA@mail.gmail.com>
+ <20150317180654.GB16113@hermes.click-hack.org>
+ <CAEMXjGxSMGQFfBvUG3VdepA_cRHb=6n1V_pO3QzXtofY2bUuMA@mail.gmail.com>
+ <20150317192431.GY25508@csclub.uwaterloo.ca>
+ <CAEMXjGx6R0HtdJwU5_5AoDN=KV1T9nn5ug-ZwctJzd9B43NYSw@mail.gmail.com>
+ <20150317213457.GZ25508@csclub.uwaterloo.ca>
+Date: Wed, 18 Mar 2015 17:42:02 -0700
+Message-ID: <CAEMXjGy3J+aFoCNdvugUKDOunzqk=sE3aSybHuL-_xK6qiea7w@mail.gmail.com>
+From: Steve B <sbattazzo@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Makefile to use 2 APIs (rtdm and alchemy)
-	simultaneously
+Subject: Re: [Xenomai] Building with hard float: cannot open shared object
+ file libpthread_rt.so.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,51 +20,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Cc: Xenomai <xenomai@xenomai.org>
 
+On Tue, Mar 17, 2015 at 2:34 PM, Lennart Sorensen <
+lsorense@csclub.uwaterloo.ca> wrote:
+
+> On Tue, Mar 17, 2015 at 12:57:43PM -0700, Steve B wrote:
+> > Originally some other engineers on my project specified that we use
+> > Angstrom Linux which seems to only work with gnueabi.
+> > I noticed that the pow() function was causing problems so I looked at the
+> > disassembly of the libm.so with that toolchain and it looks suspiciously
+> > like soft floating point routines.
+> >
+> > So I'm trying to run my simple test program on a Debian distribution
+> which
+> > is built with gnueabihf. Seems like the issue is that if I use the
+> > -mhard-float option, I can't run with Xenomai, even if I built the
+> Xenomai
+> > libraries with -mhard-float enabled.
+> > If I don't add in -mhard-float when I compile the program, the pow()
+> > function still takes much too long... if I enable -mhard-float and take
+> > away the Xenomai libs, then the pow() function executes in a reasonable
+> > amount of time.
+> > I guess there still may be something wrong in making sure everything is
+> > built the same.
+> >
+> > Hopefully that makes more sense?
 >
-> XDDP is based on RTDM, so you need POSIX, along with Alchemy for the
-> changes you added, i.e.:
+> Xenomai runs fine on Debian with hard float, as long as your whole system
+> is built that way.  No specifying of -mhard-float, just using what the
+> tool chain of the system does by default, and of course on debian armhf,
+> that is hard float.
 >
-> xeno-config --alchemy --posix --ldflags
-
-
-ok, thanks
-
-
-> > For the original version POSIX version xeno-config returns the correct
-> > compilation flags specifying rtdm skin or posix skin. It is not needed to
-> > specify both.
+> --
+> Len Sorensen
 >
-> Unlike with 2.6.x, mentioning RTDM is pointless with Xenomai 3.x because
-> you always have POSIX implicitly for any application, therefore you have
-> RTDM. Giving --skin=rtdm or --rtdm is a no-op for compat purpose with
-> legacy Makefiles actually.
->
-> With 3.x, RTDM implies POSIX I/O calls and the socket interface, which
-> is readily available with libcobalt, which all apps link against.
->
->
-Ok, but it is still needed to specifying both:
 
-xeno-config --alchemy --posix --ldflags
+Hello again, all.
+It turns out that when I ran without Xenomai and with the -mhard-float
+option enabled, the pow() function was only returning one of the original
+arguments as a result, and thus wasn't working properly!
 
-to get the all necessary linking flags, right?
+Without the -mhard-float option in my compile, it seems that the gnueabihf
+case actually has worse timing than the regular gnueabi, which is kind of
+puzzling. This is definitely not a Xenomai issue though so I will check
+with some other software folks on site and see if they have any thoughts.
 
-Because if only specified --alchemy program is linked with libcobalt but it
-still gives the same error. From the flags returned by xeno-config it seems
-that it is required to specify --posix to get the wrappers on posix
-functions like socket():
+Thanks,
 
--Wl,@/usr/xenomai/lib/cobalt.wrappers
-
-
-> xeno-config --alchemy --posix --ldflags
--Wl,@/usr/xenomai/lib/cobalt.wrappers  -lalchemy -Wl,--wrap=main
--Wl,--dynamic-list=/usr/xenomai/lib/dynlist.ld -lcopperplate
--L/usr/xenomai/lib -lcobalt -lpthread -lrt    -lfuse
-
-> xeno-config --alchemy --ldflags
--lalchemy -Wl,--wrap=main -Wl,--dynamic-list=/usr/xenomai/lib/dynlist.ld
--lcopperplate -L/usr/xenomai/lib -lcobalt -lpthread -lrt    -lfuse
+Steve
