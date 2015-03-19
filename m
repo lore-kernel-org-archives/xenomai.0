@@ -1,17 +1,22 @@
-Date: Fri, 13 Mar 2015 17:34:31 +0100
+Date: Thu, 19 Mar 2015 21:03:02 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150313163431.GE1497@hermes.click-hack.org>
-References: <54EEF08B.6040905@triphase.com>
- <20150226102010.GA24003@hermes.click-hack.org>
- <54EF0790.3040607@triphase.com> <54F07AC2.6000902@triphase.com>
- <54F0D46F.1070006@siemens.com> <54F56C9C.6080507@siemens.com>
- <CAPRPZsC9mPitPUmXXR6QQfAGN3UMa2u6hkVwjtO4Eoh-NzC7wA@mail.gmail.com>
- <54FDB495.3060303@triphase.com> <5501FC89.2040205@siemens.com>
+Message-ID: <20150319200302.GA6571@hermes.click-hack.org>
+References: <20150317213457.GZ25508@csclub.uwaterloo.ca>
+ <CAEMXjGy3J+aFoCNdvugUKDOunzqk=sE3aSybHuL-_xK6qiea7w@mail.gmail.com>
+ <20150319140703.GC25508@csclub.uwaterloo.ca>
+ <20150319144041.GB787@hermes.click-hack.org>
+ <20150319155939.GD25508@csclub.uwaterloo.ca>
+ <20150319160403.GC787@hermes.click-hack.org>
+ <20150319164326.GE25508@csclub.uwaterloo.ca>
+ <CAEMXjGyOG8340cOOYJiPgugfka7L01yRGaXgufWDWiURZcVQcw@mail.gmail.com>
+ <20150319165400.GE787@hermes.click-hack.org>
+ <CAEMXjGxVHjAbLh0jEWF1fJbdVA+1PhiEa1oF9KbNXiEaqCJr8A@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5501FC89.2040205@siemens.com>
-Subject: Re: [Xenomai] xeno3_rc3 - Watchdog detected hard LOCKUP
+In-Reply-To: <CAEMXjGxVHjAbLh0jEWF1fJbdVA+1PhiEa1oF9KbNXiEaqCJr8A@mail.gmail.com>
+Subject: Re: [Xenomai] Building with hard float: cannot open shared object
+ file libpthread_rt.so.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,107 +25,98 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Steve B <sbattazzo@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Thu, Mar 12, 2015 at 09:52:25PM +0100, Jan Kiszka wrote:
-> Am 2015-03-09 um 15:56 schrieb Niels Wellens:
-> > Hi,
-> > 
-> > We have a few updates on the lockup's that we observed.
-> > 
-> > Jeroen did a dohell test on his unpatched 3.14.28 kernel and he didn't
-> > experienced any problems, the system was still working as expected after
-> > more than 100 hours of operation.
-> > 
-> > In the meanwhile, I did some further tests on my 3.16.0 ipipe kernel. I
-> > disabled some services (gdm3, rtkit-daemon, smbd and nmbd) and after 90
-> > hours of operation (latency + dohell) everything was still working
-> > flawlessly.  Afterwards I enabled gdm3 and rtkit-daemon services again
-> > and the lockup didn't occur for another 25hours (test stopped due to
-> > kernel panic while porting one of my RTDM drivers to xeno 3 ;-) ).
-> > Then I continued my test where it stopped (only smbd and nmbd services
-> > disabled, latency + dohell running) and it was running perfectly for 114
-> > hours, then I enabled smbd and nmbd again and after 3 hours the hard
-> > lockup occurred again:
-> > 
-> > Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Initializing cgroup
-> > subsys cpuset
-> > Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Initializing cgroup
-> > subsys cpu
-> > Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Initializing cgroup
-> > subsys cpuacct
-> > Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Linux version
-> > 3.16.0-ipipe-v0+ (triphase@dev-x10sae) (gcc version 4.9.1 (Debian
-> > 4.9.1-19) ) #1 SMP Thu Feb 26 12:15:32 CET 2015
-> > Mar  4 16:35:47 dev-x10sae kernel: [    0.000000] Command line:
-> > BOOT_IMAGE=/boot/vmlinuz-3.16.0-ipipe-v0+
-> > root=UUID=fc8ecefa-fc73-487f-a045-cffa99c38a11 ro quiet
-> > ...
-> > Mar  9 07:35:02 dev-x10sae anacron[26338]: Job `cron.daily' terminated
-> > Mar  9 07:35:02 dev-x10sae anacron[26338]: Normal exit (1 job run)
-> > Mar  9 08:17:01 dev-x10sae CRON[25670]: (root) CMD (   cd / && run-parts
-> > --report /etc/cron.hourly)
-> > Mar  9 08:30:17 dev-x10sae gnome-session[2611]:
-> > (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 4961 was not
-> > found when attempting to remove it
-> > Mar  9 09:17:01 dev-x10sae CRON[20303]: (root) CMD (   cd / && run-parts
-> > --report /etc/cron.hourly)
-> > Mar  9 09:30:17 dev-x10sae gnome-session[2611]:
-> > (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 4987 was not
-> > found when attempting to remove it
-> > Mar  9 10:17:01 dev-x10sae CRON[14576]: (root) CMD (   cd / && run-parts
-> > --report /etc/cron.hourly)
-> > Mar  9 10:30:17 dev-x10sae gnome-session[2611]:
-> > (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 5017 was not
-> > found when attempting to remove it
-> > Mar  9 11:17:01 dev-x10sae CRON[30596]: (root) CMD (   cd / && run-parts
-> > --report /etc/cron.hourly)
-> > Mar  9 11:20:51 dev-x10sae smbd[11478]: Starting SMB/CIFS daemon: smbd.
-> > Mar  9 11:20:56 dev-x10sae nmbd[24483]: Starting NetBIOS name server: nmbd.
-> > Mar  9 11:30:17 dev-x10sae gnome-session[2611]:
-> > (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 5043 was not
-> > found when attempting to remove it
-> > Mar  9 12:17:01 dev-x10sae CRON[6674]: (root) CMD (   cd / && run-parts
-> > --report /etc/cron.hourly)
-> > Mar  9 12:30:17 dev-x10sae gnome-session[2611]:
-> > (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 5075 was not
-> > found when attempting to remove it
-> > Mar  9 13:17:01 dev-x10sae CRON[6801]: (root) CMD (   cd / && run-parts
-> > --report /etc/cron.hourly)
-> > Mar  9 13:30:17 dev-x10sae gnome-session[2611]:
-> > (gnome-settings-daemon:2675): GLib-CRITICAL **: Source ID 5464 was not
-> > found when attempting to remove it
-> > Mar  9 14:02:54 dev-x10sae kernel: [422579.748685] Watchdog detected
-> > hard LOCKUP on cpu 5
-> > Mar  9 14:02:54 dev-x10sae kernel: [422583.196923] INFO: rcu_sched
-> > self-detected stall on CPUINFO: rcu_sched self-detected stall on
-> > CPUINFO: rcu_sched self-detected stall on CPU {
-> > Mar  9 14:02:54 dev-x10sae kernel: [422583.196927]  {
-> > Mar  9 14:02:54 dev-x10sae kernel: [422583.196928]  2
-> > Mar  9 14:02:54 dev-x10sae kernel: [422583.196928]  1
-> > Mar  9 14:02:54 dev-x10sae kernel: [422583.196929] }
-> > Mar  9 14:02:54 dev-x10sae kernel: [422583.196930] }
-> > Mar  9 14:02:54 dev-x10sae kernel: [422583.196930]  (t=5250 jiffies
-> > g=21756356 c=21756355 q=15258)
-> > Mar  9 14:02:54 dev-x10sae kernel: [422583.196931]  (t=5250 jiffies
-> > g=21756356 c=21756355 q=15258)
-> > Mar  9 14:02:54 dev-x10sae kernel: [422583.196932] sending NMI to all CPUs:
-> > Mar  9 14:02:54 dev-x10sae kernel: [422583.197098]  { 6}  (t=5250
-> > jiffies g=21756356 c=21756355 q=15258)
-> > 
-> > Is it possible that the kernel part of Samba (CIFS?) is holding the page
-> > allocation spinlock that Jan has mentioned?
+On Thu, Mar 19, 2015 at 11:00:12AM -0700, Steve B wrote:
+> On Thu, Mar 19, 2015 at 9:54 AM, Gilles Chanteperdrix <
+> gilles.chanteperdrix@xenomai.org> wrote:
 > 
-> Well, we need to see the backtraces to know more. But even then the
-> question would what could cause this. If it is some issue in I-pipe or
-> Xenomai, or if this is a generic issue that would see after a while with
-> an unpatched kernel as well.
+> > On Thu, Mar 19, 2015 at 09:49:45AM -0700, Steve B wrote:
+> > > On Thu, Mar 19, 2015 at 9:43 AM, Lennart Sorensen <
+> > > lsorense@csclub.uwaterloo.ca> wrote:
+> > >
+> > > > On Thu, Mar 19, 2015 at 05:04:03PM +0100, Gilles Chanteperdrix wrote:
+> > > > > My point was, there may be some pathological values that may involve
+> > > > > using expm1 or logp1 instead of log or exp, and so to avoid pow
+> > > > > entirely. Also, I am not sure pow optimizes the case where b is an
+> > > > > integer. It would be interesting to know the actual values of a and
+> > > > > b which cause pow to explode.
+> > > >
+> > > > Could be.
+> > > >
+> > > > For fun I checked how many instructions it took to execute
+> > > > pow(1.234000,12.200000) to get 13.003041 and according to my gdb run,
+> > > > it took 1151 instructions.  Now I did not enable optimization for that
+> > > > build, which might matter.  Those were of course not all floating
+> > pointer
+> > > > instructions, but quite a few of them are.
+> > > >
+> > > > With -O3, it dropped to 303 instructions.
+> > > >
+> > > > I should try the same test on armel to see what difference it shows
+> > just
+> > > > because I am curious.  I would have to setup an armel chroot to run
+> > > > in first.
+> > > >
+> > > > --
+> > > > Len Sorensen
+> > > >
+> > >
+> > > Hi guys,
+> > > Here are some input values that have caused problems for me:
+> > >
+> > > b=0.975800; c= 7.000000;
+> > > b = -1789009.391544; c = 6.000000;
+> > > b= 42442350436303.453125; c = 4.500000;
+> > >
+> > > (where I am doing a = pow(b,c);)
+> > > Interestingly the first two took a long time in my actual application but
+> > > not in my test program where I was just plugging them straight into the
+> > > pow() function. I guess there may be some difference in compile options
+> > > that I need to take a look at to see what is going on.
+> > > And the third one (yeah, that's a huge number!) takes a very long time no
+> > > matter what, and seems to take much longer with the hf compiler.
+> > >
+> > > Let me know if this looks interesting..
+> > > My original plan was to try to get my algorithm designer to get rid of
+> > the
+> > > pow() calls wherever he can, and hopefully that will get us straightened
+> > > out...
+> >
+> > For the first example, b being close to 1, and pow(b,c) being
+> > exp(c * log(b))
+> >
+> > you may want to try exp(c * log1p(b - 1))
+> >
+> > Also, since the exponents are integers
+> > you may want to try the russian peon algorithm
+> > 4.5 is 9 / 2 so pow(b, 4.5) is sqrt(pow(b, 9))
+> >
+> >
+> > >
+> > > Steve
+> >
+> > --
+> >                                             Gilles.
+> >
+> 
+> Yes, that's a good idea, or maybe sqrt(b)*b*b*b*b would even work better,
+> since it's just a few multiplies and a square root.
 
-Well, to rule out any already fixed mainline issue, maybe it would
-make sense to upgrade to the latest in the 3.14 series? This is a
-double edged sword, since it has a risk to introduce regressions,
-but maybe worth a try.
+For b^4, you want to do
+x = b * b
+y = x * x
+
+That is only two multiplications (instead of 4). I believe the
+russian peasant would do it that way. It gives a reduced number of
+multiplications (it is not optimal though), and that works for any
+integer power.
+
+Anyway, I do not believe the pow function is supposed to be
+efficient for integer powers, I do not know if there is another
+glibc function, but if there is not, the russian peasant is simple
+and efficient.
 
 -- 
 					    Gilles.
