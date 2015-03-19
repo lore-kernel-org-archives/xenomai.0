@@ -1,22 +1,14 @@
-Date: Thu, 19 Mar 2015 17:54:00 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150319165400.GE787@hermes.click-hack.org>
-References: <20150317192431.GY25508@csclub.uwaterloo.ca>
- <CAEMXjGx6R0HtdJwU5_5AoDN=KV1T9nn5ug-ZwctJzd9B43NYSw@mail.gmail.com>
- <20150317213457.GZ25508@csclub.uwaterloo.ca>
- <CAEMXjGy3J+aFoCNdvugUKDOunzqk=sE3aSybHuL-_xK6qiea7w@mail.gmail.com>
- <20150319140703.GC25508@csclub.uwaterloo.ca>
- <20150319144041.GB787@hermes.click-hack.org>
- <20150319155939.GD25508@csclub.uwaterloo.ca>
- <20150319160403.GC787@hermes.click-hack.org>
- <20150319164326.GE25508@csclub.uwaterloo.ca>
- <CAEMXjGyOG8340cOOYJiPgugfka7L01yRGaXgufWDWiURZcVQcw@mail.gmail.com>
+Message-ID: <550B0626.5090801@xenomai.org>
+Date: Thu, 19 Mar 2015 18:23:50 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEMXjGyOG8340cOOYJiPgugfka7L01yRGaXgufWDWiURZcVQcw@mail.gmail.com>
-Subject: Re: [Xenomai] Building with hard float: cannot open shared object
- file libpthread_rt.so.1
+References: <CAKk99t1N5b0_iQerSxPyKmMTLC8PePTJCO9zzFLdkmt_mDiiVg@mail.gmail.com>	<54F716CC.1010600@xenomai.org>	<CAKk99t14auR=Ez-9k6bSxDQt5iNbTjvYtxeaAyGzMPuwQi_nnQ@mail.gmail.com>	<54F73E7A.2070100@xenomai.org>	<CAKk99t0z4Tq==LTzFK_9cmbrDTZ+RFt2vo=ur56VbVG3sso_iQ@mail.gmail.com>	<5505B14F.4060107@xenomai.org>	<CAKk99t3Gv-3Nz=drk-bOvbYo7EU3F-DSsGA35Z6D6GdF_z00Zg@mail.gmail.com>	<55072D34.1070405@xenomai.org>	<CAKk99t2ZsNmY4myJAF+H3hWNpHN4bVm255QEsU6Nu+ytG-B0dA@mail.gmail.com>	<550837E2.9050701@xenomai.org>	<CAKk99t2eGYME0BsLCjJV7VMm8VU_2okmpd8sYfMb_02sTvOfLQ@mail.gmail.com>	<55083DA4.3080201@xenomai.org>	<CAKk99t0pG6HWOucFXDw1-_5-=EGQ7faqA22yVog6Ye6TcGjevA@mail.gmail.com>	<550850D5.9060207@xenomai.org>	<CAKk99t0q3iNcah1Us79hJUjjHQCr2rEPu9gukSNjO2a6+Gk3sg@mail.gmail.com>	<CAKk99t3wP-WLemoO_bbsvE4uwh-Sh-5eGPJrM=6cAc5edyQW5Q@mail.gmail.com>	<5508600D.4020500@xenomai.org>
+ <CAKk99t3xFzLuydH3HoPzWBzjd5DNtC_4Kf3YQuodHDpXTLdsUg@mail.gmail.com>
+In-Reply-To: <CAKk99t3xFzLuydH3HoPzWBzjd5DNtC_4Kf3YQuodHDpXTLdsUg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai/cobalt: low_init(): binding failed: Function
+ not implemented error issued when trting to run latency app on xeno 3.x-rc3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,71 +17,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Steve B <sbattazzo@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Helder Daniel <hdaniel@ualg.pt>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thu, Mar 19, 2015 at 09:49:45AM -0700, Steve B wrote:
-> On Thu, Mar 19, 2015 at 9:43 AM, Lennart Sorensen <
-> lsorense@csclub.uwaterloo.ca> wrote:
+On 03/17/2015 06:19 PM, Helder Daniel wrote:
+> ok
 > 
-> > On Thu, Mar 19, 2015 at 05:04:03PM +0100, Gilles Chanteperdrix wrote:
-> > > My point was, there may be some pathological values that may involve
-> > > using expm1 or logp1 instead of log or exp, and so to avoid pow
-> > > entirely. Also, I am not sure pow optimizes the case where b is an
-> > > integer. It would be interesting to know the actual values of a and
-> > > b which cause pow to explode.
-> >
-> > Could be.
-> >
-> > For fun I checked how many instructions it took to execute
-> > pow(1.234000,12.200000) to get 13.003041 and according to my gdb run,
-> > it took 1151 instructions.  Now I did not enable optimization for that
-> > build, which might matter.  Those were of course not all floating pointer
-> > instructions, but quite a few of them are.
-> >
-> > With -O3, it dropped to 303 instructions.
-> >
-> > I should try the same test on armel to see what difference it shows just
-> > because I am curious.  I would have to setup an armel chroot to run
-> > in first.
-> >
-> > --
-> > Len Sorensen
-> >
+> On 17 March 2015 at 17:10, Philippe Gerum <rpm@xenomai.org
+> <mailto:rpm@xenomai.org>> wrote:
 > 
-> Hi guys,
-> Here are some input values that have caused problems for me:
+>     On 03/17/2015 06:06 PM, Helder Daniel wrote:
+>     > I am sorry I just found now.
+>     > It still happens with Mercury (with the configuration described in the
+>     > previous email)
+>     >
+>     > When I compiled another app and try to run it I got the same error:
+>     >
+>     > root@debian:~/09-portAccessSyncTwoAppsC++# ./writeport
+>     > sysregd: create_directory_recursive("/var/run/xenomai/anon/system"):
+>     > Transport endpoint is not connected
+>     > sysregd: create_directory_recursive("/var/run/xenomai/anon/system"):
+>     > Transport endpoint is not connected
+>     > sysregd: create_directory_recursive("/var/run/xenomai/anon/system"):
+>     > Transport endpoint is not connected
+>     >    3"012.188| WARNING: [main] cannot connect to registry daemon
+>     >    3"012.188| BUG: [main] initialization failed, EAGAIN
 > 
-> b=0.975800; c= 7.000000;
-> b = -1789009.391544; c = 6.000000;
-> b= 42442350436303.453125; c = 4.500000;
+>     Ok. This one is different from the ENOMEM issue, which is
+>     Cobalt-specific. The problem with mounting the anon/system root is a
+>     FUSE issue, which still needs a work around it seems.
 > 
-> (where I am doing a = pow(b,c);)
-> Interestingly the first two took a long time in my actual application but
-> not in my test program where I was just plugging them straight into the
-> pow() function. I guess there may be some difference in compile options
-> that I need to take a look at to see what is going on.
-> And the third one (yeah, that's a huge number!) takes a very long time no
-> matter what, and seems to take much longer with the hf compiler.
-> 
-> Let me know if this looks interesting..
-> My original plan was to try to get my algorithm designer to get rid of the
-> pow() calls wherever he can, and hopefully that will get us straightened
-> out...
 
-For the first example, b being close to 1, and pow(b,c) being 
-exp(c * log(b))
-
-you may want to try exp(c * log1p(b - 1))
-
-Also, since the exponents are integers
-you may want to try the russian peon algorithm
-4.5 is 9 / 2 so pow(b, 4.5) is sqrt(pow(b, 9))
-
-
-> 
-> Steve
+The ENOMEM issue is now fixed in -next. I'll tackle the C++ parsing
+problem with libtrank next.
 
 -- 
-					    Gilles.
+Philippe.
 
