@@ -1,9 +1,19 @@
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Thu, 19 Mar 2015 10:07:03 -0400
+Message-ID: <20150319140703.GC25508@csclub.uwaterloo.ca>
+References: <CAEMXjGwam0jjOrUBgBY_FyFOaT15qHdobMo96G3bEsWx6rEcpA@mail.gmail.com>
+ <20150317180654.GB16113@hermes.click-hack.org>
+ <CAEMXjGxSMGQFfBvUG3VdepA_cRHb=6n1V_pO3QzXtofY2bUuMA@mail.gmail.com>
+ <20150317192431.GY25508@csclub.uwaterloo.ca>
+ <CAEMXjGx6R0HtdJwU5_5AoDN=KV1T9nn5ug-ZwctJzd9B43NYSw@mail.gmail.com>
+ <20150317213457.GZ25508@csclub.uwaterloo.ca>
+ <CAEMXjGy3J+aFoCNdvugUKDOunzqk=sE3aSybHuL-_xK6qiea7w@mail.gmail.com>
 MIME-Version: 1.0
-Date: Thu, 19 Mar 2015 10:57:38 +0100
-Message-ID: <CADvZd9Z8LSPRMAJWb1Tp91i4i9N5wLGMxb3_suaDyFRwRiJd-w@mail.gmail.com>
-From: Michael Haberler <haberlerm@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] RT-CAN question (was: CAN bus on beaglebone black)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEMXjGy3J+aFoCNdvugUKDOunzqk=sE3aSybHuL-_xK6qiea7w@mail.gmail.com>
+Subject: Re: [Xenomai] Building with hard float: cannot open shared object
+ file libpthread_rt.so.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,40 +22,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Steve B <sbattazzo@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-status:
+On Wed, Mar 18, 2015 at 05:42:02PM -0700, Steve B wrote:
+> Hello again, all.
+> It turns out that when I ran without Xenomai and with the -mhard-float
+> option enabled, the pow() function was only returning one of the original
+> arguments as a result, and thus wasn't working properly!
+> 
+> Without the -mhard-float option in my compile, it seems that the gnueabihf
+> case actually has worse timing than the regular gnueabi, which is kind of
+> puzzling. This is definitely not a Xenomai issue though so I will check
+> with some other software folks on site and see if they have any thoughts.
 
-I have Steve Batazzo's driver running on the beaglebone, using a stock
-Xenomai kernel from Robert Nelson's repo (linux-image-3.8.13-xenomai-r71
-from http://repos.rcn-ee.net/debian/), current driver out of tree at
-https://github.com/mhaberler/rtcan-bb branch mah
+Well it is possible the FPU is so bad at that function, that the software
+implementation using intergers only can be faster.
 
-I also have a preliminary HAL driver for machinekit which talks to a
-Trinamic motor over RT-CAN just fine (beaglebone for now, x86 once I get a
-CAN PCI card).
+Which CPU are you running this on?  I remember the Cortex-A8 is known for
+having a horribly slow FPU (neon code generally runs quite a bit faster,
+which isn't true of later Cortex-A designs, where the FPU is usually
+faster than neon or at least equal).
 
-I'm working with Steve to get the driver polished and hope we can inject it
-into the Xenomai foodchain eventually, after which it will be eventually
-picked up by Robert's periodic builds, and the whole thing becomes an
-'apt-get install' - affair. But we're not there yet.
+-- 
+Len Sorensen
 
-
-I have a few questions on RT-CAN (I guess really RTDM):
-
-- can the RTDM API (
-https://xenomai.org/documentation/trunk/html/api/group__userapi.html) be
-used from a normal Posix thread (non-RT) just alike? from the rtcansend*
-utilities src it looks like at least for setup, even if the send/receive
-ops are done in an RT thread.
-
-- socket-CAN and RT-CAN interworking: I assume this is an either-or affair,
-right? (background: for some jobs the RT-CAN features are overkill, and in
-that case something like the python-can binding would be convenient to use)
-
-- in case the above answers are 'yes' and 'no, it's either/or': anybody
-aware of Python bindings for RTDM?
-
-sorry for the noobish questions, climbing the learning curve
-
-- Michael
