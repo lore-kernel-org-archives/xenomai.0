@@ -1,15 +1,22 @@
-Date: Fri, 13 Mar 2015 17:44:59 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150313164459.GF1497@hermes.click-hack.org>
-References: <CANWkrRPz2B5FgOAVLy5-i+DOFOHf5QDZQoHP28n_oAdaSmYTBw@mail.gmail.com>
- <5502AEAF.3010003@xenomai.org>
- <CANWkrRNmZqnN7p2nmNCc_8C8iFUW79E03L1Z62nnx4zWmSJ8Sw@mail.gmail.com>
- <CANWkrRM3hD_LG-7EQFDxF5U-YS3YJYe8jNyL3cOZqSEL+tqQNg@mail.gmail.com>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Fri, 20 Mar 2015 09:58:56 -0400
+Message-ID: <20150320135856.GM25508@csclub.uwaterloo.ca>
+References: <20150319160403.GC787@hermes.click-hack.org>
+ <20150319164326.GE25508@csclub.uwaterloo.ca>
+ <CAEMXjGyOG8340cOOYJiPgugfka7L01yRGaXgufWDWiURZcVQcw@mail.gmail.com>
+ <20150319165400.GE787@hermes.click-hack.org>
+ <CAEMXjGxVHjAbLh0jEWF1fJbdVA+1PhiEa1oF9KbNXiEaqCJr8A@mail.gmail.com>
+ <20150319180559.GH25508@csclub.uwaterloo.ca>
+ <20150319190007.GI25508@csclub.uwaterloo.ca>
+ <CAEMXjGzUcnujGyKEbhaBm1EpQ-WrNbM4+sMH1xjU3xVt7cf0ew@mail.gmail.com>
+ <20150319192415.GJ25508@csclub.uwaterloo.ca>
+ <20150319203313.GL25508@csclub.uwaterloo.ca>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CANWkrRM3hD_LG-7EQFDxF5U-YS3YJYe8jNyL3cOZqSEL+tqQNg@mail.gmail.com>
-Subject: Re: [Xenomai] rtdm/driver.h location - Xenomai 3.0
+In-Reply-To: <20150319203313.GL25508@csclub.uwaterloo.ca>
+Subject: Re: [Xenomai] Building with hard float: cannot open shared object
+ file libpthread_rt.so.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,77 +25,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Smith <2michael.smith@gmail.com>
-Cc: xenomai@xenomai.org
+To: Steve B <sbattazzo@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Fri, Mar 13, 2015 at 06:39:03PM +0200, Michael Smith wrote:
-> On Fri, Mar 13, 2015 at 1:42 PM, Michael Smith <2michael.smith@gmail.com> wrote:
-> > On Fri, Mar 13, 2015 at 11:32 AM, Philippe Gerum <rpm@xenomai.org> wrote:
-> >> On 03/13/2015 09:17 AM, Michael Smith wrote:
-> >>> Hi.
-> >>> I am busy porting device drivers over to Xenomai 3.0.
-> >>> At the moment I'm having trouble figuring out the location of
-> >>> rtdm/driver.h.
-> >>> I would assume it should be installed under /usr/include/xenomai, because
-> >>> in my previous Xenomai 2.x build the rtdm/rtdm_driver.h was located there.
-> >>> I can see the file in the Xenomai source code but its not installed under
-> >>> /usr/include/xenomai after Xenomai 3.0 the build and install.
-> >>> I'm using cobalt with an x86_64 architecture.
-> >>>
-> >>> Am I missing something? Is there something that I should have setup in the
-> >>> configuration file with the install? I went back and had a look in the
-> >>> Linux kernel
-> >>> build setup under the Xenomai heading, but I could not see any obvious
-> >>> options that I missed.
-> >>>
-> >>
-> >> In short, Xenomai 3 introduces a split between kernel and userland
-> >> headers, with only a few of them shared in order to expose the ABI. So
-> >> you need to build against a kernel prepared with the Xenomai sources,
-> >> adding the proper extra CFLAGS to your kernel Makefile for building the
-> >> module with the proper -I directives to find them.
-> >>
-> >> Everything under /usr/include/xenomai now belongs to userland
-> >> exclusively, barring the ABI bits (uapi/).
-> >>
-> >> See http://www.xenomai.org/pipermail/xenomai/2015-March/033558.html
-> >>
-> >> --
-> >> Philippe.
-> >
-> > I understand.
-> > Thanks Phillipe.
-> > Will implement it like that.
-> > If I can suggest, maybe to have a note of this somewhere in the
-> > documentation, or
-> > a RTDM example will clarify similar questions in the future.
-> >
-> > Regards
-> > Michael
+On Thu, Mar 19, 2015 at 04:33:13PM -0400, Lennart Sorensen wrote:
+> On Thu, Mar 19, 2015 at 03:24:15PM -0400, Lennart Sorensen wrote:
+> > I am running a count on the number of instructions used with softfloat
+> > right now.  It is at 130000 and counting.
 > 
-> I am trying to do a out of tree compile for my RTDM driver.
-> As I include the line $(shell xeno-config --kcflags)) in my make file,
-> it expands to the line -Iarch/$(SRCARCH)/xenomai/include -Iinclude/xenomai.
-> 
-> My problem is my compiler is not finding the $(SRCARCH) variable in
-> the make process.
-> I had a look and its not defined in my environmental variables either.
-> I see the only place it is defined is in linux/Makefile on the top
-> level of the Linux tree.
-> 
-> But does this mean I can only compile a Xenomai driver as part of the
-> full Linux tree?
-> And do I need to re-make the whole kernel tree when I want to compile a custom
-> Xenomai driver?
-> Where would I need to place the RTDM source code if I want to compile
-> it, linux/drivers perhaps?
-> Or can I still do a out of tree compile for a Xenomai driver?
+> Softfloat is now at 642000 and counting.
 
-Compilation of kernel modules outside of the kernel sources is
-documented in Documentation/kbuild/modules.txt in kernel sources.
-Since RTDM modules are ordinary kernel modules, these instructions
-apply. 
+At 1600000 instructions my softfloat test ran out of ram.
+
+Hard float using glibc 2.19 needed 149339, so that is quite an improvement
+over glibc 2.13.  Still quite a lot though.
 
 -- 
-					    Gilles.
+Len Sorensen
 
