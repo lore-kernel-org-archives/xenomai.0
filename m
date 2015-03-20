@@ -1,12 +1,19 @@
-Date: Fri, 20 Mar 2015 19:13:08 +0100
+Date: Fri, 20 Mar 2015 19:16:38 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150320181308.GA27775@hermes.click-hack.org>
-References: <CAKC9m6dkbD2iwi62YP_O2wRiOUHNp17eoMLYP6okg=PQ0OgjxQ@mail.gmail.com>
+Message-ID: <20150320181638.GB27775@hermes.click-hack.org>
+References: <CADvZd9Z8LSPRMAJWb1Tp91i4i9N5wLGMxb3_suaDyFRwRiJd-w@mail.gmail.com>
+ <CAEMXjGzNnwnrZOG4AFPbgKrJUpdHiuuVRFOAoKNasy-eVJQ0yg@mail.gmail.com>
+ <CADvZd9bRzWJKP4ye48T6Jq-Y8wQH=GhpnqsUCcxGo0BMhi0BBg@mail.gmail.com>
+ <CADvZd9aGmH0_xsYJ=CVn6813AWCE-B78zYrgh0vNhrBHZU=rfg@mail.gmail.com>
+ <CADvZd9ZGNcYTt4WNLPJRL+J+MgLpRPRZsyQ9MY4ammYh+7B5Rg@mail.gmail.com>
+ <550BD231.5020002@web.de>
+ <CADvZd9b9vxCGkWKGcdwudCKvMAsFFrZ0t-OHPFn53B4qE+DdDw@mail.gmail.com>
+ <CAEMXjGz8o5UWpNhznHC5-RsjRh_FBRW6ug7rpR-Z5tPvHY34GA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAKC9m6dkbD2iwi62YP_O2wRiOUHNp17eoMLYP6okg=PQ0OgjxQ@mail.gmail.com>
-Subject: Re: [Xenomai] ARMv8 (ARM64) port of Xenomai
+In-Reply-To: <CAEMXjGz8o5UWpNhznHC5-RsjRh_FBRW6ug7rpR-Z5tPvHY34GA@mail.gmail.com>
+Subject: Re: [Xenomai] RT-CAN question (was: CAN bus on beaglebone black)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,19 +22,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongfei Cheng <hongfei@mperpetuo.com>
-Cc: xenomai@xenomai.org
+To: Steve B <sbattazzo@gmail.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-On Fri, Mar 20, 2015 at 09:45:59AM -0700, Hongfei Cheng wrote:
-> Gilles,
+On Fri, Mar 20, 2015 at 10:42:05AM -0700, Steve B wrote:
+> Michael,
+> At least for the Beaglebone Black case, it is looking like you will have a
+> good and simple way of picking which driver you load.
+> I am working on getting the driver integrated to the Xenomai tree and in
+> the process making minor tweaks.. by changing the "compatibility" string to
+> something unique it looks like you can match the CAN device to the driver
+> in your device tree overlay. Should be no more having to load the original
+> driver first.
 > 
-> Do you mind to share the maker of the ARMv8 board which you are
-> working on, as indicated in the posting below?
+> I have a bit of an issue that I'm trying to work around with splitting the
+> driver into the multiple source files, but once I get that sorted out it
+> should be ready to work that way!
 
-https://www.96boards.org/products/hikey/
-
-But I have not started working on it, and will not start before a
-few weeks.
+>From what I understood, the device tree is a description of the
+hardware, so the compatibility string describes what hardware a
+board/controller is based on. So, it does not make sense to change
+the compatibility string to change the driver used. This is contrary
+to the spirit of the device tree. A device tree is supposed to be OS
+independent, the device tree files licenses for instance, have been
+chosen to not prevent a device tree file from being used with BSD.
 
 -- 
 					    Gilles.
