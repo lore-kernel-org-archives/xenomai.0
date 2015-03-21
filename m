@@ -1,15 +1,12 @@
+Message-ID: <550D3291.7030100@grandegger.com>
+Date: Sat, 21 Mar 2015 09:57:53 +0100
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-Sender: had2006@gmail.com
-In-Reply-To: <CANWkrRM3hD_LG-7EQFDxF5U-YS3YJYe8jNyL3cOZqSEL+tqQNg@mail.gmail.com>
-References: <CANWkrRPz2B5FgOAVLy5-i+DOFOHf5QDZQoHP28n_oAdaSmYTBw@mail.gmail.com>
- <5502AEAF.3010003@xenomai.org>
- <CANWkrRNmZqnN7p2nmNCc_8C8iFUW79E03L1Z62nnx4zWmSJ8Sw@mail.gmail.com>
- <CANWkrRM3hD_LG-7EQFDxF5U-YS3YJYe8jNyL3cOZqSEL+tqQNg@mail.gmail.com>
-Date: Fri, 13 Mar 2015 17:06:06 +0000
-Message-ID: <CAKk99t3XcTPTD=7VoFsJ=hsZeX7mVAR4dnyecCd_yZ2NiiZzzw@mail.gmail.com>
-From: Helder Daniel <hdaniel@ualg.pt>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] rtdm/driver.h location - Xenomai 3.0
+References: <CADvZd9Z8LSPRMAJWb1Tp91i4i9N5wLGMxb3_suaDyFRwRiJd-w@mail.gmail.com>
+In-Reply-To: <CADvZd9Z8LSPRMAJWb1Tp91i4i9N5wLGMxb3_suaDyFRwRiJd-w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] RT-CAN question (was: CAN bus on beaglebone black)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,122 +15,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Smith <2michael.smith@gmail.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Michael Haberler <haberlerm@gmail.com>, xenomai@xenomai.org
 
-I was having the same problem.
-What I did was (for a one source code file module only to keep it simple):
+On 03/19/2015 10:57 AM, Michael Haberler wrote:
+> status:
+> 
+> I have Steve Batazzo's driver running on the beaglebone, using a stock
+> Xenomai kernel from Robert Nelson's repo (linux-image-3.8.13-xenomai-r71
+> from http://repos.rcn-ee.net/debian/), current driver out of tree at
+> https://github.com/mhaberler/rtcan-bb branch mah
+> 
+> I also have a preliminary HAL driver for machinekit which talks to a
+> Trinamic motor over RT-CAN just fine (beaglebone for now, x86 once I get a
+> CAN PCI card).
+> 
+> I'm working with Steve to get the driver polished and hope we can inject it
+> into the Xenomai foodchain eventually, after which it will be eventually
+> picked up by Robert's periodic builds, and the whole thing becomes an
+> 'apt-get install' - affair. But we're not there yet.
+> 
+> 
+> I have a few questions on RT-CAN (I guess really RTDM):
+> 
+> - can the RTDM API (
+> https://xenomai.org/documentation/trunk/html/api/group__userapi.html) be
+> used from a normal Posix thread (non-RT) just alike? from the rtcansend*
+> utilities src it looks like at least for setup, even if the send/receive
+> ops are done in an RT thread.
+> 
+> - socket-CAN and RT-CAN interworking: I assume this is an either-or affair,
+> right? (background: for some jobs the RT-CAN features are overkill, and in
+> that case something like the python-can binding would be convenient to use)
 
-In the source code: #include <rtdm/driver.h>
+If the resources (irq, mem, etc.) used by the device are clearly
+separated, it might be possible to use one device (of the same type) for
+Linux and the other for RTCAN. It will work for sure for devices using
+different drivers (belonging to different controllers).
 
-The makefile that I use is:
-
-obj-m += modulesource.o
-
-$(eval EXTRA_CFLAGS := $(shell xeno-config --kcflags))
-#or:
-#$(eval ccflags-y = $(shell xeno-config --kcflags))
-
-all:
-make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
-clean:
-make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
-
-It assumes that:
-
-/lib/modules/3.16.0-ipipe/build -> /usr/src/linux-3.16.0-ipipe/
-
-points the full source tree (not just a headers tree like the one created
-by the debian kbuild)
-
-
-
-
-On 13 March 2015 at 16:39, Michael Smith <2michael.smith@gmail.com> wrote:
-
-> On Fri, Mar 13, 2015 at 1:42 PM, Michael Smith <2michael.smith@gmail.com>
-> wrote:
-> > On Fri, Mar 13, 2015 at 11:32 AM, Philippe Gerum <rpm@xenomai.org>
-> wrote:
-> >> On 03/13/2015 09:17 AM, Michael Smith wrote:
-> >>> Hi.
-> >>> I am busy porting device drivers over to Xenomai 3.0.
-> >>> At the moment I'm having trouble figuring out the location of
-> >>> rtdm/driver.h.
-> >>> I would assume it should be installed under /usr/include/xenomai,
-> because
-> >>> in my previous Xenomai 2.x build the rtdm/rtdm_driver.h was located
-> there.
-> >>> I can see the file in the Xenomai source code but its not installed
-> under
-> >>> /usr/include/xenomai after Xenomai 3.0 the build and install.
-> >>> I'm using cobalt with an x86_64 architecture.
-> >>>
-> >>> Am I missing something? Is there something that I should have setup in
-> the
-> >>> configuration file with the install? I went back and had a look in the
-> >>> Linux kernel
-> >>> build setup under the Xenomai heading, but I could not see any obvious
-> >>> options that I missed.
-> >>>
-> >>
-> >> In short, Xenomai 3 introduces a split between kernel and userland
-> >> headers, with only a few of them shared in order to expose the ABI. So
-> >> you need to build against a kernel prepared with the Xenomai sources,
-> >> adding the proper extra CFLAGS to your kernel Makefile for building the
-> >> module with the proper -I directives to find them.
-> >>
-> >> Everything under /usr/include/xenomai now belongs to userland
-> >> exclusively, barring the ABI bits (uapi/).
-> >>
-> >> See http://www.xenomai.org/pipermail/xenomai/2015-March/033558.html
-> >>
-> >> --
-> >> Philippe.
-> >
-> > I understand.
-> > Thanks Phillipe.
-> > Will implement it like that.
-> > If I can suggest, maybe to have a note of this somewhere in the
-> > documentation, or
-> > a RTDM example will clarify similar questions in the future.
-> >
-> > Regards
-> > Michael
->
-> I am trying to do a out of tree compile for my RTDM driver.
-> As I include the line $(shell xeno-config --kcflags)) in my make file,
-> it expands to the line -Iarch/$(SRCARCH)/xenomai/include -Iinclude/xenomai.
->
-> My problem is my compiler is not finding the $(SRCARCH) variable in
-> the make process.
-> I had a look and its not defined in my environmental variables either.
-> I see the only place it is defined is in linux/Makefile on the top
-> level of the Linux tree.
->
-> But does this mean I can only compile a Xenomai driver as part of the
-> full Linux tree?
-> And do I need to re-make the whole kernel tree when I want to compile a
-> custom
-> Xenomai driver?
-> Where would I need to place the RTDM source code if I want to compile
-> it, linux/drivers perhaps?
-> Or can I still do a out of tree compile for a Xenomai driver?
->
-> Thanks
-> Michael
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
+Wolfgang.
 
 
-
--- 
-Helder Daniel
-UALG - FCT
-DEEI
-
-http://w3.ualg.pt/~hdaniel
