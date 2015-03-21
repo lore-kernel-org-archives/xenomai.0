@@ -1,15 +1,12 @@
-Date: Sat, 21 Mar 2015 14:21:30 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150321132130.GC20203@hermes.click-hack.org>
-References: <CAKC9m6dkbD2iwi62YP_O2wRiOUHNp17eoMLYP6okg=PQ0OgjxQ@mail.gmail.com>
- <20150320181308.GA27775@hermes.click-hack.org>
- <CAKC9m6eFoRrFj_QteNeJmcbi+eir0SGzwoCTd2TVzPVuqDsiCQ@mail.gmail.com>
- <20150321131111.GA20203@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20150321131111.GA20203@hermes.click-hack.org>
-Subject: Re: [Xenomai] ARMv8 (ARM64) port of Xenomai
+In-Reply-To: <550D3291.7030100@grandegger.com>
+References: <CADvZd9Z8LSPRMAJWb1Tp91i4i9N5wLGMxb3_suaDyFRwRiJd-w@mail.gmail.com>
+ <550D3291.7030100@grandegger.com>
+Date: Sat, 21 Mar 2015 15:56:53 +0100
+Message-ID: <CADvZd9YsJjhjf4pPWdtbK=MGCORyAJ8++0Un44x4ygeFbueEuw@mail.gmail.com>
+From: Michael Haberler <haberlerm@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] RT-CAN question (was: CAN bus on beaglebone black)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,45 +15,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongfei Cheng <hongfei@mperpetuo.com>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@grandegger.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-On Sat, Mar 21, 2015 at 02:11:11PM +0100, Gilles Chanteperdrix wrote:
-> On Fri, Mar 20, 2015 at 05:06:36PM -0700, Hongfei Cheng wrote:
-> > Gilles - Thank you for sharing the link and updating us with your schedule.
-> > 
-> > I just started to port the I-pipe and Xenomai-3 code for supporting
-> > the ARMv8 architecture. Based on my limited understanding of Xenomai,
-> > it appears that the following changes are required in order to get
-> > Xenomai-3 running on the ARMv8 SoC we plan to use (Qualcomm msm8994):
-> > 
-> > 1). In vendor kernel tree, add I-pipe support to arm64 generic arch
-> > code: arch/arm64/boot, arch/arm64/kernel, etc.
-> > 2). In vendor kernel tree, add I-pipe support to arm64 MMU: arch/arm64/mm
-> > 3). In vendor kernel tree, add I-pipe support to platform-specific
-> > device tree: arm(64)/boot/dts/qcom
-> > 4). In vendor kernel tree, add I-pipe support to SoC and platform
-> > dependent drivers for arm64: drivers/gpio, drivers/irqchip(?),
-> > drivers/clocksource(?)
-> > 5). In xenomai-3 tree, support arm64 in Cobalt kernel: kernel/cobalt/arch/arm64
-> > 
-> > Do you (and anyone else who's working on ARMv8) see any critical
-> > modules missing from my list?
-> 
-> No, but the contrary, there is no reason to touch boot, kernel, mm.
+I'll try the bind/unbind approach and see if I can both stacks to coexist,
+that sounds like the most elegant way
 
-Also, I would do things step by step. First get irq interception
-working, then timer interception, at that point I would test with
-rtdm kernel tasks only (without CONFIG_SMP). Then add CONFIG_SMP and
-get SMP specific stuff working, like IPI interception working, test
-with rtdm tasks again, testing on the various cores. Then finally
-add fault/syscall interception, and test with default latency test.
+thanks!
 
-I would use xenomai 3.x for testing, it will avoid quite a few
-complicated things (kernel-space tasks without task_struct, hybrid
-context switch), and we could leave it at that and decide that
-xenomai 2.6 will never support armv8.
+- Michael
 
--- 
-					    Gilles.
+2015-03-21 9:57 GMT+01:00 Wolfgang Grandegger <wg@grandegger.com>:
 
+> On 03/19/2015 10:57 AM, Michael Haberler wrote:
+> > status:
+> >
+> > I have Steve Batazzo's driver running on the beaglebone, using a stock
+> > Xenomai kernel from Robert Nelson's repo (linux-image-3.8.13-xenomai-r71
+> > from http://repos.rcn-ee.net/debian/), current driver out of tree at
+> > https://github.com/mhaberler/rtcan-bb branch mah
+> >
+> > I also have a preliminary HAL driver for machinekit which talks to a
+> > Trinamic motor over RT-CAN just fine (beaglebone for now, x86 once I get
+> a
+> > CAN PCI card).
+> >
+> > I'm working with Steve to get the driver polished and hope we can inject
+> it
+> > into the Xenomai foodchain eventually, after which it will be eventually
+> > picked up by Robert's periodic builds, and the whole thing becomes an
+> > 'apt-get install' - affair. But we're not there yet.
+> >
+> >
+> > I have a few questions on RT-CAN (I guess really RTDM):
+> >
+> > - can the RTDM API (
+> > https://xenomai.org/documentation/trunk/html/api/group__userapi.html) be
+> > used from a normal Posix thread (non-RT) just alike? from the rtcansend*
+> > utilities src it looks like at least for setup, even if the send/receive
+> > ops are done in an RT thread.
+> >
+> > - socket-CAN and RT-CAN interworking: I assume this is an either-or
+> affair,
+> > right? (background: for some jobs the RT-CAN features are overkill, and
+> in
+> > that case something like the python-can binding would be convenient to
+> use)
+>
+> If the resources (irq, mem, etc.) used by the device are clearly
+> separated, it might be possible to use one device (of the same type) for
+> Linux and the other for RTCAN. It will work for sure for devices using
+> different drivers (belonging to different controllers).
+>
+> Wolfgang.
+>
+>
