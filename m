@@ -1,21 +1,13 @@
-Date: Mon, 23 Mar 2015 16:25:40 +0100
+Date: Mon, 23 Mar 2015 23:09:35 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150323152540.GC5299@hermes.click-hack.org>
-References: <CAKC9m6dkbD2iwi62YP_O2wRiOUHNp17eoMLYP6okg=PQ0OgjxQ@mail.gmail.com>
- <20150320181308.GA27775@hermes.click-hack.org>
- <CAKC9m6eFoRrFj_QteNeJmcbi+eir0SGzwoCTd2TVzPVuqDsiCQ@mail.gmail.com>
- <20150321131111.GA20203@hermes.click-hack.org>
- <20150321132130.GC20203@hermes.click-hack.org>
- <CAKC9m6ceEi593XX04-dLfQaVYHmQHmwe75oC+d4Qu-t9q1G9_A@mail.gmail.com>
- <550FD6CA.7080407@web.de>
- <20150323095340.GA5299@hermes.click-hack.org>
- <55101C6F.2030207@web.de>
+Message-ID: <20150323220935.GA19836@hermes.click-hack.org>
+References: <CAJT0owGYuZ8L47AKM0FdjOw5x3g0cjXcXAFPaL91TaxMun6WBw@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <55101C6F.2030207@web.de>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ARMv8 (ARM64) port of Xenomai
+In-Reply-To: <CAJT0owGYuZ8L47AKM0FdjOw5x3g0cjXcXAFPaL91TaxMun6WBw@mail.gmail.com>
+Subject: Re: [Xenomai] Xenomai 3.0-rc3 Interruption on Arietta G25
+ (AT91SAM9G25 chip)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,88 +16,111 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
+To: Tianchi Huang <gz.eddie.htc@gmail.com>
 Cc: xenomai@xenomai.org
 
-On Mon, Mar 23, 2015 at 03:00:15PM +0100, Jan Kiszka wrote:
-> On 2015-03-23 10:53, Gilles Chanteperdrix wrote:
-> > On Mon, Mar 23, 2015 at 10:03:06AM +0100, Jan Kiszka wrote:
-> >> On 2015-03-23 07:01, Hongfei Cheng wrote:
-> >>> Thank you for the terrific info and timely advice. I'll proceed as you
-> >>> suggested and report back progress regularly.
-> >>
-> >> Another tip: it can we useful to do early bring-up on QEMU basis. It is
-> >> already in a pretty decent state regarding aarch64, Linaro is hacking on
-> >> it, and vendors like Xilinx do their virtual prototyping on that basis
-> >> as well (in the latter case for the upcoming MPSoC). Probably - I didn't
-> >> try it out myself yet, only planning to do these days - the gdb
-> >> interface also works fine, thus will give you source level debugging.
-> > 
-> > I would not recommend that, as it adds the debug tools and emulator
-> > bugs, and removes some real silicon bugs, as well as adding the
-> > temptation to rely too much on the debug tools and not see the
-> > forest for the tree. If you really really want to use gdb, I would
-> > rather recommend JTAG (but it still has some of the issues of QEMU).
+On Mon, Mar 23, 2015 at 12:07:43PM +0100, Tianchi Huang wrote:
+> *Hello,*
 > 
-> Sure, there are always specific aspects that require real hw - e.g. when
-> in doubt about an emulated behavior or when you need to validate
-> timings.
-
-Or when you want to use a register that is not implemented in the
-emulator.
-
-> But for an initial architecture port, specifically to a pretty
-> much unified one like AARCH64, emulation remains handier.
+> *I'm now working on project using Arietta G25 board (AT91SAM9G25 chip) on
+> which i need to capture 1000 interruptions per second of an external ADC. *
+> *I have patched the kernel 3.14.17 with the patch ipipe-core-3.14.17-arm-5
+> which i found on GNA. The compilation passed and Xenomai seems to run all
+> right. The latency test gave me about 100us as worst value. *
 > 
-> > 
-> > Besides, developing on real hardware is much less painful on embedded
-> > hardware than on x86 hardware because: 
-> > 
-> > - embedded hardware usually has a serial console, which makes things
-> > real easy (when everything fails, you can output characters to the
-> > serial console in a brute force polling manner) 
+> *I make un modele of interruption test as below*
+> #include <linux/fs.h>
+> #include <linux/fcntl.h>
+> #include <linux/gpio.h>
+> #include <linux/interrupt.h>
+> #include <linux/module.h>
+> #include <rtdm/driver.h>
 > 
-> So do all my PC targets. But already the output of a physical console
-> slows things down so much that an emulated UART (without speed
-> limitation) pays off.
-
-Recent embedded hardware use DMA for serial output, so the serial
-output has little to no impact on the code execution unless you have
-as much output as the UART bit rate. Unless of course you are using
-the brute force polling, but this is something you usually do when
-the system is in so bad a shape that the speed does not matter.
-
+> #define GPIO_IN  27
+> static rtdm_irq_t irq_rtdm;
+> static int handler_interruption(rtdm_irq_t * irq){
+> printk(KERN_ALERT "IRQ received!\n");
+> return RTDM_IRQ_HANDLED;
+> }
 > 
-> > 
-> > - embedded hardware usually does not take forever to initialize its
-> > firmware (no BIOS with stupid timeoeuts waiting for not unplugged
-> > peripherals). Typically, u-boot is slower to execute in qemu than on
-> > real hardware (if you want to execute u-boot in qemu).
+> static int __init exemple_init (void){
+> int err;
+> int num_interruption;
+> if ((err = gpio_request(GPIO_IN, "test_irq")) != 0) {
+> return err;
+> }
+> if ((err = gpio_direction_input(GPIO_IN)) != 0) {
+> gpio_free(GPIO_IN);
+> return err;
+> }
+> numero_interruption = gpio_to_irq(GPIO_IN);
+> irq_set_irq_type(numero_interruption, IRQF_TRIGGER_FALLING);
+> if ((err = rtdm_irq_request(& irq_rtdm, num_interruption,
+> handler_interruption, RTDM_IRQTYPE_EDGE, "test_irq", NULL)) != 0) {
+> gpio_free(GPIO_IN);
+> return err;
+> }
+> printk(KERN_ALERT "Driver registed\n");
+> rtdm_irq_enable(& irq_rtdm);
+> return 0;
+> }
 > 
-> There is generally no need for a boot loader (unless that is your
-> development target), you just boot the kernel directly.
-
-Then you are relying on yet another code which is different from
-what will run on real hardware. Even more risks of bugs, even more
-differences between real environment and emulated environment,
-etc...
-
+> static void __exit exemple_exit (void){
+> rtdm_irq_disable(& irq_rtdm);
+> rtdm_irq_free(&irq_rtdm);
+> gpio_free(GPIO_IN);
+> }
+> module_init(exemple_init);
+> module_exit(exemple_exit);
+> MODULE_LICENSE("GPL");
 > 
-> There is a trend in industry towards virtual targets. That's because you
-> can do much more (and much earlier) with emulation than with real hw,
-> and handling is much easier (no wiring, no physical reset, free
-> replication of setups etc.).
+> 
+> *It seems that it has been registed and run without no error, as you can
+> see just here:*
+> root@arietta:/home# cat /proc/xenomai/irq
+>   IRQ         CPU0
+>    17:           1         [timer/0]
+>    28:           0         test_irq
+>  1027:           0         [virtual]
+> root@arietta:/home# cat /proc/interrupts
+>            CPU0
+>  16:      31031       AIC   1  at91_tick, at91_rtc, ttyS0
+>  18:       1579       AIC  20  at_hdmac
+>  19:          0       AIC  21  at_hdmac
+>  23:      15338       AIC  12  f0008000.mmc
+>  25:          0       AIC  14  f0004000.spi
+>  26:      20732       AIC  23  atmel_usba_udc
+>  27:       8119       AIC  22  ehci_hcd:usb1, ohci_hcd:usb2
+>  28:          1      GPIO  27
+> Err:          0
+> 
+> *But, when i generate a signal on GPIO 27, i can see the counter of
+> /proc/interrupts increase but not the counter of /proc/xenomai/irq nor the
+> message i put in the interrupt handler, as you can see below:*
+> 
+> root@arietta:/home# cat /proc/xenomai/irq
+>   IRQ         CPU0
+>    17:           1         [timer/0]
+>    28:           0         test_irq
+>  1027:           0         [virtual]
+> root@arietta:/home# cat /proc/interrupts
+>            CPU0
+>  16:      31031       AIC   1  at91_tick, at91_rtc, ttyS0
+>  18:       1579       AIC  20  at_hdmac
+>  19:          0       AIC  21  at_hdmac
+>  23:      15338       AIC  12  f0008000.mmc
+>  25:          0       AIC  14  f0004000.spi
+>  26:      20732       AIC  23  atmel_usba_udc
+>  27:       8119       AIC  22  ehci_hcd:usb1, ohci_hcd:usb2
+>  28:       5459      GPIO  27
+> Err:          0
+> 
+> *Do you have any idea of that? I've tried Xenomai 2.6.4 too, but i had the
+> same problem. Hope you can help me with this.*
 
-Being a trend does not mean this is a good idea. I still believe a
-lot of people using JTAG or gdb tend to see symptoms rather than
-real issue and misinterpret them.
+Have you tried calling both rtdm_irq_request and request_irq in the
+same driver ?
 
 -- 
 					    Gilles.
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: not available
-Type: application/pgp-signature
-Size: 811 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150323/9e85b4f1/attachment.sig>
+
