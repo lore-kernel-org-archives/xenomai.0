@@ -1,32 +1,10 @@
 MIME-Version: 1.0
-Sender: had2006@gmail.com
-In-Reply-To: <CAKk99t0ndeNODKHf3mmL4GTg9wrOnOcsgf_okqx_-dmNitWkXA@mail.gmail.com>
-References: <CAKk99t1N5b0_iQerSxPyKmMTLC8PePTJCO9zzFLdkmt_mDiiVg@mail.gmail.com>
- <54F716CC.1010600@xenomai.org>
- <CAKk99t14auR=Ez-9k6bSxDQt5iNbTjvYtxeaAyGzMPuwQi_nnQ@mail.gmail.com>
- <54F73E7A.2070100@xenomai.org>
- <CAKk99t0z4Tq==LTzFK_9cmbrDTZ+RFt2vo=ur56VbVG3sso_iQ@mail.gmail.com>
- <5505B14F.4060107@xenomai.org>
- <CAKk99t3Gv-3Nz=drk-bOvbYo7EU3F-DSsGA35Z6D6GdF_z00Zg@mail.gmail.com>
- <55072D34.1070405@xenomai.org>
- <CAKk99t2ZsNmY4myJAF+H3hWNpHN4bVm255QEsU6Nu+ytG-B0dA@mail.gmail.com>
- <550837E2.9050701@xenomai.org>
- <CAKk99t2eGYME0BsLCjJV7VMm8VU_2okmpd8sYfMb_02sTvOfLQ@mail.gmail.com>
- <55083DA4.3080201@xenomai.org>
- <CAKk99t0pG6HWOucFXDw1-_5-=EGQ7faqA22yVog6Ye6TcGjevA@mail.gmail.com>
- <550850D5.9060207@xenomai.org>
- <CAKk99t0q3iNcah1Us79hJUjjHQCr2rEPu9gukSNjO2a6+Gk3sg@mail.gmail.com>
- <CAKk99t3wP-WLemoO_bbsvE4uwh-Sh-5eGPJrM=6cAc5edyQW5Q@mail.gmail.com>
- <5508600D.4020500@xenomai.org>
- <CAKk99t3xFzLuydH3HoPzWBzjd5DNtC_4Kf3YQuodHDpXTLdsUg@mail.gmail.com>
- <550B0626.5090801@xenomai.org> <550B1584.8040309@xenomai.org>
- <CAKk99t0ndeNODKHf3mmL4GTg9wrOnOcsgf_okqx_-dmNitWkXA@mail.gmail.com>
-Date: Mon, 23 Mar 2015 11:01:32 +0000
-Message-ID: <CAKk99t0qBOG5Y9e8eJ5S3Ae4MhPrJqOM+6p06G-c3KojO2fSgQ@mail.gmail.com>
-From: Helder Daniel <hdaniel@ualg.pt>
+Date: Mon, 23 Mar 2015 12:07:43 +0100
+Message-ID: <CAJT0owGYuZ8L47AKM0FdjOw5x3g0cjXcXAFPaL91TaxMun6WBw@mail.gmail.com>
+From: Tianchi Huang <gz.eddie.htc@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Xenomai/cobalt: low_init(): binding failed: Function
- not implemented error issued when trting to run latency app on xeno 3.x-rc3
+Subject: [Xenomai] Xenomai 3.0-rc3 Interruption on Arietta G25 (AT91SAM9G25
+	chip)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -35,179 +13,108 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-PS: Version that I am using now
+*Hello,*
 
-xenomai-3-655dda153fbaba31246963f3011fff194fbecaa8.tar.bz2
-<http://git.xenomai.org/xenomai-3.git/snapshot/xenomai-3-655dda153fbaba31246963f3011fff194fbecaa8.tar.bz2>
+*I'm now working on project using Arietta G25 board (AT91SAM9G25 chip) on
+which i need to capture 1000 interruptions per second of an external ADC. *
+*I have patched the kernel 3.14.17 with the patch ipipe-core-3.14.17-arm-5
+which i found on GNA. The compilation passed and Xenomai seems to run all
+right. The latency test gave me about 100us as worst value. *
 
-PS: Version that compiled ok:
+*I make un modele of interruption test as below*
+#include <linux/fs.h>
+#include <linux/fcntl.h>
+#include <linux/gpio.h>
+#include <linux/interrupt.h>
+#include <linux/module.h>
+#include <rtdm/driver.h>
 
-xenomai-3-9b8fa963ae6c4751602c00f6be81861b620822af.tar.bz2
-<http://git.xenomai.org/xenomai-3.git/snapshot/xenomai-3-9b8fa963ae6c4751602c00f6be81861b620822af.tar.bz2>
+#define GPIO_IN  27
+static rtdm_irq_t irq_rtdm;
+static int handler_interruption(rtdm_irq_t * irq){
+printk(KERN_ALERT "IRQ received!\n");
+return RTDM_IRQ_HANDLED;
+}
+
+static int __init exemple_init (void){
+int err;
+int num_interruption;
+if ((err = gpio_request(GPIO_IN, "test_irq")) != 0) {
+return err;
+}
+if ((err = gpio_direction_input(GPIO_IN)) != 0) {
+gpio_free(GPIO_IN);
+return err;
+}
+numero_interruption = gpio_to_irq(GPIO_IN);
+irq_set_irq_type(numero_interruption, IRQF_TRIGGER_FALLING);
+if ((err = rtdm_irq_request(& irq_rtdm, num_interruption,
+handler_interruption, RTDM_IRQTYPE_EDGE, "test_irq", NULL)) != 0) {
+gpio_free(GPIO_IN);
+return err;
+}
+printk(KERN_ALERT "Driver registed\n");
+rtdm_irq_enable(& irq_rtdm);
+return 0;
+}
+
+static void __exit exemple_exit (void){
+rtdm_irq_disable(& irq_rtdm);
+rtdm_irq_free(&irq_rtdm);
+gpio_free(GPIO_IN);
+}
+module_init(exemple_init);
+module_exit(exemple_exit);
+MODULE_LICENSE("GPL");
 
 
-On 23 March 2015 at 10:59, Helder Daniel <hdaniel@ualg.pt> wrote:
+*It seems that it has been registed and run without no error, as you can
+see just here:*
+root@arietta:/home# cat /proc/xenomai/irq
+  IRQ         CPU0
+   17:           1         [timer/0]
+   28:           0         test_irq
+ 1027:           0         [virtual]
+root@arietta:/home# cat /proc/interrupts
+           CPU0
+ 16:      31031       AIC   1  at91_tick, at91_rtc, ttyS0
+ 18:       1579       AIC  20  at_hdmac
+ 19:          0       AIC  21  at_hdmac
+ 23:      15338       AIC  12  f0008000.mmc
+ 25:          0       AIC  14  f0004000.spi
+ 26:      20732       AIC  23  atmel_usba_udc
+ 27:       8119       AIC  22  ehci_hcd:usb1, ohci_hcd:usb2
+ 28:          1      GPIO  27
+Err:          0
 
-> Ok,
->
-> but now I am compiling a module to write for an I/O port (code below)
-> With the previous version of next branch I can compile it without any
-> error, insert it check that it is working fine by reading te I/O port from
-> an user space app, but with this new version, when compiling the module, I
-> get:
->
->  CC [M]  /mnt/hgfs/apps-3.x/10-portAccessSyncKernel/writeportK.o
-> In file included from include/xenomai/rtdm/driver.h:43:0,
->                  from
-> /mnt/hgfs/apps-3.x/10-portAccessSyncKernel/writeportK.c:8:
-> include/xenomai/cobalt/kernel/init.h:24:33: fatal error:
-> cobalt/uapi/corectl.h: No such file or directory
->  #include <cobalt/uapi/corectl.h>
->                                  ^
-> compilation terminated.
->
-> The makefile is just:
->
-> obj-m += writeportK.o
->
-> $(eval EXTRA_CFLAGS := $(shell xeno-config --kcflags))
->
-> all:
-> make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
->
->
-> And the code of the module:
->
-> #include <linux/kernel.h>
-> #include <linux/module.h>
-> #include <rtdm/driver.h>   //defines: rtdm_task_t, rtdm_sem_t, ... (also
-> includes rtdm.h)
->
-> #define TASK_PRIO  20 //99 is Highest RT priority, 0 is Lowest
->
-> #define us 1000 //1000 ns = 1 us (micro sec)
-> #define ms 1000000ll //1000000 ns = 1 ms
-> #define TASK_PERIOD 500*ms //0.5 secs period
->
-> #define COUNT 0x80
-> #define DATA  0x81
->
-> rtdm_task_t td_pw;  //RTDM task descriptor
-> rtdm_sem_t  semA;   //RTDM semaphore descriptor
->
-> void writeport (void *arg) {
-> static unsigned char count=0;
-> int err;
->
-> for (;;) {
-> err = rtdm_task_wait_period(); //deschedule until next period
-> if (err<0) {
-> rtdm_printk("writeportK: rtdm_task_wait_period, error %d\n", err);
-> break; //avoid kernel corruption when removing module
-> //trying to execute code of killed thread
-> }
-> outb (count, COUNT); //outb takes aprox. 1 Micro sec.
-> outb (count%4, DATA); //outb takes aprox. 1 Micro sec.
-> rtdm_printk("writeportK: count = %d\n", count); //check with dmesg
-> if (++count == 100) count=0;
-> }
-> }
->
->
-> int init_module(void) {
-> int err;
->
-> err = rtdm_task_init (&td_pw, "writeportK", writeport, NULL, TASK_PRIO,
-> TASK_PERIOD);
-> if (err < 0) rtdm_printk("writeportK: rtdm_task_init, error %d\n", err);
-> else {
-> err = rtdm_task_set_period(&td_pw, TASK_PERIOD); //set period
-> if (err < 0) rtdm_printk("writeportK: rtdm_task_set_period %d\n", err);
-> else rtdm_printk("writeportK successfully loaded\n");
-> }
-> return err;
-> }
->
-> void cleanup_module(void) {
-> rtdm_task_destroy(&td_pw);
-> rtdm_printk("writeportK unloaded\n");
-> }
->
-> MODULE_LICENSE("GPL");  //To have access to Xenomai symbols
->
->
->
->
->
->
-> On 19 March 2015 at 18:29, Philippe Gerum <rpm@xenomai.org> wrote:
->
->> On 03/19/2015 06:23 PM, Philippe Gerum wrote:
->> > On 03/17/2015 06:19 PM, Helder Daniel wrote:
->> >> ok
->> >>
->> >> On 17 March 2015 at 17:10, Philippe Gerum <rpm@xenomai.org
->> >> <mailto:rpm@xenomai.org>> wrote:
->> >>
->> >>     On 03/17/2015 06:06 PM, Helder Daniel wrote:
->> >>     > I am sorry I just found now.
->> >>     > It still happens with Mercury (with the configuration described
->> in the
->> >>     > previous email)
->> >>     >
->> >>     > When I compiled another app and try to run it I got the same
->> error:
->> >>     >
->> >>     > root@debian:~/09-portAccessSyncTwoAppsC++# ./writeport
->> >>     > sysregd:
->> create_directory_recursive("/var/run/xenomai/anon/system"):
->> >>     > Transport endpoint is not connected
->> >>     > sysregd:
->> create_directory_recursive("/var/run/xenomai/anon/system"):
->> >>     > Transport endpoint is not connected
->> >>     > sysregd:
->> create_directory_recursive("/var/run/xenomai/anon/system"):
->> >>     > Transport endpoint is not connected
->> >>     >    3"012.188| WARNING: [main] cannot connect to registry daemon
->> >>     >    3"012.188| BUG: [main] initialization failed, EAGAIN
->> >>
->> >>     Ok. This one is different from the ENOMEM issue, which is
->> >>     Cobalt-specific. The problem with mounting the anon/system root is
->> a
->> >>     FUSE issue, which still needs a work around it seems.
->> >>
->> >
->> > The ENOMEM issue is now fixed in -next. I'll tackle the C++ parsing
->> > problem with libtrank next.
->> >
->>
->> This commit in -next fixes the link stage for the readport/writeport test.
->>
->>
->> http://git.xenomai.org/xenomai-3.git/commit/?h=next&id=f537649c1b69a4f7b6d8f22ef344faf3414fe079
->>
->> --
->> Philippe.
->>
->
->
->
-> --
-> Helder Daniel
-> UALG - FCT
-> DEEI
->
-> http://w3.ualg.pt/~hdaniel
->
+*But, when i generate a signal on GPIO 27, i can see the counter of
+/proc/interrupts increase but not the counter of /proc/xenomai/irq nor the
+message i put in the interrupt handler, as you can see below:*
+
+root@arietta:/home# cat /proc/xenomai/irq
+  IRQ         CPU0
+   17:           1         [timer/0]
+   28:           0         test_irq
+ 1027:           0         [virtual]
+root@arietta:/home# cat /proc/interrupts
+           CPU0
+ 16:      31031       AIC   1  at91_tick, at91_rtc, ttyS0
+ 18:       1579       AIC  20  at_hdmac
+ 19:          0       AIC  21  at_hdmac
+ 23:      15338       AIC  12  f0008000.mmc
+ 25:          0       AIC  14  f0004000.spi
+ 26:      20732       AIC  23  atmel_usba_udc
+ 27:       8119       AIC  22  ehci_hcd:usb1, ohci_hcd:usb2
+ 28:       5459      GPIO  27
+Err:          0
+
+*Do you have any idea of that? I've tried Xenomai 2.6.4 too, but i had the
+same problem. Hope you can help me with this.*
+
+*Best regards,*
 
 
 
--- 
-Helder Daniel
-UALG - FCT
-DEEI
-
-http://w3.ualg.pt/~hdaniel
+*Eddie HUANG*
