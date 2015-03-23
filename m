@@ -1,16 +1,14 @@
-In-Reply-To: <20150318133921.GC24525@hermes.click-hack.org>
-References: <tencent_07B7EF291D718FAF2A4D5BBC@qq.com>
- <20150318075122.GL16113@hermes.click-hack.org>
- <tencent_1DF1E8A94FD8F46B59E71CC9@qq.com>
- <20150318133921.GC24525@hermes.click-hack.org>
-From: "=?ISO-8859-1?B?WmhvdXBlbmc=?=" <zhoupeng1982@qq.com>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="ISO-8859-1"
-Content-Transfer-Encoding: base64
-Date: Mon, 23 Mar 2015 10:44:29 +0800
-Message-ID: <tencent_22D619831C4C1DE9516A60BE@qq.com>
-Subject: Re: [Xenomai] I find a way to reduce latency, but I don't know why.
+MIME-Version: 1.0
+In-Reply-To: <20150321131111.GA20203@hermes.click-hack.org>
+References: <CAKC9m6dkbD2iwi62YP_O2wRiOUHNp17eoMLYP6okg=PQ0OgjxQ@mail.gmail.com>
+ <20150320181308.GA27775@hermes.click-hack.org>
+ <CAKC9m6eFoRrFj_QteNeJmcbi+eir0SGzwoCTd2TVzPVuqDsiCQ@mail.gmail.com>
+ <20150321131111.GA20203@hermes.click-hack.org>
+Date: Sun, 22 Mar 2015 22:56:56 -0700
+Message-ID: <CAKC9m6eU5PD4cr7viVD1g1M4s=HoTnv8WCBin2vjZurxapDk=w@mail.gmail.com>
+From: Hongfei Cheng <hongfei@mperpetuo.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] ARMv8 (ARM64) port of Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,42 +17,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?ISO-8859-1?B?R2lsbGVzIENoYW50ZXBlcmRyaXg=?= <gilles.chanteperdrix@xenomai.org>
-Cc: =?ISO-8859-1?B?eGVub21haQ==?= <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-T24gV2VkLCBNYXIgMTgsIDIwMTUgMDk6MzkgUE0sIEdpbGxlcyB3cm90ZToKPiA+ID4gVHdv
-IHBvc3NpYmlsaXRpZXM6Cj4gPiA+IC0gdGFzazIgaXMgY2FjaGUgZnJpZW5kbHksIHNvIGlm
-IHRoZSBjYWNoZSBpcyBzaGFyZWQgYmV0d2VlbiB0aGUgdHdvCj4gPiA+IGNwdXMsIGl0IHBy
-ZXZlbnRzIExpbnV4IGZyb20gZXZpY3RpbmcgeGVub21haSBhbmQgSS1waXBlIGNvZGUgZnJv
-bQo+ID4gPiB0aGUgY2FjaGUsIHdlIGtub3cgdGhhdCBjYWNoZSBoYXMgYSBiaWcgaW5mbHVl
-bmNlIG9uIGxhdGVuY3k7Cj4gPiAKPiA+IEkgYWdyZWUgdGhpcyBpcyB0aGUgYmVzdCBndWVz
-cywgdGhlIEk1IENQVXMgZG8gc2hhcmUgTDMgY2FjaGUgYmV0d2VlbiB0aGVtLiAKPiA+IAo+
-ID4gSSBhbHNvIHVzZSBydF90aW1lcl9yZWFkKCkgd3JhcCByZWFsX3dvcmsoKSB0byBtZWFz
-dXJlIHRpbWUgY29uc3VtcHRpb246IAo+ID4gd2l0aG91dCB0YXNrMiByZWFsX3dvcmsoKSBl
-eHBlbmQgMjAgdG8gMzZ1cywgd2l0aCB0YXNrMiByZWFsX3dvcmsoKSAKPiA+IGV4cGVuZCAy
-MCB0byAyMnVzIHRvIGNvbXBlbHRlLiAKPiA+IHJlYWxfd29yaygpIG9ubHkgY29udGFpbiBm
-bG9hdC1wb2ludCBhcml0aG1ldGljLCB0aGUgdGltZSBzdGFiaWxpdHkgaXMKPiA+IGltcHJv
-dmVkIG9idmlvdXNseS4KPiA+IAo+ID4gSWYgdGhpcyBpcyBjYWNoZSBwcm9ibGVtLCBpcyB0
-YXNrMiB0aGUgcmlnaHQgd2F5IHRvIGtlZXAgY29kZSBpbiBjYWNoZSA/Cj4gPiAKPiA+ID4g
-LSB0YXNrMiBwcmV2ZW50cyB0aGUgY3B1IGZyb20gZW50ZXJpbmcgaWRsZSBtb2RlLCBhbmQg
-c28gcG90ZW50aWFsbHkKPiA+ID4gcHJldmVudHMgYW55IGxvdyBwb3dlciBvcHRpbWl6YXRp
-b24gZnJvbSBoYXBwZW5pbmcsIGxvdyBwb3dlciBtb2Rlcwo+ID4gPiBhcmUgZ2VuZXJhbGx5
-IG5vdCBsYXRlbmN5IGZyaWVuZGx5Lgo+ID4gCj4gPiBDT05GSUdfQ1BVX0ZSRVEgYW5kIENP
-TkZJR19DUFVfSURMRSBpcyBhbHJlYWR5IGRpc2FibGVkLCBzbWkgd29ya2Fyb3VuZAo+ID4g
-YWxzbyBlbmFibGVkLgo+ID4gSSBoYXZlIG5vdGljZSBDMUUgbW9kZSBpcyBkaXNhYmxlZCBp
-biBYZW5vbWFpIDMsIGJ1dCBub3QgaW4gWGVub21haSAyLAo+ID4gYnV0IEMxRSBpcyB0cmln
-Z2VyZWQgYnkgbXdhaXQsIEkgZG9uJ3QgdGhpbmsgdGhpcyBpcyB0aGUgcHJvYmxlbS4KPiAK
-PiBMaW51eCBpZGxlIHRhc2sgdXNlcyBtd2FpdCwgYW5kIG5vdGhpbmcgcHJldmVudHMgdGhl
-IGNoaXAgbWFrZXIgdG8KPiBkbyBhbnkgb3B0aW1pemF0aW9uIGhlIHdhbnRzIHdoZW4gaGx0
-IGlzIGNhbGxlZC4gT24gZ2VvZGUKPiBwcm9jZXNzb3JzLCB3aXRoIHNvbWUgY29uZmlndXJh
-dGlvbiwgaGx0IGNhdXNlcyB0aGUgdHNjIHRvIGJlCj4gc3RvcHBlZCBmb3IgaW5zdGFuY2Uu
-CgpZZXMsIHRoaXMgaXMgZHVlIHRvIHBvd2VyIG9wdGltaXphdGlvbi4KQWZ0ZXIgYWRkICJp
-ZGxlPXBvbGwiIHRvIGJvb3QgcGFyYW1ldGVyLCBsYXRlbmN5IGFuZCB0aW1lIGNvbXN1bXB0
-aW9uCmlzIGp1c3QgbGlrZSB0YXNrMiBydW5uaW5nLgoKSnVzdCBsaWtlIHlvdSBzYWlkLCAi
-aWRsZT1wb2xsIiBtYWtlcyBsYXRlbmN5IG1vcmUgc21hbGxlcjsgYnV0IGFmdGVyIGxvbmcK
-dGltZSB0ZXN0LCB0aGUgd29yc3QgY2FzZSBpcyBzdGlsbCB0aGVyZS4gCgp0aGFua3MsIHpo
-b3U=
+Yes, I'll cross out /arch/arm64/boot and arch/mm from my todo list.
 
+Do you mean the existing I-pipe code changes made to linux kernel
+module arch/arm/kernel do not apply to arch/arm64/kernel (for arm64)?
+I saw some I-pipe code in arch/arm/kernel dealing with interrupt,
+which made me wonder if similar code might have been needed in
+arch/arm64/kernel. I'll be glad to cross this one out too.
 
+Thanks!
+Hongfei
 
+On Sat, Mar 21, 2015 at 6:11 AM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On Fri, Mar 20, 2015 at 05:06:36PM -0700, Hongfei Cheng wrote:
+>> Gilles - Thank you for sharing the link and updating us with your schedule.
+>>
+>> I just started to port the I-pipe and Xenomai-3 code for supporting
+>> the ARMv8 architecture. Based on my limited understanding of Xenomai,
+>> it appears that the following changes are required in order to get
+>> Xenomai-3 running on the ARMv8 SoC we plan to use (Qualcomm msm8994):
+>>
+>> 1). In vendor kernel tree, add I-pipe support to arm64 generic arch
+>> code: arch/arm64/boot, arch/arm64/kernel, etc.
+>> 2). In vendor kernel tree, add I-pipe support to arm64 MMU: arch/arm64/mm
+>> 3). In vendor kernel tree, add I-pipe support to platform-specific
+>> device tree: arm(64)/boot/dts/qcom
+>> 4). In vendor kernel tree, add I-pipe support to SoC and platform
+>> dependent drivers for arm64: drivers/gpio, drivers/irqchip(?),
+>> drivers/clocksource(?)
+>> 5). In xenomai-3 tree, support arm64 in Cobalt kernel: kernel/cobalt/arch/arm64
+>>
+>> Do you (and anyone else who's working on ARMv8) see any critical
+>> modules missing from my list?
+>
+> No, but the contrary, there is no reason to touch boot, kernel, mm.
+>
+> --
+>                                             Gilles.
 
