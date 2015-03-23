@@ -1,12 +1,16 @@
-MIME-Version: 1.0
-In-Reply-To: <550D3291.7030100@grandegger.com>
-References: <CADvZd9Z8LSPRMAJWb1Tp91i4i9N5wLGMxb3_suaDyFRwRiJd-w@mail.gmail.com>
- <550D3291.7030100@grandegger.com>
-Date: Sat, 21 Mar 2015 15:56:53 +0100
-Message-ID: <CADvZd9YsJjhjf4pPWdtbK=MGCORyAJ8++0Un44x4ygeFbueEuw@mail.gmail.com>
-From: Michael Haberler <haberlerm@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] RT-CAN question (was: CAN bus on beaglebone black)
+In-Reply-To: <20150318133921.GC24525@hermes.click-hack.org>
+References: <tencent_07B7EF291D718FAF2A4D5BBC@qq.com>
+ <20150318075122.GL16113@hermes.click-hack.org>
+ <tencent_1DF1E8A94FD8F46B59E71CC9@qq.com>
+ <20150318133921.GC24525@hermes.click-hack.org>
+From: "=?ISO-8859-1?B?WmhvdXBlbmc=?=" <zhoupeng1982@qq.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="ISO-8859-1"
+Content-Transfer-Encoding: base64
+Date: Mon, 23 Mar 2015 10:44:29 +0800
+Message-ID: <tencent_22D619831C4C1DE9516A60BE@qq.com>
+Subject: Re: [Xenomai] I find a way to reduce latency, but I don't know why.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,58 +19,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Grandegger <wg@grandegger.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: =?ISO-8859-1?B?R2lsbGVzIENoYW50ZXBlcmRyaXg=?= <gilles.chanteperdrix@xenomai.org>
+Cc: =?ISO-8859-1?B?eGVub21haQ==?= <xenomai@xenomai.org>
 
-I'll try the bind/unbind approach and see if I can both stacks to coexist,
-that sounds like the most elegant way
+T24gV2VkLCBNYXIgMTgsIDIwMTUgMDk6MzkgUE0sIEdpbGxlcyB3cm90ZToKPiA+ID4gVHdv
+IHBvc3NpYmlsaXRpZXM6Cj4gPiA+IC0gdGFzazIgaXMgY2FjaGUgZnJpZW5kbHksIHNvIGlm
+IHRoZSBjYWNoZSBpcyBzaGFyZWQgYmV0d2VlbiB0aGUgdHdvCj4gPiA+IGNwdXMsIGl0IHBy
+ZXZlbnRzIExpbnV4IGZyb20gZXZpY3RpbmcgeGVub21haSBhbmQgSS1waXBlIGNvZGUgZnJv
+bQo+ID4gPiB0aGUgY2FjaGUsIHdlIGtub3cgdGhhdCBjYWNoZSBoYXMgYSBiaWcgaW5mbHVl
+bmNlIG9uIGxhdGVuY3k7Cj4gPiAKPiA+IEkgYWdyZWUgdGhpcyBpcyB0aGUgYmVzdCBndWVz
+cywgdGhlIEk1IENQVXMgZG8gc2hhcmUgTDMgY2FjaGUgYmV0d2VlbiB0aGVtLiAKPiA+IAo+
+ID4gSSBhbHNvIHVzZSBydF90aW1lcl9yZWFkKCkgd3JhcCByZWFsX3dvcmsoKSB0byBtZWFz
+dXJlIHRpbWUgY29uc3VtcHRpb246IAo+ID4gd2l0aG91dCB0YXNrMiByZWFsX3dvcmsoKSBl
+eHBlbmQgMjAgdG8gMzZ1cywgd2l0aCB0YXNrMiByZWFsX3dvcmsoKSAKPiA+IGV4cGVuZCAy
+MCB0byAyMnVzIHRvIGNvbXBlbHRlLiAKPiA+IHJlYWxfd29yaygpIG9ubHkgY29udGFpbiBm
+bG9hdC1wb2ludCBhcml0aG1ldGljLCB0aGUgdGltZSBzdGFiaWxpdHkgaXMKPiA+IGltcHJv
+dmVkIG9idmlvdXNseS4KPiA+IAo+ID4gSWYgdGhpcyBpcyBjYWNoZSBwcm9ibGVtLCBpcyB0
+YXNrMiB0aGUgcmlnaHQgd2F5IHRvIGtlZXAgY29kZSBpbiBjYWNoZSA/Cj4gPiAKPiA+ID4g
+LSB0YXNrMiBwcmV2ZW50cyB0aGUgY3B1IGZyb20gZW50ZXJpbmcgaWRsZSBtb2RlLCBhbmQg
+c28gcG90ZW50aWFsbHkKPiA+ID4gcHJldmVudHMgYW55IGxvdyBwb3dlciBvcHRpbWl6YXRp
+b24gZnJvbSBoYXBwZW5pbmcsIGxvdyBwb3dlciBtb2Rlcwo+ID4gPiBhcmUgZ2VuZXJhbGx5
+IG5vdCBsYXRlbmN5IGZyaWVuZGx5Lgo+ID4gCj4gPiBDT05GSUdfQ1BVX0ZSRVEgYW5kIENP
+TkZJR19DUFVfSURMRSBpcyBhbHJlYWR5IGRpc2FibGVkLCBzbWkgd29ya2Fyb3VuZAo+ID4g
+YWxzbyBlbmFibGVkLgo+ID4gSSBoYXZlIG5vdGljZSBDMUUgbW9kZSBpcyBkaXNhYmxlZCBp
+biBYZW5vbWFpIDMsIGJ1dCBub3QgaW4gWGVub21haSAyLAo+ID4gYnV0IEMxRSBpcyB0cmln
+Z2VyZWQgYnkgbXdhaXQsIEkgZG9uJ3QgdGhpbmsgdGhpcyBpcyB0aGUgcHJvYmxlbS4KPiAK
+PiBMaW51eCBpZGxlIHRhc2sgdXNlcyBtd2FpdCwgYW5kIG5vdGhpbmcgcHJldmVudHMgdGhl
+IGNoaXAgbWFrZXIgdG8KPiBkbyBhbnkgb3B0aW1pemF0aW9uIGhlIHdhbnRzIHdoZW4gaGx0
+IGlzIGNhbGxlZC4gT24gZ2VvZGUKPiBwcm9jZXNzb3JzLCB3aXRoIHNvbWUgY29uZmlndXJh
+dGlvbiwgaGx0IGNhdXNlcyB0aGUgdHNjIHRvIGJlCj4gc3RvcHBlZCBmb3IgaW5zdGFuY2Uu
+CgpZZXMsIHRoaXMgaXMgZHVlIHRvIHBvd2VyIG9wdGltaXphdGlvbi4KQWZ0ZXIgYWRkICJp
+ZGxlPXBvbGwiIHRvIGJvb3QgcGFyYW1ldGVyLCBsYXRlbmN5IGFuZCB0aW1lIGNvbXN1bXB0
+aW9uCmlzIGp1c3QgbGlrZSB0YXNrMiBydW5uaW5nLgoKSnVzdCBsaWtlIHlvdSBzYWlkLCAi
+aWRsZT1wb2xsIiBtYWtlcyBsYXRlbmN5IG1vcmUgc21hbGxlcjsgYnV0IGFmdGVyIGxvbmcK
+dGltZSB0ZXN0LCB0aGUgd29yc3QgY2FzZSBpcyBzdGlsbCB0aGVyZS4gCgp0aGFua3MsIHpo
+b3U=
 
-thanks!
 
-- Michael
 
-2015-03-21 9:57 GMT+01:00 Wolfgang Grandegger <wg@grandegger.com>:
 
-> On 03/19/2015 10:57 AM, Michael Haberler wrote:
-> > status:
-> >
-> > I have Steve Batazzo's driver running on the beaglebone, using a stock
-> > Xenomai kernel from Robert Nelson's repo (linux-image-3.8.13-xenomai-r71
-> > from http://repos.rcn-ee.net/debian/), current driver out of tree at
-> > https://github.com/mhaberler/rtcan-bb branch mah
-> >
-> > I also have a preliminary HAL driver for machinekit which talks to a
-> > Trinamic motor over RT-CAN just fine (beaglebone for now, x86 once I get
-> a
-> > CAN PCI card).
-> >
-> > I'm working with Steve to get the driver polished and hope we can inject
-> it
-> > into the Xenomai foodchain eventually, after which it will be eventually
-> > picked up by Robert's periodic builds, and the whole thing becomes an
-> > 'apt-get install' - affair. But we're not there yet.
-> >
-> >
-> > I have a few questions on RT-CAN (I guess really RTDM):
-> >
-> > - can the RTDM API (
-> > https://xenomai.org/documentation/trunk/html/api/group__userapi.html) be
-> > used from a normal Posix thread (non-RT) just alike? from the rtcansend*
-> > utilities src it looks like at least for setup, even if the send/receive
-> > ops are done in an RT thread.
-> >
-> > - socket-CAN and RT-CAN interworking: I assume this is an either-or
-> affair,
-> > right? (background: for some jobs the RT-CAN features are overkill, and
-> in
-> > that case something like the python-can binding would be convenient to
-> use)
->
-> If the resources (irq, mem, etc.) used by the device are clearly
-> separated, it might be possible to use one device (of the same type) for
-> Linux and the other for RTCAN. It will work for sure for devices using
-> different drivers (belonging to different controllers).
->
-> Wolfgang.
->
->
