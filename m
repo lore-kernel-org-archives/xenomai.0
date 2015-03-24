@@ -1,17 +1,12 @@
+Message-ID: <55117766.4090003@web.de>
+Date: Tue, 24 Mar 2015 15:40:38 +0100
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-Sender: had2006@gmail.com
-In-Reply-To: <20150313171016.GG1497@hermes.click-hack.org>
-References: <CANWkrRPz2B5FgOAVLy5-i+DOFOHf5QDZQoHP28n_oAdaSmYTBw@mail.gmail.com>
- <5502AEAF.3010003@xenomai.org>
- <CANWkrRNmZqnN7p2nmNCc_8C8iFUW79E03L1Z62nnx4zWmSJ8Sw@mail.gmail.com>
- <CANWkrRM3hD_LG-7EQFDxF5U-YS3YJYe8jNyL3cOZqSEL+tqQNg@mail.gmail.com>
- <CAKk99t3XcTPTD=7VoFsJ=hsZeX7mVAR4dnyecCd_yZ2NiiZzzw@mail.gmail.com>
- <20150313171016.GG1497@hermes.click-hack.org>
-Date: Fri, 13 Mar 2015 17:16:52 +0000
-Message-ID: <CAKk99t0kTkCMMs_U9m10TDRK8PQk_Uo1wS2PURjKmxSDHeCPJA@mail.gmail.com>
-From: Helder Daniel <hdaniel@ualg.pt>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] rtdm/driver.h location - Xenomai 3.0
+References: <CAOgYGPq2882YFEd+r97TTO41u-KD1GTfVzUtoH3jjVz9NUM42Q@mail.gmail.com>
+In-Reply-To: <CAOgYGPq2882YFEd+r97TTO41u-KD1GTfVzUtoH3jjVz9NUM42Q@mail.gmail.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] xenomia on virtual box
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,17 +15,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Michael Smith <2michael.smith@gmail.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: r t <rolandtollenaar@gmail.com>, xenomai@xenomai.org
 
->
->
-> Once again, typing:
->
-> make -C /usr/src/linux-3.16.0-ipipe/ M=$(PWD) modules
->
-> is shorter and avoids the need for a symbolic link which requires
-> root privileges.
->
->
-ok. thanks Gilles
+On 2015-03-24 12:54, r t wrote:
+> Hi,
+> =
+
+> perhaps a silly question but we are trying to get our pre- xenomai patched
+> kernel to run on VirtualBox. Playing about a bit. Well we already have it
+> running that is not the problem.
+> =
+
+> The question is whether there is any chance that we will get good (or any)
+> latency/ realtime performance if the kernel was compiled on another machi=
+ne
+> other than the host environment currently hosting the VirtualBox?
+> =
+
+> Instructions to achieve what we are playing with explicitly state that the
+> kernel must be compiled on the host then installed on the guest which lea=
+ds
+> to believe (as I would intuitively expect) that it is not possible to
+> abstract a xenomai environement from the hardware. However to my surprize
+> the xenomai patched kernel does noet seeem to have to run on the host.  H=
+ow
+> does xenomai on the guest machine achieve good realtime performance if the
+> host is still free to act as it wishes in terms of accessing hardware?
+> =
+
+> =
+
+> Can anyone perhaps shed some light on this?
+
+Virtualization, specifically if VirtualBox-based, destroys real-time for
+a Xenomai guest system. You can use such setups very well for functional
+tests provided they do not fail due to longer delays or high jitters.
+
+VirtualBox has a fairly poor interface for Linux guests /wrt virtual
+clocks and their calibration. Therefore, we frequently run into issues
+when setting up Xenomai tests on Windows hosts.
+
+The best real-time environment you can get right now out of a common
+hypervisor is stacking KVM on top of PREEMPT-RT. But that alone will not
+suffice, you will also have to tune the guest to avoid priority
+inversions in the hypervisor's machine emulation.
+
+Jan
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 181 bytes
+Desc: OpenPGP digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150324/a84fbc8=
+4/attachment.sig>
