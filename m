@@ -1,13 +1,10 @@
-Date: Mon, 23 Mar 2015 23:09:35 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150323220935.GA19836@hermes.click-hack.org>
-References: <CAJT0owGYuZ8L47AKM0FdjOw5x3g0cjXcXAFPaL91TaxMun6WBw@mail.gmail.com>
+Message-ID: <55114499.7050509@xenomai.org>
+Date: Tue, 24 Mar 2015 12:03:53 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJT0owGYuZ8L47AKM0FdjOw5x3g0cjXcXAFPaL91TaxMun6WBw@mail.gmail.com>
-Subject: Re: [Xenomai] Xenomai 3.0-rc3 Interruption on Arietta G25
- (AT91SAM9G25 chip)
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai]  [RELEASE] Xenomai 3.0-rc4
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,111 +13,132 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Tianchi Huang <gz.eddie.htc@gmail.com>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Mon, Mar 23, 2015 at 12:07:43PM +0100, Tianchi Huang wrote:
-> *Hello,*
-> 
-> *I'm now working on project using Arietta G25 board (AT91SAM9G25 chip) on
-> which i need to capture 1000 interruptions per second of an external ADC. *
-> *I have patched the kernel 3.14.17 with the patch ipipe-core-3.14.17-arm-5
-> which i found on GNA. The compilation passed and Xenomai seems to run all
-> right. The latency test gave me about 100us as worst value. *
-> 
-> *I make un modele of interruption test as below*
-> #include <linux/fs.h>
-> #include <linux/fcntl.h>
-> #include <linux/gpio.h>
-> #include <linux/interrupt.h>
-> #include <linux/module.h>
-> #include <rtdm/driver.h>
-> 
-> #define GPIO_IN  27
-> static rtdm_irq_t irq_rtdm;
-> static int handler_interruption(rtdm_irq_t * irq){
-> printk(KERN_ALERT "IRQ received!\n");
-> return RTDM_IRQ_HANDLED;
-> }
-> 
-> static int __init exemple_init (void){
-> int err;
-> int num_interruption;
-> if ((err = gpio_request(GPIO_IN, "test_irq")) != 0) {
-> return err;
-> }
-> if ((err = gpio_direction_input(GPIO_IN)) != 0) {
-> gpio_free(GPIO_IN);
-> return err;
-> }
-> numero_interruption = gpio_to_irq(GPIO_IN);
-> irq_set_irq_type(numero_interruption, IRQF_TRIGGER_FALLING);
-> if ((err = rtdm_irq_request(& irq_rtdm, num_interruption,
-> handler_interruption, RTDM_IRQTYPE_EDGE, "test_irq", NULL)) != 0) {
-> gpio_free(GPIO_IN);
-> return err;
-> }
-> printk(KERN_ALERT "Driver registed\n");
-> rtdm_irq_enable(& irq_rtdm);
-> return 0;
-> }
-> 
-> static void __exit exemple_exit (void){
-> rtdm_irq_disable(& irq_rtdm);
-> rtdm_irq_free(&irq_rtdm);
-> gpio_free(GPIO_IN);
-> }
-> module_init(exemple_init);
-> module_exit(exemple_exit);
-> MODULE_LICENSE("GPL");
-> 
-> 
-> *It seems that it has been registed and run without no error, as you can
-> see just here:*
-> root@arietta:/home# cat /proc/xenomai/irq
->   IRQ         CPU0
->    17:           1         [timer/0]
->    28:           0         test_irq
->  1027:           0         [virtual]
-> root@arietta:/home# cat /proc/interrupts
->            CPU0
->  16:      31031       AIC   1  at91_tick, at91_rtc, ttyS0
->  18:       1579       AIC  20  at_hdmac
->  19:          0       AIC  21  at_hdmac
->  23:      15338       AIC  12  f0008000.mmc
->  25:          0       AIC  14  f0004000.spi
->  26:      20732       AIC  23  atmel_usba_udc
->  27:       8119       AIC  22  ehci_hcd:usb1, ohci_hcd:usb2
->  28:          1      GPIO  27
-> Err:          0
-> 
-> *But, when i generate a signal on GPIO 27, i can see the counter of
-> /proc/interrupts increase but not the counter of /proc/xenomai/irq nor the
-> message i put in the interrupt handler, as you can see below:*
-> 
-> root@arietta:/home# cat /proc/xenomai/irq
->   IRQ         CPU0
->    17:           1         [timer/0]
->    28:           0         test_irq
->  1027:           0         [virtual]
-> root@arietta:/home# cat /proc/interrupts
->            CPU0
->  16:      31031       AIC   1  at91_tick, at91_rtc, ttyS0
->  18:       1579       AIC  20  at_hdmac
->  19:          0       AIC  21  at_hdmac
->  23:      15338       AIC  12  f0008000.mmc
->  25:          0       AIC  14  f0004000.spi
->  26:      20732       AIC  23  atmel_usba_udc
->  27:       8119       AIC  22  ehci_hcd:usb1, ohci_hcd:usb2
->  28:       5459      GPIO  27
-> Err:          0
-> 
-> *Do you have any idea of that? I've tried Xenomai 2.6.4 too, but i had the
-> same problem. Hope you can help me with this.*
 
-Have you tried calling both rtdm_irq_request and request_irq in the
-same driver ?
+This release mainly fixes Cobalt issues, in addition to addressing bugs
+in the shared session management for Copperplate-based APIs (alchemy,
+vxworks and psos currently).
 
--- 
-					    Gilles.
+Please note that autoconf-generated files have been dropped from the GIT
+repository, so you will have to bootstrap the source tree if you plan to
+build from the repo from now on:
+see
+http://xenomai.org/installing-xenomai-3-x/#Installing_the_Xenomai_libraries_and_tools
+
+3.0-rc4 supports kernel 3.18, for which no I-pipe patches have been
+formally released yet; the pipeline code can be obtained from branch
+ipipe-3.18 at git://git.xenomai.org/ipipe.git though.
+
+>From that point we will likely go to 3.0 final directly, I don't see any
+reason to plan for -rc5.
+
+http://download.gna.org/xenomai/testing/latest/
+
+Short log follows:
+
+Jan Kiszka (9):
+      cobalt: Remove unused __xn_success_return
+      cobalt/posix/timer: Properly wrap timer_delete syscall handler
+      cobalt/posix: Convert syscalls to long return type
+      cobalt/posix: Add support for return long values from syscalls
+      cobalt/posix/syscall: Exclude sc_cobalt_get_current from debug
+warnings
+      cobalt/timer: Fix build for kernels < 3.18
+      cobalt/procfs: Fix layout of APC header line
+      cobalt/posix/sem: Increment semaphore on interrupted sem_wait
+      alchemy/sem: Fix nwaiters reported by rt_sem_inquire
+
+Philippe Gerum (80):
+      cobalt/x86: exclude %rsp from mayday fixup in long mode
+      cobalt/x86: drop %esp from mayday fixup in 32bit mode
+      lib/cobalt: lock memory upon deferred init too
+      lib/cobalt: control auto-shadowing via __cobalt_no_shadow
+      cobalt/thread: send SIGTERM to weak user threads upon cancellation
+request
+      cobalt: finalize the core control interface
+      cobalt/kernel: unify naming of extern data - cobalt_kernel_ppd
+      cobalt/kernel: unify naming of extern data - cobalt_machine
+      drivers/serial/mpc52xx: fix build issue
+      cobalt/kernel: unify naming of extern data - cobalt_pipeline
+      cobalt/kernel: unify naming of extern data - cobalt_machine_cpudata
+      cobalt/kernel: unify naming of extern data - cobalt_nrthreads
+      cobalt/kernel: unify naming of extern data - cobalt_cpu_affinity
+      cobalt/kernel: unify naming of extern data - cobalt_heap
+      cobalt/kernel: unify naming of extern data - cobalt_vfroot
+      cobalt/kernel: unify naming of extern data - cobalt_debug_vfroot
+      cobalt/posix: convert 32bit syscalls to long return type
+      cobalt/kernel: rebase assertion mechanism on BUG/WARN support
+      cobalt/kernel: sanitize usage of internal copy_to/from helpers
+      doc/man/autotune: mention static CONFIG_* values for gravity
+      cobalt/x86: allow symbolic state names for xenomai.smi
+      cobalt/kernel: add back sysfs exposure to parameters
+      build: turn on _FORTIFY_SOURCE on --enable-fortify
+      autotune: fix build with _FORTIFY_SOURCE > 0
+      copperplate/regd: fix build with _FORTIFY_SOURCE > 0
+      build: auto-detect fortify support in libc unconditionally
+      smokey/sigdebug: account for uclibc lacking clock_nanosleep()
+      build: do not set _FORTIFY_SOURCE in autodetect mode
+      scripts/prepare-kernel.sh: fix check for supported major kernel
+version
+      cobalt/intr: catch invalid status from IRQ handlers
+      debian/rules: xeno-config also belongs to the base package
+      cobalt: fixups for kernel 3.18
+      scripts/xeno-config: dump the compiler version with --info
+      copperplate/registry: execlp() is pointless with an absolute path
+      cobalt/x86: upgrade I-pipe support
+      build: make $prefix value available to configure script
+      cobalt/x86: upgrade I-pipe support
+      copperplate/regd: be resilient in presence of a stale /system tree
+      cobalt/timer: fix heap-based timer management
+      alchemy: fix internal error handling
+      boilerplate/hash: no dependency on address space in shared h-table
+      boilerplate/hash: pass opaque arg to table walk handler
+      copperplate/cluster: add support for walking a cluster
+      copperplate/init: allow pure copperplate-based applications
+      copperplate/init: fix shared heap name with default session
+      copperplate: drop useless session reset option
+      copperplate: fix cluster probe routine
+      copperplate: fix synchronization with shared clusters
+      utils/hdb: add basic shared heap debugger/viewer
+      README: refer to build & run howtos
+      cobalt/sched: do not choke on redundant policy setting
+      doc/asciidoc: update guides
+      copperplate/regd: fall back to umount if fusermount -u failed
+      cobalt/posix/process: move global thread list out of kqueue container
+      cobalt/posix: cleanup reclaiming of process-local objects
+      cobalt/posix: group init work
+      cobalt/posix/process: introduce resource management API
+      cobalt/posix/cond: use resource management API
+      cobalt/posix/mutex: use resource management API
+      cobalt/posix/event: use resource management API
+      cobalt/posix/monitor: use resource management API
+      cobalt/posix/sem: use resource management API
+      include/trank: add C bindings
+      cobalt/arm: upgrade I-pipe support
+      cobalt/powerpc: upgrade I-pipe support
+      cobalt/blackfin: upgrade I-pipe support
+      cobalt/x86: upgrade I-pipe support
+      cobalt/posix/mutex: fix release of shared state to UMM heap
+      demo/altency: allow for longer thread names
+      copperplate/registry: shorten sync delay with sysregd
+      copperplate/regd: drop references to stale threads in sysgroup
+      copperplate/heapobj: use per-process heap for anon sessions
+      copperplate/registry: disambiguate socket usage
+      build: drop autoconf-generated files
+      copperplate/registry: move anon sessions under the user tree
+      config: bump core version
+      cobalt: bump ABI revision level
+      doc/asciidoc: update guides
+      copperplate/registry: fix build issue with non-wrapped symbol
+      doc/asciidoc: update guides
+
+--
+Philippe.
+
+_______________________________________________
+Xenomai mailing list
+Xenomai@xenomai.org
+http://www.xenomai.org/mailman/listinfo/xenomai
+
 
