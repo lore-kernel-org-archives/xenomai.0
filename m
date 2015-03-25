@@ -1,12 +1,17 @@
-Date: Wed, 25 Mar 2015 09:36:23 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150325083622.GF15125@hermes.click-hack.org>
-References: <55127004.3010708@mitrol.it>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <55127004.3010708@mitrol.it>
-Subject: Re: [Xenomai] fault in ppd_lookup_inner
+In-Reply-To: <20150324161347.GC15125@hermes.click-hack.org>
+References: <CAJT0owGYuZ8L47AKM0FdjOw5x3g0cjXcXAFPaL91TaxMun6WBw@mail.gmail.com>
+ <20150323220935.GA19836@hermes.click-hack.org>
+ <CAJT0owGFHg9cuqWQWYY1y93=Dff9pHUyE+Gct_1=RM2gOwNK_w@mail.gmail.com>
+ <20150324160153.GB15125@hermes.click-hack.org>
+ <20150324161347.GC15125@hermes.click-hack.org>
+Date: Wed, 25 Mar 2015 09:58:54 +0100
+Message-ID: <CAJT0owE5VFmOfH05BZTZ4xZ_8=Co6Anu7VWa3qcW-MLMJK8GTQ@mail.gmail.com>
+From: Tianchi Huang <gz.eddie.htc@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Xenomai 3.0-rc3 Interruption on Arietta G25
+ (AT91SAM9G25 chip)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,18 +20,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paolo Minazzi <Paolo.Minazzi@mitrol.it>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Wed, Mar 25, 2015 at 09:21:24AM +0100, Paolo Minazzi wrote:
-> Hello all,
-> I'm stressing an arm IMX6 boardwith
-> - kernel 3.0.35
-> - I-pipe 1.18-13
-> - xenomai 2.6.3
-
-Do you observe the same behaviour with Xenomai 2.6.4 ?
-
--- 
-					    Gilles.
-
+KnRoZSBsYXRlbmN5IHRlc3QgZGlkIHJ1biBjb3JyZWN0bHkgYW5kIGFmdGVyIHRoZSB0ZXN0LCB0
+aGUgdGltZXIgY291bnRlcgppbmNyZWFzZSwgbGlrZSB0aGlzOioKCnJvb3RAYXJpZXR0YTovdXNy
+L3hlbm9tYWkvYmluIyAuL2xhdGVuY3kKPT0gU2FtcGxpbmcgcGVyaW9kOiAxMDAwIHVzCj09IFRl
+c3QgbW9kZTogcGVyaW9kaWMgdXNlci1tb2RlIHRhc2sKPT0gQWxsIHJlc3VsdHMgaW4gbWljcm9z
+ZWNvbmRzCndhcm1pbmcgdXAuLi4KUlRUfCAgMDA6MDA6MDEgIChwZXJpb2RpYyB1c2VyLW1vZGUg
+dGFzaywgMTAwMCB1cyBwZXJpb2QsIHByaW9yaXR5IDk5KQpSVEh8LS0tLWxhdCBtaW58LS0tLWxh
+dCBhdmd8LS0tLWxhdCBtYXh8LW92ZXJydW58LS0tbXN3fC0tLWxhdCBiZXN0fC0tbGF0CndvcnN0
+ClJURHwgICAgICA1LjgyNHwgICAgIDE0LjE3NnwgICAgIDY1LjE1MXwgICAgICAgMHwgICAgIDB8
+ICAgICAgNS44MjR8CjY1LjE1MQpSVER8ICAgICAgNS44MDZ8ICAgICAxMy40OTN8ICAgICA2NS4y
+NTF8ICAgICAgIDB8ICAgICAwfCAgICAgIDUuODA2fAo2NS4yNTEKUlREfCAgICAgIDUuNzE3fCAg
+ICAgMTIuMTQxfCAgICAgNjQuMzkxfCAgICAgICAwfCAgICAgMHwgICAgICA1LjcxN3wKNjUuMjUx
+ClJURHwgICAgICA1LjYyN3wgICAgIDExLjIwM3wgICAgIDY1LjYxMXwgICAgICAgMHwgICAgIDB8
+ICAgICAgNS42Mjd8CjY1LjYxMQpSVER8ICAgICAgNS45MDR8ICAgICAxNS45NjR8ICAgICA2NC4y
+NzF8ICAgICAgIDB8ICAgICAwfCAgICAgIDUuNjI3fAo2NS42MTEKUlREfCAgICAgIDUuNzgzfCAg
+ICAgMTMuNzM3fCAgICAgNjMuNzExfCAgICAgICAwfCAgICAgMHwgICAgICA1LjYyN3wKNjUuNjEx
+Cl5DLS0tfC0tLS0tLS0tLS0tfC0tLS0tLS0tLS0tfC0tLS0tLS0tLS0tfC0tLS0tLS0tfC0tLS0t
+LXwtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tClJUU3wgICAgICA1LjYyN3wgICAgIDEzLjQ1Mnwg
+ICAgIDY1LjYxMXwgICAgICAgMHwgICAgIDB8CiAwMDowMDowNi8wMDowMDowNgpyb290QGFyaWV0
+dGE6L3Vzci94ZW5vbWFpL2JpbiMgY2F0IC9wcm9jL3hlbm9tYWkvaXJxCiAgSVJRICAgICAgICAg
+Q1BVMAogICAxNzogICAgICAgIDc2MTYgICAgICAgICBbdGltZXIvMF0KIDEwMjc6ICAgICAgICAg
+IDE2ICAgICAgICAgW3ZpcnR1YWxdCnJvb3RAYXJpZXR0YTovdXNyL3hlbm9tYWkvYmluIwoKSGVy
+ZSBpcyBteSAuY29uZmlnLCBmb3Iga2VybmVsIDMuMTQuMTcuCgpCZXN0IHJlZ2FyZHMsCgoqVGlh
+bmNoaSBIVUFORyoKCkluZ8OpbmlldXIgSW5mb3JtYXRpcXVlIGVuIEFwcHJlbnRpc3NhZ2UKCmVk
+ZGllLmh1YW5nQGJpb3NlcmVuaXR5LmNvbQoKVGVsIDogKzMzKDApIDYgNTIgODYgMjkgODYKCgoK
+QmlvU2VyZW5pdHkKCklDTS1pUEVQUwoKNDctODUgYm91bGV2YXJkIGRlIGwnSMO0cGl0YWwKCjc1
+MDEzIFBhcmlzCgoKd3d3LmJpb3NlcmVuaXR5LmNvbQoKMjAxNS0wMy0yNCAxNzoxMyBHTVQrMDE6
+MDAgR2lsbGVzIENoYW50ZXBlcmRyaXggPApnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9y
+Zz46Cgo+IE9uIFR1ZSwgTWFyIDI0LCAyMDE1IGF0IDA1OjAxOjUzUE0gKzAxMDAsIEdpbGxlcyBD
+aGFudGVwZXJkcml4IHdyb3RlOgo+ID4gT24gVHVlLCBNYXIgMjQsIDIwMTUgYXQgMDQ6NTU6NTVQ
+TSArMDEwMCwgVGlhbmNoaSBIdWFuZyB3cm90ZToKPiA+ID4gVGhhbmsgeW91IGZvciB5b3VyIHJl
+c3BvbnNlLCBHaWxsZXMuCj4gPiA+Cj4gPiA+IEkgYWRkZWQgaXJxX3JlcXVlc3QgaW4gdGhlIGlu
+aXQgZnVuY3Rpb24gYW5kIGFuIG90aGVyIGNhbGxiYWNrIGhhbmRsZXIuCj4gPiA+IEludGVycnVw
+dGlvbnMgaGF2ZSBiZWVuIGhhbmRsZWQgaW4gdGhlIG5ldyBoYW5kbGVyLCBidXQgbm90IHRoZSBl
+bGRlci4KPiBBbmQKPiA+ID4gdGhlcmUgd2FzIGFsd2F5cyB0aGUgc2FtZSBwcm9ibGVtIHdpdGgg
+dGhlIGNvdW50ZXIgaW4KPiAvcHJvYy94ZW5vbWFpL2lycSwgaXQKPiA+ID4gZG9lc24ndCBpbmNy
+ZWFzZS4KPiA+Cj4gPiBPaywgZG9lcyB0aGUgbGF0ZW5jeSB0ZXN0IHJ1biBjb3JyZWN0bHk/IElm
+IHllcywgaXMgdGhlIHRpbWVyCj4gPiBjb3VudGVyIGluY3JlbWVudGluZyBpbiAvcHJvYy94ZW5v
+bWFpL2lycT8KPgo+IEZvcmdldCBhYm91dCB0aGF0LCBwbGVhc2Ugc2VuZCBtZSB5b3VyIGtlcm5l
+bCBjb25maWd1cmF0aW9uLgo+Cj4gLS0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgIEdpbGxlcy4KPgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0t
+LS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiAuY29uZmln
+ClR5cGU6IGFwcGxpY2F0aW9uL3htbApTaXplOiA2ODk5MyBieXRlcwpEZXNjOiBub3QgYXZhaWxh
+YmxlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNo
+bWVudHMvMjAxNTAzMjUvM2JmMDM5N2EvYXR0YWNobWVudC53c2RsPgo=
