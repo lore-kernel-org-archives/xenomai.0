@@ -1,16 +1,8 @@
-Date: Tue, 24 Mar 2015 17:13:47 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150324161347.GC15125@hermes.click-hack.org>
-References: <CAJT0owGYuZ8L47AKM0FdjOw5x3g0cjXcXAFPaL91TaxMun6WBw@mail.gmail.com>
- <20150323220935.GA19836@hermes.click-hack.org>
- <CAJT0owGFHg9cuqWQWYY1y93=Dff9pHUyE+Gct_1=RM2gOwNK_w@mail.gmail.com>
- <20150324160153.GB15125@hermes.click-hack.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20150324160153.GB15125@hermes.click-hack.org>
-Subject: Re: [Xenomai] Xenomai 3.0-rc3 Interruption on Arietta G25
- (AT91SAM9G25 chip)
+From: Stefan Roese <sr@denx.de>
+Date: Wed, 25 Mar 2015 05:15:43 +0100
+Message-Id: <1427256943-8654-1-git-send-email-sr@denx.de>
+Subject: [Xenomai] [PATCH] ipipe: drivers/irqchip/irq-vic.c: Fix problems
+	with ipipe in VIC
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,23 +11,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Tianchi Huang <gz.eddie.htc@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Tue, Mar 24, 2015 at 05:01:53PM +0100, Gilles Chanteperdrix wrote:
-> On Tue, Mar 24, 2015 at 04:55:55PM +0100, Tianchi Huang wrote:
-> > Thank you for your response, Gilles.
-> > 
-> > I added irq_request in the init function and an other callback handler.
-> > Interruptions have been handled in the new handler, but not the elder. And
-> > there was always the same problem with the counter in /proc/xenomai/irq, it
-> > doesn't increase.
-> 
-> Ok, does the latency test run correctly? If yes, is the timer
-> counter incrementing in /proc/xenomai/irq?
+These changes are needed to enable the VIC interrupt handler for I-pipe usage.
+This patch version is for the "ipipe-3.18" branch in Philippes "ipipe" git
+respository. But a quick search reveals that such a fix very likely is needed
+for kernel version from v3.10 onward.
 
-Forget about that, please send me your kernel configuration.
+Tested on SPEAr600 based board with v3.18.
 
+Signed-off-by: Stefan Roese <sr@denx.de>
+---
+ drivers/irqchip/irq-vic.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/irqchip/irq-vic.c b/drivers/irqchip/irq-vic.c
+index 46da75e..9302875 100644
+--- a/drivers/irqchip/irq-vic.c
++++ b/drivers/irqchip/irq-vic.c
+@@ -220,7 +220,7 @@ static int handle_one_vic(struct vic_device *vic, struct pt_regs *regs)
+ 
+ 	while ((stat = readl_relaxed(vic->base + VIC_IRQ_STATUS))) {
+ 		irq = ffs(stat) - 1;
+-		handle_domain_irq(vic->domain, irq, regs);
++		ipipe_handle_multi_irq(irq_find_mapping(vic->domain, irq), regs);
+ 		handled = 1;
+ 	}
+ 
+@@ -237,7 +237,7 @@ static void vic_handle_irq_cascaded(unsigned int irq, struct irq_desc *desc)
+ 
+ 	while ((stat = readl_relaxed(vic->base + VIC_IRQ_STATUS))) {
+ 		hwirq = ffs(stat) - 1;
+-		generic_handle_irq(irq_find_mapping(vic->domain, hwirq));
++		ipipe_handle_demuxed_irq(irq_find_mapping(vic->domain, hwirq));
+ 	}
+ 
+ 	chained_irq_exit(host_chip, desc);
 -- 
-					    Gilles.
+2.3.4
+
 
