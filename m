@@ -1,21 +1,22 @@
-Message-ID: <8dc6116b7b5868d884c9f8c3e3de3c84.squirrel@xenomai.org>
-In-Reply-To: <5500A3DD.2070306@xenomai.org>
-References: <CAKk99t3_phHv3kUfCZcwr2bqTys3JPL3iaWACLjP+f1yoD_Nag@mail.gmail.com>
- <54F97594.2060605@xenomai.org>
- <CAKk99t1AGHj8sOf7Vgy_UZ_+rECP5Vx22cyup--FHsh=RuK2zA@mail.gmail.com>
- <54F97E05.8010107@xenomai.org>
- <CAKk99t3FfAff0X0nGzKD+YcVFQWm5aeSRFB4U6No1YSPuS_qpA@mail.gmail.com>
- <CAKk99t03p_Pc41meo_zzZ0V6X_vjHZRWBeO1aNb+DM2c38pNTg@mail.gmail.com>
- <54FF64AF.5000300@xenomai.org>
- <CAKk99t2159Do6Rj0GSRPkPFcbN-qT9JpWBD1ojmFOHYv7ZKkGg@mail.gmail.com>
- <5500A3DD.2070306@xenomai.org>
-Date: Wed, 11 Mar 2015 22:01:42 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+Date: Thu, 26 Mar 2015 20:52:10 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150326195210.GA12891@hermes.click-hack.org>
+References: <20150324160153.GB15125@hermes.click-hack.org>
+ <20150324161347.GC15125@hermes.click-hack.org>
+ <CAJT0owE5VFmOfH05BZTZ4xZ_8=Co6Anu7VWa3qcW-MLMJK8GTQ@mail.gmail.com>
+ <CAJT0owE7vtJDWM289=4cNR_LuUqPWAO60nvg9D0NiTQWeN9Xbg@mail.gmail.com>
+ <20150326143225.GN15125@hermes.click-hack.org>
+ <oqsicrznxt.fsf@merlin.sez.to>
+ <20150326183015.GZ15125@hermes.click-hack.org>
+ <oqk2y3zj6n.fsf@merlin.sez.to>
+ <20150326185807.GA15125@hermes.click-hack.org>
+ <oqegobzh9z.fsf@merlin.sez.to>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Fwd: Error boilerplate/wrappers.h no found trying to
- compile RTDM module on 3.x-rc3 cobalt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <oqegobzh9z.fsf@merlin.sez.to>
+Subject: Re: [Xenomai] Xenomai 3.0-rc3 Interruption on Arietta G25
+ (AT91SAM9G25 chip)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,57 +25,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Paul Janzen <pcj@xenomai.sez.to>
+Cc: xenomai@xenomai.org
 
+On Thu, Mar 26, 2015 at 12:32:24PM -0700, Paul Janzen wrote:
+> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
+> >> I'm simply suggesting that xenomai mailman be configured to include
+> >> this header. Then people would have to consciously edit header fields
+> >> to send to your private account only.
+> >
+> > No, the mailman documentation recommends against that, it is a
+> > recipe for sending private mails to the list unintentionally, which
+> > is way worse than the opposite.
+> 
+> Your responses to those who make the trivial mistake of clicking on
+> "reply" rather than "reply all" seem to indicate that you believe
+> otherwise.
 
-Philippe Gerum wrote:
-> On 03/11/2015 06:30 PM, Helder Daniel wrote:
->>     You need /lib/modules/$(shell uname -r)/build to refer to a kernel
->> tree
->>     prepared with the Xenomai kernel sources, i.e.
->> scripts/prepare-kernel.sh
->>     should have run in this source tree at some point. The errors you
->> get
->>     indicate that no Xenomai code can be found there.
->>
->>
->> I had
->>
->> /lib/modules/$(shell uname -r)/build
->>
->> pointing to the kernel headers installed from a .deb package.
->> This package was created when compiling the Cobalt kernel with:
->>
->> make-kpkg --initrd kernel_image kernel_headers
->>
->> so I assumed that all Xenomai code is included in that package.
->>
->> Now I pointed to the kernel source tree and I can compile the module.
->>
->> This is strange. I was expecting that the kernel headers package created
->> with debian build to store all Xenomai info, so that I can install a
->> cobalt kernel image + headers in another computer, from 2 debian
->> packages (I did this before successfully with Xenomai 2.5.x) without
->> having to copy all the kernel source tree.
->>
->
-> Following the current kernel standards, Xenomai 3 introduces a strict
-> split between kernel headers and user-space ones, with a uapi/ section
-> for the shared portion which exposes the ABI. Maybe debian/rules does
-> not reflect that change.
->
+My response are a warning, just that: next private mail will not
+receive an answer. But otherwise, again, I prefer this error than
+the opposite.
 
-make-kpkg does not use the debian rules. It uses its own rules, and yes,
-you may have issues if you use an old version of make-pkkg (like for
-instance the one in debian stable) with a newer kernel. The solution is to
-install make-kpkg from debian unstable. Or maybe use a backport if it
-exists. Now, I do not know if make-kpkg will resolve the symbolic links
-in the kernel sources, or if it keeps them. If it keeps them, you need
-to keep the xenomai headers at the place they were when running
-prepare-kernel.sh.
+> 
+> The rationale behind the mailman developers' stance against Reply-To:
+> is that users should be encouraged to choose either to reply to the
+> original sender's personal address, or to the entire list.  This is
+> the opposite of the stated policy of the xenomai list.
+
+There are cases where a private answer is appropriate, asking a
+question about xenomai, is not one of them.
+
+> 
+> If you personally do not want replies sent only to your personal
+> address, then feel free to configure your MUA to insert your own
+> Reply-To: header.  If you want to maximize the amount of
+> xenomai-related traffic captured in the digests, configure mailman to
+> do it.
+
+No, I think I will handle things differently: private answers to the
+xenomai mailing list will go to my "slow" imap folder only polled once a
+day.
 
 -- 
-                    Gilles.
-
+					    Gilles.
 
