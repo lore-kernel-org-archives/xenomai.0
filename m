@@ -1,20 +1,23 @@
-References: <CAJT0owGYuZ8L47AKM0FdjOw5x3g0cjXcXAFPaL91TaxMun6WBw@mail.gmail.com>
- <20150323220935.GA19836@hermes.click-hack.org>
- <CAJT0owGFHg9cuqWQWYY1y93=Dff9pHUyE+Gct_1=RM2gOwNK_w@mail.gmail.com>
- <20150324160153.GB15125@hermes.click-hack.org>
- <20150324161347.GC15125@hermes.click-hack.org>
- <CAJT0owE5VFmOfH05BZTZ4xZ_8=Co6Anu7VWa3qcW-MLMJK8GTQ@mail.gmail.com>
- <CAJT0owE7vtJDWM289=4cNR_LuUqPWAO60nvg9D0NiTQWeN9Xbg@mail.gmail.com>
- <20150326143225.GN15125@hermes.click-hack.org>
-From: Paul Janzen <pcj@xenomai.sez.to>
-Date: Thu, 26 Mar 2015 10:08:30 -0700
-In-Reply-To: <20150326143225.GN15125@hermes.click-hack.org> (Gilles
- Chanteperdrix's message of "Thu, 26 Mar 2015 15:32:25 +0100")
-Message-ID: <oqsicrznxt.fsf@merlin.sez.to>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20150326165710.GY15125@hermes.click-hack.org>
+References: <20150326143151.GM15125@hermes.click-hack.org>
+ <CAJT0owEumqaqe+Kd2cRN+cqxx1ZzA905MYE_wbeGv2t61OkNkQ@mail.gmail.com>
+ <20150326145437.GR15125@hermes.click-hack.org>
+ <CAJT0owFNyAPqyu4hRAU1SFdXZQjQkukvWi5sgwHoMijGxO17kQ@mail.gmail.com>
+ <20150326154402.GU15125@hermes.click-hack.org>
+ <CAJT0owF97KT-VMmK7ofB45mU_esXAJH7J3ge0RBYwHJHoAMFuw@mail.gmail.com>
+ <20150326160002.GV15125@hermes.click-hack.org>
+ <CAJT0owG6X2P7XUfu7d88VCam4Wd+TzXbJow4driZKR1GWyLfTw@mail.gmail.com>
+ <20150326163548.GW15125@hermes.click-hack.org>
+ <CAJT0owG00wy+ePmaS-45ioziRDbTtRQ0vtc=upUGpAKiz+UBQA@mail.gmail.com>
+ <20150326165710.GY15125@hermes.click-hack.org>
+Date: Thu, 26 Mar 2015 18:25:25 +0100
+Message-ID: <CAJT0owFc5PPxrvy3qbu7sSQem5NQGJxfq_o_kR=Yn9+4e=prLg@mail.gmail.com>
+From: Tianchi Huang <gz.eddie.htc@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] Xenomai 3.0-rc3 Interruption on Arietta G25
-	(AT91SAM9G25 chip)
+ (AT91SAM9G25 chip)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,18 +29,63 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
+*Found it !*
+
+eddie@eddie-VirtualBox:~/Desktop/xenomai-3/linux-3.14.17$
+arm-linux-gnueabi-addr2line 0xc019681c -e vmlinux -f
+gpio_irq_handler
+/home/eddie/Desktop/xenomai-3/linux-3.14.17/drivers/pinctrl/pinctrl-at91.c:=
+1433
+(discriminator 2)
+
+*0xc019681c shows up in the earlier bug message. *
+
+
+
+
+
+*Tianchi HUANG*
+
+Ing=C3=A9nieur Informatique en Apprentissage
+
+eddie.huang@bioserenity.com
+
+Tel : +33(0) 6 52 86 29 86
+
+
+
+BioSerenity
+
+ICM-iPEPS
+
+47-85 boulevard de l'H=C3=B4pital
+
+75013 Paris
+
+
+www.bioserenity.com
+
+2015-03-26 17:57 GMT+01:00 Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org>:
+
+> On Thu, Mar 26, 2015 at 05:56:05PM +0100, Tianchi Huang wrote:
+> > eddie@eddie-VirtualBox:~/Desktop/xenomai-3/linux-3.14.17$
+> > arm-linux-gnueabi-objdump -t vmlinux | grep gpio_irq_handler
+> > c0014d7c l     F .text 000000d4 gpio_irq_handler
+> > c0196784 l     F .text 000000d0 gpio_irq_handler
+> > eddie@eddie-VirtualBox:~/Desktop/xenomai-3/linux-3.14.17$
+> > arm-linux-gnueabi-addr2line 0xc0194784 -e vmlinux -f
+> > $d
+> > pinctrl-utils.c:?
+> > eddie@eddie-VirtualBox:~/Desktop/xenomai-3/linux-3.14.17$
+> > arm-linux-gnueabi-addr2line 0xc0014d7c -e vmlinux -f
+> > gpio_irq_handler
+> > gpio.c:?
+> >
+> > *I found nothing in pinctrl-utils.c*
 >
-> Next mail to my private address will not be answered.
+> Please enable compilation with debug symbols.
 >
-
-Neither your MUA nor the mailing list software insert a
-
-Reply-To: xenomai@xenomai.org
-
-header into messages coming from your address. If you want replies to
-go to the list, why not use the provided mechanism to say that?
-
--- Paul
-
-
+> --
+>                                             Gilles.
+>
