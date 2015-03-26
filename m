@@ -1,8 +1,8 @@
-Resent-Message-ID: <20150326143241.GO15125@hermes.click-hack.org>
+Resent-Message-ID: <20150326143727.GP15125@hermes.click-hack.org>
 Resent-To: xenomai@xenomai.org
-Date: Thu, 26 Mar 2015 15:32:25 +0100
+Date: Thu, 26 Mar 2015 15:31:51 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150326143225.GN15125@hermes.click-hack.org>
+Message-ID: <20150326143151.GM15125@hermes.click-hack.org>
 References: <CAJT0owGYuZ8L47AKM0FdjOw5x3g0cjXcXAFPaL91TaxMun6WBw@mail.gmail.com>
  <20150323220935.GA19836@hermes.click-hack.org>
  <CAJT0owGFHg9cuqWQWYY1y93=Dff9pHUyE+Gct_1=RM2gOwNK_w@mail.gmail.com>
@@ -31,7 +31,11 @@ On Thu, Mar 26, 2015 at 03:21:31PM +0100, Tianchi Huang wrote:
 > 
 > Did you find something about that bug?
 
-Next mail to my private address will not be answered.
+No. I did not have a look yet. Very much likely there is a piece of
+code in the gpio code that calls generic_handle_irq instead of
+ipipe_handle_demuxed_irq, however from what I can tell the at91 gpio
+driver does not have this issue. You are using a vanilla kernel,
+right, not a patched one ?
 
 -- 
 					    Gilles.
