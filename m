@@ -1,13 +1,19 @@
-Date: Fri, 27 Mar 2015 08:55:57 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150327075557.GB27713@hermes.click-hack.org>
-References: <CAJqUr7w6OZ+kcYp7mFg9OPD0AKuXXDDdLQBCAHQiuxKcG5A=hA@mail.gmail.com>
- <20150327001331.GB29558@csclub.uwaterloo.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20150327001331.GB29558@csclub.uwaterloo.ca>
-Subject: Re: [Xenomai] ARMv8 (ARM64) port of Xenomai
+In-Reply-To: <CACreCV+tYp1QConFh2uKWjnqVOQ4uA=xLmbyay_XT9mui0txfw@mail.gmail.com>
+References: <CACreCVLijm5Wup7aTrRTq=SHBmEUQY5D2pYpXThWXSrGqpcuqw@mail.gmail.com>
+ <20150318142119.GF24525@hermes.click-hack.org>
+ <CACreCV+WajHg9wKp3HpxZ4uVdva5ADAWtOH6DDjPfWzcyNk2YQ@mail.gmail.com>
+ <20150318145611.GG24525@hermes.click-hack.org>
+ <CACreCV+VoYvYQbejhJ2RzU9ZJDUBExwZyRv-DFs3TzWtQvzZkg@mail.gmail.com>
+ <20150325145730.GJ15125@hermes.click-hack.org>
+ <CACreCVLQk_4i7OdMdOFBG6cLKxh3-qJLZGMoz9i_q4XoZPbdoA@mail.gmail.com>
+ <20150325160852.GK15125@hermes.click-hack.org>
+ <CACreCV+tYp1QConFh2uKWjnqVOQ4uA=xLmbyay_XT9mui0txfw@mail.gmail.com>
+Date: Fri, 27 Mar 2015 18:19:01 +0800
+Message-ID: <CACreCVLG=dtjriCzUUqYtOK1Pz+NqYoPFNLJZ4KrM-AccBoHPA@mail.gmail.com>
+From: GP Orcullo <kinsamanka@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Boot failure when CONFIG_XENOMAI is enabled
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,31 +22,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thu, Mar 26, 2015 at 08:13:31PM -0400, Lennart Sorensen wrote:
-> On Thu, Mar 26, 2015 at 03:58:12PM -0700, Don Mahurin wrote:
-> > Another basic question regarding this porting effort:
-> > 
-> > Before any arm64 specific changes or platform specific changes, would
-> > just merging the i-pipe patch/tree (merging ipipe-3.10 into the vendor
-> > kernel for instance) be expected to boot, with CONFIG_IPIPE not set?
-> > Or will that lead to undefined results?
-> 
-> I have yet to ever have a kernel with ipipe patches applied that could
-> be compiled with CONFIG_IPIPE disabled.  I always have to remove the
-> ipipe and xenomai patches if I want to test without them.  I imagine
-> that for some architectures with some kernel versions it had worked,
-> but it seems in general it doesn't.  It just isn't a priority to test
-> that configuration I suspect.
+What happens in between the clocksource switch and head domain registration?
 
-Normally, this is a configuration which is supported and tested. It
-may happen that a patch is released without having tested it on all
-platforms I guess, so, if you find a problem with that, please send
-a report. Or a patch, because such problems are usually not hard to
-fix.
+[    0.090129] DMA: preallocated 4096 KiB pool for atomic coherent
+allocations
+[    0.095333] Switching to clocksource ipipe_tsc
+[    0.122397] I-pipe: head domain Xenomai registered.
+[    0.124618] Xenomai: hal/arm started.
 
--- 
-					    Gilles.
+I'm trying to trace the code to find out where it stops. I tried
+adding printk to to the set and request functions and the code never
+runs when CONFIG_SMP is enabled.
+
+Thanks,
+
+GP Orcullo
 
