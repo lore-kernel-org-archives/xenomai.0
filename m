@@ -1,18 +1,21 @@
 MIME-Version: 1.0
-Sender: had2006@gmail.com
-In-Reply-To: <CAKk99t2LDG0+CC3360XmaQ-F6zb=OuKLMRCtEgfKYFYouoOYqw@mail.gmail.com>
-References: <CAKk99t15m2dbUzGNxi4TsAVk4suZGc14qxv2cBh+iG1nWcM-kQ@mail.gmail.com>
- <55196828.9020207@xenomai.org>
- <20150330152002.GL32766@hermes.click-hack.org>
- <55196B64.9010901@xenomai.org>
- <20150330152957.GN32766@hermes.click-hack.org>
- <55196DB0.8020308@xenomai.org>
- <CAKk99t2LDG0+CC3360XmaQ-F6zb=OuKLMRCtEgfKYFYouoOYqw@mail.gmail.com>
-Date: Mon, 30 Mar 2015 16:55:42 +0100
-Message-ID: <CAKk99t0m=CoE7qw+4aH_UwhK+JYt5Ry5YtDA-7W79q91nOaWsw@mail.gmail.com>
-From: Helder Daniel <hdaniel@ualg.pt>
+In-Reply-To: <20150328151920.GH25831@hermes.click-hack.org>
+References: <CACreCV+tYp1QConFh2uKWjnqVOQ4uA=xLmbyay_XT9mui0txfw@mail.gmail.com>
+ <CACreCVLG=dtjriCzUUqYtOK1Pz+NqYoPFNLJZ4KrM-AccBoHPA@mail.gmail.com>
+ <CACreCVKO35Xt9qgerZnw9V3GTRwnGPn_URkL+1C4ymeHUGfK5A@mail.gmail.com>
+ <CACreCVLg5ufmVAK_+6P1KpYaQ0ShkkPw9m=5+A+Ao=xtA9tEDQ@mail.gmail.com>
+ <551679A2.20508@xenomai.org>
+ <20150328113638.GA25635@hermes.click-hack.org>
+ <CACreCVKgzpDYUbMu2ihYtHxV5CSma-eNaH57u-CvCWmKbkoU=Q@mail.gmail.com>
+ <20150328135303.GE25831@hermes.click-hack.org>
+ <20150328145628.GF25831@hermes.click-hack.org>
+ <CACreCV+dhS14ur96dk2k5nSWfdRx9iXPEPYwSfZncmb0wiNkMg@mail.gmail.com>
+ <20150328151920.GH25831@hermes.click-hack.org>
+Date: Sat, 28 Mar 2015 23:56:33 +0800
+Message-ID: <CACreCV+jhvAadxYoxputQmL4YW1heXK3=v+W7MSSyx4qZEjKuA@mail.gmail.com>
+From: GP Orcullo <kinsamanka@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] There is XDDP Sockets support in kernel?
+Subject: Re: [Xenomai] Boot failure when CONFIG_XENOMAI is enabled
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,142 +24,144 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-After moving rtdm_bind() to the module initialization the module loads, but
-now something wrong happened to the kernel :). Probably I left the program
-buggy when moving the xddp-echo example to kernel space. I will take a
-deeper look.
-
-Thanks
-
-[  450.392941] senderK successfully loaded
-[  450.643664] BUG: unable to handle kernel paging request at
-000000004fcf4200
-[  450.644714] IP: [<ffffffffa03950c8>] sender+0x26/0xc9 [senderK]
-[  450.645497] PGD 0
-[  450.645930] Oops: 0000 [#1] SMP
-[  450.646600] Modules linked in: senderK(O) xeno_rtipc cfg80211 bnep nfsd
-auth_rpcgss oid_registry nfs_acl nfs lockd fscache sunrpc fuse vmhgfs(O)
-loop snd_ens1371 snd_ac97_codec coretemp snd_rawmidi snd_seq_device
-microcode ac97_bus gameport ecb snd_pcm snd_timer snd psmouse soundcore
-evdev serio_raw pcspkr btusb bluetooth rfkill vmwgfx ttm drm_kms_helper
-ehci_pci drm shpchp rt_e1000 i2c_piix4 i2c_core rtnet vmci(O) ext4 crc16
-jbd2 mbcache vmw_pvscsi vmxnet3 hid_generic usbhid hid sd_mod sg crc_t10dif
-crct10dif_common sr_mod cdrom ata_generic uhci_hcd ehci_hcd usbcore e1000
-usb_common mptspi scsi_transport_spi mptscsih mptbase ata_piix libata
-scsi_mod
-[  450.660900] CPU: 0 PID: 3840 Comm: XDDPsender Tainted: G           O
- 3.16.0-ipipe #1
-[  450.662123] Hardware name: VMware, Inc. VMware Virtual Platform/440BX
-Desktop Reference Platform, BIOS 6.00 05/20/2014
-[  450.663030] task: ffff8800149cd2b0 ti: ffff88001f98c000 task.ti:
-ffff88001f98c000
-[  450.663743] RIP: 0010:[<ffffffffa03950c8>]  [<ffffffffa03950c8>]
-sender+0x26/0xc9 [senderK]
-[  450.664627] RSP: 0018:ffff88001f98fdf8  EFLAGS: 00010286
-[  450.669222] RAX: 0000000015f2bbe8 RBX: ffffffffa03972c0 RCX:
-ffffffffffffffff
-[  450.669835] RDX: ffff880016000000 RSI: 0000000000000000 RDI:
-0000000000000000
-[  450.670409] RBP: ffff880015f2bbe8 R08: 0000000080000000 R09:
-ffff8800160948f8
-[  450.671019] R10: 00000000000004b9 R11: ffffffffa03972c0 R12:
-0000000000000000
-[  450.671630] R13: ffffffff810d2e44 R14: 0000000000000000 R15:
-0000000000000000
-[  450.672529] FS:  0000000000000000(0000) GS:ffff880016000000(0000)
-knlGS:0000000000000000
-[  450.673360] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
-[  450.673897] CR2: 000000004fcf4200 CR3: 000000001ed28000 CR4:
-00000000000407f0
-[  450.674624] I-pipe domain Linux
-[  450.675519] Stack:
-[  450.675837]  0000000000000000 0000000000000003 0000000000000082
-ffffffffa03972c0
-[  450.677144]  0000000000000000 0000000000000000 ffff8800149cd2b0
-ffffffff810d1fba
-[  450.678336]  ffff8800160506a8 ffffffff810d2e17 0000000000000000
-0000000000000018
-[  450.680082] Call Trace:
-[  450.680514]  [<ffffffff810d1fba>] ? xnthread_test_cancel+0x6/0x1f
-[  450.681074]  [<ffffffff810d2e17>] ? xnthread_map+0x164/0x191
-[  450.681691]  [<ffffffff810d0c90>] ? ipipe_set_ti_thread_flag+0xa/0xa
-[  450.682308]  [<ffffffff810d2eec>] ? kthread_trampoline+0xa8/0xcc
-[  450.682903]  [<ffffffff81053bea>] ? kthread+0x99/0xa1
-[  450.683378]  [<ffffffff81053b51>] ? __kthread_parkme+0x59/0x59
-[  450.683969]  [<ffffffff813663ed>] ? ret_from_fork+0x7d/0xb0
-[  450.684518]  [<ffffffff81053b51>] ? __kthread_parkme+0x59/0x59
-[  450.685061] Code: 48 83 c4 48 c3 55 53 48 81 ec 88 00 00 00 31 ff e8 12
-cb d3 e0 85 c0 79 0b 89 c6 48 c7 c7 24 60 39 a0 eb 7c 48 63 c5 48 83 c9 ff
-<4c> 8b 04 c5 c0 62 39 a0 31 c0 4c 89 c7 4c 89 c6 f2 ae 8b 3d a0
-[  450.695959] RIP  [<ffffffffa03950c8>] sender+0x26/0xc9 [senderK]
-[  450.696681]  RSP <ffff88001f98fdf8>
-[  450.697063] CR2: 000000004fcf4200
-[  450.697573] ---[ end trace 573e93c96f32000b ]---
-
-
-On 30 March 2015 at 16:40, Helder Daniel <hdaniel@ualg.pt> wrote:
-
-> I think it is.
-> xeno_rtipc was successfully loaded before inserting my module.
->
->
->
-> On 30 March 2015 at 16:37, Philippe Gerum <rpm@xenomai.org> wrote:
->
->> On 03/30/2015 05:29 PM, Gilles Chanteperdrix wrote:
->> > On Mon, Mar 30, 2015 at 05:27:32PM +0200, Philippe Gerum wrote:
->> >> On 03/30/2015 05:20 PM, Gilles Chanteperdrix wrote:
->> >>> On Mon, Mar 30, 2015 at 05:13:44PM +0200, Philippe Gerum wrote:
->> >>>> On 03/30/2015 04:55 PM, Helder Daniel wrote:
->> >>>>> Hi,
->> >>>>>
->> >>>>> When trying to compile a kernel module that sets up a XDDP socket
->> (code
->> >>>>> snippet below) with Xenomai 3.x-rc3 on Cobalt setup,
->> >>>>> rtdm_bind() returns ENOSYS.
->> >>>>> This means that XDDP sockets can not be used in kernel?
->> >>>>>
->> >>>>
->> >>>> No, in this case it likely means that you are calling it from a
->> >>>> real-time context (i.e. a real-time kthread started with
->> >>>> rtdm_task_create()). The binding op can only run from a non-rt
->> context,
->> >>>> e.g. module init code, regular kthread context, _nrt handler.
->> >>>
->> >>> Or that XDDP is not enabled in the kernel configuration, maybe?
->> >>>
+On Sat, Mar 28, 2015 at 11:19 PM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+> On Sat, Mar 28, 2015 at 11:17:24PM +0800, GP Orcullo wrote:
+>> On Sat, Mar 28, 2015 at 10:56 PM, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org> wrote:
+>> > On Sat, Mar 28, 2015 at 02:53:03PM +0100, Gilles Chanteperdrix wrote:
+>> >> On Sat, Mar 28, 2015 at 08:27:33PM +0800, GP Orcullo wrote:
+>> >> > On Sat, Mar 28, 2015 at 7:36 PM, Gilles Chanteperdrix
+>> >> > <gilles.chanteperdrix@xenomai.org> wrote:
+>> >> > > On Sat, Mar 28, 2015 at 10:51:30AM +0100, Philippe Gerum wrote:
+>> >> > >> On 03/28/2015 10:05 AM, GP Orcullo wrote:
+>> >> > >> > On Fri, Mar 27, 2015 at 8:12 PM, GP Orcullo <
+kinsamanka@gmail.com> wrote:
+>> >> > >> >> On Fri, Mar 27, 2015 at 6:19 PM, GP Orcullo <
+kinsamanka@gmail.com> wrote:
+>> >> > >> >>> What happens in between the clocksource switch and head
+domain registration?
+>> >> > >> >>>
+>> >> > >> >>> [    0.090129] DMA: preallocated 4096 KiB pool for atomic
+coherent
+>> >> > >> >>> allocations
+>> >> > >> >>> [    0.095333] Switching to clocksource ipipe_tsc
+>> >> > >> >>> [    0.122397] I-pipe: head domain Xenomai registered.
+>> >> > >> >>> [    0.124618] Xenomai: hal/arm started.
+>> >> > >> >>>
+>> >> > >> >>> I'm trying to trace the code to find out where it stops. I
+tried
+>> >> > >> >>> adding printk to to the set and request functions and the
+code never
+>> >> > >> >>> runs when CONFIG_SMP is enabled.
+>> >> > >> >>>
+>> >> > >> >>> Thanks,
+>> >> > >> >>>
+>> >> > >> >>> GP Orcullo
+>> >> > >> >>
+>> >> > >> >> It gets stuck on the call to ipipe_critical_enter:
+>> >> > >> >>
+http://git.xenomai.org/ipipe-gch.git/tree/kernel/ipipe/timer.c?id=ipipe-core-3.10.32-arm-7#n279
+>> >> > >> >>
+>> >> > >> >> Which then gets stuck on ipipe_send_ipi:
+>> >> > >> >>
+http://git.xenomai.org/ipipe-gch.git/tree/kernel/ipipe/core.c?id=ipipe-core-3.10.32-arm-7#n1533
+>> >> > >> >>
+>> >> > >> >
+>> >> > >> > I've traced the issue to the ipipe_processor_id() function. It
+returns
+>> >> > >> > the value 512 for processor 0. This value comes from cpu node
+property
+>> >> > >> > of the DT file.
+>> >> > >> >
+>> >> > >> > Changing ipipe_processor_id() to return 0 instead of 512
+allows the
+>> >> > >> > kernel to boot but it fails the switchtest regression test.
+>> >> > >> >
+>> >> > >> > Changing the cpu0 reg value on the DT file allows the kernel
+to boot
+>> >> > >> > and pass all the xenomai regression tests but it generates the
+>> >> > >> > following warning at boot:
+>> >> > >>
+>> >> > >> No, this property for armv7 must match MPIDR[23:0], i.e. the
+physical id
+>> >> > >> of the core.
+>> >> > >>
+>> >> > >> > What's the proper way of fixing this?
+>> >> > >> >
+>> >> > >>
+>> >> > >> By fixing ipipe_processor_id() in the CONFIG_LEGACY case, it's
+broken.
+>> >> > >> It assumes __cpu_logical_map[] is a hw->logical map, but it is
+actually
+>> >> > >> the opposite.
+>> >> > >>
+>> >> > >> We may have been lucky until now because the physical mapping
+seems to
+>> >> > >> have always matched the logical order on the SMP SoCs people
+used with
+>> >> > >> Xenomai so far, it looks like your A5 core does not follow this
+order.
+>> >> > >
+>> >> > > No, cpu_logical_map works both ways, it simply exchanges 0 with
+>> >> > > whatever number the boot cpu has
+>> >> > > so, since cpu_logical_map[0] == 512 and cpu_logical_map[512] == 0
+>> >> > > it should work both ways.
+>> >> > > At least, that was true before DT. Now, I find 512 a bit high, are
+>> >> > > you sure cpu_logical_map[] is large enough ? Or is it even
+>> >> > > initialized with DT ?
+>> >> > >
+>> >> > > --
+>> >> > >                                             Gilles.
+>> >> >
+>> >> > cpu_logical_map[] contains these values: {512,1,2,3}
+>> >> >
+>> >> > This is the cpu entry:
+>> >> >
+https://github.com/hardkernel/linux/blob/odroidc-3.10.y/arch/arm/boot/dts/meson8b_odroidc.dts#L9-L32
+>> >> >
+>> >> > Changing the reg values alters the contents of cpu_logical_map[].
 >> >>
->> >> It's an intra-kernel call, so it must be there.
+>> >> Actually, the code as it existed should either have worked, or bug
+>> >> because 512 is larger than __cpu_logical_map size (the largest of 16
+>> >> and NR_CPUS).
 >> >
->> > Not sure I follow. If RTDM is enabled in the kernel configuration,
->> > and XDDP is not, then rtdm_bind will return -ENOSYS.
+>> > This is bugging me, if the kernel does not print a bug in
+>> > smp_setup_processor_id, it means that NR_CPUS is sufficiently large,
+>> > so larger than 512. How much is the compilation constant
+>> > CONFIG_NR_CPUS in your kernel configuration ?
 >> >
+>> > --
+>> >                                             Gilles.
 >>
->> It's a binding operation, so if the code did receive a valid XDDP
->> socket, the XDDP support must be there.
->>
->> --
->> Philippe.
->>
+>> CONFIG_NR_CPUS is still 4.
 >
+> Could you show us the code of the smp_setup_processor_id function in
+> the source tree of the kernel you compile ? It can be found in
+> arch/arm/kernel/secup.c
 >
 >
 > --
-> Helder Daniel
-> UALG - FCT
-> DEEI
->
-> http://w3.ualg.pt/~hdaniel
->
+>                                             Gilles.
 
+The orignal code is standard, no changes on that function:
+https://github.com/hardkernel/linux/blob/odroidc-3.10.y/arch/arm/kernel/setup.c#L449
+
+Bit [11:8] of the MPIDR is actually the cluster ID; the maximum cpus is
+still 4 for Cortex-A5.
+
+I'm not sure if this is relevant here:
+http://www.spinics.net/lists/arm-kernel/msg221730.html
+
+> With commit a0ae0240 (ARM: kernel: add device tree init map function),
+> the cpu id value may include the cluster id and is no longer 0-3, so we
+> need to mask it in scu_power_mode to get the local cpu number. Since we
+> are only dealing with the cpu we are running on, the cluster id should
+> not ever be needed.
 
 
 -- 
-Helder Daniel
-UALG - FCT
-DEEI
-
-http://w3.ualg.pt/~hdaniel
+GP Orcullo
