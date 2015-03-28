@@ -1,12 +1,21 @@
-Message-ID: <5525E21C.90709@ebus.com>
-Date: Wed, 08 Apr 2015 19:21:16 -0700
-From: Doug Brunner <dbrunner@ebus.com>
+Date: Sat, 28 Mar 2015 19:28:08 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150328182808.GL25831@hermes.click-hack.org>
+References: <CACreCVLG=dtjriCzUUqYtOK1Pz+NqYoPFNLJZ4KrM-AccBoHPA@mail.gmail.com>
+ <CACreCVKO35Xt9qgerZnw9V3GTRwnGPn_URkL+1C4ymeHUGfK5A@mail.gmail.com>
+ <CACreCVLg5ufmVAK_+6P1KpYaQ0ShkkPw9m=5+A+Ao=xtA9tEDQ@mail.gmail.com>
+ <551679A2.20508@xenomai.org>
+ <20150328113638.GA25635@hermes.click-hack.org>
+ <55169F35.1080108@xenomai.org>
+ <20150328150516.GG25831@hermes.click-hack.org>
+ <5516EBB6.6030208@xenomai.org>
+ <20150328181016.GK25831@hermes.click-hack.org>
+ <5516F073.4040001@xenomai.org>
 MIME-Version: 1.0
-References: <54F01C44.9090000@ebus.com> <54F43A5D.1050704@xenomai.org>
-In-Reply-To: <54F43A5D.1050704@xenomai.org>
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="windows-1252"; Format="flowed"
-Subject: Re: [Xenomai] Detecting closure of non-RT end of XDDP from userspace
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5516F073.4040001@xenomai.org>
+Subject: Re: [Xenomai] Boot failure when CONFIG_XENOMAI is enabled
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,174 +24,123 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: GP Orcullo <kinsamanka@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/02/2015 02:24 AM, Philippe Gerum wrote:
-> On 02/27/2015 08:27 AM, Doug Brunner wrote:
->> Hi all,
->>
->> I have a need for an RT task that communicates with Linux tasks through
->> XDDP to tell when the Linux process has closed /dev/rtpN. In this case t=
-he
->> RT task is acting as a server of sorts from which Linux processes retrie=
-ve
->> data, and if an ill-behaved Linux process dies, the RT task needs to cle=
-an
->> up its connection state in order to not flood the hapless Linux process
->> that connects next with all the data that built up in the XDDP buffers. I
->> would rather avoid implementing a heartbeat mechanism (RT task watches f=
-or
->> periodic "I'm alive" signal from Linux process), because of the many
->> moving parts this would introduce.
->>
->> It looks like the information is there - xnpipe_state::status (please
->> forgive my C++ scoping operator :)) has a bit indicating whether the Lin=
-ux
->> side is connected, XNPIPE_USER_CONN. I was thinking of adding a function
->> xnpipe_get_status, which retrieves the status word:
->>
->> int xnpipe_get_status(int minor, unsigned long *out);
->>
->> The XDDP getsockopt() can then return this information to userspace,
->> mirroring how Linux sockets behave (if I understand correctly):
->>
->> int err;
->> getsockopt(fd, SOL_SOCKET, SO_ERROR, &err, sizeof(err));
->> if(err =3D=3D 0) {
->>      /* socket is connected on Linux end */
->> }
->> else if(err =3D=3D EPIPE) {
->>      /* socket is not connected on Linux end*/
->> }
->>
->> One other possibility would be to add a socket option that, when set,
->> causes sendmsg() and recvmsg() to fail with EPIPE if the Linux end of the
->> pipe is not connected.
->>
->> Does either/both of these seem like a good idea?
->>
-> Yes, I think so. Fixing send/receive seems the most appropriate option,
-> since the current implementation is half-baked with respect to this
-> issue. In addition, this could be paired with select() for Xenomai 3.x.
->
-> Actually, the code detects when the nrt peer disconnects and it notifies
-> the rt peer accordingly, but only when the latter is currently blocked
-> on input. But, if the rt peer attempts to read from the channel _after_
-> the nrt side has disconnected, the former is simply put to sleep,
-> waiting for the next nrt peer to connect and send data, which is broken.
->
-> On the send side, the rt peer is currently allowed to log output before
-> the _next_ nrt peer connects to the same channel, at which point the
-> logged data can be received. This was a deliberate choice, because
-> synchronizing both peers so that channel nrt/rt endpoints are opened in
-> any required sequence at application startup, would have been a pain in
-> the common case.
->
-> We could change this to logging output solely before the _first_ nrt
-> peer connects to the channel instead, then returning -EPIPE for any send
-> request received after the nrt peer has dropped the connection. However,
-> although I'm willing to do it that way in Xenomai 3.x, I'm wary of such
-> change in Xenomai 2.6.x for backward compatibility reason, although
-> there would be no issue to adapt existing code which currently rely on
-> this undocumented behavior.
->
-> Here is a patch for 2.6.x implementing both changes. I'd be interested
-> to know whether it addresses the issue you mentioned:
->
-> diff --git a/include/nucleus/pipe.h b/include/nucleus/pipe.h
-> index a4fa785..aec2459 100644
-> --- a/include/nucleus/pipe.h
-> +++ b/include/nucleus/pipe.h
-> @@ -54,6 +54,7 @@
->   #define XNPIPE_USER_WREAD_READY  0x20
->   #define XNPIPE_USER_WSYNC        0x40
->   #define XNPIPE_USER_WSYNC_READY  0x80
-> +#define XNPIPE_USER_GONE	 0x100
->
->   #define XNPIPE_USER_ALL_WAIT \
->   (XNPIPE_USER_WREAD|XNPIPE_USER_WSYNC)
-> diff --git a/ksrc/nucleus/pipe.c b/ksrc/nucleus/pipe.c
-> index 3c4dccf..8422a14 100644
-> --- a/ksrc/nucleus/pipe.c
-> +++ b/ksrc/nucleus/pipe.c
-> @@ -438,6 +438,11 @@ ssize_t xnpipe_send(int minor, struct xnpipe_mh
-> *mh, size_t size, int flags)
->   		return -EBADF;
->   	}
->
-> +	if (testbits(state->status, XNPIPE_USER_GONE)) {
-> +		xnlock_put_irqrestore(&nklock, s);
-> +		return -EPIPE;
-> +	}
-> +
->   	inith(xnpipe_m_link(mh));
->   	xnpipe_m_size(mh) =3D size - sizeof(*mh);
->   	xnpipe_m_rdoff(mh) =3D 0;
-> @@ -528,6 +533,11 @@ ssize_t xnpipe_recv(int minor, struct xnpipe_mh
-> **pmh, xnticks_t timeout)
->   		goto unlock_and_exit;
->   	}
->
-> +	if (testbits(state->status, XNPIPE_USER_GONE)) {
-> +		ret =3D -EIDRM;
-> +		goto unlock_and_exit;
-> +	}
-> +
->   	curr =3D xnpod_current_thread();
->
->   	while ((h =3D getq(&state->inq)) =3D=3D NULL) {
-> @@ -659,7 +669,7 @@ static int xnpipe_open(struct inode *inode, struct
-> file *file)
->
->   	__clrbits(state->status,
->   		  XNPIPE_USER_ALL_WAIT | XNPIPE_USER_ALL_READY |
-> -		  XNPIPE_USER_SIGIO);
-> +		  XNPIPE_USER_SIGIO | XNPIPE_USER_GONE);
->
->   	if (!testbits(state->status, XNPIPE_KERN_CONN)) {
->   		if (testbits(file->f_flags, O_NONBLOCK)) {
-> @@ -695,6 +705,7 @@ static int xnpipe_release(struct inode *inode,
-> struct file *file)
->
->   	xnpipe_dequeue_all(state, XNPIPE_USER_WREAD);
->   	xnpipe_dequeue_all(state, XNPIPE_USER_WSYNC);
-> +	__setbits(state->status, XNPIPE_USER_GONE);
->
->   	if (testbits(state->status, XNPIPE_KERN_CONN)) {
->   		/* Unblock waiters. */
->
->
-Hi Philippe,
+On Sat, Mar 28, 2015 at 07:18:27PM +0100, Philippe Gerum wrote:
+> On 03/28/2015 07:10 PM, Gilles Chanteperdrix wrote:
+> > On Sat, Mar 28, 2015 at 06:58:14PM +0100, Philippe Gerum wrote:
+> >> On 03/28/2015 04:05 PM, Gilles Chanteperdrix wrote:
+> >>> On Sat, Mar 28, 2015 at 01:31:49PM +0100, Philippe Gerum wrote:
+> >>>> On 03/28/2015 12:36 PM, Gilles Chanteperdrix wrote:
+> >>>>> On Sat, Mar 28, 2015 at 10:51:30AM +0100, Philippe Gerum wrote:
+> >>>>>> On 03/28/2015 10:05 AM, GP Orcullo wrote:
+> >>>>>>> On Fri, Mar 27, 2015 at 8:12 PM, GP Orcullo <kinsamanka@gmail.com> wrote:
+> >>>>>>>> On Fri, Mar 27, 2015 at 6:19 PM, GP Orcullo <kinsamanka@gmail.com> wrote:
+> >>>>>>>>> What happens in between the clocksource switch and head domain registration?
+> >>>>>>>>>
+> >>>>>>>>> [    0.090129] DMA: preallocated 4096 KiB pool for atomic coherent
+> >>>>>>>>> allocations
+> >>>>>>>>> [    0.095333] Switching to clocksource ipipe_tsc
+> >>>>>>>>> [    0.122397] I-pipe: head domain Xenomai registered.
+> >>>>>>>>> [    0.124618] Xenomai: hal/arm started.
+> >>>>>>>>>
+> >>>>>>>>> I'm trying to trace the code to find out where it stops. I tried
+> >>>>>>>>> adding printk to to the set and request functions and the code never
+> >>>>>>>>> runs when CONFIG_SMP is enabled.
+> >>>>>>>>>
+> >>>>>>>>> Thanks,
+> >>>>>>>>>
+> >>>>>>>>> GP Orcullo
+> >>>>>>>>
+> >>>>>>>> It gets stuck on the call to ipipe_critical_enter:
+> >>>>>>>> http://git.xenomai.org/ipipe-gch.git/tree/kernel/ipipe/timer.c?id=ipipe-core-3.10.32-arm-7#n279
+> >>>>>>>>
+> >>>>>>>> Which then gets stuck on ipipe_send_ipi:
+> >>>>>>>> http://git.xenomai.org/ipipe-gch.git/tree/kernel/ipipe/core.c?id=ipipe-core-3.10.32-arm-7#n1533
+> >>>>>>>>
+> >>>>>>>
+> >>>>>>> I've traced the issue to the ipipe_processor_id() function. It returns
+> >>>>>>> the value 512 for processor 0. This value comes from cpu node property
+> >>>>>>> of the DT file.
+> >>>>>>>
+> >>>>>>> Changing ipipe_processor_id() to return 0 instead of 512 allows the
+> >>>>>>> kernel to boot but it fails the switchtest regression test.
+> >>>>>>>
+> >>>>>>> Changing the cpu0 reg value on the DT file allows the kernel to boot
+> >>>>>>> and pass all the xenomai regression tests but it generates the
+> >>>>>>> following warning at boot:
+> >>>>>>
+> >>>>>> No, this property for armv7 must match MPIDR[23:0], i.e. the physical id
+> >>>>>> of the core.
+> >>>>>>
+> >>>>>>> What's the proper way of fixing this?
+> >>>>>>>
+> >>>>>>
+> >>>>>> By fixing ipipe_processor_id() in the CONFIG_LEGACY case, it's broken.
+> >>>>>> It assumes __cpu_logical_map[] is a hw->logical map, but it is actually
+> >>>>>> the opposite.
+> >>>>>>
+> >>>>>> We may have been lucky until now because the physical mapping seems to
+> >>>>>> have always matched the logical order on the SMP SoCs people used with
+> >>>>>> Xenomai so far, it looks like your A5 core does not follow this order.
+> >>>>>
+> >>>>> No, cpu_logical_map works both ways, it simply exchanges 0 with
+> >>>>> whatever number the boot cpu has
+> >>>>> so, since cpu_logical_map[0] == 512 and cpu_logical_map[512] == 0
+> >>>>> it should work both ways.
+> >>>>
+> >>>> It does not make sense. We just cannot do this with DT.
+> >>>
+> >>> In fact we can. The "only" downside is that we have to have
+> >>> cpu_logical_map big enough to allow setting cpu_logical_map[512] to
+> >>> 0, so to have NR_CPUS at least 513. Setting up a separate
+> >>> reverse map avoids this issue of course, so I will merge that patch
+> >>> when it has been tested.
+> >>>
+> >>>>
+> >>>>> At least, that was true before DT.
+> >>>>
+> >>>> That is the issue with this code.
+> >>>
+> >>> No the issue is that 512 is larger than 255 and given the way we
+> >>> mask in hard_smp_processor_id(), this causes hard_smp_processor_id()
+> >>> to return 0 instead of 512 for the boot cpu. The size of the MPIDR
+> >>> mask has varied over time, and hard_smp_processor_id() was not
+> >>> updated to reflect that change.
+> >>>
+> >>
+> >> The fact that we might change the semantics of __cpu_logical_map[] to
+> >> make it a double-entry map does not make it a proper solution. The
+> >> regular kernel defines it as a logical->hardware identity mapping array,
+> >> I'd rather prefer your latest change which introduces a reverse map instead.
+> >>
+> >> The calculations and masks used to extract the MPIDR fields have
+> >> obviously never changed over time, since this reflects hardware properties.
+> > 
+> > See commit cb8cf4f821044f140ea5b9c8d4f816f0c05fab44
+> > 
+> > As the OP explained, it is to take the "cluster ID" into account.
+> > Maybe if we look at the ARM11 MPCORE specification, it had no such
+> > notion of cluster ID. So, yes, hardware registers do evolve over
+> > time. And the code to parse them evolves too.
+> > 
+> 
+> This commit does not change the way the MPIDR is split in fields, which
+> is my point. Said differently, MPIDR_AFFINITY_LEVEL did not change since
+> it was introduced:
+> 
+> git diff dca463d..HEAD arch/arm/include/asm/cputype.h
 
-Sorry it took me so long to try this out. I found that it does work on the =
-RT =
+The linux kernel code before that commit did not take into account
+the fact that there could be several "clusters", it simply masked
+the mpidr register with 0xff and this is what we based the I-pipe
+code on. Implementing a reverse map is more complicated than what I
+did, if we want to allow that cluster ID to have a different value.
+We probably have to add the call to the MPIDR_AFFINITY_LEVEL to the
+ipipe_processor_id definition, I have to look more carefully at how
+all this works.
 
-sending side (you get EPIPE as expected), but when I call recvfrom() in RT =
-after =
+-- 
+					    Gilles.
 
-the NRT peer has closed the file descriptor, it returns 0 rather than retur=
-ning =
-
--1 and setting errno =3D EIDRM as expected. I looked over the kernel code, =
-but =
-
-wasn't able to figure out why this was happening. I've attached an example =
-program.
-
-This isn't a huge deal for me to get fixed (the issue is worked around by =
-
-changes I have to make for other reasons), but I wanted to let you know how=
- it =
-
-turned out.
-
-Thanks,
-     --Doug Brunner
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: xddp_epipe.c
-Type: text/x-csrc
-Size: 5922 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150408/ec9cd4f=
-2/attachment.c>
