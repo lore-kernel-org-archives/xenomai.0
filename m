@@ -1,19 +1,19 @@
+Message-ID: <5516F073.4040001@xenomai.org>
+Date: Sat, 28 Mar 2015 19:18:27 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <20150402191555.GK31175@hermes.click-hack.org>
-References: <54F07AC2.6000902@triphase.com> <54F0D46F.1070006@siemens.com>
- <54F56C9C.6080507@siemens.com>
- <CAPRPZsC9mPitPUmXXR6QQfAGN3UMa2u6hkVwjtO4Eoh-NzC7wA@mail.gmail.com>
- <54FDB495.3060303@triphase.com> <5501FC89.2040205@siemens.com>
- <20150313163431.GE1497@hermes.click-hack.org>
- <550319B3.1050902@siemens.com>
- <20150313171211.GH1497@hermes.click-hack.org>
- <CAPRPZsD4503Yc92d=e0jqR8HtLiV8rXo_vA2e5ea5V_gyCTOzA@mail.gmail.com>
- <20150402191555.GK31175@hermes.click-hack.org>
-Date: Thu, 2 Apr 2015 21:29:29 +0200
-Message-ID: <CAPRPZsCcAQCYNbVXzB5yW+hNzhLcrDLETDteFLgDLnuzz6RCsA@mail.gmail.com>
-From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] xeno3_rc3 - Watchdog detected hard LOCKUP
+References: <20150325160852.GK15125@hermes.click-hack.org>
+ <CACreCV+tYp1QConFh2uKWjnqVOQ4uA=xLmbyay_XT9mui0txfw@mail.gmail.com>
+ <CACreCVLG=dtjriCzUUqYtOK1Pz+NqYoPFNLJZ4KrM-AccBoHPA@mail.gmail.com>
+ <CACreCVKO35Xt9qgerZnw9V3GTRwnGPn_URkL+1C4ymeHUGfK5A@mail.gmail.com>
+ <CACreCVLg5ufmVAK_+6P1KpYaQ0ShkkPw9m=5+A+Ao=xtA9tEDQ@mail.gmail.com>
+ <551679A2.20508@xenomai.org> <20150328113638.GA25635@hermes.click-hack.org>
+ <55169F35.1080108@xenomai.org> <20150328150516.GG25831@hermes.click-hack.org>
+ <5516EBB6.6030208@xenomai.org> <20150328181016.GK25831@hermes.click-hack.org>
+In-Reply-To: <20150328181016.GK25831@hermes.click-hack.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Boot failure when CONFIG_XENOMAI is enabled
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,43 +23,112 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: GP Orcullo <kinsamanka@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-2015-04-02 21:15 GMT+02:00 Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org>:
-> On Thu, Apr 02, 2015 at 08:47:30PM +0200, Jeroen Van den Keybus wrote:
->> I've been testing for two weeks now and the system has crashed three
->> more times under dohell load. Two with 3.14.28, the other with 3.16.0.
->> Time to crash varied between 3 hours and 90 hours.
+On 03/28/2015 07:10 PM, Gilles Chanteperdrix wrote:
+> On Sat, Mar 28, 2015 at 06:58:14PM +0100, Philippe Gerum wrote:
+>> On 03/28/2015 04:05 PM, Gilles Chanteperdrix wrote:
+>>> On Sat, Mar 28, 2015 at 01:31:49PM +0100, Philippe Gerum wrote:
+>>>> On 03/28/2015 12:36 PM, Gilles Chanteperdrix wrote:
+>>>>> On Sat, Mar 28, 2015 at 10:51:30AM +0100, Philippe Gerum wrote:
+>>>>>> On 03/28/2015 10:05 AM, GP Orcullo wrote:
+>>>>>>> On Fri, Mar 27, 2015 at 8:12 PM, GP Orcullo <kinsamanka@gmail.com> wrote:
+>>>>>>>> On Fri, Mar 27, 2015 at 6:19 PM, GP Orcullo <kinsamanka@gmail.com> wrote:
+>>>>>>>>> What happens in between the clocksource switch and head domain registration?
+>>>>>>>>>
+>>>>>>>>> [    0.090129] DMA: preallocated 4096 KiB pool for atomic coherent
+>>>>>>>>> allocations
+>>>>>>>>> [    0.095333] Switching to clocksource ipipe_tsc
+>>>>>>>>> [    0.122397] I-pipe: head domain Xenomai registered.
+>>>>>>>>> [    0.124618] Xenomai: hal/arm started.
+>>>>>>>>>
+>>>>>>>>> I'm trying to trace the code to find out where it stops. I tried
+>>>>>>>>> adding printk to to the set and request functions and the code never
+>>>>>>>>> runs when CONFIG_SMP is enabled.
+>>>>>>>>>
+>>>>>>>>> Thanks,
+>>>>>>>>>
+>>>>>>>>> GP Orcullo
+>>>>>>>>
+>>>>>>>> It gets stuck on the call to ipipe_critical_enter:
+>>>>>>>> http://git.xenomai.org/ipipe-gch.git/tree/kernel/ipipe/timer.c?id=ipipe-core-3.10.32-arm-7#n279
+>>>>>>>>
+>>>>>>>> Which then gets stuck on ipipe_send_ipi:
+>>>>>>>> http://git.xenomai.org/ipipe-gch.git/tree/kernel/ipipe/core.c?id=ipipe-core-3.10.32-arm-7#n1533
+>>>>>>>>
+>>>>>>>
+>>>>>>> I've traced the issue to the ipipe_processor_id() function. It returns
+>>>>>>> the value 512 for processor 0. This value comes from cpu node property
+>>>>>>> of the DT file.
+>>>>>>>
+>>>>>>> Changing ipipe_processor_id() to return 0 instead of 512 allows the
+>>>>>>> kernel to boot but it fails the switchtest regression test.
+>>>>>>>
+>>>>>>> Changing the cpu0 reg value on the DT file allows the kernel to boot
+>>>>>>> and pass all the xenomai regression tests but it generates the
+>>>>>>> following warning at boot:
+>>>>>>
+>>>>>> No, this property for armv7 must match MPIDR[23:0], i.e. the physical id
+>>>>>> of the core.
+>>>>>>
+>>>>>>> What's the proper way of fixing this?
+>>>>>>>
+>>>>>>
+>>>>>> By fixing ipipe_processor_id() in the CONFIG_LEGACY case, it's broken.
+>>>>>> It assumes __cpu_logical_map[] is a hw->logical map, but it is actually
+>>>>>> the opposite.
+>>>>>>
+>>>>>> We may have been lucky until now because the physical mapping seems to
+>>>>>> have always matched the logical order on the SMP SoCs people used with
+>>>>>> Xenomai so far, it looks like your A5 core does not follow this order.
+>>>>>
+>>>>> No, cpu_logical_map works both ways, it simply exchanges 0 with
+>>>>> whatever number the boot cpu has
+>>>>> so, since cpu_logical_map[0] == 512 and cpu_logical_map[512] == 0
+>>>>> it should work both ways.
+>>>>
+>>>> It does not make sense. We just cannot do this with DT.
+>>>
+>>> In fact we can. The "only" downside is that we have to have
+>>> cpu_logical_map big enough to allow setting cpu_logical_map[512] to
+>>> 0, so to have NR_CPUS at least 513. Setting up a separate
+>>> reverse map avoids this issue of course, so I will merge that patch
+>>> when it has been tested.
+>>>
+>>>>
+>>>>> At least, that was true before DT.
+>>>>
+>>>> That is the issue with this code.
+>>>
+>>> No the issue is that 512 is larger than 255 and given the way we
+>>> mask in hard_smp_processor_id(), this causes hard_smp_processor_id()
+>>> to return 0 instead of 512 for the boot cpu. The size of the MPIDR
+>>> mask has varied over time, and hard_smp_processor_id() was not
+>>> updated to reflect that change.
+>>>
 >>
->> The scenario is always the same: one CPU (has already been any of the
->> 4) gets stuck and the others start reporting soft lockups. The trouble
->> is: I've been unable to get hold of a stack trace of the hardlocked
->> CPU. SysRq L does not work and the CPU does not respond to the NMIs it
->> is given from the softlocked CPUs. I also enabled hardlockup_panic to
->> make sure I get all stack traces but to no avail.
+>> The fact that we might change the semantics of __cpu_logical_map[] to
+>> make it a double-entry map does not make it a proper solution. The
+>> regular kernel defines it as a logical->hardware identity mapping array,
+>> I'd rather prefer your latest change which introduces a reverse map instead.
 >>
->> Does anyone know another trick to possibly get the backtrace from this CPU ?
->
+>> The calculations and masks used to extract the MPIDR fields have
+>> obviously never changed over time, since this reflects hardware properties.
+> 
+> See commit cb8cf4f821044f140ea5b9c8d4f816f0c05fab44
+> 
+> As the OP explained, it is to take the "cluster ID" into account.
+> Maybe if we look at the ARM11 MPCORE specification, it had no such
+> notion of cluster ID. So, yes, hardware registers do evolve over
+> time. And the code to parse them evolves too.
+> 
 
-> You can modify ipipe_trace_freeze to get the trace of a different
-> CPU.
+This commit does not change the way the MPIDR is split in fields, which
+is my point. Said differently, MPIDR_AFFINITY_LEVEL did not change since
+it was introduced:
 
-Ah yes, I forgot. It is probably locked outside the Linux domain. That
-would explain why the regular panic won't work. Is that correct ?
+git diff dca463d..HEAD arch/arm/include/asm/cputype.h
 
-> But if I were you I would test the latest stable release
-> first.
-
-Ok. I'll do that. I would have liked to know the cause of the lockups
-though, And above all, we wanted to test Xenomai 3 from the start of a
-new project.
-
-Thanks
-
-J.
-
->
-> --
->                                             Gilles.
+-- 
+Philippe.
 
