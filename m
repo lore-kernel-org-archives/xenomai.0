@@ -1,13 +1,21 @@
-Message-ID: <55196B64.9010901@xenomai.org>
-Date: Mon, 30 Mar 2015 17:27:32 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Mon, 30 Mar 2015 17:28:52 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150330152852.GM32766@hermes.click-hack.org>
+References: <CACreCVKgzpDYUbMu2ihYtHxV5CSma-eNaH57u-CvCWmKbkoU=Q@mail.gmail.com>
+ <20150328185913.GN25831@hermes.click-hack.org>
+ <CACreCV+ddKJz6vq4vmb6b+Jd6kxrpbDTXUDyfoQ9WNk48w3u1Q@mail.gmail.com>
+ <20150329110623.GB32766@hermes.click-hack.org>
+ <CACreCVKG=6AEGF9BVBraHgQ8N=PwqD-6=kzfvinSpU+BBHtpng@mail.gmail.com>
+ <20150329120218.GE32766@hermes.click-hack.org>
+ <CACreCVLmJAa_hLLVQsiKYLks-4Ev=uAVw=5DFOZ+EL_DZ2VuPA@mail.gmail.com>
+ <20150329124445.GH32766@hermes.click-hack.org>
+ <CACreCV+Uke5rmAQ+2DXcJN-kHGmz-iwf39qDVhd8F_UwvDScdg@mail.gmail.com>
+ <CACreCV+zCm_kLA27iLUmTLZifL72=ucna=6jrLMo_4dRb3gsjg@mail.gmail.com>
 MIME-Version: 1.0
-References: <CAKk99t15m2dbUzGNxi4TsAVk4suZGc14qxv2cBh+iG1nWcM-kQ@mail.gmail.com>
- <55196828.9020207@xenomai.org> <20150330152002.GL32766@hermes.click-hack.org>
-In-Reply-To: <20150330152002.GL32766@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] There is XDDP Sockets support in kernel?
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACreCV+zCm_kLA27iLUmTLZifL72=ucna=6jrLMo_4dRb3gsjg@mail.gmail.com>
+Subject: Re: [Xenomai] Boot failure when CONFIG_XENOMAI is enabled
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,30 +24,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: GP Orcullo <kinsamanka@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/30/2015 05:20 PM, Gilles Chanteperdrix wrote:
-> On Mon, Mar 30, 2015 at 05:13:44PM +0200, Philippe Gerum wrote:
->> On 03/30/2015 04:55 PM, Helder Daniel wrote:
->>> Hi,
->>>
->>> When trying to compile a kernel module that sets up a XDDP socket (code
->>> snippet below) with Xenomai 3.x-rc3 on Cobalt setup,
->>> rtdm_bind() returns ENOSYS.
->>> This means that XDDP sockets can not be used in kernel?
->>>
->>
->> No, in this case it likely means that you are calling it from a
->> real-time context (i.e. a real-time kthread started with
->> rtdm_task_create()). The binding op can only run from a non-rt context,
->> e.g. module init code, regular kthread context, _nrt handler.
-> 
-> Or that XDDP is not enabled in the kernel configuration, maybe?
-> 
+On Mon, Mar 30, 2015 at 11:21:57PM +0800, GP Orcullo wrote:
+> +u32 __cpu_reverse_map[NR_CPUS] = { [0 ... NR_CPUS-1] = MPIDR_INVALID };
 
-It's an intra-kernel call, so it must be there.
+This is wrong. You want u32 *__cpu_reverse_map then kmalloc a big
+enough reverse map.
 
 -- 
-Philippe.
+					    Gilles.
 
