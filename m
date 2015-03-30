@@ -1,10 +1,10 @@
 MIME-Version: 1.0
 Sender: had2006@gmail.com
-Date: Mon, 30 Mar 2015 15:51:09 +0100
-Message-ID: <CAKk99t38gY19zrSZ3k8akM8Yr4QT586sfhSY0oAn=o2cv4-8pA@mail.gmail.com>
+Date: Mon, 30 Mar 2015 15:55:59 +0100
+Message-ID: <CAKk99t15m2dbUzGNxi4TsAVk4suZGc14qxv2cBh+iG1nWcM-kQ@mail.gmail.com>
 From: Helder Daniel <hdaniel@ualg.pt>
 Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] (no subject)
+Subject: [Xenomai] There is XDDP Sockets support in kernel?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,10 +17,10 @@ To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
 Hi,
 
-I am trying to compile a kernel module that sets up a XDDP socket (code
-snippet below).
-But rtdm_bind() returns ENOSYS.
-This means that I can not use XDDP sockets in kernel?
+When trying to compile a kernel module that sets up a XDDP socket (code
+snippet below) with Xenomai 3.x-rc3 on Cobalt setup,
+rtdm_bind() returns ENOSYS.
+This means that XDDP sockets can not be used in kernel?
 
 ================================================
 s = rtdm_socket(AF_RTIPC, SOCK_DGRAM, IPCPROTO_XDDP);
