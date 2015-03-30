@@ -1,10 +1,12 @@
+Message-ID: <55196828.9020207@xenomai.org>
+Date: Mon, 30 Mar 2015 17:13:44 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Sender: had2006@gmail.com
-Date: Mon, 30 Mar 2015 15:55:59 +0100
-Message-ID: <CAKk99t15m2dbUzGNxi4TsAVk4suZGc14qxv2cBh+iG1nWcM-kQ@mail.gmail.com>
-From: Helder Daniel <hdaniel@ualg.pt>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] There is XDDP Sockets support in kernel?
+References: <CAKk99t15m2dbUzGNxi4TsAVk4suZGc14qxv2cBh+iG1nWcM-kQ@mail.gmail.com>
+In-Reply-To: <CAKk99t15m2dbUzGNxi4TsAVk4suZGc14qxv2cBh+iG1nWcM-kQ@mail.gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] There is XDDP Sockets support in kernel?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,21 +15,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Helder Daniel <hdaniel@ualg.pt>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+On 03/30/2015 04:55 PM, Helder Daniel wrote:
+> Hi,
+> 
+> When trying to compile a kernel module that sets up a XDDP socket (code
+> snippet below) with Xenomai 3.x-rc3 on Cobalt setup,
+> rtdm_bind() returns ENOSYS.
+> This means that XDDP sockets can not be used in kernel?
+> 
 
-When trying to compile a kernel module that sets up a XDDP socket (code
-snippet below) with Xenomai 3.x-rc3 on Cobalt setup,
-rtdm_bind() returns ENOSYS.
-This means that XDDP sockets can not be used in kernel?
+No, in this case it likely means that you are calling it from a
+real-time context (i.e. a real-time kthread started with
+rtdm_task_create()). The binding op can only run from a non-rt context,
+e.g. module init code, regular kthread context, _nrt handler.
 
-================================================
-s = rtdm_socket(AF_RTIPC, SOCK_DGRAM, IPCPROTO_XDDP);
-memset(&saddr, 0, sizeof(saddr));
-saddr.sipc_family = AF_RTIPC;
-saddr.sipc_port = XDDP_PORT;
-ret = rtdm_bind(s, (struct sockaddr *)&saddr, sizeof(saddr));
-if (ret) rtdm_printk("senderK: bind error: %d\n", ret);
+-- 
+Philippe.
 
-================================================
