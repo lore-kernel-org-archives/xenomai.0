@@ -1,21 +1,9 @@
-Date: Sat, 28 Mar 2015 17:02:58 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150328160258.GI25831@hermes.click-hack.org>
-References: <CACreCVKO35Xt9qgerZnw9V3GTRwnGPn_URkL+1C4ymeHUGfK5A@mail.gmail.com>
- <CACreCVLg5ufmVAK_+6P1KpYaQ0ShkkPw9m=5+A+Ao=xtA9tEDQ@mail.gmail.com>
- <551679A2.20508@xenomai.org>
- <20150328113638.GA25635@hermes.click-hack.org>
- <CACreCVKgzpDYUbMu2ihYtHxV5CSma-eNaH57u-CvCWmKbkoU=Q@mail.gmail.com>
- <20150328135303.GE25831@hermes.click-hack.org>
- <20150328145628.GF25831@hermes.click-hack.org>
- <CACreCV+dhS14ur96dk2k5nSWfdRx9iXPEPYwSfZncmb0wiNkMg@mail.gmail.com>
- <20150328151920.GH25831@hermes.click-hack.org>
- <CACreCV+jhvAadxYoxputQmL4YW1heXK3=v+W7MSSyx4qZEjKuA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACreCV+jhvAadxYoxputQmL4YW1heXK3=v+W7MSSyx4qZEjKuA@mail.gmail.com>
-Subject: Re: [Xenomai] Boot failure when CONFIG_XENOMAI is enabled
+Date: Tue, 31 Mar 2015 23:01:56 +0200
+Message-ID: <CAL5YyVYCeiRSCOQCrx+UkiLj+jqTL2tBUpziisaiSyEV9WAg7w@mail.gmail.com>
+From: ACO31 <alain.cordat@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] latency : low_init(): mlockall: Cannot allocate memory
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,138 +12,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: GP Orcullo <kinsamanka@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai@xenomai.org
 
-On Sat, Mar 28, 2015 at 11:56:33PM +0800, GP Orcullo wrote:
-> On Sat, Mar 28, 2015 at 11:19 PM, Gilles Chanteperdrix <
-> gilles.chanteperdrix@xenomai.org> wrote:
-> > On Sat, Mar 28, 2015 at 11:17:24PM +0800, GP Orcullo wrote:
-> >> On Sat, Mar 28, 2015 at 10:56 PM, Gilles Chanteperdrix
-> >> <gilles.chanteperdrix@xenomai.org> wrote:
-> >> > On Sat, Mar 28, 2015 at 02:53:03PM +0100, Gilles Chanteperdrix wrote:
-> >> >> On Sat, Mar 28, 2015 at 08:27:33PM +0800, GP Orcullo wrote:
-> >> >> > On Sat, Mar 28, 2015 at 7:36 PM, Gilles Chanteperdrix
-> >> >> > <gilles.chanteperdrix@xenomai.org> wrote:
-> >> >> > > On Sat, Mar 28, 2015 at 10:51:30AM +0100, Philippe Gerum wrote:
-> >> >> > >> On 03/28/2015 10:05 AM, GP Orcullo wrote:
-> >> >> > >> > On Fri, Mar 27, 2015 at 8:12 PM, GP Orcullo <
-> kinsamanka@gmail.com> wrote:
-> >> >> > >> >> On Fri, Mar 27, 2015 at 6:19 PM, GP Orcullo <
-> kinsamanka@gmail.com> wrote:
-> >> >> > >> >>> What happens in between the clocksource switch and head
-> domain registration?
-> >> >> > >> >>>
-> >> >> > >> >>> [    0.090129] DMA: preallocated 4096 KiB pool for atomic
-> coherent
-> >> >> > >> >>> allocations
-> >> >> > >> >>> [    0.095333] Switching to clocksource ipipe_tsc
-> >> >> > >> >>> [    0.122397] I-pipe: head domain Xenomai registered.
-> >> >> > >> >>> [    0.124618] Xenomai: hal/arm started.
-> >> >> > >> >>>
-> >> >> > >> >>> I'm trying to trace the code to find out where it stops. I
-> tried
-> >> >> > >> >>> adding printk to to the set and request functions and the
-> code never
-> >> >> > >> >>> runs when CONFIG_SMP is enabled.
-> >> >> > >> >>>
-> >> >> > >> >>> Thanks,
-> >> >> > >> >>>
-> >> >> > >> >>> GP Orcullo
-> >> >> > >> >>
-> >> >> > >> >> It gets stuck on the call to ipipe_critical_enter:
-> >> >> > >> >>
-> http://git.xenomai.org/ipipe-gch.git/tree/kernel/ipipe/timer.c?id=ipipe-core-3.10.32-arm-7#n279
-> >> >> > >> >>
-> >> >> > >> >> Which then gets stuck on ipipe_send_ipi:
-> >> >> > >> >>
-> http://git.xenomai.org/ipipe-gch.git/tree/kernel/ipipe/core.c?id=ipipe-core-3.10.32-arm-7#n1533
-> >> >> > >> >>
-> >> >> > >> >
-> >> >> > >> > I've traced the issue to the ipipe_processor_id() function. It
-> returns
-> >> >> > >> > the value 512 for processor 0. This value comes from cpu node
-> property
-> >> >> > >> > of the DT file.
-> >> >> > >> >
-> >> >> > >> > Changing ipipe_processor_id() to return 0 instead of 512
-> allows the
-> >> >> > >> > kernel to boot but it fails the switchtest regression test.
-> >> >> > >> >
-> >> >> > >> > Changing the cpu0 reg value on the DT file allows the kernel
-> to boot
-> >> >> > >> > and pass all the xenomai regression tests but it generates the
-> >> >> > >> > following warning at boot:
-> >> >> > >>
-> >> >> > >> No, this property for armv7 must match MPIDR[23:0], i.e. the
-> physical id
-> >> >> > >> of the core.
-> >> >> > >>
-> >> >> > >> > What's the proper way of fixing this?
-> >> >> > >> >
-> >> >> > >>
-> >> >> > >> By fixing ipipe_processor_id() in the CONFIG_LEGACY case, it's
-> broken.
-> >> >> > >> It assumes __cpu_logical_map[] is a hw->logical map, but it is
-> actually
-> >> >> > >> the opposite.
-> >> >> > >>
-> >> >> > >> We may have been lucky until now because the physical mapping
-> seems to
-> >> >> > >> have always matched the logical order on the SMP SoCs people
-> used with
-> >> >> > >> Xenomai so far, it looks like your A5 core does not follow this
-> order.
-> >> >> > >
-> >> >> > > No, cpu_logical_map works both ways, it simply exchanges 0 with
-> >> >> > > whatever number the boot cpu has
-> >> >> > > so, since cpu_logical_map[0] == 512 and cpu_logical_map[512] == 0
-> >> >> > > it should work both ways.
-> >> >> > > At least, that was true before DT. Now, I find 512 a bit high, are
-> >> >> > > you sure cpu_logical_map[] is large enough ? Or is it even
-> >> >> > > initialized with DT ?
-> >> >> > >
-> >> >> > > --
-> >> >> > >                                             Gilles.
-> >> >> >
-> >> >> > cpu_logical_map[] contains these values: {512,1,2,3}
-> >> >> >
-> >> >> > This is the cpu entry:
-> >> >> >
-> https://github.com/hardkernel/linux/blob/odroidc-3.10.y/arch/arm/boot/dts/meson8b_odroidc.dts#L9-L32
-> >> >> >
-> >> >> > Changing the reg values alters the contents of cpu_logical_map[].
-> >> >>
-> >> >> Actually, the code as it existed should either have worked, or bug
-> >> >> because 512 is larger than __cpu_logical_map size (the largest of 16
-> >> >> and NR_CPUS).
-> >> >
-> >> > This is bugging me, if the kernel does not print a bug in
-> >> > smp_setup_processor_id, it means that NR_CPUS is sufficiently large,
-> >> > so larger than 512. How much is the compilation constant
-> >> > CONFIG_NR_CPUS in your kernel configuration ?
-> >> >
-> >> > --
-> >> >                                             Gilles.
-> >>
-> >> CONFIG_NR_CPUS is still 4.
-> >
-> > Could you show us the code of the smp_setup_processor_id function in
-> > the source tree of the kernel you compile ? It can be found in
-> > arch/arm/kernel/secup.c
-> >
-> >
-> > --
-> >                                             Gilles.
-> 
-> The orignal code is standard, no changes on that function:
-> https://github.com/hardkernel/linux/blob/odroidc-3.10.y/arch/arm/kernel/setup.c#L449
+Hi all,
 
-Then that is the problem, because it should have been patched by the
-I-pipe patch. Or maybe you mean before applying the I-pipe patch ?
-What I am interested in is the code you are actually compiling, so,
-after applying the I-pipe patch.
+I've built xenomai 3 rc4 on 3.16.7 kernel. no problem.
+see hereafter an extract of the result of "xeno-config --info"
+I-pipe release # detected
+Cobalt core 3.0-rc4 detected
+Build args: --with-core=cobalt ....  --enable-debug=partial
+   --enable-registry CFLAGS="-m32" LDFLAGS="-m32".
+(No error during make)
+But when I launch  "latency -p 100", I have the message
+Xenomai/cobalt: low_init(): mlockall: Cannot allocate memory
+
+Could you help me?
+Thanks
+
 
 -- 
-					    Gilles.
+Cordialement.
 
+A.Cordat
