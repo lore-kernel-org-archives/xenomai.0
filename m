@@ -1,15 +1,15 @@
+From: Sagi Maimon <SMaimon@advaoptical.com>
+Date: Tue, 31 Mar 2015 06:23:54 +0000
+Message-ID: <2b2ffe256e0547af996997c833660a44@MUC-S-EX13B.advaoptical.com>
+References: <7615c5d3d380485499b229435e14ee65@MUC-S-EX13B.advaoptical.com>
+ <55195485.9070302@xenomai.org>
+In-Reply-To: <55195485.9070302@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <551975C4.8050501@web.de>
-References: <CADvZd9aaGmA38b+zx-jFB-0S6yn7KPEzy58kXEdX4HoyKxe=Cg@mail.gmail.com>
- <CADvZd9af58_fHQYDMpQ+g3caew0_W144kCKGeCpFi7uGP3FD1A@mail.gmail.com>
- <5519149C.4030505@xenomai.org>
- <CADvZd9YfYVnYQhpsS933kZ_XyG+1G0W4qYWn04weQDm3TCOZHg@mail.gmail.com>
- <55191E4E.9020803@xenomai.org> <551975C4.8050501@web.de>
-Date: Tue, 31 Mar 2015 02:00:03 +0200
-Message-ID: <CADvZd9YCDX-=+59=nTSZV1a4NvkfwO2zqB=H8GKPgGTrdMUjWw@mail.gmail.com>
-From: Michael Haberler <haberlerm@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Q: LTTNG & xenomai status
+Subject: Re: [Xenomai] Using xenomai posix routines instead of Linux POSIX
+ routines
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,86 +18,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-2015-03-30 18:11 GMT+02:00 Jan Kiszka <jan.kiszka@web.de>:
+Hi,=20
+thanks for the help.
+I have read the document, and the use of wrapper makes good sense.=20
+According to the document, when calling "pthread_create" (by using the XENO=
+_POSIX_LIBS flags),  it will call  "__wrap_pthread_create" routine.
+But I am using Xenomai 2.6.4 , and there is no implementation of "__wrap_pt=
+hread_create" routine,=20
+instead there is implementation of "pthread_create" under  kernel/xenomai/s=
+kins/posix/thread.c
 
-> On 2015-03-30 11:58, Philippe Gerum wrote:
-> > On 03/30/2015 11:51 AM, Michael Haberler wrote:
-> >>
-> >>
-> >> 2015-03-30 11:17 GMT+02:00 Philippe Gerum <rpm@xenomai.org
-> >> <mailto:rpm@xenomai.org>>:
-> >>
-> >>     On 03/30/2015 10:58 AM, Michael Haberler wrote:
-> >>     > 2015-03-26 23:37 GMT+01:00 Michael Haberler <haberlerm@gmail.com
-> <mailto:haberlerm@gmail.com>>:
-> >>     >
-> >>     >> what is the status on using LTTNG tracepoints in an RT thread?
-> the last
-> >>     >> discussion has been a while back, like 2010ish
-> >>     >>
-> >>     >> LTTNG 2.5.1 is in the debian jessie stream. Can I use that as-is?
-> >>     >>
-> >>     >> Any special precautions I need to take, or do the stock
-> instructions for
-> >>     >> LTTNG apply?
-> >>     >>
-> >>     >
-> >>     > noting that CONFIG_FTRACE was disabled for performance reasons:
-> >>     > http://www.xenomai.org/pipermail/xenomai/2013-January/027272.html
-> >>     >
-> >>     > that would suggest *functionally* it is not an issue, and LTTng
-> layers
-> >>     > ontop of CONFIG_FTRACE for kernel tracing
-> >>     >
-> >>     > or am I overlooking something?
-> >>     >
-> >>
-> >>     Functionally it is not an issue, but the LTT core for any given LTT
-> >>     version might not be entirely safe for running over a kernel with
-> >>     pipelined interrupts. Fixing this is part of the usual process of
-> >>     merging LTTng and the I-pipe.
-> >>
-> >>
-> >> given that there is no code pertaining to LTTng in xenomai-2.6, I assume
-> >> you consider this the responsibility of the LTTng maintainers?
-> >>
-> >> I will inquire on the lttng-dev list, but does "usual" imply they
-> >> usually take care of this?
-> >>
-> >
-> > No, this implies that people have to take care of this when they need
-> > it. By "usual", I mean "each time I had to do this".
-> >
->
-> We used to integrate Xenomai with LTTng back then but gave up as LTTng
-> made no progress towards upstream and the efforts became too high. These
-> days you get Xenomai kernel instrumentation via ftrace, at least in 3.0.
-> Maybe give that a try first and then tell us what is missing.
->
+Can you please explain it?
 
-the kernel tracing would be nice to have and if ftrace covers that - fine
+Thanks,
 
-I'm primarily interested in userland tracing (lttng-ust) - it would be nice
-to have that merged with kernel tracing into a unified view as LTTng does
-it but if not, I'll live with that
+Sagi
 
-this still leaves open the question if LTTng userspace tracing intervenes
-somehow with Xenomai userland threads
-the ringbuffer event notification comes to my mind, I think it is an
-(optional, can be suppressed) write to a pipe
+-----Original Message-----
+From: Philippe Gerum [mailto:rpm@xenomai.org]=20
+Sent: Monday, March 30, 2015 16:50
+To: Sagi Maimon; xenomai@xenomai.org
+Subject: Re: [Xenomai] Using xenomai posix routines instead of Linux POSIX =
+routines
 
-- Michael
+On 03/30/2015 03:40 PM, Sagi Maimon wrote:
+> Hi,
+>=20
+> Until now I have created RT xenomai threads, by using the skin native API=
+:
+> kernel/xenomai/skins/native/task.c  (rt_task_create routine)
+>=20
+> and for creating Linux threads, I have used the "pthread_create" routine =
+(.../powerpc-e300c3-linux-gnu/usr/lib/libpthread.so)
+>=20
+> xenomai also implements POSIX API:
+> kernel/xenomai/skins/posix/thread.c
+> And by looking at the code (and according to documentation), by calling "=
+pthread_create" routine , xenomai creates RT threads.
+>=20
+>=20
+> My question:
+> I want to use the xenomai POSIX API, so How can I use the xenomai  "pthre=
+ad_create" routine, instead of the one from (.../powerpc-e300c3-linux-gnu/u=
+sr/lib/libpthread.so)?
+> should I add something to my Makefile?
+> Should I remove "-lpthread" parameter from my application Makefile?
+>=20
 
+This document explains how to create real-time POSIX applications with
+Xenomai:
 
->
-> For 2.6, we have some out-of-tree ftrace patches for x86-64 as well. Can
-> refresh our queue [1] if needed.
->
-> Jan
->
-> [1] http://git.xenomai.org/xenomai-jki.git/log/?h=queues/ftrace
->
->
+http://xenomai.org/2014/08/porting-a-linux-application-to-xenomai-dual-kern=
+el/#Compilation_for_the_Xenomai_POSIX_skin
+
+--=20
+Philippe.
+
