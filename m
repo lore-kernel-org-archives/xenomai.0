@@ -1,13 +1,15 @@
-Message-ID: <55199D31.5080601@xenomai.org>
-Date: Mon, 30 Mar 2015 21:00:01 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAKk99t15m2dbUzGNxi4TsAVk4suZGc14qxv2cBh+iG1nWcM-kQ@mail.gmail.com>	<55196828.9020207@xenomai.org>	<20150330152002.GL32766@hermes.click-hack.org>	<55196B64.9010901@xenomai.org>	<20150330152957.GN32766@hermes.click-hack.org>	<55196DB0.8020308@xenomai.org>	<CAKk99t2LDG0+CC3360XmaQ-F6zb=OuKLMRCtEgfKYFYouoOYqw@mail.gmail.com>
- <CAKk99t0m=CoE7qw+4aH_UwhK+JYt5Ry5YtDA-7W79q91nOaWsw@mail.gmail.com>
-In-Reply-To: <CAKk99t0m=CoE7qw+4aH_UwhK+JYt5Ry5YtDA-7W79q91nOaWsw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] There is XDDP Sockets support in kernel?
+In-Reply-To: <551975C4.8050501@web.de>
+References: <CADvZd9aaGmA38b+zx-jFB-0S6yn7KPEzy58kXEdX4HoyKxe=Cg@mail.gmail.com>
+ <CADvZd9af58_fHQYDMpQ+g3caew0_W144kCKGeCpFi7uGP3FD1A@mail.gmail.com>
+ <5519149C.4030505@xenomai.org>
+ <CADvZd9YfYVnYQhpsS933kZ_XyG+1G0W4qYWn04weQDm3TCOZHg@mail.gmail.com>
+ <55191E4E.9020803@xenomai.org> <551975C4.8050501@web.de>
+Date: Tue, 31 Mar 2015 02:00:03 +0200
+Message-ID: <CADvZd9YCDX-=+59=nTSZV1a4NvkfwO2zqB=H8GKPgGTrdMUjWw@mail.gmail.com>
+From: Michael Haberler <haberlerm@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Q: LTTNG & xenomai status
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,19 +18,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Helder Daniel <hdaniel@ualg.pt>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 03/30/2015 05:55 PM, Helder Daniel wrote:
-> After moving rtdm_bind() to the module initialization the module loads,
-> but now something wrong happened to the kernel :). Probably I left the
-> program buggy when moving the xddp-echo example to kernel space. I will
-> take a deeper look. 
-> 
+2015-03-30 18:11 GMT+02:00 Jan Kiszka <jan.kiszka@web.de>:
 
-You probably need to turn on CONFIG_FRAME_POINTER in order to get
-meaningful backtraces.
+> On 2015-03-30 11:58, Philippe Gerum wrote:
+> > On 03/30/2015 11:51 AM, Michael Haberler wrote:
+> >>
+> >>
+> >> 2015-03-30 11:17 GMT+02:00 Philippe Gerum <rpm@xenomai.org
+> >> <mailto:rpm@xenomai.org>>:
+> >>
+> >>     On 03/30/2015 10:58 AM, Michael Haberler wrote:
+> >>     > 2015-03-26 23:37 GMT+01:00 Michael Haberler <haberlerm@gmail.com
+> <mailto:haberlerm@gmail.com>>:
+> >>     >
+> >>     >> what is the status on using LTTNG tracepoints in an RT thread?
+> the last
+> >>     >> discussion has been a while back, like 2010ish
+> >>     >>
+> >>     >> LTTNG 2.5.1 is in the debian jessie stream. Can I use that as-is?
+> >>     >>
+> >>     >> Any special precautions I need to take, or do the stock
+> instructions for
+> >>     >> LTTNG apply?
+> >>     >>
+> >>     >
+> >>     > noting that CONFIG_FTRACE was disabled for performance reasons:
+> >>     > http://www.xenomai.org/pipermail/xenomai/2013-January/027272.html
+> >>     >
+> >>     > that would suggest *functionally* it is not an issue, and LTTng
+> layers
+> >>     > ontop of CONFIG_FTRACE for kernel tracing
+> >>     >
+> >>     > or am I overlooking something?
+> >>     >
+> >>
+> >>     Functionally it is not an issue, but the LTT core for any given LTT
+> >>     version might not be entirely safe for running over a kernel with
+> >>     pipelined interrupts. Fixing this is part of the usual process of
+> >>     merging LTTng and the I-pipe.
+> >>
+> >>
+> >> given that there is no code pertaining to LTTng in xenomai-2.6, I assume
+> >> you consider this the responsibility of the LTTng maintainers?
+> >>
+> >> I will inquire on the lttng-dev list, but does "usual" imply they
+> >> usually take care of this?
+> >>
+> >
+> > No, this implies that people have to take care of this when they need
+> > it. By "usual", I mean "each time I had to do this".
+> >
+>
+> We used to integrate Xenomai with LTTng back then but gave up as LTTng
+> made no progress towards upstream and the efforts became too high. These
+> days you get Xenomai kernel instrumentation via ftrace, at least in 3.0.
+> Maybe give that a try first and then tell us what is missing.
+>
 
--- 
-Philippe.
+the kernel tracing would be nice to have and if ftrace covers that - fine
 
+I'm primarily interested in userland tracing (lttng-ust) - it would be nice
+to have that merged with kernel tracing into a unified view as LTTng does
+it but if not, I'll live with that
+
+this still leaves open the question if LTTng userspace tracing intervenes
+somehow with Xenomai userland threads
+the ringbuffer event notification comes to my mind, I think it is an
+(optional, can be suppressed) write to a pipe
+
+- Michael
+
+
+>
+> For 2.6, we have some out-of-tree ftrace patches for x86-64 as well. Can
+> refresh our queue [1] if needed.
+>
+> Jan
+>
+> [1] http://git.xenomai.org/xenomai-jki.git/log/?h=queues/ftrace
+>
+>
