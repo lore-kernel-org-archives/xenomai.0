@@ -1,14 +1,16 @@
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Date: Wed, 01 Apr 2015 13:06:36 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
-In-Reply-To: <CE26B02160B73D4F82E70632544CC6823D2E30E1@chnshlmbx11>
+From: Narasimhaprasad Yedatore Achutha <Narasimhaprasad_A@infosys.com>
+Date: Wed, 1 Apr 2015 12:04:16 +0000
+Message-ID: <CE26B02160B73D4F82E70632544CC6823D2E3153@chnshlmbx11>
 References: <20150317181631.GC16113@hermes.click-hack.org>
  <CE26B02160B73D4F82E70632544CC6823D2C3600@chnshlmbx11>
  <CE26B02160B73D4F82E70632544CC6823D2E30E1@chnshlmbx11>
-Message-ID: <0fae2988214e43a729ae9cd1442b2577@grandegger.com>
+ <0fae2988214e43a729ae9cd1442b2577@grandegger.com>
+In-Reply-To: <0fae2988214e43a729ae9cd1442b2577@grandegger.com>
+Content-Language: en-US
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] CAN tx successfullness at Xenomai RT SocketCAN
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -18,48 +20,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Narasimhaprasad Yedatore Achutha <Narasimhaprasad_A@infosys.com>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@grandegger.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, 1 Apr 2015 10:19:31 +0000, Narasimhaprasad Yedatore Achutha
-<Narasimhaprasad_A@infosys.com> wrote:
-> Hi All
-> Could anybody share details on this query?
-
-See below.
-
-> 
-> Thanks and Regards
-> Prasad
-> 
-> -----Original Message-----
-> From: Narasimhaprasad Yedatore Achutha 
-> Sent: Wednesday, March 18, 2015 1:57 PM
-> To: 'gilles.chanteperdrix@xenomai.org'; 'xenomai-owner@xenomai.org';
-> 'xenomai@xenomai.org'
-> Subject: Re: CAN tx successfullness at Xenomai RT SocketCAN
-> 
-> Hello All
-> I'm using RTSocket CAN in my application. Trying figure out how to
-ensure
-> the CAN message tranmission succesfulness in my function Previuosly I
-was
-> able to assess the echoed (recv own msg) message with MSG_CONFIRM flag
-> returned by recvmsg() while using just socket CAN functionalities.
-> However with RT SOcket CAN, the CAN_RAW_RECV_OWN_MSGS is not supported
-at
-> rt_dev_setsockopt, and because of this the MSG_CONFIRM isnot being set
-at
-> msg flags in the received messages.
-> Could please elaborate how do we make sure the tx message successfulness
-> are assesed at RT socket CAN.
-
-As a workaround you could open another socket to receive the looped back
-message. Also implementing CAN_RAW_RECV_OWN_MSGS should not be a big deal.
-The delivery skipping the own socket is done here:
-
-http://git.xenomai.org/xenomai-2.6.git/tree/ksrc/drivers/can/rtcan_raw.c#n194
-
-Wolfgang.
-
+QWN0dWFsbHkgaXQgd2lsbCBiZSBkZWZpbml0ZWx5IGhlbHBmdWwgaWYgd2UgY2FuIHJlY29nbml6
+ZSB0aHJvdWdoIE1TR19DT05GSVJNIGZsYWcgd2l0aCBDQU5fUkFXX1JFQ1ZfT1dOX01TR1Mgb3B0
+aW9ucy4NCkV2ZW4gd2l0aCAgbG9vcGJhY2sgb3B0aW9uICB3ZSBjYW4gcmVjZWl2ZSBvdXIgb3du
+IG1lc3NhZ2VzLCBidXQgbmVlZHMgYWRkaXRpb25hbCB0YXNrIHRpbWUgdG8gc2VwYXJhdGUgaXQg
+ZnJvbSBleHRlcm5hbCBtZXNzYWdlcyBhbmQgaXRzIG93biB0cmFuc21pdHRlZCBtZXNzYWdlcyBh
+cyB0aGVyZSB3aWxsIGJlIG1peCBvZiBib3RoLCAgYWRkaXRpb25hbGx5IHdpdGggbG90IG9mIGJh
+Y2t0cmFja2luZy4gSGVyZSB3ZSBqdXN0IHdhbnQgdG8gY29uZmlybSB3aGV0aGVyIHRoZSB0eCBt
+ZXNzYWdlcyBoYXMgZ29uZSBvdXQgc3VjY2Vzc2Z1bGx5Lg0KDQpJbmNpZGVudGFsbHkgc29ja2V0
+Y2FuIGFsc28gaGFzIGEgcGF0Y2gocmVmZXIgbmV0XGNhblxyYXcuYyAgIEAgcmF3X3JjdigpICkN
+Cmh0dHA6Ly9wYXRjaHdvcmsub3psYWJzLm9yZy9wYXRjaC82Nzg5My8NCg0KU28gYSBwYXRjaCBv
+biB0aGlzIGxpbmUsICB3aWxsIGVuYWJsZSB1cyB0byBoYW5kbGUgdGhpcyBpbiBhIGJldHRlciB3
+YXkuIFBsZWFzZSBsZXQgbWUga25vdyB0aGUgZmVhc2liaWxpdHkuDQoNClRoYW5rcyBhbmQgUmVn
+YXJkcw0KUHJhc2FkDQoNCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IFdvbGZn
+YW5nIEdyYW5kZWdnZXIgW21haWx0bzp3Z0BncmFuZGVnZ2VyLmNvbV0gDQpTZW50OiBXZWRuZXNk
+YXksIEFwcmlsIDAxLCAyMDE1IDQ6MzcgUE0NClRvOiBOYXJhc2ltaGFwcmFzYWQgWWVkYXRvcmUg
+QWNodXRoYQ0KQ2M6IGdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnOyB4ZW5vbWFpQHhl
+bm9tYWkub3JnDQpTdWJqZWN0OiBSZTogW1hlbm9tYWldIENBTiB0eCBzdWNjZXNzZnVsbG5lc3Mg
+YXQgWGVub21haSBSVCBTb2NrZXRDQU4NCkltcG9ydGFuY2U6IEhpZ2gNCg0KT24gV2VkLCAxIEFw
+ciAyMDE1IDEwOjE5OjMxICswMDAwLCBOYXJhc2ltaGFwcmFzYWQgWWVkYXRvcmUgQWNodXRoYSA8
+TmFyYXNpbWhhcHJhc2FkX0FAaW5mb3N5cy5jb20+IHdyb3RlOg0KPiBIaSBBbGwNCj4gQ291bGQg
+YW55Ym9keSBzaGFyZSBkZXRhaWxzIG9uIHRoaXMgcXVlcnk/DQoNClNlZSBiZWxvdy4NCg0KPiAN
+Cj4gVGhhbmtzIGFuZCBSZWdhcmRzDQo+IFByYXNhZA0KPiANCj4gLS0tLS1PcmlnaW5hbCBNZXNz
+YWdlLS0tLS0NCj4gRnJvbTogTmFyYXNpbWhhcHJhc2FkIFllZGF0b3JlIEFjaHV0aGENCj4gU2Vu
+dDogV2VkbmVzZGF5LCBNYXJjaCAxOCwgMjAxNSAxOjU3IFBNDQo+IFRvOiAnZ2lsbGVzLmNoYW50
+ZXBlcmRyaXhAeGVub21haS5vcmcnOyAneGVub21haS1vd25lckB4ZW5vbWFpLm9yZyc7IA0KPiAn
+eGVub21haUB4ZW5vbWFpLm9yZycNCj4gU3ViamVjdDogUmU6IENBTiB0eCBzdWNjZXNzZnVsbG5l
+c3MgYXQgWGVub21haSBSVCBTb2NrZXRDQU4NCj4gDQo+IEhlbGxvIEFsbA0KPiBJJ20gdXNpbmcg
+UlRTb2NrZXQgQ0FOIGluIG15IGFwcGxpY2F0aW9uLiBUcnlpbmcgZmlndXJlIG91dCBob3cgdG8N
+CmVuc3VyZQ0KPiB0aGUgQ0FOIG1lc3NhZ2UgdHJhbm1pc3Npb24gc3VjY2VzZnVsbmVzcyBpbiBt
+eSBmdW5jdGlvbiBQcmV2aXVvc2x5IEkNCndhcw0KPiBhYmxlIHRvIGFzc2VzcyB0aGUgZWNob2Vk
+IChyZWN2IG93biBtc2cpIG1lc3NhZ2Ugd2l0aCBNU0dfQ09ORklSTSBmbGFnIA0KPiByZXR1cm5l
+ZCBieSByZWN2bXNnKCkgd2hpbGUgdXNpbmcganVzdCBzb2NrZXQgQ0FOIGZ1bmN0aW9uYWxpdGll
+cy4NCj4gSG93ZXZlciB3aXRoIFJUIFNPY2tldCBDQU4sIHRoZSBDQU5fUkFXX1JFQ1ZfT1dOX01T
+R1MgaXMgbm90IHN1cHBvcnRlZA0KYXQNCj4gcnRfZGV2X3NldHNvY2tvcHQsIGFuZCBiZWNhdXNl
+IG9mIHRoaXMgdGhlIE1TR19DT05GSVJNIGlzbm90IGJlaW5nIHNldA0KYXQNCj4gbXNnIGZsYWdz
+IGluIHRoZSByZWNlaXZlZCBtZXNzYWdlcy4NCj4gQ291bGQgcGxlYXNlIGVsYWJvcmF0ZSBob3cg
+ZG8gd2UgbWFrZSBzdXJlIHRoZSB0eCBtZXNzYWdlIA0KPiBzdWNjZXNzZnVsbmVzcyBhcmUgYXNz
+ZXNlZCBhdCBSVCBzb2NrZXQgQ0FOLg0KDQpBcyBhIHdvcmthcm91bmQgeW91IGNvdWxkIG9wZW4g
+YW5vdGhlciBzb2NrZXQgdG8gcmVjZWl2ZSB0aGUgbG9vcGVkIGJhY2sgbWVzc2FnZS4gQWxzbyBp
+bXBsZW1lbnRpbmcgQ0FOX1JBV19SRUNWX09XTl9NU0dTIHNob3VsZCBub3QgYmUgYSBiaWcgZGVh
+bC4NClRoZSBkZWxpdmVyeSBza2lwcGluZyB0aGUgb3duIHNvY2tldCBpcyBkb25lIGhlcmU6DQoN
+Cmh0dHA6Ly9naXQueGVub21haS5vcmcveGVub21haS0yLjYuZ2l0L3RyZWUva3NyYy9kcml2ZXJz
+L2Nhbi9ydGNhbl9yYXcuYyNuMTk0DQoNCldvbGZnYW5nLg0KDQoNCioqKioqKioqKioqKioqKiog
+Q0FVVElPTiAtIERpc2NsYWltZXIgKioqKioqKioqKioqKioqKioNClRoaXMgZS1tYWlsIGNvbnRh
+aW5zIFBSSVZJTEVHRUQgQU5EIENPTkZJREVOVElBTCBJTkZPUk1BVElPTiBpbnRlbmRlZCBzb2xl
+bHkgDQpmb3IgdGhlIHVzZSBvZiB0aGUgYWRkcmVzc2VlKHMpLiBJZiB5b3UgYXJlIG5vdCB0aGUg
+aW50ZW5kZWQgcmVjaXBpZW50LCBwbGVhc2UgDQpub3RpZnkgdGhlIHNlbmRlciBieSBlLW1haWwg
+YW5kIGRlbGV0ZSB0aGUgb3JpZ2luYWwgbWVzc2FnZS4gRnVydGhlciwgeW91IGFyZSBub3QgDQp0
+byBjb3B5LCBkaXNjbG9zZSwgb3IgZGlzdHJpYnV0ZSB0aGlzIGUtbWFpbCBvciBpdHMgY29udGVu
+dHMgdG8gYW55IG90aGVyIHBlcnNvbiBhbmQgDQphbnkgc3VjaCBhY3Rpb25zIGFyZSB1bmxhd2Z1
+bC4gVGhpcyBlLW1haWwgbWF5IGNvbnRhaW4gdmlydXNlcy4gSW5mb3N5cyBoYXMgdGFrZW4gDQpl
+dmVyeSByZWFzb25hYmxlIHByZWNhdXRpb24gdG8gbWluaW1pemUgdGhpcyByaXNrLCBidXQgaXMg
+bm90IGxpYWJsZSBmb3IgYW55IGRhbWFnZSANCnlvdSBtYXkgc3VzdGFpbiBhcyBhIHJlc3VsdCBv
+ZiBhbnkgdmlydXMgaW4gdGhpcyBlLW1haWwuIFlvdSBzaG91bGQgY2Fycnkgb3V0IHlvdXIgDQpv
+d24gdmlydXMgY2hlY2tzIGJlZm9yZSBvcGVuaW5nIHRoZSBlLW1haWwgb3IgYXR0YWNobWVudC4g
+SW5mb3N5cyByZXNlcnZlcyB0aGUgDQpyaWdodCB0byBtb25pdG9yIGFuZCByZXZpZXcgdGhlIGNv
+bnRlbnQgb2YgYWxsIG1lc3NhZ2VzIHNlbnQgdG8gb3IgZnJvbSB0aGlzIGUtbWFpbCANCmFkZHJl
+c3MuIE1lc3NhZ2VzIHNlbnQgdG8gb3IgZnJvbSB0aGlzIGUtbWFpbCBhZGRyZXNzIG1heSBiZSBz
+dG9yZWQgb24gdGhlIA0KSW5mb3N5cyBlLW1haWwgc3lzdGVtLg0KKioqSU5GT1NZUyoqKioqKioq
+IEVuZCBvZiBEaXNjbGFpbWVyICoqKioqKioqSU5GT1NZUyoqKg==
 
