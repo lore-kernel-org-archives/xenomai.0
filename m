@@ -1,14 +1,13 @@
-Message-ID: <551C0025.5090908@siemens.com>
-Date: Wed, 01 Apr 2015 16:26:45 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Wed, 1 Apr 2015 10:47:17 -0400
+Message-ID: <20150401144717.GQ29558@csclub.uwaterloo.ca>
+References: <20150401135910.GO29558@csclub.uwaterloo.ca>
+ <551BFEB2.1000009@xenomai.org>
 MIME-Version: 1.0
-References: <E1YdHjz-0005Rv-A3@sd-51317.xenomai.org>
- <20150401125148.GA29467@hermes.click-hack.org> <551BEB62.7030901@xenomai.org>
-In-Reply-To: <551BEB62.7030901@xenomai.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : Create gitignore for
-	autotools files
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <551BFEB2.1000009@xenomai.org>
+Subject: Re: [Xenomai] Hit BUG() in arch/arm/mm/pgd.c
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,44 +16,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 2015-04-01 14:58, Philippe Gerum wrote:
-> On 04/01/2015 02:51 PM, Gilles Chanteperdrix wrote:
->> On Wed, Apr 01, 2015 at 02:27:27PM +0200, git repository hosting wrote:
->>> Module: xenomai-jki
->>> Branch: for-forge
->>> Commit: 519962c23a696aba736d8b535c8f1a00382dae8b
->>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=519962c23a696aba736d8b535c8f1a00382dae8b
->>>
->>> Author: Jan Kiszka <jan.kiszka@siemens.com>
->>> Date:   Wed Apr  1 14:25:42 2015 +0200
->>>
->>> Create gitignore for autotools files
->>>
->>> This avoids filling up "git status" with tones of autotools files that
->>> are now locally maintained.
->>
->> I am not sure having a gitignore file in the repository is a good
->> idea, for instance, it will conflict with the gitignore I already
->> had, because not using the same autotools version as Philippe, my
->> git status was already filled with tons of autotools files without a
->> gitignore and before they were removed from the repository. I also
->> like to add files to gitignore like *~ my editor creates, and so if
->> my gitignore has local modifications, I will see it in the git
->> status too.
->>
+On Wed, Apr 01, 2015 at 04:20:34PM +0200, Philippe Gerum wrote:
+> On 04/01/2015 03:59 PM, Lennart Sorensen wrote:
+> > We are seeing occational hits on a BUG() statement in pgd.c:
+> > 
+> > static inline void pgd_holder_free(pgd_t *pgd)
+> > {
+> >         struct rb_node *node = pgd_table.rb_node;
+> >         struct pgd_holder *p;
+> >         unsigned long flags;
+> > 
+> >         pgd_table_lock(flags);
+> > 
+> >         while (node) {
+> >                 p = rb_entry(node, struct pgd_holder, rb);
+> >                 if ((unsigned long)pgd < (unsigned long)p->pgd)
+> >                         node = node->rb_left;
+> >                 else if ((unsigned long)pgd > (unsigned long)p->pgd)
+> >                         node = node->rb_right;
+> >                 else {
+> >                         rb_erase(node, &pgd_table);
+> >                         pgd_table_unlock(flags);
+> >                         kfree(p);
+> >                         return;
+> >                 }
+> >         }
+> > 
+> >         pgd_table_unlock(flags);
+> > 
+> >         BUG(); <- this one
+> > }
+> > 
+> > Any idea how that could be happening?
+> > 
 > 
-> I'd rather refrain from forcing .gitignore on users too, what to filter
-> out should remain a local policy. However, we could provide a sane
-> default template for this file if that helps, e.g. scripts/gitignore.dot.
+> That is a sanity check covering an unexpected situation, when a page
+> table directory to be freed is not found in the map of active PGDs as
+> tracked by the pipeline. Could you try the following change?
+> 
+> diff --git a/arch/arm/mm/pgd.c b/arch/arm/mm/pgd.c
+> index a4aafb5..672e811 100644
+> --- a/arch/arm/mm/pgd.c
+> +++ b/arch/arm/mm/pgd.c
+> @@ -299,8 +299,8 @@ no_pmd:
+>  no_pud:
+>  	pgd_clear(pgd);
+>  	pud_free(mm, pud);
+> -no_pgd:
+>  	pgd_holder_free(pgd);
+> +no_pgd:
+> 
+>  #ifdef CONFIG_ARM_LPAE
+>  	/*
 
-See "man gitignore" for the common policy: .gitignore is already that
-baseline we want to distribute.
-
-Jan
+Sure I will give that a try.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Len Sorensen
 
