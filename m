@@ -1,12 +1,15 @@
-Message-ID: <551BFEB2.1000009@xenomai.org>
-Date: Wed, 01 Apr 2015 16:20:34 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <551BFF9A.7000604@siemens.com>
+Date: Wed, 01 Apr 2015 16:24:26 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <20150401135910.GO29558@csclub.uwaterloo.ca>
-In-Reply-To: <20150401135910.GO29558@csclub.uwaterloo.ca>
+References: <E1YdHjz-0005Rv-A3@sd-51317.xenomai.org>
+ <20150401125148.GA29467@hermes.click-hack.org>
+ <44384kklz4.fsf@be-well.ilk.org>
+In-Reply-To: <44384kklz4.fsf@be-well.ilk.org>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Hit BUG() in arch/arm/mm/pgd.c
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : Create gitignore for
+	autotools files
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,59 +18,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, xenomai@xenomai.org
+To: Lowell Gilbert <kludge@be-well.ilk.org>, xenomai@xenomai.org
 
-On 04/01/2015 03:59 PM, Lennart Sorensen wrote:
-> We are seeing occational hits on a BUG() statement in pgd.c:
+On 2015-04-01 15:38, Lowell Gilbert wrote:
+> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
 > 
-> static inline void pgd_holder_free(pgd_t *pgd)
-> {
->         struct rb_node *node = pgd_table.rb_node;
->         struct pgd_holder *p;
->         unsigned long flags;
+>> I am not sure having a gitignore file in the repository is a good
+>> idea, for instance, it will conflict with the gitignore I already
+>> had, because not using the same autotools version as Philippe, my
+>> git status was already filled with tons of autotools files without a
+>> gitignore and before they were removed from the repository. I also
+>> like to add files to gitignore like *~ my editor creates, and so if
+>> my gitignore has local modifications, I will see it in the git
+>> status too.
 > 
->         pgd_table_lock(flags);
-> 
->         while (node) {
->                 p = rb_entry(node, struct pgd_holder, rb);
->                 if ((unsigned long)pgd < (unsigned long)p->pgd)
->                         node = node->rb_left;
->                 else if ((unsigned long)pgd > (unsigned long)p->pgd)
->                         node = node->rb_right;
->                 else {
->                         rb_erase(node, &pgd_table);
->                         pgd_table_unlock(flags);
->                         kfree(p);
->                         return;
->                 }
->         }
-> 
->         pgd_table_unlock(flags);
-> 
->         BUG(); <- this one
-> }
-> 
-> Any idea how that could be happening?
-> 
+> While I do not support adding gitignore to repositories, I suggest that
+> these particular issues are more easily handled with methods that cover
+> multiple work trees. In these examples, .git/info/exclude and
+> .config/git/ignore respectively.
 
-That is a sanity check covering an unexpected situation, when a page
-table directory to be freed is not found in the map of active PGDs as
-tracked by the pipeline. Could you try the following change?
+Indeed. .gitignore is supposed to be carried in the repository (most
+projects do this) while .git/... or ~/.config/... is for local tuning.
 
-diff --git a/arch/arm/mm/pgd.c b/arch/arm/mm/pgd.c
-index a4aafb5..672e811 100644
---- a/arch/arm/mm/pgd.c
-+++ b/arch/arm/mm/pgd.c
-@@ -299,8 +299,8 @@ no_pmd:
- no_pud:
- 	pgd_clear(pgd);
- 	pud_free(mm, pud);
--no_pgd:
- 	pgd_holder_free(pgd);
-+no_pgd:
+Jan
 
- #ifdef CONFIG_ARM_LPAE
- 	/*
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
