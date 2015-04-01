@@ -1,12 +1,12 @@
-Message-ID: <551C289C.7030908@xenomai.org>
-Date: Wed, 01 Apr 2015 19:19:24 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <551C33B6.5000906@siemens.com>
+Date: Wed, 01 Apr 2015 20:06:46 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 References: <E1YdHjz-0005Rv-A3@sd-51317.xenomai.org>
  <20150401125148.GA29467@hermes.click-hack.org> <551BEB62.7030901@xenomai.org>
  <551C0025.5090908@siemens.com> <551C1AC9.1060109@xenomai.org>
- <551C1D2C.2060303@siemens.com>
-In-Reply-To: <551C1D2C.2060303@siemens.com>
+ <551C1D2C.2060303@siemens.com> <551C289C.7030908@xenomai.org>
+In-Reply-To: <551C289C.7030908@xenomai.org>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : Create gitignore for
@@ -19,72 +19,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
 
-On 04/01/2015 06:30 PM, Jan Kiszka wrote:
-> On 2015-04-01 18:20, Philippe Gerum wrote:
->> On 04/01/2015 04:26 PM, Jan Kiszka wrote:
->>> On 2015-04-01 14:58, Philippe Gerum wrote:
->>>> On 04/01/2015 02:51 PM, Gilles Chanteperdrix wrote:
->>>>> On Wed, Apr 01, 2015 at 02:27:27PM +0200, git repository hosting wrote:
->>>>>> Module: xenomai-jki
->>>>>> Branch: for-forge
->>>>>> Commit: 519962c23a696aba736d8b535c8f1a00382dae8b
->>>>>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=519962c23a696aba736d8b535c8f1a00382dae8b
+On 2015-04-01 19:19, Philippe Gerum wrote:
+> On 04/01/2015 06:30 PM, Jan Kiszka wrote:
+>> On 2015-04-01 18:20, Philippe Gerum wrote:
+>>> On 04/01/2015 04:26 PM, Jan Kiszka wrote:
+>>>> On 2015-04-01 14:58, Philippe Gerum wrote:
+>>>>> On 04/01/2015 02:51 PM, Gilles Chanteperdrix wrote:
+>>>>>> On Wed, Apr 01, 2015 at 02:27:27PM +0200, git repository hosting wrote:
+>>>>>>> Module: xenomai-jki
+>>>>>>> Branch: for-forge
+>>>>>>> Commit: 519962c23a696aba736d8b535c8f1a00382dae8b
+>>>>>>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=519962c23a696aba736d8b535c8f1a00382dae8b
+>>>>>>>
+>>>>>>> Author: Jan Kiszka <jan.kiszka@siemens.com>
+>>>>>>> Date:   Wed Apr  1 14:25:42 2015 +0200
+>>>>>>>
+>>>>>>> Create gitignore for autotools files
+>>>>>>>
+>>>>>>> This avoids filling up "git status" with tones of autotools files that
+>>>>>>> are now locally maintained.
 >>>>>>
->>>>>> Author: Jan Kiszka <jan.kiszka@siemens.com>
->>>>>> Date:   Wed Apr  1 14:25:42 2015 +0200
+>>>>>> I am not sure having a gitignore file in the repository is a good
+>>>>>> idea, for instance, it will conflict with the gitignore I already
+>>>>>> had, because not using the same autotools version as Philippe, my
+>>>>>> git status was already filled with tons of autotools files without a
+>>>>>> gitignore and before they were removed from the repository. I also
+>>>>>> like to add files to gitignore like *~ my editor creates, and so if
+>>>>>> my gitignore has local modifications, I will see it in the git
+>>>>>> status too.
 >>>>>>
->>>>>> Create gitignore for autotools files
->>>>>>
->>>>>> This avoids filling up "git status" with tones of autotools files that
->>>>>> are now locally maintained.
 >>>>>
->>>>> I am not sure having a gitignore file in the repository is a good
->>>>> idea, for instance, it will conflict with the gitignore I already
->>>>> had, because not using the same autotools version as Philippe, my
->>>>> git status was already filled with tons of autotools files without a
->>>>> gitignore and before they were removed from the repository. I also
->>>>> like to add files to gitignore like *~ my editor creates, and so if
->>>>> my gitignore has local modifications, I will see it in the git
->>>>> status too.
->>>>>
+>>>>> I'd rather refrain from forcing .gitignore on users too, what to filter
+>>>>> out should remain a local policy. However, we could provide a sane
+>>>>> default template for this file if that helps, e.g. scripts/gitignore.dot.
 >>>>
->>>> I'd rather refrain from forcing .gitignore on users too, what to filter
->>>> out should remain a local policy. However, we could provide a sane
->>>> default template for this file if that helps, e.g. scripts/gitignore.dot.
+>>>> See "man gitignore" for the common policy: .gitignore is already that
+>>>> baseline we want to distribute.
+>>>>
 >>>
->>> See "man gitignore" for the common policy: .gitignore is already that
->>> baseline we want to distribute.
+>>> "A project normally includes such .gitignore files in its repository,
+>>> containing patterns for files generated as part of the project build."
 >>>
+>>> Those files are not generated by the build process, but by the
+>>> configuration process, which is separate. What is produced even depends
+>>> on the autoconf release being used locally.
 >>
->> "A project normally includes such .gitignore files in its repository,
->> containing patterns for files generated as part of the project build."
->>
->> Those files are not generated by the build process, but by the
->> configuration process, which is separate. What is produced even depends
->> on the autoconf release being used locally.
+>> By pulling everything that autoconf generates out of the repo, forcing
+>> the user of the git version to generate them yourself, you effectively
+>> made those files build outputs. As we cannot store them out-of-tree
+>> (like object files), we have to ignore them in-tree.
 > 
-> By pulling everything that autoconf generates out of the repo, forcing
-> the user of the git version to generate them yourself, you effectively
-> made those files build outputs. As we cannot store them out-of-tree
-> (like object files), we have to ignore them in-tree.
+> Sorry, no. We cannot predict what files will be produced by the autoconf
+> system when bootstrapping unless we know about the autoconf version
+> being used locally, which we don't. This should be a clear hint that
+> forcing a filter on users for such files is a bad idea in the first place.
 
-Sorry, no. We cannot predict what files will be produced by the autoconf
-system when bootstrapping unless we know about the autoconf version
-being used locally, which we don't. This should be a clear hint that
-forcing a filter on users for such files is a bad idea in the first place.
+Those files do not change arbitrarily, and, yes, we can easily update
+those as they come in via new version. That is how other project deal
+with the very same issue.
 
-It seems fairly reasonable to ask people tracking our git trees to do
-such bootstrap, and create their own filter in the same move.
-Bootstrapping is a one time operation, which is documented:
-http://xenomai.org/installing-xenomai-3-x/#Installing_the_Xenomai_libraries_and_tools
-
-People building Xenomai out of tarballs won't have to care about
-bootstrapping, since in this case we should assume that they don't care
-for a development tree, but rather need a self-contained and frozen
-source tree.
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
