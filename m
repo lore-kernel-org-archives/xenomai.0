@@ -1,17 +1,12 @@
-Date: Thu, 2 Apr 2015 10:38:27 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150402083827.GA31175@hermes.click-hack.org>
-References: <E1YdHjz-0005Rv-A3@sd-51317.xenomai.org>
- <20150401125148.GA29467@hermes.click-hack.org>
- <551BEB62.7030901@xenomai.org> <551C0025.5090908@siemens.com>
- <551C1AC9.1060109@xenomai.org> <551C1D2C.2060303@siemens.com>
- <20150401194928.GS29558@csclub.uwaterloo.ca>
+Message-ID: <551D03F9.8050004@xenomai.org>
+Date: Thu, 02 Apr 2015 10:55:21 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20150401194928.GS29558@csclub.uwaterloo.ca>
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : Create gitignore for
- autotools files
+References: <9BA84827B30CBE4996725F98F7DC912342961B3D@SMExchange01.siebmeyer.org>
+In-Reply-To: <9BA84827B30CBE4996725F98F7DC912342961B3D@SMExchange01.siebmeyer.org>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] git clone https ipipe.git fetch failed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,24 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: =?windows-1252?Q?=22H=E4nel-Baas=2C_Alexander=22?= <alexander.haenel-baas@sieb-meyer.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, Apr 01, 2015 at 03:49:28PM -0400, Lennart Sorensen wrote:
-> On Wed, Apr 01, 2015 at 06:30:36PM +0200, Jan Kiszka wrote:
-> > By pulling everything that autoconf generates out of the repo, forcing
-> > the user of the git version to generate them yourself, you effectively
-> > made those files build outputs. As we cannot store them out-of-tree
-> > (like object files), we have to ignore them in-tree.
-> 
-> Certainly having them in .gitignore is a handy way to avoid them
-> accidentally being commited again, if someone has a habbit of doing git
-> commit -a.
+On 03/31/2015 02:07 PM, H=E4nel-Baas, Alexander wrote:
+> Hi all
+>=20
+> I try
+> git clone https://git.xenomai.org/ipipe.git
+>=20
+> And get:
+> Cloning into 'ipipe'...
+> error: Unable to get pack index https://git.xenomai.org/ipipe.git/objects=
+/pack/pack-be8960f4c7303115aa655b8eec7c29e476a47c6f.idx
+> error: Unable to get pack index https://git.xenomai.org/ipipe.git/objects=
+/pack/pack-7406c21d6740fa9d3f29d84c78ec1fa2318ea377.idx
+> error: Unable to get pack index https://git.xenomai.org/ipipe.git/objects=
+/pack/pack-a976e69a09a914de5f70b330c819578fe05a4542.idx
+> error: Unable to find 4d58c244f26df8a07fc501cfea550d5902ce329c under http=
+s://git.xenomai.org/ipipe.git
+> Cannot obtain needed object 4d58c244f26df8a07fc501cfea550d5902ce329c
+> while processing commit ea34abcc6db809d3a2c747bb58bb31a23bb61d6b.
+> error: Fetch failed.
+>=20
+> A problem of the git server, or at my side?
+>=20
 
-git commit -a does not automatically add files to the repository. At
-least not with the default configuration. Besides, nobody in this
-thread is against the use of a .gitignore.
+Sorry for the late reply. Could you try pulling from that tree again?
 
--- 
-					    Gilles.
+--=20
+Philippe.
 
