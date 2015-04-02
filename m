@@ -1,18 +1,21 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Thu, 2 Apr 2015 13:49:53 -0400
-Message-ID: <20150402174953.GT29558@csclub.uwaterloo.ca>
-References: <E1YdHjz-0005Rv-A3@sd-51317.xenomai.org>
- <20150401125148.GA29467@hermes.click-hack.org>
- <551BEB62.7030901@xenomai.org> <551C0025.5090908@siemens.com>
- <551C1AC9.1060109@xenomai.org> <551C1D2C.2060303@siemens.com>
- <20150401194928.GS29558@csclub.uwaterloo.ca>
- <20150402083827.GA31175@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20150402083827.GA31175@hermes.click-hack.org>
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : Create gitignore for
- autotools files
+In-Reply-To: <20150402090400.GC31175@hermes.click-hack.org>
+References: <20150321131111.GA20203@hermes.click-hack.org>
+ <20150321132130.GC20203@hermes.click-hack.org>
+ <CAKC9m6ceEi593XX04-dLfQaVYHmQHmwe75oC+d4Qu-t9q1G9_A@mail.gmail.com>
+ <550FD6CA.7080407@web.de>
+ <20150323095340.GA5299@hermes.click-hack.org>
+ <55101C6F.2030207@web.de>
+ <20150323152540.GC5299@hermes.click-hack.org>
+ <55117747.6040807@web.de>
+ <20150324152749.GA15125@hermes.click-hack.org>
+ <CAKC9m6e24UQg6NiYc+tJbQH-txLF6fvYKH-jca0oEnVMavmjpQ@mail.gmail.com>
+ <20150402090400.GC31175@hermes.click-hack.org>
+Date: Thu, 2 Apr 2015 10:56:36 -0700
+Message-ID: <CAKC9m6cVoXA0nHTobW-aFuPwH2023UxKp4SFyTaUd7SfK7b-iQ@mail.gmail.com>
+From: Hongfei Cheng <hongfei@mperpetuo.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] ARMv8 (ARM64) port of Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,26 +25,45 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@web.de>, xenomai@xenomai.org
 
-On Thu, Apr 02, 2015 at 10:38:27AM +0200, Gilles Chanteperdrix wrote:
-> On Wed, Apr 01, 2015 at 03:49:28PM -0400, Lennart Sorensen wrote:
-> > On Wed, Apr 01, 2015 at 06:30:36PM +0200, Jan Kiszka wrote:
-> > > By pulling everything that autoconf generates out of the repo, forcing
-> > > the user of the git version to generate them yourself, you effectively
-> > > made those files build outputs. As we cannot store them out-of-tree
-> > > (like object files), we have to ignore them in-tree.
-> > 
-> > Certainly having them in .gitignore is a handy way to avoid them
-> > accidentally being commited again, if someone has a habbit of doing git
-> > commit -a.
-> 
-> git commit -a does not automatically add files to the repository. At
-> least not with the default configuration. Besides, nobody in this
-> thread is against the use of a .gitignore.
+Thank you, Gilles, for the clarification.
 
-Oh right you are.  I was remembering wrong.
+Our immediate goal is to enable/port the minimum ipipe-core code for
+Aarch64 so we can successfully build an image with ipipe enabled. We
+can then start to work on irq interception, timer interception, etc.
+By then we should be able to ask I-pipe specific questions for the
+arm64 port.
 
--- 
-Len Sorensen
+Thanks again,
+Hongfei
+
+On Thu, Apr 2, 2015 at 2:04 AM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On Thu, Apr 02, 2015 at 01:12:11AM -0700, Hongfei Cheng wrote:
+>> Thank you all again for the clear and prompt responses, along with
+>> the informative discussions.
+>>
+>> A follow-up question to the kernel module(s) requiring changes for
+>> supporting I-pipe for Aarch64/arm64: After enabling I-pipe (but with
+>> xenomai-3 disabled) in the kernel with the ipipe-core patch for
+>> Aarch32/arm, building the Aarch64 kernel image shows clear dependency on
+>> I-pipe specific code in arch/arm64/kernel. This observation appears
+>> to deviate from Gilles' earlier advice -- "there is no reason to touch
+>> boot, kernel, mm".
+>>
+>> Since the Aarch64 code in arch/arm64/kernel differs quite a bit from the
+>> Aarch32 code in arch/arm/kernel, porting the ipipe-core code from
+>> arch/arm/kernel to arch/arm64/kernel will require significant amount of
+>> work. I'd appreciate if anyone can affirm or refute the need to touch
+>> arch/arm64/kernel for Aarch64/arm64, before I go too far and veer off the
+>> road.
+>
+> Speaking in directory/files is meaningless, what matters is what you
+> change. I think I have given you a list of what to change already.
+> If some files to change are in the kernel directory, then OK, I was
+> wrong.
+>
+> --
+>                                             Gilles.
 
