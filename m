@@ -1,6 +1,6 @@
-Date: Thu, 2 Apr 2015 12:27:53 +0200
+Date: Thu, 2 Apr 2015 12:31:45 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150402102753.GD31175@hermes.click-hack.org>
+Message-ID: <20150402103145.GE31175@hermes.click-hack.org>
 References: <9BA84827B30CBE4996725F98F7DC912342962237@SMExchange01.siebmeyer.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -32,13 +32,14 @@ On Thu, Apr 02, 2015 at 10:16:40AM +0000, Hänel-Baas, Alexander wrote:
 > error: Fetch failed.
 > 
 > By the way,  the http git works fine. It is only the https git that have this trouble.
+> Now I am at the weekend, back at Tuesday than I can make some git test for you.
 
+Just tried
 
-> Now I am at the weekend, back at Tuesday than I can make some git
-> test for you
+wget 'https://git.xenomai.org/ipipe.git/objects/pack/pack-fc3c9da4f48cfea58e4448f81f2f88cee2a4c047.idx'
 
-I have tried a git https clone on my side and it works just fine.
-So, it would seem the issue is on your side.
+And it works fine too.
+I suggest you run that wget command to see what error you get.
 
 -- 
 					    Gilles.
