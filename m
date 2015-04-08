@@ -1,9 +1,11 @@
 MIME-Version: 1.0
-Date: Tue, 7 Apr 2015 16:43:18 +0430
-Message-ID: <CAKKWdtcq_Cj7keL4rkpsLwUX1zHg7Cu0CQUwEYAG=o5ZUbPCJQ@mail.gmail.com>
-From: ali hagigat <hagigatali@gmail.com>
+Sender: had2006@gmail.com
+Date: Wed, 8 Apr 2015 13:35:55 +0100
+Message-ID: <CAKk99t04WrAswcZb-YZJ2ZJzPjnev=Zq0S5cTr_u_E2Aftv-Xg@mail.gmail.com>
+From: Helder Daniel <hdaniel@ualg.pt>
 Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] clocktest
+Subject: [Xenomai] How to propagate Interrupt down the pipeline in cobalt
+	(xenoma 3.x)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,29 +14,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>, Helder Daniel <hdaniel@ualg.pt>
 
-What are the meanings of the following items for clocktest utility:
-ToD offset
-ToD drift
-wraps
-max delta
+Hi,
 
-Besides I have some wraps and delta for the following system, are they
-OK? while there was no wraps or delta for a x86 desktop
-computer+xenomai-2.6.4:
+I am trying to propagate an interrupt from the real time kernel to the
+linux domain.
 
-linux-3.16.7.tar.xz
-ipipe-core-3.16.7-arm-5.patch  + xenomai user space applications and libraries
-target-board: wandboard-quad
+I have 2 drivers (two LKMs), one a RTDM for Cobalt and the other for Linux.
+Each one installs an ISR for IRQ 8 (RTC) that just rtdm_printks and printks
+a message to kernel log.
 
-# clocktest
-== Tested clock: 0 (CLOCK_REALTIME)
-CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
---- -------------------- ---------------- ---------- --------------
-  0            1548388.7           -0.002          0            0.0
-  0            1548389.5            0.004          1            0.1
-  1            1548389.1           -0.000          3            0.3
-  2            1548388.9            0.000          1            0.1
-  3            1548389.0           -0.000          1            0.1
+RTC is programmed to generate interrupts each second.
 
+While both LKMs are inserted, since since the RT domain is the first in the
+pipeline, the RT ISR handles the interrupt, which never arrives the Linux
+NON-RT ISR.
+
+Only when the module with the RT ISR is removed, interrupt arrive to the
+Linux NON RT ISR.
+Which is fine.
+
+But I am trying to propagate interrupts down the pipeline.
+With Xenomai 2.6.x we can create an interrupt object with the native API
+and specify that the interrupt is to be propagated:
+
+err = rt_intr_create(&intr, "RTCInt", RTCIRQ, I_PROPAGATE);
+
+But since with Xenomai 3.x the native API is not available in Kernel, and
+interrupts can not be handled in user spce, I can not figure out a way to
+decide if an interrupt is to be propagated to Linux or not.
+
+I tried to install both IRQs as shared handlers:
+
+RT domain:
+ret = rtdm_irq_request(&intr, IRQ, irq_handler, RTDM_IRQTYPE_SHARED, name,
+NULL);
+
+Linux domain:
+ret = request_irq(RTCIRQ, rtc_interrupt, 0, name, NULL));
+
+and return from the RT ISR:
+
+RTDM_IRQ_NONE.
+
+but it did not worked.
+
+It is still possible to control propagation of interrupts in xenomai 3.x?
+
+
+
+
+
+
+
+-- 
+Helder Daniel
+UALG - FCT
+DEEI
+
+http://w3.ualg.pt/~hdaniel
