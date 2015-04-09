@@ -1,21 +1,13 @@
-Date: Sat, 28 Mar 2015 19:28:08 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150328182808.GL25831@hermes.click-hack.org>
-References: <CACreCVLG=dtjriCzUUqYtOK1Pz+NqYoPFNLJZ4KrM-AccBoHPA@mail.gmail.com>
- <CACreCVKO35Xt9qgerZnw9V3GTRwnGPn_URkL+1C4ymeHUGfK5A@mail.gmail.com>
- <CACreCVLg5ufmVAK_+6P1KpYaQ0ShkkPw9m=5+A+Ao=xtA9tEDQ@mail.gmail.com>
- <551679A2.20508@xenomai.org>
- <20150328113638.GA25635@hermes.click-hack.org>
- <55169F35.1080108@xenomai.org>
- <20150328150516.GG25831@hermes.click-hack.org>
- <5516EBB6.6030208@xenomai.org>
- <20150328181016.GK25831@hermes.click-hack.org>
- <5516F073.4040001@xenomai.org>
+Message-ID: <55264097.2010203@siemens.com>
+Date: Thu, 09 Apr 2015 11:04:23 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5516F073.4040001@xenomai.org>
-Subject: Re: [Xenomai] Boot failure when CONFIG_XENOMAI is enabled
+References: <54F56C9C.6080507@siemens.com>	<CAPRPZsC9mPitPUmXXR6QQfAGN3UMa2u6hkVwjtO4Eoh-NzC7wA@mail.gmail.com>	<54FDB495.3060303@triphase.com>	<5501FC89.2040205@siemens.com>	<20150313163431.GE1497@hermes.click-hack.org>	<550319B3.1050902@siemens.com>	<20150313171211.GH1497@hermes.click-hack.org>	<CAPRPZsD4503Yc92d=e0jqR8HtLiV8rXo_vA2e5ea5V_gyCTOzA@mail.gmail.com>	<20150402191555.GK31175@hermes.click-hack.org>	<CAPRPZsCcAQCYNbVXzB5yW+hNzhLcrDLETDteFLgDLnuzz6RCsA@mail.gmail.com>	<20150402204139.GL31175@hermes.click-hack.org>
+ <CAPRPZsDr__xN4EX8hXn8Wn+j67ip+eAzEOB4so9crCuz8_E+sA@mail.gmail.com>
+In-Reply-To: <CAPRPZsDr__xN4EX8hXn8Wn+j67ip+eAzEOB4so9crCuz8_E+sA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] xeno3_rc3 - Watchdog detected hard LOCKUP
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,123 +16,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: GP Orcullo <kinsamanka@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Sat, Mar 28, 2015 at 07:18:27PM +0100, Philippe Gerum wrote:
-> On 03/28/2015 07:10 PM, Gilles Chanteperdrix wrote:
-> > On Sat, Mar 28, 2015 at 06:58:14PM +0100, Philippe Gerum wrote:
-> >> On 03/28/2015 04:05 PM, Gilles Chanteperdrix wrote:
-> >>> On Sat, Mar 28, 2015 at 01:31:49PM +0100, Philippe Gerum wrote:
-> >>>> On 03/28/2015 12:36 PM, Gilles Chanteperdrix wrote:
-> >>>>> On Sat, Mar 28, 2015 at 10:51:30AM +0100, Philippe Gerum wrote:
-> >>>>>> On 03/28/2015 10:05 AM, GP Orcullo wrote:
-> >>>>>>> On Fri, Mar 27, 2015 at 8:12 PM, GP Orcullo <kinsamanka@gmail.com> wrote:
-> >>>>>>>> On Fri, Mar 27, 2015 at 6:19 PM, GP Orcullo <kinsamanka@gmail.com> wrote:
-> >>>>>>>>> What happens in between the clocksource switch and head domain registration?
-> >>>>>>>>>
-> >>>>>>>>> [    0.090129] DMA: preallocated 4096 KiB pool for atomic coherent
-> >>>>>>>>> allocations
-> >>>>>>>>> [    0.095333] Switching to clocksource ipipe_tsc
-> >>>>>>>>> [    0.122397] I-pipe: head domain Xenomai registered.
-> >>>>>>>>> [    0.124618] Xenomai: hal/arm started.
-> >>>>>>>>>
-> >>>>>>>>> I'm trying to trace the code to find out where it stops. I tried
-> >>>>>>>>> adding printk to to the set and request functions and the code never
-> >>>>>>>>> runs when CONFIG_SMP is enabled.
-> >>>>>>>>>
-> >>>>>>>>> Thanks,
-> >>>>>>>>>
-> >>>>>>>>> GP Orcullo
-> >>>>>>>>
-> >>>>>>>> It gets stuck on the call to ipipe_critical_enter:
-> >>>>>>>> http://git.xenomai.org/ipipe-gch.git/tree/kernel/ipipe/timer.c?id=ipipe-core-3.10.32-arm-7#n279
-> >>>>>>>>
-> >>>>>>>> Which then gets stuck on ipipe_send_ipi:
-> >>>>>>>> http://git.xenomai.org/ipipe-gch.git/tree/kernel/ipipe/core.c?id=ipipe-core-3.10.32-arm-7#n1533
-> >>>>>>>>
-> >>>>>>>
-> >>>>>>> I've traced the issue to the ipipe_processor_id() function. It returns
-> >>>>>>> the value 512 for processor 0. This value comes from cpu node property
-> >>>>>>> of the DT file.
-> >>>>>>>
-> >>>>>>> Changing ipipe_processor_id() to return 0 instead of 512 allows the
-> >>>>>>> kernel to boot but it fails the switchtest regression test.
-> >>>>>>>
-> >>>>>>> Changing the cpu0 reg value on the DT file allows the kernel to boot
-> >>>>>>> and pass all the xenomai regression tests but it generates the
-> >>>>>>> following warning at boot:
-> >>>>>>
-> >>>>>> No, this property for armv7 must match MPIDR[23:0], i.e. the physical id
-> >>>>>> of the core.
-> >>>>>>
-> >>>>>>> What's the proper way of fixing this?
-> >>>>>>>
-> >>>>>>
-> >>>>>> By fixing ipipe_processor_id() in the CONFIG_LEGACY case, it's broken.
-> >>>>>> It assumes __cpu_logical_map[] is a hw->logical map, but it is actually
-> >>>>>> the opposite.
-> >>>>>>
-> >>>>>> We may have been lucky until now because the physical mapping seems to
-> >>>>>> have always matched the logical order on the SMP SoCs people used with
-> >>>>>> Xenomai so far, it looks like your A5 core does not follow this order.
-> >>>>>
-> >>>>> No, cpu_logical_map works both ways, it simply exchanges 0 with
-> >>>>> whatever number the boot cpu has
-> >>>>> so, since cpu_logical_map[0] == 512 and cpu_logical_map[512] == 0
-> >>>>> it should work both ways.
-> >>>>
-> >>>> It does not make sense. We just cannot do this with DT.
-> >>>
-> >>> In fact we can. The "only" downside is that we have to have
-> >>> cpu_logical_map big enough to allow setting cpu_logical_map[512] to
-> >>> 0, so to have NR_CPUS at least 513. Setting up a separate
-> >>> reverse map avoids this issue of course, so I will merge that patch
-> >>> when it has been tested.
-> >>>
-> >>>>
-> >>>>> At least, that was true before DT.
-> >>>>
-> >>>> That is the issue with this code.
-> >>>
-> >>> No the issue is that 512 is larger than 255 and given the way we
-> >>> mask in hard_smp_processor_id(), this causes hard_smp_processor_id()
-> >>> to return 0 instead of 512 for the boot cpu. The size of the MPIDR
-> >>> mask has varied over time, and hard_smp_processor_id() was not
-> >>> updated to reflect that change.
-> >>>
-> >>
-> >> The fact that we might change the semantics of __cpu_logical_map[] to
-> >> make it a double-entry map does not make it a proper solution. The
-> >> regular kernel defines it as a logical->hardware identity mapping array,
-> >> I'd rather prefer your latest change which introduces a reverse map instead.
-> >>
-> >> The calculations and masks used to extract the MPIDR fields have
-> >> obviously never changed over time, since this reflects hardware properties.
-> > 
-> > See commit cb8cf4f821044f140ea5b9c8d4f816f0c05fab44
-> > 
-> > As the OP explained, it is to take the "cluster ID" into account.
-> > Maybe if we look at the ARM11 MPCORE specification, it had no such
-> > notion of cluster ID. So, yes, hardware registers do evolve over
-> > time. And the code to parse them evolves too.
-> > 
+On 2015-04-08 23:02, Jeroen Van den Keybus wrote:
+> It took a while, but a hard lockup occurred on Xenomai 3.0-rc4 with
+> Linux 3.16.7 running dohell. This time, I believe I have a trace of
+> the locked up CPU. It's listed below and for completeness, the first
+> part of the dmesg log is attached as well.
 > 
-> This commit does not change the way the MPIDR is split in fields, which
-> is my point. Said differently, MPIDR_AFFINITY_LEVEL did not change since
-> it was introduced:
-> 
-> git diff dca463d..HEAD arch/arm/include/asm/cputype.h
+> [419215.683857] Kernel panic - not syncing: Watchdog detected hard
+> LOCKUP on cpu 3
+> [419215.683886] CPU: 3 PID: 18835 Comm: dohell Not tainted 3.16.7-cobalt #1
+> [419215.683903] Hardware name: Supermicro X10SAE/X10SAE, BIOS 2.0a 05/09/2014
+> [419215.683920]  0000000000000000 ffff88021fb86c38 ffffffff8175761d
+> ffffffff81a8a1e8
+> [419215.683945]  ffff88021fb86cb0 ffffffff81752c0e 0000000000000010
+> ffff88021fb86cc0
+> [419215.683968]  ffff88021fb86c60 0000000000000000 0000000000000003
+> 000000000001999e
+> [419215.684095] Call Trace:
+> [419215.684103]  <NMI>  [<ffffffff8175761d>] dump_stack+0x45/0x56
+> [419215.684125]  [<ffffffff81752c0e>] panic+0xd8/0x20a
+> [419215.684141]  [<ffffffff81103f02>] watchdog_overflow_callback+0xc2/0xd0
+> [419215.684158]  [<ffffffff8114257d>] __perf_event_overflow+0x8d/0x230
+> [419215.684174]  [<ffffffff81143024>] perf_event_overflow+0x14/0x20
+> [419215.684190]  [<ffffffff81020326>] intel_pmu_handle_irq+0x1e6/0x400
+> [419215.684259]  [<ffffffff811cb501>] ? unmap_kernel_range_noflush+0x11/0x20
+> [419215.684277]  [<ffffffff81017f2b>] perf_event_nmi_handler+0x2b/0x50
+> [419215.684293]  [<ffffffff81006f68>] nmi_handle+0x88/0x120
+> [419215.684308]  [<ffffffff8100755e>] default_do_nmi+0xce/0x130
+> [419215.684373]  [<ffffffff81007690>] do_nmi+0xd0/0xf0
+> [419215.684387]  [<ffffffff8176175a>] end_repeat_nmi+0x1e/0x2e
+> [419215.684402]  [<ffffffff8175ea4a>] ? _raw_spin_lock+0x2a/0x40
+> [419215.684417]  [<ffffffff8175ea4a>] ? _raw_spin_lock+0x2a/0x40
+> [419215.684431]  [<ffffffff8175ea4a>] ? _raw_spin_lock+0x2a/0x40
+> [419215.684445]  <<EOE>>  [<ffffffff81046bac>]
+> __ipipe_pin_range_globally+0x7c/0x2b0
+> [419215.684468]  [<ffffffff8139efe6>] ioremap_page_range+0x226/0x300
+> [419215.684485]  [<ffffffff8114e90a>] ? xnintr_core_clock_handler+0x2ea/0x310
+> [419215.684553]  [<ffffffff81093eb0>] ? update_curr+0x80/0x180
+> [419215.684568]  [<ffffffff81455e09>] ghes_copy_tofrom_phys+0x1e9/0x200
 
-The linux kernel code before that commit did not take into account
-the fact that there could be several "clusters", it simply masked
-the mpidr register with 0xff and this is what we based the I-pipe
-code on. Implementing a reverse map is more complicated than what I
-did, if we want to allow that cluster ID to have a different value.
-We probably have to add the call to the MPIDR_AFFINITY_LEVEL to the
-ipipe_processor_id definition, I have to look more carefully at how
-all this works.
+OK, maybe it is related to ACPI APEI, maybe that is just triggering an
+I-pipe bug. But could you try to disable that feature and see if the
+issue still appears?
+
+I'll meanwhile dig deeper and try to understand what could cause a lockup.
+
+BTW, if you read what GHES specifically does, how it interacts with the
+firmware, then this may explain why the issue is not reproducible on any
+platform.
+
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
