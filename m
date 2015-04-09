@@ -1,11 +1,10 @@
-Message-ID: <552698E7.1080501@siemens.com>
-Date: Thu, 09 Apr 2015 17:21:11 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Wojciech Domski <wojciech.domski@gmail.com>
+Message-ID: <5526CD6D.5050500@gmail.com>
+Date: Thu, 09 Apr 2015 21:05:17 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PATCH] ipipe: Protect ioremap_page_range also against
- IRQ usage by APEI
+Subject: [Xenomai] Writing RTDM driver for multiple PCI cards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,40 +13,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>, Niels Wellens <niels.wellens@triphase.com>, Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Commit 261a3fdbae added a check to prevent NMI invocation of the range
-pinning function. But APEI may also call ioremap_page_range from timer
-IRQ context. Therefore we need to extend the check.
+Dear All,
 
-This addresses lockups seen on long-running systems with APEI GHES
-enabled.
+I would like to write an another driver for a PCI card.
+I have encountered an issue, however. I have some experience with
+writing RTDM drivers but
+for a single PCI card.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
+Now I would like to write a driver which would support multiple PCI
+cards. How should I do that?
 
-Jeroen, Niels, this should truly and safely fix the issue. Please give
-it a try!
+For example when writing a character device driver for standard Linux
+kernel we can use something
+like alloc_chrdev_region() or register_chrdev_region(). In those
+functions one of the parameters is
+count which refers to the number of devices. If I am not mistaken those
+devices will be available
+under /dev/device1, /dev/device2 and so on.
 
- lib/ioremap.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+What kind of mechanic should I use to achieve similar result with RTDM.
+One difference is that in RTDM I do not have those devices under /dev
+but they
+are registered under some device name space in Xenomai which handles this.
+Is there a way to make one driver with name ex. MyDev for 3 devices
+and access them by passing MyDev1, MyDev2 or MyDev3 to rt_dev_open()?
 
-diff --git a/lib/ioremap.c b/lib/ioremap.c
-index f5331c0..9b8e8d5 100644
---- a/lib/ioremap.c
-+++ b/lib/ioremap.c
-@@ -88,9 +88,9 @@ int ioremap_page_range(unsigned long addr,
- 			break;
- 	} while (pgd++, addr = next, addr != end);
- 
--	/* APEI may invoke this for temporarily remapping pages in NMI
-+	/* APEI may invoke this for temporarily remapping pages in IRQ or NMI
- 	 * context - nothing we can and need to propagate globally. */
--	if (!in_nmi()) {
-+	if (!(in_irq() || in_nmi())) {
- 		__ipipe_pin_range_globally(start, end);
- 		flush_cache_vmap(start, end);
- 	}
+Best regards,
+
 -- 
-2.1.4
+Wojciech Domski
+
+Domski.pl
+
+Wojciech.Domski.pl
+
 
