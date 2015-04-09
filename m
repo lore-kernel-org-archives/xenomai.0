@@ -1,6 +1,6 @@
-Date: Thu, 9 Apr 2015 14:56:14 +0200
+Date: Thu, 9 Apr 2015 14:58:38 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150409125614.GZ20752@hermes.click-hack.org>
+Message-ID: <20150409125838.GA20752@hermes.click-hack.org>
 References: <20150313171211.GH1497@hermes.click-hack.org>
  <CAPRPZsD4503Yc92d=e0jqR8HtLiV8rXo_vA2e5ea5V_gyCTOzA@mail.gmail.com>
  <20150402191555.GK31175@hermes.click-hack.org>
@@ -85,7 +85,10 @@ On Thu, Apr 09, 2015 at 02:49:11PM +0200, Jan Kiszka wrote:
 > 
 > Just need to look at the backtrace.
 
-Yuck!
+Is the mapping done this way permanent, or just temporary, for the
+duration of the irq ? Because if done temporarily, we might as
+well just skip ipipe_pin_range_globally in this case: the mm context
+is not going to change under an irq handler's feet.
 
 -- 
 					    Gilles.
