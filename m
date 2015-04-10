@@ -1,16 +1,14 @@
-Date: Fri, 10 Apr 2015 16:50:35 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150410145035.GN20752@hermes.click-hack.org>
-References: <CAJZRki9RpfcQQ+c8oz1bJ7RsFQE4MrsQdULxvHAuh-STi0fhkQ@mail.gmail.com>
- <oqegntropy.fsf@merlin.sez.to>
- <20150409220956.GE29558@csclub.uwaterloo.ca>
- <20150409221718.GI20752@hermes.click-hack.org>
- <20150410144410.GF29558@csclub.uwaterloo.ca>
+Message-ID: <5527E771.6070601@denx.de>
+Date: Fri, 10 Apr 2015 17:08:33 +0200
+From: Stefan Roese <sr@denx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20150410144410.GF29558@csclub.uwaterloo.ca>
-Subject: Re: [Xenomai] Why does mqueue.h define mqd_t as unsigned
+References: <203841149.1070671428676190916.JavaMail.httpd@webmail-27.iol.local>
+In-Reply-To: <203841149.1070671428676190916.JavaMail.httpd@webmail-27.iol.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai]
+ =?utf-8?q?=5BPATCH=5D_hal/arm=3A_Add_Zynq_v3=2E14=2E17_?=
+ =?utf-8?q?patches=E2=80=8F?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,27 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: Xenomai Mailing List <xenomai@xenomai.org>
+To: "claudio.lorini@libero.it" <claudio.lorini@libero.it>, xenomai@xenomai.org
 
-On Fri, Apr 10, 2015 at 10:44:10AM -0400, Lennart Sorensen wrote:
-> On Fri, Apr 10, 2015 at 12:17:18AM +0200, Gilles Chanteperdrix wrote:
-> > This design is specified by POSIX. This looks like a "fighting the
-> > windmill" case.
+On 10.04.2015 16:29, claudio.lorini@libero.it wrote:
+> On Wed, Jan 21, 2015 at 04:05:43PM +0100, Stefan Roese wrote:
+>> Xilinx Zynq is already supported in the mainline Xenomai git repository.
+>> This patch adds support for the v3.14.17 Linux Kernel with the latest
+>> arm-6 i-pipe patch additionally to the already present v3.5 and v3.8
+>> support...
 > 
-> Yeah "Posix says so" always wins any argument it seems. :)
+> Hello,
+> can someone indicate a specific branch of the linux-xlnx git repo to use?
+> I've tried to apply to the one with tag 'xlnx_3.14' without success
+> and the README brings no information yet, (the last and only linux version
+> i succeeded in patching is the 3.8).
+> thanks, Claudio.
 
-Adding #define MQ_FAILED ((mqd_t)-1) in your application and using
-it makes your application portable. Adding it to Xenomai headers and
-using it in your application makes your application non portable. If
-the POSIX standard added this definition, then if you wanted your
-application to be portable, you would want it to support previous
-POSIX standards, so you would still add this definition to your
-application (with an added ifdef on the posix standard level).
+The README mentions says:
 
-So, all and all, adding #define MQ_FAILED ((mqd_t)-1) to your
-application and move on wins the argument.
+---- Zynq (v3.14.17)
 
--- 
-					    Gilles.
+1- Checkout the "xilinx-zynq-v3.14.17" branch from the DENX Linux git
+   repository [2]
+2- apply zynq/ipipe-core-3.14.17-zynq-pre.patch
+3- apply ipipe-core-3.14.17-arm-*.patch
+4- apply zynq/ipipe-core-3.14.17-zynq-post.patch
+5- you can resume to generic installation instructions.
+
+[2] git://git.denx.de/linux-denx.git
+
+So please use this git repo as a base:
+
+http://git.denx.de/?p=linux-2.6-denx.git;a=shortlog;h=refs/heads/xilinx-zynq-v3.14.17
+
+HTP.
+
+Thanks,
+Stefan
+
 
