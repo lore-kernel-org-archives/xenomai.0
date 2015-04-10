@@ -1,14 +1,13 @@
-Date: Fri, 10 Apr 2015 18:14:03 +0200
+Date: Fri, 10 Apr 2015 20:55:11 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150410161403.GS20752@hermes.click-hack.org>
-References: <5527DF9B.9020304@galauner.de>
- <20150410152959.GQ20752@hermes.click-hack.org>
- <5527F517.1090809@galauner.de>
+Message-ID: <20150410185511.GT20752@hermes.click-hack.org>
+References: <CAJZRki9RpfcQQ+c8oz1bJ7RsFQE4MrsQdULxvHAuh-STi0fhkQ@mail.gmail.com>
+ <20150409210713.GH20752@hermes.click-hack.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5527F517.1090809@galauner.de>
-Subject: Re: [Xenomai] Xenomai on Linux 3.18 on Zynq
+In-Reply-To: <20150409210713.GH20752@hermes.click-hack.org>
+Subject: Re: [Xenomai] Why does mqueue.h define mqd_t as unsigned
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,45 +16,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Andreas Galauner <andreas@galauner.de>
-Cc: xenomai@xenomai.org
+To: Phil Mitchell <p.mitch@gmail.com>
+Cc: Xenomai Mailing List <xenomai@xenomai.org>
 
-On Fri, Apr 10, 2015 at 06:06:47PM +0200, Andreas Galauner wrote:
-> On 10.04.2015 17:29, Gilles Chanteperdrix wrote:
-> > Maybe you already tried since you tried "all kinds of things", but
-> > better be sure, have you tried enabling Xenomai and I-pipe debugging
-> > options? 
+On Thu, Apr 09, 2015 at 11:07:13PM +0200, Gilles Chanteperdrix wrote:
+> On Thu, Apr 09, 2015 at 04:52:26PM -0400, Phil Mitchell wrote:
+> > Dear All,
+> > 
+> > mqueue.h defines mqd_t as an unsigned long. The function mq_open returns
+> > type mqd_t and states that -1 is returned in case of error.
+> > 
+> > Is mqd_t defined incorrectly or am I missing something?
 > 
-> Sorry for that sloppy phrase, it's a side project and I lost track what
-> exactly I did over the last weekends.
+> The specification does not say what mqd_t should be and says that
+> mq_open returns (mqd_t)-1, not -1, and (unsigned long)-1 is valid,
+> so, this is valid even if a bit strange. mqd_t is an opaque type for
+> the user anyway, so its actual type should not matter to you.
 > 
-> I just enabled the I-pipe debugging features. I didn't know that they
-> are under "Kernel hacking". The Xenomai debugging features were enabled
-> all the time.
-> 
-> Sadly, I don't get any messages that may relate to my system behaviour.
-> Actually no messages at all except the initialization messages of i-pipe
-> and Xenomai.
-> 
-> What I forgot to mention is, that it's not a complete freeze. It seems
-> to me, that the system just gets horribly slow. The heartbeat LED stops
-> blinking and I get occasional terminal output (1-2 lines) until it stops
-> completely.
-> 
-> There seem to be three points where the kernel may hang:
-> 1) Somewhere in the driver init phase
-> 2) While mounting the rootfs
-> 3) At the login prompt or idle shell
-> 
-> And as I said, sometimes I get a few more lines from the kernel after a
-> while.
+> But in fact we do not even need a long type since what is returned
+> is a file descriptor, so, we could have typedef int mqd_t like
+> glibc.
 
-The classical issues to check are irq issues and timer issues. Since
-you are using a non mainline kernel (I guess), you may simply lack
-some changes to the code added by your non mainline kernel. To fix
-that, you can use the following document:
+In fact mqd_t is already an int in the following case:
+- in kernel-space where it gets defined by kernel/types.h
+- in user-space when the glibc has mqueue.h, since then include that
+header.
 
-https://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc/
+The only remaining cases where we use unsigned long are:
+- glibc without an mqueue.h, but I believe they are rare now a days
+- when compiling for xeno-sim, which has been unusable with recent
+compilers for years now.
+
+So, I think we do not care.
 
 -- 
 					    Gilles.
