@@ -1,16 +1,11 @@
-From: Lowell Gilbert <kludge@be-well.ilk.org>
-References: <CAJZRki9RpfcQQ+c8oz1bJ7RsFQE4MrsQdULxvHAuh-STi0fhkQ@mail.gmail.com>
- <oqegntropy.fsf@merlin.sez.to>
- <20150409220956.GE29558@csclub.uwaterloo.ca>
- <20150409221718.GI20752@hermes.click-hack.org>
- <20150409222914.GJ20752@hermes.click-hack.org>
-Date: Thu, 09 Apr 2015 19:17:53 -0400
-In-Reply-To: <20150409222914.GJ20752@hermes.click-hack.org> (Gilles
- Chanteperdrix's message of "Fri, 10 Apr 2015 00:29:14 +0200")
-Message-ID: <44wq1knb6m.fsf@lowell-desk.lan>
 MIME-Version: 1.0
-Content-Type: text/plain
-Subject: Re: [Xenomai] Why does mqueue.h define mqd_t as unsigned
+Sender: had2006@gmail.com
+Date: Fri, 10 Apr 2015 09:36:08 +0100
+Message-ID: <CAKk99t1XUV4-0YUcQFZbJudxfPgM1qB26gTA8KemjqVGoqmGQA@mail.gmail.com>
+From: Helder Daniel <hdaniel@ualg.pt>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] It is possible to control Interrupt propagation on ipipe
+	with xenoami 3.x?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,22 +14,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai Mailing List <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
+Hi,
 
-> On Fri, Apr 10, 2015 at 12:17:18AM +0200, Gilles Chanteperdrix wrote:
+Since the RT_INTR API is no longer implemented It is possible to control
+Interrupt propagation down the ipipe with xenoami 3.x. In kernel or user
+space?
 
->> This design is specified by POSIX. This looks like a "fighting the
->> windmill" case.
->
-> I think the upside of this design is that it allows mqd_t being
-> implemented as a pointer or as an integer, this gives freedom to the
-> implementer by making the type opaque.
+I took a look at Cobalt functions but I didn't find some similar to the
+RT_INTR API (maybe I miseds something)
 
-Yes, but in other cases POSIX specified symbolic constants rather than
-numeric values for exactly that problem.  It's possible that somebody just
-made a mistake by not doing that here, but I would venture to guess that
-there was probably an issue with existing code that led to this hack.
+My goal is to show how to implement a shield between the RT and Linux
+domains, as described in Xenomai white papers.
 
+thanks,
+
+Helder
