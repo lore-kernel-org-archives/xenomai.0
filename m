@@ -1,21 +1,13 @@
-Date: Fri, 10 Apr 2015 23:39:06 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150410213906.GW20752@hermes.click-hack.org>
-References: <CACreCVKgzpDYUbMu2ihYtHxV5CSma-eNaH57u-CvCWmKbkoU=Q@mail.gmail.com>
- <20150328185913.GN25831@hermes.click-hack.org>
- <CACreCV+ddKJz6vq4vmb6b+Jd6kxrpbDTXUDyfoQ9WNk48w3u1Q@mail.gmail.com>
- <20150329110623.GB32766@hermes.click-hack.org>
- <CACreCVKG=6AEGF9BVBraHgQ8N=PwqD-6=kzfvinSpU+BBHtpng@mail.gmail.com>
- <20150329120218.GE32766@hermes.click-hack.org>
- <CACreCVLmJAa_hLLVQsiKYLks-4Ev=uAVw=5DFOZ+EL_DZ2VuPA@mail.gmail.com>
- <20150329124445.GH32766@hermes.click-hack.org>
- <1428696530.4257.1.camel@lx-henry>
- <20150410213306.GV20752@hermes.click-hack.org>
+Message-ID: <5528EAF4.4000500@xenomai.org>
+Date: Sat, 11 Apr 2015 11:35:48 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20150410213306.GV20752@hermes.click-hack.org>
-Subject: Re: [Xenomai] Boot failure when CONFIG_XENOMAI is enabled
+References: <1427256943-8654-1-git-send-email-sr@denx.de>
+In-Reply-To: <1427256943-8654-1-git-send-email-sr@denx.de>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] ipipe: drivers/irqchip/irq-vic.c: Fix
+ problems with ipipe in VIC
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,24 +16,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henry Bausley <hbausley@deltatau.com>
-Cc: GP Orcullo <kinsamanka@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Stefan Roese <sr@denx.de>, xenomai@xenomai.org
 
-On Fri, Apr 10, 2015 at 11:33:06PM +0200, Gilles Chanteperdrix wrote:
-> On Fri, Apr 10, 2015 at 01:08:50PM -0700, Henry Bausley wrote:
-> > FYI,
-> > 
-> >   Using your patches also allowed the LS1021A Arm to boot with Xenomai
-> > in SMP mode.
+On 03/25/2015 05:15 AM, Stefan Roese wrote:
+> These changes are needed to enable the VIC interrupt handler for I-pipe usage.
+> This patch version is for the "ipipe-3.18" branch in Philippes "ipipe" git
+> respository. But a quick search reveals that such a fix very likely is needed
+> for kernel version from v3.10 onward.
 > 
-> You mean the latest version I sent today ?
-> https://git.xenomai.org/ipipe-gch.git/commit/?h=for-ipipe-3.18&id=d1414de8ada86282fe77f8ff17283f1dc9d50141
+> Tested on SPEAr600 based board with v3.18.
+> 
 
-Ok, found the typo which is probably the cause of the issues.
-Please try that one instead:
-
-https://git.xenomai.org/ipipe-gch.git/commit/?h=for-ipipe-3.18&id=92b112d3c6f9f7b9a287fb6569c5e92a731e8cab
+Merged, thanks.
 
 -- 
-					    Gilles.
+Philippe.
 
