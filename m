@@ -1,12 +1,14 @@
-From: =?iso-8859-1?Q?H=E4nel-Baas=2C_Alexander?=
- <alexander.haenel-baas@sieb-meyer.de>
-Date: Mon, 13 Apr 2015 12:27:08 +0000
-Message-ID: <9BA84827B30CBE4996725F98F7DC912342962C71@SMExchange01.siebmeyer.org>
-Content-Language: de-DE
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Xeno3.0 latency no /dev/rtheap under 3.18 i.mx6
+Sender: had2006@gmail.com
+In-Reply-To: <552915AE.4000809@xenomai.org>
+References: <CAKk99t04WrAswcZb-YZJ2ZJzPjnev=Zq0S5cTr_u_E2Aftv-Xg@mail.gmail.com>
+ <552915AE.4000809@xenomai.org>
+Date: Mon, 13 Apr 2015 13:37:50 +0100
+Message-ID: <CAKk99t0VmN0L1D+VpNRv4B4m=fNxj_n_2tzu=tvYBqdOJRjJdA@mail.gmail.com>
+From: Helder Daniel <hdaniel@ualg.pt>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] How to propagate Interrupt down the pipeline in
+ cobalt (xenoma 3.x)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,76 +17,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi
+On 11 April 2015 at 13:38, Philippe Gerum <rpm@xenomai.org> wrote:
 
-when i start latency, i get the error:
-Xenomai: /dev/rtheap is missing
-(chardev, major=3D10 minor=3D254)
+>
+>
+ I can not figure out a way to
+> > decide if an interrupt is to be propagated to Linux or not.
+> >
+> > I tried to install both IRQs as shared handlers:
+> >
+> > RT domain:
+> > ret = rtdm_irq_request(&intr, IRQ, irq_handler, RTDM_IRQTYPE_SHARED,
+> name,
+> > NULL);
+> >
+> > Linux domain:
+> > ret = request_irq(RTCIRQ, rtc_interrupt, 0, name, NULL));
+> >
+> > and return from the RT ISR:
+> >
+> > RTDM_IRQ_NONE.
+>
+> - RTDM_IRQ_NONE
+> + XN_ISR_PROPAGATE
+>
+>
+Ok
+I changed the return of the RT ISR to just XN_IRQ_PRPAGATE (I did not find
+XN_ISR_PROPAGATE on Cobalt API from Xenomai 3.x).
+It now propagates the interrupt notification to Linux Domain.
+Thanks
 
-dmesg | grep Xeno shows:
-[Xenomai] scheduling class idle registered.
-[Xenomai] scheduling class rt registered.
-I-pipe: head domain Xenomai registered.
-[Xenomai] Cobalt v3.0-rc4 (Exact Zero)
+I also tried returning:
 
-cat /sys/module/xenomai/parameters/state
-enabled
+RTDM_IRQ_NONE | XN_ISR_PROPAGATE
 
-Always looks good, ore can I check more?
+or
 
-I have made this:
+RTDM_IRQ_HANDLED | XN_ISR_PROPAGATE
 
-First I read the document: Installing Xenomai 3.x, because it is my first X=
-eno3 touch.
+Both of thenm still propagates int notifications to Linux.
 
-Than git clone  https://git.xenomai.org/ipipe-gch.git -b for-ipipe-3.18<htt=
-ps://git.xenomai.org/ipipe-gch.git%20-b%20for-ipipe-3.18>
-Call /scripts/ipipe/genpatches
-It generates the ipipe-core-3.18-arm-1.patches without any messages.
-
-Get the vanilla 3.18 kernel
-Prepare the kernel:
-cd /platform-sm-arm/build-target/xenomai-"3.0-rc4" && \
-                               scripts/prepare-kernel.sh --linux /platform-=
-sm-arm/build-target/linux-3.18 \
-                               --ipipe /platform-sm-arm/build-target/xenoma=
-i-"3.0-rc4"/kernel/cobalt/arch/arm/patches/ipipe-core-3.18-arm-1.patch \
-                               --arch=3Darm
-
-Make imx_v6_v7_defconfig (for the i.mx6 sabresd board)
-Call kernel menuconfig and check the settings.
-Make the kernel.
-Make dtb for imx6q-sabresd board.
-
-Than configure the Xenomai-lib with:
-
-      CFLAGS=3D"-march=3Darmv7-a -mfpu=3Dvfp3" \
-      --host=3Darm-v7a-linux-gnueabi \
-       --build=3Di686-host-linux-gnu  \
-       --enable-shared \
-       --with-core=3Dcobalt \
-       --enable-smp  \
-       --disable-doc-install
-
-make and install it.
-
-Put all on the target, boot and try latency...
-Xenomai: /dev/rtheap is missing
-
-I don't know what is my mistake.
-
-There is a message in dmesg:
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D
-[ INFO: inconsistent lock state ]
-3.18.0 #1 Not tainted
----------------------------------
-It is important about my problem?
+So, the proper way to mark an interrupt as handled in RT Domain and to
+propagate it to Linux domain is this last one (RTDM_IRQ_HANDLED
+| XN_ISR_PROPAGATE)?
 
 
 
-With best regards,
-Alexander
+> Sharing IRQs between the rt domain and linux leads to a basic priority
+> inversion problem with level type interrupts, since one would have to
+> keep the IRQ line masked until the linux handler eventually had a chance
+> to process the same event. This would obviously delay the next interrupt
+> from the same device for the rt domain.
+>
 
+ok
+
+
+> For this reason, their is no API for implementing such sharing
+> explicitly anymore, since it is discouraged. However, the mechanism is
+> still in place for the (rare) desperate cases when there would be no
+> other option, and the application could cope with the incurred delay.
+> This hack is enabled when a RTDM interrupt handler returns
+> XN_ISR_PROPAGATE, in which case the interrupt line is not unmasked upon
+> return from the handler, and the event is posted to the linux domain.
+
+
+My goal is just to show how interrupts can be propagated down the pipeline
+to the next domain or how the Linux domain can be starved from interrupts.
+
+Something like the Interrupt Shield referred in Xenomai documentation used
+to starve Linux form events notifications while a real time task enters
+secondary mode to run a Linux system call, and all the Linux kernel
+inherits the RT priority of this RT task while executing the system call.
+
+Helder
+
+
+
+-- 
+Helder Daniel
+UALG - FCT
+DEEI
+
+http://w3.ualg.pt/~hdaniel
