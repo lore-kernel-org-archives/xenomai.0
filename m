@@ -1,13 +1,12 @@
-From: <romain.perier@scle.fr>
-Date: Tue, 14 Apr 2015 10:15:56 +0200
-Message-ID: <299A38B133279A4EBA47BCB60993FEAF858030C89E@xs203433.MELINDA.LOCAL>
-References: <299A38B133279A4EBA47BCB60993FEAF858030C89D@xs203433.MELINDA.LOCAL>
- <20150414073454.GA1589@hermes.click-hack.org>
-Content-Language: en-US
+From: =?iso-8859-1?Q?H=E4nel-Baas=2C_Alexander?=
+ <alexander.haenel-baas@sieb-meyer.de>
+Date: Wed, 15 Apr 2015 08:49:32 +0000
+Message-ID: <9BA84827B30CBE4996725F98F7DC912342962E20@SMExchange01.siebmeyer.org>
+Content-Language: de-DE
+MIME-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-Subject: Re: [Xenomai] RTNET
+Subject: [Xenomai] porting issue Xeno2 Xeno3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,20 +15,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: gilles.chanteperdrix@xenomai.org
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Le 14/04/2015 09:35, Gilles Chanteperdrix a =E9crit :=0A=
->> I have two questions :=0A=
->>=0A=
->> 1. Have you any ideas about the problem described above ?=0A=
-> No, the macb driver has been tested on AT91, and was working. Have=0A=
-> you tried loading rtipv4 and passing an IP address to rtifconfig (in=0A=
-> that order)?=0A=
-=0A=
-I have just tried, same behaviour, it freezes.=0A=
-$ modprobe rtipv4 (rtnet and macb are already loaded)=0A=
-$ /usr/xenomai/sbin/rtifconfig rteth0 up 192.168.0.1=0A=
-   # freeze=0A=
-=0A=
+Hi
+
+Which headers are right?
+
+In Xeno2 i include native/timer.h.
+Now in Xeno3 I have read the alchemy is the formerly native API.
+But when I include alchemy/timer.h some defines are missing.
+When I include trank/native/timer.h the compiler are lucky.
+
+Which headers shall I used?
+
+With best regards,
+Alexander
 
