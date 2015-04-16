@@ -1,12 +1,11 @@
-From: "=?ISO-8859-1?B?WmhvdXBlbmc=?=" <zhoupeng1982@qq.com>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="ISO-8859-1"
-Content-Transfer-Encoding: base64
-Date: Thu, 16 Apr 2015 19:30:11 +0800
-Message-ID: <tencent_6AF600A70C38ADD93C8320D9@qq.com>
-Subject: [Xenomai] Rtnet e1000e 82583: slow writel(tx_ring->tail),
-	takes above 1us?
+Date: Thu, 16 Apr 2015 14:26:19 +0200
+From: "Mariusz Janiak" <mariuszjaniak@wp.pl>
+Message-ID: <552faa6bf2d134.92118662@wp.pl>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-2"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Rtnet e1000e 82583: slow writel(tx_ring->tail),
+ takes above 1us?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,18 +14,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?ISO-8859-1?B?eGVub21haQ==?= <xenomai@xenomai.org>
+To: Zhoupeng <zhoupeng1982@qq.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-SSdtIHVzaW5nIFJ0bmV0IHdpdGggODI1ODMgZXRoZXJuZXQgY2FyZC4KSXQgdGFrZXMgYWJv
-dXQgMnVzIHRvIHNlbmQgQUZfUEFDS0VUIHVzaW5nIHJ0X2Rldl9zZW5kbXNnKCksIGFib3V0
-IDIwMCBieXRlcyBvZiBkYXRhLgoKSXQgaXMgcHJldHR5IGZhc3QsIGJ1dCBJIHdhbnQgdG8g
-ZmluZCB3aGF0IHRha2VzIHNvIGxvbmcuCkF0IGxhc3QgSSBmaW5kIHRoYXQgIndyaXRlbCh0
-eF9yaW5nLSZndDt0YWlsKSIgc3BlbmQgYWJvdmUgMXVzIHRvIGNvbXBsZXRlLgoKVGhpcyBp
-cyBqdXN0IE1NSU8gd3JpdGUgdG8gODI1ODMsIG9mIGNvdXJzZSBNTUlPIGlzIHVuY2FjaGUu
-CkFuZCBQQ0lFIEFTUE0gaXMgZGlzYWJsZWQsIHNvIEwwcyBpcyBub3QgdGhlIHByb2JsZW0u
-CgpJIHRoaW5rIFBDSUUgTWVtb3J5IFdyaXRlIFRMUHMgaXMgZmFzdCBlbm91Z2gsIGJ1dCB3
-aHkgc3BlbmQgc28gbXVjaCB0aW1lPwoKdGhhbmtzLA==
+Dnia Czwartek, 16 Kwietnia 2015 13:30 Zhoupeng <zhoupeng1982@qq.com> napisa=
+=B3(a) =
+
+> I'm using Rtnet with 82583 ethernet card.
+> It takes about 2us to send AF_PACKET using rt_dev_sendmsg(), about 200 by=
+tes of data.
+> =
+
+> It is pretty fast, but I want to find what takes so long.
+> At last I find that "writel(tx_ring-&gt;tail)" spend above 1us to complet=
+e.
+> =
+
+> This is just MMIO write to 82583, of course MMIO is uncache.
+> And PCIE ASPM is disabled, so L0s is not the problem.
+> =
+
+> I think PCIE Memory Write TLPs is fast enough, but why spend so much time?
+
+Hi,
+
+There is an interesting article that may be relevant to this issue
+
+"PCI Express as a Killer of Software-based Real-Time Ethernet"
+
+You can find copy in the attachment. =
 
 
+Best
+Mariusz
 
 
+ =
+
+> thanks,
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: rteth_hw_eval.pdf
+Type: application/x-unknown
+Size: 875870 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150416/f9dc8e9=
+7/attachment.bin>
