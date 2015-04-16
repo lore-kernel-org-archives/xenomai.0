@@ -1,7 +1,12 @@
-From: GP Orcullo <kinsamanka@gmail.com>
-Date: Thu, 16 Apr 2015 16:05:05 +0800
-Message-Id: <1429171505-5598-1-git-send-email-kinsamanka@gmail.com>
-Subject: [Xenomai] [PATCH] Add support for SUNXI boards
+Message-ID: <552F7BD2.5030700@xenomai.org>
+Date: Thu, 16 Apr 2015 11:07:30 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+MIME-Version: 1.0
+References: <9BA84827B30CBE4996725F98F7DC912342962F15@SMExchange01.siebmeyer.org>
+In-Reply-To: <9BA84827B30CBE4996725F98F7DC912342962F15@SMExchange01.siebmeyer.org>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] porting issue Xeno2 Xeno3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,62 +15,96 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: GP Orcullo <kinsamanka@gmail.com>
+To: =?windows-1252?Q?=22H=E4nel-Baas=2C_Alexander=22?= <alexander.haenel-baas@sieb-meyer.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Tested on a Cubieboard2 with v3.16.7-ckt9 kernel.
+On 04/16/2015 08:59 AM, H=E4nel-Baas, Alexander wrote:
+> Hi Philippe
+>=20
+> Thank you for your reply.
+>=20
+> I know this document. In the section "Using the Transition Kit" is descri=
+bed how to use the xeno-config script.
+> So I call the script with:
+> usr/xenomai/bin/xeno-config --skin=3Dnative --cflags
+>=20
+> and get:
+> -I/usr/xenomai/include/trank -D__XENO_COMPAT__ -I/usr/xenomai/include/cob=
+alt -I/usr/xenomai/include -march=3Darmv7-a -mfpu=3Dvfp3 -D_GNU_SOURCE -D_R=
+EENTRANT -D__COBALT__ -I/usr/xenomai/include/alchemy
+>=20
+> I get this info to set the right cflags/ldflags in my own environment.
+>=20
+> In the document stands alchemy is the native skin, so I set the include p=
+ath to alchemy. In this case I get some undefined errors.
+> When I changed the include path to trank the compiler are lucky. Because =
+the trank/native/timer.h include the /alchemy/timer too.
 
----
- arch/arm/mach-sunxi/Kconfig     |    1 +
- drivers/irqchip/irq-sunxi-nmi.c |    7 ++++---
- 2 files changed, 5 insertions(+), 3 deletions(-)
+I'm unsure to understand what you want to achieve or at least where the
+problem stands, so here is a bit of background in case that helps.
+Alchemy is the evolution in x3 of the former native API from x2 which is
+10 years old, the name was changed because referring to "native" causes
+confusion, particularly when Xenomai can run in dual kernel or
+single/native kernel configuration.
 
-diff --git a/arch/arm/mach-sunxi/Kconfig b/arch/arm/mach-sunxi/Kconfig
-index 0fbd4f1..96d76da8 100644
---- a/arch/arm/mach-sunxi/Kconfig
-+++ b/arch/arm/mach-sunxi/Kconfig
-@@ -6,6 +6,7 @@ menuconfig ARCH_SUNXI
- 	select PINCTRL
- 	select PINCTRL_SUNXI
- 	select SUN4I_TIMER
-+	select IPIPE_ARM_KUSER_TSC if IPIPE
- 
- if ARCH_SUNXI
- 
-diff --git a/drivers/irqchip/irq-sunxi-nmi.c b/drivers/irqchip/irq-sunxi-nmi.c
-index 12f547a..d3e8da2 100644
---- a/drivers/irqchip/irq-sunxi-nmi.c
-+++ b/drivers/irqchip/irq-sunxi-nmi.c
-@@ -77,8 +77,9 @@ static int sunxi_sc_nmi_set_type(struct irq_data *data, unsigned int flow_type)
- 	u32 ctrl_off = ct->regs.type;
- 	unsigned int src_type;
- 	unsigned int i;
-+	unsigned long flags;
- 
--	irq_gc_lock(gc);
-+	flags = irq_gc_lock(gc);
- 
- 	switch (flow_type & IRQF_TRIGGER_MASK) {
- 	case IRQ_TYPE_EDGE_FALLING:
-@@ -95,7 +96,7 @@ static int sunxi_sc_nmi_set_type(struct irq_data *data, unsigned int flow_type)
- 		src_type = SUNXI_SRC_TYPE_LEVEL_LOW;
- 		break;
- 	default:
--		irq_gc_unlock(gc);
-+		irq_gc_unlock(gc, flags);
- 		pr_err("%s: Cannot assign multiple trigger modes to IRQ %d.\n",
- 			__func__, data->irq);
- 		return -EBADR;
-@@ -113,7 +114,7 @@ static int sunxi_sc_nmi_set_type(struct irq_data *data, unsigned int flow_type)
- 	src_type_reg |= src_type;
- 	sunxi_sc_nmi_write(gc, ctrl_off, src_type_reg);
- 
--	irq_gc_unlock(gc);
-+	irq_gc_unlock(gc, flags);
- 
- 	return IRQ_SET_MASK_OK;
- }
--- 
-1.7.10.4
+As this API was revised, some differences appeared with the former
+specification: 1) to fix usability issues, 2) to make it seamlessly
+usable over single and dual kernel configurations indifferently.
 
+For this reason, Alchemy does depart in some cases from the former
+"native" skin, I assume this is the undefined symbols you are referring to.
+
+For this reason the so-called "Transition Kit" (aka libtrank) was
+introduced, to provide a compatibility layer on top of Alchemy, which
+hides most of the differences using wrappers when this can be done.
+This package makes sense for building apps running in dual kernel mode
+only (i.e. Cobalt).
+
+So, building an application currently running on the legacy "native" API
+with the CFLAGS returned by "xeno-config --alchemy --cflags" could
+require you to fix up that application, in order to cope with the
+changes described in the migration guide.
+
+If you don't want to do that, then using the transition kit by passing
+the CFLAGS obtained from "xeno-config --native --cflags" may allow you
+to run your application over the Alchemy skin unmodified in most cases.
+
+The only feature that was dropped and not emulated by libtrank is the
+set of former RT_INTR services. Applications that have to synchronize on
+IRQ receipts from user-space over x3 should implement a UDD mini-driver,
+which is like UIO for dual kernel mode:
+http://www.xenomai.org/documentation/xenomai-3/html/xeno3prm/group__rtdm__u=
+dd.html
+
+Basically, to build for Alchemy, you will have to pull headers from
+[$sysroot/]$xenomai_prefix/include/alchemy. This is what the --cflags
+switch gives along with --alchemy.
+
+For enabling the compatibility mode, one would need to 1) define
+__XENO_COMPAT__ 2) pull headers from
+[$sysroot/]$xenomai_prefix/include/trank _and_
+[$sysroot/]$xenomai_prefix/include/alchemy, in that order. This is what
+the --cflags switch gives along with --native.
+
+In addition, -I[$sysroot/]$xenomai_prefix/include is always required
+since all Xenomai headers are referring to files prefixed by their
+package name, e.g. <alchemy/timer.h>. This is the recommended practice
+with the Xenomai API headers, except for the POSIX files from
+include/cobalt obviously.
+
+>=20
+> Now I am not sure which is the right include path when I will used the na=
+tive api alchemy.
+>=20
+> Sorry for that detailed question, but I can't use the xeno-config script =
+in my cross environment directly. I need a sysroot directive to
+> set the include path correct to the installed xenomai headers under my sy=
+sroot path, and not to the host path.
+>=20
+
+You can achieve this using xeno-config as well:
+
+$ DESTDIR=3D$sysroot/$xenomai_prefix xeno-config ...
+
+--=20
+Philippe.
 
