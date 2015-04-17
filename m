@@ -1,6 +1,6 @@
-Date: Fri, 17 Apr 2015 20:46:46 +0200
+Date: Fri, 17 Apr 2015 20:50:58 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150417184646.GA17020@hermes.click-hack.org>
+Message-ID: <20150417185058.GB17020@hermes.click-hack.org>
 References: <20150417175028.GP1589@hermes.click-hack.org>
  <55314B85.2030708@siemens.com>
  <20150417180819.GQ1589@hermes.click-hack.org>
@@ -98,11 +98,14 @@ On Fri, Apr 17, 2015 at 08:34:00PM +0200, Jan Kiszka wrote:
 > completely (much simpler) or raise it to a value that has at least an
 > effect.
 
-Again, trying to enforce a minimum looks like a bad idea to me. I
-would rather have pthread_attr_init set a default value. And 
-larger than PTHREAD_STACK_MIN + pagesize (but much smaller than the
-default 2MiB). I believe POSIX does not define what value is set by
-pthread_attr_init, so we can do what we want.
+As in xenomai 2.x, I would suggest the maximum of __WORDSIZE * 1024
+and PTHREAD_STACK_MIN as a default stack size.
+
+I think the idea of adding pagesize to PTHREAD_STACK_MIN comes from
+the implementation of signals which were pulling siginfo structs
+from kernel after each syscall. Since this thing is long gone (even
+in xenomai 2.6 I believe), we have no reason to try and enforce
+another minimum than POSIX.
 
 -- 
 					    Gilles.
