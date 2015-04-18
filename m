@@ -1,16 +1,17 @@
-MIME-Version: 1.0
-In-Reply-To: <20150418081621.GV15807@lukather>
+Date: Sat, 18 Apr 2015 17:20:07 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150418152007.GA10096@hermes.click-hack.org>
 References: <1429171505-5598-1-git-send-email-kinsamanka@gmail.com>
  <20150416131956.GC1589@hermes.click-hack.org>
  <CACreCVJd-1c8iYGuEJE4W_6Q4dpo4sPOtJvDLbQaTUN2m8Bwpw@mail.gmail.com>
  <20150418065520.GT15807@lukather>
  <CACreCVL8VdhBQNewr_iocc_1ZAj6uuF8mgWQRpz+wWErvCehXg@mail.gmail.com>
  <20150418081621.GV15807@lukather>
-Date: Sat, 18 Apr 2015 22:45:10 +0800
-Message-ID: <CACreCV+S=9CX8ANfsfTmkac1yv8z6p3KzoDROTagXNZC1P7dEQ@mail.gmail.com>
-From: GP Orcullo <kinsamanka@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <CACreCV+S=9CX8ANfsfTmkac1yv8z6p3KzoDROTagXNZC1P7dEQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACreCV+S=9CX8ANfsfTmkac1yv8z6p3KzoDROTagXNZC1P7dEQ@mail.gmail.com>
 Subject: Re: [Xenomai] [PATCH] Add support for SUNXI boards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -20,31 +21,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: GP Orcullo <kinsamanka@gmail.com>
+Cc: Maxime Ripard <maxime.ripard@free-electrons.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gU2F0LCBBcHIgMTgsIDIwMTUgYXQgNDoxNiBQTSwgTWF4aW1lIFJpcGFyZAo8bWF4aW1lLnJp
-cGFyZEBmcmVlLWVsZWN0cm9ucy5jb20+IHdyb3RlOgo+IE9uIFNhdCwgQXByIDE4LCAyMDE1IGF0
-IDA0OjA1OjI1UE0gKzA4MDAsIEdQIE9yY3VsbG8gd3JvdGU6Cj4+IE9uIFNhdCwgQXByIDE4LCAy
-MDE1IGF0IDI6NTUgUE0sIE1heGltZSBSaXBhcmQKPj4gPG1heGltZS5yaXBhcmRAZnJlZS1lbGVj
-dHJvbnMuY29tPiB3cm90ZToKPj4gPiBPbiBGcmksIEFwciAxNywgMjAxNSBhdCAxMjowNDoyMkFN
-ICswODAwLCBHUCBPcmN1bGxvIHdyb3RlOgo+PiA+PiBPbiBUaHUsIEFwciAxNiwgMjAxNSBhdCA5
-OjE5IFBNLCBHaWxsZXMgQ2hhbnRlcGVyZHJpeAo+PiA+PiA8Z2lsbGVzLmNoYW50ZXBlcmRyaXhA
-eGVub21haS5vcmc+IHdyb3RlOgo+PiA+PiA+IE9uIFRodSwgQXByIDE2LCAyMDE1IGF0IDA0OjA1
-OjA1UE0gKzA4MDAsIEdQIE9yY3VsbG8gd3JvdGU6Cj4+ID4+ID4+IFRlc3RlZCBvbiBhIEN1Ymll
-Ym9hcmQyIHdpdGggdjMuMTYuNy1ja3Q5IGtlcm5lbC4KPj4gPj4gPgo+PiA+PiA+IERvZXMgbm90
-IHN1bnhpIGhhdmUgR1BJTyA/Cj4+ID4+ID4KPj4gPj4gPiAtLQo+PiA+PiA+ICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgR2lsbGVzLgo+PiA+Pgo+PiA+PiBUaGVy
-ZSdzIG5vIEdQSU8gZHJpdmVyIGluIHRoZSBtYWlubGluZSBrZXJuZWwuIFRoZSBvcmlnaW5hbCBz
-dW54aQo+PiA+PiBrZXJuZWwgaGFzIGluY29tcGxldGUgc3VwcG9ydCBmb3IgR1BJT3MuCj4+ID4K
-Pj4gPiBUaGF0J3Mgbm90IHRydWUuCj4+ID4KPj4gPiBUaGUgR1BJTyBzdXBwb3J0IGhhcyBiZWVu
-IGZlYXR1cmUgY29tcGxldGUgc2luY2UgMy4xMS4KPj4gPgo+Pgo+PiBJJ20gbm90IHN1cmUgaWYg
-aXQgc3VwcG9ydHMgaW50ZXJydXB0cyB0aG91Z2guCj4KPiBJdCBkb2VzLCBzaW5jZSAzLjExLgo+
-Cj4gLS0KPiBNYXhpbWUgUmlwYXJkLCBGcmVlIEVsZWN0cm9ucwo+IEVtYmVkZGVkIExpbnV4LCBL
-ZXJuZWwgYW5kIEFuZHJvaWQgZW5naW5lZXJpbmcKPiBodHRwOi8vZnJlZS1lbGVjdHJvbnMuY29t
-CgpBdHRhY2hlZCBpcyB0aGUgdXBkYXRlZCBwYXRjaC4KCi0tIApHUCBPcmN1bGxvCi0tLS0tLS0t
-LS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2Fz
-IHNjcnViYmVkLi4uCk5hbWU6IEFkZC1zdXBwb3J0LWZvci1TVU5YSS1ib2FyZHMucGF0Y2gKVHlw
-ZTogdGV4dC94LXBhdGNoClNpemU6IDI2MjIgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6
-IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIw
-MTUwNDE4L2Y2NDhmMDg5L2F0dGFjaG1lbnQuYmluPgo=
+On Sat, Apr 18, 2015 at 10:45:10PM +0800, GP Orcullo wrote:
+> On Sat, Apr 18, 2015 at 4:16 PM, Maxime Ripard
+> <maxime.ripard@free-electrons.com> wrote:
+> > On Sat, Apr 18, 2015 at 04:05:25PM +0800, GP Orcullo wrote:
+> >> On Sat, Apr 18, 2015 at 2:55 PM, Maxime Ripard
+> >> <maxime.ripard@free-electrons.com> wrote:
+> >> > On Fri, Apr 17, 2015 at 12:04:22AM +0800, GP Orcullo wrote:
+> >> >> On Thu, Apr 16, 2015 at 9:19 PM, Gilles Chanteperdrix
+> >> >> <gilles.chanteperdrix@xenomai.org> wrote:
+> >> >> > On Thu, Apr 16, 2015 at 04:05:05PM +0800, GP Orcullo wrote:
+> >> >> >> Tested on a Cubieboard2 with v3.16.7-ckt9 kernel.
+> >> >> >
+> >> >> > Does not sunxi have GPIO ?
+> >> >> >
+> >> >> > --
+> >> >> >                                             Gilles.
+> >> >>
+> >> >> There's no GPIO driver in the mainline kernel. The original sunxi
+> >> >> kernel has incomplete support for GPIOs.
+> >> >
+> >> > That's not true.
+> >> >
+> >> > The GPIO support has been feature complete since 3.11.
+> >> >
+> >>
+> >> I'm not sure if it supports interrupts though.
+> >
+> > It does, since 3.11.
+> >
+> > --
+> > Maxime Ripard, Free Electrons
+> > Embedded Linux, Kernel and Android engineering
+> > http://free-electrons.com
+> 
+> Attached is the updated patch.
+
+You sure this is sufficient? Does not that pinctrl stuff use a
+spinlock? We are not in a hurry, we can afford to be thorough.
+
+-- 
+					    Gilles.
+
