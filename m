@@ -1,18 +1,13 @@
-Message-ID: <55322539.3050800@web.de>
-Date: Sat, 18 Apr 2015 11:34:49 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <1429171505-5598-1-git-send-email-kinsamanka@gmail.com>
- <20150416131956.GC1589@hermes.click-hack.org>
- <CACreCVJd-1c8iYGuEJE4W_6Q4dpo4sPOtJvDLbQaTUN2m8Bwpw@mail.gmail.com>
- <20150416161629.GF1589@hermes.click-hack.org> <552FE54F.6090606@siemens.com>
- <20150416164310.GH1589@hermes.click-hack.org> <552FE904.50804@siemens.com>
- <20150416165600.GI1589@hermes.click-hack.org>
- <20150418065647.GU15807@lukather>
-In-Reply-To: <20150418065647.GU15807@lukather>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] [PATCH] Add support for SUNXI boards
+Sender: had2006@gmail.com
+In-Reply-To: <CABqyFP9Trq2CVWVQPqvJrwNza1-mTm5NS1T16-Pno5xEY-eOKg@mail.gmail.com>
+References: <CABqyFP9Trq2CVWVQPqvJrwNza1-mTm5NS1T16-Pno5xEY-eOKg@mail.gmail.com>
+Date: Sat, 18 Apr 2015 10:35:36 +0100
+Message-ID: <CAKk99t2rt5Sk6O_zeW0OFcxYWC++CZ1UjWka2uZA-36LnmwnbA@mail.gmail.com>
+From: Helder Daniel <hdaniel@ualg.pt>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Error: could not insert module kernel-task.ko:
+ Unknown symbol in module
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,64 +16,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Maxime Ripard <maxime.ripard@free-electrons.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, GP Orcullo <kinsamanka@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Ruika You <crazylinuxcnc@gmail.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2015-04-18 08:56, Maxime Ripard wrote:
-> On Thu, Apr 16, 2015 at 06:56:00PM +0200, Gilles Chanteperdrix wrote:
->> On Thu, Apr 16, 2015 at 06:53:24PM +0200, Jan Kiszka wrote:
->>> On 2015-04-16 18:43, Gilles Chanteperdrix wrote:
->>>> On Thu, Apr 16, 2015 at 06:37:35PM +0200, Jan Kiszka wrote:
->>>>> On 2015-04-16 18:16, Gilles Chanteperdrix wrote:
->>>>>> On Fri, Apr 17, 2015 at 12:04:22AM +0800, GP Orcullo wrote:
->>>>>>> On Thu, Apr 16, 2015 at 9:19 PM, Gilles Chanteperdrix
->>>>>>> <gilles.chanteperdrix@xenomai.org> wrote:
->>>>>>>> On Thu, Apr 16, 2015 at 04:05:05PM +0800, GP Orcullo wrote:
->>>>>>>>> Tested on a Cubieboard2 with v3.16.7-ckt9 kernel.
->>>>>>>>
->>>>>>>> Does not sunxi have GPIO ?
->>>>>>>>
->>>>>>>> --
->>>>>>>>                                             Gilles.
->>>>>>>
->>>>>>> There's no GPIO driver in the mainline kernel. The original sunxi
->>>>>>> kernel has incomplete support for GPIOs.
->>>>>>
->>>>>> Ok, what about timer and tsc? Basically, you should run through the
->>>>>> ARM porting guide and check every modification to be made. And if
->>>>>> you have done so, the commit message should mention it.
->>>>>
->>>>> sunxi is pretty generic ARMv7-class in that regard, but double-checki=
-ng
->>>>> is surely better.
->>>>
->>>> armv7 does not mean a particular timer. Cortex A9 or cortex A15 do,
->>>> but different ones, and Cortex A8 does not for instance. The
->>>> processor we are talking about is probably not a cortex A9 since on
->>>> I-pipe, there is no timer or tsc defined on A9 when booting in UP
->>>> mode (and GP Orcullo is booting in UP mode). So my question is not
->>>> about "double-checking", it is rather the first check.
->>>
->>> The A20 is a dual-core Cortex A7.
->>
->> Strange that GP Orcullo is not running the kernel in SMP mode then.
-> =
+Hi,
 
-> The A20 uses PSCI to implement its SMP ops, which requires some
-> cooperation from the bootloader. Maybe he just has a too ancient
-> bootloader.
+Are you using Xenomai version 3.x or 2.6.x?
 
-Recent upstream U-boot is a must, of course. I think the upstream kernel
-never supported SMP without PSCI, and the now obsolete sunxi U-boot was
-lacking that feature.
+In version 3.x the native API is no longer exported to kernel, only the
+RTDM API.
 
-Jan
+//NOT EXPORTED in 3.x: #include <native/task.h>
 
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 181 bytes
-Desc: OpenPGP digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150418/b187c19=
-f/attachment.sig>
+Helder
+
+
+
+On 18 April 2015 at 03:52, Ruika You <crazylinuxcnc@gmail.com> wrote:
+
+> Dear all,
+>
+> I just start to explore xenomai with compile a kernel module as simple as
+> "hello world". After compile successful, sudo insmod kernel-task.ko,
+> failed, error message as follow:
+> Error: could not insert module kernel-task.ko: Unknown symbol in module
+>
+> Dmesg result as belllow:
+> [52170.262642] kernel_task: Unknown symbol rt_task_create (err 0)
+> [52170.262688] kernel_task: Unknown symbol rt_task_start (err 0)
+> [52170.262722] kernel_task: Unknown symbol rt_task_delete (err 0)
+>
+> Source code:
+> #include <native/task.h>
+> #define TASK_PRIO 99 /* Highest RT priority */
+> #define TASK_MODE T_FPU|T_CPU(0) /* Uses FPU, bound to CPU #0 */
+> #define TASK_STKSZ 4096 /* Stack size (in bytes) */
+> RT_TASK task_desc;
+> void task_body (void *cookie)
+> {
+> for (;;) {
+> /* ... "cookie" should be NULL ... */
+> }
+> }
+> int init_module (void)
+> {
+> int err;
+> /* ... */
+> err =
+> rt_task_create(&task_desc,"MyTaskName",TASK_STKSZ,TASK_PRIO,TASK_MODE);
+> if (!err)
+> rt_task_start(&task_desc,&task_body,NULL);
+> return 1;
+> /* ... */
+> }
+> void cleanup_module (void)
+> {
+> rt_task_delete(&task_desc);
+> }
+>
+> As I analyzed the reason might be :
+>
+> 1. kernel build configure problem ?
+> 2. xenomai userland  configure problem?
+> 3. any xenomai module not loaded? native?
+> 4. have to export all these unknow symbol to kernel?
+>
+> Please advise!
+> Thank you very much!
+> -chengxi
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+>
+
+
+
+-- 
+Helder Daniel
+UALG - FCT
+DEEI
+
+http://w3.ualg.pt/~hdaniel
