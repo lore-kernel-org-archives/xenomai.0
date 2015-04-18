@@ -1,13 +1,14 @@
+Message-ID: <553232db.8404460a.6101.538c@mx.google.com>
+From: "=?utf-8?B?Y3JhenlsaW51eGNuY0BnbWFpbC5jb20=?=" <crazylinuxcnc@gmail.com>
+Date: Sat, 18 Apr 2015 18:32:57 +0800
 MIME-Version: 1.0
-Sender: had2006@gmail.com
-In-Reply-To: <CABqyFP9Trq2CVWVQPqvJrwNza1-mTm5NS1T16-Pno5xEY-eOKg@mail.gmail.com>
-References: <CABqyFP9Trq2CVWVQPqvJrwNza1-mTm5NS1T16-Pno5xEY-eOKg@mail.gmail.com>
-Date: Sat, 18 Apr 2015 10:35:36 +0100
-Message-ID: <CAKk99t2rt5Sk6O_zeW0OFcxYWC++CZ1UjWka2uZA-36LnmwnbA@mail.gmail.com>
-From: Helder Daniel <hdaniel@ualg.pt>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Error: could not insert module kernel-task.ko:
- Unknown symbol in module
+Content-Type: text/plain;
+	charset=utf-8
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+Subject: Re: [Xenomai]
+ =?utf-8?q?Error=3A_could_not_insert_module_kernel-task?=
+ =?utf-8?q?=2Eko=3A_Unknown_symbol_in_module?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,85 +17,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ruika You <crazylinuxcnc@gmail.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?utf-8?B?SGVsZGVyIERhbmllbA==?= <hdaniel@ualg.pt>
+Cc: =?utf-8?B?WGVub21haUB4ZW5vbWFpLm9yZw==?= <xenomai@xenomai.org>
 
-Hi,
+CgotLS0tLSBSZXBseSBtZXNzYWdlIC0tLS0tCkZyb206ICJIZWxkZXIgRGFuaWVsIiA8aGRhbmll
+bEB1YWxnLnB0PgpUbzogIlJ1aWthIFlvdSIgPGNyYXp5bGludXhjbmNAZ21haWwuY29tPgpDYzog
+Ilhlbm9tYWlAeGVub21haS5vcmciIDx4ZW5vbWFpQHhlbm9tYWkub3JnPgpTdWJqZWN0OiBbWGVu
+b21haV0gRXJyb3I6IGNvdWxkIG5vdCBpbnNlcnQgbW9kdWxlIGtlcm5lbC10YXNrLmtvOiBVbmtu
+b3duIHN5bWJvbCBpbiBtb2R1bGUKRGF0ZTogU2F0LCBBcHIgMTgsIDIwMTUgNTozNSBQTQoKSGks
+CkFyZSB5b3UgdXNpbmcgWGVub21haSB2ZXJzaW9uIDMueCBvciAyLjYueD8KCk15IHhlbm9tYWkg
+dmVyc2lvbiBpcyAyLjYuNAoKSW4gdmVyc2lvbiAzLnggdGhlIG5hdGl2ZSBBUEkgaXMgbm8gbG9u
+Z2VyIGV4cG9ydGVkIHRvIGtlcm5lbCwgb25seSB0aGUgUlRETSBBUEkuCgovL05PVCBFWFBPUlRF
+RCBpbiAzLng6ICNpbmNsdWRlIDxuYXRpdmUvdGFzay5oPgoKCkhlbGRlcgoKCgoKCk9uIDE4IEFw
+cmlsIDIwMTUgYXQgMDM6NTIsIFJ1aWthIFlvdSA8Y3JhenlsaW51eGNuY0BnbWFpbC5jb20+IHdy
+b3RlOgpEZWFyIGFsbCwKCgoKSSBqdXN0IHN0YXJ0IHRvIGV4cGxvcmUgeGVub21haSB3aXRoIGNv
+bXBpbGUgYSBrZXJuZWwgbW9kdWxlIGFzIHNpbXBsZSBhcwoKImhlbGxvIHdvcmxkIi4gQWZ0ZXIg
+Y29tcGlsZSBzdWNjZXNzZnVsLCBzdWRvIGluc21vZCBrZXJuZWwtdGFzay5rbywKCmZhaWxlZCwg
+ZXJyb3IgbWVzc2FnZSBhcyBmb2xsb3c6CgpFcnJvcjogY291bGQgbm90IGluc2VydCBtb2R1bGUg
+a2VybmVsLXRhc2sua286IFVua25vd24gc3ltYm9sIGluIG1vZHVsZQoKCgpEbWVzZyByZXN1bHQg
+YXMgYmVsbGxvdzoKCls1MjE3MC4yNjI2NDJdIGtlcm5lbF90YXNrOiBVbmtub3duIHN5bWJvbCBy
+dF90YXNrX2NyZWF0ZSAoZXJyIDApCgpbNTIxNzAuMjYyNjg4XSBrZXJuZWxfdGFzazogVW5rbm93
+biBzeW1ib2wgcnRfdGFza19zdGFydCAoZXJyIDApCgpbNTIxNzAuMjYyNzIyXSBrZXJuZWxfdGFz
+azogVW5rbm93biBzeW1ib2wgcnRfdGFza19kZWxldGUgKGVyciAwKQoKCgpTb3VyY2UgY29kZToK
+CiNpbmNsdWRlIDxuYXRpdmUvdGFzay5oPgoKI2RlZmluZSBUQVNLX1BSSU8gOTkgLyogSGlnaGVz
+dCBSVCBwcmlvcml0eSAqLwoKI2RlZmluZSBUQVNLX01PREUgVF9GUFV8VF9DUFUoMCkgLyogVXNl
+cyBGUFUsIGJvdW5kIHRvIENQVSAjMCAqLwoKI2RlZmluZSBUQVNLX1NUS1NaIDQwOTYgLyogU3Rh
+Y2sgc2l6ZSAoaW4gYnl0ZXMpICovCgpSVF9UQVNLIHRhc2tfZGVzYzsKCnZvaWQgdGFza19ib2R5
+ICh2b2lkICpjb29raWUpCgp7Cgpmb3IgKDs7KSB7CgovKiAuLi4gImNvb2tpZSIgc2hvdWxkIGJl
+IE5VTEwgLi4uICovCgp9Cgp9CgppbnQgaW5pdF9tb2R1bGUgKHZvaWQpCgp7CgppbnQgZXJyOwoK
+LyogLi4uICovCgplcnIgPQoKcnRfdGFza19jcmVhdGUoJnRhc2tfZGVzYywiTXlUYXNrTmFtZSIs
+VEFTS19TVEtTWixUQVNLX1BSSU8sVEFTS19NT0RFKTsKCmlmICghZXJyKQoKcnRfdGFza19zdGFy
+dCgmdGFza19kZXNjLCZ0YXNrX2JvZHksTlVMTCk7CgpyZXR1cm4gMTsKCi8qIC4uLiAqLwoKfQoK
+dm9pZCBjbGVhbnVwX21vZHVsZSAodm9pZCkKCnsKCnJ0X3Rhc2tfZGVsZXRlKCZ0YXNrX2Rlc2Mp
+OwoKfQoKCgpBcyBJIGFuYWx5emVkIHRoZSByZWFzb24gbWlnaHQgYmUgOgoKCgoxLiBrZXJuZWwg
+YnVpbGQgY29uZmlndXJlIHByb2JsZW0gPwoKMi4geGVub21haSB1c2VybGFuZCAgY29uZmlndXJl
+IHByb2JsZW0/CgozLiBhbnkgeGVub21haSBtb2R1bGUgbm90IGxvYWRlZD8gbmF0aXZlPwoKNC4g
+aGF2ZSB0byBleHBvcnQgYWxsIHRoZXNlIHVua25vdyBzeW1ib2wgdG8ga2VybmVsPwoKCgpQbGVh
+c2UgYWR2aXNlIQoKVGhhbmsgeW91IHZlcnkgbXVjaCEKCi1jaGVuZ3hpCgpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwoKWGVub21haSBtYWlsaW5nIGxpc3QK
+Clhlbm9tYWlAeGVub21haS5vcmcKCmh0dHA6Ly93d3cueGVub21haS5vcmcvbWFpbG1hbi9saXN0
+aW5mby94ZW5vbWFpCgoKCgotLSAKSGVsZGVyIERhbmllbApVQUxHIC0gRkNUCkRFRUkKCmh0dHA6
+Ly93My51YWxnLnB0L35oZGFuaWVs
 
-Are you using Xenomai version 3.x or 2.6.x?
-
-In version 3.x the native API is no longer exported to kernel, only the
-RTDM API.
-
-//NOT EXPORTED in 3.x: #include <native/task.h>
-
-Helder
-
-
-
-On 18 April 2015 at 03:52, Ruika You <crazylinuxcnc@gmail.com> wrote:
-
-> Dear all,
->
-> I just start to explore xenomai with compile a kernel module as simple as
-> "hello world". After compile successful, sudo insmod kernel-task.ko,
-> failed, error message as follow:
-> Error: could not insert module kernel-task.ko: Unknown symbol in module
->
-> Dmesg result as belllow:
-> [52170.262642] kernel_task: Unknown symbol rt_task_create (err 0)
-> [52170.262688] kernel_task: Unknown symbol rt_task_start (err 0)
-> [52170.262722] kernel_task: Unknown symbol rt_task_delete (err 0)
->
-> Source code:
-> #include <native/task.h>
-> #define TASK_PRIO 99 /* Highest RT priority */
-> #define TASK_MODE T_FPU|T_CPU(0) /* Uses FPU, bound to CPU #0 */
-> #define TASK_STKSZ 4096 /* Stack size (in bytes) */
-> RT_TASK task_desc;
-> void task_body (void *cookie)
-> {
-> for (;;) {
-> /* ... "cookie" should be NULL ... */
-> }
-> }
-> int init_module (void)
-> {
-> int err;
-> /* ... */
-> err =
-> rt_task_create(&task_desc,"MyTaskName",TASK_STKSZ,TASK_PRIO,TASK_MODE);
-> if (!err)
-> rt_task_start(&task_desc,&task_body,NULL);
-> return 1;
-> /* ... */
-> }
-> void cleanup_module (void)
-> {
-> rt_task_delete(&task_desc);
-> }
->
-> As I analyzed the reason might be :
->
-> 1. kernel build configure problem ?
-> 2. xenomai userland  configure problem?
-> 3. any xenomai module not loaded? native?
-> 4. have to export all these unknow symbol to kernel?
->
-> Please advise!
-> Thank you very much!
-> -chengxi
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
-
-
-
--- 
-Helder Daniel
-UALG - FCT
-DEEI
-
-http://w3.ualg.pt/~hdaniel
