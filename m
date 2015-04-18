@@ -1,10 +1,15 @@
+Date: Sat, 18 Apr 2015 08:55:20 +0200
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Message-ID: <20150418065520.GT15807@lukather>
+References: <1429171505-5598-1-git-send-email-kinsamanka@gmail.com>
+ <20150416131956.GC1589@hermes.click-hack.org>
+ <CACreCVJd-1c8iYGuEJE4W_6Q4dpo4sPOtJvDLbQaTUN2m8Bwpw@mail.gmail.com>
 MIME-Version: 1.0
-Date: Sat, 18 Apr 2015 10:52:48 +0800
-Message-ID: <CABqyFP9Trq2CVWVQPqvJrwNza1-mTm5NS1T16-Pno5xEY-eOKg@mail.gmail.com>
-From: Ruika You <crazylinuxcnc@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] Error: could not insert module kernel-task.ko: Unknown
-	symbol in module
+Content-Disposition: inline
+In-Reply-To: <CACreCVJd-1c8iYGuEJE4W_6Q4dpo4sPOtJvDLbQaTUN2m8Bwpw@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] Add support for SUNXI boards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,55 +18,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: GP Orcullo <kinsamanka@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Dear all,
+On Fri, Apr 17, 2015 at 12:04:22AM +0800, GP Orcullo wrote:
+> On Thu, Apr 16, 2015 at 9:19 PM, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+> > On Thu, Apr 16, 2015 at 04:05:05PM +0800, GP Orcullo wrote:
+> >> Tested on a Cubieboard2 with v3.16.7-ckt9 kernel.
+> >
+> > Does not sunxi have GPIO ?
+> >
+> > --
+> >                                             Gilles.
+> 
+> There's no GPIO driver in the mainline kernel. The original sunxi
+> kernel has incomplete support for GPIOs.
 
-I just start to explore xenomai with compile a kernel module as simple as
-"hello world". After compile successful, sudo insmod kernel-task.ko,
-failed, error message as follow:
-Error: could not insert module kernel-task.ko: Unknown symbol in module
+That's not true.
 
-Dmesg result as belllow:
-[52170.262642] kernel_task: Unknown symbol rt_task_create (err 0)
-[52170.262688] kernel_task: Unknown symbol rt_task_start (err 0)
-[52170.262722] kernel_task: Unknown symbol rt_task_delete (err 0)
+The GPIO support has been feature complete since 3.11.
 
-Source code:
-#include <native/task.h>
-#define TASK_PRIO 99 /* Highest RT priority */
-#define TASK_MODE T_FPU|T_CPU(0) /* Uses FPU, bound to CPU #0 */
-#define TASK_STKSZ 4096 /* Stack size (in bytes) */
-RT_TASK task_desc;
-void task_body (void *cookie)
-{
-for (;;) {
-/* ... "cookie" should be NULL ... */
-}
-}
-int init_module (void)
-{
-int err;
-/* ... */
-err =
-rt_task_create(&task_desc,"MyTaskName",TASK_STKSZ,TASK_PRIO,TASK_MODE);
-if (!err)
-rt_task_start(&task_desc,&task_body,NULL);
-return 1;
-/* ... */
-}
-void cleanup_module (void)
-{
-rt_task_delete(&task_desc);
-}
+Maxime
 
-As I analyzed the reason might be :
-
-1. kernel build configure problem ?
-2. xenomai userland  configure problem?
-3. any xenomai module not loaded? native?
-4. have to export all these unknow symbol to kernel?
-
-Please advise!
-Thank you very much!
--chengxi
+-- 
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 819 bytes
+Desc: Digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150418/9c8cf63a/attachment.sig>
