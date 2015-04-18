@@ -1,14 +1,21 @@
-Message-ID: <553232db.8404460a.6101.538c@mx.google.com>
-From: "=?utf-8?B?Y3JhenlsaW51eGNuY0BnbWFpbC5jb20=?=" <crazylinuxcnc@gmail.com>
-Date: Sat, 18 Apr 2015 18:32:57 +0800
+Date: Sat, 18 Apr 2015 13:50:39 +0200
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Message-ID: <20150418115039.GW15807@lukather>
+References: <1429171505-5598-1-git-send-email-kinsamanka@gmail.com>
+ <20150416131956.GC1589@hermes.click-hack.org>
+ <CACreCVJd-1c8iYGuEJE4W_6Q4dpo4sPOtJvDLbQaTUN2m8Bwpw@mail.gmail.com>
+ <20150416161629.GF1589@hermes.click-hack.org>
+ <552FE54F.6090606@siemens.com>
+ <20150416164310.GH1589@hermes.click-hack.org>
+ <552FE904.50804@siemens.com>
+ <20150416165600.GI1589@hermes.click-hack.org>
+ <20150418065647.GU15807@lukather> <55322539.3050800@web.de>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset=utf-8
-Content-Transfer-Encoding: base64
 Content-Disposition: inline
-Subject: Re: [Xenomai]
- =?utf-8?q?Error=3A_could_not_insert_module_kernel-task?=
- =?utf-8?q?=2Eko=3A_Unknown_symbol_in_module?=
+In-Reply-To: <55322539.3050800@web.de>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] Add support for SUNXI boards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,45 +24,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?B?SGVsZGVyIERhbmllbA==?= <hdaniel@ualg.pt>
-Cc: =?utf-8?B?WGVub21haUB4ZW5vbWFpLm9yZw==?= <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: GP Orcullo <kinsamanka@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-CgotLS0tLSBSZXBseSBtZXNzYWdlIC0tLS0tCkZyb206ICJIZWxkZXIgRGFuaWVsIiA8aGRhbmll
-bEB1YWxnLnB0PgpUbzogIlJ1aWthIFlvdSIgPGNyYXp5bGludXhjbmNAZ21haWwuY29tPgpDYzog
-Ilhlbm9tYWlAeGVub21haS5vcmciIDx4ZW5vbWFpQHhlbm9tYWkub3JnPgpTdWJqZWN0OiBbWGVu
-b21haV0gRXJyb3I6IGNvdWxkIG5vdCBpbnNlcnQgbW9kdWxlIGtlcm5lbC10YXNrLmtvOiBVbmtu
-b3duIHN5bWJvbCBpbiBtb2R1bGUKRGF0ZTogU2F0LCBBcHIgMTgsIDIwMTUgNTozNSBQTQoKSGks
-CkFyZSB5b3UgdXNpbmcgWGVub21haSB2ZXJzaW9uIDMueCBvciAyLjYueD8KCk15IHhlbm9tYWkg
-dmVyc2lvbiBpcyAyLjYuNAoKSW4gdmVyc2lvbiAzLnggdGhlIG5hdGl2ZSBBUEkgaXMgbm8gbG9u
-Z2VyIGV4cG9ydGVkIHRvIGtlcm5lbCwgb25seSB0aGUgUlRETSBBUEkuCgovL05PVCBFWFBPUlRF
-RCBpbiAzLng6ICNpbmNsdWRlIDxuYXRpdmUvdGFzay5oPgoKCkhlbGRlcgoKCgoKCk9uIDE4IEFw
-cmlsIDIwMTUgYXQgMDM6NTIsIFJ1aWthIFlvdSA8Y3JhenlsaW51eGNuY0BnbWFpbC5jb20+IHdy
-b3RlOgpEZWFyIGFsbCwKCgoKSSBqdXN0IHN0YXJ0IHRvIGV4cGxvcmUgeGVub21haSB3aXRoIGNv
-bXBpbGUgYSBrZXJuZWwgbW9kdWxlIGFzIHNpbXBsZSBhcwoKImhlbGxvIHdvcmxkIi4gQWZ0ZXIg
-Y29tcGlsZSBzdWNjZXNzZnVsLCBzdWRvIGluc21vZCBrZXJuZWwtdGFzay5rbywKCmZhaWxlZCwg
-ZXJyb3IgbWVzc2FnZSBhcyBmb2xsb3c6CgpFcnJvcjogY291bGQgbm90IGluc2VydCBtb2R1bGUg
-a2VybmVsLXRhc2sua286IFVua25vd24gc3ltYm9sIGluIG1vZHVsZQoKCgpEbWVzZyByZXN1bHQg
-YXMgYmVsbGxvdzoKCls1MjE3MC4yNjI2NDJdIGtlcm5lbF90YXNrOiBVbmtub3duIHN5bWJvbCBy
-dF90YXNrX2NyZWF0ZSAoZXJyIDApCgpbNTIxNzAuMjYyNjg4XSBrZXJuZWxfdGFzazogVW5rbm93
-biBzeW1ib2wgcnRfdGFza19zdGFydCAoZXJyIDApCgpbNTIxNzAuMjYyNzIyXSBrZXJuZWxfdGFz
-azogVW5rbm93biBzeW1ib2wgcnRfdGFza19kZWxldGUgKGVyciAwKQoKCgpTb3VyY2UgY29kZToK
-CiNpbmNsdWRlIDxuYXRpdmUvdGFzay5oPgoKI2RlZmluZSBUQVNLX1BSSU8gOTkgLyogSGlnaGVz
-dCBSVCBwcmlvcml0eSAqLwoKI2RlZmluZSBUQVNLX01PREUgVF9GUFV8VF9DUFUoMCkgLyogVXNl
-cyBGUFUsIGJvdW5kIHRvIENQVSAjMCAqLwoKI2RlZmluZSBUQVNLX1NUS1NaIDQwOTYgLyogU3Rh
-Y2sgc2l6ZSAoaW4gYnl0ZXMpICovCgpSVF9UQVNLIHRhc2tfZGVzYzsKCnZvaWQgdGFza19ib2R5
-ICh2b2lkICpjb29raWUpCgp7Cgpmb3IgKDs7KSB7CgovKiAuLi4gImNvb2tpZSIgc2hvdWxkIGJl
-IE5VTEwgLi4uICovCgp9Cgp9CgppbnQgaW5pdF9tb2R1bGUgKHZvaWQpCgp7CgppbnQgZXJyOwoK
-LyogLi4uICovCgplcnIgPQoKcnRfdGFza19jcmVhdGUoJnRhc2tfZGVzYywiTXlUYXNrTmFtZSIs
-VEFTS19TVEtTWixUQVNLX1BSSU8sVEFTS19NT0RFKTsKCmlmICghZXJyKQoKcnRfdGFza19zdGFy
-dCgmdGFza19kZXNjLCZ0YXNrX2JvZHksTlVMTCk7CgpyZXR1cm4gMTsKCi8qIC4uLiAqLwoKfQoK
-dm9pZCBjbGVhbnVwX21vZHVsZSAodm9pZCkKCnsKCnJ0X3Rhc2tfZGVsZXRlKCZ0YXNrX2Rlc2Mp
-OwoKfQoKCgpBcyBJIGFuYWx5emVkIHRoZSByZWFzb24gbWlnaHQgYmUgOgoKCgoxLiBrZXJuZWwg
-YnVpbGQgY29uZmlndXJlIHByb2JsZW0gPwoKMi4geGVub21haSB1c2VybGFuZCAgY29uZmlndXJl
-IHByb2JsZW0/CgozLiBhbnkgeGVub21haSBtb2R1bGUgbm90IGxvYWRlZD8gbmF0aXZlPwoKNC4g
-aGF2ZSB0byBleHBvcnQgYWxsIHRoZXNlIHVua25vdyBzeW1ib2wgdG8ga2VybmVsPwoKCgpQbGVh
-c2UgYWR2aXNlIQoKVGhhbmsgeW91IHZlcnkgbXVjaCEKCi1jaGVuZ3hpCgpfX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwoKWGVub21haSBtYWlsaW5nIGxpc3QK
-Clhlbm9tYWlAeGVub21haS5vcmcKCmh0dHA6Ly93d3cueGVub21haS5vcmcvbWFpbG1hbi9saXN0
-aW5mby94ZW5vbWFpCgoKCgotLSAKSGVsZGVyIERhbmllbApVQUxHIC0gRkNUCkRFRUkKCmh0dHA6
-Ly93My51YWxnLnB0L35oZGFuaWVs
+On Sat, Apr 18, 2015 at 11:34:49AM +0200, Jan Kiszka wrote:
+> On 2015-04-18 08:56, Maxime Ripard wrote:
+> > On Thu, Apr 16, 2015 at 06:56:00PM +0200, Gilles Chanteperdrix wrote:
+> >> On Thu, Apr 16, 2015 at 06:53:24PM +0200, Jan Kiszka wrote:
+> >>> On 2015-04-16 18:43, Gilles Chanteperdrix wrote:
+> >>>> On Thu, Apr 16, 2015 at 06:37:35PM +0200, Jan Kiszka wrote:
+> >>>>> On 2015-04-16 18:16, Gilles Chanteperdrix wrote:
+> >>>>>> On Fri, Apr 17, 2015 at 12:04:22AM +0800, GP Orcullo wrote:
+> >>>>>>> On Thu, Apr 16, 2015 at 9:19 PM, Gilles Chanteperdrix
+> >>>>>>> <gilles.chanteperdrix@xenomai.org> wrote:
+> >>>>>>>> On Thu, Apr 16, 2015 at 04:05:05PM +0800, GP Orcullo wrote:
+> >>>>>>>>> Tested on a Cubieboard2 with v3.16.7-ckt9 kernel.
+> >>>>>>>>
+> >>>>>>>> Does not sunxi have GPIO ?
+> >>>>>>>>
+> >>>>>>>> --
+> >>>>>>>>                                             Gilles.
+> >>>>>>>
+> >>>>>>> There's no GPIO driver in the mainline kernel. The original sunxi
+> >>>>>>> kernel has incomplete support for GPIOs.
+> >>>>>>
+> >>>>>> Ok, what about timer and tsc? Basically, you should run through the
+> >>>>>> ARM porting guide and check every modification to be made. And if
+> >>>>>> you have done so, the commit message should mention it.
+> >>>>>
+> >>>>> sunxi is pretty generic ARMv7-class in that regard, but double-checking
+> >>>>> is surely better.
+> >>>>
+> >>>> armv7 does not mean a particular timer. Cortex A9 or cortex A15 do,
+> >>>> but different ones, and Cortex A8 does not for instance. The
+> >>>> processor we are talking about is probably not a cortex A9 since on
+> >>>> I-pipe, there is no timer or tsc defined on A9 when booting in UP
+> >>>> mode (and GP Orcullo is booting in UP mode). So my question is not
+> >>>> about "double-checking", it is rather the first check.
+> >>>
+> >>> The A20 is a dual-core Cortex A7.
+> >>
+> >> Strange that GP Orcullo is not running the kernel in SMP mode then.
+> > 
+> > The A20 uses PSCI to implement its SMP ops, which requires some
+> > cooperation from the bootloader. Maybe he just has a too ancient
+> > bootloader.
+> 
+> Recent upstream U-boot is a must, of course. I think the upstream kernel
+> never supported SMP without PSCI, and the now obsolete sunxi U-boot was
+> lacking that feature.
 
+Exactly.
+
+Maxime
+
+-- 
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 819 bytes
+Desc: Digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150418/46187f72/attachment.sig>
