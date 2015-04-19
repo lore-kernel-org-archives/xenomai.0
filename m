@@ -1,18 +1,9 @@
-Date: Sat, 18 Apr 2015 17:20:07 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150418152007.GA10096@hermes.click-hack.org>
-References: <1429171505-5598-1-git-send-email-kinsamanka@gmail.com>
- <20150416131956.GC1589@hermes.click-hack.org>
- <CACreCVJd-1c8iYGuEJE4W_6Q4dpo4sPOtJvDLbQaTUN2m8Bwpw@mail.gmail.com>
- <20150418065520.GT15807@lukather>
- <CACreCVL8VdhBQNewr_iocc_1ZAj6uuF8mgWQRpz+wWErvCehXg@mail.gmail.com>
- <20150418081621.GV15807@lukather>
- <CACreCV+S=9CX8ANfsfTmkac1yv8z6p3KzoDROTagXNZC1P7dEQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACreCV+S=9CX8ANfsfTmkac1yv8z6p3KzoDROTagXNZC1P7dEQ@mail.gmail.com>
-Subject: Re: [Xenomai] [PATCH] Add support for SUNXI boards
+Date: Mon, 20 Apr 2015 01:01:13 +0200
+Message-ID: <CADvZd9a0UuoQx-g0N5YFbxEMajgSohyQ7U-8BbA+Ay9kpOrqGw@mail.gmail.com>
+From: Michael Haberler <haberlerm@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] RT-CAN driver for C_CAN,D_CAN cores ready
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,48 +12,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: GP Orcullo <kinsamanka@gmail.com>
-Cc: Maxime Ripard <maxime.ripard@free-electrons.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-On Sat, Apr 18, 2015 at 10:45:10PM +0800, GP Orcullo wrote:
-> On Sat, Apr 18, 2015 at 4:16 PM, Maxime Ripard
-> <maxime.ripard@free-electrons.com> wrote:
-> > On Sat, Apr 18, 2015 at 04:05:25PM +0800, GP Orcullo wrote:
-> >> On Sat, Apr 18, 2015 at 2:55 PM, Maxime Ripard
-> >> <maxime.ripard@free-electrons.com> wrote:
-> >> > On Fri, Apr 17, 2015 at 12:04:22AM +0800, GP Orcullo wrote:
-> >> >> On Thu, Apr 16, 2015 at 9:19 PM, Gilles Chanteperdrix
-> >> >> <gilles.chanteperdrix@xenomai.org> wrote:
-> >> >> > On Thu, Apr 16, 2015 at 04:05:05PM +0800, GP Orcullo wrote:
-> >> >> >> Tested on a Cubieboard2 with v3.16.7-ckt9 kernel.
-> >> >> >
-> >> >> > Does not sunxi have GPIO ?
-> >> >> >
-> >> >> > --
-> >> >> >                                             Gilles.
-> >> >>
-> >> >> There's no GPIO driver in the mainline kernel. The original sunxi
-> >> >> kernel has incomplete support for GPIOs.
-> >> >
-> >> > That's not true.
-> >> >
-> >> > The GPIO support has been feature complete since 3.11.
-> >> >
-> >>
-> >> I'm not sure if it supports interrupts though.
-> >
-> > It does, since 3.11.
-> >
-> > --
-> > Maxime Ripard, Free Electrons
-> > Embedded Linux, Kernel and Android engineering
-> > http://free-electrons.com
-> 
-> Attached is the updated patch.
+here is the RT-CAN driver by Steve Battazzo for (among others) the
+Beaglebone: https://github.com/mhaberler/xeno_d_can/commits/for-xenomai-2
 
-You sure this is sufficient? Does not that pinctrl stuff use a
-spinlock? We are not in a hurry, we can afford to be thorough.
+I've reconstructed the history as Steve based this on the 3.8 c_can driver.
+The problems Steve originally noted are resolved.
 
--- 
-					    Gilles.
+Please let me know if anything is missing for a merge into Xenomai 2.
 
+- Michael
+
+
+Usage:
+
+blacklist the Linux drivers in /etc/modprobe.d/can-blackist.conf:
+
+blacklist c_can_platform
+
+blacklist c_can
+
+blacklist can_dev
+
+
+enable the can pins using the universal overlay (
+https://github.com/cdsteinkuehler/beaglebone-universal-io)
+
+
+config-pin overlay cape-universal
+
+config-pin P9.24 can
+
+config-pin P9.26 can
+
+
+# load the rtcan mods
+
+modprobe xeno_can
+
+modprobe rtcan_can
+
+
+# start the rtcan interface
+
+rtcanconfig rtcan1 -b 1000000 start
+
+rtcansend rtcan1 --verbose --identifier=0x1  0x04 0x01 0x00 0x00 0x0f 0xff
+0xe7 0x00
