@@ -1,14 +1,12 @@
-Message-ID: <5550D15D.8050502@nta-inc.net>
-Date: Mon, 11 May 2015 10:57:17 -0500
-From: Jeff Webb <jeff.webb@nta-inc.net>
+Message-ID: <55363096.8070400@siemens.com>
+Date: Tue, 21 Apr 2015 13:12:22 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <554B0C27.5010802@free.fr>
- <20150507090719.GC2099@hermes.click-hack.org> <554B651A.9000209@nta-inc.net>
- <5550B94D.1010003@xenomai.org>
-In-Reply-To: <5550B94D.1010003@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] v3 heap mem-pool-size
+References: <9BA84827B30CBE4996725F98F7DC912342963659@SMExchange01.siebmeyer.org>
+In-Reply-To: <9BA84827B30CBE4996725F98F7DC912342963659@SMExchange01.siebmeyer.org>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Xeno3.x xeno-config --kcflags
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,47 +15,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?windows-1252?Q?=22H=E4nel-Baas=2C_Alexander=22?= <alexander.haenel-baas@sieb-meyer.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/11/2015 09:14 AM, Philippe Gerum wrote:
-> On 05/07/2015 03:14 PM, Jeff Webb wrote:
->> On 05/07/2015 04:07 AM, Gilles Chanteperdrix wrote:
->>> On Thu, May 07, 2015 at 08:54:31AM +0200, Stéphane ANCELOT wrote:
->>>> Hi,
->>>>
->>>> Is there a better way to raise mem-pool-size other than specifying in
->>>> cmdline ?
->>>>
->>>>      0"007.389| WARNING: [main] heapobj_init() failed for 470 bytes,
->>>> raise
->>>> --mem-pool-size?
->>>
->>> A command line option is nice, it allows you to do basically
->>> anything you want by calling your program from a script. What is it
->>> you want to do that can not be achieved this way?
->>>
->>
->> If we don't want to call our application from a script to set
->> appropriate Xenomai parameters, will supplying the --no-auto-init option
->> to xeno-config allow us to set Xenomai run-time options to the desired
->> values by manually calling copperplate_init() from our application?  Are
->> the options that can be passed to copperplate_init() the ones described
->> here [1]?  Do these options apply to applications based on the POSIX
->> skin as well?  If so, I am slightly confused because the documentation
->> (e.g. [2], [3]) that states that all APIs except POSIX are based on the
->> Copperplate library, so it would seem that Copperplate related stuff
->> would not apply to POSIX applications.  I apologize if this is a silly
->> question, but I am still coming up to speed on the new Xenomai 3
->> architecture.
->>
->
-> No silly question for sure. These questions definitely illustrate
-> usability issues with respect to the init sequence which I'm working on.
-> I'll follow up on this asap.
->
+On 2015-04-21 08:37, H=E4nel-Baas, Alexander wrote:
+> Hi,=20
+> I run "xeno-config --rtdm --kcflags" to get the cflags when i build my ow=
+n kernel modules.
+> The script returned:  -Iarch/$(SRCARCH)/xenomai/include
+>=20
+> My question: who is set $(SRCARCH)?
+>=20
 
-Thanks, Philippe.
+That that the directory under linux/arch/ that will be used for the
+build. But you don't need to worry about this, kbuild will take care of
+resolving it (assuming that you are not trying to reinvent it). Just
+feed the output into ccflags-y, e.g.
 
--Jeff
+Jan
 
+--=20
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
