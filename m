@@ -1,13 +1,21 @@
-Message-ID: <554B6C3D.6040101@free.fr>
-Date: Thu, 07 May 2015 15:44:29 +0200
-From: =?UTF-8?B?U3TDqXBoYW5lIEFOQ0VMT1Q=?= <sancelot@free.fr>
+Date: Tue, 21 Apr 2015 19:56:51 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150421175651.GC7109@hermes.click-hack.org>
+References: <E1Yka0Q-00008c-Jh@sd-51317.xenomai.org>
+ <20150421152715.GV7109@hermes.click-hack.org>
+ <5536751A.6080609@siemens.com>
+ <20150421160625.GX7109@hermes.click-hack.org>
+ <553676DF.8020607@siemens.com>
+ <20150421161623.GY7109@hermes.click-hack.org>
+ <553678CC.5020206@siemens.com>
+ <20150421163247.GZ7109@hermes.click-hack.org>
+ <55367CB0.90609@siemens.com> <55368E4F.4040101@siemens.com>
 MIME-Version: 1.0
-References: <554B0C27.5010802@free.fr>
- <20150507090719.GC2099@hermes.click-hack.org>
-In-Reply-To: <20150507090719.GC2099@hermes.click-hack.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] v3 heap mem-pool-size
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <55368E4F.4040101@siemens.com>
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : lib/cobalt: Rework minimum
+ stack size enforcement
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,34 +24,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-On 07/05/2015 11:07, Gilles Chanteperdrix wrote:
-> On Thu, May 07, 2015 at 08:54:31AM +0200, Stéphane ANCELOT wrote:
->> Hi,
->>
->> Is there a better way to raise mem-pool-size other than specifying in
->> cmdline ?
->>
->>     0"007.389| WARNING: [main] heapobj_init() failed for 470 bytes, raise
->> --mem-pool-size?
-> A command line option is nice, it allows you to do basically
-> anything you want by calling your program from a script. What is it
-> you want to do that can not be achieved this way?
->
-It is a nice idea, however I understand everybody needs are not the same.
+On Tue, Apr 21, 2015 at 07:52:15PM +0200, Jan Kiszka wrote:
+> On 2015-04-21 18:37, Jan Kiszka wrote:
+> > Possibly the crash was limited to the case where the application set a
+> > stack address and Xenomai messed up the size. I'm rechecking this right
+> > now, and if we are lucky, PTHREAD_STACK_MIN turns out to be fine for
+> > Xenomai as well.
+> 
+> Too bad, it wasn't that easy. Just try this, even without Xenomai:
+> 
+> #include <stdio.h>
+> #include <pthread.h>
+> #include <limits.h>
+> 
+> void *thread_func(void *arg)
+> {
+> 	fprintf(stderr, "crash %s\n", "me");
+> 	return NULL;
+> }
+> 
+> int main(int argc, char *argv[])
+> {
+> 	pthread_t thread;
+> 	pthread_attr_t attr;
+> 
+> 	pthread_attr_init(&attr);
+> 	pthread_attr_setstacksize(&attr, PTHREAD_STACK_MIN);
+> 
+> 	pthread_create(&thread, &attr, thread_func, NULL);
+> 
+> 	pthread_join(thread, NULL);
+> 
+> 	return 0;
+> }
+> 
+> Crashes on my x86-64 boxes all the time. stdout/printf is fine. Some
+> internal glibc function requires a lot of stack space.
 
-Regarding my application, I setup dynamically my heap once. But this 
-heap size depends will depend on some external parameters and will vary. 
-And the only way to know the size to allocate is to "count" the 
-databytes in my C programing structures. Honestly, I am sure a computer
-will better do it than my mind.
+Well, as I said several time in that thread, using printf with glibc
+and PTHREAD_STACK_MIN crashes. Yes, this is an issue I had noticed a
+long time ago. I always assumed it was because printf used alloca or
+allocated a large buffer on stack by some other mean.
 
-eg. These external parameters may depend on how many motors in my 
-machine, and so on.
+> 
+> The problem is that we trigger the very same pattern with warning() in
+> Xenomai. When that is called by the thread trampoline, the user cannot
+> run threads with otherwise totally fine PTHREAD_STACK_MIN.
+> 
+> Now we can
+> - ask the user to specify for more stack (by contract)
+> - reject too small stacks (my patches)
+> - warn about too small stacks, but accept them (maybe a compromise)
+> - simply ignore this
 
-Regards,
-S.Ancelot
+This is not our business. Really.
 
+-- 
+					    Gilles.
 
