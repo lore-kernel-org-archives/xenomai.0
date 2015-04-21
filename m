@@ -1,14 +1,12 @@
-Date: Thu, 30 Apr 2015 15:04:20 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20150430150420.62e6c164@md1em3qc>
-In-Reply-To: <20150430122359.GQ1993@hermes.click-hack.org>
-References: <d0dc8c289d0b45fafbb6b39b839b468bd53f256f.1430395105.git.henning.schild@siemens.com>
- <20150430122359.GQ1993@hermes.click-hack.org>
+Date: Tue, 21 Apr 2015 16:14:27 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150421141427.GU7109@hermes.click-hack.org>
+References: <1429625014.4018.13.camel@rt10.zhou>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] debian: remove xeno-config from
- libxenomai-dev package
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1429625014.4018.13.camel@rt10.zhou>
+Subject: Re: [Xenomai] Is idle=poll the right way to decrease jitter ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,21 +15,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Zhoupeng <zhoupeng1982@qq.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-On Thu, 30 Apr 2015 14:23:59 +0200
-Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
-
-> On Thu, Apr 30, 2015 at 01:59:54PM +0200, Henning Schild wrote:
-> > Since 8871363fa57266af4c8d8a06965f2898b940fb48 the binary and its
-> > man-page are in the base package (xenomai-runtime). Remove the
-> > files from the -dev package to resolve the current package conflict.
+On Tue, Apr 21, 2015 at 10:03:34PM +0800, Zhoupeng wrote:
+> As conclusion in "POWERLINK and Realtime linux": the jitter was so high
+> on an idle system and gets smaller if the CPU is heavily loaded.
 > 
-> I would rather do things the other way around: move xeno-config and
-> its man page to the -dev package and remove them from the runtime
-> package.
+> This is probably due to power optimization when hlt is called, as
+> discussed before.
 > 
+> "idle=poll" will waste more power, but jitter decrease from 30us to less
+> than 10us in my test. Is this the right way ?
 
-Ok with me. "git revert 8871363fa57266af4c8d8a06965f2898b940fb48"
+Are you sure the worst case latency is not more than 30us on a
+loaded system? Usurally, the worst case latency is best approximated
+on a loaded system than on an idle system.
+
+-- 
+					    Gilles.
 
