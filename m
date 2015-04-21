@@ -1,16 +1,15 @@
-Message-ID: <55433623.3000401@web.de>
-Date: Fri, 01 May 2015 10:15:31 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Date: Tue, 21 Apr 2015 18:06:26 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150421160625.GX7109@hermes.click-hack.org>
+References: <E1Yka0Q-00008c-Jh@sd-51317.xenomai.org>
+ <20150421152715.GV7109@hermes.click-hack.org>
+ <5536751A.6080609@siemens.com>
 MIME-Version: 1.0
-References: <3382708.2jmfqTEg5F@eltrolinux48.eltroad.eltropuls>
- <2238179.hbnctTCPtY@eltrolinux48.eltroad.eltropuls>
- <20150430151442.GW1993@hermes.click-hack.org>
- <3872595.UY9zmVq9KM@eltrolinux48.eltroad.eltropuls>
-In-Reply-To: <3872595.UY9zmVq9KM@eltrolinux48.eltroad.eltropuls>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Hang/Reboot when using
-	CONFIG_CC_STACKPROTECTOR_REGULAR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5536751A.6080609@siemens.com>
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : lib/cobalt: Rework minimum
+ stack size enforcement
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,85 +18,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?windows-1252?Q?Marc_Str=E4mke?= <marc.straemke@eltropuls.de>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai-git@xenomai.org, xenomai@xenomai.org
 
-On 2015-04-30 17:17, Marc Str=E4mke wrote:
-> Am Donnerstag, 30. April 2015, 17:14:42 schrieb Gilles Chanteperdrix:
->>> I compared the disassembly of xnarch_switch_to with and without  the
->>> option
->>> set. That does like fine to me (even though i do not fully understand e=
-ach
->>> line..). The CANARY_SWITCH gets inserted correctly in to the
->>> do_switch_threads inline function.
->>
->> I guess the next step is to look at what this *_REGULAR option adds
->> to CONFIG_CC_STACKPROTECTOR in the kernel code, and see if it does
->> not add something more to switch_to that we should add to
->> xnarch_switch_to.
-> =
+On Tue, Apr 21, 2015 at 06:04:42PM +0200, Jan Kiszka wrote:
+> On 2015-04-21 17:27, Gilles Chanteperdrix wrote:
+> > On Tue, Apr 21, 2015 at 05:22:34PM +0200, git repository hosting wrote:
+> >> +COBALT_IMPL(int, pthread_attr_setstack, (pthread_attr_t *attr, void *stackaddr,
+> >> +					 size_t stacksize))
+> >> +{
+> >> +	if (stacksize < COBALT_STACKSIZE_MIN)
+> >> +		return -EINVAL;
+> >> +	return __STD(pthread_attr_setstack)(attr, stackaddr, stacksize);
+> >> +}
+> > 
+> > As I said, there is no reason for Xenomai to enforce a task size
+> > larger than PTHREAD_STACK_MIN. This breaks POSIX compliance, and is
+> > useless.
+> 
+> Then we should not use printf & Co. from any trampoline function, e.g.
+> vxworks/taskLib.c:task_trampoline. I only tried with a local skin, but I
+> bet the issue is reproducible with that one.
+> 
+> For that reason, I went down the conservative path.
 
-> This will probably take a bit of time on my side... =
+The path you took breaks compatibility with POSIX. On a compliant
+system, pthread_attr_setstacksize(attr, PTHREAD_STACK_MIN) is not
+supposed to return an error.
 
-> =
+-- 
+					    Gilles.
 
-> Thank you for your help Gilles, I might have something more to say or ask=
- next =
-
-> week...
-
-Reproduced and quickly debugged in KVM: The switch code was just broken
-regarding argument numbering when the protector is on. This fixes it
-(will push a patch soon):
-
-diff --git a/kernel/cobalt/arch/x86/thread.c b/kernel/cobalt/arch/x86/threa=
-d.c
-index 1b73b0d..2c2574a 100644
---- a/kernel/cobalt/arch/x86/thread.c
-+++ b/kernel/cobalt/arch/x86/thread.c
-@@ -57,12 +57,12 @@ static inline void do_switch_threads(struct xnarchtcb *=
-out_tcb,
- =
-
- 	__asm__ __volatile__("pushfl\n\t"
- 			     "pushl %%ebp\n\t"
--			     "movl %6,%%ecx\n\t"
-+			     "movl %[spp_out_ptr],%%ecx\n\t"
- 			     "movl %%esp,(%%ecx)\n\t"
--			     "movl %7,%%ecx\n\t"
-+			     "movl %[ipp_out_ptr],%%ecx\n\t"
- 			     "movl $1f,(%%ecx)\n\t"
--			     "movl %8,%%ecx\n\t"
--			     "movl %9,%%edi\n\t"
-+			     "movl %[spp_in_ptr],%%ecx\n\t"
-+			     "movl %[ipp_in_ptr],%%edi\n\t"
- 			     "movl (%%ecx),%%esp\n\t"
- 			     "pushl (%%edi)\n\t"
- 			     __CANARY_SWITCH
-@@ -76,10 +76,10 @@ static inline void do_switch_threads(struct xnarchtcb *=
-out_tcb,
- 			       "+a"(outproc),
- 			       "+d"(inproc)
- 			       __CANARY_OUTPUT
--			     : "m"(out_tcb->spp),
--			       "m"(out_tcb->ipp),
--			       "m"(in_tcb->spp),
--			       "m"(in_tcb->ipp)
-+			     : [spp_out_ptr] "m"(out_tcb->spp),
-+			       [ipp_out_ptr] "m"(out_tcb->ipp),
-+			       [spp_in_ptr] "m"(in_tcb->spp),
-+			       [ipp_in_ptr] "m"(in_tcb->ipp)
- 			       __CANARY_INPUT
- 			     : "memory");
- }
-
-Jan
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 181 bytes
-Desc: OpenPGP digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150501/64ff752=
-0/attachment.sig>
