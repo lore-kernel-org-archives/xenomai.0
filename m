@@ -1,6 +1,6 @@
-Date: Tue, 21 Apr 2015 20:35:18 +0200
+Date: Tue, 21 Apr 2015 20:44:00 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150421183518.GF7109@hermes.click-hack.org>
+Message-ID: <20150421184400.GG7109@hermes.click-hack.org>
 References: <553676DF.8020607@siemens.com>
  <20150421161623.GY7109@hermes.click-hack.org>
  <553678CC.5020206@siemens.com>
@@ -112,17 +112,6 @@ On Tue, Apr 21, 2015 at 08:25:59PM +0200, Jan Kiszka wrote:
 > Xenomai, it crashes in libc, and only Xenomai libs are in the backtrace."
 > 
 > That's the user experience, specifically the delta will fall back on us.
-
-If you use pthread_attr_setstack you get what you deserved. "This
-function should be avoided", the documentation says. So one of our
-usual question will be "do you get the same problem if you use the
-default stack size ?". If you use pthread_attr_setstacksize we can
-arrange to increase the stack size, because the size passed to this
-function is a minimum, and the implementation is free to allocate a
-larger stack, so, as the documentation says, this function is more
-apropriate. If you use both, your application is broken, so this is
-a non issue.
-
 > 
 > > 
 > >> but the more I
@@ -141,14 +130,19 @@ a non issue.
 > 
 > There are already guard pages around normally allocates stacks.
 
-The point is, the kernel does not print anything when you hit the
-gard page, we can add that printk.
+The issue is not with normally allocated stacks, there is no issue
+with normally allocated stacks. The issue is with stacks passed with
+pthread_attr_setstack. And in that case, the linux documentation
+says:
 
+When an application employs pthread_attr_setstack(), it takes over
+the responsibility of allocating the stack. Any guard size value
+that was set using pthread_attr_setguardsize(3) is ignored. If
+deemed necessary, it is the application's responsibility to allocate
+a guard area (one or more pages protected against reading and
+writing) to handle the possibility of stack overflow.
 
-> However,
-> the pointer first of all goes back to Xenomai, not the application.
-
-Good. We can put the printk in xenomai then.
+So in that case, there is no guard page.
 
 -- 
 					    Gilles.
