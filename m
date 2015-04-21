@@ -1,12 +1,12 @@
-Date: Mon, 20 Apr 2015 19:46:23 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150420174623.GA456@hermes.click-hack.org>
-References: <CAL5YyVZw6JttAzBnApqQyV-9o3ng9VG3Srv=E5bGfD1tRaZZ+g@mail.gmail.com>
+From: =?iso-8859-1?Q?H=E4nel-Baas=2C_Alexander?=
+ <alexander.haenel-baas@sieb-meyer.de>
+Date: Tue, 21 Apr 2015 06:37:29 +0000
+Message-ID: <9BA84827B30CBE4996725F98F7DC912342963659@SMExchange01.siebmeyer.org>
+Content-Language: de-DE
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAL5YyVZw6JttAzBnApqQyV-9o3ng9VG3Srv=E5bGfD1tRaZZ+g@mail.gmail.com>
-Subject: Re: [Xenomai] X86 rebbot when i use latency
+Subject: [Xenomai] Xeno3.x xeno-config --kcflags
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,27 +15,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ACO31 <alain.cordat@gmail.com>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Apr 17, 2015 at 02:50:22PM +0200, ACO31 wrote:
-> hi,
-> 
-> conf Xeno3, cobalt, kernel 3.16.7(from kernel.org),build for X86 (32bits)
-> No problem on compile/install.
-> I may read correct data in dmesg.
-> I may do all cat about xenomai in /proc/xenomai.
-> But when i run /usr/xenomai/bin/latency -p 100, the system reboot without
-> message.
-> could you help me.
+Hi,=20
+I run "xeno-config --rtdm --kcflags" to get the cflags when i build my own =
+kernel modules.
+The script returned:  -Iarch/$(SRCARCH)/xenomai/include
 
-Are you sure that the system is not simply experiencing a kernel
-oops and that your system is configured to reboot in that case?
+My question: who is set $(SRCARCH)?
 
-If that is the case, disable this, and run the latency test in text
-mode in order to see the oops text. Or capture it via serial console
-if you are lucky enough that your PC has a serial port.
 
--- 
-					    Gilles.
+With best regards,
+Alexander
 
