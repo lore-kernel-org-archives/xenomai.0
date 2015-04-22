@@ -1,13 +1,12 @@
-Date: Tue, 21 Apr 2015 14:20:10 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150421122010.GP7109@hermes.click-hack.org>
-References: <CAGeOLJfw93peFkdX0mZOVEAUzN9GUe_ukTrfPrXkMbTK1QGb9A@mail.gmail.com>
- <CAGeOLJdLtm4LwikyfwOGvOi1rc0iwXJRsmNFLOnqGbTngBgbXg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGeOLJdLtm4LwikyfwOGvOi1rc0iwXJRsmNFLOnqGbTngBgbXg@mail.gmail.com>
-Subject: Re: [Xenomai] regarding xeno_16650A
+In-Reply-To: <20150420174623.GA456@hermes.click-hack.org>
+References: <CAL5YyVZw6JttAzBnApqQyV-9o3ng9VG3Srv=E5bGfD1tRaZZ+g@mail.gmail.com>
+ <20150420174623.GA456@hermes.click-hack.org>
+Date: Wed, 22 Apr 2015 21:28:24 +0200
+Message-ID: <CAPRPZsD==s4TZOAaEsroOtUCo_AzpPHi15QNyCE962Pb1JAwBg@mail.gmail.com>
+From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] X86 rebbot when i use latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,15 +15,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Santosh Vivek <vivek.ece477@gmail.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: ACO31 <alain.cordat@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, Apr 21, 2015 at 04:55:33PM +0530, Santosh Vivek wrote:
-> irq=3,4.my configuration as xenomai 2.6.2 and linux3.2.21.In user level
+> Are you sure that the system is not simply experiencing a kernel
+> oops and that your system is configured to reboot in that case?
+>
+> If that is the case, disable this, and run the latency test in text
+> mode in order to see the oops text. Or capture it via serial console
+> if you are lucky enough that your PC has a serial port.
 
-Do you have the same problem with a current version of Xenomai and
-Linux instead of antique ones?
+In case it's useful: while hunting for the APEI interrupt bug, we're
+using netconsole. The kernel command line in this case is:
 
--- 
-					    Gilles.
+BOOT_IMAGE=/boot/vmlinuz-3.16.7-cobalt
+root=UUID=4cc8572b-8982-4cfe-9887-070196bd6827
+ ro netconsole=6665@192.168.17.181/eth0,6666@192.168.17.180/62:54:04:a6:0a:a5
+debug loglevel=7 systemd.log_level=de
+bug systemd.log_target=kmsg softlockup_all_cpu_backtrace=1
+
+>
+> --
+>                                             Gilles.
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
 
