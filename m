@@ -1,10 +1,10 @@
-Message-ID: <5538EFB1.8080405@siemens.com>
-Date: Thu, 23 Apr 2015 15:12:17 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
+From: Henry Bausley <hbausley@deltatau.com>
+Content-Type: text/plain; charset="UTF-8"
+Date: Thu, 23 Apr 2015 07:18:29 -0700
+Message-ID: <1429798709.21270.3.camel@lx-henry>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PULL] ipipe: Updates for 3.14
+Subject: [Xenomai] segfaults when using xenomai shared library
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,38 +13,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-The following changes since commit ea7af9c0573dd0b33ac6ce900b4f91cc71224f43:
+I am seeing a intermittent segfaults when linking to a shared library
+that links with xenomai.
 
-  ipipe: protect head domain while updating PTE range protection (2015-04-17 11:02:38 +0200)
+I sometimes get
+[30354.351344] projpp[25002]: segfault at c ip b751bcfa sp b770c238
+error 4 in libpthread-2.19.so[b7511000+18000]
 
-are available in the git repository at:
+My shared library libppmac.so contains a single function and absolutely
+nothing else
 
-  git://git.xenomai.org/ipipe-jki 182ec034409705315b828844f0cda163dd693d64
+int Test(void)
+{
+  return 1 + 1;
+}
 
-for you to fetch changes up to 182ec034409705315b828844f0cda163dd693d64:
+ldd returns
 
-  ipipe: Truly protect ioremap_page_range against APEI (2015-04-23 15:01:58 +0200)
+root@10.34.9.73:/opt/ppmac/libppmac# ldd libppmac.so 
+	linux-gate.so.1 =>  (0xb7779000)
+	libpthread_rt.so.1 => /usr/lib/libpthread_rt.so.1 (0xb774e000)
+	libxenomai.so.0 => /usr/lib/libxenomai.so.0 (0xb7746000)
+	libc.so.6 => /lib/i386-linux-gnu/libc.so.6 (0xb7596000)
+	libpthread.so.0 => /lib/i386-linux-gnu/libpthread.so.0 (0xb757a000)
+	librt.so.1 => /lib/i386-linux-gnu/librt.so.1 (0xb7571000)
+	/lib/ld-linux.so.2 (0xb777a000)
 
-In addition, there is one commit after these (for-upstream/3.14 head) a
-merge with latest stable (3.14.39).
+My application does not even call the function in the shared library.
+Its code is as follows
 
-Jan
+#include <pthread.h>
+#include <dlfcn.h>
 
-----------------------------------------------------------------
-Jan Kiszka (5):
-      x86/ipipe: Simplify __ipipe_handle/divert_exception
-      x86/ipipe: Sync root state before leaving __ipipe_handle_exception
-      x86/ipipe: Restore regs->flags on return from __ipipe_handle_exception
-      x86/ipipe: Update comments related to exception handling
-      ipipe: Truly protect ioremap_page_range against APEI
+int Test(void);
 
- arch/x86/kernel/ipipe.c | 96 +++++++++++++++----------------------------------
- lib/ioremap.c           |  4 +--
- 2 files changed, 30 insertions(+), 70 deletions(-)
+int main(int argc, char *argv[])
+{
+  printf("pthread_setschedparam(pthread_self(),SCHED_OTHER,&param);\n");
+}
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+int CallLibraryToBreak(void)
+{
+  Test();
+}
+
+The application does not segfault if I do not link the xenomai libraries
+ie. 
+
+root@10.34.9.73:/opt/ppmac/libppmac# ldd libppmac.so
+	linux-gate.so.1 =>  (0xb77ac000)
+	libc.so.6 => /lib/i386-linux-gnu/libc.so.6 (0xb75de000)
+	/lib/ld-linux.so.2 (0xb77ad000)
+
+I am using i686 ubuntu 14.04 with 3.14.28-xenomai-2.6.4  any suggestions
+would be greatly appreciated.
+
+I use the script below to check if the program faults
+#!/bin/bash
+test=`./projpp | grep SCHED_OTHER`
+
+while [ $test ]
+do
+test=`./projpp | grep SCHED_OTHER`
+done
+echo 'Crashed'
+
+
+
+
+Outbound scan for Spam or Virus by Barracuda at Delta Tau
+
 
