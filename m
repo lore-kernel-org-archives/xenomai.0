@@ -1,12 +1,11 @@
+From: Biermans Joeri <joeri.biermans@student.uantwerpen.be>
+Date: Thu, 23 Apr 2015 07:41:24 +0000
+Message-ID: <1429774884371.77432@student.uantwerpen.be>
+Content-Language: nl-NL
 MIME-Version: 1.0
-In-Reply-To: <20150420174623.GA456@hermes.click-hack.org>
-References: <CAL5YyVZw6JttAzBnApqQyV-9o3ng9VG3Srv=E5bGfD1tRaZZ+g@mail.gmail.com>
- <20150420174623.GA456@hermes.click-hack.org>
-Date: Wed, 22 Apr 2015 21:28:24 +0200
-Message-ID: <CAPRPZsD==s4TZOAaEsroOtUCo_AzpPHi15QNyCE962Pb1JAwBg@mail.gmail.com>
-From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] X86 rebbot when i use latency
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Implementing a few scheduling policies on Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,31 +14,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: ACO31 <alain.cordat@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-> Are you sure that the system is not simply experiencing a kernel
-> oops and that your system is configured to reboot in that case?
->
-> If that is the case, disable this, and run the latency test in text
-> mode in order to see the oops text. Or capture it via serial console
-> if you are lucky enough that your PC has a serial port.
+Hi everyone,
 
-In case it's useful: while hunting for the APEI interrupt bug, we're
-using netconsole. The kernel command line in this case is:
 
-BOOT_IMAGE=/boot/vmlinuz-3.16.7-cobalt
-root=UUID=4cc8572b-8982-4cfe-9887-070196bd6827
- ro netconsole=6665@192.168.17.181/eth0,6666@192.168.17.180/62:54:04:a6:0a:a5
-debug loglevel=7 systemd.log_level=de
-bug systemd.log_target=kmsg softlockup_all_cpu_backtrace=1
+I'm a student at the university of Antwerp and I'm currently working on my
 
->
-> --
->                                             Gilles.
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
+master's thesis. My thesis is about comparing the performance of several
+
+real-time multicore scheduling algorithms on embedded systems such as EDF, =
+EDF-US,
+
+RM, RM-US and EDF(k).
+
+
+I'm currently looking for a combination of a multicore embedded system if t=
+he form
+
+of a single board computer and an RTOS. I'm currently thinking of using a f=
+reescale sabrelite
+
+in combination with Xenomai.
+
+
+Before making a descision there are a few things I have to know first:
+
+
+  *   Would it be possible to implement these algorithms in Xenomai?
+(Note that these are multicore algorithms)
+  *   If yes: Could this be achieved in a reasonable amount of time?
+  *   Is it possible to monitor the scheduling process of the tasks schedul=
+ed?
+(ie monitoring how many jobs are generated, how many deadlines are missed, =
+when jobs are scheduled,
+when they arrive, when they end, when they are interrupted etc.)
+
+
+Thanks in advance.
+
+
+Kind regards,
+
+Joeri Biermans
 
