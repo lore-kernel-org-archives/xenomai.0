@@ -1,11 +1,10 @@
-From: Biermans Joeri <joeri.biermans@student.uantwerpen.be>
-Date: Thu, 23 Apr 2015 07:41:24 +0000
-Message-ID: <1429774884371.77432@student.uantwerpen.be>
-Content-Language: nl-NL
+Message-ID: <5538EFB1.8080405@siemens.com>
+Date: Thu, 23 Apr 2015 15:12:17 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Implementing a few scheduling policies on Xenomai
+Content-Type: text/plain; charset=iso-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] [PULL] ipipe: Updates for 3.14
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,47 +13,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-Hi everyone,
+The following changes since commit ea7af9c0573dd0b33ac6ce900b4f91cc71224f43:
 
+  ipipe: protect head domain while updating PTE range protection (2015-04-17 11:02:38 +0200)
 
-I'm a student at the university of Antwerp and I'm currently working on my
+are available in the git repository at:
 
-master's thesis. My thesis is about comparing the performance of several
+  git://git.xenomai.org/ipipe-jki 182ec034409705315b828844f0cda163dd693d64
 
-real-time multicore scheduling algorithms on embedded systems such as EDF, =
-EDF-US,
+for you to fetch changes up to 182ec034409705315b828844f0cda163dd693d64:
 
-RM, RM-US and EDF(k).
+  ipipe: Truly protect ioremap_page_range against APEI (2015-04-23 15:01:58 +0200)
 
+In addition, there is one commit after these (for-upstream/3.14 head) a
+merge with latest stable (3.14.39).
 
-I'm currently looking for a combination of a multicore embedded system if t=
-he form
+Jan
 
-of a single board computer and an RTOS. I'm currently thinking of using a f=
-reescale sabrelite
+----------------------------------------------------------------
+Jan Kiszka (5):
+      x86/ipipe: Simplify __ipipe_handle/divert_exception
+      x86/ipipe: Sync root state before leaving __ipipe_handle_exception
+      x86/ipipe: Restore regs->flags on return from __ipipe_handle_exception
+      x86/ipipe: Update comments related to exception handling
+      ipipe: Truly protect ioremap_page_range against APEI
 
-in combination with Xenomai.
+ arch/x86/kernel/ipipe.c | 96 +++++++++++++++----------------------------------
+ lib/ioremap.c           |  4 +--
+ 2 files changed, 30 insertions(+), 70 deletions(-)
 
-
-Before making a descision there are a few things I have to know first:
-
-
-  *   Would it be possible to implement these algorithms in Xenomai?
-(Note that these are multicore algorithms)
-  *   If yes: Could this be achieved in a reasonable amount of time?
-  *   Is it possible to monitor the scheduling process of the tasks schedul=
-ed?
-(ie monitoring how many jobs are generated, how many deadlines are missed, =
-when jobs are scheduled,
-when they arrive, when they end, when they are interrupted etc.)
-
-
-Thanks in advance.
-
-
-Kind regards,
-
-Joeri Biermans
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
