@@ -1,24 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <CAPRPZsAdUmKxq+-0VFLJ8yr1S5gV=nYxbPh9SLzF2pBZ+jgSkw@mail.gmail.com>
-References: <20150313171211.GH1497@hermes.click-hack.org>
- <CAPRPZsD4503Yc92d=e0jqR8HtLiV8rXo_vA2e5ea5V_gyCTOzA@mail.gmail.com>
- <20150402191555.GK31175@hermes.click-hack.org>
- <CAPRPZsCcAQCYNbVXzB5yW+hNzhLcrDLETDteFLgDLnuzz6RCsA@mail.gmail.com>
- <20150402204139.GL31175@hermes.click-hack.org>
- <CAPRPZsDr__xN4EX8hXn8Wn+j67ip+eAzEOB4so9crCuz8_E+sA@mail.gmail.com>
- <55264097.2010203@siemens.com> <5526430E.8030808@siemens.com>
- <20150409124110.GY20752@hermes.click-hack.org>
- <55267547.7080206@siemens.com>
- <20150409125838.GA20752@hermes.click-hack.org>
- <55267832.7010804@siemens.com>
- <CAPRPZsAjhPeDboNL7fdzwjm2cYVx-rVURbFzATgWi11o5f2Meg@mail.gmail.com>
- <55372E49.10106@siemens.com>
- <CAPRPZsAdUmKxq+-0VFLJ8yr1S5gV=nYxbPh9SLzF2pBZ+jgSkw@mail.gmail.com>
-Date: Tue, 28 Apr 2015 21:12:14 +0200
-Message-ID: <CAPRPZsDZJsrMyNJGMPh1oRNQNWBU9WtCyBKSqa8yG87veAymyQ@mail.gmail.com>
-From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] xeno3_rc3 - Watchdog detected hard LOCKUP
+Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2098\))
+From: Michael Haberler <haberlerm@gmail.com>
+In-Reply-To: <20150428160255.GD1993@hermes.click-hack.org>
+Date: Tue, 28 Apr 2015 22:19:26 +0200
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <6EE509AA-B0D3-40DC-9DEA-63E1DCDB39A6@gmail.com>
+References: <CADvZd9azLVdxYd8gy4BwT8Fh1LixV_=vbZoAAZegJ+rAut8mng@mail.gmail.com>
+ <20150428160255.GD1993@hermes.click-hack.org>
+Subject: Re: [Xenomai] RT-CAN driver for C_CAN,D_CAN cores ready
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,22 +16,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai <xenomai@xenomai.org>
 
-> No problem. Started testing now.
+Gille -
 
-No issue encountered anymore (running for about a week now).
+> Am 28.04.2015 um 18:02 schrieb Gilles Chanteperdrix =
+<gilles.chanteperdrix@xenomai.org>:
+>=20
+> On Tue, Apr 28, 2015 at 05:47:40PM +0200, Michael Haberler wrote:
+>> as requested:
+>=20
+> This is a mess, really, you add files to remove them later.
 
-Thanks for fixing,
+Steve started with the vanilla c_can driver, copied and renamed the =
+files. But the code still shares a lot with the original.
 
+I do think history is important - when searching for a bug this driver =
+introduced, or backporting a fix to the vanilla driver.
 
-Jeroen.
+This is why you see what you see. I think it is more relevant than =
+aesthetics.
 
+If you prefer to have a history-free squash, that is fine too - I pity =
+the fellow trying to nail a bug though. Please advise.
 
->
-> Thanks,
->
->
-> Jeroen.
+>=20
+> A patch should be against Xenomai sources, and for adding a driver
+> it should only add file or modify existing files.
+>=20
+> Second point, the indentation, Xenomai follows the linux kernel
+> rules where the indentation "unit" is a tab characters which should
+> be displayed as 8 spaces by diff. Here your indentation seems to be
+> one space (maybe your mailer did that ?).
+
+To exclude that option is why I attached the file. For reference, =
+umutilated originals are here: =
+https://github.com/mhaberler/xenomai-2.6/commits/bbcan
+
+I didnt write this - I am just moderating the process, but I can =
+reformat as requested.
+
+- Michael
+
+>=20
+> A smaller patch means an easier review.
+>=20
+> --=20
+> 					    Gilles.
+
 
