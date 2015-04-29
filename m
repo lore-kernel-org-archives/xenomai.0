@@ -1,13 +1,18 @@
 MIME-Version: 1.0
-In-Reply-To: <20150428083243.GB1993@hermes.click-hack.org>
-References: <CAKC9m6eKP5fvSx7ximsehOYKxZhm15EFaWeRhqUcUozWM-pjLw@mail.gmail.com>
- <20150428082434.GA1993@hermes.click-hack.org>
- <20150428083243.GB1993@hermes.click-hack.org>
-Date: Tue, 28 Apr 2015 22:58:23 -0700
-Message-ID: <CAKC9m6dfDfp3g0v4seKpzem4KKWbApFsu7Ttd3N_AVbiCsEsnw@mail.gmail.com>
-From: Hongfei Cheng <hongfei@mperpetuo.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Porting the I-pipe core to ARM big.LITTLE architecture
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Date: Wed, 29 Apr 2015 08:35:49 +0200
+From: Wolfgang Grandegger <wg@grandegger.com>
+In-Reply-To: <20150428141110.GC1993@hermes.click-hack.org>
+References: <CADvZd9a0UuoQx-g0N5YFbxEMajgSohyQ7U-8BbA+Ay9kpOrqGw@mail.gmail.com>
+ <553D4E9F.2060907@grandegger.com>
+ <CA4FDA06-6595-4656-AE7A-A9092F103B98@gmail.com>
+ <20150428141110.GC1993@hermes.click-hack.org>
+Message-ID: <32f86d60f1642011c4a7408e5317cb6c@grandegger.com>
+Subject: Re: [Xenomai]
+	=?utf-8?q?RT-CAN_driver_for_C=5FCAN=2CD=5FCAN_cores_rea?=
+	=?utf-8?q?dy?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,33 +22,57 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: xenomai <xenomai@xenomai.org>
 
-Thank you, Gilles, for the helpful info and the suggestion to work
-around the inherent CPU power management scheme.
-
-Hongfei
-
-On Tue, Apr 28, 2015 at 1:32 AM, Gilles Chanteperdrix
+On Tue, 28 Apr 2015 16:11:10 +0200, Gilles Chanteperdrix
 <gilles.chanteperdrix@xenomai.org> wrote:
-> On Tue, Apr 28, 2015 at 10:24:34AM +0200, Gilles Chanteperdrix wrote:
->> On Tue, Apr 28, 2015 at 01:08:12AM -0700, Hongfei Cheng wrote:
->> > Searching the mailing list archives, I don't see mentioning of ARM's
->> > big.LITTLE architecture. The list of the supported SoCs doesn't appear
->> > to include any SoC based on ARM's big.LITTLE architecture.
->> >
->> > Are there any special considerations for porting the I-pipe core to
->> > such big.LITTLE architecture?
+> On Tue, Apr 28, 2015 at 04:01:24PM +0200, Michael Haberler wrote:
+>> 
+>> > Am 26.04.2015 um 22:46 schrieb Wolfgang Grandegger
+<wg@grandegger.com>:
+>> > 
+>> > Hi Michael,
+>> > 
+>> > thanks for your contribution. Could you please send it as inline
+patch
+>> > to this mailing list to simplify the review and integration.
+>> > 
+>> > Thanks,
+>> > 
+>> > Wolfgang.
+>> 
+>> Here it is:
+>> 
+>> https://github.com/mhaberler/xenomai-2.6/commits/bbcan :
+>> 
+>> 027e3551a4d6aeca201ce92c66a3808b332ff9da Merge remote-tracking branch
+>> 'xenocan/for-xenomai-2' into bbcan
+>> 8740cfe7fd960727ad3e993da5366c88e2280264 xeno_d_can: RTDM driver for
+>> Bosch CCAN and DCAN peripherals
+>> fbe3b224501e091d26275b45e2cf0881d94997dd rename original files to match
+>> Steve's naming
+>> 84badf976ed149a352cbb34edc329685aaacb531 as from 3.8
+>> fe59354a1ed2ee2cff65d17f2cb249292c647e57 drivers/analogy: remove
+>> unnecessary spinlock
+>> 
+>> 
+>> -------------- next part --------------
+>> A non-text attachment was scrubbed...
+>> Name: xeno-c_can.patch
+>> Type: application/octet-stream
+>> Size: 224496 bytes
+>> Desc: not available
+>> URL:
 >>
->> I would say this sounds like cpufreq:
->> - migrating a task from an A15 to an A7 will have a huge impact on
->> latencies
->> - the speed difference will have a huge impact on the timings of the
->> running tasks.
->
-> Note that xenomai never migrates a task from a cpu to another
-> automatically for the same reason.
->
-> --
->                                             Gilles.
+<http://www.xenomai.org/pipermail/xenomai/attachments/20150428/72323552/attachment.obj>
+>> -------------- next part --------------
+> 
+> I guess Wolfgang wanted the code inline, and not sent as an
+> attachment, so as to put the comments in situation, by replying to
+> your mail.
+
+Yes, and we also need a *one* patch for the (head of the) Xenomai tree.
+Then the maintainer can finally apply it via "git am" <mbox>".
+
+Wolfgang.
 
