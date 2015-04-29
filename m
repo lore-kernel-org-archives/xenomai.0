@@ -1,15 +1,7 @@
-Date: Wed, 29 Apr 2015 14:06:41 +0200
 From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20150429140641.0da43fb1@md1em3qc>
-In-Reply-To: <20150429115938.GN1993@hermes.click-hack.org>
-References: <5c789beff3ff2c2ef88fbe1a53342cb7ebc714b8.1430299655.git.henning.schild@siemens.com>
- <20150429093943.GL1993@hermes.click-hack.org>
- <20150429135338.0aa92a70@md1em3qc>
- <20150429115938.GN1993@hermes.click-hack.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH 1/2] debian: add autoreconf to build rules
+Date: Wed, 29 Apr 2015 16:47:57 +0200
+Message-Id: <50e02c6cc01a52e26ce177b7238b094fd68968d5.1430318857.git.henning.schild@siemens.com>
+Subject: [Xenomai] [PATCH] debian: add pkg-config as explicit build dep
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,24 +10,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Wed, 29 Apr 2015 13:59:38 +0200
-Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+configure.ac uses the PKG_CHECK_MODULES macro, which is provided by pkg-config
+Not having pkg-config installed will cause a syntax error in configure
 
-> > You are right, that is another way of looking at it. I was assuming
-> > that the rules should contain all necessary build steps, but i am
-> > not sure what the best practice is for debian-directories.
-> 
-> The thing is that debian allows to install very old versions of the
-> autotools. I would not want the default rule, to simply wreck the
-> autotools file because the user made the mistake of having old
-> versions of the autotools used by default, whereas the shipped ones
-> are fine.
+Signed-off-by: Henning Schild <henning.schild@siemens.com>
+---
+ debian/control | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Ok, thats a valid argument. So people working against git have to
-autoreconf manually before being able to use the debian-stuff.
+diff --git a/debian/control b/debian/control
+index 2225648..492f0e2 100644
+--- a/debian/control
++++ b/debian/control
+@@ -2,7 +2,7 @@ Source: xenomai
+ Section: devel
+ Priority: extra
+ Maintainer: Xenomai <xenomai@xenomai.org>
+-Build-Depends: debhelper (>= 8), findutils (>= 4.2.28), autotools-dev, autoconf, automake, libtool
++Build-Depends: debhelper (>= 8), findutils (>= 4.2.28), autotools-dev, autoconf, automake, libtool, pkg-config
+ Standards-Version: 3.9.3
+ Homepage: http://www.xenomai.org/
+ 
+-- 
+1.9.1
 
-Henning
 
