@@ -1,15 +1,7 @@
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Date: Wed, 29 Apr 2015 09:05:39 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
-In-Reply-To: <CADvZd9azLVdxYd8gy4BwT8Fh1LixV_=vbZoAAZegJ+rAut8mng@mail.gmail.com>
-References: <CADvZd9azLVdxYd8gy4BwT8Fh1LixV_=vbZoAAZegJ+rAut8mng@mail.gmail.com>
-Message-ID: <a3a9e8ae191d814acdbd1d12a7e7dbaa@grandegger.com>
-Subject: Re: [Xenomai]
-	=?utf-8?q?RT-CAN_driver_for_C=5FCAN=2CD=5FCAN_cores_rea?=
-	=?utf-8?q?dy?=
+From: Henning Schild <henning.schild@siemens.com>
+Date: Wed, 29 Apr 2015 11:32:42 +0200
+Message-Id: <5c789beff3ff2c2ef88fbe1a53342cb7ebc714b8.1430299655.git.henning.schild@siemens.com>
+Subject: [Xenomai] [PATCH 1/2] debian: add autoreconf to build rules
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,50 +10,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Haberler <haberlerm@gmail.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi Michael,
+Add autoreconf steps to debian/rules and add required tools to build deps.
 
-On Tue, 28 Apr 2015 17:47:40 +0200, Michael Haberler <haberlerm@gmail.com>
-wrote:
-> as requested:
-> 
-> 
->>From 84badf976ed149a352cbb34edc329685aaacb531 Mon Sep 17 00:00:00 2001
-> From: Michael Haberler <git@mah.priv.at>
-> Date: Tue, 7 Apr 2015 08:04:36 +0200
-> Subject: [PATCH 1/3] as from 3.8
-> 
-> ---
->  c_can/Kconfig          |   23 +
->  c_can/Makefile         |    9 +
->  c_can/c_can.c          | 1292
-> ++++++++++++++++++++++++++++++++++++++++++++++++
->  c_can/c_can.h          |  187 +++++++
->  c_can/c_can_pci.c      |  221 +++++++++
->  c_can/c_can_platform.c |  347 +++++++++++++
->  6 files changed, 2079 insertions(+)
->  create mode 100644 c_can/Kconfig
->  create mode 100644 c_can/Makefile
->  create mode 100644 c_can/c_can.c
->  create mode 100644 c_can/c_can.h
->  create mode 100644 c_can/c_can_pci.c
->  create mode 100644 c_can/c_can_platform.c
+Signed-off-by: Henning Schild <henning.schild@siemens.com>
+---
+ debian/control | 2 +-
+ debian/rules   | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-As Gilles already pointed out, this patch is not suitable for a review
-or mainline integration, sorry. It's even not complete. At least the
-Kconfig entry in "ksrc/drivers/can" is missing. The patch should be
-against the *Xenomai* tree. I would fix that by copying over the relevant
-files into "ksrs/drivers/can" of an up-to-date Xenomai and generate a
-fresh patch form that. The patch usually contains a subject starting with
-"[PATCH] rtcan: " and should have a meaningful commit message. It would
-also be good to mention the version (commit id) of the Linux driver the
-port is based on. Finally it should have the usual "Author" and 
-"Signed-of-by" lines.
-
-Thanks for your patience.
-
-Wolfgang.
+diff --git a/debian/control b/debian/control
+index 2225648..54fc898 100644
+--- a/debian/control
++++ b/debian/control
+@@ -2,7 +2,7 @@ Source: xenomai
+ Section: devel
+ Priority: extra
+ Maintainer: Xenomai <xenomai@xenomai.org>
+-Build-Depends: debhelper (>= 8), findutils (>= 4.2.28), autotools-dev, autoconf, automake, libtool
++Build-Depends: debhelper (>= 8), findutils (>= 4.2.28), autotools-dev, autoconf, automake, dh-autoreconf
+ Standards-Version: 3.9.3
+ Homepage: http://www.xenomai.org/
+ 
+diff --git a/debian/rules b/debian/rules
+index f91a621..a5d2e32 100755
+--- a/debian/rules
++++ b/debian/rules
+@@ -39,11 +39,13 @@ build-indep-stamp: config.status
+ 
+ config.status: configure-stamp
+ configure-stamp:
++	dh_autoreconf
+ 	dh_testdir
+ 	./configure $(CONFIG_OPTS)
+ 	touch configure-stamp
+ 
+ clean:
++	dh_autoreconf_clean
+ 	dh_testdir
+ 	dh_testroot
+ 	rm -f configure-stamp build-indep-stamp build-arch-stamp
+-- 
+1.9.1
 
 
