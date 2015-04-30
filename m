@@ -1,9 +1,12 @@
+Date: Thu, 30 Apr 2015 18:17:30 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150430161730.GX1993@hermes.click-hack.org>
+References: <CAKC9m6fXKqNhwy3sZ9zqzoAu=Xb7TUSxceogpE7xxB9-J=11wQ@mail.gmail.com>
 MIME-Version: 1.0
-Date: Thu, 30 Apr 2015 08:53:10 -0700
-Message-ID: <CAKC9m6fXKqNhwy3sZ9zqzoAu=Xb7TUSxceogpE7xxB9-J=11wQ@mail.gmail.com>
-From: Hongfei Cheng <hongfei@mperpetuo.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] Ipipe-core patched kernel fails to start when certain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKC9m6fXKqNhwy3sZ9zqzoAu=Xb7TUSxceogpE7xxB9-J=11wQ@mail.gmail.com>
+Subject: Re: [Xenomai] Ipipe-core patched kernel fails to start when certain
  platform drivers are enabled
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -13,53 +16,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Hongfei Cheng <hongfei@mperpetuo.com>
+Cc: xenomai@xenomai.org
 
-We've been working on porting the I-pipe core to an ARMv8/AArch64
-platform (Qualcomm msm8994).
+On Thu, Apr 30, 2015 at 08:53:10AM -0700, Hongfei Cheng wrote:
+> We've been working on porting the I-pipe core to an ARMv8/AArch64
+> platform (Qualcomm msm8994).
+> 
+> Taking the advice we received from this forum, our approach has been
+> to add and enable the I-pipe core patches on this new architecture one
+> (small) step at a time.
+> 
+> The development platform is currently configured and patched as follows:
+> 1). Only 1 CPU core is enabled (via kernel command line).
+> 2). Interrupt controller, GPIO controller, and platform drivers are
+> patched following the porting guide and the existing ipipe-core code,
+> along with the relevant discussions on this list.
+> 3). I-pipe spinlocks are applied to the instances where we think
+> require "ipipe protection", although we are still uncertain if this
+> work is complete in our code.
 
-Taking the advice we received from this forum, our approach has been
-to add and enable the I-pipe core patches on this new architecture one
-(small) step at a time.
+Each spinlock you turn into an ipipe spinlock bears a risk of creating
+large masking sections, so, this is something you should not do a
+lot. The porting guide warns about that. This is something
+important. Do only this when it is really needed, and not before
+having examined every section where this spinlock is used by Linux
+to see if it has no chance of creating a large masking section. If
+it does, you will have to find other workarounds.
 
-The development platform is currently configured and patched as follows:
-1). Only 1 CPU core is enabled (via kernel command line).
-2). Interrupt controller, GPIO controller, and platform drivers are
-patched following the porting guide and the existing ipipe-core code,
-along with the relevant discussions on this list.
-3). I-pipe spinlocks are applied to the instances where we think
-require "ipipe protection", although we are still uncertain if this
-work is complete in our code.
-4). High resolution counter is not yet supported as we're exploring
-different way(s) to implement TSC.
-5). CPU_FREQ and CPU_IDLE are *not yet* disabled, mainly due to the
-dependency of big.LITTLE architecture vendor-specific code.
+> 4). High resolution counter is not yet supported as we're exploring
+> different way(s) to implement TSC.
+> 5). CPU_FREQ and CPU_IDLE are *not yet* disabled, mainly due to the
+> dependency of big.LITTLE architecture vendor-specific code.
 
-Below is what we've observed so far:
-1). Hardware timer appears to be running properly with
-arch_timer_ack() being called regularly and reliably.
-2). I-pipe is indeed grabbing the interrupt (through examining the call stack).
-3). The kernel startup process comes to a screeching halt when probing
-certain platform drivers, such as ipa or pcie. No kernel oops is
-shown. In this kernel state, the *only* task being scheduled is the
-watchdog process.
+This is bad. Probably a source of troubles. Disable them.
 
-I believe there are "holes", to borrow the term from Gilles, in the
-platform drivers. However the few platform drivers which call
-generic_handle_irq have all been replaced with
-ipipe_handle_demuxed_irq.
+> 
+> Below is what we've observed so far:
+> 1). Hardware timer appears to be running properly with
+> arch_timer_ack() being called regularly and reliably.
+> 2). I-pipe is indeed grabbing the interrupt (through examining the call stack).
+> 3). The kernel startup process comes to a screeching halt when probing
+> certain platform drivers, such as ipa or pcie. No kernel oops is
+> shown. In this kernel state, the *only* task being scheduled is the
+> watchdog process.
+> 
+> I believe there are "holes", to borrow the term from Gilles, in the
+> platform drivers. However the few platform drivers which call
+> generic_handle_irq have all been replaced with
+> ipipe_handle_demuxed_irq.
 
-My questions are:
-1). Has anyone encountered similar experience while porting I-pipe core?
-2). Could such behavior be the result of missing or incorrectly
-applied I-pipe spinlocks?
+This looks wrong. Only when the irq is demuxed should you use
+ipipe_handle_demuxed_irq. If the parent irq is a plain Linux irq,
+there is no reason to replace generic_handle_irq with
+ipipe_handle_demuxed_irq. In the GPIO case, the demux function is
+run as an interrupt ack callback, so it runs "ahead of the
+pipeline", and is not executed in Linux domain so can not use
+generic_handle_irq.
 
-I'll put the kernel config, patched code, and startup logs in the
-cloud and post the link here.
+> 
+> My questions are:
+> 1). Has anyone encountered similar experience while porting I-pipe
+> core?
 
-Thanks!
-Hongfei
+Porting the I-pipe code to a new ARM board has always been full of
+surprises for me, it has always required to understand some new
+problems, and avoid them. I have always found the I-pipe tracer to
+be a great help in that case. Of course, enabling the I-pipe debug
+options is a must, also (though it can create double faults
+conditions when something goes really wrong).
 
-P.S. Apologies for my top-postings in the past few weeks which I just
-noticed (in Gmail client).
+
+> 2). Could such behavior be the result of missing or incorrectly
+> applied I-pipe spinlocks?
+
+No
+
+> 
+> I'll put the kernel config, patched code, and startup logs in the
+> cloud and post the link here.
+
+I do not think it is necessary.
+
+-- 
+					    Gilles.
 
