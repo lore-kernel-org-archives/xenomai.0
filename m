@@ -1,6 +1,6 @@
-Date: Thu, 30 Apr 2015 23:27:49 +0200
+Date: Thu, 30 Apr 2015 23:34:04 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150430212749.GB1993@hermes.click-hack.org>
+Message-ID: <20150430213404.GC1993@hermes.click-hack.org>
 References: <CAKC9m6fXKqNhwy3sZ9zqzoAu=Xb7TUSxceogpE7xxB9-J=11wQ@mail.gmail.com>
  <20150430183147.GZ1993@hermes.click-hack.org>
  <CAKC9m6cXp+ZQdZG2qCQA5+J2m0W-2hnLniL0wswfSu5aD32wwg@mail.gmail.com>
@@ -44,18 +44,14 @@ On Thu, Apr 30, 2015 at 05:21:51PM -0400, Lennart Sorensen wrote:
 > Good thing we use the TI am572x instead, which does have the architecture
 > timer, although with an errata I had to come up with a software fix for.
 > The speed is slightly wrong but consistently so.
-> 
-> It sure would be nice if chip makers would NOT try to reinvent the
-> wheel when the architecture has come up with a standard way to do it
-> that works well.
 
-The problem I see with the architected timer is the minimum wrap
-time imposed by the specification, which forces a low resolution if
-the implementer does not want to implement the full 64 bits. So, it
-may be a good reason to propose another timer, with say nanosecond
-resolution, but without a guaranteed large wrap time, especially
-since then implementation can extend it to the full 64 its in
-software and have both high resolution and long wrap time.
+I had tested architected timers on omap5432, and I believe the
+counter frequency was something like 5 MHz, and a high latency, this
+looks like a serious regression when omap4 had the global timer
+running at 500 MHz and a 22ns latency in user-space (including the
+time to jump to the kernel helper), which is better than the latency
+I have on an atom N230 where reading the tsc is a dedicated
+instruction (like architected timers actually).
 
 -- 
 					    Gilles.
