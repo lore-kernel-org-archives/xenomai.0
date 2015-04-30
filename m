@@ -1,13 +1,13 @@
-Message-ID: <5541E66D.2050303@xenomai.org>
-Date: Thu, 30 Apr 2015 10:23:09 +0200
+Message-ID: <5541E930.30000@xenomai.org>
+Date: Thu, 30 Apr 2015 10:34:56 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <5541BFA1.40101@bmwedler.de> <5541DB07.4050304@xenomai.org>
- <5541E1F2.1090908@bmwedler.de>
-In-Reply-To: <5541E1F2.1090908@bmwedler.de>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 3.0rc creating alchemy task in a shared object
+References: <553FAC36.3050803@free.fr> <553FC281.70308@xenomai.org>
+ <5541D505.2000109@free.fr>
+In-Reply-To: <5541D505.2000109@free.fr>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] xenomai 3.0rc4 rt_heap_alloc replies with timeout
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,35 +16,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Registrierungen <regist@bmwedler.de>, xenomai@xenomai.org
+To: =?windows-1252?Q?St=E9phane_ANCELOT?= <sancelot@free.fr>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/30/2015 10:04 AM, Registrierungen wrote:
-> Thanks for your reply.
-> 
-> Please not that it works fine for the standalone application.
-> 
-> Just in case, the task is created inside a staticaly linked shared
-> object the error occurs.
+On 04/30/2015 09:08 AM, St=E9phane ANCELOT wrote:
+> Hi,
+>=20
+> Ok, I am using more than one heap, it seems being related .
+>
 
-Could you sketch how this app is organized, and how the compilation
-units are linked together? e.g. is this something like this?
+I don't think so. This unit test illustrates such case:
+http://git.xenomai.org/xenomai-3.git/commit/?h=3Dnext&id=3Dfc7a90768c60e59c=
+dc86ed47a42d4757ff2c4d90
 
-main executable (foo.c somelib.so)
-	calls do_task_init()
+> It is not possible anymore?
 
-somelib.so (bar.c)
-	do_task_init() => calls rt_task_create()
+That would be quite a silly decision, isn't it? You should refer to this
+part of the online migration guide to find out which changes have been
+introduced in the user-visible interface:
 
-Or are you doing late binding via dlopen()?
+http://xenomai.org/migrating-from-xenomai-2-x-to-3-x/#Heaps
 
-> 
-> Here ist the config:
-> 
-> CONFIG_XENO_VERSION_STRING="3.0-rc1"
+> Regards,
+> S.Ancelot
+>=20
+>=20
+>=20
+> On 28/04/2015 19:25, Philippe Gerum wrote:
+>> On 04/28/2015 05:50 PM, St=E9phane ANCELOT wrote:
+>>> Hi,
+>>>
+>>> for unknown reason, using compat api, rt_heap_alloc replies with
+>>> timeout, or blocks if TM_INFINITE is requested.
+>> Because the request exceeds the available space. The compat api does not
+>> wrap rt_heap services, so this is unrelated.
+>>
+>>> I also noticed I don't have /dev/rtheap node, is it normal.?
+>>>
+>> Yes, /dev/rtheap is gone in 3.x.
+>>
+>=20
+>=20
 
-Please upgrade to -rc4 at the very least before more time is spent on
-any issue involving xenomai3.
 
--- 
+--=20
 Philippe.
 
