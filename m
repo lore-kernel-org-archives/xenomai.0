@@ -1,10 +1,13 @@
+Message-ID: <5541E66D.2050303@xenomai.org>
+Date: Thu, 30 Apr 2015 10:23:09 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-From: Ronny Meeus <ronny.meeus@gmail.com>
-Date: Thu, 30 Apr 2015 10:14:38 +0200
-Message-ID: <CAMJ=MEceJGYZ+RQ4eW9vnvfM=iLNTUv7sN0ePij4aEbegdAM+w@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] [xenomai-forge] Task blocked in t_delete
+References: <5541BFA1.40101@bmwedler.de> <5541DB07.4050304@xenomai.org>
+ <5541E1F2.1090908@bmwedler.de>
+In-Reply-To: <5541E1F2.1090908@bmwedler.de>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai 3.0rc creating alchemy task in a shared object
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,21 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: martin.bielik.sk@gmail.com
+To: Registrierungen <regist@bmwedler.de>, xenomai@xenomai.org
 
-SGVsbG8KCndlIGFyZSB1c2luZyB0aGUgeGVub21haS1mb3JnZSBtZXJjdXJ5IGNvcmUgdG9nZXRo
-ZXIgd2l0aCB0aGUgcFNPUyBpbnRlcmZhY2UuCgpXZSBvYnNlcnZlIGZvbGxvd2luZyBpc3N1ZTog
-d2UgaGF2ZSAzIHRhc2tzIGF0IGRpZmZlcmVudCBwcmlvcml0aWVzCihzZWUgdGVzdCBjb2RlIGF0
-dGFjaGVkKS4KVGhlIHRhc2sgd2l0aCB0aGUgbWlkZGxlIHByaW9yaXR5IGlzIHJ1bm5pbmcgZm9y
-ZXZlciAod2hpbGUgKDEpKS4KClRoZSBoaWdlc3QgcHJpbyB0YXNrIGlzIHJlc3BvbnNpYmxlIGNs
-ZWFuaW5nIHVwIHRoZSAyIG90aGVyIHRhc2tzLgpJZiB0aGUgbWlkZGxlIHByaW8gdGFzayBpcyBk
-ZWxldGVkIGZpcnN0LCBmb2xsb3dlZCBieSB0aGUgbG93IHByaW8sIGl0IHdvcmtzLgpJZiB0aGUg
-bG93IHByaW8gdGFzayBpcyBkZWxldGVkIGZpcnN0LCB0aGUgaGlnaCBwcmlvIHRhc2sganVzdCBi
-bG9ja3MKb24gdGhlIGRlbGV0ZSBhbmQgdGhlIHN5c3RlbSBoYW5ncyBpbiB0aGF0IHBoYXNlLgoK
-TXkgYXNzdW1wdGlvbiBpcyB0aGF0IHRoaXMgaXMgYSBidWcgaW4gdGhlIGRlbGV0ZSBmdW5jdGlv
-bmFsaXR5LgpJcyB0aGlzIGEga25vd24gaXNzdWU/CgoKUm9ubnkKLS0tLS0tLS0tLS0tLS0gbmV4
-dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQu
-Li4KTmFtZTogdGFza19oYW5nLmMKVHlwZTogdGV4dC94LWNzcmMKU2l6ZTogMTY0NSBieXRlcwpE
-ZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWls
-L3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTA0MzAvYWEwYzNlMGYvYXR0YWNobWVudC5jPgo=
+On 04/30/2015 10:04 AM, Registrierungen wrote:
+> Thanks for your reply.
+> 
+> Please not that it works fine for the standalone application.
+> 
+> Just in case, the task is created inside a staticaly linked shared
+> object the error occurs.
+
+Could you sketch how this app is organized, and how the compilation
+units are linked together? e.g. is this something like this?
+
+main executable (foo.c somelib.so)
+	calls do_task_init()
+
+somelib.so (bar.c)
+	do_task_init() => calls rt_task_create()
+
+Or are you doing late binding via dlopen()?
+
+> 
+> Here ist the config:
+> 
+> CONFIG_XENO_VERSION_STRING="3.0-rc1"
+
+Please upgrade to -rc4 at the very least before more time is spent on
+any issue involving xenomai3.
+
+-- 
+Philippe.
+
