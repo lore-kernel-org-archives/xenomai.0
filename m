@@ -1,15 +1,10 @@
-From: Marc =?ISO-8859-1?Q?Str=E4mke?= <marc.straemke@eltropuls.de>
-Date: Thu, 30 Apr 2015 17:17:48 +0200
-Message-ID: <3872595.UY9zmVq9KM@eltrolinux48.eltroad.eltropuls>
-In-Reply-To: <20150430151442.GW1993@hermes.click-hack.org>
-References: <3382708.2jmfqTEg5F@eltrolinux48.eltroad.eltropuls>
- <2238179.hbnctTCPtY@eltrolinux48.eltroad.eltropuls>
- <20150430151442.GW1993@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Hang/Reboot when using
-	CONFIG_CC_STACKPROTECTOR_REGULAR
+Date: Thu, 30 Apr 2015 08:53:10 -0700
+Message-ID: <CAKC9m6fXKqNhwy3sZ9zqzoAu=Xb7TUSxceogpE7xxB9-J=11wQ@mail.gmail.com>
+From: Hongfei Cheng <hongfei@mperpetuo.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] Ipipe-core patched kernel fails to start when certain
+ platform drivers are enabled
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,44 +13,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Am Donnerstag, 30. April 2015, 17:14:42 schrieb Gilles Chanteperdrix:
-> > I compared the disassembly of xnarch_switch_to with and without  the
-> > option
-> > set. That does like fine to me (even though i do not fully understand e=
-ach
-> > line..). The CANARY_SWITCH gets inserted correctly in to the
-> > do_switch_threads inline function.
-> =
+We've been working on porting the I-pipe core to an ARMv8/AArch64
+platform (Qualcomm msm8994).
 
-> I guess the next step is to look at what this *_REGULAR option adds
-> to CONFIG_CC_STACKPROTECTOR in the kernel code, and see if it does
-> not add something more to switch_to that we should add to
-> xnarch_switch_to.
+Taking the advice we received from this forum, our approach has been
+to add and enable the I-pipe core patches on this new architecture one
+(small) step at a time.
 
-This will probably take a bit of time on my side... =
+The development platform is currently configured and patched as follows:
+1). Only 1 CPU core is enabled (via kernel command line).
+2). Interrupt controller, GPIO controller, and platform drivers are
+patched following the porting guide and the existing ipipe-core code,
+along with the relevant discussions on this list.
+3). I-pipe spinlocks are applied to the instances where we think
+require "ipipe protection", although we are still uncertain if this
+work is complete in our code.
+4). High resolution counter is not yet supported as we're exploring
+different way(s) to implement TSC.
+5). CPU_FREQ and CPU_IDLE are *not yet* disabled, mainly due to the
+dependency of big.LITTLE architecture vendor-specific code.
 
+Below is what we've observed so far:
+1). Hardware timer appears to be running properly with
+arch_timer_ack() being called regularly and reliably.
+2). I-pipe is indeed grabbing the interrupt (through examining the call stack).
+3). The kernel startup process comes to a screeching halt when probing
+certain platform drivers, such as ipa or pcie. No kernel oops is
+shown. In this kernel state, the *only* task being scheduled is the
+watchdog process.
 
-Thank you for your help Gilles, I might have something more to say or ask n=
-ext =
+I believe there are "holes", to borrow the term from Gilles, in the
+platform drivers. However the few platform drivers which call
+generic_handle_irq have all been replaced with
+ipipe_handle_demuxed_irq.
 
-week...
+My questions are:
+1). Has anyone encountered similar experience while porting I-pipe core?
+2). Could such behavior be the result of missing or incorrectly
+applied I-pipe spinlocks?
 
-Marc
+I'll put the kernel config, patched code, and startup logs in the
+cloud and post the link here.
 
--- =
+Thanks!
+Hongfei
 
-Dipl.-Ing. Marc Str=E4mke
-Gesch=E4ftsf=FChrer / CEO
+P.S. Apologies for my top-postings in the past few weeks which I just
+noticed (in Gmail client).
 
-ELTROPULS Anlagenbau GmbH
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 181 bytes
-Desc: This is a digitally signed message part.
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150430/b264224=
-0/attachment.sig>
