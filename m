@@ -1,15 +1,13 @@
-Date: Thu, 30 Apr 2015 17:14:42 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150430151442.GW1993@hermes.click-hack.org>
+From: Marc =?ISO-8859-1?Q?Str=E4mke?= <marc.straemke@eltropuls.de>
+Date: Thu, 30 Apr 2015 17:17:48 +0200
+Message-ID: <3872595.UY9zmVq9KM@eltrolinux48.eltroad.eltropuls>
+In-Reply-To: <20150430151442.GW1993@hermes.click-hack.org>
 References: <3382708.2jmfqTEg5F@eltrolinux48.eltroad.eltropuls>
- <20150430145352.GV1993@hermes.click-hack.org>
- <16271667.Fx8U4yiYQd@eltrolinux48.eltroad.eltropuls>
  <2238179.hbnctTCPtY@eltrolinux48.eltroad.eltropuls>
+ <20150430151442.GW1993@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <2238179.hbnctTCPtY@eltrolinux48.eltroad.eltropuls>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] Hang/Reboot when using
 	CONFIG_CC_STACKPROTECTOR_REGULAR
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -20,28 +18,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marc =?utf-8?Q?Str=C3=A4mke?= <marc.straemke@eltropuls.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-T24gVGh1LCBBcHIgMzAsIDIwMTUgYXQgMDU6MTI6MDlQTSArMDIwMCwgTWFyYyBTdHLDpG1rZSB3
-cm90ZToKPiBBbSBEb25uZXJzdGFnLCAzMC4gQXByaWwgMjAxNSwgMTc6MDM6NTQgc2NocmllYiBN
-YXJjIFN0csOkbWtlOgo+ID4gQW0gRG9ubmVyc3RhZywgMzAuIEFwcmlsIDIwMTUsIDE2OjUzOjUy
-IHNjaHJpZWIgR2lsbGVzIENoYW50ZXBlcmRyaXg6Cj4gPiA+IElzIENPTkZJR19DQ19TVEFDS1BS
-T1RFQ1RPUiBlbmFibGVkIHdoZW4geW91IGVuYWJsZSB0aGUgKl9SRUdVTEFSCj4gPiA+IG9wdGlv
-biA/IFRoZSBmaXJzdCB0aGluZyB0byBjaGVjayBpcyB0aGF0IHRoZSB4bmFyY2hfc3dpdGNoX3Rv
-Cj4gPiAKPiA+IEkgY2FuIGNvbmZpcm0gdGhhdCBDT05GSUdfQ0NfU1RBQ0tQUk9URUNUT1IgZ2V0
-cyBzZXQgdG9nZXRoZXIgd2l0aCB0aGUKPiA+ICpfUkVHVUxBUiBvcHRpb24uIEkgYW0gaW5zcGVj
-dGluZyB0aGUgZGlzYXNzZW1ibHkgbm93Li4uCj4gCj4gSSBjb21wYXJlZCB0aGUgZGlzYXNzZW1i
-bHkgb2YgeG5hcmNoX3N3aXRjaF90byB3aXRoIGFuZCB3aXRob3V0ICB0aGUgb3B0aW9uIAo+IHNl
-dC4gVGhhdCBkb2VzIGxpa2UgZmluZSB0byBtZSAoZXZlbiB0aG91Z2ggaSBkbyBub3QgZnVsbHkg
-dW5kZXJzdGFuZCBlYWNoIAo+IGxpbmUuLikuIFRoZSBDQU5BUllfU1dJVENIIGdldHMgaW5zZXJ0
-ZWQgY29ycmVjdGx5IGluIHRvIHRoZSBkb19zd2l0Y2hfdGhyZWFkcyAKPiBpbmxpbmUgZnVuY3Rp
-b24uCgpJIGd1ZXNzIHRoZSBuZXh0IHN0ZXAgaXMgdG8gbG9vayBhdCB3aGF0IHRoaXMgKl9SRUdV
-TEFSIG9wdGlvbiBhZGRzCnRvIENPTkZJR19DQ19TVEFDS1BST1RFQ1RPUiBpbiB0aGUga2VybmVs
-IGNvZGUsIGFuZCBzZWUgaWYgaXQgZG9lcwpub3QgYWRkIHNvbWV0aGluZyBtb3JlIHRvIHN3aXRj
-aF90byB0aGF0IHdlIHNob3VsZCBhZGQgdG8KeG5hcmNoX3N3aXRjaF90by4KCi0tIAoJCQkJCSAg
-ICBHaWxsZXMuCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10
-ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IG5vdCBhdmFpbGFibGUKVHlwZTog
-YXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiA4MTEgYnl0ZXMKRGVzYzogbm90IGF2YWls
-YWJsZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFj
-aG1lbnRzLzIwMTUwNDMwL2ZkOWU3ODg2L2F0dGFjaG1lbnQuc2lnPgo=
+Am Donnerstag, 30. April 2015, 17:14:42 schrieb Gilles Chanteperdrix:
+> > I compared the disassembly of xnarch_switch_to with and without  the
+> > option
+> > set. That does like fine to me (even though i do not fully understand e=
+ach
+> > line..). The CANARY_SWITCH gets inserted correctly in to the
+> > do_switch_threads inline function.
+> =
+
+> I guess the next step is to look at what this *_REGULAR option adds
+> to CONFIG_CC_STACKPROTECTOR in the kernel code, and see if it does
+> not add something more to switch_to that we should add to
+> xnarch_switch_to.
+
+This will probably take a bit of time on my side... =
+
+
+Thank you for your help Gilles, I might have something more to say or ask n=
+ext =
+
+week...
+
+Marc
+
+-- =
+
+Dipl.-Ing. Marc Str=E4mke
+Gesch=E4ftsf=FChrer / CEO
+
+ELTROPULS Anlagenbau GmbH
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 181 bytes
+Desc: This is a digitally signed message part.
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150430/b264224=
+0/attachment.sig>
