@@ -1,13 +1,14 @@
-Date: Thu, 30 Apr 2015 22:14:09 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150430201409.GA1993@hermes.click-hack.org>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Thu, 30 Apr 2015 17:21:51 -0400
+Message-ID: <20150430212151.GD24389@csclub.uwaterloo.ca>
 References: <CAKC9m6fXKqNhwy3sZ9zqzoAu=Xb7TUSxceogpE7xxB9-J=11wQ@mail.gmail.com>
  <20150430183147.GZ1993@hermes.click-hack.org>
  <CAKC9m6cXp+ZQdZG2qCQA5+J2m0W-2hnLniL0wswfSu5aD32wwg@mail.gmail.com>
+ <20150430201409.GA1993@hermes.click-hack.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAKC9m6cXp+ZQdZG2qCQA5+J2m0W-2hnLniL0wswfSu5aD32wwg@mail.gmail.com>
+In-Reply-To: <20150430201409.GA1993@hermes.click-hack.org>
 Subject: Re: [Xenomai] Ipipe-core patched kernel fails to start when certain
  platform drivers are enabled
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,44 +19,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongfei Cheng <hongfei@mperpetuo.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Thu, Apr 30, 2015 at 01:04:07PM -0700, Hongfei Cheng wrote:
-> On Thu, Apr 30, 2015 at 11:31 AM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
-> > On Thu, Apr 30, 2015 at 08:53:10AM -0700, Hongfei Cheng wrote:
-> >> 4). High resolution counter is not yet supported as we're exploring
-> >> different way(s) to implement TSC.
-> >
-> > Note the implications here: if you say "all armv8 will use
-> > architected timer", we can get away with a unique implementation. If
-> > you want to use another timer, then we will have to implement kernel
-> > helpers with a constant kernel/user ABI, so probably in the vdso.
-> > All this for an improved accuracy that may well not be worth the
-> > trouble.
-> 
-> Currently we're not concerned about tsc accuracy.
-> 
-> Could you elaborate a bit more on the "architected timer" and the
-> possible implementation you envision on Cortex-A53/A57?
+On Thu, Apr 30, 2015 at 10:14:09PM +0200, Gilles Chanteperdrix wrote:
+> "architected timer" is the name of the timers available since cortex
+> A15 (on A7 also, I guess it allows big/little to run exactly the
+> same code on both cores), and I thought I had understood it was also
+> available on armv8. These timers are guaranteed to operate a long
+> period of time without wrapping (something like tens of years), so
+> they do not have a resolution as high as they could have (especially
+> since implementations use less than 32 bits of the higher 32 bits).
 
-"architected timer" is the name of the timers available since cortex
-A15 (on A7 also, I guess it allows big/little to run exactly the
-same code on both cores), and I thought I had understood it was also
-available on armv8. These timers are guaranteed to operate a long
-period of time without wrapping (something like tens of years), so
-they do not have a resolution as high as they could have (especially
-since implementations use less than 32 bits of the higher 32 bits).
+The A15 (and A7, A17, A12, etc) timer is certainly handy.  Some designs
+have managed to screw it up though (like the exynos 5420, where samsung
+decided they were going to use their own timer design from previous
+designs, and not initialize or even run the A15 timer, so the register
+is there, the timer is there, but it isn't running and hence you can't
+use it, which pretty much means no chance of KVM on the exynos chips
+given it assumes the architecture timer can be used by the guest too).
 
-> 
-> Is the I-pipe tracer dependent upon a live/running tsc counter?
+Good thing we use the TI am572x instead, which does have the architecture
+timer, although with an errata I had to come up with a software fix for.
+The speed is slightly wrong but consistently so.
 
-To get timestamped results yes. But you can probably run it with
-stubs, the timing information will be unusable that is all. The
-frequency can not be null though, so you can set something like 1
-MHz and it should work.
+It sure would be nice if chip makers would NOT try to reinvent the
+wheel when the architecture has come up with a standard way to do it
+that works well.
+
+> To get timestamped results yes. But you can probably run it with
+> stubs, the timing information will be unusable that is all. The
+> frequency can not be null though, so you can set something like 1
+> MHz and it should work.
 
 -- 
-					    Gilles.
+Len Sorensen
 
