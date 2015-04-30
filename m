@@ -1,12 +1,14 @@
-Date: Tue, 21 Apr 2015 16:14:27 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150421141427.GU7109@hermes.click-hack.org>
-References: <1429625014.4018.13.camel@rt10.zhou>
+Message-ID: <5542299B.30409@xenomai.org>
+Date: Thu, 30 Apr 2015 15:09:47 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1429625014.4018.13.camel@rt10.zhou>
-Subject: Re: [Xenomai] Is idle=poll the right way to decrease jitter ?
+References: <CAMJ=MEceJGYZ+RQ4eW9vnvfM=iLNTUv7sN0ePij4aEbegdAM+w@mail.gmail.com>
+ <5541FD72.3090806@xenomai.org>
+ <CAMJ=MEcq-VE-QK021_RigRUVbbXOtKwL4G27bhtP=y+hX3eE6w@mail.gmail.com>
+In-Reply-To: <CAMJ=MEcq-VE-QK021_RigRUVbbXOtKwL4G27bhtP=y+hX3eE6w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [xenomai-forge] Task blocked in t_delete
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,23 +17,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Zhoupeng <zhoupeng1982@qq.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: Ronny Meeus <ronny.meeus@gmail.com>
+Cc: "martin.bielik.sk" <martin.bielik.sk@gmail.com>, xenomai@xenomai.org
 
-On Tue, Apr 21, 2015 at 10:03:34PM +0800, Zhoupeng wrote:
-> As conclusion in "POWERLINK and Realtime linux": the jitter was so high
-> on an idle system and gets smaller if the CPU is heavily loaded.
+On 04/30/2015 02:39 PM, Ronny Meeus wrote:
+> If I run the test I see:
 > 
-> This is probably due to power optimization when hlt is called, as
-> discussed before.
+> /tmp # ./task_delete
+> Start of test
+> Create and start main task:Create task M:
+> Create task L:
+> Start task M:
+> Start task L:
+> M: entry
+> L: entry
+> M: Dead loop starts
+> Cleaning ..
+> End of test
 > 
-> "idle=poll" will waste more power, but jitter decrease from 30us to less
-> than 10us in my test. Is this the right way ?
+> Here is the piece of the code that goes wrong:
+> 
+>   printf("Cleaning ..\r\n");
+>   /* Remove tasks */
+>   t_delete(L_id);
+>   /* Followed code is not executed because t_delete is somehow blocked */
+>   printf("Removed L task id = 0x%lx\r\n", L_id);
+>   t_delete(M_id);
+>   printf("Removed M task id = 0x%lx\r\n", M_id);
+> }
+> 
+> Since the trace "Removed L task id..." is not generated, my assumption
+> it that the t_delete(L_id) blocks.
+> 
+> 
 
-Are you sure the worst case latency is not more than 30us on a
-loaded system? Usurally, the worst case latency is best approximated
-on a loaded system than on an idle system.
+Could you attach GDB to the hung process, then dump a backtrace for all
+the remaining threads?
 
 -- 
-					    Gilles.
+Philippe.
 
