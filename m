@@ -1,15 +1,20 @@
-Message-ID: <553676DF.8020607@siemens.com>
-Date: Tue, 21 Apr 2015 18:12:15 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Fri, 1 May 2015 10:36:31 -0400
+Message-ID: <20150501143631.GH24389@csclub.uwaterloo.ca>
+References: <CAKC9m6fXKqNhwy3sZ9zqzoAu=Xb7TUSxceogpE7xxB9-J=11wQ@mail.gmail.com>
+ <20150430183147.GZ1993@hermes.click-hack.org>
+ <CAKC9m6cXp+ZQdZG2qCQA5+J2m0W-2hnLniL0wswfSu5aD32wwg@mail.gmail.com>
+ <20150430201409.GA1993@hermes.click-hack.org>
+ <20150430212151.GD24389@csclub.uwaterloo.ca>
+ <20150430212749.GB1993@hermes.click-hack.org>
+ <20150501134547.GF24389@csclub.uwaterloo.ca>
+ <20150501135651.GE1993@hermes.click-hack.org>
 MIME-Version: 1.0
-References: <E1Yka0Q-00008c-Jh@sd-51317.xenomai.org>
- <20150421152715.GV7109@hermes.click-hack.org> <5536751A.6080609@siemens.com>
- <20150421160625.GX7109@hermes.click-hack.org>
-In-Reply-To: <20150421160625.GX7109@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : lib/cobalt: Rework minimum
- stack size enforcement
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20150501135651.GE1993@hermes.click-hack.org>
+Subject: Re: [Xenomai] Ipipe-core patched kernel fails to start when certain
+ platform drivers are enabled
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,38 +26,59 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 2015-04-21 18:06, Gilles Chanteperdrix wrote:
-> On Tue, Apr 21, 2015 at 06:04:42PM +0200, Jan Kiszka wrote:
->> On 2015-04-21 17:27, Gilles Chanteperdrix wrote:
->>> On Tue, Apr 21, 2015 at 05:22:34PM +0200, git repository hosting wrote:
->>>> +COBALT_IMPL(int, pthread_attr_setstack, (pthread_attr_t *attr, void *stackaddr,
->>>> +					 size_t stacksize))
->>>> +{
->>>> +	if (stacksize < COBALT_STACKSIZE_MIN)
->>>> +		return -EINVAL;
->>>> +	return __STD(pthread_attr_setstack)(attr, stackaddr, stacksize);
->>>> +}
->>>
->>> As I said, there is no reason for Xenomai to enforce a task size
->>> larger than PTHREAD_STACK_MIN. This breaks POSIX compliance, and is
->>> useless.
->>
->> Then we should not use printf & Co. from any trampoline function, e.g.
->> vxworks/taskLib.c:task_trampoline. I only tried with a local skin, but I
->> bet the issue is reproducible with that one.
->>
->> For that reason, I went down the conservative path.
+On Fri, May 01, 2015 at 03:56:51PM +0200, Gilles Chanteperdrix wrote:
+> 6MHz is still not a lot (even omap3 did better than that).
 > 
-> The path you took breaks compatibility with POSIX. On a compliant
-> system, pthread_attr_setstacksize(attr, PTHREAD_STACK_MIN) is not
-> supposed to return an error.
+> And no, a A 56 bits counter running at 6MHz does not wrap in 2794
+> seconds, it wraps in:
+> 
+> (2^56) / 6000000 = 12009599006 s
+> 
+> That is:
+> 12009599006 / (365 * 24 * 3600) = 380 years
+> 
+> So, you are safe, it can be considered to avoid wrapping for a
+> reasonable amount of time.
+> 
+> Which means really, that I do not understand why the frequency is so
+> low.
 
-That is true. We have to pick from one evil: fail non-compliant here or
-crash later.
+I hava a suspicition that the 6.144MHz was chosen because it is what
+S/PDIF requires to run 48Khz audio.  Some it may have something to do
+with multimedia handling.
 
-Jan
+And in low power mode they run it from 32.768 KHz * 375 / 2.
+
+Sure looks like they could have easily made it faster, although making
+it faster wouldn't necesarily make it any more accurate depending on
+how it is implemented.  After all if it is just taking a 20MHz system
+clock input and incrementing from that, then there isn't much point
+running it faster.  If you can run it from the PLL circuit that runs
+the CPU core on the other hand, that would be interesting.  Of course
+that frequency can scale up and down if cpu frequency scaling is enabled.
+
+> 56 bits at 1 GHz would wrap in two years using the same computation,
+> that clearly would violate ARM specs. But 60 MHz for instance would
+> wrap in 38 years, that would seem reasonable.
+
+Does the kernel have a bug then:
+
+[    0.000000] OMAP clockevent source: timer1 at 32786 Hz
+[    0.000000] sched_clock: 32 bits at 32kHz, resolution 30517ns, wraps every 65536000000000ns
+[    0.000000] OMAP clocksource: 32k_counter at 32768 Hz
+[    0.000335] Architected cp15 timer(s) running at 6.14MHz (phys).
+[    0.000370] sched_clock: 56 bits at 6MHz, resolution 162ns, wraps every 2794592043008ns
+[    0.000376] Switching to timer-based delay loop
+[    0.100554] Calibrating delay loop (skipped), value calculated using timer frequency.. 12.29 BogoMIPS (lpj=6147)
+
+I think 2794592043008ns = 2794.592043008s, and I must admit I assumed
+the kernel knew what it was talking about.  It looks like it does not.
+
+I agree that thing isn't going to wrap ever.
+
+I see a few patches have gone in to that code since 3.14, so perhaps
+someone has fixed that printout.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Len Sorensen
 
