@@ -1,17 +1,16 @@
-Date: Tue, 21 Apr 2015 18:16:23 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150421161623.GY7109@hermes.click-hack.org>
-References: <E1Yka0Q-00008c-Jh@sd-51317.xenomai.org>
- <20150421152715.GV7109@hermes.click-hack.org>
- <5536751A.6080609@siemens.com>
- <20150421160625.GX7109@hermes.click-hack.org>
- <553676DF.8020607@siemens.com>
+Message-ID: <5543AFEB.2070808@xenomai.org>
+Date: Fri, 01 May 2015 18:55:07 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <553676DF.8020607@siemens.com>
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : lib/cobalt: Rework minimum
- stack size enforcement
+References: <CAMJ=MEceJGYZ+RQ4eW9vnvfM=iLNTUv7sN0ePij4aEbegdAM+w@mail.gmail.com>
+ <5541FD72.3090806@xenomai.org>
+ <CAMJ=MEcq-VE-QK021_RigRUVbbXOtKwL4G27bhtP=y+hX3eE6w@mail.gmail.com>
+ <5542299B.30409@xenomai.org>
+ <CAMJ=MEcC11C1Th6NjWMH6Ld3NthFvWpcSY+5tZAbk_akc6hS5g@mail.gmail.com>
+In-Reply-To: <CAMJ=MEcC11C1Th6NjWMH6Ld3NthFvWpcSY+5tZAbk_akc6hS5g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [xenomai-forge] Task blocked in t_delete
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,48 +19,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: Ronny Meeus <ronny.meeus@gmail.com>
+Cc: "martin.bielik.sk" <martin.bielik.sk@gmail.com>, xenomai@xenomai.org
 
-On Tue, Apr 21, 2015 at 06:12:15PM +0200, Jan Kiszka wrote:
-> On 2015-04-21 18:06, Gilles Chanteperdrix wrote:
-> > On Tue, Apr 21, 2015 at 06:04:42PM +0200, Jan Kiszka wrote:
-> >> On 2015-04-21 17:27, Gilles Chanteperdrix wrote:
-> >>> On Tue, Apr 21, 2015 at 05:22:34PM +0200, git repository hosting wrote:
-> >>>> +COBALT_IMPL(int, pthread_attr_setstack, (pthread_attr_t *attr, void *stackaddr,
-> >>>> +					 size_t stacksize))
-> >>>> +{
-> >>>> +	if (stacksize < COBALT_STACKSIZE_MIN)
-> >>>> +		return -EINVAL;
-> >>>> +	return __STD(pthread_attr_setstack)(attr, stackaddr, stacksize);
-> >>>> +}
-> >>>
-> >>> As I said, there is no reason for Xenomai to enforce a task size
-> >>> larger than PTHREAD_STACK_MIN. This breaks POSIX compliance, and is
-> >>> useless.
-> >>
-> >> Then we should not use printf & Co. from any trampoline function, e.g.
-> >> vxworks/taskLib.c:task_trampoline. I only tried with a local skin, but I
-> >> bet the issue is reproducible with that one.
-> >>
-> >> For that reason, I went down the conservative path.
-> > 
-> > The path you took breaks compatibility with POSIX. On a compliant
-> > system, pthread_attr_setstacksize(attr, PTHREAD_STACK_MIN) is not
-> > supposed to return an error.
+On 04/30/2015 03:55 PM, Ronny Meeus wrote:
+> On Thu, Apr 30, 2015 at 3:09 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+>> On 04/30/2015 02:39 PM, Ronny Meeus wrote:
+>>> If I run the test I see:
+>>>
+>>> /tmp # ./task_delete
+>>> Start of test
+>>> Create and start main task:Create task M:
+>>> Create task L:
+>>> Start task M:
+>>> Start task L:
+>>> M: entry
+>>> L: entry
+>>> M: Dead loop starts
+>>> Cleaning ..
+>>> End of test
+>>>
+>>> Here is the piece of the code that goes wrong:
+>>>
+>>>   printf("Cleaning ..\r\n");
+>>>   /* Remove tasks */
+>>>   t_delete(L_id);
+>>>   /* Followed code is not executed because t_delete is somehow blocked */
+>>>   printf("Removed L task id = 0x%lx\r\n", L_id);
+>>>   t_delete(M_id);
+>>>   printf("Removed M task id = 0x%lx\r\n", M_id);
+>>> }
+>>>
+>>> Since the trace "Removed L task id..." is not generated, my assumption
+>>> it that the t_delete(L_id) blocks.
+>>>
+>>>
+>>
+>> Could you attach GDB to the hung process, then dump a backtrace for all
+>> the remaining threads?
+>>
+>> --
+>> Philippe.
 > 
-> That is true. We have to pick from one evil: fail non-compliant here or
-> crash later.
+> Philippe
+> 
+> I have put a breakpoint in main @ line 62:
+> 
+> 57        printf("Create and start main task:");
+> 58        t_create("MaIn",10, 16000, 16000,0,&tid);
+> 59        ret = t_start(tid, 0, main_task, NULL);
+> 60        if (0 != ret) {printf("Failed %lu\r\n",ret);return -1;}
+> 61        sleep(10);
+> 62        t_delete(tid);
+> 63        printf("End of test\n\r");
+> 64        return 0;
+> 
+> and I generated a backtrace for all threads, see below.
+> It looks like the "MaIn" task is wating on a semaphore.
 
-The point is: you do not know if it will crash later, you can assume
-that the user calling pthread_attr_setstack knows what he is doing.
-Any user calling this interface should. We are doing real-time in C,
-not making an API for tutorials in ADA, or C++, let us try not to
-prevent the user from doing what he wants.
+[snip]
 
-For pthread_attr_setstacksize, you can round to the larger size and
-remain POSIX compliant.
+This is a priority inversion issue caused by the handshake mechanism
+between the caller of t_delete() and the killed task finalizer. I
+eventually reproduced it after I figured out that pinning all tasks on
+the same CPU was required to trigger such bug. This patch should help:
+
+http://git.xenomai.org/xenomai-3.git/commit/?h=next&id=8431d7149405235fb0aebb53ed32a537ad968c7e
 
 -- 
-					    Gilles.
+Philippe.
 
