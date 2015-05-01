@@ -1,15 +1,18 @@
-Date: Tue, 21 Apr 2015 18:06:26 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150421160625.GX7109@hermes.click-hack.org>
-References: <E1Yka0Q-00008c-Jh@sd-51317.xenomai.org>
- <20150421152715.GV7109@hermes.click-hack.org>
- <5536751A.6080609@siemens.com>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Fri, 1 May 2015 09:45:47 -0400
+Message-ID: <20150501134547.GF24389@csclub.uwaterloo.ca>
+References: <CAKC9m6fXKqNhwy3sZ9zqzoAu=Xb7TUSxceogpE7xxB9-J=11wQ@mail.gmail.com>
+ <20150430183147.GZ1993@hermes.click-hack.org>
+ <CAKC9m6cXp+ZQdZG2qCQA5+J2m0W-2hnLniL0wswfSu5aD32wwg@mail.gmail.com>
+ <20150430201409.GA1993@hermes.click-hack.org>
+ <20150430212151.GD24389@csclub.uwaterloo.ca>
+ <20150430212749.GB1993@hermes.click-hack.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5536751A.6080609@siemens.com>
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : lib/cobalt: Rework minimum
- stack size enforcement
+In-Reply-To: <20150430212749.GB1993@hermes.click-hack.org>
+Subject: Re: [Xenomai] Ipipe-core patched kernel fails to start when certain
+ platform drivers are enabled
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,34 +21,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai-git@xenomai.org, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Tue, Apr 21, 2015 at 06:04:42PM +0200, Jan Kiszka wrote:
-> On 2015-04-21 17:27, Gilles Chanteperdrix wrote:
-> > On Tue, Apr 21, 2015 at 05:22:34PM +0200, git repository hosting wrote:
-> >> +COBALT_IMPL(int, pthread_attr_setstack, (pthread_attr_t *attr, void *stackaddr,
-> >> +					 size_t stacksize))
-> >> +{
-> >> +	if (stacksize < COBALT_STACKSIZE_MIN)
-> >> +		return -EINVAL;
-> >> +	return __STD(pthread_attr_setstack)(attr, stackaddr, stacksize);
-> >> +}
-> > 
-> > As I said, there is no reason for Xenomai to enforce a task size
-> > larger than PTHREAD_STACK_MIN. This breaks POSIX compliance, and is
-> > useless.
-> 
-> Then we should not use printf & Co. from any trampoline function, e.g.
-> vxworks/taskLib.c:task_trampoline. I only tried with a local skin, but I
-> bet the issue is reproducible with that one.
-> 
-> For that reason, I went down the conservative path.
+On Thu, Apr 30, 2015 at 11:27:49PM +0200, Gilles Chanteperdrix wrote:
+> The problem I see with the architected timer is the minimum wrap
+> time imposed by the specification, which forces a low resolution if
+> the implementer does not want to implement the full 64 bits. So, it
+> may be a good reason to propose another timer, with say nanosecond
+> resolution, but without a guaranteed large wrap time, especially
+> since then implementation can extend it to the full 64 its in
+> software and have both high resolution and long wrap time.
 
-The path you took breaks compatibility with POSIX. On a compliant
-system, pthread_attr_setstacksize(attr, PTHREAD_STACK_MIN) is not
-supposed to return an error.
+Well on the TI am572x it is 56 bits at about 6MHz, so it wraps every
+2794 seconds according to the boot messages.  Would be nice if it was
+64 bits, since that would avoid wrapping for quite a while.  And sure
+a timer with 1ns would be great.  This one only gets 162ns.
+
+The exynos5420 has a 32bit timer at 24MHz.  It wraps every 178 seconds.
+Good thing we only use that as a build box.
 
 -- 
-					    Gilles.
+Len Sorensen
 
