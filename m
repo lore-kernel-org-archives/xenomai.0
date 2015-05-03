@@ -1,16 +1,11 @@
+Message-ID: <5546597F.9000601@xenomai.org>
+Date: Sun, 03 May 2015 19:23:11 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <5543AFEB.2070808@xenomai.org>
-References: <CAMJ=MEceJGYZ+RQ4eW9vnvfM=iLNTUv7sN0ePij4aEbegdAM+w@mail.gmail.com>
- <5541FD72.3090806@xenomai.org>
- <CAMJ=MEcq-VE-QK021_RigRUVbbXOtKwL4G27bhtP=y+hX3eE6w@mail.gmail.com>
- <5542299B.30409@xenomai.org>
- <CAMJ=MEcC11C1Th6NjWMH6Ld3NthFvWpcSY+5tZAbk_akc6hS5g@mail.gmail.com>
- <5543AFEB.2070808@xenomai.org>
-From: Ronny Meeus <ronny.meeus@gmail.com>
-Date: Sat, 2 May 2015 20:48:41 +0200
-Message-ID: <CAMJ=MEdXoC42PyRaKHbukCTVG9YSdqpHj=m4-Qa0jSpybiAVqA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] [xenomai-forge] Task blocked in t_delete
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] [IPIPE] patch releases for kernels 3.10.32, 3.14.39,
+ 3.16.7 and 3.18.12 (all archs)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,19 +14,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "martin.bielik.sk" <martin.bielik.sk@gmail.com>, xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-> This is a priority inversion issue caused by the handshake mechanism
-> between the caller of t_delete() and the killed task finalizer. I
-> eventually reproduced it after I figured out that pinning all tasks on
-> the same CPU was required to trigger such bug. This patch should help:
->
-> http://git.xenomai.org/xenomai-3.git/commit/?h=next&id=8431d7149405235fb0aebb53ed32a537ad968c7e
->
 
-I will try the patch on Monday.
-(I did run the example on a single core CPU).
+A new patch series is available from
+http://download.gna.org/adeos/patches/v3.x/
 
-Thanks for the quick feedback.
+ipipe-core-3.10.32-arm-8
+ipipe-core-3.10.32-blackfin-5
+ipipe-core-3.10.32-powerpc-6
+ipipe-core-3.10.32-x86-6
+
+ipipe-core-3.14.39-arm-9
+ipipe-core-3.14.39-blackfin-7
+ipipe-core-3.14.39-powerpc-8
+ipipe-core-3.14.39-x86-9
+
+ipipe-core-3.16.7-arm-7
+ipipe-core-3.16.7-blackfin-5
+ipipe-core-3.16.7-powerpc-5
+ipipe-core-3.16.7-x86-5
+
+ipipe-core-3.18.12-arm-1
+ipipe-core-3.18.12-blackfin-1
+ipipe-core-3.18.12-powerpc-1
+ipipe-core-3.18.12-x86-1
+
+GIT clone:
+git://git.xenomai.org/ipipe.git
+https://git.xenomai.org/ipipe.git
+http://git.xenomai.org/ipipe.git
+
+-- 
+Philippe.
 
