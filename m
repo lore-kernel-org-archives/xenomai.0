@@ -1,16 +1,13 @@
-Message-ID: <553678CC.5020206@siemens.com>
-Date: Tue, 21 Apr 2015 18:20:28 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Mon, 4 May 2015 11:47:45 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150504094745.GL1993@hermes.click-hack.org>
+References: <1740903282.3953811.1430731145805.JavaMail.root@openwide.fr>
+ <727852337.3956926.1430732646012.JavaMail.root@openwide.fr>
 MIME-Version: 1.0
-References: <E1Yka0Q-00008c-Jh@sd-51317.xenomai.org>
- <20150421152715.GV7109@hermes.click-hack.org> <5536751A.6080609@siemens.com>
- <20150421160625.GX7109@hermes.click-hack.org> <553676DF.8020607@siemens.com>
- <20150421161623.GY7109@hermes.click-hack.org>
-In-Reply-To: <20150421161623.GY7109@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : lib/cobalt: Rework minimum
- stack size enforcement
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <727852337.3956926.1430732646012.JavaMail.root@openwide.fr>
+Subject: Re: [Xenomai] Problem with the promiscuous mode of RTnet
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,59 +16,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Damien Lagneux <damien.lagneux@openwide.fr>
 Cc: xenomai@xenomai.org
 
-On 2015-04-21 18:16, Gilles Chanteperdrix wrote:
-> On Tue, Apr 21, 2015 at 06:12:15PM +0200, Jan Kiszka wrote:
->> On 2015-04-21 18:06, Gilles Chanteperdrix wrote:
->>> On Tue, Apr 21, 2015 at 06:04:42PM +0200, Jan Kiszka wrote:
->>>> On 2015-04-21 17:27, Gilles Chanteperdrix wrote:
->>>>> On Tue, Apr 21, 2015 at 05:22:34PM +0200, git repository hosting wrote:
->>>>>> +COBALT_IMPL(int, pthread_attr_setstack, (pthread_attr_t *attr, void *stackaddr,
->>>>>> +					 size_t stacksize))
->>>>>> +{
->>>>>> +	if (stacksize < COBALT_STACKSIZE_MIN)
->>>>>> +		return -EINVAL;
->>>>>> +	return __STD(pthread_attr_setstack)(attr, stackaddr, stacksize);
->>>>>> +}
->>>>>
->>>>> As I said, there is no reason for Xenomai to enforce a task size
->>>>> larger than PTHREAD_STACK_MIN. This breaks POSIX compliance, and is
->>>>> useless.
->>>>
->>>> Then we should not use printf & Co. from any trampoline function, e.g.
->>>> vxworks/taskLib.c:task_trampoline. I only tried with a local skin, but I
->>>> bet the issue is reproducible with that one.
->>>>
->>>> For that reason, I went down the conservative path.
->>>
->>> The path you took breaks compatibility with POSIX. On a compliant
->>> system, pthread_attr_setstacksize(attr, PTHREAD_STACK_MIN) is not
->>> supposed to return an error.
->>
->> That is true. We have to pick from one evil: fail non-compliant here or
->> crash later.
+On Mon, May 04, 2015 at 11:44:06AM +0200, Damien Lagneux wrote:
+> Hi all,
 > 
-> The point is: you do not know if it will crash later, you can assume
-> that the user calling pthread_attr_setstack knows what he is doing.
-
-The crash can be caused by the the library code and, thus, can happen
-even if the application code would not crash. That is my problem.
-
-> Any user calling this interface should. We are doing real-time in C,
-> not making an API for tutorials in ADA, or C++, let us try not to
-> prevent the user from doing what he wants.
+> I'm trying to adapt openPOWERLINK to RTnet. I'm using Xenomai 3.0-rc4,
+> linux kernel 3.16.7, and the board I'm working with is an Armadeus apf6.
 > 
-> For pthread_attr_setstacksize, you can round to the larger size and
-> remain POSIX compliant.
+> I have a problem with the promiscuous mode of the fec driver. It seems I 
+> can only receive packets which are addressed to the board.
+> 
+> I'm using the raw-ethernet and eth_p_all programs to test the promiscuous
+> mode. If the destination MAC address used in the raw-ethernet program 
+> is the the broadcast address or the board's address, the eth_p_all program
+> prints the messages. Otherwise, it doesn't print them.
+> 
+> I did set the interface rteth0 in promiscuous mode.
+> 
+> Does anyone have an idea what could the problem?
 
-Is it specified that this call invalidate a stack address set earlier? I
-don't see this.
-
-Jan
+How did you set the promiscuous mode ?
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
