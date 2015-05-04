@@ -1,10 +1,12 @@
-Date: Mon, 4 May 2015 11:54:11 +0200 (CEST)
-From: Damien Lagneux <damien.lagneux@openwide.fr>
-Message-ID: <161457050.3957521.1430733251745.JavaMail.root@openwide.fr>
-In-Reply-To: <20150504094745.GL1993@hermes.click-hack.org>
+Date: Mon, 4 May 2015 12:04:41 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150504100441.GM1993@hermes.click-hack.org>
+References: <20150504094745.GL1993@hermes.click-hack.org>
+ <161457050.3957521.1430733251745.JavaMail.root@openwide.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <161457050.3957521.1430733251745.JavaMail.root@openwide.fr>
 Subject: Re: [Xenomai] Problem with the promiscuous mode of RTnet
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -14,61 +16,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Damien Lagneux <damien.lagneux@openwide.fr>
 Cc: xenomai@xenomai.org
 
-Hi Gilles,=20
+On Mon, May 04, 2015 at 11:54:11AM +0200, Damien Lagneux wrote:
+> Hi Gilles, 
+> 
+> Thank you for your quick reply.
+> 
+> Here is the script I'm using to set RTnet:
+> #!/bin/sh
+> 
+> modprobe rtnet
+> modprobe rt_fec
+> modprobe rtpacket
+> modprobe rtudp
+> modprobe rtcap
+> 
+> rtifconfig rteth0 up 10.5.18.161 netmask 255.255.0.0 promisc
 
-Thank you for your quick reply.
+I do not see anything wrong in the code. rtifconfig seems to ask the
+IFF_PROMISC flag to be set for the driver, and the driver code seems
+to take this flag into account. So I guess you will have to trace
+the path from rtifconfig to the driver code to see where the
+information gets lost.
 
-Here is the script I'm using to set RTnet:
-#!/bin/sh
+> ifconfig rteth0 up
 
-modprobe rtnet
-modprobe rt_fec
-modprobe rtpacket
-modprobe rtudp
-modprobe rtcap
+Note that what you are doing here is enabling the rtcap interface
+(which is a plain linux interface, and not the rtnet interface), you
+may want to avoid doing that in a first step, in case it fiddles
+with the promisc bit too.
 
-rtifconfig rteth0 up 10.5.18.161 netmask 255.255.0.0 promisc
-ifconfig rteth0 up
-
-Damien
-
------ Mail original -----
-> De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-> =C3=80: "Damien Lagneux" <damien.lagneux@openwide.fr>
-> Cc: xenomai@xenomai.org
-> Envoy=C3=A9: Lundi 4 Mai 2015 11:47:45
-> Objet: Re: [Xenomai] Problem with the promiscuous mode of RTnet
->=20
-> On Mon, May 04, 2015 at 11:44:06AM +0200, Damien Lagneux wrote:
-> > Hi all,
-> >=20
-> > I'm trying to adapt openPOWERLINK to RTnet. I'm using Xenomai
-> > 3.0-rc4,
-> > linux kernel 3.16.7, and the board I'm working with is an Armadeus
-> > apf6.
-> >=20
-> > I have a problem with the promiscuous mode of the fec driver. It
-> > seems I
-> > can only receive packets which are addressed to the board.
-> >=20
-> > I'm using the raw-ethernet and eth_p_all programs to test the
-> > promiscuous
-> > mode. If the destination MAC address used in the raw-ethernet
-> > program
-> > is the the broadcast address or the board's address, the eth_p_all
-> > program
-> > prints the messages. Otherwise, it doesn't print them.
-> >=20
-> > I did set the interface rteth0 in promiscuous mode.
-> >=20
-> > Does anyone have an idea what could the problem?
->=20
-> How did you set the promiscuous mode ?
->=20
-> --
-> =09=09=09=09=09    Gilles.
->=20
+-- 
+					    Gilles.
 
