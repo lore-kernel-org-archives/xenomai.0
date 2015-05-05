@@ -1,13 +1,17 @@
-Date: Mon, 4 May 2015 12:04:41 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150504100441.GM1993@hermes.click-hack.org>
-References: <20150504094745.GL1993@hermes.click-hack.org>
- <161457050.3957521.1430733251745.JavaMail.root@openwide.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <161457050.3957521.1430733251745.JavaMail.root@openwide.fr>
-Subject: Re: [Xenomai] Problem with the promiscuous mode of RTnet
+In-Reply-To: <CAMJ=MEdXoC42PyRaKHbukCTVG9YSdqpHj=m4-Qa0jSpybiAVqA@mail.gmail.com>
+References: <CAMJ=MEceJGYZ+RQ4eW9vnvfM=iLNTUv7sN0ePij4aEbegdAM+w@mail.gmail.com>
+ <5541FD72.3090806@xenomai.org>
+ <CAMJ=MEcq-VE-QK021_RigRUVbbXOtKwL4G27bhtP=y+hX3eE6w@mail.gmail.com>
+ <5542299B.30409@xenomai.org>
+ <CAMJ=MEcC11C1Th6NjWMH6Ld3NthFvWpcSY+5tZAbk_akc6hS5g@mail.gmail.com>
+ <5543AFEB.2070808@xenomai.org>
+ <CAMJ=MEdXoC42PyRaKHbukCTVG9YSdqpHj=m4-Qa0jSpybiAVqA@mail.gmail.com>
+From: Ronny Meeus <ronny.meeus@gmail.com>
+Date: Tue, 5 May 2015 08:04:20 +0200
+Message-ID: <CAMJ=MEcdpq=95YZe9cPe00kFerru+e4yukoNiji3h-HfXZaohQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] [xenomai-forge] Task blocked in t_delete
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,38 +20,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Damien Lagneux <damien.lagneux@openwide.fr>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "martin.bielik.sk" <martin.bielik.sk@gmail.com>, xenomai@xenomai.org
 
-On Mon, May 04, 2015 at 11:54:11AM +0200, Damien Lagneux wrote:
-> Hi Gilles, 
-> 
-> Thank you for your quick reply.
-> 
-> Here is the script I'm using to set RTnet:
-> #!/bin/sh
-> 
-> modprobe rtnet
-> modprobe rt_fec
-> modprobe rtpacket
-> modprobe rtudp
-> modprobe rtcap
-> 
-> rtifconfig rteth0 up 10.5.18.161 netmask 255.255.0.0 promisc
+On Sat, May 2, 2015 at 8:48 PM, Ronny Meeus <ronny.meeus@gmail.com> wrote:
+>> This is a priority inversion issue caused by the handshake mechanism
+>> between the caller of t_delete() and the killed task finalizer. I
+>> eventually reproduced it after I figured out that pinning all tasks on
+>> the same CPU was required to trigger such bug. This patch should help:
+>>
+>> http://git.xenomai.org/xenomai-3.git/commit/?h=next&id=8431d7149405235fb0aebb53ed32a537ad968c7e
+>>
+>
+> I will try the patch on Monday.
+> (I did run the example on a single core CPU).
+>
+> Thanks for the quick feedback.
 
-I do not see anything wrong in the code. rtifconfig seems to ask the
-IFF_PROMISC flag to be set for the driver, and the driver code seems
-to take this flag into account. So I guess you will have to trace
-the path from rtifconfig to the driver code to see where the
-information gets lost.
+Philippe,
+the patch seems to solve the issue.
+Thanks
 
-> ifconfig rteth0 up
+Just for my information, is there somewhere documentation about the
+remote agent?
 
-Note that what you are doing here is enabling the rtcap interface
-(which is a plain linux interface, and not the rtnet interface), you
-may want to avoid doing that in a first step, in case it fiddles
-with the promisc bit too.
-
--- 
-					    Gilles.
+Ronny
 
