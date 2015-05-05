@@ -1,13 +1,14 @@
+Message-ID: <5548C7A4.5030309@free.fr>
+Date: Tue, 05 May 2015 15:37:40 +0200
+From: =?windows-1252?Q?St=E9phane_ANCELOT?= <sancelot@free.fr>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Date: Tue, 05 May 2015 15:32:08 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
-In-Reply-To: <5548A805.60401@sigmatek.at>
-References: <5548A805.60401@sigmatek.at>
-Message-ID: <049c19b3633199cac11cca95cdff99ad@grandegger.com>
-Subject: Re: [Xenomai] Flexcan RT driver registration failed
+References: <553FAC36.3050803@free.fr> <553FC281.70308@xenomai.org>
+ <5541D505.2000109@free.fr> <5541E930.30000@xenomai.org>
+ <5542205E.5080302@free.fr>
+In-Reply-To: <5542205E.5080302@free.fr>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="windows-1252"; Format="flowed"
+Subject: Re: [Xenomai] xenomai 3.0rc4 rt_heap_alloc replies with timeout
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,108 +17,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: wolfgang.netbal@sigmatek.at
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, 05 May 2015 13:22:45 +0200, Wolfgang Netbal
-<wolfgang.netbal@sigmatek.at> wrote:
-> Dear All,
-> 
-> I have a custom board with an imx6dl using freescale yocto 3.10.53 with 
-> Xenomai 2.6.4.
-> The probe function works fine while booting the kernel
-> 
-> RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development Team
-> rtcan: registered rtcan0
-> flexcan 2090000.can: RTCAN device registered (reg_base=d0c00000, 
-> irq=142, clock=66000000)
-> rtcan: registered rtcan1
-> flexcan 2094000.can: RTCAN device registered (reg_base=d0c08000, 
-> irq=143, clock=66000000)
-> 
-> After Linux started I call the function flexcan_mode_start() and get the
+Hi,
+unfortunately, There is something wrong for unknown reason using these =
 
-> following message and CAN connections doesn't work.
-> 
-> rtcan0: Failed to softreset can module (mcr=0x5b80000f)
-> 
-> I have a working configuration for this board using Kernel 3.0.43 and 
-> Xenomai 2.6.2.1
-> 
-> RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development Team
-> flexcan netdevice driver
-> rtcan: registered rtcan0
-> flexcan imx6q-flexcan.0: RTCAN device registered (reg_base=e0968000, 
-> irq=142, clock=30000000)
-> rtcan: registered rtcan1
-> flexcan imx6q-flexcan.1: RTCAN device registered (reg_base=e0970000, 
-> irq=143, clock=30000000)
-> ...
-> rtcan0: writing ctrl=0x03292005
-> 
-> It seems that the clock is the difference so I checked the values of 
-> register CCM_CCGR0
-> 3.0.43 address 0x20C4068 is set to 0x7fc03f
-> 3.10.53 address 0x20C4068 is set to 0x4cc00f
-> 
-> so on kernel 3.10.53 are the serial clocks for can disabled.
-> 
-> If anyone has a hint for me how to activate the serial clock in register
+functions.
 
-> CCM_CCGR0 and change the clock to 30000000 that would be great.
+I made a simple regression program that only create heaps and allocates =
 
-Have a look into the directory "arch/arm/boot/dts" of a recent kernel tree
-and execute therein "grep LEXCAN[12] *.dts*". There are various boards
-setting the pins you mention below. Maybe you find some matching hardware.
+area.
 
-> Here is the part of the devicetree used to configure flexcan.
-> 
-> 
-> #include "imx6dl.dtsi"
-> 
-> / {
-> 
-> };
-> 
-> /*
->   * PAD settings
->   */
-> &iomuxc {
->      flexcan1 {
->          pinctrl_flexcan1_sigmatek: flexcan1grp-sigmatek {
->              fsl,pins = <
->                  MX6QDL_PAD_SD3_CLK__FLEXCAN1_RX NO_PAD_CTRL
->                  MX6QDL_PAD_SD3_CMD__FLEXCAN1_TX NO_PAD_CTRL
->              >;
->          };
->      };
-> 
->      flexcan2 {
->          pinctrl_flexcan2_sigmatek: flexcan2grp-sigmatek {
->              fsl,pins = <
->                  MX6QDL_PAD_SD3_DAT1__FLEXCAN2_RX NO_PAD_CTRL
->                  MX6QDL_PAD_SD3_DAT0__FLEXCAN2_TX NO_PAD_CTRL
->              >;
->          };
->      };
-> };
-> 
-> /*
->   * CAN
->   */
-> &flexcan1 {
->      pinctrl-names = "default";
->      pinctrl-0 = <&pinctrl_flexcan1_sigmatek>;
->      status = "okay";
-> };
-> 
-> &flexcan2 {
->      pinctrl-names = "default";
->      pinctrl-0 = <&pinctrl_flexcan2_sigmatek>;
->      status = "okay";
-> };
+At line 190 of the file, depending on the size value of the heap, the =
 
-Hope that already helps.
+program works or not.
+This looks like corrupted memory problem...
 
-Wolfgang.
+enclose is the c file, I hope you will be able reproduce it.
+Regards,
+Steph
 
+
+
+On 30/04/2015 14:30, St=E9phane ANCELOT wrote:
+> On 30/04/2015 10:34, Philippe Gerum wrote:
+>> On 04/30/2015 09:08 AM, St=E9phane ANCELOT wrote:
+>>> Hi,
+>>>
+>>> Ok, I am using more than one heap, it seems being related .
+>>>
+>> I don't think so. This unit test illustrates such case:
+>> http://git.xenomai.org/xenomai-3.git/commit/?h=3Dnext&id=3Dfc7a90768c60e=
+59cdc86ed47a42d4757ff2c4d90 =
+
+>>
+>>
+> Yes, this one rocks.
+>
+> I found the reason in my application, I created the heap with H_SINGLE =
+
+> (or deprecated H_SHARED)
+> but the block is not being allocated if rt_heap_alloc() func size =
+
+> parameter is 0 .
+> changing size to blocksize works.
+>>> It is not possible anymore?
+>> That would be quite a silly decision, isn't it? You should refer to this
+>> part of the online migration guide to find out which changes have been
+>> introduced in the user-visible interface:
+>>
+>> http://xenomai.org/migrating-from-xenomai-2-x-to-3-x/#Heaps
+>>
+>>> Regards,
+>>> S.Ancelot
+>>>
+>>>
+>>>
+>>> On 28/04/2015 19:25, Philippe Gerum wrote:
+>>>> On 04/28/2015 05:50 PM, St=E9phane ANCELOT wrote:
+>>>>> Hi,
+>>>>>
+>>>>> for unknown reason, using compat api, rt_heap_alloc replies with
+>>>>> timeout, or blocks if TM_INFINITE is requested.
+>>>> Because the request exceeds the available space. The compat api =
+
+>>>> does not
+>>>> wrap rt_heap services, so this is unrelated.
+>>>>
+>>>>> I also noticed I don't have /dev/rtheap node, is it normal.?
+>>>>>
+>>>> Yes, /dev/rtheap is gone in 3.x.
+>>>>
+>>>
+>>
+>
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: heap_test.cpp
+Type: text/x-c++src
+Size: 6429 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20150505/44cda4a=
+1/attachment.cpp>
