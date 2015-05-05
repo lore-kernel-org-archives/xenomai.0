@@ -1,17 +1,11 @@
+Message-ID: <5548A805.60401@sigmatek.at>
+Date: Tue, 05 May 2015 13:22:45 +0200
+From: Wolfgang Netbal <wolfgang.netbal@sigmatek.at>
 MIME-Version: 1.0
-In-Reply-To: <CAMJ=MEdXoC42PyRaKHbukCTVG9YSdqpHj=m4-Qa0jSpybiAVqA@mail.gmail.com>
-References: <CAMJ=MEceJGYZ+RQ4eW9vnvfM=iLNTUv7sN0ePij4aEbegdAM+w@mail.gmail.com>
- <5541FD72.3090806@xenomai.org>
- <CAMJ=MEcq-VE-QK021_RigRUVbbXOtKwL4G27bhtP=y+hX3eE6w@mail.gmail.com>
- <5542299B.30409@xenomai.org>
- <CAMJ=MEcC11C1Th6NjWMH6Ld3NthFvWpcSY+5tZAbk_akc6hS5g@mail.gmail.com>
- <5543AFEB.2070808@xenomai.org>
- <CAMJ=MEdXoC42PyRaKHbukCTVG9YSdqpHj=m4-Qa0jSpybiAVqA@mail.gmail.com>
-From: Ronny Meeus <ronny.meeus@gmail.com>
-Date: Tue, 5 May 2015 08:04:20 +0200
-Message-ID: <CAMJ=MEcdpq=95YZe9cPe00kFerru+e4yukoNiji3h-HfXZaohQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] [xenomai-forge] Task blocked in t_delete
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Flexcan RT driver registration failed
+Reply-To: wolfgang.netbal@sigmatek.at
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,29 +14,101 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "martin.bielik.sk" <martin.bielik.sk@gmail.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Sat, May 2, 2015 at 8:48 PM, Ronny Meeus <ronny.meeus@gmail.com> wrote:
->> This is a priority inversion issue caused by the handshake mechanism
->> between the caller of t_delete() and the killed task finalizer. I
->> eventually reproduced it after I figured out that pinning all tasks on
->> the same CPU was required to trigger such bug. This patch should help:
->>
->> http://git.xenomai.org/xenomai-3.git/commit/?h=next&id=8431d7149405235fb0aebb53ed32a537ad968c7e
->>
->
-> I will try the patch on Monday.
-> (I did run the example on a single core CPU).
->
-> Thanks for the quick feedback.
+Dear All,
 
-Philippe,
-the patch seems to solve the issue.
-Thanks
+I have a custom board with an imx6dl using freescale yocto 3.10.53 with 
+Xenomai 2.6.4.
+The probe function works fine while booting the kernel
 
-Just for my information, is there somewhere documentation about the
-remote agent?
+RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development Team
+rtcan: registered rtcan0
+flexcan 2090000.can: RTCAN device registered (reg_base=d0c00000, 
+irq=142, clock=66000000)
+rtcan: registered rtcan1
+flexcan 2094000.can: RTCAN device registered (reg_base=d0c08000, 
+irq=143, clock=66000000)
 
-Ronny
+After Linux started I call the function flexcan_mode_start() and get the 
+following message and CAN connections doesn't work.
+
+rtcan0: Failed to softreset can module (mcr=0x5b80000f)
+
+I have a working configuration for this board using Kernel 3.0.43 and 
+Xenomai 2.6.2.1
+
+RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development Team
+flexcan netdevice driver
+rtcan: registered rtcan0
+flexcan imx6q-flexcan.0: RTCAN device registered (reg_base=e0968000, 
+irq=142, clock=30000000)
+rtcan: registered rtcan1
+flexcan imx6q-flexcan.1: RTCAN device registered (reg_base=e0970000, 
+irq=143, clock=30000000)
+...
+rtcan0: writing ctrl=0x03292005
+
+It seems that the clock is the difference so I checked the values of 
+register CCM_CCGR0
+3.0.43 address 0x20C4068 is set to 0x7fc03f
+3.10.53 address 0x20C4068 is set to 0x4cc00f
+
+so on kernel 3.10.53 are the serial clocks for can disabled.
+
+If anyone has a hint for me how to activate the serial clock in register 
+CCM_CCGR0 and change the clock to 30000000 that would be great.
+
+
+Here is the part of the devicetree used to configure flexcan.
+
+
+#include "imx6dl.dtsi"
+
+/ {
+
+};
+
+/*
+  * PAD settings
+  */
+&iomuxc {
+     flexcan1 {
+         pinctrl_flexcan1_sigmatek: flexcan1grp-sigmatek {
+             fsl,pins = <
+                 MX6QDL_PAD_SD3_CLK__FLEXCAN1_RX NO_PAD_CTRL
+                 MX6QDL_PAD_SD3_CMD__FLEXCAN1_TX NO_PAD_CTRL
+             >;
+         };
+     };
+
+     flexcan2 {
+         pinctrl_flexcan2_sigmatek: flexcan2grp-sigmatek {
+             fsl,pins = <
+                 MX6QDL_PAD_SD3_DAT1__FLEXCAN2_RX NO_PAD_CTRL
+                 MX6QDL_PAD_SD3_DAT0__FLEXCAN2_TX NO_PAD_CTRL
+             >;
+         };
+     };
+};
+
+/*
+  * CAN
+  */
+&flexcan1 {
+     pinctrl-names = "default";
+     pinctrl-0 = <&pinctrl_flexcan1_sigmatek>;
+     status = "okay";
+};
+
+&flexcan2 {
+     pinctrl-names = "default";
+     pinctrl-0 = <&pinctrl_flexcan2_sigmatek>;
+     status = "okay";
+};
+
+
+Kind regards
+
+Wolfgang Netbal
 
