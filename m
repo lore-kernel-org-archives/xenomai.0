@@ -1,19 +1,15 @@
-Message-ID: <5549E1D9.7060607@xenomai.org>
-Date: Wed, 06 May 2015 11:41:45 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5549E4F4.7030507@free.fr>
+Date: Wed, 06 May 2015 11:55:00 +0200
+From: =?windows-1252?Q?St=E9phane_ANCELOT?= <sancelot@free.fr>
 MIME-Version: 1.0
-References: <CAMJ=MEceJGYZ+RQ4eW9vnvfM=iLNTUv7sN0ePij4aEbegdAM+w@mail.gmail.com>
- <5541FD72.3090806@xenomai.org>
- <CAMJ=MEcq-VE-QK021_RigRUVbbXOtKwL4G27bhtP=y+hX3eE6w@mail.gmail.com>
- <5542299B.30409@xenomai.org>
- <CAMJ=MEcC11C1Th6NjWMH6Ld3NthFvWpcSY+5tZAbk_akc6hS5g@mail.gmail.com>
- <5543AFEB.2070808@xenomai.org>
- <CAMJ=MEdXoC42PyRaKHbukCTVG9YSdqpHj=m4-Qa0jSpybiAVqA@mail.gmail.com>
- <CAMJ=MEcdpq=95YZe9cPe00kFerru+e4yukoNiji3h-HfXZaohQ@mail.gmail.com>
-In-Reply-To: <CAMJ=MEcdpq=95YZe9cPe00kFerru+e4yukoNiji3h-HfXZaohQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [xenomai-forge] Task blocked in t_delete
+References: <553FAC36.3050803@free.fr> <553FC281.70308@xenomai.org>
+ <5541D505.2000109@free.fr> <5541E930.30000@xenomai.org>
+ <5542205E.5080302@free.fr> <5548C7A4.5030309@free.fr>
+ <5549D733.90702@xenomai.org>
+In-Reply-To: <5549D733.90702@xenomai.org>
+Content-Type: text/plain; charset="windows-1252"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] xenomai 3.0rc4 rt_heap_alloc replies with timeout
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,38 +18,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ronny Meeus <ronny.meeus@gmail.com>
-Cc: "martin.bielik.sk" <martin.bielik.sk@gmail.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/05/2015 08:04 AM, Ronny Meeus wrote:
-> On Sat, May 2, 2015 at 8:48 PM, Ronny Meeus <ronny.meeus@gmail.com> wrote:
->>> This is a priority inversion issue caused by the handshake mechanism
->>> between the caller of t_delete() and the killed task finalizer. I
->>> eventually reproduced it after I figured out that pinning all tasks on
->>> the same CPU was required to trigger such bug. This patch should help:
->>>
->>> http://git.xenomai.org/xenomai-3.git/commit/?h=next&id=8431d7149405235fb0aebb53ed32a537ad968c7e
->>>
+right. This is fixed using create size >=3D 2048 bytes.
+
+
+On 06/05/2015 10:56, Philippe Gerum wrote:
+> On 05/05/2015 03:37 PM, St=E9phane ANCELOT wrote:
+>> Hi,
+>> unfortunately, There is something wrong for unknown reason using these
+>> functions.
 >>
->> I will try the patch on Monday.
->> (I did run the example on a single core CPU).
+>> I made a simple regression program that only create heaps and allocates
+>> area.
 >>
->> Thanks for the quick feedback.
-> 
-> Philippe,
-> the patch seems to solve the issue.
-> Thanks
-> 
-> Just for my information, is there somewhere documentation about the
-> remote agent?
-> 
+>> At line 190 of the file, depending on the size value of the heap, the
+>> program works or not.
+>> This looks like corrupted memory problem...
+>>
+> The API tells you what happens, it's just that you did not pay attention
+> to return codes:
+>
+> 	flags =3D H_FIFO ;
+> 	size =3D 36800;
+> 	size =3D 824; // size =3D 824 is failing but changing size to 3200 rocks=
+ ...
+> 	ret =3D rt_heap_create(&heap2, "config", size, flags);
+>
+> This returns -EINVAL, which is documented for rt_heap_create() as:
+>
+>   * - -EINVAL is returned if @a mode is invalid, or @a heapsz is not in
+>   * the range [2k..2Gb].
+>
+> Besides, your test code never deletes the heaps it creates, before
+> overwriting the same heap descriptor with the next call to
+> rt_heap_create(). Hopefully your application does not do that.
+>
+> I'm unsure to understand your reasoning about memory corruption.
+>
 
-No documentation so far. Basically it's an internal proxy thread for
-carrying out remote POSIX requests that are otherwise restricted to the
-local process. This only applies when --enable-pshared is in effect, and
-a multi-process application does remote thread control. So far we only
-need to proxy pthread_setschedparam() and pthread_cancel().
-
--- 
-Philippe.
 
