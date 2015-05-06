@@ -1,15 +1,14 @@
+Message-ID: <5549D733.90702@xenomai.org>
+Date: Wed, 06 May 2015 10:56:19 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Date: Wed, 06 May 2015 10:51:23 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
-In-Reply-To: <5549D04C.1060501@sigmatek.at>
-References: <5548A805.60401@sigmatek.at>
- <049c19b3633199cac11cca95cdff99ad@grandegger.com>
- <5549D04C.1060501@sigmatek.at>
-Message-ID: <cdbbfcd38f779f62c8f54fffcaefa26d@grandegger.com>
-Subject: Re: [Xenomai] Flexcan RT driver registration failed
+References: <553FAC36.3050803@free.fr> <553FC281.70308@xenomai.org>
+ <5541D505.2000109@free.fr> <5541E930.30000@xenomai.org>
+ <5542205E.5080302@free.fr> <5548C7A4.5030309@free.fr>
+In-Reply-To: <5548C7A4.5030309@free.fr>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] xenomai 3.0rc4 rt_heap_alloc replies with timeout
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,143 +17,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: wolfgang.netbal@sigmatek.at
-Cc: xenomai@xenomai.org
+To: =?windows-1252?Q?St=E9phane_ANCELOT?= <sancelot@free.fr>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, 06 May 2015 10:26:52 +0200, Wolfgang Netbal
-<wolfgang.netbal@sigmatek.at> wrote:
-> Dear Wolfgang,
-> 
-> thank you for your fast replay.
-> 
-> I'm sure my problems are not from setting the pin configuration, because
+On 05/05/2015 03:37 PM, St=E9phane ANCELOT wrote:
+> Hi,
+> unfortunately, There is something wrong for unknown reason using these
+> functions.
+>=20
+> I made a simple regression program that only create heaps and allocates
+> area.
+>=20
+> At line 190 of the file, depending on the size value of the heap, the
+> program works or not.
+> This looks like corrupted memory problem...
+>=20
 
-> I tested configuration also with the default settings.
-> 
-> My issue is that the clock rate is set to 66000000 instead of 30000000 
-> and that can_serial_clock in register CCM_CCG0 is disabled.
-> 
-> Do you hava any idea how to activate the serial_clock for can.
-> I cant find anything in other devicetree files.
+The API tells you what happens, it's just that you did not pay attention
+to return codes:
 
-Looking to the Flexcan function "register_flexcandev()" of the 3.10 
-mainline kernel here:
+	flags =3D H_FIFO ;
+	size =3D 36800;
+	size =3D 824; // size =3D 824 is failing but changing size to 3200 rocks .=
+..
+	ret =3D rt_heap_create(&heap2, "config", size, flags);
 
-  http://lxr.free-electrons.com/source/drivers/net/can/flexcan.c#L1083
+This returns -EINVAL, which is documented for rt_heap_create() as:
 
-I realize that the Xenomai kernel support of that driver is not
-correct. Could you please replace *all* "KERNEL_VERSION(3,11,0)" with
-"KERNEL_VERSION(3,10,0)" in your "rtcan_flexcan.c".
+ * - -EINVAL is returned if @a mode is invalid, or @a heapsz is not in
+ * the range [2k..2Gb].
 
-Hope it helps.
+Besides, your test code never deletes the heaps it creates, before
+overwriting the same heap descriptor with the next call to
+rt_heap_create(). Hopefully your application does not do that.
 
-Wolfgang.
+I'm unsure to understand your reasoning about memory corruption.
 
-> Kind regards
-> Wolfgang
-> 
-> Am 2015-05-05 um 15:32 schrieb Wolfgang Grandegger:
->> On Tue, 05 May 2015 13:22:45 +0200, Wolfgang Netbal
->> <wolfgang.netbal@sigmatek.at> wrote:
->>> Dear All,
->>>
->>> I have a custom board with an imx6dl using freescale yocto 3.10.53
-with
->>> Xenomai 2.6.4.
->>> The probe function works fine while booting the kernel
->>>
->>> RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development Team
->>> rtcan: registered rtcan0
->>> flexcan 2090000.can: RTCAN device registered (reg_base=d0c00000,
->>> irq=142, clock=66000000)
->>> rtcan: registered rtcan1
->>> flexcan 2094000.can: RTCAN device registered (reg_base=d0c08000,
->>> irq=143, clock=66000000)
->>>
->>> After Linux started I call the function flexcan_mode_start() and get
-the
->>> following message and CAN connections doesn't work.
->>>
->>> rtcan0: Failed to softreset can module (mcr=0x5b80000f)
->>>
->>> I have a working configuration for this board using Kernel 3.0.43 and
->>> Xenomai 2.6.2.1
->>>
->>> RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development Team
->>> flexcan netdevice driver
->>> rtcan: registered rtcan0
->>> flexcan imx6q-flexcan.0: RTCAN device registered (reg_base=e0968000,
->>> irq=142, clock=30000000)
->>> rtcan: registered rtcan1
->>> flexcan imx6q-flexcan.1: RTCAN device registered (reg_base=e0970000,
->>> irq=143, clock=30000000)
->>> ...
->>> rtcan0: writing ctrl=0x03292005
->>>
->>> It seems that the clock is the difference so I checked the values of
->>> register CCM_CCGR0
->>> 3.0.43 address 0x20C4068 is set to 0x7fc03f
->>> 3.10.53 address 0x20C4068 is set to 0x4cc00f
->>>
->>> so on kernel 3.10.53 are the serial clocks for can disabled.
->>>
->>> If anyone has a hint for me how to activate the serial clock in
-register
->>> CCM_CCGR0 and change the clock to 30000000 that would be great.
->> Have a look into the directory "arch/arm/boot/dts" of a recent kernel
->> tree
->> and execute therein "grep LEXCAN[12] *.dts*". There are various boards
->> setting the pins you mention below. Maybe you find some matching
->> hardware.
->>
->>> Here is the part of the devicetree used to configure flexcan.
->>>
->>>
->>> #include "imx6dl.dtsi"
->>>
->>> / {
->>>
->>> };
->>>
->>> /*
->>>    * PAD settings
->>>    */
->>> &iomuxc {
->>>       flexcan1 {
->>>           pinctrl_flexcan1_sigmatek: flexcan1grp-sigmatek {
->>>               fsl,pins = <
->>>                   MX6QDL_PAD_SD3_CLK__FLEXCAN1_RX NO_PAD_CTRL
->>>                   MX6QDL_PAD_SD3_CMD__FLEXCAN1_TX NO_PAD_CTRL
->>>               >;
->>>           };
->>>       };
->>>
->>>       flexcan2 {
->>>           pinctrl_flexcan2_sigmatek: flexcan2grp-sigmatek {
->>>               fsl,pins = <
->>>                   MX6QDL_PAD_SD3_DAT1__FLEXCAN2_RX NO_PAD_CTRL
->>>                   MX6QDL_PAD_SD3_DAT0__FLEXCAN2_TX NO_PAD_CTRL
->>>               >;
->>>           };
->>>       };
->>> };
->>>
->>> /*
->>>    * CAN
->>>    */
->>> &flexcan1 {
->>>       pinctrl-names = "default";
->>>       pinctrl-0 = <&pinctrl_flexcan1_sigmatek>;
->>>       status = "okay";
->>> };
->>>
->>> &flexcan2 {
->>>       pinctrl-names = "default";
->>>       pinctrl-0 = <&pinctrl_flexcan2_sigmatek>;
->>>       status = "okay";
->>> };
->> Hope that already helps.
->>
->> Wolfgang
->>
+--=20
+Philippe.
 
