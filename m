@@ -1,16 +1,14 @@
-Message-ID: <554A2236.5010405@sigmatek.at>
-Date: Wed, 06 May 2015 16:16:22 +0200
-From: Wolfgang Netbal <wolfgang.netbal@sigmatek.at>
+From: SMITH Peter T <peter.t.smith@alstom.com>
+Date: Wed, 6 May 2015 14:22:33 +0000
+Message-ID: <92BAB684D31DCD4A8F623A7EE7FD8C06013ED0D5@041-DB3MPN1-092.041d.mgd.msft.net>
+References: <92BAB684D31DCD4A8F623A7EE7FD8C06013ED08A@041-DB3MPN1-092.041d.mgd.msft.net>
+ <20150506140524.GW1993@hermes.click-hack.org>
+In-Reply-To: <20150506140524.GW1993@hermes.click-hack.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <5548A805.60401@sigmatek.at>
- <049c19b3633199cac11cca95cdff99ad@grandegger.com>
- <5549D04C.1060501@sigmatek.at>
- <cdbbfcd38f779f62c8f54fffcaefa26d@grandegger.com>
-In-Reply-To: <cdbbfcd38f779f62c8f54fffcaefa26d@grandegger.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Flexcan RT driver registration failed
-Reply-To: wolfgang.netbal@sigmatek.at
+Subject: Re: [Xenomai] Xenomai on Zynq (linux-denx xilinx-zynq-v3.14.17)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,151 +17,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: wg@grandegger.com
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+
+Gilles,
+
+So do I need to disable some more kernel configuration options?
+
+Peter
+
+-----Original Message-----
+From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+Sent: 06 May 2015 15:05
+To: SMITH Peter T
 Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai] Xenomai on Zynq (linux-denx xilinx-zynq-v3.14.17)
 
+On Wed, May 06, 2015 at 01:50:36PM +0000, SMITH Peter T wrote:
+> Hi everyone,
+>
+> I have successfully built a kernel for Zynq 7020 (on the Xilinx
+> ZC702 board) following the instructions on the Xenomai web site.
+>
+> I have used the linux-denx git (branch xilinx-zynq-v3.14.17) and the
+> xenomai-2.6 git (branch master). The kernel boots and I am able to log
+> on to the target, so all seems well. I have also made sure that
+> CONFIG_CPU_FREQ and CONFIG_CPU_IDLE are not enabled.
+>
+> I do however, see a strange error message related to [ INFO:
+> inconsistent lock state ] in my dmesg output.
+>
+> My first question is, is this anything to worry about? Is it an
+> indication that my build is incorrect.
 
+Yes, in its current form, irq state tracking does not work correctly, and w=
+hat is more gets function called in Xenomai domain which should not be call=
+ed. So, better disable it altogether. Jan proposed to fix this, but only ca=
+me up with an empirically validated implementation which was thus refused. =
+This functionality will probably be disabled in the kernel configuration if=
+ nobody comes with an implementation which can be proved to cover all the c=
+ases.
 
-Am 2015-05-06 um 10:51 schrieb Wolfgang Grandegger:
-> On Wed, 06 May 2015 10:26:52 +0200, Wolfgang Netbal
-> <wolfgang.netbal@sigmatek.at> wrote:
->> Dear Wolfgang,
->>
->> thank you for your fast replay.
->>
->> I'm sure my problems are not from setting the pin configuration, because
->> I tested configuration also with the default settings.
->>
->> My issue is that the clock rate is set to 66000000 instead of 30000000
->> and that can_serial_clock in register CCM_CCG0 is disabled.
->>
->> Do you hava any idea how to activate the serial_clock for can.
->> I cant find anything in other devicetree files.
-> Looking to the Flexcan function "register_flexcandev()" of the 3.10
-> mainline kernel here:
->
->    http://lxr.free-electrons.com/source/drivers/net/can/flexcan.c#L1083
->
-> I realize that the Xenomai kernel support of that driver is not
-> correct. Could you please replace *all* "KERNEL_VERSION(3,11,0)" with
-> "KERNEL_VERSION(3,10,0)" in your "rtcan_flexcan.c".
-I made a cherry-pick of commit "can/flexcan: fixup for kernel release >= 
-3.11" (a7b7adec9123dc60587d160f0818322a9a547630 
-<http://git.xenomai.org/xenomai-2.6.git/commit/?id=a7b7adec9123dc60587d160f0818322a9a547630>) 
-from xenomai-2.6.git <http://git.xenomai.org/xenomai-2.6.git/>
-and replaced all "KERNEL_VERSION(3,11,0)" with "KERNEL_VERSION(3,10,0)" 
-and it works.
+> My second (and last) question is related to performance. Below is the
+> output of the latency test on an unloaded target. Is it normal to see
+> negative latencies or is this an indication that something is wrong?
 
-Thanks a lot Wolfgang
-> Hope it helps.
->
-> Wolfgang.
->
->> Kind regards
->> Wolfgang
->>
->> Am 2015-05-05 um 15:32 schrieb Wolfgang Grandegger:
->>> On Tue, 05 May 2015 13:22:45 +0200, Wolfgang Netbal
->>> <wolfgang.netbal@sigmatek.at> wrote:
->>>> Dear All,
->>>>
->>>> I have a custom board with an imx6dl using freescale yocto 3.10.53
-> with
->>>> Xenomai 2.6.4.
->>>> The probe function works fine while booting the kernel
->>>>
->>>> RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development Team
->>>> rtcan: registered rtcan0
->>>> flexcan 2090000.can: RTCAN device registered (reg_base=d0c00000,
->>>> irq=142, clock=66000000)
->>>> rtcan: registered rtcan1
->>>> flexcan 2094000.can: RTCAN device registered (reg_base=d0c08000,
->>>> irq=143, clock=66000000)
->>>>
->>>> After Linux started I call the function flexcan_mode_start() and get
-> the
->>>> following message and CAN connections doesn't work.
->>>>
->>>> rtcan0: Failed to softreset can module (mcr=0x5b80000f)
->>>>
->>>> I have a working configuration for this board using Kernel 3.0.43 and
->>>> Xenomai 2.6.2.1
->>>>
->>>> RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development Team
->>>> flexcan netdevice driver
->>>> rtcan: registered rtcan0
->>>> flexcan imx6q-flexcan.0: RTCAN device registered (reg_base=e0968000,
->>>> irq=142, clock=30000000)
->>>> rtcan: registered rtcan1
->>>> flexcan imx6q-flexcan.1: RTCAN device registered (reg_base=e0970000,
->>>> irq=143, clock=30000000)
->>>> ...
->>>> rtcan0: writing ctrl=0x03292005
->>>>
->>>> It seems that the clock is the difference so I checked the values of
->>>> register CCM_CCGR0
->>>> 3.0.43 address 0x20C4068 is set to 0x7fc03f
->>>> 3.10.53 address 0x20C4068 is set to 0x4cc00f
->>>>
->>>> so on kernel 3.10.53 are the serial clocks for can disabled.
->>>>
->>>> If anyone has a hint for me how to activate the serial clock in
-> register
->>>> CCM_CCGR0 and change the clock to 30000000 that would be great.
->>> Have a look into the directory "arch/arm/boot/dts" of a recent kernel
->>> tree
->>> and execute therein "grep LEXCAN[12] *.dts*". There are various boards
->>> setting the pins you mention below. Maybe you find some matching
->>> hardware.
->>>
->>>> Here is the part of the devicetree used to configure flexcan.
->>>>
->>>>
->>>> #include "imx6dl.dtsi"
->>>>
->>>> / {
->>>>
->>>> };
->>>>
->>>> /*
->>>>     * PAD settings
->>>>     */
->>>> &iomuxc {
->>>>        flexcan1 {
->>>>            pinctrl_flexcan1_sigmatek: flexcan1grp-sigmatek {
->>>>                fsl,pins = <
->>>>                    MX6QDL_PAD_SD3_CLK__FLEXCAN1_RX NO_PAD_CTRL
->>>>                    MX6QDL_PAD_SD3_CMD__FLEXCAN1_TX NO_PAD_CTRL
->>>>                >;
->>>>            };
->>>>        };
->>>>
->>>>        flexcan2 {
->>>>            pinctrl_flexcan2_sigmatek: flexcan2grp-sigmatek {
->>>>                fsl,pins = <
->>>>                    MX6QDL_PAD_SD3_DAT1__FLEXCAN2_RX NO_PAD_CTRL
->>>>                    MX6QDL_PAD_SD3_DAT0__FLEXCAN2_TX NO_PAD_CTRL
->>>>                >;
->>>>            };
->>>>        };
->>>> };
->>>>
->>>> /*
->>>>     * CAN
->>>>     */
->>>> &flexcan1 {
->>>>        pinctrl-names = "default";
->>>>        pinctrl-0 = <&pinctrl_flexcan1_sigmatek>;
->>>>        status = "okay";
->>>> };
->>>>
->>>> &flexcan2 {
->>>>        pinctrl-names = "default";
->>>>        pinctrl-0 = <&pinctrl_flexcan2_sigmatek>;
->>>>        status = "okay";
->>>> };
->>> Hope that already helps.
->>>
->>> Wolfgang
->>>
+Yes, it means that your system is not correctly calibrated.
+
+--
+                                            Gilles.
+
+________________________________
+CONFIDENTIALITY : This e-mail and any attachments are confidential and may =
+be privileged. If you are not a named recipient, please notify the sender i=
+mmediately and do not disclose the contents to another person, use it for a=
+ny purpose or store or copy the information in any medium.
 
