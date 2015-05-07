@@ -1,10 +1,10 @@
-Message-ID: <554B0C27.5010802@free.fr>
-Date: Thu, 07 May 2015 08:54:31 +0200
-From: =?UTF-8?B?U3TDqXBoYW5lIEFOQ0VMT1Q=?= <sancelot@free.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] v3 heap mem-pool-size
+Date: Thu, 7 May 2015 10:24:28 +0200
+Message-ID: <CAL5YyVbFyWrFj2jCKHXAEL67gC046xKE8OJCq7c8F+_Zi4PzmQ@mail.gmail.com>
+From: ACO31 <alain.cordat@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] X86 rebbot when i use latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,17 +13,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai@xenomai.org
 
-Hi,
+Hi, I've rebuild kerrnel with your patch, and  latency run well.
+20=C2=B5s of worst latency in old X86, it's ok for me.
 
-Is there a better way to raise mem-pool-size other than specifying in 
-cmdline ?
-
-    0"007.389| WARNING: [main] heapobj_init() failed for 470 bytes, 
-raise --mem-pool-size?
-
-
-Regards,
-S.Ancelot
-
+Thanks
+alain
