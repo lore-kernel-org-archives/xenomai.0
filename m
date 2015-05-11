@@ -1,18 +1,14 @@
-Message-ID: <55369131.9070406@siemens.com>
-Date: Tue, 21 Apr 2015 20:04:33 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5550A807.1010504@free.fr>
+Date: Mon, 11 May 2015 15:00:55 +0200
+From: =?UTF-8?B?U3TDqXBoYW5lIEFOQ0VMT1Q=?= <sancelot@free.fr>
 MIME-Version: 1.0
-References: <E1Yka0Q-00008c-Jh@sd-51317.xenomai.org>
- <20150421152715.GV7109@hermes.click-hack.org> <5536751A.6080609@siemens.com>
- <20150421160625.GX7109@hermes.click-hack.org> <553676DF.8020607@siemens.com>
- <20150421161623.GY7109@hermes.click-hack.org> <553678CC.5020206@siemens.com>
- <20150421163247.GZ7109@hermes.click-hack.org> <55367CB0.90609@siemens.com>
- <55368E4F.4040101@siemens.com> <20150421175651.GC7109@hermes.click-hack.org>
-In-Reply-To: <20150421175651.GC7109@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : lib/cobalt: Rework minimum
- stack size enforcement
+References: <554B0C27.5010802@free.fr>
+ <20150507090719.GC2099@hermes.click-hack.org> <554B6C3D.6040101@free.fr>
+ <20150507153225.GD2099@hermes.click-hack.org>
+In-Reply-To: <20150507153225.GD2099@hermes.click-hack.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] v3 heap mem-pool-size
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,74 +18,82 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2015-04-21 19:56, Gilles Chanteperdrix wrote:
-> On Tue, Apr 21, 2015 at 07:52:15PM +0200, Jan Kiszka wrote:
->> On 2015-04-21 18:37, Jan Kiszka wrote:
->>> Possibly the crash was limited to the case where the application set a
->>> stack address and Xenomai messed up the size. I'm rechecking this right
->>> now, and if we are lucky, PTHREAD_STACK_MIN turns out to be fine for
->>> Xenomai as well.
->>
->> Too bad, it wasn't that easy. Just try this, even without Xenomai:
->>
->> #include <stdio.h>
->> #include <pthread.h>
->> #include <limits.h>
->>
->> void *thread_func(void *arg)
->> {
->> 	fprintf(stderr, "crash %s\n", "me");
->> 	return NULL;
->> }
->>
->> int main(int argc, char *argv[])
->> {
->> 	pthread_t thread;
->> 	pthread_attr_t attr;
->>
->> 	pthread_attr_init(&attr);
->> 	pthread_attr_setstacksize(&attr, PTHREAD_STACK_MIN);
->>
->> 	pthread_create(&thread, &attr, thread_func, NULL);
->>
->> 	pthread_join(thread, NULL);
->>
->> 	return 0;
->> }
->>
->> Crashes on my x86-64 boxes all the time. stdout/printf is fine. Some
->> internal glibc function requires a lot of stack space.
-> 
-> Well, as I said several time in that thread, using printf with glibc
-> and PTHREAD_STACK_MIN crashes. Yes, this is an issue I had noticed a
-> long time ago. I always assumed it was because printf used alloca or
-> allocated a large buffer on stack by some other mean.
-> 
->>
->> The problem is that we trigger the very same pattern with warning() in
->> Xenomai. When that is called by the thread trampoline, the user cannot
->> run threads with otherwise totally fine PTHREAD_STACK_MIN.
->>
->> Now we can
->> - ask the user to specify for more stack (by contract)
->> - reject too small stacks (my patches)
->> - warn about too small stacks, but accept them (maybe a compromise)
->> - simply ignore this
-> 
-> This is not our business. Really.
-> 
+On 07/05/2015 17:32, Gilles Chanteperdrix wrote:
+> On Thu, May 07, 2015 at 03:44:29PM +0200, Stéphane ANCELOT wrote:
+>> On 07/05/2015 11:07, Gilles Chanteperdrix wrote:
+>>> On Thu, May 07, 2015 at 08:54:31AM +0200, Stéphane ANCELOT wrote:
+>>>> Hi,
+>>>>
+>>>> Is there a better way to raise mem-pool-size other than specifying in
+>>>> cmdline ?
+>>>>
+>>>>     0"007.389| WARNING: [main] heapobj_init() failed for 470 bytes, raise
+>>>> --mem-pool-size?
+>>> A command line option is nice, it allows you to do basically
+>>> anything you want by calling your program from a script. What is it
+>>> you want to do that can not be achieved this way?
+>>>
+>> It is a nice idea, however I understand everybody needs are not the same.
+> You asked for a "better way", I just tried and guessed what it
+> means, despite the fact that it was yet another unjustified critic
+> of Xenomai. Maybe if the question had been precise like "is there a way
+> to programmaticaly set "mem-pool-size", would you have get an answer
+> to your question.
+>
+Hi,
 
-It is our business as we change the interface for the user in a
-non-configurable way. The bare minimum is documentation, but the more I
-think about, the better is the warning variant: violates no
-specification and still improves the debugging situation of - again -
-valid programs under plain Linux.
+In reply to the latest question :
 
-Jan
+"""What is it you want to do that can not be achieved this way? """
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+My last complete answer was :
+
+"""
+  It is a nice idea, however I understand everybody needs are not the same.
+
+Regarding my application, I setup dynamically my heap once. But this 
+heap size depends will depend on some external parameters and will vary. 
+And the only way to know the size to allocate is to "count" the 
+databytes in my C programing structures. Honestly, I am sure a computer 
+will better do it than my mind.
+
+eg. These external parameters may depend on how many motors in my 
+machine, and so on.
+
+"""
+
+It bothers megetting these kinds of personal judgement in reply, 
+furthermore out of topic and in a wrong context. Furthermore a waste of 
+time.
+
+I would suggest a bit of sagacity on both sides, as I do, e.g. trying to 
+understand :
+why we need to round up small heap sizes to at least 2048 bytes ?
+why heaps are not allocated if I setup 0 size in rt_heap_alloc() ?
+why I have to  setup mem-pool-size in xenomai v3 ?
+and so on ....
+
+I am pretty sure that there are good reasons , in some contexts. 
+Unfortunately, not in my context, may be not in bob's or alice's context 
+too....
+Precisely, my last question was asking if either I need to make a 
+program for computing estimate heap space needed and set it in cmdline,
+or if there is a workaround to programmatically set cmdline 
+mem-pool-size option?
+And in the first case, I think there is unfortunately  some regression .
+
+Regards,
+Steph.
+
+
+
+
+
+
+
+
+
+
 
