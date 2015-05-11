@@ -1,6 +1,6 @@
-Message-ID: <5550C78E.1030501@free.fr>
-Date: Mon, 11 May 2015 17:15:26 +0200
-From: =?UTF-8?B?U3TDqXBoYW5lIEFOQ0VMT1Q=?= <sancelot@free.fr>
+Message-ID: <5550D15D.8050502@nta-inc.net>
+Date: Mon, 11 May 2015 10:57:17 -0500
+From: Jeff Webb <jeff.webb@nta-inc.net>
 MIME-Version: 1.0
 References: <554B0C27.5010802@free.fr>
  <20150507090719.GC2099@hermes.click-hack.org> <554B651A.9000209@nta-inc.net>
@@ -17,9 +17,9 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Jeff Webb <jeff.webb@nta-inc.net>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 11/05/2015 16:14, Philippe Gerum wrote:
+On 05/11/2015 09:14 AM, Philippe Gerum wrote:
 > On 05/07/2015 03:14 PM, Jeff Webb wrote:
 >> On 05/07/2015 04:07 AM, Gilles Chanteperdrix wrote:
 >>> On Thu, May 07, 2015 at 08:54:31AM +0200, Stéphane ANCELOT wrote:
@@ -31,10 +31,12 @@ On 11/05/2015 16:14, Philippe Gerum wrote:
 >>>>      0"007.389| WARNING: [main] heapobj_init() failed for 470 bytes,
 >>>> raise
 >>>> --mem-pool-size?
+>>>
 >>> A command line option is nice, it allows you to do basically
 >>> anything you want by calling your program from a script. What is it
 >>> you want to do that can not be achieved this way?
 >>>
+>>
 >> If we don't want to call our application from a script to set
 >> appropriate Xenomai parameters, will supplying the --no-auto-init option
 >> to xeno-config allow us to set Xenomai run-time options to the desired
@@ -48,9 +50,14 @@ On 11/05/2015 16:14, Philippe Gerum wrote:
 >> question, but I am still coming up to speed on the new Xenomai 3
 >> architecture.
 >>
+>
 > No silly question for sure. These questions definitely illustrate
 > usability issues with respect to the init sequence which I'm working on.
 > I'll follow up on this asap.
 >
-Thanks
+
+Thanks, Philippe.
+
+-Jeff
+
 
