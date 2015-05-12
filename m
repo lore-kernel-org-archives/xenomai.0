@@ -1,12 +1,9 @@
-Date: Mon, 11 May 2015 21:26:45 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150511192645.GB3759@hermes.click-hack.org>
-References: <2769EB0871C23A4C8DB00D1218015E8E1B0CE61F@de08ex3008.global.ds.honeywell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2769EB0871C23A4C8DB00D1218015E8E1B0CE61F@de08ex3008.global.ds.honeywell.com>
-Subject: Re: [Xenomai] Signal not received
+From: Michael Smith <2michael.smith@gmail.com>
+Date: Tue, 12 May 2015 14:05:07 +0200
+Message-ID: <CANWkrRN33Hvv-ZLh5+op0mYE7gnuZVv-59nWeACSzF1kRR9=5A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] xeno-config packaging issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,40 +12,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Mann, Anthony M" <Anthony.Mann@Honeywell.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, May 11, 2015 at 07:04:05PM +0000, Mann, Anthony M wrote:
-> The code below uses POSIX and when compiled for a Linux kernel, it
-> works.  When the code is compiled to use the Cobalt real-time kernel, the
-> POSIX calls are wrapped (--posix).  Executing the program, the thread,
-> timer and semaphore work but the signal from the expired timer (SIGRTMIN)
-> is not delivered but is in the queue.  I had tried to unblock all signals
-> when the signal was detected in the queue.  That did not work either.
-> 
-> Also, when compiled for the Linux kernel, sigemptyset with sigsuspend
-> causes the main loop to suspend; however, the POSIX wrappped version,
-> sigsuspend did not suspend the loop.  Sigprocmask was needed to be call
-> first, then it suspended.  Since the SIGTRMIN was not received the main
-> goes no further.  However, when pressing ctrl-c, the SIGINT is received
-> and calls the kill_handler routine as intented.  Then the main loop
-> continues.
-> 
-> I am new to Xenomai and any suggestions on why the program is not
-> receiving the SIGRTMIN signal and how to correct it will be much
-> appreciated.
-> 
-> The system is setup with:
-> Ubuntu 14.04 LTS
-> vanilla kernel linux 3.14.33
-> ipipe-core-3.14.33-x86-8.patch
-> xenomai-3.0-rc4
-> Build args: --with-core=cobalt --enable-smp --enable-pshared
->             --host=x86_64-linux host_alias=x86_64-linux
+Hi
+I have compiled the newest 3.x HEAD (5e81f9e) form the GIT repository
+by creating Debian packages.
+And when those packages are installed after the compile there is a
+clash between the "xenomai-runtime" and the "libxenomai-dev" packages.
+Because "xeno-config" has been included both in packages.
 
-See:
-https://xenomai.org/migrating-from-xenomai-2-x-to-3-x/#Real-time_signals
+So as a result xeno-runtime that contains the testsuite and binaries
+located under /usr/bin/
+are not installed because /usr/bin/xeno-config have already been
+included in the libxenomai-dev
+package, and so the apt package manager aborts the install of xeno-runtime.
 
--- 
-					    Gilles.
+My architecture is as follows:
+Real-time used: Cobalt
+OS: Ubuntu 14.04
+Vanilla Kernel: 3.16
+Arch: x86_64
+
+I suspect some or other changes in the make files have created this
+conflict, because I have compiled a version older than rc3 previously,
+namely 590aa2a and there were no package
+issues like the above.
+
+Regards
+Michael
 
