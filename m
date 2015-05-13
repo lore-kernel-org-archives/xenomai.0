@@ -1,22 +1,15 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Wed, 13 May 2015 13:33:01 -0400
-Message-ID: <20150513173301.GB6169@csclub.uwaterloo.ca>
-References: <CAKC9m6cXp+ZQdZG2qCQA5+J2m0W-2hnLniL0wswfSu5aD32wwg@mail.gmail.com>
- <20150430201409.GA1993@hermes.click-hack.org>
- <20150430212151.GD24389@csclub.uwaterloo.ca>
- <20150430212749.GB1993@hermes.click-hack.org>
- <20150501134547.GF24389@csclub.uwaterloo.ca>
- <20150501135651.GE1993@hermes.click-hack.org>
- <20150501143631.GH24389@csclub.uwaterloo.ca>
- <20150501144428.GI1993@hermes.click-hack.org>
- <20150501153325.GJ24389@csclub.uwaterloo.ca>
- <20150513170156.GA6169@csclub.uwaterloo.ca>
+Date: Wed, 13 May 2015 20:06:13 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150513180613.GE3759@hermes.click-hack.org>
+References: <CAKC9m6cqL6vFttH3QJM9Z64YqHscF1QGCeP6dq5w=XepGDXgeQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <20150513170156.GA6169@csclub.uwaterloo.ca>
-Subject: Re: [Xenomai] Ipipe-core patched kernel fails to start when certain
- platform drivers are enabled
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAKC9m6cqL6vFttH3QJM9Z64YqHscF1QGCeP6dq5w=XepGDXgeQ@mail.gmail.com>
+Subject: Re: [Xenomai]
+ =?utf-8?b?SVJRIGZsb3cgaGFuZGxlcjog4oCcaGFuZGxlX2VkZ2Vf?=
+ =?utf-8?b?aXJx4oCdIHZzIOKAnGhhbmRsZV9sZXZlbF9pcnHigJ0=?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,33 +18,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Hongfei Cheng <hongfei@mperpetuo.com>
 Cc: xenomai@xenomai.org
 
-On Wed, May 13, 2015 at 01:01:56PM -0400, Lennart Sorensen wrote:
-> On Fri, May 01, 2015 at 11:33:25AM -0400, Lennart Sorensen wrote:
-> > There is some talk of a 50% or 12.5% safety margin, but that doesn't
-> > explain it either.  Looks like a bug somehow.
-> > 
-> > Your calculation looks right, the kernel's looks crazy.
+On Wed, May 13, 2015 at 12:55:46AM -0700, Hongfei Cheng wrote:
+> Hi All,
 > 
-> Trying to boot 3.14.39 I just saw:
+> In the document of "Porting Xenomai dual kernel to a new ARM SoC",
+> section "flow handler" states: If the flow handler is
+> “handle_edge_irq”, and the system locks up when the first interrupt
+> happens, try replacing “handle_edge_irq” with “handle_level_irq”.
 > 
-> [    0.040557] I-pipe, 6.147 MHz clocksource, wrap in 3000934451555157 ms
-> [    0.054082] sched_clock: 56 bits at 6MHz, resolution 162ns, wraps every 2794592043008ns
-> 
-> I wonder who could be right... :)
-> 
-> Of course then it gets stuck at
-> [    0.070615] Switching to timer-based delay loop
-> [    0.081432] Interrupt pipeline (release #9)
-> 
-> so I better figure out what I did wrong with this new version.  Time to
-> check the config.  It booted before I added ipipe to it.
+> Could anyone explain why “handle_edge_irq” can cause system to hang
+> while “handle_level_irq” doesn't? I searched the archives but failed
+> to find any discussion on this topic.
 
-Oh good, I managed to make it fail without ipipe enabled, so that's good.
-Not an ipipe problem I think, unless the ipipe patch is at fault.
+level irqs are acked and masked at interrupt controller level on
+entry, whereas edge interrupts are only acked. The Adeos patch
+unmasks the irqs at processor level after this initial ack and mask
+or ack. So, if the interrupt controller keeps the interrupt asserted
+at the processor level when the level stays the same (IOW, if the
+interrupt controller only supports the "level" behaviour), unmasking
+the interrupt line will cause the interrupt to trigger again, being
+ack again, etc... without any chance for the handler to ack the
+interrupt at device level. The fix is to use handle_level_irq so
+that the irq is masked at interrupt controller level before irqs are
+unmasked at processor level.
+
+This does not happen with an unpatched kernel, because irqs are not
+unmasked at processor level until the handler has had a chance to
+execute and ack the interrupt at device level.
 
 -- 
-Len Sorensen
+					    Gilles.
 
