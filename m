@@ -1,36 +1,53 @@
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Wed, 13 May 2015 13:01:56 -0400
+Message-ID: <20150513170156.GA6169@csclub.uwaterloo.ca>
+References: <20150430183147.GZ1993@hermes.click-hack.org>
+ <CAKC9m6cXp+ZQdZG2qCQA5+J2m0W-2hnLniL0wswfSu5aD32wwg@mail.gmail.com>
+ <20150430201409.GA1993@hermes.click-hack.org>
+ <20150430212151.GD24389@csclub.uwaterloo.ca>
+ <20150430212749.GB1993@hermes.click-hack.org>
+ <20150501134547.GF24389@csclub.uwaterloo.ca>
+ <20150501135651.GE1993@hermes.click-hack.org>
+ <20150501143631.GH24389@csclub.uwaterloo.ca>
+ <20150501144428.GI1993@hermes.click-hack.org>
+ <20150501153325.GJ24389@csclub.uwaterloo.ca>
 MIME-Version: 1.0
-Date: Wed, 13 May 2015 00:55:46 -0700
-Message-ID: <CAKC9m6cqL6vFttH3QJM9Z64YqHscF1QGCeP6dq5w=XepGDXgeQ@mail.gmail.com>
-From: Hongfei Cheng <hongfei@mperpetuo.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] =?utf-8?b?SVJRIGZsb3cgaGFuZGxlcjog4oCcaGFuZGxlX2VkZ2Vf?=
-	=?utf-8?b?aXJx4oCdIHZzIOKAnGhhbmRsZV9sZXZlbF9pcnHigJ0=?=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20150501153325.GJ24389@csclub.uwaterloo.ca>
+Subject: Re: [Xenomai] Ipipe-core patched kernel fails to start when certain
+ platform drivers are enabled
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
-List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
+List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
-List-Archive: <http://www.xenomai.org/pipermail/xenomai/>
+List-Archive: <http://xenomai.org/pipermail/xenomai/>
 List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
-List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
+List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hi All,
+On Fri, May 01, 2015 at 11:33:25AM -0400, Lennart Sorensen wrote:
+> There is some talk of a 50% or 12.5% safety margin, but that doesn't
+> explain it either.  Looks like a bug somehow.
+> 
+> Your calculation looks right, the kernel's looks crazy.
 
-In the document of "Porting Xenomai dual kernel to a new ARM SoC",
-section "flow handler" states: If the flow handler is
-=E2=80=9Chandle_edge_irq=E2=80=9D, and the system locks up when the first i=
-nterrupt
-happens, try replacing =E2=80=9Chandle_edge_irq=E2=80=9D with =E2=80=9Chand=
-le_level_irq=E2=80=9D.
+Trying to boot 3.14.39 I just saw:
 
-Could anyone explain why =E2=80=9Chandle_edge_irq=E2=80=9D can cause system=
- to hang
-while =E2=80=9Chandle_level_irq=E2=80=9D doesn't? I searched the archives b=
-ut failed
-to find any discussion on this topic.
+[    0.040557] I-pipe, 6.147 MHz clocksource, wrap in 3000934451555157 ms
+[    0.054082] sched_clock: 56 bits at 6MHz, resolution 162ns, wraps every 2794592043008ns
 
-Thanks!
-Hongfei
+I wonder who could be right... :)
+
+Of course then it gets stuck at
+[    0.070615] Switching to timer-based delay loop
+[    0.081432] Interrupt pipeline (release #9)
+
+so I better figure out what I did wrong with this new version.  Time to
+check the config.  It booted before I added ipipe to it.
+
+-- 
+Len Sorensen
 
