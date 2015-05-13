@@ -1,9 +1,11 @@
 MIME-Version: 1.0
-From: Michael Smith <2michael.smith@gmail.com>
-Date: Tue, 12 May 2015 14:05:07 +0200
-Message-ID: <CANWkrRN33Hvv-ZLh5+op0mYE7gnuZVv-59nWeACSzF1kRR9=5A@mail.gmail.com>
+Date: Wed, 13 May 2015 00:55:46 -0700
+Message-ID: <CAKC9m6cqL6vFttH3QJM9Z64YqHscF1QGCeP6dq5w=XepGDXgeQ@mail.gmail.com>
+From: Hongfei Cheng <hongfei@mperpetuo.com>
 Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] xeno-config packaging issue
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] =?utf-8?b?SVJRIGZsb3cgaGFuZGxlcjog4oCcaGFuZGxlX2VkZ2Vf?=
+	=?utf-8?b?aXJx4oCdIHZzIOKAnGhhbmRsZV9sZXZlbF9pcnHigJ0=?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,32 +14,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi
-I have compiled the newest 3.x HEAD (5e81f9e) form the GIT repository
-by creating Debian packages.
-And when those packages are installed after the compile there is a
-clash between the "xenomai-runtime" and the "libxenomai-dev" packages.
-Because "xeno-config" has been included both in packages.
+Hi All,
 
-So as a result xeno-runtime that contains the testsuite and binaries
-located under /usr/bin/
-are not installed because /usr/bin/xeno-config have already been
-included in the libxenomai-dev
-package, and so the apt package manager aborts the install of xeno-runtime.
+In the document of "Porting Xenomai dual kernel to a new ARM SoC",
+section "flow handler" states: If the flow handler is
+=E2=80=9Chandle_edge_irq=E2=80=9D, and the system locks up when the first i=
+nterrupt
+happens, try replacing =E2=80=9Chandle_edge_irq=E2=80=9D with =E2=80=9Chand=
+le_level_irq=E2=80=9D.
 
-My architecture is as follows:
-Real-time used: Cobalt
-OS: Ubuntu 14.04
-Vanilla Kernel: 3.16
-Arch: x86_64
+Could anyone explain why =E2=80=9Chandle_edge_irq=E2=80=9D can cause system=
+ to hang
+while =E2=80=9Chandle_level_irq=E2=80=9D doesn't? I searched the archives b=
+ut failed
+to find any discussion on this topic.
 
-I suspect some or other changes in the make files have created this
-conflict, because I have compiled a version older than rc3 previously,
-namely 590aa2a and there were no package
-issues like the above.
-
-Regards
-Michael
+Thanks!
+Hongfei
 
