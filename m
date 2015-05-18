@@ -1,13 +1,15 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Mon, 15 Jun 2015 13:04:17 +0200
-Message-ID: <2970048.iIsezngRJb@soho>
-In-Reply-To: <4e4a5c22efeb4b0332d46ad157e388aa.squirrel@sourcetrek.com>
-References: <1859656.Cz6t9ftYOG@soho>
- <4e4a5c22efeb4b0332d46ad157e388aa.squirrel@sourcetrek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Generating the documentation
+In-Reply-To: <20150513180613.GE3759@hermes.click-hack.org>
+References: <CAKC9m6cqL6vFttH3QJM9Z64YqHscF1QGCeP6dq5w=XepGDXgeQ@mail.gmail.com>
+ <20150513180613.GE3759@hermes.click-hack.org>
+Date: Mon, 18 May 2015 10:32:49 -0700
+Message-ID: <CAKC9m6edtqma0t4ddUpqker1Ofx5YDyV6TUXNY3EAZnxyDu2vQ@mail.gmail.com>
+From: Hongfei Cheng <hongfei@mperpetuo.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai]
+	=?utf-8?b?SVJRIGZsb3cgaGFuZGxlcjog4oCcaGFuZGxlX2VkZ2Vf?=
+	=?utf-8?b?aXJx4oCdIHZzIOKAnGhhbmRsZV9sZXZlbF9pcnHigJ0=?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,23 +21,51 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-RWwgRGlsbHVucywgMTUgZGUganVueSBkZSAyMDE1LCBhIGxlcyAxMTo0OTo0NiwgR2lsbGVzIENo
-YW50ZXBlcmRyaXggdmEgCmVzY3JpdXJlOgo+IExlb3BvbGQgUGFsb21vLUF2ZWxsYW5lZGEgd3Jv
-dGU6Cj4gPiBIaSwKPiAKPiA+IEkgdHJ5IHRvIGdlbmVyYXRlIHRoZSBkb2N1bWVudGF0aW9uICgy
-LjYuNCwgb2ZmaWNpYWwgdGFyYmFsbCkgdXNpbmc6Cj4gQWxzbywgc3BlbmRpbmcgdGltZSBvbiAy
-LjYgaXMgcHJvYmFibHkgYSB3YXN0ZSBvZiB0aW1lLiBUaGlzIGJyYW5jaCBpcyBpbgo+IGRlZXAg
-bWFpbnRlbmFuY2UgbW9kZSBub3cuIFdlIHdpbGwgcHJvYmFibHkgbm90IGFwcGx5IHBhdGNoZXMg
-dW5sZXNzIHRoZXkKPiBmaXggc29tZSBzZXJpb3VzIGJ1Z3MuCgpJIGtub3csIGJ1dCBBRkFJSyB0
-aGUgX29ubHlfIG9mZmljaWFsIHN0YWJsZSByZWxlYXNlIG9mIHhlbm9tYWkgaXMgMi42LjQuIApY
-ZW5vbWFpLTMgaXMgcmVsZWFzZSBjYW5kaWRhdGUuCgpMZW9wb2xkCgpbMV0gaHR0cDovL2Rvd25s
-b2FkLmduYS5vcmcveGVub21haS9zdGFibGUvbGF0ZXN0LwoKLS0gCi0tCkxpbnV4IFVzZXIgMTUy
-NjkyICAgICBHUEc6IDA1RjRBN0E5NDlBMkQ5QUEKQ2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0KQTogQmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhlIG9yZGVyIGlu
-IHdoaWNoIHBlb3BsZSBub3JtYWxseSByZWFkIHRleHQuClE6IFdoeSBpcyB0b3AtcG9zdGluZyBz
-dWNoIGEgYmFkIHRoaW5nPwpBOiBUb3AtcG9zdGluZy4KUTogV2hhdCBpcyB0aGUgbW9zdCBhbm5v
-eWluZyB0aGluZyBpbiBlLW1haWw/Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0t
-LS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVy
-ZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiA4MTkgYnl0ZXMKRGVz
-YzogVGhpcyBpcyBhIGRpZ2l0YWxseSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6IDxodHRwOi8v
-eGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTA2MTUvY2FjNGFh
-MGQvYXR0YWNobWVudC5zaWc+Cg==
+On Wed, May 13, 2015 at 11:06 AM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On Wed, May 13, 2015 at 12:55:46AM -0700, Hongfei Cheng wrote:
+>> Hi All,
+>>
+>> In the document of "Porting Xenomai dual kernel to a new ARM SoC",
+>> section "flow handler" states: If the flow handler is
+>> =E2=80=9Chandle_edge_irq=E2=80=9D, and the system locks up when the firs=
+t interrupt
+>> happens, try replacing =E2=80=9Chandle_edge_irq=E2=80=9D with =E2=80=9Ch=
+andle_level_irq=E2=80=9D.
+>>
+>> Could anyone explain why =E2=80=9Chandle_edge_irq=E2=80=9D can cause sys=
+tem to hang
+>> while =E2=80=9Chandle_level_irq=E2=80=9D doesn't? I searched the archive=
+s but failed
+>> to find any discussion on this topic.
+>
+> level irqs are acked and masked at interrupt controller level on
+> entry, whereas edge interrupts are only acked. The Adeos patch
+> unmasks the irqs at processor level after this initial ack and mask
+> or ack. So, if the interrupt controller keeps the interrupt asserted
+> at the processor level when the level stays the same (IOW, if the
+> interrupt controller only supports the "level" behaviour), unmasking
+> the interrupt line will cause the interrupt to trigger again, being
+> ack again, etc... without any chance for the handler to ack the
+> interrupt at device level. The fix is to use handle_level_irq so
+> that the irq is masked at interrupt controller level before irqs are
+> unmasked at processor level.
+>
+> This does not happen with an unpatched kernel, because irqs are not
+> unmasked at processor level until the handler has had a chance to
+> execute and ack the interrupt at device level.
+
+Gilles, thank you for the detailed explanation.
+
+For ARM Cortex-A9/A15/A57, can we make the following statements as to
+which irq flow handler can be used for a specific interrupt:
+1. An interrupt input is programmed as "level-sensitive" on the
+interrupt controller (GIC): only flow handler =E2=80=9Chandle_level_irq=E2=
+=80=9D
+should be used at the device driver level.
+2. An interrupt input is programmed as "edge-triggered" on the
+interrupt controller (GIC): either "edge" or "level" flow handler can
+be used at the device driver level.
+
+Hongfei
+
