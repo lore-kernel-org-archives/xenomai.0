@@ -1,13 +1,11 @@
-Date: Sun, 31 May 2015 08:30:48 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150531063048.GA4433@hermes.click-hack.org>
-References: <DUB121-W42011D0A38E8540A396B2C81C80@phx.gbl>
+Message-ID: <555BA2F4.4030106@techfak.uni-bielefeld.de>
+Date: Tue, 19 May 2015 22:54:12 +0200
+From: Robert Haschke <rhaschke@techfak.uni-bielefeld.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <DUB121-W42011D0A38E8540A396B2C81C80@phx.gbl>
-Subject: Re: [Xenomai] smp.c error on rc4
+Subject: [Xenomai] rtdm_driver.h fails to build: implicit declaration of
+	smp_mb__before_atomic_dec()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,26 +14,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: mobin Motallebizadeh <mobin.seven@live.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Sat, May 30, 2015 at 07:09:15PM +0000, mobin Motallebizadeh wrote:
-> I'm getting this error in making kernel( Xenomai 3.0 rc4 - ipipe patch 3.16 - kernel 3.16 - target: armv7)
-> arch/arm/kernel/smp.c: In function ‘ipi_timer’:arch/arm/kernel/smp.c:531:2: error: implicit declaration of function ‘’ [-Werror=implicit-function-declaration]cc1: some warnings being treated as errorsscripts/Makefile.build:257: recipe for target 'arch/arm/kernel/smp.o' failedmake[1]: *** [arch/arm/kernel/smp.o] Error 1make[1]: *** Waiting for unfinished jobs....Makefile:901: recipe for target 'arch/arm/kernel' failedmake: *** [arch/arm/kernel] Error 2
-> WHY? 		 	   		  
+I'm trying to build Xenomai 2.6.4 on linux 3.18.13 with i-pipe patch for 
+3.18.12.
+When enabling RTDM support, the compiler throws the following error:
 
-3.16 is not a version of I-pipe patch, it is the version of the
-Linux kernel it applies to.
-armv7 is vague, there are a lot of different armv7 arm cores and
-processors.
-The name of the function which is implicitly declared is missing.
-And the answer to "why", is certainly because you are using kernel
-configuration options that nobody else uses. But you do not provide
-that information either.
+In file included from ../kernel/xenomai/skins/posix/syscall.c:40:0:
+../include/xenomai/rtdm/rtdm_driver.h: In function ‘rtdm_context_unlock’:
+../include/xenomai/rtdm/rtdm_driver.h:587:2: error: implicit declaration 
+of function ‘smp_mb__before_atomic_dec’ 
+[-Werror=implicit-function-declaration]
+   smp_mb__before_atomic_dec();
+   ^
+cc1: some warnings being treated as errors
 
-So, given this characteristic lack of information, I am afraid
-it is impossible for us to answer your question.
+This function became deprecated in kernel 3.16 and was removed in 3.18.
 
--- 
-					    Gilles.
+Best, Robert
 
