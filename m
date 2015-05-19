@@ -1,13 +1,17 @@
-Message-ID: <55618C06.2040608@xenomai.org>
-Date: Sun, 24 May 2015 10:29:58 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <554B0C27.5010802@free.fr>
- <20150507090719.GC2099@hermes.click-hack.org> <554B651A.9000209@nta-inc.net>
-In-Reply-To: <554B651A.9000209@nta-inc.net>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] v3 heap mem-pool-size
+In-Reply-To: <20150518173654.GC10686@hermes.click-hack.org>
+References: <CAKC9m6cqL6vFttH3QJM9Z64YqHscF1QGCeP6dq5w=XepGDXgeQ@mail.gmail.com>
+ <20150513180613.GE3759@hermes.click-hack.org>
+ <CAKC9m6edtqma0t4ddUpqker1Ofx5YDyV6TUXNY3EAZnxyDu2vQ@mail.gmail.com>
+ <20150518173654.GC10686@hermes.click-hack.org>
+Date: Tue, 19 May 2015 10:23:36 -0700
+Message-ID: <CAKC9m6d025dA-8hZ=tRS86+RP9jomraT9MKvBBDdiBNo9DUmwQ@mail.gmail.com>
+From: Hongfei Cheng <hongfei@mperpetuo.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai]
+	=?utf-8?b?SVJRIGZsb3cgaGFuZGxlcjog4oCcaGFuZGxlX2VkZ2Vf?=
+	=?utf-8?b?aXJx4oCdIHZzIOKAnGhhbmRsZV9sZXZlbF9pcnHigJ0=?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,52 +20,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeff Webb <jeff.webb@nta-inc.net>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 05/07/2015 03:14 PM, Jeff Webb wrote:
-> On 05/07/2015 04:07 AM, Gilles Chanteperdrix wrote:
->> On Thu, May 07, 2015 at 08:54:31AM +0200, Stéphane ANCELOT wrote:
->>> Hi,
->>>
->>> Is there a better way to raise mem-pool-size other than specifying in
->>> cmdline ?
->>>
->>>     0"007.389| WARNING: [main] heapobj_init() failed for 470 bytes,
->>> raise
->>> --mem-pool-size?
+On Mon, May 18, 2015 at 10:36 AM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On Mon, May 18, 2015 at 10:32:49AM -0700, Hongfei Cheng wrote:
+>> On Wed, May 13, 2015 at 11:06 AM, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org> wrote:
+>> > On Wed, May 13, 2015 at 12:55:46AM -0700, Hongfei Cheng wrote:
+>> >> Hi All,
+>> >>
+>> >> In the document of "Porting Xenomai dual kernel to a new ARM SoC",
+>> >> section "flow handler" states: If the flow handler is
+>> >> =E2=80=9Chandle_edge_irq=E2=80=9D, and the system locks up when the f=
+irst interrupt
+>> >> happens, try replacing =E2=80=9Chandle_edge_irq=E2=80=9D with =E2=80=
+=9Chandle_level_irq=E2=80=9D.
+>> >>
+>> >> Could anyone explain why =E2=80=9Chandle_edge_irq=E2=80=9D can cause =
+system to hang
+>> >> while =E2=80=9Chandle_level_irq=E2=80=9D doesn't? I searched the arch=
+ives but failed
+>> >> to find any discussion on this topic.
+>> >
+>> > level irqs are acked and masked at interrupt controller level on
+>> > entry, whereas edge interrupts are only acked. The Adeos patch
+>> > unmasks the irqs at processor level after this initial ack and mask
+>> > or ack. So, if the interrupt controller keeps the interrupt asserted
+>> > at the processor level when the level stays the same (IOW, if the
+>> > interrupt controller only supports the "level" behaviour), unmasking
+>> > the interrupt line will cause the interrupt to trigger again, being
+>> > ack again, etc... without any chance for the handler to ack the
+>> > interrupt at device level. The fix is to use handle_level_irq so
+>> > that the irq is masked at interrupt controller level before irqs are
+>> > unmasked at processor level.
+>> >
+>> > This does not happen with an unpatched kernel, because irqs are not
+>> > unmasked at processor level until the handler has had a chance to
+>> > execute and ack the interrupt at device level.
 >>
->> A command line option is nice, it allows you to do basically
->> anything you want by calling your program from a script. What is it
->> you want to do that can not be achieved this way?
+>> Gilles, thank you for the detailed explanation.
 >>
-> 
-> If we don't want to call our application from a script to set
-> appropriate Xenomai parameters, will supplying the --no-auto-init option
-> to xeno-config allow us to set Xenomai run-time options to the desired
-> values by manually calling copperplate_init() from our application?  Are
-> the options that can be passed to copperplate_init() the ones described
-> here [1]?  Do these options apply to applications based on the POSIX
-> skin as well?  If so, I am slightly confused because the documentation
-> (e.g. [2], [3]) that states that all APIs except POSIX are based on the
-> Copperplate library, so it would seem that Copperplate related stuff
-> would not apply to POSIX applications.  I apologize if this is a silly
-> question, but I am still coming up to speed on the new Xenomai 3
-> architecture.
-> 
+>> For ARM Cortex-A9/A15/A57, can we make the following statements as to
+>> which irq flow handler can be used for a specific interrupt:
+>> 1. An interrupt input is programmed as "level-sensitive" on the
+>> interrupt controller (GIC): only flow handler =E2=80=9Chandle_level_irq=
+=E2=80=9D
+>> should be used at the device driver level.
+>> 2. An interrupt input is programmed as "edge-triggered" on the
+>> interrupt controller (GIC): either "edge" or "level" flow handler can
+>> be used at the device driver level.
+>
+> I believe on cortex A9, the GIC irqs are of the "fasteoi" type.
+> Which is a kind of level, but requires more patching of the irq
+> controller routines. Is not that code shared between 32 and 64 bits?
 
-There used to be an inconsistency regarding this, because POSIX apps did
-not share the same init sequence internally than non-POSIX ones. This
-has been fixed by recent changes, available from the master branch.
-The new (common) init sequence of all Xenomai applications is described
-in this document: http://xenomai.org/2015/05/application-setup-and-init/
+The GIC code is indeed shared between AArch32 and AArch64. However on
+our ARMv8 platform, only parts of the SPIs, 32~447, are initialized
+and mapped to fasteoi. The rest of the SPIs, 448~639, are for platform
+specific peripheral drivers. These drivers use handle_level_irq and
+handle_edge_irq as flow handlers.
 
-You may be interested in using the tunables:
-http://xenomai.org/2015/05/application-setup-and-init/#Configuration_and_runtime_tunables
+What we are seeing is that, when I-pipe is enabled, some of the
+platform specific peripheral drivers receive numerous interrupts which
+are nonexistent when I-pipe is disabled. At first glance, such problem
+appears to match the pattern of using "handle_edge_irq" for
+level-triggered interrupts at the GIC. However the number of the
+"bogus" interrupts (per second) are only in the 100s. The handlers in
+the device drivers still have chance to process these interrupts.
 
-I have checked this approach with a large, real world application, which
-looks good so far. Please let me know if that addresses your
-requirements as well. Thanks,
+Here is a partial call stack:
+<peripheral-driver-irq-mask>+0xc/0x18
+gic_hold_irq+0xb8/0x134
+__ipipe_ack_fasteoi_irq+0x14/0x20
+__ipipe_dispatch_irq+0x90/0x2a8
+__ipipe_grab_irq+0x5c/0x74
 
--- 
-Philippe.
+Does this call stack look correct to you? Any idea as to the cause of
+such problem?
+
+Thanks,
+Hongfei
 
