@@ -1,13 +1,13 @@
-Date: Thu, 21 May 2015 23:24:32 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150521212432.GQ10686@hermes.click-hack.org>
-References: <20150521221811.1cc69dcd@crunchbang>
+Message-ID: <555AFAC1.5000003@xenomai.org>
+Date: Tue, 19 May 2015 10:56:33 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20150521221811.1cc69dcd@crunchbang>
-Subject: Re: [Xenomai] Raspberry Pi + Xenomai doesn't compile
+References: <CANWkrRN33Hvv-ZLh5+op0mYE7gnuZVv-59nWeACSzF1kRR9=5A@mail.gmail.com>
+ <CANWkrRP0Fi8bn2FtDdmX54BGH3HBbfkLUsqc7ZbO+BqP6TJu9A@mail.gmail.com>
+In-Reply-To: <CANWkrRP0Fi8bn2FtDdmX54BGH3HBbfkLUsqc7ZbO+BqP6TJu9A@mail.gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] xeno-config packaging issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,66 +16,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marc =?utf-8?B?TWFyw60=?= <5.markmb.5@gmail.com>
-Cc: xenomai@xenomai.org
+To: Michael Smith <2michael.smith@gmail.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thu, May 21, 2015 at 10:18:11PM +0200, Marc Marí wrote:
-> Hello
+On 05/19/2015 10:50 AM, Michael Smith wrote:
+> On Tue, May 12, 2015 at 2:05 PM, Michael Smith <2michael.smith@gmail.com> wrote:
+>> Hi
+>> I have compiled the newest 3.x HEAD (5e81f9e) form the GIT repository
+>> by creating Debian packages.
+>> And when those packages are installed after the compile there is a
+>> clash between the "xenomai-runtime" and the "libxenomai-dev" packages.
+>> Because "xeno-config" has been included both in packages.
+>>
+>> So as a result xeno-runtime that contains the testsuite and binaries
+>> located under /usr/bin/
+>> are not installed because /usr/bin/xeno-config have already been
+>> included in the libxenomai-dev
+>> package, and so the apt package manager aborts the install of xeno-runtime.
+>>
+>> My architecture is as follows:
+>> Real-time used: Cobalt
+>> OS: Ubuntu 14.04
+>> Vanilla Kernel: 3.16
+>> Arch: x86_64
+>>
+>> I suspect some or other changes in the make files have created this
+>> conflict, because I have compiled a version older than rc3 previously,
+>> namely 590aa2a and there were no package
+>> issues like the above.
+>>
+>> Regards
+>> Michael
 > 
-> I'm trying to put Xenomai 2.6.4 on top of a Raspberry Pi model B with
-> kernel version 3.8.13. In theory, it should be straightforward, but I
-> don't get it to compile, and I don't know if I'm missing something
-> vital or something is broken.
+> I have found the issue on the problem listed above.
+> The commit (8871363..) that was made on 2015-02-26 was the issue.
+> I added the lines back in that was removed in debian/rules on that commit,
+> into the newest git HEAD and all the packages compiled and installed
+> correctly as expected.
 > 
-> This is what I executed:
+> I don't have the bigger picture about why the changes were made on
+> 8871363, but on my
+> system it broke the package install mechanism, and I was unable to
+> install xeno-runtime as a result.
+> So I'm just reporting what I found.
 > 
-> $ git clone git@github.com:raspberrypi/linux.git
-> $ mv linux rpi-xenomai
-> $ git checkout rpi-3.8.y
-> $ patch -p1 -i \
-> ../xenomai-2.6.4/ksrc/arch/arm/patches/raspberry/ipipe-core-3.8.13-raspberry-pre-2.patch
-> $ ../xenomai-2.6.4/scripts/prepare-kernel.sh --arch=arm --linux=./ \
-> --adeos=../xenomai-2.6.4/ksrc/arch/arm/patches/ipipe-core-3.8.13-arm-4.patch
-> $ patch -p1 -i \
-> ../xenomai-2.6.4/ksrc/arch/arm/patches/raspberry/ipipe-core-3.8.13-raspberry-post-2.patch
-> $ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- bcmrpi_defconfig
-> $ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-
-> 
-> I get this output:
-> 
-> kernel/ipipe/core.c: In function ‘ipipe_probe_kernel_read’:
-> kernel/ipipe/core.c:1748:2: error: implicit declaration of function
-> ‘get_fs’ [-Werror=implicit-function-declaration]
->   mm_segment_t old_fs = get_fs();
->   ^
-> kernel/ipipe/core.c:1750:2: error: implicit declaration of function
-> ‘set_fs’ [-Werror=implicit-function-declaration]
->   set_fs(KERNEL_DS);
->   ^
-> kernel/ipipe/core.c:1750:9: error: ‘KERNEL_DS’ undeclared (first use in
-> this function)
->   set_fs(KERNEL_DS);
->          ^
-> kernel/ipipe/core.c:1750:9: note: each undeclared identifier is
-> reported only once for each function it appears in
-> kernel/ipipe/core.c:1753:2: error: implicit declaration of function
-> ‘__copy_from_user_inatomic’ [-Werror=implicit-function-declaration]
->   ret = __copy_from_user_inatomic(dst,
->   ^
-> kernel/ipipe/core.c: In function ‘ipipe_probe_kernel_write’:
-> kernel/ipipe/core.c:1767:9: error: ‘KERNEL_DS’ undeclared (first use in
-> this function)
->   set_fs(KERNEL_DS);
->          ^
-> kernel/ipipe/core.c:1770:2: error: implicit declaration of function
-> ‘__copy_to_user_inatomic’ [-Werror=implicit-function-declaration]
->   ret = __copy_to_user_inatomic((__force void __user *)dst, src, size);
 
-This part of the code is compiled conditionally if CONFIG_KGDB is
-enabled. Have you tried turning KGDB off? Chances are, nobody ever
-tried running Xenomai with KGDB on ARM, so, I doubt it has any
-chance to work anyway.
+xeno-config should be present in the base package and dropped from the
+-dev one, this may be the issue.
+
 
 -- 
-					    Gilles.
+Philippe.
 
