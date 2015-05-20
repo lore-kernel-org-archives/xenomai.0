@@ -1,15 +1,13 @@
-Date: Thu, 14 May 2015 18:28:31 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150514162831.GH3759@hermes.click-hack.org>
-References: <20150513203301.GC6169@csclub.uwaterloo.ca>
- <20150513203743.GG3759@hermes.click-hack.org>
- <20150513203833.GD6169@csclub.uwaterloo.ca>
- <20150514162351.GE6169@csclub.uwaterloo.ca>
+Message-ID: <555CCA71.4010905@zultron.com>
+Date: Wed, 20 May 2015 12:54:57 -0500
+From: John Morris <john@zultron.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20150514162351.GE6169@csclub.uwaterloo.ca>
-Subject: Re: [Xenomai] 3.14 hangs with ipipe patch applied
+References: <555C2BE9.3020001@zultron.com>
+ <20150520164005.GJ10686@hermes.click-hack.org> <555CC91A.9090901@zultron.com>
+In-Reply-To: <555CC91A.9090901@zultron.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] 3.0 packaging fixes
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,51 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Thu, May 14, 2015 at 12:23:51PM -0400, Lennart Sorensen wrote:
-> On Wed, May 13, 2015 at 04:38:33PM -0400, Lennart Sorensen wrote:
-> > On Wed, May 13, 2015 at 10:37:43PM +0200, Gilles Chanteperdrix wrote:
-> > > On Wed, May 13, 2015 at 04:33:01PM -0400, Lennart Sorensen wrote:
-> > > > Any suggestion for what part of the code to look at to explain what
-> > > > could be happening right after the timer is enabled?
-> > > 
-> > > Sorry, nothing more to suggest than what is already in the porting guide.
-> > 
-> > I am trying to check that the 3.12 and 3.14 configs don't have some
-> > stupid difference I missed.
-> 
-> OK it is getting stuck here:
-> 
-> static bool hvc_dcc_check(void)
-> {
->         unsigned long time = jiffies + (HZ / 10);
-> 
->         /* Write a test character to check if it is handled */
->         __dcc_putchar('\n');
-> 
-> // it gets here
->         while (time_is_after_jiffies(time)) {
->                 if (!(__dcc_getstatus() & DCC_STATUS_TX))
->                         return true;
->         }
-> // it never gets here
-> 
->         return false;
-> }
-> 
-> Any idea how the ipipe patch (even with CONFIG_IPIPE=n) causes that look
-> to get stuck forever?
 
-The DCC should not be used with SMP for the obvious reason shown by
-this code. I observed bugs on Zynq without the I-pipe patch.
 
-Now the second obvious thing is that if time_is_after_jiffies() does
-not make progress, it is because the timer does not tick. Once
-again, how to debug this is explained in the troubleshooting section
-of the porting guide.
+On 05/20/2015 12:49 PM, John Morris wrote:
+>
+>
+> On 05/20/2015 11:40 AM, Gilles Chanteperdrix wrote:
+>> On Wed, May 20, 2015 at 01:38:33AM -0500, John Morris wrote:
+>>> I needed the top 5 commits here to build 3.0 packages:
+>>>
+>>>      https://github.com/zultron/xenomai
+>>>
+>>> Pick them or not, as you please.  If you prefer them in email, let me
+>>> know.
+>>
+>> I you could put a link which lists clearly the commits you are
+>> talking about, it would make looking at them simpler. But the last
+>> commit, which readds autoreconf has already been discussed on this
+>> list. We do not want that.
+>
+> Ok.  The other four:
+>
+> https://github.com/zultron/xenomai/commit/9e870cf1
 
--- 
-					    Gilles.
+> https://github.com/zultron/xenomai/commit/2253220c
+I'm sure 2253220c will be disagreeable, and it's incorrect, since 
+Xenomai has switched to `3.0 (native)` format packaging.  Please just 
+take it as a reminder to update the version in `debian/changelog`.
+
+
+> https://github.com/zultron/xenomai/commit/25fb98b6
+> https://github.com/zultron/xenomai/commit/d95a071c
+>
+> Thanks-
+>      John
 
