@@ -1,11 +1,9 @@
-From: "Lopes, Alexandre" <alexandre.lopes.ext@zeiss.com>
-Date: Thu, 11 Jun 2015 10:29:09 +0000
-Message-ID: <79A9E4882C44D44FA53B5AB15E6198011385C369@ADEERL01SMS001.cznet.zeiss.org>
-Content-Language: de-DE
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: [Xenomai] init failed code -19 on Cyclone V SoC
+Date: Wed, 20 May 2015 11:53:46 +0200
+Message-ID: <CAD6zzEn4imLcrGfSu-Ehrs_L3Kyf3DM_Fhb4NuQREZ4xszbxpg@mail.gmail.com>
+From: Marco Baracchi <cormabara@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] hrtimer negative next event
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,53 +14,106 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello,
+We are using kernel *linux 3.0.35*, branch *imx_3.0.35_4.1.0* with
+patches *adeos-xenomai
+2.6.4* for *mxc* on a freescale imx6 single core and we have  a problem
+with hrtimer: sometimes after a couple of hour our periodic task inside
+Xenomai blocks. checking inside /proc path we  found:
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-I am trying to get Xenomai 3.0 rc4 with the 3.18.12 Linux Kernel and the=20
-corresponding ipipe patch to work on an ARM SoC.
-The device in question is a MitySoM module which is based on the Cyclone V
-from Altera and contains a dual core ARM Cortex A9.
+~$ cat /proc/timer_list
+Timer List Version: v0.6
+HRTIMER_MAX_CLOCK_BASES: 3
+now at 23036522464643 nsecs
 
-I have followed the "Porting Xenomai dual kernel to a new ARM SoC"=20
-guide. Even though Linux boots without any  problems, Xenomai is not=20
-working.
+cpu: 0
+ clock 0:
+  .base:       80bac120
+  .index:      0
+  .resolution: 10000000 nsecs
+  .get_time:   ktime_get
+active timers:
+ #0: <8da95ad0>, hrtimer_wakeup, S:01
+* # expires at 21797170078601-21797175078598 nsecs [in -1239352386042 to
+-1239347386045 nsecs]*
+ #1: <8d9bbad0>, hrtimer_wakeup, S:01
+* # expires at 22305508502700-22305508552700 nsecs [in -731013961943 to
+-731013911943 nsecs]*
+ #2: <8d9adad0>, hrtimer_wakeup, S:01
+* # expires at 22306066149366-22306066711361 nsecs [in -730456315277 to
+-730455753282 nsecs]*
+ clock 1:
+  .base:       80bac158
+  .index:      1
+  .resolution: 10000000 nsecs
+  .get_time:   ktime_get_real
+active timers:
+ clock 2:
+  .base:       80bac190
+  .index:      2
+  .resolution: 10000000 nsecs
+  .get_time:   ktime_get_boottime
+active timers:
+  .nohz_mode      : 1
+  .idle_tick      : 23940000000 nsecs
+  .tick_stopped   : 0
+  .idle_jiffies   : 4294939689
+  .idle_calls     : 818
+  .idle_sleeps    : 262
+  .idle_entrytime : 23934848677 nsecs
+  .idle_waketime  : 23933040680 nsecs
+  .idle_exittime  : 23933071013 nsecs
+  .idle_sleeptime : 5144197445 nsecs
+  .iowait_sleeptime: 2999951898 nsecs
+  .last_jiffies   : 4294939689
+  .next_jiffies   : 4294939690
+  .idle_expires   : 24000000000 nsecs
+jiffies: 2149406
 
-The output of dmesg | grep -E 'Xenomai|I-pipe' is the following:
 
-[    0.000000] I-pipe, 200.000 MHz timer
-[    0.123073] I-pipe, 200.000 MHz timer
-[    0.249682] [Xenomai] scheduling class idle registered.
-[    0.249689] [Xenomai] scheduling class rt registered.
-[    0.249758] I-pipe: high-resolution clock not working
-[    0.249789] [Xenomai] init failed, code -19
+Tick Device: mode:     1
+Per CPU device: 0
+Clock Event Device: mxc_timer1
+ max_delta_ns:   4294967295
+ min_delta_ns:   85000
+ mult:           1
+ shift:          0
+ mode:           3
+ next_event:     21794070000000 nsecs
+ set_next_event: xnarch_next_htick_shot
+ set_mode:       xnarch_switch_htick_mode
+ event_handler:  tick_nohz_handler
+ retries:        0
 
-Which seems to indicate a problem with the timer.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-On my device tree (which is already upstream) the smp_twd timer seems to=20
-be properly registered (socfpga.dtsi):
+seems the hrclock receive a negative next event.
 
-timer@fffec600 {
-	compatible =3D "arm,cortex-a9-twd-timer";
-	reg =3D <0xfffec600 0x100>;
-	interrupts =3D <1 13 0xf04>;
-	clocks =3D <&mpu_periph_clk>;
-};
+Inside configuration:
 
-I have also disabled CONFIG_CPU_FREQ, CONFIG_CPU_IDLE,=20
-CONFIG_CC_STACKPROTECTOR, CONFIG_KGDB as well as hibernation
-and sleep support and I have enabled CONFIG_IPIPE_ARM_KUSER_TSC
-(it doesn't compile without it, anyway, so I am sure the symbol is
-selected).
-I have as well enabled the "High Resolution Timer Support" on the Kernel.
+CONFIG_IPIPE yes
+CONFIG_SMP is not set
 
-As I am rather new to Xenomai, I am clueless of where the problem lies.
-I had no problems setting it up on x86 systems, but on SoCs this seems
-to be a totally different business...
+We check with CONFIG_HIGH_RES_TIMERS enabled and disabled but the problem
+still persist
 
-If anybody has some idea of how I can solve this, I would be greatly=20
-appreciated.
 
-Thanks,
+We go to check inside kernel and we found:
 
-Alexandre
+static int v2_set_next_event(unsigned long evt,
+      struct clock_event_device *unused)
+{
+unsigned long tcmp;
 
+tcmp = __raw_readl(timer_base + V2_TCN) + evt;
+
+__raw_writel(tcmp, timer_base + V2_TCMP);
+
+return evt < 0x7fffffff &&
+(int)(tcmp - __raw_readl(timer_base + V2_TCN)) < 0 ?
+-ETIME : 0;
+}
+
+in this function a negative value should already still trapped.
+
+Can someone help us
