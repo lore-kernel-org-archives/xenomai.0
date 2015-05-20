@@ -1,18 +1,14 @@
-From: "Lopes, Alexandre" <alexandre.lopes.ext@zeiss.com>
-Date: Fri, 12 Jun 2015 13:14:36 +0000
-Message-ID: <79A9E4882C44D44FA53B5AB15E6198011385D4A8@ADEERL01SMS001.cznet.zeiss.org>
-References: <79A9E4882C44D44FA53B5AB15E6198011385C369@ADEERL01SMS001.cznet.zeiss.org>
- <b692bb78ab6f887dfd41f71655a0a205.squirrel@sourcetrek.com>
- <44y4jq71ku.fsf@be-well.ilk.org>
- <650830a42485b39f0a0443dcb4c5c962.squirrel@sourcetrek.com>
- <79A9E4882C44D44FA53B5AB15E6198011385D400@ADEERL01SMS001.cznet.zeiss.org>
- <8f7e2c2ccbb9edd9f8c491ee09d2e096.squirrel@sourcetrek.com>
-In-Reply-To: <8f7e2c2ccbb9edd9f8c491ee09d2e096.squirrel@sourcetrek.com>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Paul <paul_c@tuxcnc.org>
+Date: Wed, 20 May 2015 11:11:20 +0100
+References: <CAD6zzEn4imLcrGfSu-Ehrs_L3Kyf3DM_Fhb4NuQREZ4xszbxpg@mail.gmail.com>
+In-Reply-To: <CAD6zzEn4imLcrGfSu-Ehrs_L3Kyf3DM_Fhb4NuQREZ4xszbxpg@mail.gmail.com>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] init failed code -19 on Cyclone V SoC
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <201505201111.20347.paul_c@tuxcnc.org>
+Subject: Re: [Xenomai] hrtimer negative next event
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,68 +17,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-PiAtLS0tLVVyc3Byw7xuZ2xpY2hlIE5hY2hyaWNodC0tLS0tDQo+IFZvbjogR2lsbGVzIENoYW50
-ZXBlcmRyaXggW21haWx0bzpnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZ10NCj4gR2Vz
-ZW5kZXQ6IERvbm5lcnN0YWcsIDExLiBKdW5pIDIwMTUgMTk6MzUNCj4gQW46IExvcGVzLCBBbGV4
-YW5kcmUNCj4gQ2M6IEdpbGxlcyBDaGFudGVwZXJkcml4OyBMb3dlbGwgR2lsYmVydDsgeGVub21h
-aUB4ZW5vbWFpLm9yZw0KPiBCZXRyZWZmOiBSZTogQVc6IFtYZW5vbWFpXSBpbml0IGZhaWxlZCBj
-b2RlIC0xOSBvbiBDeWNsb25lIFYgU29DDQo+IA0KPiBUaGUgTGludXggbWFpbmxpbmUgY29kZSBy
-ZWZ1c2VzIHRvIHN0YXJ0IHRoZSBnbG9iYWwgdGltZXIgd2l0aCBvbGQNCj4gcmV2aXNpb25zIG9m
-IHRoZSBjb3J0ZXggQTkgY29yZSB3aGljaCBnbG9iYWwgdGltZXIgaXMgbm90IGV4YWN0bHkgdGhl
-IHNhbWUNCj4gYXMgd2l0aCBuZXdlciByZXZpc2lvbnMgKHRoZXJlIGlzIGEgZGlmZmVyZW5jZSBp
-biB3aGF0IGNvbmRpdGlvbiB0cmlnZ2Vycw0KPiB0aGUgdGltZXIgaW50ZXJydXB0IHdoaWNoIG1h
-a2UgaXQgcG9zc2libGUgZm9yIHRoZSBvbGQgcmV2aXNpb25zIHRpbWVyIHRvDQo+IG5vdCByZWNl
-aXZlIGFuIGludGVycnVwdCBpZiB0aGUgcHJvZ3JhbW1lZCBkZWxheSBpcyB0b28gc2hvcnQsIHdo
-ZXJlYXMgaXQNCj4gY2FuIG5vdCBoYXBwZW4gd2l0aCBuZXdlciB2ZXJzaW9ucykuIFNvLCB0aGUg
-U09DcyBpbiBtYWlubGluZSBiYXNlZCBvbg0KPiBzdWNoIG9sZCB2ZXJzaW9ucyBkbyBub3QgZXZl
-biBib3RoZXIgdG8gZGVjbGFyZSB0aGUgZ2xvYmFsIHRpbWVyIHJlZ2lzdGVycw0KPiBpbiB0aGUg
-RFQuDQo+IA0KDQpJIHNlZS4gSSd2ZSBub3RpY2VkIHRoZSBEVFMgZm9yIHRoZSBaeW5xLTcwMDAg
-ZG9lcyBoYXZlIGEgbm9kZSBmb3IgdGhlDQpnbG9iYWwgdGltZXIuIFNpbmNlIEkgYmVsaWV2ZSB0
-aGUgQ3ljbG9uZSBWIGFuZCB0aGUgWnlucS03MDAwIHVzZSBpZGVudGljYWwNCkNvcnRleCBBOSBy
-ZXZpc2lvbnMsIHRoZSByZWFzb24gbWlnaHQgdGhlbiBiZSB0aGF0IEFsdGVyYSBuZXZlciBwdXNo
-ZWQgZm9yIGl0DQooc3VwcG9ydGVkIGJ5IHRoZSBmYWN0IHRoYXQgdGhleSBkb24ndCB1c2UgaXQg
-ZXZlbiBpbiB0aGVpciB2ZW5kb3Itc3BlY2lmaWMNCktlcm5lbCwgbGlrZSBJIHJlcGxpZWQgdG8g
-TG93ZWxsKQ0KDQo+IFRoZSBJLXBpcGUgY2xvY2sgc291cmNlIGRvZXMgbm90IGNhcmUgYWJvdXQg
-dGhlIHRpbWVyLCBpdCBvbmx5IG5lZWRzIHRoZQ0KPiBmcmVlIHJ1bm5pbmcgY291bnRlciwgYW5k
-IGFjdHVhbGx5IGhhcyBiZWVuIHVzaW5nIGl0IGxvbmcgYmVmb3JlIHRoZSBhcm0NCj4gZ2xvYmFs
-IHRpbWVyIGRyaXZlciB3YXMgbWVyZ2VkLiBUaGlzIGZyZWUgcnVubmluZyBjb3VudGVyIHdvcmtz
-IGZpbmUgaW4NCj4gYm90aCBjYXNlcyAoYW5kIGhhcyBhbiB1bnBhcmFsbGVsZWQgcmVzb2x1dGlv
-biBhbmQgbGF0ZW5jeSwgd2hpY2ggbWFrZXMgaXQNCj4gaW50ZXJlc3RpbmcgZm9yIGVtdWxhdGlu
-ZyBhIHRzYyksIHNvLCBJIGhhdmUgcGF0Y2hlZCB1cCB0aGUgZ2xvYmFsIHRpbWVyDQo+IGNvZGUg
-dG8ga2VlcCB0aGUgY2xvY2tzb3VyY2UgZXZlbiB3aXRoIG9sZCByZXZpc2lvbnMgYW5kIG9ubHkg
-c2tpcCB0aGUNCj4gY2xvY2tldmVudCBkZXZpY2UgcmVnaXN0cmF0aW9uLCBzbyB0aGF0IHdlIGNh
-biBhZGQgdGhlIGdsb2JhbCB0aW1lcg0KPiByZWdpc3RlciBkZWNsYXJhdGlvbnMgaW4gRFQgYW5k
-IGhhdmUgdGhlIGNsb2Nrc291cmNlIHdpdGhvdXQgdGhlIHRpbWVyLg0KPiBCdXQgdGhpcyBpcyBh
-IGhhY2ssIHJlYWxseSwgaXQgbWVhbnMgdGhhdCB3ZSBoYXZlIHRvIGFkZCB0aGUgRFQgZGF0YSBp
-bg0KPiB0aGUgSS1waXBlIHBhdGNoLCBhbmQgdGhpcyBpcyBnb2luZyB0byBieXRlIHVzIHdoZW4g
-bWFpbmxpbmUgZGVjaWRlcyB0bw0KPiByZXN0cnVjdHVyZSB0aGUgZ2xvYmFsIHRpbWVyIHN1cHBv
-cnQuDQoNClJpZ2h0LCBhZGRpbmcgdGhlIERUUyBub2RlcyBpbiB0aGUgSS1waXBlIHBhdGNoIHNv
-dW5kcyBmYXIgZnJvbSBpZGVhbC4NCkluIGFueSBjYXNlLCBzaW5jZSB0aGF0J3MgaG93IGl0J3Mg
-YmVpbmcgZG9uZSBhdG0sIGhlcmUncyBhIHBhdGNoIHdoaWNoIA0Kc2hvdWxkIHdvcmsgb24gYW55
-IG9mIHRoZSBBbHRlcmEncyBDb3J0ZXggQTkgYmFzZWQgU29DcyAoQ3ljbG9uZSBhbmQgQXJyaWEp
-Og0KDQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT0NCg0KRnJvbSBmZTdjMWZmZjVhNDA0ZGFhMjg0ZjJmYzAyNTNjNDRjNjg5
-YmVlYjU0IE1vbiBTZXAgMTcgMDA6MDA6MDAgMjAwMQ0KRnJvbTogQWxleGFuZHJlIExvcGVzIDxh
-bGV4YW5kcmUubG9wZXMuZXh0QHplaXNzLmNvbT4NCkRhdGU6IEZyaSwgMTIgSnVuIDIwMTUgMTU6
-MDI6NTMgKzAyMDANClN1YmplY3Q6IFtQQVRDSF0gRFQgQ29ydGV4IEE5IGdsb2JhbCB0aW1lciBm
-b3IgQWx0ZXJhIFNvQ3MNCg0KLS0tDQogYXJjaC9hcm0vYm9vdC9kdHMvc29jZnBnYS5kdHNpIHwg
-ICAgOSArKysrKysrKysNCiAxIGZpbGUgY2hhbmdlZCwgOSBpbnNlcnRpb25zKCspDQoNCmRpZmYg
-LS1naXQgYS9hcmNoL2FybS9ib290L2R0cy9zb2NmcGdhLmR0c2kgYi9hcmNoL2FybS9ib290L2R0
-cy9zb2NmcGdhLmR0c2kNCmluZGV4IDQ0NzJmZDkuLjI1MDc0NTUgMTAwNjQ0DQotLS0gYS9hcmNo
-L2FybS9ib290L2R0cy9zb2NmcGdhLmR0c2kNCisrKyBiL2FyY2gvYXJtL2Jvb3QvZHRzL3NvY2Zw
-Z2EuZHRzaQ0KQEAgLTY0Nyw2ICs2NDcsMTUgQEANCiAgICAgICAgICAgICAgICAgICAgICAgIGNs
-b2NrcyA9IDwmbXB1X3BlcmlwaF9jbGs+Ow0KICAgICAgICAgICAgICAgIH07DQoNCisgICAgICAg
-ICAgICAgICAvKiBHbG9iYWwgdGltZXIgKi8NCisgICAgICAgICAgICAgICB0aW1lckBmZmZlYzIw
-MCB7DQorICAgICAgICAgICAgICAgICAgICAgICBjb21wYXRpYmxlID0gImFybSxjb3J0ZXgtYTkt
-Z2xvYmFsLXRpbWVyIjsNCisgICAgICAgICAgICAgICAgICAgICAgIHJlZyA9IDwweGZmZmVjMjAw
-IDB4MjA+Ow0KKyAgICAgICAgICAgICAgICAgICAgICAgaW50ZXJydXB0cyA9IDwxIDExIDB4ZjA0
-PjsNCisgICAgICAgICAgICAgICAgICAgICAgIGNsb2NrcyA9IDwmbXB1X3BlcmlwaF9jbGs+Ow0K
-KyAgICAgICAgICAgICAgIH07DQorDQorDQogICAgICAgICAgICAgICAgdGltZXIwOiB0aW1lcjBA
-ZmZjMDgwMDAgew0KICAgICAgICAgICAgICAgICAgICAgICAgY29tcGF0aWJsZSA9ICJzbnBzLGR3
-LWFwYi10aW1lciI7DQogICAgICAgICAgICAgICAgICAgICAgICBpbnRlcnJ1cHRzID0gPDAgMTY3
-IDQ+Ow0KLS0gDQoxLjcuOS41DQoNCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0KDQpBbGV4YW5kcmUNCg==
+On Wednesday 20 May 2015, Marco Baracchi wrote:
+> We are using kernel *linux 3.0.35*, branch *imx_3.0.35_4.1.0* with
+> patches *adeos-xenomai
+> 2.6.4* for *mxc* on a freescale imx6 single core and we have =A0a
+> problem with hrtimer: sometimes after a couple of hour our periodic
+> task inside Xenomai blocks. checking inside /proc path we =A0found:
+> ---------------------------------------------------------------------
+>----------------------------------------------------------------------
+>-------------------
+>
+> ~$ cat /proc/timer_list
+> Timer List Version: v0.6
+> HRTIMER_MAX_CLOCK_BASES: 3
+> now at 23036522464643 nsecs
+>
+> cpu: 0
+> =A0clock 0:
+> =A0 .base: =A0 =A0 =A0 80bac120
+> =A0 .index: =A0 =A0 =A00
+> =A0 .resolution: 10000000 nsecs
+> =A0 .get_time: =A0 ktime_get
+> active timers:
+> =A0#0: <8da95ad0>, hrtimer_wakeup, S:01
+> * # expires at 21797170078601-21797175078598 nsecs [in -1239352386042
+> to -1239347386045 nsecs]*
+[...]
+>-------------------
+>
+> seems the hrclock receive a negative next event.
+
+
+If you look at the print_timer() function found in=20
+kernel/time/timer_list.c, the last two values are cast to a long long.=20
+Nothing to worry about, but perhaps an issue that should be addressed=20
+via the linux kernel mailing list.
 
