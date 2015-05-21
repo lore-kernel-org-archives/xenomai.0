@@ -1,12 +1,12 @@
-Message-ID: <555D7C73.8030905@basystemes.fr>
-Date: Thu, 21 May 2015 08:34:27 +0200
-From: Thierry Bultel <thierry.bultel@basystemes.fr>
+Message-ID: <555DCA94.1070909@xenomai.org>
+Date: Thu, 21 May 2015 14:07:48 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <555D77F6.7030007@basystemes.fr>
-In-Reply-To: <555D77F6.7030007@basystemes.fr>
-Content-Type: text/plain; charset=utf-8; format=flowed
+References: <555D77F6.7030007@basystemes.fr> <555D7C73.8030905@basystemes.fr>
+In-Reply-To: <555D7C73.8030905@basystemes.fr>
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Are concurrent writes to XDDP sockets allowed ?
+Subject: Re: [Xenomai] Are concurrent writes to XDDP sockets allowed ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,23 +15,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: =?UTF-8?B?Q8OpbGluZQ==?= <celine.leberre.prestataire@basystemes.fr>
+To: Thierry Bultel <thierry.bultel@basystemes.fr>, xenomai@xenomai.org
+Cc: =?windows-1252?Q?C=E9line?= <celine.leberre.prestataire@basystemes.fr>
 
-Hi,
-In an application, we have one regular thread listening on an RTP device,
-and 2 realtime threads that concurrently write data in the XDDP socket 
-backend.
-We use the POSIX skin.
+On 05/21/2015 08:34 AM, Thierry Bultel wrote:
+> Hi,
+> In an application, we have one regular thread listening on an RTP device,
+> and 2 realtime threads that concurrently write data in the XDDP socket
+> backend.
+> We use the POSIX skin.
+> 
+> Sometimes, the regular thread gets its blocking read() call just return 0.
+> That never happens with the classic "one reader, one writer" case.
+> 
+> Also, we notice that the 'return 0' case occurrence is not the same,
+> depending
+> on the fact that the realtime task uses 'write' instead of 'sendto'
+> (more occurrences with 'sendto')
+> 
 
-Sometimes, the regular thread gets its blocking read() call just return 0.
-That never happens with the classic "one reader, one writer" case.
+There is no restriction with respect to concurrent sending to such socket.
 
-Also, we notice that the 'return 0' case occurrence is not the same, 
-depending
-on the fact that the realtime task uses 'write' instead of 'sendto' 
-(more occurrences with 'sendto')
+Knowing about the Xenomai release number, and a simple test code that
+actually illustrates the intended usage and ideally reproduces the issue
+would help.
 
-Regards,
-Thierry
+-- 
+Philippe.
 
