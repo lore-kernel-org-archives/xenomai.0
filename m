@@ -1,8 +1,7 @@
-Date: Thu, 21 May 2015 19:10:18 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150521171018.GO10686@hermes.click-hack.org>
-References: <20150514162351.GE6169@csclub.uwaterloo.ca>
- <20150514162831.GH3759@hermes.click-hack.org>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Thu, 21 May 2015 13:13:53 -0400
+Message-ID: <20150521171353.GP6169@csclub.uwaterloo.ca>
+References: <20150514162831.GH3759@hermes.click-hack.org>
  <20150514164745.GF6169@csclub.uwaterloo.ca>
  <20150514193433.GG6169@csclub.uwaterloo.ca>
  <20150521163208.GL6169@csclub.uwaterloo.ca>
@@ -11,10 +10,11 @@ References: <20150514162351.GE6169@csclub.uwaterloo.ca>
  <20150521170301.GN10686@hermes.click-hack.org>
  <20150521170432.GN6169@csclub.uwaterloo.ca>
  <20150521170716.GO6169@csclub.uwaterloo.ca>
+ <20150521171018.GO10686@hermes.click-hack.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20150521170716.GO6169@csclub.uwaterloo.ca>
+In-Reply-To: <20150521171018.GO10686@hermes.click-hack.org>
 Subject: Re: [Xenomai] 3.14 hangs with ipipe patch applied
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -24,63 +24,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Thu, May 21, 2015 at 01:07:16PM -0400, Lennart Sorensen wrote:
-> On Thu, May 21, 2015 at 01:04:32PM -0400, Lennart Sorensen wrote:
-> > OK, I was not sure, hence why I wanted to ask.
+On Thu, May 21, 2015 at 07:10:18PM +0200, Gilles Chanteperdrix wrote:
+> On Thu, May 21, 2015 at 01:07:16PM -0400, Lennart Sorensen wrote:
+> > On Thu, May 21, 2015 at 01:04:32PM -0400, Lennart Sorensen wrote:
+> > > OK, I was not sure, hence why I wanted to ask.
+> > > 
+> > > Let me fix that up and try that.  Then I should do a build with
+> > > CONFIG_IPIPE=y and see if that then starts to work.
+> > > 
+> > > At least this is progress.
 > > 
-> > Let me fix that up and try that.  Then I should do a build with
-> > CONFIG_IPIPE=y and see if that then starts to work.
+> > So this perhaps:
 > > 
-> > At least this is progress.
+> > --- debian/patches/ipipe-core-3.14.39.diff.original     2015-05-21 12:32:53.669255161 -0400
+> > +++ debian/patches/ipipe-core-3.14.39.diff      2015-05-21 13:06:12.075112664 -0400
+> > @@ -24605,7 +24605,7 @@
+> >   static void gic_mask_irq(struct irq_data *d)
+> >   {
+> >  -      u32 mask = 1 << (gic_irq(d) % 32);
+> > -+      u32 mask = 1 << (d->irq % 32);
+> > ++      u32 mask = 1 << (gic_irq(d) % 32);
+> >  +      unsigned long flags;
+> >   
+> >  -      raw_spin_lock(&irq_controller_lock);
+> > @@ -24621,7 +24621,7 @@
+> >   static void gic_unmask_irq(struct irq_data *d)
+> >   {
+> >  -      u32 mask = 1 << (gic_irq(d) % 32);
+> > -+      u32 mask = 1 << (d->irq % 32);
+> > ++      u32 mask = 1 << (gic_irq(d) % 32);
+> >  +      unsigned long flags;
+> >   
+> >  -      raw_spin_lock(&irq_controller_lock);
+> > @@ -24652,7 +24652,7 @@
+> >  +
+> >  +static void gic_hold_irq(struct irq_data *d)
+> >  +{
+> > -+      u32 mask = 1 << (d->irq % 32);
+> > ++      u32 mask = 1 << (gic_irq(d) % 32);
+> >  +      unsigned long flags;
+> >  +
+> >  +      raw_spin_lock_irqsave_cond(&irq_controller_lock, flags);
+> > @@ -24668,7 +24668,7 @@
+> >  +
+> >  +static void gic_release_irq(struct irq_data *d)
+> >  +{
+> > -+      u32 mask = 1 << (d->irq % 32);
+> > ++      u32 mask = 1 << (gic_irq(d) % 32);
+> >  +      unsigned long flags;
+> >  +
+> >  +      raw_spin_lock_irqsave_cond(&irq_controller_lock, flags);
 > 
-> So this perhaps:
-> 
-> --- debian/patches/ipipe-core-3.14.39.diff.original     2015-05-21 12:32:53.669255161 -0400
-> +++ debian/patches/ipipe-core-3.14.39.diff      2015-05-21 13:06:12.075112664 -0400
-> @@ -24605,7 +24605,7 @@
->   static void gic_mask_irq(struct irq_data *d)
->   {
->  -      u32 mask = 1 << (gic_irq(d) % 32);
-> -+      u32 mask = 1 << (d->irq % 32);
-> ++      u32 mask = 1 << (gic_irq(d) % 32);
->  +      unsigned long flags;
->   
->  -      raw_spin_lock(&irq_controller_lock);
-> @@ -24621,7 +24621,7 @@
->   static void gic_unmask_irq(struct irq_data *d)
->   {
->  -      u32 mask = 1 << (gic_irq(d) % 32);
-> -+      u32 mask = 1 << (d->irq % 32);
-> ++      u32 mask = 1 << (gic_irq(d) % 32);
->  +      unsigned long flags;
->   
->  -      raw_spin_lock(&irq_controller_lock);
-> @@ -24652,7 +24652,7 @@
->  +
->  +static void gic_hold_irq(struct irq_data *d)
->  +{
-> -+      u32 mask = 1 << (d->irq % 32);
-> ++      u32 mask = 1 << (gic_irq(d) % 32);
->  +      unsigned long flags;
->  +
->  +      raw_spin_lock_irqsave_cond(&irq_controller_lock, flags);
-> @@ -24668,7 +24668,7 @@
->  +
->  +static void gic_release_irq(struct irq_data *d)
->  +{
-> -+      u32 mask = 1 << (d->irq % 32);
-> ++      u32 mask = 1 << (gic_irq(d) % 32);
->  +      unsigned long flags;
->  +
->  +      raw_spin_lock_irqsave_cond(&irq_controller_lock, flags);
+> Actually, gic_mask_irq and gic_unmask_irq should be identical to the
+> unpatched kernel with regard to registers reads and writes. And
+> gic_hold_irq/gic_release_irq should be identical to gic_mask/unmask.
 
-Actually, gic_mask_irq and gic_unmask_irq should be identical to the
-unpatched kernel with regard to registers reads and writes. And
-gic_hold_irq/gic_release_irq should be identical to gic_mask/unmask.
+OK, I will go compare to those.
+
+Thanks.
 
 -- 
-					    Gilles.
+Len Sorensen
 
