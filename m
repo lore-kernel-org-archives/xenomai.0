@@ -1,13 +1,14 @@
-Message-ID: <555AFAC1.5000003@xenomai.org>
-Date: Tue, 19 May 2015 10:56:33 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Thu, 21 May 2015 23:27:32 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150521212732.GR10686@hermes.click-hack.org>
+References: <20150521221811.1cc69dcd@crunchbang>
+ <20150521204856.GV6169@csclub.uwaterloo.ca>
 MIME-Version: 1.0
-References: <CANWkrRN33Hvv-ZLh5+op0mYE7gnuZVv-59nWeACSzF1kRR9=5A@mail.gmail.com>
- <CANWkrRP0Fi8bn2FtDdmX54BGH3HBbfkLUsqc7ZbO+BqP6TJu9A@mail.gmail.com>
-In-Reply-To: <CANWkrRP0Fi8bn2FtDdmX54BGH3HBbfkLUsqc7ZbO+BqP6TJu9A@mail.gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xeno-config packaging issue
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20150521204856.GV6169@csclub.uwaterloo.ca>
+Subject: Re: [Xenomai] Raspberry Pi + Xenomai doesn't compile
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,54 +17,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Smith <2michael.smith@gmail.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Cc: xenomai@xenomai.org
 
-On 05/19/2015 10:50 AM, Michael Smith wrote:
-> On Tue, May 12, 2015 at 2:05 PM, Michael Smith <2michael.smith@gmail.com> wrote:
->> Hi
->> I have compiled the newest 3.x HEAD (5e81f9e) form the GIT repository
->> by creating Debian packages.
->> And when those packages are installed after the compile there is a
->> clash between the "xenomai-runtime" and the "libxenomai-dev" packages.
->> Because "xeno-config" has been included both in packages.
->>
->> So as a result xeno-runtime that contains the testsuite and binaries
->> located under /usr/bin/
->> are not installed because /usr/bin/xeno-config have already been
->> included in the libxenomai-dev
->> package, and so the apt package manager aborts the install of xeno-runtime.
->>
->> My architecture is as follows:
->> Real-time used: Cobalt
->> OS: Ubuntu 14.04
->> Vanilla Kernel: 3.16
->> Arch: x86_64
->>
->> I suspect some or other changes in the make files have created this
->> conflict, because I have compiled a version older than rc3 previously,
->> namely 590aa2a and there were no package
->> issues like the above.
->>
->> Regards
->> Michael
+On Thu, May 21, 2015 at 04:48:56PM -0400, Lennart Sorensen wrote:
+> On Thu, May 21, 2015 at 10:18:11PM +0200, Marc Marí wrote:
+> > Hello
+> > 
+> > I'm trying to put Xenomai 2.6.4 on top of a Raspberry Pi model B with
+> > kernel version 3.8.13. In theory, it should be straightforward, but I
+> > don't get it to compile, and I don't know if I'm missing something
+> > vital or something is broken.
+> > 
+> > This is what I executed:
+> > 
+> > $ git clone git@github.com:raspberrypi/linux.git
+> > $ mv linux rpi-xenomai
+> > $ git checkout rpi-3.8.y
+> > $ patch -p1 -i \
+> > ../xenomai-2.6.4/ksrc/arch/arm/patches/raspberry/ipipe-core-3.8.13-raspberry-pre-2.patch
+> > $ ../xenomai-2.6.4/scripts/prepare-kernel.sh --arch=arm --linux=./ \
+> > --adeos=../xenomai-2.6.4/ksrc/arch/arm/patches/ipipe-core-3.8.13-arm-4.patch
+> > $ patch -p1 -i \
+> > ../xenomai-2.6.4/ksrc/arch/arm/patches/raspberry/ipipe-core-3.8.13-raspberry-post-2.patch
+> > $ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- bcmrpi_defconfig
+> > $ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-
+> > 
+> > I get this output:
+> > 
+> > kernel/ipipe/core.c: In function ‘ipipe_probe_kernel_read’:
+> > kernel/ipipe/core.c:1748:2: error: implicit declaration of function
+> > ‘get_fs’ [-Werror=implicit-function-declaration]
+> >   mm_segment_t old_fs = get_fs();
+> >   ^
+> > kernel/ipipe/core.c:1750:2: error: implicit declaration of function
+> > ‘set_fs’ [-Werror=implicit-function-declaration]
+> >   set_fs(KERNEL_DS);
+> >   ^
+> > kernel/ipipe/core.c:1750:9: error: ‘KERNEL_DS’ undeclared (first use in
+> > this function)
+> >   set_fs(KERNEL_DS);
+> >          ^
+> > kernel/ipipe/core.c:1750:9: note: each undeclared identifier is
+> > reported only once for each function it appears in
+> > kernel/ipipe/core.c:1753:2: error: implicit declaration of function
+> > ‘__copy_from_user_inatomic’ [-Werror=implicit-function-declaration]
+> >   ret = __copy_from_user_inatomic(dst,
+> >   ^
+> > kernel/ipipe/core.c: In function ‘ipipe_probe_kernel_write’:
+> > kernel/ipipe/core.c:1767:9: error: ‘KERNEL_DS’ undeclared (first use in
+> > this function)
+> >   set_fs(KERNEL_DS);
+> >          ^
+> > kernel/ipipe/core.c:1770:2: error: implicit declaration of function
+> > ‘__copy_to_user_inatomic’ [-Werror=implicit-function-declaration]
+> >   ret = __copy_to_user_inatomic((__force void __user *)dst, src, size);
+> >   ^
+> > cc1: some warnings being treated as errors
+> > scripts/Makefile.build:307: recipe for target 'kernel/ipipe/core.o'
+> > failed
+> > make[2]: *** [kernel/ipipe/core.o] Error 1
+> > scripts/Makefile.build:454: recipe for target 'kernel/ipipe' failed
+> > make[1]: *** [kernel/ipipe] Error 2
+> > Makefile:791: recipe for target 'kernel' failed
+> > make: *** [kernel] Error 2
+> > 
+> > 
+> > I tried by including asm/uaccess.h, which solved the issue. But the
+> > kernel doesn't boot, and there is no message. It just hangs.
+> > 
+> > I tried the same kernel without Xenomai patch, and it compiles and
+> > boots without problem.
 > 
-> I have found the issue on the problem listed above.
-> The commit (8871363..) that was made on 2015-02-26 was the issue.
-> I added the lines back in that was removed in debian/rules on that commit,
-> into the newest git HEAD and all the packages compiled and installed
-> correctly as expected.
-> 
-> I don't have the bigger picture about why the changes were made on
-> 8871363, but on my
-> system it broke the package install mechanism, and I was unable to
-> install xeno-runtime as a result.
-> So I'm just reporting what I found.
-> 
+> Did you enable IPIPE in the config?  After all bcmrpi_defconfig probably
+> does NOT include IPIPE config, and most releases of ipipe don't compile
+> if you disable IPIPE support.  I have only ever seen recent versions
+> actually be able to compile with CONFIG_IPIPE=n.
 
-xeno-config should be present in the base package and dropped from the
--dev one, this may be the issue.
-
+That statement is simply not true. Most I-pipe patched kernel
+compile with IPIPE off, but you happened to find one that did not.
+Please stop spreading this misconception.
 
 -- 
-Philippe.
+					    Gilles.
 
