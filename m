@@ -1,21 +1,11 @@
 From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Thu, 21 May 2015 13:29:13 -0400
-Message-ID: <20150521172913.GS6169@csclub.uwaterloo.ca>
-References: <20150521163208.GL6169@csclub.uwaterloo.ca>
- <20150521163440.GM10686@hermes.click-hack.org>
- <20150521165913.GM6169@csclub.uwaterloo.ca>
- <20150521170301.GN10686@hermes.click-hack.org>
- <20150521170432.GN6169@csclub.uwaterloo.ca>
- <20150521170716.GO6169@csclub.uwaterloo.ca>
- <20150521171018.GO10686@hermes.click-hack.org>
- <20150521171641.GQ6169@csclub.uwaterloo.ca>
- <20150521172058.GP10686@hermes.click-hack.org>
- <20150521172624.GR6169@csclub.uwaterloo.ca>
+Date: Thu, 21 May 2015 15:00:24 -0400
+Message-ID: <20150521190024.GA20676@csclub.uwaterloo.ca>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20150521172624.GR6169@csclub.uwaterloo.ca>
-Subject: Re: [Xenomai] 3.14 hangs with ipipe patch applied
+Subject: [Xenomai] [PATCH] Fix arm GIC irq mask calculations on complex arm
+	devices
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,21 +14,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Thu, May 21, 2015 at 01:26:24PM -0400, Lennart Sorensen wrote:
-> I am stuck at 3.14 since that's the current tree TI works with for
-> the am572x.
-> 
-> But I could generate a patch for the other ones, even if I can't test
-> it yet.
-> 
-> Should I send patches as a new thread?
+Complex arm devices like the TI AM572x have IRQ crossbars that can make
+interrupt numbers map to just about anything you want.  This means that
+the value of d->irq and d->hwirq do not have to have anything to do with
+each other.  The unpatched kernel uses the inline function gic_irq() to
+get this mapping, rather than d->irq.  Restore the code to the unpatched
+kernel state, and update the ipipe gic_hold_irq/gic_release_irq functions
+to use gic_irq() too.
 
-So with CONFIG_IPIPE and CONFIG_XENOMAI enabled it still boots to
-userspace, so yay!  I can continue getting things going now.
+This fixes booting with 3.14.39 on the TI AM572x.
 
+Signed-off-by: Len Sorensen <lsorense@csclub.uwaterloo.ca>
+---
+ drivers/irqchip/irq-gic.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/irqchip/irq-gic.c b/drivers/irqchip/irq-gic.c
+index 7a68905..c4ff114 100644
+--- a/drivers/irqchip/irq-gic.c
++++ b/drivers/irqchip/irq-gic.c
+@@ -155,7 +155,7 @@ static inline unsigned int gic_irq(struct irq_data *d)
+  */
+ static void gic_mask_irq(struct irq_data *d)
+ {
+-	u32 mask = 1 << (d->irq % 32);
++	u32 mask = 1 << (gic_irq(d) % 32);
+ 	unsigned long flags;
+ 
+ 	raw_spin_lock_irqsave_cond(&irq_controller_lock, flags);
+@@ -168,7 +168,7 @@ static void gic_mask_irq(struct irq_data *d)
+ 
+ static void gic_unmask_irq(struct irq_data *d)
+ {
+-	u32 mask = 1 << (d->irq % 32);
++	u32 mask = 1 << (gic_irq(d) % 32);
+ 	unsigned long flags;
+ 
+ 	raw_spin_lock_irqsave_cond(&irq_controller_lock, flags);
+@@ -195,7 +195,7 @@ static void gic_eoi_irq(struct irq_data *d)
+ 
+ static void gic_hold_irq(struct irq_data *d)
+ {
+-	u32 mask = 1 << (d->irq % 32);
++	u32 mask = 1 << (gic_irq(d) % 32);
+ 	unsigned long flags;
+ 
+ 	raw_spin_lock_irqsave_cond(&irq_controller_lock, flags);
+@@ -211,7 +211,7 @@ static void gic_hold_irq(struct irq_data *d)
+ 
+ static void gic_release_irq(struct irq_data *d)
+ {
+-	u32 mask = 1 << (d->irq % 32);
++	u32 mask = 1 << (gic_irq(d) % 32);
+ 	unsigned long flags;
+ 
+ 	raw_spin_lock_irqsave_cond(&irq_controller_lock, flags);
 -- 
-Len Sorensen
+1.7.10.4
 
