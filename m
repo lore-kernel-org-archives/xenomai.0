@@ -1,17 +1,21 @@
-Date: Mon, 18 May 2015 19:36:54 +0200
+Date: Thu, 21 May 2015 19:10:18 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150518173654.GC10686@hermes.click-hack.org>
-References: <CAKC9m6cqL6vFttH3QJM9Z64YqHscF1QGCeP6dq5w=XepGDXgeQ@mail.gmail.com>
- <20150513180613.GE3759@hermes.click-hack.org>
- <CAKC9m6edtqma0t4ddUpqker1Ofx5YDyV6TUXNY3EAZnxyDu2vQ@mail.gmail.com>
+Message-ID: <20150521171018.GO10686@hermes.click-hack.org>
+References: <20150514162351.GE6169@csclub.uwaterloo.ca>
+ <20150514162831.GH3759@hermes.click-hack.org>
+ <20150514164745.GF6169@csclub.uwaterloo.ca>
+ <20150514193433.GG6169@csclub.uwaterloo.ca>
+ <20150521163208.GL6169@csclub.uwaterloo.ca>
+ <20150521163440.GM10686@hermes.click-hack.org>
+ <20150521165913.GM6169@csclub.uwaterloo.ca>
+ <20150521170301.GN10686@hermes.click-hack.org>
+ <20150521170432.GN6169@csclub.uwaterloo.ca>
+ <20150521170716.GO6169@csclub.uwaterloo.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAKC9m6edtqma0t4ddUpqker1Ofx5YDyV6TUXNY3EAZnxyDu2vQ@mail.gmail.com>
-Subject: Re: [Xenomai]
- =?utf-8?b?SVJRIGZsb3cgaGFuZGxlcjog4oCcaGFuZGxlX2VkZ2Vf?=
- =?utf-8?b?aXJx4oCdIHZzIOKAnGhhbmRsZV9sZXZlbF9pcnHigJ0=?=
+In-Reply-To: <20150521170716.GO6169@csclub.uwaterloo.ca>
+Subject: Re: [Xenomai] 3.14 hangs with ipipe patch applied
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,54 +24,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongfei Cheng <hongfei@mperpetuo.com>
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
 Cc: xenomai@xenomai.org
 
-On Mon, May 18, 2015 at 10:32:49AM -0700, Hongfei Cheng wrote:
-> On Wed, May 13, 2015 at 11:06 AM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
-> > On Wed, May 13, 2015 at 12:55:46AM -0700, Hongfei Cheng wrote:
-> >> Hi All,
-> >>
-> >> In the document of "Porting Xenomai dual kernel to a new ARM SoC",
-> >> section "flow handler" states: If the flow handler is
-> >> “handle_edge_irq”, and the system locks up when the first interrupt
-> >> happens, try replacing “handle_edge_irq” with “handle_level_irq”.
-> >>
-> >> Could anyone explain why “handle_edge_irq” can cause system to hang
-> >> while “handle_level_irq” doesn't? I searched the archives but failed
-> >> to find any discussion on this topic.
-> >
-> > level irqs are acked and masked at interrupt controller level on
-> > entry, whereas edge interrupts are only acked. The Adeos patch
-> > unmasks the irqs at processor level after this initial ack and mask
-> > or ack. So, if the interrupt controller keeps the interrupt asserted
-> > at the processor level when the level stays the same (IOW, if the
-> > interrupt controller only supports the "level" behaviour), unmasking
-> > the interrupt line will cause the interrupt to trigger again, being
-> > ack again, etc... without any chance for the handler to ack the
-> > interrupt at device level. The fix is to use handle_level_irq so
-> > that the irq is masked at interrupt controller level before irqs are
-> > unmasked at processor level.
-> >
-> > This does not happen with an unpatched kernel, because irqs are not
-> > unmasked at processor level until the handler has had a chance to
-> > execute and ack the interrupt at device level.
+On Thu, May 21, 2015 at 01:07:16PM -0400, Lennart Sorensen wrote:
+> On Thu, May 21, 2015 at 01:04:32PM -0400, Lennart Sorensen wrote:
+> > OK, I was not sure, hence why I wanted to ask.
+> > 
+> > Let me fix that up and try that.  Then I should do a build with
+> > CONFIG_IPIPE=y and see if that then starts to work.
+> > 
+> > At least this is progress.
 > 
-> Gilles, thank you for the detailed explanation.
+> So this perhaps:
 > 
-> For ARM Cortex-A9/A15/A57, can we make the following statements as to
-> which irq flow handler can be used for a specific interrupt:
-> 1. An interrupt input is programmed as "level-sensitive" on the
-> interrupt controller (GIC): only flow handler “handle_level_irq”
-> should be used at the device driver level.
-> 2. An interrupt input is programmed as "edge-triggered" on the
-> interrupt controller (GIC): either "edge" or "level" flow handler can
-> be used at the device driver level.
+> --- debian/patches/ipipe-core-3.14.39.diff.original     2015-05-21 12:32:53.669255161 -0400
+> +++ debian/patches/ipipe-core-3.14.39.diff      2015-05-21 13:06:12.075112664 -0400
+> @@ -24605,7 +24605,7 @@
+>   static void gic_mask_irq(struct irq_data *d)
+>   {
+>  -      u32 mask = 1 << (gic_irq(d) % 32);
+> -+      u32 mask = 1 << (d->irq % 32);
+> ++      u32 mask = 1 << (gic_irq(d) % 32);
+>  +      unsigned long flags;
+>   
+>  -      raw_spin_lock(&irq_controller_lock);
+> @@ -24621,7 +24621,7 @@
+>   static void gic_unmask_irq(struct irq_data *d)
+>   {
+>  -      u32 mask = 1 << (gic_irq(d) % 32);
+> -+      u32 mask = 1 << (d->irq % 32);
+> ++      u32 mask = 1 << (gic_irq(d) % 32);
+>  +      unsigned long flags;
+>   
+>  -      raw_spin_lock(&irq_controller_lock);
+> @@ -24652,7 +24652,7 @@
+>  +
+>  +static void gic_hold_irq(struct irq_data *d)
+>  +{
+> -+      u32 mask = 1 << (d->irq % 32);
+> ++      u32 mask = 1 << (gic_irq(d) % 32);
+>  +      unsigned long flags;
+>  +
+>  +      raw_spin_lock_irqsave_cond(&irq_controller_lock, flags);
+> @@ -24668,7 +24668,7 @@
+>  +
+>  +static void gic_release_irq(struct irq_data *d)
+>  +{
+> -+      u32 mask = 1 << (d->irq % 32);
+> ++      u32 mask = 1 << (gic_irq(d) % 32);
+>  +      unsigned long flags;
+>  +
+>  +      raw_spin_lock_irqsave_cond(&irq_controller_lock, flags);
 
-I believe on cortex A9, the GIC irqs are of the "fasteoi" type.
-Which is a kind of level, but requires more patching of the irq
-controller routines. Is not that code shared between 32 and 64 bits?
+Actually, gic_mask_irq and gic_unmask_irq should be identical to the
+unpatched kernel with regard to registers reads and writes. And
+gic_hold_irq/gic_release_irq should be identical to gic_mask/unmask.
 
 -- 
 					    Gilles.
