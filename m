@@ -1,14 +1,13 @@
-Date: Thu, 21 May 2015 23:27:32 +0200
+Date: Thu, 21 May 2015 23:55:53 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150521212732.GR10686@hermes.click-hack.org>
-References: <20150521221811.1cc69dcd@crunchbang>
- <20150521204856.GV6169@csclub.uwaterloo.ca>
+Message-ID: <20150521215553.GS10686@hermes.click-hack.org>
+References: <20150521190024.GA20676@csclub.uwaterloo.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20150521204856.GV6169@csclub.uwaterloo.ca>
-Subject: Re: [Xenomai] Raspberry Pi + Xenomai doesn't compile
+In-Reply-To: <20150521190024.GA20676@csclub.uwaterloo.ca>
+Subject: Re: [Xenomai] [PATCH] Fix arm GIC irq mask calculations on complex
+ arm devices
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,83 +19,17 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
 To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
 Cc: xenomai@xenomai.org
 
-On Thu, May 21, 2015 at 04:48:56PM -0400, Lennart Sorensen wrote:
-> On Thu, May 21, 2015 at 10:18:11PM +0200, Marc Marí wrote:
-> > Hello
-> > 
-> > I'm trying to put Xenomai 2.6.4 on top of a Raspberry Pi model B with
-> > kernel version 3.8.13. In theory, it should be straightforward, but I
-> > don't get it to compile, and I don't know if I'm missing something
-> > vital or something is broken.
-> > 
-> > This is what I executed:
-> > 
-> > $ git clone git@github.com:raspberrypi/linux.git
-> > $ mv linux rpi-xenomai
-> > $ git checkout rpi-3.8.y
-> > $ patch -p1 -i \
-> > ../xenomai-2.6.4/ksrc/arch/arm/patches/raspberry/ipipe-core-3.8.13-raspberry-pre-2.patch
-> > $ ../xenomai-2.6.4/scripts/prepare-kernel.sh --arch=arm --linux=./ \
-> > --adeos=../xenomai-2.6.4/ksrc/arch/arm/patches/ipipe-core-3.8.13-arm-4.patch
-> > $ patch -p1 -i \
-> > ../xenomai-2.6.4/ksrc/arch/arm/patches/raspberry/ipipe-core-3.8.13-raspberry-post-2.patch
-> > $ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- bcmrpi_defconfig
-> > $ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-
-> > 
-> > I get this output:
-> > 
-> > kernel/ipipe/core.c: In function ‘ipipe_probe_kernel_read’:
-> > kernel/ipipe/core.c:1748:2: error: implicit declaration of function
-> > ‘get_fs’ [-Werror=implicit-function-declaration]
-> >   mm_segment_t old_fs = get_fs();
-> >   ^
-> > kernel/ipipe/core.c:1750:2: error: implicit declaration of function
-> > ‘set_fs’ [-Werror=implicit-function-declaration]
-> >   set_fs(KERNEL_DS);
-> >   ^
-> > kernel/ipipe/core.c:1750:9: error: ‘KERNEL_DS’ undeclared (first use in
-> > this function)
-> >   set_fs(KERNEL_DS);
-> >          ^
-> > kernel/ipipe/core.c:1750:9: note: each undeclared identifier is
-> > reported only once for each function it appears in
-> > kernel/ipipe/core.c:1753:2: error: implicit declaration of function
-> > ‘__copy_from_user_inatomic’ [-Werror=implicit-function-declaration]
-> >   ret = __copy_from_user_inatomic(dst,
-> >   ^
-> > kernel/ipipe/core.c: In function ‘ipipe_probe_kernel_write’:
-> > kernel/ipipe/core.c:1767:9: error: ‘KERNEL_DS’ undeclared (first use in
-> > this function)
-> >   set_fs(KERNEL_DS);
-> >          ^
-> > kernel/ipipe/core.c:1770:2: error: implicit declaration of function
-> > ‘__copy_to_user_inatomic’ [-Werror=implicit-function-declaration]
-> >   ret = __copy_to_user_inatomic((__force void __user *)dst, src, size);
-> >   ^
-> > cc1: some warnings being treated as errors
-> > scripts/Makefile.build:307: recipe for target 'kernel/ipipe/core.o'
-> > failed
-> > make[2]: *** [kernel/ipipe/core.o] Error 1
-> > scripts/Makefile.build:454: recipe for target 'kernel/ipipe' failed
-> > make[1]: *** [kernel/ipipe] Error 2
-> > Makefile:791: recipe for target 'kernel' failed
-> > make: *** [kernel] Error 2
-> > 
-> > 
-> > I tried by including asm/uaccess.h, which solved the issue. But the
-> > kernel doesn't boot, and there is no message. It just hangs.
-> > 
-> > I tried the same kernel without Xenomai patch, and it compiles and
-> > boots without problem.
-> 
-> Did you enable IPIPE in the config?  After all bcmrpi_defconfig probably
-> does NOT include IPIPE config, and most releases of ipipe don't compile
-> if you disable IPIPE support.  I have only ever seen recent versions
-> actually be able to compile with CONFIG_IPIPE=n.
+On Thu, May 21, 2015 at 03:00:24PM -0400, Lennart Sorensen wrote:
+> Complex arm devices like the TI AM572x have IRQ crossbars that can make
+> interrupt numbers map to just about anything you want.
 
-That statement is simply not true. Most I-pipe patched kernel
-compile with IPIPE off, but you happened to find one that did not.
-Please stop spreading this misconception.
+The difference between d->hwirq and d->irq has nothing to do with
+any crossbar. It is simply a relatively recent evolution of the
+Linux kernel where the space for software interrupts is separated
+from the space for hardware interrupts. Not all interrupt
+controllers have been converted from a version to the next, so the
+I-pipe patch has to play catch-up with each version converting more
+interrupt controllers. Business as usual.
 
 -- 
 					    Gilles.
