@@ -1,6 +1,6 @@
 From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Thu, 21 May 2015 13:13:53 -0400
-Message-ID: <20150521171353.GP6169@csclub.uwaterloo.ca>
+Date: Thu, 21 May 2015 13:16:41 -0400
+Message-ID: <20150521171641.GQ6169@csclub.uwaterloo.ca>
 References: <20150514162831.GH3759@hermes.click-hack.org>
  <20150514164745.GF6169@csclub.uwaterloo.ca>
  <20150514193433.GG6169@csclub.uwaterloo.ca>
@@ -82,9 +82,16 @@ On Thu, May 21, 2015 at 07:10:18PM +0200, Gilles Chanteperdrix wrote:
 > unpatched kernel with regard to registers reads and writes. And
 > gic_hold_irq/gic_release_irq should be identical to gic_mask/unmask.
 
-OK, I will go compare to those.
+Well I am reverting the change to gic_mask_irq and gic_unmask_irq, so
+that should make them identical to the unpatched kernel, and that does
+in fact make the system now boot.
 
-Thanks.
+And I am changing the mask in gic_hold_irq/gic_release_irq to match
+gic_mask_irq/gic_unmask_irq, so that seems like it should be correct
+too then.
+
+Should I make a proper patch based on the current 3.14 git tree to make
+it easier to read?  diffs of diffs are a bit messy.
 
 -- 
 Len Sorensen
