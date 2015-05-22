@@ -1,13 +1,14 @@
-Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2098\))
-From: "Yogi A. Patel" <yapatel@gatech.edu>
-In-Reply-To: <20150522210503.GA1987@hermes.click-hack.org>
-Date: Fri, 22 May 2015 17:37:16 -0400
-Message-Id: <9184F070-BBB8-44F8-AD64-79536BCDFA52@gatech.edu>
+Date: Fri, 22 May 2015 23:52:16 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150522215216.GB1987@hermes.click-hack.org>
 References: <245D3361-0412-466A-BFA1-22F2EDDC18B6@gatech.edu>
  <20150522210503.GA1987@hermes.click-hack.org>
-Content-Type: text/plain;
-	charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+ <9184F070-BBB8-44F8-AD64-79536BCDFA52@gatech.edu>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <9184F070-BBB8-44F8-AD64-79536BCDFA52@gatech.edu>
 Subject: Re: [Xenomai] 3.14.17 patch initial ram disk hangup
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -17,39 +18,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: "Yogi A. Patel" <yapatel@gatech.edu>
 Cc: xenomai@xenomai.org
 
+On Fri, May 22, 2015 at 05:37:16PM -0400, Yogi A. Patel wrote:
+> 
+> > On May 22, 2015, at 17:05, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+> > 
+> > On Fri, May 22, 2015 at 04:47:59PM -0400, Yogi A. Patel wrote:
+> >> Hi -
+> >> 
+> >> I have a Dell OptiPlex 9020 running 3.14.17. I am trying to get this system to run 3.14.17 with xenomai (using the 3.14.17 patch in the xenomai 2.6.4 source).
+> >> 
+> >> The computer hangs when I select the kernel at “Loading initial ram disk”. I tried booting into recovery mode and go the following output:
+> >> 
+> >> Kernel panic - not syncing: timer doesn’t work through Interrupt-remapped IO-APIC.
+> >> CPU: 0 PID: 1 Comm: swapper/0 Not tainted 3.14.17-xenomai-2.6.4.
+> >> 
+> >> I’m having a hard time finding the source of the error. I’ve attached my config file. Any suggestions appreciated!
+> > 
+> > Does the exact same kernel configuration, but without CONFIG_IPIPE
+> > and CONFIG_XENOMAI work ?
+> > 
+> > -- 
+> > 					    Gilles.
+> 
+> Sorry, I may have misunderstood but if you’re asking if 3.14.17 works out of the box (withough being patched), then yes it does work.
 
-> On May 22, 2015, at 17:05, Gilles Chanteperdrix =
-<gilles.chanteperdrix@xenomai.org> wrote:
->=20
-> On Fri, May 22, 2015 at 04:47:59PM -0400, Yogi A. Patel wrote:
->> Hi -
->>=20
->> I have a Dell OptiPlex 9020 running 3.14.17. I am trying to get this =
-system to run 3.14.17 with xenomai (using the 3.14.17 patch in the =
-xenomai 2.6.4 source).
->>=20
->> The computer hangs when I select the kernel at =E2=80=9CLoading =
-initial ram disk=E2=80=9D. I tried booting into recovery mode and go the =
-following output:
->>=20
->> Kernel panic - not syncing: timer doesn=E2=80=99t work through =
-Interrupt-remapped IO-APIC.
->> CPU: 0 PID: 1 Comm: swapper/0 Not tainted 3.14.17-xenomai-2.6.4.
->>=20
->> I=E2=80=99m having a hard time finding the source of the error. =
-I=E2=80=99ve attached my config file. Any suggestions appreciated!
->=20
-> Does the exact same kernel configuration, but without CONFIG_IPIPE
-> and CONFIG_XENOMAI work ?
->=20
-> --=20
-> 					    Gilles.
+The question is: with the exact same configuration?
 
-Sorry, I may have misunderstood but if you=E2=80=99re asking if 3.14.17 =
-works out of the box (withough being patched), then yes it does work.
-
-Yogi
+-- 
+					    Gilles.
 
