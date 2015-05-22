@@ -1,8 +1,8 @@
 Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2098\))
 From: "Yogi A. Patel" <yapatel@gatech.edu>
 In-Reply-To: <20150522210503.GA1987@hermes.click-hack.org>
-Date: Fri, 22 May 2015 17:22:24 -0400
-Message-Id: <C3F5C748-508E-49F2-BE52-80AE06082D8E@gatech.edu>
+Date: Fri, 22 May 2015 17:37:16 -0400
+Message-Id: <9184F070-BBB8-44F8-AD64-79536BCDFA52@gatech.edu>
 References: <245D3361-0412-466A-BFA1-22F2EDDC18B6@gatech.edu>
  <20150522210503.GA1987@hermes.click-hack.org>
 Content-Type: text/plain;
@@ -19,6 +19,7 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
+
 
 > On May 22, 2015, at 17:05, Gilles Chanteperdrix =
 <gilles.chanteperdrix@xenomai.org> wrote:
@@ -47,17 +48,8 @@ I=E2=80=99ve attached my config file. Any suggestions appreciated!
 > --=20
 > 					    Gilles.
 
+Sorry, I may have misunderstood but if you=E2=80=99re asking if 3.14.17 =
+works out of the box (withough being patched), then yes it does work.
 
-I disabled CONFIG_XENOMAI and CONFIG_IPIPE - but when recompiling the =
-kernel, I get:
-
-kernel/fork.c: In function =E2=80=98dup_task_struct=E2=80=99:
-kernel/fork.c:317:29: error: =E2=80=98struct thread_info=E2=80=99 has no =
-member named =E2=80=98ipipe_data=E2=80=99
-__ipipe_init_threadinfo(&ti->pipe_data);
-make[2] *** [kernel/fork.o] Error 1
-make[1] *** [kernel] Error 2
-
-I checked the config and both of those are set to =E2=80=9Cn=E2=80=9D. =
-What am I missing?
+Yogi
 
