@@ -1,11 +1,11 @@
-Date: Sun, 24 May 2015 08:51:34 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150524065134.GB27570@hermes.click-hack.org>
-References: <245D3361-0412-466A-BFA1-22F2EDDC18B6@gatech.edu>
+Message-ID: <55617756.4080307@web.de>
+Date: Sun, 24 May 2015 09:01:42 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <245D3361-0412-466A-BFA1-22F2EDDC18B6@gatech.edu>
 In-Reply-To: <245D3361-0412-466A-BFA1-22F2EDDC18B6@gatech.edu>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] 3.14.17 patch initial ram disk hangup
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -15,17 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Yogi A. Patel" <yapatel@gatech.edu>
-Cc: xenomai@xenomai.org
+To: "Yogi A. Patel" <yapatel@gatech.edu>, xenomai@xenomai.org
 
-On Fri, May 22, 2015 at 04:47:59PM -0400, Yogi A. Patel wrote:
-> Hi -
-> 
-> I have a Dell OptiPlex 9020 running 3.14.17. I am trying to get this system to run 3.14.17 with xenomai (using the 3.14.17 patch in the xenomai 2.6.4 source).
-
-Sorry. I missed that information. Please try the latest available
-I-pipe patch for Linux 3.14 instead of the one in Xenomai sources.
-
--- 
-					    Gilles.
-
+T24gMjAxNS0wNS0yMiAyMjo0NywgWW9naSBBLiBQYXRlbCB3cm90ZToKPiBIaSAtCj4gCj4gSSBo
+YXZlIGEgRGVsbCBPcHRpUGxleCA5MDIwIHJ1bm5pbmcgMy4xNC4xNy4gSSBhbSB0cnlpbmcgdG8g
+Z2V0IHRoaXMgc3lzdGVtIHRvIHJ1biAzLjE0LjE3IHdpdGggeGVub21haSAodXNpbmcgdGhlIDMu
+MTQuMTcgcGF0Y2ggaW4gdGhlIHhlbm9tYWkgMi42LjQgc291cmNlKS4KPiAKPiBUaGUgY29tcHV0
+ZXIgaGFuZ3Mgd2hlbiBJIHNlbGVjdCB0aGUga2VybmVsIGF0IOKAnExvYWRpbmcgaW5pdGlhbCBy
+YW0gZGlza+KAnS4gSSB0cmllZCBib290aW5nIGludG8gcmVjb3ZlcnkgbW9kZSBhbmQgZ28gdGhl
+IGZvbGxvd2luZyBvdXRwdXQ6Cj4gCj4gS2VybmVsIHBhbmljIC0gbm90IHN5bmNpbmc6IHRpbWVy
+IGRvZXNu4oCZdCB3b3JrIHRocm91Z2ggSW50ZXJydXB0LXJlbWFwcGVkIElPLUFQSUMuCgpQbGVh
+c2UgdHVybiBvZmYgQ09ORklHX0lSUV9SRU1BUCBvciBib290IHRoZSBrZXJuZWwgd2l0aCBpbnRy
+ZW1hcD1vZmYuClRoaXMgZmVhdHVyZSBpcyBub3QgeWV0IGNvbXBhdGlibGUgd2l0aCBJLXBpcGUu
+IEkgZ3Vlc3Mgd2Ugc2hvdWxkIGVuY29kZQp0aGlzIGludG8gdGhlIHg4NiBwYXRjaC4KCkphbgoK
+PiBDUFU6IDAgUElEOiAxIENvbW06IHN3YXBwZXIvMCBOb3QgdGFpbnRlZCAzLjE0LjE3LXhlbm9t
+YWktMi42LjQuCj4gCj4gSeKAmW0gaGF2aW5nIGEgaGFyZCB0aW1lIGZpbmRpbmcgdGhlIHNvdXJj
+ZSBvZiB0aGUgZXJyb3IuIEnigJl2ZSBhdHRhY2hlZCBteSBjb25maWcgZmlsZS4gQW55IHN1Z2dl
+c3Rpb25zIGFwcHJlY2lhdGVkIQo+IC0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0t
+LS0tLQo+IEEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KPiBOYW1lOiBjb25m
+aWcKPiBUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KPiBTaXplOiAxNjM3NzMgYnl0ZXMK
+PiBEZXNjOiBub3QgYXZhaWxhYmxlCj4gVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFp
+bC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTUwNTIyL2MyNDk1MWRlL2F0dGFjaG1lbnQub2JqPgo+
+IC0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQo+IAo+IFlvZ2kKPiAKPiBf
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+IFhlbm9tYWkg
+bWFpbGluZyBsaXN0Cj4gWGVub21haUB4ZW5vbWFpLm9yZwo+IGh0dHA6Ly94ZW5vbWFpLm9yZy9t
+YWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkKPiAKCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0t
+LS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBz
+aWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMTk4IGJ5
+dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3hlbm9tYWku
+b3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTUwNTI0L2EyNTViNTdkL2F0dGFj
+aG1lbnQuc2lnPgo=
