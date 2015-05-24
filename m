@@ -1,12 +1,13 @@
-Message-ID: <55617756.4080307@web.de>
-Date: Sun, 24 May 2015 09:01:42 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <55618C06.2040608@xenomai.org>
+Date: Sun, 24 May 2015 10:29:58 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <245D3361-0412-466A-BFA1-22F2EDDC18B6@gatech.edu>
-In-Reply-To: <245D3361-0412-466A-BFA1-22F2EDDC18B6@gatech.edu>
+References: <554B0C27.5010802@free.fr>
+ <20150507090719.GC2099@hermes.click-hack.org> <554B651A.9000209@nta-inc.net>
+In-Reply-To: <554B651A.9000209@nta-inc.net>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] 3.14.17 patch initial ram disk hangup
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] v3 heap mem-pool-size
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,33 +16,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Yogi A. Patel" <yapatel@gatech.edu>, xenomai@xenomai.org
+To: Jeff Webb <jeff.webb@nta-inc.net>, xenomai@xenomai.org
 
-T24gMjAxNS0wNS0yMiAyMjo0NywgWW9naSBBLiBQYXRlbCB3cm90ZToKPiBIaSAtCj4gCj4gSSBo
-YXZlIGEgRGVsbCBPcHRpUGxleCA5MDIwIHJ1bm5pbmcgMy4xNC4xNy4gSSBhbSB0cnlpbmcgdG8g
-Z2V0IHRoaXMgc3lzdGVtIHRvIHJ1biAzLjE0LjE3IHdpdGggeGVub21haSAodXNpbmcgdGhlIDMu
-MTQuMTcgcGF0Y2ggaW4gdGhlIHhlbm9tYWkgMi42LjQgc291cmNlKS4KPiAKPiBUaGUgY29tcHV0
-ZXIgaGFuZ3Mgd2hlbiBJIHNlbGVjdCB0aGUga2VybmVsIGF0IOKAnExvYWRpbmcgaW5pdGlhbCBy
-YW0gZGlza+KAnS4gSSB0cmllZCBib290aW5nIGludG8gcmVjb3ZlcnkgbW9kZSBhbmQgZ28gdGhl
-IGZvbGxvd2luZyBvdXRwdXQ6Cj4gCj4gS2VybmVsIHBhbmljIC0gbm90IHN5bmNpbmc6IHRpbWVy
-IGRvZXNu4oCZdCB3b3JrIHRocm91Z2ggSW50ZXJydXB0LXJlbWFwcGVkIElPLUFQSUMuCgpQbGVh
-c2UgdHVybiBvZmYgQ09ORklHX0lSUV9SRU1BUCBvciBib290IHRoZSBrZXJuZWwgd2l0aCBpbnRy
-ZW1hcD1vZmYuClRoaXMgZmVhdHVyZSBpcyBub3QgeWV0IGNvbXBhdGlibGUgd2l0aCBJLXBpcGUu
-IEkgZ3Vlc3Mgd2Ugc2hvdWxkIGVuY29kZQp0aGlzIGludG8gdGhlIHg4NiBwYXRjaC4KCkphbgoK
-PiBDUFU6IDAgUElEOiAxIENvbW06IHN3YXBwZXIvMCBOb3QgdGFpbnRlZCAzLjE0LjE3LXhlbm9t
-YWktMi42LjQuCj4gCj4gSeKAmW0gaGF2aW5nIGEgaGFyZCB0aW1lIGZpbmRpbmcgdGhlIHNvdXJj
-ZSBvZiB0aGUgZXJyb3IuIEnigJl2ZSBhdHRhY2hlZCBteSBjb25maWcgZmlsZS4gQW55IHN1Z2dl
-c3Rpb25zIGFwcHJlY2lhdGVkIQo+IC0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0t
-LS0tLQo+IEEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KPiBOYW1lOiBjb25m
-aWcKPiBUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KPiBTaXplOiAxNjM3NzMgYnl0ZXMK
-PiBEZXNjOiBub3QgYXZhaWxhYmxlCj4gVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFp
-bC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTUwNTIyL2MyNDk1MWRlL2F0dGFjaG1lbnQub2JqPgo+
-IC0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQo+IAo+IFlvZ2kKPiAKPiBf
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+IFhlbm9tYWkg
-bWFpbGluZyBsaXN0Cj4gWGVub21haUB4ZW5vbWFpLm9yZwo+IGh0dHA6Ly94ZW5vbWFpLm9yZy9t
-YWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkKPiAKCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0t
-LS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBz
-aWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMTk4IGJ5
-dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3hlbm9tYWku
-b3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTUwNTI0L2EyNTViNTdkL2F0dGFj
-aG1lbnQuc2lnPgo=
+On 05/07/2015 03:14 PM, Jeff Webb wrote:
+> On 05/07/2015 04:07 AM, Gilles Chanteperdrix wrote:
+>> On Thu, May 07, 2015 at 08:54:31AM +0200, Stéphane ANCELOT wrote:
+>>> Hi,
+>>>
+>>> Is there a better way to raise mem-pool-size other than specifying in
+>>> cmdline ?
+>>>
+>>>     0"007.389| WARNING: [main] heapobj_init() failed for 470 bytes,
+>>> raise
+>>> --mem-pool-size?
+>>
+>> A command line option is nice, it allows you to do basically
+>> anything you want by calling your program from a script. What is it
+>> you want to do that can not be achieved this way?
+>>
+> 
+> If we don't want to call our application from a script to set
+> appropriate Xenomai parameters, will supplying the --no-auto-init option
+> to xeno-config allow us to set Xenomai run-time options to the desired
+> values by manually calling copperplate_init() from our application?  Are
+> the options that can be passed to copperplate_init() the ones described
+> here [1]?  Do these options apply to applications based on the POSIX
+> skin as well?  If so, I am slightly confused because the documentation
+> (e.g. [2], [3]) that states that all APIs except POSIX are based on the
+> Copperplate library, so it would seem that Copperplate related stuff
+> would not apply to POSIX applications.  I apologize if this is a silly
+> question, but I am still coming up to speed on the new Xenomai 3
+> architecture.
+> 
+
+There used to be an inconsistency regarding this, because POSIX apps did
+not share the same init sequence internally than non-POSIX ones. This
+has been fixed by recent changes, available from the master branch.
+The new (common) init sequence of all Xenomai applications is described
+in this document: http://xenomai.org/2015/05/application-setup-and-init/
+
+You may be interested in using the tunables:
+http://xenomai.org/2015/05/application-setup-and-init/#Configuration_and_runtime_tunables
+
+I have checked this approach with a large, real world application, which
+looks good so far. Please let me know if that addresses your
+requirements as well. Thanks,
+
+-- 
+Philippe.
+
