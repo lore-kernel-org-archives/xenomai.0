@@ -1,14 +1,13 @@
-Date: Mon, 25 May 2015 17:22:38 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150525152238.GJ27570@hermes.click-hack.org>
+MIME-Version: 1.0
+In-Reply-To: <55633A71.5090405@gatech.edu>
 References: <245D3361-0412-466A-BFA1-22F2EDDC18B6@gatech.edu>
  <55617756.4080307@web.de> <5563280B.2040301@gatech.edu>
  <CAPRPZsB59=0nQfZ7pAa-f4g5sG-myA4Z99phWwdmE_XH0cOFUw@mail.gmail.com>
  <55633A71.5090405@gatech.edu>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <55633A71.5090405@gatech.edu>
+Date: Mon, 25 May 2015 18:01:15 +0200
+Message-ID: <CAPRPZsBu9r-6ZJe0Nuu-OngctajtRwx7YCpERaUH9ooQ9k-tWA@mail.gmail.com>
+From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Subject: Re: [Xenomai] 3.14.17 patch initial ram disk hangup
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -21,53 +20,74 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
 To: "Yogi A. Patel" <yapatel@gatech.edu>
 Cc: Jan Kiszka <jan.kiszka@web.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, May 25, 2015 at 11:06:25AM -0400, Yogi A. Patel wrote:
-> 
-> On 05/25/2015 10:23 AM, Jeroen Van den Keybus wrote:
-> >>I read around online about interrupt remapping - and I can't seem to find
-> >>anything that hints at why this turning it off would cause the latencies to
-> >>be all over the place.
-> >It shouldn't. There may be other reasons. But beware, in our tests the
-> >Core i5/i7 showed about 29 us max. latency (running dohell), but
-> >depending on the load, that can go up to 70 us (running a handbrake
-> >video encoding session). What you see might actually be the best you
-> >can get.
-> I've been using "stress" to put a load on the system while running the
-> xenomai latency test.
-> 
-> >>Any thoughts/guidance appreciated!
-> >You seem to be running a desktop distribution. Try leaving desktop
-> >mode (kill the window manager / X). Check you're not running binary
-> >graphics drivers. Unload as many drivers as you can.
 > You are correct. It looks like if I blacklist the radeon module (which I
 > compiled with the kernel as a module, not using a binary), the latencies
 > drop to 8-10us. I
+>
+> Just some ideas; you don't seem to have provided a dmesg log.
+>
+> Sorry - dmesg log is attached. From just looking at the radeon specific
+> messages, I don't quite see what the problem could be except for something
+> internal to the radeon driver.
 
-The information that would be interesting would be whether you are
-running the proprietary module. Even though proprietary modules
-seem like being compiled, they in fact compile a small glue over a
-big binary blob. Obviously, the I-pipe patch can not patch that
-binary blob, so, you can only hope that the glue compiles what the
-I-pipe patch would want to patch.
+Well, at least we now know that you are running with a HD8xxx GPU, and
+what I find intriguing is the date reported by the driver:
 
-Anyway, this log message:
-> [    0.880890] drm: module has bad taint, not creating trace events
-Suggests that you are running the proprietary blob.
+[drm] Initialized radeon 2.37.0 20080528 for 0000:01:00.0 on minor 0
 
-Also, something to note, once again, is that if you care about
-performances, you should not have a kernel with everything enabled.
-Notably not any form of tracing or debugging.
+I would definitely check your driver. especially verify that fglrx is
+NOT running. Apart from that:
 
-On the other hand, this message:
-> [   21.886328] kvm: module has bad taint, not creating trace events
-would suggest that you have rather a module/kernel mismatch. This
-too can be detrimental to performances if you are running plain
-linux modules with an I-pipe patched kernel.
+[    0.877121] video: module verification failed: signature and/or
+required key missing - tainting kernel
+[ 0.880890] drm: module has bad taint, not creating trace events
+[ 0.884665] radeon: module has bad taint, not creating trace events
+...
 
-However, looking at all this, I do not find any evidence that
-disabling irq remapping created any performance issue, and I really
-do not understand the logic that lead you to this weird conclusion.
+you have no less than 6 tainting warnings for a kernel you claim to
+have built yourself. Are you sure you didn't turn the module
+versioning check off ? To me it seems your modules (or not all of
+them) and kernel do not match. If so, all bets are off and this setup
+could only be running by coincidence. You could even be running
+modules that aren't patched at all in a patched kernel.
 
--- 
-					    Gilles.
+I also see a 'vboxdrv' driver. I have absolutely no idea what its
+impact on I-pipe would be, but it sounds bad to me (along with kvm).
+This is the type of thing you would only enable / try when the system
+is working properly. I wouldn't even allow it to initialize.
+
+Apart from that, there is indeed not much that can be learnt from your
+dmesg log...
+
+Other suggestions include trying to use the on-CPU video (but you must
+have the proper chipset for this), remove the Radeon and save some
+energy in the process.
+
+It is imperative that you do as Gilles said: minimize the .config
+(you'd be amazed how much you can throw away and still keep the Ubuntu
+desktop). It compiles much faster and at least you are more likely to
+throw an eye on the compile log afterwards.
+
+
+Jeroen.
+
+
+>
+> Jeroen.
+>
+>
+>
+> Yogi
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://xenomai.org/mailman/listinfo/xenomai
+>
+>
+> --
+>
+> Yogi A. Patel
+> @yapatel525
+>
 
