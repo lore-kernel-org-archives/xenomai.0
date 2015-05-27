@@ -1,11 +1,11 @@
-Message-ID: <55658C9D.8020406@xenomai.org>
-Date: Wed, 27 May 2015 11:21:33 +0200
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
+Date: Wed, 27 May 2015 13:09:31 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20150527130931.27f37fcb@md1em3qc>
+In-Reply-To: <55658C9D.8020406@xenomai.org>
 References: <d0dc8c289d0b45fafbb6b39b839b468bd53f256f.1430395105.git.henning.schild@siemens.com>
- <20150527111126.2f03fa66@md1em3qc>
-In-Reply-To: <20150527111126.2f03fa66@md1em3qc>
-Content-Type: text/plain; charset=windows-1252
+ <20150527111126.2f03fa66@md1em3qc> <55658C9D.8020406@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [PATCH] debian: remove xeno-config from
  libxenomai-dev package
@@ -17,28 +17,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 05/27/2015 11:11 AM, Henning Schild wrote:
-> Hey Guys,
+On Wed, 27 May 2015 11:21:33 +0200
+Philippe Gerum <rpm@xenomai.org> wrote:
+ 
+> You mean this?
 > 
-> we have a continuous integration setup here at Siemens. Next to our own
-> repos we also compile and test upstream to detect problems before
-> merging.
-> I know the changes to the debian directory seem unimportant, but our
-> current CI infrastructure is built on that. So please consider applying
-> my suggestions. Using the CI we hope to find and fix issues in the
-> whole project but for that to work we need a reliable way of deploying
-> binaries to our test systems.
-> 
-> If there is a debian directory in the tree, it should be consistent.
-> The other option would be to remove it all together, i personally
-> prefer the first option.
+> http://git.xenomai.org/xenomai-3.git/commit/?id=571ec165ad6a22d3f93f6197b64eb8edba8fbee4
 
-You mean this?
+Ahh. Yes i meant this. The actual conclusion of the discussion to this
+patch was to revert the change that introduced the problem and not
+apply my patch. But for me either way is fine.
 
-http://git.xenomai.org/xenomai-3.git/commit/?id=571ec165ad6a22d3f93f6197b64eb8edba8fbee4
+I also referred to another change i suggested and am still waiting for
+feedback:
+https://xenomai.org/pipermail/xenomai/2015-April/034105.html
 
--- 
-Philippe.
+regards,
+Henning
+
+
 
