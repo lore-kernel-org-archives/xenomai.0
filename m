@@ -1,19 +1,15 @@
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Wed, 27 May 2015 23:27:27 +0200
+Message-ID: <2640138.cV33tOjW7h@indiana>
+In-Reply-To: <20150527155732.GX27570@hermes.click-hack.org>
+References: <d0dc8c289d0b45fafbb6b39b839b468bd53f256f.1430395105.git.henning.schild@siemens.com>
+ <20150527134318.GU27570@hermes.click-hack.org>
+ <20150527155732.GX27570@hermes.click-hack.org>
 MIME-Version: 1.0
-In-Reply-To: <20150519183909.GH10686@hermes.click-hack.org>
-References: <CAKC9m6cqL6vFttH3QJM9Z64YqHscF1QGCeP6dq5w=XepGDXgeQ@mail.gmail.com>
- <20150513180613.GE3759@hermes.click-hack.org>
- <CAKC9m6edtqma0t4ddUpqker1Ofx5YDyV6TUXNY3EAZnxyDu2vQ@mail.gmail.com>
- <20150518173654.GC10686@hermes.click-hack.org>
- <CAKC9m6d025dA-8hZ=tRS86+RP9jomraT9MKvBBDdiBNo9DUmwQ@mail.gmail.com>
- <20150519183909.GH10686@hermes.click-hack.org>
-Date: Tue, 19 May 2015 12:13:00 -0700
-Message-ID: <CAKC9m6diBSAiWYe-Nh5MEeCNji3r2Bx8evn-aAfToWSCg87Svw@mail.gmail.com>
-From: Hongfei Cheng <hongfei@mperpetuo.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai]
-	=?utf-8?b?SVJRIGZsb3cgaGFuZGxlcjog4oCcaGFuZGxlX2VkZ2Vf?=
-	=?utf-8?b?aXJx4oCdIHZzIOKAnGhhbmRsZV9sZXZlbF9pcnHigJ0=?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] [PATCH] debian: remove xeno-config from
+	libxenomai-dev package
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,100 +18,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Tue, May 19, 2015 at 11:39 AM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On Tue, May 19, 2015 at 10:23:36AM -0700, Hongfei Cheng wrote:
->> On Mon, May 18, 2015 at 10:36 AM, Gilles Chanteperdrix
->> <gilles.chanteperdrix@xenomai.org> wrote:
->> > On Mon, May 18, 2015 at 10:32:49AM -0700, Hongfei Cheng wrote:
->> >> On Wed, May 13, 2015 at 11:06 AM, Gilles Chanteperdrix
->> >> <gilles.chanteperdrix@xenomai.org> wrote:
->> >> > On Wed, May 13, 2015 at 12:55:46AM -0700, Hongfei Cheng wrote:
->> >> >> Hi All,
->> >> >>
->> >> >> In the document of "Porting Xenomai dual kernel to a new ARM SoC",
->> >> >> section "flow handler" states: If the flow handler is
->> >> >> =E2=80=9Chandle_edge_irq=E2=80=9D, and the system locks up when th=
-e first interrupt
->> >> >> happens, try replacing =E2=80=9Chandle_edge_irq=E2=80=9D with =E2=
-=80=9Chandle_level_irq=E2=80=9D.
->> >> >>
->> >> >> Could anyone explain why =E2=80=9Chandle_edge_irq=E2=80=9D can cau=
-se system to hang
->> >> >> while =E2=80=9Chandle_level_irq=E2=80=9D doesn't? I searched the a=
-rchives but failed
->> >> >> to find any discussion on this topic.
->> >> >
->> >> > level irqs are acked and masked at interrupt controller level on
->> >> > entry, whereas edge interrupts are only acked. The Adeos patch
->> >> > unmasks the irqs at processor level after this initial ack and mask
->> >> > or ack. So, if the interrupt controller keeps the interrupt asserte=
-d
->> >> > at the processor level when the level stays the same (IOW, if the
->> >> > interrupt controller only supports the "level" behaviour), unmaskin=
-g
->> >> > the interrupt line will cause the interrupt to trigger again, being
->> >> > ack again, etc... without any chance for the handler to ack the
->> >> > interrupt at device level. The fix is to use handle_level_irq so
->> >> > that the irq is masked at interrupt controller level before irqs ar=
-e
->> >> > unmasked at processor level.
->> >> >
->> >> > This does not happen with an unpatched kernel, because irqs are not
->> >> > unmasked at processor level until the handler has had a chance to
->> >> > execute and ack the interrupt at device level.
->> >>
->> >> Gilles, thank you for the detailed explanation.
->> >>
->> >> For ARM Cortex-A9/A15/A57, can we make the following statements as to
->> >> which irq flow handler can be used for a specific interrupt:
->> >> 1. An interrupt input is programmed as "level-sensitive" on the
->> >> interrupt controller (GIC): only flow handler =E2=80=9Chandle_level_i=
-rq=E2=80=9D
->> >> should be used at the device driver level.
->> >> 2. An interrupt input is programmed as "edge-triggered" on the
->> >> interrupt controller (GIC): either "edge" or "level" flow handler can
->> >> be used at the device driver level.
->> >
->> > I believe on cortex A9, the GIC irqs are of the "fasteoi" type.
->> > Which is a kind of level, but requires more patching of the irq
->> > controller routines. Is not that code shared between 32 and 64 bits?
->>
->> The GIC code is indeed shared between AArch32 and AArch64. However on
->> our ARMv8 platform, only parts of the SPIs, 32~447, are initialized
->> and mapped to fasteoi. The rest of the SPIs, 448~639, are for platform
->> specific peripheral drivers. These drivers use handle_level_irq and
->> handle_edge_irq as flow handlers.
->>
->> What we are seeing is that, when I-pipe is enabled, some of the
->> platform specific peripheral drivers receive numerous interrupts which
->> are nonexistent when I-pipe is disabled. At first glance, such problem
->> appears to match the pattern of using "handle_edge_irq" for
->> level-triggered interrupts at the GIC. However the number of the
->> "bogus" interrupts (per second) are only in the 100s. The handlers in
->> the device drivers still have chance to process these interrupts.
->>
->> Here is a partial call stack:
->> <peripheral-driver-irq-mask>+0xc/0x18
->> gic_hold_irq+0xb8/0x134
->> __ipipe_ack_fasteoi_irq+0x14/0x20
->> __ipipe_dispatch_irq+0x90/0x2a8
->> __ipipe_grab_irq+0x5c/0x74
->>
->> Does this call stack look correct to you? Any idea as to the cause of
->> such problem?
->
-> No, this call stack does not look correct. gic_hold_irq should only
-> mask the irq at interrupt controller level, not call back anything
-> related to peripheral driver itself.
->
-> Also, if an irq does not use handle_fasteoi_irq, gic_hold_irq should
-> not be invoked.
-
-Thanks, Gilles. I'll dive into this and report back my findings.
-
-Hongfei
-
+RWwgRGltZWNyZXMsIDI3IGRlIG1haWcgZGUgMjAxNSwgYSBsZXMgMTc6NTc6MzIsIEdpbGxlcyBD
+aGFudGVwZXJkcml4IHZhIAplc2NyaXVyZToKPiBPbiBXZWQsIE1heSAyNywgMjAxNSBhdCAwMzo0
+MzoxOFBNICswMjAwLCBHaWxsZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKPiA+IE9uIFdlZCwgTWF5
+IDI3LCAyMDE1IGF0IDAxOjQ5OjIwUE0gKzAyMDAsIFBoaWxpcHBlIEdlcnVtIHdyb3RlOgo+ID4g
+PiBPbiAwNS8yNy8yMDE1IDAxOjA5IFBNLCBIZW5uaW5nIFNjaGlsZCB3cm90ZToKPiA+ID4gPiBP
+biBXZWQsIDI3IE1heSAyMDE1IDExOjIxOjMzICswMjAwCj4gPiA+ID4gCj4gPiA+ID4gUGhpbGlw
+cGUgR2VydW0gPHJwbUB4ZW5vbWFpLm9yZz4gd3JvdGU6Cj4gPiA+ID4+IFlvdSBtZWFuIHRoaXM/
+Cj4gPiA+ID4+IAo+ID4gPiA+PiBodHRwOi8vZ2l0Lnhlbm9tYWkub3JnL3hlbm9tYWktMy5naXQv
+Y29tbWl0Lz9pZD01NzFlYzE2NWFkNmEyMmQzZjkzZjYKPiA+ID4gPj4gMTk3YjY0ZWI4ZWRiYThm
+YmVlND4gPiA+IAo+ID4gPiA+IEFoaC4gWWVzIGkgbWVhbnQgdGhpcy4gVGhlIGFjdHVhbCBjb25j
+bHVzaW9uIG9mIHRoZSBkaXNjdXNzaW9uIHRvIHRoaXMKPiA+ID4gPiBwYXRjaCB3YXMgdG8gcmV2
+ZXJ0IHRoZSBjaGFuZ2UgdGhhdCBpbnRyb2R1Y2VkIHRoZSBwcm9ibGVtIGFuZCBub3QKPiA+ID4g
+PiBhcHBseSBteSBwYXRjaC4gQnV0IGZvciBtZSBlaXRoZXIgd2F5IGlzIGZpbmUuCj4gPiA+IAo+
+ID4gPiBBY3R1YWxseSwgdGhlIHJpZ2h0IGFwcHJvYWNoIGlzIHRvIG1vdmUgeGVuby1jb25maWcg
+dG8gdGhlIGJhc2UgcGFja2FnZSwKPiA+ID4gc2luY2UgaXQgbm93IGRlbGl2ZXJzIGluZm9ybWF0
+aW9uIGFib3V0IHRoZSBydW50aW1lIHN5c3RlbSBhcyB3ZWxsLgo+ID4gPiAKPiA+ID4gPiBJIGFs
+c28gcmVmZXJyZWQgdG8gYW5vdGhlciBjaGFuZ2UgaSBzdWdnZXN0ZWQgYW5kIGFtIHN0aWxsIHdh
+aXRpbmcgZm9yCj4gPiA+ID4gZmVlZGJhY2s6Cj4gPiA+ID4gaHR0cHM6Ly94ZW5vbWFpLm9yZy9w
+aXBlcm1haWwveGVub21haS8yMDE1LUFwcmlsLzAzNDEwNS5odG1sCj4gPiA+IAo+ID4gPiBMb29r
+cyBvay4gSSdsbCBwaWNrIHRoYXQgb25lIHVubGVzcyBHaWxsZXMgcHVsbHMgdGhlIGJyZWFrIGZv
+ciBhbnkKPiA+ID4gZGViaWFuLXNwZWNpZmljIGlzc3VlLgo+ID4gCj4gPiBObywgdGhhdCBpcyBm
+aW5lIGJ5IG1lLiBBcyBvZiAyMDE0LCBJIGhhdmUgc3RvcHBlZCBiZWluZyBhIERlYmlhbgo+ID4g
+dXNlciAoYWZ0ZXIgYmVpbmcgb25lIGZvciAxNyB5ZWFycyksIHNvLCBJIGNhcmUgbGVzcyBhbmQg
+bGVzcyBhYm91dAo+ID4gaXQsIEkgaGF2ZSByZWFjaGVkIGEgcG9pbnQgd2hlcmUgZXZlcnl0aGlu
+ZyBhYm91dCB0aGlzIGRpc3RyaWJ1dGlvbgo+ID4gc2VlbXMgb3Zlci1kZXNpZ25lZCwgZ2V0cyBp
+biB0aGUgd2F5IG9uIHRoZSBkZXNrdG9wIG9mIHNvbWVvbmUgd2hvCj4gPiBtYWlubHkgZG9lcyBz
+b2Z0d2FyZSBkZXZlbG9wbWVudCwgYW5kIHBhcmFkb3hpY2FsbHkgbGVhZCB0byBiYWQKPiA+IHF1
+YWxpdHkgc29mdHdhcmUuCj4gPiAKPiA+IEluIGFueSBjYXNlLCBJIGFtIG5vIGxvbmdlciBydW5u
+aW5nIERlYmlhbiBvbiBteSBkZXNrdG9wLCBhbmQKPiA+IHJlc3RhcnRpbmcgYSBzZXJ2ZXIgdG8g
+dGVzdCBhIFhlbm9tYWkgcmVsZWFzZSBpcyBvdXQgb2YgdGhlCj4gPiBxdWVzdGlvbiwgc28gaXQg
+d291bGQgbm90IGJlIGVhc3kgZm9yIG1lIHRvIHRlc3QgRGViaWFuIHBhY2thZ2luZy4KPiA+IFNp
+bmNlIHdlIGRvIG5vdCByZWFsbHkgaGF2ZSBhIERlYmlhbiBtYWludGFpbmVyIChhbmQgd2UgbmV2
+ZXIgZGlkCj4gPiByZWFsbHkgaGF2ZSBvbmUganVkZ2luZyBieSB0aGUgd29yayB0aGUgcGVyc29u
+IHRoYXQgY2xhaW1lZCB0byBiZQo+ID4gb25lIGRpZCksIEkgd291bGQgYmUgaW4gZmF2b3Igb2Yg
+ZHJvcHBpbmcgdGhlIGJhbGwgYW5kIHJlbW92aW5nIHRoZQo+ID4gZGViaWFuIGRpcmVjdG9yeSwg
+dW5sZXNzIHNvbWVvbmUgc3RlcHMgdXAgZm9yIGFzc3VtaW5nIHRoaXMgcm9sZSwKPiA+IGJ1dCBJ
+IG1lYW4sIHdpdGggYSByZWFsIGludGVudGlvbiBvZiBjb21taXRtZW50IHRvIHRoZSB0YXNrLgoK
+SXQncyBzYWQgdG8gbWUgdGhhdCBhIGRlYmlhbiB1c2VyIHdpdGggYSBsb25nIGV4cGVyaWVuY2Ug
+bGlrZSB5b3UgaGF2ZSAKYWJhbmRvbmVkIHRoZSBkaXN0cm8uIEJ1dCBJJ20gc3VyZSB0aGF0IHlv
+dSB3aWxsIGhhdmUgYSBnb29kIHJlYXNvbnMuIEFueXdheSwgCnBsZWFzZSwgc2hhcmUgdGhlbSBh
+bmQgd2UgY291bGQgdHJ5IHRvIGltcHJvdmUgdGhhdC4KCj4gSnVzdCB0byBhZGQgc29tZXRoaW5n
+IG1vcmUgdG8gdGhlIHN1YmplY3Q6IEkgZG8gbm90IHRoaW5rIGJlaW5nIHRoZQo+IGRlYmlhbiBt
+YWludGFpbmVyIG9mIHRoZSBYZW5vbWFpIHBhY2thZ2UgaXMgYSBoYXJkIHRhc2suIEkgbWVhbiBj
+b21lCj4gb24sIGl0IGlzIGp1c3QgYmFzaWNhbGx5IGEgTWFrZWZpbGUgc2hvcnRlciB0aGFuIHNv
+bWUgb3RoZXIKPiBNYWtlZmlsZXMgaW4gdGhlIHByb2plY3QuIEJ1dCB0aGlzIHJlcXVpcmVzIHN0
+YXlpbmcgaW4gdG91Y2ggd2l0aAo+IHRoZSBEZWJpYW4gcHJvamVjdCB0byBrbm93IHdoYXQgdGhl
+ICJnb29kIHByYWN0aWNlcyIgYXJlLCB3aGF0Cj4gcHJhY3RpY2VzIGhhdmUgYmVjb21lIGRlcHJl
+Y2F0ZWQgYW5kIHdoYXQgbmV3IGRlYmlhbiBoZWxwZXIgY291bGQKPiBtYWtlIHRoZSBwYWNrYWdp
+bmcgZXZlbiBzaW1wbGVyLCB0aGluZ3MgSSBkbyBub3QgY2FyZSB0byBkby4gSW4gYW55Cj4gY2Fz
+ZSwgdGhpcyBzaG91bGQgYmUgYSBnb29kIHJlYXNvbiBub3QgdG8gYm90Y2ggdGhlIHRhc2suIEEg
+Ym90Y2hlZAo+IGhhcmQgdGFzayBpcyBlYXNpZXIgdG8gdW5kZXJzdGFuZCB0aGFuIGEgYm90Y2hl
+ZCBlYXN5IHRhc2suCgpKdXN0IHRvIGluZm9ybSwgYmVjYXVzZSBpIGhhdmUgYmVlbiBpbiBzaWxl
+bmNlIGFsbCB0aGlzIHRocmVhZCB0aGF0IHNvbWUgd2Vla3MgCmFnbyAobWF5YmUgdHdvIG1vbnRo
+KSBJIGNvbnRhY3RlZCB3aXRoIHRoZSBkZWJpYW4gbWFpbnRhaW5lciBvZiB4ZW5vbWFpLiBJIApv
+ZmZlcmVkIG15IGhlbHAgYmVjYXVzZSBJIHdhcyBpbnRlcmVzdGVkIGluIG1haW50YWluIHRoZSBw
+YWNrYWdlLiBXZSBmaW5hbGx5IAp3aWxsIHdvcmsgdG9nZXRoZXIsIGFuZCB0aGUgZGViaWFuIGRp
+cmVjdG9yeSB3aWxsIGJlIGhvc3RlZCBpbiBjb2xsYWItbWFpbnQgCmdpdCwgaW4gYWxpb3RoLCBh
+IGdpdCBzZXJ2ZXIgb2YgZGViaWFuLgoKU2FpZCB0aGF0LCBiZWNhdXNlIHRpbWUgY29uc3RyYWlu
+dHMgb2YgdGhlIGxhc3Qgd2Vla3MsIEknbSBqdXN0IGluIHRoZSAKYmVnaW5uaW5nIG9mIHJldmll
+dyBhbGwgdGhlIHBhY2thZ2luZyBvZiB4ZW5vbWFpLiBJIHdpbGwgYmVnaW4gd2l0aCAyLjYuNCBh
+bmQgCmFmdGVyIHRoYXQsIEkgd2lsbCBqdW1wIHRvIDMuMCB3aGVuIHlvdSByZWxlYXNlZCBhbiBv
+ZmZpY2lhbCBvbmUuIFNvLCBkb24ndCB0cnkgCnRvIGZpbmQgYW55dGhpbmcgdGhlcmUsIGJlY2F1
+c2UgSSBoYXZlIG5vdGhpbmcgZG9uZS4gSSB3aWxsIHRyeSB0byBpbmZvcm0gdGhlIApsaXN0IGFi
+b3V0IG15IHByb2dyZXNzLgoKQW55d2F5LCB0aGUgaWRlYSBpcyB0byBkcm9wIHlvdXIgZGViaWFu
+IGRpcmVjdG9yeSBhbmQgcHV0IGEgbmV3IG9uZSwgdHJ5aW5nIHRvIAp1c2UgdGhlICJnb29kIHBy
+YWN0aWNlcyIgYW5kIHRoZSB1cGRhdGVkIGRlYmhlbHBlciB0b29scy4gSSB3aWxsIHRyeSB0byBr
+ZWVwIAp0aGUgcGFja2FnZSBpbiBhIGdvb2Qgc2hhcGUsIHN5bmMgd2l0aCB0aGUgdXBzdHJlYW0g
+bGFzdCB2ZXJzaW9ucywgYXQgbGVhc3QgaW4gCnVuc3RhYmxlLiBJZiBJIGNvdWxkLCBzb21lIGJh
+Y2twb3J0IChiZWNhdXNlIEkgdXNlZCBpdCkgY291bGQgYmUgcG9zc2libGUuCgpCZXN0IHJlZ2Fy
+ZHMsCgpMZW9wb2xkCgoKLS0gCi0tCkxpbnV4IFVzZXIgMTUyNjkyICAgICBHUEc6IDA1RjRBN0E5
+NDlBMkQ5QUEKQ2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0K
+QTogQmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhlIG9yZGVyIGluIHdoaWNoIHBlb3BsZSBub3JtYWxs
+eSByZWFkIHRleHQuClE6IFdoeSBpcyB0b3AtcG9zdGluZyBzdWNoIGEgYmFkIHRoaW5nPwpBOiBU
+b3AtcG9zdGluZy4KUTogV2hhdCBpcyB0aGUgbW9zdCBhbm5veWluZyB0aGluZyBpbiBlLW1haWw/
+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFj
+aG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRp
+b24vcGdwLXNpZ25hdHVyZQpTaXplOiA4MTkgYnl0ZXMKRGVzYzogVGhpcyBpcyBhIGRpZ2l0YWxs
+eSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWls
+L3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTA1MjcvNDIxNzc0Y2UvYXR0YWNobWVudC5zaWc+Cg==
