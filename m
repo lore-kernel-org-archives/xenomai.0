@@ -1,12 +1,17 @@
-Message-ID: <5566E374.3000706@free.fr>
-Date: Thu, 28 May 2015 11:44:20 +0200
-From: =?UTF-8?B?U3TDqXBoYW5lIEFOQ0VMT1Q=?= <sancelot@free.fr>
+Date: Thu, 28 May 2015 15:01:53 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20150528150153.0ceb9539@md1em3qc>
+In-Reply-To: <20150527235131.GZ27570@hermes.click-hack.org>
+References: <d0dc8c289d0b45fafbb6b39b839b468bd53f256f.1430395105.git.henning.schild@siemens.com>
+ <20150527134318.GU27570@hermes.click-hack.org>
+ <20150527155732.GX27570@hermes.click-hack.org>
+ <2640138.cV33tOjW7h@indiana>
+ <20150527235131.GZ27570@hermes.click-hack.org>
 MIME-Version: 1.0
-References: <5566D83B.1020006@free.fr>
-In-Reply-To: <5566D83B.1020006@free.fr>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] v3 heap mem-pool-size
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] debian: remove xeno-config from
+ libxenomai-dev package
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,58 +20,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
+On Thu, 28 May 2015 01:51:31 +0200
+Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
 
+> > Just to inform, because i have been in silence all this thread that
+> > some weeks ago (maybe two month) I contacted with the debian
+> > maintainer of xenomai. I offered my help because I was interested
+> > in maintain the package. We finally will work together, and the
+> > debian directory will be hosted in collab-maint git, in alioth, a
+> > git server of debian.
+> > 
+> > Said that, because time constraints of the last weeks, I'm just in
+> > the beginning of review all the packaging of xenomai. I will begin
+> > with 2.6.4 and after that, I will jump to 3.0 when you released an
+> > official one. So, don't try to find anything there, because I have
+> > nothing done. I will try to inform the list about my progress.
+> > 
+> > Anyway, the idea is to drop your debian directory and put a new
+> > one, trying to use the "good practices" and the updated debhelper
+> > tools. I will try to keep the package in a good shape, sync with
+> > the upstream last versions, at least in unstable. If I could, some
+> > backport (because I used it) could be possible.
+> 
+> So, you want to reiterate the previous maintainer mistakes, and
+> continue to maintain the Xenomai Debian packaging outside of the
+> Xenomai project. See my last point for why this is a bad idea.
+> Please, come maintaining Xenomai debian directory, allowing us to
+> review your work and discuss the patches proposed by Debian users.
+> If you want to make a new release because of a correction in the
+> Debian directory, we can arrange something I am sure with a
+> maintenance branch, or a git tag.
 
-On 24/05/2015 10:29, Philippe Gerum wrote:
-> On 05/07/2015 03:14 PM, Jeff Webb wrote:
->> On 05/07/2015 04:07 AM, Gilles Chanteperdrix wrote:
->>> On Thu, May 07, 2015 at 08:54:31AM +0200, Stéphane ANCELOT wrote:
->>>> Hi,
->>>>
->>>> Is there a better way to raise mem-pool-size other than specifying in
->>>> cmdline ?
->>>>
->>>>      0"007.389| WARNING: [main] heapobj_init() failed for 470 bytes,
->>>> raise
->>>> --mem-pool-size?
->>> A command line option is nice, it allows you to do basically
->>> anything you want by calling your program from a script. What is it
->>> you want to do that can not be achieved this way?
->>>
->> If we don't want to call our application from a script to set
->> appropriate Xenomai parameters, will supplying the --no-auto-init option
->> to xeno-config allow us to set Xenomai run-time options to the desired
->> values by manually calling copperplate_init() from our application?  Are
->> the options that can be passed to copperplate_init() the ones described
->> here [1]?  Do these options apply to applications based on the POSIX
->> skin as well?  If so, I am slightly confused because the documentation
->> (e.g. [2], [3]) that states that all APIs except POSIX are based on the
->> Copperplate library, so it would seem that Copperplate related stuff
->> would not apply to POSIX applications.  I apologize if this is a silly
->> question, but I am still coming up to speed on the new Xenomai 3
->> architecture.
->>
-> There used to be an inconsistency regarding this, because POSIX apps did
-> not share the same init sequence internally than non-POSIX ones. This
-> has been fixed by recent changes, available from the master branch.
-> The new (common) init sequence of all Xenomai applications is described
-> in this document: http://xenomai.org/2015/05/application-setup-and-init/
->
-> You may be interested in using the tunables:
-> http://xenomai.org/2015/05/application-setup-and-init/#Configuration_and_runtime_tunables
->
-> I have checked this approach with a large, real world application, which
-> looks good so far. Please let me know if that addresses your
-> requirements as well. Thanks,
+It should stay in the tree, especially when using it against git and
+not releases. So additional to the already mentioned problems we would
+have to match two repos with submodules or whatever. Send patches to
+two communities .. no thanks.
+Several people said that they use it and want to keep it. And Leopold
+offered to maintain it. I hope that offer stands also if the directory
+stays in the xenomai tree. If so i think the problem is solved and we
+can all continue this thread with a nice distro war ;).
 
-Hi,
-So, if I understand, if I want two programs using shared heaps area, I
-have to define session setting ?
-Regards,
-Steph
-
-
+Henning 
 
 
