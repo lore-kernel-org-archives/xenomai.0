@@ -1,17 +1,14 @@
-Date: Thu, 28 May 2015 15:01:53 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20150528150153.0ceb9539@md1em3qc>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Thu, 28 May 2015 15:09:26 +0200
+Message-ID: <2068804.pkeAgNJKLc@soho>
 In-Reply-To: <20150527235131.GZ27570@hermes.click-hack.org>
 References: <d0dc8c289d0b45fafbb6b39b839b468bd53f256f.1430395105.git.henning.schild@siemens.com>
- <20150527134318.GU27570@hermes.click-hack.org>
- <20150527155732.GX27570@hermes.click-hack.org>
- <2640138.cV33tOjW7h@indiana>
- <20150527235131.GZ27570@hermes.click-hack.org>
+ <2640138.cV33tOjW7h@indiana> <20150527235131.GZ27570@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] [PATCH] debian: remove xeno-config from
- libxenomai-dev package
+	libxenomai-dev package
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,46 +20,63 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Thu, 28 May 2015 01:51:31 +0200
-Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
-
-> > Just to inform, because i have been in silence all this thread that
-> > some weeks ago (maybe two month) I contacted with the debian
-> > maintainer of xenomai. I offered my help because I was interested
-> > in maintain the package. We finally will work together, and the
-> > debian directory will be hosted in collab-maint git, in alioth, a
-> > git server of debian.
-> > 
-> > Said that, because time constraints of the last weeks, I'm just in
-> > the beginning of review all the packaging of xenomai. I will begin
-> > with 2.6.4 and after that, I will jump to 3.0 when you released an
-> > official one. So, don't try to find anything there, because I have
-> > nothing done. I will try to inform the list about my progress.
-> > 
-> > Anyway, the idea is to drop your debian directory and put a new
-> > one, trying to use the "good practices" and the updated debhelper
-> > tools. I will try to keep the package in a good shape, sync with
-> > the upstream last versions, at least in unstable. If I could, some
-> > backport (because I used it) could be possible.
-> 
-> So, you want to reiterate the previous maintainer mistakes, and
-> continue to maintain the Xenomai Debian packaging outside of the
-> Xenomai project. See my last point for why this is a bad idea.
-> Please, come maintaining Xenomai debian directory, allowing us to
-> review your work and discuss the patches proposed by Debian users.
-> If you want to make a new release because of a correction in the
-> Debian directory, we can arrange something I am sure with a
-> maintenance branch, or a git tag.
-
-It should stay in the tree, especially when using it against git and
-not releases. So additional to the already mentioned problems we would
-have to match two repos with submodules or whatever. Send patches to
-two communities .. no thanks.
-Several people said that they use it and want to keep it. And Leopold
-offered to maintain it. I hope that offer stands also if the directory
-stays in the xenomai tree. If so i think the problem is solved and we
-can all continue this thread with a nice distro war ;).
-
-Henning 
-
-
+RWwgRGlqb3VzLCAyOCBkZSBtYWlnIGRlIDIwMTUsIGEgbGVzIDAxOjUxOjMxLCBHaWxsZXMgQ2hh
+bnRlcGVyZHJpeCB2YSAKZXNjcml1cmU6ClsuLi5dCgpkcm9wcGVkIGFsbCB5b3VyIGNvbXBsYWlu
+cyB0byBkZWJpYW4uIEkgbXVzdCByZWFkIGFuZCBhbnN3ZXIgbW9yZSBjYXJlZnVsIGFuZCAKSSBk
+b24ndCBrbm93IGlmIHRoZSB4ZW5vbWFpIGxpc3QgaXMgdGhlIHByb3BlciBhdWRpZW5jZS4KIAog
+Cj4gPiA+IEp1c3QgdG8gYWRkIHNvbWV0aGluZyBtb3JlIHRvIHRoZSBzdWJqZWN0OiBJIGRvIG5v
+dCB0aGluayBiZWluZyB0aGUKPiA+ID4gZGViaWFuIG1haW50YWluZXIgb2YgdGhlIFhlbm9tYWkg
+cGFja2FnZSBpcyBhIGhhcmQgdGFzay4gSSBtZWFuIGNvbWUKPiA+ID4gb24sIGl0IGlzIGp1c3Qg
+YmFzaWNhbGx5IGEgTWFrZWZpbGUgc2hvcnRlciB0aGFuIHNvbWUgb3RoZXIKPiA+ID4gTWFrZWZp
+bGVzIGluIHRoZSBwcm9qZWN0LiBCdXQgdGhpcyByZXF1aXJlcyBzdGF5aW5nIGluIHRvdWNoIHdp
+dGgKPiA+ID4gdGhlIERlYmlhbiBwcm9qZWN0IHRvIGtub3cgd2hhdCB0aGUgImdvb2QgcHJhY3Rp
+Y2VzIiBhcmUsIHdoYXQKPiA+ID4gcHJhY3RpY2VzIGhhdmUgYmVjb21lIGRlcHJlY2F0ZWQgYW5k
+IHdoYXQgbmV3IGRlYmlhbiBoZWxwZXIgY291bGQKPiA+ID4gbWFrZSB0aGUgcGFja2FnaW5nIGV2
+ZW4gc2ltcGxlciwgdGhpbmdzIEkgZG8gbm90IGNhcmUgdG8gZG8uIEluIGFueQo+ID4gPiBjYXNl
+LCB0aGlzIHNob3VsZCBiZSBhIGdvb2QgcmVhc29uIG5vdCB0byBib3RjaCB0aGUgdGFzay4gQSBi
+b3RjaGVkCj4gPiA+IGhhcmQgdGFzayBpcyBlYXNpZXIgdG8gdW5kZXJzdGFuZCB0aGFuIGEgYm90
+Y2hlZCBlYXN5IHRhc2suCj4gPiAKPiA+IEp1c3QgdG8gaW5mb3JtLCBiZWNhdXNlIGkgaGF2ZSBi
+ZWVuIGluIHNpbGVuY2UgYWxsIHRoaXMgdGhyZWFkIHRoYXQgc29tZQo+ID4gd2Vla3MgYWdvICht
+YXliZSB0d28gbW9udGgpIEkgY29udGFjdGVkIHdpdGggdGhlIGRlYmlhbiBtYWludGFpbmVyIG9m
+Cj4gPiB4ZW5vbWFpLiBJIG9mZmVyZWQgbXkgaGVscCBiZWNhdXNlIEkgd2FzIGludGVyZXN0ZWQg
+aW4gbWFpbnRhaW4gdGhlCj4gPiBwYWNrYWdlLiBXZSBmaW5hbGx5IHdpbGwgd29yayB0b2dldGhl
+ciwgYW5kIHRoZSBkZWJpYW4gZGlyZWN0b3J5IHdpbGwgYmUKPiA+IGhvc3RlZCBpbiBjb2xsYWIt
+bWFpbnQgZ2l0LCBpbiBhbGlvdGgsIGEgZ2l0IHNlcnZlciBvZiBkZWJpYW4uCj4gPiAKPiA+IFNh
+aWQgdGhhdCwgYmVjYXVzZSB0aW1lIGNvbnN0cmFpbnRzIG9mIHRoZSBsYXN0IHdlZWtzLCBJJ20g
+anVzdCBpbiB0aGUKPiA+IGJlZ2lubmluZyBvZiByZXZpZXcgYWxsIHRoZSBwYWNrYWdpbmcgb2Yg
+eGVub21haS4gSSB3aWxsIGJlZ2luIHdpdGggMi42LjQKPiA+IGFuZCBhZnRlciB0aGF0LCBJIHdp
+bGwganVtcCB0byAzLjAgd2hlbiB5b3UgcmVsZWFzZWQgYW4gb2ZmaWNpYWwgb25lLiBTbywKPiA+
+IGRvbid0IHRyeSB0byBmaW5kIGFueXRoaW5nIHRoZXJlLCBiZWNhdXNlIEkgaGF2ZSBub3RoaW5n
+IGRvbmUuIEkgd2lsbCB0cnkKPiA+IHRvIGluZm9ybSB0aGUgbGlzdCBhYm91dCBteSBwcm9ncmVz
+cy4KPiA+IAo+ID4gQW55d2F5LCB0aGUgaWRlYSBpcyB0byBkcm9wIHlvdXIgZGViaWFuIGRpcmVj
+dG9yeSBhbmQgcHV0IGEgbmV3IG9uZSwKPiA+IHRyeWluZyB0byB1c2UgdGhlICJnb29kIHByYWN0
+aWNlcyIgYW5kIHRoZSB1cGRhdGVkIGRlYmhlbHBlciB0b29scy4gSQo+ID4gd2lsbCB0cnkgdG8g
+a2VlcCB0aGUgcGFja2FnZSBpbiBhIGdvb2Qgc2hhcGUsIHN5bmMgd2l0aCB0aGUgdXBzdHJlYW0g
+bGFzdAo+ID4gdmVyc2lvbnMsIGF0IGxlYXN0IGluIHVuc3RhYmxlLiBJZiBJIGNvdWxkLCBzb21l
+IGJhY2twb3J0IChiZWNhdXNlIEkgdXNlZAo+ID4gaXQpIGNvdWxkIGJlIHBvc3NpYmxlLgo+IFNv
+LCB5b3Ugd2FudCB0byByZWl0ZXJhdGUgdGhlIHByZXZpb3VzIG1haW50YWluZXIgbWlzdGFrZXMs
+IGFuZAo+IGNvbnRpbnVlIHRvIG1haW50YWluIHRoZSBYZW5vbWFpIERlYmlhbiBwYWNrYWdpbmcg
+b3V0c2lkZSBvZiB0aGUKPiBYZW5vbWFpIHByb2plY3QuIFNlZSBteSBsYXN0IHBvaW50IGZvciB3
+aHkgdGhpcyBpcyBhIGJhZCBpZGVhLgoKSXQncyB5b3VyIG9waW5pb24uIEkgZG9uJ3QgYWdyZWUg
+d2l0aCB5b3UuIEFueXdheSwgbGV0IG1lIGJlZ2luLCB0cnkgdG8gZmluZCAKc29tZSBraW5kIG9m
+IGNvbmZsdWVuY2UgdGhhdCBmaXRzIGRlYmlhbiByZXF1aXJlbWVudHMgYW5kIHVwc3RyZWFtIApy
+ZXF1aXJlbWVudHMuIFBsZWFzZSwgdHJ5IHRvIGJlZ2luIGZyb20gemVybywgdGhlIHBhc3QgaXMg
+aW4gdGhlIHBhc3QgKFF1ZWVuIApFbHNhIGRpeGl0IDotKSkKCj4gUGxlYXNlLCBjb21lIG1haW50
+YWluaW5nIFhlbm9tYWkgZGViaWFuIGRpcmVjdG9yeSwgYWxsb3dpbmcgdXMgdG8KPiByZXZpZXcg
+eW91ciB3b3JrIGFuZCBkaXNjdXNzIHRoZSBwYXRjaGVzIHByb3Bvc2VkIGJ5IERlYmlhbiB1c2Vy
+cy4KPiBJZiB5b3Ugd2FudCB0byBtYWtlIGEgbmV3IHJlbGVhc2UgYmVjYXVzZSBvZiBhIGNvcnJl
+Y3Rpb24gaW4gdGhlCj4gRGViaWFuIGRpcmVjdG9yeSwgd2UgY2FuIGFycmFuZ2Ugc29tZXRoaW5n
+IEkgYW0gc3VyZSB3aXRoIGEKPiBtYWludGVuYW5jZSBicmFuY2gsIG9yIGEgZ2l0IHRhZy4KClN1
+cmUsIHdlIHdpbGwgZmluZCBhIHNvbHV0aW9uLiBJJ20gYSBiaXQgb3ZlcmZsb3cgdGhlc2UgZGF5
+cy4gTGV0IG1lIHRyeSB0byAKd29yayBvbiB4ZW5vbWFpIHBhY2thZ2luZyBzb29uIGFuZCB3ZSBj
+YW4gZGlzY3VzcyB0aGUgcmVzdC4KCkJlc3QgcmVnYXJkcywKCkxlb3BvbGQKCi0tIAotLQpMaW51
+eCBVc2VyIDE1MjY5MiAgICAgR1BHOiAwNUY0QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQotLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkE6IEJlY2F1c2UgaXQgbWVzc2VzIHVwIHRo
+ZSBvcmRlciBpbiB3aGljaCBwZW9wbGUgbm9ybWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkgaXMgdG9w
+LXBvc3Rpbmcgc3VjaCBhIGJhZCB0aGluZz8KQTogVG9wLXBvc3RpbmcuClE6IFdoYXQgaXMgdGhl
+IG1vc3QgYW5ub3lpbmcgdGhpbmcgaW4gZS1tYWlsPwotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQg
+LS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1l
+OiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogODE5
+IGJ5dGVzCkRlc2M6IFRoaXMgaXMgYSBkaWdpdGFsbHkgc2lnbmVkIG1lc3NhZ2UgcGFydC4KVVJM
+OiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTUw
+NTI4LzcxMGEzNTQwL2F0dGFjaG1lbnQuc2lnPgo=
