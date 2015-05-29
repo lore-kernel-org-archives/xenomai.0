@@ -1,16 +1,14 @@
-From: Jouko Haapaluoma <jouko.haapaluoma@wapice.com>
-Date: Fri, 29 May 2015 06:11:20 +0000
-Message-ID: <C9F8415089354E4FB76F4548B3515AF48CD48DF5@edb1.wapice.localdomain>
-References: <C9F8415089354E4FB76F4548B3515AF48CD382E9@edb0.wapice.localdomain>
- <C9F8415089354E4FB76F4548B3515AF48CD48B3E@edb1.wapice.localdomain>
- <55661E8E.1000300@xenomai.org>
-In-Reply-To: <55661E8E.1000300@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <55680E2D.20501@free.fr>
+Date: Fri, 29 May 2015 08:58:53 +0200
+From: =?UTF-8?B?U3TDqXBoYW5lIEFOQ0VMT1Q=?= <sancelot@free.fr>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] [RFC] [PATCH] Backport for chained interrupt handling
- fix - Linux 3.1.10 PowerPC
+References: <554B0C27.5010802@free.fr>
+ <20150507090719.GC2099@hermes.click-hack.org> <554B651A.9000209@nta-inc.net>
+ <55618C06.2040608@xenomai.org>
+In-Reply-To: <55618C06.2040608@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] v3 heap mem-pool-size
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,109 +17,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Jeff Webb <jeff.webb@nta-inc.net>, xenomai@xenomai.org
 
-From: Philippe Gerum [mailto:rpm@xenomai.org]=20
-Sent: 27. toukokuuta 2015 22:44
+Hi,
 
-> This might be the consequence of a domain mismatch. A related bug was
-> fixed a few months ago, you should at least check the IRQ log syncer in
-> the legacy pipeline code for this issue:
-> http://git.xenomai.org/ipipe.git/commit/?h=3Dipipe-3.18&id=3D3a71c688d0e3=
-3c2e1bbe3eee8cce898419043cac
+I tried git version.
 
-I tried the patch you posted. We had several boards running last night and
-no crashes or freezes so far. It seems that this fixed the crashes we had
-after the backported latency fix patch was applied (the one I posted before=
-).
-It also makes sense according to the kernel oops like you said.
+I am able to create heaps in one program. No problem.
+but altough, I enabled pshared, I can not bind on these heaps from 
+another program.
 
-After all, it seems that the backported latency fix was OK but we only=20
-saw this other bug after the latency fix was applied.=20
+rt_heap_bind fails with "Resource temporary unavailable."
 
-Many thanks!
-
-For those interested, the backported version
-(adeos-ipipe-3.1.10-powerpc-2.13-07.patch) of the patch "handle
-domain downgrading in slow path of IRQ syncer" can be found below in
-this mail.
-
-BR,
-Jouko Haapaluoma
-Wapice Ltd
+Regards,
+S.Ancelot
 
 
-From: Jouko Haapaluoma
-Date: Thu, 28 May 2015 12:40:20 +0300
-Subject: [PATCH] Fix domain downgrading in IRQ syncer
----
- include/linux/ipipe.h |  2 ++
- kernel/ipipe/core.c   | 27 +++++++++++++++++++++++++++
- 2 files changed, 29 insertions(+)
-
-diff --git a/include/linux/ipipe.h b/include/linux/ipipe.h
-index 253dcdf..45bd89d 100644
---- a/include/linux/ipipe.h
-+++ b/include/linux/ipipe.h
-@@ -69,9 +69,11 @@ static inline void ipipe_context_check_off(void) { }
- #ifdef CONFIG_IPIPE_DEBUG_INTERNAL
- #define IPIPE_WARN(c)		WARN_ON(c)
- #define IPIPE_WARN_ONCE(c)	WARN_ON_ONCE(c)
-+#define IPIPE_BUG_ON(c)		BUG_ON(c)
- #else
- #define IPIPE_WARN(c)		do { (void)(c); } while (0)
- #define IPIPE_WARN_ONCE(c)	do { (void)(c); } while (0)
-+#define IPIPE_BUG_ON(c)		do { (void)(c); } while (0)
- #endif
-=20
- #ifdef CONFIG_IPIPE
-diff --git a/kernel/ipipe/core.c b/kernel/ipipe/core.c
-index 327ebff..9c096c7 100644
---- a/kernel/ipipe/core.c
-+++ b/kernel/ipipe/core.c
-@@ -1244,6 +1244,7 @@ void __ipipe_sync_stage(void)
- 	struct ipipe_domain *ipd;
- 	int irq;
-=20
-+respin:
- 	ipd =3D __ipipe_current_domain;
- 	p =3D ipipe_cpudom_ptr(ipd);
-=20
-@@ -1288,7 +1289,33 @@ void __ipipe_sync_stage(void)
- 			local_irq_disable_hw();
- 		}
-=20
-+		/*
-+		 * We may have migrated to a different CPU (1) upon
-+		 * return from the handler, or downgraded from the
-+		 * head domain to the root one (2), the opposite way
-+		 * is NOT allowed though.
-+		 *
-+		 * (1) reload the current per-cpu context pointer, so
-+		 * that we further pull pending interrupts from the
-+		 * proper per-cpu log.
-+		 *
-+		 * (2) check the stall bit to know whether we may
-+		 * dispatch any interrupt pending for the root domain,
-+		 * and respin the entire dispatch loop if
-+		 * so. Otherwise, immediately return to the caller,
-+		 * _without_ affecting the stall state for the root
-+		 * domain, since we do not own it at this stage.  This
-+		 * case is basically reflecting what may happen in
-+		 * dispatch_irq_head() for the fast path.
-+		 */
-+
- 		p =3D ipipe_cpudom_ptr(__ipipe_current_domain);
-+		if (__ipipe_current_domain !=3D ipd) {
-+			IPIPE_BUG_ON(ipd =3D=3D ipipe_root_domain);
-+			if (test_bit(IPIPE_STALL_FLAG, &p->status))
-+				return;
-+			goto respin;
-+		}
- 	}
-=20
- 	if (ipd =3D=3D ipipe_root_domain)
---=20
-1.8.4
+On 24/05/2015 10:29, Philippe Gerum wrote:
+> On 05/07/2015 03:14 PM, Jeff Webb wrote:
+>> On 05/07/2015 04:07 AM, Gilles Chanteperdrix wrote:
+>>> On Thu, May 07, 2015 at 08:54:31AM +0200, Stéphane ANCELOT wrote:
+>>>> Hi,
+>>>>
+>>>> Is there a better way to raise mem-pool-size other than specifying in
+>>>> cmdline ?
+>>>>
+>>>>      0"007.389| WARNING: [main] heapobj_init() failed for 470 bytes,
+>>>> raise
+>>>> --mem-pool-size?
+>>> A command line option is nice, it allows you to do basically
+>>> anything you want by calling your program from a script. What is it
+>>> you want to do that can not be achieved this way?
+>>>
+>> If we don't want to call our application from a script to set
+>> appropriate Xenomai parameters, will supplying the --no-auto-init option
+>> to xeno-config allow us to set Xenomai run-time options to the desired
+>> values by manually calling copperplate_init() from our application?  Are
+>> the options that can be passed to copperplate_init() the ones described
+>> here [1]?  Do these options apply to applications based on the POSIX
+>> skin as well?  If so, I am slightly confused because the documentation
+>> (e.g. [2], [3]) that states that all APIs except POSIX are based on the
+>> Copperplate library, so it would seem that Copperplate related stuff
+>> would not apply to POSIX applications.  I apologize if this is a silly
+>> question, but I am still coming up to speed on the new Xenomai 3
+>> architecture.
+>>
+> There used to be an inconsistency regarding this, because POSIX apps did
+> not share the same init sequence internally than non-POSIX ones. This
+> has been fixed by recent changes, available from the master branch.
+> The new (common) init sequence of all Xenomai applications is described
+> in this document: http://xenomai.org/2015/05/application-setup-and-init/
+>
+> You may be interested in using the tunables:
+> http://xenomai.org/2015/05/application-setup-and-init/#Configuration_and_runtime_tunables
+>
+> I have checked this approach with a large, real world application, which
+> looks good so far. Please let me know if that addresses your
+> requirements as well. Thanks,
+>
 
 
