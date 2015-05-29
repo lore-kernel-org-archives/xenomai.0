@@ -1,19 +1,19 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Fri, 29 May 2015 16:16:18 -0400
-Message-ID: <20150529201618.GM6169@csclub.uwaterloo.ca>
-References: <d0dc8c289d0b45fafbb6b39b839b468bd53f256f.1430395105.git.henning.schild@siemens.com>
- <20150527134318.GU27570@hermes.click-hack.org>
- <20150527155732.GX27570@hermes.click-hack.org>
- <2640138.cV33tOjW7h@indiana>
- <20150527235131.GZ27570@hermes.click-hack.org>
- <20150528155804.GI6169@csclub.uwaterloo.ca>
- <20150528173226.GC27570@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20150528173226.GC27570@hermes.click-hack.org>
-Subject: Re: [Xenomai] [PATCH] debian: remove xeno-config from
- libxenomai-dev package
+In-Reply-To: <20150519183909.GH10686@hermes.click-hack.org>
+References: <CAKC9m6cqL6vFttH3QJM9Z64YqHscF1QGCeP6dq5w=XepGDXgeQ@mail.gmail.com>
+ <20150513180613.GE3759@hermes.click-hack.org>
+ <CAKC9m6edtqma0t4ddUpqker1Ofx5YDyV6TUXNY3EAZnxyDu2vQ@mail.gmail.com>
+ <20150518173654.GC10686@hermes.click-hack.org>
+ <CAKC9m6d025dA-8hZ=tRS86+RP9jomraT9MKvBBDdiBNo9DUmwQ@mail.gmail.com>
+ <20150519183909.GH10686@hermes.click-hack.org>
+Date: Fri, 29 May 2015 14:32:51 -0700
+Message-ID: <CAKC9m6e3=O2jhAQ124Mv4+7kEHpkqFFD4THpTgTa=0zWbCJNAA@mail.gmail.com>
+From: Hongfei Cheng <hongfei@mperpetuo.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai]
+	=?utf-8?b?SVJRIGZsb3cgaGFuZGxlcjog4oCcaGFuZGxlX2VkZ2Vf?=
+	=?utf-8?b?aXJx4oCdIHZzIOKAnGhhbmRsZV9sZXZlbF9pcnHigJ0=?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,123 +25,164 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Thu, May 28, 2015 at 07:32:26PM +0200, Gilles Chanteperdrix wrote:
-> As I said in the next mail, this is ridiculous. First a few headers
-> and a .pc file do not occupy that much room, I mean come on, people
-> have tera bytes disks now, and what does a Debian occupy with all
-> the packages installed 100 GiB ? And second the Debian system is
-> spending way much more space elsewhere with its package with all
-> options enabled that get a lot of stuff installed on your system
-> that you actually do not need. Look at libav dependencies for
-> instance. libav can be configured to have no external dependencies
-> and this is generally sufficient for common use like watching
-> videos. In addition to that, there are packages that you do not need
-> or want, that will cause apt to uninstall half the distribution if
-> you remove them, so, you have to keep them, and they are more than
-> just a few headers and a .pc file.
+On Tue, May 19, 2015 at 11:39 AM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+> On Tue, May 19, 2015 at 10:23:36AM -0700, Hongfei Cheng wrote:
+>> On Mon, May 18, 2015 at 10:36 AM, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org> wrote:
+>> > On Mon, May 18, 2015 at 10:32:49AM -0700, Hongfei Cheng wrote:
+>> >> On Wed, May 13, 2015 at 11:06 AM, Gilles Chanteperdrix
+>> >> <gilles.chanteperdrix@xenomai.org> wrote:
+>> >> > On Wed, May 13, 2015 at 12:55:46AM -0700, Hongfei Cheng wrote:
+>> >> >> Hi All,
+>> >> >>
+>> >> >> In the document of "Porting Xenomai dual kernel to a new ARM SoC",
+>> >> >> section "flow handler" states: If the flow handler is
+>> >> >> =E2=80=9Chandle_edge_irq=E2=80=9D, and the system locks up when th=
+e first interrupt
+>> >> >> happens, try replacing =E2=80=9Chandle_edge_irq=E2=80=9D with =E2=
+=80=9Chandle_level_irq=E2=80=9D.
+>> >> >>
+>> >> >> Could anyone explain why =E2=80=9Chandle_edge_irq=E2=80=9D can cau=
+se system to hang
+>> >> >> while =E2=80=9Chandle_level_irq=E2=80=9D doesn't? I searched the a=
+rchives but
+failed
+>> >> >> to find any discussion on this topic.
+>> >> >
+>> >> > level irqs are acked and masked at interrupt controller level on
+>> >> > entry, whereas edge interrupts are only acked. The Adeos patch
+>> >> > unmasks the irqs at processor level after this initial ack and mask
+>> >> > or ack. So, if the interrupt controller keeps the interrupt asserte=
+d
+>> >> > at the processor level when the level stays the same (IOW, if the
+>> >> > interrupt controller only supports the "level" behaviour), unmaskin=
+g
+>> >> > the interrupt line will cause the interrupt to trigger again, being
+>> >> > ack again, etc... without any chance for the handler to ack the
+>> >> > interrupt at device level. The fix is to use handle_level_irq so
+>> >> > that the irq is masked at interrupt controller level before irqs ar=
+e
+>> >> > unmasked at processor level.
+>> >> >
+>> >> > This does not happen with an unpatched kernel, because irqs are not
+>> >> > unmasked at processor level until the handler has had a chance to
+>> >> > execute and ack the interrupt at device level.
+>> >>
+>> >> Gilles, thank you for the detailed explanation.
+>> >>
+>> >> For ARM Cortex-A9/A15/A57, can we make the following statements as to
+>> >> which irq flow handler can be used for a specific interrupt:
+>> >> 1. An interrupt input is programmed as "level-sensitive" on the
+>> >> interrupt controller (GIC): only flow handler =E2=80=9Chandle_level_i=
+rq=E2=80=9D
+>> >> should be used at the device driver level.
+>> >> 2. An interrupt input is programmed as "edge-triggered" on the
+>> >> interrupt controller (GIC): either "edge" or "level" flow handler can
+>> >> be used at the device driver level.
+>> >
+>> > I believe on cortex A9, the GIC irqs are of the "fasteoi" type.
+>> > Which is a kind of level, but requires more patching of the irq
+>> > controller routines. Is not that code shared between 32 and 64 bits?
+>>
+>> The GIC code is indeed shared between AArch32 and AArch64. However on
+>> our ARMv8 platform, only parts of the SPIs, 32~447, are initialized
+>> and mapped to fasteoi. The rest of the SPIs, 448~639, are for platform
+>> specific peripheral drivers. These drivers use handle_level_irq and
+>> handle_edge_irq as flow handlers.
+>>
+>> What we are seeing is that, when I-pipe is enabled, some of the
+>> platform specific peripheral drivers receive numerous interrupts which
+>> are nonexistent when I-pipe is disabled. At first glance, such problem
+>> appears to match the pattern of using "handle_edge_irq" for
+>> level-triggered interrupts at the GIC. However the number of the
+>> "bogus" interrupts (per second) are only in the 100s. The handlers in
+>> the device drivers still have chance to process these interrupts.
+>>
+>> Here is a partial call stack:
+>> <peripheral-driver-irq-mask>+0xc/0x18
+>> gic_hold_irq+0xb8/0x134
+>> __ipipe_ack_fasteoi_irq+0x14/0x20
+>> __ipipe_dispatch_irq+0x90/0x2a8
+>> __ipipe_grab_irq+0x5c/0x74
+>>
+>> Does this call stack look correct to you? Any idea as to the cause of
+>> such problem?
+>
+> No, this call stack does not look correct. gic_hold_irq should only
+> mask the irq at interrupt controller level, not call back anything
+> related to peripheral driver itself.
+>
+> Also, if an irq does not use handle_fasteoi_irq, gic_hold_irq should
+> not be invoked.
 
-We ship Debian on systems with 512MB of flash.  Not everything is a
-desktop or a server.  We like how Debian splits things, it is very
-convinient.
+What we've found is that one of the vendor-specific platform drivers
+defines arch specific GIC irq extension, gic_arch_extn. The GIC callbacks
+added by the I-pipe core, gic_hold_irq() and gic_release_irq(), "extend"
+some of the GIC irqs to the platform driver's irq_mask and irq_unmask
+callbacks. None of these GIC irqs are registered by the platform driver.
+The following code changes are needed to successfully probe the platform
+driver.
 
-> "non-free Free Software Foundation documentation" sounds like a
-> cheap oxymoron does not it? And does not Debian have a directory
-> named "non-free" in its repository for this case? From a user-space
-> experience point of view, this was a frustrating change. That and
-> the gratuitous move of /usr/doc to /usr/share/doc, but that was a
-> long time ago.
+In addition, the spinlock used in the irq callbacks of the platform driver
+has to be converted to I-pipe spinlock. Below is a sequence of the
+spinlocks used for gic_mask_irq(), for instance:
+<drivers/irqchip/irq-gic.c> gic_mask_irq():
+raw_spin_lock_irqsave_cond(&irq_controller_lock, flags); /*
+IPIPE_DEFINE_RAW_SPINLOCK(irq_controller_lock) */
+<platform driver> msm_mpm_disable_irq(): spin_lock_irqsave(&msm_mpm_lock,
+flags); /* IPIPE_DEFINE_SPINLOCK(msm_mpm_lock) */
+<kernel/sched/core.c> complete(struct completion *x):
+spin_lock_irqsave(&x->wait.lock, flags); /* x->wait.lock is defined as
+spinlock_t */
+......
+<kernel/sched/core.c> complete(struct completion *x):
+spin_unlock_irqrestore(&x->wait.lock, flags);
+<platform driver> msm_mpm_disable_irq():
+spin_unlock_irqrestore(&msm_mpm_lock, flags);
+<drivers/irqchip/irq-gic.c>:
+raw_spin_unlock_irqrestore_cond(&irq_controller_lock, flags);
 
-That was a long time ago.  And the FSF making such a blunder is odd,
-but they did it, not Debian.
+Two questions:
+1). Is the linux spinlock used in its scheduler's complete() function safe
+in this chain of spinlocks?
+2). Is there any risk if gic_arch_extn.irq_hold() and
+gic_arch_extn.irq_release() are set as NULL (in the platform driver)?
 
-> Well, I do not seem to have the problem right now, otherwise I would
-> have sent a screenshot. But I assure you I had it at some point.
-> Maybe it depends on some static IP range. But the error message made
-> it clear that your access was denied because you were using an
-> anonymous VPN service. Maybe the problem was fixed in the mean time.
+diff --git a/drivers/irqchip/irq-gic.c b/drivers/irqchip/irq-gic.c
+index debcd50..fdb0a5b 100644
+--- a/drivers/irqchip/irq-gic.c
++++ b/drivers/irqchip/irq-gic.c
+@@ -363,11 +363,16 @@ static void gic_hold_irq(struct irq_data *d)
 
-I wonder if they came up with a better way to prevent spammers messing
-with the wiki.
+        raw_spin_lock_irqsave_cond(&irq_controller_lock, flags);
+        writel_relaxed_no_log(mask, gic_dist_base(d) +
+GIC_DIST_ENABLE_CLEAR + (gic_irq(d) / 32) * 4);
++#ifdef CONFIG_ARCH_MSM
++       if (gic_arch_extn.irq_hold)
++               gic_arch_extn.irq_hold(d);
++#else /* !CONFIG_ARCH_MSM */
+        if (gic_arch_extn.irq_mask)
+                gic_arch_extn.irq_mask(d);
+        if (gic_arch_extn.irq_eoi) {
+                gic_arch_extn.irq_eoi(d);
+        }
++#endif /* CONFIG_ARCH_MSM */
+        writel_relaxed(gic_irq(d), gic_cpu_base(d) + GIC_CPU_EOI);
+        raw_spin_unlock_irqrestore_cond(&irq_controller_lock, flags);
+ }
+@@ -378,8 +383,13 @@ static void gic_release_irq(struct irq_data *d)
+        unsigned long flags;
 
-> I do not find that the Apache httpd project does "a shitty job", but
-> I find the Debian apache configuration system over-engineered with
-> its specialized helpers, yet weak on the point of implicit
-> configuration file order, so shitty in a way. And requires to
-> acquire knowledge about the package not available in the upstream
-> documentation.
-
-I think both the apache way and the Debian way are a mess. :)
-
-> My desktop runs 24/7, maybe that is the reason.
-
-Mine do too.
-
-> I currently use Slackware, and the Slackware base system only
-> contains very few packages (a Slackware with all packages installed,
-> yes, this includes the library headers and documentation, occupies 8
-> GiB of disk space), and I guess none that few people use. The
-> distribution does not make promises it can't keep.
-
-I can't possible go back to that shitty "packaging" system (if you can
-even call it that)..  No way.  I went from there to redhat which was a
-huge improvement, and then to Debian which was another huge improvement.
-
-And last I checked it looked like slackware had been dead for a couple
-of years, which would make it even more stale than Debian stable.
-
-> > often even in the upstream code in that case.
-> 
-> From my point of view, a Debian package maintainer is responsible
-> for the Debian package quality. So, if he can not reach that quality
-> because the upstream code does not have a high enough quality, he
-> should not package it. Packaging low quality software without fixing
-> the quality issue is a bad service to the user. Again, a frustrating
-> experience from the end-user point of view.
-
-Well if people want the code even in the state it is in, it can be
-packaged.  Perhaps Ubuntu's concept of having core packages, and then
-optional repositories of lower quality software makes sense there.
-
-> For some software (mostly server/infrastructure software) a good
-> testing matters. And for some other (mostly desktop software and
-> developer tools like the autotools, toolchain and debugger I forgot
-> to mention), having the latest version is imperative. By using
-> debian testing/unstable you give up on the first. By using debian
-> stable, you give up on the second. The only solution on Debian is to
-> compile testing packages on stable, but as I explained, even this
-> only available solution is made uselessly difficult by the control
-> files requiring newer versions of the libraries that they do not
-> actually strictly need. Compiling packages yourself is much easier
-> on other distributions.
-
-That's a matter of ones preference.  I find building debian packages
-fairly simply.  Redhat is complicated.  Some distributions I guess you
-just build from source and throw it in and it's your problem to get the
-things that work together right.  Some consider that easier.
-
-> I was rather referring to the conclusion of the mess.
-
-The conclussion and the entire progress towards it.  I am not convinced
-it is even over yet.
-
-> > Not required to, but usually does submit upstream.  Of course there are
-> > also cases of upstream being impossible to work with, or in some cases
-> > no longer exists.  There are packages for which Debian has become the
-> > defacto maintainer because the upstream is no longer there.
-> 
-> I do not think Xenomai was in either of these cases.
-
-I entirely agree. :)
-
-> I thought it worked well, and believed like you that problems came
-> from upstream packages, until I tried another one and found out it
-> worked better, so, the Debian problems definitely not all come from
-> the upstream packages.
-
-Well I know slackware, and I can't think of anything it does well,
-so unless you have some other distribution suggestions to look at,
-I am stuck with Debian.  Oh well.
-
--- 
-Len Sorensen
-
+        raw_spin_lock_irqsave_cond(&irq_controller_lock, flags);
++#ifdef CONFIG_ARCH_MSM
++       if (gic_arch_extn.irq_release)
++               gic_arch_extn.irq_release(d);
++#else /* !CONFIG_ARCH_MSM */
+        if (gic_arch_extn.irq_unmask)
+                gic_arch_extn.irq_unmask(d);
++#endif /* CONFIG_ARCH_MSM */
+        writel_relaxed(mask, gic_dist_base(d) + GIC_DIST_ENABLE_SET +
+(gic_irq(d) / 32) * 4);
+        raw_spin_unlock_irqrestore_cond(&irq_controller_lock, flags);
+ }
