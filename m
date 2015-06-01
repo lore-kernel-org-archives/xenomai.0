@@ -1,13 +1,13 @@
-Date: Mon, 1 Jun 2015 12:17:06 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150601101706.GB25476@hermes.click-hack.org>
-References: <5349076.XOSFdPdBY7@indiana>
+Message-ID: <DUB121-W243EAFB481F0A0900E76B081B60@phx.gbl>
+From: mobin Motallebizadeh <mobin.seven@live.com>
+Date: Mon, 1 Jun 2015 15:46:07 +0000
+In-Reply-To: <20150531063048.GA4433@hermes.click-hack.org>
+References: <DUB121-W42011D0A38E8540A396B2C81C80@phx.gbl>,
+ <20150531063048.GA4433@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <5349076.XOSFdPdBY7@indiana>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Gpg signatures of releases
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] smp.c error on rc4
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,31 +16,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Jun 01, 2015 at 12:11:03AM +0200, Leopold Palomo-Avellaneda wrote:
-> Hi,
-> 
-> who sig 
-> 
-> http://download.gna.org/xenomai/stable/latest/*.sig
-> 
-> ?
 
-I do. There used to be a readme file that said so, but it seems it
-is no longer displayed by gna. In any case, if you go to the gna
-interface you should find the keys of all the project members,
-including mine (in fact, gna quarantines an upload if it is not
-signed by a project member, or at least is used to). I use the same
-key to sign that mail.
 
--- 
-					    Gilles.
+> Date: Sun, 31 May 2015 08:30:48 +0200
+> From: gilles.chanteperdrix@xenomai.org
+> To: mobin.seven@live.com
+> CC: xenomai@xenomai.org
+> Subject: Re: [Xenomai] smp.c error on rc4
+> =
+
+> On Sat, May 30, 2015 at 07:09:15PM +0000, mobin Motallebizadeh wrote:
+> > I'm getting this error in making kernel( Xenomai 3.0 rc4 - ipipe patch =
+3.16 - kernel 3.16 - target: armv7)
+> > arch/arm/kernel/smp.c: In function =91ipi_timer=92:arch/arm/kernel/smp.=
+c:531:2: error: implicit declaration of function =91=92 [-Werror=3Dimplicit=
+-function-declaration]cc1: some warnings being treated as errorsscripts/Mak=
+efile.build:257: recipe for target 'arch/arm/kernel/smp.o' failedmake[1]: *=
+** [arch/arm/kernel/smp.o] Error 1make[1]: *** Waiting for unfinished jobs.=
+...Makefile:901: recipe for target 'arch/arm/kernel' failedmake: *** [arch/=
+arm/kernel] Error 2
+> > WHY? 		 	   		  =
+
+> =
+
+> 3.16 is not a version of I-pipe patch, it is the version of the
+> Linux kernel it applies to.
+> armv7 is vague, there are a lot of different armv7 arm cores and
+> processors.
+> The name of the function which is implicitly declared is missing.
+> And the answer to "why", is certainly because you are using kernel
+> configuration options that nobody else uses. But you do not provide
+> that information either.
+> =
+
+> So, given this characteristic lack of information, I am afraid
+> it is impossible for us to answer your question.
+> =
+
+> -- =
+
+> 					    Gilles.
+
+I have attached my config file.thanX
+
+ 		 	   		  =
+
 -------------- next part --------------
 A non-text attachment was scrubbed...
-Name: not available
-Type: application/pgp-signature
-Size: 811 bytes
+Name: rpi_xen.config
+Type: application/octet-stream
+Size: 49797 bytes
 Desc: not available
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20150601/695395ef/attachment.sig>
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20150601/9648bd84/at=
+tachment.obj>
