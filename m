@@ -1,14 +1,12 @@
-Date: Mon, 1 Jun 2015 23:21:54 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150601212154.GK27570@hermes.click-hack.org>
-References: <5349076.XOSFdPdBY7@indiana>
- <20150601101706.GB25476@hermes.click-hack.org>
- <1532737.3vFK565vsb@indiana>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Mon, 01 Jun 2015 23:51:33 +0200
+Message-ID: <2176353.1XFu4ogKc2@indiana>
+In-Reply-To: <20150601212154.GK27570@hermes.click-hack.org>
+References: <5349076.XOSFdPdBY7@indiana> <1532737.3vFK565vsb@indiana>
+ <20150601212154.GK27570@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <1532737.3vFK565vsb@indiana>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Gpg signatures of releases
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -18,60 +16,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Jun 01, 2015 at 10:52:27PM +0200, Leopold Palomo-Avellaneda wrote:
-> El Dilluns, 1 de juny de 2015, a les 12:17:06, Gilles Chanteperdrix va 
-> escriure:
-> > On Mon, Jun 01, 2015 at 12:11:03AM +0200, Leopold Palomo-Avellaneda wrote:
-> > > Hi,
-> > > 
-> > > who sig
-> > > 
-> > > http://download.gna.org/xenomai/stable/latest/*.sig
-> > > 
-> > > ?
-> > 
-> > I do. There used to be a readme file that said so, but it seems it
-> > is no longer displayed by gna. In any case, if you go to the gna
-> > interface you should find the keys of all the project members,
-> > including mine (in fact, gna quarantines an upload if it is not
-> > signed by a project member, or at least is used to). I use the same
-> > key to sign that mail.
-> 
-> When I try to download the keyring I get a 0 bytes long file from here:
-> 
-> http://gna.org/project/memberlist-gpgkeys.php?group=xenomai
-> 
-> I found that the file was signed by this key with this id A9BF7DBA,
-> but I have not found who is the proprietary.
-> 
-> gpg: using character set `utf-8'
-> :signature packet: algo 17, keyid 1A972013A9BF7DBA
-> 	version 3, created 1411642226, md5len 5, sigclass 0x00
-> 	digest algo 2, begin of digest 95 30
-> 	data: [158 bits]
-> 	data: [158 bits]
-> gpg: Nombre total processat: 0
-> 
-> Any idea?
-
-1- as I told you the key was mine, you can download the key from my
-account:
-http://gna.org/users/gch
-
-2- have you tried gpg --recv-keys ?
-
-I believe this key expired though, my new key is 7F392711, but of
-course the xenomai archives are not signed with it yet.
-
--- 
-					    Gilles.
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: not available
-Type: application/pgp-signature
-Size: 811 bytes
-Desc: not available
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20150601/69a2f56e/attachment.sig>
+RWwgRGlsbHVucywgMSBkZSBqdW55IGRlIDIwMTUsIGEgbGVzIDIzOjIxOjU0LCBHaWxsZXMgQ2hh
+bnRlcGVyZHJpeCB2YSAKZXNjcml1cmU6Cj4gT24gTW9uLCBKdW4gMDEsIDIwMTUgYXQgMTA6NTI6
+MjdQTSArMDIwMCwgTGVvcG9sZCBQYWxvbW8tQXZlbGxhbmVkYSB3cm90ZToKPiA+IEVsIERpbGx1
+bnMsIDEgZGUganVueSBkZSAyMDE1LCBhIGxlcyAxMjoxNzowNiwgR2lsbGVzIENoYW50ZXBlcmRy
+aXggdmEKPiA+IAo+ID4gZXNjcml1cmU6Cj4gPiA+IE9uIE1vbiwgSnVuIDAxLCAyMDE1IGF0IDEy
+OjExOjAzQU0gKzAyMDAsIExlb3BvbGQgUGFsb21vLUF2ZWxsYW5lZGEgCndyb3RlOgo+ID4gPiA+
+IEhpLAo+ID4gPiA+IAo+ID4gPiA+IHdobyBzaWcKPiA+ID4gPiAKPiA+ID4gPiBodHRwOi8vZG93
+bmxvYWQuZ25hLm9yZy94ZW5vbWFpL3N0YWJsZS9sYXRlc3QvKi5zaWcKPiA+ID4gPiAKPiA+ID4g
+PiA/Cj4gPiA+IAo+ID4gPiBJIGRvLiBUaGVyZSB1c2VkIHRvIGJlIGEgcmVhZG1lIGZpbGUgdGhh
+dCBzYWlkIHNvLCBidXQgaXQgc2VlbXMgaXQKPiA+ID4gaXMgbm8gbG9uZ2VyIGRpc3BsYXllZCBi
+eSBnbmEuIEluIGFueSBjYXNlLCBpZiB5b3UgZ28gdG8gdGhlIGduYQo+ID4gPiBpbnRlcmZhY2Ug
+eW91IHNob3VsZCBmaW5kIHRoZSBrZXlzIG9mIGFsbCB0aGUgcHJvamVjdCBtZW1iZXJzLAo+ID4g
+PiBpbmNsdWRpbmcgbWluZSAoaW4gZmFjdCwgZ25hIHF1YXJhbnRpbmVzIGFuIHVwbG9hZCBpZiBp
+dCBpcyBub3QKPiA+ID4gc2lnbmVkIGJ5IGEgcHJvamVjdCBtZW1iZXIsIG9yIGF0IGxlYXN0IGlz
+IHVzZWQgdG8pLiBJIHVzZSB0aGUgc2FtZQo+ID4gPiBrZXkgdG8gc2lnbiB0aGF0IG1haWwuCj4g
+PiAKPiA+IFdoZW4gSSB0cnkgdG8gZG93bmxvYWQgdGhlIGtleXJpbmcgSSBnZXQgYSAwIGJ5dGVz
+IGxvbmcgZmlsZSBmcm9tIGhlcmU6Cj4gPiAKPiA+IGh0dHA6Ly9nbmEub3JnL3Byb2plY3QvbWVt
+YmVybGlzdC1ncGdrZXlzLnBocD9ncm91cD14ZW5vbWFpCj4gPiAKPiA+IEkgZm91bmQgdGhhdCB0
+aGUgZmlsZSB3YXMgc2lnbmVkIGJ5IHRoaXMga2V5IHdpdGggdGhpcyBpZCBBOUJGN0RCQSwKPiA+
+IGJ1dCBJIGhhdmUgbm90IGZvdW5kIHdobyBpcyB0aGUgcHJvcHJpZXRhcnkuCj4gPiAKPiA+IGdw
+ZzogdXNpbmcgY2hhcmFjdGVyIHNldCBgdXRmLTgnCj4gPiAKPiA+IDpzaWduYXR1cmUgcGFja2V0
+OiBhbGdvIDE3LCBrZXlpZCAxQTk3MjAxM0E5QkY3REJBCj4gPiA6Cj4gPiAJdmVyc2lvbiAzLCBj
+cmVhdGVkIDE0MTE2NDIyMjYsIG1kNWxlbiA1LCBzaWdjbGFzcyAweDAwCj4gPiAJZGlnZXN0IGFs
+Z28gMiwgYmVnaW4gb2YgZGlnZXN0IDk1IDMwCj4gPiAJZGF0YTogWzE1OCBiaXRzXQo+ID4gCWRh
+dGE6IFsxNTggYml0c10KPiA+IAo+ID4gZ3BnOiBOb21icmUgdG90YWwgcHJvY2Vzc2F0OiAwCj4g
+PiAKPiA+IEFueSBpZGVhPwo+IAo+IDEtIGFzIEkgdG9sZCB5b3UgdGhlIGtleSB3YXMgbWluZSwg
+eW91IGNhbiBkb3dubG9hZCB0aGUga2V5IGZyb20gbXkKPiBhY2NvdW50Ogo+IGh0dHA6Ly9nbmEu
+b3JnL3VzZXJzL2djaAoKaW4gdGhhdCBwbGFjZSwgdGhlcmUncyBvbmx5IHRoZSA3RjM5MjcxMSwg
+dGhhdCBpdCBzZWVtcyB0aGUgbmV3IG9uZS4KCj4gCj4gMi0gaGF2ZSB5b3UgdHJpZWQgZ3BnIC0t
+cmVjdi1rZXlzID8KCk9rLCB0aGF0IHdhcyB0aGUgcG9pbnQuIEkgZ290IGl0LCBidXQgaXQgd2Fz
+IGV4cGlyZWQuCgo+IEkgYmVsaWV2ZSB0aGlzIGtleSBleHBpcmVkIHRob3VnaCwgbXkgbmV3IGtl
+eSBpcyA3RjM5MjcxMSwgYnV0IG9mCj4gY291cnNlIHRoZSB4ZW5vbWFpIGFyY2hpdmVzIGFyZSBu
+b3Qgc2lnbmVkIHdpdGggaXQgeWV0LgoKVGhlIDIuNi40IHJlbGVhc2VkIHdhcyBzaWduZWQgd2l0
+aCB0aGUgb2xkIG9uZS4KCkFueXdheSwgdGhlIHhlbm9tYWkga2V5cmluZyBhdCBnbmEgaXMgdm9p
+ZC4gUGxlYXNlIGNvdWxkIHlvdSBjaGVjayBpdD8KCgpMZW9wb2xkCgotLSAKLS0KTGludXggVXNl
+ciAxNTI2OTIgICAgIEdQRzogMDVGNEE3QTk0OUEyRDlBQQpDYXRhbG9uaWEKLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpBOiBCZWNhdXNlIGl0IG1lc3NlcyB1cCB0aGUgb3Jk
+ZXIgaW4gd2hpY2ggcGVvcGxlIG5vcm1hbGx5IHJlYWQgdGV4dC4KUTogV2h5IGlzIHRvcC1wb3N0
+aW5nIHN1Y2ggYSBiYWQgdGhpbmc/CkE6IFRvcC1wb3N0aW5nLgpROiBXaGF0IGlzIHRoZSBtb3N0
+IGFubm95aW5nIHRoaW5nIGluIGUtbWFpbD8KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0t
+LS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2ln
+bmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDgxOSBieXRl
+cwpEZXNjOiBUaGlzIGlzIGEgZGlnaXRhbGx5IHNpZ25lZCBtZXNzYWdlIHBhcnQuClVSTDogPGh0
+dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1MDYwMS80
+MGVhYTA5ZC9hdHRhY2htZW50LnNpZz4K
