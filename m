@@ -1,14 +1,13 @@
-Date: Wed, 3 Jun 2015 15:02:17 +0200
+Date: Wed, 3 Jun 2015 15:09:35 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150603130217.GQ27570@hermes.click-hack.org>
-References: <2745691.a91SqWkUDm@eltrolinux48.eltroad.eltropuls>
+Message-ID: <20150603130935.GR27570@hermes.click-hack.org>
+References: <CAHH_qdD+0RnjOZejUuYp9Z7-7sSDfEE+c=sZGds3i_u=8zpKvg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2745691.a91SqWkUDm@eltrolinux48.eltroad.eltropuls>
-Subject: Re: [Xenomai] Problem with RTNET Packet Socket (or RTDM in general)
- in Xenomai 3
+In-Reply-To: <CAHH_qdD+0RnjOZejUuYp9Z7-7sSDfEE+c=sZGds3i_u=8zpKvg@mail.gmail.com>
+Subject: Re: [Xenomai] [Xenomai 2.6] iMX6 + linux 3.16.7 + ipipe arm-7 +
+ inconsistent lock state on kdevtmpfs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,31 +16,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marc =?utf-8?Q?Str=C3=A4mke?= <marc.straemke@eltropuls.de>
+To: Gautier HAOUY <gautier.haouy@gmail.com>
 Cc: xenomai@xenomai.org
 
-On Wed, Jun 03, 2015 at 02:56:07PM +0200, Marc Strämke wrote:
+On Wed, Jun 03, 2015 at 03:00:33PM +0200, Gautier HAOUY wrote:
 > Hello everyone,
 > 
-> I am experiencing an issue with using packet sockets in Xenomai 3. I am at the 
-> moment trying to replicate it on a minimal testcase but struggling.
-> What I've found so far is that when a packet socket is read non-blocking with 
-> MSG_DONTWAIT the socket sometimes cannot be closed afterwards. 
-> I inserted a rt_printk into rt_packet_socket(fd,proto) and rt_packet_close(fd) 
-> in af_packet.c, sometimes rt_packet_close never gets called and so any further 
-> communication on this interface is effectively impossible.
+> I'm requesting once again your help as I'm getting an "INFO message on
+> inconsistent lock state" while booting linux 3.16.7 with ipipe arm-7 on an
+> iMX6 platform. I would like to understand how I could dive in and determine
+> if this is going to be an issue or just informational.
 > 
-> Any hints on where I should start looking? 
+> I kindly ask for assistance as I did not find anything on the internet on
+> how to proceed with such case.
 
-Look at the reference counts.
-
-> I assume the socket should be closed by Xenomai in any case, even if the 
-> application abnormally terminates without calling close? If that is not the 
-> case how do I make sure to clean up after the application in case the 
-> application terminates abnormally?
-
-Yes, xenomai cleans up file descriptors automatically upon process
-termination.
+Please try disabling CONFIG_TRACE_IRQFLAGS. It is known to be broken
+with the I-pipe patch on ARM. You probably can not disable it
+directly, you will have to remove all the options that depend on
+this one.
 
 -- 
 					    Gilles.
