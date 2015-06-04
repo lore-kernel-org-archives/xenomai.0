@@ -1,14 +1,14 @@
 From: Marc =?ISO-8859-1?Q?Str=E4mke?= <marc.straemke@eltropuls.de>
-Date: Wed, 03 Jun 2015 19:09:36 +0200
-Message-ID: <30507154.J7D5WlzkQ8@eltrolinux48.eltroad.eltropuls>
-In-Reply-To: <20150603130217.GQ27570@hermes.click-hack.org>
+Date: Thu, 04 Jun 2015 12:41:47 +0200
+Message-ID: <8492059.5Osop05oYh@eltrolinux48.eltroad.eltropuls>
+In-Reply-To: <30507154.J7D5WlzkQ8@eltrolinux48.eltroad.eltropuls>
 References: <2745691.a91SqWkUDm@eltrolinux48.eltroad.eltropuls>
  <20150603130217.GQ27570@hermes.click-hack.org>
+ <30507154.J7D5WlzkQ8@eltrolinux48.eltroad.eltropuls>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Problem with RTNET Packet Socket (or RTDM in general)
-	in Xenomai 3
+Subject: [Xenomai] rtnet locking/socket SKBs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,66 +19,37 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Thank you for your swift response Gilles,
+Am Mittwoch, 3. Juni 2015, 19:09:36 schrieb Marc Str=E4mke:
+> How is the reference count maintained for the rtdm devices, is that the
+> refcount in the rtdm_fd structure (fd->refs). There is also a driver
+> refcount, I am actually somewhat confused how this is maintained...
 
-Am Mittwoch, 3. Juni 2015, 15:02:17 schrieb Gilles Chanteperdrix:
-> On Wed, Jun 03, 2015 at 02:56:07PM +0200, Marc Str=E4mke wrote:
-> > Hello everyone,
-> > =
+So I got mostly down to the issue but I need some input from someone more =
 
-> > I am experiencing an issue with using packet sockets in Xenomai 3. I =
+knowledged in rtnets design: =
 
-am at
-> > the moment trying to replicate it on a minimal testcase but struggling.
-> > What I've found so far is that when a packet socket is read non-
-blocking
-> > with MSG_DONTWAIT the socket sometimes cannot be closed =
+The reference count of an open AF_PACKET socket is not dropping to zero =
 
-afterwards.
-> > I inserted a rt_printk into rt_packet_socket(fd,proto) and
-> > rt_packet_close(fd) in af_packet.c, sometimes rt_packet_close never =
+because there are still skb in the sockets skb pool and =
 
-gets
-> > called and so any further communication on this interface is effectively
-> > impossible.
-> > =
+rtskb_socket_pool_trylock increments the fds reference =
 
-> > Any hints on where I should start looking?
-> =
+count. rt_socket_cleanup would release the skb pool but never gets called.
 
-> Look at the reference counts.
-> =
+What I do not really understand at this moment is why the fd reference coun=
+t =
 
-Thats what I was assuming also... it is indeed the reference count that =
+gets incremented at all when the socket gets a skb in its pool? =
 
-stays at 1 after closing the socket . /sys/class/rtdm/raw_packet/refcount -=
-> =
+Is there any reason to not close a socket while it still has associated skb=
+s =
 
-1
+in the pool? They will never get cleared if the application crashes If I am =
 
-But I am at a total loss where this reference count is actually =
+not mistaken.
 
-incremented/decremented? One thing I now noticed is that I can trigger =
+Best Regards,
 
-the problem by accessing the sysfs refcount entry of the raw_packet rtdm =
-
-driver while I have a raw_packet socket open. So the same test program =
-
-(open socket, send a packet, wait 2 seconds, receive a packet) works fine =
-
-without the sysfs access, and triggers the dangling reference problem if =
-
-the sysfs entry is accesed during the 2 seconds sleep.
-
-How is the reference count maintained for the rtdm devices, is that the =
-
-refcount in the rtdm_fd structure (fd->refs). There is also a driver refcou=
-nt, =
-
-I am actually somewhat confused how this is maintained...  =
-
-
-Regards,
 Marc
 
 -- =
@@ -93,5 +64,5 @@ Name: signature.asc
 Type: application/pgp-signature
 Size: 181 bytes
 Desc: This is a digitally signed message part.
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20150603/aa9e6c40/at=
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20150604/9f03ea71/at=
 tachment.sig>
