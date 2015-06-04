@@ -1,15 +1,13 @@
-Date: Thu, 4 Jun 2015 14:37:47 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150604123747.GY27570@hermes.click-hack.org>
+From: Marc =?ISO-8859-1?Q?Str=E4mke?= <marc.straemke@eltropuls.de>
+Date: Thu, 04 Jun 2015 14:40:34 +0200
+Message-ID: <1610117.Pd8ycFtbxj@eltrolinux48.eltroad.eltropuls>
+In-Reply-To: <20150604123747.GY27570@hermes.click-hack.org>
 References: <2745691.a91SqWkUDm@eltrolinux48.eltroad.eltropuls>
- <2172332.WGhck7t4nv@eltrolinux48.eltroad.eltropuls>
- <20150604113100.GU27570@hermes.click-hack.org>
  <2202092.SxJm6YhEYp@eltrolinux48.eltroad.eltropuls>
+ <20150604123747.GY27570@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <2202092.SxJm6YhEYp@eltrolinux48.eltroad.eltropuls>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] rtnet locking/socket SKBs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -19,62 +17,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marc =?utf-8?Q?Str=C3=A4mke?= <marc.straemke@eltropuls.de>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-T24gVGh1LCBKdW4gMDQsIDIwMTUgYXQgMDI6MzU6MThQTSArMDIwMCwgTWFyYyBTdHLDpG1rZSB3
-cm90ZToKPiBBbSBEb25uZXJzdGFnLCA0LiBKdW5pIDIwMTUsIDEzOjMxOjAwIHNjaHJpZWIgR2ls
-bGVzIENoYW50ZXBlcmRyaXg6Cj4gPiBPbiBUaHUsIEp1biAwNCwgMjAxNSBhdCAwMTowOTowOFBN
-ICswMjAwLCBNYXJjIFN0csOkbWtlIHdyb3RlOgo+ID4gPiAKPiA+ID4gWWVzIEkgZG8gdW5kZXJz
-dGFuZCB0aGlzLiBJIGFtIGp1c3QgdHJ5aW5nIHRvIGZpZ3VyZSBvdXQgd2hhdCB0aGUgcmlnaHQK
-PiA+ID4gZml4IGlzLiBJZiBJIGp1c3QgZGlzYWJsZSBpbmNyZW1lbnRpbmcgdGhlIGZkIHJlZmVy
-ZW5jZSBjb3VudCAoc2VlCj4gPiA+IGF0dGFjaGVkIHBhdGNoKSBBRl9QQUNLRVQgd29ya3MgYXMg
-aXQgc2hvdWxkLiAgRnJvbSBteSBjdXJyZW50Cj4gPiA+IHVuZGVyc3RhbmRpbmcgb2YgdGhlIGNv
-ZGUgdGhlIHJlZmVyZW5jZSBjb3VudGluZyBmb3IgdGhlIFNLQiBQb29scwo+ID4gPiBhdHRhY2hl
-ZCB0byBhIHNvY2tldCBpcyByZWR1bmRhbnQsIGJ1dCBJJ3ZlIG9ubHkgY2xvc2VseSBpbnNwZWN0
-ZWQKPiA+ID4gQUZfUEFDS0VUIG5vdCB0aGUgb3RoZXIgc29ja2V0cyBpbiB0aGUgSVAgc3RhY2su
-Cj4gPiBUaGUgbG9ja2luZyBvZiB0aGUgcG9vbHMgaXMgbm90IHJlZHVuZGFudC4gVGhlIHJlYXNv
-biBmb3IgdGhpcyBsb2NrCj4gPiBpcyB0aGF0IHdoZW4gYW4gc2tiIGlzIGluIGJldHdlZW4gdHdv
-IHBvb2xzLCB3ZSBkbyBub3Qgd2FudCB0aGUgcG9vbAo+ID4gaXQgY29tZXMgZnJvbSB0byBiZSBk
-ZXN0cm95ZWQsIGFzIHRoZSBza2Igd291bGQgZW5kLXVwIGxlYWtpbmcuIFNvLAo+IFllcywgdGhh
-dCBpcyBvYnZpb3VzLiBCdXQgd2hhdCB0aGVzZSBsb2NrIG9wcyBkbyBpcyBub3QgbG9ja2luZyBm
-b3IgdGhlIAo+IHRyYW5zaWVudCBtb21lbnQgd2hlbiB0aGUgcGFja2V0IGlzIG1vdmluZyBiZXR3
-ZWVuIHBvb2xzIGJ1dCBmb3IgdGhlIHRpbWUgdGhlIAo+IHBhY2tldCBpcyBpbiBhIHBvb2wuIFRo
-aXMgbG9ja2luZyBvcHMgaW5zdXJlIHRoYXQgbm8gd2hvbGUgc2tiIHBvb2wgaXMgbGVha2VkLgo+
-IAo+IElmIEkgbG9vayBhdCBydHNrYl9tb2R1bGVfbG9ja19vcHMgdGhpcyBtYWtlcyBzZW5zZSB0
-byBtZSwgb25lIGNhbm5vdCB1bmxvYWQgCj4gdGhlIG1vZHVsZSB0aWxsIGFsbCBwb29scyBhcmUg
-ZW1wdHkuIEl0IGxlZnQgbWUgd29uZGVyaW5nIHRob3VnaCBpZiAKPiB0cnlfbW9kdWxlX2dldCBp
-cyBzYWZlIHRvIGJlIGNhbGxlZCBmcm9tIGEgcmVhbHRpbWUgY29udGV4dC4uCj4gCj4gCj4gPiBz
-aW5jZSBza2JzIG1vdmUgZnJvbSBwb29sIHRvIHBvb2wsIHdoZW4gdGhlIHNrYiBjb21lcyB0byBh
-IG5ldyBwb29sLAo+ID4gdGhlIG9sZCBwb29sIHNob3VsZCBiZSB1bmxvY2tlZC4gVGhpcyBzaG91
-bGQgd29yayBhcyBydG5ldCBzcGVuZHMKPiA+IGl0cyB0aW1lIGV4Y2hhbmdpbmcgc2ticyBmcm9t
-IHBvb2wgdG8gcG9vbCBhbmQgZG9lcyBub3QgYWxsb2NhdGUgb3IKPiA+IGZyZWUgdGhlbS4gSSB0
-cmllZCBhbmQgaW1wbGVtZW50IHNvbWV0aGluZyBhbG9uZyB0aGVzZSBsaW5lcy4KPiA+IEFwcGFy
-ZW50bHksIEkgbWVzc2VkIHVwLCBidXQgdGhlIGZpeCBpcyBub3QgdG8gZGlzYWJsZSB0aGUgbG9j
-a2luZy4KPiA+IERpc2FibGluZyBsb2NraW5nIHdpbGwgbGVhZCB0byBsZWFraW5nIHNrYnMuCj4g
-SSBkbyB1bmRlcnN0YW5kIHRoaXMgYWxzby4gSXQgaXMgcmVkdW5kYW50IGluIHRoZSBjYXNlIG9m
-IEFGX1BBQ0tFVCwgbm90IGluIAo+IHRoZSBnZW5lcmFsIGNhc2UuIEluIHRoZSBjYXNlIG9mIHJ0
-c2tiX3NvY2tldF9wb29sX29wcyB0aGUgYWJvdmUgbWVudGlvbmVkIAo+IG1lY2hhbmlzbSBkb2Vz
-IG5vdCB3b3JrIG91dC4gVGhlIHBvb2wgaXMgZW1wdGllZCBvbiBjbG9zZSBpZiB0aGVyZSBhcmUg
-c3RpbGwgCj4gdW5yZWFkIHBhY2tldHMgaW4gdGhlIHBvb2wuIFNvIHRoZSByZWZlcmVuY2UgY291
-bnRpbmcgb24gcnRkbV9mZCBhbHJlYWR5IG1ha2VzIAo+IHN1cmUgdGhhdCB0aGUgc29ja2V0IGNs
-b3NlIG9wZXJhdGlvbiBpcyBjYWxsZWQuIEJvdGggbWVjaGFuaXNtcyB0b2dldGhlciBsZWFkIAo+
-IHRvIGEgZGVhZGxvY2suIAo+IElmIGV2ZXJ5IHNvY2tldCB0eXBlIGltcGxlbWVudHMgYSBjb3Jy
-ZWN0IGNsb3NlIG9wZXJhdGlvbiB3aGljaCBmcmVlcyB0aGUgCj4gc2ticG9vbCB1c2VkIGJ5IHRo
-ZSBzb2NrZXQgb24gY2xvc2UsIHRoZXJlIGlzIG5vIHJpc2sgb2YgbGVha2luZyBza2JzLiBJIGRp
-ZCAKPiBhbHNvIHRlc3QgdGhhdCBJIGFtIG5vdCBsZWFraW5nIHNrYnMgd2hlbiBzdHJlc3Npbmcg
-dGhlIEFGX1BBQ0tFVCBzb2NrZXQuCj4gCj4gQnV0IHlvdSBhcmUgY2VydGFpbmx5IHJpZ2h0LCB0
-aGUgcGF0Y2ggSSBzdWJtaXR0ZWQgaXMga2luZGEgc3R1cGlkLiBJdCB3YXMgCj4ganVzdCB3aGF0
-IEkgdGVzdGVkIGZvciBBRl9QQUNLRVQuIElmIG15IGFzc3VtcHRpb25zIGFyZSBjb3JyZWN0IHRo
-ZSBsb2NrIG9wcyAKPiBmb3IgYWxsIHNvY2tldHMgc2hvdWxkIGJlIGRpc2FibGVkIGJlY2F1c2Ug
-dGhlIHJlZmVyZW5jZSBjb3VudGluZyBvZiB0aGUgZmQgCj4gdGFrZXMgY2FyZSBvZiBmcmVlaW5n
-IHRoZSBwb29sLiBUaGlzIHdvdWxkIHRoZW4gYmUgZG9uZSBhdCBjcmVhdGlvbiB0aW1lIGluIAo+
-IHJ0X2JhcmVfc29ja2V0X2luaXQgbm90IGxhdGVyIG9uLgoKWW91ciBhc3N1bXB0aW9ucyBhcmUg
-bm90IGNvcnJlY3QuIFRoZSBsb2NrIGlzIG5lZWRlZCwgaXQganVzdCBoYXMgdG8KYmUgbWFkZSB0
-byB3b3JrIGFzIGludGVuZGVkLCB3aGljaCBpdCBjdXJyZW50bHkgZG9lcyBub3QuIEFuZApyZW1v
-dmluZyBpdCBpcyBub3QgdGhlIHNvbHV0aW9uLgoKLS0gCgkJCQkJICAgIEdpbGxlcy4KLS0tLS0t
-LS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3
-YXMgc2NydWJiZWQuLi4KTmFtZTogbm90IGF2YWlsYWJsZQpUeXBlOiBhcHBsaWNhdGlvbi9wZ3At
-c2lnbmF0dXJlClNpemU6IDgxMSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6
-Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1MDYwNC9iMmJi
-MGIwZS9hdHRhY2htZW50LnNpZz4K
+> Your assumptions are not correct. The lock is needed, it just has to
+> be made to work as intended, which it currently does not. And
+> removing it is not the solution.
+
+I was just trying to help. Would be nice to know in how far my assumptions =
+are =
+
+wrong though.
+
+Marc
+-- =
+
+Dipl.-Ing. Marc Str=E4mke
+Gesch=E4ftsf=FChrer / CEO
+
+ELTROPULS Anlagenbau GmbH
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 181 bytes
+Desc: This is a digitally signed message part.
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20150604/7bf7fd8c/at=
+tachment.sig>
