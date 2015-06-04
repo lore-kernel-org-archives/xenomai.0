@@ -1,15 +1,16 @@
-From: Marc =?ISO-8859-1?Q?Str=E4mke?= <marc.straemke@eltropuls.de>
-Date: Thu, 04 Jun 2015 13:12:27 +0200
-Message-ID: <4852939.sydttErcHR@eltrolinux48.eltroad.eltropuls>
-In-Reply-To: <2172332.WGhck7t4nv@eltrolinux48.eltroad.eltropuls>
+Date: Thu, 4 Jun 2015 13:20:34 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150604112034.GT27570@hermes.click-hack.org>
 References: <2745691.a91SqWkUDm@eltrolinux48.eltroad.eltropuls>
+ <8492059.5Osop05oYh@eltrolinux48.eltroad.eltropuls>
  <20150604105616.GS27570@hermes.click-hack.org>
  <2172332.WGhck7t4nv@eltrolinux48.eltroad.eltropuls>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PATCH] Proof of concept: disable locking in af_packet
-	skb pool
+Content-Disposition: inline
+In-Reply-To: <2172332.WGhck7t4nv@eltrolinux48.eltroad.eltropuls>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] rtnet locking/socket SKBs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,54 +19,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Marc =?utf-8?Q?Str=C3=A4mke?= <marc.straemke@eltropuls.de>
+Cc: xenomai@xenomai.org
 
----
- kernel/drivers/net/stack/packet/af_packet.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
-
-diff --git a/kernel/drivers/net/stack/packet/af_packet.c 
-b/kernel/drivers/net/stack/packet/af_packet.c
-index 4c7ff57..9f5e417 100644
---- a/kernel/drivers/net/stack/packet/af_packet.c
-+++ b/kernel/drivers/net/stack/packet/af_packet.c
-@@ -190,6 +190,19 @@ static int rt_packet_getsockname(struct rtsocket *sock, 
-struct sockaddr *addr,
- }
- 
- 
-+static int rtskb_nop_trylock(void *cookie)
-+{
-+    return 1;
-+}
-+
-+static void rtskb_nop_unlock(void *cookie)
-+{
-+}
-+
-+static const struct rtskb_pool_lock_ops rtskb_nop_lock_ops = {
-+    .trylock = rtskb_nop_trylock,
-+    .unlock = rtskb_nop_unlock,
-+};
- 
- /***
-  * rt_packet_socket - initialize a packet socket
-@@ -202,6 +215,8 @@ static int rt_packet_socket(struct rtdm_fd *fd, int 
-protocol)
- 
-     if ((ret = rt_socket_init(fd, protocol)) != 0)
-        return ret;
-+    sock->skb_pool.lock_ops = &rtskb_module_lock_ops;
-+
- 
-     sock->prot.packet.packet_type.type         = protocol;
-     sock->prot.packet.ifindex                  = 0;
--- 
-2.2.0
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 181 bytes
-Desc: This is a digitally signed message part.
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20150604/daf9252e/attachment.sig>
+T24gVGh1LCBKdW4gMDQsIDIwMTUgYXQgMDE6MDk6MDhQTSArMDIwMCwgTWFyYyBTdHLDpG1rZSB3
+cm90ZToKPiBHaWxsZXMsCj4gCj4gQW0gRG9ubmVyc3RhZywgNC4gSnVuaSAyMDE1LCAxMjo1Njox
+NiBzY2hyaWViIEdpbGxlcyBDaGFudGVwZXJkcml4Ogo+ID4gVGhlIHByZXZpb3VzIHJ0bmV0IGRl
+c2lnbiB3YXMgY29udmVydGVkIHRvIHJlZmVyZW5jZSBjb3VudHMgZ2xvYmFsbHkKPiA+IHdoZW4g
+aW50ZWdyYXRpbmcgaW50byB4ZW5vbWFpIDMsIHNvbWUgZGV0YWlscyBtYXkgc3RpbGwgbmVlZCBm
+aXhpbmcuCj4gPiBUaGUgb2xkIGRlc2lnbiB3YXMgZGlmZmVyZW50IGJ1dCBsZWFkIHRvIHRoZSBj
+bG9zZSBzeXNjYWxsIGxvb3BpbmcKPiA+IGZvciBldmVyIGFuZCBibG9ja2luZyB5b3VyIGFwcGxp
+Y2F0aW9uIGlmIGFueXRoaW5nIHdlbnQgd3JvbmcsIHNvLAo+ID4gdGhpcyBpcyBhbiBhdHRlbXB0
+IHRvIGF2b2lkIHRoaXMgaXNzdWUuCj4gWWVzIEkgZG8gdW5kZXJzdGFuZCB0aGlzLiBJIGFtIGp1
+c3QgdHJ5aW5nIHRvIGZpZ3VyZSBvdXQgd2hhdCB0aGUgcmlnaHQgZml4IGlzLiAKPiBJZiBJIGp1
+c3QgZGlzYWJsZSBpbmNyZW1lbnRpbmcgdGhlIGZkIHJlZmVyZW5jZSBjb3VudCAoc2VlIGF0dGFj
+aGVkIHBhdGNoKSAKPiBBRl9QQUNLRVQgd29ya3MgYXMgaXQgc2hvdWxkLiAgRnJvbSBteSBjdXJy
+ZW50IHVuZGVyc3RhbmRpbmcgb2YgdGhlIGNvZGUgdGhlIAo+IHJlZmVyZW5jZSBjb3VudGluZyBm
+b3IgdGhlIFNLQiBQb29scyBhdHRhY2hlZCB0byBhIHNvY2tldCBpcyByZWR1bmRhbnQsIGJ1dCAK
+PiBJJ3ZlIG9ubHkgY2xvc2VseSBpbnNwZWN0ZWQgQUZfUEFDS0VUIG5vdCB0aGUgb3RoZXIgc29j
+a2V0cyBpbiB0aGUgSVAgc3RhY2suCgpJIHdpbGwgaGF2ZSBhIGxvb2sgYXQgdGhhdCB3aGVuIEkg
+cmVzdW1lIHdvcmtpbmcgb24gcnRuZXQuIFRoaXMKc2hvdWxkIGNvbWUgaW4gYSBmZXcgd2Vla3Mg
+bm93LiBZb3VyIGZpeCBpcyBkZWZpbml0ZWx5IG5vdCB0aGUgcmlnaHQKZml4IHRob3VnaCwgYXMg
+dGhlIHNvY2tldCBwb29sIHNob3VsZCBiZSBjcmVhdGVkIHdpdGggdGhlIHJpZ2h0IGxvY2sKb3Bl
+cmF0aW9ucyBwb2ludGVyIHJpZ2h0IGF3YXksIHRoZSBwb2ludGVyIHNob3VsZCBub3QgYmUgY2hh
+bmdlZAphZnRlciB0aGUgZmFjdC4KClRoZSByaXNrIGhlcmUgaXMgdG8gbGVhayBzb21lIHNrYnMu
+IE1heWJlIHlvdXIgYXBwbGljYXRpb24gd29yaywgYnV0Cm1heWJlIHlvdSBsZWFrIHNvbWUgc2ti
+cyBldmVyeSB0aW1lIHlvdSBjbG9zZSB0aGUgZmlsZSBkZXNjcmlwdG9yLgpUaGUgc2ticyBhcmUg
+b25seSBhbGxvY2F0ZWQgYW5kIGZyZWVkIGR1cmluZyBzb2NrZXQgb3IgaW50ZXJmYWNlCmNyZWF0
+aW9ucywgdGhlIHJlc3Qgb2YgdGhlIHRpbWUsIHRoZXkgbW92ZSBmcm9tIHBvb2wgdG8gcG9vbC4K
+Cj4gCj4gPiAKPiA+ID4gVGhleSB3aWxsIG5ldmVyIGdldCBjbGVhcmVkIGlmIHRoZSBhcHBsaWNh
+dGlvbiBjcmFzaGVzIElmIEkgYW0KPiA+ID4gbm90IG1pc3Rha2VuLgo+ID4gCj4gPiBPbmNlIGFn
+YWluOiB3aGVuIGFuIGFwcGxpY2F0aW9uIGNyYXNoZXMsIHRoZSBmaWxlIGRlc2NyaXB0b3JzIGFy
+ZQo+ID4gYXV0b21hdGljYWxseSBjbG9zZWQgYnkgWGVub21haSwgeW91IGRvIG5vdCBuZWVkIHRv
+IGNhcmUgYWJvdXQgdGhpcwo+ID4gY2FzZS4KPiBXaGF0IEkgYW0gc2VlaW5nIGlzIHRoYXQgd2hl
+biB0aGUgcmVmZXJlbmNlIGNvdW50IGlzIGFib3ZlIDEgd2hlbiB0aGUgCj4gYXBwbGljYXRpb24g
+Y2xvc2VzL2NyYXNoZXMsIHRoZSBjbG9zZSBvcGVyYXRpb24gb2YgdGhlIHJ0ZG0gc29ja2V0IG5l
+dmVyIGdldCdzIAo+IGNhbGxlZCwgbmVpdGhlciB3aGVuIGRvaW5nIGFuIGV4cGxpY2l0IGNsb3Nl
+IHN5c3RlbSBjYWxsIG9uIHRoZSBzb2NrZXQgd2hpY2ggCj4gc3RpbGwgaGFkIGEgcmVmZXJlbmNl
+IGNvdW50IGFib3ZlIDEuCj4gCj4gV2hlbiBJIGRpc2FibGUgdGhlIHNrYiBwb29sIHJlZmVyZW5j
+ZSBjb3VudGluZyBmb3IgQUZfUEFDS0VUIGl0IGJhc2ljYWxseSAKPiB3b3JrcyBhcyBpdCBzaG91
+bGQuIFdoZW4gdGhlIGFwcGxpY2F0aW9uIGNsb3NlcyB0aGUgc29ja2V0IG9yIGNyYXNoZXMgdGhl
+IAo+IGNsb3NlIG9wIGdldCdzIGNhbGxlZCBhbmQgdGhlIHNrYidzIHJlbGVhc2UuIAoKU28sIHRo
+ZSBwcm9ibGVtIGZpeGVzIGl0c2VsZiB3aGVuIGZpeGluZyB0aGUgZmlyc3QgcHJvYmxlbS4gU28s
+CmFnYWluLCB0aGlzIGlzIG5vdCB0aGUgcHJvYmxlbSB5b3Ugc2hvdWxkIGNhcmUgYWJvdXQuCgot
+LSAKCQkJCQkgICAgR2lsbGVzLgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0t
+LS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBub3QgYXZhaWxh
+YmxlClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogODExIGJ5dGVzCkRlc2M6
+IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFp
+L2F0dGFjaG1lbnRzLzIwMTUwNjA0L2UyYzNiMDhlL2F0dGFjaG1lbnQuc2lnPgo=
