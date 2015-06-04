@@ -1,13 +1,15 @@
-From: Marc =?ISO-8859-1?Q?Str=E4mke?= <marc.straemke@eltropuls.de>
-Date: Thu, 04 Jun 2015 14:40:34 +0200
-Message-ID: <1610117.Pd8ycFtbxj@eltrolinux48.eltroad.eltropuls>
-In-Reply-To: <20150604123747.GY27570@hermes.click-hack.org>
+Date: Thu, 4 Jun 2015 16:07:11 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150604140711.GZ27570@hermes.click-hack.org>
 References: <2745691.a91SqWkUDm@eltrolinux48.eltroad.eltropuls>
+ <2172332.WGhck7t4nv@eltrolinux48.eltroad.eltropuls>
+ <20150604113100.GU27570@hermes.click-hack.org>
  <2202092.SxJm6YhEYp@eltrolinux48.eltroad.eltropuls>
- <20150604123747.GY27570@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+In-Reply-To: <2202092.SxJm6YhEYp@eltrolinux48.eltroad.eltropuls>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] rtnet locking/socket SKBs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -17,29 +19,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Marc =?utf-8?Q?Str=C3=A4mke?= <marc.straemke@eltropuls.de>
+Cc: xenomai@xenomai.org
 
-> Your assumptions are not correct. The lock is needed, it just has to
-> be made to work as intended, which it currently does not. And
-> removing it is not the solution.
-
-I was just trying to help. Would be nice to know in how far my assumptions =
-are =
-
-wrong though.
-
-Marc
--- =
-
-Dipl.-Ing. Marc Str=E4mke
-Gesch=E4ftsf=FChrer / CEO
-
-ELTROPULS Anlagenbau GmbH
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 181 bytes
-Desc: This is a digitally signed message part.
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20150604/7bf7fd8c/at=
-tachment.sig>
+T24gVGh1LCBKdW4gMDQsIDIwMTUgYXQgMDI6MzU6MThQTSArMDIwMCwgTWFyYyBTdHLDpG1rZSB3
+cm90ZToKPiBBbSBEb25uZXJzdGFnLCA0LiBKdW5pIDIwMTUsIDEzOjMxOjAwIHNjaHJpZWIgR2ls
+bGVzIENoYW50ZXBlcmRyaXg6Cj4gPiBPbiBUaHUsIEp1biAwNCwgMjAxNSBhdCAwMTowOTowOFBN
+ICswMjAwLCBNYXJjIFN0csOkbWtlIHdyb3RlOgo+ID4gPiAKPiA+ID4gWWVzIEkgZG8gdW5kZXJz
+dGFuZCB0aGlzLiBJIGFtIGp1c3QgdHJ5aW5nIHRvIGZpZ3VyZSBvdXQgd2hhdCB0aGUgcmlnaHQK
+PiA+ID4gZml4IGlzLiBJZiBJIGp1c3QgZGlzYWJsZSBpbmNyZW1lbnRpbmcgdGhlIGZkIHJlZmVy
+ZW5jZSBjb3VudCAoc2VlCj4gPiA+IGF0dGFjaGVkIHBhdGNoKSBBRl9QQUNLRVQgd29ya3MgYXMg
+aXQgc2hvdWxkLiAgRnJvbSBteSBjdXJyZW50Cj4gPiA+IHVuZGVyc3RhbmRpbmcgb2YgdGhlIGNv
+ZGUgdGhlIHJlZmVyZW5jZSBjb3VudGluZyBmb3IgdGhlIFNLQiBQb29scwo+ID4gPiBhdHRhY2hl
+ZCB0byBhIHNvY2tldCBpcyByZWR1bmRhbnQsIGJ1dCBJJ3ZlIG9ubHkgY2xvc2VseSBpbnNwZWN0
+ZWQKPiA+ID4gQUZfUEFDS0VUIG5vdCB0aGUgb3RoZXIgc29ja2V0cyBpbiB0aGUgSVAgc3RhY2su
+Cj4gPiBUaGUgbG9ja2luZyBvZiB0aGUgcG9vbHMgaXMgbm90IHJlZHVuZGFudC4gVGhlIHJlYXNv
+biBmb3IgdGhpcyBsb2NrCj4gPiBpcyB0aGF0IHdoZW4gYW4gc2tiIGlzIGluIGJldHdlZW4gdHdv
+IHBvb2xzLCB3ZSBkbyBub3Qgd2FudCB0aGUgcG9vbAo+ID4gaXQgY29tZXMgZnJvbSB0byBiZSBk
+ZXN0cm95ZWQsIGFzIHRoZSBza2Igd291bGQgZW5kLXVwIGxlYWtpbmcuIFNvLAo+IFllcywgdGhh
+dCBpcyBvYnZpb3VzLiBCdXQgd2hhdCB0aGVzZSBsb2NrIG9wcyBkbyBpcyBub3QgbG9ja2luZyBm
+b3IgdGhlIAo+IHRyYW5zaWVudCBtb21lbnQgd2hlbiB0aGUgcGFja2V0IGlzIG1vdmluZyBiZXR3
+ZWVuIHBvb2xzIGJ1dCBmb3IgdGhlIHRpbWUgdGhlIAo+IHBhY2tldCBpcyBpbiBhIHBvb2wuIFRo
+aXMgbG9ja2luZyBvcHMgaW5zdXJlIHRoYXQgbm8gd2hvbGUgc2tiIHBvb2wgaXMgbGVha2VkLgo+
+IAo+IElmIEkgbG9vayBhdCBydHNrYl9tb2R1bGVfbG9ja19vcHMgdGhpcyBtYWtlcyBzZW5zZSB0
+byBtZSwgb25lIGNhbm5vdCB1bmxvYWQgCj4gdGhlIG1vZHVsZSB0aWxsIGFsbCBwb29scyBhcmUg
+ZW1wdHkuIEl0IGxlZnQgbWUgd29uZGVyaW5nIHRob3VnaCBpZiAKPiB0cnlfbW9kdWxlX2dldCBp
+cyBzYWZlIHRvIGJlIGNhbGxlZCBmcm9tIGEgcmVhbHRpbWUgY29udGV4dC4uCgp0cnlfbW9kdWxl
+X2dldCBpcyBzYWZlIHRvIGJlIGNhbGxlZCBmcm9tIHJlYWx0aW1lIGNvbnRleHQsIHN0YXJ0aW5n
+CndpdGggdGhlIEktcGlwZSBwYXRjaCBmb3IgTGludXggMy4xNC4KCi0tIAoJCQkJCSAgICBHaWxs
+ZXMuCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0
+dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IG5vdCBhdmFpbGFibGUKVHlwZTogYXBwbGlj
+YXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiA4MTEgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpV
+Ukw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAx
+NTA2MDQvMTQxNmI5YjAvYXR0YWNobWVudC5zaWc+Cg==
