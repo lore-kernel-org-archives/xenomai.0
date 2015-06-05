@@ -1,17 +1,11 @@
-Date: Thu, 4 Jun 2015 16:15:56 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150604141556.GA27570@hermes.click-hack.org>
-References: <2745691.a91SqWkUDm@eltrolinux48.eltroad.eltropuls>
- <20150604105616.GS27570@hermes.click-hack.org>
- <2172332.WGhck7t4nv@eltrolinux48.eltroad.eltropuls>
- <4852939.sydttErcHR@eltrolinux48.eltroad.eltropuls>
 MIME-Version: 1.0
+Date: Thu, 4 Jun 2015 17:06:25 -0700
+Message-ID: <CAJqUr7yMDB5eWEeKAPRVRNfX+GLXLdYeT9divj3Co_hd-u3ghw@mail.gmail.com>
+From: Don Mahurin <don@mperpetuo.com>
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <4852939.sydttErcHR@eltrolinux48.eltroad.eltropuls>
-Subject: Re: [Xenomai] [PATCH] Proof of concept: disable locking in
- af_packet skb pool
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] infinite loop/oops on cat /proc/xenomai/sched/stats when
+ online cpus > present cpus
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,16 +14,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marc =?utf-8?Q?Str=C3=A4mke?= <marc.straemke@eltropuls.de>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Thu, Jun 04, 2015 at 01:12:27PM +0200, Marc Strämke wrote:
-> ---
->  kernel/drivers/net/stack/packet/af_packet.c | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
-
-NACK. For reasons explained in other mails.
-
--- 
-					    Gilles.
-
+SW4gdGhlIGZ1bmN0aW9uIHhuaW50cl9xdWVyeV9uZXh0IGluIGtlcm5lbC9jb2JhbHQvaW50ci5j
+LAoKVGhlIGl0ZXJhdG9yIHByb2NlZWRzIHRvIHRoZSBuZXh0IGVudHJ5IHdoZW4gdGhlIG5leHQg
+Y3B1IGlzIG5yX2NwdXMuCndoZXJlIG5yX2NwdXMgaXMgc2V0IHRvIG51bV9vbmxpbmVfY3B1cygp
+LgoKaWYgKGNwdSArIDEgPT0gbnJfY3B1cykKICBpdGVyYXRvci0+cHJldiA9IGludHI7CkJ1dCBp
+ZiB0aGVyZSBhcmUgbW9yZSBjcHVzIHByZXNlbnQgdGhhbiBvbmxpbmUsIGZvciB0aGUgY2FzZSBm
+b3IgYSB0aW1lcgppcnEsIHRoaXMgY29uZGl0aW9uIGlzIG5ldmVyIHJlYWNoZWQsIGFzIHRoZSBm
+b2xsb3dpbmcgd2lsbCBjYXVzZSBjcHUgdG8gYmUKcmVzZXQgdG8gMCBpZiB0aGV5IGFyZSBhdCB0
+aGUgZW5kIG9mIHRoZSBsaXN0LgoKZm9yIChjcHUgPSBpdGVyYXRvci0+Y3B1ICsgMTsgY3B1IDwg
+bnJfY3B1czsgKytjcHUpIHsKICBpZiAoY3B1X29ubGluZShjcHUpKQogICAgYnJlYWs7Cn0KaWYg
+KGNwdSA9PSBucl9jcHVzKQogICBjcHUgPSAwOwpJbiBvdXIgY2FzZSwgd2UgaGF2ZSA4IGNwdXMg
+cHJlc2VudCwgYW5kIDQgb25saW5lLgoKRm9yIGEgdGltZXIgaXJxLCB0aGlzIHdpbGwgbG9vcCAw
+LDEsMiwzIHJlcGVhdGVkbHkgZm9yIHRoZSBzYW1lIGlycS4KCkNhbiB3ZSBzYWZlbHkgcmVwbGFj
+ZSAnbnVtX3ByZXNlbnRfY3B1cycgd2l0aCAnbnVtX29ubGluZV9jcHVzJz8KCk9yIGRvIHdlIG5l
+ZWQgYW5vdGhlciB3YXkgb2YgZGV0ZWN0aW5nIHRoZSBsYXN0IG9ubGluZSBjcHUgZm9yIHRoZSBu
+ZXh0CmVudHJ5PwotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24t
+dGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBpbnRyLWNwdXMtcHJlc2VudC1v
+bmxpbmUucGF0Y2gKVHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtClNpemU6IDc3MCBieXRl
+cwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwv
+eGVub21haS9hdHRhY2htZW50cy8yMDE1MDYwNC9kNzI1OWMwYy9hdHRhY2htZW50Lm9iaj4K
