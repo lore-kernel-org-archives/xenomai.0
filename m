@@ -1,13 +1,11 @@
-MIME-Version: 1.0
-In-Reply-To: <CAJqUr7yMDB5eWEeKAPRVRNfX+GLXLdYeT9divj3Co_hd-u3ghw@mail.gmail.com>
-References: <CAJqUr7yMDB5eWEeKAPRVRNfX+GLXLdYeT9divj3Co_hd-u3ghw@mail.gmail.com>
-Date: Fri, 5 Jun 2015 08:30:53 -0700
-Message-ID: <CAJqUr7wNkKZAZzMWz6K4+ydBPiRyoWNZtA713WZLEehhUzNYig@mail.gmail.com>
-From: Don Mahurin <don@mperpetuo.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] infinite loop/oops on cat /proc/xenomai/sched/stats
- when online cpus > present cpus
+Date: Sun, 07 Jun 2015 06:22:14 -1000
+From: Glen Wernersbach <glen@jetsoftdev.com>
+Message-ID: <D1999396.37C38%glen@jetsoftdev.com>
+Mime-version: 1.0
+Content-Type: text/plain;
+	charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Xenomai 3 on YoctoProject/OpenEmbedded
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,27 +16,27 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-T24gVGh1LCBKdW4gNCwgMjAxNSBhdCA1OjA2IFBNLCBEb24gTWFodXJpbiA8ZG9uQG1wZXJwZXR1
-by5jb20+IHdyb3RlOgoKPiBJbiB0aGUgZnVuY3Rpb24geG5pbnRyX3F1ZXJ5X25leHQgaW4ga2Vy
-bmVsL2NvYmFsdC9pbnRyLmMsCj4KPiBUaGUgaXRlcmF0b3IgcHJvY2VlZHMgdG8gdGhlIG5leHQg
-ZW50cnkgd2hlbiB0aGUgbmV4dCBjcHUgaXMgbnJfY3B1cy4KPiB3aGVyZSBucl9jcHVzIGlzIHNl
-dCB0byBudW1fb25saW5lX2NwdXMoKS4KPgo+IGlmIChjcHUgKyAxID09IG5yX2NwdXMpCj4gICBp
-dGVyYXRvci0+cHJldiA9IGludHI7Cj4gQnV0IGlmIHRoZXJlIGFyZSBtb3JlIGNwdXMgcHJlc2Vu
-dCB0aGFuIG9ubGluZSwgZm9yIHRoZSBjYXNlIGZvciBhIHRpbWVyCj4gaXJxLCB0aGlzIGNvbmRp
-dGlvbiBpcyBuZXZlciByZWFjaGVkLCBhcyB0aGUgZm9sbG93aW5nIHdpbGwgY2F1c2UgY3B1IHRv
-IGJlCj4gcmVzZXQgdG8gMCBpZiB0aGV5IGFyZSBhdCB0aGUgZW5kIG9mIHRoZSBsaXN0Lgo+Cj4g
-Zm9yIChjcHUgPSBpdGVyYXRvci0+Y3B1ICsgMTsgY3B1IDwgbnJfY3B1czsgKytjcHUpIHsKPiAg
-IGlmIChjcHVfb25saW5lKGNwdSkpCj4gICAgIGJyZWFrOwo+IH0KPiBpZiAoY3B1ID09IG5yX2Nw
-dXMpCj4gICAgY3B1ID0gMDsKPiBJbiBvdXIgY2FzZSwgd2UgaGF2ZSA4IGNwdXMgcHJlc2VudCwg
-YW5kIDQgb25saW5lLgo+Cj4gRm9yIGEgdGltZXIgaXJxLCB0aGlzIHdpbGwgbG9vcCAwLDEsMiwz
-IHJlcGVhdGVkbHkgZm9yIHRoZSBzYW1lIGlycS4KPgo+IENhbiB3ZSBzYWZlbHkgcmVwbGFjZSAn
-bnVtX3ByZXNlbnRfY3B1cycgd2l0aCAnbnVtX29ubGluZV9jcHVzJz8KPgo+IE9yIGRvIHdlIG5l
-ZWQgYW5vdGhlciB3YXkgb2YgZGV0ZWN0aW5nIHRoZSBsYXN0IG9ubGluZSBjcHUgZm9yIHRoZSBu
-ZXh0Cj4gZW50cnk/Cj4KPgpUaGUgYXR0YWNoZWQgcGF0Y2ggaXMgYW4gYWx0ZXJuYXRlIGZpeC4g
-IFRoaXMgc2tpcHMgcGFzdCBvZmZsaW5lIGNwdXMgd2hlbgpkZXRlY3RpbmcgbGFzdCBjcHUsIG1h
-a2luZyBubyBhc3N1bXB0aW9ucyBvZiB0aGUgb3JkZXIgb2Ygb25saW5lL29mZmxpbmUKY3B1J3Mu
-Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFj
-aG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGludHItY3B1cy1wcmVzZW50LW9ubGluZS1hbHQu
-cGF0Y2gKVHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtClNpemU6IDgwOSBieXRlcwpEZXNj
-OiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21h
-aS9hdHRhY2htZW50cy8yMDE1MDYwNS9lMzg4YTI3ZS9hdHRhY2htZW50Lm9iaj4K
+Hi All,=20
+
+I have seen some old threads out there but I wonder if anyone is
+successfully using Xenomai 3 with YoctoProject/OpenEmbedded and patching vi=
+a
+a receipt?
+
+I like to look before I jump.
+
+Glen
+
+--=20
+Glen Wernersbach=20
+Business, Innovation and Technical Consultant;
+President and CEO
+Jetsoft Development Co.
+
+
+629 Old St Rt. 74 =AD Suite 210
+Cincinnati, Oh 45244
+513-240-9929
+glen@jetsoftdev.com
+
+
