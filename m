@@ -1,14 +1,14 @@
-Content-Type: text/plain; charset=windows-1252
-Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2098\))
-From: Michael Haberler <haberlerm@gmail.com>
-In-Reply-To: <5574585D.90803@xenomai.org>
-Date: Mon, 8 Jun 2015 11:28:57 +0200
+From: Paul <paul_c@tuxcnc.org>
+Date: Mon, 8 Jun 2015 12:11:15 +0100
+References: <DUB121-W42B693A503D6EC1D2F144381BF0@phx.gbl>
+In-Reply-To: <DUB121-W42B693A503D6EC1D2F144381BF0@phx.gbl>
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Message-Id: <92E2440A-6B28-4352-B6E9-F9B5ED130340@gmail.com>
-References: <CADvZd9YUCnLcuwndRrsEY=Po1AL7nm_3Z+7daBOaCucRAJgT0w@mail.gmail.com>
- <5574585D.90803@xenomai.org>
-Subject: Re: [Xenomai] Q on scheduling - rt_task_wait_period vs
-	rtdm_wait_event
+Content-Disposition: inline
+Message-Id: <201506081211.15597.paul_c@tuxcnc.org>
+Subject: Re: [Xenomai] Raspberry Pi 2 patch - BCM2709
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,38 +17,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+
+On Monday 08 June 2015, mobin Motallebizadeh wrote:
+> HiCan anybody provide some information about making a patch for
+> Raspberry Pi 2 ?The patches :
+> xenomai-2.6.4/ksrc/arch/arm/patches/raspberryand the both `pre` and
+> `post` patch need some changes to be applicable for rpi2 and 3.18
+> kernel.Specially in :
+> https://github.com/raspberrypi/linux/blob/rpi-3.18.y/arch/arm/mach-bc
+>m2709/bcm2708_gpio.c Thanx in advance
 
 
-> Am 07.06.2015 um 16:42 schrieb Philippe Gerum <rpm@xenomai.org>:
-> 
-> On 06/07/2015 02:39 PM, Michael Haberler wrote:
->> so far  we had multiple periodic RT threads of different priority, so a
->> lower-priority thread would not preempt a higher-priority one
->> 
->> we are switching the scheduling of a low-priority thread from periodic to
->> event-based - instead of rt_task_wait_period(), this task will now wait in
->> an RTDM driver ioctl in rtdm_event_wait()
->> 
->> I assume the following to be true:
->> 
->> even if the rtdm_even_wait() terminates while a higher priority thread is
->> running, the lower priority thread will not be scheduled until all
->> higher-priority threads have entered rt_task_wait_period().
->> 
->> correct?
->> 
-> 
-> Yes, assuming SCHED_FIFO for all of these threads. There is no reason
-> for implicitly changing the priority of a sleeper as a result of waking
-> it up from a blocking service.
+There are two separate development paths for the Raspberry kernel.
 
-thanks! yes, SCHED_FIFO used here. Just preventing a possible blunder ;)
+1) The "official" Raspberry Pi Foundation (RPF) work which is found 
+under mach-bcm2708 - This is what is targeted by the pre/post patches 
+you refer to. 
+
+2) The "official" Linux support is to be found in the mach-bcm2709 tree. 
+This is still "work in progress", but looks to be at the stage where it 
+is usable - I've not been following developments too closely, is it in 
+the mainline kernel yet ?
 
 
-> 
-> -- 
-> Philippe.
-
+If the RPF kernel runs on the RPi2 board, it wouldn't take much to 
+update the pre/post patches to 3.18.
 
