@@ -1,17 +1,14 @@
+Message-ID: <55772F6D.9090509@siemens.com>
+Date: Tue, 09 Jun 2015 20:24:45 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <20150609174138.GA17436@csclub.uwaterloo.ca>
-References: <DUB121-W42B693A503D6EC1D2F144381BF0@phx.gbl>
- <201506081211.15597.paul_c@tuxcnc.org>
- <DUB121-W1EC856DF0BB8FC70B291281BF0@phx.gbl>
- <201506090119.30719.paul_c@tuxcnc.org>
- <DUB403-EAS557D5FDB6E75C92D3DC47981BE0@phx.gbl>
- <20150609164046.GA12517@hermes.click-hack.org>
- <20150609174138.GA17436@csclub.uwaterloo.ca>
-Date: Tue, 9 Jun 2015 10:54:01 -0700
-Message-ID: <CAK4EZFTYMLoTsAS9wmSxXhgXzSxrinX=LDSs_kBekPFzFAcYag@mail.gmail.com>
-From: Adam Vaughan <vaughana@umich.edu>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Raspberry Pi 2 patch - BCM2709
+References: <CAJqUr7yMDB5eWEeKAPRVRNfX+GLXLdYeT9divj3Co_hd-u3ghw@mail.gmail.com>
+ <CAJqUr7wNkKZAZzMWz6K4+ydBPiRyoWNZtA713WZLEehhUzNYig@mail.gmail.com>
+In-Reply-To: <CAJqUr7wNkKZAZzMWz6K4+ydBPiRyoWNZtA713WZLEehhUzNYig@mail.gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] infinite loop/oops on cat /proc/xenomai/sched/stats
+ when online cpus > present cpus
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,39 +17,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Don Mahurin <don@mperpetuo.com>, xenomai@xenomai.org
 
-> Although I suppose one being quad core and having probably a different
-> IRQ controller could cause some work to need to be done (almost
-> certainly, although it might be a standard arm gic
-
-Some specifics about the RPi 2 interrupt implementation are available here:
-
-https://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2836/QA7_rev3.4.pdf
-
-On Tue, Jun 9, 2015 at 10:41 AM, Lennart Sorensen
-<lsorense@csclub.uwaterloo.ca> wrote:
-> On Tue, Jun 09, 2015 at 06:40:46PM +0200, Gilles Chanteperdrix wrote:
->> On Tue, Jun 09, 2015 at 09:01:52PM +0430, mobin Motallebizadeh wrote:
->> > None of them talk about rpi 2 which is from another architecture.
+On 2015-06-05 17:30, Don Mahurin wrote:
+> On Thu, Jun 4, 2015 at 5:06 PM, Don Mahurin <don@mperpetuo.com> wrote:
+> 
+>> In the function xnintr_query_next in kernel/cobalt/intr.c,
 >>
->> That is simply not true. rpi2 processor has an ARM core, just like rpi.
->
-> Yes armv6 and armv7 are not different architectures, just different
-> generations, and given apparently the pheripherals of the two bcm chips,
-> they should be fairly compatible, although I suppose one being quad core
-> and having probably a different IRQ controller could cause some work to
-> need to be done (almost certainly, although it might be a standard
-> arm gic, I haven't looked at that part of the pi 2 yet, given when I got
-> one, my wife immediately took it and I haven't got to touch it since.
-> Apparently I should have gotten two.).
->
-> --
-> Len Sorensen
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://xenomai.org/mailman/listinfo/xenomai
+>> The iterator proceeds to the next entry when the next cpu is nr_cpus.
+>> where nr_cpus is set to num_online_cpus().
+>>
+>> if (cpu + 1 == nr_cpus)
+>>   iterator->prev = intr;
+>> But if there are more cpus present than online, for the case for a timer
+>> irq, this condition is never reached, as the following will cause cpu to be
+>> reset to 0 if they are at the end of the list.
+>>
+>> for (cpu = iterator->cpu + 1; cpu < nr_cpus; ++cpu) {
+>>   if (cpu_online(cpu))
+>>     break;
+>> }
+>> if (cpu == nr_cpus)
+>>    cpu = 0;
+>> In our case, we have 8 cpus present, and 4 online.
+>>
+>> For a timer irq, this will loop 0,1,2,3 repeatedly for the same irq.
+>>
+>> Can we safely replace 'num_present_cpus' with 'num_online_cpus'?
+>>
+>> Or do we need another way of detecting the last online cpu for the next
+>> entry?
+>>
+>>
+> The attached patch is an alternate fix.  This skips past offline cpus when
+> detecting last cpu, making no assumptions of the order of online/offline
+> cpu's.
+
+Note that Xenomai does not support hotplug for CPUs that are included in
+its supported_cpus set. You have to exclude those CPUs by setting
+xenomai.supported_cpus during boot accordingly. That should also resolve
+the issue you have seen. Can you confirm this?
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
