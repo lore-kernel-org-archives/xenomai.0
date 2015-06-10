@@ -1,18 +1,9 @@
-Message-ID: <DUB121-W2271AF72F050D09F1D570681BD0@phx.gbl>
-From: mobin Motallebizadeh <mobin.seven@live.com>
-Date: Wed, 10 Jun 2015 03:24:51 +0000
-In-Reply-To: <20150609174138.GA17436@csclub.uwaterloo.ca>
-References: <DUB121-W42B693A503D6EC1D2F144381BF0@phx.gbl>,
- <201506081211.15597.paul_c@tuxcnc.org>,
- <DUB121-W1EC856DF0BB8FC70B291281BF0@phx.gbl>,
- <201506090119.30719.paul_c@tuxcnc.org>,
- <DUB403-EAS557D5FDB6E75C92D3DC47981BE0@phx.gbl>,
- <20150609164046.GA12517@hermes.click-hack.org>,
- <20150609174138.GA17436@csclub.uwaterloo.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Raspberry Pi 2 patch - BCM2709
+Date: Tue, 9 Jun 2015 23:44:33 -0700
+Message-ID: <CA+K1mPEsWRfYyjxac5dGiH0DuUHWGZ2H-jxvNC_YuyfN15O=+w@mail.gmail.com>
+From: C Smith <csmithquestions@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] Does Xenomai export shared memory keys to Linux kernel?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,65 +12,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-> From: lsorense@csclub.uwaterloo.ca
-> Date: Tue, 9 Jun 2015 13:41:38 -0400
-> To: gilles.chanteperdrix@xenomai.org
-> CC: mobin.seven@live.com; xenomai@xenomai.org
-> Subject: Re: [Xenomai] Raspberry Pi 2 patch - BCM2709
-> =
+I have been developing a set of shared memory applications.
+The first is a real time Xenomai kernelspace app which creates a block of
+shared memory. This uses shm_open(), mmap() of the POSIX skin.
 
-> On Tue, Jun 09, 2015 at 06:40:46PM +0200, Gilles Chanteperdrix wrote:
-> > On Tue, Jun 09, 2015 at 09:01:52PM +0430, mobin Motallebizadeh wrote:
-> > > None of them talk about rpi 2 which is from another architecture.
-> > =
+Once created, the shared memory shows up OK in /proc/xenomai/heap
+$ cat /proc/xenomai/heap
+    TOTAL      USED  PAGESZ  NAME
+  ...
+    12288     12288    4096  posix shm: /shared_data_unique
 
-> > That is simply not true. rpi2 processor has an ARM core, just like rpi.
-> =
+I can then successfully mmap() this shared memory from a userspace app
+which includes xenomai headers and is linked to the xenomai libraries.
+Here is how I compiled the userspace app for xenomai:
+gcc -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -D__XENO__
+-I/usr/xenomai/include/posix -Xlinker -rpath -Xlinker /usr/xenomai/lib
+userspace-shmem.c  -Wl,@/usr/xenomai/lib/posix.wrappers -L/usr/xenomai/lib
+-lpthread_rt -lxenomai -lpthread -lrt  -lrtdm -L/usr/xenomai/lib -lxenomai
+-lpthread -lrt -o userspace-shmem
 
-> Yes armv6 and armv7 are not different architectures, just different
-> generations, and given apparently the pheripherals of the two bcm chips,
-> they should be fairly compatible, although I suppose one being quad core
-> and having probably a different IRQ controller could cause some work to
-> need to be done (almost certainly, although it might be a standard
-> arm gic, I haven't looked at that part of the pi 2 yet, given when I got
-> one, my wife immediately took it and I haven't got to touch it since.
-> Apparently I should have gotten two.).
-> =
+The problem is that if I compile the userspace app without xenomai, with
+paths to regular Linux headers, the app cannot get the shared memory
+segment.
+Here is how I compiled the userspace app without xenomai:
+gcc -o userspace-shmem userspace-shmem.c -lrt
 
-> -- =
+The call to shm_open() in the userspace app returns -1 and errno is set to
+2 : No such file or directory.
 
-> Len Sorensen
+Also,
+ipcs -m
+doesnt show the existence of my shared memory key.
 
-I've made some patches [see attachments]. I've just modified  ipipe patch f=
-or 3.18.12 and raspberry related patches to match RPi repo [https://github.=
-com/raspberrypi/linux] which is 3.18.14 .
-the resulting kernel img boots without IPIPE and XENOMAI configs successful=
-ly(of course!) but with IPIPE doesn't boot.(so I haven't netconsole working)
-any suggestion to make it work will be appreciated. 		 	   		  =
+Does xenomai export its shared memory segments to the Linux kernel? Does
+the Linux kernel know about them such that a plain linux app (with no
+xenomai linkage) would be able to access shared memory created by a xenomai
+kernelspace driver?
 
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: ipipe-core-3.18.14-arm.patch
-Type: application/octet-stream
-Size: 728647 bytes
-Desc: not available
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20150610/45d8899d/at=
-tachment.obj>
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: ipipe-core-3.18.14-raspberry-post.patch
-Type: application/octet-stream
-Size: 6556 bytes
-Desc: not available
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20150610/45d8899d/at=
-tachment-0001.obj>
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: ipipe-core-3.18.14-raspberry-pre.patch
-Type: application/octet-stream
-Size: 552 bytes
-Desc: not available
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20150610/45d8899d/at=
-tachment-0002.obj>
+-CSmith
