@@ -1,14 +1,19 @@
+Message-ID: <b702f097261219e470392ab60ba6fd2d.squirrel@sourcetrek.com>
+In-Reply-To: <DUB121-W2271AF72F050D09F1D570681BD0@phx.gbl>
+References: <DUB121-W42B693A503D6EC1D2F144381BF0@phx.gbl>,
+ <201506081211.15597.paul_c@tuxcnc.org>,
+ <DUB121-W1EC856DF0BB8FC70B291281BF0@phx.gbl>,
+ <201506090119.30719.paul_c@tuxcnc.org>,
+ <DUB403-EAS557D5FDB6E75C92D3DC47981BE0@phx.gbl>,
+ <20150609164046.GA12517@hermes.click-hack.org>,
+ <20150609174138.GA17436@csclub.uwaterloo.ca>
+ <DUB121-W2271AF72F050D09F1D570681BD0@phx.gbl>
+Date: Wed, 10 Jun 2015 12:06:59 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <CAHH_qdACfPLuXRAQqDkgtmPJGD71pe+-qnRJKAg_a5WT1RY+SQ@mail.gmail.com>
-References: <CAHH_qdD+0RnjOZejUuYp9Z7-7sSDfEE+c=sZGds3i_u=8zpKvg@mail.gmail.com>
- <20150603130935.GR27570@hermes.click-hack.org>
- <CAHH_qdACfPLuXRAQqDkgtmPJGD71pe+-qnRJKAg_a5WT1RY+SQ@mail.gmail.com>
-Date: Wed, 10 Jun 2015 11:53:28 +0200
-Message-ID: <CAHH_qdA3ymeDgraTLYPw0Mhq2Xw=-cUevBhwpgofDkWzpxefZA@mail.gmail.com>
-From: Gautier HAOUY <gautier.haouy@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] [Xenomai 2.6] iMX6 + linux 3.16.7 + ipipe arm-7 +
- inconsistent lock state on kdevtmpfs
+Content-Type: text/plain;charset=utf-8
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Raspberry Pi 2 patch - BCM2709
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,47 +22,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
+To: mobin Motallebizadeh <mobin.seven@live.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello Gilles,
 
-I do confirm that there is no more message while changing the configuration
-of the kernel such like:
-CONFIG_PROVE_LOCKING=n
-CONFIG_DEBUG_LOCK_ALLOC=y
-
-Thank you again & have a nice day,
-Gautier.
-
-2015-06-03 15:23 GMT+02:00 Gautier HAOUY <gautier.haouy@gmail.com>:
-
-> Thank you for your prompt feedback, I'm going to look for the dependencies
-> and let you know.
->
-> 2015-06-03 15:09 GMT+02:00 Gilles Chanteperdrix <
-> gilles.chanteperdrix@xenomai.org>:
->
->> On Wed, Jun 03, 2015 at 03:00:33PM +0200, Gautier HAOUY wrote:
->> > Hello everyone,
->> >
->> > I'm requesting once again your help as I'm getting an "INFO message on
->> > inconsistent lock state" while booting linux 3.16.7 with ipipe arm-7 on
->> an
->> > iMX6 platform. I would like to understand how I could dive in and
->> determine
->> > if this is going to be an issue or just informational.
->> >
->> > I kindly ask for assistance as I did not find anything on the internet
->> on
->> > how to proceed with such case.
+mobin Motallebizadeh wrote:
+>> From: lsorense@csclub.uwaterloo.ca
+>> Date: Tue, 9 Jun 2015 13:41:38 -0400
+>> To: gilles.chanteperdrix@xenomai.org
+>> CC: mobin.seven@live.com; xenomai@xenomai.org
+>> Subject: Re: [Xenomai] Raspberry Pi 2 patch - BCM2709
 >>
->> Please try disabling CONFIG_TRACE_IRQFLAGS. It is known to be broken
->> with the I-pipe patch on ARM. You probably can not disable it
->> directly, you will have to remove all the options that depend on
->> this one.
+>> On Tue, Jun 09, 2015 at 06:40:46PM +0200, Gilles Chanteperdrix wrote:
+>> > On Tue, Jun 09, 2015 at 09:01:52PM +0430, mobin Motallebizadeh wrote:
+>> > > None of them talk about rpi 2 which is from another architecture.
+>> >
+>> > That is simply not true. rpi2 processor has an ARM core, just like
+>> rpi.
+>>
+>> Yes armv6 and armv7 are not different architectures, just different
+>> generations, and given apparently the pheripherals of the two bcm chips,
+>> they should be fairly compatible, although I suppose one being quad core
+>> and having probably a different IRQ controller could cause some work to
+>> need to be done (almost certainly, although it might be a standard
+>> arm gic, I haven't looked at that part of the pi 2 yet, given when I got
+>> one, my wife immediately took it and I haven't got to touch it since.
+>> Apparently I should have gotten two.).
 >>
 >> --
->>                                             Gilles.
->>
+>> Len Sorensen
 >
->
+> I've made some patches [see attachments]. I've just modified  ipipe patch
+> for 3.18.12 and raspberry related patches to match RPi repo
+> [https://github.com/raspberrypi/linux] which is 3.18.14 .
+> the resulting kernel img boots without IPIPE and XENOMAI configs
+> successfully(of course!) but with IPIPE doesn't boot.(so I haven't
+> netconsole working)
+> any suggestion to make it work will be appreciated.
+
+See:
+http://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc/
+
+-- 
+                    Gilles.
+
+
