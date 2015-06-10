@@ -1,14 +1,18 @@
-Message-ID: <55772F6D.9090509@siemens.com>
-Date: Tue, 09 Jun 2015 20:24:45 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <DUB121-W2271AF72F050D09F1D570681BD0@phx.gbl>
+From: mobin Motallebizadeh <mobin.seven@live.com>
+Date: Wed, 10 Jun 2015 03:24:51 +0000
+In-Reply-To: <20150609174138.GA17436@csclub.uwaterloo.ca>
+References: <DUB121-W42B693A503D6EC1D2F144381BF0@phx.gbl>,
+ <201506081211.15597.paul_c@tuxcnc.org>,
+ <DUB121-W1EC856DF0BB8FC70B291281BF0@phx.gbl>,
+ <201506090119.30719.paul_c@tuxcnc.org>,
+ <DUB403-EAS557D5FDB6E75C92D3DC47981BE0@phx.gbl>,
+ <20150609164046.GA12517@hermes.click-hack.org>,
+ <20150609174138.GA17436@csclub.uwaterloo.ca>
 MIME-Version: 1.0
-References: <CAJqUr7yMDB5eWEeKAPRVRNfX+GLXLdYeT9divj3Co_hd-u3ghw@mail.gmail.com>
- <CAJqUr7wNkKZAZzMWz6K4+ydBPiRyoWNZtA713WZLEehhUzNYig@mail.gmail.com>
-In-Reply-To: <CAJqUr7wNkKZAZzMWz6K4+ydBPiRyoWNZtA713WZLEehhUzNYig@mail.gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] infinite loop/oops on cat /proc/xenomai/sched/stats
- when online cpus > present cpus
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Raspberry Pi 2 patch - BCM2709
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,50 +21,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Don Mahurin <don@mperpetuo.com>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2015-06-05 17:30, Don Mahurin wrote:
-> On Thu, Jun 4, 2015 at 5:06 PM, Don Mahurin <don@mperpetuo.com> wrote:
-> 
->> In the function xnintr_query_next in kernel/cobalt/intr.c,
->>
->> The iterator proceeds to the next entry when the next cpu is nr_cpus.
->> where nr_cpus is set to num_online_cpus().
->>
->> if (cpu + 1 == nr_cpus)
->>   iterator->prev = intr;
->> But if there are more cpus present than online, for the case for a timer
->> irq, this condition is never reached, as the following will cause cpu to be
->> reset to 0 if they are at the end of the list.
->>
->> for (cpu = iterator->cpu + 1; cpu < nr_cpus; ++cpu) {
->>   if (cpu_online(cpu))
->>     break;
->> }
->> if (cpu == nr_cpus)
->>    cpu = 0;
->> In our case, we have 8 cpus present, and 4 online.
->>
->> For a timer irq, this will loop 0,1,2,3 repeatedly for the same irq.
->>
->> Can we safely replace 'num_present_cpus' with 'num_online_cpus'?
->>
->> Or do we need another way of detecting the last online cpu for the next
->> entry?
->>
->>
-> The attached patch is an alternate fix.  This skips past offline cpus when
-> detecting last cpu, making no assumptions of the order of online/offline
-> cpu's.
+> From: lsorense@csclub.uwaterloo.ca
+> Date: Tue, 9 Jun 2015 13:41:38 -0400
+> To: gilles.chanteperdrix@xenomai.org
+> CC: mobin.seven@live.com; xenomai@xenomai.org
+> Subject: Re: [Xenomai] Raspberry Pi 2 patch - BCM2709
+> =
 
-Note that Xenomai does not support hotplug for CPUs that are included in
-its supported_cpus set. You have to exclude those CPUs by setting
-xenomai.supported_cpus during boot accordingly. That should also resolve
-the issue you have seen. Can you confirm this?
+> On Tue, Jun 09, 2015 at 06:40:46PM +0200, Gilles Chanteperdrix wrote:
+> > On Tue, Jun 09, 2015 at 09:01:52PM +0430, mobin Motallebizadeh wrote:
+> > > None of them talk about rpi 2 which is from another architecture.
+> > =
 
-Jan
+> > That is simply not true. rpi2 processor has an ARM core, just like rpi.
+> =
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+> Yes armv6 and armv7 are not different architectures, just different
+> generations, and given apparently the pheripherals of the two bcm chips,
+> they should be fairly compatible, although I suppose one being quad core
+> and having probably a different IRQ controller could cause some work to
+> need to be done (almost certainly, although it might be a standard
+> arm gic, I haven't looked at that part of the pi 2 yet, given when I got
+> one, my wife immediately took it and I haven't got to touch it since.
+> Apparently I should have gotten two.).
+> =
 
+> -- =
+
+> Len Sorensen
+
+I've made some patches [see attachments]. I've just modified  ipipe patch f=
+or 3.18.12 and raspberry related patches to match RPi repo [https://github.=
+com/raspberrypi/linux] which is 3.18.14 .
+the resulting kernel img boots without IPIPE and XENOMAI configs successful=
+ly(of course!) but with IPIPE doesn't boot.(so I haven't netconsole working)
+any suggestion to make it work will be appreciated. 		 	   		  =
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: ipipe-core-3.18.14-arm.patch
+Type: application/octet-stream
+Size: 728647 bytes
+Desc: not available
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20150610/45d8899d/at=
+tachment.obj>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: ipipe-core-3.18.14-raspberry-post.patch
+Type: application/octet-stream
+Size: 6556 bytes
+Desc: not available
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20150610/45d8899d/at=
+tachment-0001.obj>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: ipipe-core-3.18.14-raspberry-pre.patch
+Type: application/octet-stream
+Size: 552 bytes
+Desc: not available
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20150610/45d8899d/at=
+tachment-0002.obj>
