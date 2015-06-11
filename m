@@ -1,13 +1,11 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Wed, 10 Jun 2015 16:40:01 -0400
-Message-ID: <20150610204001.GG17436@csclub.uwaterloo.ca>
-References: <20150610203925.GA11561@csclub.uwaterloo.ca>
+From: "Lopes, Alexandre" <alexandre.lopes.ext@zeiss.com>
+Date: Thu, 11 Jun 2015 10:29:09 +0000
+Message-ID: <79A9E4882C44D44FA53B5AB15E6198011385C369@ADEERL01SMS001.cznet.zeiss.org>
+Content-Language: de-DE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20150610203925.GA11561@csclub.uwaterloo.ca>
-Subject: Re: [Xenomai] [PATCH] ksrc: Fix pthread_create return value sign
- when xnthread_register fails
+Subject: [Xenomai] init failed code -19 on Cyclone V SoC
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,37 +14,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, Jun 10, 2015 at 04:39:25PM -0400, Lennart Sorensen wrote:
-> xnthread_register returns negative errors, but pthread_create returns
-> positive errors, so the return value has to be negated before being
-> passed on, otherwise the caller of pthread_create will use the return
-> value as a valid thread id.
-> 
-> Signed-off-by: Len Sorensen <lsorense@csclub.uwaterloo.ca>
-> ---
->  ksrc/skins/posix/thread.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/ksrc/skins/posix/thread.c b/ksrc/skins/posix/thread.c
-> index f1a96f7..05ccf63 100644
-> --- a/ksrc/skins/posix/thread.c
-> +++ b/ksrc/skins/posix/thread.c
-> @@ -258,7 +258,7 @@ int pthread_create(pthread_t *tid,
->  	ret = xnthread_register(&thread->threadbase, "");
->  	if (ret) {
->  		thread_destroy(thread);
-> -		return ret;
-> +		return -ret;
->  	}
->  
->  	*tid = thread;		/* Must be done before the thread is started. */
-> -- 
-> 1.7.10.4
+Hello,
 
-This is for xenomai-2.6
+I am trying to get Xenomai 3.0 rc4 with the 3.18.12 Linux Kernel and the=20
+corresponding ipipe patch to work on an ARM SoC.
+The device in question is a MitySoM module which is based on the Cyclone V
+from Altera and contains a dual core ARM Cortex A9.
 
--- 
-Len Sorensen
+I have followed the "Porting Xenomai dual kernel to a new ARM SoC"=20
+guide. Even though Linux boots without any  problems, Xenomai is not=20
+working.
+
+The output of dmesg | grep -E 'Xenomai|I-pipe' is the following:
+
+[    0.000000] I-pipe, 200.000 MHz timer
+[    0.123073] I-pipe, 200.000 MHz timer
+[    0.249682] [Xenomai] scheduling class idle registered.
+[    0.249689] [Xenomai] scheduling class rt registered.
+[    0.249758] I-pipe: high-resolution clock not working
+[    0.249789] [Xenomai] init failed, code -19
+
+Which seems to indicate a problem with the timer.
+
+On my device tree (which is already upstream) the smp_twd timer seems to=20
+be properly registered (socfpga.dtsi):
+
+timer@fffec600 {
+	compatible =3D "arm,cortex-a9-twd-timer";
+	reg =3D <0xfffec600 0x100>;
+	interrupts =3D <1 13 0xf04>;
+	clocks =3D <&mpu_periph_clk>;
+};
+
+I have also disabled CONFIG_CPU_FREQ, CONFIG_CPU_IDLE,=20
+CONFIG_CC_STACKPROTECTOR, CONFIG_KGDB as well as hibernation
+and sleep support and I have enabled CONFIG_IPIPE_ARM_KUSER_TSC
+(it doesn't compile without it, anyway, so I am sure the symbol is
+selected).
+I have as well enabled the "High Resolution Timer Support" on the Kernel.
+
+As I am rather new to Xenomai, I am clueless of where the problem lies.
+I had no problems setting it up on x86 systems, but on SoCs this seems
+to be a totally different business...
+
+If anybody has some idea of how I can solve this, I would be greatly=20
+appreciated.
+
+Thanks,
+
+Alexandre
 
