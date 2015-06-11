@@ -1,12 +1,17 @@
-Message-ID: <3f53684a76c1f4e0b4f97672bdaa90fb.squirrel@sourcetrek.com>
-In-Reply-To: <CAL92PvU2DNPis5vtOH_NDpRJCYOwSBh3yvEQ83_OJ3POr17-3g@mail.gmail.com>
-References: <CAL92PvU2DNPis5vtOH_NDpRJCYOwSBh3yvEQ83_OJ3POr17-3g@mail.gmail.com>
-Date: Thu, 11 Jun 2015 18:47:42 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+From: Lowell Gilbert <kludge@be-well.ilk.org>
+References: <79A9E4882C44D44FA53B5AB15E6198011385C369@ADEERL01SMS001.cznet.zeiss.org>
+ <b692bb78ab6f887dfd41f71655a0a205.squirrel@sourcetrek.com>
+ <44y4jq71ku.fsf@be-well.ilk.org>
+ <650830a42485b39f0a0443dcb4c5c962.squirrel@sourcetrek.com>
+ <79A9E4882C44D44FA53B5AB15E6198011385D400@ADEERL01SMS001.cznet.zeiss.org>
+Date: Thu, 11 Jun 2015 13:30:10 -0400
+In-Reply-To: <79A9E4882C44D44FA53B5AB15E6198011385D400@ADEERL01SMS001.cznet.zeiss.org>
+ (Alexandre Lopes's message of "Thu, 11 Jun 2015 15:45:23 +0000")
+Message-ID: <44oakm9mql.fsf@be-well.ilk.org>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Timer
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] init failed code -19 on Cyclone V SoC
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,47 +20,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: cristian ramos <cristian0084@gmail.com>
-Cc: xenomai@xenomai.org
+To: "Lopes, Alexandre" <alexandre.lopes.ext@zeiss.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
+>> Note that the mail you are replying to is talking about "global timer", =
+not "global clock".
+>>
+>> --=20
+>>                     Gilles.
 
-cristian ramos wrote:
-> Hello everybody,
->
->     First at all, thank very much for you attention and I would like
-> receive your help.
->
->     I'm working with centos7 and 2.6.4 release. All is working perfect,
-> but
-> I don't understand because the code below I get a difference of two
-> seconds.
->
->     clock_gettime(CLOCK_REALTIME, &ts);
->     RTIME rtime = rt_timer_read();
->     cout <<"posix: " << ts.tv_sec << ts.tv_nsec << endl;
->     cout <<"xeno:  "<<  rtime << endl;
->
-> the result is:
->
->     posix: *1434035528*803555763
->     xeno: *1434035526*522192216
->
-> you can see that clock_gettime has two seconds more than rt_timer_read.
-> I'm
-> using ntp for the synchronization between machines.
->
-> Thank you very much for your time and would appreciate any help.
+Oops. Sorry; and thanks.
 
-Oh boy, are there ambiguities between the words "clock" and "timer" this
-afternoon.
+"Lopes, Alexandre" <alexandre.lopes.ext@zeiss.com> writes:
 
-See:
-http://xenomai.org/2014/08/porting-a-linux-application-to-xenomai-dual-kernel/#Timing_services
+> @Lowell: Like Gilles mentioned, there are several timers in the=20
+> Cortex A9. At address PERIPH_BASE_ADDR + 0x200 you have the global timer=
+=20
+> registers and at PERIPH_BASE_ADDR + 0x600 you have the private timer and=
+=20
+> watchdog timer registers (on a per core basis). On the Altera socfpga sys=
+tems
+> the base address is, in this case, 0xfffec000.=20
 
-rt_timer_read() is the same as Xenomai POSIX skin CLOCK_REALTIME.
+The Cyclone V has a timer block external to the Cortex A9 as well, if I
+remember correctly.
 
+>                                                Unfortunately Altera didn=
+=92t
+> register the global timer, at least not on the upstream Kernels.
 
--- 
-                    Gilles.
-
+I would expect it to come from Qsys, in the sopcinfo file, but
+apparently at some point I added it to my board info file instead.
 
