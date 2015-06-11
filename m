@@ -1,16 +1,12 @@
-From: "Lopes, Alexandre" <alexandre.lopes.ext@zeiss.com>
-Date: Thu, 11 Jun 2015 15:45:23 +0000
-Message-ID: <79A9E4882C44D44FA53B5AB15E6198011385D400@ADEERL01SMS001.cznet.zeiss.org>
-References: <79A9E4882C44D44FA53B5AB15E6198011385C369@ADEERL01SMS001.cznet.zeiss.org>
- <b692bb78ab6f887dfd41f71655a0a205.squirrel@sourcetrek.com>
- <44y4jq71ku.fsf@be-well.ilk.org>
- <650830a42485b39f0a0443dcb4c5c962.squirrel@sourcetrek.com>
-In-Reply-To: <650830a42485b39f0a0443dcb4c5c962.squirrel@sourcetrek.com>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <3f53684a76c1f4e0b4f97672bdaa90fb.squirrel@sourcetrek.com>
+In-Reply-To: <CAL92PvU2DNPis5vtOH_NDpRJCYOwSBh3yvEQ83_OJ3POr17-3g@mail.gmail.com>
+References: <CAL92PvU2DNPis5vtOH_NDpRJCYOwSBh3yvEQ83_OJ3POr17-3g@mail.gmail.com>
+Date: Thu, 11 Jun 2015 18:47:42 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] init failed code -19 on Cyclone V SoC
+Content-Type: text/plain;charset=utf-8
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Timer
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,45 +15,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Lowell Gilbert <kludge@be-well.ilk.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: cristian ramos <cristian0084@gmail.com>
+Cc: xenomai@xenomai.org
 
-Pj4NCj4+IE5vcGUuIGNsb2NrICE9IHRpbWVyLg0KPj4NCj4+IE9uIENvcnRleCBBOSwgdGhlIGhh
-cmR3YXJlIHRpbWVyIHVzZWQgYXMgY2xvY2sgaXMgdGhlICJnbG9iYWwgdGltZXIiDQo+PiBub3Jt
-YWxseS4gU28sIHdpdGggcmVjZW50IGtlcm5lbHMsIHlvdSBuZWVkIHRoZSBwcm9wZXIgZGF0YSBp
-biB0aGUgDQo+PiBkZXZpY2UgdHJlZSwgYW5kIHRvIGVuYWJsZSB0aGUgZGV2aWNlIGluIHRoZSBr
-ZXJuZWwgY29uZmlndXJhdGlvbi4gDQo+PiBMb29rIGF0IHdoYXQgdGhlIEktcGlwZSBwYXRjaCBk
-b2VzIGZvciBPTUFQNCBhbmQgSU1YLTYuDQo+DQo+Pj4gdGltZXJAZmZmZWM2MDAgew0KPj4+IAlj
-b21wYXRpYmxlID0gImFybSxjb3J0ZXgtYTktdHdkLXRpbWVyIjsNCj4+PiAJcmVnID0gPDB4ZmZm
-ZWM2MDAgMHgxMDA+Ow0KPj4+IAlpbnRlcnJ1cHRzID0gPDEgMTMgMHhmMDQ+Ow0KPj4+IAljbG9j
-a3MgPSA8Jm1wdV9wZXJpcGhfY2xrPjsNCj4+PiB9Ow0KPg0KPiBJIGJlbGlldmUgdGhhdCB0aGlz
-ICppcyogdGhlIGdsb2JhbCBjbG9jaywgYW5kIHRoZSBzZXR0aW5ncyBhcmUgDQo+IGNvcnJlY3Qg
-KGFsdGhvdWdoIEkgd29uZGVyIGFib3V0IGl0IG5vdCBoYXZpbmcgYW4gaW50ZXJydXB0LXBhcmVu
-dCwgDQo+IHdoaWNoIEkgZ2V0IGZyb20gQWx0ZXJhJ3MgaGFyZHdhcmUgdG9vbHMpLg0KPg0KDQo+
-IE5vdGUgdGhhdCB0aGUgbWFpbCB5b3UgYXJlIHJlcGx5aW5nIHRvIGlzIHRhbGtpbmcgYWJvdXQg
-Imdsb2JhbCB0aW1lciIsIG5vdCAiZ2xvYmFsIGNsb2NrIi4NCj4NCj4gLS0gDQo+ICAgICAgICAg
-ICAgICAgICAgICAgR2lsbGVzLg0KDQpIaSBHaWxsZXMsDQoNCkkganVzdCB3YW50IHRvIHRoYW5r
-IHlvdSBmb3IgcG9pbnRpbmcgbWUgaW4gdGhlIHJpZ2h0IGRpcmVjdGlvbi4NClRoZSBwcm9ibGVt
-IHdhcyBpbmRlZWQgdGhlIGR1ZSB0byB0aGUgZ2xvYmFsIHRpbWVyIG5vdCBiZWluZyByZWdpc3Rl
-cmVkLg0KQWZ0ZXIgcmVnaXN0ZXJpbmcgaXQgd2l0aA0KdGltZXJAZmZmZWMyMDAgew0KCWNvbXBh
-dGlibGUgPSAiYXJtLGNvcnRleC1hOS1nbG9iYWwtdGltZXIiOw0KCXJlZyA9IDwweGZmZmVjMjAw
-IDB4MjA+Ow0KCWludGVycnVwdHMgPSA8MSAxMSAweGYwND47DQoJY2xvY2tzID0gPCZtcHVfcGVy
-aXBoX2Nsaz47DQp9Ow0KDQphbmQgbWFraW5nIHN1cmUgdGhhdCBBUk1fR0xPQkFMX1RJTUVSIHN5
-bWJvbCB3YXMgZGVmaW5lZCAod2hpY2ggYWxyZWFkeSB3YXMpLA0KWGVub21haSBzZWVtcyB0byBi
-b290IGNvcnJlY3RseToNCg0KWyAgICAwLjAwMDAwMF0gSS1waXBlLCAyMDAuMDAwIE1IeiB0aW1l
-cg0KWyAgICAwLjAwMDAyMV0gSS1waXBlLCAyMDAuMDAwIE1IeiBjbG9ja3NvdXJjZSwgd3JhcCBp
-biAyMTQ3NCBtcw0KWyAgICAwLjEyMzIxOF0gSS1waXBlLCAyMDAuMDAwIE1IeiB0aW1lcg0KWyAg
-ICAwLjI0OTgzMl0gW1hlbm9tYWldIHNjaGVkdWxpbmcgY2xhc3MgaWRsZSByZWdpc3RlcmVkLg0K
-WyAgICAwLjI0OTgzOF0gW1hlbm9tYWldIHNjaGVkdWxpbmcgY2xhc3MgcnQgcmVnaXN0ZXJlZC4N
-ClsgICAgMC4yNDk5NjhdIEktcGlwZTogaGVhZCBkb21haW4gWGVub21haSByZWdpc3RlcmVkLg0K
-WyAgICAwLjI1MTI4Ml0gW1hlbm9tYWldIENvYmFsdCB2My4wLXJjNCAoRXhhY3QgWmVybykNCg0K
-VGhhbmtzIQ0KDQoNCkBMb3dlbGw6IExpa2UgR2lsbGVzIG1lbnRpb25lZCwgdGhlcmUgYXJlIHNl
-dmVyYWwgdGltZXJzIGluIHRoZSANCkNvcnRleCBBOS4gQXQgYWRkcmVzcyBQRVJJUEhfQkFTRV9B
-RERSICsgMHgyMDAgeW91IGhhdmUgdGhlIGdsb2JhbCB0aW1lciANCnJlZ2lzdGVycyBhbmQgYXQg
-UEVSSVBIX0JBU0VfQUREUiArIDB4NjAwIHlvdSBoYXZlIHRoZSBwcml2YXRlIHRpbWVyIGFuZCAN
-CndhdGNoZG9nIHRpbWVyIHJlZ2lzdGVycyAob24gYSBwZXIgY29yZSBiYXNpcykuIE9uIHRoZSBB
-bHRlcmEgc29jZnBnYSBzeXN0ZW1zDQp0aGUgYmFzZSBhZGRyZXNzIGlzLCBpbiB0aGlzIGNhc2Us
-IDB4ZmZmZWMwMDAuIFVuZm9ydHVuYXRlbHkgQWx0ZXJhIGRpZG7igJl0DQpyZWdpc3RlciB0aGUg
-Z2xvYmFsIHRpbWVyLCBhdCBsZWFzdCBub3Qgb24gdGhlIHVwc3RyZWFtIEtlcm5lbHMuDQoNCkFs
-ZXhhbmRyZQ0K
+
+cristian ramos wrote:
+> Hello everybody,
+>
+>     First at all, thank very much for you attention and I would like
+> receive your help.
+>
+>     I'm working with centos7 and 2.6.4 release. All is working perfect,
+> but
+> I don't understand because the code below I get a difference of two
+> seconds.
+>
+>     clock_gettime(CLOCK_REALTIME, &ts);
+>     RTIME rtime = rt_timer_read();
+>     cout <<"posix: " << ts.tv_sec << ts.tv_nsec << endl;
+>     cout <<"xeno:  "<<  rtime << endl;
+>
+> the result is:
+>
+>     posix: *1434035528*803555763
+>     xeno: *1434035526*522192216
+>
+> you can see that clock_gettime has two seconds more than rt_timer_read.
+> I'm
+> using ntp for the synchronization between machines.
+>
+> Thank you very much for your time and would appreciate any help.
+
+Oh boy, are there ambiguities between the words "clock" and "timer" this
+afternoon.
+
+See:
+http://xenomai.org/2014/08/porting-a-linux-application-to-xenomai-dual-kernel/#Timing_services
+
+rt_timer_read() is the same as Xenomai POSIX skin CLOCK_REALTIME.
+
+
+-- 
+                    Gilles.
+
 
