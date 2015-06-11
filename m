@@ -1,9 +1,9 @@
-Message-ID: <5bb7f586387f49d02766817dbc9888f5.squirrel@sourcetrek.com>
+Message-ID: <650830a42485b39f0a0443dcb4c5c962.squirrel@sourcetrek.com>
 In-Reply-To: <44y4jq71ku.fsf@be-well.ilk.org>
 References: <79A9E4882C44D44FA53B5AB15E6198011385C369@ADEERL01SMS001.cznet.zeiss.org>
  <b692bb78ab6f887dfd41f71655a0a205.squirrel@sourcetrek.com>
  <44y4jq71ku.fsf@be-well.ilk.org>
-Date: Thu, 11 Jun 2015 16:56:01 +0200
+Date: Thu, 11 Jun 2015 16:56:54 +0200
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain;charset=utf-8
@@ -69,18 +69,8 @@ Lowell Gilbert wrote:
 > from Altera's hardware tools).
 >
 
-No. twd is the "timer watchdog", i.e. the cpu local timers.
-
-The "global timer" by contrast is global to all cores.
-
-The global timer register address is the address of the twd timer plus or
-minus 0x400, I never remember.
-
-The <mpu_periph_clk> is a clock, in the hardware sense, which indeed gets
-the twds and global timer ticking (at cpufreq / 2). But this has nothing
-to do with what the software calls a "clock". What the software calls a
-clock is what Linux calls a clocksource, a counter that gives the current
-time (usually since the boot-up).
+Note that the mail you are replying to is talking about "global timer",
+not "global clock".
 
 -- 
                     Gilles.
