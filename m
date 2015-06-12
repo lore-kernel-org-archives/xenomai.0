@@ -1,15 +1,10 @@
-Message-ID: <557B0CBF.7080200@xenomai.org>
-Date: Fri, 12 Jun 2015 18:45:51 +0200
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
-References: <e85c77d488ea4d89e8efd14cc5d82a92.squirrel@sourcetrek.com>
- <A2E3B789-3ADD-4D70-8414-E7533CF2A6D4@mah.priv.at>
- <CA+K1mPFkzcYeaaUnChRRAjYMoKXxHzjjAfZtDi79zy59S8ZVSQ@mail.gmail.com>
-In-Reply-To: <CA+K1mPFkzcYeaaUnChRRAjYMoKXxHzjjAfZtDi79zy59S8ZVSQ@mail.gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Does Xenomai export shared memory keys to Linux
-	kernel?
+From: Michael Haberler <haberlerm@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <F89CBA55-43A8-4AE5-A859-BFE111D40561@gmail.com>
+Date: Fri, 12 Jun 2015 23:41:21 +0200
+Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2098\))
+Subject: [Xenomai] RTDM-native mainlining - status?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,21 +13,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: C Smith <csmithquestions@gmail.com>, Xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-On 06/12/2015 06:23 PM, C Smith wrote:
-> OK, thanks, Gilles and Michael for your explanation and suggestion.
-> What I have works for now if I link my userspace app to Xenomai,though my
-> goal was to stay as "standard" as possible to maintain compatibility with
-> legacy POSIX code.
-> 
-> My vote is please keep the POSIX code in Xenomai for as long as you can -
-> it actually works.
-> 
+Q - can I assume "RTDM-native" will be part of RT-PREEMPT if/when that =
+goes mainline?
 
-POSIX support (in userland) is fundamental in Xenomai 3. All the rest
-depends on it.
+or must I assume this will remain a Xenomai-specific way of doing things =
+which will not be available via a torvalds kernel?
 
--- 
-Philippe.
+
+- Michael
+
+background - since we have a portable RT application, investing into =
+RTDM drivers makes a lot more sense if both RT kernel flavors can make =
+use of them (in fact three if a vanilla kernel is used - which is good =
+enough for certain applications)
+
 
