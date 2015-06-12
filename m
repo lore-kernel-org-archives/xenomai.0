@@ -1,15 +1,17 @@
-Message-ID: <8f7e2c2ccbb9edd9f8c491ee09d2e096.squirrel@sourcetrek.com>
-In-Reply-To: <79A9E4882C44D44FA53B5AB15E6198011385D400@ADEERL01SMS001.cznet.zeiss.org>
+From: "Lopes, Alexandre" <alexandre.lopes.ext@zeiss.com>
+Date: Fri, 12 Jun 2015 07:54:38 +0000
+Message-ID: <79A9E4882C44D44FA53B5AB15E6198011385D47B@ADEERL01SMS001.cznet.zeiss.org>
 References: <79A9E4882C44D44FA53B5AB15E6198011385C369@ADEERL01SMS001.cznet.zeiss.org>
  <b692bb78ab6f887dfd41f71655a0a205.squirrel@sourcetrek.com>
  <44y4jq71ku.fsf@be-well.ilk.org>
  <650830a42485b39f0a0443dcb4c5c962.squirrel@sourcetrek.com>
  <79A9E4882C44D44FA53B5AB15E6198011385D400@ADEERL01SMS001.cznet.zeiss.org>
-Date: Thu, 11 Jun 2015 19:35:11 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+ <44oakm9mql.fsf@be-well.ilk.org>
+In-Reply-To: <44oakm9mql.fsf@be-well.ilk.org>
+Content-Language: de-DE
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai] init failed code -19 on Cyclone V SoC
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -19,49 +21,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Lopes, Alexandre" <alexandre.lopes.ext@zeiss.com>
+To: Lowell Gilbert <kludge@be-well.ilk.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
+-----Urspr=FCngliche Nachricht-----
+Von: Lowell Gilbert [mailto:kludge@be-well.ilk.org]=20
+Gesendet: Donnerstag, 11. Juni 2015 19:30
+An: Lopes, Alexandre
+Cc: Gilles Chanteperdrix; Lowell Gilbert; xenomai@xenomai.org
+Betreff: Re: AW: [Xenomai] init failed code -19 on Cyclone V SoC
 
-Lopes, Alexandre wrote:
-> @Lowell: Like Gilles mentioned, there are several timers in the
-> Cortex A9. At address PERIPH_BASE_ADDR + 0x200 you have the global timer
-> registers and at PERIPH_BASE_ADDR + 0x600 you have the private timer and
-> watchdog timer registers (on a per core basis). On the Altera socfpga
-> systems
-> the base address is, in this case, 0xfffec000. Unfortunately Altera
-> didn’t
-> register the global timer, at least not on the upstream Kernels.
+> The Cyclone V has a timer block external to the Cortex A9 as well, if I=20
+remember correctly.
 
-The Linux mainline code refuses to start the global timer with old
-revisions of the cortex A9 core which global timer is not exactly the same
-as with newer revisions (there is a difference in what condition triggers
-the timer interrupt which make it possible for the old revisions timer to
-not receive an interrupt if the programmed delay is too short, whereas it
-can not happen with newer versions). So, the SOCs in mainline based on
-such old versions do not even bother to declare the global timer registers
-in the DT.
+Yes, you're right. There are four external timers available, which could=20
+also be used in this case and are already registered on the DTS:
 
-The I-pipe clock source does not care about the timer, it only needs the
-free running counter, and actually has been using it long before the arm
-global timer driver was merged. This free running counter works fine in
-both cases (and has an unparalleled resolution and latency, which makes it
-interesting for emulating a tsc), so, I have patched up the global timer
-code to keep the clocksource even with old revisions and only skip the
-clockevent device registration, so that we can add the global timer
-register declarations in DT and have the clocksource without the timer.
-But this is a hack, really, it means that we have to add the DT data in
-the I-pipe patch, and this is going to byte us when mainline decides to
-restructure the global timer support.
+timer0: timer0@ffc08000 {
+	compatible =3D "snps,dw-apb-timer";
+	interrupts =3D <0 167 4>;
+	reg =3D <0xffc08000 0x1000>;
+	clocks =3D <&l4_sp_clk>;
+	clock-names =3D "timer";
+};
 
-The proper fix is to submit a patch to mainline that agrees both parties,
-namely implement a different clockevent callback for the old revisions
-that test for short delays and return -ETIME to let the clockevent system
-handle it. Then submit the DT data to make the ARM global timer available
-for the SOCs we need, and move all this out of the I-pipe patch.
+timer1: timer1@ffc09000 {
+	compatible =3D "snps,dw-apb-timer";
+	interrupts =3D <0 168 4>;
+	reg =3D <0xffc09000 0x1000>;
+	clocks =3D <&l4_sp_clk>;
+	clock-names =3D "timer";
+};
+
+timer2: timer2@ffd00000 {
+	compatible =3D "snps,dw-apb-timer";
+	interrupts =3D <0 169 4>;
+	reg =3D <0xffd00000 0x1000>;
+	clocks =3D <&osc1>;
+	clock-names =3D "timer";
+};
+
+timer3: timer3@ffd01000 {
+	compatible =3D "snps,dw-apb-timer";
+	interrupts =3D <0 170 4>;
+	reg =3D <0xffd01000 0x1000>;
+	clocks =3D <&osc1>;
+	clock-names =3D "timer";
+};
 
 
--- 
-                    Gilles.
+> I would expect it to come from Qsys, in the sopcinfo file, but=20
+apparently at some point I added it to my board info file instead.
 
+It also doesn't seem to be in DTS contained in the vendor specific Kernel=20
+(available from the RocketBoards website), so if you have it, it makes=20
+sense that you added it yourself.
+
+Alexandre
 
