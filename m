@@ -1,10 +1,12 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Mon, 15 Jun 2015 10:28:44 +0200
-Message-ID: <1859656.Cz6t9ftYOG@soho>
+Message-ID: <6cbaf8e2f1d872e05fcb58ae61279c17.squirrel@sourcetrek.com>
+In-Reply-To: <1859656.Cz6t9ftYOG@soho>
+References: <1859656.Cz6t9ftYOG@soho>
+Date: Mon, 15 Jun 2015 10:47:36 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Generating the documentation
+Content-Type: text/plain;charset=utf-8
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Generating the documentation
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,28 +15,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Cc: xenomai@xenomai.org
 
-SGksCgpJIHRyeSB0byBnZW5lcmF0ZSB0aGUgZG9jdW1lbnRhdGlvbiAoMi42LjQsIG9mZmljaWFs
-IHRhcmJhbGwpIHVzaW5nOgoKLi9jb25maWd1cmUgLS1lbmFibGUtZG94LWRvYwoKYW5kIEkgaGF2
-ZSBmb3VuZCB0aGF0IG1ha2UgLWpYIHdpdGggWCA+PSAyIGZhaWxzOgoKYW5kIEkgZ290IHRoaXMg
-bWVzc2FnZToKCm1ha2VbMl06IEVudGVyaW5nIGRpcmVjdG9yeSAKJy9zcnYvZHJwL3BhY2thZ2Vz
-L3hlbm9tYWkveGVub21haS5naXQvYnVpbGQvZG9jL2RveHlnZW4nCmRveHlnZW4gCm1ha2VbMl06
-ICoqKiBObyBydWxlIHRvIG1ha2UgdGFyZ2V0ICdhcGkvc2VhcmNoJywgbmVlZGVkIGJ5ICdhbGwt
-bG9jYWwnLiAgClN0b3AuCm1ha2VbMl06ICoqKiBXYWl0aW5nIGZvciB1bmZpbmlzaGVkIGpvYnMu
-Li4uCgoKc28sIElNSE8gdGhlcmUncyBzb21ldGhpbmcgd3JvbmcgaW4gdGhlIGRlcGVuZGVuY2ll
-cy4gVGhlbiwgSSB3b3VsZCBsaWtlIApraW5kbHkgdG8gYXNrIHRvIHVwc3RyZWFtIGlmIHlvdSBj
-YW46CgotIHJldmlldyB0aGUgZ2VuZXJhdGlvbiBvZiB0aGUgZG9jdW1lbnRhdGlvbiwgdG8gYXZv
-aWQgdGhpcyBlcnJvci4KCm9yIGlmIGl0J3Mgbm90IG9idmlvdXMsCgpwbGVhc2UgYWRkICJtYWtl
-IGRvYyIgdGFyZ2V0IGFuZCB0YWtlIG91dCBmcm9tIHRoZSBkZWZhdWx0IHJ1bGUgdG8gYmUgYWJs
-ZSB0byAKZG86CgotIG1ha2UgLWpYICg+PTIpCi0gbWFrZSAtajEgZG9jCgpCZXN0IHJlZ2FyZHMs
-CgpMZW9wb2xkCgoKLS0gCi0tCkxpbnV4IFVzZXIgMTUyNjkyICAgICBHUEc6IDA1RjRBN0E5NDlB
-MkQ5QUEKQ2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KQTog
-QmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhlIG9yZGVyIGluIHdoaWNoIHBlb3BsZSBub3JtYWxseSBy
-ZWFkIHRleHQuClE6IFdoeSBpcyB0b3AtcG9zdGluZyBzdWNoIGEgYmFkIHRoaW5nPwpBOiBUb3At
-cG9zdGluZy4KUTogV2hhdCBpcyB0aGUgbW9zdCBhbm5veWluZyB0aGluZyBpbiBlLW1haWw/Ci0t
-LS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1l
-bnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24v
-cGdwLXNpZ25hdHVyZQpTaXplOiA4MTkgYnl0ZXMKRGVzYzogVGhpcyBpcyBhIGRpZ2l0YWxseSBz
-aWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hl
-bm9tYWkvYXR0YWNobWVudHMvMjAxNTA2MTUvYzBiNzlkNDcvYXR0YWNobWVudC5zaWc+Cg==
+
+Leopold Palomo-Avellaneda wrote:
+> Hi,
+>
+> I try to generate the documentation (2.6.4, official tarball) using:
+>
+> ./configure --enable-dox-doc
+>
+> and I have found that make -jX with X >= 2 fails:
+>
+> and I got this message:
+>
+> make[2]: Entering directory
+> '/srv/drp/packages/xenomai/xenomai.git/build/doc/doxygen'
+> doxygen
+> make[2]: *** No rule to make target 'api/search', needed by 'all-local'.
+> Stop.
+> make[2]: *** Waiting for unfinished jobs....
+>
+>
+> so, IMHO there's something wrong in the dependencies. Then, I would like
+> kindly to ask to upstream if you can:
+>
+> - review the generation of the documentation, to avoid this error.
+>
+> or if it's not obvious,
+>
+> please add "make doc" target and take out from the default rule to be able
+> to
+> do:
+>
+> - make -jX (>=2)
+> - make -j1 doc
+>
+> Best regards,
+
+The documentation generation is reserved to the maintainer. Why do you
+need it?
+
+
+-- 
+                                            Gilles.
+https://click-hack.org
+
+
