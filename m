@@ -1,13 +1,13 @@
-Message-ID: <555CC91A.9090901@zultron.com>
-Date: Wed, 20 May 2015 12:49:14 -0500
-From: John Morris <john@zultron.com>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Mon, 15 Jun 2015 13:04:17 +0200
+Message-ID: <2970048.iIsezngRJb@soho>
+In-Reply-To: <4e4a5c22efeb4b0332d46ad157e388aa.squirrel@sourcetrek.com>
+References: <1859656.Cz6t9ftYOG@soho>
+ <4e4a5c22efeb4b0332d46ad157e388aa.squirrel@sourcetrek.com>
 MIME-Version: 1.0
-References: <555C2BE9.3020001@zultron.com>
- <20150520164005.GJ10686@hermes.click-hack.org>
-In-Reply-To: <20150520164005.GJ10686@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] 3.0 packaging fixes
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Generating the documentation
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,28 +19,23 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-
-
-On 05/20/2015 11:40 AM, Gilles Chanteperdrix wrote:
-> On Wed, May 20, 2015 at 01:38:33AM -0500, John Morris wrote:
->> I needed the top 5 commits here to build 3.0 packages:
->>
->>      https://github.com/zultron/xenomai
->>
->> Pick them or not, as you please.  If you prefer them in email, let me know.
->
-> I you could put a link which lists clearly the commits you are
-> talking about, it would make looking at them simpler. But the last
-> commit, which readds autoreconf has already been discussed on this
-> list. We do not want that.
-
-Ok.  The other four:
-
-https://github.com/zultron/xenomai/commit/9e870cf1
-https://github.com/zultron/xenomai/commit/2253220c
-https://github.com/zultron/xenomai/commit/25fb98b6
-https://github.com/zultron/xenomai/commit/d95a071c
-
-Thanks-
-	John
-
+RWwgRGlsbHVucywgMTUgZGUganVueSBkZSAyMDE1LCBhIGxlcyAxMTo0OTo0NiwgR2lsbGVzIENo
+YW50ZXBlcmRyaXggdmEgCmVzY3JpdXJlOgo+IExlb3BvbGQgUGFsb21vLUF2ZWxsYW5lZGEgd3Jv
+dGU6Cj4gPiBIaSwKPiAKPiA+IEkgdHJ5IHRvIGdlbmVyYXRlIHRoZSBkb2N1bWVudGF0aW9uICgy
+LjYuNCwgb2ZmaWNpYWwgdGFyYmFsbCkgdXNpbmc6Cj4gQWxzbywgc3BlbmRpbmcgdGltZSBvbiAy
+LjYgaXMgcHJvYmFibHkgYSB3YXN0ZSBvZiB0aW1lLiBUaGlzIGJyYW5jaCBpcyBpbgo+IGRlZXAg
+bWFpbnRlbmFuY2UgbW9kZSBub3cuIFdlIHdpbGwgcHJvYmFibHkgbm90IGFwcGx5IHBhdGNoZXMg
+dW5sZXNzIHRoZXkKPiBmaXggc29tZSBzZXJpb3VzIGJ1Z3MuCgpJIGtub3csIGJ1dCBBRkFJSyB0
+aGUgX29ubHlfIG9mZmljaWFsIHN0YWJsZSByZWxlYXNlIG9mIHhlbm9tYWkgaXMgMi42LjQuIApY
+ZW5vbWFpLTMgaXMgcmVsZWFzZSBjYW5kaWRhdGUuCgpMZW9wb2xkCgpbMV0gaHR0cDovL2Rvd25s
+b2FkLmduYS5vcmcveGVub21haS9zdGFibGUvbGF0ZXN0LwoKLS0gCi0tCkxpbnV4IFVzZXIgMTUy
+NjkyICAgICBHUEc6IDA1RjRBN0E5NDlBMkQ5QUEKQ2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0KQTogQmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhlIG9yZGVyIGlu
+IHdoaWNoIHBlb3BsZSBub3JtYWxseSByZWFkIHRleHQuClE6IFdoeSBpcyB0b3AtcG9zdGluZyBz
+dWNoIGEgYmFkIHRoaW5nPwpBOiBUb3AtcG9zdGluZy4KUTogV2hhdCBpcyB0aGUgbW9zdCBhbm5v
+eWluZyB0aGluZyBpbiBlLW1haWw/Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0t
+LS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVy
+ZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiA4MTkgYnl0ZXMKRGVz
+YzogVGhpcyBpcyBhIGRpZ2l0YWxseSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6IDxodHRwOi8v
+eGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTA2MTUvY2FjNGFh
+MGQvYXR0YWNobWVudC5zaWc+Cg==
