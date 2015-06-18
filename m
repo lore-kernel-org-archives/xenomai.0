@@ -1,13 +1,15 @@
-Date: Fri, 26 Jun 2015 18:01:09 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150626160109.GA8276@hermes.click-hack.org>
-References: <E1Z8UN2-0004n4-Gc@sd-51317.xenomai.org>
+Message-ID: <558270FD.9090307@siemens.com>
+Date: Thu, 18 Jun 2015 09:19:25 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1Z8UN2-0004n4-Gc@sd-51317.xenomai.org>
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt/kernel: Fix locking
- for xnthread info manipulations
+References: <1649054.cG979aVMUy@soho>
+ <66bead79a47e082c19c410f097b53c9e.squirrel@sourcetrek.com>
+ <11760776.AKg2s0Tc8c@indiana> <55826C4D.4000506@siemens.com>
+ <28e34526295769234fe6fe5971714059.squirrel@sourcetrek.com>
+In-Reply-To: <28e34526295769234fe6fe5971714059.squirrel@sourcetrek.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] License Issues
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,79 +18,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: xenomai-git@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Fri, Jun 26, 2015 at 04:12:44PM +0200, git repository hosting wrote:
-> Module: xenomai-jki
-> Branch: for-forge
-> Commit: 67a64e164b737759cc171d3b04b05770e1450cb6
-> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=67a64e164b737759cc171d3b04b05770e1450cb6
+On 2015-06-18 09:05, Gilles Chanteperdrix wrote:
 > 
-> Author: Jan Kiszka <jan.kiszka@siemens.com>
-> Date:   Fri Jun 26 15:11:42 2015 +0200
+> Jan Kiszka wrote:
+>> On 2015-06-17 23:35, Leopold Palomo-Avellaneda wrote:
+>>> El Dimecres, 17 de juny de 2015, a les 19:25:56, Gilles Chanteperdrix va
+>>> escriure:
+>>>> Leopold Palomo-Avellaneda wrote:
+>>>>> Hi,
+>>>>>
+>>>>> using a debian tool to check the license of the package I have found
+>>>>> that
+>>>>> his
+>>>>
+>>>>> files:
+>>>> This mail looks very different from the one you sent me privately and I
+>>>> told you to post on the list. It does not even concern the same version
+>>>> of
+>>>> Xenomai.
+>>>
+>>> yes,
+>>>
+>>> it's true. But what I understood from you was that it was better that I
+>>> sent
+>>> to the list. That file comes from xenomai-2.6.4. Any problem then?
+>>>
+>>> I just need to clarify this kind of things because ftp-masters are every
+>>> day
+>>> more strict (what I think it's better), especially with licenses. Never
+>>> happens nothing till the day that something happen.
+>>
+>> Out of curiosity: How do these license check work right now? What's the
+>> tool used and how are the outputs processed (manual or automatic
+>> decisions etc.)?
+>>
+>>>
+>>> If can check this kind of stuff it would be better, that's all. For
+>>> instance, I
+>>> was a bit surprised about the autotools generated files, because I
+>>> thought they
+>>> would never had license.
+>>
+>> If something has no license, it cannot be used.
 > 
-> cobalt/kernel: Fix locking for xnthread info manipulations
-> 
-> nklock must be held when manipulating bits of xnthread::info. Not all
-> callsites of xnthread_set/clear_info follow this rule so far, directly
-> or indirectly, fix them (and possibly some other races along this).
-> 
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> 
-> ---
-> 
->  include/cobalt/kernel/rtdm/driver.h |    8 ++++----
->  kernel/cobalt/posix/syscall.c       |    5 +++++
->  kernel/cobalt/synch.c               |    2 ++
->  kernel/cobalt/thread.c              |    5 +++++
->  4 files changed, 16 insertions(+), 4 deletions(-)
-> 
-> diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
-> index c14198b..de476ca 100644
-> --- a/include/cobalt/kernel/rtdm/driver.h
-> +++ b/include/cobalt/kernel/rtdm/driver.h
-> @@ -553,7 +553,7 @@ static inline void rtdm_lock_get(rtdm_lock_t *lock)
->  {
->  	XENO_BUG_ON(COBALT, !spltest());
->  	spin_lock(lock);
-> -	__xnsched_lock();
-> +	xnsched_lock();
->  }
->  
->  /**
-> @@ -566,7 +566,7 @@ static inline void rtdm_lock_get(rtdm_lock_t *lock)
->  static inline void rtdm_lock_put(rtdm_lock_t *lock)
->  {
->  	spin_unlock(lock);
-> -	__xnsched_unlock();
-> +	xnsched_unlock();
->  }
->  
->  /**
-> @@ -584,7 +584,7 @@ static inline rtdm_lockctx_t __rtdm_lock_get_irqsave(rtdm_lock_t *lock)
->  
->  	context = ipipe_test_and_stall_head();
->  	spin_lock(lock);
-> -	__xnsched_lock();
-> +	xnsched_lock();
->  
->  	return context;
->  }
-> @@ -603,7 +603,7 @@ static inline
->  void rtdm_lock_put_irqrestore(rtdm_lock_t *lock, rtdm_lockctx_t context)
->  {
->  	spin_unlock(lock);
-> -	__xnsched_unlock();
-> +	xnsched_unlock();
->  	ipipe_restore_head(context);
->  }
+> That is an over-simplification. Or maybe a policy of the company you work
+> at. But that is not a general truth that applies to everyone.
 
-These changes are not without risk: is not there a risk of deadlock
-if one thread calls rtdm_lock_get without holding the nklock and
-another calls it while holding it?
+Of course, it's a simplification (you may still use it secretly under
+your blanket), but your lawyer will tell you something like this if you
+ask. At least when referring to common copyright laws on this planet. So
+this is not a company policy thing but a jurisdiction issue.
+
+Jan
 
 -- 
-					    Gilles.
-https://click-hack.org
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
