@@ -1,13 +1,10 @@
-Date: Wed, 1 Jul 2015 12:06:20 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150701100620.GE3641@hermes.click-hack.org>
-References: <CAL5YyVbm6rHu0QFyfMZbrVdDAeHmJrtrggbsAyERdC5HhaeQng@mail.gmail.com>
- <CAL5YyVawvx-8nVDd4u7RTgQ4o6z3Xdy+WeRP-Sg=0shdLLp-jA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAL5YyVawvx-8nVDd4u7RTgQ4o6z3Xdy+WeRP-Sg=0shdLLp-jA@mail.gmail.com>
-Subject: Re: [Xenomai] Kernel compilation problem x86
+Date: Thu, 18 Jun 2015 14:50:48 +0200
+Message-ID: <CANprwBMXsCVdx0qup4e=weJpWW8WZtP2TfZSiT58MhRODSpNsQ@mail.gmail.com>
+From: fre go <fgosew@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] RTcfg module waits forever after "rtcfg rteth0 server"
+ has been called
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,28 +13,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ACO31 <alain.cordat@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Wed, Jul 01, 2015 at 11:59:52AM +0200, ACO31 wrote:
-> 'cocobalt' is just a bad  copy/past -> sorry
-> I work with   linux kernel and xenomai3rc5 without modification
-> In a first time i have launched the compil with same modification of kernel
-> with menuconfig  (RC4 ok, RC5 KO)
-> in a second time, I launch the compil of RC5 with no modification on
-> 'menuconfig'. (only for test) with exactly the same process that with RC4.
-> (RC4 ok, RC5 KO)
-> I can find the apc.h
->  - linux: in dir arch/sparc/... and include/xenomai/cobalt/kernel/
->  - rc4 and rc5: in rep include/cobalt/kernel.
-> But the compil is ok for RC4, not for RC5. with same kernel src and same
-> process.
+I'm currently working with Xenomai 3 (first rc4, now git head) with Kernel
+3.16.7 and encountered a problem with both versions concerning rtnet: When
+I try to start rtnet with "rtnet start" the call stalls and sometimes even
+locks the kernel. I could trace this back to the "rtcfg rteth0 server" and
+further investigation via kgdb debugging via virtual machine showed that
+the call to "rtdm_event_signal" in rtnet_rtpc.c seems to be not answered.
+Although the kernel should be waiting interruptible most of the time ctrl+c
+does nothing. Sometimes it does what it's supposed to (interrupt) but after
+another call to "rtnet start" the kernel often fails with a oops or even a
+panic). Could it be the kernel which fails here and not xenomai? I'm
+currently out of ideas how to tackle this problem on my own. Maybe somebody
+could point me into the right direction.
 
-I do not understand. What more information does this answer provide?
-Have you read the "asking for help page" I just recommended you to
-read? Do you not find it clear to follow?
-
--- 
-					    Gilles.
-https://click-hack.org
-
+My dev machine is running on KVM and it as been tested with xenomai 2.6.4
+and RTnet 0.9.13 git head, both with different nics (e1000, rtl8139) so I
+can rule out possible KVM or Qemu issues.
