@@ -1,20 +1,14 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Tue, 23 Jun 2015 12:07:36 -0400
-Message-ID: <20150623160736.GL17436@csclub.uwaterloo.ca>
-References: <CAOL1OyMgNHaY4tgbUXM0Ytm9YnR3VGaJN-c60_5fuMayjz4aSw@mail.gmail.com>
- <558843FB.3040704@siemens.com>
- <CAOL1OyOWmGY2TFo6LaydWmeFqThHnVHNHtgk_iFZJ9aiwOM6uw@mail.gmail.com>
- <5588FA58.2080403@siemens.com>
- <CAOL1OyMJ9BS8jHWrHHVeCbP7tYJ7-Kgz6KzB4DAkBDpAGENUVA@mail.gmail.com>
- <20150623141142.GK17436@csclub.uwaterloo.ca>
- <55896A1A.2030408@siemens.com>
- <c2c68cadb110b6c7963aa06cadde978b.squirrel@sourcetrek.com>
- <CAOL1OyM2ViCuuD1BPRze0yhX6cSNqCRxMvu3mM=frnXA5Ly5NA@mail.gmail.com>
+Message-ID: <55826C4D.4000506@siemens.com>
+Date: Thu, 18 Jun 2015 08:59:25 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOL1OyM2ViCuuD1BPRze0yhX6cSNqCRxMvu3mM=frnXA5Ly5NA@mail.gmail.com>
-Subject: Re: [Xenomai] I-Pipe Tracer and linux ftrace
+References: <1649054.cG979aVMUy@soho>
+ <66bead79a47e082c19c410f097b53c9e.squirrel@sourcetrek.com>
+ <11760776.AKg2s0Tc8c@indiana>
+In-Reply-To: <11760776.AKg2s0Tc8c@indiana>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] License Issues
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,24 +17,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Antoine Durand <wanipof@gmail.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Tue, Jun 23, 2015 at 04:41:06PM +0200, Antoine Durand wrote:
-> The clocksource switching is due to the config option
+On 2015-06-17 23:35, Leopold Palomo-Avellaneda wrote:
+> El Dimecres, 17 de juny de 2015, a les 19:25:56, Gilles Chanteperdrix va 
+> escriure:
+>> Leopold Palomo-Avellaneda wrote:
+>>> Hi,
+>>>
+>>> using a debian tool to check the license of the package I have found that
+>>> his
+>>
+>>> files:
+>> This mail looks very different from the one you sent me privately and I
+>> told you to post on the list. It does not even concern the same version of
+>> Xenomai.
 > 
-> CONFIG_NR_CPUS=2
+> yes,
 > 
-> the CPU is quad core and i would like to use only two of them to emulate a
-> cheaper board.
+> it's true. But what I understood from you was that it was better that I sent 
+> to the list. That file comes from xenomai-2.6.4. Any problem then?
 > 
-> now the time run normally
-> 
-> i will check if the other problems are resolved.
+> I just need to clarify this kind of things because ftp-masters are every day 
+> more strict (what I think it's better), especially with licenses. Never 
+> happens nothing till the day that something happen.
 
-Wouldn't booting with 'maxcpus=2' be good enough for that test and avoid
-any breaking of the system?
+Out of curiosity: How do these license check work right now? What's the
+tool used and how are the outputs processed (manual or automatic
+decisions etc.)?
+
+> 
+> If can check this kind of stuff it would be better, that's all. For instance, I 
+> was a bit surprised about the autotools generated files, because I thought they 
+> would never had license.
+
+If something has no license, it cannot be used. IIRC, you can freely
+choose the license of the generated autotools files, but you should
+state at least something somewhere to avoid needless confusion for
+people who validate the licenses of projects (AKA license clearing process).
+
+Given that tool-based license analysis often looks at individual files
+only, a license header for those that lack a note would be the optimal
+resolution. The minimum - and likely the only option for generated files
+- is to define a default license for Xenomai that covers all files not
+explicitly carrying a note or not being covered by a subdir COPYING file.
+
+Did you also look at Xenomai 3 already in this regard, Leopold?
+
+Jan
 
 -- 
-Len Sorensen
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
