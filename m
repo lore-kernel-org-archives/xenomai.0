@@ -1,13 +1,16 @@
-Date: Sat, 27 Jun 2015 14:49:30 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150627124930.GE9756@hermes.click-hack.org>
-References: <C31C0BF8-AC9A-442B-8A2F-4576ACF1F817@gmail.com>
- <20150627124339.GD9756@hermes.click-hack.org>
+Message-ID: <f384a2881775ae2fc3b81fce890dc7ec.squirrel@sourcetrek.com>
+In-Reply-To: <558270FD.9090307@siemens.com>
+References: <1649054.cG979aVMUy@soho>
+ <66bead79a47e082c19c410f097b53c9e.squirrel@sourcetrek.com>
+ <11760776.AKg2s0Tc8c@indiana> <55826C4D.4000506@siemens.com>
+ <28e34526295769234fe6fe5971714059.squirrel@sourcetrek.com>
+ <558270FD.9090307@siemens.com>
+Date: Thu, 18 Jun 2015 09:25:25 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20150627124339.GD9756@hermes.click-hack.org>
-Subject: Re: [Xenomai] Q on xenomai2/3 userland coexistence
+Content-Type: text/plain;charset=utf-8
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] License Issues
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,61 +19,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Haberler <haberlerm@gmail.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-On Sat, Jun 27, 2015 at 02:43:39PM +0200, Gilles Chanteperdrix wrote:
-> On Sat, Jun 27, 2015 at 02:22:09PM +0200, Michael Haberler wrote:
-> > ATM we're sorting through the machinekit xenomai3 transition on
-> > debian
-> > 
-> > I assume that users will continue to run xenomai2 kernels for a
-> > long time, so we work towards separate (but hopefully
-> > coexisting-in-peace) packages for Xenomai2 and Xenomai3 (startup
-> > is driven by kernel autodetection, so booting a different kernel
-> > chooses the right runtime)
-> > 
-> > The libxenomai-dev and libxenomai1 in debian are all xenomai2 atm,
-> > but I assume Xenomai3 equivalents will appear eventually
-> 
-> Xenomai 3 has a debian directory allowing to build it as a Debian
-> package. So, in fact, they are already here.
-> 
-> 
-> > 
-> > I hope these will be able to co-reside on the same host?
-> > 
-> > Ideally suggesting the Xenomai3 packages would be separate, be named differently, and not supersede any installed Xenomai2 packages?
-> > 
-> > 
-> > (or am I blundering and I can run applications linked against the Xenomai3 libraries on a Xenomai2 kernel? my tests so far indicate - not)
-> > 
-> 
-> I was afraid someone was going to ask for that. Experience has
-> proved that allowing to install silently several versions of Xenomai
-> is a recipe for trouble. So, relying on Debian allowing to install
-> only one version of the package was a nice feature.
-> 
-> So, if we agree that having the two versions installed is not
-> something for the common user, I would suggest people who want to do
-> that know what they are doing and can install one version as a
-> Debian package, and the other manually.
-> 
-> On the other hand, if we think having the two versions installed
-> will be a very common use case, I do not think there is any conflict
-> with library names, only with tool names, and since we provide the
-> the "xeno" wrapper to fetch the tools from another place than
-> /usr/bin, I guess the only conflict would be on the "xeno" wrapper
-> itself. So, maybe we could call it xeno3 in Xenomai3 Debian package
-> to avoid any issue? Or use the Debian "alternatives" mechanism
-> (though this mechanism is probably unknown from the typical ubuntu
-> user)? 
 
-Other obvious conflicts are xeno-config, xeno-test. Of course, they
-could be hidden behind the xeno wrapper as well. as xeno config and
-xeno test.
+Jan Kiszka wrote:
+> On 2015-06-18 09:05, Gilles Chanteperdrix wrote:
+>>
+>> Jan Kiszka wrote:
+>>> On 2015-06-17 23:35, Leopold Palomo-Avellaneda wrote:
+>>>> El Dimecres, 17 de juny de 2015, a les 19:25:56, Gilles Chanteperdrix
+>>>> va
+>>>> escriure:
+>>>>> Leopold Palomo-Avellaneda wrote:
+>>>>>> Hi,
+>>>>>>
+>>>>>> using a debian tool to check the license of the package I have found
+>>>>>> that
+>>>>>> his
+>>>>>
+>>>>>> files:
+>>>>> This mail looks very different from the one you sent me privately and
+>>>>> I
+>>>>> told you to post on the list. It does not even concern the same
+>>>>> version
+>>>>> of
+>>>>> Xenomai.
+>>>>
+>>>> yes,
+>>>>
+>>>> it's true. But what I understood from you was that it was better that
+>>>> I
+>>>> sent
+>>>> to the list. That file comes from xenomai-2.6.4. Any problem then?
+>>>>
+>>>> I just need to clarify this kind of things because ftp-masters are
+>>>> every
+>>>> day
+>>>> more strict (what I think it's better), especially with licenses.
+>>>> Never
+>>>> happens nothing till the day that something happen.
+>>>
+>>> Out of curiosity: How do these license check work right now? What's the
+>>> tool used and how are the outputs processed (manual or automatic
+>>> decisions etc.)?
+>>>
+>>>>
+>>>> If can check this kind of stuff it would be better, that's all. For
+>>>> instance, I
+>>>> was a bit surprised about the autotools generated files, because I
+>>>> thought they
+>>>> would never had license.
+>>>
+>>> If something has no license, it cannot be used.
+>>
+>> That is an over-simplification. Or maybe a policy of the company you
+>> work
+>> at. But that is not a general truth that applies to everyone.
+>
+> Of course, it's a simplification (you may still use it secretly under
+> your blanket), but your lawyer will tell you something like this if you
+> ask. At least when referring to common copyright laws on this planet. So
+> this is not a company policy thing but a jurisdiction issue.
+
+What I mean is that there are other cases, such as:
+- code in the public domain
+- reuse of portions of the code that fall under "fair use" or "right to
+quote", that could easily apply to things like the 5 lines x86 arith.h or
+the examples. And I would think that of the Makefiles too.
 
 -- 
-					    Gilles.
+                                            Gilles.
 https://click-hack.org
+
 
