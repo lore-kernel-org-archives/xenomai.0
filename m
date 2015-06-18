@@ -1,13 +1,17 @@
-Message-ID: <55910060.1090605@grinta.net>
-Date: Mon, 29 Jun 2015 10:22:56 +0200
-From: Daniele Nicolodi <daniele@grinta.net>
+Message-ID: <5582761E.6060602@siemens.com>
+Date: Thu, 18 Jun 2015 09:41:18 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <558993D6.8080108@xenomai.org> <558BDB3E.4060405@grinta.net>
- <558BDED2.20300@xenomai.org>
-In-Reply-To: <558BDED2.20300@xenomai.org>
-Content-Type: text/plain; charset=windows-1252
+References: <1649054.cG979aVMUy@soho>
+ <66bead79a47e082c19c410f097b53c9e.squirrel@sourcetrek.com>
+ <11760776.AKg2s0Tc8c@indiana> <55826C4D.4000506@siemens.com>
+ <28e34526295769234fe6fe5971714059.squirrel@sourcetrek.com>
+ <558270FD.9090307@siemens.com>
+ <f384a2881775ae2fc3b81fce890dc7ec.squirrel@sourcetrek.com>
+In-Reply-To: <f384a2881775ae2fc3b81fce890dc7ec.squirrel@sourcetrek.com>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [RELEASE] Xenomai 3.0-rc5
+Subject: Re: [Xenomai] License Issues
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,34 +20,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 25/06/15 12:58, Philippe Gerum wrote:
-> On 06/25/2015 12:43 PM, Daniele Nicolodi wrote:
->> On 23/06/15 19:13, Philippe Gerum wrote:
+On 2015-06-18 09:25, Gilles Chanteperdrix wrote:
+> 
+> Jan Kiszka wrote:
+>> On 2015-06-18 09:05, Gilles Chanteperdrix wrote:
 >>>
->>> Unlike originally planned, this is -rc5. We merged way too many changes
->>> and important fixes since -rc4 for going final directly.
+>>> Jan Kiszka wrote:
+>>>> On 2015-06-17 23:35, Leopold Palomo-Avellaneda wrote:
+>>>>> El Dimecres, 17 de juny de 2015, a les 19:25:56, Gilles Chanteperdrix
+>>>>> va
+>>>>> escriure:
+>>>>>> Leopold Palomo-Avellaneda wrote:
+>>>>>>> Hi,
+>>>>>>>
+>>>>>>> using a debian tool to check the license of the package I have found
+>>>>>>> that
+>>>>>>> his
+>>>>>>
+>>>>>>> files:
+>>>>>> This mail looks very different from the one you sent me privately and
+>>>>>> I
+>>>>>> told you to post on the list. It does not even concern the same
+>>>>>> version
+>>>>>> of
+>>>>>> Xenomai.
+>>>>>
+>>>>> yes,
+>>>>>
+>>>>> it's true. But what I understood from you was that it was better that
+>>>>> I
+>>>>> sent
+>>>>> to the list. That file comes from xenomai-2.6.4. Any problem then?
+>>>>>
+>>>>> I just need to clarify this kind of things because ftp-masters are
+>>>>> every
+>>>>> day
+>>>>> more strict (what I think it's better), especially with licenses.
+>>>>> Never
+>>>>> happens nothing till the day that something happen.
+>>>>
+>>>> Out of curiosity: How do these license check work right now? What's the
+>>>> tool used and how are the outputs processed (manual or automatic
+>>>> decisions etc.)?
+>>>>
+>>>>>
+>>>>> If can check this kind of stuff it would be better, that's all. For
+>>>>> instance, I
+>>>>> was a bit surprised about the autotools generated files, because I
+>>>>> thought they
+>>>>> would never had license.
+>>>>
+>>>> If something has no license, it cannot be used.
+>>>
+>>> That is an over-simplification. Or maybe a policy of the company you
+>>> work
+>>> at. But that is not a general truth that applies to everyone.
 >>
->> Hello Philippe,
->>
->> it seems that the release has not be tagged in the git repository. Is
->> this an oversight or am I missing something?
->>
+>> Of course, it's a simplification (you may still use it secretly under
+>> your blanket), but your lawyer will tell you something like this if you
+>> ask. At least when referring to common copyright laws on this planet. So
+>> this is not a company policy thing but a jurisdiction issue.
 > 
-> I did not push the tags. My bad. Should be ok now.
-> 
-> Thanks for the heads up.
+> What I mean is that there are other cases, such as:
+> - code in the public domain
+> - reuse of portions of the code that fall under "fair use" or "right to
+> quote", that could easily apply to things like the 5 lines x86 arith.h or
+> the examples. And I would think that of the Makefiles too.
 
-Hello Philippe,
+You may not be wrong, depending on the concrete case, but relying on
+such assumptions needlessly complicates licensing for the end user,
+specifically those that carefully check license obligations and
+compatibilities. It's way simpler for everyone to make the licensing
+intention of the copyright holder explicit, even for "trivial" code.
+It's already way simpler than having such a discussion. ;)
 
-sorry for bothering you again, but it looks like the tag has been
-applied to the "next" branch and not on the "master" branch, or at least
-the changesets for rc5 have not been pushed to the master branch.
+Jan
 
-Is this intended?
-
-Cheers,
-Daniele
-
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
