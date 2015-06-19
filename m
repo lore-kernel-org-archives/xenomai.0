@@ -1,11 +1,12 @@
-Date: Fri, 19 Jun 2015 13:02:22 +0000 (UTC)
-From: Frederik Bayart <frederik_bayart@yahoo.co.uk>
-Message-ID: <1840957946.1843713.1434718942501.JavaMail.yahoo@mail.yahoo.com>
+Message-ID: <5584142A.9030203@xenomai.org>
+Date: Fri, 19 Jun 2015 15:07:54 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] include guard trank/posix/pthread.h
-Reply-To: Frederik Bayart <frederik_bayart@yahoo.co.uk>
+References: <1840957946.1843713.1434718942501.JavaMail.yahoo@mail.yahoo.com>
+In-Reply-To: <1840957946.1843713.1434718942501.JavaMail.yahoo@mail.yahoo.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] include guard trank/posix/pthread.h
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,17 +15,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Frederik Bayart <frederik_bayart@yahoo.co.uk>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGFsbG8sCkkgbm90aWNlZCB0aGF0IGJvdGggL3Vzci94ZW5vbWFpL2luY2x1ZGUvdHJhbmsvdHJh
-bmsuaCBhbmTCoCAvdXNyL3hlbm9tYWkvaW5jbHVkZS90cmFuay9wb3NpeC9wdGhyZWFkLmggc2hh
-cmUgdGhlIHNhbWUgaW5jbHVkZSBndWFyZCAoX1hFTk9NQUlfVFJBTktfVFJBTktfSCkuQ2FuIHRo
-aXMgYmUgYW4gZXJyb3IgPyBJIHVzZSBjb21waWxlIGZsYWdzICd4ZW5vLWNvbmZpZyAtLXNraW49
-bmF0aXZlIC0tY2ZsYWdzJyBhbmQgZ2V0IGNvbXBpbGUgZXJyb3JzLiBJZiBJIGNoYW5nZSB0aGUg
-aW5jbHVkZSBndWFyZCBvZiBwdGhyZWFkLmggdG8gX1hFTk9NQUlfVFJBTktfUE9TSVhfUFRIUkVB
-RF9ILCB0aGUgcHJvYmxlbSBzZWVtcyB0byBiZSBzb2x2ZWQuSW4gYXR0YWNobWVudCBhIGRpZmYg
-d2l0aCBteSBjaGFuZ2VzLgpGcmVkZXJpawoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0t
-LS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogcHRo
-cmVhZC5oLnBhdGNoClR5cGU6IHRleHQveC1kaWZmClNpemU6IDUwOSBieXRlcwpEZXNjOiBub3Qg
-YXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRh
-Y2htZW50cy8yMDE1MDYxOS8yYWY3Yzc0Ny9hdHRhY2htZW50LnBhdGNoPgo=
+On 06/19/2015 03:02 PM, Frederik Bayart wrote:
+> Hallo,
+> I noticed that both /usr/xenomai/include/trank/trank.h and  /usr/xenomai/include/trank/posix/pthread.h share the same include guard (_XENOMAI_TRANK_TRANK_H).Can this be an error ? I use compile flags 'xeno-config --skin=native --cflags' and get compile errors. If I change the include guard of pthread.h to _XENOMAI_TRANK_POSIX_PTHREAD_H, the problem seems to be solved.In attachment a diff with my changes.
+> Frederik
+> 
+
+Yes, the guard is definitely wrong, will fix. Thanks for pointing this out.
+
+-- 
+Philippe.
+
