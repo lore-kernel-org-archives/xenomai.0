@@ -1,11 +1,12 @@
-Message-ID: <a7e2b8e6e4623f66073ed7256f00d22f.squirrel@sourcetrek.com>
-In-Reply-To: <558579E2.9070507@web.de>
-References: <558579E2.9070507@web.de>
-Date: Sat, 20 Jun 2015 16:46:57 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+Message-ID: <55858035.1090803@web.de>
+Date: Sat, 20 Jun 2015 17:01:09 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: 8bit
+References: <558579E2.9070507@web.de>
+ <a7e2b8e6e4623f66073ed7256f00d22f.squirrel@sourcetrek.com>
+In-Reply-To: <a7e2b8e6e4623f66073ed7256f00d22f.squirrel@sourcetrek.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Mayday issues again
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -15,33 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-
-Jan Kiszka wrote:
-> Hi Philippe,
->
-> the mayday mechanism is causing troubles to me again.
->
-> First of all, there is a bug /wrt restarting the mayday syscall. We
-> current don't restart on pending signals, thus destroy the register of
-> the interrupted thread that contains the syscall return code. See my
-> for-forge branch for a fix proposal.
->
-> But actually I would like to get rid of the syscall trampoline
-> completely if somehow possible, at least for certain archs. The reason
-> is that it ruins debuggability. If a RT thread is stopped by gdb with
-> the help of the mayday mechanism, it ends up waiting for resumption on
-> the mayday page. Even worse, backtracing is broken, at least on x86.
-
-The problem here seems to be mixing mayday with gdb. As its name
-indicates, the mayday mechanism is something exceptional, that should not
-happen during a casual debugging session with gdb.
-
-
--- 
-                                            Gilles.
-https://click-hack.org
-
-
+T24gMjAxNS0wNi0yMCAxNjo0NiwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gCj4gSmFu
+IEtpc3prYSB3cm90ZToKPj4gSGkgUGhpbGlwcGUsCj4+Cj4+IHRoZSBtYXlkYXkgbWVjaGFuaXNt
+IGlzIGNhdXNpbmcgdHJvdWJsZXMgdG8gbWUgYWdhaW4uCj4+Cj4+IEZpcnN0IG9mIGFsbCwgdGhl
+cmUgaXMgYSBidWcgL3dydCByZXN0YXJ0aW5nIHRoZSBtYXlkYXkgc3lzY2FsbC4gV2UKPj4gY3Vy
+cmVudCBkb24ndCByZXN0YXJ0IG9uIHBlbmRpbmcgc2lnbmFscywgdGh1cyBkZXN0cm95IHRoZSBy
+ZWdpc3RlciBvZgo+PiB0aGUgaW50ZXJydXB0ZWQgdGhyZWFkIHRoYXQgY29udGFpbnMgdGhlIHN5
+c2NhbGwgcmV0dXJuIGNvZGUuIFNlZSBteQo+PiBmb3ItZm9yZ2UgYnJhbmNoIGZvciBhIGZpeCBw
+cm9wb3NhbC4KPj4KPj4gQnV0IGFjdHVhbGx5IEkgd291bGQgbGlrZSB0byBnZXQgcmlkIG9mIHRo
+ZSBzeXNjYWxsIHRyYW1wb2xpbmUKPj4gY29tcGxldGVseSBpZiBzb21laG93IHBvc3NpYmxlLCBh
+dCBsZWFzdCBmb3IgY2VydGFpbiBhcmNocy4gVGhlIHJlYXNvbgo+PiBpcyB0aGF0IGl0IHJ1aW5z
+IGRlYnVnZ2FiaWxpdHkuIElmIGEgUlQgdGhyZWFkIGlzIHN0b3BwZWQgYnkgZ2RiIHdpdGgKPj4g
+dGhlIGhlbHAgb2YgdGhlIG1heWRheSBtZWNoYW5pc20sIGl0IGVuZHMgdXAgd2FpdGluZyBmb3Ig
+cmVzdW1wdGlvbiBvbgo+PiB0aGUgbWF5ZGF5IHBhZ2UuIEV2ZW4gd29yc2UsIGJhY2t0cmFjaW5n
+IGlzIGJyb2tlbiwgYXQgbGVhc3Qgb24geDg2Lgo+IAo+IFRoZSBwcm9ibGVtIGhlcmUgc2VlbXMg
+dG8gYmUgbWl4aW5nIG1heWRheSB3aXRoIGdkYi4gQXMgaXRzIG5hbWUKPiBpbmRpY2F0ZXMsIHRo
+ZSBtYXlkYXkgbWVjaGFuaXNtIGlzIHNvbWV0aGluZyBleGNlcHRpb25hbCwgdGhhdCBzaG91bGQg
+bm90Cj4gaGFwcGVuIGR1cmluZyBhIGNhc3VhbCBkZWJ1Z2dpbmcgc2Vzc2lvbiB3aXRoIGdkYi4K
+ClllcywgbWF5ZGF5IGlzIGEgbWlzbm9tZXIgdG9kYXkuIEl0IGlzIGFsc28gdXNlZCB0byBzeW5j
+aHJvbm91c2x5IGluamVjdApMaW51eCBzaWduYWxzIGludG8gdGhlIFJUIHRocmVhZHMgKGhhbmRs
+ZV9zaWd3YWtlX2V2ZW50IC0+Cl9feG50aHJlYWRfa2ljayAtPiBpcGlwZV9yYWlzZV9tYXlkYXkp
+LCBsaWtlIFNJR1NUT1AuCgpKYW4KCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0t
+LS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1
+cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMTgxIGJ5dGVzCkRl
+c2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3Bp
+cGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTUwNjIwL2Q3M2M3MTFiL2F0dGFjaG1lbnQu
+c2lnPgo=
