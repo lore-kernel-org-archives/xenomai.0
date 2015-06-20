@@ -1,13 +1,12 @@
-Message-ID: <f7e5785057e2a9f6fe8374e56cd44d47.squirrel@sourcetrek.com>
-In-Reply-To: <E1Z6JYL-0001WU-7T@sd-51317.xenomai.org>
-References: <E1Z6JYL-0001WU-7T@sd-51317.xenomai.org>
-Date: Sat, 20 Jun 2015 16:41:49 +0200
+Message-ID: <a7e2b8e6e4623f66073ed7256f00d22f.squirrel@sourcetrek.com>
+In-Reply-To: <558579E2.9070507@web.de>
+References: <558579E2.9070507@web.de>
+Date: Sat, 20 Jun 2015 16:46:57 +0200
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain;charset=utf-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt/kernel: Fix mode of
- mayday syscall
+Subject: Re: [Xenomai] Mayday issues again
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,27 +15,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: Xenomai <xenomai@xenomai.org>
 
 
-git repository hosting wrote:
-> Module: xenomai-jki
-> Branch: for-forge
-> Commit: c806b60eaf505aafd4dbeeaf59cd3fc6d68703fa
-> URL:
-> http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=c806b60eaf505aafd4dbeeaf59cd3fc6d68703fa
+Jan Kiszka wrote:
+> Hi Philippe,
 >
-> Author: Jan Kiszka <jan.kiszka@siemens.com>
-> Date:   Fri Jun 19 15:59:15 2015 +0200
+> the mayday mechanism is causing troubles to me again.
 >
-> cobalt/kernel: Fix mode of mayday syscall
+> First of all, there is a bug /wrt restarting the mayday syscall. We
+> current don't restart on pending signals, thus destroy the register of
+> the interrupted thread that contains the syscall return code. See my
+> for-forge branch for a fix proposal.
 >
-> The oneway mode meant norestart, thus return -EINTR instead of retrying
-> the syscall after signal processing. But this caused damaged to the
-> register state of the mayday-interrupted thread, most visible on x86-64
-> where RAX is holding the RIP.
+> But actually I would like to get rid of the syscall trampoline
+> completely if somehow possible, at least for certain archs. The reason
+> is that it ruins debuggability. If a RT thread is stopped by gdb with
+> the help of the mayday mechanism, it ends up waiting for resumption on
+> the mayday page. Even worse, backtracing is broken, at least on x86.
 
-And this can not be fixed, because ?
+The problem here seems to be mixing mayday with gdb. As its name
+indicates, the mayday mechanism is something exceptional, that should not
+happen during a casual debugging session with gdb.
 
 
 -- 
