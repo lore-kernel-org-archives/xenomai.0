@@ -1,11 +1,12 @@
-Date: Sat, 20 Jun 2015 12:26:57 -0400
-From: Glen Wernersbach <glen@jetsoftdev.com>
-Message-ID: <D1AB0C91.3950C%glen@jetsoftdev.com>
-Mime-version: 1.0
-Content-Type: text/plain;
-	charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Error on Installing the Xeno 3 libraries.
+Message-ID: <5585ADDE.9070005@xenomai.org>
+Date: Sat, 20 Jun 2015 20:15:58 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+MIME-Version: 1.0
+References: <558579E2.9070507@web.de>
+In-Reply-To: <558579E2.9070507@web.de>
+Content-Type: text/plain; charset=iso-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Mayday issues again
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,50 +15,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Hi All,
+On 06/20/2015 04:34 PM, Jan Kiszka wrote:
+> Hi Philippe,
+> 
+> the mayday mechanism is causing troubles to me again.
+> 
+> First of all, there is a bug /wrt restarting the mayday syscall. We
+> current don't restart on pending signals, thus destroy the register of
+> the interrupted thread that contains the syscall return code. See my
+> for-forge branch for a fix proposal.
+> 
+> But actually I would like to get rid of the syscall trampoline
+> completely if somehow possible, at least for certain archs. The reason
+> is that it ruins debuggability. If a RT thread is stopped by gdb with
+> the help of the mayday mechanism, it ends up waiting for resumption on
+> the mayday page. Even worse, backtracing is broken, at least on x86.
+> 
+> That brings me to the key question: why do we need the syscall
+> trampoline? We set TIP_MAYDAY in the target task, the task causes
+> IPIPE_TRAP_MAYDAY to be reported via the trap hook, the hook sets the
+> trampoline code, the trampoline triggers the syscall, and only on
+> syscall return, we finally migrate the task to Linux. What prevents
+> doing the migration already in the trap hook, ie. in
+> handle_mayday_event? The pattern seems similar to the migration we
+> trigger on userspace faults. And it seems to works, at least for x86,
+> and doesn't have the unwanted side effects.
+> 
+> The background of this work is improving gdb support, in particular
+> deterministic stopping and resuming of multi-threaded RT processes. I'm
+> still in the design & prototype phase, RFC patches will follow later.
+> 
 
-I am trying to install the Xenomai libraries on a X86_64 bit system for a 6=
-4
-target with the following commands:
-> sudo $xenomai_root/configure --with-core=3Dcobalt --enable-smp --enable-psh=
-ared
-> sudo make install
->=20
+Ok. The proposed design has to cover the basic case solved by the mayday
+mechanism, i.e. a runaway thread spinning into a syscall-less loop.
 
-I keep getting the follow error which I can=B9t find in any previous threads.
-Any ideas?
-> make[3]: Nothing to be done for `install-exec-am'.
->  /bin/mkdir -p '/usr/xenomai/include'
->  /usr/bin/install -c -m 644 /usr/src/xeno/xenomai-3.0-rc4/include/version=
-.h
-> '/usr/xenomai/include'
->  /bin/mkdir -p '/usr/xenomai/include'
->  /usr/bin/install -c -m 644 xeno_config.h '/usr/xenomai/include'
-> /usr/bin/install: `xeno_config.h' and `/usr/xenomai/include/xeno_config.h=
-' are
-> the same file
-> make[3]: *** [install-nodist_includeHEADERS] Error 1
-> make[3]: Leaving directory `/usr/xenomai/include'
-> make[2]: *** [install-am] Error 2
-> make[2]: Leaving directory `/usr/xenomai/include'
-> make[1]: *** [install-recursive] Error 1
-> make[1]: Leaving directory `/usr/xenomai/include'
-> make: *** [install-recursive] Error 1
->=20
+e.g. it should be able to switch such code back to secondary mode:
 
-Thanks in Advance.
+	for (;;) ;
 
-Glen
---=20
-Glen Wernersbach=20
-Business, Innovation and Technical Consultant;
-President and CEO
-Jetsoft Development Co.
-629 Old St Rt. 74 =AD Suite 210
-Cincinnati, Oh 45244
-513-240-9929
-glen@jetsoftdev.com
-
+-- 
+Philippe.
 
