@@ -1,13 +1,11 @@
-Date: Sat, 20 Jun 2015 15:57:10 +0000 (UTC)
-From: Gabriele Moabiti <gabmoa@yahoo.it>
-Message-ID: <370402527.3799215.1434815830773.JavaMail.yahoo@mail.yahoo.com>
-In-Reply-To: <1972650.TnPARfU7Gx@soho>
-References: <1972650.TnPARfU7Gx@soho>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Date: Sat, 20 Jun 2015 12:26:57 -0400
+From: Glen Wernersbach <glen@jetsoftdev.com>
+Message-ID: <D1AB0C91.3950C%glen@jetsoftdev.com>
+Mime-version: 1.0
+Content-Type: text/plain;
+	charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Rtnet driver of RTL8111/8168/8411
-Reply-To: Gabriele Moabiti <gabmoa@yahoo.it>
+Subject: [Xenomai] Error on Installing the Xeno 3 libraries.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,26 +14,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-=20
+Hi All,
 
-> It doesn't compile, so I don't know how updated is that driver.
-I use it with xenomai 2.6 and kernel 3.8.I guess some changes will be neede=
-d in order to use it with xenomai 3.x.
-Gabriele
+I am trying to install the Xenomai libraries on a X86_64 bit system for a 6=
+4
+target with the following commands:
+> sudo $xenomai_root/configure --with-core=3Dcobalt --enable-smp --enable-psh=
+ared
+> sudo make install
+>=20
 
+I keep getting the follow error which I can=B9t find in any previous threads.
+Any ideas?
+> make[3]: Nothing to be done for `install-exec-am'.
+>  /bin/mkdir -p '/usr/xenomai/include'
+>  /usr/bin/install -c -m 644 /usr/src/xeno/xenomai-3.0-rc4/include/version=
+.h
+> '/usr/xenomai/include'
+>  /bin/mkdir -p '/usr/xenomai/include'
+>  /usr/bin/install -c -m 644 xeno_config.h '/usr/xenomai/include'
+> /usr/bin/install: `xeno_config.h' and `/usr/xenomai/include/xeno_config.h=
+' are
+> the same file
+> make[3]: *** [install-nodist_includeHEADERS] Error 1
+> make[3]: Leaving directory `/usr/xenomai/include'
+> make[2]: *** [install-am] Error 2
+> make[2]: Leaving directory `/usr/xenomai/include'
+> make[1]: *** [install-recursive] Error 1
+> make[1]: Leaving directory `/usr/xenomai/include'
+> make: *** [install-recursive] Error 1
+>=20
+
+Thanks in Advance.
+
+Glen
 --=20
---
-Linux User 152692=C2=A0 =C2=A0 GPG: 05F4A7A949A2D9AA
-Catalonia
--------------------------------------
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
+Glen Wernersbach=20
+Business, Innovation and Technical Consultant;
+President and CEO
+Jetsoft Development Co.
+629 Old St Rt. 74 =AD Suite 210
+Cincinnati, Oh 45244
+513-240-9929
+glen@jetsoftdev.com
 
 
-
-  
