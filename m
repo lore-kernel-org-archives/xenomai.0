@@ -1,12 +1,13 @@
-Message-ID: <5587E2D9.8000307@xenomai.org>
-Date: Mon, 22 Jun 2015 12:26:33 +0200
+Message-ID: <5587EAF1.8000305@xenomai.org>
+Date: Mon, 22 Jun 2015 13:01:05 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <1434966877.74785.YahooMailBasic@web173202.mail.ir2.yahoo.com>
-In-Reply-To: <1434966877.74785.YahooMailBasic@web173202.mail.ir2.yahoo.com>
+References: <CAKk99t2XmS1FSxmoJJ7DSCfgsPw5vOrf60BxK15w2XE9zgTe6g@mail.gmail.com>
+In-Reply-To: <CAKk99t2XmS1FSxmoJJ7DSCfgsPw5vOrf60BxK15w2XE9zgTe6g@mail.gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] include guard trank/posix/pthread.h
+Subject: Re: [Xenomai] How to make user space app wait to read from driver
+ with rtdm_select? (Xenomai 3.x)f
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,45 +16,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Frederik Bayart <frederik_bayart@yahoo.co.uk>, xenomai@xenomai.org
+To: Helder Daniel <hdaniel@ualg.pt>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 06/22/2015 11:54 AM, Frederik Bayart wrote:
+On 06/22/2015 10:43 AM, Helder Daniel wrote:
+> Hi,
 > 
+> I am writing a Xenomai 3.x RTDM driver.
+> This driver gets data from a device and stores it a buffer. This takes a
+> while.
+> After buffer is filled a user space application issues a read call to the
+> driver fd get data.
 > 
+> The problem is how to make user space app wait for the buffer to be filled.
 > 
-> On Friday, 19 June 2015, 15:07, Philippe Gerum <rpm@xenomai.org> wrote:
->> On 06/19/2015 03:02 PM, Frederik Bayart wrote:
->>
->>
->>
->>
->>> Hallo,
->>> I noticed that both /usr/xenomai/include/trank/trank.h and  /usr/xenomai/include/trank/posix/pthread.h share the same include guard (_XENOMAI_TRANK_TRANK_H).Can this be an error ? I use compile flags 'xeno-config --skin=native --cflags' and get compile errors. If I change the include guard of pthread.h to _XENOMAI_TRANK_POSIX_PTHREAD_H, the problem seems to be solved.In attachment a diff with my changes.
->>> Frederik
->>>
->>
->> Yes, the guard is definitely wrong, will fix. Thanks for pointing this out.
->>
->> -- 
->> Philippe.
+> One could think on using the poll interface (http://linux.die.net/man/2/poll
+> ),
+> but as I understood from Xenomai 3.0-rc5 API reference there is no real
+> time implementation of poll or epoll.
 > 
-> In the same context : to make it compile, I had to add
-> /usr/xenomai/include/trank/posix to
->  $(shell xeno-config --skin=native --cflags).
-> At the moment -I/usr/xenomai/include/trank -D__XENO_COMPAT__
->  -I/usr/xenomai/include/cobalt -I/usr/xenomai/include -D_GNU_SOURCE
->  -D_REENTRANT -D__COBALT__ -I/usr/xenomai/include/alchemy
-> is returned.
+> However I found there a real time implementation of select:
+> RTDM_select_handler.
+> I am assuming that (can I?) in user space an app use select the same way as
+> with POSIX (http://linux.die.net/man/2/select)
 > 
-> If this is the correct solution, I can prepare a patch for
->  xeno-config if desired.
+> Unfortunately I did not find any example of programming the rtdm_select
+> driver handler.
+> In (https://xenomai.org/migrating-from-xenomai-2-x-to-3-x/) shows how to
+> declare the handler in a (struct rtdm_driver) but not how to program the
+> handler function.
+> 
+> Is there any example of implementing rtdm_select handler? For instance in
+> the Xenomai 3.x-rc4 source code? I tried to find it in the drivers section
+> but I didn't (I might be looking in the wrong place).
+> 
+> Or there is another (better?) way to make an user space app (real time)
+> wait for the driver before reading from it?
 > 
 
-Please do.
+See kernel/drivers/ipc, looking for xnselect_bind() [wait registration],
+and xnselect_signal() [state change notifications]. A particular
+direction (e.g. wait for read / wait for write) is associated with a
+dedicated selector, declared with DECLARE_XNSELECT().
 
-You seem to be combining the legacy native API and the POSIX interface,
-which is fine, but would require --native --posix to be passed to
-xeno-config if so.
+The logic of the rtdm_fd_ops.select() handler is:
+
+- determine the current poll state (which events are currently
+satisfied). The value encoding the event state (e.g. readable or
+writable) is arbitrary, non-zero means set, zero means absent.
+- allocate a binding block via xnmalloc() [required]
+- call xnselect_bind(), mentioning the proper selector and binding, the
+current poll state and the details about the user request.
+- drop the binding block if the binding failed, or return. RTDM will do
+the rest.
+
+RTDM events and sema4s readily provide cooked routines doing just that,
+which you can invoke from your handler if your code synchronizes on
+those objects (rtdm_event_select(), rtdm_sem_select()).
 
 -- 
 Philippe.
