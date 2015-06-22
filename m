@@ -1,12 +1,11 @@
+Date: Mon, 22 Jun 2015 21:55:53 +0000 (UTC)
+From: Wayne Ross <mr_trekkie@yahoo.com>
+Message-ID: <1098268209.1791408.1435010153652.JavaMail.yahoo@mail.yahoo.com>
 MIME-Version: 1.0
-In-Reply-To: <558843FB.3040704@siemens.com>
-References: <CAOL1OyMgNHaY4tgbUXM0Ytm9YnR3VGaJN-c60_5fuMayjz4aSw@mail.gmail.com>
- <558843FB.3040704@siemens.com>
-From: Antoine Durand <wanipof@gmail.com>
-Date: Mon, 22 Jun 2015 22:47:28 +0200
-Message-ID: <CAOL1OyOWmGY2TFo6LaydWmeFqThHnVHNHtgk_iFZJ9aiwOM6uw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] I-Pipe Tracer and linux ftrace
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Supported PCI Express CANOpen hardware?
+Reply-To: Wayne Ross <mr_trekkie@yahoo.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,124 +14,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Thank you,
+18 Months ago we ported our propietary software/hardware to Linux, leveraging Xenomai's CAN and RS232 driver support with a PCI CAN card using the xeno_can_mem device driver delivering the RT behaviors we need.
 
-I really better understand the differences between the two traces sources.
-Indeed I am more interrested in ftrace datas for the moment.
+We are now looking at using a different hardware vendor that utilizes a "Mini PCI Express" form factor ("the successor of the Mini PCI").
 
-I use a x86_64 CPCI cpu board with linux-3.16.7 and
-xenomai-3.0-rc4 with I-Pipe tracer Options On
-
-My problem may comes from trace-cmd actually, because it uses nearly two
-cores full time during ftrace collect.
-I don't known what for ! I used it to be able to plot datas in kernelshark
-but its overhead is too much.
-
-I will try with no external tools, (just /sys/kernel/debug/tracing/*
-controls).
-
-I had to disable nmi (echo 0 > /proc/sys/kernel/nmi_watchdog) at boot to
-avoid hard Lockup kernel crash when system load is high (running dohell for
-exemple). I don't think it can be linked.
+I am trying to validate if the vendor's (Hilscher) interface is supported (a "netX Dual-Port Memory Interface").  I did see a couple 2-year-old emails in the Xenomai archive with PCI_VENDOR_ID_Hilscher, but I see none of that source code made it to 2.6.4.  ./ksrc/drivers/can/README basically indicates support for only the SJA1000 CAN controller.
 
 
+So I have two questions:
+- Is is possible Hilscher's netX interface might be supported for CANOpen?
+- Does anyone know if there are *any* supported CANOpen cards in the PCIe Mini family?
 
-2015-06-22 19:20 GMT+02:00 Jan Kiszka <jan.kiszka@siemens.com>:
 
-> On 2015-06-22 18:06, Antoine Durand wrote:
-> > Hi,
-> >
-> > I would like to check my RT threads scheduling, so I started here :
-> > http://xenomai.org/2014/06/using-the-i-pipe-tracer/
-> >
-> > I put 100000 in /proc/ipipe/trace/back_trace_points
-> > I ran my tasks, i write 1 in frozen, and then I read the frozen file.
-> >
-> > I'm not sure what kind of datas can be found in I-Pipe Tracer
-> > (/proc/ipipe/trace/frozen) and what is in linux ftrace
-> > (/sys/kernel/debug/tracing). For instance, I "think" I'm interested in
-> the
-> > __xnsched_run trace points, but there isn't informations about the CPU on
-> > which the task is running on in I-Pipe tracer output.
-> >
-> > So I checked in linux ftrace.
-> >
-> > But when i activate linux ftrace by writing 1 to
-> > /sys/kernel/debug/tracing/tracing_on, the RT tasks behaviors became weird
-> > (the task with the higher priority just toggle an output that I check on
-> an
-> > oscilloscope, this task is unable to make a clean 10ms periodic square
-> > signal with tracing_on activated !).
->
-> Can you share more details of of your setup (patch version, kernel
-> config, detailed tracing setup, ...)?
->
-> >
-> > so I did not find any source to be able to observe my tasks without
-> > crippling side effect.
-> >
-> > So here are my questions !
-> >
-> >
-> >
-> > Are linux ftrace datas relevant for xenomai tasks (there is a lot of
-> > cobalt_core entries so I guess yes) ?
->
-> Yes, they are. The Xenomai 3 cobalt core is pretty well instrumented for
-> event tracing.
->
-> >
-> > Is there any tool to plot I-Pipe tracer datas from
-> /proc/ipipe/trace/frozen
-> > ?
->
-> No, that data is so far for textual consumption only.
->
-> > (I tried to use trace-cmd and kernelshark to plot linux ftrace but if
-> what
-> > is ploted is true, the side effect with xenomai is awful !)
->
-> We need to understand that side effects, they should not be that
-> massive, rather much less invasive than that of the I-pipe tracer.
->
-> >
-> > What datas must be checked from I-Pipe Tracer and what must be checked
-> from
-> > linux ftrace ?
->
-> The I-pipe tracer is for detailed analysis, specifically on kernel
-> function level. If you have a latency spot or a bug on which you can
-> trigger a trace freeze, then you can look into the details around this
-> event. The I-pipe tracer is actually quite similar to ftrace's function
-> tracer, but it has some additional data about the context (RT or Linux).
-> Maybe we can merge both one day.
->
-> Event tracing via ftrace with additional Xenomai tracepoints is for a
-> broader overview. For analyzing scheduling orders and domain migrations,
-> identifying application activities based on their syscalls and driver
-> interactions. It's the first stop when you want to understand your
-> system activities as a whole - probably what you are after here.
->
-> Jan
->
-> >
-> >
-> >
-> > That's a lot of questions in one, I'm sorry, it's more that I'am a bit
-> lost.
-> >
-> > Thank you for your help.
-> >
-> > Bob
-> >
-> > x86_64
-> > linux-3.16.7
-> > xenomai-3.0-rc4 with I-Pipe tracer Options On
-> >
->
-> --
-> Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-> Corporate Competence Center Embedded Linux
->
+Thanks,
+    Wayne
+
