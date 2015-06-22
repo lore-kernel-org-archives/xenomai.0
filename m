@@ -1,12 +1,11 @@
-Message-ID: <5581BE6F.4030607@siemens.com>
-Date: Wed, 17 Jun 2015 20:37:35 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <7B9254AC-C035-4D61-884E-8C9B3706A22B@gmail.com>
-In-Reply-To: <7B9254AC-C035-4D61-884E-8C9B3706A22B@gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RTDM-native brushup
+Sender: had2006@gmail.com
+Date: Mon, 22 Jun 2015 09:43:33 +0100
+Message-ID: <CAKk99t2XmS1FSxmoJJ7DSCfgsPw5vOrf60BxK15w2XE9zgTe6g@mail.gmail.com>
+From: Helder Daniel <hdaniel@ualg.pt>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] How to make user space app wait to read from driver with
+ rtdm_select? (Xenomai 3.x)f
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,59 +14,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Haberler <haberlerm@gmail.com>, xenomai <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>, Helder Daniel <hdaniel@ualg.pt>
 
-On 2015-06-15 16:39, Michael Haberler wrote:
-> ok, so tried to just get RTDM support and rtdmtest build as module and loadable without error, and that works
-> 
-> I did not bother fixing the sk_alloc() etc proto related changes for now
-> Kernel was 3.2.0-4-rt-686-pae #1 SMP PREEMPT RT Debian 3.2.68-1+deb7u1 i686 GNU/Linux (RT-PREEMPT kernel in debian wheezy)
-> 
-> 
-> this is where I am:  https://github.com/mhaberler/rtdm-native/commits/try1
-> 
-> do not expect my API transmogrifications to be correct, those were based on "maximum likelihood" guesstimates
-> 
-> 
-> modprobe rtdm
-> [31537.309416] starting RTDM services.
-> 
-> modprobe rtdmtest
-> [31540.595708] __rtdmtest_init: registering device rttest0, err=251
-> 
-> mah@nwheezy:~/rtdm-native/ksrc/drivers/testing$ grep rttes /proc/devices 
-> 251 rttest0
-> 
-> rmmod rtdmtest
-> [31551.675050] rtdm_task_destroy: not allowed on user threads
-> [31551.675053] rtdm_task_join_nrt: not allowed on user threads
-> [31551.675056] __rtdmtest_exit: unregistering device rttest0
-> 
-> rmmod rtdm
-> [31557.916463] stopping RTDM services.
-> 
-> the rtdm_task_destroy ff warning re user threads I cant make much sense of, I guess some underlying change
+Hi,
 
-I would start checking if rtdm_task_has_magic(task) returns false, and
-why. But I would also check the current kernel API /wrt kthread
-management. There were some changes since then, and likely better
-mappings are available now.
+I am writing a Xenomai 3.x RTDM driver.
+This driver gets data from a device and stores it a buffer. This takes a
+while.
+After buffer is filled a user space application issues a read call to the
+driver fd get data.
 
-> 
-> examples/rtdm-native/rtdmtest fails since /dev/rttest0 doesnt show up, I guess hotplug/udev update required - not sure how to force creation of the /dev entry otherwise
+The problem is how to make user space app wait for the buffer to be filled.
 
-mknod?
+One could think on using the poll interface (http://linux.die.net/man/2/poll
+),
+but as I understood from Xenomai 3.0-rc5 API reference there is no real
+time implementation of poll or epoll.
 
-> 
-> I am unsure where to go from here - I looked over the xenomai-3 rtdm changes and I dont feel I'm qualified to track those
+However I found there a real time implementation of select:
+RTDM_select_handler.
+I am assuming that (can I?) in user space an app use select the same way as
+with POSIX (http://linux.die.net/man/2/select)
 
-I suppose you have a use case / driver in mind. So it would probably be
-best for you to fix / revise the native layer along that usage profile,
-starting with init/cleanup functions, then extending to runtime services.
+Unfortunately I did not find any example of programming the rtdm_select
+driver handler.
+In (https://xenomai.org/migrating-from-xenomai-2-x-to-3-x/) shows how to
+declare the handler in a (struct rtdm_driver) but not how to program the
+handler function.
 
-Jan
+Is there any example of implementing rtdm_select handler? For instance in
+the Xenomai 3.x-rc4 source code? I tried to find it in the drivers section
+but I didn't (I might be looking in the wrong place).
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Or there is another (better?) way to make an user space app (real time)
+wait for the driver before reading from it?
 
+Thanks,
+
+Helder Daniel
