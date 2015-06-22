@@ -1,13 +1,9 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Wed, 17 Jun 2015 23:35:44 +0200
-Message-ID: <11760776.AKg2s0Tc8c@indiana>
-In-Reply-To: <66bead79a47e082c19c410f097b53c9e.squirrel@sourcetrek.com>
-References: <1649054.cG979aVMUy@soho>
- <66bead79a47e082c19c410f097b53c9e.squirrel@sourcetrek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] License Issues
+From: Antoine Durand <wanipof@gmail.com>
+Date: Mon, 22 Jun 2015 18:06:26 +0200
+Message-ID: <CAOL1OyMgNHaY4tgbUXM0Ytm9YnR3VGaJN-c60_5fuMayjz4aSw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] I-Pipe Tracer and linux ftrace
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,33 +12,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-RWwgRGltZWNyZXMsIDE3IGRlIGp1bnkgZGUgMjAxNSwgYSBsZXMgMTk6MjU6NTYsIEdpbGxlcyBD
-aGFudGVwZXJkcml4IHZhIAplc2NyaXVyZToKPiBMZW9wb2xkIFBhbG9tby1BdmVsbGFuZWRhIHdy
-b3RlOgo+ID4gSGksCj4gPiAKPiA+IHVzaW5nIGEgZGViaWFuIHRvb2wgdG8gY2hlY2sgdGhlIGxp
-Y2Vuc2Ugb2YgdGhlIHBhY2thZ2UgSSBoYXZlIGZvdW5kIHRoYXQKPiA+IGhpcwo+IAo+ID4gZmls
-ZXM6Cj4gVGhpcyBtYWlsIGxvb2tzIHZlcnkgZGlmZmVyZW50IGZyb20gdGhlIG9uZSB5b3Ugc2Vu
-dCBtZSBwcml2YXRlbHkgYW5kIEkKPiB0b2xkIHlvdSB0byBwb3N0IG9uIHRoZSBsaXN0LiBJdCBk
-b2VzIG5vdCBldmVuIGNvbmNlcm4gdGhlIHNhbWUgdmVyc2lvbiBvZgo+IFhlbm9tYWkuCgp5ZXMs
-CgppdCdzIHRydWUuIEJ1dCB3aGF0IEkgdW5kZXJzdG9vZCBmcm9tIHlvdSB3YXMgdGhhdCBpdCB3
-YXMgYmV0dGVyIHRoYXQgSSBzZW50IAp0byB0aGUgbGlzdC4gVGhhdCBmaWxlIGNvbWVzIGZyb20g
-eGVub21haS0yLjYuNC4gQW55IHByb2JsZW0gdGhlbj8KCkkganVzdCBuZWVkIHRvIGNsYXJpZnkg
-dGhpcyBraW5kIG9mIHRoaW5ncyBiZWNhdXNlIGZ0cC1tYXN0ZXJzIGFyZSBldmVyeSBkYXkgCm1v
-cmUgc3RyaWN0ICh3aGF0IEkgdGhpbmsgaXQncyBiZXR0ZXIpLCBlc3BlY2lhbGx5IHdpdGggbGlj
-ZW5zZXMuIE5ldmVyIApoYXBwZW5zIG5vdGhpbmcgdGlsbCB0aGUgZGF5IHRoYXQgc29tZXRoaW5n
-IGhhcHBlbi4KCklmIGNhbiBjaGVjayB0aGlzIGtpbmQgb2Ygc3R1ZmYgaXQgd291bGQgYmUgYmV0
-dGVyLCB0aGF0J3MgYWxsLiBGb3IgaW5zdGFuY2UsIEkgCndhcyBhIGJpdCBzdXJwcmlzZWQgYWJv
-dXQgdGhlIGF1dG90b29scyBnZW5lcmF0ZWQgZmlsZXMsIGJlY2F1c2UgSSB0aG91Z2h0IHRoZXkg
-CndvdWxkIG5ldmVyIGhhZCBsaWNlbnNlLgoKTGVvcG9sZAoKCi0tIAotLQpMaW51eCBVc2VyIDE1
-MjY5MiAgICAgR1BHOiAwNUY0QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQotLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tCkE6IEJlY2F1c2UgaXQgbWVzc2VzIHVwIHRoZSBvcmRlciBp
-biB3aGljaCBwZW9wbGUgbm9ybWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkgaXMgdG9wLXBvc3Rpbmcg
-c3VjaCBhIGJhZCB0aGluZz8KQTogVG9wLXBvc3RpbmcuClE6IFdoYXQgaXMgdGhlIG1vc3QgYW5u
-b3lpbmcgdGhpbmcgaW4gZS1tYWlsPwotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0t
-LS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1
-cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogODE5IGJ5dGVzCkRl
-c2M6IFRoaXMgaXMgYSBkaWdpdGFsbHkgc2lnbmVkIG1lc3NhZ2UgcGFydC4KVVJMOiA8aHR0cDov
-L3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTUwNjE3LzMzYmRm
-MDUzL2F0dGFjaG1lbnQuc2lnPgo=
+Hi,
+
+I would like to check my RT threads scheduling, so I started here :
+http://xenomai.org/2014/06/using-the-i-pipe-tracer/
+
+I put 100000 in /proc/ipipe/trace/back_trace_points
+I ran my tasks, i write 1 in frozen, and then I read the frozen file.
+
+I'm not sure what kind of datas can be found in I-Pipe Tracer
+(/proc/ipipe/trace/frozen) and what is in linux ftrace
+(/sys/kernel/debug/tracing). For instance, I "think" I'm interested in the
+__xnsched_run trace points, but there isn't informations about the CPU on
+which the task is running on in I-Pipe tracer output.
+
+So I checked in linux ftrace.
+
+But when i activate linux ftrace by writing 1 to
+/sys/kernel/debug/tracing/tracing_on, the RT tasks behaviors became weird
+(the task with the higher priority just toggle an output that I check on an
+oscilloscope, this task is unable to make a clean 10ms periodic square
+signal with tracing_on activated !).
+
+so I did not find any source to be able to observe my tasks without
+crippling side effect.
+
+So here are my questions !
+
+
+
+Are linux ftrace datas relevant for xenomai tasks (there is a lot of
+cobalt_core entries so I guess yes) ?
+
+Is there any tool to plot I-Pipe tracer datas from /proc/ipipe/trace/frozen
+?
+(I tried to use trace-cmd and kernelshark to plot linux ftrace but if what
+is ploted is true, the side effect with xenomai is awful !)
+
+What datas must be checked from I-Pipe Tracer and what must be checked from
+linux ftrace ?
+
+
+
+That's a lot of questions in one, I'm sorry, it's more that I'am a bit lost.
+
+Thank you for your help.
+
+Bob
+
+x86_64
+linux-3.16.7
+xenomai-3.0-rc4 with I-Pipe tracer Options On
