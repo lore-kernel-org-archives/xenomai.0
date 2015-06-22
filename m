@@ -1,11 +1,10 @@
+Message-ID: <1434966877.74785.YahooMailBasic@web173202.mail.ir2.yahoo.com>
+Date: Mon, 22 Jun 2015 10:54:37 +0100
+From: Frederik Bayart <frederik_bayart@yahoo.co.uk>
 MIME-Version: 1.0
-Sender: had2006@gmail.com
-Date: Mon, 22 Jun 2015 09:43:33 +0100
-Message-ID: <CAKk99t2XmS1FSxmoJJ7DSCfgsPw5vOrf60BxK15w2XE9zgTe6g@mail.gmail.com>
-From: Helder Daniel <hdaniel@ualg.pt>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] How to make user space app wait to read from driver with
- rtdm_select? (Xenomai 3.x)f
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] include guard trank/posix/pthread.h
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,41 +13,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <xenomai@xenomai.org>, Helder Daniel <hdaniel@ualg.pt>
+To: xenomai@xenomai.org
 
-Hi,
 
-I am writing a Xenomai 3.x RTDM driver.
-This driver gets data from a device and stores it a buffer. This takes a
-while.
-After buffer is filled a user space application issues a read call to the
-driver fd get data.
 
-The problem is how to make user space app wait for the buffer to be filled.
 
-One could think on using the poll interface (http://linux.die.net/man/2/poll
-),
-but as I understood from Xenomai 3.0-rc5 API reference there is no real
-time implementation of poll or epoll.
+On Friday, 19 June 2015, 15:07, Philippe Gerum <rpm@xenomai.org> wrote:
+>On 06/19/2015 03:02 PM, Frederik Bayart wrote:
+>
+>
+>
+>
+>> Hallo,
+>> I noticed that both /usr/xenomai/include/trank/trank.h and=A0 /usr/xenom=
+ai/include/trank/posix/pthread.h share the same include guard (_XENOMAI_TRA=
+NK_TRANK_H).Can this be an error ? I use compile flags 'xeno-config --skin=
+=3Dnative --cflags' and get compile errors. If I change the include guard o=
+f pthread.h to _XENOMAI_TRANK_POSIX_PTHREAD_H, the problem seems to be solv=
+ed.In attachment a diff with my changes.
+>> Frederik
+>>=20
+>
+>Yes, the guard is definitely wrong, will fix. Thanks for pointing this out=
+.
+>
+>--=20
+>Philippe.
 
-However I found there a real time implementation of select:
-RTDM_select_handler.
-I am assuming that (can I?) in user space an app use select the same way as
-with POSIX (http://linux.die.net/man/2/select)
+In the same context : to make it compile, I had to add
+/usr/xenomai/include/trank/posix to
+ $(shell xeno-config --skin=3Dnative --cflags).
+At the moment -I/usr/xenomai/include/trank -D__XENO_COMPAT__
+ -I/usr/xenomai/include/cobalt -I/usr/xenomai/include -D_GNU_SOURCE
+ -D_REENTRANT -D__COBALT__ -I/usr/xenomai/include/alchemy
+is returned.
 
-Unfortunately I did not find any example of programming the rtdm_select
-driver handler.
-In (https://xenomai.org/migrating-from-xenomai-2-x-to-3-x/) shows how to
-declare the handler in a (struct rtdm_driver) but not how to program the
-handler function.
+If this is the correct solution, I can prepare a patch for
+ xeno-config if desired.
 
-Is there any example of implementing rtdm_select handler? For instance in
-the Xenomai 3.x-rc4 source code? I tried to find it in the drivers section
-but I didn't (I might be looking in the wrong place).
+Frederik
 
-Or there is another (better?) way to make an user space app (real time)
-wait for the driver before reading from it?
-
-Thanks,
-
-Helder Daniel
