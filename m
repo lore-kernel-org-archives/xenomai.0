@@ -1,11 +1,18 @@
-Message-ID: <1434986459.50378.YahooMailBasic@web173201.mail.ir2.yahoo.com>
-Date: Mon, 22 Jun 2015 16:20:59 +0100
-From: Frederik Bayart <frederik_bayart@yahoo.co.uk>
-In-Reply-To: <55882075.3000005@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2098\))
+Content-Type: text/plain; charset=us-ascii
+From: Michael Haberler <haberlerm@gmail.com>
+In-Reply-To: <9BD99D42-5187-413A-986F-A04189721344@gmail.com>
+Date: Mon, 22 Jun 2015 17:34:15 +0200
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] include guard trank/posix/pthread.h
+Message-Id: <D5554168-F567-47B1-838D-51DBC3B59703@gmail.com>
+References: <7B9254AC-C035-4D61-884E-8C9B3706A22B@gmail.com>
+ <5581BE6F.4030607@siemens.com>
+ <624126A3-294C-48BF-A099-2AA8E000FE11@gmail.com>
+ <5584079E.2090000@siemens.com>
+ <316F216B-1C02-4EE7-92B8-10FC6DCF6761@gmail.com>
+ <55841ABE.9090809@siemens.com>
+ <9BD99D42-5187-413A-986F-A04189721344@gmail.com>
+Subject: Re: [Xenomai] RTDM-native brushup
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,518 +21,140 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiska <jan.kiszka@siemens.com>
+Cc: xenomai <xenomai@xenomai.org>
 
->--------------------------------------------
->On Mon, 22/6/15, Philippe Gerum <rpm@xenomai.org> wrote:
->
-> Subject: Re: [Xenomai] include guard trank/posix/pthread.h
-> To: "Frederik Bayart" <frederik_bayart@yahoo.co.uk>, xenomai@xenomai.org
-> Date: Monday, 22 June, 2015, 16:49
->=20
-> On 06/22/2015 04:37 PM,
-> Frederik Bayart wrote:
-> >> On Mon,
-> 22/6/15, Frederik Bayart <frederik_bayart@yahoo.co.uk>
-> wrote:
-> >>
-> >>
-> Subject: Re: [Xenomai] include guard
-> trank/posix/pthread.h
-> >> To: xenomai@xenomai.org
-> >> Date: Monday, 22 June, 2015, 15:41
-> >>
-> >>
-> >>>
-> --------------------------------------------
-> >>> On Mon, 22/6/15, Philippe Gerum
-> <rpm@xenomai.org>
-> >> wrote:
-> >>>
-> >>> Subject:
-> >>
-> Re: [Xenomai] include guard trank/posix/pthread.h
-> >>> To: "Frederik Bayart"
-> <frederik_bayart@yahoo.co.uk>,
-> >> xenomai@xenomai.org
-> >>> Date: Monday, 22 June, 2015,
-> 14:48
-> >>>
-> >>> On 06/22/2015 12:26
-> >> PM,
-> >>>
-> Philippe Gerum wrote:
-> >>>> On
-> 06/22/2015
-> >>>
-> >> 11:54 AM, Frederik Bayart wrote:
-> >>>
-> >>>>
-> >>>>>
-> >>>
-> >>>>
-> >>>>> On Friday, 19 June
-> >> 2015, 15:07,
-> >>> Philippe Gerum <rpm@xenomai.org>
-> >>> wrote:
-> >>>>>>
-> >> On 06/19/2015 03:02 PM,
-> >>> Frederik Bayart
-> >> wrote:
-> >>>>>>
-> >>>>>>
-> >>>
-> >>>>>
-> >>>>>>
-> >>>>>>>
-> >>>
-> >> Hallo,
-> >>>>>>> I noticed that
-> >> both
-> >>>
-> /usr/xenomai/include/trank/trank.h
-> >>
-> and=20
-> >>>
-> >>
-> /usr/xenomai/include/trank/posix/pthread.h share the same
-> >>> include guard
-> (_XENOMAI_TRANK_TRANK_H).Can
-> >> this
-> be an error
-> >>> ? I use compile
-> flags
-> >> 'xeno-config
-> --skin=3Dnative
-> >>>
-> >> --cflags' and get compile errors.
-> If I change the
-> >>> include guard
-> of pthread.h to
-> >>>
-> _XENOMAI_TRANK_POSIX_PTHREAD_H, the
-> >>
-> problem seems to be
-> >>>
-> solved.In
-> >> attachment a diff with my
-> changes.
-> >>>
-> >>>>>> Frederik
-> >>>
-> >>>>>>
-> >>>>>>
-> >>>>>> Yes,
-> >>> the
-> >> guard
-> is definitely wrong, will fix. Thanks for pointing
-> >>> this out.
-> >>>
-> >>>>>
-> >>>>>> --=20
-> >>>>>>
-> >>>
-> >>
-> Philippe.
-> >>>>>
-> >>>
-> >>>>
-> >>>
-> In the same context : to make
-> >> it
-> compile, I had to add
-> >>>>>
-> >>
-> /usr/xenomai/include/trank/posix to
-> >>>
-> >>>>=20
-> $(shell xeno-config --skin=3Dnative
-> >>> --cflags).
-> >>>>>
-> >>
-> At the moment
-> >>>
-> >> -I/usr/xenomai/include/trank
-> -D__XENO_COMPAT__
-> >>>>>
-> >> -I/usr/xenomai/include/cobalt
-> >>>
-> >>
-> -I/usr/xenomai/include -D_GNU_SOURCE
-> >>>
-> >>>>=20
-> -D_REENTRANT -D__COBALT__
-> >>>
-> >> -I/usr/xenomai/include/alchemy
-> >>>>>
-> >>
-> is
-> >>> returned.
-> >>>
-> >>>>
-> >>>>>
-> >>>
-> >> If this
-> is the correct solution, I can prepare a patch
-> >>> for
-> >>>>>
-> >>
-> xeno-config if desired.
-> >>>>>
-> >>>>
-> >>>
-> --------------------------------------------
-> >>> On Mon, 22/6/15, Philippe Gerum
-> <rpm@xenomai.org>
-> >> wrote:
-> >>>
-> >>> Subject:
-> >>
-> Re: [Xenomai] include guard trank/posix/pthread.h
-> >>> To: "Frederik Bayart"
-> <frederik_bayart@yahoo.co.uk>,
-> >> xenomai@xenomai.org
-> >>> Date: Monday, 22 June, 2015,
-> 14:48
-> >>>
-> >>> On 06/22/2015 12:26
-> >> PM,
-> >>>
-> Philippe Gerum wrote:
-> >>>> On
-> 06/22/2015
-> >>>
-> >> 11:54 AM, Frederik Bayart wrote:
-> >>>
-> >>>>
-> >>>>>
-> >>>
-> >>>>
-> >>>>> On Friday, 19 June
-> >> 2015, 15:07,
-> >>> Philippe Gerum <rpm@xenomai.org>
-> >>> wrote:
-> >>>>>>
-> >> On 06/19/2015 03:02 PM,
-> >>> Frederik Bayart
-> >> wrote:
-> >>>>>>
-> >>>>>>
-> >>>
-> >>>>>
-> >>>>>>
-> >>>>>>>
-> >>>
-> >> Hallo,
-> >>>>>>> I noticed that
-> >> both
-> >>>
-> /usr/xenomai/include/trank/trank.h
-> >>
-> and=20
-> >>>
-> >>
-> /usr/xenomai/include/trank/posix/pthread.h share the same
-> >>> include guard
-> (_XENOMAI_TRANK_TRANK_H).Can
-> >> this
-> be an error
-> >>> ? I use compile
-> flags
-> >> 'xeno-config
-> --skin=3Dnative
-> >>>
-> >> --cflags' and get compile errors.
-> If I change the
-> >>> include guard
-> of pthread.h to
-> >>>
-> _XENOMAI_TRANK_POSIX_PTHREAD_H, the
-> >>
-> problem seems to be
-> >>>
-> solved.In
-> >> attachment a diff with my
-> changes.
-> >>>
-> >>>>>> Frederik
-> >>>
-> >>>>>>
-> >>>>>>
-> >>>>>> Yes,
-> >>> the
-> >> guard
-> is definitely wrong, will fix. Thanks for pointing
-> >>> this out.
-> >>>
-> >>>>>
-> >>>>>> --=20
-> >>>>>>
-> >>>
-> >>
-> Philippe.
-> >>>>>
-> >>>
-> >>>>
-> >>>
-> In the same context : to make
-> >> it
-> compile, I had to add
-> >>>>>
-> >>
-> /usr/xenomai/include/trank/posix to
-> >>>
-> >>>>=20
-> $(shell xeno-config --skin=3Dnative
-> >>> --cflags).
-> >>>>>
-> >>
-> At the moment
-> >>>
-> >> -I/usr/xenomai/include/trank
-> -D__XENO_COMPAT__
-> >>>>>
-> >> -I/usr/xenomai/include/cobalt
-> >>>
-> >>
-> -I/usr/xenomai/include -D_GNU_SOURCE
-> >>>
-> >>>>=20
-> -D_REENTRANT -D__COBALT__
-> >>>
-> >> -I/usr/xenomai/include/alchemy
-> >>>>>
-> >>
-> is
-> >>> returned.
-> >>>
-> >>>>
-> >>>>>
-> >>>
-> >> If this
-> is the correct solution, I can prepare a patch
-> >>> for
-> >>>>>
-> >>
-> xeno-config if desired.
-> >>>>>
-> >>>>
-> >>>> Please
-> >> do.
-> >>>>
-> >>>
-> >>> -rc5
-> is ready and I don't
-> >>> want
-> to hold it for too long, so if
-> >>
-> possible,
-> >>> any feedback
-> regarding this
-> >> asap would be
-> >>> great. By default,
-> >> I'll merge
-> >>> the patch
-> >>> below, which should address this
-> issue.
-> >>>
-> >>> diff --git
-> >> a/scripts/xeno-config-cobalt.in
-> >>>
-> >>
-> b/scripts/xeno-config-cobalt.in
-> >>>
-> >> index
-> >>> c6e51d1..7b623db 100644
-> >>> ---
-> >>>
-> >>
-> a/scripts/xeno-config-cobalt.in
-> >>>
-> +++
-> >>>
-> b/scripts/xeno-config-cobalt.in
-> >>>
-> @@ -198,7
-> >>> +198,10 @@
-> >> if test x$do_cflags =3D xy; then
-> >>> =20
-> >>>=20
->   test x$compat =3D xy &&
-> >>>
-> cflags=3D"-I$XENO_INCLUDE_DIR/trank
-> >>> -D__XENO_COMPAT__ $cflags"
-> >>>      for skin in $skin_list;
-> do
-> >>>      case
-> "$skin" in
-> >>> -    =20
->   posix|cobalt|rtdm)
-> >>> +    =20
->   posix|rtdm)
-> >>> +      =20
-> test x$compat =3D xy
-> >> &&
-> >>> cflags=3D"$cflags
-> >>>
-> -I$XENO_INCLUDE_DIR/trank/posix"
-> >>> +        ;;
-> >>> +=20
-> >>  =20
->  =20
-> >>> cobalt)
-> >>>          ;;
-> >>>
-> >>>=20
->   =20
-> >>  =20
-> vxworks|psos|alchemy|smokey)
-> >>>
-> >>>    =20
-> >>    cflags=3D"$cflags
-> >>>
-> >>
-> -I$XENO_INCLUDE_DIR/$skin"
-> >>>
-> >>> --
->=20
-> >>> Philippe.
-> >>>
-> >>>>
-> Please do.
-> >>>>
-> >>>
-> >>> -rc5
-> is ready and I don't
-> >>> want
-> to hold it for too long, so if
-> >>
-> possible,
-> >>> any feedback
-> regarding this
-> >> asap would be
-> >>> great. By default,
-> >> I'll merge
-> >>> the patch
-> >>> below, which should address this
-> issue.
-> >>>
-> >>> diff --git
-> >> a/scripts/xeno-config-cobalt.in
-> >>>
-> >>
-> b/scripts/xeno-config-cobalt.in
-> >>>
-> >> index
-> >>> c6e51d1..7b623db 100644
-> >>> ---
-> >>>
-> >>
-> a/scripts/xeno-config-cobalt.in
-> >>>
-> +++
-> >>>
-> b/scripts/xeno-config-cobalt.in
-> >>>
-> @@ -198,7
-> >>> +198,10 @@
-> >> if test x$do_cflags =3D xy; then
-> >>> =20
-> >>>=20
->   test x$compat =3D xy &&
-> >>>
-> cflags=3D"-I$XENO_INCLUDE_DIR/trank
-> >>> -D__XENO_COMPAT__ $cflags"
-> >>>      for skin in $skin_list;
-> do
-> >>>      case
-> "$skin" in
-> >>> -    =20
->   posix|cobalt|rtdm)
-> >>> +    =20
->   posix|rtdm)
-> >>> +      =20
-> test x$compat =3D xy
-> >> &&
-> >>> cflags=3D"$cflags
-> >>>
-> -I$XENO_INCLUDE_DIR/trank/posix"
-> >>> +        ;;
-> >>> +=20
-> >>  =20
->  =20
-> >>> cobalt)
-> >>>          ;;
-> >>>
-> >>>=20
->   =20
-> >>  =20
-> vxworks|psos|alchemy|smokey)
-> >>>
-> >>>    =20
-> >>    cflags=3D"$cflags
-> >>>
-> >>
-> -I$XENO_INCLUDE_DIR/$skin"
-> >>>
-> >>> --
->=20
-> >>> Philippe.
-> >>>
-> >>
-> >> Philippe,
-> >>
-> >> With
-> >> this
-> patch, xeno-config works with --native and --posix.
-> >>
-> >> Thank you for
-> the quick
-> >> fix.
-> >>
-> >> I noticed
-> also that
-> >> xeno-config is in 2
-> debian packages so that you yet an
-> >>
-> install error.
-> >> I'm busy to
-> write a mail
-> >> to report this, and to
-> fix this, but maybe this is not
-> >>
-> urgent for rc5
-> >>
-> >> Regards,
-> >>
-> >> Frederik
-> >=20
-> > Philippe
-> >=20
-> > I haven't test the ldflags yet. I will
-> have a look at it right now and keep you informed. I noticed
-> that in older xenomai versions there was a dependency on
-> libpthread_rt.so.1 but now I don't see that dependency
-> anymore, I don't know yet whether this a problem.
-> >=20
->=20
-> That's correct, this library is named
-> libcobalt in xenomai 3. With the
-> compat mode
-> enabled, you only need -ltrank in addition to the usual
-> deps.
->=20
-> --=20
-> Philippe.
->=20
+I now get all tests to pass (as far as I can tell), see below
 
-Ok, libtrank is in the dependencies, server proces starts and I have severa=
-l tasks. I have still some problems but I think these are on application le=
-vel, not on compile and link level. So I think the xeno-config is correct n=
-ow.
+Has anybody ever gone beyond running rtdmtest with this, like building =
+an actual driver?=20
 
-Frederik
+before I spend time on it - did the can and serial drivers actually =
+work?
+
+- Michael
+
+---
+
+Fixed by changing  add_wait_queue_exclusive_locked() to =
+__add_wait_queue_tail_excl()  and
+remove_wait_queue_locked() to  __remove_wait_queue() as outlined here: =
+http://permalink.gmane.org/gmane.linux.file-systems/40051
+
+the error message I reported earlier on is simply an result of the =
+rtdmtest driver calling rtdm_task_destroy(&task)  and =
+rtdm_task_join_nrt(&task, 100) on module exit without having actually =
+created an rtdm task, so  pretty sure this already existed
+
+[  154.523718] rtdm_task_destroy: not allowed on user threads
+[  154.529468] rtdm_task_join_nrt: not allowed on user threads
+
+status: =
+https://github.com/mhaberler/rtdm-native/commit/2de7f03fa2682af63f2d6e1ea3=
+21761f7277d64f
+
+execution logs:
+
+root@j1900:/home/mah/rtdm-native/examples/rtdm-native# ./rtdmtest
+Events 0/0 Sems 0/0 Mutex 0
+Events 483/483 Sems 0/0 Mutex 0
+Events 966/966 Sems 0/0 Mutex 0
+Events 1448/1448 Sems 0/0 Mutex 0
+Events 1932/1932 Sems 0/0 Mutex 0
+Events 2423/2423 Sems 0/0 Mutex 0
+Events 2914/2914 Sems 0/0 Mutex 0
+Events 3400/3400 Sems 0/0 Mutex 0
+Events 3884/3884 Sems 0/0 Mutex 0
+Events 4367/4367 Sems 0/0 Mutex 0
+Events 4854/4854 Sems 0/0 Mutex 0
+Events 5345/5345 Sems 0/0 Mutex 0
+Events 5832/5832 Sems 0/0 Mutex 0
+Events 6321/6321 Sems 0/0 Mutex 0
+Events 6812/6812 Sems 0/0 Mutex 0
+Events 7303/7303 Sems 0/0 Mutex 0
+Events 7793/7793 Sems 0/0 Mutex 0
+Events 8284/8284 Sems 0/0 Mutex 0
+Events 8775/8775 Sems 0/0 Mutex 0
+Events 9266/9266 Sems 0/0 Mutex 0
+^Csighand: signal=3D2
+Exiting event_signal_thread
+Exiting event_wait_thread
+Events 9347/9347[94398.084126] rtdmtest_close state=3D0x0
+ Sems 0/0 Mutex 0
+Canceling threads
+Join wait thread
+Join signal thread
+Exit...
 
 
+root@j1900:/home/mah/rtdm-native/examples/rtdm-native# ./rtdmtest -m -c =
+10
+Events 0/0 Sems 0/0 Mutex 0
+Events 0/0 Sems 0/0 Mutex 492
+Events 0/0 Sems 0/0 Mutex 985
+Events 0/0 Sems 0/0 Mutex 1477
+Events 0/0 Sems 0/0 Mutex 1970
+Events 0/0 Sems 0/0 Mutex 2462
+Events 0/0 Sems 0/0 Mutex 2955
+Events 0/0 Sems 0/0 Mutex 3447
+Events 0/0 Sems 0/0 Mutex 3940
+Events 0/0 Sems 0/0 Mutex 4433
+Events 0/0 Sems 0/0 Mutex 4925
+Events 0/0 Sems 0/0 Mutex 5418
+Events 0/0 Sems 0/0 Mutex 5910
+Events 0/0 Sems 0/0 Mutex 6403
+Events 0/0 Sems 0/0 Mutex 6896
+^Csighand: signal=3D2
+ioctl MUTEX_TEST: Identifier removed
+[94428.098513] RTTST_RTIOC_RTDMTEST_MUTEX_GETSTAT
+Events 0/0 Sems [94428.103216] rtdmtest_close state=3D0x0
+0/0 Mutex 7083
+Mutex lock count: 7083 (7083)
+Canceling threads
+Join wait thread
+Join signal thread
+Exit...
+
+
+root@j1900:/home/mah/rtdm-native/examples/rtdm-native# dmesg=20
+[94398.084126] rtdmtest_close state=3D0x0
+[94428.098513] RTTST_RTIOC_RTDMTEST_MUTEX_GETSTAT
+[94428.103216] rtdmtest_close state=3D0x0
+root@j1900:/home/mah/rtdm-native/examples/rtdm-native# ./rtdmtest -e -c =
+10
+ioctl EVENT_WAIT: Identifier removed
+Exiting event_wait_thread
+Exiting event_signal_thread
+[94466.305761] rtdmtest_close state=3D0x4
+Events 10/10 Sems 0/0 Mutex 0
+Canceling threads
+Join wait thread
+Join signal thread
+Exit...
+
+
+root@j1900:/home/mah/rtdm-native/examples/rtdm-native# ./rtdmtest -s -c =
+10
+ioctl SEM_DOWN: [94547.555904] rtdm_nrtsig_handler called
+Identifier removed
+[94548.546266] rtdmtest_close state=3D0x0
+Events 0/0 Sems 10/10 Mutex 0
+Canceling threads
+Join wait thread
+Join signal thread
+Exit...
+
+
+dmesg after above runs:
+
+root@j1900:~# dmesg=20
+[   89.364268] starting RTDM services.
+[   93.597113] __rtdmtest_init: registering device rttest0, err=3D250
+[  177.201902] rtdmtest_close state=3D0x0
+[  190.092607] RTTST_RTIOC_RTDMTEST_MUTEX_GETSTAT
+[  190.097406] rtdmtest_close state=3D0x0
+[  199.686598] rtdmtest_close state=3D0x4
+[  207.570485] rtdm_nrtsig_handler called
+[  208.561437] rtdmtest_close state=3D0x0
 
 
