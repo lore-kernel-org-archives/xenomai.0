@@ -1,11 +1,21 @@
-Message-ID: <5589907F.9080209@xenomai.org>
-Date: Tue, 23 Jun 2015 18:59:43 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <55899093.4050006@siemens.com>
+Date: Tue, 23 Jun 2015 19:00:03 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
+References: <CAOL1OyMgNHaY4tgbUXM0Ytm9YnR3VGaJN-c60_5fuMayjz4aSw@mail.gmail.com>
+ <558843FB.3040704@siemens.com>
+ <CAOL1OyOWmGY2TFo6LaydWmeFqThHnVHNHtgk_iFZJ9aiwOM6uw@mail.gmail.com>
+ <5588FA58.2080403@siemens.com>
+ <CAOL1OyMJ9BS8jHWrHHVeCbP7tYJ7-Kgz6KzB4DAkBDpAGENUVA@mail.gmail.com>
+ <20150623141142.GK17436@csclub.uwaterloo.ca> <55896A1A.2030408@siemens.com>
+ <c2c68cadb110b6c7963aa06cadde978b.squirrel@sourcetrek.com>
+ <CAOL1OyM2ViCuuD1BPRze0yhX6cSNqCRxMvu3mM=frnXA5Ly5NA@mail.gmail.com>
+ <20150623160736.GL17436@csclub.uwaterloo.ca>
+ <CAOL1OyOdg9S=G412PAsiJCkaSii9Pgu17a_0=gOHaOyr=fHaDQ@mail.gmail.com>
+In-Reply-To: <CAOL1OyOdg9S=G412PAsiJCkaSii9Pgu17a_0=gOHaOyr=fHaDQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [IPIPE] patch releases for kernel 3.18.12 (arm),
-	3.14.44  (all archs)
+Subject: Re: [Xenomai] I-Pipe Tracer and linux ftrace
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,24 +24,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Antoine Durand <wanipof@gmail.com>, Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Cc: xenomai@xenomai.org
 
+On 2015-06-23 18:18, Antoine Durand wrote:
+> booting with 'maxcpus=2' in my case has the same behavior than
+> CONFIG_NR_CPUS=2
+> the clocksource switche to refined-jiffies and system time is wrong (very
+> very slow)
 
-A new patch series is available from
-http://xenomai.org/downloads/ipipe/v3.x/
+Ugh, reproduced something with a 4-core VM and maxcpus=2. I get a kernel
+crash in __ipipe_ack_hrtimer_irq. Probably an online vs. possible cpus
+issue. Will look into this.
 
-ipipe-core-3.18.12-arm-2
-
-ipipe-core-3.14.44-arm-10
-ipipe-core-3.14.44-x86-9
-ipipe-core-3.14.44-blackfin-7
-ipipe-core-3.14.44-powerpc-8
-
-GIT clone:
-git://git.xenomai.org/ipipe.git
-https://git.xenomai.org/ipipe.git
-http://git.xenomai.org/ipipe.git
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
