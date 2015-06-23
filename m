@@ -1,22 +1,11 @@
-Message-ID: <b6faa54490b78e7d2d66d3143323d8d3.squirrel@sourcetrek.com>
-In-Reply-To: <CAOL1OyMEPWaM9tYSJRzutEy1=FDVquA1O86zjkSw=dnnb+vckw@mail.gmail.com>
-References: <CAOL1OyMgNHaY4tgbUXM0Ytm9YnR3VGaJN-c60_5fuMayjz4aSw@mail.gmail.com>
- <558843FB.3040704@siemens.com>
- <CAOL1OyOWmGY2TFo6LaydWmeFqThHnVHNHtgk_iFZJ9aiwOM6uw@mail.gmail.com>
- <5588FA58.2080403@siemens.com>
- <CAOL1OyMJ9BS8jHWrHHVeCbP7tYJ7-Kgz6KzB4DAkBDpAGENUVA@mail.gmail.com>
- <20150623141142.GK17436@csclub.uwaterloo.ca>
- <55896A1A.2030408@siemens.com>
- <c2c68cadb110b6c7963aa06cadde978b.squirrel@sourcetrek.com>
- <CAOL1OyM2ViCuuD1BPRze0yhX6cSNqCRxMvu3mM=frnXA5Ly5NA@mail.gmail.com>
- <27e7da29c78157dc78e598cd191b3893.squirrel@sourcetrek.com>
- <CAOL1OyMEPWaM9tYSJRzutEy1=FDVquA1O86zjkSw=dnnb+vckw@mail.gmail.com>
-Date: Tue, 23 Jun 2015 16:49:37 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+Message-ID: <790091D8B6A84455A1DA8F3E5353087C@itd206>
+From: "Sureshvs" <sureshvs@datapatterns.co.in>
+Date: Tue, 23 Jun 2015 20:25:47 +0530
 MIME-Version: 1.0
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] I-Pipe Tracer and linux ftrace
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Reg: Linux 3.8.13 64bit xenomai-2.6.4 compilation problem
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,19 +14,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Antoine Durand <wanipof@gmail.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: "karunakaran.krishnan" <karunakaran.krishnan@industeqsite.com>
 
+Hi,
 
-Antoine Durand wrote:
-> It switched to refined-jiffies :
+I am using freescale T2080 PowerPC based processor board. we are patched =
+the linux kernel 3.8.13 with xenomai 2.6.4.
+After patched, The following kernel configuration are selected before =
+compiling.
 
-Ok, indeed, this one is not supported by Xenomai, and will likely never
-be. We support HPET and 8254 only.
+1) 64 bit Kernel.
+2) Processor Type --> Embedded Processor
+3) CPU Selection --> POWER7
+4) Symmetric Multiprocessing support
+5) Max No of CPU 8
+6) Disabled the CPU Frequency Scaling
 
+compiling the above configuration with fsl-64 bit freescale cross =
+compiler. It gives the following error.
 
--- 
-                                            Gilles.
-https://click-hack.org
+  CHK     include/generated/uapi/linux/version.h
+  CHK     include/generated/utsrelease.h
+  CC      arch/powerpc/kernel/asm-offsets.s
+In file included from include/linux/ipipe_debug.h:25:0,
+                 from include/linux/ipipe.h:31,
+                 from include/linux/sched.h:25,
+                 from arch/powerpc/kernel/asm-offsets.c:17:
+include/linux/ipipe_domain.h: In function 'ipipe_current_context':
+include/linux/ipipe_domain.h:252:2: error: implicit declaration of =
+function '__mtmsrd' [-Werror=3Dimplicit-function-declaration]
+cc1: some warnings being treated as errors
+make[1]: *** [arch/powerpc/kernel/asm-offsets.s] Error 1
+make: *** [prepare0] Error 2
 
-
+Kindly suggest us to resolve this issue.RegardsSuresh=20
