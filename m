@@ -1,12 +1,14 @@
-Message-ID: <5588ECBD.8050005@web.de>
-Date: Tue, 23 Jun 2015 07:21:01 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <5588FA58.2080403@siemens.com>
+Date: Tue, 23 Jun 2015 08:19:04 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <1098268209.1791408.1435010153652.JavaMail.yahoo@mail.yahoo.com>
-In-Reply-To: <1098268209.1791408.1435010153652.JavaMail.yahoo@mail.yahoo.com>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Supported PCI Express CANOpen hardware?
+References: <CAOL1OyMgNHaY4tgbUXM0Ytm9YnR3VGaJN-c60_5fuMayjz4aSw@mail.gmail.com>
+ <558843FB.3040704@siemens.com>
+ <CAOL1OyOWmGY2TFo6LaydWmeFqThHnVHNHtgk_iFZJ9aiwOM6uw@mail.gmail.com>
+In-Reply-To: <CAOL1OyOWmGY2TFo6LaydWmeFqThHnVHNHtgk_iFZJ9aiwOM6uw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] I-Pipe Tracer and linux ftrace
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,48 +17,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wayne Ross <mr_trekkie@yahoo.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Antoine Durand <wanipof@gmail.com>, xenomai@xenomai.org
 
-On 2015-06-22 23:55, Wayne Ross wrote:
-> 18 Months ago we ported our propietary software/hardware to Linux, levera=
-ging Xenomai's CAN and RS232 driver support with a PCI CAN card using the x=
-eno_can_mem device driver delivering the RT behaviors we need.
-> =
+On 2015-06-22 22:47, Antoine Durand wrote:
+> Thank you,
+> 
+> I really better understand the differences between the two traces sources.
+> Indeed I am more interrested in ftrace datas for the moment.
+> 
+> I use a x86_64 CPCI cpu board with linux-3.16.7 and
+> xenomai-3.0-rc4 with I-Pipe tracer Options On
 
-> We are now looking at using a different hardware vendor that utilizes a "=
-Mini PCI Express" form factor ("the successor of the Mini PCI").
-> =
+The first thing is to switch the I-pipe tracer off, at least during
+runtime. You don't need that overhead if you do ftrace event tracing.
+But I suspect the issue elsewhere.
 
-> I am trying to validate if the vendor's (Hilscher) interface is supported=
- (a "netX Dual-Port Memory Interface").  I did see a couple 2-year-old emai=
-ls in the Xenomai archive with PCI_VENDOR_ID_Hilscher, but I see none of th=
-at source code made it to 2.6.4.  ./ksrc/drivers/can/README basically indic=
-ates support for only the SJA1000 CAN controller.
-> =
+> 
+> My problem may comes from trace-cmd actually, because it uses nearly two
+> cores full time during ftrace collect.
+> I don't known what for ! I used it to be able to plot datas in kernelshark
+> but its overhead is too much.
+> 
+> I will try with no external tools, (just /sys/kernel/debug/tracing/*
+> controls).
 
-> =
+I'm using trace-cmd without such problems. Can you share your .config?
+Could you also try 3.14.44-x86-9 (that's where I ran ftrace recently).
 
-> So I have two questions:
-> - Is is possible Hilscher's netX interface might be supported for CANOpen?
-> - Does anyone know if there are *any* supported CANOpen cards in the PCIe=
- Mini family?
-> =
+> 
+> I had to disable nmi (echo 0 > /proc/sys/kernel/nmi_watchdog) at boot to
+> avoid hard Lockup kernel crash when system load is high (running dohell for
+> exemple). I don't think it can be linked.
 
-
-Note that CANopen is "just" a software layer on top of regular CAN
-hardware - just in case you restricted your hardware search needlessly.
-There are mini PCIe cards on the market with SJA1000 controller, e.g. by
-PHYTEC - adopting the existing driver is then not very tricky. I assume
-you already have the required CANopen bits in your software stack.
+Shouldn't happen either. Maybe related, and the system is in a general
+bad shape due to configuration or patch issues.
 
 Jan
 
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 181 bytes
-Desc: OpenPGP digital signature
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20150623/67e7ae58/at=
-tachment.sig>
