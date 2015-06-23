@@ -1,7 +1,5 @@
-Message-ID: <55897469.7020502@siemens.com>
-Date: Tue, 23 Jun 2015 16:59:53 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
+In-Reply-To: <b6faa54490b78e7d2d66d3143323d8d3.squirrel@sourcetrek.com>
 References: <CAOL1OyMgNHaY4tgbUXM0Ytm9YnR3VGaJN-c60_5fuMayjz4aSw@mail.gmail.com>
  <558843FB.3040704@siemens.com>
  <CAOL1OyOWmGY2TFo6LaydWmeFqThHnVHNHtgk_iFZJ9aiwOM6uw@mail.gmail.com>
@@ -13,9 +11,10 @@ References: <CAOL1OyMgNHaY4tgbUXM0Ytm9YnR3VGaJN-c60_5fuMayjz4aSw@mail.gmail.com>
  <27e7da29c78157dc78e598cd191b3893.squirrel@sourcetrek.com>
  <CAOL1OyMEPWaM9tYSJRzutEy1=FDVquA1O86zjkSw=dnnb+vckw@mail.gmail.com>
  <b6faa54490b78e7d2d66d3143323d8d3.squirrel@sourcetrek.com>
-In-Reply-To: <b6faa54490b78e7d2d66d3143323d8d3.squirrel@sourcetrek.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+From: Antoine Durand <wanipof@gmail.com>
+Date: Tue, 23 Jun 2015 17:01:23 +0200
+Message-ID: <CAOL1OyMgM42eG3_Vk0rKp6M+xuD5cz2+j0vEUsCFe2g1VK6KZw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Subject: Re: [Xenomai] I-Pipe Tracer and linux ftrace
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -25,22 +24,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Antoine Durand <wanipof@gmail.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-On 2015-06-23 16:49, Gilles Chanteperdrix wrote:
-> 
+I don't need do disable nmi_watchdog anymore,
+I can run dohell without any Hard Lockup kernel crash.
+That's a good point !
+
+
+
+2015-06-23 16:49 GMT+02:00 Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org>:
+
+>
 > Antoine Durand wrote:
->> It switched to refined-jiffies :
-> 
+> > It switched to refined-jiffies :
+>
 > Ok, indeed, this one is not supported by Xenomai, and will likely never
 > be. We support HPET and 8254 only.
-
-acpi_pm is fine as well.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
-
+>
+>
+> --
+>                                             Gilles.
+> https://click-hack.org
+>
+>
