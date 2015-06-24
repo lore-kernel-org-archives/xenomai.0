@@ -1,13 +1,21 @@
-Message-ID: <558A590F.5060307@xenomai.org>
-Date: Wed, 24 Jun 2015 09:15:27 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <790091D8B6A84455A1DA8F3E5353087C@itd206>
-In-Reply-To: <790091D8B6A84455A1DA8F3E5353087C@itd206>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Reg: Linux 3.8.13 64bit xenomai-2.6.4 compilation
-	problem
+In-Reply-To: <55899613.10006@siemens.com>
+References: <CAOL1OyMgNHaY4tgbUXM0Ytm9YnR3VGaJN-c60_5fuMayjz4aSw@mail.gmail.com>
+ <558843FB.3040704@siemens.com>
+ <CAOL1OyOWmGY2TFo6LaydWmeFqThHnVHNHtgk_iFZJ9aiwOM6uw@mail.gmail.com>
+ <5588FA58.2080403@siemens.com>
+ <CAOL1OyMJ9BS8jHWrHHVeCbP7tYJ7-Kgz6KzB4DAkBDpAGENUVA@mail.gmail.com>
+ <20150623141142.GK17436@csclub.uwaterloo.ca> <55896A1A.2030408@siemens.com>
+ <c2c68cadb110b6c7963aa06cadde978b.squirrel@sourcetrek.com>
+ <CAOL1OyM2ViCuuD1BPRze0yhX6cSNqCRxMvu3mM=frnXA5Ly5NA@mail.gmail.com>
+ <20150623160736.GL17436@csclub.uwaterloo.ca>
+ <CAOL1OyOdg9S=G412PAsiJCkaSii9Pgu17a_0=gOHaOyr=fHaDQ@mail.gmail.com>
+ <55899093.4050006@siemens.com> <55899613.10006@siemens.com>
+From: Antoine Durand <wanipof@gmail.com>
+Date: Wed, 24 Jun 2015 09:30:35 +0200
+Message-ID: <CAOL1OyNk+8HN2hAd6Vr9-XJB9ySeGaOveJXatmn7e6p3MQDnmA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] I-Pipe Tracer and linux ftrace
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,51 +24,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sureshvs <sureshvs@datapatterns.co.in>, xenomai@xenomai.org
-Cc: "karunakaran.krishnan" <karunakaran.krishnan@industeqsite.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-On 06/23/2015 04:55 PM, Sureshvs wrote:
-> Hi,
-> 
-> I am using freescale T2080 PowerPC based processor board. we are patched the linux kernel 3.8.13 with xenomai 2.6.4.
-> After patched, The following kernel configuration are selected before compiling.
-> 
-> 1) 64 bit Kernel.
-> 2) Processor Type --> Embedded Processor
-> 3) CPU Selection --> POWER7
-> 4) Symmetric Multiprocessing support
-> 5) Max No of CPU 8
-> 6) Disabled the CPU Frequency Scaling
-> 
-> compiling the above configuration with fsl-64 bit freescale cross compiler. It gives the following error.
-> 
->   CHK     include/generated/uapi/linux/version.h
->   CHK     include/generated/utsrelease.h
->   CC      arch/powerpc/kernel/asm-offsets.s
-> In file included from include/linux/ipipe_debug.h:25:0,
->                  from include/linux/ipipe.h:31,
->                  from include/linux/sched.h:25,
->                  from arch/powerpc/kernel/asm-offsets.c:17:
-> include/linux/ipipe_domain.h: In function 'ipipe_current_context':
-> include/linux/ipipe_domain.h:252:2: error: implicit declaration of function '__mtmsrd' [-Werror=implicit-function-declaration]
-> cc1: some warnings being treated as errors
-> make[1]: *** [arch/powerpc/kernel/asm-offsets.s] Error 1
-> make: *** [prepare0] Error 2
-> 
-> Kindly suggest us to resolve this issue.RegardsSuresh 
+ nr_cpus=2 and maxcpus=2 have the same consequences on my system,
+tsc is considered unstable and linux switch to refined-jiffies
+because I've nothing better available as clocksource than refined-jiffies
+(except for tsc) on that board.
 
-You should not use base your work on 3.8 for Xenomai/powerpc64,
-especially if unfamiliar with Linux over this architecture: this kernel
-is obsolete, and the interrupt pipeline port is broken for this release
-on powerpc64.
+2015-06-23 19:23 GMT+02:00 Jan Kiszka <jan.kiszka@siemens.com>:
 
-The I-pipe port has been heavily reworked for 3.14 to bring it back in
-shape, however no port to the T2080 was ever done here, so this is
-unlikely to work out of the box using the official I-pipe patches.
-
-Please note that Xenomai 2.6.x will be EOL by the end of this year. We
-are moving to 3.x.
-
--- 
-Philippe.
-
+> On 2015-06-23 19:00, Jan Kiszka wrote:
+> > On 2015-06-23 18:18, Antoine Durand wrote:
+> >> booting with 'maxcpus=2' in my case has the same behavior than
+> >> CONFIG_NR_CPUS=2
+> >> the clocksource switche to refined-jiffies and system time is wrong
+> (very
+> >> very slow)
+> >
+> > Ugh, reproduced something with a 4-core VM and maxcpus=2. I get a kernel
+> > crash in __ipipe_ack_hrtimer_irq. Probably an online vs. possible cpus
+> > issue. Will look into this.
+>
+> Interesting: maxcpus limits the number of cores the kernel will bring
+> online on its own, but it does not stop the kernel from detecting more,
+> keeping them recorded as offline. Now userland jumps in and may decide
+> to bring them online as well, which happens with my recent OpenSUSE
+> system, not with a much older one. And that means cpu hotplugging, which
+> does not work when Xenomai considers those CPUs as part of the RT set.
+> Still, excluding the additional ones per supported_cpus mask is not
+> sufficient.
+>
+> Anyway, what works fine here is nr_cpus=2 - clocksource TSC is chosen,
+> and no crash. Could you check that as well?
+>
+> Jan
+>
+> --
+> Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+> Corporate Competence Center Embedded Linux
+>
