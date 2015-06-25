@@ -1,11 +1,12 @@
-Date: Thu, 25 Jun 2015 22:56:08 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150625205607.GA23673@hermes.click-hack.org>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Thu, 25 Jun 2015 23:10:32 +0200
+Message-ID: <1922926.QGJ4YRI68g@indiana>
+In-Reply-To: <20150625205607.GA23673@hermes.click-hack.org>
 References: <2634889.oyRnRNCYxl@soho>
+ <20150625205607.GA23673@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2634889.oyRnRNCYxl@soho>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Debian package of Xenomai 2.6.4
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -15,18 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Thu, Jun 25, 2015 at 01:43:51PM +0200, Leopold Palomo-Avellaneda wrote:
-> - I have removed the previous debian patches (incorporated by upstream) but I 
-> have added one commit from upstream to build with 2.6.4 kernels => 3.11.
-
-Would be interested to know about this patch, because Xenomai 2.6.4
-has been built-tested with kernels up to 3.14, so, there is no
-problem to build it with versions superior to 3.11 that I know of.
-
--- 
-					    Gilles.
-https://click-hack.org
-
+RWwgRGlqb3VzLCAyNSBkZSBqdW55IGRlIDIwMTUsIGEgbGVzIDIyOjU2OjA4LCBHaWxsZXMgQ2hh
+bnRlcGVyZHJpeCB2YSAKZXNjcml1cmU6Cj4gT24gVGh1LCBKdW4gMjUsIDIwMTUgYXQgMDE6NDM6
+NTFQTSArMDIwMCwgTGVvcG9sZCBQYWxvbW8tQXZlbGxhbmVkYSB3cm90ZToKPiA+IC0gSSBoYXZl
+IHJlbW92ZWQgdGhlIHByZXZpb3VzIGRlYmlhbiBwYXRjaGVzIChpbmNvcnBvcmF0ZWQgYnkgdXBz
+dHJlYW0pCj4gPiBidXQgSSBoYXZlIGFkZGVkIG9uZSBjb21taXQgZnJvbSB1cHN0cmVhbSB0byBi
+dWlsZCB3aXRoIDIuNi40IGtlcm5lbHMgPT4KPiA+IDMuMTEuCj4gV291bGQgYmUgaW50ZXJlc3Rl
+ZCB0byBrbm93IGFib3V0IHRoaXMgcGF0Y2gsIGJlY2F1c2UgWGVub21haSAyLjYuNAo+IGhhcyBi
+ZWVuIGJ1aWx0LXRlc3RlZCB3aXRoIGtlcm5lbHMgdXAgdG8gMy4xNCwgc28sIHRoZXJlIGlzIG5v
+Cj4gcHJvYmxlbSB0byBidWlsZCBpdCB3aXRoIHZlcnNpb25zIHN1cGVyaW9yIHRvIDMuMTEgdGhh
+dCBJIGtub3cgb2YuCgpHaWxsZXMsCgpvbiAyMDE0LTA5LTI1IHlvdSByZWxlYXNlZCAyLjYuNC4K
+Cm9uIDIwMTUtMDEtMTYgeW91IGRpZCBhIGNvbW1pdCAoY2FuL2ZsZXhjYW46IGZpeHVwIGZvciBr
+ZXJuZWwgcmVsZWFzZSA+PSAzLjExKSAKdGhhdCBpcyB0aGUgb25lIHRoYXQgSSBub3RpY2VkLgoK
+SG93ZXZlciwgbG9va2luZyBub3cgdGhlIGxvZyB0aGVyZSBhcmUgdHdvIGNvbW1pdHMgdGhhdCB3
+aWxsIGFmZmVjdCBvbiBhcm0gCnBsYXRmb3JtczoKMjAxNC0xMS0yNAloYWwvYXJtOiBmaXh1cCBm
+b3IgTGludXggMy4xNgkKMjAxNC0xMS0wNQloYWw6IGZpeHVwcyBmb3Iga2VybmVsIDMuMTYKClNv
+LCBwcm9iYWJseSBJIHdpbGwgbmVlZCB0aGVtIHRvby4KCkFsbCB0aGlzIHBhdGNoZXMgY2FtZSBh
+ZnRlciB0aGUgb2ZmaWNpYWwgcmVsZWFzZWQgMi42LjQuCgpQZXJzb25hbGx5LCBJIHdvdWxkIGxv
+dmUgYSAyLjYuNSB3aXRoIGFsbCB0aGUgZml4ZXMgLi4uCgpMZW9wb2xkCgoKLS0gCi0tCkxpbnV4
+IFVzZXIgMTUyNjkyICAgICBHUEc6IDA1RjRBN0E5NDlBMkQ5QUEKQ2F0YWxvbmlhCi0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KQTogQmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhl
+IG9yZGVyIGluIHdoaWNoIHBlb3BsZSBub3JtYWxseSByZWFkIHRleHQuClE6IFdoeSBpcyB0b3At
+cG9zdGluZyBzdWNoIGEgYmFkIHRoaW5nPwpBOiBUb3AtcG9zdGluZy4KUTogV2hhdCBpcyB0aGUg
+bW9zdCBhbm5veWluZyB0aGluZyBpbiBlLW1haWw/Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAt
+LS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6
+IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiA4MTkg
+Ynl0ZXMKRGVzYzogVGhpcyBpcyBhIGRpZ2l0YWxseSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6
+IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTA2
+MjUvMDM1NWVhZjcvYXR0YWNobWVudC5zaWc+Cg==
