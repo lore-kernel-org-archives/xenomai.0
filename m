@@ -1,10 +1,12 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Thu, 25 Jun 2015 13:43:51 +0200
-Message-ID: <2634889.oyRnRNCYxl@soho>
+Date: Thu, 25 Jun 2015 14:01:16 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150625120116.GD26099@hermes.click-hack.org>
+References: <2634889.oyRnRNCYxl@soho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Debian package of Xenomai 2.6.4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2634889.oyRnRNCYxl@soho>
+Subject: Re: [Xenomai] Debian package of Xenomai 2.6.4
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,138 +15,190 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Cc: xenomai@xenomai.org
 
-SGksCgppbiB0aGUgbGFzdHMgZGF5cyBJIGhhdmUgYmVlbiB3b3JraW5nIGluIHRoZSBEZWJpYW4g
-cGFja2FnZSBvZiB4ZW5vbWFpLiBCeSBub3cgIAoyLjYuNCwgYnV0IDMuMCBpcyBpbiB0aGUgYWdl
-bmRhLCBzbyBJIHdpbGwgYmVnaW4gdG8gd29yayBvbiBpdCBzb29uLgoKSSdtIHdvcmtpbmcgZm9y
-IHRoZSAib2ZmaWNpYWxseSIgRGViaWFuIHBhY2thZ2UgZm9yIHRoZSBEZWJpYW4gb3JnYW5pemF0
-aW9uLiAKSSdtIG5vdCBhbG9uZSwgSSdtIGNvbGxhYm9yYXRpbmcgd2l0aCBvZmZpY2lhbCBtYWlu
-dGFpbmVyIChSb2xhbmQgU3RpZ2dlKS4gU28sIApteSBtYWluIHRhcmdldCBpcyB0byBoYXZlIG9u
-ZSBnb29kIHBhY2thZ2UgZm9yIERlYmlhbi4gCgpIb3dldmVyLCBzYXkgdGhhdCwgSU1ITyBpdCdz
-IGltcG9ydGFudCB0aGF0IHRoZSBwYWNrYWdlIGNvdWxkIHNvbHZlIHRoZSBuZWVkcyAKb2YgbW9y
-ZSBwZW9wbGUsIHNvLCBJJ20gb3BlbiB0byBhZGFwdCwgbW9kaWZ5IG9yIHdoYXRldmVyIGluIGEg
-Z29vZCBtYW5uZXIgdG8gCmhlbHAgdGhlIG5lZWRzIG9mIHRoZSB1c2VycyBvZiB0aGF0IHBhY2th
-Z2U6IERlYmlhbiB1c2VycyBvciBEZWJpYW4gCmRlcml2YXRpdmVzIHVzZXJzLgoKVGhlIERlYmlh
-biBwYWNrYWdlIGZvbGxvd3MgbWFpbmx5IHRoZSB1cHN0cmVhbSAoWGVub21haSBwcm9qZWN0KSBw
-YWNrYWdlLiAKSG93ZXZlciwgSSBoYXZlIGludHJvZHVjZWQgc2V2ZXJhbCBjaGFuZ2VzIGZyb20g
-dGhlIG9yaWdpbmFsIERlYmlhbiBvbmU6CgotIFJlbmFtZWQgbGludXgtcGF0Y2gteGVub21haSBi
-eSB4ZW5vbWFpLWtlcm5lbC1zb3VyY2UKV2UgYXJlIHVzaW5nIFVwc3RyZWFtIG5vbWVuY2xhdHVy
-ZS4KCi0gUmVuYW1lZCB4ZW5vbWFpLXJ1bnRpbWUgYnkgeGVub21haS1zeXN0ZW0tdG9vbHMuClVk
-ZXYgZmlsZXMsIGluaXQgZmlsZSwgdGVzdCB1dGlsaXRpZXMsIG1vZHByb2JlIHV0aWxpdGllcy4g
-QWxsIHRoaXMgc3R1ZmYgZ29lcyAKdG8gdGhhdCBwYWNrYWdlLgoKLSBEcm9wIC9kZXYgZnJvbSBs
-aWJ4ZW5vbWFpMS4KVGhlIC9kZXYgZGlyZWN0b3J5IGlzIGNyZWF0ZWQgYnkgdWRldi4gQWxsIGRl
-YmlhbiBzeXN0ZW1zIGhhdmUgdWRldi4gSG93ZXZlciwgCkknbSB0aGlua2luZyB0byBoYXZlIGFu
-b3RoZXIgcGFja2FnZSB3aXRoIHRoaXMgc3R1ZmYuIFdoYXQgZG8geW91IHRoaW5rPwoKLSBJbnN0
-YWxsIHRoZSBsaWJyYXJpZXMgaW4gL3Vzci9saWIvJEFSQ0gvLgpJJ20gZm9sbG93aW5nIHRoZSBN
-dWx0aS1BcmNoIHNjaGVtYS4gSW4gdGhlb3J5IHdlIGNvdWxkIGhhdmUgc2V2ZXJhbCBsaWJyYXJp
-ZXMgCmNvLWluc3RhbGxlZC4gTmVlZCB0byB0ZXN0LgoKLSBDb3B5cmlnaHQgZmlsZSBtaWdyYXRl
-ZCB0byBjb3B5cmlnaHQtZm9ybWF0IDEuMApJIGhhdmUgd29ya2VkIGEgbG90IHRvIGhhdmUgc29t
-ZSBraW5kIG9mIENvcHlyaWdodCBmaWxlIGNvbXBsZXRlLiBJZiBzb21lb25lIApmb3VuZCBzb21l
-dGhpbmcgd3JvbmcsIHBsZWFzZSB0ZWxsIG1lIHNvbWV0aGluZy4KCi0gSSBoYXZlIHJlbW92ZWQg
-dGhlIHByZXZpb3VzIGRlYmlhbiBwYXRjaGVzIChpbmNvcnBvcmF0ZWQgYnkgdXBzdHJlYW0pIGJ1
-dCBJIApoYXZlIGFkZGVkIG9uZSBjb21taXQgZnJvbSB1cHN0cmVhbSB0byBidWlsZCB3aXRoIDIu
-Ni40IGtlcm5lbHMgPT4gMy4xMS4KCkNoZWNraW5nIHRoZSBwYWNrYWdlIEkgaGF2ZSBmb3VuZCBz
-b21lIGludGVyZXN0aW5nIHRoaW5nczoKClg6IHhlbm9tYWkgc291cmNlOiBkZXByZWNhdGVkLWNv
-bmZpZ3VyZS1maWxlbmFtZQpOOiAKTjogICAgVGhlIHVzZSBvZiAnY29uZmlndXJlLmluJyB3aXRo
-IGF1dG9tYWtlIGlzIGRlcHJlY2F0ZWQgYW5kIHdpbGwgbm90IGJlCk46ICAgIHN1cHBvcnRlZCBp
-biBmdXR1cmUgdmVyc2lvbnMgb2YgYXV0b21ha2UuIFBsZWFzZSBjb25zaWRlciAoaGVscGluZwpO
-OiAgICB1cHN0cmVhbSkgbWlncmF0aW5nIHRvICdjb25maWd1cmUuYWMnIGluc3RlYWQuCk46ICAg
-IAoKUDogeGVub21haSBzb3VyY2U6IHNvdXJjZS1jb250YWlucy1wcmVidWlsdC1qYXZhc2NyaXB0
-LW9iamVjdCAKZG9jL2dlbmVyYXRlZC9odG1sL2FwaS9qcXVlcnkuanMgbWVhbiBsaW5lIGxlbmd0
-aCBpcyBhYm91dCAxNjEzMSBjaGFyYWN0ZXJzCk46IApOOiAgICBUaGUgc291cmNlIHRhcmJhbGwg
-Y29udGFpbnMgYSBwcmVidWlsdCAobWluaWZpZWQpIEphdmFTY3JpcHQgb2JqZWN0LgpOOiAgICBU
-aGV5IGFyZSB1c3VhbGx5IGxlZnQgYnkgbWlzdGFrZSB3aGVuIGdlbmVyYXRpbmcgdGhlIHRhcmJh
-bGwgYnkgbm90IApOOiAgICBjbGVhbmluZyB0aGUgc291cmNlIGRpcmVjdG9yeSBmaXJzdC4gWW91
-IG1heSB3YW50IHRvIHJlcG9ydCB0aGlzIGFzIGFuCk46ICAgIHVwc3RyZWFtIGJ1ZywgaW4gY2Fz
-ZSB0aGVyZSBpcyBubyBzaWduIHRoYXQgdGhpcyB3YXMgaW50ZW5kZWQuCgoKVzogeGVub21haS1z
-eXN0ZW0tdG9vbHM6IGhhcmRlbmluZy1uby1yZWxybyB1c3IvYmluL2NtZF9iaXRzCk46Ck46ICAg
-IFRoaXMgcGFja2FnZSBwcm92aWRlcyBhbiBFTEYgYmluYXJ5IHRoYXQgbGFja3MgdGhlICJyZWFk
-LW9ubHkKTjogICAgcmVsb2NhdGlvbiIgbGluayBmbGFnLiBUaGlzIHBhY2thZ2Ugd2FzIGxpa2Vs
-eSBub3QgYnVpbHQgd2l0aCB0aGUKTjogICAgZGVmYXVsdCBEZWJpYW4gY29tcGlsZXIgZmxhZ3Mg
-ZGVmaW5lZCBieSBkcGtnLWJ1aWxkZmxhZ3MuIElmIGJ1aWx0IHVzaW5nCk46ICAgIGRwa2ctYnVp
-bGRmbGFncyBkaXJlY3RseSwgYmUgc3VyZSB0byBpbXBvcnQgTERGTEFHUy4KTjoKTjogICAgUmVm
-ZXIgdG8gaHR0cHM6Ly93aWtpLmRlYmlhbi5vcmcvSGFyZGVuaW5nIGZvciBkZXRhaWxzLgpOOgpO
-OiAgICBTZXZlcml0eTogbm9ybWFsLCBDZXJ0YWludHk6IGNlcnRhaW4KTjoKTjogICAgQ2hlY2s6
-IGJpbmFyaWVzLCBUeXBlOiBiaW5hcnksIHVkZWIKTjoKVzogeGVub21haS1zeXN0ZW0tdG9vbHM6
-IGhhcmRlbmluZy1uby1yZWxybyB1c3IvYmluL2NtZF9yZWFkClc6IHhlbm9tYWktc3lzdGVtLXRv
-b2xzOiBoYXJkZW5pbmctbm8tcmVscm8gdXNyL2Jpbi9jbWRfd3JpdGUKVzogeGVub21haS1zeXN0
-ZW0tdG9vbHM6IGhhcmRlbmluZy1uby1yZWxybyB1c3IvYmluL2luc25fYml0cwpXOiB4ZW5vbWFp
-LXN5c3RlbS10b29sczogaGFyZGVuaW5nLW5vLXJlbHJvIHVzci9iaW4vaW5zbl9yZWFkClc6IHhl
-bm9tYWktc3lzdGVtLXRvb2xzOiBoYXJkZW5pbmctbm8tcmVscm8gdXNyL2Jpbi9pbnNuX3dyaXRl
-Clc6IHhlbm9tYWktc3lzdGVtLXRvb2xzOiBoYXJkZW5pbmctbm8tcmVscm8gdXNyL2Jpbi9ydGNh
-bnJlY3YKVzogeGVub21haS1zeXN0ZW0tdG9vbHM6IGhhcmRlbmluZy1uby1yZWxybyB1c3IvYmlu
-L3J0Y2Fuc2VuZApXOiB4ZW5vbWFpLXN5c3RlbS10b29sczogaGFyZGVuaW5nLW5vLXJlbHJvIHVz
-ci9iaW4vd2ZfZ2VuZXJhdGUKVzogeGVub21haS1zeXN0ZW0tdG9vbHM6IGhhcmRlbmluZy1uby1y
-ZWxybyB1c3IvbGliL3g4Nl82NC1saW51eC0KZ251L3hlbm9tYWkvcmVncmVzc2lvbi9uYXRpdmUr
-cG9zaXgvbXFfc2VsZWN0Clc6IHhlbm9tYWktc3lzdGVtLXRvb2xzOiBoYXJkZW5pbmctbm8tcmVs
-cm8gdXNyL2xpYi94ODZfNjQtbGludXgtCmdudS94ZW5vbWFpL3JlZ3Jlc3Npb24vbmF0aXZlL2hl
-YXAKVzogeGVub21haS1zeXN0ZW0tdG9vbHM6IGhhcmRlbmluZy1uby1yZWxybyB1c3IvbGliL3g4
-Nl82NC1saW51eC0KZ251L3hlbm9tYWkvcmVncmVzc2lvbi9uYXRpdmUvbGVha3MKVzogeGVub21h
-aS1zeXN0ZW0tdG9vbHM6IGhhcmRlbmluZy1uby1yZWxybyB1c3IvbGliL3g4Nl82NC1saW51eC0K
-Z251L3hlbm9tYWkvcmVncmVzc2lvbi9uYXRpdmUvc2lnZGVidWcKVzogeGVub21haS1zeXN0ZW0t
-dG9vbHM6IGhhcmRlbmluZy1uby1yZWxybyB1c3IvbGliL3g4Nl82NC1saW51eC0KZ251L3hlbm9t
-YWkvcmVncmVzc2lvbi9uYXRpdmUvdHNjClc6IHhlbm9tYWktc3lzdGVtLXRvb2xzOiBoYXJkZW5p
-bmctbm8tcmVscm8gdXNyL2xpYi94ODZfNjQtbGludXgtCmdudS94ZW5vbWFpL3JlZ3Jlc3Npb24v
-cG9zaXgvbGVha3MKVzogeGVub21haS1zeXN0ZW0tdG9vbHM6IGhhcmRlbmluZy1uby1yZWxybyB1
-c3IvbGliL3g4Nl82NC1saW51eC0KZ251L3hlbm9tYWkvcmVncmVzc2lvbi9wb3NpeC9tcHJvdGVj
-dApXOiB4ZW5vbWFpLXN5c3RlbS10b29sczogaGFyZGVuaW5nLW5vLXJlbHJvIHVzci9saWIveDg2
-XzY0LWxpbnV4LQpnbnUveGVub21haS9yZWdyZXNzaW9uL3Bvc2l4L25hbm9fdGVzdApXOiB4ZW5v
-bWFpLXN5c3RlbS10b29sczogaGFyZGVuaW5nLW5vLXJlbHJvIHVzci9saWIveDg2XzY0LWxpbnV4
-LQpnbnUveGVub21haS9yZWdyZXNzaW9uL3Bvc2l4L3NobQpXOiB4ZW5vbWFpLXN5c3RlbS10b29s
-czogaGFyZGVuaW5nLW5vLXJlbHJvIHVzci9saWIveDg2XzY0LWxpbnV4LQpnbnUveGVub21haS9y
-ZWdyZXNzaW9uL3Bvc2l4L3Rlc3RfcGlwX2V4aXQKVzogeGVub21haS1zeXN0ZW0tdG9vbHM6IGhh
-cmRlbmluZy1uby1yZWxybyB1c3IvbGliL3g4Nl82NC1saW51eC0KZ251L3hlbm9tYWkvcmVncmVz
-c2lvbi9wb3NpeC94ZGRwX3Rlc3QKVzogeGVub21haS1zeXN0ZW0tdG9vbHM6IGhhcmRlbmluZy1u
-by1yZWxybyB1c3Ivc2Jpbi9hbmFsb2d5X2NvbmZpZwpXOiB4ZW5vbWFpLXN5c3RlbS10b29sczog
-aGFyZGVuaW5nLW5vLXJlbHJvIHVzci9zYmluL3J0Y2FuY29uZmlnCgoKQW55IHZvbHVudGVlcj8K
-Clc6IHhlbm9tYWktc3lzdGVtLXRvb2xzOiBiaW5hcnktd2l0aG91dC1tYW5wYWdlIHVzci9zYmlu
-L2FuYWxvZ3lfY29uZmlnClc6IHhlbm9tYWktc3lzdGVtLXRvb2xzOiBiaW5hcnktd2l0aG91dC1t
-YW5wYWdlIHVzci9iaW4vY21kX2JpdHMKVzogeGVub21haS1zeXN0ZW0tdG9vbHM6IGJpbmFyeS13
-aXRob3V0LW1hbnBhZ2UgdXNyL2Jpbi9jbWRfcmVhZApXOiB4ZW5vbWFpLXN5c3RlbS10b29sczog
-YmluYXJ5LXdpdGhvdXQtbWFucGFnZSB1c3IvYmluL2NtZF93cml0ZQpXOiB4ZW5vbWFpLXN5c3Rl
-bS10b29sczogYmluYXJ5LXdpdGhvdXQtbWFucGFnZSB1c3IvYmluL2luc25fYml0cwpXOiB4ZW5v
-bWFpLXN5c3RlbS10b29sczogYmluYXJ5LXdpdGhvdXQtbWFucGFnZSB1c3IvYmluL2luc25fcmVh
-ZApXOiB4ZW5vbWFpLXN5c3RlbS10b29sczogYmluYXJ5LXdpdGhvdXQtbWFucGFnZSB1c3IvYmlu
-L2luc25fd3JpdGUKVzogeGVub21haS1zeXN0ZW0tdG9vbHM6IGJpbmFyeS13aXRob3V0LW1hbnBh
-Z2UgdXNyL3NiaW4vcnRwcwpXOiB4ZW5vbWFpLXN5c3RlbS10b29sczogYmluYXJ5LXdpdGhvdXQt
-bWFucGFnZSB1c3IvYmluL3dmX2dlbmVyYXRlClc6IHhlbm9tYWktc3lzdGVtLXRvb2xzOiBiaW5h
-cnktd2l0aG91dC1tYW5wYWdlIHVzci9iaW4vd3JhcC1saW5rClc6IHhlbm9tYWktc3lzdGVtLXRv
-b2xzOiBiaW5hcnktd2l0aG91dC1tYW5wYWdlIHVzci9iaW4veGVuby1yZWdyZXNzaW9uLXRlc3QK
-CgpYOiBsaWJ4ZW5vbWFpMTogc2hsaWItY2FsbHMtZXhpdCB1c3IvbGliL3g4Nl82NC1saW51eC1n
-bnUvbGlibmF0aXZlLnNvLjMuMC4wCk46IApOOiAgICBUaGUgbGlzdGVkIHNoYXJlZCBsaWJyYXJ5
-IGNhbGxzIHRoZSBDIGxpYnJhcnkgZXhpdCgpIG9yIF9leGl0KCkKTjogICAgZnVuY3Rpb25zLgpO
-OiAKTjogICAgSW4gdGhlIGNhc2Ugb2YgYW4gZXJyb3IsIHRoZSBsaWJyYXJ5IHNob3VsZCBpbnN0
-ZWFkIHJldHVybiBhbgpOOiAgICBhcHByb3ByaWF0ZSBlcnJvciBjb2RlIHRvIHRoZSBjYWxsaW5n
-IHByb2dyYW0gd2hpY2ggY2FuIHRoZW4gZGV0ZXJtaW5lCk46ICAgIGhvdyB0byBoYW5kbGUgdGhl
-IGVycm9yLCBpbmNsdWRpbmcgcGVyZm9ybWluZyBhbnkgcmVxdWlyZWQgY2xlYW4tdXAuICAKTjog
-Ck46ICAgIEluIG1vc3QgY2FzZXMsIHJlbW92aW5nIHRoZSBjYWxsIHNob3VsZCBiZSBkaXNjdXNz
-ZWQgd2l0aCB1cHN0cmVhbSwKTjogICAgcGFydGljdWxhcmx5IGFzIGl0IG1heSBwcm9kdWNlIGFu
-IEFCSSBjaGFuZ2UuCk46IApOOiAgICBTZXZlcml0eTogd2lzaGxpc3QsIENlcnRhaW50eTogcG9z
-c2libGUKTjogCk46ICAgIENoZWNrOiBzaGFyZWQtbGlicywgVHlwZTogYmluYXJ5LCB1ZGViCk46
-IApOOiAgICBUaGlzIHRhZyBpcyBtYXJrZWQgZXhwZXJpbWVudGFsLCB3aGljaCBtZWFucyB0aGF0
-IHRoZSBjb2RlIHRoYXQKTjogICAgZ2VuZXJhdGVzIGl0IGlzIG5vdCBhcyB3ZWxsLXRlc3RlZCBh
-cyB0aGUgcmVzdCBvZiBMaW50aWFuIGFuZCBtaWdodApOOiAgICBzdGlsbCBnaXZlIHN1cnByaXNp
-bmcgcmVzdWx0cy4gRmVlbCBmcmVlIHRvIGlnbm9yZSBleHBlcmltZW50YWwgdGFncwpOOiAgICB0
-aGF0IGRvIG5vdCBzZWVtIHRvIG1ha2Ugc2Vuc2UsIHRob3VnaCBvZiBjb3Vyc2UgYnVnIHJlcG9y
-dHMgYXJlIGFsd2F5cwpOOiAgICB3ZWxjb21lLgpOOiAKWDogbGlieGVub21haTE6IHNobGliLWNh
-bGxzLWV4aXQgdXNyL2xpYi94ODZfNjQtbGludXgtZ251L2xpYnBzb3Muc28uMC4wLjAKWDogbGli
-eGVub21haTE6IHNobGliLWNhbGxzLWV4aXQgdXNyL2xpYi94ODZfNjQtbGludXgtCmdudS9saWJw
-dGhyZWFkX3J0LnNvLjEuMC4wClg6IGxpYnhlbm9tYWkxOiBzaGxpYi1jYWxscy1leGl0IHVzci9s
-aWIveDg2XzY0LWxpbnV4LWdudS9saWJ1aXRyb24uc28uMC4wLjAKWDogbGlieGVub21haTE6IHNo
-bGliLWNhbGxzLWV4aXQgdXNyL2xpYi94ODZfNjQtbGludXgtZ251L2xpYnZydHguc28uMC4wLjAg
-IApYOiBsaWJ4ZW5vbWFpMTogc2hsaWItY2FsbHMtZXhpdCB1c3IvbGliL3g4Nl82NC1saW51eC1n
-bnUvbGlidnh3b3Jrcy5zby4xLjAuMApYOiBsaWJ4ZW5vbWFpMTogc2hsaWItY2FsbHMtZXhpdCB1
-c3IvbGliL3g4Nl82NC1saW51eC1nbnUvbGlieGVub21haS5zby4wLjAuMAoKClRoZSBwYWNrYWdl
-IGdpdCBpcyBsb2NhdGVkIGhlcmU6IAoKaHR0cDovL2Fub25zY20uZGViaWFuLm9yZy9jZ2l0L2Nv
-bGxhYi1tYWludC94ZW5vbWFpLmdpdAoKCkJlc3QgcmVnYXJkcywKCkxlb3BvbGQKCgoKLS0gCi0t
-CkxpbnV4IFVzZXIgMTUyNjkyICAgICBHUEc6IDA1RjRBN0E5NDlBMkQ5QUEKQ2F0YWxvbmlhCi0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KQTogQmVjYXVzZSBpdCBtZXNzZXMg
-dXAgdGhlIG9yZGVyIGluIHdoaWNoIHBlb3BsZSBub3JtYWxseSByZWFkIHRleHQuClE6IFdoeSBp
-cyB0b3AtcG9zdGluZyBzdWNoIGEgYmFkIHRoaW5nPwpBOiBUb3AtcG9zdGluZy4KUTogV2hhdCBp
-cyB0aGUgbW9zdCBhbm5veWluZyB0aGluZyBpbiBlLW1haWw/Ci0tLS0tLS0tLS0tLS0tIG5leHQg
-cGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4u
-Ck5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXpl
-OiA4MTkgYnl0ZXMKRGVzYzogVGhpcyBpcyBhIGRpZ2l0YWxseSBzaWduZWQgbWVzc2FnZSBwYXJ0
-LgpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMv
-MjAxNTA2MjUvZDcxMjk5OTAvYXR0YWNobWVudC5zaWc+Cg==
+On Thu, Jun 25, 2015 at 01:43:51PM +0200, Leopold Palomo-Avellaneda wrote:
+> Hi,
+> 
+> in the lasts days I have been working in the Debian package of xenomai. By now  
+> 2.6.4, but 3.0 is in the agenda, so I will begin to work on it soon.
+> 
+> I'm working for the "officially" Debian package for the Debian organization. 
+> I'm not alone, I'm collaborating with official maintainer (Roland Stigge). So, 
+> my main target is to have one good package for Debian. 
+> 
+> However, say that, IMHO it's important that the package could solve the needs 
+> of more people, so, I'm open to adapt, modify or whatever in a good manner to 
+> help the needs of the users of that package: Debian users or Debian 
+> derivatives users.
+> 
+> The Debian package follows mainly the upstream (Xenomai project) package. 
+> However, I have introduced several changes from the original Debian one:
+> 
+> - Renamed linux-patch-xenomai by xenomai-kernel-source
+> We are using Upstream nomenclature.
+
+The move from linux-patch-xenomai to xenomai-kernel-source is not a
+simple rename. Providing patches as linux-patch-xenomai did has been
+obsolete for several debian releases (3 or 4, something like that),
+and so no longer justified the costly maintenance of the script
+generating those patches. So, the xenomai-kernel-source package
+simply contains the part of the xenomai sources and the
+prepare-kernel.sh script allowing to build a kernel with xenomai
+support, making the preparation of a kernel the same as the one
+documented by the upstream package.
+
+> 
+> - Renamed xenomai-runtime by xenomai-system-tools.
+> Udev files, init file, test utilities, modprobe utilities. All this stuff goes 
+> to that package.
+> 
+> - Drop /dev from libxenomai1.
+> The /dev directory is created by udev. All debian systems have udev. However, 
+> I'm thinking to have another package with this stuff. What do you think?
+> 
+> - Install the libraries in /usr/lib/$ARCH/.
+> I'm following the Multi-Arch schema. In theory we could have several libraries 
+> co-installed. Need to test.
+> 
+> - Copyright file migrated to copyright-format 1.0
+> I have worked a lot to have some kind of Copyright file complete. If someone 
+> found something wrong, please tell me something.
+> 
+> - I have removed the previous debian patches (incorporated by upstream) but I 
+> have added one commit from upstream to build with 2.6.4 kernels => 3.11.
+> 
+> Checking the package I have found some interesting things:
+> 
+> X: xenomai source: deprecated-configure-filename
+> N: 
+> N:    The use of 'configure.in' with automake is deprecated and will not be
+> N:    supported in future versions of automake. Please consider (helping
+> N:    upstream) migrating to 'configure.ac' instead.
+> N:    
+
+configure.in has been renamed configure.ac in xenomai 3.x. It will
+not be renamed in xenomai 2.6.x.
+
+> 
+> P: xenomai source: source-contains-prebuilt-javascript-object 
+> doc/generated/html/api/jquery.js mean line length is about 16131 characters
+> N: 
+> N:    The source tarball contains a prebuilt (minified) JavaScript object.
+> N:    They are usually left by mistake when generating the tarball by not 
+> N:    cleaning the source directory first. You may want to report this as an
+> N:    upstream bug, in case there is no sign that this was intended.
+
+No, this is intended, this file is part of the documentation
+generated by doxygen, and we want that documentation to be
+installable on the users system without any need to install doxygen. 
+
+> 
+> 
+> W: xenomai-system-tools: hardening-no-relro usr/bin/cmd_bits
+> N:
+> N:    This package provides an ELF binary that lacks the "read-only
+> N:    relocation" link flag. This package was likely not built with the
+> N:    default Debian compiler flags defined by dpkg-buildflags. If built using
+> N:    dpkg-buildflags directly, be sure to import LDFLAGS.
+> N:
+> N:    Refer to https://wiki.debian.org/Hardening for details.
+> N:
+> N:    Severity: normal, Certainty: certain
+> N:
+> N:    Check: binaries, Type: binary, udeb
+> N:
+> W: xenomai-system-tools: hardening-no-relro usr/bin/cmd_read
+> W: xenomai-system-tools: hardening-no-relro usr/bin/cmd_write
+> W: xenomai-system-tools: hardening-no-relro usr/bin/insn_bits
+> W: xenomai-system-tools: hardening-no-relro usr/bin/insn_read
+> W: xenomai-system-tools: hardening-no-relro usr/bin/insn_write
+> W: xenomai-system-tools: hardening-no-relro usr/bin/rtcanrecv
+> W: xenomai-system-tools: hardening-no-relro usr/bin/rtcansend
+> W: xenomai-system-tools: hardening-no-relro usr/bin/wf_generate
+> W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> gnu/xenomai/regression/native+posix/mq_select
+> W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> gnu/xenomai/regression/native/heap
+> W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> gnu/xenomai/regression/native/leaks
+> W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> gnu/xenomai/regression/native/sigdebug
+> W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> gnu/xenomai/regression/native/tsc
+> W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> gnu/xenomai/regression/posix/leaks
+> W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> gnu/xenomai/regression/posix/mprotect
+> W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> gnu/xenomai/regression/posix/nano_test
+> W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> gnu/xenomai/regression/posix/shm
+> W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> gnu/xenomai/regression/posix/test_pip_exit
+> W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> gnu/xenomai/regression/posix/xddp_test
+> W: xenomai-system-tools: hardening-no-relro usr/sbin/analogy_config
+> W: xenomai-system-tools: hardening-no-relro usr/sbin/rtcanconfig
+> 
+> 
+> Any volunteer?
+
+Please provide the patch to the debian/rules to apply this change. I
+do not think we did anything special to avoid using the default flags.
+
+> 
+> W: xenomai-system-tools: binary-without-manpage usr/sbin/analogy_config
+> W: xenomai-system-tools: binary-without-manpage usr/bin/cmd_bits
+> W: xenomai-system-tools: binary-without-manpage usr/bin/cmd_read
+> W: xenomai-system-tools: binary-without-manpage usr/bin/cmd_write
+> W: xenomai-system-tools: binary-without-manpage usr/bin/insn_bits
+> W: xenomai-system-tools: binary-without-manpage usr/bin/insn_read
+> W: xenomai-system-tools: binary-without-manpage usr/bin/insn_write
+> W: xenomai-system-tools: binary-without-manpage usr/sbin/rtps
+> W: xenomai-system-tools: binary-without-manpage usr/bin/wf_generate
+> W: xenomai-system-tools: binary-without-manpage usr/bin/wrap-link
+> W: xenomai-system-tools: binary-without-manpage usr/bin/xeno-regression-test
+> 
+> 
+> X: libxenomai1: shlib-calls-exit usr/lib/x86_64-linux-gnu/libnative.so.3.0.0
+> N: 
+> N:    The listed shared library calls the C library exit() or _exit()
+> N:    functions.
+> N: 
+> N:    In the case of an error, the library should instead return an
+> N:    appropriate error code to the calling program which can then determine
+> N:    how to handle the error, including performing any required clean-up.  
+> N: 
+> N:    In most cases, removing the call should be discussed with upstream,
+> N:    particularly as it may produce an ABI change.
+> N: 
+> N:    Severity: wishlist, Certainty: possible
+> N: 
+> N:    Check: shared-libs, Type: binary, udeb
+> N: 
+> N:    This tag is marked experimental, which means that the code that
+> N:    generates it is not as well-tested as the rest of Lintian and might
+> N:    still give surprising results. Feel free to ignore experimental tags
+> N:    that do not seem to make sense, though of course bug reports are always
+> N:    welcome.
+> N: 
+> X: libxenomai1: shlib-calls-exit usr/lib/x86_64-linux-gnu/libpsos.so.0.0.0
+> X: libxenomai1: shlib-calls-exit usr/lib/x86_64-linux-
+> gnu/libpthread_rt.so.1.0.0
+> X: libxenomai1: shlib-calls-exit usr/lib/x86_64-linux-gnu/libuitron.so.0.0.0
+> X: libxenomai1: shlib-calls-exit usr/lib/x86_64-linux-gnu/libvrtx.so.0.0.0  
+> X: libxenomai1: shlib-calls-exit usr/lib/x86_64-linux-gnu/libvxworks.so.1.0.0
+> X: libxenomai1: shlib-calls-exit usr/lib/x86_64-linux-gnu/libxenomai.so.0.0.0
+> 
+> 
+> The package git is located here: 
+> 
+> http://anonscm.debian.org/cgit/collab-maint/xenomai.git
+
+Calling exit in those libs is intentional, and will not be modified.
+
+-- 
+					    Gilles.
+
