@@ -1,12 +1,14 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Thu, 25 Jun 2015 15:56:49 +0200
-Message-ID: <5297525.euQ38TDxur@soho>
-In-Reply-To: <20150625125414.GE26099@hermes.click-hack.org>
+Date: Thu, 25 Jun 2015 16:06:41 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150625140641.GI26099@hermes.click-hack.org>
 References: <2634889.oyRnRNCYxl@soho> <3101296.KSktGWlV1q@soho>
  <20150625125414.GE26099@hermes.click-hack.org>
+ <5297525.euQ38TDxur@soho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Disposition: inline
+In-Reply-To: <5297525.euQ38TDxur@soho>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Debian package of Xenomai 2.6.4
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -16,109 +18,166 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
 Cc: xenomai@xenomai.org
 
-RWwgRGlqb3VzLCAyNSBkZSBqdW55IGRlIDIwMTUsIGEgbGVzIDE0OjU0OjE0LCBHaWxsZXMgQ2hh
-bnRlcGVyZHJpeCB2YSAKZXNjcml1cmU6Cj4gPiA+ID4gCj4gPiA+ID4gLSBEcm9wIC9kZXYgZnJv
-bSBsaWJ4ZW5vbWFpMS4KPiA+ID4gPiBUaGUgL2RldiBkaXJlY3RvcnkgaXMgY3JlYXRlZCBieSB1
-ZGV2LiBBbGwgZGViaWFuIHN5c3RlbXMgaGF2ZSB1ZGV2Lgo+ID4gPiA+IEhvd2V2ZXIsIEknbSB0
-aGlua2luZyB0byBoYXZlIGFub3RoZXIgcGFja2FnZSB3aXRoIHRoaXMgc3R1ZmYuIFdoYXQgZG8K
-PiA+ID4gPiB5b3UgdGhpbms/Cj4gPiAKPiA+IFlvdSBkaWRuJ3QgYW5zd2VyIHRoaXMgLi4KR2ls
-bGVzLAoKSSBoYXZlIGRyb3BwZWQgL2RldiBmcm9tIGxpYnhlbm9tYWkuIENvdWxkIGJlIHByb2Js
-ZW1hdGljPwoKWy4uLl0KCgo+ID4gCj4gPiA+ID4gVzogeGVub21haS1zeXN0ZW0tdG9vbHM6IGhh
-cmRlbmluZy1uby1yZWxybyB1c3IvYmluL2NtZF9iaXRzCj4gPiA+ID4gTjoKPiA+ID4gPiBOOiAg
-ICBUaGlzIHBhY2thZ2UgcHJvdmlkZXMgYW4gRUxGIGJpbmFyeSB0aGF0IGxhY2tzIHRoZSAicmVh
-ZC1vbmx5Cj4gPiA+ID4gTjogICAgcmVsb2NhdGlvbiIgbGluayBmbGFnLiBUaGlzIHBhY2thZ2Ug
-d2FzIGxpa2VseSBub3QgYnVpbHQgd2l0aAo+ID4gPiA+IHRoZQo+ID4gPiA+IE46ICAgIGRlZmF1
-bHQgRGViaWFuIGNvbXBpbGVyIGZsYWdzIGRlZmluZWQgYnkgZHBrZy1idWlsZGZsYWdzLiBJZgo+
-ID4gPiA+IGJ1aWx0Cj4gPiA+ID4gdXNpbmcgTjogICAgZHBrZy1idWlsZGZsYWdzIGRpcmVjdGx5
-LCBiZSBzdXJlIHRvIGltcG9ydCBMREZMQUdTLgo+ID4gPiA+IE46Cj4gPiA+ID4gTjogICAgUmVm
-ZXIgdG8gaHR0cHM6Ly93aWtpLmRlYmlhbi5vcmcvSGFyZGVuaW5nIGZvciBkZXRhaWxzLgo+ID4g
-PiA+IE46Cj4gPiA+ID4gTjogICAgU2V2ZXJpdHk6IG5vcm1hbCwgQ2VydGFpbnR5OiBjZXJ0YWlu
-Cj4gPiA+ID4gTjoKPiA+ID4gPiBOOiAgICBDaGVjazogYmluYXJpZXMsIFR5cGU6IGJpbmFyeSwg
-dWRlYgo+ID4gPiA+IE46Cj4gPiA+ID4gVzogeGVub21haS1zeXN0ZW0tdG9vbHM6IGhhcmRlbmlu
-Zy1uby1yZWxybyB1c3IvYmluL2NtZF9yZWFkCj4gPiA+ID4gVzogeGVub21haS1zeXN0ZW0tdG9v
-bHM6IGhhcmRlbmluZy1uby1yZWxybyB1c3IvYmluL2NtZF93cml0ZQo+ID4gPiA+IFc6IHhlbm9t
-YWktc3lzdGVtLXRvb2xzOiBoYXJkZW5pbmctbm8tcmVscm8gdXNyL2Jpbi9pbnNuX2JpdHMKPiA+
-ID4gPiBXOiB4ZW5vbWFpLXN5c3RlbS10b29sczogaGFyZGVuaW5nLW5vLXJlbHJvIHVzci9iaW4v
-aW5zbl9yZWFkCj4gPiA+ID4gVzogeGVub21haS1zeXN0ZW0tdG9vbHM6IGhhcmRlbmluZy1uby1y
-ZWxybyB1c3IvYmluL2luc25fd3JpdGUKPiA+ID4gPiBXOiB4ZW5vbWFpLXN5c3RlbS10b29sczog
-aGFyZGVuaW5nLW5vLXJlbHJvIHVzci9iaW4vcnRjYW5yZWN2Cj4gPiA+ID4gVzogeGVub21haS1z
-eXN0ZW0tdG9vbHM6IGhhcmRlbmluZy1uby1yZWxybyB1c3IvYmluL3J0Y2Fuc2VuZAo+ID4gPiA+
-IFc6IHhlbm9tYWktc3lzdGVtLXRvb2xzOiBoYXJkZW5pbmctbm8tcmVscm8gdXNyL2Jpbi93Zl9n
-ZW5lcmF0ZQo+ID4gPiA+IFc6IHhlbm9tYWktc3lzdGVtLXRvb2xzOiBoYXJkZW5pbmctbm8tcmVs
-cm8gdXNyL2xpYi94ODZfNjQtbGludXgtCj4gPiA+ID4gZ251L3hlbm9tYWkvcmVncmVzc2lvbi9u
-YXRpdmUrcG9zaXgvbXFfc2VsZWN0Cj4gPiA+ID4gVzogeGVub21haS1zeXN0ZW0tdG9vbHM6IGhh
-cmRlbmluZy1uby1yZWxybyB1c3IvbGliL3g4Nl82NC1saW51eC0KPiA+ID4gPiBnbnUveGVub21h
-aS9yZWdyZXNzaW9uL25hdGl2ZS9oZWFwCj4gPiA+ID4gVzogeGVub21haS1zeXN0ZW0tdG9vbHM6
-IGhhcmRlbmluZy1uby1yZWxybyB1c3IvbGliL3g4Nl82NC1saW51eC0KPiA+ID4gPiBnbnUveGVu
-b21haS9yZWdyZXNzaW9uL25hdGl2ZS9sZWFrcwo+ID4gPiA+IFc6IHhlbm9tYWktc3lzdGVtLXRv
-b2xzOiBoYXJkZW5pbmctbm8tcmVscm8gdXNyL2xpYi94ODZfNjQtbGludXgtCj4gPiA+ID4gZ251
-L3hlbm9tYWkvcmVncmVzc2lvbi9uYXRpdmUvc2lnZGVidWcKPiA+ID4gPiBXOiB4ZW5vbWFpLXN5
-c3RlbS10b29sczogaGFyZGVuaW5nLW5vLXJlbHJvIHVzci9saWIveDg2XzY0LWxpbnV4LQo+ID4g
-PiA+IGdudS94ZW5vbWFpL3JlZ3Jlc3Npb24vbmF0aXZlL3RzYwo+ID4gPiA+IFc6IHhlbm9tYWkt
-c3lzdGVtLXRvb2xzOiBoYXJkZW5pbmctbm8tcmVscm8gdXNyL2xpYi94ODZfNjQtbGludXgtCj4g
-PiA+ID4gZ251L3hlbm9tYWkvcmVncmVzc2lvbi9wb3NpeC9sZWFrcwo+ID4gPiA+IFc6IHhlbm9t
-YWktc3lzdGVtLXRvb2xzOiBoYXJkZW5pbmctbm8tcmVscm8gdXNyL2xpYi94ODZfNjQtbGludXgt
-Cj4gPiA+ID4gZ251L3hlbm9tYWkvcmVncmVzc2lvbi9wb3NpeC9tcHJvdGVjdAo+ID4gPiA+IFc6
-IHhlbm9tYWktc3lzdGVtLXRvb2xzOiBoYXJkZW5pbmctbm8tcmVscm8gdXNyL2xpYi94ODZfNjQt
-bGludXgtCj4gPiA+ID4gZ251L3hlbm9tYWkvcmVncmVzc2lvbi9wb3NpeC9uYW5vX3Rlc3QKPiA+
-ID4gPiBXOiB4ZW5vbWFpLXN5c3RlbS10b29sczogaGFyZGVuaW5nLW5vLXJlbHJvIHVzci9saWIv
-eDg2XzY0LWxpbnV4LQo+ID4gPiA+IGdudS94ZW5vbWFpL3JlZ3Jlc3Npb24vcG9zaXgvc2htCj4g
-PiA+ID4gVzogeGVub21haS1zeXN0ZW0tdG9vbHM6IGhhcmRlbmluZy1uby1yZWxybyB1c3IvbGli
-L3g4Nl82NC1saW51eC0KPiA+ID4gPiBnbnUveGVub21haS9yZWdyZXNzaW9uL3Bvc2l4L3Rlc3Rf
-cGlwX2V4aXQKPiA+ID4gPiBXOiB4ZW5vbWFpLXN5c3RlbS10b29sczogaGFyZGVuaW5nLW5vLXJl
-bHJvIHVzci9saWIveDg2XzY0LWxpbnV4LQo+ID4gPiA+IGdudS94ZW5vbWFpL3JlZ3Jlc3Npb24v
-cG9zaXgveGRkcF90ZXN0Cj4gPiA+ID4gVzogeGVub21haS1zeXN0ZW0tdG9vbHM6IGhhcmRlbmlu
-Zy1uby1yZWxybyB1c3Ivc2Jpbi9hbmFsb2d5X2NvbmZpZwo+ID4gPiA+IFc6IHhlbm9tYWktc3lz
-dGVtLXRvb2xzOiBoYXJkZW5pbmctbm8tcmVscm8gdXNyL3NiaW4vcnRjYW5jb25maWcKPiA+ID4g
-Cj4gPiA+IFBsZWFzZSBwcm92aWRlIHRoZSBwYXRjaCB0byB0aGUgZGViaWFuL3J1bGVzIHRvIGFw
-cGx5IHRoaXMgY2hhbmdlLiBJCj4gPiA+IGRvIG5vdCB0aGluayB3ZSBkaWQgYW55dGhpbmcgc3Bl
-Y2lhbCB0byBhdm9pZCB1c2luZyB0aGUgZGVmYXVsdCBmbGFncy4KPiA+IAo+ID4gbXkgY29uZmln
-dXJlIGxpbmUgc2F5czoKPiA+IAo+ID4gQ09ORklHX09QVFMgKz0gLS1wcmVmaXg9L3VzciBcCj4g
-PiAKPiA+ICAgICAgICAgICAgICAgICAgICAgLS1pbmNsdWRlZGlyPS91c3IvaW5jbHVkZS94ZW5v
-bWFpIFwKPiA+ICAgICAgICAgICAgICAgICAgICAgLS1tYW5kaXI9L3Vzci9zaGFyZS9tYW4gXAo+
-ID4gICAgICAgICAgICAgICAgICAgICAtLXdpdGgtdGVzdGRpcj0vdXNyL2xpYi8kKERFQl9IT1NU
-X01VTFRJQVJDSCkveGVub21haQo+ID4gICAgICAgICAgICAgICAgICAgICBcCj4gPiAgICAgICAg
-ICAgICAgICAgICAgIC0tZW5hYmxlLWZvcnRpZnkgXAo+ID4gICAgICAgICAgICAgICAgICAgICAt
-LWxpYmRpcj0nJCR7cHJlZml4fS9saWIvJChERUJfSE9TVF9NVUxUSUFSQ0gpLycKPiA+IAo+ID4g
-cGx1cyBzb21lIHNwZWNpZmljIGFyY2ggcGFyYW1zLgo+IAo+IFdoYXQgc3BlY2lmaWMgYXJjaCBw
-YXJhbXM/IExhc3QgdGltZSBJIGNoZWNrZWQgaW4gdGhlIGluLXRyZWUKPiBkZWJpYW4vcnVsZXMs
-IHRoZXNlIGFyY2ggcGFyYW1zIHdlcmUgb2Jzb2xldGUsIHNvLCBJIHJlbW92ZWQgdGhlbQo+IGFs
-bC4KCmlmZXEgKCQoREVCX0hPU1RfQVJDSCksIGkzODYpCiAgICAgICAgQ09ORklHX09QVFMgPSBc
-CiAgICAgICAgICAgICAgICAgICAgLS1lbmFibGUteDg2LXRzYwplbmRpZgppZmVxICgkKERFQl9I
-T1NUX0FSQ0gpLCBhbWQ2NCkKICAgICAgICBDT05GSUdfT1BUUyA9IFwKICAgICAgICAgICAgICAg
-ICAgICAtLWVuYWJsZS14ODYtdHNjIFwKICAgICAgICAgICAgICAgICAgICAtLWVuYWJsZS14ODYt
-c2VwICAKZW5kaWYKaWZlcSAoJChERUJfSE9TVF9BUkNIKSwgcG93ZXJwYykKICAgICAgICBDT05G
-SUdfT1BUUyA9CmVuZGlmCmlmZXEgKCQoREVCX0hPU1RfQVJDSCksIGFybWViKQogICAgICAgIENP
-TkZJR19PUFRTID0gLS1lbmFibGUtYXJtLW1hY2g9Z2VuZXJpYyAtLWVuYWJsZS1hcm0tZWFiaQpl
-bmRpZgppZmVxICgkKERFQl9IT1NUX0FSQ0gpLCBhcm1lbCkKICAgICAgICBDT05GSUdfT1BUUyA9
-IC0tZW5hYmxlLWFybS1tYWNoPWdlbmVyaWMgLS1lbmFibGUtYXJtLWVhYmkKZW5kaWYKaWZlcSAo
-JChERUJfSE9TVF9BUkNIKSwgYXJtKQogICAgICAgIENPTkZJR19PUFRTID0gLS1lbmFibGUtYXJt
-LW1hY2g9Z2VuZXJpYwplbmRpZgoKCj4gPiBJIGhhdmUgdGVzdGVkIGl0IHdpdGggLS1lbmFibGUt
-Zm9ydGlmeSBhbmQKPiA+IHdpdGhvdXQuCj4gCj4gLS1lbmFibGUtZm9ydGlmeSwgYXMgZG9jdW1l
-bnRlZCwgYWxsb3dzIGFwcGxpY2F0aW9ucyBidWlsdCBmb3IgdGhlCj4gUE9TSVggc2tpbiB3aXRo
-IHRoZSBmb3J0aWZ5IGRlZmluZSAoX0ZPUlRJRllfU09VUkNFKSwgdG8gY29ycmVjdGx5Cj4gbGlu
-ayB3aXRoIFhlbm9tYWkgbGlicmFyaWVzIChJT1csIGl0IHByb3ZpZGVzIGltcGxlbWVudGF0aW9u
-IG9mCj4gX193cmFwX3ByaW50Zl9jaGsgYW5kIHRoZSBsaWtlKS4gSXQgaGFzIG5vIGluZmx1ZW5j
-ZSBvbiBidWlsZGluZwo+IFhlbm9tYWkgd2l0aCB0aGF0IGZsYWcuCj4gCj4gPiBJIGhhdmUgYWxz
-bzoKPiA+IERFQl9CVUlMRF9NQUlOVF9PUFRJT05TPWhhcmRlbmluZz0rYWxsLC1waWUKPiA+IAo+
-ID4gZm9sbG93aW5nCj4gPiAKPiA+IGh0dHBzOi8vd2lraS5kZWJpYW4ub3JnL0hhcmRlbmluZwo+
-ID4gCj4gPiBhbnkgaGVscCBpbiB0aGlzIHN0dWZmIHdpbGwgaGVscC4KPiAKPiBUaGUgaW4tdHJl
-ZSBkZWJpYW4vcnVsZXMgZXhwb3J0cyB0aGUgdmFyaWFibGUgREVCX0JVSUxEX0hBUkRFTklORz0x
-Cj4gdG8gYnVpbGQgdGhlIHBhY2thZ2Ugd2l0aCBoYXJkZW5pbmcuIEF0IHRoZSB0aW1lIEkgcmVh
-ZCB0aGUgd2lraSwKPiB0aGlzIHdhcyBvbmUgcmVjb21tZW5kZWQgd2F5LCBzdXBwb3NpbmcgdGhh
-dCB0aGUgd2lraSB3YXMgdXAgdG8gZGF0ZQo+IHdoZW4gSSByZWFkIGl0LiBJIGFtIGFmcmFpZCBJ
-IGNhbiB5b3UgaGVscCBtb3JlIG9uIHRoaXMsIHRoaXMgbG9va3MKPiBsaWtlIGEgZGViaWFuIHNw
-ZWNpZmljIHByb2JsZW0uCgpPaywKCnRoZSBvdGhlciBwZW9wbGUgaGF2ZSB0aGUgc2FtZSBpc3N1
-ZT8KCkxlb3BvbGQKCgotLSAKLS0KTGludXggVXNlciAxNTI2OTIgICAgIEdQRzogMDVGNEE3QTk0
-OUEyRDlBQQpDYXRhbG9uaWEKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpB
-OiBCZWNhdXNlIGl0IG1lc3NlcyB1cCB0aGUgb3JkZXIgaW4gd2hpY2ggcGVvcGxlIG5vcm1hbGx5
-IHJlYWQgdGV4dC4KUTogV2h5IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBiYWQgdGhpbmc/CkE6IFRv
-cC1wb3N0aW5nLgpROiBXaGF0IGlzIHRoZSBtb3N0IGFubm95aW5nIHRoaW5nIGluIGUtbWFpbD8K
-LS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNo
-bWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlv
-bi9wZ3Atc2lnbmF0dXJlClNpemU6IDgxOSBieXRlcwpEZXNjOiBUaGlzIGlzIGEgZGlnaXRhbGx5
-IHNpZ25lZCBtZXNzYWdlIHBhcnQuClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwv
-eGVub21haS9hdHRhY2htZW50cy8yMDE1MDYyNS81MDMxMTA3Zi9hdHRhY2htZW50LnNpZz4K
+On Thu, Jun 25, 2015 at 03:56:49PM +0200, Leopold Palomo-Avellaneda wrote:
+> El Dijous, 25 de juny de 2015, a les 14:54:14, Gilles Chanteperdrix va 
+> escriure:
+> > > > > 
+> > > > > - Drop /dev from libxenomai1.
+> > > > > The /dev directory is created by udev. All debian systems have udev.
+> > > > > However, I'm thinking to have another package with this stuff. What do
+> > > > > you think?
+> > > 
+> > > You didn't answer this ..
+> Gilles,
+> 
+> I have dropped /dev from libxenomai. Could be problematic?
+
+How should I know, I never did that. I would think not since the
+udev rules should create the nodes, but you have to check.
+
+> 
+> [...]
+> 
+> 
+> > > 
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/bin/cmd_bits
+> > > > > N:
+> > > > > N:    This package provides an ELF binary that lacks the "read-only
+> > > > > N:    relocation" link flag. This package was likely not built with
+> > > > > the
+> > > > > N:    default Debian compiler flags defined by dpkg-buildflags. If
+> > > > > built
+> > > > > using N:    dpkg-buildflags directly, be sure to import LDFLAGS.
+> > > > > N:
+> > > > > N:    Refer to https://wiki.debian.org/Hardening for details.
+> > > > > N:
+> > > > > N:    Severity: normal, Certainty: certain
+> > > > > N:
+> > > > > N:    Check: binaries, Type: binary, udeb
+> > > > > N:
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/bin/cmd_read
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/bin/cmd_write
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/bin/insn_bits
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/bin/insn_read
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/bin/insn_write
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/bin/rtcanrecv
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/bin/rtcansend
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/bin/wf_generate
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> > > > > gnu/xenomai/regression/native+posix/mq_select
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> > > > > gnu/xenomai/regression/native/heap
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> > > > > gnu/xenomai/regression/native/leaks
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> > > > > gnu/xenomai/regression/native/sigdebug
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> > > > > gnu/xenomai/regression/native/tsc
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> > > > > gnu/xenomai/regression/posix/leaks
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> > > > > gnu/xenomai/regression/posix/mprotect
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> > > > > gnu/xenomai/regression/posix/nano_test
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> > > > > gnu/xenomai/regression/posix/shm
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> > > > > gnu/xenomai/regression/posix/test_pip_exit
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/lib/x86_64-linux-
+> > > > > gnu/xenomai/regression/posix/xddp_test
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/sbin/analogy_config
+> > > > > W: xenomai-system-tools: hardening-no-relro usr/sbin/rtcanconfig
+> > > > 
+> > > > Please provide the patch to the debian/rules to apply this change. I
+> > > > do not think we did anything special to avoid using the default flags.
+> > > 
+> > > my configure line says:
+> > > 
+> > > CONFIG_OPTS += --prefix=/usr \
+> > > 
+> > >                     --includedir=/usr/include/xenomai \
+> > >                     --mandir=/usr/share/man \
+> > >                     --with-testdir=/usr/lib/$(DEB_HOST_MULTIARCH)/xenomai
+> > >                     \
+> > >                     --enable-fortify \
+> > >                     --libdir='$${prefix}/lib/$(DEB_HOST_MULTIARCH)/'
+> > > 
+> > > plus some specific arch params.
+> > 
+> > What specific arch params? Last time I checked in the in-tree
+> > debian/rules, these arch params were obsolete, so, I removed them
+> > all.
+> 
+> ifeq ($(DEB_HOST_ARCH), i386)
+>         CONFIG_OPTS = \
+>                     --enable-x86-tsc
+> endif
+> ifeq ($(DEB_HOST_ARCH), amd64)
+>         CONFIG_OPTS = \
+>                     --enable-x86-tsc \
+>                     --enable-x86-sep  
+> endif
+> ifeq ($(DEB_HOST_ARCH), powerpc)
+>         CONFIG_OPTS =
+> endif
+> ifeq ($(DEB_HOST_ARCH), armeb)
+>         CONFIG_OPTS = --enable-arm-mach=generic --enable-arm-eabi
+> endif
+> ifeq ($(DEB_HOST_ARCH), armel)
+>         CONFIG_OPTS = --enable-arm-mach=generic --enable-arm-eabi
+> endif
+> ifeq ($(DEB_HOST_ARCH), arm)
+>         CONFIG_OPTS = --enable-arm-mach=generic
+> endif
+
+ARM options are obsolete (and cause configure to emit a warning
+BTW), x86 are not, but are useless since these options have been the
+default for a long time.
+
+> 
+> 
+> > > I have tested it with --enable-fortify and
+> > > without.
+> > 
+> > --enable-fortify, as documented, allows applications built for the
+> > POSIX skin with the fortify define (_FORTIFY_SOURCE), to correctly
+> > link with Xenomai libraries (IOW, it provides implementation of
+> > __wrap_printf_chk and the like). It has no influence on building
+> > Xenomai with that flag.
+> > 
+> > > I have also:
+> > > DEB_BUILD_MAINT_OPTIONS=hardening=+all,-pie
+> > > 
+> > > following
+> > > 
+> > > https://wiki.debian.org/Hardening
+> > > 
+> > > any help in this stuff will help.
+> > 
+> > The in-tree debian/rules exports the variable DEB_BUILD_HARDENING=1
+> > to build the package with hardening. At the time I read the wiki,
+> > this was one recommended way, supposing that the wiki was up to date
+> > when I read it. I am afraid I can you help more on this, this looks
+> > like a debian specific problem.
+> 
+> Ok,
+> 
+> the other people have the same issue?
+
+What debian defines as "hardening" is debian-specific, so, I do not
+know whether all of these options work. Someone has to check, and
+you are the best person for the job.
+
+-- 
+					    Gilles.
+https://click-hack.org
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 811 bytes
+Desc: not available
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20150625/b8548b52/attachment.sig>
