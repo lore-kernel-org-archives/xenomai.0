@@ -1,21 +1,9 @@
 MIME-Version: 1.0
-In-Reply-To: <55899613.10006@siemens.com>
-References: <CAOL1OyMgNHaY4tgbUXM0Ytm9YnR3VGaJN-c60_5fuMayjz4aSw@mail.gmail.com>
- <558843FB.3040704@siemens.com>
- <CAOL1OyOWmGY2TFo6LaydWmeFqThHnVHNHtgk_iFZJ9aiwOM6uw@mail.gmail.com>
- <5588FA58.2080403@siemens.com>
- <CAOL1OyMJ9BS8jHWrHHVeCbP7tYJ7-Kgz6KzB4DAkBDpAGENUVA@mail.gmail.com>
- <20150623141142.GK17436@csclub.uwaterloo.ca> <55896A1A.2030408@siemens.com>
- <c2c68cadb110b6c7963aa06cadde978b.squirrel@sourcetrek.com>
- <CAOL1OyM2ViCuuD1BPRze0yhX6cSNqCRxMvu3mM=frnXA5Ly5NA@mail.gmail.com>
- <20150623160736.GL17436@csclub.uwaterloo.ca>
- <CAOL1OyOdg9S=G412PAsiJCkaSii9Pgu17a_0=gOHaOyr=fHaDQ@mail.gmail.com>
- <55899093.4050006@siemens.com> <55899613.10006@siemens.com>
-From: Antoine Durand <wanipof@gmail.com>
-Date: Wed, 24 Jun 2015 09:30:35 +0200
-Message-ID: <CAOL1OyNk+8HN2hAd6Vr9-XJB9ySeGaOveJXatmn7e6p3MQDnmA@mail.gmail.com>
+Date: Wed, 24 Jun 2015 17:12:02 -0700
+Message-ID: <CAKC9m6dRcjd6zzDMj1uPaAeNB2F5zzAQpVUG7ZFaMwEBgtk1WA@mail.gmail.com>
+From: Hongfei Cheng <hongfei@mperpetuo.com>
 Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] I-Pipe Tracer and linux ftrace
+Subject: [Xenomai] Questions about __ipipe_pin_range_globally
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,43 +12,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: Xenomai Mailing List <xenomai@xenomai.org>
 
- nr_cpus=2 and maxcpus=2 have the same consequences on my system,
-tsc is considered unstable and linux switch to refined-jiffies
-because I've nothing better available as clocksource than refined-jiffies
-(except for tsc) on that board.
+While porting Xenomai 3 to an ARMv8 SoC, we're seeing peculiar errors,
+such as "level 1 translation fault", in the Linux domain when running
+a specific application. The same app runs fine when I-pipe is
+disabled.
 
-2015-06-23 19:23 GMT+02:00 Jan Kiszka <jan.kiszka@siemens.com>:
+One function, __ipipe_pin_range_globally, is of particular interest to
+us (mostly because I don't think I fully understand its purpose and
+impact).
 
-> On 2015-06-23 19:00, Jan Kiszka wrote:
-> > On 2015-06-23 18:18, Antoine Durand wrote:
-> >> booting with 'maxcpus=2' in my case has the same behavior than
-> >> CONFIG_NR_CPUS=2
-> >> the clocksource switche to refined-jiffies and system time is wrong
-> (very
-> >> very slow)
-> >
-> > Ugh, reproduced something with a 4-core VM and maxcpus=2. I get a kernel
-> > crash in __ipipe_ack_hrtimer_irq. Probably an online vs. possible cpus
-> > issue. Will look into this.
->
-> Interesting: maxcpus limits the number of cores the kernel will bring
-> online on its own, but it does not stop the kernel from detecting more,
-> keeping them recorded as offline. Now userland jumps in and may decide
-> to bring them online as well, which happens with my recent OpenSUSE
-> system, not with a much older one. And that means cpu hotplugging, which
-> does not work when Xenomai considers those CPUs as part of the RT set.
-> Still, excluding the additional ones per supported_cpus mask is not
-> sufficient.
->
-> Anyway, what works fine here is nr_cpus=2 - clocksource TSC is chosen,
-> and no crash. Could you check that as well?
->
-> Jan
->
-> --
-> Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-> Corporate Competence Center Embedded Linux
->
+Searching the mailing list archives, I see the following comment
+(http://www.xenomai.org/pipermail/xenomai/2014-September/031731.html)
+made by Gilles on Sep 22, 2014:
+"... ipipe_pin_range_globally probably has never been used with 3
+level page tables, which are enabled by LPAE ..."
+
+The code change logs (in branch ipipe-3.14) show that, about 2 months
+later, on Nov 30, 2014, Philippe updated the code of
+__ipipe_pin_range_globally and pgd_holder, with a nice comment section
+(ccbd22da).
+
+Our armv8 SoC uses 4KB page configuration and 3-level translation
+tables. I have the following questions:
+1). Has anyone tested the latest __ipipe_pin_range_globally code
+against ARMv7 with LPAE enabled (and 3-level page tables)?
+2). Is __ipipe_pin_range_globally mainly for the purpose of preventing
+"(minor) page faults" for applications running in primary/real-time
+domain?
+
+Thanks,
+Hongfei
+
