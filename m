@@ -1,13 +1,10 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Fri, 26 Jun 2015 15:47:02 +0200
-Message-ID: <71780767.LPXQKYItBR@soho>
-In-Reply-To: <20150626124947.GD23673@hermes.click-hack.org>
-References: <2634889.oyRnRNCYxl@soho> <1922926.QGJ4YRI68g@indiana>
- <20150626124947.GD23673@hermes.click-hack.org>
+Message-ID: <558D5FAD.3060003@siemens.com>
+Date: Fri, 26 Jun 2015 16:20:29 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Debian package of Xenomai 2.6.4
+Content-Type: text/plain; charset=iso-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Heads up: some race condition fixes for Xenomai 3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,46 +13,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-RWwgRGl2ZW5kcmVzLCAyNiBkZSBqdW55IGRlIDIwMTUsIGEgbGVzIDE0OjQ5OjQ3LCBHaWxsZXMg
-Q2hhbnRlcGVyZHJpeCB2YSAKZXNjcml1cmU6Cj4gT24gVGh1LCBKdW4gMjUsIDIwMTUgYXQgMTE6
-MTA6MzJQTSArMDIwMCwgTGVvcG9sZCBQYWxvbW8tQXZlbGxhbmVkYSB3cm90ZToKPiA+IEVsIERp
-am91cywgMjUgZGUganVueSBkZSAyMDE1LCBhIGxlcyAyMjo1NjowOCwgR2lsbGVzIENoYW50ZXBl
-cmRyaXggdmEKPiA+IAo+ID4gZXNjcml1cmU6Cj4gPiA+IE9uIFRodSwgSnVuIDI1LCAyMDE1IGF0
-IDAxOjQzOjUxUE0gKzAyMDAsIExlb3BvbGQgUGFsb21vLUF2ZWxsYW5lZGEgCndyb3RlOgo+ID4g
-PiA+IC0gSSBoYXZlIHJlbW92ZWQgdGhlIHByZXZpb3VzIGRlYmlhbiBwYXRjaGVzIChpbmNvcnBv
-cmF0ZWQgYnkKPiA+ID4gPiB1cHN0cmVhbSkKPiA+ID4gPiBidXQgSSBoYXZlIGFkZGVkIG9uZSBj
-b21taXQgZnJvbSB1cHN0cmVhbSB0byBidWlsZCB3aXRoIDIuNi40IGtlcm5lbHMKPiA+ID4gPiA9
-Pgo+ID4gPiA+IDMuMTEuCj4gPiA+IAo+ID4gPiBXb3VsZCBiZSBpbnRlcmVzdGVkIHRvIGtub3cg
-YWJvdXQgdGhpcyBwYXRjaCwgYmVjYXVzZSBYZW5vbWFpIDIuNi40Cj4gPiA+IGhhcyBiZWVuIGJ1
-aWx0LXRlc3RlZCB3aXRoIGtlcm5lbHMgdXAgdG8gMy4xNCwgc28sIHRoZXJlIGlzIG5vCj4gPiA+
-IHByb2JsZW0gdG8gYnVpbGQgaXQgd2l0aCB2ZXJzaW9ucyBzdXBlcmlvciB0byAzLjExIHRoYXQg
-SSBrbm93IG9mLgo+ID4gCj4gPiBHaWxsZXMsCj4gPiAKPiA+IG9uIDIwMTQtMDktMjUgeW91IHJl
-bGVhc2VkIDIuNi40Lgo+ID4gCj4gPiBvbiAyMDE1LTAxLTE2IHlvdSBkaWQgYSBjb21taXQgKGNh
-bi9mbGV4Y2FuOiBmaXh1cCBmb3Iga2VybmVsIHJlbGVhc2UgPj0KPiA+IDMuMTEpIHRoYXQgaXMg
-dGhlIG9uZSB0aGF0IEkgbm90aWNlZC4KPiAKPiBJbmRlZWQsIG1lcmdpbmcgdGhhdCBvbmUgbWFr
-ZXMgc2Vuc2UuCj4gCj4gPiBIb3dldmVyLCBsb29raW5nIG5vdyB0aGUgbG9nIHRoZXJlIGFyZSB0
-d28gY29tbWl0cyB0aGF0IHdpbGwgYWZmZWN0IG9uIGFybQo+ID4gcGxhdGZvcm1zOgo+ID4gMjAx
-NC0xMS0yNAloYWwvYXJtOiBmaXh1cCBmb3IgTGludXggMy4xNgo+ID4gMjAxNC0xMS0wNQloYWw6
-IGZpeHVwcyBmb3Iga2VybmVsIDMuMTYKPiA+IAo+ID4gU28sIHByb2JhYmx5IEkgd2lsbCBuZWVk
-IHRoZW0gdG9vLgo+IAo+IEkgd291bGQgbm90IHJlY29tbWVuZCB0aGF0LiBYZW5vbWFpIDIuNi40
-IApmdHA6Ly9mdHAua2VybmVsLm9yZy9wdWIvbGludXgva2VybmVsL3YzLngvbGludXgtMy4xNi43
-LnRhci54emhhcyBiZWVuIHRlc3RlZCAKYW5kCj4gcmVsZWFzZWQgdG8gc3VwcG9ydCBrZXJuZWwg
-dmVyc2lvbnMgdXAgdG8gMy4xNCwgc28sIEkgd291bGQga2VlcCBpdAo+IGxpa2UgdGhhdC4gWGVu
-b21haSAzLjAgc3VwcG9ydHMgaGlnaGVyIGtlcm5lbCB2ZXJzaW9ucywgWGVub21haQo+IDIuNi41
-IHdpbGwgcHJvYmFibHkgYWxzbywgYnV0IEkgd2lsbCB0ZXN0IHRoZSAzLjE2IGFuZCAzLjE4IHZl
-cnNpb25zCj4gZXh0ZW5zaXZlbHkgYmVmb3JlIHJlbGVhc2luZyBpdC4KClBlcmZlY3QuIEkgaGF2
-ZSBfb25seV8gdGVzdGVkIGFtZDY0IHBsYXRmb3JtIGFuZCBpdCBoYXZlIGJlZW4gd29ya2VkIHdp
-dGggMy4xNiAKd2l0aG91dCBhbnkgbm90aWNlYWJsZSBwcm9ibGVtLgoKTGVvcG9sZCAKCi0tIAot
-LQpMaW51eCBVc2VyIDE1MjY5MiAgICAgR1BHOiAwNUY0QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQot
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkE6IEJlY2F1c2UgaXQgbWVzc2Vz
-IHVwIHRoZSBvcmRlciBpbiB3aGljaCBwZW9wbGUgbm9ybWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkg
-aXMgdG9wLXBvc3Rpbmcgc3VjaCBhIGJhZCB0aGluZz8KQTogVG9wLXBvc3RpbmcuClE6IFdoYXQg
-aXMgdGhlIG1vc3QgYW5ub3lpbmcgdGhpbmcgaW4gZS1tYWlsPwotLS0tLS0tLS0tLS0tLSBuZXh0
-IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4u
-LgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6
-ZTogODE5IGJ5dGVzCkRlc2M6IFRoaXMgaXMgYSBkaWdpdGFsbHkgc2lnbmVkIG1lc3NhZ2UgcGFy
-dC4KVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRz
-LzIwMTUwNjI2L2FkYTQ2NTAzL2F0dGFjaG1lbnQuc2lnPgo=
+Hi,
+
+just pushed 3 patches to git.xenomai.org/xenomai-jki.git for-forge that
+are supposed to fix race conditions while manipulating xnthread::state
+and info (both need to be nklock-protected). Please review if finding
+and fixes make sense.
+
+      cobalt/kernel: Fix locking for xnthread info manipulations
+      cobalt/kernel: Fix locking for setting XNFPU
+      cobalt/kernel: Rework thread debugging helpers
+
+Maybe some of the issues also exist in Xenomai 2, didn't check yet.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
+
