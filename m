@@ -1,15 +1,15 @@
-Message-ID: <558270AE.9080008@xenomai.org>
-Date: Thu, 18 Jun 2015 09:18:06 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Fri, 26 Jun 2015 14:49:47 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150626124947.GD23673@hermes.click-hack.org>
+References: <2634889.oyRnRNCYxl@soho>
+ <20150625205607.GA23673@hermes.click-hack.org>
+ <1922926.QGJ4YRI68g@indiana>
 MIME-Version: 1.0
-References: <1649054.cG979aVMUy@soho>
- <66bead79a47e082c19c410f097b53c9e.squirrel@sourcetrek.com>
- <11760776.AKg2s0Tc8c@indiana> <55826C4D.4000506@siemens.com>
- <28e34526295769234fe6fe5971714059.squirrel@sourcetrek.com>
-In-Reply-To: <28e34526295769234fe6fe5971714059.squirrel@sourcetrek.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Disposition: inline
+In-Reply-To: <1922926.QGJ4YRI68g@indiana>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] License Issues
+Subject: Re: [Xenomai] Debian package of Xenomai 2.6.4
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,60 +18,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
 Cc: xenomai@xenomai.org
 
-On 06/18/2015 09:05 AM, Gilles Chanteperdrix wrote:
+On Thu, Jun 25, 2015 at 11:10:32PM +0200, Leopold Palomo-Avellaneda wrote:
+> El Dijous, 25 de juny de 2015, a les 22:56:08, Gilles Chanteperdrix va 
+> escriure:
+> > On Thu, Jun 25, 2015 at 01:43:51PM +0200, Leopold Palomo-Avellaneda wrote:
+> > > - I have removed the previous debian patches (incorporated by upstream)
+> > > but I have added one commit from upstream to build with 2.6.4 kernels =>
+> > > 3.11.
+> > Would be interested to know about this patch, because Xenomai 2.6.4
+> > has been built-tested with kernels up to 3.14, so, there is no
+> > problem to build it with versions superior to 3.11 that I know of.
 > 
-> Jan Kiszka wrote:
->> On 2015-06-17 23:35, Leopold Palomo-Avellaneda wrote:
->>> El Dimecres, 17 de juny de 2015, a les 19:25:56, Gilles Chanteperdrix va
->>> escriure:
->>>> Leopold Palomo-Avellaneda wrote:
->>>>> Hi,
->>>>>
->>>>> using a debian tool to check the license of the package I have found
->>>>> that
->>>>> his
->>>>
->>>>> files:
->>>> This mail looks very different from the one you sent me privately and I
->>>> told you to post on the list. It does not even concern the same version
->>>> of
->>>> Xenomai.
->>>
->>> yes,
->>>
->>> it's true. But what I understood from you was that it was better that I
->>> sent
->>> to the list. That file comes from xenomai-2.6.4. Any problem then?
->>>
->>> I just need to clarify this kind of things because ftp-masters are every
->>> day
->>> more strict (what I think it's better), especially with licenses. Never
->>> happens nothing till the day that something happen.
->>
->> Out of curiosity: How do these license check work right now? What's the
->> tool used and how are the outputs processed (manual or automatic
->> decisions etc.)?
->>
->>>
->>> If can check this kind of stuff it would be better, that's all. For
->>> instance, I
->>> was a bit surprised about the autotools generated files, because I
->>> thought they
->>> would never had license.
->>
->> If something has no license, it cannot be used.
+> Gilles,
 > 
-> That is an over-simplification. Or maybe a policy of the company you work
-> at. But that is not a general truth that applies to everyone.
+> on 2014-09-25 you released 2.6.4.
 > 
-> 
+> on 2015-01-16 you did a commit (can/flexcan: fixup for kernel release >= 3.11) 
+> that is the one that I noticed.
 
-I believe Jan refers to the default copyright laws in this case, which
-state that all copyrights are retained by the author.
+Indeed, merging that one makes sense.
+
+> 
+> However, looking now the log there are two commits that will affect on arm 
+> platforms:
+> 2014-11-24	hal/arm: fixup for Linux 3.16	
+> 2014-11-05	hal: fixups for kernel 3.16
+> 
+> So, probably I will need them too.
+
+I would not recommend that. Xenomai 2.6.4 has been tested and
+released to support kernel versions up to 3.14, so, I would keep it
+like that. Xenomai 3.0 supports higher kernel versions, Xenomai
+2.6.5 will probably also, but I will test the 3.16 and 3.18 versions
+extensively before releasing it.
 
 -- 
-Philippe.
-
+					    Gilles.
+https://click-hack.org
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 811 bytes
+Desc: not available
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20150626/9c1af026/attachment.sig>
