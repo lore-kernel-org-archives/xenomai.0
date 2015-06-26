@@ -1,14 +1,12 @@
-Date: Fri, 26 Jun 2015 14:49:47 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150626124947.GD23673@hermes.click-hack.org>
-References: <2634889.oyRnRNCYxl@soho>
- <20150625205607.GA23673@hermes.click-hack.org>
- <1922926.QGJ4YRI68g@indiana>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Fri, 26 Jun 2015 15:47:02 +0200
+Message-ID: <71780767.LPXQKYItBR@soho>
+In-Reply-To: <20150626124947.GD23673@hermes.click-hack.org>
+References: <2634889.oyRnRNCYxl@soho> <1922926.QGJ4YRI68g@indiana>
+ <20150626124947.GD23673@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <1922926.QGJ4YRI68g@indiana>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Debian package of Xenomai 2.6.4
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -18,50 +16,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Thu, Jun 25, 2015 at 11:10:32PM +0200, Leopold Palomo-Avellaneda wrote:
-> El Dijous, 25 de juny de 2015, a les 22:56:08, Gilles Chanteperdrix va 
-> escriure:
-> > On Thu, Jun 25, 2015 at 01:43:51PM +0200, Leopold Palomo-Avellaneda wrote:
-> > > - I have removed the previous debian patches (incorporated by upstream)
-> > > but I have added one commit from upstream to build with 2.6.4 kernels =>
-> > > 3.11.
-> > Would be interested to know about this patch, because Xenomai 2.6.4
-> > has been built-tested with kernels up to 3.14, so, there is no
-> > problem to build it with versions superior to 3.11 that I know of.
-> 
-> Gilles,
-> 
-> on 2014-09-25 you released 2.6.4.
-> 
-> on 2015-01-16 you did a commit (can/flexcan: fixup for kernel release >= 3.11) 
-> that is the one that I noticed.
-
-Indeed, merging that one makes sense.
-
-> 
-> However, looking now the log there are two commits that will affect on arm 
-> platforms:
-> 2014-11-24	hal/arm: fixup for Linux 3.16	
-> 2014-11-05	hal: fixups for kernel 3.16
-> 
-> So, probably I will need them too.
-
-I would not recommend that. Xenomai 2.6.4 has been tested and
-released to support kernel versions up to 3.14, so, I would keep it
-like that. Xenomai 3.0 supports higher kernel versions, Xenomai
-2.6.5 will probably also, but I will test the 3.16 and 3.18 versions
-extensively before releasing it.
-
--- 
-					    Gilles.
-https://click-hack.org
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: not available
-Type: application/pgp-signature
-Size: 811 bytes
-Desc: not available
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20150626/9c1af026/attachment.sig>
+RWwgRGl2ZW5kcmVzLCAyNiBkZSBqdW55IGRlIDIwMTUsIGEgbGVzIDE0OjQ5OjQ3LCBHaWxsZXMg
+Q2hhbnRlcGVyZHJpeCB2YSAKZXNjcml1cmU6Cj4gT24gVGh1LCBKdW4gMjUsIDIwMTUgYXQgMTE6
+MTA6MzJQTSArMDIwMCwgTGVvcG9sZCBQYWxvbW8tQXZlbGxhbmVkYSB3cm90ZToKPiA+IEVsIERp
+am91cywgMjUgZGUganVueSBkZSAyMDE1LCBhIGxlcyAyMjo1NjowOCwgR2lsbGVzIENoYW50ZXBl
+cmRyaXggdmEKPiA+IAo+ID4gZXNjcml1cmU6Cj4gPiA+IE9uIFRodSwgSnVuIDI1LCAyMDE1IGF0
+IDAxOjQzOjUxUE0gKzAyMDAsIExlb3BvbGQgUGFsb21vLUF2ZWxsYW5lZGEgCndyb3RlOgo+ID4g
+PiA+IC0gSSBoYXZlIHJlbW92ZWQgdGhlIHByZXZpb3VzIGRlYmlhbiBwYXRjaGVzIChpbmNvcnBv
+cmF0ZWQgYnkKPiA+ID4gPiB1cHN0cmVhbSkKPiA+ID4gPiBidXQgSSBoYXZlIGFkZGVkIG9uZSBj
+b21taXQgZnJvbSB1cHN0cmVhbSB0byBidWlsZCB3aXRoIDIuNi40IGtlcm5lbHMKPiA+ID4gPiA9
+Pgo+ID4gPiA+IDMuMTEuCj4gPiA+IAo+ID4gPiBXb3VsZCBiZSBpbnRlcmVzdGVkIHRvIGtub3cg
+YWJvdXQgdGhpcyBwYXRjaCwgYmVjYXVzZSBYZW5vbWFpIDIuNi40Cj4gPiA+IGhhcyBiZWVuIGJ1
+aWx0LXRlc3RlZCB3aXRoIGtlcm5lbHMgdXAgdG8gMy4xNCwgc28sIHRoZXJlIGlzIG5vCj4gPiA+
+IHByb2JsZW0gdG8gYnVpbGQgaXQgd2l0aCB2ZXJzaW9ucyBzdXBlcmlvciB0byAzLjExIHRoYXQg
+SSBrbm93IG9mLgo+ID4gCj4gPiBHaWxsZXMsCj4gPiAKPiA+IG9uIDIwMTQtMDktMjUgeW91IHJl
+bGVhc2VkIDIuNi40Lgo+ID4gCj4gPiBvbiAyMDE1LTAxLTE2IHlvdSBkaWQgYSBjb21taXQgKGNh
+bi9mbGV4Y2FuOiBmaXh1cCBmb3Iga2VybmVsIHJlbGVhc2UgPj0KPiA+IDMuMTEpIHRoYXQgaXMg
+dGhlIG9uZSB0aGF0IEkgbm90aWNlZC4KPiAKPiBJbmRlZWQsIG1lcmdpbmcgdGhhdCBvbmUgbWFr
+ZXMgc2Vuc2UuCj4gCj4gPiBIb3dldmVyLCBsb29raW5nIG5vdyB0aGUgbG9nIHRoZXJlIGFyZSB0
+d28gY29tbWl0cyB0aGF0IHdpbGwgYWZmZWN0IG9uIGFybQo+ID4gcGxhdGZvcm1zOgo+ID4gMjAx
+NC0xMS0yNAloYWwvYXJtOiBmaXh1cCBmb3IgTGludXggMy4xNgo+ID4gMjAxNC0xMS0wNQloYWw6
+IGZpeHVwcyBmb3Iga2VybmVsIDMuMTYKPiA+IAo+ID4gU28sIHByb2JhYmx5IEkgd2lsbCBuZWVk
+IHRoZW0gdG9vLgo+IAo+IEkgd291bGQgbm90IHJlY29tbWVuZCB0aGF0LiBYZW5vbWFpIDIuNi40
+IApmdHA6Ly9mdHAua2VybmVsLm9yZy9wdWIvbGludXgva2VybmVsL3YzLngvbGludXgtMy4xNi43
+LnRhci54emhhcyBiZWVuIHRlc3RlZCAKYW5kCj4gcmVsZWFzZWQgdG8gc3VwcG9ydCBrZXJuZWwg
+dmVyc2lvbnMgdXAgdG8gMy4xNCwgc28sIEkgd291bGQga2VlcCBpdAo+IGxpa2UgdGhhdC4gWGVu
+b21haSAzLjAgc3VwcG9ydHMgaGlnaGVyIGtlcm5lbCB2ZXJzaW9ucywgWGVub21haQo+IDIuNi41
+IHdpbGwgcHJvYmFibHkgYWxzbywgYnV0IEkgd2lsbCB0ZXN0IHRoZSAzLjE2IGFuZCAzLjE4IHZl
+cnNpb25zCj4gZXh0ZW5zaXZlbHkgYmVmb3JlIHJlbGVhc2luZyBpdC4KClBlcmZlY3QuIEkgaGF2
+ZSBfb25seV8gdGVzdGVkIGFtZDY0IHBsYXRmb3JtIGFuZCBpdCBoYXZlIGJlZW4gd29ya2VkIHdp
+dGggMy4xNiAKd2l0aG91dCBhbnkgbm90aWNlYWJsZSBwcm9ibGVtLgoKTGVvcG9sZCAKCi0tIAot
+LQpMaW51eCBVc2VyIDE1MjY5MiAgICAgR1BHOiAwNUY0QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQot
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkE6IEJlY2F1c2UgaXQgbWVzc2Vz
+IHVwIHRoZSBvcmRlciBpbiB3aGljaCBwZW9wbGUgbm9ybWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkg
+aXMgdG9wLXBvc3Rpbmcgc3VjaCBhIGJhZCB0aGluZz8KQTogVG9wLXBvc3RpbmcuClE6IFdoYXQg
+aXMgdGhlIG1vc3QgYW5ub3lpbmcgdGhpbmcgaW4gZS1tYWlsPwotLS0tLS0tLS0tLS0tLSBuZXh0
+IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4u
+LgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6
+ZTogODE5IGJ5dGVzCkRlc2M6IFRoaXMgaXMgYSBkaWdpdGFsbHkgc2lnbmVkIG1lc3NhZ2UgcGFy
+dC4KVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRz
+LzIwMTUwNjI2L2FkYTQ2NTAzL2F0dGFjaG1lbnQuc2lnPgo=
