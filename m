@@ -1,13 +1,13 @@
-Message-ID: <558D6EBC.80300@siemens.com>
-Date: Fri, 26 Jun 2015 17:24:44 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Fri, 26 Jun 2015 18:01:09 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150626160109.GA8276@hermes.click-hack.org>
+References: <E1Z8UN2-0004n4-Gc@sd-51317.xenomai.org>
 MIME-Version: 1.0
-References: <558D5FAD.3060003@siemens.com>
- <20150626150751.GA6095@hermes.click-hack.org>
-In-Reply-To: <20150626150751.GA6095@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Heads up: some race condition fixes for Xenomai 3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E1Z8UN2-0004n4-Gc@sd-51317.xenomai.org>
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt/kernel: Fix locking
+ for xnthread info manipulations
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,45 +16,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: xenomai-git@xenomai.org
 
-On 2015-06-26 17:07, Gilles Chanteperdrix wrote:
-> On Fri, Jun 26, 2015 at 04:20:29PM +0200, Jan Kiszka wrote:
->> Hi,
->>
->> just pushed 3 patches to git.xenomai.org/xenomai-jki.git for-forge that
->> are supposed to fix race conditions while manipulating xnthread::state
->> and info (both need to be nklock-protected). Please review if finding
->> and fixes make sense.
->>
->>       cobalt/kernel: Fix locking for xnthread info manipulations
->>       cobalt/kernel: Fix locking for setting XNFPU
->>       cobalt/kernel: Rework thread debugging helpers
->>
->> Maybe some of the issues also exist in Xenomai 2, didn't check yet.
+On Fri, Jun 26, 2015 at 04:12:44PM +0200, git repository hosting wrote:
+> Module: xenomai-jki
+> Branch: for-forge
+> Commit: 67a64e164b737759cc171d3b04b05770e1450cb6
+> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=67a64e164b737759cc171d3b04b05770e1450cb6
 > 
-> At some point, one of info and state was supposed to be only
-> modified by the current thread, but I am not sure this still holds.
-
-I vaguely remember something like this as well. From my analysis of
-today, this is no longer the case.
-
+> Author: Jan Kiszka <jan.kiszka@siemens.com>
+> Date:   Fri Jun 26 15:11:42 2015 +0200
 > 
-> Anyway, instead of adding explicit nklock sections around
-> xnthread_clear_info/xnthread_set_info, would not it be better to
-> have xnthread_clear_info/xnthread_set_info implicitly take the lock,
-> and add __xnthread_clear_info/__xnthread_set_info for the sections
-> where the caller already holds the nklock?
+> cobalt/kernel: Fix locking for xnthread info manipulations
+> 
+> nklock must be held when manipulating bits of xnthread::info. Not all
+> callsites of xnthread_set/clear_info follow this rule so far, directly
+> or indirectly, fix them (and possibly some other races along this).
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> 
+> ---
+> 
+>  include/cobalt/kernel/rtdm/driver.h |    8 ++++----
+>  kernel/cobalt/posix/syscall.c       |    5 +++++
+>  kernel/cobalt/synch.c               |    2 ++
+>  kernel/cobalt/thread.c              |    5 +++++
+>  4 files changed, 16 insertions(+), 4 deletions(-)
+> 
+> diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
+> index c14198b..de476ca 100644
+> --- a/include/cobalt/kernel/rtdm/driver.h
+> +++ b/include/cobalt/kernel/rtdm/driver.h
+> @@ -553,7 +553,7 @@ static inline void rtdm_lock_get(rtdm_lock_t *lock)
+>  {
+>  	XENO_BUG_ON(COBALT, !spltest());
+>  	spin_lock(lock);
+> -	__xnsched_lock();
+> +	xnsched_lock();
+>  }
+>  
+>  /**
+> @@ -566,7 +566,7 @@ static inline void rtdm_lock_get(rtdm_lock_t *lock)
+>  static inline void rtdm_lock_put(rtdm_lock_t *lock)
+>  {
+>  	spin_unlock(lock);
+> -	__xnsched_unlock();
+> +	xnsched_unlock();
+>  }
+>  
+>  /**
+> @@ -584,7 +584,7 @@ static inline rtdm_lockctx_t __rtdm_lock_get_irqsave(rtdm_lock_t *lock)
+>  
+>  	context = ipipe_test_and_stall_head();
+>  	spin_lock(lock);
+> -	__xnsched_lock();
+> +	xnsched_lock();
+>  
+>  	return context;
+>  }
+> @@ -603,7 +603,7 @@ static inline
+>  void rtdm_lock_put_irqrestore(rtdm_lock_t *lock, rtdm_lockctx_t context)
+>  {
+>  	spin_unlock(lock);
+> -	__xnsched_unlock();
+> +	xnsched_unlock();
+>  	ipipe_restore_head(context);
+>  }
 
-That is an option, though we likely only have very few users of
-self-locking variants.
-
-Or we make those fields atomics, but that would affect all users.
-
-Jan
+These changes are not without risk: is not there a risk of deadlock
+if one thread calls rtdm_lock_get without holding the nklock and
+another calls it while holding it?
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+					    Gilles.
+https://click-hack.org
 
