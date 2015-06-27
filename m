@@ -1,17 +1,10 @@
-Date: Sat, 27 Jun 2015 12:59:14 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150627105914.GC9756@hermes.click-hack.org>
-References: <E1Z8UN2-0004n4-Gc@sd-51317.xenomai.org>
- <20150626160109.GA8276@hermes.click-hack.org>
- <558DB351.8090804@web.de>
- <20150627100331.GB9756@hermes.click-hack.org>
- <558E7FFB.1010802@xenomai.org>
-MIME-Version: 1.0
+From: Michael Haberler <haberlerm@gmail.com>
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <558E7FFB.1010802@xenomai.org>
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt/kernel: Fix locking
- for xnthread info manipulations
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <C31C0BF8-AC9A-442B-8A2F-4576ACF1F817@gmail.com>
+Date: Sat, 27 Jun 2015 14:22:09 +0200
+Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2098\))
+Subject: [Xenomai] Q on xenomai2/3 userland coexistence
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,132 +13,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-git@xenomai.org, Jan Kiszka <jan.kiszka@web.de>, xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-On Sat, Jun 27, 2015 at 12:50:35PM +0200, Philippe Gerum wrote:
-> On 06/27/2015 12:03 PM, Gilles Chanteperdrix wrote:
-> > On Fri, Jun 26, 2015 at 10:17:21PM +0200, Jan Kiszka wrote:
-> >> On 2015-06-26 18:01, Gilles Chanteperdrix wrote:
-> >>> On Fri, Jun 26, 2015 at 04:12:44PM +0200, git repository hosting wrote:
-> >>>> Module: xenomai-jki
-> >>>> Branch: for-forge
-> >>>> Commit: 67a64e164b737759cc171d3b04b05770e1450cb6
-> >>>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=67a64e164b737759cc171d3b04b05770e1450cb6
-> >>>>
-> >>>> Author: Jan Kiszka <jan.kiszka@siemens.com>
-> >>>> Date:   Fri Jun 26 15:11:42 2015 +0200
-> >>>>
-> >>>> cobalt/kernel: Fix locking for xnthread info manipulations
-> >>>>
-> >>>> nklock must be held when manipulating bits of xnthread::info. Not all
-> >>>> callsites of xnthread_set/clear_info follow this rule so far, directly
-> >>>> or indirectly, fix them (and possibly some other races along this).
-> >>>>
-> >>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> >>>>
-> >>>> ---
-> >>>>
-> >>>>  include/cobalt/kernel/rtdm/driver.h |    8 ++++----
-> >>>>  kernel/cobalt/posix/syscall.c       |    5 +++++
-> >>>>  kernel/cobalt/synch.c               |    2 ++
-> >>>>  kernel/cobalt/thread.c              |    5 +++++
-> >>>>  4 files changed, 16 insertions(+), 4 deletions(-)
-> >>>>
-> >>>> diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
-> >>>> index c14198b..de476ca 100644
-> >>>> --- a/include/cobalt/kernel/rtdm/driver.h
-> >>>> +++ b/include/cobalt/kernel/rtdm/driver.h
-> >>>> @@ -553,7 +553,7 @@ static inline void rtdm_lock_get(rtdm_lock_t *lock)
-> >>>>  {
-> >>>>  	XENO_BUG_ON(COBALT, !spltest());
-> >>>>  	spin_lock(lock);
-> >>>> -	__xnsched_lock();
-> >>>> +	xnsched_lock();
-> >>>>  }
-> >>>>  
-> >>>>  /**
-> >>>> @@ -566,7 +566,7 @@ static inline void rtdm_lock_get(rtdm_lock_t *lock)
-> >>>>  static inline void rtdm_lock_put(rtdm_lock_t *lock)
-> >>>>  {
-> >>>>  	spin_unlock(lock);
-> >>>> -	__xnsched_unlock();
-> >>>> +	xnsched_unlock();
-> >>>>  }
-> >>>>  
-> >>>>  /**
-> >>>> @@ -584,7 +584,7 @@ static inline rtdm_lockctx_t __rtdm_lock_get_irqsave(rtdm_lock_t *lock)
-> >>>>  
-> >>>>  	context = ipipe_test_and_stall_head();
-> >>>>  	spin_lock(lock);
-> >>>> -	__xnsched_lock();
-> >>>> +	xnsched_lock();
-> >>>>  
-> >>>>  	return context;
-> >>>>  }
-> >>>> @@ -603,7 +603,7 @@ static inline
-> >>>>  void rtdm_lock_put_irqrestore(rtdm_lock_t *lock, rtdm_lockctx_t context)
-> >>>>  {
-> >>>>  	spin_unlock(lock);
-> >>>> -	__xnsched_unlock();
-> >>>> +	xnsched_unlock();
-> >>>>  	ipipe_restore_head(context);
-> >>>>  }
-> >>>
-> >>> These changes are not without risk: is not there a risk of deadlock
-> >>> if one thread calls rtdm_lock_get without holding the nklock and
-> >>> another calls it while holding it?
-> >>
-> >> That could happen, although the "normal" pattern does not involve
-> >> explicit nklock acquisition if nesting is used, rather rtdm_lock before
-> >> calling nklock-acquiring services. Not a reasonable ordering either, but
-> >> common practice now.
-> >>
-> >> We could also try to rework the whole scheduler lock so that it avoids
-> >> unsafe thread fields, ideally converting it to something more
-> >> lightweight as Linux' preempt_disable/enable().
-> >>
-> >> BTW, xnsched has those two types of flags fields: status requires
-> >> nklock, lflags must only be locally modified, thus are fine with
-> >> interrupt disabling as protection.
-> > 
-> > the sched lock uses lflags. The only point where we need to know
-> > that a thread had the scheduler lock, is when it is switched in
-> > after having voluntarily suspended. So, maybe a solution would be to
-> > set that state bit only when a thread with the scheduler lock
-> > voluntarily suspends. That would make the scheduler lock quite
-> > lightweight (refcount + scheduler lflags bit).
-> > 
-> 
-> - XNINLOCK is overkill, it is only tested for skipping the resched
-> procedure as an optimization from xnsched_run(). As we may access
-> sched->lflags in that situation, we may also access
-> sched->curr->lock_count to figure this out.
-> 
-> - XNLOCK and xnthread->lock_count are redundant when combined to track
-> the lock state internally. This is part of what makes xnsched_lock() and
-> friends uselessly complex (the potential for deadlocks you mentioned
-> about the RTDM locking changes is definitely a concern, dropping the
-> requirement for grabbing the nklock there is very desirable in that
-> sense). However, we still need XNLOCK as part of the ABI to convey the
-> state bit information between kernel and userland. But, referring to
-> curr->lock_count should be enough for implementing that logic in the
-> scheduler code.
-> 
-> - there are only two places where XNLOCK is accessed within the state
-> word of a potentially non-current thread, i.e: from
-> __xnthread_set_schedparam(), and xnthread_set_mode(). But XNLOCK is only
-> tested there, and testing thread->lock_count would work exactly the same
-> way.
-> 
-> So, yes, I agree that such code direly needs simplification.
+ATM we're sorting through the machinekit xenomai3 transition on debian
 
-Ok. I was thinking about using XNINLOCK in place of XNLOCK, but
-using lock_count may be even simpler.
+I assume that users will continue to run xenomai2 kernels for a long =
+time, so we work towards separate (but hopefully coexisting-in-peace) =
+packages for Xenomai2 and Xenomai3 (startup is driven by kernel =
+autodetection, so booting a different kernel chooses the right runtime)
 
-The nklock seems to also be needed for handling the XNLBALERT bit.
+The libxenomai-dev and libxenomai1 in debian are all xenomai2 atm, but I =
+assume Xenomai3 equivalents will appear eventually
 
--- 
-					    Gilles.
-https://click-hack.org
+I hope these will be able to co-reside on the same host?
+
+Ideally suggesting the Xenomai3 packages would be separate, be named =
+differently, and not supersede any installed Xenomai2 packages?
+
+
+(or am I blundering and I can run applications linked against the =
+Xenomai3 libraries on a Xenomai2 kernel? my tests so far indicate - not)
+
+
+thanks in advance,
+
+Michael
+
+
+btw: a working 3.14 Xenomai3 kernel for the Beaglebone (and likely X15) =
+appeared the other day in "deb [arch=3Darmhf] =
+http://repos.rcn-ee.net/debian/ jessie main" , thanks to Robert Nelson!
+
+mah@epig:~/machinekit/src$ apt-cache search 3.14.45-ti-xenomai-r69
+
+linux-firmware-image-3.14.45-ti-xenomai-r69 - Linux kernel firmware, =
+version 3.14.45-ti-xenomai-r69
+linux-image-3.14.45-ti-xenomai-r69 - Linux kernel, version =
+3.14.45-ti-xenomai-r69
+mt7601u-modules-3.14.45-ti-xenomai-r69 - mt7601u modules
+ti-sgx-es8-modules-3.14.45-ti-xenomai-r69 - ti-sgx es8 modules
+ti-sgx-es9-modules-3.14.45-ti-xenomai-r69 - ti-sgx es9 modules
+linux-headers-3.14.45-ti-xenomai-r69 - Linux kernel headers for =
+3.14.45-ti-xenomai-r69 on armhf
+
+[    2.732701] [Xenomai] Cobalt v3.0-rc4 (Exact Zero) [DEBUG]
+
 
