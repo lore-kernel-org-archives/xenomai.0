@@ -1,10 +1,12 @@
-From: Michael Haberler <haberlerm@gmail.com>
+Date: Sat, 27 Jun 2015 14:43:39 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150627124339.GD9756@hermes.click-hack.org>
+References: <C31C0BF8-AC9A-442B-8A2F-4576ACF1F817@gmail.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <C31C0BF8-AC9A-442B-8A2F-4576ACF1F817@gmail.com>
-Date: Sat, 27 Jun 2015 14:22:09 +0200
-Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2098\))
-Subject: [Xenomai] Q on xenomai2/3 userland coexistence
+Content-Disposition: inline
+In-Reply-To: <C31C0BF8-AC9A-442B-8A2F-4576ACF1F817@gmail.com>
+Subject: Re: [Xenomai] Q on xenomai2/3 userland coexistence
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,49 +15,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: Michael Haberler <haberlerm@gmail.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-ATM we're sorting through the machinekit xenomai3 transition on debian
+On Sat, Jun 27, 2015 at 02:22:09PM +0200, Michael Haberler wrote:
+> ATM we're sorting through the machinekit xenomai3 transition on
+> debian
+> 
+> I assume that users will continue to run xenomai2 kernels for a
+> long time, so we work towards separate (but hopefully
+> coexisting-in-peace) packages for Xenomai2 and Xenomai3 (startup
+> is driven by kernel autodetection, so booting a different kernel
+> chooses the right runtime)
+> 
+> The libxenomai-dev and libxenomai1 in debian are all xenomai2 atm,
+> but I assume Xenomai3 equivalents will appear eventually
 
-I assume that users will continue to run xenomai2 kernels for a long =
-time, so we work towards separate (but hopefully coexisting-in-peace) =
-packages for Xenomai2 and Xenomai3 (startup is driven by kernel =
-autodetection, so booting a different kernel chooses the right runtime)
-
-The libxenomai-dev and libxenomai1 in debian are all xenomai2 atm, but I =
-assume Xenomai3 equivalents will appear eventually
-
-I hope these will be able to co-reside on the same host?
-
-Ideally suggesting the Xenomai3 packages would be separate, be named =
-differently, and not supersede any installed Xenomai2 packages?
-
-
-(or am I blundering and I can run applications linked against the =
-Xenomai3 libraries on a Xenomai2 kernel? my tests so far indicate - not)
+Xenomai 3 has a debian directory allowing to build it as a Debian
+package. So, in fact, they are already here.
 
 
-thanks in advance,
+> 
+> I hope these will be able to co-reside on the same host?
+> 
+> Ideally suggesting the Xenomai3 packages would be separate, be named differently, and not supersede any installed Xenomai2 packages?
+> 
+> 
+> (or am I blundering and I can run applications linked against the Xenomai3 libraries on a Xenomai2 kernel? my tests so far indicate - not)
+> 
 
-Michael
+I was afraid someone was going to ask for that. Experience has
+proved that allowing to install silently several versions of Xenomai
+is a recipe for trouble. So, relying on Debian allowing to install
+only one version of the package was a nice feature.
 
+So, if we agree that having the two versions installed is not
+something for the common user, I would suggest people who want to do
+that know what they are doing and can install one version as a
+Debian package, and the other manually.
 
-btw: a working 3.14 Xenomai3 kernel for the Beaglebone (and likely X15) =
-appeared the other day in "deb [arch=3Darmhf] =
-http://repos.rcn-ee.net/debian/ jessie main" , thanks to Robert Nelson!
+On the other hand, if we think having the two versions installed
+will be a very common use case, I do not think there is any conflict
+with library names, only with tool names, and since we provide the
+the "xeno" wrapper to fetch the tools from another place than
+/usr/bin, I guess the only conflict would be on the "xeno" wrapper
+itself. So, maybe we could call it xeno3 in Xenomai3 Debian package
+to avoid any issue? Or use the Debian "alternatives" mechanism
+(though this mechanism is probably unknown from the typical ubuntu
+user)? 
 
-mah@epig:~/machinekit/src$ apt-cache search 3.14.45-ti-xenomai-r69
-
-linux-firmware-image-3.14.45-ti-xenomai-r69 - Linux kernel firmware, =
-version 3.14.45-ti-xenomai-r69
-linux-image-3.14.45-ti-xenomai-r69 - Linux kernel, version =
-3.14.45-ti-xenomai-r69
-mt7601u-modules-3.14.45-ti-xenomai-r69 - mt7601u modules
-ti-sgx-es8-modules-3.14.45-ti-xenomai-r69 - ti-sgx es8 modules
-ti-sgx-es9-modules-3.14.45-ti-xenomai-r69 - ti-sgx es9 modules
-linux-headers-3.14.45-ti-xenomai-r69 - Linux kernel headers for =
-3.14.45-ti-xenomai-r69 on armhf
-
-[    2.732701] [Xenomai] Cobalt v3.0-rc4 (Exact Zero) [DEBUG]
-
+-- 
+					    Gilles.
+https://click-hack.org
 
