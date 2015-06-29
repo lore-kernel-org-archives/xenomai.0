@@ -1,15 +1,11 @@
-Message-ID: <558F8E0A.8010306@zultron.com>
-Date: Sun, 28 Jun 2015 01:02:50 -0500
-From: John Morris <john@zultron.com>
 MIME-Version: 1.0
-References: <C31C0BF8-AC9A-442B-8A2F-4576ACF1F817@gmail.com>
- <558EA07F.2060204@xenomai.org> <20150627131446.GF9756@hermes.click-hack.org>
- <CA2E5E80-204F-48D2-8FAF-1917CD257D90@gmail.com>
- <20150627133724.GG9756@hermes.click-hack.org>
-In-Reply-To: <20150627133724.GG9756@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Q on xenomai2/3 userland coexistence
+In-Reply-To: <CAJt3u5n2Ay=QSbR-jXtymMLTBWp263km_Q6ByPqqbJR2N179AA@mail.gmail.com>
+References: <CAJt3u5n2Ay=QSbR-jXtymMLTBWp263km_Q6ByPqqbJR2N179AA@mail.gmail.com>
+Date: Mon, 29 Jun 2015 11:03:18 +0530
+Message-ID: <CAJt3u5m6i63UPTG5gOC3L8qkgX_3aKW20u-LwSFDRKd=R5T__Q@mail.gmail.com>
+From: Madan Sondur <sondur.madan23@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] CyclicTest query on Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,83 +14,203 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Haberler <haberlerm@gmail.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
+Hi,
+Any inputs will be greatly appreciated,
 
+Thanks
+M
 
-On 06/27/2015 08:37 AM, Gilles Chanteperdrix wrote:
-> On Sat, Jun 27, 2015 at 03:25:01PM +0200, Michael Haberler wrote:
->>
->>> Am 27.06.2015 um 15:14 schrieb Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
->>>
->>> On Sat, Jun 27, 2015 at 03:09:19PM +0200, Philippe Gerum wrote:
->>>> On 06/27/2015 02:22 PM, Michael Haberler wrote:
->>>>> ATM we're sorting through the machinekit xenomai3 transition on debian
->>>>>
->>>>> I assume that users will continue to run xenomai2 kernels for a long time, so we work towards separate (but hopefully coexisting-in-peace) packages for Xenomai2 and Xenomai3 (startup is driven by kernel autodetection, so booting a different kernel chooses the right runtime)
->>>>>
->>>>> The libxenomai-dev and libxenomai1 in debian are all xenomai2 atm, but I assume Xenomai3 equivalents will appear eventually
->>>>>
->>>>> I hope these will be able to co-reside on the same host?
->>>>>
->>>>> Ideally suggesting the Xenomai3 packages would be separate, be named differently, and not supersede any installed Xenomai2 packages?
->>>>>
->>>>>
->>>>> (or am I blundering and I can run applications linked against the Xenomai3 libraries on a Xenomai2 kernel? my tests so far indicate - not)
->>>>>
->>>>
->>>> Not possible. Xenomai 2 uses kernel services provided by the I-pipe
->>>> compiled for legacy operation mode. Xenomai 3 wants this mode disabled.
->>>
->>> The two kernels have different ABIs anyway. I think what Michael
->>> wants to do is to also have the two patched kernels installed and
->>> reboot (or kexec?) to switch from one to the other.
->>
->> yes, it's a potential support issue, mostly for the folk installing from packages (I'm less concerned about those which install from source, and we can use configure.ac tests if something is obviously afoul)
->>
->> what I see unfolding is:
->>
->> - folks with a xeno2 package-based install want to try a xeno3 kernel, run apt-get upgrade etc, pull in kernel, and updated libraries
->> - something is not to their liking, and they step back to boot a xeno2 kernel - maybe just by changing the bootloader entry or by removing the xeno3 kernel
->> - if the first step has wiped the xeno2 userland support by upgrading, we have a support issue
->> - if xeno2 and xeno3 userland co-reside peacefully and separate, no issue
->>
->> doing everything through the xeno wrapper looks doable, but I guess backporting this wrapper to xeno2 will be unpopular
->>
->> what about completely separating the names, like /usr/xenomai3 ? sledgehammer approach (that is, in the best tradition of yankee engineering ;), but certainly effective.
+On Fri, Jun 26, 2015 at 11:46 AM, Madan Sondur <sondur.madan23@gmail.com>
+wrote:
+
+> Hi ,
 >
-> Obviously, the two installations should have different prefixes, but
-> that does not solve the problem of helpers which should be found in
-> the PATH, such as xeno and xeno-config.
+> I have installed Xenomai 2.6.4 on Ubuntu 12.04 64 bit.
 >
-> Anyway, I think this is a Debian-specific problem, so, I will let
-> the Debian maintainer discuss of what would be the distribution best
-> practices.
-
-Yes, this is a packaging-specific problem, and it's the package repo 
-maintainer's job to solve this for the repo's users.
-
-My Machinekit distro, which includes Xenomai kernels and run-time 
-packages, will only ever ship one version of Xenomai:  v.2 now, and v.3 
-once the Machinekit migration is stable.
-
-I do also ship a separate 'bleeding' repo with Xenomai-3 packages, 
-potentially opening up space for confusion.  However, there are strong 
-warnings [1], and those not scared off are expected to know how to revert.
-
-So, I don't see the above support issue affecting regular users.  Of the 
-handful of folks who'll help develop and test the Xeno-3 migration, if 
-some small fraction needs hand-holding, I'm OK helping them.
-
-As for two simultaneous copies, I agree with Gilles:  install Xenomai-3 
-in non-standard location and use Machinekit's `./configure 
---with-xeno-config=[...]`.  One can still install both Xenomai 2 and 3 
-kernel packages simultaneously, and it takes just a minute to compile 
-Xenomai.
-
-	John
-
-[1]: 
-http://www.dovetail-automata.com/articles/2015/05/30/jessie-bleeding-kernel-packages/
-
+> Linux Madan 3.8.13-xenomai-2.6.4 #2 SMP Wed Jun 24 11:22:01 IST 2015
+> x86_64 x86_64 x86_64 GNU/Linux
+>
+> After successfull installation, i am getting varied results with
+> cyclictest present in /usr/xenomai/bin folder and the one in the rt-tests
+> which i downloaded.
+>
+> pi_stress is used in background to stress the system.
+>
+> Xenomai cyclictest takes a lot of time to complete other threads, where as
+> the first one completes quickly. This is exactly the opposite if i run the
+> cyclictest, first thread completes and the test stops.
+>
+> 1) is my observation correct? I may be missing some understanding here.?
+>
+> 2) This is done in Core i7, the difference in latencies with and without
+> xenomai are noticeable but not significant, Is this correct ?
+>
+> 3) I trying to have Hard real time System with minimal latencies ?
+>
+> Below are output results.
+>
+> Can you please help.
+>
+>
+> ------------------------------------------------------------------------------------------------
+> Linux Madan 3.8.13-xenomai-2.6.4 #2 SMP Wed Jun 24 11:22:01 IST 2015
+> x86_64 x86_64 x86_64 GNU/Linux
+>
+> root@Madan:/usr/xenomai/bin#/home/mymo/MADAN_Xeno/rt-tests/cyclictest -t
+> 21 -p 80 -i 5000 -l 5000
+> # /dev/cpu_dma_latency set to 0us
+> policy: fifo: loadavg: 0.00 0.01 0.01 1/405 2756
+>
+> T: 0 ( 2736) P:80 I:5000 C:   5000 Min:      2 Act:    5 Avg:    3
+> Max:      24
+> T: 1 ( 2737) P:80 I:5500 C:   4546 Min:      1 Act:    2 Avg:    2
+> Max:      18
+> T: 2 ( 2738) P:80 I:6000 C:   4167 Min:      2 Act:    2 Avg:    2
+> Max:      26
+> T: 3 ( 2739) P:80 I:6500 C:   3847 Min:      1 Act:    2 Avg:    2
+> Max:      20
+> T: 4 ( 2740) P:80 I:7000 C:   3572 Min:      1 Act:    3 Avg:    2
+> Max:      16
+> T: 5 ( 2741) P:80 I:7500 C:   3334 Min:      2 Act:    2 Avg:    2
+> Max:      20
+> T: 6 ( 2742) P:80 I:8000 C:   3125 Min:      1 Act:    4 Avg:    2
+> Max:      21
+> T: 7 ( 2743) P:80 I:8500 C:   2942 Min:      1 Act:    2 Avg:    3
+> Max:      18
+> T: 8 ( 2744) P:80 I:9000 C:   2778 Min:      1 Act:    3 Avg:    2
+> Max:      16
+> T: 9 ( 2745) P:80 I:9500 C:   2632 Min:      1 Act:    3 Avg:    2
+> Max:      13
+> T:10 ( 2746) P:80 I:10000 C:   2500 Min:      2 Act:    3 Avg:    2
+> Max:      26
+> T:11 ( 2747) P:80 I:10500 C:   2381 Min:      1 Act:    3 Avg:    2
+> Max:      14
+> T:12 ( 2748) P:80 I:11000 C:   2273 Min:      2 Act:    3 Avg:    2
+> Max:      19
+> T:13 ( 2749) P:80 I:11500 C:   2174 Min:      2 Act:    3 Avg:    2
+> Max:      18
+> T:14 ( 2750) P:80 I:12000 C:   2083 Min:      2 Act:    3 Avg:    2
+> Max:      13
+> T:15 ( 2751) P:80 I:12500 C:   2000 Min:      2 Act:    3 Avg:    2
+> Max:      17
+> T:16 ( 2752) P:80 I:13000 C:   1923 Min:      2 Act:    3 Avg:    2
+> Max:       9
+> T:17 ( 2753) P:80 I:13500 C:   1852 Min:      2 Act:    3 Avg:    3
+> Max:      17
+> T:18 ( 2754) P:80 I:14000 C:   1786 Min:      1 Act:    3 Avg:    2
+> Max:      11
+> T:19 ( 2755) P:80 I:14500 C:   1724 Min:      2 Act:    3 Avg:    3
+> Max:      21
+> T:20 ( 2756) P:80 I:15000 C:   1667 Min:      2 Act:    3 Avg:    2
+> Max:       8
+>
+>
+> root@Madan:/usr/xenomai/bin# ./xeno cyclictest -t 21 -p 80 -i 5000 -l 5000
+> 0.01 0.01 0.01 1/410 2708
+>
+> T: 0 ( 2688) P:80 I:    5000 C:    5000 Min:      -2 Act:      -2
+> Avg:       0 Max:      12
+> T: 1 ( 2689) P:79 I:  505000 C:     120 Min:       0 Act:       7
+> Avg:       0 Max:       9
+> T: 2 ( 2690) P:78 I: 1005000 C:      60 Min:       0 Act:       2
+> Avg:       0 Max:      11
+> T: 3 ( 2691) P:77 I: 1505000 C:      40 Min:       0 Act:       2
+> Avg:       0 Max:      13
+> T: 4 ( 2692) P:76 I: 2005000 C:      30 Min:       0 Act:       0
+> Avg:       0 Max:      15
+> T: 5 ( 2693) P:75 I: 2505000 C:      24 Min:       0 Act:       0
+> Avg:       0 Max:      16
+> T: 6 ( 2694) P:74 I: 3005000 C:      20 Min:       0 Act:       0
+> Avg:       0 Max:      19
+> T: 7 ( 2695) P:73 I: 3505000 C:      18 Min:       0 Act:       0
+> Avg:       1 Max:      21
+> T: 8 ( 2696) P:72 I: 4005000 C:      16 Min:       0 Act:       0
+> Avg:       1 Max:      23
+> T: 9 ( 2697) P:71 I: 4505000 C:      14 Min:       0 Act:       0
+> Avg:       2 Max:      24
+> T:10 ( 2698) P:70 I: 5005000 C:      12 Min:       0 Act:       2
+> Avg:       2 Max:      26
+> T:11 ( 2699) P:69 I: 5505000 C:      12 Min:       0 Act:       2
+> Avg:       2 Max:      28
+> T:12 ( 2700) P:68 I: 6005000 C:      10 Min:       0 Act:       0
+> Avg:       3 Max:      30
+> T:13 ( 2701) P:67 I: 6505000 C:      10 Min:       1 Act:       1
+> Avg:       3 Max:      32
+> T:14 ( 2702) P:66 I: 7005000 C:      10 Min:       0 Act:       0
+> Avg:       3 Max:      34
+> T:15 ( 2703) P:65 I: 7505000 C:       8 Min:       0 Act:       2
+> Avg:       4 Max:      36
+> T:16 ( 2704) P:64 I: 8005000 C:       8 Min:       0 Act:       1
+> Avg:       5 Max:      38
+> T:17 ( 2705) P:63 I: 8505000 C:       8 Min:       0 Act:       1
+> Avg:       5 Max:      40
+> T:18 ( 2706) P:62 I: 9005000 C:       8 Min:       0 Act:       0
+> Avg:       5 Max:      42
+> T:19 ( 2707) P:61 I: 9505000 C:       8 Min:       0 Act:       0
+> Avg:       5 Max:      44
+> T:20 ( 2708) P:60 I:10005000 C:       6 Min:       3 Act:       3
+> Avg:       8 Max:      46
+>
+> This never stops, T0 completes quickly but not others
+>
+>
+> ------------------------------------------------------------------------------------------------
+> Linux Madan 3.13.0-32-generic #57~precise1-Ubuntu SMP Tue Jul 15 03:51:20
+> UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+>
+> root@Madan:/home/mymo/MADAN_Xeno/rt-tests# ./cyclictest -t 21 -p 80 -i
+> 5000 -l 5000
+> # /dev/cpu_dma_latency set to 0us
+> policy: fifo: loadavg: 14.44 5.11 1.85 20/444 2835
+>
+> T: 0 ( 2815) P:80 I:5000 C:   5000 Min:      2 Act:    3 Avg:    3
+> Max:      18
+> T: 1 ( 2816) P:80 I:5500 C:   4541 Min:      2 Act:    3 Avg:    3
+> Max:      21
+> T: 2 ( 2817) P:80 I:6000 C:   4163 Min:      2 Act:    3 Avg:    3
+> Max:     315
+> T: 3 ( 2818) P:80 I:6500 C:   3843 Min:      2 Act:    3 Avg:    3
+> Max:      12
+> T: 4 ( 2819) P:80 I:7000 C:   3568 Min:      2 Act:    2 Avg:    3
+> Max:      20
+> T: 5 ( 2820) P:80 I:7500 C:   3330 Min:      2 Act:    3 Avg:    3
+> Max:      14
+> T: 6 ( 2821) P:80 I:8000 C:   3122 Min:      2 Act:    3 Avg:    3
+> Max:     366
+> T: 7 ( 2822) P:80 I:8500 C:   2938 Min:      2 Act:    3 Avg:    3
+> Max:      11
+> T: 8 ( 2823) P:80 I:9000 C:   2775 Min:      2 Act:    3 Avg:    3
+> Max:      15
+> T: 9 ( 2824) P:80 I:9500 C:   2629 Min:      2 Act:    3 Avg:    3
+> Max:      28
+> T:10 ( 2825) P:80 I:10000 C:   2497 Min:      2 Act:    2 Avg:    3
+> Max:      15
+> T:11 ( 2826) P:80 I:10500 C:   2379 Min:      2 Act:    2 Avg:    3
+> Max:      13
+> T:12 ( 2827) P:80 I:11000 C:   2270 Min:      2 Act:    4 Avg:    3
+> Max:      14
+> T:13 ( 2828) P:80 I:11500 C:   2172 Min:      2 Act:    3 Avg:    3
+> Max:      15
+> T:14 ( 2829) P:80 I:12000 C:   2081 Min:      2 Act:    3 Avg:    4
+> Max:     469
+> T:15 ( 2830) P:80 I:12500 C:   1998 Min:      2 Act:    2 Avg:    3
+> Max:      15
+> T:16 ( 2831) P:80 I:13000 C:   1921 Min:      2 Act:    3 Avg:    3
+> Max:      30
+> T:17 ( 2832) P:80 I:13500 C:   1850 Min:      2 Act:    3 Avg:    3
+> Max:      14
+> T:18 ( 2833) P:80 I:14000 C:   1784 Min:      2 Act:    3 Avg:    3
+> Max:      15
+> T:19 ( 2834) P:80 I:14500 C:   1722 Min:      2 Act:    3 Avg:    3
+> Max:      13
+> T:20 ( 2835) P:80 I:15000 C:   1665 Min:      2 Act:    2 Avg:    3
+> Max:      11
+>
+>
+>
+> Thanks
+>
+> M
+>
