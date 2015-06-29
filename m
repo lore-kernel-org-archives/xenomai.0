@@ -1,13 +1,13 @@
-Date: Mon, 29 Jun 2015 21:45:14 +0200
+Date: Mon, 29 Jun 2015 22:22:43 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150629194514.GC10993@hermes.click-hack.org>
-References: <55919C0F.7020000@laposte.net>
+Message-ID: <20150629202243.GE10993@hermes.click-hack.org>
+References: <000a01d0b270$6c0e6b70$442b4250$@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <55919C0F.7020000@laposte.net>
-Subject: Re: [Xenomai] Arietta (AT91SAM9G25),
- strange kernel messages (3.0-rc5)
+In-Reply-To: <000a01d0b270$6c0e6b70$442b4250$@gmail.com>
+Subject: Re: [Xenomai] Device drivers and networking stack (RTnet) on
+ Xenomai 3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,45 +16,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marc Le Douarain <marc.le-douarain@laposte.net>
-Cc: Xenomai@xenomai.org
+To: Giorgio Buffa <giorgiobuffa.work@gmail.com>
+Cc: xenomai@xenomai.org
 
-On Mon, Jun 29, 2015 at 09:27:11PM +0200, Marc Le Douarain wrote:
-> Hello everybody,
+On Mon, Jun 29, 2015 at 03:35:03PM +0200, Giorgio Buffa wrote:
+> Hello list!
+> I'm new to the Xenomai architecture, so I would like to receive a feedback
+> regarding my (little) understanding on device drivers and the RTnet stack.
 > 
-> tested Xenomai 3.0-rc5 on the little Arietta (with patch
-> ipipe-core-3.18.12-arm-2.patch),
-> and even if it seems to work (I-pipe registered and latenty test running),
-> theses lines seeems quite suspect :
-> 
-> NR_IRQS:16 nr_irqs:16 16
-> ------------[ cut here ]------------
-> WARNING: CPU: 0 PID: 0 at kernel/irq/pm.c:48
-> irq_pm_install_action+0x94/0xd0()
-> Modules linked in:
-> CPU: 0 PID: 0 Comm: swapper Not tainted 3.18.12-xeno-mld #1
-> [<c000dc84>] (unwind_backtrace) from [<c000b9b4>] (show_stack+0x10/0x14)
-> [<c000b9b4>] (show_stack) from [<c001671c>] (warn_slowpath_common+0x60/0x80)
-> [<c001671c>] (warn_slowpath_common) from [<c0016754>]
-> (warn_slowpath_null+0x18/0x1c)
-> [<c0016754>] (warn_slowpath_null) from [<c003fc28>]
-> (irq_pm_install_action+0x94/0xd0)
-> [<c003fc28>] (irq_pm_install_action) from [<c003bcd8>]
-> (__setup_irq+0x398/0x4f4)
-> [<c003bcd8>] (__setup_irq) from [<c003bef8>]
-> (request_threaded_irq+0xc4/0x124)
-> [<c003bef8>] (request_threaded_irq) from [<c0526050>]
-> (at91sam926x_pit_common_init+0xcc/0x1a0)
-> [<c0526050>] (at91sam926x_pit_common_init) from [<c0525f40>]
-> (clocksource_of_init+0x44/0x88)
-> [<c0525f40>] (clocksource_of_init) from [<c050dae8>]
-> (start_kernel+0x240/0x3cc)
-> [<c050dae8>] (start_kernel) from [<20008040>] (0x20008040)
-> ---[ end trace cb88537fdc8fa200 ]---
+> In dual-kernel configurations (both Xenomai 2.x and Xenomai 3.x Cobalt
+> core), device drivers need to be ported to the RTDM model: it allows a
+> Xenomai thread not to leave the primary mode when accessing these device
+> drivers. This is good because a Xenomai thread in secondary mode is
+> scheduled by the Linux scheduler, hence it can run only when there are no
+> other runnable Xenomay thread in primary mode (even with a lower priority),
+> nor other runnable Linux threads / Xenomai threads in secondary mode with
+> higher priority.
 
-Does not the exact same kernel not patched with Xenomai and I-pipe
-with the exact same configuration, only without CONFIG_IPIPE and
-CONFIG_XENOMAI, have the same problem?
+Your comprehension of why threads must remain in primary mode is
+flawed. Low priority threads having to let high priority threads run
+before is always the case in a real-time system, and is not a
+problem to be able to meet deadline, or if it is, it means you did
+not choose your priorities correctly. The whole point of using a
+real-time extension such as Xenomai dual-kernel or PREEMPT_RT is
+that the Linux kernel is not deterministic, it does not provide any
+guarantee in terms of scheduling latency. The time it takes for the
+Linux kernel to schedule the highest priority task when an interrupt
+happens is not bounded by design. So, that is the reason why a
+Xenomai thread running in secondary mode (with a kernel that is not
+patched with a combo of PREEMPT_RT and I-pipe that is) can not be
+used in a real-time system, not the fact that higher priority
+threads run before it.
+
+> 
+> Porting a Linux driver to the RTDM model basically means to replace any
+> call to Linux services within the driver itself (e.g. to register the
+> driver, the IRQ handlers, the open/close/ioctl handlers, ...) to the
+> equivalent services provided by the RTDM API.
+> 
+> In single-kernel configurations (Xenomai 3.x Mercury core) there is only
+> the Linux scheduler, hence there is no such distinction of
+> primary/secondary mode. A device driver can be used as is (i.e. as it is
+> provided by the stock Linux kernel), even without porting it to the RTDM
+> model. By the way, it is also possible to use a RTDM-based device driver
+> (in that case, RTDM API calls are translated into Linux service calls at
+> compile time).
+
+If you want to use Xenomai to implement a real-time system, using
+Xenomai 3.x mercury core, the simplest way is to use a Linux kernel
+patched with the PREEMPT_RT patch, but the PREEMPT_RT patch does not
+automatically turn any driver in a driver that can be used in an
+application trying to meet deadlines. The driver code needs to be
+inspected. When porting a Linux driver to RTDM, this inspection was
+already done, and RTDM does not provide services that can cause
+trouble for real-time applications (for instance, mutexes without
+priority inheritance). So, using an RTDM driver is a shortcut to
+that. But the main reason to try and use RTDM drivers with Mercury
+is for people that developed custom drivers for Xenomai 2.x, to be
+able to use these drivers with mercury without rewriting them.
+
+> 
+> Are there some good "rules of thumb" when looking at a stock Linux driver
+> to be used in a Xenomai application with the Mercury core
+> underneath?
+
+Yes, see above.
+
+> 
+> My last point is related to RTnet. I've seen that RTnet has been integrated
+> into Xenomai 3 because some sort of API changes. Is RTnet needed in both
+> dual-kernel and single-kernel configurations?
+
+No, the reason to integrate RTnet in Xenomai 3, is because it makes
+sense, and makes its maintenance easier. And no, RTnet is not
+already usable with Mercury for the simple reason that RTDM has not
+been ported to Xenomai 3 yet.
 
 -- 
 					    Gilles.
