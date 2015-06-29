@@ -1,12 +1,13 @@
-From: <giorgiobuffa.work@gmail.com>
-Date: Mon, 29 Jun 2015 10:45:49 +0200
-Message-ID: <000001d0b248$002ca660$0085f320$@gmail.com>
+Message-ID: <55910833.7050902@xenomai.org>
+Date: Mon, 29 Jun 2015 10:56:19 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
+References: <558993D6.8080108@xenomai.org> <558BDB3E.4060405@grinta.net>
+ <558BDED2.20300@xenomai.org> <55910060.1090605@grinta.net>
+In-Reply-To: <55910060.1090605@grinta.net>
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Content-Language: it
-Subject: [Xenomai] How to profile/trace a Xenomai application?
+Subject: Re: [Xenomai] [RELEASE] Xenomai 3.0-rc5
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,50 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Daniele Nicolodi <daniele@grinta.net>, xenomai@xenomai.org
 
-Hello list!
-I'm planning to develop a real-time Xenomai application using Linux 3.16.7
-and Xenomai 2.6.4. I would like to receive some hints on how to
-profile/trace the behaviour of my Xenomai application.
+On 06/29/2015 10:22 AM, Daniele Nicolodi wrote:
+> On 25/06/15 12:58, Philippe Gerum wrote:
+>> On 06/25/2015 12:43 PM, Daniele Nicolodi wrote:
+>>> On 23/06/15 19:13, Philippe Gerum wrote:
+>>>>
+>>>> Unlike originally planned, this is -rc5. We merged way too many changes
+>>>> and important fixes since -rc4 for going final directly.
+>>>
+>>> Hello Philippe,
+>>>
+>>> it seems that the release has not be tagged in the git repository. Is
+>>> this an oversight or am I missing something?
+>>>
+>>
+>> I did not push the tags. My bad. Should be ok now.
+>>
+>> Thanks for the heads up.
+> 
+> Hello Philippe,
+> 
+> sorry for bothering you again, but it looks like the tag has been
+> applied to the "next" branch and not on the "master" branch, or at least
+> the changesets for rc5 have not been pushed to the master branch.
+> 
+> Is this intended?
+> 
 
-My primary concern is how to measure execution times of the functions
-called by Xenomai threads.
+Nope. master is resynced now.
 
-It would be also interesting to have a way to monitor the behaviour of the
-schedulers to understand/validate thread activation times, state
-transitions and preemptions, response times to external or periodic events,
-deadline misses, and so on. However, I do realize that this is just asking
-too much... :)
-
-Q1: Which tools may I use for that purposes? Clearly, a tool with a
-graphical interface would be the best, but this is not essential! :)
-
-After some research, I was thinking to explore the following tools, but I'm
-not sure that they can all be used in a Xenomai dual-kernel configuration.
-In other words, I'm not sure they would be aware of Xenomai threads and
-their behaviour (e.g. their call graph, or the time spent in each function
-being called), as I'm not sure they would be aware of the presence and the
-decisions made by the Nucleos-RT scheduler.
-
-* I-pipe tracer
-  <http://xenomai.org/2014/06/using-the-i-pipe-tracer/>
-* perf
-  <https://perf.wiki.kernel.org/index.php/Tutorial>
-* OProfile
-  <http://oprofile.sourceforge.net/news/>
-* Intel VTune Amplifier
-  <https://software.intel.com/en-us/intel-vtune-amplifier-xe>
-* ftrace
-  <https://www.kernel.org/doc/Documentation/trace/ftrace.txt>
-* DTrace
-  <https://en.wikipedia.org/wiki/DTrace>
-
-Q2: Am I on the right track, or some of the tools I was thinking to use are
-useless for my purposes listed above (in particular, to measure execution
-times of the functions called by Xenomai threads).
-
-Thank you for any help and best regards,
-Giorgio Buffa
-
+-- 
+Philippe.
 
