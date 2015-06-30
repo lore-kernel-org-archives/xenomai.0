@@ -1,12 +1,17 @@
-Message-ID: <55927557.3000208@web.de>
-Date: Tue, 30 Jun 2015 12:54:15 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <CAJt3u5n2Ay=QSbR-jXtymMLTBWp263km_Q6ByPqqbJR2N179AA@mail.gmail.com>	<CAJt3u5m6i63UPTG5gOC3L8qkgX_3aKW20u-LwSFDRKd=R5T__Q@mail.gmail.com>	<5590E4E4.6030101@web.de>	<CAJt3u5=cbY2V0xNy_ug-T8=ZWMazMbT_nit9_e9bEWeo7LMiaw@mail.gmail.com>	<55922BE4.4040007@web.de>
+In-Reply-To: <55927557.3000208@web.de>
+References: <CAJt3u5n2Ay=QSbR-jXtymMLTBWp263km_Q6ByPqqbJR2N179AA@mail.gmail.com>
+ <CAJt3u5m6i63UPTG5gOC3L8qkgX_3aKW20u-LwSFDRKd=R5T__Q@mail.gmail.com>
+ <5590E4E4.6030101@web.de>
+ <CAJt3u5=cbY2V0xNy_ug-T8=ZWMazMbT_nit9_e9bEWeo7LMiaw@mail.gmail.com>
+ <55922BE4.4040007@web.de>
  <CAJt3u5mK=rn2cN7xWQM8z5XQ8dXYGUorzJ_KQ1Sv1ehu-0xvmA@mail.gmail.com>
-In-Reply-To: <CAJt3u5mK=rn2cN7xWQM8z5XQ8dXYGUorzJ_KQ1Sv1ehu-0xvmA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <55927557.3000208@web.de>
+Date: Tue, 30 Jun 2015 16:40:13 +0530
+Message-ID: <CAJt3u5mOA2akinFXEeCt6cqfd0qfrV_O8TGST_xXxwGPnDP8+w@mail.gmail.com>
+From: Madan Sondur <sondur.madan23@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] CyclicTest query on Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -16,48 +21,89 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Madan Sondur <sondur.madan23@gmail.com>
+To: Jan Kiszka <jan.kiszka@web.de>
 Cc: xenomai@xenomai.org
 
-T24gMjAxNS0wNi0zMCAxMjo0NSwgTWFkYW4gU29uZHVyIHdyb3RlOgo+IE9uIFR1ZSwgSnVuIDMw
-LCAyMDE1IGF0IDExOjEwIEFNLCBKYW4gS2lzemthIDxqYW4ua2lzemthQHdlYi5kZT4gd3JvdGU6
-Cj4gCj4+IFBsZWFzZSBkb24ndCB0b3AtcG9zdC4KPj4KPj4gT24gMjAxNS0wNi0zMCAwNTozNCwg
-TWFkYW4gU29uZHVyIHdyb3RlOgo+Pj4gSSBzdHJlc3MgdGVzdGVkIHRoZSBzeXN0ZW0gZm9yIGFu
-IGhvdXIgdXNpbmcgUGktc3RyZXNzIGFuZCBwdW1waW5nIGh1Z2UKPj4+IGFtb3VudCBvZiBkYXRh
-IHRocm91Z2ggdXNiMy4wIGFuZCBJIHBlcmYgYXQgbmV0d29yay4gIFdoYXQgSSBoYXZlCj4+IG9i
-c2VydmVkCj4+PiBpcyBjeWNsaWN0ZXN0IGZyb20gdXNyL3hlbm9tYWkvYmluIGJlaGF2ZXMgZGlm
-ZmVyZW50bHksIG9ubHkgdGhlIGZpcnN0Cj4+PiB0aHJlYWQgY29tcGxldGVzIHRoZW4gYWZ0ZXIg
-YWxsIHRoZSBvdGhlciB0aHJlYWRzIGV4ZWN1dGUgdmVyeSBzbG93bHksCj4+IHlvdQo+Pj4gY2Fu
-IHNlZSB0aGUgY291bnQgdmFsdWUuCj4+Pgo+Pj4gQnV0IHRoZSBjeWNsaWN0ZXN0IHRoYXQgd2Fz
-IGRvd25sb2FkZWQgZnJvbSBuZXQgY29tcGxldGVzIGFsbCB0aGUgdGhyZWFkcwo+Pj4gYW5kIGV4
-aXRzLgo+Pj4KPj4+IFRoZSByZXN1bHRzIG9mIHNhbXBsZSB0ZXN0cyBmb3IgNTAwMCBsb29wcyBh
-cmUgYXMgc2hvd24uCj4+Pgo+Pj4gWGVub21haSBjeWNsaWN0ZXN0IFQxIGNvdW50IGlzIDEyMCwg
-d2hlcmUgYXMgY3ljbGljdGVzdCB3aGljaCBpcyBmcm9tIG5ldAo+Pj4gaGFzIFQxIGNvdW50IG9m
-IDQ1NDYuCj4+Pgo+Pj4gV2h5IGlzIHRoaXMgYmVoYXZpb3VyPwo+Pgo+PiBYZW5vbWFpIHVzZXMg
-ZGlmZmVyZW50IGludGVydmFsIHNwcmVhZGluZyB0aGFuIHJ0LXRlc3QsIHNlZSB5b3VyCj4+IG91
-dHB1dHMuIFRoZXJlIGlzIHByb2JhYmx5IGEgYnVnIGluIHRoZSBYZW5vbWFpIHZlcnNpb24gb2Yg
-Y3ljbGljdGVzdCwKPj4gZ2V0dGluZyBzb21lIG9yZGVyIG9mIG1hZ25pdHVkZSB3cm9uZyB3aXRo
-IHRoZSBkZWZhdWx0IHNldHRpbmdzLiBTaG91bGQKPj4gYmUgZWFzeSB0byBmaXguCj4+Cj4gCj4g
-Q2FuIHlvdSB0ZWxsIG1lIHdoYXQgYXJlIHRoZSBkZWZhdWx0IHNldHRpbmdzIGZvciBmaXhpbmcg
-dGhpcyA/CgpjeWNsaWN0ZXN0IC1kIDxkaXN0YW5jZT4KCj4gCj4+Cj4+IFRoZSBmYWN0IHRoYXQg
-eW91IHNlZSBvdmVyIDMwMCDCtXMgd29yc3QtY2FzZSBsYXRlbmNpZXMgd2l0aCB2YW5pbGxhCj4+
-IGN5Y2xpY3Rlc3Qgb24gYSBzdGFuZGFyZCBrZXJuZWwgYW5kIHRoYXQgeW91IGRvbid0IGdldCB0
-aGlzIHdpdGggdGhlCj4+IHNhbWUgdGVzdCBwcm9ncmFtIG92ZXIgYSBYZW5vbWFpIGtlcm5lbCwg
-aW5kaWNhdGVzIHRoYXQgeW91ciB0ZXN0IG1ldGhvZAo+PiB3YXMgbm90IGNvcnJlY3QsIGUuZy4g
-dGhhdCBsb2FkIHdhcyBhZmZlY3Rpbmcgb25seSB0aGUgb3RoZXIgY29yZXMuCj4+IFhlbm9tYWkg
-ZG9lcyBub3QgaW1wcm92ZSB0aGUgbGF0ZW5jaWVzIG9mIG5vcm1hbCBhcHBsaWNhdGlvbnMuCj4+
-Cj4gCj4gCj4gSG93IGRvIHlvdSBzYXkgdGhlIHZhbmlsbGEgY3ljbGljdGVzdCBzaG91bGQgbm90
-IHBlcmZvcm0gYmV0dGVyIGluIHhlbm9tYWkKPiBrZXJuZWwgdGhhbiBpbiBzdGFuZGFyZCBrZXJu
-ZWwgPywKPiAgIHZhbmlsbGEgY3ljbGljdGVzdCBpcyB1c2luZyBwb3NpeCBjYWxscyB3aGljaCB4
-ZW5vbWFpIHN1cHBvcnRzIChwb3NpeCBhcGkKPiBpbnRlcmZhY2UpIGZvciBoYXJkIHJlYWwgdGlt
-ZS4KPiAKPiBBbGwgdGhlIGNvcmVzIGFyZSBzaG90IHVwIHRvIDEwMCUgd2l0aCBwaV9zdHJlc3Mu
-IG9ubHkgdGhlIGZpcnN0IGNvcmUgd2FzCj4gYXJvdW5kIDkwJSBmb3IgdHJhZmZpYyBoYW5kbGlu
-ZyBpbiB1c2IgMy4wIGFuZCBFdGhlcm5ldC4KPiAKPiBpIGRvbid0IHRoaW5rIFZhbmlsbGEgY3lj
-bGljdGVzdCBpcyBhIG5vcm1hbCBhcHBsaWNhdGlvbi4KCkRpZCB5b3UgYnVpbGQgdGhlIHZhbmls
-bGEgdmVyc2lvbiBhZ2FpbnN0IFhlbm9tYWkgbGlicyB1c2luZyB0aGUKeGVuby1jb25maWcgcHJv
-dmlkZWQgcGFyYW1ldGVycz8gVGhlbiB0aGUgc2l0dWF0aW9uIGNvdWxkIGJlIGRpZmZlcmVudC4K
-CkphbgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQg
-YXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBs
-aWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDE4MSBieXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0
-YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9h
-dHRhY2htZW50cy8yMDE1MDYzMC9kOTQzOWRhYy9hdHRhY2htZW50LnNpZz4K
+On Tue, Jun 30, 2015 at 4:24 PM, Jan Kiszka <jan.kiszka@web.de> wrote:
+
+> On 2015-06-30 12:45, Madan Sondur wrote:
+> > On Tue, Jun 30, 2015 at 11:10 AM, Jan Kiszka <jan.kiszka@web.de> wrote:
+> >
+> >> Please don't top-post.
+> >>
+> >> On 2015-06-30 05:34, Madan Sondur wrote:
+> >>> I stress tested the system for an hour using Pi-stress and pumping hu=
+ge
+> >>> amount of data through usb3.0 and I perf at network.  What I have
+> >> observed
+> >>> is cyclictest from usr/xenomai/bin behaves differently, only the firs=
+t
+> >>> thread completes then after all the other threads execute very slowly=
+,
+> >> you
+> >>> can see the count value.
+> >>>
+> >>> But the cyclictest that was downloaded from net completes all the
+> threads
+> >>> and exits.
+> >>>
+> >>> The results of sample tests for 5000 loops are as shown.
+> >>>
+> >>> Xenomai cyclictest T1 count is 120, where as cyclictest which is from
+> net
+> >>> has T1 count of 4546.
+> >>>
+> >>> Why is this behaviour?
+> >>
+> >> Xenomai uses different interval spreading than rt-test, see your
+> >> outputs. There is probably a bug in the Xenomai version of cyclictest,
+> >> getting some order of magnitude wrong with the default settings. Shoul=
+d
+> >> be easy to fix.
+> >>
+> >
+> > Can you tell me what are the default settings for fixing this ?
+>
+> cyclictest -d <distance>
+>
+> >
+> >>
+> >> The fact that you see over 300 =C2=B5s worst-case latencies with vanil=
+la
+> >> cyclictest on a standard kernel and that you don't get this with the
+> >> same test program over a Xenomai kernel, indicates that your test meth=
+od
+> >> was not correct, e.g. that load was affecting only the other cores.
+> >> Xenomai does not improve the latencies of normal applications.
+> >>
+> >
+> >
+> > How do you say the vanilla cyclictest should not perform better in
+> xenomai
+> > kernel than in standard kernel ?,
+> >   vanilla cyclictest is using posix calls which xenomai supports (posix
+> api
+> > interface) for hard real time.
+> >
+> > All the cores are shot up to 100% with pi_stress. only the first core w=
+as
+> > around 90% for traffic handling in usb 3.0 and Ethernet.
+> >
+> > i don't think Vanilla cyclictest is a normal application.
+>
+> Did you build the vanilla version against Xenomai libs using the
+> xeno-config provided parameters? Then the situation could be different.
+>
+
+Wow i missed this, ( can't imagine, silly me ), I will try compiling with
+Xeno-config. I never tried this as this
+ is the first time i am exploring. If you can point me to any useful
+guides/examples, would be very helpful
+
+Thx for your time
+M
+
+>
+> Jan
+>
+>
