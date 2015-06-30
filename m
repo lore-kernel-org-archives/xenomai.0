@@ -1,9 +1,12 @@
+Date: Tue, 30 Jun 2015 02:19:53 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150630001953.GA2038@hermes.click-hack.org>
+References: <CA+K1mPFgcxF5UAkMNXzit34sPHNWc+uzPTT45bngA6dd0wAyTw@mail.gmail.com>
 MIME-Version: 1.0
-Date: Mon, 29 Jun 2015 16:57:47 -0700
-Message-ID: <CA+K1mPFgcxF5UAkMNXzit34sPHNWc+uzPTT45bngA6dd0wAyTw@mail.gmail.com>
-From: C Smith <csmithquestions@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] Unable to Read from Pipe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+K1mPFgcxF5UAkMNXzit34sPHNWc+uzPTT45bngA6dd0wAyTw@mail.gmail.com>
+Subject: Re: [Xenomai] Unable to Read from Pipe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,48 +15,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai@xenomai.org
+To: C Smith <csmithquestions@gmail.com>
+Cc: Xenomai@xenomai.org
 
-I am developing a set of applications which write to and read from a
-rt_pipe. The writing app is in plain linux userspace, the reading app is a
-periodic Xenomai task. I am using xenomai 2.6.3 on kernel 3.4.6 (32 bit).
+On Mon, Jun 29, 2015 at 04:57:47PM -0700, C Smith wrote:
+> I am developing a set of applications which write to and read from a
+> rt_pipe. The writing app is in plain linux userspace, the reading app is a
+> periodic Xenomai task. I am using xenomai 2.6.3 on kernel 3.4.6 (32 bit).
 
-The problem I have is that the Xenomai task gets this warning when it tries
-to read the pipe:
-"errno 11 -EWOULDBLOCK" and the bytes the userspace app sent never arrive
-at the Xenomai task.
+Do you have the same problem with xenomai latest stable version? If
+yes, do you have it with xenomai testing version?
+Do you have the same problem with xddp sockets ?
 
-The Xenomai task creates the pipe this way:
 
-ret = rt_pipe_create(&cmd_fifo_fd, "cmd_fifo", 0, 30);
+-- 
+					    Gilles.
+https://click-hack.org
 
-The userspace app opens and writes to the pipe this way:
-
-fd = open("/dev/rtp0", O_RDWR);
-wr = write(fd, "Debug", sizeof("Debug"));
-
-The Xenomai task becomes periodic like this:
-
- ret = rt_task_create(&main_task, "mytask", 0, 99, T_FPU | T_JOINABLE);
- ret = rt_task_start(&main_task, &Periodic_routine, NULL);
-
-Each time the Xenomai periodic task 'wakes', it checks the pipe in a
-non-blocking fashion (this is a requirement).
-Here is most of the periodic code which reads the pipe:
-
-void Periodic_routine(void *cookie) {
-   RTIME next;
-   rt_task_set_mode(0, T_WARNSW, NULL);
-   next = rt_timer_read();
-   while (1)   {
-      next += 2000000000;
-      retval = rt_task_sleep_until(next);
-      retval = rt_pipe_read(&cmd_fifo_fd, msg, 6, TM_NONBLOCK);
-   }
-}
-
-Yet the rt_pipe_read() above always returns errno 11 -EWOULDBLOCK and never
-gets any bytes from the pipe, no matter how many times the periodic task
-wakes up.
-
--CSmith
