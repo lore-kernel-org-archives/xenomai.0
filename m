@@ -1,16 +1,12 @@
-Date: Wed, 1 Jul 2015 11:07:23 +0200
+Date: Wed, 1 Jul 2015 11:20:50 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150701090723.GC3641@hermes.click-hack.org>
-References: <55919C0F.7020000@laposte.net>
- <20150629194514.GC10993@hermes.click-hack.org>
- <5592CD0A.6080503@laposte.net>
+Message-ID: <20150701092050.GD3641@hermes.click-hack.org>
+References: <CAL5YyVbm6rHu0QFyfMZbrVdDAeHmJrtrggbsAyERdC5HhaeQng@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <5592CD0A.6080503@laposte.net>
-Subject: Re: [Xenomai] Arietta (AT91SAM9G25),
- strange kernel messages (3.0-rc5)
+In-Reply-To: <CAL5YyVbm6rHu0QFyfMZbrVdDAeHmJrtrggbsAyERdC5HhaeQng@mail.gmail.com>
+Subject: Re: [Xenomai] Kernel compilation problem x86
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,60 +15,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: ACO31 <alain.cordat@gmail.com>
+Cc: xenomai@xenomai.org
 
-On Tue, Jun 30, 2015 at 07:08:26PM +0200, Marc Le Douarain wrote:
-> Le 29/06/2015 21:45, Gilles Chanteperdrix a =E9crit :
-> >On Mon, Jun 29, 2015 at 09:27:11PM +0200, Marc Le Douarain wrote:
-> >>Hello everybody,
-> >>
-> >>tested Xenomai 3.0-rc5 on the little Arietta (with patch
-> >>ipipe-core-3.18.12-arm-2.patch),
-> >>and even if it seems to work (I-pipe registered and latenty test runnin=
-g),
-> >>theses lines seeems quite suspect :
-> >>
-> >>NR_IRQS:16 nr_irqs:16 16
-> >>------------[ cut here ]------------
-> >>WARNING: CPU: 0 PID: 0 at kernel/irq/pm.c:48
-> >>irq_pm_install_action+0x94/0xd0()
-> >>Modules linked in:
-> >>CPU: 0 PID: 0 Comm: swapper Not tainted 3.18.12-xeno-mld #1
-> >>[<c000dc84>] (unwind_backtrace) from [<c000b9b4>] (show_stack+0x10/0x14)
-> >>[<c000b9b4>] (show_stack) from [<c001671c>] (warn_slowpath_common+0x60/=
-0x80)
-> >>[<c001671c>] (warn_slowpath_common) from [<c0016754>]
-> >>(warn_slowpath_null+0x18/0x1c)
-> >>[<c0016754>] (warn_slowpath_null) from [<c003fc28>]
-> >>(irq_pm_install_action+0x94/0xd0)
-> >>[<c003fc28>] (irq_pm_install_action) from [<c003bcd8>]
-> >>(__setup_irq+0x398/0x4f4)
-> >>[<c003bcd8>] (__setup_irq) from [<c003bef8>]
-> >>(request_threaded_irq+0xc4/0x124)
-> >>[<c003bef8>] (request_threaded_irq) from [<c0526050>]
-> >>(at91sam926x_pit_common_init+0xcc/0x1a0)
-> >>[<c0526050>] (at91sam926x_pit_common_init) from [<c0525f40>]
-> >>(clocksource_of_init+0x44/0x88)
-> >>[<c0525f40>] (clocksource_of_init) from [<c050dae8>]
-> >>(start_kernel+0x240/0x3cc)
-> >>[<c050dae8>] (start_kernel) from [<20008040>] (0x20008040)
-> >>---[ end trace cb88537fdc8fa200 ]---
-> >Does not the exact same kernel not patched with Xenomai and I-pipe
-> >with the exact same configuration, only without CONFIG_IPIPE and
-> >CONFIG_XENOMAI, have the same problem?
-> >
-> Thanks for the idea of this simple test to be done,
-> and you are absolutely right, same strange messages with the vanilla kern=
-el
-> without I-pipe patch !
+On Wed, Jul 01, 2015 at 11:02:56AM +0200, ACO31 wrote:
+> Hello,
+> 
+> I want to compile the RC5 of Xenomai 3  for X86 arch
+> I use ipipe core 3.16.7-5  accorded to linux kernel 3.16.7 from kernel.org.
+> (I've do the same compile for the RC4 without problem)
+> no error message for prepare-kernel.sh.
+> No problem with kernel make menuconfig.
+> But the compile stop with error message about apc.h:
+> cobalt/kernel/apc.h no such file or dir
+> #include <cocobalt/kernel/apc.h>
+> ...
+> I re lauch teh compil wit same kernel archive and rc4 to valide archives
+> and process:
+> No error message...
+> Thanks
+> alain
 
-You are welcome. You should have a look at the corresponding line of
-code to know whether this is an important issue. But the reason is
-probably that the configuration you test is not the same as the one
-the maintainer of the board uses, probably in the power management
-area.
+The compilation of Xenomai from the archive has been built-tested
+(starting tonight, it will be done every night, the report may be
+found here: https://click-hack.org/~gilles/bx-forge/)
 
---=20
+I also checked that the file include/cobalt/kernel/apc.h may be
+found in the archive and it is there. I have also greped the sources
+for the typo "cocobalt" and there is no such typo in the archive
+sources.
+
+So, obviously either you are compiling otherwise modified sources,
+or some out of tree code. Or you introduced the typo while typing
+the report and some other issues is causing the problem, like a
+particular kernel configuration. But as your mail does not provide
+much of the information we would need to try and reproduce your
+issue, and which are recommended on our website
+(https://xenomai.org//asking-for-help/), we can not help you
+much more than that.
+
+-- 
 					    Gilles.
 https://click-hack.org
 
