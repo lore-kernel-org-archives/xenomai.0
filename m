@@ -1,6 +1,6 @@
-Date: Thu, 2 Jul 2015 20:00:42 +0200
+Date: Thu, 2 Jul 2015 20:42:32 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150702180042.GW13256@hermes.click-hack.org>
+Message-ID: <20150702184232.GX13256@hermes.click-hack.org>
 References: <559557C2.3040004@xenomai.org> <55955B45.5000201@siemens.com>
  <55956729.9010901@xenomai.org> <55956A56.3050806@siemens.com>
  <20150702164933.GR13256@hermes.click-hack.org>
@@ -95,17 +95,38 @@ On Thu, Jul 02, 2015 at 07:57:26PM +0200, Jan Kiszka wrote:
 > > calls to the COBALT_SYSCALL macro. This can be done with sed or awk
 > > even. And this does not require playing with the linker script.
 > 
-> I more and more believe that is actually only feasible approach.
+> I more and more believe that is actually only feasible approach. The
 > linker tricks seem to fail because we cannot prepare the required input
-> as needed.
+> as needed. If they worked, the kernel would surely use one of them.
 
-No, as I said it can be done, but requires adding code to the linker
-script. And this causes problem for handling I-pipe patches that
-were released before we introduce the change to the linker script.
+Actually the awk script is astonishingly simple.
 
-> If they worked, the kernel would surely use one of them.
+find kernel/cobalt -name '*.c' | xargs cat | awk -f foo.awk
 
-That is BS, the kernel has chosen other solutions, that is all.
+With foo.awk
+
+match($0, /COBALT_SYSCALL\([^,]*, [^,]*/)  {
+	str=substr($0, RSTART + 15, RLENGTH - 15)
+	match(str, /[^,]*/)
+	syscall=substr(str, RSTART, RLENGTH)
+	seen[syscall]=1;
+	print "__COBALT_MODE(" str "),"
+}
+
+match($0, /__COBALT_CALL_ENTRY\([^)]*/)  {
+	syscall=substr($0, RSTART + 20, RLENGTH - 20)
+	intable[syscall]=1
+}
+
+END {
+	for (s in intable)  {
+		if (s != "" && s != "__name" && !seen[s])
+			print "missed syscall \"" s "\" implementation!"
+	}
+}
+
+The problem will be to re-run the script when a new syscall is added
+or a file is modified.
 
 -- 
 					    Gilles.
