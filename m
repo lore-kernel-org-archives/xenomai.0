@@ -1,13 +1,17 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Fri, 19 Jun 2015 12:41:13 +0200
-Message-ID: <1972650.TnPARfU7Gx@soho>
-In-Reply-To: <1281528104.2749631.1434707703235.JavaMail.yahoo@mail.yahoo.com>
-References: <7ad4e107e9fd70e40e7a622724d8e211.squirrel@sourcetrek.com>
- <1281528104.2749631.1434707703235.JavaMail.yahoo@mail.yahoo.com>
+References: <558579E2.9070507@web.de> <559B9B77.3020409@xenomai.org>
+ <559BCBDB.7080208@xenomai.org> <559CFBE7.3050802@siemens.com>
+ <559D0FEC.8030606@xenomai.org> <559D1689.2020102@siemens.com>
+ <20150708123205.GM20176@hermes.click-hack.org> <559D189A.8060800@siemens.com>
+ <559D1B05.9010503@xenomai.org> <559D1D2B.3080704@siemens.com>
+ <559D1ED5.3030806@xenomai.org> <559D1FE1.1020204@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <559D212F.5000504@xenomai.org>
+Date: Wed, 8 Jul 2015 15:10:07 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
-Subject: Re: [Xenomai] Rtnet driver of RTL8111/8168/8411
+In-Reply-To: <559D1FE1.1020204@siemens.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Mayday issues again
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,68 +20,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gabriele Moabiti <gabmoa@yahoo.it>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-El Divendres, 19 de juny de 2015, a les 09:55:03, Gabriele Moabiti va=20=
+On 07/08/2015 03:04 PM, Jan Kiszka wrote:
+> On 2015-07-08 15:00, Philippe Gerum wrote:
+>> On 07/08/2015 02:52 PM, Jan Kiszka wrote:
+>>> On 2015-07-08 14:43, Philippe Gerum wrote:
+>>>> On 07/08/2015 02:33 PM, Jan Kiszka wrote:
+>>>>> On 2015-07-08 14:32, Gilles Chanteperdrix wrote:
+>>>>>> On Wed, Jul 08, 2015 at 02:24:41PM +0200, Jan Kiszka wrote:
+>>>>>>> On 2015-07-08 13:56, Philippe Gerum wrote:
+>>>>>>>> On 07/08/2015 12:31 PM, Jan Kiszka wrote:
+>>>>>>>>> On 2015-07-07 14:53, Philippe Gerum wrote:
+>>>>>>>>>> On 07/07/2015 11:27 AM, Philippe Gerum wrote:
+>>>>>>>>>>> I tested the patch on ARM. Enabling IPIPE_DEBUG_INTERNAL there reveals a
+>>>>>>>>>>> bug with the mayday handler now turning hw IRQs on, as a result of
+>>>>>>>>>>> relaxing over the low level IRQ trampoline, which makes some I-pipe call
+>>>>>>>>>>> in the irq_handler boilerplate code unhappy. The very same issue is
+>>>>>>>>>>> looming on x86, with an unprotected call to __ipipe_root_p from
+>>>>>>>>>>> __ipipe_handle_irq(). Disabling IRQs before leaving the mayday handler
+>>>>>>>>>>> is required at the very least.
+>>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> Looking further, ARM is affected because it does not invoke
+>>>>>>>>>> __ipipe_call_mayday() for triggering the mayday trap, but still uses the
+>>>>>>>>>> open-coded method. This routine preserves the current hw state across
+>>>>>>>>>> the trap, which should make x86 safe in the end.
+>>>>>>>>>
+>>>>>>>>> Which kernel version are you testing? It's not reproducing on 3.14 for
+>>>>>>>>> Cortex-A7/15 targets at least. And I find __ipipe_call_mayday in both
+>>>>>>>>> 3.14 and 3.18 (fastcall_exit_check).
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> Looking at the code, any kernel version since 3.10 will have the same
+>>>>>>>> issue, older ones likely too, tested on 3.18.12. This does not depend on
+>>>>>>>> the ARM target.
+>>>>>>>>
+>>>>>>>> irq_handler from entry-armv.S:
+>>>>>>>> 	=> __ipipe_grab_irq (or indirecty via ipipe_handle_multi_irq with
+>>>>>>>> MULTI_IRQ enabled)
+>>>>>>>> 		=> __ipipe_exit_irq (open coded __ipipe_notify_trap(MAYDAY),
+>>>>>>>> xnthread_relax() re-enables hw IRQs)
+>>>>>>>> 	=> __ipipe_check_root_interruptible (from irq_handler)
+>>>>>>>> 		BAD: __ipipe_root_p tested with CPU migration enabled
+>>>>>>>>
+>>>>>>>
+>>>>>>> Maybe [1] makes the difference here? I think I had to fix this for a
+>>>>>>> different reason.
+>>>>>>
+>>>>>> Except this does not work over legacy kernel thread stacks..
+>>>>>
+>>>>> Xenomai 2 is out of scope for these changes on mayday and for gdb
+>>>>> improvements.
+>>>>>
+>>>>
+>>>> Testing CONFIG_IPIPE_LEGACY for such change would be required then.
+>>>
+>>> Do you mean if I can access preempt_count() in
+>>> __ipipe_check_percpu_access? We are over the root domain at that point,
+>>> thus legacy RT kernel threads are implicitly excluded, no?
+>>
+>> Yes. I mean that if you intend to upstream changes that only care for
+>> Xenomai 3, you should exclude them from legacy mode builds using
+>> CONFIG_IPIPE_LEGACY, at least until we drop all support for Xenomai 2 in
+>> the I-pipe for newer kernel releases.
+> 
+> Sure, if there are dependencies, I'll do this. Right now I see none,
+> thus I'd like to avoid cluttering up the code with #ifdefs.
+>
 
-escriure:
-> In RTNET mailing list an update driver was sent:
->=20
-> http://sourceforge.net/p/rtnet/mailman/message/31389885/
->=20
-> I've changed this driver and used successfully with some 8168/8111 ne=
-twork
-> card.Hope this helps. Gabriele
+IS_ENABLED() would likely help nicely.
 
-Thanks Gabriele,
-
-It doesn't compile, so I don't know how updated is that driver.
->=20
->=20
->=20
->      Il Gioved=C3=AC 18 Giugno 2015 17:27, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> ha scritto:
-> Leopold Palomo-Avellaneda wrote:
-> > Hi,
-> >=20
-> > just to confirm. I assume that if my box has this ethernet chipset:=
-
-> >=20
-> > Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigab=
-it
-> > Ethernet
-> >=20
-> > the rt_r8169 doesn't work, although the linux module is r8169.
-> >=20
-> > Is it correct?
-> >=20
-> > And I'm saying this because although I'm using xenomai 2.6.4 (lates=
-t
-> > stable)
-> > and rtnet (git updated) when I load the module no rtethX interface =
-is
-> > generated.
->=20
-> I think rt_8169 supports 8169 only. I added support for the chipset o=
-n my
-> Atom-based board to xenomai 3 rtnet. Do not remember which it was 811=
-11 or
-> 8168.
-
-I think that 8168 .... do you think that you will make a 8111 driver?
-
-Leopold
+> What is in current for-upstream/3.14 and 3.18 is intended for upstream
+> as-is unless someone sees problems I missed.
+> 
+> Jan
+> 
 
 
-
---=20
---
-Linux User 152692     GPG: 05F4A7A949A2D9AA
-Catalonia
--------------------------------------
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
+-- 
+Philippe.
 
