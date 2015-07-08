@@ -1,13 +1,12 @@
-References: <558579E2.9070507@web.de> <559B9B77.3020409@xenomai.org>
- <559BCBDB.7080208@xenomai.org> <559BCDA9.3010205@web.de>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <559BD30B.2090205@xenomai.org>
-Date: Tue, 7 Jul 2015 15:24:27 +0200
-MIME-Version: 1.0
-In-Reply-To: <559BCDA9.3010205@web.de>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Mayday issues again
+Date: Tue, 07 Jul 2015 22:45:05 -0400
+From: Glen Wernersbach <glen@jetsoftdev.com>
+Message-ID: <D1C206F1.39ADA%glen@jetsoftdev.com>
+Mime-version: 1.0
+Content-Type: text/plain;
+	charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Xemomai 3 - posix demo programs don't seem to be loading
+ the right socket program.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,79 +15,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 07/07/2015 03:01 PM, Jan Kiszka wrote:
-> On 2015-07-07 14:53, Philippe Gerum wrote:
->> On 07/07/2015 11:27 AM, Philippe Gerum wrote:
->>>
->>> - we want the target thread to relax from a safe and sane location. What
->>> about the IRQ context which signals the mayday event preempting, e.g.
->>> xnthread_relax() prologue, or any kernel code supposed to run in primary
->>> mode only? We would have xnthread_relax() stacking over that context,
->>> this wouldn't be pretty. Redirecting the target thread by fixing up the
->>> interrupt frame gives such guarantee, by making sure that it will relax
->>> on a regular user->kernel syscall transition asap, which is inherently safe.
->>>
->>
->> Actually, the code currently prevents mayday traps over non-user callers
->> to skip foreign stack contexts such as Xenomai 2.x kthreads, so this bad
->> scenario would not happen anyway. Besides, without such elimination the
->> indirect call mechanism would not fix the unsafe preemption issue
->> either. So, the remaining problem is with blackfin and its peculiar
->> requirement about rescheduling, which is a barrier to a generic mayday
->> handling.
-> 
-> Yes, that is the assumption I was building upon. And, BTW, faults do
-> happen over kernel contexts as well and cause relaxing then:
-> copy_to/from_user. So that has to work already.
->
+Hi All,
 
-copy_* are specific: they should never happen over an unsafe or atomic
-context by design. That context can be considered as an extension of the
-plain userland context in our case.
+Fooling around with Xenomai 3 RC4. I can get the TestSuite to work but when
+I run any of the standard posix demo examples I get the following error:
+./bufp-readwrite=20
+socket 1: Address family not supported by protocol
+socket 2: Address family not supported by protocol
 
-> But Blackfin was my concern as well, and you confirmed it. But how does
-> Linux address the need for rescheduling on IRQ return - which should be
-> similar to what we need for relaxing?
+Looking on the web this would indicate that the wrapper instruction is not
+in the linker flags but it is. I tried building my own copy just to make
+sure the wrapper was included but got the same error.
+make
+gcc -o RsConMain RsConMain.c -I/usr/xenomai/include/cobalt
+-I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -D__COBALT__
+-Wl,@/usr/xenomai/lib/cobalt.wrappers   -L/usr/xenomai/lib -lcobalt
+-lpthread -lrt  =20
 
-The kernel schedules a delayed call from the IRQ/trap epilogue, which
-will run at the lowest priority from vector EVT15, which guarantees the
-absence of nesting, since other core events such as IRQs have higher
-priority (e.g. schedule_and_signal_from_int, mach-common/entry.S).
-
-> 
->>
->>> I tested the patch on ARM. Enabling IPIPE_DEBUG_INTERNAL there reveals a
->>> bug with the mayday handler now turning hw IRQs on, as a result of
->>> relaxing over the low level IRQ trampoline, which makes some I-pipe call
->>> in the irq_handler boilerplate code unhappy. The very same issue is
->>> looming on x86, with an unprotected call to __ipipe_root_p from
->>> __ipipe_handle_irq(). Disabling IRQs before leaving the mayday handler
->>> is required at the very least.
->>>
->>
->> Looking further, ARM is affected because it does not invoke
->> __ipipe_call_mayday() for triggering the mayday trap, but still uses the
->> open-coded method. This routine preserves the current hw state across
->> the trap, which should make x86 safe in the end.
->>
-> 
-> ARM is not yet properly tested, just a quick smoke test. I will
-> eventually look into this.
-> 
-> Another reason I'm trying to overcome the mayday trampoline is that it
-> prevents properly synchronized stopping and resuming of RT threads for
-> debugging purposes. I'm trying to address this requirement with a
-> userspace trap/irq return notifier, similar to what Linux has
-> (implemented on x86-only so far) but capable of hardening the context
-> before returning.
-> 
-> Jan
-> 
+Any ideas?
 
 
--- 
-Philippe.
+Glen
+--=20
+Glen Wernersbach View Profile <http://www.linkedin.com/in/GlenWernersbach>
+Business, Innovation and Technical Consultant;
+President and CEO
+Jetsoft Development Co.
+
+
+629 Old St Rt. 74 =AD Suite 210
+Cincinnati, Oh 45244
+513-240-9929
+glen@jetsoftdev.com
+
 
