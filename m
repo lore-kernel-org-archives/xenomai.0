@@ -1,10 +1,16 @@
-From: Michael Haberler <haberlerm@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <8FBA82E4-226A-459B-AA6C-0CDEAB32859D@gmail.com>
-Date: Wed, 17 Jun 2015 19:13:13 +0200
-Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2098\))
-Subject: [Xenomai] RTLWS 17 Call for Papers
+References: <558579E2.9070507@web.de> <559B9B77.3020409@xenomai.org>
+ <559BCBDB.7080208@xenomai.org> <559CFBE7.3050802@siemens.com>
+ <559D0FEC.8030606@xenomai.org> <559D1689.2020102@siemens.com>
+ <20150708123205.GM20176@hermes.click-hack.org> <559D189A.8060800@siemens.com>
+ <559D1B05.9010503@xenomai.org> <559D1D2B.3080704@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <559D1ED5.3030806@xenomai.org>
+Date: Wed, 8 Jul 2015 15:00:05 +0200
+MIME-Version: 1.0
+In-Reply-To: <559D1D2B.3080704@siemens.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Mayday issues again
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,126 +19,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-hello,
+On 07/08/2015 02:52 PM, Jan Kiszka wrote:
+> On 2015-07-08 14:43, Philippe Gerum wrote:
+>> On 07/08/2015 02:33 PM, Jan Kiszka wrote:
+>>> On 2015-07-08 14:32, Gilles Chanteperdrix wrote:
+>>>> On Wed, Jul 08, 2015 at 02:24:41PM +0200, Jan Kiszka wrote:
+>>>>> On 2015-07-08 13:56, Philippe Gerum wrote:
+>>>>>> On 07/08/2015 12:31 PM, Jan Kiszka wrote:
+>>>>>>> On 2015-07-07 14:53, Philippe Gerum wrote:
+>>>>>>>> On 07/07/2015 11:27 AM, Philippe Gerum wrote:
+>>>>>>>>> I tested the patch on ARM. Enabling IPIPE_DEBUG_INTERNAL there reveals a
+>>>>>>>>> bug with the mayday handler now turning hw IRQs on, as a result of
+>>>>>>>>> relaxing over the low level IRQ trampoline, which makes some I-pipe call
+>>>>>>>>> in the irq_handler boilerplate code unhappy. The very same issue is
+>>>>>>>>> looming on x86, with an unprotected call to __ipipe_root_p from
+>>>>>>>>> __ipipe_handle_irq(). Disabling IRQs before leaving the mayday handler
+>>>>>>>>> is required at the very least.
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> Looking further, ARM is affected because it does not invoke
+>>>>>>>> __ipipe_call_mayday() for triggering the mayday trap, but still uses the
+>>>>>>>> open-coded method. This routine preserves the current hw state across
+>>>>>>>> the trap, which should make x86 safe in the end.
+>>>>>>>
+>>>>>>> Which kernel version are you testing? It's not reproducing on 3.14 for
+>>>>>>> Cortex-A7/15 targets at least. And I find __ipipe_call_mayday in both
+>>>>>>> 3.14 and 3.18 (fastcall_exit_check).
+>>>>>>>
+>>>>>>
+>>>>>> Looking at the code, any kernel version since 3.10 will have the same
+>>>>>> issue, older ones likely too, tested on 3.18.12. This does not depend on
+>>>>>> the ARM target.
+>>>>>>
+>>>>>> irq_handler from entry-armv.S:
+>>>>>> 	=> __ipipe_grab_irq (or indirecty via ipipe_handle_multi_irq with
+>>>>>> MULTI_IRQ enabled)
+>>>>>> 		=> __ipipe_exit_irq (open coded __ipipe_notify_trap(MAYDAY),
+>>>>>> xnthread_relax() re-enables hw IRQs)
+>>>>>> 	=> __ipipe_check_root_interruptible (from irq_handler)
+>>>>>> 		BAD: __ipipe_root_p tested with CPU migration enabled
+>>>>>>
+>>>>>
+>>>>> Maybe [1] makes the difference here? I think I had to fix this for a
+>>>>> different reason.
+>>>>
+>>>> Except this does not work over legacy kernel thread stacks..
+>>>
+>>> Xenomai 2 is out of scope for these changes on mayday and for gdb
+>>> improvements.
+>>>
+>>
+>> Testing CONFIG_IPIPE_LEGACY for such change would be required then.
+> 
+> Do you mean if I can access preempt_count() in
+> __ipipe_check_percpu_access? We are over the root domain at that point,
+> thus legacy RT kernel threads are implicitly excluded, no?
 
-the 17th Real Time Linux Workshop will be in Graz, Austria this
-year - find the Call for Papers below - looking forward to seeing
-some of you at RTLWS17!
+Yes. I mean that if you intend to upstream changes that only care for
+Xenomai 3, you should exclude them from legacy mode builds using
+CONFIG_IPIPE_LEGACY, at least until we drop all support for Xenomai 2 in
+the I-pipe for newer kernel releases.
 
-- Michael
-
-
-                      17th Real Time Linux Workshop
-                             Call for Papers
-                         October 21 to 22, 2015
-                     Virtual Vehicle Research Center
-                      Graz University of Technology
-                   Inffeldgasse 18, 8010 Graz, Austria
-
-
-Following the meetings of academics, developers and users of real-time
-and embedded Linux at the previous 16 Real Time Linux Workshops held
-world-wide (Vienna, Orlando, Milano, Boston, Valencia, Singapore, Lille,
-Lanzhou, Linz, Guadalajara, Dresden, Nairobi, Prague, Chapel Hill,
-Lugano and D=C3=BCsseldorf) - the 2015 Real Time Linux Workshop will =
-come to
-the Virtual Vehicle Research Center in Graz, Austria. It will be held
-from October 21 to October 22, 2015. We gratefully acknowledge the
-offering of Virtual Vehicle to host and co-organize this year's RTLWS in
-Graz.
-
-
-Call for papers
-
-Authors from regulatory bodies, academics, industry as well as the
-user-community are invited to submit original work dealing with general
-topics related to Open Source and Free Software based real-time systems
-research, experiments and case studies, as well as issues of integration
-of open-source real-time and embedded OS. A special focus will be on
-industrial case studies and safety related systems. Topics of interest
-include, but are not limited to:
-
-- Modifications and variants of the GNU/Linux operating system and
- extending its real-time capabilities,
-- Contributions to real-time Linux variants, drivers and extensions,
-- Tools for the verification and validation of real-time properties,
-- User-mode real-time concepts, implementation and experience,
-- Real-time Linux applications, in academia, research and industry,
-- Safety related FLOSS systems,
-- Safety related systems using FLOSS components,
-- FLOSS Tools used to analyze, verify or validate safety properties,
-- Work in progress reports, covering recent developments,
-- Educational material on real-time Linux,
-- RTOS core concepts, RT-safe synchronization mechanisms,
-- RT-safe IPC mechanisms for RT and non RT components,
-- Analysis and benchmarking methods and results of real-time
- GNU/Linux variants,
-- Debugging techniques and tools, both for code and temporal
- debugging of core RTOS components, drivers and real-time
- applications,
-- Real-time related extensions to development environments,
-- Legal aspects with regard to using Open Source in the industry,
-- IoT (Internet of Troubles)
-
-
-Abstract submission=20
-
-If you wish to present a paper at the workshop, please submit an
-abstract using the submission page at:
-https://www.osadl.org/RTLWS17-Abstract.submission-form.0.html
-
-
-Final paper
-
-Upon acceptance of an abstract by the RTLWS17 Program Committee, the
-author will be invited to submit a full paper in a form defined by
-https://www.osadl.org/paper.tgz. A detailed description of the editing
-and formatting process will be provided along with the notification
-email. The full paper will be included in the RTLWS17 proceedings.
-
-
-Important dates
-
-August 2, 2015 - Abstract submission deadline
-August 30, 2015 - Notification of acceptance
-September 27, 2015 - Submission of final paper
-October 21-22, 2015 - Workshop
-
-
-Program committee
-
-Alexey Khoroshilov, ISPRAS, Russia
-Andrea Leitner, Virtual Vehicle, Austria
-Andreas Platschek, TU Wien, Austria=20
-Carsten Emde, OSADL, Germany
-Daniel Watzenig, Virtual Vehicle, Austria
-Georg Schiesser, OpenTech EDV Research, Austria
-Joseph Wenninger, TU Wien, Austria
-Julia Lawall, Inria, France
-Michael Haberler, machinekit.io, Austria
-Nicholas Mc Guire, OpenTech EDV Research, Austria
-Paolo Mantegazza, Politecnico di Milano, Italy
-Paul McKenney, IBM Linux Technology Center, USA
-Roberto Bucher, SUPSI, Switzerland
-Sebastian Andrzej Siewior, Linutronix, Germany
-Shawn Choo, Weslab, Singapur
-Tilmann Ochs, BMW Car-IT, Germany
-Zhou Qingguo, DSLab, Lanzhou University, China
-
-
-Workshop organizers
-
-Open Source Automation Development Lab (OSADL), Heidelberg, Germany
-Virtual Vehicle Research Center, Graz, Austria
-
-Carsten Emde
-Nicholas Mc Guire
-Andreas Platschek
---
-To unsubscribe from this list: send the line "unsubscribe =
-linux-rt-users" in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-- 
+Philippe.
 
