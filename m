@@ -1,17 +1,15 @@
-References: <558579E2.9070507@web.de> <559B9B77.3020409@xenomai.org>
- <559BCBDB.7080208@xenomai.org> <559CFBE7.3050802@siemens.com>
- <559D0FEC.8030606@xenomai.org> <559D1689.2020102@siemens.com>
- <20150708123205.GM20176@hermes.click-hack.org> <559D189A.8060800@siemens.com>
- <559D1B05.9010503@xenomai.org> <559D1D2B.3080704@siemens.com>
- <559D1ED5.3030806@xenomai.org> <559D1FE1.1020204@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <559D212F.5000504@xenomai.org>
-Date: Wed, 8 Jul 2015 15:10:07 +0200
-MIME-Version: 1.0
-In-Reply-To: <559D1FE1.1020204@siemens.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Mayday issues again
+Date: Wed, 08 Jul 2015 16:57:46 -0400
+From: Glen Wernersbach <glen@jetsoftdev.com>
+Message-ID: <D1C2D578.39B56%glen@jetsoftdev.com>
+References: <D1C206F1.39ADA%glen@jetsoftdev.com>
+ <20150708101145.GL20176@hermes.click-hack.org>
+In-Reply-To: <20150708101145.GL20176@hermes.click-hack.org>
+Mime-version: 1.0
+Content-type: text/plain;
+	charset="ISO-8859-1"
+Content-transfer-encoding: quoted-printable
+Subject: Re: [Xenomai] Xemomai 3 - posix demo programs don't seem to be
+ loading the right socket program.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,85 +18,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 07/08/2015 03:04 PM, Jan Kiszka wrote:
-> On 2015-07-08 15:00, Philippe Gerum wrote:
->> On 07/08/2015 02:52 PM, Jan Kiszka wrote:
->>> On 2015-07-08 14:43, Philippe Gerum wrote:
->>>> On 07/08/2015 02:33 PM, Jan Kiszka wrote:
->>>>> On 2015-07-08 14:32, Gilles Chanteperdrix wrote:
->>>>>> On Wed, Jul 08, 2015 at 02:24:41PM +0200, Jan Kiszka wrote:
->>>>>>> On 2015-07-08 13:56, Philippe Gerum wrote:
->>>>>>>> On 07/08/2015 12:31 PM, Jan Kiszka wrote:
->>>>>>>>> On 2015-07-07 14:53, Philippe Gerum wrote:
->>>>>>>>>> On 07/07/2015 11:27 AM, Philippe Gerum wrote:
->>>>>>>>>>> I tested the patch on ARM. Enabling IPIPE_DEBUG_INTERNAL there reveals a
->>>>>>>>>>> bug with the mayday handler now turning hw IRQs on, as a result of
->>>>>>>>>>> relaxing over the low level IRQ trampoline, which makes some I-pipe call
->>>>>>>>>>> in the irq_handler boilerplate code unhappy. The very same issue is
->>>>>>>>>>> looming on x86, with an unprotected call to __ipipe_root_p from
->>>>>>>>>>> __ipipe_handle_irq(). Disabling IRQs before leaving the mayday handler
->>>>>>>>>>> is required at the very least.
->>>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>> Looking further, ARM is affected because it does not invoke
->>>>>>>>>> __ipipe_call_mayday() for triggering the mayday trap, but still uses the
->>>>>>>>>> open-coded method. This routine preserves the current hw state across
->>>>>>>>>> the trap, which should make x86 safe in the end.
->>>>>>>>>
->>>>>>>>> Which kernel version are you testing? It's not reproducing on 3.14 for
->>>>>>>>> Cortex-A7/15 targets at least. And I find __ipipe_call_mayday in both
->>>>>>>>> 3.14 and 3.18 (fastcall_exit_check).
->>>>>>>>>
->>>>>>>>
->>>>>>>> Looking at the code, any kernel version since 3.10 will have the same
->>>>>>>> issue, older ones likely too, tested on 3.18.12. This does not depend on
->>>>>>>> the ARM target.
->>>>>>>>
->>>>>>>> irq_handler from entry-armv.S:
->>>>>>>> 	=> __ipipe_grab_irq (or indirecty via ipipe_handle_multi_irq with
->>>>>>>> MULTI_IRQ enabled)
->>>>>>>> 		=> __ipipe_exit_irq (open coded __ipipe_notify_trap(MAYDAY),
->>>>>>>> xnthread_relax() re-enables hw IRQs)
->>>>>>>> 	=> __ipipe_check_root_interruptible (from irq_handler)
->>>>>>>> 		BAD: __ipipe_root_p tested with CPU migration enabled
->>>>>>>>
->>>>>>>
->>>>>>> Maybe [1] makes the difference here? I think I had to fix this for a
->>>>>>> different reason.
->>>>>>
->>>>>> Except this does not work over legacy kernel thread stacks..
->>>>>
->>>>> Xenomai 2 is out of scope for these changes on mayday and for gdb
->>>>> improvements.
->>>>>
->>>>
->>>> Testing CONFIG_IPIPE_LEGACY for such change would be required then.
->>>
->>> Do you mean if I can access preempt_count() in
->>> __ipipe_check_percpu_access? We are over the root domain at that point,
->>> thus legacy RT kernel threads are implicitly excluded, no?
->>
->> Yes. I mean that if you intend to upstream changes that only care for
->> Xenomai 3, you should exclude them from legacy mode builds using
->> CONFIG_IPIPE_LEGACY, at least until we drop all support for Xenomai 2 in
->> the I-pipe for newer kernel releases.
-> 
-> Sure, if there are dependencies, I'll do this. Right now I see none,
-> thus I'd like to avoid cluttering up the code with #ifdefs.
+Giles,
+
+RsConMain was just a copy of  the bufp-readwrite demo program so I could
+fool around with the make file to see if I could prove the wrapper was
+loading. The code is the standard unmodified demo of the bufp-readwrite
+demo example.
+
+As it turns out as you suspected, for the standard demos that are
+installed to work, you must go in and change the Xenomai kernel setting
+RTIPC Protocol Family from its default value of excluded/Off and change to
+an included/On setting.
+
+Once that was done all of the demo programs and my copy worked just fine.
+
+Glen
+--=20
+Glen Wernersbach View Profile <http://www.linkedin.com/in/GlenWernersbach>
+Business, Innovation and Technical Consultant;
+President and CEO
+Jetsoft Development Co.
+
+
+629 Old St Rt. 74 =AD Suite 210
+Cincinnati, Oh 45244
+
+513-240-9929
+glen@jetsoftdev.com
+
+
+
+
+On 7/8/15, 6:11 AM, "Gilles Chanteperdrix"
+<gilles.chanteperdrix@xenomai.org> wrote:
+
+>On Tue, Jul 07, 2015 at 10:45:05PM -0400, Glen Wernersbach wrote:
+>> Hi All,
+>>=20
+>> Fooling around with Xenomai 3 RC4. I can get the TestSuite to work but
+>>when
+>> I run any of the standard posix demo examples I get the following error:
+>> ./bufp-readwrite
+>> socket 1: Address family not supported by protocol
+>> socket 2: Address family not supported by protocol
+>>=20
+>> Looking on the web this would indicate that the wrapper instruction is
+>>not
+>> in the linker flags but it is. I tried building my own copy just to make
+>> sure the wrapper was included but got the same error.
+>> make
+>> gcc -o RsConMain RsConMain.c -I/usr/xenomai/include/cobalt
+>> -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -D__COBALT__
+>> -Wl,@/usr/xenomai/lib/cobalt.wrappers   -L/usr/xenomai/lib -lcobalt
+>> -lpthread -lrt =20
 >
+>I do not think "RsConMain" is a "standard posix demo example", or I
+>do not know what you mean by that. Anyway, providing the source of
+>the code you compile would allow us to help you instead of making
+>educated guesses. But the obvious question is: do you have the
+>support for the socket family you are trying to use enabled in the
+>kernel configuration?
+>
+>--=20
+>					    Gilles.
+>https://click-hack.org
 
-IS_ENABLED() would likely help nicely.
 
-> What is in current for-upstream/3.14 and 3.18 is intended for upstream
-> as-is unless someone sees problems I missed.
-> 
-> Jan
-> 
-
-
--- 
-Philippe.
 
