@@ -1,15 +1,11 @@
-Date: Wed, 08 Jul 2015 16:57:46 -0400
-From: Glen Wernersbach <glen@jetsoftdev.com>
-Message-ID: <D1C2D578.39B56%glen@jetsoftdev.com>
-References: <D1C206F1.39ADA%glen@jetsoftdev.com>
- <20150708101145.GL20176@hermes.click-hack.org>
-In-Reply-To: <20150708101145.GL20176@hermes.click-hack.org>
-Mime-version: 1.0
-Content-type: text/plain;
-	charset="ISO-8859-1"
-Content-transfer-encoding: quoted-printable
-Subject: Re: [Xenomai] Xemomai 3 - posix demo programs don't seem to be
- loading the right socket program.
+Message-ID: <559E65FB.8080904@sigmatek.at>
+Date: Thu, 09 Jul 2015 14:15:55 +0200
+From: Johann Obermayr <johann.obermayr@sigmatek.at>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] usage of rtdm_task_sleep_abs
+Reply-To: johann.obermayr@sigmatek.at
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,73 +14,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Xenomai@xenomai.org
 
-Giles,
+Hello,
 
-RsConMain was just a copy of  the bufp-readwrite demo program so I could
-fool around with the make file to see if I could prove the wrapper was
-loading. The code is the standard unmodified demo of the bufp-readwrite
-demo example.
+we have follow situation
 
-As it turns out as you suspected, for the standard demos that are
-installed to work, you must go in and change the Xenomai kernel setting
-RTIPC Protocol Family from its default value of excluded/Off and change to
-an included/On setting.
+u64 lrtdrv_time_of_irq_ns ;
+void worker_task()
+{
+while(1)
+     {
+     rtdm_task_sleep_abs(lrtdrv_time_of_irq_ns + 950000ull, 
+RTDM_TIMERMODE_ABSOLUTE);
+     do_something();
+     }
+}
 
-Once that was done all of the demo programs and my copy worked just fine.
+_kernel_rtdm_irq_handler()
+{
+     lrtdrv_time_of_irq_ns = rtdm_clock_read_monotonic();
+}
 
-Glen
---=20
-Glen Wernersbach View Profile <http://www.linkedin.com/in/GlenWernersbach>
-Business, Innovation and Technical Consultant;
-President and CEO
-Jetsoft Development Co.
+the  _kernel_irq_callback() is called every 1ms.
+we will , that the worker_task begin 50us before next irq
 
+But sometime, the worker task start ~50us after irq. Why ?
 
-629 Old St Rt. 74 =AD Suite 210
-Cincinnati, Oh 45244
+Sometime we call xntbase_adjust_time to sync external RTC with internal 
+clocks.
+can this be a problem ?
 
-513-240-9929
-glen@jetsoftdev.com
+Hardware & Software
+X86 SMP Dual celeron
+Linux Kernel 3.10.0
+Xenomai 2.6.3
 
-
-
-
-On 7/8/15, 6:11 AM, "Gilles Chanteperdrix"
-<gilles.chanteperdrix@xenomai.org> wrote:
-
->On Tue, Jul 07, 2015 at 10:45:05PM -0400, Glen Wernersbach wrote:
->> Hi All,
->>=20
->> Fooling around with Xenomai 3 RC4. I can get the TestSuite to work but
->>when
->> I run any of the standard posix demo examples I get the following error:
->> ./bufp-readwrite
->> socket 1: Address family not supported by protocol
->> socket 2: Address family not supported by protocol
->>=20
->> Looking on the web this would indicate that the wrapper instruction is
->>not
->> in the linker flags but it is. I tried building my own copy just to make
->> sure the wrapper was included but got the same error.
->> make
->> gcc -o RsConMain RsConMain.c -I/usr/xenomai/include/cobalt
->> -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -D__COBALT__
->> -Wl,@/usr/xenomai/lib/cobalt.wrappers   -L/usr/xenomai/lib -lcobalt
->> -lpthread -lrt =20
->
->I do not think "RsConMain" is a "standard posix demo example", or I
->do not know what you mean by that. Anyway, providing the source of
->the code you compile would allow us to help you instead of making
->educated guesses. But the obvious question is: do you have the
->support for the socket family you are trying to use enabled in the
->kernel configuration?
->
->--=20
->					    Gilles.
->https://click-hack.org
-
-
+Regards
+   Johann
 
