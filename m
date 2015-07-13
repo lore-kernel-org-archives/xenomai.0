@@ -1,6 +1,6 @@
-Date: Mon, 13 Jul 2015 22:31:33 +0200
+Date: Mon, 13 Jul 2015 22:35:06 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150713203133.GA2022@hermes.click-hack.org>
+Message-ID: <20150713203505.GB2022@hermes.click-hack.org>
 References: <20150710104957.GT20176@hermes.click-hack.org>
  <55A3C023.5070000@sigmatek.at>
  <20150713140208.GC1554@hermes.click-hack.org>
@@ -92,7 +92,12 @@ On Mon, Jul 13, 2015 at 10:23:02PM +0200, Johann Obermayr wrote:
 > >
 > Ok.  on out PCI Card there is a FPGA. This FPGA generate am Interrupt to the
 > PC. But internal in the FPGA there
-> are different IRQ sources. One of them is our Tick.
+> are different IRQ sources.
+
+The proper way to handle an interrupt which generates multiple IRQ
+sources is with a "chained handler".
+
+> One of them is our Tick.
 > So we measure the time from  __ipipe_handle_irq to the  our rtdm_irq_request
 > handler.
 > In our handler we can check, if it our Tick and than we can calc the correct
@@ -100,16 +105,13 @@ On Mon, Jul 13, 2015 at 10:23:02PM +0200, Johann Obermayr wrote:
 > 
 > It's a callback function from some irq function ipipe_raise_irq,
 > __ipipe_do_IRQ, __ipipe_handle_irq
-> for our own tracing and it save the fpga irq time.
-> Only __ipipe_handle_irq have state 0x01 (begin irq) & state 0x02 at the end
-> of the function.
 
-I see two weird things in your traces:
-- irq_hook_handler which is taking a lot of time
-- or some APIC related functions taking a lot of time.
-
-Are you sure your system is not one of those which disable the APIC
-during idle period. Is your system UP or SMP?
+Ok, this is a bit ugly, and probably useless. The latency is not
+between __ipipe_handle_irq and your handler, it is between the hardware
+irq and __ipipe_handle_irq. And due to this latency, you must
+calculate the "correct" time with some margin taking the latency
+into account. And you must realize that you can not do anything from
+such callback, such as calling xenomai functions.
 
 -- 
 					    Gilles.
