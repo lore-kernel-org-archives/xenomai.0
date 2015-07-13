@@ -1,16 +1,12 @@
-From: "Giorgio Buffa" <giorgiobuffa.work@gmail.com>
-References: <00e901d0b413$83853d70$8a8fb850$@gmail.com>
- <20150701154521.GC13256@hermes.click-hack.org>
-In-Reply-To: <20150701154521.GC13256@hermes.click-hack.org>
-Date: Mon, 13 Jul 2015 10:40:41 +0200
-Message-ID: <000c01d0bd47$9a8612f0$cf9238d0$@gmail.com>
+Date: Mon, 13 Jul 2015 13:36:13 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150713113613.GB1586@hermes>
+References: <000201d0bd45$f08167b0$d1843710$@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Content-Language: it
-Subject: [Xenomai] R: Have you ever used the Linux Test Project (LTP)
-	realtime testsuite with Xenomai?
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <000201d0bd45$f08167b0$d1843710$@gmail.com>
+Subject: Re: [Xenomai] Xenomai 2.6.4 on Linux w/ PREEMPT_RT
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,26 +15,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Giorgio Buffa <giorgiobuffa.work@gmail.com>
+Cc: xenomai@xenomai.org
 
-> LTP is regularly used with Xenomai, but as part of the dohell script,
-> generating Linux load.
+On Mon, Jul 13, 2015 at 10:28:46AM +0200, Giorgio Buffa wrote:
+> Hello list!
+> Have you ever set up a dual-kernel system using Xenomai 2 and a Linux
+> kernel patched with PREEMPT_RT?
 > 
-> What you want to do, I guess, is to recompile the rt-tests for the Xenomai
-> POSIX API. In that case, you should not underestimate what this task
-means,
-> it means more than just recompiling with the xeno-config flags, see:
-> https://xenomai.org/2014/08/porting-a-linux-application-to-xenomai-dual-
-> kernel/
+> I was trying with Linux 3.14.39 on x86_64 using "patch-3.14.39-rt37.patch"
+> and "ipipe-core-3.14.39-x86-9.patch". First I've applied the
+> PREEMPT_RT
 
-Hi Gilles!
-Thank you for the pointer to the porting guide, it is very useful!
+The ipipe-core-3.14.39-x86-9.patch is made for an unpatched Linux
+kernel. Combo patches are specific patches, I am not sure we even
+have one in the download area.
 
-Yes, you're right: using the rt-tests requires more work than just a
-re-compilation with 'xeno-config' flags. BTW some of these tests are
-interesting, I think I will investigate on that matter a little more.
-
-Thank you again and king regards,
-Giorgio Buffa.
-
+-- 
+					    Gilles.
+https://click-hack.org
 
