@@ -1,13 +1,13 @@
-Date: Fri, 7 Aug 2015 11:19:58 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150807091958.GA2134@hermes>
-References: <BAY168-W32777B7F471AE273F0A1FFDC730@phx.gbl>
+References: <1835626271.1735438.1436794640939.JavaMail.yahoo@mail.yahoo.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <55A4DC2F.1090608@xenomai.org>
+Date: Tue, 14 Jul 2015 11:53:51 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <BAY168-W32777B7F471AE273F0A1FFDC730@phx.gbl>
-Subject: Re: [Xenomai] when set  CONFIG_IPIPE=y, get error
+In-Reply-To: <1835626271.1735438.1436794640939.JavaMail.yahoo@mail.yahoo.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] xenomai-3.0-rc5 : binding named semaphores from
+ external process
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,42 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: leejason <woshidahuaidan2011@hotmail.com>
-Cc: "xenomia mail l Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Frederik Bayart <frederik_bayart@yahoo.co.uk>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Aug 07, 2015 at 09:04:27AM +0000, leejason wrote:
-> linux-3.4.6  SOC: ti am335x  =20
->=20
-> ahead of patch xenomai patch ,my kernel can run correctly.    after patch=
- pipe-core-3.4.6-arm-4.patch ,and set CONFIG_IPIPE=3Dy.   then Kernel hangs=
- after =93Starting kernel ..."   =20
-> this is my log: =20
-> /**************start***************************************/NAND read: de=
-vice 0 offset 0x280000, size 0x500000     5242880 bytes read: OK    ## Boot=
-ing kernel from Legacy Image at 80007fc0 ...       Image Name:   Linux-3.4.=
-6         Image Type:   ARM Linux Kernel Image (uncompressed)        Data S=
-ize:    3205680 Bytes =3D 3.1 MiB        Load Address: 80008000      Entry =
-Point:  80008000      Verifying Checksum ... OK      XIP Kernel Image ... O=
-K   OK     Starting kernel ...             /******************end**********=
-*************************/             =20
-> open linux-tree/kernel/ipipe/Makefile  then i got                        =
-                  obj-$(CONFIG_IPIPE)     +=3D core.o timer.o   =20
->=20
->                        but i do not know witch function in core.c and tim=
-er.c affect my kernel .                           =20
-> could u help me with that?                                 =20
->=20
-> i have disable CONFIG_CPU_FREQ CONFIG_KGDB CONFIG_CPU_IDLE and enable CON=
-FIG_EARLY_PRINTK.     and  set bootargs console=3DttyO0,115200n8 debug earl=
-yprintk                                      =20
+On 07/13/2015 03:37 PM, Frederik Bayart wrote:
+> Hallo,
+> 
+> I have problems to bind named semaphores from an external process using
+> the alchemy API.  Below a detailed description. Does anyone have a suggestion
+> 
+> what could be wrong or what I could do to solve the problem ?
+> Kind regards,
+> 
+> Frederik
+> 
+> In attachment an example to reproduce my problem (makefile, stest.c).
+> If you run 'sudo ./stest 1', a named semaphore is created and a task is started
+> that binds it and perform a p operation. The main task is waiting on CTRL+C,
+> and then ask the numer of waiters and performs v operations.
+> If you run 'sudo ./stest 0', the named semaphore is not created, only a task is
+> started that binds it and perform a p operation.
+> 
+> I start first 'sudo ./stest 1'. The process binds the semaphore and blocks on rt_sem_p.
+> The content of /var/run/xenomai is :
+> 
 
-Since you are using Xenomai 2.6.4, could you try the latest I-pipe
-patch supported by Xenomai 2.6.4, that is:
-https://xenomai.org/downloads/ipipe/v3.x/arm/ipipe-core-3.14.44-arm-11.patch
+[snip]
 
-Also, what kernel are you using, is it a vanilla kernel?
+The key issue is that multiple programs forming a single application
+must belong to the same Xenomai session, for sharing data/objects. The
+notion of "session" was introduced by Xenomai 3.
 
---=20
-					    Gilles.
-https://click-hack.org
+So, all you need to do, is to tell the application bootstrap code about
+the session you want to create between several programs, e.g.:
+
+# ./stest --session=foo 1
+# ./stest --session=foo 0
+
+-- 
+Philippe.
 
