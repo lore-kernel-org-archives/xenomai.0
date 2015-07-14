@@ -1,11 +1,21 @@
+Date: Tue, 14 Jul 2015 02:02:32 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150714000232.GB1971@hermes.click-hack.org>
+References: <7413ead94cb8c4f3a91d1288a27103c9.squirrel@sourcetrek.com>
+ <55A3F4B3.1090908@sigmatek.at>
+ <20150713195856.GA1552@hermes.click-hack.org>
+ <55A41E26.9020903@sigmatek.at>
+ <20150713203133.GA2022@hermes.click-hack.org>
+ <55A4235D.2000601@sigmatek.at>
+ <20150713205412.GC2022@hermes.click-hack.org>
+ <55A4346B.9030309@sigmatek.at>
+ <20150713223932.GA1971@hermes.click-hack.org>
+ <55A44A33.7010100@sigmatek.at>
 MIME-Version: 1.0
-In-Reply-To: <BLU436-SMTP153D5AD06FBFF11FA47585FF08B0@phx.gbl>
-References: <BLU436-SMTP153D5AD06FBFF11FA47585FF08B0@phx.gbl>
-From: Miguel Rubio-Roy <mrubioroy@gmail.com>
-Date: Thu, 30 Jul 2015 13:21:15 +0200
-Message-ID: <CAEtr_LDsrbvTwb9fuyuHKASdT_Q5ofkDtOBbns7GvvTbvx7+AQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Raspberry Pi 2 patch - BCM2709
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <55A44A33.7010100@sigmatek.at>
+Subject: Re: [Xenomai] usage of rtdm_task_sleep_abs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,109 +24,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Mathieu <mathieu_rondonneau@hotmail.com>
+To: Johann Obermayr <johann.obermayr@sigmatek.at>
 Cc: xenomai@xenomai.org
 
-On 30 July 2015 at 05:37, Mathieu <mathieu_rondonneau@hotmail.com> wrote:
+On Tue, Jul 14, 2015 at 01:30:59AM +0200, Johann Obermayr wrote:
+> Am 14.07.2015 um 00:39 schrieb Gilles Chanteperdrix:
+> >You mean there is an issue with bus contention? Are there many
+> >things occupying the bus when the problem happens?
+> Hi,
+> 
+> both cpu core can access our pci-card.
+> 
+> at this time we only have one pci-card with an fpga(with dpram) and a sram.
+> the fpga generate our system tick. And have a company internal bus system.
+> this bus system can configured with the dpram & fpga-config register.
+> we also must read witch irq come from the fpga, because internal he can have
+> more than one irq sources. and we must quit this irq. (with reading a fpga
+> register)
+> 
+> we see that if one core accessing the pci-bus, the other core have a high
+> latency.
+> core0 = importan & high prior accessing fpga and sram
+> core1 = linux & visu & some other low prior
+> 
+> if a low prior copy a memblock to/from the sram, the core0 have high latency
+> in
+> our irq handler at reading some data from fpga.
+> so we add a own pci-blocker task on core1. this task ist started about 50us
+> before
+> next tick-irq is coming. now our irq handle can access the fpga without
+> waiting.
 
-> In the mean time, I was wondering is anybody else succeed to get this
-> working or has any pointers on anything obvious missing.
->
+Well, normally, a PCI bus controller has parameters controlling the
+duration of the longest burst, adequately named "PCI latency". You
+should also look at whether caching is enabled. A PCI bridge will
+normally prefetch from a PCI bar (provided that the FPGA indicates
+in the configuration bytes that the memory is prefetchable) to avoid
+CPU wait states. Using what was once called MTRR, but has a new name
+in new processor, you can cause the procesdor to buffer data before
+sending large bursts on the PCI bus. I think what you need to have a
+look at is the documentation of the PCIe to PCI bridge, to see if
+you can not improve the situation by better configuring it. Also,
+reading or writing to FPGA is RAM looks pretty strange, since I
+would guess an FPGA could be master on the PCI bus and do DMA
+itself, thereby relieving the CPU.
 
-I was stuck at the same point. I've been able to go a bit further (but not
-solve the original problem) by setting:
-CONFIG_DEBUG_PAGEALLOC=y
-CONFIG_DEBUG_MEMORY_INIT=y
+-- 
+					    Gilles.
+https://click-hack.org
 
-Then I see:
-
-Uncompressing Linux... done, booting the kernel.
-[    0.000000] Booting Linux on physical CPU 0xf00
-[    0.000000] Initializing cgroup subsys cpu
-[    0.000000] Initializing cgroup subsys cpuacct
-[    0.000000] Linux version 3.18.12-v7+ (mrubioroy@llrmrr) (gcc version
-4.7.1 20120402 (prere5
-[    0.000000] CPU: ARMv7 Processor [410fc075] revision 5 (ARMv7),
-cr=10c5387d
-[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing
-instruction cache
-[    0.000000] Machine: BCM2709
-[    0.000000] debug: ignoring loglevel setting.
-[    0.000000] bootconsole [earlycon0] enabled
-[    0.000000] cma: Reserved 8 MiB at 0x3a800000
-[    0.000000] Memory policy: Data cache writealloc
-[    0.000000] On node 0 totalpages: 241664
-[    0.000000] free_area_init_node: node 0, pgdat 8074f1c0, node_mem_map
-b9fa7000
-[    0.000000]   Normal zone: 2124 pages used for memmap
-[    0.000000]   Normal zone: 0 pages reserved
-[    0.000000]   Normal zone: 241664 pages, LIFO batch:31
-[    0.000000] mminit::memmap_init Initialising map node 0 zone 0 pfns 0 ->
-241664
-[    0.000000] [bcm2709_smp_init_cpus] enter (8b00->f3003010)
-[    0.000000] [bcm2709_smp_init_cpus] ncores=4
-[    0.000000] PERCPU: Embedded 13 pages/cpu @b9f6e000 s22400 r8192 d22656
-u53248
-[    0.000000] pcpu-alloc: s22400 r8192 d22656 u53248 alloc=13*4096
-[    0.000000] pcpu-alloc: [0] 0 [0] 1 [0] 2 [0] 3
-[    0.000000] mminit::zonelist general 0:Normal = 0:Normal
-[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.
-Total pages: 239540
-[    0.000000] Kernel command line: dma.dmachans=0x7f35
-bcm2708_fb.fbwidth=656 bcm2708_fb.fbhet
-[    0.000000] PID hash table entries: 4096 (order: 2, 16384 bytes)
-[    0.000000] Dentry cache hash table entries: 131072 (order: 7, 524288
-bytes)
-[    0.000000] Inode-cache hash table entries: 65536 (order: 6, 262144
-bytes)
-[    0.000000] Memory: 940468K/966656K available (5171K kernel code, 366K
-rwdata, 1524K rodata)
-[    0.000000] Virtual kernel memory layout:
-[    0.000000]     vector  : 0xffff0000 - 0xffff1000   (   4 kB)
-[    0.000000]     fixmap  : 0xffc00000 - 0xffe00000   (2048 kB)
-[    0.000000]     vmalloc : 0xbb800000 - 0xff000000   (1080 MB)
-[    0.000000]     lowmem  : 0x80000000 - 0xbb000000   ( 944 MB)
-[    0.000000]     modules : 0x7f000000 - 0x80000000   (  16 MB)
-[    0.000000]       .text : 0x80008000 - 0x80691e44   (6696 kB)
-[    0.000000]       .init : 0x80692000 - 0x806fa000   ( 416 kB)
-[    0.000000]       .data : 0x806fa000 - 0x80755bd4   ( 367 kB)
-[    0.000000]        .bss : 0x80755bd4 - 0x80842180   ( 946 kB)
-[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
-[    0.000000] Preemptible hierarchical RCU implementation.
-[    0.000000] NR_IRQS:608
-[    0.000000] Architected cp15 timer(s) running at 19.20MHz (virt).
-[    0.000000] I-pipe, 19.200 MHz clocksource, wrap in 960767920505705 ms
-[ 5875.515258] sched_clock: 56 bits at 19MHz, resolution 52ns, wraps every
-3579139424256ns
-[ 5875.515258] Switching to timer-based delay loop, resolution 52ns
-[ 5875.515259] Interrupt pipeline (release #2)
-[    0.000003] Console: colour dummy device 80x30
-[ 5875.515261] Calibrating delay loop (skipped), value calculated using
-timer frequency.. 38.4)
-[ 5875.515259] pid_max: default: 32768 minimum: 301
-[ 5875.515258] Mount-cache hash table entries: 2048 (order: 1, 8192 bytes)
-[    0.000002] Mountpoint-cache hash table entries: 2048 (order: 1, 8192
-bytes)
-[ 5875.515259] Initializing cgroup subsys memory
-[ 5875.515259] Initializing cgroup subsys devices
-[ 5875.515258] Initializing cgroup subsys freezer
-[ 5875.515258] Initializing cgroup subsys net_cls
-[ 5875.515259] Initializing cgroup subsys blkio
-[ 5875.515258] CPU: Testing write buffer coherency: ok
-[ 5875.515259] ftrace: allocating 17387 entries in 51 pages
-[ 5875.515260] missing device node for CPU 0
-[ 5875.515258] missing device node for CPU 1
-[ 5875.515258] missing device node for CPU 2
-[ 5875.515260] missing device node for CPU 3
-[ 5875.515259] CPU0: thread -1, cpu 0, socket 15, mpidr 80000f00
-[ 5875.515262] [bcm2709_smp_prepare_cpus] enter
-[ 5875.515259] calling  trace_init_flags_sys_exit+0x0/0x28 @ 1
-[ 5875.515261] initcall trace_init_flags_sys_exit+0x0/0x28 returned 0 after
-0 usecs
-[ 5875.515258] calling  trace_init_flags_sys_enter+0x0/0x28 @ 1
-[ 5875.515260] initcall trace_init_flags_sys_enter+0x0/0x28 returned 0
-after 0 usecs
-[ 5875.515259] calling  init_static_idmap+0x0/0x12c @ 1
-[ 5875.515261] Setting up static identity map for 0x4ab020 - 0x4ab054
-[ 5875.515259] initcall init_static_idmap+0x0/0x12c returned 0 after 0 usecs
-[ 5875.515261] calling  spawn_ksoftirqd+0x0/0x30 @ 1
