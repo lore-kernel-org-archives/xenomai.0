@@ -1,20 +1,20 @@
-Date: Mon, 13 Jul 2015 22:35:06 +0200
+Date: Thu, 16 Jul 2015 08:30:19 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150713203505.GB2022@hermes.click-hack.org>
-References: <20150710104957.GT20176@hermes.click-hack.org>
- <55A3C023.5070000@sigmatek.at>
- <20150713140208.GC1554@hermes.click-hack.org>
- <55A3D1B2.50905@sigmatek.at>
- <e5d48b6984cbc1b098062b303b56b0db.squirrel@sourcetrek.com>
- <55A3EE26.5070802@sigmatek.at>
- <7413ead94cb8c4f3a91d1288a27103c9.squirrel@sourcetrek.com>
- <55A3F4B3.1090908@sigmatek.at>
- <20150713195856.GA1552@hermes.click-hack.org>
+Message-ID: <20150716063019.GA13809@hermes.click-hack.org>
+References: <20150713195856.GA1552@hermes.click-hack.org>
  <55A41E26.9020903@sigmatek.at>
+ <20150713203133.GA2022@hermes.click-hack.org>
+ <55A4235D.2000601@sigmatek.at>
+ <20150713205412.GC2022@hermes.click-hack.org>
+ <55A4346B.9030309@sigmatek.at>
+ <20150713223932.GA1971@hermes.click-hack.org>
+ <55A44A33.7010100@sigmatek.at>
+ <20150714000232.GB1971@hermes.click-hack.org>
+ <55A6CA07.1030005@sigmatek.at>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <55A41E26.9020903@sigmatek.at>
+In-Reply-To: <55A6CA07.1030005@sigmatek.at>
 Subject: Re: [Xenomai] usage of rtdm_task_sleep_abs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -27,91 +27,61 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
 To: Johann Obermayr <johann.obermayr@sigmatek.at>
 Cc: xenomai@xenomai.org
 
-On Mon, Jul 13, 2015 at 10:23:02PM +0200, Johann Obermayr wrote:
-> Am 13.07.2015 um 21:58 schrieb Gilles Chanteperdrix:
-> >On Mon, Jul 13, 2015 at 07:26:11PM +0200, Johann Obermayr wrote:
-> >>Am 13.07.2015 um 19:21 schrieb Gilles Chanteperdrix:
-> >>>Johann Obermayr wrote:
-> >>>>Am 13.07.2015 um 17:24 schrieb Gilles Chanteperdrix:
-> >>>>>Johann Obermayr wrote:
-> >>>>>>without your application, there are no large latencies.
-> >>>>>>with your application see frozen.txt (with latency -f)
-> >>>>>I am confused. You mean "our application", not "your application",
-> >>>>>right?
-> >>>>>lrtdrv_monitoring_irq is not part of the code delivered by the Xenomai
-> >>>>>project.
-> >>>>>
-> >>>>>>We see the problem only if one task (background) is accessing the SRAM
-> >>>>>>on your PCI-Card. if we stop this task, all is ok.
-> >>>>>Again: the Xenomai project does not make PCI-card. So, you probably mean
-> >>>>>"our PCI-Card"?
-> >>>>yes, our PCI-Card. (sorry for my bad english)
-> >>>>>>So we have a higher prior task (pci-locker), that interrupt the
-> >>>>>>background task, so that the pci bus get free.
-> >>>>>I am not sure I understand your explanations. But the trace is pretty
-> >>>>>clear:
-> >>>>>
-> >>>>>At time -658 the timer is programmed to tick at -561.
-> >>>>>
-> >>>>>>:|  # event   tick@-561   -658	  0.112  xntimer_next_local_shot+0xca
-> >>>>>>:|  + func                -651	  0.145  lrtdrv_monitoring_irq+0x4
-> >>>>>>[sigmatek_lrt] (irq_hook_handler+0x32 [sigmatek_lrt])
-> >>>>>>:|  + end     0x000000ef  -651! 641.640  apic_timer_interrupt+0x52
-> >>>>>>(<102d0254>)
-> >>>>>But at that point the tick is delayed for 600us. And according to the
-> >>>>>trace, the last traced function called before that delay is the function
-> >>>>>
-> >>>>>ltdrv_monitoring_irq.
-> >>>>>
-> >>>>>So, I do not know what this irq is doing, but I would suggest having a
-> >>>>>close look at it.
-> >>>>>
-> >>>>>
-> >>>>hello,
-> >>>>
-> >>>>i have disable our lrtdrv_monitoring_irq.
-> >>>>Only have this callback
-> >>>>static void irq_hook_handler(unsigned int irq, unsigned int state)
-> >>>>{
-> >>>>      if (fpga_interrupt == irq && state == 0x01)
-> >>>>      {
-> >>>>          time_fpga_irq = rt_timer_tsc();
-> >>>>      }
-> >>>>}
-> >>>>same latency
-> >>>Maybe, but your trace does not contain enough points to see it. The trace
-> >>>should at least contain the "tick@" event which gets missed, so that we
-> >>>can see how much the interrupt is delayed, and what was happening at the
-> >>>time.
-> >>>
-> >>>
+On Wed, Jul 15, 2015 at 11:00:55PM +0200, Johann Obermayr wrote:
+> Am 14.07.2015 um 02:02 schrieb Gilles Chanteperdrix:
+> >On Tue, Jul 14, 2015 at 01:30:59AM +0200, Johann Obermayr wrote:
+> >>Am 14.07.2015 um 00:39 schrieb Gilles Chanteperdrix:
+> >>>You mean there is an issue with bus contention? Are there many
+> >>>things occupying the bus when the problem happens?
 > >>Hi,
 > >>
-> >>Sorry, here with more points.
-> >Ok, what is irq_hook_handler ?
+> >>both cpu core can access our pci-card.
+> >>
+> >>at this time we only have one pci-card with an fpga(with dpram) and a sram.
+> >>the fpga generate our system tick. And have a company internal bus system.
+> >>this bus system can configured with the dpram & fpga-config register.
+> >>we also must read witch irq come from the fpga, because internal he can have
+> >>more than one irq sources. and we must quit this irq. (with reading a fpga
+> >>register)
+> >>
+> >>we see that if one core accessing the pci-bus, the other core have a high
+> >>latency.
+> >>core0 = importan & high prior accessing fpga and sram
+> >>core1 = linux & visu & some other low prior
+> >>
+> >>if a low prior copy a memblock to/from the sram, the core0 have high latency
+> >>in
+> >>our irq handler at reading some data from fpga.
+> >>so we add a own pci-blocker task on core1. this task ist started about 50us
+> >>before
+> >>next tick-irq is coming. now our irq handle can access the fpga without
+> >>waiting.
+> >Well, normally, a PCI bus controller has parameters controlling the
+> >duration of the longest burst, adequately named "PCI latency". You
+> >should also look at whether caching is enabled. A PCI bridge will
+> >normally prefetch from a PCI bar (provided that the FPGA indicates
+> >in the configuration bytes that the memory is prefetchable) to avoid
+> >CPU wait states. Using what was once called MTRR, but has a new name
+> >in new processor, you can cause the procesdor to buffer data before
+> >sending large bursts on the PCI bus. I think what you need to have a
+> >look at is the documentation of the PCIe to PCI bridge, to see if
+> >you can not improve the situation by better configuring it. Also,
+> >reading or writing to FPGA is RAM looks pretty strange, since I
+> >would guess an FPGA could be master on the PCI bus and do DMA
+> >itself, thereby relieving the CPU.
 > >
-> Ok.  on out PCI Card there is a FPGA. This FPGA generate am Interrupt to the
-> PC. But internal in the FPGA there
-> are different IRQ sources.
-
-The proper way to handle an interrupt which generates multiple IRQ
-sources is with a "chained handler".
-
-> One of them is our Tick.
-> So we measure the time from  __ipipe_handle_irq to the  our rtdm_irq_request
-> handler.
-> In our handler we can check, if it our Tick and than we can calc the correct
-> time to start our pci_locker task 50us before next Tick-irq.
+> Hello,
 > 
-> It's a callback function from some irq function ipipe_raise_irq,
-> __ipipe_do_IRQ, __ipipe_handle_irq
+> how can i check, if the TSC on both core are run syncron ?
+> Dual Core Celeron, no Hyperthreading.
 
-Ok, this is a bit ugly, and probably useless. The latency is not
-between __ipipe_handle_irq and your handler, it is between the hardware
-irq and __ipipe_handle_irq. And due to this latency, you must
-calculate the "correct" time with some margin taking the latency
-into account. And you must realize that you can not do anything from
-such callback, such as calling xenomai functions.
+Quite frankly, I think it is pretty clear what the problem is now:
+you are accessing your SRAM in uncached mode, which causes large
+wait states in your processor and cause it to misbehave somehow. Try
+to fix that, enable pre-fetching on the PCI bridge as well, I
+believe everything else are red herrings.
+
+Regards.
 
 -- 
 					    Gilles.
