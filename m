@@ -1,19 +1,14 @@
-Message-ID: <55A7A516.7090005@siemens.com>
-Date: Thu, 16 Jul 2015 14:35:34 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+References: <55A4DC2F.1090608@xenomai.org>
+ <1504864203.3834276.1436964349384.JavaMail.yahoo@mail.yahoo.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <55A7CF2E.40508@xenomai.org>
+Date: Thu, 16 Jul 2015 17:35:10 +0200
 MIME-Version: 1.0
-References: <20150702173508.GU13256@hermes.click-hack.org>
- <20150702175526.GV13256@hermes.click-hack.org> <55957B86.7020009@siemens.com>
- <20150702184232.GX13256@hermes.click-hack.org> <559587A0.7020005@siemens.com>
- <20150702185525.GY13256@hermes.click-hack.org> <559591E5.5060106@siemens.com>
- <55959E70.1020407@siemens.com> <20150703105149.GZ13256@hermes.click-hack.org>
- <20150703123125.GC13256@hermes.click-hack.org>
- <20150703123829.GD13256@hermes.click-hack.org>
-In-Reply-To: <20150703123829.GD13256@hermes.click-hack.org>
+In-Reply-To: <1504864203.3834276.1436964349384.JavaMail.yahoo@mail.yahoo.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt/kernel: Remove
- unused mode parameter from COBALT_SYSCALL
+Subject: Re: [Xenomai] xenomai-3.0-rc5 : binding named semaphores from
+ external process
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,87 +17,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Frederik Bayart <frederik_bayart@yahoo.co.uk>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2015-07-03 14:38, Gilles Chanteperdrix wrote:
-> On Fri, Jul 03, 2015 at 02:31:25PM +0200, Gilles Chanteperdrix wrote:
->> On Fri, Jul 03, 2015 at 12:51:49PM +0200, Gilles Chanteperdrix wrote:
->>>> index 0000000..36b1e69
->>>> --- /dev/null
->>>> +++ b/kernel/cobalt/posix/gen-syscall-entries.sh
->>>> @@ -0,0 +1,24 @@
->>>> +#! /bin/sh
->>>> +
->>>> +set -e
->>>> +
->>>> +shift
->>>> +
->>>> +echo "#ifdef COBALT_LIST_CALL_ENTRIES"
->>>> +awk '
->>>> +match($0, /COBALT_SYSCALL\([^,]*, [^,]*/)  {
->>>> +	str=substr($0, RSTART + 15, RLENGTH - 15)
->>>> +	match(str, /[^,]*/)
->>>> +	print "__COBALT_CALL_ENTRY(" substr(str, RSTART, RLENGTH) ")"
->>>> +}
->>>> +' $*
->>>> +echo "#endif"
->>>> +
->>>> +echo "#ifdef COBALT_LIST_MODES"
->>>> +awk '
->>>> +match($0, /COBALT_SYSCALL\([^,]*, [^,]*/)  {
->>>> +	str=substr($0, RSTART + 15, RLENGTH - 15)
->>>> +	print "__COBALT_MODE(" str ")"
->>>> +}
->>>> +' $*
->>>> +echo "#endif"
->>>
->>> This is particularly inelegant:
->>> - you do not need awk to do that, sed is sufficient
->>> - with using awk, you can generate the two files in one pass, and
->>> remove the #ifdefs trick;
->>> - I think the awk script should at least generate an error in case
->>> of parser error
->>>
->>> I will submit an awk script which does that.
->>
->> Ok, another awk script which does that:
->>
->> BEGIN {
->> 	system("rm -f syscalls_modes.h syscalls_entries.h")
->> }
->>
->> match($0, /COBALT_SYSCALL\([^,]*,[ \t]*[^,]*/)  {
->> 	str=substr($0, RSTART + 15, RLENGTH - 15)
->> 	match(str, /[^, \t]*/)
->> 	syscall=substr(str, RSTART, RLENGTH)
->>
->> 	if (syscall == "") {
->> 		print "Failed to find syscall name in line " $0
->> 		exit 1
->> 	}
->>
->> 	print "__COBALT_MODE(" str ")," >> "syscalls_modes.h"
->> 	print "__COBALT_CALL_ENTRY(" syscall ")," >> "syscalls_entries.h"
->> 	next
->> }
->>
->> /COBALT_SYSCALL\(/  {
->> 	print "Failed to parse line " $0
->> 	exit 1
->> }
->>
->> It supposes it is running from the output directory, but we can pass
->> the output directory as a parameter if you prefer.
+On 07/15/2015 02:45 PM, Frederik Bayart wrote:
+> This works. I still notice 2 issues :
 > 
-> Note that the simplistic approach taken precludes the use of
-> conditional compilation with syscall definitions.
+> 1) If you execute reversely
+> 
+> ./stest --session=foo 0
+> ./stest --session=foo 1
+> 
+> The first process binds to the named semaphore which is not yet created. According to the description of rt_sem_bind,  if the object does not exist on entry, the caller may block until a semaphore of the given name is created.
+> 
+> So based on this description, I would I expect that if the second process is started, the first process would bind and continue and blocks in the p operation. The same for the 2nd process. Is this correct ? At the moment, if I start the 2nd process, I get a segfault in rt_sem_create :
+> 
+> [ 9758.887921] [Xenomai] switching main to secondary mode after exception #14 from user-space at 0x7f6ad8c4a43e (pid 9256)
+> [ 9758.887930] main[9256]: segfault at 7f903bf6e038 ip 00007f6ad8c4a43e sp 00007fffbd2c2eb8 error 6 in libcobalt.so.2.0.0[7f6ad8c3d000+1e000]
+>
 
-I'll parametrize and integrate this, thanks.
+Looking at the copperplate code, yep, this definitely can't work. Ok,
+queued.
 
-Jan
+> 
+> 2)
+> 
+> The fuse filesystem is not unmounted. This is because in xenomai-3.0-rc5/lib/copperplate/regd/regd.c the fullpath is hardcoded to fusermount and umount
+> 
+> I could fixed it, with the diff below. It's not clear to me why access of umount is tested and not from fusermount.
+> 
+
+Piping the "which" output seems seriously overkill. Besides, we don't
+want to rely on the environment to find those paths, we are running with
+supervisor privileges (i.e. we don't want to run what the user tells us
+what "umount" should be, but rather what the distro actually says
+"umount" is).
+
+Per LSB 3.0, /bin/umount would be the place to find this, so basically,
+testing a couple of reasonable locations should be enough.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
