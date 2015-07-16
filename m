@@ -1,18 +1,18 @@
-Message-ID: <55A79980.9050305@sigmatek.at>
-Date: Thu, 16 Jul 2015 13:46:08 +0200
-From: Johann Obermayr <johann.obermayr@sigmatek.at>
+Message-ID: <55A7A4E2.4060309@siemens.com>
+Date: Thu, 16 Jul 2015 14:34:42 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <20150713195856.GA1552@hermes.click-hack.org>
- <55A41E26.9020903@sigmatek.at> <20150713203133.GA2022@hermes.click-hack.org>
- <55A4235D.2000601@sigmatek.at> <20150713205412.GC2022@hermes.click-hack.org>
- <55A4346B.9030309@sigmatek.at> <20150713223932.GA1971@hermes.click-hack.org>
- <55A44A33.7010100@sigmatek.at> <20150714000232.GB1971@hermes.click-hack.org>
- <55A6CA07.1030005@sigmatek.at> <20150716063019.GA13809@hermes.click-hack.org>
-In-Reply-To: <20150716063019.GA13809@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+References: <20150702165642.GS13256@hermes.click-hack.org>
+ <5595757A.60301@siemens.com> <20150702173508.GU13256@hermes.click-hack.org>
+ <20150702175526.GV13256@hermes.click-hack.org> <55957B86.7020009@siemens.com>
+ <20150702184232.GX13256@hermes.click-hack.org> <559587A0.7020005@siemens.com>
+ <20150702185525.GY13256@hermes.click-hack.org> <559591E5.5060106@siemens.com>
+ <55959E70.1020407@siemens.com> <20150703105149.GZ13256@hermes.click-hack.org>
+In-Reply-To: <20150703105149.GZ13256@hermes.click-hack.org>
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] usage of rtdm_task_sleep_abs
-Reply-To: johann.obermayr@sigmatek.at
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt/kernel: Remove
+ unused mode parameter from COBALT_SYSCALL
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,84 +21,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Am 16.07.2015 um 08:30 schrieb Gilles Chanteperdrix:
-> On Wed, Jul 15, 2015 at 11:00:55PM +0200, Johann Obermayr wrote:
->> Am 14.07.2015 um 02:02 schrieb Gilles Chanteperdrix:
->>> On Tue, Jul 14, 2015 at 01:30:59AM +0200, Johann Obermayr wrote:
->>>> Am 14.07.2015 um 00:39 schrieb Gilles Chanteperdrix:
->>>>> You mean there is an issue with bus contention? Are there many
->>>>> things occupying the bus when the problem happens?
->>>> Hi,
->>>>
->>>> both cpu core can access our pci-card.
->>>>
->>>> at this time we only have one pci-card with an fpga(with dpram) and a sram.
->>>> the fpga generate our system tick. And have a company internal bus system.
->>>> this bus system can configured with the dpram & fpga-config register.
->>>> we also must read witch irq come from the fpga, because internal he can have
->>>> more than one irq sources. and we must quit this irq. (with reading a fpga
->>>> register)
->>>>
->>>> we see that if one core accessing the pci-bus, the other core have a high
->>>> latency.
->>>> core0 = importan & high prior accessing fpga and sram
->>>> core1 = linux & visu & some other low prior
->>>>
->>>> if a low prior copy a memblock to/from the sram, the core0 have high latency
->>>> in
->>>> our irq handler at reading some data from fpga.
->>>> so we add a own pci-blocker task on core1. this task ist started about 50us
->>>> before
->>>> next tick-irq is coming. now our irq handle can access the fpga without
->>>> waiting.
->>> Well, normally, a PCI bus controller has parameters controlling the
->>> duration of the longest burst, adequately named "PCI latency". You
->>> should also look at whether caching is enabled. A PCI bridge will
->>> normally prefetch from a PCI bar (provided that the FPGA indicates
->>> in the configuration bytes that the memory is prefetchable) to avoid
->>> CPU wait states. Using what was once called MTRR, but has a new name
->>> in new processor, you can cause the procesdor to buffer data before
->>> sending large bursts on the PCI bus. I think what you need to have a
->>> look at is the documentation of the PCIe to PCI bridge, to see if
->>> you can not improve the situation by better configuring it. Also,
->>> reading or writing to FPGA is RAM looks pretty strange, since I
->>> would guess an FPGA could be master on the PCI bus and do DMA
->>> itself, thereby relieving the CPU.
->>>
->> Hello,
+On 2015-07-03 12:51, Gilles Chanteperdrix wrote:
+> On Thu, Jul 02, 2015 at 10:26:24PM +0200, Jan Kiszka wrote:
+>> Just FYI - still requires testing and more review - find a first
+>> generator version below.
 >>
->> how can i check, if the TSC on both core are run syncron ?
->> Dual Core Celeron, no Hyperthreading.
-> Quite frankly, I think it is pretty clear what the problem is now:
-> you are accessing your SRAM in uncached mode, which causes large
-> wait states in your processor and cause it to misbehave somehow. Try
-> to fix that, enable pre-fetching on the PCI bridge as well, I
-> believe everything else are red herrings.
->
-> Regards.
->
-Hello,
+>> Jan
+>>
+>>
+>> cobalt/posix/syscall: Generate cobalt_syscalls and cobalt_sysmodes
+>>
+>> ---
+>>  .../arch/x86/include/asm/xenomai/syscall32.h       |  12 +-
+>>  kernel/cobalt/posix/Makefile                       |  12 ++
+>>  kernel/cobalt/posix/gen-syscall-entries.sh         |  24 +++
+>>  kernel/cobalt/posix/syscall.c                      | 208 ++-------------------
+>>  scripts/prepare-kernel.sh                          |   4 +-
+>>  5 files changed, 57 insertions(+), 203 deletions(-)
+>>  create mode 100755 kernel/cobalt/posix/gen-syscall-entries.sh
+>>
+>> diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.h b/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.h
+>> index 8bd40d4..58b7336 100644
+>> --- a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.h
+>> +++ b/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.h
+>> @@ -45,14 +45,14 @@
+>>  #define __syshand32x__(__name)	((cobalt_syshand)(cobalt32x_ ## __name))
+>>  
+>>  #define __COBALT_CALL32x_INITHAND(__handler)	\
+>> -  , [__COBALT_X32_BASE ... __COBALT_X32_BASE + __NR_COBALT_SYSCALLS-1] = __handler
+>> +	[__COBALT_X32_BASE ... __COBALT_X32_BASE + __NR_COBALT_SYSCALLS-1] = __handler,
+>>  
+>>  #define __COBALT_CALL32x_INITMODE(__mode)	\
+>> -  , [__COBALT_X32_BASE ... __COBALT_X32_BASE + __NR_COBALT_SYSCALLS-1] = __mode
+>> +	[__COBALT_X32_BASE ... __COBALT_X32_BASE + __NR_COBALT_SYSCALLS-1] = __mode,
+>>  
+>>  /* x32 default entry (no thunk) */
+>>  #define __COBALT_CALL32x_ENTRY(__name, __handler)		\
+>> -	, [sc_cobalt_ ## __name + __COBALT_X32_BASE] = __handler
+>> +	[sc_cobalt_ ## __name + __COBALT_X32_BASE] = __handler,
+>>  
+>>  /* x32 thunk installation */
+>>  #define __COBALT_CALL32x_pure_THUNK(__name)	\
+>> @@ -113,14 +113,14 @@
+>>  #define __syshand32emu__(__name)	((cobalt_syshand)(cobalt32emu_ ## __name))
+>>  
+>>  #define __COBALT_CALL32emu_INITHAND(__handler)	\
+>> -  , [__COBALT_IA32_BASE ... __COBALT_IA32_BASE + __NR_COBALT_SYSCALLS-1] = __handler
+>> +	[__COBALT_IA32_BASE ... __COBALT_IA32_BASE + __NR_COBALT_SYSCALLS-1] = __handler,
+>>  
+>>  #define __COBALT_CALL32emu_INITMODE(__mode)	\
+>> -  , [__COBALT_IA32_BASE ... __COBALT_IA32_BASE + __NR_COBALT_SYSCALLS-1] = __mode
+>> +	[__COBALT_IA32_BASE ... __COBALT_IA32_BASE + __NR_COBALT_SYSCALLS-1] = __mode,
+>>  
+>>  /* ia32 default entry (no thunk) */
+>>  #define __COBALT_CALL32emu_ENTRY(__name, __handler)		\
+>> -	, [sc_cobalt_ ## __name + __COBALT_IA32_BASE] = __handler
+>> +	[sc_cobalt_ ## __name + __COBALT_IA32_BASE] = __handler,
+>>  
+>>  /* ia32 thunk installation */
+>>  #define __COBALT_CALL32emu_THUNK(__name)	\
+> 
+> Whether this is needed is debatable. From my point of view, it is
+> not needed. But in any case, this has nothing to do with what this
+> patch does.
 
-this is our PCI-card
+It's a precondition for generating a regular list of table entries. But
+I'll split this up into a separate patch.
 
-02:04.0 ACCESS Bus: Device 5112:2200
-         Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- 
-ParErr- Stepping- SERR- FastB2B- DisINTx-
-         Status: Cap- 66MHz- UDF- FastB2B- ParErr- DEVSEL=medium 
- >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
-         Latency: 32
-         Interrupt: pin A routed to IRQ 11
-         Region 0: Memory at f6800000 (32-bit, non-prefetchable) FPGA & SRAM
-         Region 1: Memory at f7000000 (32-bit, non-prefetchable) DPRAM
-         Kernel driver in use: Sigmatek PCI
+Jan
 
-SRAM is a part of the FPGA space. for FPGA we must use non-prefetchable.
-i will talk , if there is a way to add a own region for SRAM, that is 
-prefetchable.
-for the bridge chip, i does not found about prefetchable.
-
-Why can sometime Core1 SRAM access not interrupted by the timer/schedule ?
-
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
