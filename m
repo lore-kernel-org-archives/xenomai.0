@@ -1,14 +1,15 @@
-Message-ID: <55A7A4E2.4060309@siemens.com>
-Date: Thu, 16 Jul 2015 14:34:42 +0200
+Message-ID: <55A7A516.7090005@siemens.com>
+Date: Thu, 16 Jul 2015 14:35:34 +0200
 From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <20150702165642.GS13256@hermes.click-hack.org>
- <5595757A.60301@siemens.com> <20150702173508.GU13256@hermes.click-hack.org>
+References: <20150702173508.GU13256@hermes.click-hack.org>
  <20150702175526.GV13256@hermes.click-hack.org> <55957B86.7020009@siemens.com>
  <20150702184232.GX13256@hermes.click-hack.org> <559587A0.7020005@siemens.com>
  <20150702185525.GY13256@hermes.click-hack.org> <559591E5.5060106@siemens.com>
  <55959E70.1020407@siemens.com> <20150703105149.GZ13256@hermes.click-hack.org>
-In-Reply-To: <20150703105149.GZ13256@hermes.click-hack.org>
+ <20150703123125.GC13256@hermes.click-hack.org>
+ <20150703123829.GD13256@hermes.click-hack.org>
+In-Reply-To: <20150703123829.GD13256@hermes.click-hack.org>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt/kernel: Remove
@@ -24,72 +25,80 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 2015-07-03 12:51, Gilles Chanteperdrix wrote:
-> On Thu, Jul 02, 2015 at 10:26:24PM +0200, Jan Kiszka wrote:
->> Just FYI - still requires testing and more review - find a first
->> generator version below.
+On 2015-07-03 14:38, Gilles Chanteperdrix wrote:
+> On Fri, Jul 03, 2015 at 02:31:25PM +0200, Gilles Chanteperdrix wrote:
+>> On Fri, Jul 03, 2015 at 12:51:49PM +0200, Gilles Chanteperdrix wrote:
+>>>> index 0000000..36b1e69
+>>>> --- /dev/null
+>>>> +++ b/kernel/cobalt/posix/gen-syscall-entries.sh
+>>>> @@ -0,0 +1,24 @@
+>>>> +#! /bin/sh
+>>>> +
+>>>> +set -e
+>>>> +
+>>>> +shift
+>>>> +
+>>>> +echo "#ifdef COBALT_LIST_CALL_ENTRIES"
+>>>> +awk '
+>>>> +match($0, /COBALT_SYSCALL\([^,]*, [^,]*/)  {
+>>>> +	str=substr($0, RSTART + 15, RLENGTH - 15)
+>>>> +	match(str, /[^,]*/)
+>>>> +	print "__COBALT_CALL_ENTRY(" substr(str, RSTART, RLENGTH) ")"
+>>>> +}
+>>>> +' $*
+>>>> +echo "#endif"
+>>>> +
+>>>> +echo "#ifdef COBALT_LIST_MODES"
+>>>> +awk '
+>>>> +match($0, /COBALT_SYSCALL\([^,]*, [^,]*/)  {
+>>>> +	str=substr($0, RSTART + 15, RLENGTH - 15)
+>>>> +	print "__COBALT_MODE(" str ")"
+>>>> +}
+>>>> +' $*
+>>>> +echo "#endif"
+>>>
+>>> This is particularly inelegant:
+>>> - you do not need awk to do that, sed is sufficient
+>>> - with using awk, you can generate the two files in one pass, and
+>>> remove the #ifdefs trick;
+>>> - I think the awk script should at least generate an error in case
+>>> of parser error
+>>>
+>>> I will submit an awk script which does that.
 >>
->> Jan
+>> Ok, another awk script which does that:
 >>
+>> BEGIN {
+>> 	system("rm -f syscalls_modes.h syscalls_entries.h")
+>> }
 >>
->> cobalt/posix/syscall: Generate cobalt_syscalls and cobalt_sysmodes
+>> match($0, /COBALT_SYSCALL\([^,]*,[ \t]*[^,]*/)  {
+>> 	str=substr($0, RSTART + 15, RLENGTH - 15)
+>> 	match(str, /[^, \t]*/)
+>> 	syscall=substr(str, RSTART, RLENGTH)
 >>
->> ---
->>  .../arch/x86/include/asm/xenomai/syscall32.h       |  12 +-
->>  kernel/cobalt/posix/Makefile                       |  12 ++
->>  kernel/cobalt/posix/gen-syscall-entries.sh         |  24 +++
->>  kernel/cobalt/posix/syscall.c                      | 208 ++-------------------
->>  scripts/prepare-kernel.sh                          |   4 +-
->>  5 files changed, 57 insertions(+), 203 deletions(-)
->>  create mode 100755 kernel/cobalt/posix/gen-syscall-entries.sh
+>> 	if (syscall == "") {
+>> 		print "Failed to find syscall name in line " $0
+>> 		exit 1
+>> 	}
 >>
->> diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.h b/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.h
->> index 8bd40d4..58b7336 100644
->> --- a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.h
->> +++ b/kernel/cobalt/arch/x86/include/asm/xenomai/syscall32.h
->> @@ -45,14 +45,14 @@
->>  #define __syshand32x__(__name)	((cobalt_syshand)(cobalt32x_ ## __name))
->>  
->>  #define __COBALT_CALL32x_INITHAND(__handler)	\
->> -  , [__COBALT_X32_BASE ... __COBALT_X32_BASE + __NR_COBALT_SYSCALLS-1] = __handler
->> +	[__COBALT_X32_BASE ... __COBALT_X32_BASE + __NR_COBALT_SYSCALLS-1] = __handler,
->>  
->>  #define __COBALT_CALL32x_INITMODE(__mode)	\
->> -  , [__COBALT_X32_BASE ... __COBALT_X32_BASE + __NR_COBALT_SYSCALLS-1] = __mode
->> +	[__COBALT_X32_BASE ... __COBALT_X32_BASE + __NR_COBALT_SYSCALLS-1] = __mode,
->>  
->>  /* x32 default entry (no thunk) */
->>  #define __COBALT_CALL32x_ENTRY(__name, __handler)		\
->> -	, [sc_cobalt_ ## __name + __COBALT_X32_BASE] = __handler
->> +	[sc_cobalt_ ## __name + __COBALT_X32_BASE] = __handler,
->>  
->>  /* x32 thunk installation */
->>  #define __COBALT_CALL32x_pure_THUNK(__name)	\
->> @@ -113,14 +113,14 @@
->>  #define __syshand32emu__(__name)	((cobalt_syshand)(cobalt32emu_ ## __name))
->>  
->>  #define __COBALT_CALL32emu_INITHAND(__handler)	\
->> -  , [__COBALT_IA32_BASE ... __COBALT_IA32_BASE + __NR_COBALT_SYSCALLS-1] = __handler
->> +	[__COBALT_IA32_BASE ... __COBALT_IA32_BASE + __NR_COBALT_SYSCALLS-1] = __handler,
->>  
->>  #define __COBALT_CALL32emu_INITMODE(__mode)	\
->> -  , [__COBALT_IA32_BASE ... __COBALT_IA32_BASE + __NR_COBALT_SYSCALLS-1] = __mode
->> +	[__COBALT_IA32_BASE ... __COBALT_IA32_BASE + __NR_COBALT_SYSCALLS-1] = __mode,
->>  
->>  /* ia32 default entry (no thunk) */
->>  #define __COBALT_CALL32emu_ENTRY(__name, __handler)		\
->> -	, [sc_cobalt_ ## __name + __COBALT_IA32_BASE] = __handler
->> +	[sc_cobalt_ ## __name + __COBALT_IA32_BASE] = __handler,
->>  
->>  /* ia32 thunk installation */
->>  #define __COBALT_CALL32emu_THUNK(__name)	\
+>> 	print "__COBALT_MODE(" str ")," >> "syscalls_modes.h"
+>> 	print "__COBALT_CALL_ENTRY(" syscall ")," >> "syscalls_entries.h"
+>> 	next
+>> }
+>>
+>> /COBALT_SYSCALL\(/  {
+>> 	print "Failed to parse line " $0
+>> 	exit 1
+>> }
+>>
+>> It supposes it is running from the output directory, but we can pass
+>> the output directory as a parameter if you prefer.
 > 
-> Whether this is needed is debatable. From my point of view, it is
-> not needed. But in any case, this has nothing to do with what this
-> patch does.
+> Note that the simplistic approach taken precludes the use of
+> conditional compilation with syscall definitions.
 
-It's a precondition for generating a regular list of table entries. But
-I'll split this up into a separate patch.
+I'll parametrize and integrate this, thanks.
 
 Jan
 
