@@ -1,10 +1,13 @@
-Message-ID: <55A8FBC9.3080207@siemens.com>
-Date: Fri, 17 Jul 2015 14:57:45 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+References: <E1ZG585-0002oE-L7@sd-51317.xenomai.org>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <55A8FF7B.5010605@xenomai.org>
+Date: Fri, 17 Jul 2015 15:13:31 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
+In-Reply-To: <E1ZG585-0002oE-L7@sd-51317.xenomai.org>
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PULL] Fixes for forge
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt/kernel: Fix locking
+ for xnthread info manipulations
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,40 +16,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org, xenomai-git@xenomai.org
 
-The following changes since commit 81958c620029485f3533b72f42b31ffb05eae234:
+On 07/17/2015 02:52 PM, git repository hosting wrote:
+> 
+> diff --git a/kernel/cobalt/synch.c b/kernel/cobalt/synch.c
+> index 7142fd2..ae4ceef 100644
+> --- a/kernel/cobalt/synch.c
+> +++ b/kernel/cobalt/synch.c
+> @@ -443,7 +443,9 @@ redo:
+>  	if (likely(h == XN_NO_HANDLE)) {
+>  		xnsynch_set_owner(synch, curr);
+>  		xnthread_get_resource(curr);
+> +		xnlock_get_irqsave(&nklock, s);
+>  		xnthread_clear_info(curr, XNRMID | XNTIMEO | XNBREAK);
+> +		xnlock_put_irqrestore(&nklock, s);
+>  		return 0;
+>  	}
+>  
 
-  cobalt/thread, copperplate: fetch per-thread user window from the global heap (2015-07-16 21:24:33 +0200)
+Instead of serializing in the fast path only for clearing those bits, we
+could convert the remaining call sites to use xnsynch_acquire's return
+value instead. At any rate, those info bits are meant to be tested
+immediately upon return from the blocking call. I did most of the
+conversions already, except __cobalt_mutex_acquire_unchecked(). Fixing
+this one should allow us to drop the requirement for clearing the bits
+in the info word, and the need for serializing in the same move.
 
-are available in the git repository at:
+> diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+> index 4cec6e7..7c8cb3a 100644
+> --- a/kernel/cobalt/thread.c
+> +++ b/kernel/cobalt/thread.c
+> @@ -1989,6 +1989,7 @@ void xnthread_relax(int notify, int reason)
+>  	struct task_struct *p = current;
+>  	int cpu __maybe_unused;
+>  	siginfo_t si;
+> +	spl_t s;
+>  
+>  	primary_mode_only();
+>  
+> @@ -2045,7 +2046,9 @@ void xnthread_relax(int notify, int reason)
+>  			si.si_int = reason | sigdebug_marker;
+>  			send_sig_info(SIGDEBUG, &si, p);
+>  		}
+> +		xnlock_get_irqsave(&nklock, s);
+>  		xnsynch_detect_claimed_relax(thread);
+> +		xnlock_put_irqrestore(&nklock, s);
+>  	}
 
-  git://git.xenomai.org/xenomai-jki.git for-forge
+Sigh, this was a bad one, scanning two queues with preemption enabled:
+scary. I would suggest to move the serialization to
+xnsynch_detect_claimed_relax() directly, since that code can be
+optimized out when !XENO_DEBUG(MUTEX_RELAXED).
 
-for you to fetch changes up to 9e297aa3edcf73454524106346420061d10d1208:
-
-  cobalt/kernel: Generate cobalt_syscalls and cobalt_sysmodes (2015-07-16 23:48:50 +0200)
-
-I've left out the mayday topic for now as it has known issues on
-non-x86 / depends on I-pipe changes there.
-
-----------------------------------------------------------------
-Jan Kiszka (6):
-      cobalt/kernel: Fix mode of mayday syscall
-      cobalt/posix/sem: Do not register named semaphores with process resources
-      cobalt/kernel: Mark backtrace syscall as lostage
-      cobalt/kernel: Fix locking for xnthread info manipulations
-      cobalt/kernel: Set commas in syscall tables inside the macros
-      cobalt/kernel: Generate cobalt_syscalls and cobalt_sysmodes
-
- .../arch/x86/include/asm/xenomai/syscall32.h       |  12 +-
- kernel/cobalt/posix/Makefile                       |  12 ++
- kernel/cobalt/posix/gen-syscall-entries.sh         |  32 +++
- kernel/cobalt/posix/sem.c                          |  19 +-
- kernel/cobalt/posix/syscall.c                      | 218 ++-------------------
- kernel/cobalt/synch.c                              |   2 +
- kernel/cobalt/thread.c                             |   3 +
- scripts/prepare-kernel.sh                          |   4 +-
- 8 files changed, 85 insertions(+), 217 deletions(-)
- create mode 100755 kernel/cobalt/posix/gen-syscall-entries.sh
+-- 
+Philippe.
 
