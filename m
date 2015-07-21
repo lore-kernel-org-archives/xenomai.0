@@ -1,9 +1,17 @@
+References: <CA+K1mPFgcxF5UAkMNXzit34sPHNWc+uzPTT45bngA6dd0wAyTw@mail.gmail.com>
+ <20150630001953.GA2038@hermes.click-hack.org>
+ <CA+K1mPG9OKH9FReQoC8jLRAipJ3F=vSdRMmtrxFaZEJjyfHArg@mail.gmail.com>
+ <20150701175446.GL13256@hermes.click-hack.org>
+ <CA+K1mPGfz23OEu2vR+85=bxFmRS3kNEaf4e8F9uiyMk4P7hv6g@mail.gmail.com>
+ <CA+K1mPH_C5aW60rBsRhqueVZi3K=XqzFFTwLU7+umCT1Q=90xg@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <55AE021A.5050603@xenomai.org>
+Date: Tue, 21 Jul 2015 10:26:02 +0200
 MIME-Version: 1.0
-From: Michael Smith <2michael.smith@gmail.com>
-Date: Tue, 21 Jul 2015 08:58:59 +0200
-Message-ID: <CANWkrRN9Tyk7bzjdE1NOPA_otGf=Lyspo_CFb33SRgfN8++gYQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] RTnet rtcfg thread creation issue (Xenomai 3.x)
+In-Reply-To: <CA+K1mPH_C5aW60rBsRhqueVZi3K=XqzFFTwLU7+umCT1Q=90xg@mail.gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Unable to Read from Pipe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,55 +20,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: C Smith <csmithquestions@gmail.com>, xenomai@xenomai.org
 
-Hi I require RTNet for a project I am working on.
-Because of the previously reported rtcfg issue one of my RTNet nodes
-does net run start up correctly as the master.
-So I have spent some time in order to trace the issue in the code to find a
-solution, and have come up with a question and possible corrections on
-the existing code.
+On 07/20/2015 11:31 PM, C Smith wrote:
+> I found a workaround for this, but I believe it illustrates a bug in
+> xenomai 3.0rc5, which is also present in in xenomai 2.6.4.
+> 
+> The problem is that if the userspace writer of a pipe closes the pipe
+> immediately after writing, the data does not get into the pipe reliably and
+> the real-time reader process usually doesn't get the data. This is true
+> even though the write() returns the expected number of bytes indicating
+> success.
+> 
 
-I have used Xenomai-3.0 rc5 as my code base.
-The symptoms on my system is that when running the RTNet script and
-setting up the system as
-a master the whole system locks up completely. I have traced this to
-the line in the RTNet script
-where the master is setup -> $RTCFG rteth0 server
-Then it traced the lockup to
-kernel/drivers/net/stack/rtcfg/rtcfg_event.c:151
-This is in function rtcfg_main_state_off() where the rtdm_task_init()
-is called. This thread creation
-call completely locks up the system.
+This is intended. We must allow the regular side to force a shutdown on
+the pipe since this is a valid use case, which would not be possible if
+waiting for the rt input to drain was the only option before the kernel
+actually closes the channel.
 
-I checked all the parameters in the call, and one parameter that was
-incorrect was the pointer to function  void rtcfg_timer(int ifindex)
-in kernel/drivers/net/stack/rtcfg/rtcfg_timer.c:35.
-According to the declaration of rtdm_task_init() its parameter
-task_proc is of type rtdm_task_proc_t which is declared as typedef
-void(* rtdm_task_proc_t) (void *arg). So I assume the correct function
-declaration in rtcfg_timer.c should rather be void rtcfg_timer(void *arg).
+O_SYNC can be passed to open() to have the writer wait for the rt side
+to start consuming the messages on the other end. In addition, we could
+make the close() call wait until the rt input is fully consumed with
+O_SYNC too, which is not the case so far (we currently sync on write()
+only). This patch has been scrupulously untested.
 
-Changing this in the code didn't correct the problem. But then I had a
-look in the documentation and it specifies that rtdm_task_init()
-should be called in secondary mode only. I have placed a
-rtdm_in_rt_context() call before the rtdm_task_init() call and it
-reports that the context that the
-thread is running in just before calling the rtdm_task_init() is primary mode.
-My question is would this cause a lockup if you are trying to call
-rtdm_task_init() in primary mode?
-All the other parameters to the function seems fine, and I see no
-memory pointer or other issues that will cause this behavior.
+diff --git a/ksrc/nucleus/pipe.c b/ksrc/nucleus/pipe.c
+index df587ab..5367c4c 100644
+--- a/ksrc/nucleus/pipe.c
++++ b/ksrc/nucleus/pipe.c
+@@ -697,6 +697,14 @@ static int xnpipe_release(struct inode *inode,
+struct file *file)
 
-I also found another issue in the code through my tracing process.
-kernel/drivers/net/stack/rtnet_rtpc.c:94 - 99. If the kmalloc fails
-and returns a NULL.
-The cleanup handler is called as part of the exit process. But the
-pointer used to call that cleanup
-code is NULL because of the failed kmalloc. So when the if() condition
-is tested to see if the cleanup handler exists, it will probably cause
-a segmentation fault.
+ 	xnlock_get_irqsave(&nklock, s);
 
-Regards
-Michael
++	if ((file->f_flags & O_SYNC) != 0 && !emptyq_p(&state->inq)) {
++		if (xnpipe_wait(state, XNPIPE_USER_WSYNC, s,
++				emptyq_p(&state->inq))) {
++			xnlock_put_irqrestore(&nklock, s);
++			return -ERESTARTSYS;
++		}
++	}
++
+ 	xnpipe_dequeue_all(state, XNPIPE_USER_WREAD);
+ 	xnpipe_dequeue_all(state, XNPIPE_USER_WSYNC);
+
+-- 
+Philippe.
 
