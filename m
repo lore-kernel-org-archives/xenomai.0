@@ -1,12 +1,10 @@
-Message-ID: <e8770e9868002bd1d629d3598afe26e7.squirrel@sourcetrek.com>
-In-Reply-To: <55B0B2EA.8000602@xenomai.org>
-References: <55B0B2EA.8000602@xenomai.org>
-Date: Thu, 23 Jul 2015 15:57:59 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] rt_print_auto_init()
+From: =?UTF-8?B?5byg56uL6ZGr?= <intelligentcodemail@gmail.com>
+Date: Thu, 23 Jul 2015 23:29:29 +0800
+Message-ID: <CAGFtc0Yj6yztoEUOBcM7Do5h2erYeX_2-Fcmd=4XrFxzc7JYFA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] xenomai use for Raspberry Pi (ARM7) has error
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,25 +13,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
+https://github.com/raspberrypi/linux
 
-Philippe Gerum wrote:
->
-> Hi Jan,
->
-> Do you still have a use case for calling rt_print_auto_init(false) or
-> not calling rt_print_auto_init(true) from libcobalt's bootstrap code?
->
+git reset --hard 43f497a2035f3d4a2f766d20827c68e0437cdd58
 
-At some point, I added a pre-allocation of a few buffers which avoided the
-need for malloc, and forced the call to rt_print_auto_init(true) in the
-POSIX skin library. I do not know whether all this has survived the
-Xenomai 3 cleanup though.
+use
+https://github.com/raspberrypi/linux/blob/rpi-3.18.y/arch/arm/configs/bcm27=
+09_defconfig
 
--- 
-                                            Gilles.
-https://click-hack.org
+$ export
+PATH=3D$PATH:~/raspberrypi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf=
+-raspbian/bin
+$ export CCPI=3Darm-linux-gnueabihf-
+$ KERNEL=3Dkernel7
+$ mkdir build
+$ make mrproper
+$ make ARCH=3Darm O=3Dbuild CROSS_COMPILE=3D$CCPI bcm2709_defconfig
+$ make ARCH=3Darm O=3Dbuild CROSS_COMPILE=3D$CCPI menuconfig
 
+enabled ipipe
 
+make -j 5 ARCH=3Darm O=3Dbuild CROSS_COMPILE=3D$CCPI
+
+get this error
+
+CC      arch/arm/mm/iomap.o
+../arch/arm/kernel/smp.c: In function =E2=80=98ipi_timer=E2=80=99:
+../arch/arm/kernel/smp.c:545:2: error: implicit declaration of function
+=E2=80=98__ipipe_mach_update_tsc=E2=80=99 [-Werror=3Dimplicit-function-decl=
+aration]
+  __ipipe_mach_update_tsc();
+  ^
+cc1: some warnings being treated as errors
+../scripts/Makefile.build:257: recipe for target 'arch/arm/kernel/smp.o'
+failed
+make[2]: *** [arch/arm/kernel/smp.o] Error 1
