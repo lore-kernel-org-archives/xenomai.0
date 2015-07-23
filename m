@@ -1,13 +1,14 @@
-References: <55B0B2EA.8000602@xenomai.org> <55B0B5CA.9080608@siemens.com>
- <55B0B7B6.2080709@xenomai.org>
+References: <55AE3AAB.5070403@siemens.com> <55AE4068.5050102@xenomai.org>
+ <55AE5D0B.60300@siemens.com> <55B0A89B.5020004@xenomai.org>
+ <55B0AEFE.5080202@siemens.com> <55B0B268.7020209@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <55B0EBBD.1020509@siemens.com>
-Date: Thu, 23 Jul 2015 15:27:25 +0200
+Message-ID: <55B0EE25.1030609@siemens.com>
+Date: Thu, 23 Jul 2015 15:37:41 +0200
 MIME-Version: 1.0
-In-Reply-To: <55B0B7B6.2080709@xenomai.org>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <55B0B268.7020209@xenomai.org>
+Content-Type: text/plain; charset=iso-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rt_print_auto_init()
+Subject: Re: [Xenomai] Xenomai 3: comapt issues with RTDM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,32 +18,51 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 2015-07-23 11:45, Philippe Gerum wrote:
-> On 07/23/2015 11:37 AM, Jan Kiszka wrote:
->> On 2015-07-23 11:24, Philippe Gerum wrote:
+On 2015-07-23 11:22, Philippe Gerum wrote:
+> On 07/23/2015 11:08 AM, Jan Kiszka wrote:
+>> On 2015-07-23 10:40, Philippe Gerum wrote:
+>>> On 07/21/2015 04:54 PM, Jan Kiszka wrote:
+>>>> On 2015-07-21 14:51, Philippe Gerum wrote:
+>>>>> On 07/21/2015 02:27 PM, Jan Kiszka wrote:
+>>>>>> Hi Philippe,
+>>>>>>
+>>>>>> just a heads up, I'll try to address this later:
+>>>>>>
+>>>>>> I received a report that include/rtdm/uapi/rtdm.h contains some data
+>>>>>> structures that are used between the kernel and the userspace library
+>>>>>> (so not directly by applications) and are not compatible with
+>>>>>> 32-on-64-bit (compat) scenarios. We should probably promote anything
+>>>>>> that is longer on 64-bit to that size, unconditionally. As this affects
+>>>>>> the ABI, it should be fixed before 3.0 release, ideally.
+>>>>>>
+>>>>>
+>>>>> That would require to fix up the client drivers (setsockopt, getsockopt
+>>>>> typically). Ok, I'll have a look when I'm done with testing the blackfin
+>>>>> port.
+>>>>
+>>>> Indeed. Just realized that there are already compat structs for the
+>>>> socket stuff. However, and that was what our user stumbled over, there
+>>>> is none for _rtdm_mmap_request. But that should be really internal, right?
+>>>>
 >>>
->>> Hi Jan,
->>>
->>> Do you still have a use case for calling rt_print_auto_init(false) or
->>> not calling rt_print_auto_init(true) from libcobalt's bootstrap code?
->>>
+>>> mmap() has the compat thunk for 32<->64 bit conversion already, so this
+>>> is ok.
 >>
->> Huh, that was a day-one feature, now 8 years old, barely remember the
->> details. I'm currently not aware of a concrete scenario. It definitely
->> makes sense to revisit this think.
->>
->> I guess one, if not the major problem back then was that the implicit
->> malloc of the initialization step was not consistently causing a
->> SIGDEBUG warning. That is now different.
+>> Ok... Rechecking the bug report here, the issue is rather the case that
+>> off_t becomes 64 bit when defining -D_FILE_OFFSET_BITS=64 for your
+>> userland. We are apparently required to account for that case as well.
 >>
 > 
-> Since the current thread won't be notified until XNWARN is armed in its
-> TCB, any objection to move that call as a nop placeholder to the compat
-> section in libtrank, leaving the implicit init to libcobalt as currently?
+> Ok, so let's move the offset member to loff_t and compat_loff_t in the
+> mmap request descriptors, that should do the trick.
+> 
 
-Ack.
+I only forwarded this suggestion internally, unfortunately cannot tell
+yet how it was implemented, just received the early feedback that it is
+not yet working. Maybe we are overseeing something, maybe something went
+wrong with the implementation. Will be checked tomorrow.
 
 Jan
 
