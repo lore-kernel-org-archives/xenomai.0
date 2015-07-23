@@ -1,17 +1,15 @@
+References: <55AE3AAB.5070403@siemens.com> <55AE4068.5050102@xenomai.org>
+ <55AE5D0B.60300@siemens.com> <55B0A89B.5020004@xenomai.org>
+ <55B0AEFE.5080202@siemens.com> <55B0B268.7020209@xenomai.org>
+ <55B0EE25.1030609@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <55B1446A.2080406@xenomai.org>
+Date: Thu, 23 Jul 2015 21:45:46 +0200
 MIME-Version: 1.0
-In-Reply-To: <55AE021A.5050603@xenomai.org>
-References: <CA+K1mPFgcxF5UAkMNXzit34sPHNWc+uzPTT45bngA6dd0wAyTw@mail.gmail.com>
- <20150630001953.GA2038@hermes.click-hack.org>
- <CA+K1mPG9OKH9FReQoC8jLRAipJ3F=vSdRMmtrxFaZEJjyfHArg@mail.gmail.com>
- <20150701175446.GL13256@hermes.click-hack.org>
- <CA+K1mPGfz23OEu2vR+85=bxFmRS3kNEaf4e8F9uiyMk4P7hv6g@mail.gmail.com>
- <CA+K1mPH_C5aW60rBsRhqueVZi3K=XqzFFTwLU7+umCT1Q=90xg@mail.gmail.com>
- <55AE021A.5050603@xenomai.org>
-Date: Thu, 23 Jul 2015 09:27:41 -0700
-Message-ID: <CA+K1mPH-p60GSiR_oaL_poee3tH6_z17mEfMo=z7ExoEsGti4A@mail.gmail.com>
-From: C Smith <csmithquestions@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Unable to Read from Pipe
+In-Reply-To: <55B0EE25.1030609@siemens.com>
+Content-Type: text/plain; charset=iso-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai 3: comapt issues with RTDM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,64 +18,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-That code snippet explains it well, and my tests confirm the principle. I
-no longer lose bytes when I open() with O_SYNC flag, write(),  and close()
-shortly thereafter.I don't think you need to "make the close() call wait
-until the rt input is fully consumed".
+On 07/23/2015 03:37 PM, Jan Kiszka wrote:
+> On 2015-07-23 11:22, Philippe Gerum wrote:
+>> On 07/23/2015 11:08 AM, Jan Kiszka wrote:
+>>> On 2015-07-23 10:40, Philippe Gerum wrote:
+>>>> On 07/21/2015 04:54 PM, Jan Kiszka wrote:
+>>>>> On 2015-07-21 14:51, Philippe Gerum wrote:
+>>>>>> On 07/21/2015 02:27 PM, Jan Kiszka wrote:
+>>>>>>> Hi Philippe,
+>>>>>>>
+>>>>>>> just a heads up, I'll try to address this later:
+>>>>>>>
+>>>>>>> I received a report that include/rtdm/uapi/rtdm.h contains some data
+>>>>>>> structures that are used between the kernel and the userspace library
+>>>>>>> (so not directly by applications) and are not compatible with
+>>>>>>> 32-on-64-bit (compat) scenarios. We should probably promote anything
+>>>>>>> that is longer on 64-bit to that size, unconditionally. As this affects
+>>>>>>> the ABI, it should be fixed before 3.0 release, ideally.
+>>>>>>>
+>>>>>>
+>>>>>> That would require to fix up the client drivers (setsockopt, getsockopt
+>>>>>> typically). Ok, I'll have a look when I'm done with testing the blackfin
+>>>>>> port.
+>>>>>
+>>>>> Indeed. Just realized that there are already compat structs for the
+>>>>> socket stuff. However, and that was what our user stumbled over, there
+>>>>> is none for _rtdm_mmap_request. But that should be really internal, right?
+>>>>>
+>>>>
+>>>> mmap() has the compat thunk for 32<->64 bit conversion already, so this
+>>>> is ok.
+>>>
+>>> Ok... Rechecking the bug report here, the issue is rather the case that
+>>> off_t becomes 64 bit when defining -D_FILE_OFFSET_BITS=64 for your
+>>> userland. We are apparently required to account for that case as well.
+>>>
+>>
+>> Ok, so let's move the offset member to loff_t and compat_loff_t in the
+>> mmap request descriptors, that should do the trick.
+>>
+> 
+> I only forwarded this suggestion internally, unfortunately cannot tell
+> yet how it was implemented, just received the early feedback that it is
+> not yet working. Maybe we are overseeing something, maybe something went
+> wrong with the implementation. Will be checked tomorrow.
+> 
 
-This man page is clear on the expected behavior and benefits of O_SYNC:
-http://man7.org/linux/man-pages/man2/open.2.html
+This is likely an issue with the native alignment of those types, the
+kernel may offset long members in the compat struct based on different
+constraints than -m32 does.
 
-Thanks, Philippe.
+-- 
+Philippe.
 
-On Tue, Jul 21, 2015 at 1:26 AM, Philippe Gerum <rpm@xenomai.org> wrote:
-
-> On 07/20/2015 11:31 PM, C Smith wrote:
-> > I found a workaround for this, but I believe it illustrates a bug in
-> > xenomai 3.0rc5, which is also present in in xenomai 2.6.4.
-> >
-> > The problem is that if the userspace writer of a pipe closes the pipe
-> > immediately after writing, the data does not get into the pipe reliably
-> and
-> > the real-time reader process usually doesn't get the data. This is true
-> > even though the write() returns the expected number of bytes indicating
-> > success.
-> >
->
-> This is intended. We must allow the regular side to force a shutdown on
-> the pipe since this is a valid use case, which would not be possible if
-> waiting for the rt input to drain was the only option before the kernel
-> actually closes the channel.
->
-> O_SYNC can be passed to open() to have the writer wait for the rt side
-> to start consuming the messages on the other end. In addition, we could
-> make the close() call wait until the rt input is fully consumed with
-> O_SYNC too, which is not the case so far (we currently sync on write()
-> only). This patch has been scrupulously untested.
->
-> diff --git a/ksrc/nucleus/pipe.c b/ksrc/nucleus/pipe.c
-> index df587ab..5367c4c 100644
-> --- a/ksrc/nucleus/pipe.c
-> +++ b/ksrc/nucleus/pipe.c
-> @@ -697,6 +697,14 @@ static int xnpipe_release(struct inode *inode,
-> struct file *file)
->
->         xnlock_get_irqsave(&nklock, s);
->
-> +       if ((file->f_flags & O_SYNC) != 0 && !emptyq_p(&state->inq)) {
-> +               if (xnpipe_wait(state, XNPIPE_USER_WSYNC, s,
-> +                               emptyq_p(&state->inq))) {
-> +                       xnlock_put_irqrestore(&nklock, s);
-> +                       return -ERESTARTSYS;
-> +               }
-> +       }
-> +
->         xnpipe_dequeue_all(state, XNPIPE_USER_WREAD);
->         xnpipe_dequeue_all(state, XNPIPE_USER_WSYNC);
->
-> --
-> Philippe.
->
