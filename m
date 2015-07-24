@@ -1,15 +1,13 @@
-References: <55AE3AAB.5070403@siemens.com> <55AE4068.5050102@xenomai.org>
- <55AE5D0B.60300@siemens.com> <55B0A89B.5020004@xenomai.org>
- <55B0AEFE.5080202@siemens.com> <55B0B268.7020209@xenomai.org>
- <55B0EE25.1030609@siemens.com> <55B1446A.2080406@xenomai.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55B1E813.1030705@xenomai.org>
-Date: Fri, 24 Jul 2015 09:24:03 +0200
 MIME-Version: 1.0
-In-Reply-To: <55B1446A.2080406@xenomai.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 3: comapt issues with RTDM
+In-Reply-To: <79d475ba9149de2628440336fa6947b3.squirrel@sourcetrek.com>
+References: <CAGFtc0Yj6yztoEUOBcM7Do5h2erYeX_2-Fcmd=4XrFxzc7JYFA@mail.gmail.com>
+ <79d475ba9149de2628440336fa6947b3.squirrel@sourcetrek.com>
+From: =?UTF-8?B?5byg56uL6ZGr?= <intelligentcodemail@gmail.com>
+Date: Fri, 24 Jul 2015 16:01:03 +0800
+Message-ID: <CAGFtc0aqh8irfJmApH2S72htAKe4hr5P9VykBjXm7_Z5uvp18g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] xenomai use for Raspberry Pi (ARM7) has error
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,64 +16,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 07/23/2015 09:45 PM, Philippe Gerum wrote:
-> On 07/23/2015 03:37 PM, Jan Kiszka wrote:
->> On 2015-07-23 11:22, Philippe Gerum wrote:
->>> On 07/23/2015 11:08 AM, Jan Kiszka wrote:
->>>> On 2015-07-23 10:40, Philippe Gerum wrote:
->>>>> On 07/21/2015 04:54 PM, Jan Kiszka wrote:
->>>>>> On 2015-07-21 14:51, Philippe Gerum wrote:
->>>>>>> On 07/21/2015 02:27 PM, Jan Kiszka wrote:
->>>>>>>> Hi Philippe,
->>>>>>>>
->>>>>>>> just a heads up, I'll try to address this later:
->>>>>>>>
->>>>>>>> I received a report that include/rtdm/uapi/rtdm.h contains some data
->>>>>>>> structures that are used between the kernel and the userspace library
->>>>>>>> (so not directly by applications) and are not compatible with
->>>>>>>> 32-on-64-bit (compat) scenarios. We should probably promote anything
->>>>>>>> that is longer on 64-bit to that size, unconditionally. As this affects
->>>>>>>> the ABI, it should be fixed before 3.0 release, ideally.
->>>>>>>>
->>>>>>>
->>>>>>> That would require to fix up the client drivers (setsockopt, getsockopt
->>>>>>> typically). Ok, I'll have a look when I'm done with testing the blackfin
->>>>>>> port.
->>>>>>
->>>>>> Indeed. Just realized that there are already compat structs for the
->>>>>> socket stuff. However, and that was what our user stumbled over, there
->>>>>> is none for _rtdm_mmap_request. But that should be really internal, right?
->>>>>>
->>>>>
->>>>> mmap() has the compat thunk for 32<->64 bit conversion already, so this
->>>>> is ok.
->>>>
->>>> Ok... Rechecking the bug report here, the issue is rather the case that
->>>> off_t becomes 64 bit when defining -D_FILE_OFFSET_BITS=64 for your
->>>> userland. We are apparently required to account for that case as well.
->>>>
->>>
->>> Ok, so let's move the offset member to loff_t and compat_loff_t in the
->>> mmap request descriptors, that should do the trick.
->>>
->>
->> I only forwarded this suggestion internally, unfortunately cannot tell
->> yet how it was implemented, just received the early feedback that it is
->> not yet working. Maybe we are overseeing something, maybe something went
->> wrong with the implementation. Will be checked tomorrow.
->>
-> 
-> This is likely an issue with the native alignment of those types, the
-> kernel may offset long members in the compat struct based on different
-> constraints than -m32 does.
-> 
+Can support Raspberry Pi 2 (ARM7)  bcm2709
 
-And we probably also need the mmap64 wrapper we don't have yet. Ok, I'm
-working on this.
 
--- 
-Philippe.
 
+2015-07-24 0:20 GMT+08:00 Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org>:
+
+>
+> =E5=BC=A0=E7=AB=8B=E9=91=AB wrote:
+> > https://github.com/raspberrypi/linux
+> >
+> > git reset --hard 43f497a2035f3d4a2f766d20827c68e0437cdd58
+> >
+> > use
+> >
+> https://github.com/raspberrypi/linux/blob/rpi-3.18.y/arch/arm/configs/bcm=
+2709_defconfig
+> >
+> > $ export
+> >
+> PATH=3D$PATH:~/raspberrypi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabi=
+hf-raspbian/bin
+> > $ export CCPI=3Darm-linux-gnueabihf-
+> > $ KERNEL=3Dkernel7
+> > $ mkdir build
+> > $ make mrproper
+> > $ make ARCH=3Darm O=3Dbuild CROSS_COMPILE=3D$CCPI bcm2709_defconfig
+> > $ make ARCH=3Darm O=3Dbuild CROSS_COMPILE=3D$CCPI menuconfig
+> >
+> > enabled ipipe
+>
+> It is not obvious at this point how you got the I-pipe patch for that
+> processor. The git you use is not a git supported by the Xenomai project,
+> as such we have no information about it. And the list of processors
+> supported by Xenomai (not by third parties gits obviously) may be found
+> here:
+>
+> http://xenomai.org/embedded-hardware/#Supported_SoC
+>
+>
+> --
+>                                             Gilles.
+> https://click-hack.org
+>
+>
