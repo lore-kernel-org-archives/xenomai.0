@@ -1,12 +1,14 @@
-References: <CA+CJOCzk4p0RmpCsYoCQ71Tbckb5Ztj88ORnD2i-sU2jTg115Q@mail.gmail.com>
+References: <55A7CF2E.40508@xenomai.org>
+ <1320019080.4249709.1438096751088.JavaMail.yahoo@mail.yahoo.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55B8A5A3.5040000@xenomai.org>
-Date: Wed, 29 Jul 2015 12:06:27 +0200
+Message-ID: <55B8A722.5070405@xenomai.org>
+Date: Wed, 29 Jul 2015 12:12:50 +0200
 MIME-Version: 1.0
-In-Reply-To: <CA+CJOCzk4p0RmpCsYoCQ71Tbckb5Ztj88ORnD2i-sU2jTg115Q@mail.gmail.com>
+In-Reply-To: <1320019080.4249709.1438096751088.JavaMail.yahoo@mail.yahoo.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Task killed by watchdog after exception #7
+Subject: Re: [Xenomai] xenomai-3.0-rc5 : binding named semaphores from
+ external process
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,62 +17,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Nicolas SCHURANDO <schurann@ext.essilor.com>, xenomai@xenomai.org
+To: Frederik Bayart <frederik_bayart@yahoo.co.uk>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/29/2015 10:49 AM, Nicolas SCHURANDO wrote:
-> Hello everybody,
+On 07/28/2015 05:19 PM, Frederik Bayart wrote:
+>>> ./stest --session=foo 1
+>>>
+>>> The first process binds to the named semaphore which is not yet created. According to the description of rt_sem_bind,  if the object does not exist on entry, the caller may block until a semaphore of the given name is created.
+>>>
+>>> So based on this description, I would I expect that if the second process is started, the first process would bind and continue and blocks in the p operation. The same for the 2nd process. Is this correct ? At the moment, if I start the 2nd process, I get a segfault in rt_sem_create :
+>>>
+>>> [ 9758.887921] [Xenomai] switching main to secondary mode after exception #14 from user-space at 0x7f6ad8c4a43e (pid 9256)
+>>> [ 9758.887930] main[9256]: segfault at 7f903bf6e038 ip 00007f6ad8c4a43e sp 00007fffbd2c2eb8 error 6 in libcobalt.so.2.0.0[7f6ad8c3d000+1e000]
+>>>
+>>
+>> Looking at the copperplate code, yep, this definitely can't work. Ok,
+>> queued.
 > 
-> I am running a real-time application using the VxWorks skin, on a Raspberry
-> Pi 1, with Xenomai 2.6.4. The application also makes use of the native API
-> to spawn an additional and periodic task. I have witnessed that, at random,
-> the product will stop working. Taking a look at the syslog indicates that
-> one of the VxWorks tasks (here CDL, but not always the same) gets killed by
-> the watchdog shortly after having been switched to second mode.
+> I noticed also :
 > 
-> Jul 27 09:09:26 raspberrypi kernel: [ 1600.407883] Xenomai: Switching CDL
->> to secondary mode after exception #7 from user-space at 0x37d1b0 (pid 2539)
->> Jul 27 09:09:35 raspberrypi kernel: [ 1605.135965] Xenomai: watchdog
->> triggered -- signaling runaway thread 'CDL'
->
-
-[snip]
-
-Please also mention the kernel and I-pipe releases in reports, those may
-be involved in issues.
-
-> Doing a symbol search on the address 0x37d1b0 points to the following
-> function, and in particular, to the vmov instruction.
+>  ./stest --session=foo 1
+>  ./stest --session=foo 0
 > 
+> Both processes are waiting in rt_sem_p . The first process catches SIGINT, the second doesn't. If you press CTRL+C on the second process it stops but also the first process is falling through the rt_sem_p although no rt_sem_v is raised.
 
-Exception #7 in the pipeline means undefined instruction trap. It looks
-like your code is getting a VFP bounce on the vmov instruction, which
-IIRC, can happen with the type of VFP unit on that ARM11 CPU (assuming
-RPI 1). Checking the ARM TRM for information about IEEE754 compliance
-may help in this case.
 
-[snip]
+Spurious wake up in the Cobalt kernel when aborting a sem wait operation
+due to a signal/unblock event, that is the reason why I could not see
+this from a Mercury setup. This is fixed in the -next branch.
 
-> Is the hard-float operation the reason why the task gets switched to
-> secondary mode ?
+> At that moment no process is pending on rt_sem_p anymore. But if you do then a rt_sem_inquire, nwaiters is still 1.
 
-Yes, due to the bounce.
-
- And if so, why wouldn't I be able to make use of the FPU
-> in primary mode ?
-
-You are, but your code may have triggered a situation where it had to
-trap to kernel space for running some helper code, and this trap caused
-the pipeline to switch that task away from primary mode for re-entering
-the regular VFP trap handler safely.
-
- Would I be right to assume that, when the task gets
-> switched to secondary mode, and because the other tasks are already
-> requiring a lot of cpu time, there is not enough free cpu time to run the
-> newly switched task which gets then killed by the watchdog ?
-
-Unlikely, but possible, if the CDL task takes ages to run the mode
-switching code, and gets caught by the watchdog tick before it had a
-chance to eventually suspend from primary mode.
+I don't observe this one. Assuming you enabled the registry, what does
+/var/run/xenomai/.../alchemy/semaphores/semtestsem tell you about the
+sema4 value?
 
 -- 
 Philippe.
