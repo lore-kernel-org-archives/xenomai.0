@@ -1,13 +1,14 @@
-Message-ID: <2633dfc352bae3a03b1563c30ec37b47.squirrel@sourcetrek.com>
-In-Reply-To: <55B8A5A3.5040000@xenomai.org>
-References: <CA+CJOCzk4p0RmpCsYoCQ71Tbckb5Ztj88ORnD2i-sU2jTg115Q@mail.gmail.com>
- <55B8A5A3.5040000@xenomai.org>
-Date: Wed, 29 Jul 2015 12:18:37 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+Date: Wed, 29 Jul 2015 11:48:48 +0000 (UTC)
+From: Frederik Bayart <frederik_bayart@yahoo.co.uk>
+Message-ID: <279611839.4860606.1438170528832.JavaMail.yahoo@mail.yahoo.com>
+In-Reply-To: <55B8A722.5070405@xenomai.org>
+References: <55B8A722.5070405@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Task killed by watchdog after exception #7
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] xenomai-3.0-rc5 : binding named semaphores from
+ external process
+Reply-To: Frederik Bayart <frederik_bayart@yahoo.co.uk>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,30 +17,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-
-Philippe Gerum wrote:
-> On 07/29/2015 10:49 AM, Nicolas SCHURANDO wrote:
->  Would I be right to assume that, when the task gets
->> switched to secondary mode, and because the other tasks are already
->> requiring a lot of cpu time, there is not enough free cpu time to run
->> the
->> newly switched task which gets then killed by the watchdog ?
->
-> Unlikely, but possible, if the CDL task takes ages to run the mode
-> switching code, and gets caught by the watchdog tick before it had a
-> chance to eventually suspend from primary mode.
->
-
-Another possibility is a hole in Xenomai/I-pipe fpu logic which causes the
-trap to trigger again and again when trying to relax because of the
-bounce.
-A trace from the I-pipe tracer would help here.
-
--- 
-                                            Gilles.
-https://click-hack.org
-
-
+PiBPbiBXZWRuZXNkYXksIDI5IEp1bHkgMjAxNSwgMTI6MTIsIFBoaWxpcHBlIEdlcnVtIDxycG1A
+eGVub21haS5vcmc+IHdyb3RlOgo+Cj4KPk9uIDA3LzI4LzIwMTUgMDU6MTkgUE0sIEZyZWRlcmlr
+IEJheWFydCB3cm90ZToKPj4+PiAuL3N0ZXN0IC0tc2Vzc2lvbj1mb28gMQo+Pj4+Cj4+Pj4gVGhl
+IGZpcnN0IHByb2Nlc3MgYmluZHMgdG8gdGhlIG5hbWVkIHNlbWFwaG9yZSB3aGljaCBpcyBub3Qg
+eWV0IGNyZWF0ZWQuIEFjY29yZGluZyB0byB0aGUgZGVzY3JpcHRpb24gb2YgcnRfc2VtX2JpbmQs
+ICBpZiB0aGUgb2JqZWN0IGRvZXMgbm90IGV4aXN0IG9uIGVudHJ5LCB0aGUgY2FsbGVyIG1heSBi
+bG9jayB1bnRpbCBhIHNlbWFwaG9yZSBvZiB0aGUgZ2l2ZW4gbmFtZSBpcyBjcmVhdGVkLgo+Pj4+
+Cj4+Pj4gU28gYmFzZWQgb24gdGhpcyBkZXNjcmlwdGlvbiwgSSB3b3VsZCBJIGV4cGVjdCB0aGF0
+IGlmIHRoZSBzZWNvbmQgcHJvY2VzcyBpcyBzdGFydGVkLCB0aGUgZmlyc3QgcHJvY2VzcyB3b3Vs
+ZCBiaW5kIGFuZCBjb250aW51ZSBhbmQgYmxvY2tzIGluIHRoZSBwIG9wZXJhdGlvbi4gVGhlIHNh
+bWUgZm9yIHRoZSAybmQgcHJvY2Vzcy4gSXMgdGhpcyBjb3JyZWN0ID8gQXQgdGhlIG1vbWVudCwg
+aWYgSSBzdGFydCB0aGUgMm5kIHByb2Nlc3MsIEkgZ2V0IGEgc2VnZmF1bHQgaW4gcnRfc2VtX2Ny
+ZWF0ZSA6Cj4+Pj4KPj4+PiBbIDk3NTguODg3OTIxXSBbWGVub21haV0gc3dpdGNoaW5nIG1haW4g
+dG8gc2Vjb25kYXJ5IG1vZGUgYWZ0ZXIgZXhjZXB0aW9uICMxNCBmcm9tIHVzZXItc3BhY2UgYXQg
+MHg3ZjZhZDhjNGE0M2UgKHBpZCA5MjU2KQo+Pj4+IFsgOTc1OC44ODc5MzBdIG1haW5bOTI1Nl06
+IHNlZ2ZhdWx0IGF0IDdmOTAzYmY2ZTAzOCBpcCAwMDAwN2Y2YWQ4YzRhNDNlIHNwIDAwMDA3ZmZm
+YmQyYzJlYjggZXJyb3IgNiBpbiBsaWJjb2JhbHQuc28uMi4wLjBbN2Y2YWQ4YzNkMDAwKzFlMDAw
+XQo+Pj4+Cj4+Pgo+Pj4gTG9va2luZyBhdCB0aGUgY29wcGVycGxhdGUgY29kZSwgeWVwLCB0aGlz
+IGRlZmluaXRlbHkgY2FuJ3Qgd29yay4gT2ssCj4+PiBxdWV1ZWQuCj4+Cj4+IEkgbm90aWNlZCBh
+bHNvIDoKPj4KPj4gIC4vc3Rlc3QgLS1zZXNzaW9uPWZvbyAxCj4+ICAuL3N0ZXN0IC0tc2Vzc2lv
+bj1mb28gMAo+Pgo+PiBCb3RoIHByb2Nlc3NlcyBhcmUgd2FpdGluZyBpbiBydF9zZW1fcCAuIFRo
+ZSBmaXJzdCBwcm9jZXNzIGNhdGNoZXMgU0lHSU5ULCB0aGUgc2Vjb25kIGRvZXNuJ3QuIElmIHlv
+dSBwcmVzcyBDVFJMK0Mgb24gdGhlIHNlY29uZCBwcm9jZXNzIGl0IHN0b3BzIGJ1dCBhbHNvIHRo
+ZSBmaXJzdCBwcm9jZXNzIGlzIGZhbGxpbmcgdGhyb3VnaCB0aGUgcnRfc2VtX3AgYWx0aG91Z2gg
+bm8gcnRfc2VtX3YgaXMgcmFpc2VkLgo+Cj4KPlNwdXJpb3VzIHdha2UgdXAgaW4gdGhlIENvYmFs
+dCBrZXJuZWwgd2hlbiBhYm9ydGluZyBhIHNlbSB3YWl0IG9wZXJhdGlvbgo+ZHVlIHRvIGEgc2ln
+bmFsL3VuYmxvY2sgZXZlbnQsIHRoYXQgaXMgdGhlIHJlYXNvbiB3aHkgSSBjb3VsZCBub3Qgc2Vl
+Cj50aGlzIGZyb20gYSBNZXJjdXJ5IHNldHVwLiBUaGlzIGlzIGZpeGVkIGluIHRoZSAtbmV4dCBi
+cmFuY2guCj4KPj4gQXQgdGhhdCBtb21lbnQgbm8gcHJvY2VzcyBpcyBwZW5kaW5nIG9uIHJ0X3Nl
+bV9wIGFueW1vcmUuIEJ1dCBpZiB5b3UgZG8gdGhlbiBhIHJ0X3NlbV9pbnF1aXJlLCBud2FpdGVy
+cyBpcyBzdGlsbCAxLgo+Cj5JIGRvbid0IG9ic2VydmUgdGhpcyBvbmUuIEFzc3VtaW5nIHlvdSBl
+bmFibGVkIHRoZSByZWdpc3RyeSwgd2hhdCBkb2VzCj4vdmFyL3J1bi94ZW5vbWFpLy4uLi9hbGNo
+ZW15L3NlbWFwaG9yZXMvc2VtdGVzdHNlbSB0ZWxsIHlvdSBhYm91dCB0aGUKPnNlbWE0IHZhbHVl
+Pwo+CgpXaGVuIEkgc3RhcnQgbXkgcHJvY2Vzc2VzLCBJIGRvbid0IHNlZSB0aGlzIGFsY2hlbXkg
+ZGlyZWN0b3J5IGluIG15IHJlZ2lzdHJ5LiBBbnkgc3VnZ2VzdGlvbiB3aHkgPwoKVGhlIG91dHB1
+dCBvZiAneGVuby1jb25maWcgLS1pbmZvJyBpcyA6CgpYZW5vbWFpIHZlcnNpb246IFhlbm9tYWkv
+Y29iYWx0IHYzLjAtcmM1IC0tIApMaW51eCBkZXYteDEwc2FlIDMuMTguMTIteDg2LTY0LXhlbm8t
+My4wLnJjNSAjMSBTTVAgUFJFRU1QVCBGcmkgSnVsIDEwIDEyOjI5OjE0IENFU1QgMjAxNSB4ODZf
+NjQgR05VL0xpbnV4Cktlcm5lbCBwYXJhbWV0ZXJzOiBCT09UX0lNQUdFPS9ib290L3ZtbGludXot
+My4xOC4xMi14ODYtNjQteGVuby0zLjAucmM1IHJvb3Q9VVVJRD1mYzhlY2VmYS1mYzczLTQ4N2Yt
+YTA0NS1jZmZhOTljMzhhMTEgcm8gcXVpZXQgY29uc29sZT10dHkwIGNvbnNvbGU9dHR5UzAsMTE1
+MjAwbjgKSS1waXBlIHJlbGVhc2UgIzEgZGV0ZWN0ZWQKQ29iYWx0IGNvcmUgMy4wLXJjNSBkZXRl
+Y3RlZApDb21waWxlcjogZ2NjIHZlcnNpb24gNC45LjIgKERlYmlhbiA0LjkuMi0xMCkgCkJ1aWxk
+IGFyZ3M6IC0tcHJlZml4PS91c3IgLS1pbmNsdWRlZGlyPS91c3IvaW5jbHVkZS94ZW5vbWFpIC0t
+bWFuZGlyPS91c3Ivc2hhcmUvbWFuIC0td2l0aC10ZXN0ZGlyPS91c3IvbGliL3hlbm9tYWkvdGVz
+dHN1aXRlIC0td2l0aC1jb3JlPWNvYmFsdCAtLWVuYWJsZS1zbXAgLS1lbmFibGUtcHNoYXJlZCAt
+LWVuYWJsZS1yZWdpc3RyeSAtLWJ1aWxkIHg4Nl82NC1saW51eC1nbnUgYnVpbGRfYWxpYXM9eDg2
+XzY0LWxpbnV4LWdudQoKSSBoYXZlIG9ubHkgdGhpcyBpbiB0aGUgcmVnaXN0ZXJ5IDoKCmZpbmQg
+L3Zhci9ydW4veGVub21haQoKL3Zhci9ydW4veGVub21haQovdmFyL3J1bi94ZW5vbWFpL3Jvb3QK
+L3Zhci9ydW4veGVub21haS9yb290L2ZvbwovdmFyL3J1bi94ZW5vbWFpL3Jvb3QvZm9vLzYyMTAK
+L3Zhci9ydW4veGVub21haS9yb290L2Zvby82MjAzCi92YXIvcnVuL3hlbm9tYWkvcm9vdC9mb28v
+c3lzdGVtCgoKSW4gYXR0YWNobWVudCBteSBsYXRlc3QgdmVyc2lvbiBvZiBzdGVzdC5jIHRvIGJl
+IHN1cmUsIHRoZXJlIGFyZSBvbmx5IHNtYWxsIG1vZGlmaWNhdGlvbnMuCgpCZWxvdyB0aGUgb3V0
+cHV0IG9mIHRoZSBmaXJzdCBwcm9jZXNzCgpzdWRvIC4vc3Rlc3QgLS1zZXNzaW9uPWZvbyAxCnN0
+ZXN0LmM6ODI6IF9fWEVOT19DT01QQVRfXyBub3QgZGVmaW5lZCwgY3JlYXRlID0gMQpzdGVzdC5j
+OjEyMTogZW50ZXIgQ1RSTCtDIHRvIGNvbnRpbnVlLi4uCnN0ZXN0LmM6NDM6IGJpbmRpbmcgc2Vt
+IHNlbXRlc3RzZW0uLi4Kc3Rlc3QuYzo1MTogY2FsbGluZyBydF9zZW1fcC4uLgo9PT09PT09PT0g
+Tm93IENUUkwrQyBvbiB0aGUgc2Vjb25kIChvdGhlcikgcHJvY2VzcyA9PT09PT09PT09PT09PT09
+PT09PT09CnN0ZXN0LmM6NjA6IHJ0X3NlbV9wIHBhc3NlZAo9PT09PT09PT0gTm93IENUUkwrQyBv
+biB0aGlzIChmaXJzdCkgcHJvY2VzcyB0byBpbnRlcnJ1cHQgdGhlIHdhaXQgbG9vcCA9PT09PT09
+PT0Kc3Rlc3QuYzozMjogc2lnbmFsKDIpCnN0ZXN0LmM6MTQ2OiBud2FpdGVycyA9IDEKc3Rlc3Qu
+YzoxNDc6IGNvdW50ID0gMApzdGVzdC5jOjE1MjogY2FsbGluZyBydF9zZW1fdiAxLi4uCnN0ZXN0
+LmM6MTYxOiBydF9zZW1fdiBjYWxsZWQKc3Rlc3QuYzoxODY6IG53YWl0ZXJzID0gMApzdGVzdC5j
+OjE4NzogY291bnQgPSAwCgo+LS0gCj5QaGlsaXBwZS4KPgo+Ci0tLS0tLS0tLS0tLS0tIG5leHQg
+cGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4u
+Ck5hbWU6IHN0ZXN0LmMKVHlwZTogdGV4dC94LWNzcmMKU2l6ZTogNDQwMSBieXRlcwpEZXNjOiBu
+b3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9h
+dHRhY2htZW50cy8yMDE1MDcyOS9kZjIxZGQyNy9hdHRhY2htZW50LmM+Cg==
