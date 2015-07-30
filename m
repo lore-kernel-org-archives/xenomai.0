@@ -1,21 +1,14 @@
-Date: Tue, 14 Jul 2015 02:02:32 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150714000232.GB1971@hermes.click-hack.org>
-References: <7413ead94cb8c4f3a91d1288a27103c9.squirrel@sourcetrek.com>
- <55A3F4B3.1090908@sigmatek.at>
- <20150713195856.GA1552@hermes.click-hack.org>
- <55A41E26.9020903@sigmatek.at>
- <20150713203133.GA2022@hermes.click-hack.org>
- <55A4235D.2000601@sigmatek.at>
- <20150713205412.GC2022@hermes.click-hack.org>
- <55A4346B.9030309@sigmatek.at>
- <20150713223932.GA1971@hermes.click-hack.org>
- <55A44A33.7010100@sigmatek.at>
+Date: Thu, 30 Jul 2015 14:28:55 +0000 (UTC)
+From: Frederik Bayart <frederik_bayart@yahoo.co.uk>
+Message-ID: <1152732986.5695318.1438266535029.JavaMail.yahoo@mail.yahoo.com>
+In-Reply-To: <55B91E8E.9010304@xenomai.org>
+References: <55B91E8E.9010304@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <55A44A33.7010100@sigmatek.at>
-Subject: Re: [Xenomai] usage of rtdm_task_sleep_abs
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] xenomai-3.0-rc5 : binding named semaphores from
+ external process
+Reply-To: Frederik Bayart <frederik_bayart@yahoo.co.uk>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,52 +17,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Johann Obermayr <johann.obermayr@sigmatek.at>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, Jul 14, 2015 at 01:30:59AM +0200, Johann Obermayr wrote:
-> Am 14.07.2015 um 00:39 schrieb Gilles Chanteperdrix:
-> >You mean there is an issue with bus contention? Are there many
-> >things occupying the bus when the problem happens?
-> Hi,
-> 
-> both cpu core can access our pci-card.
-> 
-> at this time we only have one pci-card with an fpga(with dpram) and a sram.
-> the fpga generate our system tick. And have a company internal bus system.
-> this bus system can configured with the dpram & fpga-config register.
-> we also must read witch irq come from the fpga, because internal he can have
-> more than one irq sources. and we must quit this irq. (with reading a fpga
-> register)
-> 
-> we see that if one core accessing the pci-bus, the other core have a high
-> latency.
-> core0 = importan & high prior accessing fpga and sram
-> core1 = linux & visu & some other low prior
-> 
-> if a low prior copy a memblock to/from the sram, the core0 have high latency
-> in
-> our irq handler at reading some data from fpga.
-> so we add a own pci-blocker task on core1. this task ist started about 50us
-> before
-> next tick-irq is coming. now our irq handle can access the fpga without
-> waiting.
+>On 07/29/2015 08:27 PM, Philippe Gerum wrote:
+>>
+>> Please merge the commit on top of -rc6 I mentioned this morning, which
+>> fixes the spurious wake up:
+>>
+>> http://git.xenomai.org/xenomai-3.git/commit/?h=next&id=081cbb8b150f30a019245dfb0e2f0b92cc7f2dfd
+>>
+>
+>Actually, I did not mention it, that's why we don't seem to be on the
+>same page, sorry for this. We should resume the discussion from the
+>situation obtained with this commit on top of -rc6.
 
-Well, normally, a PCI bus controller has parameters controlling the
-duration of the longest burst, adequately named "PCI latency". You
-should also look at whether caching is enabled. A PCI bridge will
-normally prefetch from a PCI bar (provided that the FPGA indicates
-in the configuration bytes that the memory is prefetchable) to avoid
-CPU wait states. Using what was once called MTRR, but has a new name
-in new processor, you can cause the procesdor to buffer data before
-sending large bursts on the PCI bus. I think what you need to have a
-look at is the documentation of the PCIe to PCI bridge, to see if
-you can not improve the situation by better configuring it. Also,
-reading or writing to FPGA is RAM looks pretty strange, since I
-would guess an FPGA could be master on the PCI bus and do DMA
-itself, thereby relieving the CPU.
+I have build a new rc6 kernel & libraries with the new kernel/cobalt/posix/sem.c
+The rt_sem_p problem is now solved, the first process is not interrupted anymore.
 
--- 
-					    Gilles.
-https://click-hack.org
+I still doesn't see the fuse file system like you do.  I'm looking to other problems (select/connect/send/recv on UNIX domain sockets) so I hope that this is not the cause.
+
+I found already that 'select' on  socket(PF_UNIX, SOCK_STREAM, 0)  causes Interrupted system call (errno 4).
+If I replace 'select' with '__real_select' the problem seems to be solved, and the select timeout works.
+But the select doesn't seem to react on connect. I'm looking at the problem.
+
+Maybe I will see more if I build with --enable-debug.
+
+This is the fuse data of the system :
+
+$ sudo ./stest  --dump-config|grep REGISTRY
+based on Xenomai/cobalt v3.0-rc6 -- 
+CONFIG_XENO_REGISTRY=1
+CONFIG_XENO_REGISTRY_ROOT="/var/run/xenomai"
+
+Is this what I'm supposed to see ?
+
+I configured CONFIG_FUSE_FS=m in the kernel, module fuse is loaded.
+The fuse packages are installed :
+ii  fuse            2.9.3-15+b1  amd64    Filesystem in Userspace
+ii  gvfs-fuse        1.22.2-1    amd64    userspace virtual filesystem - fuse server
+ii  libfuse-dev      2.9.3-15+b1  amd64    Filesystem in Userspace (development)
+ii  libfuse2:amd64  2.9.3-15+b1  amd64    Filesystem in Userspace (library)
+
+$ xeno-config --info
+Xenomai version: Xenomai/cobalt v3.0-rc6 -- 
+Linux dev-x10sae 3.18.12-x86-64-xeno-3.0.rc6.1 #1 SMP PREEMPT Thu Jul 30 12:38:10 CEST 2015 x86_64 GNU/Linux
+Kernel parameters: BOOT_IMAGE=/boot/vmlinuz-3.18.12-x86-64-xeno-3.0.rc6.1 root=UUID=fc8ecefa-fc73-487f-a045-cffa99c38a11 ro quiet console=tty0 console=ttyS0,115200n8
+I-pipe release #1 detected
+Cobalt core 3.0-rc6 detected
+Compiler: gcc version 4.9.2 (Debian 4.9.2-10) 
+Build args: --prefix=/usr --includedir=/usr/include/xenomai --mandir=/usr/share/man --with-testdir=/usr/lib/xenomai/testsuite --with-core=cobalt --enable-smp --enable-pshared --enable-registry --build x86_64-linux-gnu build_alias=x86_64-linux-gnu
+
+
+If I run the 2 stest processes, this is what I see :
+$ find /var/run/xenomai/
+/var/run/xenomai/
+/var/run/xenomai/root
+/var/run/xenomai/root/foo
+/var/run/xenomai/root/foo/20678
+/var/run/xenomai/root/foo/20667
+/var/run/xenomai/root/foo/system
+
+$ mount | grep fuse
+fusectl on /sys/fs/fuse/connections type fusectl (rw,relatime)
+sysregd on /run/xenomai/root/foo/system type fuse.sysregd (rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions)
+stest on /run/xenomai/root/foo/20667 type fuse.stest (rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions)
+stest on /run/xenomai/root/foo/20678 type fuse.stest (rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions)
+
+Frederik
+
+>
+>-- 
+>Philippe.
 
