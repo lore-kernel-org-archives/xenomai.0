@@ -1,20 +1,11 @@
-Message-ID: <55A4235D.2000601@sigmatek.at>
-Date: Mon, 13 Jul 2015 22:45:17 +0200
-From: Johann Obermayr <johann.obermayr@sigmatek.at>
 MIME-Version: 1.0
-References: <20150710104957.GT20176@hermes.click-hack.org>
- <55A3C023.5070000@sigmatek.at> <20150713140208.GC1554@hermes.click-hack.org>
- <55A3D1B2.50905@sigmatek.at>
- <e5d48b6984cbc1b098062b303b56b0db.squirrel@sourcetrek.com>
- <55A3EE26.5070802@sigmatek.at>
- <7413ead94cb8c4f3a91d1288a27103c9.squirrel@sourcetrek.com>
- <55A3F4B3.1090908@sigmatek.at> <20150713195856.GA1552@hermes.click-hack.org>
- <55A41E26.9020903@sigmatek.at> <20150713203133.GA2022@hermes.click-hack.org>
-In-Reply-To: <20150713203133.GA2022@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] usage of rtdm_task_sleep_abs
-Reply-To: johann.obermayr@sigmatek.at
+In-Reply-To: <BLU436-SMTP153D5AD06FBFF11FA47585FF08B0@phx.gbl>
+References: <BLU436-SMTP153D5AD06FBFF11FA47585FF08B0@phx.gbl>
+From: Miguel Rubio-Roy <mrubioroy@gmail.com>
+Date: Thu, 30 Jul 2015 13:21:15 +0200
+Message-ID: <CAEtr_LDsrbvTwb9fuyuHKASdT_Q5ofkDtOBbns7GvvTbvx7+AQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Raspberry Pi 2 patch - BCM2709
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,98 +14,109 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Mathieu <mathieu_rondonneau@hotmail.com>
+Cc: xenomai@xenomai.org
 
-Am 13.07.2015 um 22:31 schrieb Gilles Chanteperdrix:
-> On Mon, Jul 13, 2015 at 10:23:02PM +0200, Johann Obermayr wrote:
->> Am 13.07.2015 um 21:58 schrieb Gilles Chanteperdrix:
->>> On Mon, Jul 13, 2015 at 07:26:11PM +0200, Johann Obermayr wrote:
->>>> Am 13.07.2015 um 19:21 schrieb Gilles Chanteperdrix:
->>>>> Johann Obermayr wrote:
->>>>>> Am 13.07.2015 um 17:24 schrieb Gilles Chanteperdrix:
->>>>>>> Johann Obermayr wrote:
->>>>>>>> without your application, there are no large latencies.
->>>>>>>> with your application see frozen.txt (with latency -f)
->>>>>>> I am confused. You mean "our application", not "your application",
->>>>>>> right?
->>>>>>> lrtdrv_monitoring_irq is not part of the code delivered by the Xenomai
->>>>>>> project.
->>>>>>>
->>>>>>>> We see the problem only if one task (background) is accessing the SRAM
->>>>>>>> on your PCI-Card. if we stop this task, all is ok.
->>>>>>> Again: the Xenomai project does not make PCI-card. So, you probably mean
->>>>>>> "our PCI-Card"?
->>>>>> yes, our PCI-Card. (sorry for my bad english)
->>>>>>>> So we have a higher prior task (pci-locker), that interrupt the
->>>>>>>> background task, so that the pci bus get free.
->>>>>>> I am not sure I understand your explanations. But the trace is pretty
->>>>>>> clear:
->>>>>>>
->>>>>>> At time -658 the timer is programmed to tick at -561.
->>>>>>>
->>>>>>>> :|  # event   tick@-561   -658	  0.112  xntimer_next_local_shot+0xca
->>>>>>>> :|  + func                -651	  0.145  lrtdrv_monitoring_irq+0x4
->>>>>>>> [sigmatek_lrt] (irq_hook_handler+0x32 [sigmatek_lrt])
->>>>>>>> :|  + end     0x000000ef  -651! 641.640  apic_timer_interrupt+0x52
->>>>>>>> (<102d0254>)
->>>>>>> But at that point the tick is delayed for 600us. And according to the
->>>>>>> trace, the last traced function called before that delay is the function
->>>>>>>
->>>>>>> ltdrv_monitoring_irq.
->>>>>>>
->>>>>>> So, I do not know what this irq is doing, but I would suggest having a
->>>>>>> close look at it.
->>>>>>>
->>>>>>>
->>>>>> hello,
->>>>>>
->>>>>> i have disable our lrtdrv_monitoring_irq.
->>>>>> Only have this callback
->>>>>> static void irq_hook_handler(unsigned int irq, unsigned int state)
->>>>>> {
->>>>>>       if (fpga_interrupt == irq && state == 0x01)
->>>>>>       {
->>>>>>           time_fpga_irq = rt_timer_tsc();
->>>>>>       }
->>>>>> }
->>>>>> same latency
->>>>> Maybe, but your trace does not contain enough points to see it. The trace
->>>>> should at least contain the "tick@" event which gets missed, so that we
->>>>> can see how much the interrupt is delayed, and what was happening at the
->>>>> time.
->>>>>
->>>>>
->>>> Hi,
->>>>
->>>> Sorry, here with more points.
->>> Ok, what is irq_hook_handler ?
->>>
->> Ok.  on out PCI Card there is a FPGA. This FPGA generate am Interrupt to the
->> PC. But internal in the FPGA there
->> are different IRQ sources. One of them is our Tick.
->> So we measure the time from  __ipipe_handle_irq to the  our rtdm_irq_request
->> handler.
->> In our handler we can check, if it our Tick and than we can calc the correct
->> time to start our pci_locker task 50us before next Tick-irq.
->>
->> It's a callback function from some irq function ipipe_raise_irq,
->> __ipipe_do_IRQ, __ipipe_handle_irq
->> for our own tracing and it save the fpga irq time.
->> Only __ipipe_handle_irq have state 0x01 (begin irq) & state 0x02 at the end
->> of the function.
-> I see two weird things in your traces:
-> - irq_hook_handler which is taking a lot of time
-> - or some APIC related functions taking a lot of time.
+On 30 July 2015 at 05:37, Mathieu <mathieu_rondonneau@hotmail.com> wrote:
+
+> In the mean time, I was wondering is anybody else succeed to get this
+> working or has any pointers on anything obvious missing.
 >
-> Are you sure your system is not one of those which disable the APIC
-> during idle period. Is your system UP or SMP?
->
-It's a SMP (Dual core Celeron)
-Kernel cmdline
-nohlt idle=poll xeno_hal.smi=1 isolcpus=0 irqaffinity=1 
-console=ttyS0,115200 BOOT_IMAGE=/bzImage FirstUsbDrive=E 
-console=/dev/null noconsole root=/dev/sda2 rw
 
-Johann
+I was stuck at the same point. I've been able to go a bit further (but not
+solve the original problem) by setting:
+CONFIG_DEBUG_PAGEALLOC=y
+CONFIG_DEBUG_MEMORY_INIT=y
 
+Then I see:
 
+Uncompressing Linux... done, booting the kernel.
+[    0.000000] Booting Linux on physical CPU 0xf00
+[    0.000000] Initializing cgroup subsys cpu
+[    0.000000] Initializing cgroup subsys cpuacct
+[    0.000000] Linux version 3.18.12-v7+ (mrubioroy@llrmrr) (gcc version
+4.7.1 20120402 (prere5
+[    0.000000] CPU: ARMv7 Processor [410fc075] revision 5 (ARMv7),
+cr=10c5387d
+[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing
+instruction cache
+[    0.000000] Machine: BCM2709
+[    0.000000] debug: ignoring loglevel setting.
+[    0.000000] bootconsole [earlycon0] enabled
+[    0.000000] cma: Reserved 8 MiB at 0x3a800000
+[    0.000000] Memory policy: Data cache writealloc
+[    0.000000] On node 0 totalpages: 241664
+[    0.000000] free_area_init_node: node 0, pgdat 8074f1c0, node_mem_map
+b9fa7000
+[    0.000000]   Normal zone: 2124 pages used for memmap
+[    0.000000]   Normal zone: 0 pages reserved
+[    0.000000]   Normal zone: 241664 pages, LIFO batch:31
+[    0.000000] mminit::memmap_init Initialising map node 0 zone 0 pfns 0 ->
+241664
+[    0.000000] [bcm2709_smp_init_cpus] enter (8b00->f3003010)
+[    0.000000] [bcm2709_smp_init_cpus] ncores=4
+[    0.000000] PERCPU: Embedded 13 pages/cpu @b9f6e000 s22400 r8192 d22656
+u53248
+[    0.000000] pcpu-alloc: s22400 r8192 d22656 u53248 alloc=13*4096
+[    0.000000] pcpu-alloc: [0] 0 [0] 1 [0] 2 [0] 3
+[    0.000000] mminit::zonelist general 0:Normal = 0:Normal
+[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.
+Total pages: 239540
+[    0.000000] Kernel command line: dma.dmachans=0x7f35
+bcm2708_fb.fbwidth=656 bcm2708_fb.fbhet
+[    0.000000] PID hash table entries: 4096 (order: 2, 16384 bytes)
+[    0.000000] Dentry cache hash table entries: 131072 (order: 7, 524288
+bytes)
+[    0.000000] Inode-cache hash table entries: 65536 (order: 6, 262144
+bytes)
+[    0.000000] Memory: 940468K/966656K available (5171K kernel code, 366K
+rwdata, 1524K rodata)
+[    0.000000] Virtual kernel memory layout:
+[    0.000000]     vector  : 0xffff0000 - 0xffff1000   (   4 kB)
+[    0.000000]     fixmap  : 0xffc00000 - 0xffe00000   (2048 kB)
+[    0.000000]     vmalloc : 0xbb800000 - 0xff000000   (1080 MB)
+[    0.000000]     lowmem  : 0x80000000 - 0xbb000000   ( 944 MB)
+[    0.000000]     modules : 0x7f000000 - 0x80000000   (  16 MB)
+[    0.000000]       .text : 0x80008000 - 0x80691e44   (6696 kB)
+[    0.000000]       .init : 0x80692000 - 0x806fa000   ( 416 kB)
+[    0.000000]       .data : 0x806fa000 - 0x80755bd4   ( 367 kB)
+[    0.000000]        .bss : 0x80755bd4 - 0x80842180   ( 946 kB)
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+[    0.000000] Preemptible hierarchical RCU implementation.
+[    0.000000] NR_IRQS:608
+[    0.000000] Architected cp15 timer(s) running at 19.20MHz (virt).
+[    0.000000] I-pipe, 19.200 MHz clocksource, wrap in 960767920505705 ms
+[ 5875.515258] sched_clock: 56 bits at 19MHz, resolution 52ns, wraps every
+3579139424256ns
+[ 5875.515258] Switching to timer-based delay loop, resolution 52ns
+[ 5875.515259] Interrupt pipeline (release #2)
+[    0.000003] Console: colour dummy device 80x30
+[ 5875.515261] Calibrating delay loop (skipped), value calculated using
+timer frequency.. 38.4)
+[ 5875.515259] pid_max: default: 32768 minimum: 301
+[ 5875.515258] Mount-cache hash table entries: 2048 (order: 1, 8192 bytes)
+[    0.000002] Mountpoint-cache hash table entries: 2048 (order: 1, 8192
+bytes)
+[ 5875.515259] Initializing cgroup subsys memory
+[ 5875.515259] Initializing cgroup subsys devices
+[ 5875.515258] Initializing cgroup subsys freezer
+[ 5875.515258] Initializing cgroup subsys net_cls
+[ 5875.515259] Initializing cgroup subsys blkio
+[ 5875.515258] CPU: Testing write buffer coherency: ok
+[ 5875.515259] ftrace: allocating 17387 entries in 51 pages
+[ 5875.515260] missing device node for CPU 0
+[ 5875.515258] missing device node for CPU 1
+[ 5875.515258] missing device node for CPU 2
+[ 5875.515260] missing device node for CPU 3
+[ 5875.515259] CPU0: thread -1, cpu 0, socket 15, mpidr 80000f00
+[ 5875.515262] [bcm2709_smp_prepare_cpus] enter
+[ 5875.515259] calling  trace_init_flags_sys_exit+0x0/0x28 @ 1
+[ 5875.515261] initcall trace_init_flags_sys_exit+0x0/0x28 returned 0 after
+0 usecs
+[ 5875.515258] calling  trace_init_flags_sys_enter+0x0/0x28 @ 1
+[ 5875.515260] initcall trace_init_flags_sys_enter+0x0/0x28 returned 0
+after 0 usecs
+[ 5875.515259] calling  init_static_idmap+0x0/0x12c @ 1
+[ 5875.515261] Setting up static identity map for 0x4ab020 - 0x4ab054
+[ 5875.515259] initcall init_static_idmap+0x0/0x12c returned 0 after 0 usecs
+[ 5875.515261] calling  spawn_ksoftirqd+0x0/0x30 @ 1
