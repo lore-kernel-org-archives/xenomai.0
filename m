@@ -1,10 +1,10 @@
-From: Michael Haberler <haberlerm@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <09EA8A4C-D8EB-4470-A339-C2019D1B662B@gmail.com>
-Date: Thu, 30 Jul 2015 07:26:43 +0200
-Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2102\))
-Subject: [Xenomai] mutate/start RT_TASK a posix thread?
+Message-ID: <55B9E768.6050209@free.fr>
+Date: Thu, 30 Jul 2015 10:59:20 +0200
+From: =?UTF-8?B?U3TDqXBoYW5lIEFOQ0VMT1Q=?= <sancelot@free.fr>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] running as user issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,52 +13,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-we're happily using RT threads using the Xenomai 2 thread API
+Hi,
 
-is it possible _using this API_ to create/mutate/relax such a thread =
-intentionally into a Posix thread but retaining the API usage?
+I have problems running as user.
 
-I can do any conditional API usage through thread parameters to avoid =
-calls which will not work for a relaxed thread, but I would like to =
-retain the API (I guess I could switch to the posix skin but I would =
-like to avoid another learning curve/test cycle for now)
+pshared mode is enabled,
+conf tunables are defined (session_label , and mem_pool_size overloaded)
+and the program is running as root.
 
-going forward/Xenomai 3: what would be your recommendation to address =
-the issue long-term?=20
+user's group 1000 has been echoed to 
+/sys/module/xenomai/parameters/allowed_group
 
-
-
-
-(may sound like whacky question but great use case around here - turns =
-out many jobs do not need RT capabilities but it would be handy to =
-retain the flow)
-
-thanks in advance,
-
-- Michael
+xenomai_init() reports EACCESS, although ulimit set up to unlimited 
+memory lock.
 
 
-API used from =
-http://www.xenomai.org/documentation/trunk/html/api/group__task.html :
+ulimit -a
+core file size          (blocks, -c) 0
+data seg size           (kbytes, -d) unlimited
+scheduling priority             (-e) 0
+file size               (blocks, -f) unlimited
+pending signals                 (-i) 15346
+max locked memory       (kbytes, -l) unlimited
+max memory size         (kbytes, -m) unlimited
+open files                      (-n) 65536
+pipe size            (512 bytes, -p) 8
+POSIX message queues     (bytes, -q) 819200
+real-time priority              (-r) 0
+stack size              (kbytes, -s) 8192
+cpu time               (seconds, -t) unlimited
+max user processes              (-u) 15346
+virtual memory          (kbytes, -v) unlimited
+file locks                      (-x) unlimited
 
-rt_task_create
-rt_task_delete
-rt_task_inquire
-rt_task_join
-rt_task_resume
-rt_task_self
-rt_task_set_affinity
-rt_task_set_mode
-rt_task_set_periodic
-rt_task_start,
-rt_task_suspend
-rt_task_unblock
-rt_task_wait_period
 
-ps: update on rtdm_native: 'sortof works' - I ran into a problem with =
-unbalanced IRQ's which seems unrelated to rtdm_native but more related =
-to my kernel fu; with a determined push/more clue it should be possible =
-to transpose into 'fully works'=
+  ./print_erreur
+conf tunable
+mem pool size=5000000
+    0"003.362| WARNING: [main] failed to initialize main shared heap
+    0"003.439| WARNING: [main] setup call copperplate failed
+    0"003.493| BUG in xenomai_init(): [main] initialization failed, EACCES
+
+Regards,
+Steph
+
 
