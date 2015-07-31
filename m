@@ -1,14 +1,14 @@
-Date: Tue, 14 Jul 2015 05:54:33 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150714035433.GC1971@hermes.click-hack.org>
-References: <CO1PR01MB256AC4CE16186B5C49AEABD949B0@CO1PR01MB256.prod.exchangelabs.com>
+Date: Fri, 31 Jul 2015 16:04:54 +0000 (UTC)
+From: Frederik Bayart <frederik_bayart@yahoo.co.uk>
+Message-ID: <1296936493.6476410.1438358694470.JavaMail.yahoo@mail.yahoo.com>
+In-Reply-To: <55BA5273.8020402@xenomai.org>
+References: <55BA5273.8020402@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <CO1PR01MB256AC4CE16186B5C49AEABD949B0@CO1PR01MB256.prod.exchangelabs.com>
-Subject: Re: [Xenomai] xenomai latency test hangs due to kernel paging
-	request
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] xenomai-3.0-rc5 : binding named semaphores from
+ external process
+Reply-To: Frederik Bayart <frederik_bayart@yahoo.co.uk>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,61 +17,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gowtham Garimella <ggarime1@jhu.edu>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, Jul 14, 2015 at 12:57:10AM +0000, Gowtham Garimella wrote:
->  =20
-> Hi Everyone,
->=20
-> I have installed xenomai 2.6.4 on ubuntu 14.04 with the latest
-> kernel=A0 3.14.17.
+>On Thursday, 30 July 2015, 18:36, Philippe Gerum <rpm@xenomai.org> wrote:
+>On 07/30/2015 04:28 PM, Frederik Bayart wrote:
+>>> On 07/29/2015 08:27 PM, Philippe Gerum wrote:
+>>>>
+>>>> Please merge the commit on top of -rc6 I mentioned this morning, which
+>>>> fixes the spurious wake up:
+>>>>
+>>>> http://git.xenomai.org/xenomai-3.git/commit/?h=next&id=081cbb8b150f30a019245dfb0e2f0b92cc7f2dfd
+>>>>
+>>>
+>>> Actually, I did not mention it, that's why we don't seem to be on the
+>>> same page, sorry for this. We should resume the discussion from the
+>>> situation obtained with this commit on top of -rc6.
+>>
+>> I have build a new rc6 kernel & libraries with the new kernel/cobalt/posix/sem.c
+>> The rt_sem_p problem is now solved, the first process is not interrupted anymore.
+>>
+>> I still doesn't see the fuse file system like you do.  I'm looking to other problems (select/connect/send/recv on UNIX domain sockets) so I hope that this is not the cause.
+>>
+>> I found already that 'select' on  socket(PF_UNIX, SOCK_STREAM, 0)  causes Interrupted system call (errno 4).
+>> If I replace 'select' with '__real_select' the problem seems to be solved, and the select timeout works.
+>> But the select doesn't seem to react on connect. I'm looking at the problem.
+>>
+>> Maybe I will see more if I build with --enable-debug.
+>>
+>> This is the fuse data of the system :
+>>
+>> $ sudo ./stest  --dump-config|grep REGISTRY
+>> based on Xenomai/cobalt v3.0-rc6 --
+>> CONFIG_XENO_REGISTRY=1
+>> CONFIG_XENO_REGISTRY_ROOT="/var/run/xenomai"
+>>
+>> Is this what I'm supposed to see ?
+>>
+>
+>Yes.
+>
+>> I configured CONFIG_FUSE_FS=m in the kernel, module fuse is loaded.
+>> The fuse packages are installed :
+>> ii  fuse            2.9.3-15+b1  amd64    Filesystem in Userspace
+>> ii  gvfs-fuse        1.22.2-1    amd64    userspace virtual filesystem - fuse server
+>> ii  libfuse-dev      2.9.3-15+b1  amd64    Filesystem in Userspace (development)
+>> ii  libfuse2:amd64  2.9.3-15+b1  amd64    Filesystem in Userspace (library)
+>>
+>> $ xeno-config --info
+>> Xenomai version: Xenomai/cobalt v3.0-rc6 --
+>> Linux dev-x10sae 3.18.12-x86-64-xeno-3.0.rc6.1 #1 SMP PREEMPT Thu Jul 30 12:38:10 CEST 2015 x86_64 GNU/Linux
+>> Kernel parameters: BOOT_IMAGE=/boot/vmlinuz-3.18.12-x86-64-xeno-3.0.rc6.1 root=UUID=fc8ecefa-fc73-487f-a045-cffa99c38a11 ro quiet console=tty0 console=ttyS0,115200n8
+>> I-pipe release #1 detected
+>> Cobalt core 3.0-rc6 detected
+>> Compiler: gcc version 4.9.2 (Debian 4.9.2-10)
+>> Build args: --prefix=/usr --includedir=/usr/include/xenomai --mandir=/usr/share/man --with-testdir=/usr/lib/xenomai/testsuite --with-core=cobalt --enable-smp --enable-pshared --enable-registry --build x86_64-linux-gnu build_alias=x86_64-linux-gnu
+>>
+>>
+>> If I run the 2 stest processes, this is what I see :
+>> $ find /var/run/xenomai/
+>> /var/run/xenomai/
+>> /var/run/xenomai/root
+>> /var/run/xenomai/root/foo
+>> /var/run/xenomai/root/foo/20678
+>> /var/run/xenomai/root/foo/20667
+>> /var/run/xenomai/root/foo/system
+>>
+>> $ mount | grep fuse
+>> fusectl on /sys/fs/fuse/connections type fusectl (rw,relatime)
+>> sysregd on /run/xenomai/root/foo/system type fuse.sysregd (rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions)
+>> stest on /run/xenomai/root/foo/20667 type fuse.stest (rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions)
+>> stest on /run/xenomai/root/foo/20678 type fuse.stest (rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions)
+>
+>I suspect a permission issue, since you attempt to traverse the mount
+>points apparently with regular user privileges. Any luck with "sudo find
+>..." ?
+>
+>Alternatively, passing --shared-registry to your app would enable public
+>access to the registry of your application.
 
-3.14.17 is not the latest kernel. As explained in the documentation,
-you can use later patches in the I-pipe download area for the same
-kernel version number. So, the "latest kernel" would be
-https://xenomai.org//downloads/ipipe/v3.x/x86/ipipe-core-3.14.44-x86-9.patch
+This was the cause, thank you !
 
-Unfortunately that patch has an issue on x86, so I would recommend
-using that one instead:
-https://xenomai.org//downloads/ipipe/v3.x/x86/older/ipipe-core-3.14.39-x86-=
-9.patch
-
-
->  My hardware is a NUC i5 computer (NUC5i5MYHE
-> model) with x86 architecture 64 bit computer. I am able=A0 to
-> successfully install xenomai and am able to reboot the system=A0
-> normally. I checked that Xenomai is enabled correctly=A0 as seen in
-> /var/log/syslog
->=20
-> The issue I am facing is that, when I run xeno latency it hangs
-> and does=A0 not print any latencies. I have seen some posts before
-> on similar=A0 issues but they did not help much.
-
-Well, I doubt someone with similar issues did not get an answer.
-Could you point us to the posts you are talking about?
-
-
->  I enabled ipipe
-> tracing and am=A0 attaching the trace. The main part of the log
-> files=A0 that=A0 I think is the issue is these lines:
->=20
->=20
-> [=A0 643.881016] BUG: unable to handle kernel paging request at 00007fff0=
-d573ea0
-> [=A0 643.881049] IP: [<ffffffff8163c181>] rthal_strncpy_from_user+0x11/0x=
-30
-> [=A0 643.881077] PGD 3f78f8067 PUD 3e5e37067 PMD 3ff7b5067 PTE 80000003cf=
-16c067
-> [=A0 643.881108] Oops: 0001 [#1] SMP
-> [=A0 643.881124] Modules linked in: x86_pkg_temp_thermal i915
-> drm_kms_helper
-
-Actually, you do not really need the I-pipe tracer. The kernel logs
-would be sufficient. And please, post the full logs, from the boot,
-up to the bug itself.
-
---=20
-					    Gilles.
-https://click-hack.org
+Frederik
+>
+>-- 
+>Philippe.
 
