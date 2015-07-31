@@ -1,12 +1,14 @@
-References: <55B9E768.6050209@free.fr> <55BB9D9F.5050508@free.fr>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55BBA495.1000102@xenomai.org>
-Date: Fri, 31 Jul 2015 18:38:45 +0200
+Date: Fri, 31 Jul 2015 17:54:03 +0000 (UTC)
+From: Frederik Bayart <frederik_bayart@yahoo.co.uk>
+Message-ID: <694496883.6540925.1438365243369.JavaMail.yahoo@mail.yahoo.com>
+In-Reply-To: <55BA4C76.7010907@xenomai.org>
+References: <55BA4C76.7010907@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <55BB9D9F.5050508@free.fr>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] running as user issue
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] xenomai-3.0-rc5 : binding named semaphores from
+ external process
+Reply-To: Frederik Bayart <frederik_bayart@yahoo.co.uk>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,84 +17,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?St=c3=a9phane_ANCELOT?= <sancelot@free.fr>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/31/2015 06:09 PM, St=E9phane ANCELOT wrote:
-> giving a+rwx access to /dev/shm/xeno:mysession.heap permits to run
-> xenomai_init,
-
-This does not make sense unless you are trying to bind to an existing
-session with incompatible user privileges.
-
-> but unfortunately, the heap alloc / binds do not work.
-
-I'm sorry, I have no clue about what you are trying to do. More details
-would probably help, like how many processes share the same session,
-what are their respective user/privileges, which Xenomai-specific
-command line switches are passed to them?
-
-> Regards,
-> S.Ancelot
->=20
-> On 30/07/2015 10:59, St=E9phane ANCELOT wrote:
->> Hi,
->>
->> I have problems running as user.
->>
->> pshared mode is enabled,
->> conf tunables are defined (session_label , and mem_pool_size overloaded)
->> and the program is running as root.
->>
->> user's group 1000 has been echoed to
->> /sys/module/xenomai/parameters/allowed_group
->>
->> xenomai_init() reports EACCESS, although ulimit set up to unlimited
->> memory lock.
->>
->>
->> ulimit -a
->> core file size          (blocks, -c) 0
->> data seg size           (kbytes, -d) unlimited
->> scheduling priority             (-e) 0
->> file size               (blocks, -f) unlimited
->> pending signals                 (-i) 15346
->> max locked memory       (kbytes, -l) unlimited
->> max memory size         (kbytes, -m) unlimited
->> open files                      (-n) 65536
->> pipe size            (512 bytes, -p) 8
->> POSIX message queues     (bytes, -q) 819200
->> real-time priority              (-r) 0
->> stack size              (kbytes, -s) 8192
->> cpu time               (seconds, -t) unlimited
->> max user processes              (-u) 15346
->> virtual memory          (kbytes, -v) unlimited
->> file locks                      (-x) unlimited
->>
->>
->>  ./print_erreur
->> conf tunable
->> mem pool size=3D5000000
->>    0"003.362| WARNING: [main] failed to initialize main shared heap
->>    0"003.439| WARNING: [main] setup call copperplate failed
->>    0"003.493| BUG in xenomai_init(): [main] initialization failed, EACCES
->>
->> Regards,
->> Steph
->>
->>
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> http://xenomai.org/mailman/listinfo/xenomai
->=20
->=20
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://xenomai.org/mailman/listinfo/xenomai
->=20
-
-
---=20
-Philippe.
-
+Pk9uIFRodXJzZGF5LCAzMCBKdWx5IDIwMTUsIDE4OjEwLCBQaGlsaXBwZSBHZXJ1bSA8cnBtQHhl
+bm9tYWkub3JnPiB3cm90ZToKPk9uIDA3LzMwLzIwMTUgMDU6MDggUE0sIEZyZWRlcmlrIEJheWFy
+dCB3cm90ZToKPj4+IE9uIFRodXJzZGF5LCAzMCBKdWx5IDIwMTUsIDE2OjI4LCBGcmVkZXJpayBC
+YXlhcnQgPGZyZWRlcmlrX2JheWFydEB5YWhvby5jby51az4gd3JvdGU6Cj4+Pj4gT24gMDcvMjkv
+MjAxNSAwODoyNyBQTSwgUGhpbGlwcGUgR2VydW0gd3JvdGU6Cj4+Pj4+Cj4+Pj4+IFBsZWFzZSBt
+ZXJnZSB0aGUgY29tbWl0IG9uIHRvcCBvZiAtcmM2IEkgbWVudGlvbmVkIHRoaXMgbW9ybmluZywg
+d2hpY2gKPj4+Pj4gZml4ZXMgdGhlIHNwdXJpb3VzIHdha2UgdXA6Cj4+Pj4+Cj4+Pj4+IGh0dHA6
+Ly9naXQueGVub21haS5vcmcveGVub21haS0zLmdpdC9jb21taXQvP2g9bmV4dCZpZD0wODFjYmI4
+YjE1MGYzMGEwMTkyNDVkZmIwZTJmMGI5MmNjN2YyZGZkCj4+Pj4+Cj4+Pj4KPj4+PiBBY3R1YWxs
+eSwgSSBkaWQgbm90IG1lbnRpb24gaXQsIHRoYXQncyB3aHkgd2UgZG9uJ3Qgc2VlbSB0byBiZSBv
+biB0aGUKPj4+PiBzYW1lIHBhZ2UsIHNvcnJ5IGZvciB0aGlzLiBXZSBzaG91bGQgcmVzdW1lIHRo
+ZSBkaXNjdXNzaW9uIGZyb20gdGhlCj4+Pj4gc2l0dWF0aW9uIG9idGFpbmVkIHdpdGggdGhpcyBj
+b21taXQgb24gdG9wIG9mIC1yYzYuCj4+Pgo+Pj4gSSBoYXZlIGJ1aWxkIGEgbmV3IHJjNiBrZXJu
+ZWwgJiBsaWJyYXJpZXMgd2l0aCB0aGUgbmV3IGtlcm5lbC9jb2JhbHQvcG9zaXgvc2VtLmMKPj4+
+IFRoZSBydF9zZW1fcCBwcm9ibGVtIGlzIG5vdyBzb2x2ZWQsIHRoZSBmaXJzdCBwcm9jZXNzIGlz
+IG5vdCBpbnRlcnJ1cHRlZCBhbnltb3JlLgo+Pj4KPj4+IEkgc3RpbGwgZG9lc24ndCBzZWUgdGhl
+IGZ1c2UgZmlsZSBzeXN0ZW0gbGlrZSB5b3UgZG8uICBJJ20gbG9va2luZyB0byBvdGhlciBwcm9i
+bGVtcyAoc2VsZWN0L2Nvbm5lY3Qvc2VuZC9yZWN2IG9uIFVOSVggZG9tYWluIHNvY2tldHMpIHNv
+IEkgaG9wZSB0aGF0IHRoaXMgaXMgbm90IHRoZSBjYXVzZS4KPj4+Cj4+PiBJIGZvdW5kIGFscmVh
+ZHkgdGhhdCAnc2VsZWN0JyBvbiAgc29ja2V0KFBGX1VOSVgsIFNPQ0tfU1RSRUFNLCAwKSAgY2F1
+c2VzIEludGVycnVwdGVkIHN5c3RlbSBjYWxsIChlcnJubyA0KS4KPj4+IElmIEkgcmVwbGFjZSAn
+c2VsZWN0JyB3aXRoICdfX3JlYWxfc2VsZWN0JyB0aGUgcHJvYmxlbSBzZWVtcyB0byBiZSBzb2x2
+ZWQsIGFuZCB0aGUgc2VsZWN0IHRpbWVvdXQgd29ya3MuCj4+PiBCdXQgdGhlIHNlbGVjdCBkb2Vz
+bid0IHNlZW0gdG8gcmVhY3Qgb24gY29ubmVjdC4gSSdtIGxvb2tpbmcgYXQgdGhlIHByb2JsZW0u
+Cj4+Cj4+Cj4+IEkganVzdCBub3RpY2UgdGhhdCB0aGUgZmxvb2Qgb2YgSW50ZXJydXB0ZWQgc3lz
+dGVtIGNhbGxzIGlzIG9ubHkgY2F1c2Ugd2hlbiBidWlsZCB3aXRoIHRyYW5rLiBXaGVuIGJ1aWxk
+IHdpdGggYWxjaGVteSwgSW50ZXJydXB0ZWQgc3lzdGVtIGNhbGwganVzdCBoYXBwZW5zIG9uY2Uu
+Cj4KPmxpYnRyYW5rIGlzIGp1c3QgYW4gb3ZlcmxheSBvbiB0b3Agb2YgbGliYWxjaGVteSwgb25s
+eSBjb25zaXN0aW5nIG9mCj5mYWlybHkgc2ltcGxlIHdyYXBwZXJzLiBJIHdvdWxkIHN1c3BlY3Qg
+YSBkaWZmZXJlbmNlIGluIHRoZSBmbGFncyBwYXNzZWQKPnRvIHhlbm8tY29uZmlnIGluc3RlYWQu
+CgpJIHN1Y2NlZWRlZCB0byBzdGFydCBteSBzZXJ2ZXIgdXNpbmcgYWxjaGVteSBkaXJlY3RseS4K
+ClZpYSB0cmFuayB0aGUgcHJvZ3JhbSBnZW5lcmF0ZXMgYSBmbG9vZCBvZiBlcnJvcjoKCiQgc3Vk
+byAuL3B0ZXN0CgpwdGVzdC5jOjY4IEVSUk9SOiBzZWxlY3QoNCk6IEludGVycnVwdGVkIHN5c3Rl
+bSBjYWxsCnB0ZXN0LmM6NjggRVJST1I6IHNlbGVjdCg0KTogSW50ZXJydXB0ZWQgc3lzdGVtIGNh
+bGwKcHRlc3QuYzo2OCBFUlJPUjogc2VsZWN0KDQpOiBJbnRlcnJ1cHRlZCBzeXN0ZW0gY2FsbAou
+Li4KCkluIGF0dGFjaG1lbnQgYSB0ZXN0IGZpbGUgcHRlc3QuYyBhbmQgbWFrZWZpbGUgdG8gcmVw
+cm9kdWNlIHRoZSBwcm9ibGVtLgoKTXkgb3JpZ2luYWwgc2VydmVyIHVzZXMgYm90aCBuYXRpdmUg
+YW5kIHBvc2l4IGNhbGxzLCBmb3IgdGhhdCBJIHVzZWQgYm90aCBuYXRpdmUgYW5kIHBvc2l4IGZs
+YWdzLgoKWEVOT19DRkxBR1MgPSAkKHNoZWxsICQoWEVOT0NPTkZJRykgLS1wb3NpeCAgLS1jb21w
+YXQgLS1uYXRpdmUgLS1jZmxhZ3MgKQpYRU5PX0xERkxBR1MgPSAkKHNoZWxsICQoWEVOT0NPTkZJ
+RykgLS1wb3NpeCAtLWNvbXBhdCAtLW5hdGl2ZSAtLWxkZmxhZ3MgKQoKV2l0aCBhbGNoZW15IGRp
+cmVjdGx5IHRoZXJlIGlzIG5vIHByb2JsZW0gOgoKWEVOT19DRkxBR1MgPSAkKHNoZWxsICQoWEVO
+T0NPTkZJRykgLS1hbGNoZW15IC0tY2ZsYWdzKQpYRU5PX0xERkxBR1MgPSAkKHNoZWxsICQoWEVO
+T0NPTkZJRykgLS1hbGNoZW15IC0tbGRmbGFncykKCgpJIG5vdGljZWQgYWxzbyB0aGF0IGZvciB0
+aGUgZG9jdW1lbnRhdGlvbiBvZiB0aGUgdHJhbnNpdGlvbiBraXQgYXQgdGhlIGJvdHRvbSBodHRw
+Oi8veGVub21haS5vcmcvbWlncmF0aW5nLWZyb20teGVub21haS0yLXgtdG8tMy14LyNVc2luZ190
+aGVfVHJhbnNpdGlvbl9LaXQgOgoKSWYgSSBsaW5rIHdpdGggeGVuby1jb25maWcgIC0tcG9zaXgg
+LS1sZGZsYWdzIC0tY29tcGF0LCBJIGdldCA6CgpjYyAtV2wsQC91c3IvbGliL2NvYmFsdC53cmFw
+cGVycyAtbHRyYW5rICAgL3Vzci9saWIveGVub21haS9ib290c3RyYXAubyAtV2wsLS13cmFwPW1h
+aW4gLVdsLC0tZHluYW1pYy1saXN0PS91c3IvbGliL2R5bmxpc3QubGQgLUwvdXNyL2xpYiAtbGNv
+YmFsdCAtbHB0aHJlYWQgLWxydCAgICAtbGZ1c2UgLXB0aHJlYWQgIC1vIHB0ZXN0IHB0ZXN0Lm8K
+L3Vzci9saWIvbGlidHJhbmsuc286IHVuZGVmaW5lZCByZWZlcmVuY2UgdG8gYHRocmVhZG9ial9z
+ZXRfc2NoZWRwYXJhbScKL3Vzci9saWIvbGlidHJhbmsuc286IHVuZGVmaW5lZCByZWZlcmVuY2Ug
+dG8gYF9fY3VycmVudF9ydF9hbGFybV9jcmVhdGUnCi91c3IvbGliL2xpYnRyYW5rLnNvOiB1bmRl
+ZmluZWQgcmVmZXJlbmNlIHRvIGBydF90YXNrX3NlbGYnCi91c3IvbGliL2xpYnRyYW5rLnNvOiB1
+bmRlZmluZWQgcmVmZXJlbmNlIHRvIGBydF90YXNrX3dhaXRfcGVyaW9kJwovdXNyL2xpYi9saWJ0
+cmFuay5zbzogdW5kZWZpbmVkIHJlZmVyZW5jZSB0byBgeG5mcmVlJwovdXNyL2xpYi9saWJ0cmFu
+ay5zbzogdW5kZWZpbmVkIHJlZmVyZW5jZSB0byBgX19jdXJyZW50X3J0X2V2ZW50X2NyZWF0ZScK
+L3Vzci9saWIvbGlidHJhbmsuc286IHVuZGVmaW5lZCByZWZlcmVuY2UgdG8gYHJ0X3Rhc2tfc3Rh
+cnQnCi91c3IvbGliL2xpYnRyYW5rLnNvOiB1bmRlZmluZWQgcmVmZXJlbmNlIHRvIGBydF90YXNr
+X2RlbGV0ZScKL3Vzci9saWIvbGlidHJhbmsuc286IHVuZGVmaW5lZCByZWZlcmVuY2UgdG8gYHJ0
+X3Rhc2tfc2V0X2FmZmluaXR5JwovdXNyL2xpYi9saWJ0cmFuay5zbzogdW5kZWZpbmVkIHJlZmVy
+ZW5jZSB0byBgcnRfdGFza19zdXNwZW5kJwovdXNyL2xpYi9saWJ0cmFuay5zbzogdW5kZWZpbmVk
+IHJlZmVyZW5jZSB0byBgX19jdXJyZW50X3J0X2V2ZW50X2NsZWFyJwovdXNyL2xpYi9saWJ0cmFu
+ay5zbzogdW5kZWZpbmVkIHJlZmVyZW5jZSB0byBgdGhyZWFkb2JqX2lycV9wcmlvJwovdXNyL2xp
+Yi9saWJ0cmFuay5zbzogdW5kZWZpbmVkIHJlZmVyZW5jZSB0byBgX19jdXJyZW50X3J0X2V2ZW50
+X3NpZ25hbCcKL3Vzci9saWIvbGlidHJhbmsuc286IHVuZGVmaW5lZCByZWZlcmVuY2UgdG8gYF9f
+Y3VycmVudF9ydF90YXNrX2NyZWF0ZScKL3Vzci9saWIvbGlidHJhbmsuc286IHVuZGVmaW5lZCBy
+ZWZlcmVuY2UgdG8gYF9fY3VycmVudF9ydF90YXNrX3NldF9wZXJpb2RpYycKL3Vzci9saWIvbGli
+dHJhbmsuc286IHVuZGVmaW5lZCByZWZlcmVuY2UgdG8gYF9fY3VycmVudF9ydF9waXBlX2NyZWF0
+ZScKL3Vzci9saWIvbGlidHJhbmsuc286IHVuZGVmaW5lZCByZWZlcmVuY2UgdG8gYF9fdGhyZWFk
+b2JqX2N1cnJlbnQnCi91c3IvbGliL2xpYnRyYW5rLnNvOiB1bmRlZmluZWQgcmVmZXJlbmNlIHRv
+IGBfX2N1cnJlbnRfcnRfYWxhcm1fZGVsZXRlJwovdXNyL2xpYi9saWJ0cmFuay5zbzogdW5kZWZp
+bmVkIHJlZmVyZW5jZSB0byBgeG5tYWxsb2MnCmNvbGxlY3QyOiBlcnJvcjogbGQgcmV0dXJuZWQg
+MSBleGl0IHN0YXR1cwptYWtlZmlsZToyNzogcmVjaXBlIGZvciB0YXJnZXQgJ3B0ZXN0JyBmYWls
+ZWQKbWFrZTogKioqIFtwdGVzdF0gRXJyb3IgMQoKV2l0aCB0aGUgLS1uYXRpdmUgZmxhZyBhZGRl
+ZCwgdGhpcyBpcyBzb2x2ZWQgYmVjYXVzZSAgLWxhbGNoZW15IC1sY29wcGVycGxhdGUgaXMgdGhl
+biBhZGRlZC4KCkZyZWRlcmlrCgo+Cj4KPi0tIAo+UGhpbGlwcGUuCi0tLS0tLS0tLS0tLS0tIG5l
+eHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVk
+Li4uCk5hbWU6IG1ha2VmaWxlClR5cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXplOiA3
+NzMgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlw
+ZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTA3MzEvNjNlMmVlZmMvYXR0YWNobWVudC5v
+Ymo+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0
+dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHB0ZXN0LmMKVHlwZTogdGV4dC94LWNzcmMK
+U2l6ZTogMzgzMSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFp
+Lm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1MDczMS82M2UyZWVmYy9hdHRh
+Y2htZW50LmM+Cg==
