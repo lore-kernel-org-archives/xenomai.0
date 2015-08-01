@@ -1,8 +1,8 @@
 References: <55BA4C76.7010907@xenomai.org>
  <694496883.6540925.1438365243369.JavaMail.yahoo@mail.yahoo.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55BC7C7D.3010408@xenomai.org>
-Date: Sat, 1 Aug 2015 09:59:57 +0200
+Message-ID: <55BC86BE.8090505@xenomai.org>
+Date: Sat, 1 Aug 2015 10:43:42 +0200
 MIME-Version: 1.0
 In-Reply-To: <694496883.6540925.1438365243369.JavaMail.yahoo@mail.yahoo.com>
 Content-Type: text/plain; charset=windows-1252
@@ -64,18 +64,11 @@ On 07/31/2015 07:54 PM, Frederik Bayart wrote:
 > 
 > In attachment a test file ptest.c and makefile to reproduce the problem.
 > 
-
-Ok, I'll have a look.
-
 > My original server uses both native and posix calls, for that I used both native and posix flags.
 > 
 > XENO_CFLAGS = $(shell $(XENOCONFIG) --posix  --compat --native --cflags )
 > XENO_LDFLAGS = $(shell $(XENOCONFIG) --posix --compat --native --ldflags )
 > 
-
---compat --native is redundant, --native enables --compat implicitly.
---alchemy does not.
-
 > With alchemy directly there is no problem :
 > 
 > XENO_CFLAGS = $(shell $(XENOCONFIG) --alchemy --cflags)
@@ -111,10 +104,31 @@ Ok, I'll have a look.
 > make: *** [ptest] Error 1
 > 
 > With the --native flag added, this is solved because  -lalchemy -lcopperplate is then added.
-> 
 
-This is expected, compat mode is aimed at the legacy native API only.
+The issue is not between --alchemy and --native, but with --posix being
+added or not. I could not reproduce this behavior (x86, ppc or arm)
+using your exact test code (I can see timeouts triggering each 5s), but
+looking at it, I'm pretty sure this is due to passing regular linux fds
+(from socket(AF_UNIX) to RTDM services.
 
--- 
+When --posix is given, select(), socket() and friends will be routed to
+RTDM _first_, which will check whether the corresponding channels are
+connected to a real-time driver. If the fds are not managed by RTDM, the
+call will be redirected to the glibc eventually. I don't explain why
+your code receives EINTR from RTDM's select() yet, but this is most
+likely not related to libtrank. This behavior is unexpected though, so
+we have to find why Xenomai's select() behaves like this.
+
+In the meantime, if you want to mix Xenomai/POSIX calls with regular
+glibc ones when --posix is in effect, you can alternatively:
+
+- tag all regular POSIX calls for which a Xenomai counterpart exist with
+__STD(call(args))
+- invoke __real_call(args)
+
+Alternatively, you can drop --posix which will disable the POSIX
+wrapping for your code, then invoke __RT(call(args)) explicitly for
+Xenomai real-time services.
+
 Philippe.
 
