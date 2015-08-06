@@ -1,14 +1,14 @@
-Message-ID: <9f7421b4e96ca7d5e6ce77ffe8fc34f6.squirrel@sourcetrek.com>
-In-Reply-To: <55A4BA1C.9080306@siemens.com>
-References: <CO1PR01MB256AC4CE16186B5C49AEABD949B0@CO1PR01MB256.prod.exchangelabs.com>
- <55A4BA1C.9080306@siemens.com>
-Date: Tue, 14 Jul 2015 09:36:29 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+References: <CAHoW4hFHAmGqFOdDp3QHXK-6w0NQEw8XBxOc8kJkVUQAvEfT_w@mail.gmail.com>
+ <55C22EED.4040704@xenomai.org>
+ <CAHoW4hFeFo1qgvVjNEekyn=b7Z3yAny+4nG5Yt0OTMd+cMt8xw@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <55C30FF5.9080401@xenomai.org>
+Date: Thu, 6 Aug 2015 09:42:45 +0200
 MIME-Version: 1.0
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] xenomai latency test hangs due to kernel paging
- request
+In-Reply-To: <CAHoW4hFeFo1qgvVjNEekyn=b7Z3yAny+4nG5Yt0OTMd+cMt8xw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Segfaults and ENOMEM during rt_event_create()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,22 +17,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Gowtham Garimella <ggarime1@jhu.edu>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Charles Kiorpes <ckiorpes@gmail.com>
+Cc: xenomai@xenomai.org
 
+On 08/05/2015 06:34 PM, Charles Kiorpes wrote:
+> Sorry if this gets to you twice, I forgot to "Reply to all"
+> 
+> After applying the patch and rebuilding, my application still
+> segfaults at the same point, with the same error in my dmesg output.
+> 
+> For a little more info, here are the config flags I'm using to build
+> the libraries:
+> --with-core=cobalt
+> --disable-debug
+> --enable-pshared
 
-Jan Kiszka wrote:
-> What this tells us, though, is that userspace is likely out of sync /wrt
-> to the kernel used here. Please check if both installations actually
-> match.
-
-How is that? The kernel ABI is versioned and the version is checked at
-startup, so, I believe the user and kernel can not be "out of sync".
-
-Can not the name pointer passed to rt_task_create simply be invalid?
+Ok, so if pshared was enabled, the bug fixed by this patch could not
+bite anyway.
 
 -- 
-                                            Gilles.
-https://click-hack.org
-
+Philippe.
 
