@@ -1,15 +1,16 @@
-Message-ID: <55A4C2C5.1040202@siemens.com>
-Date: Tue, 14 Jul 2015 10:05:25 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+References: <CAHoW4hFHAmGqFOdDp3QHXK-6w0NQEw8XBxOc8kJkVUQAvEfT_w@mail.gmail.com>
+ <55C22EED.4040704@xenomai.org>
+ <CAHoW4hHS2QS1td6mUiWid-unDrMDZaQMo3vkYsDynNze5YsaSw@mail.gmail.com>
+ <55C326C5.4070608@xenomai.org>
+ <CAHoW4hHityc2RSznYrqr4BHnTNSwjgYH7265jyqrjawmbXZKQQ@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <55C37BF3.2070609@xenomai.org>
+Date: Thu, 6 Aug 2015 17:23:31 +0200
 MIME-Version: 1.0
-References: <CO1PR01MB256AC4CE16186B5C49AEABD949B0@CO1PR01MB256.prod.exchangelabs.com>
- <55A4BA1C.9080306@siemens.com>
- <9f7421b4e96ca7d5e6ce77ffe8fc34f6.squirrel@sourcetrek.com>
-In-Reply-To: <9f7421b4e96ca7d5e6ce77ffe8fc34f6.squirrel@sourcetrek.com>
+In-Reply-To: <CAHoW4hHityc2RSznYrqr4BHnTNSwjgYH7265jyqrjawmbXZKQQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xenomai latency test hangs due to kernel paging
-	request
+Subject: Re: [Xenomai] Segfaults and ENOMEM during rt_event_create()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,26 +19,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Gowtham Garimella <ggarime1@jhu.edu>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Charles Kiorpes <ckiorpes@gmail.com>, xenomai@xenomai.org
 
-On 2015-07-14 09:36, Gilles Chanteperdrix wrote:
+On 08/06/2015 05:00 PM, Charles Kiorpes wrote:
+>> Could you --enable-debug, and have gdb determine the offending
+>> instruction? TIA,
 > 
-> Jan Kiszka wrote:
->> What this tells us, though, is that userspace is likely out of sync /wrt
->> to the kernel used here. Please check if both installations actually
->> match.
+> The gdb output is as follows:
 > 
-> How is that? The kernel ABI is versioned and the version is checked at
-> startup, so, I believe the user and kernel can not be "out of sync".
+> Program received signal SIGSEGV, Segmentation fault.
+> get_free_range (heap=heap@entry=0x6dc07000, bsize=bsize@entry=256, log2size=8)
+>     at ../../../xenomai-3.0-rc6/lib/copperplate/heapobj-pshared.c:242
+> 242                                           freepage =
+> __shref_check(heap, *((memoff_t *)freepage));
 > 
-> Can not the name pointer passed to rt_task_create simply be invalid?
+> Thanks,
+> - Charles
+> 
 
-Could be - if that weren't the standard latency test.
+This may be a memory corruption issue, some metadata from the shared
+heap got trashed earlier in the init sequence.
 
-Jan
+Would it be practical to switch this app to the mercury core (no need
+for preempt-rt, just a plain regular desktop kernel), only for the
+purpose of running the init phase over valgrind? That would entail
+stubbing/bypassing the hardware-related inits (e.g. drivers) if ever
+possible.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
