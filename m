@@ -1,12 +1,12 @@
-Message-ID: <55C3C7F4.1030107@xenomai.org>
-Date: Thu, 06 Aug 2015 16:47:48 -0400
-From: Jorge Ramirez Ortiz <jro@xenomai.org>
-MIME-Version: 1.0
+Date: Thu, 6 Aug 2015 22:56:01 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150806205601.GV2914@hermes.click-hack.org>
 References: <55C17C8E.5000909@gatech.edu> <55C3AEBE.9080603@xenomai.org>
  <55C3C3F8.1090808@gatech.edu>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 In-Reply-To: <55C3C3F8.1090808@gatech.edu>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] analogy calibration issue(s)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -16,9 +16,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Yogi A. Patel" <yapatel@gatech.edu>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Yogi A. Patel" <yapatel@gatech.edu>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/06/2015 04:30 PM, Yogi A. Patel wrote:
+On Thu, Aug 06, 2015 at 04:30:48PM -0400, Yogi A. Patel wrote:
 > When I run
 > 
 > sudo ./analogy_calibrate --device=analogy0 --output=file
@@ -31,6 +32,10 @@ On 08/06/2015 04:30 PM, Yogi A. Patel wrote:
 > on two computers running Xenomai RC5 with Linux 3.18.12 both with NI DAQs
 > installed (M-Series).
 
-please send the procs /proc/analogy/*
-can you run analogy_calibrate under gdb?
+Please upgrade to rc6, so that you and Jorge actually talk about the
+same version.
+
+-- 
+					    Gilles.
+https://click-hack.org
 
