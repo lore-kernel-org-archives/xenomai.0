@@ -1,17 +1,12 @@
-References: <CAHoW4hFHAmGqFOdDp3QHXK-6w0NQEw8XBxOc8kJkVUQAvEfT_w@mail.gmail.com>
- <55C22EED.4040704@xenomai.org>
- <CAHoW4hHS2QS1td6mUiWid-unDrMDZaQMo3vkYsDynNze5YsaSw@mail.gmail.com>
- <55C326C5.4070608@xenomai.org>
- <CAHoW4hHityc2RSznYrqr4BHnTNSwjgYH7265jyqrjawmbXZKQQ@mail.gmail.com>
- <55C37BF3.2070609@xenomai.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55C37CBA.6060703@xenomai.org>
-Date: Thu, 6 Aug 2015 17:26:51 +0200
+Message-ID: <55C3AEBE.9080603@xenomai.org>
+Date: Thu, 06 Aug 2015 15:00:14 -0400
+From: Jorge Ramirez Ortiz <jro@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <55C37BF3.2070609@xenomai.org>
-Content-Type: text/plain; charset=windows-1252
+References: <55C17C8E.5000909@gatech.edu>
+In-Reply-To: <55C17C8E.5000909@gatech.edu>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Segfaults and ENOMEM during rt_event_create()
+Subject: Re: [Xenomai] analogy calibration issue(s)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,37 +15,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Charles Kiorpes <ckiorpes@gmail.com>, xenomai@xenomai.org
+To: "Yogi A. Patel" <yapatel@gatech.edu>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/06/2015 05:23 PM, Philippe Gerum wrote:
-> On 08/06/2015 05:00 PM, Charles Kiorpes wrote:
->>> Could you --enable-debug, and have gdb determine the offending
->>> instruction? TIA,
->>
->> The gdb output is as follows:
->>
->> Program received signal SIGSEGV, Segmentation fault.
->> get_free_range (heap=heap@entry=0x6dc07000, bsize=bsize@entry=256, log2size=8)
->>     at ../../../xenomai-3.0-rc6/lib/copperplate/heapobj-pshared.c:242
->> 242                                           freepage =
->> __shref_check(heap, *((memoff_t *)freepage));
->>
->> Thanks,
->> - Charles
->>
+
 > 
-> This may be a memory corruption issue, some metadata from the shared
-> heap got trashed earlier in the init sequence.
-> 
-> Would it be practical to switch this app to the mercury core (no need
-> for preempt-rt, just a plain regular desktop kernel), only for the
-> purpose of running the init phase over valgrind? That would entail
-> stubbing/bypassing the hardware-related inits (e.g. drivers) if ever
-> possible.
+> Has anyone successfully used the calibration feature?
 > 
 
-Also, does this bug happen with --disable-pshared?
+Seems to be working on my end (the calibration file is always generated).
+
+# analogy_config analogy0 analogy_ni_pcimio
+# analogy_calibrate --device=analogy0 --output=file
+# insn_read -d analogy0 -c 0 -R 0 -y /root/file
+Calibrated values:
+9.116142
+9.115817
+9.115817
+9.116142
+9.115817
+9.115817
+9.116142
+9.115817
+9.115817
+9.115817
+
+~ # cat /proc/analogy/devices
+--  Analogy devices --
+
+| idx | status | driver
+|  00 | Linked | pci-6221
+|  01 | Unused | No driver
+|  02 | Unused | No driver
+|  03 | Unused | No driver
+|  04 | Unused | No driver
+|  05 | Unused | No driver
+|  06 | Unused | No driver
+|  07 | Unused | No driver
+|  08 | Unused | No driver
+|  09 | Unused | No driver
+~ # cat /proc/analogy/drivers
+--  Analogy drivers --
+
+| idx | board name
+|  00 | analogy_ni_pcimio
+|  01 | analogy_8255
+~ #
+
+# uname -a
+Linux nestor 3.14.44+ #4 PREEMPT Thu Aug 6 19:09:08 CEST 2015 i686 GNU/Linux
+
+# cat /proc/xenomai/version
+3.0-rc6
+
+# cat /proc/cpuinfo
+processor       : 0
+vendor_id       : GenuineIntel
+cpu family      : 6
+model           : 8
+model name      : Pentium III (Coppermine)
+[...]
+
 
 -- 
-Philippe.
+jro
 
