@@ -1,7 +1,8 @@
-Message-ID: <55C51965.2020206@xenomai.org>
-Date: Fri, 07 Aug 2015 16:47:33 -0400
-From: Jorge Ramirez Ortiz <jro@xenomai.org>
-MIME-Version: 1.0
+Mime-Version: 1.0 (1.0)
+From: "Yogi A. Patel" <yapatel@gatech.edu>
+In-Reply-To: <55C51965.2020206@xenomai.org>
+Date: Fri, 7 Aug 2015 16:48:46 -0400
+Message-Id: <933604EB-994B-4CE9-BA38-DB404CA0811D@gatech.edu>
 References: <55C17C8E.5000909@gatech.edu> <55C3AEBE.9080603@xenomai.org>
  <55C3C3F8.1090808@gatech.edu> <55C3C7F4.1030107@xenomai.org>
  <12F45B9B-70C3-4278-BA0E-DFC26E19DBF0@gatech.edu>
@@ -11,8 +12,9 @@ References: <55C17C8E.5000909@gatech.edu> <55C3AEBE.9080603@xenomai.org>
  <EB72B89E-CA71-4F7F-9A35-99A87C282A61@gatech.edu>
  <55C515F0.8080307@xenomai.org>
  <45806C53-526E-425C-AEA4-70B2A22EA364@gatech.edu>
-In-Reply-To: <45806C53-526E-425C-AEA4-70B2A22EA364@gatech.edu>
-Content-Type: text/plain; charset=utf-8
+ <55C51965.2020206@xenomai.org>
+Content-Type: text/plain;
+	charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] analogy calibration issue(s)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -23,18 +25,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Yogi A. Patel" <yapatel@gatech.edu>
+To: Jorge Ramirez Ortiz <jro@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/07/2015 04:35 PM, Yogi A. Patel wrote:
->> any errors while generating it?
->>
->> no.
->>
->> > post the file please and I can have a look.
->>
->> attached. just generated it again.
+Yes. I've tried it. I get the error I previously sent 
 
-sorry, I am not sure what you mean.
-is this the file that is failing? have you tried it?
+Yogi A. Patel
+@yapatel525
 
+> On Aug 7, 2015, at 16:47, Jorge Ramirez Ortiz <jro@xenomai.org> wrote:
+> 
+> On 08/07/2015 04:35 PM, Yogi A. Patel wrote:
+>>> any errors while generating it?
+>>> 
+>>> no.
+>>> 
+>>>> post the file please and I can have a look.
+>>> 
+>>> attached. just generated it again.
+> 
+> sorry, I am not sure what you mean.
+> is this the file that is failing? have you tried it?
