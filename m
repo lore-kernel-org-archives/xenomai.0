@@ -1,16 +1,10 @@
-Message-ID: <55C4BD22.9060809@xenomai.org>
-Date: Fri, 07 Aug 2015 10:13:54 -0400
-From: Jorge Ramirez Ortiz <jro@xenomai.org>
 MIME-Version: 1.0
-References: <55C17C8E.5000909@gatech.edu> <55C3AEBE.9080603@xenomai.org>
- <55C3C3F8.1090808@gatech.edu> <55C3C7F4.1030107@xenomai.org>
- <12F45B9B-70C3-4278-BA0E-DFC26E19DBF0@gatech.edu>
- <55C495D6.2070706@xenomai.org>
- <06B32287-9FE2-42E5-BC2B-E9C807D0BD69@gatech.edu>
-In-Reply-To: <06B32287-9FE2-42E5-BC2B-E9C807D0BD69@gatech.edu>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] analogy calibration issue(s)
+Sender: jpromerob@unal.edu.co
+Date: Fri, 7 Aug 2015 16:33:51 +0200
+Message-ID: <CANccXAOs9RNb7+a=CSZV_Qk9HyOsorH0C=PnFMk3HF1vuakzug@mail.gmail.com>
+From: Juan Pablo Romero Bermudez <jpromerob@hotmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] RTnet: Unsupported Xenomai version 3.0-rc5
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,16 +13,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Yogi A. Patel" <yapatel@gatech.edu>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+
+Hello,
+
+I installed xenomai-3.0-rc5 on linux kernel 3.18.12. Now I'm trying to
+install RTnet-0.9.13 ...
+
+I do:
+
+/configure --with-rtext=/usr/xenomai
+--with-linux=/path_to_linux_with_xenomai_extension
+
+and I get:
+...
+...
+...
+
+checking for RT-extension... /usr/xenomai (Xenomai 2.0.x)
+checking for Xenomai version... configure: error: *** Unsupported Xenomai
+version 3.0-rc5 in /usr/xenomai
 
 
->>>
->>> This is because it is looking for the elements string under “analog_output” in 
->>> the calibration file, however there is no such section in the calibration file.
+does anybody know how to get around this problem?
 
-please pull from here for updates:
-http://git.xenomai.org/xenomai-jro.git/log/?h=devel
+Regards,
 
-
-
+Juan
