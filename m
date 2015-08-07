@@ -1,13 +1,18 @@
-Date: Fri, 7 Aug 2015 16:58:31 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150807145831.GE3223@hermes>
-References: <CANccXAOs9RNb7+a=CSZV_Qk9HyOsorH0C=PnFMk3HF1vuakzug@mail.gmail.com>
- <20150807144117.GD3223@hermes>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20150807144117.GD3223@hermes>
-Subject: Re: [Xenomai] RTnet: Unsupported Xenomai version 3.0-rc5
+Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2102\))
+From: "Yogi A. Patel" <yapatel@gatech.edu>
+In-Reply-To: <55C4BD22.9060809@xenomai.org>
+Date: Fri, 7 Aug 2015 16:15:05 -0400
+Message-Id: <EB72B89E-CA71-4F7F-9A35-99A87C282A61@gatech.edu>
+References: <55C17C8E.5000909@gatech.edu> <55C3AEBE.9080603@xenomai.org>
+ <55C3C3F8.1090808@gatech.edu> <55C3C7F4.1030107@xenomai.org>
+ <12F45B9B-70C3-4278-BA0E-DFC26E19DBF0@gatech.edu>
+ <55C495D6.2070706@xenomai.org>
+ <06B32287-9FE2-42E5-BC2B-E9C807D0BD69@gatech.edu>
+ <55C4BD22.9060809@xenomai.org>
+Content-Type: text/plain;
+	charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] analogy calibration issue(s)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,22 +21,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Juan Pablo Romero Bermudez <jpromerob@hotmail.com>
-Cc: xenomai@xenomai.org
+To: Jorge Ramirez Ortiz <jro@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Aug 07, 2015 at 04:41:17PM +0200, Gilles Chanteperdrix wrote:
-> On Fri, Aug 07, 2015 at 04:33:51PM +0200, Juan Pablo Romero Bermudez wrote:
-> > Hello,
-> > 
-> > I installed xenomai-3.0-rc5 on linux kernel 3.18.12. Now I'm trying to
-> > install RTnet-0.9.13 ...
-> 
-> The latest stable version of Xenomai 3.0 is 3.0-rc6, please
-> upgrade.
+> On Aug 7, 2015, at 10:13, Jorge Ramirez Ortiz <jro@xenomai.org> wrote:
+>=20
+>=20
+>>>>=20
+>>>> This is because it is looking for the elements string under =
+=E2=80=9Canalog_output=E2=80=9D in=20
+>>>> the calibration file, however there is no such section in the =
+calibration file.
+>=20
+> please pull from here for updates:
+> http://git.xenomai.org/xenomai-jro.git/log/?h=3Ddevel =
+<http://git.xenomai.org/xenomai-jro.git/log/?h=3Ddevel>
 
-Obviously, this is an -rc, so, not stable yet.
+I=E2=80=99ve moved to your development branch. I just compiled and ran =
+insn_read - and get:
 
--- 
-					    Gilles.
-https://click-hack.org
+error reading the calibration file: -1
+
+Yogi
 
