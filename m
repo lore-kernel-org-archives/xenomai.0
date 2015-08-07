@@ -1,17 +1,22 @@
-From: Gowtham Garimella <ggarime1@jhu.edu>
-Date: Tue, 14 Jul 2015 17:08:08 +0000
-Message-ID: <CO1PR01MB2560ACAC2B7CA52372B5A7B949B0@CO1PR01MB256.prod.exchangelabs.com>
-References: <CO1PR01MB256AC4CE16186B5C49AEABD949B0@CO1PR01MB256.prod.exchangelabs.com>
- <55A4BA1C.9080306@siemens.com>
- <9f7421b4e96ca7d5e6ce77ffe8fc34f6.squirrel@sourcetrek.com>,
- <55A4C2C5.1040202@siemens.com>
-In-Reply-To: <55A4C2C5.1040202@siemens.com>
-Content-Language: en-US
+Message-ID: <55C522AE.8030403@xenomai.org>
+Date: Fri, 07 Aug 2015 17:27:10 -0400
+From: Jorge Ramirez Ortiz <jro@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] xenomai latency test hangs due to kernel paging
-	request
+References: <55C17C8E.5000909@gatech.edu> <55C3AEBE.9080603@xenomai.org>
+ <55C3C3F8.1090808@gatech.edu> <55C3C7F4.1030107@xenomai.org>
+ <12F45B9B-70C3-4278-BA0E-DFC26E19DBF0@gatech.edu>
+ <55C495D6.2070706@xenomai.org>
+ <06B32287-9FE2-42E5-BC2B-E9C807D0BD69@gatech.edu>
+ <55C4BD22.9060809@xenomai.org>
+ <EB72B89E-CA71-4F7F-9A35-99A87C282A61@gatech.edu>
+ <55C515F0.8080307@xenomai.org>
+ <45806C53-526E-425C-AEA4-70B2A22EA364@gatech.edu>
+ <55C51965.2020206@xenomai.org>
+ <933604EB-994B-4CE9-BA38-DB404CA0811D@gatech.edu>
+In-Reply-To: <933604EB-994B-4CE9-BA38-DB404CA0811D@gatech.edu>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] analogy calibration issue(s)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,84 +25,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
-Cc: "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: "Yogi A. Patel" <yapatel@gatech.edu>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+
+On 08/07/2015 04:48 PM, Yogi A. Patel wrote:
+> Yes. I've tried it. I get the error I previously sent 
+
+you dont have an AO? it seems to be missing from the calibration file.
+having said that, AO calibration should be optional.
+
+please pull again from http://git.xenomai.org/xenomai-jro.git/log/?h=devel
 
 
-Hi Everyone,
-I used the new kernel suggested by Gilles i.e 3.14.39 downloaded from here:
+> 
+> Yogi A. Patel
+> @yapatel525
+> 
+>> On Aug 7, 2015, at 16:47, Jorge Ramirez Ortiz <jro@xenomai.org> wrote:
+>>
+>> On 08/07/2015 04:35 PM, Yogi A. Patel wrote:
+>>>> any errors while generating it?
+>>>>
+>>>> no.
+>>>>
+>>>>> post the file please and I can have a look.
+>>>>
+>>>> attached. just generated it again.
+>>
+>> sorry, I am not sure what you mean.
+>> is this the file that is failing? have you tried it?
+> 
 
-https://www.kernel.org/pub/linux/kernel/v3.x/linux-3.14.39.tar.gz
+-- 
+jro
 
-and the patch from previous email. I am still using xenomai 2.6.4 and also =
-disabled the CONFIG_DEBUG_STACK_USAGE in the kernel config. I generated the=
- config by following steps:
-make defconfig
-make menuconfig
-Followed the steps from "Configuring for x86 based kernels" on xenomai webs=
-ite
-
-Compiled and installed kernel. I am able to boot into the OS without any is=
-sues. But when I run xeno latency the test still hangs and keeps printing l=
-ot of log messages in the syslog. It also shows a Oops and the bug I specif=
-ied from previous email. I also find that the log says Xorg and compiz are =
-tainted. I do not know what these mean. Do I need to enable any specific dr=
-iver etc? I am attaching the full sys log as suggested before. I am also at=
-taching the new config file.  =
-
-
-I believe I applied the right patch to the kernel and I do not understand w=
-hat this means "userspace is out of sync wrt to the kernel used here". Is t=
-here any way to check this ? =
-
-
-Thank you for your help. Please let me know if you need any other informati=
-on. =
-
-
-Regards,
-Gowtham Garimella.
-________________________________________
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Sent: Tuesday, July 14, 2015 4:05 AM
-To: Gilles Chanteperdrix
-Cc: Gowtham Garimella; xenomai@xenomai.org
-Subject: Re: [Xenomai] xenomai latency test hangs due to kernel paging requ=
-est
-
-On 2015-07-14 09:36, Gilles Chanteperdrix wrote:
->
-> Jan Kiszka wrote:
->> What this tells us, though, is that userspace is likely out of sync /wrt
->> to the kernel used here. Please check if both installations actually
->> match.
->
-> How is that? The kernel ABI is versioned and the version is checked at
-> startup, so, I believe the user and kernel can not be "out of sync".
->
-> Can not the name pointer passed to rt_task_create simply be invalid?
-
-Could be - if that weren't the standard latency test.
-
-Jan
-
---
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: syslog_final
-Type: application/octet-stream
-Size: 153457 bytes
-Desc: syslog_final
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20150714/c6f38f7d/at=
-tachment.obj>
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: config_3_14_39
-Type: application/octet-stream
-Size: 94921 bytes
-Desc: config_3_14_39
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20150714/c6f38f7d/at=
-tachment-0001.obj>
