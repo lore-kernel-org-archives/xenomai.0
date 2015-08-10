@@ -1,12 +1,18 @@
+References: <CAHoW4hFHAmGqFOdDp3QHXK-6w0NQEw8XBxOc8kJkVUQAvEfT_w@mail.gmail.com>
+ <55C22EED.4040704@xenomai.org>
+ <CAHoW4hHS2QS1td6mUiWid-unDrMDZaQMo3vkYsDynNze5YsaSw@mail.gmail.com>
+ <55C326C5.4070608@xenomai.org>
+ <CAHoW4hHityc2RSznYrqr4BHnTNSwjgYH7265jyqrjawmbXZKQQ@mail.gmail.com>
+ <55C37BF3.2070609@xenomai.org>
+ <CAHoW4hGq02Me+TuKVdvLi4W3GseeBA7DgFFajue-_D-gUh1wtg@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <55C8C82E.6050206@xenomai.org>
+Date: Mon, 10 Aug 2015 17:50:06 +0200
 MIME-Version: 1.0
-In-Reply-To: <55C8BBB4.1050706@xenomai.org>
-References: <CAJ-wHnbT+=x0JLZDbpipGOuuTWA9CFhKrtPZqTXtcTLW+YGS9Q@mail.gmail.com>
- <55C8BBB4.1050706@xenomai.org>
-Date: Mon, 10 Aug 2015 10:45:19 -0500
-Message-ID: <CAJ-wHnaiFLLfmGJO2-Mi4+Ta9ZDkEKWSq4p3gckhTP2F5EVVRA@mail.gmail.com>
-From: Timothy Duncan <tduncan5149@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] fix_alignment trap returns nan on PowerPC
+In-Reply-To: <CAHoW4hGq02Me+TuKVdvLi4W3GseeBA7DgFFajue-_D-gUh1wtg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Segfaults and ENOMEM during rt_event_create()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,102 +21,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai@xenomai.org
+To: Charles Kiorpes <ckiorpes@gmail.com>
+Cc: xenomai@xenomai.org
 
-On Mon, Aug 10, 2015 at 10:37 AM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On 08/10/2015 05:32 PM, Timothy Duncan wrote:
->> On Mon, Aug 10, 2015 at 9:56 AM, Philippe Gerum <rpm@xenomai.org> wrote:
->>> On 08/10/2015 03:01 PM, Timothy Duncan wrote:
->>>> I'm getting not a numbers on floating point unaligned access. I have
->>>> traced it down to where it converts double to float in the
->>>> fix_alignment function in arch/powerpc/kernel/align.c. I cannot
->>>> reproduce the issue on vanilla kernel.
->>>>
->>>> preempt_disable();
->>>> enable_kernel_fp();
->>>>> cvt_df(&data.dd, (float *)&data.v[4], &current->thread);
->>>> preempt_enable();
->>>>
->>>> The double value is sometimes not converted correctly. I am guessing
->>>> it gets interrupted by a higher priority task that is also doing
->>>> floating point.
->>>>
->>>> I am on an older version of everything and wondering if anyone
->>>> remembers there being and issue/fix for something along these lines.
->>>>
->>>> I'm using the ipipe version 2.10-03 patch that was bundled with Xenomai 2.5.4
->>>> on Linux 2.6.33.5.
->>>
->>> [snip]
->>>
->>>> Any help would be appreciated. I am going to start looking at going to
->>>> a more recent version of everything, but that may take some time as I
->>>> will have to update some drivers that we wrote our board.
->>>>
->>>
->>>
->>> alignment_exception() may re-enable interrupts as a result of relaxing
->>> the rt thread causing the fp exception, so your analysis is likely
->>> right. Recent kernels even force IRQs on in fix_alignment(), so this
->>> issue exists in another form there too.
->>>
->>> I can't test with your demo code at the moment, but using the ironed
->>> variants of preemption helpers as illustrated below may help.
->>>
->>> diff --git a/arch/powerpc/kernel/align.c b/arch/powerpc/kernel/align.c
->>> index b876e989..a78ecf8 100644
->>> --- a/arch/powerpc/kernel/align.c
->>> +++ b/arch/powerpc/kernel/align.c
->>> @@ -705,7 +705,7 @@ int fix_alignment(struct pt_regs *regs)
->>>         unsigned int reg, areg;
->>>         unsigned int dsisr;
->>>         unsigned char __user *addr;
->>> -       unsigned long p, swiz;
->>> +       unsigned long p, swiz, irqflags;
->>>         int ret, t;
->>>         union {
->>>                 u64 ll;
->>> @@ -887,10 +887,10 @@ int fix_alignment(struct pt_regs *regs)
->>>                 if (flags & S) {
->>>                         /* Single-precision FP store requires conversion... */
->>>  #ifdef CONFIG_PPC_FPU
->>> -                       preempt_disable();
->>> +                       ipipe_preempt_disable(irqflags);
->>>                         enable_kernel_fp();
->>>                         cvt_df(&data.dd, (float *)&data.v[4], &current->thread);
->>> -                       preempt_enable();
->>> +                       ipipe_preempt_enable(irqflags);
->>>  #else
->>>                         return 0;
->>>  #endif
->>> @@ -931,10 +931,10 @@ int fix_alignment(struct pt_regs *regs)
->>>         /* Single-precision FP load requires conversion... */
->>>         case LD+F+S:
->>>  #ifdef CONFIG_PPC_FPU
->>> -               preempt_disable();
->>> +               ipipe_preempt_disable(irqflags);
->>>                 enable_kernel_fp();
->>>                 cvt_fd((float *)&data.v[4], &data.dd, &current->thread);
->>> -               preempt_enable();
->>> +               ipipe_preempt_enable(irqflags);
->>>  #else
->>>                 return 0;
->>>  #endif
->>>
->>> --
->>> Philippe.
+On 08/10/2015 03:52 PM, Charles Kiorpes wrote:
+>> This may be a memory corruption issue, some metadata from the shared
+>> heap got trashed earlier in the init sequence.
 >>
->> That appears to be working. Thanks. Other than the small time it takes
->> to execute the conversion I would not expect this to have any other
->> side effects. Correct?
->>
->
-> Correct.
->
-> --
-> Philippe.
+>> Would it be practical to switch this app to the mercury core (no need
+>> for preempt-rt, just a plain regular desktop kernel), only for the
+>> purpose of running the init phase over valgrind? That would entail
+>> stubbing/bypassing the hardware-related inits (e.g. drivers) if ever
+>> possible.
+> 
+> I reconfigured to use Mercury, but I can't reproduce the error in this
+> configuration.  There is no longer any segfault, or ENOMEM.
+> 
+> Despite being unable to reproduce the problem, Valgrind output
+> indicates something funny happening when I call rt_event_create() on
+> an object that already exists.
+> 
+> Here's the output from Valgrind of what occurs when I call
+> rt_event_create() in pshared mode with an event that already exists
+> (I've truncated some of the call stacks, this is all from one call to
+> rt_event_create through a wrapper layer):
+> 
+> ==6204== Thread 36 Task32:
+> ==6204== Invalid read of size 1
+> ==6204==    at 0x40E1F10: __hash_key (hash.c:66)
+> ==6204==    by 0x40E2F55: do_pvhash (hash.c:371)
+> ==6204==    by 0x40E2F55: pvhash_remove (hash.c:417)
+> ==6204==    by 0x40739E6: registry_destroy_file (registry.c:255)
+> ==6204==    by 0x4056C93: event_finalize (event.c:116)
+> ==6204==    by 0x406A17A: eventobj_finalize (eventobj.c:150)
+> ==6204==    by 0x406B022: __syncobj_finalize (syncobj.c:294)
+> ==6204==    by 0x406BD75: syncobj_destroy (syncobj.c:573)
+> ==6204==    by 0x406A290: eventobj_destroy (eventobj.c:182)
+> ==6204==    by 0x4057017: rt_event_create (event.c:218)
+> ==6204==    by 0x81942C0: RtosCreateNamedEvent (RtosXenomai3.c:279)
+> ==6204==    by 0x80D67FD: CallbackInterruptEventOpen (Callbacks.c:488)
 
-Sorry wanted this to show on the mailing list if anyone else runs into this.
--- Tim
+Ok, this one is a double-deletion bug in an error path from
+rt_create_event(). Will fix, thanks.
+
+-- 
+Philippe.
 
