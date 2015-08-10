@@ -1,12 +1,20 @@
-References: <20150810142907.GE29198@csclub.uwaterloo.ca>
+References: <CAHoW4hFHAmGqFOdDp3QHXK-6w0NQEw8XBxOc8kJkVUQAvEfT_w@mail.gmail.com>
+ <55C22EED.4040704@xenomai.org>
+ <CAHoW4hHS2QS1td6mUiWid-unDrMDZaQMo3vkYsDynNze5YsaSw@mail.gmail.com>
+ <55C326C5.4070608@xenomai.org>
+ <CAHoW4hHityc2RSznYrqr4BHnTNSwjgYH7265jyqrjawmbXZKQQ@mail.gmail.com>
+ <55C37BF3.2070609@xenomai.org>
+ <CAHoW4hGq02Me+TuKVdvLi4W3GseeBA7DgFFajue-_D-gUh1wtg@mail.gmail.com>
+ <55C8BCDD.5000501@xenomai.org>
+ <CAHoW4hFio_SG9knzKD5AG_3UOiNCf5KhrioZOAHOd0jVGVOrMA@mail.gmail.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55C8C423.4080202@xenomai.org>
-Date: Mon, 10 Aug 2015 17:32:51 +0200
+Message-ID: <55C8C605.9010400@xenomai.org>
+Date: Mon, 10 Aug 2015 17:40:53 +0200
 MIME-Version: 1.0
-In-Reply-To: <20150810142907.GE29198@csclub.uwaterloo.ca>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CAHoW4hFio_SG9knzKD5AG_3UOiNCf5KhrioZOAHOd0jVGVOrMA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Bad pointer in __ipipe_pin_range_globally
+Subject: Re: [Xenomai] Segfaults and ENOMEM during rt_event_create()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,41 +23,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, xenomai@xenomai.org
+To: Charles Kiorpes <ckiorpes@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 08/10/2015 04:29 PM, Lennart Sorensen wrote:
-> Seeing occational crashes in the function __ipipe_pin_range_globally,
-> and wondering what that might be caused by.
+On 08/10/2015 05:17 PM, Charles Kiorpes wrote:
+>> Is this case (trying to create an event flag with a conflicting name)
+>> part of the original scenario with Cobalt?
 > 
-> Kernel is 3.14.47 on AM5726 CPU (Dual cortex-A15), with the 3 level page
-> table LPAE support enabled.  Xenomai 2.6.4.  Ipipe patch
-> ipipe-core-3.14.39-arm-10.
+> This rt_event_create() with existing name occurs a little earlier in
+> my application's startup phase than where the segfault occurs using
+> Cobalt.  However, applying the rt_event_bind() workaround and
+> switching back to Cobalt does not change the segfault behavior (it
+> still occurs at the same place), so I'm not convinced that they're
+> related.
+>
+
+Ok.
+
+> When I run the processes through Valgrind using the Mercury core and
+> checking event existence with rt_event_bind() before attempting to
+> create, Valgrind finds no issues.  The application hangs at a
+> different location (creation of a periodic task; I'm fairly certain
+> that I just need to rework that section of code a little).
 > 
-> I see a few things in the ipipe git tree that are since
-> ipipe-core-3.14.39-arm-10 is before some more recent 3.14.x merges
-> were done, so perhaps I will give the git tree updates a try to see if
-> that helps.
-> 
-> Does anyone have any idea what this might be:
+> However, my application really need the tight timings that Cobalt
+> provides, and this has to eventually run on an embedded system, so
+> switching to Mercury is not a viable solution.
 > 
 
-This is a SMP-specific issue recently seen on imx6q and imx7d. PTE
-pinning would need a stronger synchronization with the vm code to solve
-this random corruption.
-
-However, it turns out that we don't need PTE pinning on armv6k and
-armv7+ CPUs, since the cost of taking an address translation trap for
-fixing up a minor fault there is negligible compared to tracking the
-PGDs, and does not entail a switch to secondary mode for the caller
-anymore. As a bonus, disabling PTE pinning removes overhead when the
-kernel creates dynamic mappings.
-
-PTE pinning is sane and required on earlier arm architectures running
-uniprocessor systems though, where the penalty for handing a translation
-trap is noticeable.
-
-To sum up, for that TI SoC, you should pick the commits disabling PTE
-pinning from 3.10, 3.14 or 3.18.
+Understood. This switch is only mentioned as a way to enable Valgrind on
+the code temporarily for debugging purpose, since this is not possible
+to run Cobalt apps over it.
 
 -- 
 Philippe.
