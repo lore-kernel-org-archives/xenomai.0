@@ -1,3 +1,5 @@
+MIME-Version: 1.0
+In-Reply-To: <55C8BCDD.5000501@xenomai.org>
 References: <CAHoW4hFHAmGqFOdDp3QHXK-6w0NQEw8XBxOc8kJkVUQAvEfT_w@mail.gmail.com>
  <55C22EED.4040704@xenomai.org>
  <CAHoW4hHS2QS1td6mUiWid-unDrMDZaQMo3vkYsDynNze5YsaSw@mail.gmail.com>
@@ -5,13 +7,11 @@ References: <CAHoW4hFHAmGqFOdDp3QHXK-6w0NQEw8XBxOc8kJkVUQAvEfT_w@mail.gmail.com>
  <CAHoW4hHityc2RSznYrqr4BHnTNSwjgYH7265jyqrjawmbXZKQQ@mail.gmail.com>
  <55C37BF3.2070609@xenomai.org>
  <CAHoW4hGq02Me+TuKVdvLi4W3GseeBA7DgFFajue-_D-gUh1wtg@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55C8BCDD.5000501@xenomai.org>
-Date: Mon, 10 Aug 2015 17:01:49 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAHoW4hGq02Me+TuKVdvLi4W3GseeBA7DgFFajue-_D-gUh1wtg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+ <55C8BCDD.5000501@xenomai.org>
+Date: Mon, 10 Aug 2015 11:17:57 -0400
+Message-ID: <CAHoW4hFio_SG9knzKD5AG_3UOiNCf5KhrioZOAHOd0jVGVOrMA@mail.gmail.com>
+From: Charles Kiorpes <ckiorpes@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Subject: Re: [Xenomai] Segfaults and ENOMEM during rt_event_create()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -21,50 +21,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Charles Kiorpes <ckiorpes@gmail.com>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 08/10/2015 03:52 PM, Charles Kiorpes wrote:
->> This may be a memory corruption issue, some metadata from the shared
->> heap got trashed earlier in the init sequence.
->>
->> Would it be practical to switch this app to the mercury core (no need
->> for preempt-rt, just a plain regular desktop kernel), only for the
->> purpose of running the init phase over valgrind? That would entail
->> stubbing/bypassing the hardware-related inits (e.g. drivers) if ever
->> possible.
-> 
-> I reconfigured to use Mercury, but I can't reproduce the error in this
-> configuration.  There is no longer any segfault, or ENOMEM.
-> 
-> Despite being unable to reproduce the problem, Valgrind output
-> indicates something funny happening when I call rt_event_create() on
-> an object that already exists.
-> 
-> Here's the output from Valgrind of what occurs when I call
-> rt_event_create() in pshared mode with an event that already exists
-> (I've truncated some of the call stacks, this is all from one call to
-> rt_event_create through a wrapper layer):
-> 
+> Is this case (trying to create an event flag with a conflicting name)
+> part of the original scenario with Cobalt?
 
-[snip]
+This rt_event_create() with existing name occurs a little earlier in
+my application's startup phase than where the segfault occurs using
+Cobalt.  However, applying the rt_event_bind() workaround and
+switching back to Cobalt does not change the segfault behavior (it
+still occurs at the same place), so I'm not convinced that they're
+related.
 
-> This can be worked around by attempting an rt_event_bind() first and
-> only attempting to create the event if bind fails.
-> 
+When I run the processes through Valgrind using the Mercury core and
+checking event existence with rt_event_bind() before attempting to
+create, Valgrind finds no issues.  The application hangs at a
+different location (creation of a periodic task; I'm fairly certain
+that I just need to rework that section of code a little).
 
-Is this case (trying to create an event flag with a conflicting name)
-part of the original scenario with Cobalt?
-
-> The above is the only complaint from Valgrind.
-> 
->> Also, does this bug happen with --disable-pshared?
-> 
-> I am unable to run this application without pshared, because there are
-> two processes that need to signal each other using real-time events.
-
-Ok.
-
--- 
-Philippe.
+However, my application really need the tight timings that Cobalt
+provides, and this has to eventually run on an embedded system, so
+switching to Mercury is not a viable solution.
 
