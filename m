@@ -1,20 +1,12 @@
-References: <CAHoW4hFHAmGqFOdDp3QHXK-6w0NQEw8XBxOc8kJkVUQAvEfT_w@mail.gmail.com>
- <55C22EED.4040704@xenomai.org>
- <CAHoW4hHS2QS1td6mUiWid-unDrMDZaQMo3vkYsDynNze5YsaSw@mail.gmail.com>
- <55C326C5.4070608@xenomai.org>
- <CAHoW4hHityc2RSznYrqr4BHnTNSwjgYH7265jyqrjawmbXZKQQ@mail.gmail.com>
- <55C37BF3.2070609@xenomai.org>
- <CAHoW4hGq02Me+TuKVdvLi4W3GseeBA7DgFFajue-_D-gUh1wtg@mail.gmail.com>
- <55C8BCDD.5000501@xenomai.org>
- <CAHoW4hFio_SG9knzKD5AG_3UOiNCf5KhrioZOAHOd0jVGVOrMA@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55C8C605.9010400@xenomai.org>
-Date: Mon, 10 Aug 2015 17:40:53 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAHoW4hFio_SG9knzKD5AG_3UOiNCf5KhrioZOAHOd0jVGVOrMA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Segfaults and ENOMEM during rt_event_create()
+In-Reply-To: <55C8BBB4.1050706@xenomai.org>
+References: <CAJ-wHnbT+=x0JLZDbpipGOuuTWA9CFhKrtPZqTXtcTLW+YGS9Q@mail.gmail.com>
+ <55C8BBB4.1050706@xenomai.org>
+Date: Mon, 10 Aug 2015 10:45:19 -0500
+Message-ID: <CAJ-wHnaiFLLfmGJO2-Mi4+Ta9ZDkEKWSq4p3gckhTP2F5EVVRA@mail.gmail.com>
+From: Timothy Duncan <tduncan5149@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] fix_alignment trap returns nan on PowerPC
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,38 +15,102 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Charles Kiorpes <ckiorpes@gmail.com>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai@xenomai.org
 
-On 08/10/2015 05:17 PM, Charles Kiorpes wrote:
->> Is this case (trying to create an event flag with a conflicting name)
->> part of the original scenario with Cobalt?
-> 
-> This rt_event_create() with existing name occurs a little earlier in
-> my application's startup phase than where the segfault occurs using
-> Cobalt.  However, applying the rt_event_bind() workaround and
-> switching back to Cobalt does not change the segfault behavior (it
-> still occurs at the same place), so I'm not convinced that they're
-> related.
+On Mon, Aug 10, 2015 at 10:37 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+> On 08/10/2015 05:32 PM, Timothy Duncan wrote:
+>> On Mon, Aug 10, 2015 at 9:56 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+>>> On 08/10/2015 03:01 PM, Timothy Duncan wrote:
+>>>> I'm getting not a numbers on floating point unaligned access. I have
+>>>> traced it down to where it converts double to float in the
+>>>> fix_alignment function in arch/powerpc/kernel/align.c. I cannot
+>>>> reproduce the issue on vanilla kernel.
+>>>>
+>>>> preempt_disable();
+>>>> enable_kernel_fp();
+>>>>> cvt_df(&data.dd, (float *)&data.v[4], &current->thread);
+>>>> preempt_enable();
+>>>>
+>>>> The double value is sometimes not converted correctly. I am guessing
+>>>> it gets interrupted by a higher priority task that is also doing
+>>>> floating point.
+>>>>
+>>>> I am on an older version of everything and wondering if anyone
+>>>> remembers there being and issue/fix for something along these lines.
+>>>>
+>>>> I'm using the ipipe version 2.10-03 patch that was bundled with Xenomai 2.5.4
+>>>> on Linux 2.6.33.5.
+>>>
+>>> [snip]
+>>>
+>>>> Any help would be appreciated. I am going to start looking at going to
+>>>> a more recent version of everything, but that may take some time as I
+>>>> will have to update some drivers that we wrote our board.
+>>>>
+>>>
+>>>
+>>> alignment_exception() may re-enable interrupts as a result of relaxing
+>>> the rt thread causing the fp exception, so your analysis is likely
+>>> right. Recent kernels even force IRQs on in fix_alignment(), so this
+>>> issue exists in another form there too.
+>>>
+>>> I can't test with your demo code at the moment, but using the ironed
+>>> variants of preemption helpers as illustrated below may help.
+>>>
+>>> diff --git a/arch/powerpc/kernel/align.c b/arch/powerpc/kernel/align.c
+>>> index b876e989..a78ecf8 100644
+>>> --- a/arch/powerpc/kernel/align.c
+>>> +++ b/arch/powerpc/kernel/align.c
+>>> @@ -705,7 +705,7 @@ int fix_alignment(struct pt_regs *regs)
+>>>         unsigned int reg, areg;
+>>>         unsigned int dsisr;
+>>>         unsigned char __user *addr;
+>>> -       unsigned long p, swiz;
+>>> +       unsigned long p, swiz, irqflags;
+>>>         int ret, t;
+>>>         union {
+>>>                 u64 ll;
+>>> @@ -887,10 +887,10 @@ int fix_alignment(struct pt_regs *regs)
+>>>                 if (flags & S) {
+>>>                         /* Single-precision FP store requires conversion... */
+>>>  #ifdef CONFIG_PPC_FPU
+>>> -                       preempt_disable();
+>>> +                       ipipe_preempt_disable(irqflags);
+>>>                         enable_kernel_fp();
+>>>                         cvt_df(&data.dd, (float *)&data.v[4], &current->thread);
+>>> -                       preempt_enable();
+>>> +                       ipipe_preempt_enable(irqflags);
+>>>  #else
+>>>                         return 0;
+>>>  #endif
+>>> @@ -931,10 +931,10 @@ int fix_alignment(struct pt_regs *regs)
+>>>         /* Single-precision FP load requires conversion... */
+>>>         case LD+F+S:
+>>>  #ifdef CONFIG_PPC_FPU
+>>> -               preempt_disable();
+>>> +               ipipe_preempt_disable(irqflags);
+>>>                 enable_kernel_fp();
+>>>                 cvt_fd((float *)&data.v[4], &data.dd, &current->thread);
+>>> -               preempt_enable();
+>>> +               ipipe_preempt_enable(irqflags);
+>>>  #else
+>>>                 return 0;
+>>>  #endif
+>>>
+>>> --
+>>> Philippe.
+>>
+>> That appears to be working. Thanks. Other than the small time it takes
+>> to execute the conversion I would not expect this to have any other
+>> side effects. Correct?
+>>
 >
+> Correct.
+>
+> --
+> Philippe.
 
-Ok.
-
-> When I run the processes through Valgrind using the Mercury core and
-> checking event existence with rt_event_bind() before attempting to
-> create, Valgrind finds no issues.  The application hangs at a
-> different location (creation of a periodic task; I'm fairly certain
-> that I just need to rework that section of code a little).
-> 
-> However, my application really need the tight timings that Cobalt
-> provides, and this has to eventually run on an embedded system, so
-> switching to Mercury is not a viable solution.
-> 
-
-Understood. This switch is only mentioned as a way to enable Valgrind on
-the code temporarily for debugging purpose, since this is not possible
-to run Cobalt apps over it.
-
--- 
-Philippe.
+Sorry wanted this to show on the mailing list if anyone else runs into this.
+-- Tim
 
