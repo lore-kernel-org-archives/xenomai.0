@@ -1,13 +1,9 @@
-Message-ID: <BLU437-SMTP30F50D247E17894FAB1735F0720@phx.gbl>
-Date: Fri, 7 Aug 2015 22:25:17 -0700
-From: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
 MIME-Version: 1.0
-References: <BLU437-SMTP62CAA597299A3591E31BB9F0760@phx.gbl>
- <20150804134759.GA22015@hermes.click-hack.org>
-In-Reply-To: <20150804134759.GA22015@hermes.click-hack.org>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Raspberry Pi 2 patch - BCM2709
+Date: Mon, 10 Aug 2015 08:01:59 -0500
+Message-ID: <CAJ-wHnbT+=x0JLZDbpipGOuuTWA9CFhKrtPZqTXtcTLW+YGS9Q@mail.gmail.com>
+From: Timothy Duncan <tduncan5149@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] fix_alignment trap returns nan on PowerPC
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,61 +12,93 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Xenomai@xenomai.org
 
-On 15-08-04 06:48 AM, Gilles Chanteperdrix wrote:
-> On Tue, Aug 04, 2015 at 06:30:57AM -0700, Mathieu wrote:
->> Some status on RPI2: kernel is now booting with CONFIG_IPIPE (only) (at
->> least passing the interrupt issue).
->>
->> The part I was missing is the interrupt binding in
->> arch_irq_handler_default().
->>
->> I also used the system timer instead of the arm timer.
->
-> The arm architected timer is used on cortex A15 Processors. So, it
-> can definitely work.
->
->> I am not sure the reason but I have the feeling it is because ipipe needs a
->> oneshot timer.
->
-> I-pipe does not need a timer. Xenomai does. The ARM architected
-> timer is a oneshot timer, so can be used by Xenomai (and once again,
-> is used on cortex A15). And a periodic timer is not an issue either,
-> provided that you reprogram it at every shot.
->
-> For details about timers and clocks, once again, see the porting guide.
->
->>
->> I also got the rpi2 connected to a jtag and debugging using eclipse but it
->> did not help much for this particular issue (and it is rather slow and not
->> really stable).
->
-> Yes, in theory JTAG is great, in practice, debug tools are always
-> buggy. Note however that you may have better chances using gdb
-> directly than using eclipse.
->
->>
->> There is a (major) issue: the mmc can not get the clock.
->> [    4.108224] mmc-bcm2835 3f300000.mmc: could not get clk
->>
->> I am guessing this is due to the switch from ARM timer to system timer.
->> I will have to fix this eventually (any suggestion welcome).
->
-> Probable wrong guess. The clock referred to here is a hardware clock
-> (in the sense, an electronic wire which gives a periodic signal),
-> and has nothing to do with the system timer.
->
+I'm getting not a numbers on floating point unaligned access. I have
+traced it down to where it converts double to float in the
+fix_alignment function in arch/powerpc/kernel/align.c. I cannot
+reproduce the issue on vanilla kernel.
 
-Hi Gilles,
-Sorry for the delay, I just wanted to thank you for taking the time to 
-reply and give feedback.
+preempt_disable();
+enable_kernel_fp();
+>cvt_df(&data.dd, (float *)&data.v[4], &current->thread);
+preempt_enable();
 
-I will look more into it once I get more time.
+The double value is sometimes not converted correctly. I am guessing
+it gets interrupted by a higher priority task that is also doing
+floating point.
 
---
-Mathieu
+I am on an older version of everything and wondering if anyone
+remembers there being and issue/fix for something along these lines.
 
+I'm using the ipipe version 2.10-03 patch that was bundled with Xenomai 2.5.4
+on Linux 2.6.33.5.
 
+I have created this application to demonstrate the issue. If I run it
+twice one time aligned and one time unaligned the unaligned will get
+failures. Unaligned by itself works fine.
+
+#include <stdio.h>
+#include <string.h>
+#include <pthread.h>
+
+static pthread_t other_task;
+static pthread_attr_t other_task_attr;
+struct sched_param par;
+void* other_task_entry(void*);
+
+int i;
+int off;
+float tmp, expected;
+char data[] = {0x00, 0x00, 0x01, 0x00, 0x10, 0x00, 0x00, 0x00};
+
+int main(int argc, char **argv)
+{
+   off = atoi(argv[1]);
+
+   memcpy(&expected, &data[off], sizeof(float));
+
+   printf("checking for %g\n", expected);
+
+   pthread_attr_init(&other_task_attr);
+   pthread_attr_setstacksize(&other_task_attr, 0x1<<16);
+   pthread_attr_setdetachstate(&other_task_attr, PTHREAD_CREATE_DETACHED);
+   pthread_attr_getschedparam(&other_task_attr, &par);
+   par.sched_priority = 95;
+   pthread_attr_setschedparam(&other_task_attr, &par);
+   pthread_attr_setschedpolicy(&other_task_attr, SCHED_FIFO);
+   pthread_attr_setinheritsched(&other_task_attr, PTHREAD_EXPLICIT_SCHED);
+
+   if(pthread_create(&other_task, &other_task_attr, &other_task_entry,
+NULL) != 0)
+      return 1;
+
+   while(1)
+   {
+      sleep(10);
+   }
+
+   return 0;
+}
+
+void* other_task_entry(void* arg)
+{
+   while(1)
+   {
+      for(i = 0; i < 100000; i++)
+      {
+         if((tmp = (*(volatile float*)(&data[off])*15.8f)) != (expected*15.8f))
+            printf("err %g:%02x%02x%02x%02x\n", tmp,
+                  ((char*)&tmp)[0],
+                  ((char*)&tmp)[1],
+                  ((char*)&tmp)[2],
+                  ((char*)&tmp)[3]);
+      }
+      usleep(1000);
+   }
+}
+
+Any help would be appreciated. I am going to start looking at going to
+a more recent version of everything, but that may take some time as I
+will have to update some drivers that we wrote our board.
 
