@@ -1,14 +1,11 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Mon, 10 Aug 2015 11:56:22 -0400
-Message-ID: <20150810155622.GG29198@csclub.uwaterloo.ca>
-References: <20150810142907.GE29198@csclub.uwaterloo.ca>
- <55C8C423.4080202@xenomai.org>
- <20150810155339.GF29198@csclub.uwaterloo.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20150810155339.GF29198@csclub.uwaterloo.ca>
-Subject: Re: [Xenomai] Bad pointer in __ipipe_pin_range_globally
+Sender: jpromerob@unal.edu.co
+Date: Mon, 10 Aug 2015 18:44:11 +0200
+Message-ID: <CANccXANz3q6=rOMO=Cbn6D1PNV2Hx4Lfy9dBw3iALYQ-cAxXuA@mail.gmail.com>
+From: Juan Pablo Romero Bermudez <jpromerob@hotmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] rt_dev_bind returns -ENOTTY (UDP and TCP Client-Server
+ communication using RTnet)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,51 +14,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, Aug 10, 2015 at 11:53:39AM -0400, Lennart Sorensen wrote:
-> On Mon, Aug 10, 2015 at 05:32:51PM +0200, Philippe Gerum wrote:
-> > On 08/10/2015 04:29 PM, Lennart Sorensen wrote:
-> > > Seeing occational crashes in the function __ipipe_pin_range_globally,
-> > > and wondering what that might be caused by.
-> > > 
-> > > Kernel is 3.14.47 on AM5726 CPU (Dual cortex-A15), with the 3 level page
-> > > table LPAE support enabled.  Xenomai 2.6.4.  Ipipe patch
-> > > ipipe-core-3.14.39-arm-10.
-> > > 
-> > > I see a few things in the ipipe git tree that are since
-> > > ipipe-core-3.14.39-arm-10 is before some more recent 3.14.x merges
-> > > were done, so perhaps I will give the git tree updates a try to see if
-> > > that helps.
-> > > 
-> > > Does anyone have any idea what this might be:
-> > > 
-> > 
-> > This is a SMP-specific issue recently seen on imx6q and imx7d. PTE
-> > pinning would need a stronger synchronization with the vm code to solve
-> > this random corruption.
-> > 
-> > However, it turns out that we don't need PTE pinning on armv6k and
-> > armv7+ CPUs, since the cost of taking an address translation trap for
-> > fixing up a minor fault there is negligible compared to tracking the
-> > PGDs, and does not entail a switch to secondary mode for the caller
-> > anymore. As a bonus, disabling PTE pinning removes overhead when the
-> > kernel creates dynamic mappings.
-> > 
-> > PTE pinning is sane and required on earlier arm architectures running
-> > uniprocessor systems though, where the penalty for handing a translation
-> > trap is noticeable.
-> > 
-> > To sum up, for that TI SoC, you should pick the commits disabling PTE
-> > pinning from 3.10, 3.14 or 3.18.
-> 
-> Hmm, do you have a commit number for that.  I don't seem to see it in
-> ipipe-3.14 branch as far as I can tell.  Or maybe I am looking on the
-> wrong tree.
+Hello,
 
-Or maybe remembering to do 'git pull' would help. :) 
+I'm new to RTnet and I'm having trouble establishing UDP and TCP
+client-server communication using RTnet:
 
--- 
-Len Sorensen
+I'm getting -ENOTTY (-25) when calling rt_dev_bind ...
 
+Does anybody know how solve this problem?
+
+The body of my UDP server task:
+
+int sockfd,n;
+struct sockaddr_in servaddr,cliaddr;
+socklen_t len;
+char mesg[2];
+memset(&servaddr, 0, sizeof(struct sockaddr_in));
+
+sockfd=rt_dev_socket(AF_INET,SOCK_DGRAM,0);
+servaddr.sin_family = AF_INET;
+servaddr.sin_addr.s_addr=htonl(INADDR_ANY);
+servaddr.sin_port=htons(32000);
+
+n = rt_dev_bind(sockfd,(struct sockaddr *)&servaddr,sizeof(servaddr));
+
+while (1)
+{
+len = sizeof(cliaddr);
+n = rt_dev_recv(sockfd,mesg,2,0);
+n = rt_dev_send(sockfd,mesg,n,0);
+usleep(250000);
+}
+
+
+The body of my UDP client task:
+
+int sockfd,n, i;
+struct sockaddr_in servaddr,cliaddr;
+char sendline[2];
+char recvline[2];
+memset(&servaddr, 0, sizeof(struct sockaddr_in));
+
+sockfd=rt_dev_socket(AF_INET,SOCK_DGRAM,0);
+servaddr.sin_family = AF_INET;
+servaddr.sin_addr.s_addr=inet_addr("192.168.218.18");
+servaddr.sin_port=htons(32000);
+i = 0;
+while (1)
+{
+i++;
+sendline[0]=0x30+i%10;
+sendline[1]='\0';
+n = rt_dev_send(sockfd,sendline,strlen(sendline),0);
+n = rt_dev_recv(sockfd,recvline,2,0);
+recvline[n]=0;
+sleep(1);
+}
+
+Thanks in advance
+
+Regards
+
+Juan
