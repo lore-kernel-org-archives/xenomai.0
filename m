@@ -1,23 +1,16 @@
-Message-ID: <55C9EAA6.6030503@gatech.edu>
-Date: Tue, 11 Aug 2015 08:29:26 -0400
-From: "Yogi A. Patel" <yapatel@gatech.edu>
+From: Philippe Gerum <rpm@xenomai.org>
+References: <CAHoW4hFHAmGqFOdDp3QHXK-6w0NQEw8XBxOc8kJkVUQAvEfT_w@mail.gmail.com>
+ <55C22EED.4040704@xenomai.org>
+ <CAHoW4hHS2QS1td6mUiWid-unDrMDZaQMo3vkYsDynNze5YsaSw@mail.gmail.com>
+ <55C326C5.4070608@xenomai.org>
+ <CAHoW4hHityc2RSznYrqr4BHnTNSwjgYH7265jyqrjawmbXZKQQ@mail.gmail.com>
+Message-ID: <55CA1157.1010309@xenomai.org>
+Date: Tue, 11 Aug 2015 17:14:31 +0200
 MIME-Version: 1.0
-References: <55C17C8E.5000909@gatech.edu> <55C3AEBE.9080603@xenomai.org>
- <55C3C3F8.1090808@gatech.edu> <55C3C7F4.1030107@xenomai.org>
- <12F45B9B-70C3-4278-BA0E-DFC26E19DBF0@gatech.edu>
- <55C495D6.2070706@xenomai.org>
- <06B32287-9FE2-42E5-BC2B-E9C807D0BD69@gatech.edu>
- <55C4BD22.9060809@xenomai.org>
- <EB72B89E-CA71-4F7F-9A35-99A87C282A61@gatech.edu>
- <55C515F0.8080307@xenomai.org>
- <45806C53-526E-425C-AEA4-70B2A22EA364@gatech.edu>
- <55C51965.2020206@xenomai.org>
- <933604EB-994B-4CE9-BA38-DB404CA0811D@gatech.edu>
- <55C522AE.8030403@xenomai.org>
-In-Reply-To: <55C522AE.8030403@xenomai.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Subject: Re: [Xenomai] analogy calibration issue(s)
+In-Reply-To: <CAHoW4hHityc2RSznYrqr4BHnTNSwjgYH7265jyqrjawmbXZKQQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Segfaults and ENOMEM during rt_event_create()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,49 +19,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jorge Ramirez Ortiz <jro@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Charles Kiorpes <ckiorpes@gmail.com>, xenomai@xenomai.org
 
-Ck9uIDA4LzA3LzIwMTUgMDU6MjcgUE0sIEpvcmdlIFJhbWlyZXogT3J0aXogd3JvdGU6Cj4gT24g
-MDgvMDcvMjAxNSAwNDo0OCBQTSwgWW9naSBBLiBQYXRlbCB3cm90ZToKPj4gWWVzLiBJJ3ZlIHRy
-aWVkIGl0LiBJIGdldCB0aGUgZXJyb3IgSSBwcmV2aW91c2x5IHNlbnQKPiB5b3UgZG9udCBoYXZl
-IGFuIEFPPyBpdCBzZWVtcyB0byBiZSBtaXNzaW5nIGZyb20gdGhlIGNhbGlicmF0aW9uIGZpbGUu
-Cj4gaGF2aW5nIHNhaWQgdGhhdCwgQU8gY2FsaWJyYXRpb24gc2hvdWxkIGJlIG9wdGlvbmFsLgpZ
-ZXMsIGFsbCBvZiBteSBjYXJkcyBoYXZlIGFuIEFPLiBJIGFza2VkIGFib3V0IHRoaXMgYSB3aGls
-ZSBiYWNrIC0gdGhlIApjYWxpYnJhdGlvbiBmaWxlIGRvZXMgbm90IGxvb2sgY29tcGxldGUuCj4g
-cGxlYXNlIHB1bGwgYWdhaW4gZnJvbSBodHRwOi8vZ2l0Lnhlbm9tYWkub3JnL3hlbm9tYWktanJv
-LmdpdC9sb2cvP2g9ZGV2ZWwKSSBkaWQsIGhvd2V2ZXIgZnJvbSB0aGUgbG9ncywgSSBkb24ndCBl
-eHBlY3QgdG8gc2VlIGFueXRoaW5nIGRpZmZlcmVudC4gCk15IG5ldyBjYWxpYnJhdGlvbiBmaWxl
-IGlzIGF0dGFjaGVkIGFnYWluLgo+PiBZb2dpIEEuIFBhdGVsCj4+IEB5YXBhdGVsNTI1Cj4+Cj4+
-PiBPbiBBdWcgNywgMjAxNSwgYXQgMTY6NDcsIEpvcmdlIFJhbWlyZXogT3J0aXogPGpyb0B4ZW5v
-bWFpLm9yZz4gd3JvdGU6Cj4+Pgo+Pj4gT24gMDgvMDcvMjAxNSAwNDozNSBQTSwgWW9naSBBLiBQ
-YXRlbCB3cm90ZToKPj4+Pj4gYW55IGVycm9ycyB3aGlsZSBnZW5lcmF0aW5nIGl0Pwo+Pj4+Pgo+
-Pj4+PiBuby4KPj4+Pj4KPj4+Pj4+IHBvc3QgdGhlIGZpbGUgcGxlYXNlIGFuZCBJIGNhbiBoYXZl
-IGEgbG9vay4KPj4+Pj4gYXR0YWNoZWQuIGp1c3QgZ2VuZXJhdGVkIGl0IGFnYWluLgo+Pj4gc29y
-cnksIEkgYW0gbm90IHN1cmUgd2hhdCB5b3UgbWVhbi4KPj4+IGlzIHRoaXMgdGhlIGZpbGUgdGhh
-dCBpcyBmYWlsaW5nPyBoYXZlIHlvdSB0cmllZCBpdD8KCi0tIApZb2dpCgotLS0tLS0tLS0tLS0t
-LSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KW3BsYXRmb3JtXSAKZHJpdmVyX25hbWUgPSBhbmFs
-b2d5X25pX3BjaW1pbzsKYm9hcmRfbmFtZSA9IHBjaS02MjU5OwoKW2FuYWxvZ19pbnB1dF0gCmlu
-ZGV4ID0gMDsKZWxlbWVudHMgPSA3OwpbYW5hbG9nX2lucHV0XzBdIApjaGFubmVsID0gLTE7CnJh
-bmdlID0gMDsKZXhwYW5zaW9uX29yaWdpbiA9IDYuOTUyODFlLTMxMDsKbmJjb2VmZj0gNDsKY29l
-ZmZfMCA9IDYuMzY1OTllLTMxNDsKY29lZmZfMSA9IDYuOTUyODFlLTMxMDsKY29lZmZfMiA9IDQu
-OTQwNjZlLTMyNDsKY29lZmZfMyA9IDYuOTE4MjZlLTMxMDsKW2FuYWxvZ19pbnB1dF8xXSAKY2hh
-bm5lbCA9IC0xOwpyYW5nZSA9IDE7CmV4cGFuc2lvbl9vcmlnaW4gPSAzMjc2NzsKbmJjb2VmZj0g
-NDsKY29lZmZfMCA9IC0wLjAwMTMyMDI0Owpjb2VmZl8xID0gMC4wMDAxNjE5Nzk7CmNvZWZmXzIg
-PSAtMS4zMzdlLTExOwpjb2VmZl8zID0gLTUuNjc2MTRlLTE2OwpbYW5hbG9nX2lucHV0XzJdIApj
-aGFubmVsID0gLTE7CnJhbmdlID0gMjsKZXhwYW5zaW9uX29yaWdpbiA9IDMyNzY3OwpuYmNvZWZm
-PSA0Owpjb2VmZl8wID0gLTAuMDAwNTMwODA0Owpjb2VmZl8xID0gNi40Nzg0N2UtMDU7CmNvZWZm
-XzIgPSAtNS4zNDc0MWUtMTI7CmNvZWZmXzMgPSAtMi4yNzAyMmUtMTY7ClthbmFsb2dfaW5wdXRf
-M10gCmNoYW5uZWwgPSAtMTsKcmFuZ2UgPSAzOwpleHBhbnNpb25fb3JpZ2luID0gMzI3Njc7Cm5i
-Y29lZmY9IDQ7CmNvZWZmXzAgPSAtMC4wMDAyNjk1ODsKY29lZmZfMSA9IDMuMjQ1ODZlLTA1Owpj
-b2VmZl8yID0gLTIuNjc5MTdlLTEyOwpjb2VmZl8zID0gLTEuMTM3NDNlLTE2OwpbYW5hbG9nX2lu
-cHV0XzRdIApjaGFubmVsID0gLTE7CnJhbmdlID0gNDsKZXhwYW5zaW9uX29yaWdpbiA9IDMyNzY3
-OwpuYmNvZWZmPSA0Owpjb2VmZl8wID0gLTAuMDAwMTM4ODQ0Owpjb2VmZl8xID0gMS42MjcyZS0w
-NTsKY29lZmZfMiA9IC0xLjM0MzExZS0xMjsKY29lZmZfMyA9IC01LjcwMjFlLTE3OwpbYW5hbG9n
-X2lucHV0XzVdIApjaGFubmVsID0gLTE7CnJhbmdlID0gNTsKZXhwYW5zaW9uX29yaWdpbiA9IDMy
-NzY3OwpuYmNvZWZmPSA0Owpjb2VmZl8wID0gLTYuMjYxNTdlLTA1Owpjb2VmZl8xID0gNi41MjEy
-ZS0wNjsKY29lZmZfMiA9IC01LjM4MjY4ZS0xMzsKY29lZmZfMyA9IC0yLjI4NTE5ZS0xNzsKW2Fu
-YWxvZ19pbnB1dF82XSAKY2hhbm5lbCA9IC0xOwpyYW5nZSA9IDY7CmV4cGFuc2lvbl9vcmlnaW4g
-PSAzMjc2NzsKbmJjb2VmZj0gNDsKY29lZmZfMCA9IC0zLjcxNDc2ZS0wNTsKY29lZmZfMSA9IDMu
-MjU5NTNlLTA2Owpjb2VmZl8yID0gLTIuNjkwNDVlLTEzOwpjb2VmZl8zID0gLTEuMTQyMjJlLTE3
-Owo=
+On 08/06/2015 05:00 PM, Charles Kiorpes wrote:
+>> Could you --enable-debug, and have gdb determine the offending
+>> instruction? TIA,
+> 
+> The gdb output is as follows:
+> 
+> Program received signal SIGSEGV, Segmentation fault.
+> get_free_range (heap=heap@entry=0x6dc07000, bsize=bsize@entry=256, log2size=8)
+>     at ../../../xenomai-3.0-rc6/lib/copperplate/heapobj-pshared.c:242
+> 242                                           freepage =
+> __shref_check(heap, *((memoff_t *)freepage));
+> 
+> Thanks,
+> - Charles
+> 
+
+To debug this further, I would need the full backtrace of this bug using
+gdb, and the value of the freepage variable. In fact, "info locals"
+would help even better. Thanks,
+
+-- 
+Philippe.
+
