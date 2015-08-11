@@ -1,15 +1,10 @@
-Date: Tue, 11 Aug 2015 21:51:32 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150811195132.GD29076@hermes.click-hack.org>
-References: <2a853db9.e8c8.14f1bf15b2f.Coremail.ericvic@163.com>
- <20150811194457.GC29076@hermes.click-hack.org>
 MIME-Version: 1.0
+From: Wuwei He <whe@neocisinc.com>
+Date: Tue, 11 Aug 2015 16:45:30 -0400
+Message-ID: <CANOAZgyvF6POSHuuoWdPOXqGuX+OiS-KgcBoW5sQU75v9eZZ7A@mail.gmail.com>
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20150811194457.GC29076@hermes.click-hack.org>
-Subject: Re: [Xenomai] x86 xenomai-2.6.4 linux-3.10.32 with i915 enble and
- CONFIG_PCI_MSI enble
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] RTCAN: need help to choose a kernel driver for CAN devices
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,31 +13,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: eric <ericvic@163.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Tue, Aug 11, 2015 at 09:44:57PM +0200, Gilles Chanteperdrix wrote:
-> On Tue, Aug 11, 2015 at 04:47:26PM +0800, eric wrote:
-> > Hi Gilles：I have a proble with Intel(R) Atom(TM) CPU E3827 @
-> >             1.74GHz . We have fpga on pcie and fpga give 250us
-> >             interrupt signal to our task . The interrupt type is
-> >             MSI .The proble is when we start gpu test glxgears the
-> >             task latency just 15us when we start without glxgears
-> >             the latency is about 120us . We tested a week‘s time
-> >             always the same situation. We don’t know why？
-> >             Thanks！！！
-> 
-> Hi, I do not answer for free to private support requests. If you
-> want support for free, then please use the mailing list. If you are
-> looking for consulting, then let us first agree on what you are
-> looking for exactly.
-
-Sorry, you actually used the list. Seems like I just made a fool of
-myself.
-
-The answer is to use the I-pipe trace.
-
--- 
-					    Gilles.
-https://click-hack.org
-
+SGVsbG8sCgoKV2UgaGF2ZSBwdXJjaGFzZWQgYSBBRExJTksgTVhDLTIzMDBDRC0zRTE6Cmh0dHA6
+Ly93d3cuYWRsaW5rdGVjaC5jb20vUEQvbWFya2V0aW5nL0RhdGFzaGVldC9NWEMtMjMwMC9NWEMt
+MjMwMF9EYXRhc2hlZXRfZW5fMS5wZGYKKEludGVswq4gQXRvbeKEoiBwcm9jZXNzb3IgRTM4NDUg
+RmFubGVzcyBFeHBhbmRhYmxlIEVtYmVkZGVkIENvbXB1dGVyIHdpdGgKUENJL1BDSWUgU2xvdHMg
+YW5kIHR3byBDQU4gRGV2aWNlcykuCgpXZSBhcmUgdHJ5aW5nIHRvIHVzZSBYZW5vbWFpIHdpdGgg
+dGhlIGNvbXB1dGVyLiBGb3IgdGhlIENBTiBkZXZpY2VzLCB3ZQpuZWVkIHRvIGNvbmZpZ3VyZSB0
+aGUga2VybmVsIGRyaXZlciwgYnV0IHdlIGRvIG5vdCBoYXZlIGVub3VnaCBpbmZvcm1hdGlvbgph
+Ym91dCB3aGljaCB0eXBlIHRoZSBib2FyZCB0aGV5IGFyZSBiYXNlZCBvbiwgZXhjZXB0IGZvciB0
+aGF0IHRoZXkgYXJlCnN1cHBvcnRlZCBieSBhIFBoaWxpcHMgU0pBMTAwMCBjb250cm9sbGVyLgoK
+SSBhdHRhY2hlZCBkZXZpY2UgbGlzdCBmcm9tIGhhcmRpbmZvIChvciBsc3BjaSksIGFuZCB0aGUg
+YXZhaWxhYmxlIGNob2ljZXMKaW4gWGVub21haSBrZXJuZWwgQ0FOIGRyaXZlci4KCkkgYWxzbyBj
+b250YWN0ZWQgdGhlIG1hbnVmYWN0dXJlciwgYnV0IEkgbWlnaHQgZ2V0IG1vcmUgaGVscCBoZXJl
+OgoKQ291bGQgYW55IG9uZSBpZGVudGlmeSB0aGUgdHlwZSBvZiB0aGUgZGV2aWNlcyBjb21lIHdp
+dGggdGhpcyBtYWNoaW5lPwpPciwgYXJlIHRoZSBDQU4gZGV2aWNlcyBvbiB0aGlzIG1hY2hpbmUg
+c3VwcG9ydGVkIGJ5IFhlbm9tYWkga2VybmVsIGRyaXZlcgphdCBhbGw/CgoKSSB0cmllZCBhIGNv
+dXBsZSBvZiBvcHRpb25zLCBidXQgZ2V0dGluZyBmcm9tIGRtZXNnOgoKWyAgICA0LjM3MTQzM10g
+UlQtU29ja2V0LUNBTiAwLjkwLjIgLSAoQykgMjAwNiBSVC1Tb2NrZXQtQ0FOIERldmVsb3BtZW50
+ClRlYW0KWyAgICA0LjM3NDQyNV0gUlRDQU4gU0pBMTAwMCBkcml2ZXIgaW5pdGlhbGl6ZWQKWyAg
+ICA0LjM3NzM4NF0gRVJST1IhIE5vIGRldmljZXMgc3BlY2lmaWVkISBVc2UgaW89PHBvcnQxPlss
+Li4uXQppcnE9PGlycTE+WywuLi5dCgpPciwgbm90aGluZyBoYXBwZW5zOgoKWyAgICA0LjI2Mjk1
+Nl0gUlQtU29ja2V0LUNBTiAwLjkwLjIgLSAoQykgMjAwNiBSVC1Tb2NrZXQtQ0FOIERldmVsb3Bt
+ZW50ClRlYW0KWyAgICA0LjI2Mjk2NV0gUlRDQU4gU0pBMTAwMCBkcml2ZXIgaW5pdGlhbGl6ZWQK
+WyAgICA0LjI2MzE2NF0gVENQOiBjdWJpYyByZWdpc3RlcmVkCgoKVGhlIG1hY2hpbmUgd29ya3Mg
+d2l0aCBhIFBFQUsgUENJIGNhcmQgcGx1Z2dlZCBpbiwgYnV0IHdlIHdvdWxkIGxpa2UgdG8gdXNl
+CnRoZSBidWlsdC1pbiBkZXZpY2VzLgoKVGhhbmtzIGluIGFkdmFuY2UgZm9yIGFueSBoZWxwIQoK
+V3V3ZWkgIldpbGwiIEhlCk1pYW1pIEZMIFVTQQotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0t
+LS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBs
+c3BjaV9yZXN1bHRzLnBuZwpUeXBlOiBpbWFnZS9wbmcKU2l6ZTogMjc0MzI0IGJ5dGVzCkRlc2M6
+IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFp
+L2F0dGFjaG1lbnRzLzIwMTUwODExLzIxNGE3ZmQ2L2F0dGFjaG1lbnQucG5nPgotLS0tLS0tLS0t
+LS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBz
+Y3J1YmJlZC4uLgpOYW1lOiBydGNhbl9rZXJuZWxfZHJpdmVyX3hlbm9tYWkucG5nClR5cGU6IGlt
+YWdlL3BuZwpTaXplOiAxMTI0NDggYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRw
+Oi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTA4MTEvMjE0
+YTdmZDYvYXR0YWNobWVudC0wMDAxLnBuZz4K
