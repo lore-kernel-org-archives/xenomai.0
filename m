@@ -1,18 +1,20 @@
-References: <CAHoW4hFHAmGqFOdDp3QHXK-6w0NQEw8XBxOc8kJkVUQAvEfT_w@mail.gmail.com>
- <55C22EED.4040704@xenomai.org>
- <CAHoW4hHS2QS1td6mUiWid-unDrMDZaQMo3vkYsDynNze5YsaSw@mail.gmail.com>
- <55C326C5.4070608@xenomai.org>
- <CAHoW4hHityc2RSznYrqr4BHnTNSwjgYH7265jyqrjawmbXZKQQ@mail.gmail.com>
- <55C37BF3.2070609@xenomai.org>
- <CAHoW4hGq02Me+TuKVdvLi4W3GseeBA7DgFFajue-_D-gUh1wtg@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55CA11F5.5030505@xenomai.org>
-Date: Tue, 11 Aug 2015 17:17:09 +0200
+Date: Tue, 11 Aug 2015 17:49:47 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150811154947.GB26800@hermes.click-hack.org>
+References: <55C3C7F4.1030107@xenomai.org>
+ <12F45B9B-70C3-4278-BA0E-DFC26E19DBF0@gatech.edu>
+ <55C495D6.2070706@xenomai.org>
+ <06B32287-9FE2-42E5-BC2B-E9C807D0BD69@gatech.edu>
+ <55C4BD22.9060809@xenomai.org>
+ <EB72B89E-CA71-4F7F-9A35-99A87C282A61@gatech.edu>
+ <55C515F0.8080307@xenomai.org>
+ <45806C53-526E-425C-AEA4-70B2A22EA364@gatech.edu>
+ <20150807212846.GA22642@hermes> <55C9E904.8020402@gatech.edu>
 MIME-Version: 1.0
-In-Reply-To: <CAHoW4hGq02Me+TuKVdvLi4W3GseeBA7DgFFajue-_D-gUh1wtg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Segfaults and ENOMEM during rt_event_create()
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <55C9E904.8020402@gatech.edu>
+Subject: Re: [Xenomai] analogy calibration issue(s)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,34 +23,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Charles Kiorpes <ckiorpes@gmail.com>
-Cc: xenomai@xenomai.org
+To: "Yogi A. Patel" <yapatel@gatech.edu>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/10/2015 03:52 PM, Charles Kiorpes wrote:
->> This may be a memory corruption issue, some metadata from the shared
->> heap got trashed earlier in the init sequence.
->>
->> Would it be practical to switch this app to the mercury core (no need
->> for preempt-rt, just a plain regular desktop kernel), only for the
->> purpose of running the init phase over valgrind? That would entail
->> stubbing/bypassing the hardware-related inits (e.g. drivers) if ever
->> possible.
-> 
-> I reconfigured to use Mercury, but I can't reproduce the error in this
-> configuration.  There is no longer any segfault, or ENOMEM.
-> 
-> Despite being unable to reproduce the problem, Valgrind output
-> indicates something funny happening when I call rt_event_create() on
-> an object that already exists.
-> 
-> Here's the output from Valgrind of what occurs when I call
-> rt_event_create() in pshared mode with an event that already exists
-> (I've truncated some of the call stacks, this is all from one call to
-> rt_event_create through a wrapper layer):
-> 
+On Tue, Aug 11, 2015 at 08:22:28AM -0400, Yogi A. Patel wrote:
+> >The attachment did not reach the mailing list. What was its mime type?
+> $ mimetype file
+> file:  text/plain
 
-Fixed in the -next branch, thanks.
+That is not really what I was asking: I was asking you the mime type
+your mailer had used. Anyway, Jorge transmitted the mail, your
+mailer used application/octet-stream. I do not see anything in the
+configuration that would filter such attachments, but anyway, for
+text attachments, your mailer should have used text/plain too.
 
 -- 
-Philippe.
+					    Gilles.
+https://click-hack.org
 
