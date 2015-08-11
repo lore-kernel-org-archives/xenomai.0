@@ -1,13 +1,15 @@
-From: Philippe Gerum <rpm@xenomai.org>
 References: <CAHoW4hFHAmGqFOdDp3QHXK-6w0NQEw8XBxOc8kJkVUQAvEfT_w@mail.gmail.com>
  <55C22EED.4040704@xenomai.org>
  <CAHoW4hHS2QS1td6mUiWid-unDrMDZaQMo3vkYsDynNze5YsaSw@mail.gmail.com>
  <55C326C5.4070608@xenomai.org>
  <CAHoW4hHityc2RSznYrqr4BHnTNSwjgYH7265jyqrjawmbXZKQQ@mail.gmail.com>
-Message-ID: <55CA1157.1010309@xenomai.org>
-Date: Tue, 11 Aug 2015 17:14:31 +0200
+ <55C37BF3.2070609@xenomai.org>
+ <CAHoW4hGq02Me+TuKVdvLi4W3GseeBA7DgFFajue-_D-gUh1wtg@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <55CA11F5.5030505@xenomai.org>
+Date: Tue, 11 Aug 2015 17:17:09 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAHoW4hHityc2RSznYrqr4BHnTNSwjgYH7265jyqrjawmbXZKQQ@mail.gmail.com>
+In-Reply-To: <CAHoW4hGq02Me+TuKVdvLi4W3GseeBA7DgFFajue-_D-gUh1wtg@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Segfaults and ENOMEM during rt_event_create()
@@ -19,27 +21,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Charles Kiorpes <ckiorpes@gmail.com>, xenomai@xenomai.org
+To: Charles Kiorpes <ckiorpes@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 08/06/2015 05:00 PM, Charles Kiorpes wrote:
->> Could you --enable-debug, and have gdb determine the offending
->> instruction? TIA,
+On 08/10/2015 03:52 PM, Charles Kiorpes wrote:
+>> This may be a memory corruption issue, some metadata from the shared
+>> heap got trashed earlier in the init sequence.
+>>
+>> Would it be practical to switch this app to the mercury core (no need
+>> for preempt-rt, just a plain regular desktop kernel), only for the
+>> purpose of running the init phase over valgrind? That would entail
+>> stubbing/bypassing the hardware-related inits (e.g. drivers) if ever
+>> possible.
 > 
-> The gdb output is as follows:
+> I reconfigured to use Mercury, but I can't reproduce the error in this
+> configuration.  There is no longer any segfault, or ENOMEM.
 > 
-> Program received signal SIGSEGV, Segmentation fault.
-> get_free_range (heap=heap@entry=0x6dc07000, bsize=bsize@entry=256, log2size=8)
->     at ../../../xenomai-3.0-rc6/lib/copperplate/heapobj-pshared.c:242
-> 242                                           freepage =
-> __shref_check(heap, *((memoff_t *)freepage));
+> Despite being unable to reproduce the problem, Valgrind output
+> indicates something funny happening when I call rt_event_create() on
+> an object that already exists.
 > 
-> Thanks,
-> - Charles
+> Here's the output from Valgrind of what occurs when I call
+> rt_event_create() in pshared mode with an event that already exists
+> (I've truncated some of the call stacks, this is all from one call to
+> rt_event_create through a wrapper layer):
 > 
 
-To debug this further, I would need the full backtrace of this bug using
-gdb, and the value of the freepage variable. In fact, "info locals"
-would help even better. Thanks,
+Fixed in the -next branch, thanks.
 
 -- 
 Philippe.
