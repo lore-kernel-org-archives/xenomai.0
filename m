@@ -1,10 +1,10 @@
 MIME-Version: 1.0
-From: Wuwei He <whe@neocisinc.com>
-Date: Tue, 11 Aug 2015 16:45:30 -0400
-Message-ID: <CANOAZgyvF6POSHuuoWdPOXqGuX+OiS-KgcBoW5sQU75v9eZZ7A@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] RTCAN: need help to choose a kernel driver for CAN devices
+Message-ID: <OF3EB5637C.BE58E83A-ONC1257E9F.0042D131-C1257E9F.0042E65D@marposs.com>
+From: Cristiano.Mantovani@marposs.com
+Date: Wed, 12 Aug 2015 14:10:42 +0200
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] rt_task_sleep returns -38
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,38 +15,181 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-SGVsbG8sCgoKV2UgaGF2ZSBwdXJjaGFzZWQgYSBBRExJTksgTVhDLTIzMDBDRC0zRTE6Cmh0dHA6
-Ly93d3cuYWRsaW5rdGVjaC5jb20vUEQvbWFya2V0aW5nL0RhdGFzaGVldC9NWEMtMjMwMC9NWEMt
-MjMwMF9EYXRhc2hlZXRfZW5fMS5wZGYKKEludGVswq4gQXRvbeKEoiBwcm9jZXNzb3IgRTM4NDUg
-RmFubGVzcyBFeHBhbmRhYmxlIEVtYmVkZGVkIENvbXB1dGVyIHdpdGgKUENJL1BDSWUgU2xvdHMg
-YW5kIHR3byBDQU4gRGV2aWNlcykuCgpXZSBhcmUgdHJ5aW5nIHRvIHVzZSBYZW5vbWFpIHdpdGgg
-dGhlIGNvbXB1dGVyLiBGb3IgdGhlIENBTiBkZXZpY2VzLCB3ZQpuZWVkIHRvIGNvbmZpZ3VyZSB0
-aGUga2VybmVsIGRyaXZlciwgYnV0IHdlIGRvIG5vdCBoYXZlIGVub3VnaCBpbmZvcm1hdGlvbgph
-Ym91dCB3aGljaCB0eXBlIHRoZSBib2FyZCB0aGV5IGFyZSBiYXNlZCBvbiwgZXhjZXB0IGZvciB0
-aGF0IHRoZXkgYXJlCnN1cHBvcnRlZCBieSBhIFBoaWxpcHMgU0pBMTAwMCBjb250cm9sbGVyLgoK
-SSBhdHRhY2hlZCBkZXZpY2UgbGlzdCBmcm9tIGhhcmRpbmZvIChvciBsc3BjaSksIGFuZCB0aGUg
-YXZhaWxhYmxlIGNob2ljZXMKaW4gWGVub21haSBrZXJuZWwgQ0FOIGRyaXZlci4KCkkgYWxzbyBj
-b250YWN0ZWQgdGhlIG1hbnVmYWN0dXJlciwgYnV0IEkgbWlnaHQgZ2V0IG1vcmUgaGVscCBoZXJl
-OgoKQ291bGQgYW55IG9uZSBpZGVudGlmeSB0aGUgdHlwZSBvZiB0aGUgZGV2aWNlcyBjb21lIHdp
-dGggdGhpcyBtYWNoaW5lPwpPciwgYXJlIHRoZSBDQU4gZGV2aWNlcyBvbiB0aGlzIG1hY2hpbmUg
-c3VwcG9ydGVkIGJ5IFhlbm9tYWkga2VybmVsIGRyaXZlcgphdCBhbGw/CgoKSSB0cmllZCBhIGNv
-dXBsZSBvZiBvcHRpb25zLCBidXQgZ2V0dGluZyBmcm9tIGRtZXNnOgoKWyAgICA0LjM3MTQzM10g
-UlQtU29ja2V0LUNBTiAwLjkwLjIgLSAoQykgMjAwNiBSVC1Tb2NrZXQtQ0FOIERldmVsb3BtZW50
-ClRlYW0KWyAgICA0LjM3NDQyNV0gUlRDQU4gU0pBMTAwMCBkcml2ZXIgaW5pdGlhbGl6ZWQKWyAg
-ICA0LjM3NzM4NF0gRVJST1IhIE5vIGRldmljZXMgc3BlY2lmaWVkISBVc2UgaW89PHBvcnQxPlss
-Li4uXQppcnE9PGlycTE+WywuLi5dCgpPciwgbm90aGluZyBoYXBwZW5zOgoKWyAgICA0LjI2Mjk1
-Nl0gUlQtU29ja2V0LUNBTiAwLjkwLjIgLSAoQykgMjAwNiBSVC1Tb2NrZXQtQ0FOIERldmVsb3Bt
-ZW50ClRlYW0KWyAgICA0LjI2Mjk2NV0gUlRDQU4gU0pBMTAwMCBkcml2ZXIgaW5pdGlhbGl6ZWQK
-WyAgICA0LjI2MzE2NF0gVENQOiBjdWJpYyByZWdpc3RlcmVkCgoKVGhlIG1hY2hpbmUgd29ya3Mg
-d2l0aCBhIFBFQUsgUENJIGNhcmQgcGx1Z2dlZCBpbiwgYnV0IHdlIHdvdWxkIGxpa2UgdG8gdXNl
-CnRoZSBidWlsdC1pbiBkZXZpY2VzLgoKVGhhbmtzIGluIGFkdmFuY2UgZm9yIGFueSBoZWxwIQoK
-V3V3ZWkgIldpbGwiIEhlCk1pYW1pIEZMIFVTQQotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0t
-LS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBs
-c3BjaV9yZXN1bHRzLnBuZwpUeXBlOiBpbWFnZS9wbmcKU2l6ZTogMjc0MzI0IGJ5dGVzCkRlc2M6
-IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFp
-L2F0dGFjaG1lbnRzLzIwMTUwODExLzIxNGE3ZmQ2L2F0dGFjaG1lbnQucG5nPgotLS0tLS0tLS0t
-LS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBz
-Y3J1YmJlZC4uLgpOYW1lOiBydGNhbl9rZXJuZWxfZHJpdmVyX3hlbm9tYWkucG5nClR5cGU6IGlt
-YWdlL3BuZwpTaXplOiAxMTI0NDggYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRw
-Oi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTA4MTEvMjE0
-YTdmZDYvYXR0YWNobWVudC0wMDAxLnBuZz4K
+Hi,
+
+I have just started to use Xenomai and I'm using Linux kernel version 
+3.10.17-1.0.2 released for Freescale i.MX6Q with Xenomai 2.6.3 (I-pipe 
+patch: ipipe-core-3.10.18-arm-1.patch).
+I have seen a behavior that I don't understand, it is in this simple 
+example:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+#include <sys/mman.h>
+#include <native/task.h>
+#include <native/timer.h>
+#include <native/pipe.h>
+
+#define TASK_PRIO      9
+#define TASK_MODE      0
+#define TASK_STKSZ     (2*8192)
+
+static RT_TASK main_task_desc, task_desc1, task_desc2, task_desc3;
+
+static void task_func1(void *arg)
+{
+    int r;
+    while (1)
+    {
+        r = rt_task_sleep(20000000000); // 20sec
+        rt_printf("Hello task1! %d\n", r);
+    }
+}
+
+static void task_func2(void *arg)
+{
+    int r;
+    while (1)
+    {
+        r = rt_task_sleep(1000000000); // 1sec
+        rt_printf("Hello task2! %d\n", r);
+    }
+}
+
+static void task_func3(void *arg)
+{
+    int r;
+    while (1)
+    {
+        r = rt_task_sleep(4000000000); // 4sec
+        rt_printf("Hello task3! %d\n", r);
+    }
+}
+
+int main()
+{
+    int r;
+
+    mlockall(MCL_CURRENT|MCL_FUTURE) ;
+    rt_print_auto_init(1) ;
+
+    rt_task_shadow(&main_task_desc, "main", 5, 0);
+
+    r = rt_task_create(&task_desc1, "task1", TASK_STKSZ, TASK_PRIO, 
+TASK_MODE);
+    if (r == 0)
+    {
+        r = rt_task_start(&task_desc1, &task_func1, 0);
+        if (r == 0)
+        {
+            r = rt_task_create(&task_desc2, "task2", TASK_STKSZ, 
+TASK_PRIO-1, TASK_MODE);
+            if (r == 0)
+            {
+                r = rt_task_start(&task_desc2, &task_func2, 0);
+                if (r == 0)
+                {
+                    r = rt_task_create(&task_desc3, "task3", TASK_STKSZ, 
+TASK_PRIO-2, TASK_MODE);
+                    if (r == 0)
+                    {
+                        r = rt_task_start(&task_desc3, &task_func3, 0);
+                        if (r == 0)
+                        {
+                            while (1)
+                            {
+                                r = rt_task_sleep(5000000000); // 5sec
+                                rt_printf("Hello main! %d\n", r);
+                                r = system("ls -l &") ;
+                                rt_printf("System result %d\n", r);
+                            }
+                         }
+                    }
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+I have three tasks that do a "rt_printf" after sleep, and the main task 
+that does a "system" after sleep.
+When the main task does the "system", the rt_task_sleep in task1 exits 
+with code -38.
+This is the output of the simple program:
+
+Hello task2! 0
+Hello task2! 0
+Hello task2! 0
+Hello task2! 0
+Hello task3! 0
+Hello task2! 0
+Hello main! 0
+total 8
+-rw-r--r-- 1 root root 12 Aug 12 11:54 file1.dat
+-rw-r--r-- 1 root root  4 Aug 12 11:54 file2.dat
+Hello task1! -38
+System result 0
+Hello task2! 0
+Hello task2! 0
+Hello task2! 0
+Hello task3! 0
+Hello task2! 0
+Hello task2! 0
+total 8
+-rw-r--r-- 1 root root 12 Aug 12 11:54 file1.dat
+-rw-r--r-- 1 root root  4 Aug 12 11:54 file2.dat
+Hello main! 0
+Hello task1! -38
+System result 0
+Hello task2! 0
+
+Do you have some suggestions for this issue?
+
+Best regards
+Cristiano Mantovani.
+
+
+Cristiano Mantovani
+R&D Measuring Systems - Software Designer
+phone +39 051 899 389 | fax +39 051 899 802
+Cristiano.Mantovani@marposs.com
+
+
+______________________________________________________
+
+MARPOSS S.p.A., with a sole shareholder
+Via Saliceto, 13 - 40010 BENTIVOGLIO (BO) - ITALY
+
+Share Capital euro 14,126,000 paid in full - Tax Code and Registration No. at 
+Business Register of Bologna 02759341205
+Economic and Administrative Index No. 464925 - VAT IT 02759341205
+ 
+
+
+
+______________________________________________________
+
+
+
+The   information  contained  in  this e-mail  and  any  attachments is 
+confidential  and  may  also  be  privileged. If you have received the e-mail 
+and any attachments by mistake, please inform us  immediately, destroy them 
+without storing or copying them on any medium, and do not disclose or use the 
+contents for any purpose.
+Although our systems implement reasonable precautions against viruses and other 
+threats, we cannot accept responsibility for any loss or damage arising from 
+managing the contents of this e-mail. 
+
+P  Please consider the environment before printing this e-mail
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: image/jpeg
+Size: 20961 bytes
+Desc: not available
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20150812/2980bb63/attachment.jpe>
