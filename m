@@ -1,15 +1,10 @@
-Date: Tue, 1 Sep 2015 21:44:51 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150901194451.GB32489@hermes.click-hack.org>
-References: <CAJqUr7ybpmgOev-iPaQ-iMEAF8SBocn54vyYSbLcm9spMY=FBg@mail.gmail.com>
- <55E5E453.1080400@xenomai.org>
- <CAPuu0=jX6ig5L7SJrmPVOhCmOm=gwxEmTafTpOqzE85hOji8CA@mail.gmail.com>
- <55E5F849.1070708@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <55E5F849.1070708@xenomai.org>
-Subject: Re: [Xenomai] xenomai/ipipe arm64 port
+From: Hongfei Cheng <hongfei@mperpetuo.com>
+Date: Thu, 13 Aug 2015 11:51:59 -0700
+Message-ID: <CAKC9m6f5Yc7MZHZQO2MRCf+y2nOM7P1psX4fLTeqgE4tsnv+RA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] I-pipe's determinism in handling hardware interrupts when
+ GIC implements "Security Extensions"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,29 +13,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jorge Ramirez Ortiz <jro@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai Mailing List <xenomai@xenomai.org>
 
-On Tue, Sep 01, 2015 at 03:11:05PM -0400, Jorge Ramirez Ortiz wrote:
-> On 09/01/2015 02:27 PM, Dmitriy Cherkasov wrote:
-> > We have seen this before, but so far have not found a way to consistently
-> > reproduce it.
-> > 
-> > There are some caveats with the current way context switching is done in Xenomai.
-> > 
-> > On armv7, there was a completely separate implementation of
-> > xnarch_switch_to(), as well as separate fpu and TLS switching.
-> > At this stage for armv8 however, we are doing a direct call to
-> > the kernel's __switch_to(), which then performs the relevant
-> > register switches.
+Hi All,
 
-On arm 32 bits, the only difference between xnarch_switch_to and
-switch_to is the FPU switch, IIRC, switch_to triggers a notifier
-which I believe can not be called from primary domain. Or maybe it
-can, but the FPU switch, can not be the same as Xenomai "FPU state
-state machine", does not work the same as Linux.
+I am wondering (aloud) if anyone has experience running I-pipe on
+ARMv7 platform which supports ARM's Security Extensions (TrustZone).
 
--- 
-					    Gilles.
-https://click-hack.org
+I believe, starting in ARMv7-A/R architecture, ARM added the
+(optional) Security Extensions (TrustZone) to provide hardware
+security features. Some of the ARM SoCs on the supported list by
+Xenomai, such as Freescale QorIQ LS1 and Xilinx Zynq, appear to have
+implemented such extensions.
+
+On an ARM SoC platform implementing the Security Extensions -
+1). How does the I-pipe/Adeos deal with both the interrupt sources in
+"Normal world" (non-secure interrupt) and "Secure world" (secure
+interrupt)?
+2). What would happen if a Xenomai real-time thread is taking on a
+non-secure interrupt while a secure interrupt with higher priviledge
+arrives which must be routed to a Linux thread?
+3). Since a secure interrupt can take an unbounded amount of time to
+complete its task, such as downloading firmware, will it break
+I-pipe's determinism in serving non-secure interrupt on behalf of
+Xenomai real-time threads?
+
+Thanks,
+Hongfei
 
