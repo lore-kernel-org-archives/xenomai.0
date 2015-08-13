@@ -1,15 +1,20 @@
-Date: Wed, 12 Aug 2015 17:27:57 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150812152757.GA27862@hermes.click-hack.org>
-References: <OF3EB5637C.BE58E83A-ONC1257E9F.0042D131-C1257E9F.0042E65D@marposs.com>
- <20150812122152.GC21595@hermes.click-hack.org>
- <20150812123920.GD21595@hermes.click-hack.org>
- <OF4F6B2713.B0429143-ONC1257E9F.004ABEC3-C1257E9F.004AC655@marposs.com>
+References: <CAHoW4hFHAmGqFOdDp3QHXK-6w0NQEw8XBxOc8kJkVUQAvEfT_w@mail.gmail.com>
+ <55C22EED.4040704@xenomai.org>
+ <CAHoW4hHS2QS1td6mUiWid-unDrMDZaQMo3vkYsDynNze5YsaSw@mail.gmail.com>
+ <55C326C5.4070608@xenomai.org>
+ <CAHoW4hHityc2RSznYrqr4BHnTNSwjgYH7265jyqrjawmbXZKQQ@mail.gmail.com>
+ <55C37BF3.2070609@xenomai.org>
+ <CAHoW4hGq02Me+TuKVdvLi4W3GseeBA7DgFFajue-_D-gUh1wtg@mail.gmail.com>
+ <55C8BCDD.5000501@xenomai.org>
+ <CAHoW4hFio_SG9knzKD5AG_3UOiNCf5KhrioZOAHOd0jVGVOrMA@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <55CC7C2F.5040805@xenomai.org>
+Date: Thu, 13 Aug 2015 13:14:55 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <OF4F6B2713.B0429143-ONC1257E9F.004ABEC3-C1257E9F.004AC655@marposs.com>
-Subject: Re: [Xenomai] rt_task_sleep returns -38
+In-Reply-To: <CAHoW4hFio_SG9knzKD5AG_3UOiNCf5KhrioZOAHOd0jVGVOrMA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Segfaults and ENOMEM during rt_event_create()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,29 +23,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Cristiano.Mantovani@marposs.com
+To: Charles Kiorpes <ckiorpes@gmail.com>
 Cc: xenomai@xenomai.org
 
-On Wed, Aug 12, 2015 at 03:36:43PM +0200, Cristiano.Mantovani@marposs.com wrote:
-> Thank you very much for your reply!
+On 08/10/2015 05:17 PM, Charles Kiorpes wrote:
+>> Is this case (trying to create an event flag with a conflicting name)
+>> part of the original scenario with Cobalt?
 > 
-> I have never used the mainline kernel on i.mx6q, only freescale kernels.
-> I have just compiled and I'm testing this new version for me.
+> This rt_event_create() with existing name occurs a little earlier in
+> my application's startup phase than where the segfault occurs using
+> Cobalt.  However, applying the rt_event_bind() workaround and
+> switching back to Cobalt does not change the segfault behavior (it
+> still occurs at the same place), so I'm not convinced that they're
+> related.
 > 
-> Can I use the ipipe-core-3.10.32-arm-5 provided in Xenomai 2.6.4?
-> Is possible it works with kernel 3.10.17?
+> When I run the processes through Valgrind using the Mercury core and
+> checking event existence with rt_event_bind() before attempting to
+> create, Valgrind finds no issues.  The application hangs at a
+> different location (creation of a periodic task; I'm fairly certain
+> that I just need to rework that section of code a little).
+> 
+> However, my application really need the tight timings that Cobalt
+> provides, and this has to eventually run on an embedded system, so
+> switching to Mercury is not a viable solution.
+> 
 
-I am surprised that nobody at marposs.com knows the answer to this
-question, given how long we had users from this company subscribed
-to this mailing list and how often this question is answered. A
-version of Xenomai supports I-pipe patches from any kernel versions
-smaller than the latest version it supports. For instance, the
-latest version supported by Xenomai 2.6.4 is 3.14 (we do not care
-about the third number, it is just a stable release from the 3.14
-branch), so Xenomai 2.6.4 supports I-pipe patch for any version of
-Linux smaller than 3.14.
+You should retry with the current head of the -next branch with Cobalt.
+No guarantee, but several fixes took place in the shared heap
+implementation. Since I don't know much about your application, I can
+only assume that one of them might help. At the very least, this is a
+better starting point than -rc6.
 
 -- 
-					    Gilles.
-https://click-hack.org
+Philippe.
 
