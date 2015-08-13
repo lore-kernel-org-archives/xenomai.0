@@ -1,3 +1,5 @@
+MIME-Version: 1.0
+In-Reply-To: <55CC7C2F.5040805@xenomai.org>
 References: <CAHoW4hFHAmGqFOdDp3QHXK-6w0NQEw8XBxOc8kJkVUQAvEfT_w@mail.gmail.com>
  <55C22EED.4040704@xenomai.org>
  <CAHoW4hHS2QS1td6mUiWid-unDrMDZaQMo3vkYsDynNze5YsaSw@mail.gmail.com>
@@ -7,13 +9,11 @@ References: <CAHoW4hFHAmGqFOdDp3QHXK-6w0NQEw8XBxOc8kJkVUQAvEfT_w@mail.gmail.com>
  <CAHoW4hGq02Me+TuKVdvLi4W3GseeBA7DgFFajue-_D-gUh1wtg@mail.gmail.com>
  <55C8BCDD.5000501@xenomai.org>
  <CAHoW4hFio_SG9knzKD5AG_3UOiNCf5KhrioZOAHOd0jVGVOrMA@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55CC7C2F.5040805@xenomai.org>
-Date: Thu, 13 Aug 2015 13:14:55 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAHoW4hFio_SG9knzKD5AG_3UOiNCf5KhrioZOAHOd0jVGVOrMA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+ <55CC7C2F.5040805@xenomai.org>
+Date: Thu, 13 Aug 2015 07:39:44 -0400
+Message-ID: <CAHoW4hFqOT=o10R8w-qxoHti1=aE5HLOohQvk7xk-PGD+_=XKQ@mail.gmail.com>
+From: Charles Kiorpes <ckiorpes@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Subject: Re: [Xenomai] Segfaults and ENOMEM during rt_event_create()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -23,37 +23,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Charles Kiorpes <ckiorpes@gmail.com>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 08/10/2015 05:17 PM, Charles Kiorpes wrote:
->> Is this case (trying to create an event flag with a conflicting name)
->> part of the original scenario with Cobalt?
-> 
-> This rt_event_create() with existing name occurs a little earlier in
-> my application's startup phase than where the segfault occurs using
-> Cobalt.  However, applying the rt_event_bind() workaround and
-> switching back to Cobalt does not change the segfault behavior (it
-> still occurs at the same place), so I'm not convinced that they're
-> related.
-> 
-> When I run the processes through Valgrind using the Mercury core and
-> checking event existence with rt_event_bind() before attempting to
-> create, Valgrind finds no issues.  The application hangs at a
-> different location (creation of a periodic task; I'm fairly certain
-> that I just need to rework that section of code a little).
-> 
-> However, my application really need the tight timings that Cobalt
-> provides, and this has to eventually run on an embedded system, so
-> switching to Mercury is not a viable solution.
-> 
+Hello Philippe,
+I have spent the past few days stressing my application and trying to
+get the problem to reproduce, so that I could better debug it and
+provide more information.  However, my current configuration seems to
+be fixed.
 
-You should retry with the current head of the -next branch with Cobalt.
-No guarantee, but several fixes took place in the shared heap
-implementation. Since I don't know much about your application, I can
-only assume that one of them might help. At the very least, this is a
-better starting point than -rc6.
+I made three changes (still using rc6):
+1 - Fixed the small bug mentioned in your first patch in this thread
+2 - Reordered event creation logic so that rt_event_bind() is used to
+check existence before rt_event_create() is called
+3 - Increased the heap sizes in the kernel configuration again
+(system=1024, shared=256, private=256)
 
--- 
-Philippe.
+These changes have me up and running on an x86 system.
+
+> You should retry with the current head of the -next branch with Cobalt.
+I'll switch to the -next branch and continue testing.  I'm also doing
+an ARM port of the app, and was having some small problems with shared
+heap initialization, so maybe I can resume work there.
+
+Thanks for all your help!
+
+-Charles
 
