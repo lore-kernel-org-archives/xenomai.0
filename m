@@ -1,13 +1,12 @@
-Date: Mon, 24 Aug 2015 20:36:47 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150824183646.GB21893@hermes.click-hack.org>
-References: <20150824181426.GA21893@hermes.click-hack.org>
- <55DB6151.8050003@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <55DB6151.8050003@siemens.com>
-Subject: Re: [Xenomai] perf nmi on x86
+In-Reply-To: <55CE176D.3020902@xenomai.org>
+References: <CAC-NLwzELS71XpnoR24fiqnSVzCv=xvcJ8SoBW4ni=FG9-tXyw@mail.gmail.com>
+ <55CE176D.3020902@xenomai.org>
+Date: Fri, 14 Aug 2015 22:08:21 +0530
+Message-ID: <CAC-NLwzZaU0VRfC4ih64bGdE-i+pm9CVLO=Sh7kDhBJHwtD9aA@mail.gmail.com>
+From: ashwin damle <ashwindamle@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Query with rtdm_clock_read
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,34 +15,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On Mon, Aug 24, 2015 at 08:24:17PM +0200, Jan Kiszka wrote:
-> On 2015-08-24 20:14, Gilles Chanteperdrix wrote:
-> > Hi Jan,
-> > 
-> > running Xenomai on an x86 machine, I noticed that the perf NMI was
-> > ticking. It seems CONFIG_PERF can not be disabled in the kernel
-> > configuration.
-> > 
-> > So, the first question is: 
-> > is there a way of disabling the NMI ?
-> > second question is: 
-> > if not, what do we do about it? 
-> > 
-> > I mean, on the one hand, disabling the NMI is probably mandatory on
-> > a system where latency matters, but on the other hand, some users
-> > may want it enabled and do not care for the additional latency.
-> 
-> Does "echo 0 > /proc/sys/kernel/nmi_watchdog" change the picture? It did
-> so for me on a distro kernel, though re-enabling it again didn't make
-> the PMIs reappear.
+Hello,
 
-Works for me, and writing 1 seems to re-enable it. Thanks. This
-should really be documented somewhere, though.
+Thank you very much.
+
+I will see documentation. I am a beginner.
+
+Thanks a ton for your reply!
+
+Thanks.
+Ashwin
+
+On 14 August 2015 at 21:59, Philippe Gerum <rpm@xenomai.org> wrote:
+
+> On 08/14/2015 05:30 PM, ashwin damle wrote:
+> > Hi,
+> >
+> > I got Xenomai 3.0-rc4 working.
+> >
+> > I wish to measure time between execution of two functions using
+> > rtdm_clock_read.in a real time thread.
+> >
+> > Pseudo code is like below.
+> > .....
+> > start = rtdm_clock_read();
+> >
+> > foo0();
+> > foo1();
+> >
+> > stop = rtdm_clock_read();
+> >
+> > execution_time= stop - start;
+> > .....
+> >
+> > Since rtdm_clock_read is still valid in Xenomai3, I plan to use the same.
+> > However, I cannot find the API. I am surely missing something. I searched
+> > .h files in include/rtdm however, I cannot locate it.
+> >
+> > Just wanted to know if I am moving in the right direction intending to
+> use
+> > rtdm_clock_read or should I use other.
+> >
+>
+> RTDM is a kernel-based API, you can only access it from a driver by
+> including rtdm/driver.h.
+>
+> --
+> Philippe.
+>
+
+
 
 -- 
-					    Gilles.
-https://click-hack.org
+Ash.D
+Institute of Infinite Tension,Bombay
 
+Support the
