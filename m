@@ -1,14 +1,9 @@
-In-Reply-To: <55D5DE78.5050909@xenomai.org>
-References: <tencent_397DFC6301EF5E535A4A4FFC@qq.com>
- <55D5DE78.5050909@xenomai.org>
-From: "=?gb18030?B?pcul46Xz0MfIyw==?=" <1173264124@qq.com>
-Mime-Version: 1.0
-Date: Fri, 21 Aug 2015 15:02:57 +0800
-Message-ID: <tencent_70F1C8C93C3F843F6A133AC8@qq.com>
-Content-Type: text/plain;
-	charset="gb18030"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] =?gb18030?b?u9i4tKO6ICBIZWxwIGFib3V0IEFsY2hlbXkgQVBJ?=
+MIME-Version: 1.0
+Date: Fri, 14 Aug 2015 21:00:19 +0530
+Message-ID: <CAC-NLwzELS71XpnoR24fiqnSVzCv=xvcJ8SoBW4ni=FG9-tXyw@mail.gmail.com>
+From: ashwin damle <ashwindamle@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] Query with rtdm_clock_read
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,66 +12,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?gb18030?B?UGhpbGlwcGUgR2VydW0=?= <rpm@xenomai.org>, =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-SGksIGFjY29yZGluZyB5b3VyIGFkdmljZSwgSSByZWluc3RhbGxlZCByYy03IGluIHZtd2Fy
-ZSB2aXJ0dWFsIG1hY2hpbmUuKGtlcm5lbDpsaW51eDMuMTYuNykNClRoZSBzYW1lIHByb2Js
-ZW0gSSBtZXQgd2hlbiBJIHVzZSAicnRfYnVmZmVyX3dyaXRlKCkib2YgYWxjaGVteSBhcGku
-DQpUaGUgd2hvbGUgY29kZSBpczoNCiIiIg0KI2luY2x1ZGUgPHN0ZGlvLmg+DQojaW5jbHVk
-ZSA8c3RkbGliLmg+DQojaW5jbHVkZSA8dW5pc3RkLmg+DQojaW5jbHVkZSA8c2lnbmFsLmg+
-DQojaW5jbHVkZSA8c3RyaW5nLmg+DQojaW5jbHVkZSA8cHRocmVhZC5oPg0KI2luY2x1ZGUg
-PGVycm5vLmg+DQojaW5jbHVkZSA8cnRkbS9pcGMuaD4NCiNpbmNsdWRlIDxhbGNoZW15L2J1
-ZmZlci5oPg0KDQoNCg0KDQpzdGF0aWMgY29uc3QgY2hhciAqbXNnW10gPSB7DQogICAgICAg
-ICJTdXJmaW5nIFdpdGggVGhlIEFsaWVuIiwNCiAgICAgICAgIkxvcmRzIG9mIEthcm1hIiwN
-CiAgICAgICAgIkJhbmFuYSBNYW5nbyIsDQogICAgICAgICJQc3ljaG8gTW9ua2V5IiwNCiAg
-ICAgICAgIkx1bWlub3VzIEZsZXNoIEdpYW50cyIsDQogICAgICAgICJNb3JvY2NhbiBTdW5z
-ZXQiLA0KICAgICAgICAiU2F0Y2ggQm9vZ2llIiwNCiAgICAgICAgIkZseWluZyBJbiBBIEJs
-dWUgRHJlYW0iLA0KICAgICAgICAiUmlkZSIsDQogICAgICAgICJTdW1tZXIgU29uZyIsDQog
-ICAgICAgICJTcGVlZCBPZiBMaWdodCIsDQogICAgICAgICJDcnlzdGFsIFBsYW5ldCIsDQog
-ICAgICAgICJSYXNwYmVycnkgSmFtIERlbHRhLVYiLA0KICAgICAgICAiQ2hhbXBhZ25lPyIs
-DQogICAgICAgICJDbG91ZHMgUmFjZSBBY3Jvc3MgVGhlIFNreSIsDQogICAgICAgICJFbmdp
-bmVzIE9mIENyZWF0aW9uIg0KfTsNCnN0YXRpYyB2b2lkIGZhaWwoY29uc3QgY2hhciAqcmVh
-c29uKQ0Kew0KICAgICAgICBwZXJyb3IocmVhc29uKTsNCiAgICAgICAgZXhpdChFWElUX0ZB
-SUxVUkUpOw0KfQ0Kc3RhdGljIHZvaWQgKnRocmVhZDEodm9pZCAqYXJnKQ0Kew0KCVJUX0JV
-RkZFUiAqYmY7DQoJaW50IHJldDsNCglyZXQgPSBydF9idWZmZXJfY3JlYXRlKGJmICwgImJ1
-ZmZlcl9kZW1vIiAsIDEwMjQgLCBCX0ZJRk8pOw0KCXByaW50ZigiJWRcbiIscmV0KTsNCglp
-ZiggMCA+IHJldCkNCgl7DQoJCXJ0X2J1ZmZlcl9kZWxldGUoYmYpOw0KCQlmYWlsKCJjcmVh
-dGUiKTsNCgl9DQoJcmV0ID0gcnRfYnVmZmVyX3dyaXRlKGJmICwgbXNnWzBdICwgc3RybGVu
-KG1zZ1swXSkgLCA1MDAwMCk7DQoJcHJpbnRmKCIlZFxuIixyZXQpOw0KCXJldCA9IHJ0X2J1
-ZmZlcl9kZWxldGUoYmYpOw0KCXByaW50ZigiJWRcbiIscmV0KTsNCiAgICAgICAgcmV0dXJu
-IE5VTEw7DQp9DQoNCg0KaW50IG1haW4oaW50IGFyZ2MsIGNoYXIgKiphcmd2KQ0Kew0KCXB0
-aHJlYWRfdCBzdnRpZDsNCiAgICAgICAgc3RydWN0IHNjaGVkX3BhcmFtIHN2cGFyYW0gPSB7
-LnNjaGVkX3ByaW9yaXR5ID0gNzEgfTsNCiAgICAgICAgcHRocmVhZF9hdHRyX3Qgc3ZhdHRy
-Ow0KICAgICAgICBzaWdzZXRfdCBzZXQ7DQogICAgICAgIGludCBzaWc7DQogICAgICAgIHNp
-Z2VtcHR5c2V0KCZzZXQpOw0KICAgICAgICBzaWdhZGRzZXQoJnNldCwgU0lHSU5UKTsNCiAg
-ICAgICAgc2lnYWRkc2V0KCZzZXQsIFNJR1RFUk0pOw0KICAgICAgICBzaWdhZGRzZXQoJnNl
-dCwgU0lHSFVQKTsNCiAgICAgICAgcHRocmVhZF9zaWdtYXNrKFNJR19CTE9DSywgJnNldCwg
-TlVMTCk7DQogICAgICAgIHB0aHJlYWRfYXR0cl9pbml0KCZzdmF0dHIpOw0KICAgICAgICBw
-dGhyZWFkX2F0dHJfc2V0ZGV0YWNoc3RhdGUoJnN2YXR0ciwgUFRIUkVBRF9DUkVBVEVfSk9J
-TkFCTEUpOw0KICAgICAgICBwdGhyZWFkX2F0dHJfc2V0aW5oZXJpdHNjaGVkKCZzdmF0dHIs
-IFBUSFJFQURfRVhQTElDSVRfU0NIRUQpOw0KICAgICAgICBwdGhyZWFkX2F0dHJfc2V0c2No
-ZWRwb2xpY3koJnN2YXR0ciwgU0NIRURfRklGTyk7DQogICAgICAgIHB0aHJlYWRfYXR0cl9z
-ZXRzY2hlZHBhcmFtKCZzdmF0dHIsICZzdnBhcmFtKTsNCiAgICAgICAgZXJybm8gPSBwdGhy
-ZWFkX2NyZWF0ZSgmc3Z0aWQsICZzdmF0dHIsICZ0aHJlYWQxLCBOVUxMKTsNCiAgICAgICAg
-aWYgKGVycm5vKQ0KICAgICAgICAgICAgICAgIGZhaWwoInB0aHJlYWRfY3JlYXRlIik7DQog
-ICAgICAgIHNpZ3dhaXQoJnNldCwgJnNpZyk7DQogICAgICAgIHB0aHJlYWRfY2FuY2VsKHN2
-dGlkKTsNCiAgICAgICAgcHRocmVhZF9qb2luKHN2dGlkLCBOVUxMKTsNCiAgICAgICAgcmV0
-dXJuIDA7DQp9DQoNCiIiIg0KSW4gdGhlIHRoZWFkMSBmdW5jdGlvbiBwYXIgb2YgYWJvdmUg
-Y29kZSwgdGhlIHJldHVybiBvZiBydF9idWZmZXJfd3JpdGUgaXMgYWx3YXkgLTEuIEkga25v
-dyBpdCBpcyByZWxhdGUgdG8geGVub21haSB0aHJlYWQuIEkganVzdCBkb24ndCBrbm93IGhv
-dyB0byB1c2UgdGhlIGFsY2hlbXkgYXBpIHByb3Blcmx5IGFuZCBkb24ndCBrbm93IHRoZSBy
-ZWxhdGlvbnNoaXAgb2YgYWxjaGVteSBpcGMgYW5kIHhlbm9tYWkgcnQgdGhyZWFkLg0KQ2Fu
-IHlvdSBnaXZlIG1lIHNvbWUgZXhhbXBsZSBvZiBhbGNoZW15IGFwaSBhbmQgeGVub21haSB0
-aHJlYWQuIFRoYW5rcyBhIGxvdC4NCg0KDQoNCg0KLS0tLS0tLS0tLS0tLS0tLS0tINStyrzT
-yrz+IC0tLS0tLS0tLS0tLS0tLS0tLQ0Kt6K8/sjLOiAiUGhpbGlwcGUgR2VydW0iPHJwbUB4
-ZW5vbWFpLm9yZz47IA0Kt6LLzcqxvOQ6IDIwMTXE6jjUwjIwyNUo0MfG2svEKSDN7cnPMTA6
-MDQNCsrVvP7IyzogIqXLpeOl89DHyMsiPDExNzMyNjQxMjRAcXEuY29tPjsgInhlbm9tYWki
-PHhlbm9tYWlAeGVub21haS5vcmc+OyANCtb3zOI6IFJlOiBbWGVub21haV0gSGVscCBhYm91
-dCBBbGNoZW15IEFQSQ0KDQoNCg0KT24gMDgvMjAvMjAxNSAwMzoxMSBQTSwgpcul46Xz0MfI
-yyB3cm90ZToNCj4gSGVsbG8sIEkgaGF2ZSBpbnN0YWxsIHhlbm9tYWlsLTMuMC1yYzQgaW4g
-dm13YXJlIHZpcnR1YWwgbWFjaGluZShvczp1YnVudHUxNCwga2VybmVsOmxpbnV4My4xNi43
-KS4gTm93IEkgaGF2ZSBtZXQgc29tZSBwcm9ibGVtcyB3aGVuIEkgdXNlIEFsY2hlbXkgQVBJ
-LiBJIHdvdWxkIGFwcHJlY2lhdGVkIGl0IGlmIHlvdSBjb3VsZCBoZWxwIG1lLg0KDQpQbGVh
-c2UgdXNlIC1yYzcuIFRoaXMgbWFrZXMgbm8gc2Vuc2UgdG8gaW52ZXN0aWdhdGUgYnVncyBm
-aXhlZCBtb250aHMNCmFnbyBieSB1c2luZyBvdXRkYXRlZCBjYW5kaWRhdGUgcmVsZWFzZXMu
-DQoNCi0tIA0KUGhpbGlwcGUu
+Hi,
+
+I got Xenomai 3.0-rc4 working.
+
+I wish to measure time between execution of two functions using
+rtdm_clock_read.in a real time thread.
+
+Pseudo code is like below.
+.....
+start = rtdm_clock_read();
+
+foo0();
+foo1();
+
+stop = rtdm_clock_read();
+
+execution_time= stop - start;
+.....
+
+Since rtdm_clock_read is still valid in Xenomai3, I plan to use the same.
+However, I cannot find the API. I am surely missing something. I searched
+.h files in include/rtdm however, I cannot locate it.
+
+Just wanted to know if I am moving in the right direction intending to use
+rtdm_clock_read or should I use other.
+
+Please let me know.
+
+-- 
+Ashwin M. Damle
