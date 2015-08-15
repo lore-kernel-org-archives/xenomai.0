@@ -1,13 +1,10 @@
-References: <55DF83E0.1060006@gmail.com>
- <20150827234940.GE20679@hermes.click-hack.org>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55E000DE.6030305@xenomai.org>
-Date: Fri, 28 Aug 2015 08:34:06 +0200
+Message-ID: <55CF75CA.1010505@xenomai.org>
+Date: Sat, 15 Aug 2015 19:24:26 +0200
 MIME-Version: 1.0
-In-Reply-To: <20150827234940.GE20679@hermes.click-hack.org>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] timer_create( ) invalid argument
+Subject: [Xenomai] [RELEASE] Xenomai 3.0-rc7
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,55 +13,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Konstantinos Chalas <konchalas@gmail.com>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 08/28/2015 01:49 AM, Gilles Chanteperdrix wrote:
-> On Thu, Aug 27, 2015 at 11:40:48PM +0200, Konstantinos Chalas wrote:
->> Hello,
->>
->> I have been trying to port some code from the Linux Kernel to the Cobalt
->> Kernel, with no success.
->>
->> When trying to call timer_create( ), i am getting the error timer_create:
->> Invalid argument
->>
->> I made the code snippet as small as possible.
->>
->> #include <time.h>
->> #include <signal.h>
->> #include <stdio.h>
->>
->> void timerfunction(union sigval handler)
->> {
->>         printf("timerfunction hello\n");
->> }
->>
->> int main(int argc, char** argv)
->> {
->>         timer_t t;
->>
->>         struct sigevent se;
->>
->>         se.sigev_value.sival_ptr = 0;
->>         se.sigev_signo = 0;
->>         se.sigev_notify =  SIGEV_THREAD_ID;
->>
->>         se.sigev_notify_attributes = 0;
->>         se.sigev_notify_function = timerfunction;
->>
->>         if (timer_create(CLOCK_REALTIME, &se, &t) != 0) {
->>                 perror("timer_create");
->>         }
->>         return 0;
->> }
-> 
-> I never tried using SIGEV_THREAD_ID with Xenomai, but I would expect
-> a valid thread id to be required when doing this.
-> 
 
-Definitely. sigev_notify_thread_id is missing.
+This release fixes a couple of serious issues affecting the Alchemy and
+VxWorks APIs (Cobalt, and Mercury with --enable-pshared), other changes
+are mostly about polishing and dealing with a few minor bugs.
 
--- 
+People setting a custom shared heap size using --mem-pool-size should
+have a look at the updated documentation:
+http://xenomai.org/2015/05/application-setup-and-init/#Standard_Xenomai_command_line_options
+
+http://xenomai.org/downloads/xenomai/testing/latest/
+
+Short log follows:
+
+Jan Kiszka (2):
+      kernel/cobalt: Add reason to gorelax trace point
+      cobalt/arm: Detect software breakpoints
+
+Jorge Ramirez-Ortiz (4):
+      utils/analogy: fix debug message
+      lib/analogy: validate size of calibration file
+      lib/analogy: check for errors in the calibration file
+      drivers/analogy: release pci region if mapping failed
+
+Philippe Gerum (26):
+      cobalt/posix/sem: fix spurious wakeup on aborted wait
+      lib/smokey: fix warning printout
+      boilerplate: add EPROTO to translated errors
+      testsuite/smokey: fail if out of quota
+      cobalt/sched: add start, stop SCHED_TP config operations
+      cobalt: bump ABI revision level
+      testsuite/smokey: fail if out of TP schedule
+      testsuite/latency: disable -t1/2 over Mercury
+      copperplate/regd: do timed wait for anon connection
+      lib/cobalt: export cobalt_thread_mode()
+      lib/cobalt: fix private event state accessor
+      lib/cobalt/heapobj: pshared: allow group access to heap
+      copperplate/semobj: add uninit cleanup helper
+      copperplate/eventobj: add uninit cleanup helper
+      alchemy/event: prevent double-free on error path
+      alchemy/sem: prevent double-free on error path
+      vxworks/memPartLib: fix invalid status from addToPool
+      vxworks/memPartLib: do not account for failed alloc
+      copperplate/heapobj-pshared: fix and sanitize extent management
+      boilerplate/ancillaries: add routine to parse mem size
+      copperplate/init: disambiguate --mem-pool-size argument
+      copperplate/heapobj-pshared: change rounding of page mapping array
+size
+      cobalt/sh: drop support for the SH4 architecture
+      cobalt/nios2: drop support for the NIOS2 architecture
+      doc: prebuild
+      cobalt/arm: upgrade I-pipe support
+
+--
 Philippe.
+
 
