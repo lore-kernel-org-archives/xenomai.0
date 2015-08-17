@@ -1,12 +1,23 @@
-Date: Mon, 31 Aug 2015 22:56:09 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150831205609.GF5696@hermes.click-hack.org>
-References: <20150831195549.GD5696@hermes.click-hack.org>
+Message-ID: <55D15EDB.4060107@gatech.edu>
+Date: Mon, 17 Aug 2015 00:11:07 -0400
+From: "Yogi A. Patel" <yapatel@gatech.edu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20150831195549.GD5696@hermes.click-hack.org>
-Subject: Re: [Xenomai] Maintenance again.
+References: <55C17C8E.5000909@gatech.edu> <55C3AEBE.9080603@xenomai.org>
+ <55C3C3F8.1090808@gatech.edu> <55C3C7F4.1030107@xenomai.org>
+ <12F45B9B-70C3-4278-BA0E-DFC26E19DBF0@gatech.edu>
+ <55C495D6.2070706@xenomai.org>
+ <06B32287-9FE2-42E5-BC2B-E9C807D0BD69@gatech.edu>
+ <55C4BD22.9060809@xenomai.org>
+ <EB72B89E-CA71-4F7F-9A35-99A87C282A61@gatech.edu>
+ <55C515F0.8080307@xenomai.org>
+ <45806C53-526E-425C-AEA4-70B2A22EA364@gatech.edu>
+ <55C51965.2020206@xenomai.org>
+ <933604EB-994B-4CE9-BA38-DB404CA0811D@gatech.edu>
+ <55C522AE.8030403@xenomai.org> <55C9EAA6.6030503@gatech.edu>
+In-Reply-To: <55C9EAA6.6030503@gatech.edu>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Subject: Re: [Xenomai] analogy calibration issue(s)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,19 +26,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Jorge Ramirez Ortiz <jro@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Aug 31, 2015 at 09:55:49PM +0200, Gilles Chanteperdrix wrote:
-> 
-> Please do not push anything to Xenomai ipipe gits, I am working on
-> them.
-
-End of alert, I have restored the I-pipe git without references to
-linux-stable.git, I could not get the setup with references to work
-with cloning through http/https, so, we will keep the full I-pipe
-gits for now, until someone else gets it working.
-
--- 
-					    Gilles.
-https://click-hack.org
-
+Cj4+IHBsZWFzZSBwdWxsIGFnYWluIGZyb20gCj4+IGh0dHA6Ly9naXQueGVub21haS5vcmcveGVu
+b21haS1qcm8uZ2l0L2xvZy8/aD1kZXZlbApJdCB0b29rIHNvbWUgdGltZSwgYnV0IEkgd2FzIGFi
+bGUgdG8gZ2V0IHRoZSBwcm9jZXNzIHRvICpydW4qIC0gYnV0IG5vdCAKd29yay4KCkkgaGFkIHRv
+IG1ha2UgdGhlIGZvbGxvd2luZyBtb2RpZmljYXRpb25zIHRvIHRoZSBjYWxpYnJhdGlvbi5jIGZp
+bGUgdG8gCmdldCB0aGlzIHRvIHdvcmsgb24gMyBkaWZmZXJlbnQgbWFjaGluZXM6CgpkaWZmIC0t
+Z2l0IGEvbGliL2FuYWxvZ3kvY2FsaWJyYXRpb24uYyBiL2xpYi9hbmFsb2d5L2NhbGlicmF0aW9u
+LmMKaW5kZXggYjUwY2IyZi4uZDA2MmEwMCAxMDA2NDQKLS0tIGEvbGliL2FuYWxvZ3kvY2FsaWJy
+YXRpb24uYworKysgYi9saWIvYW5hbG9neS9jYWxpYnJhdGlvbi5jCkBAIC0xMDUsNyArMTA1LDEw
+IEBAIHN0YXRpYyBpbmxpbmUgaW50IHJlYWRfaW50KGludCAqdmFsLCBzdHJ1Y3QgCl9kaWN0aW9u
+YXJ5XyAqZiwgY29uc3QgY2hhciAqc3ViZCwKCiAgICAgICAgICp2YWwgPSBpbmlwYXJzZXJfZ2V0
+aW50KGYsIHN0ciwgMHhGRkZGKTsKICAgICAgICAgaWYgKCp2YWwgPT0gMHhGRkZGKQorICAgICAg
+IHsKKyAgICAgICAgICAgICAgICp2YWwgPSAtMTsKICAgICAgICAgICAgICAgICByZXQgPSAtRU5P
+RU5UOworICAgICAgIH0KICAgICAgICAgZnJlZShzdHIpOwoKICAgICAgICAgcmV0dXJuIHJldDsK
+QEAgLTIyNiw3ICsyMjksNyBAQCBpbnQgYTRsX3JlYWRfY2FsaWJyYXRpb25fZmlsZShjaGFyICpu
+YW1lLCBzdHJ1Y3QgCmE0bF9jYWxpYnJhdGlvbl9kYXRhICpkYXRhKQogICAgICAgICAgICAgICAg
+IGlmIChuYl9lbGVtZW50cyA8IDAgKSB7CiAgICAgICAgICAgICAgICAgICAgICAgICAvKiBBTyBp
+cyBvcHRpb25hbCAqLwogICAgICAgICAgICAgICAgICAgICAgICAgaWYgKCFzdHJuY21wKHN1YmRl
+dmljZVtrXSwgQU9fU1VCRF9TVFIsIApzaXplb2YoQU9fU1VCRF9TVFIpKSkKLSAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICBicmVhazsKKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBy
+ZXR1cm4gMDsKICAgICAgICAgICAgICAgICAgICAgICAgIHJldHVybiAtMTsKICAgICAgICAgICAg
+ICAgICB9CgpJIGdldCB3aHkgdGhlc2UgbW9kaWZpY2F0aW9ucyBhcmUgbmVjZXNzYXJ5IGFuZCB3
+aHkgaXQgd29ya3Mgbm93LiBJIApkb24ndCB1bmRlcnN0YW5kIGhvdyBpdCB3b3JrZWQgZm9yIHlv
+dSBiZWZvcmUuCgpOb3cgdGhlIHByb2JsZW0gaXMgdGhhdCB3aGVuIEkgcnVuOgoKJCAuL2luc25f
+cmVhZCAtUiAwIC1jIDMgLWQgYW5hbG9neTAgLXkgL2hvbWUveWFwYXRlbC9maWxlCkNhbGlicmF0
+ZWQgdmFsdWVzOgowLjAwMDAwMAowLjAwMDAwMAowLjAwMDAwMAowLjAwMDAwMAowLjAwMDAwMAow
+LjAwMDAwMAowLjAwMDAwMAowLjAwMDAwMAowLjAwMDAwMAowLjAwMDAwMAoKd2l0aG91dCBjYWxp
+YnJhdGlvbiwgaXQgd29ya3MgZmluZToKCiQgLi9pbnNuX3JlYWQgLVIgMCAtYyAzIC1kIGFuYWxv
+Z3kwCk5vbiBDYWxpYnJhdGVkIHZhbHVlczoKNC44Mzc4NzMKNC44Mzg3ODgKNC44MzkwOTQKNC44
+Mzg3ODgKNC44MzkwOTQKNC44Mzg0ODMKNC44Mzg0ODMKNC44MzgxNzgKNC44MzY5NTcKNC44MzY2
+NTIKCkFsc28sIHRoZSBjYWxpYnJhdGlvbiBmaWxlIG91dHB1dCBoYXMgYW5vdGhlciBlcnJvci4g
+VGhlIGNoYW5uZWwgdmFsdWVzIAphcmUgYWxsICItMSIuIEkndmUgYXR0YWNoZWQgbXkgbmV3ZXN0
+IGNhbGlicmF0aW9uIGZpbGUgZnJvbSBhIG1hY2hpbmUgCndpdGggYW4gTkktNjI1MCBjYXJkIChu
+byBBTykuCgpDYW4geW91IHNlbmQgbWUgYSBmaWxlIHRoYXQgaGFzIHdvcmtlZCBmb3IgeW91Pwot
+LS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KW3BsYXRmb3JtXSAKZHJpdmVy
+X25hbWUgPSBhbmFsb2d5X25pX3BjaW1pbzsKYm9hcmRfbmFtZSA9IHBjaS02MjUwOwoKW2FuYWxv
+Z19pbnB1dF0gCmluZGV4ID0gMDsKZWxlbWVudHMgPSA3OwpbYW5hbG9nX2lucHV0XzBdIApjaGFu
+bmVsID0gLTE7CnJhbmdlID0gMDsKZXhwYW5zaW9uX29yaWdpbiA9IDYuOTUyOTRlLTMxMDsKbmJj
+b2VmZj0gNDsKY29lZmZfMCA9IDYuMzY1OTllLTMxNDsKY29lZmZfMSA9IDYuOTUyOTRlLTMxMDsK
+Y29lZmZfMiA9IDQuOTQwNjZlLTMyNDsKY29lZmZfMyA9IDYuOTE3NTNlLTMxMDsKW2FuYWxvZ19p
+bnB1dF8xXSAKY2hhbm5lbCA9IC0xOwpyYW5nZSA9IDE7CmV4cGFuc2lvbl9vcmlnaW4gPSAzMjc2
+NzsKbmJjb2VmZj0gNDsKY29lZmZfMCA9IC0wLjAwMDY0NjY5ODsKY29lZmZfMSA9IDAuMDAwMTYy
+MDE4Owpjb2VmZl8yID0gLTEuNTA1NDRlLTExOwpjb2VmZl8zID0gLTYuNDc5MThlLTE2OwpbYW5h
+bG9nX2lucHV0XzJdIApjaGFubmVsID0gLTE7CnJhbmdlID0gMjsKZXhwYW5zaW9uX29yaWdpbiA9
+IDMyNzY3OwpuYmNvZWZmPSA0Owpjb2VmZl8wID0gLTAuMDAwMjI1NjU4Owpjb2VmZl8xID0gNi40
+Njk3N2UtMDU7CmNvZWZmXzIgPSAtNi4wMTE1OGUtMTI7CmNvZWZmXzMgPSAtMi41ODcyOWUtMTY7
+ClthbmFsb2dfaW5wdXRfM10gCmNoYW5uZWwgPSAtMTsKcmFuZ2UgPSAzOwpleHBhbnNpb25fb3Jp
+Z2luID0gMzI3Njc7Cm5iY29lZmY9IDQ7CmNvZWZmXzAgPSAtOC44NzU5N2UtMDU7CmNvZWZmXzEg
+PSAzLjI0MTU3ZS0wNTsKY29lZmZfMiA9IC0zLjAxMmUtMTI7CmNvZWZmXzMgPSAtMS4yOTYzMmUt
+MTY7ClthbmFsb2dfaW5wdXRfNF0gCmNoYW5uZWwgPSAtMTsKcmFuZ2UgPSA0OwpleHBhbnNpb25f
+b3JpZ2luID0gMzI3Njc7Cm5iY29lZmY9IDQ7CmNvZWZmXzAgPSAtMS44ODUzZS0wNTsKY29lZmZf
+MSA9IDEuNjE5OThlLTA1Owpjb2VmZl8yID0gLTEuNTA1MjVlLTEyOwpjb2VmZl8zID0gLTYuNDc4
+MzZlLTE3OwpbYW5hbG9nX2lucHV0XzVdIApjaGFubmVsID0gLTE7CnJhbmdlID0gNTsKZXhwYW5z
+aW9uX29yaWdpbiA9IDMyNzY3OwpuYmNvZWZmPSA0Owpjb2VmZl8wID0gMi4xNzYzOGUtMDU7CmNv
+ZWZmXzEgPSA2LjQ5MDMxZS0wNjsKY29lZmZfMiA9IC02LjAzMDY3ZS0xMzsKY29lZmZfMyA9IC0y
+LjU5NTUxZS0xNzsKW2FuYWxvZ19pbnB1dF82XSAKY2hhbm5lbCA9IC0xOwpyYW5nZSA9IDY7CmV4
+cGFuc2lvbl9vcmlnaW4gPSAzMjc2NzsKbmJjb2VmZj0gNDsKY29lZmZfMCA9IDMuNjAzMTVlLTA1
+Owpjb2VmZl8xID0gMy4yNDExMmUtMDY7CmNvZWZmXzIgPSAtMy4wMTE1OGUtMTM7CmNvZWZmXzMg
+PSAtMS4yOTYxNGUtMTc7Cg==
