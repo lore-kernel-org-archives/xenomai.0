@@ -1,15 +1,14 @@
+Date: Tue, 18 Aug 2015 22:34:07 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150818203407.GB14798@hermes.click-hack.org>
+References: <55D321A2.6090201@sigmatek.at>
+ <20150818124805.GB4740@hermes.click-hack.org>
+ <55D33336.4020004@sigmatek.at>
 MIME-Version: 1.0
-In-Reply-To: <55CED222.8040901@siemens.com>
-References: <CAKC9m6f5Yc7MZHZQO2MRCf+y2nOM7P1psX4fLTeqgE4tsnv+RA@mail.gmail.com>
- <20150813191157.GG28709@hermes.click-hack.org>
- <CAKC9m6cKtcwx_tYvWVnqNrFMxxN5=0azmLcqPwzuN_ZBX1Kh8A@mail.gmail.com>
- <55CED222.8040901@siemens.com>
-From: Hongfei Cheng <hongfei@mperpetuo.com>
-Date: Tue, 18 Aug 2015 10:37:40 -0700
-Message-ID: <CAKC9m6f8zTh84Ks1pf1+LA-Z0P=gK-XQENMeszRikKzudZDRsQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] I-pipe's determinism in handling hardware interrupts
- when GIC implements "Security Extensions"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <55D33336.4020004@sigmatek.at>
+Subject: Re: [Xenomai] Function to get state of lock variable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,45 +17,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Wolfgang Netbal <wolfgang.netbal@sigmatek.at>
 Cc: Xenomai Mailing List <xenomai@xenomai.org>
 
-On Fri, Aug 14, 2015 at 10:46 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
-> On 2015-08-14 22:38, Hongfei Cheng wrote:
->>> If, like I believe,
->>> such a "privileged interrupt" is handled by the monitor behind
->>> Linux/I-pipe's back, then yes, it will break determinism.
->>
->> Do you have any suggestion as to how I-pipe can be improved to work
->> with ARM's multiple exception levels in order to ensure determinism on
->> ARMv7 (and ARMv8)?
->
-> Conceptually, this is fairly similar to the SMM on x86. But, in contrast
-> to that arch, we tend to have the firmware sources on ARM.
->
-> You can check if you actually need the secure monitor on our platform
-> (it's most often used for PSCI) and disable it (may be trickier on ARMv8
-> where PSCI is mandatory IIRC) or patch it or the kernel to avoid the
-> problematic service calls (specifically CPU power control via PSCI).
->
-> Jan
+On Tue, Aug 18, 2015 at 03:29:26PM +0200, Wolfgang Netbal wrote:
+> 
+> 
+> Am 2015-08-18 um 14:48 schrieb Gilles Chanteperdrix:
+> >On Tue, Aug 18, 2015 at 02:14:26PM +0200, Wolfgang Netbal wrote:
+> >>Hi All,
+> >>
+> >>is there a function te returns true or false if a rtdm_lock_t variable is
+> >>set ?
+> >>What I have to do is  to check in an interrupt routine if the list is
+> >>locked,
+> >>if this is the case I leave the interrupt handler befor accessing the list.
+> >>
+> >>I use the following code to lock the add and replace of list elements.
+> >>
+> >>static rtdm_lock_t opendev_list_lock;
+> >>static int open(struct rtdm_dev_context *context, rtdm_user_info_t *
+> >>user_info, int oflags)
+> >>{
+> >>     lrtdrv_context_t *ctx = (lrtdrv_context_t *) context->dev_private;
+> >>     rtdm_lockctx_t s;
+> >>
+> >>....
+> >>
+> >>     rtdm_lock_get_irqsave(&opendev_list_lock, s);
+> >>     list_add_tail(&ctx->opendev_entry, &lrtdrv_opendev_list);
+> >>     rtdm_lock_put_irqrestore(&opendev_list_lock, s);
+> >Well, if you are not running on a multiprocessor system, you can not
+> >take interrupt during that section.
+> >
+> >And on a multiprocessor system, the time this code will hold the
+> >lock is very short, so, it should not be a problem for an interrupt
+> >one core to spin while another core is holding the lock.
+> >
+> >But we can probably add rtdm_lock_is_locked, yes.
+> >
+> I'm working on a multiprocessor system and when I boot the system between
+> 200 and 1000 times I get one error, because the add and remove from the list
+> will be done on boot.
 
-Thanks for the suggestion, Jan.
+I have read this sentence multiple times, but have not understood
+what your problem is and how testing whether the spinlock is locked
+will solve anything. So, again, note that:
+- adding or removing an element to/from a list is so fast that
+having to spin waiting for the lock in an interrupt handler is not a
+problem, at all;
+- doing if (!is_locked) lock() is racy: between the time you test
+and the time you lock, the other cpu may well have taken the lock
+and be in the process of updating the list, so, what you probably want
+is a "trylock" operation, which tries and acquire the lock and fails
+instead of spinning if it would have to wait.
 
-You're right -- PSCI is an integral part of ARMv8 Linux kernel.
-Besides, secure apps other than PSCI-based CPU power management rely
-on the secure monitor, such as firmware verification and user
-authentication.
+> I tried to add a function rtdm_lock_is_locked but the thing is that the
+> variables in struct arch_spinlock_t are different for different
+> architectures, for example on ARM it is "u32 slock" and on x86 it is
+> "__ticketpair_t head_tail".
+> 
+> If you have a hint for me which element of struct rtdm_lock_t I have to use
+> to check if the list is locked I can add this on my own.
+> If you think this the function rtdm_lock_is_locked should be added it would
+> be great if you can add it for Xenomai 2.6.4 as well.
 
-I don't know the details of x86's SMM. Based on my quick reading, it
-does appear to have similar effect as ARM in terms of privileged
-interrupts. On ARMv7/8, such privileged interrupts can be routed to
-secure applications in either secure OS or non-secure OS.
+You are looking at the wrong abstraction level, rtdm_lock_t is just
+a typedef for ipipe_spinlock_t, and all the spin* functions/macros
+of the spinlock API apply to ipipe_spinlock_t, this includes
+spin_is_locked() and spin_trylock(). Of course we need to add
+rtdm_lock_is_locked and rtdm_lock_trylock, but in the meantime, you
+can use the kernel functions directly.
 
-Since SMM has been in the x86 arch for a very long time, how do you
-manage to maintain I-pipe's determinism on SMM-enable x86 platform? Is
-this one of the reasons that I-pipe requires disabling power
-management features (cpu-freq scaling, cpu-idle, hot-plug)?
-
-Hongfei
+-- 
+					    Gilles.
+https://click-hack.org
 
