@@ -1,15 +1,13 @@
-References: <CAAXf6LUGJPnZk7wtU5u0nthkrSiPbOKzsVuMQzfU+AqhL-OCcw@mail.gmail.com>
- <CAAXf6LUQ3wbLxQqoD79ZORUNZyn+Q6FXF6Wc8bOxP7FKiG0Fmg@mail.gmail.com>
- <55D499B3.9000300@xenomai.org>
- <CAAXf6LUX3Mr-q1=urd+rv_cuke+n_nTGVFsHYqHz1d=G2tRpjQ@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55D4A231.3050804@xenomai.org>
-Date: Wed, 19 Aug 2015 17:35:13 +0200
+Date: Wed, 19 Aug 2015 16:29:13 +0000 (UTC)
+From: Frederik Bayart <frederik_bayart@yahoo.co.uk>
+Message-ID: <466299436.7725534.1440001753062.JavaMail.yahoo@mail.yahoo.com>
+In-Reply-To: <55D36A9E.6030809@xenomai.org>
+References: <55D36A9E.6030809@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <CAAXf6LUX3Mr-q1=urd+rv_cuke+n_nTGVFsHYqHz1d=G2tRpjQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] minimum xenomai stack size (mercury)
+Subject: Re: [Xenomai] xeno 3-rc7 : rtcanconfig fails to set baudrate
+Reply-To: Frederik Bayart <frederik_bayart@yahoo.co.uk>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,103 +16,147 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thomas De Schampheleire <patrickdepinguin@gmail.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/19/2015 05:12 PM, Thomas De Schampheleire wrote:
-> On Wed, Aug 19, 2015 at 4:58 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->> On 08/19/2015 01:03 PM, Thomas De Schampheleire wrote:
->>> On Fri, Jul 24, 2015 at 2:48 PM, Thomas De Schampheleire
->>> <patrickdepinguin+xenomai@gmail.com> wrote:
->>>> Hi,
->>>>
->>>> With Xenomai Mercury (specifically the PSOS skin, but that doesn't
->>>> matter for this question), the minimal stack size applied is
->>>> PTHREAD_STACK_MIN * 4, even if the caller requested a smaller one.
->>>>
->>>> On MIPS, and some other architectures, PTHREAD_STACK_MIN is already 128K:
->>>> (<glibc>/ports/sysdeps/unix/sysv/linux/mips/nptl/bits/local_lim.h)
->>>>
->>>> /* Minimum size for a thread. At least two pages with 64k pages. */
->>>> #define PTHREAD_STACK_MIN 131072
->>>>
->>>> With Xenomai multiplying this with 4, every thread has half a megabyte
->>>> of stack, which is way too much for systems with a large number of
->>>> threads.
->>>> It is possible to limit this in other ways, by setting 'ulimit -s 128'
->>>> for example, but it is a dirty workaround in my opinion.
->>>>
->>>> What is the real minimum stack requirement for Xenomai? I cannot
->>>> imagine that this is in the order of 512K.
->>>>
->>>> With PTHREAD_STACK_MIN varying so much on different platforms, what
->>>> about code like:
->>>>
->>>> minimum_stacksize = MAX(XENOMAI_STACK_MIN, PTHREAD_STACK_MIN);
->>>>
->>>> if (stacksize < minimum_stacksize) {
->>>>     stacksize = minimum_stacksize;
->>>> }
->>>>
->>>> where XENOMAI_STACK_MIN is a value that is not calculated based on
->>>> PTHREAD_STACK_MIN?
->>>>
->>>> With this approach, systems with 16K PTHREAD_STACK_MIN could still get
->>>> 64K minimum stack in case the xenomai minimum stack size is 64K, while
->>>> not negatively impacting systems that have 128K PTHREAD_STACK_MIN.
->>>>
->>>> (Note that for systems with 4K/8K pages, the PTHREAD_STACK_MIN of 128K
->>>> (two 'pages' taken for 64K) is already very exaggerated)
->>>>
->>>
->>> Ping?
->>>
+>On Tuesday, 18 August 2015, 19:25, Philippe Gerum <rpm@xenomai.org> wrote:
+>> On 08/18/2015 06:26 PM, Frederik Bayart wrote:
+>
+>> I have build xeno-3.0.rc7 with kernel 3.18.12.
+>> I have a PEAK-PCIe CAN card in my system.
+>> Drivers are loaded and rtcan0 en rtcan1 are created in /proc/rtcan.
 >>
->> Since there is no reliable way to define XENOMAI_STACK_MIN, the most
->> flexible approach would be to use PTHREAD_STACK_MIN as the default value
->> (instead of x 4), expecting the code creating threads to specify the
->> stack size they need (e.g. the ustack parameter to t_create() with the
->> pSOS emulator).
->>
-> 
-> But it was my understanding that PTHREAD_STACK_MIN could be too small
-> in some systems for Xenomai to function properly, and hence x 4 was
-> added.
+>> However, I'm not able to set the baudrate when I'm execute 'rtcanconfig rtcan0 -v -b 1000000 start'
+>> By adding debug statements in rtcanconfig, I found that ioctl(can_fd, SIOCSCANBAUDRATE, &u.ifr); fails,
+>> errno gives : SIOCSCANBAUDRATE(errno=19): No such device
+>> Below the output of rtcan0/info and xeno-config --info
+>> Any suggestions ?
+>
+>This error is documented, I would check ->ifr_name in the request block:
+>
+>http://www.xenomai.org/documentation/xenomai-3/html/xeno3prm/group__rtdm__can.html#ga7c070037c218b40de849ebf4d299f977
+>
+>-- 
+>Philippe.
 
-Exactly (x86* calling stdio routines typically).
 
-> If that history is correct, then there should be a way to determine a
-> maximum to XENOMAI_STACK_MIN: it is the value of PTHREAD_STACK_MIN * 4
-> for that system, supposedly a small page system.
-> 
+The problem was that the interface name was overwritten by the baudrate. The problem is caused by use of
 
-No, this figure was just picked out of trial and error on a failing test
-case a long time ago on x86. This is why it looks overkill on ppc and
-elsewhere with a 128k stack min. There is absolutely no guarantee that
-it would fit all possible cases, not even all common paths when
-traversing Xenomai code. Besides, the Xenomai libs are running on behalf
-of applications, not on their own.
+union {
+struct ifreq ifr;
+struct can_bittime bittime;
+can_baudrate_t baudrate;
+can_ctrlmode_t ctrlmode;
+can_mode_t mode;
+} u;
 
-So only the application can figure this out, this is the reason why
-relying on a default value provided by the Xenomai core libs is wrong by
-design. The same way, PTHREAD_STACK_MIN is only a minimum value matching
-architecture-specific requirements for stacks, regardless of whether
-using such size would actually work in practice with the common software
-environment.
+I think the intention was to put struct ifreq.ifr_ifru in the union. But I think the union above doesn't work because struct ifreq has first member ifr_ifrn
 
-> Just dropping the multiplication by 4 of PTHREAD_STACK_MIN would be
-> fine for my use case, but I'm not sure if it will be fine for others.
-> I added Jan in this thread because I saw in the commit history that he
-> has been involved in such code before.
-> 
+struct ifreq {
+#define IFHWADDRLEN	6
+union
+{
+char	ifrn_name[IFNAMSIZ];		/* if name, e.g. "en0" */
+} ifr_ifrn;
 
-I'm leaning toward providing --psos-stack-size instead (and equivalent
-elsewhere) for setting the default pSOS stack size, for applications
-that insist on omitting the ustack parameter in t_create() calls. That
-would be logically better than forcing a default value different from
-PTHREAD_STACK_MIN in the core libs, which don't know anything about the
-potential stack consumption.
+union {
+...snip...
+} ifr_ifru;
+};
 
--- 
-Philippe.
+If I revert the union, the problem is solved. Diff below.
+
+Frederik
+
+--- rtcanconfig.c.old	2015-08-19 17:57:45.790326526 +0200
++++ rtcanconfig.c.new	2015-08-19 18:00:15.010330204 +0200
+@@ -88,16 +88,10 @@
+int     new_ctrlmode = 0, set_ctrlmode = 0;
+int     verbose = 0;
+int     bittime_count = 0, bittime_data[6];
++    struct ifreq ifr;
+can_baudrate_t *baudrate;
+can_ctrlmode_t *ctrlmode;
+can_mode_t *mode;
+-    union {
+-      struct ifreq ifr;
+-      struct can_bittime bittime;
+-      can_baudrate_t baudrate;
+-      can_ctrlmode_t ctrlmode;
+-      can_mode_t mode;
+-    } u;
+struct can_bittime *bittime;
+int opt, ret;
+char* ptr;
+@@ -169,7 +163,7 @@
+}
+
+strncpy(ifname, argv[optind], IFNAMSIZ);
+-    strncpy(u.ifr.ifr_name, ifname, IFNAMSIZ);
++    strncpy(ifr.ifr_name, ifname, IFNAMSIZ);
+
+if (optind == argc - 2) {   /* Get mode setting */
+new_mode = string_to_mode(argv[optind + 1]);
+@@ -187,7 +181,7 @@
+return can_fd;
+}
+
+-    ret = ioctl(can_fd, SIOCGIFINDEX, &u.ifr);
++    ret = ioctl(can_fd, SIOCGIFINDEX, &ifr);
+if (ret) {
+fprintf(stderr,"Can't get interface index for %s, code = %d\n", ifname, ret);
+return ret;
+@@ -197,16 +191,15 @@
+if (new_baudrate != -1) {
+if (verbose)
+printf("baudrate: %d\n", new_baudrate);
+-	baudrate = &u.baudrate;
++	baudrate = (can_baudrate_t *)&ifr.ifr_ifru;
+*baudrate = new_baudrate;
+-	ret = ioctl(can_fd, SIOCSCANBAUDRATE, &u.ifr);
++	ret = ioctl(can_fd, SIOCSCANBAUDRATE, &ifr);
+if (ret) {
+goto abort;
+}
+}
+-
+if (bittime_count) {
+-	bittime = &u.bittime;
++	bittime = (struct can_bittime *)&ifr.ifr_ifru;
+if (bittime_count == 2) {
+bittime->type = CAN_BITTIME_BTR;
+bittime->btr.btr0 = bittime_data[0];
+@@ -233,7 +226,7 @@
+bittime->std.sam);
+}
+
+-	ret = ioctl(can_fd, SIOCSCANCUSTOMBITTIME, &u.ifr);
++	ret = ioctl(can_fd, SIOCSCANCUSTOMBITTIME, &ifr);
+if (ret) {
+goto abort;
+}
+@@ -241,20 +234,20 @@
+}
+
+if (set_ctrlmode != 0) {
+-	ctrlmode = &u.ctrlmode;
++	ctrlmode = (can_ctrlmode_t *)&ifr.ifr_ifru;
+*ctrlmode = new_ctrlmode;
+if (verbose)
+printf("ctrlmode: %#x\n", new_ctrlmode);
+-	ret = ioctl(can_fd, SIOCSCANCTRLMODE, &u.ifr);
++	ret = ioctl(can_fd, SIOCSCANCTRLMODE, &ifr);
+if (ret) {
+goto abort;
+}
+}
+
+if (new_mode != -1) {
+-	mode = &u.mode;
++	mode = (can_mode_t *)&ifr.ifr_ifru;
+*mode = new_mode;
+-	ret = ioctl(can_fd, SIOCSCANMODE, &u.ifr);
++	ret = ioctl(can_fd, SIOCSCANMODE, &ifr);
+if (ret) {
+goto abort;
+}
 
