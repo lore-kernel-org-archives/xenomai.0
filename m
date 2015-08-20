@@ -1,11 +1,12 @@
-From: "=?gb18030?B?pcul46Xz0MfIyw==?=" <1173264124@qq.com>
-Mime-Version: 1.0
-Date: Thu, 20 Aug 2015 21:11:54 +0800
-Message-ID: <tencent_397DFC6301EF5E535A4A4FFC@qq.com>
-Content-Type: text/plain;
-	charset="gb18030"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Help about Alchemy API
+References: <tencent_397DFC6301EF5E535A4A4FFC@qq.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <55D5DE78.5050909@xenomai.org>
+Date: Thu, 20 Aug 2015 16:04:40 +0200
+MIME-Version: 1.0
+In-Reply-To: <tencent_397DFC6301EF5E535A4A4FFC@qq.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Help about Alchemy API
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,21 +15,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
+To: =?UTF-8?B?44OL44Oj44Oz5pif5Lq6?= <1173264124@qq.com>, xenomai <xenomai@xenomai.org>
 
-SGVsbG8sIEkgaGF2ZSBpbnN0YWxsIHhlbm9tYWlsLTMuMC1yYzQgaW4gdm13YXJlIHZpcnR1
-YWwgbWFjaGluZShvczp1YnVudHUxNCwga2VybmVsOmxpbnV4My4xNi43KS4gTm93IEkgaGF2
-ZSBtZXQgc29tZSBwcm9ibGVtcyB3aGVuIEkgdXNlIEFsY2hlbXkgQVBJLiBJIHdvdWxkIGFw
-cHJlY2lhdGVkIGl0IGlmIHlvdSBjb3VsZCBoZWxwIG1lLg0KDQoNCkkgdXNlZCBCdWZmZXIg
-U2VydmljZXMgb2YgQWxjaGVteSBBUEksIHRoZSBjb2RlIGxpa2UgdGhpczoNCiIiIg0KCVJU
-X0JVRkZFUiAqIGJmID0gTlVMTDsNCg0KDQoJUlRfQlVGRkVSX0lORk8gKiBpbmZvOw0KDQoN
-CglpbnQgcmV0Ow0KDQoNCglpbnQgbiA9IDA7DQoNCg0KDQoNCglyZXQgPSBydF9idWZmZXJf
-Y3JlYXRlKGJmICwgImJ1ZmZlci1kZW1vIiAsIDIwNDggLCBCX0ZJRk8pOw0KDQoNCglpZigg
-MCA8IHJldCkNCiAgICAgICAgew0KCSAgICAgICAgcHJpbnRmKCIlZFxuIixyZXQpOw0KCQlm
-YWlsKCJjcmVhdF9idWZmZXIiKTsNCiAgICAgICAgfQ0KDQoiIiINClRoZSByZXR1cm4gb2Yg
-cnRfYnVmZmVyX2NyZWF0ZSBpcyBhbHdheXMgLTE3LCBubyBtYXR0ZXIgd2hhdCBuYW1lIEkg
-dXNlZCBpbiBydF9idWZmZXJfY3JlYXRlLiBJIGhhdmUgc2VhcmNoIHRoZSBtZWFucyBvZiBl
-cnJubywgYW5kIDE3IG1lYW5zICJGaWxlIGV4aXN0cyAiLiBJIGhhdmUgdHJ5IHJ0X2J1ZmZl
-cl9iaW5kLHJ0X2J1ZmZlcl9yZWFkIGFuZCBydF9idWZmZXJfd3JpdGUgYXBpLCB0aGV5IGRp
-ZG4ndCB3b3JrIGVpdGhlci4NCkFuZCB0aGUgdXNlIG9mIE1lc3NhZ2UgUXVldWUgU2Vydmlj
-ZXMgaGF2ZSB0aGUgc2ltaWxhciBwcm9iZW0uICANClRoYW5rcyBmb3IgeW91IGhlbHAu
+On 08/20/2015 03:11 PM, ニャン星人 wrote:
+> Hello, I have install xenomail-3.0-rc4 in vmware virtual machine(os:ubuntu14, kernel:linux3.16.7). Now I have met some problems when I use Alchemy API. I would appreciated it if you could help me.
+
+Please use -rc7. This makes no sense to investigate bugs fixed months
+ago by using outdated candidate releases.
+
+-- 
+Philippe.
+
