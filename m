@@ -1,22 +1,25 @@
-References: <CAHoW4hFHAmGqFOdDp3QHXK-6w0NQEw8XBxOc8kJkVUQAvEfT_w@mail.gmail.com>
- <55C22EED.4040704@xenomai.org>
- <CAHoW4hHS2QS1td6mUiWid-unDrMDZaQMo3vkYsDynNze5YsaSw@mail.gmail.com>
- <55C326C5.4070608@xenomai.org>
- <CAHoW4hHityc2RSznYrqr4BHnTNSwjgYH7265jyqrjawmbXZKQQ@mail.gmail.com>
- <55C37BF3.2070609@xenomai.org>
- <CAHoW4hGq02Me+TuKVdvLi4W3GseeBA7DgFFajue-_D-gUh1wtg@mail.gmail.com>
- <55C8BCDD.5000501@xenomai.org>
- <CAHoW4hFio_SG9knzKD5AG_3UOiNCf5KhrioZOAHOd0jVGVOrMA@mail.gmail.com>
- <55CC7C2F.5040805@xenomai.org>
- <CAHoW4hFqOT=o10R8w-qxoHti1=aE5HLOohQvk7xk-PGD+_=XKQ@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55CCC40C.3060105@xenomai.org>
-Date: Thu, 13 Aug 2015 18:21:32 +0200
+Message-ID: <55D5E0F0.6040904@xenomai.org>
+Date: Thu, 20 Aug 2015 07:15:12 -0700
+From: Jorge Ramirez Ortiz <jro@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <CAHoW4hFqOT=o10R8w-qxoHti1=aE5HLOohQvk7xk-PGD+_=XKQ@mail.gmail.com>
+References: <55C17C8E.5000909@gatech.edu> <55C3AEBE.9080603@xenomai.org>
+ <55C3C3F8.1090808@gatech.edu> <55C3C7F4.1030107@xenomai.org>
+ <12F45B9B-70C3-4278-BA0E-DFC26E19DBF0@gatech.edu>
+ <55C495D6.2070706@xenomai.org>
+ <06B32287-9FE2-42E5-BC2B-E9C807D0BD69@gatech.edu>
+ <55C4BD22.9060809@xenomai.org>
+ <EB72B89E-CA71-4F7F-9A35-99A87C282A61@gatech.edu>
+ <55C515F0.8080307@xenomai.org>
+ <45806C53-526E-425C-AEA4-70B2A22EA364@gatech.edu>
+ <55C51965.2020206@xenomai.org>
+ <933604EB-994B-4CE9-BA38-DB404CA0811D@gatech.edu>
+ <55C522AE.8030403@xenomai.org> <55C9EAA6.6030503@gatech.edu>
+ <55D15EDB.4060107@gatech.edu> <55D1E001.5080905@xenomai.org>
+ <55D1EE0A.6030100@gatech.edu>
+In-Reply-To: <55D1EE0A.6030100@gatech.edu>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Segfaults and ENOMEM during rt_event_create()
+Subject: Re: [Xenomai] analogy calibration issue(s)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,91 +28,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Charles Kiorpes <ckiorpes@gmail.com>
-Cc: xenomai@xenomai.org
+To: "Yogi A. Patel" <yapatel@gatech.edu>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/13/2015 01:39 PM, Charles Kiorpes wrote:
-> Hello Philippe,
-> I have spent the past few days stressing my application and trying to
-> get the problem to reproduce, so that I could better debug it and
-> provide more information.  However, my current configuration seems to
-> be fixed.
+On 08/17/2015 07:22 AM, Yogi A. Patel wrote:
 > 
-> I made three changes (still using rc6):
-> 1 - Fixed the small bug mentioned in your first patch in this thread
-> 2 - Reordered event creation logic so that rt_event_bind() is used to
-> check existence before rt_event_create() is called
-> 3 - Increased the heap sizes in the kernel configuration again
-> (system=1024, shared=256, private=256)
+>>> diff --git a/lib/analogy/calibration.c b/lib/analogy/calibration.c
+>>> index b50cb2f..d062a00 100644
+>>> --- a/lib/analogy/calibration.c
+>>> +++ b/lib/analogy/calibration.c
+>>> @@ -105,7 +105,10 @@ static inline int read_int(int *val, struct _dictionary_
+>>> *f, const char *subd,
+>>>
+>>>          *val = iniparser_getint(f, str, 0xFFFF);
+>>>          if (*val == 0xFFFF)
+>>> +       {
+>>> +               *val = -1;
+>>>                  ret = -ENOENT;
+>> this is not correct.
+>> the coefficient was not found and so an error must be return.
+> Yes, I agree that an error must be returned. The problem is that *val is
+> pointing to 0XFFFF - which is nb_elements. So when you check if(nb_elements <
+> 0), it still proceeds, rather than returning an error as it should.
 > 
 
-I'd be interested to know whether the bug re-appears when this latter
-increase is not done, only keeping #1 and #2.
+ACKd. Not sure what I was thinking.
 
-> These changes have me up and running on an x86 system.
+> Thanks for sending your file. I am absurdly confused as to why I don't get an
+> output section..have you tried this with any other cards?
 > 
->> You should retry with the current head of the -next branch with Cobalt.
-> I'll switch to the -next branch and continue testing.  I'm also doing
-> an ARM port of the app, and was having some small problems with shared
-> heap initialization, so maybe I can resume work there.
 
-It's great that you made some progress. Meanwhile, I reviewed the shared
-heap management lately and some stuff there wasn't quite right. This is
-the list of recent commits in the -next tree that may/might concern your
-application, with some notes:
-
-{rpm@raven} git log --reverse --oneline -13
-23bb315 lib/cobalt: fix private event state accessor
-
-This commit contains the patch mentioned in #1.
-
-fab0540 kernel/cobalt: Add reason to gorelax trace point
-6dfdc69 cobalt/arm: Detect software breakpoints
-
-Unrelated stuff.
-
-033976a lib/cobalt/heapobj: pshared: allow group access to heap
-
-You need this one to bind several processes with different euids to a
-single session, provided they all belong to a common gid.
-
-fa3092a copperplate/semobj: add uninit cleanup helper
-824d831 copperplate/eventobj: add uninit cleanup helper
-9e3cbdb alchemy/event: prevent double-free on error path
-ac6fb1c alchemy/sem: prevent double-free on error path
-
-The four commits above fix the double deletion bug occurring upon an
-attempt to create a sema4 or an event with a conflicting name, using the
-Alchemy API. This may certainly have caused havoc in the heap when
-happening. This should allow you to drop the work around based on
-rt_event_bind() mentioned in #2.
-
-f333317 vxworks/memPartLib: fix invalid status from addToPool
-f928e4d vxworks/memPartLib: do not account for failed alloc
-
-Some fixups for the Vxworks API users who depend on memory partitions.
-
-65f16f4 copperplate/heapobj-pshared: fix and sanitize extent management
-
-This one is addresses several issues in the shared heap management,
-particularly when extending embedded heaps (like the VxWorks API does).
-Alchemy did not use the extension service, but I would recommend to pull
-those sanitizing changes nevertheless.
-
-0da6b0d boilerplate/ancillaries: add routine to parse mem size
-b151d3b copperplate/init: disambiguate --mem-pool-size argument
-
-Not directly related. This said, this commit clarifies the argument to
---mem-pool-size. You probably want to pass --mem-pool-size=400k with
-this patch in.
-
-> 
-> Thanks for all your help!
-> 
-> -Charles
-> 
+No, I only have access to the 6221.
+Just enable the debugging information in the kernel config. you can also use
+ftrace (supported by analogy)
 
 
 -- 
-Philippe.
+jro
 
