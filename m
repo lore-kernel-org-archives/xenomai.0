@@ -1,12 +1,11 @@
-References: <4ac5d8524f864db989a3332282818783@dettmbx02.intra.ifm>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55D757E3.5000607@xenomai.org>
-Date: Fri, 21 Aug 2015 18:54:59 +0200
+Message-ID: <55D773A6.8060107@laposte.net>
+Date: Fri, 21 Aug 2015 20:53:26 +0200
+From: Marc Le Douarain <marc.le-douarain@laposte.net>
 MIME-Version: 1.0
-In-Reply-To: <4ac5d8524f864db989a3332282818783@dettmbx02.intra.ifm>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] timer "host-timer" gets stopped
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Subject: [Xenomai] Demo example of a simple periodic thread for Xenomai
+	(Posix API)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,25 +14,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?See=c3=9flen=2c_Maximilian?= <maximilian.seesslen@ifm.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 08/21/2015 11:44 AM, See=DFlen, Maximilian wrote:
-> Hi all,
->=20
-> we are using kernel 3.5.7 with xenomai 2.6.2.1 on an MPC5121 PPC architec=
-ture.
-
-Which I-pipe patch release number for 3.5.7?
-
-You may want to adapt this fix from 3.10 to 3.5.7, in case the issue is
-with a timer IRQ being lost:
-
-commit dad0edc5c84722b16abb24a1f669361522e7277d
-Author: Philippe Gerum <rpm@xenomai.org>
-Date:   Wed Mar 19 15:02:58 2014 +0100
-
-    powerpc/ipipe: safe transition to cpu-idle mode
-
---
-Philippe.
-
+SGVsbG8gZXZleWJvZHksCgpBcyBJIGhhdmVuJ3QgZm91bmQgYSBsaXR0bGUgZXhhbXBsZSBvZiBh
+IHBlcmlvZGljIHRocmVhZCB3cml0dGVuIGluIFBvc2l4LApJJ3ZlIHRyaWVkIHRvIGRvIGl0LgoK
+SGVyZSB5b3Ugd2lsbCBmaW5kIGpvaW5lZCB0aGUgZGVtbyBmaWxlcyBleGFtcGxlLgpJdCBjYW4g
+YmUgKGNyb3NzLSljb21waWxlZCBmb3IgOgotIFN0YW5kYXJkIExpbnV4Ci0gWGVub21haSAyCi0g
+WGVub21haSAzCkluIHRoZSBNYWtlZmlsZSwgY29tbWVudCAyIGxpbmVzIE1ZX0NGTEFHUyAmIE1Z
+X0xERkxBR1MgdG8gY29tcGlsZSBmb3IgCnN0YW5kYXJkIExpbnV4LgoKSG9wZSBpdCBjYW4gYmUg
+aGVscGZ1bGwgZm9yIG90aGVyIHBlb3BsZSwKYW5kIG1hbnkgdGhhbmtzIGZvciBhbnkgY29tbWVu
+dHMgb3IgbWlzdGFrZXMgcmVwb3J0cyBvbiBpdCAhCk9VUFBTUywgSlVTVCBTRUVOIHRoYXQgWEVO
+T01BSSB2ZXJzaW9uIDMgaXMgZG9pbmcgJ21vZGVzIHN3aXRjaGVzJy4uLiBzbyAKdGhlcmUgaXMg
+c29tZXRoaW5nIGJhZCEgQW55IGlkZWEgPwoKUGVyaGFwcyB0byBpbmNsdWRlIGEgYmFzaWMgZXhh
+bXBsZSBsaWtlIHRoaXMgb25lIGluIHRoZSAiZGVtbyIgZGlyZWN0b3J5IApvZiBYZW5vbWFpIHdv
+dWxkIGJlIGludGVyZXN0aW5nIT8KCkJlc3QgcmVnYXJkcy4KClBTOiBJIGhhdmUgYmVlZCBkaXNh
+cG9pbnRlZCBhdCB0aGUgc3RhcnQgdG8gZGlzY292ZXIgbm8gbW9yZSAKcHRocmVhZF9tYWtlX3Bl
+cmlvZGljX25wKCkgJiBwdGhyZWFkX3dhaXRfbnAoKSBmdW5jdGlvbnMgd2l0aCBYZW5vbWFpIDMu
+IApCdXQgZmluYWxseSBub3cgd2l0aCBhIHRpbWVyZmQgd2UgY2FuIGhhdmUgdGhlIHNhbWUgc291
+cmNlY29kZSB3aXRoIApzdGFuZGFyZCBMaW51eCwgc28gbm90IHRvbyBiYWQgISA7LSkKQW5kIGFs
+c28gbm8gbW9yZSB0aGUgIl9fWEVOT19fIiBkZWZpbmUsIGJ1dCBhbHNvIHVzZWZ1bGwgZm9yIGNv
+bmRpdGlvbmFsIApjb21waWxhdGlvbiwgd2l0aCB0aGUgbmV3ICJfX0NPQkFMVF9fIiAhCgotLS0t
+LS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50
+IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBkZW1vX3BlcmlvZGljX3RocmVhZF9wb3NpeC5jClR5cGU6
+IHRleHQveC1jc3JjClNpemU6IDQ1MTMgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxo
+dHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTA4MjEv
+ZmFiZDZjNDgvYXR0YWNobWVudC5jPgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0t
+LS0tLS0KIyBNYWtlRmlsZSBmb3IgZGVtbyBvZiBhIHNpbXBsZSBwZXJpb2RpYyB0aHJlYWQgdXNp
+bmcgUG9zaXgKIyB1bmRlciAnc3RhbmRhcmQnIExpbnV4CiMgYW5kIHVuZGVyIFhlbm9tYWkgdmVy
+c2lvbnMgMiBhbmQgMyB1c2luZyBwb3NpeCBza2luCiMgTWFyYyBMZSBEb3VhcmFpbiwgYXVndXN0
+IDIwMTUKCiNDUk9TUyA6PSBhcm0tbGludXgtZ251ZWFiaS0KCgojIEZvciBhICdzdGFuZGFyZCcg
+YXBwbGljYXRpb24uLi4KTVlfTERGTEFHUyA9IC1scHRocmVhZAojIENvbW1lbnQgdGhlc2VzIDIg
+bGluZXMgZm9yIGEgJ3N0YW5kYXJkJyBhcHBsaWNhdGlvbi4uLgpNWV9DRkxBR1MgPSBgeGVuby1j
+b25maWcgLS1za2luIHBvc2l4IC0tY2ZsYWdzYApNWV9MREZMQUdTID0gYHhlbm8tY29uZmlnIC0t
+c2tpbiBwb3NpeCAtLWxkZmxhZ3NgCgpDQyA6PSAke0NST1NTfWdjYwoKYWxsOiBkZW1vX3Blcmlv
+ZGljX3RocmVhZF9wb3NpeAoKT0JKUyA6PSBkZW1vX3BlcmlvZGljX3RocmVhZF9wb3NpeC5vCgpk
+ZW1vX3BlcmlvZGljX3RocmVhZF9wb3NpeDogJHtPQkpTfQoJJHtDQ30gLW8gJEAgJHtPQkpTfSAk
+KE1ZX0xERkxBR1MpCgpjbGVhbjoKCS1ybSAtZiBjb3JlICR7T0JKU30gZGVtb19wZXJpb2RpY190
+aHJlYWRfcG9zaXgKCmRlbW9fcGVyaW9kaWNfdGhyZWFkX3Bvc2l4Lm86IGRlbW9fcGVyaW9kaWNf
+dGhyZWFkX3Bvc2l4LmMKCSR7Q0N9IC1jICQ8IC1vICRAICQoTVlfQ0ZMQUdTKQoK
