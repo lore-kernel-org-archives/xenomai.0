@@ -1,11 +1,13 @@
-Message-ID: <55D773A6.8060107@laposte.net>
-Date: Fri, 21 Aug 2015 20:53:26 +0200
-From: Marc Le Douarain <marc.le-douarain@laposte.net>
+Date: Fri, 21 Aug 2015 23:22:38 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150821212238.GF12742@hermes.click-hack.org>
+References: <55D773A6.8060107@laposte.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Subject: [Xenomai] Demo example of a simple periodic thread for Xenomai
-	(Posix API)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <55D773A6.8060107@laposte.net>
+Subject: Re: [Xenomai] Demo example of a simple periodic thread for Xenomai
+ (Posix API)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,41 +16,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Marc Le Douarain <marc.le-douarain@laposte.net>
+Cc: Xenomai <xenomai@xenomai.org>
 
-SGVsbG8gZXZleWJvZHksCgpBcyBJIGhhdmVuJ3QgZm91bmQgYSBsaXR0bGUgZXhhbXBsZSBvZiBh
-IHBlcmlvZGljIHRocmVhZCB3cml0dGVuIGluIFBvc2l4LApJJ3ZlIHRyaWVkIHRvIGRvIGl0LgoK
-SGVyZSB5b3Ugd2lsbCBmaW5kIGpvaW5lZCB0aGUgZGVtbyBmaWxlcyBleGFtcGxlLgpJdCBjYW4g
-YmUgKGNyb3NzLSljb21waWxlZCBmb3IgOgotIFN0YW5kYXJkIExpbnV4Ci0gWGVub21haSAyCi0g
-WGVub21haSAzCkluIHRoZSBNYWtlZmlsZSwgY29tbWVudCAyIGxpbmVzIE1ZX0NGTEFHUyAmIE1Z
-X0xERkxBR1MgdG8gY29tcGlsZSBmb3IgCnN0YW5kYXJkIExpbnV4LgoKSG9wZSBpdCBjYW4gYmUg
-aGVscGZ1bGwgZm9yIG90aGVyIHBlb3BsZSwKYW5kIG1hbnkgdGhhbmtzIGZvciBhbnkgY29tbWVu
-dHMgb3IgbWlzdGFrZXMgcmVwb3J0cyBvbiBpdCAhCk9VUFBTUywgSlVTVCBTRUVOIHRoYXQgWEVO
-T01BSSB2ZXJzaW9uIDMgaXMgZG9pbmcgJ21vZGVzIHN3aXRjaGVzJy4uLiBzbyAKdGhlcmUgaXMg
-c29tZXRoaW5nIGJhZCEgQW55IGlkZWEgPwoKUGVyaGFwcyB0byBpbmNsdWRlIGEgYmFzaWMgZXhh
-bXBsZSBsaWtlIHRoaXMgb25lIGluIHRoZSAiZGVtbyIgZGlyZWN0b3J5IApvZiBYZW5vbWFpIHdv
-dWxkIGJlIGludGVyZXN0aW5nIT8KCkJlc3QgcmVnYXJkcy4KClBTOiBJIGhhdmUgYmVlZCBkaXNh
-cG9pbnRlZCBhdCB0aGUgc3RhcnQgdG8gZGlzY292ZXIgbm8gbW9yZSAKcHRocmVhZF9tYWtlX3Bl
-cmlvZGljX25wKCkgJiBwdGhyZWFkX3dhaXRfbnAoKSBmdW5jdGlvbnMgd2l0aCBYZW5vbWFpIDMu
-IApCdXQgZmluYWxseSBub3cgd2l0aCBhIHRpbWVyZmQgd2UgY2FuIGhhdmUgdGhlIHNhbWUgc291
-cmNlY29kZSB3aXRoIApzdGFuZGFyZCBMaW51eCwgc28gbm90IHRvbyBiYWQgISA7LSkKQW5kIGFs
-c28gbm8gbW9yZSB0aGUgIl9fWEVOT19fIiBkZWZpbmUsIGJ1dCBhbHNvIHVzZWZ1bGwgZm9yIGNv
-bmRpdGlvbmFsIApjb21waWxhdGlvbiwgd2l0aCB0aGUgbmV3ICJfX0NPQkFMVF9fIiAhCgotLS0t
-LS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50
-IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBkZW1vX3BlcmlvZGljX3RocmVhZF9wb3NpeC5jClR5cGU6
-IHRleHQveC1jc3JjClNpemU6IDQ1MTMgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxo
-dHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTA4MjEv
-ZmFiZDZjNDgvYXR0YWNobWVudC5jPgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0t
-LS0tLS0KIyBNYWtlRmlsZSBmb3IgZGVtbyBvZiBhIHNpbXBsZSBwZXJpb2RpYyB0aHJlYWQgdXNp
-bmcgUG9zaXgKIyB1bmRlciAnc3RhbmRhcmQnIExpbnV4CiMgYW5kIHVuZGVyIFhlbm9tYWkgdmVy
-c2lvbnMgMiBhbmQgMyB1c2luZyBwb3NpeCBza2luCiMgTWFyYyBMZSBEb3VhcmFpbiwgYXVndXN0
-IDIwMTUKCiNDUk9TUyA6PSBhcm0tbGludXgtZ251ZWFiaS0KCgojIEZvciBhICdzdGFuZGFyZCcg
-YXBwbGljYXRpb24uLi4KTVlfTERGTEFHUyA9IC1scHRocmVhZAojIENvbW1lbnQgdGhlc2VzIDIg
-bGluZXMgZm9yIGEgJ3N0YW5kYXJkJyBhcHBsaWNhdGlvbi4uLgpNWV9DRkxBR1MgPSBgeGVuby1j
-b25maWcgLS1za2luIHBvc2l4IC0tY2ZsYWdzYApNWV9MREZMQUdTID0gYHhlbm8tY29uZmlnIC0t
-c2tpbiBwb3NpeCAtLWxkZmxhZ3NgCgpDQyA6PSAke0NST1NTfWdjYwoKYWxsOiBkZW1vX3Blcmlv
-ZGljX3RocmVhZF9wb3NpeAoKT0JKUyA6PSBkZW1vX3BlcmlvZGljX3RocmVhZF9wb3NpeC5vCgpk
-ZW1vX3BlcmlvZGljX3RocmVhZF9wb3NpeDogJHtPQkpTfQoJJHtDQ30gLW8gJEAgJHtPQkpTfSAk
-KE1ZX0xERkxBR1MpCgpjbGVhbjoKCS1ybSAtZiBjb3JlICR7T0JKU30gZGVtb19wZXJpb2RpY190
-aHJlYWRfcG9zaXgKCmRlbW9fcGVyaW9kaWNfdGhyZWFkX3Bvc2l4Lm86IGRlbW9fcGVyaW9kaWNf
-dGhyZWFkX3Bvc2l4LmMKCSR7Q0N9IC1jICQ8IC1vICRAICQoTVlfQ0ZMQUdTKQoK
+On Fri, Aug 21, 2015 at 08:53:26PM +0200, Marc Le Douarain wrote:
+> Hello eveybody,
+> 
+> As I haven't found a little example of a periodic thread written in Posix,
+> I've tried to do it.
+> 
+> Here you will find joined the demo files example.
+> It can be (cross-)compiled for :
+> - Standard Linux
+> - Xenomai 2
+> - Xenomai 3
+> In the Makefile, comment 2 lines MY_CFLAGS & MY_LDFLAGS to compile for
+> standard Linux.
+> 
+> Hope it can be helpfull for other people,
+> and many thanks for any comments or mistakes reports on it !
+> OUPPSS, JUST SEEN that XENOMAI version 3 is doing 'modes switches'... so
+> there is something bad! Any idea ?
+> 
+> Perhaps to include a basic example like this one in the "demo" directory of
+> Xenomai would be interesting!?
+> 
+> Best regards.
+> 
+> PS: I have beed disapointed at the start to discover no more
+> pthread_make_periodic_np() & pthread_wait_np() functions with
+> Xenomai 3.
+
+These functions were there to help porting legacy code from RTLinux,
+they were not really meant to be used in new code.
+
+> But
+> finally now with a timerfd we can have the same sourcecode with standard
+> Linux, so not too bad ! ;-)
+> And also no more the "__XENO__" define, but also usefull for conditional
+> compilation, with the new "__COBALT__" !
+> 
+> 
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: demo_periodic_thread_posix.c
+>
+> (...)
+>
+> int CreatePosixTask( char * TaskName, int Priority, int StackSizeInKo, unsigned int PeriodMicroSecs, void * (*pTaskFunction)(void *) )
+> {
+> 	pthread_attr_t ThreadAttributes;
+> 	pthread_attr_init(&ThreadAttributes);
+> 	pthread_attr_setdetachstate(&ThreadAttributes, PTHREAD_CREATE_DETACHED /*PTHREAD_CREATE_JOINABLE*/);
+> #if defined(__XENO__) || defined(__COBALT__)
+> 	pthread_attr_setschedpolicy(&ThreadAttributes, SCHED_FIFO);
+> 	struct sched_param paramA = { .sched_priority = Priority };
+> 	pthread_attr_setschedparam(&ThreadAttributes, &paramA);
+
+A call to pthread_attr_setinheritsched is missing here. The default
+for inheritsched is PTHREAD_INHERIT_SCHED, which means the new
+thread inherits the main thread scheduling policy and priority,
+which is usually SCHED_OTHER and 0 (unless you run the program with
+chrt), in which case the newly created thread switches back to
+secondary mode after every primary mode switch.
+
+-- 
+					    Gilles.
+https://click-hack.org
+
