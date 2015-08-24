@@ -1,12 +1,10 @@
-References: <55D321A2.6090201@sigmatek.at>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <55DAC981.2080409@siemens.com>
-Date: Mon, 24 Aug 2015 09:36:33 +0200
+Date: Mon, 24 Aug 2015 20:14:26 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150824181426.GA21893@hermes.click-hack.org>
 MIME-Version: 1.0
-In-Reply-To: <55D321A2.6090201@sigmatek.at>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Function to get state of lock variable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [Xenomai] perf nmi on x86
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,51 +13,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: wolfgang.netbal@sigmatek.at, Xenomai Mailing List <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 2015-08-18 14:14, Wolfgang Netbal wrote:
-> Hi All,
-> 
-> is there a function te returns true or false if a rtdm_lock_t variable
-> is set ?
-> What I have to do is  to check in an interrupt routine if the list is
-> locked,
-> if this is the case I leave the interrupt handler befor accessing the list.
+Hi Jan,
 
-Why? Why can't you simply spin until the lock is released - provided the
-section that holds it is as short as in the code below?
+running Xenomai on an x86 machine, I noticed that the perf NMI was
+ticking. It seems CONFIG_PERF can not be disabled in the kernel
+configuration.
 
-Testing for a lock being held is usually only reasonable for debugging
-purposes. trylock services make some sense in complex nested locking
-scenarios or when creatively having to optimize the fast path. I dare to
-say trying to use those mechanisms in a real-time context indicates that
-the design has some other problem.
+So, the first question is: 
+is there a way of disabling the NMI ?
+second question is: 
+if not, what do we do about it? 
 
-Jan
+I mean, on the one hand, disabling the NMI is probably mandatory on
+a system where latency matters, but on the other hand, some users
+may want it enabled and do not care for the additional latency.
 
-> 
-> I use the following code to lock the add and replace of list elements.
-> 
-> static rtdm_lock_t opendev_list_lock;
-> static int open(struct rtdm_dev_context *context, rtdm_user_info_t *
-> user_info, int oflags)
-> {
->     lrtdrv_context_t *ctx = (lrtdrv_context_t *) context->dev_private;
->     rtdm_lockctx_t s;
-> 
-> ....
-> 
->     rtdm_lock_get_irqsave(&opendev_list_lock, s);
->     list_add_tail(&ctx->opendev_entry, &lrtdrv_opendev_list);
->     rtdm_lock_put_irqrestore(&opendev_list_lock, s);
-> 
-> 
->     return 0;
-> }
-> 
-> Kind regards
+Regards.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+					    Gilles.
+https://click-hack.org
 
