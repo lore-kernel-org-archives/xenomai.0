@@ -1,10 +1,10 @@
-Message-ID: <55DCA714.5030609@xenomai.org>
-Date: Tue, 25 Aug 2015 13:34:12 -0400
-From: Jorge Ramirez Ortiz <jro@xenomai.org>
-MIME-Version: 1.0
 References: <CAJqUr7ybpmgOev-iPaQ-iMEAF8SBocn54vyYSbLcm9spMY=FBg@mail.gmail.com>
  <55DC76C7.5040606@xenomai.org> <55DC87AB.2040306@xenomai.org>
  <55DC940C.4000408@siemens.com> <55DCA0EB.6070905@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <55DCA730.9030002@siemens.com>
+Date: Tue, 25 Aug 2015 19:34:40 +0200
+MIME-Version: 1.0
 In-Reply-To: <55DCA0EB.6070905@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
@@ -17,9 +17,9 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Jorge Ramirez Ortiz <jro@xenomai.org>, xenomai@xenomai.org
 
-On 08/25/2015 01:07 PM, Jorge Ramirez Ortiz wrote:
+On 2015-08-25 19:07, Jorge Ramirez Ortiz wrote:
 > On 08/25/2015 12:13 PM, Jan Kiszka wrote:
 >> On 2015-08-25 17:20, Jorge Ramirez Ortiz wrote:
 >>> On 08/25/2015 10:08 AM, Philippe Gerum wrote:
@@ -39,10 +39,66 @@ On 08/25/2015 01:07 PM, Jorge Ramirez Ortiz wrote:
 >>
 >> The Qualcomm thing is pretty ugly beast, using a proprietary interrupt
 >> controller instead of the standard GIC as strongly recommended by ARM.
+>> As an ARM kernel developer recently put it when I asked about this
+>> board: "I prefer the Raspberry Pi2 over that one." And the Pi2 is
+>> already broken in its design.
+> 
+> do you know the name of the developer?
 
+Will mail you privately.
 
-Looking at the device tree setting it seems to me it is using GICv2
+> 
+> Incidentally I am working on both boards - I gate keep the HiKey kernel [0] but
+> do some level of support on all 96 boards.
+> It seems to me that Qualcomm might be putting more resources on the the level of
+> support and streaming efforts (hence my recommendation).
 
-drivers/irqchip/irq-gic.c
+I didn't look into that aspect yet, but this is surely valuable as well.
 
+> 
+> Having said that, HiKey has support for OP-TEE (always interesting [1] ) and in
+> the next release we will ship UEFI which we are currently validating.
+
+Is UEFI an advantage? Will we be able to hack on it to fix lacking
+features and broken bits (that was always required so far with uboot for
+the boards I tried with Cortex-A7/15)?
+
+> 
+> The 410c ubuntu kernel is here [2] - the Android kernel is also available on
+> another repo.
+> 
+> [0] https://github.com/96boards/linux
+> [1] https://github.com/OP-TEE/optee_os
+> [2]
+> https://git.linaro.org/landing-teams/working/qualcomm/kernel.git/shortlog/refs/heads/release/qcomlt-4.0
+> 
+>>
+>> The HiKey looks better in this regard, but one has to check which of the
+>> mentioned boards are already upstream (or very close to this). Same for
+>> uboot support. No one should hack on vendor trees any more.
+> 
+> Upstream support is ongoing for both boards (we upstreamed the HiKey basic
+> platform support a couple of months ago but that is not to say that it is in a
+> better shape with respect to drivers and peripherals - graphics are - currently,
+> might change in the near future-  better on the 410c for instance).
+> 
+> in any case, I think we should pick one SoC.
+> 
+
+Probably. The HiKey seems to have run out of stock right now or is late
+with shipping.
+
+The DragonBoard I saw live last week, but when I asked about
+virtualization support, that nasty detail came up. Given that
+Xenomai/I-pipe touches a lot the interrupt handling, having a
+pre-existing well-known controller in place (you can simply use the
+arm32 bits) seemed useful to me. I'm not sure what other things are
+problematic because I stopped digging deeper when that board was
+classified unsuitable for virtualization.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
