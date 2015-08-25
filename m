@@ -1,13 +1,12 @@
+Date: Tue, 25 Aug 2015 20:52:29 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150825185229.GA2319@hermes.click-hack.org>
 References: <CAJqUr7ybpmgOev-iPaQ-iMEAF8SBocn54vyYSbLcm9spMY=FBg@mail.gmail.com>
  <55DC76C7.5040606@xenomai.org>
- <CAJqUr7xc4C97XpP31tK7HLj03k=_FUQQFmX_38Bm8ejNUYBo2A@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55DCB74C.50400@xenomai.org>
-Date: Tue, 25 Aug 2015 20:43:24 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAJqUr7xc4C97XpP31tK7HLj03k=_FUQQFmX_38Bm8ejNUYBo2A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <55DC76C7.5040606@xenomai.org>
 Subject: Re: [Xenomai] xenomai/ipipe arm64 port
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -17,47 +16,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Don Mahurin <don@mperpetuo.com>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 08/25/2015 08:05 PM, Don Mahurin wrote:
-> On Tue, Aug 25, 2015 at 7:08 AM, Philippe Gerum <rpm@xenomai.org
-> <mailto:rpm@xenomai.org>> wrote:
+On Tue, Aug 25, 2015 at 04:08:07PM +0200, Philippe Gerum wrote:
+> On 08/25/2015 02:13 AM, Don Mahurin wrote:
+> > Hi all,
+> > 
+> > We would like to submit our current work on the arm64 port of
+> > ipipe/xenomai. We hope that this contribution will encourage further
+> > development of arm64 support in ipipe/xenomai.
+> >
 > 
->     This is likely because -rc7 has added checks to sched-* tests which have
->     time-dependent results, so they may not match the expected value in a
->     qemu-based execution.
+> arm64 support is definitely a high priority item. Thanks for tackling this.
 > 
+> > This port was largely developed on ipipe-3.10 as a base, so it is likely to
+> > be the most well tested there. Though recently, we have also ported these
+> > changes to ipipe-3.14.44. ( We noticed that 3.10 is missing from rc7. Is
+> > this intended, or will 3.10 support return? )
 > 
-> Would it be worthwhile to optionally disable the time-dependent nature
-> of the tests, just for use in quick/automated emulator testing?
->  
+> ipipe-core-3.10.32-arm-10.patch is still part of the distribution in
+> -rc7. This said, the absence of a patch targeting a particular kernel
+> release in a given Xenomai version does not mean the latter can't run
+> over the former. This rather means that we did not check for it. Xenomai
+> 3 over Cobalt requires a kernel release >= 3.10 though.
+> 
+> > 
+> > At the end of this message are the relevant git repos and branches for the
+> > arm64 port. Also included is a build script to build a minimal busybox
+> > linux system which may be ran using qemu (arm64 virt).
+> > 
+> > 
+> > Development status:
+> > 
+> > The 3.14 port is missing the fast-syscall changes (in entry.S) from armv7,
+> > and instead contains the 3.10 entry.S changes forward ported to 3.14.
+> > 
+> > FPU support is incomplete.
+> > 
+> > Smokey tests:
+> > 
+> > 3.10/rc6 smokey tests all pass
+> > 3.14/rc6 smokey tests all pass
+> > 3.14/rc7 smokey tests sched-quota and sched-tp fail
+> > 
+> 
+> This is likely because -rc7 has added checks to sched-* tests which have
+> time-dependent results, so they may not match the expected value in a
+> qemu-based execution.
+> 
+> > 
+> > git repos:
+> > 
+> > https://gitlab.mperpetuo.com/it/xenomai-3.git
+> > https://gitlab.mperpetuo.com/it/ipipe.git
+> > https://gitlab.mperpetuo.com/it/build-scripts.git
+> >
+> 
+> It looks like curl does not like the cypher used by this server. http is
+> fine though.
 
-I believe so. We should probably have smokey accept a --vm option or
-something along, to tell it about a virtual execution environment, which
-may be freely interpreted by any test code concerned, e.g. to figure out
-whether timings might be inaccurate due to a significant slowdown. We
-could likely figure this out automatically, but I'd rather leave this
-decision to the user. I'll have a look at this asap.
-
-> 
-> In general, how should we proceed with arm64 changes?  We can continue
-> to make updates in the separate repos.  But is there anything we need to
-> do to get a thorough review of the changes by the community and get this
-> incorporated into upstream xenomai/ipipe? 
-> 
-
-I will open dedicated arm64 branches tomorrow into the project
-repositories for both the ipipe and xenomai, that could be merged to the
-corresponding mainline branches when ready for prime time. The target
-would be Xenomai 3.1, it's too late for bringing this in 3.0-rc.
-
-So the process should be fairly common and straightforward: a pull
-request from your end for code present in your repo would trigger the
-review, bits getting merged gradually from your repo to the dedicated
-arm64 branches, along with other contributions, until we can all declare
-these branches ready for mainline.
+I do not know if any configuration was changed, but git clone did
+not complai here for the first URL.
 
 -- 
-Philippe.
+					    Gilles.
+https://click-hack.org
 
