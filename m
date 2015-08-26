@@ -1,12 +1,8 @@
-MIME-Version: 1.0
-In-Reply-To: <55DDCFEE.5070400@xenomai.org>
-References: <CAJqUr7ybpmgOev-iPaQ-iMEAF8SBocn54vyYSbLcm9spMY=FBg@mail.gmail.com>
- <55DDCFEE.5070400@xenomai.org>
-Date: Wed, 26 Aug 2015 09:30:42 -0700
-Message-ID: <CAJqUr7ynkteBkrURB0+r0esOKAF-SfPYjKPpfvkSm3OVjO9K_g@mail.gmail.com>
-From: Don Mahurin <don@mperpetuo.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] xenomai/ipipe arm64 port
+From: Henning Schild <henning.schild@siemens.com>
+Date: Wed, 26 Aug 2015 19:01:03 +0200
+Message-Id: <1440608463-31708-1-git-send-email-henning.schild@siemens.com>
+Subject: [Xenomai] [PATCH] x86/ipipe: reserve irq num we use for
+	IRQ_MOVE_CLEANUP_VECTOR
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,32 +11,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jorge Ramirez Ortiz <jro@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-dpkg -l gcc-aarch64-linux-gnu
+vector_irq must not contain the same irq number for two different
+vectors because ipipe dispatches based on irq numbers.
+For the special case of IRQ_MOVE_CLEANUP_VECTOR, the ipipe patch
+inserts a new entry in vector_irq. To ensure the required uniqueness
+we have to make sure Linux will never make a vector point to irq number
+IRQ_MOVE_CLEANUP_VECTOR.
 
-gcc-aarch64-linux-gnu             4:4.9.1-1             amd64
-  The GNU C compiler for arm64 architecture
+Before that patch ipipe did dispatch device interrupts that happened to
+receive number 32 (IRQ_MOVE_CLEANUP_VECTOR) to the cleanup function, the
+device effectively lost its interrupts. Up to 3.18 that was no problem
+since the allocator did not hand out the number ipipe failed to reserve.
 
-On Wed, Aug 26, 2015 at 7:40 AM, Jorge Ramirez Ortiz <jro@xenomai.org>
-wrote:
+Signed-off-by: Henning Schild <henning.schild@siemens.com>
+---
+ arch/x86/kernel/irqinit.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-> On 08/24/2015 08:13 PM, Don Mahurin wrote:
-> > The system is built with the following commands.
-> > git clone https://gitlab.mperpetuo.com/it/build-scripts.git
-> > mkdir -p build
-> > cd build
-> > ../build-scripts/build_linux_emulator-arm64.sh
-> > or
-> > ../build-scripts/build_linux_emulator-arm64.sh --314-rc6
-> > or
-> > ../build-scripts/build_linux_emulator-arm64.sh --314-rc7
->
->
-> what compiler version are you using?
->
->
-> --
-> jro
->
+diff --git a/arch/x86/kernel/irqinit.c b/arch/x86/kernel/irqinit.c
+index e850981..5ca0ec7 100644
+--- a/arch/x86/kernel/irqinit.c
++++ b/arch/x86/kernel/irqinit.c
+@@ -143,9 +143,12 @@ static void __init smp_intr_init(void)
+ 	/* Low priority IPI to cleanup after moving an irq */
+ 	set_intr_gate(IRQ_MOVE_CLEANUP_VECTOR, irq_move_cleanup_interrupt);
+ 	set_bit(IRQ_MOVE_CLEANUP_VECTOR, used_vectors);
++#ifdef CONFIG_IPIPE
++	BUG_ON(IRQ_MOVE_CLEANUP_VECTOR != irq_alloc_descs(IRQ_MOVE_CLEANUP_VECTOR, 0, 1, 0));
+ 	for_each_possible_cpu(cpu)
+ 		per_cpu(vector_irq, cpu)[IRQ_MOVE_CLEANUP_VECTOR] =
+ 			IRQ_MOVE_CLEANUP_VECTOR;
++#endif
+ 
+ 	/* IPI used for rebooting/stopping */
+ 	alloc_intr_gate(REBOOT_VECTOR, reboot_interrupt);
+-- 
+2.4.6
+
+
