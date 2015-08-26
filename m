@@ -1,6 +1,6 @@
-Date: Wed, 26 Aug 2015 14:12:30 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150826121230.GA13935@hermes.click-hack.org>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Wed, 26 Aug 2015 10:18:53 -0400
+Message-ID: <20150826141853.GX15616@csclub.uwaterloo.ca>
 References: <loom.20150826T125226-959@post.gmane.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -25,21 +25,30 @@ On Wed, Aug 26, 2015 at 11:03:33AM +0000, Fabian wrote:
 > kernel for dual kernel mode (cobalt).
 > 
 > I used the debian kernel v3.14.39 and the ipipe-core 3.14.39-arm-9.patch,
-> because this seems to be the newest matching combination.
+> because this seems to be the newest matching combination. but when i start
+> the patching it tells me:
+> 
+> prepare-kernel.sh: Unable to patch kernel 3.14.39 with
+> ipipe-core3.14.39-arm-9.patch
+> 
+> I also tried other kernel and ipipe versions combinations but with the same
+> result.
+> 
+> I got the debian-kernel from this git: https://github.com/beagleboard/linux.git 
 
-The I-pipe patches are meant for mainline Linux kernels, not for
-Linux kernel forks. If you want to apply an I-pipe patch to a Linux
-kernel fork, you have to:
-- fix the obvious merge conflicts;
-- inspect the changes made by the fork which could require further
-patching, you can use the following document as a checklist:
-http://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc/
+That is NOT a debian kernel source.  It looks like a TI kernel source
+tree, and certainly the 3.14 branch on it is currently 3.14.51 based.
+You didn't say which branch you used.
 
-If you are interested in using the latest versions, you should have
-a look at the I-pipe download area:
-http://xenomai.org/downloads/ipipe/v3.x/arm/
+> and the xenomai-kernel from here: https://git.xenomai.org/xenomai-3.git
+> 
+> 
+> Unfortunately i have not found an instruction how to do this with the new
+> xenomai version 3, only version 2.6 is described in the net.
+
+If you try to manually apply the patch file with patch you might see
+where the conflicts are.
 
 -- 
-					    Gilles.
-https://click-hack.org
+Len Sorensen
 
