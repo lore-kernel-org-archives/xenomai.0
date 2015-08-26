@@ -1,15 +1,10 @@
-References: <CAKC9m6f5Yc7MZHZQO2MRCf+y2nOM7P1psX4fLTeqgE4tsnv+RA@mail.gmail.com>
- <20150813191157.GG28709@hermes.click-hack.org>
- <CAKC9m6cKtcwx_tYvWVnqNrFMxxN5=0azmLcqPwzuN_ZBX1Kh8A@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <55CED222.8040901@siemens.com>
-Date: Sat, 15 Aug 2015 07:46:10 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAKC9m6cKtcwx_tYvWVnqNrFMxxN5=0azmLcqPwzuN_ZBX1Kh8A@mail.gmail.com>
-Content-Type: text/plain; charset=windows-1252
+From: Fabian <fabian.hartl@avl.com>
+Date: Wed, 26 Aug 2015 11:03:33 +0000 (UTC)
+Message-ID: <loom.20150826T125226-959@post.gmane.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] I-pipe's determinism in handling hardware interrupts
- when GIC implements "Security Extensions"
+Subject: [Xenomai] unable to patch kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,29 +13,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Hongfei Cheng <hongfei@mperpetuo.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai Mailing List <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 2015-08-14 22:38, Hongfei Cheng wrote:
->> If, like I believe,
->> such a "privileged interrupt" is handled by the monitor behind
->> Linux/I-pipe's back, then yes, it will break determinism.
-> 
-> Do you have any suggestion as to how I-pipe can be improved to work
-> with ARM's multiple exception levels in order to ensure determinism on
-> ARMv7 (and ARMv8)?
+Hi,
 
-Conceptually, this is fairly similar to the SMM on x86. But, in contrast
-to that arch, we tend to have the firmware sources on ARM.
+I am trying to patch a beaglebone black debian arm kernel with the xenomai 3
+kernel for dual kernel mode (cobalt).
 
-You can check if you actually need the secure monitor on our platform
-(it's most often used for PSCI) and disable it (may be trickier on ARMv8
-where PSCI is mandatory IIRC) or patch it or the kernel to avoid the
-problematic service calls (specifically CPU power control via PSCI).
+I used the debian kernel v3.14.39 and the ipipe-core 3.14.39-arm-9.patch,
+because this seems to be the newest matching combination. but when i start
+the patching it tells me:
 
-Jan
+prepare-kernel.sh: Unable to patch kernel 3.14.39 with
+ipipe-core3.14.39-arm-9.patch
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+I also tried other kernel and ipipe versions combinations but with the same
+result.
+
+I got the debian-kernel from this git: https://github.com/beagleboard/linux.git 
+
+and the xenomai-kernel from here: https://git.xenomai.org/xenomai-3.git
+
+
+Unfortunately i have not found an instruction how to do this with the new
+xenomai version 3, only version 2.6 is described in the net.
+
+
+Thanks in advance 
+
+Regards
+
 
