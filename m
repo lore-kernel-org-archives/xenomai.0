@@ -1,13 +1,12 @@
-Date: Wed, 26 Aug 2015 16:28:28 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150826142828.GC13935@hermes.click-hack.org>
-References: <loom.20150826T125226-959@post.gmane.org>
- <20150826141853.GX15616@csclub.uwaterloo.ca>
+Message-ID: <55DDCFEE.5070400@xenomai.org>
+Date: Wed, 26 Aug 2015 10:40:46 -0400
+From: Jorge Ramirez Ortiz <jro@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20150826141853.GX15616@csclub.uwaterloo.ca>
-Subject: Re: [Xenomai] unable to patch kernel
+References: <CAJqUr7ybpmgOev-iPaQ-iMEAF8SBocn54vyYSbLcm9spMY=FBg@mail.gmail.com>
+In-Reply-To: <CAJqUr7ybpmgOev-iPaQ-iMEAF8SBocn54vyYSbLcm9spMY=FBg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] xenomai/ipipe arm64 port
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,35 +15,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: Fabian <fabian.hartl@avl.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org, don@mperpetuo.com
 
-On Wed, Aug 26, 2015 at 10:18:53AM -0400, Lennart Sorensen wrote:
-> On Wed, Aug 26, 2015 at 11:03:33AM +0000, Fabian wrote:
-> > Hi,
-> > 
-> > I am trying to patch a beaglebone black debian arm kernel with the xenomai 3
-> > kernel for dual kernel mode (cobalt).
-> > 
-> > I used the debian kernel v3.14.39 and the ipipe-core 3.14.39-arm-9.patch,
-> > because this seems to be the newest matching combination. but when i start
-> > the patching it tells me:
-> > 
-> > prepare-kernel.sh: Unable to patch kernel 3.14.39 with
-> > ipipe-core3.14.39-arm-9.patch
-> > 
-> > I also tried other kernel and ipipe versions combinations but with the same
-> > result.
-> > 
-> > I got the debian-kernel from this git: https://github.com/beagleboard/linux.git 
-> 
-> That is NOT a debian kernel source.
+On 08/24/2015 08:13 PM, Don Mahurin wrote:
+> The system is built with the following commands.
+> git clone https://gitlab.mperpetuo.com/it/build-scripts.git
+> mkdir -p build
+> cd build
+> ../build-scripts/build_linux_emulator-arm64.sh
+> or
+> ../build-scripts/build_linux_emulator-arm64.sh --314-rc6
+> or
+> ../build-scripts/build_linux_emulator-arm64.sh --314-rc7
 
-This does not change anything. As long as this is not a mainline
-Linux kernel source, the I-pipe patches may not apply. And even if
-they apply, further work is needed.
+
+what compiler version are you using?
+
 
 -- 
-					    Gilles.
-https://click-hack.org
+jro
 
