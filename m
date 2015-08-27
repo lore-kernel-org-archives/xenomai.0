@@ -1,12 +1,12 @@
+Date: Fri, 28 Aug 2015 01:49:40 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150827234940.GE20679@hermes.click-hack.org>
+References: <55DF83E0.1060006@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <55DF43C6.2080209@xenomai.org>
-References: <CAJqUr7ybpmgOev-iPaQ-iMEAF8SBocn54vyYSbLcm9spMY=FBg@mail.gmail.com>
- <55DF43C6.2080209@xenomai.org>
-Date: Thu, 27 Aug 2015 14:56:43 -0700
-Message-ID: <CAJqUr7zcjxbd7XrkK=ky9TJ_e2Ho5BEQNDA4EnJxB6f1WDu-og@mail.gmail.com>
-From: Don Mahurin <don@mperpetuo.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] xenomai/ipipe arm64 port
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <55DF83E0.1060006@gmail.com>
+Subject: Re: [Xenomai] timer_create( ) invalid argument
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,44 +15,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jorge Ramirez Ortiz <jro@xenomai.org>
+To: Konstantinos Chalas <konchalas@gmail.com>
 Cc: xenomai@xenomai.org
 
-On Thu, Aug 27, 2015 at 10:07 AM, Jorge Ramirez Ortiz <jro@xenomai.org>
-wrote:
+On Thu, Aug 27, 2015 at 11:40:48PM +0200, Konstantinos Chalas wrote:
+> Hello,
+> 
+> I have been trying to port some code from the Linux Kernel to the Cobalt
+> Kernel, with no success.
+> 
+> When trying to call timer_create( ), i am getting the error timer_create:
+> Invalid argument
+> 
+> I made the code snippet as small as possible.
+> 
+> #include <time.h>
+> #include <signal.h>
+> #include <stdio.h>
+> 
+> void timerfunction(union sigval handler)
+> {
+>         printf("timerfunction hello\n");
+> }
+> 
+> int main(int argc, char** argv)
+> {
+>         timer_t t;
+> 
+>         struct sigevent se;
+> 
+>         se.sigev_value.sival_ptr = 0;
+>         se.sigev_signo = 0;
+>         se.sigev_notify =  SIGEV_THREAD_ID;
+> 
+>         se.sigev_notify_attributes = 0;
+>         se.sigev_notify_function = timerfunction;
+> 
+>         if (timer_create(CLOCK_REALTIME, &se, &t) != 0) {
+>                 perror("timer_create");
+>         }
+>         return 0;
+> }
 
-> On 08/24/2015 08:13 PM, Don Mahurin wrote:
-> > Hi all,
-> >
-> > We would like to submit our current work on the arm64 port of
-> > ipipe/xenomai. We hope that this contribution will encourage further
-> > development of arm64 support in ipipe/xenomai.
-> >
-> > This port was largely developed on ipipe-3.10 as a base, so it is likely
-> to
-> > be the most well tested there. Though recently, we have also ported these
-> > changes to ipipe-3.14.44. ( We noticed that 3.10 is missing from rc7. Is
-> > this intended, or will 3.10 support return? )
-> >
-> > At the end of this message are the relevant git repos and branches for
-> the
-> > arm64 port. Also included is a build script to build a minimal busybox
-> > linux system which may be ran using qemu (arm64 virt).
-> >
-> >
-> > Development status:
-> >
-> > The 3.14 port is missing the fast-syscall changes (in entry.S) from
-> armv7,
-> > and instead contains the 3.10 entry.S changes forward ported to 3.14.
->
->
-> is the IPIPE tracing supported?
->
->
-IPIPE tracing is not complete in that set of changes.
+I never tried using SIGEV_THREAD_ID with Xenomai, but I would expect
+a valid thread id to be required when doing this.
 
-We have additional changes that enable ipipe tracing, which we will submit
-once the initial changes are in a branch.
+-- 
+					    Gilles.
+https://click-hack.org
 
--Don
