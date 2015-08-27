@@ -1,10 +1,14 @@
+Date: Thu, 27 Aug 2015 10:42:48 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20150827104248.4e4f821e@md1em3qc>
+In-Reply-To: <55DE0659.9050803@siemens.com>
+References: <1440608463-31708-1-git-send-email-henning.schild@siemens.com>
+ <55DE0659.9050803@siemens.com>
 MIME-Version: 1.0
-From: Thawann Malfatti <malfatti@neuro.ufrn.br>
-Date: Sat, 15 Aug 2015 11:45:59 -0300
-Message-ID: <CAMU1Hman00iX8_5fK5Y=kfuwVNzsxE_8LycBh-_8bx38jLTghA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] Xenomai 2.6.4: using list of values as input for
-	insn_write
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] x86/ipipe: reserve irq num we use for
+ IRQ_MOVE_CLEANUP_VECTOR
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,143 +17,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-Hello all,
+On Wed, 26 Aug 2015 20:32:57 +0200
+Jan Kiszka <jan.kiszka@siemens.com> wrote:
 
-Is there a way to use a list or an array of values as input for
-insn_write? I tried:
+> On 2015-08-26 19:01, Henning Schild wrote:
+> > vector_irq must not contain the same irq number for two different
+> > vectors because ipipe dispatches based on irq numbers.
+> > For the special case of IRQ_MOVE_CLEANUP_VECTOR, the ipipe patch
+> > inserts a new entry in vector_irq. To ensure the required uniqueness
+> > we have to make sure Linux will never make a vector point to irq
+> > number IRQ_MOVE_CLEANUP_VECTOR.
+> > 
+> > Before that patch ipipe did dispatch device interrupts that
+> > happened to receive number 32 (IRQ_MOVE_CLEANUP_VECTOR) to the
+> > cleanup function, the device effectively lost its interrupts. Up to
+> > 3.18 that was no problem since the allocator did not hand out the
+> > number ipipe failed to reserve.
+> > 
+> > Signed-off-by: Henning Schild <henning.schild@siemens.com>
+> > ---
+> >  arch/x86/kernel/irqinit.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/arch/x86/kernel/irqinit.c b/arch/x86/kernel/irqinit.c
+> > index e850981..5ca0ec7 100644
+> > --- a/arch/x86/kernel/irqinit.c
+> > +++ b/arch/x86/kernel/irqinit.c
+> > @@ -143,9 +143,12 @@ static void __init smp_intr_init(void)
+> >  	/* Low priority IPI to cleanup after moving an irq */
+> >  	set_intr_gate(IRQ_MOVE_CLEANUP_VECTOR,
+> > irq_move_cleanup_interrupt); set_bit(IRQ_MOVE_CLEANUP_VECTOR,
+> > used_vectors); +#ifdef CONFIG_IPIPE
+> > +	BUG_ON(IRQ_MOVE_CLEANUP_VECTOR !=
+> > irq_alloc_descs(IRQ_MOVE_CLEANUP_VECTOR, 0, 1, 0));
+> > for_each_possible_cpu(cpu) per_cpu(vector_irq,
+> > cpu)[IRQ_MOVE_CLEANUP_VECTOR] = IRQ_MOVE_CLEANUP_VECTOR;
+> > +#endif
+> 
+> Looks like you picked up the instrumentation hunk instead of the
+> actual fix. ;)
 
-$ insn_write -v -d analogy0 -s 1 -c 1 -R 0.0000001,0.0000005V -V {0..5}
-insn_write: device analogy0 opened (fd=0)
-insn_write: basic descriptor retrieved
-subdevices count = 14
-read subdevice index = 0
-write subdevice index = 0
-insn_write: complex descriptor retrieved
-insn_write: selected subdevice index = 1
-insn_write: range descriptor retrieved
-min = -10000000
-max = 10000000
-insn_write: channel width is 16 bits
-insn_write: global scan size is 2
-insn_write: writing value 0.000000 (raw=0x7fff)
-insn_write: 2 bytes successfully sent
+Does it? No that is the fix. Alloc the irq number before using it and
+BUG if that fails.
 
-but, only the 1st value is written. I tried:
-
-$ insn_write -v -d analogy0 -s 1 -c 1 -R 0.0000001,0.0000005V -V 0,5,0,5
-insn_write: device analogy0 opened (fd=0)
-insn_write: basic descriptor retrieved
-subdevices count = 14
-read subdevice index = 0
-write subdevice index = 0
-insn_write: complex descriptor retrieved
-insn_write: selected subdevice index = 1
-insn_write: range descriptor retrieved
-min = -10000000
-max = 10000000
-insn_write: channel width is 16 bits
-insn_write: global scan size is 2
-insn_write: writing value 0.000000 (raw=0x7fff)
-insn_write: 2 bytes successfully sent
-
-but again, only the 1st value is written. I tried:
-
-$ insn_write -v -d analogy0 -s 1 -c 1 -R 0.0000001,0.0000005V -V [5,0,5,0,5]
-insn_write: device analogy0 opened (fd=0)
-insn_write: basic descriptor retrieved
-subdevices count = 14
-read subdevice index = 0
-write subdevice index = 0
-insn_write: complex descriptor retrieved
-insn_write: selected subdevice index = 1
-insn_write: range descriptor retrieved
-min = -10000000
-max = 10000000
-insn_write: channel width is 16 bits
-insn_write: global scan size is 2
-insn_write: writing value 0.000000 (raw=0x7fff)
-insn_write: 2 bytes successfully sent
-
-but the value sent is always zero. Finally, I tried:
-
-$ insn_write -v -d analogy0 -s 1 -c 1 -R 0.0000001,0.0000005V -V { 5, 0, 5, 0 }
-insn_write: device analogy0 opened (fd=0)
-insn_write: basic descriptor retrieved
-subdevices count = 14
-read subdevice index = 0
-write subdevice index = 0
-insn_write: complex descriptor retrieved
-insn_write: selected subdevice index = 1
-insn_write: range descriptor retrieved
-min = -10000000
-max = 10000000
-insn_write: channel width is 16 bits
-insn_write: global scan size is 2
-insn_write: writing value 0.000000 (raw=0x7fff)
-insn_write: 2 bytes successfully sent
-
-but the value sent is always zero.
-insn_write works fine with a single value ("-V 5", for example).
-
-Has anyone tried/used this?
-
-==== System info ====
-Board: NI PCI-6036E
-
-$ cat /proc/cpuinfo | grep 'model name'
-model name : Intel(R) Xeon(R) CPU E3-1280 V2 @ 3.60GHz
-[...]
-
-$ cat /proc/cpuinfo | grep 'cpu cores'
-cpu cores : 4
-[...]
-
-$ uname -a
-Linux LeaoLabInVivo 3.14.17-xenomai-2.6.4 #1 SMP Tue Aug 4 14:13:46
-BRT 2015 x86_64 GNU/Linux
-
-$ cat /proc/analogy/drivers
---  Analogy drivers --
-| idx | driver name
-|  00 | analogy_ni_pcimio
-|  01 | analogy_8255
-
-$ cat /proc/analogy/devices
---  Analogy devices --
-| idx | status | driver
-|  00 | Linked | analogy_ni_pcimio
-|  01 | Unused | No driver
-|  02 | Unused | No driver
-|  03 | Unused | No driver
-|  04 | Unused | No driver
-|  05 | Unused | No driver
-|  06 | Unused | No driver
-|  07 | Unused | No driver
-|  08 | Unused | No driver
-|  09 | Unused | No driver
-
-$ cat /proc/analogy/00-analogy_ni_pcimio
---  Subdevices --
-| idx | type
-|  00 | Analog input subdevice
-|  01 | Analog output subdevice
-|  02 | Digital input/output subdevice
-|  03 | Unused subdevice
-|  04 | Unused subdevice
-|  05 | Calibration subdevice
-|  06 | Memory subdevice
-|  07 | Digital input/output subdevice
-|  08 | Unused subdevice
-|  09 | Serial subdevice
-|  10 | Unused subdevice
-|  11 | Counter subdevice
-|  12 | Counter subdevice
-|  13 | Counter subdevice
-
-========
-
-Cheers,
-T Malfatti
+Henning
 
