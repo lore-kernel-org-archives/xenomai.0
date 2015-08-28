@@ -1,10 +1,13 @@
+References: <55DF2471.6030006@cern.ch> <55DF2868.2070804@xenomai.org>
+ <55DF32E3.1010706@cern.ch>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55CF75CA.1010505@xenomai.org>
-Date: Sat, 15 Aug 2015 19:24:26 +0200
+Message-ID: <55E015FE.7000302@xenomai.org>
+Date: Fri, 28 Aug 2015 10:04:14 +0200
 MIME-Version: 1.0
+In-Reply-To: <55DF32E3.1010706@cern.ch>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [RELEASE] Xenomai 3.0-rc7
+Subject: Re: [Xenomai] Cyclictest in Xenomai-3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,61 +16,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Konstantinos Chalas <konstantinos.chalas@cern.ch>, xenomai@xenomai.org
 
+On 08/27/2015 05:55 PM, Konstantinos Chalas wrote:
+> The build command for cyclictest was
+> 
+> gcc -Wall -Wno-nonnull -I/usr/xenomai/include/cobalt
+> -I/usr/xenomai/include -march=armv7-a -mfpu=vfp3 -D_GNU_SOURCE
+> -D_REENTRANT -D__COBALT__ -O2 -Wl,@/usr/xenomai/lib/cobalt.wrappers  
+> /usr/xenomai/lib/xenomai/bootstrap.o -Wl,--wrap=main
+> -Wl,--dynamic-list=/usr/xenomai/lib/dynlist.ld -L/usr/xenomai/lib
+> -lcobalt -lpthread -lrt -march=armv7-a -mfpu=vfp3   -o cyclictest
+> cyclictest.o -lrt -lpthread -lrttest -L
+> 
+> Also the clock calibration is (i already run the autotune utility),
+> 
+> root@beaglebone:~# cat /proc/xenomai/clock/coreclk
+> gravity: irq=499 kernel=1999 user=4999
+> devices: timer=timer2, clock=ipipe_tsc
+>  status: on
+>   setup: 999
+>   ticks: 350959191461
+> 
+> and finally i run cyclictest with Thanks for the interest!
+> 
+> cyclictest -n -p 99 -D 1000 -i 250 -m
 
-This release fixes a couple of serious issues affecting the Alchemy and
-VxWorks APIs (Cobalt, and Mercury with --enable-pshared), other changes
-are mostly about polishing and dealing with a few minor bugs.
+No wonder why you get weird results, the cyclictest thread does not run
+with a real-time priority since it uses sched_setscheduler() which is
+not wrapped by cobalt (pthread_setschedparam() is). You can check this
+by looking at /proc/xenomai/sched/threads.
 
-People setting a custom shared heap size using --mem-pool-size should
-have a look at the updated documentation:
-http://xenomai.org/2015/05/application-setup-and-init/#Standard_Xenomai_command_line_options
+The quick and dirty hack below fixes it, and amends the Makefile to
+switch to the Xenomai libs from a cross-compilation root, when the
+COBALT variable is mentioned on the make command line. You may need to
+do some fixup there if you don't install under $crossroot/usr/xenomai
+though.
 
-http://xenomai.org/downloads/xenomai/testing/latest/
+diff --git a/Makefile b/Makefile
+index a48e759..49301b6 100644
+--- a/Makefile
++++ b/Makefile
+@@ -28,7 +28,7 @@ CPPFLAGS += -D_GNU_SOURCE -Isrc/include
+ LDFLAGS ?=
 
-Short log follows:
+ ifneq ($(filter x86_64 i386 ia64 mips powerpc,$(machinetype)),)
+-NUMA 	:= 1
++NUMA 	:= 0
+ ifdef HAVE_PARSE_CPUSTRING_ALL
+ 	CFLAGS += -DHAVE_PARSE_CPUSTRING_ALL
+ endif
+@@ -47,6 +47,11 @@ ifeq ($(NUMA),1)
+ 	NUMA_LIBS = -lnuma
+ endif
 
-Jan Kiszka (2):
-      kernel/cobalt: Add reason to gorelax trace point
-      cobalt/arm: Detect software breakpoints
++ifneq ($(COBALT),)
++	CFLAGS += $(shell DESTDIR=$(COBALT) $(COBALT)/usr/bin/xeno-config
+--posix --cflags)
++	LDFLAGS += $(shell DESTDIR=$(COBALT) $(COBALT)/usr/bin/xeno-config
+--posix --ldflags)
++endif
++
+ VPATH	= src/cyclictest:
+ VPATH	+= src/signaltest:
+ VPATH	+= src/pi_tests:
+diff --git a/src/cyclictest/cyclictest.c b/src/cyclictest/cyclictest.c
+index 34053c5..92c7043 100644
+--- a/src/cyclictest/cyclictest.c
++++ b/src/cyclictest/cyclictest.c
+@@ -795,7 +795,7 @@ void *timerthread(void *param)
 
-Jorge Ramirez-Ortiz (4):
-      utils/analogy: fix debug message
-      lib/analogy: validate size of calibration file
-      lib/analogy: check for errors in the calibration file
-      drivers/analogy: release pci region if mapping failed
+ 	memset(&schedp, 0, sizeof(schedp));
+ 	schedp.sched_priority = par->prio;
+-	if (setscheduler(0, par->policy, &schedp))
++	if (pthread_setschedparam(pthread_self(), par->policy, &schedp))
+ 		fatal("timerthread%d: failed to set priority to %d\n", par->cpu,
+par->prio);
 
-Philippe Gerum (26):
-      cobalt/posix/sem: fix spurious wakeup on aborted wait
-      lib/smokey: fix warning printout
-      boilerplate: add EPROTO to translated errors
-      testsuite/smokey: fail if out of quota
-      cobalt/sched: add start, stop SCHED_TP config operations
-      cobalt: bump ABI revision level
-      testsuite/smokey: fail if out of TP schedule
-      testsuite/latency: disable -t1/2 over Mercury
-      copperplate/regd: do timed wait for anon connection
-      lib/cobalt: export cobalt_thread_mode()
-      lib/cobalt: fix private event state accessor
-      lib/cobalt/heapobj: pshared: allow group access to heap
-      copperplate/semobj: add uninit cleanup helper
-      copperplate/eventobj: add uninit cleanup helper
-      alchemy/event: prevent double-free on error path
-      alchemy/sem: prevent double-free on error path
-      vxworks/memPartLib: fix invalid status from addToPool
-      vxworks/memPartLib: do not account for failed alloc
-      copperplate/heapobj-pshared: fix and sanitize extent management
-      boilerplate/ancillaries: add routine to parse mem size
-      copperplate/init: disambiguate --mem-pool-size argument
-      copperplate/heapobj-pshared: change rounding of page mapping array
-size
-      cobalt/sh: drop support for the SH4 architecture
-      cobalt/nios2: drop support for the NIOS2 architecture
-      doc: prebuild
-      cobalt/arm: upgrade I-pipe support
-
---
+ 	/* Get current time */
+-- 
 Philippe.
-
 
