@@ -1,17 +1,13 @@
-Date: Sat, 29 Aug 2015 19:21:47 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150829172147.GG20679@hermes.click-hack.org>
-References: <8655AC8285F53F42A4B1B3CAB3092C47235FC2D7@IVKEX2.fkfs.de>
- <8655AC8285F53F42A4B1B3CAB3092C47235FD2F2@IVKEX2.fkfs.de>
- <8655AC8285F53F42A4B1B3CAB3092C47235FD31D@IVKEX2.fkfs.de>
- <20150829154617.GF20679@hermes.click-hack.org>
- <8655AC8285F53F42A4B1B3CAB3092C47235FD340@IVKEX2.fkfs.de>
+Date: Sun, 30 Aug 2015 12:34:35 +0000 (UTC)
+From: =?UTF-8?Q?=E2=80=ABMohamed_Fawzy=E2=80=AC_=E2=80=AB?=
+ <m.fawzy307@yahoo.com>
+Message-ID: <414081485.3401651.1440938075099.JavaMail.yahoo@mail.yahoo.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8655AC8285F53F42A4B1B3CAB3092C47235FD340@IVKEX2.fkfs.de>
-Subject: Re: [Xenomai] Question about priority coupling in primary and
- secondary mode
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] xenomai on debian
+Reply-To: =?UTF-8?Q?=E2=80=ABMohamed_Fawzy=E2=80=AC_=E2=80=AB?=
+ <m.fawzy307@yahoo.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,35 +16,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Rothermel, Thomas" <Thomas.Rothermel@fkfs.de>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Sat, Aug 29, 2015 at 04:12:19PM +0000, Rothermel, Thomas wrote:
-> Gilles, thank you very much for your fast reply. 
-> 
-> >> Furthermore I can't use RTnet, because all other network nodes
-> >> don't use it.
-> 
-> >That is a wrong reason not to use RTnet.
-> 
-> Ok does that mean that it is possible combining RTnet and non
-> RTnet network nodes? That would solve my problem. If the answer is
-> yes, I couldn't figure out how to configure RTnet to send standart
-> UDP messages.
+i followed these instructions to install xenomai 2.6.0 on debian wheezy=C2=
+=A0
+http://xenomai.org/2014/06/building-debian-packages/
+but when i built=C2=A0the packages using (debuild -uc -us )i got this messg=
+e and build failed=C2=A0
 
-As far as I know RTnet UDP messages are standard UDP messages, but I
-never tried the TDMA access control. With the nomac access control,
-you only get non standard messages when using the non real-time
-interface attached to a real-time interface. And you can even avoid
-that if you use the RTnet proxy.
 
-> Do I have to load the rt version of my network card
-> driver?
+{standard input}: Assembler messages:{standard input}:144: Error: thumb con=
+ditional instruction should be in IT block -- `strexeq r0,r1,[r3]'{standard=
+ input}:538: Error: thumb conditional instruction should be in IT block -- =
+`strexeq r5,r4,[r3]'
 
-Well, yes, obviously. As well as the rtnet, rtipv4 and rtudp
-modules.
+what's the wrong with me ?=C2=A0
 
--- 
-					    Gilles.
-https://click-hack.org
-
+Regards,
