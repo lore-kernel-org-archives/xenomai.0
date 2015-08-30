@@ -1,13 +1,16 @@
-References: <55CF75CA.1010505@xenomai.org>
- <CAC-NLwxQnTo7xg5YmUYUqepnQbvgRiUXakRwqf+6b4VMMrDF9A@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55D09565.8090800@xenomai.org>
-Date: Sun, 16 Aug 2015 15:51:33 +0200
+Date: Sun, 30 Aug 2015 20:00:17 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150830180017.GN20679@hermes.click-hack.org>
+References: <20150830133826.GK20679@hermes.click-hack.org>
+ <430113350.3486385.1440942190996.JavaMail.yahoo@mail.yahoo.com>
 MIME-Version: 1.0
-In-Reply-To: <CAC-NLwxQnTo7xg5YmUYUqepnQbvgRiUXakRwqf+6b4VMMrDF9A@mail.gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [RELEASE] Xenomai 3.0-rc7
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <430113350.3486385.1440942190996.JavaMail.yahoo@mail.yahoo.com>
+Subject: Re: [Xenomai]
+ =?utf-8?b?2KjYrti12YjYtTog2KjYrti12YjYtTogICB4ZW5vbWFp?=
+ =?utf-8?q?_on_debian?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,100 +19,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ashwin damle <ashwindamle@gmail.com>, Xenomai <xenomai@xenomai.org>
+To: =?utf-8?B?4oCrTW9oYW1lZCBGYXd6eeKArCDigKs=?= <m.fawzy307@yahoo.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/16/2015 03:48 PM, ashwin damle wrote:
-> Hi,
-> 
-> Thought of reporting. I tried using the RC7. Can compile well, however,
-> while running the demo programs say xddp-label and others, I get an error
-> 
-> *0"000.000| BUG in low_init(): [main] ABI mismatch: required r15, provided
-> r13*
+On Sun, Aug 30, 2015 at 01:43:10PM +0000, ‫Mohamed Fawzy‬ ‫ wrote:
+> thanks for your reply 
+> really i want the easiest way to install xenomai  
 
-http://xenomai.org/troubleshooting-a-dual-kernel-configuration/#incompatible_ABI_revision_level
-
-> 
-> I am running as a privileged user (sudo ./xddp-label). I am using Linux
-> debian, 3.16.0-4, 64 bit.
-> 
-> Everything works well with RC4.
-> 
-> Thanks.
-> Ashwin
-> 
-> 
-> On 15 August 2015 at 22:54, Philippe Gerum <rpm@xenomai.org> wrote:
-> 
->>
->> This release fixes a couple of serious issues affecting the Alchemy and
->> VxWorks APIs (Cobalt, and Mercury with --enable-pshared), other changes
->> are mostly about polishing and dealing with a few minor bugs.
->>
->> People setting a custom shared heap size using --mem-pool-size should
->> have a look at the updated documentation:
->>
->> http://xenomai.org/2015/05/application-setup-and-init/#Standard_Xenomai_command_line_options
->>
->> http://xenomai.org/downloads/xenomai/testing/latest/
->>
->> Short log follows:
->>
->> Jan Kiszka (2):
->>       kernel/cobalt: Add reason to gorelax trace point
->>       cobalt/arm: Detect software breakpoints
->>
->> Jorge Ramirez-Ortiz (4):
->>       utils/analogy: fix debug message
->>       lib/analogy: validate size of calibration file
->>       lib/analogy: check for errors in the calibration file
->>       drivers/analogy: release pci region if mapping failed
->>
->> Philippe Gerum (26):
->>       cobalt/posix/sem: fix spurious wakeup on aborted wait
->>       lib/smokey: fix warning printout
->>       boilerplate: add EPROTO to translated errors
->>       testsuite/smokey: fail if out of quota
->>       cobalt/sched: add start, stop SCHED_TP config operations
->>       cobalt: bump ABI revision level
->>       testsuite/smokey: fail if out of TP schedule
->>       testsuite/latency: disable -t1/2 over Mercury
->>       copperplate/regd: do timed wait for anon connection
->>       lib/cobalt: export cobalt_thread_mode()
->>       lib/cobalt: fix private event state accessor
->>       lib/cobalt/heapobj: pshared: allow group access to heap
->>       copperplate/semobj: add uninit cleanup helper
->>       copperplate/eventobj: add uninit cleanup helper
->>       alchemy/event: prevent double-free on error path
->>       alchemy/sem: prevent double-free on error path
->>       vxworks/memPartLib: fix invalid status from addToPool
->>       vxworks/memPartLib: do not account for failed alloc
->>       copperplate/heapobj-pshared: fix and sanitize extent management
->>       boilerplate/ancillaries: add routine to parse mem size
->>       copperplate/init: disambiguate --mem-pool-size argument
->>       copperplate/heapobj-pshared: change rounding of page mapping array
->> size
->>       cobalt/sh: drop support for the SH4 architecture
->>       cobalt/nios2: drop support for the NIOS2 architecture
->>       doc: prebuild
->>       cobalt/arm: upgrade I-pipe support
->>
->> --
->> Philippe.
->>
->>
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> http://xenomai.org/mailman/listinfo/xenomai
->>
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://xenomai.org/mailman/listinfo/xenomai
-> 
-
+Also, if you are in a hurry, since you had already installed
+Xenomai, why did not you simply answered Philippe question instead
+of trying to reinstall?
 
 -- 
-Philippe.
+					    Gilles.
+https://click-hack.org
 
