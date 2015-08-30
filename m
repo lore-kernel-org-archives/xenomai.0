@@ -1,6 +1,6 @@
-Date: Sun, 30 Aug 2015 15:10:52 +0200
+Date: Sun, 30 Aug 2015 15:21:44 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150830131052.GI20679@hermes.click-hack.org>
+Message-ID: <20150830132144.GJ20679@hermes.click-hack.org>
 References: <414081485.3401651.1440938075099.JavaMail.yahoo@mail.yahoo.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -29,12 +29,8 @@ On Sun, Aug 30, 2015 at 12:34:35PM +0000, ‫Mohamed Fawzy‬ ‫ wrote:
 > 
 > what's the wrong with me ? 
 
-As usual, you do not give us enough information. What I-pipe patch
-are you using? You get this error when compiling which file? What
-version of gcc are you using?
-
-IOW: please read:
-https://xenomai.org//asking-for-help/
+Wait a minute. 2.6.0 is not the latest stable release. Do you have
+the same problem with Xenomai 2.6.4?
 
 -- 
 					    Gilles.
