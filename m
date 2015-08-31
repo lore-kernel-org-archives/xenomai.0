@@ -1,14 +1,10 @@
-Date: Mon, 31 Aug 2015 15:01:56 +0200
-From: Bukuli Norbert <bukuli.norbert@protecta.hu>
-Message-ID: <20150831130156.GE8044@bukuli-linux.Protecta.local>
-References: <20150831111046.GD8044@bukuli-linux.Protecta.local>
- <55E44B07.1050402@xenomai.org> <55E44C72.1070503@xenomai.org>
+Message-ID: <55E45EE2.1090307@free.fr>
+Date: Mon, 31 Aug 2015 16:04:18 +0200
+From: =?UTF-8?B?U3TDqXBoYW5lIEFOQ0VMT1Q=?= <sancelot@free.fr>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <55E44C72.1070503@xenomai.org>
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Current state of Freescale LS1021A Xenomai support
+Subject: [Xenomai] rt_e1000e driver issues
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,53 +13,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Aug 31, 2015 at 02:45:38PM +0200, Philippe Gerum wrote:
-> On 08/31/2015 02:39 PM, Philippe Gerum wrote:
-> > On 08/31/2015 01:10 PM, Bukuli Norbert wrote:
-> >> Hello, Everyone!
-> >>
-> >> I have a few questions about the current state of Freescale LS1021A
-> >> SoC and TWR-LS1021A evaluation board support.
-> >>
-> >> I saw on the website, that the `QorIQ LS1: LS1021' SoC is supported,
-> >> but I could not figure out, what line of Xenomai supports it. The
-> >> stable one (2.6) or the upcoming release (3)?
-> >>
-> >> I prefer the dual-kernel architecture, because of our application
-> >> strict realtime needs, so I need a Xenomai supported version.
-> >>
-> >> The linux kernel found in Freescale BSP is derived from v3.12.37,
-> >> which is currently not supported by Xenomai. On the other hand,
-> >> xenomai supported linux kernel versions (3.8.13, 3.10.32, 3.14.17)
-> >> don't have LS1021 support.
-> >>
-> >> Newer vanilla kernels support LS1021A, but there are no i-pipe patches
-> >> for those versions.
-> >>
-> >> Any documentation, git trees, and corresponding information would
-> >> be highly appreciated.
-> > 
-> > The port was done over a custom 3.14.44 kernel targeting the ls1. You
-> > may need to port the I-pipe over 3.19+, or wait for the customer to
-> > release these bits.
-> > 
-> 
-> Alternatively you could forward port ipipe-3.10 to 3.12-fsl.
-> 
-> -- 
-> Philippe.
+Hi,
 
-Thanks for the quick answer I will check both solutions.
+I am checking timing issues of realtime rtnet frames in my application.
+Timing to send a frame is  convenient.
+but I have some issues with the time to receive the frames.
 
--- 
-Best regards
-Norbert Bukuli
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 181 bytes
-Desc: Digital signature
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20150831/fb256158/attachment.sig>
+Although the RxDelays are cleared, the frame is received almost 175us 
+later than it should in comparison with a rt8169 driver (v2.6 version) 
+and the same application.
+
+Any idea where to look at first ?
+Regards,
+Steph
+
+
+
+
