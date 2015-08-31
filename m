@@ -1,17 +1,11 @@
-References: <55DF2471.6030006@cern.ch> <55DF2868.2070804@xenomai.org>
- <55DF32E3.1010706@cern.ch> <55E015FE.7000302@xenomai.org>
- <55E0560B.4040601@gmail.com> <55E05817.90601@xenomai.org>
- <55E0594C.2060704@gmail.com> <55E05B2E.60907@xenomai.org>
- <55E05E81.5040209@gmail.com> <55E0607D.3070701@xenomai.org>
- <55E3689D.7060105@gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55E40EAE.8010704@xenomai.org>
-Date: Mon, 31 Aug 2015 10:22:06 +0200
+Date: Mon, 31 Aug 2015 13:10:46 +0200
+From: Bukuli Norbert <bukuli.norbert@protecta.hu>
+Message-ID: <20150831111046.GD8044@bukuli-linux.Protecta.local>
 MIME-Version: 1.0
-In-Reply-To: <55E3689D.7060105@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Disposition: inline
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Cyclictest in Xenomai-3
+Subject: [Xenomai] Current state of Freescale LS1021A Xenomai support
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,81 +14,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Konstantinos Chalas <konchalas@gmail.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 08/30/2015 10:33 PM, Konstantinos Chalas wrote:
-> It wasn't innocuous... The variable uint64_t diff was used to store the
-> latency, which in turn took the value -1 because of the timer
-> calibration issue ,
+Hello, Everyone!
 
-Which is innocuous. It only means that you got a task rescheduling early
-by a microsecond once due to the incorrect calibration. This does not
-reveal any malfunction.
+I have a few questions about the current state of Freescale LS1021A
+SoC and TWR-LS1021A evaluation board support.
 
- therefore when casted as unsigned produced 2^64-1.
-> It works as it should after running autotune.
-> 
-> Thank you very much for the help,
-> Konstantinos
-> 
-> On 08/28/2015 03:22 PM, Philippe Gerum wrote:
->> On 08/28/2015 03:13 PM, Konstantinos Chalas wrote:
->>> No, besides a negative lat best value, like this:
->>>
->>> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat
->>> best|--lat worst
->>> RTD|      1.080|      3.013|     40.080|            0| 0|
->>> -1.275|     43.961
->> Ok, that one is innocuous, this is only a timer calibration issue. The
->> strange average value may be an issue in cyclictest since 2147483647 is
->> 2^31-1, which is INT32_MAX. A bit like no sample had been recorded
->> during such run.
->>
->>> On 08/28/2015 02:59 PM, Philippe Gerum wrote:
->>>> On 08/28/2015 02:51 PM, Konstantinos Chalas wrote:
->>>>> Hello,
->>>>>
->>>>> root@beaglebone:~# uname -a
->>>>> Linux beaglebone 3.14.44+ #1 SMP PREEMPT Wed Aug 26 23:41:20 CEST 2015
->>>>> armv7l GNU/Linux
->>>>>
->>>>> and ipipe-core-3.14.44-arm-12
->>>>>
->>>> Do you have any weird values appearing during a standard latency test?
->>>> e.g.
->>>>
->>>> # latency [-t0]
->>>>
->>>>> Thanks
->>>>>
->>>>> On 08/28/2015 02:46 PM, Philippe Gerum wrote:
->>>>>> On 08/28/2015 02:37 PM, Konstantinos Chalas wrote:
->>>>>>> Great! Now, it is much better! Thanks for the interest.
->>>>>>>
->>>>>>> I have noticed something else, when using clock_nanosleep, there is
->>>>>>> something wrong going on. Example output with clock_nanosleep:
->>>>>>>
->>>>>>> root@beaglebone:~# cyclictest    -p 99  -i 250 -n
->>>>>>> # /dev/cpu_dma_latency set to 0us
->>>>>>> policy: fifo: loadavg: 1.13 1.18 1.15 1/243 2385
->>>>>>>
->>>>>>> T: 0 ( 2384) P:99 I:250 C: 122168 Min:      0 Act:    9
->>>>>>> *Avg:2147483647*
->>>>>>> Max:      -1
->>>>>>>
->>>>>>> The Avg value jumps to this insane number.
->>>>>>> I didn't find any differences between the vanilla cyclictest and the
->>>>>>> xenomai-2.6 upstream cyclictest regarding the use of
->>>>>>> clock_nanosleep.
->>>>>>> Any ideas of where this behaviour would come from?
->>>>>> Which kernel and I-pipe release are you running?
->>>>>>
->>>
->>
-> 
-> 
+I saw on the website, that the `QorIQ LS1: LS1021' SoC is supported,
+but I could not figure out, what line of Xenomai supports it. The
+stable one (2.6) or the upcoming release (3)?
 
+I prefer the dual-kernel architecture, because of our application
+strict realtime needs, so I need a Xenomai supported version.
 
--- 
-Philippe.
+The linux kernel found in Freescale BSP is derived from v3.12.37,
+which is currently not supported by Xenomai. On the other hand,
+xenomai supported linux kernel versions (3.8.13, 3.10.32, 3.14.17)
+don't have LS1021 support.
 
+Newer vanilla kernels support LS1021A, but there are no i-pipe patches
+for those versions.
+
+Any documentation, git trees, and corresponding information would
+be highly appreciated.
+
+Thank you in advance!
+
+--
+Best regards
+Norbert Bukuli
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 181 bytes
+Desc: Digital signature
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20150831/6c9570b8/attachment.sig>
