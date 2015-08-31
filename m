@@ -1,10 +1,11 @@
-Message-ID: <55E45EE2.1090307@free.fr>
-Date: Mon, 31 Aug 2015 16:04:18 +0200
-From: =?UTF-8?B?U3TDqXBoYW5lIEFOQ0VMT1Q=?= <sancelot@free.fr>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] rt_e1000e driver issues
+From: Michael Haberler <haberlerm@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <160C846F-0153-4526-9C58-F110C939335F@gmail.com>
+Date: Mon, 31 Aug 2015 16:29:25 +0200
+Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2104\))
+Subject: [Xenomai] clock_gettime(CLOCK_HOST_REALTIME) equivalent using
+	native skin?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,22 +14,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-Hi,
+We are planning to synchronize several nodes running machinekit with =
+IEEE1588/Precision Time Protocol using the ptpd debian sid package
+ptp adjusts the tunable kernel clock through adjtimex(2) similar to ntpd
 
-I am checking timing issues of realtime rtnet frames in my application.
-Timing to send a frame is  convenient.
-but I have some issues with the time to receive the frames.
+Assuming Xenomai2, it seems the Posix skin's =
+clock_gettime(CLOCK_HOST_REALTIME) is the way to access this timebase
 
-Although the RxDelays are cleared, the frame is received almost 175us 
-later than it should in comparison with a rt8169 driver (v2.6 version) 
-and the same application.
-
-Any idea where to look at first ?
-Regards,
-Steph
+do I need to use the Posix skin or is there a way to do the equivalent =
+using the native API?
 
 
+thanks in advance,
+
+Michael
 
 
