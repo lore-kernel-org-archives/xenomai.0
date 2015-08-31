@@ -1,14 +1,14 @@
-References: <55CF75CA.1010505@xenomai.org>
- <CAC-NLwxQnTo7xg5YmUYUqepnQbvgRiUXakRwqf+6b4VMMrDF9A@mail.gmail.com>
- <55D09565.8090800@xenomai.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55D095FF.3010001@xenomai.org>
-Date: Sun, 16 Aug 2015 15:54:07 +0200
+Date: Mon, 31 Aug 2015 15:01:56 +0200
+From: Bukuli Norbert <bukuli.norbert@protecta.hu>
+Message-ID: <20150831130156.GE8044@bukuli-linux.Protecta.local>
+References: <20150831111046.GD8044@bukuli-linux.Protecta.local>
+ <55E44B07.1050402@xenomai.org> <55E44C72.1070503@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <55D09565.8090800@xenomai.org>
-Content-Type: text/plain; charset=windows-1252
+Content-Disposition: inline
+In-Reply-To: <55E44C72.1070503@xenomai.org>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [RELEASE] Xenomai 3.0-rc7
+Subject: Re: [Xenomai] Current state of Freescale LS1021A Xenomai support
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,23 +17,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ashwin damle <ashwindamle@gmail.com>, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 08/16/2015 03:51 PM, Philippe Gerum wrote:
-> On 08/16/2015 03:48 PM, ashwin damle wrote:
->> Hi,
->>
->> Thought of reporting. I tried using the RC7. Can compile well, however,
->> while running the demo programs say xddp-label and others, I get an error
->>
->> *0"000.000| BUG in low_init(): [main] ABI mismatch: required r15, provided
->> r13*
+On Mon, Aug 31, 2015 at 02:45:38PM +0200, Philippe Gerum wrote:
+> On 08/31/2015 02:39 PM, Philippe Gerum wrote:
+> > On 08/31/2015 01:10 PM, Bukuli Norbert wrote:
+> >> Hello, Everyone!
+> >>
+> >> I have a few questions about the current state of Freescale LS1021A
+> >> SoC and TWR-LS1021A evaluation board support.
+> >>
+> >> I saw on the website, that the `QorIQ LS1: LS1021' SoC is supported,
+> >> but I could not figure out, what line of Xenomai supports it. The
+> >> stable one (2.6) or the upcoming release (3)?
+> >>
+> >> I prefer the dual-kernel architecture, because of our application
+> >> strict realtime needs, so I need a Xenomai supported version.
+> >>
+> >> The linux kernel found in Freescale BSP is derived from v3.12.37,
+> >> which is currently not supported by Xenomai. On the other hand,
+> >> xenomai supported linux kernel versions (3.8.13, 3.10.32, 3.14.17)
+> >> don't have LS1021 support.
+> >>
+> >> Newer vanilla kernels support LS1021A, but there are no i-pipe patches
+> >> for those versions.
+> >>
+> >> Any documentation, git trees, and corresponding information would
+> >> be highly appreciated.
+> > 
+> > The port was done over a custom 3.14.44 kernel targeting the ls1. You
+> > may need to port the I-pipe over 3.19+, or wait for the customer to
+> > release these bits.
+> > 
 > 
-> http://xenomai.org/troubleshooting-a-dual-kernel-configuration/#incompatible_ABI_revision_level
+> Alternatively you could forward port ipipe-3.10 to 3.12-fsl.
+> 
+> -- 
+> Philippe.
 
-i.e. while we refrain from changing the ABI between minor releases from
-a stable version, this restriction does not apply to -rc releases.
+Thanks for the quick answer I will check both solutions.
 
 -- 
-Philippe.
-
+Best regards
+Norbert Bukuli
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 181 bytes
+Desc: Digital signature
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20150831/fb256158/attachment.sig>
