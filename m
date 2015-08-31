@@ -1,14 +1,10 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Sun, 30 Aug 2015 21:20:41 -0400
-Message-ID: <20150831012041.GO15616@csclub.uwaterloo.ca>
-References: <20150830132144.GJ20679@hermes.click-hack.org>
- <1501316721.3426149.1440941423095.JavaMail.yahoo@mail.yahoo.com>
+Date: Mon, 31 Aug 2015 08:37:38 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150831063738.GC9120@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1501316721.3426149.1440941423095.JavaMail.yahoo@mail.yahoo.com>
-Subject: Re: [Xenomai] =?utf-8?b?2KjYrti12YjYtTogeGVub21haSBvbiBkZWJpYW4=?=
+Subject: [Xenomai] Mirroring xenomai.org
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,22 +13,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?B?4oCrTW9oYW1lZCBGYXd6eeKArCDigKs=?= <m.fawzy307@yahoo.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On Sun, Aug 30, 2015 at 01:30:23PM +0000, ‫Mohamed Fawzy‬ ‫ wrote:
-> i tried 2.6.0 because when i searched for xenomai package for debian wheezy in this site 
-> https://packages.debian.org/source/wheezy/devel/
-> i found it is xenomai 2.6.0 
-> can i use 2.6.4 ?
+Hi,
 
-Building a debian package using the debian/* files in the current
-xenomai-2.6 git tree works fine for me.  The packages in Debian are
-ancient and a waste of time.
+according to xenomai.org server statistics, some xenomai users are
+mirroring xenomai.org git repositories. In order to make things
+easy, grokmirror is now set up on xenomai.org. The manifest is
+available at:
+http://git.xenomai.org/manifest.js.gz
+or
+https://git.xenomai.org/manifest.js.gz
 
-Now for patching your kernel with ipipe and xenomai, that's a separate
-problem.
+You can read more about grokmirror here:
+https://www.kernel.org/mirroring-kernelorg-repositories.html
+and here:
+https://github.com/mricon/grokmirror
+
+But, to summarize, writing to repos-xenomai.conf:
+[xenomai.org]
+site = git://git.xenomai.org
+manifest = https://git.xenomai.org/manifest.js.gz
+toplevel = /tmp/xeno-gits
+mymanifest = /tmp/xeno-gits/manifest.js.gz
+projectslist_symlinks = no
+post_update_hook =
+purgeprotect = 5
+default_owner = Xenomai
+log = /tmp/xeno-gits/grok-pull.log
+loglevel = info
+pull_threads = 2
+include = *
+exclude =
+
+And running grok-pull -c /path/to/repos-xenomai.conf in a crontab
+should be enough to set a mirror up in /tmp/xeno-gits. When nothing
+changed, the date of the manifest file will be enough to avoid
+downloading anything, which makes the process very light.
+
+You can tweak the include line to only mirror some repositories.
+Note however that if you want to mirror one of the ipipe gits, since
+the I-pipe git now makes reference to the linux and linux stable git,
+you will also have to mirror the linux and linux-stable git (which are
+mirrored by xenomai). So, for instance, to mirror the official ipipe
+git only, you would write:
+
+include = /kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+	/kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+	/ipipe.git
+
+instead of include = *
+
+Regards.
 
 -- 
-Len Sorensen
+					    Gilles.
+https://click-hack.org
 
