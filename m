@@ -1,24 +1,13 @@
-Message-ID: <55D1E001.5080905@xenomai.org>
-Date: Mon, 17 Aug 2015 09:22:09 -0400
+Message-ID: <55E5F849.1070708@xenomai.org>
+Date: Tue, 01 Sep 2015 15:11:05 -0400
 From: Jorge Ramirez Ortiz <jro@xenomai.org>
 MIME-Version: 1.0
-References: <55C17C8E.5000909@gatech.edu> <55C3AEBE.9080603@xenomai.org>
- <55C3C3F8.1090808@gatech.edu> <55C3C7F4.1030107@xenomai.org>
- <12F45B9B-70C3-4278-BA0E-DFC26E19DBF0@gatech.edu>
- <55C495D6.2070706@xenomai.org>
- <06B32287-9FE2-42E5-BC2B-E9C807D0BD69@gatech.edu>
- <55C4BD22.9060809@xenomai.org>
- <EB72B89E-CA71-4F7F-9A35-99A87C282A61@gatech.edu>
- <55C515F0.8080307@xenomai.org>
- <45806C53-526E-425C-AEA4-70B2A22EA364@gatech.edu>
- <55C51965.2020206@xenomai.org>
- <933604EB-994B-4CE9-BA38-DB404CA0811D@gatech.edu>
- <55C522AE.8030403@xenomai.org> <55C9EAA6.6030503@gatech.edu>
- <55D15EDB.4060107@gatech.edu>
-In-Reply-To: <55D15EDB.4060107@gatech.edu>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] analogy calibration issue(s)
+References: <CAJqUr7ybpmgOev-iPaQ-iMEAF8SBocn54vyYSbLcm9spMY=FBg@mail.gmail.com>	<55E5E453.1080400@xenomai.org>
+ <CAPuu0=jX6ig5L7SJrmPVOhCmOm=gwxEmTafTpOqzE85hOji8CA@mail.gmail.com>
+In-Reply-To: <CAPuu0=jX6ig5L7SJrmPVOhCmOm=gwxEmTafTpOqzE85hOji8CA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] xenomai/ipipe arm64 port
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,68 +16,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Yogi A. Patel" <yapatel@gatech.edu>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Dmitriy Cherkasov <dmitriy@mperpetuo.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-T24gMDgvMTcvMjAxNSAxMjoxMSBBTSwgWW9naSBBLiBQYXRlbCB3cm90ZToKPiAKPj4+IHBsZWFz
-ZSBwdWxsIGFnYWluIGZyb20gaHR0cDovL2dpdC54ZW5vbWFpLm9yZy94ZW5vbWFpLWpyby5naXQv
-bG9nLz9oPWRldmVsCj4gSXQgdG9vayBzb21lIHRpbWUsIGJ1dCBJIHdhcyBhYmxlIHRvIGdldCB0
-aGUgcHJvY2VzcyB0byAqcnVuKiAtIGJ1dCBub3Qgd29yay4KPiAKPiBJIGhhZCB0byBtYWtlIHRo
-ZSBmb2xsb3dpbmcgbW9kaWZpY2F0aW9ucyB0byB0aGUgY2FsaWJyYXRpb24uYyBmaWxlIHRvIGdl
-dCB0aGlzCj4gdG8gd29yayBvbiAzIGRpZmZlcmVudCBtYWNoaW5lczoKCm5vbmUgb2YgdGhlc2Ug
-bW9kaWZpY2F0aW9ucyBhcmUgcmVhbGx5IHZhbGlkLgp5b3UgYXJlIHByb2JhYmx5IGZvcmNpbmcg
-YW5hbG9neSB0byBzd2FsbG93IGFuIGludmFsaWQgY2FsaWJyYXRpb24gZmlsZS4KCj4gCj4gZGlm
-ZiAtLWdpdCBhL2xpYi9hbmFsb2d5L2NhbGlicmF0aW9uLmMgYi9saWIvYW5hbG9neS9jYWxpYnJh
-dGlvbi5jCj4gaW5kZXggYjUwY2IyZi4uZDA2MmEwMCAxMDA2NDQKPiAtLS0gYS9saWIvYW5hbG9n
-eS9jYWxpYnJhdGlvbi5jCj4gKysrIGIvbGliL2FuYWxvZ3kvY2FsaWJyYXRpb24uYwo+IEBAIC0x
-MDUsNyArMTA1LDEwIEBAIHN0YXRpYyBpbmxpbmUgaW50IHJlYWRfaW50KGludCAqdmFsLCBzdHJ1
-Y3QgX2RpY3Rpb25hcnlfCj4gKmYsIGNvbnN0IGNoYXIgKnN1YmQsCj4gCj4gICAgICAgICAqdmFs
-ID0gaW5pcGFyc2VyX2dldGludChmLCBzdHIsIDB4RkZGRik7Cj4gICAgICAgICBpZiAoKnZhbCA9
-PSAweEZGRkYpCj4gKyAgICAgICB7Cj4gKyAgICAgICAgICAgICAgICp2YWwgPSAtMTsKPiAgICAg
-ICAgICAgICAgICAgcmV0ID0gLUVOT0VOVDsKCnRoaXMgaXMgbm90IGNvcnJlY3QuCnRoZSBjb2Vm
-ZmljaWVudCB3YXMgbm90IGZvdW5kIGFuZCBzbyBhbiBlcnJvciBtdXN0IGJlIHJldHVybi4KCgo+
-IEBAIC0yMjYsNyArMjI5LDcgQEAgaW50IGE0bF9yZWFkX2NhbGlicmF0aW9uX2ZpbGUoY2hhciAq
-bmFtZSwgc3RydWN0Cj4gYTRsX2NhbGlicmF0aW9uX2RhdGEgKmRhdGEpCj4gICAgICAgICAgICAg
-ICAgIGlmIChuYl9lbGVtZW50cyA8IDAgKSB7Cj4gICAgICAgICAgICAgICAgICAgICAgICAgLyog
-QU8gaXMgb3B0aW9uYWwgKi8KPiAgICAgICAgICAgICAgICAgICAgICAgICBpZiAoIXN0cm5jbXAo
-c3ViZGV2aWNlW2tdLCBBT19TVUJEX1NUUiwKPiBzaXplb2YoQU9fU1VCRF9TVFIpKSkKPiAtICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgIGJyZWFrOwo+ICsgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgcmV0dXJuIDA7CgoKdGhpcyBjaGFuZ2UgbWFrZXMgbm8gZGlmZmVyZW5jZToKYnJl
-YWtpbmcgdGhlIGxvb3AgaXMgbGlrZSByZXR1cm5pbmcgMC4KCgo+IEkgZ2V0IHdoeSB0aGVzZSBt
-b2RpZmljYXRpb25zIGFyZSBuZWNlc3NhcnkgYW5kIHdoeSBpdCB3b3JrcyBub3cuIEkgZG9uJ3QK
-PiB1bmRlcnN0YW5kIGhvdyBpdCB3b3JrZWQgZm9yIHlvdSBiZWZvcmUuCgp5b3VyIG1vZGlmaWNh
-dGlvbnMgbm90IG5lY2Vzc2FyeS4KCj4gCj4gTm93IHRoZSBwcm9ibGVtIGlzIHRoYXQgd2hlbiBJ
-IHJ1bjoKPiAKPiAkIC4vaW5zbl9yZWFkIC1SIDAgLWMgMyAtZCBhbmFsb2d5MCAteSAvaG9tZS95
-YXBhdGVsL2ZpbGUKPiBDYWxpYnJhdGVkIHZhbHVlczoKPiAwLjAwMDAwMAo+IDAuMDAwMDAwCj4g
-MC4wMDAwMDAKPiAwLjAwMDAwMAo+IDAuMDAwMDAwCj4gMC4wMDAwMDAKPiAwLjAwMDAwMAo+IDAu
-MDAwMDAwCj4gMC4wMDAwMDAKPiAwLjAwMDAwMAo+IAo+IHdpdGhvdXQgY2FsaWJyYXRpb24sIGl0
-IHdvcmtzIGZpbmU6Cj4gCj4gJCAuL2luc25fcmVhZCAtUiAwIC1jIDMgLWQgYW5hbG9neTAKPiBO
-b24gQ2FsaWJyYXRlZCB2YWx1ZXM6Cj4gNC44Mzc4NzMKPiA0LjgzODc4OAo+IDQuODM5MDk0Cj4g
-NC44Mzg3ODgKPiA0LjgzOTA5NAo+IDQuODM4NDgzCj4gNC44Mzg0ODMKPiA0LjgzODE3OAo+IDQu
-ODM2OTU3Cj4gNC44MzY2NTIKPiAKPiBBbHNvLCB0aGUgY2FsaWJyYXRpb24gZmlsZSBvdXRwdXQg
-aGFzIGFub3RoZXIgZXJyb3IuIFRoZSBjaGFubmVsIHZhbHVlcyBhcmUgYWxsCj4gIi0xIi4gSSd2
-ZSBhdHRhY2hlZCBteSBuZXdlc3QgY2FsaWJyYXRpb24gZmlsZSBmcm9tIGEgbWFjaGluZSB3aXRo
-IGFuIE5JLTYyNTAKPiBjYXJkIChubyBBTykuCgp0aGF0IGlzIGV4cGVjdGVkLiBUaGUgY29lZmZp
-Y2llbnRzIGFyZSBub3QgY2FsY3VsYXRlZCBwZXIgY2hhbm5lbC4KVGhlIGFsZ29yaXRobSBtaW1p
-Y3Mgd2hhdCBDb21lZGkncyBzb2Z0LWNhbGlicmF0aW9uIGRvZXMuCgo+IENhbiB5b3Ugc2VuZCBt
-ZSBhIGZpbGUgdGhhdCBoYXMgd29ya2VkIGZvciB5b3U/CgphdHRhY2hlZAoKLS0gCmpybwotLS0t
-LS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KW3BsYXRmb3JtXSAKZHJpdmVyX25h
-bWUgPSBhbmFsb2d5X25pX3BjaW1pbzsKYm9hcmRfbmFtZSA9IHBjaS02MjIxOwoKW2FuYWxvZ19p
-bnB1dF0gCmluZGV4ID0gMDsKZWxlbWVudHMgPSA0OwpbYW5hbG9nX2lucHV0XzBdIApjaGFubmVs
-ID0gLTE7CnJhbmdlID0gMDsKZXhwYW5zaW9uX29yaWdpbiA9IDMyNzY3OwpuYmNvZWZmPSA0Owpj
-b2VmZl8wID0gLTAuMDA1NjQ1MDI7CmNvZWZmXzEgPSAwLjAwMDMyNDI2NzsKY29lZmZfMiA9IC0x
-LjEwODA1ZS0xMjsKY29lZmZfMyA9IDguNTM2NTdlLTE3OwpbYW5hbG9nX2lucHV0XzFdIApjaGFu
-bmVsID0gLTE7CnJhbmdlID0gMTsKZXhwYW5zaW9uX29yaWdpbiA9IDMyNzY3OwpuYmNvZWZmPSA0
-Owpjb2VmZl8wID0gLTAuMDAyNzE2NjY7CmNvZWZmXzEgPSAwLjAwMDE2MTkxMjsKY29lZmZfMiA9
-IC01LjUzMjY3ZS0xMzsKY29lZmZfMyA9IDQuMjYyNDVlLTE3OwpbYW5hbG9nX2lucHV0XzJdIApj
-aGFubmVsID0gLTE7CnJhbmdlID0gMjsKZXhwYW5zaW9uX29yaWdpbiA9IDMyNzY3OwpuYmNvZWZm
-PSA0Owpjb2VmZl8wID0gLTAuMDAwNDAyMzYzOwpjb2VmZl8xID0gMy4yNDM4NWUtMDU7CmNvZWZm
-XzIgPSAtMS4xMDg0NWUtMTM7CmNvZWZmXzMgPSA4LjUzOTY2ZS0xODsKW2FuYWxvZ19pbnB1dF8z
-XSAKY2hhbm5lbCA9IC0xOwpyYW5nZSA9IDM7CmV4cGFuc2lvbl9vcmlnaW4gPSAzMjc2NzsKbmJj
-b2VmZj0gNDsKY29lZmZfMCA9IDAuMDA0NzA2ODM7CmNvZWZmXzEgPSAwLjAwMDU4MjY1ODsKY29l
-ZmZfMiA9IC0xLjk5MWUtMTI7CmNvZWZmXzMgPSAxLjUzMzg5ZS0xNjsKClthbmFsb2dfb3V0cHV0
-XSAKaW5kZXggPSAxOwplbGVtZW50cyA9IDI7ClthbmFsb2dfb3V0cHV0XzBdIApjaGFubmVsID0g
-MDsKcmFuZ2UgPSAwOwpleHBhbnNpb25fb3JpZ2luID0gMDsKbmJjb2VmZj0gMjsKY29lZmZfMCA9
-IDMyNzY4LjY7CmNvZWZmXzEgPSAzMjM0LjY1OwpbYW5hbG9nX291dHB1dF8xXSAKY2hhbm5lbCA9
-IDE7CnJhbmdlID0gMDsKZXhwYW5zaW9uX29yaWdpbiA9IDA7Cm5iY29lZmY9IDI7CmNvZWZmXzAg
-PSAzMjc2OC42Owpjb2VmZl8xID0gMzIzNC42NTsKCg==
+On 09/01/2015 02:27 PM, Dmitriy Cherkasov wrote:
+> We have seen this before, but so far have not found a way to consistently
+> reproduce it.
+> 
+> There are some caveats with the current way context switching is done in Xenomai.
+> 
+> On armv7, there was a completely separate implementation of xnarch_switch_to(),
+> as well as separate fpu and TLS switching. At this stage for armv8 however, we
+> are doing a direct call to the kernel's __switch_to(), which then performs the
+> relevant register switches.
+> 
+> Another possibility is that this may be lurking in the mm switch. During calls 
+> to check_and_switch_context(), the interrupt state may not always
+> match what is expected according to the comments in the original
+> version of that function. 
+> 
+> Overall, this mechanism could definitely benefit from further review.
+> 
+
+
+Thanks Dimitry.
+I'll also try to look into this for this specific platform (however I am hopping
+that either Gilles or Philippe can spend some time on this soon)
+
+Just for completeness, as things stand this is pretty much that value I am
+seeing over consecutive runs.
+
+RTD|      4.167|      6.099|     11.667|       0|     0|      3.333|     66.667
+RTD|      4.167|      6.217|     13.333|       0|     0|      3.333|     66.667
+RTD|      4.167|      6.259|     11.667|       0|     0|      3.333|     66.667
+RTD|      4.167|      6.226|     12.500|       0|     0|      3.333|     66.667
+RTD|      4.167|      6.105|     11.667|       0|     0|      3.333|     66.667
+RTD|      4.167|      6.181|     12.500|       0|     0|      3.333|     66.667
+RTD|      4.167|      6.232|     12.500|       0|     0|      3.333|     66.667
+RTD|      4.167|      6.483|     20.000|       0|     0|      3.333|     66.667
+RTD|      4.167|      6.409|      9.167|       0|     0|      3.333|     66.667
+RTD|      4.167|      5.707|     12.500|       0|     0|      3.333|     66.667
+RTD|      4.167|      5.026|      6.667|       0|     0|      3.333|     66.667
+RTT|  00:15:04  (periodic user-mode task, 1000 us period, priority 99)
+RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+RTD|      4.167|      5.025|      6.667|       0|     0|      3.333|     66.667
+Load script terminated, terminating checked scripts
+---|-----------|-----------|-----------|--------|------|-------------------------
+RTS|      3.333|      6.540|     66.667|       0|     0|    00:15:04/00:15:04
+pipe_in: /tmp/xeno-test-in-9797
+
+-- 
+jro
+
