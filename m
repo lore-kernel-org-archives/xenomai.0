@@ -3,8 +3,8 @@ References: <CAJqUr7ybpmgOev-iPaQ-iMEAF8SBocn54vyYSbLcm9spMY=FBg@mail.gmail.com>
  <CAPuu0=jX6ig5L7SJrmPVOhCmOm=gwxEmTafTpOqzE85hOji8CA@mail.gmail.com>
  <55E5F849.1070708@xenomai.org>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55E5FB89.3080604@xenomai.org>
-Date: Tue, 1 Sep 2015 21:24:57 +0200
+Message-ID: <55E5FCE0.8080702@xenomai.org>
+Date: Tue, 1 Sep 2015 21:30:40 +0200
 MIME-Version: 1.0
 In-Reply-To: <55E5F849.1070708@xenomai.org>
 Content-Type: text/plain; charset=utf-8
@@ -44,20 +44,84 @@ On 09/01/2015 09:11 PM, Jorge Ramirez Ortiz wrote:
 > Thanks Dimitry.
 > I'll also try to look into this for this specific platform (however I am hopping
 > that either Gilles or Philippe can spend some time on this soon)
-
-No arm64 hw here, so unless this is easily reproducible on a vm, I can
-only help with code review. Did you enable
-CONFIG_XENO_ARCH_UNLOCKED_SWITCH? If so, any change when turning it off?
-
 > 
 > Just for completeness, as things stand this is pretty much that value I am
 > seeing over consecutive runs.
 > 
 > RTD|      4.167|      6.099|     11.667|       0|     0|      3.333|     66.667
+> RTD|      4.167|      6.217|     13.333|       0|     0|      3.333|     66.667
+> RTD|      4.167|      6.259|     11.667|       0|     0|      3.333|     66.667
+> RTD|      4.167|      6.226|     12.500|       0|     0|      3.333|     66.667
+> RTD|      4.167|      6.105|     11.667|       0|     0|      3.333|     66.667
+> RTD|      4.167|      6.181|     12.500|       0|     0|      3.333|     66.667
+> RTD|      4.167|      6.232|     12.500|       0|     0|      3.333|     66.667
+> RTD|      4.167|      6.483|     20.000|       0|     0|      3.333|     66.667
+> RTD|      4.167|      6.409|      9.167|       0|     0|      3.333|     66.667
+> RTD|      4.167|      5.707|     12.500|       0|     0|      3.333|     66.667
+> RTD|      4.167|      5.026|      6.667|       0|     0|      3.333|     66.667
+> RTT|  00:15:04  (periodic user-mode task, 1000 us period, priority 99)
+> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+> RTD|      4.167|      5.025|      6.667|       0|     0|      3.333|     66.667
+> Load script terminated, terminating checked scripts
+> ---|-----------|-----------|-----------|--------|------|-------------------------
+> RTS|      3.333|      6.540|     66.667|       0|     0|    00:15:04/00:15:04
+> pipe_in: /tmp/xeno-test-in-9797
+> 
 
-This latency seems high for such class of hardware, especially with no
-load. We'll need the tracer to dig this too.
+This won't address the current issue, but the notification of the head
+domain on memory aborts needs fixing:
 
+diff --git a/arch/arm64/mm/fault.c b/arch/arm64/mm/fault.c
+index f363368..e59da5e 100644
+--- a/arch/arm64/mm/fault.c
++++ b/arch/arm64/mm/fault.c
+@@ -517,10 +517,10 @@ asmlinkage void __exception do_mem_abort(unsigned
+long addr, unsigned int esr,
+ 	if (!inf->fn(addr, esr, regs))
+ 		return;
+
+-	irqflags = ipipe_fault_entry();
+-
+ 	if (__ipipe_report_trap(IPIPE_TRAP_UNKNOWN, regs))
+-		goto out;
++		return;
++
++	irqflags = ipipe_fault_entry();
+
+ 	pr_alert("Unhandled fault: %s (0x%08x) at 0x%016lx\n",
+ 		 inf->name, esr, addr);
+@@ -530,7 +530,7 @@ asmlinkage void __exception do_mem_abort(unsigned
+long addr, unsigned int esr,
+ 	info.si_code  = inf->code;
+ 	info.si_addr  = (void __user *)addr;
+ 	arm64_notify_die("", regs, &info, esr);
+-out:
++
+ 	ipipe_fault_exit(irqflags);
+ }
+
+@@ -544,17 +544,17 @@ asmlinkage void __exception
+do_sp_pc_abort(unsigned long addr,
+ 	struct siginfo info;
+ 	unsigned long irqflags;
+
+-	irqflags = ipipe_fault_entry();
+-
+ 	if (__ipipe_report_trap(IPIPE_TRAP_ALIGNMENT, regs))
+-		goto out;
++		return;
++
++	irqflags = ipipe_fault_entry();
+
+ 	info.si_signo = SIGBUS;
+ 	info.si_errno = 0;
+ 	info.si_code  = BUS_ADRALN;
+ 	info.si_addr  = (void __user *)addr;
+ 	arm64_notify_die("", regs, &info, esr);
+-out:
++
+ 	ipipe_fault_exit(irqflags);
+ }
 -- 
 Philippe.
 
