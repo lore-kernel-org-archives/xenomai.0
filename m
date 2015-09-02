@@ -1,10 +1,9 @@
 MIME-Version: 1.0
-Date: Wed, 2 Sep 2015 14:19:29 -0700
-Message-ID: <CAJqUr7wKv5bsR-WuZh2wVtsCTEAWt4uAA3kcx_d2oY=znQWK5g@mail.gmail.com>
+Date: Wed, 2 Sep 2015 14:22:56 -0700
+Message-ID: <CAJqUr7zJXoASSpTr=Y8ZOzDDhWruZU9BVTbQ3YViqm7Lf8kTMA@mail.gmail.com>
 From: Don Mahurin <don@mperpetuo.com>
 Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] [pull request] ipipe/ipipe-3.14.44-arm64,
-	adding ipipe trace for arm64.
+Subject: [Xenomai] [pull request] xenomai-3/arm64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,29 +14,32 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Pull request for ipipe/ipipe-3.14.44-arm64, adding ipipe trace for arm64.
+Pull request for xenomai-3/arm64, fixing tracing/syscall prints for arm64.
 
+The following changes since commit ef3d72d9825eb5ce3a75b93b6b4b4104f7c41db0:
 
-The following changes since commit 5711ae4e759acefd98f16f086029fbdbc8a3673e:
-
-  ipipe/arm64: move local_async_enable out of ifdef IPIPE (2015-08-19
-12:40:51 -0700)
+  cobalt/arm64: machine.h: use slightly faster ffnz implementation
+(2015-06-17 16:09:20 -0700)
 
 are available in the git repository at:
 
-  http://gitlab.mperpetuo.com/it/ipipe.git ipipe-3.14.44-arm64-ipipe-trace
+  http://gitlab.mperpetuo.com/it/xenomai-3.git arm64
 
-for you to fetch changes up to 0c1da66af6c6da717a0a718e125d9538259aae65:
+for you to fetch changes up to ab0f4e2e24830c67600270789fd2ce2811c2ce60:
 
-  ipipe/arm64: Define arm64 ipipe-tracer helper functions in head.S.
-(2015-09-02 13:29:29 -0700)
+  cobalt/arm64: pc and orig_r0 are u64 on arm64 and 'unsigned long' or arm
+and other platforms. printf referencing these are using %lx. On arm64, long
+and long long (and u64) are 64 bits. Rather than changing printf format,
+chnage arm64 macros to cast to unsigned long. (2015-09-02 13:48:36 -0700)
 
 ----------------------------------------------------------------
-Hongfei Cheng (1):
-      ipipe/arm64: Define arm64 ipipe-tracer helper functions in head.S.
+Don Mahurin (1):
+      cobalt/arm64: pc and orig_r0 are u64 on arm64 and 'unsigned long' or
+arm and other platforms. printf referencing these are using %lx. On arm64,
+long and long long (and u64) are 64 bits. Rather than changing printf
+format, chnage arm64 macros to cast to unsigned long.
 
- arch/arm64/include/asm/ipipe.h |  6 +++---
- arch/arm64/kernel/head.S       | 36 ++++++++++++++++++++++++++++++++++++
- arch/arm64/mm/fault.c          |  4 ++++
- kernel/trace/ftrace.c          |  2 ++
- 4 files changed, 45 insertions(+), 3 deletions(-)
+ kernel/cobalt/arch/arm64/include/asm/xenomai/syscall.h | 2 +-
+ kernel/cobalt/arch/arm64/include/asm/xenomai/thread.h  | 2 +-
+ kernel/cobalt/posix/syscall.c                          | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
