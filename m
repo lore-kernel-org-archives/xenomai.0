@@ -5,9 +5,9 @@ References: <CAJqUr7ybpmgOev-iPaQ-iMEAF8SBocn54vyYSbLcm9spMY=FBg@mail.gmail.com>
  <CAPuu0=jX6ig5L7SJrmPVOhCmOm=gwxEmTafTpOqzE85hOji8CA@mail.gmail.com>
  <55E5F849.1070708@xenomai.org> <55E5FB89.3080604@xenomai.org>
  <55E60743.30600@xenomai.org>
-From: Hongfei Cheng <hongfei@mperpetuo.com>
-Date: Tue, 1 Sep 2015 14:02:36 -0700
-Message-ID: <CAKC9m6cUJsEtK9cUQ1k9LrmBeZ2DL-d=W73oQFxzbw-5_JzN-g@mail.gmail.com>
+Date: Tue, 1 Sep 2015 17:43:50 -0700
+Message-ID: <CAJqUr7zP85A6V7n9O=++iC4tJK8LCG5JC8xtO9Xd+u3sQW4G1A@mail.gmail.com>
+From: Don Mahurin <don@mperpetuo.com>
 Content-Type: text/plain; charset=UTF-8
 Subject: Re: [Xenomai] xenomai/ipipe arm64 port
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -22,12 +22,28 @@ To: Jorge Ramirez Ortiz <jro@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 On Tue, Sep 1, 2015 at 1:14 PM, Jorge Ramirez Ortiz <jro@xenomai.org> wrote:
+
+>
+>
+> > This latency seems high for such class of hardware, especially with no
+> > load. We'll need the tracer to dig this too.
+> >
 >
 > Don mentioned that the trace is not ready yet.
+>
 
-We do have the ipipe tracer patch for arm64. We've been running it on
-a vendor-specific platform. Will send out the patch after testing it
-on QEMU.
+I updated the branches on our server:
+xenomai - arm64
+ipipe - ipipe-3.14.44-arm64
 
-Hongfei
+These branches are base on the branches of the same names created on
+xenomai.org (Thanks Philippe). Added are a few changes required for ipipe
+tracing.
 
+For function tracing, a couple changes were required to be cherry picked
+from 3.18.
+
+I can submit our changes as pull requests over the next few days. In the
+mean time, the changes are available for review.
+
+-Don
