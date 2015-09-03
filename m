@@ -1,9 +1,9 @@
 MIME-Version: 1.0
-Date: Fri, 4 Sep 2015 00:30:56 +1200
-Message-ID: <CAFkYNwbN0kkAQLWtfvV8tpnCRbVnsiGSDcjXAonJ0uHa22mUgA@mail.gmail.com>
+Date: Fri, 4 Sep 2015 10:15:28 +1200
+Message-ID: <CAFkYNwYt+6yX-w8JzejRK+FcVe-Pe57-mW1=Y-MFNUK=Rwg8CA@mail.gmail.com>
 From: vibnwis <vibnwis@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] installing Xenomai for PandaBoard ES
+Subject: [Xenomai] Installing Xenomai step 1 - patching
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,43 +14,23 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-HI there,
-I am trying to install Xenomai onto kernel for Pandaboard ES. I am
-following the steps published by Andreas,
-http://www.xenomai.org/pipermail/xenomai/2014-April/030696.html
+Hi all,
+Would someone help here please? Having failed to patch the kernel for
+Pandaboard, I thought I was too ambitious to do other ARCH. Hence, I tried
+something easy x86.
+I tried with Linux 3.19,  4.20 with xenomai 2.6's adeos ipipe as well as
+ipipe-core. Unfortunately most of them ended with the following last
+messages.
 
-1) Setup and patch kernel
- > BASEDIR=`pwd`
- > git clone git://github.com/RobertCNelson/armv7-multiplatform.git
- > cd ${BASEDIR}/armv7-multiplatform/
- > git checkout origin/v3.14.x -b v3.14
- > ./build_deb.sh # checks out the 3.14 kernel source and adds some
-patches
+Very appreciate if someone can help, please?
 
-However, at step ./build_deb.sh I encountered the following errors.
-Would someone help to point out what went wrong, please?
+prepare-kernel.sh: Unable to patch kernel 3.19.0 with
+adeos-ipipe-2.6.38.8-x86-2.11-03.patch.
+prepare-kernel.sh: Unable to patch kernel 4.2.0 with
+adeos-ipipe-2.6.38.8-x86-2.11-03.patch.
+prepare-kernel.sh: Unable to patch kernel 4.2.0 with
+ipipe-core-3.10.32-x86-4.patch.
 
-------------------------------------
 
-+ Detected build host [Ubuntu 15.04]
-+ host: [x86_64]
-+ git HEAD commit: [06adda0add71287381a1473fa8af6a62d6bdbe8d]
-Dependency check skipped, you are on your own.
------------------------------
-Unrecognized deb based system:
------------------------------
-Please cut, paste and email to: bugs@rcn-ee.com
------------------------------
-git: 06adda0add71287381a1473fa8af6a62d6bdbe8d
-uname -m
-x86_64
-lsb_release -a
-No LSB modules are available.
-Distributor ID:	Ubuntu
-Description:	Ubuntu 15.04
-Release:	15.04
-Codename:	vivid
------------------------------
-* Failed dependency check
-
-----------------------------------------
+Thank you
+Lim
