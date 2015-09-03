@@ -1,9 +1,11 @@
+From: Wolfgang Netbal <wolfgang.netbal@sigmatek.at>
+Message-ID: <55E7E7ED.5060405@sigmatek.at>
+Date: Thu, 3 Sep 2015 08:25:49 +0200
 MIME-Version: 1.0
-Date: Wed, 2 Sep 2015 14:24:14 -0700
-Message-ID: <CAJqUr7wt0=bOLsmOTZ9PP-VtywnWGgmAOX0fkexPsP=pZ03aVg@mail.gmail.com>
-From: Don Mahurin <don@mperpetuo.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] [pull request] ipipe/ipipe-3.14.44-arm64, function tracing
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai] Activating PCI express on imx6 board
+Reply-To: wolfgang.netbal@sigmatek.at
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,43 +14,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Pull request for ipipe/ipipe-3.14.44-arm64, adding arm64 function tracing
-(cherry-picked from 3.18), required for ipipe tracing functionality.
+Hi,
+
+I activated PCI express for my imx6 board.
+To get PCI express up and running I have to activate the kernel option 
+CONFIG_CPU_FREQ
+here my configuration
+#
+# CPU Frequency scaling
+#
+CONFIG_CPU_FREQ=y
+CONFIG_CPU_FREQ_TABLE=y
+CONFIG_CPU_FREQ_STAT=y
+# CONFIG_CPU_FREQ_STAT_DETAILS is not set
+CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE=y
+# CONFIG_CPU_FREQ_DEFAULT_GOV_POWERSAVE is not set
+# CONFIG_CPU_FREQ_DEFAULT_GOV_USERSPACE is not set
+# CONFIG_CPU_FREQ_DEFAULT_GOV_ONDEMAND is not set
+# CONFIG_CPU_FREQ_DEFAULT_GOV_CONSERVATIVE is not set
+# CONFIG_CPU_FREQ_DEFAULT_GOV_INTERACTIVE is not set
+CONFIG_CPU_FREQ_GOV_PERFORMANCE=y
+# CONFIG_CPU_FREQ_GOV_POWERSAVE is not set
+# CONFIG_CPU_FREQ_GOV_USERSPACE is not set
+# CONFIG_CPU_FREQ_GOV_ONDEMAND is not set
+# CONFIG_CPU_FREQ_GOV_INTERACTIVE is not set
+# CONFIG_CPU_FREQ_GOV_CONSERVATIVE is not set
+# CONFIG_GENERIC_CPUFREQ_CPU0 is not set
+
+I think the frequency scaling can change the timing for xenomai and 
+checked the .config file
+where I found the following message.
 
 
-The following changes since commit 5711ae4e759acefd98f16f086029fbdbc8a3673e:
+#
+# WARNING! You enabled APM, CPU Frequency scaling, ACPI 'processor'
+#
 
-  ipipe/arm64: move local_async_enable out of ifdef IPIPE (2015-08-19
-12:40:51 -0700)
+#
+# or Intel cpuidle option. These options are known to cause troubles
+#
 
-are available in the git repository at:
+#
+# with Xenomai, disable them.
+#
 
-  http://gitlab.mperpetuo.com/it/ipipe.git
-ipipe-3.14.44-arm64-function-tracer
 
-for you to fetch changes up to c35175ea8254e4e0306386aa143a9f4e896e0f47:
+Do you have any idea how to activate PCI express support when using xenomai.
 
-  arm64: Add ftrace support (2015-09-02 13:27:12 -0700)
+Kind regards
 
-----------------------------------------------------------------
-AKASHI Takahiro (3):
-      ftrace: Add arm64 support to recordmcount
-      arm64: add __ASSEMBLY__ in asm/insn.h
-      arm64: Add ftrace support
+-- 
+Wolfgang Netbal
+Softwareentwicklung
+________________________________
 
- arch/arm64/Kconfig               |   4 +
- arch/arm64/include/asm/ftrace.h  |  23 +++++
- arch/arm64/include/asm/insn.h    |   2 +
- arch/arm64/kernel/Makefile       |   4 +
- arch/arm64/kernel/arm64ksyms.c   |   4 +
- arch/arm64/kernel/entry-ftrace.S | 175
-+++++++++++++++++++++++++++++++++++++++
- arch/arm64/kernel/ftrace.c       |  64 ++++++++++++++
- scripts/recordmcount.c           |   7 ++
- scripts/recordmcount.pl          |   5 ++
- 9 files changed, 288 insertions(+)
- create mode 100644 arch/arm64/include/asm/ftrace.h
- create mode 100644 arch/arm64/kernel/entry-ftrace.S
- create mode 100644 arch/arm64/kernel/ftrace.c
+SIGMATEK GmbH & Co KG
+Sigmatekstraße 1
+5112 Lamprechtshausen
+Österreich / Austria
+
+Tel.: +43/6274/4321-0
+Fax: +43/6274/4321-300
+E-Mail: wolfgang.netbal@sigmatek.at
+http://www.sigmatek-automation.at
+
+****************************Please note: ****************************
+This email and all attachments are confidential and intended solely
+for the person or entity to whom it is addressed. If you are not the
+named addressee you must not make this email and all attachments
+accessible to any other person. If you have received this email in
+error please delete it together with all attachments.
+*********************************************************************
