@@ -1,10 +1,10 @@
-Message-ID: <55E7F013.10101@free.fr>
-Date: Thu, 03 Sep 2015 09:00:36 +0200
+Message-ID: <55E7F2E7.5080007@free.fr>
+Date: Thu, 03 Sep 2015 09:12:39 +0200
 From: =?UTF-8?B?U3TDqXBoYW5lIEFOQ0VMT1Q=?= <sancelot@free.fr>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] intel turbo boost
+Subject: [Xenomai] rt_e1000e ioctls for link status
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,12 +16,14 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 Hi,
+I would need being able to know when the  link ready before using the nic ,
 
-Do you think I can use the Intel integrated turbo boost mode, without 
-problems.
+I have not seen any available ioctl to do this in  this driver.
 
-I have this nice processor :
-http://ark.intel.com/fr/products/76308/Intel-Core-i5-4300U-Processor-3M-Cache-up-to-2_90-GHz
+Can I do this ?
 
 Regards,
-S.Ancelto
+Steph
+
+
+
