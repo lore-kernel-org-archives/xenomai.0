@@ -1,12 +1,9 @@
-Message-ID: <d569079f4371f5efdff3486fe9c25cd9.squirrel@sourcetrek.com>
-In-Reply-To: <55E7F2E7.5080007@free.fr>
-References: <55E7F2E7.5080007@free.fr>
-Date: Thu, 3 Sep 2015 09:22:42 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] rt_e1000e ioctls for link status
+Date: Fri, 4 Sep 2015 00:30:56 +1200
+Message-ID: <CAFkYNwbN0kkAQLWtfvV8tpnCRbVnsiGSDcjXAonJ0uHa22mUgA@mail.gmail.com>
+From: vibnwis <vibnwis@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] installing Xenomai for PandaBoard ES
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,27 +12,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?B?IlN0w6lwaGFuZSBBTkNFTE9UIg==?= <sancelot@free.fr>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
+HI there,
+I am trying to install Xenomai onto kernel for Pandaboard ES. I am
+following the steps published by Andreas,
+http://www.xenomai.org/pipermail/xenomai/2014-April/030696.html
 
-Stéphane ANCELOT wrote:
-> Hi,
-> I would need being able to know when the  link ready before using the nic
-> ,
->
-> I have not seen any available ioctl to do this in  this driver.
->
-> Can I do this ?
+1) Setup and patch kernel
+ > BASEDIR=`pwd`
+ > git clone git://github.com/RobertCNelson/armv7-multiplatform.git
+ > cd ${BASEDIR}/armv7-multiplatform/
+ > git checkout origin/v3.14.x -b v3.14
+ > ./build_deb.sh # checks out the 3.14 kernel source and adds some
+patches
 
-Of course, simply add the ioctls you need to the driver, and make a small
-tool to use these ioctls.
+However, at step ./build_deb.sh I encountered the following errors.
+Would someone help to point out what went wrong, please?
 
-Regards.
+------------------------------------
 
++ Detected build host [Ubuntu 15.04]
++ host: [x86_64]
++ git HEAD commit: [06adda0add71287381a1473fa8af6a62d6bdbe8d]
+Dependency check skipped, you are on your own.
+-----------------------------
+Unrecognized deb based system:
+-----------------------------
+Please cut, paste and email to: bugs@rcn-ee.com
+-----------------------------
+git: 06adda0add71287381a1473fa8af6a62d6bdbe8d
+uname -m
+x86_64
+lsb_release -a
+No LSB modules are available.
+Distributor ID:	Ubuntu
+Description:	Ubuntu 15.04
+Release:	15.04
+Codename:	vivid
+-----------------------------
+* Failed dependency check
 
--- 
-                                            Gilles.
-https://click-hack.org
-
-
+----------------------------------------
