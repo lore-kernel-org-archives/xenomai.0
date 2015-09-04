@@ -1,10 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55E9C465.2020500@xenomai.org>
-Date: Fri, 4 Sep 2015 18:18:45 +0200
+Message-ID: <e84451ebd6f5fb74a560554d0076f38b.squirrel@sourcetrek.com>
+In-Reply-To: <CAFkYNwbN0kkAQLWtfvV8tpnCRbVnsiGSDcjXAonJ0uHa22mUgA@mail.gmail.com>
+References: <CAFkYNwbN0kkAQLWtfvV8tpnCRbVnsiGSDcjXAonJ0uHa22mUgA@mail.gmail.com>
+Date: Fri, 4 Sep 2015 20:48:19 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [xenomai3] fixing the rtcan_raw ioctl argument issue
+Content-Type: text/plain;charset=utf-8
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] installing Xenomai for PandaBoard ES
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,30 +15,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
-Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>
+To: vibnwis <vibnwis@gmail.com>
+Cc: xenomai@xenomai.org
 
 
-We have a problem with CAN control requests piggybacking on struct ifreq
-for passing arguments to the raw driver. This is unsafe, since we have
-no mean to relate sizeof(ifr.ifr_ifru) to the actual size required to
-pass the CAN-related arguments to the ioctl handler, so we are currently
-hopping for the best.
+vibnwis wrote:
+> HI there,
+> I am trying to install Xenomai onto kernel for Pandaboard ES. I am
+> following the steps published by Andreas,
+> http://www.xenomai.org/pipermail/xenomai/2014-April/030696.html
 
-In addition, all rtcan utilities are causing recent compilers here to
-complain loudly about potential aliasing issues when mapping those
-arguments over the ifr_ifru area using casts, which is unfortunately true.
+The pandaboard has been supported for a long time, and requires no real
+further documentation than the generic installation instructions:
 
-So I came up with a general fix, introducing struct can_ifreq for this
-purpose. Applications passing struct ifreq should still work (well, that
-is the plan) since sizeof(struct ifreq) >= sizeof(struct can_ifreq) and
-all member offsets within ifr_ifru have been preserved. Could the CAN
-maintainers please review this code and comment?
+https://xenomai.org/installing-xenomai-2-x/
 
-Thanks,
-
-http://git.xenomai.org/xenomai-3.git/commit/?h=next&id=5460e09d0f990799fb2eed67fbb00358860ebcab
 
 -- 
-Philippe.
+                                            Gilles.
+https://click-hack.org
+
 
