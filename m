@@ -1,12 +1,12 @@
-Message-ID: <e84451ebd6f5fb74a560554d0076f38b.squirrel@sourcetrek.com>
-In-Reply-To: <CAFkYNwbN0kkAQLWtfvV8tpnCRbVnsiGSDcjXAonJ0uHa22mUgA@mail.gmail.com>
-References: <CAFkYNwbN0kkAQLWtfvV8tpnCRbVnsiGSDcjXAonJ0uHa22mUgA@mail.gmail.com>
-Date: Fri, 4 Sep 2015 20:48:19 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+Date: Sat, 5 Sep 2015 14:42:26 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150905124226.GC10704@hermes.click-hack.org>
+References: <CANWkrRNJ1576NNq7zqbn-VZTZKrRmiSTTZjyaBXw5R=gQDQckw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] installing Xenomai for PandaBoard ES
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANWkrRNJ1576NNq7zqbn-VZTZKrRmiSTTZjyaBXw5R=gQDQckw@mail.gmail.com>
+Subject: Re: [Xenomai] RTNet rtcfg - system hang
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,24 +15,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: vibnwis <vibnwis@gmail.com>
-Cc: xenomai@xenomai.org
+To: Michael Smith <2michael.smith@gmail.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
+On Fri, Sep 04, 2015 at 11:44:52AM +0200, Michael Smith wrote:
+> Hi all.
+> I am trying to get RTNet to work, but the system keeps on crashing
+> when rtcfg is called.
+> I'm working on  Xenomai-3.0 rc5.
+> 
+> I have traced the crash to kernel/drivers/net/stack/rtcfg/rtcfg_event.c:151
+> This is in function rtcfg_main_state_off() where the rtdm_task_init()
+> is called. This thread creation call completely locks up the system.
+> 
+> Is there any fix for this yet? Or any advice on how to fix it myself?
 
-vibnwis wrote:
-> HI there,
-> I am trying to install Xenomai onto kernel for Pandaboard ES. I am
-> following the steps published by Andreas,
-> http://www.xenomai.org/pipermail/xenomai/2014-April/030696.html
-
-The pandaboard has been supported for a long time, and requires no real
-further documentation than the generic installation instructions:
-
-https://xenomai.org/installing-xenomai-2-x/
-
+I believe this is a known issue, we have a few pending ones with
+rtnet. Search the archive to see if someone has investigated that (I
+remember the original reporter simply avoided using rtcfg).
 
 -- 
-                                            Gilles.
+					    Gilles.
 https://click-hack.org
-
 
