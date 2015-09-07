@@ -1,12 +1,12 @@
-References: <55ED7A9E.1080209@gmail.com>
+References: <CAJqUr7zJXoASSpTr=Y8ZOzDDhWruZU9BVTbQ3YViqm7Lf8kTMA@mail.gmail.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55ED8875.10504@xenomai.org>
-Date: Mon, 7 Sep 2015 14:52:05 +0200
+Message-ID: <55EDB48F.7010800@xenomai.org>
+Date: Mon, 7 Sep 2015 18:00:15 +0200
 MIME-Version: 1.0
-In-Reply-To: <55ED7A9E.1080209@gmail.com>
+In-Reply-To: <CAJqUr7zJXoASSpTr=Y8ZOzDDhWruZU9BVTbQ3YViqm7Lf8kTMA@mail.gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] timer_create( ) example in Xenomai-3
+Subject: Re: [Xenomai] [pull request] xenomai-3/arm64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,59 +15,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Konstantinos Chalas <konchalas@gmail.com>, Xenomai <xenomai@xenomai.org>
+To: Don Mahurin <don@mperpetuo.com>, xenomai@xenomai.org
 
-On 09/07/2015 01:53 PM, Konstantinos Chalas wrote:
-> Hello everyone,
+On 09/02/2015 11:22 PM, Don Mahurin wrote:
+> Pull request for xenomai-3/arm64, fixing tracing/syscall prints for arm64.
 > 
-> Does any of you have a working implementation of timer_create( ) in
-> Xenomai-3?
+> The following changes since commit ef3d72d9825eb5ce3a75b93b6b4b4104f7c41db0:
 > 
-> According to the documentation /only thread-directed notification is
-> supported (evp->sigev_notify set to//SIGEV_THREAD_ID//). The thing is
-> that the use of //SIG/EV_THREAD_ID is not common, therefore it is hard
-> to find any help.../
->
-
-evp->sigev_notify_thread_id must be set with your recipient thread ID.
-There is nothing special otherwise.
-
-> /By the way, the example provided at the end of
-> http://www.softprayog.in/tutorials/alarm-sleep-and-high-resolution-timers,
-> crashes my system. I understand that it doesn't comply with Xenomai
-> documentation, but should it crash the whole system?
+>   cobalt/arm64: machine.h: use slightly faster ffnz implementation
+> (2015-06-17 16:09:20 -0700)
 > 
+> are available in the git repository at:
+> 
+>   http://gitlab.mperpetuo.com/it/xenomai-3.git arm64
+> 
+> for you to fetch changes up to ab0f4e2e24830c67600270789fd2ce2811c2ce60:
+> 
+>   cobalt/arm64: pc and orig_r0 are u64 on arm64 and 'unsigned long' or arm
+> and other platforms. printf referencing these are using %lx. On arm64, long
+> and long long (and u64) are 64 bits. Rather than changing printf format,
+> chnage arm64 macros to cast to unsigned long. (2015-09-02 13:48:36 -0700)
 
-You've just proved Murphy's law article #27 is right, "If you perceive
-that there are four possible ways a procedure can go wrong, and you
-circumvent these, then a fifth way, unprepared for, will promptly develop".
+The change is fine by me. Please substitute a proper short log for this
+commit, using the existing description for the long one.
 
-diff --git a/kernel/cobalt/posix/timer.c b/kernel/cobalt/posix/timer.c
-index e5551b3..8c4d2da 100644
---- a/kernel/cobalt/posix/timer.c
-+++ b/kernel/cobalt/posix/timer.c
-@@ -67,8 +67,10 @@ timer_init(struct cobalt_timer *timer,
- 	    timer->clockid != CLOCK_REALTIME)
- 		return ERR_PTR(-EINVAL);
+Thanks,
 
--	if (evp == NULL || evp->sigev_notify == SIGEV_NONE)
--		return owner;	/* Assume SIGEV_THREAD_ID. */
-+	if (evp == NULL || evp->sigev_notify == SIGEV_NONE) {
-+		target = owner;	/* Assume SIGEV_THREAD_ID. */
-+		goto init;
-+	}
-
- 	if (evp->sigev_notify != SIGEV_THREAD_ID)
- 		return ERR_PTR(-EINVAL);
-@@ -80,7 +82,7 @@ timer_init(struct cobalt_timer *timer,
- 	target = cobalt_thread_find_local(evp->sigev_notify_thread_id);
- 	if (target == NULL)
- 		return ERR_PTR(-EINVAL);
--
-+init:
- 	/*
- 	 * All standard clocks are based on the core clock, and we
- 	 * want to deliver a signal when a timer elapses.
 -- 
 Philippe.
 
