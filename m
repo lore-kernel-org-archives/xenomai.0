@@ -1,11 +1,10 @@
-Message-ID: <55D321A2.6090201@sigmatek.at>
-Date: Tue, 18 Aug 2015 14:14:26 +0200
-From: Wolfgang Netbal <wolfgang.netbal@sigmatek.at>
+Date: Wed, 9 Sep 2015 11:31:51 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20150909113151.0fed6fd7@md1em3qc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai] Function to get state of lock variable
-Reply-To: wolfgang.netbal@sigmatek.at
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] 4.x merge
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,55 +13,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai Mailing List <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
+Cc: "KISZKA, JAN" <jan.kiszka@siemens.com>
 
-Hi All,
+Hi,
 
-is there a function te returns true or false if a rtdm_lock_t variable 
-is set ?
-What I have to do is  to check in an interrupt routine if the list is 
-locked,
-if this is the case I leave the interrupt handler befor accessing the list.
+i am about to merge ipipe into a more recent kernel and would like to
+discuss the approach with you guys. As far as i have seen and been told
+i should merge and not rebase.
 
-I use the following code to lock the add and replace of list elements.
+My current plan:
+1 choose release (4.1 since its LTS)
+2 merge it into ipipe
+3 resolve obvious conflicts
+4 commit broken merge
+5 repair common bits and x86
+6 publish my tree for others to repair other archs
 
-static rtdm_lock_t opendev_list_lock;
-static int open(struct rtdm_dev_context *context, rtdm_user_info_t * 
-user_info, int oflags)
-{
-     lrtdrv_context_t *ctx = (lrtdrv_context_t *) context->dev_private;
-     rtdm_lockctx_t s;
+Steps 2,3 and 4 might become iterations stepping over 3.19 and 4.0. The
+merges will not work but the smaller steps will result in less
+conflicts at a time.
 
-....
+What do you guys think of the approach? Are my version choices sane or
+are there any reasons to consider other releases as well?
 
-     rtdm_lock_get_irqsave(&opendev_list_lock, s);
-     list_add_tail(&ctx->opendev_entry, &lrtdrv_opendev_list);
-     rtdm_lock_put_irqrestore(&opendev_list_lock, s);
+Henning
 
-
-     return 0;
-}
-
-Kind regards
--- 
-Wolfgang Netbal
-Softwareentwicklung
-________________________________
-
-SIGMATEK GmbH & Co KG
-Sigmatekstraße 1
-5112 Lamprechtshausen
-Österreich / Austria
-
-Tel.: +43/6274/4321-0
-Fax: +43/6274/4321-300
-E-Mail: wolfgang.netbal@sigmatek.at
-http://www.sigmatek-automation.at
-
-****************************Please note: ****************************
-This email and all attachments are confidential and intended solely
-for the person or entity to whom it is addressed. If you are not the
-named addressee you must not make this email and all attachments
-accessible to any other person. If you have received this email in
-error please delete it together with all attachments.
-*********************************************************************
