@@ -1,12 +1,13 @@
-Message-ID: <55EFE37F.1@free.fr>
-Date: Wed, 09 Sep 2015 09:45:03 +0200
-From: =?windows-1252?Q?St=E9phane_ANCELOT?= <sancelot@free.fr>
-MIME-Version: 1.0
+Date: Wed, 9 Sep 2015 09:48:39 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150909074838.GA21017@hermes.click-hack.org>
 References: <55EFD7C1.50606@free.fr>
- <20150909072117.GA20075@hermes.click-hack.org>
-In-Reply-To: <20150909072117.GA20075@hermes.click-hack.org>
-Content-Type: text/plain; charset="windows-1252"; format="flowed"
+ <20150909072117.GA20075@hermes.click-hack.org> <55EFE37F.1@free.fr>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <55EFE37F.1@free.fr>
 Subject: Re: [Xenomai] i210 porting
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -16,25 +17,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: =?iso-8859-1?Q?St=E9phane?= ANCELOT <sancelot@free.fr>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 09/09/2015 09:21, Gilles Chanteperdrix wrote:
-> On Wed, Sep 09, 2015 at 08:54:57AM +0200, St=E9phane ANCELOT wrote:
->> Hi,
->>
->> People interested in porting and testing i210 rtnet driver, contact me
->> please.
-> I have a working RTnet for i210. But that is the old version, for
-> Xenomai 2.x. I intend to merge this work with Xenomai 3.
->
-> Regards.
->
-I am on the way merging i210 copper dependencies from kernel 3.16.7 , I=20
-may setup a github for people wanting to work with it, before sending a=20
-patch.
+On Wed, Sep 09, 2015 at 09:45:03AM +0200, St=E9phane ANCELOT wrote:
+> On 09/09/2015 09:21, Gilles Chanteperdrix wrote:
+> >On Wed, Sep 09, 2015 at 08:54:57AM +0200, St=E9phane ANCELOT wrote:
+> >>Hi,
+> >>
+> >>People interested in porting and testing i210 rtnet driver, contact me
+> >>please.
+> >I have a working RTnet for i210. But that is the old version, for
+> >Xenomai 2.x. I intend to merge this work with Xenomai 3.
+> >
+> >Regards.
+> >
+> I am on the way merging i210 copper dependencies from kernel 3.16.7 , I m=
+ay
+> setup a github for people wanting to work with it, before sending a patch.
 
-Regards
-S.Ancelot
+I have used a more recent kernel, 3.16 is EOL, so, I do not think I
+will take your patch. However, I can do an untested port to Xenomai
+3 and let you test the port if you are interested.
 
+Regards.
+
+--=20
+					    Gilles.
+https://click-hack.org
 
