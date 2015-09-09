@@ -1,13 +1,16 @@
-References: <55ED7A9E.1080209@gmail.com> <55ED8875.10504@xenomai.org>
- <55F03436.5040202@gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55F039EE.2010502@xenomai.org>
-Date: Wed, 9 Sep 2015 15:53:50 +0200
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Wed, 9 Sep 2015 10:11:15 -0400
+Message-ID: <20150909141115.GX15616@csclub.uwaterloo.ca>
+References: <55EFD7C1.50606@free.fr>
+ <20150909072117.GA20075@hermes.click-hack.org> <55EFE37F.1@free.fr>
+ <20150909074838.GA21017@hermes.click-hack.org>
+ <55EFF3EE.9030707@free.fr>
 MIME-Version: 1.0
-In-Reply-To: <55F03436.5040202@gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] timer_create( ) example in Xenomai-3
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <55EFF3EE.9030707@free.fr>
+Subject: Re: [Xenomai] i210 porting
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,64 +19,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Konstantinos Chalas <konchalas@gmail.com>, Xenomai <xenomai@xenomai.org>
+To: =?utf-8?B?U3TDqXBoYW5l?= ANCELOT <sancelot@free.fr>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 09/09/2015 03:29 PM, Konstantinos Chalas wrote:
-> For future reference, this is what a working POSIX timer in Xenomai
-> looks like:
-> 
+On Wed, Sep 09, 2015 at 10:55:10AM +0200, Stéphane ANCELOT wrote:
+> I agree, but unfortunately, at the moment I have to stick on 3.16 since my
+> debian jessie is based on it....I have to check if they have made
+> 3.18 kernel available for this release.
+> I have not checked if there were lot of changes between 3.16 and 3.18 igb
+> driver at the moment.
+> I will have a look at it.
+> I will try my port , and if it does not succeed, I will ask for some kind of
+> help.Thanks however.
 
-Good you got it working. A few additional hints:
+Jessie will almost certainly stick with 3.16, which is being used by
+debian and ubuntu and is being maintained by the canonical kernel team
+(hence the ckt in the version number).
 
-> void* print_time (void* args)
-> {
->     struct timespec tp;
->     char buffer [80];
->     struct itimerspec new_value, old_value;
->     struct sigaction action;
->     struct sigevent sevent;
->     sigset_t set;
->     int signum = SIGALRM;
-> 
->     sevent.sigev_notify = SIGEV_THREAD_ID;
->     sevent.sigev_notify_thread_id = syscall(__NR_gettid);
->     sevent.sigev_signo = signum;
->
-
-Passing a NULL sigevent will get you the exact same behavior, i.e.:
-signum=SIGALRM, SIGEV_THREAD_ID to the calling thread. With the proper
-fix mentioned earlier, that is.
-
->     sigemptyset(&set);
->     sigaddset(&set, signum);
->     sigprocmask(SIG_BLOCK, &set, NULL);
-
-This masking is useless, and do not apply to Xenomai/cobalt signals but
-to regular ones. Cobalt signals are synchronous only, so you won't
-receive any async notification via some handler. sigwait*() is required
-to pull the pending signals explicitly. You can see this as all signals
-managed by Cobalt being implicitly blocked for any rt thread - of
-course, this does not apply to regular Linux signals which behave as usual.
-
->     while(1){
->         /* wait for signal (1 s) */
->         if (sigwait (&set, &signum) == -1)
->             perror ("sigwait");
-
-sigwait() does not return -1, but a positive error number if  something
-went wrong.
-
-> 
->         if (clock_gettime (CLOCK_MONOTONIC, &tp) == -1)
->             perror ("clock_gettime");
-> 
->         sprintf (buffer, "%ld s %ld ns overrun = %d\n", tp.tv_sec,
->                 tp.tv_nsec, timer_getoverrun (timer1));
-
-Another way to retrieve the count of overruns for a timer without the
-extra call is to invoke sigwaitinfo(&set, &siginfo), fetching that value
-from siginfo.si_overrun.
+You can maybe find a backport of a testing kernel for jessie at some
+point, but it is likely to be 4.x, not 3.18 and hence probably not
+supported by ipipe yet.
 
 -- 
-Philippe.
+Len Sorensen
 
