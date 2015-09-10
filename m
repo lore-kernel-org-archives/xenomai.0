@@ -1,12 +1,13 @@
-Date: Tue, 18 Aug 2015 14:48:05 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150818124805.GB4740@hermes.click-hack.org>
-References: <55D321A2.6090201@sigmatek.at>
+References: <1437498780-3412-1-git-send-email-sbattazzo@gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <55F13E6D.4060906@xenomai.org>
+Date: Thu, 10 Sep 2015 10:25:17 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <55D321A2.6090201@sigmatek.at>
-Subject: Re: [Xenomai] Function to get state of lock variable
+In-Reply-To: <1437498780-3412-1-git-send-email-sbattazzo@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] Added drivers for C_CAN ported from original
+ Linux driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,43 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Netbal <wolfgang.netbal@sigmatek.at>
-Cc: Xenomai Mailing List <xenomai@xenomai.org>
+To: Wolfgang Grandegger <wg@grandegger.com>, "Kiszka, Jan" <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-On Tue, Aug 18, 2015 at 02:14:26PM +0200, Wolfgang Netbal wrote:
-> Hi All,
+On 07/21/2015 07:13 PM, Steve Battazzo wrote:
+> From: SteveB <user@ubuntu.(none)>
 > 
-> is there a function te returns true or false if a rtdm_lock_t variable is
-> set ?
-> What I have to do is  to check in an interrupt routine if the list is
-> locked,
-> if this is the case I leave the interrupt handler befor accessing the list.
+> ---
+>  ksrc/drivers/can/Kconfig                      |    7 +
+>  ksrc/drivers/can/Makefile                     |    6 +-
+>  ksrc/drivers/can/c_can/Kconfig                |   23 +
+>  ksrc/drivers/can/c_can/Makefile               |   36 +
+>  ksrc/drivers/can/c_can/README                 |    5 +
+>  ksrc/drivers/can/c_can/rtcan_c_can.c          | 1289 +++++++++++++++++++++++++
+>  ksrc/drivers/can/c_can/rtcan_c_can.h          |  209 ++++
+>  ksrc/drivers/can/c_can/rtcan_c_can_pci.c      |  221 +++++
+>  ksrc/drivers/can/c_can/rtcan_c_can_platform.c |  326 +++++++
+>  9 files changed, 2120 insertions(+), 2 deletions(-)
+>  create mode 100644 ksrc/drivers/can/c_can/Kconfig
+>  create mode 100644 ksrc/drivers/can/c_can/Makefile
+>  create mode 100644 ksrc/drivers/can/c_can/README
+>  create mode 100644 ksrc/drivers/can/c_can/rtcan_c_can.c
+>  create mode 100644 ksrc/drivers/can/c_can/rtcan_c_can.h
+>  create mode 100644 ksrc/drivers/can/c_can/rtcan_c_can_pci.c
+>  create mode 100644 ksrc/drivers/can/c_can/rtcan_c_can_platform.c
 > 
-> I use the following code to lock the add and replace of list elements.
-> 
-> static rtdm_lock_t opendev_list_lock;
-> static int open(struct rtdm_dev_context *context, rtdm_user_info_t *
-> user_info, int oflags)
-> {
->     lrtdrv_context_t *ctx = (lrtdrv_context_t *) context->dev_private;
->     rtdm_lockctx_t s;
-> 
-> ....
-> 
->     rtdm_lock_get_irqsave(&opendev_list_lock, s);
->     list_add_tail(&ctx->opendev_entry, &lrtdrv_opendev_list);
->     rtdm_lock_put_irqrestore(&opendev_list_lock, s);
 
-Well, if you are not running on a multiprocessor system, you can not
-take interrupt during that section.
+Thanks, and sorry for the late reply.
 
-And on a multiprocessor system, the time this code will hold the
-lock is very short, so, it should not be a problem for an interrupt
-one core to spin while another core is holding the lock.
-
-But we can probably add rtdm_lock_is_locked, yes.
+Wolfgang/Jan, any objection with this driver? I'm willing to pick it for
+3.x if ok. Thanks.
 
 -- 
-					    Gilles.
-https://click-hack.org
+Philippe.
 
