@@ -1,6 +1,6 @@
-Date: Wed, 16 Sep 2015 07:06:46 +0200
+Date: Wed, 16 Sep 2015 07:56:50 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150916050646.GA12172@hermes.click-hack.org>
+Message-ID: <20150916055650.GE12172@hermes.click-hack.org>
 References: <CAJqUr7yEepPti2-DzW+5NXNTC1JY-eei2C9wQ+rQ7aVxNhxQZw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -31,17 +31,18 @@ On Tue, Sep 15, 2015 at 09:34:41PM -0700, Don Mahurin wrote:
 > are available in the git repository at:
 > 
 >   http://gitlab.mperpetuo.com/it/ipipe.git ipipe-3.14
+> 
+> for you to fetch changes up to d62d986645aa5853541c06cb4cba067bb4110bbb:
+> 
+>   ipipe: Fix setting of IPIPE_IRQS_NEEDS_STARTUP in irq_shutdown()
+> (2015-09-15 21:14:45 -0700)
+> 
+> ----------------------------------------------------------------
+> Mark W. Tyler (1):
+> 
+>       ipipe: Fix setting of IPIPE_IRQS_NEEDS_STARTUP in irq_shutdown()
 
-I am trying to look at the web interface to find that commit, but
-can not find an ipipe-3.14 branch. I only see:
-ipipe-3.14.44-arm64
-ipipe-3.14.44-arm64-function-tracer
-ipipe-3.14.44-arm64-ipipe-tracer
-ipipe-3.14.44-arm64-stage
-
-How do I find it?
-
-Regards.
+This fix is needed, thanks.
 
 -- 
 					    Gilles.
