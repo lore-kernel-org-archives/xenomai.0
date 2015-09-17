@@ -1,12 +1,10 @@
-References: <171658328.6961247.1439915212899.JavaMail.yahoo@mail.yahoo.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <55D36A9E.6030809@xenomai.org>
-Date: Tue, 18 Aug 2015 19:25:50 +0200
 MIME-Version: 1.0
-In-Reply-To: <171658328.6961247.1439915212899.JavaMail.yahoo@mail.yahoo.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xeno 3-rc7 : rtcanconfig fails to set baudrate
+Date: Thu, 17 Sep 2015 10:44:33 -0700
+Message-ID: <CAJqUr7zcv-09ZcNLQDSOj0A3zbv3vVwH1nnQ=2=H+MagCBCvBA@mail.gmail.com>
+From: Don Mahurin <don@mperpetuo.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] [pull request] xenomai/arm64: Use empty mayday
+	implementation for arm64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,27 +13,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Frederik Bayart <frederik_bayart@yahoo.co.uk>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 08/18/2015 06:26 PM, Frederik Bayart wrote:
-> I have build xeno-3.0.rc7 with kernel 3.18.12.
-> I have a PEAK-PCIe CAN card in my system.
-> Drivers are loaded and rtcan0 en rtcan1 are created in /proc/rtcan.
-> 
-> However, I'm not able to set the baudrate when I'm execute 'rtcanconfig rtcan0 -v -b 1000000 start'
-> 
-> By adding debug statements in rtcanconfig, I found that ioctl(can_fd, SIOCSCANBAUDRATE, &u.ifr); fails,
-> 
-> errno gives : SIOCSCANBAUDRATE(errno=19): No such device
-> 
-> Below the output of rtcan0/info and xeno-config --info
-> 
-> Any suggestions ?
+The following changes since commit 17095784c6d3d44dc7f1512ffab9bb957e298466:
 
-This error is documented, I would check ->ifr_name in the request block:
+  cobalt/arm64: leave mm tracking to the pipeline (2015-09-17 15:08:34
++0200)
 
-http://www.xenomai.org/documentation/xenomai-3/html/xeno3prm/group__rtdm__can.html#ga7c070037c218b40de849ebf4d299f977
+are available in the git repository at:
 
--- 
-Philippe.
+  http://gitlab.mperpetuo.com/it/xenomai-3.git arm64
 
+for you to fetch changes up to 6f09555dcb047ed5d31138fd5a0b978b5fe76f65:
+
+  cobalt/arm64: Use empty mayday implementation for arm64. (2015-09-17
+10:33:03 -0700)
+
+----------------------------------------------------------------
+
+Don Mahurin (1):
+      cobalt/arm64: Use empty mayday implementation for arm64.
+
+ kernel/cobalt/arch/arm64/mayday.c | 86 +
+---------------------------------------
+1 file changed, 1 insertion(+), 85 deletions(-)
