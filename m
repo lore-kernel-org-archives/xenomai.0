@@ -1,15 +1,12 @@
-References: <56139C8B.3060509@control.lth.se>
- <20151006192323.GB30765@hermes.click-hack.org> <5614C8E3.5090809@sigmatek.at>
- <5614D22A.8030203@sigmatek.at>
-From: Anders Blomdell <anders.blomdell@control.lth.se>
-Message-ID: <5615108A.6070001@control.lth.se>
-Date: Wed, 7 Oct 2015 14:31:06 +0200
+Date: Fri, 18 Sep 2015 10:14:40 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150918081440.GB7301@hermes.click-hack.org>
+References: <30CDC0E48A9B4ED496A94C7F5B511635@itd206>
 MIME-Version: 1.0
-In-Reply-To: <5614D22A.8030203@sigmatek.at>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Problems disabling SMI interrupts on MSI H87-G43
- motherboard
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <30CDC0E48A9B4ED496A94C7F5B511635@itd206>
+Subject: Re: [Xenomai] Reg: Linux OOps
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,85 +15,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: johann.obermayr@sigmatek.at, Xenomai@xenomai.org
+To: Sureshvs <sureshvs@datapatterns.co.in>
+Cc: "SDG'08@dP_Jagat Bhusan" <jagat.bhusan@datapatterns.co.in>, sureshvsmca@gmail.com, xenomai@xenomai.org
 
-On 2015-10-07 10:04, Johann Obermayr wrote:
-> Am 07.10.2015 um 09:25 schrieb Johann Obermayr:
->> Am 06.10.2015 um 21:23 schrieb Gilles Chanteperdrix:
->>> On Tue, Oct 06, 2015 at 12:03:55PM +0200, Anders Blomdell wrote:
->>>> Hi
->>>>
->>>> I have problems disabling SMI-interrupts on "MSI H87-G43 motherboard" =
-(http://www.msi.com/product/mb/H87-G43.html)
->>>>
->>>> This is what msi.c says at bootup (after attached patch is applied):
->>>>
->>>>    kernel: [Xenomai] SMI workaround failed! (1830: 1 & ~1 -> 1)
->>>>
->>>> and this is what lspci says:
->>>>
->>>>
->>>> Anybody who has a good idea how to fix this?
->>> You should first check that the way smi.c retrieves the address of
->>> the SMI_EN register is still valid for your chipset. If it is, then
->>> try fiddling with the BIOS settings to see if some setting can
->>> disable generation of SMIs. If unsuccessful, you can try contacting
->>> the motherboard support to see if they have any advice.
->>>
->> On new Mainboards, you can't disable SMI.
->> Because this is a security problem, so SMI is locked by BIOS.
->> There are some registery on the mainboard chipset, hat lock the SMI regi=
-ster.
->> So you can't disable the SMI.
->> We also had this trouble, and we get a own BIOS with disabled SMI.
->>
->> Regards
->>   Johann
->>
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> http://xenomai.org/mailman/listinfo/xenomai
->>
-> Found this:
->=20
-> GEN_PMCON_1=97General PM Configuration 1 Register (PM=97D31:F0)
-> Offset Address: A0h Attribute: R/W, RO, R/WO
-> Default Value: 0000h Size: 16-bit
-> Lockable: No Usage: ACPI, Legacy
-> Power Well: Core
->=20
-> Bit 4: SMI_LOCK =97 R/WO. When this bit is set, writes to the GLB_SMI_EN =
-bit (PMBASE
-> + 30h, bit 0) will have no effect. Once the SMI_LOCK bit is set, writes o=
-f 0 to
-> SMI_LOCK bit will have no effect (that is, once set, this bit can only be=
- cleared by
-> PLTRST#).
->=20
+On Wed, Sep 16, 2015 at 07:45:54PM +0530, Sureshvs wrote:
+> Hi
+> 
+> ARCH=powerPC
+> Processor: MPC8641
+> Linux Kernel : 3.10.32
+> Xenomai patch version: xenomai-2.6.3
+> 
+> We are getting the below oops randomly.kindly help us to isolate the problem with the stack trace given below.
+> 
+> 
+> Oops: Kernel access of bad area, sig: 11 [#1]
+> [12981.709964] VPX
+> [12981.711706] Modules linked in: dp_elpc_rt(O) xeno_16550A DPXMC5022_DRV(O) dpxmc1107xen(O) dpvpx5849xen(O) dp1553bxt(O) DPVPX0689_WDT_drv(O) DPVPX0689_Timer(O) DPVPX0689_NVSRAM_drv(O) DPVPX0689TS(O) [last unloaded: dp_elpc_rt]
+> [12981.731718] CPU: 0 PID: 3941 Comm: PROGRESS_THREAD Tainted: G           O 3.10.32-dpvpx0689 #177
+> [12981.740494] task: cf497840 ti: cf052000 task.ti: cf052000
+> [12981.745882] NIP: 00000000 LR: a007477c CTR: 00000000
+> [12981.750836] REGS: cf053c40 TRAP: 0400   Tainted: G           O  (3.10.32-dpvpx0689)
+> [12981.758479] MSR: 40001032 <ME,IR,DR,RI>  CR: 24004422  XER: 00000000
+> [12981.764839] 
+> GPR00: a007477c cf053cf0 cf497840 00000203 00000000 00000000 00010000 a0649728 
+> GPR08: 00000000 00000000 00000000 40fd2a34 24004422 1001b5d8 00000000 00000000 
+> GPR16: 3c033000 9fe21d58 9fe21d68 0ff52518 00000003 3c022018 00021000 0ffc81c4 
+> GPR24: cf053f50 00000200 00000001 a0670000 a0649728 a06ceb80 a06d2c00 00000203 
+> [12981.794546] NIP [00000000]   (null)
 
-Thanks everybody, seems like I have to give up on that motherboard:
+This looks very much like an already fixed issue. What version of
+the I-pipe patch are you using?
 
-1. Nothing found to disable in the BIOS
-2. Disabling all sourcecs with smictrl (git://git.kiszka.org/smictrl.git)
-   still gives high latencies with RTNet (+1.5 milliseconds).=20
-3. latency test does not show anything suspicious, so it might
-   be some other issue.
-
-Anybody that has a suggestion on a recent motherboard that has been used wi=
-th
-RTNet and showing good results?
-
-Thanks everyone!
-
-/Anders
-
-
---=20
-Anders Blomdell                  Email: anders.blomdell@control.lth.se
-Department of Automatic Control
-Lund University                  Phone:    +46 46 222 4625
-P.O. Box 118                     Fax:      +46 46 138118
-SE-221 00 Lund, Sweden
-
+-- 
+					    Gilles.
+https://click-hack.org
 
