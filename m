@@ -1,21 +1,16 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Fri, 25 Sep 2015 10:09:21 -0400
-Message-ID: <20150925140921.GP15616@csclub.uwaterloo.ca>
-References: <20150923053843.GD13976@hermes.click-hack.org>
- <20150923070615.GI13976@hermes.click-hack.org>
- <CAFkYNwYta4TDofpKcGfkH4xUB0udKg8Q721T97LTD6ua_5MWjg@mail.gmail.com>
- <20150923115911.GB28513@hermes.click-hack.org>
- <CAFkYNwZoEEiezx1Ny+s2WXgx5xP471A1BrVEnJJ9hukjyEv4-Q@mail.gmail.com>
- <CAFkYNwbRx9ZK10_F7XfcP7U0uNBafY=xA7H_TbxbBj7CxpETrQ@mail.gmail.com>
- <20150923153413.GN15616@csclub.uwaterloo.ca>
- <CAFkYNwajO8EDfQU36znukPsbiZPKEMtXxnpzqDO-Su1=k5jWuA@mail.gmail.com>
- <20150923161249.GO15616@csclub.uwaterloo.ca>
- <CAFkYNwZOOpH5Qv7icSf9gvaOzKcecJhC_4GA2XPgfP0OS_mq=w@mail.gmail.com>
+Date: Fri, 18 Sep 2015 09:46:33 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150918074633.GA7301@hermes.click-hack.org>
+References: <CAFkYNwaqLYu7vAAyAt6Q9qfKL4iBa+N1BuzgJWhN6z4NfA5U=g@mail.gmail.com>
+ <44k2rqz38u.fsf@be-well.ilk.org>
+ <CAFkYNwYJ7ah+U97Pwuqwf9Phg=J0rTjr1txfGtg0FuoN2oP7cg@mail.gmail.com>
+ <20150917133220.GB31663@hermes.click-hack.org>
+ <CAFkYNwacX=h7trKNEBq=KZX627nRA7u6zk6YoEOLj8_J_LEa1Q@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAFkYNwZOOpH5Qv7icSf9gvaOzKcecJhC_4GA2XPgfP0OS_mq=w@mail.gmail.com>
-Subject: Re: [Xenomai] Xenomai tests
+In-Reply-To: <CAFkYNwacX=h7trKNEBq=KZX627nRA7u6zk6YoEOLj8_J_LEa1Q@mail.gmail.com>
+Subject: Re: [Xenomai] Error code -19
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,16 +20,40 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: vibnwis <vibnwis@gmail.com>
-Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
+Cc: xenomai@xenomai.org
 
-On Fri, Sep 25, 2015 at 11:55:39AM +1200, vibnwis wrote:
-> Do you set/unset the items in "make menuconfig" or edit them manually?
+On Fri, Sep 18, 2015 at 01:39:36PM +1200, vibnwis wrote:
+> Thank you for looking into my problems.
+> 
+> Please find attached the kern.log.
+> 
+> Thanks in advance.
+> 
+> On 18 September 2015 at 01:32, Gilles Chanteperdrix <
+> gilles.chanteperdrix@xenomai.org> wrote:
+> 
+> > On Fri, Sep 18, 2015 at 01:02:53AM +1200, vibnwis wrote:
+> > > I tried my best to understand what is being described in
+> >
+> > Please post the full kernel logs.
+> >
+> > --
+> >                                             Gilles.
+> > https://click-hack.org
+> >
 
-In make menuconfig.
+> Jan  1 00:00:07 arm kernel: [    1.454040] [Xenomai] scheduling class idle registered.
+> Jan  1 00:00:07 arm kernel: [    1.454040] [Xenomai] scheduling class rt registered.
+> Jan  1 00:00:07 arm kernel: [    1.454315] I-pipe: high-resolution clock not working
+> Jan  1 00:00:07 arm kernel: [    1.454498] [Xenomai] init failed, code -19
 
-But using the saerch and seeing the state and logic it is using helps
-to go change the right dependancies.
+So, the problem is the clock, not the timer. On a cortex A9, the
+I-pipe uses the global timer as clock. Is the global timer enabled
+in the kernel configuration, and is it declared in the device tree?
+
+Regards.
 
 -- 
-Len Sorensen
+					    Gilles.
+https://click-hack.org
 
