@@ -1,8 +1,20 @@
-From: Thierry Bultel <thierry.bultel@basystemes.fr>
-Date: Fri, 25 Sep 2015 15:22:50 +0200
-Message-Id: <1443187370-3361-1-git-send-email-thierry.bultel@basystemes.fr>
-Subject: [Xenomai] [PATCH 1/1] rtcan_flexcan: with open firmware,
-	use devm_clk_put instead of clk_put
+MIME-Version: 1.0
+In-Reply-To: <20150918125020.GE7301@hermes.click-hack.org>
+References: <CAFkYNwaqLYu7vAAyAt6Q9qfKL4iBa+N1BuzgJWhN6z4NfA5U=g@mail.gmail.com>
+ <44k2rqz38u.fsf@be-well.ilk.org>
+ <CAFkYNwYJ7ah+U97Pwuqwf9Phg=J0rTjr1txfGtg0FuoN2oP7cg@mail.gmail.com>
+ <20150917133220.GB31663@hermes.click-hack.org>
+ <CAFkYNwacX=h7trKNEBq=KZX627nRA7u6zk6YoEOLj8_J_LEa1Q@mail.gmail.com>
+ <20150918074633.GA7301@hermes.click-hack.org>
+ <CAFkYNwaBpwoC7rZBV4eRd7XEZ+c1GzNJZN9ZY_n9WO184A=pFQ@mail.gmail.com>
+ <20150918122903.GC7301@hermes.click-hack.org>
+ <CAFkYNwa+1ib=a+13PWYdNEwU35pvckchVwGa+Q8Ep7caSo7ioA@mail.gmail.com>
+ <20150918125020.GE7301@hermes.click-hack.org>
+Date: Sat, 19 Sep 2015 00:58:53 +1200
+Message-ID: <CAFkYNwYmig=-67Rq6=m=_uPrmRZ-T+GxVW1B9UC8psfs64nLkw@mail.gmail.com>
+From: vibnwis <vibnwis@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Error code -19
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,46 +23,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Thierry Bultel <thierry.bultel@basystemes.fr>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Signed-off-by: Thierry Bultel <thierry.bultel@basystemes.fr>
----
- ksrc/drivers/can/rtcan_flexcan.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Many thanks, recompiling it now. Let you know tomorrow.
 
-diff --git a/ksrc/drivers/can/rtcan_flexcan.c b/ksrc/drivers/can/rtcan_flexcan.c
-index f5477db..91c5ebf 100644
---- a/ksrc/drivers/can/rtcan_flexcan.c
-+++ b/ksrc/drivers/can/rtcan_flexcan.c
-@@ -235,6 +235,7 @@ struct flexcan_priv {
- 	struct regulator *reg_xceiver;
- 	struct clk *clk_ipg;
- 	struct clk *clk_per;
-+	struct platform_device *pdev;
- #endif
- };
- 
-@@ -1054,8 +1055,8 @@ static void put_clocks(struct flexcan_priv *priv)
- #if LINUX_VERSION_CODE < KERNEL_VERSION(3,11,0)
- 	clk_put(priv->clk);
- #else
--	clk_put(priv->clk_per);
--	clk_put(priv->clk_ipg);
-+	devm_clk_put(&priv->pdev->dev,priv->clk_per);
-+	devm_clk_put(&priv->pdev->dev,priv->clk_ipg);
- #endif
- }
- 
-@@ -1132,6 +1133,7 @@ static int flexcan_probe(struct platform_device *pdev)
- 		}
- 		clock_freq = clk_get_rate(priv->clk_per);
- 	}
-+	priv->pdev = pdev;
- #endif
- 
- 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--- 
-1.9.1
+On 19 September 2015 at 00:50, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
 
-
+> On Sat, Sep 19, 2015 at 12:42:11AM +1200, vibnwis wrote:
+> > I had tried, I could not find anything associated with global_timer or
+> > global. Hence, may I know what wording would it be?
+>
+> Ok, the problem is that that code was tested on omap4430 where the
+> global timer can not be used by the mainline code. Could you try the
+> following patch?
+>
+> diff --git a/drivers/clocksource/arm_global_timer.c
+> b/drivers/clocksource/arm_global_timer.c
+> index 04ca5d3..191422d 100644
+> --- a/drivers/clocksource/arm_global_timer.c
+> +++ b/drivers/clocksource/arm_global_timer.c
+> @@ -279,7 +279,7 @@ static void __init global_timer_of_register(struct
+> device_node *np)
+>                 gt_ppi = irq_of_parse_and_map(np, 0);
+>                 if (!gt_ppi) {
+>                         pr_warn("global-timer: unable to parse irq\n");
+> -                       return;
+> +                       usable_timer = 0;
+>                 }
+>         }
+>
+> --
+>                                             Gilles.
+> https://click-hack.org
+>
