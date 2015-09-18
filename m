@@ -1,20 +1,16 @@
-Date: Mon, 21 Sep 2015 16:46:15 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150921144615.GA20753@hermes.click-hack.org>
-References: <CAFkYNwbawB8iHkJA51FpuQFDDY2aYBj2_aMontPadSBf=VZ8AA@mail.gmail.com>
- <20150919151106.GD22852@hermes.click-hack.org>
- <20150919151423.GE22852@hermes.click-hack.org>
- <CAFkYNwZSskEBYeHOK1UEXi7iGucm5x=O7wBB9YQ+1A_Gu9iGgA@mail.gmail.com>
- <CAFkYNwZS5Js_22DMKozYciMwVUKxPbUJ0-FoAxoY50rfxtcBQA@mail.gmail.com>
- <20150920081716.GH22852@hermes.click-hack.org>
- <CAFkYNwY_sQxtHYfB=Y-bcpGyfaENWjAwnx0Yc7VvWcEPaUH+fg@mail.gmail.com>
- <20150920170330.GA3486@hermes.click-hack.org>
- <CAFkYNwbHQXK8_YA1A0NLErdcHbYB-PpTMo09VUaae7fgQTmxfw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFkYNwbHQXK8_YA1A0NLErdcHbYB-PpTMo09VUaae7fgQTmxfw@mail.gmail.com>
-Subject: Re: [Xenomai] Installing xenomai libraries ARM OMAP4460
+In-Reply-To: <20150918074633.GA7301@hermes.click-hack.org>
+References: <CAFkYNwaqLYu7vAAyAt6Q9qfKL4iBa+N1BuzgJWhN6z4NfA5U=g@mail.gmail.com>
+ <44k2rqz38u.fsf@be-well.ilk.org>
+ <CAFkYNwYJ7ah+U97Pwuqwf9Phg=J0rTjr1txfGtg0FuoN2oP7cg@mail.gmail.com>
+ <20150917133220.GB31663@hermes.click-hack.org>
+ <CAFkYNwacX=h7trKNEBq=KZX627nRA7u6zk6YoEOLj8_J_LEa1Q@mail.gmail.com>
+ <20150918074633.GA7301@hermes.click-hack.org>
+Date: Sat, 19 Sep 2015 00:24:38 +1200
+Message-ID: <CAFkYNwaBpwoC7rZBV4eRd7XEZ+c1GzNJZN9ZY_n9WO184A=pFQ@mail.gmail.com>
+From: vibnwis <vibnwis@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Error code -19
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,43 +19,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: vibnwis <vibnwis@gmail.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Mon, Sep 21, 2015 at 10:16:53PM +1200, vibnwis wrote:
-> Hi Gilles,
-> 
-> I managed to get autoreconf -if to work, and advanced to compiling the
-> xenomai. However, yet not to the end. I got the following error. Then I
-> switch xenomai-gch. The same error as well. Hence, I changed the CC to
-> Ubuntu arm-linux-gnueabihf package. The same error too. The errors are as
-> follow.
-> 
-> checking for ARM machine... configure: error: Selecting a machine with
-> --enable-arm-mach is mandatory
-> 
-> and the command is  ./configure CFLAGS="-march=armv7-a -mfpu=vfp3"
-> LDFLAGS="-march=armv7-a -mfpu=vfp3" --with-core=cobalt --enable-smp
-> --enable-pshared --build=x86_64-linux-gnu --host=arm-linux-gnueabihf
-> 
-> if I added --enable-arm-mach, I get error messages "checking for ARM
-> machine... configure: error: Invalid machine selected: "yes"".
-> 
-> Googles don't seem to get any positive resolution. Appreciate any
-> comments.
+I have checked in .config. However, I am not sure what string to search for
+device tree. Would you please advise what string would it be for the clock?
 
-You are trying to compile an outdated version of Xenomai, Xenomai
-version 2.5 or earlier. You can have access to the installation
-instructions for that particular version in the sources (the file is
-named README.INSTALL at the top of the sources tree), or on the
-website, using the URL:
+In .config
 
-http://xenomai.org/documentation/xenomai-2.5/README.INSTALL
+CONFIG_ARM_GLOBAL_TIMER=y
+CONFIG_CLKSRC_ARM_GLOBAL_TIMER_SCHED_CLOCK=y
 
-for instance, if installing the version 2.5. Replace 2.5 with the
-version you are actually installing.
 
--- 
-					    Gilles.
-https://click-hack.org
 
+On 18 September 2015 at 19:46, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+
+> On Fri, Sep 18, 2015 at 01:39:36PM +1200, vibnwis wrote:
+> > Thank you for looking into my problems.
+> >
+> > Please find attached the kern.log.
+> >
+> > Thanks in advance.
+> >
+> > On 18 September 2015 at 01:32, Gilles Chanteperdrix <
+> > gilles.chanteperdrix@xenomai.org> wrote:
+> >
+> > > On Fri, Sep 18, 2015 at 01:02:53AM +1200, vibnwis wrote:
+> > > > I tried my best to understand what is being described in
+> > >
+> > > Please post the full kernel logs.
+> > >
+> > > --
+> > >                                             Gilles.
+> > > https://click-hack.org
+> > >
+>
+> > Jan  1 00:00:07 arm kernel: [    1.454040] [Xenomai] scheduling class
+> idle registered.
+> > Jan  1 00:00:07 arm kernel: [    1.454040] [Xenomai] scheduling class rt
+> registered.
+> > Jan  1 00:00:07 arm kernel: [    1.454315] I-pipe: high-resolution clock
+> not working
+> > Jan  1 00:00:07 arm kernel: [    1.454498] [Xenomai] init failed, code
+> -19
+>
+> So, the problem is the clock, not the timer. On a cortex A9, the
+> I-pipe uses the global timer as clock. Is the global timer enabled
+> in the kernel configuration, and is it declared in the device tree?
+>
+> Regards.
+>
+> --
+>                                             Gilles.
+> https://click-hack.org
+>
