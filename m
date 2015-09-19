@@ -1,16 +1,12 @@
-Date: Wed, 30 Sep 2015 16:41:52 +0200
+Date: Sat, 19 Sep 2015 17:11:06 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150930144152.GA17245@hermes.click-hack.org>
-References: <2745691.a91SqWkUDm@eltrolinux48.eltroad.eltropuls>
- <20150927213236.GA23716@hermes.click-hack.org>
- <20150929215950.GE18188@hermes.click-hack.org>
- <5758277.0p9CmTfBj9@eltrolinux48.eltroad.eltropuls>
+Message-ID: <20150919151106.GD22852@hermes.click-hack.org>
+References: <CAFkYNwbawB8iHkJA51FpuQFDDY2aYBj2_aMontPadSBf=VZ8AA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <5758277.0p9CmTfBj9@eltrolinux48.eltroad.eltropuls>
-Subject: Re: [Xenomai] rtnet locking/socket SKBs
+In-Reply-To: <CAFkYNwbawB8iHkJA51FpuQFDDY2aYBj2_aMontPadSBf=VZ8AA@mail.gmail.com>
+Subject: Re: [Xenomai] Installing xenomai libraries ARM OMAP4460
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,31 +15,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marc =?iso-8859-1?Q?Str=E4mke?= <marc.straemke@eltropuls.de>
+To: vibnwis <vibnwis@gmail.com>
 Cc: xenomai@xenomai.org
 
-On Wed, Sep 30, 2015 at 04:33:29PM +0200, Marc Str=E4mke wrote:
-> Hello Gilles,
-> Am Dienstag, 29. September 2015, 23:59:50 schrieb Gilles Chanteperdrix:
-> > > What may be missing is that creating sockets should lock the
-> > > corresponding kernel module.
-> >=20
-> > The issue should now be fixed in the xenomai-gch git, branch for-forge.
->=20
-> Thank you for your work.
->=20
-> I will try the branch in the next days. I have been running for a few mon=
-th=20
-> now with disabled locking (as in my old patch) in AF_PACKET without any i=
-ssues=20
-> so it should be fine.
+On Sun, Sep 20, 2015 at 02:58:58AM +1200, vibnwis wrote:
+> Hi All,
+> 
+> Having installed Xenomai, I am wanting to test Xenomai.
+> 
+> If I understood the guide correctly under the title "Installing the Xenomai
+> libraries and tools", I would need to compile the libraries as well as the
+> test apps. For that I need to do by executing the command below in the
+> xenomai_root which in my case is xenomai_root=xenomai-3. However, the
+> configure file is not found. I am totally confused of what have I done
+> wrong? Any helps/advise would be appreciated.
+> 
+> $xenomai_root/configure CFLAGS="-march=armv4t" LDFLAGS="-march=armv4t" \
+>   --build=i686-pc-linux-gnu --host=arm-none-linux-gnueabi- --with-core=cobalt
 
-Well, the issue is not specific to AF_PACKET. And if you do not get
-socket creations to lock the rtpacket module, you can trigger leaks
-and faults by removing the rtpacket module while an application has
-an AF_PACKET socket open.
+-march=armv4t works for ARM processors using the ARMv4T architecture
+revision. The cortex A9 in an omap4460 uses the ARMv7 architecture
+revision. So, you should pass -march=armv7 instead, or -mcpu=cortex-a9
 
---=20
+the argument to the --host option should not include the leading
+dash.
+
+the variable xenomai_root should probably be an absolute path. And
+note that if you downloaded xenomai-3 from its git repository as
+opposed to its latest archive, you also need to call autoreconf -i
+to create the configure scrippt.
+
+-- 
 					    Gilles.
 https://click-hack.org
 
