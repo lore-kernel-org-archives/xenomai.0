@@ -1,14 +1,18 @@
-References: <20150909113151.0fed6fd7@md1em3qc> <55F02DB0.1090801@xenomai.org>
- <20150915104854.56a7b13f@md1em3qc>
- <20150917143955.01a71eb6@md1em3qc>
-From: Jorge Ramirez Ortiz <jro@xenomai.org>
-Message-ID: <561E5495.8050300@xenomai.org>
-Date: Wed, 14 Oct 2015 09:11:49 -0400
+Date: Sun, 20 Sep 2015 16:14:06 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150920141406.GB31573@hermes.click-hack.org>
+References: <CAFkYNwbawB8iHkJA51FpuQFDDY2aYBj2_aMontPadSBf=VZ8AA@mail.gmail.com>
+ <20150919151106.GD22852@hermes.click-hack.org>
+ <20150919151423.GE22852@hermes.click-hack.org>
+ <CAFkYNwZSskEBYeHOK1UEXi7iGucm5x=O7wBB9YQ+1A_Gu9iGgA@mail.gmail.com>
+ <CAFkYNwZS5Js_22DMKozYciMwVUKxPbUJ0-FoAxoY50rfxtcBQA@mail.gmail.com>
+ <20150920081716.GH22852@hermes.click-hack.org>
+ <CAFkYNwY_sQxtHYfB=Y-bcpGyfaENWjAwnx0Yc7VvWcEPaUH+fg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20150917143955.01a71eb6@md1em3qc>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] 4.x merge
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFkYNwY_sQxtHYfB=Y-bcpGyfaENWjAwnx0Yc7VvWcEPaUH+fg@mail.gmail.com>
+Subject: Re: [Xenomai] Installing xenomai libraries ARM OMAP4460
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,21 +21,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: "KISZKA, JAN" <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: vibnwis <vibnwis@tgmail.com>
+Cc: xenomai@xenomai.org
 
-On 09/17/2015 08:39 AM, Henning Schild wrote:
-> I did push my current state to github. Check out 
-> https://github.com/siemens/linux-ipipe
-> branches ipipe-3.19 and -4.0
+On Sun, Sep 20, 2015 at 09:39:08PM +1200, vibnwis wrote:
+> I got the ,/configure to proceed a step further.It still complains that
+> checking whether the C compiler works... no
+> configure: error: in `/home/qws/PandaBoard-ee/xenomai-3':
+> configure: error: C compiler cannot create executables
+> See `config.log' for more details
 > 
-> The xenomai repos also require patching if you want to use these newer
-> kernels. I will send the required patches as a reply to this mail.
+> (...)
 > 
+> Any comments would be very appreciated, please?
 
-ok for me to clone your repo and start adding on the aarch64 support?
+Once again, please read:
+http://xenomai.org/installing-xenomai-3-x/#Cross-compilation
 
+Or if you are looking for more information, see:
+https://www.sourceware.org/autobook/autobook/autobook_139.html#Cross-Compilation
 
 -- 
-jro
+					    Gilles.
+https://click-hack.org
 
