@@ -1,14 +1,16 @@
-References: <20151011130536.GA1765@hermes.click-hack.org>
- <561B6002.3010409@siemens.com> <20151012081028.GA23413@hermes.click-hack.org>
- <561B715E.3090207@siemens.com> <20151012084846.GB23413@hermes.click-hack.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <561B7652.30508@siemens.com>
-Date: Mon, 12 Oct 2015 10:58:58 +0200
 MIME-Version: 1.0
-In-Reply-To: <20151012084846.GB23413@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Issue with CONFIG_PREEMPT_VOLUNTARY
+In-Reply-To: <20150920081125.GG22852@hermes.click-hack.org>
+References: <CAFkYNwbawB8iHkJA51FpuQFDDY2aYBj2_aMontPadSBf=VZ8AA@mail.gmail.com>
+ <20150919151106.GD22852@hermes.click-hack.org>
+ <20150919151423.GE22852@hermes.click-hack.org>
+ <CAFkYNwZSskEBYeHOK1UEXi7iGucm5x=O7wBB9YQ+1A_Gu9iGgA@mail.gmail.com>
+ <CAFkYNwZS5Js_22DMKozYciMwVUKxPbUJ0-FoAxoY50rfxtcBQA@mail.gmail.com>
+ <20150920081125.GG22852@hermes.click-hack.org>
+Date: Mon, 21 Sep 2015 00:02:54 +1200
+Message-ID: <CAFkYNwainOiZv64r+r46=7mXMTvxS_rdb7gifzpCZHzE3Jvh9Q@mail.gmail.com>
+From: vibnwis <vibnwis@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Installing xenomai libraries ARM OMAP4460
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,59 +20,42 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 2015-10-12 10:48, Gilles Chanteperdrix wrote:
-> On Mon, Oct 12, 2015 at 10:37:50AM +0200, Jan Kiszka wrote:
->> On 2015-10-12 10:10, Gilles Chanteperdrix wrote:
->>> On Mon, Oct 12, 2015 at 09:23:46AM +0200, Jan Kiszka wrote:
->>>> On 2015-10-11 15:05, Gilles Chanteperdrix wrote:
->>>>> Hi,
->>>>>
->>>>> It seems commit fdb5d54d04b8c3b6b6a6ad7ac2b6248cf0b415e0 in the
->>>>> I-pipe kernels cause a warning when CONFIG_PREEMPT_VOLUNTARY and
->>>>> CONFIG_IPIPE_DEBUG_INTERNAL are enabled. The culprit is the call to
->>>>> __ipipe_root_p.
->>>>
->>>> Compiler warning? Runtime warning? Which architecture? I assume that
->>>> ftrace is on then, right?
->>>
->>> Yes. Because preempt_disable()/preempt_enable*() is a nop without
->>> CONFIG_PREEMPT_COUNT, __ipipe_root_p ends up being called without
->>> any protection, and __ipipe_check_percpu_access() emits the warning.
->>>
->>
->> Makes sense.
->>
->>>>
->>>>>
->>>>> The following patch avoids this warning:
->>>>
->>>> How?
->>>
->>> It disables the test for preemption (the call to preempt_count()) in
->>> __ipipe_check_percpu_access() if CONFIG_PREEMPT_COUNT is disabled,
->>> because if it is disabled, you can not be preempted anywhere, so
->>> calling __ipipe_root_p without protection is valid. Or maybe not?
->>
->> Ah, ok. I was under the assumption preempt_count() would return a
->> constant non-zero value under !CONFIG_PREEMPT. But on the other hand,
->> that would be weird as well when triggering voluntary preemption then.
->>
->> Anyway, it's correct that preemption cannot happen then in the middle of
->> an instruction, so we can skip the test. Please make the test depend on
->> CONFIG_PREEMPT and leave a corresponding comment in the code.
-> 
-> maybe we could use preemptible()?
-> 
-> it should test both the stall flag and preempt_count with
-> CONFIG_PREEMPT_COUNT and returns 0 without CONFIG_PREEMPT_COUNT.
+Hi Gilles and all,
 
-Indeed, even better. And self-documenting.
+Having had bad experience with Linaro toolchain, arm-linux-gnueabihf-, I
+now change to arm-none-linux-. Unfortunately, I still get the same error
+messages.
 
-Jan
+checking for arm-none-linux-gcc... arm-none-linux-gnueabi-
+checking whether the C compiler works... no
+configure: error: in `/home/qws/PandaBoard-ee':
+configure: error: C compiler cannot create executables
+I have googled for hours, but couldn't get anything positive.
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Please help.
 
+Thank you
+
+On 20 September 2015 at 20:11, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+
+> On Sun, Sep 20, 2015 at 08:04:31PM +1200, vibnwis wrote:
+> > Thanks, I managed to get .configure by executing autoreconf -i. However,
+> I
+> > am facing another problem.
+> >
+> > $xenomai_root/configure CC=arm-linux-gnueabihf- CFLAGS="-march=armv7-a
+> > -mfpu3=vfp" LDFLAGS="-march=armv7-a -mfpu=vfp3" --build=i686-pc-linux-gnu
+> > --host=${CC}  --with-core=cobalt
+> > (...)
+> > Any idea how to set the --host for Linaro toolchain?
+>
+> My answer to your first mail already contained the answer to that
+> question.
+>
+> --
+>                                             Gilles.
+> https://click-hack.org
+>
