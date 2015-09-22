@@ -1,18 +1,13 @@
+References: <5601617F.3080800@sigmatek.at>
+From: Wolfgang Netbal <wolfgang.netbal@sigmatek.at>
+Message-ID: <56016225.5090601@sigmatek.at>
+Date: Tue, 22 Sep 2015 16:13:57 +0200
 MIME-Version: 1.0
-In-Reply-To: <20150918122903.GC7301@hermes.click-hack.org>
-References: <CAFkYNwaqLYu7vAAyAt6Q9qfKL4iBa+N1BuzgJWhN6z4NfA5U=g@mail.gmail.com>
- <44k2rqz38u.fsf@be-well.ilk.org>
- <CAFkYNwYJ7ah+U97Pwuqwf9Phg=J0rTjr1txfGtg0FuoN2oP7cg@mail.gmail.com>
- <20150917133220.GB31663@hermes.click-hack.org>
- <CAFkYNwacX=h7trKNEBq=KZX627nRA7u6zk6YoEOLj8_J_LEa1Q@mail.gmail.com>
- <20150918074633.GA7301@hermes.click-hack.org>
- <CAFkYNwaBpwoC7rZBV4eRd7XEZ+c1GzNJZN9ZY_n9WO184A=pFQ@mail.gmail.com>
- <20150918122903.GC7301@hermes.click-hack.org>
-Date: Sat, 19 Sep 2015 00:42:11 +1200
-Message-ID: <CAFkYNwa+1ib=a+13PWYdNEwU35pvckchVwGa+Q8Ep7caSo7ioA@mail.gmail.com>
-From: vibnwis <vibnwis@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Error code -19
+In-Reply-To: <5601617F.3080800@sigmatek.at>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Subject: [Xenomai] Problem that the Linux scheduler is not called for some ms
+Reply-To: wolfgang.netbal@sigmatek.at
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,29 +16,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Xenomai Mailing List <xenomai@xenomai.org>
 
-I had tried, I could not find anything associated with global_timer or
-global. Hence, may I know what wording would it be?
-
-On 19 September 2015 at 00:29, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
-
-> On Sat, Sep 19, 2015 at 12:24:38AM +1200, vibnwis wrote:
-> > I have checked in .config. However, I am not sure what string to search
-> for
-> > device tree. Would you please advise what string would it be for the
-> clock?
-> >
-> > In .config
-> >
-> > CONFIG_ARM_GLOBAL_TIMER=y
->
-> Yes, this looks like the right option. Is the global timer declared
-> in the device tree?
->
-> --
->                                             Gilles.
-> https://click-hack.org
->
+CgpIaSBndXlzCgpJIGhhdmUgYSBwcm9ibGVtIHRoYXQgdGhlIGxpbnV4IHNjaGVkdWxlciBpcyBu
+b3QgY2FsbGVkIGZvciBzb21lIG1zLgpUaGUgY3B1IGxvYWQgaXMgdmVyeSBsb3cuCgpJbSB1c2lu
+ZyBhIGlNWDYsIGxpbnV4IGtlcm5lbCAzLjAuNDIgYW5kIHhlbm9tYWkgMi42LjIuMS4KCkkgaGF2
+ZSBhdHRhY2hlZCBhIGdyYXBoaWNhbCB0YXNrIHRyYWNlIHdoZXJlIHlvdSBjYW4gc2VlIHRoZSB0
+YXNrIHN3aXRjaGVzLgpUaGUgdGFza3Mgd2l0aCBwcmVmaXggWC0gYXJlIHhlbm9tYWkgdGFzaywg
+dGhlIHByZWZpeCBMLSBtZWFucyBsaW51eCB0YXNrLgpJbiB0aGUgZmlyc3QgbGluZSB5b3UgY2Fu
+IHNlZSB0aGUgdGljayBmcm9tIGEgZnBnYSB0byBzdGFydCB0aGUgZm9sb3dpbmcKdGFza3MsIFgt
+cmVhbHRpbWUsIFgtY3ljbGljLCBYLUxvYWRlciBhbmQgWC1iYWNrZ3JvdW5kLgpUaGUgWC1DeWNs
+aWMgdGFzayBpcyBzd2l0Y2hpbmcgdG8gbGludXggKEwtQ3ljbGljKSBpbiBlYWNoIGN5Y2xlIGJl
+Y2F1c2UKaXQgaXMgY2FsbGluZyBVRFAgZnVuY3Rpb25zLgpVcCB0aGUgbWFyayAxOTUgbXMgZXZl
+cnRoaW5nIGlzIHdvcmtpbmcgY29ycmVjdC4KICBGcm9tIHRoZSBtYXJrIDE5NSBtcyB1cCB0byAx
+OTkgbXMgdGhlcmUgaXMgbm8gbGludXggdGFzayAoTC0pIHJ1bm5pbmcuCkkgaGF2ZSBhbHNvIHNl
+ZW4gdGhhdCB0aGUgbGludXggc2NoZWR1bGVyIGZ1bmN0aW9uIGlzIG5vdCBjYWxsZWQgZnJvbQp0
+aGUgbWFyayAxOTVtcyB0byAxOTltcy4KCkRvZXMgYW55Ym9keSBrbm93IHdoYXQgaXMgdGhlIHBy
+b2JsZW0gPwpBcmUgdGhlcmUgc29tZSBsaW51eC94ZW5vbWFpIHNldHRpbmdzIHRvIG1vZGlmeSB0
+aGlzIGJlaGF2aW9yID8KCktpbmQgcmVnYXJkCgotLSAKV29sZmdhbmcgTmV0YmFsCkJldHJpZWJz
+c3lzdGVtCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCgpTSUdNQVRFSyBHbWJIICYg
+Q28gS0cKU2lnbWF0ZWtzdHJhw59lIDEKNTExMiBMYW1wcmVjaHRzaGF1c2VuCsOWc3RlcnJlaWNo
+IC8gQXVzdHJpYQoKVGVsLjogICs0My82Mjc0LzQzMjEtMApGYXg6ICArNDMvNjI3NC80MzIxLTE4
+CkUtTWFpbDp3b2xmZ2FuZy5uZXRiYWxAc2lnbWF0ZWsuYXQKaHR0cDovL3d3dy5zaWdtYXRlay1h
+dXRvbWF0aW9uLmNvbQoKKioqKioqKioqKioqKioqKioqKioqKipQbGVhc2Ugbm90ZToqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioKVGhpcyBlbWFpbCBhbmQgYWxsIGF0dGFjaG1l
+bnRzIGFyZSBjb25maWRlbnRpYWwgYW5kIGludGVuZGVkIHNvbGVseSBmb3IKdGhlIHBlcnNvbiBv
+ciBlbnRpdHkgdG8gd2hvbSBpdCBpcyBhZGRyZXNzZWQuIElmIHlvdSBhcmUgbm90IHRoZSBuYW1l
+ZAphZGRyZXNzZWUgeW91IG11c3Qgbm90IG1ha2UgdGhpcyBlbWFpbCBhbmQgYWxsIGF0dGFjaG1l
+bnRzIGFjY2Vzc2libGUKdG8gYW55IG90aGVyIHBlcnNvbi4gSWYgeW91IGhhdmUgcmVjZWl2ZWQg
+dGhpcyBlbWFpbCBpbiBlcnJvciBwbGVhc2UKZGVsZXRlIGl0IHRvZ2V0aGVyIHdpdGggYWxsIGF0
+dGFjaG1lbnRzLgoqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKgoKCgoKCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQg
+LS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1l
+OiBzY3JlZW5zaG90LjEucG5nClR5cGU6IGltYWdlL3BuZwpTaXplOiAxNDEwMCBieXRlcwpEZXNj
+OiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21h
+aS9hdHRhY2htZW50cy8yMDE1MDkyMi8yYTFkMTY5MC9hdHRhY2htZW50LnBuZz4K
