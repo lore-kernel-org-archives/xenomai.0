@@ -1,12 +1,15 @@
-References: <20150919112648.GB22852@hermes.click-hack.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5601A396.7020605@siemens.com>
-Date: Tue, 22 Sep 2015 20:53:10 +0200
 MIME-Version: 1.0
-In-Reply-To: <20150919112648.GB22852@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rtdm_lock_get
+In-Reply-To: <20150922174455.GA13976@hermes.click-hack.org>
+References: <CAFkYNwZV3xY_QU5E+zdFNGeeM=O4jo897wppbGCg40HumoojBQ@mail.gmail.com>
+ <5600F8DE.30705@xenomai.org>
+ <CAFkYNwaW5+nnDmumwt_zFFn01oWY5CsS5Fbmj1wB0aPF7om-4w@mail.gmail.com>
+ <20150922174455.GA13976@hermes.click-hack.org>
+Date: Wed, 23 Sep 2015 12:41:38 +1200
+Message-ID: <CAFkYNwa-XGD+JM-5w6EGepO8XG2Ki9Tt+ocqgcd_zNmPCngdyA@mail.gmail.com>
+From: vibnwis <vibnwis@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Xenomai tests
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,26 +18,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 2015-09-19 13:26, Gilles Chanteperdrix wrote:
-> Hi,
-> 
-> now that rtdm_lock_get() locks the scheduler, and if moved the
-> scheduler lock before the spin_lock, would not it be possible to use
-> rtdm_lock_get() with irqs on ?
-
-Conceptually, yes. People will only have to be more carefully to use the
-right mechanism depending on if there are IRQ-based users or not - just
-like under Linux. We avoided this trap so far.
-
-Maybe we should ask the user to mark IRQ-free spinlocks via a special
-rtdm_lock_init_noirq. Then we could validate the caller's context in a
-debug version.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
-
+T24gMjMgU2VwdGVtYmVyIDIwMTUgYXQgMDU6NDQsIEdpbGxlcyBDaGFudGVwZXJkcml4IDwKZ2ls
+bGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmc+IHdyb3RlOgoKPiBPbiBXZWQsIFNlcCAyMywg
+MjAxNSBhdCAxMjozMjoxMUFNICsxMjAwLCB2aWJud2lzIHdyb3RlOgo+ID4gQnkgcmVnZW5lcmF0
+aW5nIC4vY29uZmlndXJlIHVzaW5nIGF1dG9yZWNvbmYgLWZpLCBJIG1hbmFnZWQgdG8gY29tcGls
+ZQo+ID4geGVub21haS0zLTMuMC1yYzcgbmF0aXZlbHkgb24gUGFuZGFCb2FyZC4gQWxsIHRoaW5n
+cyBhcmUgcHV0IGluIHRoZWlyIG93bgo+ID4gcGxhY2UgYnkgbWFrZSBpbnN0YWxsLiBIb3dldmVy
+LCB3aGVuIHJ1bm5pbmcgbGF0ZW5jeSwgaXQgcHJvZHVjZXMKPiA+Cj4gPiA+IGxhdGVuY3kKPiA+
+IDAiMDAwLjAwMHwgQlVHIGluIGxvd19pbml0KCk6IFttYWluXSBtbG9ja2FsbDogQ2Fubm90IGFs
+bG9jYXRlIG1lbW9yeQo+Cj4gWW91IHNob3VsZCBlaXRoZXIgcnVuIHRoZSBsYXRlbmN5IHRlc3Qg
+YXMgcm9vdCwgb3IgaGF2ZSBhIGxvb2sgYXQKPiB0aGlzIHBhZ2U6Cj4gaHR0cDovL3hlbm9tYWku
+b3JnLzIwMTQvMDYvcnVubmluZy1hLXhlbm9tYWktYXBwbGljYXRpb24tYXMtYS1yZWd1bGFyLXVz
+ZXIvCj4KPiBCeSByb290IEkgZ2V0IHRoaXMuCnJvb3RAYXJtOi91c3IveGVub21haSMgbGF0ZW5j
+eQogICAwIjAwMC4wMDB8IEJVRyBpbiBsb3dfaW5pdCgpOiBbbWFpbl0gYmluZGluZyBmYWlsZWQ6
+IEZ1bmN0aW9uIG5vdAppbXBsZW1lbnRlZAoKSG93ZXZlciwgdGhlIFBBVEggaGFzIHNldCB0aGUg
+TGliCgpyb290QGFybTovdXNyL3hlbm9tYWkjIGVjaG8gJFBBVEgKL3Vzci9sb2NhbC9zYmluOi91
+c3IvbG9jYWwvYmluOi91c3Ivc2JpbjovdXNyL2Jpbjovc2JpbjovYmluOi91c3IvZ2FtZXM6L3Vz
+ci9sb2NhbC9nYW1lczovdXNyL3hlbm9tYWkvYmluOi91c3IveGVub21haS9saWI6L3Vzci94ZW5v
+bWFpL2luY2x1ZGUKCgo+Cj4gPiA+IGRtZXNnIHwgZ3JlcCAtaSBpcGlwZQo+ID4gWyAgICAwLjAw
+MDAwMF0gTGludXggdmVyc2lvbiAzLjE4LjIwLWlwaXBlIChxd3NAcXdzLU1hY0Jvb2tQcm8pIChn
+Y2MKPiA+IHZlcnNpb24gNC45LjIgKFVidW50dS9MaW5hcm8gNC45LjItMTB1YnVudHUxMCkgKSAj
+MSBTTVAgVHVlIFNlcCAyMgo+IDIxOjA0OjQ5Cj4gPiBOWlNUIDIwMTUKPiA+IFsgICAgMC42MjM3
+NjNdIDMuMTguMjAtaXBpcGUgIzEgTm90IHRhaW50ZWQKPiA+IFsgICAgMC42MjM5OTRdICAgWzxj
+MDBkMzA5ND5dIF9faXBpcGVfZG9fc3luY19zdGFnZSsweDI4OC8weDJkMAo+ID4gWyAgICAwLjYy
+NDAxMV0gICBbPGMwMDA4NjM0Pl0gX19pcGlwZV9ncmFiX2lycSsweDVjLzB4NzAKPiA+IFsgICAg
+MC42MjQzMjFdIENQVTogMSBQSUQ6IDIyIENvbW06IGtibG9ja2QgTm90IHRhaW50ZWQgMy4xOC4y
+MC1pcGlwZSAjMQo+ID4gWyAgICAwLjYyNDQ3OV0gWzxjMDA4NDNiND5dICh0cmFjZV9oYXJkaXJx
+c19vbl9jYWxsZXIpIGZyb20gWzxjMDVkYTdmND5dCj4gPiAoX19pcGlwZV9mYXN0X3N2Y19pcnFf
+ZXhpdCsweDQvMHgxOCkKPiA+IFsgICAgMC42MjQ1MDRdIFs8YzA1ZGE3ZjQ+XSAoX19pcGlwZV9m
+YXN0X3N2Y19pcnFfZXhpdCkgZnJvbSBbPGMwMDFhYWNjPl0KPiA+IChpcGlwX3Rlc3RfYW5kX3N0
+YWxsX3Jvb3QrMHgyYy8weDNjKQo+ID4gWyAgICAwLjYyNDUyNF0gWzxjMDAxYWFjYz5dIChpcGlw
+ZV90ZXN0X2FuZF9zdGFsbF9yb290KSBmcm9tIFs8YzAwODZlNTg+XQo+ID4gKGxvY2tfYWNxdWly
+ZSsweDQ0LzB4MTA4KQo+ID4gWyAgICAwLjcyODM5NF0gU3dpdGNoZWQgdG8gY2xvY2tzb3VyY2Ug
+aXBpcGVfdHNjCj4gPiBbICAgIDIuNDY0ODAwXSB1c2IgdXNiMTogTWFudWZhY3R1cmVyOiBMaW51
+eCAzLjE4LjIwLWlwaXBlIGVoY2lfaGNkCj4gPiBbICAgIDYuMzY0NTE2XSB1c2IgdXNiMjogTWFu
+dWZhY3R1cmVyOiBMaW51eCAzLjE4LjIwLWlwaXBlIG11c2ItaGNkCj4KPiBQbGVhc2UgcG9zdCB0
+aGUgZnVsbCBrZXJuZWwgbG9ncy4gWW91IGxpa2VseSBlbmFibGVkIGEga2VybmVsCj4gY29uZmln
+dXJhdGlvbiBvcHRpb24gd2hpY2ggaGFzIGFuIGlzc3VlIHdpdGggQ09ORklHX0lQSVBFCj4KUGxl
+YXNlIGZpbmQgaXQgaW4gYXR0YWNobWVudC4gTWFueSB0aGFua3MgKHZlcnkgZ3JhdGVmdWwgaW5k
+ZWVkKQoKPgo+IC0tCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICBHaWxsZXMuCj4gaHR0cHM6Ly9jbGljay1oYWNrLm9yZwo+Ci0tLS0tLS0tLS0tLS0tIG5leHQg
+cGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4u
+Ck5hbWU6IGtlcm4ubG9nClR5cGU6IHRleHQveC1sb2cKU2l6ZTogMjQyNjk3IGJ5dGVzCkRlc2M6
+IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFp
+L2F0dGFjaG1lbnRzLzIwMTUwOTIzL2YxNzI5YTg0L2F0dGFjaG1lbnQuYmluPgo=
