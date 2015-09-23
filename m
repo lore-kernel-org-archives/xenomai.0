@@ -1,17 +1,17 @@
-MIME-Version: 1.0
-In-Reply-To: <20150923055416.GF13976@hermes.click-hack.org>
+Date: Wed, 23 Sep 2015 08:55:14 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20150923065514.GG13976@hermes.click-hack.org>
 References: <CAFkYNwZV3xY_QU5E+zdFNGeeM=O4jo897wppbGCg40HumoojBQ@mail.gmail.com>
  <5600F8DE.30705@xenomai.org>
  <CAFkYNwaW5+nnDmumwt_zFFn01oWY5CsS5Fbmj1wB0aPF7om-4w@mail.gmail.com>
  <20150922174455.GA13976@hermes.click-hack.org>
  <CAFkYNwa-XGD+JM-5w6EGepO8XG2Ki9Tt+ocqgcd_zNmPCngdyA@mail.gmail.com>
- <CAFkYNwazPQ1D98f5xEyAh0CgYfE1ddkxxK_paF4v7YN_hbkT5Q@mail.gmail.com>
- <20150923054319.GE13976@hermes.click-hack.org>
- <20150923055416.GF13976@hermes.click-hack.org>
-Date: Wed, 23 Sep 2015 18:33:57 +1200
-Message-ID: <CAFkYNwYJ8sm5LbKZZ1e-kKdSZr-L16NTVKOpKpmu2LoKnc9tOg@mail.gmail.com>
-From: vibnwis <vibnwis@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+ <20150923053843.GD13976@hermes.click-hack.org>
+ <CAFkYNwYq2EnufFGzpXz5Pszzb_F284eP34PbJMcZV74S51_OAw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFkYNwYq2EnufFGzpXz5Pszzb_F284eP34PbJMcZV74S51_OAw@mail.gmail.com>
 Subject: Re: [Xenomai] Xenomai tests
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -21,70 +21,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: vibnwis <vibnwis@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 23 September 2015 at 17:54, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+On Wed, Sep 23, 2015 at 06:29:25PM +1200, vibnwis wrote:
+> On 23 September 2015 at 17:38, Gilles Chanteperdrix <
+> gilles.chanteperdrix@xenomai.org> wrote:
+> 
+> > On Wed, Sep 23, 2015 at 12:41:38PM +1200, vibnwis wrote:
+> > > On 23 September 2015 at 05:44, Gilles Chanteperdrix <
+> > > gilles.chanteperdrix@xenomai.org> wrote:
+> > >
+> > > > On Wed, Sep 23, 2015 at 12:32:11AM +1200, vibnwis wrote:
+> > > > > By regenerating ./configure using autoreconf -fi, I managed to
+> > compile
+> > > > > xenomai-3-3.0-rc7 natively on PandaBoard. All things are put in
+> > their own
+> > > > > place by make install. However, when running latency, it produces
+> > > > >
+> > > > > > latency
+> > > > > 0"000.000| BUG in low_init(): [main] mlockall: Cannot allocate memory
+> > > >
+> > > > You should either run the latency test as root, or have a look at
+> > > > this page:
+> > > >
+> > http://xenomai.org/2014/06/running-a-xenomai-application-as-a-regular-user/
+> > > >
+> > > > By root I get this.
+> > > root@arm:/usr/xenomai# latency
+> > >    0"000.000| BUG in low_init(): [main] binding failed: Function not
+> > > implemented
+> > >
+> > > However, the PATH has set the Lib
+> >
+> > Running as root was necessary to avoid the mlockall issue. The issue
+> > you have now is different: the logs you sent show that the last
+> > kernel you booted is not patched with Xenomai. The kernel is patched
+> > with the I-pipe patch, but this is not sufficient, it is not
+> > prepared with prepare-kernel.sh
+> >
+> 
+> I had thought of that too. However, the patch namely
+> ipipe-core-3.18.20-arm-5.patch I used is meant for kernel 3.18.20. And
+> there is no such patch available in the latest xenomai-3-3.0-rc7. ie under
+> the kernel/Cobalt/arch/arm/patches/, there is such patch available for
+> 3.18.20. With the observation, I concluded that
+> ipipe-core-3.18.20-arm-5.patch would patch all is needed for xenomai to
+> work. In addition, I checked in its make menuconfig, I did not see Cobalt
+> feature, but I did see ipipe was integrated. Obviously now I know it was
+> wrong. However, I still yet found a xenomai which has patches for 3.18.20
+> kernel. Any comments?
 
-> On Wed, Sep 23, 2015 at 07:43:19AM +0200, Gilles Chanteperdrix wrote:
-> > On Wed, Sep 23, 2015 at 01:21:55PM +1200, vibnwis wrote:
-> > > On 23 September 2015 at 12:41, vibnwis <vibnwis@gmail.com> wrote:
-> > >
-> > > >
-> > > >
-> > > > On 23 September 2015 at 05:44, Gilles Chanteperdrix <
-> > > > gilles.chanteperdrix@xenomai.org> wrote:
-> > > >
-> > > >> On Wed, Sep 23, 2015 at 12:32:11AM +1200, vibnwis wrote:
-> > > >> > By regenerating ./configure using autoreconf -fi, I managed to
-> compile
-> > > >> > xenomai-3-3.0-rc7 natively on PandaBoard. All things are put in
-> their
-> > > >> own
-> > > >> > place by make install. However, when running latency, it produces
-> > > >> >
-> > > >> > > latency
-> > > >> > 0"000.000| BUG in low_init(): [main] mlockall: Cannot allocate
-> memory
-> > > >>
-> > > >> You should either run the latency test as root, or have a look at
-> > > >> this page:
-> > > >>
-> > > >>
-> http://xenomai.org/2014/06/running-a-xenomai-application-as-a-regular-user/
-> > > >
-> > > >
-> > > Referring to the link, I have the following outcomes.
-> > > /dev/rtpipe <- not exist
-> > >
-> > > /sys/module/xenomai/parameters/allowed_group <- not exist as
-> > well
->
-> So, this is probably because you are not running a kernel with
-> xenomai support.
->
-Since there isn't any 3.18.20 patch, should I use 3.18.12. It is still
-3.8.x. Should be alright ? I will give it a go.
+You can use Xenomai 3.0-rc7 with the I-pipe patch for 3.18.20.
+Simply pass the path to the patch to the prepare-kernel.sh --adeos
+option.
 
->
-> > >
-> > > tried with the following commands:
-> > >
-> > > ubuntu@arm:/usr/xenomai/bin$ sudo find /sys/module -type f -name
-> > > "allowed_group" -print
-> > > [sudo] password for ubuntu:
-> > > <nothing came back>
-> > >
-> > > ubuntu@arm:/usr/xenomai/bin$ sudo find /sys/module -type f -name
-> > > "parameters" -print
-> > > <nothing came back>
->
-> But there should be a few files named "parameters" under
-> /sys/module. Maybe you will see them if you remove "type f" from
-> find command line ?
->
-> --
->                                             Gilles.
-> https://click-hack.org
->
+> > Ok, when I say "please post the full kernel logs", I mean only the
+> > logs of the kernel currently running, not the logs of previous
+> > kernel runs, these are irrelevant. Anyway, I think you have
+> > CONFG_CONTEX_TRACKING enabled, which does not work with
+> > CONFIG_IPIPE, at least on ARM. Could you post you kernel
+> > configuration to be sure?
+> >
+> 
+> My apologies, there were two kern.log and kern.log.1. I had taken the wrong
+> perhaps. To make sure I got it right, I deleted it and reboot the system.
+> Attached is the newly created kern.log
+
+It is simpler to send the output of the "dmesg" command. Anyway, now
+that we know what the problem is, you do not need to send the logs
+again.
+
+-- 
+					    Gilles.
+https://click-hack.org
+
