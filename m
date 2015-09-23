@@ -1,14 +1,18 @@
-Message-ID: <D5A0F591844743F394CCA1C825B64747@itd206>
-From: "Sureshvs" <sureshvs@datapatterns.co.in>
-References: <30CDC0E48A9B4ED496A94C7F5B511635@itd206>
- <55FBCD72.8020305@xenomai.org>
-In-Reply-To: <55FBCD72.8020305@xenomai.org>
-Date: Wed, 23 Sep 2015 18:18:01 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset="Windows-1252";
- reply-type=original
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Reg: : Linux OOps
+In-Reply-To: <20150923065514.GG13976@hermes.click-hack.org>
+References: <CAFkYNwZV3xY_QU5E+zdFNGeeM=O4jo897wppbGCg40HumoojBQ@mail.gmail.com>
+ <5600F8DE.30705@xenomai.org>
+ <CAFkYNwaW5+nnDmumwt_zFFn01oWY5CsS5Fbmj1wB0aPF7om-4w@mail.gmail.com>
+ <20150922174455.GA13976@hermes.click-hack.org>
+ <CAFkYNwa-XGD+JM-5w6EGepO8XG2Ki9Tt+ocqgcd_zNmPCngdyA@mail.gmail.com>
+ <20150923053843.GD13976@hermes.click-hack.org>
+ <CAFkYNwYq2EnufFGzpXz5Pszzb_F284eP34PbJMcZV74S51_OAw@mail.gmail.com>
+ <20150923065514.GG13976@hermes.click-hack.org>
+Date: Thu, 24 Sep 2015 00:52:14 +1200
+Message-ID: <CAFkYNwbO9zMrRx_Dr8_NOC6yAv_ku8ocK37PuNu74-28XLULfg@mail.gmail.com>
+From: vibnwis <vibnwis@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Xenomai tests
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,79 +21,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
-Cc: "SDG'08@dP_Jagat Bhusan" <jagat.bhusan@datapatterns.co.in>, sureshvsmca@gmail.com
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hi
+On 23 September 2015 at 18:55, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
 
-Thanks for your reply.
-
-Good News...
-
-After applying the patch we are not getting Oops problem.
-
-But you have mentioned this patch is for SMP  platform.But we have not 
-enabled SMP option in our kernel.
-
-So kindly clarify it.
-
-Regards
-Suresh V.S
-
-
-
-
------ Original Message ----- 
-From: "Philippe Gerum" <rpm@xenomai.org>
-To: "Sureshvs" <sureshvs@datapatterns.co.in>; <xenomai@xenomai.org>
-Cc: "SDG'08@dP_Jagat Bhusan" <jagat.bhusan@datapatterns.co.in>; 
-<sureshvsmca@gmail.com>
-Sent: Friday, September 18, 2015 2:08 PM
-Subject: Re: [Xenomai] Reg: Linux OOps
-
-
-> On 09/16/2015 04:15 PM, Sureshvs wrote:
->> Hi
->>
->> ARCH=powerPC
->> Processor: MPC8641
->> Linux Kernel : 3.10.32
->> Xenomai patch version: xenomai-2.6.3
->>
->> We are getting the below oops randomly.kindly help us to isolate the 
->> problem with the stack trace given below.
->>
->>
->> Oops: Kernel access of bad area, sig: 11 [#1]
->> [12981.709964] VPX
->> [12981.711706] Modules linked in: dp_elpc_rt(O) xeno_16550A 
->> DPXMC5022_DRV(O) dpxmc1107xen(O) dpvpx5849xen(O) dp1553bxt(O) 
->> DPVPX0689_WDT_drv(O) DPVPX0689_Timer(O) DPVPX0689_NVSRAM_drv(O) 
->> DPVPX0689TS(O) [last unloaded: dp_elpc_rt]
->> [12981.731718] CPU: 0 PID: 3941 Comm: PROGRESS_THREAD Tainted: G 
->> O 3.10.32-dpvpx0689 #177
->> [12981.740494] task: cf497840 ti: cf052000 task.ti: cf052000
->> [12981.745882] NIP: 00000000 LR: a007477c CTR: 00000000
->> [12981.750836] REGS: cf053c40 TRAP: 0400   Tainted: G           O 
->> (3.10.32-dpvpx0689)
->> [12981.758479] MSR: 40001032 <ME,IR,DR,RI>  CR: 24004422  XER: 00000000
->> [12981.764839]
->> GPR00: a007477c cf053cf0 cf497840 00000203 00000000 00000000 00010000 
->> a0649728
->> GPR08: 00000000 00000000 00000000 40fd2a34 24004422 1001b5d8 00000000 
->> 00000000
->> GPR16: 3c033000 9fe21d58 9fe21d68 0ff52518 00000003 3c022018 00021000 
->> 0ffc81c4
->> GPR24: cf053f50 00000200 00000001 a0670000 a0649728 a06ceb80 a06d2c00 
->> 00000203
->> [12981.794546] NIP [00000000]   (null)
->> [12981.798033] LR [a007477c] __ipipe_do_sync_stage+0x13c/0x1ec
+> On Wed, Sep 23, 2015 at 06:29:25PM +1200, vibnwis wrote:
+> > On 23 September 2015 at 17:38, Gilles Chanteperdrix <
+> > gilles.chanteperdrix@xenomai.org> wrote:
+> >
+> > > On Wed, Sep 23, 2015 at 12:41:38PM +1200, vibnwis wrote:
+> > > > On 23 September 2015 at 05:44, Gilles Chanteperdrix <
+> > > > gilles.chanteperdrix@xenomai.org> wrote:
+> > > >
+> > > > > On Wed, Sep 23, 2015 at 12:32:11AM +1200, vibnwis wrote:
+> > > > > > By regenerating ./configure using autoreconf -fi, I managed to
+> > > compile
+> > > > > > xenomai-3-3.0-rc7 natively on PandaBoard. All things are put in
+> > > their own
+> > > > > > place by make install. However, when running latency, it produces
+> > > > > >
+> > > > > > > latency
+> > > > > > 0"000.000| BUG in low_init(): [main] mlockall: Cannot allocate
+> memory
+> > > > >
+> > > > > You should either run the latency test as root, or have a look at
+> > > > > this page:
+> > > > >
+> > >
+> http://xenomai.org/2014/06/running-a-xenomai-application-as-a-regular-user/
+> > > > >
+> > > > > By root I get this.
+> > > > root@arm:/usr/xenomai# latency
+> > > >    0"000.000| BUG in low_init(): [main] binding failed: Function not
+> > > > implemented
+> > > >
+> > > > However, the PATH has set the Lib
+> > >
+> > > Running as root was necessary to avoid the mlockall issue. The issue
+> > > you have now is different: the logs you sent show that the last
+> > > kernel you booted is not patched with Xenomai. The kernel is patched
+> > > with the I-pipe patch, but this is not sufficient, it is not
+> > > prepared with prepare-kernel.sh
+> > >
+> >
+> > I had thought of that too. However, the patch namely
+> > ipipe-core-3.18.20-arm-5.patch I used is meant for kernel 3.18.20. And
+> > there is no such patch available in the latest xenomai-3-3.0-rc7. ie
+> under
+> > the kernel/Cobalt/arch/arm/patches/, there is such patch available for
+> > 3.18.20. With the observation, I concluded that
+> > ipipe-core-3.18.20-arm-5.patch would patch all is needed for xenomai to
+> > work. In addition, I checked in its make menuconfig, I did not see Cobalt
+> > feature, but I did see ipipe was integrated. Obviously now I know it was
+> > wrong. However, I still yet found a xenomai which has patches for 3.18.20
+> > kernel. Any comments?
 >
-> Jump to NULL handler from the IRQ log syncer over a SMP platform, you
-> likely need this fix:
-> http://git.xenomai.org/ipipe.git/commit/?h=ipipe-3.10&id=593309f48b1c7bc7c4f9b650167e08fd67361004
+> You can use Xenomai 3.0-rc7 with the I-pipe patch for 3.18.20.
+> Simply pass the path to the patch to the prepare-kernel.sh --adeos
+> option.
 >
-> -- 
-> Philippe. 
+If I am not wrong, prepare-kernel.sh is for preparing kernel by patching
+the patch files under the ..arm/patches/ipipe-core...3.18.12.patch, and in
+my case I patch kernel 3.18.12 with ipipe-core-3.18.12.patch which I did
+not use --adeos but --ipipe.
 
+The other issue I pointed out above, Xenomai-3.0.rc7 does not have 3.18.20
+patch. Hope this clarifies things. I am happy to use kernel 3.18.12 anyway.
 
+>
+> > > Ok, when I say "please post the full kernel logs", I mean only the
+> > > logs of the kernel currently running, not the logs of previous
+> > > kernel runs, these are irrelevant. Anyway, I think you have
+> > > CONFG_CONTEX_TRACKING enabled, which does not work with
+> > > CONFIG_IPIPE, at least on ARM. Could you post you kernel
+> > > configuration to be sure?
+> > >
+> >
+> > My apologies, there were two kern.log and kern.log.1. I had taken the
+> wrong
+> > perhaps. To make sure I got it right, I deleted it and reboot the system.
+> > Attached is the newly created kern.log
+>
+> It is simpler to send the output of the "dmesg" command. Anyway, now
+> that we know what the problem is, you do not need to send the logs
+> again.
+>
+> --
+>                                             Gilles.
+> https://click-hack.org
+>
