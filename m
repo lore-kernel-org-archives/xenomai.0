@@ -1,20 +1,21 @@
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Fri, 25 Sep 2015 10:09:21 -0400
+Message-ID: <20150925140921.GP15616@csclub.uwaterloo.ca>
+References: <20150923053843.GD13976@hermes.click-hack.org>
+ <20150923070615.GI13976@hermes.click-hack.org>
+ <CAFkYNwYta4TDofpKcGfkH4xUB0udKg8Q721T97LTD6ua_5MWjg@mail.gmail.com>
+ <20150923115911.GB28513@hermes.click-hack.org>
+ <CAFkYNwZoEEiezx1Ny+s2WXgx5xP471A1BrVEnJJ9hukjyEv4-Q@mail.gmail.com>
+ <CAFkYNwbRx9ZK10_F7XfcP7U0uNBafY=xA7H_TbxbBj7CxpETrQ@mail.gmail.com>
+ <20150923153413.GN15616@csclub.uwaterloo.ca>
+ <CAFkYNwajO8EDfQU36znukPsbiZPKEMtXxnpzqDO-Su1=k5jWuA@mail.gmail.com>
+ <20150923161249.GO15616@csclub.uwaterloo.ca>
+ <CAFkYNwZOOpH5Qv7icSf9gvaOzKcecJhC_4GA2XPgfP0OS_mq=w@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20150918125020.GE7301@hermes.click-hack.org>
-References: <CAFkYNwaqLYu7vAAyAt6Q9qfKL4iBa+N1BuzgJWhN6z4NfA5U=g@mail.gmail.com>
- <44k2rqz38u.fsf@be-well.ilk.org>
- <CAFkYNwYJ7ah+U97Pwuqwf9Phg=J0rTjr1txfGtg0FuoN2oP7cg@mail.gmail.com>
- <20150917133220.GB31663@hermes.click-hack.org>
- <CAFkYNwacX=h7trKNEBq=KZX627nRA7u6zk6YoEOLj8_J_LEa1Q@mail.gmail.com>
- <20150918074633.GA7301@hermes.click-hack.org>
- <CAFkYNwaBpwoC7rZBV4eRd7XEZ+c1GzNJZN9ZY_n9WO184A=pFQ@mail.gmail.com>
- <20150918122903.GC7301@hermes.click-hack.org>
- <CAFkYNwa+1ib=a+13PWYdNEwU35pvckchVwGa+Q8Ep7caSo7ioA@mail.gmail.com>
- <20150918125020.GE7301@hermes.click-hack.org>
-Date: Sat, 19 Sep 2015 00:58:53 +1200
-Message-ID: <CAFkYNwYmig=-67Rq6=m=_uPrmRZ-T+GxVW1B9UC8psfs64nLkw@mail.gmail.com>
-From: vibnwis <vibnwis@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Error code -19
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFkYNwZOOpH5Qv7icSf9gvaOzKcecJhC_4GA2XPgfP0OS_mq=w@mail.gmail.com>
+Subject: Re: [Xenomai] Xenomai tests
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,38 +24,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: vibnwis <vibnwis@gmail.com>
+Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
 
-Many thanks, recompiling it now. Let you know tomorrow.
+On Fri, Sep 25, 2015 at 11:55:39AM +1200, vibnwis wrote:
+> Do you set/unset the items in "make menuconfig" or edit them manually?
 
-On 19 September 2015 at 00:50, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+In make menuconfig.
 
-> On Sat, Sep 19, 2015 at 12:42:11AM +1200, vibnwis wrote:
-> > I had tried, I could not find anything associated with global_timer or
-> > global. Hence, may I know what wording would it be?
->
-> Ok, the problem is that that code was tested on omap4430 where the
-> global timer can not be used by the mainline code. Could you try the
-> following patch?
->
-> diff --git a/drivers/clocksource/arm_global_timer.c
-> b/drivers/clocksource/arm_global_timer.c
-> index 04ca5d3..191422d 100644
-> --- a/drivers/clocksource/arm_global_timer.c
-> +++ b/drivers/clocksource/arm_global_timer.c
-> @@ -279,7 +279,7 @@ static void __init global_timer_of_register(struct
-> device_node *np)
->                 gt_ppi = irq_of_parse_and_map(np, 0);
->                 if (!gt_ppi) {
->                         pr_warn("global-timer: unable to parse irq\n");
-> -                       return;
-> +                       usable_timer = 0;
->                 }
->         }
->
-> --
->                                             Gilles.
-> https://click-hack.org
->
+But using the saerch and seeing the state and logic it is using helps
+to go change the right dependancies.
+
+-- 
+Len Sorensen
+
