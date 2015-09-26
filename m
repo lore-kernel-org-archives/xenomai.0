@@ -1,20 +1,7 @@
-Date: Sat, 26 Sep 2015 13:24:19 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150926112419.GH1332@hermes.click-hack.org>
-References: <55E5E453.1080400@xenomai.org>
- <CAPuu0=jX6ig5L7SJrmPVOhCmOm=gwxEmTafTpOqzE85hOji8CA@mail.gmail.com>
- <55E5F849.1070708@xenomai.org> <55E5FB89.3080604@xenomai.org>
- <55E60743.30600@xenomai.org>
- <CAJqUr7zP85A6V7n9O=++iC4tJK8LCG5JC8xtO9Xd+u3sQW4G1A@mail.gmail.com>
- <5604517A.2000602@mperpetuo.com>
- <20150925150248.GE1332@hermes.click-hack.org>
- <560580E6.6070208@mperpetuo.com>
- <20150925180137.GF1332@hermes.click-hack.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20150925180137.GF1332@hermes.click-hack.org>
-Subject: Re: [Xenomai] xenomai/ipipe arm64 port
+Date: Sat, 26 Sep 2015 13:42:45 +0200
+Message-Id: <1443267765-30719-1-git-send-email-gilles.chanteperdrix@xenomai.org>
+Subject: [Xenomai] [PATCH] arm64/ipipe: emit I-pipe events upon FPU faults
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,61 +10,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Dmitriy Cherkasov <dmitriy@mperpetuo.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-On Fri, Sep 25, 2015 at 08:01:37PM +0200, Gilles Chanteperdrix wrote:
-> On Fri, Sep 25, 2015 at 10:14:14AM -0700, Dmitriy Cherkasov wrote:
-> > Hi Gilles,
-> > 
-> > Thank you for the feedback.
-> > 
-> > Yes, I saw that the armv7 design had trapped FPU usage and switched 
-> > context then. While this is good for performance of threads that never 
-> > use the FPU, it may introduce a one-time delay for threads that do, 
-> > which may not be desirable in a real-time system.
-> > 
-> > I haven't had a chance to measure the specific delay, so I am not sure 
-> > what the real impact is.
-> 
-> You can avoid that and only switch FPU for threads which have XNFPU,
-> that is what we did in xenomai 2.x). The cost of your solution is an
-> FPU switch for every context switch, whereas some threads, and
-> especially kernel-space threads, will never use the FPU.
-> 
-> > 
-> > Also, since Linux does not currently support lazy switching, we would 
-> > have to make sure the FPU is enabled (meaning FPU access traps are 
-> > disabled) every time we switch back to the kernel. As far as I can tell, 
-> > the FPU in Linux is always on for arm64. This is in contrast to armv7, 
-> > where it was okay to return to the kernel with FPU traps enabled.
-> 
-> That does not look like a problem.
+---
+ arch/arm64/include/asm/ipipe_base.h | 8 ++------
+ arch/arm64/kernel/fpsimd.c          | 6 ++++++
+ 2 files changed, 8 insertions(+), 6 deletions(-)
 
-Ok, I feel I have not been completely clear. There are three
-questions: 
-
-- whether every context switch should switch the fpu context: your
-answer is yes, my answer is no: simply remove the line forcibly
-setting the XNFPU bit in xnarch_init_shadow_tcb and your port will
-only switch the FPU context for those tasks that have the XNFPU bit
-set. All user-space tasks have the XNFPU bit set, and some
-kernel-space tasks. And if you do that it would be nice to forbid
-using the FPU when entering a task which does not have the FPU bit
-set.
-
-- whether xnarch_init_shadow_tcb should forcibly clear the XNFPU
-bit, and the XNFPU bit be enabled upon first use of the FPU, your
-answer is no, my answer is yes. But in fact, the x86 and arm 32 bits
-could be the default, and the tasks which do not want to pay the
-price of a trap upon first use of the FPU could trigger an
-initialization of the FPU with pthread_set_mode_np for instance.
-
-- whether the FPU faults should emit I-pipe events: here there is no
-other answer possible than yes, because otherwise the port is broken
-in case of FPU exception (division by zero, etc...).
-
+diff --git a/arch/arm64/include/asm/ipipe_base.h b/arch/arm64/include/asm/ipipe_base.h
+index 72ad7a4..60ce10e 100644
+--- a/arch/arm64/include/asm/ipipe_base.h
++++ b/arch/arm64/include/asm/ipipe_base.h
+@@ -100,8 +100,8 @@ unsigned __ipipe_processor_id(void);
+ #define IPIPE_TRAP_DABT		 2	/* Generic data abort */
+ #define IPIPE_TRAP_UNKNOWN	 3	/* Unknown exception */
+ #define IPIPE_TRAP_BREAK	 4	/* Instruction breakpoint */
+-#define IPIPE_TRAP_FPU		 5	/* Floating point exception */
+-#define IPIPE_TRAP_VFP		 6	/* VFP floating point exception */
++#define IPIPE_TRAP_FPU_ACC	 5	/* Floating point access */
++#define IPIPE_TRAP_FPU_EXC	 6	/* Floating point exception */
+ #define IPIPE_TRAP_UNDEFINSTR	 7	/* Undefined instruction */
+ #define IPIPE_TRAP_ALIGNMENT	 8	/* Unaligned access exception */
+ #define IPIPE_TRAP_MAYDAY        9	/* Internal recovery trap */
+@@ -163,10 +163,6 @@ static inline unsigned ipipe_test_and_stall_root(void)
+ #define __IPIPE_FEATURE_PREEMPTIBLE_SWITCH	1
+ #define __IPIPE_FEATURE_SYSINFO_V2		1
+ 
+-#ifdef CONFIG_VFP
+-#define __IPIPE_FEATURE_VFP_SAFE		1
+-#endif
+-
+ #ifdef CONFIG_IPIPE_ARM_KUSER_TSC
+ #define __IPIPE_FEATURE_KUSER_TSC		1
+ #endif
+diff --git a/arch/arm64/kernel/fpsimd.c b/arch/arm64/kernel/fpsimd.c
+index 3dca156..b7c44ef 100644
+--- a/arch/arm64/kernel/fpsimd.c
++++ b/arch/arm64/kernel/fpsimd.c
+@@ -93,6 +93,9 @@ static DEFINE_PER_CPU(struct fpsimd_state *, fpsimd_last_state);
+  */
+ void do_fpsimd_acc(unsigned int esr, struct pt_regs *regs)
+ {
++	if (__ipipe_report_trap(IPIPE_TRAP_FPU_ACC, regs))
++		return
++
+ 	/* TODO: implement lazy context saving/restoring */
+ 	WARN_ON(1);
+ }
+@@ -105,6 +108,9 @@ void do_fpsimd_exc(unsigned int esr, struct pt_regs *regs)
+ 	siginfo_t info;
+ 	unsigned int si_code = 0;
+ 
++	if (__ipipe_report_trap(IPIPE_TRAP_FPU_EXC, regs))
++		return
++
+ 	if (esr & FPEXC_IOF)
+ 		si_code = FPE_FLTINV;
+ 	else if (esr & FPEXC_DZF)
 -- 
-					    Gilles.
-https://click-hack.org
+1.8.4
+
 
