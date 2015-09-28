@@ -1,16 +1,20 @@
-Date: Sun, 27 Sep 2015 23:32:36 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150927213236.GA23716@hermes.click-hack.org>
-References: <2745691.a91SqWkUDm@eltrolinux48.eltroad.eltropuls>
- <20150603130217.GQ27570@hermes.click-hack.org>
- <30507154.J7D5WlzkQ8@eltrolinux48.eltroad.eltropuls>
- <8492059.5Osop05oYh@eltrolinux48.eltroad.eltropuls>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <8492059.5Osop05oYh@eltrolinux48.eltroad.eltropuls>
-Subject: Re: [Xenomai] rtnet locking/socket SKBs
+In-Reply-To: <20150926112419.GH1332@hermes.click-hack.org>
+References: <55E5E453.1080400@xenomai.org>
+ <CAPuu0=jX6ig5L7SJrmPVOhCmOm=gwxEmTafTpOqzE85hOji8CA@mail.gmail.com>
+ <55E5F849.1070708@xenomai.org> <55E5FB89.3080604@xenomai.org>
+ <55E60743.30600@xenomai.org>
+ <CAJqUr7zP85A6V7n9O=++iC4tJK8LCG5JC8xtO9Xd+u3sQW4G1A@mail.gmail.com>
+ <5604517A.2000602@mperpetuo.com>
+ <20150925150248.GE1332@hermes.click-hack.org>
+ <560580E6.6070208@mperpetuo.com>
+ <20150925180137.GF1332@hermes.click-hack.org>
+ <20150926112419.GH1332@hermes.click-hack.org>
+Date: Mon, 28 Sep 2015 16:57:28 -0700
+Message-ID: <CAPuu0=hEDw3g4pkJfWsAy-LkgwL=SrGyb1xPuU7a3-5LKYuHZg@mail.gmail.com>
+From: Dmitriy Cherkasov <dmitriy@mperpetuo.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] xenomai/ipipe arm64 port
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,48 +23,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marc =?iso-8859-1?Q?Str=E4mke?= <marc.straemke@eltropuls.de>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thu, Jun 04, 2015 at 12:41:47PM +0200, Marc Str=E4mke wrote:
-> Am Mittwoch, 3. Juni 2015, 19:09:36 schrieb Marc Str=E4mke:
-> > How is the reference count maintained for the rtdm devices, is that the
-> > refcount in the rtdm_fd structure (fd->refs). There is also a driver
-> > refcount, I am actually somewhat confused how this is maintained...
->=20
-> So I got mostly down to the issue but I need some input from someone more=
-=20
-> knowledged in rtnets design:=20
-> The reference count of an open AF_PACKET socket is not dropping to zero=20
-> because there are still skb in the sockets skb pool and=20
-> rtskb_socket_pool_trylock increments the fds reference=20
-> count. rt_socket_cleanup would release the skb pool but never gets called.
->=20
-> What I do not really understand at this moment is why the fd reference co=
-unt=20
-> gets incremented at all when the socket gets a skb in its pool?=20
-> Is there any reason to not close a socket while it still has associated s=
-kbs=20
-> in the pool? They will never get cleared if the application crashes If I =
-am=20
-> not mistaken.
+On Sat, Sep 26, 2015 at 4:24 AM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
 
-Ok, so now I had a look at the issue. The counter is not dropping to
-zero probably because you have unqueued messages in the socket
-"incoming" queue, the pool is locked when a packet is out of the
-pool, not when a packet is in the pool.
+>
+> Ok, I feel I have not been completely clear. There are three
+> questions:
+>
+> - whether every context switch should switch the fpu context: your
+> answer is yes, my answer is no: simply remove the line forcibly
+> setting the XNFPU bit in xnarch_init_shadow_tcb and your port will
+> only switch the FPU context for those tasks that have the XNFPU bit
+> set. All user-space tasks have the XNFPU bit set, and some
+> kernel-space tasks. And if you do that it would be nice to forbid
+> using the FPU when entering a task which does not have the FPU bit
+> set.
 
-Anyway, you are right, this is redundant, but not only for
-af_packet, also for udp and tcp: when the packet is outside any pool
-or queue, the file descriptor is locked, so, the module can not be
-removed and leak can not occur, so there is no reason to keep track
-of the fact that it is outside any queue, and we can probably remove
-the locking in the socket pools.
 
-What may be missing is that creating sockets should lock the
-corresponding kernel module.
+> - whether xnarch_init_shadow_tcb should forcibly clear the XNFPU
+> bit, and the XNFPU bit be enabled upon first use of the FPU, your
+> answer is no, my answer is yes. But in fact, the x86 and arm 32 bits
+> could be the default, and the tasks which do not want to pay the
+> price of a trap upon first use of the FPU could trigger an
+> initialization of the FPU with pthread_set_mode_np for instance.
+>
 
---=20
-					    Gilles.
-https://click-hack.org
+To be accurate, my answer is not "no", but more of a "not yet".
 
+My original goal is to get it working without lazy switching, then optimize
+later if needed.
+
+
+>
+> - whether the FPU faults should emit I-pipe events: here there is no
+> other answer possible than yes, because otherwise the port is broken
+> in case of FPU exception (division by zero, etc...).
+>
+>
+Yes, this looks correct, and thank you for the patch. I've applied it to
+ipipe and made the relevant changes to Xenomai. I will push this to our
+gitlab shortly.
+
+However, armv8 does not trap divide by zero or overflows, and does not seem
+to trap other things like sqrt(-1) either (at least on A53). So currently
+I've been unable to exercise this code.
+
+-Dmitriy
