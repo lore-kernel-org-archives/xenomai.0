@@ -1,21 +1,11 @@
+From: Johann Obermayr <johann.obermayr@sigmatek.at>
+Message-ID: <560A8662.8050204@sigmatek.at>
+Date: Tue, 29 Sep 2015 14:38:58 +0200
 MIME-Version: 1.0
-In-Reply-To: <20150918130000.GG7301@hermes.click-hack.org>
-References: <44k2rqz38u.fsf@be-well.ilk.org>
- <CAFkYNwYJ7ah+U97Pwuqwf9Phg=J0rTjr1txfGtg0FuoN2oP7cg@mail.gmail.com>
- <20150917133220.GB31663@hermes.click-hack.org>
- <CAFkYNwacX=h7trKNEBq=KZX627nRA7u6zk6YoEOLj8_J_LEa1Q@mail.gmail.com>
- <20150918074633.GA7301@hermes.click-hack.org>
- <CAFkYNwaBpwoC7rZBV4eRd7XEZ+c1GzNJZN9ZY_n9WO184A=pFQ@mail.gmail.com>
- <20150918122903.GC7301@hermes.click-hack.org>
- <CAFkYNwa+1ib=a+13PWYdNEwU35pvckchVwGa+Q8Ep7caSo7ioA@mail.gmail.com>
- <20150918124402.GD7301@hermes.click-hack.org>
- <CAFkYNwaSGcNOzKO=frN55CKj-RGSVixYMExRZqn4BaqOZ2PmzA@mail.gmail.com>
- <20150918130000.GG7301@hermes.click-hack.org>
-Date: Sat, 19 Sep 2015 01:04:50 +1200
-Message-ID: <CAFkYNwY9xwZ9iazzpgdg5854z-bwwLCsezFHj0TEiPRKrG8qCQ@mail.gmail.com>
-From: vibnwis <vibnwis@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Error code -19
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] ipipe_read_tsc, ipipe_tsc2ns
+Reply-To: johann.obermayr@sigmatek.at
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,34 +14,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Thanks for sharing. Just finished compiling. Testing it soon.
+Hello,
 
-On 19 September 2015 at 01:00, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+in a loadable kernel module i use ipipe_read_tsc and ipipe_tsc2ns.
+But at compiling i get follow warning.
 
-> On Sat, Sep 19, 2015 at 12:49:10AM +1200, vibnwis wrote:
-> > yes, found this in arch/arm/boot/dts/omap4.dtsi.
-> >
-> > global_timer: timer@48240200 {
-> >         compatible = "arm,cortex-a9-global-timer";
-> >         reg = <0x48240200 0x20>;
-> >         clocks = <&mpu_periphclk>;
-> >     };
-> >
-> >
-> > Everything seems to be in place right?
->
-> Well, not really. Normally, the device tree for the global timer
-> should contain an irq declaration. We do not need it on omap4430
-> because drivers/clocksource/arm_gloabl_timer.c is badly hacked, but
-> the hack does not work on omap4460. The patch sent in another mail,
-> gets the hack also working on omap4460. But this is still a bad
-> hack.
->
-> --
->                                             Gilles.
-> https://click-hack.org
->
+WARNING: "__ipipe_kuser_tsc_freq" [km_testsample.ko] undefined!
+
+we have ARM, Linux 3.0 + xenomai 2.6.2.1
+
+Best reagards,
+   Johann
+
