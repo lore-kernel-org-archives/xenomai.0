@@ -1,20 +1,17 @@
+From: "PRADHAN, MAKARAND (RC-CA)" <makarand.pradhan@siemens.com>
+Date: Tue, 29 Sep 2015 17:14:10 +0000
+Message-ID: <B89CCBE86D4F62448EE4F6367C6D3C89221E435B@USMLVA0EM24MSX.ww017.siemens.net>
+References: <B89CCBE86D4F62448EE4F6367C6D3C89221E32ED@USMLVA0EM24MSX.ww017.siemens.net>
+ <560AB34B.5020300@xenomai.org>
+ <B89CCBE86D4F62448EE4F6367C6D3C89221E4342@USMLVA0EM24MSX.ww017.siemens.net>
+ <560AB938.8090905@xenomai.org>
+In-Reply-To: <560AB938.8090905@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <20150929001233.GB15767@hermes.click-hack.org>
-References: <55E5F849.1070708@xenomai.org> <55E5FB89.3080604@xenomai.org>
- <55E60743.30600@xenomai.org>
- <CAJqUr7zP85A6V7n9O=++iC4tJK8LCG5JC8xtO9Xd+u3sQW4G1A@mail.gmail.com>
- <5604517A.2000602@mperpetuo.com>
- <20150925150248.GE1332@hermes.click-hack.org>
- <560580E6.6070208@mperpetuo.com>
- <20150925180137.GF1332@hermes.click-hack.org>
- <20150926112419.GH1332@hermes.click-hack.org>
- <CAPuu0=hEDw3g4pkJfWsAy-LkgwL=SrGyb1xPuU7a3-5LKYuHZg@mail.gmail.com>
- <20150929001233.GB15767@hermes.click-hack.org>
-Date: Tue, 29 Sep 2015 10:05:39 -0700
-Message-ID: <CAJqUr7wPkEarL7RjbJsc7-k0h4tZFMwE6W+UCsnY38Qk4kEUZA@mail.gmail.com>
-From: Don Mahurin <don@mperpetuo.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] xenomai/ipipe arm64 port
+Subject: Re: [Xenomai] Interrupt latency close to 1ms on powerpc Xenomai
+ 2.6.4
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,67 +20,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Sep 28, 2015 at 5:12 PM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+Thanks Philippe.
 
-> On Mon, Sep 28, 2015 at 04:57:28PM -0700, Dmitriy Cherkasov wrote:
-> > On Sat, Sep 26, 2015 at 4:24 AM, Gilles Chanteperdrix <
-> > gilles.chanteperdrix@xenomai.org> wrote:
-> >
-> > >
-> > > Ok, I feel I have not been completely clear. There are three
-> > > questions:
-> > >
-> > > - whether every context switch should switch the fpu context: your
-> > > answer is yes, my answer is no: simply remove the line forcibly
-> > > setting the XNFPU bit in xnarch_init_shadow_tcb and your port will
-> > > only switch the FPU context for those tasks that have the XNFPU bit
-> > > set. All user-space tasks have the XNFPU bit set, and some
-> > > kernel-space tasks. And if you do that it would be nice to forbid
-> > > using the FPU when entering a task which does not have the FPU bit
-> > > set.
-> >
-> >
-> > > - whether xnarch_init_shadow_tcb should forcibly clear the XNFPU
-> > > bit, and the XNFPU bit be enabled upon first use of the FPU, your
-> > > answer is no, my answer is yes. But in fact, the x86 and arm 32 bits
-> > > could be the default, and the tasks which do not want to pay the
-> > > price of a trap upon first use of the FPU could trigger an
-> > > initialization of the FPU with pthread_set_mode_np for instance.
-> > >
-> >
-> > To be accurate, my answer is not "no", but more of a "not yet".
-> >
-> > My original goal is to get it working without lazy switching, then
-> optimize
-> > later if needed.
-> >
-> >
-> > >
-> > > - whether the FPU faults should emit I-pipe events: here there is no
-> > > other answer possible than yes, because otherwise the port is broken
-> > > in case of FPU exception (division by zero, etc...).
-> > >
-> > >
-> > Yes, this looks correct, and thank you for the patch. I've applied it to
-> > ipipe and made the relevant changes to Xenomai. I will push this to our
-> > gitlab shortly.
-> >
-> > However, armv8 does not trap divide by zero or overflows, and does not
-> seem
-> > to trap other things like sqrt(-1) either (at least on A53). So currently
-> > I've been unable to exercise this code.
+Will correct and retest for latency.
+
+-----Original Message-----
+From: Philippe Gerum [mailto:rpm@xenomai.org]
+Sent: Tuesday, September 29, 2015 12:16 PM
+To: PRADHAN, MAKARAND (RC-CA); Xenomai@xenomai.org
+Subject: Re: [Xenomai] Interrupt latency close to 1ms on powerpc Xenomai 2.=
+6.4
+
+On 09/29/2015 06:04 PM, PRADHAN, MAKARAND (RC-CA) wrote:
+>> Are you playing with the T_LOCK bit?
 >
-> Ok, this page:
->
-> http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.den0024a/CJHECGIH.html
->
-> seems to indicate that armv8 may or may not trap upon
-> exception. Or maybe the exceptions can be enabled with the FPCR
-> register? Or the glibc functions defined in the fenv.h header?
+> Yes. We do T_LOCK to lock the scheduler while we are in a critical sectio=
+n. Is that why the scheduler does not kick in immediately after the HW int?
 
+If the IRQ happens while some task holds the scheduler lock, the answer is =
+yes, that is the point of it.
 
-calling feenableexcept seemed to have no effect.
+The scheduler lock is an ugly construct inherited from the dark ages of RTO=
+S. Xenomai being about properly emulating these for running legacy code is =
+the only reason why this anti-feature is present. I would strongly recommen=
+d to use a mutual exclusion mechanism with a finer granularity.
+
+--
+Philippe.
+
+This message and any attachments are solely for the use of intended recipie=
+nts. The information contained herein may include trade secrets, protected =
+health or personal information, privileged or otherwise confidential inform=
+ation. Unauthorized review, forwarding, printing, copying, distributing, or=
+ using such information is strictly prohibited and may be unlawful. If you =
+are not an intended recipient, you are hereby notified that you received th=
+is email in error, and that any review, dissemination, distribution or copy=
+ing of this email and any attachment is strictly prohibited. If you have re=
+ceived this email in error, please contact the sender and delete the messag=
+e and any attachment from your system. Thank you for your cooperation
+
