@@ -1,20 +1,17 @@
-Date: Tue, 29 Sep 2015 22:49:45 +0200
+Date: Tue, 29 Sep 2015 23:59:50 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20150929204945.GD18188@hermes.click-hack.org>
-References: <55E5FB89.3080604@xenomai.org> <55E60743.30600@xenomai.org>
- <CAJqUr7zP85A6V7n9O=++iC4tJK8LCG5JC8xtO9Xd+u3sQW4G1A@mail.gmail.com>
- <5604517A.2000602@mperpetuo.com>
- <20150925150248.GE1332@hermes.click-hack.org>
- <560580E6.6070208@mperpetuo.com>
- <20150925180137.GF1332@hermes.click-hack.org>
- <20150926112419.GH1332@hermes.click-hack.org>
- <CAPuu0=hEDw3g4pkJfWsAy-LkgwL=SrGyb1xPuU7a3-5LKYuHZg@mail.gmail.com>
- <20150929141439.GS15616@csclub.uwaterloo.ca>
+Message-ID: <20150929215950.GE18188@hermes.click-hack.org>
+References: <2745691.a91SqWkUDm@eltrolinux48.eltroad.eltropuls>
+ <20150603130217.GQ27570@hermes.click-hack.org>
+ <30507154.J7D5WlzkQ8@eltrolinux48.eltroad.eltropuls>
+ <8492059.5Osop05oYh@eltrolinux48.eltroad.eltropuls>
+ <20150927213236.GA23716@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
-In-Reply-To: <20150929141439.GS15616@csclub.uwaterloo.ca>
-Subject: Re: [Xenomai] xenomai/ipipe arm64 port
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20150927213236.GA23716@hermes.click-hack.org>
+Subject: Re: [Xenomai] rtnet locking/socket SKBs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,33 +20,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Marc =?iso-8859-1?Q?Str=E4mke?= <marc.straemke@eltropuls.de>
+Cc: xenomai@xenomai.org
 
-On Tue, Sep 29, 2015 at 10:14:39AM -0400, Lennart Sorensen wrote:
-> On Mon, Sep 28, 2015 at 04:57:28PM -0700, Dmitriy Cherkasov wrote:
-> > To be accurate, my answer is not "no", but more of a "not yet".
-> > 
-> > My original goal is to get it working without lazy switching, then optimize
-> > later if needed.
-> > 
-> > Yes, this looks correct, and thank you for the patch. I've applied it to
-> > ipipe and made the relevant changes to Xenomai. I will push this to our
-> > gitlab shortly.
-> > 
-> > However, armv8 does not trap divide by zero or overflows, and does not seem
-> > to trap other things like sqrt(-1) either (at least on A53). So currently
-> > I've been unable to exercise this code.
-> 
-> Wow, they dropped the exceptions from armv8 and just made those bits
-> reserved?  Why would they do that?
+On Sun, Sep 27, 2015 at 11:32:36PM +0200, Gilles Chanteperdrix wrote:
+> On Thu, Jun 04, 2015 at 12:41:47PM +0200, Marc Str=E4mke wrote:
+> > Am Mittwoch, 3. Juni 2015, 19:09:36 schrieb Marc Str=E4mke:
+> > > How is the reference count maintained for the rtdm devices, is that t=
+he
+> > > refcount in the rtdm_fd structure (fd->refs). There is also a driver
+> > > refcount, I am actually somewhat confused how this is maintained...
+> >=20
+> > So I got mostly down to the issue but I need some input from someone mo=
+re=20
+> > knowledged in rtnets design:=20
+> > The reference count of an open AF_PACKET socket is not dropping to zero=
+=20
+> > because there are still skb in the sockets skb pool and=20
+> > rtskb_socket_pool_trylock increments the fds reference=20
+> > count. rt_socket_cleanup would release the skb pool but never gets call=
+ed.
+> >=20
+> > What I do not really understand at this moment is why the fd reference =
+count=20
+> > gets incremented at all when the socket gets a skb in its pool?=20
+> > Is there any reason to not close a socket while it still has associated=
+ skbs=20
+> > in the pool? They will never get cleared if the application crashes If =
+I am=20
+> > not mistaken.
+>=20
+> Ok, so now I had a look at the issue. The counter is not dropping to
+> zero probably because you have unqueued messages in the socket
+> "incoming" queue, the pool is locked when a packet is out of the
+> pool, not when a packet is in the pool.
+>=20
+> Anyway, you are right, this is redundant, but not only for
+> af_packet, also for udp and tcp: when the packet is outside any pool
+> or queue, the file descriptor is locked, so, the module can not be
+> removed and leak can not occur, so there is no reason to keep track
+> of the fact that it is outside any queue, and we can probably remove
+> the locking in the socket pools.
+>=20
+> What may be missing is that creating sockets should lock the
+> corresponding kernel module.
 
-Well, now that I think about it, not a long time ago, I tried
-generating FPU exceptions traps on omap3, omap4 and maybe
-at91sama5d3 and discovered these processors could not generate such
-traps either.
+The issue should now be fixed in the xenomai-gch git, branch for-forge.
 
--- 
+--=20
 					    Gilles.
 https://click-hack.org
 
