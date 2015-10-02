@@ -1,13 +1,18 @@
-Date: Fri, 2 Oct 2015 19:34:32 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151002173432.GV31137@hermes.click-hack.org>
-References: <1443187370-3361-1-git-send-email-thierry.bultel@basystemes.fr>
+From: "PRADHAN, MAKARAND (RC-CA)" <makarand.pradhan@siemens.com>
+Date: Fri, 2 Oct 2015 18:30:19 +0000
+Message-ID: <B89CCBE86D4F62448EE4F6367C6D3C89221E4474@USMLVA0EM24MSX.ww017.siemens.net>
+References: <B89CCBE86D4F62448EE4F6367C6D3C89221E32ED@USMLVA0EM24MSX.ww017.siemens.net>
+ <560AB34B.5020300@xenomai.org>
+ <B89CCBE86D4F62448EE4F6367C6D3C89221E4342@USMLVA0EM24MSX.ww017.siemens.net>
+ <560AB938.8090905@xenomai.org>
+ <B89CCBE86D4F62448EE4F6367C6D3C89221E435B@USMLVA0EM24MSX.ww017.siemens.net>
+In-Reply-To: <B89CCBE86D4F62448EE4F6367C6D3C89221E435B@USMLVA0EM24MSX.ww017.siemens.net>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1443187370-3361-1-git-send-email-thierry.bultel@basystemes.fr>
-Subject: Re: [Xenomai] [PATCH 1/1] rtcan_flexcan: with open firmware,
- use devm_clk_put instead of clk_put
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Interrupt latency close to 1ms on powerpc Xenomai
+ 2.6.4
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,71 +21,158 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thierry Bultel <thierry.bultel@basystemes.fr>
-Cc: xenomai@xenomai.org
+To: "PRADHAN, MAKARAND (RC-CA)" <makarand.pradhan@siemens.com>, Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Sep 25, 2015 at 03:22:50PM +0200, Thierry Bultel wrote:
-> Signed-off-by: Thierry Bultel <thierry.bultel@basystemes.fr>
-> ---
->  ksrc/drivers/can/rtcan_flexcan.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/ksrc/drivers/can/rtcan_flexcan.c b/ksrc/drivers/can/rtcan_flexcan.c
-> index f5477db..91c5ebf 100644
-> --- a/ksrc/drivers/can/rtcan_flexcan.c
-> +++ b/ksrc/drivers/can/rtcan_flexcan.c
-> @@ -235,6 +235,7 @@ struct flexcan_priv {
->  	struct regulator *reg_xceiver;
->  	struct clk *clk_ipg;
->  	struct clk *clk_per;
-> +	struct platform_device *pdev;
->  #endif
->  };
->  
-> @@ -1054,8 +1055,8 @@ static void put_clocks(struct flexcan_priv *priv)
->  #if LINUX_VERSION_CODE < KERNEL_VERSION(3,11,0)
->  	clk_put(priv->clk);
->  #else
-> -	clk_put(priv->clk_per);
-> -	clk_put(priv->clk_ipg);
-> +	devm_clk_put(&priv->pdev->dev,priv->clk_per);
-> +	devm_clk_put(&priv->pdev->dev,priv->clk_ipg);
->  #endif
->  }
->  
-> @@ -1132,6 +1133,7 @@ static int flexcan_probe(struct platform_device *pdev)
->  		}
->  		clock_freq = clk_get_rate(priv->clk_per);
->  	}
-> +	priv->pdev = pdev;
->  #endif
->  
->  	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+Hi,
 
-I think you can completely drop the calls to clk_put: with
-devm_clk_get, the clocks should be automatically put when the device
-is destroyed. At least, this is what the doc says:
-http://lxr.free-electrons.com/source/include/linux/clk.h#L219
+Have one more int latency related issue.
 
-Could you try the following patch, instead?
+I have noticed that my User space irq handler task is relaxing on invoking rt_intr_enable.
 
-diff --git a/ksrc/drivers/can/rtcan_flexcan.c b/ksrc/drivers/can/rtcan_flexcan.c
-index f5477db..ddc3708 100644
---- a/ksrc/drivers/can/rtcan_flexcan.c
-+++ b/ksrc/drivers/can/rtcan_flexcan.c
-@@ -1053,9 +1053,6 @@ static void put_clocks(struct flexcan_priv *priv)
- {
- #if LINUX_VERSION_CODE < KERNEL_VERSION(3,11,0)
- 	clk_put(priv->clk);
--#else
--	clk_put(priv->clk_per);
--	clk_put(priv->clk_ipg);
- #endif
- }
- 
+Note: As advised in the previous conversation, I have removed all references to sched locks (T_LOCK) in my code.
+
+Details follow:
+
+System config:
+Xenomai: 2.6.4
+Linux: 3.14
+Processor: MPC8360E (powerpc)
+
+I have a user space task doing an rt_intr_wait on int 42(2a). The only system call it makes is rt_intr_enable once it is ready to re enable the int:
+
+The ipipe trace is attached to the email. Am posting my interpretation of the trace below.
+
+I think that the system call is relaxing the thread causing other threads to be scheduled in:
+
+Occurance of hw interrupt:
+:|  + func               -1635+   1.651  ipic_get_irq+0x8 (__ipipe_grab_irq+0x34)
+:|  + begin   0x00000021 -1634    0.772  __ipipe_grab_irq+0x40 (__ipipe_ret_from_except+0x0)
+:|  + func               -1633+   1.121  __ipipe_dispatch_irq+0x8 (__ipipe_grab_irq+0x50)
+:|  + func               -1632+   2.166  irq_to_desc+0x8 (__ipipe_dispatch_irq+0xec)
+:|  + func               -1630+   1.818  irq_to_desc+0x8 (__ipipe_dispatch_irq+0xfc)
+:|  + func               -1628+   1.287  qe_ic_get_low_irq+0x8 (qe_ic_cascade_low_ipic+0x1c)
+:|  + begin   0x0000002a -1627    0.484  qe_ic_cascade_low_ipic+0x28 (__ipipe_dispatch_irq+0x94)
+:|  + func               -1626    0.939  __ipipe_dispatch_irq+0x8 (qe_ic_cascade_low_ipic+0x34)
+:|  + func               -1625    0.848  irq_to_desc+0x8 (__ipipe_dispatch_irq+0xec)
+:|  + func               -1625+   1.151  irq_to_desc+0x8 (__ipipe_dispatch_irq+0xfc)
+:|  + func               -1623+   1.075  __ipipe_ack_level_irq+0x8 (__ipipe_dispatch_irq+0x94)
+:|  + func               -1622    0.893  qe_ic_mask_irq+0x8 (__ipipe_ack_level_irq+0x40)
+:|  + func               -1621+   1.742  __ipipe_spin_lock_irqsave+0x8 (qe_ic_mask_irq+0x3c)
+:|  # func               -1620+   1.545  __ipipe_spin_unlock_irqrestore+0x8 (qe_ic_mask_irq+0x94)
+:|  + func               -1618+   1.227  __ipipe_set_irq_pending+0x8 (__ipipe_dispatch_irq+0x314)
+:|  + end     0x0000002a -1617    0.893  qe_ic_cascade_low_ipic+0x3c (__ipipe_dispatch_irq+0x94)
+:|  + func               -1616+   1.636  __ipipe_do_sync_stage+0x8 (__ipipe_dispatch_irq+0x2f0)
+:|  # func               -1615+   2.196  xnintr_irq_handler+0x8 (__ipipe_do_sync_stage+0x150)
+:|  # func               -1612+   1.318  rt_intr_handler+0x8 [xeno_native] (xnintr_irq_handler+0x150)
+:|  # func               -1611+   2.863  xnsynch_flush+0x8 (rt_intr_handler+0x48 [xeno_native])
+:|  # func               -1608+   1.484  xnpod_resume_thread+0x8 (xnsynch_flush+0x170)
+:|  # [ 7962] -<?>-  257 -1607+   4.272  xnpod_resume_thread+0x134 (xnsynch_flush+0x170)
+:|  # func               -1603+   1.212  __xnpod_schedule+0x8 (xnintr_irq_handler+0x380)
+:|  # [ 7975] -<?>-   87 -1601    0.515  __xnpod_schedule+0x150 (xnintr_irq_handler+0x380)
+:|  # func               -1601+   4.121  xnsched_pick_next+0x8 (__xnpod_schedule+0x2b4)
+:|  # [ 7962] -<?>-  257 -1597+   1.060  __xnpod_schedule+0x4bc (xnpod_suspend_thread+0x4fc)
+:|  # func               -1596+   2.924  xnarch_save_fpu.isra.23+0x8 (__xnpod_schedule+0x510)
+:|  # func               -1593+   6.015  xnarch_restore_fpu+0x8 (__xnpod_schedule+0x518)
+:|  # func               -1587    0.666  __ipipe_restore_head+0x8 (__rt_intr_wait+0x2b8 [xeno_native])
+:|  + end     0x80000000 -1586+   1.893  __ipipe_restore_head+0xa4 (__rt_intr_wait+0x2b8 [xeno_native])
 
 
--- 
-					    Gilles.
-https://click-hack.org
+The user space irq handler starts running at this point and does the rt_intr_enable syscall.:
 
+:|  + begin   0x80000001 -1584    0.787  __ipipe_notify_syscall+0x144 (pipeline_syscall+0x8)
+:|  + end     0x80000001 -1584+   6.939  __ipipe_notify_syscall+0x1b0 (pipeline_syscall+0x8)
+:   + func               -1577    0.803  __ipipe_notify_syscall+0x8 (pipeline_syscall+0x8)
+:|  + begin   0x80000001 -1576    0.696  __ipipe_notify_syscall+0x1dc (pipeline_syscall+0x8)
+:|  + end     0x80000001 -1575    0.500  __ipipe_notify_syscall+0x110 (pipeline_syscall+0x8)
+:   + func               -1575    0.787  ipipe_syscall_hook+0x8 (__ipipe_notify_syscall+0x120)
+:   + func               -1574+   1.575  hisyscall_event+0x8 (ipipe_syscall_hook+0x48)
+
+
+The thread relaxes for some reason:
+:   + func               -1573    0.878  xnshadow_relax+0x8 (hisyscall_event+0x180)
+:|  + begin   0x80000000 -1572    0.848  xnshadow_relax+0x1f8 (hisyscall_event+0x180)
+:|  # func               -1571+   1.803  schedule_linux_call+0x8 (xnshadow_relax+0x60)
+:|  # func               -1569+   2.075  __ipipe_set_irq_pending+0x8 (schedule_linux_call+0x108)
+:|  # func               -1567+   2.166  xnpod_suspend_thread+0x8 (xnshadow_relax+0x14c)
+:|  # func               -1565    0.651  __ipipe_restore_head+0x8 (xnpod_suspend_thread+0x544)
+:|  + end     0x80000000 -1564    0.606  __ipipe_restore_head+0xa4 (xnpod_suspend_thread+0x544)
+:|  + begin   0x80000000 -1564    0.909  xnpod_suspend_thread+0x538 (xnshadow_relax+0x14c)
+:|  # func               -1563    0.803  __xnpod_schedule+0x8 (xnpod_suspend_thread+0x4c4)
+
+
+Other threads get scheduled in and start running happily:
+:|  # [ 7962] -<?>-  257 -1562    0.500  __xnpod_schedule+0x150 (xnpod_suspend_thread+0x4c4)
+:|  # func               -1561+   1.515  xnsched_pick_next+0x8 (__xnpod_schedule+0x2b4)
+:|  # [ 7975] -<?>-   87 -1560    0.560  __xnpod_schedule+0x4bc (xnintr_irq_handler+0x380)
+:|  # func               -1559    0.757  xnarch_save_fpu.isra.23+0x8 (__xnpod_schedule+0x510)
+:|  # func               -1559+   1.818  xnarch_restore_fpu+0x8 (__xnpod_schedule+0x518)
+:|  + end     0x00000021 -1557    0.621  __ipipe_grab_irq+0x58 (__ipipe_ret_from_except+0x0)
+:|  + func               -1556+   1.969  __ipipe_exit_irq+0x8 (__ipipe_grab_irq+0x60)
+
+
+The rt_intr_enable is finally invoked after close to 1ms:
+:    +func                -495    0.924  xnshadow_send_sig+0x8 (xnshadow_relax+0x218)
+:    +func                -494    0.893  schedule_linux_call+0x8 (xnshadow_send_sig+0x40)
+:|   +begin   0x80000000  -493+   1.136  schedule_linux_call+0x128 (xnshadow_send_sig+0x40)
+:|  *+func                -492+   1.015  __ipipe_set_irq_pending+0x8 (schedule_linux_call+0x108)
+:|  *+func                -491    0.636  __ipipe_restore_head+0x8 (schedule_linux_call+0xdc)
+:|   +end     0x80000000  -491+   2.606  __ipipe_restore_head+0xa4 (schedule_linux_call+0xdc)
+:    +func                -488+   1.515  __rt_intr_enable+0x8 [xeno_native] (hisyscall_event+0x19c)
+:    +func                -487+   1.363  xnregistry_fetch+0x8 (__rt_intr_enable+0x60 [xeno_native])
+:    +func                -485    0.924  rt_intr_enable+0x8 [xeno_native] (__rt_intr_enable+0x6c [xeno_native])
+:|   +begin   0x80000000  -484+   1.924  rt_intr_enable+0x210 [xeno_native] (__rt_intr_enable+0x6c [xeno_native])
+:|  *+func                -483    0.833  xnintr_enable+0x8 (rt_intr_enable+0x1f4 [xeno_native])
+:|  *+func                -482    0.848  rthal_irq_enable+0x8 (xnintr_enable+0x28)
+:|  *+func                -481+   2.500  irq_to_desc+0x8 (rthal_irq_enable+0x30)
+:|  *+func                -478+   1.136  irq_to_desc+0x8 (rthal_irq_enable+0x40)
+:|  *+func                -477    0.833  qe_ic_unmask_irq+0x8 (rthal_irq_enable+0x58)
+
+
+I believe that this is causing a 1ms latency which is too high and our application cannot work properly.
+
+Can you please advice on how I can avoid the relax?
+
+Kind Rgds,
+Makarand.
+
+
+-----Original Message-----
+From: Xenomai [mailto:xenomai-bounces@xenomai.org] On Behalf Of PRADHAN, MAKARAND (RC-CA)
+Sent: Tuesday, September 29, 2015 1:14 PM
+To: Philippe Gerum; Xenomai@xenomai.org
+Subject: Re: [Xenomai] Interrupt latency close to 1ms on powerpc Xenomai 2.6.4
+
+Thanks Philippe.
+
+Will correct and retest for latency.
+
+-----Original Message-----
+From: Philippe Gerum [mailto:rpm@xenomai.org]
+Sent: Tuesday, September 29, 2015 12:16 PM
+To: PRADHAN, MAKARAND (RC-CA); Xenomai@xenomai.org
+Subject: Re: [Xenomai] Interrupt latency close to 1ms on powerpc Xenomai 2.6.4
+
+On 09/29/2015 06:04 PM, PRADHAN, MAKARAND (RC-CA) wrote:
+>> Are you playing with the T_LOCK bit?
+>
+> Yes. We do T_LOCK to lock the scheduler while we are in a critical section. Is that why the scheduler does not kick in immediately after the HW int?
+
+If the IRQ happens while some task holds the scheduler lock, the answer is yes, that is the point of it.
+
+The scheduler lock is an ugly construct inherited from the dark ages of RTOS. Xenomai being about properly emulating these for running legacy code is the only reason why this anti-feature is present. I would strongly recommend to use a mutual exclusion mechanism with a finer granularity.
+
+--
+Philippe.
+
+This message and any attachments are solely for the use of intended recipients. The information contained herein may include trade secrets, protected health or personal information, privileged or otherwise confidential information. Unauthorized review, forwarding, printing, copying, distributing, or using such information is strictly prohibited and may be unlawful. If you are not an intended recipient, you are hereby notified that you received this email in error, and that any review, dissemination, distribution or copying of this email and any attachment is strictly prohibited. If you have received this email in error, please contact the sender and delete the message and any attachment from your system. Thank you for your cooperation
+
+_______________________________________________
+Xenomai mailing list
+Xenomai@xenomai.org
+http://xenomai.org/mailman/listinfo/xenomai
+
+This message and any attachments are solely for the use of intended recipients. The information contained herein may include trade secrets, protected health or personal information, privileged or otherwise confidential information. Unauthorized review, forwarding, printing, copying, distributing, or using such information is strictly prohibited and may be unlawful. If you are not an intended recipient, you are hereby notified that you received this email in error, and that any review, dissemination, distribution or copying of this email and any attachment is strictly prohibited. If you have received this email in error, please contact the sender and delete the message and any attachment from your system. Thank you for your cooperation
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: frozen.txt
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20151002/5f646e85/attachment.txt>
