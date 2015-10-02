@@ -1,21 +1,13 @@
-Date: Fri, 2 Oct 2015 13:55:00 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151002115500.GP31137@hermes.click-hack.org>
-References: <5604517A.2000602@mperpetuo.com>
- <20150925150248.GE1332@hermes.click-hack.org>
- <560580E6.6070208@mperpetuo.com>
- <20150925180137.GF1332@hermes.click-hack.org>
- <20150926112419.GH1332@hermes.click-hack.org>
- <CAPuu0=hEDw3g4pkJfWsAy-LkgwL=SrGyb1xPuU7a3-5LKYuHZg@mail.gmail.com>
- <20150929141439.GS15616@csclub.uwaterloo.ca>
- <20150929204945.GD18188@hermes.click-hack.org>
- <560DC717.9050902@mperpetuo.com>
- <20151002100142.GN31137@hermes.click-hack.org>
+Date: Fri, 2 Oct 2015 15:36:32 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20151002153632.68cb0dce@md1em3qc>
+In-Reply-To: <20150929180345.GB18188@hermes.click-hack.org>
+References: <20150909113151.0fed6fd7@md1em3qc>
+ <20150929180345.GB18188@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20151002100142.GN31137@hermes.click-hack.org>
-Subject: Re: [Xenomai] xenomai/ipipe arm64 port
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] 4.x merge
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,67 +16,89 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Dmitriy Cherkasov <dmitriy@mperpetuo.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "KISZKA, JAN" <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On Fri, Oct 02, 2015 at 12:01:42PM +0200, Gilles Chanteperdrix wrote:
-> On Thu, Oct 01, 2015 at 04:51:51PM -0700, Dmitriy Cherkasov wrote:
-> > The following changes since commit 17095784c6d3d44dc7f1512ffab9bb957e298466:
+On Tue, 29 Sep 2015 20:03:45 +0200
+Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+
+> On Wed, Sep 09, 2015 at 11:31:51AM +0200, Henning Schild wrote:
+> > Hi,
 > > 
-> >    cobalt/arm64: leave mm tracking to the pipeline (2015-09-17 15:08:34 
-> > +0200)
+> > i am about to merge ipipe into a more recent kernel and would like
+> > to discuss the approach with you guys. As far as i have seen and
+> > been told i should merge and not rebase.
 > > 
-> > are available in the git repository at:
+> > My current plan:
+> > 1 choose release (4.1 since its LTS)
+> > 2 merge it into ipipe
+> > 3 resolve obvious conflicts
+> > 4 commit broken merge
+> > 5 repair common bits and x86
+> > 6 publish my tree for others to repair other archs
 > > 
-> >    http://gitlab.mperpetuo.com/it/xenomai-3.git arm64-fp
+> > Steps 2,3 and 4 might become iterations stepping over 3.19 and 4.0.
+> > The merges will not work but the smaller steps will result in less
+> > conflicts at a time.
+> > 
+> > What do you guys think of the approach? Are my version choices sane
+> > or are there any reasons to consider other releases as well?
 > 
-> Ok, I retrieved your code, some comments inlined:
+> I did not answer because I am not sure my opinion really matters. I
+> am only maintaining one architecture, and have not even worked on it
+> for a long time. And have already expressed this opinion several
+> times. But since you are asking for it:
 > 
-> > /*
-> > static void enable_fpsimd(void) {
-> > 	__asm__ __volatile__("mrs x1, cpacr_el1\n\
-> > 			orr x1, x1, #(0x3 << 20)\n\
-> > 			msr cpacr_el1, x1\n\
-> > 			isb" : : : "x1", "memory", "cc");
-> > }
-> 
-> > static void disable_fpsimd(void) {
-> > 	__asm__ __volatile__("mrs x1, cpacr_el1\n\
-> > 				and x1, x1, #~(0x3 << 20)\n\
-> > 				msr cpacr_el1, x1\n\
-> > 				isb" : : : "x1", "memory", "cc");
-> > }
-> 
-> Coding style: braces at the beginning of line, and you probably want to
-> make these functions inline.
+> - merging with mainline to maintain the modifications made by the
+> I-pipe tree is a bad solution: 
+> . first because it is more time consuming than what we did before,
+> that is reapplying the I-pipe patch and fixing the conflicts:
+> . second because the I-pipe changes get lost in the middle of the
+> upstream commits, so the idea that by doing this we could keep the
+> history of changes in the I-pipe tree does not work;
+> . third because when you do the merge, you can not easily ignore the
+> conflicts for the other architecture than the one you are currently
+> working on.
+>
+> - merging by iterating over releases is even more time consuming: it
+> is far from exceptional to see the same piece of code changed by
+> several consecutive releases, with your method you get one conflict
+> by iteration, if you skip all the releases with one big iteration,
+> that means fixing only one conflict.
 
-Also, hardcoding a register may not be a good idea. Especially x1,
-since if I understand correctly, it is used as function argument, so
-by using x1, you may be forcing the compiler to do some useless
-register saves and load. And also, the only instructions which
-requires inline assembley are msr, mrs, and isb.
+I found the approach to work OK and surprisingly fast. In some series i
+had to resolve conflicts on the same files, but it was different
+conflicts. Not particularly time consuming or annoying.
 
-So, I would do something like:
+I did not ignore the other archs when merging, i just did not test
+them. 4.0 is currently at a state as if i had applied the big patch on
+it and merged to my best knowledge.
 
-static inline long get_cpacr(void)
-{
-	long result;
-	__asm__ ("mrs %0, cpacr_el1": "=r"(result) : /* */ : "memory", "cc");
-	return result;
-}
+> - I believe the right solution is to maintain the changes made by
+> the I-pipe tree as a stack of commits applied on top of the upstream
+> kernel, maintained with git. That means using git rebase to switch
+> from one release to the next, and amend each commit to fix the
+> conflicts. This way, every patch becomes a meaningful change to the
+> upstream kernel, we keep the history of changes, and they all appear
+> on top of the upstream commits, making them easy to identify in the
+> git logs. Splitting architecture specific patches allows every
+> architecture maintainer to focus on his architecture, and not have
+> to care about the other architecture commits. Note that I have
+> maintained the FCSE patch (split in something like 7 or 8 commits)
+> for several kernel releases, and I noticed no particular difficulty
+> doing so.
 
-static inline set_cpacr(long val)
-{
-	__asm__ __volatile__ (
-		"msr cpacr_el1, %0\n\"
-		"isb" : /* */ : "r"(val) : "memory", "cc");
-}
+That also does not sound too bad. At the moment we are probably >30
+commits away from mainline, with 95% of the code in one big change that
+does have a broken history. But sorting that into a nice queue of
+independantly working commits will also take a lot of time. And
+maintaining that feature will also cost.
 
-then define enable_fpsimd/disable_fpsimd in plain C, using these
-building blocks. Also, I do not see why these instructions require
-clobbering memory and cc, but here you know better than I do.
+Using a queue has the problem that changing the history (rebasing)
+becomes an essential part of your workflow. I know a lot of people like
+doing that to keep things nice and clean but i am not a big fan. My
+experience is that you end up investing a lot of work to alter
+history that could be useful later.
 
--- 
-					    Gilles.
-https://click-hack.org
+Henning
 
