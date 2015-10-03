@@ -1,12 +1,23 @@
-References: <CAKO1R-ReR8XT8n6_UHWCV=vnk_Y38QkSiSjf0_HVg0=Eu70VNg@mail.gmail.com>
+References: <5604517A.2000602@mperpetuo.com>
+ <20150925150248.GE1332@hermes.click-hack.org>
+ <560580E6.6070208@mperpetuo.com>
+ <20150925180137.GF1332@hermes.click-hack.org>
+ <20150926112419.GH1332@hermes.click-hack.org>
+ <CAPuu0=hEDw3g4pkJfWsAy-LkgwL=SrGyb1xPuU7a3-5LKYuHZg@mail.gmail.com>
+ <20150929141439.GS15616@csclub.uwaterloo.ca>
+ <20150929204945.GD18188@hermes.click-hack.org>
+ <560DC717.9050902@mperpetuo.com>
+ <20151002100142.GN31137@hermes.click-hack.org>
+ <20151002115500.GP31137@hermes.click-hack.org>
+ <560EE693.7040501@mperpetuo.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <560FA3DF.1030204@xenomai.org>
-Date: Sat, 3 Oct 2015 11:46:07 +0200
+Message-ID: <560FA585.8030305@xenomai.org>
+Date: Sat, 3 Oct 2015 11:53:09 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAKO1R-ReR8XT8n6_UHWCV=vnk_Y38QkSiSjf0_HVg0=Eu70VNg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Cyclictest in Xenomai-3
+In-Reply-To: <560EE693.7040501@mperpetuo.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] xenomai/ipipe arm64 port
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,23 +26,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?5p6X5bGV57+U?= <chlin6016@gmail.com>, xenomai@xenomai.org
+To: Dmitriy Cherkasov <dmitriy@mperpetuo.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10/03/2015 11:35 AM, 林展翔 wrote:
-> Hello,
-> 
-> I've cloned the code from Konstantinos's github page and amended the
-> Makefile and cyclictest.c like Philippe had suggested.
-> 
-> But when I ran cyclictest(after compilation) with the command './cyclictest
-> -p 99 -i 250 -n', the MAX latency was still over 200us.
-> 
-> Can anyone tell me where the problem might be?
 
-A good way to check whether you actually fixed up the original code
-properly with the earlier, out of tree cyclictest, is to run Xenomai's
-latency test. Not seeing any latency issues with that one would give you
-some hint about where the problem might be.
+Hi Dmitriy,
+
+On 10/02/2015 10:18 PM, Dmitriy Cherkasov wrote:
+> The following changes since commit
+> 17095784c6d3d44dc7f1512ffab9bb957e298466:
+> 
+>   cobalt/arm64: leave mm tracking to the pipeline (2015-09-17 15:08:34
+> +0200)
+> 
+> are available in the git repository at:
+> 
+>   http://gitlab.mperpetuo.com/it/xenomai-3.git arm64-fp
+> 
+> for you to fetch changes up to 37d9698b827c664027180a07f151346d0979e7d6:
+> 
+>   cobalt/arm64: FPU code cleanup (2015-10-02 13:03:38 -0700)
+> 
+
+Which branch is this work based on?
 
 -- 
 Philippe.
