@@ -1,7 +1,7 @@
 References: <CAKO1R-ReR8XT8n6_UHWCV=vnk_Y38QkSiSjf0_HVg0=Eu70VNg@mail.gmail.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <560FA2D1.9030200@xenomai.org>
-Date: Sat, 3 Oct 2015 11:41:37 +0200
+Message-ID: <560FA3DF.1030204@xenomai.org>
+Date: Sat, 3 Oct 2015 11:46:07 +0200
 MIME-Version: 1.0
 In-Reply-To: <CAKO1R-ReR8XT8n6_UHWCV=vnk_Y38QkSiSjf0_HVg0=Eu70VNg@mail.gmail.com>
 Content-Type: text/plain; charset="utf-8"
@@ -28,12 +28,10 @@ On 10/03/2015 11:35 AM, 林展翔 wrote:
 > 
 > Can anyone tell me where the problem might be?
 
-Are you running the Cobalt core? Did you check the kernel log for its
-signature.
-
-Also, you may want to pull from the -next branch, where the original
-cyclictest from the rt-tests is now available. There is no need for
-patching that test anymore with the latest Cobalt code.
+A good way to check whether you actually fixed up the original code
+properly with the earlier, out of tree cyclictest, is to run Xenomai's
+latency test. Not seeing any latency issues with that one would give you
+some hint about where the problem might be.
 
 -- 
 Philippe.
