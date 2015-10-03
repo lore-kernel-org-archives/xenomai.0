@@ -1,15 +1,10 @@
-Date: Sat, 3 Oct 2015 14:29:00 +0200
+Date: Sat, 3 Oct 2015 15:33:41 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151003122900.GZ31137@hermes.click-hack.org>
-References: <299A38B133279A4EBA47BCB60993FEAF858030C89D@xs203433.MELINDA.LOCAL>
- <20150414073454.GA1589@hermes.click-hack.org>
- <299A38B133279A4EBA47BCB60993FEAF858030C89E@xs203433.MELINDA.LOCAL>
+Message-ID: <20151003133341.GC31137@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <299A38B133279A4EBA47BCB60993FEAF858030C89E@xs203433.MELINDA.LOCAL>
-Subject: Re: [Xenomai] RTNET
+Subject: [Xenomai] xenomai-3 pull request
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,27 +13,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: romain.perier@scle.fr
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Tue, Apr 14, 2015 at 10:15:56AM +0200, romain.perier@scle.fr wrote:
-> Le 14/04/2015 09:35, Gilles Chanteperdrix a =E9crit :
-> >> I have two questions :
-> >>
-> >> 1. Have you any ideas about the problem described above ?
-> > No, the macb driver has been tested on AT91, and was working. Have
-> > you tried loading rtipv4 and passing an IP address to rtifconfig (in
-> > that order)?
->=20
-> I have just tried, same behaviour, it freezes.
-> $ modprobe rtipv4 (rtnet and macb are already loaded)
-> $ /usr/xenomai/sbin/rtifconfig rteth0 up 192.168.0.1
->    # freeze
+The following changes since commit 8d2fb51e0cd41ee9ccfbc6a51acdbcf682172df8:
 
-I finally tried the macb driver with the at91 sama5d3 GEM, and could
-not reproduce any issue.
+  demo/posix/cyclictest: drop conflicting definitions (2015-10-03 11:18:18 +0200)
 
---=20
+are available in the git repository at:
+
+  git://git.xenomai.org/xenomai-gch.git for-forge
+
+for you to fetch changes up to 82bb96c63c8413f2e0d6cd050caeee676aaf6d77:
+
+  rtnet/macb: add compatible string for sama5d3 gem (2015-10-03 14:40:12 +0200)
+
+----------------------------------------------------------------
+Gilles Chanteperdrix (4):
+      cobalt/cond: fix autoinit
+      smokey/posix-cond: add testcase for autoinit
+      posix/mutex: fix autoinit
+      rtnet/macb: add compatible string for sama5d3 gem
+
+ kernel/drivers/net/drivers/macb.c        |  1 +
+ lib/cobalt/cond.c                        |  5 ----
+ lib/cobalt/init.c                        |  2 +-
+ lib/cobalt/internal.h                    |  2 +-
+ lib/cobalt/mutex.c                       | 26 +++++++++++++++--
+ testsuite/smokey/posix-cond/posix-cond.c | 53 ++++++++++++++++++++++++++++++++++
+ 6 files changed, 79 insertions(+), 10 deletions(-)
+
+-- 
 					    Gilles.
 https://click-hack.org
 
