@@ -1,10 +1,16 @@
-Date: Sat, 3 Oct 2015 15:33:41 +0200
+Date: Sun, 4 Oct 2015 13:47:27 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151003133341.GC31137@hermes.click-hack.org>
+Message-ID: <20151004114727.GB1776@hermes.click-hack.org>
+References: <1443187370-3361-1-git-send-email-thierry.bultel@basystemes.fr>
+ <20151002173432.GV31137@hermes.click-hack.org>
+ <560FC915.1010209@basystemes.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
-Subject: [Xenomai] xenomai-3 pull request
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <560FC915.1010209@basystemes.fr>
+Subject: Re: [Xenomai] [PATCH 1/1] rtcan_flexcan: with open firmware,
+ use devm_clk_put instead of clk_put
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,37 +19,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Thierry Bultel <thierry.bultel@basystemes.fr>
+Cc: xenomai@xenomai.org
 
-The following changes since commit 8d2fb51e0cd41ee9ccfbc6a51acdbcf682172df8:
+On Sat, Oct 03, 2015 at 02:24:53PM +0200, Thierry Bultel wrote:
+>=20
+>=20
+> Le 02/10/2015 19:34, Gilles Chanteperdrix a =E9crit :
+> > On Fri, Sep 25, 2015 at 03:22:50PM +0200, Thierry Bultel wrote:
+> >> Signed-off-by: Thierry Bultel <thierry.bultel@basystemes.fr>
+> >> ---
+> >>   ksrc/drivers/can/rtcan_flexcan.c | 6 ++++--
+> >>   1 file changed, 4 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/ksrc/drivers/can/rtcan_flexcan.c b/ksrc/drivers/can/rtcan=
+_flexcan.c
+> >> index f5477db..91c5ebf 100644
+> >> --- a/ksrc/drivers/can/rtcan_flexcan.c
+> >> +++ b/ksrc/drivers/can/rtcan_flexcan.c
+> >> @@ -235,6 +235,7 @@ struct flexcan_priv {
+> >>   	struct regulator *reg_xceiver;
+> >>   	struct clk *clk_ipg;
+> >>   	struct clk *clk_per;
+> >> +	struct platform_device *pdev;
+> >>   #endif
+> >>   };
+> >>
+> >> @@ -1054,8 +1055,8 @@ static void put_clocks(struct flexcan_priv *priv)
+> >>   #if LINUX_VERSION_CODE < KERNEL_VERSION(3,11,0)
+> >>   	clk_put(priv->clk);
+> >>   #else
+> >> -	clk_put(priv->clk_per);
+> >> -	clk_put(priv->clk_ipg);
+> >> +	devm_clk_put(&priv->pdev->dev,priv->clk_per);
+> >> +	devm_clk_put(&priv->pdev->dev,priv->clk_ipg);
+> >>   #endif
+> >>   }
+> >>
+> >> @@ -1132,6 +1133,7 @@ static int flexcan_probe(struct platform_device =
+*pdev)
+> >>   		}
+> >>   		clock_freq =3D clk_get_rate(priv->clk_per);
+> >>   	}
+> >> +	priv->pdev =3D pdev;
+> >>   #endif
+> >>
+> >>   	mem =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> >
+> > I think you can completely drop the calls to clk_put: with
+> > devm_clk_get, the clocks should be automatically put when the device
+> > is destroyed. At least, this is what the doc says:
+> > http://lxr.free-electrons.com/source/include/linux/clk.h#L219
+> >
+> > Could you try the following patch, instead?
+>=20
+> This is enough indeed, thanks.
+> Will you commit it ?
 
-  demo/posix/cyclictest: drop conflicting definitions (2015-10-03 11:18:18 +0200)
+It is merged. Thanks for testing.
 
-are available in the git repository at:
-
-  git://git.xenomai.org/xenomai-gch.git for-forge
-
-for you to fetch changes up to 82bb96c63c8413f2e0d6cd050caeee676aaf6d77:
-
-  rtnet/macb: add compatible string for sama5d3 gem (2015-10-03 14:40:12 +0200)
-
-----------------------------------------------------------------
-Gilles Chanteperdrix (4):
-      cobalt/cond: fix autoinit
-      smokey/posix-cond: add testcase for autoinit
-      posix/mutex: fix autoinit
-      rtnet/macb: add compatible string for sama5d3 gem
-
- kernel/drivers/net/drivers/macb.c        |  1 +
- lib/cobalt/cond.c                        |  5 ----
- lib/cobalt/init.c                        |  2 +-
- lib/cobalt/internal.h                    |  2 +-
- lib/cobalt/mutex.c                       | 26 +++++++++++++++--
- testsuite/smokey/posix-cond/posix-cond.c | 53 ++++++++++++++++++++++++++++++++++
- 6 files changed, 79 insertions(+), 10 deletions(-)
-
--- 
+--=20
 					    Gilles.
 https://click-hack.org
 
