@@ -1,11 +1,13 @@
-From: Anders Blomdell <anders.blomdell@control.lth.se>
-Message-ID: <56139C8B.3060509@control.lth.se>
-Date: Tue, 6 Oct 2015 12:03:55 +0200
+Date: Tue, 6 Oct 2015 21:23:24 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151006192323.GB30765@hermes.click-hack.org>
+References: <56139C8B.3060509@control.lth.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Problems disabling SMI interrupts on MSI H87-G43
-	motherboard
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <56139C8B.3060509@control.lth.se>
+Subject: Re: [Xenomai] Problems disabling SMI interrupts on MSI H87-G43
+ motherboard
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,55 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: Anders Blomdell <anders.blomdell@control.lth.se>
+Cc: xenomai <xenomai@xenomai.org>
 
-SGkKCkkgaGF2ZSBwcm9ibGVtcyBkaXNhYmxpbmcgU01JLWludGVycnVwdHMgb24gIk1TSSBIODct
-RzQzIG1vdGhlcmJvYXJkIiAoaHR0cDovL3d3dy5tc2kuY29tL3Byb2R1Y3QvbWIvSDg3LUc0My5o
-dG1sKQoKVGhpcyBpcyB3aGF0IG1zaS5jIHNheXMgYXQgYm9vdHVwIChhZnRlciBhdHRhY2hlZCBw
-YXRjaCBpcyBhcHBsaWVkKToKCiAga2VybmVsOiBbWGVub21haV0gU01JIHdvcmthcm91bmQgZmFp
-bGVkISAoMTgzMDogMSAmIH4xIC0+IDEpCgphbmQgdGhpcyBpcyB3aGF0IGxzcGNpIHNheXM6Cgog
-IDAwOjAwLjAgSG9zdCBicmlkZ2U6IEludGVsIENvcnBvcmF0aW9uIDR0aCBHZW4gQ29yZSBQcm9j
-ZXNzb3IgRFJBTSBDb250cm9sbGVyIChyZXYgMDYpCiAgMDA6MDIuMCBWR0EgY29tcGF0aWJsZSBj
-b250cm9sbGVyOiBJbnRlbCBDb3Jwb3JhdGlvbiBYZW9uIEUzLTEyMDAgdjMvNHRoIEdlbiBDb3Jl
-IFByb2Nlc3NvciBJbnRlZ3JhdGVkIEdyYXBoaWNzIENvbnRyb2xsZXIgKHJldiAwNikKICAwMDow
-My4wIEF1ZGlvIGRldmljZTogSW50ZWwgQ29ycG9yYXRpb24gWGVvbiBFMy0xMjAwIHYzLzR0aCBH
-ZW4gQ29yZSBQcm9jZXNzb3IgSEQgQXVkaW8gQ29udHJvbGxlciAocmV2IDA2KQogIDAwOjE0LjAg
-VVNCIGNvbnRyb2xsZXI6IEludGVsIENvcnBvcmF0aW9uIDggU2VyaWVzL0MyMjAgU2VyaWVzIENo
-aXBzZXQgRmFtaWx5IFVTQiB4SENJIChyZXYgMDUpCiAgMDA6MTYuMCBDb21tdW5pY2F0aW9uIGNv
-bnRyb2xsZXI6IEludGVsIENvcnBvcmF0aW9uIDggU2VyaWVzL0MyMjAgU2VyaWVzIENoaXBzZXQg
-RmFtaWx5IE1FSSBDb250cm9sbGVyICMxIChyZXYgMDQpCiAgMDA6MWEuMCBVU0IgY29udHJvbGxl
-cjogSW50ZWwgQ29ycG9yYXRpb24gOCBTZXJpZXMvQzIyMCBTZXJpZXMgQ2hpcHNldCBGYW1pbHkg
-VVNCIEVIQ0kgIzIgKHJldiAwNSkKICAwMDoxYi4wIEF1ZGlvIGRldmljZTogSW50ZWwgQ29ycG9y
-YXRpb24gOCBTZXJpZXMvQzIyMCBTZXJpZXMgQ2hpcHNldCBIaWdoIERlZmluaXRpb24gQXVkaW8g
-Q29udHJvbGxlciAocmV2IDA1KQogIDAwOjFjLjAgUENJIGJyaWRnZTogSW50ZWwgQ29ycG9yYXRp
-b24gOCBTZXJpZXMvQzIyMCBTZXJpZXMgQ2hpcHNldCBGYW1pbHkgUENJIEV4cHJlc3MgUm9vdCBQ
-b3J0ICMxIChyZXYgZDUpCiAgMDA6MWMuMSBQQ0kgYnJpZGdlOiBJbnRlbCBDb3Jwb3JhdGlvbiA4
-IFNlcmllcy9DMjIwIFNlcmllcyBDaGlwc2V0IEZhbWlseSBQQ0kgRXhwcmVzcyBSb290IFBvcnQg
-IzIgKHJldiBkNSkKICAwMDoxYy4zIFBDSSBicmlkZ2U6IEludGVsIENvcnBvcmF0aW9uIDgyODAx
-IFBDSSBCcmlkZ2UgKHJldiBkNSkKICAwMDoxYy40IFBDSSBicmlkZ2U6IEludGVsIENvcnBvcmF0
-aW9uIDggU2VyaWVzL0MyMjAgU2VyaWVzIENoaXBzZXQgRmFtaWx5IFBDSSBFeHByZXNzIFJvb3Qg
-UG9ydCAjNSAocmV2IGQ1KQogIDAwOjFkLjAgVVNCIGNvbnRyb2xsZXI6IEludGVsIENvcnBvcmF0
-aW9uIDggU2VyaWVzL0MyMjAgU2VyaWVzIENoaXBzZXQgRmFtaWx5IFVTQiBFSENJICMxIChyZXYg
-MDUpCiAgMDA6MWYuMCBJU0EgYnJpZGdlOiBJbnRlbCBDb3Jwb3JhdGlvbiBIODcgRXhwcmVzcyBM
-UEMgQ29udHJvbGxlciAocmV2IDA1KQogIDAwOjFmLjIgU0FUQSBjb250cm9sbGVyOiBJbnRlbCBD
-b3Jwb3JhdGlvbiA4IFNlcmllcy9DMjIwIFNlcmllcyBDaGlwc2V0IEZhbWlseSA2LXBvcnQgU0FU
-QSBDb250cm9sbGVyIDEgW0FIQ0kgbW9kZV0gKHJldiAwNSkKICAwMDoxZi4zIFNNQnVzOiBJbnRl
-bCBDb3Jwb3JhdGlvbiA4IFNlcmllcy9DMjIwIFNlcmllcyBDaGlwc2V0IEZhbWlseSBTTUJ1cyBD
-b250cm9sbGVyIChyZXYgMDUpCiAgMDI6MDAuMCBFdGhlcm5ldCBjb250cm9sbGVyOiBSZWFsdGVr
-IFNlbWljb25kdWN0b3IgQ28uLCBMdGQuIFJUTDgxMTEvODE2OC84NDExIFBDSSBFeHByZXNzIEdp
-Z2FiaXQgRXRoZXJuZXQgQ29udHJvbGxlciAocmV2IDA2KQogIDAzOjAwLjAgUENJIGJyaWRnZTog
-QVNNZWRpYSBUZWNobm9sb2d5IEluYy4gQVNNMTA4My8xMDg1IFBDSWUgdG8gUENJIEJyaWRnZSAo
-cmV2IDA0KQogIDA1OjAwLjAgRXRoZXJuZXQgY29udHJvbGxlcjogSW50ZWwgQ29ycG9yYXRpb24g
-ODI1NzFFQiBHaWdhYml0IEV0aGVybmV0IENvbnRyb2xsZXIgKHJldiAwNikKICAwNTowMC4xIEV0
-aGVybmV0IGNvbnRyb2xsZXI6IEludGVsIENvcnBvcmF0aW9uIDgyNTcxRUIgR2lnYWJpdCBFdGhl
-cm5ldCBDb250cm9sbGVyIChyZXYgMDYpCgpBbnlib2R5IHdobyBoYXMgYSBnb29kIGlkZWEgaG93
-IHRvIGZpeCB0aGlzPwoKQmVzdCByZWdhcmRzCgpBbmRlcnMgQmxvbWRlbGwKCgoKLS0gCkFuZGVy
-cyBCbG9tZGVsbCAgICAgICAgICAgICAgICAgIEVtYWlsOiBhbmRlcnMuYmxvbWRlbGxAY29udHJv
-bC5sdGguc2UKRGVwYXJ0bWVudCBvZiBBdXRvbWF0aWMgQ29udHJvbApMdW5kIFVuaXZlcnNpdHkg
-ICAgICAgICAgICAgICAgICBQaG9uZTogICAgKzQ2IDQ2IDIyMiA0NjI1ClAuTy4gQm94IDExOCAg
-ICAgICAgICAgICAgICAgICAgIEZheDogICAgICArNDYgNDYgMTM4MTE4ClNFLTIyMSAwMCBMdW5k
-LCBTd2VkZW4KCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10
-ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHhlbm9tYWktMy4wLXJjNy1zbWku
-cGF0Y2gKVHlwZTogdGV4dC94LXBhdGNoClNpemU6IDU5NyBieXRlcwpEZXNjOiBub3QgYXZhaWxh
-YmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50
-cy8yMDE1MTAwNi8wNmVhMTExNC9hdHRhY2htZW50LmJpbj4K
+On Tue, Oct 06, 2015 at 12:03:55PM +0200, Anders Blomdell wrote:
+> Hi
+> 
+> I have problems disabling SMI-interrupts on "MSI H87-G43 motherboard" (http://www.msi.com/product/mb/H87-G43.html)
+> 
+> This is what msi.c says at bootup (after attached patch is applied):
+> 
+>   kernel: [Xenomai] SMI workaround failed! (1830: 1 & ~1 -> 1)
+> 
+> and this is what lspci says:
+> 
+> 
+> Anybody who has a good idea how to fix this?
+
+You should first check that the way smi.c retrieves the address of
+the SMI_EN register is still valid for your chipset. If it is, then
+try fiddling with the BIOS settings to see if some setting can
+disable generation of SMIs. If unsuccessful, you can try contacting
+the motherboard support to see if they have any advice.
+
+-- 
+					    Gilles.
+https://click-hack.org
+
