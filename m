@@ -6,11 +6,12 @@ References: <B89CCBE86D4F62448EE4F6367C6D3C89221E32ED@USMLVA0EM24MSX.ww017.sieme
  <B89CCBE86D4F62448EE4F6367C6D3C89221E4474@USMLVA0EM24MSX.ww017.siemens.net>
  <B89CCBE86D4F62448EE4F6367C6D3C89221E4503@USMLVA0EM24MSX.ww017.siemens.net>
  <B89CCBE86D4F62448EE4F6367C6D3C89221EA9F2@USMLVA0EM24MSX.ww017.siemens.net>
+ <561568AE.30109@xenomai.org>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <561568AE.30109@xenomai.org>
-Date: Wed, 7 Oct 2015 20:47:10 +0200
+Message-ID: <56156AB4.2080705@xenomai.org>
+Date: Wed, 7 Oct 2015 20:55:48 +0200
 MIME-Version: 1.0
-In-Reply-To: <B89CCBE86D4F62448EE4F6367C6D3C89221EA9F2@USMLVA0EM24MSX.ww017.siemens.net>
+In-Reply-To: <561568AE.30109@xenomai.org>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Interrupt latency close to 1ms on powerpc Xenomai
@@ -25,31 +26,46 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "PRADHAN, MAKARAND (RC-CA)" <makarand.pradhan@siemens.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10/07/2015 04:25 PM, PRADHAN, MAKARAND (RC-CA) wrote:
-> Hi All,
+On 10/07/2015 08:47 PM, Philippe Gerum wrote:
+> On 10/07/2015 04:25 PM, PRADHAN, MAKARAND (RC-CA) wrote:
+>> Hi All,
+>>
+>> On further experimentation, I still feel that rt_intr_enable may be causing my user space int handler to jump into secondary domain.
+>>
 > 
-> On further experimentation, I still feel that rt_intr_enable may be causing my user space int handler to jump into secondary domain.
+> rt_intr_enable() is a secondary domain call, it cannot execute over the
+> primary domain simply because the infrastructure shared with the regular
+> kernel that might be involved to enable/disable IRQs requires this. The
+> nucleus forcibly relaxes the calling thread for this reason. So the
+> behavior you observe is not a bug, it is actually the intent and
+> requirement for carrying out such request. Check
+> ksrc/native/syscall.c:4152, this call is tagged as "lostage", meaning
+> that it shall run from the lowest pipeline domain stage, i.e. linux.
+> 
+> This is the reason why handling interrupt top-halves in userland is a
+> bad idea, and also the reason why the RT_INTR support has completely
+> disappeared from 3.x's Alchemy API (formerly know as 2.x's "native"
+> API), in favor of a UIO-like model called UDD, standing for "user-space
+> device driver". There, top-halves must live in kernel space, and
+> bottom-halves may live in userland, which is the only sane and safe way
+> to handle interrupts from the latter.
+> 
+> The rationale for this change is stated here:
+> http://xenomai.org/migrating-from-xenomai-2-x-to-3-x/#irqhandling
 > 
 
-rt_intr_enable() is a secondary domain call, it cannot execute over the
-primary domain simply because the infrastructure shared with the regular
-kernel that might be involved to enable/disable IRQs requires this. The
-nucleus forcibly relaxes the calling thread for this reason. So the
-behavior you observe is not a bug, it is actually the intent and
-requirement for carrying out such request. Check
-ksrc/native/syscall.c:4152, this call is tagged as "lostage", meaning
-that it shall run from the lowest pipeline domain stage, i.e. linux.
+Which also translates as: enabling/disabling an IRQ line is changing the
+permanent state of that line, compared to mask+ack/unmask when serving a
+particular occurrence which changes its transient state.
 
-This is the reason why handling interrupt top-halves in userland is a
-bad idea, and also the reason why the RT_INTR support has completely
-disappeared from 3.x's Alchemy API (formerly know as 2.x's "native"
-API), in favor of a UIO-like model called UDD, standing for "user-space
-device driver". There, top-halves must live in kernel space, and
-bottom-halves may live in userland, which is the only sane and safe way
-to handle interrupts from the latter.
+Enabling/disabling IRQ lines normally happens during the init/cleanup
+phase, where running from a mere linux context won't be an issue.
+Conversely, mask+ack/unmask upon IRQ may happen over the rt domain
+(obviously), but those ops may be called from a kernel context
+exclusively for sanity reasons.
 
-The rationale for this change is stated here:
-http://xenomai.org/migrating-from-xenomai-2-x-to-3-x/#irqhandling
+Therefore, using rt_intr_enable() to emulate the
+unmask-after-IRQ-service op from userland won't work.
 
 -- 
 Philippe.
