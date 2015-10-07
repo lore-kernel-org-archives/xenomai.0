@@ -1,16 +1,19 @@
-In-Reply-To: <20151007124107.GB30140@hermes.click-hack.org>
-References: <56139C8B.3060509@control.lth.se>
- <20151006192323.GB30765@hermes.click-hack.org> <5614C8E3.5090809@sigmatek.at>
- <5614D22A.8030203@sigmatek.at> <5615108A.6070001@control.lth.se>
- <20151007124107.GB30140@hermes.click-hack.org>
+References: <5601A1A1.2020506@siemens.com> <560263A0.4080208@sigmatek.at>
+ <56026810.8040300@sigmatek.at> <56028093.6050805@siemens.com>
+ <56050985.2060002@sigmatek.at> <560A8632.3020107@sigmatek.at>
+ <560AB4C7.3050508@xenomai.org> <561256C6.4070508@sigmatek.at>
+ <561264DD.2020803@xenomai.org> <5614DF5C.200@sigmatek.at>
+ <5614E0C7.6000309@xenomai.org>
+From: =?UTF-8?Q?Harald_Fe=c3=9fl?= <harald.fessl@sigmatek.at>
+Message-ID: <56152AED.6050407@sigmatek.at>
+Date: Wed, 7 Oct 2015 16:23:41 +0200
 MIME-Version: 1.0
+In-Reply-To: <5614E0C7.6000309@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-From: Anders Blomdell <anders.blomdell@control.lth.se>
-Date: Wed, 07 Oct 2015 15:03:25 +0200
-Message-ID: <E56D0663-C3E8-42E8-A6D7-8CFCF9F7C116@control.lth.se>
-Subject: Re: [Xenomai] Problems disabling SMI interrupts on MSI H87-G43
-	motherboard
+Subject: Re: [Xenomai] Fwd: Re: Problem that the Linux scheduler is not
+ called for some ms
+Reply-To: harald.fessl@sigmatek.at
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,91 +22,115 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai@xenomai.org
+To: rpm@xenomai.org, xenomai@xenomai.org
 
-
-
-On October 7, 2015 2:41:07 PM GMT+02:00, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
->On Wed, Oct 07, 2015 at 02:31:06PM +0200, Anders Blomdell wrote:
->> On 2015-10-07 10:04, Johann Obermayr wrote:
->> > Am 07.10.2015 um 09:25 schrieb Johann Obermayr:
->> >> Am 06.10.2015 um 21:23 schrieb Gilles Chanteperdrix:
->> >>> On Tue, Oct 06, 2015 at 12:03:55PM +0200, Anders Blomdell wrote:
->> >>>> Hi
->> >>>>
->> >>>> I have problems disabling SMI-interrupts on "MSI H87-G43
->motherboard" (http://www.msi.com/product/mb/H87-G43.html)
->> >>>>
->> >>>> This is what msi.c says at bootup (after attached patch is
->applied):
->> >>>>
->> >>>>    kernel: [Xenomai] SMI workaround failed! (1830: 1 & ~1 -> 1)
->> >>>>
->> >>>> and this is what lspci says:
->> >>>>
->> >>>>
->> >>>> Anybody who has a good idea how to fix this?
->> >>> You should first check that the way smi.c retrieves the address
->of
->> >>> the SMI_EN register is still valid for your chipset. If it is,
->then
->> >>> try fiddling with the BIOS settings to see if some setting can
->> >>> disable generation of SMIs. If unsuccessful, you can try
->contacting
->> >>> the motherboard support to see if they have any advice.
->> >>>
->> >> On new Mainboards, you can't disable SMI.
->> >> Because this is a security problem, so SMI is locked by BIOS.
->> >> There are some registery on the mainboard chipset, hat lock the
->SMI register.
->> >> So you can't disable the SMI.
->> >> We also had this trouble, and we get a own BIOS with disabled SMI.
->> >>
->> >> Regards
->> >>   Johann
->> >>
->> >> _______________________________________________
->> >> Xenomai mailing list
->> >> Xenomai@xenomai.org
->> >> http://xenomai.org/mailman/listinfo/xenomai
->> >>
->> > Found this:
->> > 
->> > GEN_PMCON_1—General PM Configuration 1 Register (PM—D31:F0)
->> > Offset Address: A0h Attribute: R/W, RO, R/WO
->> > Default Value: 0000h Size: 16-bit
->> > Lockable: No Usage: ACPI, Legacy
->> > Power Well: Core
->> > 
->> > Bit 4: SMI_LOCK — R/WO. When this bit is set, writes to the
->GLB_SMI_EN bit (PMBASE
->> > + 30h, bit 0) will have no effect. Once the SMI_LOCK bit is set,
->writes of 0 to
->> > SMI_LOCK bit will have no effect (that is, once set, this bit can
->only be cleared by
->> > PLTRST#).
->> > 
->> 
->> Thanks everybody, seems like I have to give up on that motherboard:
->> 
->> 1. Nothing found to disable in the BIOS
->> 2. Disabling all sourcecs with smictrl
->(git://git.kiszka.org/smictrl.git)
->>    still gives high latencies with RTNet (+1.5 milliseconds). 
->> 3. latency test does not show anything suspicious, so it might
->>    be some other issue.
->> 
->> Anybody that has a suggestion on a recent motherboard that has been
->used with
->> RTNet and showing good results?
+Am 07.10.2015 um 11:07 schrieb Philippe Gerum:
+> On 10/07/2015 11:01 AM, Johann Obermayr wrote:
+>> Am 05.10.2015 um 13:54 schrieb Philippe Gerum:
+>>> On 10/05/2015 12:53 PM, Johann Obermayr wrote:
+>>>> Am 29.09.2015 um 17:56 schrieb Philippe Gerum:
+>>>>> On 09/29/2015 02:38 PM, Johann Obermayr wrote:
+>>>>>> Am 25.09.2015 um 10:44 schrieb Harald Feßl:
+>>>>>>> Hi
+>>>>>>>
+>>>>>>> I have done a ipipe trace for some working and one non working cycle.
+>>>>>>> The trace is stopped after the non working cycle.
+>>>>>>> I have marked the working cycles with green and the non working cycle
+>>>>>>> with red in my graphical trace.
+>>>>>>> The ipipe trace and graphical trace are stopped at the same time.
+>>>>>>>
+>>>>>>> After the non working cycle the system is working correct again for
+>>>>>>> some seconds or minutes.
+>>>>>>>
+>>>>>>> I think the problem is, that the migration of the task "cyclic" from
+>>>>>>> xenomai to linux, needs sometimes some ms.
+>>>>>>>
+>>>>>>> Harald
+>>>>>>>
+>>>>>>> Harald Fessl
+>>>>>>> Betriebssystem
+>>>>>>> ________________________________
+>>>>>>>
+>>>>>>> SIGMATEK GmbH & Co KG
+>>>>>>> Sigmatekstraße 1
+>>>>>>> 5112 Lamprechtshausen
+>>>>>>> Österreich / Austria
+>>>>>>>
+>>>>>>> Tel.:  +43/6274/4321-0
+>>>>>>> Fax:  +43/6274/4321-18
+>>>>>>> E-Mail: harald.fessl@sigmatek.at
+>>>>>>> http://www.sigmatek-automation.com
+>>>>>>>
+>>>>>>> ***********************Please
+>>>>>>> note:************************************
+>>>>>>> This email and all attachments are confidential and intended
+>>>>>>> solely for
+>>>>>>> the person or entity to whom it is addressed. If you are not the
+>>>>>>> named
+>>>>>>> addressee you must not make this email and all attachments accessible
+>>>>>>> to any other person. If you have received this email in error please
+>>>>>>> delete it together with all attachments.
+>>>>>>> ***********************************************************************
+>>>>>>>
+>>>>>>>
+>>>>>>> Am 23.09.2015 um 12:36 schrieb Jan Kiszka:
+>>>>>>>> On 2015-09-23 10:51, Harald Feßl wrote:
+>>>>>>>>> Hi
+>>>>>>>>>
+>>>>>>>>> The linux tasks are not blocked (not all).
+>>>>>>>>> I think the problem is , that the linux scheduler function in the
+>>>>>>>>> kernel
+>>>>>>>>> is not called for some ms.
+>>>>>>>>> I have also traced the calls to the scheduler function
+>>>>>>>>> "static int __sched __schedule(void)"
+>>>>>>>>> and sometimes when the decribed problem occur this function is not
+>>>>>>>>> called while no linux task are running.
+>>>>>>>> If no task is runnable, there is also no reason to invoke schedule.
+>>>>>>>>
+>>>>>>>> Please post a ftrace log of your system, covering both a working
+>>>>>>>> and a
+>>>>>>>> non-working cycle, including cobalt* and at least sched and irq
+>>>>>>>> events.
+>>>>>>>>
+>>>>>>>> Jan
+>>>>>>>>
+>>>>>> Hello Philippe and Xenomai forum,
+>>>>>>
+>>>>>> we have some trouble with a xenomai task (cyclic with prio 30) after
+>>>>>> switching to secondary domain.
+>>>>>> Linux ARM 3.0, Xenomai 2.6.2.1, and CONFIG_XENO_OPT_PRIOCPL=y.
+>>>>> PRIOCPL should be disabled, and all tests redone in this context.
+>>>>>
+>>>> Hello,
+>>>>
+>>>> the result is the same.
+>>>> Some time your cyclic task will not schedule after switching to
+>>>> secondary domain.
+>>>>
+>>> I just noticed you were using 2.6.2.1. Several bugs in the domain switch
+>>> mechanism have been fixed since then until 2.6.4, and the latter still
+>>> suffers a recently SMP rescheduling issue already fixed in the 2.6.x
+>>> maintenance branch.
+>>>
+>>> You should try running your code on top of that branch before diving any
+>>> deeper, I suspect you might be facing a bug that has been fixed already.
+>>>
+>> Hello,
+>>
+>> we have test it with Linux 3.10.53 (Freescale) and Xenomai 2.6.4.
+>> But we see the same problem.
+>>
+> Ok, so please send a trace freeze with that configuration illustrating
+> the problem, with PRIOCPL disabled. The previous traces you sent include
+> RPI noise, which makes their interpretation uncertain.
 >
->If the issue is with RTNet, does not it make more sense to find the
->RTNet issue than to change motherboard? If you are able to detect a
->high latency, can you not trigger a trace from the I-pipe tracer?
 
-Well, same kernel identical ethernetcard on motherboard without SMI, works flawlessly (network jitter in 30 ms range).
+Hello Philippe
 
-BTW: only the RTNet drivers, raw ethernet.
+I am working with Johann at the same problem.
+We don't know what you mean with RPI noise.
+Is there a kernel switch to turn of some trace records.
+
+Harald
 
 
