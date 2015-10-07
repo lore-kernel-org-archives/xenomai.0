@@ -1,15 +1,11 @@
-References: <56139C8B.3060509@control.lth.se>
- <20151006192323.GB30765@hermes.click-hack.org> <5614C8E3.5090809@sigmatek.at>
-From: Johann Obermayr <johann.obermayr@sigmatek.at>
-Message-ID: <5614D22A.8030203@sigmatek.at>
-Date: Wed, 7 Oct 2015 10:04:58 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5614DB1F.9010301@xenomai.org>
+Date: Wed, 7 Oct 2015 10:43:11 +0200
 MIME-Version: 1.0
-In-Reply-To: <5614C8E3.5090809@sigmatek.at>
-Content-Type: text/plain; charset="windows-1252"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Problems disabling SMI interrupts on MSI H87-G43
- motherboard
-Reply-To: johann.obermayr@sigmatek.at
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] [IPIPE] patch releases for kernel 3.14.44,
+ 3.18.20 (all architectures)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,61 +14,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-Am 07.10.2015 um 09:25 schrieb Johann Obermayr:
-> Am 06.10.2015 um 21:23 schrieb Gilles Chanteperdrix:
->> On Tue, Oct 06, 2015 at 12:03:55PM +0200, Anders Blomdell wrote:
->>> Hi
->>>
->>> I have problems disabling SMI-interrupts on "MSI H87-G43=20
->>> motherboard" (http://www.msi.com/product/mb/H87-G43.html)
->>>
->>> This is what msi.c says at bootup (after attached patch is applied):
->>>
->>>    kernel: [Xenomai] SMI workaround failed! (1830: 1 & ~1 -> 1)
->>>
->>> and this is what lspci says:
->>>
->>>
->>> Anybody who has a good idea how to fix this?
->> You should first check that the way smi.c retrieves the address of
->> the SMI_EN register is still valid for your chipset. If it is, then
->> try fiddling with the BIOS settings to see if some setting can
->> disable generation of SMIs. If unsuccessful, you can try contacting
->> the motherboard support to see if they have any advice.
->>
-> On new Mainboards, you can't disable SMI.
-> Because this is a security problem, so SMI is locked by BIOS.
-> There are some registery on the mainboard chipset, hat lock the SMI=20
-> register.
-> So you can't disable the SMI.
-> We also had this trouble, and we get a own BIOS with disabled SMI.
->
-> Regards
->   Johann
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://xenomai.org/mailman/listinfo/xenomai
->
-Found this:
 
-GEN_PMCON_1=97General PM Configuration 1 Register (PM=97D31:F0)
-Offset Address: A0h Attribute: R/W, RO, R/WO
-Default Value: 0000h Size: 16-bit
-Lockable: No Usage: ACPI, Legacy
-Power Well: Core
+ipipe-core-3.14.44-arm-13
+ipipe-core-3.14.44-blackfin-8
+ipipe-core-3.14.44-powerpc-10
+ipipe-core-3.14.44-x86-10
 
-Bit 4: SMI_LOCK =97 R/WO. When this bit is set, writes to the GLB_SMI_EN=20
-bit (PMBASE
-+ 30h, bit 0) will have no effect. Once the SMI_LOCK bit is set, writes=20
-of 0 to
-SMI_LOCK bit will have no effect (that is, once set, this bit can only=20
-be cleared by
-PLTRST#).
+ipipe-core-3.18.20-arm-6
+ipipe-core-3.18.20-blackfin-3
+ipipe-core-3.18.20-powerpc-3
+ipipe-core-3.18.20-x86-3
 
-Regards
-   Johann
+GIT clone:
+git://git.xenomai.org/ipipe.git
+https://git.xenomai.org/ipipe.git
+http://git.xenomai.org/ipipe.git
+
+-- 
+Philippe.
+
 
