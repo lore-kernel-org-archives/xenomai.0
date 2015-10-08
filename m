@@ -1,21 +1,12 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Thu, 8 Oct 2015 16:41:10 -0400
-Message-ID: <20151008204110.GK21923@csclub.uwaterloo.ca>
-References: <B89CCBE86D4F62448EE4F6367C6D3C89221EA9F2@USMLVA0EM24MSX.ww017.siemens.net>
- <561568AE.30109@xenomai.org> <56156AB4.2080705@xenomai.org>
- <B89CCBE86D4F62448EE4F6367C6D3C89221ECA2A@USMLVA0EM24MSX.ww017.siemens.net>
- <56161232.50803@xenomai.org>
- <20151008144340.GE21923@csclub.uwaterloo.ca>
- <20151008145214.GF8324@hermes.click-hack.org>
- <20151008151549.GF21923@csclub.uwaterloo.ca>
- <20151008201952.GI21923@csclub.uwaterloo.ca>
- <20151008203102.GJ8324@hermes.click-hack.org>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Thu, 08 Oct 2015 23:39:09 +0200
+Message-ID: <4999336.Pj9KqtLGI4@indiana>
+In-Reply-To: <56168813.1000102@xenomai.org>
+References: <56168813.1000102@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20151008203102.GJ8324@hermes.click-hack.org>
-Subject: Re: [Xenomai] Interrupt latency close to 1ms on powerpc Xenomai
-	2.6.4
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] [RELEASE] Xenomai 3.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,18 +15,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Thu, Oct 08, 2015 at 10:31:02PM +0200, Gilles Chanteperdrix wrote:
-> I am talking about that line:
-> http://git.xenomai.org/ipipe.git/tree/kernel/irq/chip.c?h=ipipe-3.18#n893
-
-OK, so that was in the patch I had found, I just hadn't noticed
-the difference with the root_only check.  Of course without
-CONFIG_IPIPE_DEBUG_CONTEXT, that is a noop and hence wouldn't do anything
-as far as I can tell.
-
--- 
-Len Sorensen
-
+RWwgRGlqb3VzLCA4IGQnb2N0dWJyZSBkZSAyMDE1LCBhIGxlcyAxNzoxMzoyMywgUGhpbGlwcGUg
+R2VydW0gdmEgZXNjcml1cmU6Cj4gRXZlbnR1YWxseSwKPiAKPiBodHRwOi8veGVub21haS5vcmcv
+ZG93bmxvYWRzL3hlbm9tYWkvc3RhYmxlL2xhdGVzdC94ZW5vbWFpLTMuMC50YXIuYnoyCj4gCj4g
+VGhhbmtzIHRvIGV2ZXJ5b25lIGludm9sdmVkLgoKR3JlYXQhISEhIQoKTm93LCB3ZSBzaG91bGQg
+bWFrZSBhIGZlYXN0ISEhIQoKCi0tIAotLQpMaW51eCBVc2VyIDE1MjY5MiAgICAgR1BHOiAwNUY0
+QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tCkE6IEJlY2F1c2UgaXQgbWVzc2VzIHVwIHRoZSBvcmRlciBpbiB3aGljaCBwZW9wbGUgbm9y
+bWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkgaXMgdG9wLXBvc3Rpbmcgc3VjaCBhIGJhZCB0aGluZz8K
+QTogVG9wLXBvc3RpbmcuClE6IFdoYXQgaXMgdGhlIG1vc3QgYW5ub3lpbmcgdGhpbmcgaW4gZS1t
+YWlsPwotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBh
+dHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxp
+Y2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogODE5IGJ5dGVzCkRlc2M6IFRoaXMgaXMgYSBkaWdp
+dGFsbHkgc2lnbmVkIG1lc3NhZ2UgcGFydC4KVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVy
+bWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTUxMDA4L2RkNjY5NzY2L2F0dGFjaG1lbnQuc2ln
+Pgo=
