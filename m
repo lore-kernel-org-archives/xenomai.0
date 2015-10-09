@@ -1,12 +1,20 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Thu, 08 Oct 2015 23:39:09 +0200
-Message-ID: <4999336.Pj9KqtLGI4@indiana>
-In-Reply-To: <56168813.1000102@xenomai.org>
-References: <56168813.1000102@xenomai.org>
+Date: Fri, 9 Oct 2015 10:58:54 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151009085854.GC5923@hermes.click-hack.org>
+References: <56139C8B.3060509@control.lth.se>
+ <20151006192323.GB30765@hermes.click-hack.org>
+ <5614C8E3.5090809@sigmatek.at> <5614D22A.8030203@sigmatek.at>
+ <5615108A.6070001@control.lth.se>
+ <20151007124107.GB30140@hermes.click-hack.org>
+ <E56D0663-C3E8-42E8-A6D7-8CFCF9F7C116@control.lth.se>
+ <20151007144156.GC30140@hermes.click-hack.org>
+ <CAPRPZsAm5=TpD7K9S6i+rEStR3Pokk=yOPEP2ZRaFL39Szf+3Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] [RELEASE] Xenomai 3.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPRPZsAm5=TpD7K9S6i+rEStR3Pokk=yOPEP2ZRaFL39Szf+3Q@mail.gmail.com>
+Subject: Re: [Xenomai] Problems disabling SMI interrupts on MSI H87-G43
+ motherboard
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,20 +23,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
+Cc: "xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-RWwgRGlqb3VzLCA4IGQnb2N0dWJyZSBkZSAyMDE1LCBhIGxlcyAxNzoxMzoyMywgUGhpbGlwcGUg
-R2VydW0gdmEgZXNjcml1cmU6Cj4gRXZlbnR1YWxseSwKPiAKPiBodHRwOi8veGVub21haS5vcmcv
-ZG93bmxvYWRzL3hlbm9tYWkvc3RhYmxlL2xhdGVzdC94ZW5vbWFpLTMuMC50YXIuYnoyCj4gCj4g
-VGhhbmtzIHRvIGV2ZXJ5b25lIGludm9sdmVkLgoKR3JlYXQhISEhIQoKTm93LCB3ZSBzaG91bGQg
-bWFrZSBhIGZlYXN0ISEhIQoKCi0tIAotLQpMaW51eCBVc2VyIDE1MjY5MiAgICAgR1BHOiAwNUY0
-QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tCkE6IEJlY2F1c2UgaXQgbWVzc2VzIHVwIHRoZSBvcmRlciBpbiB3aGljaCBwZW9wbGUgbm9y
-bWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkgaXMgdG9wLXBvc3Rpbmcgc3VjaCBhIGJhZCB0aGluZz8K
-QTogVG9wLXBvc3RpbmcuClE6IFdoYXQgaXMgdGhlIG1vc3QgYW5ub3lpbmcgdGhpbmcgaW4gZS1t
-YWlsPwotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBh
-dHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxp
-Y2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogODE5IGJ5dGVzCkRlc2M6IFRoaXMgaXMgYSBkaWdp
-dGFsbHkgc2lnbmVkIG1lc3NhZ2UgcGFydC4KVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVy
-bWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTUxMDA4L2RkNjY5NzY2L2F0dGFjaG1lbnQuc2ln
-Pgo=
+On Thu, Oct 08, 2015 at 11:08:46AM +0200, Jeroen Van den Keybus wrote:
+> >> >> Thanks everybody, seems like I have to give up on that motherboard:
+> >> >>
+> >> >> 1. Nothing found to disable in the BIOS
+> >> >> 2. Disabling all sourcecs with smictrl
+> >> >(git://git.kiszka.org/smictrl.git)
+> >> >>    still gives high latencies with RTNet (+1.5 milliseconds).
+> >> >> 3. latency test does not show anything suspicious, so it might
+> >> >>    be some other issue.
+> >> >>
+> >> >> Anybody that has a suggestion on a recent motherboard that has been
+> >> >used with
+> >> >> RTNet and showing good results?
+> 
+> As you found out, most MB BIOSes set the SMI lock bit. No way around it.
+
+According to the documentation the SMI lock bit should only lock the
+SMI_EN register bit 0, that is the "global disable" bit. However, on
+the last machines where I had SMI issues, the SMI_EN register was
+entirely read-only, so there must be other ways than the SMI lock
+bit to lock the SMI_EN register, which is why smi.c write then reads
+the register, instead of checking the SMI lock bit.
+
+-- 
+					    Gilles.
+https://click-hack.org
+
