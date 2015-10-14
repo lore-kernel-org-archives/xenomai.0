@@ -1,12 +1,13 @@
-Date: Wed, 14 Oct 2015 10:22:22 +0000 (UTC)
-From: Frederik Bayart <frederik_bayart@yahoo.co.uk>
-Message-ID: <2122790682.242206.1444818142434.JavaMail.yahoo@mail.yahoo.com>
-MIME-Version: 1.0
 References: <2122790682.242206.1444818142434.JavaMail.yahoo@mail.yahoo.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] rt_heap_alloc size 0 - syscall 7 denied
-Reply-To: Frederik Bayart <frederik_bayart@yahoo.co.uk>
+ <2122790682.242206.1444818142434.JavaMail.yahoo@mail.yahoo.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <561E31CA.1080008@xenomai.org>
+Date: Wed, 14 Oct 2015 12:43:22 +0200
+MIME-Version: 1.0
+In-Reply-To: <2122790682.242206.1444818142434.JavaMail.yahoo@mail.yahoo.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] rt_heap_alloc size 0 - syscall 7 denied
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,61 +16,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Frederik Bayart <frederik_bayart@yahoo.co.uk>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGFsbG8sCkknbSB1c2luZyB4ZW5vbWFpIDMuMCBvbiBrZXJuZWwgMy4xOC4yMCAoNjQgYml0KS4K
-CldoZW4gdXNpbmcgc2luZ2xlIGJsb2NrIGhlYXAsIEknbSBnZXR0aW5nIG1lbW9yeSBhbGxvY2F0
-aW9uIHByb2JsZW0gd2hlbiBjYWxsaW5nIHJ0X2hlYXBfYWxsb2Mgd2l0aCBzaXplIDAuIEkgZG9u
-J3QgZ2V0IHRoZSBlcnJvciB3aGVuIGNhbGxpbmcgdGhlIGZ1bmN0aW9uIHdpdGggc2l6ZSB1c2Vk
-IGluIHJ0X2hlYXBfY3JlYXRlLgpPbiB0aGUgbWFpbGluZyBsaXN0LCBJIGZvdW5kIHRoZXJlIGhh
-cyBiZWVuIGFuIGlzc3VlIHdpdGggdGhpcyBpbiBNYXkgOiBodHRwOi8vd3d3Lnhlbm9tYWkub3Jn
-L3BpcGVybWFpbC94ZW5vbWFpLzIwMTUtTWF5LzAzNDE2NS5odG1sCklzIHRoaXMgc3RpbGwgYW4g
-aXNzdWUgPwoKSW4gYXR0YWNobWVudCBhIHRlc3QgcHJvZ3JhbSBodGVzdC5jICsgbWFrZWZpbGUg
-dG8gZ2VuZXJhdGUgdGhlIHByb2JsZW0gOgoKJCBzdWRvIC4vaHRlc3QgMcKgID09PiB1c2UgMApo
-dGVzdC5jOjY5OiBoZWFwc2l6ZSA9IDcwMDAwLCB1c2FibGVtZW0gPSA3MDE0NCwgdXNlZG1lbSA9
-IDAKaHRlc3QuYzo3OSBFUlJPUjogcnRfaGVhcF9hbGxvYygtMTIpOiBDYW5ub3QgYWxsb2NhdGUg
-bWVtb3J5CgokIHN1ZG8gLi9odGVzdCAxwqAgPT0+IHVzZSBzYW1lIHNpemUgYXMgaW4gY3JlYXRl
-Cmh0ZXN0LmM6Njk6IGhlYXBzaXplID0gNzAwMDAsIHVzYWJsZW1lbSA9IDcwMTQ0LCB1c2VkbWVt
-ID0gMApodGVzdC5jOjkyOiBoZWFwc2l6ZSA9IDcwMDAwLCB1c2FibGVtZW0gPSA3MDE0NCwgdXNl
-ZG1lbSA9IDcwMTQ0CgpIb3dldmVyLCBJIGJvdGggY2FzZXMsIEkgZ2V0IGEgdHJhY2UgaW4gZG1l
-c2cgOgoKW1hlbm9tYWldIHN5c2NhbGwgPDc+IGRlbmllZCB0byBzeXNyZWdkCgpJIGhhdmUgbm8g
-aWRlYSB3aHkgSSdtIGdldHRpbmcgdGhpcyB0cmFjZS4gRG9lcyBhbnlib2R5IGhhcyBhIHN1Z2dl
-c3Rpb24gPyBJIGZvdW5kIHRoYXQgdGhpcyBlcnJvciBpcyBwcmludGVkIHByb2JhYmx5IGluIC4v
-a2VybmVsL2NvYmFsdC9wb3NpeC9zeXNjYWxsLmMKCklmIEknbSByaWdodCwgc3lzY2FsbCA3IHdv
-dWxkIGJlIHNjX2NvYmFsdF90aHJlYWRfc2V0c2NoZWRwYXJhbV9leCAoY2ZyLiAuL2RvYy9wcmVi
-dWlsdC9odG1sL3hlbm8zcHJtL2luY2x1ZGVfMmNvYmFsdF8ydWFwaV8yc3lzY2FsbF84aF9zb3Vy
-Y2UuaHRtbCkKSSBzdGlsbCBoYXZlIG90aGVyIHByb2JsZW1zIHdoaWNoIEknbSBsb29raW5nIGF0
-LCBzbyBtYXliZSB0aGV5IGhhdmUgdGhlIHNhbWUgY2F1c2UuCgpUaGlzIGlzIHRoZSBjb250ZW50
-IG9mIHRoZSByZWdpc3RyeSB3aGVuIGFsbG9jYXRpb24gc3VjY2VlZHMgOgovdmFyL3J1bi94ZW5v
-bWFpIyBmaW5kIC4KLgouL3Jvb3QKLi9yb290L2Fub25AMjE4MDgKLi9yb290L2Fub25AMjE4MDgv
-MjE4MDgKLi9yb290L2Fub25AMjE4MDgvMjE4MDgvYWxjaGVteQouL3Jvb3QvYW5vbkAyMTgwOC8y
-MTgwOC9hbGNoZW15L2hlYXBzCi4vcm9vdC9hbm9uQDIxODA4LzIxODA4L2FsY2hlbXkvaGVhcHMv
-VEVTVEhFQVAKLi9yb290L2Fub25AMjE4MDgvc3lzdGVtCi4vcm9vdC9hbm9uQDIxODA4L3N5c3Rl
-bS90aHJlYWRzCi4vcm9vdC9hbm9uQDIxODA4L3N5c3RlbS9oZWFwcwouL3Jvb3QvYW5vbkAyMTgw
-OC9zeXN0ZW0vdmVyc2lvbgoKCiMgeGVuby1jb25maWcgLS1pbmZvClhlbm9tYWkgdmVyc2lvbjog
-WGVub21haS9jb2JhbHQgdjMuMCAtLSAKTGludXggZGV2MSAzLjE4LjIwLXg4Ni02NC14ZW5vLTMu
-MDNwLjAuMCAjMSBTTVAgUFJFRU1QVCBUdWUgT2N0IDEzIDE2OjU4OjQ0IENFU1QgMjAxNSB4ODZf
-NjQgR05VL0xpbnV4Cktlcm5lbCBwYXJhbWV0ZXJzOiBCT09UX0lNQUdFPS92bWxpbnV6LTMuMTgu
-MjAteDg2LTY0LXhlbm8tMy4wM3AuMC4wIHJvb3Q9VVVJRD0yMGYyZGQyZi1mMDJmLTRiODItODUz
-OC04ZmU1MmU1NWE4ZmYgcm8gcXVpZXQKSS1waXBlIHJlbGVhc2UgIzMgZGV0ZWN0ZWQKQ29iYWx0
-IGNvcmUgMy4wIGRldGVjdGVkCkNvbXBpbGVyOiBnY2MgdmVyc2lvbiA0LjkuMiAoRGViaWFuIDQu
-OS4yLTEwKSAKQnVpbGQgYXJnczogLS1wcmVmaXg9L3VzciAtLWluY2x1ZGVkaXI9L3Vzci9pbmNs
-dWRlL3hlbm9tYWkgLS1tYW5kaXI9L3Vzci9zaGFyZS9tYW4gLS13aXRoLXRlc3RkaXI9L3Vzci9s
-aWIveGVub21haS90ZXN0c3VpdGUgLS13aXRoLWNvcmU9Y29iYWx0IC0tZW5hYmxlLXNtcCAtLWVu
-YWJsZS1wc2hhcmVkIC0tZW5hYmxlLXJlZ2lzdHJ5IC0tYnVpbGQgeDg2XzY0LWxpbnV4LWdudSBi
-dWlsZF9hbGlhcz14ODZfNjQtbGludXgtZ251CgoKSSBoYXZlIGFsc28gYXR0YWNoZWQgdGhlIGtl
-cm5lbCBjb25maWcuCktpbmQgcmVnYXJkcywKRnJlZGVyaWsKCgotLS0tLS0tLS0tLS0tLSBuZXh0
-IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4u
-LgpOYW1lOiBjb25maWctMy4xOC4yMC14ODYtNjQteGVuby0zLjAzcC4wLjAKVHlwZTogYXBwbGlj
-YXRpb24vb2N0ZXQtc3RyZWFtClNpemU6IDEyODA3MCBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxl
-ClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8y
-MDE1MTAxNC83MDI0ZjAwYy9hdHRhY2htZW50Lm9iaj4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0
-IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFt
-ZTogaHRlc3QuYwpUeXBlOiB0ZXh0L3gtY3NyYwpTaXplOiAyMjY4IGJ5dGVzCkRlc2M6IG5vdCBh
-dmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFj
-aG1lbnRzLzIwMTUxMDE0LzcwMjRmMDBjL2F0dGFjaG1lbnQuYz4KLS0tLS0tLS0tLS0tLS0gbmV4
-dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQu
-Li4KTmFtZTogbWFrZWZpbGUKVHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtClNpemU6IDYy
-MiBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBl
-cm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1MTAxNC83MDI0ZjAwYy9hdHRhY2htZW50LTAw
-MDEub2JqPgo=
+On 10/14/2015 12:22 PM, Frederik Bayart wrote:
+> Hallo,
+> I'm using xenomai 3.0 on kernel 3.18.20 (64 bit).
+> 
+> When using single block heap, I'm getting memory allocation problem when calling rt_heap_alloc with size 0. I don't get the error when calling the function with size used in rt_heap_create.
+> On the mailing list, I found there has been an issue with this in May : http://www.xenomai.org/pipermail/xenomai/2015-May/034165.html
+> Is this still an issue ?
+
+No, this one is long gone.
+
+> 
+> In attachment a test program htest.c + makefile to generate the problem :
+> 
+> $ sudo ./htest 1  ==> use 0
+> htest.c:69: heapsize = 70000, usablemem = 70144, usedmem = 0
+> htest.c:79 ERROR: rt_heap_alloc(-12): Cannot allocate memory
+> 
+> $ sudo ./htest 1  ==> use same size as in create
+> htest.c:69: heapsize = 70000, usablemem = 70144, usedmem = 0
+> htest.c:92: heapsize = 70000, usablemem = 70144, usedmem = 70144
+>
+
+Does this help?
+
+diff --git a/lib/alchemy/heap.c b/lib/alchemy/heap.c
+index 20531e3..146bfa1 100644
+--- a/lib/alchemy/heap.c
++++ b/lib/alchemy/heap.c
+@@ -442,7 +442,9 @@ int rt_heap_alloc_timed(RT_HEAP *heap,
+ 		p = __mptr(hcb->sba);
+ 		if (p)
+ 			goto done;
+-		if (size > 0 && size != hcb->size) {
++		if (size == 0)
++			size = heapobj_size(&hcb->hobj);
++		else if (size != hcb->size) {
+ 			ret = -EINVAL;
+ 			goto done;
+ 		}
+
+> However, I both cases, I get a trace in dmesg :
+> 
+> [Xenomai] syscall <7> denied to sysregd
+> 
+
+That one is a different issue. Does your application have supervisor or
+user privileges?
+
+-- 
+Philippe.
+
