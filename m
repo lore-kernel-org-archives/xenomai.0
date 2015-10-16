@@ -1,15 +1,13 @@
-Message-ID: <BLU437-SMTP11676D7F7E77869B206F3AF02C0@phx.gbl>
-References: <56358DE3.8030308@hotmail.com>
- <BLU437-SMTP82C3E059EB476E2624582EF02C0@phx.gbl>
- <BLU437-SMTP38CA2663CEF65BBDBD9AFCF02C0@phx.gbl>
-From: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
-Date: Sun, 1 Nov 2015 21:23:09 -0800
+References: <56210E7E.1050606@siemens.com> <5621102C.4030902@siemens.com>
+ <56211645.9090503@xenomai.org> <56211787.8090107@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5621184E.8070704@xenomai.org>
+Date: Fri, 16 Oct 2015 17:31:26 +0200
 MIME-Version: 1.0
-In-Reply-To: <BLU437-SMTP38CA2663CEF65BBDBD9AFCF02C0@phx.gbl>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+In-Reply-To: <56211787.8090107@siemens.com>
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Support for Raspberry PI 2 B
-	(devm_request_threaded_irq)
+Subject: Re: [Xenomai] Xenomai 3: kill() to non-Xenomai PIDs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,42 +16,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 15-11-01 07:21 PM, Mathieu Rondonneau wrote:
-> On 15-11-01 06:58 PM, Mathieu Rondonneau wrote:
->> On 15-10-31 08:58 PM, Mathieu Rondonneau wrote:
->>> Hi,
+On 10/16/2015 05:28 PM, Jan Kiszka wrote:
+> On 2015-10-16 17:22, Philippe Gerum wrote:
+>> On 10/16/2015 04:56 PM, Jan Kiszka wrote:
+>>> On 2015-10-16 16:49, Jan Kiszka wrote:
+>>>> Hi,
+>>>>
+>>>> kill() is currently handled by libcobalt such that PIDs <= 0 are
+>>>> forwarded to Linux and PIDs > 0 are considered to target only Xenomai
+>>>> threads. But what if the user wants to address a regular Linux task from
+>>>> within a Xenomai application? Shouldn't we retry kill via the Linux path
+>>>> if Xenomai's syscall reports ESRCH?
+>>>>
 >>>
->>> irq handlers registered with devm_request_threaded_irq does not get
->>> triggered when interrupt fires.
+>>> IOW:
 >>>
->>> The mmc driver uses this (can not load the rootfs).
->>> Only the IPIPE patch is enabled.
->>> the armctrl chipirq is triggering the .ack handler instead so the
->>> interrupt is happening.
+>>> diff --git a/lib/cobalt/signal.c b/lib/cobalt/signal.c
+>>> index aac4059..7e03301 100644
+>>> --- a/lib/cobalt/signal.c
+>>> +++ b/lib/cobalt/signal.c
+>>> @@ -99,6 +99,10 @@ COBALT_IMPL(int, kill, (pid_t pid, int sig))
+>>>  
+>>>  	ret = XENOMAI_SYSCALL2(sc_cobalt_kill, pid, sig);
+>>>  	if (ret) {
+>>> +		/* Retry with regular kill is no RT target was found. */
+>>> +		if (ret == -ESRCH)
+>>> +			return __STD(kill(pid, sig));
+>>> +
+>>>  		errno = -ret;
+>>>  		return -1;
+>>>  	}
 >>>
->>> Any suggestion on where I should look? how is this supported by the
->>> ipipe layer?
+>>> Jan
 >>>
->>> Thanks,
->>> -Mathieu
 >>
->> I think I might have answered my own question.
->> Looks like I need to use ipipe_request_irq() instead.
->>
->> Regards,
->> -Mathieu
-> mmmm it is not true, it seems we still need a
-> ipipe_request_threaded_irq() to call the ackfn, put the handler in the
-> queue and wake up the thread once handler is executed. Or user will have
-> to move this functionality into their driver's IRQ handler.
->
-> It strangely looks like ipipe_request_irq's idea is similar to what
-> request_threaded_irq is already doing (delaying IRQ process later).
->
-> -Mathieu
-Looks like my bigger problem is that the handler_level_irq is not 
-called. Only the timer handler is called (handler_percpu_devid_irq).
--Mathieu
+>> This may break code that sends signal 0 to detect whether a rt thread
+>> exists (like copperplate does), which is the reason for the lack of
+>> forwarding IIRC. (ret == -ESRCH && sig) would be required to forward
+>> without breaking such assumption.
+> 
+> That still breaks POSIX (what if the user wants to test for a non-rt
+> thread, like this is possible under regular Linux?). Can't copperplate
+> be changed to bypass the wrapper?
+> 
+
+Probably, yes.
+
+
+-- 
+Philippe.
 
