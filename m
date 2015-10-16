@@ -1,13 +1,11 @@
-References: <561E4D93.4090803@xenomai.org>
- <145395888.622970.1444841737686.JavaMail.yahoo@mail.yahoo.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <561F5C37.9020602@xenomai.org>
-Date: Thu, 15 Oct 2015 09:56:39 +0200
+From: Johann Obermayr <johann.obermayr@sigmatek.at>
+Message-ID: <5620CA75.7010100@sigmatek.at>
+Date: Fri, 16 Oct 2015 11:59:17 +0200
 MIME-Version: 1.0
-In-Reply-To: <145395888.622970.1444841737686.JavaMail.yahoo@mail.yahoo.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rt_heap_alloc size 0 - syscall 7 denied
+Subject: [Xenomai] RTDM SPI Driver for ARM
+Reply-To: johann.obermayr@sigmatek.at
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,32 +14,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Frederik Bayart <frederik_bayart@yahoo.co.uk>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10/14/2015 06:55 PM, Frederik Bayart wrote:
-> However the biggest problem is the denied syscall :
-> 
-> [Xenomai] syscall <7> denied to sysregd[22217]
-> 
+Hello,
 
-This one is not an issue, it's merely debug noise. You can silence it
-with this change; the result will be functionally the same, without the
-scary warning.
+i search a RTDM SPI for the Freescale imx6 ARM Processor.
 
-diff --git a/lib/copperplate/regd/regd.c b/lib/copperplate/regd/regd.c
-index 25bd7a5..5d69d83 100644
---- a/lib/copperplate/regd/regd.c
-+++ b/lib/copperplate/regd/regd.c
-@@ -538,7 +538,7 @@ int main(int argc, char *const *argv)
+i only found "Xenomai RT SPI Driver for Blackfin 
+<https://web.archive.org/web/20071016064104/http://www.rcode.net/blog/tlaurenzo/2007/04/14/xenomai-rt-spi-driver-for-blackfin/>" 
+with
+http://www.rcode.net/blogattach/dist/rtspi-20070414.tgz 
+<https://web.archive.org/web/20071016064104/http://www.rcode.net/blogattach/dist/rtspi-20070414.tgz>
 
- 	/* Force SCHED_OTHER. */
- 	schedp.sched_priority = 0;
--	pthread_setschedparam(pthread_self(), SCHED_OTHER, &schedp);
-+	__STD(pthread_setschedparam(pthread_self(), SCHED_OTHER, &schedp));
+But the tgz is not available any more.
+Any idea , where i can found this driver ?
+Or has any an exist code.
 
- 	memset(&sa, 0, sizeof(sa));
- 	sa.sa_handler = SIG_IGN;
-
--- 
-Philippe.
-
+Thanks and Regards
+   Johann
