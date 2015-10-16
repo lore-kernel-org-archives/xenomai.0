@@ -1,13 +1,10 @@
-Date: Tue, 10 Nov 2015 17:16:15 +0000 (UTC)
-From: Frederik Bayart <frederik_bayart@yahoo.co.uk>
-Message-ID: <1769796423.4391042.1447175775237.JavaMail.yahoo@mail.yahoo.com>
-In-Reply-To: <20151108180426.GU1798@hermes.click-hack.org>
-References: <20151108180426.GU1798@hermes.click-hack.org>
+From: Alvaro <aramos@ixion.es>
+Message-ID: <5620DBC8.4080508@ixion.es>
+Date: Fri, 16 Oct 2015 13:13:12 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] kernel problem xenomai 2.6.4 - linux 3.8.13
-Reply-To: Frederik Bayart <frederik_bayart@yahoo.co.uk>
+Subject: [Xenomai] Problem with Xenomai 3.0 Cobalt executing latency app
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,52 +13,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
->On Sunday, 8 November 2015, 19:04, Gilles Chanteperdrix <gilles.chanteperd=
-rix@xenomai.org> wrote:
->
->On Fri, Nov 06, 2015 at 04:58:40PM +0000, Frederik Bayart wrote:
->
->> Hallo,
->>
->> I'm using xenomai 2.6.4 on kernel 3.8.13 (patch ipipe-core-3.8.13-x86-4.=
-patch)
->>
->> In attachment you find the kernel config.
->>
->> When I boot the kernel on a recent pc's (Intel(R) Core(TM) i5), I don't =
-get problems, but if I install the same image on an older pc, (Intel(R) Cor=
-e(TM) Duo CPU=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 T2500=C2=A0 @ 2.00GHz), I get p=
-eriodic kernel traces after booting without running any real-time process (=
-see below). In the dmesg in attachment, I see a stack trace.
->> (If I build a normal linux kernel without ipipe patch, I get no kernel t=
-races.)
->>
->> Has anyone has a suggestion what could go wrong ?
->
->
->The NULL EIP suggest an NULL handler. Any chance to test something
->more recent? Like xenomai 2.6 git head, with the latest I-pipe patch
->for 3.18?
->
->Gilles.
+Good morning,
+I 'm trying Xenomai 3.0 Kernel. I have compiled and encapsulated a=20
+preempt_rt_kernel from=20
+https://pixhawk.org/dev/ros/px4linux#rt_preempt_kernel that contains a=20
+Xenomai 3.0 with cobalt configuration on a Odroid C1 board. Afterwards,=20
+I downloaded the xenomai 3-3.0 files from your repository to install the=20
+libraries and the tools. I have compiled the libraries for Cobalt mode=20
+(./configure --with-core=3Dcobalt --enable-smp --enable-pshared). When I=20
+execute latency application the system responses as: low init():binding=20
+failed: function not implemented. If I compile for Mercury mode when I=20
+execute the application latency I get: WARNING: [main] failed to lock=20
+memory .
+BUG in xenomai_init(): [main] initialization failed, ENOMEM.
 
-First impression is that building and installing xenomai 2.6 git head with =
-ipipe-core-3.18.20-x86-3.patch seems to solve the problem.
-The problem was still existing in xenomai 2.6.4 and kernel 3.14.17, so I gu=
-ess the problem might been fixed after the release of 2.6.4
-I will test further.
+Could you help me?
 
-Thanks for the help.
+Thanks in advance.
+--=20
+Alvaro
+------------------------------------------------------------------------
 
-Frederik
+http://www.ixion.es <http://www.tcpsi.com/>
 
+=09
 
+*=C3=81lvaro Ramos *
+*Control Engineer
+*
 
+*
 
+Ixion Industry and Aerospace
+Julian Camarillo, 21B
+28037 Madrid
+Phone   +34 91 440 18 33
+Fax        +34 91 304 54 10
 
+*
 
-
-
-  
