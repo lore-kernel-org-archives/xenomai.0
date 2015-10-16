@@ -1,10 +1,13 @@
-Message-ID: <BLU436-SMTP235B354929DDB6910D2667EF02D0@phx.gbl>
-From: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
-Date: Sat, 31 Oct 2015 20:58:27 -0700
+References: <56210E7E.1050606@siemens.com> <5621102C.4030902@siemens.com>
+ <56211645.9090503@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <56211787.8090107@siemens.com>
+Date: Fri, 16 Oct 2015 17:28:07 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
+In-Reply-To: <56211645.9090503@xenomai.org>
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Support for Raspberry PI 2 B (devm_request_threaded_irq)
+Subject: Re: [Xenomai] Xenomai 3: kill() to non-Xenomai PIDs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,21 +16,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-Hi,
+On 2015-10-16 17:22, Philippe Gerum wrote:
+> On 10/16/2015 04:56 PM, Jan Kiszka wrote:
+>> On 2015-10-16 16:49, Jan Kiszka wrote:
+>>> Hi,
+>>>
+>>> kill() is currently handled by libcobalt such that PIDs <= 0 are
+>>> forwarded to Linux and PIDs > 0 are considered to target only Xenomai
+>>> threads. But what if the user wants to address a regular Linux task from
+>>> within a Xenomai application? Shouldn't we retry kill via the Linux path
+>>> if Xenomai's syscall reports ESRCH?
+>>>
+>>
+>> IOW:
+>>
+>> diff --git a/lib/cobalt/signal.c b/lib/cobalt/signal.c
+>> index aac4059..7e03301 100644
+>> --- a/lib/cobalt/signal.c
+>> +++ b/lib/cobalt/signal.c
+>> @@ -99,6 +99,10 @@ COBALT_IMPL(int, kill, (pid_t pid, int sig))
+>>  
+>>  	ret = XENOMAI_SYSCALL2(sc_cobalt_kill, pid, sig);
+>>  	if (ret) {
+>> +		/* Retry with regular kill is no RT target was found. */
+>> +		if (ret == -ESRCH)
+>> +			return __STD(kill(pid, sig));
+>> +
+>>  		errno = -ret;
+>>  		return -1;
+>>  	}
+>>
+>> Jan
+>>
+> 
+> This may break code that sends signal 0 to detect whether a rt thread
+> exists (like copperplate does), which is the reason for the lack of
+> forwarding IIRC. (ret == -ESRCH && sig) would be required to forward
+> without breaking such assumption.
 
-irq handlers registered with devm_request_threaded_irq does not get 
-triggered when interrupt fires.
+That still breaks POSIX (what if the user wants to test for a non-rt
+thread, like this is possible under regular Linux?). Can't copperplate
+be changed to bypass the wrapper?
 
-The mmc driver uses this (can not load the rootfs).
-Only the IPIPE patch is enabled.
-the armctrl chipirq is triggering the .ack handler instead so the 
-interrupt is happening.
+Jan
 
-Any suggestion on where I should look? how is this supported by the 
-ipipe layer?
-
-Thanks,
--Mathieu
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
