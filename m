@@ -1,13 +1,12 @@
-References: <56210E7E.1050606@siemens.com> <5621102C.4030902@siemens.com>
- <56211645.9090503@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <56211787.8090107@siemens.com>
-Date: Fri, 16 Oct 2015 17:28:07 +0200
+References: <5620CA75.7010100@sigmatek.at>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5620CDE1.2040806@xenomai.org>
+Date: Fri, 16 Oct 2015 12:13:53 +0200
 MIME-Version: 1.0
-In-Reply-To: <56211645.9090503@xenomai.org>
+In-Reply-To: <5620CA75.7010100@sigmatek.at>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 3: kill() to non-Xenomai PIDs
+Subject: Re: [Xenomai] RTDM SPI Driver for ARM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,53 +15,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: johann.obermayr@sigmatek.at, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2015-10-16 17:22, Philippe Gerum wrote:
-> On 10/16/2015 04:56 PM, Jan Kiszka wrote:
->> On 2015-10-16 16:49, Jan Kiszka wrote:
->>> Hi,
->>>
->>> kill() is currently handled by libcobalt such that PIDs <= 0 are
->>> forwarded to Linux and PIDs > 0 are considered to target only Xenomai
->>> threads. But what if the user wants to address a regular Linux task from
->>> within a Xenomai application? Shouldn't we retry kill via the Linux path
->>> if Xenomai's syscall reports ESRCH?
->>>
->>
->> IOW:
->>
->> diff --git a/lib/cobalt/signal.c b/lib/cobalt/signal.c
->> index aac4059..7e03301 100644
->> --- a/lib/cobalt/signal.c
->> +++ b/lib/cobalt/signal.c
->> @@ -99,6 +99,10 @@ COBALT_IMPL(int, kill, (pid_t pid, int sig))
->>  
->>  	ret = XENOMAI_SYSCALL2(sc_cobalt_kill, pid, sig);
->>  	if (ret) {
->> +		/* Retry with regular kill is no RT target was found. */
->> +		if (ret == -ESRCH)
->> +			return __STD(kill(pid, sig));
->> +
->>  		errno = -ret;
->>  		return -1;
->>  	}
->>
->> Jan
->>
+On 10/16/2015 11:59 AM, Johann Obermayr wrote:
+> Hello,
 > 
-> This may break code that sends signal 0 to detect whether a rt thread
-> exists (like copperplate does), which is the reason for the lack of
-> forwarding IIRC. (ret == -ESRCH && sig) would be required to forward
-> without breaking such assumption.
+> i search a RTDM SPI for the Freescale imx6 ARM Processor.
+> 
+> i only found "Xenomai RT SPI Driver for Blackfin
+> <https://web.archive.org/web/20071016064104/http://www.rcode.net/blog/tlaurenzo/2007/04/14/xenomai-rt-spi-driver-for-blackfin/>"
+> with
+> http://www.rcode.net/blogattach/dist/rtspi-20070414.tgz
+> <https://web.archive.org/web/20071016064104/http://www.rcode.net/blogattach/dist/rtspi-20070414.tgz>
+> 
+> 
+> But the tgz is not available any more.
+> Any idea , where i can found this driver ?
+> Or has any an exist code.
 
-That still breaks POSIX (what if the user wants to test for a non-rt
-thread, like this is possible under regular Linux?). Can't copperplate
-be changed to bypass the wrapper?
-
-Jan
+I'm not aware of any published code, but knowing a bit about the eCSPI
+module on the imx6 platform, it should not be a big deal to implement a
+basic SPI master over RTDM, with DMA-based transfers.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
