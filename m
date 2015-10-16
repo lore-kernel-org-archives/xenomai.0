@@ -1,10 +1,12 @@
+References: <56210E7E.1050606@siemens.com> <5621102C.4030902@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <56211645.9090503@xenomai.org>
+Date: Fri, 16 Oct 2015 17:22:45 +0200
 MIME-Version: 1.0
-Date: Thu, 29 Oct 2015 19:02:17 +0530
-Message-ID: <CABShy475BkFXP9xU2dAJFe7XDkVyGaG+ZOVgqw=YPEqOW-CuUA@mail.gmail.com>
-From: BHISHMAPALSINH THAKOR <bjthakor.337@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] how to make real time embedded distributed control system
- by using can bus rtdm
+In-Reply-To: <5621102C.4030902@siemens.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai 3: kill() to non-Xenomai PIDs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,8 +15,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-this is the my project how can i make this project ready how to start this
-and from where i start study working in proper manner give right path for
-this project
+On 10/16/2015 04:56 PM, Jan Kiszka wrote:
+> On 2015-10-16 16:49, Jan Kiszka wrote:
+>> Hi,
+>>
+>> kill() is currently handled by libcobalt such that PIDs <= 0 are
+>> forwarded to Linux and PIDs > 0 are considered to target only Xenomai
+>> threads. But what if the user wants to address a regular Linux task from
+>> within a Xenomai application? Shouldn't we retry kill via the Linux path
+>> if Xenomai's syscall reports ESRCH?
+>>
+> 
+> IOW:
+> 
+> diff --git a/lib/cobalt/signal.c b/lib/cobalt/signal.c
+> index aac4059..7e03301 100644
+> --- a/lib/cobalt/signal.c
+> +++ b/lib/cobalt/signal.c
+> @@ -99,6 +99,10 @@ COBALT_IMPL(int, kill, (pid_t pid, int sig))
+>  
+>  	ret = XENOMAI_SYSCALL2(sc_cobalt_kill, pid, sig);
+>  	if (ret) {
+> +		/* Retry with regular kill is no RT target was found. */
+> +		if (ret == -ESRCH)
+> +			return __STD(kill(pid, sig));
+> +
+>  		errno = -ret;
+>  		return -1;
+>  	}
+> 
+> Jan
+> 
+
+This may break code that sends signal 0 to detect whether a rt thread
+exists (like copperplate does), which is the reason for the lack of
+forwarding IIRC. (ret == -ESRCH && sig) would be required to forward
+without breaking such assumption.
+
+-- 
+Philippe.
+
