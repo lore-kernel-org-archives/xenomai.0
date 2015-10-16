@@ -1,19 +1,14 @@
-Message-ID: <BLU436-SMTP43B29DB76F59896D9FB7C0F0290@phx.gbl>
-References: <56358DE3.8030308@hotmail.com>
- <BLU437-SMTP82C3E059EB476E2624582EF02C0@phx.gbl>
- <BLU437-SMTP38CA2663CEF65BBDBD9AFCF02C0@phx.gbl>
- <BLU437-SMTP11676D7F7E77869B206F3AF02C0@phx.gbl>
- <56377DF5.5090202@xenomai.org>
- <BLU437-SMTP10132C0DA57E69E6D1C8359F02A0@phx.gbl>
- <20151104070414.GD24848@hermes.click-hack.org>
-From: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
-Date: Wed, 4 Nov 2015 16:51:58 -0800
+References: <56210E7E.1050606@siemens.com> <5621102C.4030902@siemens.com>
+ <56211645.9090503@xenomai.org> <56211787.8090107@siemens.com>
+ <5621184E.8070704@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <56211E6A.2080300@siemens.com>
+Date: Fri, 16 Oct 2015 17:57:30 +0200
 MIME-Version: 1.0
-In-Reply-To: <20151104070414.GD24848@hermes.click-hack.org>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+In-Reply-To: <5621184E.8070704@xenomai.org>
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Support for Raspberry PI 2 B
- (devm_request_threaded_irq)
+Subject: Re: [Xenomai] Xenomai 3: kill() to non-Xenomai PIDs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,92 +17,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-On 15-11-03 11:04 PM, Gilles Chanteperdrix wrote:
-> On Tue, Nov 03, 2015 at 07:18:37PM -0800, Mathieu Rondonneau wrote:
->> On 15-11-02 07:15 AM, Philippe Gerum wrote:
->>> On 11/02/2015 06:23 AM, Mathieu Rondonneau wrote:
->>>> On 15-11-01 07:21 PM, Mathieu Rondonneau wrote:
->>>>> On 15-11-01 06:58 PM, Mathieu Rondonneau wrote:
->>>>>> On 15-10-31 08:58 PM, Mathieu Rondonneau wrote:
->>>>>>> Hi,
->>>>>>>
->>>>>>> irq handlers registered with devm_request_threaded_irq does not get
->>>>>>> triggered when interrupt fires.
->>>>>>>
->>>>>>> The mmc driver uses this (can not load the rootfs).
->>>>>>> Only the IPIPE patch is enabled.
->>>>>>> the armctrl chipirq is triggering the .ack handler instead so the
->>>>>>> interrupt is happening.
->>>>>>>
->>>>>>> Any suggestion on where I should look? how is this supported by the
->>>>>>> ipipe layer?
->>>>>>>
->>>>>>> Thanks,
->>>>>>> -Mathieu
->>>>>>
->>>>>> I think I might have answered my own question.
->>>>>> Looks like I need to use ipipe_request_irq() instead.
->>>>>>
->>>>>> Regards,
->>>>>> -Mathieu
->>>>> mmmm it is not true, it seems we still need a
->>>>> ipipe_request_threaded_irq() to call the ackfn, put the handler in the
->>>>> queue and wake up the thread once handler is executed. Or user will have
->>>>> to move this functionality into their driver's IRQ handler.
+On 2015-10-16 17:31, Philippe Gerum wrote:
+> On 10/16/2015 05:28 PM, Jan Kiszka wrote:
+>> On 2015-10-16 17:22, Philippe Gerum wrote:
+>>> On 10/16/2015 04:56 PM, Jan Kiszka wrote:
+>>>> On 2015-10-16 16:49, Jan Kiszka wrote:
+>>>>> Hi,
 >>>>>
->>>>> It strangely looks like ipipe_request_irq's idea is similar to what
->>>>> request_threaded_irq is already doing (delaying IRQ process later).
+>>>>> kill() is currently handled by libcobalt such that PIDs <= 0 are
+>>>>> forwarded to Linux and PIDs > 0 are considered to target only Xenomai
+>>>>> threads. But what if the user wants to address a regular Linux task from
+>>>>> within a Xenomai application? Shouldn't we retry kill via the Linux path
+>>>>> if Xenomai's syscall reports ESRCH?
 >>>>>
->>>>> -Mathieu
->>>> Looks like my bigger problem is that the handler_level_irq is not
->>>> called. Only the timer handler is called (handler_percpu_devid_irq).
+>>>>
+>>>> IOW:
+>>>>
+>>>> diff --git a/lib/cobalt/signal.c b/lib/cobalt/signal.c
+>>>> index aac4059..7e03301 100644
+>>>> --- a/lib/cobalt/signal.c
+>>>> +++ b/lib/cobalt/signal.c
+>>>> @@ -99,6 +99,10 @@ COBALT_IMPL(int, kill, (pid_t pid, int sig))
+>>>>  
+>>>>  	ret = XENOMAI_SYSCALL2(sc_cobalt_kill, pid, sig);
+>>>>  	if (ret) {
+>>>> +		/* Retry with regular kill is no RT target was found. */
+>>>> +		if (ret == -ESRCH)
+>>>> +			return __STD(kill(pid, sig));
+>>>> +
+>>>>  		errno = -ret;
+>>>>  		return -1;
+>>>>  	}
+>>>>
+>>>> Jan
+>>>>
 >>>
->>> Which may mean that the regular IRQ top half for that interrupt source
->>> is not connected to the pipeline. You may want to check whether the
->>> irqchip handling that device's IRQs has been made aware of the interrupt
->>> pipeline.
->>>
+>>> This may break code that sends signal 0 to detect whether a rt thread
+>>> exists (like copperplate does), which is the reason for the lack of
+>>> forwarding IIRC. (ret == -ESRCH && sig) would be required to forward
+>>> without breaking such assumption.
 >>
->> Thanks for replying Philippe,
->> This is the think, I did change the arch_irq_default_handler to call the
->> __ipipe_grab_irq and __ipipe_grab_ipi.
->> Is that what you are referring to when you say "interrupt source is not
->> connected to the pipile", that's what __ipipe_grab_xxx does isn't it?
+>> That still breaks POSIX (what if the user wants to test for a non-rt
+>> thread, like this is possible under regular Linux?). Can't copperplate
+>> be changed to bypass the wrapper?
 >>
->> Obviously I am still missing something.
->> If I use irq_set_chained_handler in the driver then the handler gets
->> called but it's just replacing the handler_irq by the driver one.
->> When I use request_irq then it does not call my handler (the
->> action.handler one).
->> I will keep looking.
->
-> This is explained here:
-> http://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc/#GPIOs_as_interrupt_sources
-> and here:
-> http://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc/#CONFIG_MULTI_IRQ_HANDLER
->
-> Chained handlers have to call ipipe_handle_demuxed_irq instead of
-> generic_handle_irq.
-> And the arch irq handler has to call ipipe_handle_multi_irq or
-> ipipe_handle_multi_ipi instead of handle_IRQ
->
+> 
+> Probably, yes.
+> 
 
-Thanks Gilles for the pointers,
-MULTI_IRQ_HANDLER is not enabled for RPI2 (so I did not look at the 
-multi_irq_handler section), is it a requirement for the ipipe patch to work?
+Looking at cluster_probe, I wonder if there is actually a problem.
+Doesn't that code also run over mercury? Then kill(pid, 0) also targets
+the whole system, not just a set of Xenomai applications. Or do we need
+to ensure that the caller is not migrated to Linux needlessly under
+cobalt? IOW: can that probing happen under RT constraints?
 
-For GPIO I got it to work, but it is easier to me because they have 
-their own irqchip.
-It is the arch irq handler that cause me trouble.
+The same applies for me to the other users of the kill-based probing
+pattern (copperplate/heapobj-pshared.c and copperplate/regd/fs-common.c).
 
-Maybe I just have to enable MULTI_IRQ_HANDLER.
-I will play around with it.
+Jan
 
-Thanks again for your feedback, it helps,
-Regards,
--Mathieu
-
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
