@@ -1,10 +1,10 @@
-Message-ID: <BLU436-SMTP209CFA8CD84A8B151D863A9F0140@phx.gbl>
-From: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
-Date: Mon, 9 Nov 2015 20:56:10 -0800
+From: Alvaro <aramos@ixion.es>
+Message-ID: <5624A36D.4070002@ixion.es>
+Date: Mon, 19 Oct 2015 10:01:49 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Fails building xenomai library and tools for ARM.
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Problem in Xenomai 3 Cobalt when running some tools
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,39 +15,43 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
+Hi,
+I 'm trying Xenomai 3.0 Cobalt Kernel. I have compiled and encapsulated=20
+a preempt_rt_kernel from=20
+https://github.com/Clouded/linux-rt-odroid-c1/tree/odroidc-3.10.67-rt71=20
+that contains a Xenomai 3.0 with cobalt configuration on a Odroid C1=20
+board. Afterwards, I downloaded the xenomai 3-3.0 files from=20
+http://git.xenomai.org/xenomai-3.git/xenomai-3-3.0.tar.bz2  to install=20
+the libraries and the tools. I have compiled the libraries for Cobalt=20
+mode on Odriod board (./configure --with-core=3Dcobalt --enable-smp=20
+--enable-pshared). When I execute latency application the system=20
+responses as: low init():binding failed: function not implemented. If I=20
+compile for Mercury mode when I execute the application latency I get:=20
+WARNING: [main] failed to lock memory .
+BUG in xenomai_init(): [main] initialization failed, ENOMEM.
 
-Hi Xenomai team,
+Any helping hand?
 
-I can not build ARM xenomai library and tools to install on RaspberryPie2.
+Thanks in advance.
+--=20
+Alvaro
+------------------------------------------------------------------------
 
-Tested with this branch (also fails with master):
-http://git.xenomai.org/xenomai-3.git/commit/?h=stable-3.0.x&id=cb72996a06ae4f29e403e3397324069f1983145e
+http://www.ixion.es <http://www.tcpsi.com/>
 
-This is the error:
-Making install in testsuite
-make[1]: Entering directory `/home/mathieu/temp/xenomai/testsuite'
-Making install in latency
-make[2]: Entering directory `/home/mathieu/temp/xenomai/testsuite/latency'
-   CC       latency-latency.o
-   CCLD     latency
-../../lib/cobalt/.libs/libcobalt.so: undefined reference to 
-`__wrap_sched_yield'
-collect2: error: ld returned 1 exit status
-make[2]: *** [latency] Error 1
-make[2]: Leaving directory `/home/mathieu/temp/xenomai/testsuite/latency'
+=09
 
-this is the command I use:
- > mkdir -p $build_root/xenomai && cd $build_root/xenomai
- > $xenomai_root/configure --disable-doc-install CFLAGS="-march=armv7-a 
--mfpu=neon" LDFLAGS="-march=armv7-a -mfpu=neon" 
---build=i686-pc-linux-gnu --host=arm-linux-gnueabihf --with-core=cobalt 
---enable-smp CC=$cross_compiler-gcc LD=$cross_compiler-ld 
-AR=$cross_compiler-ar RANLIB=$cross_compiler-ranlib
- > sudo make DESTDIR=/mnt/ext4 install
+*=C3=81lvaro Ramos *
+*Control Engineer
+*
 
-Cross compiler is linaro: gcc-linaro-arm-linux-gnueabihf-raspbian-x64
+*
 
-This is the fist time I am trying this.
-Thanks for your help,
--Mathieu
+Ixion Industry and Aerospace
+Julian Camarillo, 21B
+28037 Madrid
+Phone   +34 91 440 18 33
+Fax        +34 91 304 54 10
+
+*
 
