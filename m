@@ -1,10 +1,14 @@
-Message-ID: <BLU437-SMTP3567D7D9516D88AF50AA67F0130@phx.gbl>
-From: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
-Date: Wed, 11 Nov 2015 07:40:03 -0800
+References: <20150909113151.0fed6fd7@md1em3qc> <55F02DB0.1090801@xenomai.org>
+ <20150915104854.56a7b13f@md1em3qc>
+ <20150917143955.01a71eb6@md1em3qc> <561ED42E.5080608@xenomai.org>
+From: Jorge Ramirez Ortiz <jro@xenomai.org>
+Message-ID: <562658C0.8090006@xenomai.org>
+Date: Tue, 20 Oct 2015 11:07:44 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
+In-Reply-To: <561ED42E.5080608@xenomai.org>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Latency test on RP2 vs Odroid-C1
+Subject: Re: [Xenomai] 4.x merge
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,25 +17,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Henning Schild <henning.schild@siemens.com>
+Cc: "KISZKA, JAN" <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-Hi,
+On 10/14/2015 06:16 PM, Jorge Ramirez Ortiz wrote:
+> 
+>>
+>> I did push my current state to github. Check out 
+>> https://github.com/siemens/linux-ipipe
+>> branches ipipe-3.19 and -4.0
+> 
+> 
+> 
+> I just noticed -while reusing some of your changes for aarch64 - that his needs
+> fixing (redeclaration of 'flags')
+> https://github.com/siemens/linux-ipipe/blob/ipipe-4.0/drivers/irqchip/irq-gic.c#L270
+> 
 
-I finally was able to run the latency test on RPI2.
+Hi Henning,
 
-the results are showing: lat best of 7.705 and worst 16.605
-with an average of 9.129
+have you tried running the switchtest with the boot parameter
+xenomai.supported_cpus=0x1?
 
-Is there  anybody that ran the same test on Odroid C1 board?
-I would like to know how does it compare.
 
-This test was run right after the login prompt (no graphics, no Ethernet 
-activity, no manually started apps/services other than the systemd ones).
 
-Also ran the xenomai autotune right before.
-
-Is there a database of boards with their test results?
-
-Thanks,
--Mathieu
+-- 
+jro
 
