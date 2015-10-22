@@ -1,9 +1,12 @@
-Message-ID: <trinity-3b905084-1366-4586-b761-0f15088b0d82-1447853696479@3capp-webde-bap53>
-From: JK.Behnke@web.de
-Date: Wed, 18 Nov 2015 14:34:56 +0100
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Thu, 22 Oct 2015 11:46:41 -0400
+Message-ID: <20151022154641.GA21923@csclub.uwaterloo.ca>
+References: <n0a83t$gpo$1@ger.gmane.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] rtdm_clock_read overhead/accuracy question
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <n0a83t$gpo$1@ger.gmane.org>
+Subject: Re: [Xenomai] Support for Raspberry PI 2 B
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,38 +15,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Wolfram Wadepohl <Wolfram.Wadepohl@ek-automation.com>
+Cc: xenomai@xenomai.org
 
-   Hello,
+On Thu, Oct 22, 2015 at 10:52:13AM +0200, Wolfram Wadepohl wrote:
+> Hi,
+> 
+> is ther supprot for the Raspberry PI2 Model B?
 
-   I'm currently debugging a problem in my xenomai application.
-   In order ot get timing information I do the following inside the
-   read-handler of my rtdm driver.
+I seem to recall someone mentioning working on it on the list a while
+back, but I can't remember for sure.
 
-   // --- start code snippet ---------------------------------
-   nanosecs_abs_t  t1, t2;
-   rtdm_lock_get_irqsave(&lockobj, lockctx);
+Might want to search the mailing list archives.
 
-   t1=rtdm_clock_read();
-   rtdm_task_busy_sleep(10000); // code block to be measured.
-   t2=rtdm_clock_read();
+There were some discussions about Pi 2 in June:
 
-   rtdm_lock_put_irqrestore(&lockobj, lockctx);
-   // --- end code snippet ---------------------------------
+http://www.xenomai.org/pipermail/xenomai/2015-June/034366.html
 
-   I observe the following time differences  t2-t1:
-   min=10176 ns,  max=10737 ns, avg=10314 ns
+I think at the time there was nothing working yet.
 
-   This means in this case the average overhead of the two rtdm_clock_read
-   calls is
-   approximately 314 ns/2 = 157 ns.
+-- 
+Len Sorensen
 
-   Is that realistic?
-   Are there any other functions I might use to measure execution time of
-   an arbitrary code block?
-
-   I'm running xenomai 2.6.3 on linux kernel 3.8.13.
-   Hardware platform is Intel Atom E640 (1.0 GHz)
-
-   Thanks in advance
-   Jochen
