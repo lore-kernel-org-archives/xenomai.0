@@ -1,13 +1,8 @@
-From: Vasudev Kamath <vasudev@copyninja.info>
-Date: Tue, 27 Oct 2015 16:37:31 +0530
-Message-ID: <87si4wvabw.fsf@copyninja.info>
-References: <6b0caf4dfe7d407988717a23fb855097@EX132MBOX1B.de2.local>
- <53832095.10901@xenomai.org> <loom.20151027T063128-689@post.gmane.org>
- <877fm8x2e4.fsf@copyninja.info>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Using Preempt RT with I-Pipe/Xenomai
+From: Henning Schild <henning.schild@siemens.com>
+Date: Tue, 27 Oct 2015 13:21:16 +0100
+Message-Id: <1445948476-7587-1-git-send-email-henning.schild@siemens.com>
+Subject: [Xenomai] [PATCH] scripts: use mktemp instead of relying on TMPDIR
+	beeing in env
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,45 +13,32 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Vasudev Kamath <vasudev@copyninja.info> writes:
->
-> Err correction, it looks like there are still errors but compilation
-> didn't stop on errors. Currently I saw following error.
->
-> kernel/locking/rtmutex.c: In function _rt_mutex_adjust_prio_chain_:
-> kernel/locking/rtmutex.c:459:969: error: _spinlock_t_ has no member named _rlock_
-> kernel/locking/rtmutex.c: In function _rt_spin_lock_slowunlock_hirq_:
-> kernel/locking/rtmutex.c:1081:971: error: _spinlock_t_ has no member named _rlock_
-> kernel/locking/rtmutex.c: In function _rt_mutex_slowtrylock_:
-> kernel/locking/rtmutex.c:1473:969: error: _spinlock_t_ has no member named _rlock_
->
-> Will be looking at code now. But it looks like fixing this might be
-> beyond my expertise. I wonder if Christoph managed to compile kernel
-> from his side.
+The environment variable TMPDIR is optional and not always set. We could
+test for it and fall back to /tmp/ or just use the tool mktemp.
 
-OK I did manage to get the compilation fixed, of course with my naive
-approach. I'm attaching updated patch with this email.
+Signed-off-by: Henning Schild <henning.schild@siemens.com>
+---
+ scripts/prepare-kernel.sh | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-I tried booting into resulting kernel, but ended up having kernel panic,
-attaching screen shot for reference.
+diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
+index 8e960e8..c9bb815 100755
+--- a/scripts/prepare-kernel.sh
++++ b/scripts/prepare-kernel.sh
+@@ -238,9 +238,9 @@ fi
+ # Create an empty output patch file, and initialize the temporary tree.
+ if test "x$output_patch" != "x"; then
+ 
+-    temp_tree=$TMPDIR/prepare-kernel-$$
+-    if ! mkdir $temp_tree; then
+-	echo Temporary directory $temp_tree already exists, aborting.
++    temp_tree=$( mktemp -d prepare-kernel-XXX )
++    if [ $? -ne 0 ]; then
++	echo Temporary directory could not be created.
+ 	exit 1
+     fi
+ 
+-- 
+2.4.10
 
-So it clearly means I've done something wrong when patching
-ipipe_lock.h. I would be thankful to any one who can help me with
-getting this patch working.
 
-Thanks in Advance,
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: ipipe_lock_rtpreempt.patch
-Type: text/x-diff
-Size: 4343 bytes
-Desc: ipipe_lock patch to work with rt_preempt
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20151027/632cb155/attachment.patch>
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: 20151027_001.jpg
-Type: image/jpeg
-Size: 917100 bytes
-Desc: kernel panic with rt_preempt xenomai patch
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20151027/632cb155/attachment.jpg>
