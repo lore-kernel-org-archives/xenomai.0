@@ -1,12 +1,7 @@
-References: <56210E7E.1050606@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5621102C.4030902@siemens.com>
-Date: Fri, 16 Oct 2015 16:56:44 +0200
-MIME-Version: 1.0
-In-Reply-To: <56210E7E.1050606@siemens.com>
-Content-Type: text/plain; charset=iso-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 3: kill() to non-Xenomai PIDs
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Thu, 29 Oct 2015 08:46:01 +0100
+Message-Id: <1446104761-20722-1-git-send-email-gilles.chanteperdrix@xenomai.org>
+Subject: [Xenomai] [PATCH 1/2] arm64/ipipe: trace kernel entry/exit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,39 +10,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-On 2015-10-16 16:49, Jan Kiszka wrote:
-> Hi,
-> 
-> kill() is currently handled by libcobalt such that PIDs <= 0 are
-> forwarded to Linux and PIDs > 0 are considered to target only Xenomai
-> threads. But what if the user wants to address a regular Linux task from
-> within a Xenomai application? Shouldn't we retry kill via the Linux path
-> if Xenomai's syscall reports ESRCH?
-> 
+---
+ arch/arm64/kernel/entry.S | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-IOW:
-
-diff --git a/lib/cobalt/signal.c b/lib/cobalt/signal.c
-index aac4059..7e03301 100644
---- a/lib/cobalt/signal.c
-+++ b/lib/cobalt/signal.c
-@@ -99,6 +99,10 @@ COBALT_IMPL(int, kill, (pid_t pid, int sig))
+diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
+index fa76ad1..4ae6cf3 100644
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -126,6 +126,17 @@
+ 	str	x21, [sp, #S_SYSCALLNO]
+ 	.endif
  
- 	ret = XENOMAI_SYSCALL2(sc_cobalt_kill, pid, sig);
- 	if (ret) {
-+		/* Retry with regular kill is no RT target was found. */
-+		if (ret == -ESRCH)
-+			return __STD(kill(pid, sig));
++#ifdef CONFIG_IPIPE_TRACE
++	mov     x0, #1
++	mov     x3, #0x90000000
++	ldr     x2, [sp, #S_PC]
++	mov     x1, #0
++	bl      ipipe_trace_asm
++	ldp     x0, x1, [sp]
++	ldp     x2, x3, [sp, #S_X2]
++	ldp     x4, x5, [sp, #S_X4]
++	ldp     x6, x7, [sp, #S_X6]
++#endif
+ 	/*
+ 	 * Registers that may be useful after this macro is invoked:
+ 	 *
+@@ -136,6 +147,21 @@
+ 	.endm
+ 
+ 	.macro	kernel_exit, el, ret = 0
 +
- 		errno = -ret;
- 		return -1;
- 	}
-
-Jan
-
++#ifdef CONFIG_IPIPE_TRACE
++	.if	\ret
++	mov	x19, x0
++	.endif
++	mov     x0, #2
++	mov     x3, #0x90000000
++	ldr     x2, [sp, #S_PC]
++	mov     x1, #0
++	bl      ipipe_trace_asm
++	.if	\ret
++	mov	x0, x19
++	.endif
++#endif
++
+ 	ldp	x21, x22, [sp, #S_PC]		// load ELR, SPSR
+ 	.if	\el == 0
+ 	ct_user_enter
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+1.8.4
+
 
