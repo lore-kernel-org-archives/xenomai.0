@@ -1,10 +1,11 @@
-Message-ID: <BLU437-SMTP38CA2663CEF65BBDBD9AFCF02C0@phx.gbl>
+Message-ID: <BLU437-SMTP11676D7F7E77869B206F3AF02C0@phx.gbl>
 References: <56358DE3.8030308@hotmail.com>
  <BLU437-SMTP82C3E059EB476E2624582EF02C0@phx.gbl>
+ <BLU437-SMTP38CA2663CEF65BBDBD9AFCF02C0@phx.gbl>
 From: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
-Date: Sun, 1 Nov 2015 19:21:12 -0800
+Date: Sun, 1 Nov 2015 21:23:09 -0800
 MIME-Version: 1.0
-In-Reply-To: <BLU437-SMTP82C3E059EB476E2624582EF02C0@phx.gbl>
+In-Reply-To: <BLU437-SMTP38CA2663CEF65BBDBD9AFCF02C0@phx.gbl>
 Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Support for Raspberry PI 2 B
@@ -19,36 +20,40 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-On 15-11-01 06:58 PM, Mathieu Rondonneau wrote:
-> On 15-10-31 08:58 PM, Mathieu Rondonneau wrote:
->> Hi,
+On 15-11-01 07:21 PM, Mathieu Rondonneau wrote:
+> On 15-11-01 06:58 PM, Mathieu Rondonneau wrote:
+>> On 15-10-31 08:58 PM, Mathieu Rondonneau wrote:
+>>> Hi,
+>>>
+>>> irq handlers registered with devm_request_threaded_irq does not get
+>>> triggered when interrupt fires.
+>>>
+>>> The mmc driver uses this (can not load the rootfs).
+>>> Only the IPIPE patch is enabled.
+>>> the armctrl chipirq is triggering the .ack handler instead so the
+>>> interrupt is happening.
+>>>
+>>> Any suggestion on where I should look? how is this supported by the
+>>> ipipe layer?
+>>>
+>>> Thanks,
+>>> -Mathieu
 >>
->> irq handlers registered with devm_request_threaded_irq does not get
->> triggered when interrupt fires.
+>> I think I might have answered my own question.
+>> Looks like I need to use ipipe_request_irq() instead.
 >>
->> The mmc driver uses this (can not load the rootfs).
->> Only the IPIPE patch is enabled.
->> the armctrl chipirq is triggering the .ack handler instead so the
->> interrupt is happening.
->>
->> Any suggestion on where I should look? how is this supported by the
->> ipipe layer?
->>
->> Thanks,
+>> Regards,
 >> -Mathieu
+> mmmm it is not true, it seems we still need a
+> ipipe_request_threaded_irq() to call the ackfn, put the handler in the
+> queue and wake up the thread once handler is executed. Or user will have
+> to move this functionality into their driver's IRQ handler.
 >
-> I think I might have answered my own question.
-> Looks like I need to use ipipe_request_irq() instead.
+> It strangely looks like ipipe_request_irq's idea is similar to what
+> request_threaded_irq is already doing (delaying IRQ process later).
 >
-> Regards,
 > -Mathieu
-mmmm it is not true, it seems we still need a 
-ipipe_request_threaded_irq() to call the ackfn, put the handler in the 
-queue and wake up the thread once handler is executed. Or user will have 
-to move this functionality into their driver's IRQ handler.
-
-It strangely looks like ipipe_request_irq's idea is similar to what 
-request_threaded_irq is already doing (delaying IRQ process later).
-
+Looks like my bigger problem is that the handler_level_irq is not 
+called. Only the timer handler is called (handler_percpu_devid_irq).
 -Mathieu
 
