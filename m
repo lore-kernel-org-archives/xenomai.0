@@ -1,10 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <563649B6.5000803@xenomai.org>
-Date: Sun, 1 Nov 2015 18:19:50 +0100
+Message-ID: <BLU437-SMTP82C3E059EB476E2624582EF02C0@phx.gbl>
+References: <56358DE3.8030308@hotmail.com>
+From: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
+Date: Sun, 1 Nov 2015 18:58:12 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <56358DE3.8030308@hotmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Xenomai-3 GIT tree organization
+Subject: Re: [Xenomai] Support for Raspberry PI 2 B
+	(devm_request_threaded_irq)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,21 +16,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
+On 15-10-31 08:58 PM, Mathieu Rondonneau wrote:
+> Hi,
+>
+> irq handlers registered with devm_request_threaded_irq does not get
+> triggered when interrupt fires.
+>
+> The mmc driver uses this (can not load the rootfs).
+> Only the IPIPE patch is enabled.
+> the armctrl chipirq is triggering the .ack handler instead so the
+> interrupt is happening.
+>
+> Any suggestion on where I should look? how is this supported by the
+> ipipe layer?
+>
+> Thanks,
+> -Mathieu
 
-Please see http://xenomai.org/getting-the-xenomai-code/.
+I think I might have answered my own question.
+Looks like I need to use ipipe_request_irq() instead.
 
-To sum up:
-
-- if you are interested in the latest maintenance fixes for v3.0, check
-the branch named "stable-3.0.x". We are currently heading to 3.0.1.
-
-- if you are interested in the latest development work - now heading to
-v3.1 -, you should track the "master" and/or "next" branches. "next"
-contains the bleeding edge changes, particularly the ongoing arm64 port
-merged from the former "arm64" branch.
-
--- 
-Philippe.
+Regards,
+-Mathieu
 
