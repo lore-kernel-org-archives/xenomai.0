@@ -1,12 +1,15 @@
-References: <56377A74.6020803@mail.de>
+References: <56358DE3.8030308@hotmail.com>
+ <BLU437-SMTP82C3E059EB476E2624582EF02C0@phx.gbl>
+ <BLU437-SMTP38CA2663CEF65BBDBD9AFCF02C0@phx.gbl>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <56377B55.8000600@xenomai.org>
-Date: Mon, 2 Nov 2015 16:03:49 +0100
+Message-ID: <56377D5E.4060905@xenomai.org>
+Date: Mon, 2 Nov 2015 16:12:30 +0100
 MIME-Version: 1.0
-In-Reply-To: <56377A74.6020803@mail.de>
+In-Reply-To: <BLU437-SMTP38CA2663CEF65BBDBD9AFCF02C0@phx.gbl>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] kernel oops in giveup_fpu (file fpu.S)
+Subject: Re: [Xenomai] Support for Raspberry PI 2 B
+ (devm_request_threaded_irq)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,19 +18,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ralf Moder <ralf.moder@mail.de>, xenomai@xenomai.org
+To: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>, xenomai@xenomai.org
 
-On 11/02/2015 04:00 PM, Ralf Moder wrote:
-> Hi,
+On 11/02/2015 04:21 AM, Mathieu Rondonneau wrote:
+> On 15-11-01 06:58 PM, Mathieu Rondonneau wrote:
+>> On 15-10-31 08:58 PM, Mathieu Rondonneau wrote:
+>>> Hi,
+>>>
+>>> irq handlers registered with devm_request_threaded_irq does not get
+>>> triggered when interrupt fires.
+>>>
+>>> The mmc driver uses this (can not load the rootfs).
+>>> Only the IPIPE patch is enabled.
+>>> the armctrl chipirq is triggering the .ack handler instead so the
+>>> interrupt is happening.
+>>>
+>>> Any suggestion on where I should look? how is this supported by the
+>>> ipipe layer?
+>>>
+>>> Thanks,
+>>> -Mathieu
+>>
+>> I think I might have answered my own question.
+>> Looks like I need to use ipipe_request_irq() instead.
+>>
+>> Regards,
+>> -Mathieu
+> mmmm it is not true, it seems we still need a
+> ipipe_request_threaded_irq() to call the ackfn, put the handler in the
+> queue and wake up the thread once handler is executed. Or user will have
+> to move this functionality into their driver's IRQ handler.
+
+The interrupt pipeline does not have to care about the thread level, it
+delays the top halves, which in consequence also delays the (threaded)
+bottom halves without any code change.
+
 > 
-> i have a powerpc cpu (mpc5200) running linux 3.14.17 with xenomai patch
-> 2.6.4 on it. I use floating point in kernel, so the (assembly-)function
-> "giveup_fpu" (in file arch/powerpc/kernel/fpu.S) is called and throws a
-> kernel-oops. fpu.S is patched with ipipe-core-3.14.17-powerpc-6.patch.
-> In original linux (kernel 3.14.17) "giveup_fpu" looks like this:
+> It strangely looks like ipipe_request_irq's idea is similar to what
+> request_threaded_irq is already doing (delaying IRQ process later).
 > 
 
-Please send a diff context patch summarizing your changes.
+Except that it virtualizes interrupt masking. Disabling IRQs for the
+regular kernel won't prevent real-time IRQs hooked by
+ipipe_request_irq() from being handled. That is a significant
+difference. Besides, the pipeline does not implement a threaded IRQ
+model for such virtualization.
 
 -- 
 Philippe.
