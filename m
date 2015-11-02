@@ -1,13 +1,10 @@
-References: <56210E7E.1050606@siemens.com> <5621102C.4030902@siemens.com>
- <56211645.9090503@xenomai.org> <56211787.8090107@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <5621184E.8070704@xenomai.org>
-Date: Fri, 16 Oct 2015 17:31:26 +0200
+Message-ID: <563767EC.9020008@xenomai.org>
+Date: Mon, 2 Nov 2015 14:41:00 +0100
 MIME-Version: 1.0
-In-Reply-To: <56211787.8090107@siemens.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 3: kill() to non-Xenomai PIDs
+Subject: [Xenomai] [RELEASE] Xenomai 3.0.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,55 +13,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
-
-On 10/16/2015 05:28 PM, Jan Kiszka wrote:
-> On 2015-10-16 17:22, Philippe Gerum wrote:
->> On 10/16/2015 04:56 PM, Jan Kiszka wrote:
->>> On 2015-10-16 16:49, Jan Kiszka wrote:
->>>> Hi,
->>>>
->>>> kill() is currently handled by libcobalt such that PIDs <= 0 are
->>>> forwarded to Linux and PIDs > 0 are considered to target only Xenomai
->>>> threads. But what if the user wants to address a regular Linux task from
->>>> within a Xenomai application? Shouldn't we retry kill via the Linux path
->>>> if Xenomai's syscall reports ESRCH?
->>>>
->>>
->>> IOW:
->>>
->>> diff --git a/lib/cobalt/signal.c b/lib/cobalt/signal.c
->>> index aac4059..7e03301 100644
->>> --- a/lib/cobalt/signal.c
->>> +++ b/lib/cobalt/signal.c
->>> @@ -99,6 +99,10 @@ COBALT_IMPL(int, kill, (pid_t pid, int sig))
->>>  
->>>  	ret = XENOMAI_SYSCALL2(sc_cobalt_kill, pid, sig);
->>>  	if (ret) {
->>> +		/* Retry with regular kill is no RT target was found. */
->>> +		if (ret == -ESRCH)
->>> +			return __STD(kill(pid, sig));
->>> +
->>>  		errno = -ret;
->>>  		return -1;
->>>  	}
->>>
->>> Jan
->>>
->>
->> This may break code that sends signal 0 to detect whether a rt thread
->> exists (like copperplate does), which is the reason for the lack of
->> forwarding IIRC. (ret == -ESRCH && sig) would be required to forward
->> without breaking such assumption.
-> 
-> That still breaks POSIX (what if the user wants to test for a non-rt
-> thread, like this is possible under regular Linux?). Can't copperplate
-> be changed to bypass the wrapper?
-> 
-
-Probably, yes.
+To: "xenomai@xenomai.org" <Xenomai@xenomai.org>
 
 
--- 
+This is the first maintenance release for v3.0. Core and rtnet fixes for
+the most part, including a nasty SMP-only issue which could delay a
+real-time rescheduling unexpectedly. Update recommended.
+
+http://xenomai.org/downloads/xenomai/stable/latest/
+
+Short log follows:
+
+Gilles Chanteperdrix (15):
+      rtnet/udp: fix sendmsg error path
+      rtnet: fix reference count issues
+      cobalt/sched: bypass scheduler lock in irq
+      rtnet: add option to enable debug asserts
+      cobalt/mutex: invalidate autoinit mutex upon fork
+      cobalt/mutex: propagate autoinit error
+      cobalt/process: avoid crash at fork
+      cobalt/sched: avoid leaking the reschedule bit
+      testsuite/dohell: sync after dd to disk
+      testsuite/smokey: tsc: add tsc test
+      cobalt/rtdm: use distinct minor for each protocol device
+      cobalt/rtdm: schedule_work: avoid ipipe_work_post_root
+      rtnet/e1000e: use rtdm schedule work
+      rtnet: transfer skb ownership when sending
+      lib/smokey: fix argument parsing
+
+Henning Schild (1):
+      scripts: use mktemp instead of relying on TMPDIR beeing in env
+
+Jan Kiszka (2):
+      lib/cobalt: Introduce cobalt_thread_probe
+      lib/cobalt: Forward kill to Linux if no target was found
+
+Philippe Gerum (10):
+      alchemy/heap: allow zero size for SBA binding
+      copperplate/regd: do not involve Cobalt before binding is done
+      lib/cobalt: explain -ENOSYS upon binding error
+      boilerplate/version: fix version suffix for non-devel release
+      doc: fix URL of the download area
+      cobalt/timer: allow for changing the underlying clock source
+      cobalt/thread: allow for changing the clock of the periodic timer
+      cobalt/thread: allow NULL thread spec for xnthread_set_clock()
+      bump version code
+      doc: prebuild
+
+--
 Philippe.
+
 
