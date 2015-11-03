@@ -1,14 +1,14 @@
-References: <56210E7E.1050606@siemens.com> <5621102C.4030902@siemens.com>
- <56211645.9090503@xenomai.org> <56211787.8090107@siemens.com>
- <20151016153424.GQ16010@hermes.click-hack.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <56211CC1.2030604@siemens.com>
-Date: Fri, 16 Oct 2015 17:50:25 +0200
+Date: Tue, 3 Nov 2015 15:46:51 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151103144651.GC26720@hermes.click-hack.org>
+References: <2396B4D2166B62479FBBE370D4A7C1F30A705D34@mb2010-3.intra.tut.fi>
+ <20151103114717.GA26720@hermes.click-hack.org>
+ <2396B4D2166B62479FBBE370D4A7C1F30A705DA6@mb2010-3.intra.tut.fi>
 MIME-Version: 1.0
-In-Reply-To: <20151016153424.GQ16010@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 3: kill() to non-Xenomai PIDs
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2396B4D2166B62479FBBE370D4A7C1F30A705DA6@mb2010-3.intra.tut.fi>
+Subject: Re: [Xenomai] Pcap replay tool for xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,64 +17,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Umair Ali <ali.umair@tut.fi>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2015-10-16 17:34, Gilles Chanteperdrix wrote:
-> On Fri, Oct 16, 2015 at 05:28:07PM +0200, Jan Kiszka wrote:
->> On 2015-10-16 17:22, Philippe Gerum wrote:
->>> On 10/16/2015 04:56 PM, Jan Kiszka wrote:
->>>> On 2015-10-16 16:49, Jan Kiszka wrote:
->>>>> Hi,
->>>>>
->>>>> kill() is currently handled by libcobalt such that PIDs <= 0 are
->>>>> forwarded to Linux and PIDs > 0 are considered to target only Xenomai
->>>>> threads. But what if the user wants to address a regular Linux task from
->>>>> within a Xenomai application? Shouldn't we retry kill via the Linux path
->>>>> if Xenomai's syscall reports ESRCH?
->>>>>
->>>>
->>>> IOW:
->>>>
->>>> diff --git a/lib/cobalt/signal.c b/lib/cobalt/signal.c
->>>> index aac4059..7e03301 100644
->>>> --- a/lib/cobalt/signal.c
->>>> +++ b/lib/cobalt/signal.c
->>>> @@ -99,6 +99,10 @@ COBALT_IMPL(int, kill, (pid_t pid, int sig))
->>>>  
->>>>  	ret = XENOMAI_SYSCALL2(sc_cobalt_kill, pid, sig);
->>>>  	if (ret) {
->>>> +		/* Retry with regular kill is no RT target was found. */
->>>> +		if (ret == -ESRCH)
->>>> +			return __STD(kill(pid, sig));
->>>> +
->>>>  		errno = -ret;
->>>>  		return -1;
->>>>  	}
->>>>
->>>> Jan
->>>>
->>>
->>> This may break code that sends signal 0 to detect whether a rt thread
->>> exists (like copperplate does), which is the reason for the lack of
->>> forwarding IIRC. (ret == -ESRCH && sig) would be required to forward
->>> without breaking such assumption.
->>
->> That still breaks POSIX (what if the user wants to test for a non-rt
->> thread, like this is possible under regular Linux?). Can't copperplate
->> be changed to bypass the wrapper?
+On Tue, Nov 03, 2015 at 02:31:34PM +0000, Umair Ali wrote:
+> [    0.489562] Xenomai: real-time nucleus v2.6.0 (Movin' On)
+> loaded.
+
+Xenomai 2.6.0 is seriously outdated (released in 2011).
+
+> I have run the latency tests on the xenomai and it works fine. The results of the latency are as follows
+-----
+> RTS|      0.545|      1.328|     12.077|       0|     0|    00:00:06/00:00:06
+
+I hope you have run the test for more than 6 seconds before
+concluding that xenomai runs fine.
+
+> root@cpc:/usr/xenomai/bin# "
 > 
-> If I have understood the "xenomai 3" philosophy, is not an
-> application which wants to use the standard call supposed to use the
-> __STD prefix, or not use the wrapping at all ?
+> Now i follow the following links to install the RTnet on xenomai:
+> 1) https://xenomai.org/rtnet-installation/ 2)
+> http://rtnet.org/doc.html
 
-That's also a theoretical option, but should only be used if we can't
-fix the limitation otherwise. The more exceptions we define, the less
-portable we become for POSIX/Linux applications.
+> And used the guide also for the initial
+> test of the RTnet drivers. When i type the command "sudo ./rtnet
+> start" my pc froze and i need to do the brutal restart. But some
+> time it works and i am able to do ping by "sudo ./rtping <loop
+> back IP>". But after the "sudo ./rtnet stop" it never ping again.
+> The config.log and rtnet.conf files for the configuration of the
+> Rtnet are attached with the email. Also I did not observe any
+> error while installation. Therefore i am not sure if RTnet will
+> work for me. Please guide me how i can go from here to achieve my
+> goal. Thanks in advance for your time and advice
 
-Jan
+That version of RTnet is not maintained by the Xenomai project. We
+merged RTnet in Xenomai 3, but in order to benefit from it, you
+would have to install Xenomai 3.0.1 (and note that the above
+installation instructions do not apply, since RTnet is now merged,
+it means the kernel-space support has to be enabled in the kernel
+configuration, and the user-space support is compiled
+unconditionally). Also note that the loopback interface is broken in
+Xenomai 3.0.1, it will be fixed in 3.0.2, however 8139too should
+work.
+
+Please keep the conversation on the mailing list.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+					    Gilles.
+https://click-hack.org
 
