@@ -1,9 +1,9 @@
-References: <563767EC.9020008@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5638AB4E.3010905@siemens.com>
-Date: Tue, 3 Nov 2015 13:40:46 +0100
+References: <563767EC.9020008@xenomai.org> <5638AB4E.3010905@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5638BCD3.7020200@xenomai.org>
+Date: Tue, 3 Nov 2015 14:55:31 +0100
 MIME-Version: 1.0
-In-Reply-To: <563767EC.9020008@xenomai.org>
+In-Reply-To: <5638AB4E.3010905@siemens.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [RELEASE] Xenomai 3.0.1
@@ -15,21 +15,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 2015-11-02 14:41, Philippe Gerum wrote:
+On 11/03/2015 01:40 PM, Jan Kiszka wrote:
+> On 2015-11-02 14:41, Philippe Gerum wrote:
+>>
+>> This is the first maintenance release for v3.0. Core and rtnet fixes for
+>> the most part, including a nasty SMP-only issue which could delay a
+>> real-time rescheduling unexpectedly. Update recommended.
+>>
+>> http://xenomai.org/downloads/xenomai/stable/latest/
 > 
-> This is the first maintenance release for v3.0. Core and rtnet fixes for
-> the most part, including a nasty SMP-only issue which could delay a
-> real-time rescheduling unexpectedly. Update recommended.
+> Do we lack this in git (tag and in stable-3.0.x)?
 > 
-> http://xenomai.org/downloads/xenomai/stable/latest/
 
-Do we lack this in git (tag and in stable-3.0.x)?
-
-Jan
+The tag was missing, show be ok now.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
