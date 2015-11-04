@@ -1,10 +1,13 @@
-Message-ID: <BLU436-SMTP450DD53B7012910BE83C43F02A0@phx.gbl>
-References: <BLU436-SMTP235B354929DDB6910D2667EF02D0@phx.gbl>
- <20151102162755.GA32103@hermes.click-hack.org>
+Message-ID: <BLU437-SMTP10132C0DA57E69E6D1C8359F02A0@phx.gbl>
+References: <56358DE3.8030308@hotmail.com>
+ <BLU437-SMTP82C3E059EB476E2624582EF02C0@phx.gbl>
+ <BLU437-SMTP38CA2663CEF65BBDBD9AFCF02C0@phx.gbl>
+ <BLU437-SMTP11676D7F7E77869B206F3AF02C0@phx.gbl>
+ <56377DF5.5090202@xenomai.org>
 From: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
-Date: Tue, 3 Nov 2015 19:11:12 -0800
+Date: Tue, 3 Nov 2015 19:18:37 -0800
 MIME-Version: 1.0
-In-Reply-To: <20151102162755.GA32103@hermes.click-hack.org>
+In-Reply-To: <56377DF5.5090202@xenomai.org>
 Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Support for Raspberry PI 2 B
@@ -17,36 +20,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 15-11-02 08:27 AM, Gilles Chanteperdrix wrote:
-> On Sat, Oct 31, 2015 at 08:58:27PM -0700, Mathieu Rondonneau wrote:
->> Hi,
->>
->> irq handlers registered with devm_request_threaded_irq does not get
->> triggered when interrupt fires.
->>
->> The mmc driver uses this (can not load the rootfs).
->> Only the IPIPE patch is enabled.
->> the armctrl chipirq is triggering the .ack handler instead so the
->> interrupt is happening.
->>
->> Any suggestion on where I should look? how is this supported by the
->> ipipe layer?
+On 15-11-02 07:15 AM, Philippe Gerum wrote:
+> On 11/02/2015 06:23 AM, Mathieu Rondonneau wrote:
+>> On 15-11-01 07:21 PM, Mathieu Rondonneau wrote:
+>>> On 15-11-01 06:58 PM, Mathieu Rondonneau wrote:
+>>>> On 15-10-31 08:58 PM, Mathieu Rondonneau wrote:
+>>>>> Hi,
+>>>>>
+>>>>> irq handlers registered with devm_request_threaded_irq does not get
+>>>>> triggered when interrupt fires.
+>>>>>
+>>>>> The mmc driver uses this (can not load the rootfs).
+>>>>> Only the IPIPE patch is enabled.
+>>>>> the armctrl chipirq is triggering the .ack handler instead so the
+>>>>> interrupt is happening.
+>>>>>
+>>>>> Any suggestion on where I should look? how is this supported by the
+>>>>> ipipe layer?
+>>>>>
+>>>>> Thanks,
+>>>>> -Mathieu
+>>>>
+>>>> I think I might have answered my own question.
+>>>> Looks like I need to use ipipe_request_irq() instead.
+>>>>
+>>>> Regards,
+>>>> -Mathieu
+>>> mmmm it is not true, it seems we still need a
+>>> ipipe_request_threaded_irq() to call the ackfn, put the handler in the
+>>> queue and wake up the thread once handler is executed. Or user will have
+>>> to move this functionality into their driver's IRQ handler.
+>>>
+>>> It strangely looks like ipipe_request_irq's idea is similar to what
+>>> request_threaded_irq is already doing (delaying IRQ process later).
+>>>
+>>> -Mathieu
+>> Looks like my bigger problem is that the handler_level_irq is not
+>> called. Only the timer handler is called (handler_percpu_devid_irq).
 >
-> Maybe have a look here:
-> http://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc/
+> Which may mean that the regular IRQ top half for that interrupt source
+> is not connected to the pipeline. You may want to check whether the
+> irqchip handling that device's IRQs has been made aware of the interrupt
+> pipeline.
 >
-Hi Gilles,
 
-I read this guide a couple of time already in the past but it did not help.
-But I think the section "flow handler" is where my problem resides since 
-I get the callback to trigger properly.
-I will continue staring at the code. I just don't have the big picture 
-just yet.
+Thanks for replying Philippe,
+This is the think, I did change the arch_irq_default_handler to call the 
+__ipipe_grab_irq and __ipipe_grab_ipi.
+Is that what you are referring to when you say "interrupt source is not 
+connected to the pipile", that's what __ipipe_grab_xxx does isn't it?
+
+Obviously I am still missing something.
+If I use irq_set_chained_handler in the driver then the handler gets 
+called but it's just replacing the handler_irq by the driver one.
+When I use request_irq then it does not call my handler (the 
+action.handler one).
+I will keep looking.
 
 Thanks,
 -Mathieu
-
 
