@@ -1,18 +1,14 @@
-Date: Wed, 4 Nov 2015 08:04:14 +0100
+Date: Wed, 4 Nov 2015 08:53:11 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151104070414.GD24848@hermes.click-hack.org>
-References: <56358DE3.8030308@hotmail.com>
- <BLU437-SMTP82C3E059EB476E2624582EF02C0@phx.gbl>
- <BLU437-SMTP38CA2663CEF65BBDBD9AFCF02C0@phx.gbl>
- <BLU437-SMTP11676D7F7E77869B206F3AF02C0@phx.gbl>
- <56377DF5.5090202@xenomai.org>
- <BLU437-SMTP10132C0DA57E69E6D1C8359F02A0@phx.gbl>
+Message-ID: <20151104075311.GG24848@hermes.click-hack.org>
+References: <20151028105140.GA26607@hermes.click-hack.org>
+ <1446030916-6963-1-git-send-email-henning.schild@siemens.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <BLU437-SMTP10132C0DA57E69E6D1C8359F02A0@phx.gbl>
-Subject: Re: [Xenomai] Support for Raspberry PI 2 B
- (devm_request_threaded_irq)
+In-Reply-To: <1446030916-6963-1-git-send-email-henning.schild@siemens.com>
+Subject: Re: [Xenomai] [PATCH v4] scripts: use mktemp instead of relying on
+ TMPDIR beeing in env
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,76 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
+To: Henning Schild <henning.schild@siemens.com>
 Cc: xenomai@xenomai.org
 
-On Tue, Nov 03, 2015 at 07:18:37PM -0800, Mathieu Rondonneau wrote:
-> On 15-11-02 07:15 AM, Philippe Gerum wrote:
-> > On 11/02/2015 06:23 AM, Mathieu Rondonneau wrote:
-> >> On 15-11-01 07:21 PM, Mathieu Rondonneau wrote:
-> >>> On 15-11-01 06:58 PM, Mathieu Rondonneau wrote:
-> >>>> On 15-10-31 08:58 PM, Mathieu Rondonneau wrote:
-> >>>>> Hi,
-> >>>>>
-> >>>>> irq handlers registered with devm_request_threaded_irq does not get
-> >>>>> triggered when interrupt fires.
-> >>>>>
-> >>>>> The mmc driver uses this (can not load the rootfs).
-> >>>>> Only the IPIPE patch is enabled.
-> >>>>> the armctrl chipirq is triggering the .ack handler instead so the
-> >>>>> interrupt is happening.
-> >>>>>
-> >>>>> Any suggestion on where I should look? how is this supported by the
-> >>>>> ipipe layer?
-> >>>>>
-> >>>>> Thanks,
-> >>>>> -Mathieu
-> >>>>
-> >>>> I think I might have answered my own question.
-> >>>> Looks like I need to use ipipe_request_irq() instead.
-> >>>>
-> >>>> Regards,
-> >>>> -Mathieu
-> >>> mmmm it is not true, it seems we still need a
-> >>> ipipe_request_threaded_irq() to call the ackfn, put the handler in the
-> >>> queue and wake up the thread once handler is executed. Or user will have
-> >>> to move this functionality into their driver's IRQ handler.
-> >>>
-> >>> It strangely looks like ipipe_request_irq's idea is similar to what
-> >>> request_threaded_irq is already doing (delaying IRQ process later).
-> >>>
-> >>> -Mathieu
-> >> Looks like my bigger problem is that the handler_level_irq is not
-> >> called. Only the timer handler is called (handler_percpu_devid_irq).
-> >
-> > Which may mean that the regular IRQ top half for that interrupt source
-> > is not connected to the pipeline. You may want to check whether the
-> > irqchip handling that device's IRQs has been made aware of the interrupt
-> > pipeline.
-> >
+On Wed, Oct 28, 2015 at 12:15:16PM +0100, Henning Schild wrote:
+> The environment variable TMPDIR is optional and not always set. We could
+> test for it and fall back to /tmp/ or just use the tool mktemp.
 > 
-> Thanks for replying Philippe,
-> This is the think, I did change the arch_irq_default_handler to call the 
-> __ipipe_grab_irq and __ipipe_grab_ipi.
-> Is that what you are referring to when you say "interrupt source is not 
-> connected to the pipile", that's what __ipipe_grab_xxx does isn't it?
+> Signed-off-by: Henning Schild <henning.schild@siemens.com>
+> ---
+>  scripts/prepare-kernel.sh | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 > 
-> Obviously I am still missing something.
-> If I use irq_set_chained_handler in the driver then the handler gets 
-> called but it's just replacing the handler_irq by the driver one.
-> When I use request_irq then it does not call my handler (the 
-> action.handler one).
-> I will keep looking.
+> diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
+> index 8e960e8..333d11c 100755
+> --- a/scripts/prepare-kernel.sh
+> +++ b/scripts/prepare-kernel.sh
+> @@ -238,9 +238,9 @@ fi
+>  # Create an empty output patch file, and initialize the temporary tree.
+>  if test "x$output_patch" != "x"; then
+>  
+> -    temp_tree=$TMPDIR/prepare-kernel-$$
+> -    if ! mkdir $temp_tree; then
+> -	echo Temporary directory $temp_tree already exists, aborting.
+> +    temp_tree=`mktemp -d prepare-kernel-XXX --tmpdir`
+> +    if [ $? -ne 0 ]; then
+> +	echo Temporary directory could not be created.
+>  	exit 1
+>      fi
 
-This is explained here:
-http://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc/#GPIOs_as_interrupt_sources
-and here:
-http://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc/#CONFIG_MULTI_IRQ_HANDLER
-
-Chained handlers have to call ipipe_handle_demuxed_irq instead of
-generic_handle_irq.
-And the arch irq handler has to call ipipe_handle_multi_irq or
-ipipe_handle_multi_ipi instead of handle_IRQ
+The version of mktemp installed on my machine requires 6 X in the
+template.
 
 -- 
 					    Gilles.
