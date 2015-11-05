@@ -1,21 +1,16 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Thu, 5 Nov 2015 16:28:39 -0500
-Message-ID: <20151105212839.GT21923@csclub.uwaterloo.ca>
-References: <20151105151544.GD16314@hermes.click-hack.org>
- <20151105152427.GN21923@csclub.uwaterloo.ca>
- <20151105155549.GE16314@hermes.click-hack.org>
- <20151105161902.GO21923@csclub.uwaterloo.ca>
- <20151105162514.GF16314@hermes.click-hack.org>
- <20151105165750.GP21923@csclub.uwaterloo.ca>
- <20151105171419.GG16314@hermes.click-hack.org>
- <20151105172452.GQ21923@csclub.uwaterloo.ca>
- <20151105175225.GR21923@csclub.uwaterloo.ca>
- <20151105211858.GS21923@csclub.uwaterloo.ca>
+Date: Thu, 5 Nov 2015 22:33:37 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151105213337.GD31487@hermes.click-hack.org>
+References: <2396B4D2166B62479FBBE370D4A7C1F30A705D34@mb2010-3.intra.tut.fi>
+ <20151103114717.GA26720@hermes.click-hack.org>
+ <2396B4D2166B62479FBBE370D4A7C1F30A705DA6@mb2010-3.intra.tut.fi>
+ <20151103144651.GC26720@hermes.click-hack.org>
+ <2396B4D2166B62479FBBE370D4A7C1F30A705E86@mb2010-3.intra.tut.fi>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20151105211858.GS21923@csclub.uwaterloo.ca>
-Subject: Re: [Xenomai] ARM bus error due to alignment
+In-Reply-To: <2396B4D2166B62479FBBE370D4A7C1F30A705E86@mb2010-3.intra.tut.fi>
+Subject: Re: [Xenomai] Pcap replay tool for xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,32 +19,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Umair Ali <ali.umair@tut.fi>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Thu, Nov 05, 2015 at 04:18:58PM -0500, Lennart Sorensen wrote:
-> OK blowing up here:
+On Thu, Nov 05, 2015 at 03:17:45PM +0000, Umair Ali wrote:
+> Hello Gilles, 
 > 
->                         /*
->                          * Search for a range of contiguous pages in
->                          * the free page list of the current
->                          * extent. The range must be 'bsize' long.
->                          */
->                         do {
->                                 lastpage = freepage;
-> ---->                           freepage = *((caddr_t *) freepage);
->                                 freecont += heap->pagesize;
->                         }
->                         while (freepage == lastpage + heap->pagesize
->                                && freecont < bsize);
-> 
-> I wonder if I am getting to the end of the list and trying to derefence
-> a NULL pointer as a result.  I see nothing in the code to make sure it
-> doesn't try to do that, although I hope I am just misreading the code.
+> I have managed to install the xenomai on Ubuntu 13.04 (kernel
+> 3.08).
 
-Well it does handle NULL checking at the top with while (freepage !=
-NULL), so how is this derefencing doing that.   Hmm.
+Not sure what you mean with kernel 3.08 here, since you talk about
+3.10 later on.
+
+> The version of the xenomai is 3.0.1 and kernel version is
+> 3.10.32. The following is the output after the reboot
+
+RTnet requires I-pipe patch for kernel 3.14 or later.
+
+
+> I have also observed that module 8139too is also running. As i am
+> new to the linux so i want to make sure if i have installed the
+> xenomai with rtnet correctly. Can you tell me is there a way i
+> stop the 8139too module and make rt_8139too module as default
+> driver for NIC.
+
+Yes, you can unbind the device from the 8139too driver, then bind it
+to rt_8139too, or start the rt_8139too module after unbinding from
+8139too. To know how to manual bind/unbind devices from drivers,
+see:
+https://lwn.net/Articles/143397/
+
+
+> And then use TCPreplay command such as "tcpreplayy
+> --pps=4000 --intf1=eth0 stream.pcap" to play back the pcap file as
+> we can do in the non real kernel.
+
+As I already told you, the code is identical to send raw packets
+with Linux and Xenomai, but the compilation is different. So, if
+tcpreplay is not compiled for Xenomai, it will not use Xenomai APIs.
+I suggest you start reading a bit about Xenomai to understand what
+it does and how it works, starting from here:
+http://xenomai.org/start-here/
 
 -- 
-Len Sorensen
+					    Gilles.
+https://click-hack.org
 
