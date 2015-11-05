@@ -1,16 +1,17 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Thu, 5 Nov 2015 10:24:27 -0500
-Message-ID: <20151105152427.GN21923@csclub.uwaterloo.ca>
+Date: Thu, 5 Nov 2015 16:55:49 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151105155549.GE16314@hermes.click-hack.org>
 References: <20151105015114.GJ21923@csclub.uwaterloo.ca>
  <20151105110141.GC16314@hermes.click-hack.org>
  <20151105145159.GK21923@csclub.uwaterloo.ca>
  <20151105145725.GL21923@csclub.uwaterloo.ca>
  <20151105150226.GM21923@csclub.uwaterloo.ca>
  <20151105151544.GD16314@hermes.click-hack.org>
+ <20151105152427.GN21923@csclub.uwaterloo.ca>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20151105151544.GD16314@hermes.click-hack.org>
+In-Reply-To: <20151105152427.GN21923@csclub.uwaterloo.ca>
 Subject: Re: [Xenomai] ARM bus error due to alignment
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -20,40 +21,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
 Cc: xenomai@xenomai.org
 
-On Thu, Nov 05, 2015 at 04:15:44PM +0100, Gilles Chanteperdrix wrote:
-> On Thu, Nov 05, 2015 at 10:02:26AM -0500, Lennart Sorensen wrote:
-> > On Thu, Nov 05, 2015 at 09:57:25AM -0500, Lennart Sorensen wrote:
-> > > On Thu, Nov 05, 2015 at 09:51:59AM -0500, Lennart Sorensen wrote:
-> > > > Hmm, I thought I had read that as of 2.6.38 and higher arm systems were
-> > > > supposed to not generate the fault anymore, but maybe I misunderstood
-> > > > it and they meant it sets fixup to enabled by default.
+On Thu, Nov 05, 2015 at 10:24:27AM -0500, Lennart Sorensen wrote:
+> On Thu, Nov 05, 2015 at 04:15:44PM +0100, Gilles Chanteperdrix wrote:
+> > On Thu, Nov 05, 2015 at 10:02:26AM -0500, Lennart Sorensen wrote:
+> > > On Thu, Nov 05, 2015 at 09:57:25AM -0500, Lennart Sorensen wrote:
+> > > > On Thu, Nov 05, 2015 at 09:51:59AM -0500, Lennart Sorensen wrote:
+> > > > > Hmm, I thought I had read that as of 2.6.38 and higher arm systems were
+> > > > > supposed to not generate the fault anymore, but maybe I misunderstood
+> > > > > it and they meant it sets fixup to enabled by default.
+> > > > > 
+> > > > > I should check the SCTLR.A flag.
 > > > > 
-> > > > I should check the SCTLR.A flag.
+> > > > Of course the arm docs say it is off by default at reset, so something
+> > > > in either u-boot or the kernel seems like it must have to enable it
+> > > > explicitly.  Well once I figure out how to read it I guess I will know.
+> > > > 
+> > > > Of course if the memory happens to be flagged as something other than
+> > > > normal memory, then it should also fault.  I wonder if a page used to dma
+> > > > data to/from a network driver would be flagged as normal memory or not.
 > > > 
-> > > Of course the arm docs say it is off by default at reset, so something
-> > > in either u-boot or the kernel seems like it must have to enable it
-> > > explicitly.  Well once I figure out how to read it I guess I will know.
+> > > Would using this cause such a problem:
 > > > 
-> > > Of course if the memory happens to be flagged as something other than
-> > > normal memory, then it should also fault.  I wonder if a page used to dma
-> > > data to/from a network driver would be flagged as normal memory or not.
+> > > /usr/include/xenomai/native/heap.h:#define H_DMA      0x100     /* Use memory suitable for DMA. */
 > > 
-> > Would using this cause such a problem:
-> > 
-> > /usr/include/xenomai/native/heap.h:#define H_DMA      0x100     /* Use memory suitable for DMA. */
+> > Do you have alignment issues with the same version of Linux with
+> > exactly the same configuration, but without Xenomai?
 > 
-> Do you have alignment issues with the same version of Linux with
-> exactly the same configuration, but without Xenomai?
+> Given the only application with alignment issues is a xenomai application,
+> then I don't know.  All the non xenomai code is running happily though
+> and the kernel never flags any alignment issues there although I don't
+> remember if the default kernel setting would even report alignment
+> problems or just silently fix them.
 
-Given the only application with alignment issues is a xenomai application,
-then I don't know.  All the non xenomai code is running happily though
-and the kernel never flags any alignment issues there although I don't
-remember if the default kernel setting would even report alignment
-problems or just silently fix them.
+As I said, that depends on the contents of the /proc file described
+in Documentation/arm/mem_alignment
+
+If that file is configured to fixup faults in kernel, then every
+alignment fault in user-space triggers a trap, the trap handler
+simulates the faulting instruction and returns to user-space. If you
+do that from a Xenomai task running in primary mode, it should cause
+the task to switch to secondary mode, unless there is a bug in the
+I-pipe patch regarding that particular issue (like a fault not
+transmitted to Xenomai).
+
+Xenomai does not change the type of the RAM memory, the H_DMA flag
+only has an effect on heaps created with Xenomai shared user/kernel
+heaps interface. Xenomai only use that flag automatically on arm
+machines with VIVT cache. armv7 do not have VIVT cache as far as I
+know.
 
 -- 
-Len Sorensen
+					    Gilles.
+https://click-hack.org
 
