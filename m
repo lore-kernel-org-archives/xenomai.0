@@ -1,9 +1,14 @@
-From: Henning Schild <henning.schild@siemens.com>
-Date: Thu,  5 Nov 2015 19:22:32 +0100
-Message-Id: <1446747752-8396-1-git-send-email-henning.schild@siemens.com>
-In-Reply-To: <20151105105550.GB16314@hermes.click-hack.org>
+Date: Thu, 5 Nov 2015 19:30:35 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151105183035.GH16314@hermes.click-hack.org>
 References: <20151105105550.GB16314@hermes.click-hack.org>
-Subject: [Xenomai] [PATCH] scripts: increase number of Xs in mktemp template
+ <1446747752-8396-1-git-send-email-henning.schild@siemens.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1446747752-8396-1-git-send-email-henning.schild@siemens.com>
+Subject: Re: [Xenomai] [PATCH] scripts: increase number of Xs in mktemp
+ template
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,32 +17,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>
+Cc: xenomai@xenomai.org
 
-In a5cfe9c9a8dbcc094b0c5043b21fa6cde7fc42e5 the use of mktemp was
-introduces. Some versions of mktemp seem to require a template of at
-least 6 Xs.
+On Thu, Nov 05, 2015 at 07:22:32PM +0100, Henning Schild wrote:
+> In a5cfe9c9a8dbcc094b0c5043b21fa6cde7fc42e5 the use of mktemp was
+> introduces. Some versions of mktemp seem to require a template of at
+> least 6 Xs.
 
-Signed-off-by: Henning Schild <henning.schild@siemens.com>
----
- scripts/prepare-kernel.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+not at least. Exactly 6 Xs. And this requirement is actually part of
+the POSIX standard:
+http://pubs.opengroup.org/onlinepubs/9699919799/functions/mkstemp.html
 
-diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
-index 333d11c..b75acf9 100755
---- a/scripts/prepare-kernel.sh
-+++ b/scripts/prepare-kernel.sh
-@@ -238,7 +238,7 @@ fi
- # Create an empty output patch file, and initialize the temporary tree.
- if test "x$output_patch" != "x"; then
- 
--    temp_tree=`mktemp -d prepare-kernel-XXX --tmpdir`
-+    temp_tree=`mktemp -d prepare-kernel-XXXXXX --tmpdir`
-     if [ $? -ne 0 ]; then
- 	echo Temporary directory could not be created.
- 	exit 1
 -- 
-2.4.10
-
+					    Gilles.
+https://click-hack.org
 
