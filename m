@@ -1,14 +1,10 @@
-References: <56210E7E.1050606@siemens.com> <5621102C.4030902@siemens.com>
- <56211645.9090503@xenomai.org> <56211787.8090107@siemens.com>
- <5621184E.8070704@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <56211E6A.2080300@siemens.com>
-Date: Fri, 16 Oct 2015 17:57:30 +0200
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Wed, 4 Nov 2015 20:51:14 -0500
+Message-ID: <20151105015114.GJ21923@csclub.uwaterloo.ca>
 MIME-Version: 1.0
-In-Reply-To: <5621184E.8070704@xenomai.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 3: kill() to non-Xenomai PIDs
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [Xenomai] ARM bus error due to alignment
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,68 +13,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 2015-10-16 17:31, Philippe Gerum wrote:
-> On 10/16/2015 05:28 PM, Jan Kiszka wrote:
->> On 2015-10-16 17:22, Philippe Gerum wrote:
->>> On 10/16/2015 04:56 PM, Jan Kiszka wrote:
->>>> On 2015-10-16 16:49, Jan Kiszka wrote:
->>>>> Hi,
->>>>>
->>>>> kill() is currently handled by libcobalt such that PIDs <= 0 are
->>>>> forwarded to Linux and PIDs > 0 are considered to target only Xenomai
->>>>> threads. But what if the user wants to address a regular Linux task from
->>>>> within a Xenomai application? Shouldn't we retry kill via the Linux path
->>>>> if Xenomai's syscall reports ESRCH?
->>>>>
->>>>
->>>> IOW:
->>>>
->>>> diff --git a/lib/cobalt/signal.c b/lib/cobalt/signal.c
->>>> index aac4059..7e03301 100644
->>>> --- a/lib/cobalt/signal.c
->>>> +++ b/lib/cobalt/signal.c
->>>> @@ -99,6 +99,10 @@ COBALT_IMPL(int, kill, (pid_t pid, int sig))
->>>>  
->>>>  	ret = XENOMAI_SYSCALL2(sc_cobalt_kill, pid, sig);
->>>>  	if (ret) {
->>>> +		/* Retry with regular kill is no RT target was found. */
->>>> +		if (ret == -ESRCH)
->>>> +			return __STD(kill(pid, sig));
->>>> +
->>>>  		errno = -ret;
->>>>  		return -1;
->>>>  	}
->>>>
->>>> Jan
->>>>
->>>
->>> This may break code that sends signal 0 to detect whether a rt thread
->>> exists (like copperplate does), which is the reason for the lack of
->>> forwarding IIRC. (ret == -ESRCH && sig) would be required to forward
->>> without breaking such assumption.
->>
->> That still breaks POSIX (what if the user wants to test for a non-rt
->> thread, like this is possible under regular Linux?). Can't copperplate
->> be changed to bypass the wrapper?
->>
-> 
-> Probably, yes.
-> 
+We are trying to move from gcc 4.6 to gcc 4.9 (as part of moving from
+being Debian wheezy based to jessie based).
 
-Looking at cluster_probe, I wonder if there is actually a problem.
-Doesn't that code also run over mercury? Then kill(pid, 0) also targets
-the whole system, not just a set of Xenomai applications. Or do we need
-to ensure that the caller is not migrated to Linux needlessly under
-cobalt? IOW: can that probing happen under RT constraints?
+This has now brought up an unexpected change in behaviour on arm (powerpc
+is fine).  We are getting bus errors with kernel complaints about
+unaligned memory accesses.  Now it is certainly true that we are doing
+some unaligned memory accesses, but on armv7 that is supposed to be
+allowed, as long as the memory is marked as "normal memory".
 
-The same applies for me to the other users of the kill-based probing
-pattern (copperplate/heapobj-pshared.c and copperplate/regd/fs-common.c).
+gcc 4.6 and earlier never generated unaligned accesses as far as I
+understand it, while gcc 4.7 and higher do generate unaligned accesses
+by default on armv7 according to the gcc documentation.
 
-Jan
+Is it expected that the memory in xenomai would not be flagged as normal
+memory (the other options as far as I understand it are device memory
+and strongly ordered memory).
+
+This is with 3.14 kernel and xenomai 2.6.4 with LPAE enabled on a
+Cortex-A15 system.
+
+So same code, same xenomai, same kernel with gcc 4.6 does not see this,
+while with 4.9 it does.  I tried building the application with
+-nno-unaligned-accesses, but I didn't rebuild the libraries that way,
+so that might not be enough.  Really I think it should work fine, since I
+can't see why the pages would be flagged as something other than normal
+memory (unless DMA pages are somehow getting involved, since some of
+this is dealing with network packets being received).
+
+Any ideas where to investigate?
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Len Soirensen
 
