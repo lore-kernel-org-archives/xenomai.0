@@ -1,12 +1,13 @@
 From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Thu, 5 Nov 2015 09:51:59 -0500
-Message-ID: <20151105145159.GK21923@csclub.uwaterloo.ca>
+Date: Thu, 5 Nov 2015 09:57:25 -0500
+Message-ID: <20151105145725.GL21923@csclub.uwaterloo.ca>
 References: <20151105015114.GJ21923@csclub.uwaterloo.ca>
  <20151105110141.GC16314@hermes.click-hack.org>
+ <20151105145159.GK21923@csclub.uwaterloo.ca>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20151105110141.GC16314@hermes.click-hack.org>
+In-Reply-To: <20151105145159.GK21923@csclub.uwaterloo.ca>
 Subject: Re: [Xenomai] ARM bus error due to alignment
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -19,50 +20,20 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Thu, Nov 05, 2015 at 12:01:41PM +0100, Gilles Chanteperdrix wrote:
-> On Wed, Nov 04, 2015 at 08:51:14PM -0500, Lennart Sorensen wrote:
-> > We are trying to move from gcc 4.6 to gcc 4.9 (as part of moving from
-> > being Debian wheezy based to jessie based).
-> > 
-> > This has now brought up an unexpected change in behaviour on arm (powerpc
-> > is fine).  We are getting bus errors with kernel complaints about
-> > unaligned memory accesses.  Now it is certainly true that we are doing
-> > some unaligned memory accesses, but on armv7 that is supposed to be
-> > allowed, as long as the memory is marked as "normal memory".
-> > 
-> > gcc 4.6 and earlier never generated unaligned accesses as far as I
-> > understand it, while gcc 4.7 and higher do generate unaligned accesses
-> > by default on armv7 according to the gcc documentation.
-> > 
-> > Is it expected that the memory in xenomai would not be flagged as normal
-> > memory (the other options as far as I understand it are device memory
-> > and strongly ordered memory).
-> > 
-> > This is with 3.14 kernel and xenomai 2.6.4 with LPAE enabled on a
-> > Cortex-A15 system.
-> > 
-> > So same code, same xenomai, same kernel with gcc 4.6 does not see this,
-> > while with 4.9 it does.  I tried building the application with
-> > -nno-unaligned-accesses, but I didn't rebuild the libraries that way,
-> > so that might not be enough.  Really I think it should work fine, since I
-> > can't see why the pages would be flagged as something other than normal
-> > memory (unless DMA pages are somehow getting involved, since some of
-> > this is dealing with network packets being received).
-> > 
-> > Any ideas where to investigate?
+On Thu, Nov 05, 2015 at 09:51:59AM -0500, Lennart Sorensen wrote:
+> Hmm, I thought I had read that as of 2.6.38 and higher arm systems were
+> supposed to not generate the fault anymore, but maybe I misunderstood
+> it and they meant it sets fixup to enabled by default.
 > 
-> You need some piece of code, somewhere, to program the processor to
-> not get the fault. I think Linux historically set the processor to
-> generate a fault so as to be able to control the behaviour with what
-> is explained in Documentation/arm/mem_alignment, but there is a way
-> to avoid the fault on armv7. Maybe a kernel parameter, maybe you
-> need a more recent version of u-boot.
+> I should check the SCTLR.A flag.
 
-Hmm, I thought I had read that as of 2.6.38 and higher arm systems were
-supposed to not generate the fault anymore, but maybe I misunderstood
-it and they meant it sets fixup to enabled by default.
+Of course the arm docs say it is off by default at reset, so something
+in either u-boot or the kernel seems like it must have to enable it
+explicitly.  Well once I figure out how to read it I guess I will know.
 
-I should check the SCTLR.A flag.
+Of course if the memory happens to be flagged as something other than
+normal memory, then it should also fault.  I wonder if a page used to dma
+data to/from a network driver would be flagged as normal memory or not.
 
 -- 
 Len Sorensen
