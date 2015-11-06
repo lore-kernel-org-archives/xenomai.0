@@ -1,12 +1,12 @@
-References: <75a98ced-93d1-467e-b9ac-61cd71e067c1@THSUMIDEUMSG04P.deu.umi.grp>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <563CC839.307@xenomai.org>
-Date: Fri, 6 Nov 2015 16:33:13 +0100
+Date: Fri, 6 Nov 2015 16:58:40 +0000 (UTC)
+From: Frederik Bayart <frederik_bayart@yahoo.co.uk>
+Message-ID: <1058571681.1464498.1446829121028.JavaMail.yahoo@mail.yahoo.com>
 MIME-Version: 1.0
-In-Reply-To: <75a98ced-93d1-467e-b9ac-61cd71e067c1@THSUMIDEUMSG04P.deu.umi.grp>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Issue with rt_pipe after update
+References: <1058571681.1464498.1446829121028.JavaMail.yahoo.ref@mail.yahoo.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] kernel problem xenomai 2.6.4 - linux 3.8.13
+Reply-To: Frederik Bayart <frederik_bayart@yahoo.co.uk>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,40 +15,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: BECK Fabrice - Contractor <Fabrice.BECK@external.thalesaleniaspace.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
-Cc: NARBONNE Frederic <Frederic.NARBONNE@thalesaleniaspace.com>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/06/2015 04:03 PM, BECK Fabrice - Contractor wrote:
-> Dear Xenomai support,
-> 
-> After a migration from CentOs 6.4 (linux-3.8.13_xenomai-2.6.3) to RHEL 7.1 (linux-3.10.32-xenomai-2.6.4) on a new workstation
-> and update of Xenomai we have transfer rate problems.
-> 
-> On the old machine we managed to get transfer rates of 260 Mbps with our application.
-> On the new machine we are stuck at 78 Mbps with our application.
-> 
-> With some test tool we are able to send at higher rates, so it seems not to be linked to our Ethernet driver.
-> Our application is the same on both machines.
-> 
-> After some preliminary investigation, we suspect a problem with the rt_pipes (as the problems we see are part of the SW using them),
-> yet we don't see anything wrong in the Xenomai configuration.
-> Do you have an idea how we could track down this problem?
-> 
-
-I'm unsure to understand how you came up with such conclusion about
-rt-pipes being involved in an ethernet traffic drop down for your
-application, unless your application somehow relays the network traffic
-via rt-pipes before it reaches the NIC.
-
-Anyway, I would suggest:
-
-1. to pull from the Xenomai 2.6.x maintenance branch, there are fixes
-there not present in 2.6.4, some of which updating the rt-pipe support.
-http://git.xenomai.org/xenomai-2.6.git/
-
-2. check the behavior of your application by looking at
-/proc/xenomai/stat when it runs, particularly the MSW column.
-
--- 
-Philippe.
-
+SGFsbG8sCgpJJ20gdXNpbmcgeGVub21haSAyLjYuNCBvbiBrZXJuZWwgMy44LjEzIChwYXRjaCBp
+cGlwZS1jb3JlLTMuOC4xMy14ODYtNC5wYXRjaCkKCkluIGF0dGFjaG1lbnQgeW91IGZpbmQgdGhl
+IGtlcm5lbCBjb25maWcuCgpXaGVuIEkgYm9vdCB0aGUga2VybmVsIG9uIGEgcmVjZW50IHBjJ3Mg
+KEludGVsKFIpIENvcmUoVE0pIGk1KSwgSSBkb24ndCBnZXQgcHJvYmxlbXMsIGJ1dCBpZiBJIGlu
+c3RhbGwgdGhlIHNhbWUgaW1hZ2Ugb24gYW4gb2xkZXIgcGMsIChJbnRlbChSKSBDb3JlKFRNKSBE
+dW8gQ1BVwqDCoMKgwqDCoCBUMjUwMMKgIEAgMi4wMEdIeiksIEkgZ2V0IHBlcmlvZGljIGtlcm5l
+bCB0cmFjZXMgYWZ0ZXIgYm9vdGluZyB3aXRob3V0IHJ1bm5pbmcgYW55IHJlYWwtdGltZSBwcm9j
+ZXNzIChzZWUgYmVsb3cpLiBJbiB0aGUgZG1lc2cgaW4gYXR0YWNobWVudCwgSSBzZWUgYSBzdGFj
+ayB0cmFjZS4KKElmIEkgYnVpbGQgYSBub3JtYWwgbGludXgga2VybmVsIHdpdGhvdXQgaXBpcGUg
+cGF0Y2gsIEkgZ2V0IG5vIGtlcm5lbCB0cmFjZXMuKQoKSGFzIGFueW9uZSBoYXMgYSBzdWdnZXN0
+aW9uIHdoYXQgY291bGQgZ28gd3JvbmcgPwoKS2luZCByZWdhcmRzLAoKRnJlZGVyaWsKCgpNZXNz
+YWdlIGZyb20gc3lzbG9nZEBhbHNpcG1jcCBhdCBOb3bCoCA2IDE3OjQ4OjAxIC4uLgrCoGtlcm5l
+bDpbwqDCoCA3MS4yMzYwMDZdIEJVRzogc29mdCBsb2NrdXAgLSBDUFUjMCBzdHVjayBmb3IgNDFz
+ISBbc3dhcHBlci8wOjBdCgpNZXNzYWdlIGZyb20gc3lzbG9nZEBhbHNpcG1jcCBhdCBOb3bCoCA2
+IDE3OjQ4OjAxIC4uLgrCoGtlcm5lbDpbwqDCoCA3MS4yMzYwMDZdIEktcGlwZSBkb21haW4gTGlu
+dXgKCk1lc3NhZ2UgZnJvbSBzeXNsb2dkQGFsc2lwbWNwIGF0IE5vdsKgIDYgMTc6NDg6MDEgLi4u
+CsKga2VybmVsOlvCoMKgIDcxLjIzNjAwNl0gUHJvY2VzcyBzd2FwcGVyLzAgKHBpZDogMCwgdGk9
+YzE1YTgwMDAgdGFzaz1jMTViNTI4MCB0YXNrLnRpPWMxNWE4MDAwKQoKTWVzc2FnZSBmcm9tIHN5
+c2xvZ2RAYWxzaXBtY3AgYXQgTm92wqAgNiAxNzo0ODowMSAuLi4KwqBrZXJuZWw6W8KgwqAgNzEu
+MjM2MDA2XSBTdGFjazoKCk1lc3NhZ2UgZnJvbSBzeXNsb2dkQGFsc2lwbWNwIGF0IE5vdsKgIDYg
+MTc6NDg6MDEgLi4uCsKga2VybmVsOlvCoMKgIDcxLjIzNjAwNl0gQ2FsbCBUcmFjZToKCk1lc3Nh
+Z2UgZnJvbSBzeXNsb2dkQGFsc2lwbWNwIGF0IE5vdsKgIDYgMTc6NDg6MDEgLi4uCsKga2VybmVs
+OlvCoMKgIDcxLjIzNjAwNl0gQ29kZTrCoCBCYWQgRUlQIHZhbHVlLgoKTWVzc2FnZSBmcm9tIHN5
+c2xvZ2RAYWxzaXBtY3AgYXQgTm92wqAgNiAxNzo0ODowMSAuLi4KwqBrZXJuZWw6W8KgwqAgNzEu
+MjQwMDAxXSBCVUc6IHNvZnQgbG9ja3VwIC0gQ1BVIzEgc3R1Y2sgZm9yIDQxcyEgW3N3YXBwZXIv
+MTowXQoKTWVzc2FnZSBmcm9tIHN5c2xvZ2RAYWxzaXBtY3AgYXQgTm92wqAgNiAxNzo0ODowMSAu
+Li4KwqBrZXJuZWw6W8KgwqAgNzEuMjQwMDAxXSBJLXBpcGUgZG9tYWluIExpbnV4CgpNZXNzYWdl
+IGZyb20gc3lzbG9nZEBhbHNpcG1jcCBhdCBOb3bCoCA2IDE3OjQ4OjAxIC4uLgrCoGtlcm5lbDpb
+wqDCoCA3MS4yNDAwMDFdIFByb2Nlc3Mgc3dhcHBlci8xIChwaWQ6IDAsIHRpPWRlY2I2MDAwIHRh
+c2s9ZGVjYWE0OTAgdGFzay50aT1kZWNiNjAwMCkKCk1lc3NhZ2UgZnJvbSBzeXNsb2dkQGFsc2lw
+bWNwIGF0IE5vdsKgIDYgMTc6NDg6MDEgLi4uCsKga2VybmVsOlvCoMKgIDcxLjI0MDAwMV0gU3Rh
+Y2s6CgpNZXNzYWdlIGZyb20gc3lzbG9nZEBhbHNpcG1jcCBhdCBOb3bCoCA2IDE3OjQ4OjAxIC4u
+LgrCoGtlcm5lbDpbwqDCoCA3MS4yNDAwMDFdIENhbGwgVHJhY2U6CgpNZXNzYWdlIGZyb20gc3lz
+bG9nZEBhbHNpcG1jcCBhdCBOb3bCoCA2IDE3OjQ4OjAxIC4uLgrCoGtlcm5lbDpbwqDCoCA3MS4y
+NDAwMDFdIENvZGU6wqAgQmFkIEVJUCB2YWx1ZS4KCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAt
+LS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6
+IGNvbmZpZy0zLjguMTNfeDg2LXhlbm8tMi42LjRfM3AuMC4zClR5cGU6IGFwcGxpY2F0aW9uL29j
+dGV0LXN0cmVhbQpTaXplOiA5OTY1MyBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0
+dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1MTEwNi8y
+ZmI5YjM0NC9hdHRhY2htZW50Lm9iaj4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0t
+LS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogZG1lc2cu
+bG9nClR5cGU6IHRleHQveC1sb2cKU2l6ZTogNDI1MTUgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJs
+ZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMv
+MjAxNTExMDYvMmZiOWIzNDQvYXR0YWNobWVudC5iaW4+Cg==
