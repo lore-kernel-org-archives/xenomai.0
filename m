@@ -1,21 +1,10 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Thu, 5 Nov 2015 17:08:51 -0500
-Message-ID: <20151105220851.GU21923@csclub.uwaterloo.ca>
-References: <20151105151544.GD16314@hermes.click-hack.org>
- <20151105152427.GN21923@csclub.uwaterloo.ca>
- <20151105155549.GE16314@hermes.click-hack.org>
- <20151105161902.GO21923@csclub.uwaterloo.ca>
- <20151105162514.GF16314@hermes.click-hack.org>
- <20151105165750.GP21923@csclub.uwaterloo.ca>
- <20151105171419.GG16314@hermes.click-hack.org>
- <20151105172452.GQ21923@csclub.uwaterloo.ca>
- <20151105175225.GR21923@csclub.uwaterloo.ca>
- <20151105214042.GE31487@hermes.click-hack.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20151105214042.GE31487@hermes.click-hack.org>
-Subject: Re: [Xenomai] ARM bus error due to alignment
+From: Henning Schild <henning.schild@siemens.com>
+Date: Fri,  6 Nov 2015 11:33:02 +0100
+Message-Id: <1446805982-11899-1-git-send-email-henning.schild@siemens.com>
+In-Reply-To: <20151105183035.GH16314@hermes.click-hack.org>
+References: <20151105183035.GH16314@hermes.click-hack.org>
+Subject: [Xenomai] [PATCHv2] scripts: increase number of Xs in mktemp
+	template
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,20 +13,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-On Thu, Nov 05, 2015 at 10:40:42PM +0100, Gilles Chanteperdrix wrote:
-> On Thu, Nov 05, 2015 at 12:52:25PM -0500, Lennart Sorensen wrote:
-> > I wish I could figure out why the backtraces aren't working, since they
-> > are such a nice debug feature to have.
-> 
-> You can try disabling unwinding, this should enable frame pointers
-> and maybe make the backtraces more reliable.
+In a5cfe9c9a8dbcc094b0c5043b21fa6cde7fc42e5 the use of mktemp was
+introduces. There are version of mktemp that are ok with less than six
+Xs, but POSIX requires exactly six.
+http://pubs.opengroup.org/onlinepubs/9699919799/functions/mkstemp.html
 
-I can try that.  I always thought unwinding was part of making backtraces
-work.  Not sure why I thought so.
+Signed-off-by: Henning Schild <henning.schild@siemens.com>
+---
+ scripts/prepare-kernel.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
+index 333d11c..b75acf9 100755
+--- a/scripts/prepare-kernel.sh
++++ b/scripts/prepare-kernel.sh
+@@ -238,7 +238,7 @@ fi
+ # Create an empty output patch file, and initialize the temporary tree.
+ if test "x$output_patch" != "x"; then
+ 
+-    temp_tree=`mktemp -d prepare-kernel-XXX --tmpdir`
++    temp_tree=`mktemp -d prepare-kernel-XXXXXX --tmpdir`
+     if [ $? -ne 0 ]; then
+ 	echo Temporary directory could not be created.
+ 	exit 1
 -- 
-Len Sorensen
+2.4.10
+
 
