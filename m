@@ -1,10 +1,21 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Sat, 17 Oct 2015 17:06:54 +0200
-Message-ID: <1589576.3rUbCfY1nK@indiana>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Fri, 6 Nov 2015 14:25:57 -0500
+Message-ID: <20151106192557.GV21923@csclub.uwaterloo.ca>
+References: <20151105152427.GN21923@csclub.uwaterloo.ca>
+ <20151105155549.GE16314@hermes.click-hack.org>
+ <20151105161902.GO21923@csclub.uwaterloo.ca>
+ <20151105162514.GF16314@hermes.click-hack.org>
+ <20151105165750.GP21923@csclub.uwaterloo.ca>
+ <20151105171419.GG16314@hermes.click-hack.org>
+ <20151105172452.GQ21923@csclub.uwaterloo.ca>
+ <20151105175225.GR21923@csclub.uwaterloo.ca>
+ <20151105214042.GE31487@hermes.click-hack.org>
+ <20151105220851.GU21923@csclub.uwaterloo.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] ARM64 support
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20151105220851.GU21923@csclub.uwaterloo.ca>
+Subject: Re: [Xenomai] ARM bus error due to alignment
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,21 +24,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-SGksCgpJIGhhdmUgYmVlbiBzZWFyY2hpbmcgb24gdGhlIHdlYiBpZiBYZW5vbWFpIHdvcmtzIGlu
-IEFSTTY0IG9yIG5vdC4gSSBoYXZlIApmb3VuZCBzb21lIG1haWxzIG9uIHRoZSBsaXN0IGluIG1h
-cmNoLCBidXQgSSBkb24ndCBrbm93IGlmIGl0J3Mgc3VwcG9ydGluZyBub3cgCm9yIG5vdC4KClBs
-ZWFzZSwgY291bGQgeW91IGV4cGxhaW4gdGhlIHN0YXR1cyBvZiB0aGUgcG9ydD8KCkJlc3QgcmVn
-YXJkcywKCkxlb3BvbGQKCgpbMV0gaHR0cHM6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21h
-aS8yMDE1LU1hcmNoLzAzMzcwMi5odG1sCgotLSAKLS0KTGludXggVXNlciAxNTI2OTIgICAgIEdQ
-RzogMDVGNEE3QTk0OUEyRDlBQQpDYXRhbG9uaWEKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLQpBOiBCZWNhdXNlIGl0IG1lc3NlcyB1cCB0aGUgb3JkZXIgaW4gd2hpY2ggcGVv
-cGxlIG5vcm1hbGx5IHJlYWQgdGV4dC4KUTogV2h5IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBiYWQg
-dGhpbmc/CkE6IFRvcC1wb3N0aW5nLgpROiBXaGF0IGlzIHRoZSBtb3N0IGFubm95aW5nIHRoaW5n
-IGluIGUtbWFpbD8KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9u
-LXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBl
-OiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDgxOSBieXRlcwpEZXNjOiBUaGlzIGlz
-IGEgZGlnaXRhbGx5IHNpZ25lZCBtZXNzYWdlIHBhcnQuClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9y
-Zy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1MTAxNy9lZTMwMjA2NC9hdHRhY2ht
-ZW50LnNpZz4K
+On Thu, Nov 05, 2015 at 05:08:51PM -0500, Lennart Sorensen wrote:
+> On Thu, Nov 05, 2015 at 10:40:42PM +0100, Gilles Chanteperdrix wrote:
+> > On Thu, Nov 05, 2015 at 12:52:25PM -0500, Lennart Sorensen wrote:
+> > > I wish I could figure out why the backtraces aren't working, since they
+> > > are such a nice debug feature to have.
+> > 
+> > You can try disabling unwinding, this should enable frame pointers
+> > and maybe make the backtraces more reliable.
+> 
+> I can try that.  I always thought unwinding was part of making backtraces
+> work.  Not sure why I thought so.
+
+So I removed H_DMA from the alloc cal and the alignment problem went away.
+Never actually did need the DMA flag in the case anyhow so it shouldn't
+have been there in the first place.  Now while poking at it, I did find
+that using H_NONCACHED instead causes a NULL pointer crash in the kernel,
+which seems like a bug (how can user space making a system call cause
+a NULL pointer dereference in the kernel unless there is a bug?).
+With 0 for the flags, it just works.
+
+-- 
+Len Sorensen
+
