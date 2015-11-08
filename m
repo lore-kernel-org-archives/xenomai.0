@@ -1,6 +1,6 @@
-Date: Mon, 9 Nov 2015 00:09:59 +0100
+Date: Mon, 9 Nov 2015 00:22:02 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151108230959.GV1798@hermes.click-hack.org>
+Message-ID: <20151108232202.GW1798@hermes.click-hack.org>
 References: <BLU436-SMTP73BE7B77324E5FEB445F80F0290@phx.gbl>
  <BLU436-SMTP6F35FE1B18A156B3D57E4F0160@phx.gbl>
  <20151108084205.GG1798@hermes.click-hack.org>
@@ -277,11 +277,6 @@ is
 > Maybe I was not expecting the doc to be structured in a coding language w=
 ay.
 > But that's ok, now I know it, the doc make sense :)
-
-Well, I am sorry, I am unable to communicate in a language where the
-(universal) rules of logic do not apply. I suspect very few people
-can.
-
 >=20
 > the doc focus on the handle_fasteoi_irq (and briefly handle_edge_irq),=20
 > there are other flow handler that could use some more porting details:
@@ -296,100 +291,21 @@ can.
 > 			desc->ipipe_ack =3D __ipipe_ack_percpu_irq;
 > 			desc->ipipe_end =3D __ipipe_nop_irq;
 > 		}
->=20
-> In the RPI2 case, it needs to have two chipirq, one for the=20
-> handle_percpu_devid_irq and one for the handle_level_irq.
->=20
-> reading the doc, I have assumed (wrongly) that the handle_level_irq=20
-> could also be using the same chipirq than the handle_percpu_devid_irq=20
-> since the doc did not say otherwise.
->=20
-> For the RPI2, both handle_level_irq and handle_percpu_devid_irq are=20
-> using the same chipirq already so when I ported ipipe to it, nothing was =
 
-> mentioned for handle_percpu_devid_irq which I learned by reading the=20
-> code (see copy past above).
->=20
-> So the part of the doc that says: "if the flow handler is=20
-> =93handle_edge_irq=94, and the systems locks up when the first interrupt =
+Ironically, the aim of that piece of code is to solve a problem not
+unlike yours: when an irqchip is shared between irqs using
+handle_fasteoi_irq and handle_percpu_irq (which I believe is
+the case on some cortex A9), we want the I-pipe to use
+irq_hold/irq_release, in order to avoid calling mask/unmask and
+locking the interrupts.
 
-> happens, try replacing =93handle_edge_irq=94 with =93handle_level_irq=94.
->=20
-> could use some additional clarification as follow: "..., try replacing=20
-> =93handle_edge_irq=94 with =93handle_level_irq=94 since those should not =
-have=20
-> any call to ipipe_lock_irq/ipipe_unlock_irq in their respective irqchip=20
-> handler irq_mask/irq_unmask".
->=20
-> Also, a mention to handle_percpu_devid_irq could be added as follow:
-> "If the flow handler is =93handle_fasteoi_irq=94  or=20
-> "handle_percpu_devid_irq" or "handle_percpu_irq", the implementation of=20
-> the =93struct irq_chip=94 members should be modified".
+But it works both way, handle_percpu_irq can also share an
+irqchip with handle_level_irq and use the mask/unmask. You just have
+to not put an ipipe_lock/unlock in mask/unmask.
 
-the struct irq_chip CAN be modified. The code posted above shows
-that the I-pipe also supports the case where you do not implement
-irq_hold/irq_release. If you implement them, you can put an
-ipipe_lock/unlock in mask/unmask. If you don't, then you can't.
-
->=20
-> Just a suggestion.
-> I just fell into a crack and I am proposing a change so that others=20
-> don't do the same mistake.
->=20
->=20
-> >>
-> >> Just to confirm, you were saying "it should not call irqchip->mask, but
-> >> irqchip->ipipe_ack".
-> >> But for handle_level_irq the mask and the ack are called.
-> >> Is that correct?
-> >
-> > The answer is in the implementation of ipipe_ack for level
-> > interrupts. It calls mask_ack_irq.
-> >
-> Correct, so it does call mask, but you said it does not earlier.
-
-I meant that the mask callback is not called directly. The mask
-callback being called directly would be the sign that the I-pipe
-somehow does not do its work of interposing in the interruption
-handling, which can happen during a port for a variety of reasons.
-
->=20
-> >>
-> >> I think understand what my mistake was.
-> >> I have not tested it yet but without the irq_lock, it should call the
-> >> handler.
-> >> Thank you Gilles again!
-> >
-> > You are welcome. I suggest however to take the time to read the
-> > documentation completely from beginning to end, before jumping
-> > head-on in the port, only reading parts of it, and wasting time
-> > stupidly because you only read part of a sentence.
-> >
-> It was not a waste of time to me, I got the opportunity to look at the=20
-> internal of the ipipe code to understand what my problem was.
-> I see this has a learning exercise (at spare time).
->=20
-> The code is well written.
-> Writing a porting guide is difficult because it does not cover newer=20
-> targets implementation. The document could still evolve with user's=20
-> input. After all, I think the goal is to encourage users to create more=20
-> port.
-
-Writing a porting guide is easy. Keeping it up to date is what's
-hard. When that guide was first written, I had never ported the
-I-pipe to any ARM board which used handle_percpu_devid_irq, I am not
-even sure the kernel used it on any ARM platform.
-
-Anyway, I am interested by your contribution, but as it is, I am
-afraid you still misunderstood.
-
->=20
-> Side note: with two irqchip (one for handle_level_irq that does not=20
-> lock_irq in mask and the one for handle_percpu_devid_irq that does the=20
-> lock_irq in mask()) it does work.
-
-You can probably have only one irqchip and not bother to insert the
-calls to ipipe_lock/unlock_irq.
+The idea is that the only case where you need to modify mask/unmask
+is with handle_fasteoi_irq. Other than that, don't touch anything,
+and it should just work.
 
 --=20
 					    Gilles.
