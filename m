@@ -1,7 +1,7 @@
-Message-ID: <BLU437-SMTP10AC44E8AA1A7FF0832B3BF0150@phx.gbl>
-References: <BLU436-SMTP73BE7B77324E5FEB445F80F0290@phx.gbl>
- <BLU436-SMTP6F35FE1B18A156B3D57E4F0160@phx.gbl>
- <20151108084205.GG1798@hermes.click-hack.org>
+Date: Mon, 9 Nov 2015 12:45:31 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151109114531.GA1563@hermes.click-hack.org>
+References: <20151108084205.GG1798@hermes.click-hack.org>
  <BLU436-SMTP73E9091DCDE4C2D26FB175F0160@phx.gbl>
  <20151108171031.GR1798@hermes.click-hack.org>
  <BLU436-SMTP122F0286E6E48736DB2C3A6F0160@phx.gbl>
@@ -9,13 +9,12 @@ References: <BLU436-SMTP73BE7B77324E5FEB445F80F0290@phx.gbl>
  <BLU436-SMTP502B67C2B024CF139D04DEF0160@phx.gbl>
  <20151108174512.GT1798@hermes.click-hack.org>
  <BLU436-SMTP32474C5F5180D497EB0B7CF0160@phx.gbl>
- <20151108232202.GW1798@hermes.click-hack.org>
-From: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
-Date: Sun, 8 Nov 2015 16:56:32 -0800
+ <20151108230959.GV1798@hermes.click-hack.org>
+ <BLU437-SMTP73704258277408A0F2C238F0150@phx.gbl>
 MIME-Version: 1.0
-In-Reply-To: <20151108232202.GW1798@hermes.click-hack.org>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BLU437-SMTP73704258277408A0F2C238F0150@phx.gbl>
 Subject: Re: [Xenomai] Support for Raspberry PI 2 B
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -25,300 +24,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
 Cc: xenomai@xenomai.org
 
-On 15-11-08 03:22 PM=2C Gilles Chanteperdrix wrote:
-> On Sun=2C Nov 08=2C 2015 at 01:47:02PM -0800=2C Mathieu Rondonneau wrote:
->> On 15-11-08 09:45 AM=2C Gilles Chanteperdrix wrote:
->>> On Sun=2C Nov 08=2C 2015 at 09:36:16AM -0800=2C Mathieu Rondonneau wrot=
-e:
->>>> On 15-11-08 09:26 AM=2C Gilles Chanteperdrix wrote:
->>>>> On Sun=2C Nov 08=2C 2015 at 09:20:47AM -0800=2C Mathieu Rondonneau wr=
-ote:
->>>>>> On 15-11-08 09:10 AM=2C Gilles Chanteperdrix wrote:
->>>>>>> On Sun=2C Nov 08=2C 2015 at 09:04:38AM -0800=2C Mathieu Rondonneau =
-wrote:
->>>>>>>> On 15-11-08 12:42 AM=2C Gilles Chanteperdrix wrote:
->>>>>>>>> On Sat=2C Nov 07=2C 2015 at 09:55:48PM -0800=2C Mathieu Rondonnea=
-u wrote:
->>>>>>>>>> On 15-11-04 10:08 PM=2C Mathieu Rondonneau wrote:
->>>>>>>>>>> On 15-11-04 04:51 PM=2C Mathieu Rondonneau wrote:
->>>>>>>>>>>> On 15-11-03 11:04 PM=2C Gilles Chanteperdrix wrote:
->>>>>>>>>>>>> On Tue=2C Nov 03=2C 2015 at 07:18:37PM -0800=2C Mathieu Rondo=
-nneau wrote:
->>>>>>>>>>>>>> On 15-11-02 07:15 AM=2C Philippe Gerum wrote:
->>>>>>>>>>>>>>> On 11/02/2015 06:23 AM=2C Mathieu Rondonneau wrote:
->>>>>>>>>>>>>>>> On 15-11-01 07:21 PM=2C Mathieu Rondonneau wrote:
->>>>>>>>>>>>>>>>> On 15-11-01 06:58 PM=2C Mathieu Rondonneau wrote:
->>>>>>>>>>>>>>>>>> On 15-10-31 08:58 PM=2C Mathieu Rondonneau wrote:
->>>>>>>>>>>>>>>>>>> Hi=2C
->>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>> irq handlers registered with devm_request_threaded_irq =
-does not
->>>>>>>>>>>>>>>>>>> get
->>>>>>>>>>>>>>>>>>> triggered when interrupt fires.
->>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>> The mmc driver uses this (can not load the rootfs).
->>>>>>>>>>>>>>>>>>> Only the IPIPE patch is enabled.
->>>>>>>>>>>>>>>>>>> the armctrl chipirq is triggering the .ack handler inst=
-ead so the
->>>>>>>>>>>>>>>>>>> interrupt is happening.
->>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>> Any suggestion on where I should look? how is this supp=
-orted by
->>>>>>>>>>>>>>>>>>> the
->>>>>>>>>>>>>>>>>>> ipipe layer?
->>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>> Thanks=2C
->>>>>>>>>>>>>>>>>>> -Mathieu
->>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>> I think I might have answered my own question.
->>>>>>>>>>>>>>>>>> Looks like I need to use ipipe_request_irq() instead.
->>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>> Regards=2C
->>>>>>>>>>>>>>>>>> -Mathieu
->>>>>>>>>>>>>>>>> mmmm it is not true=2C it seems we still need a
->>>>>>>>>>>>>>>>> ipipe_request_threaded_irq() to call the ackfn=2C put the=
- handler in
->>>>>>>>>>>>>>>>> the
->>>>>>>>>>>>>>>>> queue and wake up the thread once handler is executed. Or=
- user
->>>>>>>>>>>>>>>>> will have
->>>>>>>>>>>>>>>>> to move this functionality into their driver's IRQ handle=
-r.
->>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>> It strangely looks like ipipe_request_irq's idea is simil=
-ar to what
->>>>>>>>>>>>>>>>> request_threaded_irq is already doing (delaying IRQ proce=
-ss later).
->>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>> -Mathieu
->>>>>>>>>>>>>>>> Looks like my bigger problem is that the handler_level_irq=
- is not
->>>>>>>>>>>>>>>> called. Only the timer handler is called (handler_percpu_d=
-evid_irq).
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> Which may mean that the regular IRQ top half for that inter=
-rupt source
->>>>>>>>>>>>>>> is not connected to the pipeline. You may want to check whe=
-ther the
->>>>>>>>>>>>>>> irqchip handling that device's IRQs has been made aware of =
-the
->>>>>>>>>>>>>>> interrupt
->>>>>>>>>>>>>>> pipeline.
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> Thanks for replying Philippe=2C
->>>>>>>>>>>>>> This is the think=2C I did change the arch_irq_default_handl=
-er to call
->>>>>>>>>>>>>> the
->>>>>>>>>>>>>> __ipipe_grab_irq and __ipipe_grab_ipi.
->>>>>>>>>>>>>> Is that what you are referring to when you say "interrupt so=
-urce is not
->>>>>>>>>>>>>> connected to the pipile"=2C that's what __ipipe_grab_xxx doe=
-s isn't it?
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> Obviously I am still missing something.
->>>>>>>>>>>>>> If I use irq_set_chained_handler in the driver then the hand=
-ler gets
->>>>>>>>>>>>>> called but it's just replacing the handler_irq by the driver=
- one.
->>>>>>>>>>>>>> When I use request_irq then it does not call my handler (the
->>>>>>>>>>>>>> action.handler one).
->>>>>>>>>>>>>> I will keep looking.
->>>>>>>>>>>>>
->>>>>>>>>>>>> This is explained here:
->>>>>>>>>>>>> http://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-n=
-ew-arm-soc/#GPIOs_as_interrupt_sources
->>>>>>>>>>>>>
->>>>>>>>>>>>>
->>>>>>>>>>>>> and here:
->>>>>>>>>>>>> http://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-n=
-ew-arm-soc/#CONFIG_MULTI_IRQ_HANDLER
->>>>>>>>>>>>>
->>>>>>>>>>>>>
->>>>>>>>>>>>>
->>>>>>>>>>>>> Chained handlers have to call ipipe_handle_demuxed_irq instea=
-d of
->>>>>>>>>>>>> generic_handle_irq.
->>>>>>>>>>>>> And the arch irq handler has to call ipipe_handle_multi_irq o=
-r
->>>>>>>>>>>>> ipipe_handle_multi_ipi instead of handle_IRQ
->>>>>>>>>>>>>
->>>>>>>>>>>>
->>>>>>>>>>>> Thanks Gilles for the pointers=2C
->>>>>>>>>>>> MULTI_IRQ_HANDLER is not enabled for RPI2 (so I did not look a=
-t the
->>>>>>>>>>>> multi_irq_handler section)=2C is it a requirement for the ipip=
-e patch to
->>>>>>>>>>>> work?
->>>>>>>>>>>>
->>>>>>>>>>>> For GPIO I got it to work=2C but it is easier to me because th=
-ey have
->>>>>>>>>>>> their own irqchip.
->>>>>>>>>>>> It is the arch irq handler that cause me trouble.
->>>>>>>>>>>>
->>>>>>>>>>>> Maybe I just have to enable MULTI_IRQ_HANDLER.
->>>>>>>>>>>> I will play around with it.
->>>>>>>>>>>>
->>>>>>>>>>>> Thanks again for your feedback=2C it helps=2C
->>>>>>>>>>>> Regards=2C
->>>>>>>>>>>> -Mathieu
->>>>>>>>>>>>
->>>>>>>>>>>>
->>>>>>>>>>> Also confirming that the ipipe_handler_multi_irq and
->>>>>>>>>>> ipipe_handler_multi_ipi are called properly.
->>>>>>>>>>> so it looks like the arch irq handler is working as expected.
->>>>>>>>>>>
->>>>>>>>>>> it is the handle_level_irq that is not called properly when I u=
-se the
->>>>>>>>>>> request_irq in the driver.
->>>>>>>>>>> the desc->irq_data.chip->irq_ack is called properly but not the
->>>>>>>>>>> irqaction->handler (that is the handler of my driver) that shou=
-ld have
->>>>>>>>>>> been triggered by handle_level_irq.
->>>>>>>>>>>
->>>>>>>>>>> So I think my problem is that handle_level_irq() is not called.
->>>>>>>>>>> if I register my driver handler with irq_set_chained_handler th=
-en
->>>>>>>>>>> ipipe_handler_multi_irq is still called=2C but the
->>>>>>>>>>> desc->irq_data.chip->irq_ack does not get called and my driver =
-handle
->>>>>>>>>>> gets called properly.
->>>>>>>>>>> In this case=2C the ipipe is bypassed it seems since if I under=
-stand
->>>>>>>>>>> correctly=2C the irq_ack is still expected to trigger.
->>>>>>>>>>>
->>>>>>>>>>> Maybe I am missing a ipipe_handle_demuxed_irq call in an interr=
-upt
->>>>>>>>>>> handler that gets called before my driver interrupt handler get=
-s a
->>>>>>>>>>> chance to get called.
->>>>>>>>>>>
->>>>>>>>>>> I have to look at what interrupt happens before mine.
->>>>>>>>>>>
->>>>>>>>>>> -Mathieu
->>>>>>>>>>
->>>>>>>>>> more info:
->>>>>>>>>> 1) interrupt (lets say #I) triggers=2C the ipipe_dispatch_irq ca=
-lls the
->>>>>>>>>> irqchip->mask() which calls ipipe_lock_irq (IPIPE_LOCK_FLAG is n=
-ow
->>>>>>>>>> set).
->>>>>>>>>
->>>>>>>>> it should not call irqchip->mask=2C but irqchip->ipipe_ack=2C whi=
-ch
->>>>>>>>> should not call ipipe_lock_irq. See for instance the documentatio=
-n
->>>>>>>>> about fasteoi irq:
->>>>>>>>> http://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-a=
-rm-soc/#flow_handler
->>>>>>>>>
->>>>>>>>
->>>>>>>> Gilles=2C thanks again for you response=2C
->>>>>>>> the code (and execution path observed) does not seem to match with=
- what
->>>>>>>> you are saying (please don't take this the wrong way :))=2C please=
- help
->>>>>>>> clarifying. See explanation below:
->>>>>>>>
->>>>>>>>      From the doc:
->>>>>>>> "the irq_mask handler should call ipipe_lock_irq before accessing =
-the
->>>>>>>> interrupt controller registers"
->>>>>>>> So I did put a ipipe_lock_irq in the irq_mask.
->>>>>>>
->>>>>>> The documentation also says:
->>>>>>> "If the flow handler is =93handle_fasteoi_irq=94 the implementation=
- of
->>>>>>> the =93struct irq_chip=94 members should be modified:"
->>>>>>> and
->>>>>>>      an irq_hold handler should be added (when CONFIG_IPIPE is enab=
-led)
->>>>>>>      having the same effect as the irq_mask handler (but without th=
-e
->>>>>>>      call to ipipe_lock_irq)=2C and the irq_eoi handler.
->>>>>>>
->>>>>>> In which case the irq_hold handler is called upon handling the
->>>>>>> interrupt.
->>>>>>>
->>>>>>> You can not just apply half of what the documentation says and hope
->>>>>>> to have a working system.
->>>>>>>
->>>>>>
->>>>>> But I don't use handle_fasteoi_irq=2C I use handle_level_irq.
->>>>>
->>>>> Exactly my point.
->>>>>
->>>>
->>>> ok so you are saying=2C that for handle_level_irq=2C do not add the
->>>> ipipe_lock_irq in the irq_mask?
->>>> Can you confirm this?
->>>> Does it mean for handle_level_irq=2C the irq_hold and irq_release are =
-not
->>>> needed as well.
->>>> Ok this is the part I did not understood from the doc then. I think th=
-is
->>>> could be clarified in the doc. (more clarification does not hurt).
->>>
->>> The doc looks clear enough to me. It says:
->>>
->>> if condition=2C then
->>>      do 1
->>>      do 2
->>>      do 3
->>>
->>> if condition is not true=2C there is no reason to do 1=2C 2=2C or 3.
->>>
->>> perhaps you want me to add
->>>
->>> else
->>>      do nothing
->>> ?
->>>
->>> As a C programmer=2C do you put=2C
->>>       else
->>> 	=3B
->>> To all your ifs with no else ?
->>>
->>
->> Maybe I was not expecting the doc to be structured in a coding language =
-way.
->> But that's ok=2C now I know it=2C the doc make sense :)
->>
->> the doc focus on the handle_fasteoi_irq (and briefly handle_edge_irq)=2C
->> there are other flow handler that could use some more porting details:
->>
->> if (handle =3D=3D handle_percpu_irq ||
->> 	handle =3D=3D handle_percpu_devid_irq) {
->> 	if (irq_desc_get_chip(desc) &&
->> 		irq_desc_get_chip(desc)->irq_hold) {
->> 			desc->ipipe_ack =3D __ipipe_ack_fasteoi_irq=3B
->> 			desc->ipipe_end =3D __ipipe_end_fasteoi_irq=3B
->> 		} else {
->> 			desc->ipipe_ack =3D __ipipe_ack_percpu_irq=3B
->> 			desc->ipipe_end =3D __ipipe_nop_irq=3B
->> 		}
->
-> Ironically=2C the aim of that piece of code is to solve a problem not
-> unlike yours: when an irqchip is shared between irqs using
-> handle_fasteoi_irq and handle_percpu_irq (which I believe is
-> the case on some cortex A9)=2C we want the I-pipe to use
-> irq_hold/irq_release=2C in order to avoid calling mask/unmask and
-> locking the interrupts.
->
-> But it works both way=2C handle_percpu_irq can also share an
-> irqchip with handle_level_irq and use the mask/unmask. You just have
-> to not put an ipipe_lock/unlock in mask/unmask.
->
-> The idea is that the only case where you need to modify mask/unmask
-> is with handle_fasteoi_irq. Other than that=2C don't touch anything=2C
-> and it should just work.
->
+On Sun, Nov 08, 2015 at 04:54:39PM -0800, Mathieu Rondonneau wrote:
+> > Well, I am sorry, I am unable to communicate in a language where the
+> > (universal) rules of logic do not apply. I suspect very few people
+> > can.
+> >
+> I don't think it is about that.
 
-Hi Gilles=2C
-Your reply summarizes it all=2C I would encourage you to add it to the doc.
-Thanks again for all your patience and taking the time to reply.
+It is exactly about that. The doc says "if the handler is
+handle_fasteoi_irq, then add irq_hold and put an ipipe_lock in the
+mask/unmask callbacks". Applying partially the "then" clause, when
+the condition is false (when the handler is not handle_fasteoi_irq)
+is an error of logic.
 
+> What i am saying is the doc does not need to follow the coding structure.
+> I think what I take from it (and I tend to forget) is that the doc is 
+> for specific port and does not mean to be generic.
+
+I have tried to make everything for the ARM architecture so that the
+work of porting the I-pipe can be generic. So, having a
+documentation that is not generic would be a failure.
+
+> > Anyway, I am interested by your contribution, but as it is, I am
+> > afraid you still misunderstood.
+> >
+> Please explain one more time, I really would like to understand :)
+> I like what you guys are doing.
+> the RPI2 uses handle_percpu_devid_irq for the local 
+> timers/counters/IPI/videocore.
+> 
+> Once I get something working, I definitely will send you a patch for you 
+> guys to review.
+
+I was talking about your contribution to the documentation. But of
+course, the contribution of the port would be welcome, but this goes
+without saying, since the documentations says it:
+http://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc/#Publishing_your_modifications
+
+> 
+> >>
+> >> Side note: with two irqchip (one for handle_level_irq that does not
+> >> lock_irq in mask and the one for handle_percpu_devid_irq that does the
+> >> lock_irq in mask()) it does work.
+> >
+> > You can probably have only one irqchip and not bother to insert the
+> > calls to ipipe_lock/unlock_irq.
+> 
+> Ok, this is new peace of information, that would work too. But then, 
+> when one needs a lock_irq in mask and one does not?
+> (it is the same question as 2 comments above.
+
+As the doc says, when the handler is handle_fasteoi_irq.
+
+-- 
+					    Gilles.
+https://click-hack.org
 
