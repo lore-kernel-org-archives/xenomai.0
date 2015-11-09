@@ -1,4 +1,4 @@
-Message-ID: <BLU437-SMTP73704258277408A0F2C238F0150@phx.gbl>
+Message-ID: <BLU437-SMTP10AC44E8AA1A7FF0832B3BF0150@phx.gbl>
 References: <BLU436-SMTP73BE7B77324E5FEB445F80F0290@phx.gbl>
  <BLU436-SMTP6F35FE1B18A156B3D57E4F0160@phx.gbl>
  <20151108084205.GG1798@hermes.click-hack.org>
@@ -9,11 +9,11 @@ References: <BLU436-SMTP73BE7B77324E5FEB445F80F0290@phx.gbl>
  <BLU436-SMTP502B67C2B024CF139D04DEF0160@phx.gbl>
  <20151108174512.GT1798@hermes.click-hack.org>
  <BLU436-SMTP32474C5F5180D497EB0B7CF0160@phx.gbl>
- <20151108230959.GV1798@hermes.click-hack.org>
+ <20151108232202.GW1798@hermes.click-hack.org>
 From: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
-Date: Sun, 8 Nov 2015 16:54:39 -0800
+Date: Sun, 8 Nov 2015 16:56:32 -0800
 MIME-Version: 1.0
-In-Reply-To: <20151108230959.GV1798@hermes.click-hack.org>
+In-Reply-To: <20151108232202.GW1798@hermes.click-hack.org>
 Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] Support for Raspberry PI 2 B
@@ -28,7 +28,7 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 15-11-08 03:09 PM=2C Gilles Chanteperdrix wrote:
+On 15-11-08 03:22 PM=2C Gilles Chanteperdrix wrote:
 > On Sun=2C Nov 08=2C 2015 at 01:47:02PM -0800=2C Mathieu Rondonneau wrote:
 >> On 15-11-08 09:45 AM=2C Gilles Chanteperdrix wrote:
 >>> On Sun=2C Nov 08=2C 2015 at 09:36:16AM -0800=2C Mathieu Rondonneau wrot=
@@ -286,31 +286,6 @@ is
 >> Maybe I was not expecting the doc to be structured in a coding language =
 way.
 >> But that's ok=2C now I know it=2C the doc make sense :)
->
-> Well=2C I am sorry=2C I am unable to communicate in a language where the
-> (universal) rules of logic do not apply. I suspect very few people
-> can.
->
-I don't think it is about that.
-What i am saying is the doc does not need to follow the coding structure.
-I think what I take from it (and I tend to forget) is that the doc is=20
-for specific port and does not mean to be generic.
-And like you said it is difficult to maintain such doc.
-
-Maybe a solution would be to have one doc per target. For example=2C when=20
-people propose a port=2C get them to also produce a one page document to=20
-add on to your website.
-This would create a database of port for different targets.
-Users would be then able to browse the port document that matches his=20
-target as much as possible.
-
-That way=2C the port's document will be simpler=2C and only focus on the=20
-target changes (one doc per port).
-
-I think that could help.
-The port's doc won't need to change unless fixes are added to that=20
-specific target's port.
-
 >>
 >> the doc focus on the handle_fasteoi_irq (and briefly handle_edge_irq)=2C
 >> there are other flow handler that could use some more porting details:
@@ -325,131 +300,25 @@ specific target's port.
 >> 			desc->ipipe_ack =3D __ipipe_ack_percpu_irq=3B
 >> 			desc->ipipe_end =3D __ipipe_nop_irq=3B
 >> 		}
->>
->> In the RPI2 case=2C it needs to have two chipirq=2C one for the
->> handle_percpu_devid_irq and one for the handle_level_irq.
->>
->> reading the doc=2C I have assumed (wrongly) that the handle_level_irq
->> could also be using the same chipirq than the handle_percpu_devid_irq
->> since the doc did not say otherwise.
->>
->> For the RPI2=2C both handle_level_irq and handle_percpu_devid_irq are
->> using the same chipirq already so when I ported ipipe to it=2C nothing w=
-as
->> mentioned for handle_percpu_devid_irq which I learned by reading the
->> code (see copy past above).
->>
->> So the part of the doc that says: "if the flow handler is
->> =93handle_edge_irq=94=2C and the systems locks up when the first interru=
-pt
->> happens=2C try replacing =93handle_edge_irq=94 with =93handle_level_irq=
-=94.
->>
->> could use some additional clarification as follow: "...=2C try replacing
->> =93handle_edge_irq=94 with =93handle_level_irq=94 since those should not=
- have
->> any call to ipipe_lock_irq/ipipe_unlock_irq in their respective irqchip
->> handler irq_mask/irq_unmask".
->>
->> Also=2C a mention to handle_percpu_devid_irq could be added as follow:
->> "If the flow handler is =93handle_fasteoi_irq=94  or
->> "handle_percpu_devid_irq" or "handle_percpu_irq"=2C the implementation o=
-f
->> the =93struct irq_chip=94 members should be modified".
 >
-> the struct irq_chip CAN be modified. The code posted above shows
-> that the I-pipe also supports the case where you do not implement
-> irq_hold/irq_release. If you implement them=2C you can put an
-> ipipe_lock/unlock in mask/unmask. If you don't=2C then you can't.
+> Ironically=2C the aim of that piece of code is to solve a problem not
+> unlike yours: when an irqchip is shared between irqs using
+> handle_fasteoi_irq and handle_percpu_irq (which I believe is
+> the case on some cortex A9)=2C we want the I-pipe to use
+> irq_hold/irq_release=2C in order to avoid calling mask/unmask and
+> locking the interrupts.
 >
-I do have the hold implemented=2C I think that is why it works for the=20
-handle_percpu_devid_irq in my case.
-But if I understand correctly=2C you are saying from your comment below=2C =
-I=20
-could get away with only the mask that does not call the irq_hold.
-That would simplify things=2C only one chipirq=2C no irq_hold.
+> But it works both way=2C handle_percpu_irq can also share an
+> irqchip with handle_level_irq and use the mask/unmask. You just have
+> to not put an ipipe_lock/unlock in mask/unmask.
+>
+> The idea is that the only case where you need to modify mask/unmask
+> is with handle_fasteoi_irq. Other than that=2C don't touch anything=2C
+> and it should just work.
+>
 
-So then=2C when does one need irq_hold?
-
->>
->> Just a suggestion.
->> I just fell into a crack and I am proposing a change so that others
->> don't do the same mistake.
->>
->>
->>>>
->>>> Just to confirm=2C you were saying "it should not call irqchip->mask=
-=2C but
->>>> irqchip->ipipe_ack".
->>>> But for handle_level_irq the mask and the ack are called.
->>>> Is that correct?
->>>
->>> The answer is in the implementation of ipipe_ack for level
->>> interrupts. It calls mask_ack_irq.
->>>
->> Correct=2C so it does call mask=2C but you said it does not earlier.
->
-> I meant that the mask callback is not called directly. The mask
-> callback being called directly would be the sign that the I-pipe
-> somehow does not do its work of interposing in the interruption
-> handling=2C which can happen during a port for a variety of reasons.
->
-the "mask callback is not called directly" here you mean mask callback=20
-is not called but as part of __ipipe_dispatch_irq.
-I think we are on the same page.
-
->>
->>>>
->>>> I think understand what my mistake was.
->>>> I have not tested it yet but without the irq_lock=2C it should call th=
-e
->>>> handler.
->>>> Thank you Gilles again!
->>>
->>> You are welcome. I suggest however to take the time to read the
->>> documentation completely from beginning to end=2C before jumping
->>> head-on in the port=2C only reading parts of it=2C and wasting time
->>> stupidly because you only read part of a sentence.
->>>
->> It was not a waste of time to me=2C I got the opportunity to look at the
->> internal of the ipipe code to understand what my problem was.
->> I see this has a learning exercise (at spare time).
->>
->> The code is well written.
->> Writing a porting guide is difficult because it does not cover newer
->> targets implementation. The document could still evolve with user's
->> input. After all=2C I think the goal is to encourage users to create mor=
-e
->> port.
->
-> Writing a porting guide is easy. Keeping it up to date is what's
-> hard. When that guide was first written=2C I had never ported the
-> I-pipe to any ARM board which used handle_percpu_devid_irq=2C I am not
-> even sure the kernel used it on any ARM platform.
->
-> Anyway=2C I am interested by your contribution=2C but as it is=2C I am
-> afraid you still misunderstood.
->
-Please explain one more time=2C I really would like to understand :)
-I like what you guys are doing.
-the RPI2 uses handle_percpu_devid_irq for the local=20
-timers/counters/IPI/videocore.
-
-Once I get something working=2C I definitely will send you a patch for you=
-=20
-guys to review.
-
->>
->> Side note: with two irqchip (one for handle_level_irq that does not
->> lock_irq in mask and the one for handle_percpu_devid_irq that does the
->> lock_irq in mask()) it does work.
->
-> You can probably have only one irqchip and not bother to insert the
-> calls to ipipe_lock/unlock_irq.
-
-Ok=2C this is new peace of information=2C that would work too. But then=2C=
-=20
-when one needs a lock_irq in mask and one does not?
-(it is the same question as 2 comments above.
+Hi Gilles=2C
+Your reply summarizes it all=2C I would encourage you to add it to the doc.
+Thanks again for all your patience and taking the time to reply.
 
 
