@@ -1,14 +1,10 @@
-References: <5641F09E.3040608@free.fr>
- <20151110142814.GA4629@hermes.click-hack.org> <564318FF.4030007@siemens.com>
- <56432BF5.3000606@xenomai.org> <56433451.5030009@xenomai.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <56433603.3020709@xenomai.org>
-Date: Wed, 11 Nov 2015 13:35:15 +0100
+Message-ID: <BLU437-SMTP3567D7D9516D88AF50AA67F0130@phx.gbl>
+From: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
+Date: Wed, 11 Nov 2015 07:40:03 -0800
 MIME-Version: 1.0
-In-Reply-To: <56433451.5030009@xenomai.org>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] panic macro interference with xerces api.
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Latency test on RP2 vs Odroid-C1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,62 +13,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, =?UTF-8?Q?St=c3=a9phane_ANCELOT?= <sancelot@free.fr>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 11/11/2015 01:28 PM, Philippe Gerum wrote:
-> On 11/11/2015 12:52 PM, Philippe Gerum wrote:
->> On 11/11/2015 11:31 AM, Jan Kiszka wrote:
->>> On 2015-11-10 15:28, Gilles Chanteperdrix wrote:
->>>> On Tue, Nov 10, 2015 at 02:26:54PM +0100, St=E9phane ANCELOT wrote:
->>>>> Hi,
->>>>>
->>>>> I don't know if there might be a  big impact, but I noticed, dependin=
-g=20
->>>>> on the order we include headers , that
->>>>> there was a panic macro interfering with xercesc api headers.
->>>>>
->>>>> #include <alchemy/task.h>
->>>>> #include <xercesc/dom/DOMException.hpp>
->>>>>
->>>>>
->>>>> /usr/xenomai-3.0-igb/include/boilerplate/ancillaries.h:64:10: error: =
+Hi,
 
->>>>> expected identifier before '__func__'
->>>>>    __panic(__func__, __fmt, ##__args)
->>>>
->>>> Well, if the two headers define the same macro, there are not many
->>>> solutions: arrange for not having to include them in the same file.
->>>> It should not be too hard, since a real-time thread using
->>>> alchemy/task.h has no business using an xml library, probably only
->>>> using linux services which a real-time task can not use without
->>>> switching to secondary mode.
->>>
->>> Isn't *panic an internal service? Then we can maybe avoid that it is
->>> exposed to applications. If it's not internal, it should probably carry
->>> some "xenomai" prefix in its (fairly generic) name.
->>>
->>
->> Sure, this service is aimed at being fairly generic and general-purpose,
->> with backtracing support, timing data, error code translation and such.
->> With respect to layering, I would rather expect an XML lib not to mess
->> with the namespace of core services, instead of asking the xenomai libs
->> which do deliver core services to apps to prefix its own services.
->>
->> I may move those helpers in some specific file to hide them, but no, I
->> really don't want to go for xenomai_panic(), because it really should
->> work the other way around (although nobody is likely to care about this
->> on the apache side).
->>
->=20
-> Actually, the only issue is about defining the panic helpers as macros,
-> so that we can pull the source/line information automatically.
->=20
+I finally was able to run the latency test on RPI2.
 
-We are not even doing that anymore, so this is eventually about moving
-these helpers in some header that would not be pulled indirectly, or
-using a different internal identifier from the reserved namespace.
+the results are showing: lat best of 7.705 and worst 16.605
+with an average of 9.129
 
---=20
-Philippe.
+Is there  anybody that ran the same test on Odroid C1 board?
+I would like to know how does it compare.
+
+This test was run right after the login prompt (no graphics, no Ethernet 
+activity, no manually started apps/services other than the systemd ones).
+
+Also ran the xenomai autotune right before.
+
+Is there a database of boards with their test results?
+
+Thanks,
+-Mathieu
 
