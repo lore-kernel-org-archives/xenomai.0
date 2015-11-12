@@ -1,15 +1,13 @@
-References: <20150909113151.0fed6fd7@md1em3qc> <55F02DB0.1090801@xenomai.org>
- <20150915104854.56a7b13f@md1em3qc>
- <20150917143955.01a71eb6@md1em3qc>
- <561ED42E.5080608@xenomai.org> <562658C0.8090006@xenomai.org>
+References: <2396B4D2166B62479FBBE370D4A7C1F30A706120@mb2010-3.intra.tut.fi>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <56265F30.1030308@xenomai.org>
-Date: Tue, 20 Oct 2015 17:35:12 +0200
+Message-ID: <5644C066.6050804@xenomai.org>
+Date: Thu, 12 Nov 2015 17:37:58 +0100
 MIME-Version: 1.0
-In-Reply-To: <562658C0.8090006@xenomai.org>
+In-Reply-To: <2396B4D2166B62479FBBE370D4A7C1F30A706120@mb2010-3.intra.tut.fi>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] 4.x merge
+Subject: Re: [Xenomai] Error:Xenomai: /dev/rtheap is missing & Testing of
+ Xenomai 3.0.1 with kernel 3.14.39
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,34 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jorge Ramirez Ortiz <jro@xenomai.org>, Henning Schild <henning.schild@siemens.com>
-Cc: "KISZKA, JAN" <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Umair Ali <ali.umair@tut.fi>, =?UTF-8?Q?Xenomai_=e2=80=8e_, , xenomai@xenomai.org, , _=e2=80=8e?= <xenomai@xenomai.org>
 
-On 10/20/2015 05:07 PM, Jorge Ramirez Ortiz wrote:
-> On 10/14/2015 06:16 PM, Jorge Ramirez Ortiz wrote:
->>
->>>
->>> I did push my current state to github. Check out 
->>> https://github.com/siemens/linux-ipipe
->>> branches ipipe-3.19 and -4.0
->>
->>
->>
->> I just noticed -while reusing some of your changes for aarch64 - that his needs
->> fixing (redeclaration of 'flags')
->> https://github.com/siemens/linux-ipipe/blob/ipipe-4.0/drivers/irqchip/irq-gic.c#L270
->>
+On 11/12/2015 01:47 PM, Umair Ali wrote:
+> Hello,
 > 
-> Hi Henning,
-> 
-> have you tried running the switchtest with the boot parameter
-> xenomai.supported_cpus=0x1?
+> I have the following setup
 > 
 > 
+> But when i run the xeno-regression-test under load i get the following error
+> root@cpc:/usr/lib/xenomai/testsuite# xeno-regression-test -l "dohell -s 192.168.0.5 -m /mnt -l /ltp" -t 2
+> Started child 6467: /bin/bash /usr/lib/xenomai/testsuite/xeno-test-run-wrapper /usr/bin/xeno-regression-test -t 2
+> ++ echo 0
+> ++ /usr/lib/xenomai/testsuite/arith
+> Xenomai: /dev/rtheap is missing
+> (chardev, major=10 minor=254)
+>
+
+Your installation mixes 3.x and legacy 2.6.x Xenomai libraries and
+executables. /dev/rtheap is gone in 3.x, so
+/usr/lib/xenomai/testsuite/arith most likely belongs to a former 2.6.x
+install.
+
+
+> In the result of the test i found that "rtdm skipped (no kernel support)", is this a problem because i have read that xenomai uses RTDM service for the drivers. I want to use the rt_8139too and if rtdm is not supported will it work fine or not?
 > 
 
-That won't work, switchtest attempts to spread the rt test load over all
-online CPUs, which your kernel setting contradicts.
+The RTDM test was skipped, which does not mean RTDM is absent. In fact,
+it cannot be absent in 3.x, since it is built in the Cobalt core. You
+need to build and install the module-only driver from the Testing
+section (CONFIG_XENO_DRIVERS_RTDMTEST), for that test to be runnable by
+the smokey test suite.
 
 -- 
 Philippe.
