@@ -1,12 +1,13 @@
-From: Umair Ali <ali.umair@tut.fi>
-Date: Fri, 13 Nov 2015 11:45:51 +0000
-Message-ID: <2396B4D2166B62479FBBE370D4A7C1F30A70A448@mb2010-1.intra.tut.fi>
-Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Date: Fri, 13 Nov 2015 14:19:31 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151113131931.GB1820@hermes.click-hack.org>
+References: <9SlMMGR4S6RSaIBByUSWmfIigUV5A29DxyOlBMGFnrTkKHq5mREbgo1RRvCaeqM8_ajLTxHFA2V_5LHFIDjbjw==@protonmail.ch>
 MIME-Version: 1.0
-Subject: [Xenomai] Application creation & compilation tutorial for Xenomai
-	3.0.1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9SlMMGR4S6RSaIBByUSWmfIigUV5A29DxyOlBMGFnrTkKHq5mREbgo1RRvCaeqM8_ajLTxHFA2V_5LHFIDjbjw==@protonmail.ch>
+Subject: Re: [Xenomai] [PATCH] Fix "xenomai configure error: possibly
+ undefined macro: LT_SYS_SYMBOL_USCORE" error
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,29 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "roberto.rigamonti" <roberto.rigamonti@protonmail.ch>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello there,
+On Thu, Nov 12, 2015 at 03:54:01PM -0500, roberto.rigamonti wrote:
+> When running the ./build/bootstrap script, at least in the xenomai-3.0.1.tar.bz2 archive, the autoconf stops with the error:
+> xenomai configure error: possibly undefined macro: LT_SYS_SYMBOL_USCORE
+> The added m4_pattern_allow() command solves the issue.
+> 
+> P.S.: this is my first patch ever, please be kind if I had make
+> any mistake in the procedure to follow :)
 
-I am looking for the tutorial that how to make and compile an application i=
-n user work space and also in kernel work space for xenomai 3.0.1. I have r=
-ead many pages regarding this application creation (even on xenomai.org) bu=
-t still i am confused that how i can create the application, link the libra=
-ries and compile and run the application. It will be very nice if some one =
-provide me the tutorial with steps so i can learn and make my application. =
-I am new to linux and real time linux so i need some tutorial with steps fo=
-r learning. The documentation on the xenomai helped me to understand the ba=
-sic structure of the application but i am still unable to fully and underst=
-and and cant even create a basic application. I have found links e.g.
-- http://www.cs.ru.nl/lab/xenomai/exercises/ex01/Exercise-1.html
-- http://tutoria.ualg.pt/2013/pluginfile.php/78703/mod_folder/content/0/01-=
-xenomai-2.5.x-eng.pdf?forcedownload=3D1
+If you download Xenomai 3.0.1 packaged sources from here:
+http://xenomai.org/downloads/xenomai/stable/latest/
 
-These link provide me little help and they seems to be for older version of=
- xenoma. Therefore i need the tutorial which can help to write and compile =
-the application for the xenomai 3.0.1.
+You do not need to run the "bootstrap" script.
 
-Thanks & Regards
-Ali
+But if you want to run the bootstrap script, you should make sure
+that you are using the same versions of the autotools as the
+maintainer, that is:
+autoconf 2.69
+automake 1.15
+libtool 2.4.2
 
+Are these the versions you use ?
+
+-- 
+					    Gilles.
+https://click-hack.org
 
