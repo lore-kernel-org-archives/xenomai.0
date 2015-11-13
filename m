@@ -1,15 +1,13 @@
-Date: Tue, 20 Oct 2015 18:01:13 +0200
+Date: Fri, 13 Nov 2015 14:28:27 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151020160113.GE8927@hermes.click-hack.org>
-References: <20150909113151.0fed6fd7@md1em3qc> <55F02DB0.1090801@xenomai.org>
- <20150915104854.56a7b13f@md1em3qc>
- <20150917143955.01a71eb6@md1em3qc> <561ED42E.5080608@xenomai.org>
- <562658C0.8090006@xenomai.org> <56265F30.1030308@xenomai.org>
+Message-ID: <20151113132827.GD1820@hermes.click-hack.org>
+References: <2396B4D2166B62479FBBE370D4A7C1F30A70A448@mb2010-1.intra.tut.fi>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <56265F30.1030308@xenomai.org>
-Subject: Re: [Xenomai] 4.x merge
+In-Reply-To: <2396B4D2166B62479FBBE370D4A7C1F30A70A448@mb2010-1.intra.tut.fi>
+Subject: Re: [Xenomai] Application creation & compilation tutorial for
+ Xenomai 3.0.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,45 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>, "KISZKA, JAN" <jan.kiszka@siemens.com>
+To: Umair Ali <ali.umair@tut.fi>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, Oct 20, 2015 at 05:35:12PM +0200, Philippe Gerum wrote:
-> On 10/20/2015 05:07 PM, Jorge Ramirez Ortiz wrote:
-> > On 10/14/2015 06:16 PM, Jorge Ramirez Ortiz wrote:
-> >>
-> >>>
-> >>> I did push my current state to github. Check out 
-> >>> https://github.com/siemens/linux-ipipe
-> >>> branches ipipe-3.19 and -4.0
-> >>
-> >>
-> >>
-> >> I just noticed -while reusing some of your changes for aarch64 - that his needs
-> >> fixing (redeclaration of 'flags')
-> >> https://github.com/siemens/linux-ipipe/blob/ipipe-4.0/drivers/irqchip/irq-gic.c#L270
-> >>
-> > 
-> > Hi Henning,
-> > 
-> > have you tried running the switchtest with the boot parameter
-> > xenomai.supported_cpus=0x1?
-> > 
-> > 
-> > 
+On Fri, Nov 13, 2015 at 11:45:51AM +0000, Umair Ali wrote:
+> Hello there,
 > 
-> That won't work, switchtest attempts to spread the rt test load over all
-> online CPUs, which your kernel setting contradicts.
+> I am looking for the tutorial that how to make and compile an
+> application in user work space and also in kernel work space for
+> xenomai 3.0.1. I have read many pages regarding this application
+> creation (even on xenomai.org)
 
-That will not work without passing any argument to switchtest, but
-can work if you specify to switchtest a list of tasks to run on the
-first cpu.
+You did not read carefully then: running applications in
+kernel-space has been deprecated for years, and is no longer
+possible with xenomai 3.0.1.
 
-Such as:
-# switchtest rtk0 rtk0 rtk_fp0 rtk_fp0 rtk_fp_ufpp0 rtkfp_ufpp0 rtup0 \
-rtup0 rtup_ufpp0 rtup_ufpp0 rtus0 rtus0 rtus_ufps0 rtus_ufps0 \
-rtuo0 rtuo0 rtuo_ufpp0 rtuo_ufpp0 rtuo_ufps0 rtuo_ufps0 \
-rtuo_ufpp_ufps0 rtuo_ufpp_ufps0
+Other than that, the following document:
+http://xenomai.org/2014/08/porting-a-linux-application-to-xenomai-dual-kernel/
+
+Explains how to port a Linux application to Xenomai user-space. Of
+course it assumes you know how to compile a Linux application. If
+you do not know this, I suggest you look for that particular
+information on more appropriate sites/forums than on the Xenomai
+mailing list.
+
+Regards.
 
 -- 
 					    Gilles.
