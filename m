@@ -1,13 +1,13 @@
-Date: Fri, 13 Nov 2015 14:19:31 +0100
+Date: Fri, 13 Nov 2015 14:22:45 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151113131931.GB1820@hermes.click-hack.org>
-References: <9SlMMGR4S6RSaIBByUSWmfIigUV5A29DxyOlBMGFnrTkKHq5mREbgo1RRvCaeqM8_ajLTxHFA2V_5LHFIDjbjw==@protonmail.ch>
+Message-ID: <20151113132245.GC1820@hermes.click-hack.org>
+References: <tencent_7BB3FFF260BB49F738A5294C@qq.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <9SlMMGR4S6RSaIBByUSWmfIigUV5A29DxyOlBMGFnrTkKHq5mREbgo1RRvCaeqM8_ajLTxHFA2V_5LHFIDjbjw==@protonmail.ch>
-Subject: Re: [Xenomai] [PATCH] Fix "xenomai configure error: possibly
- undefined macro: LT_SYS_SYMBOL_USCORE" error
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <tencent_7BB3FFF260BB49F738A5294C@qq.com>
+Subject: Re: [Xenomai] system crushed using igh ethercat master 1.52
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,30 +16,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "roberto.rigamonti" <roberto.rigamonti@protonmail.ch>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?utf-8?B?5L2/55So57O757uf6buY6K6k5pi156ew?= <wangxueqin@tc-tech.net>
+Cc: xenomai <xenomai@xenomai.org>
 
-On Thu, Nov 12, 2015 at 03:54:01PM -0500, roberto.rigamonti wrote:
-> When running the ./build/bootstrap script, at least in the xenomai-3.0.1.tar.bz2 archive, the autoconf stops with the error:
-> xenomai configure error: possibly undefined macro: LT_SYS_SYMBOL_USCORE
-> The added m4_pattern_allow() command solves the issue.
+On Fri, Nov 13, 2015 at 01:48:25PM +0800, 使用系统默认昵称 wrote:
+> hi,we modified and complied the examples/xenomai/ example program.
+> and run it in x86 and ARM(beagleboard black) board to drive a
+> servo. the linux system can drive a servo, but get crushed in 1-2
+> hours on x86 platform. however, the cross-complied program crushed
+> at starting it on ARM platform.
 > 
-> P.S.: this is my first patch ever, please be kind if I had make
-> any mistake in the procedure to follow :)
+> 
+> we complied the realtime program and can run without problem.
+> however, it cruched when we add the igh ethercat APIs.
 
-If you download Xenomai 3.0.1 packaged sources from here:
-http://xenomai.org/downloads/xenomai/stable/latest/
-
-You do not need to run the "bootstrap" script.
-
-But if you want to run the bootstrap script, you should make sure
-that you are using the same versions of the autotools as the
-maintainer, that is:
-autoconf 2.69
-automake 1.15
-libtool 2.4.2
-
-Are these the versions you use ?
+I suggest you direct your question to igh then.
 
 -- 
 					    Gilles.
