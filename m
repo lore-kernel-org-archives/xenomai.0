@@ -1,15 +1,13 @@
-Date: Fri, 13 Nov 2015 12:54:09 -0500
-From: Roberto Rigamonti <roberto.rigamonti@protonmail.ch>
-Message-ID: <7DKiTW8f-hWs2lQg8Ihkg3A3SbWk9Wbipe39gZzL6kF7BBbNiTr5g35ITvo4yueSX7NS5_T61np0Cf1DVdYGpw==@protonmail.ch>
-In-Reply-To: <20151113131931.GB1820@hermes.click-hack.org>
-References: <9SlMMGR4S6RSaIBByUSWmfIigUV5A29DxyOlBMGFnrTkKHq5mREbgo1RRvCaeqM8_ajLTxHFA2V_5LHFIDjbjw==@protonmail.ch>
- <20151113131931.GB1820@hermes.click-hack.org>
+References: <tencent_7BB3FFF260BB49F738A5294C@qq.com>
+ <20151113132245.GC1820@hermes.click-hack.org>
+From: Jorge Ramirez Ortiz <jro@xenomai.org>
+Message-ID: <564678CD.6050505@xenomai.org>
+Date: Fri, 13 Nov 2015 18:57:01 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] [PATCH] Fix "xenomai configure error: possibly
-	undefined macro: LT_SYS_SYMBOL_USCORE" error
-Reply-To: Roberto Rigamonti <roberto.rigamonti@protonmail.ch>
+In-Reply-To: <20151113132245.GC1820@hermes.click-hack.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] system crushed using igh ethercat master 1.52
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,29 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: wangxueqin@tc-tech.net
+Cc: gilles.chanteperdrix@xenomai.org, xenomai@xenomai.org
 
-PiBZb3UgZG8gbm90IG5lZWQgdG8gcnVuIHRoZSAiYm9vdHN0cmFwIiBzY3JpcHQuClRydWUuIEhv
-d2V2ZXIsIGluIG15IGNhc2UsIHRoZSBzYW1lIHByb2JsZW0gYXBwZWFycyB3aXRoIHRoZSBnaXQg
-dmVyc2lvbi4gSSBoYWQgYW4gb2xkIHZlcnNpb24gb2YgYXV0b21ha2Ugd3J0IHlvdXJzICgxLjE0
-LjEpLCBidXQgZXZlbiBhZnRlciBhbiB1cGRhdGUgdGhpcyBpcyB3aGF0IEkgZ2V0OgoKcm9iQHdp
-bGRlcm5lc3Mgfi9rZXJuZWwvdG1wL3hlbm9tYWktMyAkIC4vc2NyaXB0cy9ib290c3RyYXAKbGli
-dG9vbGl6ZTogcHV0dGluZyBhdXhpbGlhcnkgZmlsZXMgaW4gQUNfQ09ORklHX0FVWF9ESVIsIGBj
-b25maWcnLgpsaWJ0b29saXplOiBjb3B5aW5nIGZpbGUgYGNvbmZpZy9sdG1haW4uc2gnCmxpYnRv
-b2xpemU6IHB1dHRpbmcgbWFjcm9zIGluIEFDX0NPTkZJR19NQUNST19ESVIsIGBjb25maWcnLgps
-aWJ0b29saXplOiBjb3B5aW5nIGZpbGUgYGNvbmZpZy9saWJ0b29sLm00JwpsaWJ0b29saXplOiBj
-b3B5aW5nIGZpbGUgYGNvbmZpZy9sdG9wdGlvbnMubTQnCmxpYnRvb2xpemU6IGNvcHlpbmcgZmls
-ZSBgY29uZmlnL2x0c3VnYXIubTQnCmxpYnRvb2xpemU6IGNvcHlpbmcgZmlsZSBgY29uZmlnL2x0
-dmVyc2lvbi5tNCcKbGlidG9vbGl6ZTogY29weWluZyBmaWxlIGBjb25maWcvbHR+b2Jzb2xldGUu
-bTQnCmNvbmZpZ3VyZS5hYzo5MzogZXJyb3I6IHBvc3NpYmx5IHVuZGVmaW5lZCBtYWNybzogTFRf
-U1lTX1NZTUJPTF9VU0NPUkUKSWYgdGhpcyB0b2tlbiBhbmQgb3RoZXJzIGFyZSBsZWdpdGltYXRl
-LCBwbGVhc2UgdXNlIG00X3BhdHRlcm5fYWxsb3cuClNlZSB0aGUgQXV0b2NvbmYgZG9jdW1lbnRh
-dGlvbi4KYXV0b3JlY29uZjogL3Vzci9iaW4vYXV0b2NvbmYgZmFpbGVkIHdpdGggZXhpdCBzdGF0
-dXM6IDEKcm9iQHdpbGRlcm5lc3Mgfi9rZXJuZWwvdG1wL3hlbm9tYWktMyAkIGF1dG9jb25mIC0t
-dmVyc2lvbgphdXRvY29uZiAoR05VIEF1dG9jb25mKSAyLjY5Cjwgc25pcCA+CnJvYkB3aWxkZXJu
-ZXNzIH4va2VybmVsL3RtcC94ZW5vbWFpLTMgJCBhdXRvbWFrZSAtLXZlcnNpb24KYXV0b21ha2Ug
-KEdOVSBhdXRvbWFrZSkgMS4xNQo8IHNuaXAgPgpyb2JAd2lsZGVybmVzcyB+L2tlcm5lbC90bXAv
-eGVub21haS0zICQgbGlidG9vbCAtLXZlcnNpb24KbGlidG9vbCAoR05VIGxpYnRvb2wpIDIuNC4y
-PCBzbmlwID4KClRoYW5rcyEKUm9iCgpQLlMuOiBJbmRlZWQsIGEgdHlwbyBzbmVha2VkIGluIG15
-IGZpcnN0IHBhdGNoLi4uIFNvYiA6Jyg=
+On 11/13/2015 08:22 AM, Gilles Chanteperdrix wrote:
+> On Fri, Nov 13, 2015 at 01:48:25PM +0800, 使用系统默认昵称 wrote:
+>> hi,we modified and complied the examples/xenomai/ example program.
+>> and run it in x86 and ARM(beagleboard black) board to drive a
+>> servo. the linux system can drive a servo, but get crushed in 1-2
+>> hours on x86 platform. however, the cross-complied program crushed
+>> at starting it on ARM platform.
+>>
+>>
+>> we complied the realtime program and can run without problem.
+>> however, it cruched when we add the igh ethercat APIs.
+> 
+> I suggest you direct your question to igh then.
+> 
+
+where is the code that you are using to drive the servo?
+
+I am driving a Grove servo [1] using Xenomai3 and the following driver [2] to
+generate the PWM with one of the available GPIOs - maybe you want to give it a
+go if you are also using a gpio pin?
+
+
+[1] http://www.seeedstudio.com/depot/Grove-Servo-p-1241.html
+[2]
+http://git.xenomai.org/xenomai-jro.git/commit/?h=hikey&id=7a9e0b853fd3f51699220c78cb7543c1f5723ce3
+
+-- 
+jro
 
