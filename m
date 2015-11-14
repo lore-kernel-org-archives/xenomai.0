@@ -1,10 +1,14 @@
+Date: Sat, 14 Nov 2015 08:16:07 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151114071607.GH1820@hermes.click-hack.org>
+References: <BLU436-SMTP777DC6298F62C65606DFEF0100@phx.gbl>
+ <20151114053841.GF1820@hermes.click-hack.org>
+ <BLU437-SMTP996B2B5AFA76BF27714924F0100@phx.gbl>
 MIME-Version: 1.0
-From: =?UTF-8?B?5ZCz5ZOy57ax?= <erickitten@gmail.com>
-Date: Wed, 21 Oct 2015 21:58:13 +0800
-Message-ID: <CAK-1mTfzD9+ZctzC5z0546o8g8qRWUrBsyTLnX-rYc=Y+=mk_g@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai]  [patch] Beaglebone - 3.14.39
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BLU437-SMTP996B2B5AFA76BF27714924F0100@phx.gbl>
+Subject: Re: [Xenomai] [PATCH] IPIPE patch for BCM2709/RPI2.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,22 +17,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
+Cc: xenomai@xenomai.org
 
-SGksCgpUaGUgYXR0YWNoZWQgYXJlIHByZS0gYW5kIHBvc3QtIHBhdGNoIGZvciBiZWFnbGVib25l
-IGtlcm5lbAooaHR0cHM6Ly9naXRodWIuY29tL2JlYWdsZWJvYXJkL2xpbnV4KSAzLjE0LjM5ICh0
-YWc6IDMuMTQuMzktdGktcjYxLApzaGE6IGUyODFmOGUzMTRlOTc3NDcyZjEzZGUwMzM3ZmM3MGQx
-NDIyYjgwZTUpLgoKVGhlIHBhdGNoZXMgYXJlIGJhc2VkIG9uIGlwaXBlLWNvcmUtMy4xNC4zOS1h
-cm0tOS5wYXRjaC4KClBhdGNoZWQga2VybmVsIGFyZSB0ZXN0ZWQgd2l0aCBsYXRlbmN5IG9uIGJv
-dGggeGVub21haSAyIGFuZCAzLApib3RoIGhhcyBhIG1heCBhcm91bmQgMzQgbWljcm9zZWNvbmRz
-LCB3aGljaCBJIHRoaW5rIGlzIHJlYXNvbmFibGUuCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAt
-LS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6
-IGlwaXBlLWNvcmUtMy4xNC4zOS1iZWFnbGVib25lLXByZS5wYXRjaApUeXBlOiB0ZXh0L3gtcGF0
-Y2gKU2l6ZTogMTM1NzkgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVu
-b21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTEwMjEvM2QzNzc0NDIv
-YXR0YWNobWVudC5iaW4+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpB
-IG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGlwaXBlLWNvcmUtMy4x
-NC4zOS1iZWFnbGVib25lLXBvc3QucGF0Y2gKVHlwZTogdGV4dC94LXBhdGNoClNpemU6IDM5MTcw
-NiBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBl
-cm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1MTAyMS8zZDM3NzQ0Mi9hdHRhY2htZW50LTAw
-MDEuYmluPgo=
+On Fri, Nov 13, 2015 at 10:06:56PM -0800, Mathieu Rondonneau wrote:
+> On 15-11-13 09:38 PM, Gilles Chanteperdrix wrote:
+> > On Fri, Nov 13, 2015 at 09:31:23PM -0800, Mathieu Rondonneau wrote:
+> >> From 6f985ebdd2c99257fb3873b9cb83ba6572dff60a Mon Sep 17 00:00:00 2001
+> >> From: Mathieu Rondonneau <mathieu.rondonneau@gmail.com>
+> >> Date: Fri, 13 Nov 2015 20:59:49 -0800
+> >> Subject: [PATCH] IPIPE patch for BCM2709.
+> >>
+> >>  - kernel: https://github.com/raspberrypi/linux (rpi-3.18.y)
+> >>    - 1bb18c8f721ef674a447f3622273f2e2de7a205c
+> > 
+> > As explained here:
+> > http://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc/#Working_with_vendor_forks
+> > 
+> > If the patch is not for mainline Linux it should be sent as a couple
+> > of pre and post patches.
+> > 
+> there is no pre.patch required here, the ipipe patch from xenomai repo
+> apply with no conflict so I am not sure what to put in pre.patch.
+
+Yes, sorry. Just read your patch. See comments in other post.
+
+-- 
+					    Gilles.
+https://click-hack.org
+
