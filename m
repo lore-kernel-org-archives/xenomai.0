@@ -1,10 +1,16 @@
-Message-ID: <BLU437-SMTP72A29E46372946E95D6CFAF01F0@phx.gbl>
-From: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
-Date: Sun, 15 Nov 2015 08:53:14 -0800
+Date: Sun, 15 Nov 2015 19:43:59 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151115184359.GW1820@hermes.click-hack.org>
+References: <BLU436-SMTP777DC6298F62C65606DFEF0100@phx.gbl>
+ <20151114123953.GN1820@hermes.click-hack.org>
+ <BLU437-SMTP2BEF9B6C71BB45D72DA0EF0100@phx.gbl>
+ <20151114182603.GS1820@hermes.click-hack.org>
+ <BLU436-SMTP1376F8EA4728BE09736A4FEF01F0@phx.gbl>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PATCH] IPIPE patch for BCM2709/RPI2 (version #3)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BLU436-SMTP1376F8EA4728BE09736A4FEF01F0@phx.gbl>
+Subject: Re: [Xenomai] [PATCH] IPIPE patch for BCM2709/RPI2.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,137 +19,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
+Cc: xenomai@xenomai.org
 
->From 2aa9fa2759a6bfafdac5b3355d2e827cee7c200f Mon Sep 17 00:00:00 2001
-From: Mathieu Rondonneau <mathieu.rondonneau@gmail.com>
-Date: Fri, 13 Nov 2015 20:59:49 -0800
-Subject: [PATCH] IPIPE patch for BCM2709.
+On Sat, Nov 14, 2015 at 04:14:04PM -0800, Mathieu Rondonneau wrote:
+> On 15-11-14 10:26 AM, Gilles Chanteperdrix wrote:
+> > On Sat, Nov 14, 2015 at 08:11:52AM -0800, Mathieu Rondonneau wrote:
+> >> On 15-11-14 04:39 AM, Gilles Chanteperdrix wrote:
+> >>> On Fri, Nov 13, 2015 at 09:31:23PM -0800, Mathieu Rondonneau wrote:
+> >>>>  #ifdef CONFIG_OF
+> >>>> @@ -333,6 +349,10 @@ static struct irq_chip armctrl_chip = {
+> >>>>  	.irq_mask = armctrl_mask_irq,
+> >>>>  	.irq_unmask = armctrl_unmask_irq,
+> >>>>  	.irq_set_wake = armctrl_set_wake,
+> >>>> +#ifdef CONFIG_IPIPE
+> >>>> +	.irq_hold = armctrl_mask_irq,
+> >>>> +	.irq_release = armctrl_unmask_irq,
+> >>>> +#endif
+> >>>
+> >>> Also, as explained during your lengthy discussion, you do not need
+> >>> to define irq_hold and irq_release here.
+> >>>
+> >> Kernel does not boot if I remove them (also explained in our lengthy
+> >> discussion). I think that's the part we did not understood each other.
+> >> I am happy to remove them if there is another workaround to get the
+> >> kernel booting.
+> > 
+> > I can not find the mail where you explain what happens when you
+> > remove it. Could you explain it again, please?
+> > 
+> > Regards.
+> > 
+> 
+> the doc refers to handle_fasteoi_irq
+> (http://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc/#flow_handler)
+> but I think there are more corner cases (else if cases). There seems to
+> be a case also for the handle_percpu_devid_irq for fasteoi behavior (to
+> call mask/unmask). The code allows that only when irq_hold is defined.
+> 
+> See the code from kernel/chip.c
+> 
+> } else if (handle == handle_percpu_irq ||
+> 			   handle == handle_percpu_devid_irq) {
+> 			if (irq_desc_get_chip(desc) &&
+> 			    irq_desc_get_chip(desc)->irq_hold) {
+> 				desc->ipipe_ack = __ipipe_ack_fasteoi_irq;
+> 				desc->ipipe_end = __ipipe_end_fasteoi_irq;
+> 			} else {
+> 				desc->ipipe_ack = __ipipe_ack_percpu_irq;
+> 				desc->ipipe_end = __ipipe_nop_irq;
+> 			}
+> 		}
+> 
+> In our earlier conversation you said this hack was for A9 only.
+> But it seems that this might be also needed for non-A9 (bcm2709) because
+> the mask and un-mask seems to be the one that are needed to be called.
+> this is the only reason I defined a irq_hold.
+> 
+> Does irq_ack and irq_eoi are required for handle_percpu_devid_irq?
+> the doc does not cover that part and current platform does not use
+> those. Removing the irq_hold then fails because irq not getting handled.
+> 
+> Currently handle_level_irq and handle_percpu_devid_irq share the same
+> irqchip, but that can not be the case if I define a irq_ack (irq_mask
+> will be called, then irq_ack, and then irq_unmask).
+> 
+> So far defining irq_hold seems to be what is required for this platform
+> in order to call the mask/unmask without having two irqchip.
+> 
+> I agree with you, this might look more like a hack.
+> 
+> Is there another way to do this?
 
- - kernel: https://github.com/raspberrypi/linux (rpi-3.18.y)
-   - 1bb18c8f721ef674a447f3622273f2e2de7a205c
- - xenomai: git://git.xenomai.org/xenomai-3.git (stable-3.0.x)
-   - cb72996a06ae4f29e403e3397324069f1983145e
----
- arch/arm/mach-bcm2709/armctrl.c                  |  4 ++++
- arch/arm/mach-bcm2709/bcm2708_gpio.c             |  6 ++++--
- arch/arm/mach-bcm2709/bcm2709.c                  |  9 +++++++++
- arch/arm/mach-bcm2709/include/mach/entry-macro.S | 12 ++++++++++--
- 4 files changed, 27 insertions(+), 4 deletions(-)
+>From what I understand:
+- on A9, the irqchip is shared between fasteoi irq and percpu irq
+- on other platforms (where handling percpu irq was first
+introduced), the irqchip is shared between percpu irq and another
+flow handler, probably not level irqs
+- on your platform, percpu irq shares the irqchip with level irqs,
+__ipipe_ack_percpu_irq does not work because it does not mask the
+irq, and this can not work with level irqs.
 
-diff --git a/arch/arm/mach-bcm2709/armctrl.c
-b/arch/arm/mach-bcm2709/armctrl.c
-index fc6cb8b..c50b2cb 100644
---- a/arch/arm/mach-bcm2709/armctrl.c
-+++ b/arch/arm/mach-bcm2709/armctrl.c
-@@ -333,6 +333,10 @@ static struct irq_chip armctrl_chip = {
- 	.irq_mask = armctrl_mask_irq,
- 	.irq_unmask = armctrl_unmask_irq,
- 	.irq_set_wake = armctrl_set_wake,
-+#ifdef CONFIG_IPIPE
-+	.irq_hold = armctrl_mask_irq,
-+	.irq_release = armctrl_unmask_irq,
-+#endif
- };
+So, if implementing irq_hold works for this case, then let us keep
+it that way. The porting guide simply need to be updated for this
+case.
 
- /**
-diff --git a/arch/arm/mach-bcm2709/bcm2708_gpio.c
-b/arch/arm/mach-bcm2709/bcm2708_gpio.c
-index c1e9254..7852129 100644
---- a/arch/arm/mach-bcm2709/bcm2708_gpio.c
-+++ b/arch/arm/mach-bcm2709/bcm2708_gpio.c
-@@ -24,6 +24,7 @@
- #include <linux/pinctrl/consumer.h>
-
- #include <linux/platform_data/bcm2708.h>
-+#include <linux/ipipe.h>
-
- #define BCM_GPIO_DRIVER_NAME "bcm2708_gpio"
- #define DRIVER_NAME BCM_GPIO_DRIVER_NAME
-@@ -56,7 +57,8 @@ enum { GPIO_FSEL_INPUT, GPIO_FSEL_OUTPUT,
- 	 * the GPIO code. This also makes the case of a GPIO routine call from
- 	 * the IRQ code simpler.
- 	 */
--static DEFINE_SPINLOCK(lock);	/* GPIO registers */
-+static IPIPE_DEFINE_SPINLOCK(lock); /* GPIO registers */
-+
-
- struct bcm2708_gpio {
- 	struct list_head list;
-@@ -294,7 +296,7 @@ static irqreturn_t bcm2708_gpio_interrupt(int irq,
-void *dev_id)
- 			if (!(level_bits & (1<<i)))
- 				writel(1<<i,
- 				       __io_address(GPIO_BASE) + GPIOEDS(bank));
--			generic_handle_irq(gpio_to_irq(gpio));
-+			ipipe_handle_demuxed_irq(gpio_to_irq(gpio));
- 			/* ack level triggered IRQ after handling them */
- 			if (level_bits & (1<<i))
- 				writel(1<<i,
-diff --git a/arch/arm/mach-bcm2709/bcm2709.c
-b/arch/arm/mach-bcm2709/bcm2709.c
-index 6bfd99e..4dd796c 100644
---- a/arch/arm/mach-bcm2709/bcm2709.c
-+++ b/arch/arm/mach-bcm2709/bcm2709.c
-@@ -1072,11 +1072,13 @@ static void __init bcm2709_timer_init(void)
- static void __init bcm2709_timer_init(void)
- {
- 	extern void dc4_arch_timer_init(void);
-+#ifndef CONFIG_IPIPE
- 	// timer control
- 	writel(0, __io_address(ARM_LOCAL_CONTROL));
- 	// timer pre_scaler
- 	writel(0x80000000, __io_address(ARM_LOCAL_PRESCALER)); // 19.2MHz
- 	//writel(0x06AAAAAB, __io_address(ARM_LOCAL_PRESCALER)); // 1MHz
-+#endif
-
- 	if (use_dt)
- 	{
-@@ -1085,6 +1087,13 @@ static void __init bcm2709_timer_init(void)
- 	}
- 	else
- 		dc4_arch_timer_init();
-+
-+#ifdef CONFIG_IPIPE
-+	// timer control
-+	writel(0, __io_address(ARM_LOCAL_CONTROL));
-+	// timer pre_scaler
-+	writel(0x80000000, __io_address(ARM_LOCAL_PRESCALER)); // 19.2MHz
-+#endif
- }
-
- #endif
-diff --git a/arch/arm/mach-bcm2709/include/mach/entry-macro.S
-b/arch/arm/mach-bcm2709/include/mach/entry-macro.S
-index 101d9f1..9e089c8 100644
---- a/arch/arm/mach-bcm2709/include/mach/entry-macro.S
-+++ b/arch/arm/mach-bcm2709/include/mach/entry-macro.S
-@@ -52,7 +52,11 @@
- 	dsb
- 	mov	r1, sp
- 	adr	lr, BSYM(1b)
--	b	do_IPI
-+#ifdef CONFIG_IPIPE
-+        b	__ipipe_grab_ipi
-+#else
-+        b	do_IPI
-+#endif
-
- 1030:
- 	/* check gpu interrupt */
-@@ -107,7 +111,11 @@
- 	@ routine called with r0 = irq number, r1 = struct pt_regs *
- 	@
- 	adr	lr, BSYM(1b)
--	b	asm_do_IRQ
-+#ifdef CONFIG_IPIPE
-+        b	__ipipe_grab_irq
-+#else
-+        b	asm_do_IRQ
-+#endif
-
- 1020:	@ EQ will be set if no irqs pending
- 	.endm
 -- 
-2.6.3
+					    Gilles.
+https://click-hack.org
 
