@@ -1,11 +1,12 @@
-From: Thierry Bultel <thierry.bultel@basystemes.fr>
-Message-ID: <564B02CC.6060609@basystemes.fr>
-Date: Tue, 17 Nov 2015 11:34:52 +0100
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Tue, 17 Nov 2015 10:02:22 -0500
+Message-ID: <20151117150222.GZ21923@csclub.uwaterloo.ca>
+References: <BLU436-SMTP14366D8D519BC2A3A82E3DBF01D0@phx.gbl>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] multiple failing writes to XDDP socket seem to block
-	other I/Os
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BLU436-SMTP14366D8D519BC2A3A82E3DBF01D0@phx.gbl>
+Subject: Re: [Xenomai] [PATCH] IPIPE patch for BCM2709/RPI2 (version #4)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,68 +15,155 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, Jean-Baptiste Tredez <jean-baptiste.tredez@basystemes.fr>
+To: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
+Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
 
-Hi,
+On Mon, Nov 16, 2015 at 08:05:57PM -0800, Mathieu Rondonneau wrote:
+> From fae80ca1c28b6a9e34f597fe63bfce768123337f Mon Sep 17 00:00:00 2001
+> From: Mathieu Rondonneau <mathieu.rondonneau@gmail.com>
+> Date: Mon, 16 Nov 2015 20:03:28 -0800
+> Subject: [PATCH] IPIPE patch for BCM2709/RPI2.
+> 
+>  - kernel: https://github.com/raspberrypi/linux (rpi-3.18.y)
+>    - 1bb18c8f721ef674a447f3622273f2e2de7a205c
+>  - xenomai: git://git.xenomai.org/xenomai-3.git (stable-3.0.x)
+>    - cb72996a06ae4f29e403e3397324069f1983145e
+> ---
+>  arch/arm/Kconfig                                 |  2 +-
+>  arch/arm/mach-bcm2709/armctrl.c                  |  4 ++++
+>  arch/arm/mach-bcm2709/bcm2708_gpio.c             |  6 ++++--
+>  arch/arm/mach-bcm2709/bcm2709.c                  |  9 +++++++++
+>  arch/arm/mach-bcm2709/include/mach/entry-macro.S | 12 ++++++++++--
+>  5 files changed, 28 insertions(+), 5 deletions(-)
+> 
+> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+> index 4860d5f..ed45f63 100644
+> --- a/arch/arm/Kconfig
+> +++ b/arch/arm/Kconfig
+> @@ -1058,7 +1058,7 @@ config IPIPE_ARM_KUSER_TSC
+>         bool
+>         select GENERIC_TIME_VSYSCALL
+>         select IPIPE_HAVE_HOSTRT if IPIPE
+> -       default y if ARCH_AT91 || ARM_TIMER_SP804 || ARCH_MXC ||
+> ARCH_OMAP || PLAT_PXA || PLAT_S3C24XX || ARCH_SA1100
+> +       default y if ARCH_AT91 || ARM_TIMER_SP804 || ARCH_MXC ||
+> ARCH_OMAP || PLAT_PXA || PLAT_S3C24XX || ARCH_SA1100 || ARCH_BCM2709
+>  endif
+> 
+>  source "arch/arm/firmware/Kconfig"
+> diff --git a/arch/arm/mach-bcm2709/armctrl.c
+> b/arch/arm/mach-bcm2709/armctrl.c
+> index fc6cb8b..c50b2cb 100644
+> --- a/arch/arm/mach-bcm2709/armctrl.c
+> +++ b/arch/arm/mach-bcm2709/armctrl.c
+> @@ -333,6 +333,10 @@ static struct irq_chip armctrl_chip = {
+>  	.irq_mask = armctrl_mask_irq,
+>  	.irq_unmask = armctrl_unmask_irq,
+>  	.irq_set_wake = armctrl_set_wake,
+> +#ifdef CONFIG_IPIPE
+> +	.irq_hold = armctrl_mask_irq,
+> +	.irq_release = armctrl_unmask_irq,
+> +#endif
+>  };
+> 
+>  /**
+> diff --git a/arch/arm/mach-bcm2709/bcm2708_gpio.c
+> b/arch/arm/mach-bcm2709/bcm2708_gpio.c
+> index c1e9254..7852129 100644
+> --- a/arch/arm/mach-bcm2709/bcm2708_gpio.c
+> +++ b/arch/arm/mach-bcm2709/bcm2708_gpio.c
+> @@ -24,6 +24,7 @@
+>  #include <linux/pinctrl/consumer.h>
+> 
+>  #include <linux/platform_data/bcm2708.h>
+> +#include <linux/ipipe.h>
+> 
+>  #define BCM_GPIO_DRIVER_NAME "bcm2708_gpio"
+>  #define DRIVER_NAME BCM_GPIO_DRIVER_NAME
+> @@ -56,7 +57,8 @@ enum { GPIO_FSEL_INPUT, GPIO_FSEL_OUTPUT,
+>  	 * the GPIO code. This also makes the case of a GPIO routine call from
+>  	 * the IRQ code simpler.
+>  	 */
+> -static DEFINE_SPINLOCK(lock);	/* GPIO registers */
+> +static IPIPE_DEFINE_SPINLOCK(lock); /* GPIO registers */
+> +
+> 
+>  struct bcm2708_gpio {
+>  	struct list_head list;
+> @@ -294,7 +296,7 @@ static irqreturn_t bcm2708_gpio_interrupt(int irq,
+> void *dev_id)
+>  			if (!(level_bits & (1<<i)))
+>  				writel(1<<i,
+>  				       __io_address(GPIO_BASE) + GPIOEDS(bank));
+> -			generic_handle_irq(gpio_to_irq(gpio));
+> +			ipipe_handle_demuxed_irq(gpio_to_irq(gpio));
+>  			/* ack level triggered IRQ after handling them */
+>  			if (level_bits & (1<<i))
+>  				writel(1<<i,
+> diff --git a/arch/arm/mach-bcm2709/bcm2709.c
+> b/arch/arm/mach-bcm2709/bcm2709.c
+> index 6bfd99e..4dd796c 100644
+> --- a/arch/arm/mach-bcm2709/bcm2709.c
+> +++ b/arch/arm/mach-bcm2709/bcm2709.c
+> @@ -1072,11 +1072,13 @@ static void __init bcm2709_timer_init(void)
+>  static void __init bcm2709_timer_init(void)
+>  {
+>  	extern void dc4_arch_timer_init(void);
+> +#ifndef CONFIG_IPIPE
+>  	// timer control
+>  	writel(0, __io_address(ARM_LOCAL_CONTROL));
+>  	// timer pre_scaler
+>  	writel(0x80000000, __io_address(ARM_LOCAL_PRESCALER)); // 19.2MHz
+>  	//writel(0x06AAAAAB, __io_address(ARM_LOCAL_PRESCALER)); // 1MHz
+> +#endif
+> 
+>  	if (use_dt)
+>  	{
+> @@ -1085,6 +1087,13 @@ static void __init bcm2709_timer_init(void)
+>  	}
+>  	else
+>  		dc4_arch_timer_init();
+> +
+> +#ifdef CONFIG_IPIPE
+> +	// timer control
+> +	writel(0, __io_address(ARM_LOCAL_CONTROL));
+> +	// timer pre_scaler
+> +	writel(0x80000000, __io_address(ARM_LOCAL_PRESCALER)); // 19.2MHz
+> +#endif
+>  }
+> 
+>  #endif
+> diff --git a/arch/arm/mach-bcm2709/include/mach/entry-macro.S
+> b/arch/arm/mach-bcm2709/include/mach/entry-macro.S
+> index 101d9f1..9e089c8 100644
+> --- a/arch/arm/mach-bcm2709/include/mach/entry-macro.S
+> +++ b/arch/arm/mach-bcm2709/include/mach/entry-macro.S
+> @@ -52,7 +52,11 @@
+>  	dsb
+>  	mov	r1, sp
+>  	adr	lr, BSYM(1b)
+> -	b	do_IPI
+> +#ifdef CONFIG_IPIPE
+> +        b	__ipipe_grab_ipi
+> +#else
+> +        b	do_IPI
+> +#endif
+> 
+>  1030:
+>  	/* check gpu interrupt */
+> @@ -107,7 +111,11 @@
+>  	@ routine called with r0 = irq number, r1 = struct pt_regs *
+>  	@
+>  	adr	lr, BSYM(1b)
+> -	b	asm_do_IRQ
+> +#ifdef CONFIG_IPIPE
+> +        b	__ipipe_grab_irq
+> +#else
+> +        b	asm_do_IRQ
+> +#endif
 
-With xenomai-2.6.4 on IMX6, I am facing an issue, that for now, and 
-unfortunately, I have not been able to
-narrow down to a simple test case, but I am still working on it.
+Wrong indentation.
 
-Considering the following piece of code, where :
-
-- globalLogFd is a XDDP socket, whose rtp backend is no longer 
-listening. This works great when the rtp listener pops the messages.
-- fp points to a classical text file
-
---------------
-
-static int cpt;
-void foo() { cpt++; };
-
-static int cpt2;
-void foo2() { cpt2++; };
-
---------------
-
-     cpt=0;
-     cpt2=0;
-
-     for (uint32_t i = 0; i < index; i++ )
-     {
-         fprintf(stdout,"in loop: %d\n", i);
-         char msg[256];
-         sprintf(msg, "%d \n",i);
-
-         size_t ret = write(globalLogFd,msg,strlen(msg)+1);
-         if (ret != strlen(msg)+1) {
-             foo();
-         }
-
-         count++;
-
-         fprintf(fp,"%s",m_buffer[i]);
-         foo2();
-
-     }
-
-     fflush(fp);
-     fclose(fp);
-
-The seen effect is that when the XDDP buffer is full, the I/O do not 
-work anymore after some number of iterations. The cpt and cpt2 counters 
-have been correctly incremented 'index' times, but neither the fprintf 
-to stdout, nor the fprintf to fp do anything.
-The context is not an RT thread. I am aware that sharing the globalLogFd
-between RT and non RT threads is likely not a good idea.
-
-The interesting thing to notice is that subsequent calls to the loop
-make the thing happen again -> the fprintf work for a number of times
-and then stop (about 300 times on a total of 1000).
-
-Commenting out the write to globalLogFd lets the fprintf work for all 
-iterations, as expected.
-
-Best regards
-Thierry
+-- 
+Len Sorensen
 
