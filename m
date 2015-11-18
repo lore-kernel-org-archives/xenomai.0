@@ -1,13 +1,13 @@
-Date: Wed, 18 Nov 2015 17:22:06 +0100
+Date: Wed, 18 Nov 2015 17:24:34 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151118162206.GA27240@hermes.click-hack.org>
+Message-ID: <20151118162434.GB27240@hermes.click-hack.org>
 References: <trinity-3b905084-1366-4586-b761-0f15088b0d82-1447853696479@3capp-webde-bap53>
  <20151118135249.GA24942@hermes.click-hack.org>
- <CAPRPZsDn9AFciNrBESG8Tn8oWwEeQ78Hzrnd0E0rknrjY1C+WQ@mail.gmail.com>
+ <trinity-1434a025-2abb-4454-9acd-44193ddea637-1447857385104@3capp-webde-bap53>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAPRPZsDn9AFciNrBESG8Tn8oWwEeQ78Hzrnd0E0rknrjY1C+WQ@mail.gmail.com>
+In-Reply-To: <trinity-1434a025-2abb-4454-9acd-44193ddea637-1447857385104@3capp-webde-bap53>
 Subject: Re: [Xenomai] rtdm_clock_read overhead/accuracy question
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -17,30 +17,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: JK.Behnke@web.de
+Cc: xenomai@xenomai.org
 
-On Wed, Nov 18, 2015 at 03:38:38PM +0100, Jeroen Van den Keybus wrote:
+On Wed, Nov 18, 2015 at 03:36:25PM +0100, JK.Behnke@web.de wrote:
+> Hello Gilles,
+> 
+> thanks for your quick response.
+> See my comments/questions below.
+> 
+> >On Wed, Nov 18, 2015 at 02:34:56PM +0100, JK.Behnke@web.de wrote:
+> >> Hello,
 > >>
-> >>    Is that realistic?
+> >> I'm currently debugging a problem in my xenomai application.
+> >> In order ot get timing information I do the following inside the
+> >> read-handler of my rtdm driver.
+> >>
+> >> // --- start code snippet ---------------------------------
+> >> nanosecs_abs_t t1, t2;
+> >> rtdm_lock_get_irqsave(&lockobj, lockctx);
+> >>
+> >> t1=rtdm_clock_read();
+> >> rtdm_task_busy_sleep(10000); // code block to be measured.
+> >> t2=rtdm_clock_read();
+> >>
+> >> rtdm_lock_put_irqrestore(&lockobj, lockctx);
+> >> // --- end code snippet ---------------------------------
+> >>
+> >> I observe the following time differences t2-t1:
+> >> min=10176 ns, max=10737 ns, avg=10314 ns
+> >>
+> >> This means in this case the average overhead of the two rtdm_clock_read
+> >> calls is
+> >> approximately 314 ns/2 = 157 ns.
 > >
-> > This seems to be a lot.
+> >No, this means that the average overhead of rtdm_clock_read is
+> >314ns.
+> >
+> >what you do is:
+> >read time
+> >convert to ns
+> >busy sleep
+> >read time
+> >convert to ns
+> >
+> >As you can see, between the two time reads, there is only one
+> >conversion to nanoseconds, (which we assume is the bulk of the
+> >overhead). And more generally, the overhead of the second time read
+> >is not counted either.
+> >
+> >
+> >>
+> >> Is that realistic?
+> >
+> >This seems to be a lot. The "tsc" test will measure the average
+> >difference between two time reads, and the "arith" test will measure
+> >the average time for a "multiply then shift" operation, adding the
+> >two should give you an idea of the overhead. From what I recall,
+> >reading the tsc on an atom N230 (a very old one) had an overhead
+> >around 20ns.
+> Where do I find the "tsc test", which test application do I have to run?
+
+The application is named "tsc".
+
 > 
-> It looks quite long, yes, for what should essentially be an RDTSC instruction.
-
-rtdm_clock_read does more than calling rdtsc, it calls rdtsc then
-converts the result from tsc counts to nanoseconds, which is not
-negligible compared to the time for rdtsc.
-
 > 
-> Why not test without the sleep and compare two back-to-back
-> rtdm_clock_read()s to make sure that you're not measuring jitter from
-> the sleep function ?
+> >
+> >> Are there any other functions I might use to measure execution time of
+> >> an arbitrary code block?
+> >
+> >You may want to use the tsc. The native skin has rt_timer_tsc and
+> >rt_timer_tsc2ns. Since you are in kernel space, you may want to
+> >use the I-pipe tsc read function, which should reduce even more the
+> >overhead.
+> Where do I find the I-pipe tsc read function.
+> I can't find it in the documentation.
 
-rtdm_task_busy_sleep does not sleep, it reads the tsc and wait for it
-to reach a known value. So, there should be little jitter involved.
-Maybe the difference comes from some difference in the time
-conversion routines involved ?
+That is because it is an internal function. Look at the
+implementation of rt_timer_tsc. The name is xnarch_get_cpu_tsc();
 
 -- 
 					    Gilles.
