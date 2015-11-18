@@ -1,12 +1,12 @@
-Date: Fri, 16 Oct 2015 13:17:56 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151016111756.GI16010@hermes.click-hack.org>
-References: <5620DBC8.4080508@ixion.es>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5620DBC8.4080508@ixion.es>
-Subject: Re: [Xenomai] Problem with Xenomai 3.0 Cobalt executing latency app
+In-Reply-To: <20151118135249.GA24942@hermes.click-hack.org>
+References: <trinity-3b905084-1366-4586-b761-0f15088b0d82-1447853696479@3capp-webde-bap53>
+ <20151118135249.GA24942@hermes.click-hack.org>
+Date: Wed, 18 Nov 2015 15:38:38 +0100
+Message-ID: <CAPRPZsDn9AFciNrBESG8Tn8oWwEeQ78Hzrnd0E0rknrjY1C+WQ@mail.gmail.com>
+From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] rtdm_clock_read overhead/accuracy question
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,36 +15,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Alvaro <aramos@ixion.es>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Oct 16, 2015 at 01:13:12PM +0200, Alvaro wrote:
-> Good morning,
-> I 'm trying Xenomai 3.0 Kernel. I have compiled and encapsulated a 
-> preempt_rt_kernel from 
-> https://pixhawk.org/dev/ros/px4linux#rt_preempt_kernel that contains a 
-> Xenomai 3.0 with cobalt configuration on a Odroid C1 board. Afterwards, 
-> I downloaded the xenomai 3-3.0 files from your repository
+>>
+>>    Is that realistic?
+>
+> This seems to be a lot.
 
-Hi,
+It looks quite long, yes, for what should essentially be an RDTSC instruction.
 
-"your repository" is a bit vague here. Which repository?
+Why not test without the sleep and compare two back-to-back
+rtdm_clock_read()s to make sure that you're not measuring jitter from
+the sleep function ?
 
-> to install the 
-> libraries and the tools. I have compiled the libraries for Cobalt mode 
-> (./configure --with-core=cobalt --enable-smp --enable-pshared). When I 
-> execute latency application the system responses as: low init():binding 
-> failed: function not implemented. If I compile for Mercury mode when I 
-> execute the application latency I get: WARNING: [main] failed to lock 
-> memory .
 
-The most common reason for failing to lock memory is because you are
-not running the application with root privileges. See:
-http://xenomai.org/2014/06/running-a-xenomai-application-as-a-regular-user/
-
-Regards.
-
--- 
-					    Gilles.
-https://click-hack.org
+Jeroen.
 
