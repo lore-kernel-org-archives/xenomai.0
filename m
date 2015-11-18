@@ -1,13 +1,9 @@
-References: <564B02CC.6060609@basystemes.fr>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <564C49CF.1070605@xenomai.org>
-Date: Wed, 18 Nov 2015 10:50:07 +0100
+Message-ID: <trinity-3b905084-1366-4586-b761-0f15088b0d82-1447853696479@3capp-webde-bap53>
+From: JK.Behnke@web.de
+Date: Wed, 18 Nov 2015 14:34:56 +0100
 MIME-Version: 1.0
-In-Reply-To: <564B02CC.6060609@basystemes.fr>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] multiple failing writes to XDDP socket seem to block
- other I/Os
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] rtdm_clock_read overhead/accuracy question
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,74 +12,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thierry Bultel <thierry.bultel@basystemes.fr>, xenomai@xenomai.org, Jean-Baptiste Tredez <jean-baptiste.tredez@basystemes.fr>
+To: xenomai@xenomai.org
 
-On 11/17/2015 11:34 AM, Thierry Bultel wrote:
-> Hi,
-> 
-> With xenomai-2.6.4 on IMX6, I am facing an issue, that for now, and
-> unfortunately, I have not been able to
-> narrow down to a simple test case, but I am still working on it.
-> 
-> Considering the following piece of code, where :
-> 
-> - globalLogFd is a XDDP socket, whose rtp backend is no longer
-> listening. This works great when the rtp listener pops the messages.
-> - fp points to a classical text file
-> 
-> --------------
-> 
-> static int cpt;
-> void foo() { cpt++; };
-> 
-> static int cpt2;
-> void foo2() { cpt2++; };
-> 
-> --------------
-> 
->     cpt=0;
->     cpt2=0;
-> 
->     for (uint32_t i = 0; i < index; i++ )
->     {
->         fprintf(stdout,"in loop: %d\n", i);
->         char msg[256];
->         sprintf(msg, "%d \n",i);
-> 
->         size_t ret = write(globalLogFd,msg,strlen(msg)+1);
->         if (ret != strlen(msg)+1) {
->             foo();
->         }
-> 
->         count++;
-> 
->         fprintf(fp,"%s",m_buffer[i]);
->         foo2();
-> 
->     }
-> 
->     fflush(fp);
->     fclose(fp);
-> 
-> The seen effect is that when the XDDP buffer is full, the I/O do not
-> work anymore after some number of iterations. The cpt and cpt2 counters
+   Hello,
 
-fprintf() relays output data to a low priority thread using lockless
-buffers not to delay the real-time caller.
+   I'm currently debugging a problem in my xenomai application.
+   In order ot get timing information I do the following inside the
+   read-handler of my rtdm driver.
 
-Since the caller has higher priority than the thread handling the stdio
-stream, and your code spins indefinitely in that loop without ever
-blocking, receiving -ENOMEM continuously:
+   // --- start code snippet ---------------------------------
+   nanosecs_abs_t  t1, t2;
+   rtdm_lock_get_irqsave(&lockobj, lockctx);
 
-- how is the relay thread supposed to be able to run for handling the
-output?
+   t1=rtdm_clock_read();
+   rtdm_task_busy_sleep(10000); // code block to be measured.
+   t2=rtdm_clock_read();
 
-- how is the non-rt XDDP receiver supposed to consume the data, so that
-the -ENOMEM condition would stop on the send side?
+   rtdm_lock_put_irqrestore(&lockobj, lockctx);
+   // --- end code snippet ---------------------------------
 
-Any code that keeps sending requests without acting upon a failure code
-it receives doing so, is just asking for trouble.
+   I observe the following time differences  t2-t1:
+   min=10176 ns,  max=10737 ns, avg=10314 ns
 
--- 
-Philippe.
+   This means in this case the average overhead of the two rtdm_clock_read
+   calls is
+   approximately 314 ns/2 = 157 ns.
 
+   Is that realistic?
+   Are there any other functions I might use to measure execution time of
+   an arbitrary code block?
+
+   I'm running xenomai 2.6.3 on linux kernel 3.8.13.
+   Hardware platform is Intel Atom E640 (1.0 GHz)
+
+   Thanks in advance
+   Jochen
