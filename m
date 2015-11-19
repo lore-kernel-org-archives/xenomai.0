@@ -1,13 +1,11 @@
-Date: Thu, 19 Nov 2015 12:57:31 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151119115731.GA16710@hermes.click-hack.org>
-References: <2396B4D2166B62479FBBE370D4A7C1F30A70D64A@mb2010-1.intra.tut.fi>
+From: ZIV-Guillermo Alonso Izaga <guillermo.alonso@cgglobal.com>
+Date: Thu, 19 Nov 2015 17:11:23 +0000
+Message-ID: <676E28DB5A4A2E4CA3204F137EC06E49106BAD0A@ESZMD002.cgglobal.com>
+Content-Language: es-ES
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2396B4D2166B62479FBBE370D4A7C1F30A70D64A@mb2010-1.intra.tut.fi>
-Subject: Re: [Xenomai] Problem: rtifconfig rteth0 hangs the terminal and
- applications except mouse cursor.
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Texas Intruments AM437x Xenomai support
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,23 +14,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Umair Ali <ali.umair@tut.fi>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thu, Nov 19, 2015 at 11:44:50AM +0000, Umair Ali wrote:
-> Can you tell me what is causing the problem.
+Dear all,
 
-Definitely not. See:
-http://xenomai.org/asking-for-help/
+I would like to know if Xenomai (2.6.x or 3.0 in dual-kernel configuration)=
+ currently supports the TI AM437x processors (ARM Cortex-A9).
+I already know that it is not currently included on the list of supported p=
+latforms, but I need to be sure that that information is not outdated.
 
-The first thing to do, to see the error messages is to run in text
-mode and not graphic mode, or to redirect the kernel console to a
-serial port.
+Thank you very much,
 
-You should also check that you do not have irq conflicts, see:
-http://xenomai.org/2014/06/what-if-xenomai-and-linux-devices-share-the-same-irq/
+                Guillermo
 
--- 
-					    Gilles.
-https://click-hack.org
 
+
+CG DISCLAIMER: This email contains confidential information. It is intended=
+ exclusively for the addressees. If you are not an addressee, you must not =
+store, transmit or disclose its contents. Instead please notify the sender =
+immediately; and permanently delete this e-mail from your computer systems.=
+ We have taken reasonable precautions to ensure that no viruses are present=
+. However, you must check this email and the attachments, for viruses. We a=
+ccept no liability whatsoever, for any detriment caused by any transmitted =
+virus.
