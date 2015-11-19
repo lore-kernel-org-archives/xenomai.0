@@ -1,12 +1,12 @@
-Message-ID: <trinity-cacbcd3c-ab7f-431a-a768-a9dddeae4b84-1447929286225@3capp-webde-bap51>
-From: JK.Behnke@web.de
-Date: Thu, 19 Nov 2015 11:34:47 +0100
-In-Reply-To: <20151119085558.GB29706@hermes.click-hack.org>
-References: <trinity-4e7fb472-a4bb-442c-a8c9-6c8a9ebe09cc-1447920592443@3capp-webde-bap51>,
- <20151119085558.GB29706@hermes.click-hack.org>
+From: Umair Ali <ali.umair@tut.fi>
+Date: Thu, 19 Nov 2015 11:44:50 +0000
+Message-ID: <2396B4D2166B62479FBBE370D4A7C1F30A70D64A@mb2010-1.intra.tut.fi>
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-2022-jp"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] rtdm_clock_read overhead/accuracy question
+Subject: [Xenomai] Problem: rtifconfig rteth0 hangs the terminal and
+ applications except mouse cursor.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,128 +15,120 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-   Hello Gilles,
+Hello Xenomai team,
 
-   many thanks for your help up to now.
-   I still have some questions, see below.
+I have faced a problem that when i am trying to run the command
+"root@cpc:/usr/xenomai/sbin# ./rtifconfig rteth0 up 10.0.0.175 netmask 255.=
+255.255.0" then my terminal and other applications hangs up but the mouse c=
+ursor is still works but i can not close any terminal or anything else.
+My aim was to make the 'rteth0' interface up. For doing this i have followe=
+d the following steps
+1) First unbind the driver 8139too from the NIC and bind the driver rt_8139=
+too as specfied in the link https://lwn.net/Articles/143397/.
+"root@cpc:/usr/xenomai/sbin# tree /sys/bus/pci/drivers/rt_8139too/
+/sys/bus/pci/drivers/rt_8139too/
+=1B$B('(!(!=1B(B 0000:05:04.0 -> ../../../../devices/pci0000:00/0000:00:1e.=
+0/0000:05:04.0
+=1B$B('(!(!=1B(B bind
+=1B$B('(!(!=1B(B module -> ../../../../module/rt_8139too
+=1B$B('(!(!=1B(B new_id
+=1B$B('(!(!=1B(B remove_id
+=1B$B('(!(!=1B(B uevent
+=1B$B(&(!(!=1B(B unbind
 
-   >On Thu, Nov 19, 2015 at 09:09:52AM +0100, JK.Behnke@web.de wrote:
-   >> >On Wed, Nov 18, 2015 at 06:11:00PM +0100, JK.Behnke at web.de
-   wrote:
-   >> >> Hello Gilles,
-   >> >>
-   >> >> >On Wed, Nov 18, 2015 at 03:36:25PM +0100, JK.Behnke at web.de
-   wrote:
-   >> >> >> Hello Gilles,
-   >> >> >>
-   >> >> >> thanks for your quick response.
-   >> >> >> See my comments/questions below.
-   >> >> >>
-   >> >> >> >On Wed, Nov 18, 2015 at 02:34:56PM +0100, JK.Behnke at web.de
-   wrote:
-   >> >> >> >> Hello,
-   >> >> >> >>
-   >> >> >> >> I'm currently debugging a problem in my xenomai
-   application.
-   >> >> >> >> In order ot get timing information I do the following
-   inside the
-   >> >> >> >> read-handler of my rtdm driver.
-   >> >> >> >>
-   >> >> >> >> // --- start code snippet ---------------------------------
-   >> >> >> >> nanosecs_abs_t t1, t2;
-   >> >> >> >> rtdm_lock_get_irqsave(&lockobj, lockctx);
-   >> >> >> >>
-   >> >> >> >> t1=rtdm_clock_read();
-   >> >> >> >> rtdm_task_busy_sleep(10000); // code block to be measured.
-   >> >> >> >> t2=rtdm_clock_read();
-   >> >> >> >>
-   >> >> >> >> rtdm_lock_put_irqrestore(&lockobj, lockctx);
-   >> >> >> >> // --- end code snippet ---------------------------------
-   >> >> >> >>
-   >> >> >> >> I observe the following time differences t2-t1:
-   >> >> >> >> min=10176 ns, max=10737 ns, avg=10314 ns
-   >> >> >> >>
-   >> >> >> >> This means in this case the average overhead of the two
-   rtdm_clock_read
-   >> >> >> >> calls is
-   >> >> >> >> approximately 314 ns/2 = 157 ns.
-   >> >> >> >
-   >> >> >> >No, this means that the average overhead of rtdm_clock_read
-   is
-   >> >> >> >314ns.
-   >> >> >> >
-   >> >> >> >what you do is:
-   >> >> >> >read time
-   >> >> >> >convert to ns
-   >> >> >> >busy sleep
-   >> >> >> >read time
-   >> >> >> >convert to ns
-   >> >> >> >
-   >> >> >> >As you can see, between the two time reads, there is only one
-   >> >> >> >conversion to nanoseconds, (which we assume is the bulk of
-   the
-   >> >> >> >overhead). And more generally, the overhead of the second
-   time read
-   >> >> >> >is not counted either.
-   >> >> >> >
-   >> >> >> >
-   >> >> >> >>
-   >> >> >> >> Is that realistic?
-   >> >> >> >
-   >> >> >> >This seems to be a lot. The "tsc" test will measure the
-   average
-   >> >> >> >difference between two time reads, and the "arith" test will
-   measure
-   >> >> >> >the average time for a "multiply then shift" operation,
-   adding the
-   >> >> >> >two should give you an idea of the overhead. From what I
-   recall,
-   >> >> >> >reading the tsc on an atom N230 (a very old one) had an
-   overhead
-   >> >> >> >around 20ns.
-   >> >> >> Where do I find the "tsc test", which test application do I
-   have to run?
-   >> >> >
-   >> >> >The application is named "tsc".
-   >> >>
-   >> >> Thanks, meanwhile I found the tsc tool under
-   >> >> /usr/xenomai/bin/regression
-   >> >
-   >> >Yeah, well, not a very good default directory. You can onverride it
-   >> >with an option from the configure script.
-   >> >
-   >> >>
-   >> >> Here are my "tsc" results
-   >> >> Atom E640 (1.0 GHz): min: 26, max: 936, avg: 34.0001 -> 0.0262211
-   us ==> 26 ns
-   >> >> Atom E660 (1.3 GHz): min: 26, max: 1105, avg: 34.0001 ->
-   0.0262211 us ==> 26 ns
-   >> >
-   >> >Well, there is a problem with the time conversion routines. 34
-   >> >cycles on a 1.0 GHz machine should be 34ns, not 26ns. Other than
-   >> >that, it seems consistent with what I observe on my old atom.
-   >>
-   >> What can I do about that?
-   >
-   >Check the boot to see what frequency xenomai uses, and follow all
-   >the operations which compute the constants used for time conversion.
-   >The frequency is probably the culprit though.
-   I can't find any hint on the frequency used by xenomai.
-   The single line I get by dmesg is:
-   tsc: Refined TSC clocksource calibration: 997.507 MHz
-
-   Where do I get the right information?
-   Where should I start digging in the sourcecode?
-   >You should upgrade to Xenomai 2.6 git head also, in case the issue
-   >you have has already been fixed.
-   >
-   How can I verify that time conversion is working?
-   Do I just have to run the "tsc " test tool and compare the avg value
-   against the computed us value ?
+2 directories, 5 files"
 
 
-   Regards
-   Jochen
+2) I followed this link for further steps
+https://sir.upc.edu/wikis/roblab/index.php/Development/RTnet
+ root@cpc:/usr/xenomai/sbin# mknod /dev/rtnet c 10 240
+mknod: =1B$B!F=1B(B/dev/rtnet=1B$B!G=1B(B: File exists
+
+3)root@cpc:/usr/xenomai/sbin# insmod /lib/modules/3.14.39-xenomai-3.0.1/ker=
+nel/drivers/xenomai/net/stack/rtnet.ko
+insmod: ERROR: could not insert module /lib/modules/3.14.39-xenomai-3.0.1/k=
+ernel/drivers/xenomai/net/stack/rtnet.ko: File exists
+
+4) root@cpc:/usr/xenomai/sbin# insmod /lib/modules/3.14.39-xenomai-3.0.1/ke=
+rnel/drivers/xenomai/net/stack/ipv4/rtipv4.ko
+
+5)root@cpc:/usr/xenomai/sbin# insmod /lib/modules/3.14.39-xenomai-3.0.1/ker=
+nel/drivers/xenomai/net/stack/packet/rtpacket.ko
+
+6)root@cpc:/usr/xenomai/sbin# insmod /lib/modules/3.14.39-xenomai-3.0.1/ker=
+nel/drivers/xenomai/net/drivers/rt_loopback.ko
+
+7)root@cpc:/usr/xenomai/sbin# insmod /lib/modules/3.14.39-xenomai-3.0.1/ker=
+nel/drivers/xenomai/net/drivers/rt_8139too.ko
+insmod: ERROR: could not insert module /lib/modules/3.14.39-xenomai-3.0.1/k=
+ernel/drivers/xenomai/net/drivers/rt_8139too.ko: File exists
+
+9)root@cpc:/usr/xenomai/sbin# insmod /lib/modules/3.14.39-xenomai-3.0.1/ker=
+nel/drivers/xenomai/net/addons/rtcap.ko
+
+10) root@cpc:/usr/xenomai/sbin# ./rtifconfig -a
+rteth0    Medium: Ethernet  Hardware address: 00:00:B4:C3:08:97
+          BROADCAST  MTU: 1500
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0
+          RX bytes:0 (0.0 b)  TX bytes:0 (0.0 b)
+
+rtlo      Medium: Local Loopback
+          LOOPBACK  MTU: 1500
+
+11) root@cpc:/usr/xenomai/sbin# ./rtifconfig rtlo up 127.0.0.1
+root@cpc:/usr/xenomai/sbin#
+
+But when i run the command "root@cpc:/usr/xenomai/sbin# ./rtifconfig rteth0=
+ up 10.0.0.175 netmask 255.255.255.0" every thing hangs up and even i remov=
+e the mod "rmmod 8139too" and the run the command again the results are sam=
+e. I was thinking that may be 8139too is using same irq interrupts thats wh=
+y i removed the module but problem persists.
+
+I have the following setups:
+"root@cpc:/usr/xenomai/sbin# dmesg |grep -i xenomai
+[    0.000000] Linux version 3.14.39-xenomai-3.0.1 (root@cpc) (gcc version =
+4.8.4 (Ubuntu 4.8.4-2ubuntu1~14.04) ) #2 SMP PREEMPT Tue Nov 10 18:02:47 EE=
+T 2015
+[    0.000000] Kernel command line: BOOT_IMAGE=3D/boot/vmlinuz-3.14.39-xeno=
+mai-3.0.1 root=3DUUID=3De29fa266-6a54-4815-b5bd-ea0168f18fd7 ro quiet splas=
+h crashkernel=3D384M-:128M vt.handoff=3D7
+[    0.851788] [Xenomai] scheduling class idle registered.
+[    0.851792] [Xenomai] scheduling class rt registered.
+[    0.851839] [Xenomai] SMI-enabled chipset found, but SMI workaround disa=
+bled
+[    0.851839]           (see xenomai.smi parameter). You might encounter
+[    0.851970] I-pipe: head domain Xenomai registered.
+[    0.852615] [Xenomai] Cobalt v3.0.1 (Exact Zero) [DEBUG]
+[    1.644181] usb usb1: Manufacturer: Linux 3.14.39-xenomai-3.0.1 ehci_hcd
+[    1.645404] usb usb2: Manufacturer: Linux 3.14.39-xenomai-3.0.1 uhci_hcd
+[    1.646271] usb usb3: Manufacturer: Linux 3.14.39-xenomai-3.0.1 uhci_hcd
+[    1.647128] usb usb4: Manufacturer: Linux 3.14.39-xenomai-3.0.1 uhci_hcd
+[    1.648021] usb usb5: Manufacturer: Linux 3.14.39-xenomai-3.0.1 uhci_hcd
+[   11.424158] *** RTnet for Xenomai v3.0.1 ***"
+
+root@cpc:/usr/xenomai/sbin# dmesg |grep -i rtnet
+[   11.424158] *** RTnet for Xenomai v3.0.1 ***
+[   11.424170] RTnet: initialising real-time networking
+[  705.184317] RTnet: registered rteth0
+[ 1025.632565] RTnet: registered rtlo
+
+Can you tell me what is causing the problem. Actually i am working to build=
+ a pcap replay tool in real time. Firstly i was trying to up the real time =
+interface then send the packets as raw Ethernet but it seems the interface =
+is having a problem. Can you also guide me that how i can read the pcap fil=
+e. As in the non real-time Linux you have the libpcap library which have th=
+e functions to open a pcap file in the offline mode and then read the data =
+packet by packet. But I am trying to figure that is there library like libp=
+cap which i can use with xenomai and rtnet to read pcap file. Please guide =
+me
+
+ Thanks & Regards
+Ali
+
+
+
+
