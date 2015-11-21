@@ -1,12 +1,11 @@
-References: <CAK4EZFT_wVtDGhQe+ZdgJTL2nVoqykBM5J4T0=Fw8iijGZ1G4Q@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <565B3EB8.8040807@xenomai.org>
-Date: Sun, 29 Nov 2015 19:06:48 +0100
-MIME-Version: 1.0
-In-Reply-To: <CAK4EZFT_wVtDGhQe+ZdgJTL2nVoqykBM5J4T0=Fw8iijGZ1G4Q@mail.gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Raspberry Pi Real-Time Firmware Issue
+Message-ID: <1448128636.4288.10.camel@arcor.de>
+From: kodiak <ultraviolett2@arcor.de>
+Date: Sat, 21 Nov 2015 18:57:16 +0100
+Content-Type: text/plain; charset="utf-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai] How to start with Xenomai 3 / Mercury API
+Reply-To: ultraviolett2@arcor.de
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,28 +14,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Adam Vaughan <vaughana@umich.edu>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 11/28/2015 11:38 PM, Adam Vaughan wrote:
-> Hello,
-> 
-> I've seen a fair amount of Raspberry Pi related discussion on this mailing
-> list lately, so I thought I'd mention that a real-time latency issue was
-> fixed in the recent firmware ed611df.
-> 
-> The issue caused disable_pvt not to work on both the RPi 1 and 2 since the
-> October 6th, 2014 firmware release.  Without disable_pvt, the chip will
-> stall for ~16 microseconds every half second.
-> 
-> A description is available here:
-> 
-> https://github.com/raspberrypi/firmware/issues/497
+I have been successfully compiling a linux-rt kernel and the xenomai3-libs for a Raspberry 2. Testing the installation
+with *latency* seems to produce reasonable results.
 
-The troubleshooting guide has been updated to include this information:
-http://xenomai.org/troubleshooting-a-dual-kernel-configuration/#the_latency_test_shows_high_latencies
+Now I´d like to start writing my own programs. Is there any tutorial or even a simple "hello world" example for Xenomai
+3 / Mercury, or even better some book to get started with?
 
-Thanks for the hint,
+Except for the stuff here http://www.cs.ru.nl/lab/xenomai/, which is for Xenomai 2, I found nothing else.
 
--- 
-Philippe.
+Cheers,
+Kodiak
+
 
