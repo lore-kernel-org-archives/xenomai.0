@@ -1,10 +1,12 @@
+References: <BLU436-SMTP5068DD4CFCAD34C1CC29DDF0190@phx.gbl>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <565047BC.2010101@xenomai.org>
+Date: Sat, 21 Nov 2015 11:30:20 +0100
 MIME-Version: 1.0
-Date: Tue, 5 Jan 2016 21:22:32 +0100
-Message-ID: <CACzbJrLu9YxAme9JdY-SzTeLQKrAiyk15b_bQCbufpsri4yNyA@mail.gmail.com>
-From: Denis Matteazzi <d.matteazzi@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Problem compiling kernel with Cobalt
+In-Reply-To: <BLU436-SMTP5068DD4CFCAD34C1CC29DDF0190@phx.gbl>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] registry
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,50 +15,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>, xenomai@xenomai.org
 
-Hi to all.
-I am new in Xenomai and RT in general. I have some problems in compiling
-kernel with
-patches for Xenoami and I-Pipe.
+On 11/21/2015 06:53 AM, Mathieu Rondonneau wrote:
+> Hi,
+> 
+> When a skin (lets say vxworks for example) does a
+> registry_add_dir("/vxworks"), where this directory gets created?
+> 
+> I can see the registry as follow:
+> /var/run/xenomai/root/
+> /var/run/xenomai/system/heaps
+> /var/run/xenomai/system/threads
+> /var/run/xenomai/system/version
+> 
+> This is how I started the registry:
+> sudo ./sysregd --linger --daemonize --anon --root=/var/run/xenomai
+> 
+> so I was expecting to be able to find a directory as follow:
+> /var/run/xenomai/anon/<pid>/vxworks
 
-Host computer:
-I'm trying on a notebook with an x86 32bit CPU.
-The Linux Release is Ubuntu Trusty (14.04.3 LTS).
-The Kernel version is 4.1.15.
-I'm trying to use Xenomai 3.0.1.
-I have downloaded ipipe-core-4.1-x86-1.patch.
+Nope. A registry spawned manually from the command line is supposed to
+manage a session shared between several application processes. --anon is
+an internal switch used by copperplate aimed at starting a private
+session for the current process, when it does not want to share anything
+with other processes. You should not use this switch directly.
 
-I have downloaded version 4.1 of the Kernel source from kernel.org
-I have executed the command script/prepare-kernel.sh
---linux=3D<path_of_the_kernel_source>
-    --ipipe=3D<complete_path_of_ipipe_patch> --arch=3Dx86
-After that I have run
-   make menuconfig
-and removed CPU scaling and IDLE feature, ACPI, APM and KGDB options.
-Then I have run
-make-kpkg --rootcmd fakeroot --initrd kernel_image kernel_headers
-modules_image
+--root should be the path of the top directory for the session, so
+/var/run/xenomai won't work since this is the default root for all sessions.
 
-These are the error that compare:
+> 
+>>From my test app, I have tried to find the directory in those locations
+> with no luck:
+> /var/run/xenomai/<pid>/vxworks
+> /var/run/xenomai/vxworks
 
-In file included from kernel/xenomai/bufd.c:20:0:
-include/xenomai/cobalt/kernel/sched.h: In function =E2=80=98xnsched_set_res=
-ched=E2=80=99:
-include/xenomai/cobalt/kernel/sched.h:224:3: error: implicit declaration of
-function =E2=80=98cpu_set=E2=80=99 [-Werror=3Dimplicit-function-declaration=
-]
-   cpu_set(xnsched_cpu(sched), current_sched->resched);
-   ^
-include/xenomai/cobalt/kernel/sched.h: In function =E2=80=98xnsched_support=
-ed_cpu=E2=80=99:
-include/xenomai/cobalt/kernel/sched.h:234:2: error: implicit declaration of
-function =E2=80=98cpu_isset=E2=80=99 [-Werror=3Dimplicit-function-declarati=
-on]
-  return cpu_isset(cpu, xnsched_realtime_cpus);
-  ^
-cc1: some warnings being treated as errors
+If starting the sysregd daemon is left to copperplate, that would be:
 
-Any Idea?
-Thanks.
-Denis.
+/var/run/xenomai/<user>/<session-label>/<pid>/vxworks
+
+When the session is anonymous, <session-label> is "anon@<pid>".
+
+If you start the daemon manually from the command line, --root should
+specify the session directory, and the vxworks tree below would be
+located at:
+
+<session-top-dir>/vxworks
+
+> 
+> Now I think I am missing a setup somewhere.
+> 
+
+lib/{alchemy,psos,vxworks}/init.c illustrate this. --enable-registry
+should be passed to the configure script.
+
+-- 
+Philippe.
+
