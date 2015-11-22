@@ -1,18 +1,13 @@
-Message-ID: <5661E4D5.5010804@web.de>
-Date: Fri, 04 Dec 2015 20:09:09 +0100
-From: Jochen Behnke <jk.behnke@web.de>
+Message-ID: <BLU437-SMTP28ED04ABD900BC8E661228F0180@phx.gbl>
+References: <BLU436-SMTP145401599CFFDB6392A7DA3F01C0@phx.gbl>
+ <BLU437-SMTP1580D36EAE2265F83692A4F01B0@phx.gbl>
+From: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
+Date: Sat, 21 Nov 2015 20:51:18 -0800
 MIME-Version: 1.0
-References: <trinity-3a616500-d86a-4f71-bb11-16fa1d6cf8a2-1448533977790@3capp-webde-bs12>
- <20151128064325.GC10399@hermes.click-hack.org>
- <trinity-4550a539-a311-4cb6-853e-f6f5fb983201-1448975385774@3capp-webde-bap47>
- <20151201181155.GC30041@hermes.click-hack.org>
- <trinity-8e5e4a49-df3c-4391-b1ce-b1bc4d77ffcc-1449061119000@3capp-webde-bs35>
- <trinity-edf656b8-4eef-4967-92eb-85856ad3f8bd-1449246268211@3capp-webde-bs27>
- <20151204163315.GD29398@hermes.click-hack.org>
-In-Reply-To: <20151204163315.GD29398@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+In-Reply-To: <BLU437-SMTP1580D36EAE2265F83692A4F01B0@phx.gbl>
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] "RT throttling" issue
+Subject: Re: [Xenomai] xenomai skin's test suite not built
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,28 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Hello Gilles,
-
-thanks for your response.
-
+On 15-11-18 10:05 PM, Mathieu Rondonneau wrote:
+> On 15-11-17 09:33 PM, Mathieu Rondonneau wrote:
+>> Hi Xenomai team,
 >>
->> Now I have the following questions
->> 1. What is meant by "domain stalled", "current" and "current+stalled"?
->> 2. What is that process having ID "[   0]"
->> 3. How can I tell processes running in secondary mode from others?
->>     (just by looking at the priority value?)
+>> It looks like the makefile of the testsuite directory of the different
+>> skins are not called for some reason when building the xenomai library
+>> and tools.
 >>
->> Any hint on interpreting my frozen file is appreciated.
->
-> This trace is worthless. To have a meaningful trace, enable tracing
-> on functions entry (the default when you enable the I-pipe tracer).
->
-Do you mean CONFIG_FUNCTION_TRACE?
+>> Am I missomg a flag somewhere?
+>>
+>> Thanks,
+>> -Mathieu
+>>
+> got them to build manually and run.
+> 
+> I am running a freertos skin but some testsuite are failing.
+> Will look at it more in details.
+> 
+> thanks,
+> -Mathieu
+> 
 
-Regards
-Jochen
+tests failing were due to problem accessing the registry (files created
+by the skin could not be read by the app).
 
+The problem was because of the wrong path being used by the app.
+
+Thanks,
+-Mathieu
 
