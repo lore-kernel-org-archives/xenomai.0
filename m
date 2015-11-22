@@ -1,10 +1,14 @@
-Message-ID: <565DB393.3080607@goetting.de>
-Date: Tue, 01 Dec 2015 15:49:55 +0100
-From: Julio Cesar Aguilar Zerpa <aguilar@goetting.de>
+Message-ID: <BLU437-SMTP4885BE0155BAE353981F86F0180@phx.gbl>
+References: <BLU436-SMTP5068DD4CFCAD34C1CC29DDF0190@phx.gbl>
+ <565047BC.2010101@xenomai.org>
+ <BLU436-SMTP2549CFA8208C1D85905494AF0190@phx.gbl>
+From: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
+Date: Sat, 21 Nov 2015 20:49:29 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai] delayed or discarded ethernet packets
+In-Reply-To: <BLU436-SMTP2549CFA8208C1D85905494AF0190@phx.gbl>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] registry
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,59 +17,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-Hello there,
+On 15-11-21 08:30 AM, Mathieu Rondonneau wrote:
+> On 15-11-21 02:30 AM, Philippe Gerum wrote:
+>> On 11/21/2015 06:53 AM, Mathieu Rondonneau wrote:
+>>> Hi,
+>>>
+>>> When a skin (lets say vxworks for example) does a
+>>> registry_add_dir("/vxworks"), where this directory gets created?
+>>>
+>>> I can see the registry as follow:
+>>> /var/run/xenomai/root/
+>>> /var/run/xenomai/system/heaps
+>>> /var/run/xenomai/system/threads
+>>> /var/run/xenomai/system/version
+>>>
+>>> This is how I started the registry:
+>>> sudo ./sysregd --linger --daemonize --anon --root=/var/run/xenomai
+>>>
+>>> so I was expecting to be able to find a directory as follow:
+>>> /var/run/xenomai/anon/<pid>/vxworks
+>>
+>> Nope. A registry spawned manually from the command line is supposed to
+>> manage a session shared between several application processes. --anon is
+>> an internal switch used by copperplate aimed at starting a private
+>> session for the current process, when it does not want to share anything
+>> with other processes. You should not use this switch directly.
+>>
+>> --root should be the path of the top directory for the session, so
+>> /var/run/xenomai won't work since this is the default root for all sessions.
+>>
+> Thanks Philippe, it looks like I don't need to start sysregd manually then.
+> 
+>>>
+>>> >From my test app, I have tried to find the directory in those locations
+>>> with no luck:
+>>> /var/run/xenomai/<pid>/vxworks
+>>> /var/run/xenomai/vxworks
+>>
+>> If starting the sysregd daemon is left to copperplate, that would be:
+>>
+>> /var/run/xenomai/<user>/<session-label>/<pid>/vxworks
+>>
+>> When the session is anonymous, <session-label> is "anon@<pid>".
+>>
+>> If you start the daemon manually from the command line, --root should
+>> specify the session directory, and the vxworks tree below would be
+>> located at:
+>>
+>> <session-top-dir>/vxworks
+>>
+> it looks like the path I need to look for is:
+> /var/run/xenomai/<user>/<session-label>/<pid>/vxworks
+>
+>>>
+>>> Now I think I am missing a setup somewhere.
+>>>
+>>
+>> lib/{alchemy,psos,vxworks}/init.c illustrate this. --enable-registry
+>> should be passed to the configure script.
+>>
+> I have this flag set already.
+> 
 
-State:
-I am using xenomai 2.6.1.
-I installed the driver of a 3D camera which transmit its data via 
-ethernet (UDP).
+Just confirming that this is now working, my app can now access the
+registry created by the skin (tasks, queues, semaphores).
 
-Problem:
-The transmission is being delayed (or packages are getting discarded) by 
-xenomai (probably, since the problem does not appear with
-a normal linux kernel).
-
-Solution(s):
-     - There seems to be a way of "pipelining" the data from the camera 
-to a real time thread or
-       to create a real time shared memory heap where the data is 
-delivered by the camera (as a 'producer') and gotten by a 'consumer'.
-     - What about increasing the priority of the ethernet interface to 
-that of a real time IO thread (or similar)?
-
-Question(s):
-     - Are these two options even correct?  Are there other alternatives?
-       Could you provide some example code of  the 'producer' and 
-'consumer'?
-       Do I need to write my own camera driver and include this 
-'pipelining' or 'heap'?
-     - Is there a way to increase the priority of an ethernet interface 
-in xenomai?
-
-Thank you and best regards,
-Julio Aguilar
-
-Mit freundlichen Grüßen
-Götting KG
-i.A. Julio Cesar Aguilar Zerpa
--- 
-M.Sc. Julio Cesar Aguilar Zerpa
-Forschung & Entwicklung
-aguilar@goetting.de
-Tel. +49(0)-5136-8096-39
-————————————————————
-Götting KG
-Celler Str. 5, D-31275 Lehrte/Röddensen
-Geschäftsführer H.-H. Götting
-HR A 31127 | Amtsgericht Hildesheim
-Gerichtsstand Lehrte
-USt.-Id. Nr. DE 115055039
-USt.-Nr. 16-226-13403
-Phone +49(0)-5136-8096-0
-Fax +49(0)-5136-8096-80
-info@goetting.de | www.goetting.de
-————————————————————
-
+Thanks Philippe,
+-Mathieu
 
