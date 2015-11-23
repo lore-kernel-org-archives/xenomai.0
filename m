@@ -1,13 +1,13 @@
-Date: Mon, 7 Dec 2015 21:30:37 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151207203037.GB20044@hermes.click-hack.org>
-References: <2396B4D2166B62479FBBE370D4A7C1F30A70DADE@mb2010-1.intra.tut.fi>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Mon, 23 Nov 2015 09:56:11 -0500
+Message-ID: <20151123145611.GD21923@csclub.uwaterloo.ca>
+References: <CABShy47mthA59EuoZ1F2xjH=O1T57_BNhzFp5PTNSh1rJcgB_A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <2396B4D2166B62479FBBE370D4A7C1F30A70DADE@mb2010-1.intra.tut.fi>
-Subject: Re: [Xenomai] Linking static libraries using wrap-link.sh script
+In-Reply-To: <CABShy47mthA59EuoZ1F2xjH=O1T57_BNhzFp5PTNSh1rJcgB_A@mail.gmail.com>
+Subject: Re: [Xenomai] how to install XENOMAI on beaglebone black and
+ raspberry pi
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,75 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Umair Ali <ali.umair@tut.fi>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: BHISHMAPALSINH THAKOR <bjthakor.337@gmail.com>
+Cc: xenomai-request@xenomai.org, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Dec 07, 2015 at 11:06:29AM +0000, Umair Ali wrote:
-> Hello there,
->=20
-> I have read that if you want to create a POSIX application by
-> compiling it with Xenomai POSIX skin then the script
-> "wrap-link.sh" is used. Do i have understand it correctly  or it
-> means that if you want to use static library (compiled for POSIX
-> skin) with Xenomai POSIX application then in order to link that
-> static library with real time application "wrap-link.sh" script
-> should be used. I am little confused. Please make it clear.
+On Mon, Nov 23, 2015 at 04:38:15PM +0530, BHISHMAPALSINH THAKOR wrote:
+> respected sir ,
+> i am try various solution but i am not successfully install xenomai on BBB
+> and RASPBERRY PI
+> so sir please guide me about xenomai rtos installation on BBB and if you
+> have documentation then please send me that its really help me lot
 
-I will quote the documentation:
+Well someone did the BBB a while ago and documented what they did:
 
-"Using static libraries
+http://brunosmartins.info/xenomai-on-the-beaglebone-black-in-14-easy-steps/
 
-Due to the use of the =96wrap flag, it is necessary to do the link
-edition of an application with static versions of the Xenomai POSIX
-skin library two stages. To help in this matter, versions of Xenomai
-after 2.5.0 include a script called =93wrap-link.sh=94.
+More up to date version:
 
-For more information try wrap-link.sh =96help."
+http://elinux.org/EBC_Xenomai
 
-This is true for Xenomai 2.6. I guess this is still true for Xenomai
-3.x. Anyway, using wrap-link.sh for dynamic libraries should not hurt.
+And for RPi someone has a Raspbian document:
 
-> Moreover I want to use the static libpcap which is compiled for
-> the POSIX skin to make an application on Xenomai POSIX skin to
-> read pcap files. If i use the the static libpcap file to read to
-> pcap files along with mlockall,, can reading of pcap file will
-> switch to secondary mode with this library. The slackspot output
-> file is attached for reference.
+http://wiki.linuxcnc.org/cgi-bin/wiki.pl?RaspbianXenomaiBuild
 
-Normally, this case should be handled by wrap-link.sh provided you
-put the libraries in the right order on the command line. Anyway,
-the slackspot file shows that your program uses "read" to read from
-the program, this causes switch to secondary mode, Xenomai can not
-provide a deterministic replacement to reading from file. If you
-want to avoid that, provided that you use mlockall, you can use
-mmap. With mlockall, mmap will load the entire file in memory, and
-reading will not need any Linux syscall. This too is explained in
-the documentation:
+Not that up to date, but at least could give a starting point.
 
-"Reading from file
-
-Of course, reading from files also causes switches to secondary
-mode. However, a simple solution is available: the mmap service.
-Thanks to the use of mlockall, mmaping a file is equivalent to
-loading it entirely in memory. The call to mmap itself causes a
-switch to secondary mode, but in most cases, it is possible to call
-this service in a non critical part of the code. Note however, that
-doing this may consume a lot of memory if the file is large."
-
-You can probably also have a thread reading from the file and
-passing packets to a thread running in primary mode, but you will
-loose determinism.
-
->=20
-> I am very grateful for the xenomai team and especially Gilles for
-> helping me and answering my stupid and redundant questions.
-
-You are welcome. I am not sure I sent you the link, but the guide
-for porting POSIX applications to Xenomai is here:
-https://xenomai.org/2014/08/porting-a-linux-application-to-xenomai-dual-ker=
-nel/
-
---=20
-					    Gilles.
-https://click-hack.org
+-- 
+Len Sorensen
 
