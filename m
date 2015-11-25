@@ -1,11 +1,12 @@
-From: Wolfgang Netbal <wolfgang.netbal@sigmatek.at>
-Message-ID: <567423D3.3020303@sigmatek.at>
-Date: Fri, 18 Dec 2015 16:18:43 +0100
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Wed, 25 Nov 2015 13:18:47 -0500
+Message-ID: <20151125181847.GA25177@csclub.uwaterloo.ca>
+References: <18024a6dcdef450fb51f2e38ce31f272@ATGRZSW1691.avl01.avlcorp.lan>
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Subject: [Xenomai] Adapted rt_uart_imx.c to work with kernel 3.10
-Reply-To: wolfgang.netbal@sigmatek.at
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <18024a6dcdef450fb51f2e38ce31f272@ATGRZSW1691.avl01.avlcorp.lan>
+Subject: Re: [Xenomai] Undefined references at cross compiling
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,38 +15,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai Mailing List <xenomai@xenomai.org>
+To: "Hartl, Fabian AVL/AT" <Fabian.Hartl@avl.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-RGVhciBXb2xmZ2FuZyBHcmFuZGVnZ2VyLAoKSSBleHRlbmRlZCB5b3VyIGRyaXZlciBmb3IgdGhl
-IHJlYWx0aW1lIHNlcmlhbCBvbiBpbXggdG8gd29yayB3aXRoIApkZXZpY2UgdHJlZWZpbGVzLAp3
-ZSB1c2Uga2VybmVsIDMuMTAgd2l0aCBkZXZpY2V0cmVlIHRoYXRzIHdoeSBJIHVzZWQgI2lmZGVm
-IDwgMywxMCwwLgoKQXMgYSBiYXNlIEkgdXNlZCBjb21taXQgX2E3YjdhZGVjOTEyM2RjNjA1ODdk
-MTYwZjA4MTgzMjJhOWE1NDc2MzBfIAo8aHR0cDovL2dpdC54ZW5vbWFpLm9yZy94ZW5vbWFpLTIu
-Ni5naXQvY29tbWl0L2tzcmMvZHJpdmVycy9jYW4vcnRjYW5fZmxleGNhbi5jP2lkPWE3YjdhZGVj
-OTEyM2RjNjA1ODdkMTYwZjA4MTgzMjJhOWE1NDc2MzA+IApjYW4vZmxleGNhbjogZml4dXAgZm9y
-IGtlcm5lbCByZWxlYXNlID49IDMuMTEKX18gCjxodHRwOi8vZ2l0Lnhlbm9tYWkub3JnL3hlbm9t
-YWktMi42LmdpdC9jb21taXQva3NyYy9kcml2ZXJzL2Nhbi9ydGNhbl9mbGV4Y2FuLmM/aWQ9YTdi
-N2FkZWM5MTIzZGM2MDU4N2QxNjBmMDgxODMyMmE5YTU0NzYzMD4KRmVlbCBmcmVlIHRvIGFkZCB0
-aGUgYXR0YWNoZWQgcGF0Y2ggdG8geGVub21haSBpZiBpdCBoZWxwcy4KV2UgYXJlIHVzaW5nIHhl
-bm9tYWkgMi42LjQgYXMgYmFzZSwgYnV0IGhhdmUgdG8gY2hhbmdlIGEgZmV3IHRoaW5ncyBpbiAK
-dGhlIGZpbGUsCmJlY2F1c2Ugb2YgdGhpcyBJIHRoaW5rIHRoZSBwYXRjaCB3b250IGFwcGx5IG91
-dCBvZiB0aGUgYm94LgoKS2luZCByZWdhcmRzCjxodHRwOi8vZ2l0Lnhlbm9tYWkub3JnL3hlbm9t
-YWktMi42LmdpdC9jb21taXQva3NyYy9kcml2ZXJzL2Nhbi9ydGNhbl9mbGV4Y2FuLmM/aWQ9YTdi
-N2FkZWM5MTIzZGM2MDU4N2QxNjBmMDgxODMyMmE5YTU0NzYzMD4gCgotLSAKV29sZmdhbmcgTmV0
-YmFsClNvZnR3YXJlZW50d2lja2x1bmcKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
-ClNJR01BVEVLIEdtYkggJiBDbyBLRwpTaWdtYXRla3N0cmHDn2UgMQo1MTEyIExhbXByZWNodHNo
-YXVzZW4Kw5ZzdGVycmVpY2ggLyBBdXN0cmlhCgpUZWwuOiArNDMvNjI3NC80MzIxLTAKRmF4OiAr
-NDMvNjI3NC80MzIxLTMwMApFLU1haWw6IHdvbGZnYW5nLm5ldGJhbEBzaWdtYXRlay5hdApodHRw
-Oi8vd3d3LnNpZ21hdGVrLWF1dG9tYXRpb24uYXQKCioqKioqKioqKioqKioqKioqKioqKioqKioq
-KipQbGVhc2Ugbm90ZTogKioqKioqKioqKioqKioqKioqKioqKioqKioqKgpUaGlzIGVtYWlsIGFu
-ZCBhbGwgYXR0YWNobWVudHMgYXJlIGNvbmZpZGVudGlhbCBhbmQgaW50ZW5kZWQgc29sZWx5CmZv
-ciB0aGUgcGVyc29uIG9yIGVudGl0eSB0byB3aG9tIGl0IGlzIGFkZHJlc3NlZC4gSWYgeW91IGFy
-ZSBub3QgdGhlCm5hbWVkIGFkZHJlc3NlZSB5b3UgbXVzdCBub3QgbWFrZSB0aGlzIGVtYWlsIGFu
-ZCBhbGwgYXR0YWNobWVudHMKYWNjZXNzaWJsZSB0byBhbnkgb3RoZXIgcGVyc29uLiBJZiB5b3Ug
-aGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluCmVycm9yIHBsZWFzZSBkZWxldGUgaXQgdG9nZXRo
-ZXIgd2l0aCBhbGwgYXR0YWNobWVudHMuCioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKgotLS0tLS0tLS0tLS0tLSBuZXh0
-IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4u
-LgpOYW1lOiBydF91YXJ0X2lteC5wYXRjaApUeXBlOiB0ZXh0L3gtcGF0Y2gKU2l6ZTogODQ4MCBi
-eXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1h
-aWwveGVub21haS9hdHRhY2htZW50cy8yMDE1MTIxOC80ZTYzYjNjMy9hdHRhY2htZW50LmJpbj4K
+On Wed, Nov 25, 2015 at 08:58:38AM +0000, Hartl, Fabian AVL/AT wrote:
+> Hello,
+> 
+> I successfully installed xenomai on a native ubuntu installation, the I tried installing xenomai on a BeagleBone Black by compiling it on the BeagleBone itself.
+> This also worked.
+> Now I am trying to cross compile the kernel on a Linux machine for the BeagleBone Black.
+> Doing so I encountered the problem of undefined references while making the kernel (see below)
+> 
+> 
+> make[1]: Entering directory '/home/mmg-linux/rtk/linux-3.18.20'
+> scripts/kconfig/conf --silentoldconfig Kconfig
+>   CHK     include/config/kernel.release
+>   CHK     include/generated/uapi/linux/version.h
+>   CHK     include/generated/utsrelease.h
+> make[2]: 'include/generated/mach-types.h' is up to date.
+>   CALL    scripts/checksyscalls.sh
+>   CHK     include/generated/compile.h
+>   LINK    vmlinux
+>   LD      vmlinux.o
+>   MODPOST vmlinux.o
+>   GEN     .version
+>   CHK     include/generated/compile.h
+>   UPD     include/generated/compile.h
+>   CC      init/version.o
+>   LD      init/built-in.o
+> arch/arm/kernel/built-in.o: In function `ipipe_get_sysinfo':
+> /home/mmg-linux/rtk/linux-3.18.20/arch/arm/kernel/ipipe.c:244: undefined reference to `__ipipe_mach_get_tscinfo'
+> arch/arm/xenomai/built-in.o: In function `mach_arm_calibrate':
+> /home/mmg-linux/rtk/linux-3.18.20/arch/arm/xenomai/machine.c:59: undefined reference to `__ipipe_mach_get_tsc'
+> /home/mmg-linux/rtk/linux-3.18.20/arch/arm/xenomai/machine.c:61: undefined reference to `__ipipe_mach_get_tsc'
+> /home/mmg-linux/rtk/linux-3.18.20/arch/arm/xenomai/machine.c:68: undefined reference to `__ipipe_mach_get_tsc'
+> /home/mmg-linux/rtk/linux-3.18.20/arch/arm/xenomai/machine.c:72: undefined reference to `__ipipe_mach_get_tsc'
+> kernel/built-in.o: In function `xnclock_core_read_raw':
+> /home/mmg-linux/rtk/linux-3.18.20/include/xenomai/cobalt/kernel/clock.h:118: undefined reference to `__ipipe_mach_get_tsc'
+> kernel/built-in.o:/home/mmg-linux/rtk/linux-3.18.20/include/xenomai/cobalt/kernel/clock.h:118: more undefined references to `__ipipe_mach_get_tsc' follow
+> Makefile:923: recipe for target 'vmlinux' failed
+> make[1]: *** [vmlinux] Error 1
+> make[1]: Leaving directory '/home/mmg-linux/rtk/linux-3.18.20'
+> debian/ruleset/targets/common.mk:295: recipe for target 'debian/stamp/build/kernel' failed
+> make: *** [debian/stamp/build/kernel] Error 2
+> 
+> 
+> 
+> I am compiling the kernel using this command:
+> 
+> CONCURRENCY_LEVEL=8 CLEAN_SOURCE=no CC=arm-linux-gnueabihf-gcc  fakeroot make-kpkg --arch arm --cross-compile arm-linux-gnueabihf- --initrd --append-to-version -xenomai-3.0.1 --revision 1.0 kernel_image kernel_headers
+> 
+> What is causing this error? Patching the kernel was successful under native Linux and native BeagleBone.
+
+Did you enable ipipe and xenomai in your kernel config before building it?
+
+-- 
+Len Sorensen
+
