@@ -1,14 +1,12 @@
-Date: Wed, 23 Dec 2015 16:58:31 +0100
+Date: Thu, 26 Nov 2015 10:10:52 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151223155831.GE29038@hermes.click-hack.org>
-References: <56795E20.1010102@isc.cnr.it>
- <CAPydA0Hb73k0kO_ueqVnTMeDCxpffDeU0AEUWxZFBKbG9RCY1Q@mail.gmail.com>
+Message-ID: <20151126091052.GC19641@hermes.click-hack.org>
+References: <trinity-1b427f3b-dabe-48c1-a434-82562a3226e1-1448528416329@3capp-webde-bs12>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <CAPydA0Hb73k0kO_ueqVnTMeDCxpffDeU0AEUWxZFBKbG9RCY1Q@mail.gmail.com>
-Subject: Re: [Xenomai] Programming Xenomai+analogy
+In-Reply-To: <trinity-1b427f3b-dabe-48c1-a434-82562a3226e1-1448528416329@3capp-webde-bs12>
+Subject: Re: [Xenomai] rtdm driver open_rt/nrt handler question
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,28 +15,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Orestes Mas <masorestes@gmail.com>
+To: JK.Behnke@web.de
 Cc: xenomai@xenomai.org
 
-On Wed, Dec 23, 2015 at 04:45:00PM +0100, Orestes Mas wrote:
-> If you know some french, you may have useful the book "Solutions temps r=
-=E9el
-> sous Linux"  [1]. The book itself is not free, but examples are available
-> on its web site (I've no relation with its author).
->=20
-> It covers Xenomai at a basic level, among other basic realtime programming
-> concepts.
->=20
-> [1] http://www.blaess.fr/christophe/livres/solutions-temps-reel-sous-linu=
-x/
+On Thu, Nov 26, 2015 at 10:00:16AM +0100, JK.Behnke@web.de wrote:
+>    Xenomai 2.6.3 documentation states, that the usage of open_rt handlers
+>    is deprecated
+>    as this feature will be removed in the future.
 
-An english language book talking about Xenomai is "Building Embedded
-Linux Systems":
-http://shop.oreilly.com/product/9780596529680.do
+Xenomai 2.6.3 is very old now. It is not even the latest release in
+the 2.6 branch. open_rt has been removed from Xenomai 3.
 
-But it does not talk about analogy.
+>    As a consequence one cannot use rtdm_mutex_lock inside an nrt_open
+>    handler
+>    to synchronize multiple callers, as this will result in a
+>    (!xnpod_unblockable_p()) assertion.
+>    So using a spinlock would be the only solution in that situation.
+>    Is that true?
 
---=20
+No, the caller is a Linux task, or a Xenomai task running in
+secondary mode. As such, any Linux service can be used, such as
+mutex or semaphores (the Linux ones).
+
+> 
+>    By the way, if an rtdm driver only supports RTDM_EXCLUSIVE mode, is
+>    there
+>    a need to synchronize concurrent calls to rt_dev_open on this device at
+>    all?
+>    I guess not, because the second caller will be refused.
+>    Is that also true?
+
+Yes.
+
+-- 
 					    Gilles.
 https://click-hack.org
 
