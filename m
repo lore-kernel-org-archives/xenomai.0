@@ -1,10 +1,9 @@
-Date: Sat, 28 Nov 2015 14:30:02 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151128133002.GE10399@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Subject: [Xenomai] https access
+Date: Sat, 28 Nov 2015 14:38:28 -0800
+Message-ID: <CAK4EZFT_wVtDGhQe+ZdgJTL2nVoqykBM5J4T0=Fw8iijGZ1G4Q@mail.gmail.com>
+From: Adam Vaughan <vaughana@umich.edu>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] Raspberry Pi Real-Time Firmware Issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,35 +12,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+Hello,
 
-as people have probably noticed, Xenomai website and git repository
-web interface are available using either the http or https protocol.
-We do not redirect http to https so that people wishing to continue
-using http can do so.
+I've seen a fair amount of Raspberry Pi related discussion on this mailing
+list lately, so I thought I'd mention that a real-time latency issue was
+fixed in the recent firmware ed611df.
 
-However, if you wish to force your navigator to use the https
-protocol, a simple solution exists: the EFF "https everywhere"
-add-on. I submitted a ruleset for Xenomai site to this project,
-however a new version of the add-on has not been released since. So,
-in the mean time, you can install the add-on and manually add the
-following ruleset (with firefox, you do that by creating a file
-named Xenomai.org.xml under the HTTPSEverywhereUserRules
-subdirectory of your firefox profile directory):
+The issue caused disable_pvt not to work on both the RPi 1 and 2 since the
+October 6th, 2014 firmware release.  Without disable_pvt, the chip will
+stall for ~16 microseconds every half second.
 
-<ruleset name="Xenomai.org">
-  <target host="xenomai.org" />
-  <target host="www.xenomai.org" />
-  <target host="git.xenomai.org" />
+A description is available here:
 
-  <rule from="^http:" to="https:" />
-</ruleset>
+https://github.com/raspberrypi/firmware/issues/497
 
-Regards.
-
--- 
-					    Gilles.
-https://click-hack.org
-
+-Adam
