@@ -1,12 +1,10 @@
-Message-ID: <trinity-4550a539-a311-4cb6-853e-f6f5fb983201-1448975385774@3capp-webde-bap47>
-From: JK.Behnke@web.de
-Date: Tue, 1 Dec 2015 14:09:45 +0100
-In-Reply-To: <20151128064325.GC10399@hermes.click-hack.org>
-References: <trinity-3a616500-d86a-4f71-bb11-16fa1d6cf8a2-1448533977790@3capp-webde-bs12>,
- <20151128064325.GC10399@hermes.click-hack.org>
+Message-ID: <565DB393.3080607@goetting.de>
+Date: Tue, 01 Dec 2015 15:49:55 +0100
+From: Julio Cesar Aguilar Zerpa <aguilar@goetting.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] "RT throttling" issue
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai] delayed or discarded ethernet packets
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,60 +13,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-   Hello Gilles,
+Hello there,
 
-   > in the meanwhile I added rt_timer_tsc as a second alternative to
-   measure
-   > elapsed time. rt_timer_tsc returns values that are a somewhat greater
-   > than expected (around 39 ms instead of expected 20 ms), but still
-   > reasonable.
-   >
-   > > On Thu, Nov 26, 2015 at 11:32:57AM +0100, JK.Behnke@web.de wrote:
-   > >> Hello,
-   > >>
-   > >> in my xenomai 2.6.3 application I sporadically experience very
-   long execution times of
-   > >> a task that switches back and forth between secondary and primary
-   mode.
-   > >>
-   > >> I added the following code to measure elapsed and cpu time
-   > >> //------------- start code snippet ---------------
-   > >> struct rusage rsgT1;
-   > >> struct rusage rsgT2;
-   > >> struct timeval tvT1;
-   > >> struct timeval tvT2;
-   > >> gettimeofday(&tvT1, NULL);
-   > >
-   > > Do you observe the same problem with Xenomai 2.6 git head, if you
-   > > use clock_gettime(CLOCK_HOST_REALTIME) instead of gettimeofday, at
-   > > least for threads running in primary mode ?
-   I am now running xenomai 2.6.4 git head.
-   The application now uses the posix wrappers as described in the
-   documentation "Porting a Linux application to Xenomai dual kernel"
-   I replaced the gettimeofday() calls by
-   clock_gettime(CLOCK_HOST_REALTIME).
-   The getrusage() calls have been removed.
+State:
+I am using xenomai 2.6.1.
+I installed the driver of a 3D camera which transmit its data via 
+ethernet (UDP).
 
-   Both clock_gettime and rt_timer_tsc return reasonable values.
-   However, once I observed a loop execution time of 14000 ms instead of
-   typical 30 ms.
-   This means that the task was blocked for about 14 seconds.
-   As I still experience "RT throttling" messages of the Linux kernel,
-   I guess that some lengthy operation (file access, memory
-   allocation,...)
-   of some other task in my application produces the "RT throttling".
-   As a side effect the task gets blocked by the Linux scheduler while
-   in secondary mode. As mentioned earlier, the task in question switches
-   back and forth between secondary and primary mode.
+Problem:
+The transmission is being delayed (or packages are getting discarded) by 
+xenomai (probably, since the problem does not appear with
+a normal linux kernel).
 
-   Is it dangerous to use memory allocation and file access functions
-   inside a Linux task running under policy SCHED_FIFO, even though
-   they are not really time critical?
-   Could some other Linux process block these kind of tasks for such
-   a long time (14 sec) or even longer?
-   TIA for your comments on this
-   Regards
-   Jochen
+Solution(s):
+     - There seems to be a way of "pipelining" the data from the camera 
+to a real time thread or
+       to create a real time shared memory heap where the data is 
+delivered by the camera (as a 'producer') and gotten by a 'consumer'.
+     - What about increasing the priority of the ethernet interface to 
+that of a real time IO thread (or similar)?
+
+Question(s):
+     - Are these two options even correct?  Are there other alternatives?
+       Could you provide some example code of  the 'producer' and 
+'consumer'?
+       Do I need to write my own camera driver and include this 
+'pipelining' or 'heap'?
+     - Is there a way to increase the priority of an ethernet interface 
+in xenomai?
+
+Thank you and best regards,
+Julio Aguilar
+
+Mit freundlichen Grüßen
+Götting KG
+i.A. Julio Cesar Aguilar Zerpa
+-- 
+M.Sc. Julio Cesar Aguilar Zerpa
+Forschung & Entwicklung
+aguilar@goetting.de
+Tel. +49(0)-5136-8096-39
+————————————————————
+Götting KG
+Celler Str. 5, D-31275 Lehrte/Röddensen
+Geschäftsführer H.-H. Götting
+HR A 31127 | Amtsgericht Hildesheim
+Gerichtsstand Lehrte
+USt.-Id. Nr. DE 115055039
+USt.-Nr. 16-226-13403
+Phone +49(0)-5136-8096-0
+Fax +49(0)-5136-8096-80
+info@goetting.de | www.goetting.de
+————————————————————
+
+
