@@ -1,14 +1,11 @@
+From: "Heinick, J Michael" <Michael.Heinick@Honeywell.com>
+Date: Wed, 2 Dec 2015 18:38:39 +0000
+Message-ID: <D9EDB4F689BF9F4EA6F2158A073942732E7BF245@de08ex3008.global.ds.honeywell.com>
+Content-Language: en-US
 MIME-Version: 1.0
-Message-ID: <trinity-8e5e4a49-df3c-4391-b1ce-b1bc4d77ffcc-1449061119000@3capp-webde-bs35>
-From: JK.Behnke@web.de
-Content-Type: text/plain; charset=UTF-8
-Date: Wed, 2 Dec 2015 13:58:39 +0100
-In-Reply-To: <20151201181155.GC30041@hermes.click-hack.org>
-References: <trinity-3a616500-d86a-4f71-bb11-16fa1d6cf8a2-1448533977790@3capp-webde-bs12>
- <20151128064325.GC10399@hermes.click-hack.org>
- <trinity-4550a539-a311-4cb6-853e-f6f5fb983201-1448975385774@3capp-webde-bap47>,
- <20151201181155.GC30041@hermes.click-hack.org>
-Subject: Re: [Xenomai] "RT throttling" issue
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] struct rtdm_fd usage in application
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,109 +14,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello Gilles,
-
-thanks for your comments.
-
-> On Tue, Dec 01, 2015 at 02:09:45PM +0100, JK.Behnke@web.de wrote:
-> > Hello Gilles,
-> >
-> > > in the meanwhile I added rt_timer_tsc as a second alternative to
-> > measure
-> > > elapsed time. rt_timer_tsc returns values that are a somewhat greater
-> > > than expected (around 39 ms instead of expected 20 ms), but still
-> > > reasonable.
-> > >
-> > > > On Thu, Nov 26, 2015 at 11:32:57AM +0100, JK.Behnke@web.de wrote:
-> > > >> Hello,
-> > > >>
-> > > >> in my xenomai 2.6.3 application I sporadically experience very
-> > long execution times of
-> > > >> a task that switches back and forth between secondary and primary
-> > mode.
-> > > >>
-> > > >> I added the following code to measure elapsed and cpu time
-> > > >> //------------- start code snippet ---------------
-> > > >> struct rusage rsgT1;
-> > > >> struct rusage rsgT2;
-> > > >> struct timeval tvT1;
-> > > >> struct timeval tvT2;
-> > > >> gettimeofday(&tvT1, NULL);
-> > > >
-> > > > Do you observe the same problem with Xenomai 2.6 git head, if you
-> > > > use clock_gettime(CLOCK_HOST_REALTIME) instead of gettimeofday, at
-> > > > least for threads running in primary mode ?
-> > I am now running xenomai 2.6.4 git head.
-> > The application now uses the posix wrappers as described in the
-> > documentation "Porting a Linux application to Xenomai dual kernel"
-> > I replaced the gettimeofday() calls by
-> > clock_gettime(CLOCK_HOST_REALTIME).
-> > The getrusage() calls have been removed.
-> >
-> > Both clock_gettime and rt_timer_tsc return reasonable values.
-> > However, once I observed a loop execution time of 14000 ms instead of
-> > typical 30 ms.
-> 
-> If a "loop", runs 30ms in primary mode then you are starving Linux
-> from its timer interrupts. You should try to let linux at least
-> handle its interrupt every 10ms if running with HZ==100 or every
-> millisecond if running with HZ==1000.
-By "loop execution time" I meant the elapsed time between two
-consecutive loops. This includes the sleep time of 20 ms per loop.
-I typically observe max elapsed time values of 23ms .. 39ms. 
-Sorry for being unprecise.
-
-
-> 
-> 
-> > This means that the task was blocked for about 14 seconds.
-> > As I still experience "RT throttling" messages of the Linux kernel,
-> > I guess that some lengthy operation (file access, memory
-> > allocation,...)
-> 
-> No. "RT throttling" means that a task run by the Linux scheduler
-> with scheduling policy SCHED_FIFO or SCHED_RR is using more than 95%
-> of the cpu over a period of one second. This is bad, this is
-> probably a kind of infinite loop. gettimeofday called from primary
-> mode is known to cause such an issue (when xenomai watchdog has
-> detected the infinite loop in primary mode and kicked the task to
-> secondary mode), but if you have removed all calls to gettimeofday,
-> then the issue is elsewhere.
-> 
-My understandig is, that tasks migrate automatically to secondary mode,
-when issuing a Linux system call and migrate back to primary mode on
-the next call of a xenomai service. Isn't that true?
-
-Are there any Linux system calls other than gettimeofday which may cause
-problems whenn called from primary mode?
-
-
-> > of some other task in my application produces the "RT throttling".
-> > As a side effect the task gets blocked by the Linux scheduler while
-> > in secondary mode. As mentioned earlier, the task in question switches
-> > back and forth between secondary and primary mode.
-> >
-> > Is it dangerous to use memory allocation and file access functions
-> > inside a Linux task running under policy SCHED_FIFO, even though
-> > they are not really time critical?
-> 
-> File access cause the function to wait. Not to use cpu. Memory
-> allocation should not be a problem either. Though due to the way
-> Linux handle its memory (all unused memory is used as disk cache), a
-> memory allocation may actually have to wait for a disk access to
-> finish, so the worst case would make your task not real-time at all.
-> 
-> > Could some other Linux process block these kind of tasks for such
-> > a long time (14 sec) or even longer?
-> 
-> Using the I-pipe tracer, you may be able to understand what happens.
-Should I patch my Linux kernel so that xntrace_user_freeze is called,
-when Linux scheduler sends "RT throttling activated" message?
-
-
-Regards
-Jochen
-
+V2hhdCBmaWxlKHMpIGRvIHdlIGhhdmUgdG8gaW5jbHVkZSBpbiBhbiBhcHBsaWNhdGlvbiB0aGF0
+IGludGVyYWN0cw0Kd2l0aCBhIFJURE0gZHJpdmVyIHdpdGggYSBub2RlIGluIHRoZSAvZGV2L3J0
+ZG0gZGlyZWN0b3J5IGFuZCBuZWVkcyB0aGUNCmRlY2xhcmF0aW9uIG9mIHRoZSBydGRtX2ZkIHN0
+cnVjdHVyZT8gIEFueSBhZGRpdGlvbmFsIGluZm9ybWF0aW9uIG9uLA0KYW5kIGV4YW1wbGVzIG9m
+LCB0aGUgdXNhZ2Ugb2YgdGhlIHJ0ZG1fZmQgc3RydWN0dXJlIHdvdWxkIGJlIGFwcHJlY2lhdGVk
+Lg0KDQpDdXJyZW50bHksIHdlIGhhdmUgYSBSVERNIGRyaXZlciB0aGF0IGluc3RhbGxzIHdpdGgg
+aW5zbW9kLCBjcmVhdGVzIHRoZQ0Kbm9kZSBpbiAvZGV2L3J0ZG0sIHVuaW5zdGFsbHMgd2l0aCBy
+bW1vZCwgYW5kIHJlbW92ZXMgdGhlIG5vZGUgZnJvbQ0KL2Rldi9ydGRtLiAgQXQgdGhpcyBlYXJs
+eSBzdGFnZSB0aGlzIFJURE0gZHJpdmVyIGlzIG9ubHkgYSBza2VsZXRvbiB0aGF0DQp3aWxsIGxv
+ZyBhIG1lc3NhZ2Ugd2l0aCBydGRtX3ByaW50ayB3aGVuZXZlciB0aGUgcmVhZCwgd3JpdGUsIGFu
+ZCBpb2N0bA0KaGFuZGxlcnMgYXJlIGNhbGxlZC4gIEZyb20gdGhlIFhlbm9tYWkgMy4wLjEgQVBJ
+IGRvY3VtZW50YXRpb24gaXQgYXBwZWFycw0KdGhhdCBhbiBhcHBsaWNhdGlvbiBpbnRlcmFjdGlu
+ZyB3aXRoIHRoaXMgZHJpdmVyIHRocm91Z2ggb3BlbiwgY2xvc2UsDQpyZWFkLCB3cml0ZSwgYW5k
+IGlvY3RsIHdpbGwgbmVlZCB0byBoYXZlIHRoZSBkZWNsYXJhdGlvbiBvZiB0aGUgcnRkbV9mZA0K
+c3RydWN0dXJlLiAgVGhlIGRyaXZlciBjb2RlIGNvbnRhaW5pbmcgdGhlIHJ0ZG1fZmQgc3RydWN0
+dXJlIGhhZCBubw0KcHJvYmxlbXMgYmVpbmcgYnVpbHQsIGJ1dCB3aGVuIHRoZSBhcHBsaWNhdGlv
+biBjb2RlIGNvbnRhaW5pbmcgdGhlDQoic3RydWN0IHJ0ZG1fZmQgZmQ7IiBzdGF0ZW1lbnQgaXMg
+YnVpbHQgYW4gZXJyb3IgaXMgZ2VuZXJhdGVkLg0KDQpBIGRlY2xhcmF0aW9uIGZvciB0aGUgcnRk
+bV9mZCBzdHJ1Y3R1cmUgY291bGQgbm90IGJlIGZvdW5kIGluIHRoZQ0KL3Vzci94ZW5vbWFpL2lu
+Y2x1ZGUgZGlyZWN0b3JpZXMgb24gb3VyIGluc3RhbGxhdGlvbi4NCg0KVGhhbmtzIGZvciBhbnkg
+aGVscCB0aGF0IHlvdSBjYW4gcHJvdmlkZS4NCk1pa2UgSC4NCg0KQWRkaXRpb25hbCBkZXRhaWxz
+IG9uIG91ciBzaXR1YXRpb24gYXJlIGluY2x1ZGVkIGJlbG93Og0KDQpUaGUgY29kZTogdnZ2dnZ2
+dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dg0KTm90ZTogVGhlIG9wZW4gc3RhdGVt
+ZW50IGlzIHByb2JhYmx5IHdyb25nLg0KICBBdCB0aGlzIHBvaW50IGp1c3QgdHJ5aW5nIHRvIGdl
+dCBwYXN0IHRoZSBydGRtX2ZkIHN0dWN0dXJlLg0KLy8gLS0tLS0tLS0tLS0tLSB0Y2dydGRtdGVz
+dC5jIC0tLS0tLS0tLS0tDQovLyNpbmNsdWRlIDxmY250bC5oPg0KLy8jaW5jbHVkZSA8dW5pc3Rk
+Lmg+DQoNCi8vI2luY2x1ZGUgPHVhcGkva2VybmVsL3R5cGVzLmg+DQovLyNpbmNsdWRlIDxydGRt
+L3VhcGkvcnRkbS5oPg0KI2luY2x1ZGUgPHJ0ZG0vcnRkbS5oPg0KDQppbnQgbWFpbigpDQogIHsN
+CiAgc3RydWN0IHJ0ZG1fZmQgZmQ7DQogIC8vaW50IGZkOw0KICBmZCA9IG9wZW4oIi9kZXYvcnRk
+bS90Y2dydGRtIixPX1JEV1IpOw0KICBjbG9zZShmZCk7DQogIHJldHVybiAwOw0KICB9DQoNClRo
+ZSBtYWtlZmlsZTogdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dg0KWEVOT19D
+T05GSUcgOj0gL3Vzci94ZW5vbWFpL2Jpbi94ZW5vLWNvbmZpZw0KQ0ZMQUdTIDo9ICQoc2hlbGwg
+JChYRU5PX0NPTkZJRykgLS1wb3NpeCAtLWNmbGFncykNCkxETEFHUyA6PSAkKHNoZWxsICQoWEVO
+T19DT05GSUcpIC0tcG9zaXggLS1sZGZsYWdzKQ0KQ0MgOj0gJChzaGVsbCAkKFhFTk9fQ09ORklH
+KSAtLWNjKQ0KDQpkZWZhdWx0Og0KICAgICAgICAkKENDKSAtbyB0Y2dydGRtdGVzdCB0Y2dydGRt
+dGVzdC5DICQoQ0ZMQUdTKSAkKExERkxBR1MpDQoNClRoZSByZXN1bHQ6IHZ2dnZ2dnZ2dnZ2dnZ2
+dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2DQokIG1ha2UNCmdjYyAtbyB0Y2dydGRtdGVzdCB0
+Y2dydGRtdGVzdC5DIC1JL3Vzci94ZW5vbWFpL2luY2x1ZGUvY29iYWx0IC1JL3Vzci94ZW5vbWFp
+L2luY2x1ZGUgLURfR05VX1NPVVJDRSAtRF9SRUVOVFJBTlQgLURfX0NPQkFMVF9fIC1EX19DT0JB
+TFRfV1JBUF9fDQp0Y2dydGRtdGVzdC5DOiBJbiBmdW5jdGlvbiDDouKCrMucaW50IG1haW4oKcOi
+4oKs4oSiOg0KdGNncnRkbXRlc3QuQzoxMToxODogZXJyb3I6IGFnZ3JlZ2F0ZSDDouKCrMucbWFp
+bigpOjpydGRtX2ZkIGZkw6LigqzihKIgaGFzIGluY29tcGxldGUgdHlwZSBhbmQgY2Fubm90IGJl
+IGRlZmluZWQNCiAgIHN0cnVjdCBydGRtX2ZkIGZkOw0KICAgICAgICAgICAgICAgICAgXg0KbWFr
+ZTogKioqIFtkZWZhdWx0XSBFcnJvciAxDQokDQoNCk5vdGU6IFVzaW5nIDxydGRtL3VhcGkvcnRk
+bS5oPiBpbnN0ZWFkIG9mIDxydGRtL3J0ZG0uaD4gZ2VuZXJhdGVzIHNldmVyYWwNCmVycm9ycyBm
+cm9tIHVhcGkvcnRkbS5oIHRoYXQgdWludDY0X3QsIHNvY2tsZW5fdCwgX182NCwgYW5kIHNpemVf
+dCBkbyBub3QNCm5hbWUgdHlwZXMgaW4gYWRkaXRpb24gdG8gdGhlIG9uZSBpbnZvbHZpbmcgcnRk
+bV9mZC4NCg0KL3Vzci94ZW5vbWFpIERpcmVjdG9yaWVzOiB2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2
+dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dg0KL3Vzci94ZW5vbWFpL2luY2x1ZGUvY29iYWx0Og0K
+Ym9pbGVycGxhdGUgIHB0aHJlYWQuaCAgICBzaWduYWwuaCAgc3lzICAgICAgIHRpbWUuaCAgICAg
+IHVhcGkNCmZjbnRsLmggICAgICBzY2hlZC5oICAgICAgc3RkaW8uaCAgIHN5c2xvZy5oICB0cmFj
+ZS5oICAgICB1bmlzdGQuaA0KbXF1ZXVlLmggICAgIHNlbWFwaG9yZS5oICBzdGRsaWIuaCAgdGlj
+a3MuaCAgIHR1bmFibGVzLmggIHdyYXBwZXJzLmgNCg0KL3Vzci94ZW5vbWFpL2luY2x1ZGUvY29i
+YWx0L3VhcGk6DQpjb25kLmggICAgIGV2ZW50LmggIG1vbml0b3IuaCAgc2NoZWQuaCAgc2lnbmFs
+LmggICBzeXNjb25mLmggIHRpbWUuaA0KY29yZWN0bC5oICBrZXJuZWwgICBtdXRleC5oICAgIHNl
+bS5oICAgIHN5c2NhbGwuaCAgdGhyZWFkLmgNCg0KL3Vzci94ZW5vbWFpL2luY2x1ZGU6DQphbGNo
+ZW15ICAgICAgY29iYWx0ICAgICAgIHBzb3MgIHNtb2tleSAgdmVyc2lvbi5oICB4ZW5vX2NvbmZp
+Zy5oDQpib2lsZXJwbGF0ZSAgY29wcGVycGxhdGUgIHJ0ZG0gIHRyYW5rICAgdnh3b3JrcyAgICB4
+ZW5vbWFpDQoNCi91c3IveGVub21haS9pbmNsdWRlL3J0ZG06DQphbmFsb2d5LmggIGF1dG90dW5l
+LmggIGNhbi5oICBpcGMuaCAgcnRkbS5oICBzZXJpYWwuaCAgdGVzdGluZy5oICB1YXBpICB1ZGQu
+aA0KDQovdXNyL3hlbm9tYWkvaW5jbHVkZS9ydGRtL3VhcGk6DQphbmFsb2d5LmggIGF1dG90dW5l
+LmggIGNhbi5oICBpcGMuaCAgcnRkbS5oICBzZXJpYWwuaCAgdGVzdGluZy5oICB1ZGQuaA0KDQoN
+ClJldHVybiBmcm9tIC91c3IveGVub21haS9iaW4veGVuby1jb25maWcgLS1pbmZvIHZ2dnZ2dnZ2
+dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2DQokIC91c3IveGVub21haS9iaW4veGVuby1jb25maWcgLS1pbmZv
+DQpYZW5vbWFpIHZlcnNpb246IFhlbm9tYWkvY29iYWx0IHYzLjAuMQ0KTGludXggaHRzaS1saW51
+eCAzLjE0LjQ0LXhlbm8wMiAjMSBTTVAgUFJFRU1QVCBGcmkgTm92IDEzIDA5OjM1OjM3IEVTVCAy
+MDE1IHg4Nl82NCB4ODZfNjQgeDg2XzY0IEdOVS9MaW51eA0KS2VybmVsIHBhcmFtZXRlcnM6IEJP
+T1RfSU1BR0U9L3ZtbGludXotMy4xNC40NC14ZW5vMDIgcm9vdD1VVUlEPWVmNWRhZjA4LTM2YTAt
+NDZiMy05ZWQ0LTQ5MTdiMzYzMDFjZiBybyBub21vZGVzZXQgcXVpZXQgc3BsYXNoDQpJLXBpcGUg
+cmVsZWFzZSAjMTAgZGV0ZWN0ZWQNCkNvYmFsdCBjb3JlIDMuMC4xIGRldGVjdGVkDQpDb21waWxl
+cjogZ2NjIHZlcnNpb24gNC44LjIgKFVidW50dSA0LjguMi0xOXVidW50dTEpDQpCdWlsZCBhcmdz
+OiAtLXdpdGgtY29yZT1jb2JhbHQgLS1lbmFibGUtc21wIC0tZW5hYmxlLXBzaGFyZWQgLS1ob3N0
+PWk2ODYtbGludXggaG9zdF9hbGlhcz1pNjg2LWxpbnV4DQokDQoNCg==
