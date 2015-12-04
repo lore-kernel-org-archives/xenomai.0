@@ -1,13 +1,12 @@
-Date: Fri, 4 Dec 2015 14:20:26 +0100
+Date: Fri, 4 Dec 2015 14:24:38 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151204132026.GB29398@hermes.click-hack.org>
-References: <195449769.6706761.1448050298290.JavaMail.yahoo.ref@mail.yahoo.com>
- <195449769.6706761.1448050298290.JavaMail.yahoo@mail.yahoo.com>
+Message-ID: <20151204132438.GC29398@hermes.click-hack.org>
+References: <B7E9A6C055724C8F931591A5C2DD07C8@itd206>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <195449769.6706761.1448050298290.JavaMail.yahoo@mail.yahoo.com>
-Subject: Re: [Xenomai] Port to MicroBlaze
+In-Reply-To: <B7E9A6C055724C8F931591A5C2DD07C8@itd206>
+Subject: Re: [Xenomai] Reg: Linux assertion
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,25 +15,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Taishan Fan <taishanfan@yahoo.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Sureshvs <sureshvs@datapatterns.co.in>
+Cc: aditya <aditya.kumar@industeqsite.com>, sureshvsmca@gmail.com, xenomai@xenomai.org
 
-On Fri, Nov 20, 2015 at 08:11:38PM +0000, Taishan Fan wrote:
-> Is there support to port to MicroBlaze ? or are some guide
-> materials there? Thanks.
+On Fri, Nov 20, 2015 at 12:22:15PM +0530, Sureshvs wrote:
+> 
+> Hi
+> 
+> ARCH=powerPC
+> Processor: MPC8641
+> Linux Kernel : 2.6.30
+> Xenomai patch version: xenomai-2.5.2
+> 
+> 
+> We are getting the below assertion randomly.
+> 
+> kindly help us to isolate the problem, stack trace during assertion is given below.
+> 
+> 
+> ------------[ cut here ]------------
+> Badness at a00384e8 [verbose debug info unavailable]
 
-I do not think there is a port to MicroBlaze. We had a port to NIOS,
-but I do not think it has been updated to Xenomai 3.
+What about enabling more debug infos? Function addresses only make
+sense for a particular kernel configuration, so, we can not help you
+if we do not know the line of code corresponding to the address.
 
-To start a port, you should start with the port of the I-pipe patch,
-a Linux kernel modification maintained in this git repository:
-https://git.xenomai.org/ipipe.git/
-
-We have a guide about porting the I-pipe patch to a new ARM board:
-https://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc/
-
-But this would only be a partial help, as there are much more
-changes needed for a port to a new architecture. 
+Also note that xenomai 2.5.2 and Linux 2.6.30 are really old (2010),
+so a lot of things have been fixed since then, and it is very
+unlikely that we can remember the particular bug you encounter.
 
 -- 
 					    Gilles.
