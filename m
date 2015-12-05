@@ -1,10 +1,11 @@
+From: Steven Seeger <steven.seeger@nasa.gov>
+Date: Sat, 5 Dec 2015 03:02:38 -0500
+Message-ID: <6309036.vrZ57LHtHK@wirbelwind>
 MIME-Version: 1.0
-Date: Sat, 5 Dec 2015 11:42:14 +0800
-Message-ID: <CAJONJDuLVmoDdUDc3rz3qYN1TtjMo6R3SCw0Z5=x8e69ti3kkw@mail.gmail.com>
-From: Joe Lee <joelee271828@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] [PATCH] IPIPE patch for BCM2709/RPI2 (version #5)
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+Subject: [Xenomai] powerpc 440 userspace latency test does nothing
+Reply-To: steven.seeger@nasa.gov
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,30 +16,27 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-SGkgTWF0aGlldSwKSSBhcHBseSB0aGUgcGF0Y2ggYnkgWGVub21haSBsYXRlc3Qgc3RhYmxlIHYz
-LjAuMSB0byBteSBSUEkyLCBhbmQKc29tZXRpbWVzIHRoZSBib290aW5nIGhhbmcgbGlrZSB0aGlz
-OgogKiBTdGFydGluZyBjb25maWd1cmUgbmV0d29yayBkZXZpY2Ugc2VjdXJpdHlbIE9LIF0KICog
-U3RvcHBpbmcgbG9hZCBtb2R1bGVzIGZyb20gL2V0Yy9tb2R1bGVzWyBPSyBdCiAqIFN0b3BwaW5n
-IHVzZXJzcGFjZSBib290c3BsYXNoWyBPSyBdCgpUaGF0J3MgbG93IHByb2JhYmlsaXR5LCBhYm91
-dCAxIG9mIDYwIHRpbWVzIGJvb3RpbmcsIGFuZCB0aGUgb3JpZ2luYWwKbm90IHBhdGNoZWQga2Vy
-bmVsIGlzIE9LLgpUaGUga2VybmVsIGlzIHRoZSBsYXRlc3QgdmVyc2lvbiBmcm9tCmh0dHBzOi8v
-Z2l0aHViLmNvbS9yYXNwYmVycnlwaS9saW51eC90cmVlL3JwaS0zLjE4LnkgLgpGaXJzdCwgSSBh
-cHBseSB0aGUgaXBpcGUgcGF0Y2ggImlwaXBlLWNvcmUtMy4xOC4yMC1hcm0tNi5wYXRjaCIgZnJv
-bQpodHRwczovL3hlbm9tYWkub3JnL2Rvd25sb2Fkcy9pcGlwZS92My54L2FybS8gLiBUaGVuIEkg
-YXBwbHkgeW91ciBSUEkKcGF0Y2ggdmVyc2lvbiAjNS4gVGhlIGtlcm5lbCBpcyBidWlsZCBmb2xs
-b3cgdGhpcyBpbnN0cnVjdGlvbgpodHRwczovL3d3dy5yYXNwYmVycnlwaS5vcmcvZG9jdW1lbnRh
-dGlvbi9saW51eC9rZXJuZWwvYnVpbGRpbmcubWQgLgpUaGUgcm9vdCBmaWxlIHN5c3RlbSBpcyBV
-YnVudHUgMTQuMDQgTFRTIGZvciBSUEkyLCB3aGljaCBmcm9tCmh0dHBzOi8vd2lraS51YnVudHUu
-Y29tL0FSTS9SYXNwYmVycnlQaSAuCkF0dGFjaGVkIGlzIHRoZSBrZXJuZWwgYm9vdGluZyBoYW5n
-IGxvZyBmaWxlIGFuZCBrZXJuZWwgY29uZmlnIGZpbGUuCldoYXQgY2FuIEkgZG8gdG8gZ2V0IG1v
-cmUgaW5mb21hdGlvbiBmb3IgZGVidWdnaW5nIHdoZW4ga2VybmVsIGJvb3RpbmcgaGFuZz8KTG9v
-ayBmb3J3YXJkIHRvIHlvdXIgcmVwbHkuCgotLSAKSm9lIExlZQotLS0tLS0tLS0tLS0tLSBuZXh0
-IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4u
-LgpOYW1lOiBib290aW5nX2xvZwpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTog
-MjA3NzYgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcv
-cGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTEyMDUvNmFhOTBiZWUvYXR0YWNobWVu
-dC5vYmo+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0
-IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGtlcm5lbF9jb25maWcKVHlwZTogYXBw
-bGljYXRpb24vb2N0ZXQtc3RyZWFtClNpemU6IDEwOTkyNiBieXRlcwpEZXNjOiBub3QgYXZhaWxh
-YmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50
-cy8yMDE1MTIwNS82YWE5MGJlZS9hdHRhY2htZW50LTAwMDEub2JqPgo=
+Hey guys.
+
+I am running a virtex5 ml507 board from Xilinx configured to use the internal powerpc 440 processor in the FPGA. I compiled a 3.18.20 kernel and patched it and build xenomai 3.0.1.
+
+I am able to run latency -t 1 and latency -t 2
+
+When I try to run just latency, however, I get no results. It seems like userspace threads are not ever waking up. Here's the result of cat /proc/xenomai/sched/stat:
+
+SCLINUX: / # cat /proc/xenomai/sched/stat
+CPU  PID    MSW        CSW        XSC        PF    STAT       %CPU  NAME
+  0  0      0          3240214    0          0     00018000  100.0  [ROOT]
+  0  898    1          1          5          0     000680c0    0.0  latency
+  0  900    1          2          5          0     00068042    0.0  display-898
+  0  901    2          3          7          0     0004c042    0.0  sampling-898
+  0  0      0          3245052    0          0     00000000    0.0  [IRQ512: [timer]]
+
+Before I spend too much time tearing into this I wanted to ask if anyone's seen this issue before.
+
+It should be noted that clocktest runs fine. switchtest runs. xeno-test just sits there though. 
+
+Thanks,
+Steven
+
+
