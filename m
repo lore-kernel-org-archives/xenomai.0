@@ -1,13 +1,13 @@
-From: Steven Seeger <steven.seeger@nasa.gov>
-Date: Sat, 5 Dec 2015 04:55:50 -0500
-Message-ID: <2794854.WTdy10Gj6d@wirbelwind>
-In-Reply-To: <6309036.vrZ57LHtHK@wirbelwind>
-References: <6309036.vrZ57LHtHK@wirbelwind>
+Date: Sat, 5 Dec 2015 15:45:07 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151205144506.GG29398@hermes.click-hack.org>
+References: <tencent_3993D3B2716D21357806B8B3@qq.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-Subject: Re: [Xenomai] powerpc 440 userspace latency test does nothing
-Reply-To: steven.seeger@nasa.gov
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <tencent_3993D3B2716D21357806B8B3@qq.com>
+Subject: Re: [Xenomai] Question about xnmalloc and xnheap_alloc
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,48 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?utf-8?B?44OL44Oj44Oz5pif5Lq6?= <1173264124@qq.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-Just to add more info, the issue is that the read() call from the timerfd 
-never returns. I've never seen this occur before. 
+On Sat, Dec 05, 2015 at 05:11:02PM +0800, ニャン星人 wrote:
+> Hi, I had read the source code of xenomai3.X. And I am curious
+> about the difference between xnmalloc and xnheap_alloc.
 
-Steven
+The answer is in xnmalloc definition:
+#define xnmalloc(size)     xnheap_alloc(&cobalt_heap, size)
 
-On Saturday, December 05, 2015 03:02:38 Steven Seeger wrote:
-> Hey guys.
-> 
-> I am running a virtex5 ml507 board from Xilinx configured to use the
-> internal powerpc 440 processor in the FPGA. I compiled a 3.18.20 kernel and
-> patched it and build xenomai 3.0.1.
-> 
-> I am able to run latency -t 1 and latency -t 2
-> 
-> When I try to run just latency, however, I get no results. It seems like
-> userspace threads are not ever waking up. Here's the result of cat
-> /proc/xenomai/sched/stat:
-> 
-> SCLINUX: / # cat /proc/xenomai/sched/stat
-> CPU  PID    MSW        CSW        XSC        PF    STAT       %CPU  NAME
->   0  0      0          3240214    0          0     00018000  100.0  [ROOT]
->   0  898    1          1          5          0     000680c0    0.0  latency
->   0  900    1          2          5          0     00068042    0.0 
-> display-898 0  901    2          3          7          0     0004c042   
-> 0.0  sampling-898 0  0      0          3245052    0          0     00000000
->    0.0  [IRQ512: [timer]]
-> 
-> Before I spend too much time tearing into this I wanted to ask if anyone's
-> seen this issue before.
-> 
-> It should be noted that clocktest runs fine. switchtest runs. xeno-test just
-> sits there though.
-> 
-> Thanks,
-> Steven
+> When using this two api, where the memory these api apply from.
 
-Steven Seeger
-Software Engineer Codes 443/444/582
-Embedded Flight Systems, Inc.
-304-550-8800 (cell)
-301-286-5641 (office)
+The memory has been reserved prior to calling these functions, and
+an "xnheap" object initialized with the xnheap_init call.
 
+> What do the variable cobalt_heap use for?
+
+cobalt_heap is the "global heap" object. You can use memory from
+this heap object with xnmalloc, or use memory from another heap
+object (initialized with xnheap_init) with xnheap_alloc.
+
+> 
+> 
+>     How can I achieve shared memory function by use these two api
+>     in kernel between xenomai and linux? 
+
+Any memory obtained with Linux memory allocation function is shared
+between Xenomai and Linux. The xnheap objects are just a way to
+pre-allocate some memory and allow a kind of dynamic allocation for
+real-time services without resorting to Linux services. But the
+memory you pass to an xnheap object (and in particular the
+cobalt_heap object memory) is generally some Linux memory that has
+been allocated in advance.
+
+-- 
+					    Gilles.
+https://click-hack.org
 
