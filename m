@@ -1,19 +1,10 @@
-Date: Fri, 4 Dec 2015 21:41:07 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151204204107.GE29398@hermes.click-hack.org>
-References: <trinity-3a616500-d86a-4f71-bb11-16fa1d6cf8a2-1448533977790@3capp-webde-bs12>
- <20151128064325.GC10399@hermes.click-hack.org>
- <trinity-4550a539-a311-4cb6-853e-f6f5fb983201-1448975385774@3capp-webde-bap47>
- <20151201181155.GC30041@hermes.click-hack.org>
- <trinity-8e5e4a49-df3c-4391-b1ce-b1bc4d77ffcc-1449061119000@3capp-webde-bs35>
- <trinity-edf656b8-4eef-4967-92eb-85856ad3f8bd-1449246268211@3capp-webde-bs27>
- <20151204163315.GD29398@hermes.click-hack.org>
- <5661E4D5.5010804@web.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5661E4D5.5010804@web.de>
-Subject: Re: [Xenomai] "RT throttling" issue
+Date: Sat, 5 Dec 2015 11:42:14 +0800
+Message-ID: <CAJONJDuLVmoDdUDc3rz3qYN1TtjMo6R3SCw0Z5=x8e69ti3kkw@mail.gmail.com>
+From: Joe Lee <joelee271828@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] [PATCH] IPIPE patch for BCM2709/RPI2 (version #5)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,31 +13,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jochen Behnke <jk.behnke@web.de>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Fri, Dec 04, 2015 at 08:09:09PM +0100, Jochen Behnke wrote:
-> Hello Gilles,
-> 
-> thanks for your response.
-> 
-> >>
-> >> Now I have the following questions
-> >> 1. What is meant by "domain stalled", "current" and "current+stalled"?
-> >> 2. What is that process having ID "[   0]"
-> >> 3. How can I tell processes running in secondary mode from others?
-> >>     (just by looking at the priority value?)
-> >>
-> >> Any hint on interpreting my frozen file is appreciated.
-> >
-> > This trace is worthless. To have a meaningful trace, enable tracing
-> > on functions entry (the default when you enable the I-pipe tracer).
-> >
-> Do you mean CONFIG_FUNCTION_TRACE?
-
-I mean CONFIG_IPIPE_TRACE_MCOUNT
-
--- 
-					    Gilles.
-https://click-hack.org
-
+SGkgTWF0aGlldSwKSSBhcHBseSB0aGUgcGF0Y2ggYnkgWGVub21haSBsYXRlc3Qgc3RhYmxlIHYz
+LjAuMSB0byBteSBSUEkyLCBhbmQKc29tZXRpbWVzIHRoZSBib290aW5nIGhhbmcgbGlrZSB0aGlz
+OgogKiBTdGFydGluZyBjb25maWd1cmUgbmV0d29yayBkZXZpY2Ugc2VjdXJpdHlbIE9LIF0KICog
+U3RvcHBpbmcgbG9hZCBtb2R1bGVzIGZyb20gL2V0Yy9tb2R1bGVzWyBPSyBdCiAqIFN0b3BwaW5n
+IHVzZXJzcGFjZSBib290c3BsYXNoWyBPSyBdCgpUaGF0J3MgbG93IHByb2JhYmlsaXR5LCBhYm91
+dCAxIG9mIDYwIHRpbWVzIGJvb3RpbmcsIGFuZCB0aGUgb3JpZ2luYWwKbm90IHBhdGNoZWQga2Vy
+bmVsIGlzIE9LLgpUaGUga2VybmVsIGlzIHRoZSBsYXRlc3QgdmVyc2lvbiBmcm9tCmh0dHBzOi8v
+Z2l0aHViLmNvbS9yYXNwYmVycnlwaS9saW51eC90cmVlL3JwaS0zLjE4LnkgLgpGaXJzdCwgSSBh
+cHBseSB0aGUgaXBpcGUgcGF0Y2ggImlwaXBlLWNvcmUtMy4xOC4yMC1hcm0tNi5wYXRjaCIgZnJv
+bQpodHRwczovL3hlbm9tYWkub3JnL2Rvd25sb2Fkcy9pcGlwZS92My54L2FybS8gLiBUaGVuIEkg
+YXBwbHkgeW91ciBSUEkKcGF0Y2ggdmVyc2lvbiAjNS4gVGhlIGtlcm5lbCBpcyBidWlsZCBmb2xs
+b3cgdGhpcyBpbnN0cnVjdGlvbgpodHRwczovL3d3dy5yYXNwYmVycnlwaS5vcmcvZG9jdW1lbnRh
+dGlvbi9saW51eC9rZXJuZWwvYnVpbGRpbmcubWQgLgpUaGUgcm9vdCBmaWxlIHN5c3RlbSBpcyBV
+YnVudHUgMTQuMDQgTFRTIGZvciBSUEkyLCB3aGljaCBmcm9tCmh0dHBzOi8vd2lraS51YnVudHUu
+Y29tL0FSTS9SYXNwYmVycnlQaSAuCkF0dGFjaGVkIGlzIHRoZSBrZXJuZWwgYm9vdGluZyBoYW5n
+IGxvZyBmaWxlIGFuZCBrZXJuZWwgY29uZmlnIGZpbGUuCldoYXQgY2FuIEkgZG8gdG8gZ2V0IG1v
+cmUgaW5mb21hdGlvbiBmb3IgZGVidWdnaW5nIHdoZW4ga2VybmVsIGJvb3RpbmcgaGFuZz8KTG9v
+ayBmb3J3YXJkIHRvIHlvdXIgcmVwbHkuCgotLSAKSm9lIExlZQotLS0tLS0tLS0tLS0tLSBuZXh0
+IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4u
+LgpOYW1lOiBib290aW5nX2xvZwpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTog
+MjA3NzYgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcv
+cGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTEyMDUvNmFhOTBiZWUvYXR0YWNobWVu
+dC5vYmo+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0
+IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGtlcm5lbF9jb25maWcKVHlwZTogYXBw
+bGljYXRpb24vb2N0ZXQtc3RyZWFtClNpemU6IDEwOTkyNiBieXRlcwpEZXNjOiBub3QgYXZhaWxh
+YmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50
+cy8yMDE1MTIwNS82YWE5MGJlZS9hdHRhY2htZW50LTAwMDEub2JqPgo=
