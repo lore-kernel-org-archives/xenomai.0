@@ -1,10 +1,10 @@
 From: "Seeger, Steven D. (GSFC-444.0)[Embedded Flight Systems, Inc]"
  <steven.seeger@nasa.gov>
-Date: Sun, 6 Dec 2015 18:20:42 +0000
-Message-ID: <0A5CA087C7C2B54F937024C86CBC8AD503176189@NDMSMBX402.ndc.nasa.gov>
+Date: Sun, 6 Dec 2015 18:22:48 +0000
+Message-ID: <0A5CA087C7C2B54F937024C86CBC8AD503176195@NDMSMBX402.ndc.nasa.gov>
 References: <6309036.vrZ57LHtHK@wirbelwind>
- <8954471.7jTm9DH39K@wirbelwind>,<56645788.6030604@xenomai.org>
-In-Reply-To: <56645788.6030604@xenomai.org>
+ <9606009.fESfxUr9Qo@wirbelwind>,<566458D1.7020308@xenomai.org>
+In-Reply-To: <566458D1.7020308@xenomai.org>
 Content-Language: en-US
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
@@ -20,47 +20,25 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Thanks for the suggestion. I will look at the interrupt controller and then=
- get back to you.
-I will have access to the board again on Friday.
-
-It does sound like we should be able to get decent numbers with this board.
+What would keep it from firing? The latency -t 1 works fine. At its core bo=
+th user thread and kernel
+thread use xntimers so they should all fire.
 ________________________________________
 From: Philippe Gerum [rpm@xenomai.org]
-Sent: Sunday, December 06, 2015 10:43 AM
+Sent: Sunday, December 06, 2015 10:48 AM
 To: Seeger, Steven D. (GSFC-444.0)[Embedded Flight Systems, Inc]; xenomai@x=
 enomai.org
 Subject: Re: [Xenomai] powerpc 440 userspace latency test does nothing
 
-On 12/06/2015 04:46 AM, Steven Seeger wrote:
-> I went ahead and used the ipipe-core-3.14.39-powerpc-8 patch and built th=
-e
-> vendor's 3.14.2 kernel against it. I didn't have to do as much work as I =
-did
-> with the 3.18.20 patch. I had the same results (both with latency and wit=
-h
-> freezing.)
+On 12/05/2015 07:53 PM, Steven Seeger wrote:
+> More info on this.
 >
-> At this point I've got the answers I need from this exercise, but it woul=
-d be
-> good to understand the problem and possibly fix it. If anyone can point m=
-e in
-> the right direction maybe I can take a look at it.
->
+> timer_gettime() on latency's timerfd returns 0 seconds and 1 nanosecond,
+> indicating the timer has not expired.
 
-For the Virtex5 family, we likely need the xilinx-intc controller, and
-that one has not been made pipeline-aware in the kernel tree. I checked
-Xenomai 3.0.1 over a yosemite 44xFP SoC and all went well, so this is
-consistent with a SoC-dependent issue on the ml507 (AMCC's 440EP sports
-a single UIC).
-
-I would suggest to have a look at arch/powerpc/sysdev/xilinx_intc.c, and
-make sure it implements the I-pipe helpers and tweaks.
-
-/proc/interrupts should reveal all interrupt controllers in use for a
-given configuration (make sure to enable GPIOs to have a complete
-report). From that point you should be able to cross-check that each of
-them is supported by the pipeline.
+This value usually indicates an expired but not yet handled timer shot;
+that would match your description of an elapsed timer that did not
+trigger the associated action.
 
 --
 Philippe.
