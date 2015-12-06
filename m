@@ -1,13 +1,12 @@
-From: Steven Seeger <steven.seeger@nasa.gov>
-Date: Sat, 5 Dec 2015 22:46:40 -0500
-Message-ID: <8954471.7jTm9DH39K@wirbelwind>
-In-Reply-To: <6309036.vrZ57LHtHK@wirbelwind>
-References: <6309036.vrZ57LHtHK@wirbelwind>
+References: <6309036.vrZ57LHtHK@wirbelwind> <8954471.7jTm9DH39K@wirbelwind>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <56645788.6030604@xenomai.org>
+Date: Sun, 6 Dec 2015 16:43:04 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <8954471.7jTm9DH39K@wirbelwind>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] powerpc 440 userspace latency test does nothing
-Reply-To: steven.seeger@nasa.gov
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,39 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: steven.seeger@nasa.gov, xenomai@xenomai.org
 
-Me again. The issue appears to be that there's a discrepancy between the value 
-returned by clock_gettime(CLOCK_MONOTONIC... and the cobalt kernel's internal 
-notion of time. Changing latency to start with a 100 nanosecond relative time 
-(which adds some constant latency to the expected result since both the 
-expected and actual are no longer based on the same point in time) allows it 
-to run successfully.
+On 12/06/2015 04:46 AM, Steven Seeger wrote:
+> I went ahead and used the ipipe-core-3.14.39-powerpc-8 patch and built the 
+> vendor's 3.14.2 kernel against it. I didn't have to do as much work as I did 
+> with the 3.18.20 patch. I had the same results (both with latency and with 
+> freezing.)
+> 
+> At this point I've got the answers I need from this exercise, but it would be 
+> good to understand the problem and possibly fix it. If anyone can point me in 
+> the right direction maybe I can take a look at it.
+> 
 
-It seems if I telnet into the board and generate too much text on the screen 
-the board locks up. I don't know if the board has any thermal cutoff (it gets 
-very hot) or if something is wrong with the kernel. I manually patched in some 
-vendor code from a 3.6 kernel into the 3.18.20 kernel to use the xenomai patch 
-so I could be missing something, too.
+For the Virtex5 family, we likely need the xilinx-intc controller, and
+that one has not been made pipeline-aware in the kernel tree. I checked
+Xenomai 3.0.1 over a yosemite 44xFP SoC and all went well, so this is
+consistent with a SoC-dependent issue on the ml507 (AMCC's 440EP sports
+a single UIC).
 
-I'm not sure if this makes a difference, but here is clock_gettime's returned 
-tv_sec and tv_nsec (with a space in the middle) and the line after that is an 
-immediate read of ticks: from /proc/xenomai/clock/coreclk:
+I would suggest to have a look at arch/powerpc/sysdev/xilinx_intc.c, and
+make sure it implements the I-pipe helpers and tweaks.
 
-1582347100 704906148
- ticks: 15136959121354131671
+/proc/interrupts should reveal all interrupt controllers in use for a
+given configuration (make sure to enable GPIOs to have a complete
+report). From that point you should be able to cross-check that each of
+them is supported by the pipeline.
 
-You can see there's an extra digit in the coreclk output compared to what 
-comes out of clock_gettime.
-
-I went ahead and used the ipipe-core-3.14.39-powerpc-8 patch and built the 
-vendor's 3.14.2 kernel against it. I didn't have to do as much work as I did 
-with the 3.18.20 patch. I had the same results (both with latency and with 
-freezing.)
-
-At this point I've got the answers I need from this exercise, but it would be 
-good to understand the problem and possibly fix it. If anyone can point me in 
-the right direction maybe I can take a look at it.
-
-Steven
+-- 
+Philippe.
 
