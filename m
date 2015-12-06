@@ -1,9 +1,9 @@
-References: <6309036.vrZ57LHtHK@wirbelwind> <8954471.7jTm9DH39K@wirbelwind>
+References: <6309036.vrZ57LHtHK@wirbelwind> <9606009.fESfxUr9Qo@wirbelwind>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <56645788.6030604@xenomai.org>
-Date: Sun, 6 Dec 2015 16:43:04 +0100
+Message-ID: <566458D1.7020308@xenomai.org>
+Date: Sun, 6 Dec 2015 16:48:33 +0100
 MIME-Version: 1.0
-In-Reply-To: <8954471.7jTm9DH39K@wirbelwind>
+In-Reply-To: <9606009.fESfxUr9Qo@wirbelwind>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] powerpc 440 userspace latency test does nothing
@@ -17,30 +17,15 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: steven.seeger@nasa.gov, xenomai@xenomai.org
 
-On 12/06/2015 04:46 AM, Steven Seeger wrote:
-> I went ahead and used the ipipe-core-3.14.39-powerpc-8 patch and built the 
-> vendor's 3.14.2 kernel against it. I didn't have to do as much work as I did 
-> with the 3.18.20 patch. I had the same results (both with latency and with 
-> freezing.)
+On 12/05/2015 07:53 PM, Steven Seeger wrote:
+> More info on this.
 > 
-> At this point I've got the answers I need from this exercise, but it would be 
-> good to understand the problem and possibly fix it. If anyone can point me in 
-> the right direction maybe I can take a look at it.
-> 
+> timer_gettime() on latency's timerfd returns 0 seconds and 1 nanosecond, 
+> indicating the timer has not expired.
 
-For the Virtex5 family, we likely need the xilinx-intc controller, and
-that one has not been made pipeline-aware in the kernel tree. I checked
-Xenomai 3.0.1 over a yosemite 44xFP SoC and all went well, so this is
-consistent with a SoC-dependent issue on the ml507 (AMCC's 440EP sports
-a single UIC).
-
-I would suggest to have a look at arch/powerpc/sysdev/xilinx_intc.c, and
-make sure it implements the I-pipe helpers and tweaks.
-
-/proc/interrupts should reveal all interrupt controllers in use for a
-given configuration (make sure to enable GPIOs to have a complete
-report). From that point you should be able to cross-check that each of
-them is supported by the pipeline.
+This value usually indicates an expired but not yet handled timer shot;
+that would match your description of an elapsed timer that did not
+trigger the associated action.
 
 -- 
 Philippe.
