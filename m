@@ -1,18 +1,10 @@
-Message-ID: <trinity-db1a9f17-84fe-4cd6-a77d-b6fe73d680a6-1449571352953@3capp-webde-bap21>
-From: "Jochen Behnke" <JK.Behnke@web.de>
-Date: Tue, 8 Dec 2015 11:42:32 +0100
-In-Reply-To: <20151204204107.GE29398@hermes.click-hack.org>
-References: <trinity-3a616500-d86a-4f71-bb11-16fa1d6cf8a2-1448533977790@3capp-webde-bs12>
- <20151128064325.GC10399@hermes.click-hack.org>
- <trinity-4550a539-a311-4cb6-853e-f6f5fb983201-1448975385774@3capp-webde-bap47>
- <20151201181155.GC30041@hermes.click-hack.org>
- <trinity-8e5e4a49-df3c-4391-b1ce-b1bc4d77ffcc-1449061119000@3capp-webde-bs35>
- <trinity-edf656b8-4eef-4967-92eb-85856ad3f8bd-1449246268211@3capp-webde-bs27>
- <20151204163315.GD29398@hermes.click-hack.org> <5661E4D5.5010804@web.de>,
- <20151204204107.GE29398@hermes.click-hack.org>
+Date: Tue, 8 Dec 2015 18:43:02 +0800 (CST)
+From: eric <ericvic@163.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] "RT throttling" issue
+Message-ID: <44cb82ce.15337.151812ff429.Coremail.ericvic@163.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] ipipe-gch-ipipe-3.0-imx6q latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,74 +13,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-   Hello Gilles,
-
-   > > >> Now I have the following questions
-   > > >> 1. What is meant by "domain stalled", "current" and
-   "current+stalled"?
-   > > >> 2. What is that process having ID "[ 0]"
-   > > >> 3. How can I tell processes running in secondary mode from
-   others?
-   > > >> (just by looking at the priority value?)
-   > > >>
-   > > >> Any hint on interpreting my frozen file is appreciated.
-   > > >
-   > > > This trace is worthless. To have a meaningful trace, enable
-   tracing
-   > > > on functions entry (the default when you enable the I-pipe
-   tracer).
-   > > >
-   > > Do you mean CONFIG_FUNCTION_TRACE?
-   >
-   > I mean CONFIG_IPIPE_TRACE_MCOUNT
-   >
-   I enabled CONFIG_IPIPE_TRACE_MCOUNT=Y and set
-   CONFIG_IPIPE_TRACE_SHIFT=18
-   to get 256000 lines of backtrace history.
-   I captured some frozen files, when RT Throttling occurred and during
-   normal
-   operation.
-   To me, they look very similar and I am not sure at what functions
-   I should look at.
-
-   The longest delay values (>= 1000us) I observe for the following
-   functions.
-   They occur every 5..10 ms.
-   __ipipe_halt_root           : delays = 1000us .. 3900us
-   __ipipe_restore_root_nosync : delays = 1000us .. 3900us
-
-   As "__ipipe_halt_root" is called by "default_idle", and the delay
-   values
-   increase (up to 9984 us), when the application is not running, I guess
-   this
-   is actually CPU idle time and not relevant.
-
-   "ipipe_root_only" also occasionally has long delay times.
-   Is ipipe_root_only run when Linux is executing?
-   Is this critical?
-   See extract below.
-   ================== start: extract from frozen file
-   ================================
-   :    +func               -420045+   1.443  ipipe_root_only+0x4
-   (copy_to_user+0x31)
-   :    +func               -420044      0.260  __ipipe_syscall_root+0x5
-   (sysenter_past_esp+0x5b)
-   :    +func               -420043      0.200  sys_time+0x5
-   (sysenter_do_call+0x12)
-   :    +func               -420043      0.210  get_seconds+0x3
-   (sys_time+0xf)
-   :    +func               -420043! 3910.393  ipipe_root_only+0x4
-   (sys_time+0x1c)
-   :|   +func               -416132      0.651  __ipipe_handle_irq+0x5
-   (common_interrupt+0x2c)
-   :|   +func               -416132      0.340  __ipipe_dispatch_irq+0x9
-   (__ipipe_handle_irq+0x7f)
-   ================== end: extract from frozen file
-   ================================
-
-   Any other suggestions where to look at?
-   Thanks in advance
-   Jochen
+aGVsbG86CiAgICAgICAgSSB1c2UgeGVub21haS0yLjYuNCB3aXRoIGtlcm5lbCBpcGlwZS1nY2gt
+aXBpcGUtMy4wLWlteDZxLnRhci5iejIgICB3aXRoIHNhbXBsZSB0ZXN0ICAsIGJ1aWxkICB0aGUg
+ZmxvdyBtb2R1bGUgd2l0aCAgdGltZXIgMjUwdXMgY3ljbGUsaWYgSSBtYWtlIGEgdXNlciBzcGFj
+ZSBhcHBsaWNhdGlvbiB3aXRoIG1lbW9yeSBjb3B5ICx0aGUga2VybmVsIGxhdGVuY3kgd2lsbCB2
+ZXJ5IGJpZyAsd2h5Pz8/IHRoYW5rcwpsYXRlbmN5IDoKcG1heDogMC41MDg2MjQgbXMKcG1heDog
+MC41MzM4MjMgbXMKcG1heDogMC41NTMxOTcgbXMKcG1heDogMC42MDM3NzAgbXMKcG1heDogMC42
+MTM5ODIgbXMKcG1heDogMC42MzgwMjUgbXMKcG1heDogMC42NjIxMjkgbXMKcG1heDogMC42OTky
+NDUgbXMKcG1heDogMC43ODA1MzMgbXMKcG1heDogMC44MDA3NzAgbXMKcG1heDogMC44MDIwNjYg
+bXMKcG1heDogMC44MTM5MjEgbXMKcG1heDogMC44MTYzMzAgbXMKcG1heDogMC44MjA0MjkgbXMK
+cG1heDogMC44MjA0ODMgbXMKcG1heDogMC44MjE3ODMgbXMKcG1heDogMC44Mjc2NDkgbXMKcG1h
+eDogMC44MzMxOTcgbXMKcG1heDogMC44Mzc2MDYgbXMKcG1heDogMC44NDM5MjEgbXMKcG1heDog
+MC44NzQwMzMgbXMKcG1heDogMC44OTI0MTQgbXMKcG1heDogMC44OTI3ODggbXMKCgoKCnVzciBh
+cHBsaWNhdGlvbjoKI2luY2x1ZGUgPHN0ZGlvLmg+CmludCBtYWluKCkKewpjaGFyIGFbMTAyNCox
+MDI0XT17OX07CmNoYXIgYlsxMDI0KjEwMjRdOwogICAgd2hpbGUoMSl7CiAgICBtZW1jcHkoYixh
+LDEwMjQqODAwKTsKICAgIH0KcmV0dXJuIDA7Cn0KCgprZXJuZWwgbW9kdWxlICAgY29kZSA6CgoK
+I2RlZmluZSBUQVNLX1BSSU8gOTkgLy8gOTkgaXMgSGlnaGVzdCBSVCBwcmlvcml0eQojZGVmaW5l
+IFRBU0tfTU9ERSAwIC8vIE5vIGZsYWdzCiNkZWZpbmUgVEFTS19TVEtTWiAwIC8vIGRlZmF1bHQg
+U3RhY2sgc2l6ZQoKCiNkZWZpbmUgVEFTS19QRVJJT0QgMjUwMDAwbGwgLy8gaW4gbmFubyBzZWNv
+bmRzID0gNTAwIG1zCmxvbmcgbG9uZyBwbWF4LHN0YXJ0LHN0b3A7CnN0YXRpYyBydGRtX3Rhc2tf
+dCB0ZDsgICAgLy9SVERNIFJlYWwgdGltZSB0YXNrIHBvaW50ZXIKY2hhciBsb2dvWzQwKjEwMjRd
+PXswfTsKY2hhciBtZW1fc3B2bVs0MCoxMDI0XTsKbG9uZyBsb25nIHJ1bmNvdW50PTA7CnZvaWQg
+cGVyaW9kaWMgKHZvaWQgKmFyZykgewpsb25nIG1heCxwbWF4OwoKCmZvciAoOzspIHsKcnRkbV90
+YXNrX3dhaXRfcGVyaW9kKCk7IC8vZGVzY2hlZHVsZSB1bnRpbCBuZXh0IHBlcmlvZAoKCnN0b3Ag
+PXJ0ZG1fY2xvY2tfcmVhZCgpOwptZW1zZXQobWVtX3Nwdm0sMCxzaXplb2YobG9nbykpOwptZW1j
+cHkobWVtX3Nwdm0sbG9nbyxzaXplb2YobG9nbykpOwptZW1zZXQobWVtX3Nwdm0sMTI3LHNpemVv
+Zihsb2dvKSk7Cm1lbWNweShtZW1fc3B2bSxsb2dvLHNpemVvZihsb2dvKSk7CgoKLy9zdG9wID0g
+cnRkbV9jbG9ja19yZWFkKCk7CmlmKHJ1bmNvdW50PDEwMDApCnsKcG1heD0wOwp9CmlmKHBtYXg8
+KHN0b3Atc3RhcnQpKXsKICBwbWF4PXN0b3Atc3RhcnQ7CiAgcHJpbnRrKCJwbWF4OiAlbGQuJTA2
+bGQgbXNcbiIsKGxvbmcpcG1heC8xMDAwMDAwLChsb25nKXBtYXglMTAwMDAwMCk7Cn0Kc3RhcnQ9
+c3RvcDsKcnVuY291bnQrKzsKfQp9CgoKCgppbnQgaW5pdF9tb2R1bGUodm9pZCkgewogICByZXR1
+cm4gcnRkbV90YXNrX2luaXQgKCZ0ZCwgInBlcmlvZGljIiwgJnBlcmlvZGljLCBOVUxMLCBUQVNL
+X1BSSU8sVEFTS19QRVJJT0QpOwp9CgoKdm9pZCBjbGVhbnVwX21vZHVsZSh2b2lkKSB7CnJ0ZG1f
+dGFza19kZXN0cm95KCZ0ZCk7Cn0KCgpNT0RVTEVfTElDRU5TRSgiR1BMIik7ICAg
