@@ -1,21 +1,12 @@
+From: Umair Ali <ali.umair@tut.fi>
+Date: Tue, 8 Dec 2015 17:25:21 +0000
+Message-ID: <2396B4D2166B62479FBBE370D4A7C1F30A70DB46@mb2010-1.intra.tut.fi>
+Content-Language: en-US
 MIME-Version: 1.0
-Message-ID: <trinity-53dc1e63-7636-4227-a713-1b0df1055f18-1449576720185@3capp-webde-bap21>
-From: "Jochen Behnke" <JK.Behnke@web.de>
-Content-Type: text/plain; charset=UTF-8
-Date: Tue, 8 Dec 2015 13:12:00 +0100
-In-Reply-To: <20151208110546.GA22104@hermes.click-hack.org>
-References: <trinity-3a616500-d86a-4f71-bb11-16fa1d6cf8a2-1448533977790@3capp-webde-bs12>
- <20151128064325.GC10399@hermes.click-hack.org>
- <trinity-4550a539-a311-4cb6-853e-f6f5fb983201-1448975385774@3capp-webde-bap47>
- <20151201181155.GC30041@hermes.click-hack.org>
- <trinity-8e5e4a49-df3c-4391-b1ce-b1bc4d77ffcc-1449061119000@3capp-webde-bs35>
- <trinity-edf656b8-4eef-4967-92eb-85856ad3f8bd-1449246268211@3capp-webde-bs27>
- <20151204163315.GD29398@hermes.click-hack.org> <5661E4D5.5010804@web.de>
- <20151204204107.GE29398@hermes.click-hack.org>
- <trinity-db1a9f17-84fe-4cd6-a77d-b6fe73d680a6-1449571352953@3capp-webde-bap21>,
- <20151208110546.GA22104@hermes.click-hack.org>
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] "RT throttling" issue
+Subject: [Xenomai] Loose determinism when reading pcap and sending as raw
+ ethernet packets
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,58 +15,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-> Gesendet: Dienstag, 08=2E Dezember 2015 um 12:05 Uhr
-> Von: "Gilles Chanteperdrix" <gilles=2Echanteperdrix@xenomai=2Eorg>
-> An: "Jochen Behnke" <JK=2EBehnke@web=2Ede>
-> Cc: xenomai@xenomai=2Eorg
-> Betreff: Re: [Xenomai] "RT throttling" issue
-> On Tue, Dec 08, 2015 at 11:42:32AM +0100, Jochen Behnke wrote:
-> > "ipipe_root_only" also occasionally has long delay times=2E
-> > Is ipipe_root_only run when Linux is executing?
-> > Is this critical?
-> > See extract below=2E
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D start: extract =
-from frozen file
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > : +func -420045+ 1=2E443 ipipe_root_only+0x4
-> > (copy_to_user+0x31)
-> > : +func -420044 0=2E260 __ipipe_syscall_root+0x5
-> > (sysenter_past_esp+0x5b)
-> > : +func -420043 0=2E200 sys_time+0x5
-> > (sysenter_do_call+0x12)
-> > : +func -420043 0=2E210 get_seconds+0x3
-> > (sys_time+0xf)
-> > : +func -420043! 3910=2E393 ipipe_root_only+0x4
-> > (sys_time+0x1c)
-> > :| +func -416132 0=2E651 __ipipe_handle_irq+0x5
-> > (common_interrupt+0x2c)
->
-> Hi,
->
-> What you have here is a system call to the "time" function from a
-> task scheduled by Linux scheduler=2E When the system call is finished,
-> the system returns to user-space=2E ipipe_root_only happens to be the
-> last function called before the return to user-space and before the
-> next interrupt=2E ipipe_root_only gets then charged for the time spent
-> in user-space=2E
->
-> What version of the I-pipe patch are you using on which
-> architecture? On some architectures we try to create trace points
-> when entering and leaving the kernel to avoid this issue (with the
-> added benefit that the user-space value of the PC gets printed, this
-> may be useful if you have an infinite loop)=2E
-Xenomai:      2=2E6=2E4 githead
-Architecture: x86
-Platform:     Atom E640/E660
-I-pipe patch: ipipe-core-3=2E8=2E13-x86-4=2Epatch
+Hi there,
+
+I am reading the pcap file using the following technique:
+"
+mlockall(MCL_CURRENT|MCL_FUTURE);
+fd =3D open (file.pcap, O_RDONLY);
+status =3D fstat (fd, & s);
+size =3D s.st_size;
+ /* Memory-map the file. */
+ mapped =3D mmap (0, size, PROT_READ, MAP_PRIVATE, fd, 0);"
 
 
-Regards
-Jochen
-=C2=A0
-=C2=A0
+Then i have the pcap file in mapped variable in the form of chracters (hex =
+numbers). I read packet by packet and send them as raw packet over the netw=
+ork with following code:
+"struct timespec ts;
+ts.tv_sec =3D 0;
+ts.tv_nsec =3D 5000;
+j=3D24;
 
+ while (j < size){
+         i =3D (unsigned char) mapped[j + 8];
+         sendto(sock, &mapped[j+16], i, 0,(struct sockaddr *)&peer, sizeof(=
+peer));
+         nanosleep(&ts, NULL);
+          j =3D j+i+16;
+}
+"
+
+When i run the program and receive the packets on the receiver then i have =
+observed that behaviour of sending raw packets is not constant. Sometimes n=
+anosleep finish little late or quickly.
+The slackspot output file is attached for reference. Please guide that what=
+ am i doing wrong.
+
+
+Thanks & Regards
+Ali
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: slackspot_output
+Type: application/octet-stream
+Size: 8999 bytes
+Desc: slackspot_output
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20151208/3763c1b0/at=
+tachment.obj>
