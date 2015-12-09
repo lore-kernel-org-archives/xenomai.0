@@ -1,13 +1,12 @@
-Date: Tue, 8 Dec 2015 21:13:31 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151208201331.GA3667@hermes.click-hack.org>
-References: <2396B4D2166B62479FBBE370D4A7C1F30A70DB46@mb2010-1.intra.tut.fi>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2396B4D2166B62479FBBE370D4A7C1F30A70DB46@mb2010-1.intra.tut.fi>
-Subject: Re: [Xenomai] Loose determinism when reading pcap and sending as
- raw ethernet packets
+In-Reply-To: <BLU436-SMTP188D753B1DBA2F4D5B54C3AF00B0@phx.gbl>
+References: <CAJONJDuLVmoDdUDc3rz3qYN1TtjMo6R3SCw0Z5=x8e69ti3kkw@mail.gmail.com>
+ <BLU436-SMTP188D753B1DBA2F4D5B54C3AF00B0@phx.gbl>
+Date: Wed, 9 Dec 2015 13:53:39 +0800
+Message-ID: <CAJONJDtt=XVQ0LQMwQCExLkfHjjxec+Y02uSr1QufoeVf6smDw@mail.gmail.com>
+From: Joe Lee <joelee271828@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] [PATCH] IPIPE patch for BCM2709/RPI2 (version #5)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,60 +15,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Umair Ali <ali.umair@tut.fi>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
+Cc: xenomai@xenomai.org
 
-On Tue, Dec 08, 2015 at 05:25:21PM +0000, Umair Ali wrote:
-> Hi there,
-> 
-> I am reading the pcap file using the following technique:
-> "
-> mlockall(MCL_CURRENT|MCL_FUTURE);
-> fd = open (file.pcap, O_RDONLY);
-> status = fstat (fd, & s);
-> size = s.st_size;
->  /* Memory-map the file. */
->  mapped = mmap (0, size, PROT_READ, MAP_PRIVATE, fd, 0);"
-> 
-> 
-> Then i have the pcap file in mapped variable in the form of chracters (hex numbers). I read packet by packet and send them as raw packet over the network with following code:
-> "struct timespec ts;
-> ts.tv_sec = 0;
-> ts.tv_nsec = 5000;
-> j=24;
-> 
->  while (j < size){
->          i = (unsigned char) mapped[j + 8];
->          sendto(sock, &mapped[j+16], i, 0,(struct sockaddr *)&peer, sizeof(peer));
->          nanosleep(&ts, NULL);
->           j = j+i+16;
-> }
-> "
-> 
-> When i run the program and receive the packets on the receiver
-> then i have observed that behaviour of sending raw packets is not
-> constant. Sometimes nanosleep finish little late or quickly.
+Hi Mathieu,
+Disabling xenomai and only leave the IPIPE patch enable is OK. About
+1000 times reboot no abnormal found.
 
-There are several problems with this program:
-- for a program to run in primary mode only, pthread_setschedparam
-should be called with a priority higher than 1 for the SCHED_FIFO
-(or SCHED_RR) policy;
-- when you call a function which returns a value, like send or
-nanosleep, you should always check the return value for errors;
-- if you want to send a message on average every 5us then
-nanosleep(5us) is not what you should be using, you should be using
-clock_nanosleep with an absolute date, or the easier but less
-portable timerfd;
-- what you observe is the jitter, you can measure the timer
-interrupt jitter with the "latency" test, but I bet that maybe the
-latency may be higher than 5us;
-- if you really really need to reduce the jitter, then using kernel
-timers instead of sleeping in a user-space thread is recommended,
-see:
-http://letsmakerobots.com/node/28812
-http://letsmakerobots.com/node/32347
+2015-12-06 6:34 GMT+08:00 Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>:
+> On 15-12-04 07:42 PM, Joe Lee wrote:
+>> Hi Mathieu,
+>> I apply the patch by Xenomai latest stable v3.0.1 to my RPI2, and
+>> sometimes the booting hang like this:
+>>  * Starting configure network device security[ OK ]
+>>  * Stopping load modules from /etc/modules[ OK ]
+>>  * Stopping userspace bootsplash[ OK ]
+>>
+>> That's low probability, about 1 of 60 times booting, and the original
+>> not patched kernel is OK.
+>> The kernel is the latest version from
+>> https://github.com/raspberrypi/linux/tree/rpi-3.18.y .
+>> First, I apply the ipipe patch "ipipe-core-3.18.20-arm-6.patch" from
+>> https://xenomai.org/downloads/ipipe/v3.x/arm/ . Then I apply your RPI
+>> patch version #5. The kernel is build follow this instruction
+>> https://www.raspberrypi.org/documentation/linux/kernel/building.md .
+>> The root file system is Ubuntu 14.04 LTS for RPI2, which from
+>> https://wiki.ubuntu.com/ARM/RaspberryPi .
+>> Attached is the kernel booting hang log file and kernel config file.
+>> What can I do to get more infomation for debugging when kernel booting hang?
+>> Look forward to your reply.
+>>
+> Hi Joe,
+>
+> The only difference with your .config file is that I have earlyprintk
+> enabled but that should not cause the issue you are observing.
+>
+> I am using the raspbian rootfs downloaded from the raspberry pi
+> foundation website:
+> https://www.raspberrypi.org/downloads/raspbian/
+>
+> can you try disabling xenomai from the kernel config to see if the
+> problem happens also when only the IPIPE patch is turned ON?
+>
+> Thanks,
+> -Mathieu
+
+
 
 -- 
-					    Gilles.
-https://click-hack.org
+Joe Lee
 
