@@ -1,13 +1,13 @@
-From: Umair Ali <ali.umair@tut.fi>
-Date: Thu, 10 Dec 2015 13:20:47 +0000
-Message-ID: <2396B4D2166B62479FBBE370D4A7C1F30A70DC03@mb2010-1.intra.tut.fi>
-References: <2396B4D2166B62479FBBE370D4A7C1F30A70DB46@mb2010-1.intra.tut.fi>,
+Date: Thu, 10 Dec 2015 16:01:10 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151210150110.GA20328@hermes.click-hack.org>
+References: <2396B4D2166B62479FBBE370D4A7C1F30A70DB46@mb2010-1.intra.tut.fi>
  <20151208201331.GA3667@hermes.click-hack.org>
-In-Reply-To: <20151208201331.GA3667@hermes.click-hack.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ <2396B4D2166B62479FBBE370D4A7C1F30A70DC03@mb2010-1.intra.tut.fi>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2396B4D2166B62479FBBE370D4A7C1F30A70DC03@mb2010-1.intra.tut.fi>
 Subject: Re: [Xenomai] Loose determinism when reading pcap and sending as
  raw ethernet packets
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,116 +18,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Umair Ali <ali.umair@tut.fi>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Gilles,=0A=
-=0A=
-Thanks for understanding my problem.=0A=
-=0A=
->- for a program to run in primary mode only, pthread_setschedparam=0A=
-should be called with a priority higher than 1 for the SCHED_FIFO=0A=
-(or SCHED_RR) policy;=0A=
-=0A=
-I have been doing the same already but i did not copy that part of code in =
-the email.=0A=
-=0A=
->- when you call a function which returns a value, like send or=0A=
-nanosleep, you should always check the return value for errors;=0A=
-- if you want to send a message on average every 5us then=0A=
-nanosleep(5us) is not what you should be using, you should be using=0A=
-clock_nanosleep with an absolute date, or the easier but less=0A=
-portable timerfd;=0A=
-=0A=
-I have used the clock_nanosleep with absolute time, but i could not find th=
-e absolute date. With clock_nanosleep i have found the same problem as desc=
-ribed in the last email.  I have looked the file timerfd.h. What i have und=
-erstand is that by using timerfd i will create the dedicated timer with uni=
-que ID and then use the ID to get the time by using timerfd_gettime(). The =
-time is added with amount of delay and passed to clock_nanosleep() function=
- to achieve the required sleep time period. Am i doing it right with timerf=
-d?=0A=
-=0A=
->  what you observe is the jitter, you can measure the timer=0A=
-interrupt jitter with the "latency" test, but I bet that maybe the=0A=
-latency may be higher than 5us;=0A=
-- if you really really need to reduce the jitter, then using kernel=0A=
-timers instead of sleeping in a user-space thread is recommended,=0A=
-=0A=
-Yes, you are right that what i have observed is the jitter. I have gone thr=
-ough the links which you have provided me in the last email.  I am building=
- my application using POSIX skin. In the links, they have used the rtdm_tim=
-er_start(). Now my question is that can i use the rtdm functions in the app=
-lication compiling with posix skin, if yes then how. Do i have to change th=
-e skin for comilation in order to use the rtdm functions. Please refer me s=
-ome guide for using the Xenomai Kernel  timers with posix skin in order to =
-avoid the jitter. Last thing do i need to made a kernel module in order to =
-use the kernel timers. I am confused. Please guide me.=0A=
-=0A=
-Thanks & BR=0A=
-Ali=0A=
-________________________________________=0A=
-From: Gilles Chanteperdrix [gilles.chanteperdrix@xenomai.org]=0A=
-Sent: Tuesday, December 08, 2015 10:13 PM=0A=
-To: Umair Ali=0A=
-Cc: xenomai@xenomai.org=0A=
-Subject: Re: [Xenomai] Loose determinism when reading pcap and sending as r=
-aw ethernet packets=0A=
-=0A=
-On Tue, Dec 08, 2015 at 05:25:21PM +0000, Umair Ali wrote:=0A=
-> Hi there,=0A=
->=0A=
-> I am reading the pcap file using the following technique:=0A=
-> "=0A=
-> mlockall(MCL_CURRENT|MCL_FUTURE);=0A=
-> fd =3D open (file.pcap, O_RDONLY);=0A=
-> status =3D fstat (fd, & s);=0A=
-> size =3D s.st_size;=0A=
->  /* Memory-map the file. */=0A=
->  mapped =3D mmap (0, size, PROT_READ, MAP_PRIVATE, fd, 0);"=0A=
->=0A=
->=0A=
-> Then i have the pcap file in mapped variable in the form of chracters (he=
-x numbers). I read packet by packet and send them as raw packet over the ne=
-twork with following code:=0A=
-> "struct timespec ts;=0A=
-> ts.tv_sec =3D 0;=0A=
-> ts.tv_nsec =3D 5000;=0A=
-> j=3D24;=0A=
->=0A=
->  while (j < size){=0A=
->          i =3D (unsigned char) mapped[j + 8];=0A=
->          sendto(sock, &mapped[j+16], i, 0,(struct sockaddr *)&peer, sizeo=
-f(peer));=0A=
->          nanosleep(&ts, NULL);=0A=
->           j =3D j+i+16;=0A=
-> }=0A=
-> "=0A=
->=0A=
-> When i run the program and receive the packets on the receiver=0A=
-> then i have observed that behaviour of sending raw packets is not=0A=
-> constant. Sometimes nanosleep finish little late or quickly.=0A=
-=0A=
-There are several problems with this program:=0A=
-- for a program to run in primary mode only, pthread_setschedparam=0A=
-should be called with a priority higher than 1 for the SCHED_FIFO=0A=
-(or SCHED_RR) policy;=0A=
-- when you call a function which returns a value, like send or=0A=
-nanosleep, you should always check the return value for errors;=0A=
-- if you want to send a message on average every 5us then=0A=
-nanosleep(5us) is not what you should be using, you should be using=0A=
-clock_nanosleep with an absolute date, or the easier but less=0A=
-portable timerfd;=0A=
-- what you observe is the jitter, you can measure the timer=0A=
-interrupt jitter with the "latency" test, but I bet that maybe the=0A=
-latency may be higher than 5us;=0A=
-- if you really really need to reduce the jitter, then using kernel=0A=
-timers instead of sleeping in a user-space thread is recommended,=0A=
-see:=0A=
-http://letsmakerobots.com/node/28812=0A=
-http://letsmakerobots.com/node/32347=0A=
-=0A=
---=0A=
-                                            Gilles.=0A=
-https://click-hack.org=0A=
+On Thu, Dec 10, 2015 at 01:20:47PM +0000, Umair Ali wrote:
+> Hi Gilles,
+
+Hi,
+
+> 
+> Thanks for understanding my problem.
+> 
+> >- for a program to run in primary mode only, pthread_setschedparam
+> should be called with a priority higher than 1 for the SCHED_FIFO
+> (or SCHED_RR) policy;
+> 
+> I have been doing the same already but i did not copy that part of code in the email.
+> 
+> >- when you call a function which returns a value, like send or
+> nanosleep, you should always check the return value for errors;
+> - if you want to send a message on average every 5us then
+> nanosleep(5us) is not what you should be using, you should be using
+> clock_nanosleep with an absolute date, or the easier but less
+> portable timerfd;
+> 
+> I have used the clock_nanosleep with absolute time, but i could
+> not find the absolute date. With clock_nanosleep i have found the
+> same problem as described in the last email.
+
+You compute the next absolute date. But the point is to add 5us to
+the absolute date, instead of using now + 5us, so that the packets
+are really sent every 5us on average. This should not solve the
+problem you have, only ensure that the messages are sent every 5us
+on average.
+
+> I have looked the
+> file timerfd.h. What i have understand is that by using timerfd i
+> will create the dedicated timer with unique ID and then use the ID
+> to get the time by using timerfd_gettime(). The time is added with
+> amount of delay and passed to clock_nanosleep() function to
+> achieve the required sleep time period. Am i doing it right with
+> timerfd?
+
+With timerfd, you would set up the timer with timerfd_settime() to
+tick every 5us, then the read() system call to wait for the timer
+next expiration.
+
+> 
+> >  what you observe is the jitter, you can measure the timer
+> interrupt jitter with the "latency" test, but I bet that maybe the
+> latency may be higher than 5us;
+> - if you really really need to reduce the jitter, then using kernel
+> timers instead of sleeping in a user-space thread is recommended,
+> 
+> Yes, you are right that what i have observed is the jitter. I have
+> gone through the links which you have provided me in the last
+> email. I am building my application using POSIX skin. In the
+> links, they have used the rtdm_timer_start(). Now my question is
+> that can i use the rtdm functions in the application compiling
+> with posix skin, if yes then how. Do i have to change the skin for
+> comilation in order to use the rtdm functions. Please refer me
+> some guide for using the Xenomai Kernel timers with posix skin in
+> order to avoid the jitter. Last thing do i need to made a kernel
+> module in order to use the kernel timers. I am confused. Please
+> guide me.
+
+If you want to use kernel-space, you need to write a driver, running
+in kernel spaces, and drivers use the RTDM API. The POSIX API is for
+the application.
+
+-- 
+					    Gilles.
+https://click-hack.org
 
