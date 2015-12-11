@@ -1,12 +1,13 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Fri, 11 Dec 2015 15:03:55 +0100
-Message-ID: <5073889.mxMKChqctc@soho>
-In-Reply-To: <20151211132012.GA24775@hermes.click-hack.org>
+Date: Fri, 11 Dec 2015 15:09:27 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151211140927.GB24775@hermes.click-hack.org>
 References: <2004286.fnOG18ZY9A@soho>
  <20151211132012.GA24775@hermes.click-hack.org>
+ <5073889.mxMKChqctc@soho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5073889.mxMKChqctc@soho>
 Subject: Re: [Xenomai] Porting a library to Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -16,74 +17,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
 Cc: Xenomai list <xenomai@xenomai.org>
 
-RWwgRGl2ZW5kcmVzLCAxMSBkZSBkZXNlbWJyZSBkZSAyMDE1LCBhIGxlcyAxNDoyMDoxMiwgR2ls
-bGVzIENoYW50ZXBlcmRyaXggdmEgCmVzY3JpdXJlOgo+IE9uIEZyaSwgRGVjIDExLCAyMDE1IGF0
-IDAxOjQ0OjAxUE0gKzAxMDAsIExlb3BvbGQgUGFsb21vLUF2ZWxsYW5lZGEgd3JvdGU6Cj4gPiBI
-aSwKPiA+IAo+ID4gSSdtIHdvcmtpbmcgdG8gbWFrZSBhIGxpYnJhcnkgdG8gd29yayB3aXRoIFhl
-bm9tYWkuIEl0J3MgYSBsaWJyYXJ5IHRoYXQKPiA+IGhhcyBhIHRocmVhZCBhbmQgb3BlbiBhIHNv
-Y2tldCB0byBjb21tdW5pY2F0ZSB3aXRoIGFuIGV4dGVybmFsIGRldmljZSB2aWEKPiA+IG5ldHdv
-cmsuCj4gPiAKPiA+IEkgaGF2ZSByZWFkIHRoZSBndWlkZSAiUG9ydGluZyBhIExpbnV4IGFwcGxp
-Y2F0aW9uIHRvIFhlbm9tYWkgZHVhbCBrZXJuZWwKPiA+IFsxXSIgYnV0IHN0aWxsIEkgaGF2ZSBz
-b21lIGRvdWJ0cyBpbiBzb21lIGRldGFpbHMuIFNvLCBoZXJlIG15IHRvcGljcwo+ID4gd2l0aG91
-dCBhbnkgaW1wb3J0YW5jZSBvcmRlcjoKPiA+IAo+ID4gLSBXaGF0IGlzIHRoZSByZWNvbW1lbmRl
-ZCB3YXkgdG8gb2J0YWluIHRoZSBsaW5rLCBmbGFncywgZXRjIGluZm9ybWF0aW9uCj4gPiB0bwo+
-ID4gYnVpbGQgYW4gYXBwbGljYXRpb24gdGhhdCB1c2UgWGVub21haT8geGVuby1jb25maWcsIHBr
-Zy1jb25maWcsIHNvbWUgYnVpbGQKPiA+IG1hY3JvcyB0byBmaW5kIHRoZSBpbmZvcm1hdGlvbiwg
-Li4uCj4gCj4gUXVvdGluZyB0aGUgZG9jdW1lbnQgeW91IHNheSB5b3UgaGF2ZSByZWFkOgoKOi0p
-Cgo+ICJDb21waWxhdGlvbiBmbGFncwo+IAo+IFRvIGVhc2UgdGhhdCB0YXNrLCB0aGUgeGVuby1j
-b25maWcgc2NyaXB0LCBpbnN0YWxsZWQgd2hlbiBjb21waWxpbmcKPiBYZW5vbWFpIHVzZXItc3Bh
-Y2Ugc3VwcG9ydCwgaXMgYWJsZSB0byBnaXZlIHlvdSB0aGVzZSBmbGFncy4gKC4uLikKPiBCZXdh
-cmU6IHRoaXMgd2F5IG9mIG9idGFpbmluZyB0aGUgY29tcGlsYXRpb24gZmxhZ3MgaXMgcmVjb21t
-ZW5kZWQsCj4gaWYgZm9yIGFueXRoaW5nIGJlY2F1c2UgaXQgd2lsbCBtYWtlIHVzaW5nIGEgZGlm
-ZmVyZW50IHJlbGVhc2Ugb2YKPiBYZW5vbWFpIGVhc2llcjogdGhlIGZsYWdzIG1heSBjaGFuZ2Ug
-YmV0d2VlbiB0d28gZGlmZmVyZW50IHJlbGVhc2VzLiIKCm9rLCBidXQgdGhpcyBzb2x1dGlvbiBp
-bXBsaWVzIHRoYXQgeGVuby1jb25maWcgbXVzdCBiZSBhdmFpbGFibGUuIEluIGFueSBjYXNlIAph
-cyBDTWFrZSB1c2VyLCBmb2xsb3dpbmcgeW91ciBpbmRpY2F0aW9ucyB0aGUgTWFjcm9zIHNob3Vs
-ZCB1c2UgeGVuby1jb25maWcuIApGb3Igd2hhdCBJIGhhdmUgc2VlbiBpbiB0aGUgbmV0LCBub3Qg
-YWxsIHRoZSBwZW9wbGUgdXNlIHRoYXQuCgo+ID4gLSBJIHdvdWxkIGxpa2UgdG8gaGF2ZSBhIGNv
-ZGUgdGhhdCBjb3VsZCBiZSB1c2VkIHdpdGggYW4gU3RhbmRhcmQgUE9TSVggb3IKPiA+IGEgWGVu
-b21haS4gSSB0aG91Z2h0IHRoYXQgcHJvdGVjdGluZyBteSBjb2RlIHdpdGggc29tZSAjaWZkZWYg
-X19YRU5PX18gSQo+ID4gY291bGQgY2hvb3NlIHdoaWNoIHBhcnQgaXMgc3BlY2lmaWMgdG8gWGVu
-b21haSBhbmQgd2hpY2ggbm8uIEhvd2V2ZXIsIEknbQo+ID4gYSBiaXQgY29uZnVzZWQsIGJlY2F1
-c2UgdGhlbiwgSSBkb24ndCB1bmRlcnN0YW5kIHdoYXQgaXMgdGhlIHV0aWxpdHkgb2YKPiA+IHRo
-ZSB3cmFwIHNjcmlwdC4gUGxlYXNlLCBjb3VsZCB5b3UgZWxhYm9yYXRlIGEgYml0IG1vcmUgdGhp
-cyBwYXJ0LAo+ID4gZXNwZWNpYWxseSBmb2N1c2VkIGluIGFuIGFwcGxpY2F0aW9uIHRoZSBjb3Vs
-ZCB1c2UgYW4gc3RhbmRhcmQgbmV0d29yawo+ID4gaW50ZXJmYWNlIG9yIHJ0bmV0IHZlcnNpb24u
-Cj4gCj4gUXVvdGluZyB0aGUgZG9jdW1lbnRhdGlvbiBhZ2FpbjogIlVzZSBvZiBMaW51eCBvcmln
-aW5hbCBzZXJ2aWNlcwo+IAoKWy4uLi5dCgoKTm8gR2lsbGVzLCB0aGF0J3MgdGhlIHBvaW50IHRo
-YXQgSSBkb24ndCB1bmRlcnN0YW5kLiBNYXliZSBpdCBjb3VsZCBiZSBhIApsYW5ndWFnZSBwcm9i
-bGVtLiAKCkFyZSB5b3Ugc2F5aW5nIHRoYXQsIGZvciBpbnN0YW5jZSB1c2luZyBhIHJ0bmV0IGRy
-aXZlciwgaXQncyB0aGUgc2FtZSB0byBOT1QgCnVzZSB0aGUgd3JhcCBzY3JpcHQgYW5kIHVzZSB0
-aGlzOgoKIC8qIE9wZW4gYSBwbGFpbiBMaW51eCBVRFAgc29ja2V0LiAqLwogI2lmbmRlZiBfX1hF
-Tk9fXwogICAgICAgZmQgPSBzb2NrZXQoUEZfSU5FVCwgU09DS19ER1JBTSwgMCk7CiAjZWxzZSAv
-KiBfX1hFTk9fXyAqLwogICAgICAgZmQgPSBydF9kZXZfc29ja2V0KFBGX0lORVQsIFNPQ0tfREdS
-QU0sIDApOwogI2VuZGlmIC8qIF9fWEVOT19fICovCgpPciwgCgogI2lmbmRlZiBfX1hFTk9fXwog
-ICAgICAgcHJpbnRmKCJTdG9wcGluZyB0aGUgcm9ib3QuXG4iKTsKICNlbHNlIC8qIF9fWEVOT19f
-ICovCiAgICAgICBydF9wcmludGYoIlN0b3BwaW5nIHRoZSByb2JvdC5cbiIpOwogI2VuZGlmIC8q
-IF9fWEVOT19fICovCgoKQW5kIHdoaWNoIGFyZSB0aGUgaW1wbGljYXRpb25zIG9mIHRoZSB1c2Ug
-b2YgdGhlIHdyYXAgc2NyaXB0PyBDb3VsZCBJIGF2b2lkIAp0aGUgdXNlIG9mIHRoZSBzY3JpcHQg
-cHJvdGVjdGluZyB0aGUgd3JhcHBlZCBmdW5jdGlvbnMgd2l0aCBfX1hFTk9fXyBhbmQgaXQncyAK
-dGhlIHNhbWU/Cgo+IAo+ID4gLSBJbiB0aGUgZG9jdW1lbnQsIHRoZXJlJ3MgYSBzZWN0aW9uIGFi
-b3V0IHRoZSBtbG9ja2FsbCBvcHRpb24uIFNvLCBtYXkgSQo+ID4gdW5kZXJzdGFuZCB0aGF0IGZy
-b20geGVub21haSA8PSAyLjYuMyBpdCdzIG5vdCBuZWVkZWQgdGhhdCBJIGNhbGwgdGhlCj4gPiBt
-bG9ja2FsbCBmdW5jdGlvbj8KPiAKPiBRdW90aW5nIHRoZSBkb2N1bWVudGF0aW9uIGFnYWluOiAi
-Cj4gU3RhcnRpbmcgd2l0aCB2ZXJzaW9uIDIuNi4zLCBhcyBwYXJ0IG9mIHRoZWlyIGluaXRpYWxp
-emF0aW9uLAo+IFhlbm9tYWkgbGlicmFyaWVzIHN5c3RlbWF0aWNhbGx5IGNhbGwgbWxvY2thbGwg
-dG8gY29tbWl0IGFuZCBsb2NrCj4gdGhlIHdob2xlIGFwcGxpY2F0aW9uIG1lbW9yeS4KCk9rLCBz
-byB3aHkgaXQncyB1c2UgaXQgaW4geW91ciBleGFtcGxlOgoKaHR0cDovL3d3dy54ZW5vbWFpLm9y
-Zy9kb2N1bWVudGF0aW9uL3hlbm9tYWktMi42L2h0bWwvYXBpL3RyaXZpYWwtcGVyaW9kaWNfOGMt
-ZXhhbXBsZS5odG1sCgpNYXkgSSB1bmRlcnN0YW5kIHRoYXQgdGhhdCBsaW5lIGlzIG5vdCBuZWVk
-ZWQ/CgpUaGFua3MsCgpMZW9wb2xkCgotLSAKLS0KTGludXggVXNlciAxNTI2OTIgICAgIEdQRzog
-MDVGNEE3QTk0OUEyRDlBQQpDYXRhbG9uaWEKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLQpBOiBCZWNhdXNlIGl0IG1lc3NlcyB1cCB0aGUgb3JkZXIgaW4gd2hpY2ggcGVvcGxl
-IG5vcm1hbGx5IHJlYWQgdGV4dC4KUTogV2h5IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBiYWQgdGhp
-bmc/CkE6IFRvcC1wb3N0aW5nLgpROiBXaGF0IGlzIHRoZSBtb3N0IGFubm95aW5nIHRoaW5nIGlu
-IGUtbWFpbD8KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRl
-eHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBh
-cHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDgxOSBieXRlcwpEZXNjOiBUaGlzIGlzIGEg
-ZGlnaXRhbGx5IHNpZ25lZCBtZXNzYWdlIHBhcnQuClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9w
-aXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE1MTIxMS9lMTY1YzNkZi9hdHRhY2htZW50
-LnNpZz4K
+On Fri, Dec 11, 2015 at 03:03:55PM +0100, Leopold Palomo-Avellaneda wrote:
+> El Divendres, 11 de desembre de 2015, a les 14:20:12, Gilles Chanteperdrix va 
+> escriure:
+> > On Fri, Dec 11, 2015 at 01:44:01PM +0100, Leopold Palomo-Avellaneda wrote:
+> > > Hi,
+> > > 
+> > > I'm working to make a library to work with Xenomai. It's a library that
+> > > has a thread and open a socket to communicate with an external device via
+> > > network.
+> > > 
+> > > I have read the guide "Porting a Linux application to Xenomai dual kernel
+> > > [1]" but still I have some doubts in some details. So, here my topics
+> > > without any importance order:
+> > > 
+> > > - What is the recommended way to obtain the link, flags, etc information
+> > > to
+> > > build an application that use Xenomai? xeno-config, pkg-config, some build
+> > > macros to find the information, ...
+> > 
+> > Quoting the document you say you have read:
+> 
+> :-)
+> 
+> > "Compilation flags
+> > 
+> > To ease that task, the xeno-config script, installed when compiling
+> > Xenomai user-space support, is able to give you these flags. (...)
+> > Beware: this way of obtaining the compilation flags is recommended,
+> > if for anything because it will make using a different release of
+> > Xenomai easier: the flags may change between two different releases."
+> 
+> ok, but this solution implies that xeno-config must be available. In any case 
+> as CMake user, following your indications the Macros should use xeno-config. 
+> For what I have seen in the net, not all the people use that.
+
+We can not force people to use the recommended solution. This is
+implied in the word "recommended".
+
+> 
+> > > - I would like to have a code that could be used with an Standard POSIX or
+> > > a Xenomai. I thought that protecting my code with some #ifdef __XENO__ I
+> > > could choose which part is specific to Xenomai and which no. However, I'm
+> > > a bit confused, because then, I don't understand what is the utility of
+> > > the wrap script. Please, could you elaborate a bit more this part,
+> > > especially focused in an application the could use an standard network
+> > > interface or rtnet version.
+> > 
+> > Quoting the documentation again: "Use of Linux original services
+> > 
+> 
+> [....]
+> 
+> 
+> No Gilles, that's the point that I don't understand. Maybe it could be a 
+> language problem. 
+
+If you do not understand the text. Read the example.
+
+> > 
+> > > - In the document, there's a section about the mlockall option. So, may I
+> > > understand that from xenomai <= 2.6.3 it's not needed that I call the
+> > > mlockall function?
+> > 
+> > Quoting the documentation again: "
+> > Starting with version 2.6.3, as part of their initialization,
+> > Xenomai libraries systematically call mlockall to commit and lock
+> > the whole application memory.
+> 
+> Ok, so why it's use it in your example:
+> 
+> http://www.xenomai.org/documentation/xenomai-2.6/html/api/trivial-periodic_8c-example.html
+> 
+> May I understand that that line is not needed?
+
+It is not needed indeed.
+
+-- 
+					    Gilles.
+https://click-hack.org
+
