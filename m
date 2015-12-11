@@ -1,10 +1,13 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Fri, 11 Dec 2015 13:44:01 +0100
-Message-ID: <2004286.fnOG18ZY9A@soho>
+Date: Fri, 11 Dec 2015 14:20:12 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151211132012.GA24775@hermes.click-hack.org>
+References: <2004286.fnOG18ZY9A@soho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Porting a library to Xenomai
+Content-Type: text/plain; charset="windows-1252"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <2004286.fnOG18ZY9A@soho>
+Subject: Re: [Xenomai] Porting a library to Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,39 +16,101 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai list <xenomai@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Cc: Xenomai list <xenomai@xenomai.org>
 
-SGksCgpJJ20gd29ya2luZyB0byBtYWtlIGEgbGlicmFyeSB0byB3b3JrIHdpdGggWGVub21haS4g
-SXQncyBhIGxpYnJhcnkgdGhhdCBoYXMgYSAKdGhyZWFkIGFuZCBvcGVuIGEgc29ja2V0IHRvIGNv
-bW11bmljYXRlIHdpdGggYW4gZXh0ZXJuYWwgZGV2aWNlIHZpYSBuZXR3b3JrLgoKSSBoYXZlIHJl
-YWQgdGhlIGd1aWRlICJQb3J0aW5nIGEgTGludXggYXBwbGljYXRpb24gdG8gWGVub21haSBkdWFs
-IGtlcm5lbCBbMV0iIApidXQgc3RpbGwgSSBoYXZlIHNvbWUgZG91YnRzIGluIHNvbWUgZGV0YWls
-cy4gU28sIGhlcmUgbXkgdG9waWNzIHdpdGhvdXQgYW55IAppbXBvcnRhbmNlIG9yZGVyOgoKLSBX
-aGF0IGlzIHRoZSByZWNvbW1lbmRlZCB3YXkgdG8gb2J0YWluIHRoZSBsaW5rLCBmbGFncywgZXRj
-IGluZm9ybWF0aW9uIHRvIApidWlsZCBhbiBhcHBsaWNhdGlvbiB0aGF0IHVzZSBYZW5vbWFpPyB4
-ZW5vLWNvbmZpZywgcGtnLWNvbmZpZywgc29tZSBidWlsZCAKbWFjcm9zIHRvIGZpbmQgdGhlIGlu
-Zm9ybWF0aW9uLCAuLi4gCgotIEkgd291bGQgbGlrZSB0byBoYXZlIGEgY29kZSB0aGF0IGNvdWxk
-IGJlIHVzZWQgd2l0aCBhbiBTdGFuZGFyZCBQT1NJWCBvciBhIApYZW5vbWFpLiBJIHRob3VnaHQg
-dGhhdCBwcm90ZWN0aW5nIG15IGNvZGUgd2l0aCBzb21lICNpZmRlZiBfX1hFTk9fXyBJIGNvdWxk
-IApjaG9vc2Ugd2hpY2ggcGFydCBpcyBzcGVjaWZpYyB0byBYZW5vbWFpIGFuZCB3aGljaCBuby4g
-SG93ZXZlciwgSSdtIGEgYml0IApjb25mdXNlZCwgYmVjYXVzZSB0aGVuLCBJIGRvbid0IHVuZGVy
-c3RhbmQgd2hhdCBpcyB0aGUgdXRpbGl0eSBvZiB0aGUgd3JhcCAKc2NyaXB0LiBQbGVhc2UsIGNv
-dWxkIHlvdSBlbGFib3JhdGUgYSBiaXQgbW9yZSB0aGlzIHBhcnQsIGVzcGVjaWFsbHkgZm9jdXNl
-ZCAKaW4gYW4gYXBwbGljYXRpb24gdGhlIGNvdWxkIHVzZSBhbiBzdGFuZGFyZCBuZXR3b3JrIGlu
-dGVyZmFjZSBvciBydG5ldCAKdmVyc2lvbi4KCi0gSW4gdGhlIGRvY3VtZW50LCB0aGVyZSdzIGEg
-c2VjdGlvbiBhYm91dCB0aGUgbWxvY2thbGwgb3B0aW9uLiBTbywgbWF5IEkgCnVuZGVyc3RhbmQg
-dGhhdCBmcm9tIHhlbm9tYWkgPD0gMi42LjMgaXQncyBub3QgbmVlZGVkIHRoYXQgSSBjYWxsIHRo
-ZSBtbG9ja2FsbCAKZnVuY3Rpb24/CgpCZXN0IHJlZ2FyZHMsCgpMZW9wb2xkCi0tLS0KWzFdIGh0
-dHBzOi8veGVub21haS5vcmcvMjAxNC8wOC9wb3J0aW5nLWEtbGludXgtYXBwbGljYXRpb24tdG8t
-eGVub21haS1kdWFsLWtlcm5lbC8KWzJdIGh0dHA6Ly9sZXRzbWFrZXJvYm90cy5jb20vbm9kZS8y
-ODgxMiNjb21tZW50LTg2MTY2Ci0tIAotLQpMaW51eCBVc2VyIDE1MjY5MiAgICAgR1BHOiAwNUY0
-QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tCkE6IEJlY2F1c2UgaXQgbWVzc2VzIHVwIHRoZSBvcmRlciBpbiB3aGljaCBwZW9wbGUgbm9y
-bWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkgaXMgdG9wLXBvc3Rpbmcgc3VjaCBhIGJhZCB0aGluZz8K
-QTogVG9wLXBvc3RpbmcuClE6IFdoYXQgaXMgdGhlIG1vc3QgYW5ub3lpbmcgdGhpbmcgaW4gZS1t
-YWlsPwotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBh
-dHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxp
-Y2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogODE5IGJ5dGVzCkRlc2M6IFRoaXMgaXMgYSBkaWdp
-dGFsbHkgc2lnbmVkIG1lc3NhZ2UgcGFydC4KVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVy
-bWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTUxMjExLzkwYjhhNzZiL2F0dGFjaG1lbnQuc2ln
-Pgo=
+On Fri, Dec 11, 2015 at 01:44:01PM +0100, Leopold Palomo-Avellaneda wrote:
+> Hi,
+>=20
+> I'm working to make a library to work with Xenomai. It's a library that h=
+as a=20
+> thread and open a socket to communicate with an external device via netwo=
+rk.
+>=20
+> I have read the guide "Porting a Linux application to Xenomai dual kernel=
+ [1]"=20
+> but still I have some doubts in some details. So, here my topics without =
+any=20
+> importance order:
+>=20
+> - What is the recommended way to obtain the link, flags, etc information =
+to=20
+> build an application that use Xenomai? xeno-config, pkg-config, some buil=
+d=20
+> macros to find the information, ...=20
+
+Quoting the document you say you have read:
+"Compilation flags
+
+To ease that task, the xeno-config script, installed when compiling
+Xenomai user-space support, is able to give you these flags. (...)=20
+Beware: this way of obtaining the compilation flags is recommended,
+if for anything because it will make using a different release of
+Xenomai easier: the flags may change between two different releases."=20
+
+>=20
+> - I would like to have a code that could be used with an Standard POSIX o=
+r a=20
+> Xenomai. I thought that protecting my code with some #ifdef __XENO__ I co=
+uld=20
+> choose which part is specific to Xenomai and which no. However, I'm a bit=
+=20
+> confused, because then, I don't understand what is the utility of the wra=
+p=20
+> script. Please, could you elaborate a bit more this part, especially focu=
+sed=20
+> in an application the could use an standard network interface or rtnet=20
+> version.
+
+Quoting the documentation again: "Use of Linux original services
+
+It may happen that you would like to use Linux services instead of
+Xenomai POSIX skin overloaded services. In this case, the =96wrap
+mechanism described in section Under the hood: the =96wrap flag.
+offers a solution: prefix the name of the service you would like to
+use with the __real_ prefix, such as, for instance
+__real_pthread_create.
+
+If you do that, and would still want to be able to compile your
+application without Xenomai (it may be a good idea, as it allows,
+for instance, to run your application with valgrind, which you can
+not do with an application compiled for Xenomai), Xenomai
+compilation flags define a preprocessor macro (__XENO__) which
+allows you to know whether or not you are compiling the application
+for Xenomai. You can use it for instance in the following way:
+
+ /* Open a plain Linux UDP socket. */
+ #ifndef __XENO__
+       fd =3D socket(PF_INET, SOCK_DGRAM, 0);
+ #else /* __XENO__ */
+       fd =3D __real_socket(PF_INET, SOCK_DGRAM, 0);
+ #endif /* __XENO__ */
+"
+
+>=20
+> - In the document, there's a section about the mlockall option. So, may I=
+=20
+> understand that from xenomai <=3D 2.6.3 it's not needed that I call the m=
+lockall=20
+> function?
+
+Quoting the documentation again: "
+Starting with version 2.6.3, as part of their initialization,
+Xenomai libraries systematically call mlockall to commit and lock
+the whole application memory.
+(...)
+Before version 2.6.3
+
+Xenomai POSIX library only invoked mlockall if the
+=96enable-posix-auto-mlockall option was passed to the configure
+script when compiling Xenomai user-space support. So, applications
+which did not want to depend on this configuration had to call
+mlockall by themselves, before using any Xenomai service, by using:=20
+
+ mlockall(MCL_CURRENT | MCL_FUTURE);"
+
+
+--=20
+					    Gilles.
+https://click-hack.org
+
