@@ -1,11 +1,10 @@
-From: "Hartl, Fabian AVL/AT" <Fabian.Hartl@avl.com>
-Date: Wed, 25 Nov 2015 08:58:38 +0000
-Message-ID: <18024a6dcdef450fb51f2e38ce31f272@ATGRZSW1691.avl01.avlcorp.lan>
-Content-Language: de-DE
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Fri, 11 Dec 2015 13:44:01 +0100
+Message-ID: <2004286.fnOG18ZY9A@soho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Undefined references at cross compiling
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Porting a library to Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,78 +13,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai list <xenomai@xenomai.org>
 
-Hello,
-
-I successfully installed xenomai on a native ubuntu installation, the I tri=
-ed installing xenomai on a BeagleBone Black by compiling it on the BeagleBo=
-ne itself.
-This also worked.
-Now I am trying to cross compile the kernel on a Linux machine for the Beag=
-leBone Black.
-Doing so I encountered the problem of undefined references while making the=
- kernel (see below)
-
-
-make[1]: Entering directory '/home/mmg-linux/rtk/linux-3.18.20'
-scripts/kconfig/conf --silentoldconfig Kconfig
-  CHK     include/config/kernel.release
-  CHK     include/generated/uapi/linux/version.h
-  CHK     include/generated/utsrelease.h
-make[2]: 'include/generated/mach-types.h' is up to date.
-  CALL    scripts/checksyscalls.sh
-  CHK     include/generated/compile.h
-  LINK    vmlinux
-  LD      vmlinux.o
-  MODPOST vmlinux.o
-  GEN     .version
-  CHK     include/generated/compile.h
-  UPD     include/generated/compile.h
-  CC      init/version.o
-  LD      init/built-in.o
-arch/arm/kernel/built-in.o: In function `ipipe_get_sysinfo':
-/home/mmg-linux/rtk/linux-3.18.20/arch/arm/kernel/ipipe.c:244: undefined re=
-ference to `__ipipe_mach_get_tscinfo'
-arch/arm/xenomai/built-in.o: In function `mach_arm_calibrate':
-/home/mmg-linux/rtk/linux-3.18.20/arch/arm/xenomai/machine.c:59: undefined =
-reference to `__ipipe_mach_get_tsc'
-/home/mmg-linux/rtk/linux-3.18.20/arch/arm/xenomai/machine.c:61: undefined =
-reference to `__ipipe_mach_get_tsc'
-/home/mmg-linux/rtk/linux-3.18.20/arch/arm/xenomai/machine.c:68: undefined =
-reference to `__ipipe_mach_get_tsc'
-/home/mmg-linux/rtk/linux-3.18.20/arch/arm/xenomai/machine.c:72: undefined =
-reference to `__ipipe_mach_get_tsc'
-kernel/built-in.o: In function `xnclock_core_read_raw':
-/home/mmg-linux/rtk/linux-3.18.20/include/xenomai/cobalt/kernel/clock.h:118=
-: undefined reference to `__ipipe_mach_get_tsc'
-kernel/built-in.o:/home/mmg-linux/rtk/linux-3.18.20/include/xenomai/cobalt/=
-kernel/clock.h:118: more undefined references to `__ipipe_mach_get_tsc' fol=
-low
-Makefile:923: recipe for target 'vmlinux' failed
-make[1]: *** [vmlinux] Error 1
-make[1]: Leaving directory '/home/mmg-linux/rtk/linux-3.18.20'
-debian/ruleset/targets/common.mk:295: recipe for target 'debian/stamp/build=
-/kernel' failed
-make: *** [debian/stamp/build/kernel] Error 2
-
-
-
-I am compiling the kernel using this command:
-
-CONCURRENCY_LEVEL=3D8 CLEAN_SOURCE=3Dno CC=3Darm-linux-gnueabihf-gcc  faker=
-oot make-kpkg --arch arm --cross-compile arm-linux-gnueabihf- --initrd --ap=
-pend-to-version -xenomai-3.0.1 --revision 1.0 kernel_image kernel_headers
-
-What is causing this error? Patching the kernel was successful under native=
- Linux and native BeagleBone.
-
-
---
-Best Regards,
-Fabian Hartl
-
-___________________________________________________________________________=
-_
-AVL List GmbH, Firmensitz: Graz, Firmenbuchnummer: FN 53507M, Landesgericht=
- fuer ZRS Graz
+SGksCgpJJ20gd29ya2luZyB0byBtYWtlIGEgbGlicmFyeSB0byB3b3JrIHdpdGggWGVub21haS4g
+SXQncyBhIGxpYnJhcnkgdGhhdCBoYXMgYSAKdGhyZWFkIGFuZCBvcGVuIGEgc29ja2V0IHRvIGNv
+bW11bmljYXRlIHdpdGggYW4gZXh0ZXJuYWwgZGV2aWNlIHZpYSBuZXR3b3JrLgoKSSBoYXZlIHJl
+YWQgdGhlIGd1aWRlICJQb3J0aW5nIGEgTGludXggYXBwbGljYXRpb24gdG8gWGVub21haSBkdWFs
+IGtlcm5lbCBbMV0iIApidXQgc3RpbGwgSSBoYXZlIHNvbWUgZG91YnRzIGluIHNvbWUgZGV0YWls
+cy4gU28sIGhlcmUgbXkgdG9waWNzIHdpdGhvdXQgYW55IAppbXBvcnRhbmNlIG9yZGVyOgoKLSBX
+aGF0IGlzIHRoZSByZWNvbW1lbmRlZCB3YXkgdG8gb2J0YWluIHRoZSBsaW5rLCBmbGFncywgZXRj
+IGluZm9ybWF0aW9uIHRvIApidWlsZCBhbiBhcHBsaWNhdGlvbiB0aGF0IHVzZSBYZW5vbWFpPyB4
+ZW5vLWNvbmZpZywgcGtnLWNvbmZpZywgc29tZSBidWlsZCAKbWFjcm9zIHRvIGZpbmQgdGhlIGlu
+Zm9ybWF0aW9uLCAuLi4gCgotIEkgd291bGQgbGlrZSB0byBoYXZlIGEgY29kZSB0aGF0IGNvdWxk
+IGJlIHVzZWQgd2l0aCBhbiBTdGFuZGFyZCBQT1NJWCBvciBhIApYZW5vbWFpLiBJIHRob3VnaHQg
+dGhhdCBwcm90ZWN0aW5nIG15IGNvZGUgd2l0aCBzb21lICNpZmRlZiBfX1hFTk9fXyBJIGNvdWxk
+IApjaG9vc2Ugd2hpY2ggcGFydCBpcyBzcGVjaWZpYyB0byBYZW5vbWFpIGFuZCB3aGljaCBuby4g
+SG93ZXZlciwgSSdtIGEgYml0IApjb25mdXNlZCwgYmVjYXVzZSB0aGVuLCBJIGRvbid0IHVuZGVy
+c3RhbmQgd2hhdCBpcyB0aGUgdXRpbGl0eSBvZiB0aGUgd3JhcCAKc2NyaXB0LiBQbGVhc2UsIGNv
+dWxkIHlvdSBlbGFib3JhdGUgYSBiaXQgbW9yZSB0aGlzIHBhcnQsIGVzcGVjaWFsbHkgZm9jdXNl
+ZCAKaW4gYW4gYXBwbGljYXRpb24gdGhlIGNvdWxkIHVzZSBhbiBzdGFuZGFyZCBuZXR3b3JrIGlu
+dGVyZmFjZSBvciBydG5ldCAKdmVyc2lvbi4KCi0gSW4gdGhlIGRvY3VtZW50LCB0aGVyZSdzIGEg
+c2VjdGlvbiBhYm91dCB0aGUgbWxvY2thbGwgb3B0aW9uLiBTbywgbWF5IEkgCnVuZGVyc3RhbmQg
+dGhhdCBmcm9tIHhlbm9tYWkgPD0gMi42LjMgaXQncyBub3QgbmVlZGVkIHRoYXQgSSBjYWxsIHRo
+ZSBtbG9ja2FsbCAKZnVuY3Rpb24/CgpCZXN0IHJlZ2FyZHMsCgpMZW9wb2xkCi0tLS0KWzFdIGh0
+dHBzOi8veGVub21haS5vcmcvMjAxNC8wOC9wb3J0aW5nLWEtbGludXgtYXBwbGljYXRpb24tdG8t
+eGVub21haS1kdWFsLWtlcm5lbC8KWzJdIGh0dHA6Ly9sZXRzbWFrZXJvYm90cy5jb20vbm9kZS8y
+ODgxMiNjb21tZW50LTg2MTY2Ci0tIAotLQpMaW51eCBVc2VyIDE1MjY5MiAgICAgR1BHOiAwNUY0
+QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tCkE6IEJlY2F1c2UgaXQgbWVzc2VzIHVwIHRoZSBvcmRlciBpbiB3aGljaCBwZW9wbGUgbm9y
+bWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkgaXMgdG9wLXBvc3Rpbmcgc3VjaCBhIGJhZCB0aGluZz8K
+QTogVG9wLXBvc3RpbmcuClE6IFdoYXQgaXMgdGhlIG1vc3QgYW5ub3lpbmcgdGhpbmcgaW4gZS1t
+YWlsPwotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBh
+dHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxp
+Y2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogODE5IGJ5dGVzCkRlc2M6IFRoaXMgaXMgYSBkaWdp
+dGFsbHkgc2lnbmVkIG1lc3NhZ2UgcGFydC4KVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVy
+bWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTUxMjExLzkwYjhhNzZiL2F0dGFjaG1lbnQuc2ln
+Pgo=
