@@ -1,12 +1,13 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Fri, 11 Dec 2015 16:33:58 +0100
-Message-ID: <3314665.2OtX88jxTl@soho>
-In-Reply-To: <20151211140927.GB24775@hermes.click-hack.org>
+Date: Fri, 11 Dec 2015 17:31:14 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151211163114.GE24775@hermes.click-hack.org>
 References: <2004286.fnOG18ZY9A@soho> <5073889.mxMKChqctc@soho>
  <20151211140927.GB24775@hermes.click-hack.org>
+ <3314665.2OtX88jxTl@soho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3314665.2OtX88jxTl@soho>
 Subject: Re: [Xenomai] Porting a library to Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -16,28 +17,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
 Cc: Xenomai list <xenomai@xenomai.org>
 
-RWwgRGl2ZW5kcmVzLCAxMSBkZSBkZXNlbWJyZSBkZSAyMDE1LCBhIGxlcyAxNTowOToyNywgR2ls
-bGVzIENoYW50ZXBlcmRyaXggdmEgCmVzY3JpdXJlOgpbLi4uXQo+ID4gCj4gPiBObyBHaWxsZXMs
-IHRoYXQncyB0aGUgcG9pbnQgdGhhdCBJIGRvbid0IHVuZGVyc3RhbmQuIE1heWJlIGl0IGNvdWxk
-IGJlIGEKPiA+IGxhbmd1YWdlIHByb2JsZW0uCj4gCj4gSWYgeW91IGRvIG5vdCB1bmRlcnN0YW5k
-IHRoZSB0ZXh0LiBSZWFkIHRoZSBleGFtcGxlLgoKd2hhdCBJJ20gd29ycmllZCBhYm91dCBpZiB0
-aGVzZXMgd3JhcHMgaW1wbGllcyBtb3JlIHRoaW5ncyB0aGF0IGFyZSBoaWRkZW4uIApUaGUgZXhh
-bXBsZSBpcyBjbGVhci4gTWF5YmUgSSdtIGltYWdpbmUgbW9yZSB0aGluZ3MgdGhhdCByZWFsbHkg
-ZXhpc3RzLgoKVGhlIG1vc3Qgc3VycHJpc2luZyB0aGluZyB0byBtZSBpcyB0aGF0IHVzaW5nIHRo
-YXQgd3JhcCwgd2l0aCBhIGZldyAKY29uc2lkZXJhdGlvbnMgYSAibm9ybWFsIiBQT1NJWCBwcm9n
-cmFtIHRoYXQgdXNlcyBhIHNvY2tldCBhbmQgaGFzIGEgdGhyZWFkIApjb3VsZCBiZSBtaWdyYXRl
-ZCB0byBYZW5vbWEgUlQgZWFzaWx5LCBqdXN0IGRlZmluaW5nIHNvbWUgY29tcGlsZXIvbGlua2Vy
-IGZsYWdzLgoKVGhhbmtzIGZvciBhbGwsCgpMZW9wb2xkCgoKLS0gCi0tCkxpbnV4IFVzZXIgMTUy
-NjkyICAgICBHUEc6IDA1RjRBN0E5NDlBMkQ5QUEKQ2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0KQTogQmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhlIG9yZGVyIGlu
-IHdoaWNoIHBlb3BsZSBub3JtYWxseSByZWFkIHRleHQuClE6IFdoeSBpcyB0b3AtcG9zdGluZyBz
-dWNoIGEgYmFkIHRoaW5nPwpBOiBUb3AtcG9zdGluZy4KUTogV2hhdCBpcyB0aGUgbW9zdCBhbm5v
-eWluZyB0aGluZyBpbiBlLW1haWw/Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0t
-LS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVy
-ZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiA4MTkgYnl0ZXMKRGVz
-YzogVGhpcyBpcyBhIGRpZ2l0YWxseSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6IDxodHRwOi8v
-eGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTEyMTEvMWY1NGRm
-YmUvYXR0YWNobWVudC5zaWc+Cg==
+On Fri, Dec 11, 2015 at 04:33:58PM +0100, Leopold Palomo-Avellaneda wrote:
+> El Divendres, 11 de desembre de 2015, a les 15:09:27, Gilles Chanteperdrix va 
+> escriure:
+> [...]
+> > > 
+> > > No Gilles, that's the point that I don't understand. Maybe it could be a
+> > > language problem.
+> > 
+> > If you do not understand the text. Read the example.
+> 
+> what I'm worried about if theses wraps implies more things that are hidden. 
+> The example is clear. Maybe I'm imagine more things that really
+> exists.
+
+The fact that wrapping may be a problem for large applications where
+you only want a small part of the application to use xenomai
+services is the reason why Xenomai 3.x gives you another choice: do
+not wrap xenomai services, but specify you want to use them with the
+__RT() macro.
+
+-- 
+					    Gilles.
+https://click-hack.org
+
