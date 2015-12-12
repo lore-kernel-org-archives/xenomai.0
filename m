@@ -1,14 +1,12 @@
-Date: Fri, 11 Dec 2015 17:31:14 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151211163114.GE24775@hermes.click-hack.org>
-References: <2004286.fnOG18ZY9A@soho> <5073889.mxMKChqctc@soho>
- <20151211140927.GB24775@hermes.click-hack.org>
- <3314665.2OtX88jxTl@soho>
+From: Narasimhaprasad Yedatore Achutha <Narasimhaprasad_A@infosys.com>
+Date: Sat, 12 Dec 2015 13:42:01 +0000
+Message-ID: <f032b1abe1d947cab8a89e20759c07a0@CHNSHLMBX32.ad.infosys.com>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3314665.2OtX88jxTl@soho>
-Subject: Re: [Xenomai] Porting a library to Xenomai
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] CAN Loopback with Recieve own message
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,30 +15,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Cc: Xenomai list <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Fri, Dec 11, 2015 at 04:33:58PM +0100, Leopold Palomo-Avellaneda wrote:
-> El Divendres, 11 de desembre de 2015, a les 15:09:27, Gilles Chanteperdrix va 
-> escriure:
-> [...]
-> > > 
-> > > No Gilles, that's the point that I don't understand. Maybe it could be a
-> > > language problem.
-> > 
-> > If you do not understand the text. Read the example.
-> 
-> what I'm worried about if theses wraps implies more things that are hidden. 
-> The example is clear. Maybe I'm imagine more things that really
-> exists.
+Hello All
 
-The fact that wrapping may be a problem for large applications where
-you only want a small part of the application to use xenomai
-services is the reason why Xenomai 3.x gives you another choice: do
-not wrap xenomai services, but specify you want to use them with the
-__RT() macro.
+I have a question on RT-Socket not supporting Receive own message option(=
+CAN_RAW_RECV_OWN_MSGS ) with MSG_CONFIRM flag not supported. I'm trying t=
+o understand, if we modify the kernel driver supporting  CAN_RAW_RECV_OWN=
+_MSGS, so that we start receiving transmitted message back at the control=
+ler, how much an impact happens  on
 
--- 
-					    Gilles.
-https://click-hack.org
+-          Real time scheduling
 
+-          Does CAN message missing  cases be frequent at high bus load f=
+or real time applications
+
+-          Any other impact we need to consider?
+
+Please let me know if anybody has any experience on this or any  experime=
+nts  to share?. Any thoughts or advice will be helpful
+
+Thanks and Regards
+Prasad
+
+**************** CAUTION - Disclaimer *****************
+This e-mail contains PRIVILEGED AND CONFIDENTIAL INFORMATION intended sol=
+ely 
+for the use of the addressee(s). If you are not the intended recipient, p=
+lease 
+notify the sender by e-mail and delete the original message. Further, you=
+ are not 
+to copy, disclose, or distribute this e-mail or its contents to any other=
+ person and 
+any such actions are unlawful. This e-mail may contain viruses. Infosys h=
+as taken 
+every reasonable precaution to minimize this risk, but is not liable for =
+any damage 
+you may sustain as a result of any virus in this e-mail. You should carry=
+ out your 
+own virus checks before opening the e-mail or attachment. Infosys reserve=
+s the 
+right to monitor and review the content of all messages sent to or from t=
+his e-mail 
+address. Messages sent to or from this e-mail address may be stored on th=
+e 
+Infosys e-mail system.
+***INFOSYS******** End of Disclaimer ********INFOSYS***
