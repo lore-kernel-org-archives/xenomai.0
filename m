@@ -1,13 +1,13 @@
-References: <CABShy47U4r3F1HsdBeNsJb1HtViC-MtBDzksfJZoZnkydRhW1Q@mail.gmail.com>
-From: Charles Steinkuehler <charles@steinkuehler.net>
-Message-ID: <566C5DE1.4020804@steinkuehler.net>
-Date: Sat, 12 Dec 2015 11:48:17 -0600
+Date: Mon, 14 Dec 2015 10:13:57 +0800 (CST)
+From: eric  <ericvic@163.com>
+In-Reply-To: <20151208112320.GA24418@hermes.click-hack.org>
+References: <44cb82ce.15337.151812ff429.Coremail.ericvic@163.com>
+ <20151208112320.GA24418@hermes.click-hack.org>
 MIME-Version: 1.0
-In-Reply-To: <CABShy47U4r3F1HsdBeNsJb1HtViC-MtBDzksfJZoZnkydRhW1Q@mail.gmail.com>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] How to port xenomai rtos on beaglebone black ,
- raspberry pi, beaglebone white or on any arm platform
+Message-ID: <5d8dd3ae.5ccc.1519e440866.Coremail.ericvic@163.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] ipipe-gch-ipipe-3.0-imx6q latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,36 +16,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 12/12/2015 11:23 AM, BHISHMAPALSINH THAKOR wrote:
-> Respected sir,
-> Recently i work on xenomai rtos with arm platform for my master  project =
-so
-> please help me to porting xenomai rtos on beaglebone black or white
-
-There are Xenomai kernels and packages readily available for the
-BeagleBone.
-
-Packages:
-http://repos.rcn-ee.com/debian/pool/main/l/linux-3.8.13-xenomai-r76/
-http://repos.rcn-ee.com/debian/pool/main/l/linux-3.14.52-ti-xenomai-r75/
-http://repos.rcn-ee.com/debian/pool/main/x/xenomai/
-
-Pre-built image including Xenomai and Machinekit (which run on Xenomai):
-http://elinux.org/Beagleboard:BeagleBoneBlack_Debian#BBW.2FBBB_.28All_Revs.=
-29_Machinekit
-
--- =
-
-Charles Steinkuehler
-charles@steinkuehler.net
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 196 bytes
-Desc: OpenPGP digital signature
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20151212/cc070d2a/at=
-tachment.sig>
+SXQgaXMgbXVjaCBiZXR0ZXIgd2l0aCAzLjE4LjIwICxpdCBpcyAgdGhlIHRlc3QgcmVzdWx0IHdp
+dGggeGVub21haS0zLjAuMSAgIDUwMHVzIGN5Y2xlICxzdGlsbCBhIGxpdHRsZSBiaWcgLHRoYW5r
+cyEKLXNoLTIuMDViIyBbICAxNTQuODEyMDMyXSBwbWF4OiAwLjU5NzMwMyBtcwpbICAyNDUuMjE2
+ODYzXSBwbWF4OiAwLjYwMDk0MCBtcwpbICAyNDkuOTkyMzk1XSBwbWF4OiAwLjYwMzI4OCBtcwpb
+ICAyNzcuMjgwMDA2XSBwbWF4OiAwLjYxMDQ3MCBtcwoKCgoKCgoKCgoKQXQgMjAxNS0xMi0wOCAx
+OToyMzoyMCwgIkdpbGxlcyBDaGFudGVwZXJkcml4IiA8Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVu
+b21haS5vcmc+IHdyb3RlOgo+T24gVHVlLCBEZWMgMDgsIDIwMTUgYXQgMDY6NDM6MDJQTSArMDgw
+MCwgZXJpYyB3cm90ZToKPj4gaGVsbG86Cj4+IEkgdXNlIHhlbm9tYWktMi42LjQgd2l0aCBrZXJu
+ZWwKPj4gICAgICAgICBpcGlwZS1nY2gtaXBpcGUtMy4wLWlteDZxLnRhci5iejIgd2l0aCBzYW1w
+bGUgdGVzdCAsIGJ1aWxkCj4+ICAgICAgICAgdGhlIGZsb3cgbW9kdWxlIHdpdGggdGltZXIgMjUw
+dXMgY3ljbGUsaWYgSSBtYWtlIGEgdXNlcgo+PiAgICAgICAgIHNwYWNlIGFwcGxpY2F0aW9uIHdp
+dGggbWVtb3J5IGNvcHkgLHRoZSBrZXJuZWwgbGF0ZW5jeQo+PiAgICAgICAgIHdpbGwgdmVyeSBi
+aWcgLHdoeT8/PyB0aGFua3MKPgo+RG8geW91IGhhdmUgdGhlIHNhbWUgcHJvYmxlbSBpZiB5b3Ug
+dXNlIGEgcmVjZW50IG1haW5saW5lIGtlcm5lbD8KPlN1Y2ggYXMgMy4xNCBvciAzLjE4ID8KPgo+
+LS0gCj4JCQkJCSAgICBHaWxsZXMuCj5odHRwczovL2NsaWNrLWhhY2sub3JnCg==
