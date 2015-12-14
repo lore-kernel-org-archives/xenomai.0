@@ -1,12 +1,19 @@
-From: "=?gb18030?B?pcul46Xz0MfIyw==?=" <1173264124@qq.com>
-Mime-Version: 1.0
-Date: Mon, 14 Dec 2015 22:56:40 +0800
-Message-ID: <tencent_7C005566224FD6F01071277C@qq.com>
-Content-Type: text/plain;
-	charset="gb18030"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Question about synchronisation between xenomai task and
-	linux task
+Date: Mon, 14 Dec 2015 23:19:10 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151214221910.GB16627@hermes.click-hack.org>
+References: <44cb82ce.15337.151812ff429.Coremail.ericvic@163.com>
+ <20151208112320.GA24418@hermes.click-hack.org>
+ <5d8dd3ae.5ccc.1519e440866.Coremail.ericvic@163.com>
+ <20151214064253.GC7035@hermes.click-hack.org>
+ <653fe8d9.f6c1.1519f7e1ec0.Coremail.ericvic@163.com>
+ <20151214080316.GB27298@hermes.click-hack.org>
+ <613bbb7c.109f7.1519f9cec39.Coremail.ericvic@163.com>
+ <1f53ebaf.11cf1.1519fbd18eb.Coremail.ericvic@163.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1f53ebaf.11cf1.1519fbd18eb.Coremail.ericvic@163.com>
+Subject: Re: [Xenomai] ipipe-gch-ipipe-3.0-imx6q latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,32 +22,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
+To: eric <ericvic@163.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGVsbG8sIHNvcnJ5IHRvIGJvdGhlciB5b3UuIEkgaGF2ZSBzb21lIHF1ZXN0aW9ucyBhYm91
-dCBzeW5jaHJvbmlzYXRpb24uIEkgYW0gdmVyeSBlYWdlciBmb3IgeW91ciBoZWxwLiANCg0K
-DQogICAgSSBoYXZlIHJlYWQgdGhlIHNvdXJjZSBjb2RlIGZpbGUgbGlrZSBydGlwYy5jLCB4
-ZGRwLmMsIGJ1ZnAuYywgaWRkcC5jLCBhbmQgcGlwZS5jLiBOb3cgSSBhbSB3b25kZXJpbmcg
-aWYgdGhlcmUgaXMgYSBzaW1wbGUgYW5kIGVmZmVjdGl2ZSB3YXkgb2Ygc3luY2hyb25pc2F0
-aW9uIGJldHdlZW4geGVub21haSB0YXNrIGFuZCBsaW51eCB0YXNrIGluIHVzZXIgc3BhY2Ug
-YW5kIGtlcm5lbCBzcGFjZS4NCg0KDQogICAgSSBmb3VuZCBtb3N0IG9mIHN5bmNocm9uaXNh
-dGlvbiBzZXJ2aWNlIGludHJvZHVjZWQgaW4gWGVub21haSAzIFByb2dyYW1tZXKhr3MgUmVm
-ZXJlbmNlIE1hbnVhbCBjb3VsZCBiZSBvbmx5IHVzZWQgaW4geGVub21haSB0YXNrLCBsaW51
-eCB0YXNrIGNhbiBub3QgdXNlIHRoZXNlIHN5bmNocm9uaXNhdGlvbiBzZXJ2aWNlLiBJZiBJ
-IHVzZSBsaW51eCBzeW5jaHJvbmlzYXRpb24gc2VydmljZSBsaWtlIG11dGV4IGluIHhlbm9t
-YWkgdGFzaywgeGVub21haSB0YXNrIHdvdWxkIHN3aXRjaCB0byBzZWNvbmRhcnkgbW9kZSB3
-aGljaCB3b3VsZCBjb3N0IGEgbG90IG9mIHRpbWUuIFNvIEkgd2FudCB0byBrbm93IGhvdyB0
-byBzeW5jaHJvbml6ZSB4ZW5vbWFpIHRhc2sgYW5kIGxpbnV4IHRhc2sgaW4gdXNlciBzcGFj
-ZS4NCm8NCg0KDQogICAgQXMgSSBtZW50aW9uZWQgYWJvdmUsIEkgaGF2ZSByZWFkIHRoZSBz
-b3VyY2UgY29kZSBmaWxlIGxpa2UgcnRpcGMuYywgeGRkcC5jLCBidWZwLmMsIGlkZHAuYywg
-SSBrbm93IGxvdHMgb2YgZnVuY3Rpb25zIHdlcmUgcmVhbGl6ZWQgaW4gbGludXgga2VybmVs
-IG1vZHVsZXMgYXMgcnRkbSBkZXZpY2VzLCBib3RoIHhlbm9tYWkgdGFzayBhbmQgbGludXgg
-dGFzayBjb3VsZCBjYWxsIHRoZXNlIGZ1bmN0aW9ucyBieSBydGRtIGludGVyZmFjZS4gSW4g
-a2VybmVsIHNwYWNlLCBTeW5jaHJvbmlzYXRpb24gU2VydmljZXMgd2FzIHVzZWQgdG8gc3lu
-Y2hyb25pemUgYmV0d2VlbiB4ZW5vbWFpIHRhc2tzLCB4bmFwYyBhbmQgd2FpdF9xdWV1ZV9o
-ZWFkX3Qgd2VyZSB1c2VkIHRvIHN5bmNocm9uaXplIGJldHdlZW4geGVub21haSB0YXNrIGFu
-ZCBsaW51eCB0YXNrLiBJIGFtIHdvbmRlcmluZyBpZiB0aGVyZSBpcyBhIHNpbXBsZSB0byBz
-eW5jaHJvbml6ZSBiZXR3ZWVuIHhlbm9tYWkgdGFzayBhbmQgbGludXggdGFzayBkaXJlY3Rs
-eSBpbiBrZXJuZWwgc3BhY2UuDQoNCg0KICAgIEknYW0gYSByb29raWUgb2YgeGVub21haS4g
-SXQgbWlnaHQgYmUgc2ltcGxlIHF1ZXN0aW9ucyBpbiB5b3VyIG9waW5pb24uIEkgd291bGQg
-YXBwcmVjaWF0ZSBpdCBpZiB5b3UgY291bGQgaGVscC4=
+On Mon, Dec 14, 2015 at 05:05:48PM +0800, eric wrote:
+>    Above i use the wrong version about latency test , now it works and the latency test 
+>  
+> RTD|     22.513|     39.832|     60.649|       0|     0|     11.269|     63.939
+> RTD|     27.225|     40.068|     61.134|       0|     0|     11.269|     63.939
+> RTD|     27.270|     40.531|     60.103|       0|     0|     11.269|     63.939
+> RTD|     14.876|     39.540|     61.451|       0|     0|     11.269|     63.939
+> RTD|     15.890|     39.760|     68.512|       0|     0|     11.269|     68.512
+> RTD|     10.951|     29.915|     61.269|       0|     0|     10.951|     68.512
+> RTD|     10.981|     12.596|     15.118|       0|     0|     10.951|     68.512
+> RTD|     10.814|     12.648|     16.284|       0|     0|     10.814|     68.512
+> RTD|     10.920|     12.636|     15.057|       0|     0|     10.814|     68.512
+> RTT|  00:09:38  (periodic user-mode task, 1000 us period, priority 99)
+> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+> RTD|     10.784|     12.672|     15.465|       0|     0|     10.784|     68.512
+> RTD|     11.071|     12.602|     15.374|       0|     0|     10.784|     68.512
+> RTD|     10.904|     12.632|     14.859|       0|     0|     10.784|     68.512
+> RTD|     10.934|     12.639|     15.056|       0|     0|     10.784|     68.512
+> RTD|     11.010|     12.575|     15.146|       0|     0|     10.784|     68.512
+> 
+
+So the latency is below 100us, much less than 500us. It seems a bit
+high though, do you have any debug option enabled? Do you run this
+with a real-time load?
+
+-- 
+					    Gilles.
+https://click-hack.org
+
