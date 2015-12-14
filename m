@@ -1,18 +1,11 @@
-Date: Mon, 14 Dec 2015 17:05:48 +0800 (CST)
-From: eric  <ericvic@163.com>
-In-Reply-To: <613bbb7c.109f7.1519f9cec39.Coremail.ericvic@163.com>
-References: <44cb82ce.15337.151812ff429.Coremail.ericvic@163.com>
- <20151208112320.GA24418@hermes.click-hack.org>
- <5d8dd3ae.5ccc.1519e440866.Coremail.ericvic@163.com>
- <20151214064253.GC7035@hermes.click-hack.org>
- <653fe8d9.f6c1.1519f7e1ec0.Coremail.ericvic@163.com>
- <20151214080316.GB27298@hermes.click-hack.org>
- <613bbb7c.109f7.1519f9cec39.Coremail.ericvic@163.com>
 MIME-Version: 1.0
-Message-ID: <1f53ebaf.11cf1.1519fbd18eb.Coremail.ericvic@163.com>
-Content-Type: text/plain; charset=GBK
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] ipipe-gch-ipipe-3.0-imx6q latency
+Date: Mon, 14 Dec 2015 20:06:51 +0530
+Message-ID: <CABShy46jn=__wPaUqu5kJf8e=TtKbysjE31EWkXkBh4S-GdTAw@mail.gmail.com>
+From: BHISHMAPALSINH THAKOR <bjthakor.337@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] How can i make driver for CAN Bus loopback with receive
+ own message in xenomai rtos ported beaglebone black or white and raspberry
+ pi
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,49 +14,9 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: eric <ericvic@163.com>
-Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org, xenomai-git@xenomai.org, xenomai-request@xenomai.org, support@xenomai.org
 
-ICAgQWJvdmUgaSB1c2UgdGhlIHdyb25nIHZlcnNpb24gYWJvdXQgbGF0ZW5jeSB0ZXN0ICwgbm93
-IGl0IHdvcmtzIGFuZCB0aGUgbGF0ZW5jeSB0ZXN0IAogClJURHwgICAgIDIyLjUxM3wgICAgIDM5
-LjgzMnwgICAgIDYwLjY0OXwgICAgICAgMHwgICAgIDB8ICAgICAxMS4yNjl8ICAgICA2My45MzkK
-UlREfCAgICAgMjcuMjI1fCAgICAgNDAuMDY4fCAgICAgNjEuMTM0fCAgICAgICAwfCAgICAgMHwg
-ICAgIDExLjI2OXwgICAgIDYzLjkzOQpSVER8ICAgICAyNy4yNzB8ICAgICA0MC41MzF8ICAgICA2
-MC4xMDN8ICAgICAgIDB8ICAgICAwfCAgICAgMTEuMjY5fCAgICAgNjMuOTM5ClJURHwgICAgIDE0
-Ljg3NnwgICAgIDM5LjU0MHwgICAgIDYxLjQ1MXwgICAgICAgMHwgICAgIDB8ICAgICAxMS4yNjl8
-ICAgICA2My45MzkKUlREfCAgICAgMTUuODkwfCAgICAgMzkuNzYwfCAgICAgNjguNTEyfCAgICAg
-ICAwfCAgICAgMHwgICAgIDExLjI2OXwgICAgIDY4LjUxMgpSVER8ICAgICAxMC45NTF8ICAgICAy
-OS45MTV8ICAgICA2MS4yNjl8ICAgICAgIDB8ICAgICAwfCAgICAgMTAuOTUxfCAgICAgNjguNTEy
-ClJURHwgICAgIDEwLjk4MXwgICAgIDEyLjU5NnwgICAgIDE1LjExOHwgICAgICAgMHwgICAgIDB8
-ICAgICAxMC45NTF8ICAgICA2OC41MTIKUlREfCAgICAgMTAuODE0fCAgICAgMTIuNjQ4fCAgICAg
-MTYuMjg0fCAgICAgICAwfCAgICAgMHwgICAgIDEwLjgxNHwgICAgIDY4LjUxMgpSVER8ICAgICAx
-MC45MjB8ICAgICAxMi42MzZ8ICAgICAxNS4wNTd8ICAgICAgIDB8ICAgICAwfCAgICAgMTAuODE0
-fCAgICAgNjguNTEyClJUVHwgIDAwOjA5OjM4ICAocGVyaW9kaWMgdXNlci1tb2RlIHRhc2ssIDEw
-MDAgdXMgcGVyaW9kLCBwcmlvcml0eSA5OSkKUlRIfC0tLS1sYXQgbWlufC0tLS1sYXQgYXZnfC0t
-LS1sYXQgbWF4fC1vdmVycnVufC0tLW1zd3wtLS1sYXQgYmVzdHwtLWxhdCB3b3JzdApSVER8ICAg
-ICAxMC43ODR8ICAgICAxMi42NzJ8ICAgICAxNS40NjV8ICAgICAgIDB8ICAgICAwfCAgICAgMTAu
-Nzg0fCAgICAgNjguNTEyClJURHwgICAgIDExLjA3MXwgICAgIDEyLjYwMnwgICAgIDE1LjM3NHwg
-ICAgICAgMHwgICAgIDB8ICAgICAxMC43ODR8ICAgICA2OC41MTIKUlREfCAgICAgMTAuOTA0fCAg
-ICAgMTIuNjMyfCAgICAgMTQuODU5fCAgICAgICAwfCAgICAgMHwgICAgIDEwLjc4NHwgICAgIDY4
-LjUxMgpSVER8ICAgICAxMC45MzR8ICAgICAxMi42Mzl8ICAgICAxNS4wNTZ8ICAgICAgIDB8ICAg
-ICAwfCAgICAgMTAuNzg0fCAgICAgNjguNTEyClJURHwgICAgIDExLjAxMHwgICAgIDEyLjU3NXwg
-ICAgIDE1LjE0NnwgICAgICAgMHwgICAgIDB8ICAgICAxMC43ODR8ICAgICA2OC41MTIKCgoKCgoK
-CkF0IDIwMTUtMTItMTQgMTY6MzA6NDAsICJlcmljIiA8ZXJpY3ZpY0AxNjMuY29tPiB3cm90ZToK
-CkkgdXNlIGxhdGVuY3kgdGVzdCAsaXQgc2hvdyB0aGlzCgoKCgotc2gtMi4wNWIjIC4vbGF0ZW5j
-eSAKICAgMCIwMDAuMDAwfCBXQVJOSU5HOiBbbWFpbl0gY2Fubm90IG9wZW4gUlRETSBkZXZpY2Ug
-L2Rldi9ydGRtL21lbWRldi1wcml2YXRlOiBObyBzdWNoIGZpbGUgb3IgZGlyZWN0b3J5CiAgIDAi
-MDAwLjAwMHwgV0FSTklORzogW21haW5dIGNhbm5vdCBtYXAgcHJpdmF0ZSB1bW0gYXJlYTogTm8g
-c3VjaCBmaWxlIG9yIGRpcmVjdG9yeQogICAwIjAwMC4wMDB8IEJVRyBpbiBpbml0X2JpbmQoKTog
-W21haW5dIChDT05GSUdfREVWVE1QRlNfTU9VTlQgbm90IGVuYWJsZWQ/KQotc2gtMi4wNWIjIC4v
-bGF0ZW5jeSAgLXQgMQogICAwIjAwMC4wMDB8IFdBUk5JTkc6IFttYWluXSBjYW5ub3Qgb3BlbiBS
-VERNIGRldmljZSAvZGV2L3J0ZG0vbWVtZGV2LXByaXZhdGU6IE5vIHN1Y2ggZmlsZSBvciBkaXJl
-Y3RvcnkKICAgMCIwMDAuMDAwfCBXQVJOSU5HOiBbbWFpbl0gY2Fubm90IG1hcCBwcml2YXRlIHVt
-bSBhcmVhOiBObyBzdWNoIGZpbGUgb3IgZGlyZWN0b3J5CiAgIDAiMDAwLjAwMHwgQlVHIGluIGlu
-aXRfYmluZCgpOiBbbWFpbl0gKENPTkZJR19ERVZUTVBGU19NT1VOVCBub3QgZW5hYmxlZD8pCgoK
-CgoKCgoKQXQgMjAxNS0xMi0xNCAxNjowMzoxNywgIkdpbGxlcyBDaGFudGVwZXJkcml4IiA8Z2ls
-bGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmc+IHdyb3RlOgo+T24gTW9uLCBEZWMgMTQsIDIw
-MTUgYXQgMDM6NTc6MDFQTSArMDgwMCwgZXJpYyB3cm90ZToKPj4ga2VybmVsIHNwYWNlOgo+Cj5U
-aGlzIGRvZXMgbm90IGFuc3dlciBteSBxdWVzdGlvbi4gaGVyZSBpcyBteSBxdWVzdGlvbiBhZ2Fp
-biwgc28gdGhhdAo+eW91IGNhbiByZWFkIGl0IGFnYWluOgo+Cj4+ID5XaGF0IGxhdGVuY3kgZG9l
-cyBYZW5vbWFpIGxhdGVuY3kgdGVzdCBnaXZlPwo+Cj4tLSAKPgkJCQkJICAgIEdpbGxlcy4KPmh0
-dHBzOi8vY2xpY2staGFjay5vcmcKCgoKCgog
+Respected sir,
+I working on can bus driver development on xenomai rtos ported  beagle bone
+black or white so please so please tell me about how can i make can bus
+rtdm driver on beagle bone black or white which ported with xenomai rtos.
