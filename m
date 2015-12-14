@@ -1,15 +1,15 @@
-Date: Mon, 14 Dec 2015 09:03:17 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151214080316.GB27298@hermes.click-hack.org>
+Date: Mon, 14 Dec 2015 16:08:46 +0800 (CST)
+From: eric  <ericvic@163.com>
+In-Reply-To: <653fe8d9.f6c1.1519f7e1ec0.Coremail.ericvic@163.com>
 References: <44cb82ce.15337.151812ff429.Coremail.ericvic@163.com>
  <20151208112320.GA24418@hermes.click-hack.org>
  <5d8dd3ae.5ccc.1519e440866.Coremail.ericvic@163.com>
  <20151214064253.GC7035@hermes.click-hack.org>
  <653fe8d9.f6c1.1519f7e1ec0.Coremail.ericvic@163.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <653fe8d9.f6c1.1519f7e1ec0.Coremail.ericvic@163.com>
+Message-ID: <3b1b466.fd5d.1519f88e063.Coremail.ericvic@163.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] ipipe-gch-ipipe-3.0-imx6q latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -20,17 +20,45 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: eric <ericvic@163.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Dec 14, 2015 at 03:57:01PM +0800, eric wrote:
-> kernel space:
-
-This does not answer my question. here is my question again, so that
-you can read it again:
-
-> >What latency does Xenomai latency test give?
-
--- 
-					    Gilles.
-https://click-hack.org
-
+ICAgICAgICAgICAgQW5kIHdpdGggeDg2IGR1YWwgY29yZSB0aGUgc2FtZSB0ZXN0IHRoZSByZXN1
+bHQgcXVpdGUgZ29vZCBqdXN0IDEzdXMgbGF0ZW5jeSAsIGJ1dCBqdXN0IGlteDZxIGZvciBhIGxv
+bmcgdGltZSB0aGUgcmVzdWx0IG5vdCB2ZXJ5IHdlbGwuCgoKCgoKCkF0IDIwMTUtMTItMTQgMTU6
+NTc6MDEsICJlcmljIiA8ZXJpY3ZpY0AxNjMuY29tPiB3cm90ZToKCmtlcm5lbCBzcGFjZToKCgoK
+CiNkZWZpbmUgVEFTS19QUklPIDk5IC8vIDk5IGlzIEhpZ2hlc3QgUlQgcHJpb3JpdHkKI2RlZmlu
+ZSBUQVNLX01PREUgMCAvLyBObyBmbGFncwojZGVmaW5lIFRBU0tfU1RLU1ogMCAvLyBkZWZhdWx0
+IFN0YWNrIHNpemUKI2RlZmluZSBUQVNLX1BFUklPRCA1MDAwMDBsbCAvLyBpbiBuYW5vIHNlY29u
+ZHMgPSA1MDAgbXMKbG9uZyBsb25nIHBtYXgsc3RhcnQsc3RvcDsKc3RhdGljIHJ0ZG1fdGFza190
+IHRkOyAgICAvL1JURE0gUmVhbCB0aW1lIHRhc2sgcG9pbnRlcgpjaGFyIGxvZ29bNDAqMTAyNF07
+CmNoYXIgbWVtX3Nwdm1bNDAqMTAyNF07CmxvbmcgbG9uZyBydW5jb3VudD0wOwoKCgoKdm9pZCBw
+ZXJpb2RpYyAodm9pZCAqYXJnKSB7CmxvbmcgbWF4LHBtYXg7CmZvciAoOzspIHsKcnRkbV90YXNr
+X3dhaXRfcGVyaW9kKE5VTEwpOyAvL2Rlc2NoZWR1bGUgdW50aWwgbmV4dCBwZXJpb2QKc3RvcCA9
+cnRkbV9jbG9ja19yZWFkKCk7Cm1lbXNldChtZW1fc3B2bSwwLHNpemVvZihsb2dvKSk7Cm1lbWNw
+eShtZW1fc3B2bSxsb2dvLHNpemVvZihsb2dvKSk7Cm1lbXNldChtZW1fc3B2bSwxMjcsc2l6ZW9m
+KGxvZ28pKTsKbWVtY3B5KG1lbV9zcHZtLGxvZ28sc2l6ZW9mKGxvZ28pKTsKbWVtc2V0KG1lbV9z
+cHZtLDAsc2l6ZW9mKGxvZ28pKTsKbWVtY3B5KG1lbV9zcHZtLGxvZ28sc2l6ZW9mKGxvZ28pKTsK
+bWVtc2V0KG1lbV9zcHZtLDEyNyxzaXplb2YobG9nbykpOwptZW1jcHkobWVtX3Nwdm0sbG9nbyxz
+aXplb2YobG9nbykpOwptZW1zZXQobWVtX3Nwdm0sMCxzaXplb2YobG9nbykpOwptZW1jcHkobWVt
+X3Nwdm0sbG9nbyxzaXplb2YobG9nbykpOwptZW1zZXQobWVtX3Nwdm0sMTI3LHNpemVvZihsb2dv
+KSk7CmlmKHJ1bmNvdW50PDEwMDApCnsKcG1heD0wOwp9CmlmKHBtYXg8KHN0b3Atc3RhcnQpKXsK
+ICBwbWF4PXN0b3Atc3RhcnQ7CiAgcHJpbnRrKCJwbWF4OiAlbGQuJTA2bGQgbXNcbiIsKGxvbmcp
+cG1heC8xMDAwMDAwLChsb25nKXBtYXglMTAwMDAwMCk7Cn0Kc3RhcnQ9c3RvcDsKcnVuY291bnQr
+KzsKfQp9CmludCBpbml0X21vZHVsZSh2b2lkKSB7CiAgIHJldHVybiBydGRtX3Rhc2tfaW5pdCAo
+JnRkLCAicGVyaW9kaWMiLCAmcGVyaW9kaWMsIE5VTEwsIFRBU0tfUFJJTyxUQVNLX1BFUklPRCk7
+Cn0KCgp2b2lkIGNsZWFudXBfbW9kdWxlKHZvaWQpIHsKcnRkbV90YXNrX2Rlc3Ryb3koJnRkKTsK
+fQoKCnVzZXIgc3BhY2U6CgoKI2luY2x1ZGUgPHN0ZGlvLmg+CmludCBtYWluKCkKewpjaGFyIGFb
+MTAyNCoxMDI0XT17MHhmZn07CmNoYXIgYlsxMDI0KjEwMjRdOwppbnQgaT0wOwp3aGlsZSgxKXsK
+Cgpmb3IoaT0xMDAwMDAwO2k+MDtpLS0pCnN5c3RlbSgic3luYyIpOwptZW1jcHkoYixhLDEwMjQq
+ODAwKTsKfQpyZXR1cm4gMDsKfQoKCgoKCgoKQXQgMjAxNS0xMi0xNCAxNDo0Mjo1MywgIkdpbGxl
+cyBDaGFudGVwZXJkcml4IiA8Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmc+IHdyb3Rl
+Ogo+T24gTW9uLCBEZWMgMTQsIDIwMTUgYXQgMTA6MTM6NTdBTSArMDgwMCwgZXJpYyB3cm90ZToK
+Pj4gSXQgaXMgbXVjaCBiZXR0ZXIgd2l0aCAzLjE4LjIwICxpdCBpcyAgdGhlIHRlc3QgcmVzdWx0
+IHdpdGggeGVub21haS0zLjAuMSAgIDUwMHVzIGN5Y2xlICxzdGlsbCBhIGxpdHRsZSBiaWcgLHRo
+YW5rcyEKPj4gLXNoLTIuMDViIyBbICAxNTQuODEyMDMyXSBwbWF4OiAwLjU5NzMwMyBtcwo+PiBb
+ICAyNDUuMjE2ODYzXSBwbWF4OiAwLjYwMDk0MCBtcwo+PiBbICAyNDkuOTkyMzk1XSBwbWF4OiAw
+LjYwMzI4OCBtcwo+PiBbICAyNzcuMjgwMDA2XSBwbWF4OiAwLjYxMDQ3MCBtcwo+Cj5JIGFtIG5v
+dCBzdXJlIGFib3V0IHdoYXQgeW91IG1lYXN1cmUsIGJ1dCBpZiB5b3Ugb2JzZXJ2ZSBhIDUwMHVz
+Cj5sYXRlbmN5LCB5b3UgaGF2ZSBhIHByb2JsZW0uCj4KPldoYXQgbGF0ZW5jeSBkb2VzIFhlbm9t
+YWkgbGF0ZW5jeSB0ZXN0IGdpdmU/Cj4KPi0tIAo+CQkJCQkgICAgR2lsbGVzLgo+aHR0cHM6Ly9j
+bGljay1oYWNrLm9yZwoKCgoKCiA=
