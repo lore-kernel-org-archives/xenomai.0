@@ -1,17 +1,10 @@
-Date: Mon, 14 Dec 2015 16:30:40 +0800 (CST)
-From: eric  <ericvic@163.com>
-In-Reply-To: <20151214080316.GB27298@hermes.click-hack.org>
-References: <44cb82ce.15337.151812ff429.Coremail.ericvic@163.com>
- <20151208112320.GA24418@hermes.click-hack.org>
- <5d8dd3ae.5ccc.1519e440866.Coremail.ericvic@163.com>
- <20151214064253.GC7035@hermes.click-hack.org>
- <653fe8d9.f6c1.1519f7e1ec0.Coremail.ericvic@163.com>
- <20151214080316.GB27298@hermes.click-hack.org>
+Date: Mon, 14 Dec 2015 16:52:11 +0800
+Message-ID: <uilidxdi7i7s3a3vwg8fck63.1450082790936@email.android.com>
+From: Guoquan Hu <flyingfox_hu@163.com>
 MIME-Version: 1.0
-Message-ID: <613bbb7c.109f7.1519f9cec39.Coremail.ericvic@163.com>
-Content-Type: text/plain; charset=GBK
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] ipipe-gch-ipipe-3.0-imx6q latency
+Subject: [Xenomai] Question on linux+xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,24 +13,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-SSB1c2UgbGF0ZW5jeSB0ZXN0ICxpdCBzaG93IHRoaXMKCgoKCi1zaC0yLjA1YiMgLi9sYXRlbmN5
-IAogICAwIjAwMC4wMDB8IFdBUk5JTkc6IFttYWluXSBjYW5ub3Qgb3BlbiBSVERNIGRldmljZSAv
-ZGV2L3J0ZG0vbWVtZGV2LXByaXZhdGU6IE5vIHN1Y2ggZmlsZSBvciBkaXJlY3RvcnkKICAgMCIw
-MDAuMDAwfCBXQVJOSU5HOiBbbWFpbl0gY2Fubm90IG1hcCBwcml2YXRlIHVtbSBhcmVhOiBObyBz
-dWNoIGZpbGUgb3IgZGlyZWN0b3J5CiAgIDAiMDAwLjAwMHwgQlVHIGluIGluaXRfYmluZCgpOiBb
-bWFpbl0gKENPTkZJR19ERVZUTVBGU19NT1VOVCBub3QgZW5hYmxlZD8pCi1zaC0yLjA1YiMgLi9s
-YXRlbmN5ICAtdCAxCiAgIDAiMDAwLjAwMHwgV0FSTklORzogW21haW5dIGNhbm5vdCBvcGVuIFJU
-RE0gZGV2aWNlIC9kZXYvcnRkbS9tZW1kZXYtcHJpdmF0ZTogTm8gc3VjaCBmaWxlIG9yIGRpcmVj
-dG9yeQogICAwIjAwMC4wMDB8IFdBUk5JTkc6IFttYWluXSBjYW5ub3QgbWFwIHByaXZhdGUgdW1t
-IGFyZWE6IE5vIHN1Y2ggZmlsZSBvciBkaXJlY3RvcnkKICAgMCIwMDAuMDAwfCBCVUcgaW4gaW5p
-dF9iaW5kKCk6IFttYWluXSAoQ09ORklHX0RFVlRNUEZTX01PVU5UIG5vdCBlbmFibGVkPykKCgoK
-CgoKCgpBdCAyMDE1LTEyLTE0IDE2OjAzOjE3LCAiR2lsbGVzIENoYW50ZXBlcmRyaXgiIDxnaWxs
-ZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZz4gd3JvdGU6Cj5PbiBNb24sIERlYyAxNCwgMjAx
-NSBhdCAwMzo1NzowMVBNICswODAwLCBlcmljIHdyb3RlOgo+PiBrZXJuZWwgc3BhY2U6Cj4KPlRo
-aXMgZG9lcyBub3QgYW5zd2VyIG15IHF1ZXN0aW9uLiBoZXJlIGlzIG15IHF1ZXN0aW9uIGFnYWlu
-LCBzbyB0aGF0Cj55b3UgY2FuIHJlYWQgaXQgYWdhaW46Cj4KPj4gPldoYXQgbGF0ZW5jeSBkb2Vz
-IFhlbm9tYWkgbGF0ZW5jeSB0ZXN0IGdpdmU/Cj4KPi0tIAo+CQkJCQkgICAgR2lsbGVzLgo+aHR0
-cHM6Ly9jbGljay1oYWNrLm9yZwo=
+SGksIFhlbm9tYWkgbWFpbnRhaW5lcnMsCkkgYW0gYSBYZW5vbWFpIHVzZXIgZnJvbSBjaGluYSwg
+bXkgZW52aXJvbm1lbnQgaXM6IGxpbnV4KDIuNi4zMikreGVub21haSgyLjUuNCkuIEkgbWVldCBz
+ZXZlcmFsIHByb2JsZW1zIG9uIG15IGRlYnVnIGVudmlyb25tZW50LCBhbmQgSSB3YW50IHRvIGFz
+ayBmb3IgYWR2aWNlIHRvIHNvbWUKIHF1ZXN0aW9ucyBhYm91dCB4ZW5vbWVpLCB3b3VsZCB5b3Ug
+cGxlYXNlIGdpdmUgc29tZSByZXNwb25kPyBNeSBxdWVzdGlvbnM6CjEuV2hlbiBDUFUgaXMgaGln
+aCB3b3JraW5nIGxvYWQgKG5lYXIgMTAwJSkgb3IgbmVhcmx5IG5vIG1lbW9yeSBsZWZ0LCB0aGUg
+cmVhbCB0aW1lIHRocmVhZCBpcyBraWxsZWQuIFdoYXQgaXMgdGhlIG1lY2hhbmlzbSBiZWhpbmQg
+YW5kIGhvdyB0byBhdm9pZCBpdD8KCjIuVW5kZXIgdGhpcyBlbnZpcm9ubWVudCwgaWYgT1MgaXMg
+a2VybmVsIGNyYXNoZWQgb3IgcmVhbCB0aW1lIGNvbW11bmljYXRpb27vvIhlLmcKIFBpcGUgb3Ig
+TXNnUXVldWXvvIkgaXMgYmxvY2tlZCwgaG93IHRvIGRlYnVnIG9yIHRyYWNlPyBBbnkgc3lzdGVt
+IGxvZyBpbmRpY2F0ZSBzdWNoIGtpbmRzIG9mIHRoaW5ncyBoYXBwZW5lZD/CoCBBbnkga2VybmVs
+IGR1bXAgbWVjaGFuaXNtIGlzIGF2YWlsYWJsZSBmb3Igb2ZmbGluZQogYW5hbHlzaXM/IAozLldo
+ZXRoZXIg4oCcRGlzayBpcyBzZXQgdG8gcmVhZC1vbmx54oCdIHJlbGF0ZWQgdG8gcmVhbCB0aW1l
+IHRocmVhZCB1c2FnZT8gRm9yIGV4YW1wbGUsIGlmIHdlIHVzZSByZWFsIHRpbWUgdGhyZWFkIHRv
+IHdyaXRlIGZpbGVzIG9uIGRpc2sgd2l0aCBoaWdoIGRhdGEgcmF0ZSwgd2hldGhlciBpdAogd291
+bGQgY2F1c2Ugc3lzdGVtIHVuc3RhYmxlIG9yIOKAnGRpc2sgcmVhZC1vbmx54oCdPyAKNC5JZiB3
+ZSB3YW50IHRvIGdldCB0ZWNobmljYWwgc3VwcG9ydCBvciBjb25zdWx0YW50IHNlcnZpY2UsIGFu
+eSBjb21wYW55IG9yIHBlcnNvbiBjYW4gcHJvdmlkZSBzdWNoIHNlcnZpY2U/VGhhbmshCsKgCgrC
+oApCZXN0IFJlZ2FyZHMKR3VvcXVhbiBIdQ==
