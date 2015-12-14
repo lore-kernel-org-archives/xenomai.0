@@ -1,12 +1,13 @@
-Date: Mon, 14 Dec 2015 10:13:57 +0800 (CST)
-From: eric  <ericvic@163.com>
-In-Reply-To: <20151208112320.GA24418@hermes.click-hack.org>
+Date: Mon, 14 Dec 2015 07:42:53 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151214064253.GC7035@hermes.click-hack.org>
 References: <44cb82ce.15337.151812ff429.Coremail.ericvic@163.com>
  <20151208112320.GA24418@hermes.click-hack.org>
+ <5d8dd3ae.5ccc.1519e440866.Coremail.ericvic@163.com>
 MIME-Version: 1.0
-Message-ID: <5d8dd3ae.5ccc.1519e440866.Coremail.ericvic@163.com>
-Content-Type: text/plain; charset=GBK
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5d8dd3ae.5ccc.1519e440866.Coremail.ericvic@163.com>
 Subject: Re: [Xenomai] ipipe-gch-ipipe-3.0-imx6q latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -16,21 +17,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: eric <ericvic@163.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SXQgaXMgbXVjaCBiZXR0ZXIgd2l0aCAzLjE4LjIwICxpdCBpcyAgdGhlIHRlc3QgcmVzdWx0IHdp
-dGggeGVub21haS0zLjAuMSAgIDUwMHVzIGN5Y2xlICxzdGlsbCBhIGxpdHRsZSBiaWcgLHRoYW5r
-cyEKLXNoLTIuMDViIyBbICAxNTQuODEyMDMyXSBwbWF4OiAwLjU5NzMwMyBtcwpbICAyNDUuMjE2
-ODYzXSBwbWF4OiAwLjYwMDk0MCBtcwpbICAyNDkuOTkyMzk1XSBwbWF4OiAwLjYwMzI4OCBtcwpb
-ICAyNzcuMjgwMDA2XSBwbWF4OiAwLjYxMDQ3MCBtcwoKCgoKCgoKCgoKQXQgMjAxNS0xMi0wOCAx
-OToyMzoyMCwgIkdpbGxlcyBDaGFudGVwZXJkcml4IiA8Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVu
-b21haS5vcmc+IHdyb3RlOgo+T24gVHVlLCBEZWMgMDgsIDIwMTUgYXQgMDY6NDM6MDJQTSArMDgw
-MCwgZXJpYyB3cm90ZToKPj4gaGVsbG86Cj4+IEkgdXNlIHhlbm9tYWktMi42LjQgd2l0aCBrZXJu
-ZWwKPj4gICAgICAgICBpcGlwZS1nY2gtaXBpcGUtMy4wLWlteDZxLnRhci5iejIgd2l0aCBzYW1w
-bGUgdGVzdCAsIGJ1aWxkCj4+ICAgICAgICAgdGhlIGZsb3cgbW9kdWxlIHdpdGggdGltZXIgMjUw
-dXMgY3ljbGUsaWYgSSBtYWtlIGEgdXNlcgo+PiAgICAgICAgIHNwYWNlIGFwcGxpY2F0aW9uIHdp
-dGggbWVtb3J5IGNvcHkgLHRoZSBrZXJuZWwgbGF0ZW5jeQo+PiAgICAgICAgIHdpbGwgdmVyeSBi
-aWcgLHdoeT8/PyB0aGFua3MKPgo+RG8geW91IGhhdmUgdGhlIHNhbWUgcHJvYmxlbSBpZiB5b3Ug
-dXNlIGEgcmVjZW50IG1haW5saW5lIGtlcm5lbD8KPlN1Y2ggYXMgMy4xNCBvciAzLjE4ID8KPgo+
-LS0gCj4JCQkJCSAgICBHaWxsZXMuCj5odHRwczovL2NsaWNrLWhhY2sub3JnCg==
+On Mon, Dec 14, 2015 at 10:13:57AM +0800, eric wrote:
+> It is much better with 3.18.20 ,it is  the test result with xenomai-3.0.1   500us cycle ,still a little big ,thanks!
+> -sh-2.05b# [  154.812032] pmax: 0.597303 ms
+> [  245.216863] pmax: 0.600940 ms
+> [  249.992395] pmax: 0.603288 ms
+> [  277.280006] pmax: 0.610470 ms
+
+I am not sure about what you measure, but if you observe a 500us
+latency, you have a problem.
+
+What latency does Xenomai latency test give?
+
+-- 
+					    Gilles.
+https://click-hack.org
+
