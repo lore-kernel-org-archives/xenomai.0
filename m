@@ -1,11 +1,12 @@
-MIME-Version: 1.0
-Date: Mon, 14 Dec 2015 20:06:51 +0530
-Message-ID: <CABShy46jn=__wPaUqu5kJf8e=TtKbysjE31EWkXkBh4S-GdTAw@mail.gmail.com>
-From: BHISHMAPALSINH THAKOR <bjthakor.337@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] How can i make driver for CAN Bus loopback with receive
- own message in xenomai rtos ported beaglebone black or white and raspberry
- pi
+From: "=?gb18030?B?pcul46Xz0MfIyw==?=" <1173264124@qq.com>
+Mime-Version: 1.0
+Date: Mon, 14 Dec 2015 22:56:40 +0800
+Message-ID: <tencent_7C005566224FD6F01071277C@qq.com>
+Content-Type: text/plain;
+	charset="gb18030"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Question about synchronisation between xenomai task and
+	linux task
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,9 +15,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, xenomai-git@xenomai.org, xenomai-request@xenomai.org, support@xenomai.org
+To: =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
 
-Respected sir,
-I working on can bus driver development on xenomai rtos ported  beagle bone
-black or white so please so please tell me about how can i make can bus
-rtdm driver on beagle bone black or white which ported with xenomai rtos.
+SGVsbG8sIHNvcnJ5IHRvIGJvdGhlciB5b3UuIEkgaGF2ZSBzb21lIHF1ZXN0aW9ucyBhYm91
+dCBzeW5jaHJvbmlzYXRpb24uIEkgYW0gdmVyeSBlYWdlciBmb3IgeW91ciBoZWxwLiANCg0K
+DQogICAgSSBoYXZlIHJlYWQgdGhlIHNvdXJjZSBjb2RlIGZpbGUgbGlrZSBydGlwYy5jLCB4
+ZGRwLmMsIGJ1ZnAuYywgaWRkcC5jLCBhbmQgcGlwZS5jLiBOb3cgSSBhbSB3b25kZXJpbmcg
+aWYgdGhlcmUgaXMgYSBzaW1wbGUgYW5kIGVmZmVjdGl2ZSB3YXkgb2Ygc3luY2hyb25pc2F0
+aW9uIGJldHdlZW4geGVub21haSB0YXNrIGFuZCBsaW51eCB0YXNrIGluIHVzZXIgc3BhY2Ug
+YW5kIGtlcm5lbCBzcGFjZS4NCg0KDQogICAgSSBmb3VuZCBtb3N0IG9mIHN5bmNocm9uaXNh
+dGlvbiBzZXJ2aWNlIGludHJvZHVjZWQgaW4gWGVub21haSAzIFByb2dyYW1tZXKhr3MgUmVm
+ZXJlbmNlIE1hbnVhbCBjb3VsZCBiZSBvbmx5IHVzZWQgaW4geGVub21haSB0YXNrLCBsaW51
+eCB0YXNrIGNhbiBub3QgdXNlIHRoZXNlIHN5bmNocm9uaXNhdGlvbiBzZXJ2aWNlLiBJZiBJ
+IHVzZSBsaW51eCBzeW5jaHJvbmlzYXRpb24gc2VydmljZSBsaWtlIG11dGV4IGluIHhlbm9t
+YWkgdGFzaywgeGVub21haSB0YXNrIHdvdWxkIHN3aXRjaCB0byBzZWNvbmRhcnkgbW9kZSB3
+aGljaCB3b3VsZCBjb3N0IGEgbG90IG9mIHRpbWUuIFNvIEkgd2FudCB0byBrbm93IGhvdyB0
+byBzeW5jaHJvbml6ZSB4ZW5vbWFpIHRhc2sgYW5kIGxpbnV4IHRhc2sgaW4gdXNlciBzcGFj
+ZS4NCm8NCg0KDQogICAgQXMgSSBtZW50aW9uZWQgYWJvdmUsIEkgaGF2ZSByZWFkIHRoZSBz
+b3VyY2UgY29kZSBmaWxlIGxpa2UgcnRpcGMuYywgeGRkcC5jLCBidWZwLmMsIGlkZHAuYywg
+SSBrbm93IGxvdHMgb2YgZnVuY3Rpb25zIHdlcmUgcmVhbGl6ZWQgaW4gbGludXgga2VybmVs
+IG1vZHVsZXMgYXMgcnRkbSBkZXZpY2VzLCBib3RoIHhlbm9tYWkgdGFzayBhbmQgbGludXgg
+dGFzayBjb3VsZCBjYWxsIHRoZXNlIGZ1bmN0aW9ucyBieSBydGRtIGludGVyZmFjZS4gSW4g
+a2VybmVsIHNwYWNlLCBTeW5jaHJvbmlzYXRpb24gU2VydmljZXMgd2FzIHVzZWQgdG8gc3lu
+Y2hyb25pemUgYmV0d2VlbiB4ZW5vbWFpIHRhc2tzLCB4bmFwYyBhbmQgd2FpdF9xdWV1ZV9o
+ZWFkX3Qgd2VyZSB1c2VkIHRvIHN5bmNocm9uaXplIGJldHdlZW4geGVub21haSB0YXNrIGFu
+ZCBsaW51eCB0YXNrLiBJIGFtIHdvbmRlcmluZyBpZiB0aGVyZSBpcyBhIHNpbXBsZSB0byBz
+eW5jaHJvbml6ZSBiZXR3ZWVuIHhlbm9tYWkgdGFzayBhbmQgbGludXggdGFzayBkaXJlY3Rs
+eSBpbiBrZXJuZWwgc3BhY2UuDQoNCg0KICAgIEknYW0gYSByb29raWUgb2YgeGVub21haS4g
+SXQgbWlnaHQgYmUgc2ltcGxlIHF1ZXN0aW9ucyBpbiB5b3VyIG9waW5pb24uIEkgd291bGQg
+YXBwcmVjaWF0ZSBpdCBpZiB5b3UgY291bGQgaGVscC4=
