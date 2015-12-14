@@ -1,14 +1,12 @@
-Date: Mon, 14 Dec 2015 23:35:05 +0100
+Date: Mon, 14 Dec 2015 23:45:18 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151214223505.GD16627@hermes.click-hack.org>
-References: <tencent_7C005566224FD6F01071277C@qq.com>
+Message-ID: <20151214224518.GF16627@hermes.click-hack.org>
+References: <f032b1abe1d947cab8a89e20759c07a0@CHNSHLMBX32.ad.infosys.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <tencent_7C005566224FD6F01071277C@qq.com>
-Subject: Re: [Xenomai] Question about synchronisation between xenomai task
- and linux task
+In-Reply-To: <f032b1abe1d947cab8a89e20759c07a0@CHNSHLMBX32.ad.infosys.com>
+Subject: Re: [Xenomai] CAN Loopback with Recieve own message
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,50 +15,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?B?44OL44Oj44Oz5pif5Lq6?= <1173264124@qq.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: Narasimhaprasad Yedatore Achutha <Narasimhaprasad_A@infosys.com>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Mon, Dec 14, 2015 at 10:56:40PM +0800, ニャン星人 wrote:
-> Hello, sorry to bother you. I have some questions about synchronisation. I am very eager for your help. 
+On Sat, Dec 12, 2015 at 01:42:01PM +0000, Narasimhaprasad Yedatore Achutha wrote:
+> Hello All
 > 
+> I have a question on RT-Socket not supporting Receive own message
+> option(CAN_RAW_RECV_OWN_MSGS ) with MSG_CONFIRM flag not
+> supported. I'm trying to understand, if we modify the kernel
+> driver supporting CAN_RAW_RECV_OWN_MSGS, so that we start
+> receiving transmitted message back at the controller, how much an
+> impact happens on
 > 
-> I have read the source code file like rtipc.c, xddp.c, bufp.c,
-> iddp.c, and pipe.c. Now I am wondering if there is a simple
-> and effective way of synchronisation between xenomai task and
-> linux task in user space and kernel space.
+> -          Real time scheduling
 > 
+> -          Does CAN message missing cases be frequent at high bus
+> -          load for real time applications
 > 
-> I found most of synchronisation service introduced in Xenomai
-> 3 Programmer¡¯s Reference Manual could be only used in xenomai
-> task, linux task can not use these synchronisation service. If I
-> use linux synchronisation service like mutex in xenomai task,
-> xenomai task would switch to secondary mode which would cost a lot
-> of time. So I want to know how to synchronize xenomai task and
-> linux task in user space. o
+> -          Any other impact we need to consider?
 > 
-> 
-> As I mentioned above, I have read the source code file like
-> rtipc.c, xddp.c, bufp.c, iddp.c, I know lots of functions were
-> realized in linux kernel modules as rtdm devices, both xenomai
-> task and linux task could call these functions by rtdm
-> interface. In kernel space, Synchronisation Services was used
-> to synchronize between xenomai tasks, xnapc and
-> wait_queue_head_t were used to synchronize between xenomai
-> task and linux task. I am wondering if there is a simple to
-> synchronize between xenomai task and linux task directly in
-> kernel space.
-> 
-> 
-> I'am a rookie of xenomai. It might be simple questions in your
-> opinion. I would appreciate it if you could help.
+> Please let me know if anybody has any experience on this or any
+> experiments to share?. Any thoughts or advice will be helpful
 
-The xddp sockets allow exchanging message between Xenomai and Linux
-threads. Synchronizing per-se is complicated because the two types
-of threads are scheduled by different schedulers.
-
-> _______________________________________________ Xenomai mailing
-> list Xenomai@xenomai.org
-> http://xenomai.org/mailman/listinfo/xenomai
+I do not see any other reason for not having CAN_RAW_RECV_OWN_MSGS
+than the fact that nobody needed this, so nobody implemented it.
 
 -- 
 					    Gilles.
