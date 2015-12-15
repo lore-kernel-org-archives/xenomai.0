@@ -1,13 +1,10 @@
-Message-ID: <BLU436-SMTP2549CFA8208C1D85905494AF0190@phx.gbl>
-References: <BLU436-SMTP5068DD4CFCAD34C1CC29DDF0190@phx.gbl>
- <565047BC.2010101@xenomai.org>
-From: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
-Date: Sat, 21 Nov 2015 08:30:09 -0800
 MIME-Version: 1.0
-In-Reply-To: <565047BC.2010101@xenomai.org>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] registry
+From: ilyasse toumi <toumi.ily@gmail.com>
+Date: Tue, 15 Dec 2015 13:22:55 +0100
+Message-ID: <CAG6c7CZ4_mpBc-gK0Li2yQJFW4pNkSCN26U2hWnw_osG+2RaDA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] patch for RPI2
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,65 +13,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 15-11-21 02:30 AM, Philippe Gerum wrote:
-> On 11/21/2015 06:53 AM, Mathieu Rondonneau wrote:
->> Hi,
->>
->> When a skin (lets say vxworks for example) does a
->> registry_add_dir("/vxworks"), where this directory gets created?
->>
->> I can see the registry as follow:
->> /var/run/xenomai/root/
->> /var/run/xenomai/system/heaps
->> /var/run/xenomai/system/threads
->> /var/run/xenomai/system/version
->>
->> This is how I started the registry:
->> sudo ./sysregd --linger --daemonize --anon --root=/var/run/xenomai
->>
->> so I was expecting to be able to find a directory as follow:
->> /var/run/xenomai/anon/<pid>/vxworks
-> 
-> Nope. A registry spawned manually from the command line is supposed to
-> manage a session shared between several application processes. --anon is
-> an internal switch used by copperplate aimed at starting a private
-> session for the current process, when it does not want to share anything
-> with other processes. You should not use this switch directly.
-> 
-> --root should be the path of the top directory for the session, so
-> /var/run/xenomai won't work since this is the default root for all sessions.
-> 
-Thanks Philippe, it looks like I don't need to start sysregd manually then.
+Hi there,
 
->>
->> >From my test app, I have tried to find the directory in those locations
->> with no luck:
->> /var/run/xenomai/<pid>/vxworks
->> /var/run/xenomai/vxworks
-> 
-> If starting the sysregd daemon is left to copperplate, that would be:
-> 
-> /var/run/xenomai/<user>/<session-label>/<pid>/vxworks
-> 
-> When the session is anonymous, <session-label> is "anon@<pid>".
-> 
-> If you start the daemon manually from the command line, --root should
-> specify the session directory, and the vxworks tree below would be
-> located at:
-> 
-> <session-top-dir>/vxworks
-> 
-it looks like the path I need to look for is:
-/var/run/xenomai/<user>/<session-label>/<pid>/vxworks
+I'm using kernel rpi-3.18.y as mentioned in an email sent by Joe Lee about
+RPI2, I used the patch ipipe-core-3.18.20-arm-6.patch and also the patch
+for RPI2 version5, the problem is that when i try to compile the kernel
+after patching it it gives some errors.
+It's about some implicit declarations of functions that are present in the
+patch like
 
->>
->> Now I think I am missing a setup somewhere.
->>
-> 
-> lib/{alchemy,psos,vxworks}/init.c illustrate this. --enable-registry
-> should be passed to the configure script.
-> 
-I have this flag set already.
+__ipipe_mach_update_tsc
+smp_mb__before_atomic_dec
+smp_mb__before_atomic_dec
+....
 
+Could someone please help me solve these errors.
+
+Or if someone succeeded in patching the Kernel for RPI2, please provide a
+tutorial o some help with details
+
+=E2=80=8Bthanks in advance
+
+--
