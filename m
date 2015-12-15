@@ -1,14 +1,22 @@
-Date: Tue, 15 Dec 2015 07:23:46 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151215062346.GK16627@hermes.click-hack.org>
-References: <f032b1abe1d947cab8a89e20759c07a0@CHNSHLMBX32.ad.infosys.com>
- <20151214224518.GF16627@hermes.click-hack.org>
- <1c3f1456271048ed91b95362f9605c1a@CHNSHLMBX32.ad.infosys.com>
+Date: Tue, 15 Dec 2015 15:05:40 +0800 (CST)
+From: eric <ericvic@163.com>
+In-Reply-To: <20151215061746.GI16627@hermes.click-hack.org>
+References: <44cb82ce.15337.151812ff429.Coremail.ericvic@163.com>
+ <20151208112320.GA24418@hermes.click-hack.org>
+ <5d8dd3ae.5ccc.1519e440866.Coremail.ericvic@163.com>
+ <20151214064253.GC7035@hermes.click-hack.org>
+ <653fe8d9.f6c1.1519f7e1ec0.Coremail.ericvic@163.com>
+ <20151214080316.GB27298@hermes.click-hack.org>
+ <613bbb7c.109f7.1519f9cec39.Coremail.ericvic@163.com>
+ <1f53ebaf.11cf1.1519fbd18eb.Coremail.ericvic@163.com>
+ <20151214221910.GB16627@hermes.click-hack.org>
+ <6dfbaaba.3bb5.151a3220b87.Coremail.ericvic@163.com>
+ <20151215061746.GI16627@hermes.click-hack.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1c3f1456271048ed91b95362f9605c1a@CHNSHLMBX32.ad.infosys.com>
-Subject: Re: [Xenomai] CAN Loopback with Recieve own message
+Message-ID: <43cd70ed.dfeb.151a4757624.Coremail.ericvic@163.com>
+Subject: Re: [Xenomai] ipipe-gch-ipipe-3.0-imx6q latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,18 +25,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Narasimhaprasad Yedatore Achutha <Narasimhaprasad_A@infosys.com>
-Cc: Stephen Marshall <Stephen_Marshall@infosys.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, Dec 15, 2015 at 06:01:34AM +0000, Narasimhaprasad Yedatore Achutha wrote:
-> Thanks Giles.  Do you have any idea on other three questions 
-
-The answer to the three questions is implied by my answer: there
-should be no problem implementing this. It is not implemented today
-not because it poses a particular problem, but probably simply
-because nobody needed it.
-
--- 
-					    Gilles.
-https://click-hack.org
+b2ujrHRoYW5rcyAgdmVyeSBtdWNoo6EKQXQgMjAxNS0xMi0xNSAxNDoxNzo0NiwgIkdpbGxlcyBD
+aGFudGVwZXJkcml4IiA8Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmc+IHdyb3RlOgo+
+T24gVHVlLCBEZWMgMTUsIDIwMTUgYXQgMDg6NTQ6NTZBTSArMDgwMCwgZXJpYyB3cm90ZToNCj4+
+ID4NCj4+ID5TbyB0aGUgbGF0ZW5jeSBpcyBiZWxvdyAxMDB1cywgbXVjaCBsZXNzIHRoYW4gNTAw
+dXMuIEl0IHNlZW1zIGEgYml0DQo+PiA+aGlnaCB0aG91Z2gsIGRvIHlvdSBoYXZlIGFueSBkZWJ1
+ZyBvcHRpb24gZW5hYmxlZD8gRG8geW91IHJ1biB0aGlzDQo+PiA+d2l0aCBhIHJlYWwtdGltZSBs
+b2FkPw0KPj4gPg0KPj4gPi0tIA0KPj4gPgkJCQkJICAgIEdpbGxlcy4NCj4+ID5odHRwczovL2Ns
+aWNrLWhhY2sub3JnDQo+PiANCj4+ICAgICAgICAgSSBjYW4gbm90IHJ1biByZWFsLXRpbWUgbG9h
+ZCAsaXQgYWx3YXlzIHN0b3AgIHRoZSBmbG93aW5nIHN0ZXAuICBTbyAgaSB1c2Ugc29tZSBvdGhl
+ciBsb2FkIHByb2dyYW0gLkFuZCBJIGRvIG5vdCAgZW5hYmxlZCAgZGVidWcgb3B0aW9uLg0KPj4g
+cm9vdEBpbXg2cWRsc29sbzovb3B0L3gzL2JpbiMgLi94ZW5vLXRlc3QNCj4+IFN0YXJ0ZWQgY2hp
+bGQgMjkyMjg6IC9iaW4vc2ggL3Vzci94ZW5vbWFpL2Jpbi94ZW5vLXRlc3QtcnVuLXdyYXBwZXIg
+Li94ZW5vLXRlc3QNCj4+ICsrIGVjaG8gMA0KPj4gKysgdGVzdGRpcj0vb3B0L2lteDYvc21wMy94
+ZW5vbWFpLTMuMC4xL3gzL2Jpbg0KPj4gKysgL29wdC9pbXg2L3NtcDMveGVub21haS0zLjAuMS94
+My9iaW4vc21va2V5IC0tcnVuDQo+PiBhcml0aCBPSw0KPj4gYnVmcCBPSw0KPj4gaWRkcCBPSw0K
+Pj4gbGVha3MgT0sNCj4NCj5JIHdhcyByYXRoZXIgdGhpbmtpbmcgYWJvdXQgcnVubmluZyB0aGUg
+dXNlci1zcGFjZSBsb2FkIHdoaWNoDQo+Y3JlYXRlcyBoaWdoIGxhdGVuY2llcyB3aXRoIHlvdXIg
+b3duIGxhdGVuY3kgdGVzdC4NCj4NCj5CdXQgaWYgeW91IGFyZSBpbnRlcmVzdGVkIGluIHJ1bm5p
+bmcgeGVuby10ZXN0LCB5b3Ugc2hvdWxkIGNoZWNrIGl0cw0KPnN5bnRheDoNCj4tIGVpdGhlciBi
+eSBydW5uaW5nIGl0IHdpdGggdGhlIC1oIG9yIC0taGVscCBhcmd1bWVudA0KPi0gb3IgYnkgY2hl
+Y2tpbmcgaXRzIG1hbnVhbCBwYWdlLCBlaXRoZXIgb24geW91ciBkaXNrIG9yIG9uIHhlbm9tYWkN
+Cj53ZWJzaXRlOg0KPmh0dHBzOi8veGVub21haS5vcmcvZG9jdW1lbnRhdGlvbi94ZW5vbWFpLTMv
+aHRtbC9tYW4xL3hlbm8tdGVzdC8NCj4tIG9yIGJ5IHJlYWRpbmcgdGhlIHBhZ2Ugd2hlcmUgd2Ug
+ZXhwbGFpbiBob3cgd2UgZG8gdGhlIGJlbmNobWFya3MNCj53ZSBwdWJsaXNoOg0KPmh0dHBzOi8v
+eGVub21haS5vcmcvMjAxNC8wNy9iZW5jaG1hcmtpbmctd2l0aC14ZW5vLXRlc3QvDQo+DQo+UmVn
+YXJkcy4NCj4NCj4tLSANCj4JCQkJCSAgICBHaWxsZXMuDQo+aHR0cHM6Ly9jbGljay1oYWNrLm9y
+Zw0K
 
