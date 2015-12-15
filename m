@@ -1,10 +1,12 @@
+Date: Tue, 15 Dec 2015 14:59:34 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151215135934.GA30622@hermes.click-hack.org>
+References: <2396B4D2166B62479FBBE370D4A7C1F30A716140@mb2010-1.intra.tut.fi>
 MIME-Version: 1.0
-From: ilyasse toumi <toumi.ily@gmail.com>
-Date: Tue, 15 Dec 2015 13:22:55 +0100
-Message-ID: <CAG6c7CZ4_mpBc-gK0Li2yQJFW4pNkSCN26U2hWnw_osG+2RaDA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] patch for RPI2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2396B4D2166B62479FBBE370D4A7C1F30A716140@mb2010-1.intra.tut.fi>
+Subject: Re: [Xenomai] Switching to secondary mode despite of use of mmap
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,27 +15,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Umair Ali <ali.umair@tut.fi>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi there,
+On Tue, Dec 15, 2015 at 11:28:02AM +0000, Umair Ali wrote:
+> Hello,
+> 
+> I am reading a file of size 600 MB using the mmap function and
+> mlockall(). My question is that is it possible that mmap has not
+> loaded whole file in the memory and if the whole file is not
+> loaded then is it changing to secondary mode while reading the
+> file.
 
-I'm using kernel rpi-3.18.y as mentioned in an email sent by Joe Lee about
-RPI2, I used the patch ipipe-core-3.18.20-arm-6.patch and also the patch
-for RPI2 version5, the problem is that when i try to compile the kernel
-after patching it it gives some errors.
-It's about some implicit declarations of functions that are present in the
-patch like
+Unless you have not passed MCL_CURRENT | MCL_FUTURE to mlockall or
+did not check mlockall return value and mlockall in fact failed, this
+is impossible.
 
-__ipipe_mach_update_tsc
-smp_mb__before_atomic_dec
-smp_mb__before_atomic_dec
-....
+>The size of system heap is 256KB in the menuconfig for the
+> compiling kernel.
 
-Could someone please help me solve these errors.
+The size of the system heap has nothing to do with mlockall.
 
-Or if someone succeeded in patching the Kernel for RPI2, please provide a
-tutorial o some help with details
+> If the problem, i think, i have is true then how
+> i can load the such big files using mmap. The output of slackspot
+> is attached with this email. My system specs are Memory 3.1GiB and
+> processor is intel P4 3.2GHz x 2.
 
-=E2=80=8Bthanks in advance
+The slackspot trace you show only contains calls to timerfd_create
+and socket. Yes, timerfd_create and socket cause a switch to
+secondary mode.
 
---
+-- 
+					    Gilles.
+https://click-hack.org
+
