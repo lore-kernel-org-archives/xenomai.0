@@ -1,12 +1,13 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Tue, 15 Dec 2015 16:16:23 +0100
-Message-ID: <1972107.aCc7hAvxek@soho>
-In-Reply-To: <20151211163114.GE24775@hermes.click-hack.org>
+Date: Tue, 15 Dec 2015 16:46:21 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151215154621.GA2927@hermes.click-hack.org>
 References: <2004286.fnOG18ZY9A@soho> <3314665.2OtX88jxTl@soho>
  <20151211163114.GE24775@hermes.click-hack.org>
+ <1972107.aCc7hAvxek@soho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1972107.aCc7hAvxek@soho>
 Subject: Re: [Xenomai] Porting a library to Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -16,37 +17,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
 Cc: Xenomai list <xenomai@xenomai.org>
 
-RWwgRGl2ZW5kcmVzLCAxMSBkZSBkZXNlbWJyZSBkZSAyMDE1LCBhIGxlcyAxNzozMToxNCwgR2ls
-bGVzIENoYW50ZXBlcmRyaXggdmEgCmVzY3JpdXJlOgpbLi4uXQoKPiAKPiBUaGUgZmFjdCB0aGF0
-IHdyYXBwaW5nIG1heSBiZSBhIHByb2JsZW0gZm9yIGxhcmdlIGFwcGxpY2F0aW9ucyB3aGVyZQo+
-IHlvdSBvbmx5IHdhbnQgYSBzbWFsbCBwYXJ0IG9mIHRoZSBhcHBsaWNhdGlvbiB0byB1c2UgeGVu
-b21haQo+IHNlcnZpY2VzIGlzIHRoZSByZWFzb24gd2h5IFhlbm9tYWkgMy54IGdpdmVzIHlvdSBh
-bm90aGVyIGNob2ljZTogZG8KPiBub3Qgd3JhcCB4ZW5vbWFpIHNlcnZpY2VzLCBidXQgc3BlY2lm
-eSB5b3Ugd2FudCB0byB1c2UgdGhlbSB3aXRoIHRoZQo+IF9fUlQoKSBtYWNyby4KCiAuLi4gZm9s
-bG93aW5nIHRoaXMgdGhyZWFkLiBUaGVyZSdzIGEgcG9pbnQgdGhhdCBJJ20gc3RpbGwgY29uZnVz
-ZWQ6IHRoZSBydG5ldCAKcGFydC4KClNpbmNlIDIuNi40LCBydG5ldCB3YXMgYW5vdGhlciBwcm9q
-ZWN0LCB0aGF0IGluc3RhbGxlZCBpdHMgaW5jbHVkZXMgKHJ0bmV0LmggCmFuZCBydG1hYy5oKSBp
-biBpdHMgb3duIHBsYWNlLiBGcm9tIDMueCBydG5ldCBpcyBpbnRlZ3JhdGVkLgoKTG9va2luZyB0
-aGUgcnRuZXQuaCBmaWxlLCB0aGVyZSBhcmUgZGVjbGFyZWQgc29tZSAjZGVmaW5lIGFuZCBzb21l
-IGluY2x1ZGUgCnByb3RlY3RlZCBieSBfX0tFUk5FTF9fCgpNeSBxdWVzdGlvbiBpczoKClVzaW5n
-IHRoZSBQT1NJWCB3cmFwcGVyLCBhbGwgdGhlIHNvY2tldCBmdW5jdGlvbnMgYXJlIHdyYXAuIEJ1
-dCwgaG93IGRvZXMgaXQgCmFmZmVjdCB0aGUgcnRuZXQgcGFydCBvZiB0aGUgY29kZT8gCgpJIG1l
-YW4sIGlmIEkgaGF2ZSBhIHJ0bmV0IGRldmljZSwgd2hhdCBpcyB0aGUgZGlmZmVyZW5jZSBvZiBt
-YW51YWxseSBjaGFuZ2UgYWxsIAp0aGUgbmV0d29yayBmdW5jdGlvbnMgd2l0aCBhIC1EUlRORVQg
-cHJvdGVjdGVkIFJlYWx0aW1lIHZlcnNpb25zIGZ1bmN0aW9ucyBvciAKdXNlIHRoZSB3cmFwPwoK
-SSB1bmRlcnN0YW5kIHRoYXQgaWYgSSBvcGVuIGEgZGV2aWNlIHRoYXQgaXQncyBub3QgcnRuZXQs
-IEkgbG9zZSB0aGUgUmVhbHRpbWUsIAphbHRob3VnaCBJIG9wZW4gdGhlIGRldmljZSB3aXRoIGEg
-UE9TSVggd3JhcHBlZCBmdW5jdGlvbi4gVGhhdCdzIGNvcnJlY3Q/CgpCZXN0IHJlZ2FyZHMsCgpM
-ZW9wb2xkCgotLSAKLS0KTGludXggVXNlciAxNTI2OTIgICAgIEdQRzogMDVGNEE3QTk0OUEyRDlB
-QQpDYXRhbG9uaWEKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpBOiBCZWNh
-dXNlIGl0IG1lc3NlcyB1cCB0aGUgb3JkZXIgaW4gd2hpY2ggcGVvcGxlIG5vcm1hbGx5IHJlYWQg
-dGV4dC4KUTogV2h5IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBiYWQgdGhpbmc/CkE6IFRvcC1wb3N0
-aW5nLgpROiBXaGF0IGlzIHRoZSBtb3N0IGFubm95aW5nIHRoaW5nIGluIGUtbWFpbD8KLS0tLS0t
-LS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3
-YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3At
-c2lnbmF0dXJlClNpemU6IDgxOSBieXRlcwpEZXNjOiBUaGlzIGlzIGEgZGlnaXRhbGx5IHNpZ25l
-ZCBtZXNzYWdlIHBhcnQuClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21h
-aS9hdHRhY2htZW50cy8yMDE1MTIxNS82N2JiZjU4NC9hdHRhY2htZW50LnNpZz4K
+On Tue, Dec 15, 2015 at 04:16:23PM +0100, Leopold Palomo-Avellaneda wrote:
+> El Divendres, 11 de desembre de 2015, a les 17:31:14, Gilles Chanteperdrix va 
+> escriure:
+> [...]
+> 
+> > 
+> > The fact that wrapping may be a problem for large applications where
+> > you only want a small part of the application to use xenomai
+> > services is the reason why Xenomai 3.x gives you another choice: do
+> > not wrap xenomai services, but specify you want to use them with the
+> > __RT() macro.
+> 
+>  ... following this thread. There's a point that I'm still confused: the rtnet 
+> part.
+> 
+> Since 2.6.4, rtnet was another project, that installed its includes (rtnet.h 
+> and rtmac.h) in its own place. From 3.x rtnet is integrated.
+> 
+> Looking the rtnet.h file, there are declared some #define and some include 
+> protected by __KERNEL__
+> 
+> My question is:
+> 
+> Using the POSIX wrapper, all the socket functions are wrap. But, how does it 
+> affect the rtnet part of the code? 
+> 
+> I mean, if I have a rtnet device, what is the difference of manually change all 
+> the network functions with a -DRTNET protected Realtime versions functions or 
+> use the wrap?
+> 
+> I understand that if I open a device that it's not rtnet, I lose the Realtime, 
+> although I open the device with a POSIX wrapped function. That's correct?
+
+There is no difference whatsoever between 2.6 and 3.x in the way to
+use RTnet through the POSIX wrapped interface or through the
+native/alchemy skin.
+
+If you decide to use RTnet through the POSIX skin, then the wrapped
+socket function will create RTnet sockets, and the wrapped sendto
+and recvfrom will send and receive data from that socket. No need
+for -DRTNET (or -D__XENO__ more likely, as this gets defined by
+xeno-config).
+
+If you decide to use RTnet through the alchemy skin, then you would
+use the rt_dev or rt_ variant (never can recall what they are
+called). Here you would probably use the ugly -D__XENO__.
+
+Now, the difference between 2.6 and 3.x, is that there is a third
+way to the POSIX interface: without the wrapping. In that case, if
+you call socket(), you get an Linux socket, and if you use
+_RT(socket()), you get an RTnet socket (if RTnet stack is compiled
+and loaded), of course, you then need to use _RT(sendto()) and
+_RT(recvfrom()) to send/receive from that socket.
+
+-- 
+					    Gilles.
+https://click-hack.org
+
