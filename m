@@ -1,15 +1,15 @@
-In-Reply-To: <20151214223505.GD16627@hermes.click-hack.org>
-References: <tencent_7C005566224FD6F01071277C@qq.com>
- <20151214223505.GD16627@hermes.click-hack.org>
-From: "=?gb18030?B?pcul46Xz0MfIyw==?=" <1173264124@qq.com>
-Mime-Version: 1.0
-Date: Tue, 15 Dec 2015 11:42:44 +0800
-Message-ID: <tencent_1F2D495201DDAD5A77A043F3@qq.com>
+From: Narasimhaprasad Yedatore Achutha <Narasimhaprasad_A@infosys.com>
+Date: Tue, 15 Dec 2015 06:01:34 +0000
+Message-ID: <1c3f1456271048ed91b95362f9605c1a@CHNSHLMBX32.ad.infosys.com>
+References: <f032b1abe1d947cab8a89e20759c07a0@CHNSHLMBX32.ad.infosys.com>
+ <20151214224518.GF16627@hermes.click-hack.org>
+In-Reply-To: <20151214224518.GF16627@hermes.click-hack.org>
+Content-Language: en-US
 Content-Type: text/plain;
-	charset="gb18030"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] =?gb18030?q?=BB=D8=B8=B4=A3=BA__Question_about_synchron?=
- =?gb18030?q?isation_between_xenomai_taskand_linux_task?=
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Subject: Re: [Xenomai] CAN Loopback with Recieve own message
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,54 +18,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?gb18030?B?R2lsbGVzIENoYW50ZXBlcmRyaXg=?= <gilles.chanteperdrix@xenomai.org>
-Cc: =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Stephen Marshall <Stephen_Marshall@infosys.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-U28geW91IG1lYW4gdGhlcmUgaXMgbm90IHNpbXBsZSBhbmQgY29tcGxldGUgc29sdXRpb24g
-d2F5IGFwcGx5IGJ5IHhlbm9tYWkgdG8gZmlndXJlIG91dCB0aGUgc3luY2hyb25pemF0aW9u
-IHByb2JsZW0gYmV0d2VlbiB4ZW5vbWFpIHRocmVhZCBhbmQgbGludXggdGhyZWFkPyBXaGVu
-IEkgbWVldCBzeW5jaHJvbml6YXRpb24gcHJvYmxlbSBiZXR3ZWVuIHhlbm9tYWkgdGhyZWFk
-IGFuZCBsaW51eCB0aHJlYWQsIGRvIEkgaGF2ZSB0byBoYW5kbGUgaXQgbGlrZSB4ZGRwIGFu
-ZCBwaXBlPw0KDQoNCg0KDQotLS0tLS0tLS0tLS0tLS0tLS0g1K3KvNPKvP4gLS0tLS0tLS0t
-LS0tLS0tLS0tDQq3orz+yMs6ICJHaWxsZXMgQ2hhbnRlcGVyZHJpeCI8Z2lsbGVzLmNoYW50
-ZXBlcmRyaXhAeGVub21haS5vcmc+OyANCreiy83KsbzkOiAyMDE1xOoxMtTCMTXI1SjQx8ba
-tv4pIMnPzuc2OjM1DQrK1bz+yMs6ICKly6XjpfPQx8jLIjwxMTczMjY0MTI0QHFxLmNvbT47
-IA0Ks63LzTogInhlbm9tYWkiPHhlbm9tYWlAeGVub21haS5vcmc+OyANCtb3zOI6IFJlOiBb
-WGVub21haV0gUXVlc3Rpb24gYWJvdXQgc3luY2hyb25pc2F0aW9uIGJldHdlZW4geGVub21h
-aSB0YXNrYW5kIGxpbnV4IHRhc2sNCg0KDQoNCk9uIE1vbiwgRGVjIDE0LCAyMDE1IGF0IDEw
-OjU2OjQwUE0gKzA4MDAsIKXLpeOl89DHyMsgd3JvdGU6DQo+IEhlbGxvLCBzb3JyeSB0byBi
-b3RoZXIgeW91LiBJIGhhdmUgc29tZSBxdWVzdGlvbnMgYWJvdXQgc3luY2hyb25pc2F0aW9u
-LiBJIGFtIHZlcnkgZWFnZXIgZm9yIHlvdXIgaGVscC4gDQo+IA0KPiANCj4gSSBoYXZlIHJl
-YWQgdGhlIHNvdXJjZSBjb2RlIGZpbGUgbGlrZSBydGlwYy5jLCB4ZGRwLmMsIGJ1ZnAuYywN
-Cj4gaWRkcC5jLCBhbmQgcGlwZS5jLiBOb3cgSSBhbSB3b25kZXJpbmcgaWYgdGhlcmUgaXMg
-YSBzaW1wbGUNCj4gYW5kIGVmZmVjdGl2ZSB3YXkgb2Ygc3luY2hyb25pc2F0aW9uIGJldHdl
-ZW4geGVub21haSB0YXNrIGFuZA0KPiBsaW51eCB0YXNrIGluIHVzZXIgc3BhY2UgYW5kIGtl
-cm5lbCBzcGFjZS4NCj4gDQo+IA0KPiBJIGZvdW5kIG1vc3Qgb2Ygc3luY2hyb25pc2F0aW9u
-IHNlcnZpY2UgaW50cm9kdWNlZCBpbiBYZW5vbWFpDQo+IDMgUHJvZ3JhbW1lcoEwhDOBMIU0
-cyBSZWZlcmVuY2UgTWFudWFsIGNvdWxkIGJlIG9ubHkgdXNlZCBpbiB4ZW5vbWFpDQo+IHRh
-c2ssIGxpbnV4IHRhc2sgY2FuIG5vdCB1c2UgdGhlc2Ugc3luY2hyb25pc2F0aW9uIHNlcnZp
-Y2UuIElmIEkNCj4gdXNlIGxpbnV4IHN5bmNocm9uaXNhdGlvbiBzZXJ2aWNlIGxpa2UgbXV0
-ZXggaW4geGVub21haSB0YXNrLA0KPiB4ZW5vbWFpIHRhc2sgd291bGQgc3dpdGNoIHRvIHNl
-Y29uZGFyeSBtb2RlIHdoaWNoIHdvdWxkIGNvc3QgYSBsb3QNCj4gb2YgdGltZS4gU28gSSB3
-YW50IHRvIGtub3cgaG93IHRvIHN5bmNocm9uaXplIHhlbm9tYWkgdGFzayBhbmQNCj4gbGlu
-dXggdGFzayBpbiB1c2VyIHNwYWNlLiBvDQo+IA0KPiANCj4gQXMgSSBtZW50aW9uZWQgYWJv
-dmUsIEkgaGF2ZSByZWFkIHRoZSBzb3VyY2UgY29kZSBmaWxlIGxpa2UNCj4gcnRpcGMuYywg
-eGRkcC5jLCBidWZwLmMsIGlkZHAuYywgSSBrbm93IGxvdHMgb2YgZnVuY3Rpb25zIHdlcmUN
-Cj4gcmVhbGl6ZWQgaW4gbGludXgga2VybmVsIG1vZHVsZXMgYXMgcnRkbSBkZXZpY2VzLCBi
-b3RoIHhlbm9tYWkNCj4gdGFzayBhbmQgbGludXggdGFzayBjb3VsZCBjYWxsIHRoZXNlIGZ1
-bmN0aW9ucyBieSBydGRtDQo+IGludGVyZmFjZS4gSW4ga2VybmVsIHNwYWNlLCBTeW5jaHJv
-bmlzYXRpb24gU2VydmljZXMgd2FzIHVzZWQNCj4gdG8gc3luY2hyb25pemUgYmV0d2VlbiB4
-ZW5vbWFpIHRhc2tzLCB4bmFwYyBhbmQNCj4gd2FpdF9xdWV1ZV9oZWFkX3Qgd2VyZSB1c2Vk
-IHRvIHN5bmNocm9uaXplIGJldHdlZW4geGVub21haQ0KPiB0YXNrIGFuZCBsaW51eCB0YXNr
-LiBJIGFtIHdvbmRlcmluZyBpZiB0aGVyZSBpcyBhIHNpbXBsZSB0bw0KPiBzeW5jaHJvbml6
-ZSBiZXR3ZWVuIHhlbm9tYWkgdGFzayBhbmQgbGludXggdGFzayBkaXJlY3RseSBpbg0KPiBr
-ZXJuZWwgc3BhY2UuDQo+IA0KPiANCj4gSSdhbSBhIHJvb2tpZSBvZiB4ZW5vbWFpLiBJdCBt
-aWdodCBiZSBzaW1wbGUgcXVlc3Rpb25zIGluIHlvdXINCj4gb3Bpbmlvbi4gSSB3b3VsZCBh
-cHByZWNpYXRlIGl0IGlmIHlvdSBjb3VsZCBoZWxwLg0KDQpUaGUgeGRkcCBzb2NrZXRzIGFs
-bG93IGV4Y2hhbmdpbmcgbWVzc2FnZSBiZXR3ZWVuIFhlbm9tYWkgYW5kIExpbnV4DQp0aHJl
-YWRzLiBTeW5jaHJvbml6aW5nIHBlci1zZSBpcyBjb21wbGljYXRlZCBiZWNhdXNlIHRoZSB0
-d28gdHlwZXMNCm9mIHRocmVhZHMgYXJlIHNjaGVkdWxlZCBieSBkaWZmZXJlbnQgc2NoZWR1
-bGVycy4NCg0KPiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fXyBYZW5vbWFpIG1haWxpbmcNCj4gbGlzdCBYZW5vbWFpQHhlbm9tYWkub3JnDQo+IGh0
-dHA6Ly94ZW5vbWFpLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkNCg0KLS0gDQoJCQkJ
-CSAgICBHaWxsZXMuDQpodHRwczovL2NsaWNrLWhhY2sub3Jn
+Thanks Giles.  Do you have any idea on other three questions 
+, if we modify the kernel driver supporting 
+> CAN_RAW_RECV_OWN_MSGS, so that we start receiving transmitted message 
+> back at the controller, how much an impact happens on
+> 
+> -          Real time scheduling
+> 
+> -          Does CAN message missing cases be frequent at high bus
+> -          load for real time applications
+> 
+> -          Any other impact we need to consider?
+
+Thanks and Regards
+Prasad
+
+-----Original Message-----
+From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org] 
+Sent: Tuesday, December 15, 2015 4:15 AM
+To: Narasimhaprasad Yedatore Achutha
+Cc: Xenomai@xenomai.org
+Subject: Re: [Xenomai] CAN Loopback with Recieve own message
+
+On Sat, Dec 12, 2015 at 01:42:01PM +0000, Narasimhaprasad Yedatore Achuth=
+a wrote:
+> Hello All
+> 
+> I have a question on RT-Socket not supporting Receive own message 
+> option(CAN_RAW_RECV_OWN_MSGS ) with MSG_CONFIRM flag not supported. 
+> I'm trying to understand, if we modify the kernel driver supporting 
+> CAN_RAW_RECV_OWN_MSGS, so that we start receiving transmitted message 
+> back at the controller, how much an impact happens on
+> 
+> -          Real time scheduling
+> 
+> -          Does CAN message missing cases be frequent at high bus
+> -          load for real time applications
+> 
+> -          Any other impact we need to consider?
+> 
+> Please let me know if anybody has any experience on this or any 
+> experiments to share?. Any thoughts or advice will be helpful
+
+I do not see any other reason for not having CAN_RAW_RECV_OWN_MSGS than t=
+he fact that nobody needed this, so nobody implemented it.
+
+-- 
+=09=09=09=09=09    Gilles.
+https://click-hack.org
+
+**************** CAUTION - Disclaimer *****************
+This e-mail contains PRIVILEGED AND CONFIDENTIAL INFORMATION intended sol=
+ely 
+for the use of the addressee(s). If you are not the intended recipient, p=
+lease 
+notify the sender by e-mail and delete the original message. Further, you=
+ are not 
+to copy, disclose, or distribute this e-mail or its contents to any other=
+ person and 
+any such actions are unlawful. This e-mail may contain viruses. Infosys h=
+as taken 
+every reasonable precaution to minimize this risk, but is not liable for =
+any damage 
+you may sustain as a result of any virus in this e-mail. You should carry=
+ out your 
+own virus checks before opening the e-mail or attachment. Infosys reserve=
+s the 
+right to monitor and review the content of all messages sent to or from t=
+his e-mail 
+address. Messages sent to or from this e-mail address may be stored on th=
+e 
+Infosys e-mail system.
+***INFOSYS******** End of Disclaimer ********INFOSYS***
+
