@@ -1,14 +1,14 @@
-Date: Tue, 15 Dec 2015 18:09:18 +0100
+Date: Tue, 15 Dec 2015 18:19:41 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151215170918.GA5162@hermes.click-hack.org>
-References: <2396B4D2166B62479FBBE370D4A7C1F30A716140@mb2010-1.intra.tut.fi>
- <20151215135934.GA30622@hermes.click-hack.org>
- <2396B4D2166B62479FBBE370D4A7C1F30A716185@mb2010-1.intra.tut.fi>
+Message-ID: <20151215171941.GB5162@hermes.click-hack.org>
+References: <uilidxdi7i7s3a3vwg8fck63.1450082790936@email.android.com>
+ <20151214223224.GC16627@hermes.click-hack.org>
+ <6a938112.13b59.151a50746f4.Coremail.flyingfox_hu@163.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2396B4D2166B62479FBBE370D4A7C1F30A716185@mb2010-1.intra.tut.fi>
-Subject: Re: [Xenomai] Switching to secondary mode despite of use of mmap
+In-Reply-To: <6a938112.13b59.151a50746f4.Coremail.flyingfox_hu@163.com>
+Subject: Re: [Xenomai] Question on linux+xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,50 +17,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Umair Ali <ali.umair@tut.fi>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Guoquan Hu <flyingfox_hu@163.com>
+Cc: xenomai@xenomai.org
 
-On Tue, Dec 15, 2015 at 04:03:58PM +0000, Umair Ali wrote:
-> Thanks Gilles for the reply.
+On Tue, Dec 15, 2015 at 05:44:56PM +0800, Guoquan Hu wrote:
+> Thank Gilles very much!
 > 
-> >  The slackspot trace you show only contains calls to timerfd_create
-> and socket. Yes, timerfd_create and socket cause a switch to
-> secondary mode.
+> You are right, I don't find CONFIG_XENO_OPT_WATCHDOG in xenomai 2.5.4 configure file.
+
+You are probably not looking in the right place, this is a kernel
+configuration and it is indeed present in xenomai 2.5:
+https://git.xenomai.org/xenomai-2.5.git/tree/ksrc/nucleus/Kconfig#n321
+
 > 
-> The slackspot output file shows that socket and timerfd_create is
-> called again and again. But i have used these two once and then in
-> the "while loop" timer is read and packet is send.
+> I have additional questions as follow, would you please have a look and give some advices?
+> 
+> 1. I don't understand yet how the watchdog work to kill real time
+> thread which occupied too much memory or CPU time, the real time
+> thread run too slow to feed the watchdog?
 
->From the look of the trace, the calls to timerfd_create and socket
-belong to different processes. So, I would say that the multiple
-instances correspond to multiple instances of your program. Have you
-not launched the program multiple times?
+The the option explanation in the above link. The watchdog does not
+kill real-time threads which occupy too much memory.
 
-If that is the case, and you only get in fact two modes switches due
-to timerfd_create() and socket(), are you sure you still have a
-problem? Are you sure your problem is not simply the jitter?
+> 
+> 2. I know linux kernel have a mechanism called oom-killer, would it cause real time thread killed?
 
-> Does it mean
-> that timerfd_create and socket is calling every time once the one
-> loop finish and start other loop until while loop condition is
-> satisfied.
+Real-time processes, yes.
 
-I am sorry, I do not really understand this question, but I believe
-the above explanation should be sufficient.
+> 
+> 3. sometime I got message " BUG: soft lockup - CPU#x stuck for xxs! "on my environment, and it print out some register value, such as:
+> 
+> RIP: 0010:[<ffffffff813ad762>]  [<ffffffff813ad762>] _spin_lock+0x21/0x2a
+> RSP: 0018:ffff88021dd1bdb8  EFLAGS: 00000297
+> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+> RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+> RBP: ffffffff8100c58e R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+> R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+> FS:  00007f13e8663700(0000) GS:ffff88044e480000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
+> CR2: 00007f140b2b6f60 CR3: 000000043c92e000 CR4: 00000000000406e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 0000000000000400
+> 
+> Any clue can be found from these messages? how to debug for
+> spin_lock issue?
 
-> Is there any way i can avoid the transition to
-> secondary mode without using timerfd_create and socket.
+The important part of the message is the backtrace which follows the
+registers dump. It should show you which spinlock is the problem. In
+order to get a full backtrace, please make sure to enable all
+relevant options: verbose bug support, and maybe frame pointers
+support.
 
-There should be no problem using timerfd_create and socket. 
+> 
+> 4. Is there any limit on the number of real time thread? if more
+> than 20 real time threads are created, will they cause the xenomai
+> unstable?
 
-> Can i use
-> cobalt kernel timers service direclty in user space. Please guide
-> me thanks.
+No, if you create too many threads, you may exhaust a pool, so a
+thread creation would fail, that is all. If your application does
+not check for possible failures, and continues running, then yes,
+the system may become unstable, with such nasty things as infinite
+loops in primary mode, but that is your application making the
+system unstable, not Xenomai.
 
-No, kernel space timers are used in kernel space, that is why they
-are called "kernel-space timers". But a timerfd is a user-space
-interface to a kernel-space timer. I believe I already gave you link
-on how to use kernel-space timers if you wish to do so.
+> 
+> 5. Process MUST wait for all real time threads it created exit
+> safely, then can it exit?
+
+A process may call exit at any time it pleases, Xenomai will
+destroyed the threads, and all the objects allocated by the process.
+
+> 
+> BTW, I want to update linux to 3.16.7, which close to the kernel
+> version of debian 8.2.0, and update xenomai to 3.0.1, what do you
+> think about stability  of linux(3.16.7)+xenomai(3.0.1)? Any
+> problem reported on this xenomai 3.0.1?
+
+Linux 3.16 is EOL, it is a bad choice, since you are going to
+recompile a kernel anyway, you have no reason to use the same kernel
+version as Debian, you can use a more recent one such as Linux 3.18.
+
+Regards.
 
 -- 
 					    Gilles.
