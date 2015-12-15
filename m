@@ -1,17 +1,14 @@
-Date: Tue, 15 Dec 2015 07:21:35 +0100
+Date: Tue, 15 Dec 2015 07:23:46 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151215062135.GJ16627@hermes.click-hack.org>
-References: <tencent_7C005566224FD6F01071277C@qq.com>
- <20151214223505.GD16627@hermes.click-hack.org>
- <tencent_1F2D495201DDAD5A77A043F3@qq.com>
+Message-ID: <20151215062346.GK16627@hermes.click-hack.org>
+References: <f032b1abe1d947cab8a89e20759c07a0@CHNSHLMBX32.ad.infosys.com>
+ <20151214224518.GF16627@hermes.click-hack.org>
+ <1c3f1456271048ed91b95362f9605c1a@CHNSHLMBX32.ad.infosys.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <tencent_1F2D495201DDAD5A77A043F3@qq.com>
-Subject: Re: [Xenomai]
- =?utf-8?b?5Zue5aSN77yaICBRdWVzdGlvbiBhYm91dCBzeW5jaHJv?=
- =?utf-8?q?nisation_between_xenomai_taskand_linux_task?=
+In-Reply-To: <1c3f1456271048ed91b95362f9605c1a@CHNSHLMBX32.ad.infosys.com>
+Subject: Re: [Xenomai] CAN Loopback with Recieve own message
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,25 +17,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?B?44OL44Oj44Oz5pif5Lq6?= <1173264124@qq.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: Narasimhaprasad Yedatore Achutha <Narasimhaprasad_A@infosys.com>
+Cc: Stephen Marshall <Stephen_Marshall@infosys.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Tue, Dec 15, 2015 at 11:42:44AM +0800, ニャン星人 wrote:
-> So you mean there is not simple and complete solution way apply by
-> xenomai to figure out the synchronization problem between xenomai
-> thread and linux thread? When I meet synchronization problem
-> between xenomai thread and linux thread, do I have to handle it
-> like xddp and pipe?
+On Tue, Dec 15, 2015 at 06:01:34AM +0000, Narasimhaprasad Yedatore Achutha wrote:
+> Thanks Giles.  Do you have any idea on other three questions 
 
-The solution which strictly does what you want is xddp. (rt_pipe is
-deprecated, and linux pipes will cause both ends to switch to
-secondary mode).
-
-But you may consider using a Xenomai only synchronization primitive
-(such as semaphores, message queues, etc...), and have the non
-real-time thread be a Xenomai thread oscillating between primary and
-secondary mode. Using the SCHED_OTHER or SCHED_WEAK policy for such
-a thread should help.
+The answer to the three questions is implied by my answer: there
+should be no problem implementing this. It is not implemented today
+not because it poses a particular problem, but probably simply
+because nobody needed it.
 
 -- 
 					    Gilles.
