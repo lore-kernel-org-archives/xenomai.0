@@ -1,9 +1,13 @@
-Message-ID: <trinity-1831e513-92b7-4257-8f4e-a09952d12ad0-1448472034310@3capp-webde-bap53>
-From: JK.Behnke@web.de
-Date: Wed, 25 Nov 2015 18:20:34 +0100
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Tue, 15 Dec 2015 16:16:23 +0100
+Message-ID: <1972107.aCc7hAvxek@soho>
+In-Reply-To: <20151211163114.GE24775@hermes.click-hack.org>
+References: <2004286.fnOG18ZY9A@soho> <3314665.2OtX88jxTl@soho>
+ <20151211163114.GE24775@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] how to force task switch to primary mode
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Porting a library to Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,21 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai list <xenomai@xenomai.org>
 
-   Hello,
-
-   an rtdm driver that I use requires the rt_dev_open call to be executed
-   in primary mode.
-   With xenomai 2.4.2 it was possible to switch to primary mode using
-   rt_task_set_mode(0, T_PRIMARY, NULL);
-
-   Now I use xenomai 2.6.3, but I can't find the T_PRIMARY flag.
-   Is there an other alternative to force the task to switch to primary
-   mode?
-
-   Would I have to change the rtdm driver, so xenomai performs the mode
-   switch automatically?
-
-   Thanks in advance for any hint.
-   Jochen
+RWwgRGl2ZW5kcmVzLCAxMSBkZSBkZXNlbWJyZSBkZSAyMDE1LCBhIGxlcyAxNzozMToxNCwgR2ls
+bGVzIENoYW50ZXBlcmRyaXggdmEgCmVzY3JpdXJlOgpbLi4uXQoKPiAKPiBUaGUgZmFjdCB0aGF0
+IHdyYXBwaW5nIG1heSBiZSBhIHByb2JsZW0gZm9yIGxhcmdlIGFwcGxpY2F0aW9ucyB3aGVyZQo+
+IHlvdSBvbmx5IHdhbnQgYSBzbWFsbCBwYXJ0IG9mIHRoZSBhcHBsaWNhdGlvbiB0byB1c2UgeGVu
+b21haQo+IHNlcnZpY2VzIGlzIHRoZSByZWFzb24gd2h5IFhlbm9tYWkgMy54IGdpdmVzIHlvdSBh
+bm90aGVyIGNob2ljZTogZG8KPiBub3Qgd3JhcCB4ZW5vbWFpIHNlcnZpY2VzLCBidXQgc3BlY2lm
+eSB5b3Ugd2FudCB0byB1c2UgdGhlbSB3aXRoIHRoZQo+IF9fUlQoKSBtYWNyby4KCiAuLi4gZm9s
+bG93aW5nIHRoaXMgdGhyZWFkLiBUaGVyZSdzIGEgcG9pbnQgdGhhdCBJJ20gc3RpbGwgY29uZnVz
+ZWQ6IHRoZSBydG5ldCAKcGFydC4KClNpbmNlIDIuNi40LCBydG5ldCB3YXMgYW5vdGhlciBwcm9q
+ZWN0LCB0aGF0IGluc3RhbGxlZCBpdHMgaW5jbHVkZXMgKHJ0bmV0LmggCmFuZCBydG1hYy5oKSBp
+biBpdHMgb3duIHBsYWNlLiBGcm9tIDMueCBydG5ldCBpcyBpbnRlZ3JhdGVkLgoKTG9va2luZyB0
+aGUgcnRuZXQuaCBmaWxlLCB0aGVyZSBhcmUgZGVjbGFyZWQgc29tZSAjZGVmaW5lIGFuZCBzb21l
+IGluY2x1ZGUgCnByb3RlY3RlZCBieSBfX0tFUk5FTF9fCgpNeSBxdWVzdGlvbiBpczoKClVzaW5n
+IHRoZSBQT1NJWCB3cmFwcGVyLCBhbGwgdGhlIHNvY2tldCBmdW5jdGlvbnMgYXJlIHdyYXAuIEJ1
+dCwgaG93IGRvZXMgaXQgCmFmZmVjdCB0aGUgcnRuZXQgcGFydCBvZiB0aGUgY29kZT8gCgpJIG1l
+YW4sIGlmIEkgaGF2ZSBhIHJ0bmV0IGRldmljZSwgd2hhdCBpcyB0aGUgZGlmZmVyZW5jZSBvZiBt
+YW51YWxseSBjaGFuZ2UgYWxsIAp0aGUgbmV0d29yayBmdW5jdGlvbnMgd2l0aCBhIC1EUlRORVQg
+cHJvdGVjdGVkIFJlYWx0aW1lIHZlcnNpb25zIGZ1bmN0aW9ucyBvciAKdXNlIHRoZSB3cmFwPwoK
+SSB1bmRlcnN0YW5kIHRoYXQgaWYgSSBvcGVuIGEgZGV2aWNlIHRoYXQgaXQncyBub3QgcnRuZXQs
+IEkgbG9zZSB0aGUgUmVhbHRpbWUsIAphbHRob3VnaCBJIG9wZW4gdGhlIGRldmljZSB3aXRoIGEg
+UE9TSVggd3JhcHBlZCBmdW5jdGlvbi4gVGhhdCdzIGNvcnJlY3Q/CgpCZXN0IHJlZ2FyZHMsCgpM
+ZW9wb2xkCgotLSAKLS0KTGludXggVXNlciAxNTI2OTIgICAgIEdQRzogMDVGNEE3QTk0OUEyRDlB
+QQpDYXRhbG9uaWEKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpBOiBCZWNh
+dXNlIGl0IG1lc3NlcyB1cCB0aGUgb3JkZXIgaW4gd2hpY2ggcGVvcGxlIG5vcm1hbGx5IHJlYWQg
+dGV4dC4KUTogV2h5IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBiYWQgdGhpbmc/CkE6IFRvcC1wb3N0
+aW5nLgpROiBXaGF0IGlzIHRoZSBtb3N0IGFubm95aW5nIHRoaW5nIGluIGUtbWFpbD8KLS0tLS0t
+LS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3
+YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3At
+c2lnbmF0dXJlClNpemU6IDgxOSBieXRlcwpEZXNjOiBUaGlzIGlzIGEgZGlnaXRhbGx5IHNpZ25l
+ZCBtZXNzYWdlIHBhcnQuClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21h
+aS9hdHRhY2htZW50cy8yMDE1MTIxNS82N2JiZjU4NC9hdHRhY2htZW50LnNpZz4K
