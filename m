@@ -1,13 +1,15 @@
-From: Umair Ali <ali.umair@tut.fi>
-Date: Wed, 25 Nov 2015 16:47:52 +0000
-Message-ID: <2396B4D2166B62479FBBE370D4A7C1F30A70D816@mb2010-1.intra.tut.fi>
-References: <2396B4D2166B62479FBBE370D4A7C1F30A70D805@mb2010-1.intra.tut.fi>
-In-Reply-To: <2396B4D2166B62479FBBE370D4A7C1F30A70D805@mb2010-1.intra.tut.fi>
-Content-Language: en-US
-MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] RTnet traffic problem over the network
+In-Reply-To: <20151214223505.GD16627@hermes.click-hack.org>
+References: <tencent_7C005566224FD6F01071277C@qq.com>
+ <20151214223505.GD16627@hermes.click-hack.org>
+From: "=?gb18030?B?pcul46Xz0MfIyw==?=" <1173264124@qq.com>
+Mime-Version: 1.0
+Date: Tue, 15 Dec 2015 11:42:44 +0800
+Message-ID: <tencent_1F2D495201DDAD5A77A043F3@qq.com>
+Content-Type: text/plain;
+	charset="gb18030"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] =?gb18030?q?=BB=D8=B8=B4=A3=BA__Question_about_synchron?=
+ =?gb18030?q?isation_between_xenomai_taskand_linux_task?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,131 +18,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?gb18030?B?R2lsbGVzIENoYW50ZXBlcmRyaXg=?= <gilles.chanteperdrix@xenomai.org>
+Cc: =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
 
-Sorry i forget to write the Subject line in the last email
-________________________________
-
-Hello Xenomai team,
-
-I am working on sending the raw Ethernet packets through RTnet driver (rt_8=
-139t). I am using the the example i.e. raw-ethernet.c as my starting point =
-for sending the raw Ethernet packets from Rtnet source file. I have managed=
- to compile the using skin=3DPosix and also able run it with rteth0 interfa=
-ce. The code file is attached with this email along with makefile. I have c=
-onfigured the rteth0 interface with ip and netmask with promisc mode. Morov=
-er over i have added the route by using the command "./rtroute solicit 10.0=
-.0.11 dev rteth0". I am able to ping also as below:
-
-root@cpc:/usr/xenomai/sbin# ./rtping 10.0.0.11
-Real-time PING 10.0.0.11 56(84) bytes of data.
-ioctl: No route to host
-root@cpc:/usr/xenomai/sbin# ./rtroute solicit 10.0.0.11 dev rteth0
-root@cpc:/usr/xenomai/sbin# ./rtping 10.0.0.11
-Real-time PING 10.0.0.11 56(84) bytes of data.
-64 bytes from 10.0.0.11: icmp_seq=3D1 time=3D408.6 us
-64 bytes from 10.0.0.11: icmp_seq=3D2 time=3D370.1 us
-64 bytes from 10.0.0.11: icmp_seq=3D3 time=3D387.2 us
-64 bytes from 10.0.0.11: icmp_seq=3D4 time=3D413.4 us
-^C
---- 10.0.0.11 rtping statistics ---
-4 packets transmitted, 4 received, 0% packet loss
-worst case rtt =3D 413.4 us"
-
-The other PC is non real time windows PC. And I can see the ping traffic on=
- the windows PC. But when i run the code after compilation I can not see th=
-e traffic on the network. The output of the code is
-
-root@cpc:/usr/xenomai# ./raw_packet rteth0 aliumair
-sock: 3
-string copy: rteth0
-ioctl:  0
-addr.sll_family: 17
-addr.sll_protocol: 13330
-addr.sll_ifindex: 1
-Sent frame of 1514 bytes
-Sent frame of 1514 bytes
-
-My first question is what i am doing wrong due to which i am able to see th=
-e traffic on the network even though i can see the ping traffic.
-
-Now my second problem is when i am running the code after the compilation a=
-nd look a the threads with output such as
-
-root@cpc:/home/cpc# cat /proc/xenomai/sched/threads
-CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
-  0      0          idle       core       -1           -                   =
-  R          [ROOT/0]
-  1      0          idle       core       -1           -                   =
-  R          [ROOT/1]
-  0      405        rt         core       98           -                   =
- W          [rtnet-stack]
-  0      406        rt         core        0           -                   =
-  W          [rtnet-rtpc]
-  1      2282       rt         core        0           -                   =
- W          [rtnetproxy]
-  0      2737       rt         cobalt    100   140ms47us       D          r=
-aw_packet
-root@cpc:/home/cpc# cat /proc/xenomai/sched/threads
-CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
-  0      0        idle       core           -1           -                 =
-R          [ROOT/0]
-  1      0        idle       core           -1           -                 =
-R          [ROOT/1]
-  0      405    rt         core           98            -                 W=
-          [rtnet-stack]
-  0      406    rt         core            0            -                 W=
-          [rtnet-rtpc]
-  1      2282  rt         core            0            -                 W =
-         [rtnetproxy]
-  0      2737  rt         cobalt        100   924ms122us    D          raw_=
-packet
-
-I have found that the time out for the raw_packet thread is varying. I thin=
-k if the the thread is running in real time it should be constant and deter=
-ministic. So Please guide me if i am missing anything.
-
-Details of my setup are
-root@cpc:/home/cpc# dmesg | grep xenomai
-[    0.000000] Linux version 3.14.39-xenomai-3.0.1 (root@cpc) (gcc version =
-4.8.4 (Ubuntu 4.8.4-2ubuntu1~14.04) ) #2 SMP PREEMPT Tue Nov 10 18:02:47 EE=
-T 2015
-[    0.000000] Kernel command line: BOOT_IMAGE=3D/boot/vmlinuz-3.14.39-xeno=
-mai-3.0.1 root=3DUUID=3De29fa266-6a54-4815-b5bd-ea0168f18fd7 ro quiet splas=
-h crashkernel=3D384M-:128M vt.handoff=3D7
-[    0.836257]           (see xenomai.smi parameter). You might encounter
-[    1.640220] usb usb1: Manufacturer: Linux 3.14.39-xenomai-3.0.1 ehci_hcd
-[    1.641529] usb usb2: Manufacturer: Linux 3.14.39-xenomai-3.0.1 uhci_hcd
-[    1.642402] usb usb3: Manufacturer: Linux 3.14.39-xenomai-3.0.1 uhci_hcd
-[    1.643256] usb usb4: Manufacturer: Linux 3.14.39-xenomai-3.0.1 uhci_hcd
-[    1.644153] usb usb5: Manufacturer: Linux 3.14.39-xenomai-3.0.1 uhci_hcd
-
-And i have run all the modules in order to make the rteth0 to be up as expl=
-ained in the link
-https://sir.upc.edu/wikis/roblab/index.php/Development/RTnet
-
-Thanks in advance
-
-Best regards
-Ali
-
-
-
-
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: raw_packet.c
-Type: text/x-csrc
-Size: 3667 bytes
-Desc: raw_packet.c
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20151125/7a0cf0a9/at=
-tachment.c>
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: makefile
-Type: application/octet-stream
-Size: 2319 bytes
-Desc: makefile
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20151125/7a0cf0a9/at=
-tachment.obj>
+U28geW91IG1lYW4gdGhlcmUgaXMgbm90IHNpbXBsZSBhbmQgY29tcGxldGUgc29sdXRpb24g
+d2F5IGFwcGx5IGJ5IHhlbm9tYWkgdG8gZmlndXJlIG91dCB0aGUgc3luY2hyb25pemF0aW9u
+IHByb2JsZW0gYmV0d2VlbiB4ZW5vbWFpIHRocmVhZCBhbmQgbGludXggdGhyZWFkPyBXaGVu
+IEkgbWVldCBzeW5jaHJvbml6YXRpb24gcHJvYmxlbSBiZXR3ZWVuIHhlbm9tYWkgdGhyZWFk
+IGFuZCBsaW51eCB0aHJlYWQsIGRvIEkgaGF2ZSB0byBoYW5kbGUgaXQgbGlrZSB4ZGRwIGFu
+ZCBwaXBlPw0KDQoNCg0KDQotLS0tLS0tLS0tLS0tLS0tLS0g1K3KvNPKvP4gLS0tLS0tLS0t
+LS0tLS0tLS0tDQq3orz+yMs6ICJHaWxsZXMgQ2hhbnRlcGVyZHJpeCI8Z2lsbGVzLmNoYW50
+ZXBlcmRyaXhAeGVub21haS5vcmc+OyANCreiy83KsbzkOiAyMDE1xOoxMtTCMTXI1SjQx8ba
+tv4pIMnPzuc2OjM1DQrK1bz+yMs6ICKly6XjpfPQx8jLIjwxMTczMjY0MTI0QHFxLmNvbT47
+IA0Ks63LzTogInhlbm9tYWkiPHhlbm9tYWlAeGVub21haS5vcmc+OyANCtb3zOI6IFJlOiBb
+WGVub21haV0gUXVlc3Rpb24gYWJvdXQgc3luY2hyb25pc2F0aW9uIGJldHdlZW4geGVub21h
+aSB0YXNrYW5kIGxpbnV4IHRhc2sNCg0KDQoNCk9uIE1vbiwgRGVjIDE0LCAyMDE1IGF0IDEw
+OjU2OjQwUE0gKzA4MDAsIKXLpeOl89DHyMsgd3JvdGU6DQo+IEhlbGxvLCBzb3JyeSB0byBi
+b3RoZXIgeW91LiBJIGhhdmUgc29tZSBxdWVzdGlvbnMgYWJvdXQgc3luY2hyb25pc2F0aW9u
+LiBJIGFtIHZlcnkgZWFnZXIgZm9yIHlvdXIgaGVscC4gDQo+IA0KPiANCj4gSSBoYXZlIHJl
+YWQgdGhlIHNvdXJjZSBjb2RlIGZpbGUgbGlrZSBydGlwYy5jLCB4ZGRwLmMsIGJ1ZnAuYywN
+Cj4gaWRkcC5jLCBhbmQgcGlwZS5jLiBOb3cgSSBhbSB3b25kZXJpbmcgaWYgdGhlcmUgaXMg
+YSBzaW1wbGUNCj4gYW5kIGVmZmVjdGl2ZSB3YXkgb2Ygc3luY2hyb25pc2F0aW9uIGJldHdl
+ZW4geGVub21haSB0YXNrIGFuZA0KPiBsaW51eCB0YXNrIGluIHVzZXIgc3BhY2UgYW5kIGtl
+cm5lbCBzcGFjZS4NCj4gDQo+IA0KPiBJIGZvdW5kIG1vc3Qgb2Ygc3luY2hyb25pc2F0aW9u
+IHNlcnZpY2UgaW50cm9kdWNlZCBpbiBYZW5vbWFpDQo+IDMgUHJvZ3JhbW1lcoEwhDOBMIU0
+cyBSZWZlcmVuY2UgTWFudWFsIGNvdWxkIGJlIG9ubHkgdXNlZCBpbiB4ZW5vbWFpDQo+IHRh
+c2ssIGxpbnV4IHRhc2sgY2FuIG5vdCB1c2UgdGhlc2Ugc3luY2hyb25pc2F0aW9uIHNlcnZp
+Y2UuIElmIEkNCj4gdXNlIGxpbnV4IHN5bmNocm9uaXNhdGlvbiBzZXJ2aWNlIGxpa2UgbXV0
+ZXggaW4geGVub21haSB0YXNrLA0KPiB4ZW5vbWFpIHRhc2sgd291bGQgc3dpdGNoIHRvIHNl
+Y29uZGFyeSBtb2RlIHdoaWNoIHdvdWxkIGNvc3QgYSBsb3QNCj4gb2YgdGltZS4gU28gSSB3
+YW50IHRvIGtub3cgaG93IHRvIHN5bmNocm9uaXplIHhlbm9tYWkgdGFzayBhbmQNCj4gbGlu
+dXggdGFzayBpbiB1c2VyIHNwYWNlLiBvDQo+IA0KPiANCj4gQXMgSSBtZW50aW9uZWQgYWJv
+dmUsIEkgaGF2ZSByZWFkIHRoZSBzb3VyY2UgY29kZSBmaWxlIGxpa2UNCj4gcnRpcGMuYywg
+eGRkcC5jLCBidWZwLmMsIGlkZHAuYywgSSBrbm93IGxvdHMgb2YgZnVuY3Rpb25zIHdlcmUN
+Cj4gcmVhbGl6ZWQgaW4gbGludXgga2VybmVsIG1vZHVsZXMgYXMgcnRkbSBkZXZpY2VzLCBi
+b3RoIHhlbm9tYWkNCj4gdGFzayBhbmQgbGludXggdGFzayBjb3VsZCBjYWxsIHRoZXNlIGZ1
+bmN0aW9ucyBieSBydGRtDQo+IGludGVyZmFjZS4gSW4ga2VybmVsIHNwYWNlLCBTeW5jaHJv
+bmlzYXRpb24gU2VydmljZXMgd2FzIHVzZWQNCj4gdG8gc3luY2hyb25pemUgYmV0d2VlbiB4
+ZW5vbWFpIHRhc2tzLCB4bmFwYyBhbmQNCj4gd2FpdF9xdWV1ZV9oZWFkX3Qgd2VyZSB1c2Vk
+IHRvIHN5bmNocm9uaXplIGJldHdlZW4geGVub21haQ0KPiB0YXNrIGFuZCBsaW51eCB0YXNr
+LiBJIGFtIHdvbmRlcmluZyBpZiB0aGVyZSBpcyBhIHNpbXBsZSB0bw0KPiBzeW5jaHJvbml6
+ZSBiZXR3ZWVuIHhlbm9tYWkgdGFzayBhbmQgbGludXggdGFzayBkaXJlY3RseSBpbg0KPiBr
+ZXJuZWwgc3BhY2UuDQo+IA0KPiANCj4gSSdhbSBhIHJvb2tpZSBvZiB4ZW5vbWFpLiBJdCBt
+aWdodCBiZSBzaW1wbGUgcXVlc3Rpb25zIGluIHlvdXINCj4gb3Bpbmlvbi4gSSB3b3VsZCBh
+cHByZWNpYXRlIGl0IGlmIHlvdSBjb3VsZCBoZWxwLg0KDQpUaGUgeGRkcCBzb2NrZXRzIGFs
+bG93IGV4Y2hhbmdpbmcgbWVzc2FnZSBiZXR3ZWVuIFhlbm9tYWkgYW5kIExpbnV4DQp0aHJl
+YWRzLiBTeW5jaHJvbml6aW5nIHBlci1zZSBpcyBjb21wbGljYXRlZCBiZWNhdXNlIHRoZSB0
+d28gdHlwZXMNCm9mIHRocmVhZHMgYXJlIHNjaGVkdWxlZCBieSBkaWZmZXJlbnQgc2NoZWR1
+bGVycy4NCg0KPiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fXyBYZW5vbWFpIG1haWxpbmcNCj4gbGlzdCBYZW5vbWFpQHhlbm9tYWkub3JnDQo+IGh0
+dHA6Ly94ZW5vbWFpLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkNCg0KLS0gDQoJCQkJ
+CSAgICBHaWxsZXMuDQpodHRwczovL2NsaWNrLWhhY2sub3Jn
