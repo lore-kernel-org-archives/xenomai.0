@@ -1,14 +1,13 @@
-Date: Wed, 16 Dec 2015 07:42:42 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151216064242.GC1786@hermes.click-hack.org>
-References: <CAG6c7CZ4_mpBc-gK0Li2yQJFW4pNkSCN26U2hWnw_osG+2RaDA@mail.gmail.com>
- <20151215184347.GA16267@hermes.click-hack.org>
- <BLU437-SMTP66295A1035F746065AC6D9F0EF0@phx.gbl>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Wed, 16 Dec 2015 16:45:38 +0100
+Message-ID: <3338349.5bsveW0zyp@soho>
+In-Reply-To: <20151215154621.GA2927@hermes.click-hack.org>
+References: <2004286.fnOG18ZY9A@soho> <1972107.aCc7hAvxek@soho>
+ <20151215154621.GA2927@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BLU437-SMTP66295A1035F746065AC6D9F0EF0@phx.gbl>
-Subject: Re: [Xenomai] patch for RPI2
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Porting a library to Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,52 +16,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
-Cc: ilyasse toumi <toumi.ily@gmail.com>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai list <xenomai@xenomai.org>
 
-On Tue, Dec 15, 2015 at 07:12:26PM -0800, Mathieu Rondonneau wrote:
-> On 15-12-15 10:43 AM, Gilles Chanteperdrix wrote:
-> > On Tue, Dec 15, 2015 at 01:22:55PM +0100, ilyasse toumi wrote:
-> >> Hi there,
-> >>
-> >> I'm using kernel rpi-3.18.y as mentioned in an email sent by Joe Lee about
-> >> RPI2, I used the patch ipipe-core-3.18.20-arm-6.patch and also the patch
-> >> for RPI2 version5, the problem is that when i try to compile the kernel
-> >> after patching it it gives some errors.
-> >> It's about some implicit declarations of functions that are present in the
-> >> patch like
-> >>
-> >> __ipipe_mach_update_tsc
-> > 
-> > This one is probably due to a misconfiguration, i.e. you enabled
-> > xenomai, but not a SOC or SOC family which provides an emulated tsc.
-> > A lot of the coded added by the patch is compiled conditionally, so
-> > the fact that a definition for a function is present in the patch
-> > does not necessarily mean that it will be present with your
-> > particular build configuration.
-> >
-> if you do use Xenomai-3.0, it could be that you are missing this part of
-> the patch?
-
-More likely, the SOC is not enabled in the kernel configuration.
-
-> >> smp_mb__before_atomic_dec
-> >> smp_mb__before_atomic_dec
-> > 
-> > This one indicates a version of Xenomai not ready for Linux 3.18.
-> > Xenomai 2.6.4 for instance can not be compiled with anything more
-> > recent than Linux 3.14. You can use Xenomai 2.6 git if you want
-> > Linux 3.18 support, or if starting a new development, it probably
-> > makes more sense to jump to Xenomai 3.0 directly.
-> > 
-> > Regards.
-> > 
-> That is correct, the patch is only for Xenomai 3.0.
-
-No. The patch should also work with Xenomai 2.6, but you need
-Xenomai 2.6 git.
-
--- 
-					    Gilles.
-https://click-hack.org
-
+RWwgRGltYXJ0cywgMTUgZGUgZGVzZW1icmUgZGUgMjAxNSwgYSBsZXMgMTY6NDY6MjEsIEdpbGxl
+cyBDaGFudGVwZXJkcml4IHZhIAplc2NyaXVyZToKPiBPbiBUdWUsIERlYyAxNSwgMjAxNSBhdCAw
+NDoxNjoyM1BNICswMTAwLCBMZW9wb2xkIFBhbG9tby1BdmVsbGFuZWRhIHdyb3RlOgo+ID4gRWwg
+RGl2ZW5kcmVzLCAxMSBkZSBkZXNlbWJyZSBkZSAyMDE1LCBhIGxlcyAxNzozMToxNCwgR2lsbGVz
+IENoYW50ZXBlcmRyaXgKPiA+IHZhIGVzY3JpdXJlOgo+ID4gWy4uLl0KPiA+IAo+ID4gPiBUaGUg
+ZmFjdCB0aGF0IHdyYXBwaW5nIG1heSBiZSBhIHByb2JsZW0gZm9yIGxhcmdlIGFwcGxpY2F0aW9u
+cyB3aGVyZQo+ID4gPiB5b3Ugb25seSB3YW50IGEgc21hbGwgcGFydCBvZiB0aGUgYXBwbGljYXRp
+b24gdG8gdXNlIHhlbm9tYWkKPiA+ID4gc2VydmljZXMgaXMgdGhlIHJlYXNvbiB3aHkgWGVub21h
+aSAzLnggZ2l2ZXMgeW91IGFub3RoZXIgY2hvaWNlOiBkbwo+ID4gPiBub3Qgd3JhcCB4ZW5vbWFp
+IHNlcnZpY2VzLCBidXQgc3BlY2lmeSB5b3Ugd2FudCB0byB1c2UgdGhlbSB3aXRoIHRoZQo+ID4g
+PiBfX1JUKCkgbWFjcm8uCj4gPiAgCj4gPiAgLi4uIGZvbGxvd2luZyB0aGlzIHRocmVhZC4gVGhl
+cmUncyBhIHBvaW50IHRoYXQgSSdtIHN0aWxsIGNvbmZ1c2VkOiB0aGUKPiA+ICBydG5ldD4gCj4g
+PiBwYXJ0Lgo+ID4gCj4gPiBTaW5jZSAyLjYuNCwgcnRuZXQgd2FzIGFub3RoZXIgcHJvamVjdCwg
+dGhhdCBpbnN0YWxsZWQgaXRzIGluY2x1ZGVzCj4gPiAocnRuZXQuaCBhbmQgcnRtYWMuaCkgaW4g
+aXRzIG93biBwbGFjZS4gRnJvbSAzLnggcnRuZXQgaXMgaW50ZWdyYXRlZC4KPiA+IAo+ID4gTG9v
+a2luZyB0aGUgcnRuZXQuaCBmaWxlLCB0aGVyZSBhcmUgZGVjbGFyZWQgc29tZSAjZGVmaW5lIGFu
+ZCBzb21lIGluY2x1ZGUKPiA+IHByb3RlY3RlZCBieSBfX0tFUk5FTF9fCj4gPiAKPiA+IE15IHF1
+ZXN0aW9uIGlzOgo+ID4gCj4gPiBVc2luZyB0aGUgUE9TSVggd3JhcHBlciwgYWxsIHRoZSBzb2Nr
+ZXQgZnVuY3Rpb25zIGFyZSB3cmFwLiBCdXQsIGhvdyBkb2VzCj4gPiBpdCBhZmZlY3QgdGhlIHJ0
+bmV0IHBhcnQgb2YgdGhlIGNvZGU/Cj4gPiAKPiA+IEkgbWVhbiwgaWYgSSBoYXZlIGEgcnRuZXQg
+ZGV2aWNlLCB3aGF0IGlzIHRoZSBkaWZmZXJlbmNlIG9mIG1hbnVhbGx5Cj4gPiBjaGFuZ2UgYWxs
+IHRoZSBuZXR3b3JrIGZ1bmN0aW9ucyB3aXRoIGEgLURSVE5FVCBwcm90ZWN0ZWQgUmVhbHRpbWUK
+PiA+IHZlcnNpb25zIGZ1bmN0aW9ucyBvciB1c2UgdGhlIHdyYXA/Cj4gPiAKPiA+IEkgdW5kZXJz
+dGFuZCB0aGF0IGlmIEkgb3BlbiBhIGRldmljZSB0aGF0IGl0J3Mgbm90IHJ0bmV0LCBJIGxvc2Ug
+dGhlCj4gPiBSZWFsdGltZSwgYWx0aG91Z2ggSSBvcGVuIHRoZSBkZXZpY2Ugd2l0aCBhIFBPU0lY
+IHdyYXBwZWQgZnVuY3Rpb24uCj4gPiBUaGF0J3MgY29ycmVjdD8KPiBUaGVyZSBpcyBubyBkaWZm
+ZXJlbmNlIHdoYXRzb2V2ZXIgYmV0d2VlbiAyLjYgYW5kIDMueCBpbiB0aGUgd2F5IHRvCj4gdXNl
+IFJUbmV0IHRocm91Z2ggdGhlIFBPU0lYIHdyYXBwZWQgaW50ZXJmYWNlIG9yIHRocm91Z2ggdGhl
+Cj4gbmF0aXZlL2FsY2hlbXkgc2tpbi4KPiAKPiBJZiB5b3UgZGVjaWRlIHRvIHVzZSBSVG5ldCB0
+aHJvdWdoIHRoZSBQT1NJWCBza2luLCB0aGVuIHRoZSB3cmFwcGVkCj4gc29ja2V0IGZ1bmN0aW9u
+IHdpbGwgY3JlYXRlIFJUbmV0IHNvY2tldHMsIGFuZCB0aGUgd3JhcHBlZCBzZW5kdG8KPiBhbmQg
+cmVjdmZyb20gd2lsbCBzZW5kIGFuZCByZWNlaXZlIGRhdGEgZnJvbSB0aGF0IHNvY2tldC4gTm8g
+bmVlZAo+IGZvciAtRFJUTkVUIChvciAtRF9fWEVOT19fIG1vcmUgbGlrZWx5LCBhcyB0aGlzIGdl
+dHMgZGVmaW5lZCBieQo+IHhlbm8tY29uZmlnKS4KPiAKPiBJZiB5b3UgZGVjaWRlIHRvIHVzZSBS
+VG5ldCB0aHJvdWdoIHRoZSBhbGNoZW15IHNraW4sIHRoZW4geW91IHdvdWxkCj4gdXNlIHRoZSBy
+dF9kZXYgb3IgcnRfIHZhcmlhbnQgKG5ldmVyIGNhbiByZWNhbGwgd2hhdCB0aGV5IGFyZQo+IGNh
+bGxlZCkuIEhlcmUgeW91IHdvdWxkIHByb2JhYmx5IHVzZSB0aGUgdWdseSAtRF9fWEVOT19fLgo+
+IAo+IE5vdywgdGhlIGRpZmZlcmVuY2UgYmV0d2VlbiAyLjYgYW5kIDMueCwgaXMgdGhhdCB0aGVy
+ZSBpcyBhIHRoaXJkCj4gd2F5IHRvIHRoZSBQT1NJWCBpbnRlcmZhY2U6IHdpdGhvdXQgdGhlIHdy
+YXBwaW5nLiBJbiB0aGF0IGNhc2UsIGlmCj4geW91IGNhbGwgc29ja2V0KCksIHlvdSBnZXQgYW4g
+TGludXggc29ja2V0LCBhbmQgaWYgeW91IHVzZQo+IF9SVChzb2NrZXQoKSksIHlvdSBnZXQgYW4g
+UlRuZXQgc29ja2V0IChpZiBSVG5ldCBzdGFjayBpcyBjb21waWxlZAo+IGFuZCBsb2FkZWQpLCBv
+ZiBjb3Vyc2UsIHlvdSB0aGVuIG5lZWQgdG8gdXNlIF9SVChzZW5kdG8oKSkgYW5kCj4gX1JUKHJl
+Y3Zmcm9tKCkpIHRvIHNlbmQvcmVjZWl2ZSBmcm9tIHRoYXQgc29ja2V0LgoKVGhhbmtzIEdpbGxl
+cywKCnRoZSB3cmFwIG1lY2hhbmlzbSBJTUhPIG9wZW4gYSBodWdlIGdhbW1hIG9mIHBvc3NpYmls
+aXRpZXMuIEp1c3QsIHR3byBtb3JlIApxdWVzdGlvbnM6CgotIFNvbWUgb2YgeW91IGhhdmUgdHJp
+ZWQgdG8gIlhlbm9tYWl6ZSIgYSBjb21tb24gUE9TSVggbGlicmFyeSwgZm9yIGluc3RhbmNlIAp3
+aXRoIHRocmVhZHMgYW5kIHNvY2tldHMgKFBvY28/Li4uICk/CgotIElmIEkgY3JlYXRlIGEgbGli
+cmFyeSAoUE9TSVgpIGFuZCBJIHdyYXAgdGhlIGZ1bmN0aW9ucyAoLQpXbCxAL3Vzci9saWIveDg2
+XzY0LWxpbnV4LWdudS9wb3NpeC53cmFwcGVycykuIFRoZSBsaWJyYXJ5IHVzZXJzIG11c3Qgd3Jh
+cCAKd3JhcCB0aGVpciBjb2RlIHRvbywgcmlnaHQ/IChmb3IgaW5zdGFuY2UgaWYgdGhleSBoYXZl
+IGEgcHJpbnRmLi4uKQoKTGVvcG9sZAoKLS0gCi0tCkxpbnV4IFVzZXIgMTUyNjkyICAgICBHUEc6
+IDA1RjRBN0E5NDlBMkQ5QUEKQ2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0KQTogQmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhlIG9yZGVyIGluIHdoaWNoIHBlb3Bs
+ZSBub3JtYWxseSByZWFkIHRleHQuClE6IFdoeSBpcyB0b3AtcG9zdGluZyBzdWNoIGEgYmFkIHRo
+aW5nPwpBOiBUb3AtcG9zdGluZy4KUTogV2hhdCBpcyB0aGUgbW9zdCBhbm5veWluZyB0aGluZyBp
+biBlLW1haWw/Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10
+ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTog
+YXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiA4MTkgYnl0ZXMKRGVzYzogVGhpcyBpcyBh
+IGRpZ2l0YWxseSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6IDxodHRwOi8veGVub21haS5vcmcv
+cGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTEyMTYvOTg3Yjc0MWYvYXR0YWNobWVu
+dC5zaWc+Cg==
