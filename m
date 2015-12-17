@@ -1,12 +1,13 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Wed, 16 Dec 2015 16:45:38 +0100
-Message-ID: <3338349.5bsveW0zyp@soho>
-In-Reply-To: <20151215154621.GA2927@hermes.click-hack.org>
+Date: Thu, 17 Dec 2015 01:05:18 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151217000518.GC25151@hermes.click-hack.org>
 References: <2004286.fnOG18ZY9A@soho> <1972107.aCc7hAvxek@soho>
  <20151215154621.GA2927@hermes.click-hack.org>
+ <3338349.5bsveW0zyp@soho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3338349.5bsveW0zyp@soho>
 Subject: Re: [Xenomai] Porting a library to Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -16,68 +17,93 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
 Cc: Xenomai list <xenomai@xenomai.org>
 
-RWwgRGltYXJ0cywgMTUgZGUgZGVzZW1icmUgZGUgMjAxNSwgYSBsZXMgMTY6NDY6MjEsIEdpbGxl
-cyBDaGFudGVwZXJkcml4IHZhIAplc2NyaXVyZToKPiBPbiBUdWUsIERlYyAxNSwgMjAxNSBhdCAw
-NDoxNjoyM1BNICswMTAwLCBMZW9wb2xkIFBhbG9tby1BdmVsbGFuZWRhIHdyb3RlOgo+ID4gRWwg
-RGl2ZW5kcmVzLCAxMSBkZSBkZXNlbWJyZSBkZSAyMDE1LCBhIGxlcyAxNzozMToxNCwgR2lsbGVz
-IENoYW50ZXBlcmRyaXgKPiA+IHZhIGVzY3JpdXJlOgo+ID4gWy4uLl0KPiA+IAo+ID4gPiBUaGUg
-ZmFjdCB0aGF0IHdyYXBwaW5nIG1heSBiZSBhIHByb2JsZW0gZm9yIGxhcmdlIGFwcGxpY2F0aW9u
-cyB3aGVyZQo+ID4gPiB5b3Ugb25seSB3YW50IGEgc21hbGwgcGFydCBvZiB0aGUgYXBwbGljYXRp
-b24gdG8gdXNlIHhlbm9tYWkKPiA+ID4gc2VydmljZXMgaXMgdGhlIHJlYXNvbiB3aHkgWGVub21h
-aSAzLnggZ2l2ZXMgeW91IGFub3RoZXIgY2hvaWNlOiBkbwo+ID4gPiBub3Qgd3JhcCB4ZW5vbWFp
-IHNlcnZpY2VzLCBidXQgc3BlY2lmeSB5b3Ugd2FudCB0byB1c2UgdGhlbSB3aXRoIHRoZQo+ID4g
-PiBfX1JUKCkgbWFjcm8uCj4gPiAgCj4gPiAgLi4uIGZvbGxvd2luZyB0aGlzIHRocmVhZC4gVGhl
-cmUncyBhIHBvaW50IHRoYXQgSSdtIHN0aWxsIGNvbmZ1c2VkOiB0aGUKPiA+ICBydG5ldD4gCj4g
-PiBwYXJ0Lgo+ID4gCj4gPiBTaW5jZSAyLjYuNCwgcnRuZXQgd2FzIGFub3RoZXIgcHJvamVjdCwg
-dGhhdCBpbnN0YWxsZWQgaXRzIGluY2x1ZGVzCj4gPiAocnRuZXQuaCBhbmQgcnRtYWMuaCkgaW4g
-aXRzIG93biBwbGFjZS4gRnJvbSAzLnggcnRuZXQgaXMgaW50ZWdyYXRlZC4KPiA+IAo+ID4gTG9v
-a2luZyB0aGUgcnRuZXQuaCBmaWxlLCB0aGVyZSBhcmUgZGVjbGFyZWQgc29tZSAjZGVmaW5lIGFu
-ZCBzb21lIGluY2x1ZGUKPiA+IHByb3RlY3RlZCBieSBfX0tFUk5FTF9fCj4gPiAKPiA+IE15IHF1
-ZXN0aW9uIGlzOgo+ID4gCj4gPiBVc2luZyB0aGUgUE9TSVggd3JhcHBlciwgYWxsIHRoZSBzb2Nr
-ZXQgZnVuY3Rpb25zIGFyZSB3cmFwLiBCdXQsIGhvdyBkb2VzCj4gPiBpdCBhZmZlY3QgdGhlIHJ0
-bmV0IHBhcnQgb2YgdGhlIGNvZGU/Cj4gPiAKPiA+IEkgbWVhbiwgaWYgSSBoYXZlIGEgcnRuZXQg
-ZGV2aWNlLCB3aGF0IGlzIHRoZSBkaWZmZXJlbmNlIG9mIG1hbnVhbGx5Cj4gPiBjaGFuZ2UgYWxs
-IHRoZSBuZXR3b3JrIGZ1bmN0aW9ucyB3aXRoIGEgLURSVE5FVCBwcm90ZWN0ZWQgUmVhbHRpbWUK
-PiA+IHZlcnNpb25zIGZ1bmN0aW9ucyBvciB1c2UgdGhlIHdyYXA/Cj4gPiAKPiA+IEkgdW5kZXJz
-dGFuZCB0aGF0IGlmIEkgb3BlbiBhIGRldmljZSB0aGF0IGl0J3Mgbm90IHJ0bmV0LCBJIGxvc2Ug
-dGhlCj4gPiBSZWFsdGltZSwgYWx0aG91Z2ggSSBvcGVuIHRoZSBkZXZpY2Ugd2l0aCBhIFBPU0lY
-IHdyYXBwZWQgZnVuY3Rpb24uCj4gPiBUaGF0J3MgY29ycmVjdD8KPiBUaGVyZSBpcyBubyBkaWZm
-ZXJlbmNlIHdoYXRzb2V2ZXIgYmV0d2VlbiAyLjYgYW5kIDMueCBpbiB0aGUgd2F5IHRvCj4gdXNl
-IFJUbmV0IHRocm91Z2ggdGhlIFBPU0lYIHdyYXBwZWQgaW50ZXJmYWNlIG9yIHRocm91Z2ggdGhl
-Cj4gbmF0aXZlL2FsY2hlbXkgc2tpbi4KPiAKPiBJZiB5b3UgZGVjaWRlIHRvIHVzZSBSVG5ldCB0
-aHJvdWdoIHRoZSBQT1NJWCBza2luLCB0aGVuIHRoZSB3cmFwcGVkCj4gc29ja2V0IGZ1bmN0aW9u
-IHdpbGwgY3JlYXRlIFJUbmV0IHNvY2tldHMsIGFuZCB0aGUgd3JhcHBlZCBzZW5kdG8KPiBhbmQg
-cmVjdmZyb20gd2lsbCBzZW5kIGFuZCByZWNlaXZlIGRhdGEgZnJvbSB0aGF0IHNvY2tldC4gTm8g
-bmVlZAo+IGZvciAtRFJUTkVUIChvciAtRF9fWEVOT19fIG1vcmUgbGlrZWx5LCBhcyB0aGlzIGdl
-dHMgZGVmaW5lZCBieQo+IHhlbm8tY29uZmlnKS4KPiAKPiBJZiB5b3UgZGVjaWRlIHRvIHVzZSBS
-VG5ldCB0aHJvdWdoIHRoZSBhbGNoZW15IHNraW4sIHRoZW4geW91IHdvdWxkCj4gdXNlIHRoZSBy
-dF9kZXYgb3IgcnRfIHZhcmlhbnQgKG5ldmVyIGNhbiByZWNhbGwgd2hhdCB0aGV5IGFyZQo+IGNh
-bGxlZCkuIEhlcmUgeW91IHdvdWxkIHByb2JhYmx5IHVzZSB0aGUgdWdseSAtRF9fWEVOT19fLgo+
-IAo+IE5vdywgdGhlIGRpZmZlcmVuY2UgYmV0d2VlbiAyLjYgYW5kIDMueCwgaXMgdGhhdCB0aGVy
-ZSBpcyBhIHRoaXJkCj4gd2F5IHRvIHRoZSBQT1NJWCBpbnRlcmZhY2U6IHdpdGhvdXQgdGhlIHdy
-YXBwaW5nLiBJbiB0aGF0IGNhc2UsIGlmCj4geW91IGNhbGwgc29ja2V0KCksIHlvdSBnZXQgYW4g
-TGludXggc29ja2V0LCBhbmQgaWYgeW91IHVzZQo+IF9SVChzb2NrZXQoKSksIHlvdSBnZXQgYW4g
-UlRuZXQgc29ja2V0IChpZiBSVG5ldCBzdGFjayBpcyBjb21waWxlZAo+IGFuZCBsb2FkZWQpLCBv
-ZiBjb3Vyc2UsIHlvdSB0aGVuIG5lZWQgdG8gdXNlIF9SVChzZW5kdG8oKSkgYW5kCj4gX1JUKHJl
-Y3Zmcm9tKCkpIHRvIHNlbmQvcmVjZWl2ZSBmcm9tIHRoYXQgc29ja2V0LgoKVGhhbmtzIEdpbGxl
-cywKCnRoZSB3cmFwIG1lY2hhbmlzbSBJTUhPIG9wZW4gYSBodWdlIGdhbW1hIG9mIHBvc3NpYmls
-aXRpZXMuIEp1c3QsIHR3byBtb3JlIApxdWVzdGlvbnM6CgotIFNvbWUgb2YgeW91IGhhdmUgdHJp
-ZWQgdG8gIlhlbm9tYWl6ZSIgYSBjb21tb24gUE9TSVggbGlicmFyeSwgZm9yIGluc3RhbmNlIAp3
-aXRoIHRocmVhZHMgYW5kIHNvY2tldHMgKFBvY28/Li4uICk/CgotIElmIEkgY3JlYXRlIGEgbGli
-cmFyeSAoUE9TSVgpIGFuZCBJIHdyYXAgdGhlIGZ1bmN0aW9ucyAoLQpXbCxAL3Vzci9saWIveDg2
-XzY0LWxpbnV4LWdudS9wb3NpeC53cmFwcGVycykuIFRoZSBsaWJyYXJ5IHVzZXJzIG11c3Qgd3Jh
-cCAKd3JhcCB0aGVpciBjb2RlIHRvbywgcmlnaHQ/IChmb3IgaW5zdGFuY2UgaWYgdGhleSBoYXZl
-IGEgcHJpbnRmLi4uKQoKTGVvcG9sZAoKLS0gCi0tCkxpbnV4IFVzZXIgMTUyNjkyICAgICBHUEc6
-IDA1RjRBN0E5NDlBMkQ5QUEKQ2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0KQTogQmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhlIG9yZGVyIGluIHdoaWNoIHBlb3Bs
-ZSBub3JtYWxseSByZWFkIHRleHQuClE6IFdoeSBpcyB0b3AtcG9zdGluZyBzdWNoIGEgYmFkIHRo
-aW5nPwpBOiBUb3AtcG9zdGluZy4KUTogV2hhdCBpcyB0aGUgbW9zdCBhbm5veWluZyB0aGluZyBp
-biBlLW1haWw/Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10
-ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTog
-YXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiA4MTkgYnl0ZXMKRGVzYzogVGhpcyBpcyBh
-IGRpZ2l0YWxseSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6IDxodHRwOi8veGVub21haS5vcmcv
-cGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTEyMTYvOTg3Yjc0MWYvYXR0YWNobWVu
-dC5zaWc+Cg==
+On Wed, Dec 16, 2015 at 04:45:38PM +0100, Leopold Palomo-Avellaneda wrote:
+> El Dimarts, 15 de desembre de 2015, a les 16:46:21, Gilles Chanteperdrix va 
+> escriure:
+> > On Tue, Dec 15, 2015 at 04:16:23PM +0100, Leopold Palomo-Avellaneda wrote:
+> > > El Divendres, 11 de desembre de 2015, a les 17:31:14, Gilles Chanteperdrix
+> > > va escriure:
+> > > [...]
+> > > 
+> > > > The fact that wrapping may be a problem for large applications where
+> > > > you only want a small part of the application to use xenomai
+> > > > services is the reason why Xenomai 3.x gives you another choice: do
+> > > > not wrap xenomai services, but specify you want to use them with the
+> > > > __RT() macro.
+> > >  
+> > >  ... following this thread. There's a point that I'm still confused: the
+> > >  rtnet> 
+> > > part.
+> > > 
+> > > Since 2.6.4, rtnet was another project, that installed its includes
+> > > (rtnet.h and rtmac.h) in its own place. From 3.x rtnet is integrated.
+> > > 
+> > > Looking the rtnet.h file, there are declared some #define and some include
+> > > protected by __KERNEL__
+> > > 
+> > > My question is:
+> > > 
+> > > Using the POSIX wrapper, all the socket functions are wrap. But, how does
+> > > it affect the rtnet part of the code?
+> > > 
+> > > I mean, if I have a rtnet device, what is the difference of manually
+> > > change all the network functions with a -DRTNET protected Realtime
+> > > versions functions or use the wrap?
+> > > 
+> > > I understand that if I open a device that it's not rtnet, I lose the
+> > > Realtime, although I open the device with a POSIX wrapped function.
+> > > That's correct?
+> > There is no difference whatsoever between 2.6 and 3.x in the way to
+> > use RTnet through the POSIX wrapped interface or through the
+> > native/alchemy skin.
+> > 
+> > If you decide to use RTnet through the POSIX skin, then the wrapped
+> > socket function will create RTnet sockets, and the wrapped sendto
+> > and recvfrom will send and receive data from that socket. No need
+> > for -DRTNET (or -D__XENO__ more likely, as this gets defined by
+> > xeno-config).
+> > 
+> > If you decide to use RTnet through the alchemy skin, then you would
+> > use the rt_dev or rt_ variant (never can recall what they are
+> > called). Here you would probably use the ugly -D__XENO__.
+> > 
+> > Now, the difference between 2.6 and 3.x, is that there is a third
+> > way to the POSIX interface: without the wrapping. In that case, if
+> > you call socket(), you get an Linux socket, and if you use
+> > _RT(socket()), you get an RTnet socket (if RTnet stack is compiled
+> > and loaded), of course, you then need to use _RT(sendto()) and
+> > _RT(recvfrom()) to send/receive from that socket.
+> 
+> Thanks Gilles,
+> 
+> the wrap mechanism IMHO open a huge gamma of possibilities. Just, two more 
+> questions:
+> 
+> - Some of you have tried to "Xenomaize" a common POSIX library, for instance 
+> with threads and sockets (Poco?... )?
+
+Yes, back in 2006 to 2009, I ported several applications related to
+VOIP to use Xenomai and RTnet. From this experience, I wrote this
+guide:
+https://xenomai.org/2014/08/porting-a-linux-application-to-xenomai-dual-kernel/
+
+> 
+> - If I create a library (POSIX) and I wrap the functions (-
+> Wl,@/usr/lib/x86_64-linux-gnu/posix.wrappers). The library users must wrap 
+> wrap their code too, right? (for instance if they have a
+> printf...)
+
+You should compile (and more importantly link edit) all your code,
+whether library or executable, with the flags obtained via
+xeno-config. If you want to use the static version of the POSIX skin
+library, it gets a little more complicated, you do not want to wrap
+the symbols of the POSIX skin library itself and you should use the
+"wrap-link.sh" script, to do the link edit in two stages.
+
+-- 
+					    Gilles.
+https://click-hack.org
+
