@@ -1,14 +1,13 @@
-References: <CABShy46jn=__wPaUqu5kJf8e=TtKbysjE31EWkXkBh4S-GdTAw@mail.gmail.com>
-From: Charles Steinkuehler <charles@steinkuehler.net>
-Message-ID: <56720825.4040008@steinkuehler.net>
-Date: Wed, 16 Dec 2015 18:56:05 -0600
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Thu, 17 Dec 2015 10:00:17 +0100
+Message-ID: <5183191.iz6aZqeNVV@soho>
+In-Reply-To: <20151217000518.GC25151@hermes.click-hack.org>
+References: <2004286.fnOG18ZY9A@soho> <3338349.5bsveW0zyp@soho>
+ <20151217000518.GC25151@hermes.click-hack.org>
 MIME-Version: 1.0
-In-Reply-To: <CABShy46jn=__wPaUqu5kJf8e=TtKbysjE31EWkXkBh4S-GdTAw@mail.gmail.com>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] How can i make driver for CAN Bus loopback with
- receive own message in xenomai rtos ported beaglebone black or white and
- raspberry pi
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Porting a library to Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,30 +16,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai list <xenomai@xenomai.org>
 
-On 12/14/2015 8:36 AM, BHISHMAPALSINH THAKOR wrote:
-> Respected sir,
-> I working on can bus driver development on xenomai rtos ported  beagle bo=
-ne
-> black or white so please so please tell me about how can i make can bus
-> rtdm driver on beagle bone black or white which ported with xenomai rtos.
-
-I don't work with CAN, but the CAN controller on the BBB is apparently
-fairly standard and I believe there is a CAN driver available for
-Xenomai on x86.  You should be able to fairly easily modify the
-existing driver to work with the BBB.
-
--- =
-
-Charles Steinkuehler
-charles@steinkuehler.net
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 196 bytes
-Desc: OpenPGP digital signature
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20151216/681bc462/at=
-tachment.sig>
+RWwgRGlqb3VzLCAxNyBkZSBkZXNlbWJyZSBkZSAyMDE1LCBhIGxlcyAwMTowNToxOCwgR2lsbGVz
+IENoYW50ZXBlcmRyaXggdmEgCmVzY3JpdXJlOgpbLi4uXQo+ID4gCj4gPiAtIFNvbWUgb2YgeW91
+IGhhdmUgdHJpZWQgdG8gIlhlbm9tYWl6ZSIgYSBjb21tb24gUE9TSVggbGlicmFyeSwgZm9yCj4g
+PiBpbnN0YW5jZSB3aXRoIHRocmVhZHMgYW5kIHNvY2tldHMgKFBvY28/Li4uICk/Cj4gCj4gWWVz
+LCBiYWNrIGluIDIwMDYgdG8gMjAwOSwgSSBwb3J0ZWQgc2V2ZXJhbCBhcHBsaWNhdGlvbnMgcmVs
+YXRlZCB0bwo+IFZPSVAgdG8gdXNlIFhlbm9tYWkgYW5kIFJUbmV0LiBGcm9tIHRoaXMgZXhwZXJp
+ZW5jZSwgSSB3cm90ZSB0aGlzCj4gZ3VpZGU6Cj4gaHR0cHM6Ly94ZW5vbWFpLm9yZy8yMDE0LzA4
+L3BvcnRpbmctYS1saW51eC1hcHBsaWNhdGlvbi10by14ZW5vbWFpLWR1YWwta2Vybgo+IGVsLwoK
+dGhlIGZhbW91cyBncmVhdCBwYWdlIC4uLgoKPiA+IC0gSWYgSSBjcmVhdGUgYSBsaWJyYXJ5IChQ
+T1NJWCkgYW5kIEkgd3JhcCB0aGUgZnVuY3Rpb25zICgtCj4gPiBXbCxAL3Vzci9saWIveDg2XzY0
+LWxpbnV4LWdudS9wb3NpeC53cmFwcGVycykuIFRoZSBsaWJyYXJ5IHVzZXJzIG11c3Qgd3JhcAo+
+ID4gd3JhcCB0aGVpciBjb2RlIHRvbywgcmlnaHQ/IChmb3IgaW5zdGFuY2UgaWYgdGhleSBoYXZl
+IGEKPiA+IHByaW50Zi4uLikKPiAKPiBZb3Ugc2hvdWxkIGNvbXBpbGUgKGFuZCBtb3JlIGltcG9y
+dGFudGx5IGxpbmsgZWRpdCkgYWxsIHlvdXIgY29kZSwKPiB3aGV0aGVyIGxpYnJhcnkgb3IgZXhl
+Y3V0YWJsZSwgd2l0aCB0aGUgZmxhZ3Mgb2J0YWluZWQgdmlhCj4geGVuby1jb25maWcuIAoKb2ss
+IHRoYXQncyBjbGVhci4gRm9yIHRoZSBjdXJyZW50IGNhc2UgSSBzdXBwb3NlIHRoYXQgaXQncyBi
+ZSB0aGUgc2FtZSBpZiB0aGUgCmxpYnJhcnkgaXMgQysrIG9yIEMuIFRvIGJlIG1vcmUgY29uY2lz
+ZWx5LCBpZiBJIGNyZWF0ZSBhIGR5bmFtaWMgQysrIGxpYnJhcnkgCigqKSAobGliWGVub2Zvbyks
+IHdpdGggc29tZSAqLmNwcCBmaWxlcy4gSSB1bmRlcnN0YW5kIHRoYXQ6CgotIHRvIGNvbXBpbGUg
+dGhlIGZpbGVzIEkgaGF2ZSB0byBwYXNzIHRoZSBQT1NJWCBjZmxhZ3Mgb2J0YWluZWQgYnkgeGVu
+by1jb25maWcKLSB0byBsaW5rIHRoYXQgbGlicmFyeSwgSSBoYXZlIHRvIHBhc3MgdGhlIFBPU0lY
+IGxkZmxhZ3Mgb2J0YWluZWQgYnkgeGVuby1jb25maWcgCih3cmFwLCBldGMpCgpBZnRlciwgaWYg
+SSBoYXZlIGEgcHJvZ3JhbSB0aGUgdXNlcyBsaWJYZW5vZm9vIChkeW5hbWljKQotIHRvIGNvbXBp
+bGUgbXkgcHJvZ3JhbSwgSWYgSSBkb24ndCB1c2VzIGFueSBfX1hlbm9fXyAqIGZsYWcgSSBkb24n
+dCBuZWVkIHRvIApwYXNzIHRoZSBQT1NJWCBjZmxhZ3MuIFJpZ2h0PwotIHRvIGxpbmsgdGhlIHBy
+b2dyYW0gYWdhaW5zdCBsaWJYZW5vZm9vLCBJIHVuZGVyc3RhbmQgdGhhdCB5ZXMsIHRoYXQgSSBz
+aG91bGQgCnVzZXMgdGhlIFBPU0lYIGxkZmxhZ3Mgb2J0YWluZWQgYnkgeGVuby1jb25maWcgKHdy
+YXAsIGV0YykuIFJpZ2h0PwoKPiBJZiB5b3Ugd2FudCB0byB1c2UgdGhlIHN0YXRpYyB2ZXJzaW9u
+IG9mIHRoZSBQT1NJWCBza2luCj4gbGlicmFyeSwgaXQgZ2V0cyBhIGxpdHRsZSBtb3JlIGNvbXBs
+aWNhdGVkLCB5b3UgZG8gbm90IHdhbnQgdG8gd3JhcAo+IHRoZSBzeW1ib2xzIG9mIHRoZSBQT1NJ
+WCBza2luIGxpYnJhcnkgaXRzZWxmIGFuZCB5b3Ugc2hvdWxkIHVzZSB0aGUKPiAid3JhcC1saW5r
+LnNoIiBzY3JpcHQsIHRvIGRvIHRoZSBsaW5rIGVkaXQgaW4gdHdvIHN0YWdlcy4KCkkgZG9uJ3Qg
+dW5kZXJzdGFuZCB0aGF0LCBwcm9iYWJseSBiZWNhdXNlIEkgdXNlIGNtYWtlIGFuZCBoaWRlcyB0
+aGlzLiBCdXQsIEkgCmhhdmUgY3JlYXRlZCBteSBzdGF0aWMgdmVyc2lvbiBvZiBsaWJYZW5vZm9v
+IHBhc3NpbmcgX29ubHlfIG9uZSB0aW1lIGFuZCB0aGUgCnByb2dyYW0gaGF2ZSB3b3JrZWQuIFBs
+ZWFzZSwgY291bGQgeW91IGVsYWJvcmF0ZSBhIGJpdCBtb3JlIHRoaXM/CgpMZW9wb2xkCgoKKCop
+IEMrKyBzaW1wbGUsIG5vdGhpbmcgc29waGlzdGljYXRlZCB3aXRoIHRlbXBsYXRlcywgZHluYW1p
+YyBtZW1vcnkgCmFsbG9jYXRpb25zLCBnYXJiYWdlIGNvbGxlY3Rpb24uIFNvbWUgY2xhc3NlcyB0
+YWtpbmcgY2FyZSBhYm91dCBtZW1vcnksIGV0Yy4gCgoKLS0gCi0tCkxpbnV4IFVzZXIgMTUyNjky
+ICAgICBHUEc6IDA1RjRBN0E5NDlBMkQ5QUEKQ2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0KQTogQmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhlIG9yZGVyIGluIHdo
+aWNoIHBlb3BsZSBub3JtYWxseSByZWFkIHRleHQuClE6IFdoeSBpcyB0b3AtcG9zdGluZyBzdWNo
+IGEgYmFkIHRoaW5nPwpBOiBUb3AtcG9zdGluZy4KUTogV2hhdCBpcyB0aGUgbW9zdCBhbm5veWlu
+ZyB0aGluZyBpbiBlLW1haWw/Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0t
+LQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5h
+c2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiA4MTkgYnl0ZXMKRGVzYzog
+VGhpcyBpcyBhIGRpZ2l0YWxseSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6IDxodHRwOi8veGVu
+b21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTEyMTcvZTY5ZWZkMWIv
+YXR0YWNobWVudC5zaWc+Cg==
