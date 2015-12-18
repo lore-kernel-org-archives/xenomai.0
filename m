@@ -1,6 +1,6 @@
-Date: Fri, 18 Dec 2015 18:06:16 +0100
+Date: Fri, 18 Dec 2015 18:12:03 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151218170616.GB21744@hermes.click-hack.org>
+Message-ID: <20151218171203.GC21744@hermes.click-hack.org>
 References: <5674331B.2010807@siemens.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -33,10 +33,13 @@ On Fri, Dec 18, 2015 at 05:23:55PM +0100, Jan Kiszka wrote:
 > Here we pass the userspace object for initialization to the core instead
 > of handing over the kernel shadow and then copying over the result. Is
 > there a reason for this? Could we have more of such cases?
+> 
+> Background: SMAP detects and prevents any direct userspace memory access
+> on x86 except or those that are wrapped in stac() and clac() (which
+> toggle a bit in eflags). Generally a useful feature we should allow to
+> be enabled for robustness reasons.
 
-Since the user-space is copied from user-space a couple of lines
-above, This looks like a typo. Replacing umx->shadow_mutex with
-mx.shadow_mutex should avoid the issue.
+BTW, I believe most RTnet ioctls have this issue.
 
 -- 
 					    Gilles.
