@@ -1,11 +1,13 @@
-From: Umair Ali <ali.umair@tut.fi>
-Date: Thu, 17 Dec 2015 14:07:20 +0000
-Message-ID: <2396B4D2166B62479FBBE370D4A7C1F30A716241@mb2010-1.intra.tut.fi>
-Content-Language: en-US
+References: <CAJONJDuLVmoDdUDc3rz3qYN1TtjMo6R3SCw0Z5=x8e69ti3kkw@mail.gmail.com>
+ <BLU436-SMTP188D753B1DBA2F4D5B54C3AF00B0@phx.gbl>
+From: Joe <joelee271828@gmail.com>
+Message-ID: <5673A6B5.3030108@gmail.com>
+Date: Fri, 18 Dec 2015 14:24:53 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset="cp1256"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Possible sync problem with timerfd and application
+In-Reply-To: <BLU436-SMTP188D753B1DBA2F4D5B54C3AF00B0@phx.gbl>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] IPIPE patch for BCM2709/RPI2 (version #5)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,27 +16,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?windows-1256?Q?Xenomai_list_=FD=5Bxenomai=40xenomai=2Eorg=5D=FD?= <xenomai@xenomai.org>
+To: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>, xenomai@xenomai.org
 
-SGVsbG8gdGhlcmUsCgpJIGFtIHVzaW5nIHRoZSB0aW1lcmZkIHRvIHByb2R1Y2UgdGhlIHJlcXVp
-cmVkIHNsZWVwIGZ1bmN0aW9uIGZvciBzZW5kaW5nIHRoZSByYXcgZXRoZXJuZXQgcGFja2V0cyB1
-c2luZyBydG5ldCBkcml2ZXIgcGVyaW9kaWNhbGx5LiBJIHJlYWQgdGhlIGZpbGUgdXNpbmcgdGhl
-IG1tYXAoKSBmdW5jdGlvbiBhbmQgbWxvY2thbGwoTUNMX0NVUlJFTlR8TUNMX0ZVVFVSRSkuIE15
-IGNvZGUgaXMgYXR0YWNoZWQgd2l0aCB0aGlzIGVtYWlsLiBHaWxsZXMgaGF2ZSBhbHJlYWR5IGV4
-cGxhaW5lZCBtZSB3aXRoIHRoZSBqaXR0ZXIgcHJvYmxlbSB3aXRoIHRpbWVyZmQgYnV0IGl0IGlz
-IGFjY2VwdGFibGUgc28gZmFyIHdpdGggbWUuIE5vdyB0aGUgcHJvYmxlbSBpcyB0aGF0IHRoZSBj
-b2RlIHJ1bnMgb2sgZm9yIG1vcmUgb3IgbGVzcyAzMCBzZWNzLiBGb3IgdGhpcyBwZXJpb2Qgb2Yg
-cnVubmluZyBvZiBjb2RlIHRoZSBqaXR0ZXIgaXMgYWNjZXB0YWJsZS4gQnV0IGFmdGVyIHNvbWUg
-dGltZSB0aGUgaml0dGVyIGluY3JlYXNlcyB2ZXJ5IG11Y2ggYW5kIGNhdXNlcyAgcHJvYmxlbS4g
-SSB0aG91Z2h0IHRoYXQgdGhpcyBtYXkgYmUgYmVjYXVzZSB0aGUgdGltZXJmZCBoYXMgbG9zdCB0
-aGUgc3luY2hyb25pemF0aW9uIHdpdGggYXBwbGljYXRpb24uIE9yIHRpbWVyZmQgaXMgbm90IHdv
-cmtpbmcgZmluZS4gSSB0cmllZCB0byB1c2UgdGhlIHBvbGwoKSBhbmQgZXBvbGwoKSBhbHNvIGJ1
-dCB0aGUgcHJvYmxlbSBwZXJzaXN0LiAgQ2FuIHlvdSBndWlkZSBtZSBob3cgaSBjYW4gZmluZCB0
-aGUgcHJvYmxlbSB3aGVuIHJ1bm5pbmcgdGhlIGFwcGxpY2F0aW9uIG9yIGRvIHlvdSBuZWVkIG1v
-cmUgaW5mb3JtYXRpb24gcmVnYXJkaW5nIHRoaXMgcHJvYmxlbS4gUGxlYXNlIGZlZWwgZnJlZSB0
-byBhc2sgZm9yIG1vcmUuCgpUaGFua3MgYW5kIEJSCkFsaQoKUC5TIFRoZSBzaXplIG9mIHJlYWRp
-ZyBmaWxlIGlzIDYwME1CCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpB
-IG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHJhd191ZHBfc3YuYwpU
-eXBlOiB0ZXh0L3gtY3NyYwpTaXplOiA1Njk1IGJ5dGVzCkRlc2M6IHJhd191ZHBfc3YuYwpVUkw6
-IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTEy
-MTcvNWViODllOTAvYXR0YWNobWVudC5jPgo=
+On Sunday, December 06, 2015 06:34 AM, Mathieu Rondonneau wrote:
+> On 15-12-04 07:42 PM, Joe Lee wrote:
+>> Hi Mathieu,
+>> I apply the patch by Xenomai latest stable v3.0.1 to my RPI2, and
+>> sometimes the booting hang like this:
+>>   * Starting configure network device security[ OK ]
+>>   * Stopping load modules from /etc/modules[ OK ]
+>>   * Stopping userspace bootsplash[ OK ]
+>>
+>> That's low probability, about 1 of 60 times booting, and the original
+>> not patched kernel is OK.
+>> The kernel is the latest version from
+>> https://github.com/raspberrypi/linux/tree/rpi-3.18.y .
+>> First, I apply the ipipe patch "ipipe-core-3.18.20-arm-6.patch" from
+>> https://xenomai.org/downloads/ipipe/v3.x/arm/ . Then I apply your RPI
+>> patch version #5. The kernel is build follow this instruction
+>> https://www.raspberrypi.org/documentation/linux/kernel/building.md .
+>> The root file system is Ubuntu 14.04 LTS for RPI2, which from
+>> https://wiki.ubuntu.com/ARM/RaspberryPi .
+>> Attached is the kernel booting hang log file and kernel config file.
+>> What can I do to get more infomation for debugging when kernel booting hang?
+>> Look forward to your reply.
+>
+> Hi Joe,
+>
+> The only difference with your .config file is that I have earlyprintk
+> enabled but that should not cause the issue you are observing.
+>
+> I am using the raspbian rootfs downloaded from the raspberry pi
+> foundation website:
+> https://www.raspberrypi.org/downloads/raspbian/
+>
+> can you try disabling xenomai from the kernel config to see if the
+> problem happens also when only the IPIPE patch is turned ON?
+>
+> Thanks,
+> -Mathieu
+>
+I'm so sorry, that's my RTL8192CUS USB WIFI dongle cause the issue.
+Without the dongle the patched kernel with Xenomai 3.0.1 enable is OK.
+May be the USB or WIFI driver cause the issue, I'm going to test the 
+RT5370 WIFI dongle.
+
+-- 
+Joe Lee
+
