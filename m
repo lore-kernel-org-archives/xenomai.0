@@ -1,12 +1,16 @@
-Date: Sun, 20 Dec 2015 16:03:33 +0100
+Date: Sun, 20 Dec 2015 16:07:13 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151220150333.GA25662@hermes.click-hack.org>
-References: <2396B4D2166B62479FBBE370D4A7C1F30A716241@mb2010-1.intra.tut.fi>
+Message-ID: <20151220150713.GB25662@hermes.click-hack.org>
+References: <mailman.3.1450263601.11243.xenomai@xenomai.org>
+ <mailman.3.1450263601.11243.xenomai.{4ac8acb6-338d-4c9e-8bb4-e7df718e2fe0}.0@xenomai.org>
+ <20151216064242.GC1786@hermes.click-hack.org>
+ <5673B86F.6080205@gmail.com>
+ <CAG6c7CaSBQrr+WHWNQfCcpfJ=0L5co8F=NQZqeyN=2TP=YEUbQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2396B4D2166B62479FBBE370D4A7C1F30A716241@mb2010-1.intra.tut.fi>
-Subject: Re: [Xenomai] Possible sync problem with timerfd and application
+In-Reply-To: <CAG6c7CaSBQrr+WHWNQfCcpfJ=0L5co8F=NQZqeyN=2TP=YEUbQ@mail.gmail.com>
+Subject: Re: [Xenomai] patch for RPI2
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,43 +19,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Umair Ali <ali.umair@tut.fi>
-Cc: Xenomai list =?utf-8?B?4oCOW3hlbm9tYWlAeGVub21haS5vcmdd4oCO?= <xenomai@xenomai.org>
+To: ilyasse toumi <toumi.ily@gmail.com>
+Cc: Joe Lee <joelee271828@gmail.com>, xenomai@xenomai.org
 
-On Thu, Dec 17, 2015 at 02:07:20PM +0000, Umair Ali wrote:
-> Hello there,
+On Fri, Dec 18, 2015 at 01:41:50PM +0100, ilyasse toumi wrote:
+> Hi there
 > 
-> I am using the timerfd to produce the required sleep function for
-> sending the raw ethernet packets using rtnet driver periodically.
-> I read the file using the mmap() function and
-> mlockall(MCL_CURRENT|MCL_FUTURE). My code is attached with this
-> email. Gilles have already explained me with the jitter problem
-> with timerfd but it is acceptable so far with me. Now the problem
-> is that the code runs ok for more or less 30 secs. For this period
-> of running of code the jitter is acceptable. But after some time
-> the jitter increases very much and causes problem. I thought that
-> this may be because the timerfd has lost the synchronization with
-> application.
+> I used the same kernel (rpi-3.18.y) but this time with Xenomai 3.0.1. the
+> patch seems to be OK. After building it i used it with Raspbian root file
+> system.
+> I launched the latency test in both x86 and RPI2. x86 response time is of
+> the order of several microseconds, but RPI2 response time is of the order
+> of a few ten microseconds.
+> 
+> To summarize, the problem was with Xenomai 2 ( I didn't use git version )
+> and also SOC should be enabled. Now I am planning to port Xenomai on Orange
+> Pi, It should not be very hard since they have the  same CPU
 
-The "read" call on a timerfd reads the number of timer ticks since
-the last read, so you can know whether an overrun occurred by
-checking the variable named "exp" in your program.
-
-> Or timerfd is not working fine. I tried to use the
-> poll() and epoll() also but the problem persist. Can you guide me
-
-poll() is not a wrapped call, so causes a switch to secondary mode.
-Did not you see that with slackspot? Xenomai only wraps the "select"
-call.
-
-Also note that by using the AF_INET family, you are no longer
-sending raw packets but UDP packets.
-
-And finally I do not know what your ugly memcpy with hardcoded
-lengths do exactly, but the check (j < size) looks insufficient, 
-as the memcpys are accessing data beyond j. If you receive a signal doing
-this, this would certainly cause a switch to secondary mode.
-
+I think you did not understand my answer correctly. I never said
+that the problem was with Xenomai 2. The problem is that Xenomai
+2.6.4 is too old for Linux 3.18. Please do not spread false rumors.
 
 -- 
 					    Gilles.
