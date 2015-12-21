@@ -1,15 +1,10 @@
-Date: Sun, 20 Dec 2015 16:11:54 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151220151154.GC25662@hermes.click-hack.org>
-References: <mailman.3.1450263601.11243.xenomai@xenomai.org>
- <mailman.3.1450263601.11243.xenomai.{4ac8acb6-338d-4c9e-8bb4-e7df718e2fe0}.0@xenomai.org>
- <20151216064242.GC1786@hermes.click-hack.org>
- <5673B86F.6080205@gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5677E0D4.8000207@xenomai.org>
+Date: Mon, 21 Dec 2015 12:21:56 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5673B86F.6080205@gmail.com>
-Subject: Re: [Xenomai] patch for RPI2
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Ports to BCM2708, BCM2709
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,68 +13,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Joe Lee <joelee271828@gmail.com>
-Cc: ilyasse toumi <toumi.ily@gmail.com>, xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Fri, Dec 18, 2015 at 03:40:31PM +0800, Joe Lee wrote:
-> On Wednesday, December 16, 2015 02:42 PM, Gilles Chanteperdrix wrote:
-> > On Tue, Dec 15, 2015 at 07:12:26PM -0800, Mathieu Rondonneau wrote:
-> >> On 15-12-15 10:43 AM, Gilles Chanteperdrix wrote:
-> >>> On Tue, Dec 15, 2015 at 01:22:55PM +0100, ilyasse toumi wrote:
-> >>>> Hi there,
-> >>>>
-> >>>> I'm using kernel rpi-3.18.y as mentioned in an email sent by Joe Lee about
-> >>>> RPI2, I used the patch ipipe-core-3.18.20-arm-6.patch and also the patch
-> >>>> for RPI2 version5, the problem is that when i try to compile the kernel
-> >>>> after patching it it gives some errors.
-> >>>> It's about some implicit declarations of functions that are present in the
-> >>>> patch like
-> >>>>
-> >>>> __ipipe_mach_update_tsc
-> >>>
-> >>> This one is probably due to a misconfiguration, i.e. you enabled
-> >>> xenomai, but not a SOC or SOC family which provides an emulated tsc.
-> >>> A lot of the coded added by the patch is compiled conditionally, so
-> >>> the fact that a definition for a function is present in the patch
-> >>> does not necessarily mean that it will be present with your
-> >>> particular build configuration.
-> >>>
-> >> if you do use Xenomai-3.0, it could be that you are missing this part of
-> >> the patch?
-> >
-> > More likely, the SOC is not enabled in the kernel configuration.
-> >
-> >>>> smp_mb__before_atomic_dec
-> >>>> smp_mb__before_atomic_dec
-> >>>
-> >>> This one indicates a version of Xenomai not ready for Linux 3.18.
-> >>> Xenomai 2.6.4 for instance can not be compiled with anything more
-> >>> recent than Linux 3.14. You can use Xenomai 2.6 git if you want
-> >>> Linux 3.18 support, or if starting a new development, it probably
-> >>> makes more sense to jump to Xenomai 3.0 directly.
-> >>>
-> >>> Regards.
-> >>>
-> >> That is correct, the patch is only for Xenomai 3.0.
-> >
-> > No. The patch should also work with Xenomai 2.6, but you need
-> > Xenomai 2.6 git.
-> >
-> Hi Gilles,
-> The Xenomai 3.0.1 patched kernel is OK. But the Xenomai 2.6 patched 
-> sometimes hang like this:
-> [7.407819] Xenomai: stuck on nucleus lock 808b14a0
-> [7.407819]    waiter = kernel/xenomai/nucleus/intr.c:114
-> (xnintr_clock_handler(), CPU #2)
-> [7.407819]    owner  = kernel/xenomai/nucleus/intr.c:114
-> (xnintr_clock_handler(), CPU #1)
-> Could you help me?
 
-Enable the I-pipe tracer, and trigger a trace freeze/trace dump upon
-such failure. But since Xenomai 2.6 is running fine on other
-platforms, it points to a problem in the RPi2 patch.
+Hi,
+
+There has been a significant traffic on the list about ongoing port(s)
+to the Broadcom 2709 processor family, so it seems the right time to
+contribute some related code that has been brewing here for a couple of
+weeks, targeting the BCM2708 family.
+
+At git://git.xenomai.org/ipipe.git, branch vendors/raspberry/ipipe-4.1,
+you will find a preliminary port of the interrupt pipeline to the
+Raspberry Pi Zero, based on the RPi reference tree at
+https://github.com/raspberrypi/linux (rpi-4.1.y).
+
+This is work in progress, but this kernel already runs most of the basic
+Xenomai 3 test programs on real RPi Zero hardware properly. However, the
+pipeline does not play well with CONFIG_NO_HZ_IDLE on this kernel yet,
+and the autotuner may fail calibrating the core timer although manual
+calibration will get you correct latency figures; these issues will soon
+be addressed. At this chance, I took a stab at porting the pipeline to
+the BCM2709 processor family as well, but the result has not been tested
+so far.
+
+Like it happened with several significant Xenomai features in the past,
+this effort was funded by Siemens AG. Corporate Competence Center
+Embedded Linux. To give credit where credit is due, Jan Kiszka has been
+helping in making Xenomai an industrial-grade option for real-time
+applications for more than ten years now, so thanks to him, Gernot
+Hillier and their teammates at Siemens.
+
+Over the same period, other companies have greatly helped our project by
+contributing code and/or funding significant developments as well, and
+like Siemens, keep on doing this on a regular basis, among whom the Denx
+people led by Wolfgang Denk. All Xenomai users and developers owe all of
+them quite a lot in this respect.
+
+Ok, that was my season's greetings, wrapped in software. The leopard
+cannot change its spots, I guess.
 
 -- 
-					    Gilles.
-https://click-hack.org
+Philippe.
 
