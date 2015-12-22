@@ -1,15 +1,12 @@
-References: <CADYNH7X5DJ5WTOfNYfVgoVw8o0cmF8Johhef=zakncwLqHoMQw@mail.gmail.com>
- <20151222024304.GR25177@csclub.uwaterloo.ca>
- <20151222073037.GC29679@hermes.click-hack.org>
- <20151222155429.GS25177@csclub.uwaterloo.ca>
-From: Jeff Webb <jeff.webb@nta-inc.net>
-Message-ID: <56798985.2090803@nta-inc.net>
-Date: Tue, 22 Dec 2015 11:33:57 -0600
+References: <56795E20.1010102@isc.cnr.it>
+From: Jorge Ramirez Ortiz <jro@xenomai.org>
+Message-ID: <5679E096.3030807@xenomai.org>
+Date: Tue, 22 Dec 2015 18:45:26 -0500
 MIME-Version: 1.0
-In-Reply-To: <20151222155429.GS25177@csclub.uwaterloo.ca>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+In-Reply-To: <56795E20.1010102@isc.cnr.it>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] NVIDIA Drivers w/ Xenomai
+Subject: Re: [Xenomai] Programming Xenomai+analogy
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,24 +17,27 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-On 12/22/2015 09:54 AM, Lennart Sorensen wrote:
-> On Tue, Dec 22, 2015 at 08:30:37AM +0100, Gilles Chanteperdrix wrote:
->> Last time I looked, NVIDIA drivers used some glue code to adapt to
->> the particular kernel for which they were compiled. This glue made
->> use of the standard macro local_irq_save/spin_lock_irqsave, etc...
->> So, compiling the NVIDIA driver with an I-pipe kernel worked, and so
->> did running Xenomai programs along side graphic applications. But
->> that was a long time ago. In any case, running the latency test
->> while your image processing program is running on the GPU should
->> allow you to find whether the driver is generating large latencies.
->
-> OK, maybe it isn't as bad as I was led to believe in the past then.
->
-> I suppose one could hope there are no interrupt disable calls in the
-> nvidia binary blob directly.
+On 12/22/2015 09:28 AM, GianPiero Puccioni wrote:
+> Hi,
+> 
+> I am trying to use xenomai to accomplish a, I think, simple task, but I
+> have never used real time programs before so I have some problems.
+> 
+> What I need is to use a  National Instruments PCI-MIO-16E-4 AD/DA to
+> read data from the AD, do some simple operations on it, and output the
+> result on the DA at the fastest possible frequency, with as little jitter
+> as possible.
+> 
+> I set up a machine for this with Xenomai3 (cobalt) and everything seems to work.
+> I can run "latency" with max latency around 3-4 us. the analogy
+> libraries are installed, the board is recognized and the test programs
+> are able to read and write to it.
+> 
+> The problem is how to write a realtime program for this task. Is there
+>  documentation at the basic level on howto do that or some place where I
+> can find examples for similar programs?
 
-I have experienced some high worst-case latencies when using the NVIDIA drivers along side Xenomai real-time code in the past.  The open source drivers seemed to be more well-behaved from a real-time point of view.  You may be able to get the closed-source drivers to work for your application, depending on your timing constraints and GPU feature usage.  As Gilles mentioned, you really should try running the latency test while putting the system (and GPU) under load.  As I remember, switching to another virtual console sometimes triggered some nasty behavior.
 
--Jeff
-
+have you tried reading the Xenomai demo code or the analogy utilities?
+http://git.xenomai.org/xenomai-3.git/tree/utils/analogy
 
