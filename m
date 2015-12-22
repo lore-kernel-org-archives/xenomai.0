@@ -1,12 +1,10 @@
-Date: Tue, 22 Dec 2015 08:37:47 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151222073747.GD29679@hermes.click-hack.org>
-References: <CADYNH7X5DJ5WTOfNYfVgoVw8o0cmF8Johhef=zakncwLqHoMQw@mail.gmail.com>
+Message-ID: <56795E20.1010102@isc.cnr.it>
+Date: Tue, 22 Dec 2015 15:28:48 +0100
+From: GianPiero Puccioni <gianpiero.puccioni@isc.cnr.it>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CADYNH7X5DJ5WTOfNYfVgoVw8o0cmF8Johhef=zakncwLqHoMQw@mail.gmail.com>
-Subject: Re: [Xenomai] NVIDIA Drivers w/ Xenomai
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Programming Xenomai+analogy
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,31 +13,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Eric Huang <ehuang@gatech.edu>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, Dec 21, 2015 at 07:22:26PM -0500, Eric Huang wrote:
-> Hi,
-> 
-> The specific question I am trying to answer is whether it is possible (at
-> all) to install an NVIDIA driver alongside Xenomai
-> 
-> My system is the following.
-> 
-> uname -a
-> Linux robot-Z68X-UD3H-B3 3.2.21-xenomai-2.6.1 #1 SMP Thu Jul 26 11:46:23
-> EDT 2012 x86_64 x86_64 x86_64 GNU/Linux
-> 
-> xeno-config --version
-> 2.5.5.2
+Hi,
 
-By the way, you have a mismatch between Xenomai user-space and
-kernel-space, xenomai 2.5.5.2 user-space should not work with a
-xenomai 2.6.1 kernel space. You need a xenomai 2.6.x user-space for
-a xenomai 2.6.1 kernel space. And Xenomai on Linux 3.2 is broken.
-So, I would say a general upgrade is in order.
+I am trying to use xenomai to accomplish a, I think, simple task, but I
+have never used real time programs before so I have some problems.
 
+What I need is to use a  National Instruments PCI-MIO-16E-4 AD/DA to
+read data from the AD, do some simple operations on it, and output the
+result on the DA at the fastest possible frequency, with as little jitter
+as possible.
+
+I set up a machine for this with Xenomai3 (cobalt) and everything seems to work.
+I can run "latency" with max latency around 3-4 us. the analogy
+libraries are installed, the board is recognized and the test programs
+are able to read and write to it.
+
+The problem is how to write a realtime program for this task. Is there
+  documentation at the basic level on howto do that or some place where I
+can find examples for similar programs?
+
+Thanks,
+
+GianPiero
 -- 
-					    Gilles.
-https://click-hack.org
+GianPiero Puccioni               |Istituto dei Sistemi Complessi-CNR
+gianpiero.puccioni@isc.cnr.it    |Via Madonna del Piano, 10
+T:+39 0555226682 F:+39 0555226683|50019 Sesto F. (Firenze) ITALY
 
