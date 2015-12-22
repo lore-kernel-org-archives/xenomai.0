@@ -1,10 +1,14 @@
-Message-ID: <56795E20.1010102@isc.cnr.it>
-Date: Tue, 22 Dec 2015 15:28:48 +0100
-From: GianPiero Puccioni <gianpiero.puccioni@isc.cnr.it>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Tue, 22 Dec 2015 10:54:29 -0500
+Message-ID: <20151222155429.GS25177@csclub.uwaterloo.ca>
+References: <CADYNH7X5DJ5WTOfNYfVgoVw8o0cmF8Johhef=zakncwLqHoMQw@mail.gmail.com>
+ <20151222024304.GR25177@csclub.uwaterloo.ca>
+ <20151222073037.GC29679@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Programming Xenomai+analogy
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20151222073037.GC29679@hermes.click-hack.org>
+Subject: Re: [Xenomai] NVIDIA Drivers w/ Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,32 +17,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hi,
+On Tue, Dec 22, 2015 at 08:30:37AM +0100, Gilles Chanteperdrix wrote:
+> Last time I looked, NVIDIA drivers used some glue code to adapt to
+> the particular kernel for which they were compiled. This glue made
+> use of the standard macro local_irq_save/spin_lock_irqsave, etc...
+> So, compiling the NVIDIA driver with an I-pipe kernel worked, and so
+> did running Xenomai programs along side graphic applications. But
+> that was a long time ago. In any case, running the latency test
+> while your image processing program is running on the GPU should
+> allow you to find whether the driver is generating large latencies.
 
-I am trying to use xenomai to accomplish a, I think, simple task, but I
-have never used real time programs before so I have some problems.
+OK, maybe it isn't as bad as I was led to believe in the past then.
 
-What I need is to use a  National Instruments PCI-MIO-16E-4 AD/DA to
-read data from the AD, do some simple operations on it, and output the
-result on the DA at the fastest possible frequency, with as little jitter
-as possible.
+I suppose one could hope there are no interrupt disable calls in the
+nvidia binary blob directly.
 
-I set up a machine for this with Xenomai3 (cobalt) and everything seems to work.
-I can run "latency" with max latency around 3-4 us. the analogy
-libraries are installed, the board is recognized and the test programs
-are able to read and write to it.
-
-The problem is how to write a realtime program for this task. Is there
-  documentation at the basic level on howto do that or some place where I
-can find examples for similar programs?
-
-Thanks,
-
-GianPiero
 -- 
-GianPiero Puccioni               |Istituto dei Sistemi Complessi-CNR
-gianpiero.puccioni@isc.cnr.it    |Via Madonna del Piano, 10
-T:+39 0555226682 F:+39 0555226683|50019 Sesto F. (Firenze) ITALY
+Len Sorensen
 
