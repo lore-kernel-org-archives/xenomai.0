@@ -1,12 +1,11 @@
-References: <56795E20.1010102@isc.cnr.it>
-From: Jorge Ramirez Ortiz <jro@xenomai.org>
-Message-ID: <5679E096.3030807@xenomai.org>
-Date: Tue, 22 Dec 2015 18:45:26 -0500
-MIME-Version: 1.0
-In-Reply-To: <56795E20.1010102@isc.cnr.it>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Programming Xenomai+analogy
+From: "=?gb18030?B?pcul46Xz0MfIyw==?=" <1173264124@qq.com>
+Mime-Version: 1.0
+Date: Wed, 23 Dec 2015 12:01:03 +0800
+Message-ID: <tencent_037A0D5E4214FC1A288A3CBA@qq.com>
+Content-Type: text/plain;
+	charset="gb18030"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Question about syscall
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,29 +14,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
 
-On 12/22/2015 09:28 AM, GianPiero Puccioni wrote:
-> Hi,
-> 
-> I am trying to use xenomai to accomplish a, I think, simple task, but I
-> have never used real time programs before so I have some problems.
-> 
-> What I need is to use a  National Instruments PCI-MIO-16E-4 AD/DA to
-> read data from the AD, do some simple operations on it, and output the
-> result on the DA at the fastest possible frequency, with as little jitter
-> as possible.
-> 
-> I set up a machine for this with Xenomai3 (cobalt) and everything seems to work.
-> I can run "latency" with max latency around 3-4 us. the analogy
-> libraries are installed, the board is recognized and the test programs
-> are able to read and write to it.
-> 
-> The problem is how to write a realtime program for this task. Is there
->  documentation at the basic level on howto do that or some place where I
-> can find examples for similar programs?
-
-
-have you tried reading the Xenomai demo code or the analogy utilities?
-http://git.xenomai.org/xenomai-3.git/tree/utils/analogy
-
+SGksIEkgYW0gcmVhZGluZyB0aGUgc291cmNlIGNvZGUgYWJvdXQgeGVub21haSBzeXNjYWxs
+LiBBbmQgSSBoYXZlIHNvbWUgcXVlc3Rpb24gYWJvdXQgeGVub21haSBzeXNjYWxsLiBGb3Ig
+ZXhhbXBsZSwgd2hlbiBJIGNhbGwgZnVuY3Rpb24gb3BlbiB3aGljaCBpcyBkZWZpbmVkIGlu
+IGZpbGUgcnRkbS5jLGl0IHdvdWxkIGNhbGwgeGVub21haSBzeXNjYWxsIGJ5IHVzaW5nICJm
+ZCA9IFhFTk9NQUlfU1lTQ0FMTDIoIHNjX2NvYmFsdF9vcGVuLCBwYXRoLCBvZmxhZyk7Ii4g
+c2NfY29iYWx0X29wZW4gaXMgYSBtYWNybyBsaWtlICIjZGVmaW5lIHNjX2NvYmFsdF9vcGVu
+ICAgIDc1IiBkZWZpbmVkIGluIGZpbGUgc3lzY2FsbC5oLiBBZnRlciBpbnRlcnJ1cHQgcmVx
+dWVzdGVkLCBzeXN0ZW0gd291bGQgaGFuZGxlIHRoZSBpcnEuIEJ5IHVzaW5nIDc1IGFuZCBh
+cnJheSBjb2JhbHRfc3lzY2FsbHMgd2hpY2ggaXMgZGVmaW5lZCBpbiBca2VybmVsXGNvYmFs
+dFxwb3NpeFxzeXNjYWxsLmMsIHRoZSBpcnEgaGFuZGxlIGZ1bmN0aW9uIGNvdWxkIGJlIGZv
+dW5kIGluIGNvYmFsdF9zeXNjYWxsc1s3NV0uIEFmdGVyIHJlYWRpbmcgc291cmNlIGNvZGUs
+IEkgZm91bmQgY29iYWx0X3N5c2NhbGxzWzc1XSBpcyBhIGZ1bmN0aW9uIHBvaW50ZXIuIGNv
+YmFsdF9zeXNjYWxsc1s3NV0gYW5kIGNvYmFsdF9vcGVuIHBvaW50IHRvIHRoZSBzYW1lIGZ1
+bmN0aW9uLg0KICANCiAgICAgQXQgdGhpcyBwb2ludCwgaXQgaXMgY2xlYXIgdGhhdCBmdW5j
+dGlvbiBwb2ludGVyIGNvYmFsdF8jI25hbWUgIGluaXRpYWxpemUgdGhlIGFycmF5IGNvYmFs
+dF9zeXNjYWxscy4gQnV0IEkgY2FuJ3QgZmluZCB3aGVyZSBjb2JhbHRfIyNuYW1lIGxpa2Ug
+Y29iYWx0X29wZW4gZGVmaW5lZCBpbi4NCiAgDQogICAgIEFsbCBpbiBhbGwsIEkganVzdCB3
+YW50IHRvIGZpZ3VyZSBvdXQgdGhlIG1hcCBhYm91dCBzeXNjYWxsIGZyb20gdXNlci1mdW5j
+dGlvbiB0byBrZXJuZWwtZnVuY3Rpb24sIGxpa2Ugb3Blbi0+ZmQgPSBYRU5PTUFJX1NZU0NB
+TEwyKCBzY19jb2JhbHRfb3BlbiwgcGF0aCwgb2ZsYWcpOy0+c3RhdGljIGlubGluZSBpbnQg
+cnRkbV9vcGVuKGNvbnN0IGNoYXIgKnBhdGgsIGludCBvZmxhZywgLi4uKQ0KICANCiAgICAg
+VGhhbmtzIGZvciB5b3VyIGhlbHAu
