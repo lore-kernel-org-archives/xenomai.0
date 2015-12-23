@@ -1,12 +1,11 @@
-References: <56795E20.1010102@isc.cnr.it> <5679E096.3030807@xenomai.org>
- <567A5ED3.505@isc.cnr.it>
-From: Jorge Ramirez Ortiz <jro@xenomai.org>
-Message-ID: <567AA8DD.9000202@xenomai.org>
-Date: Wed, 23 Dec 2015 08:59:57 -0500
 MIME-Version: 1.0
-In-Reply-To: <567A5ED3.505@isc.cnr.it>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <56795E20.1010102@isc.cnr.it>
+References: <56795E20.1010102@isc.cnr.it>
+Date: Wed, 23 Dec 2015 16:45:00 +0100
+Message-ID: <CAPydA0Hb73k0kO_ueqVnTMeDCxpffDeU0AEUWxZFBKbG9RCY1Q@mail.gmail.com>
+From: Orestes Mas <masorestes@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] Programming Xenomai+analogy
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -16,52 +15,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: gianpiero.puccioni@isc.cnr.it
 Cc: xenomai@xenomai.org
 
-On 12/23/2015 03:44 AM, GianPiero Puccioni wrote:
-> On 23/12/15 00:45, Jorge Ramirez Ortiz wrote:
-> 
->>
->> have you tried reading the Xenomai demo code or the analogy utilities?
->> http://git.xenomai.org/xenomai-3.git/tree/utils/analogy
->>
-> 
-> Yes, of course, but the analogy utils are not written for realtime
+If you know some french, you may have useful the book "Solutions temps r=C3=
+=A9el
+sous Linux"  [1]. The book itself is not free, but examples are available
+on its web site (I've no relation with its author).
 
-what do you mean? do you see mode switches when you run them?
-I havent executed them in a while but as far as I remember some of them were.
+It covers Xenomai at a basic level, among other basic realtime programming
+concepts.
 
-> (and there
-> are some bits missing, for example insn_read does not set the range properly),
+[1] http://www.blaess.fr/christophe/livres/solutions-temps-reel-sous-linux/
 
-could you point me where?
+Regards,
 
-> and the realtime examples are quite obscure for a beginner: only sparse comments
-> and no explanation on what's going on.
-> 
+Orestes.
 
-if you want a 101 example have a look at this control program
-http://git.xenomai.org/xenomai-jro.git/tree/demo/posix/cobalt/gpiopwm.c?h=410c
+On Tue, Dec 22, 2015 at 3:28 PM, GianPiero Puccioni <
+gianpiero.puccioni@isc.cnr.it> wrote:
 
-it opens an rtdm driver that generates a PWM signal using a GPIO
-http://git.xenomai.org/xenomai-jro.git/tree/kernel/drivers/gpiopwm/gpiopwm.c?h=410c
-
-The control program spawns two threads one to set the PWM signal base
-configuration and another one to change the duty cycle (either automatically or
-via user control, optional vi command line)
-
-The driver presents a rt path to change the duty cycle and start/stop the PWM
-signal (so no mode switches, always running in primary mode) and a non-rt path
-to set the config.
-The config has to be in a non-rt path since the kernel framework to configure
-the GPIO requires some non-rt linux services.
-
-It doesnt get any simpler than that I believe.
-
-
+> Hi,
+>
+> I am trying to use xenomai to accomplish a, I think, simple task, but I
+> have never used real time programs before so I have some problems.
+>
+> What I need is to use a  National Instruments PCI-MIO-16E-4 AD/DA to
+> read data from the AD, do some simple operations on it, and output the
+> result on the DA at the fastest possible frequency, with as little jitter
+> as possible.
+>
+> I set up a machine for this with Xenomai3 (cobalt) and everything seems t=
+o
+> work.
+> I can run "latency" with max latency around 3-4 us. the analogy
+> libraries are installed, the board is recognized and the test programs
+> are able to read and write to it.
+>
+> The problem is how to write a realtime program for this task. Is there
+>  documentation at the basic level on howto do that or some place where I
+> can find examples for similar programs?
+>
+> Thanks,
+>
 > GianPiero
-
--- 
-jro
-
+> --
+> GianPiero Puccioni               |Istituto dei Sistemi Complessi-CNR
+> gianpiero.puccioni@isc.cnr.it    |Via Madonna del Piano, 10
+> T:+39 0555226682 F:+39 0555226683|50019 Sesto F. (Firenze) ITALY
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://xenomai.org/mailman/listinfo/xenomai
+>
