@@ -1,16 +1,10 @@
-Date: Wed, 23 Dec 2015 13:48:46 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151223124846.GC29038@hermes.click-hack.org>
-References: <CADYNH7X5DJ5WTOfNYfVgoVw8o0cmF8Johhef=zakncwLqHoMQw@mail.gmail.com>
- <20151222024304.GR25177@csclub.uwaterloo.ca>
- <20151222073037.GC29679@hermes.click-hack.org>
- <20151222155429.GS25177@csclub.uwaterloo.ca>
- <56798985.2090803@nta-inc.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <56798985.2090803@nta-inc.net>
-Subject: Re: [Xenomai] NVIDIA Drivers w/ Xenomai
+Date: Wed, 23 Dec 2015 13:57:47 +0000
+Message-ID: <CAEb=mKckujP2W671ULodX3Rmr1zJiHJJXntX67UGh_nVs+yibA@mail.gmail.com>
+From: =?UTF-8?Q?Marco_V=C3=A1rzea?= <marcovarzea.ce@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Can't start realtime application on boot trough systemd.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,37 +13,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeff Webb <jeff.webb@nta-inc.net>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Tue, Dec 22, 2015 at 11:33:57AM -0600, Jeff Webb wrote:
-> On 12/22/2015 09:54 AM, Lennart Sorensen wrote:
-> > On Tue, Dec 22, 2015 at 08:30:37AM +0100, Gilles Chanteperdrix wrote:
-> >> Last time I looked, NVIDIA drivers used some glue code to adapt to
-> >> the particular kernel for which they were compiled. This glue made
-> >> use of the standard macro local_irq_save/spin_lock_irqsave, etc...
-> >> So, compiling the NVIDIA driver with an I-pipe kernel worked, and so
-> >> did running Xenomai programs along side graphic applications. But
-> >> that was a long time ago. In any case, running the latency test
-> >> while your image processing program is running on the GPU should
-> >> allow you to find whether the driver is generating large latencies.
-> >
-> > OK, maybe it isn't as bad as I was led to believe in the past then.
-> >
-> > I suppose one could hope there are no interrupt disable calls in the
-> > nvidia binary blob directly.
-> 
-> I have experienced some high worst-case latencies when using the
-> NVIDIA drivers along side Xenomai real-time code in the past. The
-> open source drivers seemed to be more well-behaved from a
-> real-time point of view.
-
-If you are talking about the "nouveau" drivers, unfortunately I am
-afraid they will not satisfy the user needs: last time I tried
-writing shaders for the nouveau drivers, the shaders were run on the
-CPU, not the GPU.
-
--- 
-					    Gilles.
-https://click-hack.org
-
+SGksCgpJIGFtIHVuYWJsZSB0byBzdGFydCBhIHVzZXIgc3BhY2UgYXBwbGljYXRpb24gYXQgYm9v
+dCB0aW1lIHRyb3VnaCB0aGUgdXNhZ2UKb2Ygc3lzdGVtZC4gVGhlIGFwcGxpY2F0aW9uIHNpbXBs
+eSBkb2Vzbid0IHJ1biBhbmQgdGhlIG9ubHkgdGhpbmcgaSBjYW4gc2VlCmluIHRoZSBsb2dzIHVz
+aW5nIGRtZXNnIGlzIHRoZSBzZW1hcGhvcmVzIGFuZCBtdXRleCBiZWluZyBjbGVhcmVkIGJ5Clhl
+bm9tYWkuCgpXaGVuIGkgbGF1bmNoIHRoZSBhcHBsaWNhdGlvbiBpbiBhIHJlZ3VsYXIgZmFzaGlv
+biAobWFudWFsbHkgdHJvdWdoIHRoZQpjb21tYW5kIGxpbmUpIGl0IHdvcmtzIGp1c3QgZmluZS4g
+SSBhbSBzZW5kaW5nIGluIGFubmV4IG15IGtlcm5lbApjb25maWd1cmF0aW9uIGZpbGUuCgpJZiBh
+bnkgb2YgeW91IGNvdWxkIGhlbHAgaSB3b3VsZCByZWFsbHkgYXBwcmVjaWF0ZS4KClNPOiBPcGVu
+c3VzZSAxMi4zIHg2NApLZXJuZWw6IDMuOC4xMwpYZW5vbWFpIFZlcnNpb246IDIuNi40CgojIyMj
+IyMjIyMgY2F0IC9wcm9jL2NwdWluZm8gIyMjIyMjIyMjIyMjIyMKCnByb2Nlc3NvciAgICA6IDAK
+dmVuZG9yX2lkICAgIDogR2VudWluZUludGVsCmNwdSBmYW1pbHkgICAgOiAxNQptb2RlbCAgICAg
+ICAgOiA2Cm1vZGVsIG5hbWUgICAgOiBJbnRlbChSKSBQZW50aXVtKFIpIDQgQ1BVIDMuNDBHSHoK
+c3RlcHBpbmcgICAgOiA0Cm1pY3JvY29kZSAgICA6IDB4NApjcHUgTUh6ICAgICAgICA6IDM0MDAu
+MTU1CmNhY2hlIHNpemUgICAgOiAyMDQ4IEtCCmZwdSAgICAgICAgOiB5ZXMKZnB1X2V4Y2VwdGlv
+biAgICA6IHllcwpjcHVpZCBsZXZlbCAgICA6IDYKd3AgICAgICAgIDogeWVzCmZsYWdzICAgICAg
+ICA6IGZwdSB2bWUgZGUgcHNlIHRzYyBtc3IgcGFlIG1jZSBjeDggYXBpYyBzZXAgbXRyciBwZ2Ug
+bWNhCmNtb3YgcGF0IHBzZTM2IGNsZmx1c2ggZHRzIGFjcGkgbW14IGZ4c3Igc3NlIHNzZTIgc3Mg
+aHQgdG0gcGJlIHN5c2NhbGwgbngKbG0gY29uc3RhbnRfdHNjIHBlYnMgYnRzIG5vcGwgcG5pIGR0
+ZXM2NCBtb25pdG9yIGRzX2NwbCBlc3QgdG0yIGNpZCBjeDE2Cnh0cHIgcGRjbSBsYWhmX2xtCmJv
+Z29taXBzICAgIDogNjgwMC4zMQpjbGZsdXNoIHNpemUgICAgOiA2NApjYWNoZV9hbGlnbm1lbnQg
+ICAgOiAxMjgKYWRkcmVzcyBzaXplcyAgICA6IDM2IGJpdHMgcGh5c2ljYWwsIDQ4IGJpdHMgdmly
+dHVhbApwb3dlciBtYW5hZ2VtZW50OgoKCkJlc3QgUmVnYXJkcwotLS0tLS0tLS0tLS0tLSBuZXh0
+IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4u
+LgpOYW1lOiBjb25maWd1cmF0aW9uClR5cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXpl
+OiAxMzQ5MDggYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5v
+cmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNTEyMjMvYWNjOTJhMDUvYXR0YWNo
+bWVudC5vYmo+Cg==
