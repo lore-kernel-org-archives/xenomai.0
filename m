@@ -1,12 +1,14 @@
-Date: Wed, 23 Dec 2015 19:43:41 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20151223184341.GB3877@hermes.click-hack.org>
+From: Steven Seeger <steven.seeger@nasa.gov>
+Date: Wed, 23 Dec 2015 14:14:14 -0500
+Message-ID: <1658062.jOZnPEAolN@wirbelwind>
+In-Reply-To: <20151223184341.GB3877@hermes.click-hack.org>
 References: <2558065.W1DNnPs8ZD@wirbelwind>
+ <20151223184341.GB3877@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2558065.W1DNnPs8ZD@wirbelwind>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Subject: Re: [Xenomai] userspace absolute timer value
+Reply-To: steven.seeger@nasa.gov
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,36 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Steven Seeger <steven.seeger@nasa.gov>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Wed, Dec 23, 2015 at 01:05:00PM -0500, Steven Seeger wrote:
-> All,
+On Wednesday, December 23, 2015 19:43:41 Gilles Chanteperdrix wrote:
+> If I understand correctly, your problem is that struct timespec
+> tv_sec member has 32 bits. Well, I am afraid there is not much we
+> can do about that (I heard mainline has a plan to switch to a new
+> timespec with a 64 bits tv_sec, but I do not know how much of that
+> plan has been implemented).
+
+Yes, this is exactly my problem.
+
 > 
-> The issue that I had with userspace absolute time to start a timer (what 
-> latency test does) was due to a quirk on my board where the powerpc timebase 
-> was coming up as 0xdXXXXXXXXXXXXXXX which was causing the 32-bit userland to 
-> lose precision when getting the monotonic clock value. The latency test gets 
-> the time, adds a millisecond, and uses this time to start the process. However 
-> on my machine the time was way off due to the loss of precision. (there were 
-> more than 2^32 seconds, but time_t is only 32-bit) On my board adding some 
-> code to set the timebase to 0 in head_44x.S and that cleared up all the 
-> issues. Everything is working for me now. This appears to be a problem with 
-> how cobalt deals with 64-bit ns counters and 32-bit userspace clocks, however 
-> I could be missing something.
+> Can you not call clock_settime to set a wallclock offset which will
+> at least allow CLOCK_REALTIME to behave as expected ?
 
-If I understand correctly, your problem is that struct timespec
-tv_sec member has 32 bits. Well, I am afraid there is not much we
-can do about that (I heard mainline has a plan to switch to a new
-timespec with a 64 bits tv_sec, but I do not know how much of that
-plan has been implemented).
+The issue is with the testsuite/latency app. It uses 
+clock_gettime(CLOCK_MONOTONIC) and adds a millisecond to that value and then 
+uses that as the absolute start time of the latency thread. All calculates are 
+based off this primed value. 
 
-Can you not call clock_settime to set a wallclock offset which will
-at least allow CLOCK_REALTIME to behave as expected ?
+There really is no reason for my board to come up with such a ridiculous 
+timebase value. I have no idea why it does that. I set it to 0 very early in 
+the kernel boot cycle and it fixed the issue. (This board is loaded via jtag so 
+there may be some weirdness there.) This fix will last 136 years, right? :) My 
+point was just that if the timebase is not a reasonable value I think this bug 
+will manifest. 
 
-Regards.
+IMHO there is no benefit to allowing us to say we want some task to start in 
+the year 500,000,000,000 so there isn't really a need for such large numbers 
+in this one use-case.
 
--- 
-					    Gilles.
-https://click-hack.org
+Your idea of a fix is essentially correct, and should work across all systems. 
+However, I was trying to run the standard latency app which should also work 
+across all systems! :)
+
+Steven
+
 
