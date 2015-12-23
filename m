@@ -1,12 +1,13 @@
-Message-ID: <567A5ED3.505@isc.cnr.it>
-Date: Wed, 23 Dec 2015 09:44:03 +0100
-From: GianPiero Puccioni <gianpiero.puccioni@isc.cnr.it>
+Date: Wed, 23 Dec 2015 13:39:02 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20151223123902.GB29038@hermes.click-hack.org>
+References: <tencent_037A0D5E4214FC1A288A3CBA@qq.com>
 MIME-Version: 1.0
-References: <56795E20.1010102@isc.cnr.it> <5679E096.3030807@xenomai.org>
-In-Reply-To: <5679E096.3030807@xenomai.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Programming Xenomai+analogy
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <tencent_037A0D5E4214FC1A288A3CBA@qq.com>
+Subject: Re: [Xenomai] Question about syscall
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,23 +16,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?utf-8?B?44OL44Oj44Oz5pif5Lq6?= <1173264124@qq.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 23/12/15 00:45, Jorge Ramirez Ortiz wrote:
+On Wed, Dec 23, 2015 at 12:01:03PM +0800, ニャン星人 wrote:
+> Hi, I am reading the source code about xenomai syscall. And I have
+> some question about xenomai syscall. For example, when I call
+> function open which is defined in file rtdm.c,it would call
+> xenomai syscall by using "fd = XENOMAI_SYSCALL2( sc_cobalt_open,
+> path, oflag);". sc_cobalt_open is a macro like "#define
+> sc_cobalt_open 75" defined in file syscall.h. After interrupt
+> requested, system would handle the irq. By using 75 and array
+> cobalt_syscalls which is defined in
+> \kernel\cobalt\posix\syscall.c, the irq handle function could be
+> found in cobalt_syscalls[75]. After reading source code, I found
+> cobalt_syscalls[75] is a function pointer. cobalt_syscalls[75] and
+> cobalt_open point to the same function.
 
->
-> have you tried reading the Xenomai demo code or the analogy utilities?
-> http://git.xenomai.org/xenomai-3.git/tree/utils/analogy
->
+Hi,
 
-Yes, of course, but the analogy utils are not written for realtime (and there 
-are some bits missing, for example insn_read does not set the range properly),
-and the realtime examples are quite obscure for a beginner: only sparse comments 
-and no explanation on what's going on.
+Strictly speaking, cobalt_open is not a pointer, so it does not
+point to anything. cobalt_syscall[75] is indeed a pointer to
+cobalt_open.
 
-GianPiero
+>   
+>      At this point, it is clear that function pointer
+>      cobalt_##name initialize the array cobalt_syscalls. But I
+>      can't find where cobalt_##name like cobalt_open defined in.
+>   
+>      All in all, I just want to figure out the map about syscall
+>      from user-function to kernel-function, like open->fd =
+>      XENOMAI_SYSCALL2( sc_cobalt_open, path, oflag);->static
+>      inline int rtdm_open(const char *path, int oflag, ...)
+
+cobalt_open is implemented in kernel/cobalt/posix/io.c
+
+The macro COBALT_SYSCALL generates the "cobalt_open" name from the
+declaration COBALT_SYSCALL(open, ...)
+
+Regards.
+
 -- 
-GianPiero Puccioni               |Istituto dei Sistemi Complessi-CNR
-gianpiero.puccioni@isc.cnr.it    |Via Madonna del Piano, 10
-T:+39 0555226682 F:+39 0555226683|50019 Sesto F. (Firenze) ITALY
+					    Gilles.
+https://click-hack.org
 
