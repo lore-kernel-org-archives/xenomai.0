@@ -1,14 +1,13 @@
-From: Steven Seeger <steven.seeger@nasa.gov>
-Date: Wed, 23 Dec 2015 14:14:14 -0500
-Message-ID: <1658062.jOZnPEAolN@wirbelwind>
-In-Reply-To: <20151223184341.GB3877@hermes.click-hack.org>
-References: <2558065.W1DNnPs8ZD@wirbelwind>
- <20151223184341.GB3877@hermes.click-hack.org>
+References: <5674331B.2010807@siemens.com>
+ <20151218171203.GC21744@hermes.click-hack.org>
+From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <56801912.3080408@web.de>
+Date: Sun, 27 Dec 2015 18:00:02 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-Subject: Re: [Xenomai] userspace absolute timer value
-Reply-To: steven.seeger@nasa.gov
+In-Reply-To: <20151218171203.GC21744@hermes.click-hack.org>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] SMAP-detected direct userspace access
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,41 +17,47 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Wednesday, December 23, 2015 19:43:41 Gilles Chanteperdrix wrote:
-> If I understand correctly, your problem is that struct timespec
-> tv_sec member has 32 bits. Well, I am afraid there is not much we
-> can do about that (I heard mainline has a plan to switch to a new
-> timespec with a 64 bits tv_sec, but I do not know how much of that
-> plan has been implemented).
+On 2015-12-18 18:12, Gilles Chanteperdrix wrote:
+> On Fri, Dec 18, 2015 at 05:23:55PM +0100, Jan Kiszka wrote:
+>> Hi all,
+>>
+>> I know this is legacy code, but this is where we currently stumbled into
+>> it, and maybe the same pattern also exists in 3.x:
+>>
+>> http://git.xenomai.org/xenomai-2.6.git/tree/ksrc/skins/posix/syscall.c#n=
+1182
+>>
+>> more precisely:
+>>
+>>     return pse51_mutex_check_init(&umx->shadow_mutex, attr);
+>>
+>> Here we pass the userspace object for initialization to the core instead
+>> of handing over the kernel shadow and then copying over the result. Is
+>> there a reason for this? Could we have more of such cases?
+>>
+>> Background: SMAP detects and prevents any direct userspace memory access
+>> on x86 except or those that are wrapped in stac() and clac() (which
+>> toggle a bit in eflags). Generally a useful feature we should allow to
+>> be enabled for robustness reasons.
+> =
 
-Yes, this is exactly my problem.
-
-> 
-> Can you not call clock_settime to set a wallclock offset which will
-> at least allow CLOCK_REALTIME to behave as expected ?
-
-The issue is with the testsuite/latency app. It uses 
-clock_gettime(CLOCK_MONOTONIC) and adds a millisecond to that value and then 
-uses that as the absolute start time of the latency thread. All calculates are 
-based off this primed value. 
-
-There really is no reason for my board to come up with such a ridiculous 
-timebase value. I have no idea why it does that. I set it to 0 very early in 
-the kernel boot cycle and it fixed the issue. (This board is loaded via jtag so 
-there may be some weirdness there.) This fix will last 136 years, right? :) My 
-point was just that if the timebase is not a reasonable value I think this bug 
-will manifest. 
-
-IMHO there is no benefit to allowing us to say we want some task to start in 
-the year 500,000,000,000 so there isn't really a need for such large numbers 
-in this one use-case.
-
-Your idea of a fix is essentially correct, and should work across all systems. 
-However, I was trying to run the standard latency app which should also work 
-across all systems! :)
-
-Steven
+> BTW, I believe most RTnet ioctls have this issue.
+> =
 
 
+Correct, long-pending deficit that will now start to bite back more
+seriously. I was always postponing this until some potential userspace
+ABI overhaul.
+
+Jan
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 181 bytes
+Desc: OpenPGP digital signature
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20151227/f642dd2d/at=
+tachment.sig>
