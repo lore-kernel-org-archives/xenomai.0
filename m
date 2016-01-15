@@ -1,12 +1,12 @@
+References: <20160114183423.69665622@md1em3qc>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5698AEA6.6030906@xenomai.org>
+Date: Fri, 15 Jan 2016 09:32:38 +0100
 MIME-Version: 1.0
-Date: Fri, 15 Jan 2016 04:51:26 +0530
-Message-ID: <CABShy44FDN4+Ets2xk9HUpeoPqr8q+BKuQis9tDOnzzbb1EJCQ@mail.gmail.com>
-From: BHISHMAPALSINH THAKOR <bjthakor.337@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] Hi friend if we want to make embedded DCS based on can
- bus or gpio by using xenomai rtos which ported on beaglebone black for
- developing application then it is possible xenomai support it better then
- else
+In-Reply-To: <20160114183423.69665622@md1em3qc>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] ipipe x86_64 huge page ioremap
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,8 +15,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Henning Schild <henning.schild@siemens.com>, Xenomai@xenomai.org
+Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-Hi friend if we want to make embedded  DCS based on can bus or gpio by
-using xenomai rtos which ported on beaglebone black for developing
-application then it is possible xenomai support it better then else
+On 01/14/2016 06:34 PM, Henning Schild wrote:
+> Hey,
+> 
+> the 4.1 kernel supports mapping IO memory using huge pages.
+> 0f616be120c632c818faaea9adcb8f05a7a8601f ..
+> 6b6378355b925050eb6fa966742d8c2d65ff0d83
+> 
+> In ipipe memory that gets ioremapped will get pinned using
+> __ipipe_pin_mapping_globally, however in the x86_64 case that function
+> uses vmalloc_sync_one which must only be used on 4k pages.
+> 
+> We found the problem when using the kernel in a VBox VM, where the
+> paravirtualized PCI device has enough iomem to cause huge page
+> mappings. When loading the device driver you will get a BUG caused by
+> __ipipe_pin_mapping_globally.
+> 
+> I will work on a fix for the problem. But i would also like to
+> understand the initial purpose of the pinning. Is it even supposed to
+> work for io memory as well? It looks like a way to commit address space
+> changes right down into the page tables, to avoid page-faults in the
+> kernel address space. Probably for more predictable timing ...
+> 
+
+This is for pinning the page table entries referencing kernel mappings,
+so that we don't get minor faults when treading over kernel memory,
+unless the fault fixup code is compatible with primary domain execution,
+and cheaper than tracking the pgds.
+
+-- 
+Philippe.
+
