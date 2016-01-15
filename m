@@ -1,12 +1,12 @@
-From: Umair Ali <ali.umair@tut.fi>
-Date: Thu, 26 Nov 2015 11:01:21 +0000
-Message-ID: <2396B4D2166B62479FBBE370D4A7C1F30A70D88D@mb2010-1.intra.tut.fi>
-Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Broadcast Netwrok traffic (rtnet) as raw ethernet is not
- able to capture on windows PC
+In-Reply-To: <5697D9DB.6070909@xenomai.org>
+References: <CA+CJOCxoqmA1r0sGb_LwqvsXPzMG485YqUmR83hsfT2mTD6xnQ@mail.gmail.com>
+ <5697D9DB.6070909@xenomai.org>
+From: Nicolas SCHURANDO <schurann@ext.essilor.com>
+Date: Fri, 15 Jan 2016 10:57:21 +0100
+Message-ID: <CA+CJOCyPzwWEQScYL=hjzntHxGFq_oF+qen8WF+LEdZWoDAtnQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] VxWorks API on Xenomai 3.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,123 +15,96 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hello Xenomai team,
+Hi Philippe,
 
-I am working on sending the raw Ethernet packets through RTnet driver (rt_8=
-139t). I am using the the example i.e. raw-ethernet.c as my starting point =
-for sending the raw Ethernet packets from Rtnet source file. I have managed=
- to compile the using skin=3DPosix and also able run it with rteth0 interfa=
-ce. The code file is attached with this email along with makefile. I have c=
-onfigured the rteth0 interface with ip and netmask with promisc mode. Morov=
-er over i have added the route by using the command "./rtroute solicit 10.0=
-.0.11 dev rteth0". I am able to ping also as below:
+Thank your for your answer. I have read the manual page entitled
+"Application setup and init", and in particular the part about manual vs
+automatic bootstrap, and I have tried to follow the instructions to the
+letter.
 
-root@cpc:/usr/xenomai/sbin# ./rtping 10.0.0.11
-Real-time PING 10.0.0.11 56(84) bytes of data.
-ioctl: No route to host
-root@cpc:/usr/xenomai/sbin# ./rtroute solicit 10.0.0.11 dev rteth0
-root@cpc:/usr/xenomai/sbin# ./rtping 10.0.0.11
-Real-time PING 10.0.0.11 56(84) bytes of data.
-64 bytes from 10.0.0.11: icmp_seq=3D1 time=3D408.6 us
-64 bytes from 10.0.0.11: icmp_seq=3D2 time=3D370.1 us
-64 bytes from 10.0.0.11: icmp_seq=3D3 time=3D387.2 us
-64 bytes from 10.0.0.11: icmp_seq=3D4 time=3D413.4 us
-^C
---- 10.0.0.11 rtping statistics ---
-4 packets transmitted, 4 received, 0% packet loss
-worst case rtt =3D 413.4 us"
+Cross GCC Compiler command is :
 
-The other PC is non real time windows PC. And I can see the ping traffic on=
- the windows PC. But when i run the code after compilation I can not see th=
-e traffic on the network. The output of the code is
+> arm-linux-gnueabihf-gcc -D_GNU_SOURCE -D_REENTRANT -D__COBALT__
+> -ID:\Gcc\Raspberry-4.9.2-Rpi2Test\arm-linux-gnueabihf\sysroot\usr\xenomai\include\cobalt
+> -ID:\Gcc\Raspberry-4.9.2-Rpi2Test\arm-linux-gnueabihf\sysroot\usr\xenomai\include
+> -ID:\Gcc\Raspberry-4.9.2-Rpi2Test\arm-linux-gnueabihf\sysroot\usr\xenomai\include\vxworks
+> -O0 -g3 -Wall -c -fmessage-length=0 -mcpu=cortex-a7 -mfpu=neon-vfpv4
+> -mfloat-abi=hard -MMD -MP -MF"main.d" -MT"main.d" -o "main.o" "../main.c"
 
-root@cpc:/usr/xenomai# ./raw_packet rteth0 aliumair
-sock: 3
-string copy: rteth0
-ioctl:  0
-addr.sll_family: 17
-addr.sll_protocol: 13330
-addr.sll_ifindex: 1
-Sent frame of 1514 bytes
-Sent frame of 1514 bytes
 
-My first question is what i am doing wrong due to which i am able to see th=
-e traffic on the network even though i can see the ping traffic.
+Cross GCC Linker command is :
 
-Now my second problem is when i am running the code after the compilation a=
-nd look a the threads with output such as
+> arm-linux-gnueabihf-gcc -L../libs
+> D:\Gcc\Raspberry-4.9.2-Rpi2Test\arm-linux-gnueabihf\sysroot\usr\xenomai\lib\xenomai\bootstrap.o
+> -Wl,--wrap=main
+> -Wl,--dynamic-list=D:\Gcc\Raspberry-4.9.2-Rpi2Test\arm-linux-gnueabihf\sysroot\usr\xenomai\lib\dynlist.ld
+> -o "rpi-test-bug-watchdog"  ./main.o   -lvxworks -lcopperplate -lcobalt
+> -lpthread -lrt
 
-root@cpc:/home/cpc# cat /proc/xenomai/sched/threads
-CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
-  0      0          idle       core       -1           -                   =
-  R          [ROOT/0]
-  1      0          idle       core       -1           -                   =
-  R          [ROOT/1]
-  0      405        rt         core       98           -                   =
- W          [rtnet-stack]
-  0      406        rt         core        0           -                   =
-  W          [rtnet-rtpc]
-  1      2282       rt         core        0           -                   =
- W          [rtnetproxy]
-  0      2737       rt         cobalt    100   140ms47us       D          r=
-aw_packet
-root@cpc:/home/cpc# cat /proc/xenomai/sched/threads
-CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
-  0      0        idle       core           -1           -                 =
-R          [ROOT/0]
-  1      0        idle       core           -1           -                 =
-R          [ROOT/1]
-  0      405    rt         core           98            -                 W=
-          [rtnet-stack]
-  0      406    rt         core            0            -                 W=
-          [rtnet-rtpc]
-  1      2282  rt         core            0            -                 W =
-         [rtnetproxy]
-  0      2737  rt         cobalt        100   924ms122us    D          raw_=
-packet
 
-I have found that the time out for the raw_packet thread is varying. I thin=
-k if the the thread is running in real time it should be constant and deter=
-ministic. So Please guide me if i am missing anything.
+And if I try to add an explicit call to xenomai_init at the very beginning
+of my main, here is what happens :
 
-Details of my setup are
-root@cpc:/home/cpc# dmesg | grep xenomai
-[    0.000000] Linux version 3.14.39-xenomai-3.0.1 (root@cpc) (gcc version =
-4.8.4 (Ubuntu 4.8.4-2ubuntu1~14.04) ) #2 SMP PREEMPT Tue Nov 10 18:02:47 EE=
-T 2015
-[    0.000000] Kernel command line: BOOT_IMAGE=3D/boot/vmlinuz-3.14.39-xeno=
-mai-3.0.1 root=3DUUID=3De29fa266-6a54-4815-b5bd-ea0168f18fd7 ro quiet splas=
-h crashkernel=3D384M-:128M vt.handoff=3D7
-[    0.836257]           (see xenomai.smi parameter). You might encounter
-[    1.640220] usb usb1: Manufacturer: Linux 3.14.39-xenomai-3.0.1 ehci_hcd
-[    1.641529] usb usb2: Manufacturer: Linux 3.14.39-xenomai-3.0.1 uhci_hcd
-[    1.642402] usb usb3: Manufacturer: Linux 3.14.39-xenomai-3.0.1 uhci_hcd
-[    1.643256] usb usb4: Manufacturer: Linux 3.14.39-xenomai-3.0.1 uhci_hcd
-[    1.644153] usb usb5: Manufacturer: Linux 3.14.39-xenomai-3.0.1 uhci_hcd
+>    0"001.000| WARNING: [main] duplicate call to xenomai_init() ignored
+>    0"001.618| WARNING: [main] (xeno-config --no-auto-init disables
+> implicit call)
 
-And i have run all the modules in order to make the rteth0 to be up as expl=
-ained in the link
-https://sir.upc.edu/wikis/roblab/index.php/Development/RTnet
 
-Thanks in advance
+What could I be missing ?
 
-Best regards
-Ali
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: raw_packet.c
-Type: text/x-csrc
-Size: 3665 bytes
-Desc: raw_packet.c
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20151126/73f5d95b/at=
-tachment.c>
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: makefile
-Type: application/octet-stream
-Size: 2319 bytes
-Desc: makefile
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20151126/73f5d95b/at=
-tachment.obj>
+Cheers,
+
+Nicolas
+
+2016-01-14 18:24 GMT+01:00 Philippe Gerum <rpm@xenomai.org>:
+
+> On 01/14/2016 10:22 AM, Nicolas SCHURANDO wrote:
+> > Hello everyone,
+> >
+> > In an attempt to migrate from Xenomai 2.6.4 on a Raspberry Pi 1 to
+> Xenomai
+> > 3.0.1 on a Raspberry Pi 2, I get an error when trying to spawn a VxWorks
+> > task in a fairly simple test program. Here is the output :
+> >
+> >    0"000.064| WARNING: [main] Xenomai compiled with full debug enabled,
+> >>                               very high latencies expected
+> >> [--enable-debug=full]
+> >>  [i] [main] Hello, launching root task ...
+> >>  200"747.521| BUG in wind_task_normalize_priority():
+> >
+> >
+> > The corresponding code is :
+> >
+> > int main(int argc, char *argv[]) {
+> >
+> >
+> >> /* Hello world */
+> >> printf(" [i] [%s] Hello, launching root task ...\r\n", __FUNCTION__);
+> >
+> >
+> >> /* Spawn root task */
+> >> taskSpawn("root_task", 100, 0, 16 * 1024, (FUNCPTR) &root_task, 0, 0, 0,
+> >> 0, 0, 0, 0, 0, 0, 0);
+> >
+> >
+> >> [...]
+> >
+> >
+> >> }
+> >
+> >
+> > I've tracked down the problem to threadobj_high_prio being equal to 0,
+> > hence the following function expecting priorities from -1 to 0. I however
+> > have no idea where threadobj_high_prio gets its value from.
+> >
+>
+> Your application is not initializing properly, the Xenomai libs are not
+> bootstrapped. There are detailed explanations about the init flow here:
+> http://xenomai.org/2015/05/application-setup-and-init/
+>
+> --
+> Philippe.
+>
