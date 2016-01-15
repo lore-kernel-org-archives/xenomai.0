@@ -1,11 +1,12 @@
-From: "Lopes, Alexandre" <alexandre.lopes.ext@zeiss.com>
-Date: Fri, 15 Jan 2016 11:30:42 +0000
-Message-ID: <79A9E4882C44D44FA53B5AB15E619801260C7E3E@ADEERL01SMS001.cznet.zeiss.org>
-Content-Language: de-DE
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+References: <20160114183423.69665622@md1em3qc> <5698AEA6.6030906@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5698E750.6050508@siemens.com>
+Date: Fri, 15 Jan 2016 13:34:24 +0100
 MIME-Version: 1.0
-Subject: [Xenomai] Analogy and PCI-6289 issue
+In-Reply-To: <5698AEA6.6030906@xenomai.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] ipipe x86_64 huge page ioremap
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,123 +15,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Henning Schild <henning.schild@siemens.com>, Xenomai@xenomai.org
+Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-Hello,
+On 2016-01-15 09:32, Philippe Gerum wrote:
+> On 01/14/2016 06:34 PM, Henning Schild wrote:
+>> Hey,
+>>
+>> the 4.1 kernel supports mapping IO memory using huge pages.
+>> 0f616be120c632c818faaea9adcb8f05a7a8601f ..
+>> 6b6378355b925050eb6fa966742d8c2d65ff0d83
+>>
+>> In ipipe memory that gets ioremapped will get pinned using
+>> __ipipe_pin_mapping_globally, however in the x86_64 case that function
+>> uses vmalloc_sync_one which must only be used on 4k pages.
+>>
+>> We found the problem when using the kernel in a VBox VM, where the
+>> paravirtualized PCI device has enough iomem to cause huge page
+>> mappings. When loading the device driver you will get a BUG caused by
+>> __ipipe_pin_mapping_globally.
+>>
+>> I will work on a fix for the problem. But i would also like to
+>> understand the initial purpose of the pinning. Is it even supposed to
+>> work for io memory as well? It looks like a way to commit address space
+>> changes right down into the page tables, to avoid page-faults in the
+>> kernel address space. Probably for more predictable timing ...
+>>
+> 
+> This is for pinning the page table entries referencing kernel mappings,
+> so that we don't get minor faults when treading over kernel memory,
+> unless the fault fixup code is compatible with primary domain execution,
+> and cheaper than tracking the pgds.
 
-I am currently using Xenomai 3.0 rc4 (3.18.12 Linux Kernel)
-and trying to get Analogy to work with the following NI cards:
-* PCI-6289
-* PCI-6713
+I suppose a critical scenario would already be a real-time driver that
+accesses io regions in its interrupt handler or in the context of some
+real-time task.
 
->From what I have read, both should be supported by the analogy_ni_pcimio
-driver.
+Jan
 
-The problem is that, while I can get the 6713 to work, I am unable
-to get the 6289 to work.
-
-At boot both cards are recognized by Analogy:
-
-[   13.172013] Analogy: MITE: Available NI device IDs: 0x1870 0x70ac
-
-and both show up on the output of lspci
-
-03:02.0 Unassigned class [ff00]: National Instruments PCI-6289
-        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-=
- Step=20
-        ping- SERR+ FastB2B- DisINTx-
-        Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=3Dmedium >TAbort- =
-<TAbort
-        - <MAbort- >SERR- <PERR- INTx-
-        Latency: 64, Cache Line Size: 32 bytes
-        Interrupt: pin A routed to IRQ 19
-        Region 0: Memory at f7e03000 (32-bit, non-prefetchable) [size=3D4K]
-        Region 1: Memory at f7e02000 (32-bit, non-prefetchable) [size=3D4K]
-        Kernel driver in use: analogy_mite
-
-03:03.0 Unassigned class [ff00]: National Instruments PCI-6713
-        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-=
- Step
-        ping- SERR+ FastB2B- DisINTx-
-        Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=3Dmedium >TAbort- =
-<TAbort
-        - <MAbort- >SERR- <PERR- INTx-
-        Latency: 64, Cache Line Size: 256 bytes
-        Interrupt: pin A routed to IRQ 16
-        Region 0: Memory at f7e01000 (32-bit, non-prefetchable) [size=3D4K]
-        Region 1: Memory at f7e00000 (32-bit, non-prefetchable) [size=3D4K]
-        Kernel driver in use: analogy_mite
-       =20
-       =20
-The PCI-6713 works flawlessly.
-
-After running=20
-
-analogy_config analogy0 analogy_ni_pcimio 3,3
-
-I get:
-
-cat 00-analogy_ni_pcimio
-       =20
---  Subdevices --
-
-| idx | type
-|  00 | Unused subdevice
-|  01 | Analog output subdevice
-|  02 | Digital input/output subdevice
-|  03 | Unused subdevice
-|  04 | Unused subdevice
-|  05 | Calibration subdevice
-|  06 | Memory subdevice
-|  07 | Digital input/output subdevice
-|  08 | Unused subdevice
-|  09 | Serial subdevice
-|  10 | Unused subdevice
-|  11 | Counter subdevice
-|  12 | Counter subdevice
-|  13 | Counter subdevice
-
-cat devices
-
---  Analogy devices --
-
-| idx | status | driver
-|  00 | Linked | pci-6713
-|  01 | Unused | No driver
-|  02 | Unused | No driver
-|  03 | Unused | No driver
-|  04 | Unused | No driver
-|  05 | Unused | No driver
-|  06 | Unused | No driver
-|  07 | Unused | No driver
-|  08 | Unused | No driver
-|  09 | Unused | No driver
-
-but for the 6289
-
-sudo analogy_config analogy1 analogy_ni_pcimio 3,2
-
-returns
-
-analogy_config: a4l_attach(analogy_ni_pcimio) failed err=3D-1
-analogy_config: check the procfs information:
- - analogy devices: /proc/analogy/devices
- - analogy drivers: /proc/analogy/drivers
-=20
-and in dmesg
-=20
-[1792.306659] Analogy: a4l_assign_driver: call(drv->attach) failed (ret=3D-=
-2)
-
-I have already tried to swap pci slots, to use only one card, to omit the d=
-river parameters
-etc. and the end result is always the same: I can attach the driver to the =
-6713 but not to
-the 6289.
-
-Could anyone help me shed some light on the issue?
-
-Thanks!
-
-Alexandre
+-- 
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
 
