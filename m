@@ -1,12 +1,11 @@
+From: "Lopes, Alexandre" <alexandre.lopes.ext@zeiss.com>
+Date: Fri, 15 Jan 2016 11:30:42 +0000
+Message-ID: <79A9E4882C44D44FA53B5AB15E619801260C7E3E@ADEERL01SMS001.cznet.zeiss.org>
+Content-Language: de-DE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <5697D9DB.6070909@xenomai.org>
-References: <CA+CJOCxoqmA1r0sGb_LwqvsXPzMG485YqUmR83hsfT2mTD6xnQ@mail.gmail.com>
- <5697D9DB.6070909@xenomai.org>
-From: Nicolas SCHURANDO <schurann@ext.essilor.com>
-Date: Fri, 15 Jan 2016 10:57:21 +0100
-Message-ID: <CA+CJOCyPzwWEQScYL=hjzntHxGFq_oF+qen8WF+LEdZWoDAtnQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] VxWorks API on Xenomai 3.0
+Subject: [Xenomai] Analogy and PCI-6289 issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,96 +14,123 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Philippe,
+Hello,
 
-Thank your for your answer. I have read the manual page entitled
-"Application setup and init", and in particular the part about manual vs
-automatic bootstrap, and I have tried to follow the instructions to the
-letter.
+I am currently using Xenomai 3.0 rc4 (3.18.12 Linux Kernel)
+and trying to get Analogy to work with the following NI cards:
+* PCI-6289
+* PCI-6713
 
-Cross GCC Compiler command is :
+>From what I have read, both should be supported by the analogy_ni_pcimio
+driver.
 
-> arm-linux-gnueabihf-gcc -D_GNU_SOURCE -D_REENTRANT -D__COBALT__
-> -ID:\Gcc\Raspberry-4.9.2-Rpi2Test\arm-linux-gnueabihf\sysroot\usr\xenomai\include\cobalt
-> -ID:\Gcc\Raspberry-4.9.2-Rpi2Test\arm-linux-gnueabihf\sysroot\usr\xenomai\include
-> -ID:\Gcc\Raspberry-4.9.2-Rpi2Test\arm-linux-gnueabihf\sysroot\usr\xenomai\include\vxworks
-> -O0 -g3 -Wall -c -fmessage-length=0 -mcpu=cortex-a7 -mfpu=neon-vfpv4
-> -mfloat-abi=hard -MMD -MP -MF"main.d" -MT"main.d" -o "main.o" "../main.c"
+The problem is that, while I can get the 6713 to work, I am unable
+to get the 6289 to work.
 
+At boot both cards are recognized by Analogy:
 
-Cross GCC Linker command is :
+[   13.172013] Analogy: MITE: Available NI device IDs: 0x1870 0x70ac
 
-> arm-linux-gnueabihf-gcc -L../libs
-> D:\Gcc\Raspberry-4.9.2-Rpi2Test\arm-linux-gnueabihf\sysroot\usr\xenomai\lib\xenomai\bootstrap.o
-> -Wl,--wrap=main
-> -Wl,--dynamic-list=D:\Gcc\Raspberry-4.9.2-Rpi2Test\arm-linux-gnueabihf\sysroot\usr\xenomai\lib\dynlist.ld
-> -o "rpi-test-bug-watchdog"  ./main.o   -lvxworks -lcopperplate -lcobalt
-> -lpthread -lrt
+and both show up on the output of lspci
 
+03:02.0 Unassigned class [ff00]: National Instruments PCI-6289
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-=
+ Step=20
+        ping- SERR+ FastB2B- DisINTx-
+        Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=3Dmedium >TAbort- =
+<TAbort
+        - <MAbort- >SERR- <PERR- INTx-
+        Latency: 64, Cache Line Size: 32 bytes
+        Interrupt: pin A routed to IRQ 19
+        Region 0: Memory at f7e03000 (32-bit, non-prefetchable) [size=3D4K]
+        Region 1: Memory at f7e02000 (32-bit, non-prefetchable) [size=3D4K]
+        Kernel driver in use: analogy_mite
 
-And if I try to add an explicit call to xenomai_init at the very beginning
-of my main, here is what happens :
+03:03.0 Unassigned class [ff00]: National Instruments PCI-6713
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-=
+ Step
+        ping- SERR+ FastB2B- DisINTx-
+        Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=3Dmedium >TAbort- =
+<TAbort
+        - <MAbort- >SERR- <PERR- INTx-
+        Latency: 64, Cache Line Size: 256 bytes
+        Interrupt: pin A routed to IRQ 16
+        Region 0: Memory at f7e01000 (32-bit, non-prefetchable) [size=3D4K]
+        Region 1: Memory at f7e00000 (32-bit, non-prefetchable) [size=3D4K]
+        Kernel driver in use: analogy_mite
+       =20
+       =20
+The PCI-6713 works flawlessly.
 
->    0"001.000| WARNING: [main] duplicate call to xenomai_init() ignored
->    0"001.618| WARNING: [main] (xeno-config --no-auto-init disables
-> implicit call)
+After running=20
 
+analogy_config analogy0 analogy_ni_pcimio 3,3
 
-What could I be missing ?
+I get:
 
-Cheers,
+cat 00-analogy_ni_pcimio
+       =20
+--  Subdevices --
 
-Nicolas
+| idx | type
+|  00 | Unused subdevice
+|  01 | Analog output subdevice
+|  02 | Digital input/output subdevice
+|  03 | Unused subdevice
+|  04 | Unused subdevice
+|  05 | Calibration subdevice
+|  06 | Memory subdevice
+|  07 | Digital input/output subdevice
+|  08 | Unused subdevice
+|  09 | Serial subdevice
+|  10 | Unused subdevice
+|  11 | Counter subdevice
+|  12 | Counter subdevice
+|  13 | Counter subdevice
 
-2016-01-14 18:24 GMT+01:00 Philippe Gerum <rpm@xenomai.org>:
+cat devices
 
-> On 01/14/2016 10:22 AM, Nicolas SCHURANDO wrote:
-> > Hello everyone,
-> >
-> > In an attempt to migrate from Xenomai 2.6.4 on a Raspberry Pi 1 to
-> Xenomai
-> > 3.0.1 on a Raspberry Pi 2, I get an error when trying to spawn a VxWorks
-> > task in a fairly simple test program. Here is the output :
-> >
-> >    0"000.064| WARNING: [main] Xenomai compiled with full debug enabled,
-> >>                               very high latencies expected
-> >> [--enable-debug=full]
-> >>  [i] [main] Hello, launching root task ...
-> >>  200"747.521| BUG in wind_task_normalize_priority():
-> >
-> >
-> > The corresponding code is :
-> >
-> > int main(int argc, char *argv[]) {
-> >
-> >
-> >> /* Hello world */
-> >> printf(" [i] [%s] Hello, launching root task ...\r\n", __FUNCTION__);
-> >
-> >
-> >> /* Spawn root task */
-> >> taskSpawn("root_task", 100, 0, 16 * 1024, (FUNCPTR) &root_task, 0, 0, 0,
-> >> 0, 0, 0, 0, 0, 0, 0);
-> >
-> >
-> >> [...]
-> >
-> >
-> >> }
-> >
-> >
-> > I've tracked down the problem to threadobj_high_prio being equal to 0,
-> > hence the following function expecting priorities from -1 to 0. I however
-> > have no idea where threadobj_high_prio gets its value from.
-> >
->
-> Your application is not initializing properly, the Xenomai libs are not
-> bootstrapped. There are detailed explanations about the init flow here:
-> http://xenomai.org/2015/05/application-setup-and-init/
->
-> --
-> Philippe.
->
+--  Analogy devices --
+
+| idx | status | driver
+|  00 | Linked | pci-6713
+|  01 | Unused | No driver
+|  02 | Unused | No driver
+|  03 | Unused | No driver
+|  04 | Unused | No driver
+|  05 | Unused | No driver
+|  06 | Unused | No driver
+|  07 | Unused | No driver
+|  08 | Unused | No driver
+|  09 | Unused | No driver
+
+but for the 6289
+
+sudo analogy_config analogy1 analogy_ni_pcimio 3,2
+
+returns
+
+analogy_config: a4l_attach(analogy_ni_pcimio) failed err=3D-1
+analogy_config: check the procfs information:
+ - analogy devices: /proc/analogy/devices
+ - analogy drivers: /proc/analogy/drivers
+=20
+and in dmesg
+=20
+[1792.306659] Analogy: a4l_assign_driver: call(drv->attach) failed (ret=3D-=
+2)
+
+I have already tried to swap pci slots, to use only one card, to omit the d=
+river parameters
+etc. and the end result is always the same: I can attach the driver to the =
+6713 but not to
+the 6289.
+
+Could anyone help me shed some light on the issue?
+
+Thanks!
+
+Alexandre
+
