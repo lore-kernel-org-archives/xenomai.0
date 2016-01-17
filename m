@@ -1,15 +1,13 @@
-References: <E1aJQEe-0006t5-UO@sd-51317.xenomai.org>
- <56969AF7.6040505@xenomai.org> <5696A8BE.7070907@siemens.com>
- <56976051.2070201@xenomai.org> <5698FB5B.3010008@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <569A773E.7090804@xenomai.org>
-Date: Sat, 16 Jan 2016 18:00:46 +0100
 MIME-Version: 1.0
-In-Reply-To: <5698FB5B.3010008@siemens.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt/kernel: Fix
- invalidation of cond shadow
+Date: Sun, 17 Jan 2016 16:24:18 +0530
+Message-ID: <CABShy45=exDb7kmYXMZHUoEtwgeF_Qw7kXNb2Oh-Eq01fo4kPw@mail.gmail.com>
+From: BHISHMAPALSINH THAKOR <bjthakor.337@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] Hi friend if we are not having beaglebone black hardware
+ then how can i check xenomai rtos rtdm driver for beaglebone black any
+ simulator or emulator is available to test virtually xenomai rtos rtdm
+ driver if any solution for that then please tell me it is very important
+ for my project ; thank you
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,68 +16,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 01/15/2016 02:59 PM, Jan Kiszka wrote:
-> On 2016-01-14 09:46, Philippe Gerum wrote:
->> On 01/13/2016 08:42 PM, Jan Kiszka wrote:
->>> On 2016-01-13 19:44, Philippe Gerum wrote:
->>>> On 01/13/2016 07:33 PM, git repository hosting wrote:
->>>>> Module: xenomai-jki
->>>>> Branch: for-forge
->>>>> Commit: b7d37dab571df0c0cd42aae094c3d5d1bc71db80
->>>>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=b7d37dab571df0c0cd42aae094c3d5d1bc71db80
->>>>>
->>>>> Author: Jan Kiszka <jan.kiszka@siemens.com>
->>>>> Date:   Wed Jan 13 19:31:23 2016 +0100
->>>>>
->>>>> cobalt/kernel: Fix invalidation of cond shadow
->>>>>
->>>>> pthread_cond_destroy fails to invalidate also the shadow object. This
->>>>> can cause spurious -EBUSY errors on re-initialization of the very same
->>>>> shadow as condition variable later on.
->>>>>
->>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>>>>
->>>>> ---
->>>>>
->>>>>  kernel/cobalt/posix/cond.c |    2 ++
->>>>>  1 file changed, 2 insertions(+)
->>>>>
->>>>> diff --git a/kernel/cobalt/posix/cond.c b/kernel/cobalt/posix/cond.c
->>>>> index 7e115cf..84ae8fd 100644
->>>>> --- a/kernel/cobalt/posix/cond.c
->>>>> +++ b/kernel/cobalt/posix/cond.c
->>>>> @@ -117,6 +117,8 @@ static inline int pthread_cond_destroy(struct cobalt_cond_shadow *cnd)
->>>>>  
->>>>>  	cobalt_cond_reclaim(&cond->resnode, s); /* drops lock */
->>>>>  
->>>>> +	cobalt_mark_deleted(cnd);
->>>>> +
->>>>>  	return 0;
->>>>>  }
->>>>>  
->>>>>
->>>>
->>>> cobalt_cond_reclaim() invalidates the shadow object already. Did you
->>>
->>> Nope, it only invalidates cond->magic, i.e. the object itself. We also
->>> need to invalidate cnd->magic here. See also mutex.c, it has the same
->>> pattern.
->>>
->>
->> Ack, I misread the patch. This is a regression compared to 2.x, we need
->> both descriptors to be invalidated indeed.
->>
-> 
-> OK, will you pull into into next and stable? BTW, it's now successfully
-> validated by our test scenario.
-> 
-
-Done, thanks.
-
-
--- 
-Philippe.
-
+Hi friend  if we are not having beaglebone black  hardware then how can i
+check xenomai rtos rtdm driver for beaglebone black any simulator or
+emulator is available to test virtually xenomai rtos rtdm driver if any
+solution for that then please tell me it is very important for my project ;
+thank you
