@@ -1,9 +1,10 @@
 References: <08349b9576164b1daad6e10748bdc0be@mmambx3.global.ad>
+ <569BC5C9.9030202@xenomai.org>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <569BC5C9.9030202@xenomai.org>
-Date: Sun, 17 Jan 2016 17:48:09 +0100
+Message-ID: <569CD209.7040008@xenomai.org>
+Date: Mon, 18 Jan 2016 12:52:41 +0100
 MIME-Version: 1.0
-In-Reply-To: <08349b9576164b1daad6e10748bdc0be@mmambx3.global.ad>
+In-Reply-To: <569BC5C9.9030202@xenomai.org>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Xenomai-3.0.1 inter-process rt_queue_receive segfault
@@ -18,18 +19,27 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
 To: Thomas Axelsson <Thomas.Axelsson@cybercom.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 Cc: Max Popescu <Max.Popescu@cybercom.com>
 
-On 01/15/2016 05:34 PM, Thomas Axelsson wrote:
-> Hi,
+On 01/17/2016 05:48 PM, Philippe Gerum wrote:
+> On 01/15/2016 05:34 PM, Thomas Axelsson wrote:
+>> Hi,
+>>
+>> We are trying to use Alchemy RT Message Queues between two different 
+>> processes in Xenomai 3.0.1. However, our receiving process segfaults 
+>> when it receives a message. Using gdb, we see that the SIGSEGV occurs in 
+>> rt_queue_receive_timed() when doing  "ret = (ssize_t)msg->size;" 
+>> (queue.c:851). Can you help us solve the problem?
 > 
-> We are trying to use Alchemy RT Message Queues between two different 
-> processes in Xenomai 3.0.1. However, our receiving process segfaults 
-> when it receives a message. Using gdb, we see that the SIGSEGV occurs in 
-> rt_queue_receive_timed() when doing  "ret = (ssize_t)msg->size;" 
-> (queue.c:851). Can you help us solve the problem?
+> The alchemy code is wrong, it should use offset-based references in this
+> case since the message crosses address spaces. I will have a look and
+> suggest a patch for testing. Thanks for reporting.
+> 
 
-The alchemy code is wrong, it should use offset-based references in this
-case since the message crosses address spaces. I will have a look and
-suggest a patch for testing. Thanks for reporting.
+Please pull from the stable-3.0.x branch, the commits below should fix
+the issue:
+
+c23b72e alchemy/queue: disable buffer-to-buffer transfer in broadcast mode
+fef8ca3 alchemy/queue: care for messages crossing address spaces
+fa4cdcc boilerplate/scope: add helpers for nullable reference
 
 -- 
 Philippe.
