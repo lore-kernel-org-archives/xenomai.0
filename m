@@ -1,16 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <569D027B.7040800@xenomai.org>
-References: <CA+CJOCxoqmA1r0sGb_LwqvsXPzMG485YqUmR83hsfT2mTD6xnQ@mail.gmail.com>
- <5697D9DB.6070909@xenomai.org>
- <CA+CJOCyPzwWEQScYL=hjzntHxGFq_oF+qen8WF+LEdZWoDAtnQ@mail.gmail.com>
- <569CD2BB.7000405@xenomai.org>
- <CA+CJOCw1MVqfB8524L3+MXAtfp=UDHP_=1YnDJorJOYb4zdBSQ@mail.gmail.com>
- <569D027B.7040800@xenomai.org>
-From: Nicolas SCHURANDO <schurann@ext.essilor.com>
-Date: Mon, 18 Jan 2016 19:15:36 +0100
-Message-ID: <CA+CJOCzZPC+ja-R4m+bwnYhOFRQp-cd1Ag0UB0h5OKN6ZhEWDw@mail.gmail.com>
+Date: Tue, 19 Jan 2016 09:12:53 +0800
+Message-ID: <CAH_b-23J18Y7xnWRpMVD3PoNFdQKr_DzHODJya-LTH5ko5QkVw@mail.gmail.com>
+From: jj subot <suprbot2015@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] VxWorks API on Xenomai 3.0
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] HELP AGAIN! ERROR:rt_task_create failed: Operation not
+	permitted
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,93 +14,150 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Hi Philippe,
+Hi,
 
-I switched to branch stable-3.0.x, retrieved your commit b411e4c
-"lib/cobalt: add init trace points", and rebuilt everything.
+I'm a newbie to xenomai and linux~
 
-Below is what I have with the new --trace option.
+I  build the xenomai environment on raspberry 2:
 
-With static linking :
+xenomai 3+ raspbian linux 3.18.20
 
-> --  xenomai_init() running
-> --  cobalt->init()
-> --  connected to Cobalt
-> --  memory locked
-> --  memory heaps mapped
-> --  boilerplate->init()
->    0"000.070| WARNING: [main] Xenomai compiled with full debug enabled,
->                               very high latencies expected
-> [--enable-debug=full]
-> --  initialization complete
->  [i] [main] Hello, launching root task ...
->    0"001.747| BUG in wind_task_normalize_priority():
+and then i build my test programe, i just try to create a rt task like this=
+:
 
 
-I also decided to try with dynamic linking as well, to see if it was
-producing anything different :
+main.cpp:
 
-> --  xenomai_init() running
-> --  cobalt->init()
-> --  connected to Cobalt
-> --  memory locked
-> --  memory heaps mapped
-> --  boilerplate->init()
-> --  copperplate->init()
-> --  vxworks->init()
->    0"016.431| WARNING: [rpi-test-bug-wa] low resolution clock disabled
-> [--enable-lores-clock]
->    0"019.474| WARNING: [rpi-test-bug-wa] vxworks_init: failed to
-> initialize VxWorks clock (res=1000000 ns)
->    0"022.093| WARNING: [main] setup call vxworks failed
->    0"024.535| BUG in xenomai_init(): [main] initialization failed, EINVAL
+/**************************************************************************=
+**/
+#include <errno.h>
+#include <signal.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include <math.h>
+
+#include <rtdm/rtdm.h>
+#include <alchemy/sem.h>
+#include <alchemy/mutex.h>
+#include <alchemy/timer.h>
+
+//cobalt
+#include <sys/mman.h>
+#include <unistd.h>
+
+//trank
+#include <trank/native/task.h>
+#include <trank/rtdk.h>
+
+#include <pthread.h>
+
+RT_TASK my_task;
+
+static int run =3D 1;
+
+/**************************************************************************=
+**/
+
+void my_task_proc(void *arg)
+{
+    rt_task_set_periodic(NULL, TM_NOW, 1000000*10); // ns  10ms
+
+    while(run);
+}
 
 
-Regards
+/**************************************************************************=
+**
+ * Signal handler
+ **************************************************************************=
+*/
 
-2016-01-18 16:19 GMT+01:00 Philippe Gerum <rpm@xenomai.org>:
+void signal_handler(int sig)
+{
+    run =3D 0;
+}
 
-> On 01/18/2016 01:34 PM, Nicolas SCHURANDO wrote:
-> > Hi Philippe,
-> >
-> > In your previous message you suggested that something might be wrong
-> > with the way the application is initialized. And my message was an
-> > attempt at further describing what I had already done.
-> >
-> > Oh, I see. I suppose the tense of my message was misleading. I meant
-> > that I had already read the documentation prior to reaching out to you,
-> > and the compiler and linker commands above are the one I had already
-> used.
-> >
-> > Are you confirming that the init seems to happen fine ? And if so, what
-> > could explain the error I get when trying to spawn the VxWorks task ?
-> >
->
-> The only reason would be that copperplate_init() did not run, which
-> means that your application init sequence does not work as expected.
->
-> You may want to pick the latest changes from stable-3.0.x, and start
-> your application with the --trace option. This will trace the init
-> sequence from xenomai_init() onward. For a VxWorks application based on
-> the copperplate layer running over Cobalt, you should see something
-> along these lines:
->
-> # /your/application --trace
-> --  xenomai_init() running
-> --  cobalt->init()
-> --  connected to Cobalt
-> --  memory locked
-> --  memory heaps mapped
-> --  boilerplate->init()
-> --  copperplate->init()
-> --  alchemy->init()
-> --  initialization complete
->
-> If you don't see such output, then something is wrong.
->
-> --
-> Philippe.
->
+
+/**************************************************************************=
+**
+ * Main function
+ **************************************************************************=
+*/
+
+int main(int argc, char *argv[])
+{
+    int ret;
+
+    /* Perform auto-init of rt_print buffers if the task doesn't do so */
+    rt_print_auto_init(1);
+
+    signal(SIGTERM, signal_handler);
+    signal(SIGINT, signal_handler);
+
+    mlockall(MCL_CURRENT | MCL_FUTURE);
+
+    ret =3D rt_task_create(&my_task, "my_task", 0, 80, T_FPU);
+    if (ret < 0) {
+        fprintf(stderr, "Failed to create task: %s\n", strerror(-ret));
+        return -1;
+    }
+
+    printf("Starting my_task...\n");
+    ret =3D rt_task_start(&my_task, &my_task_proc, NULL);
+    if (ret < 0) {
+        fprintf(stderr, "Failed to start task: %s\n", strerror(-ret));
+        return -1;
+    }
+
+    while (run) {
+        sched_yield();
+    }
+
+    printf("Deleting realtime task...\n");
+    rt_task_delete(&my_task);
+
+    return 0;
+}
+
+/**************************************************************************=
+**/
+
+CmakeLists=EF=BC=9A
+###############################
+INCLUDE_DIRECTORIES(/usr/xenomai/include /usr/xenomai/include/xenomai
+/usr/xenomai/include/cobalt /opt/etherlab/include)
+LINK_DIRECTORIES(/usr/xenomai/lib)
+ADD_EXECUTABLE(ecat_t1 main.cpp)
+TARGET_LINK_LIBRARIES(ecat_t1 rt cobalt copperplate alchemy trank pthread)
+###############################
+
+When i run it,
+Failed to create task: Operation not permitted
+
+
+I have pass this:
+      http://xenomai.org/2014/06/ru
+nning-a-xenomai-application-as-a-regular-user/
+But actually, there is a problem. When i tried to run latency test as a
+regular user with this step:
+
+  write it into sysfs (echo "<gid>" >
+/sys/module/xenomai/parameters/allowed_group
+I got a error:
+   0"000.000| WARNING: [main] cannot open RTDM device
+/dev/rtdm/memdev-private: Permission denied
+   0"000.000| WARNING: [main] cannot map private umm area: Permission denie=
+d
+   0"000.000| BUG in init_bind(): [main] (CONFIG_DEVTMPFS_MOUNT not
+enabled?)
+I check that I have enable the CONFIG_DEVTMPFS_MOUNT config. Then I change
+the owner of /dev/rtdm:
+   sudo chmod user:user /dev/rtdm/*
+
+And then I can run latency test as a regular user~
+But the above problem is still exist, even i run it as a root, i got the
+same error info:
+Failed to create task: Operation not permitted.
