@@ -1,14 +1,10 @@
-From: "Lopes, Alexandre" <alexandre.lopes.ext@zeiss.com>
-Date: Tue, 19 Jan 2016 14:08:41 +0000
-Message-ID: <79A9E4882C44D44FA53B5AB15E619801260C83CF@ADEERL01SMS001.cznet.zeiss.org>
-References: <79A9E4882C44D44FA53B5AB15E619801260C7E3E@ADEERL01SMS001.cznet.zeiss.org>
- <569E2DAF.4010203@xenomai.org>
-In-Reply-To: <569E2DAF.4010203@xenomai.org>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Analogy and PCI-6289 issue
+Date: Tue, 19 Jan 2016 16:00:17 +0100
+Message-ID: <CACBbF4VV6EwNub2A2R3t-xhUc5X=F9kY9MU=+f3Y3eAsHVDwuA@mail.gmail.com>
+From: "LOYAU, Florian" <florian.loyau@edu.esiee.fr>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] rtskbs gone missing in 3.0.x stable versions,
+	breaking most of RTnet
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,36 +13,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jorge Ramirez Ortiz <jro@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-DQo+IC0tLS0tVXJzcHLDvG5nbGljaGUgTmFjaHJpY2h0LS0tLS0NCj4gVm9uOiBKb3JnZSBSYW1p
-cmV6IE9ydGl6IFttYWlsdG86anJvQHhlbm9tYWkub3JnXQ0KPiBHZXNlbmRldDogRGllbnN0YWcs
-IDE5LiBKYW51YXIgMjAxNiAxMzozNg0KPiBBbjogeGVub21haUB4ZW5vbWFpLm9yZzsgTG9wZXMs
-IEFsZXhhbmRyZQ0KPiBCZXRyZWZmOiBSZTogW1hlbm9tYWldIEFuYWxvZ3kgYW5kIFBDSS02Mjg5
-IGlzc3VlDQo+IA0KPiBPbiAwMS8xNS8yMDE2IDA2OjMwIEFNLCBMb3BlcywgQWxleGFuZHJlIHdy
-b3RlOg0KPiA+IGFuYWxvZ3lfY29uZmlnOiBhNGxfYXR0YWNoKGFuYWxvZ3lfbmlfcGNpbWlvKSBm
-YWlsZWQgZXJyPS0xDQo+ID4gYW5hbG9neV9jb25maWc6IGNoZWNrIHRoZSBwcm9jZnMgaW5mb3Jt
-YXRpb246DQo+ID4gIC0gYW5hbG9neSBkZXZpY2VzOiAvcHJvYy9hbmFsb2d5L2RldmljZXMNCj4g
-PiAgLSBhbmFsb2d5IGRyaXZlcnM6IC9wcm9jL2FuYWxvZ3kvZHJpdmVycw0KPiA+DQo+ID4gYW5k
-IGluIGRtZXNnDQo+ID4NCj4gPiBbMTc5Mi4zMDY2NTldIEFuYWxvZ3k6IGE0bF9hc3NpZ25fZHJp
-dmVyOiBjYWxsKGRydi0+YXR0YWNoKSBmYWlsZWQNCj4gPiAocmV0PS0yKQ0KPiA+DQo+ID4gSSBo
-YXZlIGFscmVhZHkgdHJpZWQgdG8gc3dhcCBwY2kgc2xvdHMsIHRvIHVzZSBvbmx5IG9uZSBjYXJk
-LCB0byBvbWl0DQo+ID4gdGhlIGRyaXZlciBwYXJhbWV0ZXJzIGV0Yy4gYW5kIHRoZSBlbmQgcmVz
-dWx0IGlzIGFsd2F5cyB0aGUgc2FtZTogSQ0KPiA+IGNhbiBhdHRhY2ggdGhlIGRyaXZlciB0byB0
-aGUgNjcxMyBidXQgbm90IHRvIHRoZSA2Mjg5Lg0KPiA+DQo+ID4gQ291bGQgYW55b25lIGhlbHAg
-bWUgc2hlZCBzb21lIGxpZ2h0IG9uIHRoZSBpc3N1ZT8NCj4gDQo+IA0KPiBwbGVhc2UgY2hlY2sN
-Cj4gDQo+IGh0dHA6Ly9naXQueGVub21haS5vcmcveGVub21haS0NCj4gMy5naXQvdHJlZS9rZXJu
-ZWwvZHJpdmVycy9hbmFsb2d5L25hdGlvbmFsX2luc3RydW1lbnRzL3BjaW1pby5jI24xMDU1DQo+
-IA0KPiBzdXBwb3J0IGZvciB0aGUgNjI4OSAoaWUgMHg3MGFjKSBpcyBpbiB0aGUgdG9kbyBsaXN0
-IC0gZGlzYWJsZWQgYnkgdGhlDQo+IGNvbmRpdGlvbmFsIGNvbXBpbGF0aW9uIHN0YXRlbWVudC4N
-Cj4gc2luY2UgeW91IGhhdmUgdGhlIGh3LCB5b3UgY291bGQgZW5hYmxlIGl0IGFuZCB0cnkgdG8g
-Z2V0IGl0IHRvIHdvcms6IGl0DQo+IHNob3VsZG50IGJlIHRvbyBoYXJkIChJIGRpc2xvY2F0ZWQg
-bXkgc2hvdWxkZXIgbGFzdCB3ZWVrIHNvIEljYW50IHByb3ZpZGUNCj4gbXVjaCBjb2Rpbmcgc3Vw
-cG9ydCBhdCB0aGUgbW9tZW50Li5tYXliZSBpbiBhIGNvdXBsZSBvZiB3ZWVrcykNCj4gDQo+IA0K
-PiAtLQ0KPiBqcm8NCg0KVGhhbmsgeW91IHNvIG11Y2ghIFRoYXQgc2hvdWxkIGJlIG1vcmUgdGhh
-biBlbm91Z2guIEkgd2lsbCB0cnkgdG8gcmVjb21waWxlIA0KdGhlIGRyaXZlciBpbiBhIGZldyBt
-aW51dGVzLg0KSSBzaG91bGQgaGF2ZSBjaGVja2VkIHRoZSBzb3VyY2UsIGJ1dCBqdXN0IGFzc3Vt
-ZWQgdGhhdCBpdCBoYWQgYmVlbiANCm15IGZhdWx0LCBzaW5jZSB0aGUgd2Vic2l0ZSBzdGF0ZWQg
-dGhlIGJvYXJkIHdhcyBzdXBwb3J0ZWQgKGFuZCBpdCBhcHBlYXJzIA0KdG8gYmUgaW4gYW55IGNh
-c2UpLg0KDQpXaXNoIHlvdSBhIGdvb2QgcmVjb3ZlcnkuDQoNCkFsZXhhbmRyZQ0K
+Hello,
 
+We've been attempting to run RTnet/Xenomai 3 for a school project
+Our targets are 3.18.20 on a generic amd64,
+and a patched 3.14.54 kernel on an I.MX6Q-SABRESD board (ARMv7HF)
+
+We first attempted to run the i.MX6 with Xenomai 3.0-RC7 as that was the
+latest available at the time.
+However, i noticed options to build the ARM RT FEC driver had been dropped
+from drivers' Kconfig, and attempted to re-enable it. This required minor
+changes to two function calls whose signatures had been modified.
+
+This was met with mixed success:
+While on the one hand, the card did work with the built rt_fec module,
+after about ~200 packets sent the driver runs out of rtskbs and outputs
+"Memory squeeze: dropping packet" messages.
+
+We proceeded to build the newer 3.0.1 Xenomai release onto the amd64
+machine, this time without any modification, either on Xenomai or Linux
+side,
+and again have been met with strange results:
+
+ * loopback and e1000 drivers do not work at all,
+   throwing an EAGAIN when attempting to send packets.
+   after a bit of printk'ing around, we determined this was due, again,
+   to rtskb starvation in the device pool for some reason.
+
+ * rt_e1000e works as expected, and we could test this, both with the
+   i.MX6 running RC7, and looping back on the second port of our card.
+
+Thinking we just broke the first one,
+and had plain bad luck on the second one,
+we pulled 3.0.x-stable branch and rebuilt it for the i.MX6.
+
+The results were coherent with 3.0.1 :
+ FEC doesn't work at all either, returning EAGAIN
+ on packet sending due to rtskb starvation.
+ We haven't tested yet with rt_igb and rt_e1000...
+
+We're majorly confused regarding the state of the support of the different
+drivers at present, and what looks like compat-breaking changes between
+RTnet 1.7, Xenomai 3 RC, and Xenomai 3 stable. Can you provide us with
+some information on the state of support and pointers on what can be done
+to fix these problems ?
+
+Thanks in advance,
+
+Florian Loyau,
+ESIEE Paris, E5FR Network & Communications branch
