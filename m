@@ -1,12 +1,12 @@
+Date: Wed, 20 Jan 2016 21:23:35 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160120202335.GA8127@hermes.click-hack.org>
+References: <CABShy44r7BzVP-n0HEXD=_1w48ah6MMk=+QCVDRD3xszH+gekw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <56A9E753.2090006@xenomai.org>
-References: <CABaOOZ3YZn8wUym7q1ix3HBT2Vtg_O2pjp7Kab4w=X1euVBPWw@mail.gmail.com>
- <56A9E753.2090006@xenomai.org>
-Date: Thu, 28 Jan 2016 12:21:42 +0200
-Message-ID: <CABaOOZ3oei9WEh74m6STQCar6E_-YgRsGrH+joP0LhQQxpPm7A@mail.gmail.com>
-From: Stratiyenko Roman <picoworm@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Task resume problem
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CABShy44r7BzVP-n0HEXD=_1w48ah6MMk=+QCVDRD3xszH+gekw@mail.gmail.com>
+Subject: Re: [Xenomai] Xenomai ARM emulator
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,59 +15,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: BHISHMAPALSINH THAKOR <bjthakor.337@gmail.com>
+Cc: xenomai@xenomai.org
 
-resume() calls every rttask cycle, so if first resume() will not resume
-AFrttask, the second will.
+On Wed, Jan 20, 2016 at 06:49:12PM +0530, BHISHMAPALSINH THAKOR wrote:
+> Sir how can we install and use  emulator for Xenomai rtos and armplatform
+> (arm cortex a-8 processor)
 
-I think the problem can be only if:
-1. Some my program memory leaks destroyed rttask structure, so when I call
-resume(), the pointers are invalid.
-2. The problem is inside xenomai.
+Hi,
 
-I will try to find out where is it.
-Thanks for helping.
+you seem to be missing quite a bit of education on the usage of
+public mailing lists. I suggest you read some documentation and come
+back when you know how to "ask questions the smart way":
 
+http://www.catb.org/esr/faqs/smart-questions.html
 
-2016-01-28 12:02 GMT+02:00 Philippe Gerum <rpm@xenomai.org>:
+Regards.
 
-> On 01/28/2016 10:37 AM, Stratiyenko Roman wrote:
-> > Hi.
-> >
-> > Can anybody help me with one not easy to debug problem.
-> > Problem happens once per week or two weeks.
-> >
-> > I have 2 user-level rt-task.
-> > One task (rttask) is scheduled isochronous using rt_task_wait_period()
-> and
-> > have an max priority: 99
-> > Second task (AFrttask) is started once, then it suspends from itself and
-> > resumes from the first task.
-> >
-> > Program works as expected, but sometimes (very very rarely) AFrttask not
-> > resuming.
-> > I connected to the running process using GDB and tracked it. rttask works
-> > as expected, It calls resume function of the second task, but second task
-> > is not resuming.
-> >
-> > Here is the dump of /proc/xenomai/sched/stat
-> > CPU  PID    MSW        CSW        XSC        PF    STAT       %CPU  NAME
-> >   0  0      0          2537012    0          0     00018000   89.1
-> [ROOT/0]
-> >   0  25095  14         18         75         0     000680c0    0.0  main
-> >   0  25097  352        25832      25486      0     00048041    0.0
-> AFrttask
->
-> STAT == 0x48041, bit #0 means (still) forcibly suspended
-> (include/cobalt/uapi/kernel/thread.h), which may mean your tasks raced:
-> rttask could have attempted to wake up AFrttask when the latter did not
-> self-suspend yet. Wake up notifications are not buffered.
->
-> Task suspend/resume constructs are inherently unsafe by design, they are
-> present in the API only for the purpose of easing migration from legacy
-> RTOS environments, but I would definitely recommend _not_ to use them as
-> common inter-task synchronization mechanisms.
->
-> --
-> Philippe.
->
+-- 
+					    Gilles.
+https://click-hack.org
+
