@@ -1,20 +1,18 @@
-From: Wolfgang Denk <wd@denx.de>
 MIME-Version: 1.0
-Content-type: text/plain; charset=UTF-8
-Content-transfer-encoding: 8bit
-In-reply-to: <20160209190544.GH5654@hermes.click-hack.org>
-References: <20160208092941.6f1044da@md1em3qc>
- <20160208090702.GA29803@hermes.click-hack.org>
- <20160208101810.7aec631a@md1em3qc> <56B87392.8040703@web.de>
- <20160208123757.GC29803@hermes.click-hack.org>
- <20160208140259.66e5dc7f@md1em3qc>
- <20160208195533.24C19384496@gemini.denx.de>
- <20160209123826.2add02cc@md1em3qc>
- <20160209163025.B77DD385B08@gemini.denx.de>
- <20160209190544.GH5654@hermes.click-hack.org>
-Date: Tue, 09 Feb 2016 22:48:46 +0100
-Message-Id: <20160209214846.C3085380907@gemini.denx.de>
-Subject: Re: [Xenomai] mailinglist write access for non-subscribers
+In-Reply-To: <569DF24E.4080202@xenomai.org>
+References: <CA+CJOCxoqmA1r0sGb_LwqvsXPzMG485YqUmR83hsfT2mTD6xnQ@mail.gmail.com>
+ <5697D9DB.6070909@xenomai.org>
+ <CA+CJOCyPzwWEQScYL=hjzntHxGFq_oF+qen8WF+LEdZWoDAtnQ@mail.gmail.com>
+ <569CD2BB.7000405@xenomai.org>
+ <CA+CJOCw1MVqfB8524L3+MXAtfp=UDHP_=1YnDJorJOYb4zdBSQ@mail.gmail.com>
+ <569D027B.7040800@xenomai.org>
+ <CA+CJOCzZPC+ja-R4m+bwnYhOFRQp-cd1Ag0UB0h5OKN6ZhEWDw@mail.gmail.com>
+ <569DF24E.4080202@xenomai.org>
+From: Nicolas SCHURANDO <schurann@ext.essilor.com>
+Date: Mon, 25 Jan 2016 16:37:22 +0100
+Message-ID: <CA+CJOCwxqO=dBHRZ=kJJ4KME3JupqAPpCnoLwsojZWDLfGbzGg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] VxWorks API on Xenomai 3.0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,35 +21,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@web.de>, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Dear Gilles,
+Hi Philippe,
 
-In message <20160209190544.GH5654@hermes.click-hack.org> you wrote:
+Thank you very much for you help !
+
+Configuring xenomai with --enable-lores-clock and using dynamic linking
+instead of the static one did the trick.
+
+I haven't finished testing everything but, so far so good.
+
+Regards,
+
+Nicolas
+
+On Jan 19, 2016 09:22, "Philippe Gerum" <rpm@xenomai.org> wrote:
+
+> On 01/18/2016 07:15 PM, Nicolas SCHURANDO wrote:
+> > Hi Philippe,
+> >
+> > I switched to branch stable-3.0.x, retrieved your commit b411e4c
+> > "lib/cobalt: add init trace points", and rebuilt everything.
+> >
+> > Below is what I have with the new --trace option.
+> >
+> > With static linking :
+> >
+> >     --  xenomai_init() running
+> >     --  cobalt->init()
+> >     --  connected to Cobalt
+> >     --  memory locked
+> >     --  memory heaps mapped
+> >     --  boilerplate->init()
+> >        0"000.070| WARNING: [main] Xenomai compiled with full debug
+> enabled,
+> >                                   very high latencies expected
+> >     [--enable-debug=full]
+> >     --  initialization complete
+> >      [i] [main] Hello, launching root task ...
+> >        0"001.747| BUG in wind_task_normalize_priority():
 >
-> > Yes, there is spamassassin running...
-> 
-> xenomai.org also has spamassassin at SMTP time rejecting mails with
-> score higher than 10. Since we had one spam today, I wonder if 10 is
-> may not be a little high. If I may ask, at what score do you reject
-> posts on the u-boot mailing list?
-
-We are using the default: required_score 5.0
-
-I cannot remember that I've ever seen a false positive with this
-setting.  But I realize that this is similar to the statement "our
-computer has never had an undetected error." :-)
-
-Best regards,
-
-Wolfgang Denk
-
--- 
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
-"He only drinks when he gets depressed." "Why does he get depressed?"
-"Sometimes it's because he hasn't had a drink."
-                                     - Terry Pratchett, _Men at Arms_
-
+> The init call for the VxWorks API is missing, which explains the issue.
+>
+> >
+> >
+> > I also decided to try with dynamic linking as well, to see if it was
+> > producing anything different :
+> >
+> >     --  xenomai_init() running
+> >     --  cobalt->init()
+> >     --  connected to Cobalt
+> >     --  memory locked
+> >     --  memory heaps mapped
+> >     --  boilerplate->init()
+> >     --  copperplate->init()
+> >     --  vxworks->init()
+>
+> The issue is most likely with static linking. It seems that the linker
+> is eliminating the interface setup descriptor in lib/vxworks/init.c from
+> the final executable; unfortunately this is a library constructor,
+> connecting the API to the system. We already stumbled upon this issue,
+> but no fix could be found at this point, with toolchains ignoring
+> explicit requests to keep such symbols into the name list.
+>
+> Some (likely terminally ugly) work around may exist, but support for
+> static linking is very low priority here, so I would advise to stay with
+> dynamic linking for now.
+>
+> >        0"016.431| WARNING: [rpi-test-bug-wa] low resolution clock
+> >     disabled [--enable-lores-clock]
+>
+> --enable-lores-clock when configuring is required by tick-based APIs.
+>
+> --
+> Philippe.
+>
