@@ -1,12 +1,10 @@
-Date: Fri, 12 Feb 2016 11:33:22 +0100
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20160212113322.42ff3b8a@md1em3qc>
-In-Reply-To: <56BDB259.2050606@sigmatek.at>
-References: <56BDB259.2050606@sigmatek.at>
+From: Jean-Baptiste Tredez <jean-baptiste.tredez@basystemes.fr>
+Message-ID: <56A65100.8000207@basystemes.fr>
+Date: Mon, 25 Jan 2016 17:44:48 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] IRQ of pci express claimed by linux domain
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai] rt_imx_uart compilation
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,67 +13,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Netbal <wolfgang.netbal@sigmatek.at>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Fri, 12 Feb 2016 11:22:17 +0100
-Wolfgang Netbal <wolfgang.netbal@sigmatek.at> wrote:
+Hello,
 
-> Dear all,
-> 
-> I am using an imx6 controller where a FPGA-device is connected via
-> PCI express.
-> To use the FPGA in realtime I try to claim the IRQ 155 using 
-> rtdm_irq_request() but the IRQ is hold by the linux domain.
-> It looks like the default driver claims the IRQ, but I have my own 
-> driver that is linked to the device if we can trust the output of
-> lspci Has anyone of you an idea what could be the reason for this
-> issue or an idea how to fix it ?
+I tried to compile linux kernel 3.18.12 with xenomai 2.6.4 and rtserial 
+enabled on arm imx6. The compilation failed with :
+   CC [M]  drivers/xenomai/serial/rt_imx_uart.o
+drivers/xenomai/serial/rt_imx_uart.c:39:27: fatal error: 
+mach/hardware.h: No such file or directory
+  #include <mach/hardware.h>
+                            ^
 
-If you want to use another driver for the device you have to unload the
-driver currently in use, afterwards you should be able to claim the
-device in your driver.
-At runtime you can unbind the driver and keep the module loaded, or
-just unload the module. To avoid the driver taking control by default
-you have to blacklist the module in your distro, or disable it in your
-kernel config.
+I can see in the file :
+#include <mach/hardware.h>
+#include <mach/imx-uart.h>
 
-> 
->  > cat /proc/interrupts  
->             CPU0       CPU1       CPU2       CPU3
-> ...
-> 150:      39833          0          0          0       GIC
-> 2188000.ethernet 151:          0          0          0
-> 0       GIC 2188000.ethernet 155:          0          0
-> 0          0       GIC  PCIe PME ...
-> 
->  > lspci -v  
-> 00:00.0 PCI bridge: Device 16c3:abcd (rev 01) (prog-if 00 [Normal
-> decode]) Flags: bus master, fast devsel, latency 0
->      Memory at 01000000 (32-bit, non-prefetchable) [size=1M]
->      Bus: primary=00, secondary=01, subordinate=01, sec-latency=0
->      Memory behind bridge: 01100000-012fffff
->      [virtual] Expansion ROM at 01300000 [disabled] [size=64K]
->      Capabilities: [40] Power Management version 3
->      Capabilities: [50] MSI: Enable- Count=1/1 Maskable+ 64bit+
->      Capabilities: [70] Express Root Port (Slot-), MSI 00
->      Capabilities: [100] Advanced Error Reporting
->      Capabilities: [140] Virtual Channel
->      Kernel driver in use: pcieport
-> 
-> 01:00.0 ACCESS Bus: Device 5112:0c00
->      Subsystem: Device 5112:0c00
->      Flags: bus master, fast devsel, latency 0, IRQ 155
->      Memory at 01100000 (32-bit, non-prefetchable) [size=1M]
->      Memory at 01200000 (32-bit, non-prefetchable) [size=1M]
->      Capabilities: [40] Power Management version 3
->      Capabilities: [48] MSI: Enable- Count=1/1 Maskable- 64bit+
->      Capabilities: [58] Express Endpoint, MSI 00
->      Capabilities: [100] Device Serial Number 00-00-00-01-01-00-0a-35
->      Kernel driver in use: Sigmatek PCIE
-> 
-> 
-> Kind regards
-> 
+The requested file seem to be in arch/arm/mach-imx/hardware.h and 
+imx-uart.h in arch/arm/include/debug/imx-uart.h so i tried to correct 
+the path with :
+#include <../mach-imx/hardware.h>
+#include <debug/imx-uart.h>
 
+The compilation failed with :
+
+   CC [M]  drivers/xenomai/serial/rt_imx_uart.o
+drivers/xenomai/serial/rt_imx_uart.c: In function 'rt_imx_uart_probe':
+drivers/xenomai/serial/rt_imx_uart.c:1465:21: error: dereferencing 
+pointer to incomplete type
+   if (pdata && (pdata->flags & IMXUART_HAVE_RTSCTS))
+                      ^
+drivers/xenomai/serial/rt_imx_uart.c:1465:31: error: 
+'IMXUART_HAVE_RTSCTS' undeclared (first use in this function)
+   if (pdata && (pdata->flags & IMXUART_HAVE_RTSCTS))
+                                ^
+drivers/xenomai/serial/rt_imx_uart.c:1465:31: note: each undeclared 
+identifier is reported only once for each function it appears in
+drivers/xenomai/serial/rt_imx_uart.c:1467:21: error: dereferencing 
+pointer to incomplete type
+   if (pdata && (pdata->flags & IMXUART_USE_DCEDTE))
+                      ^
+drivers/xenomai/serial/rt_imx_uart.c:1467:31: error: 
+'IMXUART_USE_DCEDTE' undeclared (first use in this function)
+   if (pdata && (pdata->flags & IMXUART_USE_DCEDTE))
+                                ^
+drivers/xenomai/serial/rt_imx_uart.c:1469:20: error: dereferencing 
+pointer to incomplete type
+   if (pdata && pdata->init) {
+                     ^
+drivers/xenomai/serial/rt_imx_uart.c:1470:14: error: dereferencing 
+pointer to incomplete type
+    err = pdata->init(pdev);
+               ^
+drivers/xenomai/serial/rt_imx_uart.c:1489:20: error: dereferencing 
+pointer to incomplete type
+   if (pdata && pdata->exit)
+                     ^
+drivers/xenomai/serial/rt_imx_uart.c:1490:8: error: dereferencing 
+pointer to incomplete type
+    pdata->exit(pdev);
+         ^
+drivers/xenomai/serial/rt_imx_uart.c: In function 'rt_imx_uart_remove':
+drivers/xenomai/serial/rt_imx_uart.c:1520:20: error: dereferencing 
+pointer to incomplete type
+   if (pdata && pdata->exit)
+                     ^
+drivers/xenomai/serial/rt_imx_uart.c:1521:8: error: dereferencing 
+pointer to incomplete type
+    pdata->exit(pdev);
+         ^
+
+Do you have an idea ?
+
+
+Jean-Baptiste Trédez
 
