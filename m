@@ -1,13 +1,14 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Tue, 26 Jan 2016 14:39:39 -0500
-Message-ID: <20160126193939.GX25177@csclub.uwaterloo.ca>
-References: <CABShy46Juoutff0NBeeT7EmYbMnLeOe_u5WY3cEmjrNPke0taw@mail.gmail.com>
- <20160126193649.GB9298@hermes.click-hack.org>
+References: <20160114183423.69665622@md1em3qc>
+ <1453821607-20836-1-git-send-email-henning.schild@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <56A7D4AD.9090601@siemens.com>
+Date: Tue, 26 Jan 2016 21:18:53 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20160126193649.GB9298@hermes.click-hack.org>
-Subject: Re: [Xenomai] Xenomai build for beaglebone black
+In-Reply-To: <1453821607-20836-1-git-send-email-henning.schild@siemens.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] ipipe x86 mm: handle huge pages in memory
+	pinning
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,32 +17,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: BHISHMAPALSINH THAKOR <bjthakor.337@gmail.com>, xenomai@xenomai.org
+To: Henning Schild <henning.schild@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On Tue, Jan 26, 2016 at 08:36:49PM +0100, Gilles Chanteperdrix wrote:
-> On Tue, Jan 26, 2016 at 05:35:05PM +0530, BHISHMAPALSINH THAKOR wrote:
-> > How can i build xenomai for beaglebone black and also tell me about its
-> > procedures with example so i can do that or try this in my beaglebone black
-> > board
+On 2016-01-26 16:20, Henning Schild wrote:
+> In 4.1 huge page mapping of io memory was introduced, enable ipipe to
+> handle that when pinning kernel memory.
 > 
-> Apparently, you have not understood the document I directed you to
-> about how to use the mailing list (asking questions the smart way).
+> change that introduced the feature
+> 0f616be120c632c818faaea9adcb8f05a7a8601f
 > 
-> The kind of questions we expect here is: "I have tried Xenomai
-> installation instructions from the website, but I get a failure when
-> doing this and that.". You see the difference? It would show us that
-> you have done your homework, not just flooded the mailing list
-> with the same question over and over again. We are not going to
-> explain you how to install Xenomai, because it is already documented
-> elsewhere and many times, and if you are not able to find that
-> information by yourself, there is little hope you are going to be
-> able to use Xenomai at all.
+> Signed-off-by: Henning Schild <henning.schild@siemens.com>
+> ---
+>  arch/x86/mm/fault.c | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+> 
+> diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+> index fd5bbcc..5585610 100644
+> --- a/arch/x86/mm/fault.c
+> +++ b/arch/x86/mm/fault.c
+> @@ -211,11 +211,19 @@ static inline pmd_t *vmalloc_sync_one(pgd_t *pgd, unsigned long address)
+>  	pud_k = pud_offset(pgd_k, address);
+>  	if (!pud_present(*pud_k))
+>  		return NULL;
+> +#if defined(CONFIG_IPIPE) && defined(CONFIG_HAVE_ARCH_HUGE_VMAP)
+> +	if (pud_large(*pud))
+> +		return pud_k;
+> +#endif
+>  
+>  	pmd = pmd_offset(pud, address);
+>  	pmd_k = pmd_offset(pud_k, address);
+>  	if (!pmd_present(*pmd_k))
+>  		return NULL;
+> +#if defined(CONFIG_IPIPE) && defined(CONFIG_HAVE_ARCH_HUGE_VMAP)
+> +	if (pmd_large(*pmd))
+> +		return pmd_k;
+> +#endif
+>  
+>  	if (!pmd_present(*pmd))
+>  		set_pmd(pmd, *pmd_k);
+> @@ -400,6 +408,10 @@ static inline int vmalloc_sync_one(pgd_t *pgd, unsigned long address)
+>  
+>  	if (pud_none(*pud) || pud_page_vaddr(*pud) != pud_page_vaddr(*pud_ref))
+>  		BUG();
+> +#if defined(CONFIG_IPIPE) && defined(CONFIG_HAVE_ARCH_HUGE_VMAP)
+> +	if (pud_large(*pud))
+> +		return 0;
+> +#endif
+>  
+>  	pmd = pmd_offset(pud, address);
+>  	pmd_ref = pmd_offset(pud_ref, address);
+> @@ -408,6 +420,10 @@ static inline int vmalloc_sync_one(pgd_t *pgd, unsigned long address)
+>  
+>  	if (pmd_none(*pmd) || pmd_page(*pmd) != pmd_page(*pmd_ref))
+>  		BUG();
+> +#if defined(CONFIG_IPIPE) && defined(CONFIG_HAVE_ARCH_HUGE_VMAP)
+> +	if (pmd_large(*pmd))
+> +		return 0;
+> +#endif
+>  
+>  	pte_ref = pte_offset_kernel(pmd_ref, address);
+>  	if (!pte_present(*pte_ref))
+> 
 
-It's not as if asking google.com: How can i build xenomai for beaglebone black
-doesn't give perfectly good answers like hit number 1 which is a 14 step
-guide for doing exactly that.
+Do we need the #ifdefs? If not, maybe just leave comments to establish
+the relationship to I-pipe.
+
+Jan
 
 -- 
-Len Sorensen
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
 
