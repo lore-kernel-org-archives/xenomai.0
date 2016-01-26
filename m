@@ -1,10 +1,9 @@
-MIME-Version: 1.0
-Date: Tue, 19 Jan 2016 16:00:17 +0100
-Message-ID: <CACBbF4VV6EwNub2A2R3t-xhUc5X=F9kY9MU=+f3Y3eAsHVDwuA@mail.gmail.com>
-From: "LOYAU, Florian" <florian.loyau@edu.esiee.fr>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] rtskbs gone missing in 3.0.x stable versions,
-	breaking most of RTnet
+From: Henning Schild <henning.schild@siemens.com>
+Date: Tue, 26 Jan 2016 16:20:07 +0100
+Message-Id: <1453821607-20836-1-git-send-email-henning.schild@siemens.com>
+In-Reply-To: <20160114183423.69665622@md1em3qc>
+References: <20160114183423.69665622@md1em3qc>
+Subject: [Xenomai] [PATCH] ipipe x86 mm: handle huge pages in memory pinning
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,54 +12,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-Hello,
+In 4.1 huge page mapping of io memory was introduced, enable ipipe to
+handle that when pinning kernel memory.
 
-We've been attempting to run RTnet/Xenomai 3 for a school project
-Our targets are 3.18.20 on a generic amd64,
-and a patched 3.14.54 kernel on an I.MX6Q-SABRESD board (ARMv7HF)
+change that introduced the feature
+0f616be120c632c818faaea9adcb8f05a7a8601f
 
-We first attempted to run the i.MX6 with Xenomai 3.0-RC7 as that was the
-latest available at the time.
-However, i noticed options to build the ARM RT FEC driver had been dropped
-from drivers' Kconfig, and attempted to re-enable it. This required minor
-changes to two function calls whose signatures had been modified.
+Signed-off-by: Henning Schild <henning.schild@siemens.com>
+---
+ arch/x86/mm/fault.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-This was met with mixed success:
-While on the one hand, the card did work with the built rt_fec module,
-after about ~200 packets sent the driver runs out of rtskbs and outputs
-"Memory squeeze: dropping packet" messages.
+diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+index fd5bbcc..5585610 100644
+--- a/arch/x86/mm/fault.c
++++ b/arch/x86/mm/fault.c
+@@ -211,11 +211,19 @@ static inline pmd_t *vmalloc_sync_one(pgd_t *pgd, unsigned long address)
+ 	pud_k = pud_offset(pgd_k, address);
+ 	if (!pud_present(*pud_k))
+ 		return NULL;
++#if defined(CONFIG_IPIPE) && defined(CONFIG_HAVE_ARCH_HUGE_VMAP)
++	if (pud_large(*pud))
++		return pud_k;
++#endif
+ 
+ 	pmd = pmd_offset(pud, address);
+ 	pmd_k = pmd_offset(pud_k, address);
+ 	if (!pmd_present(*pmd_k))
+ 		return NULL;
++#if defined(CONFIG_IPIPE) && defined(CONFIG_HAVE_ARCH_HUGE_VMAP)
++	if (pmd_large(*pmd))
++		return pmd_k;
++#endif
+ 
+ 	if (!pmd_present(*pmd))
+ 		set_pmd(pmd, *pmd_k);
+@@ -400,6 +408,10 @@ static inline int vmalloc_sync_one(pgd_t *pgd, unsigned long address)
+ 
+ 	if (pud_none(*pud) || pud_page_vaddr(*pud) != pud_page_vaddr(*pud_ref))
+ 		BUG();
++#if defined(CONFIG_IPIPE) && defined(CONFIG_HAVE_ARCH_HUGE_VMAP)
++	if (pud_large(*pud))
++		return 0;
++#endif
+ 
+ 	pmd = pmd_offset(pud, address);
+ 	pmd_ref = pmd_offset(pud_ref, address);
+@@ -408,6 +420,10 @@ static inline int vmalloc_sync_one(pgd_t *pgd, unsigned long address)
+ 
+ 	if (pmd_none(*pmd) || pmd_page(*pmd) != pmd_page(*pmd_ref))
+ 		BUG();
++#if defined(CONFIG_IPIPE) && defined(CONFIG_HAVE_ARCH_HUGE_VMAP)
++	if (pmd_large(*pmd))
++		return 0;
++#endif
+ 
+ 	pte_ref = pte_offset_kernel(pmd_ref, address);
+ 	if (!pte_present(*pte_ref))
+-- 
+2.4.10
 
-We proceeded to build the newer 3.0.1 Xenomai release onto the amd64
-machine, this time without any modification, either on Xenomai or Linux
-side,
-and again have been met with strange results:
 
- * loopback and e1000 drivers do not work at all,
-   throwing an EAGAIN when attempting to send packets.
-   after a bit of printk'ing around, we determined this was due, again,
-   to rtskb starvation in the device pool for some reason.
-
- * rt_e1000e works as expected, and we could test this, both with the
-   i.MX6 running RC7, and looping back on the second port of our card.
-
-Thinking we just broke the first one,
-and had plain bad luck on the second one,
-we pulled 3.0.x-stable branch and rebuilt it for the i.MX6.
-
-The results were coherent with 3.0.1 :
- FEC doesn't work at all either, returning EAGAIN
- on packet sending due to rtskb starvation.
- We haven't tested yet with rt_igb and rt_e1000...
-
-We're majorly confused regarding the state of the support of the different
-drivers at present, and what looks like compat-breaking changes between
-RTnet 1.7, Xenomai 3 RC, and Xenomai 3 stable. Can you provide us with
-some information on the state of support and pointers on what can be done
-to fix these problems ?
-
-Thanks in advance,
-
-Florian Loyau,
-ESIEE Paris, E5FR Network & Communications branch
