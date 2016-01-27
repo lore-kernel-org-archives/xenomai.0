@@ -1,12 +1,15 @@
+Date: Wed, 27 Jan 2016 10:54:48 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20160127105448.65c467d2@md1em3qc>
+In-Reply-To: <56A7D4AD.9090601@siemens.com>
+References: <20160114183423.69665622@md1em3qc>
+ <1453821607-20836-1-git-send-email-henning.schild@siemens.com>
+ <56A7D4AD.9090601@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <20160126212134.GD9298@hermes.click-hack.org>
-References: <CA+C+_XQ=uam1BHxoQjWpp_JhC2H9owiNfzyyf8+tWBLVjyiFGg@mail.gmail.com>
- <20160126212134.GD9298@hermes.click-hack.org>
-Date: Tue, 26 Jan 2016 17:46:21 -0600
-Message-ID: <CA+C+_XTqNc0s9UfwbHopMpri4=0Utte7uZTvQiTtfBDa318V8g@mail.gmail.com>
-From: Mathew Benson <mathew.benson@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Xenomai on qemu
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] ipipe x86 mm: handle huge pages in memory
+	pinning
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,41 +18,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-I'll try tonight.  FYI, I found if I just mash the keyboard when it hits
-that spot in the boot process, it quickly jumps through it.
+On Tue, 26 Jan 2016 21:18:53 +0100
+Jan Kiszka <jan.kiszka@siemens.com> wrote:
 
-On Tue, Jan 26, 2016 at 3:21 PM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+> On 2016-01-26 16:20, Henning Schild wrote:
+> > In 4.1 huge page mapping of io memory was introduced, enable ipipe
+> > to handle that when pinning kernel memory.
+> > 
+> > change that introduced the feature
+> > 0f616be120c632c818faaea9adcb8f05a7a8601f
+> > 
+> > Signed-off-by: Henning Schild <henning.schild@siemens.com>
+> > ---
+> >  arch/x86/mm/fault.c | 16 ++++++++++++++++
+> >  1 file changed, 16 insertions(+)
+> > 
+> > diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+> > index fd5bbcc..5585610 100644
+> > --- a/arch/x86/mm/fault.c
+> > +++ b/arch/x86/mm/fault.c
+> > @@ -211,11 +211,19 @@ static inline pmd_t *vmalloc_sync_one(pgd_t
+> > *pgd, unsigned long address) pud_k = pud_offset(pgd_k, address);
+> >  	if (!pud_present(*pud_k))
+> >  		return NULL;
+> > +#if defined(CONFIG_IPIPE) && defined(CONFIG_HAVE_ARCH_HUGE_VMAP)
+> > +	if (pud_large(*pud))
+> > +		return pud_k;
+> > +#endif
+> >  
+> >  	pmd = pmd_offset(pud, address);
+> >  	pmd_k = pmd_offset(pud_k, address);
+> >  	if (!pmd_present(*pmd_k))
+> >  		return NULL;
+> > +#if defined(CONFIG_IPIPE) && defined(CONFIG_HAVE_ARCH_HUGE_VMAP)
+> > +	if (pmd_large(*pmd))
+> > +		return pmd_k;
+> > +#endif
+> >  
+> >  	if (!pmd_present(*pmd))
+> >  		set_pmd(pmd, *pmd_k);
+> > @@ -400,6 +408,10 @@ static inline int vmalloc_sync_one(pgd_t *pgd,
+> > unsigned long address) 
+> >  	if (pud_none(*pud) || pud_page_vaddr(*pud) !=
+> > pud_page_vaddr(*pud_ref)) BUG();
+> > +#if defined(CONFIG_IPIPE) && defined(CONFIG_HAVE_ARCH_HUGE_VMAP)
+> > +	if (pud_large(*pud))
+> > +		return 0;
+> > +#endif
+> >  
+> >  	pmd = pmd_offset(pud, address);
+> >  	pmd_ref = pmd_offset(pud_ref, address);
+> > @@ -408,6 +420,10 @@ static inline int vmalloc_sync_one(pgd_t *pgd,
+> > unsigned long address) 
+> >  	if (pmd_none(*pmd) || pmd_page(*pmd) != pmd_page(*pmd_ref))
+> >  		BUG();
+> > +#if defined(CONFIG_IPIPE) && defined(CONFIG_HAVE_ARCH_HUGE_VMAP)
+> > +	if (pmd_large(*pmd))
+> > +		return 0;
+> > +#endif
+> >  
+> >  	pte_ref = pte_offset_kernel(pmd_ref, address);
+> >  	if (!pte_present(*pte_ref))
+> >   
+> 
+> Do we need the #ifdefs? If not, maybe just leave comments to establish
+> the relationship to I-pipe.
 
-> On Sun, Jan 24, 2016 at 10:35:13PM -0600, Mathew Benson wrote:
-> > I created a Petalinux build with the 4.0.0 kernel and Xenomai 3.0.1 from
-> > the stable branch.  I'm running in Qemu, temporarily, until my board
-> > arrives.  The first time it booted, it paused at:
-> >
-> > [Xenomai] scheduling class idle registered.
-> > [Xenomai] scheduling class rt registered.
-> > I-pipe: head domain Xenomai registered.
-> >
-> > for about 30 seconds.  But it eventually booted up.  As far as I can
-> tell,
-> > everything looked good.  The kernel self reported xenomai 3.0.1.  I
-> > commanded a poweroff and restarted qemu.  This time it paused at the same
-> > line but never came back.  The host CPU is pegged.
-> >
-> > I'm fairly confident this is a qemu issue.  What is the CPU doing at that
-> > "Head domain Xenomai registered" step?  The menuconfig menu said I had
-> some
-> > options enabled that were known to be incompatible with Xenomai (APM,
-> ACPI,
-> > etc...), but I thought I turned those all off.
->
-> If you have CONFIG_NO_HZ enabled, disable it. This will be fixed in
-> the next version of Xenomai.
->
-> --
->                                             Gilles.
-> https://click-hack.org
->
+We do not, without ipipe the function is never called from a
+context where that check is required. If it was, this change or
+something similar would be in mainline.
+I see the ifdefs as kind of comments that establish the relationship to
+ipipe and the huge_vmap feature. Plus in all other cases a pointless
+check is not even compiled in.
+If comments should be used instead of ifdefs i will change that.
+
+Henning
+
