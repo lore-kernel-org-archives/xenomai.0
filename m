@@ -1,12 +1,14 @@
-Date: Wed, 20 Jan 2016 21:23:35 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160120202335.GA8127@hermes.click-hack.org>
-References: <CABShy44r7BzVP-n0HEXD=_1w48ah6MMk=+QCVDRD3xszH+gekw@mail.gmail.com>
+References: <CABaOOZ3YZn8wUym7q1ix3HBT2Vtg_O2pjp7Kab4w=X1euVBPWw@mail.gmail.com>
+ <56A9E753.2090006@xenomai.org>
+ <CABaOOZ3oei9WEh74m6STQCar6E_-YgRsGrH+joP0LhQQxpPm7A@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <56A9F038.1030806@xenomai.org>
+Date: Thu, 28 Jan 2016 11:40:56 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CABShy44r7BzVP-n0HEXD=_1w48ah6MMk=+QCVDRD3xszH+gekw@mail.gmail.com>
-Subject: Re: [Xenomai] Xenomai ARM emulator
+In-Reply-To: <CABaOOZ3oei9WEh74m6STQCar6E_-YgRsGrH+joP0LhQQxpPm7A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Task resume problem
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,24 +17,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: BHISHMAPALSINH THAKOR <bjthakor.337@gmail.com>
-Cc: xenomai@xenomai.org
+To: Stratiyenko Roman <picoworm@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, Jan 20, 2016 at 06:49:12PM +0530, BHISHMAPALSINH THAKOR wrote:
-> Sir how can we install and use  emulator for Xenomai rtos and armplatform
-> (arm cortex a-8 processor)
+On 01/28/2016 11:21 AM, Stratiyenko Roman wrote:
+> resume() calls every rttask cycle, so if first resume() will not resume
+> AFrttask, the second will.
 
-Hi,
+Except that although resume notifications are not buffered,
+suspend/resume call depth is tracked. Once the nesting count has dropped
+to zero, no more resume notification is actually sent.
 
-you seem to be missing quite a bit of education on the usage of
-public mailing lists. I suggest you read some documentation and come
-back when you know how to "ask questions the smart way":
+I'm afraid your your assumption is wrong.
 
-http://www.catb.org/esr/faqs/smart-questions.html
+> 
+> I think the problem can be only if:
+> 1. Some my program memory leaks destroyed rttask structure, so when I
+> call resume(), the pointers are invalid.
+> 2. The problem is inside xenomai.
+> 
+> I will try to find out where is it.
+> Thanks for helping.
+> 
+> 
+> 2016-01-28 12:02 GMT+02:00 Philippe Gerum <rpm@xenomai.org
+> <mailto:rpm@xenomai.org>>:
+> 
+>     On 01/28/2016 10:37 AM, Stratiyenko Roman wrote:
+>     > Hi.
+>     >
+>     > Can anybody help me with one not easy to debug problem.
+>     > Problem happens once per week or two weeks.
+>     >
+>     > I have 2 user-level rt-task.
+>     > One task (rttask) is scheduled isochronous using rt_task_wait_period() and
+>     > have an max priority: 99
+>     > Second task (AFrttask) is started once, then it suspends from itself and
+>     > resumes from the first task.
+>     >
+>     > Program works as expected, but sometimes (very very rarely) AFrttask not
+>     > resuming.
+>     > I connected to the running process using GDB and tracked it. rttask works
+>     > as expected, It calls resume function of the second task, but second task
+>     > is not resuming.
+>     >
+>     > Here is the dump of /proc/xenomai/sched/stat
+>     > CPU  PID    MSW        CSW        XSC        PF    STAT       %CPU  NAME
+>     >   0  0      0          2537012    0          0     00018000   89.1  [ROOT/0]
+>     >   0  25095  14         18         75         0     000680c0    0.0  main
+>     >   0  25097  352        25832      25486      0     00048041    0.0  AFrttask
+> 
+>     STAT == 0x48041, bit #0 means (still) forcibly suspended
+>     (include/cobalt/uapi/kernel/thread.h), which may mean your tasks raced:
+>     rttask could have attempted to wake up AFrttask when the latter did not
+>     self-suspend yet. Wake up notifications are not buffered.
+> 
+>     Task suspend/resume constructs are inherently unsafe by design, they are
+>     present in the API only for the purpose of easing migration from legacy
+>     RTOS environments, but I would definitely recommend _not_ to use them as
+>     common inter-task synchronization mechanisms.
+> 
+>     --
+>     Philippe.
+> 
+> 
 
-Regards.
 
 -- 
-					    Gilles.
-https://click-hack.org
+Philippe.
 
