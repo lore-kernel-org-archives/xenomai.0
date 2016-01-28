@@ -1,14 +1,14 @@
-References: <CABaOOZ3YZn8wUym7q1ix3HBT2Vtg_O2pjp7Kab4w=X1euVBPWw@mail.gmail.com>
- <56A9E753.2090006@xenomai.org>
- <CABaOOZ3oei9WEh74m6STQCar6E_-YgRsGrH+joP0LhQQxpPm7A@mail.gmail.com>
+References: <1453821607-20836-1-git-send-email-henning.schild@siemens.com>
+ <1453902069-18824-1-git-send-email-henning.schild@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <56A9F038.1030806@xenomai.org>
-Date: Thu, 28 Jan 2016 11:40:56 +0100
+Message-ID: <56A9F314.9030808@xenomai.org>
+Date: Thu, 28 Jan 2016 11:53:08 +0100
 MIME-Version: 1.0
-In-Reply-To: <CABaOOZ3oei9WEh74m6STQCar6E_-YgRsGrH+joP0LhQQxpPm7A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1453902069-18824-1-git-send-email-henning.schild@siemens.com>
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Task resume problem
+Subject: Re: [Xenomai] [PATCH v2] ipipe x86 mm: handle huge pages in memory
+	pinning
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,70 +17,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Stratiyenko Roman <picoworm@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>, Xenomai <xenomai@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>
 
-On 01/28/2016 11:21 AM, Stratiyenko Roman wrote:
-> resume() calls every rttask cycle, so if first resume() will not resume
-> AFrttask, the second will.
-
-Except that although resume notifications are not buffered,
-suspend/resume call depth is tracked. Once the nesting count has dropped
-to zero, no more resume notification is actually sent.
-
-I'm afraid your your assumption is wrong.
-
+On 01/27/2016 02:41 PM, Henning Schild wrote:
+> In 4.1 huge page mapping of io memory was introduced, enable ipipe to
+> handle that when pinning kernel memory.
 > 
-> I think the problem can be only if:
-> 1. Some my program memory leaks destroyed rttask structure, so when I
-> call resume(), the pointers are invalid.
-> 2. The problem is inside xenomai.
+> change that introduced the feature
+> 0f616be120c632c818faaea9adcb8f05a7a8601f
 > 
-> I will try to find out where is it.
-> Thanks for helping.
+> Signed-off-by: Henning Schild <henning.schild@siemens.com>
+> ---
+>  arch/x86/mm/fault.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
 > 
-> 
-> 2016-01-28 12:02 GMT+02:00 Philippe Gerum <rpm@xenomai.org
-> <mailto:rpm@xenomai.org>>:
-> 
->     On 01/28/2016 10:37 AM, Stratiyenko Roman wrote:
->     > Hi.
->     >
->     > Can anybody help me with one not easy to debug problem.
->     > Problem happens once per week or two weeks.
->     >
->     > I have 2 user-level rt-task.
->     > One task (rttask) is scheduled isochronous using rt_task_wait_period() and
->     > have an max priority: 99
->     > Second task (AFrttask) is started once, then it suspends from itself and
->     > resumes from the first task.
->     >
->     > Program works as expected, but sometimes (very very rarely) AFrttask not
->     > resuming.
->     > I connected to the running process using GDB and tracked it. rttask works
->     > as expected, It calls resume function of the second task, but second task
->     > is not resuming.
->     >
->     > Here is the dump of /proc/xenomai/sched/stat
->     > CPU  PID    MSW        CSW        XSC        PF    STAT       %CPU  NAME
->     >   0  0      0          2537012    0          0     00018000   89.1  [ROOT/0]
->     >   0  25095  14         18         75         0     000680c0    0.0  main
->     >   0  25097  352        25832      25486      0     00048041    0.0  AFrttask
-> 
->     STAT == 0x48041, bit #0 means (still) forcibly suspended
->     (include/cobalt/uapi/kernel/thread.h), which may mean your tasks raced:
->     rttask could have attempted to wake up AFrttask when the latter did not
->     self-suspend yet. Wake up notifications are not buffered.
-> 
->     Task suspend/resume constructs are inherently unsafe by design, they are
->     present in the API only for the purpose of easing migration from legacy
->     RTOS environments, but I would definitely recommend _not_ to use them as
->     common inter-task synchronization mechanisms.
-> 
->     --
->     Philippe.
-> 
+> diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+> index fd5bbcc..ca1e75b 100644
+> --- a/arch/x86/mm/fault.c
+> +++ b/arch/x86/mm/fault.c
+> @@ -211,11 +211,15 @@ static inline pmd_t *vmalloc_sync_one(pgd_t *pgd, unsigned long address)
+>  	pud_k = pud_offset(pgd_k, address);
+>  	if (!pud_present(*pud_k))
+>  		return NULL;
+> +	if (pud_large(*pud))
+> +		return pud_k;
+>  
+>  	pmd = pmd_offset(pud, address);
+>  	pmd_k = pmd_offset(pud_k, address);
+>  	if (!pmd_present(*pmd_k))
+>  		return NULL;
+> +	if (pmd_large(*pmd))
+> +		return pmd_k;
+>  
+>  	if (!pmd_present(*pmd))
+>  		set_pmd(pmd, *pmd_k);
+> @@ -400,6 +404,8 @@ static inline int vmalloc_sync_one(pgd_t *pgd, unsigned long address)
+>  
+>  	if (pud_none(*pud) || pud_page_vaddr(*pud) != pud_page_vaddr(*pud_ref))
+>  		BUG();
+> +	if (pud_large(*pud))
+> +		return 0;
+>  
+>  	pmd = pmd_offset(pud, address);
+>  	pmd_ref = pmd_offset(pud_ref, address);
+> @@ -408,6 +414,8 @@ static inline int vmalloc_sync_one(pgd_t *pgd, unsigned long address)
+>  
+>  	if (pmd_none(*pmd) || pmd_page(*pmd) != pmd_page(*pmd_ref))
+>  		BUG();
+> +	if (pmd_large(*pmd))
+> +		return 0;
+>  
+>  	pte_ref = pte_offset_kernel(pmd_ref, address);
+>  	if (!pte_present(*pte_ref))
 > 
 
+I'm confused. Assuming the purpose of that patch is to exclude huge I/O
+mappings from pte pinning, why does the changes to the x86_32 version of
+the vmalloc_sync_one() helper actually prevent such pinning, while the
+x86_64 version does not?
+
+Could you explain the logic behind the changes?
 
 -- 
 Philippe.
