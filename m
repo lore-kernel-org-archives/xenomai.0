@@ -1,11 +1,11 @@
-From: Gmail <jiahanchina@gmail.com>
-Content-Type: text/plain; charset=gb2312
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <EF1EB560-EB26-42CF-896F-A98D1329DFC8@gmail.com>
-Date: Sat, 23 Jan 2016 08:44:08 +0800
-Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2104\))
-Subject: [Xenomai] xenomai 3 rt_pipe_write() returns -ENOMEM (cannot
-	allocate memory)
+Sender: Michael Welling <mwelling79@gmail.com>
+Date: Tue, 2 Feb 2016 13:53:55 -0600
+From: Michael Welling <mwelling@ieee.org>
+Message-ID: <20160202195355.GC27804@deathstar>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [Xenomai] IMX6 Quad inconsistent lock state
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,92 +16,103 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hello,
+I found the following message while booting the IMX6 Quad with a 3.18.20 based kernel.
 
-Good day gentleman. I recently switched to xenomai 3 and found a problem =
-when I use rt_pipe_write() function.=20
+[    0.229171]
+[    0.229186] =================================
+[    0.229195] [ INFO: inconsistent lock state ]
+[    0.229207] 3.18.20 #1 Not tainted
+[    0.229215] ---------------------------------
+[    0.229224] inconsistent {IN-HARDIRQ-W} -> {HARDIRQ-ON-W} usage.
+[    0.229236] swapper/0/0 [HC0[0]:SC0[0]:HE1:SE1] takes:
+[    0.229246]  (std_spinlock_raw(&rq->lock)){?.-...}, at: [<8004adc8>] finish_task_switch+0x48/0x148
+[    0.229286] {IN-HARDIRQ-W} state was registered at:
+[    0.229295]   [<800654bc>] lock_acquire+0x88/0xa4
+[    0.229321]   [<8074ad50>] _raw_spin_lock+0x38/0x48
+[    0.229345]   [<8004e220>] scheduler_tick+0x3c/0xd4
+[    0.229364]   [<8007cba8>] update_process_times+0x5c/0x68
+[    0.229390]   [<8007cc10>] update_root_process_times+0x5c/0x60
+[    0.229406]   [<8008ac10>] tick_periodic+0x3c/0xf4
+[    0.229422]   [<8008aeb8>] tick_handle_periodic+0x30/0x90
+[    0.229436]   [<8001688c>] twd_handler+0x40/0x54
+[    0.229456]   [<80071cfc>] handle_percpu_devid_irq+0x6c/0xe8
+[    0.229480]   [<8006ea40>] generic_handle_irq+0x30/0x44
+[    0.229496]   [<8006ed70>] __handle_domain_irq+0x70/0xd4
+[    0.229510]   [<8000f9c8>] handle_IRQ+0x24/0x28
+[    0.229531]   [<8001bec8>] __ipipe_do_IRQ+0x2c/0x38
+[    0.229554]   [<800a132c>] __ipipe_do_sync_stage+0x2a0/0x2e8
+[    0.229579]   [<800a1490>] ipipe_unstall_root+0x48/0x58
+[    0.229594]   [<8074b034>] _raw_spin_unlock_irq+0x30/0x34
+[    0.229612]   [<8004ae10>] finish_task_switch+0x90/0x148
+[    0.229626]   [<80745e7c>] __schedule+0x204/0x5ec
+[    0.229641]   [<8074629c>] schedule+0x38/0x84
+[    0.229655]   [<8074a294>] schedule_timeout+0x128/0x180
+[    0.229671]   [<80746e2c>] wait_for_common+0xa0/0x15c
+[    0.229685]   [<80746f7c>] wait_for_completion_killable+0x18/0x30
+[    0.229700]   [<80046880>] kthread_create_on_node+0xec/0x19c
+[    0.229718]   [<800404c4>] create_worker+0xa0/0x170
+[    0.229741]   [<8004325c>] workqueue_cpu_up_callback+0x3e0/0x4ac
+[    0.229759]   [<800477f4>] notifier_call_chain+0x4c/0x8c
+[    0.229779]   [<80047910>] __raw_notifier_call_chain+0x1c/0x24
+[    0.229793]   [<8002ca98>] _cpu_up+0xbc/0x184
+[    0.229809]   [<8002cbd0>] cpu_up+0x70/0x9c
+[    0.229823]   [<809e9a1c>] smp_init+0xa4/0xb8
+[    0.229844]   [<809c5d84>] kernel_init_freeable+0x78/0x1d8
+[    0.229860]   [<8073f7e8>] kernel_init+0x10/0xf4
+[    0.229881]   [<8000f0c8>] ret_from_fork+0x18/0x30
+[    0.229899] irq event stamp: 2454
+[    0.229908] hardirqs last  enabled at (2453): [<8008dcf8>] tick_nohz_idle_exit+0x164/0x1fc
+[    0.229928] hardirqs last disabled at (2454): [<8074af20>] _raw_spin_lock_irq+0x20/0x54
+[    0.229944] softirqs last  enabled at (2448): [<8002f61c>] _local_bh_enable+0x2c/0x60
+[    0.229963] softirqs last disabled at (2447): [<8002ffdc>] irq_enter+0x64/0x84
+[    0.229981]
+[    0.229981] other info that might help us debug this:
+[    0.229992]  Possible unsafe locking scenario:
+[    0.229992]
+[    0.230001]        CPU0
+[    0.230009]        ----
+[    0.230015]   lock(std_spinlock_raw(&rq->lock));
+[    0.230031]   <Interrupt>
+[    0.230038]     lock(std_spinlock_raw(&rq->lock));
+[    0.230052]
+[    0.230052]  *** DEADLOCK ***
+[    0.230052]
+[    0.230066] 1 lock held by swapper/0/0:
+[    0.230073]  #0:  (std_spinlock_raw(&rq->lock)){?.-...}, at: [<8004adc8>] finish_task_switch+0x48/0x148
+[    0.230105]
+[    0.230105] stack backtrace:
+[    0.230121] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 3.18.20 #1
+[    0.230130] Backtrace:
+[    0.230157] [<80012af4>] (dump_backtrace) from [<80012d00>] (show_stack+0x18/0x1c)
+[    0.230166]  r6:80a5d11c r5:00000000 r4:00000000 r3:00000000
+[    0.230201] [<80012ce8>] (show_stack) from [<80743e9c>] (dump_stack+0x8c/0xa4)
+[    0.230222] [<80743e10>] (dump_stack) from [<80062008>] (print_usage_bug+0x1d8/0x2cc)
+[    0.230230]  r6:80a42708 r5:80bcf710 r4:80a422b0 r3:00000002
+[    0.230265] [<80061e30>] (print_usage_bug) from [<800622e0>] (mark_lock+0x1e4/0x6cc)
+[    0.230273]  r9:be080000 r8:00000000 r7:80a422b0 r6:00000002 r5:80a42708 r4:80061580
+[    0.230313] [<800620fc>] (mark_lock) from [<80062840>] (mark_held_locks+0x78/0xa0)
+[    0.230322]  r10:80a52e18 r9:be080000 r8:00000002 r7:00000000 r6:80a422b0 r5:80a42708
+[    0.230353]  r4:00000000 r3:0000000c
+[    0.230378] [<800627c8>] (mark_held_locks) from [<800628e4>] (trace_hardirqs_on_caller+0x7c/0x1e4)
+[    0.230386]  r8:00000002 r7:80013874 r6:00000001 r5:80a422b0 r4:80a36008 r3:80a36000
+[    0.230426] [<80062868>] (trace_hardirqs_on_caller) from [<80062a60>] (trace_hardirqs_on+0x14/0x18)
+[    0.230434]  r7:80a37e6c r6:ffffffff r5:20000113 r4:8074b004
+[    0.230468] [<80062a4c>] (trace_hardirqs_on) from [<80013874>] (__ipipe_fast_svc_irq_exit+0x4/0x18)
+[    0.230485] [<8004ad80>] (finish_task_switch) from [<80745e7c>] (__schedule+0x204/0x5ec)
+[    0.230493]  r9:be080000 r8:80a3edb8 r7:80a36038 r6:80a34f00 r5:80a34f00 r4:be080000
+[    0.230529] [<80745c78>] (__schedule) from [<8074629c>] (schedule+0x38/0x84)
+[    0.230538]  r10:80a9fe66 r9:80a9fe66 r8:8074e7a4 r7:80a3ea04 r6:80a3e9b8 r5:00000000
+[    0.230570]  r4:80a36000
+[    0.230588] [<80746264>] (schedule) from [<8074667c>] (schedule_preempt_disabled+0x10/0x14)
+[    0.230607] [<8074666c>] (schedule_preempt_disabled) from [<8005da44>] (cpu_startup_entry+0xd4/0x174)
+[    0.230627] [<8005d970>] (cpu_startup_entry) from [<8073f7b0>] (rest_init+0xac/0xd4)
+[    0.230635]  r7:80a3e900 r3:80a36000
+[    0.230660] [<8073f704>] (rest_init) from [<809c5c98>] (start_kernel+0x35c/0x3d0)
+[    0.230669]  r5:80aa00c0 r4:80a3eab8
+[    0.230692] [<809c593c>] (start_kernel) from [<10008074>] (0x10008074)
+[    0.230700]  r10:00000000 r9:412fc09a r8:1000406a r7:80a43a30 r6:80a216cc r5:80a3e9a8
+[    0.230731]  r4:80aa0354
 
-A pipe can be created successfully by rt_pipe_create() but when it comes =
-to rt_pipe_write(), the function returns ENOMEM. I used strerror to =
-print out the problem and I got the message =A1=B0cannot allocate =
-memory=A1=B1.=20
-
-I don=A1=AFt know if it=A1=AFs the problem of the buffer size parameter =
-in rt_pipe_create(), rt_pipe_write() or rt_task_create() ?
-Or it=A1=AFs the problem of the parameter in config file setting when I =
-compile the xenomai kernel?
-
-Here is (some parts of) my code on /* Kernel-side */:
-
- =
-/*************************************************************************=
-****************************/
-#include <alchemy/task.h>
-#include <alchemy/pipe.h>
-#include  <trank/rtdk.h>
-
-#define TASK_PRIO    50        =20
-#define TASK_MODE  0             =20
-#define TASK_STKSZ 10000           /* Stack size (in bytes) */
-
-RT_TASK task_desc;
-RT_PIPE pipe_desc;
-
-void task_body(void *arg)
-{
-  while (1) {   =20
-      fprintf(stderr, "Failed: %s\n", =
-strerror(-rt_pipe_write(&pipe_desc, "Hello", sizeof("Hello"), =
-P_NORMAL)));         =20
-     =20
-      // Then wait for the reply string "World":=20
-      rt_printf("******waiting******\n");
-
-      char buf[200];
-      rt_pipe_read(&pipe_desc, buf, 200, TM_INFINITE);
-      rt_printf("received msg> %s\n", buf);
-                      =20
-      sleep(1);               =20
-  }
-}
-
-=20
-int main(int argc, char* argv[])
-{
-    mlockall(MCL_CURRENT|MCL_FUTURE);
-=20
-    rt_print_auto_init(1);
-
-    rt_pipe_create(&pipe_desc, "my_pipe", P_MINOR_AUTO, 32);
-
-    rt_task_create(&task_desc, "MyTaskName", TASK_STKSZ, TASK_PRIO, =
-TASK_MODE);
-
-    rt_task_start(&task_desc, &task_body, NULL);
-}
- =
-/*************************************************************************=
-****************************/
-
-
-Here is the setting of the pipe in my config file:
- =
-/*************************************************************************=
-****************************/
-(32)Number of pipe devices
-(4096)Number of registry slots
-(2048)Size of system heap(Kb)
-(64)Size of private heap(Kb)
-(64)Size of shared heap(Kb)
-(128)Maximum number of POSIX timers per process
- =
-/*************************************************************************=
-****************************/
-
-Any help could be appreciated.
-
-
-Thank you in advance.
-
-Han=
+The kernel otherwise appears to be functional.
+How do I fix this?
 
