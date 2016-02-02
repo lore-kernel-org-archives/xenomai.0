@@ -1,6 +1,6 @@
-Date: Tue, 2 Feb 2016 21:59:45 +0100
+Date: Tue, 2 Feb 2016 23:08:48 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160202205945.GC29937@hermes.click-hack.org>
+Message-ID: <20160202220848.GD29937@hermes.click-hack.org>
 References: <20160202195355.GC27804@deathstar>
  <20160202200235.GB29937@hermes.click-hack.org>
  <20160202203539.GD27804@deathstar>
@@ -41,22 +41,19 @@ On Tue, Feb 02, 2016 at 02:35:39PM -0600, Michael Welling wrote:
 > ERROR: "__ipipe_smp_key" [drivers/xenomai/net/stack/rtmac/tdma/tdma.ko] undefined!
 > ERROR: "__ipipe_smp_key" [drivers/xenomai/ipc/xeno_rtipc.ko] undefined!
 > ERROR: "__ipipe_smp_key" [drivers/xenomai/can/xeno_can.ko] undefined!
-
-An EXPORT_SYMBOL is missing in arch/arm/kernel/ipipe.c. Or you can
-disable CONFIG_SMP_ON_UP.
-
 > 
-> 
-> Here is the error output with the UART driver selected:
-> /home/michael/projects/xenomai/imx_xeno/linux-3.18.20/drivers/xenomai/serial/rt_imx_uart.c:39:27: fatal error: mach/hardware.h: No such file or directory
->  #include <mach/hardware.h>
->                            ^
-> compilation terminated.
-> 
-> Any quick hints?
 
-Yes, the driver should be rebased on more recent versions of the
-mainline driver, if that is possible. Probably using DT.
+What version of the I-pipe are you using? The case SMP_ON_UP + rtnet
+tdma on imx6 is build-tested here:
+
+https://xenomai.org//build-test-stable/imx_v6_v7/3.18-arm-linux-gnueabihf-gcc-4.9.3/log.html
+
+and does not seem to produce any error with ipipe-core-3.18.20-arm-6
+
+If that is indeed the version of the patch you are testing, can you
+provide your .config ?
+
+Regards.
 
 -- 
 					    Gilles.
