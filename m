@@ -1,14 +1,10 @@
-Date: Tue, 2 Feb 2016 23:08:48 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160202220848.GD29937@hermes.click-hack.org>
-References: <20160202195355.GC27804@deathstar>
- <20160202200235.GB29937@hermes.click-hack.org>
- <20160202203539.GD27804@deathstar>
+From: Dmitriy Cherkasov <dmitriy@mperpetuo.com>
+Message-ID: <56B13150.2090606@mperpetuo.com>
+Date: Tue, 2 Feb 2016 14:44:32 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20160202203539.GD27804@deathstar>
-Subject: Re: [Xenomai] IMX6 Quad inconsistent lock state
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Subject: [Xenomai] Soft lockup on arm64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,45 +13,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Welling <mwelling@ieee.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, Feb 02, 2016 at 02:35:39PM -0600, Michael Welling wrote:
-> On Tue, Feb 02, 2016 at 09:02:35PM +0100, Gilles Chanteperdrix wrote:
-> > On Tue, Feb 02, 2016 at 01:53:55PM -0600, Michael Welling wrote:
-> > > The kernel otherwise appears to be functional.
-> > > How do I fix this?
-> > 
-> > Disable CONFIG_TRACE_IRQFLAGS. This means disabling CONFIG_LOCKDEP too.
-> 
-> Ah. I had to trace back the dependencies and found that I had CONFIG_PROVE_LOCKING
-> and CONFIG_DEBUG_LOCK_ALLOC selected.
-> 
-> Unselecting those made the warning go away. Good enough for me.
-> 
-> Thanks!
-> 
-> Next up is getting the rtdm driver modules to build.
-> 
-> Here is the error output without the UART driver selected:
-> ERROR: "__ipipe_smp_key" [drivers/xenomai/net/stack/rtmac/tdma/tdma.ko] undefined!
-> ERROR: "__ipipe_smp_key" [drivers/xenomai/ipc/xeno_rtipc.ko] undefined!
-> ERROR: "__ipipe_smp_key" [drivers/xenomai/can/xeno_can.ko] undefined!
-> 
-
-What version of the I-pipe are you using? The case SMP_ON_UP + rtnet
-tdma on imx6 is build-tested here:
-
-https://xenomai.org//build-test-stable/imx_v6_v7/3.18-arm-linux-gnueabihf-gcc-4.9.3/log.html
-
-and does not seem to produce any error with ipipe-core-3.18.20-arm-6
-
-If that is indeed the version of the patch you are testing, can you
-provide your .config ?
-
-Regards.
-
--- 
-					    Gilles.
-https://click-hack.org
-
+SGVsbG8uCgpXZSBhcmUgc2VlaW5nIGEgcG9zc2libGUgU01QIGJ1ZyBvbiBhcm02NC4gV2hlbiBy
+dW5uaW5nIHRoZSBhdHRhY2hlZCB0ZXN0CnByb2dyYW0gb24gdGhlIDQxMGMgYm9hcmQsIHRoZSBm
+b2xsb3dpbmcgbWVzc2FnZSBhcHBlYXJzLCB1c3VhbGx5IGZvbGxvd2VkCmJ5IGEgY29tcGxldGUg
+bG9ja3VwOgoKTWVzc2FnZSBmcm9tIHN5c2xvZ2RAbGluYXJvLWRldmVsb3BlciBhdCBKdWwgMyAx
+ODo1MTowMCAuLi4Ka2VybmVsOlsgMjg0LjEwMjQ5MF0gTk1JIHdhdGNoZG9nOiBCVUc6IHNvZnQg
+bG9ja3VwIC0gQ1BVIzIgc3R1Y2sgZm9yIAoyM3MhIFt4ZW5vX3NsZWVwOjk2Ml0KCkFuIGltcG9y
+dGFudCBvYnNlcnZhdGlvbiBpcyB3aGVuIEkgc2V0IHRoZSBhZmZpbml0eSBmb3IgdGhlIHJlYWx0
+aW1lIHRocmVhZAp0byBhIHNwZWNpZmljIGNvcmUsIHRoZSBwcm9ibGVtIGdvZXMgYXdheS4gSSBz
+dXNwZWN0IHRoZXJlIGlzIGFuIGlzc3VlIHdpdGgKQ1BVIG1pZ3JhdGlvbiB0aGF0IHRyaWdnZXJz
+IG1vc3Qgb2Z0ZW4gd2hlbiBzbGVlcGluZyBmb3IgYSBzaG9ydCBpbnRlcnZhbC4KCkkgaGF2ZSBu
+b3QgdGVzdGVkIHRoaXMgb24gYW55IG90aGVyIHBsYXRmb3JtLCBzbyBJIGFtIG5vdCBzdXJlIGlm
+IHRoaXMgaXMKYXJtNjQgc3BlY2lmaWMuIEFueSBoZWxwIHdvdWxkIGJlIGdyZWF0bHkgYXBwcmVj
+aWF0ZWQuCgpUZXN0IHNldHVwOgo0MTBjL0RlYmlhbiB3aXRoIEpvcmdlJ3MgbGF0ZXN0IGlwaXBl
+IGFuZCB4ZW5vbWFpIHRyZWVzLgoKVGhhbmtzLApEbWl0cml5Ci0tLS0tLS0tLS0tLS0tIG5leHQg
+cGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4u
+Ck5hbWU6IHhlbm9fc2xlZXAuYwpUeXBlOiB0ZXh0L3gtY3NyYwpTaXplOiAxMjk0IGJ5dGVzCkRl
+c2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5v
+bWFpL2F0dGFjaG1lbnRzLzIwMTYwMjAyLzk5NjBjMGUxL2F0dGFjaG1lbnQuYz4K
