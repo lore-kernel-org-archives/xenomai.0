@@ -1,18 +1,12 @@
-References: <1453821607-20836-1-git-send-email-henning.schild@siemens.com>
- <1453902069-18824-1-git-send-email-henning.schild@siemens.com>
- <56A9F314.9030808@xenomai.org> <20160128215313.7717dafb@md1em3qc>
- <56AB9D2B.1030905@xenomai.org> <20160129183948.GE24550@hermes.click-hack.org>
- <20160202130849.44ee20d5@md1em3qc> <56B0B611.4070505@xenomai.org>
- <20160202173849.1a5e43fc@md1em3qc>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <56B0DBA5.100@siemens.com>
-Date: Tue, 2 Feb 2016 17:39:01 +0100
+Date: Tue, 2 Feb 2016 18:43:10 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20160202184310.505cf6be@md1em3qc>
+In-Reply-To: <5698AEA6.6030906@xenomai.org>
+References: <20160114183423.69665622@md1em3qc> <5698AEA6.6030906@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <20160202173849.1a5e43fc@md1em3qc>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH v2] ipipe x86 mm: handle huge pages in memory
- pinning
+Subject: Re: [Xenomai] ipipe x86_64 huge page ioremap
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,17 +15,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, Philippe Gerum <rpm@xenomai.org>
-Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Xenomai@xenomai.org
 
-On 2016-02-02 17:38, Henning Schild wrote:
-> Maybe a HAVE_ARCH_HUGE_VMAP depends on !IPIPE would also be fine?
+On Fri, 15 Jan 2016 09:32:38 +0100
+Philippe Gerum <rpm@xenomai.org> wrote:
 
-No, no, that's a needless restriction. We need to fix I-pipe here.
+> On 01/14/2016 06:34 PM, Henning Schild wrote:
+> > Hey,
+> > 
+> > the 4.1 kernel supports mapping IO memory using huge pages.
+> > 0f616be120c632c818faaea9adcb8f05a7a8601f ..
+> > 6b6378355b925050eb6fa966742d8c2d65ff0d83
+> > 
+> > In ipipe memory that gets ioremapped will get pinned using
+> > __ipipe_pin_mapping_globally, however in the x86_64 case that
+> > function uses vmalloc_sync_one which must only be used on 4k pages.
+> > 
+> > We found the problem when using the kernel in a VBox VM, where the
+> > paravirtualized PCI device has enough iomem to cause huge page
+> > mappings. When loading the device driver you will get a BUG caused
+> > by __ipipe_pin_mapping_globally.
+> > 
+> > I will work on a fix for the problem. But i would also like to
+> > understand the initial purpose of the pinning. Is it even supposed
+> > to work for io memory as well? It looks like a way to commit
+> > address space changes right down into the page tables, to avoid
+> > page-faults in the kernel address space. Probably for more
+> > predictable timing ... 
+> 
+> This is for pinning the page table entries referencing kernel
+> mappings, so that we don't get minor faults when treading over kernel
+> memory, unless the fault fixup code is compatible with primary domain
+> execution, and cheaper than tracking the pgds.
 
-Jan
+Looking at both users of the pinning vmalloc and ioremap it does not
+seem to me like anything is done lazy here. The complete pagetables are
+alloced and filled.
+Maybe i am reading it wrong, maybe the kernel changed since the pinning
+function was introduced, or something else. Could you please explain
+what minor faults we are talking about?
 
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+Faults on the actual content or faults on the PTs? After all they need
+to be mapped in order to read/change them.
+
+Henning
 
