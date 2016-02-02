@@ -4,8 +4,8 @@ References: <1453821607-20836-1-git-send-email-henning.schild@siemens.com>
  <56AB9D2B.1030905@xenomai.org> <20160129183948.GE24550@hermes.click-hack.org>
  <20160202130849.44ee20d5@md1em3qc>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <56B0B611.4070505@xenomai.org>
-Date: Tue, 2 Feb 2016 14:58:41 +0100
+Message-ID: <56B0BAA7.2090307@xenomai.org>
+Date: Tue, 2 Feb 2016 15:18:15 +0100
 MIME-Version: 1.0
 In-Reply-To: <20160202130849.44ee20d5@md1em3qc>
 Content-Type: text/plain; charset=windows-1252
@@ -121,20 +121,18 @@ On 02/02/2016 01:08 PM, Henning Schild wrote:
 >> I-pipe should be able to do the same.
 > 
 > As said, my patch preserves the old ipipe behaviour, making it able to
-> deal with huge pages. Whether or not the pinning is required and on
-> which regions, is a valid but totally different question. Down in these
-> low-level functions you can not tell why the pinning was requested. It
-> has to be dealt with at a higher level.
-> But you are right, the kernel never ends up in vmalloc_sync_one for
-> these regions. Hence we can probably expect that in ioremapped region
-> is always mapped anyways. Since vmalloc_sync_one will ultimately also
-> be used when handling a #PF.
-> 
-> I just traced the change in lib/ioremap.c to
-> d41282baf7c1f2bb517d6df95571e7da865f5e37
-> Not too helpful, at least to me.
+> deal with huge pages.
 
-So why did you trace it?
+No, it does not because it creates an early exit path for x86_32 which
+did not exist preventing the page directory to be updated, which is at
+odds with the implementation for x86_64 of the very same routine where
+your changes do not filter out huge pages from pinning.
+
+So your patch now prevents PTEs for huge pages from being pinned in the
+pgd for x86_32, which departs from the current behavior. However, it
+does not for x86_64 which is already the current behavior.
+
+So the question remains: why this difference?
 
 -- 
 Philippe.
