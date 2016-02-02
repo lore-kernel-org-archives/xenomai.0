@@ -1,13 +1,13 @@
-Date: Tue, 2 Feb 2016 17:30:32 +0100
+Date: Tue, 2 Feb 2016 17:38:49 +0100
 From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20160202173032.3f0429ad@md1em3qc>
-In-Reply-To: <56B0BAA7.2090307@xenomai.org>
+Message-ID: <20160202173849.1a5e43fc@md1em3qc>
+In-Reply-To: <56B0B611.4070505@xenomai.org>
 References: <1453821607-20836-1-git-send-email-henning.schild@siemens.com>
  <1453902069-18824-1-git-send-email-henning.schild@siemens.com>
  <56A9F314.9030808@xenomai.org> <20160128215313.7717dafb@md1em3qc>
  <56AB9D2B.1030905@xenomai.org>
  <20160129183948.GE24550@hermes.click-hack.org>
- <20160202130849.44ee20d5@md1em3qc> <56B0BAA7.2090307@xenomai.org>
+ <20160202130849.44ee20d5@md1em3qc> <56B0B611.4070505@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -24,7 +24,7 @@ List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-On Tue, 2 Feb 2016 15:18:15 +0100
+On Tue, 2 Feb 2016 14:58:41 +0100
 Philippe Gerum <rpm@xenomai.org> wrote:
 
 > On 02/02/2016 01:08 PM, Henning Schild wrote:
@@ -65,10 +65,6 @@ Philippe Gerum <rpm@xenomai.org> wrote:
 > >>>>>>  		return NULL;
 > >>>>>> +	if (pmd_large(*pmd))
 > >>>>>> +		return pmd_k;
-
-Are you talking about this change? Now looking at it it indeed looks
-wrong and should not be there.
-
 > >>>>>>  
 > >>>>>>  	if (!pmd_present(*pmd))
 > >>>>>>  		set_pmd(pmd, *pmd_k);
@@ -129,31 +125,25 @@ wrong and should not be there.
 > >> huge page mappings, the I-pipe should be able to do the same.  
 > > 
 > > As said, my patch preserves the old ipipe behaviour, making it able
-> > to deal with huge pages.  
+> > to deal with huge pages. Whether or not the pinning is required and
+> > on which regions, is a valid but totally different question. Down
+> > in these low-level functions you can not tell why the pinning was
+> > requested. It has to be dealt with at a higher level.
+> > But you are right, the kernel never ends up in vmalloc_sync_one for
+> > these regions. Hence we can probably expect that in ioremapped
+> > region is always mapped anyways. Since vmalloc_sync_one will
+> > ultimately also be used when handling a #PF.
+> > 
+> > I just traced the change in lib/ioremap.c to
+> > d41282baf7c1f2bb517d6df95571e7da865f5e37
+> > Not too helpful, at least to me.  
 > 
-> No, it does not because it creates an early exit path for x86_32 which
-> did not exist preventing the page directory to be updated, which is at
-> odds with the implementation for x86_64 of the very same routine where
-> your changes do not filter out huge pages from pinning.
-> 
-> So your patch now prevents PTEs for huge pages from being pinned in
-> the pgd for x86_32, which departs from the current behavior. However,
-> it does not for x86_64 which is already the current behavior.
-> 
-> So the question remains: why this difference?
+> So why did you trace it?
 
-We are still not on the same page and i still do not know that
-difference exaclty you are talking about. Let us please write inline
-when talking about concrete code.
+I do not want to keep working on that patch just to hear that it is not
+required in the next round. Gilles suggested it might not be and you
+are the one that introduced the pinning.
 
-The return values are different between 32 and 64 because that is just
-how mainline works.
+Maybe a HAVE_ARCH_HUGE_VMAP depends on !IPIPE would also be fine?
 
-The large is checked on pmd und pud because the huge ioremap patch has
-the potential to make these two levels large.
-
-The 32bit patch is derived from 64bit and i might have to check that in
-more detail.
-
-Henning
 
