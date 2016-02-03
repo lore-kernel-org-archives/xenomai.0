@@ -1,13 +1,17 @@
-References: <20160114183423.69665622@md1em3qc> <5698AEA6.6030906@xenomai.org>
- <20160202184310.505cf6be@md1em3qc>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <56B217CD.9020805@xenomai.org>
-Date: Wed, 3 Feb 2016 16:07:57 +0100
+References: <1453902069-18824-1-git-send-email-henning.schild@siemens.com>
+ <1454504365-7015-1-git-send-email-henning.schild@siemens.com>
+ <20160203142448.GB32138@hermes.click-hack.org> <56B20F2E.2020404@siemens.com>
+ <20160203143845.GC32138@hermes.click-hack.org> <56B213F6.2010703@siemens.com>
+ <20160203150213.GE32138@hermes.click-hack.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <56B21966.30206@siemens.com>
+Date: Wed, 3 Feb 2016 16:14:46 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160202184310.505cf6be@md1em3qc>
+In-Reply-To: <20160203150213.GE32138@hermes.click-hack.org>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ipipe x86_64 huge page ioremap
+Subject: Re: [Xenomai] [PATCH v3] ipipe x86 mm: handle huge pages in memory
+ pinning
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,79 +20,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 02/02/2016 06:43 PM, Henning Schild wrote:
-> On Fri, 15 Jan 2016 09:32:38 +0100
-> Philippe Gerum <rpm@xenomai.org> wrote:
-> 
->> On 01/14/2016 06:34 PM, Henning Schild wrote:
->>> Hey,
+On 2016-02-03 16:02, Gilles Chanteperdrix wrote:
+> On Wed, Feb 03, 2016 at 03:51:34PM +0100, Jan Kiszka wrote:
+>> On 2016-02-03 15:38, Gilles Chanteperdrix wrote:
+>>> On Wed, Feb 03, 2016 at 03:31:10PM +0100, Jan Kiszka wrote:
+>>>> On 2016-02-03 15:24, Gilles Chanteperdrix wrote:
+>>>>> On Wed, Feb 03, 2016 at 01:59:25PM +0100, Henning Schild wrote:
+>>>>>> In 4.1 huge page mapping of io memory was introduced, enable ipipe to
+>>>>>> handle that when pinning kernel memory.
+>>>>>>
+>>>>>> change that introduced the feature
+>>>>>> 0f616be120c632c818faaea9adcb8f05a7a8601f
+>>>>>
+>>>>> Could we have an assessment of whether avoiding the call to
+>>>>> __ipipe_pin_range_mapping in upper layers makes the patch simpler?
+>>>>
+>>>> For that, we first of all need to recapitulate how
+>>>> __ipipe_pin_range_globally is/was supposed to work at all.
+>>>>
+>>>> I tried to restore details but I'm specifically failing regarding that
+>>>> "globally". To my understanding, the vmalloc_sync_one of x86 transfers
+>>>> at best mappings from init_mm to the current mm one, but not to all mm
+>>>> in the systems.
 >>>
->>> the 4.1 kernel supports mapping IO memory using huge pages.
->>> 0f616be120c632c818faaea9adcb8f05a7a8601f ..
->>> 6b6378355b925050eb6fa966742d8c2d65ff0d83
->>>
->>> In ipipe memory that gets ioremapped will get pinned using
->>> __ipipe_pin_mapping_globally, however in the x86_64 case that
->>> function uses vmalloc_sync_one which must only be used on 4k pages.
->>>
->>> We found the problem when using the kernel in a VBox VM, where the
->>> paravirtualized PCI device has enough iomem to cause huge page
->>> mappings. When loading the device driver you will get a BUG caused
->>> by __ipipe_pin_mapping_globally.
->>>
->>> I will work on a fix for the problem. But i would also like to
->>> understand the initial purpose of the pinning. Is it even supposed
->>> to work for io memory as well? It looks like a way to commit
->>> address space changes right down into the page tables, to avoid
->>> page-faults in the kernel address space. Probably for more
->>> predictable timing ... 
+>>> __ipipe_pin_range_globally calls vmalloc_sync_one for all pgds in
+>>> the system. This is pretty ugly, not very scalable, but if you do
 >>
->> This is for pinning the page table entries referencing kernel
->> mappings, so that we don't get minor faults when treading over kernel
->> memory, unless the fault fixup code is compatible with primary domain
->> execution, and cheaper than tracking the pgds.
+>> How are future pgds accounted for?
 > 
-> Looking at both users of the pinning vmalloc and ioremap it does not
-> seem to me like anything is done lazy here. The complete pagetables are
-> alloced and filled.
-> Maybe i am reading it wrong, maybe the kernel changed since the pinning
-> function was introduced, or something else. Could you please explain
-> what minor faults we are talking about?
+> vmalloc and ioremap add their mappings to init_mm, all processes
+> created after that copy their kernel mapping from init_mm, so
+> inherit the vmalloc/ioremap mappings.
 > 
-> Faults on the actual content or faults on the PTs? After all they need
-> to be mapped in order to read/change them.
+>>
+>>> not do that, each access to an ioremap/vmalloc area in, say, an
+>>> interrupt handler, causes a fault for processes that do not have the
+>>> mapping in their page tables. Such processes exist if they were
+>>> created before the call to ioremap/vmalloc. Another possible fix to
+>>> this issue is to allow handling that kind of faults over the head
+>>> domain without switching to secondary domain.
+>>
+>> OK, that makes more sense again.
+>>
+>> But then Henning is definitely on the right path, because you can't tell
+>> from 'start' and 'end' or the pgd pointer if there were only huge pages
+>> added or maybe also some small pages. IOW, we do have to walk the page
+>> table trees and therefore have to be prepared to hit some huge pages
+>> along that path.
+> 
+> The function which creates the mappings has to know that it creates
+> huge mapping,
+> what I believe needs to be checked is whether that
+> information can easily be made available to
+> __ipipe_pin_range_globally call sites. Because if it can, we can
+> simply skip the call, and the patch will be simpler that what is
+> currently proposed by Henning.
 
-minor faults: MMU traps occurring when the page is in-core, but not
-indexed by the pgd/TLB, due to a lazy/ondemand mapping scheme or lack of
-resources. This mechanism is typically used with vmalloc'ed memory,
-which underlies kernel modules.
+Nope, this is an internal optimization of the mapping functions: If the
+requested range is large enough for a huge page and the arch supports
+that size, it will be used (because that's faster). So, if we want to
+use vmalloc_sync_one for our purposes, we need to enhance it. The
+alternative is to reimplement it...
 
-1. A Xenomai activity preempts whatever linux context, borrowing the
-current mm
-2. That activity refers to some memory which is not mapped into the
-current mm.
-3. Minor fault
-
-Now, whether a minor fault is acceptable or not latency-wise depends on
-what has to be done for fixing up the current context: specifically we
-must be able to handle the trap immediately without having to wait for
-reentering the regular linux context.
-
-On x86, it's not acceptable so we have to pin those mappings a rt
-activity might tread on into every mm. Usually, TLB miss handlers for
-ppc32/ppc64 can be specifically "ironed", so that we don't have to
-downgrade to linux mode for handling those traps. Some ARM families such
-as imx6 look ok too these days, hence the recent dropping of pte pinning
-for kernel mappings there. Likewise for arm64.
-
-Since you mentioned a patch dating back to 2007, here is a discussion
-illustrating the issue from the same period:
-
-https://xenomai.org/pipermail/xenomai/2007-February/007383.html
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
 
