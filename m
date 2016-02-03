@@ -1,20 +1,10 @@
-Date: Wed, 3 Feb 2016 12:35:18 +0100
 From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20160203123518.20f0d884@md1em3qc>
-In-Reply-To: <20160202192654.GA29937@hermes.click-hack.org>
-References: <1453821607-20836-1-git-send-email-henning.schild@siemens.com>
- <1453902069-18824-1-git-send-email-henning.schild@siemens.com>
- <56A9F314.9030808@xenomai.org> <20160128215313.7717dafb@md1em3qc>
- <56AB9D2B.1030905@xenomai.org>
- <20160129183948.GE24550@hermes.click-hack.org>
- <20160202130849.44ee20d5@md1em3qc> <56B0B611.4070505@xenomai.org>
- <20160202173849.1a5e43fc@md1em3qc>
- <20160202192654.GA29937@hermes.click-hack.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH v2] ipipe x86 mm: handle huge pages in memory
- pinning
+Date: Wed,  3 Feb 2016 13:59:25 +0100
+Message-Id: <1454504365-7015-1-git-send-email-henning.schild@siemens.com>
+In-Reply-To: <1453902069-18824-1-git-send-email-henning.schild@siemens.com>
+References: <1453902069-18824-1-git-send-email-henning.schild@siemens.com>
+Subject: [Xenomai] [PATCH v3] ipipe x86 mm: handle huge pages in memory
+	pinning
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,34 +13,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-On Tue, 2 Feb 2016 20:26:54 +0100
-Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+In 4.1 huge page mapping of io memory was introduced, enable ipipe to
+handle that when pinning kernel memory.
 
-> On Tue, Feb 02, 2016 at 05:38:49PM +0100, Henning Schild wrote:
-> > I do not want to keep working on that patch just to hear that it is
-> > not required in the next round. Gilles suggested it might not be
-> > and you are the one that introduced the pinning.
-> > 
-> > Maybe a HAVE_ARCH_HUGE_VMAP depends on !IPIPE would also be fine?  
-> 
-> I did not expect you to use my remark as an excuse for dropping the
-> ball. What I meant is that maybe, there is a way to skip the call to
-> __ipipe_pin_mapping_globally() entirely in the upper layers, for the
-> "huge pages" case. And if there is, this should be preferred over
-> patching vmalloc_sync_one, a function not meant to be used for huge
-> mappings anyway.
+change that introduced the feature
+0f616be120c632c818faaea9adcb8f05a7a8601f
 
-Please do not get me wrong here. I am not about to drop the ball!
-Making the two things mutually exclusive is a valid solution with
-little complexity. Keeping the patch small might after all be more
-important than catering for questionable features with more patching.
-Hence the suggestion.
+Signed-off-by: Henning Schild <henning.schild@siemens.com>
+---
+ arch/x86/mm/fault.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-The x86_64 portion of my patch is fine but the 32bit version is indeed
-pretty wrong. I just took over what i did for 64bit without thinking ...
+This version has the 32bit case changed according to the problems found in
+the review. That patch finally should keep the old behaviour. But we should
+still discuss whether the old behaviour was correct and should be kept.
+If the pinning it not required it should be removed instead of beeing made
+more complex.
 
-Henning
+diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+index fd5bbcc..e78bd09 100644
+--- a/arch/x86/mm/fault.c
++++ b/arch/x86/mm/fault.c
+@@ -211,6 +211,8 @@ static inline pmd_t *vmalloc_sync_one(pgd_t *pgd, unsigned long address)
+ 	pud_k = pud_offset(pgd_k, address);
+ 	if (!pud_present(*pud_k))
+ 		return NULL;
++	if (pud_large(*pud))
++		return NULL;
+ 
+ 	pmd = pmd_offset(pud, address);
+ 	pmd_k = pmd_offset(pud_k, address);
+@@ -400,6 +402,8 @@ static inline int vmalloc_sync_one(pgd_t *pgd, unsigned long address)
+ 
+ 	if (pud_none(*pud) || pud_page_vaddr(*pud) != pud_page_vaddr(*pud_ref))
+ 		BUG();
++	if (pud_large(*pud))
++		return 0;
+ 
+ 	pmd = pmd_offset(pud, address);
+ 	pmd_ref = pmd_offset(pud_ref, address);
+@@ -408,6 +412,8 @@ static inline int vmalloc_sync_one(pgd_t *pgd, unsigned long address)
+ 
+ 	if (pmd_none(*pmd) || pmd_page(*pmd) != pmd_page(*pmd_ref))
+ 		BUG();
++	if (pmd_large(*pmd))
++		return 0;
+ 
+ 	pte_ref = pte_offset_kernel(pmd_ref, address);
+ 	if (!pte_present(*pte_ref))
+-- 
+2.4.10
+
 
