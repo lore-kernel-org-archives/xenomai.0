@@ -1,21 +1,13 @@
-Date: Wed, 3 Feb 2016 02:51:40 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160203015139.GE18030@hermes.click-hack.org>
-References: <20160202200235.GB29937@hermes.click-hack.org>
- <20160202203539.GD27804@deathstar>
- <20160202205945.GC29937@hermes.click-hack.org>
- <20160203003212.GE27804@deathstar>
- <20160203004307.GA18030@hermes.click-hack.org>
- <20160203012135.GF27804@deathstar>
- <20160203013118.GC18030@hermes.click-hack.org>
- <20160203013615.GG27804@deathstar>
- <20160203013752.GD18030@hermes.click-hack.org>
- <20160203014247.GH27804@deathstar>
+Date: Wed, 3 Feb 2016 15:45:05 +0900 (KST)
+From: =?UTF-8?B?67CV7J6s7ZmN?= <1805pjh@naver.com>
+Message-ID: <8db451acc3862440f398037d839fe83@cweb14.nm.nhnsystem.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20160203014247.GH27804@deathstar>
-Subject: Re: [Xenomai] IMX6 Quad inconsistent lock state
+Content-Type: text/plain;
+	charset=UTF-8
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] =?utf-8?q?ubuntu15=2E04_-_xenomai3=2E0=2E1_-_kernel_3?=
+ =?utf-8?q?=2E18=2E20_-_build_error?=
+Reply-To: =?UTF-8?B?67CV7J6s7ZmN?= <1805pjh@naver.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,68 +16,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Welling <mwelling@ieee.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Tue, Feb 02, 2016 at 07:42:47PM -0600, Michael Welling wrote:
-> On Wed, Feb 03, 2016 at 02:37:52AM +0100, Gilles Chanteperdrix wrote:
-> > On Tue, Feb 02, 2016 at 07:36:15PM -0600, Michael Welling wrote:
-> > > On Wed, Feb 03, 2016 at 02:31:18AM +0100, Gilles Chanteperdrix wrote:
-> > > > On Tue, Feb 02, 2016 at 07:21:35PM -0600, Michael Welling wrote:
-> > > > > On Wed, Feb 03, 2016 at 01:43:07AM +0100, Gilles Chanteperdrix wrote:
-> > > > > > On Tue, Feb 02, 2016 at 06:32:12PM -0600, Michael Welling wrote:
-> > > > > > > On Tue, Feb 02, 2016 at 09:59:45PM +0100, Gilles Chanteperdrix wrote:
-> > > > > > > > On Tue, Feb 02, 2016 at 02:35:39PM -0600, Michael Welling wrote:
-> > > > > > > > > On Tue, Feb 02, 2016 at 09:02:35PM +0100, Gilles Chanteperdrix wrote:
-> > > > > > > > > > On Tue, Feb 02, 2016 at 01:53:55PM -0600, Michael Welling wrote:
-> > > > > > > > > > > The kernel otherwise appears to be functional.
-> > > > > > > > > > > How do I fix this?
-> > > > > > > > > > 
-> > > > > > > > > > Disable CONFIG_TRACE_IRQFLAGS. This means disabling CONFIG_LOCKDEP too.
-> > > > > > > > > 
-> > > > > > > > > Ah. I had to trace back the dependencies and found that I had CONFIG_PROVE_LOCKING
-> > > > > > > > > and CONFIG_DEBUG_LOCK_ALLOC selected.
-> > > > > > > > > 
-> > > > > > > > > Unselecting those made the warning go away. Good enough for me.
-> > > > > > > > > 
-> > > > > > > > > Thanks!
-> > > > > > > > > 
-> > > > > > > > > Next up is getting the rtdm driver modules to build.
-> > > > > > > > > 
-> > > > > > > > > Here is the error output without the UART driver selected:
-> > > > > > > > > ERROR: "__ipipe_smp_key" [drivers/xenomai/net/stack/rtmac/tdma/tdma.ko] undefined!
-> > > > > > > > > ERROR: "__ipipe_smp_key" [drivers/xenomai/ipc/xeno_rtipc.ko] undefined!
-> > > > > > > > > ERROR: "__ipipe_smp_key" [drivers/xenomai/can/xeno_can.ko] undefined!
-> > > > > > > > 
-> > > > > > > > An EXPORT_SYMBOL is missing in arch/arm/kernel/ipipe.c. Or you can
-> > > > > > > > disable CONFIG_SMP_ON_UP.
-> > > > > > > 
-> > > > > > > Yeah I figured this one out.
-> > > > > > 
-> > > > > > Ok. On my side I believe I figured why the build-test does not
-> > > > > > reproduce this issue: it has CONFIG_JUMP_LABEL disabled, which does
-> > > > > > not really make sense with CONFIG_SMP_ON_UP and Xenomai, so I
-> > > > > > enabled the option, and next time the build-test runs, we should
-> > > > > > observe the compilation error you got.
-> > > > > 
-> > > > > My configuration also has CONFIG_JUMP_LABEL disabled.
-> > > > > 
-> > > > > I am likely using a module for something you are not.
-> > > > 
-> > > > the tested configuration has tdma enabled as a module. Maybe you are
-> > > > not using I-pipe path version ipipe-core-3.18.20-arm-6 ?
-> > > 
-> > > I am using the following:
-> > > xenomai-3/kernel/cobalt/arch/arm/patches/ipipe-core-3.18.20-arm-6.patch
-> > 
-> > Ok, could you post the .config with which you get a build failure?
-> 
-> It was pasted in the post two messages ago.
-
-Indeed, I even looked at it. Sorry. It is late here, I will try and
-use it tomorrow.
-
--- 
-					    Gilles.
-https://click-hack.org
-
+77u/aGVsbG8KIAphZnRlciBpcGlwZSBwYXRjaGVkLCAgYnVpbGQgZXJyb3IgIAogCiAKIyBjZCBs
+aW51eC0zLjE4LjIwCiAKIyAuLi94ZW5vbWFpLTMuMC4xL3NjcmlwdHMvcHJlcGFyZS1rZXJuZWwu
+c2ggLS1hcmNoPXg4Nl82NCAtLWlwaXBlPS4uL2lwaXBlLWNvcmUtMy4xOC4yMC14ODYtNC5wYXRj
+aAogCiMgbWFrZSBtZW51Y29uZmlnIAotJmd0OyAiUG93ZXIgTWFuYWdlbWVudCBhbmQgQUNQSSBv
+cHRpb25zIiAtLSAiQ1BVIEZyZXF1ZW5jeSBzY2FsaW5nIiAtLSAiQ1BVIEZyZXF1ZW5jeSBzY2Fs
+aW5nIgotJmd0OyAiUG93ZXIgTWFuYWdlbWVudCBhbmQgQUNQSSBvcHRpb25zIiAtLSAiQUNQSSh+
+KSBTdXBwb3J0IiAtLSAiUHJvY2Vzc29yIgotJmd0OyAiUG93ZXIgTWFuYWdlbWVudCBhbmQgQUNQ
+SSBvcHRpb25zIiAtLSAiQ3B1aWRsZSBEcml2ZXIgZm9yIEludGVsIFByb2Nlc3NvcnMiCi0mZ3Q7
+ICJQb3dlciBNYW5hZ2VtZW50IGFuZCBBQ1BJIG9wdGlvbnMiIC0tICJDUFUgaWRsZSBQTSBTdXBw
+b3J0IgotJmd0OyAiQnVzIG9wdGlvbnMoUENJIGV0Yy4pIiAtLSAiTWVzc2FnZSBTaWduYWxlZCBJ
+bnRlcnJ1cHRzIChNU0kgYW5kIE1TSS1YKSIKLSZndDsgIkRldmljZSBEcml2ZXJzIiAtLSAiSW5w
+dXQgZGV2aWNlIHN1cHBvcnQiIC0tICJNaXNjZWxsYW5lb3VzIGRldmljZXMiIC0tICJQQyBTcGVh
+a2VyIHN1cHBvcnQiCmFsbCBkaXNhYmxlZAogCiNtYWtlCiAKIyMjIyMjIyMjIyMjIyMjIyMjZXJy
+b3IjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIzMKIAogIEND
+IFtNXSAgZHJpdmVycy9uZXQvd2lyZWxlc3MvcnRsd2lmaS9ydGw4MTkyZWUvdHJ4Lm8KICBDQyBb
+TV0gIGRyaXZlcnMvc3RhZ2luZy91bmlzeXMvdWlzbGliL3Vpc3V0aWxzLm8KICBDQyBbTV0gIGRy
+aXZlcnMvdXNiL21pc2MvbHZzdGVzdC5vCiAgQ0MgW01dICBkcml2ZXJzL3V3Yi91bWMtZHJ2Lm8K
+ICBDQyBbTV0gIGRyaXZlcnMvc3RhZ2luZy9zcGVha3VwL3RocmVhZC5vCiAgQ0MgW01dICBkcml2
+ZXJzL3V3Yi93aGNpLm8KICBDQyBbTV0gIGRyaXZlcnMvbmV0L3dpcmVsZXNzL3J0bHdpZmkvcnRs
+ODE5MnNlL3N3Lm8KZHJpdmVycy9zdGFnaW5nL3VuaXN5cy91aXNsaWIvdWlzdXRpbHMuYzogSW4g
+ZnVuY3Rpb24g4oCYdWlzY3RybF9yZWdpc3Rlcl9yZXFfaGFuZGxlcuKAmToKZHJpdmVycy9zdGFn
+aW5nL3VuaXN5cy91aXNsaWIvdWlzdXRpbHMuYzoxMDE6ODogZXJyb3I6IOKAmFZFUlNJT07igJkg
+dW5kZWNsYXJlZCAoZmlyc3QgdXNlIGluIHRoaXMgZnVuY3Rpb24pCiAgICAgICAgVkVSU0lPTiwg
+TlVMTCk7CiAgICAgICAgXgpkcml2ZXJzL3N0YWdpbmcvdW5pc3lzL3Vpc2xpYi91aXN1dGlscy5j
+OjEwMTo4OiBub3RlOiBlYWNoIHVuZGVjbGFyZWQgaWRlbnRpZmllciBpcyByZXBvcnRlZCBvbmx5
+IG9uY2UgZm9yIGVhY2ggZnVuY3Rpb24gaXQgYXBwZWFycyBpbgpkcml2ZXJzL3N0YWdpbmcvdW5p
+c3lzL3Vpc2xpYi91aXN1dGlscy5jOiBJbiBmdW5jdGlvbiDigJh1aXNjdHJsX3JlZ2lzdGVyX3Jl
+cV9oYW5kbGVyX2V44oCZOgpkcml2ZXJzL3N0YWdpbmcvdW5pc3lzL3Vpc2xpYi91aXN1dGlscy5j
+OjE1NDoxOTogZXJyb3I6IOKAmFZFUlNJT07igJkgdW5kZWNsYXJlZCAoZmlyc3QgdXNlIGluIHRo
+aXMgZnVuY3Rpb24pCiAgICAgICAgICJ1aXNsaWIiLCBWRVJTSU9OLCBOVUxMKTsKICAgICAgICAg
+ICAgICAgICAgIF4Kc2NyaXB0cy9NYWtlZmlsZS5idWlsZDoyNTc6IHJlY2lwZSBmb3IgdGFyZ2V0
+ICdkcml2ZXJzL3N0YWdpbmcvdW5pc3lzL3Vpc2xpYi91aXN1dGlscy5vJyBmYWlsZWQKbWFrZVs1
+XTogKioqIFtkcml2ZXJzL3N0YWdpbmcvdW5pc3lzL3Vpc2xpYi91aXN1dGlscy5vXSBFcnJvciAx
+CnNjcmlwdHMvTWFrZWZpbGUuYnVpbGQ6NDAyOiByZWNpcGUgZm9yIHRhcmdldCAnZHJpdmVycy9z
+dGFnaW5nL3VuaXN5cy91aXNsaWInIGZhaWxlZAptYWtlWzRdOiAqKiogW2RyaXZlcnMvc3RhZ2lu
+Zy91bmlzeXMvdWlzbGliXSBFcnJvciAyCnNjcmlwdHMvTWFrZWZpbGUuYnVpbGQ6NDAyOiByZWNp
+cGUgZm9yIHRhcmdldCAnZHJpdmVycy9zdGFnaW5nL3VuaXN5cycgZmFpbGVkCm1ha2VbM106ICoq
+KiBbZHJpdmVycy9zdGFnaW5nL3VuaXN5c10gRXJyb3IgMgptYWtlWzNdOiAqKiog64Gd64KY7KeA
+IOyViuydgCDsnpHsl4XsnYQg6riw64uk66as6rOgIOyeiOyKteuLiOuLpC4uLi4KICBDQyBbTV0g
+IGRyaXZlcnMvbmV0L3dpcmVsZXNzL3J0bHdpZmkvcnRsODE5MnNlL3RhYmxlLm8KICBDQyBbTV0g
+IGRyaXZlcnMvc3RhZ2luZy9zcGVha3VwL3ZhcmhhbmRsZXJzLm8KICBDQyBbTV0gIGRyaXZlcnMv
+c3RhZ2luZy9ydGw4NzIzYXUvb3NfZGVwL3VzYl9pbnRmLm8KICBDQyBbTV0gIGRyaXZlcnMvdXNi
+L21pc2Mvc2lzdXNidmdhL3Npc3VzYi5vCiAgTEQgW01dICBkcml2ZXJzL25ldC93aXJlbGVzcy9y
+dGx3aWZpL3J0bDgxOTJlZS9ydGw4MTkyZWUubwogIENDIFtNXSAgZHJpdmVycy91c2IvbWlzYy9z
+aXN1c2J2Z2Evc2lzdXNiX2luaXQubwogIENDIFtNXSAgZHJpdmVycy91c2IvbWlzYy9zaXN1c2J2
+Z2Evc2lzdXNiX2Nvbi5vCiAKIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIwogCmhlbHAg
+bWUgcGxlYXNlCiAK
