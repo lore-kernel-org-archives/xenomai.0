@@ -1,14 +1,20 @@
-Date: Wed, 3 Feb 2016 08:41:50 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160203074150.GG18030@hermes.click-hack.org>
-References: <8db451acc3862440f398037d839fe83@cweb14.nm.nhnsystem.com>
+Date: Wed, 3 Feb 2016 12:35:18 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20160203123518.20f0d884@md1em3qc>
+In-Reply-To: <20160202192654.GA29937@hermes.click-hack.org>
+References: <1453821607-20836-1-git-send-email-henning.schild@siemens.com>
+ <1453902069-18824-1-git-send-email-henning.schild@siemens.com>
+ <56A9F314.9030808@xenomai.org> <20160128215313.7717dafb@md1em3qc>
+ <56AB9D2B.1030905@xenomai.org>
+ <20160129183948.GE24550@hermes.click-hack.org>
+ <20160202130849.44ee20d5@md1em3qc> <56B0B611.4070505@xenomai.org>
+ <20160202173849.1a5e43fc@md1em3qc>
+ <20160202192654.GA29937@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <8db451acc3862440f398037d839fe83@cweb14.nm.nhnsystem.com>
-Subject: Re: [Xenomai] ubuntu15.04 - xenomai3.0.1 - kernel 3.18.20 - build
- error
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH v2] ipipe x86 mm: handle huge pages in memory
+ pinning
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,30 +23,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?B?67CV7J6s7ZmN?= <1805pjh@naver.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On Wed, Feb 03, 2016 at 03:45:05PM +0900, 박재홍 wrote:
-> ﻿hello
->  
-> after ipipe patched,  build error  
->  
->  
-> # cd linux-3.18.20
->  
-> # ../xenomai-3.0.1/scripts/prepare-kernel.sh --arch=x86_64 --ipipe=../ipipe-core-3.18.20-x86-4.patch
->  
-> # make menuconfig 
-> -&gt; "Power Management and ACPI options" -- "CPU Frequency scaling" -- "CPU Frequency scaling"
-> -&gt; "Power Management and ACPI options" -- "ACPI(~) Support" -- "Processor"
-> -&gt; "Power Management and ACPI options" -- "Cpuidle Driver for Intel Processors"
-> -&gt; "Power Management and ACPI options" -- "CPU idle PM Support"
-> -&gt; "Bus options(PCI etc.)" -- "Message Signaled Interrupts (MSI and MSI-X)"
+On Tue, 2 Feb 2016 20:26:54 +0100
+Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
 
-Enabling MSI/MSI-X is recommended, as it helps avoiding irqs lines
-to be shared between real-time and non real-time drivers.
+> On Tue, Feb 02, 2016 at 05:38:49PM +0100, Henning Schild wrote:
+> > I do not want to keep working on that patch just to hear that it is
+> > not required in the next round. Gilles suggested it might not be
+> > and you are the one that introduced the pinning.
+> > 
+> > Maybe a HAVE_ARCH_HUGE_VMAP depends on !IPIPE would also be fine?  
+> 
+> I did not expect you to use my remark as an excuse for dropping the
+> ball. What I meant is that maybe, there is a way to skip the call to
+> __ipipe_pin_mapping_globally() entirely in the upper layers, for the
+> "huge pages" case. And if there is, this should be preferred over
+> patching vmalloc_sync_one, a function not meant to be used for huge
+> mappings anyway.
 
--- 
-					    Gilles.
-https://click-hack.org
+Please do not get me wrong here. I am not about to drop the ball!
+Making the two things mutually exclusive is a valid solution with
+little complexity. Keeping the patch small might after all be more
+important than catering for questionable features with more patching.
+Hence the suggestion.
+
+The x86_64 portion of my patch is fine but the 32bit version is indeed
+pretty wrong. I just took over what i did for 64bit without thinking ...
+
+Henning
 
