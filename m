@@ -1,13 +1,18 @@
-References: <EF1EB560-EB26-42CF-896F-A98D1329DFC8@gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <56A35D2D.50807@xenomai.org>
-Date: Sat, 23 Jan 2016 11:59:57 +0100
+Date: Wed, 3 Feb 2016 02:31:18 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160203013118.GC18030@hermes.click-hack.org>
+References: <20160202195355.GC27804@deathstar>
+ <20160202200235.GB29937@hermes.click-hack.org>
+ <20160202203539.GD27804@deathstar>
+ <20160202205945.GC29937@hermes.click-hack.org>
+ <20160203003212.GE27804@deathstar>
+ <20160203004307.GA18030@hermes.click-hack.org>
+ <20160203012135.GF27804@deathstar>
 MIME-Version: 1.0
-In-Reply-To: <EF1EB560-EB26-42CF-896F-A98D1329DFC8@gmail.com>
-Content-Type: text/plain; charset="gbk"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] xenomai 3 rt_pipe_write() returns -ENOMEM (cannot
- allocate memory)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20160203012135.GF27804@deathstar>
+Subject: Re: [Xenomai] IMX6 Quad inconsistent lock state
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,62 +21,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gmail <jiahanchina@gmail.com>, xenomai@xenomai.org
+To: Michael Welling <mwelling@ieee.org>
+Cc: xenomai@xenomai.org
 
-T24gMDEvMjMvMjAxNiAwMTo0NCBBTSwgR21haWwgd3JvdGU6Cj4gSGVsbG8sCj4gCj4gR29vZCBk
-YXkgZ2VudGxlbWFuLiBJIHJlY2VudGx5IHN3aXRjaGVkIHRvIHhlbm9tYWkgMyBhbmQgZm91bmQg
-YSBwcm9ibGVtIHdoZW4gSSB1c2UgcnRfcGlwZV93cml0ZSgpIGZ1bmN0aW9uLiAKPiAKPiBBIHBp
-cGUgY2FuIGJlIGNyZWF0ZWQgc3VjY2Vzc2Z1bGx5IGJ5IHJ0X3BpcGVfY3JlYXRlKCkgYnV0IHdo
-ZW4gaXQgY29tZXMgdG8gcnRfcGlwZV93cml0ZSgpLCB0aGUgZnVuY3Rpb24gcmV0dXJucyBFTk9N
-RU0uIEkgdXNlZCBzdHJlcnJvciB0byBwcmludCBvdXQgdGhlIHByb2JsZW0gYW5kIEkgZ290IHRo
-ZSBtZXNzYWdlIKGwY2Fubm90IGFsbG9jYXRlIG1lbW9yeaGxLiAKPiAKPiBJIGRvbqGvdCBrbm93
-IGlmIGl0oa9zIHRoZSBwcm9ibGVtIG9mIHRoZSBidWZmZXIgc2l6ZSBwYXJhbWV0ZXIgaW4gcnRf
-cGlwZV9jcmVhdGUoKSwgcnRfcGlwZV93cml0ZSgpIG9yIHJ0X3Rhc2tfY3JlYXRlKCkgPwo+IE9y
-IGl0oa9zIHRoZSBwcm9ibGVtIG9mIHRoZSBwYXJhbWV0ZXIgaW4gY29uZmlnIGZpbGUgc2V0dGlu
-ZyB3aGVuIEkgY29tcGlsZSB0aGUgeGVub21haSBrZXJuZWw/CgpUaGUgY29kZSBpbGx1c3RyYXRp
-bmcgdGhlIHByb2JsZW0gaXMgaW5jb21wbGV0ZSwgdGhlIGlzc3VlIGlzIGxpa2VseSBpbgp0aGUg
-bm9uLXJ0IHNpZGUgd2hpY2ggbXVzdCBleGlzdCBmb3Igc2VuZGluZyB0aGUgIldvcmxkIiBtZXNz
-YWdlIGJhY2sgdG8KdGhlIHJ0IGVuZHBvaW50LCByZWFkaW5nIHRoZSAiSGVsbG8iIHN0cmluZyBm
-cm9tIHNvbWUgL2Rldi9ydHAqIGRldmljZS4KVGhpcyBjb2RlIGRvZXMgbm90IGFwcGVhciBpbiB5
-b3VyIGRlc2NyaXB0aW9uLgoKPiAKPiBIZXJlIGlzIChzb21lIHBhcnRzIG9mKSBteSBjb2RlIG9u
-IC8qIEtlcm5lbC1zaWRlICovOgo+CgpZb3UgbXVzdCBtZWFuIHVzZXItc3BhY2Ugc2lkZS4KCj4g
-IC8qKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKi8KPiAjaW5jbHVk
-ZSA8YWxjaGVteS90YXNrLmg+Cj4gI2luY2x1ZGUgPGFsY2hlbXkvcGlwZS5oPgo+ICNpbmNsdWRl
-ICA8dHJhbmsvcnRkay5oPgoKRWl0aGVyIHlvdXIgYnVpbGQgZmxhZ3MgaGF2ZSBiZWVuIG9idGFp
-bmVkIGZyb20geGVuby1jb25maWcKLS1jb21wYXQvLS1uYXRpdmUgaW4gd2hpY2ggY2FzZSB5b3Ug
-Y2FuIGluY2x1ZGUgPHJ0ZGsuaD4gZGlyZWN0bHksIG9yCnlvdSBkaWQgbm90IGJ1dCB0aGVuIHlv
-dSBzaG91bGQgbm90IGZvcmNlIHRoZSBsaWJ0cmFuayBoZWFkZXJzIGluLgoKPiAKPiAjZGVmaW5l
-IFRBU0tfUFJJTyAgICA1MCAgICAgICAgIAo+ICNkZWZpbmUgVEFTS19NT0RFICAwICAgICAgICAg
-ICAgICAKPiAjZGVmaW5lIFRBU0tfU1RLU1ogMTAwMDAgICAgICAgICAgIC8qIFN0YWNrIHNpemUg
-KGluIGJ5dGVzKSAqLwoKSXQncyB0aW55LCBlc3BlY2lhbGx5IHdoZW4gY2FsbGluZyBzdGRpbyBy
-b3V0aW5lcy4gVGhlIFhlbm9tYWkgQVBJIHdpbGwKbGlrZWx5IHBpY2sgYSBsYXJnZXIgc2l6ZSB1
-bmRlciB0aGUgaG9vZCBhbnl3YXkuCgo+IAo+IFJUX1RBU0sgdGFza19kZXNjOwo+IFJUX1BJUEUg
-cGlwZV9kZXNjOwo+IAo+IHZvaWQgdGFza19ib2R5KHZvaWQgKmFyZykKPiB7Cj4gICB3aGlsZSAo
-MSkgeyAgICAKPiAgICAgICBmcHJpbnRmKHN0ZGVyciwgIkZhaWxlZDogJXNcbiIsIHN0cmVycm9y
-KC1ydF9waXBlX3dyaXRlKCZwaXBlX2Rlc2MsICJIZWxsbyIsIHNpemVvZigiSGVsbG8iKSwgUF9O
-T1JNQUwpKSk7ICAgICAgICAgIAo+ICAgICAgIAo+ICAgICAgIC8vIFRoZW4gd2FpdCBmb3IgdGhl
-IHJlcGx5IHN0cmluZyAiV29ybGQiOiAKPiAgICAgICBydF9wcmludGYoIioqKioqKndhaXRpbmcq
-KioqKipcbiIpOwoKcnRfcHJpbnQoKSBpcyBvYnNvbGV0ZSB3aXRoIHhlbm9tYWkgMy4gcHJpbnRm
-KCkgZG9lcyB0aGUgam9iIHByb3ZpZGVkCnRoZSBhcHAgaXMgbGlua2VkIHdpdGggdGhlIHByb3Bl
-ciBmbGFncyBvYnRhaW5lZCBmcm9tIHhlbm8tY29uZmlnIC0tbGRmbGFncy4KCj4gCj4gICAgICAg
-Y2hhciBidWZbMjAwXTsKPiAgICAgICBydF9waXBlX3JlYWQoJnBpcGVfZGVzYywgYnVmLCAyMDAs
-IFRNX0lORklOSVRFKTsKCkFueSByZWFzb24gbm90IHRvIHRlc3QgcmV0dXJuIHZhbHVlcz8gVGhp
-cyBpcyBhc2tpbmcgZm9yIHBhaW5mdWwKdHJvdWJsZXMsIGVzcGVjaWFsbHkgd2l0aCBibG9ja2lu
-ZyBjYWxscyB3aGljaCBtaWdodCByZWNlaXZlIGVycm9yCmNvbmRpdGlvbnMgd2hlbiBzbGVlcGlu
-Zy4KCj4gICAgICAgcnRfcHJpbnRmKCJyZWNlaXZlZCBtc2c+ICVzXG4iLCBidWYpOwo+ICAgICAg
-ICAgICAgICAgICAgICAgICAgCj4gICAgICAgc2xlZXAoMSk7ICAgICAgICAgICAgICAgIAo+ICAg
-fQo+IH0KPiAKPiAgCj4gaW50IG1haW4oaW50IGFyZ2MsIGNoYXIqIGFyZ3ZbXSkKPiB7Cj4gICAg
-IG1sb2NrYWxsKE1DTF9DVVJSRU5UfE1DTF9GVVRVUkUpOwo+ICAKClRoaXMgaXMgdXNlbGVzcyBv
-dmVyIHhlbm9tYWkgMy4KCj4gICAgIHJ0X3ByaW50X2F1dG9faW5pdCgxKTsKPiAKCkRpdHRvLgoK
-PiAgICAgcnRfcGlwZV9jcmVhdGUoJnBpcGVfZGVzYywgIm15X3BpcGUiLCBQX01JTk9SX0FVVE8s
-IDMyKTsKPiAKClNpbmNlIHlvdXIgY29kZSBhc2tzIGZvciBhIGZyZWUgL2Rldi9ydHAgZGV2aWNl
-IHRvIGJlIHBpY2tlZCBieSB0aGUgY29yZQpieSBwYXNzaW5nIFBfTUlOT1JfQVVUTywgYnV0IGRv
-ZXNuJ3QgcmVhZCB0aGUgcmV0dXJuIHZhbHVlIG9mCnJ0X3BpcGVfY3JlYXRlKCksIGhvdyBkb2Vz
-IHlvdXIgbm9uLXJ0IHByb2dyYW0gZmlndXJlIG91dCB3aGljaAovZGV2L3J0cCogaXMgY29ubmVj
-dGVkIHRvIHRoZSBydCBlbmRwb2ludD8KCmxpYi9hbGNoZW15L3Rlc3RzdWl0ZS9waXBlLTEuYyBp
-bGx1c3RyYXRlcyBwcm9wZXIgdXNhZ2UuCgpBc2lkZSBvZiB0aGUgbWlzc2luZyB0ZXN0IGNvZGUs
-IHlvdSBkaWQgbm90IG1lbnRpb24gdGhlIHhlbm9tYWkgdmVyc2lvbiwKdGhlIGtlcm5lbCB2ZXJz
-aW9uLCBub3QgZXZlbiB0aGUgQ1BVIGFyY2hpdGVjdHVyZSB5b3UgYXJlIHJ1bm5pbmcgc3VjaApj
-b2RlIG9uLiBQbGVhc2UgY29uc2lkZXIgcmVhZGluZwpodHRwOi8veGVub21haS5vcmcvc3RhcnQt
-aGVyZS8jSWZfc29tZXRoaW5nX2dvZXNfd3JvbmcKCi0tIApQaGlsaXBwZS4KCg==
+On Tue, Feb 02, 2016 at 07:21:35PM -0600, Michael Welling wrote:
+> On Wed, Feb 03, 2016 at 01:43:07AM +0100, Gilles Chanteperdrix wrote:
+> > On Tue, Feb 02, 2016 at 06:32:12PM -0600, Michael Welling wrote:
+> > > On Tue, Feb 02, 2016 at 09:59:45PM +0100, Gilles Chanteperdrix wrote:
+> > > > On Tue, Feb 02, 2016 at 02:35:39PM -0600, Michael Welling wrote:
+> > > > > On Tue, Feb 02, 2016 at 09:02:35PM +0100, Gilles Chanteperdrix wrote:
+> > > > > > On Tue, Feb 02, 2016 at 01:53:55PM -0600, Michael Welling wrote:
+> > > > > > > The kernel otherwise appears to be functional.
+> > > > > > > How do I fix this?
+> > > > > > 
+> > > > > > Disable CONFIG_TRACE_IRQFLAGS. This means disabling CONFIG_LOCKDEP too.
+> > > > > 
+> > > > > Ah. I had to trace back the dependencies and found that I had CONFIG_PROVE_LOCKING
+> > > > > and CONFIG_DEBUG_LOCK_ALLOC selected.
+> > > > > 
+> > > > > Unselecting those made the warning go away. Good enough for me.
+> > > > > 
+> > > > > Thanks!
+> > > > > 
+> > > > > Next up is getting the rtdm driver modules to build.
+> > > > > 
+> > > > > Here is the error output without the UART driver selected:
+> > > > > ERROR: "__ipipe_smp_key" [drivers/xenomai/net/stack/rtmac/tdma/tdma.ko] undefined!
+> > > > > ERROR: "__ipipe_smp_key" [drivers/xenomai/ipc/xeno_rtipc.ko] undefined!
+> > > > > ERROR: "__ipipe_smp_key" [drivers/xenomai/can/xeno_can.ko] undefined!
+> > > > 
+> > > > An EXPORT_SYMBOL is missing in arch/arm/kernel/ipipe.c. Or you can
+> > > > disable CONFIG_SMP_ON_UP.
+> > > 
+> > > Yeah I figured this one out.
+> > 
+> > Ok. On my side I believe I figured why the build-test does not
+> > reproduce this issue: it has CONFIG_JUMP_LABEL disabled, which does
+> > not really make sense with CONFIG_SMP_ON_UP and Xenomai, so I
+> > enabled the option, and next time the build-test runs, we should
+> > observe the compilation error you got.
+> 
+> My configuration also has CONFIG_JUMP_LABEL disabled.
+> 
+> I am likely using a module for something you are not.
+
+the tested configuration has tdma enabled as a module. Maybe you are
+not using I-pipe path version ipipe-core-3.18.20-arm-6 ?
+-- 
+					    Gilles.
+https://click-hack.org
+
