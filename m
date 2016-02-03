@@ -1,9 +1,14 @@
+Sender: Michael Welling <mwelling79@gmail.com>
+Date: Wed, 3 Feb 2016 09:18:02 -0600
+From: Michael Welling <mwelling@ieee.org>
+Message-ID: <20160203151802.GC25464@deathstar>
+References: <20160203145146.GB25464@deathstar>
+ <20160203150448.GF32138@hermes.click-hack.org>
 MIME-Version: 1.0
-Date: Sun, 24 Jan 2016 22:35:13 -0600
-Message-ID: <CA+C+_XQ=uam1BHxoQjWpp_JhC2H9owiNfzyyf8+tWBLVjyiFGg@mail.gmail.com>
-From: Mathew Benson <mathew.benson@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] Xenomai on qemu
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20160203150448.GF32138@hermes.click-hack.org>
+Subject: Re: [Xenomai] RT FEC net driver for IMX6Q
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,22 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-I created a Petalinux build with the 4.0.0 kernel and Xenomai 3.0.1 from
-the stable branch.  I'm running in Qemu, temporarily, until my board
-arrives.  The first time it booted, it paused at:
+On Wed, Feb 03, 2016 at 04:04:48PM +0100, Gilles Chanteperdrix wrote:
+> On Wed, Feb 03, 2016 at 08:51:46AM -0600, Michael Welling wrote:
+> > Is there any specific reason why the fec driver is restricted to the PPC
+> > arcitecture?
+> 
+> In its current state, the driver does not compile for IMX6. A broken
+> patch has been proposed, my idea is to work on RTnet core before
+> tackling the drivers, but if a patch fixing the build for imx6 is
+> proposed, it could be re-enabled.
+>
 
-[Xenomai] scheduling class idle registered.
-[Xenomai] scheduling class rt registered.
-I-pipe: head domain Xenomai registered.
+What are the issues with the RTnet core?
 
-for about 30 seconds.  But it eventually booted up.  As far as I can tell,
-everything looked good.  The kernel self reported xenomai 3.0.1.  I
-commanded a poweroff and restarted qemu.  This time it paused at the same
-line but never came back.  The host CPU is pegged.
+I just found out the hard way that the driver does not compile.
+I will try my best to update the IMX drivers so that they build with 3.18.20.
+ 
+> > 
+> > The driver appears to have bindings for the IMX ARM controllers.
+> > 
+> > Can this driver be used with the IMX6Q processor?
+> > 
+> > 
+> > _______________________________________________
+> > Xenomai mailing list
+> > Xenomai@xenomai.org
+> > http://xenomai.org/mailman/listinfo/xenomai
+> 
+> -- 
+> 					    Gilles.
+> https://click-hack.org
 
-I'm fairly confident this is a qemu issue.  What is the CPU doing at that
-"Head domain Xenomai registered" step?  The menuconfig menu said I had some
-options enabled that were known to be incompatible with Xenomai (APM, ACPI,
-etc...), but I thought I turned those all off.
