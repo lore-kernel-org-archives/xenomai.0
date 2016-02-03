@@ -1,13 +1,14 @@
-Date: Wed, 3 Feb 2016 15:45:05 +0900 (KST)
-From: =?UTF-8?B?67CV7J6s7ZmN?= <1805pjh@naver.com>
-Message-ID: <8db451acc3862440f398037d839fe83@cweb14.nm.nhnsystem.com>
+Date: Wed, 3 Feb 2016 08:33:22 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160203073322.GF18030@hermes.click-hack.org>
+References: <8db451acc3862440f398037d839fe83@cweb14.nm.nhnsystem.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset=UTF-8
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] =?utf-8?q?ubuntu15=2E04_-_xenomai3=2E0=2E1_-_kernel_3?=
- =?utf-8?q?=2E18=2E20_-_build_error?=
-Reply-To: =?UTF-8?B?67CV7J6s7ZmN?= <1805pjh@naver.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8db451acc3862440f398037d839fe83@cweb14.nm.nhnsystem.com>
+Subject: Re: [Xenomai] ubuntu15.04 - xenomai3.0.1 - kernel 3.18.20 - build
+ error
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,53 +17,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?utf-8?B?67CV7J6s7ZmN?= <1805pjh@naver.com>
+Cc: xenomai@xenomai.org
 
-77u/aGVsbG8KIAphZnRlciBpcGlwZSBwYXRjaGVkLCAgYnVpbGQgZXJyb3IgIAogCiAKIyBjZCBs
-aW51eC0zLjE4LjIwCiAKIyAuLi94ZW5vbWFpLTMuMC4xL3NjcmlwdHMvcHJlcGFyZS1rZXJuZWwu
-c2ggLS1hcmNoPXg4Nl82NCAtLWlwaXBlPS4uL2lwaXBlLWNvcmUtMy4xOC4yMC14ODYtNC5wYXRj
-aAogCiMgbWFrZSBtZW51Y29uZmlnIAotJmd0OyAiUG93ZXIgTWFuYWdlbWVudCBhbmQgQUNQSSBv
-cHRpb25zIiAtLSAiQ1BVIEZyZXF1ZW5jeSBzY2FsaW5nIiAtLSAiQ1BVIEZyZXF1ZW5jeSBzY2Fs
-aW5nIgotJmd0OyAiUG93ZXIgTWFuYWdlbWVudCBhbmQgQUNQSSBvcHRpb25zIiAtLSAiQUNQSSh+
-KSBTdXBwb3J0IiAtLSAiUHJvY2Vzc29yIgotJmd0OyAiUG93ZXIgTWFuYWdlbWVudCBhbmQgQUNQ
-SSBvcHRpb25zIiAtLSAiQ3B1aWRsZSBEcml2ZXIgZm9yIEludGVsIFByb2Nlc3NvcnMiCi0mZ3Q7
-ICJQb3dlciBNYW5hZ2VtZW50IGFuZCBBQ1BJIG9wdGlvbnMiIC0tICJDUFUgaWRsZSBQTSBTdXBw
-b3J0IgotJmd0OyAiQnVzIG9wdGlvbnMoUENJIGV0Yy4pIiAtLSAiTWVzc2FnZSBTaWduYWxlZCBJ
-bnRlcnJ1cHRzIChNU0kgYW5kIE1TSS1YKSIKLSZndDsgIkRldmljZSBEcml2ZXJzIiAtLSAiSW5w
-dXQgZGV2aWNlIHN1cHBvcnQiIC0tICJNaXNjZWxsYW5lb3VzIGRldmljZXMiIC0tICJQQyBTcGVh
-a2VyIHN1cHBvcnQiCmFsbCBkaXNhYmxlZAogCiNtYWtlCiAKIyMjIyMjIyMjIyMjIyMjIyMjZXJy
-b3IjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIzMKIAogIEND
-IFtNXSAgZHJpdmVycy9uZXQvd2lyZWxlc3MvcnRsd2lmaS9ydGw4MTkyZWUvdHJ4Lm8KICBDQyBb
-TV0gIGRyaXZlcnMvc3RhZ2luZy91bmlzeXMvdWlzbGliL3Vpc3V0aWxzLm8KICBDQyBbTV0gIGRy
-aXZlcnMvdXNiL21pc2MvbHZzdGVzdC5vCiAgQ0MgW01dICBkcml2ZXJzL3V3Yi91bWMtZHJ2Lm8K
-ICBDQyBbTV0gIGRyaXZlcnMvc3RhZ2luZy9zcGVha3VwL3RocmVhZC5vCiAgQ0MgW01dICBkcml2
-ZXJzL3V3Yi93aGNpLm8KICBDQyBbTV0gIGRyaXZlcnMvbmV0L3dpcmVsZXNzL3J0bHdpZmkvcnRs
-ODE5MnNlL3N3Lm8KZHJpdmVycy9zdGFnaW5nL3VuaXN5cy91aXNsaWIvdWlzdXRpbHMuYzogSW4g
-ZnVuY3Rpb24g4oCYdWlzY3RybF9yZWdpc3Rlcl9yZXFfaGFuZGxlcuKAmToKZHJpdmVycy9zdGFn
-aW5nL3VuaXN5cy91aXNsaWIvdWlzdXRpbHMuYzoxMDE6ODogZXJyb3I6IOKAmFZFUlNJT07igJkg
-dW5kZWNsYXJlZCAoZmlyc3QgdXNlIGluIHRoaXMgZnVuY3Rpb24pCiAgICAgICAgVkVSU0lPTiwg
-TlVMTCk7CiAgICAgICAgXgpkcml2ZXJzL3N0YWdpbmcvdW5pc3lzL3Vpc2xpYi91aXN1dGlscy5j
-OjEwMTo4OiBub3RlOiBlYWNoIHVuZGVjbGFyZWQgaWRlbnRpZmllciBpcyByZXBvcnRlZCBvbmx5
-IG9uY2UgZm9yIGVhY2ggZnVuY3Rpb24gaXQgYXBwZWFycyBpbgpkcml2ZXJzL3N0YWdpbmcvdW5p
-c3lzL3Vpc2xpYi91aXN1dGlscy5jOiBJbiBmdW5jdGlvbiDigJh1aXNjdHJsX3JlZ2lzdGVyX3Jl
-cV9oYW5kbGVyX2V44oCZOgpkcml2ZXJzL3N0YWdpbmcvdW5pc3lzL3Vpc2xpYi91aXN1dGlscy5j
-OjE1NDoxOTogZXJyb3I6IOKAmFZFUlNJT07igJkgdW5kZWNsYXJlZCAoZmlyc3QgdXNlIGluIHRo
-aXMgZnVuY3Rpb24pCiAgICAgICAgICJ1aXNsaWIiLCBWRVJTSU9OLCBOVUxMKTsKICAgICAgICAg
-ICAgICAgICAgIF4Kc2NyaXB0cy9NYWtlZmlsZS5idWlsZDoyNTc6IHJlY2lwZSBmb3IgdGFyZ2V0
-ICdkcml2ZXJzL3N0YWdpbmcvdW5pc3lzL3Vpc2xpYi91aXN1dGlscy5vJyBmYWlsZWQKbWFrZVs1
-XTogKioqIFtkcml2ZXJzL3N0YWdpbmcvdW5pc3lzL3Vpc2xpYi91aXN1dGlscy5vXSBFcnJvciAx
-CnNjcmlwdHMvTWFrZWZpbGUuYnVpbGQ6NDAyOiByZWNpcGUgZm9yIHRhcmdldCAnZHJpdmVycy9z
-dGFnaW5nL3VuaXN5cy91aXNsaWInIGZhaWxlZAptYWtlWzRdOiAqKiogW2RyaXZlcnMvc3RhZ2lu
-Zy91bmlzeXMvdWlzbGliXSBFcnJvciAyCnNjcmlwdHMvTWFrZWZpbGUuYnVpbGQ6NDAyOiByZWNp
-cGUgZm9yIHRhcmdldCAnZHJpdmVycy9zdGFnaW5nL3VuaXN5cycgZmFpbGVkCm1ha2VbM106ICoq
-KiBbZHJpdmVycy9zdGFnaW5nL3VuaXN5c10gRXJyb3IgMgptYWtlWzNdOiAqKiog64Gd64KY7KeA
-IOyViuydgCDsnpHsl4XsnYQg6riw64uk66as6rOgIOyeiOyKteuLiOuLpC4uLi4KICBDQyBbTV0g
-IGRyaXZlcnMvbmV0L3dpcmVsZXNzL3J0bHdpZmkvcnRsODE5MnNlL3RhYmxlLm8KICBDQyBbTV0g
-IGRyaXZlcnMvc3RhZ2luZy9zcGVha3VwL3ZhcmhhbmRsZXJzLm8KICBDQyBbTV0gIGRyaXZlcnMv
-c3RhZ2luZy9ydGw4NzIzYXUvb3NfZGVwL3VzYl9pbnRmLm8KICBDQyBbTV0gIGRyaXZlcnMvdXNi
-L21pc2Mvc2lzdXNidmdhL3Npc3VzYi5vCiAgTEQgW01dICBkcml2ZXJzL25ldC93aXJlbGVzcy9y
-dGx3aWZpL3J0bDgxOTJlZS9ydGw4MTkyZWUubwogIENDIFtNXSAgZHJpdmVycy91c2IvbWlzYy9z
-aXN1c2J2Z2Evc2lzdXNiX2luaXQubwogIENDIFtNXSAgZHJpdmVycy91c2IvbWlzYy9zaXN1c2J2
-Z2Evc2lzdXNiX2Nvbi5vCiAKIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIwogCmhlbHAg
-bWUgcGxlYXNlCiAK
+On Wed, Feb 03, 2016 at 03:45:05PM +0900, 박재홍 wrote:
+> ﻿hello
+>  
+> after ipipe patched,  build error  
+>  
+>  
+> # cd linux-3.18.20
+>  
+> # ../xenomai-3.0.1/scripts/prepare-kernel.sh --arch=x86_64 --ipipe=../ipipe-core-3.18.20-x86-4.patch
+>  
+> # make menuconfig 
+> -&gt; "Power Management and ACPI options" -- "CPU Frequency scaling" -- "CPU Frequency scaling"
+> -&gt; "Power Management and ACPI options" -- "ACPI(~) Support" -- "Processor"
+> -&gt; "Power Management and ACPI options" -- "Cpuidle Driver for Intel Processors"
+> -&gt; "Power Management and ACPI options" -- "CPU idle PM Support"
+> -&gt; "Bus options(PCI etc.)" -- "Message Signaled Interrupts (MSI and MSI-X)"
+> -&gt; "Device Drivers" -- "Input device support" -- "Miscellaneous devices" -- "PC Speaker support"
+> all disabled
+>  
+> #make
+>  
+> ##################error###############################################3
+>  
+>   CC [M]  drivers/net/wireless/rtlwifi/rtl8192ee/trx.o
+>   CC [M]  drivers/staging/unisys/uislib/uisutils.o
+>   CC [M]  drivers/usb/misc/lvstest.o
+>   CC [M]  drivers/uwb/umc-drv.o
+>   CC [M]  drivers/staging/speakup/thread.o
+>   CC [M]  drivers/uwb/whci.o
+>   CC [M]  drivers/net/wireless/rtlwifi/rtl8192se/sw.o
+> drivers/staging/unisys/uislib/uisutils.c: In function ‘uisctrl_register_req_handler’:
+> drivers/staging/unisys/uislib/uisutils.c:101:8: error: ‘VERSION’ undeclared (first use in this function)
+>         VERSION, NULL);
+>         ^
+> drivers/staging/unisys/uislib/uisutils.c:101:8: note: each undeclared identifier is reported only once for each function it appears in
+> drivers/staging/unisys/uislib/uisutils.c: In function ‘uisctrl_register_req_handler_ex’:
+> drivers/staging/unisys/uislib/uisutils.c:154:19: error: ‘VERSION’ undeclared (first use in this function)
+>          "uislib", VERSION, NULL);
+>                    ^
+> scripts/Makefile.build:257: recipe for target 'drivers/staging/unisys/uislib/uisutils.o' failed
+> make[5]: *** [drivers/staging/unisys/uislib/uisutils.o] Error 1
+> scripts/Makefile.build:402: recipe for target 'drivers/staging/unisys/uislib' failed
+> make[4]: *** [drivers/staging/unisys/uislib] Error 2
+> scripts/Makefile.build:402: recipe for target 'drivers/staging/unisys' failed
+> make[3]: *** [drivers/staging/unisys] Error 2
+> make[3]: *** 끝나지 않은 작업을 기다리고 있습니다....
+>   CC [M]  drivers/net/wireless/rtlwifi/rtl8192se/table.o
+>   CC [M]  drivers/staging/speakup/varhandlers.o
+>   CC [M]  drivers/staging/rtl8723au/os_dep/usb_intf.o
+>   CC [M]  drivers/usb/misc/sisusbvga/sisusb.o
+>   LD [M]  drivers/net/wireless/rtlwifi/rtl8192ee/rtl8192ee.o
+>   CC [M]  drivers/usb/misc/sisusbvga/sisusb_init.o
+>   CC [M]  drivers/usb/misc/sisusbvga/sisusb_con.o
+>  
+> ########################################################################################
+>  
+> help me please
+
+Hi,
+
+assuming you do not need it, could you try and disable the option:
+CONFIG_UNISYSSPAR
+?
+
+Regards.
+
+-- 
+					    Gilles.
+https://click-hack.org
+
