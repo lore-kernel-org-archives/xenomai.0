@@ -1,10 +1,14 @@
-Date: Thu, 4 Feb 2016 13:19:01 +0100
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20160204131901.6cd6924b@md1em3qc>
+References: <56B2D4A7.9080801@grom.net>
+ <20160204070002.GC11143@hermes.click-hack.org>
+From: Elmar Grom <elmar@grom.net>
+Message-ID: <56B358E1.3020309@grom.net>
+Date: Thu, 4 Feb 2016 05:57:53 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20160204070002.GC11143@hermes.click-hack.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] huge ioremap from kernel 4.1
+Subject: Re: [Xenomai] Trouble cross compiling Xenomai for Raspberry Pi
+Reply-To: elmar@grom.net
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,27 +17,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Toshi Kani <toshi.kani@hp.com>
-Cc: Xenomai <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hey Toshi,
 
-i am working on the xenomai project where we recently rebased our
-patches on 4.1. The fact that io-regions may be mapped as huge pages
-caused some problem in our patch.
+Oops. Sorry for that. I have been tinkering around with that stuff so 
+much in the past few weeks that I am already seeing red spots all over...
 
-Whenever memory is vmalloced or ioremapped we make sure it is synched
-into all mm's to avoid page faults in that area. We use
-vmalloc_sync_one to do that. Now vmalloc_sync_one can not handle huge
-pages (i am talking about x86 32+64). Hence for areas where you
-introduced huge pages vmalloc_fault should never happen in any mm,
-otherwise your patchset would have introduced a regression in mainline.
 
-Can you help me understand by which mechanism these io-regions are
-always mapped into all mm's, ruling out calls to vmalloc_fault and
-vmalloc_sync_one? Because calling this on these regions will treat you
-device memory as pagetables when huge pages are used.
+On 2/3/2016 11:00 PM, Gilles Chanteperdrix wrote:
+> On Wed, Feb 03, 2016 at 08:33:43PM -0800, Elmar Grom wrote:
+>> make ARCH=arm ROSS_COMPILE=arm-linux-gnueabihf- O=build/linux bzImage
+> Should be CROSS_COMPILE instead of ROSS_COMPILE.
+>
+>
 
-Best regards,
-Henning
 
