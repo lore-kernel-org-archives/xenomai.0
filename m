@@ -1,10 +1,15 @@
+Date: Thu, 4 Feb 2016 12:53:57 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20160204125357.7068aaa4@md1em3qc>
+In-Reply-To: <20160203142448.GB32138@hermes.click-hack.org>
+References: <1453902069-18824-1-git-send-email-henning.schild@siemens.com>
+ <1454504365-7015-1-git-send-email-henning.schild@siemens.com>
+ <20160203142448.GB32138@hermes.click-hack.org>
 MIME-Version: 1.0
-Date: Mon, 25 Jan 2016 08:50:39 +0100
-Message-ID: <CACBbF4Xxk9YNn3rbyZArwj5Fmf0sRPT=SMGKWne_qh0GHuzAmg@mail.gmail.com>
-From: "LOYAU, Florian" <florian.loyau@edu.esiee.fr>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] [PATCH] kernel/drivers/net/drivers/fec: fix compile-time
-	errors
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH v3] ipipe x86 mm: handle huge pages in memory
+ pinning
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,52 +18,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-As requested by Gilles, here's a patch fixing minor build issues with the
-FEC RTnet driver for i.MX platforms. This doesn't alter Kconfig, so doesn't
-reenable building it, since I believe you guys will want to make sure
-everything works right before then.
+On Wed, 3 Feb 2016 15:24:48 +0100
+Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
 
-Be aware that as i mentionned in the earlier mail, it doesn't seem to fully
-work, as the device rx rtskb pool seems to run out after some time. However
-we observed the same issues with different drivers, and they might just
-have been fixed since then.
+> On Wed, Feb 03, 2016 at 01:59:25PM +0100, Henning Schild wrote:
+> > In 4.1 huge page mapping of io memory was introduced, enable ipipe
+> > to handle that when pinning kernel memory.
+> > 
+> > change that introduced the feature
+> > 0f616be120c632c818faaea9adcb8f05a7a8601f  
+> 
+> Could we have an assessment of whether avoiding the call to
+> __ipipe_pin_range_mapping in upper layers makes the patch simpler?
 
----
- kernel/drivers/net/drivers/fec.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I will have a look at that. Specifically why mainline does not run into
+that. With the lazy nature of the mappings, when it comes to other
+mm's, i still do not see why the vmalloc_fault path does not deal with
+huge pages.
 
-diff --git a/kernel/drivers/net/drivers/fec.c
-b/kernel/drivers/net/drivers/fec.c
-index 290b765..753dab7 100644
---- a/kernel/drivers/net/drivers/fec.c
-+++ b/kernel/drivers/net/drivers/fec.c
-@@ -1047,7 +1047,7 @@ static int fec_enet_mii_probe(struct rtnet_device
-*ndev)
+Henning
 
-        snprintf(phy_name, sizeof(phy_name), PHY_ID_FMT, mdio_bus_id,
-phy_id);
-        /* attach the mac to the phy using the dummy linux netdev */
--       phy_dev = phy_connect(fep->netdev, phy_name, &fec_enet_adjust_link,
-0,
-+       phy_dev = phy_connect(fep->netdev, phy_name, &fec_enet_adjust_link,
-/* 0, */
-                              fep->phy_interface);
-        if (IS_ERR(phy_dev)) {
-                printk(KERN_ERR "%s: could not attach to PHY\n",
-ndev->name);
-@@ -1266,7 +1266,7 @@ static int fec_enet_alloc_buffers(struct rtnet_device
-*ndev)
-
-        bdp = fep->rx_bd_base;
-        for (i = 0; i < RX_RING_SIZE; i++) {
--               skb = rtnetdev_alloc_rtskb(netdev, FEC_ENET_RX_FRSIZE); /*
-RTnet */
-+               skb = rtnetdev_alloc_rtskb(ndev, FEC_ENET_RX_FRSIZE); /*
-RTnet */
-                if (!skb) {
-                        fec_enet_free_buffers(ndev);
-                        return -ENOMEM;
---
-1.7.10.4
