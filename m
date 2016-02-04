@@ -1,14 +1,9 @@
-References: <56B2D4A7.9080801@grom.net>
- <20160204070002.GC11143@hermes.click-hack.org>
-From: Elmar Grom <elmar@grom.net>
-Message-ID: <56B358E1.3020309@grom.net>
-Date: Thu, 4 Feb 2016 05:57:53 -0800
 MIME-Version: 1.0
-In-Reply-To: <20160204070002.GC11143@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Trouble cross compiling Xenomai for Raspberry Pi
-Reply-To: elmar@grom.net
+From: Michael Smith <2michael.smith@gmail.com>
+Date: Thu, 4 Feb 2016 17:28:22 +0200
+Message-ID: <CANWkrROZXVOO1nSV0yJtky9H5XefA6Jqs8fC5bxGn3Zo5miv7Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] DMA userspace access
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,18 +12,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-Cc: xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
+Hi guys.
+I am currently converting an existing Linux driver to RTDM.
+I came across a read() file operations function where the author uses
+the function
+get_user_pages() to get a pointer to userspace memory do to a direct
+DMA transfer operation to it.
+I don't see any equivalent functionality in the RTDM API, so I just
+wanted to check if
+I'm not missing something.
+There are various RTDM functions to map IO & kernel memory to
+userspace but not to
+aquire and lock userspace pages in order to do a transfer to it like
+with this function.
 
-Oops. Sorry for that. I have been tinkering around with that stuff so 
-much in the past few weeks that I am already seeing red spots all over...
+It seems that the only solution in this case is to keep the code as it
+is and to call it
+in the secondary domain instead of the primary.
+Please let me know if there is an alternative way to do this from the
+primary domain.
 
-
-On 2/3/2016 11:00 PM, Gilles Chanteperdrix wrote:
-> On Wed, Feb 03, 2016 at 08:33:43PM -0800, Elmar Grom wrote:
->> make ARCH=arm ROSS_COMPILE=arm-linux-gnueabihf- O=build/linux bzImage
-> Should be CROSS_COMPILE instead of ROSS_COMPILE.
->
->
-
+Thanks.
+Michael
 
