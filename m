@@ -1,15 +1,10 @@
-Date: Thu, 4 Feb 2016 12:53:57 +0100
+Date: Thu, 4 Feb 2016 13:19:01 +0100
 From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20160204125357.7068aaa4@md1em3qc>
-In-Reply-To: <20160203142448.GB32138@hermes.click-hack.org>
-References: <1453902069-18824-1-git-send-email-henning.schild@siemens.com>
- <1454504365-7015-1-git-send-email-henning.schild@siemens.com>
- <20160203142448.GB32138@hermes.click-hack.org>
+Message-ID: <20160204131901.6cd6924b@md1em3qc>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH v3] ipipe x86 mm: handle huge pages in memory
- pinning
+Subject: [Xenomai] huge ioremap from kernel 4.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,26 +13,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Toshi Kani <toshi.kani@hp.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Wed, 3 Feb 2016 15:24:48 +0100
-Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+Hey Toshi,
 
-> On Wed, Feb 03, 2016 at 01:59:25PM +0100, Henning Schild wrote:
-> > In 4.1 huge page mapping of io memory was introduced, enable ipipe
-> > to handle that when pinning kernel memory.
-> > 
-> > change that introduced the feature
-> > 0f616be120c632c818faaea9adcb8f05a7a8601f  
-> 
-> Could we have an assessment of whether avoiding the call to
-> __ipipe_pin_range_mapping in upper layers makes the patch simpler?
+i am working on the xenomai project where we recently rebased our
+patches on 4.1. The fact that io-regions may be mapped as huge pages
+caused some problem in our patch.
 
-I will have a look at that. Specifically why mainline does not run into
-that. With the lazy nature of the mappings, when it comes to other
-mm's, i still do not see why the vmalloc_fault path does not deal with
-huge pages.
+Whenever memory is vmalloced or ioremapped we make sure it is synched
+into all mm's to avoid page faults in that area. We use
+vmalloc_sync_one to do that. Now vmalloc_sync_one can not handle huge
+pages (i am talking about x86 32+64). Hence for areas where you
+introduced huge pages vmalloc_fault should never happen in any mm,
+otherwise your patchset would have introduced a regression in mainline.
 
+Can you help me understand by which mechanism these io-regions are
+always mapped into all mm's, ruling out calls to vmalloc_fault and
+vmalloc_sync_one? Because calling this on these regions will treat you
+device memory as pagetables when huge pages are used.
+
+Best regards,
 Henning
 
