@@ -1,11 +1,15 @@
-From: Elmar Grom <elmar@grom.net>
-Message-ID: <56B2D4A7.9080801@grom.net>
-Date: Wed, 3 Feb 2016 20:33:43 -0800
+Date: Thu, 4 Feb 2016 07:55:00 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160204065500.GB11143@hermes.click-hack.org>
+References: <8db451acc3862440f398037d839fe83@cweb14.nm.nhnsystem.com>
+ <20160203074150.GG18030@hermes.click-hack.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: [Xenomai] Trouble cross compiling Xenomai for Raspberry Pi
-Reply-To: elmar@grom.net
+In-Reply-To: <20160203074150.GG18030@hermes.click-hack.org>
+Subject: Re: [Xenomai] ubuntu15.04 - xenomai3.0.1 - kernel 3.18.20 - build
+ error
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,169 +18,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?utf-8?B?67CV7J6s7ZmN?= <1805pjh@naver.com>
+Cc: xenomai@xenomai.org
 
-Hi,
+On Wed, Feb 03, 2016 at 08:41:50AM +0100, Gilles Chanteperdrix wrote:
+> On Wed, Feb 03, 2016 at 03:45:05PM +0900, 박재홍 wrote:
+> > ﻿hello
+> >  
+> > after ipipe patched,  build error  
+> >  
+> >  
+> > # cd linux-3.18.20
+> >  
+> > # ../xenomai-3.0.1/scripts/prepare-kernel.sh --arch=x86_64 --ipipe=../ipipe-core-3.18.20-x86-4.patch
+> >  
+> > # make menuconfig 
+> > -&gt; "Power Management and ACPI options" -- "CPU Frequency scaling" -- "CPU Frequency scaling"
+> > -&gt; "Power Management and ACPI options" -- "ACPI(~) Support" -- "Processor"
+> > -&gt; "Power Management and ACPI options" -- "Cpuidle Driver for Intel Processors"
+> > -&gt; "Power Management and ACPI options" -- "CPU idle PM Support"
+> > -&gt; "Bus options(PCI etc.)" -- "Message Signaled Interrupts (MSI and MSI-X)"
+> 
+> Enabling MSI/MSI-X is recommended, as it helps avoiding irqs lines
+> to be shared between real-time and non real-time drivers.
 
-I had a bit of a rough time trying to build Xenomai but managed to get all
-issues worked out and put together a shell script going by Gilles 
-suggestion.
-This is based on Sources on the Xenomai website and should be correct, 
-as far I
-can make out. I am pasting the script below for reference of what I am 
-doing.
-The paths are based on my arrangement with the linux tree residing in
-~/raspi/linux and the Xenomai tree residing in ~/raspi/xenomai-3. The script
-itself is launched from ~/raspi though that shouldn't really be relevant.
+If you are interesting in testing rapidly xenomai on an x86 machine,
+you could try the live cd:
 
-I am cross compiling for a Raspberry Pi 2 on an Intel based Ubuntu 
-machine. I
-got the two sources in this way:
+http://xenomai.org/~gch/xeno-live.iso
 
-git clone -b 'rpi-3.18.y' http://github.com/raspberrypi/linux
-git clone git://git.xenomai.org/xenomai-3.git
-
-All steps in the script seem to work, except for the last one as it does 
-not
-manage to actually compile. Eventually the compile ends with a bunch of
-messages about errors in command line arguments. Any ideas what I might be
-doing wrong would be much appreciated.
-
-
-Here is the end of the compile:
-
-...
-(cat /dev/null; ) > modules.order
-mkdir -p kernel/
-   gcc -Wp,-MD,kernel/.bounds.s.d  -nostdinc -isystem 
-/usr/lib/gcc/x86_64-linux-gnu/4.8/include -I../arch/arm/include 
--Iarch/arm/include/generated  -I../include -Iinclude 
--I../arch/arm/include/uapi -Iarch/arm/include/generated/uapi 
--I../include/uapi -Iinclude/generated/uapi -include 
-../include/linux/kconfig.h  -I../. -I. -D__KERNEL__ -mlittle-endian 
--I../../arch/arm/mach-bcm2709/include -I../arch/arm/mach-bcm2709/include 
--Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing 
--fno-common -Werror-implicit-function-declaration -Wno-format-security 
--std=gnu89 -fno-dwarf2-cfi-asm -fno-omit-frame-pointer -mapcs 
--mno-sched-prolog -mabi=aapcs-linux -mno-thumb-interwork -mfpu=vfp 
--funwind-tables -D__LINUX_ARM_ARCH__=7 -march=armv5t -Wa,-march=armv7-a 
--msoft-float -Uarm  -I../arch/arm/xenomai/include 
--Iarch/arm/xenomai/include  -I../include/xenomai -Iinclude/xenomai -O2 
--fno-omit-frame-pointer -fno-optimize-sibling-calls -pg 
--DCC_HAVE_ASM_GOTO    -D"KBUILD_STR(s)=#s" 
--D"KBUILD_BASENAME=KBUILD_STR(bounds)" 
--D"KBUILD_MODNAME=KBUILD_STR(bounds)"  -fverbose-asm -S -o 
-kernel/bounds.s ../kernel/bounds.c
-gcc: error: unrecognized argument in option ‘-mabi=aapcs-linux’
-gcc: note: valid arguments to ‘-mabi=’ are: ms sysv
-gcc: error: unrecognized command line option ‘-mlittle-endian’
-gcc: error: unrecognized command line option ‘-mapcs’
-gcc: error: unrecognized command line option ‘-mno-sched-prolog’
-gcc: error: unrecognized command line option ‘-mno-thumb-interwork’
-gcc: error: unrecognized command line option ‘-mfpu=vfp’
-make[3]: *** [kernel/bounds.s] Error 1
-make[2]: *** [prepare0] Error 2
-make[1]: *** [sub-make] Error 2
-make: *** [__sub-make] Error 2
-
-
-Shell script:
-
-#!/bin/bash
-
-# builds the Xenomai kernel
-
-# switch to the Xenomai tree
-echo entering ~/raspi/xenomai-3
-cd ~/raspi/xenomai-3
-if test $? -gt 0
-then
-	echo failed switching to Xenomai tree
-	exit
-fi
-
-# running the bootstrap script
-echo
-echo running bootstrap...
-scripts/bootstrap
-if test $? -gt 0
-then
-	echo >> failed to bootstrap the Xenomai tree
-	exit
-fi
-
-# running the prepare script
-echo
-echo preparing...
-scripts/prepare-kernel.sh --arch=arm --linux=~/raspi/linux \
---ipipe=~/raspi/xenomai-3/kernel/cobalt/arch/arm/patches/ipipe-core-3.18.20-\
-arm-6.patch
-if test $? -gt 0
-then
-	echo failed to prepare Xenomai kernel
-	exit
-fi
-
-# configure Xenomai
-echo
-echo configuring...
-./configure
-if test $? -gt 0
-then
-	echo failed to configure Xenomai
-	exit
-fi
-
-# switch to the linux tree
-echo
-echo entering ~/raspi/linux
-cd ~/raspi/linux
-if test $? -gt 0
-then
-	echo failed switching to linux tree
-	exit
-fi
-
-echo
-echo making build directory...
-mkdir -p build
-if test $? -gt 0
-then
-	echo failed making build directory
-	exit
-fi
-
-# switch to the linux build tree
-echo
-echo entering ~/raspi/linux/build
-cd ~/raspi/linux/build
-if test $? -gt 0
-then
-	echo failed switching to build tree
-	exit
-fi
-
-echo
-echo configuring...
-make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- O=~/raspi/linux/build 
-bcm2709_defconfig
-if test $? -gt 0
-then
-	echo failed configuration
-	exit
-fi
-
-echo
-echo building...
-make ARCH=arm ROSS_COMPILE=arm-linux-gnueabihf- O=build/linux bzImage 
-modules
-if test $? -gt 0
-then
-	echo failed to compile
-	exit
-fi
-
-
-
-
+-- 
+					    Gilles.
+https://click-hack.org
 
