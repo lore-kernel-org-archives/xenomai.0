@@ -1,15 +1,12 @@
-Date: Fri, 5 Feb 2016 10:51:28 +0100
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20160205105128.027df956@md1em3qc>
-In-Reply-To: <1454618843.7389.35.camel@hpe.com>
-References: <20160204131901.6cd6924b@md1em3qc>
- <1454604076.7389.27.camel@hpe.com>
- <20160204173528.50a028bb@md1em3qc>
- <1454618843.7389.35.camel@hpe.com>
+Date: Fri, 5 Feb 2016 11:13:56 +0000 (UTC)
+From: Frederik Bayart <frederik_bayart@yahoo.co.uk>
+Message-ID: <1019176459.3312173.1454670838251.JavaMail.yahoo@mail.yahoo.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] huge ioremap from kernel 4.1
+References: <1019176459.3312173.1454670838251.JavaMail.yahoo.ref@mail.yahoo.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] ipipe tracer call trace during boot
+Reply-To: Frederik Bayart <frederik_bayart@yahoo.co.uk>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,96 +15,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Toshi Kani <toshi.kani@hpe.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thu, 4 Feb 2016 13:47:23 -0700
-Toshi Kani <toshi.kani@hpe.com> wrote:
-
-> On Thu, 2016-02-04 at 17:35 +0100, Henning Schild wrote:
-> > On Thu, 4 Feb 2016 09:41:16 -0700
-> > Toshi Kani <toshi.kani@hpe.com> wrote:
-> >  =20
-> > > On Thu, 2016-02-04 at 13:19 +0100, Henning Schild wrote: =20
-> > > > Hey Toshi,
-> > > >=20
-> > > > i am working on the xenomai project where we recently rebased
-> > > > our patches on 4.1. The fact that io-regions may be mapped as
-> > > > huge pages caused some problem in our patch.
-> > > >=20
-> > > > Whenever memory is vmalloced or ioremapped we make sure it is
-> > > > synched into all mm's to avoid page faults in that area. We use
-> > > > vmalloc_sync_one to do that. Now vmalloc_sync_one can not handle
-> > > > huge pages (i am talking about x86 32+64). Hence for areas
-> > > > where you introduced huge pages vmalloc_fault should never
-> > > > happen in any mm, otherwise your patchset would have introduced
-> > > > a regression in mainline.
-> > > >=20
-> > > > Can you help me understand by which mechanism these io-regions
-> > > > are always mapped into all mm's, ruling out calls to
-> > > > vmalloc_fault and vmalloc_sync_one? Because calling this on
-> > > > these regions will treat you device memory as pagetables when
-> > > > huge pages are used.=C2=A0=C2=A0 =20
-> > >=20
-> > > The hugepage feature is enabled on x86 PAE and 64. =C2=A0You can
-> > > disable this hugepage feature by using "nohugeiomap" kernel
-> > > option. =C2=A0You can use this option to workaround the issue for the
-> > > time being. =20
-> >=20
-> > That is what we do at the moment but in the long run we would like
-> > our patch to be able to use the feature.
-> > =C2=A0 =20
-> > > That said, vmalloc_sync_one() may not be used for ioremap'd
-> > > ranges. (BTW, this function is defined on 32-bit only, so I
-> > > assume you only call it on 32-bit, and do not see the problem on
-> > > 64-bit..?) =20
-> >=20
-> > Back in 4.1 there is a 32- and 64-bit version. I saw that the 64bit
-> > version is gone in the meantime, but probably just folded into its
-> > single user or something.
-> >=20
-> > Do you happen to know the reason why it may not be used? Is there
-> > another reason except the now obvious "cant deal with huge pages"
-> > vs. "contains huge pages since 4.1". =20
->=20
-> No, and now that I think this should be cleaned up...
->=20
-> > > ioremap
-> > > itself sets up the page tables for the entire range. =C2=A0Hence,
-> > > there is no page fault when you access to the ioremap'd range.
-> > > =C2=A0If you simply remove this call, I think you should be fine. =20
-> >=20
-> > Removing the call is exactly what i plan to do. But before doing
-> > that i would like to understand why faults in that area can never
-> > happen. When calling ioremap the current mm will get the full
-> > mapping, nothing lazy here. But how do all the other pre-existing
-> > mm's also get that mapping?
-> > Say a device interrupt with iomem-access in the handler hits the
-> > init-process. That wont cause a fault because somehow the mappings
-> > where synched into the init-mm from the modprobe-mm, right? How
-> > and
-> > where is that done?
-> >=20
-> > One possible way would be sharing of pagetables. =20
->=20
-> When a process is created via fork(), it calls pgd_alloc(), which then
-> calls pgd_ctor(). =C2=A0This function copies the kernel's pgd entries to
-> the process's pgd for the kernel ranges. =C2=A0So, process's pgd shares
-> the same page tables for the kernel space.
-
-Sure a new process will inherit the current kernel reference. The
-pinning we do is for pre-existing mm's that did not inherit those
-parts when they where forked. Hence the example with init and a later
-insmod causing ioremap. There has to be a way to sync the changes from
-the insmod mm into the init-mm. Otherwise running the device driver in
-the init-mm could cause #PFs.
-So i am afraid it is still not completely clear to me.
-
-> Let me know if I am missing something.
-
-Sorry to bother you with these questions, but you obviously know that
-subsystem better than me.
-
-regards,
-Henning
-
+SSBoYXZlIGJ1aWxkIGFuIDMuMTguMjAga2VybmVsIHdpdGggeGVub21haSAyLjYuNCBnaXQgbGF0
+ZXN0IHdpdGggaXBpcGUtY29yZS0zLjE4LjIwLXg4Ni00LnBhdGNoIG9uIGRlYmlhbiBqZXNzaWUg
+YW1kNjQgKDY0Yml0KS4KCkkgdHJ5IHRvIGJ1aWxkIGFuIHZlcnNpb24gd2l0aCBpcGlwZSB0cmFj
+ZXIuCgpJZiBJIHRyeSB0byBib290LCBJIGdldCBhIGNhbGwgdHJhY2UgOiBpbiBfX2lwaXBlX2lu
+aXRfdHJhY2VyIDoKClJJUCBfX2lwaXBlX3RyYWNlcl9ocmNsb2NrX2luaXRpYWxpemVkCgoKSSB0
+cmllZCBhbHJlYWR5IDoKCi0gZGlzYWJsaW5nIHRyYWNpbmcgb24gYm9vdAotIGVuYWJsaW5nIHZt
+YWxsb2MnZWQgdHJhY2UgYnVmZmVyIAotIHJlZHVjaW5nIGRlcHRoIG9mIHRyYWNlIGxvZyBmcm9t
+IDE0IHRvIDEwCgpJbiBhdHRhY2htZW50IDoKCi0gbXkgbGF0ZXN0IGtlcm5lbCBjb25maWcKLSBh
+IHNjcmVlbnNob3QgZnJvbSB0aGUgY2FsbCB0cmFjZQoKRG9lcyBhbnlvbmUgaGF2ZSBhIHN1Z2dl
+c3Rpb24gd2hhdCBjb3VsZCB0aGUgcHJvYmxlbSA/IApJIG5vdGljZWQgdGhlcmUgd2FzIGFuIGlz
+c3VlIHdpdGggaXBpcGUvdHJhY2VyOiBhbGxvdyBocmNsb2NrIGxhdGUgaW5pdCAoaHR0cDovL3hl
+bm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpLzIwMTUtU2VwdGVtYmVyLzAzNTE3Mi5odG1sKSBi
+dXQgZiBJJ20gY29ycmVjdCB0aGlzIHBhdGNoIGlzwqAgaW50ZWdyYXRlZCBpbiBpcGlwZS1jb3Jl
+LTMuMTguMjAteDg2LTQucGF0Y2gKCktpbmQgcmVnYXJkcywKRnJlZGVyaWsKLS0tLS0tLS0tLS0t
+LS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2Ny
+dWJiZWQuLi4KTmFtZTogY29uZmlnLTMuMTguMjAtYW1kNjQtaXBpcGUtdHJhY2VyClR5cGU6IGFw
+cGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXplOiAxMTUzMDMgYnl0ZXMKRGVzYzogbm90IGF2YWls
+YWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVu
+dHMvMjAxNjAyMDUvYTgyMTBjMzIvYXR0YWNobWVudC5vYmo+Ci0tLS0tLS0tLS0tLS0tIG5leHQg
+cGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4u
+Ck5hbWU6IElNR18yMDE2MDIwNF8xMTA0MTIuanBnClR5cGU6IGltYWdlL2pwZWcKU2l6ZTogMTQ3
+MTA5OSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9w
+aXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE2MDIwNS9hODIxMGMzMi9hdHRhY2htZW50
+LmpwZz4K
