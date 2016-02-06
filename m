@@ -1,12 +1,13 @@
-References: <CANWkrROZXVOO1nSV0yJtky9H5XefA6Jqs8fC5bxGn3Zo5miv7Q@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <56B49B53.10601@siemens.com>
-Date: Fri, 5 Feb 2016 13:53:39 +0100
+Date: Sat, 6 Feb 2016 14:46:53 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160206134652.GI11143@hermes.click-hack.org>
+References: <1019176459.3312173.1454670838251.JavaMail.yahoo.ref@mail.yahoo.com>
+ <1019176459.3312173.1454670838251.JavaMail.yahoo@mail.yahoo.com>
 MIME-Version: 1.0
-In-Reply-To: <CANWkrROZXVOO1nSV0yJtky9H5XefA6Jqs8fC5bxGn3Zo5miv7Q@mail.gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] DMA userspace access
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1019176459.3312173.1454670838251.JavaMail.yahoo@mail.yahoo.com>
+Subject: Re: [Xenomai] ipipe tracer call trace during boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,44 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Smith <2michael.smith@gmail.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Frederik Bayart <frederik_bayart@yahoo.co.uk>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2016-02-04 16:28, Michael Smith wrote:
-> Hi guys.
-> I am currently converting an existing Linux driver to RTDM.
-> I came across a read() file operations function where the author uses
-> the function
-> get_user_pages() to get a pointer to userspace memory do to a direct
-> DMA transfer operation to it.
-> I don't see any equivalent functionality in the RTDM API, so I just
-> wanted to check if
-> I'm not missing something.
-> There are various RTDM functions to map IO & kernel memory to
-> userspace but not to
-> aquire and lock userspace pages in order to do a transfer to it like
-> with this function.
+On Fri, Feb 05, 2016 at 11:13:56AM +0000, Frederik Bayart wrote:
+> I have build an 3.18.20 kernel with xenomai 2.6.4 git latest with ipipe-core-3.18.20-x86-4.patch on debian jessie amd64 (64bit).
 > 
-> It seems that the only solution in this case is to keep the code as it
-> is and to call it
-> in the secondary domain instead of the primary.
-> Please let me know if there is an alternative way to do this from the
-> primary domain.
+> I try to build an version with ipipe tracer.
+> 
+> If I try to boot, I get a call trace : in __ipipe_init_tracer :
+> 
+> RIP __ipipe_tracer_hrclock_initialized
 
-I didn't try yet, but it may work: vfio provides clean forwarding of
-DMA-performing PCI and also AMBA platform devices to userspace. E.g.,
-DPDK uses this to implement NIC drivers in userspace. Prerequisite:
-Linux-supported IOMMU (SMMU on ARM).
 
-However, you will still need RTDM for handling/forwarding interrupts
-unless you plan for polling. And there we are in conflict with vfio
-taking over the device. Probably, we need some extension of vfio here.
+Hi,
 
-That said, there would still be the option to introduce a more or less
-hacky "get my userspace page's phys address" call to udd.
+the problem is probably the commit you found. Will try your
+configuration soon.
 
-Jan
+Regards.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+					    Gilles.
+https://click-hack.org
 
