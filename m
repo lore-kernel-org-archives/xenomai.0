@@ -1,13 +1,13 @@
+Date: Mon, 8 Feb 2016 13:37:57 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160208123757.GC29803@hermes.click-hack.org>
 References: <20160208092941.6f1044da@md1em3qc>
  <20160208090702.GA29803@hermes.click-hack.org>
- <20160208101810.7aec631a@md1em3qc>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <56B87392.8040703@web.de>
-Date: Mon, 8 Feb 2016 11:53:06 +0100
+ <20160208101810.7aec631a@md1em3qc> <56B87392.8040703@web.de>
 MIME-Version: 1.0
-In-Reply-To: <20160208101810.7aec631a@md1em3qc>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <56B87392.8040703@web.de>
 Subject: Re: [Xenomai] mailinglist write access for non-subscribers
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
@@ -17,45 +17,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2016-02-08 10:18, Henning Schild wrote:
-> On Mon, 8 Feb 2016 10:07:02 +0100
-> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
-> =
+On Mon, Feb 08, 2016 at 11:53:06AM +0100, Jan Kiszka wrote:
+> On 2016-02-08 10:18, Henning Schild wrote:
+> > On Mon, 8 Feb 2016 10:07:02 +0100
+> > Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+> > 
+> >> On Mon, Feb 08, 2016 at 09:29:41AM +0100, Henning Schild wrote:
+> >>> Hey guys,
+> >>>
+> >>> i have been discussing the huge ioremap problem with the guy that
+> >>> wrote the patch-set introducing the problem. And i always had this
+> >>> list on CC, unfortunately his replies did not end up on this list
+> >>> because he is not subscribed.
+> >>>
+> >>> Is the list indeed configured like that? And is that not something
+> >>> that should be changed?  
+> >>
+> >> The list is subscriber-only, and this is intentional. It avoids spam.
+> > 
+> > I personally think an open source community should first care about
+> > beeing open and find other ways of dealing with spam, but fair enough.
+> 
+> FWIW, if we seriously want to work closer with the kernel community,
+> this policy should be reconsidered. I know it's additional effort to
+> establish some basic spam filters (unless they already exist anyway),
+> but there is also quite some value in allowing cross-list postings with
+> key communities.
 
->> On Mon, Feb 08, 2016 at 09:29:41AM +0100, Henning Schild wrote:
->>> Hey guys,
->>>
->>> i have been discussing the huge ioremap problem with the guy that
->>> wrote the patch-set introducing the problem. And i always had this
->>> list on CC, unfortunately his replies did not end up on this list
->>> because he is not subscribed.
->>>
->>> Is the list indeed configured like that? And is that not something
->>> that should be changed?  =
+Some kernel mailing lists are "subscriber only" too, probably for
+the same reason (the linux arm kernel mailing list for instance).
+People have complained about it, but so far it does not seem to be a
+problem for the participants to the Linux ARM community.
 
->>
->> The list is subscriber-only, and this is intentional. It avoids spam.
-> =
+The spammers know our domain (is there a domain they do not know
+anyway), at any time, we have a dozen subscriptions pending with
+invalid addresses to lists hosted by xenomai.org. So, if we open the
+gates, they are going to use them.
 
-> I personally think an open source community should first care about
-> beeing open and find other ways of dealing with spam, but fair enough.
+I have no idea how many posts are rejected right now. What we can
+propose is to manually moderate the posts by non-subscribers, if
+this is too much work, we will revert the change, if it happens that
+there is no spam, we will open the list completely.
 
-FWIW, if we seriously want to work closer with the kernel community,
-this policy should be reconsidered. I know it's additional effort to
-establish some basic spam filters (unless they already exist anyway),
-but there is also quite some value in allowing cross-list postings with
-key communities.
+The xenomai.org domain has some spam filtering already, though I am
+not sure the mailing lists do not bypass the spam filtering, before
+opening the mailing list, it has to be checked.
 
-Jan
+Regards.
 
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 181 bytes
-Desc: OpenPGP digital signature
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20160208/a827c35f/at=
-tachment.sig>
+-- 
+					    Gilles.
+https://click-hack.org
+
