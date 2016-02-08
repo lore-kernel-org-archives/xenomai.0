@@ -1,13 +1,19 @@
-Date: Mon, 8 Feb 2016 23:49:30 +0100
+Date: Mon, 8 Feb 2016 23:51:33 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160208224930.GF5654@hermes.click-hack.org>
-References: <20160206134652.GI11143@hermes.click-hack.org>
- <1684684796.1604350.1454943252058.JavaMail.yahoo@mail.yahoo.com>
+Message-ID: <20160208225133.GG5654@hermes.click-hack.org>
+References: <CABShy44+qBTE7WfUZmcs0NUN5n=VJV=GbobcokgjihpPd=TOvw@mail.gmail.com>
+ <CABShy460z-wLi-s4zWo9hBgRT_XSwL1d9EyDxX2n+qKQQVrbNw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1684684796.1604350.1454943252058.JavaMail.yahoo@mail.yahoo.com>
-Subject: Re: [Xenomai] ipipe tracer call trace during boot
+In-Reply-To: <CABShy460z-wLi-s4zWo9hBgRT_XSwL1d9EyDxX2n+qKQQVrbNw@mail.gmail.com>
+Subject: Re: [Xenomai] Sir trouble while installing xenomai 2.6.4 or 3.x on
+ my ubntu 14.04 lts desktop after make menuconfig command i set up the all
+ the setting like real time subsystem i enable vcan driver and then i
+ perform make ,
+ make module_install and make install but after reboot the ubntu 14.04
+ desktop is not working i use this documentation for installation
+ jbohren.com/articles/xenomai-precise/
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,42 +22,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Frederik Bayart <frederik_bayart@yahoo.co.uk>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: BHISHMAPALSINH THAKOR <bjthakor.337@gmail.com>
+Cc: xenomai@xenomai.org
 
-On Mon, Feb 08, 2016 at 02:54:12PM +0000, Frederik Bayart wrote:
-> > On Saturday, 6 February 2016, 14:46, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
-> > 
-> > On Fri, Feb 05, 2016 at 11:13:56AM +0000, Frederik Bayart wrote:
-> > 
-> > > I have build an 3.18.20 kernel with xenomai 2.6.4 git latest with ipipe-core-3.18.20-x86-4.patch on debian jessie amd64 (64bit).
-> > >
-> > > I try to build an version with ipipe tracer.
-> > >
-> > > If I try to boot, I get a call trace : in __ipipe_init_tracer :
-> > >
-> > > RIP __ipipe_tracer_hrclock_initialized
-> > 
-> > Hi,
-> > 
-> > the problem is probably the commit you found. Will try your
-> > configuration soon.
-> > 
-> > Regards.
-> > -- 
-> >                         Gilles.
-> 
-> 
-> I tried with ipipe-core-3.18.20-x86-2.patch with doesn't contain that commit and I have still a call trace :
-> 
-> RIP __ipipe_init_tracer
+On Mon, Feb 08, 2016 at 04:56:59AM -0800, BHISHMAPALSINH THAKOR wrote:
+> So sir please help me on this if possible and for me xenomai rtos is new
+> but i want to learn it
 
 Hi,
 
-I could reproduce this issue. Running "addr2line" on the RIP points
-to __BUILTIN_RETURN_ADDRESS1. I tried enabling frame pointers
-(CONFIG_FRAME_POINTER=y) and the kernel does not crash. I suspect
-__builtin_return_address(1) relies in fact on frame pointers.
+if you are interested in testing rapidly whether your machine
+supports Xenomai, I suggest trying the live CD/USB key:
+
+http://xenomai.org/~gch/xeno-live.iso
 
 Regards.
 
