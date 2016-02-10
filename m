@@ -1,15 +1,10 @@
-References: <CAMJ=MEe9k1CS_tY=SxaaWTd+aYY2jAKNL_Ay1Ya0vvp1w5A6iQ@mail.gmail.com>
- <56B9CC36.1020309@xenomai.org>
- <CAMJ=MEe4vg9+2DF3=4ccss+gfrGnFsvwLL0vsu7rYO4fwBVg6w@mail.gmail.com>
- <CAMJ=MEdRoD20Lri8W6iePg6smZhz73zNZxFdYj8epzBX-oM8xA@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <56BAF9A1.1040803@xenomai.org>
-Date: Wed, 10 Feb 2016 09:49:37 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAMJ=MEdRoD20Lri8W6iePg6smZhz73zNZxFdYj8epzBX-oM8xA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Mercury / pSOS: messages lost due to bug in q_receive
+Date: Wed, 10 Feb 2016 13:41:29 -0500
+Message-ID: <CAHoW4hGmcH5kLzwi-B3LfMrioqdj3TQ_5S8rGP6MbRudcwEBDA@mail.gmail.com>
+From: Charles Kiorpes <ckiorpes@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] Process shared rt_event_wait() never signaled on ARM with
+	Mercury core
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,28 +13,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ronny Meeus <ronny.meeus@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 02/10/2016 07:06 AM, Ronny Meeus wrote:
-> On Tue, Feb 9, 2016 at 9:23 PM, Ronny Meeus <ronny.meeus@gmail.com> wrote:
-> 
->> Philippe
->>
->> I have ported the patch to our version of Xenomai and started the test.
->> It runs already for several minutes without issues so it looks like
->> the problem is solved also with the patch below.
->> I will let it run overnight and update you tomorrow morning.
->>
-> 
-> Test is still running, no issues seen.
-> So the conclusion is clear: your patch solves the issue.
-> Thanks
-> 
+Hello,
+I am having some difficulty getting two processes to signal each other on
+an AM572x EVM.
+I have two small sample applications:
 
-Ok, this patch made it to the -stable and -next branches. Thanks for the
-update.
+- app1 : creates an event "MYTEST" using rt_event_create(), clears the
+event, and then rt_event_wait()s for TM_INFINITE.  When the event is
+signaled, app1 rt_event_clear()s the event and then loops back to the
+rt_event_wait()
 
--- 
-Philippe.
+- app2 : binds to the "MYTEST" event, sleeps for one second,
+rt_event_signal()s the event, and then loops back to the one second sleep
 
+I am using the Mercury core, built natively, configured with:
+xenomai-3.0.1/configure \
+--with-core=mercury \
+--enable-debug \
+--enable-pshared \
+--disable-registry \
+--enable-smp \
+--enable-condvar-workaround
+
+I launch both applications in different terminals in this order:
+# sudo ./app1 --session="Test"
+# sudo ./app2 --session="Test"
+
+The following behavior results:
+- app1 claims to have successfully created the event
+- app2 claims to have successfully bound to the event
+- app2 loops correctly, signalling the event once per second
+- app1 never wakes up from the first rt_event_wait()
+
+I am running the 4.1.15-ti-rt kernel with full preemption.
+
+On an x86 virtual machine with a vanilla 4.2.0-27-generic kernel, the
+applications perform as expected (app1 wakes up when app2 signals the
+event).
+
+Any advice as to where to look for further debugging would be greatly
+appreciated.
+
+Thanks,
+Charles
