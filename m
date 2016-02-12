@@ -1,10 +1,15 @@
-From: Jean-Baptiste Tredez <jean-baptiste.tredez@basystemes.fr>
-Message-ID: <56A65100.8000207@basystemes.fr>
-Date: Mon, 25 Jan 2016 17:44:48 +0100
+References: <CAHoW4hGmcH5kLzwi-B3LfMrioqdj3TQ_5S8rGP6MbRudcwEBDA@mail.gmail.com>
+ <56BB9BE5.80505@xenomai.org>
+ <CAHoW4hGESwFmrK5w4zTRSdqdTXSmOZcbM-SY+rU=PpWH92eDjg@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <56BDB759.1010008@xenomai.org>
+Date: Fri, 12 Feb 2016 11:43:37 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai] rt_imx_uart compilation
+In-Reply-To: <CAHoW4hGESwFmrK5w4zTRSdqdTXSmOZcbM-SY+rU=PpWH92eDjg@mail.gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Process shared rt_event_wait() never signaled on ARM
+ with Mercury core
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,78 +18,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Charles Kiorpes <ckiorpes@gmail.com>
+Cc: xenomai@xenomai.org
 
-Hello,
+On 02/11/2016 01:57 PM, Charles Kiorpes wrote:
+> 
+> I attempted to run several tests:  'task-1', 'event-1', and 'mutex-1'. 
+> Each of these hung indefinitely.  A gdb trace indicated that they were
+> hanging on __libc_do_syscall() within __pthread_cond_wait() within
+> threadobj_cond_wait().
+> 
+> I have attached the full backtrace from mutex-1 as mutex-1_bt.txt
+> 
 
-I tried to compile linux kernel 3.18.12 with xenomai 2.6.4 and rtserial 
-enabled on arm imx6. The compilation failed with :
-   CC [M]  drivers/xenomai/serial/rt_imx_uart.o
-drivers/xenomai/serial/rt_imx_uart.c:39:27: fatal error: 
-mach/hardware.h: No such file or directory
-  #include <mach/hardware.h>
-                            ^
+Ok, if the test suite does not pass, something is badly wrong, so we
+should investigate that hang issue before anything else.
 
-I can see in the file :
-#include <mach/hardware.h>
-#include <mach/imx-uart.h>
+The backtrace reveals that copperplate cannot handshake with a newly
+spawned task, this is the purpose of the wait_on_barrier() call over the
+context of rt_task_start(). That barrier should be signaled by a call to
+threadobj_notify_entry() from the internal trampoline code of the
+emerging thread (task_entry() in alchemy/task.c).
 
-The requested file seem to be in arch/arm/mach-imx/hardware.h and 
-imx-uart.h in arch/arm/include/debug/imx-uart.h so i tried to correct 
-the path with :
-#include <../mach-imx/hardware.h>
-#include <debug/imx-uart.h>
+- maybe task_prologue_2() (alchemy/task.c) which is called earlier hangs
+indefinitely, and therefore prevents threadobj_notify_entry() from running?
 
-The compilation failed with :
+- maybe the new thread does not even start for some reason, are we sure
+task_entry() is reached (e.g. do we hit a breakpoint there?)
 
-   CC [M]  drivers/xenomai/serial/rt_imx_uart.o
-drivers/xenomai/serial/rt_imx_uart.c: In function 'rt_imx_uart_probe':
-drivers/xenomai/serial/rt_imx_uart.c:1465:21: error: dereferencing 
-pointer to incomplete type
-   if (pdata && (pdata->flags & IMXUART_HAVE_RTSCTS))
-                      ^
-drivers/xenomai/serial/rt_imx_uart.c:1465:31: error: 
-'IMXUART_HAVE_RTSCTS' undeclared (first use in this function)
-   if (pdata && (pdata->flags & IMXUART_HAVE_RTSCTS))
-                                ^
-drivers/xenomai/serial/rt_imx_uart.c:1465:31: note: each undeclared 
-identifier is reported only once for each function it appears in
-drivers/xenomai/serial/rt_imx_uart.c:1467:21: error: dereferencing 
-pointer to incomplete type
-   if (pdata && (pdata->flags & IMXUART_USE_DCEDTE))
-                      ^
-drivers/xenomai/serial/rt_imx_uart.c:1467:31: error: 
-'IMXUART_USE_DCEDTE' undeclared (first use in this function)
-   if (pdata && (pdata->flags & IMXUART_USE_DCEDTE))
-                                ^
-drivers/xenomai/serial/rt_imx_uart.c:1469:20: error: dereferencing 
-pointer to incomplete type
-   if (pdata && pdata->init) {
-                     ^
-drivers/xenomai/serial/rt_imx_uart.c:1470:14: error: dereferencing 
-pointer to incomplete type
-    err = pdata->init(pdev);
-               ^
-drivers/xenomai/serial/rt_imx_uart.c:1489:20: error: dereferencing 
-pointer to incomplete type
-   if (pdata && pdata->exit)
-                     ^
-drivers/xenomai/serial/rt_imx_uart.c:1490:8: error: dereferencing 
-pointer to incomplete type
-    pdata->exit(pdev);
-         ^
-drivers/xenomai/serial/rt_imx_uart.c: In function 'rt_imx_uart_remove':
-drivers/xenomai/serial/rt_imx_uart.c:1520:20: error: dereferencing 
-pointer to incomplete type
-   if (pdata && pdata->exit)
-                     ^
-drivers/xenomai/serial/rt_imx_uart.c:1521:8: error: dereferencing 
-pointer to incomplete type
-    pdata->exit(pdev);
-         ^
+Could you inspect the current thread list under gdb when the program hangs?
 
-Do you have an idea ?
+Also, I would recommend to enable full debugging for now
+(--enable-debug=full) to get accurate line information, assuming the
+issue should still show up with a non-optimized code. Hopefully.
 
-
-Jean-Baptiste Trédez
+-- 
+Philippe.
 
