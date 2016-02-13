@@ -1,14 +1,20 @@
-Date: Sat, 13 Feb 2016 13:57:06 +0100
+Date: Sat, 13 Feb 2016 19:42:33 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160213125706.GC25062@hermes.click-hack.org>
-References: <DUB122-W12189AD8672E553549138CC5DA0@phx.gbl>
- <20160128153712.GB21210@hermes.click-hack.org>
- <BLU436-SMTP183FC8D4819E92CBCF167FF0AA0@phx.gbl>
+Message-ID: <20160213184233.GB5255@hermes.click-hack.org>
+References: <20160208090702.GA29803@hermes.click-hack.org>
+ <20160208101810.7aec631a@md1em3qc> <56B87392.8040703@web.de>
+ <20160208123757.GC29803@hermes.click-hack.org>
+ <20160208140259.66e5dc7f@md1em3qc>
+ <20160208195533.24C19384496@gemini.denx.de>
+ <20160209123826.2add02cc@md1em3qc>
+ <20160209163025.B77DD385B08@gemini.denx.de>
+ <20160209190544.GH5654@hermes.click-hack.org>
+ <20160209214846.C3085380907@gemini.denx.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <BLU436-SMTP183FC8D4819E92CBCF167FF0AA0@phx.gbl>
-Subject: Re: [Xenomai] Xenomai on Raspberry Pi 2
+In-Reply-To: <20160209214846.C3085380907@gemini.denx.de>
+Subject: Re: [Xenomai] mailinglist write access for non-subscribers
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,41 +23,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Wolfgang Denk <wd@denx.de>
+Cc: Jan Kiszka <jan.kiszka@web.de>, Xenomai <xenomai@xenomai.org>
 
-On Fri, Feb 12, 2016 at 07:44:51PM -0800, Mathieu Rondonneau wrote:
-> On 16-01-28 07:37 AM, Gilles Chanteperdrix wrote:
-> > On Thu, Jan 28, 2016 at 04:19:16PM +0100, Gianmarco Ottavi wrote:
-> >> I'm trying to make xenomai works on Pi 2 but i get some building
-> >> errors while compiling the kernel. I've looked it up online for
-> >> some guide on how to make it works, tried for example
-> >> https://github.com/awesomebytes/xenorasp, and seems to work and
-> >> boot on Pi b+ but if i try it on Pi 2 it won't boot up(maybe
-> >> becasue works only on 3.18 and newer, and xenorasp is on 3.10).The
-> >> error i get while compiling for xenomai 3.0 on kernel 3.18
-> >> is:"undefined reference to '__ipipe_mach_get_tscinfo' any idea?
-> > 
-> > The I-pipe patch, on which Xenomai is based, does not support the
-> > raspberry pi 2, and can not support it as long as the support is not
-> > mainlined. For the time being, you need to apply a supplementary
-> > patch which has been published on this mailing list.
-> > 
-> Hi Gilles,
+On Tue, Feb 09, 2016 at 10:48:46PM +0100, Wolfgang Denk wrote:
+> Dear Gilles,
 > 
-> can you elaborate "can not support it as long as the support is not
-> mainlined".
-
-I mean that the I-pipe patch is made for the mainline kernel. If you
-use a vendor fork, then the I-pipe patch usually does not apply and
-you need pre and/or post patches.
-
+> In message <20160209190544.GH5654@hermes.click-hack.org> you wrote:
+> >
+> > > Yes, there is spamassassin running...
+> > 
+> > xenomai.org also has spamassassin at SMTP time rejecting mails with
+> > score higher than 10. Since we had one spam today, I wonder if 10 is
+> > may not be a little high. If I may ask, at what score do you reject
+> > posts on the u-boot mailing list?
 > 
-> What does it take to get it mainlined?
+> We are using the default: required_score 5.0
+> 
+> I cannot remember that I've ever seen a false positive with this
+> setting.  But I realize that this is similar to the statement "our
+> computer has never had an undetected error." :-)
 
-An effort from the Raspberry pi community to mainline their code
-instead of using a vendor fork. Note than doing this usually
-improves the code quality, because the code gets more reviews.
+Ok, I have been a bit more cautious and redirected all mails with a
+score higher than 50 to a new mailing list named spam@xenomai.org,
+so that we can check the archives if a mail gets lost.
+
+If everybody receives this mails, this means that I have not broken
+the mailman setup in the same move.
 
 -- 
 					    Gilles.
