@@ -1,13 +1,10 @@
-Date: Mon, 15 Feb 2016 13:15:18 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160215121518.GC9903@hermes.click-hack.org>
-References: <56C1B8F1.5070506@ixion.es>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
+Date: Mon, 15 Feb 2016 13:48:57 +0100
+Message-ID: <CAMgLWPm3z5h-aLw5X5LdU+6ULQoqHTN2ebwR0Y4=z1F+qFVsKA@mail.gmail.com>
+From: "GEORGE, Laurent" <laurent.george@esiee.fr>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <56C1B8F1.5070506@ixion.es>
-Subject: Re: [Xenomai] Unexpected CPU assignment on iMX6Q
+Subject: [Xenomai] Problem with rt_igb driver for I210 card
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,50 +13,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Javier =?iso-8859-1?Q?Mart=EDnez?= Cantos <jmartinez@ixion.es>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, Feb 15, 2016 at 12:39:29PM +0100, Javier Mart=EDnez Cantos wrote:
-> Hi everybody,
->=20
-> I'm currently working on Toradex Apalis iMX6Q (4 cores) with Xenomai=20
-> 2.6.4. The system runs fine.
->=20
-> However, I'm playing around with rt_task_create and T_CPU obtaining the=20
-> following results:
->=20
-> - T_CPU(0-3) leads to task creation on expected core, i.e. 1 to 4,
->=20
-> - while T_CPU(>3) leads to task creation always on first core.
->=20
-> Affinity is configured as follows:
->=20
-> cat /proc/xenomai/affinity
-> 0000000f
->=20
-> I expect rt_task_create to return an EINVAL error or something like that =
+Hi,
 
-> when T_CPU is higher than RTHAL_NR_CPUS - 1.
+I have dowloaded and tested the stable version of Xenoma=C3=AF 3 including =
+a
+support for the I210 (Intel) card, available at the following git:
 
-The affinity is used when starting the task with rt_task_start, not
-when creating it. And indeed, rt_task_start should return -EINVAL if
-no cpu is found for running the task.
+https://git.xenomai.org/xenomai-3.git/commit/?h=3Dnext&id=3D8268c5e87cf0ac5=
+223d98a86918b9420a0e94382
 
->=20
-> Could RTHAL_NR_CPUS has a value higher than 4? How can I check this? I=20
-> have already checked that CONFIG_NR_CPUS is 4.
+I have the following problem:
 
-NR_CPUS does not matter, xnpod_start_thread does a "bitwise and" with
-cpu_online_mask.
+The Installation of Xenomai went well. When I load rt_igb.ko module, the
+rteth0 interface for Intel i210 NIC goes up well but there are following 2
+issues:
 
->=20
-> On runtime, how can I query the "task to core assignment" through=20
-> Xenomai API?
+a) when I try the rtsolicit command to add devices in network, it doesn't
+work
+b) When I try to remove rt_igb module after taking down rteth0 interface it
+hangs and the only way to get back is a hard restart by pressing the
+restart button on PC.
 
-I am not sure there is a way. You can check /proc/xenomai/sched or
-/proc/xenomai/stat though.
+I precise that I have other fully functionnal NIC interfaces based on
+rt_e1000e driver on my PC.
+
+Thank you for your help.
+
+Best regards,
+Laurent George.
 
 --=20
-					    Gilles.
-https://click-hack.org
 
+
+*Laurent George*Professor at ESIEE Paris
+
+*ESIEE Paris - LIGM, Universit=C3=A9 Paris-Est*2 Boulevard Blaise Pascal,
+93162 Noisy-le-Grand
+Laurent.George@esiee.fr
