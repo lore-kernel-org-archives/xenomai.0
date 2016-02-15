@@ -1,14 +1,11 @@
-Date: Mon, 15 Feb 2016 14:44:37 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160215134437.GE9903@hermes.click-hack.org>
-References: <CAMgLWPm3z5h-aLw5X5LdU+6ULQoqHTN2ebwR0Y4=z1F+qFVsKA@mail.gmail.com>
- <20160215125941.GD9903@hermes.click-hack.org>
- <CAMgLWPk0iR9OgAWOm1EzyHvmGS2O2T98WAtR6YZQv4+HxgugnA@mail.gmail.com>
+Sender: Michael Welling <mwelling79@gmail.com>
+Date: Mon, 15 Feb 2016 11:41:21 -0600
+From: Michael Welling <mwelling@ieee.org>
+Message-ID: <20160215174121.GA10070@deathstar>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAMgLWPk0iR9OgAWOm1EzyHvmGS2O2T98WAtR6YZQv4+HxgugnA@mail.gmail.com>
-Subject: Re: [Xenomai] Problem with rt_igb driver for I210 card
+Subject: [Xenomai] RT serial cross-link failure
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,29 +14,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "GEORGE, Laurent" <laurent.george@esiee.fr>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, Feb 15, 2016 at 02:37:23PM +0100, GEORGE, Laurent wrote:
-> >"It does not work" is a bit vague. Do you wait for the link to be up
-> >before sending the solicit? Does it return an error? Does it
-> >send a packet but receive no answer? Some other case?
-> 
-> Some precisions on the problem:
-> 
-> 1) I load all the required modules (like rtnet, rt_igb, etc)- No error
-> 2) I make the rteth0 interface up - No error
-> 3) rtifconfig -a shows rteth0 interface - No error
-> 4) I then run ./rtroute solicit ip_address dev rteth0 - No Error
-> 5) I then check whether the device is solicited using ./rtroute - Error (It
-> doesn't show that IP which I had just solicited - In normal Conditions, it
-> shows when there is no error)
+I took the time to update the IMX UART driver such that it registers with the 3.18 kernel.
 
-Ok, but on the other side, do you see the ARP packet, or not? If
-yes, does the other side answer or not? Do the TX and RX packet
-counters increase?
+The driver appears to register correctly and the /dev/rtdm/rtser* nodes appear.
 
--- 
-					    Gilles.
-https://click-hack.org
+When I run the cross-link demo the system hangs after an error in read_task.
+
+Here is the output that I get:
+main : write-file opened
+main : write-config written
+main : read-file opened
+main : read-config written
+main : write-task created
+main : read-task created
+main : starting write-task
+main : strating read-task
+ Nr |   write-irq    |    irq->read    |   write->read   |
+----------------------------------------------------------
+read_task: error on RTSER_RTIOC_WAIT_EVENT, Operation no permitted
+main : /dev/rtdm/rtser1 (read) -> closed
+read_task: exit
+
+Any ideas why this would happen?
+
+I can provide the patch for the driver if necessary. I tried to keep the changes to a minimal.
 
