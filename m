@@ -1,13 +1,13 @@
-References: <56C1B8F1.5070506@ixion.es>
- <20160215121518.GC9903@hermes.click-hack.org>
-From: =?UTF-8?Q?Javier_Mart=c3=adnez_Cantos?= <jmartinez@ixion.es>
-Message-ID: <56C1CC7D.6080006@ixion.es>
-Date: Mon, 15 Feb 2016 14:02:53 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160215121518.GC9903@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+In-Reply-To: <20160215125941.GD9903@hermes.click-hack.org>
+References: <CAMgLWPm3z5h-aLw5X5LdU+6ULQoqHTN2ebwR0Y4=z1F+qFVsKA@mail.gmail.com>
+ <20160215125941.GD9903@hermes.click-hack.org>
+Date: Mon, 15 Feb 2016 14:37:23 +0100
+Message-ID: <CAMgLWPk0iR9OgAWOm1EzyHvmGS2O2T98WAtR6YZQv4+HxgugnA@mail.gmail.com>
+From: "GEORGE, Laurent" <laurent.george@esiee.fr>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Unexpected CPU assignment on iMX6Q
+Subject: Re: [Xenomai] Problem with rt_igb driver for I210 card
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,100 +16,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 15/02/16 13:15, Gilles Chanteperdrix wrote:
-> On Mon, Feb 15, 2016 at 12:39:29PM +0100, Javier Mart=EDnez Cantos wrot=
-e:
->> Hi everybody,
->>
->> I'm currently working on Toradex Apalis iMX6Q (4 cores) with Xenomai
->> 2.6.4. The system runs fine.
->>
->> However, I'm playing around with rt_task_create and T_CPU obtaining th=
+>"It does not work" is a bit vague. Do you wait for the link to be up
+>before sending the solicit? Does it return an error? Does it
+>send a packet but receive no answer? Some other case?
+
+Some precisions on the problem:
+
+1) I load all the required modules (like rtnet, rt_igb, etc)- No error
+2) I make the rteth0 interface up - No error
+3) rtifconfig -a shows rteth0 interface - No error
+4) I then run ./rtroute solicit ip_address dev rteth0 - No Error
+5) I then check whether the device is solicited using ./rtroute - Error (It
+doesn't show that IP which I had just solicited - In normal Conditions, it
+shows when there is no error)
+
+Best regards,
+Laurent.
+
+
+2016-02-15 13:59 GMT+01:00 Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org>:
+
+> On Mon, Feb 15, 2016 at 01:48:57PM +0100, GEORGE, Laurent wrote:
+> > Hi,
+> >
+> > I have dowloaded and tested the stable version of Xenoma=C3=AF 3 includ=
+ing a
+> > support for the I210 (Intel) card, available at the following git:
+> >
+> >
+> https://git.xenomai.org/xenomai-3.git/commit/?h=3Dnext&id=3D8268c5e87cf0a=
+c5223d98a86918b9420a0e94382
+> >
+> > I have the following problem:
+> >
+> > The Installation of Xenomai went well. When I load rt_igb.ko module, th=
 e
->> following results:
->>
->> - T_CPU(0-3) leads to task creation on expected core, i.e. 1 to 4,
->>
->> - while T_CPU(>3) leads to task creation always on first core.
->>
->> Affinity is configured as follows:
->>
->> cat /proc/xenomai/affinity
->> 0000000f
->>
->> I expect rt_task_create to return an EINVAL error or something like th=
-at
->> when T_CPU is higher than RTHAL_NR_CPUS - 1.
-> The affinity is used when starting the task with rt_task_start, not
-> when creating it. And indeed, rt_task_start should return -EINVAL if
-> no cpu is found for running the task.
-Ok, I misunderstood. Anyway it is unexpected.
-
-Once rt_task_create is called with -say- T_CPU(20), rt_task_start=20
-returns 0 (success) and the target task is launched on first core (index =
-0).
-
-What's wrong?
->> Could RTHAL_NR_CPUS has a value higher than 4? How can I check this? I
->> have already checked that CONFIG_NR_CPUS is 4.
-> NR_CPUS does not matter, xnpod_start_thread does a "bitwise and" with
-> cpu_online_mask.
-I'll explore this path.
->> On runtime, how can I query the "task to core assignment" through
->> Xenomai API?
-> I am not sure there is a way. You can check /proc/xenomai/sched or
-> /proc/xenomai/stat though.
+> > rteth0 interface for Intel i210 NIC goes up well but there are followin=
+g
+> 2
+> > issues:
+> >
+> > a) when I try the rtsolicit command to add devices in network, it doesn=
+'t
+> > work
 >
-Thank you Gilles.
-
---=20
-
-
-Javier Mart=EDnez Cantos
-
-Sistemas embarcados
-
-
-
-=09
-
-Juli=E1n Camarillo, 21 B, 3=AA Planta 28037 Madrid, Espa=F1a
-
-=09
-
-(+34) 91 440 18 33
-
-=09
-
-jmartinez@ixion.es=20
-<.////172.20.31.5/datos/IXION/Info_public/Logos/Nueva%2520imagen%2520corp=
-orativa/Plantillas/xxxx@ixion.es%2520>
-
-=09
-
-http://www.ixion.es <http://www.ixion.es/>
-
--------------------------------------------------------------------------=
--------------------------------------------------------------------------=
--------------------------------------------------------------------------=
--------------
-
-/This message is intended solely for its addressee. It may contain=20
-privileged and/or confidential information, whose disclosure is=20
-prohibited by law. If you have received this message in error, please do=20
-not read, copy or distribute it and notify the dispatcher immediately./
-
-/
-Este correo electr=F3nico est=E1 dirigido exclusivamente a su destinatari=
-o y=20
-puede contener informaci=F3n sujeta a reserva y/o confidencial, cuya=20
-revelaci=F3n est=E1 prohibida por ley. Si Ud. ha recibido este mensaje po=
-r=20
-error, le rogamos que no lo lea, copie o distribuya y que lo notifique=20
-de inmediato a su remitente./
-
-
-
+> "It does not work" is a bit vague. Do you wait for the link to be up
+> before sending the solicit? Does it return an error? Does it
+> send a packet but receive no answer? Some other case?
+>
+> > b) When I try to remove rt_igb module after taking down rteth0 interfac=
+e
+> it
+> > hangs and the only way to get back is a hard restart by pressing the
+> > restart button on PC.
+>
+> Maybe the kernel crashed and capturing the console ideally via
+> serial port, failing that via netconsole would help?
+>
+> Regards.
+>
+> --
+>                                             Gilles.
+> https://click-hack.org
+>
