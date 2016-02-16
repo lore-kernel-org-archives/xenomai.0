@@ -1,13 +1,12 @@
-Date: Tue, 16 Feb 2016 10:25:00 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160216092500.GA17780@hermes.click-hack.org>
-References: <20160216074217.895C2C80639@webmail.sinamail.sina.com.cn>
+References: <CANWkrRMcQw0deq3xrPrsua1-kRuopyxOU_80_OBizZDs=U3whQ@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <56C303A0.8090009@xenomai.org>
+Date: Tue, 16 Feb 2016 12:10:24 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20160216074217.895C2C80639@webmail.sinamail.sina.com.cn>
-Subject: Re: [Xenomai] How can I use Xenomai with Firefly RK3288?
+In-Reply-To: <CANWkrRMcQw0deq3xrPrsua1-kRuopyxOU_80_OBizZDs=U3whQ@mail.gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Missing rtdm_lock_get_irqsave() in API docs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,39 +15,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?B?546L5a6H6amw?= <wangyuchi1017@sina.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: Michael Smith <2michael.smith@gmail.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, Feb 16, 2016 at 03:42:17PM +0800, 王宇驰 wrote:
-> Hi, everyone! I need a real-time platform now, and I have a board:
-> Firefly RK3288.Board: Firefly RK3288;Soc: RK3288 (rockchip);Core:
-> A17;Architecture: armv7. I can get the kernel source here:
-> https://github.com/mmind/linux-rockchip.v3.14, v3.16 v4.1 are all
-> good to be patched with
-> ipipe-core-3.14-arm-1.patch,ipipe-core-3.16-arm-4.patch,
-> ipipe-core-4.1-arm-1.patch respectively.But when I run make
-> bzImage after make firefly-rk3288_defconfig and make menuconfig,it
-> shows that "implicit declaration of function
-> '__ipipe_mach_update_tsc()' in smp.c"Can anyone tell me what I
-> should do next, do I need to port Xenomai to RK3288 or just find a
-> new board?An advice please, I am new to practical embedded
-> programming. Thank you very much!
+On 02/11/2016 04:17 PM, Michael Smith wrote:
+> Hi guys.
+> I have found that the function call rtdm_lock_get_irqsave() is missing
+> from the API documentation.
+> The complimentary call  rtdm_lock_put_irqrestore() is listed under:
+> RTDM -> Driver programming interface -> Synchronisation Services ->
+> Spinlock with preemption deactivation.
+> I found the rtdm_lock_get_irqsave() / rtdm_lock_put_irqrestore() calls
+> while I was looking at the serial driver example code, but could not
+> find the rtdm_lock_get_irqsave() listing in the API documentation.
+> 
+> Was this done with a purpose or is it a mistake?
 
-Hi,
+Speaking of Xenomai 3.0.1, for some reason, Doxygen did not pick the
+documentation block for this macro, which is present and looks like
+properly formatted though. Anyway, the doc was fixed up to make this
+block even more obvious, and I can see it in a locally generated
+html/pdf now. The online doc will reflect that change at the next daily
+update.
 
-The list of supported embedded processors may be found here:
-https://xenomai.org/embedded-hardware/
-
-If you want to port Xenomai to a new ARM board, you should follow
-this guide:
-https://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc/
-
-Though it may be a bit hard if you have no experience in kernel
-programming.
-
-Regards.
+Thanks for the heads up.
 
 -- 
-					    Gilles.
-https://click-hack.org
+Philippe.
 
