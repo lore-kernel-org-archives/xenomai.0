@@ -1,7 +1,6 @@
-Sender: Michael Welling <mwelling79@gmail.com>
-Date: Tue, 16 Feb 2016 11:25:01 -0600
-From: Michael Welling <mwelling@ieee.org>
-Message-ID: <20160216172501.GA9806@deathstar>
+Date: Tue, 16 Feb 2016 18:29:24 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160216172924.GE17780@hermes.click-hack.org>
 References: <20160215174121.GA10070@deathstar> <56C2B626.8010804@sigmatek.at>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -17,46 +16,55 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Wolfgang Netbal <wolfgang.netbal@sigmatek.at>
-Cc: xenomai-bounces@xenomai.org, xenomai@xenomai.org
+Cc: xenomai@xenomai.org
 
 On Tue, Feb 16, 2016 at 06:39:50AM +0100, Wolfgang Netbal wrote:
 > 
 > 
 > Am 2016-02-15 um 18:41 schrieb Michael Welling:
-> >I took the time to update the IMX UART driver such that it registers with the 3.18 kernel.
+> > I took the time to update the IMX UART driver such that it registers with the 3.18 kernel.
 > >
-> >The driver appears to register correctly and the /dev/rtdm/rtser* nodes appear.
+> > The driver appears to register correctly and the /dev/rtdm/rtser* nodes appear.
 > >
-> >When I run the cross-link demo the system hangs after an error in read_task.
+> > When I run the cross-link demo the system hangs after an error in read_task.
 > >
-> >Here is the output that I get:
-> >main : write-file opened
-> >main : write-config written
-> >main : read-file opened
-> >main : read-config written
-> >main : write-task created
-> >main : read-task created
-> >main : starting write-task
-> >main : strating read-task
-> >  Nr |   write-irq    |    irq->read    |   write->read   |
-> >----------------------------------------------------------
-> >read_task: error on RTSER_RTIOC_WAIT_EVENT, Operation no permitted
-> >main : /dev/rtdm/rtser1 (read) -> closed
-> >read_task: exit
+> > Here is the output that I get:
+> > main : write-file opened
+> > main : write-config written
+> > main : read-file opened
+> > main : read-config written
+> > main : write-task created
+> > main : read-task created
+> > main : starting write-task
+> > main : strating read-task
+> >   Nr |   write-irq    |    irq->read    |   write->read   |
+> > ----------------------------------------------------------
+> > read_task: error on RTSER_RTIOC_WAIT_EVENT, Operation no permitted
+> > main : /dev/rtdm/rtser1 (read) -> closed
+> > read_task: exit
 > >
-> >Any ideas why this would happen?
+> > Any ideas why this would happen?
 > >
-> >I can provide the patch for the driver if necessary. I tried to keep the changes to a minimal.
+> > I can provide the patch for the driver if necessary. I tried to keep the changes to a minimal.
 > Dear Michael,
 > 
-> I added a patch on December where I extended the IMX UART driver to support
-> open firmware, maybe my patch can help you to find your issue.
-> I posted the patch in the mailing list, you can find it here
+> I added a patch on December where I extended the IMX UART driver to 
+> support open firmware, maybe my patch can help you to find your issue.
+> I posted the patch in the mailing list, you can find it here 
 > https://xenomai.org/pipermail/xenomai/2015-December/035655.html
 
-This patch does not seem to apply to the driver in the xenomai-3
-repository.
+Please, as indicated at the bottom of every mail you receive from
+the mailing list, and in the mail headers, the address of the
+mailing list is xenomai@xenomai.org.
 
-Is there another patch that adds the devicetree stuff?
+IT IS NOT xenomai-bounces@xenomai.org
 
+When you send a regular mail to this wrong address, the mail
+administrators receive a mail, because, as its name indicates, this
+address is made to receive bounces. This is annoying.
+
+
+-- 
+					    Gilles.
+https://click-hack.org
 
