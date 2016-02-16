@@ -1,13 +1,13 @@
-References: <20160215174121.GA10070@deathstar>
-From: Wolfgang Netbal <wolfgang.netbal@sigmatek.at>
-Message-ID: <56C2B626.8010804@sigmatek.at>
-Date: Tue, 16 Feb 2016 06:39:50 +0100
+Date: Tue, 16 Feb 2016 15:42:17 +0800
+From: "=?GBK?B?zfXT7rPb?=" <wangyuchi1017@sina.com>
 MIME-Version: 1.0
-In-Reply-To: <20160215174121.GA10070@deathstar>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RT serial cross-link failure
-Reply-To: wolfgang.netbal@sigmatek.at
+Message-Id: <20160216074217.895C2C80639@webmail.sinamail.sina.com.cn>
+Content-Type: text/plain;
+	charset=GBK
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+Subject: [Xenomai] How can I use Xenomai with Firefly RK3288?
+Reply-To: wangyuchi1017@sina.com
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,48 +16,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai-bounces@xenomai.org, xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-
-
-Am 2016-02-15 um 18:41 schrieb Michael Welling:
-> I took the time to update the IMX UART driver such that it registers with the 3.18 kernel.
->
-> The driver appears to register correctly and the /dev/rtdm/rtser* nodes appear.
->
-> When I run the cross-link demo the system hangs after an error in read_task.
->
-> Here is the output that I get:
-> main : write-file opened
-> main : write-config written
-> main : read-file opened
-> main : read-config written
-> main : write-task created
-> main : read-task created
-> main : starting write-task
-> main : strating read-task
->   Nr |   write-irq    |    irq->read    |   write->read   |
-> ----------------------------------------------------------
-> read_task: error on RTSER_RTIOC_WAIT_EVENT, Operation no permitted
-> main : /dev/rtdm/rtser1 (read) -> closed
-> read_task: exit
->
-> Any ideas why this would happen?
->
-> I can provide the patch for the driver if necessary. I tried to keep the changes to a minimal.
-Dear Michael,
-
-I added a patch on December where I extended the IMX UART driver to 
-support open firmware, maybe my patch can help you to find your issue.
-I posted the patch in the mailing list, you can find it here 
-https://xenomai.org/pipermail/xenomai/2015-December/035655.html
-
-Kind regards
-Wolfgang
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
->
-
+SGksIGV2ZXJ5b25lISAgSSBuZWVkIGEgcmVhbC10aW1lIHBsYXRmb3JtIG5vdywgYW5kIEkgaGF2
+ZSBhIGJvYXJkOiBGaXJlZmx5IFJLMzI4OC5Cb2FyZDogRmlyZWZseSBSSzMyODg7U29jOiBSSzMy
+ODggKHJvY2tjaGlwKTtDb3JlOiBBMTc7QXJjaGl0ZWN0dXJlOiBhcm12Ny4KSSBjYW4gZ2V0IHRo
+ZSBrZXJuZWwgc291cmNlIGhlcmU6IGh0dHBzOi8vZ2l0aHViLmNvbS9tbWluZC9saW51eC1yb2Nr
+Y2hpcC52My4xNCwgdjMuMTYgdjQuMSBhcmUgYWxsIGdvb2QgdG8gYmUgcGF0Y2hlZCB3aXRoIGlw
+aXBlLWNvcmUtMy4xNC1hcm0tMS5wYXRjaCxpcGlwZS1jb3JlLTMuMTYtYXJtLTQucGF0Y2gsIGlw
+aXBlLWNvcmUtNC4xLWFybS0xLnBhdGNoIHJlc3BlY3RpdmVseS5CdXQgd2hlbiBJIHJ1biBtYWtl
+IGJ6SW1hZ2UgYWZ0ZXIgbWFrZSBmaXJlZmx5LXJrMzI4OF9kZWZjb25maWcgYW5kIG1ha2UgbWVu
+dWNvbmZpZyxpdCBzaG93cyB0aGF0ICJpbXBsaWNpdCBkZWNsYXJhdGlvbiBvZiBmdW5jdGlvbiAn
+X19pcGlwZV9tYWNoX3VwZGF0ZV90c2MoKScgaW4gc21wLmMiQ2FuIGFueW9uZSB0ZWxsIG1lIHdo
+YXQgSSBzaG91bGQgZG8gbmV4dCwgZG8gSSBuZWVkIHRvIHBvcnQgWGVub21haSB0byBSSzMyODgg
+b3IganVzdCBmaW5kIGEgbmV3IGJvYXJkP0FuIGFkdmljZSBwbGVhc2UsIEkgYW0gbmV3IHRvIHBy
+YWN0aWNhbCBlbWJlZGRlZCBwcm9ncmFtbWluZy4gVGhhbmsgeW91IHZlcnkgbXVjaCE=
 
