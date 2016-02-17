@@ -1,13 +1,14 @@
-Sender: Michael Welling <mwelling79@gmail.com>
-Date: Tue, 16 Feb 2016 11:58:37 -0600
-From: Michael Welling <mwelling@ieee.org>
-Message-ID: <20160216175837.GC9806@deathstar>
-References: <20160215174121.GA10070@deathstar> <56C2B626.8010804@sigmatek.at>
+Date: Wed, 17 Feb 2016 19:47:08 +0800
+From: <wangyuchi1017@sina.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Message-Id: <20160217114708.B3E4D400C7@webmail.sinamail.sina.com.cn>
+Content-Type: text/plain;
+	charset=GBK
+Content-Transfer-Encoding: base64
 Content-Disposition: inline
-In-Reply-To: <56C2B626.8010804@sigmatek.at>
-Subject: Re: [Xenomai] RT serial cross-link failure
+Subject: [Xenomai] =?gbk?b?u9i4tKO6UmU6ICBIb3cgY2FuIEkgdXNlIFhlbm9tYWkg?=
+	=?gbk?q?with_Firefly_RK3288=3F?=
+Reply-To: wangyuchi1017@sina.com
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,431 +17,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Netbal <wolfgang.netbal@sigmatek.at>
-Cc: xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-On Tue, Feb 16, 2016 at 06:39:50AM +0100, Wolfgang Netbal wrote:
-> 
-> 
-> Am 2016-02-15 um 18:41 schrieb Michael Welling:
-> >I took the time to update the IMX UART driver such that it registers with the 3.18 kernel.
-> >
-> >The driver appears to register correctly and the /dev/rtdm/rtser* nodes appear.
-> >
-> >When I run the cross-link demo the system hangs after an error in read_task.
-> >
-> >Here is the output that I get:
-> >main : write-file opened
-> >main : write-config written
-> >main : read-file opened
-> >main : read-config written
-> >main : write-task created
-> >main : read-task created
-> >main : starting write-task
-> >main : strating read-task
-> >  Nr |   write-irq    |    irq->read    |   write->read   |
-> >----------------------------------------------------------
-> >read_task: error on RTSER_RTIOC_WAIT_EVENT, Operation no permitted
-> >main : /dev/rtdm/rtser1 (read) -> closed
-> >read_task: exit
-> >
-> >Any ideas why this would happen?
-> >
-> >I can provide the patch for the driver if necessary. I tried to keep the changes to a minimal.
-> Dear Michael,
-> 
-> I added a patch on December where I extended the IMX UART driver to support
-> open firmware, maybe my patch can help you to find your issue.
-> I posted the patch in the mailing list, you can find it here
-> https://xenomai.org/pipermail/xenomai/2015-December/035655.html
-> 
-> Kind regards
-> Wolfgang
-
-See patch for what I have done so far below:
-
-diff --git a/kernel/drivers/serial/rt_imx_uart.c b/kernel/drivers/serial/rt_imx_uart.c
-index 092cecc..91f86ce 100644
---- a/kernel/drivers/serial/rt_imx_uart.c
-+++ b/kernel/drivers/serial/rt_imx_uart.c
-@@ -36,8 +36,10 @@
- #include <asm/irq.h>
- #include <asm/dma.h>
- #include <asm/div64.h>
--#include <mach/hardware.h>
--#include <mach/imx-uart.h>
-+#include <linux/platform_data/serial-imx.h>
-+#include <linux/slab.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
- 
- #include <rtdm/serial.h>
- #include <rtdm/driver.h>
-@@ -65,7 +67,9 @@ MODULE_LICENSE("GPL");
- #define UBMR	0xa8 /* BRM Modulator Register */
- #define UBRC	0xac /* Baud Rate Count Register */
- #define MX2_ONEMS 0xb0 /* One Millisecond register */
--#define UTS (cpu_is_mx1() ? 0xd0 : 0xb4) /* UART Test Register */
-+#define IMX1_UTS 0xd0 /* UART Test Register on i.mx1 */
-+#define IMX21_UTS 0xb4 /* UART Test Register on all other i.mx*/
-+
- 
- /* UART Control Register Bit Fields.*/
- #define URXD_CHARRDY	(1<<15)
-@@ -189,18 +193,32 @@ MODULE_LICENSE("GPL");
- #define RT_IMX_UART_MAX		5
- 
- static int tx_fifo[RT_IMX_UART_MAX];
--compat_module_param_array(tx_fifo, int, RT_IMX_UART_MAX, 0400);
-+module_param_array(tx_fifo, int, NULL, 0400);
- MODULE_PARM_DESC(tx_fifo, "Transmitter FIFO size");
- 
-+/* i.mx21 type uart runs on all i.mx except i.mx1 */
-+enum imx_uart_type {
-+        IMX1_UART,
-+        IMX21_UART,
-+        IMX6Q_UART,
-+};
-+
-+/* device type dependent stuff */
-+struct imx_uart_data {
-+        unsigned uts_reg;
-+        enum imx_uart_type devtype;
-+};
-+
- struct rt_imx_uart_port {
- 	unsigned char __iomem *membase;	/* read/write[bwl] */
--	resource_size_t mapbase;	/* for ioremap */
- 	unsigned int irq;		/* irq number */
- 	int tx_fifo;			/* TX fifo size*/
- 	unsigned int have_rtscts;
- 	unsigned int use_dcedte;
- 	unsigned int use_hwflow;
--	struct clk *clk;		/* clock id for UART clock */
-+	struct clk *clk_ipg;
-+	struct clk *clk_per;
-+	const struct imx_uart_data *devdata;
- 	unsigned int uartclk;		/* base uart clock */
- 	struct rtdm_device rtdm_dev;	/* RTDM device structure */
- };
-@@ -344,6 +362,7 @@ static int rt_imx_uart_rx_chars(struct rt_imx_uart_ctx *ctx,
- static void rt_imx_uart_tx_chars(struct rt_imx_uart_ctx *ctx)
- {
- 	int ch, count;
-+	unsigned uts_reg = ctx->port->devdata->uts_reg;
- 
- 	for (count = ctx->port->tx_fifo;
- 	     (count > 0) && (ctx->out_npend > 0);
-@@ -352,7 +371,7 @@ static void rt_imx_uart_tx_chars(struct rt_imx_uart_ctx *ctx)
- 		writel(ch, ctx->port->membase + URTX0);
- 		ctx->out_head &= (OUT_BUFFER_SIZE - 1);
- 
--		if (readl(ctx->port->membase + UTS) & UTS_TXFULL)
-+		if (readl(ctx->port->membase + uts_reg) & UTS_TXFULL)
- 			break;
- 	}
- }
-@@ -493,9 +512,10 @@ static unsigned int rt_imx_uart_get_msr(struct rt_imx_uart_ctx *ctx)
- static void rt_imx_uart_set_mcr(struct rt_imx_uart_ctx *ctx,
- 				unsigned int mcr)
- {
-+	unsigned uts_reg = ctx->port->devdata->uts_reg;
- 	unsigned long ucr2 = readl(ctx->port->membase + UCR2);
- 	unsigned long ucr3 = readl(ctx->port->membase + UCR3);
--	unsigned long uts = readl(ctx->port->membase + UTS);
-+	unsigned long uts = readl(ctx->port->membase + uts_reg);
- 
- 	if (mcr & RTSER_MCR_RTS) {
- 		/*
-@@ -523,7 +543,7 @@ static void rt_imx_uart_set_mcr(struct rt_imx_uart_ctx *ctx,
- 		uts |= UTS_LOOP;
- 	else
- 		uts &= ~UTS_LOOP;
--	writel(uts, ctx->port->membase + UTS);
-+	writel(uts, ctx->port->membase + uts_reg);
- }
- 
- static void rt_imx_uart_break_ctl(struct rt_imx_uart_ctx *ctx,
-@@ -723,7 +743,7 @@ static int rt_imx_uart_setup_ufcr(struct rt_imx_uart_port *port)
- 	 * RFDIV is set such way to satisfy requested uartclk value
- 	 */
- 	val = TXTL << 10 | RXTL;
--	ufcr_rfdiv = (clk_get_rate(port->clk) + port->uartclk / 2) /
-+	ufcr_rfdiv = (clk_get_rate(port->clk_per) + port->uartclk / 2) /
- 		port->uartclk;
- 
- 	if (!ufcr_rfdiv)
-@@ -897,7 +917,7 @@ static int rt_imx_uart_ioctl(struct rtdm_fd *fd,
- 		}
- 
- 		if ((config->config_mask & RTSER_SET_BAUD) &&
--		    (config->baud_rate > clk_get_rate(ctx->port->clk) / 16 ||
-+		    (config->baud_rate > clk_get_rate(ctx->port->clk_per) / 16 ||
- 		     config->baud_rate <= 0))
- 			/* invalid baudrate for this port */
- 			return -EINVAL;
-@@ -1382,42 +1402,134 @@ static struct rtdm_driver imx_uart_driver = {
- 	},
- };
- 
-+static struct imx_uart_data imx_uart_devdata[] = {
-+        [IMX1_UART] = {
-+                .uts_reg = IMX1_UTS,
-+                .devtype = IMX1_UART,
-+        },
-+        [IMX21_UART] = {
-+                .uts_reg = IMX21_UTS,
-+                .devtype = IMX21_UART,
-+        },
-+        [IMX6Q_UART] = {
-+                .uts_reg = IMX21_UTS,
-+                .devtype = IMX6Q_UART,
-+        },
-+};
-+
-+static struct platform_device_id rt_imx_uart_id_table[] = {
-+        {
-+                .name = "imx1-uart",
-+                .driver_data = (kernel_ulong_t) &imx_uart_devdata[IMX1_UART],
-+        }, {
-+                .name = "imx21-uart",
-+                .driver_data = (kernel_ulong_t) &imx_uart_devdata[IMX21_UART],
-+        }, {
-+                .name = "imx6q-uart",
-+                .driver_data = (kernel_ulong_t) &imx_uart_devdata[IMX6Q_UART],
-+        }, {
-+                /* sentinel */
-+        }
-+};
-+MODULE_DEVICE_TABLE(platform, rt_imx_uart_id_table);
-+
-+static struct of_device_id rt_imx_uart_dt_ids[] = {
-+        { .compatible = "fsl,imx6q-uart", .data = &imx_uart_devdata[IMX6Q_UART], },
-+        { .compatible = "fsl,imx1-uart", .data = &imx_uart_devdata[IMX1_UART], },
-+        { .compatible = "fsl,imx21-uart", .data = &imx_uart_devdata[IMX21_UART], },
-+        { /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, rt_imx_uart_dt_ids);
-+
-+#ifdef CONFIG_OF
-+
-+/*
-+ * This function returns 1 iff pdev isn't a device instatiated by dt, 0 iff it
-+ * could successfully get all information from dt or a negative errno.
-+ */
-+static int rt_imx_uart_probe_dt(struct rt_imx_uart_port *port,
-+                struct platform_device *pdev)
-+{
-+        struct device_node *np = pdev->dev.of_node;
-+        const struct of_device_id *of_id =
-+                        of_match_device(rt_imx_uart_dt_ids, &pdev->dev);
-+        int ret;
-+
-+        if (!np)
-+                /* no device tree device */
-+                return 1;
-+
-+        ret = of_alias_get_id(np, "serial");
-+        if (ret < 0) {
-+                dev_err(&pdev->dev, "failed to get alias id, errno %d\n", ret);
-+                return ret;
-+        }
-+
-+	pdev->id = ret;
-+
-+        if (of_get_property(np, "fsl,uart-has-rtscts", NULL))
-+                port->have_rtscts = 1;
-+
-+        if (of_get_property(np, "fsl,irda-mode", NULL))
-+                dev_warn(&pdev->dev, "IRDA not yet supported\n");
-+
-+        if (of_get_property(np, "fsl,dte-mode", NULL))
-+		port->use_dcedte = 1;
-+
-+        port->devdata = of_id->data;
-+
-+        return 0;
-+}
-+#else
-+static inline int rt_imx_uart_probe_dt(struct rt_imx_uart_port *port,
-+                struct platform_device *pdev)
-+{
-+        return 1;
-+}
-+#endif
-+
-+static void rt_imx_uart_probe_pdata(struct rt_imx_uart_port *port,
-+                struct platform_device *pdev)
-+{
-+        struct imxuart_platform_data *pdata = dev_get_platdata(&pdev->dev);
-+
-+        port->devdata = (struct imx_uart_data  *) pdev->id_entry->driver_data;
-+
-+        if (!pdata)
-+                return;
-+
-+        if (pdata->flags & IMXUART_HAVE_RTSCTS)
-+                port->have_rtscts = 1;
-+}
-+
- static int rt_imx_uart_probe(struct platform_device *pdev)
- {
--	struct imxuart_platform_data *pdata;
- 	struct rtdm_device *dev;
- 	struct rt_imx_uart_port *port;
- 	struct resource *res;
--	int err;
-+	int ret;
- 
--	port = kzalloc(sizeof(*port), GFP_KERNEL);
-+	port = devm_kzalloc(&pdev->dev, sizeof(*port), GFP_KERNEL);
- 	if (!port)
- 		return -ENOMEM;
- 
-+        ret = rt_imx_uart_probe_dt(port, pdev);
-+        if (ret > 0)
-+                rt_imx_uart_probe_pdata(port, pdev);
-+        else if (ret < 0)
-+                return ret;
-+
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (!res) {
--		err = -ENODEV;
--		goto kfree_out;
--	}
--	port->mapbase = res->start;
-+	if (!res)
-+		return -ENODEV;
- 
- 	port->irq = platform_get_irq(pdev, 0);
--	if (port->irq <= 0) {
--		err = -ENODEV;
--		goto kfree_out;
--	}
--
--	if (!request_mem_region(port->mapbase, PAGE_SIZE, DRIVER_NAME)) {
--		err = -EBUSY;
--		goto kfree_out;
--	}
--
--	port->membase = ioremap(port->mapbase, PAGE_SIZE);
--	if (!port->membase) {
--		err = -ENOMEM;
--		goto release_mem_region_out;
--	}
-+	if (port->irq <= 0)
-+		return -ENODEV;
- 
-+	port->membase = devm_ioremap_resource(&pdev->dev, res);
-+	if (IS_ERR(port->membase))
-+		return PTR_ERR(port->membase);
- 
- 	dev = &port->rtdm_dev;
- 	dev->driver = &imx_uart_driver;
-@@ -1429,54 +1541,31 @@ static int rt_imx_uart_probe(struct platform_device *pdev)
- 	else
- 		port->tx_fifo = tx_fifo[pdev->id];
- 
--	port->clk = clk_get(&pdev->dev, "uart");
--	if (IS_ERR(port->clk)) {
--		err = PTR_ERR(port->clk);
--		goto iounmap_out;
--	}
--	clk_enable(port->clk);
--	port->uartclk = clk_get_rate(port->clk);
-+	port->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
-+	if (IS_ERR(port->clk_ipg))
-+		return PTR_ERR(port->clk_ipg);
- 
--	port->use_hwflow = 1;
-+	port->clk_per = devm_clk_get(&pdev->dev, "per");
-+	if (IS_ERR(port->clk_per))
-+		return PTR_ERR(port->clk_per);
- 
--	pdata = pdev->dev.platform_data;
--	if (pdata && (pdata->flags & IMXUART_HAVE_RTSCTS))
--		port->have_rtscts = 1;
--	if (pdata && (pdata->flags & IMXUART_USE_DCEDTE))
--		port->use_dcedte = 1;
--	if (pdata && pdata->init) {
--		err = pdata->init(pdev);
--		if (err)
--			goto clk_disable_out;
--	}
-+	clk_enable(port->clk_ipg);
-+	clk_enable(port->clk_per);
-+	port->uartclk = clk_get_rate(port->clk_per);
-+
-+	port->use_hwflow = 1;
- 
--	err = rtdm_dev_register(dev);
--	if (err)
--		goto pdata_exit_out;
-+	ret = rtdm_dev_register(dev);
-+	if (ret)
-+		return ret;
- 
- 	platform_set_drvdata(pdev, port);
- 
- 	printk(KERN_INFO
--	       "%s on IMX UART%d: membase=0x%p mapbase=%#x irq=%d uartclk=%d\n",
--	       dev->name, pdev->id, port->membase, (u32)port->mapbase,
--	       port->irq, port->uartclk);
-+	       "%s on IMX UART%d: membase=0x%p irq=%d uartclk=%d\n",
-+	       dev->name, pdev->id, port->membase, port->irq, port->uartclk);
- 
- 	return 0;
--
--pdata_exit_out:
--	if (pdata && pdata->exit)
--		pdata->exit(pdev);
--clk_disable_out:
--	clk_put(port->clk);
--	clk_disable(port->clk);
--iounmap_out:
--	iounmap(port->membase);
--release_mem_region_out:
--	release_mem_region(port->mapbase, SZ_4K);
--kfree_out:
--	kfree(port);
--
--	return err;
- }
- 
- static int rt_imx_uart_remove(struct platform_device *pdev)
-@@ -1490,26 +1579,9 @@ static int rt_imx_uart_remove(struct platform_device *pdev)
- 
- 	rtdm_dev_unregister(dev);
- 
--	if (port->clk) {
--		clk_put(port->clk);
--		clk_disable(port->clk);
--	}
--
--	if (pdata && pdata->exit)
--		pdata->exit(pdev);
--
--	iounmap(port->membase);
--	release_mem_region(port->mapbase, PAGE_SIZE);
--	kfree(port);
--
- 	return 0;
- }
- 
--static const struct platform_device_id rt_imx_uart_id_table[] = {
--	{"imx-uart",},
--	{},
--};
--
- static struct platform_driver rt_imx_uart_driver = {
- 	.probe = rt_imx_uart_probe,
- 	.remove	= rt_imx_uart_remove,
-@@ -1517,6 +1589,7 @@ static struct platform_driver rt_imx_uart_driver = {
- 	.driver = {
- 		.name = DRIVER_NAME,
- 		.owner = THIS_MODULE,
-+		.of_match_table = rt_imx_uart_dt_ids,
- 	},
- };
- 
+Ci0tLS0tINStyrzTyrz+IC0tLS0tCreivP7Iy6O6R2lsbGVzIENoYW50ZXBlcmRyaXggPGdpbGxl
+cy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnPgrK1bz+yMujus310+6z2yA8d2FuZ3l1Y2hpMTAx
+N0BzaW5hLmNvbT4Ks63LzcjLo7p4ZW5vbWFpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPgrW98zio7pS
+ZTogW1hlbm9tYWldIEhvdyBjYW4gSSB1c2UgWGVub21haSB3aXRoIEZpcmVmbHkgUkszMjg4PwrI
+1cbao7oyMDE2xOowMtTCMTbI1SAxN7XjMjS31goKCk9uIFR1ZSwgRmViIDE2LCAyMDE2IGF0IDAz
+OjQyOjE3UE0gKzA4MDAsIM310+6z2yB3cm90ZToKPj4gSGksIGV2ZXJ5b25lISBJIG5lZWQgYSBy
+ZWFsLXRpbWUgcGxhdGZvcm0gbm93LCBhbmQgSSBoYXZlIGEgYm9hcmQ6Cj4+RmlyZWZseSBSSzMy
+ODguQm9hcmQ6IEZpcmVmbHkgUkszMjg4O1NvYzogUkszMjg4IChyb2NrY2hpcCk7Q29yZToKPj5B
+MTc7QXJjaGl0ZWN0dXJlOiBhcm12Ny4gSSBjYW4gZ2V0IHRoZSBrZXJuZWwgc291cmNlIGhlcmU6
+Cj4+IGh0dHBzOi8vZ2l0aHViLmNvbS9tbWluZC9saW51eC1yb2NrY2hpcC52My4xNCwgdjMuMTYg
+djQuMSBhcmUgYWxsCj4+IGdvb2QgdG8gYmUgcGF0Y2hlZCB3aXRoCj4+IGlwaXBlLWNvcmUtMy4x
+NC1hcm0tMS5wYXRjaCxpcGlwZS1jb3JlLTMuMTYtYXJtLTQucGF0Y2gsCj4+IGlwaXBlLWNvcmUt
+NC4xLWFybS0xLnBhdGNoIHJlc3BlY3RpdmVseS5CdXQgd2hlbiBJIHJ1biBtYWtlCj4+YnpJbWFn
+ZSBhZnRlciBtYWtlIGZpcmVmbHktcmszMjg4X2RlZmNvbmZpZyBhbmQgbWFrZSBtZW51Y29uZmln
+LGl0Cj4+c2hvd3MgdGhhdCAiaW1wbGljaXQgZGVjbGFyYXRpb24gb2YgZnVuY3Rpb24KPj4nX19p
+cGlwZV9tYWNoX3VwZGF0ZV90c2MoKScgaW4gc21wLmMiQ2FuIGFueW9uZSB0ZWxsIG1lIHdoYXQg
+SQo+PnNob3VsZCBkbyBuZXh0LCBkbyBJIG5lZWQgdG8gcG9ydCBYZW5vbWFpIHRvIFJLMzI4OCBv
+ciBqdXN0IGZpbmQgYQo+PiBuZXcgYm9hcmQ/QW4gYWR2aWNlIHBsZWFzZSwgSSBhbSBuZXcgdG8g
+cHJhY3RpY2FsIGVtYmVkZGVkCj4+IHByb2dyYW1taW5nLiBUaGFuayB5b3UgdmVyeSBtdWNoIQo+
+SGksCj5UaGUgbGlzdCBvZiBzdXBwb3J0ZWQgZW1iZWRkZWQgcHJvY2Vzc29ycyBtYXkgYmUgZm91
+bmQgaGVyZToKPmh0dHBzOi8veGVub21haS5vcmcvZW1iZWRkZWQtaGFyZHdhcmUvCj5JZiB5b3Ug
+d2FudCB0byBwb3J0IFhlbm9tYWkgdG8gYSBuZXcgQVJNIGJvYXJkLCB5b3Ugc2hvdWxkIGZvbGxv
+dwo+dGhpcyBndWlkZToKPmh0dHBzOi8veGVub21haS5vcmcvMjAxNC8wOS9wb3J0aW5nLXhlbm9t
+YWktZHVhbC1rZXJuZWwtdG8tYS1uZXctYXJtLXNvYy8KPlRob3VnaCBpdCBtYXkgYmUgYSBiaXQg
+aGFyZCBpZiB5b3UgaGF2ZSBubyBleHBlcmllbmNlIGluIGtlcm5lbAo+cHJvZ3JhbW1pbmcuCj5S
+ZWdhcmRzLgo+LS0gCj5HaWxsZXMuCj5odHRwczovL2NsaWNrLWhhY2sub3JnCgpIaSwgSSBjYW4g
+Z2V0IHRoZSB6SW1hZ2Ugbm93LiBJIHNvbHZlZCB0aGUgcHJvYmxlbSBieSB0aGUgZm9sbG93aW5n
+IHByb2NlZHVyZXM6KE15IGtlcm5lbCBpcyBsaW51eC1yb2NrY2hpcC0zLjE0LCBhbmQgWGVub21h
+aSB2ZXJzaW9uIGlzIDMuMC4xLiBQYXRjaCBhZnRlciAjMS4pCiMxW0NPUFldZmlyZWZseS1yazMy
+ODhfZGVmY29uZmlnZHRzCiMyW0NPUFldbWFjaF9yb2NrY2hpcFtNT0RJRlldYXJjaC9hcm0vS2Nv
+bmZpZ2FyY2gvYXJtL21hY2hfcm9ja2NoaXAvS2NvbmZpZ1tUQUtFIENBUkUgT0ZdUk9DS0NISVAg
+KFlvdSBzaG91bGQgc29sdmUgdGhpcyBieSB5b3VyIHVuZGVyc3RhbmRpbmcpQVJDSF9BUk1fS1VT
+RVJfVFNDIChUaGlzIGNhdXNlcyAiSW1wbGljaXQgZGVjbGFyYXRpb24gb2YgZnVuY3Rpb24gIl9f
+aXBpcGVfdXBkYXRlX3RzYygpIiwgIkltcGxpY2l0IGRlY2xhcmF0aW9uIG9mIGZ1bmN0aW9uICdf
+X2lwaXBlX3NoYXJlX2N1cnJlbnQoKSciIGFuZCBzbyBvbi4gTWFrZSBzdXJlIHRoYXQgYWZ0ZXIg
+bWFrZSBtZW51Y29uZmlnLCB5b3VyIC5jb25maWcgaGFzICJDT05GSUdfQVJDSF9BUk1fS1VTRVJf
+VFNDPXkiKQojMyAoIlVua25vd24gZmllbGQ6IC5sMmNfYXV4X3ZhbCwgLmwyY19hdXhfbWFzayIp
+YXJjaC9hcm0vaW5jbHVkZS9hc20vbWFjaC9hcmNoLmhMaW5lIDQ3IFtBRERdCXVuc2lnbmVkCQkJ
+bDJjX2F1eF92YWw7CQkvKiBMMiBjYWNoZSBhdXggdmFsdWUgKi8JdW5zaWduZWQJCQlsMmNfYXV4
+X21hc2s7CS8qIEwyIGNhY2hlIGF1eCBtYXNrICovCXZvaWQJCQkJKCpsMmNfd3JpdGVfc2VjKSh1
+bnNpZ25lZCBsb25nLCB1bnNpZ25lZCk7CiM0ICgiSW1wbGljaXQgZGVjbGFyYXRpb24gb2YgZnVu
+Y3Rpb24gJ19faXBpcGVfc2hhcmVfY3VycmVudCgpJyIpaW5jbHVkZS9saW51eC9pcGlwZS5oTGlu
+ZSA2NCBbQUREXXZvaWQgX19pcGlwZV9zaGFyZV9jdXJyZW50KGludCBmbGFncyk7CnZvaWQgX19p
+cGlwZV9hcmNoX3NoYXJlX2N1cnJlbnQoaW50IGZsYWdzKTsKa2VybmVsL2lwaXBlL2NvcmUuY0xp
+bmUgMTc0MSBbQUREXXZvaWQgX193ZWFrIF9faXBpcGVfYXJjaF9zaGFyZV9jdXJyZW50KGludCBm
+bGFncyl7fQp2b2lkIF9faXBpcGVfc2hhcmVfY3VycmVudChpbnQgZmxhZ3MpewlpcGlwZV9yb290
+X29ubHkoKTsKCV9faXBpcGVfYXJjaF9zaGFyZV9jdXJyZW50KGZsYWdzKTt9RVhQT1JUX1NZTUJP
+TF9HUEwoX19pcGlwZV9zaGFyZV9jdXJyZW50KTsKIzUgKCJUbyBmZXcgYXJndW1lbnRzIGlzIGZ1
+bmN0aW9uICcuLi4uLi4uLi4uLi4nIilkcml2ZXJzL3BpbmN0cmwvcGluY3RybC1yb2NrY2hpcC5j
+c3RhdGljIGludCByb2NrY2hpcF9pcnFfc2V0X3R5cGUoc3RydWN0IGlycV9kYXRhICpkLCB1bnNp
+Z25lZCBpbnQgdHlwZSlbQUREXXVuc2lnbmVkIGxvbmcgZmxhZ3M7W01PRElGWV1mbGFncyA9IGly
+cV9nY19sb2NrKGdjKTtpcnFfZ2NfdW5sb2NrKGdjLCBmbGFncyk7CgpUaGUgYWJvdmUgcHJvY2Vk
+dXJlcyBhcmUgdHJpdmlhbC4gRGlmZmVyZW50IHByb2JsZW1zIGFyaXNpbmcgYXJlIG9uIGxhcmdl
+IHBvc3NpYmlsaXRpZXMuSSBkb3dubG9hZGVkIGxpbnV4LXJvY2tjaGlwLTMuMTQsIGxpbnV4LXJv
+Y2tjaGlwLTQuMSwgaXBpcGUtY29yZS0zLjE0LWFybS14LnBhdGNoLCBpcGlwZS1jb3JlLTQuMS1h
+cm0teC5wYXRjaC4gRXhlY3V0ZSBtYWtlIGNvbW1hbmQsIGdldCB0aGUgZXJyb3IgaW5mb3JtYXRp
+b24sIGxvb2sgZm9yIHJlbGF0ZWQgcGFydHMgaW4gdGhlIGFib3ZlIGZvdXIgZm9sZGVycy9maWxl
+cywgR29vZ2xlLi4uIGxvb3AgdW50aWwgc3VjY2Vzcy4gV2lzaCB5b3UgZ29vZCBsdWNrIGlmIHlv
+dSBzZWUgdGhpcyBtZXNzYWdlIQ==
 
