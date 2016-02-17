@@ -1,14 +1,19 @@
-Date: Wed, 17 Feb 2016 19:47:08 +0800
-From: <wangyuchi1017@sina.com>
 MIME-Version: 1.0
-Message-Id: <20160217114708.B3E4D400C7@webmail.sinamail.sina.com.cn>
-Content-Type: text/plain;
-	charset=GBK
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
-Subject: [Xenomai] =?gbk?b?u9i4tKO6UmU6ICBIb3cgY2FuIEkgdXNlIFhlbm9tYWkg?=
-	=?gbk?q?with_Firefly_RK3288=3F?=
-Reply-To: wangyuchi1017@sina.com
+In-Reply-To: <56C342F8.6030701@xenomai.org>
+References: <CAHoW4hGmcH5kLzwi-B3LfMrioqdj3TQ_5S8rGP6MbRudcwEBDA@mail.gmail.com>
+ <56BB9BE5.80505@xenomai.org>
+ <CAHoW4hGESwFmrK5w4zTRSdqdTXSmOZcbM-SY+rU=PpWH92eDjg@mail.gmail.com>
+ <56BDB759.1010008@xenomai.org>
+ <CAHoW4hFb7HpkAVBEFYpzrTLeBJfouKoYruSUvJsL6OH5t-ntjg@mail.gmail.com>
+ <56BDF969.2050208@xenomai.org>
+ <CAHoW4hG5FNud8wR6P8jN4UH7WQbar7X_k+8K0DqO0Omw-Scz3g@mail.gmail.com>
+ <56C342F8.6030701@xenomai.org>
+Date: Wed, 17 Feb 2016 16:34:23 -0500
+Message-ID: <CAHoW4hFApuDpy2idirgJB9KAh4HSP46FH7-y09uDVp8bhRbv_g@mail.gmail.com>
+From: Charles Kiorpes <ckiorpes@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Process shared rt_event_wait() never signaled on ARM
+ with Mercury core
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,65 +22,143 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Ci0tLS0tINStyrzTyrz+IC0tLS0tCreivP7Iy6O6R2lsbGVzIENoYW50ZXBlcmRyaXggPGdpbGxl
-cy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnPgrK1bz+yMujus310+6z2yA8d2FuZ3l1Y2hpMTAx
-N0BzaW5hLmNvbT4Ks63LzcjLo7p4ZW5vbWFpIDx4ZW5vbWFpQHhlbm9tYWkub3JnPgrW98zio7pS
-ZTogW1hlbm9tYWldIEhvdyBjYW4gSSB1c2UgWGVub21haSB3aXRoIEZpcmVmbHkgUkszMjg4PwrI
-1cbao7oyMDE2xOowMtTCMTbI1SAxN7XjMjS31goKCk9uIFR1ZSwgRmViIDE2LCAyMDE2IGF0IDAz
-OjQyOjE3UE0gKzA4MDAsIM310+6z2yB3cm90ZToKPj4gSGksIGV2ZXJ5b25lISBJIG5lZWQgYSBy
-ZWFsLXRpbWUgcGxhdGZvcm0gbm93LCBhbmQgSSBoYXZlIGEgYm9hcmQ6Cj4+RmlyZWZseSBSSzMy
-ODguQm9hcmQ6IEZpcmVmbHkgUkszMjg4O1NvYzogUkszMjg4IChyb2NrY2hpcCk7Q29yZToKPj5B
-MTc7QXJjaGl0ZWN0dXJlOiBhcm12Ny4gSSBjYW4gZ2V0IHRoZSBrZXJuZWwgc291cmNlIGhlcmU6
-Cj4+IGh0dHBzOi8vZ2l0aHViLmNvbS9tbWluZC9saW51eC1yb2NrY2hpcC52My4xNCwgdjMuMTYg
-djQuMSBhcmUgYWxsCj4+IGdvb2QgdG8gYmUgcGF0Y2hlZCB3aXRoCj4+IGlwaXBlLWNvcmUtMy4x
-NC1hcm0tMS5wYXRjaCxpcGlwZS1jb3JlLTMuMTYtYXJtLTQucGF0Y2gsCj4+IGlwaXBlLWNvcmUt
-NC4xLWFybS0xLnBhdGNoIHJlc3BlY3RpdmVseS5CdXQgd2hlbiBJIHJ1biBtYWtlCj4+YnpJbWFn
-ZSBhZnRlciBtYWtlIGZpcmVmbHktcmszMjg4X2RlZmNvbmZpZyBhbmQgbWFrZSBtZW51Y29uZmln
-LGl0Cj4+c2hvd3MgdGhhdCAiaW1wbGljaXQgZGVjbGFyYXRpb24gb2YgZnVuY3Rpb24KPj4nX19p
-cGlwZV9tYWNoX3VwZGF0ZV90c2MoKScgaW4gc21wLmMiQ2FuIGFueW9uZSB0ZWxsIG1lIHdoYXQg
-SQo+PnNob3VsZCBkbyBuZXh0LCBkbyBJIG5lZWQgdG8gcG9ydCBYZW5vbWFpIHRvIFJLMzI4OCBv
-ciBqdXN0IGZpbmQgYQo+PiBuZXcgYm9hcmQ/QW4gYWR2aWNlIHBsZWFzZSwgSSBhbSBuZXcgdG8g
-cHJhY3RpY2FsIGVtYmVkZGVkCj4+IHByb2dyYW1taW5nLiBUaGFuayB5b3UgdmVyeSBtdWNoIQo+
-SGksCj5UaGUgbGlzdCBvZiBzdXBwb3J0ZWQgZW1iZWRkZWQgcHJvY2Vzc29ycyBtYXkgYmUgZm91
-bmQgaGVyZToKPmh0dHBzOi8veGVub21haS5vcmcvZW1iZWRkZWQtaGFyZHdhcmUvCj5JZiB5b3Ug
-d2FudCB0byBwb3J0IFhlbm9tYWkgdG8gYSBuZXcgQVJNIGJvYXJkLCB5b3Ugc2hvdWxkIGZvbGxv
-dwo+dGhpcyBndWlkZToKPmh0dHBzOi8veGVub21haS5vcmcvMjAxNC8wOS9wb3J0aW5nLXhlbm9t
-YWktZHVhbC1rZXJuZWwtdG8tYS1uZXctYXJtLXNvYy8KPlRob3VnaCBpdCBtYXkgYmUgYSBiaXQg
-aGFyZCBpZiB5b3UgaGF2ZSBubyBleHBlcmllbmNlIGluIGtlcm5lbAo+cHJvZ3JhbW1pbmcuCj5S
-ZWdhcmRzLgo+LS0gCj5HaWxsZXMuCj5odHRwczovL2NsaWNrLWhhY2sub3JnCgpIaSwgSSBjYW4g
-Z2V0IHRoZSB6SW1hZ2Ugbm93LiBJIHNvbHZlZCB0aGUgcHJvYmxlbSBieSB0aGUgZm9sbG93aW5n
-IHByb2NlZHVyZXM6KE15IGtlcm5lbCBpcyBsaW51eC1yb2NrY2hpcC0zLjE0LCBhbmQgWGVub21h
-aSB2ZXJzaW9uIGlzIDMuMC4xLiBQYXRjaCBhZnRlciAjMS4pCiMxW0NPUFldZmlyZWZseS1yazMy
-ODhfZGVmY29uZmlnZHRzCiMyW0NPUFldbWFjaF9yb2NrY2hpcFtNT0RJRlldYXJjaC9hcm0vS2Nv
-bmZpZ2FyY2gvYXJtL21hY2hfcm9ja2NoaXAvS2NvbmZpZ1tUQUtFIENBUkUgT0ZdUk9DS0NISVAg
-KFlvdSBzaG91bGQgc29sdmUgdGhpcyBieSB5b3VyIHVuZGVyc3RhbmRpbmcpQVJDSF9BUk1fS1VT
-RVJfVFNDIChUaGlzIGNhdXNlcyAiSW1wbGljaXQgZGVjbGFyYXRpb24gb2YgZnVuY3Rpb24gIl9f
-aXBpcGVfdXBkYXRlX3RzYygpIiwgIkltcGxpY2l0IGRlY2xhcmF0aW9uIG9mIGZ1bmN0aW9uICdf
-X2lwaXBlX3NoYXJlX2N1cnJlbnQoKSciIGFuZCBzbyBvbi4gTWFrZSBzdXJlIHRoYXQgYWZ0ZXIg
-bWFrZSBtZW51Y29uZmlnLCB5b3VyIC5jb25maWcgaGFzICJDT05GSUdfQVJDSF9BUk1fS1VTRVJf
-VFNDPXkiKQojMyAoIlVua25vd24gZmllbGQ6IC5sMmNfYXV4X3ZhbCwgLmwyY19hdXhfbWFzayIp
-YXJjaC9hcm0vaW5jbHVkZS9hc20vbWFjaC9hcmNoLmhMaW5lIDQ3IFtBRERdCXVuc2lnbmVkCQkJ
-bDJjX2F1eF92YWw7CQkvKiBMMiBjYWNoZSBhdXggdmFsdWUgKi8JdW5zaWduZWQJCQlsMmNfYXV4
-X21hc2s7CS8qIEwyIGNhY2hlIGF1eCBtYXNrICovCXZvaWQJCQkJKCpsMmNfd3JpdGVfc2VjKSh1
-bnNpZ25lZCBsb25nLCB1bnNpZ25lZCk7CiM0ICgiSW1wbGljaXQgZGVjbGFyYXRpb24gb2YgZnVu
-Y3Rpb24gJ19faXBpcGVfc2hhcmVfY3VycmVudCgpJyIpaW5jbHVkZS9saW51eC9pcGlwZS5oTGlu
-ZSA2NCBbQUREXXZvaWQgX19pcGlwZV9zaGFyZV9jdXJyZW50KGludCBmbGFncyk7CnZvaWQgX19p
-cGlwZV9hcmNoX3NoYXJlX2N1cnJlbnQoaW50IGZsYWdzKTsKa2VybmVsL2lwaXBlL2NvcmUuY0xp
-bmUgMTc0MSBbQUREXXZvaWQgX193ZWFrIF9faXBpcGVfYXJjaF9zaGFyZV9jdXJyZW50KGludCBm
-bGFncyl7fQp2b2lkIF9faXBpcGVfc2hhcmVfY3VycmVudChpbnQgZmxhZ3MpewlpcGlwZV9yb290
-X29ubHkoKTsKCV9faXBpcGVfYXJjaF9zaGFyZV9jdXJyZW50KGZsYWdzKTt9RVhQT1JUX1NZTUJP
-TF9HUEwoX19pcGlwZV9zaGFyZV9jdXJyZW50KTsKIzUgKCJUbyBmZXcgYXJndW1lbnRzIGlzIGZ1
-bmN0aW9uICcuLi4uLi4uLi4uLi4nIilkcml2ZXJzL3BpbmN0cmwvcGluY3RybC1yb2NrY2hpcC5j
-c3RhdGljIGludCByb2NrY2hpcF9pcnFfc2V0X3R5cGUoc3RydWN0IGlycV9kYXRhICpkLCB1bnNp
-Z25lZCBpbnQgdHlwZSlbQUREXXVuc2lnbmVkIGxvbmcgZmxhZ3M7W01PRElGWV1mbGFncyA9IGly
-cV9nY19sb2NrKGdjKTtpcnFfZ2NfdW5sb2NrKGdjLCBmbGFncyk7CgpUaGUgYWJvdmUgcHJvY2Vk
-dXJlcyBhcmUgdHJpdmlhbC4gRGlmZmVyZW50IHByb2JsZW1zIGFyaXNpbmcgYXJlIG9uIGxhcmdl
-IHBvc3NpYmlsaXRpZXMuSSBkb3dubG9hZGVkIGxpbnV4LXJvY2tjaGlwLTMuMTQsIGxpbnV4LXJv
-Y2tjaGlwLTQuMSwgaXBpcGUtY29yZS0zLjE0LWFybS14LnBhdGNoLCBpcGlwZS1jb3JlLTQuMS1h
-cm0teC5wYXRjaC4gRXhlY3V0ZSBtYWtlIGNvbW1hbmQsIGdldCB0aGUgZXJyb3IgaW5mb3JtYXRp
-b24sIGxvb2sgZm9yIHJlbGF0ZWQgcGFydHMgaW4gdGhlIGFib3ZlIGZvdXIgZm9sZGVycy9maWxl
-cywgR29vZ2xlLi4uIGxvb3AgdW50aWwgc3VjY2Vzcy4gV2lzaCB5b3UgZ29vZCBsdWNrIGlmIHlv
-dSBzZWUgdGhpcyBtZXNzYWdlIQ==
+The provided test program also did not perform correctly in the current
+environment (no signals were received by the listener).
 
+However, after testing various toolchains, I tried it on the same hardware
+(Beagleboard-x15 sample) with a TI-supplied rt kernel, and it did run
+correctly.  This indicates to me that your earlier instinct was correct;
+this is a kernel configuration problem.
+
+I am in the process of doing a thorough comparison of the kernel configs to
+determine what option(s) made the difference.
+
+If I can find the offending kernel configuration option(s), I will post
+them here.  This will take some time though, as I will need to do quite a
+bit of building and testing of kernels.
+
+Thank you for your assistance,
+- Charles
+
+On Tue, Feb 16, 2016 at 10:40 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+
+> On 02/12/2016 08:07 PM, Charles Kiorpes wrote:
+> >
+> >     Here is the sync pattern the code normally achieves, once the parent
+> >     has successfully spawned a child thread, which has to wait for a
+> >     start signal before it may run application code:
+> >
+> >     1. parent calls threadobj_start(child)
+> >             1.1 child->status |= __THREAD_S_STARTED
+> >             1.2 wait for child->status & __THREAD_S_ACTIVE
+> >
+> >     2. child calls threadobj_wait_start(self)
+> >             2.1 wait for self->status & __THREAD_S_STARTED
+> >             2.2 raise self->status |= __THREAD_S_ACTIVE
+> >
+> >     All accesses to the status bits are serialized by a per-thread
+> >     mutex, operated by the threadobj_lock/unlock accessors, which also
+> >     covers the condvar signaling/waiting as one would expect.
+> >
+> >     When running in pshared mode, thread descriptors (holding ->status,
+> >     mutex and barrier sync) are obtained from /dev/shm. If
+> >     --disable-pshared, we are using 100% process-private memory.
+> >
+> >     Case 1: a race when manipulating the thread status due to
+> >     inconsistent locking. I could not find any so far.
+> >
+> >     Case 2: a cache coherence issue in SMP, also caused by improper
+> >     locking. Otherwise, the locking should enforce memory barriers as
+> >     expected.
+> >
+> >     Case 3: anything not mentioned in other cases...
+> >
+> >     - Could you paste/copy the disassembly (objdump -dl rather than
+> >     gdb's disass) of the wait_on_barrier() function?
+> >
+> >
+> > I have attached the disassembly as wait_on_barrier_disas.txt
+> >
+> >
+> >     - Does running both programs with --cpu-affinity=0/1 change the
+> outcome?
+> >
+> >
+> > There is no change in behavior when trying any combination of cpu
+> > affinities, with either the "task-1" alchemy test or my event test apps.
+> >
+> >
+> >     - Without specifying any affinity this time, could you run the
+> >     current test with the debug patch below applied (this is clearly not
+> >     a fix)? The patch forces the code to read the value of the ->status
+> >     field before waiting on the barrier. With that code in and a
+> >     backtrace showing locals, we should be able to check the status word
+> >     when threadobj_wait_start() is entered.
+> >
+> >
+> >     diff --git a/lib/copperplate/threadobj.c
+> b/lib/copperplate/threadobj.c
+> >     index cc64caa..ed85a12 100644
+> >     --- a/lib/copperplate/threadobj.c
+> >     +++ b/lib/copperplate/threadobj.c
+> >     @@ -1273,7 +1273,9 @@ void threadobj_wait_start(void) /*
+> >     current->lock free. */
+> >             int status;
+> >
+> >             threadobj_lock(current);
+> >     -       status = wait_on_barrier(current,
+> >     __THREAD_S_STARTED|__THREAD_S_ABORTED);
+> >     +       status = current->status;
+> >     +       if (!(status & __THREAD_S_STARTED))
+> >     +               status = wait_on_barrier(current,
+> >     __THREAD_S_STARTED|__THREAD_S_ABORTED);
+> >             threadobj_unlock(current);
+> >
+> >             /*
+> >
+> >     --
+> >     Philippe.
+> >
+> >
+> > I patched in the debug and I have attached the full backtraces of
+> > threads 1 and 3 of the "task-1" alchemy test.
+> >
+> > At the time of the hang:
+> >  - parent sees status = 73    (matches the flags set during
+> > threadobj_start())
+> >  - child sees status = 8        (locked?)
+> >
+>
+> Yes, this is a debugging status with --enable-debug to check for locking
+> consistency, also raised while holding the lock. From the traces, it
+> looks like the child never sees any of the status bits raised by the
+> parent when entering wait_on_barrier(), although its priority is
+> strictly lower.
+>
+> At this point, we need to consider the toolchain. Which one are you
+> using, and specifically, is it built for supporting multi-thread
+> applications (such as implementing atomic operations)?
+>
+> I have attached a test code basically reproducing what copperplate does
+> under the hood over a native kernel.
+>
+> e.g.:
+> (term-1) ./basic-shm --create
+> (term-2) ./basic-shm --listen
+>
+> or you can invert the logic by having the listener create the shm
+> segment, waiting for the signals:
+>
+> (term-1) ./basic-shm --create --listen
+> (term-2) ./basic-shm
+>
+> The code is not smart enough to detect when the listener attempts to
+> reuse an obsolete shared memory file from a previous run. For this
+> reason, the creator should always run first in a new test.
+>
+> --
+> Philippe.
+>
