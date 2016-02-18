@@ -1,15 +1,15 @@
 Sender: Michael Welling <mwelling79@gmail.com>
-Date: Mon, 22 Feb 2016 17:51:33 -0600
+Date: Thu, 18 Feb 2016 10:10:48 -0600
 From: Michael Welling <mwelling@ieee.org>
-Message-ID: <20160222235133.GB30318@deathstar>
-References: <1456184548-30058-1-git-send-email-mwelling@ieee.org>
- <20160222234918.GJ7398@hermes.click-hack.org>
+Message-ID: <20160218161047.GA10005@deathstar>
+References: <20160215174121.GA10070@deathstar> <56C2B626.8010804@sigmatek.at>
+ <20160216175837.GC9806@deathstar> <56C56C98.4020501@sigmatek.at>
+ <20160218071030.GA20063@deathstar> <56C57320.8060002@sigmatek.at>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20160222234918.GJ7398@hermes.click-hack.org>
-Subject: Re: [Xenomai] [PATCH] demo/alchemy/cross-link: Properly handle
- syscall errors
+In-Reply-To: <56C57320.8060002@sigmatek.at>
+Subject: Re: [Xenomai] RT serial cross-link failure
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,51 +18,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Wolfgang Netbal <wolfgang.netbal@sigmatek.at>
+Cc: mwelling79@gmail.com, xenomai@xenomai.org
 
-On Tue, Feb 23, 2016 at 12:49:18AM +0100, Gilles Chanteperdrix wrote:
-> On Mon, Feb 22, 2016 at 05:42:28PM -0600, Michael Welling wrote:
-> > Update cross link demo to properly handle errors returned from syscalls.
-> > 
-> > Signed-off-by: Michael Welling <mwelling@ieee.org>
-> > ---
-> >  demo/alchemy/cobalt/cross-link.c | 25 +++++++++++++------------
-> >  1 file changed, 13 insertions(+), 12 deletions(-)
-> > 
-> > diff --git a/demo/alchemy/cobalt/cross-link.c b/demo/alchemy/cobalt/cross-link.c
-> > index 8c0f53f..dceb928 100644
-> > --- a/demo/alchemy/cobalt/cross-link.c
-> > +++ b/demo/alchemy/cobalt/cross-link.c
-> > @@ -23,6 +23,7 @@
-> >  #include <stdio.h>
-> >  #include <signal.h>
-> >  #include <unistd.h>
-> > +#include <errno.h>
-> >  #include <sys/mman.h>
-> >  #include <alchemy/task.h>
-> >  #include <alchemy/timer.h>
-> > @@ -78,8 +79,8 @@ static int close_file( int fd, char *name)
-> >  	do {
-> >  		i++;
-> >  		err = close(fd);
-> > -		switch (err) {
-> > -		case -EAGAIN:
-> > +		switch (errno) {
-> > +		case EAGAIN:
+On Thu, Feb 18, 2016 at 08:30:40AM +0100, Wolfgang Netbal wrote:
 > 
-> This looks incorrect. errno has a meaningful value only if err is
-> -1. You could get away with setting errno to 0 before calling close,
-> this would probably work, but for a more complex service which calls
-> several syscalls under the hoold, this would not even work.
 > 
-> So, you should probably just add:
-> err = err < 0 ? -errno : 0;
+> Am 2016-02-18 um 08:10 schrieb Michael Welling:
+> >On Thu, Feb 18, 2016 at 08:02:48AM +0100, Wolfgang Netbal wrote:
+> >>
+> >>Am 2016-02-16 um 18:58 schrieb Michael Welling:
+> >>>On Tue, Feb 16, 2016 at 06:39:50AM +0100, Wolfgang Netbal wrote:
+> >>>>Am 2016-02-15 um 18:41 schrieb Michael Welling:
+> >>>>>I took the time to update the IMX UART driver such that it registers with the 3.18 kernel.
+> >>>>>
+> >>>>>The driver appears to register correctly and the /dev/rtdm/rtser* nodes appear.
+> >>>>>
+> >>>>>When I run the cross-link demo the system hangs after an error in read_task.
+> >>>>>
+> >>>>>Here is the output that I get:
+> >>>>>main : write-file opened
+> >>>>>main : write-config written
+> >>>>>main : read-file opened
+> >>>>>main : read-config written
+> >>>>>main : write-task created
+> >>>>>main : read-task created
+> >>>>>main : starting write-task
+> >>>>>main : strating read-task
+> >>>>>  Nr |   write-irq    |    irq->read    |   write->read   |
+> >>>>>----------------------------------------------------------
+> >>>>>read_task: error on RTSER_RTIOC_WAIT_EVENT, Operation no permitted
+> >>>>>main : /dev/rtdm/rtser1 (read) -> closed
+> >>>>>read_task: exit
+> >>>>>
+> >>>>>Any ideas why this would happen?
+> >>>>>
+> >>>>>I can provide the patch for the driver if necessary. I tried to keep the changes to a minimal.
+> >>>>Dear Michael,
+> >>>>
+> >>>>I added a patch on December where I extended the IMX UART driver to support
+> >>>>open firmware, maybe my patch can help you to find your issue.
+> >>>>I posted the patch in the mailing list, you can find it here
+> >>>>https://xenomai.org/pipermail/xenomai/2015-December/035655.html
+> >>>>
+> >>>>Kind regards
+> >>>>Wolfgang
+> >>Sorry Michael,
+> >>
+> >>My patch working for xenomai 2.6.4 file ksrc/drivers/serial/rt_imx_uart.c
+> >I am pretty sure that there is another patch applied previous.
+> >
+> >If you look at your patch you see German comments and open firmware code that
+> >is obviously not in the v2.6.4 on the git repository.
+> >
+> >https://git.xenomai.org/xenomai-2.6.git/tree/ksrc/drivers/serial/rt_imx_uart.c?h=v2.6.4
+> >
+> I posted my patch, because I thought that Wolfgang Grandegger the author of
+> the driver may check it and include it to the xenomai if it is useable for
+> other users.
+>
 
-Okay I will fix that up in v2 along with the other things that I missed.
-
-> 
-> -- 
-> 					    Gilles.
-> https://click-hack.org
+Yes but the patch does not apply to the driver in the source tree.
+Please provide the driver that you have after the patch.
 
