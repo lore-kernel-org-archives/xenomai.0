@@ -1,17 +1,16 @@
-Date: Sun, 6 Mar 2016 20:51:25 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160306195125.GD1783@hermes.click-hack.org>
-References: <56DC4081.4040807@esiee.fr>
- <20160306150817.GA1783@hermes.click-hack.org>
- <56DC5749.8020506@esiee.fr>
- <20160306162305.GB1783@hermes.click-hack.org>
- <56DC860C.9060807@esiee.fr>
+References: <20160215174121.GA10070@deathstar> <56C2B626.8010804@sigmatek.at>
+ <20160216175837.GC9806@deathstar> <56C56C98.4020501@sigmatek.at>
+ <20160218071030.GA20063@deathstar> <56C57320.8060002@sigmatek.at>
+ <20160218161047.GA10005@deathstar> <20160222175341.GA22349@deathstar>
+ <56CB4DF8.2010802@siemens.com> <20160222190431.GB22349@deathstar>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <56CB5E84.1010803@siemens.com>
+Date: Mon, 22 Feb 2016 20:16:20 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <56DC860C.9060807@esiee.fr>
-Subject: Re: [Xenomai] rtnet/xenomai-3.0.1+3.18.20kernel: tdma & nomac issue
+In-Reply-To: <20160222190431.GB22349@deathstar>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] RT serial cross-link failure
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,160 +19,205 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thierry Grandpierre <thierry.grandpierre@esiee.fr>
-Cc: xenomai@xenomai.org
+To: Michael Welling <mwelling@ieee.org>
+Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, mwelling79@gmail.com, xenomai@xenomai.org
 
-On Sun, Mar 06, 2016 at 08:33:32PM +0100, Thierry Grandpierre wrote:
->=20
->=20
-> Le 06/03/2016 17:23, Gilles Chanteperdrix a =E9crit :
-> > On Sun, Mar 06, 2016 at 05:14:01PM +0100, Thierry Grandpierre wrote:
-> >> Thanks for a so fast answer!
-> >>
-> >>
-> >> Le 06/03/2016 16:08, Gilles Chanteperdrix a =E9crit :
-> >>> On Sun, Mar 06, 2016 at 03:36:49PM +0100, Thierry Grandpierre wrote:
-> >>>> 1) RTNET/TDMA : I am unsuccessfully  trying to run rtnet/xenomai 3 o=
-n 2
-> >>>> virtual machines : a VM as master and a VM as slave. Synchro frames =
-are
-> >>>> sent by the master and received on the slave machine (seen with
-> >>>> wireshark on the rteth0 of each machine) but slave never answer. Both
-> >>>> machine are VMs connected by a  VM to VM private network  (VMnet0 in
-> >>>> VMware)
-> >>> Are you sure the network emulation you use transmit all kinds of
-> >>> packets? In qemu, for instance, the default network emulation is not
-> >>> able to transmit icmp packets and probably not rtcfg packets (they
-> >>> use a custom ethertype). I have tested rtcfg with Xenomai 3.0.1 and
-> >>> it worked. I have not tried transmitting files though, just used it
-> >>> as a kind of DHCP.
-> >> I use VMware Workstation 11.0.0 build-2305329 and setup vm0 as a
-> >> Host-only (connect VMs internally in a private network) without
-> >> connecting any host virtual adapter to this network neither DHCP.
-> >>
-> >> As explained, using wireshark on the second VM I saw the sync frame se=
-nt
-> >> by the first VM so I think that yes the packets seems to be transmitte=
-d :
-> >> wireshark on the master : 100    0.494738000    Vmware_cc:8c:1b
-> >> Broadcast    TDMA    42 Synchronisation
-> >> wireshark on the slave : 204    0.484035000    Vmware_cc:8c:1b
-> >> Broadcast    TDMA    64 Synchronisation
-> >>
-> >> =3D=3D> the strange thing is the size difference 42 on the master vers=
-us 64
-> >> received on the slave...22 bytes difference
-> >> I will try to get more info. on that..
-> > An ethernet packet is forbidden to occupy less than 64 bytes, so the
-> > sender pads the packet to 64 bytes before sending it.
->=20
-> oups, forgotten that point.
->   So, no problem on that side, moreover with wireshark I dumped the=20
-> synchro frame on the master side  and on the slave side : they are=20
-> exactly the same (just the padding bytes difference).
->=20
-> So, since  VMware seems to transmit correctly the custom packets, I=20
-> don't know what to do, how to understand why the slave doesn't answer.
->=20
-> Here are the frames dump :
-> emitted by the master VM :
-> 1 0.000000000    Vmware_cc:8c:1b    Broadcast    TDMA    64 Synchronisati=
-on
-> 2 0.005784000    Vmware_cc:8c:1b    Broadcast    TDMA    64 Synchronisati=
-on
-> ffffffffffff000c29cc8c1b902100010200020100000000000114394e346a67b75e14394=
-e346a656843
-> ffffffffffff000c29cc8c1b902100010200020100000000000214394e346ac0762a14394=
-e346ab1b383
-> ffffffffffff000c29cc8c1b902100010200020100000000000314394e346afe538914394=
-e346afdfec3
->=20
-> received by the slave VM :
-> 1 0.000000000    Vmware_cc:8c:1b    Broadcast    TDMA    42 Synchronisati=
-on
-> 2 0.005816000    Vmware_cc:8c:1b    Broadcast    TDMA    42 Synchronisati=
-on
-> 3 0.009871000    Vmware_cc:8c:1b    Broadcast    TDMA    42 Synchronisati=
-on
-> ffffffffffff000c29cc8c1b902100010200020100000000000114394e346a67b75e14394=
-e346a65684300000000000000000000000000000000000000000000
-> ffffffffffff000c29cc8c1b902100010200020100000000000214394e346ac0762a14394=
-e346ab1b38300000000000000000000000000000000000000000000
-> ffffffffffff000c29cc8c1b902100010200020100000000000314394e346afe538914394=
-e346afdfec300000000000000000000000000000000000000000000
->=20
->=20
->=20
->=20
-> >>
-> >>>> Rtnet on the slave machine is waiting with message :
-> >>>>        /usr/xenomai/sbin/rtcfg rteth0 add 10.0.0.2 -stage1 -
-> >>>>        Waiting for all slaves.../usr/xenomai/sbin/rtcfg rteth0 wait"
-> >>>>
-> >>>> Rtnet on the master machine is also hanging with message
-> >>>>      /usr/xenomai/sbin/rtifconfig rteth0 up 10.0.0.2
-> >>>>      Stage 1: searching for master...
-> >>>>
-> >>>> I think rtnet on the slave machine doesn't see/understand the sync
-> >>>> frames. Below all details are given.
-> >>>>
-> >>>> 2)RTNET/NOMAC:
-> >>>> When trying nomac, once everything is configured, I'm getting " ioct=
-l:
-> >>>> Resource temporarily unavailable" when pinging. Details are also giv=
-en
-> >>>> at the end.
-> >>> This probably means that the network is not up, but I am a little
-> >>> confused, as I thought I added this check after the 3.0.1 release.
-> >>> Are you using the 3.0.1 release, or the current git?
-> >>> Anyway, if that is the case, when you run rtifconfig you should not
-> >>> see the RUNNING flag. You have to wait for the network to be up and
-> >>> running before being able to actually send packets.
-> >>>
-> >> I used the 3.0.1 release, not the git version.
-> >>
-> >> How can I disable this RUNNING flag (I thought is was normal to have
-> >> running..) ?  it never goes off by itself :-(
-> > Sorry, you do not want to disable the RUNNING flag. What I meant is
-> > that with current Xenomai 3.0 git, the flag is not set when the
-> > network is not up, at which point sending a packet will cause
-> > EAGAIN to be returned. When the network is up the RUNNING flag will
-> > appear in rtifconfig output, and at that point, you can start
-> > sending packets.
-> >
-> > I would suggest you try Xenomai 3.0 git to see if any commit since
-> > the release fix the issue you have.
-> >
->=20
-> Ok, I have already build a VM with xenomai-3.0-rc4 & kernel 3.18.12 : is =
+On 2016-02-22 20:04, Michael Welling wrote:
+> On Mon, Feb 22, 2016 at 07:05:44PM +0100, Jan Kiszka wrote:
+>> On 2016-02-22 18:53, Michael Welling wrote:
+>>> On Thu, Feb 18, 2016 at 10:10:48AM -0600, Michael Welling wrote:
+>>>> On Thu, Feb 18, 2016 at 08:30:40AM +0100, Wolfgang Netbal wrote:
+>>>>>
+>>>>>
+>>>>> Am 2016-02-18 um 08:10 schrieb Michael Welling:
+>>>>>> On Thu, Feb 18, 2016 at 08:02:48AM +0100, Wolfgang Netbal wrote:
+>>>>>>>
+>>>>>>> Am 2016-02-16 um 18:58 schrieb Michael Welling:
+>>>>>>>> On Tue, Feb 16, 2016 at 06:39:50AM +0100, Wolfgang Netbal wrote:
+>>>>>>>>> Am 2016-02-15 um 18:41 schrieb Michael Welling:
+>>>>>>>>>> I took the time to update the IMX UART driver such that it registers with the 3.18 kernel.
+>>>>>>>>>>
+>>>>>>>>>> The driver appears to register correctly and the /dev/rtdm/rtser* nodes appear.
+>>>>>>>>>>
+>>>>>>>>>> When I run the cross-link demo the system hangs after an error in read_task.
+>>>>>>>>>>
+>>>>>>>>>> Here is the output that I get:
+>>>>>>>>>> main : write-file opened
+>>>>>>>>>> main : write-config written
+>>>>>>>>>> main : read-file opened
+>>>>>>>>>> main : read-config written
+>>>>>>>>>> main : write-task created
+>>>>>>>>>> main : read-task created
+>>>>>>>>>> main : starting write-task
+>>>>>>>>>> main : strating read-task
+>>>>>>>>>>  Nr |   write-irq    |    irq->read    |   write->read   |
+>>>>>>>>>> ----------------------------------------------------------
+>>>>>>>>>> read_task: error on RTSER_RTIOC_WAIT_EVENT, Operation no permitted
+>>>>>>>>>> main : /dev/rtdm/rtser1 (read) -> closed
+>>>>>>>>>> read_task: exit
+>>>>>>>>>>
+>>>>>>>>>> Any ideas why this would happen?
+>>>>>>>>>>
+>>>>>>>>>> I can provide the patch for the driver if necessary. I tried to keep the changes to a minimal.
+>>>>>>>>> Dear Michael,
+>>>>>>>>>
+>>>>>>>>> I added a patch on December where I extended the IMX UART driver to support
+>>>>>>>>> open firmware, maybe my patch can help you to find your issue.
+>>>>>>>>> I posted the patch in the mailing list, you can find it here
+>>>>>>>>> https://xenomai.org/pipermail/xenomai/2015-December/035655.html
+>>>>>>>>>
+>>>>>>>>> Kind regards
+>>>>>>>>> Wolfgang
+>>>>>>> Sorry Michael,
+>>>>>>>
+>>>>>>> My patch working for xenomai 2.6.4 file ksrc/drivers/serial/rt_imx_uart.c
+>>>>>> I am pretty sure that there is another patch applied previous.
+>>>>>>
+>>>>>> If you look at your patch you see German comments and open firmware code that
+>>>>>> is obviously not in the v2.6.4 on the git repository.
+>>>>>>
+>>>>>> https://git.xenomai.org/xenomai-2.6.git/tree/ksrc/drivers/serial/rt_imx_uart.c?h=v2.6.4
+>>>>>>
+>>>>> I posted my patch, because I thought that Wolfgang Grandegger the author of
+>>>>> the driver may check it and include it to the xenomai if it is useable for
+>>>>> other users.
+>>>>>
+>>>>
+>>>> Yes but the patch does not apply to the driver in the source tree.
+>>>> Please provide the driver that you have after the patch.
+>>>
+>>> Any ideas out there?
+>>>
+>>
+>> Are you now referring to the incomplete patch or your original problem
+>> again?
+> 
+> The original problem is my primary concern. I would not mind having another
+> version of the driver to test against as well.
+> 
+>>
+>> For the latter case, I would recommend debugging the error code, ie.
+>> what threw this at you. In Xenomai context, -EPERM often means that the
+>> caller is requesting some (potentially) blocking service without being a
+>> real-time task. But, of course, also the driver itself may decide to
+>> raise this for whatever reasons.
+> 
+> Here is the snippet of code from the user app that concerns me:
+> .
+> .
+>         printf(" Nr |   write->irq    |    irq->read    |   write->read   |\n");
+>         printf("-----------------------------------------------------------\n");
+> 
+>         /*
+>          * We are in secondary mode now due to printf, the next
+>          * blocking Xenomai or driver call will switch us back
+>          * (here: RTSER_RTIOC_WAIT_EVENT).
+>          */
+> 
+>         while (1) {
+>                 /* waiting for event */
+>                 err = ioctl(read_fd, RTSER_RTIOC_WAIT_EVENT, &rx_event);
+> .
+> .
+> 
+> So is the comment no longer true with Xenomai 3?
 
-> it a good candidate for testing ?
->   (I stopped working with it because of  some issues (running rtnet I=20
-> got "couldn't insert rtudp : operation not permitted")  and then I=20
-> realized that it wasn't the last version. But I can re-check the problem =
+No, that would be a bug.
 
-> if necessary)
+> 
+> Here is the content of the corresponding ioctl in the driver:
+> .
+> .
+>         case RTSER_RTIOC_WAIT_EVENT: {
+>                 struct rtser_event ev = { .rxpend_timestamp = 0 };
+>                 rtdm_toseq_t timeout_seq;
+> 
+>                 if (!rtdm_in_rt_context())
+>                         return -ENOSYS;
+> 
+>                 /* Only one waiter allowed, stop any further attempts here. */
+>                 if (test_and_set_bit(0, &ctx->ioc_event_lock))
+>                         return -EBUSY;
+> 
+>                 rtdm_toseq_init(&timeout_seq, ctx->config.event_timeout);
+> 
+>                 rtdm_lock_get_irqsave(&ctx->lock, lock_ctx);
+> 
+>                 while (!ctx->ioc_events) {
+>                         /* Only enable error interrupt
+>                            when the user waits for it. */
+>                         if (ctx->config.event_mask & RTSER_EVENT_ERRPEND) {
+>                                 ctx->ier_status |= IER_STAT;
+> #ifdef FIXME
+>                                 rt_imx_uart_reg_out(mode, base, IER,
+>                                                  ctx->ier_status);
+> #endif
+>                         }
+> 
+>                         rtdm_lock_put_irqrestore(&ctx->lock, lock_ctx);
+> 
+>                         err = rtdm_event_timedwait(&ctx->ioc_event,
+>                                                    ctx->config.event_timeout,
+>                                                    &timeout_seq);
+>                         if (err) {
+>                                 /* Device has been closed? */
+>                                 if (err == -EIDRM)
+>                                         err = -EBADF;
+>                                 goto wait_unlock_out;
+>                         }
+> 
+>                         rtdm_lock_get_irqsave(&ctx->lock, lock_ctx);
+>                 }
+> 
+>                 ev.events = ctx->ioc_events;
+>                 ctx->ioc_events &=
+>                     ~(RTSER_EVENT_MODEMHI | RTSER_EVENT_MODEMLO);
+> 
+>                 ev.last_timestamp = ctx->last_timestamp;
+>                 ev.rx_pending = ctx->in_npend;
+> 
+>                 if (ctx->in_history)
+>                         ev.rxpend_timestamp = ctx->in_history[ctx->in_head];
+> 
+>                 rtdm_lock_put_irqrestore(&ctx->lock, lock_ctx);
+> 
+>                 if (rtdm_fd_is_user(fd))
+>                         err =
+>                             rtdm_safe_copy_to_user(fd, arg, &ev,
+>                                                    sizeof(struct
+>                                                           rtser_event));
+>                         else
+>                                 memcpy(arg, &ev, sizeof(struct rtser_event));
+> 
+> wait_unlock_out:
+>                 /* release the simple event waiter lock */
+>                 clear_bit(0, &ctx->ioc_event_lock);
+>                 break;
+>         }
+> .
+> .
+> 
+> So either rtdm_event_timedwait or rtdm_safe_copy_to_user is returing -EPERM.
 
-No. 3.0-rc4, as the name indicates, is a release candidate for the
-3.0 version so is completely outdated. What I meant is to use the
-TIP of the git repository stable-3.0.x branch.
+Or things terminate earlier / later in the ioctl dispatching path.
 
-The said git is at the following address:
-git://git.xenomai.org/xenomai-3.git
+> Looking at the documentation rtdm_safe_copy_to_user does not appear to return -EPERM.
+> 
+> Looking at the documentation rtdm_event_timedwait:
+> -EPERM may be returned if an illegal invocation environment is detected.
+> 
+> So are we stuck in secondary mode?
 
-Before going all the way with rtcfg and rtnet start up script, I
-would recommend setting up the two machines with fixed IP address
-and use rtroute solicit to create the root from one machine to the
-other. As long as this does not work, there is no need to go any
-further.
+Probably.
 
-With the current state of the git repository, you will need to wait
-for RUNNING to appear in rtifconfig before sending the arp request
-with rtroute solicit.
+> Ideas?
 
-You can even setup one machine with rtnet and the other without.
+You will not get around debugging more information out of your setup.
+Use tracing, use well-placed printk.
 
---=20
-					    Gilles.
-https://click-hack.org
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
 
