@@ -1,14 +1,14 @@
-Date: Mon, 29 Feb 2016 20:16:25 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160229191625.GA26312@hermes.click-hack.org>
-References: <20160229183956.5869650.18060.4@asyring.de>
+References: <E1aXuTj-0000rZ-UQ@sd-51317.xenomai.org>
+ <20160222174421.GD7398@hermes.click-hack.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <56CB4BE5.3090702@siemens.com>
+Date: Mon, 22 Feb 2016 18:56:53 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20160229183956.5869650.18060.4@asyring.de>
-Subject: Re: [Xenomai] Ipipe 4.1 on Allwinner A20 (Cubietruck) takes a very
- long start time
+In-Reply-To: <20160222174421.GD7398@hermes.click-hack.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : boilerplate: Allow for
+ enabling Xenomai only in shared libs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,66 +17,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Alexander Syring <xenomai@asyring.de>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
 
-On Mon, Feb 29, 2016 at 07:39:56PM +0100, Alexander Syring wrote:
-> On. On, Feb 29, 2016 at 13:55, Gilles Chanteperdrix
->  wrote:‎
-> >On Mon, Feb 29, 2016 at 01:47:17PM +0100, Alexander >Syring wrote:
-> >> Hi
-> >> I patched the 4.1.15 from git.xenomai.org to compile it on the Cubietruck.
-> >> But it takes a long time to boot.
-> > >‎
-> > > [...]
-> >> 
-> >> has anyone a clue why it takes more than two hours to bring up the interrupt 
-> >> pipeline?
-> >
-> >The problem is not the interrupt pipeline.
-> >
-> >The Allwinner A20 is not among the processors supported by the
-> >I-pipe patch, (see list here: 
-> http://xenomai.org/embedded-hardware/)
-> >
-> >Thus, before using this processor, you need to follow the porting
-> >guide:
-> >http://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc/
-> >
-> >Also you do not tell us what version of the I-pipe patch >you are
-> >using, I guess not the latest, so you should try the latest to be
-> >sure you get the latest fixes, notably:
-> >
-> >https://git.xenomai.org/ipipe.git/commit/?h=ipipe-4.1.y&id=0a037e7db92fb0f0c4a1d77c6bac38814649ee26
-> 
-> >Regards.
-> 
-> I used the last version from yesterday of the ipipe.git
-> ipipe-4.1.y
+[please CC me on replies, I've delivery turned off for all lists]
 
-I doubt that, since you are talking about 4.1.15 whereas yesterday
-version is for 4.1.18. But "yesterday" is a vague notion anyway,
-with people living around the world in different time zones. A
-git hash is more precise. Are you using
-9920b05b219c09c2fa7036d9d7db1a9bcf04094e ?
-Also, I pointed you to a precise patch, has the patch been applied
-on the kernel you use or not?
-
+On 2016-02-22 18:44, Gilles Chanteperdrix wrote:
+> On Mon, Feb 22, 2016 at 06:40:59PM +0100, git repository hosting wrote:
+>> Module: xenomai-jki
+>> Branch: for-forge
+>> Commit: 4601286f7fedb8267ea314584fc68d2b35b818a4
+>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=4601286f7fedb8267ea314584fc68d2b35b818a4
+>>
+>> Author: Jan Kiszka <jan.kiszka@siemens.com>
+>> Date:   Fri Feb  5 17:33:18 2016 +0100
+>>
+>> boilerplate: Allow for enabling Xenomai only in shared libs
+>>
+>> Normally, one builds shared libraries with Xenomai awareness by adding
+>> --no-auto-init to xeno-config. This drops bootstrap.o from the linking
+>> steps because - normally - the main application performs the
+>> initialization.
+>>
+>> However, if the main application is Xenomai-free and only dlopen() would
+>> pull in Xenomai services via a shared library, we face two problems:
+>>
+>> - bootstrap.o is not built with position-independence support
+>>
+>> - libboilerplate contains __real_main that expects the main symbol which
+>>   cannot be found from a shared library
 > 
-> I tested 3.18.12 on Allwinner A20 before an here is the patch that I was using and the dmesg output.
-> As you can see there is non delay of two hours.
-> 
-> I don't know, why 4.1 is so different to 3.18.12.
+> Does not the library find the program symbols if RTLD_GLOBAL is
+> passed to dlopen?
 
-If you follow the porting guide, you will find out. Since you are
-using an unsupported processor, no effort has been made when porting
-the I-pipe git from 3.18 to 4.1 to preserve anything about the
-processor you use. If you want to avoid that, follow the porting
-guide, them submit a patch to the I-pipe git for supporting the
-processor you us, then, when your patch is merged, attempts will be
-made to avoid breaking support for this processor in later versions.
+Nope, just retried, didn't help. In fact, RTLD_GLOBAL affects only the
+opened library's symbols, not the pre-existing ones. I think it is
+simply not possible with dlopen to refer back to a symbol from the code
+that loads the library.
+
+Jan
 
 -- 
-					    Gilles.
-https://click-hack.org
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
 
