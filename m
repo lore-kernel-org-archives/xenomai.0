@@ -1,12 +1,14 @@
-Date: Tue, 19 Apr 2016 21:10:52 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160419191052.GE29711@hermes.click-hack.org>
-References: <57155DFC.9000606@sigmatek.at>
+Sender: Michael Welling <mwelling79@gmail.com>
+Date: Mon, 22 Feb 2016 17:30:25 -0600
+From: Michael Welling <mwelling@ieee.org>
+Message-ID: <20160222233025.GA28057@deathstar>
+References: <1456177287-15501-1-git-send-email-mwelling@ieee.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <57155DFC.9000606@sigmatek.at>
-Subject: Re: [Xenomai] rt task & stack overflow
+In-Reply-To: <1456177287-15501-1-git-send-email-mwelling@ieee.org>
+Subject: Re: [Xenomai] [PATCH v2] demo: cross-link: Properly handle ioctl
+	error
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,56 +17,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Johann Obermayr <johann.obermayr@sigmatek.at>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
 
-On Tue, Apr 19, 2016 at 12:21:48AM +0200, Johann Obermayr wrote:
-> Hello,
+On Mon, Feb 22, 2016 at 03:41:27PM -0600, Michael Welling wrote:
+> Update cross-link demo to properly report ioctl errors.
 > 
-> is there a way to handle a stack overflow with a xenomai  rt_task ?
+> Signed-off-by: Michael Welling <mwelling@ieee.org>
+> ---
+> v2: Update all instances that incorrectly handle ioctl errors.
 > 
-> this example work for a standard linux
+>  demo/alchemy/cobalt/cross-link.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/demo/alchemy/cobalt/cross-link.c b/demo/alchemy/cobalt/cross-link.c
+> index 8c0f53f..fa3cc91 100644
+> --- a/demo/alchemy/cobalt/cross-link.c
+> +++ b/demo/alchemy/cobalt/cross-link.c
+> @@ -23,6 +23,7 @@
+>  #include <stdio.h>
+>  #include <signal.h>
+>  #include <unistd.h>
+> +#include <errno.h>
+>  #include <sys/mman.h>
+>  #include <alchemy/task.h>
+>  #include <alchemy/timer.h>
+> @@ -199,6 +200,7 @@ static void read_task_proc(void *arg)
+>  		/* waiting for event */
+>  		err = ioctl(read_fd, RTSER_RTIOC_WAIT_EVENT, &rx_event);
+>  		if (err) {
+> +			err = -errno;
+>  			printf(RTASK_PREFIX
+>  			       "error on RTSER_RTIOC_WAIT_EVENT, %s\n",
+>  			       strerror(-err));
+> @@ -254,6 +256,7 @@ int main(int argc, char* argv[])
+>  	/* writing write-config */
+>  	err = ioctl(write_fd, RTSER_RTIOC_SET_CONFIG, &write_config);
+>  	if (err) {
+> +		err = -errno;
+>  		printf(MAIN_PREFIX "error while RTSER_RTIOC_SET_CONFIG, %s\n",
+>  		       strerror(-err));
+>  		goto error;
+> @@ -273,6 +276,7 @@ int main(int argc, char* argv[])
+>  	/* writing read-config */
+>  	err = ioctl(read_fd, RTSER_RTIOC_SET_CONFIG, &read_config);
+>  	if (err) {
+> +		err = -errno;
+>  		printf(MAIN_PREFIX "error while ioctl, %s\n",
+>  		       strerror(-err));
+>  		goto error;
 
-This example does not handle stack overflows. It handles the SIGSEGV
-signal, which may happen in case of stack overflow or for many other
-reasons. In order to handle properly a stack overflow, you would
-have to:
-- use the SA_SIGINFO flag and setup an sa_sigaction handler instead
-of sa_handler with additional arguments
-- in the handler, use the additional arguments to extract the fault
-address and architecture specific stack pointer and check that the
-fault address is "near" the stack pointer (and in fact it may not be
-at all)
-- or walk /proc/self/maps to find the mapping where the fault
-address is and check if it is "near" a thread stack.
-- or check that the fault program counter is an operation involving
-a store or read relative to the stack pointer.
+After I got an email about this patch offlist, I found even more issues with
+error number handling.
 
-But I do not think there is a reliable way to detect stack
-overflows. It is even possible to overflow the stack so much that
-the code appears to work by writing to another thread stack (if the
-overflow length is larger than the glibc guard size).
+Not only are the ioctl calls wrong but the read, open, and write calls are too.
 
-> #define _XOPEN_SOURCE 700
-> #include <stdio.h>
-> #include <signal.h>
-> #include <unistd.h>
-> void handler(int sig)
-> {
->      printf("stack overflow: %d\n", sig);
->      _exit(1);
-> }
+Here comes v3.
 
-Also, using printf in a signal handler is bad. printf is not async
-signal safe.
-
-So in fact no, this code is complete rubbish, and it can not be said
-that it works.
-
-Other than that there should be no reason for this code to be worse
-with Xenomai than it is with Linux.
-
--- 
-					    Gilles.
-https://click-hack.org
+> -- 
+> 2.1.4
+> 
 
