@@ -1,13 +1,8 @@
-MIME-Version: 1.0
-In-Reply-To: <CAOLO655T6eQxwCq6swn2M-ruzaLvCpm9NKZNYiyKe-oUNj=89Q@mail.gmail.com>
-References: <CAOLO655T6eQxwCq6swn2M-ruzaLvCpm9NKZNYiyKe-oUNj=89Q@mail.gmail.com>
-Date: Thu, 31 Mar 2016 21:27:33 +0300
-Message-ID: <CAOLO656pVDw49ezDkdo4Mm1kPaOagSssV3zUmai9FQeF2=6Eyg@mail.gmail.com>
-From: =?UTF-8?Q?Ahmet_Soyyi=C4=9Fit?= <ahmedius2@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] No rtdm device is created with multiple source files,
-	kernel module
+Sender: Michael Welling <mwelling79@gmail.com>
+From: Michael Welling <mwelling@ieee.org>
+Date: Mon, 22 Feb 2016 15:25:43 -0600
+Message-Id: <1456176343-13522-1-git-send-email-mwelling@ieee.org>
+Subject: [Xenomai] [PATCH] demo: cross-link: Properly handle ioctl error
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,92 +11,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai@xenomai.org, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, mwelling@ieee.org
 
-Let me answer my question,
+Update cross-link demo to properly report ioctl errors.
 
-the makefile should be like:
+Signed-off-by: Michael Welling <mwelling@ieee.org>
+---
+ demo/alchemy/cobalt/cross-link.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/demo/alchemy/cobalt/cross-link.c b/demo/alchemy/cobalt/cross-link.c
+index 8c0f53f..f050524 100644
+--- a/demo/alchemy/cobalt/cross-link.c
++++ b/demo/alchemy/cobalt/cross-link.c
+@@ -23,6 +23,7 @@
+ #include <stdio.h>
+ #include <signal.h>
+ #include <unistd.h>
++#include <errno.h>
+ #include <sys/mman.h>
+ #include <alchemy/task.h>
+ #include <alchemy/timer.h>
+@@ -199,6 +200,7 @@ static void read_task_proc(void *arg)
+ 		/* waiting for event */
+ 		err = ioctl(read_fd, RTSER_RTIOC_WAIT_EVENT, &rx_event);
+ 		if (err) {
++			err = -errno;
+ 			printf(RTASK_PREFIX
+ 			       "error on RTSER_RTIOC_WAIT_EVENT, %s\n",
+ 			       strerror(-err));
+-- 
+2.1.4
 
 
-### List of modules to be build
-MODULES =3D rtdm_blink
-
-###### KERNEL MODULE BUILD (no change required normally) ######
-### Default to sources of currently running kernel
-KSRC ?=3D /lib/modules/$(shell uname -r)/build
-
-OBJS     :=3D ${patsubst %, %.o, $(MODULES)}
-CLEANMOD :=3D ${patsubst %, .%*, $(MODULES)}
-PWD      :=3D $(shell if [ "$$PWD" !=3D "" ]; then echo $$PWD; else pwd; fi=
-)
-
-obj-m        :=3D $(OBJS)
-#rtdm_blink-y :=3D rtdm_blink_module.o bcm2835.o
-ccflags-y    :=3D -I$(KSRC)/include/xenomai -I$(KSRC)/include/xenomai/posix
-$(ADD_CFLAGS)
-
-all::
-$(MAKE) -C $(KSRC) M=3D$(PWD) modules
-
-changing the name of rtdm_blink.c to rtdm_blink_module.c and editing
-makefile worked. Now now compile and link order is correct.  module name
-should be different from source files.
-
-Ahmet Soyyi=C4=9Fit
-
-
-2016-03-31 20:35 GMT+03:00 Ahmet Soyyi=C4=9Fit <ahmedius2@gmail.com>:
-
-> Hello,
->
-> I am trying to write a rtdm kernel module for raspberyy pi B+ which
-> creates a device named rtdm-blink01. The operation succeeds with no
-> problem, the device rtdm-blink01 is created under /proc/xenomai/rtdm for
-> single source file with this makefile  (my module is ioctl added version =
-of
-> tut01-skeleton-drv  rtdm driver in xenomai examples).
->
-> ### List of modules to be build
-> MODULES =3D rtdm_blink
->
-> ###### KERNEL MODULE BUILD (no change required normally) ######
-> ### Default to sources of currently running kernel
-> KSRC ?=3D /lib/modules/$(shell uname -r)/build
->
-> OBJS     :=3D ${patsubst %, %.o, $(MODULES)}
-> CLEANMOD :=3D ${patsubst %, .%*, $(MODULES)}
-> PWD      :=3D $(shell if [ "$$PWD" !=3D "" ]; then echo $$PWD; else pwd; =
-fi)
->
-> obj-m        :=3D $(OBJS)
-> #rtdm_blink-y :=3D bcm2835.o
-> ccflags-y    :=3D -I$(KSRC)/include/xenomai -I$(KSRC)/include/xenomai/pos=
-ix
-> $(ADD_CFLAGS)
->
-> all::
-> $(MAKE) -C $(KSRC) M=3D$(PWD) modules
->
-> clean::
-> $(RM) $(CLEANMOD) *.o *.ko *.mod.c Module*.symvers Module.markers
-> modules.order
-> $(RM) -R .tmp*
->
->  I can reach the device from a RT task and can do open read write and
-> close operations. But when I uncomment the line #rtdm_blink-y :=3D bcm283=
-5.o
-> and compile again with bcm.2835.c the compilation succeeds with no proble=
-m
-> but when I insmod the module no device appears under /proc/xenomai/rtdm a=
-nd
-> anything printed with rtdm_printk and prink does not show in dmesg. I do
-> not call anything from bcm2835.c file, I just link it to my module and
-> these happens. What happens when I link this file, why are these happenin=
-g
-> ? Thanks for your help.
->
-> Ahmet Soyyi=C4=9Fit
-> Gebze Technical University - TURKEY
-> Computer Engineering Department
->
->
