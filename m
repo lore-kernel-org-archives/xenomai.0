@@ -1,15 +1,9 @@
-Date: Fri, 22 Apr 2016 15:29:26 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160422132926.GE1780@hermes.click-hack.org>
-References: <CAMQ-e4_L=X+8Nn5R+LnsEgtz4ZRgz8KaN48qhV-4vFCwpkFt5A@mail.gmail.com>
- <5719E9A4.5050701@xenomai.org>
- <CAMQ-e4_PrqpX3Eo8nQLo8k4B9aEKPXTEe1Ug4bThcA3kpA2aOA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMQ-e4_PrqpX3Eo8nQLo8k4B9aEKPXTEe1Ug4bThcA3kpA2aOA@mail.gmail.com>
-Subject: Re: [Xenomai] Assertion failed on "test posix_clock" on some
- executions of xeno-test.
+Sender: Michael Welling <mwelling79@gmail.com>
+From: Michael Welling <mwelling@ieee.org>
+Date: Mon, 22 Feb 2016 17:42:28 -0600
+Message-Id: <1456184548-30058-1-git-send-email-mwelling@ieee.org>
+Subject: [Xenomai] [PATCH] demo/alchemy/cross-link: Properly handle syscall
+	errors
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,27 +12,117 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Andrea <andrea.schiappacasse@camelotbio.com>
-Cc: Xenomai@xenomai.org
+To: xenomai@xenomai.org, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, mwelling@ieee.org, Lowell Gilbert <kludge@be-well.ilk.org>
 
-On Fri, Apr 22, 2016 at 02:32:19PM +0200, Andrea wrote:
-> Hi Philippe, thanks for your answer,
-> 
-> I ran autotune but the output didn't change, sometimes the assertion just
-> fails as before.
-> Do you think that it could lead to any problem in the standard Xenomai
-> usage? Or is it something that I may safely ignore? I didn't notice any
-> strange behaviour so far, but I'm wondering if this could be an indicator
-> of something going wrong in the system I'm testing.
-> 
-> Just in case it can be of any use, you can find attached the config of my
-> kernel.
+Update cross link demo to properly handle errors returned from syscalls.
 
-Are you sure that nothing else is running in the background? Like
-dohell processes from the previous run? Most of the unit test are
-supposed to be run on the machine with no load.
+Signed-off-by: Michael Welling <mwelling@ieee.org>
+---
+ demo/alchemy/cobalt/cross-link.c | 25 +++++++++++++------------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
 
+diff --git a/demo/alchemy/cobalt/cross-link.c b/demo/alchemy/cobalt/cross-link.c
+index 8c0f53f..dceb928 100644
+--- a/demo/alchemy/cobalt/cross-link.c
++++ b/demo/alchemy/cobalt/cross-link.c
+@@ -23,6 +23,7 @@
+ #include <stdio.h>
+ #include <signal.h>
+ #include <unistd.h>
++#include <errno.h>
+ #include <sys/mman.h>
+ #include <alchemy/task.h>
+ #include <alchemy/timer.h>
+@@ -78,8 +79,8 @@ static int close_file( int fd, char *name)
+ 	do {
+ 		i++;
+ 		err = close(fd);
+-		switch (err) {
+-		case -EAGAIN:
++		switch (errno) {
++		case EAGAIN:
+ 			printf(MAIN_PREFIX "%s -> EAGAIN (%d times)\n",
+ 			       name, i);
+ 			rt_task_sleep(50000); /* wait 50us */
+@@ -89,10 +90,10 @@ static int close_file( int fd, char *name)
+ 			break;
+ 		default:
+ 			printf(MAIN_PREFIX "%s -> %s\n", name,
+-			       strerror(-err));
++			       strerror(errno));
+ 			break;
+ 		}
+-	} while (err == -EAGAIN && i < 10);
++	} while (errno == EAGAIN && i < 10);
+ 
+ 	return err;
+ }
+@@ -158,7 +159,7 @@ static void write_task_proc(void *arg)
+ 		written = write(write_fd, &write_time, sz);
+ 		if (written < 0 ) {
+ 			printf(WTASK_PREFIX "error on write, %s\n",
+-			       strerror(-err));
++			       strerror(errno));
+ 			break;
+ 		} else if (written != sz) {
+ 			printf(WTASK_PREFIX "only %d / %zd byte transmitted\n",
+@@ -201,8 +202,8 @@ static void read_task_proc(void *arg)
+ 		if (err) {
+ 			printf(RTASK_PREFIX
+ 			       "error on RTSER_RTIOC_WAIT_EVENT, %s\n",
+-			       strerror(-err));
+-			if (err == -ETIMEDOUT)
++			       strerror(errno));
++			if (err == ETIMEDOUT)
+ 				continue;
+ 			break;
+ 		}
+@@ -218,7 +219,7 @@ static void read_task_proc(void *arg)
+ 			nr++;
+ 		} else if (rd < 0 ) {
+ 			printf(RTASK_PREFIX "error on read, code %s\n",
+-			       strerror(-err));
++			       strerror(errno));
+ 			break;
+ 		} else {
+ 			printf(RTASK_PREFIX "only %d / %zd byte received \n",
+@@ -245,7 +246,7 @@ int main(int argc, char* argv[])
+ 	write_fd = open( WRITE_FILE, 0);
+ 	if (write_fd < 0) {
+ 		printf(MAIN_PREFIX "can't open %s (write), %s\n", WRITE_FILE,
+-		       strerror(-write_fd));
++		       strerror(errno));
+ 		goto error;
+ 	}
+ 	write_state |= STATE_FILE_OPENED;
+@@ -255,7 +256,7 @@ int main(int argc, char* argv[])
+ 	err = ioctl(write_fd, RTSER_RTIOC_SET_CONFIG, &write_config);
+ 	if (err) {
+ 		printf(MAIN_PREFIX "error while RTSER_RTIOC_SET_CONFIG, %s\n",
+-		       strerror(-err));
++		       strerror(errno));
+ 		goto error;
+ 	}
+ 	printf(MAIN_PREFIX "write-config written\n");
+@@ -264,7 +265,7 @@ int main(int argc, char* argv[])
+ 	read_fd = open( READ_FILE, 0 );
+ 	if (read_fd < 0) {
+ 		printf(MAIN_PREFIX "can't open %s (read), %s\n", READ_FILE,
+-		       strerror(-read_fd));
++		       strerror(errno));
+ 		goto error;
+ 	}
+ 	read_state |= STATE_FILE_OPENED;
+@@ -274,7 +275,7 @@ int main(int argc, char* argv[])
+ 	err = ioctl(read_fd, RTSER_RTIOC_SET_CONFIG, &read_config);
+ 	if (err) {
+ 		printf(MAIN_PREFIX "error while ioctl, %s\n",
+-		       strerror(-err));
++		       strerror(errno));
+ 		goto error;
+ 	}
+ 	printf(MAIN_PREFIX "read-config written\n");
 -- 
-					    Gilles.
-https://click-hack.org
+2.1.4
+
 
