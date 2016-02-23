@@ -1,15 +1,9 @@
 Sender: Michael Welling <mwelling79@gmail.com>
-Date: Thu, 18 Feb 2016 10:10:48 -0600
 From: Michael Welling <mwelling@ieee.org>
-Message-ID: <20160218161047.GA10005@deathstar>
-References: <20160215174121.GA10070@deathstar> <56C2B626.8010804@sigmatek.at>
- <20160216175837.GC9806@deathstar> <56C56C98.4020501@sigmatek.at>
- <20160218071030.GA20063@deathstar> <56C57320.8060002@sigmatek.at>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <56C57320.8060002@sigmatek.at>
-Subject: Re: [Xenomai] RT serial cross-link failure
+Date: Mon, 22 Feb 2016 18:22:06 -0600
+Message-Id: <1456186926-2517-1-git-send-email-mwelling@ieee.org>
+Subject: [Xenomai] [PATCH v2] demo/alchemy/cross-link: Properly handle
+	syscall errors
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,66 +12,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Netbal <wolfgang.netbal@sigmatek.at>
-Cc: mwelling79@gmail.com, xenomai@xenomai.org
+To: xenomai@xenomai.org, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, Lowell Gilbert <kludge@be-well.ilk.org>
 
-On Thu, Feb 18, 2016 at 08:30:40AM +0100, Wolfgang Netbal wrote:
-> 
-> 
-> Am 2016-02-18 um 08:10 schrieb Michael Welling:
-> >On Thu, Feb 18, 2016 at 08:02:48AM +0100, Wolfgang Netbal wrote:
-> >>
-> >>Am 2016-02-16 um 18:58 schrieb Michael Welling:
-> >>>On Tue, Feb 16, 2016 at 06:39:50AM +0100, Wolfgang Netbal wrote:
-> >>>>Am 2016-02-15 um 18:41 schrieb Michael Welling:
-> >>>>>I took the time to update the IMX UART driver such that it registers with the 3.18 kernel.
-> >>>>>
-> >>>>>The driver appears to register correctly and the /dev/rtdm/rtser* nodes appear.
-> >>>>>
-> >>>>>When I run the cross-link demo the system hangs after an error in read_task.
-> >>>>>
-> >>>>>Here is the output that I get:
-> >>>>>main : write-file opened
-> >>>>>main : write-config written
-> >>>>>main : read-file opened
-> >>>>>main : read-config written
-> >>>>>main : write-task created
-> >>>>>main : read-task created
-> >>>>>main : starting write-task
-> >>>>>main : strating read-task
-> >>>>>  Nr |   write-irq    |    irq->read    |   write->read   |
-> >>>>>----------------------------------------------------------
-> >>>>>read_task: error on RTSER_RTIOC_WAIT_EVENT, Operation no permitted
-> >>>>>main : /dev/rtdm/rtser1 (read) -> closed
-> >>>>>read_task: exit
-> >>>>>
-> >>>>>Any ideas why this would happen?
-> >>>>>
-> >>>>>I can provide the patch for the driver if necessary. I tried to keep the changes to a minimal.
-> >>>>Dear Michael,
-> >>>>
-> >>>>I added a patch on December where I extended the IMX UART driver to support
-> >>>>open firmware, maybe my patch can help you to find your issue.
-> >>>>I posted the patch in the mailing list, you can find it here
-> >>>>https://xenomai.org/pipermail/xenomai/2015-December/035655.html
-> >>>>
-> >>>>Kind regards
-> >>>>Wolfgang
-> >>Sorry Michael,
-> >>
-> >>My patch working for xenomai 2.6.4 file ksrc/drivers/serial/rt_imx_uart.c
-> >I am pretty sure that there is another patch applied previous.
-> >
-> >If you look at your patch you see German comments and open firmware code that
-> >is obviously not in the v2.6.4 on the git repository.
-> >
-> >https://git.xenomai.org/xenomai-2.6.git/tree/ksrc/drivers/serial/rt_imx_uart.c?h=v2.6.4
-> >
-> I posted my patch, because I thought that Wolfgang Grandegger the author of
-> the driver may check it and include it to the xenomai if it is useable for
-> other users.
->
+Update cross link demo to properly handle errors returned from syscalls.
 
-Yes but the patch does not apply to the driver in the source tree.
-Please provide the driver that you have after the patch.
+Signed-off-by: Michael Welling <mwelling@ieee.org>
+---
+v2: Fixes up error handling it close_file.
+Makes sure error is properly returned in main.
+
+ demo/alchemy/cobalt/cross-link.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/demo/alchemy/cobalt/cross-link.c b/demo/alchemy/cobalt/cross-link.c
+index 8c0f53f..0dbd415 100644
+--- a/demo/alchemy/cobalt/cross-link.c
++++ b/demo/alchemy/cobalt/cross-link.c
+@@ -78,6 +78,7 @@ static int close_file( int fd, char *name)
+ 	do {
+ 		i++;
+ 		err = close(fd);
++		err = err < 0 ? -errno : 0;
+ 		switch (err) {
+ 		case -EAGAIN:
+ 			printf(MAIN_PREFIX "%s -> EAGAIN (%d times)\n",
+@@ -158,7 +159,7 @@ static void write_task_proc(void *arg)
+ 		written = write(write_fd, &write_time, sz);
+ 		if (written < 0 ) {
+ 			printf(WTASK_PREFIX "error on write, %s\n",
+-			       strerror(-err));
++			       strerror(errno));
+ 			break;
+ 		} else if (written != sz) {
+ 			printf(WTASK_PREFIX "only %d / %zd byte transmitted\n",
+@@ -199,6 +200,7 @@ static void read_task_proc(void *arg)
+ 		/* waiting for event */
+ 		err = ioctl(read_fd, RTSER_RTIOC_WAIT_EVENT, &rx_event);
+ 		if (err) {
++			err = -errno;
+ 			printf(RTASK_PREFIX
+ 			       "error on RTSER_RTIOC_WAIT_EVENT, %s\n",
+ 			       strerror(-err));
+@@ -218,7 +220,7 @@ static void read_task_proc(void *arg)
+ 			nr++;
+ 		} else if (rd < 0 ) {
+ 			printf(RTASK_PREFIX "error on read, code %s\n",
+-			       strerror(-err));
++			       strerror(errno));
+ 			break;
+ 		} else {
+ 			printf(RTASK_PREFIX "only %d / %zd byte received \n",
+@@ -244,8 +246,9 @@ int main(int argc, char* argv[])
+ 	/* open rtser0 */
+ 	write_fd = open( WRITE_FILE, 0);
+ 	if (write_fd < 0) {
++		err = -errno;
+ 		printf(MAIN_PREFIX "can't open %s (write), %s\n", WRITE_FILE,
+-		       strerror(-write_fd));
++		       strerror(-err));
+ 		goto error;
+ 	}
+ 	write_state |= STATE_FILE_OPENED;
+@@ -254,6 +257,7 @@ int main(int argc, char* argv[])
+ 	/* writing write-config */
+ 	err = ioctl(write_fd, RTSER_RTIOC_SET_CONFIG, &write_config);
+ 	if (err) {
++		err = -errno;
+ 		printf(MAIN_PREFIX "error while RTSER_RTIOC_SET_CONFIG, %s\n",
+ 		       strerror(-err));
+ 		goto error;
+@@ -263,8 +267,9 @@ int main(int argc, char* argv[])
+ 	/* open rtser1 */
+ 	read_fd = open( READ_FILE, 0 );
+ 	if (read_fd < 0) {
++		err = -errno;
+ 		printf(MAIN_PREFIX "can't open %s (read), %s\n", READ_FILE,
+-		       strerror(-read_fd));
++		       strerror(-err));
+ 		goto error;
+ 	}
+ 	read_state |= STATE_FILE_OPENED;
+@@ -273,6 +278,7 @@ int main(int argc, char* argv[])
+ 	/* writing read-config */
+ 	err = ioctl(read_fd, RTSER_RTIOC_SET_CONFIG, &read_config);
+ 	if (err) {
++		err = -errno;
+ 		printf(MAIN_PREFIX "error while ioctl, %s\n",
+ 		       strerror(-err));
+ 		goto error;
+-- 
+2.1.4
+
 
