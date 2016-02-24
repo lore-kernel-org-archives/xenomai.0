@@ -1,9 +1,13 @@
-Sender: Michael Welling <mwelling79@gmail.com>
-From: Michael Welling <mwelling@ieee.org>
-Date: Mon, 22 Feb 2016 18:22:06 -0600
-Message-Id: <1456186926-2517-1-git-send-email-mwelling@ieee.org>
-Subject: [Xenomai] [PATCH v2] demo/alchemy/cross-link: Properly handle
-	syscall errors
+Date: Wed, 24 Feb 2016 22:10:48 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160224211048.GA31084@hermes.click-hack.org>
+References: <E1aYgex-0004LE-7y@sd-51317.xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E1aYgex-0004LE-7y@sd-51317.xenomai.org>
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt/timer: Make
+ xntimer_get_overruns robust against stopped timers
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,95 +16,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, Lowell Gilbert <kludge@be-well.ilk.org>
+To: xenomai@xenomai.org
 
-Update cross link demo to properly handle errors returned from syscalls.
+On Wed, Feb 24, 2016 at 10:07:47PM +0100, git repository hosting wrote:
+> Module: xenomai-jki
+> Branch: for-forge
+> Commit: 8e6d76e07af74056f6cb4d8cfb192485d07732f7
+> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=8e6d76e07af74056f6cb4d8cfb192485d07732f7
+> 
+> Author: Jan Kiszka <jan.kiszka@siemens.com>
+> Date:   Wed Feb 24 21:44:41 2016 +0100
+> 
+> cobalt/timer: Make xntimer_get_overruns robust against stopped timers
+> 
+> xntimer_get_overruns might be called on meanwhile stopped timers,
+> specifically by cobalt_timer_deliver. We crash if we try to dequeue a
+> stopped timer, and we should not restart it as well.
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> 
+> ---
+> 
+>  kernel/cobalt/timer.c |   14 ++++++++------
+>  1 file changed, 8 insertions(+), 6 deletions(-)
+> 
+> diff --git a/kernel/cobalt/timer.c b/kernel/cobalt/timer.c
+> index db6263d..3e85a53 100644
+> --- a/kernel/cobalt/timer.c
+> +++ b/kernel/cobalt/timer.c
+> @@ -602,13 +602,15 @@ unsigned long long xntimer_get_overruns(struct xntimer *timer, xnticks_t now)
+>  		overruns = xnarch_div64(delta, period);
+>  		timer->pexpect_ticks += overruns;
+>  
+> -		q = xntimer_percpu_queue(timer);
+> -		xntimer_dequeue(timer, q);
+> -		while (xntimerh_date(&timer->aplink) < now) {
+> -			timer->periodic_ticks++;
+> -			xntimer_update_date(timer);
+> +		if (xntimer_running_p(timer)) {
+> +			q = xntimer_percpu_queue(timer);
+> +			xntimer_dequeue(timer, q);
+> +			while (xntimerh_date(&timer->aplink) < now) {
+> +				timer->periodic_ticks++;
+> +				xntimer_update_date(timer);
+> +			}
+> +			xntimer_enqueue_and_program(timer, q);
+>  		}
+> -		xntimer_enqueue_and_program(timer, q);
 
-Signed-off-by: Michael Welling <mwelling@ieee.org>
----
-v2: Fixes up error handling it close_file.
-Makes sure error is properly returned in main.
+This looks wrong. xntimer_get_overruns should not be called on a
+stopped timer. We want the caller to return an error if called on a
+stopped timer, not the condition being silently ignored.
 
- demo/alchemy/cobalt/cross-link.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
-
-diff --git a/demo/alchemy/cobalt/cross-link.c b/demo/alchemy/cobalt/cross-link.c
-index 8c0f53f..0dbd415 100644
---- a/demo/alchemy/cobalt/cross-link.c
-+++ b/demo/alchemy/cobalt/cross-link.c
-@@ -78,6 +78,7 @@ static int close_file( int fd, char *name)
- 	do {
- 		i++;
- 		err = close(fd);
-+		err = err < 0 ? -errno : 0;
- 		switch (err) {
- 		case -EAGAIN:
- 			printf(MAIN_PREFIX "%s -> EAGAIN (%d times)\n",
-@@ -158,7 +159,7 @@ static void write_task_proc(void *arg)
- 		written = write(write_fd, &write_time, sz);
- 		if (written < 0 ) {
- 			printf(WTASK_PREFIX "error on write, %s\n",
--			       strerror(-err));
-+			       strerror(errno));
- 			break;
- 		} else if (written != sz) {
- 			printf(WTASK_PREFIX "only %d / %zd byte transmitted\n",
-@@ -199,6 +200,7 @@ static void read_task_proc(void *arg)
- 		/* waiting for event */
- 		err = ioctl(read_fd, RTSER_RTIOC_WAIT_EVENT, &rx_event);
- 		if (err) {
-+			err = -errno;
- 			printf(RTASK_PREFIX
- 			       "error on RTSER_RTIOC_WAIT_EVENT, %s\n",
- 			       strerror(-err));
-@@ -218,7 +220,7 @@ static void read_task_proc(void *arg)
- 			nr++;
- 		} else if (rd < 0 ) {
- 			printf(RTASK_PREFIX "error on read, code %s\n",
--			       strerror(-err));
-+			       strerror(errno));
- 			break;
- 		} else {
- 			printf(RTASK_PREFIX "only %d / %zd byte received \n",
-@@ -244,8 +246,9 @@ int main(int argc, char* argv[])
- 	/* open rtser0 */
- 	write_fd = open( WRITE_FILE, 0);
- 	if (write_fd < 0) {
-+		err = -errno;
- 		printf(MAIN_PREFIX "can't open %s (write), %s\n", WRITE_FILE,
--		       strerror(-write_fd));
-+		       strerror(-err));
- 		goto error;
- 	}
- 	write_state |= STATE_FILE_OPENED;
-@@ -254,6 +257,7 @@ int main(int argc, char* argv[])
- 	/* writing write-config */
- 	err = ioctl(write_fd, RTSER_RTIOC_SET_CONFIG, &write_config);
- 	if (err) {
-+		err = -errno;
- 		printf(MAIN_PREFIX "error while RTSER_RTIOC_SET_CONFIG, %s\n",
- 		       strerror(-err));
- 		goto error;
-@@ -263,8 +267,9 @@ int main(int argc, char* argv[])
- 	/* open rtser1 */
- 	read_fd = open( READ_FILE, 0 );
- 	if (read_fd < 0) {
-+		err = -errno;
- 		printf(MAIN_PREFIX "can't open %s (read), %s\n", READ_FILE,
--		       strerror(-read_fd));
-+		       strerror(-err));
- 		goto error;
- 	}
- 	read_state |= STATE_FILE_OPENED;
-@@ -273,6 +278,7 @@ int main(int argc, char* argv[])
- 	/* writing read-config */
- 	err = ioctl(read_fd, RTSER_RTIOC_SET_CONFIG, &read_config);
- 	if (err) {
-+		err = -errno;
- 		printf(MAIN_PREFIX "error while ioctl, %s\n",
- 		       strerror(-err));
- 		goto error;
 -- 
-2.1.4
-
+					    Gilles.
+https://click-hack.org
 
