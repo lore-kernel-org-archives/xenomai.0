@@ -1,14 +1,11 @@
-References: <E1aXuTj-0000rZ-UQ@sd-51317.xenomai.org>
- <20160222174421.GD7398@hermes.click-hack.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <56CB4BE5.3090702@siemens.com>
-Date: Mon, 22 Feb 2016 18:56:53 +0100
+Date: Mon, 29 Feb 2016 21:24:11 +0100
+From: "Mariusz Janiak" <mariuszjaniak@wp.pl>
+Message-ID: <56d4a8eb4617e0.42984600@wp.pl>
 MIME-Version: 1.0
-In-Reply-To: <20160222174421.GD7398@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : boilerplate: Allow for
- enabling Xenomai only in shared libs
+Content-Type: text/plain; charset=iso-8859-2
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Subject: [Xenomai] RTnet -- receive broadcast frame at the local machine
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,46 +14,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-[please CC me on replies, I've delivery turned off for all lists]
+Dear Xenomai users,
 
-On 2016-02-22 18:44, Gilles Chanteperdrix wrote:
-> On Mon, Feb 22, 2016 at 06:40:59PM +0100, git repository hosting wrote:
->> Module: xenomai-jki
->> Branch: for-forge
->> Commit: 4601286f7fedb8267ea314584fc68d2b35b818a4
->> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=4601286f7fedb8267ea314584fc68d2b35b818a4
->>
->> Author: Jan Kiszka <jan.kiszka@siemens.com>
->> Date:   Fri Feb  5 17:33:18 2016 +0100
->>
->> boilerplate: Allow for enabling Xenomai only in shared libs
->>
->> Normally, one builds shared libraries with Xenomai awareness by adding
->> --no-auto-init to xeno-config. This drops bootstrap.o from the linking
->> steps because - normally - the main application performs the
->> initialization.
->>
->> However, if the main application is Xenomai-free and only dlopen() would
->> pull in Xenomai services via a shared library, we face two problems:
->>
->> - bootstrap.o is not built with position-independence support
->>
->> - libboilerplate contains __real_main that expects the main symbol which
->>   cannot be found from a shared library
-> 
-> Does not the library find the program symbols if RTLD_GLOBAL is
-> passed to dlopen?
+Since RTnet has been integrated with Xenomai I address this question to you. The question is, how to receive a broadcast frame at the local machine without using the localhost? The issue is following, we have two process with separate rtsockets at the single machine (of course we have different machines in the network but this is not a case). One process send a broadcast UDP frame to the specified UDP port -- we have one rteth device on the machine. The second process listen on that port 
+(receivefrom) and does not receive the broadcast frame sent by first process. I have found the following thread on the RTnet mailing list 
 
-Nope, just retried, didn't help. In fact, RTLD_GLOBAL affects only the
-opened library's symbols, not the pre-existing ones. I think it is
-simply not possible with dlopen to refer back to a symbol from the code
-that loads the library.
+https://sourceforge.net/p/rtnet/mailman/message/6787561/
 
-Jan
+Could you please point me the place which should be hacked to duplicate outgoing packets if there are multiple
+matching routes?
 
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+Best,
+Mariusz
+
+
 
