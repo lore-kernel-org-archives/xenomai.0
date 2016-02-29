@@ -1,11 +1,14 @@
+Date: Mon, 29 Feb 2016 20:16:25 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160229191625.GA26312@hermes.click-hack.org>
+References: <20160229183956.5869650.18060.4@asyring.de>
 MIME-Version: 1.0
-Message-ID: <20160229183956.5869650.18060.4@asyring.de>
-Date: Mon, 29 Feb 2016 19:39:56 +0100
-From: Alexander Syring <xenomai@asyring.de>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20160229183956.5869650.18060.4@asyring.de>
 Subject: Re: [Xenomai] Ipipe 4.1 on Allwinner A20 (Cubietruck) takes a very
-	long start time
+ long start time
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,37 +17,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Alexander Syring <xenomai@asyring.de>
+Cc: xenomai@xenomai.org
 
-T24uIE9uLCBGZWIgMjksIDIwMTYgYXQgMTM6NTUsIEdpbGxlcyBDaGFudGVwZXJkcml4CsKgd3Jv
-dGU64oCOCj5PbiBNb24sIEZlYiAyOSwgMjAxNiBhdCAwMTo0NzoxN1BNICswMTAwLCBBbGV4YW5k
-ZXIgPlN5cmluZyB3cm90ZToKPj4gSGkKPj4gSSBwYXRjaGVkIHRoZSA0LjEuMTUgZnJvbSBnaXQu
-eGVub21haS5vcmcgdG8gY29tcGlsZSBpdCBvbiB0aGUgQ3ViaWV0cnVjay4KPj4gQnV0IGl0IHRh
-a2VzIGEgbG9uZyB0aW1lIHRvIGJvb3QuCj4gPuKAjgo+ID4gWy4uLl0KPj7CoAo+PiBoYXMgYW55
-b25lIGEgY2x1ZSB3aHkgaXQgdGFrZXMgbW9yZSB0aGFuIHR3byBob3VycyB0byBicmluZyB1cCB0
-aGUgaW50ZXJydXB0IAo+PiBwaXBlbGluZT8KPgo+VGhlIHByb2JsZW0gaXMgbm90IHRoZSBpbnRl
-cnJ1cHQgcGlwZWxpbmUuCj4KPlRoZSBBbGx3aW5uZXIgQTIwIGlzIG5vdCBhbW9uZyB0aGUgcHJv
-Y2Vzc29ycyBzdXBwb3J0ZWQgYnkgdGhlCj5JLXBpcGUgcGF0Y2gsIChzZWUgbGlzdCBoZXJlOiAK
-aHR0cDovL3hlbm9tYWkub3JnL2VtYmVkZGVkLWhhcmR3YXJlLykKPgo+VGh1cywgYmVmb3JlIHVz
-aW5nIHRoaXMgcHJvY2Vzc29yLCB5b3UgbmVlZCB0byBmb2xsb3cgdGhlIHBvcnRpbmcKPmd1aWRl
-Ogo+aHR0cDovL3hlbm9tYWkub3JnLzIwMTQvMDkvcG9ydGluZy14ZW5vbWFpLWR1YWwta2VybmVs
-LXRvLWEtbmV3LWFybS1zb2MvCj4KPkFsc28geW91IGRvIG5vdCB0ZWxsIHVzIHdoYXQgdmVyc2lv
-biBvZiB0aGUgSS1waXBlIHBhdGNoID55b3UgYXJlCj51c2luZywgSSBndWVzcyBub3QgdGhlIGxh
-dGVzdCwgc28geW91IHNob3VsZCB0cnkgdGhlIGxhdGVzdCB0byBiZQo+c3VyZSB5b3UgZ2V0IHRo
-ZSBsYXRlc3QgZml4ZXMsIG5vdGFibHk6Cj4KPmh0dHBzOi8vZ2l0Lnhlbm9tYWkub3JnL2lwaXBl
-LmdpdC9jb21taXQvP2g9aXBpcGUtNC4xLnkmaWQ9MGEwMzdlN2RiOTJmYjBmMGM0YTFkNzdjNmJh
-YzM4ODE0NjQ5ZWUyNgoKPlJlZ2FyZHMuCgpJIHVzZWQgdGhlIGxhc3QgdmVyc2lvbiBmcm9tIHll
-c3RlcmRheSBvZiB0aGUgaXBpcGUuZ2l0IGlwaXBlLTQuMS55CgpJIHRlc3RlZCAzLjE4LjEyIG9u
-IEFsbHdpbm5lciBBMjAgYmVmb3JlIGFuIGhlcmUgaXMgdGhlIHBhdGNoIHRoYXQgSSB3YXMgdXNp
-bmcgYW5kIHRoZSBkbWVzZyBvdXRwdXQuCkFzIHlvdSBjYW4gc2VlIHRoZXJlIGlzIG5vbiBkZWxh
-eSBvZiB0d28gaG91cnMuCgpJIGRvbid0IGtub3csIHdoeSA0LjEgaXMgc28gZGlmZmVyZW50IHRv
-IDMuMTguMTIuCgpSZWdhcmRzCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0t
-LQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGRtZXNnLjMuMTgu
-MTIKVHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtClNpemU6IDI1NDY3IGJ5dGVzCkRlc2M6
-IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFp
-L2F0dGFjaG1lbnRzLzIwMTYwMjI5LzM0YzIyOTJmL2F0dGFjaG1lbnQub2JqPgotLS0tLS0tLS0t
-LS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBz
-Y3J1YmJlZC4uLgpOYW1lOiBpcGlwZS1hbGx3aW5uZXItYTIwLTMuMTguMTIucGF0Y2gKVHlwZTog
-YXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtClNpemU6IDIyMTggYnl0ZXMKRGVzYzogbm90IGF2YWls
-YWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVu
-dHMvMjAxNjAyMjkvMzRjMjI5MmYvYXR0YWNobWVudC0wMDAxLm9iaj4K
+On Mon, Feb 29, 2016 at 07:39:56PM +0100, Alexander Syring wrote:
+> On. On, Feb 29, 2016 at 13:55, Gilles Chanteperdrix
+>  wrote:‎
+> >On Mon, Feb 29, 2016 at 01:47:17PM +0100, Alexander >Syring wrote:
+> >> Hi
+> >> I patched the 4.1.15 from git.xenomai.org to compile it on the Cubietruck.
+> >> But it takes a long time to boot.
+> > >‎
+> > > [...]
+> >> 
+> >> has anyone a clue why it takes more than two hours to bring up the interrupt 
+> >> pipeline?
+> >
+> >The problem is not the interrupt pipeline.
+> >
+> >The Allwinner A20 is not among the processors supported by the
+> >I-pipe patch, (see list here: 
+> http://xenomai.org/embedded-hardware/)
+> >
+> >Thus, before using this processor, you need to follow the porting
+> >guide:
+> >http://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc/
+> >
+> >Also you do not tell us what version of the I-pipe patch >you are
+> >using, I guess not the latest, so you should try the latest to be
+> >sure you get the latest fixes, notably:
+> >
+> >https://git.xenomai.org/ipipe.git/commit/?h=ipipe-4.1.y&id=0a037e7db92fb0f0c4a1d77c6bac38814649ee26
+> 
+> >Regards.
+> 
+> I used the last version from yesterday of the ipipe.git
+> ipipe-4.1.y
+
+I doubt that, since you are talking about 4.1.15 whereas yesterday
+version is for 4.1.18. But "yesterday" is a vague notion anyway,
+with people living around the world in different time zones. A
+git hash is more precise. Are you using
+9920b05b219c09c2fa7036d9d7db1a9bcf04094e ?
+Also, I pointed you to a precise patch, has the patch been applied
+on the kernel you use or not?
+
+> 
+> I tested 3.18.12 on Allwinner A20 before an here is the patch that I was using and the dmesg output.
+> As you can see there is non delay of two hours.
+> 
+> I don't know, why 4.1 is so different to 3.18.12.
+
+If you follow the porting guide, you will find out. Since you are
+using an unsupported processor, no effort has been made when porting
+the I-pipe git from 3.18 to 4.1 to preserve anything about the
+processor you use. If you want to avoid that, follow the porting
+guide, them submit a patch to the I-pipe git for supporting the
+processor you us, then, when your patch is merged, attempts will be
+made to avoid breaking support for this processor in later versions.
+
+-- 
+					    Gilles.
+https://click-hack.org
+
