@@ -1,6 +1,6 @@
-Date: Mon, 29 Feb 2016 22:04:25 +0100
+Date: Mon, 29 Feb 2016 22:08:42 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160229210425.GC26312@hermes.click-hack.org>
+Message-ID: <20160229210842.GD26312@hermes.click-hack.org>
 References: <56d4b0f131fc36.79352149@wp.pl>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
@@ -58,9 +58,118 @@ onf.=20
 >=20
 > Below you will find simple testcase. Compile this using Xenomai posix ski=
 n.=20
+>=20
+> 1) receiver.c
+> #include <stdio.h>
+> #include <unistd.h>
+> #include <stdlib.h>
+> #include <sys/mman.h>
+> #include <sys/socket.h>
+> #include <netinet/in.h>
+> #include <arpa/inet.h>
+> #include <rtnet.h>
+> #define DEF_REC_PORT 1883
+>=20
+> int sock;
+> struct sockaddr_in rec_addr;
+>=20
+> int main()
+> {
+>   int enable =3D 1;
+>   int buffer[100];
+>   socklen_t len =3D sizeof(rec_addr);
+>=20
+>   mlockall(MCL_CURRENT|MCL_FUTURE);
 
-Ok, one step at a time, could you check that if you send an unicast
-packet to the local rteth0 address , you receive it ?
+1->
+
+>=20
+>   sock =3D socket(AF_INET, SOCK_DGRAM, 0);
+
+2->
+
+>   setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &enable, sizeof(enable));
+
+3->
+
+>=20
+>   memset(&rec_addr, 0, sizeof(struct sockaddr_in));
+>   rec_addr.sin_family      =3D AF_INET;
+>   rec_addr.sin_port        =3D htons(DEF_REC_PORT);
+>   rec_addr.sin_addr.s_addr =3D INADDR_ANY;
+>   bind(sock, (struct sockaddr *) &rec_addr, sizeof(struct
+>   sockaddr_in));
+
+4->
+
+>=20
+>   while (1) {
+>     memset(buffer, 0, 100);
+>     recvfrom(sock, buffer, 100, 0, &rec_addr, &len);
+
+5->
+
+>     printf("%s\n", buffer);
+>   }
+>   close(sock);
+>   return 0;
+> }
+>=20
+>=20
+> 2. sender.c
+> #include <unistd.h>
+> #include <stdlib.h>
+> #include <sys/mman.h>
+> #include <sys/socket.h>
+> #include <netinet/in.h>
+> #include <arpa/inet.h>
+> #include <rtnet.h>
+> #include <rtnet_config.h>
+> #define DEF_SND_PORT 1883
+> #define DEF_SND_IP   "10.0.0.255"
+>=20
+> int sock;
+> struct sockaddr_in snd_addr;
+> int ret, size;
+>=20
+> int main()
+> {
+>   int enable =3D 1;
+>   struct in_addr  snd_ip;
+>   char buffer[] =3D "Hello";
+>   socklen_t len =3D sizeof(snd_addr);
+>=20
+>   mlockall(MCL_CURRENT|MCL_FUTURE);
+
+6->
+
+>=20
+>   inet_aton(DEF_SND_IP, &snd_ip);
+
+7->
+
+>   sock =3D socket(AF_INET, SOCK_DGRAM, 0);
+
+8->
+
+>   setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &enable,
+>   sizeof(enable));
+
+9->
+
+>=20
+>   memset(&snd_addr, 0, sizeof(struct sockaddr_in));
+>   snd_addr.sin_family =3D AF_INET;
+>   snd_addr.sin_port =3D htons(DEF_SND_PORT);
+>   snd_addr.sin_addr =3D snd_ip;
+>=20
+>   while (1) {
+>     ret =3D sendto(sock, buffer, 6, 0 , &snd_addr, len);
+
+10->
+
+So, that is 10 function calls without checking the return value.
+Please check the function return values.
 
 --=20
 					    Gilles.
