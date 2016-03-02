@@ -1,14 +1,10 @@
-Date: Wed, 2 Mar 2016 14:25:14 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160302132514.GB14986@hermes.click-hack.org>
-References: <56d616b706ffa3.50702648@wp.pl>
- <20160302130733.GA14986@hermes.click-hack.org>
+From: Alexander Syring <xenomai@asyring.de>
+Date: Wed, 02 Mar 2016 15:50:18 +0100
+Message-ID: <3385442.a3NuqbveQI@alex-xw9400>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20160302130733.GA14986@hermes.click-hack.org>
-Subject: Re: [Xenomai] Odp: Re: RTnet -- receive broadcast frame at the
- local machine
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+Subject: [Xenomai] Portation of Allwinner A20 to Ipipe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,46 +13,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Mariusz Janiak <mariuszjaniak@wp.pl>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Wed, Mar 02, 2016 at 02:07:33PM +0100, Gilles Chanteperdrix wrote:
-> On Tue, Mar 01, 2016 at 11:24:55PM +0100, Mariusz Janiak wrote:
-> > > From what I understand from this post, it is not easy to fix, as it
-> > > requires duplicating packets. So, patch welcome.
-> > 
-> > Ok, we went back to the original question, could someone point the
-> > place that has to be modified. I have played a little bit with the
-> > RTnet stack recently, but this task require far better
-> > understanding of the stack. Maybe someone more advanced can give
-> > some guidelines.
-> 
-> It is not that complicated. The udp send function (rt_udp_sendmsg)
-> is in udp.c, it calls rt_ip_route_output (found in route.c) to find
-> the output route, than rt_ip_build_xmit (found in ip_output.c) to
-> build the packet and send in on the device. rt_ip_build_xmit calls
-> rt_eth_header to build the ethernet header (found in eth.c), then
-> rtdev_xmit (found in dev.c) to send the packet.
-> 
-> So you can do this either at the IP level in rt_ip_build_xmit, or at
-> the ethernet level in rtdev_xmit. What you need to do is that when
-> the destination is broadcast (there should be a macro to test that
-> an IP address is broadcast if you want to do it at IP level, and the
-> mac address for broadcast is just ff:ff:ff:ff:ff:ff if you want to
-> do it at ethernet level) you need to duplicate the packet, and
-> either trigger a receive on the same device, or send the packet on
-> the loopback device. If you go the ethernet route, you will have to
-> use a per-device callback to test if the destination is broadcast,
-> as rtdev_xmit is supposed to not be specific to ethernet, like is
-> done with the hard_header and start_xmit callbacks.
+Hello 
 
-Note that doing this at ethernet level is better, as it will also
-work for packets sent with raw sockets, and also note that to test
-if a MAC address is broadcast, you only need to test the most
-significant byte least significant bit. If you do it that way, it
-also gets the trick working with multicast addresses.
+I've read the FAQ to port to new SoC but I don't know where to start with the 
+timers.
 
--- 
-					    Gilles.
-https://click-hack.org
+The A20 uses this drivers as I can see from the dts:
+
+[..]
+	timer {
+		compatible = "arm,armv7-timer";
+		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
+	};
+[...]
+		timer@01c20c00 {
+			compatible = "allwinner,sun4i-a10-timer";
+			reg = <0x01c20c00 0x90>;
+			interrupts = <GIC_SPI 22 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 23 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 24 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 25 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 68 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&osc24M>;
+		};
+[...]
+		hstimer@01c60000 {
+			compatible = "allwinner,sun7i-a20-hstimer";
+			reg = <0x01c60000 0x1000>;
+			interrupts = <GIC_SPI 81 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 84 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&ahb_gates 28>;
+		};
+[...]
+
+So I found these drivers for the compatible tag
+arm,armv7-timer : drivers/clocksource/arm_arch_timer.c (with ipipe enabled)
+allwinner,sun4i-a10-timer : drivers/clocksource/sun4i_timer.c (no ipipe)
+allwinner,sun7i-a20-hstimer : drivers/clocksource/timer-sun5i.c (no ipipe)
+
+Can someone give me a hint in which file I have to change something or wihich 
+file is the main file to do something?
+
+Regards
+Alex
 
