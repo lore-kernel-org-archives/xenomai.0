@@ -1,12 +1,9 @@
-References: <2396B4D2166B62479FBBE370D4A7C1F30A723600@mb2010-3.intra.tut.fi>
-From: Jorge Ramirez Ortiz <jro@xenomai.org>
-Message-ID: <56DF046E.6030708@xenomai.org>
-Date: Tue, 8 Mar 2016 11:57:18 -0500
 MIME-Version: 1.0
-In-Reply-To: <2396B4D2166B62479FBBE370D4A7C1F30A723600@mb2010-3.intra.tut.fi>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 3.0.1 kernel timer example
+Date: Tue, 8 Mar 2016 19:30:54 +0200
+Message-ID: <CAOLO655yJTU_bS=Scn7gny1xpaFARQ70kibkvY5QNp0T7Fp35A@mail.gmail.com>
+From: =?UTF-8?Q?Ahmet_Soyyi=C4=9Fit?= <ahmedius2@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] Searching Raspberry Pi UART and SPI RTDM drivers
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,21 +12,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Umair Ali <ali.umair@tut.fi>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: massimo.savana@gmail.com
 
-On 03/04/2016 09:00 AM, Umair Ali wrote:
-> Hello there,
-> 
-> I am searching for the example of the Xenomai 3.0.1 kernel timer. I want to know how I can write the basic code of the kernel timer. 
+Dear xenomai subscribers,
 
-have a look at this example (pwm signal generator)
-http://git.xenomai.org/xenomai-jro.git/tree/?h=hikey
+I am looking for Raspberry Pi UART and SPI drivers like Mr. Savana said in
+this post:
+http://www.xenomai.org/pipermail/xenomai/2014-May/030845.html
+If there is any, where can I reach the source code of these drivers ? If
+there is not, how can I implement such drivers, can you tell me the basic
+steps (I am new to Xenomai and kernel programming) ?
 
-it is controlled from:
-http://git.xenomai.org/xenomai-jro.git/tree/kernel/drivers/gpiopwm/gpiopwm.c?h=hikey
+Regards,
 
-
-> 
--- 
-jro
-
+Ahmet Soyyigit
+Gebze Technical University
+KOCAELI - TURKEY
