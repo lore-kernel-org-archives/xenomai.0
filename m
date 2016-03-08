@@ -1,13 +1,12 @@
-References: <56DEA622.4020107@sigmatek.at> <56DEA859.2040306@xenomai.org>
- <56DEBCD0.7080603@sigmatek.at>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <56DEF3D6.5050209@xenomai.org>
-Date: Tue, 8 Mar 2016 16:46:30 +0100
+References: <2396B4D2166B62479FBBE370D4A7C1F30A723600@mb2010-3.intra.tut.fi>
+From: Jorge Ramirez Ortiz <jro@xenomai.org>
+Message-ID: <56DF046E.6030708@xenomai.org>
+Date: Tue, 8 Mar 2016 11:57:18 -0500
 MIME-Version: 1.0
-In-Reply-To: <56DEBCD0.7080603@sigmatek.at>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <2396B4D2166B62479FBBE370D4A7C1F30A723600@mb2010-3.intra.tut.fi>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rtdm_event_wait -EINTR error
+Subject: Re: [Xenomai] Xenomai 3.0.1 kernel timer example
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,49 +15,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: johann.obermayr@sigmatek.at
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Umair Ali <ali.umair@tut.fi>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/08/2016 12:51 PM, Johann Obermayr wrote:
-> Am 08.03.2016 um 11:24 schrieb Philippe Gerum:
->> On 03/08/2016 11:14 AM, Johann Obermayr wrote:
->>> Hello,
->>>
->>> We have some user space task running into a rtdm driver (ioctl).
->>> this task are waiting for a event with rtdm_event_wait.
->>>
->>> When our appliction crash, we see that rtdm_event_wait return with -4
->>> (-EINTR).
->>> is this a normal behavior ?
->>>
->> Please read your question above again, and ask yourself whether you
->> actually gave us enough information to figure out what you are talking
->> about.
->>
-> ok,
-> we have a application with some rt-task.
-> Some of the task are calling a function in our rtdm drive with
-> rt_dev_ioctl.
+On 03/04/2016 09:00 AM, Umair Ali wrote:
+> Hello there,
 > 
-> in the ioctl we have follow code.
->     if ((rval = rtdm_event_wait(&pIrqData->irq_event)) != 0) {
->         if (rval != -EIDRM) {
->             printk(KERN_ERR "rtdm_event_wait failed %d, irq:%d\n", rval,
-> local->irq_number);
->         }
->         return rval;
->     }
+> I am searching for the example of the Xenomai 3.0.1 kernel timer. I want to know how I can write the basic code of the kernel timer. 
+
+have a look at this example (pwm signal generator)
+http://git.xenomai.org/xenomai-jro.git/tree/?h=hikey
+
+it is controlled from:
+http://git.xenomai.org/xenomai-jro.git/tree/kernel/drivers/gpiopwm/gpiopwm.c?h=hikey
+
+
 > 
-> if our application crash (we have no backtrace) , we see in the syslog some
-> "rtdm_event_wait failed -4"  messages.
-> 
-> why we see this message ?
->
-
-This return code is documented:
-
-http://www.xenomai.org/documentation/xenomai-3/html/xeno3prm/group__rtdm__sync__event.html#ga1c433b50c53d49d164b084751861e855
-
 -- 
-Philippe.
+jro
 
