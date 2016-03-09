@@ -1,9 +1,11 @@
-MIME-Version: 1.0
-Date: Tue, 8 Mar 2016 19:30:54 +0200
-Message-ID: <CAOLO655yJTU_bS=Scn7gny1xpaFARQ70kibkvY5QNp0T7Fp35A@mail.gmail.com>
-From: =?UTF-8?Q?Ahmet_Soyyi=C4=9Fit?= <ahmedius2@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] Searching Raspberry Pi UART and SPI RTDM drivers
+From: "=?gb18030?B?MjAxMqGqMjAxMg==?=" <643651564@qq.com>
+Mime-Version: 1.0
+Date: Wed, 9 Mar 2016 10:41:48 +0800
+Message-ID: <tencent_43A1242B10392F742BD72EDA@qq.com>
+Content-Type: text/plain;
+	charset="gb18030"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] error: implicit declaration of function '__mtmsrd'
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,20 +14,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: massimo.savana@gmail.com
+To: =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
 
-Dear xenomai subscribers,
-
-I am looking for Raspberry Pi UART and SPI drivers like Mr. Savana said in
-this post:
-http://www.xenomai.org/pipermail/xenomai/2014-May/030845.html
-If there is any, where can I reach the source code of these drivers ? If
-there is not, how can I implement such drivers, can you tell me the basic
-steps (I am new to Xenomai and kernel programming) ?
-
-Regards,
-
-Ahmet Soyyigit
-Gebze Technical University
-KOCAELI - TURKEY
+V2hlbiBJIGNvbXBpbGUgdGhlIGtlcm5lbCwgdGhlcmUgYXJlIHNvbWUgZXJyb3JzLg0KDQpU
+aGUgZGV0YWlsZWQgY29tcGlsZSBvdXRwdXQgaXMgaGVyZToNCnJvb3RAdWJ1bnR1Oi9ob21l
+L2xpbmcvbGludXgtMy4xNC40NCMgbWFrZSBBUkNIPXBvd2VycGMgQ1JPU1NfQ09NUElMRT1w
+b3dlcnBjLWZzbC1saW51eC0gdUltYWdlDQpzY3JpcHRzL2tjb25maWcvY29uZiAtLXNpbGVu
+dG9sZGNvbmZpZyBLY29uZmlnDQojDQojIGNvbmZpZ3VyYXRpb24gd3JpdHRlbiB0byAuY29u
+ZmlnDQojDQogIENISyAgICAgaW5jbHVkZS9jb25maWcva2VybmVsLnJlbGVhc2UNCiAgVVBE
+ICAgICBpbmNsdWRlL2NvbmZpZy9rZXJuZWwucmVsZWFzZQ0KICBDSEsgICAgIGluY2x1ZGUv
+Z2VuZXJhdGVkL3VhcGkvbGludXgvdmVyc2lvbi5oDQogIENISyAgICAgaW5jbHVkZS9nZW5l
+cmF0ZWQvdXRzcmVsZWFzZS5oDQogIFVQRCAgICAgaW5jbHVkZS9nZW5lcmF0ZWQvdXRzcmVs
+ZWFzZS5oDQogIENDICAgICAga2VybmVsL2JvdW5kcy5zDQogIEdFTiAgICAgaW5jbHVkZS9n
+ZW5lcmF0ZWQvYm91bmRzLmgNCiAgQ0MgICAgICBhcmNoL3Bvd2VycGMva2VybmVsL2FzbS1v
+ZmZzZXRzLnMNCkluIGZpbGUgaW5jbHVkZWQgZnJvbSBpbmNsdWRlL2xpbnV4L2lwaXBlX2Rl
+YnVnLmg6MjU6MCwNCiAgICAgICAgICAgICAgICAgZnJvbSBpbmNsdWRlL2xpbnV4L2lwaXBl
+Lmg6MzEsDQogICAgICAgICAgICAgICAgIGZyb20gaW5jbHVkZS9saW51eC9zY2hlZC5oOjI3
+LA0KICAgICAgICAgICAgICAgICBmcm9tIGFyY2gvcG93ZXJwYy9rZXJuZWwvYXNtLW9mZnNl
+dHMuYzoxNzoNCmluY2x1ZGUvbGludXgvaXBpcGVfZG9tYWluLmg6IEluIGZ1bmN0aW9uICdp
+cGlwZV9jdXJyZW50X2NvbnRleHQnOg0KaW5jbHVkZS9saW51eC9pcGlwZV9kb21haW4uaDoy
+NDc6MjogZXJyb3I6IGltcGxpY2l0IGRlY2xhcmF0aW9uIG9mIGZ1bmN0aW9uICdfX210bXNy
+ZCcgWy1XZXJyb3I9aW1wbGljaXQtZnVuY3Rpb24tZGVjbGFyYXRpb25dDQogIGhhcmRfc21w
+X2xvY2FsX2lycV9yZXN0b3JlKGZsYWdzKTsNCiAgXg0KY2MxOiBzb21lIHdhcm5pbmdzIGJl
+aW5nIHRyZWF0ZWQgYXMgZXJyb3JzDQptYWtlWzFdOiAqKiogW2FyY2gvcG93ZXJwYy9rZXJu
+ZWwvYXNtLW9mZnNldHMuc10gRXJyb3IgMQ0KbWFrZTogKioqIFtwcmVwYXJlMF0gRXJyb3Ig
+Mg0KDQpBbnlvbmUgY2FuIGhlbHAgbWU/IFNpbmNlcmVseS4=
