@@ -1,14 +1,13 @@
-Date: Fri, 19 Feb 2016 11:14:16 +0100
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20160219111416.5b64c561@md1em3qc>
-In-Reply-To: <20160208224930.GF5654@hermes.click-hack.org>
-References: <20160206134652.GI11143@hermes.click-hack.org>
- <1684684796.1604350.1454943252058.JavaMail.yahoo@mail.yahoo.com>
- <20160208224930.GF5654@hermes.click-hack.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Message-ID: <1457990656.28082.20.camel@henry-ThinkCentre-M93p>
+From: Henry Bausley <hbausley@deltatau.com>
+Date: Mon, 14 Mar 2016 14:24:16 -0700
+In-Reply-To: <56E71CC1.5070600@xenomai.org>
+References: <1457983382.28082.11.camel@henry-ThinkCentre-M93p>
+ <56E71CC1.5070600@xenomai.org>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ipipe tracer call trace during boot
+Subject: Re: [Xenomai] Reentrant Interrupts on Freescale LS1021A
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,55 +16,113 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Frederik Bayart <frederik_bayart@yahoo.co.uk>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Mon, 8 Feb 2016 23:49:30 +0100
-Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
-
-> On Mon, Feb 08, 2016 at 02:54:12PM +0000, Frederik Bayart wrote:
-> > > On Saturday, 6 February 2016, 14:46, Gilles Chanteperdrix
-> > > <gilles.chanteperdrix@xenomai.org> wrote:
-> > > 
-> > > On Fri, Feb 05, 2016 at 11:13:56AM +0000, Frederik Bayart wrote:
-> > >   
-> > > > I have build an 3.18.20 kernel with xenomai 2.6.4 git latest
-> > > > with ipipe-core-3.18.20-x86-4.patch on debian jessie amd64
-> > > > (64bit).
-> > > >
-> > > > I try to build an version with ipipe tracer.
-> > > >
-> > > > If I try to boot, I get a call trace : in __ipipe_init_tracer :
-> > > >
-> > > > RIP __ipipe_tracer_hrclock_initialized  
-> > > 
-> > > Hi,
-> > > 
-> > > the problem is probably the commit you found. Will try your
-> > > configuration soon.
-> > > 
-> > > Regards.
-> > > -- 
-> > >                         Gilles.  
-> > 
-> > 
-> > I tried with ipipe-core-3.18.20-x86-2.patch with doesn't contain
-> > that commit and I have still a call trace :
-> > 
-> > RIP __ipipe_init_tracer  
+On Mon, 2016-03-14 at 21:19 +0100, Philippe Gerum wrote:
+>  Content preview:  On 03/14/2016 08:23 PM, Henry Bausley wrote: > > For many
+>    years we have had a reentrant interrupt routine that has run on > our single
+>     core AMCC460EX for ~7-8yrs. We received instructions on how > to do this
+>    many years ago. See the link below > > > https://www.mail-archive.com/search?l=xenomai-help@gna.org&q=subject:%
+>     > 22Re%5C%3A+%5C%5BXenomai%5C-help%5C%5D+Recurring+Interrupts% > 22&o=newest&f=1
+>     > > We have now changed to a Freescale dual core LS1021A ARM CPU. It now
+>    > hangs on the LS1021A ARM. Is there anyway we can support reentrant > interrupts
+>     on the LS1021A design? > > We currently do this as we were instructed: >
+>    > int your_isr(xnintr_t *intr) > { > unsigned long flags; > > xnlock_clear_irqon(nklock);
+>     > > ... your code ... > > xnlock_get_irqsave(nklock, flags); /* must re-lock
+>     on exit */ > } > > We are using xenomai-2.6.4 w/ linux 3.14.28 > > Any help
+>     would be greatly appreciated. > [...] 
+>  
+>  Content analysis details:   (-1.0 points, 5.0 required)
+>  
+>   pts rule name              description
+>  ---- ---------------------- --------------------------------------------------
+>  -1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
+> X-Barracuda-Connect: sd-51317.xenomai.org[62.210.215.82]
+> X-Barracuda-Start-Time: 1457986755
+> X-Barracuda-URL: https://76.79.246.10:443/cgi-mod/mark.cgi
+> X-Virus-Scanned: by bsmtpd at deltatau.com
+> X-Barracuda-BRTS-Status: 1
+> X-Barracuda-Spam-Score: 0.00
+> X-Barracuda-Spam-Status: No, SCORE=0.00 using global scores of TAG_LEVEL=2.0 QUARANTINE_LEVEL=4.0 KILL_LEVEL=7.0 tests=
+> X-Barracuda-Spam-Report: Code version 3.2, rules version 3.2.3.27841
+> 	Rule breakdown below
+> 	 pts rule name              description
+> 	---- ---------------------- --------------------------------------------------
 > 
-> Hi,
+> On 03/14/2016 08:23 PM, Henry Bausley wrote:
+> > 
+> > For many years we have had a reentrant interrupt routine that has run on
+> > our single core AMCC460EX for ~7-8yrs.  We received instructions on how
+> > to do this many years ago.  See the link below
+> > 
+> > 
+> > https://www.mail-archive.com/search?l=xenomai-help@gna.org&q=subject:%
+> > 22Re%5C%3A+%5C%5BXenomai%5C-help%5C%5D+Recurring+Interrupts%
+> > 22&o=newest&f=1
+> > 
+> > We have now changed to a Freescale dual core LS1021A ARM CPU.  It now
+> > hangs on the LS1021A ARM.  Is there anyway we can support reentrant
+> > interrupts on the LS1021A design?
+> > 
+> > We currently do this as we were instructed:
+> > 
+> > int your_isr(xnintr_t *intr)
+> > {
+> > unsigned long flags;
+> > 
+> > xnlock_clear_irqon(nklock);
+> > 
+> > ... your code ...
+> > 
+> > xnlock_get_irqsave(nklock, flags); /* must re-lock on exit */
+> > }
+> > 
+> > We are using xenomai-2.6.4 w/ linux 3.14.28
+> > 
+> > Any help would be greatly appreciated.
+> > 
 > 
-> I could reproduce this issue. Running "addr2line" on the RIP points
-> to __BUILTIN_RETURN_ADDRESS1. I tried enabling frame pointers
-> (CONFIG_FRAME_POINTER=y) and the kernel does not crash. I suspect
-> __builtin_return_address(1) relies in fact on frame pointers.
+> There is a per-IRQ lock since 2.3, so you should drop the code fiddling
+> with the superlock, it's not locked on entry, and locking it on exit
+> causes the hang.
+> 
+> You could try:
+> 
+> your_isr()
+> {
+> 	hard_local_irq_enable();
+> 	your code;
+> 	hard_local_irq_disable();
+> }
+> 
+> That should be SMP-safe on your dual core board provided you don't
+> re-enable the IRQ line in the GIC for the ongoing IRQ in your handler,
+> of course. IOW, you won't be able to nest invocations of the same IRQ
+> handler using that hack, but only allow other IRQs to preempt your
+> handler. Hopefully this is what you are aiming at.
+> 
+> Btw, unless you changed the interrupt distributor settings for the
+> onboard GIC, CPU0 should take all IRQs anyway.
+> 
+> PS: re-enabling IRQs in a Xenomai interrupt context is undocumented, and
+> not officially supported. This is living on the edge, but I guess you
+> already know it.
+> 
 
-The issue can be solved with the right config. Is that something we
-should make more explicit? i.e. config depend
-Did you also look into reproducing it on 4.1?
+We have in deed been nesting invocations of the same IRQ handler and are
+trying to do the same.  Is there a different hack we can use to achieve
+that?
 
-I could test 4.1 and provide patches.
+As you indicated calling
+hard_local_irq_enable()/hard_local_irq_disable() won't accomplish nested
+invocations of the same IRQ handler and our test confirmed that.
 
-Henning
+
+
+
+
+
+Outbound scan for Spam or Virus by Barracuda at Delta Tau
+
 
