@@ -1,13 +1,13 @@
-Message-ID: <1457990656.28082.20.camel@henry-ThinkCentre-M93p>
-From: Henry Bausley <hbausley@deltatau.com>
-Date: Mon, 14 Mar 2016 14:24:16 -0700
-In-Reply-To: <56E71CC1.5070600@xenomai.org>
-References: <1457983382.28082.11.camel@henry-ThinkCentre-M93p>
- <56E71CC1.5070600@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Message-ID: <BLU437-SMTP29D359A6746B3F160FFE69F0890@phx.gbl>
+References: <56E5F4B4.9030807@googlemail.com>
+ <CA+CJOCzH=jrnM70D3=8ix1i25eMGpemv_Te_Tk3aWbUeZ86j6g@mail.gmail.com>
+From: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
+Date: Mon, 14 Mar 2016 20:58:42 -0700
+MIME-Version: 1.0
+In-Reply-To: <CA+CJOCzH=jrnM70D3=8ix1i25eMGpemv_Te_Tk3aWbUeZ86j6g@mail.gmail.com>
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Reentrant Interrupts on Freescale LS1021A
+Subject: Re: [Xenomai] Xenomai-3.0.1 with raspberry pi
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,113 +16,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Nicolas SCHURANDO <schurann@ext.essilor.com>, mosta <mosta.me@googlemail.com>
 Cc: xenomai@xenomai.org
 
-On Mon, 2016-03-14 at 21:19 +0100, Philippe Gerum wrote:
->  Content preview:  On 03/14/2016 08:23 PM, Henry Bausley wrote: > > For many
->    years we have had a reentrant interrupt routine that has run on > our single
->     core AMCC460EX for ~7-8yrs. We received instructions on how > to do this
->    many years ago. See the link below > > > https://www.mail-archive.com/search?l=xenomai-help@gna.org&q=subject:%
->     > 22Re%5C%3A+%5C%5BXenomai%5C-help%5C%5D+Recurring+Interrupts% > 22&o=newest&f=1
->     > > We have now changed to a Freescale dual core LS1021A ARM CPU. It now
->    > hangs on the LS1021A ARM. Is there anyway we can support reentrant > interrupts
->     on the LS1021A design? > > We currently do this as we were instructed: >
->    > int your_isr(xnintr_t *intr) > { > unsigned long flags; > > xnlock_clear_irqon(nklock);
->     > > ... your code ... > > xnlock_get_irqsave(nklock, flags); /* must re-lock
->     on exit */ > } > > We are using xenomai-2.6.4 w/ linux 3.14.28 > > Any help
->     would be greatly appreciated. > [...] 
->  
->  Content analysis details:   (-1.0 points, 5.0 required)
->  
->   pts rule name              description
->  ---- ---------------------- --------------------------------------------------
->  -1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
-> X-Barracuda-Connect: sd-51317.xenomai.org[62.210.215.82]
-> X-Barracuda-Start-Time: 1457986755
-> X-Barracuda-URL: https://76.79.246.10:443/cgi-mod/mark.cgi
-> X-Virus-Scanned: by bsmtpd at deltatau.com
-> X-Barracuda-BRTS-Status: 1
-> X-Barracuda-Spam-Score: 0.00
-> X-Barracuda-Spam-Status: No, SCORE=0.00 using global scores of TAG_LEVEL=2.0 QUARANTINE_LEVEL=4.0 KILL_LEVEL=7.0 tests=
-> X-Barracuda-Spam-Report: Code version 3.2, rules version 3.2.3.27841
-> 	Rule breakdown below
-> 	 pts rule name              description
-> 	---- ---------------------- --------------------------------------------------
+On 16-03-14 12:47 AM, Nicolas SCHURANDO wrote:
+> Hi Mosta,
 > 
-> On 03/14/2016 08:23 PM, Henry Bausley wrote:
-> > 
-> > For many years we have had a reentrant interrupt routine that has run on
-> > our single core AMCC460EX for ~7-8yrs.  We received instructions on how
-> > to do this many years ago.  See the link below
-> > 
-> > 
-> > https://www.mail-archive.com/search?l=xenomai-help@gna.org&q=subject:%
-> > 22Re%5C%3A+%5C%5BXenomai%5C-help%5C%5D+Recurring+Interrupts%
-> > 22&o=newest&f=1
-> > 
-> > We have now changed to a Freescale dual core LS1021A ARM CPU.  It now
-> > hangs on the LS1021A ARM.  Is there anyway we can support reentrant
-> > interrupts on the LS1021A design?
-> > 
-> > We currently do this as we were instructed:
-> > 
-> > int your_isr(xnintr_t *intr)
-> > {
-> > unsigned long flags;
-> > 
-> > xnlock_clear_irqon(nklock);
-> > 
-> > ... your code ...
-> > 
-> > xnlock_get_irqsave(nklock, flags); /* must re-lock on exit */
-> > }
-> > 
-> > We are using xenomai-2.6.4 w/ linux 3.14.28
-> > 
-> > Any help would be greatly appreciated.
-> > 
+> I have written a quick guide to get Xenomai 3.0 on the Raspberry Pi 2
+> working at https://www.raspberrypi.org/forums/viewtopic.php?p=926466#p926466
+> .
 > 
-> There is a per-IRQ lock since 2.3, so you should drop the code fiddling
-> with the superlock, it's not locked on entry, and locking it on exit
-> causes the hang.
+> It relies on a post patch written by a member of the mailing list a few
+> month ago.
 > 
-> You could try:
+> I however find the system to be very unstable so I would love to hear some
+> feedback from you, especially if your system freezes or not.
 > 
-> your_isr()
-> {
-> 	hard_local_irq_enable();
-> 	your code;
-> 	hard_local_irq_disable();
-> }
+> Hope this helps.
 > 
-> That should be SMP-safe on your dual core board provided you don't
-> re-enable the IRQ line in the GIC for the ongoing IRQ in your handler,
-> of course. IOW, you won't be able to nest invocations of the same IRQ
-> handler using that hack, but only allow other IRQs to preempt your
-> handler. Hopefully this is what you are aiming at.
+> Regards,
 > 
-> Btw, unless you changed the interrupt distributor settings for the
-> onboard GIC, CPU0 should take all IRQs anyway.
+> Nicolas
 > 
-> PS: re-enabling IRQs in a Xenomai interrupt context is undocumented, and
-> not officially supported. This is living on the edge, but I guess you
-> already know it.
+> 2016-03-14 0:16 GMT+01:00 mosta <mosta.me@googlemail.com>:
+> 
+>> Hallo everyone,
+>>
+>> I try to compile the current stable release of xenomai for the raspberry
+>> pi2. I found a linuxcnc installation guide for xenomai 2.6.1
+>> (http://wiki.linuxcnc.org/cgi-bin/wiki.pl?RaspbianXenomaiBuild) and I
+>> compiled on image with it, so I use it as a template to compile
+>> xenomai-3.0.1 and the problem I found is that there are pre- and post
+>> patches for the raspberry pi and I can't find any for xenomai-3.0.1 are
+>> they not needed or do I have to create them myself?
+>>
+>> tips and hints for moving forward are welcome.
+>>
+>> greetings mosta
+>>
+>> _______________________________________________
+>> Xenomai mailing list
+>> Xenomai@xenomai.org
+>> https://xenomai.org/mailman/listinfo/xenomai
+>>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 > 
 
-We have in deed been nesting invocations of the same IRQ handler and are
-trying to do the same.  Is there a different hack we can use to achieve
-that?
+Thanks Nicolas for taking the time to write the guide.
+I have not looked at the problem but there is port to the 4.1 kernel
+from Philippe Gerum here:
+http://git.xenomai.org/ipipe.git/log/?h=vendors/raspberry/ipipe-4.1
+It is likely more up to date than mine.
 
-As you indicated calling
-hard_local_irq_enable()/hard_local_irq_disable() won't accomplish nested
-invocations of the same IRQ handler and our test confirmed that.
-
-
-
-
-
-
-Outbound scan for Spam or Virus by Barracuda at Delta Tau
-
+Regards,
+-Mathieu
 
