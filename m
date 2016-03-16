@@ -1,13 +1,10 @@
-Message-ID: <BLU437-SMTP29D359A6746B3F160FFE69F0890@phx.gbl>
-References: <56E5F4B4.9030807@googlemail.com>
- <CA+CJOCzH=jrnM70D3=8ix1i25eMGpemv_Te_Tk3aWbUeZ86j6g@mail.gmail.com>
-From: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
-Date: Mon, 14 Mar 2016 20:58:42 -0700
-MIME-Version: 1.0
-In-Reply-To: <CA+CJOCzH=jrnM70D3=8ix1i25eMGpemv_Te_Tk3aWbUeZ86j6g@mail.gmail.com>
-Content-Type: text/plain; charset="windows-1252"
+Message-ID: <1458099705.9868.11.camel@henry-ThinkCentre-M93p>
+From: Henry Bausley <hbausley@deltatau.com>
+Date: Tue, 15 Mar 2016 20:41:45 -0700
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai-3.0.1 with raspberry pi
+Subject: [Xenomai] ARM LS1021A SMP Floating point Interrupt Service Routine
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,61 +13,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Nicolas SCHURANDO <schurann@ext.essilor.com>, mosta <mosta.me@googlemail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 16-03-14 12:47 AM, Nicolas SCHURANDO wrote:
-> Hi Mosta,
-> 
-> I have written a quick guide to get Xenomai 3.0 on the Raspberry Pi 2
-> working at https://www.raspberrypi.org/forums/viewtopic.php?p=926466#p926466
-> .
-> 
-> It relies on a post patch written by a member of the mailing list a few
-> month ago.
-> 
-> I however find the system to be very unstable so I would love to hear some
-> feedback from you, especially if your system freezes or not.
-> 
-> Hope this helps.
-> 
-> Regards,
-> 
-> Nicolas
-> 
-> 2016-03-14 0:16 GMT+01:00 mosta <mosta.me@googlemail.com>:
-> 
->> Hallo everyone,
->>
->> I try to compile the current stable release of xenomai for the raspberry
->> pi2. I found a linuxcnc installation guide for xenomai 2.6.1
->> (http://wiki.linuxcnc.org/cgi-bin/wiki.pl?RaspbianXenomaiBuild) and I
->> compiled on image with it, so I use it as a template to compile
->> xenomai-3.0.1 and the problem I found is that there are pre- and post
->> patches for the raspberry pi and I can't find any for xenomai-3.0.1 are
->> they not needed or do I have to create them myself?
->>
->> tips and hints for moving forward are welcome.
->>
->> greetings mosta
->>
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> https://xenomai.org/mailman/listinfo/xenomai
->>
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
-> 
+How does one properly permit floating point operations in an ISR in a
+kernel driver running on an ARM CPU.  Our ISR is on cpu 0 and I thought
+that the code below would work.  However sometimes the userspace
+application using the floating point unit will get a segmentation fault.
+The kernel driver running floating point does not have a problem.  I am
+sure I am missing something here since I can use floating point in
+xenomai kernel threads without a problem.
 
-Thanks Nicolas for taking the time to write the guide.
-I have not looked at the problem but there is port to the 4.1 kernel
-from Philippe Gerum here:
-http://git.xenomai.org/ipipe.git/log/?h=vendors/raspberry/ipipe-4.1
-It is likely more up to date than mine.
+int FloatingPointISR()
+{
+  rthal_vfp_save((union vfp_state*)x, rthal_enable_fpu());
 
-Regards,
--Mathieu
+   // A bunch of floating point stuff
+
+  rthal_vfp_load((union vfp_state*)x, 0);
+}
+
+
+
+
+Outbound scan for Spam or Virus by Barracuda at Delta Tau
+
 
