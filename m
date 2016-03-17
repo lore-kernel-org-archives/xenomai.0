@@ -1,10 +1,12 @@
+Date: Thu, 17 Mar 2016 14:36:09 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160317133609.GD575@hermes.click-hack.org>
+References: <CABfy4==QwJ36Kw2j==_kmtKnMtBy_obCjwR_2oD0TEo4LF=d7w@mail.gmail.com>
 MIME-Version: 1.0
-Date: Thu, 17 Mar 2016 15:25:16 +0200
-Message-ID: <CABfy4==QwJ36Kw2j==_kmtKnMtBy_obCjwR_2oD0TEo4LF=d7w@mail.gmail.com>
-From: Yury Kaliukhovich <jury.kaliukhovich@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Problem with rtnet e1000e ethernet card
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CABfy4==QwJ36Kw2j==_kmtKnMtBy_obCjwR_2oD0TEo4LF=d7w@mail.gmail.com>
+Subject: Re: [Xenomai] Problem with rtnet e1000e ethernet card
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,22 +15,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Yury Kaliukhovich <jury.kaliukhovich@gmail.com>
+Cc: xenomai@xenomai.org
 
-SGVsbG8gZXZlcnlvbmUsCgpJJ3ZlIGZhY2VkIGFuIGlzc3VlIHdpdGggcnRuZXQgY29uY2Vybmlu
-ZyBpbnRlbCBlMTAwMGUgbmV0d29yayBhZGFwdGVyLgpJIGhhdmUgYW4gYXBwbGljYXRpb24gdGhh
-dCB1c2VzIHJ0bmV0IHRvIHdvcmsgd2l0aCBldGhlcm5ldCBkZXZpY2VzLiBJbgpjYXNlIG9mIHRl
-bXBvcmFyeSBkaXNjb25uZWN0aW9uIGZyYW1lcyBjb3VsZG4ndCBiZSBzZW50L3JlY2VpdmVkIGJ5
-CmFwcGxpY2F0aW9uLCBhbmQgdHJhY2UgIlJlc2V0IGFkYXB0ZXIgIiBhcHBlYXJzIGluIGRtZXNn
-LgpXZSBhcmUgdXNpbmcga2VybmVsIDMuMTQuMzkgYW5kIHRoZSBsYXN0IHhlbm9tYWkgMy4wLjEu
-CkFmdGVyIHNvbWUgZ29vZ2xpbmcgSSd2ZSBmb3VuZCBhIGNvbW1pdCB0byBsaW51eCBrZXJuZWwg
-dG8gZml4IGUxMDAwZQptb2R1bGUgLQoKaHR0cHM6Ly9naXRodWIuY29tL3RvcnZhbGRzL2xpbnV4
-L2NvbW1pdC8xMmQ0M2Y3ZDNjZDM2NDk0YTQ0MmRlYTZmMmQyYzdjY2I3NmQwZDgwCgphcHBseWlu
-ZyB0aGF0IGNvbW1pdCB3aXRoIHNvbWUgbW9kaWZpY2F0aW9ucyBmaXhlZCB0aGUgcHJvYmxlbSwK
-c28gSSd2ZSBtYWRlIGEgc21hbGwgcGF0Y2ggdG8geGVub21haSB0aGF0IGNvdWxkIGJlIHVzZWZ1
-bGwgZm9yIHNvbWVvbmUKZWxzZSBhcyB3ZWxsIGFzIGNvdWxkIGJlIGFwcGxpZWQgdG8geGVub21h
-aSBnaXQgcmVwb3NpdG9yeQotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0K
-QSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBpbnRlbF9lMTAwMGUu
-cGF0Y2gKVHlwZTogdGV4dC94LWRpZmYKU2l6ZTogNDI1MSBieXRlcwpEZXNjOiBub3QgYXZhaWxh
-YmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50
-cy8yMDE2MDMxNy8xOTA1NWUwMy9hdHRhY2htZW50LnBhdGNoPgo=
+On Thu, Mar 17, 2016 at 03:25:16PM +0200, Yury Kaliukhovich wrote:
+> Hello everyone,
+> 
+> I've faced an issue with rtnet concerning intel e1000e network adapter.
+> I have an application that uses rtnet to work with ethernet devices. In
+> case of temporary disconnection frames couldn't be sent/received by
+> application, and trace "Reset adapter " appears in dmesg.
+> We are using kernel 3.14.39 and the last xenomai 3.0.1.
+> After some googling I've found a commit to linux kernel to fix e1000e
+> module -
+> 
+> https://github.com/torvalds/linux/commit/12d43f7d3cd36494a442dea6f2d2c7ccb76d0d80
+
+Thanks this is an interesting patch. However, triggering a reset
+when packets are sent while the network is down causes a problem:
+in the middle of the reset the network is down, so if the
+application sends packets again, this will trigger a reset again,
+and can lead to situation where the application is never able to
+send packets, because the interface is always resetting and thus
+never up.
+
+So, the issue has been fixed differently in the git repository: we refuse
+to queue packets if the cable is not plugged:
+https://git.xenomai.org/xenomai-3.git/commit/?h=stable-3.0.x&id=0eeba1c172efabbc1d2194f7893cd40ad3ee1162
+
+Besides, real-time applications expect short latency from RTnet, so
+it seems more correct to inform them that their packet could not be
+sent because the network is down, than to queue the packet for an
+indefinite time.
+
+-- 
+					    Gilles.
+https://click-hack.org
+
