@@ -1,12 +1,11 @@
-Date: Thu, 17 Mar 2016 14:36:09 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160317133609.GD575@hermes.click-hack.org>
-References: <CABfy4==QwJ36Kw2j==_kmtKnMtBy_obCjwR_2oD0TEo4LF=d7w@mail.gmail.com>
+From: Umair Ali <ali.umair@tut.fi>
+Date: Thu, 17 Mar 2016 14:11:30 +0000
+Message-ID: <2396B4D2166B62479FBBE370D4A7C1F30A729F5F@mb2010-1.intra.tut.fi>
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CABfy4==QwJ36Kw2j==_kmtKnMtBy_obCjwR_2oD0TEo4LF=d7w@mail.gmail.com>
-Subject: Re: [Xenomai] Problem with rtnet e1000e ethernet card
+Subject: [Xenomai] Error: Xenomai/cobalt: Watch triggered
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,40 +14,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Yury Kaliukhovich <jury.kaliukhovich@gmail.com>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thu, Mar 17, 2016 at 03:25:16PM +0200, Yury Kaliukhovich wrote:
-> Hello everyone,
-> 
-> I've faced an issue with rtnet concerning intel e1000e network adapter.
-> I have an application that uses rtnet to work with ethernet devices. In
-> case of temporary disconnection frames couldn't be sent/received by
-> application, and trace "Reset adapter " appears in dmesg.
-> We are using kernel 3.14.39 and the last xenomai 3.0.1.
-> After some googling I've found a commit to linux kernel to fix e1000e
-> module -
-> 
-> https://github.com/torvalds/linux/commit/12d43f7d3cd36494a442dea6f2d2c7ccb76d0d80
+Hello,
 
-Thanks this is an interesting patch. However, triggering a reset
-when packets are sent while the network is down causes a problem:
-in the middle of the reset the network is down, so if the
-application sends packets again, this will trigger a reset again,
-and can lead to situation where the application is never able to
-send packets, because the interface is always resetting and thus
-never up.
+I have developed a POSIX application. In my application i am reading a file=
+ using mmap function. The size of file is 600Mb. When i read the file the f=
+ollowing error appears
 
-So, the issue has been fixed differently in the git repository: we refuse
-to queue packets if the cable is not plugged:
-https://git.xenomai.org/xenomai-3.git/commit/?h=stable-3.0.x&id=0eeba1c172efabbc1d2194f7893cd40ad3ee1162
+"Xenomai/Cobalt: Watchdog triggered
+CPU time limit exceeded (Core dumped)"
 
-Besides, real-time applications expect short latency from RTnet, so
-it seems more correct to inform them that their packet could not be
-sent because the network is down, than to queue the packet for an
-indefinite time.
+The Kernel messages are as follows
 
--- 
-					    Gilles.
-https://click-hack.org
+"[513566.035432] [Xenomai] switching raw_udp_sv to secondary mode after exc=
+eption #14 from user-space at 0xb75b2f96 (pid 23177)
+[513566.035460] raw_udp_sv[23177]: segfault at 0 ip b75b2f96 sp bf8f7618 er=
+ror 4 in libc-2.19.so[b7536000+1a8000]
+[513692.910072] [Xenomai] watchdog triggered on CPU #0 -- runaway thread 'r=
+aw_udp_sv' signaled
+[513816.909854] [Xenomai] watchdog triggered on CPU #0 -- runaway thread 'r=
+aw_udp_sv' signaled"
+
+
+I have noticed that if i am reading a different file of the same size then =
+no such error appear.
+I have some solution on internet about installing libc 6 but i am confused.=
+ My quesstion is that what are the possible ways i can use to trace my prob=
+lem if such kind of error appears.
+
+Thanks & BR
+Ali
 
