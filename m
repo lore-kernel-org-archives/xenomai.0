@@ -1,14 +1,13 @@
-Date: Fri, 18 Mar 2016 13:28:26 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160318122826.GA3345@hermes.click-hack.org>
-References: <56EBDBCE.3030800@sigmatek.at>
- <20160318111030.GE6555@hermes.click-hack.org>
- <56EBF155.6010006@sigmatek.at>
+References: <E1ahDS5-0004G9-QW@sd-51317.xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <56ED227B.2040309@siemens.com>
+Date: Sat, 19 Mar 2016 10:57:15 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <56EBF155.6010006@sigmatek.at>
-Subject: Re: [Xenomai] ipipe bug in gpio/irq for mx6
+In-Reply-To: <E1ahDS5-0004G9-QW@sd-51317.xenomai.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Philippe Gerum : cobalt/thread: add schedparam lazy
+	propagation
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,104 +16,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Johann Obermayr <johann.obermayr@sigmatek.at>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Fri, Mar 18, 2016 at 01:15:17PM +0100, Johann Obermayr wrote:
-> Am 18.03.2016 um 12:10 schrieb Gilles Chanteperdrix:
-> > On Fri, Mar 18, 2016 at 11:43:26AM +0100, Johann Obermayr wrote:
-> >> Hello,
-> >>
-> >> in the the git branch ipipe-3.0-imx6q
-> > This I-pipe patch is really old now. Any chance to use a current
-> > version of Xenomai?
-> Not now. but we have started to change to 3.10.x with newer xenomai
-> >> in the file arch/arm/plat-mxc/gpio.c
-> >>
-> >> there is follow function.
-> >>
-> >> void __ipipe_mach_enable_irqdesc(struct ipipe_domain *ipd, unsigned irq)
-> >> {
-> >>       struct irq_desc *desc = irq_to_desc(irq);
-> >>       struct irq_data *idata = irq_desc_get_irq_data(desc);
-> >>       struct irq_chip *chip = irq_data_get_irq_chip(idata);
-> >>
-> >>       if (chip == &gpio_irq_chip) {
-> >>           /* It is a gpio. */
-> >>           u32 gpio = irq_to_gpio(irq);
-> >>           struct mxc_gpio_port *port = &mxc_gpio_ports[gpio / 32];
-> >>
-> >>           if (ipd != &ipipe_root) {
-> >>               port->nonroot_gpios |= (1 << (gpio % 32));
-> >>               if (port->nonroot_gpios == (1 << (gpio % 32))) {
-> >>                   __ipipe_irqbits[(port->irq / 32)]
-> >>                       &= ~(1 << (port->irq % 32));
-> >>                   set_irq_prio(port->irq, 1);
-> >>               }
-> >>           }
-> >>       } else
-> >>           set_irq_prio(irq, ipd != &ipipe_root);
-> >> }
-> >>
-> >> But there is missing  set_irq_prio for the port->irq_high.
-> >> to add
-> >>                   if (port->irq_high > 0)
-> >>                       set_irq_prio(port->irq_high, 1);
-> >> is not my problem.
-> >>
-> >> my problem is, that i don't known if  __ipipe_irqbits is handled
-> >> correct.
-> > Well, if you want to set port->irq_high, you have to clear the
-> > corresponding bit in __ipipe_irqbits, as is done for port->irq.
-> >
-> Thank you Gilles.
+On 2016-03-19 10:45, git repository hosting wrote:
+> Module: xenomai-3
+> Branch: next
+> Commit: 4eee0136b4bcb744b9dfdc195f18dd839b3e2198
+> URL:    http://git.xenomai.org/?p=xenomai-3.git;a=commit;h=4eee0136b4bcb744b9dfdc195f18dd839b3e2198
 > 
-> i've also take a part from newer version.
-> void __ipipe_mach_enable_irqdesc(struct ipipe_domain *ipd, unsigned irq)
-> {
->      struct irq_desc *desc = irq_to_desc(irq);
->      struct irq_data *idata = irq_desc_get_irq_data(desc);
->      struct irq_chip *chip = irq_data_get_irq_chip(idata);
+> Author: Philippe Gerum <rpm@xenomai.org>
+> Date:   Fri Mar 18 12:12:50 2016 +0100
 > 
->      if (chip == &gpio_irq_chip) {
->          /* It is a gpio. */
->          u32 gpio = irq_to_gpio(irq);
->          struct mxc_gpio_port *port = &mxc_gpio_ports[gpio / 32];
+> cobalt/thread: add schedparam lazy propagation
 > 
->          if (ipd == &ipipe_root) {
->              port->nonroot_gpios &= ~(1 << (gpio % 32));
->              if (port->nonroot_gpios == 0) {
->                  __ipipe_irqbits[(port->irq / 32)] &= ~(1 << (port->irq 
-> % 32));
->                  __ipipe_irqbits[(port->irq_high / 32)] &= ~(1 << 
-> (port->irq_high % 32));
->                  set_irq_prio(port->irq, 0);
->                  if (port->irq_high > 0)
->                      set_irq_prio(port->irq_high, 0);
->              }
->          } else {
->              port->nonroot_gpios |= (1 << (gpio % 32));
->              if (port->nonroot_gpios == (1 << (gpio % 32))) {
->                  __ipipe_irqbits[(port->irq / 32)] &= ~(1 << (port->irq 
-> % 32));
->                  __ipipe_irqbits[(port->irq_high / 32)] &= ~(1 << 
-> (port->irq_high % 32));
->                  set_irq_prio(port->irq, 1);
->                  if (port->irq_high > 0)
->                      set_irq_prio(port->irq_high, 1);
->              }
->          }
->      } else
->          set_irq_prio(irq, ipd != &ipipe_root);
-> }
+> Provide a mechanism for carrying out a lazy propagation of schedparam
+> updates to the regular kernel, so that userland does not have to
+> switch to secondary mode for this.
 > 
-> is this correct to clear the the bit in __ipipe_irqbits also for ipd == 
-> ipipe_root ?
+> When userland issues sc_cobalt_thread_setschedparam_ex for updating
+> the scheduling parameters of a Xenomai thread, a request for
+> propagating this change to the regular kernel is made pending. Such
+> request will be committed later, either when:
+> 
+> - the thread relaxes if it is running in primary mode when the update
+>   request is received;
+> 
+> - next time the thread calls back into the Cobalt core as a result of
+>   receiving a HOME action from a SIGSHADOW notification, which is sent
+>   if such thread was relaxed at the time of the update request.
+> 
+> As a result, the target thread will have propagated the schedparams
+> update to the regular kernel as soon as it resumes (relaxed) execution
+> in user-space.
 
-It is useless, __ipipe_mach_enable_irqdesc for root irqs is called
-only once at boot time, when the bits are already cleared.
+More light-weight than my approach with the kernel helper task - but
+doesn't this create a prio inversion window on the Linux side?
+
+Consider a relaxed thread that received a prio raising while in primary
+mode. It will now start off with its old, lower Linux prio in secondary
+mode, potentially being starved by a higher prio Linux task because it
+cannot update its own priority.
+
+Jan
 
 -- 
-					    Gilles.
-https://click-hack.org
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
 
