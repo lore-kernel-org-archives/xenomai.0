@@ -1,13 +1,13 @@
-From: Alex Plits <alex_plits@radwin.com>
-Date: Sun, 20 Mar 2016 07:49:16 +0000
-Message-ID: <DB5PR06MB110995B3101666B866BB93C28F8E0@DB5PR06MB1109.eurprd06.prod.outlook.com>
+Date: Sun, 20 Mar 2016 08:59:38 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160320075938.GG3345@hermes.click-hack.org>
 References: <DB5PR06MB1109ECFBDA54A3B1A11457608F8E0@DB5PR06MB1109.eurprd06.prod.outlook.com>
  <20160320072520.GF3345@hermes.click-hack.org>
-In-Reply-To: <20160320072520.GF3345@hermes.click-hack.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ <DB5PR06MB110995B3101666B866BB93C28F8E0@DB5PR06MB1109.eurprd06.prod.outlook.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DB5PR06MB110995B3101666B866BB93C28F8E0@DB5PR06MB1109.eurprd06.prod.outlook.com>
 Subject: Re: [Xenomai] Suggested approach to schedule N-RT work in kernel on
  a specific CPU core
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,72 +18,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Alex Plits <alex_plits@radwin.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
+On Sun, Mar 20, 2016 at 07:49:16AM +0000, Alex Plits wrote:
+> 
+> 
+> > -----Original Message-----
+> > From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+> > If the Linux kernel provides a function to do this, we could implement a
+> > function mirroring that function in the RTDM API. Looks simple. Am I missing
+> > something ?
+> > 
+> 
+> [Alex Plits] The Linux provides an option to configure the workQ
+> on specific CPU's on it's initialization stage of the WorkQ. I'm
+> unsure Of how/whether it actually schedules it's execution when
+> schedule_work is called from a different CPU core that it was
+> configured up-on.
+
+I doubt very much this does not work. Have you tried it and observed
+that it does not work?
 
 
-> -----Original Message-----
-> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
-> Sent: Sunday, March 20, 2016 9:25 AM
-> To: Alex Plits
-> Cc: xenomai@xenomai.org
-> Subject: Re: [Xenomai] Suggested approach to schedule N-RT work in kernel
-> on a specific CPU core
->=20
-> On Sun, Mar 20, 2016 at 07:15:42AM +0000, Alex Plits wrote:
-> > Hi,
-> >
-> > We have a requirement to schedule N-RT linux kernel specific work
-> > (e.g. workQ) on a dedicated core from an RTDM driver running In Xenomai
-> "context".
-> > The current RTDM API does in fact provide an API to schedule a N-RT
-> > workQ but this does not meet our needs as we need the N-RT job to run
-> > on A dedicated CPU. Current API implementation will run this special
-> > workQ on the CPU where the RT scheduling call occurred, so I have 2
-> > queries we need help with -
-> >
-> > 1.       Is there an API/example/configuration that will achieve our ne=
-eds?
-> >
-> > 2.       In case there isn't what would be the best approach to impleme=
-nt
-> such a mechanism - I can think of solutions but it seems excessive:
-> >
-> > a.       Run another Xenomai thread that has CPU affinity on the target=
- cpu
-> Core which will call a dedicated RTDM blocking call (e.g. IOCTL with semT=
-ake)
-> and then the scheduling RTDM driver will release that semaphore - which w=
-ill
-> re-schedule the thread on the core we need and now it can call a N-RT IOC=
-TL
-> for example.
-> >
-> > b.      Initialize a new WorkQ on I-Pipe init which will be binded on t=
-he target
-> cpu Core only then add new RTDM api to schedule work on that WorkQ -
-> although I'm not sure this will work as it will use the VIRQ  mechanism w=
-hich
-> will somehow need to change cores.
->=20
-> If the Linux kernel provides a function to do this, we could implement a
-> function mirroring that function in the RTDM API. Looks simple. Am I miss=
-ing
-> something ?
->=20
 
-[Alex Plits]=20
-The Linux provides an option to configure the workQ on specific CPU's on it=
-'s initialization stage of the WorkQ. I'm unsure
-Of how/whether it actually schedules it's execution when schedule_work is c=
-alled from a different CPU core that it was configured up-on. I'm guessing =
-that if it were trivial the same mechanism would also be used in the curren=
-t API for N-RT or xenomai printk mechanism (both use dedicated workQs which=
- are different than Linux WorkQs awaken via VIRQs).
+> I'm guessing that if it were trivial the same
+> mechanism would also be used in the current API for N-RT or
+> xenomai printk mechanism (both use dedicated workQs which are
+> different than Linux WorkQs awaken via VIRQs).
 
+There is no xenomai printk mechanism. printk is implemented by the
+I-pipe patch, a layer below Xenomai, so can not use an RTDM service.
+Besides, the I-pipe patch printk implementation predates
+ipipe_post_work_root.
 
-> --
-> 					    Gilles.
-> https://click-hack.org
+The way RTDM work works is with the ipipe_post_work_root service,
+so it does not use virqs, and since the schedule_work gets invoked
+in a plain linux context, anything which works with schedule_work
+(like triggering a work queue on a different cpu) should work with
+the RTDM service.
+
+So, again, have you tried running the RTDM service with a work queue
+pinned on a different cpu and observed that it did not work?
+
+-- 
+					    Gilles.
+https://click-hack.org
 
