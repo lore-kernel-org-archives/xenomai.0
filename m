@@ -1,14 +1,13 @@
-References: <E1ahDS5-0004G9-QW@sd-51317.xenomai.org>
- <56ED227B.2040309@siemens.com> <56EEC8BC.1060606@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <56EFBA39.5070402@siemens.com>
-Date: Mon, 21 Mar 2016 10:09:13 +0100
 MIME-Version: 1.0
-In-Reply-To: <56EEC8BC.1060606@xenomai.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Philippe Gerum : cobalt/thread: add schedparam lazy
-	propagation
+In-Reply-To: <BLU437-SMTP29D359A6746B3F160FFE69F0890@phx.gbl>
+References: <56E5F4B4.9030807@googlemail.com>
+ <CA+CJOCzH=jrnM70D3=8ix1i25eMGpemv_Te_Tk3aWbUeZ86j6g@mail.gmail.com>
+ <BLU437-SMTP29D359A6746B3F160FFE69F0890@phx.gbl>
+From: Nicolas SCHURANDO <schurann@ext.essilor.com>
+Date: Mon, 21 Mar 2016 16:41:59 +0100
+Message-ID: <CA+CJOCyuEohMS4NjtOmewB+7BzbG=OTCQ2UfESamyoA736J4Xw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Xenomai-3.0.1 with raspberry pi
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,101 +16,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
 Cc: xenomai@xenomai.org
 
-On 2016-03-20 16:58, Philippe Gerum wrote:
-> On 03/19/2016 10:57 AM, Jan Kiszka wrote:
->> On 2016-03-19 10:45, git repository hosting wrote:
->>> Module: xenomai-3
->>> Branch: next
->>> Commit: 4eee0136b4bcb744b9dfdc195f18dd839b3e2198
->>> URL:    http://git.xenomai.org/?p=xenomai-3.git;a=commit;h=4eee0136b4bcb744b9dfdc195f18dd839b3e2198
->>>
->>> Author: Philippe Gerum <rpm@xenomai.org>
->>> Date:   Fri Mar 18 12:12:50 2016 +0100
->>>
->>> cobalt/thread: add schedparam lazy propagation
->>>
->>> Provide a mechanism for carrying out a lazy propagation of schedparam
->>> updates to the regular kernel, so that userland does not have to
->>> switch to secondary mode for this.
->>>
->>> When userland issues sc_cobalt_thread_setschedparam_ex for updating
->>> the scheduling parameters of a Xenomai thread, a request for
->>> propagating this change to the regular kernel is made pending. Such
->>> request will be committed later, either when:
->>>
->>> - the thread relaxes if it is running in primary mode when the update
->>>   request is received;
->>>
->>> - next time the thread calls back into the Cobalt core as a result of
->>>   receiving a HOME action from a SIGSHADOW notification, which is sent
->>>   if such thread was relaxed at the time of the update request.
->>>
->>> As a result, the target thread will have propagated the schedparams
->>> update to the regular kernel as soon as it resumes (relaxed) execution
->>> in user-space.
->>
->> More light-weight than my approach with the kernel helper task - but
->> doesn't this create a prio inversion window on the Linux side?
->>
->> Consider a relaxed thread that received a prio raising while in primary
->> mode. It will now start off with its old, lower Linux prio in secondary
->> mode, potentially being starved by a higher prio Linux task because it
->> cannot update its own priority.
->>
-> 
-> I considered it just like I considered the prio inversion with the
-> kthread option too, but let's face it, we trade a mode switch in
-> pthread_setschedparam*() to favor the RT side for a general
-> inconsistency with the nptl-to-kernel interface on the non-RT side, due
-> to the priority cache.
-> 
-> Enabling lazy schedparam updates means:
-> 
-> - inability to mix the glibc and Cobalt calls for managing a thread's
-> scheduling parameters, and POSIX standard assumptions made invalid (see
-> the illustration attached).
-> - inability to use standard prioceiling mutexes from the glibc from
-> threads receiving Cobalt's pthread_setschedparam*() call.
-> 
-> With that in mind, I see no strong point in guaranteeing anything with
-> respect to priority inversion for relaxing threads when the lazy
-> schedparam propagation scheme is enabled, given the significant
-> restrictions introduced for the non-RT side. For the most part, those
-> threads receiving Cobalt's pthread_setschedparam*() calls should be RT
-> threads, which normally don't expect much from the regular kernel with
-> respect to RT behavior. Those can cope with a priority inversion that
-> might exist when they relax, which is supposed to be a rare event
-> anyway, and not time-critical by definition.
-> 
-> The only non-covered case that remains would be setting the scheduling
-> parameters of SCHED_WEAK threads with non-zero priorities from
-> SCHED_FIFO threads via Cobalt, expecting strict real-time behavior from
-> the former. I've been wrapping my head around this, and this very idea
-> still makes no sense to me.
-> 
-> The patch merged in -next does have the restriction you mentioned, but
-> is much simpler and raceless compared to the kthread approach, and
-> cheaper CPU wise too (kthread potentially means a double context switch
-> at each pthread_setschedparam*() call, compared to no overhead for the
-> other approach if the thread is not relaxed, which should be the common
-> case for RT threads).
-> 
-> In short, it's definitely not perfect, but it should fit the bill for
-> the corner case when relaxing in pthread_setschedparam() is a problem.
-> If you have any use case in mind for which this restriction would be a
-> showstopper, please let me know.
-> 
+Thanks Mathieu for the reminder. I had bookmarked Philippe's new year
+message introducing the specific vendor branch, but in the interval I
+somehow forgot it existed.
 
-Sounds fair. However, We should document prominently that scheduling
-order in secondary mode can be "unexpected" and that RT application
-logic shall not rely on it.
+I was able to produce a working Xenomai 3.0 image for the Raspberry Pi 1
+using the bcmrpi_defconfig as a base. It seems stable so far.
 
-Jan
+However, when using bcm2709_defconfig, the generated kernel won't boot on a
+Raspberry Pi 2, leaving me with the initial rainbow screen.
 
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe, have you had any feedback from people testing on the Raspberry Pi
+2 yet ?
 
+Regards,
+
+Nicolas
+
+2016-03-15 4:58 GMT+01:00 Mathieu Rondonneau <mathieu_rondonneau@hotmail.com
+>:
+
+> On 16-03-14 12:47 AM, Nicolas SCHURANDO wrote:
+> > Hi Mosta,
+> >
+> > I have written a quick guide to get Xenomai 3.0 on the Raspberry Pi 2
+> > working at
+> https://www.raspberrypi.org/forums/viewtopic.php?p=926466#p926466
+> > .
+> >
+> > It relies on a post patch written by a member of the mailing list a few
+> > month ago.
+> >
+> > I however find the system to be very unstable so I would love to hear
+> some
+> > feedback from you, especially if your system freezes or not.
+> >
+> > Hope this helps.
+> >
+> > Regards,
+> >
+> > Nicolas
+> >
+> > 2016-03-14 0:16 GMT+01:00 mosta <mosta.me@googlemail.com>:
+> >
+> >> Hallo everyone,
+> >>
+> >> I try to compile the current stable release of xenomai for the raspberry
+> >> pi2. I found a linuxcnc installation guide for xenomai 2.6.1
+> >> (http://wiki.linuxcnc.org/cgi-bin/wiki.pl?RaspbianXenomaiBuild) and I
+> >> compiled on image with it, so I use it as a template to compile
+> >> xenomai-3.0.1 and the problem I found is that there are pre- and post
+> >> patches for the raspberry pi and I can't find any for xenomai-3.0.1 are
+> >> they not needed or do I have to create them myself?
+> >>
+> >> tips and hints for moving forward are welcome.
+> >>
+> >> greetings mosta
+> >>
+> >> _______________________________________________
+> >> Xenomai mailing list
+> >> Xenomai@xenomai.org
+> >> https://xenomai.org/mailman/listinfo/xenomai
+> >>
+> > _______________________________________________
+> > Xenomai mailing list
+> > Xenomai@xenomai.org
+> > https://xenomai.org/mailman/listinfo/xenomai
+> >
+>
+> Thanks Nicolas for taking the time to write the guide.
+> I have not looked at the problem but there is port to the 4.1 kernel
+> from Philippe Gerum here:
+> http://git.xenomai.org/ipipe.git/log/?h=vendors/raspberry/ipipe-4.1
+> It is likely more up to date than mine.
+>
+> Regards,
+> -Mathieu
+>
