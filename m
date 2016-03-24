@@ -1,17 +1,13 @@
-References: <1457983382.28082.11.camel@henry-ThinkCentre-M93p>
- <56E71CC1.5070600@xenomai.org>
- <1457990656.28082.20.camel@henry-ThinkCentre-M93p>
- <56E90784.7080702@xenomai.org>
- <1458260422.4930.2.camel@henry-ThinkCentre-M93p>
- <1458666633.2713.2.camel@henry-ThinkCentre-M93p>
+References: <56F3B595.5060907@knapp.com>
+ <20160324095104.GI22286@hermes.click-hack.org> <56F3BE21.9060708@knapp.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <56F3C088.1030000@xenomai.org>
-Date: Thu, 24 Mar 2016 11:25:12 +0100
+Message-ID: <56F3C10C.2030300@xenomai.org>
+Date: Thu, 24 Mar 2016 11:27:24 +0100
 MIME-Version: 1.0
-In-Reply-To: <1458666633.2713.2.camel@henry-ThinkCentre-M93p>
+In-Reply-To: <56F3BE21.9060708@knapp.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Reentrant Interrupts on Freescale LS1021A
+Subject: Re: [Xenomai] testsuite segfaults on Ubuntu 16.04 with Xenomai 2.6.4
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,29 +16,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henry Bausley <hbausley@deltatau.com>, xenomai@xenomai.org
+To: Christoph Permes <christoph.permes@knapp.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 03/22/2016 06:10 PM, Henry Bausley wrote:
-> What we are seeing is if we are in the intr->isr(intr) and another H/W
-> interrupt occurs it is replayed after the current intr->isr(intr) is
-> finished.  
+On 03/24/2016 11:14 AM, Christoph Permes wrote:
+> On 03/24/2016 10:51 AM, Gilles Chanteperdrix wrote:
+>> On Thu, Mar 24, 2016 at 10:38:29AM +0100, Christoph Permes wrote:
+>>> Hi,
+>>>
+>>> I am experiencing problems getting Xenomai 2.6.4 running on Ubuntu 16.04.
+>>>
+>>> My Xenomai applications and also some applications from the testsuite
+>>> (e.g. cyclictest, latency) keep crashing instantly with a segfault.
+>>>
+>>> For instance, cyclictest crashes with the following backtrace:
+>>>
+>>> Thread 1 "cyclictest" received signal SIGSEGV, Segmentation fault.
+>>> 0xb7fb59f3 in xnarch_tsc_to_ns (ticks=16028154345163) at ../../../src/include/asm-generic/xenomai/bits/timeconv.h:37
+>>> 37              return xnarch_llmulshft(ticks, tsc_scale, tsc_shift);
+>>> (gdb) bt
+>>> #0  0xb7fb59f3 in xnarch_tsc_to_ns (ticks=16028154345163) at ../../../src/include/asm-generic/xenomai/bits/timeconv.h:37
+>>> #1  0xb7fbfa9c in __wrap_clock_gettime (clock_id=1, tp=0x804c1f0 <start>) at clock.c:121
+>>> #2  0x08049cc3 in main (argc=1, argv=0xbffff6a4) at cyclictest.c:587
+>>>
+>>> The backtrace of all other applications also leads to xnarch_tsc_to_ns.
+>>>
+>>>
+>>> I am using
+>>> - Xenomai 2.6.4
+>>> - Linux 3.14.44 (see attachment for kernel configuration)
+>>> - ipipe-core-3.14.44-x86-10.patch
+>>>
+>>> which works without any issues on Ubuntu 14.04, so it seems to me that
+>>> the problem is related to the compiler or some system libraries.
+>>>
+>>> I have also tried the prebuilt Xenomai packages from the Ubuntu package
+>>> repository as well as the latest 2.6 git head, different I-Pipe patch
+>>> (ipipe-core-3.14.44-x86-11.patch), but the problem is still the same.
+>>>
+>>> With Xenomai 3.0.1 the testsuite seems to work, but for now I would
+>>> prefer staying with 2.6 as porting my applications to Xenomai 3 would
+>>> take some more effort.
+>>>
+>>>
+>>> Can anyone point me into the right direction?
+>>
+>> xnarch_llmulshft is written in assembly, it probably lacks a
+>> constraint which causes bad code generation under register pressure
+>> (which is high on x86_32). You need to work at the assembly level to
+>> understand what is wrong and fix the assembly code. As a quick
+>> check, you may want to check 3.0 implementation of the same
+>> function, to see if it has already been fixed.
+>>
+>> What is astonishing however, is that xnarch_llmulshft only uses
+>> registers to do some arithmetic operations, it should not dereference
+>> any pointer. I guess some argument lands on stack since x86_32 has
+>> so few registers. You may want to run a 64 bits OS if the machine is
+>> 64 bits.
+>>
 > 
-> What we are trying to accomplish is when a second H/W interrupt occurs
-> the current intr->isr(intr) is stopped and a second call to
-> intr->isr(intr) gets processed then when finished the original
-> intr->isr(intr) .  
-> 
-> 
-> Is there a way to accomplish what we are trying to do?
+> Just checked out the Xenomai 3 code, the change in commit
+> 5d313a256ff20a8ccdab6503e5f99b032ec9e6f1 seems to solve the problem
+> also in 2.6.4, the commit message suggests that it is gcc related.
 > 
 
-You need to fixup the virtual interrupt state for the head domain to
-match the hardware IRQ state change. There are pipeline helpers
-combining both operations the proper way. e.g. in your handler:
-
-ipipe_unstall_head(); /* enable IRQs (hw-wise and virtually) */
-...
-ipipe_stall_head(); /* disable IRQs for the head domain */
+I does depend on the GCC release, but this was actually a missing
+constraint in our code.
 
 -- 
 Philippe.
