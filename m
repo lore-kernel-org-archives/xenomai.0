@@ -1,16 +1,10 @@
-Date: Wed, 23 Mar 2016 12:12:34 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160323111234.GB22286@hermes.click-hack.org>
-References: <56EBDBCE.3030800@sigmatek.at>
- <20160318111030.GE6555@hermes.click-hack.org>
- <56EBF155.6010006@sigmatek.at>
- <20160318122826.GA3345@hermes.click-hack.org>
- <56F2776D.7060800@sigmatek.at>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <56F2776D.7060800@sigmatek.at>
-Subject: Re: [Xenomai] ipipe bug in gpio/irq for mx6
+Date: Thu, 24 Mar 2016 14:51:31 +0800
+Message-ID: <CALxt+8tVMDmQYHv-80rm4LBNGpnqvaNkSiJssGZjg4YOd9w9+Q@mail.gmail.com>
+From: Grant Liu <grant7788@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] xenomai latency more than 100 microseconds on 3rd gen
+	core i5
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,191 +13,116 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Johann Obermayr <johann.obermayr@sigmatek.at>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Wed, Mar 23, 2016 at 12:01:01PM +0100, Johann Obermayr wrote:
-> Am 18.03.2016 um 13:28 schrieb Gilles Chanteperdrix:
-> > On Fri, Mar 18, 2016 at 01:15:17PM +0100, Johann Obermayr wrote:
-> >> Am 18.03.2016 um 12:10 schrieb Gilles Chanteperdrix:
-> >>> On Fri, Mar 18, 2016 at 11:43:26AM +0100, Johann Obermayr wrote:
-> >>>> Hello,
-> >>>>
-> >>>> in the the git branch ipipe-3.0-imx6q
-> >>> This I-pipe patch is really old now. Any chance to use a current
-> >>> version of Xenomai?
-> >> Not now. but we have started to change to 3.10.x with newer xenomai
-> >>>> in the file arch/arm/plat-mxc/gpio.c
-> >>>>
-> >>>> there is follow function.
-> >>>>
-> >>>> void __ipipe_mach_enable_irqdesc(struct ipipe_domain *ipd, unsigned irq)
-> >>>> {
-> >>>>        struct irq_desc *desc = irq_to_desc(irq);
-> >>>>        struct irq_data *idata = irq_desc_get_irq_data(desc);
-> >>>>        struct irq_chip *chip = irq_data_get_irq_chip(idata);
-> >>>>
-> >>>>        if (chip == &gpio_irq_chip) {
-> >>>>            /* It is a gpio. */
-> >>>>            u32 gpio = irq_to_gpio(irq);
-> >>>>            struct mxc_gpio_port *port = &mxc_gpio_ports[gpio / 32];
-> >>>>
-> >>>>            if (ipd != &ipipe_root) {
-> >>>>                port->nonroot_gpios |= (1 << (gpio % 32));
-> >>>>                if (port->nonroot_gpios == (1 << (gpio % 32))) {
-> >>>>                    __ipipe_irqbits[(port->irq / 32)]
-> >>>>                        &= ~(1 << (port->irq % 32));
-> >>>>                    set_irq_prio(port->irq, 1);
-> >>>>                }
-> >>>>            }
-> >>>>        } else
-> >>>>            set_irq_prio(irq, ipd != &ipipe_root);
-> >>>> }
-> >>>>
-> >>>> But there is missing  set_irq_prio for the port->irq_high.
-> >>>> to add
-> >>>>                    if (port->irq_high > 0)
-> >>>>                        set_irq_prio(port->irq_high, 1);
-> >>>> is not my problem.
-> >>>>
-> >>>> my problem is, that i don't known if  __ipipe_irqbits is handled
-> >>>> correct.
-> >>> Well, if you want to set port->irq_high, you have to clear the
-> >>> corresponding bit in __ipipe_irqbits, as is done for port->irq.
-> >>>
-> >> Thank you Gilles.
-> >>
-> >> i've also take a part from newer version.
-> >> void __ipipe_mach_enable_irqdesc(struct ipipe_domain *ipd, unsigned irq)
-> >> {
-> >>       struct irq_desc *desc = irq_to_desc(irq);
-> >>       struct irq_data *idata = irq_desc_get_irq_data(desc);
-> >>       struct irq_chip *chip = irq_data_get_irq_chip(idata);
-> >>
-> >>       if (chip == &gpio_irq_chip) {
-> >>           /* It is a gpio. */
-> >>           u32 gpio = irq_to_gpio(irq);
-> >>           struct mxc_gpio_port *port = &mxc_gpio_ports[gpio / 32];
-> >>
-> >>           if (ipd == &ipipe_root) {
-> >>               port->nonroot_gpios &= ~(1 << (gpio % 32));
-> >>               if (port->nonroot_gpios == 0) {
-> >>                   __ipipe_irqbits[(port->irq / 32)] &= ~(1 << (port->irq
-> >> % 32));
-> >>                   __ipipe_irqbits[(port->irq_high / 32)] &= ~(1 <<
-> >> (port->irq_high % 32));
-> >>                   set_irq_prio(port->irq, 0);
-> >>                   if (port->irq_high > 0)
-> >>                       set_irq_prio(port->irq_high, 0);
-> >>               }
-> >>           } else {
-> >>               port->nonroot_gpios |= (1 << (gpio % 32));
-> >>               if (port->nonroot_gpios == (1 << (gpio % 32))) {
-> >>                   __ipipe_irqbits[(port->irq / 32)] &= ~(1 << (port->irq
-> >> % 32));
-> >>                   __ipipe_irqbits[(port->irq_high / 32)] &= ~(1 <<
-> >> (port->irq_high % 32));
-> >>                   set_irq_prio(port->irq, 1);
-> >>                   if (port->irq_high > 0)
-> >>                       set_irq_prio(port->irq_high, 1);
-> >>               }
-> >>           }
-> >>       } else
-> >>           set_irq_prio(irq, ipd != &ipipe_root);
-> >> }
-> >>
-> >> is this correct to clear the the bit in __ipipe_irqbits also for ipd ==
-> >> ipipe_root ?
-> > It is useless, __ipipe_mach_enable_irqdesc for root irqs is called
-> > only once at boot time, when the bits are already cleared.
-> >
-> Here are my patches for imx.6 gpio irq handling.
-> also add patch for using edge select bit (irq raise/fall detection) on 
-> imx.6
-> 
-> Regards
->     Johann
-> 
-> -------------- next part --------------
-> From b806dcf59ec3cf1abc18318cce090b78e396dec6 Mon Sep 17 00:00:00 2001
-> From: Johann Obermayr <johann.obermayr@sigmatek.at>
-> Date: Fri, 18 Mar 2016 16:04:38 +0100
-> Subject: [PATCH] high irq for GPIO input not working.
-> 
-> ---
->  arch/arm/plat-mxc/gpio.c |   14 ++++++++++----
->  1 file changed, 10 insertions(+), 4 deletions(-)
-> 
-> diff --git a/arch/arm/plat-mxc/gpio.c b/arch/arm/plat-mxc/gpio.c
-> index 87b643e..3f5925a 100755
-> --- a/arch/arm/plat-mxc/gpio.c
-> +++ b/arch/arm/plat-mxc/gpio.c
-> @@ -426,9 +426,12 @@ void __ipipe_mach_enable_irqdesc(struct ipipe_domain *ipd, unsigned irq)
->  		if (ipd != &ipipe_root) {
->  			port->nonroot_gpios |= (1 << (gpio % 32));
->  			if (port->nonroot_gpios == (1 << (gpio % 32))) {
-> -				__ipipe_irqbits[(port->irq / 32)]
-> -					&= ~(1 << (port->irq % 32));
-> +				__ipipe_irqbits[(port->irq / 32)] &= ~(1 << (port->irq % 32));
->  				set_irq_prio(port->irq, 1);
-> +				if (port->irq_high > 0) {
-> +					__ipipe_irqbits[(port->irq_high / 32)] &= ~(1 << (port->irq_high % 32));
-> +					set_irq_prio(port->irq_high, 1);
-> +				}
->  			}
->  		}
->  	} else
-> @@ -450,8 +453,11 @@ void __ipipe_mach_disable_irqdesc(struct ipipe_domain *ipd, unsigned irq)
->  			port->nonroot_gpios &= ~(1 << (gpio % 32));
->  			if (!port->nonroot_gpios) {
->  				set_irq_prio(port->irq, 0);
-> -				__ipipe_irqbits[(port->irq / 32)]
-> -					|= (1 << (port->irq % 32));
-> +				__ipipe_irqbits[(port->irq / 32)] |= (1 << (port->irq % 32));
-> +				if (port->irq_high > 0) {
-> +					set_irq_prio(port->irq_high, 0);
-> +					__ipipe_irqbits[(port->irq_high / 32)] |= (1 << (port->irq_high % 32));
-> +				}
->  			}
->  		}
->  	} else if (ipd != &ipipe_root)
-> -- 
-> 1.7.9.5
+Hello,
 
-I am fine with this patch. Will merge it in recent kernels if
-possible.
+I have one X86 system using Ubuntu 12.04 with 3rd gen i5,
+and I try to get one real time system with < 50 us (microsecond) time
+period,
+but with xenomai 3.0.1, the latency is around 10us, and sometimes more than
+100us (once per 50 seconds or so.)
 
-> 
-> -------------- next part --------------
-> From 962417f6870aec76188f391a708fc05d54f6d94c Mon Sep 17 00:00:00 2001
-> From: Johann Obermayr <johann.obermayr@sigmatek.at>
-> Date: Mon, 21 Mar 2016 17:14:18 +0100
-> Subject: [PATCH] use edge select bit to activate raise/fall irq detection.
-> 
-> ---
->  arch/arm/plat-mxc/gpio.c |   51 ++++++++++++++++++++++++++++++++--------------
->  1 file changed, 36 insertions(+), 15 deletions(-)
-> 
-> diff --git a/arch/arm/plat-mxc/gpio.c b/arch/arm/plat-mxc/gpio.c
-> index 3f5925a..c1caa6b 100755
-> --- a/arch/arm/plat-mxc/gpio.c
-> +++ b/arch/arm/plat-mxc/gpio.c
-> @@ -31,6 +31,7 @@
->  
->  static struct mxc_gpio_port *mxc_gpio_ports;
->  static int gpio_table_size;
-> +static int GPIO_EDGE_SEL = -1;
+Would you please kindly help to check it... Thanks in advance.
 
-All capital names are reserved to macros.
+BRs,
+Grant
 
-I am fine with this patch patch though I do not understand why it is
-needed, if Linux is able to detect both edges so should Xenomai with
-the same code. Also, if the patch is for the 3.0-imx6q branch, this
-branch has been abandoned a long time ago. The 3.0 kernel has been
-EOL for a long time now (last release dates back from october 2013).
-So, I do not plan to issue any new patches for this kernel.
+============= System configuration ===========
+X86 system
+Intel 3rd generation i5, 8G RAM, 64G SSD
+Ubuntu 12.04, core version 3.18.20
+Xenomai 3.0.1, ipipe-core-3.18.20-x86-3.patch
 
--- 
-					    Gilles.
-https://click-hack.org
+I followed the installation guide:
+http://xenomai.org/installing-xenomai-3-x/#cobalt-core-x86
+and while make menuconfig, I followed this link:
+http://xenomai.org/2014/06/configuring-for-x86-based-dual-kernels/
+disabled the following items:
+CONFIG_APM
+CONFIG_ACPI_PROCESSOR
+CONFIG_CPU_FREQ
+CONFIG_CPU_IDLE
+CONFIG_CC_STACKPROTECTOR
 
+I also tried to disable SMI while seems not success...
+add 'xenomai.smi=disabled' to kernel command line,
+but still see the result of 'rdmsr 0x34' changed while system running.
+
+the other attempts:
+disable / enable SMT (Hyperthreading( scheduler support
+Change Preemption Model (tested all 3 options)
+...
+
+The following are trace result using ./latency -f, hope useful...
+I-pipe worst-case tracing service on 3.18.20/ipipe release #3
+-------------------------------------------------------------
+CPU: 0, Begin: 1102363168656 cycles, Trace Points: 14 (-10/+6), Length: 26
+us
+Calibrated minimum trace-point overhead: 0.081 us
+
+ +----- Hard IRQs ('|': locked)
+ |+-- Xenomai
+ ||+- Linux ('*': domain stalled, '+': current, '#': current+stalled)
+ |||   +---------- Delay flag ('+': > 1 us, '!': > 10 us)
+ |||   |    +- NMI noise ('N')
+ |||   |    |
+  Type   User Val.   Time    Delay  Function (Parent)
+ |   #end     0x80000001  -792   0.136  check_preemption_disabled+0x8a
+(debug_smp_processor_id+0x12)
+     #func                -792   0.160  ipipe_restore_root+0x4
+(rcu_idle_enter+0x92)
+     #func                -792   0.149  ipipe_root_only+0xf
+(ipipe_restore_root+0x10)
+ |   #begin   0x80000001  -792   0.176  ipipe_root_only+0x2d
+(ipipe_restore_root+0x10)
+ |   #end     0x80000001  -792   0.158  ipipe_root_only+0x87
+(ipipe_restore_root+0x10)
+     #func                -792   3.093  arch_cpu_idle+0x3
+(cpu_startup_entry+0x243)
+     #func                -788   1.709  mwait_idle+0x4 (arch_cpu_idle+0xe)
+     #func                -787   0.238  __ipipe_halt_root+0x5
+(mwait_idle+0x5a)
+ |   #begin   0x80000000  -787   1.063  __ipipe_halt_root+0x1e
+(mwait_idle+0x5a)
+ |   +end     0x8000000e  -785 785.951  __ipipe_halt_root+0x49
+(mwait_idle+0x5a)
+>|   +begin   0x000000ef     0+   9.664  apic_timer_interrupt+0x3a
+(__ipipe_halt_root+0x60)
+:|   +func                   9+   4.820  __ipipe_handle_irq+0x9
+(apic_timer_interrupt+0x41)
+:|   +func                  14   0.195  __ipipe_dispatch_irq+0x9
+(__ipipe_handle_irq+0x7d)
+:|   +func                  14+   1.135  __ipipe_ack_hrtimer_irq+0xf
+(__ipipe_dispatch_irq+0xe0)
+:|   +func                  15+   1.096  lapic_itimer_ack+0x3
+(__ipipe_ack_hrtimer_irq+0x43)
+:|   +func                  16+   1.345  dispatch_irq_head+0x9
+(__ipipe_dispatch_irq+0xa6)
+:|  # func                  18+   3.184  xnintr_core_clock_handler+0x9
+(dispatch_irq_head+0x9b)
+:|  # func                  21+   1.231  xnclock_tick+0x9
+(xnintr_core_clock_handler+0x11a)
+:|  # func                  22   0.553  xnclock_core_local_shot+0xf
+(xnclock_tick+0x74)
+:|  # func                  23+   1.860  xnintr_host_tick+0x4
+(xnintr_core_clock_handler+0x1b8)
+:|  # func                  25   0.388  __ipipe_set_irq_pending+0xf
+(xnintr_host_tick+0x31)
+:|   +func                  25   0.429  __ipipe_do_sync_pipeline+0x9
+(dispatch_irq_head+0x134)
+:|   +func                  25   0.200  __ipipe_do_sync_stage+0x9
+(__ipipe_do_sync_pipeline+0xdd)
+<|   #end     0x80000000    26   0.150  __ipipe_do_sync_stage+0xd7
+(__ipipe_do_sync_pipeline+0xdd)
+     #func                  26   0.291  __ipipe_do_IRQ+0xc
+(__ipipe_do_sync_stage+0xf5)
+     #func                  26   0.800  __ipipe_get_ioapic_irq_vector+0x3
+(__ipipe_do_IRQ+0x24)
+     #func                  27   0.519  smp_apic_timer_interrupt+0x4
+(__ipipe_do_IRQ+0x49)
+     #func                  27   0.864  irq_enter+0x3
+(smp_apic_timer_interrupt+0x1b)
+     #func                  28   1.194  rcu_irq_enter+0xf (irq_enter+0xd)
+ |   #begin   0x80000001    29   0.000  check_preemption_disabled+0x7b
+(debug_smp_processor_id+0x12)
