@@ -1,12 +1,12 @@
-References: <56FAF42C.2040902@mitre.org>
-From: Jeffrey Melville <jmelville@mitre.org>
-Message-ID: <56FBD441.3030905@mitre.org>
-Date: Wed, 30 Mar 2016 09:27:29 -0400
+Date: Thu, 31 Mar 2016 12:03:08 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160331100308.GA4744@hermes.click-hack.org>
+References: <56F96800.6090301@mperpetuo.com>
 MIME-Version: 1.0
-In-Reply-To: <56FAF42C.2040902@mitre.org>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai and AddressSanitizer/ASan
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <56F96800.6090301@mperpetuo.com>
+Subject: Re: [Xenomai] arm64: spurious timer tick
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,75 +15,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Dmitriy Cherkasov <dmitriy@mperpetuo.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 3/29/2016 5:31 PM, Jeffrey Melville wrote:
-> Hi,
+On Mon, Mar 28, 2016 at 10:21:04AM -0700, Dmitriy Cherkasov wrote:
+> Hello,
 > 
-> I'm running Zynq ZC706 board with Xenomai 2.6.4 on a pre/post patched
-> 3.14.17 kernel from the Xilinx fork. Everything was built using gcc 4.9.1
-> 
-> I'm hitting a segfault and the core dumps are corrupted with no useful
-> information. As a last resort, I'm trying to use the gcc version of
-> AddressSanitizer
-> (https://github.com/google/sanitizers/wiki/AddressSanitizer). We've used
-> ASan successfully on the same codebase but on x86_64 using a hardware
-> simulation library that doesn't have real-time requirements.
-> Unfortunately, this bug doesn't show up in the simulation.
-> 
-> I tried a simple "hello world" program with a memory bug that generates
-> the desired report with ASan alone. When I include Xenomai, the app
-> crashes before getting to main():
-> Program received signal SIGSEGV, Segmentation fault.
-> 0x00000000 in ?? ()
-> (gdb) bt
-> #0  0x00000000 in ?? ()
-> #1  0xb6b482cc in __interceptor_pthread_cond_signal (Cannot access
-> memory at address 0x0
-> c=0x4e9dd2f8) at
-> ../../../../../../../../../work-shared/gcc-4.9.1-r0/gcc-4.9.1/libsanitizer/sanitizer_common/sanitizer_common_interceptors.inc:2268
-> #2  0x4e9d2cf8 in ?? () from /usr/lib/libxenomai.so.0
-> Cannot access memory at address 0x0
-> Backtrace stopped: previous frame identical to this frame (corrupt stack?)
-> 
-> I think the pthread_cond_signal call occurs in the rt_print init. This
-> sanitizer issue may be related:
-> https://github.com/google/sanitizers/issues/297. I'm not sure why the
-> problem occurs when Xenomai is linked but not when it isn't.
-> 
-> My LDFLAGS are:
-> -lasan -lpthread -lrt
-> -Wl,@/mnt/data/poky/1.7.1/sysroots/armv7a-vfp-neon-poky-linux-gnueabi/usr/lib/posix.wrappers
-> -L/mnt/data/poky/1.7.1/sysroots/armv7a-vfp-neon-poky-linux-gnueabi/usr/lib
-> -lpthread_rt -lxenomai -lpthread -lrt
-> 
-> Has anyone used Xenomai and ASan together successfully? What steps did
-> you have to take? Or is it a terrible idea?
-> 
-> I know this might be more of an ASan issue but figured it's more likely
-> Xenomai people are familiar with ASan than vice versa. I'll try them as
-> well.
-> 
-> Thanks,
-> Jeff
-> 
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
-> 
-Nevermind.
+> I have noticed that when Xenomai is running on an arm64 platform that uses 
+> the arm architected timer, a spurious timer tick can occur.
 
-My non-Xenomai test case was oversimplified. If I included a call to
-pthread_cond_signal in the non-Xenomai test case, I get the same
-segfault due to the upstream issue. I will need to update my compiler to
-get the upstream fix.
+I believe all arm64 platforms so far use the architected timers. It
+would seem not all of them have spurious timer ticks, though.
 
-More fundamentally, I realized the ASan is not practical on a Xenomai
-system because it relies on mapping a huge amount of virtual memory that
-isn't possible with Xenomai's use of mlockall(). I'll have to figure out
-something else.
+> 
+> Here is a patch to observe it:
+> 
+> diff --git a/drivers/clocksource/arm_arch_timer.c 
+> b/drivers/clocksource/arm_arch_timer.c
+> index 51230ee7..4a91ce6 100644
+> --- a/drivers/clocksource/arm_arch_timer.c
+> +++ b/drivers/clocksource/arm_arch_timer.c
+> @@ -148,6 +148,10 @@ static int arch_timer_ack(const int access, struct 
+> clock_event_device *evt)
+>                  arch_timer_reg_write(access, ARCH_TIMER_REG_CTRL, ctrl, evt);
+>                  return 1;
+>          }
+> +
+> +       printk("spurious timer tick\n");
+> +       dump_stack();
+> +
+>          return 0;
+>   }
+> 
+> 
+> On the 410c, it is sufficient to apply this patch and run switchtest - the 
+> issue occurs quite frequently - about every 15 seconds on my board.
+> 
+> Below is a stack trace that I get with the above patch:
+> 
+> [57283.366174] [<ffffffc000089c30>] dump_backtrace+0x0/0x12c
+> [57283.368974] [<ffffffc000089d6c>] show_stack+0x10/0x1c
+> [57283.373904] [<ffffffc0007f3c3c>] dump_stack+0x88/0xd8
+> [57283.378910] [<ffffffc0005dc4b0>] arch_timer_ack+0x110/0x12c
+> [57283.383917] [<ffffffc0005dc6c8>] arch_itimer_ack_virt+0x20/0x2c
+> [57283.389281] [<ffffffc000139ab8>] __ipipe_ack_hrtimer_irq+0x2c/0x60
+> [57283.395194] [<ffffffc000139504>] __ipipe_dispatch_irq+0x88/0x1e4
+> [57283.401414] [<ffffffc000082350>] __ipipe_grab_irq+0x78/0x90
+> [57283.484836] [<ffffffc0000825c0>] gic_handle_irq+0x38/0x7c
+> [57283.570645] [<ffffffc0000855a8>] el1_irq+0x68/0x94
+> [57283.578846] [<ffffffc000156aec>] program_htick_shot+0xdc/0xfc
+> [57283.583516] [<ffffffc000117e08>] clockevents_program_event+0x78/0x104
+> [57283.589336] [<ffffffc00011a018>] tick_program_event+0x28/0x34
+> [57283.595797] [<ffffffc00010b860>] __remove_hrtimer+0xf4/0x100
+> [57283.601567] [<ffffffc00010bea4>] __hrtimer_start_range_ns+0x1ec/0x344
+> [57283.607364] [<ffffffc00010c028>] hrtimer_start+0x14/0x20
+> [57283.613726] [<ffffffc00011a9a4>] __tick_nohz_idle_enter+0x328/0x3e8
+> [57283.619182] [<ffffffc00011ac4c>] tick_nohz_idle_enter+0x3c/0x7c
+> [57283.625212] [<ffffffc0000ea3c0>] cpu_startup_entry+0x44/0x290
+> [57283.631157] [<ffffffc0007ee21c>] rest_init+0xc0/0xd0
+> [57283.637080] [<ffffffc000af79b0>] start_kernel+0x3c4/0x3dc
+> 
+> Any help figuring out why this is happening would be much appreciated.
 
-Cheers,
-Jeff
+>From that stack trace, it would appear it happens when the timer
+next_event callback is called while the timer has not ticked yet,
+so, when reprogramming the timer outside the timer interrupt. I
+think you can try and see if the mainline kernel has the same
+problem in the same conditions, and if it does, bring the question
+to the linux arm kernel mailing list, where people from ARM will be
+able to answer you.
+
+-- 
+					    Gilles.
+https://click-hack.org
 
