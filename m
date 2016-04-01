@@ -1,10 +1,9 @@
-From: =?utf-8?Q?Rolf_W=C3=B6hrmann?= <info@temporubato.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <1DBBC459-57F9-4113-A843-DE6997A583EE@temporubato.com>
-Date: Fri, 1 Apr 2016 16:46:24 +0200
-Mime-Version: 1.0 (Mac OS X Mail 9.2 \(3112\))
-Subject: [Xenomai] Cobalt with RT_PREEMPT kernel usefull?
+MIME-Version: 1.0
+Date: Fri, 1 Apr 2016 18:17:38 +0200
+Message-ID: <CABprWp=4Ph8wRqtXnB7AocU0MkaYax+qC0UHRkaoFt8uhnk=vg@mail.gmail.com>
+From: Varun Deshpande <varun9485@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] Request for support of SIOCSHWTSTAMP
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,21 +14,27 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi
+Hello Folks,
 
-I=E2=80=99m running successfully Xenomai (3.0.x branch) on a BeagleBone =
-Black in Cobalt setup with ipipe 4.1.18 arm 3 patch built on a vanilla =
-4.1.18 kernel with debootstrapped Debian jessie rootfs.
-Also I got mercury with 4.1.20 RT_PREEMPT patched kernel running.
+As Xenomai-RTnet has combined, it is the solution for many hard realtime
+systems but the main feature which is missing is SIOCSHWTSTAMP.
+As i210 supports harware timestamping, it is crucial for performance
+analysis. But it is not supported by rt_igb driver as SIOCSHWTSTAMP returns
+"OPERATION NOT SUPPORTED"
 
-My (maybe stupid) question is if there=E2=80=99s any use in having the =
-cobalt kernel also RT_PREEMPT patched?
+I kindly request you guys to please incorporate this feature so that user
+can get hardware timestamp in cmsg header by enabling SIOCSHWTSTAMP option
+for rt_igb driver as many of the ptp, avb programs evaluation is done by
+hardware timestamp only.
 
-I haven=E2=80=99t tried so far since I haven=E2=80=99t found a RT kernel =
-patch for 4.1.18 and getting it together with the ipipe 4.1.18 patch =
-might be some nice work. So, if there=E2=80=99s no use, then why bother.
+Best Regards
 
-Great thanks for any feedback
-Rolf
-=20=
+Varun Deshpande
+Exchange Program Student,
+ESIEE Paris
++33 760 349 859
 
+Alma Mater
+Electronics & Communication Engineering,
+National Institute of Technology, Bhopal (INDIA)
++91 8965 080 507
