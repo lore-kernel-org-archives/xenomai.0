@@ -1,12 +1,10 @@
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5701203A.6030209@xenomai.org>
+Date: Sun, 3 Apr 2016 15:52:58 +0200
 MIME-Version: 1.0
-In-Reply-To: <20160402153812.GM22286@hermes.click-hack.org>
-References: <CAJ=MaHrS2fBum0_YXj9Cussd9zpqiFa5o425j-5voggnzkd++Q@mail.gmail.com>
- <20160402153812.GM22286@hermes.click-hack.org>
-Date: Sat, 2 Apr 2016 21:40:23 +0100
-Message-ID: <CAJ=MaHqM5rpstvdg1m2WBf14rMZB+zhrKh-MHbuQ5waM-LJD+Q@mail.gmail.com>
-From: Andrew Eliasz <andrew.eliasz@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Xenomai 3 on BBB or Raspi
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] [RELEASE] Xenomai 3.0.2
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,94 +13,166 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-Dear Gilles,
-Thank you ...
-I plan to follow the steps you have outlined carefully.
-My experience with Linux building and tinkering is that "the logic of the
-steps"  is normally quite clear.
-Its the little details and bugs / features that need patching and
-mismatches between combinations of versions
-that cause problems.  I am one of these people that likes to start a
-complex real time or embedded systems project by laying a foundation and
-starting off with something that is really well defined and is known to
-work.
-Once I have something that works then I can feel more confident in applying
-various extensions and modifications ...
-Once again many thanks for this information.
-br
-Andrew
 
-On 2 April 2016 at 16:38, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+http://xenomai.org/downloads/xenomai/stable/latest/
 
-> On Sat, Apr 02, 2016 at 04:03:20PM +0100, Andrew Eliasz wrote:
-> > Apologies for taking up your valuable time.
-> > I have been able to get Xenomai 2 running on a Beagle Bone Black ...
-> > I have not been able to find any detailed instructions for getting
-> Xenomai
-> > 3 to run on either a Beagle Bone Black or a Raspberry Pi.
-> > Has anyone, to your knowledge, been able to do this successfully please ?
-> > If not is there some other reference board for which Xenomai 3 build and
-> > install details are available so that I can carefully work through the
-> > steps involved and at least master those before attempting to get
-> Xenomai 3
-> > to run on either a RaspberryPi or a Beagle Bone Black.
-> > Many thanks
->
-> Hi,
->
-> this question starts being asked a lot, so I am going to give a
-> longer answer than usual, for future reference.
->
-> Installing Xenomai is largely a process which does not depend on
-> distributions or board details, and is documented here:
-> https://xenomai.org/installing-xenomai-3-x/
->
-> I am giving here a summary of the information found there, supposing
-> you want to compile Xenomai with the cobalt core.
->
-> You first need to prepare kernel sources by running a shell script
-> (named prepare-kernel.sh) which applies an I-pipe patch (either
-> taken from Xenomai sources, or downloaded following instructions
-> here https://xenomai.org/getting-the-i-pipe-patch/, downloading the
-> I-pipe patch ensures that you can have a more recent version than
-> the one released with Xenomai), and sets up some symbolic links in
-> the kernel sources to compile Xenomai kernel-space support while
-> compiling the kernel.
->
-> For the specific case of boards not using mainline kernels, you may
-> have to apply some pre- and post- patches around the I-pipe patch,
-> these patches are found in Xenomai sources.
-> Alternatively, in the case of the Rpi, a branch may be found in the
-> I-pipe git repository, which you may use as base for running the
-> prepare-kernel.sh script: the script does not try and apply an
-> I-pipe patch if the sources are already patched.
->
-> Once you have done that, you have to configure the kernel. This is
-> the hard part, as the configuration is dependent on your board, but
-> you must also pay attention to not enable some options (listed
-> here:
-> https://xenomai.org//troubleshooting-a-dual-kernel-configuration/#kconf)
->
-> Finally, you can cross-compile your kernel "as usual". If you are
-> not comfortable with compiling kernels, you may find some
-> instructions specific to your board somewhere (but again, this is
-> largely independent of any board or distribution details), the fact
-> that the kernel is patched with Xenomai does not change anything to
-> the compilation and installation process.
->
-> The second step is to cross-compile Xenomai user-space support.
-> Xenomai uses the autotools, so is compiled by running configure,
-> make and make install (with some arguments when cross-compiling), in
-> any case, compiling packages using the autotools is also largely
-> documented on the web.
->
-> Regards.
->
-> --
->                                             Gilles.
-> https://click-hack.org
->
+Upgrade from 3.0.1 or earlier is recommended. Short log follows:
+
+Gilles Chanteperdrix (34):
+      smokey/tsc: remove redundant line breaks
+      testsuite/smokey: tsc: shorten default duration
+      drivers/rtnet: hide configuration options if globally disabled
+      drivers/rtnet: forbid removing the rtnet module
+      drivers/rtnet: fix loopback
+      drivers/rtnet: refuse to uselessly queue packets
+      drivers/rtnet: fix SIOCGIFNAME ioctl
+      rtnet/ioctl: allow checking link state
+      drivers/rtnet: upgrade igb driver
+      cobalt/rtnet: tdma: remove deprecated construct
+      cobalt/rtnet: e1000e: fix compilation warnings
+      cobalt/wrappers: add wrappers for igb driver
+      cobalt/rtnet: igb: fix compilation issues
+      cobalt/rtnet: smc91111: fix compilation warnings
+      cobalt/wrappers: reverse wrappers order (latest kernel release first)
+      cobalt/wrappers: move get_current_uid() to ancillaries.h
+      testsuite/switchtest: fix mode switches
+      lib/cobalt: mutex: avoid compiler error
+      cobalt/fpu: stall head domain to handle fpu fault
+      cobalt/arm: remove redundant change of irq mask
+      cobalt/x86: remove redundant change of irq mask
+      cobalt/arm: remove unused variable
+      cobalt/timer: avoid early tick in case of overrun
+      rtnet/rtcfg: fix for Linux 4.1
+      cobalt/rtnet: IGB driver requires I2C support
+      testsuite/xeno-test: add -r option
+      cobalt/x86: FPU fixes for Linux 4.1
+      cobalt/corectl: allow retrieving RTnet configuration
+      smokey: align Makefile on next branch
+      testsuite/smokey: add RTnet testsuite
+      testsuite/smokey: add RTnet raw packets test
+      smokey/net: add missing file to distributed tarball
+      drivers/net: move corectl to net drivers directory
+      cobalt/config: disallow page migration
+
+Jan Kiszka (8):
+      lib/cobalt: Mark __cobalt_print_bufsz weak
+      cobalt/intr: Fix unhandled interrupt detection
+      cobalt/x86: Fix strncpy_from_user_nocheck for SMAP-enabled systems
+      cobalt/kernel: Fix invalidation of cond shadow
+      cobalt/posix/timer: Allow extension to override timer_gettimeout value
+      cobalt/posix/timer: Remove redundant test for stopped timers
+      cobalt/posix/timer: Return interval value also for stopped timers
+      cobalt/timer: Make xntimer_get_overruns robust against stopped timers
+
+Philippe Gerum (104):
+      cobalt/kernel: fixup for v3.19+ (user_msghdr)
+      cobalt/kernel: fixup for v3.19+ (trace_seq)
+      lib/cobalt: add details about failing init step
+      cobalt/posix/thread: fix failure code upon missing u_window
+      smokey/sigdebug: fix probe for watchdog
+      cobalt/posix/process: fix mayday mapping denial on NOMMU
+      smokey/sigdebug: use mapping also compatible with NOMMU
+      smokey: provide trace helper with variadic arglist
+      include/boilerplate, lib: do not pull ancillaries.h indirectly
+      cobalt/wrappers: fix backport prefix
+      cobalt/kernel: fixup for v3.19+ (user_msghdr)
+      cobalt/kernel: fixup for v4.1+ (TRACE_SYSTEM)
+      cobalt/kernel: convert to current cpumask operators
+      cobalt/assert: introduce SMP-specific WARN/BUG assertions
+      cobalt/clock: introduce CPU affinity for clock event sources
+      cobalt: select pipeline API revision 2 explicitly
+      cobalt/corectl: move implementation to separate file
+      cobalt/corectl: chain config requests to external subsystems
+      copperplate/threadobj: fixup run state upon threadobj_wait_period()
+      copperplate/threadobj: mercury: fix stat call (CPU number)
+      copperplate/registry: handle bad stat reading in system/threads
+      drivers/switchtest: stop timers before releasing task data
+      cobalt/intr: remove unused label
+      Revert "cobalt/intr: remove unused label"
+      boilerplate/libc: fix detection of mutex protocols
+      boilerplate/scope: add helpers for nullable reference
+      alchemy/heap: handle nullable references properly
+      psos/rn: handle nullable references properly
+      alchemy/queue: care for messages crossing address spaces
+      alchemy/queue: disable buffer-to-buffer transfer in broadcast mode
+      lib/boilerplate: add --trace to the base option set
+      lib/cobalt: add init trace points
+      smokey/net: provide ETH_P_802_EX1 for outdated libc
+      drivers/autotune: track gravit limit in progress messages
+      drivers/ipc/xddp: fixup allocation rounding for tiny private pool
+sizes
+      cobalt/clock: display external clock id. in procfs
+      cobalt/sched: fix timeout display in thread-related procfs information
+      cobalt/clock: use proper reference clock for periodic timings
+      cobalt/clock: add helper to change resolution
+      cobalt/timer: fix handling of late arrival on first periodic delivery
+      copperplate/traceobj: not all return values are status codes
+      copperplate/threadobj: fix status returned by threadobj_sleep()
+      copperplate/syncobj: fix race in aborted wait_grant/drain operations
+      cobalt/registry: return -EAGAIN upon lack of registry slot
+      doc/rtdm: work around Doxygen weirdness
+      doc: prebuild
+      testsuite/smokey: mutex: fix centralized init
+      lib/smokey: add barrier support helpers
+      lib/cobalt/thread: fix unwanted relax spot in pthread_create()
+      debian/doc: switch mailing list URL to https
+      lib/smokey: add common assertion helpers
+      lib/smokey: add --exclude switch for dropping tests from the run list
+      boilerplate: more helpers to retrieve various CPU information
+      lib/smokey: add timed wait on barrier
+      drivers/ipc: bufp: fix wrong TX timeout
+      drivers/testing: rtdm: add actor task device
+      testsuite/smokey: add test checking Cobalt's cpu affinity control
+      testsuite/smokey: cpu-affinity: silence unused_result warning
+      cobalt/arm: upgrade I-pipe support
+      cobalt/x86: upgrade I-pipe support
+      cobalt/powerpc: upgrade I-pipe support
+      cobalt/blackfin: upgrade I-pipe support
+      cobalt/init: get main heap memory from vmalloc()
+      cobalt/posix/mqueue: get buffer memory from vmalloc()
+      cobalt/posix/signal: get buffer memory from vmalloc()
+      drivers/ipc: bufp: get buffer memory from vmalloc()
+      drivers/ipc: iddp: get buffer memory from vmalloc()
+      drivers/ipc: xddp: get buffer memory from vmalloc()
+      lib/smokey: init: fix regression introduced by #9489274
+      cobalt/heap: export *vmalloc helpers
+      cobalt/thread: do not demote kthreads when cancelling
+      cobalt/thread: force secondary mode for joining threads
+      cobalt/thread: fix SMP race with xnthread_join()
+      cobalt/timer: allow binding core timers to passive CPUs
+      cobalt/thread: wait for RCU grace period after killall
+      cobalt/posix/corectl: clarify argument types for mixed ABI support
+      utils/corectl: fix handling of argument to --stop (grace period)
+      cobalt/kernel: use standard accessor to global pid
+      cobalt/powerpc: upgrade I-pipe support
+      config: bump version code
+      doc: prebuild
+      cobalt/wrappers: add wrapper for reinit_completion()
+      cobalt/init: get system heap from the normal zone
+      cobalt/umm: get UMM heaps from the normal zone
+      cobalt/kernel: raise default sysheap size to 512 Kb
+      cobalt/arm: upgrade I-pipe support
+      cobalt/powerpc: upgrade I-pipe support
+      cobalt/blackfin: upgrade I-pipe support
+      cobalt/x86: upgrade I-pipe support
+      cobalt/thread: fix join request handling from non-Xenomai context
+      lib/cobalt: clear u_window when releasing TSD
+      lib/cobalt: simplify checks for secondary mode
+      include/boilerplate: add shorthand for deprecated calls
+      utils/autotune: protect against SIGHUP in background mode
+      cobalt/arm: upgrade I-pipe support
+      cobalt/blackfin: upgrade I-pipe support
+      cobalt/powerpc: upgrade I-pipe support
+      cobalt/x86: upgrade I-pipe support
+      cobalt/arm: upgrade I-pipe support
+      cobalt/blackfin: upgrade I-pipe support
+      cobalt/powerpc: upgrade I-pipe support
+      cobalt/x86: upgrade I-pipe support
+      cobalt/config: relax requirement on CONFIG_MIGRATION
+      cobalt/arm: upgrade I-pipe support
+
+-- 
+Philippe.
+
