@@ -1,12 +1,11 @@
-Date: Sun, 10 Apr 2016 16:47:30 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160410144730.GI9538@hermes.click-hack.org>
-References: <5708388C.6020004@mperpetuo.com>
+From: Thierry Bultel <thierry.bultel@basystemes.fr>
+Message-ID: <570B7253.1000904@basystemes.fr>
+Date: Mon, 11 Apr 2016 11:45:55 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5708388C.6020004@mperpetuo.com>
-Subject: Re: [Xenomai] arm64: kernel entry/exit tracing status
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Issue while porting ipipe to kernel > 4.5 (clockevents
+	API change)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,23 +14,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Dmitriy Cherkasov <dmitriy@mperpetuo.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org, Jean-Baptiste Tredez <jean-baptiste.tredez@basystemes.fr>
 
-On Fri, Apr 08, 2016 at 04:02:36PM -0700, Dmitriy Cherkasov wrote:
-> Hello folks,
-> 
-> What is the status of kernel entry/exit tracing on arm64? I found two posts 
-> on the mailing list with patches to enable this, but the titles seem to 
-> imply that the patchset as posted is incomplete (Patch 1/2, patch 1/3).
-> 
-> Can someone please clarify?
+Hi,
+while porting ipipe to 4.5, I am facing the following issue:
 
-I believe the first patch has been merged, and last time I used the
-second, I suspected it to cause random registers corruption, so, I
-abandoned it. If you feel like fixing it, then go ahead.
+clockchips.h has changed, and the set_mode function pointer has been 
+replaced by
 
--- 
-					    Gilles.
-https://click-hack.org
+     int            (*set_state_periodic)(struct clock_event_device *);
+     int            (*set_state_oneshot)(struct clock_event_device *);
+     int            (*set_state_oneshot_stopped)(struct 
+clock_event_device *);
+     int            (*set_state_shutdown)(struct clock_event_device *);
+
+Moreover, CLOCK_EVT_MODE_XXX have been renamed to :
+
+enum clock_event_state {
+     CLOCK_EVT_STATE_DETACHED,
+     CLOCK_EVT_STATE_SHUTDOWN,
+     CLOCK_EVT_STATE_PERIODIC,
+     CLOCK_EVT_STATE_ONESHOT,
+     CLOCK_EVT_STATE_ONESHOT_STOPPED,
+};
+
+The impact therefore goes further than ipipe , since xenomai uses a 
+single pointer
+for performing emulation.
+
+I am just wondering what is the best way to deal with this, without 
+impacting to much code
+Is it best to add a compatibility wrapper (moreover, the set_state_xxx 
+functions are only used in clockevents.c), and some extra #defines
+or to spread the changes up to xenomai code ?
+
+Thanks,
+Thierry
 
