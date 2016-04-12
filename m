@@ -1,13 +1,13 @@
+References: <570B7253.1000904@basystemes.fr> <570BBD4C.6040409@xenomai.org>
+From: Thierry Bultel <thierry.bultel@basystemes.fr>
+Message-ID: <570CF2E2.3000904@basystemes.fr>
+Date: Tue, 12 Apr 2016 15:06:42 +0200
 MIME-Version: 1.0
-In-Reply-To: <20160412105712.GG8694@hermes.click-hack.org>
-References: <CABprWpketiup8jSBhmbhO3vJ2PzOtj0uuOG8J6_eFkMJiUUeDg@mail.gmail.com>
- <20160412105712.GG8694@hermes.click-hack.org>
-Date: Tue, 12 Apr 2016 13:30:59 +0200
-Message-ID: <CABprWp=UKQD6u3+r4872OtSJDZ5FLkFr=q7SA+enMVu2J6OG1Q@mail.gmail.com>
-From: Varun Deshpande <varun9485@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <570BBD4C.6040409@xenomai.org>
+Content-Type: text/plain; charset="windows-1252"; format="flowed"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] IPIPE_LOCK Problem
+Subject: Re: [Xenomai] Issue while porting ipipe to kernel > 4.5
+ (clockevents API change)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,86 +16,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org, Jean-Baptiste Tredez <jean-baptiste.tredez@basystemes.fr>
 
-Hello,
 
-I have examined the options, only point 1,2 and
-11) Device Drivers  =E2=86=92  Input device support  =E2=86=92  Miscellaneo=
-us devices=E2=86=92   PC
-Speaker support (Press N)
-12) Device Drivers  =E2=86=92  Staging Drivers  (Press N)
 
-Are not required by Xenomai, I tried to compile without touching them but
-after some the I get the same output.
-Other options are changed otherwise on the main screen there is a warning
-regarding the same.
-
-Also I dont have any problem with kernel 3.x but only when the kernel is
-4.x, its a problem. I am not sure what I am doing wrong exactly, any
-guidance is highly appreciated.
-
-Best Regards
-Varun Deshpande
-
-On Tue, Apr 12, 2016 at 12:57 PM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
-
-> On Tue, Apr 12, 2016 at 11:55:15AM +0200, Varun Deshpande wrote:
-> > Hello all,
-> >
-> > I am trying to compile Xenomai 3.0.2 with Kernel 4.1.18. I am running a
-> > 32bit Ubuntu(14.04.04). I configured the kernel and changed the followi=
-ng
-> > options
-> >
-> > 1) Enable loadable module support  =E2=86=92   Forced module loading (P=
-ress Y)
-> > 2) Enable loadable module support  =E2=86=92   Forced module unloading =
-(Press Y)
-> > 3) Xenomai/cobalt   =E2=86=92  Drivers  =E2=86=92   RTnet  =E2=86=92   =
-Protocol Stack  =E2=86=92  RTmac
-> > Layer  =E2=86=92   NoMAC discipline for RTmac (Press M)
-> > 4) Xenomai/cobalt   =E2=86=92  Drivers  =E2=86=92   RTnet  =E2=86=92   =
-Drivers  =E2=86=92  (For All
-> > requried Drivers Press M){Exclude Others by pressing N)
-> > 5) Xenomai/cobalt   =E2=86=92  Drivers  =E2=86=92   RTnet  =E2=86=92  A=
-dd=C2=ADOns  =E2=86=92 Real=C2=ADTime
-> > Capturing Support (Press M)
-> > 6) Power management and ACPI options  =E2=86=92  ACPI (Advanced Configu=
-ration &
-> > Power Interface)Support  =E2=86=92  Processor(Press N)
-> > 7) Power management and ACPI options  =E2=86=92  APM (Advanced Power Ma=
-nagement)
-> > BIOS support (Press N)
-> > 8) Power management and ACPI options  =E2=86=92   CPU Frequency scaling=
-   =E2=86=92CPU
-> > Frequency scaling (Press N)
-> > 9) Power management and ACPI options  =E2=86=92  CPU Idle  =E2=86=92  C=
-PU idle PM support
-> > (Press N)
-> > 10) Networking support  =E2=86=92  Networking Options  =E2=86=92  Times=
-tamping in
-> > PHYdevices (Press Y)
-> > 11) Device Drivers  =E2=86=92  Input device support  =E2=86=92  Miscell=
-aneous devices=E2=86=92
->  PC
-> > Speaker support (Press N)
-> > 12) Device Drivers  =E2=86=92  Staging Drivers  (Press N)
-> > 13) Processor type and features -->  Continuous Memory Allocator (Press
-> N)
-> > 14) Processor type and features --> Transparent Huge Page Support (Pres=
-s
-> N)
-> > 15) Processor type and features --> Allow for memory compaction (Press =
-N)
-> > 16) Processor type and features --> Page Migration (Press N)
+Le 11/04/2016 17:05, Philippe Gerum a =E9crit :
+> On 04/11/2016 11:45 AM, Thierry Bultel wrote:
+>> Hi,
+>> while porting ipipe to 4.5, I am facing the following issue:
+>>
+>> clockchips.h has changed, and the set_mode function pointer has been
+>> replaced by
+>>
+>>      int            (*set_state_periodic)(struct clock_event_device *);
+>>      int            (*set_state_oneshot)(struct clock_event_device *);
+>>      int            (*set_state_oneshot_stopped)(struct
+>> clock_event_device *);
+>>      int            (*set_state_shutdown)(struct clock_event_device *);
+>>
+>> Moreover, CLOCK_EVT_MODE_XXX have been renamed to :
+>>
+>> enum clock_event_state {
+>>      CLOCK_EVT_STATE_DETACHED,
+>>      CLOCK_EVT_STATE_SHUTDOWN,
+>>      CLOCK_EVT_STATE_PERIODIC,
+>>      CLOCK_EVT_STATE_ONESHOT,
+>>      CLOCK_EVT_STATE_ONESHOT_STOPPED,
+>> };
+>>
+>> The impact therefore goes further than ipipe , since xenomai uses a
+>> single pointer
+>> for performing emulation.
+>>
+>> I am just wondering what is the best way to deal with this, without
+>> impacting to much code
+>> Is it best to add a compatibility wrapper (moreover, the set_state_xxx
+>> functions are only used in clockevents.c), and some extra #defines
+>> or to spread the changes up to xenomai code ?
+>>
+> I would confine the changes to the pipeline, I don't see any reason for
+> spreading those changes to Xenomai only for supporting the
+> ONESHOT_STOPPED mode, which might be usable as a hint, but may be
+> ignored by Xenomai as well, especially by legacy Xenomai 2.x releases.
 >
-> The missing key information here is the resulting kernel
-> configuration. You likely have some option enabled that none of our
-> build or run tests enables.
+> You could redirect the new state handlers to a set of internal wrapper
+> routines in the pipeline, which would translate the calls to the
+> Xenomai's current emulation handlers.
 >
-> --
->                                             Gilles.
-> https://click-hack.org
->
+
+Thanks Philippe,
+
+At this step, I have something that compiles without CONFIG_XENOMAI (there =
+is a little work to do in xenomai,
+since some other kernel APIs changed too, like cpu masks, and struct msghdr=
+ ... )
+
+Before going to that, I would like to get rid of this:
+
+The kernel boots fine with CONFIG_IPIPE disabled.
+
+With CONFIG_IPIPE and !CONFIG_SMP, the kernel boots fine up to user land.
+With CONFIG_IPIPE and  CONFIG_SMP, the kernel hangs at random positions dur=
+ing initcalls.
+I had to enable CONFIG_EARLY_PRINTK to notice it, because nothing came on t=
+he console else.
+
+"printk-bisecting" makes the hang position change, making impossible to loc=
+alize the hang position this way.
+
+I have CONFIG_DEBUG_SPINLOCK enabled but that does not help much. I payed m=
+uch attention to spinlock.h without noticing
+anything wrong.
+
+What can I do to investigate this ?
+
+I forgot to say that the target CPU is an IMX6Q
+
+Thanks
+Thierry
+
+
