@@ -1,9 +1,11 @@
 MIME-Version: 1.0
-Date: Wed, 13 Apr 2016 12:05:08 +0530
-Message-ID: <CABUerAHGbUXGDMmDgmKJ9npexevU01i1-fbVz0iDsqx67A_4GQ@mail.gmail.com>
-From: ravi kanth <xenomai412@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] patching
+Date: Wed, 13 Apr 2016 14:04:16 -0400
+Message-ID: <CAHoW4hE=sh9dL_+LpCmO8qKhzfnMYQbu9Yx-2jf+6Cu4gDFUrg@mail.gmail.com>
+From: Charles Kiorpes <ckiorpes@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] i-pipe patched 4.1.18 fails to boot on BeagleBoard-x15
+	(AM5728 processor)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,4 +16,28 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-I am facing problum in patching of xenomai on 14.04 help me in this one.
+SGVsbG8sCgpJIGhhdmUgYmVlbiB0cnlpbmcgdG8gYnJpbmcgdXAgYSBSZXYgQTIgQmVhZ2xlQm9h
+cmQteDE1IHdpdGggaS1waXBlLCBpbgpvcmRlciB0byB0ZXN0IFhlbm9tYWkgY28ta2VybmVsIGZ1
+bmN0aW9uYWxpdHkgb24gdGhpcyBib2FyZC4KCkkgaGF2ZSB2ZXJpZmllZCB0aGF0IHRoZSBrZXJu
+ZWwgY29uZmlndXJhdGlvbiBzZXR0aW5ncyB0aGF0IEknbSB1c2luZwpjcmVhdGUgYSBib290YWJs
+ZSBtYWlubGluZSA0LjEuMTgga2VybmVsLgoKT25jZSBJIHBhdGNoIHRoZSA0LjEuMTgga2VybmVs
+IHdpdGggaXBpcGUtY29yZS00LjEuMTgtYXJtLTQucGF0Y2gsIGFuZCBtYWtlCnRoZSBzYW1lIGNv
+bmZpZ3VyYXRpb24gY2hhbmdlcywgSSBhbSB1bmFibGUgdG8gYm9vdCB0aGUgcmVzdWx0aW5nIGtl
+cm5lbC4KCkkgaGF2ZSBhdHRhY2hlZCBteSBrZXJuZWwgY29uZmlnIGFuZCB0aGUga2VybmVsIG91
+dHB1dCBmcm9tIGEgZmFpbGVkIGJvb3QuCgpUaGUgZmlyc3QgbWFqb3IgZXJyb3IgKGFzaWRlIGZy
+b20gc29tZSBsb2NrIGRlYnVnIHByaW50b3V0cykgb2NjdXJzIGF0CjIuMTQxMzQwLCB3aGVuIHRo
+ZSBrZXJuZWwgYXR0ZW1wdHMgdG8gZGVyZWZlcmVuY2UgYSBOVUxMIHBvaW50ZXIuCkl0IGFwcGVh
+cnMgdGhhdCB0aGUgcHJvYmxlbSBpcyByZWxhdGVkIHRvIHRoZSBQQUxNQVMgZHJpdmVyLCBidXQg
+SSBhbSBub3QKd2VsbC12ZXJzZWQgaW4ga2VybmVsIGRldmVsb3BtZW50IGFuZCBkb24ndCBrbm93
+IGhvdyB0byBwcm9jZWVkLgoKV2hhdCBzdGVwcyBjYW4gSSB0YWtlIHRvIGJldHRlciBkZWJ1ZyBh
+bmQgZXZlbnR1YWxseSBjb3JyZWN0IHRoZSBwcm9ibGVtPwoKVGhhbmsgeW91LApDaGFybGVzIEtp
+b3JwZXMKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQg
+YXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogaXBpcGUtNC4xLjE4X0ZhaWxlZF9Cb290
+X0xvZwpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTogNDY4NTcgYnl0ZXMKRGVz
+Yzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9t
+YWkvYXR0YWNobWVudHMvMjAxNjA0MTMvNjQyZDU4NzIvYXR0YWNobWVudC5vYmo+Ci0tLS0tLS0t
+LS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2Fz
+IHNjcnViYmVkLi4uCk5hbWU6IGNvbmZpZy00LjEuMTgtaXBpcGUtMDAwMDEtZzJkYjM5NjYKVHlw
+ZTogYXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtClNpemU6IDk0MTQ1IGJ5dGVzCkRlc2M6IG5vdCBh
+dmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFj
+aG1lbnRzLzIwMTYwNDEzLzY0MmQ1ODcyL2F0dGFjaG1lbnQtMDAwMS5vYmo+Cg==
