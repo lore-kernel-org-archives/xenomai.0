@@ -1,14 +1,11 @@
-Sender: Michael Welling <mwelling79@gmail.com>
-Date: Mon, 22 Feb 2016 15:33:26 -0600
-From: Michael Welling <mwelling@ieee.org>
-Message-ID: <20160222213326.GA14715@deathstar>
-References: <1456176343-13522-1-git-send-email-mwelling@ieee.org>
- <20160222213140.GI7398@hermes.click-hack.org>
+From: =?UTF-8?B?0JDRgNGC0ZHQvCDQm9C+0LHQsNGH?= <smart9113@mail.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20160222213140.GI7398@hermes.click-hack.org>
-Subject: Re: [Xenomai] [PATCH] demo: cross-link: Properly handle ioctl error
+Date: Thu, 14 Apr 2016 18:14:58 +0300
+Message-ID: <1460646898.874575405@f99.i.mail.ru>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] =?utf-8?q?RTNet_installation_error?=
+Reply-To: =?UTF-8?B?0JDRgNGC0ZHQvCDQm9C+0LHQsNGH?= <smart9113@mail.ru>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,19 +14,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, Feb 22, 2016 at 10:31:40PM +0100, Gilles Chanteperdrix wrote:
-> On Mon, Feb 22, 2016 at 03:25:43PM -0600, Michael Welling wrote:
-> > Update cross-link demo to properly report ioctl errors.
-> 
-> This fixes only one spot. Are there no other spots with the same issue?
-
-Oooops. Here come v2.
-
-> 
-> -- 
-> 					    Gilles.
-> https://click-hack.org
-
+IEhpISBJdCdzIHRoZSBmaXJzdCB0aW1lIEkgdHJ5IHRvIGluc3RhbGwgUlROZXQgZm9yIFhlbm9t
+YWktcGF0Y2hlZCBrZXJuZWwuIEkgaW5zdGFsbGVkIE9TIHdpdGggWGVub21haSBmcm9tIFJUWEkg
+TGl2ZUNELgo+PiAjIHVuYW1lIC1hCj4+IExpbnV4IEEtTDIgMy44LjEzLXhlbm9tYWktMi42LjQt
+YXVmcyAjMSBTTVAgV2VkIEFwciAyOSAxNzoxOToyMSBFRFQgMjAxNSBpNjg2IGk2ODYgaTY4NiBH
+TlUvTGludXgKCkFmdGVyICJtYWtlIG1lbnVjb25maWciIGluIHJ0bmV0IHNvdXJjZSBhbmQgYXBw
+bHlpbmcgcGFyYW1ldGVycyBuZXh0IGVycm9yIGFwcGVhcmVkOgoiY2hlY2tpbmcgZm9yIFJULWV4
+dGVuc2lvbi4uLiBjb25maWd1cmU6IGVycm9yOiAqKiogUlQtZXh0ZW5kZWQga2VybmVsIG5vdCBm
+b3VuZCBpbiAvbGliL21vZHVsZXMvMy44LjEzLXhlbm9tYWktMi42LjQtYXVmcy9zb3VyY2UiCgpX
+aGF0IG1heSBjYXVzZSB0aGlzIGVycm9yPwoKVGhhbmtzIGluIGFkdmFuY2UhCkFydHlvbQoK
