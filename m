@@ -1,9 +1,9 @@
 MIME-Version: 1.0
-In-Reply-To: <570E8F94.1000600@xenomai.org>
+In-Reply-To: <20160413185757.GT11630@csclub.uwaterloo.ca>
 References: <CAHoW4hE=sh9dL_+LpCmO8qKhzfnMYQbu9Yx-2jf+6Cu4gDFUrg@mail.gmail.com>
- <570E8F94.1000600@xenomai.org>
-Date: Thu, 14 Apr 2016 15:54:12 -0400
-Message-ID: <CAHoW4hEfGA3K5URssQ8cz6BiChusT+Ee3+60DGcDN3htLK6L0w@mail.gmail.com>
+ <20160413185757.GT11630@csclub.uwaterloo.ca>
+Date: Thu, 14 Apr 2016 16:09:28 -0400
+Message-ID: <CAHoW4hHtHAuqpqeCZkb3iebgqjzLR09qQHGE-zQi-3p5qN1yzg@mail.gmail.com>
 From: Charles Kiorpes <ckiorpes@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Subject: Re: [Xenomai] i-pipe patched 4.1.18 fails to boot on
@@ -16,39 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
 Cc: xenomai@xenomai.org
 
-Hello Philippe,
-Thanks for the suggestion to disable PROVE_LOCKING.  Disabling this and a
-few other of the kernel trace/debug options has cleared up my output a bit.
+I am using am57xx-beagle-x15.dts/dtb, as included in the mainline 4.1.18
+source (not the ti-linux-kernel, just linux-stable).
 
-I used addr2line on the vmlinux image, it pointed me to
-kernel/ipipe/core.c:1304.  This is in the midst of __ipipe_dispatch_irq().
-The line directly before involves the use of a function pointer, but that
-pointer is null checked before use.
+The board I am using reports itself to u-boot as the TI AM572x GP EVM,
+which I understood to simply be a change in the eeprom, and should be
+compatible with the beagle-x15 device tree (EVM device tree merely adds the
+expansion board functionality, which I don't need).
 
-if (ipd->irqs[irq].ackfn)
-    ipd->irqs[irq].ackfn(irq, desc);
+I noticed the discrepancy with the naming as well.  I did see the correct
+printout for "Machine model: TI AM5728 BeagleBoard-X15", but all of the
+failure printouts show "Hardware name: Generic DRA74X (Flattened Device
+Tree)".
 
-I have checked the disassembly; the null check is present, yet somehow the
-PC is being set to 0.
+I hope that the case is not that an entire interrupt controller's code
+needs to be made ipipe-ready, because that is pretty far out of my league.
+However, I will look further into the tps659038.
 
-I have tried removing the palmas device from the kernel configuration, and
-I still get a null dereference at the same location in
-__ipipe_dispatch_irq().
+I removed the palmas driver in stages (piece by piece across several kernel
+builds and test boots), and still wound up with a null dereference, even
+when the driver was completely removed from the kernel config.
 
-I will continue to try to discern what is going on here, particularly
-concerning the values that are passed into __ipipe_dispatch_irq()
+For your successful Xenomai 2.6.4 run on the 3.14 kernel, were you using
+the ti-linux-kernel, or mainline?  I would be perfectly content to test on
+Xenomai 2.6.4 for the short term, so it would be great to just get a kernel
+running, even with limited peripheral support.
 
-If you see any other things I should check out, please let me know.
-
-Thanks,
+Thanks for your help,
 Charles
 
-On Wed, Apr 13, 2016 at 2:27 PM, Philippe Gerum <rpm@xenomai.org> wrote:
 
-> On 04/13/2016 08:04 PM, Charles Kiorpes wrote:
+
+On Wed, Apr 13, 2016 at 2:57 PM, Lennart Sorensen <
+lsorense@csclub.uwaterloo.ca> wrote:
+
+> On Wed, Apr 13, 2016 at 02:04:16PM -0400, Charles Kiorpes wrote:
 > > Hello,
 > >
 > > I have been trying to bring up a Rev A2 BeagleBoard-x15 with i-pipe, in
@@ -65,27 +70,34 @@ On Wed, Apr 13, 2016 at 2:27 PM, Philippe Gerum <rpm@xenomai.org> wrote:
 > boot.
 > >
 > > The first major error (aside from some lock debug printouts) occurs at
->
-> Those printouts are due to CONFIG_PROVE_LOCKING. The virtual interrupt
-> state the pipeline introduces confuses that machinery, so you may want
-> to disable this option until the pipeline is fixed regarding that
-> particular issue.
->
 > > 2.141340, when the kernel attempts to dereference a NULL pointer.
 > > It appears that the problem is related to the PALMAS driver, but I am not
 > > well-versed in kernel development and don't know how to proceed.
 > >
 > > What steps can I take to better debug and eventually correct the problem?
-> >
 >
-> A NULL handler is called, weird. You can use addr2line on the vmlinux
-> image of your kernel to match the faulty call site at 0xc00d00cc. Or
-> dump that image as an annotated assembly file
-> (arm-linux-gnueabihf-objdump -dl ...), looking for the call site in the
-> output.
+> I have a suspicion that you have the wrong dtb file.
 >
-> You will need CONFIG_DEBUG_INFO enabled.
+> Yours says:
+>
+> Hardware name: Generic DRA74X (Flattened Device Tree)
+>
+> I would have expected something like:
+>
+> Hardware name: TI AM5728 BeagleBoard-X15
+>
+> Which kernel tree are you basing this on?
+>
+> Certainly the AM5728 is known to work with ipipe, but so far with 3.14.x
+> kernel with xenomai 2.6.4.  I have not tried with xenomai 3.x yet or
+> the 4.1 kernel.  The palmas driver has no IRQ on our board though since
+> we have no power button or the other stuff that it has on the X15.
+>
+> The X15 uses a tps659038 as an interrupt controller.  Maybe that code
+> isn't updated for ipipe use.  Our board has no such thing.  It may be
+> that your problem is that palmas requests and IRQ from the tps659038 and
+> if it's code isn't ipipe ready it could blow up when the irq is requested.
 >
 > --
-> Philippe.
+> Len Sorensen
 >
