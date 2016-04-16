@@ -1,8 +1,17 @@
-Sender: Michael Welling <mwelling79@gmail.com>
-From: Michael Welling <mwelling@ieee.org>
-Date: Mon, 22 Feb 2016 15:41:27 -0600
-Message-Id: <1456177287-15501-1-git-send-email-mwelling@ieee.org>
-Subject: [Xenomai] [PATCH v2] demo: cross-link: Properly handle ioctl error
+References: <CAP-AUyhPPqU+AzwG8hyVU2nb42_fukCntEFBh9buCjgOk5FWJg@mail.gmail.com>
+ <CAP-AUyjnNdUkA5_uHbm_yQvrNR2eF+k9uN-S0CeXBcN601jqKw@mail.gmail.com>
+ <CAP-AUygsMMF8gufbaZ==w=sS=UV9EdiQ9hNJzOpUMYt0dsYpCQ@mail.gmail.com>
+ <CAP-AUygg+9PdVRi9G1y+YQkc31kwqmjZoW5T4cVmZFHt5Fa5RA@mail.gmail.com>
+ <CAP-AUyhBLBo8W6E6sN0urviiHsuZT1aTMXX3MFOy9Vt84y=K_g@mail.gmail.com>
+ <CAP-AUyhQvG3PDSzi54kBpn0i2HpULKaSjj7MWxP3deNSjOU73w@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5711D941.30307@xenomai.org>
+Date: Sat, 16 Apr 2016 08:18:41 +0200
+MIME-Version: 1.0
+In-Reply-To: <CAP-AUyhQvG3PDSzi54kBpn0i2HpULKaSjj7MWxP3deNSjOU73w@mail.gmail.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Kernel ipipe patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,54 +20,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
+To: Brandon Enochs <enochs.brandon@gmail.com>, xenomai@xenomai.org
 
-Update cross-link demo to properly report ioctl errors.
+On 04/16/2016 12:28 AM, Brandon Enochs wrote:
+> Can anyone tell me which distributions are comparible with Xenomai?  It
+> seems that the kernel ipipe patch doesn't support any of the LTS
+> distributions like RHEL (3.10) or Ubuntu (3.14).
 
-Signed-off-by: Michael Welling <mwelling@ieee.org>
----
-v2: Update all instances that incorrectly handle ioctl errors.
+Xenomai can run on any distribution provided the interrupt pipeline is 
+available from the kernel. The I-pipe development tracks the mainline 
+kernel only, for which we do have support for 3.10 and 3.14 releases.
 
- demo/alchemy/cobalt/cross-link.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ From time to time we may track vendor kernels temporarily to provide 
+early support for some embedded hardware (ARM SBC/SOM usually), but only 
+for a limited time until the vendor code for that target gets merged 
+into mainline eventually. We never maintain distro-specific development 
+trees though.
 
-diff --git a/demo/alchemy/cobalt/cross-link.c b/demo/alchemy/cobalt/cross-link.c
-index 8c0f53f..fa3cc91 100644
---- a/demo/alchemy/cobalt/cross-link.c
-+++ b/demo/alchemy/cobalt/cross-link.c
-@@ -23,6 +23,7 @@
- #include <stdio.h>
- #include <signal.h>
- #include <unistd.h>
-+#include <errno.h>
- #include <sys/mman.h>
- #include <alchemy/task.h>
- #include <alchemy/timer.h>
-@@ -199,6 +200,7 @@ static void read_task_proc(void *arg)
- 		/* waiting for event */
- 		err = ioctl(read_fd, RTSER_RTIOC_WAIT_EVENT, &rx_event);
- 		if (err) {
-+			err = -errno;
- 			printf(RTASK_PREFIX
- 			       "error on RTSER_RTIOC_WAIT_EVENT, %s\n",
- 			       strerror(-err));
-@@ -254,6 +256,7 @@ int main(int argc, char* argv[])
- 	/* writing write-config */
- 	err = ioctl(write_fd, RTSER_RTIOC_SET_CONFIG, &write_config);
- 	if (err) {
-+		err = -errno;
- 		printf(MAIN_PREFIX "error while RTSER_RTIOC_SET_CONFIG, %s\n",
- 		       strerror(-err));
- 		goto error;
-@@ -273,6 +276,7 @@ int main(int argc, char* argv[])
- 	/* writing read-config */
- 	err = ioctl(read_fd, RTSER_RTIOC_SET_CONFIG, &read_config);
- 	if (err) {
-+		err = -errno;
- 		printf(MAIN_PREFIX "error while ioctl, %s\n",
- 		       strerror(-err));
- 		goto error;
+If you need to run Xenomai over any distro, you need to adapt the I-pipe 
+to your target kernel, or just switch to a mainline kernel for running 
+your distro, assuming the platform does not depend on vendor-specific 
+drivers.
+
 -- 
-2.1.4
-
+Philippe.
 
