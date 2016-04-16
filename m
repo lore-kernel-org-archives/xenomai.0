@@ -1,15 +1,10 @@
+Message-ID: <BLU436-SMTP684251C7C82A7FA80458BFF0690@phx.gbl>
+From: Mathieu Rondonneau <mathieu_rondonneau@hotmail.com>
+Date: Fri, 15 Apr 2016 21:53:59 -0700
 MIME-Version: 1.0
-In-Reply-To: <CAP-AUyhBLBo8W6E6sN0urviiHsuZT1aTMXX3MFOy9Vt84y=K_g@mail.gmail.com>
-References: <CAP-AUyhPPqU+AzwG8hyVU2nb42_fukCntEFBh9buCjgOk5FWJg@mail.gmail.com>
- <CAP-AUyjnNdUkA5_uHbm_yQvrNR2eF+k9uN-S0CeXBcN601jqKw@mail.gmail.com>
- <CAP-AUygsMMF8gufbaZ==w=sS=UV9EdiQ9hNJzOpUMYt0dsYpCQ@mail.gmail.com>
- <CAP-AUygg+9PdVRi9G1y+YQkc31kwqmjZoW5T4cVmZFHt5Fa5RA@mail.gmail.com>
- <CAP-AUyhBLBo8W6E6sN0urviiHsuZT1aTMXX3MFOy9Vt84y=K_g@mail.gmail.com>
-Date: Fri, 15 Apr 2016 18:28:43 -0400
-Message-ID: <CAP-AUyhQvG3PDSzi54kBpn0i2HpULKaSjj7MWxP3deNSjOU73w@mail.gmail.com>
-From: Brandon Enochs <enochs.brandon@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] Kernel ipipe patch
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] [PATCH] xenomai-3 on RPI2 with 4.1 kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,6 +15,153 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Can anyone tell me which distributions are comparible with Xenomai?  It
-seems that the kernel ipipe patch doesn't support any of the LTS
-distributions like RHEL (3.10) or Ubuntu (3.14).
+Hi All,
+
+Just updating the rpi2 patch to run with 4.1 kernel.
+No issue so far but did not do much stress test.
+
+Any comment/improvement welcome.
+
+Regards,
+-Mathieu
+
+>From 0062b1d3e4f2a30d7e6acd6d1848eb78e9c389d4 Mon Sep 17 00:00:00 2001
+From: Mathieu Rondonneau <mathieu.rondonneau@gmail.com>
+Date: Fri, 15 Apr 2016 21:36:54 -0700
+Subject: [PATCH 1/1] Minimal changes to get xenomai-3 going on BCM2709.
+
+---
+ arch/arm/Kconfig                                 | 1 +
+ arch/arm/mach-bcm2709/armctrl.c                  | 4 ++++
+ arch/arm/mach-bcm2709/bcm2708_gpio.c             | 6 ++++--
+ arch/arm/mach-bcm2709/bcm2709.c                  | 9 +++++++++
+ arch/arm/mach-bcm2709/include/mach/entry-macro.S | 8 ++++++++
+ 5 files changed, 26 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 5b894d6..d9a61ca 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -348,6 +348,7 @@ config ARCH_BCM2709
+ 	select MACH_BCM2709
+ 	select VC4
+ 	select FIQ
++	select IPIPE_ARM_KUSER_TSC if IPIPE
+ 	help
+ 	  This enables support for Broadcom BCM2709 boards.
+
+diff --git a/arch/arm/mach-bcm2709/armctrl.c
+b/arch/arm/mach-bcm2709/armctrl.c
+index 90805a6..2e681d0 100644
+--- a/arch/arm/mach-bcm2709/armctrl.c
++++ b/arch/arm/mach-bcm2709/armctrl.c
+@@ -348,6 +348,10 @@ static struct irq_chip armctrl_chip = {
+ 	.irq_mask = armctrl_mask_irq,
+ 	.irq_unmask = armctrl_unmask_irq,
+ 	.irq_set_wake = armctrl_set_wake,
++#ifdef CONFIG_IPIPE
++	.irq_hold = armctrl_mask_irq,
++	.irq_release = armctrl_unmask_irq,
++#endif
+ };
+
+ /**
+diff --git a/arch/arm/mach-bcm2709/bcm2708_gpio.c
+b/arch/arm/mach-bcm2709/bcm2708_gpio.c
+index e33265d..be827b4 100644
+--- a/arch/arm/mach-bcm2709/bcm2708_gpio.c
++++ b/arch/arm/mach-bcm2709/bcm2708_gpio.c
+@@ -24,6 +24,7 @@
+ #include <linux/pinctrl/consumer.h>
+
+ #include <linux/platform_data/bcm2708.h>
++#include <linux/ipipe.h>
+
+ #define BCM_GPIO_DRIVER_NAME "bcm2708_gpio"
+ #define DRIVER_NAME BCM_GPIO_DRIVER_NAME
+@@ -56,7 +57,8 @@ enum { GPIO_FSEL_INPUT, GPIO_FSEL_OUTPUT,
+ 	 * the GPIO code. This also makes the case of a GPIO routine call from
+ 	 * the IRQ code simpler.
+ 	 */
+-static DEFINE_SPINLOCK(lock);	/* GPIO registers */
++static IPIPE_DEFINE_SPINLOCK(lock); /* GPIO registers */
++
+
+ struct bcm2708_gpio {
+ 	struct list_head list;
+@@ -294,7 +296,7 @@ static irqreturn_t bcm2708_gpio_interrupt(int irq,
+void *dev_id)
+ 			if (!(level_bits & (1<<i)))
+ 				writel(1<<i,
+ 				       __io_address(GPIO_BASE) + GPIOEDS(bank));
+-			generic_handle_irq(gpio_to_irq(gpio));
++			ipipe_handle_demuxed_irq(gpio_to_irq(gpio));
+ 			/* ack level triggered IRQ after handling them */
+ 			if (level_bits & (1<<i))
+ 				writel(1<<i,
+diff --git a/arch/arm/mach-bcm2709/bcm2709.c
+b/arch/arm/mach-bcm2709/bcm2709.c
+index e1934dc..fc66fce 100644
+--- a/arch/arm/mach-bcm2709/bcm2709.c
++++ b/arch/arm/mach-bcm2709/bcm2709.c
+@@ -1104,11 +1104,13 @@ static void __init bcm2709_timer_init(void)
+ static void __init bcm2709_timer_init(void)
+ {
+ 	extern void dc4_arch_timer_init(void);
++#ifndef CONFIG_IPIPE
+ 	// timer control
+ 	writel(0, __io_address(ARM_LOCAL_CONTROL));
+ 	// timer pre_scaler
+ 	writel(0x80000000, __io_address(ARM_LOCAL_PRESCALER)); // 19.2MHz
+ 	//writel(0x06AAAAAB, __io_address(ARM_LOCAL_PRESCALER)); // 1MHz
++#endif
+
+ 	if (use_dt)
+ 	{
+@@ -1117,6 +1119,13 @@ static void __init bcm2709_timer_init(void)
+ 	}
+ 	else
+ 		dc4_arch_timer_init();
++
++#ifdef CONFIG_IPIPE
++	// timer control
++	writel(0, __io_address(ARM_LOCAL_CONTROL));
++	// timer pre_scaler
++	writel(0x80000000, __io_address(ARM_LOCAL_PRESCALER)); // 19.2MHz
++#endif
+ }
+
+ #endif
+diff --git a/arch/arm/mach-bcm2709/include/mach/entry-macro.S
+b/arch/arm/mach-bcm2709/include/mach/entry-macro.S
+index 08d184c..53d3c46 100644
+--- a/arch/arm/mach-bcm2709/include/mach/entry-macro.S
++++ b/arch/arm/mach-bcm2709/include/mach/entry-macro.S
+@@ -52,8 +52,12 @@
+ 	dsb
+ 	mov	r1, sp
+ 	adr	lr, BSYM(1b)
++#ifdef CONFIG_IPIPE
++	b	__ipipe_grab_ipi
++#else
+ 	b	do_IPI
+ #endif
++#endif
+ 1030:
+ 	/* check gpu interrupt */
+ 	tst	\tmp, #0x100
+@@ -107,7 +111,11 @@
+ 	@ routine called with r0 = irq number, r1 = struct pt_regs *
+ 	@
+ 	adr	lr, BSYM(1b)
++#ifdef CONFIG_IPIPE
++	b	__ipipe_grab_irq
++#else
+ 	b	asm_do_IRQ
++#endif
+
+ 1020:	@ EQ will be set if no irqs pending
+ 	.endm
+-- 
+2.8.1
+
