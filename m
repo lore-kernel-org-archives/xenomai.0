@@ -1,13 +1,13 @@
-MIME-Version: 1.0
-Sender: andret7@gmail.com
-In-Reply-To: <5719E9A4.5050701@xenomai.org>
+Date: Fri, 22 Apr 2016 15:29:26 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160422132926.GE1780@hermes.click-hack.org>
 References: <CAMQ-e4_L=X+8Nn5R+LnsEgtz4ZRgz8KaN48qhV-4vFCwpkFt5A@mail.gmail.com>
  <5719E9A4.5050701@xenomai.org>
-From: Andrea <andrea.schiappacasse@camelotbio.com>
-Date: Fri, 22 Apr 2016 14:32:19 +0200
-Message-ID: <CAMQ-e4_PrqpX3Eo8nQLo8k4B9aEKPXTEe1Ug4bThcA3kpA2aOA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <CAMQ-e4_PrqpX3Eo8nQLo8k4B9aEKPXTEe1Ug4bThcA3kpA2aOA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMQ-e4_PrqpX3Eo8nQLo8k4B9aEKPXTEe1Ug4bThcA3kpA2aOA@mail.gmail.com>
 Subject: Re: [Xenomai] Assertion failed on "test posix_clock" on some
  executions of xeno-test.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,37 +18,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Andrea <andrea.schiappacasse@camelotbio.com>
 Cc: Xenomai@xenomai.org
 
-SGkgUGhpbGlwcGUsIHRoYW5rcyBmb3IgeW91ciBhbnN3ZXIsCgpJIHJhbiBhdXRvdHVuZSBidXQg
-dGhlIG91dHB1dCBkaWRuJ3QgY2hhbmdlLCBzb21ldGltZXMgdGhlIGFzc2VydGlvbiBqdXN0CmZh
-aWxzIGFzIGJlZm9yZS4KRG8geW91IHRoaW5rIHRoYXQgaXQgY291bGQgbGVhZCB0byBhbnkgcHJv
-YmxlbSBpbiB0aGUgc3RhbmRhcmQgWGVub21haQp1c2FnZT8gT3IgaXMgaXQgc29tZXRoaW5nIHRo
-YXQgSSBtYXkgc2FmZWx5IGlnbm9yZT8gSSBkaWRuJ3Qgbm90aWNlIGFueQpzdHJhbmdlIGJlaGF2
-aW91ciBzbyBmYXIsIGJ1dCBJJ20gd29uZGVyaW5nIGlmIHRoaXMgY291bGQgYmUgYW4gaW5kaWNh
-dG9yCm9mIHNvbWV0aGluZyBnb2luZyB3cm9uZyBpbiB0aGUgc3lzdGVtIEknbSB0ZXN0aW5nLgoK
-SnVzdCBpbiBjYXNlIGl0IGNhbiBiZSBvZiBhbnkgdXNlLCB5b3UgY2FuIGZpbmQgYXR0YWNoZWQg
-dGhlIGNvbmZpZyBvZiBteQprZXJuZWwuCgpUaGFua3MgYWdhaW4gZm9yIHlvdXIga2luZCBzdXBw
-b3J0LAoKUmVnYXJkcywKQW5kcmVhCgoyMDE2LTA0LTIyIDExOjA2IEdNVCswMjowMCBQaGlsaXBw
-ZSBHZXJ1bSA8cnBtQHhlbm9tYWkub3JnPjoKCj4gT24gMDQvMjIvMjAxNiAxMDo1MSBBTSwgQW5k
-cmVhIHdyb3RlOgo+Cj4+IEhlbGxvLAo+Pgo+PiBJJ20gY3VycmVudGx5IHVzaW5nIFhlbm9tYWkg
-My4wLjIsIHVuZGVyIGtlcm5lbCA0LjEuOCAgd2l0aCBpLXBpcGUgcGF0Y2guCj4+IEkganVzdCBu
-b3RpY2VkIHRoYXQgSSdtIGV4cGVyaWVuY2luZyBhbiBlcnJvciBvbiBzb21lIHJ1biBvZiB4ZW5v
-LXRlc3QuCj4+Cj4+IFRoZSByZXBvcnRlZCBlcnJvciBpczoKPj4gKnBvc2l4LWNsb2NrLmM6NDIw
-LCBhc3NlcnRpb24gZmFpbGVkOiBkaWZmIDwgMTAwMDAwMDAwMCoKPj4gKi91c3IveGVub21haS9i
-aW4vc21va2V5OiB0ZXN0IHBvc2l4X2Nsb2NrIGZhaWxlZDogSW52YWxpZCBhcmd1bWVudCoKPj4K
-Pj4gVGhlIHNwZWNpZmljIGZ1bmN0aW9uIHdoZXJlIHRoZSBhc3NlcnQgaXMgaXNzdWVkIGluIHBv
-c2l4LWNsb2NrLmMgaXMKPj4gImNsb2NrX2RlY3JlYXNlX2FmdGVyX3BlcmlvZGljX3RpbWVyX2Zp
-cnN0X3RpY2sodm9pZCkiCj4+Cj4+IE9uIG11bHRpcGxlIGV4ZWN1dGlvbnMgaXQgaXMgbm90IHJl
-cHJvZHVjaWJsZSwgSSBhbSB3b25kZXJpbmcgaWYgYW55Ym9keQo+PiBjb3VsZCBoaW50IG1lIHRv
-IHRoZSBzb3VyY2Ugb2YgdGhlIHByb2JsZW0gb24gbXkgc3lzdGVtLgo+Pgo+Pgo+IFRoaXMgdGVz
-dCBpcyBoaWdobHkgdGltZS1kZXBlbmRlbnQuIFRyeSBydW5uaW5nIHRoZSBhdXRvdHVuZXIKPiAo
-L3Vzci94ZW5vbWFpL2Jpbi9hdXRvdHVuZSkgZm9yIGNhbGlicmF0aW5nIHRoZSBjb3JlIHRpbWVy
-IHdpdGggcmVzcGVjdCB0bwo+IHN5c3RlbSBsYXRlbmNpZXMgcHJpb3IgdG8gcnVubmluZyB0aGUg
-dGVzdHMgKGFrYSAidGltZXIgZ3Jhdml0eSIgc2V0dGluZ3MpLgo+Cj4KPiAtLQo+IFBoaWxpcHBl
-Lgo+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0
-dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGNvbmZpZy00LjEuMTguZ3oKVHlwZTogYXBw
-bGljYXRpb24veC1nemlwClNpemU6IDQ0OTA1IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJM
-OiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTYw
-NDIyL2ZkNmYyMTY3L2F0dGFjaG1lbnQuYmluPgo=
+On Fri, Apr 22, 2016 at 02:32:19PM +0200, Andrea wrote:
+> Hi Philippe, thanks for your answer,
+> 
+> I ran autotune but the output didn't change, sometimes the assertion just
+> fails as before.
+> Do you think that it could lead to any problem in the standard Xenomai
+> usage? Or is it something that I may safely ignore? I didn't notice any
+> strange behaviour so far, but I'm wondering if this could be an indicator
+> of something going wrong in the system I'm testing.
+> 
+> Just in case it can be of any use, you can find attached the config of my
+> kernel.
+
+Are you sure that nothing else is running in the background? Like
+dohell processes from the previous run? Most of the unit test are
+supposed to be run on the machine with no load.
+
+-- 
+					    Gilles.
+https://click-hack.org
+
