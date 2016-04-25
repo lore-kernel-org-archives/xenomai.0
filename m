@@ -1,10 +1,19 @@
-From: Jeffrey Melville <jmelville@mitre.org>
-Message-ID: <57226422.2010707@mitre.org>
-Date: Thu, 28 Apr 2016 15:27:30 -0400
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Mon, 25 Apr 2016 10:36:44 -0400
+Message-ID: <20160425143644.GI11630@csclub.uwaterloo.ca>
+References: <CAJ2oMh+Bp4iFpVSN0M+SvyL9WerjxJOgMWq-JEc2_AZvbvGdPg@mail.gmail.com>
+ <20160418134509.GW11630@csclub.uwaterloo.ca>
+ <CAJ2oMhJEuYiJ40xw4+dL5WYS9oPVfF21eh=wcWSwQXLzn35pdQ@mail.gmail.com>
+ <20160418135438.GX11630@csclub.uwaterloo.ca>
+ <CAJ2oMh+edAyPTNzwq0HNFDO9Y-ZFn=_BZvJ0-zdB-8NQCBPHDg@mail.gmail.com>
+ <CAJ2oMhLrcs104KGKAKx4Z1XWpwLKaVQBn6cZRP4EOLoVXtZJNw@mail.gmail.com>
+ <20160418143032.GZ11630@csclub.uwaterloo.ca>
+ <CAJ2oMh+vab29mm8xhMc=3KT=2mG2cO=opi5jtJtTkc_wFugU3A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Clarification on EINTR with wrapped select call.
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJ2oMh+vab29mm8xhMc=3KT=2mG2cO=opi5jtJtTkc_wFugU3A@mail.gmail.com>
+Subject: Re: [Xenomai] kernel 3.12
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,33 +22,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Ran Shalit <ranshalit@gmail.com>
+Cc: xenomai@xenomai.org
 
-Hi,
+On Sun, Apr 24, 2016 at 10:21:50AM +0300, Ran Shalit wrote:
+> We intend to use ipipe with zynq (we already have 3.12.0 kernel used with zynq).
+> Do you think the patch should be relevant for zynq ?
+> I see that xilinx have their own patch , but it is for older kernel 2.6.3
+> http://www.wiki.xilinx.com/Xenomai+for+Zynq#Xenomai for Zynq-7000 AP
+> SoC Linux--Patch
 
-I wanted to clarify the expected behavior that would cause a wrapped
-select() call to return EINTR when using the POSIX skin.
+You can give it a try.  The zynq does have a Cortex-A9 as far as I recall,
+so it ought to work.  Doesn't mean there aren't other bits that need
+fixing in the zynq specific code.  But maybe there isn't.
 
-I'm running Xenomai 2.6.4 (actually 2.6 git rev 4f349cf0553, with a99426
-cherry-picked) with kernel 3.14.17 on a Zynq and the POSIX skin.
+Just remember it was never an officially supported kernel version.
+It worked for us, it was given a once over by a proper xenomai developer
+who did not seem to think it was wrong, but if it doesn't work I wouldn't
+expect the xenomai developers to be excited to help fix it.
 
-We have a real-time thread (SCHED_FIFO, nonzero priority) that
-frequently calls (wrapped) select() on a normal Linux UDP socket. We've
-noticed that sometimes, when data is available on the socket, the call
-to select will return -1 with errno EINTR. There is no other evidence in
-the user application that a signal occurred. I suspect that it may be
-related to SIGWINCH/SIGHARDEN but I don't know how this works in much
-detail. I haven't been able to confirm this theory yet either. I see
-that select does not have to respect SA_RESTART.
+> I also see that in git there is ipipe for 3.12.0
+> http://git.xenomai.org/ipipe-gch.git/log/?h=raw/for-ipipe-3.12.0
+> But again I am unsure if it is relevant for zynq too.
 
-With that in mind:
-1. Is it expected that a wrapped select() call returns EINTR during
-normal mode transitions? It doesn't seem right to me.
+Well that was a work in progress I believe and never officially released
+as far as I recall.  I started from that one, but the one I posted is
+actually based on the 3.14 patch and backported as far as I recall.
+It has been a while since we moved to 3.14.
 
-2. If this isn't the expected behavior, what would you recommend as a
-next debugging step? I suspect that handling every SIGWINCH will result
-in a lot of noise.
-
-Thanks,
-Jeff
+-- 
+Len Sorensen
 
