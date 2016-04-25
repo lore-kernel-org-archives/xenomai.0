@@ -1,18 +1,21 @@
-From: Umair Ali <ali.umair@tut.fi>
-Date: Wed, 11 May 2016 14:22:20 +0000
-Message-ID: <2396B4D2166B62479FBBE370D4A7C1F30A733367@mb2010-3.intra.tut.fi>
-References: <2396B4D2166B62479FBBE370D4A7C1F30A733197@mb2010-3.intra.tut.fi>
- <20160504210030.GK1761@hermes.click-hack.org>
- <2396B4D2166B62479FBBE370D4A7C1F30A733219@mb2010-3.intra.tut.fi>
- <20160506151720.GH3264@csclub.uwaterloo.ca>
- <20160506231034.GK13285@hermes.click-hack.org>
- <2396B4D2166B62479FBBE370D4A7C1F30A7332A2@mb2010-3.intra.tut.fi>
-In-Reply-To: <2396B4D2166B62479FBBE370D4A7C1F30A7332A2@mb2010-3.intra.tut.fi>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Mon, 25 Apr 2016 16:09:32 -0400
+Message-ID: <20160425200932.GK11630@csclub.uwaterloo.ca>
+References: <CAJ2oMhJEuYiJ40xw4+dL5WYS9oPVfF21eh=wcWSwQXLzn35pdQ@mail.gmail.com>
+ <20160418135438.GX11630@csclub.uwaterloo.ca>
+ <CAJ2oMh+edAyPTNzwq0HNFDO9Y-ZFn=_BZvJ0-zdB-8NQCBPHDg@mail.gmail.com>
+ <CAJ2oMhLrcs104KGKAKx4Z1XWpwLKaVQBn6cZRP4EOLoVXtZJNw@mail.gmail.com>
+ <20160418143032.GZ11630@csclub.uwaterloo.ca>
+ <CAJ2oMh+vab29mm8xhMc=3KT=2mG2cO=opi5jtJtTkc_wFugU3A@mail.gmail.com>
+ <20160425143644.GI11630@csclub.uwaterloo.ca>
+ <CAJ2oMhK+xcdxtkXY+1koTvnmXVVHFDBFzPWO3xGXq9KBmsTdnA@mail.gmail.com>
+ <20160425195054.GH1881@hermes.click-hack.org>
+ <CAJ2oMhKccwbyCsOyi_JN-EybDmdttotajqKh6nK=zz=-Ay33gA@mail.gmail.com>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] mmap a file in rtdm moudle without switching the mode
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJ2oMhKccwbyCsOyi_JN-EybDmdttotajqKh6nK=zz=-Ay33gA@mail.gmail.com>
+Subject: Re: [Xenomai] kernel 3.12
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,117 +24,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Umair Ali <ali.umair@tut.fi>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Ran Shalit <ranshalit@gmail.com>
+Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
 
-Mmap is giving a virtual address from userspace. Can remaping the mmap addr=
-ess passed from userspace to the vma of kernel will help to read the file. =
-What are  these functions
-- rtdm_mmap_kmem
-- rtdm_mmap_vmem
-Can these functions be used to remap the mmap address to new address in ker=
-nel space
+On Mon, Apr 25, 2016 at 11:01:40PM +0300, Ran Shalit wrote:
+> On Mon, Apr 25, 2016 at 10:50 PM, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+> > On Mon, Apr 25, 2016 at 07:38:45PM +0300, Ran Shalit wrote:
+> >> On Mon, Apr 25, 2016 at 5:36 PM, Lennart Sorensen
+> >> <lsorense@csclub.uwaterloo.ca> wrote:
+> >> > On Sun, Apr 24, 2016 at 10:21:50AM +0300, Ran Shalit wrote:
+> >> >> We intend to use ipipe with zynq (we already have 3.12.0 kernel used with zynq).
+> >> >> Do you think the patch should be relevant for zynq ?
+> >> >> I see that xilinx have their own patch , but it is for older kernel 2.6.3
+> >> >> http://www.wiki.xilinx.com/Xenomai+for+Zynq#Xenomai for Zynq-7000 AP
+> >> >> SoC Linux--Patch
 
------Original Message-----
-From: Xenomai [mailto:xenomai-bounces@xenomai.org] On Behalf Of Umair Ali
-Sent: May-09-16 4:55 PM
-To: Gilles Chanteperdrix
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai] mmap a file in rtdm moudle without switching the mod=
-e
+Actually that is xenomai 2.6.3 with 3.8 kernel patches.  2.6.4 is the
+latest xenomai 2, while current xenomai is now 3.x (which we have not
+yet moved to but really should at some point).
 
-Thanks Gilles for such detailed answer. I think I have got your point. I am=
- just confused about some functions such as
-- rtdm_mmap_kmem
-- rtdm_mmap_vmem
+The fact it needs pre and post patches for zynq makes me suspect it
+might involve a bit more work, but maybe I am wrong.  I have never had
+to deal with pre and post patches.
 
-Will such functions are of any help or what is the main purpose of them.
+> >> > You can give it a try.  The zynq does have a Cortex-A9 as far as I recall,
+> >> > so it ought to work.  Doesn't mean there aren't other bits that need
+> >> > fixing in the zynq specific code.  But maybe there isn't.
+> >> >
+> >> > Just remember it was never an officially supported kernel version.
+> >> > It worked for us, it was given a once over by a proper xenomai developer
+> >> > who did not seem to think it was wrong, but if it doesn't work I wouldn't
+> >> > expect the xenomai developers to be excited to help fix it.
+> >> >
+> >> >> I also see that in git there is ipipe for 3.12.0
+> >> >> http://git.xenomai.org/ipipe-gch.git/log/?h=raw/for-ipipe-3.12.0
+> >> >> But again I am unsure if it is relevant for zynq too.
+> >> >
+> >> > Well that was a work in progress I believe and never officially released
+> >> > as far as I recall.  I started from that one, but the one I posted is
+> >> > actually based on the 3.14 patch and backported as far as I recall.
+> >> > It has been a while since we moved to 3.14.
+> >> >
+> >> > --
+> >> > Len Sorensen
+> >>
+> >> Hi Len,
+> >>
+> >> We've first tried to apply the patch for 3.12.0 but there were too many errors,
+> >> so we eventually used
+> >> http://git.xenomai.org/ipipe-gch.git/log/?h=raw/for-ipipe-3.12.0
+> >> latest commit.
+> >> I hope the ipipe should work without any issues wuth this tree.
+> >> Is there a way to check if ipipe is OK with our version based on this commit ?
+> >
+> > Bad idea, this branch corresponds to some intermediate state. I
+> > removed it.
+> >
+> > --
+> >                                             Gilles.
+> 
+> Hi Gilles,
+> 
+> Is there any better way to apply ipipe on 3.12.0 ?
 
-Thanks
-Ali
------Original Message-----
-From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
-Sent: May-07-16 2:11 AM
-To: Lennart Sorensen
-Cc: Umair Ali; xenomai@xenomai.org
-Subject: Re: [Xenomai] mmap a file in rtdm moudle without switching the mod=
-e
+Well as I said, I backported the 3.14 patch to 3.12 when we used 3.12,
+which wasn't too hard.  That's what my patch for 3.12 was.
 
-On Fri, May 06, 2016 at 11:17:20AM -0400, Lennart Sorensen wrote:
-> On Fri, May 06, 2016 at 03:04:03PM +0000, Umair Ali wrote:
-> > Hello gilles,
-> >=20
-> > Thanks for the patience and the reply. I am sorry for asking such quest=
-ions. I am newbie so need some guidance. I have searched for linux device d=
-rivers on the internet and I found the book (https://lwn.net/Kernel/LDD3/) =
-. Can you recommend me which chapter will be very helpful for me. I want to=
- read a big file of size 600MB in kernel space and need to read it periodic=
-ally by timers. I think the answers lies in the using functions rtdm_malloc=
-, rtdm_safe_copy_from _user. I know the good way to is open the file in the=
- userspace and send the address to kernel space. Any example will help me a=
- lot.=20
->=20
-> Well my understanding is that you do NOT ever read files from kernel=20
-> space.  You let user space do that and pass the data.
->=20
-> This doesn't mean it can't be done, just that the kernel maintainers=20
-> seem quite insistent that you don't do file access from kernel space.
->=20
-> Certainly doing file access sounds like something you would not want=20
-> to try and do from the realtime side of things.  You probably can't.
+Unfortunately 3.12 was never a supported kernel for xenomai.
 
-I believe I was the one who suggested doing things in kernel-space, but not=
- to read the file. Though there is an API to read files from
-kernel-space:
-https://lwn.net/Articles/676101/
-
-The idea with doing it in kernel-space is to reduce the latency.
-
-What Ali is trying to do is essentially to do what "tcpreplay" does, but us=
-ing Xenomai and RTnet: play back recorded packets including playing them ba=
-ck at the time given by their timestamps. Since the sending is timed, you c=
-an not really benefit from the hardware queueing to reduce the latencies, y=
-ou have to set up a timer, and when the timer ticks, trigger the send. So, =
-the send may be delayed by the user-space scheduling latency. Doing the sen=
-d in a kernel thread, on the other hand, replaces the user-space scheduling=
- latency with a kernel-space scheduling latency. It would be nice if we cou=
-ld do it from a kernel timer, to reduce even more the latency, but RTnet se=
-nd involves a mutex, so requires a thread, whether kernel or user.
-
-For this to work, however, the next packet must be available to the kernel =
-thread doing the sends, when the timer ticks. So, what you want to do is to=
- implement a message queue between the user-space thread reading the file, =
-somehow, and the kernel-space thread doing the send, passing the user-space=
- message address and its timestamp.
-You are not going to cut down on message copies: every message will be copi=
-ed three times, once from the disk to user-space memory, the second time fr=
-om the user-space memory to the kernel-space memory, then from kernel-space=
- memory to the rtnet packet structure, because the rtnet API in kernel-spac=
-e follows the POSIX API, and the kernel-space "send" function expects a ker=
-nel-space address. Whereas you would get only two copies when sending from =
-user-space. You can use malloc + read to set up the messages for the kernel=
- thread, or mmap, it does not really matter, though malloc + read implies o=
-ne more copy, but the copy is done ahead of time so has no influence on the=
- replay timings precision.
-
-As for the laziness of mmap, it is not a problem: Xenomai programs run with=
- mlockall anyway. There will be a problem if the mmaped file is larger than=
- the available RAM though.
-
-All of this however, only makes sense if benchmarks have showed that sendin=
-g from user-space does not yield precise enough replays, and all other pote=
-ntial bugs have been removed, like for instance taking into account the fac=
-t that the tcpdump capture timestamps are packets arrival times, not depart=
-ure times.
-
-Regards.
-
---=20
-					    Gilles.
-https://click-hack.org
-
-_______________________________________________
-Xenomai mailing list
-Xenomai@xenomai.org
-https://xenomai.org/mailman/listinfo/xenomai
+-- 
+Len Sorensen
 
