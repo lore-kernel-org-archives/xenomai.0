@@ -1,12 +1,12 @@
-References: <20160502192504.GL2055@csclub.uwaterloo.ca>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <b1a516a1-6798-b2d1-ccb6-3197c5eac17d@xenomai.org>
-Date: Mon, 23 May 2016 11:12:22 +0200
+Date: Tue, 26 Apr 2016 13:17:14 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160426111714.GB27058@hermes.click-hack.org>
+References: <CABUerAE9GZWfm_5q8pS2ntwD4pg2k3LcNe04K=eDuiGo3GHpEA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20160502192504.GL2055@csclub.uwaterloo.ca>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] arm/ipipe: pinctrl-single: Fix build failure
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CABUerAE9GZWfm_5q8pS2ntwD4pg2k3LcNe04K=eDuiGo3GHpEA@mail.gmail.com>
+Subject: Re: [Xenomai] xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,16 +15,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, xenomai@xenomai.org
+To: ravi kanth <xenomai412@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 05/02/2016 09:25 PM, Lennart Sorensen wrote:
-> arm/ipipe: pinctrl-single: Fix build failure
-> 
-> A ; was lost when adding IPIPE support to the pinctrl-single.c which is
-> only seen when building with IPIPE disabled.
+On Tue, Apr 26, 2016 at 03:53:54PM +0530, ravi kanth wrote:
+> Hai all
+> when I am patching xenomai on ubuntu 14.04 I am getting error like
+> root@jPower-Series:/usr/src/linux-2.6.38.8-xenomai# apt-get install
+> make-kpkg
+> Reading package lists... Done
+> Building dependency tree
+> Reading state information... Done
+> E: Unable to locate package make-kpkg
 
-Merged, thanks.
+ubuntu is a debian derivative. So, I believe the following
+explanations apply (and nowhere contain any apt-get install
+make-kpkg):
+
+https://xenomai.org//2014/06/building-debian-packages/
 
 -- 
-Philippe.
+					    Gilles.
+https://click-hack.org
 
