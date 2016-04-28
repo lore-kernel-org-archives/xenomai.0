@@ -1,12 +1,9 @@
-Date: Thu, 28 Apr 2016 12:56:12 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160428105612.GB10481@hermes.click-hack.org>
-References: <CABUerAFN6zT_DPbF7uEU=2jLj5iE1K6RaTEJHYsbovGhuxW_WA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CABUerAFN6zT_DPbF7uEU=2jLj5iE1K6RaTEJHYsbovGhuxW_WA@mail.gmail.com>
-Subject: Re: [Xenomai] kernal2.6.38.8
+Date: Thu, 28 Apr 2016 15:45:09 +0300
+Message-ID: <CAJ2oMhLB8Mm7go7-K2D3LKA8uiuHum2GV08FNg9Bqp9WrLmFag@mail.gmail.com>
+From: Ran Shalit <ranshalit@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Communication between RT-kernel to non-RT kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,29 +12,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ravi kanth <xenomai412@gmail.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Thu, Apr 28, 2016 at 12:03:41PM +0530, ravi kanth wrote:
-> when I am patching  linux kernal 2.6.38.8 with xenomai 2.6-2.2.6.3
+On Thu, Apr 28, 2016 at 1:52 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On Thu, Apr 28, 2016 at 08:37:17AM +0300, Ran Shalit wrote:
+>> On Thu, Apr 28, 2016 at 7:44 AM, Ran Shalit <ranshalit@gmail.com> wrote:
+>> > Hello,
+>> >
+>> > I am new with xenomai.
+>> >
+>> > I've made a lot of reading in the documentation which is very helpful.
+>> > But I haven't found how to communicate between rt kernel to non-rt
+>> > kernel on same machine,
+>> > Is there any example or documantation which explains this ?
+>> >
+>> > Best Regards,
+>> > Ran
+>>
+>> I guess that there is actually no need for such example or documentation.
+>> In userland 2 applications, one using xenomai kernel and the other
+>> linux kernel can commuicate
+>> in any method available in Linux between processes (pipes, shared
+>> memeory, etc) . Right?
+>
+> Not quite. Accessing a pipe from a xenomai thread will cause it to
+> switch to secondary mode, IOW to migrate to the Linux kernel.
+>
+> The IPC adapted to communicated between Xenomai threads and plain
+> Linux threads is XDDP, see the API documentation here:
+> https://xenomai.org/api-reference/
+>
 
-Linux 2.6.38 is outdated.
-Xenomai 2.6.3 is doubly outdated (the latest release in the 2.6
-branch is Xenomai 2.6.4, and the latest stable release of Xenomai is
-3.0.2, a completely new branch which you should consider using if
-starting a project now).
+Thank you for the feedback,
+I did eventually see that there is good introduction documentation for
+this "A tour of the native API ".
+1. In this document I see that there are others mechanism which can be used :
+message Queues and shared memory.
+2. Other thing I've noticed is that it seems that in xenomai 3.x pdf
+folder this document is missing. Is the native api not relevant with
+xenomai 3.x anymore ?
+3. We do a kind of simple "Linux RT POC project", in order to
+understand how xenomai is RT (so that we can later choose between
+vxWorks or Linux according to the results),
+all we need to do is something simple as following:
+  3.1 application running on Zynq will get periodic interrupt from fpga.
+  3.2 on receiving interrupt it shall do some known mathematic
+calculation and continue to wait for next interrupt
+  3.3 we need to measure the time of received interrupt in application
+and to measure jitter if exist.
+  3.4 we also need to write simple standard Linux application which
+shall read the statistics from the RT application.
+4. Can rtdm_clock_read  be used for reading time of interrupt ?
+5. If a userspace wait for interrupt on rt_intr_wait, which is
+synchronizaed on clock, is it better to CONFIG_HZ a larger number in
+order to get smaller lateny ?
 
-> (...)
-> prepare-kernel.sh: Unable to patch kernel 2.6.38.8 with
-> ipipe-core-3.8.13-x86-4.patch
+any feedback or suggestions is appreciated,
 
-the ipipe-core-3.8.13 patch is for kernel version 3.8.13 and so has
-no chances to apply to Linux 2.6.38, and is also outdated, Xenomai
-3.0 dropped support for anything older than Linux 3.10.
-
-Regards.
-
--- 
-					    Gilles.
-https://click-hack.org
+Regards,
+Ran
 
