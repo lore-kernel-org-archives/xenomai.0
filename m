@@ -1,13 +1,12 @@
-Date: Thu, 28 Apr 2016 12:52:36 +0200
+Date: Thu, 28 Apr 2016 12:56:12 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160428105236.GA10481@hermes.click-hack.org>
-References: <CAJ2oMhL_wa5vNe=ujt7GDUM1q3GOmWsCUGv6t_pVfH+oJZkX7A@mail.gmail.com>
- <CAJ2oMh+1yKWqQXWHoQELsD731xDGWWjiYvWNSXv5Nc=1Ky5xSQ@mail.gmail.com>
+Message-ID: <20160428105612.GB10481@hermes.click-hack.org>
+References: <CABUerAFN6zT_DPbF7uEU=2jLj5iE1K6RaTEJHYsbovGhuxW_WA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAJ2oMh+1yKWqQXWHoQELsD731xDGWWjiYvWNSXv5Nc=1Ky5xSQ@mail.gmail.com>
-Subject: Re: [Xenomai] Communication between RT-kernel to non-RT kernel
+In-Reply-To: <CABUerAFN6zT_DPbF7uEU=2jLj5iE1K6RaTEJHYsbovGhuxW_WA@mail.gmail.com>
+Subject: Re: [Xenomai] kernal2.6.38.8
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,35 +15,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ran Shalit <ranshalit@gmail.com>
+To: ravi kanth <xenomai412@gmail.com>
 Cc: xenomai@xenomai.org
 
-On Thu, Apr 28, 2016 at 08:37:17AM +0300, Ran Shalit wrote:
-> On Thu, Apr 28, 2016 at 7:44 AM, Ran Shalit <ranshalit@gmail.com> wrote:
-> > Hello,
-> >
-> > I am new with xenomai.
-> >
-> > I've made a lot of reading in the documentation which is very helpful.
-> > But I haven't found how to communicate between rt kernel to non-rt
-> > kernel on same machine,
-> > Is there any example or documantation which explains this ?
-> >
-> > Best Regards,
-> > Ran
-> 
-> I guess that there is actually no need for such example or documentation.
-> In userland 2 applications, one using xenomai kernel and the other
-> linux kernel can commuicate
-> in any method available in Linux between processes (pipes, shared
-> memeory, etc) . Right?
+On Thu, Apr 28, 2016 at 12:03:41PM +0530, ravi kanth wrote:
+> when I am patching  linux kernal 2.6.38.8 with xenomai 2.6-2.2.6.3
 
-Not quite. Accessing a pipe from a xenomai thread will cause it to
-switch to secondary mode, IOW to migrate to the Linux kernel.
+Linux 2.6.38 is outdated.
+Xenomai 2.6.3 is doubly outdated (the latest release in the 2.6
+branch is Xenomai 2.6.4, and the latest stable release of Xenomai is
+3.0.2, a completely new branch which you should consider using if
+starting a project now).
 
-The IPC adapted to communicated between Xenomai threads and plain
-Linux threads is XDDP, see the API documentation here:
-https://xenomai.org/api-reference/
+> (...)
+> prepare-kernel.sh: Unable to patch kernel 2.6.38.8 with
+> ipipe-core-3.8.13-x86-4.patch
+
+the ipipe-core-3.8.13 patch is for kernel version 3.8.13 and so has
+no chances to apply to Linux 2.6.38, and is also outdated, Xenomai
+3.0 dropped support for anything older than Linux 3.10.
+
+Regards.
 
 -- 
 					    Gilles.
