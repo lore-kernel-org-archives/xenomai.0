@@ -1,13 +1,11 @@
+From: Umair Ali <ali.umair@tut.fi>
+Date: Thu, 28 Apr 2016 15:27:01 +0000
+Message-ID: <2396B4D2166B62479FBBE370D4A7C1F30A731FA3@mb2010-3.intra.tut.fi>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <SN1PR10MB0446E28A1F7A36A38AB3E2FEF0650@SN1PR10MB0446.namprd10.prod.outlook.com>
-References: <CAJ=MaHrS2fBum0_YXj9Cussd9zpqiFa5o425j-5voggnzkd++Q@mail.gmail.com>
- <20160402153812.GM22286@hermes.click-hack.org>
- <SN1PR10MB0446E28A1F7A36A38AB3E2FEF0650@SN1PR10MB0446.namprd10.prod.outlook.com>
-Date: Thu, 28 Apr 2016 16:07:22 +0100
-Message-ID: <CAJ=MaHoZa3uNpmXTDa96ok_DYsRQs=jfLVsRfgvcZ95ATRNT+Q@mail.gmail.com>
-From: Andrew Eliasz <andrew.eliasz@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Xenomai 3 on BBB or Raspi
+Subject: [Xenomai] Sending udp packets from kernel module
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,89 +14,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Mathieu <mathieu_rondonneau@hotmail.com>
-Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Yes indeed,
-Many thanks ...
-Andrew
+Hello there,
 
-On 28 April 2016 at 16:03, Mathieu <mathieu_rondonneau@hotmail.com> wrote:
+Can anyone give me an example that how I can send the UDP packets from the =
+kernel module using RTnet. Should I use rtdm_ioctl() and rtdm_socket() func=
+tions. Please guide me.
+Thanks in advance
 
-> On 16-04-02 08:38 AM, Gilles Chanteperdrix wrote:
-> > On Sat, Apr 02, 2016 at 04:03:20PM +0100, Andrew Eliasz wrote:
-> >> Apologies for taking up your valuable time.
-> >> I have been able to get Xenomai 2 running on a Beagle Bone Black ...
-> >> I have not been able to find any detailed instructions for getting
-> Xenomai
-> >> 3 to run on either a Beagle Bone Black or a Raspberry Pi.
-> >> Has anyone, to your knowledge, been able to do this successfully please
-> ?
-> >> If not is there some other reference board for which Xenomai 3 build and
-> >> install details are available so that I can carefully work through the
-> >> steps involved and at least master those before attempting to get
-> Xenomai 3
-> >> to run on either a RaspberryPi or a Beagle Bone Black.
-> >> Many thanks
-> >
-> > Hi,
-> >
-> > this question starts being asked a lot, so I am going to give a
-> > longer answer than usual, for future reference.
-> >
-> > Installing Xenomai is largely a process which does not depend on
-> > distributions or board details, and is documented here:
-> > https://xenomai.org/installing-xenomai-3-x/
-> >
-> > I am giving here a summary of the information found there, supposing
-> > you want to compile Xenomai with the cobalt core.
-> >
-> > You first need to prepare kernel sources by running a shell script
-> > (named prepare-kernel.sh) which applies an I-pipe patch (either
-> > taken from Xenomai sources, or downloaded following instructions
-> > here https://xenomai.org/getting-the-i-pipe-patch/, downloading the
-> > I-pipe patch ensures that you can have a more recent version than
-> > the one released with Xenomai), and sets up some symbolic links in
-> > the kernel sources to compile Xenomai kernel-space support while
-> > compiling the kernel.
-> >
-> > For the specific case of boards not using mainline kernels, you may
-> > have to apply some pre- and post- patches around the I-pipe patch,
-> > these patches are found in Xenomai sources.
-> > Alternatively, in the case of the Rpi, a branch may be found in the
-> > I-pipe git repository, which you may use as base for running the
-> > prepare-kernel.sh script: the script does not try and apply an
-> > I-pipe patch if the sources are already patched.
-> >
-> > Once you have done that, you have to configure the kernel. This is
-> > the hard part, as the configuration is dependent on your board, but
-> > you must also pay attention to not enable some options (listed
-> > here:
-> > https://xenomai.org//troubleshooting-a-dual-kernel-configuration/#kconf)
-> >
-> > Finally, you can cross-compile your kernel "as usual". If you are
-> > not comfortable with compiling kernels, you may find some
-> > instructions specific to your board somewhere (but again, this is
-> > largely independent of any board or distribution details), the fact
-> > that the kernel is patched with Xenomai does not change anything to
-> > the compilation and installation process.
-> >
-> > The second step is to cross-compile Xenomai user-space support.
-> > Xenomai uses the autotools, so is compiled by running configure,
-> > make and make install (with some arguments when cross-compiling), in
-> > any case, compiling packages using the autotools is also largely
-> > documented on the web.
-> >
-> > Regards.
-> >
->
-> I have posted an updated patch recently (about xenomai-3 on rpi using
-> kernel 4.1):
-> http://www.xenomai.org/pipermail/xenomai/2016-April/036110.html
->
-> Andrew,
-> Isn't it what you are looking for?
->
-> Regards,
-> -Mathieu
->
+Regards
+Ali
+
