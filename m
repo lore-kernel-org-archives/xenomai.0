@@ -1,14 +1,13 @@
-Date: Fri, 29 Apr 2016 23:29:55 +0200
+Date: Sat, 30 Apr 2016 08:49:39 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160429212955.GB1781@hermes.click-hack.org>
-References: <57226422.2010707@mitre.org>
- <20160429195415.GQ1881@hermes.click-hack.org>
- <5723CD41.4070809@mitre.org>
+Message-ID: <20160430064939.GC1781@hermes.click-hack.org>
+References: <47132d04b76942d8bd15c82a5a460f7b@EDB3.wapice.localdomain>
+ <20160403190948.GC20399@hermes.click-hack.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5723CD41.4070809@mitre.org>
-Subject: Re: [Xenomai] Clarification on EINTR with wrapped select call.
+In-Reply-To: <20160403190948.GC20399@hermes.click-hack.org>
+Subject: Re: [Xenomai] A fix to few generic issues in rttcp stack
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,73 +16,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeffrey Melville <jmelville@mitre.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Matti Suominen <matti.suominen@wapice.com>
+Cc: Lassi =?iso-8859-1?Q?Niemist=F6?= <lassi.niemisto@wapice.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Apr 29, 2016 at 05:08:17PM -0400, Jeffrey Melville wrote:
-> On 4/29/2016 3:54 PM, Gilles Chanteperdrix wrote:
-> > On Thu, Apr 28, 2016 at 03:27:30PM -0400, Jeffrey Melville wrote:
-> >> Hi,
-> >>
-> >> I wanted to clarify the expected behavior that would cause a wrapped
-> >> select() call to return EINTR when using the POSIX skin.
-> >>
-> >> I'm running Xenomai 2.6.4 (actually 2.6 git rev 4f349cf0553, with a99426
-> >> cherry-picked) with kernel 3.14.17 on a Zynq and the POSIX skin.
-> >>
-> >> We have a real-time thread (SCHED_FIFO, nonzero priority) that
-> >> frequently calls (wrapped) select() on a normal Linux UDP socket. We've
-> >> noticed that sometimes, when data is available on the socket, the call
-> >> to select will return -1 with errno EINTR. There is no other evidence in
-> >> the user application that a signal occurred. I suspect that it may be
-> >> related to SIGWINCH/SIGHARDEN but I don't know how this works in much
-> >> detail. I haven't been able to confirm this theory yet either. I see
-> >> that select does not have to respect SA_RESTART.
-> >>
-> >> With that in mind:
-> >> 1. Is it expected that a wrapped select() call returns EINTR during
-> >> normal mode transitions? It doesn't seem right to me.
+On Sun, Apr 03, 2016 at 09:09:48PM +0200, Gilles Chanteperdrix wrote:
+> On Thu, Mar 31, 2016 at 10:33:09AM +0000, Matti Suominen wrote:
+> > Hi,
 > > 
-> > Well, first, calling the wrapped select on plain linux descriptors
-> > is kind of stupid: Xenomai core will migrate the task to primary
+> > I have case where we use rtnet's tcp socket in server application to 
+> > communicate with real time and non-real time tcp clients. To get 
+> > communication work between client and server I had to do some changes to 
+> > stack/ipv4/tcp/tcp.c file.
+> > 
+> > First. Original tcp flag enumeration didn't work at all in this case. This 
+> > was verified by using Wireshark to track communication which didn't show 
+> > me any flags in tcp packets. This was solved by replacing flags assigning 
+> > TCP_FLAG_ prefixed enums with TCPHDR_ prefixed defines from <net/tcp.h> in 
+> > stack/ipv4/tcp/tcp.c file. The original code only works in case of little 
+> > endian machine, as rt_tcp_set_flags function places assumption that flags 
+> > are located in the least-significant 8bits of the 32bit flag variable. 
+> > This approach is similar to what regular TCP is using: 
+> > https://github.com/torvalds/linux/blob/master/net/ipv4/tcp.c
+> > 
+> > Second. Server was able to receive messages from client but was unable to 
+> > reply messages. I was able to trace function calls by adding debug prints 
+> > to tcp.c functions and noticed that accepted socket wasn't signaled for 
+> > "ready to send" at all and server was unable to reply messages. This seems 
+> > to work properly if the send signal is posted in the end of the accept 
+> > function, which also would seem the logical way to initialize it once 
+> > connection has been established.
+> > 
+> > Third. In our case we have regular Linux tcp sockets and rtnet tcp sockets 
+> > working parallel, serving different services. Referred to this I noticed 
+> > that *rt_tcp_dest_socket() may cause problem when real time stack 
+> > processes a message targeted to a regular Linux socket and does not find a 
+> > rttcp socket for it. The rttcp stack then  tries to send RST|ACK to client 
+> > to terminate the connection. This is temporarily disabled by setting 
+> > "if (!th->rst)" clause into #ifdef YET_UNUSED. This should be corrected 
+> > for example by implementing layer which is able to loop also non real time 
+> > sockets. Or is it really a desired rttcp design principle to unsupport the 
+> > usage of regular Linux tcp sockets in parallel?
 > 
-> I guess that's fair. In reality, the task is calling into a library
-> function for a library that we also link against Xenomai in this case.
-> The library is used on non-Xenomai systems (for different applications)
-> as well and I have tried to minimize the number of ifdefs, leaving plain
-> 'select' etc. calls until I have a need to change it.
-> 
-> > mode, in order to execute the syscall, which will say "there is a
-> > linux file descriptor in that set, let us handle it with plain linux
-> > syscall", so the wrapped select call will call the plain linux
-> > select syscall which will cause the thread to switch to secondary
-> 
-> I didn't realize it always caused two mode switches until I looked at
-> the code further. I figured that the detection of plain Linux fds
-> happened in the userspace __wrap_select. Is that impossible because
-> userspace doesn't know where RTDM fds start?
+> I am going to merge your patch for the time being. However, I have a
+> question about using rttcp in parallel with Linux tcp: are you using
+> the rtnetproxy module? If yes, then testing for
+> CONFIG_XENO_DRIVERS_NET_ADDON_PROXY and the rt_ip_fallback_handler
+> pointer would be the way to go.
 
-__wrap_select being called for plain linux threads is kind of a
-corner case, not the main use of __wrap_select, so the check is made
-in kernel space in such a way that it can be avoided in the "normal"
-case when __wrap_select is called with only file descriptors which
-have already been checked. I did not see any way to make the same
-thing in user-space.
-
-> 
-> > mode (and get a SIGDEBUG signal if it has enabled PTHREAD_WARNSW).
-> > Second, EINTR is very much likely returned by the 
-> > plain linux select syscall, and not by Xenomai syscall. Third, is
-> > not it because you have enabled PTHREAD_WARNSW on that thread?
-> 
-> I agree that EINTR is most likely being returned by the Linux select
-> syscall, but am not entirely clear where the signal is coming from.
-> PTHREAD_WARNSW is not enabled on this thread.
-
-You can try and play with pselect, in order to find what value of
-pselect signal mask does not cause EINTR to be emitted. Or a more
-direct way would be to use the I-pipe tracer and cause a trace
-freeze when select returns -EINTR.
+Hi, ping ?
 
 -- 
 					    Gilles.
