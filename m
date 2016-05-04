@@ -1,13 +1,16 @@
-Date: Tue, 3 May 2016 23:17:15 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160503211715.GJ1761@hermes.click-hack.org>
-References: <CAJ2oMhKmN34tBFwYr0W1bAkBsmPyiSC+CGVEXkZhV7C4Jid01Q@mail.gmail.com>
- <20160503204457.GI1761@hermes.click-hack.org>
+References: <4318702e-51ea-f276-55b0-490fdc13fffd@isir.upmc.fr>
+ <20160426142028.GD27058@hermes.click-hack.org>
+ <4e3bc939-1942-1e78-9551-fffe95204fef@isir.upmc.fr>
+ <20160429194212.GP1881@hermes.click-hack.org>
+From: Florian Richer <richer@isir.upmc.fr>
+Message-ID: <d05a6592-b473-2a12-2e71-f9b067e2c83d@isir.upmc.fr>
+Date: Wed, 4 May 2016 12:17:30 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20160503204457.GI1761@hermes.click-hack.org>
-Subject: Re: [Xenomai] xenomai & zynq
+In-Reply-To: <20160429194212.GP1881@hermes.click-hack.org>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="windows-1252"; Format="flowed"
+Subject: Re: [Xenomai] Latency test shows weird results
+Reply-To: florian.richer@upmc.fr
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,61 +19,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ran Shalit <ranshalit@gmail.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai@xenomai.org
 
-On Tue, May 03, 2016 at 10:44:57PM +0200, Gilles Chanteperdrix wrote:
-> On Tue, May 03, 2016 at 11:21:16PM +0300, Ran Shalit wrote:
-> > Hello,
-> > 
-> > I hope someone will have idea about the following.
-> > I try to build xenomai 3 .
-> > The configure seems to works fine, but
-> >  make <DESTDIR> install, gives errors:
-> > ".....
-> > Making install in init
-> > make[4]: Entering directory
-> > `/home/ubuntu/zynq/xenomai_3/xenomai-3.0.2/lib/boilerplate/init'
-> >   CC       libbootstrap_a-bootstrap.o
-> > In file included from ../../../include/xenomai/init.h:21:0,
-> >                  from bootstrap.c:23:
-> > ../../../include/boilerplate/setup.h:27:2: error: unknown type name 'cpu_set_t'
-> >   cpu_set_t cpu_affinity;
-> >   ^
-> > ../../../include/boilerplate/setup.h: In function 'get_program_name':
-> > ../../../include/boilerplate/setup.h:107:2: error: implicit
-> > declaration of function 'basename'
-> > [-Werror=implicit-function-declaration]
-> >   return basename(__base_setup_data.arg0 ?: "program");
-> >   ^
-> > ...."
-> > I configure it as following:
-> >   ./configure CFLAGS="-march=armv7-a -mfpu=neon"
-> > LDFLAGS="-march=armv7-a -mfpu=neon"   --build=i686-pc-linux-gnu
-> > --host=arm-xilinx-eabi --with-core=cobalt
-> > 
-> > But When I change the host cross compiles from
-> > host=arm-xilinx-eabi
-> > to
-> > host=arm-none-linux-gnueabi
-> > 
-> > than  build is completed without errors.
-> > 
-> > Is there anything wrong with the configuration I use with zynq ?
-> > I am not sure if arm-none-linux-gnueabi can be used instead of arm-xilinx-eabi.
-> > Is there anyone who used xenomai with zynq ?
-> 
-> arm-xilinx-eabi is a compiler without glibc or uclibc. Xenomai needs
-> glibc or uclibc, so can not be compiled with arm-xilinx-eabi.
-> arm-none-linux-gnueabi is fine. However, you may want to find a
-> toolchain for Zynq with glibc, because the Zynq has an FPU, and
-> arm-none-linux-gnueabi (usually) uses soft floats, so is not an
-> optimal choice for Zynq.
+Hello and sorry for the delay,
 
-You probably want arm-xilinx-linux-gnueabi mentioned on this page:
-http://www.wiki.xilinx.com/Install+Xilinx+Tools
+It seems to be isolated; The previous line displayed shows a best =
 
--- 
-					    Gilles.
-https://click-hack.org
+latency just above 0.
 
+i tried to get a trace to show the problem but with the patch you =
+
+mentioned, the trace is flooded with calls to xnclock_ticks_to_ns =
+
+(called from xntimer_update_date in the while)
+
+I rolled back to xenomai 2.6.4 for now and got a trace (attached) =
+
+corresponding to these results :
+RTS|    -121.330|    1.927|    94.445|    33040|     0| 16:17:44
+
+Thanks again for your help
+
+Le 29/04/2016 =E0 21:42, Gilles Chanteperdrix a =E9crit :
+> On Thu, Apr 28, 2016 at 05:03:59PM +0200, Florian Richer wrote:
+>> Hello,
+>>> This is very much likely the issue fixed by this patch:
+>>> https://git.xenomai.org/xenomai-3.git/commit/?h=3Dstable-3.0.x&id=3Db41=
+88f68e9ac7c9e9da25cf57d9756f0ccb78f4d
+>>>
+>>> You may want to try Xenomai 3.0.2 to see if you still have the
+>>> problem.
+>> Xenomai 3.0.2 does indeed correct the "offset" caused by the overrun.
+>>> Note that if it is the problem, the real problem is that you have
+>>> latencies close to 100us, which should not happen on such a
+>>> processor.
+>> My latencies were probably caused by CONFIG_COMPACTION, which is now
+>> disabled; After a full day of latency testing my maximum latencies are
+>> now fine, but the min was at around -1000000us (-1s), any idea where
+>> that could come from ? (dmesg and .config attached if it helps)
+>>> To get useful traces with the I-pipe tracer, you should increase the
+>>> number of "back trace points".
+>> Thanks for your help !
+> Has the minimum drifted slowly over time, or is this an isolated
+> spot?
+>
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: trace.zip
+Type: application/x-zip-compressed
+Size: 249876 bytes
+Desc: not available
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20160504/4bf05dcd/at=
+tachment.bin>
