@@ -1,13 +1,13 @@
-Date: Fri, 6 May 2016 11:22:48 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160506092248.GE13285@hermes.click-hack.org>
-References: <E1aybuF-000446-5i@sd-51317.xenomai.org>
+References: <E1aybuF-00044d-BO@sd-51317.xenomai.org>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <572C6719.5070900@xenomai.org>
+Date: Fri, 6 May 2016 11:42:49 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1aybuF-000446-5i@sd-51317.xenomai.org>
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : boilerplate: Allow for
- enabling Xenomai only in shared libs
+In-Reply-To: <E1aybuF-00044d-BO@sd-51317.xenomai.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : testsuite/smokey: Add test
+ case for setschedparam & Co, 
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,24 +17,33 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
-Cc: xenomai-git@xenomai.org
+Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>
 
-On Fri, May 06, 2016 at 11:18:43AM +0200, git repository hosting wrote:
-> diff --git a/lib/boilerplate/init/Makefile.am b/lib/boilerplate/init/Makefile.am
-> index 7a58f54..8c09e28 100644
-> --- a/lib/boilerplate/init/Makefile.am
-> +++ b/lib/boilerplate/init/Makefile.am
-> @@ -4,6 +4,7 @@ libbootstrap_a_SOURCES = bootstrap.c
->  
->  libbootstrap_a_CPPFLAGS =		\
->  	@XENO_USER_CFLAGS@		\
-> +	-fPIC				\
->  	-I$(top_srcdir)/include		\
->  	-I$(top_srcdir)/lib
+On 05/06/2016 11:18 AM, git repository hosting wrote:
+> Module: xenomai-jki
+> Branch: for-forge
+> Commit: dcd6af76837c1afa2941729919337b932b42bd13
+> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=dcd6af76837c1afa2941729919337b932b42bd13
+> 
+> Author: Jan Kiszka <jan.kiszka@siemens.com>
+> Date:   Mon Feb 29 16:54:26 2016 +0100
+> 
+> testsuite/smokey: Add test case for setschedparam & Co,
+> 
+> This performs basic checks on the correct execution of scheduling
+> parameter changes from primary mode.
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> 
 
-This is not how this should be done.
+Please do not exit on failure, but unwind and propagate the error up to
+the run() handler instead, which should in turn return the status code
+to the test driver. Exiting defeats the purpose of passing --keep-going,
+which is annoying.
+
+In that respect, the tests from testsuite/smokey that still exit bluntly
+on error need fixing.
 
 -- 
-					    Gilles.
-https://click-hack.org
+Philippe.
 
