@@ -1,10 +1,13 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Thu, 5 May 2016 14:38:18 -0400
-Message-ID: <20160505183818.GB3264@csclub.uwaterloo.ca>
+Date: Fri, 6 May 2016 11:22:48 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160506092248.GE13285@hermes.click-hack.org>
+References: <E1aybuF-000446-5i@sd-51317.xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Subject: [Xenomai] Possible missing symbol export in powerpc ipipe 4.1?
+In-Reply-To: <E1aybuF-000446-5i@sd-51317.xenomai.org>
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : boilerplate: Allow for
+ enabling Xenomai only in shared libs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,21 +17,24 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
+Cc: xenomai-git@xenomai.org
 
-In 3.10 and 3.14 ipipe patches for powerpc, there was an
-EXPORT_SYMBOL_GPL(do_munmap);
-in arc/powerpc/kernel/ipipe.c
+On Fri, May 06, 2016 at 11:18:43AM +0200, git repository hosting wrote:
+> diff --git a/lib/boilerplate/init/Makefile.am b/lib/boilerplate/init/Makefile.am
+> index 7a58f54..8c09e28 100644
+> --- a/lib/boilerplate/init/Makefile.am
+> +++ b/lib/boilerplate/init/Makefile.am
+> @@ -4,6 +4,7 @@ libbootstrap_a_SOURCES = bootstrap.c
+>  
+>  libbootstrap_a_CPPFLAGS =		\
+>  	@XENO_USER_CFLAGS@		\
+> +	-fPIC				\
+>  	-I$(top_srcdir)/include		\
+>  	-I$(top_srcdir)/lib
 
-In 3.18 and 4.1 for powerpc that is gone, but x86 and arm still have it.
-
-Sure xenomai-3 doesn't use it, but xenomai 2.6 does and it seems to be
-the only thing preventing compiling xenomai-2.6 on 4.1 kernel (arm built
-and ran fine for me so far, while powerpc is missing just that one
-symbol).
-
-Any reason it was removed from powerpc but not arm and x86?  Any reason
-not to put it back for powerpc?
+This is not how this should be done.
 
 -- 
-Len Sorensen
+					    Gilles.
+https://click-hack.org
 
