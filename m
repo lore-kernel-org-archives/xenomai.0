@@ -1,14 +1,14 @@
-References: <E1aybuF-00044d-BO@sd-51317.xenomai.org>
- <572C6719.5070900@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <572C6886.6010400@siemens.com>
-Date: Fri, 6 May 2016 11:48:54 +0200
+From: Umair Ali <ali.umair@tut.fi>
+Date: Fri, 6 May 2016 15:04:03 +0000
+Message-ID: <2396B4D2166B62479FBBE370D4A7C1F30A733219@mb2010-3.intra.tut.fi>
+References: <2396B4D2166B62479FBBE370D4A7C1F30A733197@mb2010-3.intra.tut.fi>
+ <20160504210030.GK1761@hermes.click-hack.org>
+In-Reply-To: <20160504210030.GK1761@hermes.click-hack.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <572C6719.5070900@xenomai.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : testsuite/smokey: Add test
- case for setschedparam & Co, 
+Subject: Re: [Xenomai] mmap a file in rtdm moudle without switching the mode
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,40 +17,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2016-05-06 11:42, Philippe Gerum wrote:
-> On 05/06/2016 11:18 AM, git repository hosting wrote:
->> Module: xenomai-jki
->> Branch: for-forge
->> Commit: dcd6af76837c1afa2941729919337b932b42bd13
->> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=dcd6af76837c1afa2941729919337b932b42bd13
->>
->> Author: Jan Kiszka <jan.kiszka@siemens.com>
->> Date:   Mon Feb 29 16:54:26 2016 +0100
->>
->> testsuite/smokey: Add test case for setschedparam & Co,
->>
->> This performs basic checks on the correct execution of scheduling
->> parameter changes from primary mode.
->>
->> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>
-> 
-> Please do not exit on failure, but unwind and propagate the error up to
-> the run() handler instead, which should in turn return the status code
-> to the test driver. Exiting defeats the purpose of passing --keep-going,
-> which is annoying.
+Hello gilles,
 
-OK, will change this.
+Thanks for the patience and the reply. I am sorry for asking such questions=
+. I am newbie so need some guidance. I have searched for linux device drive=
+rs on the internet and I found the book (https://lwn.net/Kernel/LDD3/) . Ca=
+n you recommend me which chapter will be very helpful for me. I want to rea=
+d a big file of size 600MB in kernel space and need to read it periodically=
+ by timers. I think the answers lies in the using functions rtdm_malloc, rt=
+dm_safe_copy_from _user. I know the good way to is open the file in the use=
+rspace and send the address to kernel space. Any example will help me a lot=
+.=20
 
-> 
-> In that respect, the tests from testsuite/smokey that still exit bluntly
-> on error need fixing.
+Thanks & BR
+Ali
 
-Jan
+-----Original Message-----
+From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]=20
+Sent: May-05-16 12:01 AM
+To: Umair Ali
+Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai] mmap a file in rtdm moudle without switching the mod=
+e
 
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+On Wed, May 04, 2016 at 01:03:35PM +0000, Umair Ali wrote:
+> Hello ,
+>=20
+> My aim is to open and read a file in the rtdm module. This file will=20
+> be accessed or red  periodically using the kernel timers until the=20
+> whole file is read completely. What I am doing is as follows
+> - Open the file and mapped the file using mmap() in the user space in rea=
+l time.
+> -  a kernel module is running in the back ground with timer=20
+> initialized
+> -  run the application in user space and pass the mmap pointer along with=
+ the size of file to the kernel module by using the read() function to read=
+ the device.
+> - In the read_rt thread of module the pointer of the mapped file is assig=
+ned to the global  char pointer and timer is started.
+> - The timed function is using the global char pointer to access file=20
+> but fails when the read_rt ends
+> - Meanwhile the user space app is also ended after passing the pointer an=
+d file size.
+>=20
+> The above technique is not working because when the read_rt ends then the=
+ kernel is stuck. I have read on the net that I should pass the pointer of =
+mmaped file from userspace to the kernel space as mmap is ponting the file =
+to kernel memory. It seems to me that memory is erased once the user space =
+app or read_rt in module ends. Please guide me if I am on the right path or=
+ what should I do so that I can read the file in the module and read period=
+ically using kernel timer. Is there any rtdm functions which I have missed =
+and can help me.=20
+
+No, you are not on the right track. I do not understand the problems you ha=
+ve, I believe I understand what you are trying to achieve, but I do not see=
+ an easy angle to give you the lot of information you lack. I believe readi=
+ng "linux device drivers" would be in order to have a little understanding =
+of how a standard linux driver works and is implemented, then read the RTDM=
+ API documentation to understand how to replace Linux kernel functions with=
+ their RTDM equivalent.
+
+--=20
+					    Gilles.
+https://click-hack.org
 
