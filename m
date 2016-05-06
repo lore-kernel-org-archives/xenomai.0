@@ -1,21 +1,14 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Mon, 25 Apr 2016 13:08:00 -0400
-Message-ID: <20160425170800.GJ11630@csclub.uwaterloo.ca>
-References: <CAJ2oMh+Bp4iFpVSN0M+SvyL9WerjxJOgMWq-JEc2_AZvbvGdPg@mail.gmail.com>
- <20160418134509.GW11630@csclub.uwaterloo.ca>
- <CAJ2oMhJEuYiJ40xw4+dL5WYS9oPVfF21eh=wcWSwQXLzn35pdQ@mail.gmail.com>
- <20160418135438.GX11630@csclub.uwaterloo.ca>
- <CAJ2oMh+edAyPTNzwq0HNFDO9Y-ZFn=_BZvJ0-zdB-8NQCBPHDg@mail.gmail.com>
- <CAJ2oMhLrcs104KGKAKx4Z1XWpwLKaVQBn6cZRP4EOLoVXtZJNw@mail.gmail.com>
- <20160418143032.GZ11630@csclub.uwaterloo.ca>
- <CAJ2oMh+vab29mm8xhMc=3KT=2mG2cO=opi5jtJtTkc_wFugU3A@mail.gmail.com>
- <20160425143644.GI11630@csclub.uwaterloo.ca>
- <CAJ2oMhK+xcdxtkXY+1koTvnmXVVHFDBFzPWO3xGXq9KBmsTdnA@mail.gmail.com>
+References: <E1aybuF-00044d-BO@sd-51317.xenomai.org>
+ <572C6719.5070900@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <572C6886.6010400@siemens.com>
+Date: Fri, 6 May 2016 11:48:54 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJ2oMhK+xcdxtkXY+1koTvnmXVVHFDBFzPWO3xGXq9KBmsTdnA@mail.gmail.com>
-Subject: Re: [Xenomai] kernel 3.12
+In-Reply-To: <572C6719.5070900@xenomai.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : testsuite/smokey: Add test
+ case for setschedparam & Co, 
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,22 +17,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ran Shalit <ranshalit@gmail.com>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On Mon, Apr 25, 2016 at 07:38:45PM +0300, Ran Shalit wrote:
-> Hi Len,
+On 2016-05-06 11:42, Philippe Gerum wrote:
+> On 05/06/2016 11:18 AM, git repository hosting wrote:
+>> Module: xenomai-jki
+>> Branch: for-forge
+>> Commit: dcd6af76837c1afa2941729919337b932b42bd13
+>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=dcd6af76837c1afa2941729919337b932b42bd13
+>>
+>> Author: Jan Kiszka <jan.kiszka@siemens.com>
+>> Date:   Mon Feb 29 16:54:26 2016 +0100
+>>
+>> testsuite/smokey: Add test case for setschedparam & Co,
+>>
+>> This performs basic checks on the correct execution of scheduling
+>> parameter changes from primary mode.
+>>
+>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>
 > 
-> We've first tried to apply the patch for 3.12.0 but there were too many errors,
-> so we eventually used
-> http://git.xenomai.org/ipipe-gch.git/log/?h=raw/for-ipipe-3.12.0
-> latest commit.
-> I hope the ipipe should work without any issues wuth this tree.
-> Is there a way to check if ipipe is OK with our version based on this commit ?
+> Please do not exit on failure, but unwind and propagate the error up to
+> the run() handler instead, which should in turn return the status code
+> to the test driver. Exiting defeats the purpose of passing --keep-going,
+> which is annoying.
 
-Well try it.  switch-test and latency and such that come with xenomai
-are a start.  Pretty sure the documentation covers those.
+OK, will change this.
+
+> 
+> In that respect, the tests from testsuite/smokey that still exit bluntly
+> on error need fixing.
+
+Jan
 
 -- 
-Len Sorensen
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
 
