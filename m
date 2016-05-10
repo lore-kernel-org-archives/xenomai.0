@@ -1,9 +1,10 @@
 References: <E1azqoa-0005Bc-3q@sd-51317.xenomai.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <5731E948.5050301@xenomai.org>
-Date: Tue, 10 May 2016 15:59:36 +0200
+ <5731E948.5050301@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5731FE39.3060101@siemens.com>
+Date: Tue, 10 May 2016 17:28:57 +0200
 MIME-Version: 1.0
-In-Reply-To: <E1azqoa-0005Bc-3q@sd-51317.xenomai.org>
+In-Reply-To: <5731E948.5050301@xenomai.org>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt/kernel: Return
@@ -16,24 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, xenomai-git@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 05/09/2016 09:26 PM, git repository hosting wrote:
-> Module: xenomai-jki
-> Branch: for-forge
-> Commit: dd2df9a8bfbb7e45e1c262b52050cc1c3f75b3bd
-> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=dd2df9a8bfbb7e45e1c262b52050cc1c3f75b3bd
+On 2016-05-10 15:59, Philippe Gerum wrote:
+> On 05/09/2016 09:26 PM, git repository hosting wrote:
+>> Module: xenomai-jki
+>> Branch: for-forge
+>> Commit: dd2df9a8bfbb7e45e1c262b52050cc1c3f75b3bd
+>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=dd2df9a8bfbb7e45e1c262b52050cc1c3f75b3bd
+> 
+>> @@ -926,7 +924,7 @@ struct xnthread *xnsynch_release(struct xnsynch *synch,
+>>  	trace_cobalt_synch_release(synch);
+>>  
+>>  	if (xnthread_put_resource(curr))
+>> -		return NULL;
+>> +		return 0;
+>>  
+> 
+> Nitpicking about the boolean return. Otherwise looks good.
+> 
 
-> @@ -926,7 +924,7 @@ struct xnthread *xnsynch_release(struct xnsynch *synch,
->  	trace_cobalt_synch_release(synch);
->  
->  	if (xnthread_put_resource(curr))
-> -		return NULL;
-> +		return 0;
->  
+Yep, pushed a fixed version.
 
-Nitpicking about the boolean return. Otherwise looks good.
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
 
