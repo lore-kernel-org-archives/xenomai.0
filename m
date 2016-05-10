@@ -1,8 +1,8 @@
 References: <5730DF08.8080309@siemens.com> <5730E540.4030807@xenomai.org>
  <5730E5BF.3030301@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5731E2D6.8030700@siemens.com>
-Date: Tue, 10 May 2016 15:32:06 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5731E8E0.7060503@xenomai.org>
+Date: Tue, 10 May 2016 15:57:52 +0200
 MIME-Version: 1.0
 In-Reply-To: <5730E5BF.3030301@siemens.com>
 Content-Type: text/plain; charset=iso-8859-15
@@ -16,10 +16,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2016-05-09 21:32, Jan Kiszka wrote:
+On 05/09/2016 09:32 PM, Jan Kiszka wrote:
 > On 2016-05-09 21:30, Philippe Gerum wrote:
 >> On 05/09/2016 09:03 PM, Jan Kiszka wrote:
 >>> Hi Philippe,
@@ -81,13 +81,10 @@ On 2016-05-09 21:32, Jan Kiszka wrote:
 > 
 > OK, I didn't use bool (will change that), but otherwise did the same
 > with that two patches in for-forge. Or what do you mean?
+> 
 
-Problem solved these ways, both for slow and fast path. Just received
-the confirmation.
-
-Jan
+No issue, e-mail crossing.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
