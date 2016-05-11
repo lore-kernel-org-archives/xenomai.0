@@ -1,14 +1,18 @@
-References: <573204D1.4060202@siemens.com>
- <20160510160837.GA29741@hermes.click-hack.org> <57320A7D.1060105@siemens.com>
- <20160511060545.GH13285@hermes.click-hack.org> <5732DCA4.8020404@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5732DE63.1070003@siemens.com>
-Date: Wed, 11 May 2016 09:25:23 +0200
+From: Umair Ali <ali.umair@tut.fi>
+Date: Wed, 11 May 2016 14:22:20 +0000
+Message-ID: <2396B4D2166B62479FBBE370D4A7C1F30A733367@mb2010-3.intra.tut.fi>
+References: <2396B4D2166B62479FBBE370D4A7C1F30A733197@mb2010-3.intra.tut.fi>
+ <20160504210030.GK1761@hermes.click-hack.org>
+ <2396B4D2166B62479FBBE370D4A7C1F30A733219@mb2010-3.intra.tut.fi>
+ <20160506151720.GH3264@csclub.uwaterloo.ca>
+ <20160506231034.GK13285@hermes.click-hack.org>
+ <2396B4D2166B62479FBBE370D4A7C1F30A7332A2@mb2010-3.intra.tut.fi>
+In-Reply-To: <2396B4D2166B62479FBBE370D4A7C1F30A7332A2@mb2010-3.intra.tut.fi>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <5732DCA4.8020404@xenomai.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Resuming nanosleep & Co. after ignored signals
+Subject: Re: [Xenomai] mmap a file in rtdm moudle without switching the mode
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,78 +21,117 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Umair Ali <ali.umair@tut.fi>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2016-05-11 09:17, Philippe Gerum wrote:
-> On 05/11/2016 08:05 AM, Gilles Chanteperdrix wrote:
->> On Tue, May 10, 2016 at 06:21:17PM +0200, Jan Kiszka wrote:
->>> On 2016-05-10 18:08, Gilles Chanteperdrix wrote:
->>>> On Tue, May 10, 2016 at 05:57:05PM +0200, Jan Kiszka wrote:
->>>>> Hi,
->>>>>
->>>>> originally, this effect was only reported for debugged applications, but
->>>>> I think it affects more:
->>>>>
->>>>> clock_nanosleep (as well as nanosleep and sleep) should return -EINTR if
->>>>> they were interrupted by signal while sleeping. OK. But what if that
->>>>> signal was SIGSTOP, maybe even related to ptrace? Right now the function
->>>>> just bails out, and applications behave differently from native Linux.
->>>>> There we resume the sleep transparently if the signal is not delivered
->>>>> to some handler (or actually terminates the process).
->>>>>
->>>>> How could we model this properly with Xenomai? And could there be more
->>>>> services affected than clock_nanosleep?
->>>>
->>>> I was going to say, this is unspecified by POSIX, but actually it
->>>> is:
->>>> http://pubs.opengroup.org/onlinepubs/9699919799/functions/clock_nanosleep.html
->>>>
->>>> The relevant sentence is:
->>>> "the clock_nanosleep() function shall cause the current thread to be
->>>> suspended from execution until either the time interval specified by
->>>> the rqtp argument has elapsed, or a signal is delivered to the
->>>> calling thread and its action is to invoke a signal-catching
->>>> function"
->>>>
->>>> Clearly, the action of SIGSTOP is not "a signal-catching function",
->>>> and the sleep should not appear to have been interrupted.
->>>>
->>>> Just saying, I have no idea whatsoever on how to get this working.
->>>
->>> It's at least not trivial: The kernel has per-thread restart blocks
->>> where it pushes the timer state of an interrupted relative
->>> clock_nanosleep so that the restarted syscall will not restart the timer
->>> at 0.
->>>
->>> And then we still need to differentiate between those two signal types
->>> (delivered to handler vs. internally processed).
->>
->> Since we will return from the xenomai syscall in secondary mode, we
->> could conceivably go through the plain Linux syscall epilogue with
->> the restart block, using a specific restart block which piggy backs
->> into xenomai kernel. I wonder if xenomai syscall returning in
->> secondary mode do not go through the plain Linux syscall epilogue
->> already, actually.
->>
-> 
-> Correct, it does.
-> 
+Mmap is giving a virtual address from userspace. Can remaping the mmap addr=
+ess passed from userspace to the vma of kernel will help to read the file. =
+What are  these functions
+- rtdm_mmap_kmem
+- rtdm_mmap_vmem
+Can these functions be used to remap the mmap address to new address in ker=
+nel space
 
-I was thinking along these lines already, but it is not straightforward.
-The problems that we cannot directly use the restart mechanism. It would
-make userspace issue the restart syscall, a Linux one, but we need to
-migrate in that syscall to primary mode again. That, to my
-understanding, can only be done from within the syscall hook because
-only then we ensure running the correct syscall return path.
+-----Original Message-----
+From: Xenomai [mailto:xenomai-bounces@xenomai.org] On Behalf Of Umair Ali
+Sent: May-09-16 4:55 PM
+To: Gilles Chanteperdrix
+Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai] mmap a file in rtdm moudle without switching the mod=
+e
 
-But we may reuse at least Linux' mechanism to decide if the syscall
-should be restarted or not by initializing and then evaluating
-restart_block.fn in our nanosleep syscall. I will play with that today.
+Thanks Gilles for such detailed answer. I think I have got your point. I am=
+ just confused about some functions such as
+- rtdm_mmap_kmem
+- rtdm_mmap_vmem
 
-Jan
+Will such functions are of any help or what is the main purpose of them.
 
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+Thanks
+Ali
+-----Original Message-----
+From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+Sent: May-07-16 2:11 AM
+To: Lennart Sorensen
+Cc: Umair Ali; xenomai@xenomai.org
+Subject: Re: [Xenomai] mmap a file in rtdm moudle without switching the mod=
+e
+
+On Fri, May 06, 2016 at 11:17:20AM -0400, Lennart Sorensen wrote:
+> On Fri, May 06, 2016 at 03:04:03PM +0000, Umair Ali wrote:
+> > Hello gilles,
+> >=20
+> > Thanks for the patience and the reply. I am sorry for asking such quest=
+ions. I am newbie so need some guidance. I have searched for linux device d=
+rivers on the internet and I found the book (https://lwn.net/Kernel/LDD3/) =
+. Can you recommend me which chapter will be very helpful for me. I want to=
+ read a big file of size 600MB in kernel space and need to read it periodic=
+ally by timers. I think the answers lies in the using functions rtdm_malloc=
+, rtdm_safe_copy_from _user. I know the good way to is open the file in the=
+ userspace and send the address to kernel space. Any example will help me a=
+ lot.=20
+>=20
+> Well my understanding is that you do NOT ever read files from kernel=20
+> space.  You let user space do that and pass the data.
+>=20
+> This doesn't mean it can't be done, just that the kernel maintainers=20
+> seem quite insistent that you don't do file access from kernel space.
+>=20
+> Certainly doing file access sounds like something you would not want=20
+> to try and do from the realtime side of things.  You probably can't.
+
+I believe I was the one who suggested doing things in kernel-space, but not=
+ to read the file. Though there is an API to read files from
+kernel-space:
+https://lwn.net/Articles/676101/
+
+The idea with doing it in kernel-space is to reduce the latency.
+
+What Ali is trying to do is essentially to do what "tcpreplay" does, but us=
+ing Xenomai and RTnet: play back recorded packets including playing them ba=
+ck at the time given by their timestamps. Since the sending is timed, you c=
+an not really benefit from the hardware queueing to reduce the latencies, y=
+ou have to set up a timer, and when the timer ticks, trigger the send. So, =
+the send may be delayed by the user-space scheduling latency. Doing the sen=
+d in a kernel thread, on the other hand, replaces the user-space scheduling=
+ latency with a kernel-space scheduling latency. It would be nice if we cou=
+ld do it from a kernel timer, to reduce even more the latency, but RTnet se=
+nd involves a mutex, so requires a thread, whether kernel or user.
+
+For this to work, however, the next packet must be available to the kernel =
+thread doing the sends, when the timer ticks. So, what you want to do is to=
+ implement a message queue between the user-space thread reading the file, =
+somehow, and the kernel-space thread doing the send, passing the user-space=
+ message address and its timestamp.
+You are not going to cut down on message copies: every message will be copi=
+ed three times, once from the disk to user-space memory, the second time fr=
+om the user-space memory to the kernel-space memory, then from kernel-space=
+ memory to the rtnet packet structure, because the rtnet API in kernel-spac=
+e follows the POSIX API, and the kernel-space "send" function expects a ker=
+nel-space address. Whereas you would get only two copies when sending from =
+user-space. You can use malloc + read to set up the messages for the kernel=
+ thread, or mmap, it does not really matter, though malloc + read implies o=
+ne more copy, but the copy is done ahead of time so has no influence on the=
+ replay timings precision.
+
+As for the laziness of mmap, it is not a problem: Xenomai programs run with=
+ mlockall anyway. There will be a problem if the mmaped file is larger than=
+ the available RAM though.
+
+All of this however, only makes sense if benchmarks have showed that sendin=
+g from user-space does not yield precise enough replays, and all other pote=
+ntial bugs have been removed, like for instance taking into account the fac=
+t that the tcpdump capture timestamps are packets arrival times, not depart=
+ure times.
+
+Regards.
+
+--=20
+					    Gilles.
+https://click-hack.org
+
+_______________________________________________
+Xenomai mailing list
+Xenomai@xenomai.org
+https://xenomai.org/mailman/listinfo/xenomai
 
