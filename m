@@ -1,15 +1,18 @@
-References: <573204D1.4060202@siemens.com>
- <20160510160837.GA29741@hermes.click-hack.org> <57320A7D.1060105@siemens.com>
- <20160511060545.GH13285@hermes.click-hack.org> <5732DCA4.8020404@xenomai.org>
- <5732DE63.1070003@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <5734E29F.9080109@siemens.com>
-Date: Thu, 12 May 2016 22:07:59 +0200
+References: <5734A9F8.10305@siemens.com>
+ <20160512163142.GC18298@hermes.click-hack.org> <5734B43B.4040001@siemens.com>
+ <20160512165904.GF18298@hermes.click-hack.org>
+ <20160512171246.GG18298@hermes.click-hack.org> <5734BA9B.1030503@siemens.com>
+ <20160512182049.GQ13285@hermes.click-hack.org> <5734CA76.5000606@siemens.com>
+ <5734CCF8.5090508@xenomai.org> <5734CE80.60707@siemens.com>
+ <5734D4B9.4070900@xenomai.org> <5734D92F.1000206@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <57350331.1020302@xenomai.org>
+Date: Fri, 13 May 2016 00:26:57 +0200
 MIME-Version: 1.0
-In-Reply-To: <5732DE63.1070003@siemens.com>
+In-Reply-To: <5734D92F.1000206@siemens.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Resuming nanosleep & Co. after ignored signals
+Subject: Re: [Xenomai] RTDM syscalls & switching
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,118 +21,188 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2016-05-11 09:25, Jan Kiszka wrote:
-> On 2016-05-11 09:17, Philippe Gerum wrote:
->> On 05/11/2016 08:05 AM, Gilles Chanteperdrix wrote:
->>> Since we will return from the xenomai syscall in secondary mode, we
->>> could conceivably go through the plain Linux syscall epilogue with
->>> the restart block, using a specific restart block which piggy backs
->>> into xenomai kernel. I wonder if xenomai syscall returning in
->>> secondary mode do not go through the plain Linux syscall epilogue
->>> already, actually.
+On 05/12/2016 09:27 PM, Jan Kiszka wrote:
+> On 2016-05-12 21:08, Philippe Gerum wrote:
+>> On 05/12/2016 08:42 PM, Jan Kiszka wrote:
+>>> On 2016-05-12 20:35, Philippe Gerum wrote:
+>>>> On 05/12/2016 08:24 PM, Jan Kiszka wrote:
+>>>>> On 2016-05-12 20:20, Gilles Chanteperdrix wrote:
+>>>>>> On Thu, May 12, 2016 at 07:17:15PM +0200, Jan Kiszka wrote:
+>>>>>>> On 2016-05-12 19:12, Gilles Chanteperdrix wrote:
+>>>>>>>> On Thu, May 12, 2016 at 06:59:04PM +0200, Gilles Chanteperdrix wrote:
+>>>>>>>>> On Thu, May 12, 2016 at 06:50:03PM +0200, Jan Kiszka wrote:
+>>>>>>>>>> On 2016-05-12 18:31, Gilles Chanteperdrix wrote:
+>>>>>>>>>>> On Thu, May 12, 2016 at 06:06:16PM +0200, Jan Kiszka wrote:
+>>>>>>>>>>>> Gilles,
+>>>>>>>>>>>>
+>>>>>>>>>>>> regarding commit bec5d0dd42 (rtdm: make syscalls conforming rather than
+>>>>>>>>>>>> current) - I remember a discussion on that topic, but I do not find its
+>>>>>>>>>>>> traces any more. Do you have a pointer
+>>>>>>>>>>>>
+>>>>>>>>>>>> In any case, I'm confronted with a use case for the old (Xenomai 2),
+>>>>>>>>>>>> lazy switching behaviour: lightweight, performance sensitive IOCTL
+>>>>>>>>>>>> services that can (and should) be called without any switching from both
+>>>>>>>>>>>> domains.
+>>>>>>>>>>>
+>>>>>>>>>>> Why not using a plain linux driver? ioctl_nrt callbacks are
+>>>>>>>>>>> redundant with plain linux drivers.
+>>>>>>>>>>
+>>>>>>>>>> Because that enforces the calling layer to either call the same service
+>>>>>>>>>> via a plain Linux device if the calling thread is currently relaxed or
+>>>>>>>>>> go for the RT device if the caller is in primary. Doable, but I would
+>>>>>>>>>> really like to avoid this pain for the users.
+>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>>>
+>>>>>>>>>>>> What were the arguments in favour of migrating threads to real-time first?
+>>>>>>>>>>>>
+>>>>>>>>>>>> I currently see the real need only for IOCTLs, but the question is then
+>>>>>>>>>>>> if we shouldn't go back to "__xn_exec_current" in all RTDM cases to
+>>>>>>>>>>>> avoid unwanted migration costs (which are significantly higher than
+>>>>>>>>>>>> syscall restarts).
+>>>>>>>>>>>
+>>>>>>>>>>> I do not find commit bec5d0dd42 in xenomai-2.6 git tree, and I do
+>>>>>>>>>>
+>>>>>>>>>> Xenomai 2 is still following the lazy scheme - we reverted that commit
+>>>>>>>>>> later on in 7df0c1d96b. Xenomai 3 changed it again with the commit above.
+>>>>>>>>>>
+>>>>>>>>>>> not remember merging this. However I find commit
+>>>>>>>>>>> 13bfdd477ab880499d2e8f3b82c49ef4d2cccff0 from 2010 which seems to
+>>>>>>>>>>> explain the reason pretty clear.
+>>>>>>>>>>>
+>>>>>>>>>>> At the time of the discussion we had concluded that it was the way
+>>>>>>>>>>> to go. With __xn_exec_current you may enter the ioctl_rt callback
+>>>>>>>>>>> from secondary domain, which is counter-intuitive, error-prone, and
+>>>>>>>>>>> forces you to cripple driver code for checks for the current domain.
+>>>>>>>>>>
+>>>>>>>>>> Nope, normal drivers are not affected as they just implement those
+>>>>>>>>>> services in the respective mode they want to support there and have a
+>>>>>>>>>> simple -ENOSYS for the rest (explicitly in IOCTLs or implicitly by
+>>>>>>>>>> leaving out the implementation of the counterpart handler).
+>>>>>>>>>
+>>>>>>>>> Yes, I got mixed up trying to remember. I think the crux of the
+>>>>>>>>> problem is that if a thread running in primary mode gets
+>>>>>>>>> (temporarily) switched to secondary mode by gdb, the ioctl_nrt
+>>>>>>>>> handler gets invoked, which is almost certainly the wrong thing to
+>>>>>>>>> do. You want the thread to migrate to primary mode to execute
+>>>>>>>>> ioctl_rt, which __xn_exec_conforming achieves. Otherwise running an
+>>>>>>>>> application in gdb causes the application to behave differently.
+>>>>>>>>
+>>>>>>>> And trying and avoiding this issue indeed cripple codes with checks
+>>>>>>>> for rtdm_in_rt_context:
+>>>>>>>> https://git.xenomai.org/xenomai-2.6.git/tree/ksrc/drivers/analogy/rtdm_interface.c#n194
+>>>>>>>>
+>>>>>>>
+>>>>>>> I don't remember details here, but this is a special case: The driver
+>>>>>>> provides also read_nrt - is that really useful for Analogy?
+>>>>>>>
+>>>>>>> In most cases, you are fine with not providing the nrt (or rt) handler,
+>>>>>>> or with a simple
+>>>>>>>
+>>>>>>> default:
+>>>>>>> 	return -ENOSYS;
+>>>>>>>
+>>>>>>> in your ioctl dispatcher.
+>>>>>>
+>>>>>> You are missing the point: if you enter read_nrt, there are two
+>>>>>> cases:
+>>>>>> - either the thread is real-time capable and has been relaxed by gdb
+>>>>>> and you want to switch to read_rt for the reasons I already
+>>>>>> explained, in that case, you must return -ENOSYS;
+>>>>>> - or the thread is not real-time capable and the nrt handler
+>>>>>> applies.
+>>>>>>
+>>>>>> So, you need at least
+>>>>>>
+>>>>>> read_nrt()
+>>>>>> {
+>>>>>> 	if (rt_capable)
+>>>>>> 	     return -ENOSYS;
+>>>>>>
+>>>>>> 	/* Do the normal case here */
+>>>>>> }
+>>>>>
+>>>>> Now tell me how many drivers have read_nrt, write_nrt? 1 in-tree.
+>>>>> recvmsg_nrt, sendmsg_nrt? 0 in-tree. Analogy is special (still like to
+>>>>> understand why, though). And having some special code in the exceptional
+>>>>> case is probably better then the side effects we get from eagerly
+>>>>> switching now.
+>>>>>
+>>>>
+>>>> Sorry, that is exactly the opposite: your use case is exceptional and I
+>>>> believe is wrong. The normal use case is the one that does not ask the
+>>>> user to track the current mode for knowing what any random driver would
+>>>> eventually do depending on the calling context.
+>>>
+>>> You still miss the point that this is not required in 99% of the cases.
+>>> There is no such problem. There only Analogy.
 >>>
 >>
->> Correct, it does.
+>> I'm not discussing Analogy at all, those drivers are still biased by the
+>> legacy 2.x logic for dealing with modes and need fixing. I have never
+>> been convinced by the reasoning behind rtdm_in_rt_context(), which
+>> perfectly illustrates why messing with the call mode is not the
+>> application's business.
+> 
+> You still need rtdm_in_rt_context() for the (rare) case of having the
+> same handler for both service_rt and service_nrt. That didn't change
+> with any switching strategy adjustment. It can't as long as there are
+> services behind a syscall that may handle any mode, thus that syscall is
+> unable to filter for the service in the background. We really need to
+> differentiate here.
+> 
 >>
+>>> Every driver must ensure that a service is only exposed to users in the
+>>> right mode. That is a functional requirement, and drivers that fail to
+>>> do so only work by chance (thus with the restricted workload they are
+>>> tested against). If that is fulfilled, it doesn't matter to the driver
+>>> when the switch happens. It's pure optimization.
+>>>
+>>
+>> You don't seem to get my point either. Let's proceed differently, please
+>> sketch the application code that would require __xn_exec_current for
+>> RTDM calls.
 > 
-> I was thinking along these lines already, but it is not straightforward.
-> The problems that we cannot directly use the restart mechanism. It would
-> make userspace issue the restart syscall, a Linux one, but we need to
-> migrate in that syscall to primary mode again. That, to my
-> understanding, can only be done from within the syscall hook because
-> only then we ensure running the correct syscall return path.
-> 
-> But we may reuse at least Linux' mechanism to decide if the syscall
-> should be restarted or not by initializing and then evaluating
-> restart_block.fn in our nanosleep syscall. I will play with that today.
+> You cut the more interesting case (migration ping-pong when calling
+> non-RT drivers from relaxed threads), and I hope you will not forget to
+> answer this.
 > 
 
-Here is the outcome which seems to work but is a bit hacky by relying on
-Linux to set restart_block.fn to do_no_restart_syscall if it delivered a
-signal (and by reusing the nanosleep.expires field). Feedback welcome
-if / how this could be turned into an upstream feature.
+I'm not ignoring the question, I have been postponing the answer until I
+understand why the application could be put in a situation making this
+migration a problem, and whether another approach would exist for
+solving that problem within the current scheme.
 
-Jan
+> But let's go to our case:
+> 
+> We have a non-blocking service in the driver, the classic case of
+> accessing a privileged resource that userspace can't or shouldn't touch
+> directly. Think of some kind of register access that requires low-level
+> synchronization with other threads and interrupt handlers. That service
+> is called by both RT and non-RT threads (SCHED_WEAK) at higher frequency
+> (some thousand times per second). The RT threads are obviously on the
+> time critical path, must not migrate, and that can be achieved perfectly
+> already by providing that service under ioctl_rt. The non-RT threads
+> could be migrated to RT, but then they would pay an unneeded price,
+> contributing to a higher system load, in the worst case overload.
+> Therefore, the very same service shall be provided under ioctl_nrt as
+> well. Makes sense?
+> 
 
-diff --git a/include/cobalt/uapi/kernel/thread.h b/include/cobalt/uapi/kernel/thread.h
-index 8d26f16..409e75d 100644
---- a/include/cobalt/uapi/kernel/thread.h
-+++ b/include/cobalt/uapi/kernel/thread.h
-@@ -77,6 +77,7 @@
- 
- #define XNMOVED   0x00000001 /**< CPU migration in primary mode occurred */
- #define XNLBALERT 0x00000002 /**< Scheduler lock break alert (SIGDEBUG sent) */
-+#define XNRESTART 0x00000004
- 
- /** @} */
- 
-diff --git a/kernel/cobalt/posix/clock.c b/kernel/cobalt/posix/clock.c
-index b51cb4c..a54a516 100644
---- a/kernel/cobalt/posix/clock.c
-+++ b/kernel/cobalt/posix/clock.c
-@@ -237,7 +237,7 @@ int __cobalt_clock_nanosleep(clockid_t clock_id, int flags,
- 			     struct timespec *rmt)
- {
- 	struct xnthread *cur;
--	xnsticks_t rem;
-+	xnsticks_t timeout, rem;
- 	int ret = 0;
- 	spl_t s;
- 
-@@ -261,10 +261,37 @@ int __cobalt_clock_nanosleep(clockid_t clock_id, int flags,
- 
- 	xnlock_get_irqsave(&nklock, s);
- 
--	xnthread_suspend(cur, XNDELAY, ts2ns(rqt) + 1,
-+	if (xnthread_test_localinfo(cur, XNLBALERT)) {
-+		xnthread_clear_localinfo(cur, XNLBALERT);
-+
-+		if (current->restart_block.fn != NULL) {
-+			xnlock_put_irqrestore(&nklock, s);
-+
-+			if (rmt)
-+				ns2ts(rmt, rem > 1 ? rem : 0);
-+			return -EINTR;
-+		}
-+
-+		timeout = current->restart_block.nanosleep.expires;
-+	} else
-+		timeout = ts2ns(rqt);
-+
-+	xnthread_suspend(cur, XNDELAY, timeout + 1,
- 			 clock_flag(flags, clock_id), NULL);
- 
- 	if (xnthread_test_info(cur, XNBREAK)) {
-+		if (flags == 0 && signal_pending(current)) {
-+			xnthread_set_localinfo(cur, XNLBALERT);
-+
-+			current->restart_block.fn = NULL;
-+			current->restart_block.nanosleep.expires =
-+				xntimer_get_timeout_stopped(&cur->rtimer);
-+
-+			xnlock_put_irqrestore(&nklock, s);
-+
-+			return -ERESTARTSYS;
-+		}
-+
- 		if (flags == 0 && rmt) {
- 			rem = xntimer_get_timeout_stopped(&cur->rtimer);
- 			xnlock_put_irqrestore(&nklock, s);
-@@ -280,7 +307,7 @@ int __cobalt_clock_nanosleep(clockid_t clock_id, int flags,
- 	return ret;
- }
- 
--COBALT_SYSCALL(clock_nanosleep, nonrestartable,
-+COBALT_SYSCALL(clock_nanosleep, primary,
- 	       (clockid_t clock_id, int flags,
- 		const struct timespec __user *u_rqt,
- 		struct timespec __user *u_rmt))
+I understand the conflict with the "rt-always-has-precedence" rule
+implemented by the conforming state, then I have another question:
 
+assuming the nrt thread undergoes the SCHED_WEAK policy because it is
+mainly operating from the Linux space but still needs to synchronize
+with the rt side at some point, which kind of high frequency interaction
+with the rt side is this?
+
+Sharing some resource requiring mutual exclusion via a Cobalt synchro,
+waiting for rt events, something else?
 
 -- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
