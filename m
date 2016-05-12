@@ -1,10 +1,11 @@
 References: <5734A9F8.10305@siemens.com>
  <20160512163142.GC18298@hermes.click-hack.org> <5734B43B.4040001@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <5734BF98.3060704@xenomai.org>
-Date: Thu, 12 May 2016 19:38:32 +0200
+ <5734BF98.3060704@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5734C298.30205@siemens.com>
+Date: Thu, 12 May 2016 19:51:20 +0200
 MIME-Version: 1.0
-In-Reply-To: <5734B43B.4040001@siemens.com>
+In-Reply-To: <5734BF98.3060704@xenomai.org>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] RTDM syscalls & switching
@@ -16,105 +17,124 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 05/12/2016 06:50 PM, Jan Kiszka wrote:
-> On 2016-05-12 18:31, Gilles Chanteperdrix wrote:
->> On Thu, May 12, 2016 at 06:06:16PM +0200, Jan Kiszka wrote:
->>> Gilles,
+On 2016-05-12 19:38, Philippe Gerum wrote:
+> On 05/12/2016 06:50 PM, Jan Kiszka wrote:
+>> On 2016-05-12 18:31, Gilles Chanteperdrix wrote:
+>>> On Thu, May 12, 2016 at 06:06:16PM +0200, Jan Kiszka wrote:
+>>>> Gilles,
+>>>>
+>>>> regarding commit bec5d0dd42 (rtdm: make syscalls conforming rather than
+>>>> current) - I remember a discussion on that topic, but I do not find its
+>>>> traces any more. Do you have a pointer
+>>>>
+>>>> In any case, I'm confronted with a use case for the old (Xenomai 2),
+>>>> lazy switching behaviour: lightweight, performance sensitive IOCTL
+>>>> services that can (and should) be called without any switching from both
+>>>> domains.
 >>>
->>> regarding commit bec5d0dd42 (rtdm: make syscalls conforming rather than
->>> current) - I remember a discussion on that topic, but I do not find its
->>> traces any more. Do you have a pointer
->>>
->>> In any case, I'm confronted with a use case for the old (Xenomai 2),
->>> lazy switching behaviour: lightweight, performance sensitive IOCTL
->>> services that can (and should) be called without any switching from both
->>> domains.
+>>> Why not using a plain linux driver? ioctl_nrt callbacks are
+>>> redundant with plain linux drivers.
 >>
->> Why not using a plain linux driver? ioctl_nrt callbacks are
->> redundant with plain linux drivers.
-> 
-> Because that enforces the calling layer to either call the same service
-> via a plain Linux device if the calling thread is currently relaxed or
-> go for the RT device if the caller is in primary. Doable, but I would
-> really like to avoid this pain for the users.
-> 
+>> Because that enforces the calling layer to either call the same service
+>> via a plain Linux device if the calling thread is currently relaxed or
+>> go for the RT device if the caller is in primary. Doable, but I would
+>> really like to avoid this pain for the users.
 >>
 >>>
->>> What were the arguments in favour of migrating threads to real-time first?
+>>>>
+>>>> What were the arguments in favour of migrating threads to real-time first?
+>>>>
+>>>> I currently see the real need only for IOCTLs, but the question is then
+>>>> if we shouldn't go back to "__xn_exec_current" in all RTDM cases to
+>>>> avoid unwanted migration costs (which are significantly higher than
+>>>> syscall restarts).
 >>>
->>> I currently see the real need only for IOCTLs, but the question is then
->>> if we shouldn't go back to "__xn_exec_current" in all RTDM cases to
->>> avoid unwanted migration costs (which are significantly higher than
->>> syscall restarts).
+>>> I do not find commit bec5d0dd42 in xenomai-2.6 git tree, and I do
 >>
->> I do not find commit bec5d0dd42 in xenomai-2.6 git tree, and I do
-> 
-> Xenomai 2 is still following the lazy scheme - we reverted that commit
-> later on in 7df0c1d96b. Xenomai 3 changed it again with the commit above.
-> 
->> not remember merging this. However I find commit
->> 13bfdd477ab880499d2e8f3b82c49ef4d2cccff0 from 2010 which seems to
->> explain the reason pretty clear.
+>> Xenomai 2 is still following the lazy scheme - we reverted that commit
+>> later on in 7df0c1d96b. Xenomai 3 changed it again with the commit above.
 >>
->> At the time of the discussion we had concluded that it was the way
->> to go. With __xn_exec_current you may enter the ioctl_rt callback
->> from secondary domain, which is counter-intuitive, error-prone, and
->> forces you to cripple driver code for checks for the current domain.
-> 
-> Nope, normal drivers are not affected as they just implement those
-> services in the respective mode they want to support there and have a
-> simple -ENOSYS for the rest (explicitly in IOCTLs or implicitly by
-> leaving out the implementation of the counterpart handler).
-> 
->> It optimizes the secondary mode case at the expense of the primary
->> mode case which is the inverse of what should be done. With
->> __xn_exec_conforming, you have the guarantee to enter ioctl_rt over
->> primary domain and ioctl_nrt over secondary domain.
+>>> not remember merging this. However I find commit
+>>> 13bfdd477ab880499d2e8f3b82c49ef4d2cccff0 from 2010 which seems to
+>>> explain the reason pretty clear.
+>>>
+>>> At the time of the discussion we had concluded that it was the way
+>>> to go. With __xn_exec_current you may enter the ioctl_rt callback
+>>> from secondary domain, which is counter-intuitive, error-prone, and
+>>> forces you to cripple driver code for checks for the current domain.
 >>
->> See Philippe prose here also:
->> https://xenomai.org/migrating-from-xenomai-2-x-to-3-x/#Adaptive_syscalls
+>> Nope, normal drivers are not affected as they just implement those
+>> services in the respective mode they want to support there and have a
+>> simple -ENOSYS for the rest (explicitly in IOCTLs or implicitly by
+>> leaving out the implementation of the counterpart handler).
+>>
+>>> It optimizes the secondary mode case at the expense of the primary
+>>> mode case which is the inverse of what should be done. With
+>>> __xn_exec_conforming, you have the guarantee to enter ioctl_rt over
+>>> primary domain and ioctl_nrt over secondary domain.
+>>>
+>>> See Philippe prose here also:
+>>> https://xenomai.org/migrating-from-xenomai-2-x-to-3-x/#Adaptive_syscalls
+>>>
+>>
+>> Yes, unfortunately I didn't have the current use case at hand by then to
+>> argue against this change:
+>>
+>> We do not always need real-time context in a driver, specifically to
+>> perform certain IOCTLs. We do typically need a caller path that does not
+>> migrate RT threads to Linux without a reason, though. As migrating is
+>> far from free, migration ping-pong (we first migrate a conforming caller
+>> and then find out that there is no RT version for an IOCTL service) or
+>> needless switching for those services that can handle both domains has
+>> to be avoided.
 >>
 > 
-> Yes, unfortunately I didn't have the current use case at hand by then to
-> argue against this change:
+> The logic of your driver is broken: it wants to optimize on the number
+> of migration a thread does. That is wrong:
 > 
-> We do not always need real-time context in a driver, specifically to
-> perform certain IOCTLs. We do typically need a caller path that does not
-> migrate RT threads to Linux without a reason, though. As migrating is
-> far from free, migration ping-pong (we first migrate a conforming caller
-> and then find out that there is no RT version for an IOCTL service) or
-> needless switching for those services that can handle both domains has
-> to be avoided.
+> - either a thread has real-time requirements, in which case all services
+> it calls during normal operations are best served from primary mode by
+> definition, which the current RTDM logic honors.
 > 
+> - or, a thread does not have such requirements (e.g. SCHED_WEAK), in
+> which case the preferred mode of operation is secondary mode, which the
+> current RTDM logic honors too.
 
-The logic of your driver is broken: it wants to optimize on the number
-of migration a thread does. That is wrong:
+Where is SCHED_WEAK honoured in the syscall handling? To my
+understanding, the only thing that matters for __xn_exec_conforming is
+if the caller has a shadow or not.
 
-- either a thread has real-time requirements, in which case all services
-it calls during normal operations are best served from primary mode by
-definition, which the current RTDM logic honors.
+> 
+> If an application switches mode frequently enough to be adversely
+> affected by the migration cost, then it is certainly mixing real-time
+> and regular Linux code within a thread's inner loop, which is not a RTDM
+> or Cobalt issue.
+> 
+> Cobalt is not migrating the threads without a reason, it is making sure
+> that your application knows a priori which context a call will be
+> handled from, without asking you to track the current mode, crippling
+> the driver code with in_nrt() or forced mode switches from the
+> application, like Gilles mentioned.
 
-- or, a thread does not have such requirements (e.g. SCHED_WEAK), in
-which case the preferred mode of operation is secondary mode, which the
-current RTDM logic honors too.
+As pointed out, normal drivers (the majority) were and will never be
+affected by the laziness or eagerness of the syscall entry path - they
+need to handle both cases independently of the caller's preference any
+way. The cited Analogy case is an exception.
 
-If an application switches mode frequently enough to be adversely
-affected by the migration cost, then it is certainly mixing real-time
-and regular Linux code within a thread's inner loop, which is not a RTDM
-or Cobalt issue.
+Really, the current switching model has too many disadvantages. Just
+think what happens to a shadowed thread, currently in Linux mode to do
+some non-RT stuff, now issuing a read() or ioctl() on a normal Linux
+device: it will first be migrated to RT, because RTDM may handle the
+file descriptor, but it doesn't, and so it will return to Linux when
+calling the regular syscall afterwards. Such inefficiencies didn't exist
+with the original switching scheme.
 
-Cobalt is not migrating the threads without a reason, it is making sure
-that your application knows a priori which context a call will be
-handled from, without asking you to track the current mode, crippling
-the driver code with in_nrt() or forced mode switches from the
-application, like Gilles mentioned.
-
->From that point of view, __xn_exec_current has always been a bad idea,
-and has no more in-tree users nowadays for that reason.
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
 
