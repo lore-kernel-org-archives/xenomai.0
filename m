@@ -1,21 +1,11 @@
+From: Marcel Van Mierlo <Marcel.VanMierlo@marel.com>
+Date: Fri, 13 May 2016 13:27:34 +0000
+Message-ID: <AM4PR05MB17479649FDCD91F251E66DB991740@AM4PR05MB1747.eurprd05.prod.outlook.com>
+Content-Language: en-GB
 MIME-Version: 1.0
-In-Reply-To: <20160425195054.GH1881@hermes.click-hack.org>
-References: <CAJ2oMh+Bp4iFpVSN0M+SvyL9WerjxJOgMWq-JEc2_AZvbvGdPg@mail.gmail.com>
- <20160418134509.GW11630@csclub.uwaterloo.ca>
- <CAJ2oMhJEuYiJ40xw4+dL5WYS9oPVfF21eh=wcWSwQXLzn35pdQ@mail.gmail.com>
- <20160418135438.GX11630@csclub.uwaterloo.ca>
- <CAJ2oMh+edAyPTNzwq0HNFDO9Y-ZFn=_BZvJ0-zdB-8NQCBPHDg@mail.gmail.com>
- <CAJ2oMhLrcs104KGKAKx4Z1XWpwLKaVQBn6cZRP4EOLoVXtZJNw@mail.gmail.com>
- <20160418143032.GZ11630@csclub.uwaterloo.ca>
- <CAJ2oMh+vab29mm8xhMc=3KT=2mG2cO=opi5jtJtTkc_wFugU3A@mail.gmail.com>
- <20160425143644.GI11630@csclub.uwaterloo.ca>
- <CAJ2oMhK+xcdxtkXY+1koTvnmXVVHFDBFzPWO3xGXq9KBmsTdnA@mail.gmail.com>
- <20160425195054.GH1881@hermes.click-hack.org>
-Date: Tue, 26 Apr 2016 08:48:14 +0300
-Message-ID: <CAJ2oMhLCbtQ_SQWaFvxTy0HyK=4OLrM73U4R=k-nBC0Dk4Oo8Q@mail.gmail.com>
-From: Ran Shalit <ranshalit@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] kernel 3.12
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] what limits number of pSOS tasks using t_create?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,57 +14,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Apr 25, 2016 at 10:50 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On Mon, Apr 25, 2016 at 07:38:45PM +0300, Ran Shalit wrote:
->> On Mon, Apr 25, 2016 at 5:36 PM, Lennart Sorensen
->> <lsorense@csclub.uwaterloo.ca> wrote:
->> > On Sun, Apr 24, 2016 at 10:21:50AM +0300, Ran Shalit wrote:
->> >> We intend to use ipipe with zynq (we already have 3.12.0 kernel used with zynq).
->> >> Do you think the patch should be relevant for zynq ?
->> >> I see that xilinx have their own patch , but it is for older kernel 2.6.3
->> >> http://www.wiki.xilinx.com/Xenomai+for+Zynq#Xenomai for Zynq-7000 AP
->> >> SoC Linux--Patch
->> >
->> > You can give it a try.  The zynq does have a Cortex-A9 as far as I recall,
->> > so it ought to work.  Doesn't mean there aren't other bits that need
->> > fixing in the zynq specific code.  But maybe there isn't.
->> >
->> > Just remember it was never an officially supported kernel version.
->> > It worked for us, it was given a once over by a proper xenomai developer
->> > who did not seem to think it was wrong, but if it doesn't work I wouldn't
->> > expect the xenomai developers to be excited to help fix it.
->> >
->> >> I also see that in git there is ipipe for 3.12.0
->> >> http://git.xenomai.org/ipipe-gch.git/log/?h=raw/for-ipipe-3.12.0
->> >> But again I am unsure if it is relevant for zynq too.
->> >
->> > Well that was a work in progress I believe and never officially released
->> > as far as I recall.  I started from that one, but the one I posted is
->> > actually based on the 3.14 patch and backported as far as I recall.
->> > It has been a while since we moved to 3.14.
->> >
->> > --
->> > Len Sorensen
->>
->> Hi Len,
->>
->> We've first tried to apply the patch for 3.12.0 but there were too many errors,
->> so we eventually used
->> http://git.xenomai.org/ipipe-gch.git/log/?h=raw/for-ipipe-3.12.0
->> latest commit.
->> I hope the ipipe should work without any issues wuth this tree.
->> Is there a way to check if ipipe is OK with our version based on this commit ?
->
-> Bad idea, this branch corresponds to some intermediate state. I
-> removed it.
->
+Hi,
 
-Is there a chance that the branch for-ipipe-3.12.0 will work OK ?
 
-Thanks,
-Ran
+Which parameters limit the number of psos skin tasks that can be created us=
+ing t_create()? (ARM (Beagle), Xenomai 3.0).
+
+At the moment I am getting ERR_NOTCB back after creating about 118 tasks (j=
+ust calling t_create not t_start). In production we are hitting the limit a=
+t about 70 tasks...though sometimes we can go a bit higher.
+
+>From the documentation I see:
+
+* t_create() returns ERR_NOTCB upon memory allocation failure when
+trying to get a task control block from the nucleus heap. There is
+no control block limit for tasks.
+
+
+So I adjusted the following:
+
+CONFIG_XENO_OPT_SYS_HEAPSZ=3D1024
+CONFIG_XENO_OPT_PRIVATE_HEAPSZ=3D128
+CONFIG_XENO_OPT_SHARED_HEAPSZ=3D128
+
+but increasing (doubling) these made no difference to maximum number of tas=
+ks which can be created...
+
+
+This is the guts of the test:
+
+      for (i =3D 0; i < limit; i++)
+      {
+        result =3D t_create("MAX_THREAD_TEST", 200, 0x1000, 0x1000, T_LOCAL=
+, &tids[i]);
+        if (result !=3D 0)
+          break;
+      }
+
 
