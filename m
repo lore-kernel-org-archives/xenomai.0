@@ -1,6 +1,6 @@
-Date: Tue, 17 May 2016 11:31:18 +0200
+Date: Tue, 17 May 2016 11:41:27 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160517093118.GB2668@hermes.click-hack.org>
+Message-ID: <20160517094127.GC2668@hermes.click-hack.org>
 References: <f5af5dc73c2046f789592c7f15246c24@AM3PR48MB0177.041d.mgd.msft.net>
  <20160514123051.GB27354@hermes.click-hack.org>
  <3CC67847-B96B-4A25-A4C0-D92F267E4E3F@temporubato.com>
@@ -22,16 +22,14 @@ To: TALBI Ahmed -EXT <ahmed.talbi-ext@alstom.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 On Tue, May 17, 2016 at 09:11:09AM +0000, TALBI Ahmed -EXT wrote:
-> Hi Rolf and Gilles,
-> 
-> Thanks for your responses and sorry for my delayed one (we had 3 days off ...)
-> 
-> Unfortunately we can not afford to upgrade to newer versions of kernel and xenomai. We are near to a major release and we have very short deadlines.
+> In the logs I attached I can see that xnlock  is locked in do_taskexit_event (by CPU0) and then in the same context we try to lock it a second time in xintr_clock_handler. May this be the issue ? or is xnlock a recursive lock ?
 
-We are not asking you to upgrade. We are asking you to test Xenomai
-3.0.2 with Linux 4.1.18 so as to know whether the issue you have has
-already been fixed. On our side, we do not have much time either,
-and certainly no time to waste on an issue that was already fixed.
+You are misreading the logs. xnintr_clock_handler tries to get the
+lock on one cpu, while do_taskexit_event got it on another cpu. The
+root cause of the problem is a fault when xnlock_spin is trying to
+print some message. Probably because it has spin for too long. You
+can try to disable spinlock debugging, but I am afraid you will get
+a lockup instead.
 
 -- 
 					    Gilles.
