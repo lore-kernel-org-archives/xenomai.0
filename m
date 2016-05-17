@@ -1,20 +1,15 @@
+From: TALBI Ahmed -EXT <ahmed.talbi-ext@alstom.com>
+Date: Tue, 17 May 2016 09:11:09 +0000
+Message-ID: <28dcd6ac421c4696a7f60ccef160c8ef@AM3PR48MB0177.041d.mgd.msft.net>
+References: <f5af5dc73c2046f789592c7f15246c24@AM3PR48MB0177.041d.mgd.msft.net>
+ <20160514123051.GB27354@hermes.click-hack.org>,
+ <3CC67847-B96B-4A25-A4C0-D92F267E4E3F@temporubato.com>
+In-Reply-To: <3CC67847-B96B-4A25-A4C0-D92F267E4E3F@temporubato.com>
+Content-Language: fr-FR
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <57372181.5010607@xenomai.org>
-References: <CAEMXjGyohbJkCzMDTGWfhbREdmbT7VWoHpinyvbLTdpyRkEw1Q@mail.gmail.com>
- <5735DB97.5080804@xenomai.org>
- <CAEMXjGws9VOasRJh2aV+bTXDvqFHTP4yuWD_T7hPp7BJCnM+bA@mail.gmail.com>
- <57361836.4090906@xenomai.org>
- <CAEMXjGxE8N9wv8N=HiVVinhMqLse72ozMC3_Gq5pBdeQNHjcDg@mail.gmail.com>
- <CAEMXjGxGaTo55=ibxL0DJwZ9eJmXrzQ7TYUxWbGoaTB8aUz81w@mail.gmail.com>
- <573620E5.9050202@xenomai.org>
- <CAEMXjGzCEdjwSKyTMbi3vq5inFsPQ7vqcuf-HojCKGDgPj5sTw@mail.gmail.com>
- <57372181.5010607@xenomai.org>
-Date: Mon, 16 May 2016 17:17:43 -0700
-Message-ID: <CAEMXjGwMOm-4WJXrL2enHRAuYx10cnXEr5QwSBwMCSkZv6gKBQ@mail.gmail.com>
-From: Steve B <sbattazzo@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] XDDP socket,
-	any memory allocation when sendto() is called?
+Subject: Re: [Xenomai] system freeze on IMX6
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,73 +18,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai <xenomai@xenomai.org>
+To: =?Windows-1252?Q?Rolf_W=F6hrmann?= <info@temporubato.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Sat, May 14, 2016 at 6:00 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+Hi Rolf and Gilles,
 
-> On 05/13/2016 09:42 PM, Steve B wrote:
-> >
-> >
-> > On Fri, May 13, 2016 at 11:45 AM, Philippe Gerum <rpm@xenomai.org
-> > <mailto:rpm@xenomai.org>> wrote:
-> >
-> >
-> >     Maybe. You should have a look at the vmstat output for a while (e.g.
-> >     vmstat -a 1).
-> >
-> >     Cobalt gets all the core memory it needs from __vmalloc() since 3.0.2
-> >     (was __get_free_pages() in earlier 3.x releases), then stacks its own
-> >     allocation scheme on top of this (cobalt/kernel/heap.c). So the
-> memory
-> >     usage on the RT side appears as one shot allocations only for getting
-> >     the initial memory underlying the real-time heaps.
-> >
-> >     --
-> >     Philippe.
-> >
-> >
-> > Thanks, this has been informative for me on a few more things to be
-> > looking at during development cycle, if a little off topic for this
-> > mailing list.
-> > I think I've actually found what's happening. I went ahead and wiped out
-> > all of the log files even while the process was still running, and found
-> > that the memory is freed up immediately! So the memory consumption is in
-> > the files I'm saving, even though they're supposed to go to the on board
-> > flash filesystem. I understand that they might be stored in RAM
-> > initially before getting synced over to flash, but kind of interesting
-> > that the upper bound on that is almost the entire RAM. There may be an
-> > OS setting somewhere that sets a bound, or an occasional "sync" system
-> > call might help free that memory up if I really need to for some reason.
-> >
-> > Now that I've ruled out the XDDP and found what's actually happening, it
-> > becomes more of a Linux question than a Xenomai thing but thanks for
-> > helping me narrow it down!
-> >
+Thanks for your responses and sorry for my delayed one (we had 3 days off .=
+..)
+
+Unfortunately we can not afford to upgrade to newer versions of kernel and =
+xenomai. We are near to a major release and we have very short deadlines.
+
+In the logs I attached I can see that xnlock  is locked in do_taskexit_even=
+t (by CPU0) and then in the same context we try to lock it a second time in=
+ xintr_clock_handler. May this be the issue ? or is xnlock a recursive lock=
+ ?
+
+Cheers
+Ahmed
+
+________________________________________
+De : Rolf W=F6hrmann <info@temporubato.com>
+Envoy=E9 : samedi 14 mai 2016 15:01:14
+=C0 : Gilles Chanteperdrix; TALBI Ahmed -EXT; xenomai@xenomai.org
+Objet : Re: [Xenomai] system freeze on IMX6
+
+Hi
+
+not sure if this helps:
+
+I=92m running fine Xenomai 3.0.1 with mainline 4.1 on a i.MX6Q phyCORE boar=
+d.
+
+Phytec has a new PD15.3.0 released which contains a mainline 4.1.18 only wi=
+th some DTS additions and minor driver changes. Applying the ipipe-4.1.18ar=
+m 4 was without problems.
+So, may it=92s worth a try to upgrade.
+
+Cheers
+Rolf
+
+
+> On 14 May 2016, at 14:30, Gilles Chanteperdrix <gilles.chanteperdrix@xeno=
+mai.org> wrote:
 >
-> As Gilles pointed out, the fs cache is likely eating that memory. You
-> could try flushing it, before looking at the available free memory again:
+> On Fri, May 13, 2016 at 01:25:31PM +0000, TALBI Ahmed -EXT wrote:
+>> Hi all,
+>>
+>>
+>> I'm new to this mailing list so please feel free to correct me if i'm no=
+t using it as it should.
+>>
+>> We are facing a freeze on our platform based on a IMX6 soc (see backtrac=
+e dump bellow). Please, can anybody take a look to it and give us a feedbac=
+k  or an idea on the root cause of this issue ?
+>>
+>>
+>> thanks in advance
+>>
+>>
+>> we use kernel 3.0.35 and xenomai 2.6.4.
 >
-> # echo 1 > /proc/sys/vm/drop_caches
+> Do you have the same problem with the 4.1 mainline kernel on Xenomai
+> 3.0.2 ?
 >
 > --
-> Philippe.
+>                                           Gilles.
+> https://click-hack.org
 >
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
-Thanks guys! I came to the same conclusion late on Friday that it was the
-file system cache when I noticed that the memory was all freed up if I
-deleted the saved files. Kind of a silly thing to get worked up about, in
-retrospect!
 
-My application is not dynamically allocating anything and I don't need the
-extra memory for anything else so I will just leave it to the OS to handle
-all of that. I had considered keeping watch over trends of free memory in
-my runtime diagnostics but I don't think it's telling me anything useful as
-a result of this fact.. memory consumed by my application specifically
-might be useful to watch over, but it is now stable so I probably won't
-bother to add it in this time.
+________________________________
+CONFIDENTIALITY : This e-mail and any attachments are confidential and may =
+be privileged. If you are not a named recipient, please notify the sender i=
+mmediately and do not disclose the contents to another person, use it for a=
+ny purpose or store or copy the information in any medium.
 
-Sorry to bother you guys on this but it was an interesting little side
-track for me anyway!
-
-Steve
