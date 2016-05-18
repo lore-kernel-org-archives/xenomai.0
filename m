@@ -1,14 +1,11 @@
-Date: Wed, 18 May 2016 08:49:24 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160518064924.GH1722@hermes.click-hack.org>
-References: <2396B4D2166B62479FBBE370D4A7C1F30A7395A9@mb2010-1.intra.tut.fi>
- <20160518064554.GG1722@hermes.click-hack.org>
+From: Antoine Rennuit <antoine.rennuit@lesbuilderscompanions.com>
+Date: Wed, 18 May 2016 21:00:01 +0000
+Message-ID: <2tp93g0j23ghsr5l30as2gwu.1463605197163@email.android.com>
+Content-Language: fr-FR
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20160518064554.GG1722@hermes.click-hack.org>
-Subject: Re: [Xenomai] Send interrupt from RTDM kernel module to userspace
-	app
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] xenomai 3 on the BBB (beaglebone black)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,28 +14,9 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Umair Ali <ali.umair@tut.fi>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, May 18, 2016 at 08:45:54AM +0200, Gilles Chanteperdrix wrote:
-> On Tue, May 17, 2016 at 01:51:59PM +0000, Umair Ali wrote:
-> > Hello, 
-> > 
-> > I need to send an interrupt from Rtdm kernel device to initiate the action in the userspace application. The interrupt will be send periodically by using kernel timers. Can someone give me the example how I can do send the interrupt from Rtdm module and read the interrupt in the userspace. I have read these articles
-> > http://stackoverflow.com/questions/33041199/sending-realtime-signal-from-a-kernel-module-to-user-space-fails
-> > Can anyone tell me how can I implement the above in rtdm modul. Give me example
-> 
-> Xenomai 3 does not support asynchronous signals. You can use
-> synchronous signals with sigwait, but that is uselessly complicated.
-> What you want is probably to have the thread blocked on read() or
-> ioctl() and wake it up when the event you are interested in happens,
-> this is how drivers usually work.
-
-You have examples in xenomai sources, see for instance ioctl
-RTTST_RTIOC_INTERM_BENCH_RES in:
-https://git.xenomai.org/xenomai-gch.git/tree/kernel/drivers/testing/timerbench.c?h=next
-
--- 
-					    Gilles.
-https://click-hack.org
-
+DQoNCg0KSGkgYWxsLA0KDQoNCkkgY2FuIGZpbmQgbm8gaW5mb3JtYXRpb24gb24gZ2V0dGluZyB4
+ZW5vbWFpIDMgb24gdGhlIEJCQiwgYW55d2hlcmUgb24gdGhlIGludGVybmV0LiBEb2VzIGl0IG1l
+YW4gaXQgaXMgbm90IHBvc3NpYmxlIHRvIGluc3RhbGwgeGVub21haSAzIG9uIHRoZSBCQkI/IFRo
+aXMgaXMgd2VpcmQsIG5vPw0KDQoNClRoYW5rcywNCg0KQW50b2luZSBSZW5udWl0Lg0K
