@@ -1,12 +1,19 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Tue, 26 Apr 2016 09:59:05 -0400
-Message-ID: <20160426135905.GM11630@csclub.uwaterloo.ca>
-References: <CABUerAE9GZWfm_5q8pS2ntwD4pg2k3LcNe04K=eDuiGo3GHpEA@mail.gmail.com>
+Date: Mon, 23 May 2016 15:45:03 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160523134503.GE27631@hermes.click-hack.org>
+References: <E1b4nHE-0003qK-1y@sd-51317.xenomai.org>
+ <20160523120749.GB27631@hermes.click-hack.org>
+ <5742F5F4.2020402@siemens.com>
+ <20160523124443.GC27631@hermes.click-hack.org>
+ <5742FCDB.9080608@siemens.com>
+ <20160523130913.GD27631@hermes.click-hack.org>
+ <574305A5.2010103@siemens.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CABUerAE9GZWfm_5q8pS2ntwD4pg2k3LcNe04K=eDuiGo3GHpEA@mail.gmail.com>
-Subject: Re: [Xenomai] xenomai
+In-Reply-To: <574305A5.2010103@siemens.com>
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt/kernel: Introduce
+ __SCHED_CURRENT policy to setschedparam_ex
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,22 +22,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ravi kanth <xenomai412@gmail.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: xenomai@xenomai.org
 
-On Tue, Apr 26, 2016 at 03:53:54PM +0530, ravi kanth wrote:
-> Hai all
-> when I am patching xenomai on ubuntu 14.04 I am getting error like
-> root@jPower-Series:/usr/src/linux-2.6.38.8-xenomai# apt-get install
-> make-kpkg
-> Reading package lists... Done
-> Building dependency tree
-> Reading state information... Done
-> E: Unable to locate package make-kpkg
+On Mon, May 23, 2016 at 03:29:09PM +0200, Jan Kiszka wrote:
+> On 2016-05-23 15:09, Gilles Chanteperdrix wrote:
+> > On Mon, May 23, 2016 at 02:51:39PM +0200, Jan Kiszka wrote:
+> >> On 2016-05-23 14:44, Gilles Chanteperdrix wrote:
+> >>> On Mon, May 23, 2016 at 02:22:12PM +0200, Jan Kiszka wrote:
+> >>>> On 2016-05-23 14:07, Gilles Chanteperdrix wrote:
+> >>>>> On Mon, May 23, 2016 at 12:40:00PM +0200, git repository hosting wrote:
+> >>>>>> Module: xenomai-3
+> >>>>>> Branch: next
+> >>>>>> Commit: c821cbaa31c4a816615a82d7cbbd049987da6f1a
+> >>>>>> URL:    http://git.xenomai.org/?p=xenomai-3.git;a=commit;h=c821cbaa31c4a816615a82d7cbbd049987da6f1a
+> >>>>>>
+> >>>>>> Author: Jan Kiszka <jan.kiszka@siemens.com>
+> >>>>>> Date:   Tue Mar  8 14:41:28 2016 +0100
+> >>>>>>
+> >>>>>> cobalt/kernel: Introduce __SCHED_CURRENT policy to setschedparam_ex
+> >>>>>>
+> >>>>>> Define the internal scheduling policy "current": it shall refer to the
+> >>>>>> target thread's current scheduling policy. This will allow to model
+> >>>>>> pthread_setschedprio on top of pthread_setschedparam_ex with only a
+> >>>>>> single syscall.
+> >>>>>
+> >>>>> I am not sure I understand the use of __SCHED_CURRENT all that well.
+> >>>>> Since different scheduling policies have different priority ranges,
+> >>>>> a particular priority may only make sense for a couple of scheduling
+> >>>>> policies. This, means, to use __SCHED_CURRENT, the programmer has to
+> >>>>> know the scheduling policy of the current thread anyway. So, since
+> >>>>> he knows it, why not specifying it clearly? This will make the
+> >>>>> application code more readable, will not change anything with regard
+> >>>>> to the number of calls, and avoid to have to change Xenomai core.
+> >>>>
+> >>>> See "Wrap pthread_setschedprio for proper real-time support" for the use
+> >>>> case. I'm open to address that one differently, via a separate syscall
+> >>>> or whatever, if preferred. This one was just most simple.
+> >>>
+> >>> Ok, my point shift to: de we need to support pthread_setschedprio()?
+> >>
+> >> Yes, for existing programs that we want to support over Xenomai without
+> >> modifying them.
+> >>
+> >>> The programmer has to know the target thread scheduling policy to be
+> >>> able to call that function sanely, so why not using
+> >>> pthread_setschedparam instead, which has a "self documenting" effect
+> >>> on indicating clearly which policy the target thread is using?
+> >>
+> >> Think of a layer that has no knowledge if the caller has SCHED_RR or
+> >> SCHED_FIFO set (or any other policy that have compatible prio scales)
+> >> but needs to adjust only the prio. That's the scenario we have to deal with.
+> > 
+> > Your argument seems to always be the same: "my application is badly
+> > designed, let us fix it in Xenomai core". What about fixing your
+> > application for a change?
+> 
+> It's a) not badly designed and b) it's Xenomai's role to enable
+> application porting as seamlessly as possible. So I don't see any value
+> in NOT providing this POSIX interface now also without migrations. It's
+> there anyway, it's usable, it's just lacking migration-free support.
 
-Not sure what that has to do with xenomai, but make-kpkg is in the
-package kernel-package
+As I said. I find this interface bad. So I am going to try and
+explain it a third time, in a different way.
+
+pthread_setschedprio(0)
+
+only works if the thread is running with the SCHED_OTHER policy.
+
+pthread_setschedprio(1)
+
+only works if the thread is running with the SCHED_FIFO or SCHED_RR
+policy.
+
+So, in order to be able to use pthread_setschedprio() sanely, the
+programmer has to KNOW what is the current policy of the thread. So,
+if he knows it, it seems better to use pthread_setschedparam().
 
 -- 
-Len Sorensen
+					    Gilles.
+https://click-hack.org
 
