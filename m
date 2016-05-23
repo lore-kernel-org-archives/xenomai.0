@@ -1,13 +1,13 @@
-Date: Mon, 23 May 2016 11:37:18 +0200
+Date: Mon, 23 May 2016 14:07:50 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160523093718.GA27631@hermes.click-hack.org>
-References: <20160502192504.GL2055@csclub.uwaterloo.ca>
- <b1a516a1-6798-b2d1-ccb6-3197c5eac17d@xenomai.org>
+Message-ID: <20160523120749.GB27631@hermes.click-hack.org>
+References: <E1b4nHE-0003qK-1y@sd-51317.xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b1a516a1-6798-b2d1-ccb6-3197c5eac17d@xenomai.org>
-Subject: Re: [Xenomai] [PATCH] arm/ipipe: pinctrl-single: Fix build failure
+In-Reply-To: <E1b4nHE-0003qK-1y@sd-51317.xenomai.org>
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt/kernel: Introduce
+ __SCHED_CURRENT policy to setschedparam_ex
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,20 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, May 23, 2016 at 11:12:22AM +0200, Philippe Gerum wrote:
-> On 05/02/2016 09:25 PM, Lennart Sorensen wrote:
-> > arm/ipipe: pinctrl-single: Fix build failure
-> > 
-> > A ; was lost when adding IPIPE support to the pinctrl-single.c which is
-> > only seen when building with IPIPE disabled.
+On Mon, May 23, 2016 at 12:40:00PM +0200, git repository hosting wrote:
+> Module: xenomai-3
+> Branch: next
+> Commit: c821cbaa31c4a816615a82d7cbbd049987da6f1a
+> URL:    http://git.xenomai.org/?p=xenomai-3.git;a=commit;h=c821cbaa31c4a816615a82d7cbbd049987da6f1a
 > 
-> Merged, thanks.
+> Author: Jan Kiszka <jan.kiszka@siemens.com>
+> Date:   Tue Mar  8 14:41:28 2016 +0100
+> 
+> cobalt/kernel: Introduce __SCHED_CURRENT policy to setschedparam_ex
+> 
+> Define the internal scheduling policy "current": it shall refer to the
+> target thread's current scheduling policy. This will allow to model
+> pthread_setschedprio on top of pthread_setschedparam_ex with only a
+> single syscall.
 
-I was wondering: do we have to have the #ifdef, does not that kernel
-have ipipe_raw_spinlock_t ? I wanted to have a look before answering.
+I am not sure I understand the use of __SCHED_CURRENT all that well.
+Since different scheduling policies have different priority ranges,
+a particular priority may only make sense for a couple of scheduling
+policies. This, means, to use __SCHED_CURRENT, the programmer has to
+know the scheduling policy of the current thread anyway. So, since
+he knows it, why not specifying it clearly? This will make the
+application code more readable, will not change anything with regard
+to the number of calls, and avoid to have to change Xenomai core.
 
 -- 
 					    Gilles.
