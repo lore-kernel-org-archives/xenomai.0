@@ -1,6 +1,6 @@
-Date: Mon, 23 May 2016 15:45:03 +0200
+Date: Tue, 24 May 2016 09:03:07 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160523134503.GE27631@hermes.click-hack.org>
+Message-ID: <20160524070307.GL13609@hermes.click-hack.org>
 References: <E1b4nHE-0003qK-1y@sd-51317.xenomai.org>
  <20160523120749.GB27631@hermes.click-hack.org>
  <5742F5F4.2020402@siemens.com>
@@ -83,21 +83,8 @@ On Mon, May 23, 2016 at 03:29:09PM +0200, Jan Kiszka wrote:
 > in NOT providing this POSIX interface now also without migrations. It's
 > there anyway, it's usable, it's just lacking migration-free support.
 
-As I said. I find this interface bad. So I am going to try and
-explain it a third time, in a different way.
-
-pthread_setschedprio(0)
-
-only works if the thread is running with the SCHED_OTHER policy.
-
-pthread_setschedprio(1)
-
-only works if the thread is running with the SCHED_FIFO or SCHED_RR
-policy.
-
-So, in order to be able to use pthread_setschedprio() sanely, the
-programmer has to KNOW what is the current policy of the thread. So,
-if he knows it, it seems better to use pthread_setschedparam().
+It is not there an all platforms it seems:
+https://xenomai.org/build-test-next/distcheck-bfin-linux-uclibc-gcc-4.3.5/cobalt/log.html#1
 
 -- 
 					    Gilles.
