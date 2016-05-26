@@ -1,12 +1,9 @@
 MIME-Version: 1.0
-In-Reply-To: <20160525152057.GC22660@hermes.click-hack.org>
-References: <CAJ2oMh+KSW=wGadQ079T+e7M1E3=UG5GY=J8ih61Ez6UHENzWQ@mail.gmail.com>
- <20160525152057.GC22660@hermes.click-hack.org>
-Date: Wed, 25 May 2016 18:37:40 +0300
-Message-ID: <CAJ2oMh+53g4ru8AXQHTWPKWGfgEHxvG==fqfcUMaK3wGmsg50A@mail.gmail.com>
+Date: Thu, 26 May 2016 18:57:49 +0300
+Message-ID: <CAJ2oMhL-7pF+3ZCHy_yA1OiFo-O327PGwL=Sy8g9-h8JZ0YNDw@mail.gmail.com>
 From: Ran Shalit <ranshalit@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Oops "undefined instruction: 0 [#1] PREEMPT SMP ARM"
+Subject: [Xenomai] "watchdog triggered" error & irq interrupt
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,28 +12,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Wed, May 25, 2016 at 6:20 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On Wed, May 25, 2016 at 11:55:25AM +0300, Ran Shalit wrote:
->> rtdm.c driver is attached here:
->> https://drive.google.com/file/d/0B22GsWueReZTMjZYWlltZFRXU2M/view?usp=sharing
->
-> Starting from the "rtdmtest" driver is a bad idea: the rtdmtest
-> driver is a unit test for the RTDM driver and contains a lot of code
-> which makes no sense out of that context. Better start from the
-> "skeleton" drivers in the examples/rtdm/driver-api directory.
->
-> As for the cause of the bug, the problem is that you declare
-> rtdm_irq_t on stack, which causes its address to point to random
-> bytes as soon as it goes out of scope. rtdm_irq_t needs to remain
-> valid from the call to rtdm_irq_request to the call to
-> rtdm_irq_free.
->
+Hello,
 
-Right ! That was the issue...
+On testing interrupt within kernel it seems to work ok.
+I then moved to userspace rt thread waiting on events coming from the
+rtfm kernel driver (witch signals with rtd_event_signal)
 
-Thank you
+But then I get the following errors:
+
+dma0chan1-copy0: #15195: got completion callback, but status is 'in progress'
+dma0chan3-copy0: #14335: test timed out
+dma0chan3-copy0: #14336: got completion callback, but status is 'in progress'
+Xenomai: watchdog triggered -- signaling runaway thread 'rtdm'
+[sched_delayed] sched: RT throttling activated
+Xenomai: RTDM: closing file descriptor 0.
+CPU time limit exceeded
+
+I understand that it mean that cpu is probably in busy wait.
+The interrupt is done on raising edge, and I configure it as following:
+rtdm driver:
+========
+ret = rtdm_irq_request(&ctx->irq_handle,
+ 91, PFI_IRQHandler, RTDM_IRQTYPE_EDGE,
+ DRVNAM, ctx);
+
+userspace real-time thread
+===============
+
+while (1) {
+    rt_printf("11\n");
+    if (ioctl(file_desc, RTTST_RTIOC_GPIOIRQ_WAIT_IRQ))
+    {
+           rt_printf("failed!");
+     };
+     rt_printf("22\n");
+      mymmap[0xe4] = 1;  //mymmap is memory mapped io to 0x80010000
+      writel(1, rtdm_fpga_base_addr + 0xe4);
+      g_value[g_index] = readl( rtdm_fpga_base_addr+ 0x8010);
+     pCnt = &(ledRegister[0x8010]);
+      mymmap[0xe4] = 0;
+
+   }
+
+I've been debugging it for some hours in vain. I have no idea, any
+suggestion will help.
+
+complete sources (driver & app)
+https://drive.google.com/folderview?id=0B22GsWueReZTS3RaV3gzRk9aZzQ&usp=sharing
+
+Regards,
+Ran
 
