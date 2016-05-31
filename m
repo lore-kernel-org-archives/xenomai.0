@@ -1,13 +1,16 @@
-From: Wojciech Domski <wojciech.domski@gmail.com>
-References: <80829334.1467803968128.JavaMail.root@webmail1>
- <577CECCE.50701@xenomai.org>
-Message-ID: <b8001b58-62d7-f3aa-d6dd-b4c9ba846861@gmail.com>
-Date: Thu, 7 Jul 2016 11:08:41 +0200
+Date: Tue, 31 May 2016 14:18:38 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160531121838.GE5951@hermes.click-hack.org>
+References: <E1b7OM2-0000oL-Q7@sd-51317.xenomai.org>
+ <20160530152043.GE17483@hermes.click-hack.org>
+ <574D702F.6000303@siemens.com>
+ <20160531113216.GD5951@hermes.click-hack.org>
 MIME-Version: 1.0
-In-Reply-To: <577CECCE.50701@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] request about daq board.
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20160531113216.GD5951@hermes.click-hack.org>
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : lib/cobalt: Provide
+ RT-capable usleep
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,34 +19,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jorge Ramirez <jro@xenomai.org>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
+On Tue, May 31, 2016 at 01:32:16PM +0200, Gilles Chanteperdrix wrote:
+> On Tue, May 31, 2016 at 01:06:23PM +0200, Jan Kiszka wrote:
+> > On 2016-05-30 17:20, Gilles Chanteperdrix wrote:
+> > > On Mon, May 30, 2016 at 04:39:42PM +0200, git repository hosting wrote:
+> > >> Module: xenomai-jki
+> > >> Branch: for-forge
+> > >> Commit: ec9a8c81944d4a3e3f50af314fa58ade68dd28c2
+> > >> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=ec9a8c81944d4a3e3f50af314fa58ade68dd28c2
+> > >>
+> > >> Author: Jan Kiszka <jan.kiszka@siemens.com>
+> > >> Date:   Mon May 30 14:58:07 2016 +0200
+> > >>
+> > >> lib/cobalt: Provide RT-capable usleep
+> > >>
+> > >> User may expect this (probably last) sleeping service to be available
+> > >> under Cobalt just like sleep, nanosleep & Co.
+> > > 
+> > > CONFORMING TO
+> > >        4.3BSD,  POSIX.1-2001.   POSIX.1-2001  declares this function obsolete;
+> > >        use nanosleep(2) instead.  POSIX.1-2008 removes  the  specification  of
+> > >        usleep().
+> > 
+> > Do you expect people - and specifically Linux - to follow this soon?
+> > 
+> > The idea here is to reduce the level of surprise, and as long as using
+> > usleep in your app doesn't cause an "undefined symbol" error, this risk
+> > persists.
+> 
+> The thing is adding services do not come for free: it incurs a
+> maintenance cost. From my point of view, one of the imperatives of
+> the Xenomai project is to keep the code base small (and simple) so
+> that it remains possible to maintain it with the little work force
+> we have. From this point of view, adding a wrapper for a service
+> that has been deprecated for 15 years, and removed from the POSIX
+> specification for 8 years does not look like a smart move. And every
+> time we want to add a service, we should wonder if it is worth the
+> maintenance burden it incurs, this is the reason why I questioned
+> adding pthread_setschedprio too.
+> 
+> That being said, I am not opposed to this, and will happily let
+> other people decide. I just wanted to make sure that everyone
+> realized that usleep has been dead a long time.
+> 
+> If people use usleep, they will get a switch to secondary mode and
+> realize they should not use it, it is not as if it could cause a
+> crash or something. We might even document that somewhere.
 
-W dniu 06.07.2016 o 13:34, Jorge Ramirez pisze:
-> On 07/06/2016 01:19 PM, 성주환 wrote:
->> Hello I'm a new xenomai starter.  I have a one question. From the 
->> xenomai website, I saw that Sensoray s526 is fit to xenomai. But I 
->> ordered Sensoray s626 , Is it possible using s626 board instead of 
->> s526?? Thank you for you respond
->
-> Unfortunately the driver for the s626 was never merged - Wojciech 
-> Domski in copy - might have a version that you could use.
->
-> Wojciech please let me know if you would like to attempt upstreaming 
-> the driver again (I think most of the issues were about coding 
-> standards not functional)
->
->
-As Jorge said I have prepared the driver for s626. The very first 
-version of the driver is on xenomai's git repository. However, the 
-updated version of s626 was never merged with the xenomai tree.
-You can find current driver and sample application at my github:
-https://github.com/wdomski/s626
+And replacing usleep with nanosleep in the application code does not
+make the application less portable, quite the contrary in fact, it
+makes it compatible with POSIX 2008. And if the application really
+really want to remain non portable it can provide an usleep
+implementation on its side which calls nanosleep under the hood.
 
-Best regards,
-
-Wojciech Domski
-
-www.domski.pl | www.blog.domski.pl
-
+-- 
+					    Gilles.
+https://click-hack.org
 
