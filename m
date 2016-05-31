@@ -1,14 +1,14 @@
-Date: Fri, 3 Jun 2016 16:09:59 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160603140959.GQ1801@hermes.click-hack.org>
-References: <CAL8zT=j3AF5CEmEsDczFbb_i7Fe72gOMENLN3yQh_WWu59jrvw@mail.gmail.com>
- <20160603091339.GM1801@hermes.click-hack.org>
- <20160603135534.GD28301@csclub.uwaterloo.ca>
+References: <E1b7OM2-0000oL-Q7@sd-51317.xenomai.org>
+ <20160530152043.GE17483@hermes.click-hack.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <574D702F.6000303@siemens.com>
+Date: Tue, 31 May 2016 13:06:23 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20160603135534.GD28301@csclub.uwaterloo.ca>
-Subject: Re: [Xenomai] Migrating a Xenomai 2.6.4 to a 4.6 kernel
+In-Reply-To: <20160530152043.GE17483@hermes.click-hack.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : lib/cobalt: Provide
+	RT-capable usleep
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,47 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
 
-On Fri, Jun 03, 2016 at 09:55:34AM -0400, Lennart Sorensen wrote:
-> On Fri, Jun 03, 2016 at 11:13:39AM +0200, Gilles Chanteperdrix wrote:
-> > The APIs have not changed much. The cost is not very high. The
-> > changes are documented here:
-> > https://xenomai.org/migrating-from-xenomai-2-x-to-3-x/
-> > 
-> > You will have to:
-> > - port the I-pipe patch for Linux 4.1 to Linux 4.6
+On 2016-05-30 17:20, Gilles Chanteperdrix wrote:
+> On Mon, May 30, 2016 at 04:39:42PM +0200, git repository hosting wrote:
+>> Module: xenomai-jki
+>> Branch: for-forge
+>> Commit: ec9a8c81944d4a3e3f50af314fa58ade68dd28c2
+>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=ec9a8c81944d4a3e3f50af314fa58ade68dd28c2
+>>
+>> Author: Jan Kiszka <jan.kiszka@siemens.com>
+>> Date:   Mon May 30 14:58:07 2016 +0200
+>>
+>> lib/cobalt: Provide RT-capable usleep
+>>
+>> User may expect this (probably last) sleeping service to be available
+>> under Cobalt just like sleep, nanosleep & Co.
 > 
-> Would that not be required for xenomai 3.x as well though?
-> 
-> > - add to the I-pipe patches the "I-pipe legacy" support, which was
-> > removed from 4.1
-> > - add the missing bits to Xenomai to adapt to the kernel API changes
-> > between Linux 3.18 and Linux 4.6, of which there should be a fair
-> > amount, given the difference in version numbers.
-> > 
-> > So, the best strategy is to not migrate xenomai 2.6.4 to a 4.6
-> > kernel.
-> > 
-> > > Would you be interested by the patches once done ?
-> > 
-> > No. Xenomai 2.6.5 is about to be released, will not support 4.x
-> > kernel, and will be the last release in the 2.6 branch. We simply do
-> > not have the man power to maintain two branches, and for this
-> > reason, want to encourage the users to migrate.
-> 
-> That does make sense.
-> 
-> Of course a lot of people are scared of moving xenomai versions.  3 sounds
-> quite different than 2.6, and I certainly remember having a fair bit of
-> pain going from 2.5 to 2.6 years ago (some of it was probably self inflicted).
+> CONFORMING TO
+>        4.3BSD,  POSIX.1-2001.   POSIX.1-2001  declares this function obsolete;
+>        use nanosleep(2) instead.  POSIX.1-2008 removes  the  specification  of
+>        usleep().
 
-As far as I remember there were almost no API changes between 2.5
-and 2.6. The main reason to switch from 2.5 to 2.6 was to fix an
-issue that could not be fixed reasonably without breaking the ABI.
+Do you expect people - and specifically Linux - to follow this soon?
+
+The idea here is to reduce the level of surprise, and as long as using
+usleep in your app doesn't cause an "undefined symbol" error, this risk
+persists.
+
+Jan
 
 -- 
-					    Gilles.
-https://click-hack.org
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
 
