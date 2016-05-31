@@ -1,12 +1,22 @@
-Date: Fri, 3 Jun 2016 11:13:39 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160603091339.GM1801@hermes.click-hack.org>
-References: <CAL8zT=j3AF5CEmEsDczFbb_i7Fe72gOMENLN3yQh_WWu59jrvw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAL8zT=j3AF5CEmEsDczFbb_i7Fe72gOMENLN3yQh_WWu59jrvw@mail.gmail.com>
-Subject: Re: [Xenomai] Migrating a Xenomai 2.6.4 to a 4.6 kernel
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date: Tue, 31 May 2016 15:15:31 +0200
+From: mfinkbei <mfinkbei@stud.hs-heilbronn.de>
+In-Reply-To: <20160525101146.GH13609@hermes.click-hack.org>
+References: <0abe0634dbf999057bf8529e0cc0ecd8@stud.hs-heilbronn.de>
+ <20160523075954.GJ13609@hermes.click-hack.org>
+ <674a5761ce5e9da1774b90b499a2e3d6@stud.hs-heilbronn.de>
+ <20160524135324.GA11602@hermes.click-hack.org>
+ <48747eda7ad827e2f69dd3d159a606bc@stud.hs-heilbronn.de>
+ <b19757cdceb6cde95fb69b49a99f1361@stud.hs-heilbronn.de>
+ <0ffacf8b2a8fe70df9e590c2964e3639@stud.hs-heilbronn.de>
+ <20160524180256.GM13609@hermes.click-hack.org>
+ <82d75d19468fc00b0b447ba3fc5a9bcd@stud.hs-heilbronn.de>
+ <20160525101146.GH13609@hermes.click-hack.org>
+Message-ID: <2996ea588d38fe1ce3e14ea9371bfeb3@stud.hs-heilbronn.de>
+Subject: Re: [Xenomai] Xenomai on Udoo Neo
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,42 +25,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jean-Michel Hautbois <jhautbois@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Fri, Jun 03, 2016 at 10:06:10AM +0200, Jean-Michel Hautbois wrote:
-> Hi !
+Am 2016-05-25 12:11, schrieb Gilles Chanteperdrix:
 > 
-> I have a 3.18 kernel which is currently built with xenomai 2.6.4.
-> I need to keep xenomai 2.6.4, as a lot of applications are using the API,
-> and I don't want to migrate, the cost would be very high ATM.
+> Basically what you showed here does not show what particular dts
+> your device uses, since all the dtbs are copied. So, no, you do not
+> know yet if the dtb your device actually loads contains the
+> declaration of the global timer.
 
-The APIs have not changed much. The cost is not very high. The
-changes are documented here:
-https://xenomai.org/migrating-from-xenomai-2-x-to-3-x/
+You were right.
+With the command cat /proc/device-tree/compatible I have found out that 
+the file imx6sx is used in the device tree instead of imx6qdl.
+After I declared the timer in the imx6sx.dtsi file Xenomai was running.
+Thank you for your help, Gilles.
 
-> 
-> What is the best strategy to migrate xenomai to a 4.6 kernel ?
-
-You will have to:
-- port the I-pipe patch for Linux 4.1 to Linux 4.6
-- add to the I-pipe patches the "I-pipe legacy" support, which was
-removed from 4.1
-- add the missing bits to Xenomai to adapt to the kernel API changes
-between Linux 3.18 and Linux 4.6, of which there should be a fair
-amount, given the difference in version numbers.
-
-So, the best strategy is to not migrate xenomai 2.6.4 to a 4.6
-kernel.
-
-> Would you be interested by the patches once done ?
-
-No. Xenomai 2.6.5 is about to be released, will not support 4.x
-kernel, and will be the last release in the 2.6 branch. We simply do
-not have the man power to maintain two branches, and for this
-reason, want to encourage the users to migrate.
-
--- 
-					    Gilles.
-https://click-hack.org
 
