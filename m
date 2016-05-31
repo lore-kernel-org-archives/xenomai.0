@@ -1,18 +1,13 @@
-From: Sripath Roy Koganti <koganti_sripathroy@kluniversity.in>
-Date: Mon, 13 Jun 2016 08:36:39 +0000
-Message-ID: <SG2PR01MB1230772D77FA28E0734AE2A5FF530@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>
-References: <SG2PR01MB12300E6F7AC1284011B6FBBBFF500@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>
- <20160610071612.GG1785@hermes.click-hack.org>
- <SG2PR01MB1230DD21BB16D91C6E68F1D5FF500@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>,
- <20160610074538.GB18377@hermes.click-hack.org>,
- <SG2PR01MB1230165E11DF45A8D3E2F7DBFF500@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>
-In-Reply-To: <SG2PR01MB1230165E11DF45A8D3E2F7DBFF500@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>
-Content-Language: en-IN
+References: <574D9B03.8080706@sigmatek.at>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <fc250048-4a85-c561-d5d7-280191d0564f@xenomai.org>
+Date: Tue, 31 May 2016 17:08:54 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Resources for Installation of Xenomai 2.6 and 3 on
- iMx6 Sabre Lite Dev Board
+In-Reply-To: <574D9B03.8080706@sigmatek.at>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Performance impact after switching from 2.6.2.1 to
+ 2.6.4
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,91 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: wolfgang.netbal@sigmatek.at, xenomai@xenomai.org
 
-While installing the package in Jessie debian resulted no package found.
-
-arm-none-linux-gnueabi-gcc
-
-
-
-
-
-
-Regards
-Sripath Roy Koganti
-Assistant Professor
-Department of ECE
-(DST- FIST Sponsored Department)
-KL University
-________________________________
-From: Xenomai <xenomai-bounces@xenomai.org> on behalf of Sripath Roy Kogant=
-i <koganti_sripathroy@kluniversity.in>
-Sent: 10 June 2016 13:21:27
-To: Gilles Chanteperdrix
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai] Resources for Installation of Xenomai 2.6 and 3 on i=
-Mx6 Sabre Lite Dev Board
-
-Thanks
-
-I am going ahead with following the instructions from the given page.
-https://xenomai.org/installing-xenomai-3-x/
-
-I will do the following (Correct me if i am wrong)
-1) Install Debian on Sabre Lite Board
-2) Download Xenomai Kernel (in the target board running Debian)
-3) Follow the process given in the link https://xenomai.org/installing-xeno=
-mai-3-x/
-
-
-Am i headed in a right way??
-
-
-Regards
-Sripath Roy Koganti
-
-________________________________________
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Sent: 10 June 2016 13:15:38
-To: Sripath Roy Koganti
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai] Resources for Installation of Xenomai 2.6 and 3 on i=
-Mx6 Sabre Lite Dev Board
-
-On Fri, Jun 10, 2016 at 07:32:30AM +0000, Sripath Roy Koganti wrote:
-> Should i do this process in a Linux Environment under the target
-> board. Basically i am a newbie and its kindof looking complex. It
-> would really help if the process to be done can be explained.
-
-The process is explained on the page I sent you. Whether you
-cross-compile or not is your choice, the procedure is almost the
-same in both cases.
-
+On 05/31/2016 04:09 PM, Wolfgang Netbal wrote:
+> Dear all,
+> 
+> we have moved our application from "XENOMAI 2.6.2.1 + Linux 3.0.43" to
+> "XENOMAI 2.6.4. + Linux 3.10.53". Our target is an i.MX6DL. The system
+> is now up and running and works stable. Unfortunately we see a
+> difference in the performance. Our old combination (XENOMAI 2.6.2.1 +
+> Linux 3.0.43) was slightly faster.
 >
-> Let me explain what i am trying to do. I am deploying debian on
-> Freescale with imX6 SOC Then im looking for packages in debian (if
-> they are precompiled) or else i will follow the proces you
-> mentioned from knowledge base. Can you suggest which would be
-> better.
 
-Your choice again. We have a page explaining how to build Debian
-packages.
-https://xenomai.org/2014/06/building-debian-packages/
+Could you quantify "slightly faster"? This is a dual kernel system, so
+changes on either the regular kernel side and/or the co-kernel side may
+have a measurable impact.
 
-My opinion on that is that building debian packages is more complex
-than simply compiling and installing following the generic
-instructions, so there are many more things that can go wrong. So, I
-would only do it if I need the benefits of using debian packages:
-being able to build the packages once, and deploy them on several
-machines. But this is simply my opinion.
+> At the moment it looks like that XENOMAI 2.6.4 calls
+> xnpod_schedule_handler much more often then XENOMAI 2.6.2.1 in our old
+> system.  Every call of xnpod_schedule_handler interrupts our main
+> XENOMAI task with priority = 95.
 
---
-                                            Gilles.
-https://click-hack.org
+That handler is attached to the inter-processor interrupt used for
+rescheduling tasks running on a remote CPU. You may want to check the
+CPU affinity settings of your tasks, and the way they interact/synchronize.
 
-_______________________________________________
-Xenomai mailing list
-Xenomai@xenomai.org
-https://xenomai.org/mailman/listinfo/xenomai
+-- 
+Philippe.
+
