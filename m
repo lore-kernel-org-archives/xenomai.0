@@ -1,18 +1,15 @@
-From: "Heinick, J Michael" <Michael.Heinick@Honeywell.com>
-Date: Fri, 17 Jun 2016 13:25:05 +0000
-Message-ID: <D9EDB4F689BF9F4EA6F2158A073942732E801E4B@de08ex3008.global.ds.honeywell.com>
-References: <D9EDB4F689BF9F4EA6F2158A073942732E8007D6@de08ex3008.global.ds.honeywell.com>
- <20160608193911.GA31360@hermes.click-hack.org>
- <D9EDB4F689BF9F4EA6F2158A073942732E8008F3@de08ex3008.global.ds.honeywell.com>
- <20160609174118.GD1785@hermes.click-hack.org> <575AF2E1.3060401@siemens.com>
- <D9EDB4F689BF9F4EA6F2158A073942732E801DAA@de08ex3008.global.ds.honeywell.com>
- <20160616171605.GD32532@hermes.click-hack.org>
-In-Reply-To: <20160616171605.GD32532@hermes.click-hack.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Date: Tue, 31 May 2016 13:32:16 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160531113216.GD5951@hermes.click-hack.org>
+References: <E1b7OM2-0000oL-Q7@sd-51317.xenomai.org>
+ <20160530152043.GE17483@hermes.click-hack.org>
+ <574D702F.6000303@siemens.com>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Xenomai/Cobalt on i7-3770S CPU
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <574D702F.6000303@siemens.com>
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : lib/cobalt: Provide
+ RT-capable usleep
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,69 +18,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
-
-
-
------Original Message-----
-From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]=20
-Sent: Thursday, June 16, 2016 1:16 PM
-To: Heinick, J Michael
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai] Xenomai/Cobalt on i7-3770S CPU
 
-On Thu, Jun 16, 2016 at 03:51:17PM +0000, Heinick, J Michael wrote:
-> problem, the stripped down driver would hang the core2 computer just=20
-> like the i7 computer.
+On Tue, May 31, 2016 at 01:06:23PM +0200, Jan Kiszka wrote:
+> On 2016-05-30 17:20, Gilles Chanteperdrix wrote:
+> > On Mon, May 30, 2016 at 04:39:42PM +0200, git repository hosting wrote:
+> >> Module: xenomai-jki
+> >> Branch: for-forge
+> >> Commit: ec9a8c81944d4a3e3f50af314fa58ade68dd28c2
+> >> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=ec9a8c81944d4a3e3f50af314fa58ade68dd28c2
+> >>
+> >> Author: Jan Kiszka <jan.kiszka@siemens.com>
+> >> Date:   Mon May 30 14:58:07 2016 +0200
+> >>
+> >> lib/cobalt: Provide RT-capable usleep
+> >>
+> >> User may expect this (probably last) sleeping service to be available
+> >> under Cobalt just like sleep, nanosleep & Co.
+> > 
+> > CONFORMING TO
+> >        4.3BSD,  POSIX.1-2001.   POSIX.1-2001  declares this function obsolete;
+> >        use nanosleep(2) instead.  POSIX.1-2008 removes  the  specification  of
+> >        usleep().
+> 
+> Do you expect people - and specifically Linux - to follow this soon?
+> 
+> The idea here is to reduce the level of surprise, and as long as using
+> usleep in your app doesn't cause an "undefined symbol" error, this risk
+> persists.
 
-Are you running a graphic system? If yes, have you tried to plug a serial c=
-onsole or netconsole to try and retrieve the kernel console when the hang h=
-appens? Because if the hang is in fact a kernel oops, the oops message may =
-indicate what the problem is.
+The thing is adding services do not come for free: it incurs a
+maintenance cost. From my point of view, one of the imperatives of
+the Xenomai project is to keep the code base small (and simple) so
+that it remains possible to maintain it with the little work force
+we have. From this point of view, adding a wrapper for a service
+that has been deprecated for 15 years, and removed from the POSIX
+specification for 8 years does not look like a smart move. And every
+time we want to add a service, we should wonder if it is worth the
+maintenance burden it incurs, this is the reason why I questioned
+adding pthread_setschedprio too.
 
-> Eventually, I noticed that only nrt
-> handlers were specified in the ops structure. After moving our ioctl=20
-> functions to .ioctl_rt, both the stripped down driver and the full=20
-> driver run on both the core2 and i7 computers.
+That being said, I am not opposed to this, and will happily let
+other people decide. I just wanted to make sure that everyone
+realized that usleep has been dead a long time.
 
-You can not call "sleeping" services from an _nrt handler. If that is what =
-you were doing.
+If people use usleep, they will get a switch to secondary mode and
+realize they should not use it, it is not as if it could cause a
+crash or something. We might even document that somewhere.
 
-> Why the core2 computers appeared to work with only the ioctl_nrt=20
-> handler specified in the full driver and hang the i7 computer is still=20
-> a mystery to us.
-
-Did the two machines run with the same kernel? Or were there differences in=
- the kernel configuration? Like I-pipe checks disabled/enabled?
-
---=20
+-- 
 					    Gilles.
 https://click-hack.org
-
-----------------------------------------------------------
-Thanks Gilles,
-
-Yes, I was making an rtdm_sem_down call in the ioctl_nrt to wait for the rt=
-dm_sem_up in the interrupt handler.  I probably set it that way months ago =
-when I was developing calls in the full driver to configure the device, and=
- did not remember it when I implemented the interrupts and things still app=
-eared to work on the core2 machine where development was taking place.  The=
- stripped down driver eliminated the interrupt handler and put the rtdm_sem=
-_up call in the write handler that was called by the user program to fake a=
-n interrupt.  The stripped down driver with the ioctl_nrt would hang the co=
-mputer on both machines.  Changing ioctl_nrt to ioctl_rt enabled both the s=
-tripped down driver and the full driver to work on all machines. =20
-
-All machines were running xenomai 3.0.1 with ipipe release 10 on linux 3.14=
-.44.  There were probably some differences in kernel configuration, but any=
-thing involving things like i-pipe just used defaults.  Since the fix the S=
-uper Logics i7 computer has been updated to Xenomai 3.0.2.
-
-I suppose now I should separate my ioctl_nrt stuff to a separate function f=
-rom the ioctl_rt stuff, and then I will I have both functions specified in =
-the ops structure of the rtdm_driver structure.  I will have to look up how=
- xenomai is going to determine which one to use.
-
-Thanks for the help,
-Mike
 
