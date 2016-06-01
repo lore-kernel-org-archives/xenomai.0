@@ -1,12 +1,10 @@
-Date: Fri, 8 Jul 2016 10:29:43 +0000 (UTC)
-From: <praneeth.y@yahoo.com>
-Message-ID: <1569300380.1342469.1467973783459.JavaMail.yahoo@mail.yahoo.com>
+From: Jeffrey Melville <jmelville@mitre.org>
+Message-ID: <574EFA37.5030607@mitre.org>
+Date: Wed, 1 Jun 2016 11:07:35 -0400
 MIME-Version: 1.0
-References: <1569300380.1342469.1467973783459.JavaMail.yahoo.ref@mail.yahoo.com>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] unable to patch
-Reply-To: praneeth.y@yahoo.com
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] SIGDEBUG_RESCNT_IMBALANCE with recursive mutex
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,13 +15,52 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGksIApIYXZpbmcgZmFpbGVkIHRvIHBhdGNoIHRoZSBrZXJuZWwgZm9yIGFybSxJIHRyaWVkIHdp
-dGggTGludXgga2VybmVsIDMuMC40MywzLjE0LDMuMTggNC4yMCB3aXRoIHhlbm9tYWkgMi42LjQn
-cyBhZGVvcyBpcGlwZSBhcyB3ZWxsIGFzIGlwaXBlLWNvcmUuIFVuZm9ydHVuYXRlbHkgbW9zdCBv
-ZiB0aGVtIGVuZGVkIHdpdGggdGhlIGZvbGxvd2luZyBsYXN0Cm1lc3NhZ2VzLsKgdW5hYmxlIHRv
-IHBhdGNoIHRoZSBrZXJuZWwgMy4wLjQzIHdpdGggYWRlb3MgLWlwaXBlLTMuMC40M8KgIAoKCgoK
-CgoKCgpyZWdhcmRzcHJhbmVldGgKCgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0t
-LS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogaW1hZ2Uu
-cG5nClR5cGU6IGltYWdlL3BuZwpTaXplOiAyOTYyMyBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxl
-ClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8y
-MDE2MDcwOC8wNjYwN2FkOS9hdHRhY2htZW50LnBuZz4K
+Hi,
+
+Setup: Xenomai 2.6.4 (actually 2.6 git rev 4f349cf0553, with a99426
+cherry-picked) with kernel 3.14.17 on a Zynq and the POSIX skin using
+the ipipe patches included with the specified git rev)
+
+We've noticed that SIGDEBUG_RESCNT_IMBALANCE is generated when a
+(Xenomai) mutex is taken recursively by an NRT thread. The snippet at
+the bottom of this message will reproduce the issue. I omitted most of
+the error-checking for brevity.
+
+A couple previous threads have discussed slightly similar problems, but
+I never saw final resolutions:
+http://www.xenomai.org/pipermail/xenomai/2012-January/025278.html
+http://www.xenomai.org/pipermail/xenomai/2014-October/031919.html
+
+As far as "why are we doing this?", the problem area occurs in a test
+suite where some tests have to run as NRT threads because they don't
+have to run real-time and will get killed by the watchdog if they run as
+RT threads. Removing the Xenomai wrappers would also be complicated for
+reasons that are outside of the scope of this email.
+
+Thanks,
+Jeff
+
+---
+#include <stdio.h>
+#include <pthread.h>
+
+int main(int argc, char **argv)
+{
+    pthread_mutex_t mutex;
+    pthread_mutexattr_t mutex_attr;
+    pthread_mutexattr_init(&mutex_attr);
+    pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_RECURSIVE);
+    if (pthread_mutex_init(&mutex, &mutex_attr) != 0)
+    {
+        printf("Failed to initialize mutex.\n");
+        return 1;
+    }
+    pthread_mutexattr_destroy(&mutex_attr);
+    pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&mutex);
+    pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&mutex);
+    pthread_mutex_destroy(&mutex);
+    return 0;
+}
+
