@@ -1,6 +1,6 @@
-Date: Wed, 1 Jun 2016 17:45:43 +0200
+Date: Wed, 1 Jun 2016 18:45:30 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160601154543.GD14103@hermes.click-hack.org>
+Message-ID: <20160601164530.GE14103@hermes.click-hack.org>
 References: <574EFA37.5030607@mitre.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -33,15 +33,7 @@ On Wed, Jun 01, 2016 at 11:07:35AM -0400, Jeffrey Melville wrote:
 > A couple previous threads have discussed slightly similar problems, but
 > I never saw final resolutions:
 > http://www.xenomai.org/pipermail/xenomai/2012-January/025278.html
-
-This issue is unrelated: setting a thread priority while holding a
-mutex is clearly something we consider you should not be doing.
-
 > http://www.xenomai.org/pipermail/xenomai/2014-October/031919.html
-
-In this case, the mail asked the user to provide a test case, and
-the user never provided one, it seems.
-
 > 
 > As far as "why are we doing this?", the problem area occurs in a test
 > suite where some tests have to run as NRT threads because they don't
@@ -49,17 +41,16 @@ the user never provided one, it seems.
 > RT threads. Removing the Xenomai wrappers would also be complicated for
 > reasons that are outside of the scope of this email.
 
-Now we have a testcase it seems. However, a Xenomai mutex used by an
-NRT thread only makes sense if the mutex is shared with an RT thread
-(otherwise you could use plain Linux mutex). In that context, it
-makes little sense to not enable priority inheritance on the mutex.
-So, the question is: do you have the same problem if you enable
-priority inheritance?
+Yeah well, this is an issue that has been known and fixed for so
+long that I forgot we knew it:
 
-Also, could you check the function return values, to make sure that
-you did not miss any error?
+https://git.xenomai.org/xenomai-3.git/commit/?id=79f0dd1cdc408b22afe301fa03805349a4a9f151
 
-Regards.
+I will try and backport this change to 2.6 in 2.6.5. The change
+should be easy to backport since it was made prior to most of the
+cleanup of mutex and condvars. In 3.x, the kernel does not handle at
+all the recursive mutex recursion count, this makes things much
+simpler, but the code very different.
 
 -- 
 					    Gilles.
