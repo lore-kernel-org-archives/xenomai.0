@@ -1,19 +1,15 @@
-References: <20160606153545.GA376@hermes.click-hack.org>
- <5756D673.4080408@sigmatek.at> <20160607170050.GA13922@hermes.click-hack.org>
- <57714C60.4070407@sigmatek.at> <20160627164604.GH18662@hermes.click-hack.org>
- <577235C4.2080507@sigmatek.at> <20160628083404.GI18662@hermes.click-hack.org>
- <57724022.8010904@sigmatek.at> <20160628091747.GK18662@hermes.click-hack.org>
- <57724333.6010608@sigmatek.at> <20160628092955.GL18662@hermes.click-hack.org>
-From: Wolfgang Netbal <wolfgang.netbal@sigmatek.at>
-Message-ID: <577248AB.5070601@sigmatek.at>
-Date: Tue, 28 Jun 2016 11:51:39 +0200
+From: Ali Umair <ali.umair@tut.fi>
+Date: Wed, 1 Jun 2016 13:03:18 +0000
+Message-ID: <2396B4D2166B62479FBBE370D4A7C1F30A73A888@mb2010-1.intra.tut.fi>
+References: <2396B4D2166B62479FBBE370D4A7C1F30A739854@mb2010-1.intra.tut.fi>
+ <20160601122543.GA14103@hermes.click-hack.org>
+In-Reply-To: <20160601122543.GA14103@hermes.click-hack.org>
+Content-Language: en-US
 MIME-Version: 1.0
-In-Reply-To: <20160628092955.GL18662@hermes.click-hack.org>
-Content-Type: text/plain; charset="windows-1252"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Performance impact after switching from 2.6.2.1 to
- 2.6.4
-Reply-To: wolfgang.netbal@sigmatek.at
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] rtdm_timer_start causes switching to secondary mode
+ and Bug
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,215 +18,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: gilles.chanteperdrix@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+
+Hello
+
+Thanks Gilles and sorry for first incomplete email. The code files and kernel log files are attached with this email
+
+The system is x86 architecture and 3.14.39-xenomai-3.0.1.
+
+root@cpc:/usr/xenomai/sbin# /usr/xenomai/bin/xeno-config --info|grep -i build 
+Build args: --with-core=cobalt --enable-smp --enable-pshared --enable-x86-vsyscall --enable-dlopen-libs --enable-tls
+
+I hope new information will be helpful. I am extremely sorry I am missing anything still
+
+Thanks & BR
+ali
+
+-----Original Message-----
+From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org] 
+Sent: June-01-16 3:26 PM
+To: Ali Umair
 Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai] rtdm_timer_start causes switching to secondary mode and Bug
 
+On Wed, Jun 01, 2016 at 12:15:57PM +0000, Ali Umair wrote:
+> Hello
+> 
+> I am using 3.14.39-xenomai-3.0.1. I am trying following
 
+Please use Xenomai 3.0.2
 
-Am 2016-06-28 um 11:29 schrieb Gilles Chanteperdrix:
-> On Tue, Jun 28, 2016 at 11:28:19AM +0200, Wolfgang Netbal wrote:
->>
->> Am 2016-06-28 um 11:17 schrieb Gilles Chanteperdrix:
->>> On Tue, Jun 28, 2016 at 11:15:14AM +0200, Wolfgang Netbal wrote:
->>>> Am 2016-06-28 um 10:34 schrieb Gilles Chanteperdrix:
->>>>> On Tue, Jun 28, 2016 at 10:31:00AM +0200, Wolfgang Netbal wrote:
->>>>>> Am 2016-06-27 um 18:46 schrieb Gilles Chanteperdrix:
->>>>>>> On Mon, Jun 27, 2016 at 05:55:12PM +0200, Wolfgang Netbal wrote:
->>>>>>>> Am 2016-06-07 um 19:00 schrieb Gilles Chanteperdrix:
->>>>>>>>> On Tue, Jun 07, 2016 at 04:13:07PM +0200, Wolfgang Netbal wrote:
->>>>>>>>>> Am 2016-06-06 um 17:35 schrieb Gilles Chanteperdrix:
->>>>>>>>>>> On Mon, Jun 06, 2016 at 09:03:40AM +0200, Wolfgang Netbal wrote:
->>>>>>>>>>>> Am 2016-06-02 um 10:23 schrieb Gilles Chanteperdrix:
->>>>>>>>>>>>> On Thu, Jun 02, 2016 at 10:15:41AM +0200, Wolfgang Netbal wro=
-te:
->>>>>>>>>>>>>> Am 2016-06-01 um 16:12 schrieb Gilles Chanteperdrix:
->>>>>>>>>>>>>>> On Wed, Jun 01, 2016 at 03:52:06PM +0200, Wolfgang Netbal w=
-rote:
->>>>>>>>>>>>>>>> Am 2016-05-31 um 16:16 schrieb Gilles Chanteperdrix:
->>>>>>>>>>>>>>>>> On Tue, May 31, 2016 at 04:09:07PM +0200, Wolfgang Netbal=
- wrote:
->>>>>>>>>>>>>>>>>> Dear all,
->>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>> we have moved our application from "XENOMAI 2.6.2.1 + Li=
-nux 3.0.43" to
->>>>>>>>>>>>>>>>>> "XENOMAI 2.6.4. + Linux 3.10.53". Our target is an i.MX6=
-DL. The system
->>>>>>>>>>>>>>>>>> is now up and running and works stable. Unfortunately we=
- see a
->>>>>>>>>>>>>>>>>> difference in the performance. Our old combination (XENO=
-MAI 2.6.2.1 +
->>>>>>>>>>>>>>>>>> Linux 3.0.43) was slightly faster.
->>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>> At the moment it looks like that XENOMAI 2.6.4 calls
->>>>>>>>>>>>>>>>>> xnpod_schedule_handler much more often then XENOMAI 2.6.=
-2.1 in our old
->>>>>>>>>>>>>>>>>> system.  Every call of xnpod_schedule_handler interrupts=
- our main
->>>>>>>>>>>>>>>>>> XENOMAI task with priority =3D 95.
->>>>>>>>>> As I wrote above, I get interrupts 1037 handled by rthal_apc_han=
-dler()
->>>>>>>>>> and 1038 handled by xnpod_schedule_handler() while my realtime t=
-ask
->>>>>>>>>> is running on kernel 3.10.53 with Xenomai 2.6.4.
->>>>>>>>>> On kernel 3.0.43 with Xenomai 2.6.4 there are no interrupts, exc=
-ept the
->>>>>>>>>> once that are send by my board using GPIOs, but this virtual int=
-errupts
->>>>>>>>>> are assigned to Xenomai and Linux as well but I didn't see a han=
-dler
->>>>>>>>>> installed.
->>>>>>>>>> I'm pretty sure that these interrupts are slowing down my system=
-, but
->>>>>>>>>> where do they come from ?
->>>>>>>>>> why didn't I see them on Kernel 3.0.43 with Xenomai 2.6.4 ?
->>>>>>>>>> how long do they need to process ?
->>>>>>>>> How do you mean you do not see them? If you are talking about the
->>>>>>>>> rescheduling API, it used no to be bound to a virq (so, it would
->>>>>>>>> have a different irq number on cortex A9, something between 0 and=
- 31
->>>>>>>>> that would not show in the usual /proc files), I wonder if 3.0 is
->>>>>>>>> before or after that. You do not see them in /proc, or you see th=
-em
->>>>>>>>> and their count does not increase?
->>>>>>>> Sorry for the long delay, we ran a lot of tests to find out what c=
-ould
->>>>>>>> be the reason for
->>>>>>>> the performance difference.
->>>>>>>>
->>>>>>>> If I call cat /proc/ipipe/Xenomai I dont see the IRQ handler assig=
-ned to
->>>>>>>> the virtual
->>>>>>>> IRQ on Kernel 3.0.43, but it looks like thats an issue of the Kern=
-el
->>>>>>>>> As for where they come from, this is not a mystery, the reschedule
->>>>>>>>> IPI is triggered when code on one cpu changes the scheduler state
->>>>>>>>> (wakes up a thread for instance) on another cpu. If you want to
->>>>>>>>> avoid it, do not do that. That means, do not share mutex between
->>>>>>>>> threads running on different cpus, pay attention for timers to be
->>>>>>>>> running on the same cpu as the thread they signal, etc...
->>>>>>>>>
->>>>>>>>> The APC virq is used to multiplex several services, which you can
->>>>>>>>> find by grepping the sources for rthal_apc_alloc:
->>>>>>>>> ./ksrc/skins/posix/apc.c:       pse51_lostage_apc =3D rthal_apc_a=
-lloc("pse51_lostage_handler",
->>>>>>>>> ./ksrc/skins/rtdm/device.c:     rtdm_apc =3D rthal_apc_alloc("def=
-erred RTDM close", rtdm_apc_handler,
->>>>>>>>> ./ksrc/nucleus/registry.c:          rthal_apc_alloc("registry_exp=
-ort", &registry_proc_schedule, NULL);
->>>>>>>>> ./ksrc/nucleus/pipe.c:      rthal_apc_alloc("pipe_wakeup", &xnpip=
-e_wakeup_proc, NULL);
->>>>>>>>> ./ksrc/nucleus/shadow.c:            rthal_apc_alloc("lostage_hand=
-ler", &lostage_handler, NULL);
->>>>>>>>> ./ksrc/nucleus/select.c:        xnselect_apc =3D rthal_apc_alloc(=
-"xnselectors_destroy",
->>>>>>>>>
->>>>>>>>> It would be interesting to know which of these services is trigge=
-red
->>>>>>>>> a lot. One possibility I see would be root thread priority
->>>>>>>>> inheritance, so it would be caused by mode switches. This brings =
-the
->>>>>>>>> question: do your application have threads migrating between prim=
-ary
->>>>>>>>> and secondary mode, do you see the count of mode switches increase
->>>>>>>>> with the kernel changes, do you have root thread priority
->>>>>>>>> inheritance enabled?
->>>>>>>>>
->>>>>>>> Here a short sum up of our tests and the results and at the end a =
-few
->>>>>>>> questions :-)
->>>>>>>>
->>>>>>>> we are using a Freescale imx6dl on our hardware and upgraded our o=
-perating system from
->>>>>>>> Freescale Kernel 3.0.43 with Xenomai 2.6.2.1 and U-Boot 2013.04 as=
- compiler we use GCC 4.7.2
->>>>>>>> Freescale Kernel 3.10.53 with Xenomai 2.6.4 and U-Boot 2016.01 as =
-compiler we use GCC 4.8.2
->>>>>>>> On both Kernels the CONFIG_SMP is set.
->>>>>>>>
->>>>>>>> What we see is that when we running a customer project in a Xenoma=
-i task with priority 95
->>>>>>>> tooks 40% of the CPU time on Kernel 3.0.43
->>>>>>>> and 47% of CPU time on Kernel 3.10.53
->>>>>>>>
->>>>>>>> so the new system is slower by 7% if we sum up this to 100% CPU lo=
-ad we have a difference of 15%
->>>>>>>> To find out what is the reason for this difference we ran the foll=
-owing test.
->>>>>>>> We tried to get the new system faster by change some components of=
- the system.
->>>>>>>>
->>>>>>>> -Changing U-Boot on new system                -> still 7% slower
->>>>>>>> -Copy Kernel 3.0.43 to new system            -> still 7% slower
->>>>>>>> -Creating Kernel 3.0.43 with
->>>>>>>>          Xenomai 2.6.4 and copy it to new system    -> still 7% sl=
-ower
->>>>>>>> -Compiling the new system with
->>>>>>>>          old GCC version                                        ->=
- still 7% slower
->>>>>>>> -We also checked the settings for RAM and CPU clock -> these are e=
-qual
->>>>>>>>
->>>>>>>> It looks like that is not one of the big components,
->>>>>>>> so we started to test some special functions like rt_timer_tsc()
->>>>>>>> In the following example we stay for 800=B5s in the while loop and
->>>>>>>> start this loop again after 200=B5s delay.
->>>>>>>> The task application running this code has priotity 95.
->>>>>>>>
->>>>>>>> Here a simplified code snipped
->>>>>>>> start =3D rt_timer_tsc();
->>>>>>>> do
->>>>>>>> {
->>>>>>>> 	current =3D rt_timer_tsc();
->>>>>>>> 	i++;=09
->>>>>>>> } while((current - start) < 800)
->>>>>>> If your CPU is running at 1 GHz and uses the global timer as clock
->>>>>>> source, the clock source runs at 500 MHz, so 800 ticks of the tsc is
->>>>>>> something around 1.6 us
->>>>>> Sorry I simplified the code snippet a little bit to much.
->>>>>> Thats the correct code.
->>>>>>
->>>>>> current =3D rt_timer_tsc2ns(rt_timer_tsc());
->>>>>>
->>>>>>> So, I do not really understand what you are talking about. But are
->>>>>>> you sure the two kernels use the same clocksource for xenomai?
->>>>>>>
->>>>>>> Could you show us the result of "dmesg | grep I-pipe" with the two
->>>>>>> kernels ?
->>>>>> Output of Kernel 3.10.53 with Xenomai 2.6.4
->>>>>> I-pipe, 3.000 MHz clocksource
->>>>>> I-pipe, 396.000 MHz clocksource
->>>>>> I-pipe, 396.000 MHz timer
->>>>>> I-pipe, 396.000 MHz timer
->>>>>> I-pipe: head domain Xenomai registered.
->>>>>>
->>>>>> Output of Kernel 3.0.43 with Xenomai 2.6.2.1
->>>>>> [    0.000000] I-pipe 1.18-13: pipeline enabled.
->>>>>> [    0.331999] I-pipe, 396.000 MHz timer
->>>>>> [    0.335720] I-pipe, 396.000 MHz clocksource
->>>>>> [    0.844016] I-pipe: Domain Xenomai registered.
->>>>>>
->>>>>> The controller is a imx6dl, this controller can run maximum 800MHz
->>>>> Ok, so the new kernel registers two tsc emulations, could you run
->>>>> the "tsc" regression test to measure the tsc latency? The two tsc
->>>>> emulations have very different latencies, so the result would be
->>>>> unmistakable.
->>>>>
->>>> Output of Kernel 3.10.53 with Xenomai 2.6.4
->>>> /usr/xenomai/bin/latency
->>> This test is named "latency", not "tsc". As the different names
->>> imply, they are not measuring the same thing.
->>>
->> Sorry for the stupied question,
->> but where do I find the "tsc" test, because in folder /usr/xenomai/bin/
->> is it not located
-> You have millions of files on your target? Or you compiled busybox
-> without support for the "find" utility ?
->
-Sorry I searched for tsc befor but didn't find any executable called "tsc"
-what I find is /usr/share/ghostscript and its config files and=20
-/usr/bin/xtscal.
+> 
+> Kernel module:
+> - Make a buffer i.e. char  buffer[4000][126] and initializing the 
+> buffer using memset in the initial thread
+> - Filled the buffer in the read thread of module
+> - After filling the buffer start the timer
+> 
+> As I start the timer after filling the buffer the kernel displays the 
+> message that switching to secondary  mode and A bug. The whole message 
+> is end of the email
 
-I find in the xenomai sources the file tsc.c, could you please tell me
-what option do I have to enable that this will be build ?
+The data you sent are unreadable. If you want help, and do not want to give all the details asked by the https://xenomai.org//asking-for-help/ page, then at least send properly formatted logs.
 
+Anyway, very much likely the timer address you pass to rtdm_timer_start is not initialized, or the address you pass is invalid, or becomes invalid because you used an object on stack.
 
+In such a case, posting the code of the module would help: the description you send describes what you think you are doing, the code shows what you are really doing, and usually, if there is a bug, it is because there is a difference between the two.
+
+-- 
+					    Gilles.
+https://click-hack.org
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: kernel_log.txt
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20160601/95c9e9b9/attachment.txt>
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: pcap_replay.c
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20160601/95c9e9b9/attachment.c>
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: raw_packet.c
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20160601/95c9e9b9/attachment-0001.c>
