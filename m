@@ -1,13 +1,16 @@
-References: <574EFA37.5030607@mitre.org>
- <20160601164530.GE14103@hermes.click-hack.org>
-From: Jeffrey Melville <jmelville@mitre.org>
-Message-ID: <574F142C.7060408@mitre.org>
-Date: Wed, 1 Jun 2016 12:58:20 -0400
+References: <574D9B03.8080706@sigmatek.at>
+ <20160531141646.GG5951@hermes.click-hack.org> <574EE886.2020907@sigmatek.at>
+ <20160601141238.GC14103@hermes.click-hack.org>
+From: Wolfgang Netbal <wolfgang.netbal@sigmatek.at>
+Message-ID: <574FEB2D.5010509@sigmatek.at>
+Date: Thu, 2 Jun 2016 10:15:41 +0200
 MIME-Version: 1.0
-In-Reply-To: <20160601164530.GE14103@hermes.click-hack.org>
-Content-Type: text/plain; charset="windows-1252"
+In-Reply-To: <20160601141238.GC14103@hermes.click-hack.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] SIGDEBUG_RESCNT_IMBALANCE with recursive mutex
+Subject: Re: [Xenomai] Performance impact after switching from 2.6.2.1 to
+ 2.6.4
+Reply-To: wolfgang.netbal@sigmatek.at
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,48 +19,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 6/1/2016 12:45 PM, Gilles Chanteperdrix wrote:
-> On Wed, Jun 01, 2016 at 11:07:35AM -0400, Jeffrey Melville wrote:
->> Hi,
->>
->> Setup: Xenomai 2.6.4 (actually 2.6 git rev 4f349cf0553, with a99426
->> cherry-picked) with kernel 3.14.17 on a Zynq and the POSIX skin using
->> the ipipe patches included with the specified git rev)
->>
->> We've noticed that SIGDEBUG_RESCNT_IMBALANCE is generated when a
->> (Xenomai) mutex is taken recursively by an NRT thread. The snippet at
->> the bottom of this message will reproduce the issue. I omitted most of
->> the error-checking for brevity.
->>
->> A couple previous threads have discussed slightly similar problems, but
->> I never saw final resolutions:
->> http://www.xenomai.org/pipermail/xenomai/2012-January/025278.html
->> http://www.xenomai.org/pipermail/xenomai/2014-October/031919.html
->>
->> As far as "why are we doing this?", the problem area occurs in a test
->> suite where some tests have to run as NRT threads because they don't
->> have to run real-time and will get killed by the watchdog if they run as
->> RT threads. Removing the Xenomai wrappers would also be complicated for
->> reasons that are outside of the scope of this email.
-> 
-> Yeah well, this is an issue that has been known and fixed for so
-> long that I forgot we knew it:
-> 
-> https://git.xenomai.org/xenomai-3.git/commit/?id=79f0dd1cdc408b22afe301fa03805349a4a9f151
-> 
-> I will try and backport this change to 2.6 in 2.6.5. The change
-> should be easy to backport since it was made prior to most of the
-> cleanup of mutex and condvars. In 3.x, the kernel does not handle at
-> all the recursive mutex recursion count, this makes things much
-> simpler, but the code very different.
-> 
-Ok thanks. You can disregard my other email then. I'll keep an eye out
-for the fix and we will avoid that test case for the time being.
 
-At some point after 2.6.5 I know we'll have to migrate to 3.x...
 
-Jeff
+Am 2016-06-01 um 16:12 schrieb Gilles Chanteperdrix:
+> On Wed, Jun 01, 2016 at 03:52:06PM +0200, Wolfgang Netbal wrote:
+>>
+>> Am 2016-05-31 um 16:16 schrieb Gilles Chanteperdrix:
+>>> On Tue, May 31, 2016 at 04:09:07PM +0200, Wolfgang Netbal wrote:
+>>>> Dear all,
+>>>>
+>>>> we have moved our application from "XENOMAI 2.6.2.1 + Linux 3.0.43" to
+>>>> "XENOMAI 2.6.4. + Linux 3.10.53". Our target is an i.MX6DL. The system
+>>>> is now up and running and works stable. Unfortunately we see a
+>>>> difference in the performance. Our old combination (XENOMAI 2.6.2.1 +
+>>>> Linux 3.0.43) was slightly faster.
+>>>>
+>>>> At the moment it looks like that XENOMAI 2.6.4 calls
+>>>> xnpod_schedule_handler much more often then XENOMAI 2.6.2.1 in our old
+>>>> system.  Every call of xnpod_schedule_handler interrupts our main
+>>>> XENOMAI task with priority = 95.
+>>>>
+>>>> I have compared the configuration of both XENOMAI versions but did not
+>>>> found any difference. I checked the source code (new commits) but did
+>>>> also not find a solution.
+>>> Have you tried Xenomai 2.6.4 with Linux 3.0.43 ? In order to see
+>>> whether it comes from the kernel update or the Xenomai udpate?
+>> I've tried Linux 3.0.43 with Xenomai 2.6.4 an there is no difference to
+>> Xenomai 2.6.2.1
+>> Looks like there is an other reason than Xenomai.
+> Ok, one thing to pay attention to on imx6 is the L2 cache write
+> allocate policy. You want to disable L2 write allocate on imx6 to
+> get low latencies. I do not know which patches exactly you are
+> using, so it is difficult to check, but the kernel normally displays
+> the value set in the L2 auxiliary configuration register, you can
+> check in the datasheet if it means that L2 write allocate is
+> disabled or not. And check if you get the same value with 3.0 and
+> 3.10.
+Thank you for this hint, I looked around in the kernel config, but cant 
+find
+an option sounds like L2 write allocate.
+The only option I found was CACHE_L2X0 and that is activated on both 
+kernels.
+Do you have an idea whats the name of this configuration or where in the
+kernel sources it should be located, so I can find out whats the name of 
+the
+config flag by searching the sourcecode.
+
 
