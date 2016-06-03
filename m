@@ -1,11 +1,12 @@
 From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Fri, 3 Jun 2016 09:49:32 -0400
-Message-ID: <20160603134932.GC28301@csclub.uwaterloo.ca>
+Date: Fri, 3 Jun 2016 09:55:34 -0400
+Message-ID: <20160603135534.GD28301@csclub.uwaterloo.ca>
 References: <CAL8zT=j3AF5CEmEsDczFbb_i7Fe72gOMENLN3yQh_WWu59jrvw@mail.gmail.com>
+ <20160603091339.GM1801@hermes.click-hack.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAL8zT=j3AF5CEmEsDczFbb_i7Fe72gOMENLN3yQh_WWu59jrvw@mail.gmail.com>
+In-Reply-To: <20160603091339.GM1801@hermes.click-hack.org>
 Subject: Re: [Xenomai] Migrating a Xenomai 2.6.4 to a 4.6 kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -15,26 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jean-Michel Hautbois <jhautbois@gmail.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Fri, Jun 03, 2016 at 10:06:10AM +0200, Jean-Michel Hautbois wrote:
-> Hi !
+On Fri, Jun 03, 2016 at 11:13:39AM +0200, Gilles Chanteperdrix wrote:
+> The APIs have not changed much. The cost is not very high. The
+> changes are documented here:
+> https://xenomai.org/migrating-from-xenomai-2-x-to-3-x/
 > 
-> I have a 3.18 kernel which is currently built with xenomai 2.6.4.
-> I need to keep xenomai 2.6.4, as a lot of applications are using the API,
-> and I don't want to migrate, the cost would be very high ATM.
-> 
-> What is the best strategy to migrate xenomai to a 4.6 kernel ?
-> Would you be interested by the patches once done ?
+> You will have to:
+> - port the I-pipe patch for Linux 4.1 to Linux 4.6
 
-Well I managed to take the ipipe for 4.1 and then add xenomai-2.6 latest
-git to that and with just a couple of minor tweaks the patches applied
-and built and seemed to pass all the tests I threw at it.  I can't
-imagine 4.4 would be much harder than 4.1, although I didn't check if
-ipipe work had been done for 4.4 yet.  Didn't get a chance to full test
-it though and I moved to a new job a few weeks ago, so I don't have the
-code handy either unfortunately (although I could probably ask for it).
+Would that not be required for xenomai 3.x as well though?
+
+> - add to the I-pipe patches the "I-pipe legacy" support, which was
+> removed from 4.1
+> - add the missing bits to Xenomai to adapt to the kernel API changes
+> between Linux 3.18 and Linux 4.6, of which there should be a fair
+> amount, given the difference in version numbers.
+> 
+> So, the best strategy is to not migrate xenomai 2.6.4 to a 4.6
+> kernel.
+> 
+> > Would you be interested by the patches once done ?
+> 
+> No. Xenomai 2.6.5 is about to be released, will not support 4.x
+> kernel, and will be the last release in the 2.6 branch. We simply do
+> not have the man power to maintain two branches, and for this
+> reason, want to encourage the users to migrate.
+
+That does make sense.
+
+Of course a lot of people are scared of moving xenomai versions.  3 sounds
+quite different than 2.6, and I certainly remember having a fair bit of
+pain going from 2.5 to 2.6 years ago (some of it was probably self inflicted).
 
 -- 
 Len Sorensen
