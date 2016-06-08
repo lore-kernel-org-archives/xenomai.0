@@ -1,14 +1,12 @@
-References: <DB5PR06MB1287D4090873A5C9EC9B540A8F720@DB5PR06MB1287.eurprd06.prod.outlook.com>
- <063cc054-45bf-97a8-c036-6a06993bf415@xenomai.org>
- <DB5PR06MB1287BED9E19165B91A5DCA068F5E0@DB5PR06MB1287.eurprd06.prod.outlook.com>
+References: <d00bbb2d634101853ccee292203bef44@smile.fr>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <45df824b-3115-48b3-8f3c-34ade819ce3c@xenomai.org>
-Date: Wed, 8 Jun 2016 20:34:54 +0200
+Message-ID: <ecbd6473-5c37-8e7e-582e-568cdec43269@xenomai.org>
+Date: Wed, 8 Jun 2016 20:46:42 +0200
 MIME-Version: 1.0
-In-Reply-To: <DB5PR06MB1287BED9E19165B91A5DCA068F5E0@DB5PR06MB1287.eurprd06.prod.outlook.com>
+In-Reply-To: <d00bbb2d634101853ccee292203bef44@smile.fr>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] XDDP NRT to RT communication and select
+Subject: Re: [Xenomai] Activate a task with an alarm
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,83 +15,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Alex Plits <alex_plits@radwin.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Mathieu KOWALEWSKI <matthieu.kowalewski@smile.eu>, xenomai@xenomai.org
 
-On 06/08/2016 11:56 AM, Alex Plits wrote:
+On 06/08/2016 02:12 PM, Mathieu KOWALEWSKI wrote:
+>  
 > 
+> Hey, 
 > 
->> -----Original Message-----
->> From: Philippe Gerum [mailto:rpm@xenomai.org]
->> Sent: Thursday, June 02, 2016 4:12 PM
->> To: Alex Plits; xenomai@xenomai.org
->> Subject: Re: [Xenomai] XDDP NRT to RT communication and select
->>
->> On 05/11/2016 08:58 AM, Alex Plits wrote:
->>> Hi,
->>>
->>> We require communication between non-real time and real time thread in
->>> xenomai 3.x, so naturally we planned to use XDDP.
->>> After careful read and looking into examples in smokey we tried to
->>> implement simple communication Between NRT thread that sends via RTP
->>> pseudo device a buffer to RT thread which is blocked on xenomai
->>> "select" (read_fds) based on a ripped example of XDDP in smokey (without
->> 2nd real time thread), i.e. NRT thread periodically sends messages to the RT
->> thread waiting on select before actual receive call.
->>> Unfortunately the "select" call on the RT thread was never triggered -
->>> although in the smokey unit test it worked as expected, the only difference
->> was the 2nd real time thread (which we got rid of in our case) used "sendto"
->> call to that XDDP socket.
->>> After some xenomai code examination we saw that XDDP send/recv
->>> functions do signal xenomai select waiters which explains the smokey case
->> (sendto triggered select) but It seems (correct me if I'm wrong) that
->> xnpipe_write/read do not.
->>> In order to confirm that we used "xnselect_signal" to trigger the xenomai
->> select waiters in the "__xddp_input_handler" callback that is called inside
->> xnpipe_write and this seemed to work.
->>> So my queries are -
->>>
->>> 1.       Does XDDP mechanism support select call for NRT writers  - or did we
->> misread https://xenomai.org/2014/08/porting-a-linux-application-to-
->> xenomai-dual-kernel/#IO_multiplexing_with_select?
->>>
->>
->> That was the plan, but as you noticed, the implementation was broken,
->> spuriously connecting the rt output to the rt input instead.
->>
->>> 2.       Will the opposite direction work i.e. RT-> NRT that is waiting on a
->> select?
->>>
->>
->> Yes, this is a separate code path, which works fine.
->>
->>> 3.       Is the small patch we added acceptable for the case described above /
->> is there any additional locking that we need to handle?
->>>
->>
->> I don't know the exact implementation of your fix, but this should indeed live
->> in the pipe input handler from the XDDP protocol module.
->> Conversely, the corresponding code has to be removed from
->> __xddp_sendmsg().
->>
->> http://git.xenomai.org/xenomai-3.git/commit/?h=stable-
->> 3.0.x&id=fd828bf38f2c7ba5140cbbf1ae932a5e184f823f
->>
-> [Alex Plits] 
-> Hi Philippe, 
-> That seems to be the exact fix we have tried and indeed this solved the select issue on the XDDP socket. 
-> However this was part of our requirement - in addition to waiting on the XDDP socket RT part, in the select call
-> we required a wait on a posix(RT) message queue descriptor and this yield strange behavior, long story short - this does not work as expected although using
-> select on each of them apart works fine.
-> i.e. 
-> Select on the posix(RT) Qs -> works as expected
-> Select on the XDDPs after fix -> works as expected
-> Select on FD_SET where Posix(RT) Q descriptor is set and XDDP socket descriptor is set -> broken.
+> I'm trying to create a alarm that can activate a alarm
+> handler or a task ... 
 > 
->>From what we understand in the documentation mentioned in previous post this should work. 
-> Can you advise?
+> But when my handler spawn a task, it returns an
+> EINVAL error. 
+> 
+> I use Alchemy (Native) API and the Cobalt kernel on
+> Xenomai 3.0.2 with x86 architecture. 
+> 
+> I don't know if it's an
+> implementation will, to disallow the call of spawning/starting a task in
+> an alarm handler, or just a bug. 
 
-Please send me a simple test case.
-
+This is by design. An alarm handler is supposed to run time-critical
+code. Creating new tasks is a heavyweight operation, which a dual kernel
+system like Cobalt won't be able to carry out with real-time guarantees.
 
 -- 
 Philippe.
