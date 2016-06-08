@@ -1,14 +1,11 @@
-From: Alex Plits <alex_plits@radwin.com>
-Date: Wed, 8 Jun 2016 09:56:00 +0000
-Message-ID: <DB5PR06MB1287BED9E19165B91A5DCA068F5E0@DB5PR06MB1287.eurprd06.prod.outlook.com>
-References: <DB5PR06MB1287D4090873A5C9EC9B540A8F720@DB5PR06MB1287.eurprd06.prod.outlook.com>
- <063cc054-45bf-97a8-c036-6a06993bf415@xenomai.org>
-In-Reply-To: <063cc054-45bf-97a8-c036-6a06993bf415@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+From: =?ks_c_5601-1987?B?sei9ybW/?= <sdkim@ajinextek.com>
+Date: Wed, 8 Jun 2016 20:40:23 +0900
+Message-ID: <001201d1c17a$8b683bd0$a238b370$@ajinextek.com>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] XDDP NRT to RT communication and select
+Content-Language: ko
+Content-Type: text/plain; charset="euc-kr"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] My Device of xenomai 2.6.3 patch Issues ~!
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,101 +14,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-
-
-> -----Original Message-----
-> From: Philippe Gerum [mailto:rpm@xenomai.org]
-> Sent: Thursday, June 02, 2016 4:12 PM
-> To: Alex Plits; xenomai@xenomai.org
-> Subject: Re: [Xenomai] XDDP NRT to RT communication and select
->=20
-> On 05/11/2016 08:58 AM, Alex Plits wrote:
-> > Hi,
-> >
-> > We require communication between non-real time and real time thread in
-> > xenomai 3.x, so naturally we planned to use XDDP.
-> > After careful read and looking into examples in smokey we tried to
-> > implement simple communication Between NRT thread that sends via RTP
-> > pseudo device a buffer to RT thread which is blocked on xenomai
-> > "select" (read_fds) based on a ripped example of XDDP in smokey (withou=
-t
-> 2nd real time thread), i.e. NRT thread periodically sends messages to the=
- RT
-> thread waiting on select before actual receive call.
-> > Unfortunately the "select" call on the RT thread was never triggered -
-> > although in the smokey unit test it worked as expected, the only differ=
-ence
-> was the 2nd real time thread (which we got rid of in our case) used "send=
-to"
-> call to that XDDP socket.
-> > After some xenomai code examination we saw that XDDP send/recv
-> > functions do signal xenomai select waiters which explains the smokey ca=
-se
-> (sendto triggered select) but It seems (correct me if I'm wrong) that
-> xnpipe_write/read do not.
-> > In order to confirm that we used "xnselect_signal" to trigger the xenom=
-ai
-> select waiters in the "__xddp_input_handler" callback that is called insi=
-de
-> xnpipe_write and this seemed to work.
-> > So my queries are -
-> >
-> > 1.       Does XDDP mechanism support select call for NRT writers  - or =
-did we
-> misread https://xenomai.org/2014/08/porting-a-linux-application-to-
-> xenomai-dual-kernel/#IO_multiplexing_with_select?
-> >
->=20
-> That was the plan, but as you noticed, the implementation was broken,
-> spuriously connecting the rt output to the rt input instead.
->=20
-> > 2.       Will the opposite direction work i.e. RT-> NRT that is waiting=
- on a
-> select?
-> >
->=20
-> Yes, this is a separate code path, which works fine.
->=20
-> > 3.       Is the small patch we added acceptable for the case described =
-above /
-> is there any additional locking that we need to handle?
-> >
->=20
-> I don't know the exact implementation of your fix, but this should indeed=
- live
-> in the pipe input handler from the XDDP protocol module.
-> Conversely, the corresponding code has to be removed from
-> __xddp_sendmsg().
->=20
-> http://git.xenomai.org/xenomai-3.git/commit/?h=3Dstable-
-> 3.0.x&id=3Dfd828bf38f2c7ba5140cbbf1ae932a5e184f823f
->=20
-[Alex Plits]=20
-Hi Philippe,=20
-That seems to be the exact fix we have tried and indeed this solved the sel=
-ect issue on the XDDP socket.=20
-However this was part of our requirement - in addition to waiting on the XD=
-DP socket RT part, in the select call
-we required a wait on a posix(RT) message queue descriptor and this yield s=
-trange behavior, long story short - this does not work as expected although=
- using
-select on each of them apart works fine.
-i.e.=20
-Select on the posix(RT) Qs -> works as expected
-Select on the XDDPs after fix -> works as expected
-Select on FD_SET where Posix(RT) Q descriptor is set and XDDP socket descri=
-ptor is set -> broken.
-
->From what we understand in the documentation mentioned in previous post thi=
-s should work.=20
-Can you advise?
-
-Thanks,
-Alex Pits.
-=20
-=20
-> --
-> Philippe.
-
+IAoKSGkKCiAKCldoZW4gdGhlIHhlbm9tYWkgMi42LjMgcGF0Y2ggb24gbXkgZGV2aWNlLCB0aGVy
+ZSBhcmUgc29tZSBwcm9ibGVtcy4KCiAKCkgvVyBzcGVjCgotICAgICAgIEFtMzM1MiBBUk0gQ29y
+dGV4LUE4CgotICAgICAgIEJlYWdsZWJvbmUgQmxhY2sgYmFzZSBib2FyZC4KClMvVyBzcGVjCgot
+ICAgICAgIEtlcm5lbCBWZXJzaW9uOiB2My44LjEzLWJvbmU3OQoKLSAgICAgICBYZW5vbWFpIDIu
+Ni4zIHBhdGNoCgotICAgICAgIFVidW50dSAxNC4wNC40IExUUwoKIAoKVGhlIGZpcnN0IHByb2Js
+ZW0uCgpXaGVuIGluIHVzZSB0aGUgYXBwbGljYXRpb24gcHJvZ3JhbSChsGNsb2NrX2dldHRpbWWh
+sSBmdW5jdGlvbiBxdWlja2x5CihhYm91dCA1bXMpLCB0aGUgc3BpbmxvY2sgb2NjdXJyZWQgaW4g
+dGhlIGtlcm5lbC4KClNlZSBrZXJuZWwgbWVzc2FnZSBmaWxlICihsGRtZXNnobEgY29tbWFuZCks
+IGZpbGUgbmFtZSA9IGRtZXNnX3NwaW5sb2NrLnR4dAoKIAoKQSBTZWNvbmQgcHJvYmxlbS4KClVz
+aW5nIGEgInJ0X211dGV4X2NyZWF0ZSIgZnVuY3Rpb24gaW4gdGhlIHBhcmVudCBwcm9ncmFtIHdo
+ZW4gZ2VuZXJhdGluZyBhCiJNeU11dGV4IiwgcGVyZm9ybXMgInJ0X211dGV4X2FjcXVpcmUiLCAi
+cnRfbXV0ZXhfcmVsZWFzZSIgcXVpY2tseSwgYW5kIHRoZQpwcm9ibGVtIG9jY3VycyBvbmNlIGlu
+IDUtNyBkYXlzLgoKS2VybmVsIG1lc3NhZ2VzIG9mIHRoZSBwcm9ibGVtLiAoobBkbWVzZ6GxIGNv
+bW1hbmQpCgoKCqGwWGVub21haTogbmF0aXZlOiBjbGVhbmluZyB1cCBtdXRleCChsE15TXV0ZXih
+sSAocmV0PTApLqGxCgogCgpJIHdhbnQgdG8ga25vdyB3aGF0IHRoZSBjYXVzZSBvciB0aGUgc29s
+dXRpb24gdG8gdGhlIHR3byBwcm9ibGVtcy4gQW5kIGp1c3QKYXNrLgoKLS0tLS0tLS0tLS0tLS0g
+bmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJi
+ZWQuLi4KTmFtZTogaW1hZ2UwMDMuanBnClR5cGU6IGltYWdlL2pwZWcKU2l6ZTogNDIxNDEgYnl0
+ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWls
+L3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNjA2MDgvZjFlYjdjODUvYXR0YWNobWVudC5qcGc+Ci0t
+LS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBbiBlbWJlZGRlZCBhbmQgY2hh
+cnNldC11bnNwZWNpZmllZCB0ZXh0IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBkbWVzZ19zcGlubG9j
+ay50eHQKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1l
+bnRzLzIwMTYwNjA4L2YxZWI3Yzg1L2F0dGFjaG1lbnQudHh0Pgo=
