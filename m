@@ -1,13 +1,14 @@
-References: <d8ab0bd9-b115-7c0e-1234-6e2ea8c35982@peak-system.com>
- <2d2ef67a-a82d-5017-2928-98210d67eacd@xenomai.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <58d8a94e-8c5b-2b42-2cc3-07eb9a620d79@xenomai.org>
-Date: Mon, 13 Jun 2016 15:23:32 +0200
+From: =?iso-8859-1?Q?Lassi_Niemist=F6?= <lassi.niemisto@wapice.com>
+Date: Mon, 13 Jun 2016 14:01:10 +0000
+Message-ID: <09ef98ed5f8a438fa3703a3e3f5736f5@EDB2.wapice.localdomain>
+References: <47132d04b76942d8bd15c82a5a460f7b@EDB3.wapice.localdomain>
+ <20160403190948.GC20399@hermes.click-hack.org>
+ <20160430064939.GC1781@hermes.click-hack.org>  
+Content-Language: en-US
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <2d2ef67a-a82d-5017-2928-98210d67eacd@xenomai.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Linux RT driver migrating to 3.0...
+Subject: [Xenomai] PowerPC hardware watchpoints unstable with GDB and Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,39 +17,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Stephane Grosjean <s.grosjean@peak-system.com>, Xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 06/13/2016 03:21 PM, Philippe Gerum wrote:
-> On 06/13/2016 03:14 PM, Stephane Grosjean wrote:
->> Hi!
->>
->> Successfully running for years a Xenomai 2.6.x RT driver under some
->> dual-kernel Linux versions, we'd like to migrate it to Xenomai 3.x.
->>
->> First step consisting in compiling the driver is over, time has come to
->> test it.
->>
->> Everything looks like the rtm_mutex_lock() locks the entire system when
->> running a Xenomai 3.x cobalt Linux, while it doesn't with 2.6.x: in
->> fact, in some particular cases, this rtdm_mutex_lock() might be called
->> from the "init_module()", so I'm afraid that the calling task isn't a RT
->> one, but a Linux regular one, isn't it? So maybe it's actually the
->> reason why...
->>
-> 
-> It is.
-> 
->> But, in that case, why such a call was not a problem with Xenomai 2.6.x?
-> 
-> Because that mutex was not contended at the time of the call. You should
-> also check for a lack of initialization of that mutex, causing the code
-> to fail gracefully instead of panicking. Did you check the return code
-> of rtdm_mutex_lock() in 2.6.x ?
-> 
+Hello,
 
-Enabling CONFIG_XENO_OPT_DEBUG_COBALT in Xenomai 3.x should help
-detecting such issue too.
+Note: please keep gdb@sourceware.org as a recipient - I tried to post on bo=
+th but xenomai rejected due to missing membership and I do not want to re-p=
+ost on gdb..=20
 
--- 
-Philippe.
+I am trying to debug (applications, not kernel) using hardware watchpoints =
+(memory breakpoints) with=20
+
+GDB: 7.10.1 and 7.11 (local mode)
+Processor: PowerPC e300c3 (MPC8309E)
+Xenomai: 2.6.1
+Linux: 3.1.10-ipipe
+
+I have two issues:
+
+1) If I set up a while(1) loop with (a global) counter and sleep, and place=
+ the watchpoint on the counter variable, I get GDB to break nicely to each =
+increment if I use usleep() in my loop. Instead, if I use rt_task_sleep(), =
+the watchpoint may go unnoticed for up to 100 loops, then trigger, then aga=
+in go unnoticed for 5 loops and so on. Triggering happens on correct line, =
+though. This is reproducable with a simple C main with only rt_task_shadow =
+and the loop.=20
+
+2) The watchpoint seems to go broken (at least sometimes) when new (rt) thr=
+eads are being created. The GDB still thinks the watchpoint exists, but it =
+never gets triggered. If I remove the wp and create it again, it starts tri=
+ggering. This finding I will investigate further and see if it is reproduca=
+ble with simple test code.
+
+Are these known issues? I found only little information about using watchpo=
+ints on xenomai, so is it something rarely used? Or is the PowerPC integrat=
+ion the broken part here? GDB, in turn, has had some patches on the hardwar=
+e-watchpoint inheritance at thread creation, so I would assume that it at l=
+east "should work". Any hints for debugging the issue further?
+
+BR,
+Lassi Niemist=F6
+Wapice Oy
+Vaasa, Finland
 
