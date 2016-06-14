@@ -1,19 +1,22 @@
-Date: Mon, 13 Jun 2016 17:20:34 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160613152034.GK898@hermes.click-hack.org>
-References: <47132d04b76942d8bd15c82a5a460f7b@EDB3.wapice.localdomain>
- <20160403190948.GC20399@hermes.click-hack.org>
- <20160430064939.GC1781@hermes.click-hack.org>
- <09ef98ed5f8a438fa3703a3e3f5736f5@EDB2.wapice.localdomain>
- <20160613143016.GJ898@hermes.click-hack.org>
- <d7f1e0d09cba4c14a5e0e20d168a2141@EDB2.wapice.localdomain>
+From: Sripath Roy Koganti <koganti_sripathroy@kluniversity.in>
+Date: Tue, 14 Jun 2016 04:23:26 +0000
+Message-ID: <SG2PR01MB1230A72993D684166375BE97FF540@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>
+References: <SG2PR01MB12300E6F7AC1284011B6FBBBFF500@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>
+ <20160610071612.GG1785@hermes.click-hack.org>
+ <SG2PR01MB1230DD21BB16D91C6E68F1D5FF500@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>
+ <20160610074538.GB18377@hermes.click-hack.org>
+ <SG2PR01MB1230165E11DF45A8D3E2F7DBFF500@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>
+ <SG2PR01MB1230772D77FA28E0734AE2A5FF530@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>
+ <20160613084232.GP1785@hermes.click-hack.org>
+ <SG2PR01MB123046BD62C63FCE5467025BFF530@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>,
+ <20160613085719.GR1785@hermes.click-hack.org>
+In-Reply-To: <20160613085719.GR1785@hermes.click-hack.org>
+Content-Language: en-IN
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <d7f1e0d09cba4c14a5e0e20d168a2141@EDB2.wapice.localdomain>
-Subject: Re: [Xenomai] PowerPC hardware watchpoints unstable with GDB and
- Xenomai
+Subject: Re: [Xenomai] Resources for Installation of Xenomai 2.6 and 3 on
+ iMx6 Sabre Lite Dev Board
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,48 +25,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lassi =?iso-8859-1?Q?Niemist=F6?= <lassi.niemisto@wapice.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Jun 13, 2016 at 03:14:05PM +0000, Lassi Niemist=F6 wrote:
-> > Whether or not you should contact the gdb mailing list is simple: if yo=
-u get the issue without Xenomai, then it is a=20
-> > gdb issue, if you get the issue only with Xenomai, then it is a Xenomai=
- issue, and there is no reason to bother the=20
-> > gdb mailing list.
->=20
-> Well, I had no idea which side contains the Xenomai support and I wished =
-the GDB guys to provide some debugging hints. But if you see it most probab=
-ly as a Xenomai issue, let's not cross-post it then.
->=20
->=20
-> > Xenomai 2.6.1 is pretty old, a lot of things have been fixed since then=
-, including issues with gdb. So, do you get the same issue with Xenomai 2.6=
-.4?
->=20
-> I will find out if we have the possibility of trying the version
-> update with sensible effort.=20
+I am done with building a new kernel from BBB. but it took me more than 4 h=
+ours to complete the kernel compilation.
 
-The update should be painless: the two versions belong to the same
-branch, they are ABI compatible. This means that you do not even
-need to recompile your applications, you simply need to compile the
-new xenomai version. Also, recompiling the kernel support should be
-enough.
 
->=20
-> A thought: I have been getting "warning: Unable to find libthread_db matc=
-hing inferior's thread library, thread debugging will not be available." at=
- GDB startup, but ignored it this far as the threading has worked just fine=
-.. Might this have anything to do with my issue, and does anyone know how t=
-o get rid of the message on Xenomai? I know how to specify the library for =
-GDB, but which one should be the correct for Xenomai?
+Now i have zImage and Image available in arch/arm/boot/ .... unable to inst=
+all the kernel
 
-No idea, I always debugged threaded programs with libthread_db.so,
-and it has to come from the toolchain used to compile the target
-gdb/gdbserver. And if using gdbserver, the cross-gdb running on host
-and the gdbserver running on target should have the same version too.
 
---=20
-					    Gilles.
+
+Regards
+Sripath Roy Koganti
+
+________________________________
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Sent: 13 June 2016 14:27:19
+To: Sripath Roy Koganti
+Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai] Resources for Installation of Xenomai 2.6 and 3 on i=
+Mx6 Sabre Lite Dev Board
+
+On Mon, Jun 13, 2016 at 08:52:11AM +0000, Sripath Roy Koganti wrote:
+> Yes
+>
+> I tried running directly from BBB. but got an error stating timer
+> files not found. Now im trying an alternate way doing from my PC
+> and cross compiling.
+
+Do not waste your time doing that. Please report the problem you get
+when compiling directly on the board, but clearly, more than just
+"got an error stating timer files not found", at which point, during
+compilation, at run-time? etc... Send the full compilation logs if
+this is an error at compilation time, or the full kernel logs if
+this is a run-time error.
+
+Changing where the compiler run will probably not change anything.
+
+--
+                                            Gilles.
 https://click-hack.org
-
