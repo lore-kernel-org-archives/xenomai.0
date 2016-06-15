@@ -1,13 +1,15 @@
-Message-ID: <883C6B92332C446CBBAC00B85D062AF8@itd206>
-From: "Sureshvs" <sureshvs@datapatterns.co.in>
-References: <B7E9A6C055724C8F931591A5C2DD07C8@itd206><20151204132438.GC29398@hermes.click-hack.org>
+Date: Wed, 15 Jun 2016 09:42:34 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160615074234.GN23680@hermes.click-hack.org>
+References: <B7E9A6C055724C8F931591A5C2DD07C8@itd206>
+ <20151204132438.GC29398@hermes.click-hack.org>
  <CAE+cAAw-bec89JVObr_YUNUEGGhVCut00Z3buNZJRfGg3f8uvw@mail.gmail.com>
-In-Reply-To: <CAE+cAAw-bec89JVObr_YUNUEGGhVCut00Z3buNZJRfGg3f8uvw@mail.gmail.com>
-Date: Wed, 15 Jun 2016 12:57:54 +0530
+ <883C6B92332C446CBBAC00B85D062AF8@itd206>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Reg:  Reg: Linux assertion with debug info
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <883C6B92332C446CBBAC00B85D062AF8@itd206>
+Subject: Re: [Xenomai] Reg:  Reg: Linux assertion with debug info
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,60 +18,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Sureshvs <sureshvs@datapatterns.co.in>
 Cc: sureshvsmca@gmail.com, xenomai@xenomai.org
 
-IEhpIEdpbGxlcwoKICAgCiAgIFdlIGhhdmUgZW5hYmxlZCB0aGUgZGVidWcgaW5mbyBhbmQgYXR0
-YWNoZWQgdGhlIEFzc2VydGlvbiBMb2cgZmlsZXMgZm9yIHlvdXIgcmVmZXJlbmNlLldlIGFyZSBn
-ZXR0aW5nIHRoaXMgaXNzdWUgZHVyaW5nIEV0aGVybmV0IG9wZXJhdGlvbihzc2ggZm9ybSByZW1v
-dGUgc3lzdGVtLGV0aGVybmV0IHNvY2tldCBvcGVyYXRpb24gZXRjLikuCgpXZSB1bmRlcnN0b29k
-IHlvdXIgY29uY2VybiAgTGludXggIGFuZCB4ZW5vbWFpIHZlcnNpb24gIGlzIG9sZCBidXQgb3Vy
-IHN5c3RlbSBpcyBpbiB0aGUgZmluYWwgc3RhZ2Ugb2YgdGVzdGluZy5zbyBraW5kbHkgaGVscHMg
-dXMgdG8gcmVzb2x2ZSB0aGUgaXNzdWUgYXMgc29vbiBhcyBwb3NzaWJsZS4KCgpSZWdhcmRzCnN1
-cmVzaCBWLlMKCgogIC0tLS0tIE9yaWdpbmFsIE1lc3NhZ2UgLS0tLS0gCiAgRnJvbTogU3VyZXNo
-IFN1YnJhbWFuaSAKICBUbzogc3VyZXNodnNAZGF0YXBhdHRlcm5zLmNvLmluIAogIFNlbnQ6IEZy
-aWRheSwgRGVjZW1iZXIgMTgsIDIwMTUgNzoxMCBQTQogIFN1YmplY3Q6IEZ3ZDogW1hlbm9tYWld
-IFJlZzogTGludXggYXNzZXJ0aW9uCgoKCgogIC0tLS0tLS0tLS0gRm9yd2FyZGVkIG1lc3NhZ2Ug
-LS0tLS0tLS0tLQogIEZyb206IEdpbGxlcyBDaGFudGVwZXJkcml4IDxnaWxsZXMuY2hhbnRlcGVy
-ZHJpeEB4ZW5vbWFpLm9yZz4KICBEYXRlOiBGcmksIERlYyA0LCAyMDE1IGF0IDY6NTQgUE0KICBT
-dWJqZWN0OiBSZTogW1hlbm9tYWldIFJlZzogTGludXggYXNzZXJ0aW9uCiAgVG86IFN1cmVzaHZz
-IDxzdXJlc2h2c0BkYXRhcGF0dGVybnMuY28uaW4+CiAgQ2M6IHhlbm9tYWlAeGVub21haS5vcmcs
-IGFkaXR5YSA8YWRpdHlhLmt1bWFyQGluZHVzdGVxc2l0ZS5jb20+LCBzdXJlc2h2c21jYUBnbWFp
-bC5jb20KCgogIE9uIEZyaSwgTm92IDIwLCAyMDE1IGF0IDEyOjIyOjE1UE0gKzA1MzAsIFN1cmVz
-aHZzIHdyb3RlOgogID4KICA+IEhpCiAgPgogID4gQVJDSD1wb3dlclBDCiAgPiBQcm9jZXNzb3I6
-IE1QQzg2NDEKICA+IExpbnV4IEtlcm5lbCA6IDIuNi4zMAogID4gWGVub21haSBwYXRjaCB2ZXJz
-aW9uOiB4ZW5vbWFpLTIuNS4yCiAgPgogID4KICA+IFdlIGFyZSBnZXR0aW5nIHRoZSBiZWxvdyBh
-c3NlcnRpb24gcmFuZG9tbHkuCiAgPgogID4ga2luZGx5IGhlbHAgdXMgdG8gaXNvbGF0ZSB0aGUg
-cHJvYmxlbSwgc3RhY2sgdHJhY2UgZHVyaW5nIGFzc2VydGlvbiBpcyBnaXZlbiBiZWxvdy4KICA+
-CiAgPgogID4gLS0tLS0tLS0tLS0tWyBjdXQgaGVyZSBdLS0tLS0tLS0tLS0tCiAgPiBCYWRuZXNz
-IGF0IGEwMDM4NGU4IFt2ZXJib3NlIGRlYnVnIGluZm8gdW5hdmFpbGFibGVdCgogIFdoYXQgYWJv
-dXQgZW5hYmxpbmcgbW9yZSBkZWJ1ZyBpbmZvcz8gRnVuY3Rpb24gYWRkcmVzc2VzIG9ubHkgbWFr
-ZQogIHNlbnNlIGZvciBhIHBhcnRpY3VsYXIga2VybmVsIGNvbmZpZ3VyYXRpb24sIHNvLCB3ZSBj
-YW4gbm90IGhlbHAgeW91CiAgaWYgd2UgZG8gbm90IGtub3cgdGhlIGxpbmUgb2YgY29kZSBjb3Jy
-ZXNwb25kaW5nIHRvIHRoZSBhZGRyZXNzLgoKICBBbHNvIG5vdGUgdGhhdCB4ZW5vbWFpIDIuNS4y
-IGFuZCBMaW51eCAyLjYuMzAgYXJlIHJlYWxseSBvbGQgKDIwMTApLAogIHNvIGEgbG90IG9mIHRo
-aW5ncyBoYXZlIGJlZW4gZml4ZWQgc2luY2UgdGhlbiwgYW5kIGl0IGlzIHZlcnkKICB1bmxpa2Vs
-eSB0aGF0IHdlIGNhbiByZW1lbWJlciB0aGUgcGFydGljdWxhciBidWcgeW91IGVuY291bnRlci4K
-CiAgLS0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEdpbGxl
-cy4KICBodHRwczovL2NsaWNrLWhhY2sub3JnCgoKCioqKioqKioqKioqKioqKiogQ0FVVElPTiAt
-IERpc2NsYWltZXIgKioqKioqKioqKioqKioqKipUaGlzIGVtYWlsIG1heSBjb250YWluIGNvbmZp
-ZGVudGlhbCBhbmQgcHJpdmlsZWdlZCBtYXRlcmlhbCBmb3IgdGhlCnNvbGUgdXNlIG9mIHRoZSBp
-bnRlbmRlZCByZWNpcGllbnQocykuIEFueSByZXZpZXcsIHVzZSwgcmV0ZW50aW9uLCBkaXN0cmli
-dXRpb24gb3IgZGlzY2xvc3VyZSBieSBvdGhlcnMgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYg
-eW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCAob3IgYXV0aG9yaXplZCB0byByZWNl
-aXZlIGZvciB0aGUgcmVjaXBpZW50KSwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBieSByZXBs
-eSBlbWFpbCBhbmQgZGVsZXRlIGFsbCBjb3BpZXMgb2YgdGhpcyBtZXNzYWdlLiBBbHNvLCBlbWFp
-bCBpcyBzdXNjZXB0aWJsZSB0byBkYXRhIGNvcnJ1cHRpb24sIGludGVyY2VwdGlvbiwgdGFtcGVy
-aW5nLCB1bmF1dGhvcml6ZWQgYW1lbmRtZW50IGFuZCB2aXJ1c2VzLiBXZSBvbmx5IHNlbmQgYW5k
-IHJlY2VpdmUgZW1haWxzIG9uIHRoZSBiYXNpcyB0aGF0IHdlIGFyZSBub3QgbGlhYmxlIGZvciBh
-bnkgc3VjaCBjb3JydXB0aW9uLCBpbnRlcmNlcHRpb24sIHRhbXBlcmluZywgYW1lbmRtZW50IG9y
-IHZpcnVzZXMgb3IgYW55IGNvbnNlcXVlbmNlIHRoZXJlb2YuIAoqKioqKioqKioqKiBFbmQgb2Yg
-RGlzY2xhaW1lciAqKioqKioqKioqKkRhdGFQYXR0ZXJucyBJVFMgR3JvdXAqKioqKioqKioqCgot
-LS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQW4gZW1iZWRkZWQgYW5kIGNo
-YXJzZXQtdW5zcGVjaWZpZWQgdGV4dCB3YXMgc2NydWJiZWQuLi4KTmFtZTogU1NoX0Fzc2VydGlv
-bi50eHQKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1l
-bnRzLzIwMTYwNjE1LzZkMjRjYTQ0L2F0dGFjaG1lbnQudHh0PgotLS0tLS0tLS0tLS0tLSBuZXh0
-IHBhcnQgLS0tLS0tLS0tLS0tLS0KQW4gZW1iZWRkZWQgYW5kIGNoYXJzZXQtdW5zcGVjaWZpZWQg
-dGV4dCB3YXMgc2NydWJiZWQuLi4KTmFtZTogQXNlcnRpb25fU0JDLnR4dApVUkw6IDxodHRwOi8v
-eGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNjA2MTUvNmQyNGNh
-NDQvYXR0YWNobWVudC0wMDAxLnR4dD4K
+On Wed, Jun 15, 2016 at 12:57:54PM +0530, Sureshvs wrote:
+>  Hi Gilles
+> 
+>    
+>    We have enabled the debug info and attached the Assertion Log
+>    files for your reference.We are getting this issue during
+>    Ethernet operation(ssh form remote system,ethernet socket
+>    operation etc.).
+> 
+> We understood your concern Linux and xenomai version is old but
+> our system is in the final stage of testing.so kindly helps us to
+> resolve the issue as soon as possible.
+
+I am afraid I can not. Since you are using such an old version,
+chances are very high that that issue has been fixed already. I
+suggest you browse the I-pipe git, in order to see when and how.
+Using the mailing list archives may be of help too.
+
+-- 
+					    Gilles.
+https://click-hack.org
+
