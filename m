@@ -1,22 +1,14 @@
-Date: Wed, 15 Jun 2016 15:50:04 +0200
+Date: Thu, 16 Jun 2016 15:26:34 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160615135004.GU23680@hermes.click-hack.org>
-References: <SG2PR01MB1230DD21BB16D91C6E68F1D5FF500@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>
- <20160610074538.GB18377@hermes.click-hack.org>
- <SG2PR01MB1230165E11DF45A8D3E2F7DBFF500@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>
- <SG2PR01MB1230772D77FA28E0734AE2A5FF530@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>
- <20160613084232.GP1785@hermes.click-hack.org>
- <SG2PR01MB123046BD62C63FCE5467025BFF530@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>
- <20160613085719.GR1785@hermes.click-hack.org>
- <SG2PR01MB1230A72993D684166375BE97FF540@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>
- <20160614085937.GB3060@hermes.click-hack.org>
- <SG2PR01MB1230B7E711E9B9A0021E128CFF550@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>
+Message-ID: <20160616132634.GA32532@hermes.click-hack.org>
+References: <574EFA37.5030607@mitre.org>
+ <20160601164530.GE14103@hermes.click-hack.org>
+ <574F142C.7060408@mitre.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <SG2PR01MB1230B7E711E9B9A0021E128CFF550@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>
-Subject: Re: [Xenomai] Resources for Installation of Xenomai 2.6 and 3 on
- iMx6 Sabre Lite Dev Board
+In-Reply-To: <574F142C.7060408@mitre.org>
+Subject: Re: [Xenomai] SIGDEBUG_RESCNT_IMBALANCE with recursive mutex
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,43 +17,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sripath Roy Koganti <koganti_sripathroy@kluniversity.in>
+To: Jeffrey Melville <jmelville@mitre.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, Jun 15, 2016 at 12:54:35PM +0000, Sripath Roy Koganti wrote:
-> I tried to install the following way
+On Wed, Jun 01, 2016 at 12:58:20PM -0400, Jeffrey Melville wrote:
+> On 6/1/2016 12:45 PM, Gilles Chanteperdrix wrote:
+> > On Wed, Jun 01, 2016 at 11:07:35AM -0400, Jeffrey Melville wrote:
+> >> Hi,
+> >>
+> >> Setup: Xenomai 2.6.4 (actually 2.6 git rev 4f349cf0553, with a99426
+> >> cherry-picked) with kernel 3.14.17 on a Zynq and the POSIX skin using
+> >> the ipipe patches included with the specified git rev)
+> >>
+> >> We've noticed that SIGDEBUG_RESCNT_IMBALANCE is generated when a
+> >> (Xenomai) mutex is taken recursively by an NRT thread. The snippet at
+> >> the bottom of this message will reproduce the issue. I omitted most of
+> >> the error-checking for brevity.
+> >>
+> >> A couple previous threads have discussed slightly similar problems, but
+> >> I never saw final resolutions:
+> >> http://www.xenomai.org/pipermail/xenomai/2012-January/025278.html
+> >> http://www.xenomai.org/pipermail/xenomai/2014-October/031919.html
+> >>
+> >> As far as "why are we doing this?", the problem area occurs in a test
+> >> suite where some tests have to run as NRT threads because they don't
+> >> have to run real-time and will get killed by the watchdog if they run as
+> >> RT threads. Removing the Xenomai wrappers would also be complicated for
+> >> reasons that are outside of the scope of this email.
+> > 
+> > Yeah well, this is an issue that has been known and fixed for so
+> > long that I forgot we knew it:
+> > 
+> > https://git.xenomai.org/xenomai-3.git/commit/?id=79f0dd1cdc408b22afe301fa03805349a4a9f151
+> > 
+> > I will try and backport this change to 2.6 in 2.6.5. The change
+> > should be easy to backport since it was made prior to most of the
+> > cleanup of mutex and condvars. In 3.x, the kernel does not handle at
+> > all the recursive mutex recursion count, this makes things much
+> > simpler, but the code very different.
+> > 
+> Ok thanks. You can disregard my other email then. I'll keep an eye out
+> for the fix and we will avoid that test case for the time being.
 > 
-> 
-> Added this repo
-> 
-> add this repo
-> deb [arch=armhf] http://repos.rcn-ee.com/debian/ jessie main
-> 
-> sudo apt-get install linux-image-3.8.13-xenomai-r78 linux-headers-3.8.13-xenomai-r78 linux-firmware-image-3.8.13-xenomai-r78
-> 
-> wget https://xenomai.org/downloads/xenomai/stable/xenomai-
-> 2.6.4.tar.bz<http://2.6.4.tar.bz/>2
-> tar xvjf xenomai-2.6.4.tar.bz<http://xenomai-2.6.4.tar.bz/>2
-> cd xenomai-2.6.4
-> ./configure
-> make
-> sudo make install
-> 
-> 
-> after that i tried to run apps from /usr/xenomai/bin  i got this
-> 
-> 
-> Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.
-> (modprobe xeno_native?)
+> At some point after 2.6.5 I know we'll have to migrate to 3.x...
 
-So, you changed the procedure again? Can you not finish just once
-what you started? I am sorry, but I do not know that debian
-repository and what it contains exactly, maybe it has a website with
-some information?
+Hi,
 
-Other than that, that error is documented in the troubleshooting
-guide:
-https://xenomai.org/troubleshooting-a-dual-kernel-configuration/#native_skin_or_CONFIG_XENO_OPT_PERVASIVE_disabled
+I have pushed a fix for this issue:
+https://git.xenomai.org/xenomai-2.6.git/commit/?id=8047147aff9dee9529f5561ecd7afc29c48d14db
+
+Could you test it on your side?
+
+Regards.
 
 -- 
 					    Gilles.
