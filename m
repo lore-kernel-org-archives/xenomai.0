@@ -1,11 +1,12 @@
-Date: Fri, 17 Jun 2016 12:07:28 +0200
+Date: Fri, 17 Jun 2016 12:21:22 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160617100728.GK32532@hermes.click-hack.org>
+Message-ID: <20160617102122.GL32532@hermes.click-hack.org>
 References: <5763C908.6010007@gmail.com>
+ <20160617100728.GK32532@hermes.click-hack.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5763C908.6010007@gmail.com>
+In-Reply-To: <20160617100728.GK32532@hermes.click-hack.org>
 Subject: Re: [Xenomai] need help to Xenomai Cobalt RTnet socket UDP recvfrom
  non blocking
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -19,47 +20,50 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Laurent LEQUIEVRE <laurent.lequievre@gmail.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Jun 17, 2016 at 11:55:20AM +0200, Laurent LEQUIEVRE wrote:
-> Hello,
+On Fri, Jun 17, 2016 at 12:07:28PM +0200, Gilles Chanteperdrix wrote:
+> On Fri, Jun 17, 2016 at 11:55:20AM +0200, Laurent LEQUIEVRE wrote:
+> > Hello,
+> > 
+> > I installed xenomai 3.0.2 and try to test some RTnet features needed for 
+> > the communication with my Kuka robot arm.
+> > 
+> > I specify that I want to work with the skin posix only.
+> > 
+> > I need to create a UDP socket with a timeout on the 'recvfrom' function 
+> > (Non blocking recvfrom).
+> > 
+> > I tested this first code :
+> > 
+> > int udp_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+> > bind(udp_socket, ...)
+> > struct timeval timeout;
+> > timeout.tv_sec = 1;
+> > timeout.tv_usec = 0;
+> > 
+> > setsockopt(udp_socket, SOL_SOCKET, SOCKET_SO_RCVTIMEO, &timeout, 
+> > sizeof(timeout));
+> > --> this function return -1, errno=92, Protocol not available ???
 > 
-> I installed xenomai 3.0.2 and try to test some RTnet features needed for 
-> the communication with my Kuka robot arm.
+> This socket option is not implemented in RTnet sockets. You can use
+> the RTNET_RTIOC_TIMEOUT ioctl instead.
 > 
-> I specify that I want to work with the skin posix only.
 > 
-> I need to create a UDP socket with a timeout on the 'recvfrom' function 
-> (Non blocking recvfrom).
+> > ....
+> > recvfrom(udp_socket, ....) --> blocked ??
+> > 
+> > I tested this second code :
+> > 
+> > int udp_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+> > bind(udp_socket, ...)
+> > fcntl(udp_socket, F_SETFL, O_NONBLOCK);
+> > --> this function return 0
+> > ....
+> > recvfrom(udp_socket, ....) --> blocked ??
 > 
-> I tested this first code :
-> 
-> int udp_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-> bind(udp_socket, ...)
-> struct timeval timeout;
-> timeout.tv_sec = 1;
-> timeout.tv_usec = 0;
-> 
-> setsockopt(udp_socket, SOL_SOCKET, SOCKET_SO_RCVTIMEO, &timeout, 
-> sizeof(timeout));
-> --> this function return -1, errno=92, Protocol not available ???
+> RTnet UDP recvfrom does not check the O_NONBLOCK flag, you can use
+> recvmsg with MSG_DONTWAIT instead.
 
-This socket option is not implemented in RTnet sockets. You can use
-the RTNET_RTIOC_TIMEOUT ioctl instead.
-
-
-> ....
-> recvfrom(udp_socket, ....) --> blocked ??
-> 
-> I tested this second code :
-> 
-> int udp_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-> bind(udp_socket, ...)
-> fcntl(udp_socket, F_SETFL, O_NONBLOCK);
-> --> this function return 0
-> ....
-> recvfrom(udp_socket, ....) --> blocked ??
-
-RTnet UDP recvfrom does not check the O_NONBLOCK flag, you can use
-recvmsg with MSG_DONTWAIT instead.
+You can also use the MSG_DONTWAIT flag in recvfrom.
 
 -- 
 					    Gilles.
