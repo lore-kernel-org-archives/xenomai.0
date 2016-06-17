@@ -1,15 +1,14 @@
-Date: Tue, 31 May 2016 13:32:16 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160531113216.GD5951@hermes.click-hack.org>
-References: <E1b7OM2-0000oL-Q7@sd-51317.xenomai.org>
- <20160530152043.GE17483@hermes.click-hack.org>
- <574D702F.6000303@siemens.com>
+References: <574EFA37.5030607@mitre.org>
+ <20160601164530.GE14103@hermes.click-hack.org> <574F142C.7060408@mitre.org>
+ <20160616132634.GA32532@hermes.click-hack.org>
+From: Jeffrey Melville <jmelville@mitre.org>
+Message-ID: <57644FE5.3000206@mitre.org>
+Date: Fri, 17 Jun 2016 15:30:45 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <574D702F.6000303@siemens.com>
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : lib/cobalt: Provide
- RT-capable usleep
+In-Reply-To: <20160616132634.GA32532@hermes.click-hack.org>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] SIGDEBUG_RESCNT_IMBALANCE with recursive mutex
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,56 +17,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, May 31, 2016 at 01:06:23PM +0200, Jan Kiszka wrote:
-> On 2016-05-30 17:20, Gilles Chanteperdrix wrote:
-> > On Mon, May 30, 2016 at 04:39:42PM +0200, git repository hosting wrote:
-> >> Module: xenomai-jki
-> >> Branch: for-forge
-> >> Commit: ec9a8c81944d4a3e3f50af314fa58ade68dd28c2
-> >> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=ec9a8c81944d4a3e3f50af314fa58ade68dd28c2
-> >>
-> >> Author: Jan Kiszka <jan.kiszka@siemens.com>
-> >> Date:   Mon May 30 14:58:07 2016 +0200
-> >>
-> >> lib/cobalt: Provide RT-capable usleep
-> >>
-> >> User may expect this (probably last) sleeping service to be available
-> >> under Cobalt just like sleep, nanosleep & Co.
-> > 
-> > CONFORMING TO
-> >        4.3BSD,  POSIX.1-2001.   POSIX.1-2001  declares this function obsolete;
-> >        use nanosleep(2) instead.  POSIX.1-2008 removes  the  specification  of
-> >        usleep().
+On 6/16/2016 9:26 AM, Gilles Chanteperdrix wrote:
+> On Wed, Jun 01, 2016 at 12:58:20PM -0400, Jeffrey Melville wrote:
+>> On 6/1/2016 12:45 PM, Gilles Chanteperdrix wrote:
+>>> On Wed, Jun 01, 2016 at 11:07:35AM -0400, Jeffrey Melville wrote:
+>>>> Hi,
+>>>>
+>>>> Setup: Xenomai 2.6.4 (actually 2.6 git rev 4f349cf0553, with a99426
+>>>> cherry-picked) with kernel 3.14.17 on a Zynq and the POSIX skin using
+>>>> the ipipe patches included with the specified git rev)
+>>>>
+>>>> We've noticed that SIGDEBUG_RESCNT_IMBALANCE is generated when a
+>>>> (Xenomai) mutex is taken recursively by an NRT thread. The snippet at
+>>>> the bottom of this message will reproduce the issue. I omitted most of
+>>>> the error-checking for brevity.
+>>>>
+>>>> A couple previous threads have discussed slightly similar problems, but
+>>>> I never saw final resolutions:
+>>>> http://www.xenomai.org/pipermail/xenomai/2012-January/025278.html
+>>>> http://www.xenomai.org/pipermail/xenomai/2014-October/031919.html
+>>>>
+>>>> As far as "why are we doing this?", the problem area occurs in a test
+>>>> suite where some tests have to run as NRT threads because they don't
+>>>> have to run real-time and will get killed by the watchdog if they run as
+>>>> RT threads. Removing the Xenomai wrappers would also be complicated for
+>>>> reasons that are outside of the scope of this email.
+>>>
+>>> Yeah well, this is an issue that has been known and fixed for so
+>>> long that I forgot we knew it:
+>>>
+>>> https://git.xenomai.org/xenomai-3.git/commit/?id=79f0dd1cdc408b22afe301fa03805349a4a9f151
+>>>
+>>> I will try and backport this change to 2.6 in 2.6.5. The change
+>>> should be easy to backport since it was made prior to most of the
+>>> cleanup of mutex and condvars. In 3.x, the kernel does not handle at
+>>> all the recursive mutex recursion count, this makes things much
+>>> simpler, but the code very different.
+>>>
+>> Ok thanks. You can disregard my other email then. I'll keep an eye out
+>> for the fix and we will avoid that test case for the time being.
+>>
+>> At some point after 2.6.5 I know we'll have to migrate to 3.x...
 > 
-> Do you expect people - and specifically Linux - to follow this soon?
+> Hi,
 > 
-> The idea here is to reduce the level of surprise, and as long as using
-> usleep in your app doesn't cause an "undefined symbol" error, this risk
-> persists.
+> I have pushed a fix for this issue:
+> https://git.xenomai.org/xenomai-2.6.git/commit/?id=8047147aff9dee9529f5561ecd7afc29c48d14db
+> 
+> Could you test it on your side?
+> 
+> Regards.
+> 
+Gilles,
 
-The thing is adding services do not come for free: it incurs a
-maintenance cost. From my point of view, one of the imperatives of
-the Xenomai project is to keep the code base small (and simple) so
-that it remains possible to maintain it with the little work force
-we have. From this point of view, adding a wrapper for a service
-that has been deprecated for 15 years, and removed from the POSIX
-specification for 8 years does not look like a smart move. And every
-time we want to add a service, we should wonder if it is worth the
-maintenance burden it incurs, this is the reason why I questioned
-adding pthread_setschedprio too.
+I confirmed that the isolated test case no longer causes SIGDEBUG on our
+system after rebuilding with the fix. I don't have many miles on the new
+build otherwise but will let you know if I see anything strange elsewhere.
 
-That being said, I am not opposed to this, and will happily let
-other people decide. I just wanted to make sure that everyone
-realized that usleep has been dead a long time.
+Thanks for the quick turnaround with the fix.
 
-If people use usleep, they will get a switch to secondary mode and
-realize they should not use it, it is not as if it could cause a
-crash or something. We might even document that somewhere.
-
--- 
-					    Gilles.
-https://click-hack.org
+Cheers,
+Jeff
 
