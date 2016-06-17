@@ -1,15 +1,18 @@
-MIME-Version: 1.0
-In-Reply-To: <5763DEE9.1000801@gmail.com>
-References: <5763C908.6010007@gmail.com>
- <20160617100728.GK32532@hermes.click-hack.org>
- <5763DEE9.1000801@gmail.com>
-From: laurent LEQUIEVRE <laurent.lequievre@gmail.com>
-Date: Fri, 17 Jun 2016 15:04:54 +0200
-Message-ID: <CABYaVQ3ehQpYsjfB7oQnfTUKXBs+RNR04G0gScJzciVNMeRArw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+From: "Heinick, J Michael" <Michael.Heinick@Honeywell.com>
+Date: Fri, 17 Jun 2016 13:25:05 +0000
+Message-ID: <D9EDB4F689BF9F4EA6F2158A073942732E801E4B@de08ex3008.global.ds.honeywell.com>
+References: <D9EDB4F689BF9F4EA6F2158A073942732E8007D6@de08ex3008.global.ds.honeywell.com>
+ <20160608193911.GA31360@hermes.click-hack.org>
+ <D9EDB4F689BF9F4EA6F2158A073942732E8008F3@de08ex3008.global.ds.honeywell.com>
+ <20160609174118.GD1785@hermes.click-hack.org> <575AF2E1.3060401@siemens.com>
+ <D9EDB4F689BF9F4EA6F2158A073942732E801DAA@de08ex3008.global.ds.honeywell.com>
+ <20160616171605.GD32532@hermes.click-hack.org>
+In-Reply-To: <20160616171605.GD32532@hermes.click-hack.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] need help to Xenomai Cobalt RTnet socket UDP recvfrom
- non blocking
+MIME-Version: 1.0
+Subject: Re: [Xenomai] Xenomai/Cobalt on i7-3770S CPU
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,97 +21,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "laurent.lequievre" <laurent.lequievre@univ-bpclermont.fr>, "xenomai@xenomai.org" <xenomai@xenomai.org>
-
-Hi Gilles,
-
-It works fine with :
-int64_t timeout =3D 3e09;  // 3 seconds to test
-int return_ioctl =3D ioctl(udp_socket,RTNET_RTIOC_TIMEOUT,&timeout);
-
-but it needed to add these 'includes' to compile :
-#include <asm/ioctl.h>
-#include <rtdm/rtdm.h>
-#define RTIOC_TYPE_NETWORK      RTDM_CLASS_NETWORK
-#define RTNET_RTIOC_TIMEOUT     _IOW(RTIOC_TYPE_NETWORK,  0x11, int64_t)
-
-I read in the documentation that rtnet is included in xenomai 3, why there
-is no rtnet.h file installed with the xenomai include files ?
-
-Thanks,
-
-Regards,
-
-Laurent LEQUIEVRE
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 
-2016-06-17 13:28 GMT+02:00 Laurent LEQUIEVRE <laurent.lequievre@gmail.com>:
 
-> Hi Gilles,
->
-> thank you for your quick answers !
->
-> where I can find this option : RTNET_RTIOC_TIMEOUT ?
->
-> cd /usr/xenomai_3_0_2/include
-> grep -r RTNET_RTIOC_TIMEOUT
->
-> --> Return nothing
->
-> Need to include something in my code ?
->
-> Thanks,
->
-> Laurent
->
->
->
-> Le 17/06/2016 12:07, Gilles Chanteperdrix a =C3=A9crit :
->
->> On Fri, Jun 17, 2016 at 11:55:20AM +0200, Laurent LEQUIEVRE wrote:
->>
->>> Hello,
->>>
->>> I installed xenomai 3.0.2 and try to test some RTnet features needed fo=
-r
->>> the communication with my Kuka robot arm.
->>>
->>> I specify that I want to work with the skin posix only.
->>>
->>> I need to create a UDP socket with a timeout on the 'recvfrom' function
->>> (Non blocking recvfrom).
->>>
->>> I tested this first code :
->>>
->>> int udp_socket =3D socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
->>> bind(udp_socket, ...)
->>> struct timeval timeout;
->>> timeout.tv_sec =3D 1;
->>> timeout.tv_usec =3D 0;
->>>
->>> setsockopt(udp_socket, SOL_SOCKET, SOCKET_SO_RCVTIMEO, &timeout,
->>> sizeof(timeout));
->>> --> this function return -1, errno=3D92, Protocol not available ???
->>>
->> This socket option is not implemented in RTnet sockets. You can use
->> the RTNET_RTIOC_TIMEOUT ioctl instead.
->>
->>
->> ....
->>> recvfrom(udp_socket, ....) --> blocked ??
->>>
->>> I tested this second code :
->>>
->>> int udp_socket =3D socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
->>> bind(udp_socket, ...)
->>> fcntl(udp_socket, F_SETFL, O_NONBLOCK);
->>> --> this function return 0
->>> ....
->>> recvfrom(udp_socket, ....) --> blocked ??
->>>
->> RTnet UDP recvfrom does not check the O_NONBLOCK flag, you can use
->> recvmsg with MSG_DONTWAIT instead.
->>
->>
->
+-----Original Message-----
+From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]=20
+Sent: Thursday, June 16, 2016 1:16 PM
+To: Heinick, J Michael
+Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai] Xenomai/Cobalt on i7-3770S CPU
+
+On Thu, Jun 16, 2016 at 03:51:17PM +0000, Heinick, J Michael wrote:
+> problem, the stripped down driver would hang the core2 computer just=20
+> like the i7 computer.
+
+Are you running a graphic system? If yes, have you tried to plug a serial c=
+onsole or netconsole to try and retrieve the kernel console when the hang h=
+appens? Because if the hang is in fact a kernel oops, the oops message may =
+indicate what the problem is.
+
+> Eventually, I noticed that only nrt
+> handlers were specified in the ops structure. After moving our ioctl=20
+> functions to .ioctl_rt, both the stripped down driver and the full=20
+> driver run on both the core2 and i7 computers.
+
+You can not call "sleeping" services from an _nrt handler. If that is what =
+you were doing.
+
+> Why the core2 computers appeared to work with only the ioctl_nrt=20
+> handler specified in the full driver and hang the i7 computer is still=20
+> a mystery to us.
+
+Did the two machines run with the same kernel? Or were there differences in=
+ the kernel configuration? Like I-pipe checks disabled/enabled?
+
+--=20
+					    Gilles.
+https://click-hack.org
+
+----------------------------------------------------------
+Thanks Gilles,
+
+Yes, I was making an rtdm_sem_down call in the ioctl_nrt to wait for the rt=
+dm_sem_up in the interrupt handler.  I probably set it that way months ago =
+when I was developing calls in the full driver to configure the device, and=
+ did not remember it when I implemented the interrupts and things still app=
+eared to work on the core2 machine where development was taking place.  The=
+ stripped down driver eliminated the interrupt handler and put the rtdm_sem=
+_up call in the write handler that was called by the user program to fake a=
+n interrupt.  The stripped down driver with the ioctl_nrt would hang the co=
+mputer on both machines.  Changing ioctl_nrt to ioctl_rt enabled both the s=
+tripped down driver and the full driver to work on all machines. =20
+
+All machines were running xenomai 3.0.1 with ipipe release 10 on linux 3.14=
+.44.  There were probably some differences in kernel configuration, but any=
+thing involving things like i-pipe just used defaults.  Since the fix the S=
+uper Logics i7 computer has been updated to Xenomai 3.0.2.
+
+I suppose now I should separate my ioctl_nrt stuff to a separate function f=
+rom the ioctl_rt stuff, and then I will I have both functions specified in =
+the ops structure of the rtdm_driver structure.  I will have to look up how=
+ xenomai is going to determine which one to use.
+
+Thanks for the help,
+Mike
+
