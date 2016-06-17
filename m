@@ -1,17 +1,11 @@
-Date: Thu, 16 Jun 2016 19:16:05 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160616171605.GD32532@hermes.click-hack.org>
-References: <D9EDB4F689BF9F4EA6F2158A073942732E8007D6@de08ex3008.global.ds.honeywell.com>
- <20160608193911.GA31360@hermes.click-hack.org>
- <D9EDB4F689BF9F4EA6F2158A073942732E8008F3@de08ex3008.global.ds.honeywell.com>
- <20160609174118.GD1785@hermes.click-hack.org>
- <575AF2E1.3060401@siemens.com>
- <D9EDB4F689BF9F4EA6F2158A073942732E801DAA@de08ex3008.global.ds.honeywell.com>
+From: Laurent LEQUIEVRE <laurent.lequievre@gmail.com>
+Message-ID: <5763C908.6010007@gmail.com>
+Date: Fri, 17 Jun 2016 11:55:20 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <D9EDB4F689BF9F4EA6F2158A073942732E801DAA@de08ex3008.global.ds.honeywell.com>
-Subject: Re: [Xenomai] Xenomai/Cobalt on i7-3770S CPU
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] need help to Xenomai Cobalt RTnet socket UDP recvfrom non
+	blocking
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,35 +14,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Heinick, J Michael" <Michael.Heinick@Honeywell.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, laurent.lequievre@gmail.com
 
-On Thu, Jun 16, 2016 at 03:51:17PM +0000, Heinick, J Michael wrote:
-> problem, the stripped down driver would hang the core2 computer
-> just like the i7 computer.
+Hello,
 
-Are you running a graphic system? If yes, have you tried to plug a
-serial console or netconsole to try and retrieve the kernel console
-when the hang happens? Because if the hang is in fact a kernel oops,
-the oops message may indicate what the problem is.
+I installed xenomai 3.0.2 and try to test some RTnet features needed for 
+the communication with my Kuka robot arm.
 
-> Eventually, I noticed that only nrt
-> handlers were specified in the ops structure. After moving our
-> ioctl functions to .ioctl_rt, both the stripped down driver and
-> the full driver run on both the core2 and i7 computers.
+I specify that I want to work with the skin posix only.
 
-You can not call "sleeping" services from an _nrt handler. If that
-is what you were doing.
+I need to create a UDP socket with a timeout on the 'recvfrom' function 
+(Non blocking recvfrom).
 
-> Why the core2 computers appeared to work with only the ioctl_nrt
-> handler specified in the full driver and hang the i7 computer is
-> still a mystery to us.
+I tested this first code :
 
-Did the two machines run with the same kernel? Or were there
-differences in the kernel configuration? Like I-pipe checks
-disabled/enabled?
+int udp_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+bind(udp_socket, ...)
+struct timeval timeout;
+timeout.tv_sec = 1;
+timeout.tv_usec = 0;
 
--- 
-					    Gilles.
-https://click-hack.org
+setsockopt(udp_socket, SOL_SOCKET, SOCKET_SO_RCVTIMEO, &timeout, 
+sizeof(timeout));
+--> this function return -1, errno=92, Protocol not available ???
+....
+recvfrom(udp_socket, ....) --> blocked ??
+
+I tested this second code :
+
+int udp_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+bind(udp_socket, ...)
+fcntl(udp_socket, F_SETFL, O_NONBLOCK);
+--> this function return 0
+....
+recvfrom(udp_socket, ....) --> blocked ??
+
+Can you give me a sample ?
+
+Thanks for your help,
+
+Regards,
+
+Laurent LEQUIEVRE
+
+
+
+
+
 
