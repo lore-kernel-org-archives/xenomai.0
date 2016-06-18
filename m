@@ -1,6 +1,6 @@
-Date: Sat, 18 Jun 2016 15:37:34 +0200
+Date: Sat, 18 Jun 2016 15:52:35 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160618133734.GD18433@hermes.click-hack.org>
+Message-ID: <20160618135235.GE18433@hermes.click-hack.org>
 References: <20160618130822.GB18433@hermes.click-hack.org>
  <8e8bb173-eda9-bab4-6236-634da1e396cb@xenomai.org>
 MIME-Version: 1.0
@@ -51,32 +51,25 @@ On Sat, Jun 18, 2016 at 03:21:40PM +0200, Philippe Gerum wrote:
 > I would go for the change which has the lesser impact on the mainline
 > code; that would be option #1.
 
-Ok. Something else. Commit fdb5d54d04b8c3b6b6a6ad7ac2b6248cf0b415e0:
-    ipipe: Avoid rescheduling from __ftrace_ops_list_func in illegal contexts
-    
-    The ftrace callback dispatcher may be called with hard irqs disabled or
-    even over the head domain. We cannot allow any rescheduling in that
-    case, but also do not have: only non-urgent events are expected to be
-    kicked-off from ftrace callbacks, and those will at latest be handled on
-    the next Linux timer tick.
+Ok, now I get:
 
-Added the following code to the ftrace dispatch function:
-+#ifdef CONFIG_IPIPE
-+       if (hard_irqs_disabled() || !__ipipe_root_p)
-+               /*
-+                * Nothing urgent to schedule here. At latest the timer tick
-+                * will pick up whatever the tracing functions kicked off.
-+                */
-+               preempt_enable_no_resched_notrace();
-+       else
-+#endif
-+               preempt_enable_notrace();
+   12.958818] I-pipe: Detected stalled head domain, probably caused by a bug.
+[   12.958818]         A critical section may have been left unterminated.
 
-Should not this go to the generic definition of preempt_enable() ? I
-mean if in the !LEGACY case, it is now legal to call
-preempt_enable() over non root contexts or with hard irqs off, so,
-does it really make sense to fix all the preempt_enable() spots one
-by one?
+I guess in the following sequence:
+
+#define hard_preempt_disable()				\
+	({						\
+		unsigned long __flags__;		\
+		__flags__ = hard_local_irq_save();	\
+		if (__ipipe_root_p)			\
+			preempt_disable();		\
+		__flags__;				\
+	})
+
+preempt_disable() gets called with the head domain stalled, while
+current domain is root, and ipipe_root_only() treats this as an
+error.
 
 -- 
 					    Gilles.
