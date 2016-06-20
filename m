@@ -1,16 +1,13 @@
-References: <20160618130822.GB18433@hermes.click-hack.org>
- <8e8bb173-eda9-bab4-6236-634da1e396cb@xenomai.org>
- <20160618133734.GD18433@hermes.click-hack.org>
- <6da3c6da-6194-9e35-85ce-5f205a19affa@xenomai.org>
- <20160619173402.GN18433@hermes.click-hack.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <757bb267-bb63-d9be-5dd9-669cfbcbf0da@xenomai.org>
-Date: Sun, 19 Jun 2016 20:35:57 +0200
+From: Lowell Gilbert <kludge@be-well.ilk.org>
+References: <447fdp9oue.fsf@be-well.ilk.org>
+ <0b7ab1b8-8d53-069a-49b6-a3f289c0b43c@xenomai.org>
+Date: Mon, 20 Jun 2016 11:19:49 -0400
+In-Reply-To: <0b7ab1b8-8d53-069a-49b6-a3f289c0b43c@xenomai.org> (Philippe
+ Gerum's message of "Sat, 18 Jun 2016 15:29:22 +0200")
+Message-ID: <441t3rlwfe.fsf@be-well.ilk.org>
 MIME-Version: 1.0
-In-Reply-To: <20160619173402.GN18433@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ftrace dispatch function broken on 2.6.5
+Content-Type: text/plain
+Subject: Re: [Xenomai] slackspot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,90 +16,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 06/19/2016 07:34 PM, Gilles Chanteperdrix wrote:
-> On Sun, Jun 19, 2016 at 07:28:43PM +0200, Philippe Gerum wrote:
->> On 06/18/2016 03:37 PM, Gilles Chanteperdrix wrote:
->>> On Sat, Jun 18, 2016 at 03:21:40PM +0200, Philippe Gerum wrote:
->>>> On 06/18/2016 03:08 PM, Gilles Chanteperdrix wrote:
->>>>> Hi Philippe,
->>>>>
->>>>> it seems since I-pipe commit
->>>>> b115c4094d734e19fa7a96be1bf3958b3d244b8b on the ipipe-3.18 branch:
->>>>>     Revert "ipipe: Register function tracer for direct and exclusive invocation"
->>>>>     
->>>>>     This reverts commit e00888b4aae45d9b84698a62079dde14c9be5fd3.
->>>>>     
->>>>>     We now have an I-pipe-compatible dispatching function for ftrace.
->>>>>
->>>>> The ftrace dispatching function causes the following warning at
->>>>> boot on x86_32 with all warnings/debugs enabled:
->>>>> [    4.730812] I-pipe: head domain Xenomai registered.
->>>>> [    4.737967] I-pipe: Detected illicit call from head domain 'Xenomai'
->>>>> [    4.737967]         into a regular Linux service
->>>>>
->>>>> Because it calls preempt_disable(), which is not safe to be called
->>>>> form root domain, when runnning over 2.6.x on an architecture such
->>>>> as x86_32 which does not have IPIPE_HAVE_SAFE_THREAD_INFO.
->>>>>
->>>>> Should we make the ftrace dispatching function really I-pipe
->>>>> compatible by calling ipipe_preempt_disable() in that case instead?
->>>>> or should we make the patch revert conditional to !IPIPE_LEGACY or
->>>>> IPIPE_HAVE_SAFE_THREAD_INFO (but that would make only the I-pipe
->>>>> tracer work in that case).
->>>>>
->>>>
->>>> I would go for the change which has the lesser impact on the mainline
->>>> code; that would be option #1.
->>>
->>> Ok. Something else. Commit fdb5d54d04b8c3b6b6a6ad7ac2b6248cf0b415e0:
->>>     ipipe: Avoid rescheduling from __ftrace_ops_list_func in illegal contexts
->>>     
->>>     The ftrace callback dispatcher may be called with hard irqs disabled or
->>>     even over the head domain. We cannot allow any rescheduling in that
->>>     case, but also do not have: only non-urgent events are expected to be
->>>     kicked-off from ftrace callbacks, and those will at latest be handled on
->>>     the next Linux timer tick.
->>>
->>> Added the following code to the ftrace dispatch function:
->>> +#ifdef CONFIG_IPIPE
->>> +       if (hard_irqs_disabled() || !__ipipe_root_p)
->>> +               /*
->>> +                * Nothing urgent to schedule here. At latest the timer tick
->>> +                * will pick up whatever the tracing functions kicked off.
->>> +                */
->>> +               preempt_enable_no_resched_notrace();
->>> +       else
->>> +#endif
->>> +               preempt_enable_notrace();
->>>
->>> Should not this go to the generic definition of preempt_enable() ? I
->>> mean if in the !LEGACY case, it is now legal to call
->>> preempt_enable() over non root contexts or with hard irqs off, so,
->>> does it really make sense to fix all the preempt_enable() spots one
->>> by one?
->>>
->>
->> That would add a useless branch to hundreds of code paths, which can
->> never run with hard irqs off and/or over the head domain. Besides, this
->> might prevent the context check in schedule_debug() to run, papering
->> over a bug. On the other end, specifically annotating the very few code
->> spots affected by the pipeline, which must not reschedule after
->> re-enabling preemption seems better maintenance-wise.
->>
->> I would just use a specific annotation folding all the lengthy code
->> block above into a single statement.
-> 
-> Yeah, well, the above code does not work anyway. See other mails
-> about ftrace.
-> 
+Philippe Gerum <rpm@xenomai.org> writes:
 
-I saw them, I'm discussing about reducing the impact of the pipeline
-changes on the vanilla kernel in general, keeping the corner cases
-annotated.
+> On 06/16/2016 04:43 PM, Lowell Gilbert wrote:
+>>  I have not run /bin/relax,
+>> mentioned in the manual page, because I don't have such a program and
+>> can't find any reference to it.
+>> 
+>> I am using 3.0.2.
+>
+>
+> /bin/relax is only the name of a fake executable that would have
+> produced the typical output described in the example, read /foo/bar if
+> that helps.
 
--- 
-Philippe.
+That seems obvious now that you've explained it. 
+
+Maybe something like the following would help:
+--- doc/asciidoc/man1/slackspot.adoc.~1~ 2016-02-18 07:17:40.000000000
+-0500
++++ doc/asciidoc/man1/slackspot.adoc    2016-06-20 11:16:22.130252140
+-0400
+@@ -91,7 +91,7 @@
+
+ In the following scenario, the _target_ system built with the
+  CONFIG_XENO_OPT_DEBUG_TRACE_RELAX feature enabled in the kernel
+  -configuration, just ran the _/bin/relax_ program.
+  +configuration, just ran the Xenomai-enabled _/bin/relax_ program.
+
+ This program caused a transition to secondary mode switch of the
+  current task (_Task 2_) as a result of calling +putchar()+. The Cobalt
+
+> Once TRACE_RELAX is enabled in the kernel, running any application that
+> causes switches to secondary mode should populate
+> /proc/xenomai/debug/relax with event records.
+
+Hmm. I'm still not getting the records, and the SIGXCPU method isn't
+giving me anything either. But the MSW, CSW, and XSC counts are all
+rising at exactly the rate that the thread wakes up.
+
+Here's the design: I have a POSIX thread which calls into an RTDM ioctl
+which blocks on an RTDM event, then copies a couple of dozen bytes of
+data back to the POSIX thread. The POSIX thread does some calculations
+on the data, then uses another ioctl to write the results back to the
+hardware. And repeats.
+
+Is it possible that the thread might be relaxing in the kernel (RTDM
+ioctl) and not receiving signals as as result?
+
+I have two theories about what is happening.
+   1. I have made an error somewhere that is resulting in unnecessary
+      relax events. In that case, getting the stack traces is the key to
+      finding said error. I can create a small example if that helps me
+      get assistance in looking at it.
+   2. Having a real-time pthread block in an RTDM ioctl may be an
+      inherently bad idea. I notice that all synchronization primitives
+      are characterized by "might-switch". Perhaps I should be using a
+      device read to block the POSIX thread instead of doing it in an
+      ioctl()?
+
+My current plan is to use the I-pipe tracer, but if there is an easier
+way to move forward, I would appreciate advice to that effect.
+
+Thank you very much.
+
+ - Lowell Gilbert
 
