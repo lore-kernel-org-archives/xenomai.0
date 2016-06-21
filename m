@@ -1,13 +1,18 @@
-References: <f4f9f773-e9d1-0239-235c-a14cad91877f@peak-system.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <499d911c-c604-14b1-446b-33106c55b2c9@xenomai.org>
-Date: Tue, 21 Jun 2016 12:11:09 +0200
+From: Lowell Gilbert <kludge@be-well.ilk.org>
+References: <447fdp9oue.fsf@be-well.ilk.org>
+ <0b7ab1b8-8d53-069a-49b6-a3f289c0b43c@xenomai.org>
+ <441t3rlwfe.fsf@be-well.ilk.org>
+ <20160620152246.GA18662@hermes.click-hack.org>
+ <44wpljkchx.fsf@be-well.ilk.org>
+ <20160620171848.GB18662@hermes.click-hack.org>
+Date: Tue, 21 Jun 2016 14:35:34 -0400
+In-Reply-To: <20160620171848.GB18662@hermes.click-hack.org> (Gilles
+ Chanteperdrix's message of "Mon, 20 Jun 2016 19:18:48 +0200")
+Message-ID: <44h9cmz8y1.fsf@be-well.ilk.org>
 MIME-Version: 1.0
-In-Reply-To: <f4f9f773-e9d1-0239-235c-a14cad91877f@peak-system.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 3 vs 2.6: rtdm_irq_request() calling task
- context change
+Subject: Re: [Xenomai] slackspot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,59 +21,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Stephane Grosjean <s.grosjean@peak-system.com>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 06/21/2016 11:22 AM, Stephane Grosjean wrote:
-> Hi,
-> 
-> https://xenomai.org/migrating-from-xenomai-2-x-to-3-x/ says:
-> 
-> "rtdm_irq_request/free() and rtdm_irq_enable/disable() call pairs must
-> be called from a Linux task context, which is a restriction that did not
-> exist previously with Xenomai 2.x."
-> 
-> and, a few lower lines:
-> 
-> "Since allocating, releasing, enabling or disabling real-time interrupts
-> is most commonly done from driver initialization/cleanup context already,"
-> 
-> I was not aware about these Linux kernel driver requirements... On the
+Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
 
-The mainline kernel does not have to deal with dual kernel issues, by
-definition.
+> On Mon, Jun 20, 2016 at 01:15:38PM -0400, Lowell Gilbert wrote:
+>> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
+>> 
+>> > There is one possibility: if your thread runs with the
+>> > SCHED_OTHER/SCHED_WEAK scheduling policy, I would not expect the
+>> > relaxes to trigger anything, as you have been asking for them by
+>> > choosing to use these policies.
+>> 
+>> Yes, I should have mentioned that topic. I have run this under both
+>> SCHED_FIFO and SCHED_RR.
+>
+> Ok. Could you post an example allowing us to reproduce the issue ?
 
-> contrary, regarding linux-can drivers (for example), the IRQ is
-> requested when the device is opened only, not when it is probed. An it
-> is freed when the device is closed. In my mind, this was a good choice
-> because it avoids useless chained ISRs during the times the devices are
-> not opened.
+I can. It took me a little longer than I figured because I had
+accidentally deleted the MODULE_LICENSE. Is it possible to get the
+kernel makefiles to tell you *why* it isn't linking in libraries you
+asked for?
 
-Your issue is about depending on open_rt() which is long gone, nothing
-prevents you from hooking IRQs from the current open() handler. If you
-expected IRQ hooking services to meet any sort of real-time requirement,
-then you were wrong, they just can't. Hooking the IRQ from the open()
-handler will just work.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: example.tar
+Type: archive/tar
+Size: 10240 bytes
+Desc: not available
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20160621/eb21f260/attachment.bin>
+-------------- next part --------------
+I'm attaching a tar file, but in case this list strips attachments, it's
+also at
+ http://be-well.ilk.org/~lowell/example.tar
+It's about a hundred lines each for the application and kernel module.
 
-> So, the above assumption is a little rough, IMHO...
-> 
-
-Xenomai relies on the linux kernel internals for IRQ
-installation/cleanup duties, which can only be called from a plain Linux
-context for common hardware such as chip controllers depending on the
-PCI framework. Enabling/disabling IRQ channels have the same
-requirement. Even more services we need during these specific phases
-also have the very same requirement.
-
-Some code may have been lucky enough to run IRQ installation/cleanup
-calls from RT context without any issue, only due to the underlying
-interrupt controller code not traversing regular Linux locking constructs.
-
-In addition, there are cases when it is simply not possible to disable
-an IRQ channel safely from a RT context.
-
-All these issues have been identified over the years and discussed on
-this mailing list several times, the related changes address them.
-
--- 
-Philippe.
-
+Thank you.
