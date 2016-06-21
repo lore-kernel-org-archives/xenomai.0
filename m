@@ -1,17 +1,11 @@
-From: Lowell Gilbert <kludge@be-well.ilk.org>
-References: <447fdp9oue.fsf@be-well.ilk.org>
- <0b7ab1b8-8d53-069a-49b6-a3f289c0b43c@xenomai.org>
- <441t3rlwfe.fsf@be-well.ilk.org>
- <20160620152246.GA18662@hermes.click-hack.org>
- <44wpljkchx.fsf@be-well.ilk.org>
- <20160620171848.GB18662@hermes.click-hack.org>
-Date: Mon, 20 Jun 2016 13:30:21 -0400
-In-Reply-To: <20160620171848.GB18662@hermes.click-hack.org> (Gilles
- Chanteperdrix's message of "Mon, 20 Jun 2016 19:18:48 +0200")
-Message-ID: <44porbkbte.fsf@be-well.ilk.org>
+From: Stephane Grosjean <s.grosjean@peak-system.com>
+Message-ID: <f4f9f773-e9d1-0239-235c-a14cad91877f@peak-system.com>
+Date: Tue, 21 Jun 2016 11:22:37 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-Subject: Re: [Xenomai] slackspot
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai] Xenomai 3 vs 2.6: rtdm_irq_request() calling task context
+	change
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,11 +16,35 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
+Hi,
 
->
-> Ok. Could you post an example allowing us to reproduce the issue ?
+https://xenomai.org/migrating-from-xenomai-2-x-to-3-x/ says:
 
-I would be happy to do so.
+"rtdm_irq_request/free() and rtdm_irq_enable/disable() call pairs must 
+be called from a Linux task context, which is a restriction that did not 
+exist previously with Xenomai 2.x."
 
+and, a few lower lines:
+
+"Since allocating, releasing, enabling or disabling real-time interrupts 
+is most commonly done from driver initialization/cleanup context already,"
+
+I was not aware about these Linux kernel driver requirements... On the 
+contrary, regarding linux-can drivers (for example), the IRQ is 
+requested when the device is opened only, not when it is probed. An it 
+is freed when the device is closed. In my mind, this was a good choice 
+because it avoids useless chained ISRs during the times the devices are 
+not opened. So, the above assumption is a little rough, IMHO...
+
+Anyway, this is how new things are... Any advice for us not to change 
+the whole architecture of our driver will be welcome.
+
+Stéphane
+
+
+--
+PEAK-System Technik GmbH
+Sitz der Gesellschaft Darmstadt - HRB 9183 
+Geschaeftsfuehrung: A.Gach, U.Wilhelm
+--
 
