@@ -1,19 +1,12 @@
-From: Lowell Gilbert <kludge@be-well.ilk.org>
-References: <447fdp9oue.fsf@be-well.ilk.org>
- <0b7ab1b8-8d53-069a-49b6-a3f289c0b43c@xenomai.org>
- <441t3rlwfe.fsf@be-well.ilk.org>
- <20160620152246.GA18662@hermes.click-hack.org>
- <44wpljkchx.fsf@be-well.ilk.org>
- <20160620171848.GB18662@hermes.click-hack.org>
- <44h9cmz8y1.fsf@be-well.ilk.org> <44d1naz7ub.fsf@be-well.ilk.org>
- <b436e690-79d6-0de7-647a-1ec5c80ae4d9@xenomai.org>
-Date: Tue, 21 Jun 2016 16:09:24 -0400
-In-Reply-To: <b436e690-79d6-0de7-647a-1ec5c80ae4d9@xenomai.org> (Philippe
- Gerum's message of "Tue, 21 Jun 2016 21:27:38 +0200")
-Message-ID: <441t3qz4ln.fsf@be-well.ilk.org>
+From: "Patel, Yogi A" <yapatel@gatech.edu>
+Date: Wed, 22 Jun 2016 17:39:59 +0000
+Message-ID: <BLUPR07MB30717F1B2E872CC730AEF26C82C0@BLUPR07MB307.namprd07.prod.outlook.com>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain
-Subject: Re: [Xenomai] slackspot
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Advice on optimizing design for low latency real-time
+	processing
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,21 +15,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Philippe Gerum <rpm@xenomai.org> writes:
+Hi -
 
-> You app is missing a call to pthread_setmode_np() for enabling the
-> warn-upon-switch bit,
-> e.g. calling pthread_set_mode_np(0, PTHREAD_WARNSW, NULL) would enable
-> tracing for the calling thread.
 
-My real application has that. My example stripped out everything I could
-live without, including lots of error-checking for errors that generally
-don't come up.
+We are working on designing and prototyping a PCIe based data acquisition s=
+ystem for hard real-time, low-latency closed-loop processing. This hardware=
+ would interface with our current application which uses Xenomai (rtxi.org)=
+.
 
-I did actually test setting PTHREAD_WARNSW in the example program, and
-there was no data to be read from /proc/xenomai/debug/relax.
 
-Be well.
+The base of the system is a Xilinx FPGA that interfaces with the host proce=
+ssor for acquisition control, settings, etc. This system will ideally allow=
+ sampling from up to 10,000 channels at a rate of about 30kHz each.
+
+
+One interest of our's is to make this system work with a dedicted RTOS (Xen=
+omai, possibly through RTDM). As we are designing this, the question came u=
+p of how to minimize latencies for getting data to the processor (and back)=
+ for online processing, visualization, etc. So far we have looked into DMA =
+schemes, memory mapping, etc.
+
+
+This is purposefully a broad question - are there considerations we should =
+be keeping to minimize the latencies introduced by data transfers alone? An=
+y suggestions on "best practices" or "optimal methods" are greatly apprecia=
+ted.
+
+
+Thanks in advance.
 
