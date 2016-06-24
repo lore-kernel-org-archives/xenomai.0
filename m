@@ -1,11 +1,12 @@
+Date: Fri, 24 Jun 2016 17:36:05 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160624153605.GL18662@hermes.click-hack.org>
 References: <576D453F.4090208@gmail.com>
-From: Laurent LEQUIEVRE <laurent.lequievre@gmail.com>
-Message-ID: <576D4598.4080706@gmail.com>
-Date: Fri, 24 Jun 2016 16:37:12 +0200
+ <576D4598.4080706@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <576D453F.4090208@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <576D4598.4080706@gmail.com>
 Subject: Re: [Xenomai] socket XDDP recvfrom timeout ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -15,38 +16,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, Laurent LEQUIEVRE <laurent.lequievre@univ-bpclermont.fr>
+To: Laurent LEQUIEVRE <laurent.lequievre@gmail.com>
+Cc: Laurent LEQUIEVRE <laurent.lequievre@univ-bpclermont.fr>, xenomai@xenomai.org
 
-forgot to specify : Xenomai 3.0.2
+On Fri, Jun 24, 2016 at 04:37:12PM +0200, Laurent LEQUIEVRE wrote:
+> forgot to specify : Xenomai 3.0.2
 
-Le 24/06/2016 16:35, Laurent LEQUIEVRE a écrit :
-> Hello,
->
-> I try to use the socket XDDP with the posix skin to communicate from 
-> RT thread to non RT thread.
->
-> To get a non blocked 'recvfrom', I added the flag 'MSG_DONTWAIT', and 
-> it's work fine.
->
-> But how to setup a timeout for this function ?
->
-> I tried to set the flag 'SO_RCVTIEMO' by using 2 methods :
->
-> struct timeval tv;
-> tv.tv_sec=nb seconds
-> tv.tv_usec=nb micro seconds
-> setsockopt(socket_id,SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)); --> 
-> doesn't work, blocked !
->
-> timeout (in nano seonds)
-> ioctl(socket_id, SO_RCVTIMEO, &timeout);  --> doesn't work, blocked !
->
->
-> Thanks for your help,
->
-> Laurent LEQUIEVRE
->
->
->
-
+Just a simple reminder. The Xenomai mailing list is a "subscriber
+only" mailing list. Which means you must be subscribed to be allowed
+to post. And when I say you, I mean "one e-mail address". So, if you
+want to use a second mail address, you must subscribe this second
+mail address (and disable mail delivery if you do not want to
+receive the e-mails twice).
+-- 
+					    Gilles.
+https://click-hack.org
 
