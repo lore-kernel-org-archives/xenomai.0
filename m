@@ -1,16 +1,18 @@
-Date: Mon, 27 Jun 2016 13:39:11 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160627113911.GC18662@hermes.click-hack.org>
-References: <CAJ2oMh+w8m_ZiWC45US8Qbi7oWU-X0SH28wsFghLQzYbmTfuyg@mail.gmail.com>
- <20160627105948.GA18662@hermes.click-hack.org>
- <CAJ2oMhL_Mde=pY2dVeaU-9WqWs2AhY9-1yVONC3wSXUYOD3omA@mail.gmail.com>
- <20160627111228.GB18662@hermes.click-hack.org>
- <CAJ2oMhKfF23gwWtQ-L0NOYnePxeb_Aae1bk8q+7igWm6k5BaRA@mail.gmail.com>
+From: Lowell Gilbert <kludge@be-well.ilk.org>
+References: <447fdp9oue.fsf@be-well.ilk.org>
+ <0b7ab1b8-8d53-069a-49b6-a3f289c0b43c@xenomai.org>
+ <441t3rlwfe.fsf@be-well.ilk.org>
+ <20160620152246.GA18662@hermes.click-hack.org>
+ <44wpljkchx.fsf@be-well.ilk.org>
+ <20160620171848.GB18662@hermes.click-hack.org>
+ <44h9cmz8y1.fsf@be-well.ilk.org>
+Date: Mon, 27 Jun 2016 11:12:45 -0400
+In-Reply-To: <44h9cmz8y1.fsf@be-well.ilk.org> (Lowell Gilbert's message of
+ "Tue, 21 Jun 2016 14:35:34 -0400")
+Message-ID: <44eg7i1x8y.fsf@be-well.ilk.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJ2oMhKfF23gwWtQ-L0NOYnePxeb_Aae1bk8q+7igWm6k5BaRA@mail.gmail.com>
-Subject: Re: [Xenomai] xenomai patch for kernel & omap
+Content-Type: text/plain
+Subject: Re: [Xenomai] slackspot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,83 +21,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ran Shalit <ranshalit@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, Jun 27, 2016 at 02:37:22PM +0300, Ran Shalit wrote:
-> On Mon, Jun 27, 2016 at 2:12 PM, Gilles Chanteperdrix <
-> gilles.chanteperdrix@xenomai.org> wrote:
-> 
-> > On Mon, Jun 27, 2016 at 02:05:35PM +0300, Ran Shalit wrote:
-> > > On Mon, Jun 27, 2016 at 1:59 PM, Gilles Chanteperdrix <
-> > > gilles.chanteperdrix@xenomai.org> wrote:
-> > >
-> > > > On Mon, Jun 27, 2016 at 01:58:21PM +0300, Ran Shalit wrote:
-> > > > > Hello,
-> > > > >
-> > > > > I need to patch a kernel version (which I don't know yet the exact
-> > > > version)
-> > > > > for OMAP4 processor.
-> > > > >
-> > > > > I've seen the following post:
-> > > > > https://xenomai.org/pipermail/xenomai/2015-March/033649.html
-> > > > >
-> > > > > which explain that patch x.y.z should support ALL kernel version up
-> > to
-> > > > x.y.z
-> > > > >
-> > > > > If I understand correctly,
-> > > >
-> > > > You did not understand correctly.
-> > > >
-> > > > --
-> > > >                                             Gilles.
-> > > > https://click-hack.org
-> > > >
-> > >
-> > > Hi Gilles,
-> > >
-> > > When I used xenomai before (with zynq) , I worked with the exact kernel
-> > > version 3.8.13 as this patch requires (trying to merge older kernel was
-> > > too difficult).
-> > >
-> > > Is it the correct thing to do ?
-> > > I mean, when we have some old kernel, i.e. to try to merge it with the
-> > > required kernel version as the patch requires ?
-> >
-> > There is no "correct thing". Do the one that is the easiest for you.
-> > For me, the simpler solution is to use a kernel for which
-> > an I-ipipe patch already exists, but YMMV.
-> >
-> > You have a large choice of them here:
-> > https://xenomai.org/downloads/ipipe/v3.x/arm/
-> > and here:
-> > https://xenomai.org/downloads/ipipe/v4.x/arm/
-> >
-> > The rule for matching I-pipe versions with Xenomai versions is
-> > explained in the mail you quote.
-> >
-> > --
-> >                                             Gilles.
-> > https://click-hack.org
-> >
-> 
-> Right,
-> I now found the detailed explanation in the reply (I missed that part
-> before):
-> https://xenomai.org/pipermail/xenomai/2015-March/033648.html
-> 
-> Another thing if I may:
-> There is no "omap" processor pre/post patches. Does it mean "arm" patch is
-> relevant for omap ?
+Lowell Gilbert <kludge@be-well.ilk.org> writes:
 
-You will find the list of supported processors here, whether they
-need a pre/post patch is also indicated:
-https://xenomai.org/embedded-hardware/#ARM
+> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
+>> Ok. Could you post an example allowing us to reproduce the issue ?
+>
+> I can. It took me a little longer than I figured because I had
+> accidentally deleted the MODULE_LICENSE. Is it possible to get the
+> kernel makefiles to tell you *why* it isn't linking in libraries you
+> asked for?
 
-Regards.
+>  http://be-well.ilk.org/~lowell/example.tar
+> It's about a hundred lines each for the application and kernel module.
 
--- 
-					    Gilles.
-https://click-hack.org
+Has anyone tried this out? My real application is meeting its latency
+requirements, but I'm pretty sure it's having more of an impact on the
+rest of the system than it needs to do.
+
+Be well.
 
