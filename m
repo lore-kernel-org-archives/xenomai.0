@@ -1,15 +1,19 @@
-Date: Wed, 1 Jun 2016 15:30:24 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160601133024.GB14103@hermes.click-hack.org>
-References: <2396B4D2166B62479FBBE370D4A7C1F30A739854@mb2010-1.intra.tut.fi>
- <20160601122543.GA14103@hermes.click-hack.org>
- <2396B4D2166B62479FBBE370D4A7C1F30A73A888@mb2010-1.intra.tut.fi>
+References: <20160628083404.GI18662@hermes.click-hack.org>
+ <57724022.8010904@sigmatek.at> <20160628091747.GK18662@hermes.click-hack.org>
+ <57724333.6010608@sigmatek.at> <20160628092955.GL18662@hermes.click-hack.org>
+ <577248AB.5070601@sigmatek.at> <20160628095543.GM18662@hermes.click-hack.org>
+ <57724CFE.2050401@sigmatek.at> <20160628101957.GO18662@hermes.click-hack.org>
+ <5772520E.8010407@sigmatek.at> <20160628103925.GP18662@hermes.click-hack.org>
+From: Wolfgang Netbal <wolfgang.netbal@sigmatek.at>
+Message-ID: <577265AF.9080300@sigmatek.at>
+Date: Tue, 28 Jun 2016 13:55:27 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2396B4D2166B62479FBBE370D4A7C1F30A73A888@mb2010-1.intra.tut.fi>
-Subject: Re: [Xenomai] rtdm_timer_start causes switching to secondary mode
- and Bug
+In-Reply-To: <20160628103925.GP18662@hermes.click-hack.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Performance impact after switching from 2.6.2.1 to
+ 2.6.4
+Reply-To: wolfgang.netbal@sigmatek.at
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,32 +22,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ali Umair <ali.umair@tut.fi>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Wed, Jun 01, 2016 at 01:03:18PM +0000, Ali Umair wrote:
-> Hello
-> 
-> Thanks Gilles and sorry for first incomplete email. The code files and kernel log files are attached with this email
 
-Ok, I see you have not read "Linux devices drivers" as I advised. I
-am not going to tell you everything which is wrong in that driver,
-because there are to many things really, beginner's programming
-error with using memset or off by one errors in indexes, ignorance
-of best practices in error handling (in kernel modules or
-otherwise), disregard to concurrence issues, disregard to support of
-multiple simultaneous file descriptors.
 
-I do see a lot of things wrong in your code, I do not see which is
-causing rtdm_timer_start to fail. But I am sure there is nothing
-wrong with Xenomai's rtdm_timer_start and that the problem is in
-your code. You can see that rtdm_timer_start is working by using
-latency -t 1 for instance. If latency -t 1 causes an issue on your
-platform, then we will have a look.
+Am 2016-06-28 um 12:39 schrieb Gilles Chanteperdrix:
+> On Tue, Jun 28, 2016 at 12:31:42PM +0200, Wolfgang Netbal wrote:
+>>
+>> Am 2016-06-28 um 12:19 schrieb Gilles Chanteperdrix:
+>> min: 10, max: 677, avg: 10.5048 -> 0.0265273 us
+>>
+>> Here are the output for Kernel 3.0.43 and Xenomai 2.6.2.1
+>>
+>> #> ./tsc
+>> min: 10, max: 667, avg: 11.5755 -> 0.029231 us
+> Ok. So, first it confirms that the two configurations are running
+> the processor at the same frequency. But we seem to see a pattern,
+> the maxima in the case of the new kernel seems consistently higher.
+> Which would suggest that there is some difference in the cache. What
+> is the status of the two configurations with regard to the L2 cache
+> write allocate policy?
+Do you mean the configuration we checked in this request
+https://xenomai.org/pipermail/xenomai/2016-June/036390.html
+?
+> Could you show us the tsc results of Xenomai
+> 2.6.4 with the 3.0 kernel ?
+>
 
-Regards.
-
--- 
-					    Gilles.
-https://click-hack.org
 
