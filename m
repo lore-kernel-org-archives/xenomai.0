@@ -1,12 +1,12 @@
+Date: Fri, 8 Jul 2016 10:29:43 +0000 (UTC)
+From: <praneeth.y@yahoo.com>
+Message-ID: <1569300380.1342469.1467973783459.JavaMail.yahoo@mail.yahoo.com>
 MIME-Version: 1.0
-In-Reply-To: <20160707125109.GO9465@hermes.click-hack.org>
-References: <CALZu-7YbLMszbw+82nWzZ+9W=VYKY0s81UGmq=UvQw_fg3XHrw@mail.gmail.com>
- <20160707125109.GO9465@hermes.click-hack.org>
-From: marc favereau <favereau.marc.m2gl@gmail.com>
-Date: Thu, 7 Jul 2016 15:27:37 +0200
-Message-ID: <CALZu-7YPEdg7U4ShiK_6K9KtWUBtREp37e97cc0udwo=u1XD-w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Serial port problem
+References: <1569300380.1342469.1467973783459.JavaMail.yahoo.ref@mail.yahoo.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] unable to patch
+Reply-To: praneeth.y@yahoo.com
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,30 +15,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Of course !!!
-
-Thanks a lot for four help,
-That's work fine !
-
-Marc
-
-2016-07-07 14:51 GMT+02:00 Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org>:
-
-> On Thu, Jul 07, 2016 at 02:40:03PM +0200, marc favereau wrote:
-> > when i read the driver code source (16550A.c) i think there is a problem
-> > with 'rtdm_irq_request' function. It's like the IRQ was not shared
-> between
-> > the 4 ports of the card !!!
-> >
-> > I don't understand why !
->
-> Do you have CONFIG_XENO_OPT_SHIRQ enabled in the kernel configuration?
->
-> --
->                                             Gilles.
-> https://click-hack.org
->
+SGksIApIYXZpbmcgZmFpbGVkIHRvIHBhdGNoIHRoZSBrZXJuZWwgZm9yIGFybSxJIHRyaWVkIHdp
+dGggTGludXgga2VybmVsIDMuMC40MywzLjE0LDMuMTggNC4yMCB3aXRoIHhlbm9tYWkgMi42LjQn
+cyBhZGVvcyBpcGlwZSBhcyB3ZWxsIGFzIGlwaXBlLWNvcmUuIFVuZm9ydHVuYXRlbHkgbW9zdCBv
+ZiB0aGVtIGVuZGVkIHdpdGggdGhlIGZvbGxvd2luZyBsYXN0Cm1lc3NhZ2VzLsKgdW5hYmxlIHRv
+IHBhdGNoIHRoZSBrZXJuZWwgMy4wLjQzIHdpdGggYWRlb3MgLWlwaXBlLTMuMC40M8KgIAoKCgoK
+CgoKCgpyZWdhcmRzcHJhbmVldGgKCgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0t
+LS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogaW1hZ2Uu
+cG5nClR5cGU6IGltYWdlL3BuZwpTaXplOiAyOTYyMyBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxl
+ClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8y
+MDE2MDcwOC8wNjYwN2FkOS9hdHRhY2htZW50LnBuZz4K
