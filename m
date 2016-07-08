@@ -1,10 +1,14 @@
-From: Jeffrey Melville <jmelville@mitre.org>
-Message-ID: <574EFA37.5030607@mitre.org>
-Date: Wed, 1 Jun 2016 11:07:35 -0400
+Date: Fri, 8 Jul 2016 13:03:14 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20160708110314.GP9465@hermes.click-hack.org>
+References: <1569300380.1342469.1467973783459.JavaMail.yahoo.ref@mail.yahoo.com>
+ <1569300380.1342469.1467973783459.JavaMail.yahoo@mail.yahoo.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] SIGDEBUG_RESCNT_IMBALANCE with recursive mutex
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1569300380.1342469.1467973783459.JavaMail.yahoo@mail.yahoo.com>
+Subject: Re: [Xenomai] unable to patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,54 +17,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: praneeth.y@yahoo.com
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+On Fri, Jul 08, 2016 at 10:29:43AM +0000, praneeth.y@yahoo.com wrote:
+> Hi,=20
+> Having failed to patch the kernel for arm,I tried with Linux kernel 3.0.4=
+3,3.14,3.18 4.20 with xenomai 2.6.4's adeos ipipe as well as ipipe-core. Un=
+fortunately most of them ended with the following last
+> messages.=A0unable to patch the kernel 3.0.43 with adeos -ipipe-3.0.43=A0=
+=20
 
-Setup: Xenomai 2.6.4 (actually 2.6 git rev 4f349cf0553, with a99426
-cherry-picked) with kernel 3.14.17 on a Zynq and the POSIX skin using
-the ipipe patches included with the specified git rev)
+I guess you do not get a message about kernel 3.0.43 when trying to
+apply a patch on 3.14. Anyway, this message means that you are
+trying to apply a patch to a kernel which is not the kernel it was
+made for.=20
 
-We've noticed that SIGDEBUG_RESCNT_IMBALANCE is generated when a
-(Xenomai) mutex is taken recursively by an NRT thread. The snippet at
-the bottom of this message will reproduce the issue. I omitted most of
-the error-checking for brevity.
+Basically, this is explained in the file ksrc/arch/arm/patches/README
+in the source tree:
 
-A couple previous threads have discussed slightly similar problems, but
-I never saw final resolutions:
-http://www.xenomai.org/pipermail/xenomai/2012-January/025278.html
-http://www.xenomai.org/pipermail/xenomai/2014-October/031919.html
+- the patches directly in this directory apply to mainline kernels,
+the ones from kernel.org, with the exact same version as the version
+in the I-pipe patch name (so for instance,
+ipipe-core-3.14.17-arm-4.patch applies to the vanilla kernel
+3.14.17, probably not to 3.14.0 or 3.14.73)
 
-As far as "why are we doing this?", the problem area occurs in a test
-suite where some tests have to run as NRT threads because they don't
-have to run real-time and will get killed by the watchdog if they run as
-RT threads. Removing the Xenomai wrappers would also be complicated for
-reasons that are outside of the scope of this email.
+- for the case of patches to the mainline kernel you are encouraged to
+use more recent versions from https://xenomai.org//downloads/ipipe
+area, but only for versions of the kernel supported by Xenomai, so
+for instance  ipipe-core-3.14.44-arm-17.patch is a better choice
+than ipipe-core-3.14.17-arm-4.patch (which ships with Xenomai
+2.6.4), but you can not use ipipe-core-3.18.20-arm-10.patch or=20
+ipipe-core-4.1.18-arm-5.patch, because Xenomai does not support
+Linux versions after Linux 3.14. But any version in the stable
+branch (3.14.44 for instance) should be OK.
 
-Thanks,
-Jeff
+- the patches in the sub-directories (beaglebone, mxc, raspberry,
+zynq) apply to specific vendor forks, which exactly should be
+documented in the README file. Sometimes they are pre or post
+patches meaning that you have to apply them before or after a patch
+for a mainline kernel, the details are given in the README file.
 
----
-#include <stdio.h>
-#include <pthread.h>
-
-int main(int argc, char **argv)
-{
-    pthread_mutex_t mutex;
-    pthread_mutexattr_t mutex_attr;
-    pthread_mutexattr_init(&mutex_attr);
-    pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_RECURSIVE);
-    if (pthread_mutex_init(&mutex, &mutex_attr) != 0)
-    {
-        printf("Failed to initialize mutex.\n");
-        return 1;
-    }
-    pthread_mutexattr_destroy(&mutex_attr);
-    pthread_mutex_lock(&mutex);
-    pthread_mutex_lock(&mutex);
-    pthread_mutex_unlock(&mutex);
-    pthread_mutex_unlock(&mutex);
-    pthread_mutex_destroy(&mutex);
-    return 0;
-}
+--=20
+					    Gilles.
+https://click-hack.org
 
