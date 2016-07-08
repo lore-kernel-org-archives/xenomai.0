@@ -1,13 +1,14 @@
-Date: Fri, 8 Jul 2016 22:34:05 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160708203405.GS9465@hermes.click-hack.org>
+MIME-Version: 1.0
+In-Reply-To: <20160708203405.GS9465@hermes.click-hack.org>
 References: <CAPXCTbbQ1Lo7voRB1sVOtnZ0yjwhZBgUnzi1YX2rv_CL1z8f0g@mail.gmail.com>
  <20160708194905.GQ9465@hermes.click-hack.org>
  <CAPXCTbYJ_rQnvdU7srw1oGL6R0c7vJmMF+u_T7d-zgkZ1yLCXg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPXCTbYJ_rQnvdU7srw1oGL6R0c7vJmMF+u_T7d-zgkZ1yLCXg@mail.gmail.com>
+ <20160708203405.GS9465@hermes.click-hack.org>
+From: Eder Alves de Moura <edermoura@gmail.com>
+Date: Fri, 8 Jul 2016 17:47:40 -0300
+Message-ID: <CAPXCTbai+OJHRkt=x5qxrQNa+dsmN8aNpcgxSmygsqW7rqibXQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] Compiling testsuite and utils
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,35 +18,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Eder Alves de Moura <edermoura@gmail.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On Fri, Jul 08, 2016 at 05:28:48PM -0300, Eder Alves de Moura wrote:
-> Dear Gilles,
-
-Dear Eder,
-
-next private mail will not be answered.
-
-> 
-> I just trying to run it for the first time, I was just following the
-> tutorial (https://xenomai.org/installing-xenomai-3-x/) on the section
-> "Examples of building the Xenomai libraries and tools" and  after some
-> trials I unziped again the xenomai folder again and I  ran the command
-> "$ ../configure --with-core=cobalt --enable-smp --enable-pshared
-> --host=i686" on build directory inside the xenomai and it returned to
-> me:
-
-Ok. This is a different issue. You are not answering my questions
-though. So I am going to repeat them:
 - do you really want to compile a 32 bits version of Xenomai?
-- if yes, did you check that you have everything in place to do it,
-by compiling a C language hello world command with gcc -m32?
 
-Until you have answered these questions, any later attempt at
-compiling xenomai is useless.
+no. I am not want to compile it to a specific 32 bits.
 
--- 
-					    Gilles.
-https://click-hack.org
+I want to run this program on my machine
+
+--=20
+--------------------------------------------------
+=C3=89der Alves de Moura
 
