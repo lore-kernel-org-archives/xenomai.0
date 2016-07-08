@@ -1,13 +1,10 @@
-Date: Mon, 1 Aug 2016 14:03:51 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20160801140351.1a2b224e@md1em3qc>
-In-Reply-To: <20160801132946.368f30eb@md1em3qc>
-References: <20160709132949.GA22236@hermes.click-hack.org>
- <20160801132946.368f30eb@md1em3qc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Announce] Xenomai 2.6.5
+From: Eder Alves de Moura <edermoura@gmail.com>
+Date: Fri, 8 Jul 2016 16:30:17 -0300
+Message-ID: <CAPXCTbbQ1Lo7voRB1sVOtnZ0yjwhZBgUnzi1YX2rv_CL1z8f0g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Compiling testsuite and utils
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,89 +13,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Am Mon, 1 Aug 2016 13:29:46 +0200
-schrieb Henning Schild <henning.schild@siemens.com>:
+Dears,
 
-> Hey Gilles,
-> 
-> i just checked out the new release, which came as a surprise. Thanks
-> for publishing that!
-> 
-> Some of the patches prepare for kernel 4.0+ but one specifically makes
-> sure the combination 4.0+ and 2.6.5 wont work.
-> 
-> Am Sat, 9 Jul 2016 15:29:49 +0200
-> schrieb Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
-> 
-> ...
-> >       hal/x86: forbid compilation with Linux 4.0+  
-> ...
-> 
-> Could you please provide details on how the FPU support is broken. I
-> am successfully using xenomai 2.6 with 4.1.18 for some time now. I am
-> not sure whether the applications on top use the FPU and if so, if
-> there are multiple FPU-users per core.
+I am starting with Xenomai and rt systems and I want to compile it for
+a raspberry pi 2/3 and beaglebone black but first I compiled it to a
+PC and, apparently it is working fine.
 
-In continous integration the switchtest FPU test never triggered, not
-in 64 nor in 32-bit mode.
+$ dmesg | grep -i xenomai
+[    3.224489] [Xenomai] scheduling class idle registered.
+[    3.224491] [Xenomai] scheduling class rt registered.
+[    3.224515] [Xenomai] disabling automatic C1E state promotion on
+Intel processor
+[    3.224521] [Xenomai] SMI-enabled chipset found, but SMI workaround disa=
+bled
+                         (see xenomai.smi parameter). You might encounter
+[    3.224592] I-pipe: head domain Xenomai registered.
+[    3.224916] [Xenomai] Cobalt v3.0.2 (Exact Zero)
 
-Henning
 
-> Henning
-> 
-> >       switchtest: clarify the mode switch
-> >       x86/fptest: add missing asm constraints
-> >       switchtest: align kernel-space fpu register values
-> >       posix/mutex,cond: allow static initializer
-> >       doc: adapt to different installations of asciidoc and doxygen
-> >       doc: fix generate-doc script after removal of docbook
-> > documentation posix/clock: remove documentation of internal function
-> >       doc/sched: move sched documentation under nucleus section
-> >       bump version number and bootstrap
-> >       hal/arm: update patches
-> >       hal/blackfin: update I-pipe patches
-> >       hal/powerpc: update I-pipe patches
-> >       hal/x86: update I-pipe patches
-> >       doc: regenerate
-> > 
-> > Jeffrey Melville (2):
-> >       posix/doc: Fix sched_get_priority(min|max) doc
-> >       posix: fix pthread_mutex_timedlock for recursive mutexes.
-> > 
-> > Jorge Ramirez-Ortiz (2):
-> >       drivers/analogy: fix detach logic
-> >       drivers/analogy: remove unnecessary spinlock
-> > 
-> > Matthew Lindner (1):
-> >       drivers/can: Properly initialize bittime
-> > 
-> > Philippe Gerum (14):
-> >       native: fix user-space interrupt syscalls
-> >       hal/arm: add specific calibration value for imx6q
-> >       can/flexcan: fixup for kernel release >= 3.11
-> >       arm/hal: silence C89 warning
-> >       nucleus/pipe: care for spurious wakeups waiting for events
-> >       nucleus: add default calibration value for imx7
-> >       nucleus: fix calibration return for imx7
-> >       nucleus/pod: fix missed rescheduling in SMP
-> >       rtipc/bufp: fix wrong TX timeout
-> >       hal/generic: add backward wrappers for legacy cpu mask ops
-> >       scripts/prepare-kernel: allow building over 4.x kernel series
-> >       ksrc, include: cope with introduction of user_msghdr
-> >       testsuite/xeno-test-run: requesting /bin/sh is enough
-> >       cobalt/x86: fix missing early clobber in asm
-> > 
-> > Stefan Roese (1):
-> >       hal/arm: Add Zynq v3.14.17 patches
-> >   
-> 
-> 
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
 
+But after install I could not compile the tools for xenomai, running
+
+$ mkdir $build_root && cd $build_root
+$ $xenomai_root/configure --with-core=3Dcobalt --enable-smp --enable-pshare=
+d \
+  --host=3Di686-linux CFLAGS=3D"-m32 -O2" LDFLAGS=3D"-m32"
+
+I am receiving the following message
+
+checking whether we build for Cobalt or Mercury core... cobalt
+checking build system type... x86_64-pc-linux-gnu
+checking host system type... i686-pc-linux-gnu
+checking for a BSD-compatible install... /usr/bin/install -c
+checking for i686-linux-gcc... no
+checking for gcc... gcc
+checking whether the C compiler works... no
+configure: error: in `/home/pc/tools/xenomai-3-3.0.2':
+configure: error: C compiler cannot create executables
+See `config.log' for more details
+
+
+
+My machine is running an Ubuntu Mate
+
+$ uname -a
+Linux my-pc 4.1.18 #1 SMP PREEMPT Mon Jun 27 16:53:25 BRT 2016 x86_64
+x86_64 x86_64 GNU/Linux
+
+and its configuration is
+
+lscpu
+Architecture:          x86_64
+CPU op-mode(s):        32-bit, 64-bit
+Byte Order:            Little Endian
+CPU(s):                2
+On-line CPU(s) list:   0,1
+Thread(s) per core:    1
+Core(s) per socket:    2
+Socket(s):             1
+Vendor ID:             GenuineIntel
+CPU family:            6
+Model:                 42
+Model name:            Intel(R) Core(TM) i3-2120 CPU @ 3.30GHz
+Stepping:              7
+CPU MHz:               3292.343
+BogoMIPS:              6584.68
+Virtualization:        VT-x
+L1d cache:             32K
+L1i cache:             32K
+L2 cache:              256K
+L3 cache:              3072K
+Flags:                 fpu vme de pse tsc msr pae mce cx8 apic sep
+mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht
+tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts
+rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64
+monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm pcid sse4_1 sse4_2
+popcnt tsc_deadline_timer xsave avx lahf_lm arat epb pln pts dtherm
+tpr_shadow vnmi flexpriority ept vpid xsaveopt
+
+
+
+
+--=20
+--------------------------------------------------
+=C3=89der Moura
 
