@@ -1,18 +1,10 @@
-References: <20160709132949.GA22236@hermes.click-hack.org>
- <20160801132946.368f30eb@md1em3qc>
- <20160801123510.jxujyigrecnbpkiy@hermes.click-hack.org>
- <64e9fed7-ae79-b7fc-04f7-0e74ef1c9239@siemens.com>
- <20160801140555.7wtzxtbqnd7iecd6@hermes.click-hack.org>
- <2930884c-9198-1da8-40ab-b9ad8bd360e0@siemens.com>
- <20160801173334.v5twlqgs73obpeup@hermes.click-hack.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <2b4ba869-5e35-9a23-aaa2-bf4b7096a480@siemens.com>
-Date: Mon, 1 Aug 2016 21:04:55 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <eac52e41-5114-8535-1a7a-58d6927a7743@xenomai.org>
+Date: Sun, 10 Jul 2016 11:47:44 +0200
 MIME-Version: 1.0
-In-Reply-To: <20160801173334.v5twlqgs73obpeup@hermes.click-hack.org>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Announce] Xenomai 2.6.5
+Subject: [Xenomai] [RFC] Switchless RTDM calls from SCHED_WEAK threads
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,109 +13,120 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>
 
-On 2016-08-01 19:33, Gilles Chanteperdrix wrote:
-> On Mon, Aug 01, 2016 at 07:18:36PM +0200, Jan Kiszka wrote:
->> On 2016-08-01 16:05, Gilles Chanteperdrix wrote:
->>> On Mon, Aug 01, 2016 at 02:58:54PM +0200, Jan Kiszka wrote:
->>>> On 2016-08-01 14:35, Gilles Chanteperdrix wrote:
->>>>> On Mon, Aug 01, 2016 at 01:29:46PM +0200, Henning Schild wrote:
->>>>>> Hey Gilles,
->>>>>>
->>>>>> i just checked out the new release, which came as a surprise. Thanks
->>>>>> for publishing that!
->>>>>>
->>>>>> Some of the patches prepare for kernel 4.0+ but one specifically makes
->>>>>> sure the combination 4.0+ and 2.6.5 wont work.
->>>>>>
->>>>>> Am Sat, 9 Jul 2016 15:29:49 +0200
->>>>>> schrieb Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
->>>>>>
->>>>>> ...
->>>>>>>       hal/x86: forbid compilation with Linux 4.0+
->>>>>> ...
->>>>>>
->>>>>> Could you please provide details on how the FPU support is broken. I am
->>>>>> successfully using xenomai 2.6 with 4.1.18 for some time now. I am not
->>>>>> sure whether the applications on top use the FPU and if so, if there
->>>>>> are multiple FPU-users per core.
->>>>>
->>>>> The FPU support is broken in the way it detects that Linux was using
->>>>> FPU in kernel-space (for RAID, or memcpy on oldish AMD processors,
->>>>> geode, K6, etc...) when Linux gets preempted. We can no longer rely
->>>>> on checking the bit TS in CR0, and need instead to use an accessor
->>>>> that was added in the I-pipe patch to know that. For details, see
->>>>> the changes that were made to FPU support for x86 in Xenomai 3.x.
->>>>>
->>>>
->>>> Are we doing eager switching there already? Would allow to use things
->>>> as-is (i.e. without having to trap FPU accesses) on CPUs that are recent
->>>> enough to do this switching lazily in hardware.
->>>
->>> The problem has nothing to do with trapping FPU accesses or eager
->>> switching. Xenomai has always done eager switching. Xenomai 3 traps
->>> fpu access in order to arm the XNFPU bit on first fpu use and then
->>> does eager switching as usual.
->>
->> Eager means always switch on flipping the context, irrespective of the
->> previous usage. There is no trapping of FPU usage anymore then. Hardware
->> does this much faster today when using xsave. Therefore upstream moved
->> away from the lazy pattern apparently also still used in Xenomai.
-> 
-> I know what eager means and Xenomai has always switched eagerly. But
-> the difference with Linux is that a Xenomai task has an XNFPU bit
-> indicating whether it wants to use the FPU or not. And obviously we
-> do not switch eagerly FPU for tasks which do not have the XNFPU bit.
-> 
-> Now, in Xenomai 2.x the XNFPU bit was systematically set for
-> user-space tasks, so that Xenomai always switched eagerly FPU for
-> user-space tasks. With Xenomai 3, the change I have made for x86 and
-> ARM is that a user-space task starts without the XNFPU bit, and if
-> it uses the FPU once, it gets the trap, the XNFPU is set, then it
-> gets eager switches forever after. So, it only gets a trap once.
-> Now, that means that you have to pay the price of a fault, once. So,
-> to do even better, Philippe has proposed to add the XNFPU bit to
-> pthread_set_mode_np/rt_task_set_mode so that a user-space task can
-> forcibly set the XNFPU bit.
-> 
-> But clearly, Xenomai switches FPU eagerly, and always has.
-> 
-> I am surprised to have to explain all this to you, I thought this
-> was common knowledge.
-> 
 
-Commit 304bceda6a upstream:
+This RFC is a follow up to
+http://xenomai.org/pipermail/xenomai/2016-May/036253.html.
 
-    x86, fpu: use non-lazy fpu restore for processors supporting xsave
-    
-    Fundamental model of the current Linux kernel is to lazily init and
-    restore FPU instead of restoring the task state during context switch.
-    This changes that fundamental lazy model to the non-lazy model for
-    the processors supporting xsave feature.
-    
-    Reasons driving this model change are:
-    
-    i. Newer processors support optimized state save/restore using xsaveopt and
-    xrstor by tracking the INIT state and MODIFIED state during context-switch.
-    This is faster than modifying the cr0.TS bit which has serializing semantics.
-    [...]
+To sum up the issue, calling Cobalt's ioctl() implementation on a file
+descriptor pointing at a RTDM named device, or pointing at a regular
+character device, may create overhead for SCHED_WEAK threads, when/as
+the ioctl request should be processed from the ioctl_nrt handler. This
+is due to extra mode switches, illustrated as follows (Cobalt syscalls
+are enclosed by __RT(), glibc services by __STD()):
 
-(so it's xsaveopt, not just xsave - weak memory...)
+[Secondary mode]           <== mode switch ==>       [Primary mode]
 
-Eager switching in this context means *unconditionally* eager, just
-dependent on the availability of this hardware feature, which is present
-on all modern system, high-end or low-end (will check tomorrow if we
-even have it on the Quark which is seriously low-end). This makes the
-code much simpler than the semi-eager model of Xenomai, at least for
-modern x86.
+app:__RT(ioctl(fd, ...))
+         |
+	 +-----------------------------------------> driver:ioctl_rt
+	                                                   |
+   	                                   returns -ENOSYS |
+   	                                                   |
+driver:ioctl_nrt <-----------------------------------------+
 
-So the question here is not about low- vs. high-end but rather modern
-vs. legacy. We can't remove the lazy model yet, but the eager makes
-sense as well. Yes, this is an optimization (so is lazy switching), but
-apparently even of the worst case (which is nothing lazy switching is
-about) because we save the costly fiddling with cr0, unconditionally.
+Since SCHED_WEAK threads normally run in the Linux domain, and Cobalt
+always starts probing the ioctl_rt() routine for handling the request,
+a useless double mode switch happens in those particular cases.
 
-Jan
+The rationale behind probing the ioctl_rt() handler first, is that
+SCHED_WEAK threads are supposed to wait for events from, or share
+non-critical resources with real-time Cobalt threads and/or devices,
+and that normally happens with the help of the Cobalt scheduler, which
+requires the caller to run in primary mode. In short, this is the
+runtime scenario Cobalt favors because this the reason for running
+SCHED_WEAK threads in the first place.
+
+This leads to some clarification: SCHED_WEAK is not meant to run plain
+regular POSIX threads that don't interface with the real-time
+sub-system; for such use case, one should call the regular
+__STD(pthread_create()) service to create the thread, not libcobalt's
+__RT(pthread_create()). Such thread would be able to issue RTDM
+ioctl() calls as well, ending up into the driver's ioctl_nrt() handler
+directly.
+
+Back to the issue, we have three options for fixing the overhead
+described above for threads that actually need to run in the
+SCHED_WEAK class:
+
+1- Cobalt could figure out whether the incoming file descriptor is
+  actually managed by RTDM, before switching to primary mode if so.
+  This way, regular file descriptors would be rejected early, before
+  any mode switch is attempted, and libcobalt could hand over the
+  request to the (g)libc in such an event. The ioctl request that has
+  to be processed from a plain Linux context could then be handled by
+  a simple chardev driver.
+
+2- We could allow the application to tell Cobalt that RTDM I/O calls
+  issued on a given file descriptor are primarily directed to the
+  non-rt handler in the driver. Typically, an open mode flag such as
+  "O_WEAK" could do the job; such flag would affect requests issued
+  from SCHED_WEAK or regular threads unconditionally, or from
+  real-time threads provided no rt handler is defined by the
+  driver. In other cases, it would be ignored. This way, we would not
+  allow the application to shoot itself in the foot by bypassing the
+  RT handler inadvertently.
+
+  e.g.:
+
+    fd = open(some_rtdm_device, O_RDWR | O_WEAK);
+    ret = ioctl(fd, SOMEDEV_RTIOC_FOO, &opt_arg);
+
+  Pros: Applicable to all RTDM I/O requests (ioctl/read/write).
+
+  Cons: Breaks the ABI with the introduction of the O_WEAK open flag.
+  Complex semantics, given that SCHED_WEAK threads may behave
+  differently than members of real-time scheduling classes for the
+  same ioctl request on the same file descriptor.  Leaves the decision
+  about the best mode to run a request implemented by a driver to the
+  application, which seems odd.
+
+3- We could introduce a special tag for composing the RTIOC code of an
+  ioctl request, that a driver would use to state the preference for
+  running the request in relaxed mode. The existing adaptative switch
+  (ENOSYS) would still be available for handling requests for which no
+  preference has been defined.
+
+  e.g.
+
+  #define _IOC_RELAX			15U
+  #define _IOWRX(type, nr, size)	_IOWR(type, nr | (1U << _IOC_RELAX), size)
+
+  #define SOMEDEV_RTIOC_FOO		_IOWRX(RTDM_CLASS_BAR, 10, &some_arg)
+
+  Pros: Semantics is easy to grasp: the decision about the best mode
+  to run any given request is left to the driver. It also implies the
+  best practice of assigning an exclusive handler to each ioctl
+  request, i.e. either _rt or _nrt, but not both.
+
+  Cons: Breaks the ABI, by consuming a bit normally used to encode the
+  ioctl number for the tag, restricting the namespace to 2^15 codes.
+  Would not enable the mechanism for other RTDM I/O calls such as
+  read/write(_nrt).
+
+An implementation of option #1 is available from wip/handover in the
+xenomai-3 repo. It is planned to merge these changes in 3.0.3, since
+there is no reason for such overhead to exist with non-RTDM file
+descriptors. Besides, it has no impact on the ABI, this is purely a
+kernel-based optimization.
+
+Options #2 and #3, or any other approach should be discussed if there
+is interest in them. Also, as a corollary to option #3, I would be
+interested to hear about real-world use cases involving any of the
+read_nrt, write_nrt, recvmsg_nrt and sendmsg_nrt handlers of RTDM.
+
+-- 
+Philippe.
 
