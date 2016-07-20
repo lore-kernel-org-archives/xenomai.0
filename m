@@ -1,12 +1,12 @@
+Date: Wed, 20 Jul 2016 16:17:45 +0200
+From: Gilles Chanteperdrix <gilles@click-hack.org>
+Message-ID: <20160720141745.GW6751@hermes.click-hack.org>
+References: <7d0df99eb5c44c1fb444a3d5642001bc@lujp1svwi090222.corp.mooginc.com>
 MIME-Version: 1.0
-In-Reply-To: <c289b77a-5be2-e55b-b0aa-4808de060a5d@xenomai.org>
-References: <c289b77a-5be2-e55b-b0aa-4808de060a5d@xenomai.org>
-From: Michael Trimarchi <michael@amarulasolutions.com>
-Date: Sat, 13 Aug 2016 19:02:58 +0200
-Message-ID: <CAOf5uwn3gHtq0drm1A8xG6=e=Oq3CsjCSMC_Zy6hL3tJPRpsgQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Gilles Chanteperdrix, 1975-2016
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7d0df99eb5c44c1fb444a3d5642001bc@lujp1svwi090222.corp.mooginc.com>
+Subject: Re: [Xenomai] [RFC] [PATCH] Add C_CAN/D_CAN driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,51 +15,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: "Haydon, Andrew" <ahaydon@moog.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi
+On Wed, Jul 20, 2016 at 02:10:27PM +0000, Haydon, Andrew wrote:
+> Hi,
+> 
+> I have updated the C_CAN patch submitted by Stephen Battazzo:
+> http://xenomai.org/pipermail/xenomai/2015-July/034690.html
+> 
+> This update is for Xenomai 3.0.x and also updates the driver to the one
+> used in Linux v3.18.20. I've also backported a couple of bug fixes from
+> later kernel versions. I haven't ported the PCI support because I have no
+> way of testing this.
+> The RTDM port is largely the same as in Stephen's patch.
+> 
+> I'm not sure whether my use of "rtdm_task_busy_sleep" is correct. The
+> Linux driver uses udelay here.
 
-On Sat, Aug 13, 2016 at 6:11 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->
-> It is with deep sorrow that I have to inform you that Gilles
-> Chanteperdrix has passed away on Sunday 7th August. He now rests in the
-> cemetery of Baillargues, in Southern France.
->
-> You can extend your sympathy to Gilles's family by sending a message to
-> im-gilles@xenomai.org.
->
-> Gilles will forever be remembered as a true-hearted man, a brilliant
-> mind always scratching beneath the surface, looking for elegance in the
-> driest topics, never jaded from such accomplishment.
->
+It is if not called in the middle of a section protected by a mutex,
+spinlock or with irqs off. The fact that the hardware has large
+latencies may be unavoidable, the fact that it causes the rest of
+the system to experience high latencies is not acceptable however.
 
-I'm still under shock in what happen to him. He was a great guy and forever=
- will
-be with us.
+> 
+> At the moment I have only done very limited testing on this driver in
+> Xenomai, but it seems to work OK as far as I have tested it so far. I do
+> know that the Linux driver works well for me using the D_CAN interface on
+> the Cyclone V.
 
-Michael
+Your patch is not indented correctly, as such it can not be
+accepted, and it makes the review uselessly hard. So, please resend
+a correctly indented patch.
 
-> According to Paul Valery, "death is a trick played by the inconceivable
-> on the conceivable". Gilles's absence is inconceivable to me, I can only
-> assume that for once, he just got rest from tirelessly helping all of us.
->
-> Repose en paix mon ami, l'=C3=A9clat de ta m=C3=A9moire dissipera ces heu=
-res  sombres.
->
-> --
-> Philippe.
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
-
-
-
---=20
-| Michael Nazzareno Trimarchi                     Amarula Solutions BV |
-| COO  -  Founder                                      Cruquiuskade 47 |
-| +31(0)851119172                                 Amsterdam 1018 AM NL |
-|                  [`as] http://www.amarulasolutions.com               |
+-- 
+					    Gilles.
 
