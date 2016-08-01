@@ -1,10 +1,17 @@
-Date: Sat, 9 Jul 2016 15:29:49 +0200
+Date: Mon, 1 Aug 2016 19:35:34 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Message-ID: <20160709132949.GA22236@hermes.click-hack.org>
+Message-ID: <20160801173534.c6q6rmateqpttg7w@hermes.click-hack.org>
+References: <20160709132949.GA22236@hermes.click-hack.org>
+ <20160801132946.368f30eb@md1em3qc>
+ <20160801123510.jxujyigrecnbpkiy@hermes.click-hack.org>
+ <64e9fed7-ae79-b7fc-04f7-0e74ef1c9239@siemens.com>
+ <20160801140555.7wtzxtbqnd7iecd6@hermes.click-hack.org>
+ <2930884c-9198-1da8-40ab-b9ad8bd360e0@siemens.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Subject: [Xenomai] [Announce] Xenomai 2.6.5
+In-Reply-To: <2930884c-9198-1da8-40ab-b9ad8bd360e0@siemens.com>
+Subject: Re: [Xenomai] [Announce] Xenomai 2.6.5
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,103 +20,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Hi,
+On Mon, Aug 01, 2016 at 07:18:36PM +0200, Jan Kiszka wrote:
+> On 2016-08-01 16:05, Gilles Chanteperdrix wrote:
+> > On Mon, Aug 01, 2016 at 02:58:54PM +0200, Jan Kiszka wrote:
+> >> On 2016-08-01 14:35, Gilles Chanteperdrix wrote:
+> >>> On Mon, Aug 01, 2016 at 01:29:46PM +0200, Henning Schild wrote:
+> >>>> Hey Gilles,
+> >>>>
+> >>>> i just checked out the new release, which came as a surprise. Thanks
+> >>>> for publishing that!
+> >>>>
+> >>>> Some of the patches prepare for kernel 4.0+ but one specifically makes
+> >>>> sure the combination 4.0+ and 2.6.5 wont work.
+> >>>>
+> >>>> Am Sat, 9 Jul 2016 15:29:49 +0200
+> >>>> schrieb Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+> >>>>
+> >>>> ...
+> >>>>>       hal/x86: forbid compilation with Linux 4.0+
+> >>>> ...
+> >>>>
+> >>>> Could you please provide details on how the FPU support is broken. I am
+> >>>> successfully using xenomai 2.6 with 4.1.18 for some time now. I am not
+> >>>> sure whether the applications on top use the FPU and if so, if there
+> >>>> are multiple FPU-users per core.
+> >>>
+> >>> The FPU support is broken in the way it detects that Linux was using
+> >>> FPU in kernel-space (for RAID, or memcpy on oldish AMD processors,
+> >>> geode, K6, etc...) when Linux gets preempted. We can no longer rely
+> >>> on checking the bit TS in CR0, and need instead to use an accessor
+> >>> that was added in the I-pipe patch to know that. For details, see
+> >>> the changes that were made to FPU support for x86 in Xenomai 3.x.
+> >>>
+> >>
+> >> Are we doing eager switching there already? Would allow to use things
+> >> as-is (i.e. without having to trap FPU accesses) on CPUs that are recent
+> >> enough to do this switching lazily in hardware.
+> > 
+> > The problem has nothing to do with trapping FPU accesses or eager
+> > switching. Xenomai has always done eager switching. Xenomai 3 traps
+> > fpu access in order to arm the XNFPU bit on first fpu use and then
+> > does eager switching as usual.
+> 
+> Eager means always switch on flipping the context, irrespective of the
+> previous usage. There is no trapping of FPU usage anymore then. Hardware
+> does this much faster today when using xsave. Therefore upstream moved
+> away from the lazy pattern apparently also still used in Xenomai.
 
-you will find the latest release in Xenomai 2.6 branch here:
-https://xenomai.org/downloads/xenomai/stable/xenomai-2.6.5.tar.bz2
-
-It contains fixes for known bugs in the 2.6.4 release, now almost
-two years old, notably:
-- a scheduler bug, fixed by commit b03e3d08379f236eb75b34c1b705e127c6e3b2e5
-https://git.xenomai.org/xenomai-2.6.git/commit/?id=b03e3d08379f236eb75b34c1b705e127c6e3b2e5
-- a bug in ARM VFP support, fixed by commit d4e755b2a9909afb7bbd0a522ff1d97718494cd7
-https://git.xenomai.org/xenomai-2.6.git/commit/?id=d4e755b2a9909afb7bbd0a522ff1d97718494cd7
-
-Users of the Xenomai 2.6 branch are encouraged to upgrade. It is
-expected to be the last release in the 2.6 branch. It supports all
-I-pipe patches up to those for Linux version 3.18. The short log
-follows.
-
-Thanks to all contributors.
-
-Gilles Chanteperdrix (45):
-      debian: also include the config directory in the xenomai-kernel-source package
-      hal: fixups for kernel 3.16
-      hal/arm: fixup for Linux 3.16
-      posix: fix user-space interrupt syscalls
-      hal/arm: simplify fpu handling
-      nucleus/registry: initialize vfile structure to 0
-      hal/xnlock: also indicate file, line and function in unlock debugging
-      can/flexcan: avoid dereferencing clocks twice
-      nucleus/timers: fix the timers situation
-      posix/clock_host_realtime: fix error handling
-      posix: avoid dereferencing user-space address
-      autotools: regenerate
-      sigdebug: add SIGDEBUG_RESCNT_IMBALANCE
-      posix/mutex: handle recursion count completely in user-space
-      posix: fix pthread_once
-      posix/mutex: avoid warnings
-      posix/once: cosmetic fixes
-      build: add .gitignore
-      nucleus: replace do_munmap with vm_munmap
-      nucleus/shadow: avoid tasklist_lock for find_task_by_pid
-      hal/powerpc64: fix compilation with I-pipe patches >= 3.18
-      nucleus/shadow: fix crash with debugs enabled
-      testsuite/cond-torture: increase sleep duration
-      testsuite/mutex-torture: increase sleep duration
-      testsuite/mutex-torture: avoid race-condition
-      nucleus/Kconfig: warn about CONFIG_MIGRATION
-      hal/arm: fix VFP support
-      testsuite/switchtest: detect more FPU errors.
-      x86/fptest: do not use the same value for all the registers
-      switchtest: set the registers before switching mode
-      hal/x86: forbid compilation with Linux 4.0+
-      switchtest: clarify the mode switch
-      x86/fptest: add missing asm constraints
-      switchtest: align kernel-space fpu register values
-      posix/mutex,cond: allow static initializer
-      doc: adapt to different installations of asciidoc and doxygen
-      doc: fix generate-doc script after removal of docbook documentation
-      posix/clock: remove documentation of internal function
-      doc/sched: move sched documentation under nucleus section
-      bump version number and bootstrap
-      hal/arm: update patches
-      hal/blackfin: update I-pipe patches
-      hal/powerpc: update I-pipe patches
-      hal/x86: update I-pipe patches
-      doc: regenerate
-
-Jeffrey Melville (2):
-      posix/doc: Fix sched_get_priority(min|max) doc
-      posix: fix pthread_mutex_timedlock for recursive mutexes.
-
-Jorge Ramirez-Ortiz (2):
-      drivers/analogy: fix detach logic
-      drivers/analogy: remove unnecessary spinlock
-
-Matthew Lindner (1):
-      drivers/can: Properly initialize bittime
-
-Philippe Gerum (14):
-      native: fix user-space interrupt syscalls
-      hal/arm: add specific calibration value for imx6q
-      can/flexcan: fixup for kernel release >= 3.11
-      arm/hal: silence C89 warning
-      nucleus/pipe: care for spurious wakeups waiting for events
-      nucleus: add default calibration value for imx7
-      nucleus: fix calibration return for imx7
-      nucleus/pod: fix missed rescheduling in SMP
-      rtipc/bufp: fix wrong TX timeout
-      hal/generic: add backward wrappers for legacy cpu mask ops
-      scripts/prepare-kernel: allow building over 4.x kernel series
-      ksrc, include: cope with introduction of user_msghdr
-      testsuite/xeno-test-run: requesting /bin/sh is enough
-      cobalt/x86: fix missing early clobber in asm
-
-Stefan Roese (1):
-      hal/arm: Add Zynq v3.14.17 patches
+besides, optimizing the case of high-end does not really make sense
+for Xenomai. We prefer to optimize the case of low-end, even if it
+has a small cost for high-end. We target good worst case, remember?
 
 -- 
 					    Gilles.
