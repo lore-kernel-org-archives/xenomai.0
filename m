@@ -1,11 +1,10 @@
-From: Alex Plits <alex_plits@radwin.com>
-Date: Thu, 4 Aug 2016 06:12:11 +0000
-Message-ID: <AM4PR0601MB2162E2F39CB8D4BD792D2DD88F070@AM4PR0601MB2162.eurprd06.prod.outlook.com>
-Content-Language: en-US
+From: "Vincent Berenz" <vincent.berenz@tuebingen.mpg.de>
+Date: Wed, 03 Aug 2016 12:12:51 +0200
+Message-ID: <web-9034838@tuebingen.mpg.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Page fault on io mapping resulting secondary mode switches
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] tsc not monotonic
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,46 +13,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi,
-
-We wanted to share an issue we were having with the following setup and it'=
-s solution
-Kernel 3.14.43 (Vendor)
-Xenomai 3.0.2
-Cobalt core.
-ARM cortex A7 (SMP) based board.
-
-We have mapped (in numerous ways/APIs) a register space of some device to u=
-ser space using various methods
-For IO mapping -
-mmap
-rtdm_iomap_to_user
-rtdm_mmap_iomem
-etc.
-
-And for unknown at the time reason we have seen page faults on writes to th=
-ese mapping which resulted
-In mode switches no matter what method of mapping APIs we used. It is impor=
-tant to note that mapping the same registrer space in Kernel
-i.e. devm_ioremap_resource for example did not result in page faults.
-
-After some investigation we found this had to do with the actual mapping pe=
-rmissions being read-only on initial mapping to user space and after the pa=
-ge fault handling - each faulted page changed permission to read-write.
-
-The solution to for this was to add L_PTE_DIRTY mask to pgprot for that map=
-ping and in retrospect we found this patch
-https://lkml.org/lkml/2015/9/12/29
-which addressed the issue.
-
-I'm unsure whether this patch found its way to 3.14, I think for Xenomai on=
- ARM this can be very relevant so please consider adding to the mapping flo=
-w.
-
-Thanks,
-Alex Plits.
-
-
-
+SGksCgpBZnRlciB1c2luZyBmb3IgeWVhcnMgeGVub21haSAyLjUuNiBvbiB1YnVudHUgMTIuMDQs
+IHdlIGRlY2lkZWQgdG8gdXBncmFkZSB0byB1YnVudHUgMTQuMDQgYW5kIGEgbmV3ZXIgbWFjaGlu
+ZS4KSSBpbnN0YWxsZWQgeGVub21haSAyLjYuNCBhbmQga2VybmVsIDMuMTQuMzkuClRoZSBpbnN0
+YWxsYXRpb24gYm9vdHMgY29ycmVjdGx5LCB0aGUgbGF0ZW5jeSBpcyBsb3cgYW5kIG91ciBzb2Z0
+d2FyZSBzZWVtcyB0byB3b3JrIG9rLgoKQnV0IHRoZSBzeXN0ZW0gaGFzICJmcmVxdWVuY3kgc3Vy
+Z2UiIChJIGNvdWxkIG5vdCBmaW5kIGJldHRlciB3b3JkaW5nKS4gRm9yIGV4YW1wbGU6CgotIHNv
+bWV0aW1lIHdoZW4gdHlwaW5nIG9uIHRoZSBrZXlib2FyZCwgdGhlIHByZXNzZWQga2V5IGlzIHBy
+aW50ZWQgbWFueSB0aW1lcyAoJ2FhYWFhYWFhJyBpbnN0ZWFkIG9mICdhJykKCi0gJ2dseGdlYXJz
+JyBoYXMgY2hhbmdlIGluIGZyYW1lIHJhdGVzLCB0aGUgZ2VhcnMgY2FuIGJlIHNlZW4gYXMgc29t
+ZXRpbWUgY2hhbmdpbmcgc3BlZWQuIEZvciBleGFtcGxlOgoKLS0tCjExNDEgZnJhbWVzIGluIDUu
+MCBzZWNvbmRzID0gMjI4LjE4NiBGUFMKMTAyNCBmcmFtZXMgaW4gNS4wIHNlY29uZHMgPSAyMDQu
+Nzg3IEZQUwo1MDYgZnJhbWVzIGluIDUuMCBzZWNvbmRzID0gMTAxLjE5NCBGUFMKNDgyIGZyYW1l
+cyBpbiA1LjAgc2Vjb25kcyA9IDk2LjMxNyBGUFMKMTQxNiBmcmFtZXMgaW4gNS4wIHNlY29uZHMg
+PSAyODMuMTgyIEZQUwoyNjE0IGZyYW1lcyBpbiA1LjAgc2Vjb25kcyA9IDUyMS4xMDAgRlBTCjI2
+MTggZnJhbWVzIGluIDUuMCBzZWNvbmRzID0gNTIyLjMxNCBGUFMKMzA3MyBmcmFtZXMgaW4gNS4w
+IHNlY29uZHMgPSA2MTQuNTYyIEZQUwotLS0KCkFsbCB0aGUgdGVzdHMgcnVuIGZpbmUgKGFzIGZh
+ciBhcyBJIGNvdWxkIHRlbGwpIHdpdGggdGhlIG5vdGFibGUgZXhjZXB0aW9uIG9mIHRzYyB3aGlj
+aCBzb21ldGltZXMgKG5vdCBhbHdheXMpIHRlcm1pbmF0ZXMgd2l0aCBzb21ldGhpbmcgbGlrZToK
+Ci0tLQp0c2Mgbm90IG1vbm90b25pYyBhZnRlciA3NDMwNjg3Nzk4IHRpY2tzLCBqdW1wZWQgYmFj
+ayA0OTU2NzY1MCB0aWNrCi0tLQoKSSBjb3VsZCBmaW5kIHRoaXMgaW4gdGhlIHN5c2xvZzoKCi0t
+LS0tLS0KWyAgICAwLjA5MjkzMl0gVFNDIGRlYWRsaW5lIHRpbWVyIGVuYWJsZWQKWyAgICAwLjA5
+Mjk0MV0gUGVyZm9ybWFuY2UgRXZlbnRzOiBQRUJTIGZtdDIrLCAxNi1kZWVwIExCUiwgSGFzd2Vs
+bCBldmVudHMsIGZ1bGwtd2lkdGggY291bnRlcnMsIEludGVsIFBNVSBkcml2ZXIuClsgICAgMC4w
+OTI5NjFdIC4uLiB2ZXJzaW9uOiAgICAgICAgICAgICAgICAzClsgICAgMC4wOTI5NjJdIC4uLiBi
+aXQgd2lkdGg6ICAgICAgICAgICAgICA0OApbICAgIDAuMDkyOTYzXSAuLi4gZ2VuZXJpYyByZWdp
+c3RlcnM6ICAgICAgNApbICAgIDAuMDkyOTY0XSAuLi4gdmFsdWUgbWFzazogICAgICAgICAgICAg
+MDAwMGZmZmZmZmZmZmZmZgpbICAgIDAuMDkyOTY1XSAuLi4gbWF4IHBlcmlvZDogICAgICAgICAg
+ICAgMDAwMGZmZmZmZmZmZmZmZgpbICAgIDAuMDkyOTY1XSAuLi4gZml4ZWQtcHVycG9zZSBldmVu
+dHM6ICAgMwpbICAgIDAuMDkyOTY2XSAuLi4gZXZlbnQgbWFzazogICAgICAgICAgICAgMDAwMDAw
+MDcwMDAwMDAwZgpbICAgIDAuMDk0OTE0XSB4ODY6IEJvb3RpbmcgU01QIGNvbmZpZ3VyYXRpb246
+ClsgICAgMC4wOTQ5MTZdIC4uLi4gbm9kZSAgIzAsIENQVXM6ICAgICAgICAjMQpbICAgIDAuMTA5
+MTUwXSBUU0Mgc3luY2hyb25pemF0aW9uIFtDUFUjMCAtPiBDUFUjMV06ClsgICAgMC4xMDkxNTdd
+IE1lYXN1cmVkIDI1ODAyMzgyIGN5Y2xlcyBUU0Mgd2FycCBiZXR3ZWVuIENQVXMsIHR1cm5pbmcg
+b2ZmIFRTQyBjbG9jay4KWyAgICAwLjEwOTE2MV0gdHNjOiBNYXJraW5nIFRTQyB1bnN0YWJsZSBk
+dWUgdG8gY2hlY2tfdHNjX3N5bmNfc291cmNlIGZhaWxlZAotLS0tLS0tLS0KCkJlc3QKClZpbmNl
+bnQKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0
+YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogY29uZmlnClR5cGU6IGFwcGxpY2F0aW9uL29j
+dGV0LXN0cmVhbQpTaXplOiAxNjIyNjggYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxo
+dHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNjA4MDMv
+MjZiYzJlOTAvYXR0YWNobWVudC5vYmo+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0t
+LS0tLS0tLQpBbiBlbWJlZGRlZCBhbmQgY2hhcnNldC11bnNwZWNpZmllZCB0ZXh0IHdhcyBzY3J1
+YmJlZC4uLgpOYW1lOiBkbWVzZ194ZW5vLnR4dApVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlw
+ZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNjA4MDMvMjZiYzJlOTAvYXR0YWNobWVudC50
+eHQ+Cg==
