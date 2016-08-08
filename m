@@ -1,12 +1,13 @@
-From: "Vincent Berenz" <vincent.berenz@tuebingen.mpg.de>
-Date: Fri, 05 Aug 2016 19:13:13 +0200
-Message-ID: <web-9079189@tuebingen.mpg.de>
-In-Reply-To: <20160804161155.382df26e@md1em3qc>
+Date: Mon, 8 Aug 2016 11:34:21 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20160808113421.5ce17aaa@md1em3qc>
+In-Reply-To: <web-9079189@tuebingen.mpg.de>
 References: <web-9034838@tuebingen.mpg.de> <20160804141744.3adbe573@md1em3qc>
  <web-9059594@tuebingen.mpg.de> <20160804161155.382df26e@md1em3qc>
+ <web-9079189@tuebingen.mpg.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] tsc not monotonic
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,223 +17,338 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
+To: Vincent Berenz <vincent.berenz@tuebingen.mpg.de>
 Cc: xenomai@xenomai.org
 
-CkkgY2hlY2tlZCB0aGUgc3lzbG9nIHdoZW4gYm9vdGluZyBvbiB0aGUgbm9uIHJlYWx0aW1lIGtl
-cm5lbCwgYW5kIGluZGVlZCB0aGUgc2FtZSBtZXNzYWdlcyByZWxhdGVkIHRvIFRTQyBzaG93ZWQg
-dXAuIFlldCwgSSBkbyBub3QgZXhwZXJpZW5jZSBhbnkgb2YgdGhlIGlzc3VlcyBvYnNlcnZlZCBv
-biB0aGUgcGF0Y2hlZCBrZXJuZWwgKGUuZyBnbHhnZWFycyBvciBrZXlib2FyZCkKCkkgcmFuIGxz
-dG9wbyBhbmQgbHNodyBhbmQgdGhlcmUgc2VlbSB0byBiZSAyIHNvY2tldHMgd2l0aCAxMiBjb3Jl
-cyBvbiBlYWNoLgoKCmxzdG9wbwoKLS0tCk1hY2hpbmUgKDEyNkdCKQogIFNvY2tldCBMIzAgKyBM
-MyBMIzAgKDMwTUIpCiAgICBMMiBMIzAgKDI1NktCKSArIEwxZCBMIzAgKDMyS0IpICsgTDFpIEwj
-MCAoMzJLQikgKyBDb3JlIEwjMCArIFBVIEwjMCAoUCMwKQogICAgTDIgTCMxICgyNTZLQikgKyBM
-MWQgTCMxICgzMktCKSArIEwxaSBMIzEgKDMyS0IpICsgQ29yZSBMIzEgKyBQVSBMIzEgKFAjMSkK
-ICAgIEwyIEwjMiAoMjU2S0IpICsgTDFkIEwjMiAoMzJLQikgKyBMMWkgTCMyICgzMktCKSArIENv
-cmUgTCMyICsgUFUgTCMyIChQIzIpCiAgICBMMiBMIzMgKDI1NktCKSArIEwxZCBMIzMgKDMyS0Ip
-ICsgTDFpIEwjMyAoMzJLQikgKyBDb3JlIEwjMyArIFBVIEwjMyAoUCMzKQogICAgTDIgTCM0ICgy
-NTZLQikgKyBMMWQgTCM0ICgzMktCKSArIEwxaSBMIzQgKDMyS0IpICsgQ29yZSBMIzQgKyBQVSBM
-IzQgKFAjNCkKICAgIEwyIEwjNSAoMjU2S0IpICsgTDFkIEwjNSAoMzJLQikgKyBMMWkgTCM1ICgz
-MktCKSArIENvcmUgTCM1ICsgUFUgTCM1IChQIzUpCiAgICBMMiBMIzYgKDI1NktCKSArIEwxZCBM
-IzYgKDMyS0IpICsgTDFpIEwjNiAoMzJLQikgKyBDb3JlIEwjNiArIFBVIEwjNiAoUCM2KQogICAg
-TDIgTCM3ICgyNTZLQikgKyBMMWQgTCM3ICgzMktCKSArIEwxaSBMIzcgKDMyS0IpICsgQ29yZSBM
-IzcgKyBQVSBMIzcgKFAjNykKICAgIEwyIEwjOCAoMjU2S0IpICsgTDFkIEwjOCAoMzJLQikgKyBM
-MWkgTCM4ICgzMktCKSArIENvcmUgTCM4ICsgUFUgTCM4IChQIzgpCiAgICBMMiBMIzkgKDI1NktC
-KSArIEwxZCBMIzkgKDMyS0IpICsgTDFpIEwjOSAoMzJLQikgKyBDb3JlIEwjOSArIFBVIEwjOSAo
-UCM5KQogICAgTDIgTCMxMCAoMjU2S0IpICsgTDFkIEwjMTAgKDMyS0IpICsgTDFpIEwjMTAgKDMy
-S0IpICsgQ29yZSBMIzEwICsgUFUgTCMxMCAoUCMxMCkKICAgIEwyIEwjMTEgKDI1NktCKSArIEwx
-ZCBMIzExICgzMktCKSArIEwxaSBMIzExICgzMktCKSArIENvcmUgTCMxMSArIFBVIEwjMTEgKFAj
-MTEpCiAgU29ja2V0IEwjMSArIEwzIEwjMSAoMzBNQikKICAgIEwyIEwjMTIgKDI1NktCKSArIEwx
-ZCBMIzEyICgzMktCKSArIEwxaSBMIzEyICgzMktCKSArIENvcmUgTCMxMiArIFBVIEwjMTIgKFAj
-MTIpCiAgICBMMiBMIzEzICgyNTZLQikgKyBMMWQgTCMxMyAoMzJLQikgKyBMMWkgTCMxMyAoMzJL
-QikgKyBDb3JlIEwjMTMgKyBQVSBMIzEzIChQIzEzKQogICAgTDIgTCMxNCAoMjU2S0IpICsgTDFk
-IEwjMTQgKDMyS0IpICsgTDFpIEwjMTQgKDMyS0IpICsgQ29yZSBMIzE0ICsgUFUgTCMxNCAoUCMx
-NCkKICAgIEwyIEwjMTUgKDI1NktCKSArIEwxZCBMIzE1ICgzMktCKSArIEwxaSBMIzE1ICgzMktC
-KSArIENvcmUgTCMxNSArIFBVIEwjMTUgKFAjMTUpCiAgICBMMiBMIzE2ICgyNTZLQikgKyBMMWQg
-TCMxNiAoMzJLQikgKyBMMWkgTCMxNiAoMzJLQikgKyBDb3JlIEwjMTYgKyBQVSBMIzE2IChQIzE2
-KQogICAgTDIgTCMxNyAoMjU2S0IpICsgTDFkIEwjMTcgKDMyS0IpICsgTDFpIEwjMTcgKDMyS0Ip
-ICsgQ29yZSBMIzE3ICsgUFUgTCMxNyAoUCMxNykKICAgIEwyIEwjMTggKDI1NktCKSArIEwxZCBM
-IzE4ICgzMktCKSArIEwxaSBMIzE4ICgzMktCKSArIENvcmUgTCMxOCArIFBVIEwjMTggKFAjMTgp
-CiAgICBMMiBMIzE5ICgyNTZLQikgKyBMMWQgTCMxOSAoMzJLQikgKyBMMWkgTCMxOSAoMzJLQikg
-KyBDb3JlIEwjMTkgKyBQVSBMIzE5IChQIzE5KQogICAgTDIgTCMyMCAoMjU2S0IpICsgTDFkIEwj
-MjAgKDMyS0IpICsgTDFpIEwjMjAgKDMyS0IpICsgQ29yZSBMIzIwICsgUFUgTCMyMCAoUCMyMCkK
-ICAgIEwyIEwjMjEgKDI1NktCKSArIEwxZCBMIzIxICgzMktCKSArIEwxaSBMIzIxICgzMktCKSAr
-IENvcmUgTCMyMSArIFBVIEwjMjEgKFAjMjEpCiAgICBMMiBMIzIyICgyNTZLQikgKyBMMWQgTCMy
-MiAoMzJLQikgKyBMMWkgTCMyMiAoMzJLQikgKyBDb3JlIEwjMjIgKyBQVSBMIzIyIChQIzIyKQog
-ICAgTDIgTCMyMyAoMjU2S0IpICsgTDFkIEwjMjMgKDMyS0IpICsgTDFpIEwjMjMgKDMyS0IpICsg
-Q29yZSBMIzIzICsgUFUgTCMyMyAoUCMyMykKLS0tCgoKbHNodyAtY2xhc3MgcHJvY2Vzc29yCgot
-LS0KICAqLWNwdTowICAgICAgICAgICAgICAgICAKICAgICAgIGRlc2NyaXB0aW9uOiBDUFUKICAg
-ICAgIHByb2R1Y3Q6IEludGVsKFIpIFhlb24oUikgQ1BVIEU1LTI2OTAgdjMgQCAyLjYwR0h6CiAg
-ICAgICB2ZW5kb3I6IEludGVsIENvcnAuCiAgICAgICBwaHlzaWNhbCBpZDogMTA2CiAgICAgICBi
-dXMgaW5mbzogY3B1QDAKICAgICAgIHZlcnNpb246IEludGVsKFIpIFhlb24oUikgQ1BVIEU1LTI2
-OTAgdjMgQCAyLjYwR0h6CiAgICAgICBzbG90OiBTT0NLRVQgMQogICAgICAgc2l6ZTogMjYwME1I
-egogICAgICAgY2FwYWNpdHk6IDRHSHoKICAgICAgIHdpZHRoOiA2NCBiaXRzCiAgICAgICBjbG9j
-azogMTAwTUh6CiAgICAgICBjYXBhYmlsaXRpZXM6IHg4Ni02NCBmcHUgZnB1X2V4Y2VwdGlvbiB3
-cCB2bWUgZGUgcHNlIHRzYyBtc3IgcGFlIG1jZSBjeDggYXBpYyBzZXAgbXRyciBwZ2UgbWNhIGNt
-b3YgcGF0IHBzZTM2IGNsZmx1c2ggZHRzIGFjcGkgbW14IGZ4c3Igc3NlIHNzZTIgc3MgaHQgdG0g
-cGJlIHN5c2NhbGwgbnggcGRwZTFnYiByZHRzY3AgY29uc3RhbnRfdHNjIGFyY2hfcGVyZm1vbiBw
-ZWJzIGJ0cyByZXBfZ29vZCBub3BsIHh0b3BvbG9neSBub25zdG9wX3RzYyBhcGVyZm1wZXJmIHBu
-aSBwY2xtdWxxZHEgZHRlczY0IG1vbml0b3IgZHNfY3BsIHZteCBzbXggZXN0IHRtMiBzc3NlMyBm
-bWEgY3gxNiB4dHByIHBkY20gcGNpZCBkY2Egc3NlNF8xIHNzZTRfMiB4MmFwaWMgbW92YmUgcG9w
-Y250IHRzY19kZWFkbGluZV90aW1lciBhZXMgeHNhdmUgYXZ4IGYxNmMgcmRyYW5kIGxhaGZfbG0g
-YWJtIGlkYSBhcmF0IGVwYiB4c2F2ZW9wdCBwbG4gcHRzIGR0aGVybSB0cHJfc2hhZG93IHZubWkg
-ZmxleHByaW9yaXR5IGVwdCB2cGlkIGZzZ3NiYXNlIHRzY19hZGp1c3QgYm1pMSBhdngyIHNtZXAg
-Ym1pMiBlcm1zIGludnBjaWQKICAgICAgIGNvbmZpZ3VyYXRpb246IGNvcmVzPTEyIGVuYWJsZWRj
-b3Jlcz0xMiB0aHJlYWRzPTI0CiAgKi1jcHU6MQogICAgICAgZGVzY3JpcHRpb246IENQVQogICAg
-ICAgcHJvZHVjdDogSW50ZWwoUikgWGVvbihSKSBDUFUgRTUtMjY5MCB2MyBAIDIuNjBHSHoKICAg
-ICAgIHZlbmRvcjogSW50ZWwgQ29ycC4KICAgICAgIHBoeXNpY2FsIGlkOiAxMWEKICAgICAgIGJ1
-cyBpbmZvOiBjcHVAMQogICAgICAgdmVyc2lvbjogSW50ZWwoUikgWGVvbihSKSBDUFUgRTUtMjY5
-MCB2MyBAIDIuNjBHSHoKICAgICAgIHNsb3Q6IFNPQ0tFVCAyCiAgICAgICBzaXplOiAyNjAwTUh6
-CiAgICAgICBjYXBhY2l0eTogNEdIegogICAgICAgd2lkdGg6IDY0IGJpdHMKICAgICAgIGNsb2Nr
-OiAxMDBNSHoKICAgICAgIGNhcGFiaWxpdGllczogeDg2LTY0IGZwdSBmcHVfZXhjZXB0aW9uIHdw
-IHZtZSBkZSBwc2UgdHNjIG1zciBwYWUgbWNlIGN4OCBhcGljIHNlcCBtdHJyIHBnZSBtY2EgY21v
-diBwYXQgcHNlMzYgY2xmbHVzaCBkdHMgYWNwaSBtbXggZnhzciBzc2Ugc3NlMiBzcyBodCB0bSBw
-YmUgc3lzY2FsbCBueCBwZHBlMWdiIHJkdHNjcCBjb25zdGFudF90c2MgYXJjaF9wZXJmbW9uIHBl
-YnMgYnRzIHJlcF9nb29kIG5vcGwgeHRvcG9sb2d5IG5vbnN0b3BfdHNjIGFwZXJmbXBlcmYgcG5p
-IHBjbG11bHFkcSBkdGVzNjQgbW9uaXRvciBkc19jcGwgdm14IHNteCBlc3QgdG0yIHNzc2UzIGZt
-YSBjeDE2IHh0cHIgcGRjbSBwY2lkIGRjYSBzc2U0XzEgc3NlNF8yIHgyYXBpYyBtb3ZiZSBwb3Bj
-bnQgdHNjX2RlYWRsaW5lX3RpbWVyIGFlcyB4c2F2ZSBhdnggZjE2YyByZHJhbmQgbGFoZl9sbSBh
-Ym0gaWRhIGFyYXQgZXBiIHhzYXZlb3B0IHBsbiBwdHMgZHRoZXJtIHRwcl9zaGFkb3cgdm5taSBm
-bGV4cHJpb3JpdHkgZXB0IHZwaWQgZnNnc2Jhc2UgdHNjX2FkanVzdCBibWkxIGF2eDIgc21lcCBi
-bWkyIGVybXMgaW52cGNpZAogICAgICAgY29uZmlndXJhdGlvbjogY29yZXM9MTIgZW5hYmxlZGNv
-cmVzPTEyIHRocmVhZHM9MjQKLS0tCgpUbyBhZGQgdGhlIGtlcm5lbCBwYXJhbWV0ZXIgSSB1cGRh
-dGVkIC9ldGMvZGVmYXVsdC9ncnViIHRvIDoKCi0tLQpHUlVCX0NNRExJTkVfTElOVVhfREVGQVVM
-VD0icXVpZXQgc3BsYXNoIHhlbm9fbnVjbGV1cy54ZW5vbWFpX2dpZD0xMDAxIHhlbm9faGFsLnN1
-cHBvcnRlZF9jcHVzPTB4ZmZmZmZmZmZmZmZmZmZmZCIKLS0tCgpJcyB0aGF0IHRoZSBjb3JyZWN0
-IHdheSB0byBkbyB0aGlzID8KSXMgdGhlcmUgYSB3YXkgdG8gY2hlY2sgdGhpcyB3YXMgZWZmZWN0
-aXZlID8gKEkgYXR0YWNoZWQgdGhlIHN5c2xvZ3MsIGp1c3QgaW4gY2FzZSkuCgpTdHJlc3Npbmcg
-dGhlIGtlcm5lbCByZXN1bHRlZCBpbiA6CgotLS0KWyAgNTE1LjQyMDI3NV0gQnJva2UgYWZmaW5p
-dHkgZm9yIGlycSA5OApbICA1MTUuNDIxMzI5XSBrdm06IGRpc2FibGluZyB2aXJ0dWFsaXphdGlv
-biBvbiBDUFUxClsgIDUxNS40MjQxODRdIHNtcGJvb3Q6IENQVSAxIGlzIG5vdyBvZmZsaW5lClsg
-IDUzMC4wMjExMThdIHg4NjogQm9vdGluZyBTTVAgY29uZmlndXJhdGlvbjoKWyAgNTMwLjAyMTEy
-MV0gc21wYm9vdDogQm9vdGluZyBOb2RlIDAgUHJvY2Vzc29yIDEgQVBJQyAweDIKWyAgNTMwLjAz
-NzIwMV0ga3ZtOiBlbmFibGluZyB2aXJ0dWFsaXphdGlvbiBvbiBDUFUxCi0tLQoKSW4gY2FzZSB0
-aGlzIGhhcmR3YXJlIGlzIG5vdCBiZXN0IGZvciB4ZW5vbWFpOgpXZSBzZWxlY3RlZCB0aGlzIGNv
-bmZpZ3VyYXRpb24gZm9yIHRoZSBvbmx5IHJlYXNvbiBpdCBoYXMgbG90cyBvZiBwY2ktZXhwcmVz
-cyBzbG90cy4gV2Ugd291bGQgYmUgaGFwcHkgdG8gc3dpdGNoIHRvIGFueSBvdGhlciBwcmVmZXJy
-ZWQgc29sdXRpb24uIEp1c3QgaW4gY2FzZSA6IHdvdWxkIHlvdSBoYXZlIGJ5IGNoYW5jZSBzb21l
-IHJlY29tbWVuZGF0aW9uID8KCgpIYXZlIGEgbmljZSB3ZWVrIGVuZCAhCgpWaW5jZW50CgoKCgoK
-Ck9uIFRodSwgNCBBdWcgMjAxNiAxNjoxMTo1NSArMDIwMAogSGVubmluZyBTY2hpbGQgPGhlbm5p
-bmcuc2NoaWxkQHNpZW1lbnMuY29tPiB3cm90ZToKPiBBbSBUaHUsIDQgQXVnIDIwMTYgMTU6MjM6
-MzQgKzAyMDAKPiBzY2hyaWViIFZpbmNlbnQgQmVyZW56IDx2aW5jZW50LmJlcmVuekB0dWViaW5n
-ZW4ubXBnLmRlPjoKPiAKPiA+IEhpLAo+ID4gCj4gPiBNYW55IHRoYW5rcyBmb3IgdGhlIGFuc3dl
-ci4KPiA+IAo+ID4gV2UgdXNlIG5ldyBoYXJkd2FyZS4gSSBhbSB3b3JraW5nIG9uIGEgcmVjZW50
-IGRlbGwgcHJlY2lzaW9uIFQ3OTEwLiBJCj4gPiBkaWQgbm90IHRyeSB0byB1cGRhdGUgb3VyIG9s
-ZGVyIGhhcmR3YXJlIChzdGlsbCBpbiB1c2UpLgo+ID4gCj4gPiBJbmZvIG9uIHRoZSBDUFUgb2Yg
-dGhlIG5ldyBtYWNoaW5lOgo+ID4gCj4gPiAtLS0tLQo+ID4gcHJvY2Vzc29yCTogMjMKPiA+IHZl
-bmRvcl9pZAk6IEdlbnVpbmVJbnRlbAo+ID4gY3B1IGZhbWlseQk6IDYKPiA+IG1vZGVsCQk6IDYz
-Cj4gPiBtb2RlbCBuYW1lCTogSW50ZWwoUikgWGVvbihSKSBDUFUgRTUtMjY5MCB2MyBAIDIuNjBH
-SHoKPiA+IHN0ZXBwaW5nCTogMgo+ID4gbWljcm9jb2RlCTogMHgzNgo+ID4gY3B1IE1IegkJOiAy
-NTk0LjAzNwo+ID4gY2FjaGUgc2l6ZQk6IDMwNzIwIEtCCj4gPiBwaHlzaWNhbCBpZAk6IDEKPiA+
-IHNpYmxpbmdzCTogMTIKPiA+IGNvcmUgaWQJCTogMTMKPiA+IGNwdSBjb3Jlcwk6IDEyCj4gPiBh
-cGljaWQJCTogNTgKPiA+IGluaXRpYWwgYXBpY2lkCTogNTgKPiA+IGZwdQkJOiB5ZXMKPiA+IGZw
-dV9leGNlcHRpb24JOiB5ZXMKPiA+IGNwdWlkIGxldmVsCTogMTUKPiA+IHdwCQk6IHllcwo+ID4g
-ZmxhZ3MJCTogZnB1IHZtZSBkZSBwc2UgdHNjIG1zciBwYWUgbWNlIGN4OCBhcGljIHNlcAo+ID4g
-bXRyciBwZ2UgbWNhIGNtb3YgcGF0IHBzZTM2IGNsZmx1c2ggZHRzIGFjcGkgbW14IGZ4c3Igc3Nl
-IHNzZTIgc3MgaHQKPiA+IHRtIHBiZSBzeXNjYWxsIG54IHBkcGUxZ2IgcmR0c2NwIGxtIGNvbnN0
-YW50X3RzYyBhcmNoX3BlcmZtb24gcGVicwo+ID4gYnRzIHJlcF9nb29kIG5vcGwgeHRvcG9sb2d5
-IG5vbnN0b3BfdHNjIGFwZXJmbXBlcmYgcG5pIHBjbG11bHFkcQo+ID4gZHRlczY0IG1vbml0b3Ig
-ZHNfY3BsIHZteCBzbXggZXN0IHRtMiBzc3NlMyBmbWEgY3gxNiB4dHByIHBkY20gcGNpZAo+ID4g
-ZGNhIHNzZTRfMSBzc2U0XzIgeDJhcGljIG1vdmJlIHBvcGNudCB0c2NfZGVhZGxpbmVfdGltZXIg
-YWVzIHhzYXZlCj4gPiBhdnggZjE2YyByZHJhbmQgbGFoZl9sbSBhYm0gaWRhIGFyYXQgZXBiIHhz
-YXZlb3B0IHBsbiBwdHMgZHRoZXJtCj4gPiB0cHJfc2hhZG93IHZubWkgZmxleHByaW9yaXR5IGVw
-dCB2cGlkIGZzZ3NiYXNlIHRzY19hZGp1c3QgYm1pMSBhdngyCj4gPiBzbWVwIGJtaTIgZXJtcyBp
-bnZwY2lkIGJvZ29taXBzCTogNTE4OS43MCBjbGZsdXNoCj4gPiBzaXplCTogNjQgY2FjaGVfYWxp
-Z25tZW50CTogNjQgYWRkcmVzcyBzaXplcwk6Cj4gPiA0NiBiaXRzIHBoeXNpY2FsLCA0OCBiaXRz
-IHZpcnR1YWwgcG93ZXIgbWFuYWdlbWVudDogLS0tLS0KPiA+IAo+ID4gVGhlcmUgYXJlIDI0IHBy
-b2Nlc3NvcnMgYW5kIEkgaGFkIHRvIHVwZGF0ZSB0aGUgY29uZmlnIGZpbGU6Cj4gCj4gVGhhdCBp
-cyBhIGJpZyBtYWNoaW5lLiBBcmUgY3B1MCBhbmQgY3B1MSBvbiBkaWZmZXJlbnQgc29ja2V0cz8g
-KGxzdG9wbykKPiBMaW51eCBkZXRlY3RzIGEgcHJvYmxlbSB3aXRoIHRoZSBUU0NzIG9mIHRoZSB0
-d28gY29yZXMgbm90IGJlZWluZyBpbgo+IHN5bmMsIHRoYXQgc2hvdWxkIGJlIHVucmVsYXRlZCB0
-byBYZW5vbWFpIGFuZCBzaG91bGQgYWxzbyBoYXBwZW4gb24KPiB5b3VyIERpc3Ryby1LZXJuZWwu
-Cj4gCj4gWW91IGNhbiBzdHJlc3MgdGhlIExpbnV4LUtlcm5lbCBjb2RlIHRoYXQgZ2VuZXJhdGVk
-IHRoYXQgbWVzc2FnZSB3aXRoCj4gb2ZmbGluaW5nL29ubGluaW5nIHRoZSBDUFUuCj4gCj4gRm9y
-IHlvdXIgY2FzZSAiVFNDIHN5bmNocm9uaXphdGlvbiBbQ1BVIzAgLT4gQ1BVIzFdIiB5b3Ugd2Fu
-dCB0bwo+IG9mZmxpbmUgQ1BVMSBhbmQgb25saW5lIGl0IGZyb20gQ1BVMC4KPiAKPiAjIG1ha2Ug
-c3VyZSBvbmxpbmUgY29tZXMgZnJvbSBDUFUwCj4gdGFza3NldCAweDEgYmFzaAo+ICMgb2ZmbGlu
-ZSBDUFUxCj4gZWNobyAwID4gIC9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdTEvb25saW5lCj4g
-IyBvbmxpbmUgQ1BVMQo+IGVjaG8gMSA+ICAvc3lzL2RldmljZXMvc3lzdGVtL2NwdS9jcHUxL29u
-bGluZQo+IAo+IERvaW5nIHRoYXQgb24gYSB4ZW5vbWFpIGVuYWJsZWQga2VybmVsIHlvdSB3aWxs
-IGhhdmUgdG8gZXhjbHVkZSB0aGUgQ1BVCj4gaW4gcXVlc3Rpb24gZnJvbSB4ZW5vbWFpLiBJbiB5
-b3VyIGNhc2UgYWRkIHRoZSBmb2xsb3dpbmcga2VybmVsCj4gcGFyYW1ldGVyICJ4ZW5vX2hhbC5z
-dXBwb3J0ZWRfY3B1cz0weGZmZmZmZmZmZmZmZmZmZmQiLgo+IAo+IEkgYW0gZ3Vlc3NpbmcgeW91
-IHdpbGwgYmUgYWJsZSB0byByZXByb2R1Y2UgdGhpcyAKPiAKPiA+ID4gPiBbICAgIDAuMTA5MTUw
-XSBUU0Mgc3luY2hyb25pemF0aW9uIFtDUFUjMCAtPiBDUFUjMV06Cj4gPiA+ID4gWyAgICAwLjEw
-OTE1N10gTWVhc3VyZWQgMjU4MDIzODIgY3ljbGVzIFRTQyB3YXJwIGJldHdlZW4gQ1BVcywKPiA+
-ID4gPiB0dXJuaW5nIG9mZiBUU0MgY2xvY2suIFsgICAgMC4xMDkxNjFdIHRzYzogTWFya2luZyBU
-U0MgdW5zdGFibGUKPiAKPiBvbiBhIHhlbm9tYWkga2VybmVsIGFuZCBhIHJlZ3VsYXIga2VybmVs
-LiBJIHdvdWxkIGJlIGludGVyZXN0ZWQgaW4gdGhlCj4gcmVzdWx0cy4KPiBJbiB0aGUgd29yc3Qg
-Y2FzZSB0aGUgVFNDIG9mIHlvdXIgbWFjaGluZSBjYW4gaW5kZWVkIG5vdCBiZSB0cnVzdGVkLgo+
-IAo+ID4gLS0tCj4gPiBDT05GSUdfWEVOT19PUFRfUElQRV9OUkRFVj0zMgo+ID4gQ09ORklHX1hF
-Tk9fT1BUX1JFR0lTVFJZX05SU0xPVFM9MTAyNAo+ID4gQ09ORklHX1hFTk9fT1BUX1NZU19IRUFQ
-U1o9MzI3NjgKPiA+IENPTkZJR19YRU5PX09QVF9TWVNfU1RBQ0tQT09MU1o9NDA5Ngo+ID4gLS0t
-Cj4gPiAKPiA+IEJlc3QKPiA+IAo+ID4gVmluY2VudAo+ID4gCj4gPiBPbiBUaHUsIDQgQXVnIDIw
-MTYgMTQ6MTc6NDQgKzAyMDAKPiA+ICBIZW5uaW5nIFNjaGlsZCA8aGVubmluZy5zY2hpbGRAc2ll
-bWVucy5jb20+IHdyb3RlOgo+ID4gPiBBbSBXZWQsIDMgQXVnIDIwMTYgMTI6MTI6NTEgKzAyMDAK
-PiA+ID4gc2NocmllYiBWaW5jZW50IEJlcmVueiA8dmluY2VudC5iZXJlbnpAdHVlYmluZ2VuLm1w
-Zy5kZT46Cj4gPiA+ICAgCj4gPiA+ID4gSGksCj4gPiA+ID4gCj4gPiA+ID4gQWZ0ZXIgdXNpbmcg
-Zm9yIHllYXJzIHhlbm9tYWkgMi41LjYgb24gdWJ1bnR1IDEyLjA0LCB3ZSBkZWNpZGVkIHRvCj4g
-PiA+ID4gdXBncmFkZSB0byB1YnVudHUgMTQuMDQgYW5kIGEgbmV3ZXIgbWFjaGluZS4gSSBpbnN0
-YWxsZWQgeGVub21haQo+ID4gPiA+IDIuNi40IGFuZCBrZXJuZWwgMy4xNC4zOS4gVGhlIGluc3Rh
-bGxhdGlvbiBib290cyBjb3JyZWN0bHksIHRoZQo+ID4gPiA+IGxhdGVuY3kgaXMgbG93IGFuZCBv
-dXIgc29mdHdhcmUgc2VlbXMgdG8gd29yayBvay4KPiA+ID4gPiAKPiA+ID4gPiBCdXQgdGhlIHN5
-c3RlbSBoYXMgImZyZXF1ZW5jeSBzdXJnZSIgKEkgY291bGQgbm90IGZpbmQgYmV0dGVyCj4gPiA+
-ID4gd29yZGluZykuIEZvciBleGFtcGxlOgo+ID4gPiA+IAo+ID4gPiA+IC0gc29tZXRpbWUgd2hl
-biB0eXBpbmcgb24gdGhlIGtleWJvYXJkLCB0aGUgcHJlc3NlZCBrZXkgaXMgcHJpbnRlZAo+ID4g
-PiA+IG1hbnkgdGltZXMgKCdhYWFhYWFhYScgaW5zdGVhZCBvZiAnYScpCj4gPiA+ID4gCj4gPiA+
-ID4gLSAnZ2x4Z2VhcnMnIGhhcyBjaGFuZ2UgaW4gZnJhbWUgcmF0ZXMsIHRoZSBnZWFycyBjYW4g
-YmUgc2VlbiBhcwo+ID4gPiA+IHNvbWV0aW1lIGNoYW5naW5nIHNwZWVkLiBGb3IgZXhhbXBsZToK
-PiA+ID4gPiAKPiA+ID4gPiAtLS0KPiA+ID4gPiAxMTQxIGZyYW1lcyBpbiA1LjAgc2Vjb25kcyA9
-IDIyOC4xODYgRlBTCj4gPiA+ID4gMTAyNCBmcmFtZXMgaW4gNS4wIHNlY29uZHMgPSAyMDQuNzg3
-IEZQUwo+ID4gPiA+IDUwNiBmcmFtZXMgaW4gNS4wIHNlY29uZHMgPSAxMDEuMTk0IEZQUwo+ID4g
-PiA+IDQ4MiBmcmFtZXMgaW4gNS4wIHNlY29uZHMgPSA5Ni4zMTcgRlBTCj4gPiA+ID4gMTQxNiBm
-cmFtZXMgaW4gNS4wIHNlY29uZHMgPSAyODMuMTgyIEZQUwo+ID4gPiA+IDI2MTQgZnJhbWVzIGlu
-IDUuMCBzZWNvbmRzID0gNTIxLjEwMCBGUFMKPiA+ID4gPiAyNjE4IGZyYW1lcyBpbiA1LjAgc2Vj
-b25kcyA9IDUyMi4zMTQgRlBTCj4gPiA+ID4gMzA3MyBmcmFtZXMgaW4gNS4wIHNlY29uZHMgPSA2
-MTQuNTYyIEZQUwo+ID4gPiA+IC0tLQo+ID4gPiA+IAo+ID4gPiA+IEFsbCB0aGUgdGVzdHMgcnVu
-IGZpbmUgKGFzIGZhciBhcyBJIGNvdWxkIHRlbGwpIHdpdGggdGhlIG5vdGFibGUKPiA+ID4gPiBl
-eGNlcHRpb24gb2YgdHNjIHdoaWNoIHNvbWV0aW1lcyAobm90IGFsd2F5cykgdGVybWluYXRlcyB3
-aXRoCj4gPiA+ID4gc29tZXRoaW5nIGxpa2U6Cj4gPiA+ID4gCj4gPiA+ID4gLS0tCj4gPiA+ID4g
-dHNjIG5vdCBtb25vdG9uaWMgYWZ0ZXIgNzQzMDY4Nzc5OCB0aWNrcywganVtcGVkIGJhY2sgNDk1
-Njc2NTAKPiA+ID4gPiB0aWNrIC0tLQo+ID4gPiA+IAo+ID4gPiA+IEkgY291bGQgZmluZCB0aGlz
-IGluIHRoZSBzeXNsb2c6Cj4gPiA+ID4gCj4gPiA+ID4gLS0tLS0tLQo+ID4gPiA+IFsgICAgMC4w
-OTI5MzJdIFRTQyBkZWFkbGluZSB0aW1lciBlbmFibGVkCj4gPiA+ID4gWyAgICAwLjA5Mjk0MV0g
-UGVyZm9ybWFuY2UgRXZlbnRzOiBQRUJTIGZtdDIrLCAxNi1kZWVwIExCUiwKPiA+ID4gPiBIYXN3
-ZWxsIGV2ZW50cywgZnVsbC13aWR0aCBjb3VudGVycywgSW50ZWwgUE1VIGRyaXZlci4KPiA+ID4g
-PiBbICAgIDAuMDkyOTYxXSAuLi4gdmVyc2lvbjogICAgICAgICAgICAgICAgMyBbICAgIDAuMDky
-OTYyXSAuLi4KPiA+ID4gPiBiaXQgd2lkdGg6IDQ4IFsgICAgMC4wOTI5NjNdIC4uLiBnZW5lcmlj
-IHJlZ2lzdGVyczogICAgICA0Cj4gPiA+ID4gWyAgICAwLjA5Mjk2NF0gLi4uIHZhbHVlIG1hc2s6
-ICAgICAgICAgICAgIDAwMDBmZmZmZmZmZmZmZmYKPiA+ID4gPiBbICAgIDAuMDkyOTY1XSAuLi4g
-bWF4IHBlcmlvZDogICAgICAgICAgICAgMDAwMGZmZmZmZmZmZmZmZgo+ID4gPiA+IFsgICAgMC4w
-OTI5NjVdIC4uLiBmaXhlZC1wdXJwb3NlIGV2ZW50czogICAzCj4gPiA+ID4gWyAgICAwLjA5Mjk2
-Nl0gLi4uIGV2ZW50IG1hc2s6ICAgICAgICAgICAgIDAwMDAwMDA3MDAwMDAwMGYKPiA+ID4gPiBb
-ICAgIDAuMDk0OTE0XSB4ODY6IEJvb3RpbmcgU01QIGNvbmZpZ3VyYXRpb246Cj4gPiA+ID4gWyAg
-ICAwLjA5NDkxNl0gLi4uLiBub2RlICAjMCwgQ1BVczogICAgICAgICMxCj4gPiA+ID4gWyAgICAw
-LjEwOTE1MF0gVFNDIHN5bmNocm9uaXphdGlvbiBbQ1BVIzAgLT4gQ1BVIzFdOgo+ID4gPiA+IFsg
-ICAgMC4xMDkxNTddIE1lYXN1cmVkIDI1ODAyMzgyIGN5Y2xlcyBUU0Mgd2FycCBiZXR3ZWVuIENQ
-VXMsCj4gPiA+ID4gdHVybmluZyBvZmYgVFNDIGNsb2NrLiBbICAgIDAuMTA5MTYxXSB0c2M6IE1h
-cmtpbmcgVFNDIHVuc3RhYmxlCj4gPiA+ID4gZHVlIHRvIGNoZWNrX3RzY19zeW5jX3NvdXJjZSBm
-YWlsZWQgLS0tLS0tLS0tICAKPiA+ID4gCj4gPiA+IEkgaGF2ZSBzZWVuIHRoaXMgbWVzc2FnZSBi
-ZWZvcmUsIGJ1dCB3aXRoIHNtYWxsZXIgbnVtYmVycy4KPiA+ID4gCj4gPiA+IEkgYXNzdW1lIHlv
-dSBoYXZlIG5vdCBjaGFuZ2VkIHRoZSBIYXJkd2FyZSwgd2hpY2ggdmVyc2lvbnMgb2YKPiA+ID4g
-WGVub21haSBhbmQgdGhlIEtlcm5lbCBkaWQgeW91IHVzZSBiZWZvcmU/IFRyeWluZyB0byBmaW5k
-IG91dAo+ID4gPiB3aGV0aGVyIHRoZXNlIGNoZWNrcyBkaWQgbm90IHRyaWdnZXIgYmVmb3JlIGJl
-Y2F1c2UgdGhleSBkaWQgbm90Cj4gPiA+IGV4aXN0IG9yIHdoZXJlIGRpZmZlcmVudCBpbiB5b3Vy
-IG9sZCBzZXR1cC4KPiA+ID4gICAKPiA+ID4gPiBCZXN0Cj4gPiA+ID4gCj4gPiA+ID4gVmluY2Vu
-dAo+ID4gPiA+IC0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQo+ID4gPiA+
-IEEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KPiA+ID4gPiBOYW1lOiBjb25m
-aWcKPiA+ID4gPiBUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KPiA+ID4gPiBTaXplOiAx
-NjIyNjggYnl0ZXMKPiA+ID4gPiBEZXNjOiBub3QgYXZhaWxhYmxlCj4gPiA+ID4gVVJMOgo+ID4g
-PiA+IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAx
-NjA4MDMvMjZiYzJlOTAvYXR0YWNobWVudC5vYmo+Cj4gPiA+ID4gLS0tLS0tLS0tLS0tLS0gbmV4
-dCBwYXJ0IC0tLS0tLS0tLS0tLS0tIEFuIGVtYmVkZGVkIGFuZAo+ID4gPiA+IGNoYXJzZXQtdW5z
-cGVjaWZpZWQgdGV4dCB3YXMgc2NydWJiZWQuLi4gTmFtZTogZG1lc2dfeGVuby50eHQKPiA+ID4g
-PiBVUkw6Cj4gPiA+ID4gPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRh
-Y2htZW50cy8yMDE2MDgwMy8yNmJjMmU5MC9hdHRhY2htZW50LnR4dD4KPiA+ID4gPiBfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXyBYZW5vbWFpIG1haWxpbmcK
-PiA+ID4gPiBsaXN0IFhlbm9tYWlAeGVub21haS5vcmcKPiA+ID4gPiBodHRwczovL3hlbm9tYWku
-b3JnL21haWxtYW4vbGlzdGluZm8veGVub21haSAgCj4gPiA+ICAgCj4gPiAKPiAKCi0tLS0tLS0t
-LS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBbiBlbWJlZGRlZCBhbmQgY2hhcnNldC11
-bnNwZWNpZmllZCB0ZXh0IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBkbWVzZ194ZW5vLnR4dApVUkw6
-IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNjA4
-MDUvMDdkZjMzYjIvYXR0YWNobWVudC50eHQ+Cg==
+Am Fri, 5 Aug 2016 19:13:13 +0200
+schrieb Vincent Berenz <vincent.berenz@tuebingen.mpg.de>:
+
+> I checked the syslog when booting on the non realtime kernel, and
+> indeed the same messages related to TSC showed up. Yet, I do not
+> experience any of the issues observed on the patched kernel (e.g
+> glxgears or keyboard)
+> 
+> I ran lstopo and lshw and there seem to be 2 sockets with 12 cores on
+> each.
+> 
+
+I have seen this several times across sockets, but in your case the two
+CPUs are on the same socket. And i have a 32 core XEON that also fails
+the TSC test between 0 and 1 on the same socket.
+
+> lstopo
+> 
+> ---
+> Machine (126GB)
+>   Socket L#0 + L3 L#0 (30MB)
+>     L2 L#0 (256KB) + L1d L#0 (32KB) + L1i L#0 (32KB) + Core L#0 + PU
+> L#0 (P#0) L2 L#1 (256KB) + L1d L#1 (32KB) + L1i L#1 (32KB) + Core L#1
+> + PU L#1 (P#1) L2 L#2 (256KB) + L1d L#2 (32KB) + L1i L#2 (32KB) +
+> Core L#2 + PU L#2 (P#2) L2 L#3 (256KB) + L1d L#3 (32KB) + L1i L#3
+> (32KB) + Core L#3 + PU L#3 (P#3) L2 L#4 (256KB) + L1d L#4 (32KB) +
+> L1i L#4 (32KB) + Core L#4 + PU L#4 (P#4) L2 L#5 (256KB) + L1d L#5
+> (32KB) + L1i L#5 (32KB) + Core L#5 + PU L#5 (P#5) L2 L#6 (256KB) +
+> L1d L#6 (32KB) + L1i L#6 (32KB) + Core L#6 + PU L#6 (P#6) L2 L#7
+> (256KB) + L1d L#7 (32KB) + L1i L#7 (32KB) + Core L#7 + PU L#7 (P#7)
+> L2 L#8 (256KB) + L1d L#8 (32KB) + L1i L#8 (32KB) + Core L#8 + PU L#8
+> (P#8) L2 L#9 (256KB) + L1d L#9 (32KB) + L1i L#9 (32KB) + Core L#9 +
+> PU L#9 (P#9) L2 L#10 (256KB) + L1d L#10 (32KB) + L1i L#10 (32KB) +
+> Core L#10 + PU L#10 (P#10) L2 L#11 (256KB) + L1d L#11 (32KB) + L1i
+> L#11 (32KB) + Core L#11 + PU L#11 (P#11) Socket L#1 + L3 L#1 (30MB)
+> L2 L#12 (256KB) + L1d L#12 (32KB) + L1i L#12 (32KB) + Core L#12 + PU
+> L#12 (P#12) L2 L#13 (256KB) + L1d L#13 (32KB) + L1i L#13 (32KB) +
+> Core L#13 + PU L#13 (P#13) L2 L#14 (256KB) + L1d L#14 (32KB) + L1i
+> L#14 (32KB) + Core L#14 + PU L#14 (P#14) L2 L#15 (256KB) + L1d L#15
+> (32KB) + L1i L#15 (32KB) + Core L#15 + PU L#15 (P#15) L2 L#16 (256KB)
+> + L1d L#16 (32KB) + L1i L#16 (32KB) + Core L#16 + PU L#16 (P#16) L2
+> L#17 (256KB) + L1d L#17 (32KB) + L1i L#17 (32KB) + Core L#17 + PU
+> L#17 (P#17) L2 L#18 (256KB) + L1d L#18 (32KB) + L1i L#18 (32KB) +
+> Core L#18 + PU L#18 (P#18) L2 L#19 (256KB) + L1d L#19 (32KB) + L1i
+> L#19 (32KB) + Core L#19 + PU L#19 (P#19) L2 L#20 (256KB) + L1d L#20
+> (32KB) + L1i L#20 (32KB) + Core L#20 + PU L#20 (P#20) L2 L#21 (256KB)
+> + L1d L#21 (32KB) + L1i L#21 (32KB) + Core L#21 + PU L#21 (P#21) L2
+> L#22 (256KB) + L1d L#22 (32KB) + L1i L#22 (32KB) + Core L#22 + PU
+> L#22 (P#22) L2 L#23 (256KB) + L1d L#23 (32KB) + L1i L#23 (32KB) +
+> Core L#23 + PU L#23 (P#23) ---
+> 
+> 
+> lshw -class processor
+> 
+> ---
+>   *-cpu:0                 
+>        description: CPU
+>        product: Intel(R) Xeon(R) CPU E5-2690 v3 @ 2.60GHz
+>        vendor: Intel Corp.
+>        physical id: 106
+>        bus info: cpu@0
+>        version: Intel(R) Xeon(R) CPU E5-2690 v3 @ 2.60GHz
+>        slot: SOCKET 1
+>        size: 2600MHz
+>        capacity: 4GHz
+>        width: 64 bits
+>        clock: 100MHz
+>        capabilities: x86-64 fpu fpu_exception wp vme de pse tsc msr
+> pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx
+> fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp constant_tsc
+> arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf
+> pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16
+> xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt
+> tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm ida arat epb
+> xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid
+> fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid configuration:
+> cores=12 enabledcores=12 threads=24 *-cpu:1 description: CPU product:
+> Intel(R) Xeon(R) CPU E5-2690 v3 @ 2.60GHz vendor: Intel Corp.
+> physical id: 11a bus info: cpu@1 version: Intel(R) Xeon(R) CPU
+> E5-2690 v3 @ 2.60GHz slot: SOCKET 2 size: 2600MHz capacity: 4GHz
+> width: 64 bits clock: 100MHz
+>        capabilities: x86-64 fpu fpu_exception wp vme de pse tsc msr
+> pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx
+> fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp constant_tsc
+> arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf
+> pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16
+> xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt
+> tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm ida arat epb
+> xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid
+> fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid configuration:
+> cores=12 enabledcores=12 threads=24 ---
+> 
+> To add the kernel parameter I updated /etc/default/grub to :
+> 
+> ---
+> GRUB_CMDLINE_LINUX_DEFAULT="quiet splash
+> xeno_nucleus.xenomai_gid=1001
+> xeno_hal.supported_cpus=0xfffffffffffffffd" ---
+> 
+> Is that the correct way to do this ?
+> Is there a way to check this was effective ? (I attached the syslogs,
+> just in case).
+> 
+> Stressing the kernel resulted in :
+> 
+> ---
+> [  515.420275] Broke affinity for irq 98
+> [  515.421329] kvm: disabling virtualization on CPU1
+> [  515.424184] smpboot: CPU 1 is now offline
+> [  530.021118] x86: Booting SMP configuration:
+> [  530.021121] smpboot: Booting Node 0 Processor 1 APIC 0x2
+> [  530.037201] kvm: enabling virtualization on CPU1
+> ---
+
+Sorry, i should have explained that in more detail. The systems i have
+seen the problem on do not always fail the TSC sync test. So the idea is
+to hotplug a CPU to not have to reboot all the time. If any CPU pair
+fails the test during boot you will not be able to do anything with cpu
+hotplugging, because the TSC will be marked unstable already.
+
+I guess in your case the TSC tests fails all the time on 0 -> 1. So you
+do not need the hotplugging to try and reproduce it.
+
+There is a switch that tells Linux to skip the test and assume the tsc
+was stable. "tsc=reliable"
+What is the behaviour if you use that? Both in regular Linux and in
+the patched kernel. The problem with this guy is that it skips a test
+very relevant to Xenomai operation later on.
+
+> In case this hardware is not best for xenomai:
+> We selected this configuration for the only reason it has lots of
+> pci-express slots. We would be happy to switch to any other preferred
+> solution. Just in case : would you have by chance some
+> recommendation ?
+
+I do not have a recommendation, but you could try different BIOS
+versions for that machine. (up- or downgrade)
+ 
+> 
+> Have a nice week end !
+> 
+> Vincent
+> 
+> 
+> 
+> 
+> 
+> 
+> On Thu, 4 Aug 2016 16:11:55 +0200
+>  Henning Schild <henning.schild@siemens.com> wrote:
+> > Am Thu, 4 Aug 2016 15:23:34 +0200
+> > schrieb Vincent Berenz <vincent.berenz@tuebingen.mpg.de>:
+> >   
+> > > Hi,
+> > > 
+> > > Many thanks for the answer.
+> > > 
+> > > We use new hardware. I am working on a recent dell precision
+> > > T7910. I did not try to update our older hardware (still in use).
+> > > 
+> > > Info on the CPU of the new machine:
+> > > 
+> > > -----
+> > > processor	: 23
+> > > vendor_id	: GenuineIntel
+> > > cpu family	: 6
+> > > model		: 63
+> > > model name	: Intel(R) Xeon(R) CPU E5-2690 v3 @ 2.60GHz
+> > > stepping	: 2
+> > > microcode	: 0x36
+> > > cpu MHz		: 2594.037
+> > > cache size	: 30720 KB
+> > > physical id	: 1
+> > > siblings	: 12
+> > > core id		: 13
+> > > cpu cores	: 12
+> > > apicid		: 58
+> > > initial apicid	: 58
+> > > fpu		: yes
+> > > fpu_exception	: yes
+> > > cpuid level	: 15
+> > > wp		: yes
+> > > flags		: fpu vme de pse tsc msr pae mce cx8 apic sep
+> > > mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss
+> > > ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon
+> > > pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni
+> > > pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16
+> > > xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt
+> > > tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm ida arat
+> > > epb xsaveopt pln pts dtherm tpr_shadow vnmi flexpriority ept vpid
+> > > fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid
+> > > bogomips	: 5189.70 clflush size	: 64
+> > > cache_alignment	: 64 address sizes	: 46 bits
+> > > physical, 48 bits virtual power management: -----
+> > > 
+> > > There are 24 processors and I had to update the config file:  
+> > 
+> > That is a big machine. Are cpu0 and cpu1 on different sockets?
+> > (lstopo) Linux detects a problem with the TSCs of the two cores not
+> > beeing in sync, that should be unrelated to Xenomai and should also
+> > happen on your Distro-Kernel.
+> > 
+> > You can stress the Linux-Kernel code that generated that message
+> > with offlining/onlining the CPU.
+> > 
+> > For your case "TSC synchronization [CPU#0 -> CPU#1]" you want to
+> > offline CPU1 and online it from CPU0.
+> > 
+> > # make sure online comes from CPU0
+> > taskset 0x1 bash
+> > # offline CPU1
+> > echo 0 >  /sys/devices/system/cpu/cpu1/online
+> > # online CPU1
+> > echo 1 >  /sys/devices/system/cpu/cpu1/online
+> > 
+> > Doing that on a xenomai enabled kernel you will have to exclude the
+> > CPU in question from xenomai. In your case add the following kernel
+> > parameter "xeno_hal.supported_cpus=0xfffffffffffffffd".
+> > 
+> > I am guessing you will be able to reproduce this 
+> >   
+> > > > > [    0.109150] TSC synchronization [CPU#0 -> CPU#1]:
+> > > > > [    0.109157] Measured 25802382 cycles TSC warp between CPUs,
+> > > > > turning off TSC clock. [    0.109161] tsc: Marking TSC
+> > > > > unstable  
+> > 
+> > on a xenomai kernel and a regular kernel. I would be interested in
+> > the results.
+> > In the worst case the TSC of your machine can indeed not be trusted.
+> >   
+> > > ---
+> > > CONFIG_XENO_OPT_PIPE_NRDEV=32
+> > > CONFIG_XENO_OPT_REGISTRY_NRSLOTS=1024
+> > > CONFIG_XENO_OPT_SYS_HEAPSZ=32768
+> > > CONFIG_XENO_OPT_SYS_STACKPOOLSZ=4096
+> > > ---
+> > > 
+> > > Best
+> > > 
+> > > Vincent
+> > > 
+> > > On Thu, 4 Aug 2016 14:17:44 +0200
+> > >  Henning Schild <henning.schild@siemens.com> wrote:  
+> > > > Am Wed, 3 Aug 2016 12:12:51 +0200
+> > > > schrieb Vincent Berenz <vincent.berenz@tuebingen.mpg.de>:
+> > > >     
+> > > > > Hi,
+> > > > > 
+> > > > > After using for years xenomai 2.5.6 on ubuntu 12.04, we
+> > > > > decided to upgrade to ubuntu 14.04 and a newer machine. I
+> > > > > installed xenomai 2.6.4 and kernel 3.14.39. The installation
+> > > > > boots correctly, the latency is low and our software seems to
+> > > > > work ok.
+> > > > > 
+> > > > > But the system has "frequency surge" (I could not find better
+> > > > > wording). For example:
+> > > > > 
+> > > > > - sometime when typing on the keyboard, the pressed key is
+> > > > > printed many times ('aaaaaaaa' instead of 'a')
+> > > > > 
+> > > > > - 'glxgears' has change in frame rates, the gears can be seen
+> > > > > as sometime changing speed. For example:
+> > > > > 
+> > > > > ---
+> > > > > 1141 frames in 5.0 seconds = 228.186 FPS
+> > > > > 1024 frames in 5.0 seconds = 204.787 FPS
+> > > > > 506 frames in 5.0 seconds = 101.194 FPS
+> > > > > 482 frames in 5.0 seconds = 96.317 FPS
+> > > > > 1416 frames in 5.0 seconds = 283.182 FPS
+> > > > > 2614 frames in 5.0 seconds = 521.100 FPS
+> > > > > 2618 frames in 5.0 seconds = 522.314 FPS
+> > > > > 3073 frames in 5.0 seconds = 614.562 FPS
+> > > > > ---
+> > > > > 
+> > > > > All the tests run fine (as far as I could tell) with the
+> > > > > notable exception of tsc which sometimes (not always)
+> > > > > terminates with something like:
+> > > > > 
+> > > > > ---
+> > > > > tsc not monotonic after 7430687798 ticks, jumped back 49567650
+> > > > > tick ---
+> > > > > 
+> > > > > I could find this in the syslog:
+> > > > > 
+> > > > > -------
+> > > > > [    0.092932] TSC deadline timer enabled
+> > > > > [    0.092941] Performance Events: PEBS fmt2+, 16-deep LBR,
+> > > > > Haswell events, full-width counters, Intel PMU driver.
+> > > > > [    0.092961] ... version:                3
+> > > > > [    0.092962] ... bit width: 48 [    0.092963] ... generic
+> > > > > registers:      4 [    0.092964] ... value mask:
+> > > > > 0000ffffffffffff [    0.092965] ... max period:
+> > > > > 0000ffffffffffff [    0.092965] ... fixed-purpose events:   3
+> > > > > [    0.092966] ... event mask:             000000070000000f
+> > > > > [    0.094914] x86: Booting SMP configuration:
+> > > > > [    0.094916] .... node  #0, CPUs:        #1
+> > > > > [    0.109150] TSC synchronization [CPU#0 -> CPU#1]:
+> > > > > [    0.109157] Measured 25802382 cycles TSC warp between CPUs,
+> > > > > turning off TSC clock. [    0.109161] tsc: Marking TSC
+> > > > > unstable due to check_tsc_sync_source failed ---------    
+> > > > 
+> > > > I have seen this message before, but with smaller numbers.
+> > > > 
+> > > > I assume you have not changed the Hardware, which versions of
+> > > > Xenomai and the Kernel did you use before? Trying to find out
+> > > > whether these checks did not trigger before because they did not
+> > > > exist or where different in your old setup.
+> > > >     
+> > > > > Best
+> > > > > 
+> > > > > Vincent
+> > > > > -------------- next part --------------
+> > > > > A non-text attachment was scrubbed...
+> > > > > Name: config
+> > > > > Type: application/octet-stream
+> > > > > Size: 162268 bytes
+> > > > > Desc: not available
+> > > > > URL:
+> > > > > <http://xenomai.org/pipermail/xenomai/attachments/20160803/26bc2e90/attachment.obj>
+> > > > > -------------- next part -------------- An embedded and
+> > > > > charset-unspecified text was scrubbed... Name: dmesg_xeno.txt
+> > > > > URL:
+> > > > > <http://xenomai.org/pipermail/xenomai/attachments/20160803/26bc2e90/attachment.txt>
+> > > > > _______________________________________________ Xenomai
+> > > > > mailing list Xenomai@xenomai.org
+> > > > > https://xenomai.org/mailman/listinfo/xenomai    
+> > > >     
+> > >   
+> >   
+> 
+
+
