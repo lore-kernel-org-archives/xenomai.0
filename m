@@ -1,12 +1,12 @@
-Date: Wed, 20 Jul 2016 16:17:45 +0200
-From: Gilles Chanteperdrix <gilles@click-hack.org>
-Message-ID: <20160720141745.GW6751@hermes.click-hack.org>
-References: <7d0df99eb5c44c1fb444a3d5642001bc@lujp1svwi090222.corp.mooginc.com>
+References: <c289b77a-5be2-e55b-b0aa-4808de060a5d@xenomai.org>
+From: Christophe Blaess <mailist@logilin.fr>
+Message-ID: <e6e7db0f-b280-e155-0314-022e9d81a6c6@logilin.fr>
+Date: Sun, 14 Aug 2016 01:50:14 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7d0df99eb5c44c1fb444a3d5642001bc@lujp1svwi090222.corp.mooginc.com>
-Subject: Re: [Xenomai] [RFC] [PATCH] Add C_CAN/D_CAN driver
+In-Reply-To: <c289b77a-5be2-e55b-b0aa-4808de060a5d@xenomai.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Gilles Chanteperdrix, 1975-2016
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,39 +15,11 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Haydon, Andrew" <ahaydon@moog.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Wed, Jul 20, 2016 at 02:10:27PM +0000, Haydon, Andrew wrote:
-> Hi,
-> 
-> I have updated the C_CAN patch submitted by Stephen Battazzo:
-> http://xenomai.org/pipermail/xenomai/2015-July/034690.html
-> 
-> This update is for Xenomai 3.0.x and also updates the driver to the one
-> used in Linux v3.18.20. I've also backported a couple of bug fixes from
-> later kernel versions. I haven't ported the PCI support because I have no
-> way of testing this.
-> The RTDM port is largely the same as in Stephen's patch.
-> 
-> I'm not sure whether my use of "rtdm_task_busy_sleep" is correct. The
-> Linux driver uses udelay here.
+We will miss you very much Gilles.
 
-It is if not called in the middle of a section protected by a mutex,
-spinlock or with irqs off. The fact that the hardware has large
-latencies may be unavoidable, the fact that it causes the rest of
-the system to experience high latencies is not acceptable however.
+Thank you for all your work and help.
 
-> 
-> At the moment I have only done very limited testing on this driver in
-> Xenomai, but it seems to work OK as far as I have tested it so far. I do
-> know that the Linux driver works well for me using the D_CAN interface on
-> the Cyclone V.
-
-Your patch is not indented correctly, as such it can not be
-accepted, and it makes the review uselessly hard. So, please resend
-a correctly indented patch.
-
--- 
-					    Gilles.
+I'm very sad...
 
