@@ -1,11 +1,12 @@
+Content-Type: text/plain;
+	charset=utf-8
+Content-Transfer-Encoding: base64
+From: Pierre FICHEUX <pierre.ficheux@smile.fr>
+Mime-Version: 1.0 (1.0)
+Message-Id: <DE365A4D-FF65-4197-9E26-A60C94C2CD19@smile.fr>
+Date: Sun, 14 Aug 2016 13:07:41 +0100
 References: <c289b77a-5be2-e55b-b0aa-4808de060a5d@xenomai.org>
-From: Huub van Niekerk <huubvanniekerk@yahoo.com>
-Message-ID: <a271f6f0-9504-91b0-18e7-44b6b3f64778@yahoo.com>
-Date: Sun, 14 Aug 2016 06:18:15 +0200
-MIME-Version: 1.0
 In-Reply-To: <c289b77a-5be2-e55b-b0aa-4808de060a5d@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai] Gilles Chanteperdrix, 1975-2016
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -15,28 +16,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: im-gilles@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I'm shocked. My deepest sympathy to his family. May he rest in peace.
+SSBtZXQgZ2lsbGVzIGFzIGhlIHdvcmtlZCBmb3Igb3BlbiB3aWRlIGEgbG9uZyB0aW1lIGFnbyAu
+Li5hIGJyaWxsYW50IGd1eS4uLnRoYXQncyBzbyBzYWQuLi4NCg0KLS0NClBpZXJyZQ0KDQo+IExl
+IDEzIGFvw7t0IDIwMTYgw6AgMTc6MTIsIFBoaWxpcHBlIEdlcnVtIDxycG1AeGVub21haS5vcmc+
+IGEgw6ljcml0IDoNCj4gDQo+IA0KPiBJdCBpcyB3aXRoIGRlZXAgc29ycm93IHRoYXQgSSBoYXZl
+IHRvIGluZm9ybSB5b3UgdGhhdCBHaWxsZXMNCj4gQ2hhbnRlcGVyZHJpeCBoYXMgcGFzc2VkIGF3
+YXkgb24gU3VuZGF5IDd0aCBBdWd1c3QuIEhlIG5vdyByZXN0cyBpbiB0aGUNCj4gY2VtZXRlcnkg
+b2YgQmFpbGxhcmd1ZXMsIGluIFNvdXRoZXJuIEZyYW5jZS4NCj4gDQo+IFlvdSBjYW4gZXh0ZW5k
+IHlvdXIgc3ltcGF0aHkgdG8gR2lsbGVzJ3MgZmFtaWx5IGJ5IHNlbmRpbmcgYSBtZXNzYWdlIHRv
+DQo+IGltLWdpbGxlc0B4ZW5vbWFpLm9yZy4NCj4gDQo+IEdpbGxlcyB3aWxsIGZvcmV2ZXIgYmUg
+cmVtZW1iZXJlZCBhcyBhIHRydWUtaGVhcnRlZCBtYW4sIGEgYnJpbGxpYW50DQo+IG1pbmQgYWx3
+YXlzIHNjcmF0Y2hpbmcgYmVuZWF0aCB0aGUgc3VyZmFjZSwgbG9va2luZyBmb3IgZWxlZ2FuY2Ug
+aW4gdGhlDQo+IGRyaWVzdCB0b3BpY3MsIG5ldmVyIGphZGVkIGZyb20gc3VjaCBhY2NvbXBsaXNo
+bWVudC4NCj4gDQo+IEFjY29yZGluZyB0byBQYXVsIFZhbGVyeSwgImRlYXRoIGlzIGEgdHJpY2sg
+cGxheWVkIGJ5IHRoZSBpbmNvbmNlaXZhYmxlDQo+IG9uIHRoZSBjb25jZWl2YWJsZSIuIEdpbGxl
+cydzIGFic2VuY2UgaXMgaW5jb25jZWl2YWJsZSB0byBtZSwgSSBjYW4gb25seQ0KPiBhc3N1bWUg
+dGhhdCBmb3Igb25jZSwgaGUganVzdCBnb3QgcmVzdCBmcm9tIHRpcmVsZXNzbHkgaGVscGluZyBh
+bGwgb2YgdXMuDQo+IA0KPiBSZXBvc2UgZW4gcGFpeCBtb24gYW1pLCBsJ8OpY2xhdCBkZSB0YSBt
+w6ltb2lyZSBkaXNzaXBlcmEgY2VzIGhldXJlcyAgc29tYnJlcy4NCj4gDQo+IC0tIA0KPiBQaGls
+aXBwZS4NCj4gDQo+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fDQo+IFhlbm9tYWkgbWFpbGluZyBsaXN0DQo+IFhlbm9tYWlAeGVub21haS5vcmcNCj4gaHR0
+cHM6Ly94ZW5vbWFpLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkNCg==
 
-
-On 13-08-16 18:11, Philippe Gerum wrote:
-> It is with deep sorrow that I have to inform you that Gilles
-> Chanteperdrix has passed away on Sunday 7th August. He now rests in the
-> cemetery of Baillargues, in Southern France.
->
-> You can extend your sympathy to Gilles's family by sending a message to
-> im-gilles@xenomai.org.
->
-> Gilles will forever be remembered as a true-hearted man, a brilliant
-> mind always scratching beneath the surface, looking for elegance in the
-> driest topics, never jaded from such accomplishment.
->
-> According to Paul Valery, "death is a trick played by the inconceivable
-> on the conceivable". Gilles's absence is inconceivable to me, I can only
-> assume that for once, he just got rest from tirelessly helping all of us.
->
-> Repose en paix mon ami, l'éclat de ta mémoire dissipera ces heures  sombres.
->
 
