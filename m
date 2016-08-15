@@ -1,11 +1,12 @@
+Date: Mon, 15 Aug 2016 21:39:57 +0200
+From: Richard Cochran <richardcochran@gmail.com>
+Message-ID: <20160815193957.GA11942@localhost.localdomain>
 References: <c289b77a-5be2-e55b-b0aa-4808de060a5d@xenomai.org>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <450776d3-a178-b273-c03a-a6fa25f3a35d@web.de>
-Date: Sun, 14 Aug 2016 21:36:51 +0200
+ <450776d3-a178-b273-c03a-a6fa25f3a35d@web.de>
 MIME-Version: 1.0
-In-Reply-To: <c289b77a-5be2-e55b-b0aa-4808de060a5d@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <450776d3-a178-b273-c03a-a6fa25f3a35d@web.de>
 Subject: Re: [Xenomai] Gilles Chanteperdrix, 1975-2016
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -15,44 +16,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>, rtnet-developers <rtnet-developers@lists.sourceforge.net>, rtai@rtai.org, RT <linux-rt-users@vger.kernel.org>
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: RT <linux-rt-users@vger.kernel.org>, rtnet-developers <rtnet-developers@lists.sourceforge.net>, rtai@rtai.org, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-T24gMjAxNi0wOC0xMyAxODoxMSwgUGhpbGlwcGUgR2VydW0gd3JvdGU6Cj4gCj4gSXQgaXMgd2l0
-aCBkZWVwIHNvcnJvdyB0aGF0IEkgaGF2ZSB0byBpbmZvcm0geW91IHRoYXQgR2lsbGVzCj4gQ2hh
-bnRlcGVyZHJpeCBoYXMgcGFzc2VkIGF3YXkgb24gU3VuZGF5IDd0aCBBdWd1c3QuIEhlIG5vdyBy
-ZXN0cyBpbiB0aGUKPiBjZW1ldGVyeSBvZiBCYWlsbGFyZ3VlcywgaW4gU291dGhlcm4gRnJhbmNl
-Lgo+IAo+IFlvdSBjYW4gZXh0ZW5kIHlvdXIgc3ltcGF0aHkgdG8gR2lsbGVzJ3MgZmFtaWx5IGJ5
-IHNlbmRpbmcgYSBtZXNzYWdlIHRvCj4gaW0tZ2lsbGVzQHhlbm9tYWkub3JnLgo+IAo+IEdpbGxl
-cyB3aWxsIGZvcmV2ZXIgYmUgcmVtZW1iZXJlZCBhcyBhIHRydWUtaGVhcnRlZCBtYW4sIGEgYnJp
-bGxpYW50Cj4gbWluZCBhbHdheXMgc2NyYXRjaGluZyBiZW5lYXRoIHRoZSBzdXJmYWNlLCBsb29r
-aW5nIGZvciBlbGVnYW5jZSBpbiB0aGUKPiBkcmllc3QgdG9waWNzLCBuZXZlciBqYWRlZCBmcm9t
-IHN1Y2ggYWNjb21wbGlzaG1lbnQuCj4gCj4gQWNjb3JkaW5nIHRvIFBhdWwgVmFsZXJ5LCAiZGVh
-dGggaXMgYSB0cmljayBwbGF5ZWQgYnkgdGhlIGluY29uY2VpdmFibGUKPiBvbiB0aGUgY29uY2Vp
-dmFibGUiLiBHaWxsZXMncyBhYnNlbmNlIGlzIGluY29uY2VpdmFibGUgdG8gbWUsIEkgY2FuIG9u
-bHkKPiBhc3N1bWUgdGhhdCBmb3Igb25jZSwgaGUganVzdCBnb3QgcmVzdCBmcm9tIHRpcmVsZXNz
-bHkgaGVscGluZyBhbGwgb2YgdXMuCj4gCj4gUmVwb3NlIGVuIHBhaXggbW9uIGFtaSwgbCfDqWNs
-YXQgZGUgdGEgbcOpbW9pcmUgZGlzc2lwZXJhIGNlcyBoZXVyZXMgIHNvbWJyZXMuCj4gCgpJJ20g
-dmVyeSBzYWQgaGF2aW5nIHRvIHJlYWQgdGhpcy4gTXkgZGVlcGVzdCBzeW1wYXRoeSB0byBoaXMg
-ZmFtaWx5IGFuZApmcmllbmRzLgoKR2lsbGVzIGhhcyBiZWVuIHdvcmtpbmcgaW4gdGhlc2UgY29t
-bXVuaXRpZXMgZm9yIGFnZXMsIGFzIGxvbmcgYXMgSSBjYW4KcmVtZW1iZXIuIEZyb20gdGhlIGVh
-cmx5IFJUQUktZnVzaW9uIGRheXMsIG92ZXIgaGlzIFBPU0lYIHNraW4sIHRoZQpjb250aW51b3Vz
-IGhhcmQgd29yayBvbiBBUk0gb3ZlciBhbGwgdGhlIHllYXJzLCBoaXMgRkNTRSBwYXRjaGVzLApj
-b3VudGxlc3MgZW5oYW5jZW1lbnRzIGFuZCB0cmlja3kgZml4ZXMgZm9yIGJvdGggWGVub21haSBz
-ZXJpZXMsIGl0cwppbmZyYXN0cnVjdHVyZSBhbmQgbXVjaCBtb3JlLgoKQXMgaWYgYWxsIHRoZSBj
-b2Rpbmcgd2Fzbid0IGVub3VnaCwgaGUgd2FzIGFsc28gYWx3YXlzIHRyeWluZyB0byBoZWxwCnBl
-b3BsZSB3aXRoIHRoZWlyIHF1ZXN0aW9ucyBhbmQgcHJvYmxlbXMgb24gdGhlIGxpc3RzLCBhbmQg
-ZGlkIHRob3JvdWdoCnJldmlld3Mgb2Ygb3VyIHBhdGNoZXMuIFRlZGlvdXMgd29yaywgc29tZXRp
-bWVzIHJlcGVhdGluZywgYW5kIHdlIGNhbm5vdAp0aGFuayBoaW0gZW5vdWdoIGZvciBhbGwgdGhl
-IHRpbWUgaGUgc3BlbnQgb24gdGhpcywgd2l0aCBhbG1vc3QgaW5maW5pdGUKZW5kdXJhbmNlLgoK
-SSB3aWxsIHNwZWNpZmljYWxseSBrZWVwIGlzIHZhbHVhYmxlIGNvbnRyaWJ1dGlvbnMgdG8gUlRu
-ZXQgaW4gbWVtb3J5CndoaWNoIGZpbmFsbHkgbGVkIHRvIGEgcGVyZmVjdCB0YWtlLW92ZXIuIEhl
-IGFjaGlldmVkIHdoYXQgSSB3YXMgb25seQppbWFnaW5pbmc6IHRoZSBzbW9vdGggaW50ZWdyYXRp
-b24gb2YgdGhpcyBwcm9qZWN0IGludG8gWGVub21haS4KCldpdGggaGlzIGFtYXppbmcgZXhwZXJ0
-aXNlLCBwYXNzaW9uIGZvciBmcmVlIHNvZnR3YXJlLCBkZWRpY2F0aW9uIHRvIGhpcwp3b3JrLCBo
-ZSB3YXMgc2hhcGluZyB0aGUgY28ta2VybmVsIHJlYWwtdGltZSBMaW51eCBwcm9qZWN0cyBlbmR1
-cmluZ2x5LgpJdCdzIHNvIHNhZCB0aGF0IHdlIGxvc3QgaGltLiBXYXkgdG9vIGVhcmx5LgoKSmFu
-CgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRh
-Y2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0
-aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMTgxIGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBz
-aWduYXR1cmUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFj
-aG1lbnRzLzIwMTYwODE0L2VmNTE3ZTFjL2F0dGFjaG1lbnQuc2lnPgo=
+
+I had the privilege to work with Gilles on a paper for the first (and
+only?) xenomai users meeting in Dresden in 2009.  Our topic was the
+fast context switch extension (FCSE) for armv5 machines.  Gilles made
+the FCSE actually work and creatively expanded the idea in a useful
+way.  I was able to meet him in person in Dresden on that occasion,
+and I will remember him as a true gentleman with a good sense of
+humor.
+
+We are thankful for Gilles' many contributions and remember his
+kindness to those wanting to learn more about real time systems.
+
+Rest in Peace!
+
+Richard
+
