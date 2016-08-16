@@ -1,13 +1,13 @@
-Date: Mon, 15 Aug 2016 21:39:57 +0200
-From: Richard Cochran <richardcochran@gmail.com>
-Message-ID: <20160815193957.GA11942@localhost.localdomain>
-References: <c289b77a-5be2-e55b-b0aa-4808de060a5d@xenomai.org>
- <450776d3-a178-b273-c03a-a6fa25f3a35d@web.de>
+From: Steven Seeger <steven.seeger@nasa.gov>
+Date: Tue, 16 Aug 2016 08:35:01 -0400
+Message-ID: <4414270.eDVGh4Rk5V@wirbelwind>
+In-Reply-To: <mailman.2.1471168801.16175.xenomai@xenomai.org>
+References: <mailman.2.1471168801.16175.xenomai@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <450776d3-a178-b273-c03a-a6fa25f3a35d@web.de>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="ISO-8859-1"
 Subject: Re: [Xenomai] Gilles Chanteperdrix, 1975-2016
+Reply-To: steven.seeger@nasa.gov
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,22 +16,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: RT <linux-rt-users@vger.kernel.org>, rtnet-developers <rtnet-developers@lists.sourceforge.net>, rtai@rtai.org, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
+Words cannot adequately describe the loss of Gilles for our hard realtime 
+Linux community. I have communicated with him for years, and always had the 
+utmost respect for him.He took the time to troubleshoot a strange FPU issue on 
+the Geode with me back in early 2007. We spent weeks going back and forth and 
+he figured it out. (I claim no credit for figuring it out!) He was a brilliant 
+man and someone I considered a friend and colleague. I know that he would want 
+us to continue  to make Xenomai better and further proliferate it in industry. 
+Let's do so with Gilles in our hearts.
 
-I had the privilege to work with Gilles on a paper for the first (and
-only?) xenomai users meeting in Dresden in 2009.  Our topic was the
-fast context switch extension (FCSE) for armv5 machines.  Gilles made
-the FCSE actually work and creatively expanded the idea in a useful
-way.  I was able to meet him in person in Dresden on that occasion,
-and I will remember him as a true gentleman with a good sense of
-humor.
-
-We are thankful for Gilles' many contributions and remember his
-kindness to those wanting to learn more about real time systems.
-
-Rest in Peace!
-
-Richard
+Steven 
 
