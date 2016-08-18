@@ -1,12 +1,13 @@
-Date: Wed, 24 Aug 2016 15:49:34 -0400
-Message-ID: <20160824194934.GD14309@csclub.uwaterloo.ca>
-References: <78f5f51a-dce0-f7f3-bed3-e2c908a14276@ethz.ch>
+References: <57B41CA5.5040103@allwinnertech.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <a7e6b5c8-ba49-3b78-09a3-f8417ae4a0b9@xenomai.org>
+Date: Thu, 18 Aug 2016 21:50:47 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <78f5f51a-dce0-f7f3-bed3-e2c908a14276@ethz.ch>
-From: lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
-Subject: Re: [Xenomai] 16550A Baud Rate Limitation
+In-Reply-To: <57B41CA5.5040103@allwinnertech.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [help] porting I-pipe patch on linux-3.4
+ ARM(cortex-a7) soc
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,40 +16,154 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Asutosh Satapathy <sasutosh@ethz.ch>
-Cc: xenomai@xenomai.org
+To: xielinfei <xielinfei@allwinnertech.com>, xenomai@xenomai.org
 
-On Wed, Aug 24, 2016 at 09:07:36PM +0200, Asutosh Satapathy wrote:
-> Hello All,
+On 08/17/2016 10:13 AM, xielinfei wrote:
+> Hi Philippe,
 > 
-> This is my first ever mail to this mailing list. I apologize in advance if
-> my mail is not adhering to the etiquettes of this mailing list. Having said
-> that,
+>      I try to port Xenomai-2.6.2 to ARM (cortex-a7) soc, Using:
+>      Linux version: linux-3.4.39
+>      I-pipe patch:  ipipe-core-3.4.6-arm-4.patch
+>      Hardware: ARM (cortex-a7) single CPU
+>      Following the guild: Porting Xenomai dual kernel to a new ARM SoC -
+> Xenomai<https://www.google.com.hk/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&cad=rja&uact=8&ved=0ahUKEwiC5a-r8cfOAhWJRI8KHatQC_cQFggmMAE&url=https%3A%2F%2Fxenomai.org%2F2014%2F09%2Fporting-xenomai-dual-kernel-to-a-new-arm-soc%2F&usg=AFQjCNF7_SLahZ2bEmhJokUuxzy44eH10A&sig2=zgLgf_uma3eALRUl5S9v3A&bvm=bv.129759880,d.dGo>
 > 
-> Context: I have recently started working with xenomai 2.6.4 for serial
-> communication. My program needs to read and write to an IMU. The serial card
-> supports higher baud rate. I do an insmod to load the xeno_16550A.ko driver
-> for the serial port at 230400 baud base. And then when I run the program,
-> error occurs. But the program runs fine for 115200 baud base.
 > 
-> Problem: To restate, my program works fine for serial communication at baud
-> rate of 115200. But I am getting errors when I try to read data at a higher
-> baud-rate i.e. 230400 and higher.
+>      For I-pipe patch, I modified <ipipe_tsc.c> and <ipipe_tsc_asm.S> to
+> add support for "IPIPE_TSC_TYPE_FREERUNNING_ARCH"
+>       (I have successfully running on linux-3.10 on the same ARM soc)
 > 
-> Errors: 1. rt_dev_read : Input/Output Error
->             2. rt_dev_read : Broken Pipe
+>      After integrate I-pipe patch(without Xenomai), the kernel running
+> for a while then halt, "__ipipe_tsc_update()" not update any more.
+>      I trace the code, the timer IRQ is always got by the gic
+> controller, but ipipe not dispatch. the call trace is :
+>      __ipipe_grab_irq()--> __ipipe_dispatch_irq() -->
+> __ipipe_sync_pipeline()
 > 
-> Questions:
-> 1. Is there a driver limitation on the baudrate? I was not able to find any
-> documentation regarding this.
-> 2. If there are no limitations, any suggestions on this?
-> 2.1. Why am I getting the error while trying to read the data and not when I
-> am trying to open the port.
+>     static inline void __ipipe_sync_pipeline(struct ipipe_domain *top,
+> unsigned int irq)
+>     {
+>               if (__ipipe_current_domain != top) {
+>                   __ipipe_do_sync_pipeline(top);
+>                   return;
+>              }
+>              if (!test_bit(IPIPE_STALL_FLAG,
+> &ipipe_this_cpu_context(top)->status)){
+>                  __ipipe_sync_stage();
+>              }
+>     }
+> 
+>     While halt,  the __ipipe_sync_pipeline will do nothing, if I hack
+> it, force it calling "__ipipe_sync_stage"
+>     the kernel can goes on, but this should not be the solution.
+>     I don't know who set the IPIPE_STALL_FLAG, for I trace the code  it
+> seems to be ok,
+>    
+> -------------------------------------------------------------------------------------------
+> 
+>     fun:ipipe_unstall_root,clear
+>     fun:__ipipe_dispatch_irq, line=1279, control=1, name =Linux
+>     fun:__ipipe_dispatch_irq, line=1285
+>     fun:__ipipe_spin_lock_irqsave,test and set
+>     fun:__ipipe_spin_unlock_irqrestore,clear
+>     fun:__ipipe_dispatch_irq, line=1319
+>     fun:__ipipe_spin_lock_irqsave,test and set
+>     fun:ipipe_unstall_root,clear
+>     fun:ipipe_unstall_root,clear
+>     fun:ipipe_unstall_root,clear
+>     fun:__ipipe_dispatch_irq, line=1279, control=1, name =Linux
+>     fun:__ipipe_dispatch_irq, line=1285
+>     fun:__ipipe_spin_lock_irqsave,test and set
+>     fun:__ipipe_spin_unlock_irqrestore,clear
+>     fun:__ipipe_dispatch_irq, line=1319
+>     fun:__ipipe_spin_lock_irqsave,test and set
+>     fun:ipipe_unstall_root,clear
+>     fun:ipipe_unstall_root,clear
+>     fun:ipipe_unstall_root,clear
+>   
+> ------------------------------------------------------------------------------------------
+> 
+> 
+>    Looking forward to get some suggestion!   thank you!
+> 
 
-Does the port work at 230400 using the linux driver?
+As Lennart told you, you may be asking for trouble with porting an
+outdated Xenomai release to an outdated Linux kernel, I assume you have
+good reasons for inflicting such pain on yourself, so I won't rehash.
+Bottom line is that arm-related changes between 3.4 and 3.10 are
+significant both for the mainline kernel and the I-pipe implementation,
+so I'm not surprised this is not a trivial backport.
 
-How are you changing the baud base?
+It's a bit difficult to give you any advice without exactly knowing how
+you did that backport, assuming you picked the official ipipe-3.10(-32?)
+as the reference version, and which is that SoC exactly. At the very
+least you should paste your diffs against the original ipipe code
+composing the backport changes, so that we can better understand the
+situation.
+
+Your Cortex-A7 based SoC is likely to sport an architected timer, I
+don't think the pipeline support code for this one would cause the issue.
+
+Now, when the stall bit looks wacky at some point, there are two typical
+culprits:
+
+- the low level irq trampoline spuriously branches back to the regular
+linux IRQ tail code after the interrupt was handled from __irq_svc or
+__irq_usr, although the root domain is not current or stalled. This may
+happen with a new architecture port, but I don't think it can happen
+with an existing arm port unless you touched this code, which you should
+not have. Your SoC is likely defining MULTI_IRQ_HANDLER, so the macro
+irq_handler in entry-armv.S needs inspection for that particular path,
+making sure that it ends with a call to
+__ipipe_check_root_interruptible. That call should return non-zero if
+the IRQ can be seen by the regular kernel (i.e. root domain active and
+not stalled), zero otherwise.
+
+- a hard spinlock construct is trashing the real IRQ state at unlocking.
+__ipipe_spin_unlock_debug() should detect when this happens; make sure
+to enable IPIPE_DEBUG_INTERNAL in SMP mode to catch it at the call site.
+This assertion may trigger when some regular spinlock has not been
+converted to a hard (ipipe) spinlock as it should have been, so one ends
+up with the construct following construct: spin_lock_irqsave(&hard_lock)
+-> spin_lock_irqsave(&regular_lock) ->
+spin_unlock_irqrestore(&regular_lock) ->
+spin_unlock_irqrestore(&hard_lock), which is wrong (bad nesting of a
+regular lock within a hard lock).
+
+Also, the best way to debug those issues is to start with the minimum
+possible code involved, and the maximum debug knobs turn on. That means:
+
+- enable the pipeline, but disable Xenomai. With a Xenomai 2.6 core,
+that means that no skin (posix, native, etc) should be pushed on top of
+the nucleus, so that the hardware timer is not redirected to the
+real-time core. In fact, you should basically leave Xenomai out of the
+kernel build.
+
+- turn on IPIPE_DEBUG, IPIPE_DEBUG_INTERNAL, IPIPE_DEBUG_CONTEXT,
+DEBUG_SPINLOCKS.
+
+- try downgrading to uniprocessor mode, to see if SMP is involved.
+
+If nothing of the above helps, there is the possibility to use the
+I-pipe tracer for tracking the stall bit manipulation until a certain
+point in the execution is reached (IPIPE_TRACE_MCOUNT). If you can
+certainly identify at which point the situation looks wrong, which you
+seem to be able to, then call ipipe_trace_panic_freeze() followed by
+ipipe_trace_panic_dump() at that point - you will need IPIPE_TRACE_PANIC
+enabled too.
+
+Make sure to keep the serial console in the kernel boot line, instead of
+switching over a vt.
+
+With a bit of luck, you should see a backtrace of kernel function calls,
+with the current state of the stall bit for each of them. Maybe you
+could find the offending call that leaves the root domain unexpectedly
+stalled. You may have to play with the backtrace depth to collect enough
+data, there is no knob for this, just adjust IPIPE_DEFAULT_BACK_TRACE
+from kernel/ipipe/tracer.c.
+This may help as well:
+http://xenomai.org/2014/06/using-the-i-pipe-tracer/
 
 -- 
-Len Sorensen
+Philippe.
 
