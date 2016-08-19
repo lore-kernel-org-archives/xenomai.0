@@ -1,11 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <c289b77a-5be2-e55b-b0aa-4808de060a5d@xenomai.org>
-References: <c289b77a-5be2-e55b-b0aa-4808de060a5d@xenomai.org>
-From: Nicolas SCHURANDO <schurann@ext.essilor.com>
-Date: Wed, 17 Aug 2016 15:05:58 +0200
-Message-ID: <CA+CJOCz0QfC4StCkbCsOahFJ20RYXfn0ZZW8MmRVb7H_zTofDg@mail.gmail.com>
+In-Reply-To: <CAMQfvZxao1kscCNBESfw=AujMr5a3-u3cwLvyVM75RXQ_PYYLQ@mail.gmail.com>
+References: <CABmfJQaFvseCk=C_WsJvDNEc+Q2kR3m0JY9FUt834ao9LA7rLw@mail.gmail.com>
+ <CAMQfvZxao1kscCNBESfw=AujMr5a3-u3cwLvyVM75RXQ_PYYLQ@mail.gmail.com>
+From: Hongfei Cheng <hongfei@mperpetuo.com>
+Date: Fri, 19 Aug 2016 12:34:31 -0700
+Message-ID: <CAKC9m6etFkck77m67Se8zF+OqB3TjYkWKN0sgyWatzYUQaNT1Q@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] Gilles Chanteperdrix, 1975-2016
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -15,48 +15,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
-Cc: im-gilles@xenomai.org
+To: Xenomai Mailing List <xenomai@xenomai.org>
 
-His relentless dedication was a true source of inspiration.
+I'm also shocked and deeply saddened learning the passing of Gilles.
+He had been tremendously helpful since early 2015 when we started to
+port Xenomai 3.x to ARMv8 architecture. Whenever I asked a question on
+this list, Gilles always responded immediately regardless of the time
+and day. Since I was new to Xenomai back then, Gilles was very patient
+in explaining the key concepts. Although I did thank him for each of
+his responses, I don't think I thanked him enough for his significant
+contribution to Xenomai and open source communities.
 
-I believe he made a valuable and long-lasting contribution, which is I=E2=
-=80=99m
-sure all any of us hope to be true at the end of our lives.
+Thank you, Gilles! We'll miss you greatly.
 
-His legacy will live on through all that will ever stem from his passionate
-and meaningful work.
+Hongfei
 
-Mes plus sinc=C3=A8res condol=C3=A9ances =C3=A0 sa famille. Voyez en ce mes=
-sage
-l'expression de mon grand respect pour Gilles.
 
-2016-08-13 18:11 GMT+02:00 Philippe Gerum <rpm@xenomai.org>:
 
+On Thu, Aug 18, 2016 at 5:12 AM, Carlos Novaes <carlosnov@gmail.com> wrote:
+> Gilles helped me a few times in the past. He was always very devoted and
+> helpful. Even in a situation where the error was obviously in my code,
+> instead of sending me to look for the error, he took care to provide me a
+> small working example.
+> During the following years, always I noticed that Gilles gave the same
+> attention to other questions, from the simplest (as mine) to the most
+> interesting ones.
+> Although I do not know him personally, I felt his loss as such.
 >
-> It is with deep sorrow that I have to inform you that Gilles
-> Chanteperdrix has passed away on Sunday 7th August. He now rests in the
-> cemetery of Baillargues, in Southern France.
+> Thank you Gilles, I will keep this memory as an example to follow.
 >
-> You can extend your sympathy to Gilles's family by sending a message to
-> im-gilles@xenomai.org.
 >
-> Gilles will forever be remembered as a true-hearted man, a brilliant
-> mind always scratching beneath the surface, looking for elegance in the
-> driest topics, never jaded from such accomplishment.
+> 2016-08-18 8:51 GMT-03:00 Paolo Minazzi <paolo.minazzi@gmail.com>:
 >
-> According to Paul Valery, "death is a trick played by the inconceivable
-> on the conceivable". Gilles's absence is inconceivable to me, I can only
-> assume that for once, he just got rest from tirelessly helping all of us.
->
-> Repose en paix mon ami, l'=C3=A9clat de ta m=C3=A9moire dissipera ces heu=
-res
-> sombres.
->
-> --
-> Philippe.
->
+>> I'm very sad to know this.
+>> Gilles helped me several times to discover some strange situation.
+>> He was a frank person, always ready to help other users and make
+>> xenomai project better.
+>>
+>> Gilles, thanks for your patience, for repeat several time same answers.
+>> Thanks for your support.
+>> You were a brilliant mind.
+>> You were only some years older than me.
+>>
+>> Paolo
+>>
+>> _______________________________________________
+>> Xenomai mailing list
+>> Xenomai@xenomai.org
+>> https://xenomai.org/mailman/listinfo/xenomai
+>>
 > _______________________________________________
 > Xenomai mailing list
 > Xenomai@xenomai.org
 > https://xenomai.org/mailman/listinfo/xenomai
+
