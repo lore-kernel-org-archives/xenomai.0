@@ -1,11 +1,10 @@
+From: Asutosh Satapathy <sasutosh@ethz.ch>
+Message-ID: <78f5f51a-dce0-f7f3-bed3-e2c908a14276@ethz.ch>
+Date: Wed, 24 Aug 2016 21:07:36 +0200
 MIME-Version: 1.0
-In-Reply-To: <CABmfJQaFvseCk=C_WsJvDNEc+Q2kR3m0JY9FUt834ao9LA7rLw@mail.gmail.com>
-References: <CABmfJQaFvseCk=C_WsJvDNEc+Q2kR3m0JY9FUt834ao9LA7rLw@mail.gmail.com>
-From: Carlos Novaes <carlosnov@gmail.com>
-Date: Thu, 18 Aug 2016 09:12:33 -0300
-Message-ID: <CAMQfvZxao1kscCNBESfw=AujMr5a3-u3cwLvyVM75RXQ_PYYLQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Gilles Chanteperdrix, 1975-2016
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai]  16550A Baud Rate Limitation
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,36 +13,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Gilles helped me a few times in the past. He was always very devoted and
-helpful. Even in a situation where the error was obviously in my code,
-instead of sending me to look for the error, he took care to provide me a
-small working example.
-During the following years, always I noticed that Gilles gave the same
-attention to other questions, from the simplest (as mine) to the most
-interesting ones.
-Although I do not know him personally, I felt his loss as such.
+Hello All,
 
-Thank you Gilles, I will keep this memory as an example to follow.
+This is my first ever mail to this mailing list. I apologize in advance 
+if my mail is not adhering to the etiquettes of this mailing list. 
+Having said that,
 
+Context: I have recently started working with xenomai 2.6.4 for serial 
+communication. My program needs to read and write to an IMU. The serial 
+card supports higher baud rate. I do an insmod to load the 
+xeno_16550A.ko driver for the serial port at 230400 baud base. And then 
+when I run the program, error occurs. But the program runs fine for 
+115200 baud base.
 
-2016-08-18 8:51 GMT-03:00 Paolo Minazzi <paolo.minazzi@gmail.com>:
+Problem: To restate, my program works fine for serial communication at 
+baud rate of 115200. But I am getting errors when I try to read data at 
+a higher baud-rate i.e. 230400 and higher.
 
-> I'm very sad to know this.
-> Gilles helped me several times to discover some strange situation.
-> He was a frank person, always ready to help other users and make
-> xenomai project better.
->
-> Gilles, thanks for your patience, for repeat several time same answers.
-> Thanks for your support.
-> You were a brilliant mind.
-> You were only some years older than me.
->
-> Paolo
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
->
+Errors: 1. rt_dev_read : Input/Output Error
+             2. rt_dev_read : Broken Pipe
+
+Questions:
+1. Is there a driver limitation on the baudrate? I was not able to find 
+any documentation regarding this.
+2. If there are no limitations, any suggestions on this?
+2.1. Why am I getting the error while trying to read the data and not 
+when I am trying to open the port.
+
+Thanks a lot in advance.
+
+Thanks
+Asutosh
+
