@@ -9,11 +9,12 @@ References: <447fdp9oue.fsf@be-well.ilk.org>
  <CAMcKmiFjiUv7bChKbVgwKg-Nx7aFqy3=H6ph55Vcv98cOSXexQ@mail.gmail.com>
  <DB6PR0601MB21674058568F45BD554818828FEB0@DB6PR0601MB2167.eurprd06.prod.outlook.com>
  <CAMcKmiH1-0WajO4S3k0M3qzNTRyg=Lx_L0ofWuypKBE_f+waLw@mail.gmail.com>
+ <593d9818-17fb-c7a7-ebcf-ab801d73499a@xenomai.org>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <593d9818-17fb-c7a7-ebcf-ab801d73499a@xenomai.org>
-Date: Wed, 24 Aug 2016 12:14:30 +0200
+Message-ID: <7a06a7b5-7d52-c192-b8ce-a3e2a77ea805@xenomai.org>
+Date: Wed, 24 Aug 2016 12:29:04 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAMcKmiH1-0WajO4S3k0M3qzNTRyg=Lx_L0ofWuypKBE_f+waLw@mail.gmail.com>
+In-Reply-To: <593d9818-17fb-c7a7-ebcf-ab801d73499a@xenomai.org>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] slackspot
@@ -28,42 +29,42 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: George Broz <brozgeo@gmail.com>, Alex Plits <alex_plits@radwin.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/24/2016 02:35 AM, George Broz wrote:
-> On 23 August 2016 at 10:14, Alex Plits <alex_plits@radwin.com> wrote:
->> Hi,
+On 08/24/2016 12:14 PM, Philippe Gerum wrote:
+> On 08/24/2016 02:35 AM, George Broz wrote:
+>> On 23 August 2016 at 10:14, Alex Plits <alex_plits@radwin.com> wrote:
+>>> Hi,
+>>>
+>>> Had the same issue (ARMv7/Cobalt/3.0.2), did not find any solution, fail back to debugging using the SIGDEBUG signaling catching.
+>>>
+>>> Best Regards,
+>>> Alex Plits.
+>>>
+>>> -----Original Message-----
 >>
->> Had the same issue (ARMv7/Cobalt/3.0.2), did not find any solution, fail back to debugging using the SIGDEBUG signaling catching.
+>> Thanks.
 >>
->> Best Regards,
->> Alex Plits.
+>> Has anyone out there successfully run slackspot on ARM? After a day of
+>> trying with a very simple single task example, I'm giving up.
 >>
->> -----Original Message-----
+>> Regarding SIGDEBUG - I started with the code from here:
+>>
+>> https://xenomai.org/2014/06/finding-spurious-relaxes/
+>>
+>> but found I had to change signal(sig, SIG_DFL); to signal(sig,
+>> SIG_IGN); to prevent the application from exiting on the first
+>> instance
+>> of a (non-lethal) secondary transition (and using sigdebug_reason(si)
+>> to return the correct code). With SIG_IGN, the application does
+>> not terminate, but the SIGDEBUG handler is not invoked for subsequent
+>> secondary transition events (as indicated by the MSW counter).
+>>
+>> Is there a trick to catching multiple SIGDEBUG events on the same task?
+>>
+>>
 > 
-> Thanks.
-> 
-> Has anyone out there successfully run slackspot on ARM? After a day of
-> trying with a very simple single task example, I'm giving up.
-> 
-> Regarding SIGDEBUG - I started with the code from here:
-> 
-> https://xenomai.org/2014/06/finding-spurious-relaxes/
-> 
-> but found I had to change signal(sig, SIG_DFL); to signal(sig,
-> SIG_IGN); to prevent the application from exiting on the first
-> instance
-> of a (non-lethal) secondary transition (and using sigdebug_reason(si)
-> to return the correct code). With SIG_IGN, the application does
-> not terminate, but the SIGDEBUG handler is not invoked for subsequent
-> secondary transition events (as indicated by the MSW counter).
-> 
-> Is there a trick to catching multiple SIGDEBUG events on the same task?
-> 
-> 
+> Yes, just don't change the re-trap the signal in the handler, leave it
 
-Yes, just don't change the re-trap the signal in the handler, leave it
-as is. testsuite/latency.c illustrates this, we trap SIGDEBUG to SIG_DFL
-only when the -b option was given (stop_upon_switch), to make sure the
-default action will be taken when we resend it for exiting.
+Wow, ok, please read: just don't re-trap the signal in the handler.
 
 -- 
 Philippe.
