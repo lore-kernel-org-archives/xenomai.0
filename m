@@ -1,6 +1,5 @@
-From: Alex Plits <alex_plits@radwin.com>
-Date: Tue, 23 Aug 2016 17:14:16 +0000
-Message-ID: <DB6PR0601MB21674058568F45BD554818828FEB0@DB6PR0601MB2167.eurprd06.prod.outlook.com>
+MIME-Version: 1.0
+In-Reply-To: <DB6PR0601MB21674058568F45BD554818828FEB0@DB6PR0601MB2167.eurprd06.prod.outlook.com>
 References: <447fdp9oue.fsf@be-well.ilk.org>
  <0b7ab1b8-8d53-069a-49b6-a3f289c0b43c@xenomai.org>
  <441t3rlwfe.fsf@be-well.ilk.org>
@@ -10,11 +9,11 @@ References: <447fdp9oue.fsf@be-well.ilk.org>
  <44h9cmz8y1.fsf@be-well.ilk.org> <44eg7i1x8y.fsf@be-well.ilk.org>
  <44ziq6ze1c.fsf@be-well.ilk.org>
  <CAMcKmiFjiUv7bChKbVgwKg-Nx7aFqy3=H6ph55Vcv98cOSXexQ@mail.gmail.com>
-In-Reply-To: <CAMcKmiFjiUv7bChKbVgwKg-Nx7aFqy3=H6ph55Vcv98cOSXexQ@mail.gmail.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="windows-1255"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
+ <DB6PR0601MB21674058568F45BD554818828FEB0@DB6PR0601MB2167.eurprd06.prod.outlook.com>
+From: George Broz <brozgeo@gmail.com>
+Date: Tue, 23 Aug 2016 17:35:38 -0700
+Message-ID: <CAMcKmiH1-0WajO4S3k0M3qzNTRyg=Lx_L0ofWuypKBE_f+waLw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Subject: Re: [Xenomai] slackspot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -24,61 +23,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: George Broz <brozgeo@gmail.com>, Lowell Gilbert <kludge@be-well.ilk.org>
+To: Alex Plits <alex_plits@radwin.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
-
-Had the same issue (ARMv7/Cobalt/3.0.2), did not find any solution, fail ba=
-ck to debugging using the SIGDEBUG signaling catching.
-
-Best Regards,
-Alex Plits.
-
------Original Message-----
-From: Xenomai [mailto:xenomai-bounces@xenomai.org] On Behalf Of George Broz
-Sent: =E9=E5=ED=A0=E2 23 =E0=E5=E2=E5=F1=E8 2016 04:35
-To: Lowell Gilbert <kludge@be-well.ilk.org>
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai] slackspot
-
-> Lowell Gilbert <kludge@be-well.ilk.org> writes:
+On 23 August 2016 at 10:14, Alex Plits <alex_plits@radwin.com> wrote:
+> Hi,
 >
->> Lowell Gilbert <kludge@be-well.ilk.org> writes:
->>
->>> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> writes:
->>>> Ok. Could you post an example allowing us to reproduce the issue ?
->>>
->>> I can. It took me a little longer than I figured because I had=20
->>> accidentally deleted the MODULE_LICENSE. Is it possible to get the=20
->>> kernel makefiles to tell you *why* it isn't linking in libraries you=20
->>> asked for?
->>
->>>  http://be-well.ilk.org/~lowell/example.tar
->>> It's about a hundred lines each for the application and kernel module.
->>
->> Has anyone tried this out? My real application is meeting its latency=20
->> requirements, but I'm pretty sure it's having more of an impact on=20
->> the rest of the system than it needs to do.
+> Had the same issue (ARMv7/Cobalt/3.0.2), did not find any solution, fail back to debugging using the SIGDEBUG signaling catching.
 >
-> I've tried changing the event to a semaphore, and changing the "read"
-> ioctl to a device read, and I'm still seeing huge numbers of state switch=
-es.
+> Best Regards,
+> Alex Plits.
+>
+> -----Original Message-----
 
-Hi Lowell,
+Thanks.
 
-Did you ever figure out how to get slackspot working? I'm experiencing the =
-same issue - debug/relax is empty but the MSW counter is regularly incremen=
-ting for my Xenomai application. Using 3.0.2 on ARM. Enabled XENO_.._TRACE_=
-RELAX in the kernel and set PTHREAD_WARNSW on the task. Any help appreciate=
-d.
+Has anyone out there successfully run slackspot on ARM? After a day of
+trying with a very simple single task example, I'm giving up.
+
+Regarding SIGDEBUG - I started with the code from here:
+
+https://xenomai.org/2014/06/finding-spurious-relaxes/
+
+but found I had to change signal(sig, SIG_DFL); to signal(sig,
+SIG_IGN); to prevent the application from exiting on the first
+instance
+of a (non-lethal) secondary transition (and using sigdebug_reason(si)
+to return the correct code). With SIG_IGN, the application does
+not terminate, but the SIGDEBUG handler is not invoked for subsequent
+secondary transition events (as indicated by the MSW counter).
+
+Is there a trick to catching multiple SIGDEBUG events on the same task?
 
 
-Thanks,
+Thanks in advance,
 --George
-
-_______________________________________________
-Xenomai mailing list
-Xenomai@xenomai.org
-https://xenomai.org/mailman/listinfo/xenomai
 
