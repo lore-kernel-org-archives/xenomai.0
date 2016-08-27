@@ -1,14 +1,11 @@
-References: <57B41CA5.5040103@allwinnertech.com>
- <a7e6b5c8-ba49-3b78-09a3-f8417ae4a0b9@xenomai.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <458bb092-c690-e8e9-7d9b-a66969b4505f@xenomai.org>
-Date: Thu, 18 Aug 2016 22:01:17 +0200
+Message-ID: <5A2723010DA94C5A9E6C65B5AB3F5E7A@rtkbgeng>
+From: "Chunsheng Geng" <chunsheng.geng@realtimes.cn>
+Date: Sat, 27 Aug 2016 16:21:35 +0800
 MIME-Version: 1.0
-In-Reply-To: <a7e6b5c8-ba49-3b78-09a3-f8417ae4a0b9@xenomai.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [help] porting I-pipe patch on linux-3.4
- ARM(cortex-a7) soc
+Content-Type: text/plain;
+	charset="gb2312"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Peak PCI CAN card  problem
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,120 +14,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xielinfei <xielinfei@allwinnertech.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 08/18/2016 09:50 PM, Philippe Gerum wrote:
-> On 08/17/2016 10:13 AM, xielinfei wrote:
->> Hi Philippe,
->>
->>      I try to port Xenomai-2.6.2 to ARM (cortex-a7) soc, Using:
->>      Linux version: linux-3.4.39
->>      I-pipe patch:  ipipe-core-3.4.6-arm-4.patch
->>      Hardware: ARM (cortex-a7) single CPU
->>      Following the guild: Porting Xenomai dual kernel to a new ARM SoC -
->> Xenomai<https://www.google.com.hk/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&cad=rja&uact=8&ved=0ahUKEwiC5a-r8cfOAhWJRI8KHatQC_cQFggmMAE&url=https%3A%2F%2Fxenomai.org%2F2014%2F09%2Fporting-xenomai-dual-kernel-to-a-new-arm-soc%2F&usg=AFQjCNF7_SLahZ2bEmhJokUuxzy44eH10A&sig2=zgLgf_uma3eALRUl5S9v3A&bvm=bv.129759880,d.dGo>
->>
->>
->>      For I-pipe patch, I modified <ipipe_tsc.c> and <ipipe_tsc_asm.S> to
->> add support for "IPIPE_TSC_TYPE_FREERUNNING_ARCH"
->>       (I have successfully running on linux-3.10 on the same ARM soc)
->>
->>      After integrate I-pipe patch(without Xenomai), the kernel running
->> for a while then halt, "__ipipe_tsc_update()" not update any more.
->>      I trace the code, the timer IRQ is always got by the gic
->> controller, but ipipe not dispatch. the call trace is :
->>      __ipipe_grab_irq()--> __ipipe_dispatch_irq() -->
->> __ipipe_sync_pipeline()
->>
->>     static inline void __ipipe_sync_pipeline(struct ipipe_domain *top,
->> unsigned int irq)
->>     {
->>               if (__ipipe_current_domain != top) {
->>                   __ipipe_do_sync_pipeline(top);
->>                   return;
->>              }
->>              if (!test_bit(IPIPE_STALL_FLAG,
->> &ipipe_this_cpu_context(top)->status)){
->>                  __ipipe_sync_stage();
->>              }
->>     }
->>
->>     While halt,  the __ipipe_sync_pipeline will do nothing, if I hack
->> it, force it calling "__ipipe_sync_stage"
->>     the kernel can goes on, but this should not be the solution.
->>     I don't know who set the IPIPE_STALL_FLAG, for I trace the code  it
->> seems to be ok,
->>    
->> -------------------------------------------------------------------------------------------
->>
->>     fun:ipipe_unstall_root,clear
->>     fun:__ipipe_dispatch_irq, line=1279, control=1, name =Linux
->>     fun:__ipipe_dispatch_irq, line=1285
->>     fun:__ipipe_spin_lock_irqsave,test and set
->>     fun:__ipipe_spin_unlock_irqrestore,clear
->>     fun:__ipipe_dispatch_irq, line=1319
->>     fun:__ipipe_spin_lock_irqsave,test and set
->>     fun:ipipe_unstall_root,clear
->>     fun:ipipe_unstall_root,clear
->>     fun:ipipe_unstall_root,clear
->>     fun:__ipipe_dispatch_irq, line=1279, control=1, name =Linux
->>     fun:__ipipe_dispatch_irq, line=1285
->>     fun:__ipipe_spin_lock_irqsave,test and set
->>     fun:__ipipe_spin_unlock_irqrestore,clear
->>     fun:__ipipe_dispatch_irq, line=1319
->>     fun:__ipipe_spin_lock_irqsave,test and set
->>     fun:ipipe_unstall_root,clear
->>     fun:ipipe_unstall_root,clear
->>     fun:ipipe_unstall_root,clear
->>   
->> ------------------------------------------------------------------------------------------
->>
->>
->>    Looking forward to get some suggestion!   thank you!
->>
-> 
-> As Lennart told you, you may be asking for trouble with porting an
-> outdated Xenomai release to an outdated Linux kernel, I assume you have
-> good reasons for inflicting such pain on yourself, so I won't rehash.
-> Bottom line is that arm-related changes between 3.4 and 3.10 are
-> significant both for the mainline kernel and the I-pipe implementation,
-> so I'm not surprised this is not a trivial backport.
-> 
-> It's a bit difficult to give you any advice without exactly knowing how
-> you did that backport, assuming you picked the official ipipe-3.10(-32?)
-> as the reference version, and which is that SoC exactly. At the very
-> least you should paste your diffs against the original ipipe code
-> composing the backport changes, so that we can better understand the
-> situation.
-> 
-> Your Cortex-A7 based SoC is likely to sport an architected timer, I
-> don't think the pipeline support code for this one would cause the issue.
-
-Looking at the boot log that followed, this is indeed an architected timer.
-
-> 
-> Now, when the stall bit looks wacky at some point, there are two typical
-> culprits:
-
-[snip]
-
-I overlooked that you mentioned a single core SoC (sun8i single A7?
-which SoC is it?), so downgrading from SMP to UP is unlikely to be an
-option anyway, however the spinlock issue is still important with
-respect to interrupt virtualization, including in uniprocessor mode:
-
-> - a hard spinlock construct is trashing the real IRQ state at unlocking.
-> __ipipe_spin_unlock_debug() should detect when this happens; make sure
-> to enable IPIPE_DEBUG_INTERNAL in SMP mode to catch it at the call site.
-> This assertion may trigger when some regular spinlock has not been
-> converted to a hard (ipipe) spinlock as it should have been, so one ends
-> up with the construct following construct: spin_lock_irqsave(&hard_lock)
-> -> spin_lock_irqsave(&regular_lock) ->
-> spin_unlock_irqrestore(&regular_lock) ->
-> spin_unlock_irqrestore(&hard_lock), which is wrong (bad nesting of a
-> regular lock within a hard lock).
-> 
-
--- 
-Philippe.
-
+SGksc2lyDQoNCkkgYW0gdGVzdGluZyB0aGUgUGVhayBQQ0kgQ0FOLHVzZWQgdGhlICB4ZW5vbWFp
+LTIuNi41IHVuZGVyIHRoZSBsaW51eCBrZXJuZWwtMy4xOC4yMC4NCkJ1dCxpdCBjYW4gbm90IHRv
+IHdvcmsuQ2FuIHlvdSBnaXZlIG1lIHNvbWUgaGVscHM/DQpUaGFua3MuDQoNCmRtZXNnDQo9PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09DQpbICAgIDYuNDQ1MzIxXSBsZWR0cmlnLWNwdTogcmVnaXN0ZXJlZCB0byBpbmRp
+Y2F0ZSBhY3Rpdml0eSBvbiBDUFVzDQpbICAgIDYuNDQ1NTY0XSBSVC1Tb2NrZXQtQ0FOIDAuOTAu
+MiAtIChDKSAyMDA2IFJULVNvY2tldC1DQU4gRGV2ZWxvcG1lbnQgVGVhbQ0KWyAgICA2LjQ0NTU4
+NF0gUlRDQU4gU0pBMTAwMCBkcml2ZXIgaW5pdGlhbGl6ZWQNClsgICAgNi40NDU2MTNdIFBFQUst
+UENJLUNBTjogaW5pdGlhbGl6aW5nIGRldmljZSAwMDFjOjAwMDgNClsgICAgNi40NTA3MDhdIFBF
+QUstUENJLUNBTjogYmFzZV9hZGRyPWY4MDY4MDAwIGNvbmZfYWRkcj1mODA1ZTAwMCBpcnE9MTgN
+ClsgICAgNi40NTA3MzNdIHJ0Y2FuOiByZWdpc3RlcmVkIHJ0Y2FuMA0KWyAgICA2LjQ1MDc0OF0g
+UEVBSy1QQ0ktQ0FOOiBiYXNlX2FkZHI9ZjgwNmE0MDAgY29uZl9hZGRyPWY4MDVlMDAwIGlycT0x
+OA0KWyAgICA2LjQ1MDc2MF0gRVJST1IgLTE2OiBJUlEgMTggaXMgYnVzeSwgY2hlY2sgc2hhcmVk
+IGludGVycnVwdCBzdXBwb3J0IQ0KWyAgICA2LjQ1MDc3MF0gRVJST1IgLTE2IHdoaWxlIHRyeWlu
+ZyB0byByZWdpc3RlciBTSkExMDAwIGRldmljZSENClsgICAgNi40NTA3ODJdIFJlbW92aW5nIFBF
+QUstUENJIFNKQTEwMDAgZGV2aWNlIHJ0Y2FuMA0KWyAgICA2LjQ1MDc4Nl0gVW5yZWdpc3Rlcmlu
+ZyBTSkExMDAwIGRldmljZSBydGNhbjANClsgICAgNi40NTA3OTddIFJUQ0FOOiB1bnJlZ2lzdGVy
+ZWQgcnRjYW4wDQpbICAgIDYuNDUwODEzXSBQRUFLLVBDSS1DQU46IHByb2JlIG9mIDAwMDA6MDc6
+MDAuMCBmYWlsZWQgd2l0aCBlcnJvciAtMTYNClsgICAgNi40NTA4NDVdIEVSUk9SISBObyBkZXZp
+Y2VzIHNwZWNpZmllZCEgVXNlIG1lbT08cG9ydDE+WywuLi5dIGlycT08aXJxMT5bLC4uLl0NClsg
+ICAgNi40NTEwMDNdIFRDUDogY3ViaWMgcmVnaXN0ZXJlZA0KWyAgICA2LjQ1MTMxMF0gTkVUOiBS
+ZWdpc3RlcmVkIHByb3RvY29sIGZhbWlseSAxMA0KWyAgICA2LjQ1MTc2MV0gTkVUOiBSZWdpc3Rl
+cmVkIHByb3RvY29sIGZhbWlseSAxNw0KWyAgICA2LjQ1MTc4M10gS2V5IHR5cGUgZG5zX3Jlc29s
+dmVyIHJlZ2lzdGVyZWQNCg0KDQpjYXQgL3Byb2MvaW50ZXJydXB0cw0KPT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQogICAg
+ICAgICAgIENQVTAgICAgICAgQ1BVMSAgICAgICANCiAgMDogICAgICAgICA0MiAgICAgICAgICAw
+ICAgSU8tQVBJQy1lZGdlICAgICAgdGltZXINCiAgMTogICAgICAgIDUzNyAgICAgICAgMTExICAg
+SU8tQVBJQy1lZGdlICAgICAgaTgwNDINCiAgMzogICAgICAgICAgMiAgICAgICAgICAyICAgSU8t
+QVBJQy1lZGdlICAgIA0KICA0OiAgICAgICAgICAyICAgICAgICAgIDIgICBJTy1BUElDLWVkZ2Ug
+ICAgDQogIDg6ICAgICAgICAgIDAgICAgICAgICAgMSAgIElPLUFQSUMtZWRnZSAgICAgIHJ0YzAN
+CiAgOTogICAgICAgICAgMiAgICAgICAgICAxICAgSU8tQVBJQy1mYXN0ZW9pICAgYWNwaQ0KIDEy
+OiAgICAgICAgICAzICAgICAgICAgIDEgICBJTy1BUElDLWVkZ2UgICAgICBpODA0Mg0KIDE0OiAg
+ICAgICA1NzEzICAgICAgIDM5ODAgICBJTy1BUElDLWVkZ2UgICAgICBhdGFfcGlpeA0KIDE1OiAg
+ICAgICAgICAwICAgICAgICAgIDAgICBJTy1BUElDLWVkZ2UgICAgICBhdGFfcGlpeA0KIDE5OiAg
+ICAgICA2OTk3ICAgICAgICAxMTggICBJTy1BUElDICAxOS1mYXN0ZW9pICAgYXRhX3BpaXgsIGF0
+aDlrDQogMjQ6ICAgICAgICAgIDAgICAgICAgICAgMCAgIFBDSS1NU0ktZWRnZSAgICAgIFBDSWUg
+UE1FDQogMjU6ICAgICAgICAgIDAgICAgICAgICAgMCAgIFBDSS1NU0ktZWRnZSAgICAgIFBDSWUg
+UE1FDQogMjY6ICAgICAgICAgIDAgICAgICAgICAgMCAgIFBDSS1NU0ktZWRnZSAgICAgIFBDSWUg
+UE1FDQogMjc6ICAgICAgICAgIDAgICAgICAgICAgMCAgIFBDSS1NU0ktZWRnZSAgICAgIFBDSWUg
+UE1FDQogMjg6ICAgICAgICAgIDAgICAgICAgICAgMCAgIFBDSS1NU0ktZWRnZSAgICAgIFBDSWUg
+UE1FDQogNDg6ICAgICAgICAgNjIgICAgICAgIDY1NiAgIFBDSS1NU0ktZWRnZSAgICAgIGV0aDAN
+CiA0OTogICAgICAgMTQ3MCAgICAgICAgNzAyICAgUENJLU1TSS1lZGdlICAgICAgaTkxNQ0KTk1J
+OiAgICAgICAgIDE2ICAgICAgICAgMTUgICBOb24tbWFza2FibGUgaW50ZXJydXB0cw0KTE9DOiAg
+ICAgIDE2MzM2ICAgICAgMTc3MDkgICBMb2NhbCB0aW1lciBpbnRlcnJ1cHRzDQpTUFU6ICAgICAg
+ICAgIDAgICAgICAgICAgMCAgIFNwdXJpb3VzIGludGVycnVwdHMNClBNSTogICAgICAgICAxNiAg
+ICAgICAgIDE1ICAgUGVyZm9ybWFuY2UgbW9uaXRvcmluZyBpbnRlcnJ1cHRzDQpJV0k6ICAgICAg
+ICAgIDAgICAgICAgICAgMCAgIElSUSB3b3JrIGludGVycnVwdHMNClJUUjogICAgICAgICAgMCAg
+ICAgICAgICAwICAgQVBJQyBJQ1IgcmVhZCByZXRyaWVzDQpSRVM6ICAgICAgIDIxMjEgICAgICAg
+MjIzMyAgIFJlc2NoZWR1bGluZyBpbnRlcnJ1cHRzDQpDQUw6ICAgICAgICAzNTYgICAgICAgIDE3
+NCAgIEZ1bmN0aW9uIGNhbGwgaW50ZXJydXB0cw0KVExCOiAgICAgICAgMzI4ICAgICAgICAzNDMg
+ICBUTEIgc2hvb3Rkb3ducw0KVFJNOiAgICAgICAgICAwICAgICAgICAgIDAgICBUaGVybWFsIGV2
+ZW50IGludGVycnVwdHMNClRIUjogICAgICAgICAgMCAgICAgICAgICAwICAgVGhyZXNob2xkIEFQ
+SUMgaW50ZXJydXB0cw0KTUNFOiAgICAgICAgICAwICAgICAgICAgIDAgICBNYWNoaW5lIGNoZWNr
+IGV4Y2VwdGlvbnMNCk1DUDogICAgICAgICAgMiAgICAgICAgICAyICAgTWFjaGluZSBjaGVjayBw
+b2xscw0KSFlQOiAgICAgICAgICAwICAgICAgICAgIDAgICBIeXBlcnZpc29yIGNhbGxiYWNrIGlu
+dGVycnVwdHMNCkVSUjogICAgICAgICAgMA0KTUlTOiAgICAgICAgICAwDQoNCg0KDQoNCg0KS2lu
+ZCByZWdhcmRzLA0KR2VuZyBDaHVuc2hlbmc=
