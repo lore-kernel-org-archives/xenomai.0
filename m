@@ -1,11 +1,11 @@
-From: Sripath Roy Koganti <koganti_sripathroy@kluniversity.in>
-Date: Wed, 31 Aug 2016 06:14:31 +0000
-Message-ID: <SG2PR01MB1230494FDA7DE90A9E80E605FFE30@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>
-Content-Language: en-IN
-MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Benchmarking the hardware by creating tasks
+Date: Wed, 31 Aug 2016 13:14:07 +0800
+From: "liufei@empower.cn" <liufei@empower.cn>
+Mime-Version: 1.0
+Message-ID: <2016083113134616155361@empower.cn>
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Two questions about Xenomai 3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,32 +14,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-Hi
-
-
-I am a new user to Xenomai and a beginner lever programmer. I just started =
-working on this framework or any RTOS. I need help/suggestions with the fol=
-lowing
-
-
-  *   I want to generate few tasks one set with simple logic (arithmetic) a=
-nd other set involving floating point ops and wish to test the latency and =
-context switch times between the tasks. Can you suggest any simpler tasks w=
-hich could help me do that.
-  *
-  *   Also wish to test the above tasks by assigning various priorities and=
- evaluate functioning of various schd algorithms on multicore environment.
-
-I have seen various benchmark tests which are predefined, but i wish to cre=
-ate the tasks on my own by setting the priorities. Also where can i study t=
-he source of the benchmark tests
-
-
-
-It really helps to understand the functioning of the Framework by providing=
- resources about tasks creation and implementation.
-
-Regards
-Sripath Roy Koganti
+RGVhciBhbGw6DQogIFJlY2VudGx5LGkgcHJlcGFyZWQgdG8gdXNpbmcgWGVub21haSAzIGluIG91
+ciB6ZWRib2FyZCBjb25zaWRlcmluZyB0byBwb3J0IGEgUlQtUFJFRU1UICBlbWJlZGRlZCBhcHBs
+aWNhdGlvbi5UaGVyZSBhcmUgdHdvIHF1ZXN0aW9ucyB0aGF0IGkgYW0gbm90IHN1cmUgYWJvdXQu
+DQoNCiAgRmlyc3QsVGhlIFhlbm9tYWkgMyBhcmNoaXRlY3R1cmUgc2F5cyB0aGF0IFhlbm9tYWkg
+MyBjYW4gcnVuIG5hdGl2ZWx5IG92ZXIgbWFpbmxpbmUgTGludXgga2VybmVscy5JZiBsaWtlIHRo
+YXQsdGhlIG1haW5saW5lIGtlcm5lbCBjYW4gYmUgc3VwcGxlbWVudGVkIGJ5IHRoZSBSVC1QUkVS
+TVBUIHBhdGNoLkkgd2FudCB0byBrbm93IHdoZXRoZXIgdGhpcyBtZWFucyB0aGF0IFhlbm9tYWkg
+MyBjYW4gYmUgcGF0Y2hlZCB0byBhIFJULVBSRUVNUFQga2VybmVscy5JZiB5ZXMsaXMgdGhlcmUg
+YSB2ZXJzaW9uIGxpbWl0IGluIFBULVBSRUVNUFQ/SWYgbm8saG93IHRvIGluc3RhbGwgWGVub21h
+aSAzIHRvIG1ha2UgdGhhdD9JZiBpdCBzb2x2ZXMsIGNhbiB0aGUgUFQtUFJFRU1UIGVtYmVkZGVk
+IGFwcGxpY2F0aW9uIHdvcmsgbm9ybWFsbHk/DQoNCiAgU2Vjb25kLGFjdHVhbGx5IG91ciB6ZWRi
+b2FyZCB1c2VkIFhlbm9tYWkgMi54IGluIHRoZSBwYXN0LHNvIGl0IGhhcyBzb21lIFhlbm9tYWkg
+Mi54IGVtYmVkZGVkIGFwcGxpY2F0aW9uLklmIGkgd29yayB0aGUgZmlyc3QgcHJvYmxlbSBvdXQs
+dGhhdCBrZXJuZWxzIGNhbiBzdXBwb3J0IHRoZSBvbGQgWGVub21haSAyLnggZW1iZWRkZWQgYXBw
+bGljYXRpb24gb3Igbm90Pw0KDQogIE15IEVuZ2xpc2ggaXMgbm90IHNvIGdvb2QuQW55d2hlcmUg
+aSBoYXZlJ3QgbWFkZSBpdCBjbGVhcixwbGVhc2UgbWFpbCB0byBtZS4NCg0KICBUaGFua3MsZ3V5
+cy4NCg0KLS1GZWkuDQo=
