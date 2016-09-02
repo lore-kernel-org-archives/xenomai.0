@@ -1,13 +1,12 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Tue, 13 Sep 2016 14:40:49 +0200
-Message-ID: <1856300.iiYY0NCQlV@soho>
-In-Reply-To: <1271995210.507800.1473769593022@mail.yahoo.com>
-References: <1271995210.507800.1473769593022.ref@mail.yahoo.com>
- <1271995210.507800.1473769593022@mail.yahoo.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="utf-8"
-Subject: Re: [Xenomai] multiarch on ipipe kernel
+From: "=?gb18030?B?SmFjayBMZWU=?=" <jacklee11@foxmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="gb18030"
+Content-Transfer-Encoding: base64
+Date: Fri, 2 Sep 2016 15:23:34 +0800
+Message-ID: <tencent_4818DEB2364F8B0334FB2C0A@qq.com>
+Subject: [Xenomai] rt-socket-can "no device" problem with advantech
+	PCM-26D2CA CAN board
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,45 +15,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
 
-El Dimarts, 13 de setembre de 2016, a les 12:26:33, Frederik Bayart va 
-escriure:
-> Should it be possible to run an 32 bit non-rt binary on a 64 bit ipipe
-> kernel ? I'm using debian jessie amd64 and xenomai 2.6.4 on kernel 3.18.20
-> 
-> I have added i386 as foreing architecture and installed the i386 toolchain
-> $ dpkg --print-architectureamd64s$ dpkg --print-foreign-architecturesi386
-> I have a small hello world binary
-> 
-> #include <stdio.h>
-> int main(int argc, char* argv[]){  printf("hello world\n");  return 0;}
-> I compile with 
-> gcc -m32 -o hello hello.c
-> This binary runs on the normal (non-ipipe) kernel
-> linux-image-3.16.0-4-amd64.But if I'm booting the ipipe kernel on the same
-> system, I get the error : -bash: ./hello: cannot execute binary file: Exec
-> format error
-> So the problem seems to be related to the kernel. But I didn't find whether
-> a kernel option could be the cause. The kernel was prepared with I only
-> found that you can't run 32 bit xenomai libraries on a 64 bit kernel, but
-> this binary is not using these libraries. Kind regards,
+PiBIZWxsbywKPiAKPiBBbSAwMi4wOS4yMDE2IHVtIDA4OjIzIHNjaHJpZWIgSmFjayBMZWU6
+Cj4gPiBIaSwgZXZlcnlvbmWjoQo+ID4gICBJIGFtIHVzaW5nIHRoZSBhZHZhbnRlY2ggUENN
+LTI2RDJDQSBDQU4gYm9hcmQsIGl0cyBkZXRhaWxzIGNhbiBiZSBmb3VuZCBoZXJlIGF0Cj4g
+PiBodHRwOi8vd3d3LmFkdmFudGVjaC5jb20vcHJvZHVjdHMvMTQyNjM3MjktYWFhMy00NTUy
+LWI5OTAtOTlkMTZjZGZlZTI0L3BjbS0yNmQyY2EvbW9kXzlhMWU5ZGJmLWUyMmQtNDc3MC1h
+ODk2LWNlY2Y0MDYwNzA4NC4KPiA+IFRoZSBvcmlnaW5hbCBkcml2ZXIgd29ya3MgZmluZSwg
+YnV0IEkgbmVlZCBpdCB0byBiZSByZWFsdGltZS4KPiA+ICAgcnQtY2FuIGRyaXZlciB3YXMg
+Y29tcGlsZWQgYXMgbW9kdWxlcyBwcmV2aW91c2x5LiBXaGVuIGJvb3RlZCBhbmQgIiNtb2Rw
+cm9iZSB4ZW5vX2Nhbl9hZHZfcGNpIiB3YXMgZXhlY3V0ZWQsCj4gPiAiI2RtZXNnIHwgZ3Jl
+cCAtaSBjYW4iIG91dHB1dCB3YXMKPiA+IC4uLgo+ID4gUlQtU29ja2V0LUNBTiAwLjkwLTIg
+LSAoYykgMjAwNiBSVC1Tb2NrZXQtQ0FOIERldmVsb3BtZW50IFRlYW0KPiA+IFJUQ0FOIFNK
+QTEwMDAgZHJpdmVyIGluaXRpYWxpemVkCj4gPgo+ID4gIiNsc21vZCB8IGdyZXAgLWkgY2Fu
+IiBvdXRwdXQgd2FzCj4gPiB4ZW5vX2Nhbl9hZHZfcGNpCj4gPiB4ZW5vX2Nhbl9zamExMDAw
+ICAgIHVzZWQgYnkgeGVub19jYW5fYWR2X3BjaQo+ID4geGVub19jYW4gICAgICAgICAgICAg
+ICAgICB1c2VkIGJ5IHhlbm9fY2FuX3NqYTEwMDAsIHhlbm9fY2FuX2Fkdl9wY2kKPiA+Cj4g
+PiBXaGF0IHN0cmFuZ2UgaXMgdGhhdCAvcHJvYy9ydGNhbi9kZXZpY2VzIGhhcyBubyBkZXZp
+Y2VzIGxpa2UgcnRjYW4wLgo+ID4gVGhlIC9wcm9jL3J0Y2FuIGRpcmVjdG9yeSBqdXN0IGhh
+cyB0aHJlZSBmaWxlczogZGV2aWNlcywgc29ja2V0cyBhbmQgdmVyc2lvCj4gCj4gV2hhdCBp
+cyB0aGUgUENJIGRldmljZSBpZCBvZiB0aGUgQ0FOIGRldmljZT8gWW91IGNhbiB1c2UgImxz
+cGNpIC12diIgdG8gCj4gbGlzdCB0aGUgaWRzLgo+IAo+ID4gRG9lcyB0aGlzIENBTiBib2Fy
+ZCBzdXBwb3J0ZWQgYnkgcnQtc29ja2V0LWNhbj8gSG93IGNhbiBJIGltcGxlbWVudCByZWFs
+LXRpbWVyIGRyaXZlciBmb3IgaXQ/Cj4gCj4gTW9zdCBsaWtlbHkgdGhlIGRldmljZSBpZCBp
+cyBtaXNzaW5nIGluIHRoZSBkcml2ZXIgUENJIGRldmljZSBsaXN0Ogo+IAo+ICAKPiBodHRw
+Oi8vZ2l0Lnhlbm9tYWkub3JnL3hlbm9tYWktMi42LmdpdC90cmVlL2tzcmMvZHJpdmVycy9j
+YW4vc2phMTAwMC9ydGNhbl9hZHZfcGNpLmMjbjg3Cj4gCj4gV29sZmdhbmcuCgpUaGFuayB5
+b3UsIFdvbGZnYW5nISBNeSBtYWlsYm94IGRlbGF5cyB0aGF0IEkgY2Fubm90IGFkZCB5b3Ug
+aW4gdGhlIGNvbnRhY3QsIHNvIEkgc2VuZCB0byB0aGUgeGVub21haSBsaXN0LiBTb3JyeSBm
+b3IgdGhhdC4KQ0FOIGJvYXJkIGluZm9ybWF0aW9uIGlzIGJlbG93LgojbHNwY2kgLXZ2CjAz
+OjAwLjAgQ0FOQlVTOiBBZHZhbnRlY2ggQ28uIEx0ZCBNSU9lLTM2ODAgMi1Qb3J0IENBTi1C
+dXMgTUlPZSBNb2R1bGUgd2l0aCBJc29sYXRpb24gUHJvdGVjdGlvbgoJU3Vic3lzdGVtOiBB
+ZHZhbnRlY2ggQ28uIEx0ZCBNSU9lLTM2ODAgMi1Qb3J0IENBTi1CdXMgTUlPZSBNb2R1bGUg
+d2l0aCBJc29sYXRpb24gUHJvdGVjdGlvbgoJQ29udHJvbDogSS9PKyBNZW0rIEJ1c01hc3Rl
+cisgU3BlY0N5Y2xlLSBNZW1XSU5WLSBWR0FTbm9vcC0gUGFyRXJyLSBTdGVwcGluZy0gU0VS
+Ui0gRmFzdEIyQi0gRGlzSU5UeC0KCVN0YXR1czogQ2FwKyA2Nk1Iei0gVURGLSBGYXN0QjJC
+LSBQYXJFcnItIERFVlNFTD1mYXN0ID5UQWJvcnQtIDxUQWJvcnQtIDxNQWJvcnQtID5TRVJS
+LSA8UEVSUi0gSU5UeC0KCUxhdGVuY3k6IDAsIENhY2hlIExpbmUgU2l6ZTogNjQgYnl0ZXMK
+CUludGVycnVwdDogcGluIEEgcm91dGVkIHRvIElSUSAxMAoJUmVnaW9uIDA6IE1lbW9yeSBh
+dCBkMGMwMjAwMCAoMzItYml0LCBub24tcHJlZmV0Y2hhYmxlKSBbc2l6ZT0yS10KCVJlZ2lv
+biAxOiBNZW1vcnkgYXQgZDBjMDEwMDAgKDMyLWJpdCwgbm9uLXByZWZldGNoYWJsZSkgW3Np
+emU9MTI4XQoJUmVnaW9uIDI6IE1lbW9yeSBhdCBkMGMwMDAwMCAoMzItYml0LCBub24tcHJl
+ZmV0Y2hhYmxlKSBbc2l6ZT0xMjhdCglDYXBhYmlsaXRpZXM6IDxhY2Nlc3MgZGVuaWVkPg==
 
-do you have libc6-dev-i386 and libc6-i686 installed?
-
-I'm able to run your example with a similar setup.
-
-Cheers,
-
-Leopold
-
--- 
---
-Linux User 152692     GPG: 05F4A7A949A2D9AA
-Catalonia
--------------------------------------
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
 
