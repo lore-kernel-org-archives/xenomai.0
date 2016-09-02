@@ -1,13 +1,13 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Tue, 04 Oct 2016 17:36:09 +0200
-Message-ID: <3624229.iZt7HIcxlZ@soho>
-In-Reply-To: <2990549.hKSmcVRoDB@indiana>
-References: <2990549.hKSmcVRoDB@indiana>
+References: <tencent_010CF19618CECFA947D4EC41@qq.com>
+From: Wolfgang Grandegger <wg@grandegger.com>
+Message-ID: <9488e09c-cb54-75cc-dd14-102eab57927b@grandegger.com>
+Date: Fri, 2 Sep 2016 10:52:30 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="utf-8"
-Subject: Re: [Xenomai] Xenomai 3.0.3 is broken in my system (was Regarding
-	Xenomai and RTNET)
+In-Reply-To: <tencent_010CF19618CECFA947D4EC41@qq.com>
+Content-Type: text/plain; charset="gb18030"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] rt-socket-can "no device" problem with advantech
+ PCM-26D2CA CAN board
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,170 +18,160 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-El Dilluns, 3 d'octubre de 2016, a les 18:12:12, Leopold Palomo-Avellaneda va 
-escriure:
-> Hi,
-> 
-> I have been making some tests and I have arrived to the conclusion that the
-> PC that I would like to install Xenomai and RTNET doesn't like it.
-> 
-> It's a PC with a motherboard Gigabyte Q170M-D3H-CF. I'm running 4.1.18 with
-> xenomai 3.0.3. AFAIK, the xenomai tests works. However, when I try to run
-> RTNET, I got crashes:
-> 
-> BUG: unable to handle kernel paging request at 00007f47ea0ef878
->  IP: [<ffffffffa0231580>] rt_udp_ioctl+0x50/0x74 [rtudp]
->  PGD 458887067 PUD 4590a1067 PMD 45921f067 PTE 8000000438863867
->  Oops: 0001 [#1] PREEMPT SMP
->  Modules linked in: rt_igb rt_loopback rtcfg rtudp rtipv4 rtmac rtpacket
-> rtnet e100 mii ctr ccm binfmt_misc nfsd
->  CPU: 4 PID: 6773 Comm: LWRJointPositio Not tainted 4.1.18-xenomai-3.0.3 #1
->  Hardware name: Gigabyte Technology Co., Ltd. To be filled by
-> O.E.M./Q170M-D3H- CF, BIOS F1 10/13/2015
->  task: ffff880459a26010 ti: ffff880459a38000 task.ti: ffff880459a38000
->  RIP: 0010:[<ffffffffa0231580>]  [<ffffffffa0231580>] rt_udp_ioctl+0x50/0x74
-> [rtudp]
->  RSP: 0018:ffff880459a3be08  EFLAGS: 00010246
->  RAX: 00007f47ea0ef870 RBX: ffff880458d59400 RCX: ffff880458d59440
->  RDX: 0000000000000000 RSI: 0000000040100022 RDI: ffff880458d59400
->  RBP: 0000000000000003 R08: ffff880460297420 R09: 000000000000004e
->  R10: 00000000000000dc R11: ffff880459a3bdc0 R12: ffff880459a26010
->  R13: ffffc90001f05008 R14: 0000000040100022 R15: ffffffff81b85ec0
->  FS:  00007f47ea0f0700(0000) GS:ffff880460200000(0000)
-> knlGS:0000000000000000 CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
->  CR2: 00007f47ea0ef878 CR3: 000000045890c000 CR4: 00000000003406e0
->  DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->  DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->  I-pipe domain Linux
->  Stack:
->   ffffffffa0231535 ffffffff8116fb70 ffff880459a265c0 00007f47ea0ef870
->   ffff8804599975d0 0000000000000010 ffff880459a3beb8 ffff880459a3be48
->   0000000000000002 ffff880459a26010 00007f47ea0ef870 ffff880459a26010
->  Call Trace:
->   [<ffffffffa0231535>] ? rt_udp_ioctl+0x5/0x74 [rtudp]
->   [<ffffffff8116fb70>] ? rtdm_fd_ioctl+0x100/0x270
->   [<ffffffff81174b40>] ? CoBaLt_fcntl+0x20/0x20
->   [<ffffffff81174b40>] ? CoBaLt_fcntl+0x20/0x20
->   [<ffffffff81174b50>] ? CoBaLt_ioctl+0x10/0x20
->   [<ffffffff81174b45>] ? CoBaLt_ioctl+0x5/0x20
->   [<ffffffff8118450a>] ? ipipe_syscall_hook+0x11a/0x360
->   [<ffffffff81108da7>] ? __ipipe_notify_syscall+0xe7/0x1d0
->   [<ffffffff81107185>] ? __ipipe_restore_root_nosync+0x5/0x30
->   [<ffffffff8158fb34>] ? pipeline_syscall+0x9/0x16
->  Code: 23 00 10 40 75 15 8b 50 08 48 8b 30 48 89 cf 48 83 c4 08 e9 a3 fd ff
-> ff 0f 1f 00 48 89 c2 48 83 c4 08 e9 5
->  RIP  [<ffffffffa0231580>] rt_udp_ioctl+0x50/0x74 [rtudp]
->   RSP <ffff880459a3be08>
->  CR2: 00007f47ea0ef878
->  ---[ end trace 085d23e71de3ae4b ]---
-> 
-> 
-> The funny (or ugly thing) is that, same kernel (I'm using debian packages)
-> and almost the same Xenomai (compiled in each machine but with the same
-> configure options) works in another similar box, with the same network
-> cards (rt_igb). My application doesn't crash.
-> 
-> I also have tested another network card (rt_e1000_new) with the same core
-> dump.
-> 
-> So, any idea how can I find some light in this? I don't know if it's a rtnet
-> issue of a combination of kernel and hardware issue.
-
-digging more in this I have found some interesting data. Although I though 
-that previous message was equal to all the crashes is not true. I have much 
-more messages with this error:
-
-
- BUG: unable to handle kernel paging request at 00007ffda8577680
- IP: [<ffffffff812fe5c8>] strncmp+0x8/0x50
- PGD 4589e3067 PUD 45c719067 PMD 459a88067 PTE 8000000453c52867
- Oops: 0001 [#1] SMP 
- Modules linked in: rt_loopback rtcfg rtudp rtipv4 rtmac rtpacket ctr ccm 
-binfmt_misc nfsd auth_rpcgss oid_registry nfs_acl nfs lockd grace fscache 
-sunrpc joydev rt_e1000e rt_e1000 hid_generic usbhid nls_utf8 nls_cp437 
-snd_hda_codec_hdmi vfat fat ppdev snd_hda_codec_realtek snd_hda_codec_generic 
-x86_pkg_temp_thermal rt_e1000_new coretemp rt_igb rt_eepro100 kvm_intel rtnet 
-kvm crct10dif_pclmul crc32_pclmul arc4 snd_hda_intel aesni_intel 
-snd_hda_controller aes_x86_64 snd_hda_codec lrw snd_hda_core gf128mul 
-snd_hwdep glue_helper snd_pcm ablk_helper cryptd snd_timer i915 snd evdev 
-soundcore pcspkr efivars serio_raw i2c_i801 drm_kms_helper drm wmi battery 
-i2c_algo_bit parport_pc video parport shpchp tpm_infineon tpm_tis tpm button 
-ath9k ath9k_common ath9k_hw ath mac80211 cfg80211 rfkill fuse
-  autofs4 ext4 crc16 mbcache jbd2 sg sd_mod crc32c_intel ahci libahci xhci_pci 
-libata xhci_hcd e100 mii scsi_mod usbcore usb_common fan thermal_sys i2c_hid 
-hid i2c_core
- CPU: 7 PID: 1047 Comm: slaveinfo_rt Not tainted 4.1.18-xenomai-3.0.3 #2
- Hardware name: Gigabyte Technology Co., Ltd. To be filled by O.E.M./Q170M-D3H-
-CF, BIOS F1 10/13/2015
- task: ffff88045b0faaa0 ti: ffff88045b44c000 task.ti: ffff88045b44c000
- RIP: 0010:[<ffffffff812fe5c8>]  [<ffffffff812fe5c8>] strncmp+0x8/0x50
- RSP: 0018:ffff88045b44fda0  EFLAGS: 00010202
- RAX: ffffc90001f07008 RBX: ffffffffa0366740 RCX: 0000000000000072
- RDX: 0000000000000010 RSI: 00007ffda8577680 RDI: ffff880459aaa004
- RBP: ffff880459aaa000 R08: ffff880460597420 R09: 0000000000000056
- R10: 00000000000000dc R11: ffff88045b44fdc0 R12: 00007ffda8577680
- R13: 00007ffda8577680 R14: 0000000040180021 R15: ffffffff81b832c0
- FS:  00007f3094175740(0000) GS:ffff880460500000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
- CR2: 00007ffda8577680 CR3: 000000045a12a000 CR4: 00000000003406e0
- DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
- DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
- I-pipe domain Linux
- Stack:
-  ffffffffa035f151 0000000000052f08 0000000000000000 00007ffda8577680
-  ffffffffa035f621 ffff880459a17000 0000000040180021 ffff88045b0faaa0
-  ffffffffa03627be ffff880459a17000 0000000000000003 ffff88045b0faaa0
- Call Trace:
-  [<ffffffffa035f151>] ? __rtdev_get_by_name+0x31/0x60 [rtnet]
-  [<ffffffffa035f621>] ? rtdev_get_by_name+0x51/0xd0 [rtnet]
-  [<ffffffffa03627be>] ? rt_socket_if_ioctl+0x2e/0x2f0 [rtnet]
-  [<ffffffff8116505c>] ? rtdm_fd_ioctl+0xfc/0x220
-  [<ffffffff81169d10>] ? CoBaLt_fcntl+0x20/0x20
-  [<ffffffff81169d10>] ? CoBaLt_fcntl+0x20/0x20
-  [<ffffffff81169d20>] ? CoBaLt_ioctl+0x10/0x20
-  [<ffffffff81169d15>] ? CoBaLt_ioctl+0x5/0x20
-  [<ffffffff8117932a>] ? ipipe_syscall_hook+0x25a/0x330
-  [<ffffffff81100097>] ? __ipipe_notify_syscall+0xe7/0x1d0
-  [<ffffffff811e7845>] ? fput+0x5/0x90
-  [<ffffffff81567cf4>] ? pipeline_syscall+0x9/0x16
-
-
-it shows that the crash is produced by __rtdev_get_by_name called from 
-rtdev_get_by_name called from rt_socket_if_ioctl ... with a strncmp
-
-that function is defined kernel/drivers/net/stack/rtdev.c
-
-static struct rtnet_device *__rtdev_get_by_name(const char *name)
-{
-    int                 i;   
-    struct rtnet_device *rtdev;
- 
-
-    for (i = 0; i < MAX_RT_DEVICES; i++) {
-        rtdev = rtnet_devices[i];
-        if ((rtdev != NULL) && (strncmp(rtdev->name, name, IFNAMSIZ) == 0))
-            return rtdev;
-    }
-    return NULL;
-}
-
-however I couldn't understand why this function crashes in this box and not in 
-the other box that I have tested. I will update BIOS and see what happen.
-
-In any case, any help will be appreciated.
-
-Best regards,
-
-Leopold
-
-
--- 
---
-Linux User 152692     GPG: 05F4A7A949A2D9AA
-Catalonia
--------------------------------------
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
-
+SGVsbG8sCgpBbSAwMi4wOS4yMDE2IHVtIDEwOjE5IHNjaHJpZWIgSmFjayBMZWU6Cj4+IEhlbGxv
+LAo+Pgo+PiBBbSAwMi4wOS4yMDE2IHVtIDA5OjIzIHNjaHJpZWIgSmFjayBMZWU6Cj4+Pj4gSGVs
+bG8sCj4+Pj4KPj4+PiBBbSAwMi4wOS4yMDE2IHVtIDA4OjIzIHNjaHJpZWIgSmFjayBMZWU6Cj4+
+Pj4+IEhpLCBldmVyeW9uZaOhCj4+Pj4+ICAgSSBhbSB1c2luZyB0aGUgYWR2YW50ZWNoIFBDTS0y
+NkQyQ0EgQ0FOIGJvYXJkLCBpdHMgZGV0YWlscyBjYW4gYmUgZm91bmQgaGVyZSBhdAo+Pj4+PiBo
+dHRwOi8vd3d3LmFkdmFudGVjaC5jb20vcHJvZHVjdHMvMTQyNjM3MjktYWFhMy00NTUyLWI5OTAt
+OTlkMTZjZGZlZTI0L3BjbS0yNmQyY2EvbW9kXzlhMWU5ZGJmLWUyMmQtNDc3MC1hODk2LWNlY2Y0
+MDYwNzA4NC4KPj4+Pj4gVGhlIG9yaWdpbmFsIGRyaXZlciB3b3JrcyBmaW5lLCBidXQgSSBuZWVk
+IGl0IHRvIGJlIHJlYWx0aW1lLgo+Pj4+PiAgIHJ0LWNhbiBkcml2ZXIgd2FzIGNvbXBpbGVkIGFz
+IG1vZHVsZXMgcHJldmlvdXNseS4gV2hlbiBib290ZWQgYW5kICIjbW9kcHJvYmUgeGVub19jYW5f
+YWR2X3BjaSIgd2FzIGV4ZWN1dGVkLAo+Pj4+PiAiI2RtZXNnIHwgZ3JlcCAtaSBjYW4iIG91dHB1
+dCB3YXMKPj4+Pj4gLi4uCj4+Pj4+IFJULVNvY2tldC1DQU4gMC45MC0yIC0gKGMpIDIwMDYgUlQt
+U29ja2V0LUNBTiBEZXZlbG9wbWVudCBUZWFtCj4+Pj4+IFJUQ0FOIFNKQTEwMDAgZHJpdmVyIGlu
+aXRpYWxpemVkCj4+Pj4+Cj4+Pj4+ICIjbHNtb2QgfCBncmVwIC1pIGNhbiIgb3V0cHV0IHdhcwo+
+Pj4+PiB4ZW5vX2Nhbl9hZHZfcGNpCj4+Pj4+IHhlbm9fY2FuX3NqYTEwMDAgICAgdXNlZCBieSB4
+ZW5vX2Nhbl9hZHZfcGNpCj4+Pj4+IHhlbm9fY2FuICAgICAgICAgICAgICAgICAgdXNlZCBieSB4
+ZW5vX2Nhbl9zamExMDAwLCB4ZW5vX2Nhbl9hZHZfcGNpCj4+Pj4+Cj4+Pj4+IFdoYXQgc3RyYW5n
+ZSBpcyB0aGF0IC9wcm9jL3J0Y2FuL2RldmljZXMgaGFzIG5vIGRldmljZXMgbGlrZSBydGNhbjAu
+Cj4+Pj4+IFRoZSAvcHJvYy9ydGNhbiBkaXJlY3RvcnkganVzdCBoYXMgdGhyZWUgZmlsZXM6IGRl
+dmljZXMsIHNvY2tldHMgYW5kIHZlcnNpbwo+Pj4+Cj4+Pj4gV2hhdCBpcyB0aGUgUENJIGRldmlj
+ZSBpZCBvZiB0aGUgQ0FOIGRldmljZT8gWW91IGNhbiB1c2UgImxzcGNpIC12diIgdG8KPj4+PiBs
+aXN0IHRoZSBpZHMuCj4+Pj4KPj4+Pj4gRG9lcyB0aGlzIENBTiBib2FyZCBzdXBwb3J0ZWQgYnkg
+cnQtc29ja2V0LWNhbj8gSG93IGNhbiBJIGltcGxlbWVudCByZWFsLXRpbWVyIGRyaXZlciBmb3Ig
+aXQ/Cj4+Pj4KPj4+PiBNb3N0IGxpa2VseSB0aGUgZGV2aWNlIGlkIGlzIG1pc3NpbmcgaW4gdGhl
+IGRyaXZlciBQQ0kgZGV2aWNlIGxpc3Q6Cj4+Pj4KPj4+Pgo+Pj4+IGh0dHA6Ly9naXQueGVub21h
+aS5vcmcveGVub21haS0yLjYuZ2l0L3RyZWUva3NyYy9kcml2ZXJzL2Nhbi9zamExMDAwL3J0Y2Fu
+X2Fkdl9wY2kuYyNuODcKPj4+Pgo+Pj4+IFdvbGZnYW5nLgo+Pj4KPj4+IFRoYW5rIHlvdSwgV29s
+ZmdhbmchIE15IG1haWxib3ggZGVsYXlzIHRoYXQgSSBjYW5ub3QgYWRkIHlvdSBpbiB0aGUgY29u
+dGFjdCwgc28gSSBzZW5kIHRvIHRoZSB4ZW5vbWFpIGxpc3QuIFNvcnJ5IGZvciB0aGF0Lgo+Pgo+
+PiBObyBwcm9ibGVtLgo+Pgo+Pj4gQ0FOIGJvYXJkIGluZm9ybWF0aW9uIGlzIGJlbG93Lgo+Pj4g
+I2xzcGNpIC12dgo+Pj4gMDM6MDAuMCBDQU5CVVM6IEFkdmFudGVjaCBDby4gTHRkIE1JT2UtMzY4
+MCAyLVBvcnQgQ0FOLUJ1cyBNSU9lIE1vZHVsZSB3aXRoIElzb2xhdGlvbiBQcm90ZWN0aW9uCj4+
+PiAJU3Vic3lzdGVtOiBBZHZhbnRlY2ggQ28uIEx0ZCBNSU9lLTM2ODAgMi1Qb3J0IENBTi1CdXMg
+TUlPZSBNb2R1bGUgd2l0aCBJc29sYXRpb24gUHJvdGVjdGlvbgo+Pj4gCUNvbnRyb2w6IEkvTysg
+TWVtKyBCdXNNYXN0ZXIrIFNwZWNDeWNsZS0gTWVtV0lOVi0gVkdBU25vb3AtIFBhckVyci0gU3Rl
+cHBpbmctIFNFUlItIEZhc3RCMkItIERpc0lOVHgtCj4+PiAJU3RhdHVzOiBDYXArIDY2TUh6LSBV
+REYtIEZhc3RCMkItIFBhckVyci0gREVWU0VMPWZhc3QgPlRBYm9ydC0gPFRBYm9ydC0gPE1BYm9y
+dC0gPlNFUlItIDxQRVJSLSBJTlR4LQo+Pj4gCUxhdGVuY3k6IDAsIENhY2hlIExpbmUgU2l6ZTog
+NjQgYnl0ZXMKPj4+IAlJbnRlcnJ1cHQ6IHBpbiBBIHJvdXRlZCB0byBJUlEgMTAKPj4+IAlSZWdp
+b24gMDogTWVtb3J5IGF0IGQwYzAyMDAwICgzMi1iaXQsIG5vbi1wcmVmZXRjaGFibGUpIFtzaXpl
+PTJLXQo+Pj4gCVJlZ2lvbiAxOiBNZW1vcnkgYXQgZDBjMDEwMDAgKDMyLWJpdCwgbm9uLXByZWZl
+dGNoYWJsZSkgW3NpemU9MTI4XQo+Pj4gCVJlZ2lvbiAyOiBNZW1vcnkgYXQgZDBjMDAwMDAgKDMy
+LWJpdCwgbm9uLXByZWZldGNoYWJsZSkgW3NpemU9MTI4XQo+Pj4gCUNhcGFiaWxpdGllczogPGFj
+Y2VzcyBkZW5pZWQ+Cj4+Cj4+IENvdWxkIHlvdSBwbGVhc2UgdXNlICJsc3BjaSAtdnZuIiB0byBn
+ZXQgIG51bWJlcnMgKGluc3RlYWQgb2Ygc3RyaW5ncykuCj4+Cj4+IFdvbGZnYW5nLgo+IAo+IFRo
+YW5rcyEgVGhlIGluZm9ybWF0aW9uIGlzIGJlbG93Lgo+ICNsc3BjaSAtdnZuCj4gMDM6MDAuMCAw
+YzA5OiAxM2ZlOmMzMDIKPiAJU3Vic3lzdGVtOiAxM2ZlOmMzMDIKPiAJQ29udHJvbDogSS9PKyBN
+ZW0rIEJ1c01hc3RlcisgU3BlY0N5Y2xlLSBNZW1XSU5WLSBWR0FTbm9vcC0gUGFyRXJyLSBTdGVw
+cGluZy0gU0VSUi0gRmFzdEIyQi0gRGlzSU5UeC0KPiAJU3RhdHVzOiBDYXArIDY2TUh6LSBVREYt
+IEZhc3RCMkItIFBhckVyci0gREVWU0VMPWZhc3QgPlRBYm9ydC0gPFRBYm9ydC0gPE1BYm9ydC0g
+PlNFUlItIDxQRVJSLSBJTlR4LQo+IAlMYXRlbmN5OiAwLCBDYWNoZSBMaW5lIFNpemU6IDY0IGJ5
+dGVzCj4gCUludGVycnVwdDogcGluIEEgcm91dGVkIHRvIElSUSAxMAo+IAlSZWdpb24gMDogTWVt
+b3J5IGF0IGQwYzAyMDAwICgzMi1iaXQsIG5vbi1wcmVmZXRjaGFibGUpIFtzaXplPTJLXQo+IAlS
+ZWdpb24gMTogTWVtb3J5IGF0IGQwYzAxMDAwICgzMi1iaXQsIG5vbi1wcmVmZXRjaGFibGUpIFtz
+aXplPTEyOF0KPiAJUmVnaW9uIDI6IE1lbW9yeSBhdCBkMGMwMDAwMCAoMzItYml0LCBub24tcHJl
+ZmV0Y2hhYmxlKSBbc2l6ZT0xMjhdCj4gCUNhcGFiaWxpdGllczogWzQwXSBQb3dlciBNYW5hZ2Vt
+ZW50IHZlcnNpb24gMwo+IAkJRmxhZ3M6IFBNRUNsay0gRFNJLSBEMS0gRDItIEF1eEN1cnJlbnQ9
+MG1BIFBNRShEMCssRDErLEQyKyxEM2hvdCssRDNjb2xkLSkKPiAJCVN0YXR1czogRDAgTm9Tb2Z0
+UnN0KyBQTUUtRW5hYmxlLSBEU2VsPTAgRFNjYWxlPTAgUE1FLQo+IAlDYXBhYmlsaXRpZXM6IFs0
+OF0gTVNJOiBFbmFibGUtIENvdW50PTEvMiBNYXNrYWJsZS0gNjRiaXQrCj4gCQlBZGRyZXNzOiAw
+MDAwMDAwMDAwMDAwMDAwICBEYXRhOiAwMDAwCj4gCUNhcGFiaWxpdGllczogWzU4XSBFeHByZXNz
+ICh2MSkgTGVnYWN5IEVuZHBvaW50LCBNU0kgMDAKPiAJCURldkNhcDoJTWF4UGF5bG9hZCA1MTIg
+Ynl0ZXMsIFBoYW50RnVuYyAwLCBMYXRlbmN5IEwwcyA8NjRucywgTDEgPDF1cwo+IAkJCUV4dFRh
+Zy0gQXR0bkJ0bi0gQXR0bkluZC0gUHdySW5kLSBSQkUrIEZMUmVzZXQtCj4gCQlEZXZDdGw6CVJl
+cG9ydCBlcnJvcnM6IENvcnJlY3RhYmxlLSBOb24tRmF0YWwtIEZhdGFsLSBVbnN1cHBvcnRlZC0K
+PiAJCQlSbHhkT3JkLSBFeHRUYWctIFBoYW50RnVuYy0gQXV4UHdyLSBOb1Nub29wKwo+IAkJCU1h
+eFBheWxvYWQgMTI4IGJ5dGVzLCBNYXhSZWFkUmVxIDUxMiBieXRlcwo+IAkJRGV2U3RhOglDb3Jy
+RXJyKyBVbmNvcnJFcnItIEZhdGFsRXJyLSBVbnN1cHBSZXEtIEF1eFB3ci0gVHJhbnNQZW5kLQo+
+IAkJTG5rQ2FwOglQb3J0ICMwLCBTcGVlZCAyLjVHVC9zLCBXaWR0aCB4MSwgQVNQTSBMMHMsIEV4
+aXQgTGF0ZW5jeSBMMHMgdW5saW1pdGVkLCBMMSB1bmxpbWl0ZWQKPiAJCQlDbG9ja1BNLSBTdXJw
+cmlzZS0gTExBY3RSZXAtIEJ3Tm90LSBBU1BNT3B0Q29tcC0KPiAJCUxua0N0bDoJQVNQTSBEaXNh
+YmxlZDsgUkNCIDY0IGJ5dGVzIERpc2FibGVkLSBDb21tQ2xrLQo+IAkJCUV4dFN5bmNoLSBDbG9j
+a1BNLSBBdXRXaWREaXMtIEJXSW50LSBBdXRCV0ludC0KPiAJCUxua1N0YToJU3BlZWQgMi41R1Qv
+cywgV2lkdGggeDEsIFRyRXJyLSBUcmFpbi0gU2xvdENsay0gRExBY3RpdmUtIEJXTWdtdC0gQUJX
+TWdtdC0KPiAKPiAKPiBJcyChsDBjMDk6IDEzZmU6YzMwMqGxIHRoZSBkZXZpY2UgSUQ/IENhbiB5
+b3Ugc2hvdyBtZSBzb21lIGluc3RydWN0aW9ucyB0byBtYWtlIHRoaXMgZGV2aWNlIHdvcms/IEkg
+YW0gcmVhbGx5IG5ldyB0byB0aGlzLgoKVGhlIFBDSSB2ZW5kb3IgaWQgaXMgMHgxM2ZlIGFuZCB0
+aGUgZGV2aWNlIGlkIGlzIDB4YzMwMi4KCj4gSSBvcGVuZWQgdGhlIGxpbmsgeW91IHBhc3RlIGFi
+b3ZlLCBwZXJoYXBzIHRoZSBmb2xsb3dpbmcgdHdvIHBsYWNlcyBzaG91bGQgYmUgbW9kaWZpZWQu
+Cj4gCj4gQSBuZXcgbGluZSAiQURWX1BDSV9ERVZJQ0UoMHhjMzAyKSwgIiBzaG91bGQgYmUgYWRk
+ZWQ/Cj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tCj4gCXN0YXRpYyBERUZJTkVfUENJX0RFVklDRV9UQUJMRShhZHZfcGNpX3Ri
+bCkgPSB7Cj4gCQlBRFZfUENJX0RFVklDRSgweDE2ODApLAo+IAkJQURWX1BDSV9ERVZJQ0UoMHgz
+NjgwKSwKPiAJCUFEVl9QQ0lfREVWSUNFKDB4MjA1MiksCj4gCQlBRFZfUENJX0RFVklDRSgweDE2
+ODEpLAo+IAkJQURWX1BDSV9ERVZJQ0UoMHhjMDAxKSwKPiAJCUFEVl9QQ0lfREVWSUNFKDB4YzAw
+MiksCj4gCQlBRFZfUENJX0RFVklDRSgweGMwMDQpLAo+IAkJQURWX1BDSV9ERVZJQ0UoMHhjMTAx
+KSwKPiAJCUFEVl9QQ0lfREVWSUNFKDB4YzEwMiksCj4gCQlBRFZfUENJX0RFVklDRSgweGMxMDQp
+LAo+IAkJLyogcmVxdWlyZWQgbGFzdCBlbnRyeSAqLwo+IAkJeyB9Cj4gCX07Cj4gCj4gSG93IHRv
+IGRlYWwgd2l0aCB0aGlzIG9uZT8KPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPiAJc3dpdGNoIChwZGV2LT5kZXZpY2UpIHsK
+PiAJY2FzZSAweGMwMDE6Cj4gCWNhc2UgMHhjMDAyOgo+IAljYXNlIDB4YzAwNDoKPiAJY2FzZSAw
+eGMxMDE6Cj4gCWNhc2UgMHhjMTAyOgo+IAljYXNlIDB4YzEwNDoKPiAJCW5iX3BvcnRzID0gcGRl
+di0+ZGV2aWNlICYgMHg3Owo+IAkJb2Zmc2V0ID0gMHgxMDA7Cj4gCQliYXIgPSAwOwo+IAkJYnJl
+YWs7Cj4gCWNhc2UgMHgxNjgwOgo+IAljYXNlIDB4MjA1MjoKPiAJCW5iX3BvcnRzID0gMjsKPiAJ
+CWJhciA9IDI7Cj4gCQliYXJfZmxhZyA9IDE7Cj4gCQlicmVhazsKPiAJY2FzZSAweDE2ODE6Cj4g
+CQluYl9wb3J0cyA9IDE7Cj4gCQliYXIgPSAyOwo+IAkJYmFyX2ZsYWcgPSAxOwo+IAkJYnJlYWs7
+Cj4gCWRlZmF1bHQ6Cj4gCQlnb3RvIGZhaWx1cmVfcmVnaW9uczsKPiAJfQoKQ291bGQgeW91IHBs
+ZWFzZSBnaXZlIHRoZSB1bnRlc3RlZCBwYXRjaCBiZWxvdyBhIHRyeS4KCkdvb2QgbHVjaywKCldv
+bGZnYW5nLgoKPkZyb20gMDBjOTYzMWYyNjY3NWI5MGVhMWZmMmI0YmI5ZjcyZmQ4MWZjYjkxYyBN
+b24gU2VwIDE3IDAwOjAwOjAwIDIwMDEKRnJvbTogV29sZmdhbmcgR3JhbmRlZ2dlciA8V29sZmdh
+bmcgR3JhbmRlZ2dlcj4KRGF0ZTogRnJpLCAyIFNlcCAyMDE2IDEwOjQ2OjI2ICswMjAwClN1Ympl
+Y3Q6IFtQQVRDSF0gcnRjYW46IGFkZCBzdXBwb3J0IGZvciBuZXcgQWR2YW50ZWMgQ0FOIFBDSSBk
+ZXZpY2VzCgotLS0KIGtzcmMvZHJpdmVycy9jYW4vc2phMTAwMC9ydGNhbl9hZHZfcGNpLmMgfCA0
+NiArKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLQogMSBmaWxlIGNoYW5nZWQsIDQyIGlu
+c2VydGlvbnMoKyksIDQgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEva3NyYy9kcml2ZXJzL2Nh
+bi9zamExMDAwL3J0Y2FuX2Fkdl9wY2kuYyBiL2tzcmMvZHJpdmVycy9jYW4vc2phMTAwMC9ydGNh
+bl9hZHZfcGNpLmMKaW5kZXggMWQzNmU3Yi4uYzNkZTA1MiAxMDA2NDQKLS0tIGEva3NyYy9kcml2
+ZXJzL2Nhbi9zamExMDAwL3J0Y2FuX2Fkdl9wY2kuYworKysgYi9rc3JjL2RyaXZlcnMvY2FuL3Nq
+YTEwMDAvcnRjYW5fYWR2X3BjaS5jCkBAIC05NSw2ICs5NSwxMiBAQCBzdGF0aWMgREVGSU5FX1BD
+SV9ERVZJQ0VfVEFCTEUoYWR2X3BjaV90YmwpID0gewogCUFEVl9QQ0lfREVWSUNFKDB4YzEwMSks
+CiAJQURWX1BDSV9ERVZJQ0UoMHhjMTAyKSwKIAlBRFZfUENJX0RFVklDRSgweGMxMDQpLAorCUFE
+Vl9QQ0lfREVWSUNFKDB4YzIwMSksCisJQURWX1BDSV9ERVZJQ0UoMHhjMjAyKSwKKwlBRFZfUENJ
+X0RFVklDRSgweGMyMDQpLAorCUFEVl9QQ0lfREVWSUNFKDB4YzMwMSksCisJQURWX1BDSV9ERVZJ
+Q0UoMHhjMzAyKSwKKwlBRFZfUENJX0RFVklDRSgweGMzMDQpLAogCS8qIHJlcXVpcmVkIGxhc3Qg
+ZW50cnkgKi8KIAl7IH0KIH07CkBAIC0xMTUsNiArMTIxLDIxIEBAIHN0YXRpYyB2b2lkIHJ0Y2Fu
+X2Fkdl9wY2lfd3JpdGVfcmVnKHN0cnVjdCBydGNhbl9kZXZpY2UgKmRldiwgaW50IHBvcnQsIHU4
+IGRhdGEpCiAJaW93cml0ZTgoZGF0YSwgYm9hcmQtPmJhc2VfYWRkciArIHBvcnQpOwogfQogCitz
+dGF0aWMgdTggcnRjYW5fYWR2X3BjaV9yZWFkX3JlZ19zaGlmdDIoc3RydWN0IHJ0Y2FuX2Rldmlj
+ZSAqZGV2LCBpbnQgcG9ydCkKK3sKKwlzdHJ1Y3QgcnRjYW5fYWR2X3BjaSAqYm9hcmQgPSAoc3Ry
+dWN0IHJ0Y2FuX2Fkdl9wY2kgKilkZXYtPmJvYXJkX3ByaXY7CisKKwlyZXR1cm4gaW9yZWFkOChi
+b2FyZC0+YmFzZV9hZGRyICsgKHBvcnQgPDwgMikpOworfQorCitzdGF0aWMgdm9pZCBydGNhbl9h
+ZHZfcGNpX3dyaXRlX3JlZ19zaGlmdDIoc3RydWN0IHJ0Y2FuX2RldmljZSAqZGV2LCBpbnQgcG9y
+dCwKKwkJCQkJICAgdTggZGF0YSkKK3sKKwlzdHJ1Y3QgcnRjYW5fYWR2X3BjaSAqYm9hcmQgPSAo
+c3RydWN0IHJ0Y2FuX2Fkdl9wY2kgKilkZXYtPmJvYXJkX3ByaXY7CisKKwlpb3dyaXRlOChkYXRh
+LCBib2FyZC0+YmFzZV9hZGRyICsgKHBvcnQgPDwgMikpOworfQorCiBzdGF0aWMgdm9pZCBydGNh
+bl9hZHZfcGNpX2RlbF9jaGFuKHN0cnVjdCBwY2lfZGV2ICpwZGV2LAogCQkJCSAgIHN0cnVjdCBy
+dGNhbl9kZXZpY2UgKmRldikKIHsKQEAgLTEzNyw2ICsxNTgsNyBAQCBzdGF0aWMgaW50IHJ0Y2Fu
+X2Fkdl9wY2lfYWRkX2NoYW4oc3RydWN0IHBjaV9kZXYgKnBkZXYsCiAJCQkJICBpbnQgY2hhbm5l
+bCwKIAkJCQkgIHVuc2lnbmVkIGludCBiYXIsCiAJCQkJICB1bnNpZ25lZCBpbnQgb2Zmc2V0LAor
+CQkJCSAgdW5zaWduZWQgaW50IHNoaWZ0LAogCQkJCSAgc3RydWN0IHJ0Y2FuX2RldmljZSAqKm1h
+c3Rlcl9kZXYpCiB7CiAJc3RydWN0IHJ0Y2FuX2RldmljZSAqZGV2OwpAQCAtMTgwLDggKzIwMiwx
+MyBAQCBzdGF0aWMgaW50IHJ0Y2FuX2Fkdl9wY2lfYWRkX2NoYW4oc3RydWN0IHBjaV9kZXYgKnBk
+ZXYsCiAKIAlkZXYtPmJvYXJkX25hbWUgPSBhZHZfcGNpX2JvYXJkX25hbWU7CiAKLQljaGlwLT5y
+ZWFkX3JlZyA9IHJ0Y2FuX2Fkdl9wY2lfcmVhZF9yZWc7Ci0JY2hpcC0+d3JpdGVfcmVnID0gcnRj
+YW5fYWR2X3BjaV93cml0ZV9yZWc7CisJaWYgKHNoaWZ0ID09IDIpIHsKKwkJY2hpcC0+cmVhZF9y
+ZWcgPSBydGNhbl9hZHZfcGNpX3JlYWRfcmVnX3NoaWZ0MjsKKwkJY2hpcC0+d3JpdGVfcmVnID0g
+cnRjYW5fYWR2X3BjaV93cml0ZV9yZWdfc2hpZnQyOworCX0gZWxzZSB7CisJCWNoaXAtPnJlYWRf
+cmVnID0gcnRjYW5fYWR2X3BjaV9yZWFkX3JlZzsKKwkJY2hpcC0+d3JpdGVfcmVnID0gcnRjYW5f
+YWR2X3BjaV93cml0ZV9yZWc7CisJfQogCiAJLyogQ2xvY2sgZnJlcXVlbmN5IGluIEh6ICovCiAJ
+ZGV2LT5jYW5fc3lzX2Nsb2NrID0gQURWX1BDSV9DQU5fQ0xPQ0s7CkBAIC0yNDQsNiArMjcxLDcg
+QEAgc3RhdGljIGludCBhZHZfcGNpX2luaXRfb25lKHN0cnVjdCBwY2lfZGV2ICpwZGV2LAogCXVu
+c2lnbmVkIGludCBiYXIgPSAwOwogCXVuc2lnbmVkIGludCBiYXJfZmxhZyA9IDA7CiAJdW5zaWdu
+ZWQgaW50IG9mZnNldCA9IDA7CisJdW5zaWduZWQgaW50IHNoaWZ0ID0gMDsKIAl1bnNpZ25lZCBp
+bnQgaXg7CiAKIAlzdHJ1Y3QgcnRjYW5fZGV2aWNlICptYXN0ZXJfZGV2ID0gTlVMTDsKQEAgLTI3
+MCw3ICsyOTgsMTYgQEAgc3RhdGljIGludCBhZHZfcGNpX2luaXRfb25lKHN0cnVjdCBwY2lfZGV2
+ICpwZGV2LAogCWNhc2UgMHhjMTA0OgogCQluYl9wb3J0cyA9IHBkZXYtPmRldmljZSAmIDB4NzsK
+IAkJb2Zmc2V0ID0gMHgxMDA7Ci0JCWJhciA9IDA7CisJCWJyZWFrOworCWNhc2UgMHhjMjAxOgor
+CWNhc2UgMHhjMjAyOgorCWNhc2UgMHhjMjA0OgorCWNhc2UgMHhjMzAxOgorCWNhc2UgMHhjMzAy
+OgorCWNhc2UgMHhjMzA0OgorCQluYl9wb3J0cyA9IHBkZXYtPmRldmljZSAmIDB4NzsKKwkJb2Zm
+c2V0ID0gMHg0MDA7CisJCXNoaWZ0ID0gMjsKIAkJYnJlYWs7CiAJY2FzZSAweDE2ODA6CiAJY2Fz
+ZSAweDIwNTI6CkBAIC0yOTgsNyArMzM1LDggQEAgc3RhdGljIGludCBhZHZfcGNpX2luaXRfb25l
+KHN0cnVjdCBwY2lfZGV2ICpwZGV2LAogCQkgICBwZGV2LT5kZXZpY2UsCiAJCSAgIHBkZXYtPnN1
+YnN5c3RlbV9kZXZpY2UpOwogCi0JcmV0ID0gcnRjYW5fYWR2X3BjaV9hZGRfY2hhbihwZGV2LCBj
+aGFubmVsLCBiYXIsIG9mZnNldCwgJm1hc3Rlcl9kZXYpOworCXJldCA9IHJ0Y2FuX2Fkdl9wY2lf
+YWRkX2NoYW4ocGRldiwgY2hhbm5lbCwgYmFyLCBvZmZzZXQsIHNoaWZ0LAorCQkJCSAgICAgJm1h
+c3Rlcl9kZXYpOwogCWlmIChyZXQpCiAJCWdvdG8gZmFpbHVyZV9pb3VubWFwOwogCi0tIAoxLjku
+MQoKCg==
