@@ -1,16 +1,12 @@
-Date: Tue, 20 Sep 2016 12:12:03 +0000 (UTC)
-From: Frederik Bayart <frederik_bayart@yahoo.co.uk>
-Message-ID: <60511831.3137105.1474373523702@mail.yahoo.com>
-In-Reply-To: <824086437.604672.1473773965754@mail.yahoo.com>
-References: <1271995210.507800.1473769593022.ref@mail.yahoo.com>
- <1271995210.507800.1473769593022@mail.yahoo.com>
- <20160913151107.0b15e1e8@md1em3qc>
- <824086437.604672.1473773965754@mail.yahoo.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] multiarch on ipipe kernel
-Reply-To: Frederik Bayart <frederik_bayart@yahoo.co.uk>
+From: "=?gb18030?B?SmFjayBMZWU=?=" <jacklee11@foxmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="gb18030"
+Content-Transfer-Encoding: base64
+Date: Fri, 2 Sep 2016 15:43:53 +0800
+Message-ID: <tencent_0BA5A90D4CADBE973A9C60D8@qq.com>
+Subject: [Xenomai] rt-socket-can "no device" problem with advantech
+	PCM-26D2CA CAN board
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,61 +15,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
 
-I enabled the settings below and then it was working. Thanks again.
-CONFIG_IA32_EMULATION=3DyCONFIG_IA32_AOUT=3DmCONFIG_X86_X32=3Dy
-Frederik=20
+PiBIZWxsbywKPiAKPiBBbSAwMi4wOS4yMDE2IHVtIDA5OjIzIHNjaHJpZWIgSmFjayBMZWU6
+Cj4gPj4gSGVsbG8sCj4gPj4KPiA+PiBBbSAwMi4wOS4yMDE2IHVtIDA4OjIzIHNjaHJpZWIg
+SmFjayBMZWU6Cj4gPj4+IEhpLCBldmVyeW9uZaOhCj4gPj4+ICAgSSBhbSB1c2luZyB0aGUg
+YWR2YW50ZWNoIFBDTS0yNkQyQ0EgQ0FOIGJvYXJkLCBpdHMgZGV0YWlscyBjYW4gYmUgZm91
+bmQgaGVyZSBhdAo+ID4+PiBodHRwOi8vd3d3LmFkdmFudGVjaC5jb20vcHJvZHVjdHMvMTQy
+NjM3MjktYWFhMy00NTUyLWI5OTAtOTlkMTZjZGZlZTI0L3BjbS0yNmQyY2EvbW9kXzlhMWU5
+ZGJmLWUyMmQtNDc3MC1hODk2LWNlY2Y0MDYwNzA4NC4KPiA+Pj4gVGhlIG9yaWdpbmFsIGRy
+aXZlciB3b3JrcyBmaW5lLCBidXQgSSBuZWVkIGl0IHRvIGJlIHJlYWx0aW1lLgo+ID4+PiAg
+IHJ0LWNhbiBkcml2ZXIgd2FzIGNvbXBpbGVkIGFzIG1vZHVsZXMgcHJldmlvdXNseS4gV2hl
+biBib290ZWQgYW5kICIjbW9kcHJvYmUgeGVub19jYW5fYWR2X3BjaSIgd2FzIGV4ZWN1dGVk
+LAo+ID4+PiAiI2RtZXNnIHwgZ3JlcCAtaSBjYW4iIG91dHB1dCB3YXMKPiA+Pj4gLi4uCj4g
+Pj4+IFJULVNvY2tldC1DQU4gMC45MC0yIC0gKGMpIDIwMDYgUlQtU29ja2V0LUNBTiBEZXZl
+bG9wbWVudCBUZWFtCj4gPj4+IFJUQ0FOIFNKQTEwMDAgZHJpdmVyIGluaXRpYWxpemVkCj4g
+Pj4+Cj4gPj4+ICIjbHNtb2QgfCBncmVwIC1pIGNhbiIgb3V0cHV0IHdhcwo+ID4+PiB4ZW5v
+X2Nhbl9hZHZfcGNpCj4gPj4+IHhlbm9fY2FuX3NqYTEwMDAgICAgdXNlZCBieSB4ZW5vX2Nh
+bl9hZHZfcGNpCj4gPj4+IHhlbm9fY2FuICAgICAgICAgICAgICAgICAgdXNlZCBieSB4ZW5v
+X2Nhbl9zamExMDAwLCB4ZW5vX2Nhbl9hZHZfcGNpCj4gPj4+Cj4gPj4+IFdoYXQgc3RyYW5n
+ZSBpcyB0aGF0IC9wcm9jL3J0Y2FuL2RldmljZXMgaGFzIG5vIGRldmljZXMgbGlrZSBydGNh
+bjAuCj4gPj4+IFRoZSAvcHJvYy9ydGNhbiBkaXJlY3RvcnkganVzdCBoYXMgdGhyZWUgZmls
+ZXM6IGRldmljZXMsIHNvY2tldHMgYW5kIHZlcnNpbwo+ID4+Cj4gPj4gV2hhdCBpcyB0aGUg
+UENJIGRldmljZSBpZCBvZiB0aGUgQ0FOIGRldmljZT8gWW91IGNhbiB1c2UgImxzcGNpIC12
+diIgdG8KPiA+PiBsaXN0IHRoZSBpZHMuCj4gPj4KPiA+Pj4gRG9lcyB0aGlzIENBTiBib2Fy
+ZCBzdXBwb3J0ZWQgYnkgcnQtc29ja2V0LWNhbj8gSG93IGNhbiBJIGltcGxlbWVudCByZWFs
+LXRpbWVyIGRyaXZlciBmb3IgaXQ/Cj4gPj4KPiA+PiBNb3N0IGxpa2VseSB0aGUgZGV2aWNl
+IGlkIGlzIG1pc3NpbmcgaW4gdGhlIGRyaXZlciBQQ0kgZGV2aWNlIGxpc3Q6Cj4gPj4KPiA+
+Pgo+ID4+IGh0dHA6Ly9naXQueGVub21haS5vcmcveGVub21haS0yLjYuZ2l0L3RyZWUva3Ny
+Yy9kcml2ZXJzL2Nhbi9zamExMDAwL3J0Y2FuX2Fkdl9wY2kuYyNuODcKPiA+Pgo+ID4+IFdv
+bGZnYW5nLgo+ID4KPiA+IFRoYW5rIHlvdSwgV29sZmdhbmchIE15IG1haWxib3ggZGVsYXlz
+IHRoYXQgSSBjYW5ub3QgYWRkIHlvdSBpbiB0aGUgY29udGFjdCwgc28gSSBzZW5kIHRvIHRo
+ZSB4ZW5vbWFpIGxpc3QuIFNvcnJ5IGZvciB0aGF0Lgo+IAo+IE5vIHByb2JsZW0uCj4gCj4g
+PiBDQU4gYm9hcmQgaW5mb3JtYXRpb24gaXMgYmVsb3cuCj4gPiAjbHNwY2kgLXZ2Cj4gPiAw
+MzowMC4wIENBTkJVUzogQWR2YW50ZWNoIENvLiBMdGQgTUlPZS0zNjgwIDItUG9ydCBDQU4t
+QnVzIE1JT2UgTW9kdWxlIHdpdGggSXNvbGF0aW9uIFByb3RlY3Rpb24KPiA+IAlTdWJzeXN0
+ZW06IEFkdmFudGVjaCBDby4gTHRkIE1JT2UtMzY4MCAyLVBvcnQgQ0FOLUJ1cyBNSU9lIE1v
+ZHVsZSB3aXRoIElzb2xhdGlvbiBQcm90ZWN0aW9uCj4gPiAJQ29udHJvbDogSS9PKyBNZW0r
+IEJ1c01hc3RlcisgU3BlY0N5Y2xlLSBNZW1XSU5WLSBWR0FTbm9vcC0gUGFyRXJyLSBTdGVw
+cGluZy0gU0VSUi0gRmFzdEIyQi0gRGlzSU5UeC0KPiA+IAlTdGF0dXM6IENhcCsgNjZNSHot
+IFVERi0gRmFzdEIyQi0gUGFyRXJyLSBERVZTRUw9ZmFzdCA+VEFib3J0LSA8VEFib3J0LSA8
+TUFib3J0LSA+U0VSUi0gPFBFUlItIElOVHgtCj4gPiAJTGF0ZW5jeTogMCwgQ2FjaGUgTGlu
+ZSBTaXplOiA2NCBieXRlcwo+ID4gCUludGVycnVwdDogcGluIEEgcm91dGVkIHRvIElSUSAx
+MAo+ID4gCVJlZ2lvbiAwOiBNZW1vcnkgYXQgZDBjMDIwMDAgKDMyLWJpdCwgbm9uLXByZWZl
+dGNoYWJsZSkgW3NpemU9MktdCj4gPiAJUmVnaW9uIDE6IE1lbW9yeSBhdCBkMGMwMTAwMCAo
+MzItYml0LCBub24tcHJlZmV0Y2hhYmxlKSBbc2l6ZT0xMjhdCj4gPiAJUmVnaW9uIDI6IE1l
+bW9yeSBhdCBkMGMwMDAwMCAoMzItYml0LCBub24tcHJlZmV0Y2hhYmxlKSBbc2l6ZT0xMjhd
+Cj4gPiAJQ2FwYWJpbGl0aWVzOiA8YWNjZXNzIGRlbmllZD4KPiAKPiBDb3VsZCB5b3UgcGxl
+YXNlIHVzZSAibHNwY2kgLXZ2biIgdG8gZ2V0ICBudW1iZXJzIChpbnN0ZWFkIG9mIHN0cmlu
+Z3MpLgo+IAo+IFdvbGZnYW5nLgoKVGhhbmtzISBUaGUgaW5mb3JtYXRpb24gaXMgYmVsb3cu
+CiNsc3BjaSAtdnZuCjAzOjAwLjAgMGMwOTogMTNmZTpjMzAyCglTdWJzeXN0ZW06IDEzZmU6
+YzMwMgoJQ29udHJvbDogSS9PKyBNZW0rIEJ1c01hc3RlcisgU3BlY0N5Y2xlLSBNZW1XSU5W
+LSBWR0FTbm9vcC0gUGFyRXJyLSBTdGVwcGluZy0gU0VSUi0gRmFzdEIyQi0gRGlzSU5UeC0K
+CVN0YXR1czogQ2FwKyA2Nk1Iei0gVURGLSBGYXN0QjJCLSBQYXJFcnItIERFVlNFTD1mYXN0
+ID5UQWJvcnQtIDxUQWJvcnQtIDxNQWJvcnQtID5TRVJSLSA8UEVSUi0gSU5UeC0KCUxhdGVu
+Y3k6IDAsIENhY2hlIExpbmUgU2l6ZTogNjQgYnl0ZXMKCUludGVycnVwdDogcGluIEEgcm91
+dGVkIHRvIElSUSAxMAoJUmVnaW9uIDA6IE1lbW9yeSBhdCBkMGMwMjAwMCAoMzItYml0LCBu
+b24tcHJlZmV0Y2hhYmxlKSBbc2l6ZT0yS10KCVJlZ2lvbiAxOiBNZW1vcnkgYXQgZDBjMDEw
+MDAgKDMyLWJpdCwgbm9uLXByZWZldGNoYWJsZSkgW3NpemU9MTI4XQoJUmVnaW9uIDI6IE1l
+bW9yeSBhdCBkMGMwMDAwMCAoMzItYml0LCBub24tcHJlZmV0Y2hhYmxlKSBbc2l6ZT0xMjhd
+CglDYXBhYmlsaXRpZXM6IFs0MF0gUG93ZXIgTWFuYWdlbWVudCB2ZXJzaW9uIDMKCQlGbGFn
+czogUE1FQ2xrLSBEU0ktIEQxLSBEMi0gQXV4Q3VycmVudD0wbUEgUE1FKEQwKyxEMSssRDIr
+LEQzaG90KyxEM2NvbGQtKQoJCVN0YXR1czogRDAgTm9Tb2Z0UnN0KyBQTUUtRW5hYmxlLSBE
+U2VsPTAgRFNjYWxlPTAgUE1FLQoJQ2FwYWJpbGl0aWVzOiBbNDhdIE1TSTogRW5hYmxlLSBD
+b3VudD0xLzIgTWFza2FibGUtIDY0Yml0KwoJCUFkZHJlc3M6IDAwMDAwMDAwMDAwMDAwMDAg
+IERhdGE6IDAwMDAKCUNhcGFiaWxpdGllczogWzU4XSBFeHByZXNzICh2MSkgTGVnYWN5IEVu
+ZHBvaW50LCBNU0kgMDAKCQlEZXZDYXA6CU1heFBheWxvYWQgNTEyIGJ5dGVzLCBQaGFudEZ1
+bmMgMCwgTGF0ZW5jeSBMMHMgPDY0bnMsIEwxIDwxdXMKCQkJRXh0VGFnLSBBdHRuQnRuLSBB
+dHRuSW5kLSBQd3JJbmQtIFJCRSsgRkxSZXNldC0KCQlEZXZDdGw6CVJlcG9ydCBlcnJvcnM6
+IENvcnJlY3RhYmxlLSBOb24tRmF0YWwtIEZhdGFsLSBVbnN1cHBvcnRlZC0KCQkJUmx4ZE9y
+ZC0gRXh0VGFnLSBQaGFudEZ1bmMtIEF1eFB3ci0gTm9Tbm9vcCsKCQkJTWF4UGF5bG9hZCAx
+MjggYnl0ZXMsIE1heFJlYWRSZXEgNTEyIGJ5dGVzCgkJRGV2U3RhOglDb3JyRXJyKyBVbmNv
+cnJFcnItIEZhdGFsRXJyLSBVbnN1cHBSZXEtIEF1eFB3ci0gVHJhbnNQZW5kLQoJCUxua0Nh
+cDoJUG9ydCAjMCwgU3BlZWQgMi41R1QvcywgV2lkdGggeDEsIEFTUE0gTDBzLCBFeGl0IExh
+dGVuY3kgTDBzIHVubGltaXRlZCwgTDEgdW5saW1pdGVkCgkJCUNsb2NrUE0tIFN1cnByaXNl
+LSBMTEFjdFJlcC0gQndOb3QtIEFTUE1PcHRDb21wLQoJCUxua0N0bDoJQVNQTSBEaXNhYmxl
+ZDsgUkNCIDY0IGJ5dGVzIERpc2FibGVkLSBDb21tQ2xrLQoJCQlFeHRTeW5jaC0gQ2xvY2tQ
+TS0gQXV0V2lkRGlzLSBCV0ludC0gQXV0QldJbnQtCgkJTG5rU3RhOglTcGVlZCAyLjVHVC9z
+LCBXaWR0aCB4MSwgVHJFcnItIFRyYWluLSBTbG90Q2xrLSBETEFjdGl2ZS0gQldNZ210LSBB
+QldNZ210LQ==
 
-    On Tuesday, 13 September 2016, 15:39, Frederik Bayart <frederik_bayart@=
-yahoo.co.uk> wrote:
-=20
 
- CONFIG_IA32_EMULATION is indeed not set.
-I will try to test it this week and let you know whether this was the cause=
-.
-Thank you very much for the help,
-Frederik=20
-
-    On Tuesday, 13 September 2016, 15:11, Henning Schild <henning.schild@si=
-emens.com> wrote:
-=20
-
- Do you have CONFIG_IA32_EMULATION set in your ipipe kernel?
-
-Henning
-
-Am Tue, 13 Sep 2016 12:26:33 +0000
-schrieb Frederik Bayart <frederik_bayart@yahoo.co.uk>:
-
-> Should it be possible to run an 32 bit non-rt binary on a 64 bit
-> ipipe kernel ? I'm using debian jessie amd64 and xenomai 2.6.4 on
-> kernel 3.18.20
->=20
-> I have added i386 as foreing architecture and installed the i386
-> toolchain $ dpkg --print-architectureamd64s$ dpkg
-> --print-foreign-architecturesi386 I have a small hello world binary
->=20
-> #include <stdio.h>
-> int main(int argc, char* argv[]){=C2=A0 printf("hello world\n");=C2=A0 re=
-turn
-> 0;} I compile with=C2=A0
-> gcc -m32 -o hello hello.c
-> This binary runs on the normal (non-ipipe) kernel
-> linux-image-3.16.0-4-amd64.But if I'm booting the ipipe kernel on the
-> same system, I get the error : -bash: ./hello: cannot execute binary
-> file: Exec format error So the problem seems to be related to the
-> kernel. But I didn't find whether a kernel option could be the cause.
-> The kernel was prepared with=C2=A0I only found that you can't run 32 bit
-> xenomai libraries on a 64 bit kernel, but this binary is not using
-> these libraries. Kind regards, Frederik
->=20
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
-
-
-  =20
-
-  =20
