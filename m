@@ -1,13 +1,15 @@
+In-Reply-To: <4881f7df-7eb5-30ec-035c-3314b79642ab@grandegger.com>
 References: <tencent_701E00C233E82F4D5C850B25@qq.com>
-From: Wolfgang Grandegger <wg@grandegger.com>
-Message-ID: <4881f7df-7eb5-30ec-035c-3314b79642ab@grandegger.com>
-Date: Sat, 3 Sep 2016 11:46:44 +0200
-MIME-Version: 1.0
-In-Reply-To: <tencent_701E00C233E82F4D5C850B25@qq.com>
-Content-Type: text/plain; charset=gb18030
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rt-socket-can "no device" problem with advantech
- PCM-26D2CA CAN board
+ <4881f7df-7eb5-30ec-035c-3314b79642ab@grandegger.com>
+From: "=?ISO-8859-1?B?SmFjayBMZWU=?=" <jacklee11@foxmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="ISO-8859-1"
+Content-Transfer-Encoding: base64
+Date: Sat, 3 Sep 2016 18:13:18 +0800
+Message-ID: <tencent_6DA3D28565D352B5124B1A38@qq.com>
+Subject: [Xenomai] rt-socket-can "no device" problem with advantech
+	PCM-26D2CA CANboard
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,172 +18,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jack Lee <jacklee11@foxmail.com>, xenomai <xenomai@xenomai.org>
+To: =?ISO-8859-1?B?d2c=?= <wg@grandegger.com>, =?ISO-8859-1?B?eGVub21haQ==?= <xenomai@xenomai.org>
 
-Hello,
-
-Am 03.09.2016 um 02:54 schrieb Jack Lee:
-...snip...
-
-> ------------I am back.--------------
-> I modified the source code and compiled the xeno_can_adv_pci.ko with
-> "make CONFIG_XENO_...=m -C $(krnsrc)
-> M=$(krnsrc)/drivers/xenomai/can/sja1000 modules".
-> After copied the module to the /lib/... directory and "modprobe
-> xeno_can_adv_pci", /proc/rtcan/devices remain the same. But "dmesg |
-> grep -i can" outputs these:
-> ...
-> [  239.374873] RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development
-> Team
-> [  239.396977] RTCAN SJA1000 driver initialized
-> [  239.405819] xeno_can_adv_pci: module verification failed: signature
-> and/or required key missing - tainting kernel
-> [  239.408014] ADV-PCI-CAN 0000:03:00.0: RTCAN Registering card
-> [  239.408121] ADV-PCI-CAN 0000:03:00.0: PCI->APIC IRQ transform: INT A
-> -> IRQ 18
-> [  239.408189] ADV-PCI-CAN 0000:03:00.0: RTCAN detected Advantech PCI
-> card at slot #0
-> [  239.408254] ADV-PCI-CAN: Initializing device 13fe:c302:c302
-> [  239.408386] ADV-PCI-CAN: base_addr=ffffc900008fe400
-> conf_addr=          (null) irq=18 ocr=0xfa cdr=0xc0
-> [  239.408575] rtcan: registered rtcan0
-> [  239.408631] Unregistering SJA1000 device rtcan0
-> [  239.408736] RTCAN: unregistered rtcan0
-> [  239.408890] ADV-PCI-CAN: probe of 0000:03:00.0 failed with error -5
-
-Oops, I forgot to adjust the mapped PCI space. In "pci_map()" "ADV_PCI_BASE_SIZE << shift"
-should be used. Below is v2 of the patch. Hope it works now.
-
-Wolfgang.
-
-
->From f346a0e7b08a02cc4ef3b06eef88992a6140b957 Mon Sep 17 00:00:00 2001
-From: Wolfgang Grandegger <Wolfgang Grandegger>
-Date: Fri, 2 Sep 2016 10:46:26 +0200
-Subject: [PATCH v2] rtcan: add support for new Advantec CAN PCI devices
-
----
- ksrc/drivers/can/sja1000/rtcan_adv_pci.c | 52 ++++++++++++++++++++++++++++----
- 1 file changed, 46 insertions(+), 6 deletions(-)
-
-diff --git a/ksrc/drivers/can/sja1000/rtcan_adv_pci.c b/ksrc/drivers/can/sja1000/rtcan_adv_pci.c
-index 1d36e7b..9d2ea7b 100644
---- a/ksrc/drivers/can/sja1000/rtcan_adv_pci.c
-+++ b/ksrc/drivers/can/sja1000/rtcan_adv_pci.c
-@@ -95,6 +95,12 @@ static DEFINE_PCI_DEVICE_TABLE(adv_pci_tbl) = {
- 	ADV_PCI_DEVICE(0xc101),
- 	ADV_PCI_DEVICE(0xc102),
- 	ADV_PCI_DEVICE(0xc104),
-+	ADV_PCI_DEVICE(0xc201),
-+	ADV_PCI_DEVICE(0xc202),
-+	ADV_PCI_DEVICE(0xc204),
-+	ADV_PCI_DEVICE(0xc301),
-+	ADV_PCI_DEVICE(0xc302),
-+	ADV_PCI_DEVICE(0xc304),
- 	/* required last entry */
- 	{ }
- };
-@@ -115,6 +121,21 @@ static void rtcan_adv_pci_write_reg(struct rtcan_device *dev, int port, u8 data)
- 	iowrite8(data, board->base_addr + port);
- }
- 
-+static u8 rtcan_adv_pci_read_reg_shift2(struct rtcan_device *dev, int port)
-+{
-+	struct rtcan_adv_pci *board = (struct rtcan_adv_pci *)dev->board_priv;
-+
-+	return ioread8(board->base_addr + (port << 2));
-+}
-+
-+static void rtcan_adv_pci_write_reg_shift2(struct rtcan_device *dev, int port,
-+					   u8 data)
-+{
-+	struct rtcan_adv_pci *board = (struct rtcan_adv_pci *)dev->board_priv;
-+
-+	iowrite8(data, board->base_addr + (port << 2));
-+}
-+
- static void rtcan_adv_pci_del_chan(struct pci_dev *pdev,
- 				   struct rtcan_device *dev)
- {
-@@ -137,6 +158,7 @@ static int rtcan_adv_pci_add_chan(struct pci_dev *pdev,
- 				  int channel,
- 				  unsigned int bar,
- 				  unsigned int offset,
-+				  unsigned int shift,
- 				  struct rtcan_device **master_dev)
- {
- 	struct rtcan_device *dev;
-@@ -161,13 +183,15 @@ static int rtcan_adv_pci_add_chan(struct pci_dev *pdev,
- 		if (offset)
- 			base_addr = master_board->base_addr+offset;
- 		else
--			base_addr = pci_iomap(pdev, bar, ADV_PCI_BASE_SIZE);
-+			base_addr = pci_iomap(pdev, bar,
-+					      ADV_PCI_BASE_SIZE << shift);
- 			if (!base_addr) {
- 				ret = -EIO;
- 				goto failure;
- 			}
- 	} else {
--		base_addr = pci_iomap(pdev, bar, ADV_PCI_BASE_SIZE) + offset;
-+		base_addr = pci_iomap(pdev, bar,
-+				      ADV_PCI_BASE_SIZE << shift) + offset;
- 		if (!base_addr) {
- 			ret = -EIO;
- 			goto failure;
-@@ -180,8 +204,13 @@ static int rtcan_adv_pci_add_chan(struct pci_dev *pdev,
- 
- 	dev->board_name = adv_pci_board_name;
- 
--	chip->read_reg = rtcan_adv_pci_read_reg;
--	chip->write_reg = rtcan_adv_pci_write_reg;
-+	if (shift == 2) {
-+		chip->read_reg = rtcan_adv_pci_read_reg_shift2;
-+		chip->write_reg = rtcan_adv_pci_write_reg_shift2;
-+	} else {
-+		chip->read_reg = rtcan_adv_pci_read_reg;
-+		chip->write_reg = rtcan_adv_pci_write_reg;
-+	}
- 
- 	/* Clock frequency in Hz */
- 	dev->can_sys_clock = ADV_PCI_CAN_CLOCK;
-@@ -244,6 +273,7 @@ static int adv_pci_init_one(struct pci_dev *pdev,
- 	unsigned int bar = 0;
- 	unsigned int bar_flag = 0;
- 	unsigned int offset = 0;
-+	unsigned int shift = 0;
- 	unsigned int ix;
- 
- 	struct rtcan_device *master_dev = NULL;
-@@ -270,7 +300,16 @@ static int adv_pci_init_one(struct pci_dev *pdev,
- 	case 0xc104:
- 		nb_ports = pdev->device & 0x7;
- 		offset = 0x100;
--		bar = 0;
-+		break;
-+	case 0xc201:
-+	case 0xc202:
-+	case 0xc204:
-+	case 0xc301:
-+	case 0xc302:
-+	case 0xc304:
-+		nb_ports = pdev->device & 0x7;
-+		offset = 0x400;
-+		shift = 2;
- 		break;
- 	case 0x1680:
- 	case 0x2052:
-@@ -298,7 +337,8 @@ static int adv_pci_init_one(struct pci_dev *pdev,
- 		   pdev->device,
- 		   pdev->subsystem_device);
- 
--	ret = rtcan_adv_pci_add_chan(pdev, channel, bar, offset, &master_dev);
-+	ret = rtcan_adv_pci_add_chan(pdev, channel, bar, offset, shift,
-+				     &master_dev);
- 	if (ret)
- 		goto failure_iounmap;
- 
--- 
-1.9.1
+PiBIZWxsbywKPiAKPiBBbSAwMy4wOS4yMDE2IHVtIDAyOjU0IHNjaHJpZWIgSmFjayBMZWU6
+Cj4gLi4uc25pcC4uLgo+IAo+ID4gLS0tLS0tLS0tLS0tSSBhbSBiYWNrLi0tLS0tLS0tLS0t
+LS0tCj4gPiBJIG1vZGlmaWVkIHRoZSBzb3VyY2UgY29kZSBhbmQgY29tcGlsZWQgdGhlIHhl
+bm9fY2FuX2Fkdl9wY2kua28gd2l0aAo+ID4gIm1ha2UgQ09ORklHX1hFTk9fLi4uPW0gLUMg
+JChrcm5zcmMpCj4gPiBNPSQoa3Juc3JjKS9kcml2ZXJzL3hlbm9tYWkvY2FuL3NqYTEwMDAg
+bW9kdWxlcyIuCj4gPiBBZnRlciBjb3BpZWQgdGhlIG1vZHVsZSB0byB0aGUgL2xpYi8uLi4g
+ZGlyZWN0b3J5IGFuZCAibW9kcHJvYmUKPiA+IHhlbm9fY2FuX2Fkdl9wY2kiLCAvcHJvYy9y
+dGNhbi9kZXZpY2VzIHJlbWFpbiB0aGUgc2FtZS4gQnV0ICJkbWVzZyB8Cj4gPiBncmVwIC1p
+IGNhbiIgb3V0cHV0cyB0aGVzZToKPiA+IC4uLgo+ID4gWyAgMjM5LjM3NDg3M10gUlQtU29j
+a2V0LUNBTiAwLjkwLjIgLSAoQykgMjAwNiBSVC1Tb2NrZXQtQ0FOIERldmVsb3BtZW50Cj4g
+PiBUZWFtCj4gPiBbICAyMzkuMzk2OTc3XSBSVENBTiBTSkExMDAwIGRyaXZlciBpbml0aWFs
+aXplZAo+ID4gWyAgMjM5LjQwNTgxOV0geGVub19jYW5fYWR2X3BjaTogbW9kdWxlIHZlcmlm
+aWNhdGlvbiBmYWlsZWQ6IHNpZ25hdHVyZQo+ID4gYW5kL29yIHJlcXVpcmVkIGtleSBtaXNz
+aW5nIC0gdGFpbnRpbmcga2VybmVsCj4gPiBbICAyMzkuNDA4MDE0XSBBRFYtUENJLUNBTiAw
+MDAwOjAzOjAwLjA6IFJUQ0FOIFJlZ2lzdGVyaW5nIGNhcmQKPiA+IFsgIDIzOS40MDgxMjFd
+IEFEVi1QQ0ktQ0FOIDAwMDA6MDM6MDAuMDogUENJLT5BUElDIElSUSB0cmFuc2Zvcm06IElO
+VCBBCj4gPiAtPiBJUlEgMTgKPiA+IFsgIDIzOS40MDgxODldIEFEVi1QQ0ktQ0FOIDAwMDA6
+MDM6MDAuMDogUlRDQU4gZGV0ZWN0ZWQgQWR2YW50ZWNoIFBDSQo+ID4gY2FyZCBhdCBzbG90
+ICMwCj4gPiBbICAyMzkuNDA4MjU0XSBBRFYtUENJLUNBTjogSW5pdGlhbGl6aW5nIGRldmlj
+ZSAxM2ZlOmMzMDI6YzMwMgo+ID4gWyAgMjM5LjQwODM4Nl0gQURWLVBDSS1DQU46IGJhc2Vf
+YWRkcj1mZmZmYzkwMDAwOGZlNDAwCj4gPiBjb25mX2FkZHI9ICAgICAgICAgIChudWxsKSBp
+cnE9MTggb2NyPTB4ZmEgY2RyPTB4YzAKPiA+IFsgIDIzOS40MDg1NzVdIHJ0Y2FuOiByZWdp
+c3RlcmVkIHJ0Y2FuMAo+ID4gWyAgMjM5LjQwODYzMV0gVW5yZWdpc3RlcmluZyBTSkExMDAw
+IGRldmljZSBydGNhbjAKPiA+IFsgIDIzOS40MDg3MzZdIFJUQ0FOOiB1bnJlZ2lzdGVyZWQg
+cnRjYW4wCj4gPiBbICAyMzkuNDA4ODkwXSBBRFYtUENJLUNBTjogcHJvYmUgb2YgMDAwMDow
+MzowMC4wIGZhaWxlZCB3aXRoIGVycm9yIC01Cj4gCj4gT29wcywgSSBmb3Jnb3QgdG8gYWRq
+dXN0IHRoZSBtYXBwZWQgUENJIHNwYWNlLiBJbiAicGNpX21hcCgpIiAiQURWX1BDSV9CQVNF
+X1NJWkUgPDwgc2hpZnQiCj4gc2hvdWxkIGJlIHVzZWQuIEJlbG93IGlzIHYyIG9mIHRoZSBw
+YXRjaC4gSG9wZSBpdCB3b3JrcyBub3cuCj4gCj4gV29sZmdhbmcuCj4gCj4gCj4gRnJvbSBm
+MzQ2YTBlN2IwOGEwMmNjNGVmM2IwNmVlZjg4OTkyYTYxNDBiOTU3IE1vbiBTZXAgMTcgMDA6
+MDA6MDAgMjAwMQo+IEZyb206IFdvbGZnYW5nIEdyYW5kZWdnZXIgPFdvbGZnYW5nIEdyYW5k
+ZWdnZXI+Cj4gRGF0ZTogRnJpLCAyIFNlcCAyMDE2IDEwOjQ2OjI2ICswMjAwCj4gU3ViamVj
+dDogW1BBVENIIHYyXSBydGNhbjogYWRkIHN1cHBvcnQgZm9yIG5ldyBBZHZhbnRlYyBDQU4g
+UENJIGRldmljZXMKPiAKPiAtLS0KPiAga3NyYy9kcml2ZXJzL2Nhbi9zamExMDAwL3J0Y2Fu
+X2Fkdl9wY2kuYyB8IDUyICsrKysrKysrKysrKysrKysrKysrKysrKysrKystLS0tCj4gIDEg
+ZmlsZSBjaGFuZ2VkLCA0NiBpbnNlcnRpb25zKCspLCA2IGRlbGV0aW9ucygtKQoKPiBkaWZm
+IC0tZ2l0IGEva3NyYy9kcml2ZXJzL2Nhbi9zamExMDAwL3J0Y2FuX2Fkdl9wY2kuYyBiL2tz
+cmMvZHJpdmVycy9jYW4vc2phMTAwMC9ydGNhbl9hZHZfcGNpLmMKPiBpbmRleCAxZDM2ZTdi
+Li45ZDJlYTdiIDEwMDY0NAo+IC0tLSBhL2tzcmMvZHJpdmVycy9jYW4vc2phMTAwMC9ydGNh
+bl9hZHZfcGNpLmMKPiArKysgYi9rc3JjL2RyaXZlcnMvY2FuL3NqYTEwMDAvcnRjYW5fYWR2
+X3BjaS5jCj4gQEAgLTk1LDYgKzk1LDEyIEBAIHN0YXRpYyBERUZJTkVfUENJX0RFVklDRV9U
+QUJMRShhZHZfcGNpX3RibCkgPSB7Cj4gIAlBRFZfUENJX0RFVklDRSgweGMxMDEpLAo+ICAJ
+QURWX1BDSV9ERVZJQ0UoMHhjMTAyKSwKPiAgCUFEVl9QQ0lfREVWSUNFKDB4YzEwNCksCj4g
+KwlBRFZfUENJX0RFVklDRSgweGMyMDEpLAo+ICsJQURWX1BDSV9ERVZJQ0UoMHhjMjAyKSwK
+PiArCUFEVl9QQ0lfREVWSUNFKDB4YzIwNCksCj4gKwlBRFZfUENJX0RFVklDRSgweGMzMDEp
+LAo+ICsJQURWX1BDSV9ERVZJQ0UoMHhjMzAyKSwKPiArCUFEVl9QQ0lfREVWSUNFKDB4YzMw
+NCksCj4gIAkvKiByZXF1aXJlZCBsYXN0IGVudHJ5ICovCj4gIAl7IH0KPiAgfTsKPiBAQCAt
+MTE1LDYgKzEyMSwyMSBAQCBzdGF0aWMgdm9pZCBydGNhbl9hZHZfcGNpX3dyaXRlX3JlZyhz
+dHJ1Y3QgcnRjYW5fZGV2aWNlICpkZXYsIGludCBwb3J0LCB1OCBkYXRhKQo+ICAJaW93cml0
+ZTgoZGF0YSwgYm9hcmQtPmJhc2VfYWRkciArIHBvcnQpOwo+IH0KPiAgCj4gK3N0YXRpYyB1
+OCBydGNhbl9hZHZfcGNpX3JlYWRfcmVnX3NoaWZ0MihzdHJ1Y3QgcnRjYW5fZGV2aWNlICpk
+ZXYsIGludCBwb3J0KQo+ICt7Cj4gKwlzdHJ1Y3QgcnRjYW5fYWR2X3BjaSAqYm9hcmQgPSAo
+c3RydWN0IHJ0Y2FuX2Fkdl9wY2kgKilkZXYtPmJvYXJkX3ByaXY7Cj4gKwo+ICsJcmV0dXJu
+IGlvcmVhZDgoYm9hcmQtPmJhc2VfYWRkciArIChwb3J0IDw8IDIpKTsKPiArfQo+ICsKPiAr
+c3RhdGljIHZvaWQgcnRjYW5fYWR2X3BjaV93cml0ZV9yZWdfc2hpZnQyKHN0cnVjdCBydGNh
+bl9kZXZpY2UgKmRldiwgaW50IHBvcnQsCj4gKwkgICB1OCBkYXRhKQo+ICt7Cj4gKwlzdHJ1
+Y3QgcnRjYW5fYWR2X3BjaSAqYm9hcmQgPSAoc3RydWN0IHJ0Y2FuX2Fkdl9wY2kgKilkZXYt
+PmJvYXJkX3ByaXY7Cj4gKwo+ICsJaW93cml0ZTgoZGF0YSwgYm9hcmQtPmJhc2VfYWRkciAr
+IChwb3J0IDw8IDIpKTsKPiArfQo+ICsKPiAgc3RhdGljIHZvaWQgcnRjYW5fYWR2X3BjaV9k
+ZWxfY2hhbihzdHJ1Y3QgcGNpX2RldiAqcGRldiwKPiAgCSAgIHN0cnVjdCBydGNhbl9kZXZp
+Y2UgKmRldikKPiAgewo+IEBAIC0xMzcsNiArMTU4LDcgQEAgc3RhdGljIGludCBydGNhbl9h
+ZHZfcGNpX2FkZF9jaGFuKHN0cnVjdCBwY2lfZGV2ICpwZGV2LAo+ICAJICBpbnQgY2hhbm5l
+bCwKPiAgCSAgdW5zaWduZWQgaW50IGJhciwKPiAgCSAgdW5zaWduZWQgaW50IG9mZnNldCwK
+PiArCSAgdW5zaWduZWQgaW50IHNoaWZ0LAo+ICAJICBzdHJ1Y3QgcnRjYW5fZGV2aWNlICoq
+bWFzdGVyX2RldikKPiAgewo+ICAJc3RydWN0IHJ0Y2FuX2RldmljZSAqZGV2Owo+IEBAIC0x
+NjEsMTMgKzE4MywxNSBAQCBzdGF0aWMgaW50IHJ0Y2FuX2Fkdl9wY2lfYWRkX2NoYW4oc3Ry
+dWN0IHBjaV9kZXYgKnBkZXYsCj4gIAlpZiAob2Zmc2V0KQo+ICAJYmFzZV9hZGRyID0gbWFz
+dGVyX2JvYXJkLT5iYXNlX2FkZHIrb2Zmc2V0Owo+ICAJZWxzZQo+IC0JYmFzZV9hZGRyID0g
+cGNpX2lvbWFwKHBkZXYsIGJhciwgQURWX1BDSV9CQVNFX1NJWkUpOwo+ICsJYmFzZV9hZGRy
+ID0gcGNpX2lvbWFwKHBkZXYsIGJhciwKPiArCSAgICAgIEFEVl9QQ0lfQkFTRV9TSVpFIDw8
+IHNoaWZ0KTsKPiAgCWlmICghYmFzZV9hZGRyKSB7Cj4gIAlyZXQgPSAtRUlPOwo+ICAJZ290
+byBmYWlsdXJlOwo+ICAJfQo+ICAJfSBlbHNlIHsKPiAtCWJhc2VfYWRkciA9IHBjaV9pb21h
+cChwZGV2LCBiYXIsIEFEVl9QQ0lfQkFTRV9TSVpFKSArIG9mZnNldDsKPiArCWJhc2VfYWRk
+ciA9IHBjaV9pb21hcChwZGV2LCBiYXIsCj4gKwkgICAgICBBRFZfUENJX0JBU0VfU0laRSA8
+PCBzaGlmdCkgKyBvZmZzZXQ7Cj4gIAlpZiAoIWJhc2VfYWRkcikgewo+ICAJcmV0ID0gLUVJ
+TzsKPiAgCWdvdG8gZmFpbHVyZTsKPiBAQCAtMTgwLDggKzIwNCwxMyBAQCBzdGF0aWMgaW50
+IHJ0Y2FuX2Fkdl9wY2lfYWRkX2NoYW4oc3RydWN0IHBjaV9kZXYgKnBkZXYsCj4gIAo+ICAJ
+ZGV2LT5ib2FyZF9uYW1lID0gYWR2X3BjaV9ib2FyZF9uYW1lOwo+ICAKPiAtCWNoaXAtPnJl
+YWRfcmVnID0gcnRjYW5fYWR2X3BjaV9yZWFkX3JlZzsKPiAtCWNoaXAtPndyaXRlX3JlZyA9
+IHJ0Y2FuX2Fkdl9wY2lfd3JpdGVfcmVnOwo+ICsJaWYgKHNoaWZ0ID09IDIpIHsKPiArCWNo
+aXAtPnJlYWRfcmVnID0gcnRjYW5fYWR2X3BjaV9yZWFkX3JlZ19zaGlmdDI7Cj4gKwljaGlw
+LT53cml0ZV9yZWcgPSBydGNhbl9hZHZfcGNpX3dyaXRlX3JlZ19zaGlmdDI7Cj4gKwl9IGVs
+c2Ugewo+ICsJY2hpcC0+cmVhZF9yZWcgPSBydGNhbl9hZHZfcGNpX3JlYWRfcmVnOwo+ICsJ
+Y2hpcC0+d3JpdGVfcmVnID0gcnRjYW5fYWR2X3BjaV93cml0ZV9yZWc7Cj4gKwl9Cj4gIAo+
+ICAJLyogQ2xvY2sgZnJlcXVlbmN5IGluIEh6ICovCj4gIAlkZXYtPmNhbl9zeXNfY2xvY2sg
+PSBBRFZfUENJX0NBTl9DTE9DSzsKPiBAQCAtMjQ0LDYgKzI3Myw3IEBAIHN0YXRpYyBpbnQg
+YWR2X3BjaV9pbml0X29uZShzdHJ1Y3QgcGNpX2RldiAqcGRldiwKPiAgCXVuc2lnbmVkIGlu
+dCBiYXIgPSAwOwo+ICAJdW5zaWduZWQgaW50IGJhcl9mbGFnID0gMDsKPiAgCXVuc2lnbmVk
+IGludCBvZmZzZXQgPSAwOwo+ICsJdW5zaWduZWQgaW50IHNoaWZ0ID0gMDsKPiAgCXVuc2ln
+bmVkIGludCBpeDsKPiAgCj4gIAlzdHJ1Y3QgcnRjYW5fZGV2aWNlICptYXN0ZXJfZGV2ID0g
+TlVMTDsKPiBAQCAtMjcwLDcgKzMwMCwxNiBAQCBzdGF0aWMgaW50IGFkdl9wY2lfaW5pdF9v
+bmUoc3RydWN0IHBjaV9kZXYgKnBkZXYsCj4gIAljYXNlIDB4YzEwNDoKPiAgCW5iX3BvcnRz
+ID0gcGRldi0+ZGV2aWNlICYgMHg3Owo+IAlvZmZzZXQgPSAweDEwMDsKPiAtCWJhciA9IDA7
+Cj4gKwlicmVhazsKPiArCWNhc2UgMHhjMjAxOgo+ICsJY2FzZSAweGMyMDI6Cj4gKwljYXNl
+IDB4YzIwNDoKPiArCWNhc2UgMHhjMzAxOgo+ICsJY2FzZSAweGMzMDI6Cj4gKwljYXNlIDB4
+YzMwNDoKPiArCW5iX3BvcnRzID0gcGRldi0+ZGV2aWNlICYgMHg3Owo+ICsJb2Zmc2V0ID0g
+MHg0MDA7Cj4gKwlzaGlmdCA9IDI7Cj4gIAlicmVhazsKPiAgCWNhc2UgMHgxNjgwOgo+ICAJ
+Y2FzZSAweDIwNTI6Cj4gQEAgLTI5OCw3ICszMzcsOCBAQCBzdGF0aWMgaW50IGFkdl9wY2lf
+aW5pdF9vbmUoc3RydWN0IHBjaV9kZXYgKnBkZXYsCj4gIAkgICBwZGV2LT5kZXZpY2UsCj4g
+IAkgICBwZGV2LT5zdWJzeXN0ZW1fZGV2aWNlKTsKPiAgCj4gLQlyZXQgPSBydGNhbl9hZHZf
+cGNpX2FkZF9jaGFuKHBkZXYsIGNoYW5uZWwsIGJhciwgb2Zmc2V0LCAmbWFzdGVyX2Rldik7
+Cj4gKwlyZXQgPSBydGNhbl9hZHZfcGNpX2FkZF9jaGFuKHBkZXYsIGNoYW5uZWwsIGJhciwg
+b2Zmc2V0LCBzaGlmdCwKPiArCSAgICAgJm1hc3Rlcl9kZXYpOwo+ICAJaWYgKHJldCkKPiAg
+CWdvdG8gZmFpbHVyZV9pb3VubWFwOwo+ICAKPiAtLSAKPiAxLjkuMQoKVGhhbmtzIGEgbG90
+ISBUaGUgZGV2aWNlIGlzIG5vdCBvbiBteSBoYW5kIGF0IHRoZSBtb21lbnQuIEkgd2lsbCB0
+ZXN0IGl0IHRvbW9ycm93CmFuZCBicmluZyBiYWNrIHRoZSByZXN1bHQuIEJ5IHRoZSB3YXks
+IEkgYW0gaW4gdGhlIEVhc3QgKzguMDAgdGltZXpvbmUuICBIYXZlIGEgZ29vZCBkYXkh
 
 
