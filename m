@@ -1,12 +1,13 @@
-From: "=?gb18030?B?SmFjayBMZWU=?=" <jacklee11@foxmail.com>
-Mime-Version: 1.0
-Date: Sat, 3 Sep 2016 08:54:52 +0800
-Message-ID: <tencent_701E00C233E82F4D5C850B25@qq.com>
-Content-Type: text/plain;
-	charset="gb18030"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] rt-socket-can "no device" problem with advantech
-	PCM-26D2CA CAN board
+References: <tencent_701E00C233E82F4D5C850B25@qq.com>
+From: Wolfgang Grandegger <wg@grandegger.com>
+Message-ID: <4881f7df-7eb5-30ec-035c-3314b79642ab@grandegger.com>
+Date: Sat, 3 Sep 2016 11:46:44 +0200
+MIME-Version: 1.0
+In-Reply-To: <tencent_701E00C233E82F4D5C850B25@qq.com>
+Content-Type: text/plain; charset=gb18030
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] rt-socket-can "no device" problem with advantech
+ PCM-26D2CA CAN board
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,211 +16,172 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?gb18030?B?d2c=?= <wg@grandegger.com>, =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
+To: Jack Lee <jacklee11@foxmail.com>, xenomai <xenomai@xenomai.org>
 
-PiBIZWxsbywNCj4gDQo+IEFtIDAyLjA5LjIwMTYgdW0gMTA6MTkgc2NocmllYiBKYWNrIExl
-ZToNCj4gPj4gSGVsbG8sDQo+ID4+DQo+ID4+IEFtIDAyLjA5LjIwMTYgdW0gMDk6MjMgc2No
-cmllYiBKYWNrIExlZToNCj4gPj4+PiBIZWxsbywNCj4gPj4+Pg0KPiA+Pj4+IEFtIDAyLjA5
-LjIwMTYgdW0gMDg6MjMgc2NocmllYiBKYWNrIExlZToNCj4gPj4+Pj4gSGksIGV2ZXJ5b25l
-o6ENCj4gPj4+Pj4gICBJIGFtIHVzaW5nIHRoZSBhZHZhbnRlY2ggUENNLTI2RDJDQSBDQU4g
-Ym9hcmQsIGl0cyBkZXRhaWxzIGNhbiBiZSBmb3VuZCBoZXJlIGF0DQo+ID4+Pj4+IGh0dHA6
-Ly93d3cuYWR2YW50ZWNoLmNvbS9wcm9kdWN0cy8xNDI2MzcyOS1hYWEzLTQ1NTItYjk5MC05
-OWQxNmNkZmVlMjQvcGNtLTI2ZDJjYS9tb2RfOWExZTlkYmYtZTIyZC00NzcwLWE4OTYtY2Vj
-ZjQwNjA3MDg0Lg0KPiA+Pj4+PiBUaGUgb3JpZ2luYWwgZHJpdmVyIHdvcmtzIGZpbmUsIGJ1
-dCBJIG5lZWQgaXQgdG8gYmUgcmVhbHRpbWUuDQo+ID4+Pj4+ICAgcnQtY2FuIGRyaXZlciB3
-YXMgY29tcGlsZWQgYXMgbW9kdWxlcyBwcmV2aW91c2x5LiBXaGVuIGJvb3RlZCBhbmQgIiNt
-b2Rwcm9iZSB4ZW5vX2Nhbl9hZHZfcGNpIiB3YXMgZXhlY3V0ZWQsDQo+ID4+Pj4+ICIjZG1l
-c2cgfCBncmVwIC1pIGNhbiIgb3V0cHV0IHdhcw0KPiA+Pj4+PiAuLi4NCj4gPj4+Pj4gUlQt
-U29ja2V0LUNBTiAwLjkwLTIgLSAoYykgMjAwNiBSVC1Tb2NrZXQtQ0FOIERldmVsb3BtZW50
-IFRlYW0NCj4gPj4+Pj4gUlRDQU4gU0pBMTAwMCBkcml2ZXIgaW5pdGlhbGl6ZWQNCj4gPj4+
-Pj4NCj4gPj4+Pj4gIiNsc21vZCB8IGdyZXAgLWkgY2FuIiBvdXRwdXQgd2FzDQo+ID4+Pj4+
-IHhlbm9fY2FuX2Fkdl9wY2kNCj4gPj4+Pj4geGVub19jYW5fc2phMTAwMCAgICB1c2VkIGJ5
-IHhlbm9fY2FuX2Fkdl9wY2kNCj4gPj4+Pj4geGVub19jYW4gICAgICAgICAgICAgICAgICB1
-c2VkIGJ5IHhlbm9fY2FuX3NqYTEwMDAsIHhlbm9fY2FuX2Fkdl9wY2kNCj4gPj4+Pj4NCj4g
-Pj4+Pj4gV2hhdCBzdHJhbmdlIGlzIHRoYXQgL3Byb2MvcnRjYW4vZGV2aWNlcyBoYXMgbm8g
-ZGV2aWNlcyBsaWtlIHJ0Y2FuMC4NCj4gPj4+Pj4gVGhlIC9wcm9jL3J0Y2FuIGRpcmVjdG9y
-eSBqdXN0IGhhcyB0aHJlZSBmaWxlczogZGV2aWNlcywgc29ja2V0cyBhbmQgdmVyc2lvDQo+
-ID4+Pj4NCj4gPj4+PiBXaGF0IGlzIHRoZSBQQ0kgZGV2aWNlIGlkIG9mIHRoZSBDQU4gZGV2
-aWNlPyBZb3UgY2FuIHVzZSAibHNwY2kgLXZ2IiB0bw0KPiA+Pj4+IGxpc3QgdGhlIGlkcy4N
-Cj4gPj4+Pg0KPiA+Pj4+PiBEb2VzIHRoaXMgQ0FOIGJvYXJkIHN1cHBvcnRlZCBieSBydC1z
-b2NrZXQtY2FuPyBIb3cgY2FuIEkgaW1wbGVtZW50IHJlYWwtdGltZXIgZHJpdmVyIGZvciBp
-dD8NCj4gPj4+Pg0KPiA+Pj4+IE1vc3QgbGlrZWx5IHRoZSBkZXZpY2UgaWQgaXMgbWlzc2lu
-ZyBpbiB0aGUgZHJpdmVyIFBDSSBkZXZpY2UgbGlzdDoNCj4gPj4+Pg0KPiA+Pj4+DQo+ID4+
-Pj4gaHR0cDovL2dpdC54ZW5vbWFpLm9yZy94ZW5vbWFpLTIuNi5naXQvdHJlZS9rc3JjL2Ry
-aXZlcnMvY2FuL3NqYTEwMDAvcnRjYW5fYWR2X3BjaS5jI244Nw0KPiA+Pj4+DQo+ID4+Pj4g
-V29sZmdhbmcuDQo+ID4+Pg0KPiA+Pj4gVGhhbmsgeW91LCBXb2xmZ2FuZyEgTXkgbWFpbGJv
-eCBkZWxheXMgdGhhdCBJIGNhbm5vdCBhZGQgeW91IGluIHRoZSBjb250YWN0LCBzbyBJIHNl
-bmQgdG8gdGhlIHhlbm9tYWkgbGlzdC4gU29ycnkgZm9yIHRoYXQuDQo+ID4+DQo+ID4+IE5v
-IHByb2JsZW0uDQo+ID4+DQo+ID4+PiBDQU4gYm9hcmQgaW5mb3JtYXRpb24gaXMgYmVsb3cu
-DQo+ID4+PiAjbHNwY2kgLXZ2DQo+ID4+PiAwMzowMC4wIENBTkJVUzogQWR2YW50ZWNoIENv
-LiBMdGQgTUlPZS0zNjgwIDItUG9ydCBDQU4tQnVzIE1JT2UgTW9kdWxlIHdpdGggSXNvbGF0
-aW9uIFByb3RlY3Rpb24NCj4gPj4+IAlTdWJzeXN0ZW06IEFkdmFudGVjaCBDby4gTHRkIE1J
-T2UtMzY4MCAyLVBvcnQgQ0FOLUJ1cyBNSU9lIE1vZHVsZSB3aXRoIElzb2xhdGlvbiBQcm90
-ZWN0aW9uDQo+ID4+PiAJQ29udHJvbDogSS9PKyBNZW0rIEJ1c01hc3RlcisgU3BlY0N5Y2xl
-LSBNZW1XSU5WLSBWR0FTbm9vcC0gUGFyRXJyLSBTdGVwcGluZy0gU0VSUi0gRmFzdEIyQi0g
-RGlzSU5UeC0NCj4gPj4+IAlTdGF0dXM6IENhcCsgNjZNSHotIFVERi0gRmFzdEIyQi0gUGFy
-RXJyLSBERVZTRUw9ZmFzdCA+VEFib3J0LSA8VEFib3J0LSA8TUFib3J0LSA+U0VSUi0gPFBF
-UlItIElOVHgtDQo+ID4+PiAJTGF0ZW5jeTogMCwgQ2FjaGUgTGluZSBTaXplOiA2NCBieXRl
-cw0KPiA+Pj4gCUludGVycnVwdDogcGluIEEgcm91dGVkIHRvIElSUSAxMA0KPiA+Pj4gCVJl
-Z2lvbiAwOiBNZW1vcnkgYXQgZDBjMDIwMDAgKDMyLWJpdCwgbm9uLXByZWZldGNoYWJsZSkg
-W3NpemU9MktdDQo+ID4+PiAJUmVnaW9uIDE6IE1lbW9yeSBhdCBkMGMwMTAwMCAoMzItYml0
-LCBub24tcHJlZmV0Y2hhYmxlKSBbc2l6ZT0xMjhdDQo+ID4+PiAJUmVnaW9uIDI6IE1lbW9y
-eSBhdCBkMGMwMDAwMCAoMzItYml0LCBub24tcHJlZmV0Y2hhYmxlKSBbc2l6ZT0xMjhdDQo+
-ID4+PiAJQ2FwYWJpbGl0aWVzOiA8YWNjZXNzIGRlbmllZD4NCj4gPj4NCj4gPj4gQ291bGQg
-eW91IHBsZWFzZSB1c2UgImxzcGNpIC12dm4iIHRvIGdldCAgbnVtYmVycyAoaW5zdGVhZCBv
-ZiBzdHJpbmdzKS4NCj4gPj4NCj4gPj4gV29sZmdhbmcuDQo+ID4gDQo+ID4gVGhhbmtzISBU
-aGUgaW5mb3JtYXRpb24gaXMgYmVsb3cuDQo+ID4gI2xzcGNpIC12dm4NCj4gPiAwMzowMC4w
-IDBjMDk6IDEzZmU6YzMwMg0KPiA+IAlTdWJzeXN0ZW06IDEzZmU6YzMwMg0KPiA+IAlDb250
-cm9sOiBJL08rIE1lbSsgQnVzTWFzdGVyKyBTcGVjQ3ljbGUtIE1lbVdJTlYtIFZHQVNub29w
-LSBQYXJFcnItIFN0ZXBwaW5nLSBTRVJSLSBGYXN0QjJCLSBEaXNJTlR4LQ0KPiA+IAlTdGF0
-dXM6IENhcCsgNjZNSHotIFVERi0gRmFzdEIyQi0gUGFyRXJyLSBERVZTRUw9ZmFzdCA+VEFi
-b3J0LSA8VEFib3J0LSA8TUFib3J0LSA+U0VSUi0gPFBFUlItIElOVHgtDQo+ID4gCUxhdGVu
-Y3k6IDAsIENhY2hlIExpbmUgU2l6ZTogNjQgYnl0ZXMNCj4gPiAJSW50ZXJydXB0OiBwaW4g
-QSByb3V0ZWQgdG8gSVJRIDEwDQo+ID4gCVJlZ2lvbiAwOiBNZW1vcnkgYXQgZDBjMDIwMDAg
-KDMyLWJpdCwgbm9uLXByZWZldGNoYWJsZSkgW3NpemU9MktdDQo+ID4gCVJlZ2lvbiAxOiBN
-ZW1vcnkgYXQgZDBjMDEwMDAgKDMyLWJpdCwgbm9uLXByZWZldGNoYWJsZSkgW3NpemU9MTI4
-XQ0KPiA+IAlSZWdpb24gMjogTWVtb3J5IGF0IGQwYzAwMDAwICgzMi1iaXQsIG5vbi1wcmVm
-ZXRjaGFibGUpIFtzaXplPTEyOF0NCj4gPiAJQ2FwYWJpbGl0aWVzOiBbNDBdIFBvd2VyIE1h
-bmFnZW1lbnQgdmVyc2lvbiAzDQo+ID4gCQlGbGFnczogUE1FQ2xrLSBEU0ktIEQxLSBEMi0g
-QXV4Q3VycmVudD0wbUEgUE1FKEQwKyxEMSssRDIrLEQzaG90KyxEM2NvbGQtKQ0KPiA+IAkJ
-U3RhdHVzOiBEMCBOb1NvZnRSc3QrIFBNRS1FbmFibGUtIERTZWw9MCBEU2NhbGU9MCBQTUUt
-DQo+ID4gCUNhcGFiaWxpdGllczogWzQ4XSBNU0k6IEVuYWJsZS0gQ291bnQ9MS8yIE1hc2th
-YmxlLSA2NGJpdCsNCj4gPiAJCUFkZHJlc3M6IDAwMDAwMDAwMDAwMDAwMDAgIERhdGE6IDAw
-MDANCj4gPiAJQ2FwYWJpbGl0aWVzOiBbNThdIEV4cHJlc3MgKHYxKSBMZWdhY3kgRW5kcG9p
-bnQsIE1TSSAwMA0KPiA+IAkJRGV2Q2FwOglNYXhQYXlsb2FkIDUxMiBieXRlcywgUGhhbnRG
-dW5jIDAsIExhdGVuY3kgTDBzIDw2NG5zLCBMMSA8MXVzDQo+ID4gCQkJRXh0VGFnLSBBdHRu
-QnRuLSBBdHRuSW5kLSBQd3JJbmQtIFJCRSsgRkxSZXNldC0NCj4gPiAJCURldkN0bDoJUmVw
-b3J0IGVycm9yczogQ29ycmVjdGFibGUtIE5vbi1GYXRhbC0gRmF0YWwtIFVuc3VwcG9ydGVk
-LQ0KPiA+IAkJCVJseGRPcmQtIEV4dFRhZy0gUGhhbnRGdW5jLSBBdXhQd3ItIE5vU25vb3Ar
-DQo+ID4gCQkJTWF4UGF5bG9hZCAxMjggYnl0ZXMsIE1heFJlYWRSZXEgNTEyIGJ5dGVzDQo+
-ID4gCQlEZXZTdGE6CUNvcnJFcnIrIFVuY29yckVyci0gRmF0YWxFcnItIFVuc3VwcFJlcS0g
-QXV4UHdyLSBUcmFuc1BlbmQtDQo+ID4gCQlMbmtDYXA6CVBvcnQgIzAsIFNwZWVkIDIuNUdU
-L3MsIFdpZHRoIHgxLCBBU1BNIEwwcywgRXhpdCBMYXRlbmN5IEwwcyB1bmxpbWl0ZWQsIEwx
-IHVubGltaXRlZA0KPiA+IAkJCUNsb2NrUE0tIFN1cnByaXNlLSBMTEFjdFJlcC0gQndOb3Qt
-IEFTUE1PcHRDb21wLQ0KPiA+IAkJTG5rQ3RsOglBU1BNIERpc2FibGVkOyBSQ0IgNjQgYnl0
-ZXMgRGlzYWJsZWQtIENvbW1DbGstDQo+ID4gCQkJRXh0U3luY2gtIENsb2NrUE0tIEF1dFdp
-ZERpcy0gQldJbnQtIEF1dEJXSW50LQ0KPiA+IAkJTG5rU3RhOglTcGVlZCAyLjVHVC9zLCBX
-aWR0aCB4MSwgVHJFcnItIFRyYWluLSBTbG90Q2xrLSBETEFjdGl2ZS0gQldNZ210LSBBQldN
-Z210LQ0KPiA+IA0KPiA+IA0KPiA+IElzIKGwMGMwOTogMTNmZTpjMzAyobEgdGhlIGRldmlj
-ZSBJRD8gQ2FuIHlvdSBzaG93IG1lIHNvbWUgaW5zdHJ1Y3Rpb25zIHRvIG1ha2UgdGhpcyBk
-ZXZpY2Ugd29yaz8gSSBhbSByZWFsbHkgbmV3IHRvIHRoaXMuDQo+IA0KPiBUaGUgUENJIHZl
-bmRvciBpZCBpcyAweDEzZmUgYW5kIHRoZSBkZXZpY2UgaWQgaXMgMHhjMzAyLg0KPiANCj4g
-PiBJIG9wZW5lZCB0aGUgbGluayB5b3UgcGFzdGUgYWJvdmUsIHBlcmhhcHMgdGhlIGZvbGxv
-d2luZyB0d28gcGxhY2VzIHNob3VsZCBiZSBtb2RpZmllZC4NCj4gPiANCj4gPiBBIG5ldyBs
-aW5lICJBRFZfUENJX0RFVklDRSgweGMzMDIpLCAiIHNob3VsZCBiZSBhZGRlZD8NCj4gPiAt
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0NCj4gPiAJc3RhdGljIERFRklORV9QQ0lfREVWSUNFX1RBQkxFKGFkdl9wY2lf
-dGJsKSA9IHsNCj4gPiAJCUFEVl9QQ0lfREVWSUNFKDB4MTY4MCksDQo+ID4gCQlBRFZfUENJ
-X0RFVklDRSgweDM2ODApLA0KPiA+IAkJQURWX1BDSV9ERVZJQ0UoMHgyMDUyKSwNCj4gPiAJ
-CUFEVl9QQ0lfREVWSUNFKDB4MTY4MSksDQo+ID4gCQlBRFZfUENJX0RFVklDRSgweGMwMDEp
-LA0KPiA+IAkJQURWX1BDSV9ERVZJQ0UoMHhjMDAyKSwNCj4gPiAJCUFEVl9QQ0lfREVWSUNF
-KDB4YzAwNCksDQo+ID4gCQlBRFZfUENJX0RFVklDRSgweGMxMDEpLA0KPiA+IAkJQURWX1BD
-SV9ERVZJQ0UoMHhjMTAyKSwNCj4gPiAJCUFEVl9QQ0lfREVWSUNFKDB4YzEwNCksDQo+ID4g
-CQkvKiByZXF1aXJlZCBsYXN0IGVudHJ5ICovDQo+ID4gCQl7IH0NCj4gPiAJfTsNCj4gPiAN
-Cj4gPiBIb3cgdG8gZGVhbCB3aXRoIHRoaXMgb25lPw0KPiA+IC0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiA+IAlz
-d2l0Y2ggKHBkZXYtPmRldmljZSkgew0KPiA+IAljYXNlIDB4YzAwMToNCj4gPiAJY2FzZSAw
-eGMwMDI6DQo+ID4gCWNhc2UgMHhjMDA0Og0KPiA+IAljYXNlIDB4YzEwMToNCj4gPiAJY2Fz
-ZSAweGMxMDI6DQo+ID4gCWNhc2UgMHhjMTA0Og0KPiA+IAkJbmJfcG9ydHMgPSBwZGV2LT5k
-ZXZpY2UgJiAweDc7DQo+ID4gCQlvZmZzZXQgPSAweDEwMDsNCj4gPiAJCWJhciA9IDA7DQo+
-ID4gCQlicmVhazsNCj4gPiAJY2FzZSAweDE2ODA6DQo+ID4gCWNhc2UgMHgyMDUyOg0KPiA+
-IAkJbmJfcG9ydHMgPSAyOw0KPiA+IAkJYmFyID0gMjsNCj4gPiAJCWJhcl9mbGFnID0gMTsN
-Cj4gPiAJCWJyZWFrOw0KPiA+IAljYXNlIDB4MTY4MToNCj4gPiAJCW5iX3BvcnRzID0gMTsN
-Cj4gPiAJCWJhciA9IDI7DQo+ID4gCQliYXJfZmxhZyA9IDE7DQo+ID4gCQlicmVhazsNCj4g
-PiAJZGVmYXVsdDoNCj4gPiAJCWdvdG8gZmFpbHVyZV9yZWdpb25zOw0KPiA+IAl9DQo+IA0K
-PiBDb3VsZCB5b3UgcGxlYXNlIGdpdmUgdGhlIHVudGVzdGVkIHBhdGNoIGJlbG93IGEgdHJ5
-Lg0KPiANCj4gR29vZCBsdWNrLA0KPiANCj4gV29sZmdhbmcuDQo+IA0KPiA+RnJvbSAwMGM5
-NjMxZjI2Njc1YjkwZWExZmYyYjRiYjlmNzJmZDgxZmNiOTFjIE1vbiBTZXAgMTcgMDA6MDA6
-MDAgMjAwMQ0KPiBGcm9tOiBXb2xmZ2FuZyBHcmFuZGVnZ2VyIDxXb2xmZ2FuZyBHcmFuZGVn
-Z2VyPg0KPiBEYXRlOiBGcmksIDIgU2VwIDIwMTYgMTA6NDY6MjYgKzAyMDANCj4gU3ViamVj
-dDogW1BBVENIXSBydGNhbjogYWRkIHN1cHBvcnQgZm9yIG5ldyBBZHZhbnRlYyBDQU4gUENJ
-IGRldmljZXMNCj4gDQo+IC0tLQ0KPiAga3NyYy9kcml2ZXJzL2Nhbi9zamExMDAwL3J0Y2Fu
-X2Fkdl9wY2kuYyB8IDQ2ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrLS0tDQo+ICAx
-IGZpbGUgY2hhbmdlZCwgNDIgaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMoLSkNCj4gDQo+
-IGRpZmYgLS1naXQgYS9rc3JjL2RyaXZlcnMvY2FuL3NqYTEwMDAvcnRjYW5fYWR2X3BjaS5j
-IGIva3NyYy9kcml2ZXJzL2Nhbi9zamExMDAwL3J0Y2FuX2Fkdl9wY2kuYw0KPiBpbmRleCAx
-ZDM2ZTdiLi5jM2RlMDUyIDEwMDY0NA0KPiAtLS0gYS9rc3JjL2RyaXZlcnMvY2FuL3NqYTEw
-MDAvcnRjYW5fYWR2X3BjaS5jDQo+ICsrKyBiL2tzcmMvZHJpdmVycy9jYW4vc2phMTAwMC9y
-dGNhbl9hZHZfcGNpLmMNCj4gQEAgLTk1LDYgKzk1LDEyIEBAIHN0YXRpYyBERUZJTkVfUENJ
-X0RFVklDRV9UQUJMRShhZHZfcGNpX3RibCkgPSB7DQo+ICAJQURWX1BDSV9ERVZJQ0UoMHhj
-MTAxKSwNCj4gIAlBRFZfUENJX0RFVklDRSgweGMxMDIpLA0KPiAgCUFEVl9QQ0lfREVWSUNF
-KDB4YzEwNCksDQo+ICsJQURWX1BDSV9ERVZJQ0UoMHhjMjAxKSwNCj4gKwlBRFZfUENJX0RF
-VklDRSgweGMyMDIpLA0KPiArCUFEVl9QQ0lfREVWSUNFKDB4YzIwNCksDQo+ICsJQURWX1BD
-SV9ERVZJQ0UoMHhjMzAxKSwNCj4gKwlBRFZfUENJX0RFVklDRSgweGMzMDIpLA0KPiArCUFE
-Vl9QQ0lfREVWSUNFKDB4YzMwNCksDQo+ICAJLyogcmVxdWlyZWQgbGFzdCBlbnRyeSAqLw0K
-PiAgCXsgfQ0KPiAgfTsNCj4gQEAgLTExNSw2ICsxMjEsMjEgQEAgc3RhdGljIHZvaWQgcnRj
-YW5fYWR2X3BjaV93cml0ZV9yZWcoc3RydWN0IHJ0Y2FuX2RldmljZSAqZGV2LCBpbnQgcG9y
-dCwgdTggZGF0YSkNCj4gCWlvd3JpdGU4KGRhdGEsIGJvYXJkLT5iYXNlX2FkZHIgKyBwb3J0
-KTsNCj4gIH0NCj4gIA0KPiArc3RhdGljIHU4IHJ0Y2FuX2Fkdl9wY2lfcmVhZF9yZWdfc2hp
-ZnQyKHN0cnVjdCBydGNhbl9kZXZpY2UgKmRldiwgaW50IHBvcnQpDQo+ICt7DQo+ICsJc3Ry
-dWN0IHJ0Y2FuX2Fkdl9wY2kgKmJvYXJkID0gKHN0cnVjdCBydGNhbl9hZHZfcGNpICopZGV2
-LT5ib2FyZF9wcml2Ow0KPiArDQo+ICsJcmV0dXJuIGlvcmVhZDgoYm9hcmQtPmJhc2VfYWRk
-ciArIChwb3J0IDw8IDIpKTsNCj4gK30NCj4gKw0KPiArc3RhdGljIHZvaWQgcnRjYW5fYWR2
-X3BjaV93cml0ZV9yZWdfc2hpZnQyKHN0cnVjdCBydGNhbl9kZXZpY2UgKmRldiwgaW50IHBv
-cnQsDQo+ICsJCQkJCSAgIHU4IGRhdGEpDQo+ICt7DQo+ICsJc3RydWN0IHJ0Y2FuX2Fkdl9w
-Y2kgKmJvYXJkID0gKHN0cnVjdCBydGNhbl9hZHZfcGNpICopZGV2LT5ib2FyZF9wcml2Ow0K
-PiArDQo+ICsJaW93cml0ZTgoZGF0YSwgYm9hcmQtPmJhc2VfYWRkciArIChwb3J0IDw8IDIp
-KTsNCj4gK30NCj4gKw0KPiAgc3RhdGljIHZvaWQgcnRjYW5fYWR2X3BjaV9kZWxfY2hhbihz
-dHJ1Y3QgcGNpX2RldiAqcGRldiwNCj4gIAkJCQkgICBzdHJ1Y3QgcnRjYW5fZGV2aWNlICpk
-ZXYpDQo+ICB7DQo+IEBAIC0xMzcsNiArMTU4LDcgQEAgc3RhdGljIGludCBydGNhbl9hZHZf
-cGNpX2FkZF9jaGFuKHN0cnVjdCBwY2lfZGV2ICpwZGV2LA0KPiAgCQkJCSAgaW50IGNoYW5u
-ZWwsDQo+ICAJCQkJICB1bnNpZ25lZCBpbnQgYmFyLA0KPiAgCQkJCSAgdW5zaWduZWQgaW50
-IG9mZnNldCwNCj4gKwkJCQkgIHVuc2lnbmVkIGludCBzaGlmdCwNCj4gIAkJCQkgIHN0cnVj
-dCBydGNhbl9kZXZpY2UgKiptYXN0ZXJfZGV2KQ0KPiAgew0KPiAgCXN0cnVjdCBydGNhbl9k
-ZXZpY2UgKmRldjsNCj4gQEAgLTE4MCw4ICsyMDIsMTMgQEAgc3RhdGljIGludCBydGNhbl9h
-ZHZfcGNpX2FkZF9jaGFuKHN0cnVjdCBwY2lfZGV2ICpwZGV2LA0KPiAgDQo+ICAJZGV2LT5i
-b2FyZF9uYW1lID0gYWR2X3BjaV9ib2FyZF9uYW1lOw0KPiAgDQo+IC0JY2hpcC0+cmVhZF9y
-ZWcgPSBydGNhbl9hZHZfcGNpX3JlYWRfcmVnOw0KPiAtCWNoaXAtPndyaXRlX3JlZyA9IHJ0
-Y2FuX2Fkdl9wY2lfd3JpdGVfcmVnOw0KPiArCWlmIChzaGlmdCA9PSAyKSB7DQo+ICsJCWNo
-aXAtPnJlYWRfcmVnID0gcnRjYW5fYWR2X3BjaV9yZWFkX3JlZ19zaGlmdDI7DQo+ICsJCWNo
-aXAtPndyaXRlX3JlZyA9IHJ0Y2FuX2Fkdl9wY2lfd3JpdGVfcmVnX3NoaWZ0MjsNCj4gKwl9
-IGVsc2Ugew0KPiArCQljaGlwLT5yZWFkX3JlZyA9IHJ0Y2FuX2Fkdl9wY2lfcmVhZF9yZWc7
-DQo+ICsJCWNoaXAtPndyaXRlX3JlZyA9IHJ0Y2FuX2Fkdl9wY2lfd3JpdGVfcmVnOw0KPiAr
-CX0NCj4gIA0KPiAgCS8qIENsb2NrIGZyZXF1ZW5jeSBpbiBIeiAqLw0KPiAgCWRldi0+Y2Fu
-X3N5c19jbG9jayA9IEFEVl9QQ0lfQ0FOX0NMT0NLOw0KPiBAQCAtMjQ0LDYgKzI3MSw3IEBA
-IHN0YXRpYyBpbnQgYWR2X3BjaV9pbml0X29uZShzdHJ1Y3QgcGNpX2RldiAqcGRldiwNCj4g
-IAl1bnNpZ25lZCBpbnQgYmFyID0gMDsNCj4gIAl1bnNpZ25lZCBpbnQgYmFyX2ZsYWcgPSAw
-Ow0KPiAgCXVuc2lnbmVkIGludCBvZmZzZXQgPSAwOw0KPiArCXVuc2lnbmVkIGludCBzaGlm
-dCA9IDA7DQo+ICAJdW5zaWduZWQgaW50IGl4Ow0KPiAgDQo+ICAJc3RydWN0IHJ0Y2FuX2Rl
-dmljZSAqbWFzdGVyX2RldiA9IE5VTEw7DQo+IEBAIC0yNzAsNyArMjk4LDE2IEBAIHN0YXRp
-YyBpbnQgYWR2X3BjaV9pbml0X29uZShzdHJ1Y3QgcGNpX2RldiAqcGRldiwNCj4gIAljYXNl
-IDB4YzEwNDoNCj4gIAkJbmJfcG9ydHMgPSBwZGV2LT5kZXZpY2UgJiAweDc7DQo+ICAJCW9m
-ZnNldCA9IDB4MTAwOw0KPiAtCQliYXIgPSAwOw0KPiArCQlicmVhazsNCj4gKwljYXNlIDB4
-YzIwMToNCj4gKwljYXNlIDB4YzIwMjoNCj4gKwljYXNlIDB4YzIwNDoNCj4gKwljYXNlIDB4
-YzMwMToNCj4gKwljYXNlIDB4YzMwMjoNCj4gKwljYXNlIDB4YzMwNDoNCj4gKwkJbmJfcG9y
-dHMgPSBwZGV2LT5kZXZpY2UgJiAweDc7DQo+ICsJCW9mZnNldCA9IDB4NDAwOw0KPiArCQlz
-aGlmdCA9IDI7DQo+ICAJCWJyZWFrOw0KPiAgCWNhc2UgMHgxNjgwOg0KPiAgCWNhc2UgMHgy
-MDUyOg0KPiBAQCAtMjk4LDcgKzMzNSw4IEBAIHN0YXRpYyBpbnQgYWR2X3BjaV9pbml0X29u
-ZShzdHJ1Y3QgcGNpX2RldiAqcGRldiwNCj4gIAkJICAgcGRldi0+ZGV2aWNlLA0KPiAgCQkg
-ICBwZGV2LT5zdWJzeXN0ZW1fZGV2aWNlKTsNCj4gIA0KPiAtCXJldCA9IHJ0Y2FuX2Fkdl9w
-Y2lfYWRkX2NoYW4ocGRldiwgY2hhbm5lbCwgYmFyLCBvZmZzZXQsICZtYXN0ZXJfZGV2KTsN
-Cj4gKwlyZXQgPSBydGNhbl9hZHZfcGNpX2FkZF9jaGFuKHBkZXYsIGNoYW5uZWwsIGJhciwg
-b2Zmc2V0LCBzaGlmdCwNCj4gKwkJCQkgICAgICZtYXN0ZXJfZGV2KTsNCj4gIAlpZiAocmV0
-KQ0KPiAgCQlnb3RvIGZhaWx1cmVfaW91bm1hcDsNCj4gIA0KPiAtLSANCj4gMS45LjENCg0K
-VGhhbmsgeW91IHZlcnkgbXVjaC4gQXJlIHlvdSB0aGUgV29sZmdhbmcgb2YgdGhlIGRyaXZl
-ciBhdXRob3I/IFRoYXQncyByZWFsbHkgYW1hemluZyBhbmQgeW91IGFyZSByZWFsbHkgYSBu
-aWNlIHBlcnNvbi4gV2lzaCB5b3UgYSBnb29kIHdlZWtlbmQhDQpBcyBJIGhhdmUgbWVudGlv
-bmVkLCBJIGFtIG5ldyB0byB0aGlzLCBpdCB3aWxsIHRha2UgbWUgYSB3aGlsZSBjb21pbmcg
-YmFjay4gVGhhbmsgeW91IQ0KLS0tLS0tLS0tLS0tSSBhbSBiYWNrLi0tLS0tLS0tLS0tLS0t
-DQpJIG1vZGlmaWVkIHRoZSBzb3VyY2UgY29kZSBhbmQgY29tcGlsZWQgdGhlIHhlbm9fY2Fu
-X2Fkdl9wY2kua28gd2l0aCAibWFrZSBDT05GSUdfWEVOT18uLi49bSAtQyAkKGtybnNyYykg
-TT0kKGtybnNyYykvZHJpdmVycy94ZW5vbWFpL2Nhbi9zamExMDAwIG1vZHVsZXMiLg0KQWZ0
-ZXIgY29waWVkIHRoZSBtb2R1bGUgdG8gdGhlIC9saWIvLi4uIGRpcmVjdG9yeSBhbmQgIm1v
-ZHByb2JlIHhlbm9fY2FuX2Fkdl9wY2kiLCAvcHJvYy9ydGNhbi9kZXZpY2VzIHJlbWFpbiB0
-aGUgc2FtZS4gQnV0ICJkbWVzZyB8IGdyZXAgLWkgY2FuIiBvdXRwdXRzIHRoZXNlOg0KLi4u
-DQpbICAyMzkuMzc0ODczXSBSVC1Tb2NrZXQtQ0FOIDAuOTAuMiAtIChDKSAyMDA2IFJULVNv
-Y2tldC1DQU4gRGV2ZWxvcG1lbnQgVGVhbQ0KWyAgMjM5LjM5Njk3N10gUlRDQU4gU0pBMTAw
-MCBkcml2ZXIgaW5pdGlhbGl6ZWQNClsgIDIzOS40MDU4MTldIHhlbm9fY2FuX2Fkdl9wY2k6
-IG1vZHVsZSB2ZXJpZmljYXRpb24gZmFpbGVkOiBzaWduYXR1cmUgYW5kL29yIHJlcXVpcmVk
-IGtleSBtaXNzaW5nIC0gdGFpbnRpbmcga2VybmVsDQpbICAyMzkuNDA4MDE0XSBBRFYtUENJ
-LUNBTiAwMDAwOjAzOjAwLjA6IFJUQ0FOIFJlZ2lzdGVyaW5nIGNhcmQNClsgIDIzOS40MDgx
-MjFdIEFEVi1QQ0ktQ0FOIDAwMDA6MDM6MDAuMDogUENJLT5BUElDIElSUSB0cmFuc2Zvcm06
-IElOVCBBIC0+IElSUSAxOA0KWyAgMjM5LjQwODE4OV0gQURWLVBDSS1DQU4gMDAwMDowMzow
-MC4wOiBSVENBTiBkZXRlY3RlZCBBZHZhbnRlY2ggUENJIGNhcmQgYXQgc2xvdCAjMA0KWyAg
-MjM5LjQwODI1NF0gQURWLVBDSS1DQU46IEluaXRpYWxpemluZyBkZXZpY2UgMTNmZTpjMzAy
-OmMzMDINClsgIDIzOS40MDgzODZdIEFEVi1QQ0ktQ0FOOiBiYXNlX2FkZHI9ZmZmZmM5MDAw
-MDhmZTQwMCBjb25mX2FkZHI9ICAgICAgICAgIChudWxsKSBpcnE9MTggb2NyPTB4ZmEgY2Ry
-PTB4YzANClsgIDIzOS40MDg1NzVdIHJ0Y2FuOiByZWdpc3RlcmVkIHJ0Y2FuMA0KWyAgMjM5
-LjQwODYzMV0gVW5yZWdpc3RlcmluZyBTSkExMDAwIGRldmljZSBydGNhbjANClsgIDIzOS40
-MDg3MzZdIFJUQ0FOOiB1bnJlZ2lzdGVyZWQgcnRjYW4wDQpbICAyMzkuNDA4ODkwXSBBRFYt
-UENJLUNBTjogcHJvYmUgb2YgMDAwMDowMzowMC4wIGZhaWxlZCB3aXRoIGVycm9yIC01
+Hello,
+
+Am 03.09.2016 um 02:54 schrieb Jack Lee:
+...snip...
+
+> ------------I am back.--------------
+> I modified the source code and compiled the xeno_can_adv_pci.ko with
+> "make CONFIG_XENO_...=m -C $(krnsrc)
+> M=$(krnsrc)/drivers/xenomai/can/sja1000 modules".
+> After copied the module to the /lib/... directory and "modprobe
+> xeno_can_adv_pci", /proc/rtcan/devices remain the same. But "dmesg |
+> grep -i can" outputs these:
+> ...
+> [  239.374873] RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development
+> Team
+> [  239.396977] RTCAN SJA1000 driver initialized
+> [  239.405819] xeno_can_adv_pci: module verification failed: signature
+> and/or required key missing - tainting kernel
+> [  239.408014] ADV-PCI-CAN 0000:03:00.0: RTCAN Registering card
+> [  239.408121] ADV-PCI-CAN 0000:03:00.0: PCI->APIC IRQ transform: INT A
+> -> IRQ 18
+> [  239.408189] ADV-PCI-CAN 0000:03:00.0: RTCAN detected Advantech PCI
+> card at slot #0
+> [  239.408254] ADV-PCI-CAN: Initializing device 13fe:c302:c302
+> [  239.408386] ADV-PCI-CAN: base_addr=ffffc900008fe400
+> conf_addr=          (null) irq=18 ocr=0xfa cdr=0xc0
+> [  239.408575] rtcan: registered rtcan0
+> [  239.408631] Unregistering SJA1000 device rtcan0
+> [  239.408736] RTCAN: unregistered rtcan0
+> [  239.408890] ADV-PCI-CAN: probe of 0000:03:00.0 failed with error -5
+
+Oops, I forgot to adjust the mapped PCI space. In "pci_map()" "ADV_PCI_BASE_SIZE << shift"
+should be used. Below is v2 of the patch. Hope it works now.
+
+Wolfgang.
+
+
+>From f346a0e7b08a02cc4ef3b06eef88992a6140b957 Mon Sep 17 00:00:00 2001
+From: Wolfgang Grandegger <Wolfgang Grandegger>
+Date: Fri, 2 Sep 2016 10:46:26 +0200
+Subject: [PATCH v2] rtcan: add support for new Advantec CAN PCI devices
+
+---
+ ksrc/drivers/can/sja1000/rtcan_adv_pci.c | 52 ++++++++++++++++++++++++++++----
+ 1 file changed, 46 insertions(+), 6 deletions(-)
+
+diff --git a/ksrc/drivers/can/sja1000/rtcan_adv_pci.c b/ksrc/drivers/can/sja1000/rtcan_adv_pci.c
+index 1d36e7b..9d2ea7b 100644
+--- a/ksrc/drivers/can/sja1000/rtcan_adv_pci.c
++++ b/ksrc/drivers/can/sja1000/rtcan_adv_pci.c
+@@ -95,6 +95,12 @@ static DEFINE_PCI_DEVICE_TABLE(adv_pci_tbl) = {
+ 	ADV_PCI_DEVICE(0xc101),
+ 	ADV_PCI_DEVICE(0xc102),
+ 	ADV_PCI_DEVICE(0xc104),
++	ADV_PCI_DEVICE(0xc201),
++	ADV_PCI_DEVICE(0xc202),
++	ADV_PCI_DEVICE(0xc204),
++	ADV_PCI_DEVICE(0xc301),
++	ADV_PCI_DEVICE(0xc302),
++	ADV_PCI_DEVICE(0xc304),
+ 	/* required last entry */
+ 	{ }
+ };
+@@ -115,6 +121,21 @@ static void rtcan_adv_pci_write_reg(struct rtcan_device *dev, int port, u8 data)
+ 	iowrite8(data, board->base_addr + port);
+ }
+ 
++static u8 rtcan_adv_pci_read_reg_shift2(struct rtcan_device *dev, int port)
++{
++	struct rtcan_adv_pci *board = (struct rtcan_adv_pci *)dev->board_priv;
++
++	return ioread8(board->base_addr + (port << 2));
++}
++
++static void rtcan_adv_pci_write_reg_shift2(struct rtcan_device *dev, int port,
++					   u8 data)
++{
++	struct rtcan_adv_pci *board = (struct rtcan_adv_pci *)dev->board_priv;
++
++	iowrite8(data, board->base_addr + (port << 2));
++}
++
+ static void rtcan_adv_pci_del_chan(struct pci_dev *pdev,
+ 				   struct rtcan_device *dev)
+ {
+@@ -137,6 +158,7 @@ static int rtcan_adv_pci_add_chan(struct pci_dev *pdev,
+ 				  int channel,
+ 				  unsigned int bar,
+ 				  unsigned int offset,
++				  unsigned int shift,
+ 				  struct rtcan_device **master_dev)
+ {
+ 	struct rtcan_device *dev;
+@@ -161,13 +183,15 @@ static int rtcan_adv_pci_add_chan(struct pci_dev *pdev,
+ 		if (offset)
+ 			base_addr = master_board->base_addr+offset;
+ 		else
+-			base_addr = pci_iomap(pdev, bar, ADV_PCI_BASE_SIZE);
++			base_addr = pci_iomap(pdev, bar,
++					      ADV_PCI_BASE_SIZE << shift);
+ 			if (!base_addr) {
+ 				ret = -EIO;
+ 				goto failure;
+ 			}
+ 	} else {
+-		base_addr = pci_iomap(pdev, bar, ADV_PCI_BASE_SIZE) + offset;
++		base_addr = pci_iomap(pdev, bar,
++				      ADV_PCI_BASE_SIZE << shift) + offset;
+ 		if (!base_addr) {
+ 			ret = -EIO;
+ 			goto failure;
+@@ -180,8 +204,13 @@ static int rtcan_adv_pci_add_chan(struct pci_dev *pdev,
+ 
+ 	dev->board_name = adv_pci_board_name;
+ 
+-	chip->read_reg = rtcan_adv_pci_read_reg;
+-	chip->write_reg = rtcan_adv_pci_write_reg;
++	if (shift == 2) {
++		chip->read_reg = rtcan_adv_pci_read_reg_shift2;
++		chip->write_reg = rtcan_adv_pci_write_reg_shift2;
++	} else {
++		chip->read_reg = rtcan_adv_pci_read_reg;
++		chip->write_reg = rtcan_adv_pci_write_reg;
++	}
+ 
+ 	/* Clock frequency in Hz */
+ 	dev->can_sys_clock = ADV_PCI_CAN_CLOCK;
+@@ -244,6 +273,7 @@ static int adv_pci_init_one(struct pci_dev *pdev,
+ 	unsigned int bar = 0;
+ 	unsigned int bar_flag = 0;
+ 	unsigned int offset = 0;
++	unsigned int shift = 0;
+ 	unsigned int ix;
+ 
+ 	struct rtcan_device *master_dev = NULL;
+@@ -270,7 +300,16 @@ static int adv_pci_init_one(struct pci_dev *pdev,
+ 	case 0xc104:
+ 		nb_ports = pdev->device & 0x7;
+ 		offset = 0x100;
+-		bar = 0;
++		break;
++	case 0xc201:
++	case 0xc202:
++	case 0xc204:
++	case 0xc301:
++	case 0xc302:
++	case 0xc304:
++		nb_ports = pdev->device & 0x7;
++		offset = 0x400;
++		shift = 2;
+ 		break;
+ 	case 0x1680:
+ 	case 0x2052:
+@@ -298,7 +337,8 @@ static int adv_pci_init_one(struct pci_dev *pdev,
+ 		   pdev->device,
+ 		   pdev->subsystem_device);
+ 
+-	ret = rtcan_adv_pci_add_chan(pdev, channel, bar, offset, &master_dev);
++	ret = rtcan_adv_pci_add_chan(pdev, channel, bar, offset, shift,
++				     &master_dev);
+ 	if (ret)
+ 		goto failure_iounmap;
+ 
+-- 
+1.9.1
+
+
