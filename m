@@ -1,16 +1,14 @@
-In-Reply-To: <tencent_6DA3D28565D352B5124B1A38@qq.com>
-References: <tencent_701E00C233E82F4D5C850B25@qq.com>
- <4881f7df-7eb5-30ec-035c-3314b79642ab@grandegger.com>
- <tencent_6DA3D28565D352B5124B1A38@qq.com>
-From: "=?ISO-8859-1?B?SmFjayBMZWU=?=" <jacklee11@foxmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="ISO-8859-1"
-Content-Transfer-Encoding: base64
-Date: Sun, 4 Sep 2016 09:17:51 +0800
-Message-ID: <tencent_7E01099D7A4B51FC33C24833@qq.com>
-Subject: [Xenomai] rt-socket-can "no device" problem with advantech
-	PCM-26D2CA CANboard
+From: Sripath Roy Koganti <koganti_sripathroy@kluniversity.in>
+Date: Sun, 4 Sep 2016 10:14:47 +0000
+Message-ID: <SG2PR01MB123080E8CF4DBBDE8EAF43BCFFE70@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>
+References: <SG2PR01MB1230494FDA7DE90A9E80E605FFE30@SG2PR01MB1230.apcprd01.prod.exchangelabs.com>,
+ <b4e48b4c-be3d-06ab-7f70-42c1205b5d94@xenomai.org>
+In-Reply-To: <b4e48b4c-be3d-06ab-7f70-42c1205b5d94@xenomai.org>
+Content-Language: en-IN
+MIME-Version: 1.0
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Benchmarking the hardware by creating tasks
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,115 +17,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?ISO-8859-1?B?d2c=?= <wg@grandegger.com>, =?ISO-8859-1?B?eGVub21haQ==?= <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-PiBIZWxsbywKPiAKPiBBbSAwMy4wOS4yMDE2IHVtIDAyOjU0IHNjaHJpZWIgSmFjayBMZWU6
-Cj4gLi4uc25pcC4uLgo+IAo+ID4gLS0tLS0tLS0tLS0tSSBhbSBiYWNrLi0tLS0tLS0tLS0t
-LS0tCj4gPiBJIG1vZGlmaWVkIHRoZSBzb3VyY2UgY29kZSBhbmQgY29tcGlsZWQgdGhlIHhl
-bm9fY2FuX2Fkdl9wY2kua28gd2l0aAo+ID4gIm1ha2UgQ09ORklHX1hFTk9fLi4uPW0gLUMg
-JChrcm5zcmMpCj4gPiBNPSQoa3Juc3JjKS9kcml2ZXJzL3hlbm9tYWkvY2FuL3NqYTEwMDAg
-bW9kdWxlcyIuCj4gPiBBZnRlciBjb3BpZWQgdGhlIG1vZHVsZSB0byB0aGUgL2xpYi8uLi4g
-ZGlyZWN0b3J5IGFuZCAibW9kcHJvYmUKPiA+IHhlbm9fY2FuX2Fkdl9wY2kiLCAvcHJvYy9y
-dGNhbi9kZXZpY2VzIHJlbWFpbiB0aGUgc2FtZS4gQnV0ICJkbWVzZyB8Cj4gPiBncmVwIC1p
-IGNhbiIgb3V0cHV0cyB0aGVzZToKPiA+IC4uLgo+ID4gWyAgMjM5LjM3NDg3M10gUlQtU29j
-a2V0LUNBTiAwLjkwLjIgLSAoQykgMjAwNiBSVC1Tb2NrZXQtQ0FOIERldmVsb3BtZW50Cj4g
-PiBUZWFtCj4gPiBbICAyMzkuMzk2OTc3XSBSVENBTiBTSkExMDAwIGRyaXZlciBpbml0aWFs
-aXplZAo+ID4gWyAgMjM5LjQwNTgxOV0geGVub19jYW5fYWR2X3BjaTogbW9kdWxlIHZlcmlm
-aWNhdGlvbiBmYWlsZWQ6IHNpZ25hdHVyZQo+ID4gYW5kL29yIHJlcXVpcmVkIGtleSBtaXNz
-aW5nIC0gdGFpbnRpbmcga2VybmVsCj4gPiBbICAyMzkuNDA4MDE0XSBBRFYtUENJLUNBTiAw
-MDAwOjAzOjAwLjA6IFJUQ0FOIFJlZ2lzdGVyaW5nIGNhcmQKPiA+IFsgIDIzOS40MDgxMjFd
-IEFEVi1QQ0ktQ0FOIDAwMDA6MDM6MDAuMDogUENJLT5BUElDIElSUSB0cmFuc2Zvcm06IElO
-VCBBCj4gPiAtPiBJUlEgMTgKPiA+IFsgIDIzOS40MDgxODldIEFEVi1QQ0ktQ0FOIDAwMDA6
-MDM6MDAuMDogUlRDQU4gZGV0ZWN0ZWQgQWR2YW50ZWNoIFBDSQo+ID4gY2FyZCBhdCBzbG90
-ICMwCj4gPiBbICAyMzkuNDA4MjU0XSBBRFYtUENJLUNBTjogSW5pdGlhbGl6aW5nIGRldmlj
-ZSAxM2ZlOmMzMDI6YzMwMgo+ID4gWyAgMjM5LjQwODM4Nl0gQURWLVBDSS1DQU46IGJhc2Vf
-YWRkcj1mZmZmYzkwMDAwOGZlNDAwCj4gPiBjb25mX2FkZHI9ICAgICAgICAgIChudWxsKSBp
-cnE9MTggb2NyPTB4ZmEgY2RyPTB4YzAKPiA+IFsgIDIzOS40MDg1NzVdIHJ0Y2FuOiByZWdp
-c3RlcmVkIHJ0Y2FuMAo+ID4gWyAgMjM5LjQwODYzMV0gVW5yZWdpc3RlcmluZyBTSkExMDAw
-IGRldmljZSBydGNhbjAKPiA+IFsgIDIzOS40MDg3MzZdIFJUQ0FOOiB1bnJlZ2lzdGVyZWQg
-cnRjYW4wCj4gPiBbICAyMzkuNDA4ODkwXSBBRFYtUENJLUNBTjogcHJvYmUgb2YgMDAwMDow
-MzowMC4wIGZhaWxlZCB3aXRoIGVycm9yIC01Cj4gCj4gT29wcywgSSBmb3Jnb3QgdG8gYWRq
-dXN0IHRoZSBtYXBwZWQgUENJIHNwYWNlLiBJbiAicGNpX21hcCgpIiAiQURWX1BDSV9CQVNF
-X1NJWkUgPDwgc2hpZnQiCj4gc2hvdWxkIGJlIHVzZWQuIEJlbG93IGlzIHYyIG9mIHRoZSBw
-YXRjaC4gSG9wZSBpdCB3b3JrcyBub3cuCj4gCj4gV29sZmdhbmcuCj4gCj4gCj4gRnJvbSBm
-MzQ2YTBlN2IwOGEwMmNjNGVmM2IwNmVlZjg4OTkyYTYxNDBiOTU3IE1vbiBTZXAgMTcgMDA6
-MDA6MDAgMjAwMQo+IEZyb206IFdvbGZnYW5nIEdyYW5kZWdnZXIgPFdvbGZnYW5nIEdyYW5k
-ZWdnZXI+Cj4gRGF0ZTogRnJpLCAyIFNlcCAyMDE2IDEwOjQ2OjI2ICswMjAwCj4gU3ViamVj
-dDogW1BBVENIIHYyXSBydGNhbjogYWRkIHN1cHBvcnQgZm9yIG5ldyBBZHZhbnRlYyBDQU4g
-UENJIGRldmljZXMKPiAKPiAtLS0KPiAga3NyYy9kcml2ZXJzL2Nhbi9zamExMDAwL3J0Y2Fu
-X2Fkdl9wY2kuYyB8IDUyICsrKysrKysrKysrKysrKysrKysrKysrKysrKystLS0tCj4gIDEg
-ZmlsZSBjaGFuZ2VkLCA0NiBpbnNlcnRpb25zKCspLCA2IGRlbGV0aW9ucygtKQoKPiBkaWZm
-IC0tZ2l0IGEva3NyYy9kcml2ZXJzL2Nhbi9zamExMDAwL3J0Y2FuX2Fkdl9wY2kuYyBiL2tz
-cmMvZHJpdmVycy9jYW4vc2phMTAwMC9ydGNhbl9hZHZfcGNpLmMKPiBpbmRleCAxZDM2ZTdi
-Li45ZDJlYTdiIDEwMDY0NAo+IC0tLSBhL2tzcmMvZHJpdmVycy9jYW4vc2phMTAwMC9ydGNh
-bl9hZHZfcGNpLmMKPiArKysgYi9rc3JjL2RyaXZlcnMvY2FuL3NqYTEwMDAvcnRjYW5fYWR2
-X3BjaS5jCj4gQEAgLTk1LDYgKzk1LDEyIEBAIHN0YXRpYyBERUZJTkVfUENJX0RFVklDRV9U
-QUJMRShhZHZfcGNpX3RibCkgPSB7Cj4gIEFEVl9QQ0lfREVWSUNFKDB4YzEwMSksCj4gIEFE
-Vl9QQ0lfREVWSUNFKDB4YzEwMiksCj4gIEFEVl9QQ0lfREVWSUNFKDB4YzEwNCksCj4gKwlB
-RFZfUENJX0RFVklDRSgweGMyMDEpLAo+ICsJQURWX1BDSV9ERVZJQ0UoMHhjMjAyKSwKPiAr
-CUFEVl9QQ0lfREVWSUNFKDB4YzIwNCksCj4gKwlBRFZfUENJX0RFVklDRSgweGMzMDEpLAo+
-ICsJQURWX1BDSV9ERVZJQ0UoMHhjMzAyKSwKPiArCUFEVl9QQ0lfREVWSUNFKDB4YzMwNCks
-Cj4gIC8qIHJlcXVpcmVkIGxhc3QgZW50cnkgKi8KPiAgeyB9Cj4gIH07Cj4gQEAgLTExNSw2
-ICsxMjEsMjEgQEAgc3RhdGljIHZvaWQgcnRjYW5fYWR2X3BjaV93cml0ZV9yZWcoc3RydWN0
-IHJ0Y2FuX2RldmljZSAqZGV2LCBpbnQgcG9ydCwgdTggZGF0YSkKPiAgaW93cml0ZTgoZGF0
-YSwgYm9hcmQtPmJhc2VfYWRkciArIHBvcnQpOwo+IH0KPiAgCj4gK3N0YXRpYyB1OCBydGNh
-bl9hZHZfcGNpX3JlYWRfcmVnX3NoaWZ0MihzdHJ1Y3QgcnRjYW5fZGV2aWNlICpkZXYsIGlu
-dCBwb3J0KQo+ICt7Cj4gKwlzdHJ1Y3QgcnRjYW5fYWR2X3BjaSAqYm9hcmQgPSAoc3RydWN0
-IHJ0Y2FuX2Fkdl9wY2kgKilkZXYtPmJvYXJkX3ByaXY7Cj4gKwo+ICsJcmV0dXJuIGlvcmVh
-ZDgoYm9hcmQtPmJhc2VfYWRkciArIChwb3J0IDw8IDIpKTsKPiArfQo+ICsKPiArc3RhdGlj
-IHZvaWQgcnRjYW5fYWR2X3BjaV93cml0ZV9yZWdfc2hpZnQyKHN0cnVjdCBydGNhbl9kZXZp
-Y2UgKmRldiwgaW50IHBvcnQsCj4gKwkgICB1OCBkYXRhKQo+ICt7Cj4gKwlzdHJ1Y3QgcnRj
-YW5fYWR2X3BjaSAqYm9hcmQgPSAoc3RydWN0IHJ0Y2FuX2Fkdl9wY2kgKilkZXYtPmJvYXJk
-X3ByaXY7Cj4gKwo+ICsJaW93cml0ZTgoZGF0YSwgYm9hcmQtPmJhc2VfYWRkciArIChwb3J0
-IDw8IDIpKTsKPiArfQo+ICsKPiAgc3RhdGljIHZvaWQgcnRjYW5fYWR2X3BjaV9kZWxfY2hh
-bihzdHJ1Y3QgcGNpX2RldiAqcGRldiwKPiAgICAgc3RydWN0IHJ0Y2FuX2RldmljZSAqZGV2
-KQo+ICB7Cj4gQEAgLTEzNyw2ICsxNTgsNyBAQCBzdGF0aWMgaW50IHJ0Y2FuX2Fkdl9wY2lf
-YWRkX2NoYW4oc3RydWN0IHBjaV9kZXYgKnBkZXYsCj4gICAgaW50IGNoYW5uZWwsCj4gICAg
-dW5zaWduZWQgaW50IGJhciwKPiAgICB1bnNpZ25lZCBpbnQgb2Zmc2V0LAo+ICsJICB1bnNp
-Z25lZCBpbnQgc2hpZnQsCj4gICAgc3RydWN0IHJ0Y2FuX2RldmljZSAqKm1hc3Rlcl9kZXYp
-Cj4gIHsKPiAgc3RydWN0IHJ0Y2FuX2RldmljZSAqZGV2Owo+IEBAIC0xNjEsMTMgKzE4Mywx
-NSBAQCBzdGF0aWMgaW50IHJ0Y2FuX2Fkdl9wY2lfYWRkX2NoYW4oc3RydWN0IHBjaV9kZXYg
-KnBkZXYsCj4gIGlmIChvZmZzZXQpCj4gIGJhc2VfYWRkciA9IG1hc3Rlcl9ib2FyZC0+YmFz
-ZV9hZGRyK29mZnNldDsKPiAgZWxzZQo+IC0JYmFzZV9hZGRyID0gcGNpX2lvbWFwKHBkZXYs
-IGJhciwgQURWX1BDSV9CQVNFX1NJWkUpOwo+ICsJYmFzZV9hZGRyID0gcGNpX2lvbWFwKHBk
-ZXYsIGJhciwKPiArCSAgICAgIEFEVl9QQ0lfQkFTRV9TSVpFIDw8IHNoaWZ0KTsKPiAgaWYg
-KCFiYXNlX2FkZHIpIHsKPiAgcmV0ID0gLUVJTzsKPiAgZ290byBmYWlsdXJlOwo+ICB9Cj4g
-IH0gZWxzZSB7Cj4gLQliYXNlX2FkZHIgPSBwY2lfaW9tYXAocGRldiwgYmFyLCBBRFZfUENJ
-X0JBU0VfU0laRSkgKyBvZmZzZXQ7Cj4gKwliYXNlX2FkZHIgPSBwY2lfaW9tYXAocGRldiwg
-YmFyLAo+ICsJICAgICAgQURWX1BDSV9CQVNFX1NJWkUgPDwgc2hpZnQpICsgb2Zmc2V0Owo+
-ICBpZiAoIWJhc2VfYWRkcikgewo+ICByZXQgPSAtRUlPOwo+ICBnb3RvIGZhaWx1cmU7Cj4g
-QEAgLTE4MCw4ICsyMDQsMTMgQEAgc3RhdGljIGludCBydGNhbl9hZHZfcGNpX2FkZF9jaGFu
-KHN0cnVjdCBwY2lfZGV2ICpwZGV2LAo+ICAKPiAgZGV2LT5ib2FyZF9uYW1lID0gYWR2X3Bj
-aV9ib2FyZF9uYW1lOwo+ICAKPiAtCWNoaXAtPnJlYWRfcmVnID0gcnRjYW5fYWR2X3BjaV9y
-ZWFkX3JlZzsKPiAtCWNoaXAtPndyaXRlX3JlZyA9IHJ0Y2FuX2Fkdl9wY2lfd3JpdGVfcmVn
-Owo+ICsJaWYgKHNoaWZ0ID09IDIpIHsKPiArCWNoaXAtPnJlYWRfcmVnID0gcnRjYW5fYWR2
-X3BjaV9yZWFkX3JlZ19zaGlmdDI7Cj4gKwljaGlwLT53cml0ZV9yZWcgPSBydGNhbl9hZHZf
-cGNpX3dyaXRlX3JlZ19zaGlmdDI7Cj4gKwl9IGVsc2Ugewo+ICsJY2hpcC0+cmVhZF9yZWcg
-PSBydGNhbl9hZHZfcGNpX3JlYWRfcmVnOwo+ICsJY2hpcC0+d3JpdGVfcmVnID0gcnRjYW5f
-YWR2X3BjaV93cml0ZV9yZWc7Cj4gKwl9Cj4gIAo+ICAvKiBDbG9jayBmcmVxdWVuY3kgaW4g
-SHogKi8KPiAgZGV2LT5jYW5fc3lzX2Nsb2NrID0gQURWX1BDSV9DQU5fQ0xPQ0s7Cj4gQEAg
-LTI0NCw2ICsyNzMsNyBAQCBzdGF0aWMgaW50IGFkdl9wY2lfaW5pdF9vbmUoc3RydWN0IHBj
-aV9kZXYgKnBkZXYsCj4gIHVuc2lnbmVkIGludCBiYXIgPSAwOwo+ICB1bnNpZ25lZCBpbnQg
-YmFyX2ZsYWcgPSAwOwo+ICB1bnNpZ25lZCBpbnQgb2Zmc2V0ID0gMDsKPiArCXVuc2lnbmVk
-IGludCBzaGlmdCA9IDA7Cj4gIHVuc2lnbmVkIGludCBpeDsKPiAgCj4gIHN0cnVjdCBydGNh
-bl9kZXZpY2UgKm1hc3Rlcl9kZXYgPSBOVUxMOwo+IEBAIC0yNzAsNyArMzAwLDE2IEBAIHN0
-YXRpYyBpbnQgYWR2X3BjaV9pbml0X29uZShzdHJ1Y3QgcGNpX2RldiAqcGRldiwKPiAgY2Fz
-ZSAweGMxMDQ6Cj4gIG5iX3BvcnRzID0gcGRldi0+ZGV2aWNlICYgMHg3Owo+IG9mZnNldCA9
-IDB4MTAwOwo+IC0JYmFyID0gMDsKPiArCWJyZWFrOwo+ICsJY2FzZSAweGMyMDE6Cj4gKwlj
-YXNlIDB4YzIwMjoKPiArCWNhc2UgMHhjMjA0Ogo+ICsJY2FzZSAweGMzMDE6Cj4gKwljYXNl
-IDB4YzMwMjoKPiArCWNhc2UgMHhjMzA0Ogo+ICsJbmJfcG9ydHMgPSBwZGV2LT5kZXZpY2Ug
-JiAweDc7Cj4gKwlvZmZzZXQgPSAweDQwMDsKPiArCXNoaWZ0ID0gMjsKPiAgYnJlYWs7Cj4g
-IGNhc2UgMHgxNjgwOgo+ICBjYXNlIDB4MjA1MjoKPiBAQCAtMjk4LDcgKzMzNyw4IEBAIHN0
-YXRpYyBpbnQgYWR2X3BjaV9pbml0X29uZShzdHJ1Y3QgcGNpX2RldiAqcGRldiwKPiAgICAg
-cGRldi0+ZGV2aWNlLAo+ICAgICBwZGV2LT5zdWJzeXN0ZW1fZGV2aWNlKTsKPiAgCj4gLQly
-ZXQgPSBydGNhbl9hZHZfcGNpX2FkZF9jaGFuKHBkZXYsIGNoYW5uZWwsIGJhciwgb2Zmc2V0
-LCAmbWFzdGVyX2Rldik7Cj4gKwlyZXQgPSBydGNhbl9hZHZfcGNpX2FkZF9jaGFuKHBkZXYs
-IGNoYW5uZWwsIGJhciwgb2Zmc2V0LCBzaGlmdCwKPiArCSAgICAgJm1hc3Rlcl9kZXYpOwo+
-ICBpZiAocmV0KQo+ICBnb3RvIGZhaWx1cmVfaW91bm1hcDsKPiAgCj4gLS0gCj4gMS45LjEK
-ClRoYW5rcyBhIGxvdCEgVGhlIGRldmljZSBpcyBub3Qgb24gbXkgaGFuZCBhdCB0aGUgbW9t
-ZW50LiBJIHdpbGwgdGVzdCBpdCB0b21vcnJvdwphbmQgYnJpbmcgYmFjayB0aGUgcmVzdWx0
-LiBCeSB0aGUgd2F5LCBJIGFtIGluIHRoZSBFYXN0ICs4LjAwIHRpbWV6b25lLiAgSGF2ZSBh
-IGdvb2QgZGF5IQotLS0tLS0tLS1iYWNrLi0tLS0tLS0tLS0tLQpTb3JyeSB0byBzYXkgdGhh
-dCBlcnJvciBleGFjdGx5IHRoZSBzYW1lIHdpdGggYmVmb3JlLg==
+Thanks
 
 
+I would like to generate 10 different tasks and wish to test the context sw=
+itching times between those tasks when run in preemptive mode.
+
+
+Can i go with modifying the switch-test program.
+
+
+
+Regards
+Sripath Roy Koganti
+
+________________________________
+From: Philippe Gerum <rpm@xenomai.org>
+Sent: 02 September 2016 13:20:24
+To: Sripath Roy Koganti; xenomai@xenomai.org
+Subject: Re: [Xenomai] Benchmarking the hardware by creating tasks
+
+On 08/31/2016 08:14 AM, Sripath Roy Koganti wrote:
+> Hi
+>
+>
+> I am a new user to Xenomai and a beginner lever programmer. I just starte=
+d working on this framework or any RTOS. I need help/suggestions with the f=
+ollowing
+>
+>
+>   *   I want to generate few tasks one set with simple logic (arithmetic)=
+ and other set involving floating point ops and wish to test the latency an=
+d context switch times between the tasks. Can you suggest any simpler tasks=
+ which could help me do that.
+>   *
+>   *   Also wish to test the above tasks by assigning various priorities a=
+nd evaluate functioning of various schd algorithms on multicore environment=
+.
+>
+> I have seen various benchmark tests which are predefined, but i wish to c=
+reate the tasks on my own by setting the priorities. Also where can i study=
+ the source of the benchmark tests
+>
+>
+>
+> It really helps to understand the functioning of the Framework by providi=
+ng resources about tasks creation and implementation.
+>
+>
+
+You have many programs in code source form available from the Xenomai
+distro, notably under the demo/ and testsuite/ directories. A way to
+measure latency is specifically illustrated by testsuite/latency.
+Interpreting the various options of the latency program and how they
+translate into actual code is made easier by reading this manpage:
+http://www.xenomai.org/documentation/xenomai-3/html/man1/latency/index.html
+
+Assuming you want to run a dual kernel configuration, the POSIX services
+such code uses are documented here:
+http://www.xenomai.org/documentation/xenomai-3/html/xeno3prm/group__cobalt_=
+_api.html
+
+Some code from the demo tree is implemented with the alchemy API
+instead, which is documented here:
+http://www.xenomai.org/documentation/xenomai-3/html/xeno3prm/group__alchemy=
+.html
+
+--
+Philippe.
