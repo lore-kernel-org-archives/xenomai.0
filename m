@@ -1,12 +1,12 @@
-References: <20160812113057.1eed5e0e@md1em3qc>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <81acad55-ac3f-2916-10b7-d0a04f0d7ced@xenomai.org>
-Date: Mon, 5 Sep 2016 12:11:44 +0200
-MIME-Version: 1.0
-In-Reply-To: <20160812113057.1eed5e0e@md1em3qc>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] dealing with non-synchronized TSCs in Xenomai
+From: "=?ISO-8859-1?B?SmFjayBMZWU=?=" <jacklee11@foxmail.com>
+Mime-Version: 1.0
+Date: Mon, 5 Sep 2016 19:30:03 +0800
+Message-ID: <tencent_0665C5E346CB72916FA20B7D@qq.com>
+Content-Type: text/plain;
+	charset="ISO-8859-1"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] rt-socket-can "no device" problem with advantech
+	PCM-26D2CA CANboard [CLOSED]
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,115 +15,149 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, Xenomai@xenomai.org, "KISZKA, JAN" <jan.kiszka@siemens.com>, Gilles Chanteperdrix <gilles@click-hack.org>
-Cc: Vincent Berenz <vberenz@tuebingen.mpg.de>
+To: =?ISO-8859-1?B?d2c=?= <wg@grandegger.com>, =?ISO-8859-1?B?eGVub21haQ==?= <xenomai@xenomai.org>
 
-On 08/12/2016 11:30 AM, Henning Schild wrote:
-> TSCs are the only clocksource that Xenomai is able to use at the moment
-> and it relies on them to be synchronized across cores. Unfortunately
-> that is not always the case and the offsets can be substantial. [1]
-> 
-> Linux does test for that on bootup and whenever a CPU is hotplugged and
-> it will fall back to HPET if TSCs don't turn out to be in sync. That
-> test result should also tell the user that the system in question is
-> not fit to be used with Xenomai. I already have a patch that will
-> actually return an error from the init of the Xenomai module.
-> 
-> But that reaction is pretty drastic, especially since it potentially
-> disables Xenomai on systems that are already running on a Xenomai stack
-> "just fine". So the idea was to relax the TSC sync test in Linux and
-> allow a few hundred ns offset via a kernel parameter. Systems i have
-> seen TSC async on are sometimes off by something like 2000 cycles, but
-> most of the time the TSCs are in sync at boottime.
-> 
-> But i have also seen the ocassional 10s of thousands and i have seen
-> machines where the TSCs seem to always be off, sometimes 100s of
-> thousands of cycles. I am not sure whether one could just blame the
-> BIOS or the hardware for that, and actually blaming a component you can
-> not control does not help solve the problem.
-> 
-> Fact is, we need to get these counters in relatively close sync or we
-> need another clocksource like the HPET.
-> 
-> TSCs can be synched with MSR 0x10, given the potential for SMIs that is
-> not trivial but hopefully possible. And here i am hoping/assuming that
-> once synched they will not start drifting. Modern CPUs have monotonic
-> TSCs and tell about it via CPUID.
-> 
-> Linux used to have syncing code but that was dropped in 2007. [2]
-> At the time it did not work well enough, probably also because of power
-> management and changing frequencies. But today a TSC is stable across
-> power states and synching is hopefully feasible again.
-> 
-> To conclude i basically see two ways to approach that problem:
-> 
-> 1. rely on Linux to test the TSCs and refuse Xenomai service
->  - patch Linux to sync the TSCs again
->  - maybe patch Linux to slightly relax the sync test, once we are close
->    enough
-> 
-> 2. rely on Linux to test the TSCs and fall back to another clock, which
->    needs to be implemented and wont be as fast
-> 
-> I certainly prefer option 1. because it seems like less effort and it
-> will maintain a high performance clocksource. And it - if we get the
-> patches mainline - has the potential to improve Linux and not get these
-> changes into the ipipe-patch. I am not sure how "bad" it would be
-> performance-wise to use HPET in Xenomai.
-> 
-> We should include the Linux TSC experts in this discussion at some
-> point. But right now i am curious to hear opinions, thoughts, and
-> expertise from the Xenomai community! 
-> 
-> Henning
-> 
-> [1]
-> http://www.xenomai.org/pipermail/xenomai/2016-August/036615.html
-> [2]
-> https://github.com/torvalds/linux/commit/95492e4646e5de8b43d9a7908d6177fb737b61f0
-> 
-> 
-
-Xenomai cannot use the HPET as a clocksource because we don't have the
-support code for reading from the MMIO-based HPET_COUNTER register from
-userland. So far, cobalt_read_tsc() over x86 only knows about reading
-the per-CPU tsc. So, at any rate, enabling the HPET for Xenomai as a
-clocksource would require to extend this.
-
-Actually, the only sane way to address this issue would be for Xenomai
-to reuse the regular clock_gettime() interface directly from the vDSO,
-making it generally suitable for getting the monotonic time from any
-pipeline stages, instead of reimplementing our own wheel. That would
-make the support for fast tsc<->ns conversion helpers (written in
-assembly code) useless, implicitly enable ntp correction, simplify the
-integration of high precision timers in the mainline code by rebasing
-time values on nanosecs instead of raw timestamps, and the notion of
-CLOCK_HOST_REALTIME would match CLOCK_REALTIME eventually. Gilles was
-precisely working on this for ARM [2], for the new "dovetail" [3]
-architecture of the pipeline. For several reasons, this is not an effort
-than can be completed overnight, and certainly not aimed at the current
-pipeline architecture Xenomai uses.
-
-Bottom line is that HPET is not suitable for real-time usage; it's slow
-to read the time from [1]. For that reason, I don't think that teaching
-Xenomai how to read that counter from userland would be worth the effort.
-
-Unsynced TSC area a problem only when time references obtained from
-Xenomai are shared between CPUs, so I tend to favor option #1 too.
-
-People who insist on sharing time references between CPUs with unsynced
-CPUs should disable the check with tsc=reliable provided the offset is
-bearable. If not, the hardware would not be suitable for real-time usage
-anyway, since falling back to HPET would not a suitable option either.
-
-[1] https://patchwork.kernel.org/patch/8814521/
-[2]
-http://git.xenomai.org/ipipe-gch.git/commit/?h=symbiote-mmio-clocksource&id=a25f72010194a1d6c0e601934cd01816c73642a6
-[3] I know that I need to clarify the goal and purpose of that
-"dovetail" thing which have popped up in some e-mails here and there
-over the past months, along with several other important issues. This is
-brewing.
-
--- 
-Philippe.
-
+V29sZmdhbmcgaGFzIHNvbHZlZCB0aGlzIHByb2JsZW0uDQpUaGlzIHByb2JsZW0gb2NjdXJz
+LCBiZWNhdXNlIHJ0LXNvY2tldC1jYW4gZHJpdmVyIGluIHhlbm9tYWkgMy4wLjIgZG9lcyBu
+b3QgaGF2ZSB0aGUgQWR2YW50ZWNoIFBDTTI2RDJDQSBkZXZpY2UgeWV0LiBJdCdzIGRldmlj
+ZSBpZCBpcyAweEMzMDIuDQpCZWxvdyBpcyB0aGUgdGhlIGZpbmFsIHBhdGNoLiBJIGhhdmUg
+dGVzdGVkIGl0LiBJdCB3b3JrcyBmaW5lIDopDQpUaGFua3MsIFdvbGZnYW5nLg0KDQotLS0N
+Cjk3YTk4LDEwMw0KPkFEVl9QQ0lfREVWSUNFKDB4YzIwMSksDQo+QURWX1BDSV9ERVZJQ0Uo
+MHhjMjAyKSwNCj5BRFZfUENJX0RFVklDRSgweGMyMDQpLA0KPkFEVl9QQ0lfREVWSUNFKDB4
+YzMwMSksDQo+QURWX1BDSV9ERVZJQ0UoMHhjMzAyKSwNCj5BRFZfUENJX0RFVklDRSgweGMz
+MDQpLA0KMTE3YTEyNCwxMzgNCj4gc3RhdGljIHU4IHJ0Y2FuX2Fkdl9wY2lfcmVhZF9yZWdf
+c2hpZnQyKHN0cnVjdCBydGNhbl9kZXZpY2UgKmRldiwgaW50IHBvcnQpDQo+IHsNCj5zdHJ1
+Y3QgcnRjYW5fYWR2X3BjaSAqYm9hcmQgPSAoc3RydWN0IHJ0Y2FuX2Fkdl9wY2kgKilkZXYt
+PmJvYXJkX3ByaXY7DQo+IA0KPnJldHVybiBpb3JlYWQ4KGJvYXJkLT5iYXNlX2FkZHIgKyAo
+cG9ydCA8PCAyKSk7DQo+IH0NCj4gDQo+IHN0YXRpYyB2b2lkIHJ0Y2FuX2Fkdl9wY2lfd3Jp
+dGVfcmVnX3NoaWZ0MihzdHJ1Y3QgcnRjYW5fZGV2aWNlICpkZXYsIGludCBwb3J0LA0KPiAg
+IHU4IGRhdGEpDQo+IHsNCj5zdHJ1Y3QgcnRjYW5fYWR2X3BjaSAqYm9hcmQgPSAoc3RydWN0
+IHJ0Y2FuX2Fkdl9wY2kgKilkZXYtPmJvYXJkX3ByaXY7DQo+IA0KPmlvd3JpdGU4KGRhdGEs
+IGJvYXJkLT5iYXNlX2FkZHIgKyAocG9ydCA8PCAyKSk7DQo+IH0NCj4gDQoxMzlhMTYxDQo+
+ICAgdW5zaWduZWQgaW50IHNoaWZ0LCANCjE2NGMxODYNCjxiYXNlX2FkZHIgPSBwY2lfaW9t
+YXAocGRldiwgYmFyLCBBRFZfUENJX0JBU0VfU0laRSk7DQotLS0NCj5iYXNlX2FkZHIgPSBw
+Y2lfaW9tYXAocGRldiwgYmFyLCBBRFZfUENJX0JBU0VfU0laRSA8PCBzaGlmdCk7DQoxNzBj
+MTkyDQo8IGJhc2VfYWRkciA9IHBjaV9pb21hcChwZGV2LCBiYXIsIEFEVl9QQ0lfQkFTRV9T
+SVpFKSArIG9mZnNldDsNCi0tLQ0KPiBiYXNlX2FkZHIgPSBwY2lfaW9tYXAocGRldiwgYmFy
+LDApIDsNCjE4MmEyMDUsMjA4DQo+aWYgKHNoaWZ0ID09IDIpIHsNCj5jaGlwLT5yZWFkX3Jl
+ZyA9IHJ0Y2FuX2Fkdl9wY2lfcmVhZF9yZWdfc2hpZnQyOw0KPmNoaXAtPndyaXRlX3JlZyA9
+IHJ0Y2FuX2Fkdl9wY2lfd3JpdGVfcmVnX3NoaWZ0MjsNCj59IGVsc2Ugew0KMTg0YTIxMQ0K
+Pn0NCjI0NmEyNzQNCj51bnNpZ25lZCBpbnQgc2hpZnQgPSAwOw0KMjc0YTMwMywzMTINCj5j
+YXNlIDB4YzIwMToNCj5jYXNlIDB4YzIwMjoNCj5jYXNlIDB4YzIwNDoNCj5jYXNlIDB4YzMw
+MToNCj5jYXNlIDB4YzMwMjoNCj5jYXNlIDB4YzMwNDoNCj4gbmJfcG9ydHMgPSBwZGV2LT5k
+ZXZpY2UgJiAweDc7DQo+IG9mZnNldCA9IDB4NDAwOw0KPiBzaGlmdCA9IDI7DQo+IGJyZWFr
+Ow0KMzAxYzMzOSwzNDANCjxyZXQgPSBydGNhbl9hZHZfcGNpX2FkZF9jaGFuKHBkZXYsIGNo
+YW5uZWwsIGJhciwgb2Zmc2V0LCAmbWFzdGVyX2Rldik7DQotLS0NCj5yZXQgPSBydGNhbl9h
+ZHZfcGNpX2FkZF9jaGFuKHBkZXYsIGNoYW5uZWwsIGJhciwgb2Zmc2V0LCBzaGlmdCwNCj4g
+ICAgICZtYXN0ZXJfZGV2KTsNCjMxMWEzNTENCj4gICAgIHNoaWZ0LCANCg0KLS0tDQoNCg0K
+LS0tLS0tLS0tLS0tLS0tLS0tIE9yaWdpbmFsIC0tLS0tLS0tLS0tLS0tLS0tLQ0KRnJvbTog
+ICJKYWNrIExlZSI7PGphY2tsZWUxMUBmb3htYWlsLmNvbT47DQpEYXRlOiAgU2VwIDQsIDIw
+MTYNClRvOiAgIndnIjx3Z0BncmFuZGVnZ2VyLmNvbT47ICJ4ZW5vbWFpIjx4ZW5vbWFpQHhl
+bm9tYWkub3JnPjsNClN1YmplY3Q6ICBydC1zb2NrZXQtY2FuICJubyBkZXZpY2UiIHByb2Js
+ZW0gd2l0aCBhZHZhbnRlY2ggUENNLTI2RDJDQSBDQU5ib2FyZA0KDQo+IEhlbGxvLA0KPiAN
+Cj4gQW0gMDMuMDkuMjAxNiB1bSAwMjo1NCBzY2hyaWViIEphY2sgTGVlOg0KPiAuLi5zbmlw
+Li4uDQo+IA0KPiA+IC0tLS0tLS0tLS0tLUkgYW0gYmFjay4tLS0tLS0tLS0tLS0tLQ0KPiA+
+IEkgbW9kaWZpZWQgdGhlIHNvdXJjZSBjb2RlIGFuZCBjb21waWxlZCB0aGUgeGVub19jYW5f
+YWR2X3BjaS5rbyB3aXRoDQo+ID4gIm1ha2UgQ09ORklHX1hFTk9fLi4uPW0gLUMgKGtybnNy
+YykvZHJpdmVycy94ZW5vbWFpL2Nhbi9zamExMDAwIG1vZHVsZXMiLg0KPiA+IEFmdGVyIGNv
+cGllZCB0aGUgbW9kdWxlIHRvIHRoZSAvbGliLy4uLiBkaXJlY3RvcnkgYW5kICJtb2Rwcm9i
+ZQ0KPiA+IHhlbm9fY2FuX2Fkdl9wY2kiLCAvcHJvYy9ydGNhbi9kZXZpY2VzIHJlbWFpbiB0
+aGUgc2FtZS4gQnV0ICJkbWVzZyB8DQo+ID4gZ3JlcCAtaSBjYW4iIG91dHB1dHMgdGhlc2U6
+DQo+ID4gLi4uDQo+ID4gWyAgMjM5LjM3NDg3M10gUlQtU29ja2V0LUNBTiAwLjkwLjIgLSAo
+QykgMjAwNiBSVC1Tb2NrZXQtQ0FOIERldmVsb3BtZW50DQo+ID4gVGVhbQ0KPiA+IFsgIDIz
+OS4zOTY5NzddIFJUQ0FOIFNKQTEwMDAgZHJpdmVyIGluaXRpYWxpemVkDQo+ID4gWyAgMjM5
+LjQwNTgxOV0geGVub19jYW5fYWR2X3BjaTogbW9kdWxlIHZlcmlmaWNhdGlvbiBmYWlsZWQ6
+IHNpZ25hdHVyZQ0KPiA+IGFuZC9vciByZXF1aXJlZCBrZXkgbWlzc2luZyAtIHRhaW50aW5n
+IGtlcm5lbA0KPiA+IFsgIDIzOS40MDgwMTRdIEFEVi1QQ0ktQ0FOIDAwMDA6MDM6MDAuMDog
+UlRDQU4gUmVnaXN0ZXJpbmcgY2FyZA0KPiA+IFsgIDIzOS40MDgxMjFdIEFEVi1QQ0ktQ0FO
+IDAwMDA6MDM6MDAuMDogUENJLT5BUElDIElSUSB0cmFuc2Zvcm06IElOVCBBDQo+ID4gLT4g
+SVJRIDE4DQo+ID4gWyAgMjM5LjQwODE4OV0gQURWLVBDSS1DQU4gMDAwMDowMzowMC4wOiBS
+VENBTiBkZXRlY3RlZCBBZHZhbnRlY2ggUENJDQo+ID4gY2FyZCBhdCBzbG90ICMwDQo+ID4g
+WyAgMjM5LjQwODI1NF0gQURWLVBDSS1DQU46IEluaXRpYWxpemluZyBkZXZpY2UgMTNmZTpj
+MzAyOmMzMDINCj4gPiBbICAyMzkuNDA4Mzg2XSBBRFYtUENJLUNBTjogYmFzZV9hZGRyPWZm
+ZmZjOTAwMDA4ZmU0MDANCj4gPiBjb25mX2FkZHI9ICAgICAgICAgIChudWxsKSBpcnE9MTgg
+b2NyPTB4ZmEgY2RyPTB4YzANCj4gPiBbICAyMzkuNDA4NTc1XSBydGNhbjogcmVnaXN0ZXJl
+ZCBydGNhbjANCj4gPiBbICAyMzkuNDA4NjMxXSBVbnJlZ2lzdGVyaW5nIFNKQTEwMDAgZGV2
+aWNlIHJ0Y2FuMA0KPiA+IFsgIDIzOS40MDg3MzZdIFJUQ0FOOiB1bnJlZ2lzdGVyZWQgcnRj
+YW4wDQo+ID4gWyAgMjM5LjQwODg5MF0gQURWLVBDSS1DQU46IHByb2JlIG9mIDAwMDA6MDM6
+MDAuMCBmYWlsZWQgd2l0aCBlcnJvciAtNQ0KPiANCj4gT29wcywgSSBmb3Jnb3QgdG8gYWRq
+dXN0IHRoZSBtYXBwZWQgUENJIHNwYWNlLiBJbiAicGNpX21hcCgpIiAiQURWX1BDSV9CQVNF
+X1NJWkUgPDwgc2hpZnQiDQo+IHNob3VsZCBiZSB1c2VkLiBCZWxvdyBpcyB2MiBvZiB0aGUg
+cGF0Y2guIEhvcGUgaXQgd29ya3Mgbm93Lg0KPiANCj4gV29sZmdhbmcuDQo+IA0KPiANCj4g
+RnJvbSBmMzQ2YTBlN2IwOGEwMmNjNGVmM2IwNmVlZjg4OTkyYTYxNDBiOTU3IE1vbiBTZXAg
+MTcgMDA6MDA6MDAgMjAwMQ0KPiBGcm9tOiBXb2xmZ2FuZyBHcmFuZGVnZ2VyIDxXb2xmZ2Fu
+ZyBHcmFuZGVnZ2VyPg0KPiBEYXRlOiBGcmksIDIgU2VwIDIwMTYgMTA6NDY6MjYgKzAyMDAN
+Cj4gU3ViamVjdDogW1BBVENIIHYyXSBydGNhbjogYWRkIHN1cHBvcnQgZm9yIG5ldyBBZHZh
+bnRlYyBDQU4gUENJIGRldmljZXMNCj4gDQo+IC0tLQ0KPiAga3NyYy9kcml2ZXJzL2Nhbi9z
+amExMDAwL3J0Y2FuX2Fkdl9wY2kuYyB8IDUyICsrKysrKysrKysrKysrKysrKysrKysrKysr
+KystLS0tDQo+ICAxIGZpbGUgY2hhbmdlZCwgNDYgaW5zZXJ0aW9ucygrKSwgNiBkZWxldGlv
+bnMoLSkNCg0KPiBkaWZmIC0tZ2l0IGEva3NyYy9kcml2ZXJzL2Nhbi9zamExMDAwL3J0Y2Fu
+X2Fkdl9wY2kuYyBiL2tzcmMvZHJpdmVycy9jYW4vc2phMTAwMC9ydGNhbl9hZHZfcGNpLmMN
+Cj4gaW5kZXggMWQzNmU3Yi4uOWQyZWE3YiAxMDA2NDQNCj4gLS0tIGEva3NyYy9kcml2ZXJz
+L2Nhbi9zamExMDAwL3J0Y2FuX2Fkdl9wY2kuYw0KPiArKysgYi9rc3JjL2RyaXZlcnMvY2Fu
+L3NqYTEwMDAvcnRjYW5fYWR2X3BjaS5jDQo+IEBAIC05NSw2ICs5NSwxMiBAQCBzdGF0aWMg
+REVGSU5FX1BDSV9ERVZJQ0VfVEFCTEUoYWR2X3BjaV90YmwpID0gew0KPiAgQURWX1BDSV9E
+RVZJQ0UoMHhjMTAxKSwNCj4gIEFEVl9QQ0lfREVWSUNFKDB4YzEwMiksDQo+ICBBRFZfUENJ
+X0RFVklDRSgweGMxMDQpLA0KPiArIEFEVl9QQ0lfREVWSUNFKDB4YzIwMSksDQo+ICsgQURW
+X1BDSV9ERVZJQ0UoMHhjMjAyKSwNCj4gKyBBRFZfUENJX0RFVklDRSgweGMyMDQpLA0KPiAr
+IEFEVl9QQ0lfREVWSUNFKDB4YzMwMSksDQo+ICsgQURWX1BDSV9ERVZJQ0UoMHhjMzAyKSwN
+Cj4gKyBBRFZfUENJX0RFVklDRSgweGMzMDQpLA0KPiAgLyogcmVxdWlyZWQgbGFzdCBlbnRy
+eSAqLw0KPiAgeyB9DQo+ICB9Ow0KPiBAQCAtMTE1LDYgKzEyMSwyMSBAQCBzdGF0aWMgdm9p
+ZCBydGNhbl9hZHZfcGNpX3dyaXRlX3JlZyhzdHJ1Y3QgcnRjYW5fZGV2aWNlICpkZXYsIGlu
+dCBwb3J0LCB1OCBkYXRhKQ0KPiAgaW93cml0ZTgoZGF0YSwgYm9hcmQtPmJhc2VfYWRkciAr
+IHBvcnQpOw0KPiB9DQo+ICANCj4gK3N0YXRpYyB1OCBydGNhbl9hZHZfcGNpX3JlYWRfcmVn
+X3NoaWZ0MihzdHJ1Y3QgcnRjYW5fZGV2aWNlICpkZXYsIGludCBwb3J0KQ0KPiArew0KPiAr
+IHN0cnVjdCBydGNhbl9hZHZfcGNpICpib2FyZCA9IChzdHJ1Y3QgcnRjYW5fYWR2X3BjaSAq
+KWRldi0+Ym9hcmRfcHJpdjsNCj4gKw0KPiArIHJldHVybiBpb3JlYWQ4KGJvYXJkLT5iYXNl
+X2FkZHIgKyAocG9ydCA8PCAyKSk7DQo+ICt9DQo+ICsNCj4gK3N0YXRpYyB2b2lkIHJ0Y2Fu
+X2Fkdl9wY2lfd3JpdGVfcmVnX3NoaWZ0MihzdHJ1Y3QgcnRjYW5fZGV2aWNlICpkZXYsIGlu
+dCBwb3J0LA0KPiArICAgIHU4IGRhdGEpDQo+ICt7DQo+ICsgc3RydWN0IHJ0Y2FuX2Fkdl9w
+Y2kgKmJvYXJkID0gKHN0cnVjdCBydGNhbl9hZHZfcGNpICopZGV2LT5ib2FyZF9wcml2Ow0K
+PiArDQo+ICsgaW93cml0ZTgoZGF0YSwgYm9hcmQtPmJhc2VfYWRkciArIChwb3J0IDw8IDIp
+KTsNCj4gK30NCj4gKw0KPiAgc3RhdGljIHZvaWQgcnRjYW5fYWR2X3BjaV9kZWxfY2hhbihz
+dHJ1Y3QgcGNpX2RldiAqcGRldiwNCj4gICAgIHN0cnVjdCBydGNhbl9kZXZpY2UgKmRldikN
+Cj4gIHsNCj4gQEAgLTEzNyw2ICsxNTgsNyBAQCBzdGF0aWMgaW50IHJ0Y2FuX2Fkdl9wY2lf
+YWRkX2NoYW4oc3RydWN0IHBjaV9kZXYgKnBkZXYsDQo+ICAgIGludCBjaGFubmVsLA0KPiAg
+ICB1bnNpZ25lZCBpbnQgYmFyLA0KPiAgICB1bnNpZ25lZCBpbnQgb2Zmc2V0LA0KPiArICAg
+dW5zaWduZWQgaW50IHNoaWZ0LA0KPiAgICBzdHJ1Y3QgcnRjYW5fZGV2aWNlICoqbWFzdGVy
+X2RldikNCj4gIHsNCj4gIHN0cnVjdCBydGNhbl9kZXZpY2UgKmRldjsNCj4gQEAgLTE2MSwx
+MyArMTgzLDE1IEBAIHN0YXRpYyBpbnQgcnRjYW5fYWR2X3BjaV9hZGRfY2hhbihzdHJ1Y3Qg
+cGNpX2RldiAqcGRldiwNCj4gIGlmIChvZmZzZXQpDQo+ICBiYXNlX2FkZHIgPSBtYXN0ZXJf
+Ym9hcmQtPmJhc2VfYWRkcitvZmZzZXQ7DQo+ICBlbHNlDQo+IC0gYmFzZV9hZGRyID0gcGNp
+X2lvbWFwKHBkZXYsIGJhciwgQURWX1BDSV9CQVNFX1NJWkUpOw0KPiArIGJhc2VfYWRkciA9
+IHBjaV9pb21hcChwZGV2LCBiYXIsDQo+ICsgICAgICAgQURWX1BDSV9CQVNFX1NJWkUgPDwg
+c2hpZnQpOw0KPiAgaWYgKCFiYXNlX2FkZHIpIHsNCj4gIHJldCA9IC1FSU87DQo+ICBnb3Rv
+IGZhaWx1cmU7DQo+ICB9DQo+ICB9IGVsc2Ugew0KPiAtIGJhc2VfYWRkciA9IHBjaV9pb21h
+cChwZGV2LCBiYXIsIEFEVl9QQ0lfQkFTRV9TSVpFKSArIG9mZnNldDsNCj4gKyBiYXNlX2Fk
+ZHIgPSBwY2lfaW9tYXAocGRldiwgYmFyLA0KPiArICAgICAgIEFEVl9QQ0lfQkFTRV9TSVpF
+IDw8IHNoaWZ0KSArIG9mZnNldDsNCj4gIGlmICghYmFzZV9hZGRyKSB7DQo+ICByZXQgPSAt
+RUlPOw0KPiAgZ290byBmYWlsdXJlOw0KPiBAQCAtMTgwLDggKzIwNCwxMyBAQCBzdGF0aWMg
+aW50IHJ0Y2FuX2Fkdl9wY2lfYWRkX2NoYW4oc3RydWN0IHBjaV9kZXYgKnBkZXYsDQo+ICAN
+Cj4gIGRldi0+Ym9hcmRfbmFtZSA9IGFkdl9wY2lfYm9hcmRfbmFtZTsNCj4gIA0KPiAtIGNo
+aXAtPnJlYWRfcmVnID0gcnRjYW5fYWR2X3BjaV9yZWFkX3JlZzsNCj4gLSBjaGlwLT53cml0
+ZV9yZWcgPSBydGNhbl9hZHZfcGNpX3dyaXRlX3JlZzsNCj4gKyBpZiAoc2hpZnQgPT0gMikg
+ew0KPiArIGNoaXAtPnJlYWRfcmVnID0gcnRjYW5fYWR2X3BjaV9yZWFkX3JlZ19zaGlmdDI7
+DQo+ICsgY2hpcC0+d3JpdGVfcmVnID0gcnRjYW5fYWR2X3BjaV93cml0ZV9yZWdfc2hpZnQy
+Ow0KPiArIH0gZWxzZSB7DQo+ICsgY2hpcC0+cmVhZF9yZWcgPSBydGNhbl9hZHZfcGNpX3Jl
+YWRfcmVnOw0KPiArIGNoaXAtPndyaXRlX3JlZyA9IHJ0Y2FuX2Fkdl9wY2lfd3JpdGVfcmVn
+Ow0KPiArIH0NCj4gIA0KPiAgLyogQ2xvY2sgZnJlcXVlbmN5IGluIEh6ICovDQo+ICBkZXYt
+PmNhbl9zeXNfY2xvY2sgPSBBRFZfUENJX0NBTl9DTE9DSzsNCj4gQEAgLTI0NCw2ICsyNzMs
+NyBAQCBzdGF0aWMgaW50IGFkdl9wY2lfaW5pdF9vbmUoc3RydWN0IHBjaV9kZXYgKnBkZXYs
+DQo+ICB1bnNpZ25lZCBpbnQgYmFyID0gMDsNCj4gIHVuc2lnbmVkIGludCBiYXJfZmxhZyA9
+IDA7DQo+ICB1bnNpZ25lZCBpbnQgb2Zmc2V0ID0gMDsNCj4gKyB1bnNpZ25lZCBpbnQgc2hp
+ZnQgPSAwOw0KPiAgdW5zaWduZWQgaW50IGl4Ow0KPiAgDQo+ICBzdHJ1Y3QgcnRjYW5fZGV2
+aWNlICptYXN0ZXJfZGV2ID0gTlVMTDsNCj4gQEAgLTI3MCw3ICszMDAsMTYgQEAgc3RhdGlj
+IGludCBhZHZfcGNpX2luaXRfb25lKHN0cnVjdCBwY2lfZGV2ICpwZGV2LA0KPiAgY2FzZSAw
+eGMxMDQ6DQo+ICBuYl9wb3J0cyA9IHBkZXYtPmRldmljZSAmIDB4NzsNCj4gb2Zmc2V0ID0g
+MHgxMDA7DQo+IC0gYmFyID0gMDsNCj4gKyBicmVhazsNCj4gKyBjYXNlIDB4YzIwMToNCj4g
+KyBjYXNlIDB4YzIwMjoNCj4gKyBjYXNlIDB4YzIwNDoNCj4gKyBjYXNlIDB4YzMwMToNCj4g
+KyBjYXNlIDB4YzMwMjoNCj4gKyBjYXNlIDB4YzMwNDoNCj4gKyBuYl9wb3J0cyA9IHBkZXYt
+PmRldmljZSAmIDB4NzsNCj4gKyBvZmZzZXQgPSAweDQwMDsNCj4gKyBzaGlmdCA9IDI7DQo+
+ICBicmVhazsNCj4gIGNhc2UgMHgxNjgwOg0KPiAgY2FzZSAweDIwNTI6DQo+IEBAIC0yOTgs
+NyArMzM3LDggQEAgc3RhdGljIGludCBhZHZfcGNpX2luaXRfb25lKHN0cnVjdCBwY2lfZGV2
+ICpwZGV2LA0KPiAgICAgcGRldi0+ZGV2aWNlLA0KPiAgICAgcGRldi0+c3Vic3lzdGVtX2Rl
+dmljZSk7DQo+ICANCj4gLSByZXQgPSBydGNhbl9hZHZfcGNpX2FkZF9jaGFuKHBkZXYsIGNo
+YW5uZWwsIGJhciwgb2Zmc2V0LCAmbWFzdGVyX2Rldik7DQo+ICsgcmV0ID0gcnRjYW5fYWR2
+X3BjaV9hZGRfY2hhbihwZGV2LCBjaGFubmVsLCBiYXIsIG9mZnNldCwgc2hpZnQsDQo+ICsg
+ICAgICAmbWFzdGVyX2Rldik7DQo+ICBpZiAocmV0KQ0KPiAgZ290byBmYWlsdXJlX2lvdW5t
+YXA7DQo+ICANCj4gLS0gDQo+IDEuOS4xDQouLi5zbmlwLi4u
