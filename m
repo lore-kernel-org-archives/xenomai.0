@@ -1,11 +1,17 @@
-From: Tobias Luksch <Tobias.Luksch@itk-engineering.de>
-Date: Tue, 6 Sep 2016 15:38:41 +0000
-Message-ID: <fe0243c96682430eb5c01ebec98b269e@itk-engineering.de>
-Content-Language: de-DE
+From: BREGARDIS Cedric <cedric.bregardis@transport.alstom.com>
+Date: Tue, 6 Sep 2016 16:02:52 +0000
+Message-ID: <e97e0cc68f64487182e38b4707f5622e@AM3PR48MB0130.041d.mgd.msft.net>
+References: <b3a6f4c97449444a9f315329b4b7faf1@AM3PR48MB0130.041d.mgd.msft.net>
+ <1d69d480-52da-5a17-2ca9-d9b5ce296501@mperpetuo.com>
+ <8d544c56950547518f0e6aa5908ddf0a@AM3PR48MB0130.041d.mgd.msft.net>
+ <115943e8-eaf2-66f2-800f-bee51b5f9375@mperpetuo.com>
+In-Reply-To: <115943e8-eaf2-66f2-800f-bee51b5f9375@mperpetuo.com>
+Content-Language: fr-FR
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: [Xenomai] Multiple processes within same session
+Subject: Re: [Xenomai] [ARM64] Context saving problem with floating point
+ registers?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,69 +22,53 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello,
 
-[Arch:x86, Processor:Corei7, Kernel: 4.1.18, Xenomai:3.0.2]
 
-we are using several Xenomai processes communicating using shared memory (r=
-t_heap) and a few named mutexes. The processes also create additional unnam=
-ed task, mutexes, semaphores, etc.
-After porting to Xenomai 3, I see the following problem: To access the shar=
-ed heap, I start two processes within the same session (--session from comm=
-and line). Shared access to the heap works, but when creating unnamed objec=
-ts, e.g. a mutex, in the second process, rt_mutex_create returns -17.
+> De : Xenomai [mailto:xenomai-bounces@xenomai.org] De la part de Dmitriy
+> Cherkasov
+>
+> > Do you know if there is a workaround? Maybe a previous version of
+> > ipipe/linux (where to find it ?)?
+>
+> For now I think the most stable fpsimd support is in the 3.18 kernel, whi=
+ch
+> can be found in Jorge's hikey port here:
+>
+> http://git.xenomai.org/ipipe-jro.git/
+>
+> And here is the Xenomai side to go with it, also in the hikey branch:
+>
+> http://git.xenomai.org/xenomai-jro.git/
+>
 
-Here is a small example program to reproduce this:
+Thank you very much Dmitriy!
 
-#include <alchemy/task.h>
-#include <alchemy/mutex.h>
-#include <stdio.h>
+Unfortunately I only have a version 3.14 and 4.1 of the linux kernel
+for my SoC. I may port it to 3.18, but I fear it may be a bit
+difficult/time consuming. So before doing it, I am thinking about
+other alternatives in order to achieve my goal: measure the execution
+time of an existing xenomai application (written for Xenomai 2 and
+Cortex A9) on this new SoC. This application do a lot of floating
+point operations.
 
-int main(int argc, char* argv[])
-{
-	rt_printf("hello  world\n");
-	RT_MUTEX mutex;
-	int ret_val =3D rt_mutex_create( &mutex, NULL );
-	rt_printf( "rt_mutex_create: %d\n", ret_val );
-
-	while (true)
-	{
-		rt_task_sleep(1000000000);
-		rt_printf("ping\n");
-	}
-	return 0;
-}
-
-Starting this program (called xeno-test here) once gives:
-$ ./xeno-test --session=3Dtest
-hello  world
-rt_mutex_create: 0
-ping
-ping
-[..]
-
-Starting it a second time with the same session:
-$ ./xeno-test --session=3Dtest
-hello  world
-rt_mutex_create: -17
-ping
-ping
-[..]
-
-Starting the program another time with a different session works without er=
-ror. Also using differently named mutexes for both instances works.
-
-I am not sure about the naming mechanism (if any) when creating unnamed obj=
-ects like mutexes, nor about what is actually shared between processes when=
- using the same session. It would be great if anyone could give some detail=
-s on this.
-
-Any help would be appreciated.
+Here are other options I could imagine:
+1 - Contain the bug. Will I meet the floating point context saving
+problem if the xenomai application do not switch to the Linux
+Domain? Maybe the floating point problem only occur in certain
+conditions that I can ensure to not meet?
+2 - Use the SoC in 32 bits mode (aarch32). Does the fpsimd switch
+mechanism works correctly on 32 bits ARM on xenomai for 4.1.x?
+3 - Wait for a correction of xenomai. Is it expected to be available
+soon? It would be unfortunate to work on a complex workaround while
+someone is working on this problem and will release a fix soon.
 
 Best regards,
-Tobias
+Cedric
 
 
-
-
+________________________________
+CONFIDENTIALITY : This e-mail and any attachments are confidential and may =
+be privileged. If you are not a named recipient, please notify the sender i=
+mmediately and do not disclose the contents to another person, use it for a=
+ny purpose or store or copy the information in any medium.
 
