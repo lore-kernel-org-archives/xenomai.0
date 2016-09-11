@@ -1,12 +1,12 @@
-References: <08AAAB36BFF54B11B600000E17F0C13F@itd206>
+References: <fe0243c96682430eb5c01ebec98b269e@itk-engineering.de>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <caefde48-495b-d2d6-c3d4-f036cda25e1e@xenomai.org>
-Date: Sun, 11 Sep 2016 13:20:52 +0200
+Message-ID: <93a86010-6692-e08f-12a4-0c1f27d3aedf@xenomai.org>
+Date: Sun, 11 Sep 2016 15:29:04 +0200
 MIME-Version: 1.0
-In-Reply-To: <08AAAB36BFF54B11B600000E17F0C13F@itd206>
+In-Reply-To: <fe0243c96682430eb5c01ebec98b269e@itk-engineering.de>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Reg:Linux 3.10.32 xenomai UART problem
+Subject: Re: [Xenomai] Multiple processes within same session
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,42 +15,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sureshvs <sureshvs@datapatterns.co.in>, xenomai@xenomai.org
-Cc: sureshvsmca@gmail.com
+To: Tobias Luksch <Tobias.Luksch@itk-engineering.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 09/09/2016 03:01 PM, Sureshvs wrote:
-> Hi
+On 09/06/2016 05:38 PM, Tobias Luksch wrote:
+> Hello,
 > 
-> ARCH=powerPC
-> Processor: MPC8641
-> Linux Kernel : 3.10.32
-> Xenomai patch version: xenomai-2.6.3
-> ipipe : ipipe-core-3.10.32-powerpc-2.patch
+> [Arch:x86, Processor:Corei7, Kernel: 4.1.18, Xenomai:3.0.2]
 > 
-> We have ns16550 compatible two UART in our mpc8641 processor and 6 external UART interface.
+> we are using several Xenomai processes communicating using shared memory (rt_heap) and a few named mutexes. The processes also create additional unnamed task, mutexes, semaphores, etc.
+> After porting to Xenomai 3, I see the following problem: To access the shared heap, I start two processes within the same session (--session from command line). Shared access to the heap works, but when creating unnamed objects, e.g. a mutex, in the second process, rt_mutex_create returns -17.
 > 
-> We have tested all 8 UARTS in linux without xenomai patch and it is working fine.But with xenomai patched kernel when we test external UARTS system hangs after 10 to 15 minutes of testing.
+> Here is a small example program to reproduce this:
 > 
-> kindly help us to sove the problem.
+> #include <alchemy/task.h>
+> #include <alchemy/mutex.h>
+> #include <stdio.h>
+> 
+> int main(int argc, char* argv[])
+> {
+> 	rt_printf("hello  world\n");
+> 	RT_MUTEX mutex;
+> 	int ret_val = rt_mutex_create( &mutex, NULL );
+> 	rt_printf( "rt_mutex_create: %d\n", ret_val );
+> 
+> 	while (true)
+> 	{
+> 		rt_task_sleep(1000000000);
+> 		rt_printf("ping\n");
+> 	}
+> 	return 0;
+> }
+> 
+> Starting this program (called xeno-test here) once gives:
+> $ ./xeno-test --session=test
+> hello  world
+> rt_mutex_create: 0
+> ping
+> ping
+> [..]
+> 
+> Starting it a second time with the same session:
+> $ ./xeno-test --session=test
+> hello  world
+> rt_mutex_create: -17
+> ping
+> ping
+> [..]
+> 
+> Starting the program another time with a different session works without error. Also using differently named mutexes for both instances works.
+> 
+> I am not sure about the naming mechanism (if any) when creating unnamed objects like mutexes, nor about what is actually shared between processes when using the same session. It would be great if anyone could give some details on this.
+> 
+> Any help would be appreciated.
 
-Please consider checking whether this issue also happens with recent
-pipeline, kernel and Xenomai releases, at least for the purpose of testing.
+This is a shortcoming of the internal no-so-random name generator used
+for anon objects in lib/alchemy: it should use a shared counter when
+running in pshared mode for drawing unique names, but currently uses a
+process-private one which is wrong. Hence the -EEXIST error received
+when two processes draw the same private counter value, which is likely.
 
-> 
-> 
-> Regards
-> Suresh V.S
-> 
-> **************** CAUTION - Disclaimer *****************This email may contain confidential and privileged material for the
-> sole use of the intended recipient(s). Any review, use, retention, distribution or disclosure by others is strictly prohibited. If you are not the intended recipient (or authorized to receive for the recipient), please contact the sender by reply email and delete all copies of this message. Also, email is susceptible to data corruption, interception, tampering, unauthorized amendment and viruses. We only send and receive emails on the basis that we are not liable for any such corruption, interception, tampering, amendment or viruses or any consequence thereof. 
-> *********** End of Disclaimer ***********DataPatterns ITS Group**********
-> 
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
-> 
-
+As a work around, you could provide named mutexes based on a sequence
+number and the current pid value, until the name generator is fixed in
+mainline.
 
 -- 
 Philippe.
