@@ -1,12 +1,12 @@
-From: "=?ISO-8859-1?B?SmFjayBMZWU=?=" <jacklee11@foxmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="ISO-8859-1"
-Content-Transfer-Encoding: base64
-Date: Sun, 11 Sep 2016 19:12:42 +0800
-Message-ID: <tencent_7EFF3BC22CBB53AA568408E6@qq.com>
-Subject: [Xenomai] "Ctrl + C" makes system crashed when exitting from
-	"cross-link"
+References: <08AAAB36BFF54B11B600000E17F0C13F@itd206>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <caefde48-495b-d2d6-c3d4-f036cda25e1e@xenomai.org>
+Date: Sun, 11 Sep 2016 13:20:52 +0200
+MIME-Version: 1.0
+In-Reply-To: <08AAAB36BFF54B11B600000E17F0C13F@itd206>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Reg:Linux 3.10.32 xenomai UART problem
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,28 +15,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?ISO-8859-1?B?eGVub21haQ==?= <xenomai@xenomai.org>
+To: Sureshvs <sureshvs@datapatterns.co.in>, xenomai@xenomai.org
+Cc: sureshvsmca@gmail.com
 
-SGVsbG8sIGV2ZXJ5b25lIQogIE15IGNvbXB1dGVyIGlzIEFkdmFudGVjaCBNSU8tNTI1MSwg
-KHRoZSBKMTkwMCB2ZXJzaW9uLCAKaHR0cDovL3d3dy5hZHZhbnRlY2guY29tL3Byb2R1Y3Rz
-L2JjNjc4NmI3LWI2OWItNGZkZC05YjYzLTc5MTgwZGJkNWRjYi9taW8tNTI1MS9tb2RfZmY4
-NTM0Y2MtZTg1OC00MGJhLTliYzItMzg2ZjE5YmZlZTRhKQogbGludXgga2VybmVsIHZlcnNp
-b24gaXMgNC4xLjE4LCB4ZW5vbWFpIHZlcnNpb24gaXMgMy4wLjIsIHN5c3RlbSBpcyBsdWJ1
-bnR1IDE2LjA0LgpJIHJlbW92ZSB0aGUgb3JpZ2luYWwgVUFSVCBkcml2ZXJzIGFuZCBtb2Rw
-cm9iZSB0aGUgeGVub18xNjU1MEEgZHJpdmVyLiBjcm9zcy1saW5rIGRlbW8Kd29ya3MgZmlu
-ZSwgYnV0IHdoZW4gSSB0eXBlIGluICJDdHJsICsgQyIgdG8gZXhpdCBmcm9tIGl0LCB0aGUg
-dGVybWluYWwgb3V0cHV0cyB0aGVzZSBhbmQgdGhlIHN5c3RlbQpqdXN0IGRpZXMuCi4uLgpt
-YWluOiAvZGV2L3J0ZG0vcnRzZXIxIChyZWFkKSAtPiBjbG9zZWQKbWFpbjogL2Rldi9ydGRt
-L3J0c2VyMCAod3JpdGUpIC0+IGNsb3NlZAptYWluOiBkZWxldGUgd3JpdGVfdGFzawp3cml0
-ZV90YXNrOiBlcnJvciBvbiBydF90YXNrX3dhaXRfcGVyaW9kLCBJbnRlcnJ1cHRlZCBzeXN0
-ZW0gY2FsbAp3cml0ZV90YXNrOiBleGl0Cm1haW46IGRlbGV0ZSByZWFkX3Rhc2sKLS0tCgpT
-b21ldGltZXMsIGl0IG91dHB1dHMgdGhlc2U6Ci4uLgptYWluOiBleGl0Ci0tLQpUaGUgc3lz
-dGVtIGRvZXMgbm90IGRpZSwgYnV0IHRoZSBjcm9zcy1saW5rIGRvZXMgbm90IGV4aXQgYWN0
-dWFsbHkuCkkgcnVuICJjYXQgL3Byb2MveGVub21haS9zY2hlZC90aHJlYWQiIHRvIGdldCB0
-aGUgcGlkIGFuZCBraWxsIGl0LAp0aGUgdGVybWluYWwganVzdCBvdXRwdXRzICJtYWluOiBl
-eGl0IiByZXBlYXRlZGx5LgoKV2hhdCdzIHdyb25nLCBhbmQgIGhvdyBjYW4gSSBzb2x2ZSBp
-dD8gVGhhbmtzIQ==
+On 09/09/2016 03:01 PM, Sureshvs wrote:
+> Hi
+> 
+> ARCH=powerPC
+> Processor: MPC8641
+> Linux Kernel : 3.10.32
+> Xenomai patch version: xenomai-2.6.3
+> ipipe : ipipe-core-3.10.32-powerpc-2.patch
+> 
+> We have ns16550 compatible two UART in our mpc8641 processor and 6 external UART interface.
+> 
+> We have tested all 8 UARTS in linux without xenomai patch and it is working fine.But with xenomai patched kernel when we test external UARTS system hangs after 10 to 15 minutes of testing.
+> 
+> kindly help us to sove the problem.
+
+Please consider checking whether this issue also happens with recent
+pipeline, kernel and Xenomai releases, at least for the purpose of testing.
+
+> 
+> 
+> Regards
+> Suresh V.S
+> 
+> **************** CAUTION - Disclaimer *****************This email may contain confidential and privileged material for the
+> sole use of the intended recipient(s). Any review, use, retention, distribution or disclosure by others is strictly prohibited. If you are not the intended recipient (or authorized to receive for the recipient), please contact the sender by reply email and delete all copies of this message. Also, email is susceptible to data corruption, interception, tampering, unauthorized amendment and viruses. We only send and receive emails on the basis that we are not liable for any such corruption, interception, tampering, amendment or viruses or any consequence thereof. 
+> *********** End of Disclaimer ***********DataPatterns ITS Group**********
+> 
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+> 
 
 
-
+-- 
+Philippe.
 
