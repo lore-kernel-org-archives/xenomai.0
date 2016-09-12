@@ -1,15 +1,17 @@
-In-Reply-To: <0fe39a24-b767-dff2-230d-18fa0b3766dd@xenomai.org>
-References: <tencent_7EFF3BC22CBB53AA568408E6@qq.com>
- <0fe39a24-b767-dff2-230d-18fa0b3766dd@xenomai.org>
-From: "=?ISO-8859-1?B?SmFjayBMZWU=?=" <jacklee11@foxmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="ISO-8859-1"
-Content-Transfer-Encoding: base64
-Date: Mon, 12 Sep 2016 11:30:52 +0800
-Message-ID: <tencent_5E5F68F22D0540CF4309F8EE@qq.com>
-Subject: [Xenomai] "Ctrl + C" makes system crashed when exitting
-	from"cross-link"
+References: <b3a6f4c97449444a9f315329b4b7faf1@AM3PR48MB0130.041d.mgd.msft.net>
+ <1d69d480-52da-5a17-2ca9-d9b5ce296501@mperpetuo.com>
+ <8d544c56950547518f0e6aa5908ddf0a@AM3PR48MB0130.041d.mgd.msft.net>
+ <115943e8-eaf2-66f2-800f-bee51b5f9375@mperpetuo.com>
+ <e97e0cc68f64487182e38b4707f5622e@AM3PR48MB0130.041d.mgd.msft.net>
+From: Dmitriy Cherkasov <dmitriy@mperpetuo.com>
+Message-ID: <ab68d15d-f883-61c5-f946-a1a034cac0a4@mperpetuo.com>
+Date: Mon, 12 Sep 2016 10:54:10 -0700
+MIME-Version: 1.0
+In-Reply-To: <e97e0cc68f64487182e38b4707f5622e@AM3PR48MB0130.041d.mgd.msft.net>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [ARM64] Context saving problem with floating point
+ registers?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,74 +20,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?ISO-8859-1?B?UGhpbGlwcGUgR2VydW0=?= <rpm@xenomai.org>, =?ISO-8859-1?B?eGVub21haQ==?= <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-PiAtLS0tLS0tLS0tLS0tLS0tLS0gT3JpZ2luYWwgLS0tLS0tLS0tLS0tLS0tLS0tCj4gRnJv
-bTogICJQaGlsaXBwZSBHZXJ1bSI7PHJwbUB4ZW5vbWFpLm9yZz47Cj4gRGF0ZTogIFNlcCAx
-MSwgMjAxNgo+IFRvOiAgIkphY2sgTGVlIjxqYWNrbGVlMTFAZm94bWFpbC5jb20+OyAieGVu
-b21haSI8eGVub21haUB4ZW5vbWFpLm9yZz47Cj4gU3ViamVjdDogIFJlOiBbWGVub21haV0g
-IkN0cmwgKyBDIiBtYWtlcyBzeXN0ZW0gY3Jhc2hlZCB3aGVuIGV4aXR0aW5nIGZyb20iY3Jv
-c3MtbGluayIKPiAKPiBPbiAwOS8xMS8yMDE2IDAxOjEyIFBNLCBKYWNrIExlZSB3cm90ZToK
-PiA+IEhlbGxvLCBldmVyeW9uZSEKPiA+ICAgTXkgY29tcHV0ZXIgaXMgQWR2YW50ZWNoIE1J
-Ty01MjUxLCAodGhlIEoxOTAwIHZlcnNpb24sIAo+ID4gaHR0cDovL3d3dy5hZHZhbnRlY2gu
-Y29tL3Byb2R1Y3RzL2JjNjc4NmI3LWI2OWItNGZkZC05YjYzLTc5MTgwZGJkNWRjYi9taW8t
-NTI1MS9tb2RfZmY4NTM0Y2MtZTg1OC00MGJhLTliYzItMzg2ZjE5YmZlZTRhKQo+ID4gIGxp
-bnV4IGtlcm5lbCB2ZXJzaW9uIGlzIDQuMS4xOCwgeGVub21haSB2ZXJzaW9uIGlzIDMuMC4y
-LCBzeXN0ZW0gaXMgbHVidW50dSAxNi4wNC4KPiA+IEkgcmVtb3ZlIHRoZSBvcmlnaW5hbCBV
-QVJUIGRyaXZlcnMgYW5kIG1vZHByb2JlIHRoZSB4ZW5vXzE2NTUwQSBkcml2ZXIuIGNyb3Nz
-LWxpbmsgZGVtbwo+ID4gd29ya3MgZmluZSwgYnV0IHdoZW4gSSB0eXBlIGluICJDdHJsICsg
-QyIgdG8gZXhpdCBmcm9tIGl0LCB0aGUgdGVybWluYWwgb3V0cHV0cyB0aGVzZSBhbmQgdGhl
-IHN5c3RlbQo+ID4ganVzdCBkaWVzLgo+ID4gLi4uCj4gPiBtYWluOiAvZGV2L3J0ZG0vcnRz
-ZXIxIChyZWFkKSAtPiBjbG9zZWQKPiA+IG1haW46IC9kZXYvcnRkbS9ydHNlcjAgKHdyaXRl
-KSAtPiBjbG9zZWQKPiA+IG1haW46IGRlbGV0ZSB3cml0ZV90YXNrCj4gPiB3cml0ZV90YXNr
-OiBlcnJvciBvbiBydF90YXNrX3dhaXRfcGVyaW9kLCBJbnRlcnJ1cHRlZCBzeXN0ZW0gY2Fs
-bAo+ID4gd3JpdGVfdGFzazogZXhpdAo+ID4gbWFpbjogZGVsZXRlIHJlYWRfdGFzawo+ID4g
-LS0tCj4gPiAKPiA+IFNvbWV0aW1lcywgaXQgb3V0cHV0cyB0aGVzZToKPiA+IC4uLgo+ID4g
-bWFpbjogZXhpdAo+ID4gLS0tCj4gPiBUaGUgc3lzdGVtIGRvZXMgbm90IGRpZSwgYnV0IHRo
-ZSBjcm9zcy1saW5rIGRvZXMgbm90IGV4aXQgYWN0dWFsbHkuCj4gPiBJIHJ1biAiY2F0IC9w
-cm9jL3hlbm9tYWkvc2NoZWQvdGhyZWFkIiB0byBnZXQgdGhlIHBpZCBhbmQga2lsbCBpdCwK
-PiA+IHRoZSB0ZXJtaW5hbCBqdXN0IG91dHB1dHMgIm1haW46IGV4aXQiIHJlcGVhdGVkbHku
-Cj4gPiAKPiA+IFdoYXQncyB3cm9uZywgYW5kICBob3cgY2FuIEkgc29sdmUgaXQ/IFRoYW5r
-cyEKPiA+IAo+IAo+IFRoZSByZWFkZXIgdGFzayBtYXkgYmUgaGFuZ2luZyBhcm91bmQgYWx0
-aG91Z2ggaXQgc2hvdWxkIGhhdmUgcmVjZWl2ZWQgYQo+IGRlbGV0aW9uIHNpZ25hbCwgY2F1
-c2luZyB0aGUgbWFpbiB0aHJlYWQgdG8gd2FpdCBmb3IgYWxsIGl0cyBjaGlsZHJlbgo+IGlu
-ZGVmaW5pdGVseS4gVGhpcyBzYWlkLCBpc3N1aW5nIHJ0X3Rhc2tfZGVsZXRlKCkgYW5kIGZy
-aWVuZHMgb3ZlciBhCj4gc2lnbmFsIGhhbmRsZXIgaXMgbm90IGxlZ2l0LCBzbyB0aGUgZGVt
-byBjb2RlIGhhcyBhIHByb2JsZW0gYW55d2F5Lgo+IAo+IFlvdSBjb3VsZCBydW4gdGhlIGNy
-b3NzLWxpbmsgYXBwbGljYXRpb24gb3ZlciBnZGIsIHRoZW4gY2hlY2sgdGhlIHN0YWNrCj4g
-YmFja3RyYWNlIG9mIHRoZSByZWFkZXIgdGFzayBhdCBleGl0IChvciBhbnkgdGFzayB0aGF0
-IGFwcGVhcnMgdG8gYmUKPiBzdHVjayksIHRvIGZpbmQgb3V0IHdoZXJlIHRoYXQgdGFzayBp
-cyBzdHVjayAoXkMsIHRoZW4gc3dpdGNoIHRvIHRoZQo+IHJlYWRlciB0YXNrIGNvbnRleHQg
-dXNpbmcgZ2RiJ3MgInRocmVhZCIgY29tbWFuZCwgdGhlbiAiYnQiKS4KPiAKPiAtLSAKPiBQ
-aGlsaXBwZS4KCkhpLCBQaGlsaXBwZSwKCkkgcnVuIHRoZSAiZ2RiIGNyb3NzLWxpbmsiICJD
-dHJsICsgQyIgYW5kIG90aGVyIGluc3RydWN0aW9ucyB5b3Ugc2hvd2VkLCAKcmVzdWx0cyBh
-cmUgYmVibG93OgoKXkMKVGhyZWFkIDEgImNyb3NzLWxpbmsiIHJlY2VpdmVkIHNpZ25hbCBT
-SUdJTlQsIEludGVycnVwdC4KMHgwMDAwN2ZmZmY3NTg2ZDFkIGluIHBhdXNlICgpIGF0IC4u
-L3N5c2RlcHMvdW5peC9zeXNjYWxsLXRlbXBsYXRlLlM6ODQKODQJLi4vc3lzZGVwcy91bml4
-L3N5c2NhbGwtdGVtcGxhdGUuUzogTm8gc3VjaCBmaWxlIG9yIGRpcmVjdG9yeS4KCihnZGIp
-IHRocmVhZCBmaW5kIHJlYWQKVGhyZWFkIDEgaGFzIHRhcmdldCBpZCAnVGhyZWFkIDB4N2Zm
-ZmY3ZmRlNzQwIChMV1AgMzM4MiknClRocmVhZCAyIGhhcyB0YXJnZXQgaWQgJ1RocmVhZCAw
-eDdmZmZmNmZhNDcwMCAoTFdQIDMzODMpJwpUaHJlYWQgMyBoYXMgdGFyZ2V0IGlkICdUaHJl
-YWQgMHg3ZmZmZjdlYzk3MDAgKExXUCAzMzg0KScKVGhyZWFkIDQgaGFzIHRhcmdldCBuYW1l
-ICdyZWFkX3Rhc2snClRocmVhZCA0IGhhcyB0YXJnZXQgaWQgJ1RocmVhZCAweDdmZmZmN2Vi
-ODcwMCAoTFdQIDMzODUpJwoKKGdkYikgdGhyZWFkIDQKW1N3aXRjaGluZyB0byB0aHJlYWQg
-NCAoVGhyZWFkIDB4N2ZmZmY3ZWI4NzAwIChMV1AgMzM4NSkpXQojMCAgMHgwMDAwN2ZmZmY3
-N2EzOTBmIGluIGRvX2lvY3RsICgpIGZyb20gL3Vzci94ZW5vbWFpL2xpYi9saWJjb2JhbHQu
-c28uMgoKKGdkYikgYnQKIzAgIDB4MDAwMDdmZmZmNzdhMzkwZiBpbiBkb19pb2N0bCAoKSBm
-cm9tIC91c3IveGVub21haS9saWIvbGliY29iYWx0LnNvLjIKIzEgIDB4MDAwMDdmZmZmNzdh
-M2Q4NCBpbiBfX3dyYXBfaW9jdGwgKCkgZnJvbSAvdXNyL3hlbm9tYWkvbGliL2xpYmNvYmFs
-dC5zby4yCiMyICAweDAwMDAwMDAwMDA0MDE0NTkgaW4gcmVhZF90YXNrX3Byb2MgKGFyZz0w
-eDApIGF0IGNyb3NzLWxpbmsuYzoyMDAKIzMgIDB4MDAwMDdmZmZmN2JkMGIxYSBpbiB0YXNr
-X2VudHJ5ICgpIGZyb20gL3Vzci94ZW5vbWFpL2xpYi9saWJhbGNoZW15LnNvLjAKIzQgIDB4
-MDAwMDdmZmZmNzliZDBhYiBpbiB0aHJlYWRfdHJhbXBvbGluZSAoKQogICBmcm9tIC91c3Iv
-eGVub21haS9saWIvbGliY29wcGVycGxhdGUuc28uMAojNSAgMHgwMDAwN2ZmZmY3N2E1YWNj
-IGluIGNvYmFsdF90aHJlYWRfdHJhbXBvbGluZSAoKQogICBmcm9tIC91c3IveGVub21haS9s
-aWIvbGliY29iYWx0LnNvLjIKIzYgIDB4MDAwMDdmZmZmNzU3ZDZmYSBpbiBzdGFydF90aHJl
-YWQgKGFyZz0weDdmZmZmN2ViODcwMCkKICAgIGF0IHB0aHJlYWRfY3JlYXRlLmM6MzMzCiM3
-ICAweDAwMDA3ZmZmZjcyYjNiNWQgaW4gY2xvbmUgKCkKICAgIGF0IC4uL3N5c2RlcHMvdW5p
-eC9zeXN2L2xpbnV4L3g4Nl82NC9jbG9uZS5TOjEwOQoKSXMgdGhlcmUgc29tZXRoaW5nIHdy
-b25nPw==
+On 09/06/2016 09:02 AM, BREGARDIS Cedric wrote:
+
+>
+> Here are other options I could imagine:
+> 1 - Contain the bug. Will I meet the floating point context saving
+> problem if the xenomai application do not switch to the Linux
+> Domain? Maybe the floating point problem only occur in certain
+> conditions that I can ensure to not meet?
+
+I haven't tested this, but I think you'll still run into the problem 
+eventually. When your Xenomai process exits, it will switch back to Linux 
+and the incorrect context will affect subsequent processes. Also, I'm not 
+sure if the switch to Xenomai would even work correctly in the first place.
+
+> 2 - Use the SoC in 32 bits mode (aarch32). Does the fpsimd switch
+> mechanism works correctly on 32 bits ARM on xenomai for 4.1.x?
+
+If you run an armv7 kernel on your board ala rpi3, you will be using the 
+armv7 Xenomai port, which I believe is pretty stable. This could be the 
+easiest way to go if you have access to such a kernel.
+
+> 3 - Wait for a correction of xenomai. Is it expected to be available
+> soon? It would be unfortunate to work on a complex workaround while
+> someone is working on this problem and will release a fix soon.
+
+I don't think anyone is working on this at the moment. You are always 
+welcome to submit a patch :)
+
+The proper fix would involve adjusting the context switch code on the 
+Xenomai side to play nice with the kernel side. It needs to work correctly 
+with the TIF_FOREIGN_FPSTATE thread flag, and the algorithm that uses it. I 
+will probably be taking a look at this myself sometime in the future, but I 
+can't really give you any sort of timeline at the moment.
+
+Another possible suggestion is to try and port the 3.18 ipipe patch back to 
+the 3.14 kernel. Likely more work than 2), but should be doable.
+
+Regards,
+Dmitriy
 
 
+>
+> Best regards,
+> Cedric
+>
+>
+> ________________________________
+> CONFIDENTIALITY : This e-mail and any attachments are confidential and may be privileged. If you are not a named recipient, please notify the sender immediately and do not disclose the contents to another person, use it for any purpose or store or copy the information in any medium.
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+>
 
 
