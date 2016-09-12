@@ -1,13 +1,15 @@
+In-Reply-To: <0fe39a24-b767-dff2-230d-18fa0b3766dd@xenomai.org>
 References: <tencent_7EFF3BC22CBB53AA568408E6@qq.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <0fe39a24-b767-dff2-230d-18fa0b3766dd@xenomai.org>
-Date: Sun, 11 Sep 2016 15:48:43 +0200
-MIME-Version: 1.0
-In-Reply-To: <tencent_7EFF3BC22CBB53AA568408E6@qq.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] "Ctrl + C" makes system crashed when exitting from
- "cross-link"
+ <0fe39a24-b767-dff2-230d-18fa0b3766dd@xenomai.org>
+From: "=?ISO-8859-1?B?SmFjayBMZWU=?=" <jacklee11@foxmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="ISO-8859-1"
+Content-Transfer-Encoding: base64
+Date: Mon, 12 Sep 2016 11:30:52 +0800
+Message-ID: <tencent_5E5F68F22D0540CF4309F8EE@qq.com>
+Subject: [Xenomai] "Ctrl + C" makes system crashed when exitting
+	from"cross-link"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,46 +18,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jack Lee <jacklee11@foxmail.com>, xenomai <xenomai@xenomai.org>
+To: =?ISO-8859-1?B?UGhpbGlwcGUgR2VydW0=?= <rpm@xenomai.org>, =?ISO-8859-1?B?eGVub21haQ==?= <xenomai@xenomai.org>
 
-On 09/11/2016 01:12 PM, Jack Lee wrote:
-> Hello, everyone!
->   My computer is Advantech MIO-5251, (the J1900 version, 
-> http://www.advantech.com/products/bc6786b7-b69b-4fdd-9b63-79180dbd5dcb/mio-5251/mod_ff8534cc-e858-40ba-9bc2-386f19bfee4a)
->  linux kernel version is 4.1.18, xenomai version is 3.0.2, system is lubuntu 16.04.
-> I remove the original UART drivers and modprobe the xeno_16550A driver. cross-link demo
-> works fine, but when I type in "Ctrl + C" to exit from it, the terminal outputs these and the system
-> just dies.
-> ...
-> main: /dev/rtdm/rtser1 (read) -> closed
-> main: /dev/rtdm/rtser0 (write) -> closed
-> main: delete write_task
-> write_task: error on rt_task_wait_period, Interrupted system call
-> write_task: exit
-> main: delete read_task
-> ---
-> 
-> Sometimes, it outputs these:
-> ...
-> main: exit
-> ---
-> The system does not die, but the cross-link does not exit actually.
-> I run "cat /proc/xenomai/sched/thread" to get the pid and kill it,
-> the terminal just outputs "main: exit" repeatedly.
-> 
-> What's wrong, and  how can I solve it? Thanks!
-> 
+PiAtLS0tLS0tLS0tLS0tLS0tLS0gT3JpZ2luYWwgLS0tLS0tLS0tLS0tLS0tLS0tCj4gRnJv
+bTogICJQaGlsaXBwZSBHZXJ1bSI7PHJwbUB4ZW5vbWFpLm9yZz47Cj4gRGF0ZTogIFNlcCAx
+MSwgMjAxNgo+IFRvOiAgIkphY2sgTGVlIjxqYWNrbGVlMTFAZm94bWFpbC5jb20+OyAieGVu
+b21haSI8eGVub21haUB4ZW5vbWFpLm9yZz47Cj4gU3ViamVjdDogIFJlOiBbWGVub21haV0g
+IkN0cmwgKyBDIiBtYWtlcyBzeXN0ZW0gY3Jhc2hlZCB3aGVuIGV4aXR0aW5nIGZyb20iY3Jv
+c3MtbGluayIKPiAKPiBPbiAwOS8xMS8yMDE2IDAxOjEyIFBNLCBKYWNrIExlZSB3cm90ZToK
+PiA+IEhlbGxvLCBldmVyeW9uZSEKPiA+ICAgTXkgY29tcHV0ZXIgaXMgQWR2YW50ZWNoIE1J
+Ty01MjUxLCAodGhlIEoxOTAwIHZlcnNpb24sIAo+ID4gaHR0cDovL3d3dy5hZHZhbnRlY2gu
+Y29tL3Byb2R1Y3RzL2JjNjc4NmI3LWI2OWItNGZkZC05YjYzLTc5MTgwZGJkNWRjYi9taW8t
+NTI1MS9tb2RfZmY4NTM0Y2MtZTg1OC00MGJhLTliYzItMzg2ZjE5YmZlZTRhKQo+ID4gIGxp
+bnV4IGtlcm5lbCB2ZXJzaW9uIGlzIDQuMS4xOCwgeGVub21haSB2ZXJzaW9uIGlzIDMuMC4y
+LCBzeXN0ZW0gaXMgbHVidW50dSAxNi4wNC4KPiA+IEkgcmVtb3ZlIHRoZSBvcmlnaW5hbCBV
+QVJUIGRyaXZlcnMgYW5kIG1vZHByb2JlIHRoZSB4ZW5vXzE2NTUwQSBkcml2ZXIuIGNyb3Nz
+LWxpbmsgZGVtbwo+ID4gd29ya3MgZmluZSwgYnV0IHdoZW4gSSB0eXBlIGluICJDdHJsICsg
+QyIgdG8gZXhpdCBmcm9tIGl0LCB0aGUgdGVybWluYWwgb3V0cHV0cyB0aGVzZSBhbmQgdGhl
+IHN5c3RlbQo+ID4ganVzdCBkaWVzLgo+ID4gLi4uCj4gPiBtYWluOiAvZGV2L3J0ZG0vcnRz
+ZXIxIChyZWFkKSAtPiBjbG9zZWQKPiA+IG1haW46IC9kZXYvcnRkbS9ydHNlcjAgKHdyaXRl
+KSAtPiBjbG9zZWQKPiA+IG1haW46IGRlbGV0ZSB3cml0ZV90YXNrCj4gPiB3cml0ZV90YXNr
+OiBlcnJvciBvbiBydF90YXNrX3dhaXRfcGVyaW9kLCBJbnRlcnJ1cHRlZCBzeXN0ZW0gY2Fs
+bAo+ID4gd3JpdGVfdGFzazogZXhpdAo+ID4gbWFpbjogZGVsZXRlIHJlYWRfdGFzawo+ID4g
+LS0tCj4gPiAKPiA+IFNvbWV0aW1lcywgaXQgb3V0cHV0cyB0aGVzZToKPiA+IC4uLgo+ID4g
+bWFpbjogZXhpdAo+ID4gLS0tCj4gPiBUaGUgc3lzdGVtIGRvZXMgbm90IGRpZSwgYnV0IHRo
+ZSBjcm9zcy1saW5rIGRvZXMgbm90IGV4aXQgYWN0dWFsbHkuCj4gPiBJIHJ1biAiY2F0IC9w
+cm9jL3hlbm9tYWkvc2NoZWQvdGhyZWFkIiB0byBnZXQgdGhlIHBpZCBhbmQga2lsbCBpdCwK
+PiA+IHRoZSB0ZXJtaW5hbCBqdXN0IG91dHB1dHMgIm1haW46IGV4aXQiIHJlcGVhdGVkbHku
+Cj4gPiAKPiA+IFdoYXQncyB3cm9uZywgYW5kICBob3cgY2FuIEkgc29sdmUgaXQ/IFRoYW5r
+cyEKPiA+IAo+IAo+IFRoZSByZWFkZXIgdGFzayBtYXkgYmUgaGFuZ2luZyBhcm91bmQgYWx0
+aG91Z2ggaXQgc2hvdWxkIGhhdmUgcmVjZWl2ZWQgYQo+IGRlbGV0aW9uIHNpZ25hbCwgY2F1
+c2luZyB0aGUgbWFpbiB0aHJlYWQgdG8gd2FpdCBmb3IgYWxsIGl0cyBjaGlsZHJlbgo+IGlu
+ZGVmaW5pdGVseS4gVGhpcyBzYWlkLCBpc3N1aW5nIHJ0X3Rhc2tfZGVsZXRlKCkgYW5kIGZy
+aWVuZHMgb3ZlciBhCj4gc2lnbmFsIGhhbmRsZXIgaXMgbm90IGxlZ2l0LCBzbyB0aGUgZGVt
+byBjb2RlIGhhcyBhIHByb2JsZW0gYW55d2F5Lgo+IAo+IFlvdSBjb3VsZCBydW4gdGhlIGNy
+b3NzLWxpbmsgYXBwbGljYXRpb24gb3ZlciBnZGIsIHRoZW4gY2hlY2sgdGhlIHN0YWNrCj4g
+YmFja3RyYWNlIG9mIHRoZSByZWFkZXIgdGFzayBhdCBleGl0IChvciBhbnkgdGFzayB0aGF0
+IGFwcGVhcnMgdG8gYmUKPiBzdHVjayksIHRvIGZpbmQgb3V0IHdoZXJlIHRoYXQgdGFzayBp
+cyBzdHVjayAoXkMsIHRoZW4gc3dpdGNoIHRvIHRoZQo+IHJlYWRlciB0YXNrIGNvbnRleHQg
+dXNpbmcgZ2RiJ3MgInRocmVhZCIgY29tbWFuZCwgdGhlbiAiYnQiKS4KPiAKPiAtLSAKPiBQ
+aGlsaXBwZS4KCkhpLCBQaGlsaXBwZSwKCkkgcnVuIHRoZSAiZ2RiIGNyb3NzLWxpbmsiICJD
+dHJsICsgQyIgYW5kIG90aGVyIGluc3RydWN0aW9ucyB5b3Ugc2hvd2VkLCAKcmVzdWx0cyBh
+cmUgYmVibG93OgoKXkMKVGhyZWFkIDEgImNyb3NzLWxpbmsiIHJlY2VpdmVkIHNpZ25hbCBT
+SUdJTlQsIEludGVycnVwdC4KMHgwMDAwN2ZmZmY3NTg2ZDFkIGluIHBhdXNlICgpIGF0IC4u
+L3N5c2RlcHMvdW5peC9zeXNjYWxsLXRlbXBsYXRlLlM6ODQKODQJLi4vc3lzZGVwcy91bml4
+L3N5c2NhbGwtdGVtcGxhdGUuUzogTm8gc3VjaCBmaWxlIG9yIGRpcmVjdG9yeS4KCihnZGIp
+IHRocmVhZCBmaW5kIHJlYWQKVGhyZWFkIDEgaGFzIHRhcmdldCBpZCAnVGhyZWFkIDB4N2Zm
+ZmY3ZmRlNzQwIChMV1AgMzM4MiknClRocmVhZCAyIGhhcyB0YXJnZXQgaWQgJ1RocmVhZCAw
+eDdmZmZmNmZhNDcwMCAoTFdQIDMzODMpJwpUaHJlYWQgMyBoYXMgdGFyZ2V0IGlkICdUaHJl
+YWQgMHg3ZmZmZjdlYzk3MDAgKExXUCAzMzg0KScKVGhyZWFkIDQgaGFzIHRhcmdldCBuYW1l
+ICdyZWFkX3Rhc2snClRocmVhZCA0IGhhcyB0YXJnZXQgaWQgJ1RocmVhZCAweDdmZmZmN2Vi
+ODcwMCAoTFdQIDMzODUpJwoKKGdkYikgdGhyZWFkIDQKW1N3aXRjaGluZyB0byB0aHJlYWQg
+NCAoVGhyZWFkIDB4N2ZmZmY3ZWI4NzAwIChMV1AgMzM4NSkpXQojMCAgMHgwMDAwN2ZmZmY3
+N2EzOTBmIGluIGRvX2lvY3RsICgpIGZyb20gL3Vzci94ZW5vbWFpL2xpYi9saWJjb2JhbHQu
+c28uMgoKKGdkYikgYnQKIzAgIDB4MDAwMDdmZmZmNzdhMzkwZiBpbiBkb19pb2N0bCAoKSBm
+cm9tIC91c3IveGVub21haS9saWIvbGliY29iYWx0LnNvLjIKIzEgIDB4MDAwMDdmZmZmNzdh
+M2Q4NCBpbiBfX3dyYXBfaW9jdGwgKCkgZnJvbSAvdXNyL3hlbm9tYWkvbGliL2xpYmNvYmFs
+dC5zby4yCiMyICAweDAwMDAwMDAwMDA0MDE0NTkgaW4gcmVhZF90YXNrX3Byb2MgKGFyZz0w
+eDApIGF0IGNyb3NzLWxpbmsuYzoyMDAKIzMgIDB4MDAwMDdmZmZmN2JkMGIxYSBpbiB0YXNr
+X2VudHJ5ICgpIGZyb20gL3Vzci94ZW5vbWFpL2xpYi9saWJhbGNoZW15LnNvLjAKIzQgIDB4
+MDAwMDdmZmZmNzliZDBhYiBpbiB0aHJlYWRfdHJhbXBvbGluZSAoKQogICBmcm9tIC91c3Iv
+eGVub21haS9saWIvbGliY29wcGVycGxhdGUuc28uMAojNSAgMHgwMDAwN2ZmZmY3N2E1YWNj
+IGluIGNvYmFsdF90aHJlYWRfdHJhbXBvbGluZSAoKQogICBmcm9tIC91c3IveGVub21haS9s
+aWIvbGliY29iYWx0LnNvLjIKIzYgIDB4MDAwMDdmZmZmNzU3ZDZmYSBpbiBzdGFydF90aHJl
+YWQgKGFyZz0weDdmZmZmN2ViODcwMCkKICAgIGF0IHB0aHJlYWRfY3JlYXRlLmM6MzMzCiM3
+ICAweDAwMDA3ZmZmZjcyYjNiNWQgaW4gY2xvbmUgKCkKICAgIGF0IC4uL3N5c2RlcHMvdW5p
+eC9zeXN2L2xpbnV4L3g4Nl82NC9jbG9uZS5TOjEwOQoKSXMgdGhlcmUgc29tZXRoaW5nIHdy
+b25nPw==
 
-The reader task may be hanging around although it should have received a
-deletion signal, causing the main thread to wait for all its children
-indefinitely. This said, issuing rt_task_delete() and friends over a
-signal handler is not legit, so the demo code has a problem anyway.
 
-You could run the cross-link application over gdb, then check the stack
-backtrace of the reader task at exit (or any task that appears to be
-stuck), to find out where that task is stuck (^C, then switch to the
-reader task context using gdb's "thread" command, then "bt").
 
--- 
-Philippe.
 
