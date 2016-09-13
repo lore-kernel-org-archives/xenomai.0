@@ -1,12 +1,17 @@
-From: "=?gb18030?B?SmFjayBMZWU=?=" <jacklee11@foxmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="gb18030"
-Content-Transfer-Encoding: base64
-Date: Fri, 2 Sep 2016 15:23:34 +0800
-Message-ID: <tencent_4818DEB2364F8B0334FB2C0A@qq.com>
-Subject: [Xenomai] rt-socket-can "no device" problem with advantech
-	PCM-26D2CA CAN board
+References: <tencent_7EFF3BC22CBB53AA568408E6@qq.com>
+ <0fe39a24-b767-dff2-230d-18fa0b3766dd@xenomai.org>
+ <tencent_5E5F68F22D0540CF4309F8EE@qq.com>
+ <2ded9de8-95c1-52ea-8e56-55398d454fbd@xenomai.org>
+ <tencent_22D865866B28E107473867CD@qq.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <cc52c1d1-235e-e96a-47c7-dad9a1416f66@xenomai.org>
+Date: Tue, 13 Sep 2016 15:00:01 +0200
+MIME-Version: 1.0
+In-Reply-To: <tencent_22D865866B28E107473867CD@qq.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] "Ctrl + C" makes system crashed when exitting
+	from"cross-link"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,48 +20,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
+To: Jack Lee <jacklee11@foxmail.com>, xenomai <xenomai@xenomai.org>
 
-PiBIZWxsbywKPiAKPiBBbSAwMi4wOS4yMDE2IHVtIDA4OjIzIHNjaHJpZWIgSmFjayBMZWU6
-Cj4gPiBIaSwgZXZlcnlvbmWjoQo+ID4gICBJIGFtIHVzaW5nIHRoZSBhZHZhbnRlY2ggUENN
-LTI2RDJDQSBDQU4gYm9hcmQsIGl0cyBkZXRhaWxzIGNhbiBiZSBmb3VuZCBoZXJlIGF0Cj4g
-PiBodHRwOi8vd3d3LmFkdmFudGVjaC5jb20vcHJvZHVjdHMvMTQyNjM3MjktYWFhMy00NTUy
-LWI5OTAtOTlkMTZjZGZlZTI0L3BjbS0yNmQyY2EvbW9kXzlhMWU5ZGJmLWUyMmQtNDc3MC1h
-ODk2LWNlY2Y0MDYwNzA4NC4KPiA+IFRoZSBvcmlnaW5hbCBkcml2ZXIgd29ya3MgZmluZSwg
-YnV0IEkgbmVlZCBpdCB0byBiZSByZWFsdGltZS4KPiA+ICAgcnQtY2FuIGRyaXZlciB3YXMg
-Y29tcGlsZWQgYXMgbW9kdWxlcyBwcmV2aW91c2x5LiBXaGVuIGJvb3RlZCBhbmQgIiNtb2Rw
-cm9iZSB4ZW5vX2Nhbl9hZHZfcGNpIiB3YXMgZXhlY3V0ZWQsCj4gPiAiI2RtZXNnIHwgZ3Jl
-cCAtaSBjYW4iIG91dHB1dCB3YXMKPiA+IC4uLgo+ID4gUlQtU29ja2V0LUNBTiAwLjkwLTIg
-LSAoYykgMjAwNiBSVC1Tb2NrZXQtQ0FOIERldmVsb3BtZW50IFRlYW0KPiA+IFJUQ0FOIFNK
-QTEwMDAgZHJpdmVyIGluaXRpYWxpemVkCj4gPgo+ID4gIiNsc21vZCB8IGdyZXAgLWkgY2Fu
-IiBvdXRwdXQgd2FzCj4gPiB4ZW5vX2Nhbl9hZHZfcGNpCj4gPiB4ZW5vX2Nhbl9zamExMDAw
-ICAgIHVzZWQgYnkgeGVub19jYW5fYWR2X3BjaQo+ID4geGVub19jYW4gICAgICAgICAgICAg
-ICAgICB1c2VkIGJ5IHhlbm9fY2FuX3NqYTEwMDAsIHhlbm9fY2FuX2Fkdl9wY2kKPiA+Cj4g
-PiBXaGF0IHN0cmFuZ2UgaXMgdGhhdCAvcHJvYy9ydGNhbi9kZXZpY2VzIGhhcyBubyBkZXZp
-Y2VzIGxpa2UgcnRjYW4wLgo+ID4gVGhlIC9wcm9jL3J0Y2FuIGRpcmVjdG9yeSBqdXN0IGhh
-cyB0aHJlZSBmaWxlczogZGV2aWNlcywgc29ja2V0cyBhbmQgdmVyc2lvCj4gCj4gV2hhdCBp
-cyB0aGUgUENJIGRldmljZSBpZCBvZiB0aGUgQ0FOIGRldmljZT8gWW91IGNhbiB1c2UgImxz
-cGNpIC12diIgdG8gCj4gbGlzdCB0aGUgaWRzLgo+IAo+ID4gRG9lcyB0aGlzIENBTiBib2Fy
-ZCBzdXBwb3J0ZWQgYnkgcnQtc29ja2V0LWNhbj8gSG93IGNhbiBJIGltcGxlbWVudCByZWFs
-LXRpbWVyIGRyaXZlciBmb3IgaXQ/Cj4gCj4gTW9zdCBsaWtlbHkgdGhlIGRldmljZSBpZCBp
-cyBtaXNzaW5nIGluIHRoZSBkcml2ZXIgUENJIGRldmljZSBsaXN0Ogo+IAo+ICAKPiBodHRw
-Oi8vZ2l0Lnhlbm9tYWkub3JnL3hlbm9tYWktMi42LmdpdC90cmVlL2tzcmMvZHJpdmVycy9j
-YW4vc2phMTAwMC9ydGNhbl9hZHZfcGNpLmMjbjg3Cj4gCj4gV29sZmdhbmcuCgpUaGFuayB5
-b3UsIFdvbGZnYW5nISBNeSBtYWlsYm94IGRlbGF5cyB0aGF0IEkgY2Fubm90IGFkZCB5b3Ug
-aW4gdGhlIGNvbnRhY3QsIHNvIEkgc2VuZCB0byB0aGUgeGVub21haSBsaXN0LiBTb3JyeSBm
-b3IgdGhhdC4KQ0FOIGJvYXJkIGluZm9ybWF0aW9uIGlzIGJlbG93LgojbHNwY2kgLXZ2CjAz
-OjAwLjAgQ0FOQlVTOiBBZHZhbnRlY2ggQ28uIEx0ZCBNSU9lLTM2ODAgMi1Qb3J0IENBTi1C
-dXMgTUlPZSBNb2R1bGUgd2l0aCBJc29sYXRpb24gUHJvdGVjdGlvbgoJU3Vic3lzdGVtOiBB
-ZHZhbnRlY2ggQ28uIEx0ZCBNSU9lLTM2ODAgMi1Qb3J0IENBTi1CdXMgTUlPZSBNb2R1bGUg
-d2l0aCBJc29sYXRpb24gUHJvdGVjdGlvbgoJQ29udHJvbDogSS9PKyBNZW0rIEJ1c01hc3Rl
-cisgU3BlY0N5Y2xlLSBNZW1XSU5WLSBWR0FTbm9vcC0gUGFyRXJyLSBTdGVwcGluZy0gU0VS
-Ui0gRmFzdEIyQi0gRGlzSU5UeC0KCVN0YXR1czogQ2FwKyA2Nk1Iei0gVURGLSBGYXN0QjJC
-LSBQYXJFcnItIERFVlNFTD1mYXN0ID5UQWJvcnQtIDxUQWJvcnQtIDxNQWJvcnQtID5TRVJS
-LSA8UEVSUi0gSU5UeC0KCUxhdGVuY3k6IDAsIENhY2hlIExpbmUgU2l6ZTogNjQgYnl0ZXMK
-CUludGVycnVwdDogcGluIEEgcm91dGVkIHRvIElSUSAxMAoJUmVnaW9uIDA6IE1lbW9yeSBh
-dCBkMGMwMjAwMCAoMzItYml0LCBub24tcHJlZmV0Y2hhYmxlKSBbc2l6ZT0yS10KCVJlZ2lv
-biAxOiBNZW1vcnkgYXQgZDBjMDEwMDAgKDMyLWJpdCwgbm9uLXByZWZldGNoYWJsZSkgW3Np
-emU9MTI4XQoJUmVnaW9uIDI6IE1lbW9yeSBhdCBkMGMwMDAwMCAoMzItYml0LCBub24tcHJl
-ZmV0Y2hhYmxlKSBbc2l6ZT0xMjhdCglDYXBhYmlsaXRpZXM6IDxhY2Nlc3MgZGVuaWVkPg==
+On 09/13/2016 11:13 AM, Jack Lee wrote:
+> Sometimes, the system just dies absolutely, and I could only press the power key to power off and restart the computer.
+> Sometimes, "cross-link" can not exit even using the "kill" command, as described above. No crash assertion /warning reported.
+>
 
+The watchdog may help in situation #1 if a runaway thread is at work.
+
+> I am not familiar with xenomai yet, the experiments may be done in the future.
+> Also, real-time performance of the advantech MIO-5251 is quite bad. I want to use this
+
+Meaning with Xenomai in? What are the figures if so, any output of the
+latency program?
+
+Did you consider this information?
+http://xenomai.org/troubleshooting-a-dual-kernel-configuration/#the_latency_test_shows_high_latencies
+
+> system as a robot controller (eg. 6 axises.) Heavy duty of calculations is required. Is x-window running possible?
+
+X-windows is possible if neither of your graphic card nor X driver
+causes pathological latencies. I worked on several projects coupling
+real-time acquisition and graphics on the same x86 SBC over the years
+with no issues; conversely, a few graphic hw support did introduce
+roadblocks in other cases, YYMV. You may definitely want to benchmark
+the hw before buying.
+
+> Do you have any board to recommend? Performance is preferred. Thanks!
+> 
+
+A bad BIOS is often involved in bad real-time performances (including
+SMI woes), affecting dual kernel and native preemption configurations
+the same way. Likewise, CONFIG_PERF_EVENTS on x86 may kill real-time
+performances when NMI-based events are involved.
+
+People of this list running x86 systems in production may hopefully give
+you some hints about decent hardware for this usage.
+
+-- 
+Philippe.
 
