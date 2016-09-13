@@ -1,13 +1,15 @@
-Date: Tue, 13 Sep 2016 15:11:07 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20160913151107.0b15e1e8@md1em3qc>
-In-Reply-To: <1271995210.507800.1473769593022@mail.yahoo.com>
+Date: Tue, 13 Sep 2016 13:39:25 +0000 (UTC)
+From: Frederik Bayart <frederik_bayart@yahoo.co.uk>
+Message-ID: <824086437.604672.1473773965754@mail.yahoo.com>
+In-Reply-To: <20160913151107.0b15e1e8@md1em3qc>
 References: <1271995210.507800.1473769593022.ref@mail.yahoo.com>
  <1271995210.507800.1473769593022@mail.yahoo.com>
+ <20160913151107.0b15e1e8@md1em3qc>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] multiarch on ipipe kernel
+Reply-To: Frederik Bayart <frederik_bayart@yahoo.co.uk>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,10 +18,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Frederik Bayart <frederik_bayart@yahoo.co.uk>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Do you have CONFIG_IA32_EMULATION set in your ipipe kernel?
+CONFIG_IA32_EMULATION is indeed not set.
+I will try to test it this week and let you know whether this was the cause=
+.
+Thank you very much for the help,
+Frederik=20
+
+    On Tuesday, 13 September 2016, 15:11, Henning Schild <henning.schild@si=
+emens.com> wrote:
+=20
+
+ Do you have CONFIG_IA32_EMULATION set in your ipipe kernel?
 
 Henning
 
@@ -54,3 +65,4 @@ turn
 > https://xenomai.org/mailman/listinfo/xenomai
 
 
+  =20
