@@ -1,14 +1,17 @@
-From: Tobias Luksch <Tobias.Luksch@itk-engineering.de>
-Date: Tue, 13 Sep 2016 08:48:48 +0000
-Message-ID: <96de570c4780415e98b93f5b7a96f83c@itk-engineering.de>
-References: <fe0243c96682430eb5c01ebec98b269e@itk-engineering.de>
- <dcec62b2-a521-1696-3184-0975b389198e@xenomai.org>
-In-Reply-To: <dcec62b2-a521-1696-3184-0975b389198e@xenomai.org>
-Content-Language: de-DE
-Content-Type: text/plain; charset="Windows-1252"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-Subject: Re: [Xenomai] Multiple processes within same session
+In-Reply-To: <2ded9de8-95c1-52ea-8e56-55398d454fbd@xenomai.org>
+References: <tencent_7EFF3BC22CBB53AA568408E6@qq.com>
+ <0fe39a24-b767-dff2-230d-18fa0b3766dd@xenomai.org>
+ <tencent_5E5F68F22D0540CF4309F8EE@qq.com>
+ <2ded9de8-95c1-52ea-8e56-55398d454fbd@xenomai.org>
+From: "=?ISO-8859-1?B?SmFjayBMZWU=?=" <jacklee11@foxmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="ISO-8859-1"
+Content-Transfer-Encoding: base64
+Date: Tue, 13 Sep 2016 17:13:11 +0800
+Message-ID: <tencent_22D865866B28E107473867CD@qq.com>
+Subject: [Xenomai] "Ctrl + C" makes system crashed when exitting
+	from"cross-link"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,102 +20,101 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?ISO-8859-1?B?UGhpbGlwcGUgR2VydW0=?= <rpm@xenomai.org>, =?ISO-8859-1?B?eGVub21haQ==?= <xenomai@xenomai.org>
 
-> On 09/06/2016 05:38 PM, Tobias Luksch wrote:
-> > Hello,
-> >
-> > [Arch:x86, Processor:Corei7, Kernel: 4.1.18, Xenomai:3.0.2]
-> >
-> > we are using several Xenomai processes communicating using shared
-> memory (rt_heap) and a few named mutexes. The processes also create
-> additional unnamed task, mutexes, semaphores, etc.
-> > After porting to Xenomai 3, I see the following problem: To access the
-> shared heap, I start two processes within the same session (--session fro=
-m
-> command line). Shared access to the heap works, but when creating
-> unnamed objects, e.g. a mutex, in the second process, rt_mutex_create
-> returns -17.
-> >
-> > Here is a small example program to reproduce this:
-> >
-> > #include <alchemy/task.h>
-> > #include <alchemy/mutex.h>
-> > #include <stdio.h>
-> >
-> > int main(int argc, char* argv[])
-> > {
-> > 	rt_printf("hello  world\n");
-> > 	RT_MUTEX mutex;
-> > 	int ret_val =3D rt_mutex_create( &mutex, NULL );
-> > 	rt_printf( "rt_mutex_create: %d\n", ret_val );
-> >
-> > 	while (true)
-> > 	{
-> > 		rt_task_sleep(1000000000);
-> > 		rt_printf("ping\n");
-> > 	}
-> > 	return 0;
-> > }
-> >
-> > Starting this program (called xeno-test here) once gives:
-> > $ ./xeno-test --session=3Dtest
-> > hello  world
-> > rt_mutex_create: 0
-> > ping
-> > ping
-> > [..]
-> >
-> > Starting it a second time with the same session:
-> > $ ./xeno-test --session=3Dtest
-> > hello  world
-> > rt_mutex_create: -17
-> > ping
-> > ping
-> > [..]
-> >
-> > Starting the program another time with a different session works withou=
-t
-> error. Also using differently named mutexes for both instances works.
-> >
-> > I am not sure about the naming mechanism (if any) when creating
-> unnamed objects like mutexes, nor about what is actually shared between
-> processes when using the same session. It would be great if anyone could
-> give some details on this.
-> >
-> > Any help would be appreciated.
->=20
-> This patch should address the issue:
->=20
-> commit e539ab0b1db5ca56f8d3db39d2ca0bdf009c9b25
-> Author: Philippe Gerum <rpm@xenomai.org>
-> Date:   Tue Sep 13 09:36:11 2016 +0200
->=20
->     boilerplate/ancillaries: fix unique name generation in pshared mode
->=20
-> diff --git a/lib/boilerplate/ancillaries.c b/lib/boilerplate/ancillaries.=
-c
-> index a811a40..0f469a4 100644
-> --- a/lib/boilerplate/ancillaries.c
-> +++ b/lib/boilerplate/ancillaries.c
-> @@ -231,7 +231,11 @@ char *generate_name(char *buf, const char *radix,
->  		buf[len] =3D '\0';
->  	} else {
->  		tag =3D atomic_add_fetch(&ngen->serial, 1);
-> +#ifdef CONFIG_XENO_PSHARED
-> +		snprintf(buf, len, "%s@%d[%d]", ngen->radix, tag,
-> __node_id);
-> +#else
->  		snprintf(buf, len, "%s@%d", ngen->radix, tag);
-> +#endif
->  	}
->=20
->  	return buf;
->=20
+PiBPbiAwOS8xMi8yMDE2IDA1OjMwIEFNLCBKYWNrIExlZSB3cm90ZToKPiA+PiAtLS0tLS0t
+LS0tLS0tLS0tLS0gT3JpZ2luYWwgLS0tLS0tLS0tLS0tLS0tLS0tCj4gPj4gRnJvbTogICJQ
+aGlsaXBwZSBHZXJ1bSI7PHJwbUB4ZW5vbWFpLm9yZz47Cj4gPj4gRGF0ZTogIFNlcCAxMSwg
+MjAxNgo+ID4+IFRvOiAgIkphY2sgTGVlIjxqYWNrbGVlMTFAZm94bWFpbC5jb20+OyAieGVu
+b21haSI8eGVub21haUB4ZW5vbWFpLm9yZz47Cj4gPj4gU3ViamVjdDogIFJlOiBbWGVub21h
+aV0gIkN0cmwgKyBDIiBtYWtlcyBzeXN0ZW0gY3Jhc2hlZCB3aGVuIGV4aXR0aW5nIGZyb20i
+Y3Jvc3MtbGluayIKPiA+Pgo+ID4+IE9uIDA5LzExLzIwMTYgMDE6MTIgUE0sIEphY2sgTGVl
+IHdyb3RlOgo+ID4+PiBIZWxsbywgZXZlcnlvbmUhCj4gPj4+ICAgTXkgY29tcHV0ZXIgaXMg
+QWR2YW50ZWNoIE1JTy01MjUxLCAodGhlIEoxOTAwIHZlcnNpb24sIAo+ID4+PiBodHRwOi8v
+d3d3LmFkdmFudGVjaC5jb20vcHJvZHVjdHMvYmM2Nzg2YjctYjY5Yi00ZmRkLTliNjMtNzkx
+ODBkYmQ1ZGNiL21pby01MjUxL21vZF9mZjg1MzRjYy1lODU4LTQwYmEtOWJjMi0zODZmMTli
+ZmVlNGEpCj4gPj4+ICBsaW51eCBrZXJuZWwgdmVyc2lvbiBpcyA0LjEuMTgsIHhlbm9tYWkg
+dmVyc2lvbiBpcyAzLjAuMiwgc3lzdGVtIGlzIGx1YnVudHUgMTYuMDQuCj4gPj4+IEkgcmVt
+b3ZlIHRoZSBvcmlnaW5hbCBVQVJUIGRyaXZlcnMgYW5kIG1vZHByb2JlIHRoZSB4ZW5vXzE2
+NTUwQSBkcml2ZXIuIGNyb3NzLWxpbmsgZGVtbwo+ID4+PiB3b3JrcyBmaW5lLCBidXQgd2hl
+biBJIHR5cGUgaW4gIkN0cmwgKyBDIiB0byBleGl0IGZyb20gaXQsIHRoZSB0ZXJtaW5hbCBv
+dXRwdXRzIHRoZXNlIGFuZCB0aGUgc3lzdGVtCj4gPj4+IGp1c3QgZGllcy4KPiA+Pj4gLi4u
+Cj4gPj4+IG1haW46IC9kZXYvcnRkbS9ydHNlcjEgKHJlYWQpIC0+IGNsb3NlZAo+ID4+PiBt
+YWluOiAvZGV2L3J0ZG0vcnRzZXIwICh3cml0ZSkgLT4gY2xvc2VkCj4gPj4+IG1haW46IGRl
+bGV0ZSB3cml0ZV90YXNrCj4gPj4+IHdyaXRlX3Rhc2s6IGVycm9yIG9uIHJ0X3Rhc2tfd2Fp
+dF9wZXJpb2QsIEludGVycnVwdGVkIHN5c3RlbSBjYWxsCj4gPj4+IHdyaXRlX3Rhc2s6IGV4
+aXQKPiA+Pj4gbWFpbjogZGVsZXRlIHJlYWRfdGFzawo+ID4+PiAtLS0KPiA+Pj4KPiA+Pj4g
+U29tZXRpbWVzLCBpdCBvdXRwdXRzIHRoZXNlOgo+ID4+PiAuLi4KPiA+Pj4gbWFpbjogZXhp
+dAo+ID4+PiAtLS0KPiA+Pj4gVGhlIHN5c3RlbSBkb2VzIG5vdCBkaWUsIGJ1dCB0aGUgY3Jv
+c3MtbGluayBkb2VzIG5vdCBleGl0IGFjdHVhbGx5Lgo+ID4+PiBJIHJ1biAiY2F0IC9wcm9j
+L3hlbm9tYWkvc2NoZWQvdGhyZWFkIiB0byBnZXQgdGhlIHBpZCBhbmQga2lsbCBpdCwKPiA+
+Pj4gdGhlIHRlcm1pbmFsIGp1c3Qgb3V0cHV0cyAibWFpbjogZXhpdCIgcmVwZWF0ZWRseS4K
+PiA+Pj4KPiA+Pj4gV2hhdCdzIHdyb25nLCBhbmQgIGhvdyBjYW4gSSBzb2x2ZSBpdD8gVGhh
+bmtzIQo+ID4+Pgo+ID4+Cj4gPj4gVGhlIHJlYWRlciB0YXNrIG1heSBiZSBoYW5naW5nIGFy
+b3VuZCBhbHRob3VnaCBpdCBzaG91bGQgaGF2ZSByZWNlaXZlZCBhCj4gPj4gZGVsZXRpb24g
+c2lnbmFsLCBjYXVzaW5nIHRoZSBtYWluIHRocmVhZCB0byB3YWl0IGZvciBhbGwgaXRzIGNo
+aWxkcmVuCj4gPj4gaW5kZWZpbml0ZWx5LiBUaGlzIHNhaWQsIGlzc3VpbmcgcnRfdGFza19k
+ZWxldGUoKSBhbmQgZnJpZW5kcyBvdmVyIGEKPiA+PiBzaWduYWwgaGFuZGxlciBpcyBub3Qg
+bGVnaXQsIHNvIHRoZSBkZW1vIGNvZGUgaGFzIGEgcHJvYmxlbSBhbnl3YXkuCj4gPj4KPiA+
+PiBZb3UgY291bGQgcnVuIHRoZSBjcm9zcy1saW5rIGFwcGxpY2F0aW9uIG92ZXIgZ2RiLCB0
+aGVuIGNoZWNrIHRoZSBzdGFjawo+ID4+IGJhY2t0cmFjZSBvZiB0aGUgcmVhZGVyIHRhc2sg
+YXQgZXhpdCAob3IgYW55IHRhc2sgdGhhdCBhcHBlYXJzIHRvIGJlCj4gPj4gc3R1Y2spLCB0
+byBmaW5kIG91dCB3aGVyZSB0aGF0IHRhc2sgaXMgc3R1Y2sgKF5DLCB0aGVuIHN3aXRjaCB0
+byB0aGUKPiA+PiByZWFkZXIgdGFzayBjb250ZXh0IHVzaW5nIGdkYidzICJ0aHJlYWQiIGNv
+bW1hbmQsIHRoZW4gImJ0IikuCj4gPj4KPiA+PiAtLSAKPiA+PiBQaGlsaXBwZS4KPiA+ICAK
+PiA+IEhpLCBQaGlsaXBwZSwKPiA+IAo+ID4gSSBydW4gdGhlICJnZGIgY3Jvc3MtbGluayIg
+IkN0cmwgKyBDIiBhbmQgb3RoZXIgaW5zdHJ1Y3Rpb25zIHlvdSBzaG93ZWQsIAo+ID4gcmVz
+dWx0cyBhcmUgYmVibG93Ogo+ID4gCj4gPiBeQwo+ID4gVGhyZWFkIDEgImNyb3NzLWxpbmsi
+IHJlY2VpdmVkIHNpZ25hbCBTSUdJTlQsIEludGVycnVwdC4KPiA+IDB4MDAwMDdmZmZmNzU4
+NmQxZCBpbiBwYXVzZSAoKSBhdCAuLi9zeXNkZXBzL3VuaXgvc3lzY2FsbC10ZW1wbGF0ZS5T
+Ojg0Cj4gPiA4NAkuLi9zeXNkZXBzL3VuaXgvc3lzY2FsbC10ZW1wbGF0ZS5TOiBObyBzdWNo
+IGZpbGUgb3IgZGlyZWN0b3J5Lgo+ID4gCj4gPiAoZ2RiKSB0aHJlYWQgZmluZCByZWFkCj4g
+PiBUaHJlYWQgMSBoYXMgdGFyZ2V0IGlkICdUaHJlYWQgMHg3ZmZmZjdmZGU3NDAgKExXUCAz
+MzgyKScKPiA+IFRocmVhZCAyIGhhcyB0YXJnZXQgaWQgJ1RocmVhZCAweDdmZmZmNmZhNDcw
+MCAoTFdQIDMzODMpJwo+ID4gVGhyZWFkIDMgaGFzIHRhcmdldCBpZCAnVGhyZWFkIDB4N2Zm
+ZmY3ZWM5NzAwIChMV1AgMzM4NCknCj4gPiBUaHJlYWQgNCBoYXMgdGFyZ2V0IG5hbWUgJ3Jl
+YWRfdGFzaycKPiA+IFRocmVhZCA0IGhhcyB0YXJnZXQgaWQgJ1RocmVhZCAweDdmZmZmN2Vi
+ODcwMCAoTFdQIDMzODUpJwo+ID4gCj4gPiAoZ2RiKSB0aHJlYWQgNAo+ID4gW1N3aXRjaGlu
+ZyB0byB0aHJlYWQgNCAoVGhyZWFkIDB4N2ZmZmY3ZWI4NzAwIChMV1AgMzM4NSkpXQo+ID4g
+IzAgIDB4MDAwMDdmZmZmNzdhMzkwZiBpbiBkb19pb2N0bCAoKSBmcm9tIC91c3IveGVub21h
+aS9saWIvbGliY29iYWx0LnNvLjIKPiA+IAo+ID4gKGdkYikgYnQKPiA+ICMwICAweDAwMDA3
+ZmZmZjc3YTM5MGYgaW4gZG9faW9jdGwgKCkgZnJvbSAvdXNyL3hlbm9tYWkvbGliL2xpYmNv
+YmFsdC5zby4yCj4gPiAjMSAgMHgwMDAwN2ZmZmY3N2EzZDg0IGluIF9fd3JhcF9pb2N0bCAo
+KSBmcm9tIC91c3IveGVub21haS9saWIvbGliY29iYWx0LnNvLjIKPiA+ICMyICAweDAwMDAw
+MDAwMDA0MDE0NTkgaW4gcmVhZF90YXNrX3Byb2MgKGFyZz0weDApIGF0IGNyb3NzLWxpbmsu
+YzoyMDAKPiA+ICMzICAweDAwMDA3ZmZmZjdiZDBiMWEgaW4gdGFza19lbnRyeSAoKSBmcm9t
+IC91c3IveGVub21haS9saWIvbGliYWxjaGVteS5zby4wCj4gPiAjNCAgMHgwMDAwN2ZmZmY3
+OWJkMGFiIGluIHRocmVhZF90cmFtcG9saW5lICgpCj4gPiAgICBmcm9tIC91c3IveGVub21h
+aS9saWIvbGliY29wcGVycGxhdGUuc28uMAo+ID4gIzUgIDB4MDAwMDdmZmZmNzdhNWFjYyBp
+biBjb2JhbHRfdGhyZWFkX3RyYW1wb2xpbmUgKCkKPiA+ICAgIGZyb20gL3Vzci94ZW5vbWFp
+L2xpYi9saWJjb2JhbHQuc28uMgo+ID4gIzYgIDB4MDAwMDdmZmZmNzU3ZDZmYSBpbiBzdGFy
+dF90aHJlYWQgKGFyZz0weDdmZmZmN2ViODcwMCkKPiA+ICAgICBhdCBwdGhyZWFkX2NyZWF0
+ZS5jOjMzMwo+ID4gIzcgIDB4MDAwMDdmZmZmNzJiM2I1ZCBpbiBjbG9uZSAoKQo+ID4gICAg
+IGF0IC4uL3N5c2RlcHMvdW5peC9zeXN2L2xpbnV4L3g4Nl82NC9jbG9uZS5TOjEwOQo+ID4g
+Cj4gPiBJcyB0aGVyZSBzb21ldGhpbmcgd3Jvbmc/Cj4gPiAKPiAKPiBDYW4ndCB0ZWxsIHll
+dC4gV2hhdCBkb2VzICJpbmZvIHRocmVhZHMiIHNheT8KPiAKPiBBbHNvLCBpcyB0aGUgaXNz
+dWUgdHJhbnNsYXRlcyB0byBhIGhhcmQgbG9ja3VwIHdpdGhvdXQgYW55IG1lc3NhZ2Ugb3IK
+PiBkaWQgeW91IG5vdGljZSBhbnkgd2FybmluZyBvciBrZXJuZWwgb29wcyBvbiB0aGUgY29u
+c29sZSBjaGFubmVsIGR1ZSB0bwo+IGEgY3Jhc2gvQlVHIGFzc2VydGlvbj8KPiAKPiBJZiB0
+aGlzIGlzIGEgc2lsZW50LCBoYXJkIGxvY2t1cCwgdGhlbiB5b3UgbWF5IHdhbnQgdG8gZW5h
+YmxlCj4gWEVOT19PUFRfV0FUQ0hET0cgaW4gdGhlIFhlbm9tYWkgZGVidWcgb3B0aW9ucyBv
+ZiB0aGUga2VybmVsCj4gY29uZmlndXJhdGlvbi4gVGhpcyB3b3VsZCBjYXRjaCBhbnkgcnVu
+YXdheSBYZW5vbWFpIHRocmVhZCB3aGljaCBtYXkKPiBmcmVlemUgdGhlIGJveCBiZWZvcmUg
+aXQncyB0b28gbGF0ZSAoNCBzZWNzIGJ5IGRlZmF1bHQpLCBnaXZpbmcgdXMgYQo+IGhpbnQg
+YWJvdXQgdGhlIGlzc3VlIHdlIGFyZSBjaGFzaW5nLgo+IAo+IC0tIAo+IFBoaWxpcHBlLgoK
+SGksIFBoaWxpcHBlLCAKClNvbWV0aW1lcywgdGhlIHN5c3RlbSBqdXN0IGRpZXMgYWJzb2x1
+dGVseSwgYW5kIEkgY291bGQgb25seSBwcmVzcyB0aGUgcG93ZXIga2V5IHRvIHBvd2VyIG9m
+ZiBhbmQgcmVzdGFydCB0aGUgY29tcHV0ZXIuClNvbWV0aW1lcywgImNyb3NzLWxpbmsiIGNh
+biBub3QgZXhpdCBldmVuIHVzaW5nIHRoZSAia2lsbCIgY29tbWFuZCwgYXMgZGVzY3JpYmVk
+IGFib3ZlLiBObyBjcmFzaCBhc3NlcnRpb24gL3dhcm5pbmcgcmVwb3J0ZWQuCgpJIGFtIG5v
+dCBmYW1pbGlhciB3aXRoIHhlbm9tYWkgeWV0LCB0aGUgZXhwZXJpbWVudHMgbWF5IGJlIGRv
+bmUgaW4gdGhlIGZ1dHVyZS4KQWxzbywgcmVhbC10aW1lIHBlcmZvcm1hbmNlIG9mIHRoZSBh
+ZHZhbnRlY2ggTUlPLTUyNTEgaXMgcXVpdGUgYmFkLiBJIHdhbnQgdG8gdXNlIHRoaXMKc3lz
+dGVtIGFzIGEgcm9ib3QgY29udHJvbGxlciAoZWcuIDYgYXhpc2VzLikgSGVhdnkgZHV0eSBv
+ZiBjYWxjdWxhdGlvbnMgaXMgcmVxdWlyZWQuIElzIHgtd2luZG93IHJ1bm5pbmcgcG9zc2li
+bGU/CkRvIHlvdSBoYXZlIGFueSBib2FyZCB0byByZWNvbW1lbmQ/IFBlcmZvcm1hbmNlIGlz
+IHByZWZlcnJlZC4gVGhhbmtzIQ==
 
-Thank you for the patch, we will test it soon and give feedback on the resu=
-lt.
 
-Tobias
 
 
