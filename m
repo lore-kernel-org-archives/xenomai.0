@@ -1,18 +1,12 @@
-Date: Mon, 12 Sep 2016 14:14:31 -0400
-Message-ID: <20160912181431.GL14309@csclub.uwaterloo.ca>
-References: <b3a6f4c97449444a9f315329b4b7faf1@AM3PR48MB0130.041d.mgd.msft.net>
- <1d69d480-52da-5a17-2ca9-d9b5ce296501@mperpetuo.com>
- <8d544c56950547518f0e6aa5908ddf0a@AM3PR48MB0130.041d.mgd.msft.net>
- <115943e8-eaf2-66f2-800f-bee51b5f9375@mperpetuo.com>
- <e97e0cc68f64487182e38b4707f5622e@AM3PR48MB0130.041d.mgd.msft.net>
- <ab68d15d-f883-61c5-f946-a1a034cac0a4@mperpetuo.com>
+References: <fe0243c96682430eb5c01ebec98b269e@itk-engineering.de>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <dcec62b2-a521-1696-3184-0975b389198e@xenomai.org>
+Date: Tue, 13 Sep 2016 09:37:48 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ab68d15d-f883-61c5-f946-a1a034cac0a4@mperpetuo.com>
-From: lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
-Subject: Re: [Xenomai] [ARM64] Context saving problem with floating point
- registers?
+In-Reply-To: <fe0243c96682430eb5c01ebec98b269e@itk-engineering.de>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Multiple processes within same session
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,50 +15,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Dmitriy Cherkasov <dmitriy@mperpetuo.com>
-Cc: xenomai@xenomai.org
+To: Tobias Luksch <Tobias.Luksch@itk-engineering.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Sep 12, 2016 at 10:54:10AM -0700, Dmitriy Cherkasov wrote:
-> On 09/06/2016 09:02 AM, BREGARDIS Cedric wrote:
+On 09/06/2016 05:38 PM, Tobias Luksch wrote:
+> Hello,
 > 
-> >
-> >Here are other options I could imagine:
-> >1 - Contain the bug. Will I meet the floating point context saving
-> >problem if the xenomai application do not switch to the Linux
-> >Domain? Maybe the floating point problem only occur in certain
-> >conditions that I can ensure to not meet?
+> [Arch:x86, Processor:Corei7, Kernel: 4.1.18, Xenomai:3.0.2]
 > 
-> I haven't tested this, but I think you'll still run into the problem
-> eventually. When your Xenomai process exits, it will switch back to Linux
-> and the incorrect context will affect subsequent processes. Also, I'm not
-> sure if the switch to Xenomai would even work correctly in the first place.
+> we are using several Xenomai processes communicating using shared memory (rt_heap) and a few named mutexes. The processes also create additional unnamed task, mutexes, semaphores, etc.
+> After porting to Xenomai 3, I see the following problem: To access the shared heap, I start two processes within the same session (--session from command line). Shared access to the heap works, but when creating unnamed objects, e.g. a mutex, in the second process, rt_mutex_create returns -17.
 > 
-> >2 - Use the SoC in 32 bits mode (aarch32). Does the fpsimd switch
-> >mechanism works correctly on 32 bits ARM on xenomai for 4.1.x?
+> Here is a small example program to reproduce this:
 > 
-> If you run an armv7 kernel on your board ala rpi3, you will be using the
-> armv7 Xenomai port, which I believe is pretty stable. This could be the
-> easiest way to go if you have access to such a kernel.
+> #include <alchemy/task.h>
+> #include <alchemy/mutex.h>
+> #include <stdio.h>
 > 
-> >3 - Wait for a correction of xenomai. Is it expected to be available
-> >soon? It would be unfortunate to work on a complex workaround while
-> >someone is working on this problem and will release a fix soon.
+> int main(int argc, char* argv[])
+> {
+> 	rt_printf("hello  world\n");
+> 	RT_MUTEX mutex;
+> 	int ret_val = rt_mutex_create( &mutex, NULL );
+> 	rt_printf( "rt_mutex_create: %d\n", ret_val );
 > 
-> I don't think anyone is working on this at the moment. You are always
-> welcome to submit a patch :)
+> 	while (true)
+> 	{
+> 		rt_task_sleep(1000000000);
+> 		rt_printf("ping\n");
+> 	}
+> 	return 0;
+> }
 > 
-> The proper fix would involve adjusting the context switch code on the
-> Xenomai side to play nice with the kernel side. It needs to work correctly
-> with the TIF_FOREIGN_FPSTATE thread flag, and the algorithm that uses it. I
-> will probably be taking a look at this myself sometime in the future, but I
-> can't really give you any sort of timeline at the moment.
+> Starting this program (called xeno-test here) once gives:
+> $ ./xeno-test --session=test
+> hello  world
+> rt_mutex_create: 0
+> ping
+> ping
+> [..]
 > 
-> Another possible suggestion is to try and port the 3.18 ipipe patch back to
-> the 3.14 kernel. Likely more work than 2), but should be doable.
+> Starting it a second time with the same session:
+> $ ./xeno-test --session=test
+> hello  world
+> rt_mutex_create: -17
+> ping
+> ping
+> [..]
+> 
+> Starting the program another time with a different session works without error. Also using differently named mutexes for both instances works.
+> 
+> I am not sure about the naming mechanism (if any) when creating unnamed objects like mutexes, nor about what is actually shared between processes when using the same session. It would be great if anyone could give some details on this.
+> 
+> Any help would be appreciated.
 
-Now that 3.14 is EOL, it might be best to move on if starting something
-new.
+This patch should address the issue:
+
+commit e539ab0b1db5ca56f8d3db39d2ca0bdf009c9b25
+Author: Philippe Gerum <rpm@xenomai.org>
+Date:   Tue Sep 13 09:36:11 2016 +0200
+
+    boilerplate/ancillaries: fix unique name generation in pshared mode
+
+diff --git a/lib/boilerplate/ancillaries.c b/lib/boilerplate/ancillaries.c
+index a811a40..0f469a4 100644
+--- a/lib/boilerplate/ancillaries.c
++++ b/lib/boilerplate/ancillaries.c
+@@ -231,7 +231,11 @@ char *generate_name(char *buf, const char *radix,
+ 		buf[len] = '\0';
+ 	} else {
+ 		tag = atomic_add_fetch(&ngen->serial, 1);
++#ifdef CONFIG_XENO_PSHARED
++		snprintf(buf, len, "%s@%d[%d]", ngen->radix, tag, __node_id);
++#else
+ 		snprintf(buf, len, "%s@%d", ngen->radix, tag);
++#endif
+ 	}
+ 
+ 	return buf;
 
 -- 
-Len Sorensen
+Philippe.
 
