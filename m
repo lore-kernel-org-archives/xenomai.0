@@ -1,17 +1,13 @@
-References: <tencent_7EFF3BC22CBB53AA568408E6@qq.com>
- <0fe39a24-b767-dff2-230d-18fa0b3766dd@xenomai.org>
- <tencent_5E5F68F22D0540CF4309F8EE@qq.com>
- <2ded9de8-95c1-52ea-8e56-55398d454fbd@xenomai.org>
- <tencent_22D865866B28E107473867CD@qq.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <cc52c1d1-235e-e96a-47c7-dad9a1416f66@xenomai.org>
-Date: Tue, 13 Sep 2016 15:00:01 +0200
+Date: Tue, 13 Sep 2016 15:11:07 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20160913151107.0b15e1e8@md1em3qc>
+In-Reply-To: <1271995210.507800.1473769593022@mail.yahoo.com>
+References: <1271995210.507800.1473769593022.ref@mail.yahoo.com>
+ <1271995210.507800.1473769593022@mail.yahoo.com>
 MIME-Version: 1.0
-In-Reply-To: <tencent_22D865866B28E107473867CD@qq.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] "Ctrl + C" makes system crashed when exitting
-	from"cross-link"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] multiarch on ipipe kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,44 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jack Lee <jacklee11@foxmail.com>, xenomai <xenomai@xenomai.org>
+To: Frederik Bayart <frederik_bayart@yahoo.co.uk>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 09/13/2016 11:13 AM, Jack Lee wrote:
-> Sometimes, the system just dies absolutely, and I could only press the power key to power off and restart the computer.
-> Sometimes, "cross-link" can not exit even using the "kill" command, as described above. No crash assertion /warning reported.
->
+Do you have CONFIG_IA32_EMULATION set in your ipipe kernel?
 
-The watchdog may help in situation #1 if a runaway thread is at work.
+Henning
 
-> I am not familiar with xenomai yet, the experiments may be done in the future.
-> Also, real-time performance of the advantech MIO-5251 is quite bad. I want to use this
+Am Tue, 13 Sep 2016 12:26:33 +0000
+schrieb Frederik Bayart <frederik_bayart@yahoo.co.uk>:
 
-Meaning with Xenomai in? What are the figures if so, any output of the
-latency program?
+> Should it be possible to run an 32 bit non-rt binary on a 64 bit
+> ipipe kernel ? I'm using debian jessie amd64 and xenomai 2.6.4 on
+> kernel 3.18.20
+>=20
+> I have added i386 as foreing architecture and installed the i386
+> toolchain $ dpkg --print-architectureamd64s$ dpkg
+> --print-foreign-architecturesi386 I have a small hello world binary
+>=20
+> #include <stdio.h>
+> int main(int argc, char* argv[]){=C2=A0 printf("hello world\n");=C2=A0 re=
+turn
+> 0;} I compile with=C2=A0
+> gcc -m32 -o hello hello.c
+> This binary runs on the normal (non-ipipe) kernel
+> linux-image-3.16.0-4-amd64.But if I'm booting the ipipe kernel on the
+> same system, I get the error : -bash: ./hello: cannot execute binary
+> file: Exec format error So the problem seems to be related to the
+> kernel. But I didn't find whether a kernel option could be the cause.
+> The kernel was prepared with=C2=A0I only found that you can't run 32 bit
+> xenomai libraries on a 64 bit kernel, but this binary is not using
+> these libraries. Kind regards, Frederik
+>=20
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
-Did you consider this information?
-http://xenomai.org/troubleshooting-a-dual-kernel-configuration/#the_latency_test_shows_high_latencies
-
-> system as a robot controller (eg. 6 axises.) Heavy duty of calculations is required. Is x-window running possible?
-
-X-windows is possible if neither of your graphic card nor X driver
-causes pathological latencies. I worked on several projects coupling
-real-time acquisition and graphics on the same x86 SBC over the years
-with no issues; conversely, a few graphic hw support did introduce
-roadblocks in other cases, YYMV. You may definitely want to benchmark
-the hw before buying.
-
-> Do you have any board to recommend? Performance is preferred. Thanks!
-> 
-
-A bad BIOS is often involved in bad real-time performances (including
-SMI woes), affecting dual kernel and native preemption configurations
-the same way. Likewise, CONFIG_PERF_EVENTS on x86 may kill real-time
-performances when NMI-based events are involved.
-
-People of this list running x86 systems in production may hopefully give
-you some hints about decent hardware for this usage.
-
--- 
-Philippe.
 
