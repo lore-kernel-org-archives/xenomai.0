@@ -1,18 +1,13 @@
-References: <tencent_7EFF3BC22CBB53AA568408E6@qq.com>
- <0fe39a24-b767-dff2-230d-18fa0b3766dd@xenomai.org>
- <tencent_5E5F68F22D0540CF4309F8EE@qq.com>
- <2ded9de8-95c1-52ea-8e56-55398d454fbd@xenomai.org>
- <tencent_22D865866B28E107473867CD@qq.com>
- <cc52c1d1-235e-e96a-47c7-dad9a1416f66@xenomai.org>
-From: Jack Lee <jacklee11@foxmail.com>
-Message-ID: <b3007d8b-0ea7-edcb-c727-3770c1171b3a@foxmail.com>
-Date: Wed, 14 Sep 2016 16:38:22 +0800
+References: <E1bORzl-00034s-19@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <2c1f909e-f50a-fca6-5f23-64e1284951aa@siemens.com>
+Date: Fri, 16 Sep 2016 06:54:03 +0200
 MIME-Version: 1.0
-In-Reply-To: <cc52c1d1-235e-e96a-47c7-dad9a1416f66@xenomai.org>
-Content-Type: text/plain; charset="windows-1252"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] "Ctrl + C" makes system crashed when exitting
-	from"cross-link"
+In-Reply-To: <E1bORzl-00034s-19@xenomai.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Philippe Gerum : cobalt/rtdm: leave mode selection to
+ I/O syscall handlers
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,74 +16,136 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org, Philippe Gerum <rpm@xenomai.org>
 
-On 09/13/2016 09:00 PM, Philippe Gerum wrote:
-> On 09/13/2016 11:13 AM, Jack Lee wrote:
->> Sometimes, the system just dies absolutely, and I could only press the p=
-ower key to power off and restart the computer.
->> Sometimes, "cross-link" can not exit even using the "kill" command, as d=
-escribed above. No crash assertion /warning reported.
->>
-> The watchdog may help in situation #1 if a runaway thread is at work.
->
->> I am not familiar with xenomai yet, the experiments may be done in the f=
-uture.
->> Also, real-time performance of the advantech MIO-5251 is quite bad. I wa=
-nt to use this
-> Meaning with Xenomai in? What are the figures if so, any output of the
-> latency program?
->
-> Did you consider this information?
->
->
->> system as a robot controller (eg. 6 axises.) Heavy duty of calculations =
-is required. Is x-window running possible?
-> X-windows is possible if neither of your graphic card nor X driver
-> causes pathological latencies. I worked on several projects coupling
-> real-time acquisition and graphics on the same x86 SBC over the years
-> with no issues; conversely, a few graphic hw support did introduce
-> roadblocks in other cases, YYMV. You may definitely want to benchmark
-> the hw before buying.
->
->> Do you have any board to recommend? Performance is preferred. Thanks!
->>
-> A bad BIOS is often involved in bad real-time performances (including
-> SMI woes), affecting dual kernel and native preemption configurations
-> the same way. Likewise, CONFIG_PERF_EVENTS on x86 may kill real-time
-> performances when NMI-based events are involved.
->
-> People of this list running x86 systems in production may hopefully give
-> you some hints about decent hardware for this usage.
+On 2016-07-16 17:59, git repository hosting wrote:
+> Module: xenomai-3
+> Branch: wip/dovetail
+> Commit: 37f90fb2a9d1d8ad6e120e01c8972817b315baf6
+> URL:    http://git.xenomai.org/?p=xenomai-3.git;a=commit;h=37f90fb2a9d1d8ad6e120e01c8972817b315baf6
+> 
+> Author: Philippe Gerum <rpm@xenomai.org>
+> Date:   Thu Jul  7 18:35:47 2016 +0200
+> 
+> cobalt/rtdm: leave mode selection to I/O syscall handlers
+> 
+> We don't want requests bearing invalid file descriptors (RTDM-wise) to
+> trigger any mode switch, so that RTDM requests on regular fildes can
+> be rejected with little overhead.
+> 
+> Tell the core to hand over mode selection to RTDM I/O syscall
+> handlers, which now check the file descriptor prior to triggering any
+> mode transition.
+> 
+> ---
+> 
+>  kernel/cobalt/posix/io.c        |   10 +--
+>  kernel/cobalt/posix/syscall32.c |    4 +-
+>  kernel/cobalt/rtdm/fd.c         |  144 +++++++++++++++++++++++----------------
+>  3 files changed, 92 insertions(+), 66 deletions(-)
+> 
+> diff --git a/kernel/cobalt/posix/io.c b/kernel/cobalt/posix/io.c
+> index 7110d21..42b7b00 100644
+> --- a/kernel/cobalt/posix/io.c
+> +++ b/kernel/cobalt/posix/io.c
+> @@ -58,25 +58,25 @@ COBALT_SYSCALL(fcntl, current, (int fd, int cmd, int arg))
+>  	return rtdm_fd_fcntl(fd, cmd, arg);
+>  }
+>  
+> -COBALT_SYSCALL(ioctl, probing,
+> +COBALT_SYSCALL(ioctl, handover,
+>  	       (int fd, unsigned int request, void __user *arg))
+>  {
+>  	return rtdm_fd_ioctl(fd, request, arg);
+>  }
+>  
+> -COBALT_SYSCALL(read, probing,
+> +COBALT_SYSCALL(read, handover,
+>  	       (int fd, void __user *buf, size_t size))
+>  {
+>  	return rtdm_fd_read(fd, buf, size);
+>  }
+>  
+> -COBALT_SYSCALL(write, probing,
+> +COBALT_SYSCALL(write, handover,
+>  	       (int fd, const void __user *buf, size_t size))
+>  {
+>  	return rtdm_fd_write(fd, buf, size);
+>  }
+>  
+> -COBALT_SYSCALL(recvmsg, probing,
+> +COBALT_SYSCALL(recvmsg, handover,
+>  	       (int fd, struct user_msghdr __user *umsg, int flags))
+>  {
+>  	struct user_msghdr m;
+> @@ -93,7 +93,7 @@ COBALT_SYSCALL(recvmsg, probing,
+>  	return cobalt_copy_to_user(umsg, &m, sizeof(*umsg)) ?: ret;
+>  }
+>  
+> -COBALT_SYSCALL(sendmsg, probing,
+> +COBALT_SYSCALL(sendmsg, handover,
+>  	       (int fd, struct user_msghdr __user *umsg, int flags))
+>  {
+>  	struct user_msghdr m;
+> diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
+> index 0576b37..bc8b9d9 100644
+> --- a/kernel/cobalt/posix/syscall32.c
+> +++ b/kernel/cobalt/posix/syscall32.c
+> @@ -766,7 +766,7 @@ COBALT_SYSCALL32emu(select, nonrestartable,
+>  	return err;
+>  }
+>  
+> -COBALT_SYSCALL32emu(recvmsg, probing,
+> +COBALT_SYSCALL32emu(recvmsg, handover,
+>  		    (int fd, struct compat_msghdr __user *umsg,
+>  		     int flags))
+>  {
+> @@ -784,7 +784,7 @@ COBALT_SYSCALL32emu(recvmsg, probing,
+>  	return sys32_put_msghdr(umsg, &m) ?: ret;
+>  }
+>  
+> -COBALT_SYSCALL32emu(sendmsg, probing,
+> +COBALT_SYSCALL32emu(sendmsg, handover,
+>  		    (int fd, struct compat_msghdr __user *umsg, int flags))
+>  {
+>  	struct user_msghdr m;
+> diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
+> index d82cfe4..3381dea 100644
+> --- a/kernel/cobalt/rtdm/fd.c
+> +++ b/kernel/cobalt/rtdm/fd.c
+> @@ -392,6 +392,44 @@ int rtdm_fd_fcntl(int ufd, int cmd, ...)
+>  }
+>  EXPORT_SYMBOL_GPL(rtdm_fd_fcntl);
+>  
+> +static struct rtdm_fd *get_fd_fixup_mode(int ufd)
+> +{
+> +	struct xnthread *thread;
+> +	struct rtdm_fd *fd;
+> +	
+> +	fd = rtdm_fd_get(ufd, 0);
+> +	if (IS_ERR(fd))
+> +		return fd;
+> +
+> +	/*
+> +	 * Mode is selected according to the following convention:
+> +	 *
+> +	 * - Cobalt threads must try running the syscall from primary
+> +	 * mode as a first attempt, regardless of their scheduling
+> +	 * class. The driver handler may ask for demoting the caller
+> +	 * to secondary mode by returning -ENOSYS.
+> +	 *
+> +	 * - Regular threads (i.e. not bound to Cobalt) may only run
+> +	 * the syscall from secondary mode.
+> +	 */
 
-  * make sure that you carefully followed the=93Kernel configuration=94
-    section
-    <http://xenomai.org/troubleshooting-a-dual-kernel-configuration/#kconf>.
+In case of IOCTLs, we would also have to push the decision one level
+further, into the driver. Only in few cases, default would remain this
+policy here. Do you already have a suggestion how to do that?
 
-Checked.
+Thanks,
+Jan
 
-  * if running on a x86 platform, make sure that you do not have an
-    issue with SMIs, see thesection about SMIs
-    <http://xenomai.org/troubleshooting-a-dual-kernel-configuration/#SMI>.
-
-SMI walkaround enabled. nmi.watchdog was set to be 0.
-
-  * if running on a x86 platform with a/legacy USB/switch available from
-    the BIOS configuration, try disabling it.
-
-Disabling it makes the keyboard not work.
-
-  * if you observe high latencies while running X-window, try disabling
-    hardware acceleration in the X-window server file. With recent
-    versions of X-window, try using the/fbdev/driver. Install it (Debian
-    package named/xserver-xorg-video-fbdev/for instance), then modifiy
-    theDevicesection to use this driver in//etc/X11/xorg.conf/, as in:
-
-fbdev is enabled.
-
-
-If I have any progress on this issue, I will back.
-Thanks for your endeavors!
-
-
+-- 
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
 
