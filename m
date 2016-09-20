@@ -1,13 +1,14 @@
-References: <tencent_4818DEB2364F8B0334FB2C0A@qq.com>
-From: Wolfgang Grandegger <wg@grandegger.com>
-Message-ID: <bf1ec1c9-63a5-d53c-1341-93f7da57b3c1@grandegger.com>
-Date: Fri, 2 Sep 2016 09:33:38 +0200
+From: <dietmar.schindler@manroland-web.com>
+Date: Tue, 20 Sep 2016 06:18:45 +0000
+Message-ID: <b4c844ac2faa4a4a8d56a4e41e67fb6f@AUSMXMBX04.mrws.biz>
+References: <1560138.jJyhniltkJ@indiana>
+In-Reply-To: <1560138.jJyhniltkJ@indiana>
+Content-Language: de-DE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <tencent_4818DEB2364F8B0334FB2C0A@qq.com>
-Content-Type: text/plain; charset="gb18030"; format="flowed"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] rt-socket-can "no device" problem with advantech
- PCM-26D2CA CAN board
+Subject: Re: [Xenomai] Cannot create a share library linked against Xenomai
+ libs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,45 +19,43 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-SGVsbG8sCgpBbSAwMi4wOS4yMDE2IHVtIDA5OjIzIHNjaHJpZWIgSmFjayBMZWU6Cj4+IEhlbGxv
-LAo+Pgo+PiBBbSAwMi4wOS4yMDE2IHVtIDA4OjIzIHNjaHJpZWIgSmFjayBMZWU6Cj4+PiBIaSwg
-ZXZlcnlvbmWjoQo+Pj4gICBJIGFtIHVzaW5nIHRoZSBhZHZhbnRlY2ggUENNLTI2RDJDQSBDQU4g
-Ym9hcmQsIGl0cyBkZXRhaWxzIGNhbiBiZSBmb3VuZCBoZXJlIGF0Cj4+PiBodHRwOi8vd3d3LmFk
-dmFudGVjaC5jb20vcHJvZHVjdHMvMTQyNjM3MjktYWFhMy00NTUyLWI5OTAtOTlkMTZjZGZlZTI0
-L3BjbS0yNmQyY2EvbW9kXzlhMWU5ZGJmLWUyMmQtNDc3MC1hODk2LWNlY2Y0MDYwNzA4NC4KPj4+
-IFRoZSBvcmlnaW5hbCBkcml2ZXIgd29ya3MgZmluZSwgYnV0IEkgbmVlZCBpdCB0byBiZSByZWFs
-dGltZS4KPj4+ICAgcnQtY2FuIGRyaXZlciB3YXMgY29tcGlsZWQgYXMgbW9kdWxlcyBwcmV2aW91
-c2x5LiBXaGVuIGJvb3RlZCBhbmQgIiNtb2Rwcm9iZSB4ZW5vX2Nhbl9hZHZfcGNpIiB3YXMgZXhl
-Y3V0ZWQsCj4+PiAiI2RtZXNnIHwgZ3JlcCAtaSBjYW4iIG91dHB1dCB3YXMKPj4+IC4uLgo+Pj4g
-UlQtU29ja2V0LUNBTiAwLjkwLTIgLSAoYykgMjAwNiBSVC1Tb2NrZXQtQ0FOIERldmVsb3BtZW50
-IFRlYW0KPj4+IFJUQ0FOIFNKQTEwMDAgZHJpdmVyIGluaXRpYWxpemVkCj4+Pgo+Pj4gIiNsc21v
-ZCB8IGdyZXAgLWkgY2FuIiBvdXRwdXQgd2FzCj4+PiB4ZW5vX2Nhbl9hZHZfcGNpCj4+PiB4ZW5v
-X2Nhbl9zamExMDAwICAgIHVzZWQgYnkgeGVub19jYW5fYWR2X3BjaQo+Pj4geGVub19jYW4gICAg
-ICAgICAgICAgICAgICB1c2VkIGJ5IHhlbm9fY2FuX3NqYTEwMDAsIHhlbm9fY2FuX2Fkdl9wY2kK
-Pj4+Cj4+PiBXaGF0IHN0cmFuZ2UgaXMgdGhhdCAvcHJvYy9ydGNhbi9kZXZpY2VzIGhhcyBubyBk
-ZXZpY2VzIGxpa2UgcnRjYW4wLgo+Pj4gVGhlIC9wcm9jL3J0Y2FuIGRpcmVjdG9yeSBqdXN0IGhh
-cyB0aHJlZSBmaWxlczogZGV2aWNlcywgc29ja2V0cyBhbmQgdmVyc2lvCj4+Cj4+IFdoYXQgaXMg
-dGhlIFBDSSBkZXZpY2UgaWQgb2YgdGhlIENBTiBkZXZpY2U/IFlvdSBjYW4gdXNlICJsc3BjaSAt
-dnYiIHRvCj4+IGxpc3QgdGhlIGlkcy4KPj4KPj4+IERvZXMgdGhpcyBDQU4gYm9hcmQgc3VwcG9y
-dGVkIGJ5IHJ0LXNvY2tldC1jYW4/IEhvdyBjYW4gSSBpbXBsZW1lbnQgcmVhbC10aW1lciBkcml2
-ZXIgZm9yIGl0Pwo+Pgo+PiBNb3N0IGxpa2VseSB0aGUgZGV2aWNlIGlkIGlzIG1pc3NpbmcgaW4g
-dGhlIGRyaXZlciBQQ0kgZGV2aWNlIGxpc3Q6Cj4+Cj4+Cj4+IGh0dHA6Ly9naXQueGVub21haS5v
-cmcveGVub21haS0yLjYuZ2l0L3RyZWUva3NyYy9kcml2ZXJzL2Nhbi9zamExMDAwL3J0Y2FuX2Fk
-dl9wY2kuYyNuODcKPj4KPj4gV29sZmdhbmcuCj4KPiBUaGFuayB5b3UsIFdvbGZnYW5nISBNeSBt
-YWlsYm94IGRlbGF5cyB0aGF0IEkgY2Fubm90IGFkZCB5b3UgaW4gdGhlIGNvbnRhY3QsIHNvIEkg
-c2VuZCB0byB0aGUgeGVub21haSBsaXN0LiBTb3JyeSBmb3IgdGhhdC4KCk5vIHByb2JsZW0uCgo+
-IENBTiBib2FyZCBpbmZvcm1hdGlvbiBpcyBiZWxvdy4KPiAjbHNwY2kgLXZ2Cj4gMDM6MDAuMCBD
-QU5CVVM6IEFkdmFudGVjaCBDby4gTHRkIE1JT2UtMzY4MCAyLVBvcnQgQ0FOLUJ1cyBNSU9lIE1v
-ZHVsZSB3aXRoIElzb2xhdGlvbiBQcm90ZWN0aW9uCj4gCVN1YnN5c3RlbTogQWR2YW50ZWNoIENv
-LiBMdGQgTUlPZS0zNjgwIDItUG9ydCBDQU4tQnVzIE1JT2UgTW9kdWxlIHdpdGggSXNvbGF0aW9u
-IFByb3RlY3Rpb24KPiAJQ29udHJvbDogSS9PKyBNZW0rIEJ1c01hc3RlcisgU3BlY0N5Y2xlLSBN
-ZW1XSU5WLSBWR0FTbm9vcC0gUGFyRXJyLSBTdGVwcGluZy0gU0VSUi0gRmFzdEIyQi0gRGlzSU5U
-eC0KPiAJU3RhdHVzOiBDYXArIDY2TUh6LSBVREYtIEZhc3RCMkItIFBhckVyci0gREVWU0VMPWZh
-c3QgPlRBYm9ydC0gPFRBYm9ydC0gPE1BYm9ydC0gPlNFUlItIDxQRVJSLSBJTlR4LQo+IAlMYXRl
-bmN5OiAwLCBDYWNoZSBMaW5lIFNpemU6IDY0IGJ5dGVzCj4gCUludGVycnVwdDogcGluIEEgcm91
-dGVkIHRvIElSUSAxMAo+IAlSZWdpb24gMDogTWVtb3J5IGF0IGQwYzAyMDAwICgzMi1iaXQsIG5v
-bi1wcmVmZXRjaGFibGUpIFtzaXplPTJLXQo+IAlSZWdpb24gMTogTWVtb3J5IGF0IGQwYzAxMDAw
-ICgzMi1iaXQsIG5vbi1wcmVmZXRjaGFibGUpIFtzaXplPTEyOF0KPiAJUmVnaW9uIDI6IE1lbW9y
-eSBhdCBkMGMwMDAwMCAoMzItYml0LCBub24tcHJlZmV0Y2hhYmxlKSBbc2l6ZT0xMjhdCj4gCUNh
-cGFiaWxpdGllczogPGFjY2VzcyBkZW5pZWQ+CgpDb3VsZCB5b3UgcGxlYXNlIHVzZSAibHNwY2kg
-LXZ2biIgdG8gZ2V0ICBudW1iZXJzIChpbnN0ZWFkIG9mIHN0cmluZ3MpLgoKV29sZmdhbmcuCgo=
+> Von: Xenomai [mailto:xenomai-bounces@xenomai.org] Im Auftrag von Leopold =
+Palomo-Avellaneda
+> Gesendet: Montag, 19. September 2016 22:45
+>
+> I'm trying to build a shared library, using the posix skin with Xenomai 3=
+.0.3.
+> I have built xenomai with:
+>
+> '--with-core=3Dcobalt' '--enable-smp' '--enable-pshared' '--enable-fortif=
+y'
+> '--enable-shared
+>
+> I built withour any error. However, when I try to build a library (shared=
+)
+> that uses xenomai I got this error:
+>
+> /usr/bin/ld: /usr/xenomai/lib/xenomai/bootstrap.o: relocation R_X86_64_32
+> against `.rodata.str1.1' can not be used when making a shared object;
+> recompile with -fPIC
+
+Here is an answer to a similar problem: http://stackoverflow.com/a/38431538=
+/2413201
+It says to use the compiler flags -Wformat=3D0 or/and -Wno-format-security;=
+ perhaps it helps also in your case.
+--
+Best regards,
+Dietmar
+________________________________
+manroland web systems GmbH -- Managing Director: Alexander Wassermann
+Registered Office: Augsburg -- Trade Register: AG Augsburg -- HRB-No.: 2681=
+6 -- VAT: DE281389840
+
+Confidentiality note:
+This eMail and any files transmitted with it are confidential and intended =
+solely for the use of the individual or entity to whom they are addressed. =
+If you are not the intended recipient, you are hereby notified that any use=
+ or dissemination of this communication is strictly prohibited. If you have=
+ received this eMail in error, then please delete this eMail.
+________________________________
+
