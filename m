@@ -1,14 +1,16 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Tue, 20 Sep 2016 12:56:49 +0200
-Message-ID: <3202879.l8ld4jIH5k@soho>
-In-Reply-To: <c81239b6-2473-13c2-b04c-0cf64646f83c@xenomai.org>
-References: <1560138.jJyhniltkJ@indiana>
- <c81239b6-2473-13c2-b04c-0cf64646f83c@xenomai.org>
+Date: Tue, 20 Sep 2016 12:12:03 +0000 (UTC)
+From: Frederik Bayart <frederik_bayart@yahoo.co.uk>
+Message-ID: <60511831.3137105.1474373523702@mail.yahoo.com>
+In-Reply-To: <824086437.604672.1473773965754@mail.yahoo.com>
+References: <1271995210.507800.1473769593022.ref@mail.yahoo.com>
+ <1271995210.507800.1473769593022@mail.yahoo.com>
+ <20160913151107.0b15e1e8@md1em3qc>
+ <824086437.604672.1473773965754@mail.yahoo.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="utf-8"
-Subject: Re: [Xenomai] Cannot create a share library linked against Xenomai
-	libs
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] multiarch on ipipe kernel
+Reply-To: Frederik Bayart <frederik_bayart@yahoo.co.uk>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,116 +19,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai Users list <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-El Dimarts, 20 de setembre de 2016, a les 09:04:55, Philippe Gerum va 
-escriure:
-> On 09/19/2016 10:45 PM, Leopold Palomo-Avellaneda wrote:
-> > Hi,
-> > 
-> > 
-> > I'm trying to build a shared library, using the posix skin with Xenomai
-> > 3.0.3. I have built xenomai with:
-> > 
-> > '--with-core=cobalt' '--enable-smp' '--enable-pshared' '--enable-fortify'
-> > '--enable-shared
-> > 
-> > I built withour any error. However, when I try to build a library (shared)
-> > that uses xenomai I got this error:
-> > 
-> > /usr/bin/ld: /usr/xenomai/lib/xenomai/bootstrap.o: relocation R_X86_64_32
-> > against `.rodata.str1.1' can not be used when making a shared object;
-> > recompile with -fPIC
-> > 
-> > Static libs build perfect.
-> > 
-> > Any idea,
-> > 
-> > Best regards,
-> > 
-> > Leopold
-> 
-> You may want to check --auto-init-solib from xeno-config:
-> 
-> http://www.xenomai.org/documentation/xenomai-3/html/man1/xeno-config/index.h
-> tml
+I enabled the settings below and then it was working. Thanks again.
+CONFIG_IA32_EMULATION=3DyCONFIG_IA32_AOUT=3DmCONFIG_X86_X32=3Dy
+Frederik=20
 
-I partially solved the problem but your email worries me more. First of all 
-because in 3.0.2 that option was not there. And it's an important issue.
+    On Tuesday, 13 September 2016, 15:39, Frederik Bayart <frederik_bayart@=
+yahoo.co.uk> wrote:
+=20
 
-Second, because you make a difference between creating a executable and create 
-a shared library and I don't know if we have a lot of benefits making that 
-distinction. Gcc documentation explain:
+ CONFIG_IA32_EMULATION is indeed not set.
+I will try to test it this week and let you know whether this was the cause=
+.
+Thank you very much for the help,
+Frederik=20
 
-"If supported for the target machine, emit position-independent code, suitable 
-for dynamic linking and avoiding any limit on the size of the global offset 
-table. This option makes a difference on AArch64, m68k, PowerPC and SPARC."
+    On Tuesday, 13 September 2016, 15:11, Henning Schild <henning.schild@si=
+emens.com> wrote:
+=20
 
+ Do you have CONFIG_IA32_EMULATION set in your ipipe kernel?
 
-And lastly, although the first error is solved, I got another error:
+Henning
 
-Linking C shared library libsoem_rt.so
-/usr/bin/cmake -E cmake_link_script CMakeFiles/soem_dynamic_rt.dir/link.txt --
-verbose=1
-/usr/bin/cc  -fPIC -D_FORTIFY_SOURCE=2 -Wno-format-security -Wformat=0 -O2 -g 
--DNDEBUG -Wl,@/usr/xenomai/lib/cobalt.wrappers 
-/usr/xenomai/lib/xenomai/bootstrap.o -Wl,--wrap=main -Wl,--dynamic-
-list=/usr/xenomai/lib/dynlist.ld -Wl,--no-undefined -shared -Wl,-
-soname,libsoem_rt.so.1 -o libsoem_rt.so.1.3 
-CMakeFiles/soem_dynamic_rt.dir/soem/ethercatdc.c.o 
-CMakeFiles/soem_dynamic_rt.dir/soem/ethercatfoe.c.o 
-CMakeFiles/soem_dynamic_rt.dir/soem/ethercatmain.c.o 
-CMakeFiles/soem_dynamic_rt.dir/soem/ethercatprint.c.o 
-CMakeFiles/soem_dynamic_rt.dir/soem/ethercatconfig.c.o 
-CMakeFiles/soem_dynamic_rt.dir/soem/ethercatsoe.c.o 
-CMakeFiles/soem_dynamic_rt.dir/soem/ethercatbase.c.o 
-CMakeFiles/soem_dynamic_rt.dir/soem/ethercatcoe.c.o 
-CMakeFiles/soem_dynamic_rt.dir/osal/linux/osal.c.o 
-CMakeFiles/soem_dynamic_rt.dir/oshw/linux/nicdrv.c.o 
-CMakeFiles/soem_dynamic_rt.dir/oshw/linux/oshw.c.o -L/usr/xenomai/lib -lcobalt 
--lpthread -lrt 
-/usr/xenomai/lib/xenomai/bootstrap.o: In function `xenomai_main':
-bootstrap.c:(.text+0x2c): undefined reference to `main'
-bootstrap.c:(.text+0x40): undefined reference to `main'
-collect2: error: ld returned 1 exit status
+Am Tue, 13 Sep 2016 12:26:33 +0000
+schrieb Frederik Bayart <frederik_bayart@yahoo.co.uk>:
+
+> Should it be possible to run an 32 bit non-rt binary on a 64 bit
+> ipipe kernel ? I'm using debian jessie amd64 and xenomai 2.6.4 on
+> kernel 3.18.20
+>=20
+> I have added i386 as foreing architecture and installed the i386
+> toolchain $ dpkg --print-architectureamd64s$ dpkg
+> --print-foreign-architecturesi386 I have a small hello world binary
+>=20
+> #include <stdio.h>
+> int main(int argc, char* argv[]){=C2=A0 printf("hello world\n");=C2=A0 re=
+turn
+> 0;} I compile with=C2=A0
+> gcc -m32 -o hello hello.c
+> This binary runs on the normal (non-ipipe) kernel
+> linux-image-3.16.0-4-amd64.But if I'm booting the ipipe kernel on the
+> same system, I get the error : -bash: ./hello: cannot execute binary
+> file: Exec format error So the problem seems to be related to the
+> kernel. But I didn't find whether a kernel option could be the cause.
+> The kernel was prepared with=C2=A0I only found that you can't run 32 bit
+> xenomai libraries on a 64 bit kernel, but this binary is not using
+> these libraries. Kind regards, Frederik
+>=20
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
 
-so, the POSIX script to build a POSIX code fails when you wants to build a 
-shared library. Dropping "-Wl,--wrap=main " the library is built.
+  =20
 
-So, from my point of view, xeno-config is not giving an accurate answer and the 
---auto-init-solib doesn't help too much. I would like to propose this:
-
-as --[no-]auto-init is meaningful only with --ldflags, and to link against (*)-
-pic is for shared libraries I would add an option to xeno-config, --ldflags-
-shared, or --ldflags-shared-libs where /usr/xenomai/lib/xenomai/bootstrap-pic.o 
-i set and "-Wl,--wrap=main" is dropped.
-
-What do you think?
-
-Leopold
-
-
-
--- 
---
-Linux User 152692     GPG: 05F4A7A949A2D9AA
-Catalonia
--------------------------------------
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
-
-
--- 
---
-Linux User 152692     GPG: 05F4A7A949A2D9AA
-Catalonia
--------------------------------------
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
-
+  =20
