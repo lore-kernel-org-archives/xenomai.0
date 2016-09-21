@@ -1,12 +1,14 @@
-From: "=?gb18030?B?SmFjayBMZWU=?=" <jacklee11@foxmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="gb18030"
-Content-Transfer-Encoding: base64
-Date: Fri, 2 Sep 2016 15:43:53 +0800
-Message-ID: <tencent_0BA5A90D4CADBE973A9C60D8@qq.com>
-Subject: [Xenomai] rt-socket-can "no device" problem with advantech
-	PCM-26D2CA CAN board
+From: Philippe Gerum <rpm@xenomai.org>
+References: <1560138.jJyhniltkJ@indiana>
+ <c81239b6-2473-13c2-b04c-0cf64646f83c@xenomai.org> <3202879.l8ld4jIH5k@soho>
+Message-ID: <1caa297c-4095-401e-cc16-def2070b5422@xenomai.org>
+Date: Wed, 21 Sep 2016 10:30:43 +0200
+MIME-Version: 1.0
+In-Reply-To: <3202879.l8ld4jIH5k@soho>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Cannot create a share library linked against Xenomai
+ libs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,84 +17,153 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Cc: Xenomai Users list <xenomai@xenomai.org>
 
-PiBIZWxsbywKPiAKPiBBbSAwMi4wOS4yMDE2IHVtIDA5OjIzIHNjaHJpZWIgSmFjayBMZWU6
-Cj4gPj4gSGVsbG8sCj4gPj4KPiA+PiBBbSAwMi4wOS4yMDE2IHVtIDA4OjIzIHNjaHJpZWIg
-SmFjayBMZWU6Cj4gPj4+IEhpLCBldmVyeW9uZaOhCj4gPj4+ICAgSSBhbSB1c2luZyB0aGUg
-YWR2YW50ZWNoIFBDTS0yNkQyQ0EgQ0FOIGJvYXJkLCBpdHMgZGV0YWlscyBjYW4gYmUgZm91
-bmQgaGVyZSBhdAo+ID4+PiBodHRwOi8vd3d3LmFkdmFudGVjaC5jb20vcHJvZHVjdHMvMTQy
-NjM3MjktYWFhMy00NTUyLWI5OTAtOTlkMTZjZGZlZTI0L3BjbS0yNmQyY2EvbW9kXzlhMWU5
-ZGJmLWUyMmQtNDc3MC1hODk2LWNlY2Y0MDYwNzA4NC4KPiA+Pj4gVGhlIG9yaWdpbmFsIGRy
-aXZlciB3b3JrcyBmaW5lLCBidXQgSSBuZWVkIGl0IHRvIGJlIHJlYWx0aW1lLgo+ID4+PiAg
-IHJ0LWNhbiBkcml2ZXIgd2FzIGNvbXBpbGVkIGFzIG1vZHVsZXMgcHJldmlvdXNseS4gV2hl
-biBib290ZWQgYW5kICIjbW9kcHJvYmUgeGVub19jYW5fYWR2X3BjaSIgd2FzIGV4ZWN1dGVk
-LAo+ID4+PiAiI2RtZXNnIHwgZ3JlcCAtaSBjYW4iIG91dHB1dCB3YXMKPiA+Pj4gLi4uCj4g
-Pj4+IFJULVNvY2tldC1DQU4gMC45MC0yIC0gKGMpIDIwMDYgUlQtU29ja2V0LUNBTiBEZXZl
-bG9wbWVudCBUZWFtCj4gPj4+IFJUQ0FOIFNKQTEwMDAgZHJpdmVyIGluaXRpYWxpemVkCj4g
-Pj4+Cj4gPj4+ICIjbHNtb2QgfCBncmVwIC1pIGNhbiIgb3V0cHV0IHdhcwo+ID4+PiB4ZW5v
-X2Nhbl9hZHZfcGNpCj4gPj4+IHhlbm9fY2FuX3NqYTEwMDAgICAgdXNlZCBieSB4ZW5vX2Nh
-bl9hZHZfcGNpCj4gPj4+IHhlbm9fY2FuICAgICAgICAgICAgICAgICAgdXNlZCBieSB4ZW5v
-X2Nhbl9zamExMDAwLCB4ZW5vX2Nhbl9hZHZfcGNpCj4gPj4+Cj4gPj4+IFdoYXQgc3RyYW5n
-ZSBpcyB0aGF0IC9wcm9jL3J0Y2FuL2RldmljZXMgaGFzIG5vIGRldmljZXMgbGlrZSBydGNh
-bjAuCj4gPj4+IFRoZSAvcHJvYy9ydGNhbiBkaXJlY3RvcnkganVzdCBoYXMgdGhyZWUgZmls
-ZXM6IGRldmljZXMsIHNvY2tldHMgYW5kIHZlcnNpbwo+ID4+Cj4gPj4gV2hhdCBpcyB0aGUg
-UENJIGRldmljZSBpZCBvZiB0aGUgQ0FOIGRldmljZT8gWW91IGNhbiB1c2UgImxzcGNpIC12
-diIgdG8KPiA+PiBsaXN0IHRoZSBpZHMuCj4gPj4KPiA+Pj4gRG9lcyB0aGlzIENBTiBib2Fy
-ZCBzdXBwb3J0ZWQgYnkgcnQtc29ja2V0LWNhbj8gSG93IGNhbiBJIGltcGxlbWVudCByZWFs
-LXRpbWVyIGRyaXZlciBmb3IgaXQ/Cj4gPj4KPiA+PiBNb3N0IGxpa2VseSB0aGUgZGV2aWNl
-IGlkIGlzIG1pc3NpbmcgaW4gdGhlIGRyaXZlciBQQ0kgZGV2aWNlIGxpc3Q6Cj4gPj4KPiA+
-Pgo+ID4+IGh0dHA6Ly9naXQueGVub21haS5vcmcveGVub21haS0yLjYuZ2l0L3RyZWUva3Ny
-Yy9kcml2ZXJzL2Nhbi9zamExMDAwL3J0Y2FuX2Fkdl9wY2kuYyNuODcKPiA+Pgo+ID4+IFdv
-bGZnYW5nLgo+ID4KPiA+IFRoYW5rIHlvdSwgV29sZmdhbmchIE15IG1haWxib3ggZGVsYXlz
-IHRoYXQgSSBjYW5ub3QgYWRkIHlvdSBpbiB0aGUgY29udGFjdCwgc28gSSBzZW5kIHRvIHRo
-ZSB4ZW5vbWFpIGxpc3QuIFNvcnJ5IGZvciB0aGF0Lgo+IAo+IE5vIHByb2JsZW0uCj4gCj4g
-PiBDQU4gYm9hcmQgaW5mb3JtYXRpb24gaXMgYmVsb3cuCj4gPiAjbHNwY2kgLXZ2Cj4gPiAw
-MzowMC4wIENBTkJVUzogQWR2YW50ZWNoIENvLiBMdGQgTUlPZS0zNjgwIDItUG9ydCBDQU4t
-QnVzIE1JT2UgTW9kdWxlIHdpdGggSXNvbGF0aW9uIFByb3RlY3Rpb24KPiA+IAlTdWJzeXN0
-ZW06IEFkdmFudGVjaCBDby4gTHRkIE1JT2UtMzY4MCAyLVBvcnQgQ0FOLUJ1cyBNSU9lIE1v
-ZHVsZSB3aXRoIElzb2xhdGlvbiBQcm90ZWN0aW9uCj4gPiAJQ29udHJvbDogSS9PKyBNZW0r
-IEJ1c01hc3RlcisgU3BlY0N5Y2xlLSBNZW1XSU5WLSBWR0FTbm9vcC0gUGFyRXJyLSBTdGVw
-cGluZy0gU0VSUi0gRmFzdEIyQi0gRGlzSU5UeC0KPiA+IAlTdGF0dXM6IENhcCsgNjZNSHot
-IFVERi0gRmFzdEIyQi0gUGFyRXJyLSBERVZTRUw9ZmFzdCA+VEFib3J0LSA8VEFib3J0LSA8
-TUFib3J0LSA+U0VSUi0gPFBFUlItIElOVHgtCj4gPiAJTGF0ZW5jeTogMCwgQ2FjaGUgTGlu
-ZSBTaXplOiA2NCBieXRlcwo+ID4gCUludGVycnVwdDogcGluIEEgcm91dGVkIHRvIElSUSAx
-MAo+ID4gCVJlZ2lvbiAwOiBNZW1vcnkgYXQgZDBjMDIwMDAgKDMyLWJpdCwgbm9uLXByZWZl
-dGNoYWJsZSkgW3NpemU9MktdCj4gPiAJUmVnaW9uIDE6IE1lbW9yeSBhdCBkMGMwMTAwMCAo
-MzItYml0LCBub24tcHJlZmV0Y2hhYmxlKSBbc2l6ZT0xMjhdCj4gPiAJUmVnaW9uIDI6IE1l
-bW9yeSBhdCBkMGMwMDAwMCAoMzItYml0LCBub24tcHJlZmV0Y2hhYmxlKSBbc2l6ZT0xMjhd
-Cj4gPiAJQ2FwYWJpbGl0aWVzOiA8YWNjZXNzIGRlbmllZD4KPiAKPiBDb3VsZCB5b3UgcGxl
-YXNlIHVzZSAibHNwY2kgLXZ2biIgdG8gZ2V0ICBudW1iZXJzIChpbnN0ZWFkIG9mIHN0cmlu
-Z3MpLgo+IAo+IFdvbGZnYW5nLgoKVGhhbmtzISBUaGUgaW5mb3JtYXRpb24gaXMgYmVsb3cu
-CiNsc3BjaSAtdnZuCjAzOjAwLjAgMGMwOTogMTNmZTpjMzAyCglTdWJzeXN0ZW06IDEzZmU6
-YzMwMgoJQ29udHJvbDogSS9PKyBNZW0rIEJ1c01hc3RlcisgU3BlY0N5Y2xlLSBNZW1XSU5W
-LSBWR0FTbm9vcC0gUGFyRXJyLSBTdGVwcGluZy0gU0VSUi0gRmFzdEIyQi0gRGlzSU5UeC0K
-CVN0YXR1czogQ2FwKyA2Nk1Iei0gVURGLSBGYXN0QjJCLSBQYXJFcnItIERFVlNFTD1mYXN0
-ID5UQWJvcnQtIDxUQWJvcnQtIDxNQWJvcnQtID5TRVJSLSA8UEVSUi0gSU5UeC0KCUxhdGVu
-Y3k6IDAsIENhY2hlIExpbmUgU2l6ZTogNjQgYnl0ZXMKCUludGVycnVwdDogcGluIEEgcm91
-dGVkIHRvIElSUSAxMAoJUmVnaW9uIDA6IE1lbW9yeSBhdCBkMGMwMjAwMCAoMzItYml0LCBu
-b24tcHJlZmV0Y2hhYmxlKSBbc2l6ZT0yS10KCVJlZ2lvbiAxOiBNZW1vcnkgYXQgZDBjMDEw
-MDAgKDMyLWJpdCwgbm9uLXByZWZldGNoYWJsZSkgW3NpemU9MTI4XQoJUmVnaW9uIDI6IE1l
-bW9yeSBhdCBkMGMwMDAwMCAoMzItYml0LCBub24tcHJlZmV0Y2hhYmxlKSBbc2l6ZT0xMjhd
-CglDYXBhYmlsaXRpZXM6IFs0MF0gUG93ZXIgTWFuYWdlbWVudCB2ZXJzaW9uIDMKCQlGbGFn
-czogUE1FQ2xrLSBEU0ktIEQxLSBEMi0gQXV4Q3VycmVudD0wbUEgUE1FKEQwKyxEMSssRDIr
-LEQzaG90KyxEM2NvbGQtKQoJCVN0YXR1czogRDAgTm9Tb2Z0UnN0KyBQTUUtRW5hYmxlLSBE
-U2VsPTAgRFNjYWxlPTAgUE1FLQoJQ2FwYWJpbGl0aWVzOiBbNDhdIE1TSTogRW5hYmxlLSBD
-b3VudD0xLzIgTWFza2FibGUtIDY0Yml0KwoJCUFkZHJlc3M6IDAwMDAwMDAwMDAwMDAwMDAg
-IERhdGE6IDAwMDAKCUNhcGFiaWxpdGllczogWzU4XSBFeHByZXNzICh2MSkgTGVnYWN5IEVu
-ZHBvaW50LCBNU0kgMDAKCQlEZXZDYXA6CU1heFBheWxvYWQgNTEyIGJ5dGVzLCBQaGFudEZ1
-bmMgMCwgTGF0ZW5jeSBMMHMgPDY0bnMsIEwxIDwxdXMKCQkJRXh0VGFnLSBBdHRuQnRuLSBB
-dHRuSW5kLSBQd3JJbmQtIFJCRSsgRkxSZXNldC0KCQlEZXZDdGw6CVJlcG9ydCBlcnJvcnM6
-IENvcnJlY3RhYmxlLSBOb24tRmF0YWwtIEZhdGFsLSBVbnN1cHBvcnRlZC0KCQkJUmx4ZE9y
-ZC0gRXh0VGFnLSBQaGFudEZ1bmMtIEF1eFB3ci0gTm9Tbm9vcCsKCQkJTWF4UGF5bG9hZCAx
-MjggYnl0ZXMsIE1heFJlYWRSZXEgNTEyIGJ5dGVzCgkJRGV2U3RhOglDb3JyRXJyKyBVbmNv
-cnJFcnItIEZhdGFsRXJyLSBVbnN1cHBSZXEtIEF1eFB3ci0gVHJhbnNQZW5kLQoJCUxua0Nh
-cDoJUG9ydCAjMCwgU3BlZWQgMi41R1QvcywgV2lkdGggeDEsIEFTUE0gTDBzLCBFeGl0IExh
-dGVuY3kgTDBzIHVubGltaXRlZCwgTDEgdW5saW1pdGVkCgkJCUNsb2NrUE0tIFN1cnByaXNl
-LSBMTEFjdFJlcC0gQndOb3QtIEFTUE1PcHRDb21wLQoJCUxua0N0bDoJQVNQTSBEaXNhYmxl
-ZDsgUkNCIDY0IGJ5dGVzIERpc2FibGVkLSBDb21tQ2xrLQoJCQlFeHRTeW5jaC0gQ2xvY2tQ
-TS0gQXV0V2lkRGlzLSBCV0ludC0gQXV0QldJbnQtCgkJTG5rU3RhOglTcGVlZCAyLjVHVC9z
-LCBXaWR0aCB4MSwgVHJFcnItIFRyYWluLSBTbG90Q2xrLSBETEFjdGl2ZS0gQldNZ210LSBB
-QldNZ210LQ==
+On 09/20/2016 12:56 PM, Leopold Palomo-Avellaneda wrote:
+> El Dimarts, 20 de setembre de 2016, a les 09:04:55, Philippe Gerum va 
+> escriure:
+>> You may want to check --auto-init-solib from xeno-config:
+>>
+>> http://www.xenomai.org/documentation/xenomai-3/html/man1/xeno-config/index.h
+>> tml
+> 
+> I partially solved the problem but your email worries me more. First of all 
+> because in 3.0.2 that option was not there. And it's an important issue.
 
+Improvements in software do happen, including with new versions.
+Besides, you mentioned 3.0.3 as being your current version.
+
+This option is a shorthand for people with a very specific requirement
+for building a shared library with Xenomai auto-init capabilities,
+instead of crafting an obscure set of link flags manually for this
+purpose. The intended use case is about having a regular executable not linked with Xenomai libs, but using the dlopen() interface to attach Xenomai-dependent libs dynamically at runtime, in which case one may want the latter to kick the Xenomai services transparently when loaded.
+
+Reading your proposal, I'm now wondering whether building a
+shared library of that sort with automatic Xenomai bootstrap is your goal. Is it?
+
+> 
+> Second, because you make a difference between creating a executable and create 
+> a shared library and I don't know if we have a lot of benefits making that 
+> distinction. Gcc documentation explain:
+> 
+> "If supported for the target machine, emit position-independent code, suitable 
+> for dynamic linking and avoiding any limit on the size of the global offset 
+> table. This option makes a difference on AArch64, m68k, PowerPC and SPARC."
+> 
+
+I don't get your point. Xenomai supports two of those architectures, and
+you could add blackfin to that list, so this is not a matter of benefit,
+this is a matter of requirement.
+
+> 
+> And lastly, although the first error is solved,
+
+Which illustrates the benefit of emiting PIC when required, otherwise one gets relocation errors as you observed.
+
+ I got another error:
+> 
+> Linking C shared library libsoem_rt.so
+> /usr/bin/cmake -E cmake_link_script CMakeFiles/soem_dynamic_rt.dir/link.txt --
+> verbose=1
+> /usr/bin/cc  -fPIC -D_FORTIFY_SOURCE=2 -Wno-format-security -Wformat=0 -O2 -g 
+> -DNDEBUG -Wl,@/usr/xenomai/lib/cobalt.wrappers 
+> /usr/xenomai/lib/xenomai/bootstrap.o -Wl,--wrap=main -Wl,--dynamic-
+> list=/usr/xenomai/lib/dynlist.ld -Wl,--no-undefined -shared -Wl,-
+> soname,libsoem_rt.so.1 -o libsoem_rt.so.1.3 
+> CMakeFiles/soem_dynamic_rt.dir/soem/ethercatdc.c.o 
+> CMakeFiles/soem_dynamic_rt.dir/soem/ethercatfoe.c.o 
+> CMakeFiles/soem_dynamic_rt.dir/soem/ethercatmain.c.o 
+> CMakeFiles/soem_dynamic_rt.dir/soem/ethercatprint.c.o 
+> CMakeFiles/soem_dynamic_rt.dir/soem/ethercatconfig.c.o 
+> CMakeFiles/soem_dynamic_rt.dir/soem/ethercatsoe.c.o 
+> CMakeFiles/soem_dynamic_rt.dir/soem/ethercatbase.c.o 
+> CMakeFiles/soem_dynamic_rt.dir/soem/ethercatcoe.c.o 
+> CMakeFiles/soem_dynamic_rt.dir/osal/linux/osal.c.o 
+> CMakeFiles/soem_dynamic_rt.dir/oshw/linux/nicdrv.c.o 
+> CMakeFiles/soem_dynamic_rt.dir/oshw/linux/oshw.c.o -L/usr/xenomai/lib -lcobalt 
+> -lpthread -lrt 
+> /usr/xenomai/lib/xenomai/bootstrap.o: In function `xenomai_main':
+> bootstrap.c:(.text+0x2c): undefined reference to `main'
+> bootstrap.c:(.text+0x40): undefined reference to `main'
+> collect2: error: ld returned 1 exit status
+> 
+> 
+> so, the POSIX script to build a POSIX code fails when you wants to build a 
+> shared library. Dropping "-Wl,--wrap=main " the library is built.
+> 
+> So, from my point of view, xeno-config is not giving an accurate answer and the 
+> --auto-init-solib doesn't help too much. I would like to propose this:
+> 
+> as --[no-]auto-init is meaningful only with --ldflags, and to link against (*)-
+> pic is for shared libraries I would add an option to xeno-config, --ldflags-
+> shared, or --ldflags-shared-libs where /usr/xenomai/lib/xenomai/bootstrap-pic.o 
+> i set and "-Wl,--wrap=main" is dropped.
+> 
+> What do you think?
+> 
+
+Using --auto-init-solib is not about building a generic shared library,
+there is nothing Xenomai-specific in doing so, and it's not
+xeno-config's business to determine the right ldflags for this.
+
+xeno-config is the documented way to retrieve the extra flags required to compile and link object files for which dependencies on Xenomai exist. --auto-init-solib extends this by providing a shorthand for retrieving the additional ldflags required for including a version of the _bootstrap_ code suitable for a shared library, so that e.g. Cobalt binding code runs when the library is dlopened, or the Copperplate layer automatically initializes before a non-POSIX API is used.
+
+So the issue is not with xeno-config lacking yet another switch for
+specifically linking shared libraries in general, but with
+--auto-init-solib wrongly trying to wrap the main symbol when turning on
+the automatic bootstrap mode, which it should only do with plain
+executables. As a corollary, the bootstrap module should not create any reference to the main() routine when built for a shared library,
+
+i.e something along these lines:
+
+diff --git a/scripts/xeno-config-cobalt.in b/scripts/xeno-config-cobalt.in
+index 38f8208..802b778 100644
+--- a/scripts/xeno-config-cobalt.in
++++ b/scripts/xeno-config-cobalt.in
+@@ -262,10 +262,14 @@ if test x$do_ldflags = xy; then
+     done
+     wrap_main=
+     if test x$do_autoinit = xy; then
+-	test x$do_autoinit_solib = xy && codegen=-pic
+-	wrap_main="${XENO_LIBRARY_DIR}/xenomai/bootstrap${codegen}.o
+-Wl,--wrap=main -Wl,--dynamic-list=${XENO_LIBRARY_DIR}/dynlist.ld"
++	if test x$do_autoinit_solib = xy; then
++	    codegen=-pic
++	else
++	    wrap_main="-Wl,--wrap=main
+-Wl,--dynamic-list=${XENO_LIBRARY_DIR}/dynlist.ld"
++	fi
++	bootstrap="${XENO_LIBRARY_DIR}/xenomai/bootstrap${codegen}.o"
+     fi
+-    echo "$ldflags $copperplate $wrap_main $XENO_POSIX_LDFLAGS"
++    echo "$ldflags $copperplate $bootstrap $wrap_main $XENO_POSIX_LDFLAGS"
+ fi
+
+ exit 0
+
+diff --git a/lib/boilerplate/init/bootstrap.c b/lib/boilerplate/init/bootstrap.c
+index 119b405..b0d4a12 100644
+--- a/lib/boilerplate/init/bootstrap.c
++++ b/lib/boilerplate/init/bootstrap.c
+@@ -28,6 +28,8 @@ static char *const *early_argv;
+ 
+ const int xenomai_auto_bootstrap = 1;
+ 
++#ifndef __PIC__
++
+ int __real_main(int argc, char *const argv[]);
+ 
+ int __wrap_main(int argc, char *const argv[])
+@@ -43,6 +45,8 @@ int xenomai_main(int argc, char *const argv[])
+ 	return __real_main(argc, argv);
+ }
+ 
++#endif /* !__PIC__ */
++
+ __bootstrap_ctor static void xenomai_bootstrap(void)
+ {
+ 	char *arglist, *argend, *p, **v, *const *argv;
+-- 
+Philippe.
 
