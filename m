@@ -1,10 +1,13 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Wed, 28 Sep 2016 13:12:12 +0200
-Message-ID: <52697293.XgM39KIdf6@soho>
+References: <1cd6ace8-e63d-dd46-4ec9-8e636ef5b43c@foxmail.com>
+ <a56e7261-41fc-b1a5-cf86-3314b97d7520@foxmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <e75aadf4-880f-af0a-cb39-0a7c498f9ae3@xenomai.org>
+Date: Wed, 28 Sep 2016 20:57:04 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] rthal_strncpy_from_user bug
+In-Reply-To: <a56e7261-41fc-b1a5-cf86-3314b97d7520@foxmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Real-time Performance Improvement
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,46 +16,100 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jack Lee <jacklee11@foxmail.com>, xenomai <xenomai@xenomai.org>
 
-SGksCgoKSSdtIHRyYXBwZWQgYmV0d2VlbiAyLjYueCBhbmQgMy54IHZlcnNpb25zLiBUaGUgcXVl
-c3Rpb24gdG8gbm90IGJvcmluZyB5b3UgaXMgCnRoYXQgSSdtIGhhdmluZyBhIGxvdCBvZiBwcm9i
-bGVtcyB3aXRoIHRoaXMgc29mdCAzLnggc28gSSB0cnkgdG8gZ28gYmFjayBhZ2FpbiAKdG8gMi42
-LgoKSG93ZXZlciwgSSBuZWVkIHRvIHVzZSBhIG1vZGVybiBoYXJkd2FyZSAobmV3IGRldmVsb3Bt
-ZW50KSBhbmQgMi42IGhhdmUgc29tZSAKaXNzdWVzIGVzcGVjaWFsbHkgcnRuZXQgdGhhdCBkb2Vz
-bid0IHdvcmsgd2l0aG91dCBzb21lIHBhdGNoIHdpdGgga2VybmVscyAKZ3JlYXRlciB0aGFuIDMu
-MTcgKG9yIGF0IGxlYXN0IEknbSBub3QgYWJsZSB0bykuCgpBZnRlciBzb2x2aW5nIHNvbWUgb3Ro
-ZXIgaXNzdWVzIG15IHRlc3RzIGZhaWxzIHdpdGggc29tZSB1Z2x5IG1lc3NhZ2UgCihraWxsZWQh
-ISEhKQoKWyA1NzYxLjAyNDUwMl0gUklQICBbPGZmZmZmZmZmODE0MzA3OWQ+XSBydGhhbF9zdHJu
-Y3B5X2Zyb21fdXNlcisweGQvMHgyMApbIDU3NjEuMDI3MDE3XSAgUlNQIDxmZmZmODgwNDVhNDkz
-ZTIwPgpbIDU3NjEuMDI5NDU2XSBDUjI6IDAwMDAwMDAwMDA0MDQ0NWQKWyA1NzYxLjAzMTg1OV0g
-LS0tWyBlbmQgdHJhY2UgZjA5MmI0ZGIyYTlhOTY1NCBdLS0tClsgNTc3My44MTA0MjhdIEJVRzog
-dW5hYmxlIHRvIGhhbmRsZSBrZXJuZWwgcGFnaW5nIHJlcXVlc3QgYXQgMDAwMDAwMDAwMDQwNDQ1
-ZApbIDU3NzMuODEyOTA5XSBJUDogWzxmZmZmZmZmZjgxNDMwNzlkPl0gcnRoYWxfc3RybmNweV9m
-cm9tX3VzZXIrMHhkLzB4MjAKWyA1NzczLjgxNTM4OV0gUEdEIDQ1YTAwYzA2NyBQVUQgNDU2ZDRl
-MDY3IFBNRCA0NWFhNDIwNjcgUFRFIDQ1MTdmNTAyNQpbIDU3NzMuODE3ODY0XSBPb3BzOiAwMDAx
-IFsjMTZdIFNNUCAKWyA1NzczLjgyMDI5M10gTW9kdWxlcyBsaW5rZWQgaW46IHJ0X2lnYihPKSBy
-dF9lMTAwMGUoTykgcnRfbG9vcGJhY2soTykgCnJ0Y2ZnKE8pIHJ0dWRwKE8pIHJ0aXB2NChPKSBy
-dG1hYyhPKSBydHBhY2tldChPKSBydG5ldChPKSBjdHIgY2NtIGJpbmZtdF9taXNjIApuZnNkIGF1
-dGhfcnBjZ3NzIG5mc19hY2wgbmZzIGxvY2tkIGZzY2FjaGUgc3VucnBjIG5sc191dGY4IG5sc19j
-cDQzNyB2ZmF0IGZhdCAKeGVub19jYW5fcGVha19wY2kgeGVub19jYW5fc2phMTAwMCB4ZW5vX2Nh
-biB4ODZfcGtnX3RlbXBfdGhlcm1hbCBjb3JldGVtcCAKa3ZtX2ludGVsIGt2bSBwZWFrX3BjaSBz
-amExMDAwIGpveWRldiBjcmMzMl9wY2xtdWwgaGlkX2dlbmVyaWMgdXNiaGlkIApnaGFzaF9jbG11
-bG5pX2ludGVsIGFlc25pX2ludGVsIHBwZGV2IGFlc194ODZfNjQgbHJ3IGNhbl9kZXYgZ2YxMjht
-dWwgCmdsdWVfaGVscGVyIHhlbm9fcnRkbSBzbmRfcGNtIHNuZF90aW1lciBhYmxrX2hlbHAKCgps
-b29raW5nIG9uIHRoZSB3ZWIsIEkgaGF2ZSBmb3VuZCB0aGF0IGhpcyBpc3N1ZSB3YXMgc29sdmVk
-OgoKaHR0cDovL2dpdC54ZW5vbWFpLm9yZy94ZW5vbWFpLWpraS5naXQvY29tbWl0Lz9oPW1haW50
-ZW5hbmNlLTIuNiZpZD0yZWNlZWY0YzYyYmM4ZDZiMzcxMzc4N2MyNjg4MmZkY2Q5Yjg3ODQyCgpI
-b3dldmVyLCBhbHRob3VnaCBpdCB3YXMgb24gRGVjZW1iZXIgMjAxNSwgMi42LjUgKEp1bHkgMjAx
-NikgZG9lc24ndCBoYXZlIGl0LgoKU28sIHRoZXJlJ3MgYW55IHJlYXNvbiB3aHkgdGhpcyBwYXRj
-aCB3YXMgbm90IHB1c2hlZCB0byAyLjYuNT8KCkJlc3QgcmVnYXJkcywKCkxlb3BvbGQKCgotLSAK
-LS0KTGludXggVXNlciAxNTI2OTIgICAgIEdQRzogMDVGNEE3QTk0OUEyRDlBQQpDYXRhbG9uaWEK
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpBOiBCZWNhdXNlIGl0IG1lc3Nl
-cyB1cCB0aGUgb3JkZXIgaW4gd2hpY2ggcGVvcGxlIG5vcm1hbGx5IHJlYWQgdGV4dC4KUTogV2h5
-IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBiYWQgdGhpbmc/CkE6IFRvcC1wb3N0aW5nLgpROiBXaGF0
-IGlzIHRoZSBtb3N0IGFubm95aW5nIHRoaW5nIGluIGUtbWFpbD8KLS0tLS0tLS0tLS0tLS0gbmV4
-dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQu
-Li4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNp
-emU6IDgxOSBieXRlcwpEZXNjOiBUaGlzIGlzIGEgZGlnaXRhbGx5IHNpZ25lZCBtZXNzYWdlIHBh
-cnQuClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50
-cy8yMDE2MDkyOC8xZjczZTY3ZS9hdHRhY2htZW50LnNpZz4K
+On 09/26/2016 05:08 AM, Jack Lee wrote:
+> 
+> 
+> On 09/22/2016 02:43 PM, Jack Lee wrote:
+>> Hi, everyone,
+>>
+>> My board is advantech MIO-5251 (J1900 version), linux kernel version
+>> is 4.1.18,
+>>
+>> xenomai version is 3.0.3. As mentioned before, the real-time
+>> performance I got was
+>>
+>> not good.
+>>
+>> But I found something here:
+>> http://rtt-lwr.readthedocs.io/en/latest/rtpc/xenomai.html.
+>>
+>> After "i915.enable_rc6=0 i915.modset=1 noapic" was added to the kernel
+>> command
+>>
+>> line, the real-time performance improved a lot, which means latency
+>> tests (-t0, t1, t2)
+>>
+>> has no overruns (less than 80us) in 13+ hours, but when other
+>> real-time applications
+>>
+>> was running, overruns occurred sometimes.
+>>
+>> I found that "intel_powerclamp" "intel_rapl" was in the "lsmod" list.
+>> After I removed them,
+>>
+>> real-time performance of the system is quite good now.
+>>
+>> I found configs below exist in the original .config file, except
+>> "CONFIG_CPU_THERMAL". These
+>>
+>> configs do not appear on the official website as far as I know. Is it
+>> necessary to disable them to
+>>
+>> improve real-time performance?
+>>
+>> Generic Thermal sysfs driver
+>> CONFIG_THERMAL
+>>
+>> Fair-share thermal governor
+>> CONFIG_THERMAL_GOV_FAIR_SHARE
+>>
+>> Step_wise thermal governor
+>> CONFIG_THERMAL_GOV_STEP_WISE
+>>
+>> User_space thermal governor
+>> CONFIG_THERMAL_GOV_USER_SPACE
+>>
+>> generic cpu cooling support
+>> CONFIG_CPU_THERMAL(n)
+>>
+>> Thermal emulation mode support
+>> CONFIG_THERMAL_EMULATION
+>>
+>> Intel PowerClamp idle injection driver
+>> CONFIG_INTEL_POWERCLAMP
+>>
+>> By the way, I found my two Ethernet cards and the can board have the
+>> same interrupt number.I removed the igb module.
+>>
+>> Is it possible to assign interrupt numbers manuallly? When I started
+>> from different kernels, the number is not the same.
+>>
+>>
+>> Good luck!
+>>
+> [    0.004106] ENERGY_PERF_BIAS: Set to 'normal', was 'performance'
+> [    0.004114] ENERGY_PERF_BIAS: View and update with
+> x86_energy_perf_policy(8)
+> 
+> I found the above message in the "dmesg" output.
+> This was solved by:
+>     sudo modprobe msr
+>     sudo cd $(knlsrc)/tools/power/x86/x86_energy_perf_policy
+>     sudo make
+>     sudo ./x86_energy_perf_policy performance
+> "rdmsr -a 0x1b0" outputs "6 6 6 6" and "0 0 0 0" previously and
+> subsequently.
+> "wrmsr" should works too.
+> 
+
+Since this is a model specific register for the Celeron J1900, could you
+point us to the Intel documentation you referred to, to understand what
+these settings are doing?
+
+Thanks,
+
+-- 
+Philippe.
+
