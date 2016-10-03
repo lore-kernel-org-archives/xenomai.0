@@ -1,12 +1,13 @@
-From: "=?gb18030?B?SmFjayBMZWU=?=" <jacklee11@foxmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="gb18030"
-Content-Transfer-Encoding: base64
-Date: Fri, 2 Sep 2016 16:19:25 +0800
-Message-ID: <tencent_010CF19618CECFA947D4EC41@qq.com>
-Subject: [Xenomai] rt-socket-can "no device" problem with advantech
-	PCM-26D2CA CAN board
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Mon, 03 Oct 2016 09:20:49 +0200
+Message-ID: <1932067.5yzClnBBlW@soho>
+In-Reply-To: <fa625591-d30d-6e14-83fc-c5a98de570b0@xenomai.org>
+References: <4215540.eSPgLzVGbT@soho>
+ <fa625591-d30d-6e14-83fc-c5a98de570b0@xenomai.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Subject: Re: [Xenomai] Regarding Xenomai and RTNET
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,105 +16,118 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai <xenomai@xenomai.org>
 
-PiBIZWxsbywKPiAKPiBBbSAwMi4wOS4yMDE2IHVtIDA5OjIzIHNjaHJpZWIgSmFjayBMZWU6
-Cj4gPj4gSGVsbG8sCj4gPj4KPiA+PiBBbSAwMi4wOS4yMDE2IHVtIDA4OjIzIHNjaHJpZWIg
-SmFjayBMZWU6Cj4gPj4+IEhpLCBldmVyeW9uZaOhCj4gPj4+ICAgSSBhbSB1c2luZyB0aGUg
-YWR2YW50ZWNoIFBDTS0yNkQyQ0EgQ0FOIGJvYXJkLCBpdHMgZGV0YWlscyBjYW4gYmUgZm91
-bmQgaGVyZSBhdAo+ID4+PiBodHRwOi8vd3d3LmFkdmFudGVjaC5jb20vcHJvZHVjdHMvMTQy
-NjM3MjktYWFhMy00NTUyLWI5OTAtOTlkMTZjZGZlZTI0L3BjbS0yNmQyY2EvbW9kXzlhMWU5
-ZGJmLWUyMmQtNDc3MC1hODk2LWNlY2Y0MDYwNzA4NC4KPiA+Pj4gVGhlIG9yaWdpbmFsIGRy
-aXZlciB3b3JrcyBmaW5lLCBidXQgSSBuZWVkIGl0IHRvIGJlIHJlYWx0aW1lLgo+ID4+PiAg
-IHJ0LWNhbiBkcml2ZXIgd2FzIGNvbXBpbGVkIGFzIG1vZHVsZXMgcHJldmlvdXNseS4gV2hl
-biBib290ZWQgYW5kICIjbW9kcHJvYmUgeGVub19jYW5fYWR2X3BjaSIgd2FzIGV4ZWN1dGVk
-LAo+ID4+PiAiI2RtZXNnIHwgZ3JlcCAtaSBjYW4iIG91dHB1dCB3YXMKPiA+Pj4gLi4uCj4g
-Pj4+IFJULVNvY2tldC1DQU4gMC45MC0yIC0gKGMpIDIwMDYgUlQtU29ja2V0LUNBTiBEZXZl
-bG9wbWVudCBUZWFtCj4gPj4+IFJUQ0FOIFNKQTEwMDAgZHJpdmVyIGluaXRpYWxpemVkCj4g
-Pj4+Cj4gPj4+ICIjbHNtb2QgfCBncmVwIC1pIGNhbiIgb3V0cHV0IHdhcwo+ID4+PiB4ZW5v
-X2Nhbl9hZHZfcGNpCj4gPj4+IHhlbm9fY2FuX3NqYTEwMDAgICAgdXNlZCBieSB4ZW5vX2Nh
-bl9hZHZfcGNpCj4gPj4+IHhlbm9fY2FuICAgICAgICAgICAgICAgICAgdXNlZCBieSB4ZW5v
-X2Nhbl9zamExMDAwLCB4ZW5vX2Nhbl9hZHZfcGNpCj4gPj4+Cj4gPj4+IFdoYXQgc3RyYW5n
-ZSBpcyB0aGF0IC9wcm9jL3J0Y2FuL2RldmljZXMgaGFzIG5vIGRldmljZXMgbGlrZSBydGNh
-bjAuCj4gPj4+IFRoZSAvcHJvYy9ydGNhbiBkaXJlY3RvcnkganVzdCBoYXMgdGhyZWUgZmls
-ZXM6IGRldmljZXMsIHNvY2tldHMgYW5kIHZlcnNpbwo+ID4+Cj4gPj4gV2hhdCBpcyB0aGUg
-UENJIGRldmljZSBpZCBvZiB0aGUgQ0FOIGRldmljZT8gWW91IGNhbiB1c2UgImxzcGNpIC12
-diIgdG8KPiA+PiBsaXN0IHRoZSBpZHMuCj4gPj4KPiA+Pj4gRG9lcyB0aGlzIENBTiBib2Fy
-ZCBzdXBwb3J0ZWQgYnkgcnQtc29ja2V0LWNhbj8gSG93IGNhbiBJIGltcGxlbWVudCByZWFs
-LXRpbWVyIGRyaXZlciBmb3IgaXQ/Cj4gPj4KPiA+PiBNb3N0IGxpa2VseSB0aGUgZGV2aWNl
-IGlkIGlzIG1pc3NpbmcgaW4gdGhlIGRyaXZlciBQQ0kgZGV2aWNlIGxpc3Q6Cj4gPj4KPiA+
-Pgo+ID4+IGh0dHA6Ly9naXQueGVub21haS5vcmcveGVub21haS0yLjYuZ2l0L3RyZWUva3Ny
-Yy9kcml2ZXJzL2Nhbi9zamExMDAwL3J0Y2FuX2Fkdl9wY2kuYyNuODcKPiA+Pgo+ID4+IFdv
-bGZnYW5nLgo+ID4KPiA+IFRoYW5rIHlvdSwgV29sZmdhbmchIE15IG1haWxib3ggZGVsYXlz
-IHRoYXQgSSBjYW5ub3QgYWRkIHlvdSBpbiB0aGUgY29udGFjdCwgc28gSSBzZW5kIHRvIHRo
-ZSB4ZW5vbWFpIGxpc3QuIFNvcnJ5IGZvciB0aGF0Lgo+IAo+IE5vIHByb2JsZW0uCj4gCj4g
-PiBDQU4gYm9hcmQgaW5mb3JtYXRpb24gaXMgYmVsb3cuCj4gPiAjbHNwY2kgLXZ2Cj4gPiAw
-MzowMC4wIENBTkJVUzogQWR2YW50ZWNoIENvLiBMdGQgTUlPZS0zNjgwIDItUG9ydCBDQU4t
-QnVzIE1JT2UgTW9kdWxlIHdpdGggSXNvbGF0aW9uIFByb3RlY3Rpb24KPiA+IAlTdWJzeXN0
-ZW06IEFkdmFudGVjaCBDby4gTHRkIE1JT2UtMzY4MCAyLVBvcnQgQ0FOLUJ1cyBNSU9lIE1v
-ZHVsZSB3aXRoIElzb2xhdGlvbiBQcm90ZWN0aW9uCj4gPiAJQ29udHJvbDogSS9PKyBNZW0r
-IEJ1c01hc3RlcisgU3BlY0N5Y2xlLSBNZW1XSU5WLSBWR0FTbm9vcC0gUGFyRXJyLSBTdGVw
-cGluZy0gU0VSUi0gRmFzdEIyQi0gRGlzSU5UeC0KPiA+IAlTdGF0dXM6IENhcCsgNjZNSHot
-IFVERi0gRmFzdEIyQi0gUGFyRXJyLSBERVZTRUw9ZmFzdCA+VEFib3J0LSA8VEFib3J0LSA8
-TUFib3J0LSA+U0VSUi0gPFBFUlItIElOVHgtCj4gPiAJTGF0ZW5jeTogMCwgQ2FjaGUgTGlu
-ZSBTaXplOiA2NCBieXRlcwo+ID4gCUludGVycnVwdDogcGluIEEgcm91dGVkIHRvIElSUSAx
-MAo+ID4gCVJlZ2lvbiAwOiBNZW1vcnkgYXQgZDBjMDIwMDAgKDMyLWJpdCwgbm9uLXByZWZl
-dGNoYWJsZSkgW3NpemU9MktdCj4gPiAJUmVnaW9uIDE6IE1lbW9yeSBhdCBkMGMwMTAwMCAo
-MzItYml0LCBub24tcHJlZmV0Y2hhYmxlKSBbc2l6ZT0xMjhdCj4gPiAJUmVnaW9uIDI6IE1l
-bW9yeSBhdCBkMGMwMDAwMCAoMzItYml0LCBub24tcHJlZmV0Y2hhYmxlKSBbc2l6ZT0xMjhd
-Cj4gPiAJQ2FwYWJpbGl0aWVzOiA8YWNjZXNzIGRlbmllZD4KPiAKPiBDb3VsZCB5b3UgcGxl
-YXNlIHVzZSAibHNwY2kgLXZ2biIgdG8gZ2V0ICBudW1iZXJzIChpbnN0ZWFkIG9mIHN0cmlu
-Z3MpLgo+IAo+IFdvbGZnYW5nLgoKVGhhbmtzISBUaGUgaW5mb3JtYXRpb24gaXMgYmVsb3cu
-CiNsc3BjaSAtdnZuCjAzOjAwLjAgMGMwOTogMTNmZTpjMzAyCglTdWJzeXN0ZW06IDEzZmU6
-YzMwMgoJQ29udHJvbDogSS9PKyBNZW0rIEJ1c01hc3RlcisgU3BlY0N5Y2xlLSBNZW1XSU5W
-LSBWR0FTbm9vcC0gUGFyRXJyLSBTdGVwcGluZy0gU0VSUi0gRmFzdEIyQi0gRGlzSU5UeC0K
-CVN0YXR1czogQ2FwKyA2Nk1Iei0gVURGLSBGYXN0QjJCLSBQYXJFcnItIERFVlNFTD1mYXN0
-ID5UQWJvcnQtIDxUQWJvcnQtIDxNQWJvcnQtID5TRVJSLSA8UEVSUi0gSU5UeC0KCUxhdGVu
-Y3k6IDAsIENhY2hlIExpbmUgU2l6ZTogNjQgYnl0ZXMKCUludGVycnVwdDogcGluIEEgcm91
-dGVkIHRvIElSUSAxMAoJUmVnaW9uIDA6IE1lbW9yeSBhdCBkMGMwMjAwMCAoMzItYml0LCBu
-b24tcHJlZmV0Y2hhYmxlKSBbc2l6ZT0yS10KCVJlZ2lvbiAxOiBNZW1vcnkgYXQgZDBjMDEw
-MDAgKDMyLWJpdCwgbm9uLXByZWZldGNoYWJsZSkgW3NpemU9MTI4XQoJUmVnaW9uIDI6IE1l
-bW9yeSBhdCBkMGMwMDAwMCAoMzItYml0LCBub24tcHJlZmV0Y2hhYmxlKSBbc2l6ZT0xMjhd
-CglDYXBhYmlsaXRpZXM6IFs0MF0gUG93ZXIgTWFuYWdlbWVudCB2ZXJzaW9uIDMKCQlGbGFn
-czogUE1FQ2xrLSBEU0ktIEQxLSBEMi0gQXV4Q3VycmVudD0wbUEgUE1FKEQwKyxEMSssRDIr
-LEQzaG90KyxEM2NvbGQtKQoJCVN0YXR1czogRDAgTm9Tb2Z0UnN0KyBQTUUtRW5hYmxlLSBE
-U2VsPTAgRFNjYWxlPTAgUE1FLQoJQ2FwYWJpbGl0aWVzOiBbNDhdIE1TSTogRW5hYmxlLSBD
-b3VudD0xLzIgTWFza2FibGUtIDY0Yml0KwoJCUFkZHJlc3M6IDAwMDAwMDAwMDAwMDAwMDAg
-IERhdGE6IDAwMDAKCUNhcGFiaWxpdGllczogWzU4XSBFeHByZXNzICh2MSkgTGVnYWN5IEVu
-ZHBvaW50LCBNU0kgMDAKCQlEZXZDYXA6CU1heFBheWxvYWQgNTEyIGJ5dGVzLCBQaGFudEZ1
-bmMgMCwgTGF0ZW5jeSBMMHMgPDY0bnMsIEwxIDwxdXMKCQkJRXh0VGFnLSBBdHRuQnRuLSBB
-dHRuSW5kLSBQd3JJbmQtIFJCRSsgRkxSZXNldC0KCQlEZXZDdGw6CVJlcG9ydCBlcnJvcnM6
-IENvcnJlY3RhYmxlLSBOb24tRmF0YWwtIEZhdGFsLSBVbnN1cHBvcnRlZC0KCQkJUmx4ZE9y
-ZC0gRXh0VGFnLSBQaGFudEZ1bmMtIEF1eFB3ci0gTm9Tbm9vcCsKCQkJTWF4UGF5bG9hZCAx
-MjggYnl0ZXMsIE1heFJlYWRSZXEgNTEyIGJ5dGVzCgkJRGV2U3RhOglDb3JyRXJyKyBVbmNv
-cnJFcnItIEZhdGFsRXJyLSBVbnN1cHBSZXEtIEF1eFB3ci0gVHJhbnNQZW5kLQoJCUxua0Nh
-cDoJUG9ydCAjMCwgU3BlZWQgMi41R1QvcywgV2lkdGggeDEsIEFTUE0gTDBzLCBFeGl0IExh
-dGVuY3kgTDBzIHVubGltaXRlZCwgTDEgdW5saW1pdGVkCgkJCUNsb2NrUE0tIFN1cnByaXNl
-LSBMTEFjdFJlcC0gQndOb3QtIEFTUE1PcHRDb21wLQoJCUxua0N0bDoJQVNQTSBEaXNhYmxl
-ZDsgUkNCIDY0IGJ5dGVzIERpc2FibGVkLSBDb21tQ2xrLQoJCQlFeHRTeW5jaC0gQ2xvY2tQ
-TS0gQXV0V2lkRGlzLSBCV0ludC0gQXV0QldJbnQtCgkJTG5rU3RhOglTcGVlZCAyLjVHVC9z
-LCBXaWR0aCB4MSwgVHJFcnItIFRyYWluLSBTbG90Q2xrLSBETEFjdGl2ZS0gQldNZ210LSBB
-QldNZ210LQoKCklzIKGwMGMwOTogMTNmZTpjMzAyobEgdGhlIGRldmljZSBJRD8gQ2FuIHlv
-dSBzaG93IG1lIHNvbWUgaW5zdHJ1Y3Rpb25zIHRvIG1ha2UgdGhpcyBkZXZpY2Ugd29yaz8g
-SSBhbSByZWFsbHkgbmV3IHRvIHRoaXMuCkkgb3BlbmVkIHRoZSBsaW5rIHlvdSBwYXN0ZSBh
-Ym92ZSwgcGVyaGFwcyB0aGUgZm9sbG93aW5nIHR3byBwbGFjZXMgc2hvdWxkIGJlIG1vZGlm
-aWVkLgoKQSBuZXcgbGluZSAiQURWX1BDSV9ERVZJQ0UoMHhjMzAyKSwgIiBzaG91bGQgYmUg
-YWRkZWQ/Ci0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLQoJc3RhdGljIERFRklORV9QQ0lfREVWSUNFX1RBQkxFKGFkdl9w
-Y2lfdGJsKSA9IHsKCQlBRFZfUENJX0RFVklDRSgweDE2ODApLAoJCUFEVl9QQ0lfREVWSUNF
-KDB4MzY4MCksCgkJQURWX1BDSV9ERVZJQ0UoMHgyMDUyKSwKCQlBRFZfUENJX0RFVklDRSgw
-eDE2ODEpLAoJCUFEVl9QQ0lfREVWSUNFKDB4YzAwMSksCgkJQURWX1BDSV9ERVZJQ0UoMHhj
-MDAyKSwKCQlBRFZfUENJX0RFVklDRSgweGMwMDQpLAoJCUFEVl9QQ0lfREVWSUNFKDB4YzEw
-MSksCgkJQURWX1BDSV9ERVZJQ0UoMHhjMTAyKSwKCQlBRFZfUENJX0RFVklDRSgweGMxMDQp
-LAoJCS8qIHJlcXVpcmVkIGxhc3QgZW50cnkgKi8KCQl7IH0KCX07CgpIb3cgdG8gZGVhbCB3
-aXRoIHRoaXMgb25lPwotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCXN3aXRjaCAocGRldi0+ZGV2aWNlKSB7CgljYXNl
-IDB4YzAwMToKCWNhc2UgMHhjMDAyOgoJY2FzZSAweGMwMDQ6CgljYXNlIDB4YzEwMToKCWNh
-c2UgMHhjMTAyOgoJY2FzZSAweGMxMDQ6CgkJbmJfcG9ydHMgPSBwZGV2LT5kZXZpY2UgJiAw
-eDc7CgkJb2Zmc2V0ID0gMHgxMDA7CgkJYmFyID0gMDsKCQlicmVhazsKCWNhc2UgMHgxNjgw
-OgoJY2FzZSAweDIwNTI6CgkJbmJfcG9ydHMgPSAyOwoJCWJhciA9IDI7CgkJYmFyX2ZsYWcg
-PSAxOwoJCWJyZWFrOwoJY2FzZSAweDE2ODE6CgkJbmJfcG9ydHMgPSAxOwoJCWJhciA9IDI7
-CgkJYmFyX2ZsYWcgPSAxOwoJCWJyZWFrOwoJZGVmYXVsdDoKCQlnb3RvIGZhaWx1cmVfcmVn
-aW9uczsKCX0=
+El Divendres, 30 de setembre de 2016, a les 16:06:15, Philippe Gerum va=
+=20
+escriure:
+> On 09/30/2016 02:15 PM, Leopold Palomo-Avellaneda wrote:
+> > Hi,
+> >=20
+> >=20
+> > I'm fighting with some code to run with Xenomai 3. One of the proje=
+cts is
+> > soem [1].
+> >=20
+> > The original library uses POSIX to open a raw socket to send Etherc=
+at
+> > messages. Our fork, uses rtnet and some Xenomai functionalities to
+> > accomplish it. It has been working with 2.6.x without any problems.=
 
+> >=20
+> > OTOH, also we have done another fork fril  [2] that, using the POSI=
+X
+> > compatibility and rtnet use a rt_ethX device to communicate with a =
+robot.
+> > We have used it without any problem too with 2.6.x
+> >=20
+> > Now, we try to migrate all of this code to Xenomai-3 but we are hav=
+ing
+> > crashes all the time.
+> >=20
+> > With fril, a pure POSIX code, using the compatibility mode, we have=
+ a
+> > crash,>=20
+> > showing:
+> >  BUG: unable to handle kernel paging request at 00007f47ea0ef878
+> >  IP: [<ffffffffa0231580>] rt_udp_ioctl+0x50/0x74 [rtudp]
+> >  PGD 458887067 PUD 4590a1067 PMD 45921f067 PTE 8000000438863867
+>=20
+> [snip]
+>=20
+> > If both the program crashes "unable to handle kernel paging request=
+".
+>=20
+> The compat mode is not related to this issue, it is merely a source c=
+ode
+> wrapping trick at user level, nothing more. If a driver breaks the
+> kernel, then it's the driver's fault no matter what, regardless of th=
+e
+> input data userland might have sent.
+
+Ok.
+
+> You should check the RTnet stack for this. Btw, assuming your 2.6 set=
+up
+> relies on the original out-of-tree RTnet, and that your 3.0
+> configuration relies on the RTnet code integrated in the Xenomai tree=
+,
+> then you end up comparing two different RTnet implementations.
+
+I'm investigating this issue. I have found an interesting detail. I'm u=
+sing=20
+rt_igb module. The first time I upload the module, it's loaded (showed =
+with=20
+lsmod) but no rtethX interface is found. So, if I rmmod it and I load i=
+t=20
+again, then the rtethX are found.
+
+Any idea why this?
+
+In any case, we are talking to debug rtnet modules. Right?
+
+
+> > Also, I have found that using the --compat parameter in xeno-config=
+, the
+> > values obtained (--posix --compat --cflags) makes that the applicat=
+ions
+> > doesn't>=20
+> > compile:
+> > =20
+/home/leopold.palomo/fril/fril.git/src/FastResearchInterfaceLibrary/Con=
+sole.cpp:50:
+> > /usr/xenomai/include/trank/posix/pthread.h: In function =E2=80=98in=
+t
+> > pthread_set_mode_np(int, int, int*)=E2=80=99:
+> > /usr/xenomai/include/trank/posix/pthread.h:55:52: error:
+> > =E2=80=98pthread_setmode_np=E2=80=99 was not declared in this scope=
+
+> >=20
+> >   return pthread_setmode_np(clrmask, setmask, mask_r);
+> >=20
+> > I guess that there's a missing includes hidden here.
+>=20
+> No, it's rather an issue in the include directory chain when --compat=
+ is
+> enabled. Fixed in xeno-config, in the stable maintenance tree.
+>=20
+> > So, any idea to find a solution?
+> > Do you have some example that works with xenomai-3 and rtnet?
+>=20
+> No, but I'm no RTnet expert.
+
+Jan?
+
+Leopold
+
+--=20
+--
+Linux User 152692     GPG: 05F4A7A949A2D9AA
+Catalonia
+-------------------------------------
+A: Because it messes up the order in which people normally read text.
+Q: Why is top-posting such a bad thing?
+A: Top-posting.
+Q: What is the most annoying thing in e-mail?
 
