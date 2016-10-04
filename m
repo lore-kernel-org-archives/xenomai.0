@@ -1,11 +1,13 @@
-From: Wolfgang Grandegger <wg@grandegger.com>
-Message-ID: <9ab7c23a-84c4-a8cd-0dde-59dccccce13a@grandegger.com>
-Date: Tue, 4 Oct 2016 08:25:44 +0200
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Tue, 04 Oct 2016 17:36:09 +0200
+Message-ID: <3624229.iZt7HIcxlZ@soho>
+In-Reply-To: <2990549.hKSmcVRoDB@indiana>
+References: <2990549.hKSmcVRoDB@indiana>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PATCH] rtcan: ems_pci driver update to support more
-	devices
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="utf-8"
+Subject: Re: [Xenomai] Xenomai 3.0.3 is broken in my system (was Regarding
+	Xenomai and RTNET)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,636 +16,172 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
-Cc: Markus Plessing <plessing@ems-wuensche.com>, Sebastian Haas <haas@ems-wuensche.com>
+To: xenomai@xenomai.org
 
-The driver follows now more closely the corresponding Linux driver
-to simplify updates in the future.
+El Dilluns, 3 d'octubre de 2016, a les 18:12:12, Leopold Palomo-Avellaneda va 
+escriure:
+> Hi,
+> 
+> I have been making some tests and I have arrived to the conclusion that the
+> PC that I would like to install Xenomai and RTNET doesn't like it.
+> 
+> It's a PC with a motherboard Gigabyte Q170M-D3H-CF. I'm running 4.1.18 with
+> xenomai 3.0.3. AFAIK, the xenomai tests works. However, when I try to run
+> RTNET, I got crashes:
+> 
+> BUG: unable to handle kernel paging request at 00007f47ea0ef878
+>  IP: [<ffffffffa0231580>] rt_udp_ioctl+0x50/0x74 [rtudp]
+>  PGD 458887067 PUD 4590a1067 PMD 45921f067 PTE 8000000438863867
+>  Oops: 0001 [#1] PREEMPT SMP
+>  Modules linked in: rt_igb rt_loopback rtcfg rtudp rtipv4 rtmac rtpacket
+> rtnet e100 mii ctr ccm binfmt_misc nfsd
+>  CPU: 4 PID: 6773 Comm: LWRJointPositio Not tainted 4.1.18-xenomai-3.0.3 #1
+>  Hardware name: Gigabyte Technology Co., Ltd. To be filled by
+> O.E.M./Q170M-D3H- CF, BIOS F1 10/13/2015
+>  task: ffff880459a26010 ti: ffff880459a38000 task.ti: ffff880459a38000
+>  RIP: 0010:[<ffffffffa0231580>]  [<ffffffffa0231580>] rt_udp_ioctl+0x50/0x74
+> [rtudp]
+>  RSP: 0018:ffff880459a3be08  EFLAGS: 00010246
+>  RAX: 00007f47ea0ef870 RBX: ffff880458d59400 RCX: ffff880458d59440
+>  RDX: 0000000000000000 RSI: 0000000040100022 RDI: ffff880458d59400
+>  RBP: 0000000000000003 R08: ffff880460297420 R09: 000000000000004e
+>  R10: 00000000000000dc R11: ffff880459a3bdc0 R12: ffff880459a26010
+>  R13: ffffc90001f05008 R14: 0000000040100022 R15: ffffffff81b85ec0
+>  FS:  00007f47ea0f0700(0000) GS:ffff880460200000(0000)
+> knlGS:0000000000000000 CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
+>  CR2: 00007f47ea0ef878 CR3: 000000045890c000 CR4: 00000000003406e0
+>  DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>  DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>  I-pipe domain Linux
+>  Stack:
+>   ffffffffa0231535 ffffffff8116fb70 ffff880459a265c0 00007f47ea0ef870
+>   ffff8804599975d0 0000000000000010 ffff880459a3beb8 ffff880459a3be48
+>   0000000000000002 ffff880459a26010 00007f47ea0ef870 ffff880459a26010
+>  Call Trace:
+>   [<ffffffffa0231535>] ? rt_udp_ioctl+0x5/0x74 [rtudp]
+>   [<ffffffff8116fb70>] ? rtdm_fd_ioctl+0x100/0x270
+>   [<ffffffff81174b40>] ? CoBaLt_fcntl+0x20/0x20
+>   [<ffffffff81174b40>] ? CoBaLt_fcntl+0x20/0x20
+>   [<ffffffff81174b50>] ? CoBaLt_ioctl+0x10/0x20
+>   [<ffffffff81174b45>] ? CoBaLt_ioctl+0x5/0x20
+>   [<ffffffff8118450a>] ? ipipe_syscall_hook+0x11a/0x360
+>   [<ffffffff81108da7>] ? __ipipe_notify_syscall+0xe7/0x1d0
+>   [<ffffffff81107185>] ? __ipipe_restore_root_nosync+0x5/0x30
+>   [<ffffffff8158fb34>] ? pipeline_syscall+0x9/0x16
+>  Code: 23 00 10 40 75 15 8b 50 08 48 8b 30 48 89 cf 48 83 c4 08 e9 a3 fd ff
+> ff 0f 1f 00 48 89 c2 48 83 c4 08 e9 5
+>  RIP  [<ffffffffa0231580>] rt_udp_ioctl+0x50/0x74 [rtudp]
+>   RSP <ffff880459a3be08>
+>  CR2: 00007f47ea0ef878
+>  ---[ end trace 085d23e71de3ae4b ]---
+> 
+> 
+> The funny (or ugly thing) is that, same kernel (I'm using debian packages)
+> and almost the same Xenomai (compiled in each machine but with the same
+> configure options) works in another similar box, with the same network
+> cards (rt_igb). My application doesn't crash.
+> 
+> I also have tested another network card (rt_e1000_new) with the same core
+> dump.
+> 
+> So, any idea how can I find some light in this? I don't know if it's a rtnet
+> issue of a combination of kernel and hardware issue.
 
-Signed-off-by: Wolfgang Grandegger <wg@grandegger.com>
----
- ksrc/drivers/can/sja1000/rtcan_ems_pci.c      | 487 +++++++++++++++-----------
- ksrc/drivers/can/sja1000/rtcan_sja1000_regs.h |   1 +
- 2 files changed, 281 insertions(+), 207 deletions(-)
+digging more in this I have found some interesting data. Although I though 
+that previous message was equal to all the crashes is not true. I have much 
+more messages with this error:
 
-diff --git a/ksrc/drivers/can/sja1000/rtcan_ems_pci.c b/ksrc/drivers/can/sja1000/rtcan_ems_pci.c
-index 4a88ca6..868d236 100644
---- a/ksrc/drivers/can/sja1000/rtcan_ems_pci.c
-+++ b/ksrc/drivers/can/sja1000/rtcan_ems_pci.c
-@@ -1,28 +1,28 @@
- /*
-- * Copyright (C) 2007 Wolfgang Grandegger <wg@grandegger.com>
-+ * Copyright (C) 2007, 2016 Wolfgang Grandegger <wg@grandegger.com>
-+ * Copyright (C) 2008 Markus Plessing <plessing@ems-wuensche.com>
-+ * Copyright (C) 2008 Sebastian Haas <haas@ems-wuensche.com>
-  *
-- * Register definitions and descriptions are taken from LinCAN 0.3.3.
-+ * Derived from Linux CAN SJA1000 PCI driver "ems_pci".
-  *
-- * This program is free software; you can redistribute it and/or modify it
-- * under the terms of the GNU General Public License as published by
-- * the Free Software Foundation; either version 2 of the License, or
-- * (at your option) any later version.
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the version 2 of the GNU General Public License
-+ * as published by the Free Software Foundation
-  *
-- * This program is distributed in the hope that it will be useful, but
-- * WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-- * General Public License for more details.
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-+ * GNU General Public License for more details.
-  *
-  * You should have received a copy of the GNU General Public License
-- * along with this program; if not, write to the Free Software Foundation,
-- * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
-  */
+
+ BUG: unable to handle kernel paging request at 00007ffda8577680
+ IP: [<ffffffff812fe5c8>] strncmp+0x8/0x50
+ PGD 4589e3067 PUD 45c719067 PMD 459a88067 PTE 8000000453c52867
+ Oops: 0001 [#1] SMP 
+ Modules linked in: rt_loopback rtcfg rtudp rtipv4 rtmac rtpacket ctr ccm 
+binfmt_misc nfsd auth_rpcgss oid_registry nfs_acl nfs lockd grace fscache 
+sunrpc joydev rt_e1000e rt_e1000 hid_generic usbhid nls_utf8 nls_cp437 
+snd_hda_codec_hdmi vfat fat ppdev snd_hda_codec_realtek snd_hda_codec_generic 
+x86_pkg_temp_thermal rt_e1000_new coretemp rt_igb rt_eepro100 kvm_intel rtnet 
+kvm crct10dif_pclmul crc32_pclmul arc4 snd_hda_intel aesni_intel 
+snd_hda_controller aes_x86_64 snd_hda_codec lrw snd_hda_core gf128mul 
+snd_hwdep glue_helper snd_pcm ablk_helper cryptd snd_timer i915 snd evdev 
+soundcore pcspkr efivars serio_raw i2c_i801 drm_kms_helper drm wmi battery 
+i2c_algo_bit parport_pc video parport shpchp tpm_infineon tpm_tis tpm button 
+ath9k ath9k_common ath9k_hw ath mac80211 cfg80211 rfkill fuse
+  autofs4 ext4 crc16 mbcache jbd2 sg sd_mod crc32c_intel ahci libahci xhci_pci 
+libata xhci_hcd e100 mii scsi_mod usbcore usb_common fan thermal_sys i2c_hid 
+hid i2c_core
+ CPU: 7 PID: 1047 Comm: slaveinfo_rt Not tainted 4.1.18-xenomai-3.0.3 #2
+ Hardware name: Gigabyte Technology Co., Ltd. To be filled by O.E.M./Q170M-D3H-
+CF, BIOS F1 10/13/2015
+ task: ffff88045b0faaa0 ti: ffff88045b44c000 task.ti: ffff88045b44c000
+ RIP: 0010:[<ffffffff812fe5c8>]  [<ffffffff812fe5c8>] strncmp+0x8/0x50
+ RSP: 0018:ffff88045b44fda0  EFLAGS: 00010202
+ RAX: ffffc90001f07008 RBX: ffffffffa0366740 RCX: 0000000000000072
+ RDX: 0000000000000010 RSI: 00007ffda8577680 RDI: ffff880459aaa004
+ RBP: ffff880459aaa000 R08: ffff880460597420 R09: 0000000000000056
+ R10: 00000000000000dc R11: ffff88045b44fdc0 R12: 00007ffda8577680
+ R13: 00007ffda8577680 R14: 0000000040180021 R15: ffffffff81b832c0
+ FS:  00007f3094175740(0000) GS:ffff880460500000(0000) knlGS:0000000000000000
+ CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
+ CR2: 00007ffda8577680 CR3: 000000045a12a000 CR4: 00000000003406e0
+ DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+ DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ I-pipe domain Linux
+ Stack:
+  ffffffffa035f151 0000000000052f08 0000000000000000 00007ffda8577680
+  ffffffffa035f621 ffff880459a17000 0000000040180021 ffff88045b0faaa0
+  ffffffffa03627be ffff880459a17000 0000000000000003 ffff88045b0faaa0
+ Call Trace:
+  [<ffffffffa035f151>] ? __rtdev_get_by_name+0x31/0x60 [rtnet]
+  [<ffffffffa035f621>] ? rtdev_get_by_name+0x51/0xd0 [rtnet]
+  [<ffffffffa03627be>] ? rt_socket_if_ioctl+0x2e/0x2f0 [rtnet]
+  [<ffffffff8116505c>] ? rtdm_fd_ioctl+0xfc/0x220
+  [<ffffffff81169d10>] ? CoBaLt_fcntl+0x20/0x20
+  [<ffffffff81169d10>] ? CoBaLt_fcntl+0x20/0x20
+  [<ffffffff81169d20>] ? CoBaLt_ioctl+0x10/0x20
+  [<ffffffff81169d15>] ? CoBaLt_ioctl+0x5/0x20
+  [<ffffffff8117932a>] ? ipipe_syscall_hook+0x25a/0x330
+  [<ffffffff81100097>] ? __ipipe_notify_syscall+0xe7/0x1d0
+  [<ffffffff811e7845>] ? fput+0x5/0x90
+  [<ffffffff81567cf4>] ? pipeline_syscall+0x9/0x16
+
+
+it shows that the crash is produced by __rtdev_get_by_name called from 
+rtdev_get_by_name called from rt_socket_if_ioctl ... with a strncmp
+
+that function is defined kernel/drivers/net/stack/rtdev.c
+
+static struct rtnet_device *__rtdev_get_by_name(const char *name)
+{
+    int                 i;   
+    struct rtnet_device *rtdev;
  
-+#include <linux/kernel.h>
- #include <linux/module.h>
--#include <linux/ioport.h>
- #include <linux/delay.h>
- #include <linux/pci.h>
--#include <asm/io.h>
-+#include <linux/io.h>
- 
- #include <rtdm/rtdm_driver.h>
- 
-@@ -40,23 +40,30 @@
- static char *ems_pci_board_name = "EMS-CPC-PCI";
- 
- MODULE_AUTHOR("Wolfgang Grandegger <wg@grandegger.com>");
--MODULE_DESCRIPTION("RTCAN board driver for EMS CPC-PCI cards");
--MODULE_SUPPORTED_DEVICE("EMS CPC-PCI card CAN controller");
--MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("RTCAN board driver for EMS CPC-PCI/PCIe/104P CAN cards");
-+MODULE_SUPPORTED_DEVICE("EMS CPC-PCI/PCIe/104P CAN card");
-+MODULE_LICENSE("GPL v2");
-+
-+#define EMS_PCI_V1_MAX_CHAN 2
-+#define EMS_PCI_V2_MAX_CHAN 4
-+#define EMS_PCI_MAX_CHAN    EMS_PCI_V2_MAX_CHAN
-+
-+struct ems_pci_card {
-+	int version;
-+	int channels;
- 
--struct rtcan_ems_pci
--{
- 	struct pci_dev *pci_dev;
--	struct rtcan_device *slave_dev;
--	int channel;
--	volatile void __iomem *base_addr;
--	volatile void __iomem *conf_addr;
-+	struct rtcan_device *rtcan_dev[EMS_PCI_MAX_CHAN];
-+
-+	void __iomem *conf_addr;
-+	void __iomem *base_addr;
- };
- 
--#define EMS_PCI_MASTER 1 /* multi channel device, this device is master */
--#define EMS_PCI_SLAVE  2 /* multi channel device, this is slave */
-+#define EMS_PCI_CAN_CLOCK (16000000 / 2)
- 
- /*
-+ * Register definitions and descriptions are from LinCAN 0.3.3.
-+ *
-  * PSB4610 PITA-2 bridge control registers
-  */
- #define PITA2_ICR           0x00	/* Interrupt Control Register */
-@@ -64,7 +71,17 @@ struct rtcan_ems_pci
- #define PITA2_ICR_INT0_EN   0x00020000	/* [RW] Enable INT0 */
- 
- #define PITA2_MISC          0x1c	/* Miscellaneous Register */
--#define PITA2_MISC_CONFIG   0x04000000	/* Multiplexed Parallel_interface_model */
-+#define PITA2_MISC_CONFIG   0x04000000	/* Multiplexed parallel interface */
-+
-+/*
-+ * Register definitions for the PLX 9030
-+ */
-+#define PLX_ICSR            0x4c   /* Interrupt Control/Status register */
-+#define PLX_ICSR_LINTI1_ENA 0x0001 /* LINTi1 Enable */
-+#define PLX_ICSR_PCIINT_ENA 0x0040 /* PCI Interrupt Enable */
-+#define PLX_ICSR_LINTI1_CLR 0x0400 /* Local Edge Triggerable Interrupt Clear */
-+#define PLX_ICSR_ENA_CLR    (PLX_ICSR_LINTI1_ENA | PLX_ICSR_PCIINT_ENA | \
-+			     PLX_ICSR_LINTI1_CLR)
- 
- /*
-  * The board configuration is probably following:
-@@ -72,9 +89,9 @@ struct rtcan_ems_pci
-  * TX1 is not connected.
-  * CLKO is not connected.
-  * Setting the OCR register to 0xDA is a good idea.
-- * This means  normal output mode , push-pull and the correct polarity.
-+ * This means normal output mode, push-pull and the correct polarity.
-  */
--#define EMS_PCI_OCR_STD     0xda	/* Standard value: Pushpull */
-+#define EMS_PCI_OCR         (SJA_OCR_TX0_PUSHPULL | SJA_OCR_TX1_PUSHPULL)
- 
- /*
-  * In the CDR register, you should set CBP to 1.
-@@ -82,248 +99,304 @@ struct rtcan_ems_pci
-  * (meaning direct oscillator output) because the second SJA1000 chip
-  * is driven by the first one CLKOUT output.
-  */
--#define EMS_PCI_CDR_MASTER  (SJA_CDR_CAN_MODE | SJA_CDR_CBP | 0x07)
--#define EMS_PCI_CDR_SLAVE   (SJA_CDR_CAN_MODE | SJA_CDR_CBP | 0x07 |	\
--			     SJA_CDR_CLK_OFF)
--#define EMS_PCI_CONF_SIZE   0x0100  /* Size of the config io-memory */
--#define EMS_PCI_PORT_START  0x0400  /* Start of the channel io-memory */
--#define EMS_PCI_PORT_SIZE   0x0200  /* Size of a channel io-memory */
--
--
--#define EMS_PCI_PORT_BYTES  0x4     /* Each register occupies 4 bytes */
--
--#define EMS_PCI_VENDOR_ID   0x110a  /* PCI device and vendor ID */
--#define EMS_PCI_DEVICE_ID   0x2104
--
--static struct pci_device_id ems_pci_tbl[] = {
--	{EMS_PCI_VENDOR_ID, EMS_PCI_DEVICE_ID,
--	 PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0},
--	{ }
-+#define EMS_PCI_CDR             (SJA_CDR_CBP | SJA_CDR_CLKOUT_MASK)
-+
-+#define EMS_PCI_V1_BASE_BAR     1
-+#define EMS_PCI_V1_CONF_SIZE    4096 /* size of PITA control area */
-+#define EMS_PCI_V2_BASE_BAR     2
-+#define EMS_PCI_V2_CONF_SIZE    128 /* size of PLX control area */
-+#define EMS_PCI_CAN_BASE_OFFSET 0x400 /* offset where the controllers starts */
-+#define EMS_PCI_CAN_CTRL_SIZE   0x200 /* memory size for each controller */
-+
-+#define EMS_PCI_BASE_SIZE  4096 /* size of controller area */
-+
-+static const struct pci_device_id ems_pci_tbl[] = {
-+	/* CPC-PCI v1 */
-+	{PCI_VENDOR_ID_SIEMENS, 0x2104, PCI_ANY_ID, PCI_ANY_ID,},
-+	/* CPC-PCI v2 */
-+	{PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_9030, PCI_VENDOR_ID_PLX, 0x4000},
-+	/* CPC-104P v2 */
-+	{PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_9030, PCI_VENDOR_ID_PLX, 0x4002},
-+	{0,}
- };
--MODULE_DEVICE_TABLE (pci, ems_pci_tbl);
-+MODULE_DEVICE_TABLE(pci, ems_pci_tbl);
- 
--#define EMS_PCI_CAN_SYS_CLOCK (16000000 / 2)
-+/*
-+ * Helper to read internal registers from card logic (not CAN)
-+ */
-+static u8 ems_pci_v1_readb(struct ems_pci_card *card, unsigned int port)
-+{
-+	return readb((void __iomem *)card->base_addr + (port * 4));
-+}
- 
--static u8 rtcan_ems_pci_read_reg(struct rtcan_device *dev, int port)
-+static u8 ems_pci_v1_read_reg(struct rtcan_device *dev, int port)
- {
--	struct rtcan_ems_pci *board = (struct rtcan_ems_pci *)dev->board_priv;
--	return readb(board->base_addr + (port * EMS_PCI_PORT_BYTES));
-+	return readb((void __iomem *)dev->base_addr + (port * 4));
- }
- 
--static void rtcan_ems_pci_write_reg(struct rtcan_device *dev, int port, u8 data)
-+static void ems_pci_v1_write_reg(struct rtcan_device *dev,
-+				 int port, u8 val)
- {
--	struct rtcan_ems_pci *board = (struct rtcan_ems_pci *)dev->board_priv;
--	writeb(data, board->base_addr + (port * EMS_PCI_PORT_BYTES));
-+	writeb(val, (void __iomem *)dev->base_addr + (port * 4));
- }
- 
--static void rtcan_ems_pci_irq_ack(struct rtcan_device *dev)
-+static void ems_pci_v1_post_irq(struct rtcan_device *dev)
- {
--	struct rtcan_ems_pci *board = (struct rtcan_ems_pci *)dev->board_priv;
-+	struct ems_pci_card *card = (struct ems_pci_card *)dev->board_priv;
- 
-+	/* reset int flag of pita */
- 	writel(PITA2_ICR_INT0_EN | PITA2_ICR_INT0,
--	       board->conf_addr + PITA2_ICR);
-+	       card->conf_addr + PITA2_ICR);
- }
- 
--static void rtcan_ems_pci_del_chan(struct rtcan_device *dev,
--				   int init_step)
-+static u8 ems_pci_v2_read_reg(struct rtcan_device *dev, int port)
- {
--	struct rtcan_ems_pci *board;
-+	return readb((void __iomem *)dev->base_addr + port);
-+}
- 
--	if (!dev)
--		return;
-+static void ems_pci_v2_write_reg(struct rtcan_device *dev,
-+				 int port, u8 val)
-+{
-+	writeb(val, (void __iomem *)dev->base_addr + port);
-+}
- 
--	board = (struct rtcan_ems_pci *)dev->board_priv;
-+static void ems_pci_v2_post_irq(struct rtcan_device *dev)
-+{
-+	struct ems_pci_card *card = (struct ems_pci_card *)dev->board_priv;
- 
--	switch (init_step) {
--	case 0:			/* Full cleanup */
--		RTCAN_DBG("Removing %s %s device %s\n",
--			  ems_pci_board_name, dev->ctrl_name, dev->name);
--		rtcan_sja1000_unregister(dev);
--	case 5:
--	case 4:
--		iounmap((void *)board->base_addr);
--	case 3:
--		if (board->channel != EMS_PCI_SLAVE)
--			iounmap((void *)board->conf_addr);
--	case 2:
--		rtcan_dev_free(dev);
--	case 1:
--		break;
--	}
-+	writel(PLX_ICSR_ENA_CLR, card->conf_addr + PLX_ICSR);
- }
- 
--static int rtcan_ems_pci_add_chan(struct pci_dev *pdev, int channel,
--				  struct rtcan_device **master_dev)
-+/*
-+ * Check if a CAN controller is present at the specified location
-+ * by trying to set 'em into the PeliCAN mode
-+ */
-+static inline int ems_pci_check_chan(struct rtcan_device *dev)
- {
--	struct rtcan_device *dev;
--	struct rtcan_sja1000 *chip;
--	struct rtcan_ems_pci *board;
--	unsigned long addr;
--	int err, init_step = 1;
-+	struct rtcan_sja1000 *chip = (struct rtcan_sja1000 *)dev->priv;
-+	unsigned char res;
- 
--	dev = rtcan_dev_alloc(sizeof(struct rtcan_sja1000),
--			      sizeof(struct rtcan_ems_pci));
--	if (dev == NULL)
--		return -ENOMEM;
--	init_step = 2;
-+	/* Make sure SJA1000 is in reset mode */
-+	chip->write_reg(dev, SJA_MOD, 1);
- 
--	chip = (struct rtcan_sja1000 *)dev->priv;
--	board = (struct rtcan_ems_pci *)dev->board_priv;
-+	chip->write_reg(dev, SJA_CDR, SJA_CDR_CAN_MODE);
- 
--	board->pci_dev = pdev;
--	board->channel = channel;
-+	/* read reset-values */
-+	res = chip->read_reg(dev, SJA_CDR);
- 
--	if (channel != EMS_PCI_SLAVE) {
-+	if (res == SJA_CDR_CAN_MODE)
-+		return 1;
- 
--		addr = pci_resource_start(pdev, 0);
--		board->conf_addr = ioremap(addr, EMS_PCI_CONF_SIZE);
--		if (board->conf_addr == 0) {
--			err = -ENODEV;
--			goto failure;
--		}
--		init_step = 3;
-+	return 0;
-+}
- 
--		/* Configure PITA-2 parallel interface */
--		writel(PITA2_MISC_CONFIG, board->conf_addr + PITA2_MISC);
--		/* Enable interrupts from card */
--		writel(PITA2_ICR_INT0_EN, board->conf_addr + PITA2_ICR);
--	} else {
--		struct rtcan_ems_pci *master_board =
--			(struct rtcan_ems_pci *)(*master_dev)->board_priv;
--		master_board->slave_dev = dev;
--		board->conf_addr = master_board->conf_addr;
--	}
-+static void ems_pci_del_card(struct pci_dev *pdev)
-+{
-+	struct ems_pci_card *card = pci_get_drvdata(pdev);
-+	struct rtcan_device *dev;
-+	int i = 0;
- 
--	addr = pci_resource_start(pdev, 1) + EMS_PCI_PORT_START;
--	if (channel == EMS_PCI_SLAVE)
--		addr += EMS_PCI_PORT_SIZE;
-+	for (i = 0; i < card->channels; i++) {
-+		dev = card->rtcan_dev[i];
- 
--	board->base_addr = ioremap(addr, EMS_PCI_PORT_SIZE);
--	if (board->base_addr == 0) {
--		err = -ENODEV;
--		goto failure;
-+		if (!dev)
-+			continue;
-+
-+		dev_info(&pdev->dev, "Removing %s.\n", dev->name);
-+		rtcan_sja1000_unregister(dev);
-+		rtcan_dev_free(dev);
- 	}
--	init_step = 4;
- 
--	dev->board_name = ems_pci_board_name;
-+	if (card->base_addr != NULL)
-+		pci_iounmap(card->pci_dev, card->base_addr);
- 
--	chip->read_reg = rtcan_ems_pci_read_reg;
--	chip->write_reg = rtcan_ems_pci_write_reg;
--	chip->irq_ack = rtcan_ems_pci_irq_ack;
-+	if (card->conf_addr != NULL)
-+		pci_iounmap(card->pci_dev, card->conf_addr);
- 
--	/* Clock frequency in Hz */
--	dev->can_sys_clock = EMS_PCI_CAN_SYS_CLOCK;
-+	kfree(card);
- 
--	/* Output control register */
--	chip->ocr = EMS_PCI_OCR_STD;
-+	pci_disable_device(pdev);
-+	pci_set_drvdata(pdev, NULL);
-+}
- 
--	/* Clock divider register */
--	if (channel == EMS_PCI_MASTER)
--		chip->cdr = EMS_PCI_CDR_MASTER;
--	else
--		chip->cdr = EMS_PCI_CDR_SLAVE;
-+static void ems_pci_card_reset(struct ems_pci_card *card)
-+{
-+	/* Request board reset */
-+	writeb(0, card->base_addr);
-+}
- 
--	strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
-+/*
-+ * Probe PCI device for EMS CAN signature and register each available
-+ * CAN channel to RTCAN subsystem.
-+ */
-+static int ems_pci_add_card(struct pci_dev *pdev,
-+			    const struct pci_device_id *ent)
-+{
-+	struct rtcan_sja1000 *chip;
-+	struct rtcan_device *dev;
-+	struct ems_pci_card *card;
-+	int max_chan, conf_size, base_bar;
-+	int err, i;
-+
-+	/* Enabling PCI device */
-+	if (pci_enable_device(pdev) < 0) {
-+		dev_err(&pdev->dev, "Enabling PCI device failed\n");
-+		return -ENODEV;
-+	}
- 
--	/* Register and setup interrupt handling */
--	chip->irq_flags = RTDM_IRQTYPE_SHARED;
--	chip->irq_num = pdev->irq;
--	init_step = 5;
-+	/* Allocating card structures to hold addresses, ... */
-+	card = kzalloc(sizeof(*card), GFP_KERNEL);
-+	if (card == NULL) {
-+		pci_disable_device(pdev);
-+		return -ENOMEM;
-+	}
- 
--	printk("%s: base_addr=%p conf_addr=%p irq=%d\n", RTCAN_DRV_NAME,
--	       board->base_addr, board->conf_addr, chip->irq_num);
-+	pci_set_drvdata(pdev, card);
- 
--	/* Register SJA1000 device */
--	err = rtcan_sja1000_register(dev);
--	if (err) {
--		printk(KERN_ERR
--		       "ERROR %d while trying to register SJA1000 device!\n",
--		       err);
--		goto failure;
--	}
-+	card->pci_dev = pdev;
- 
--	if (channel != EMS_PCI_SLAVE)
--		*master_dev = dev;
-+	card->channels = 0;
- 
--	return 0;
-+	if (pdev->vendor == PCI_VENDOR_ID_PLX) {
-+		card->version = 2; /* CPC-PCI v2 */
-+		max_chan = EMS_PCI_V2_MAX_CHAN;
-+		base_bar = EMS_PCI_V2_BASE_BAR;
-+		conf_size = EMS_PCI_V2_CONF_SIZE;
-+	} else {
-+		card->version = 1; /* CPC-PCI v1 */
-+		max_chan = EMS_PCI_V1_MAX_CHAN;
-+		base_bar = EMS_PCI_V1_BASE_BAR;
-+		conf_size = EMS_PCI_V1_CONF_SIZE;
-+	}
- 
--failure:
--	rtcan_ems_pci_del_chan(dev, init_step);
--	return err;
--}
-+	/* Remap configuration space and controller memory area */
-+	card->conf_addr = pci_iomap(pdev, 0, conf_size);
-+	if (card->conf_addr == NULL) {
-+		err = -ENOMEM;
-+		goto failure_cleanup;
-+	}
- 
--static int ems_pci_init_one(struct pci_dev *pdev,
--			    const struct pci_device_id *ent)
--{
--	struct rtcan_device *master_dev = NULL;
--	int err;
-+	card->base_addr = pci_iomap(pdev, base_bar, EMS_PCI_BASE_SIZE);
-+	if (card->base_addr == NULL) {
-+		err = -ENOMEM;
-+		goto failure_cleanup;
-+	}
- 
--	RTCAN_DBG("%s: initializing device %04x:%04x\n",
--		  RTCAN_DRV_NAME,  pdev->vendor, pdev->device);
-+	if (card->version == 1) {
-+		/* Configure PITA-2 parallel interface (enable MUX) */
-+		writel(PITA2_MISC_CONFIG, card->conf_addr + PITA2_MISC);
-+
-+		/* Check for unique EMS CAN signature */
-+		if (ems_pci_v1_readb(card, 0) != 0x55 ||
-+		    ems_pci_v1_readb(card, 1) != 0xAA ||
-+		    ems_pci_v1_readb(card, 2) != 0x01 ||
-+		    ems_pci_v1_readb(card, 3) != 0xCB ||
-+		    ems_pci_v1_readb(card, 4) != 0x11) {
-+			dev_err(&pdev->dev,
-+				"Not EMS Dr. Thomas Wuensche interface\n");
-+			err = -ENODEV;
-+			goto failure_cleanup;
-+		}
-+	}
- 
--	if ((err = pci_enable_device (pdev)))
--		goto failure;
-+	ems_pci_card_reset(card);
- 
--	if ((err = pci_request_regions(pdev, RTCAN_DRV_NAME)))
--		goto failure;
-+	for (i = 0; i < max_chan; i++) {
-+		dev = rtcan_dev_alloc(sizeof(struct rtcan_sja1000), 0);
-+		if (!dev) {
-+			err = -ENOMEM;
-+			goto failure_cleanup;
-+		}
- 
--	if ((err = pci_write_config_word(pdev, 0x04, 2)))
--		goto failure_cleanup;
-+		strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
-+		dev->board_name = ems_pci_board_name;
-+		dev->board_priv = card;
-+
-+		card->rtcan_dev[i] = dev;
-+		chip = card->rtcan_dev[i]->priv;
-+		chip->irq_flags = RTDM_IRQTYPE_SHARED;
-+		chip->irq_num = pdev->irq;
-+
-+		dev->base_addr = (unsigned long)card->base_addr +
-+			EMS_PCI_CAN_BASE_OFFSET + (i * EMS_PCI_CAN_CTRL_SIZE);
-+		if (card->version == 1) {
-+			chip->read_reg  = ems_pci_v1_read_reg;
-+			chip->write_reg = ems_pci_v1_write_reg;
-+			chip->irq_ack = ems_pci_v1_post_irq;
-+		} else {
-+			chip->read_reg  = ems_pci_v2_read_reg;
-+			chip->write_reg = ems_pci_v2_write_reg;
-+			chip->irq_ack = ems_pci_v2_post_irq;
-+		}
- 
--	if ((err = rtcan_ems_pci_add_chan(pdev, EMS_PCI_MASTER,
--					  &master_dev)))
--		goto failure_cleanup;
--	if ((err = rtcan_ems_pci_add_chan(pdev, EMS_PCI_SLAVE,
--					  &master_dev)))
-+		/* Check if channel is present */
-+		if (ems_pci_check_chan(dev)) {
-+			dev->can_sys_clock = EMS_PCI_CAN_CLOCK;
-+			chip->ocr = EMS_PCI_OCR | SJA_OCR_MODE_NORMAL;
-+			chip->cdr = EMS_PCI_CDR | SJA_CDR_CAN_MODE;
-+
-+			if (card->version == 1)
-+				/* reset int flag of pita */
-+				writel(PITA2_ICR_INT0_EN | PITA2_ICR_INT0,
-+				       card->conf_addr + PITA2_ICR);
-+			else
-+				/* enable IRQ in PLX 9030 */
-+				writel(PLX_ICSR_ENA_CLR,
-+				       card->conf_addr + PLX_ICSR);
-+
-+			/* Register SJA1000 device */
-+			err = rtcan_sja1000_register(dev);
-+			if (err) {
-+				dev_err(&pdev->dev, "Registering device failed "
-+					"(err=%d)\n", err);
-+				rtcan_dev_free(dev);
-+				goto failure_cleanup;
-+			}
-+
-+			card->channels++;
-+
-+			dev_info(&pdev->dev, "Channel #%d at 0x%p, irq %d "
-+				 "registered as %s\n", i + 1,
-+				 (void* __iomem)dev->base_addr, chip->irq_num,
-+				 dev->name);
-+		} else {
-+			dev_err(&pdev->dev, "Channel #%d not detected\n",
-+				i + 1);
-+			rtcan_dev_free(dev);
-+		}
-+	}
-+
-+	if (!card->channels) {
-+		err = -ENODEV;
- 		goto failure_cleanup;
-+	}
- 
--	pci_set_drvdata(pdev, master_dev);
- 	return 0;
- 
- failure_cleanup:
--	if (master_dev)
--		rtcan_ems_pci_del_chan(master_dev, 0);
-+	dev_err(&pdev->dev, "Error: %d. Cleaning Up.\n", err);
- 
--	pci_release_regions(pdev);
-+	ems_pci_del_card(pdev);
- 
--failure:
- 	return err;
--
--}
--
--static void ems_pci_remove_one(struct pci_dev *pdev)
--{
--	struct rtcan_device *dev = pci_get_drvdata(pdev);
--	struct rtcan_ems_pci *board = (struct rtcan_ems_pci *)dev->board_priv;
--
--	/* Disable interrupts from card */
--	writel(0x0, board->conf_addr + PITA2_ICR);
--
--	if (board->slave_dev)
--		rtcan_ems_pci_del_chan(board->slave_dev, 0);
--	rtcan_ems_pci_del_chan(dev, 0);
--
--	pci_release_regions(pdev);
--	pci_disable_device(pdev);
--	pci_set_drvdata(pdev, NULL);
- }
- 
--static struct pci_driver rtcan_ems_pci_driver = {
--	.name		= RTCAN_DRV_NAME,
--	.id_table	= ems_pci_tbl,
--	.probe		= ems_pci_init_one,
--	.remove		= ems_pci_remove_one,
-+static struct pci_driver ems_pci_driver = {
-+	.name = RTCAN_DRV_NAME,
-+	.id_table = ems_pci_tbl,
-+	.probe = ems_pci_add_card,
-+	.remove = ems_pci_del_card,
- };
- 
--static int __init rtcan_ems_pci_init(void)
-+static int __init ems_pci_init(void)
- {
--	return pci_register_driver(&rtcan_ems_pci_driver);
-+	return pci_register_driver(&ems_pci_driver);
- }
- 
--static void __exit rtcan_ems_pci_exit(void)
-+static void __exit ems_pci_exit(void)
- {
--	pci_unregister_driver(&rtcan_ems_pci_driver);
-+	pci_unregister_driver(&ems_pci_driver);
- }
- 
--module_init(rtcan_ems_pci_init);
--module_exit(rtcan_ems_pci_exit);
-+module_init(ems_pci_init);
-+module_exit(ems_pci_exit);
-diff --git a/ksrc/drivers/can/sja1000/rtcan_sja1000_regs.h b/ksrc/drivers/can/sja1000/rtcan_sja1000_regs.h
-index f02d23b..9f2f871 100644
---- a/ksrc/drivers/can/sja1000/rtcan_sja1000_regs.h
-+++ b/ksrc/drivers/can/sja1000/rtcan_sja1000_regs.h
-@@ -197,6 +197,7 @@ enum SJA1000_PELI_FIR {
- 
- /* Clock divider register */
- enum SJA1000_PELI_CDR {
-+    SJA_CDR_CLKOUT_MASK  = 0x07,
-     SJA_CDR_CLK_OFF      = 1<<3, /* Clock off (CLKOUT pin)              */
-     SJA_CDR_CBP          = 1<<6, /* CAN input comparator bypass         */
-     SJA_CDR_CAN_MODE     = 1<<7  /* CAN mode: 1 = PeliCAN               */
+
+    for (i = 0; i < MAX_RT_DEVICES; i++) {
+        rtdev = rtnet_devices[i];
+        if ((rtdev != NULL) && (strncmp(rtdev->name, name, IFNAMSIZ) == 0))
+            return rtdev;
+    }
+    return NULL;
+}
+
+however I couldn't understand why this function crashes in this box and not in 
+the other box that I have tested. I will update BIOS and see what happen.
+
+In any case, any help will be appreciated.
+
+Best regards,
+
+Leopold
+
+
 -- 
-1.9.1
-
-
+--
+Linux User 152692     GPG: 05F4A7A949A2D9AA
+Catalonia
+-------------------------------------
+A: Because it messes up the order in which people normally read text.
+Q: Why is top-posting such a bad thing?
+A: Top-posting.
+Q: What is the most annoying thing in e-mail?
 
