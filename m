@@ -1,12 +1,14 @@
-Date: Thu, 6 Oct 2016 15:45:27 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20161006154527.1a113427@md1em3qc>
-In-Reply-To: <664a4398-90bc-b0cc-eb9a-6c6ede1f0b61@seoultech.ac.kr>
-References: <664a4398-90bc-b0cc-eb9a-6c6ede1f0b61@seoultech.ac.kr>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Thu, 06 Oct 2016 19:24:15 +0200
+Message-ID: <7810159.2OkF4KFj7y@fura>
+In-Reply-To: <5ed168a2-fa54-0d21-a6ff-05abe1d95b11@siemens.com>
+References: <2990549.hKSmcVRoDB@indiana> <2013828.8eEOvBkU4r@soho>
+ <5ed168a2-fa54-0d21-a6ff-05abe1d95b11@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai latency test hang
+Subject: Re: [Xenomai] About SMAP (was Re: Xenomai 3.0.3 is broken in my
+	system)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,38 +17,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Raimarius Delgado <raim223@seoultech.ac.kr>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: xenomai@xenomai.org
 
-The problem is caused by the Intel SMAP feature of your CPU. It is
-fixed - at least partially - in Xenomai 3. For further details read the
-Mailing list archive, this topic was just discussed.
-
-A quick solution to your current problem is disabling CONFIG_X86_SMAP
-in your kernel config or booting the kernel with "nosmap"
-
-Henning
-
-Am Thu, 6 Oct 2016 21:06:26 +0900
-schrieb Raimarius Delgado <raim223@seoultech.ac.kr>:
-
-> Hi,
-> I have installed Xenomai 2.6.4 alongside Linux 3.14.17, 3.14.39, and
-> 3.14.44 on Ubuntu 14.04. I encountered a problem when I try to run
-> the latency test, the system hangs with no output if run in user
-> space and abruptly ends (killed) if run in kernel space.
+El Dijous, 6 d'octubre de 2016, a les 13:50:00, Jan Kiszka va escriure:
+> On 2016-10-06 11:51, Leopold Palomo-Avellaneda wrote:
+> > Hi,
+> > 
+> > lasts weeks I have been in a trouble with Xenomai and RTnet. Finally it
+> > was
+> > solved disabling some parameters in kernel (nosmap) Thanks again Jan.
+> > 
+> > That parameter is an interesting feature of the Intel processors [1,2],
+> > that IMHO affects all the RTnet code and I hope that nothing more of
+> > Xenomai.
+> > 
+> > It seems that fix it is could be easy, but it must be done (a boring task
+> > ;-) In the middle, I would propose that some note could be added to the
+> > FAQ, or "Troubleshooting a dual kernel configuration" page. Something
+> > like this in the "Common kernel configuration issues":
+> > 
+> > CONFIG_X86_SMAP
+> > 
+> > On modern Intel processors with SMAP-enabled systems, kernel is not
+> > allowed to access to userspace memory, it must be done in a special way.
+> > So, until all Xenomai code was updated, specially RTnet, if you find
+> > crashes with " unable to handle kernel paging request at " disable this
+> > feature neither in kernel configuration or in boot with nosmap.
 > 
-> I've seen a similar thread in:
-> http://www.xenomai.org/pipermail/xenomai/2015-July/034658.html but
-> there was no solution offered to this problem. All the kernel version
-> sub-levels demonstrated the same results.
-> 
-> I am working on an Intel Core i7 6700 (Skylake) on a Gigabyte
-> GA-B150M-HD3. I am attaching the kernel log files and configurations
-> for 3.14.39 and 3.14.44. I have used ipipe-core-3.14.17-x86-6,
-> ipipe-core-3.14.39-x86-9, and ipipe-core-3.14.44-x86-12, respectively.
-> 
-> Hope somebody could help me. Thanks in advance.
-> 
+> Send your proposal as patch for the included documentation or even the
+> kernel Kconfig tests.
 
+I think that I don't understand you. AFAIK xenomai documentation is in a 
+Wordpress that Gilles installed and configured. I really don't know how to send 
+a patch to that.
 
+I'm just proposing that someone of the core team with write permissions to the 
+wordpress make a cut and paste (if you think appropriate) of  that paragraph 
+and add it to that part. That's all
+
+Leopold
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 819 bytes
+Desc: This is a digitally signed message part.
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20161006/71127e1e/attachment.sig>
