@@ -1,11 +1,11 @@
 References: <SG2PR04MB0925FDF5009929D778345754F2DA0@SG2PR04MB0925.apcprd04.prod.outlook.com>
-From: Raimarius Delgado <raim223@seoultech.ac.kr>
-Message-ID: <1ca35638-e92d-c594-5df4-9eea6e4952ce@seoultech.ac.kr>
-Date: Tue, 11 Oct 2016 19:11:52 +0900
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <a19d74e0-5050-5d61-daab-48624caabbce@xenomai.org>
+Date: Wed, 12 Oct 2016 11:22:05 +0200
 MIME-Version: 1.0
 In-Reply-To: <SG2PR04MB0925FDF5009929D778345754F2DA0@SG2PR04MB0925.apcprd04.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Compatibility VS Specific HW
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -15,47 +15,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "RAGAGLIA Matteo (Matteo)" <matteo_ragaglia@yanmar.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2016-10-11 오후 7:00, xenomai-request@xenomai.org wrote:
-> Date: Tue, 11 Oct 2016 08:35:01 +0000
-> From: "RAGAGLIA Matteo (Matteo)" <matteo_ragaglia@yanmar.com>
-> To: "xenomai@xenomai.org" <xenomai@xenomai.org>
-> Subject: [Xenomai]  Compatibility VS Specific HW
-> Message-ID:
-> 	<SG2PR04MB0925FDF5009929D778345754F2DA0@SG2PR04MB0925.apcprd04.prod.outlook.com>
-> 	
-> Content-Type: text/plain; charset="us-ascii"
->
+On 10/11/2016 10:35 AM, RAGAGLIA Matteo (Matteo) wrote:
 > Hi everyone,
 > I have the following HW configuration:
->     x) CPU:                             INTEL CORE I7-6800K 3.4G;
->     x) Mother board:          Asus MB X99-A/USB3.1;
->     x) Graphic card:             ASUS STRIX GTX1080 A8G;
->
+>    x) CPU:                             INTEL CORE I7-6800K 3.4G;
+>    x) Mother board:          Asus MB X99-A/USB3.1;
+>    x) Graphic card:             ASUS STRIX GTX1080 A8G;
+> 
 > Does anyone know if there is some kind of incompatibility between Xenomai and the listed components?
 > Thank you in advance.
->
-> MATTEO RAGAGLIA, PhD
-> Researcher
-> YANMAR R&D EUROPE SRL
-> PI 06157240489
-> Viale Galileo, 3/A - 50125 Firenze
-> Tel. +39 055 5121694/5
-> Fax +39 055 5121693
->
-> YANMAR GROUP COMPANY - CONFIDENTIALITY NOTICE: This email is for the intended recipient only. It may contain PRIVILEGED and/or CONFIDENTIAL information. If you received this email in error, please delete it and notify the sender immediately. Any other use of this email or attachment(s) is prohibited.
 
-I don't think there would be incompatibility problems between Xenomai and your hardware. However, I would like to advise you to provide us with particular version of Xenomai and what version of Linux would it run alongside with.
-Different Linux versions could result to different problems, especially regarding kernel configuration.
+I don't have this information, but if you already have this hw at hand,
+you could check for the most common sources of unexpected latency on x86
+by running the hw latency detector, without installing Xenomai yet. A
+revamped version of this code was posted back in August to the lkml [1],
+it is integrated into the regular tracing infrastructure; it is
+available from linux-next/master at the moment.
 
-Best,
+During the tests, you may want to make sure that graphical activity
+happens to exercise the gpu support code, and the usb plug&play as well
+if that makes sense. Whether thermal events could be triggered by your
+workload should be considered too.
+
+[1] https://lkml.org/lkml/2016/8/4/348
+
 -- 
-Raimarius Delgado, M.Sc.Eng. (레임)
-Embedded Systems Laboratory
-Seoul National University of Science and Technology
-Dept. of Electrical and Information Engineering
-Phone: +82-2-970-9868
-Mobile: +82-10-2129-4987
-
+Philippe.
 
