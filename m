@@ -1,10 +1,11 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Thu, 13 Oct 2016 15:18:48 +0200
-Message-ID: <2545532.cdgYMZEeqY@soho>
+From: Jack Lee <jacklee11@foxmail.com>
+Message-ID: <5683b7e7-8dd5-5036-99f6-e86f8ad97bd8@foxmail.com>
+Date: Fri, 14 Oct 2016 17:09:23 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Adding a new RTnet driver
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Something interesting about advantech board that may
+ influence real-time performance
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,30 +14,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-SGksCgpJIGhhdmUgYSBib3ggd2l0aCB0aGlzIGhhcmR3YXJlOgoKMDA6MWYuNiBFdGhlcm5ldCBj
-b250cm9sbGVyOiBJbnRlbCBDb3Jwb3JhdGlvbiBFdGhlcm5ldCBDb25uZWN0aW9uICgyKSBJMjE5
-LUxNIAoocmV2IDMxKQoKSSB3b3VsZCBsaWtlIHRvIG1ha2UgaXQgd29yayB3aXRoIFJUTmV0LiBJ
-dCdzIGEgcXVpdGUgbmV3IGhhcmR3YXJlLCB0aGF0IGZvciAKZXhhbXBsZSwgNC4xLjggZG9lc24n
-dCBzdXBwb3J0LiBUaGUgZHJpdmVyIGlzIHRoZSBlMTAwMGUuCgpMb29raW5nIG9uIHRoZSBzb3Vy
-Y2VzIG9mIFhlbm9tYWksIEkgaGF2ZSBzZWVuIHRoYXQgdGhlIHJ0X2RyaXZlcnMgc2VlbXMgdmVy
-eSAKc2ltaWxhciB0byB0aGUgb3JpZ2luYWwgb25lcyBidXQgd2l0aCBzb21lIHdyYXBwZWQgZnVu
-Y3Rpb25zLCBzb21lIGRlZmluZXMsIGFuZCAKY2hhbmdlZCBzdHJ1Y3QgbmV0IGRldmljZSBieSBz
-dHJ1Y3QgcnRuZXQgZGV2aWNlLiBIb3dldmVyLCBJIG11c3QgYWRtaXQgdGhhdCAKSSdtIG5vdCBh
-IGtlcm5lbCBoYWNrZXIgYW5kIEknbSBub3QgY29tZm9ydGFibGUgd2l0aCB0aGlzIGtpbmQgb2Yg
-Y29kZS4KCkkgaGF2ZSBiZWVuIHN1cmZpbmcgb24gdGhlIHdlYiBidXQgSSBub3Qgbm90IHNlZW4g
-YW55IGd1aWRlIHRvIGNvbnZlcnQgYSBsaW51eCAKZHJpdmVyIHRvIFJUbmV0LiBTbyBteSBxdWVz
-dGlvbnMgYXJlOgoKLSB0aGVyZSdzIGFueSByZWNvbW1lbmRhdGlvbiB0byBkbyB0aGF0IGpvYj8K
-LSBkbyB5b3UgaGF2ZSBzb21lIHBsYW5zIHRvIHVwZGF0ZSBuZXcgZHJpdmVycywgZXNwZWNpYWxs
-eSBlMTAwMGU/CgoKQmVzdCByZWdhcmRzLAoKTGVvcG9sZAoKCgoKCgoKLS0gCi0tCkxpbnV4IFVz
-ZXIgMTUyNjkyICAgICBHUEc6IDA1RjRBN0E5NDlBMkQ5QUEKQ2F0YWxvbmlhCi0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KQTogQmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhlIG9y
-ZGVyIGluIHdoaWNoIHBlb3BsZSBub3JtYWxseSByZWFkIHRleHQuClE6IFdoeSBpcyB0b3AtcG9z
-dGluZyBzdWNoIGEgYmFkIHRoaW5nPwpBOiBUb3AtcG9zdGluZy4KUTogV2hhdCBpcyB0aGUgbW9z
-dCBhbm5veWluZyB0aGluZyBpbiBlLW1haWw/Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0t
-LS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNp
-Z25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiA4MTkgYnl0
-ZXMKRGVzYzogVGhpcyBpcyBhIGRpZ2l0YWxseSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6IDxo
-dHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNjEwMTMv
-ZWFiNjk0YzcvYXR0YWNobWVudC5zaWc+Cg==
+I recently want to access GPIO of the advantech MIO-5251 board.
+
+I found that the GPIO was attached to iManager which was connect
+
+to the CPU by LPC. The iManager is an advantech device to manage
+
+the whole system, including temperature and fan .... "embedded
+
+controller ..." item was found in the BIOS. It has an interrupt, sleep
+
+mode setting and watchdog... This is really interesting that it 
+implements a standalone
+
+device that completes some functions of the SMI. The influence made
+
+to the real-time performance by this device needs to be assessed.
+
+If I get something valuable later, I will come back.
+
+
+Have a nice day!
+
+
+
+
