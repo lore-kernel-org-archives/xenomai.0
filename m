@@ -1,11 +1,10 @@
-Date: Mon, 17 Oct 2016 10:22:38 +0200 (CEST)
-From: pierre.roumagnac@free.fr
-Message-ID: <1359560381.356634122.1476692558285.JavaMail.root@zimbra19-e3.priv.proxad.net>
-In-Reply-To: <03f63e59-6773-ae07-3adc-1c0654cb55f4@xenomai.org>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Tue, 18 Oct 2016 17:10:33 +0200
+Message-ID: <1925227.WKKolcpHYl@soho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] [xenomai]:heap memory management
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Questions about SMAP in RTnet
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,49 +13,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-super clear Philippe
-Thanks again for your help
-
-
------ Mail original -----
-De: "Philippe Gerum" <rpm@xenomai.org>
-=C3=80: "pierre roumagnac" <pierre.roumagnac@free.fr>
-Cc: xenomai@xenomai.org
-Envoy=C3=A9: Lundi 17 Octobre 2016 09:37:43
-Objet: Re: [Xenomai] [xenomai]:heap memory management
-
-On 10/17/2016 08:44 AM, pierre.roumagnac@free.fr wrote:
-> For my culture can someone explain me (or provide doc) the difference bet=
-ween the memory pool create with --mem_pool_size and the=20
-> rt_heap_create api of alchemy?
-> http://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__alchemy__=
-heap.html#ga1d19ad24dc9f94b969aa0f574170bdc4.
-
-With Xenomai 3, any application process has access to a main memory
-pool, whose size can be set explicitly using --mem-pool-size, 1Mb by
-default. The Xenomai libraries allocate the dynamic memory they need
-from this main pool, which can be shared between multiple processes if
-you built the Xenomai code stack with the --enable-pshared option set.
-This allows multi-process applications to share real-time objects such
-as tasks, sema4, queues, heaps and so on.
-
-Applications using the alchemy API may call rt_heap_create() to
-initialize specific memory heaps for their own usage, whose memory is
-pulled from the main pool; this way, such heaps inherit the
-shared/private property of the main pool memory, depending on whether
---enable-pshared was given to the configure script.
-
-Bottom line is that --enable-pshared should be set only for applications
-composed of multiple concurrent processes which must share data and/or
-real-time constructs; this feature should be left disabled otherwise.
-
-See the command line options for any Xenomai 3 application:
-http://xenomai.org/2015/05/application-setup-and-init/#Standard_Xenomai_com=
-mand_line_options
-
---=20
-Philippe.
-
+SGksCgpJIGhhdmUgaW52ZXN0aWdhdGVkIGEgYml0IGFib3V0IHdoZXJlIHRvIHB1dCB0aGUgcHJv
+dGVjdGlvbnMgdG8gYXZvaWQgdGhlIFNNQVAgCmlzc3VlIGluIFhlbm9tYWkgUlRuZXQuIEhvd2V2
+ZXIsIEknbSBhIGJpdCBibG9ja2VkIGFuZCBJIHdvdWxkIGxpa2UgdG8gYXNrIApzb21lIGRldGFp
+bHMuCgpJJ20gdGVzdGluZyBhIHNpbXBsZSBwcm9ncmFtIGZvdW5kIG9uIHRoZSB3ZWIgWzFdIHRo
+YXQgb3BlbiBhIHJhdyBzb2NrZXQgYW5kIApzZW5kIHNvbWUgaW5mby4gVGhlIHByb2dyYW0gY3Jh
+c2ggYW5kIEkgZ290IHRoaXMgcmVsZXZhbnQgbWVzc2FnZXMgZnJvbSAKa2VybmVsOgoKWyAgNDg3
+Ljg0ODg0NV0gQlVHOiB1bmFibGUgdG8gaGFuZGxlIGtlcm5lbCBwYWdpbmcgcmVxdWVzdCBhdCAw
+MDAwN2ZmZGMzYjZhNDU4ClsgIDQ4Ny44NDg4NjVdIElQOiBbPGZmZmZmZmZmYTA1OWUxZjA+XSBy
+dF9wYWNrZXRfc2VuZG1zZysweDQwLzB4MmQwIFtydHBhY2tldF0KLi4uLi4uClsgIDQ4Ny44NDkx
+ODRdIENQVTogNiBQSUQ6IDE2OTYgQ29tbTogc2VuZFJhdyBOb3QgdGFpbnRlZCA0LjEuMTgteGVu
+b21haS0zLjAuMyAKIzMKLi4uLi4uClsgIDQ4Ny44NDk0NjBdIENhbGwgVHJhY2U6ClsgIDQ4Ny44
+NDk0NjhdICBbPGZmZmZmZmZmODExNjQ5Mzc+XSA/IHJ0ZG1fZmRfc2VuZG1zZysweGQ3LzB4MWMw
+ClsgIDQ4Ny44NDk0ODRdICBbPGZmZmZmZmZmODExNjllMjA+XSA/IENvQmFMdF9yZWN2bXNnKzB4
+YjAvMHhiMApbICA0ODcuODQ5NDk3XSAgWzxmZmZmZmZmZjgxMTY5ZTZmPl0gPyBDb0JhTHRfc2Vu
+ZG1zZysweDRmLzB4ODAKCkkgdW5kZXJzdG9vZCB0aGF0IHRoZSBwcm9ncmFtIGludGVybmFsbHkg
+Y2FsbCBydGRtX2ZkX3NlbmRtc2cgYW5kIHRoYXQgCmZ1bmN0aW9uIGNhbGwgcnRfcGFja2V0X3Nl
+bmRtc2cuCgpJZiBJIGxvb2sgdGhlIGZ1bmN0aW9uCgpzdGF0aWMgc3NpemVfdCBydF9wYWNrZXRf
+c2VuZG1zZyhzdHJ1Y3QgcnRkbV9mZCAqZmQsIGNvbnN0IHN0cnVjdCB1c2VyX21zZ2hkciAKKm1z
+ZywgaW50IG1zZ19mbGFncykKCml0IHRyeSB0byBhY2Nlc3MgdG8gKm1zZywgdGhhdCBJIGd1ZXNz
+IHRoYXQgaGFzIHNvbWUgZGF0YSBmcm9tIHVzZXJzcGFjZS4gCkhvd2V2ZXIsIEkgaGF2ZSB0byBh
+ZG1pdCB0aGF0IEkgZG9uJ3Qga25vdyBob3cgdG8gc29sdmUgaXQsIGJlY2F1c2UgYWx0aG91Z2gg
+CnRoZXJlIGFyZSB0d28gZnVuY3Rpb25zIHRvIGludGVyY2hhbmdlIGRhdGEgZnJvbSBrZXJuZWwg
+CihydF9tZW1jcHlfZnJvbWtlcm5lbGlvdmVjIGFuZCBydF9tZW1jcHlfdG9rZXJuZWxpb3ZlYykg
+SSBkb24ndCBrbm93IGhvdyB0byAKaW50ZWdyYXRlIHJ0X21lbWNweV90b2tlcm5lbGlvdmVjIGhl
+cmUuCgpBbHNvLCBJIGRvbid0IGtub3cgaWYgcnRfbWVtY3B5X3Rva2VybmVsaW92ZWMgaXMgU01B
+UCBjb21waWxhbnQuIFNvLCBhbnkgaGVscCAKZnJvbSB0aGUgWGVub21haSBndXJ1cyB3aWxsIGJl
+IGFwcHJlY2lhdGVkLgoKQmVzdCByZWdhcmRzLAoKTGVvcG9sZAoKClsxXSBodHRwczovL2dpc3Qu
+Z2l0aHViLmNvbS9hdXN0aW5tYXJ0b24vMTkyMjYwMAoKLS0gCi0tCkxpbnV4IFVzZXIgMTUyNjky
+ICAgICBHUEc6IDA1RjRBN0E5NDlBMkQ5QUEKQ2F0YWxvbmlhCi0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0KQTogQmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhlIG9yZGVyIGluIHdo
+aWNoIHBlb3BsZSBub3JtYWxseSByZWFkIHRleHQuClE6IFdoeSBpcyB0b3AtcG9zdGluZyBzdWNo
+IGEgYmFkIHRoaW5nPwpBOiBUb3AtcG9zdGluZy4KUTogV2hhdCBpcyB0aGUgbW9zdCBhbm5veWlu
+ZyB0aGluZyBpbiBlLW1haWw/Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0t
+LQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5h
+c2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiA4MTkgYnl0ZXMKRGVzYzog
+VGhpcyBpcyBhIGRpZ2l0YWxseSBzaWduZWQgbWVzc2FnZSBwYXJ0LgpVUkw6IDxodHRwOi8veGVu
+b21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNjEwMTgvZjJhZjgxMTUv
+YXR0YWNobWVudC5zaWc+Cg==
