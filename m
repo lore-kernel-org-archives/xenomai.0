@@ -1,12 +1,11 @@
-References: <CAPUhiY0pnnBEiHzUcMcxymTWxKx48AYkLi8F=_jxE-z0W7bB5w@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <b66e0569-f524-4d0c-7cdb-d1eea131f7af@xenomai.org>
-Date: Fri, 21 Oct 2016 12:35:11 +0200
+From: Jan Leupold <leupold@rsi-elektrotechnik.de>
+Message-ID: <05275bfd-e65c-e60d-b0b8-f7c230d6fbb9@rsi-elektrotechnik.de>
+Date: Mon, 24 Oct 2016 16:22:25 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAPUhiY0pnnBEiHzUcMcxymTWxKx48AYkLi8F=_jxE-z0W7bB5w@mail.gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Porting Xenomai on Odroid XU4
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai] sigwait or pthread_sigmask behaviour misunderstood or
+	broken?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,47 +14,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ugo Fabrizi <ugo.fabrizi0@gmail.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 10/09/2016 03:49 PM, Ugo Fabrizi wrote:
-> Hi,
-> 
-> I am trying to port Xenomai on Odroid XU4 following the steps I have found
-> at https://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc/
-> 
-> I have never done a porting but I was used to use hard real time operating
-> systems such as RTAI.
-> 
-> I have got stuck at the first step "Hardware timer" for the general.
-> 
-> I have found the code within the sources of the Odroid XU4 kernel at
-> https://github.com/hardkernel/linux/blob/odroidxu3-3.10.y/
-> arch/arm/mach-exynos/mach-smdk5422.c
-> 
-> and at https://github.com/hardkernel/linux/blob/odroidxu3-3.10.y/
-> arch/arm/plat-samsung/samsung-time.c
-> 
-> Can anyone help me?
-> 
-> The board supports the clock event infrastucture and to start I would like
-> to use shared timers between linux and xenomai. Following the guide the
-> first thing I have understood it is needed to do is to add
-> if (!clockevent_ipipe_stolen(evt))
->          acklowdege_the_irq_if_not_stolen
-> 
-> in the interrupt service routine "static irqreturn_t
-> samsung_clock_event_isr(int irq, void *dev_id)"
-> What low level register should I write to acknowledge the irq and with what?
-> 
-> I have tried to found the datasheet of the Exynos 5422 but I cannot find it.
-> 
-> Can anyone help me please?
+Hi,
 
-The proper acknowledge code usually precedes the call to the clock event
-handler in the original IRQ handler, that is the point of testing
-clockevent_ipipe_stolen(evt), i.e. for skipping it in the regular IRQ
-handler, because it has to run earlier from the I-pipe timer ack routine.
+My question is about Linux signal handling as it is used in the examples in
+Xenomai 3.0.3. My target runs on ipipe-core-4.1.18-arm7.
+The test program:
+
+#include <signal.h>
+#include <stdio.h>
+
+int
+main()
+{
+    sigset_t blocked_signals;
+    sigemptyset(&blocked_signals);
+    sigaddset(&blocked_signals, SIGUSR1);
+    pthread_sigmask(SIG_BLOCK, &blocked_signals, NULL);
+
+    int sig;
+    sigwait(&blocked_signals, &sig);
+    printf("got signal %d\n", sig);
+    return 0;
+}
+
+When compiled and linked with
+$CC test-sigwait.c -lpthread
+it works as expected: when I send SIGUSR1 it prints my message
+exit code 0
+
+But when compile and linked with
+$CC test-sigwait.c $(xeno-config --skin=posix --cflags --ldflags)
+it still waits for some Linux signal, but then prints
+"User defined signal 1",
+which seems to be a string from glibc.
+exit code 138
+
+Any ideas what is wrong here?
+
+Best regards,
+Jan
 
 -- 
-Philippe.
+_____________________________________________________________
+Jan Leupold
+Dr.-Ing.
+Entwicklung
+
+Tel.: +49 8444 9204-32
+Fax:  +49 8444 9204-50
+leupold@rsi-elektrotechnik.de
+
+R-S-I Elektrotechnik GmbH & Co. KG
+Woelkestrasse 11
+D-85301 Schweitenkirchen
+www.rsi-elektrotechnik.de
+_____________________________________________________________
+Amtsgericht Ingolstadt - GmbH: HRB 191328 - KG: HRA 170363
+Geschäftsführer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
+USt-IdNr.: DE 128592548
+
 
