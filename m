@@ -1,7 +1,9 @@
-From: Henning Schild <henning.schild@siemens.com>
-Date: Mon, 24 Oct 2016 19:39:45 +0200
-Message-Id: <9eed427afba0029a91a7819dd38f7ba55d81ca0a.1477330570.git.henning.schild@siemens.com>
-Subject: [Xenomai] [PATCH 1/2] hal/x86: fix kernel-space FPU with 4.1 kernel
+MIME-Version: 1.0
+From: Grant Liu <grant7788@gmail.com>
+Date: Tue, 25 Oct 2016 10:37:14 +0800
+Message-ID: <CALxt+8tmhvRVB3wpem5OP41C65Qs+QP+yWKqYSiQmMN7uKxzRQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] xenomai 2.6.4 ToD drift hunge in linux kernel 3.14.17
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,34 +12,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-Starting at kernel 4.1 we have a per-cpu flag for kernel fpu and do not
-abuse the flag of current anymore. This patch is a minimal fix for
-something that is hard to get your head around, but xenomai 2.6 will not
-go beyond 4.1. So not effort to fix or document what is going on ...
+Hello xenomai,
 
-Signed-off-by: Henning Schild <henning.schild@siemens.com>
----
- include/asm-x86/bits/pod.h | 4 ++++
- 1 file changed, 4 insertions(+)
+I have one Intel atom e3826 platform from Neousys technology,
+(http://www.neousys-tech.com/products/embedded/poc-120/)
+and I want to install xenomai 2.6.4 on linux kernel 3.14.17,
+but the result of clocktest is un-acceptable (ToD drift more than 1000us/S).
+After tuned the parameters for several times, the issue remain unchanged.
+So I turn to  other kernel, and found out the on kernel 3.8.13, the ToD
+drift is around -40us/S, which is very good.
+I used the same config file, and all build procedure are the same.
+Would you please kindly let me know what's the root cause?
+I attached config file and screen capture for your reference.
+Thank you in advance.
 
-diff --git a/include/asm-x86/bits/pod.h b/include/asm-x86/bits/pod.h
-index 678720a..8a16713 100644
---- a/include/asm-x86/bits/pod.h
-+++ b/include/asm-x86/bits/pod.h
-@@ -58,6 +58,10 @@ static inline void xnarch_leave_root(xnarchtcb_t *rootcb)
- 	rootcb->spp = &current->thread.x86reg_sp;
- 	rootcb->ipp = &current->thread.rip;
- #endif
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,0,0)
-+	if (kernel_fpu_disabled())
-+		wrap_clear_fpu_used(current);
-+#endif
- 	rootcb->ts_usedfpu = !!wrap_test_fpu_used(current);
- 	rootcb->cr0_ts = (read_cr0() & 8) != 0;
- 	/* So that xnarch_save_fpu() will operate on the right FPU area. */
--- 
-2.7.3
+I compared the clock source on both kernel:
+available_clocksource: tsc hpet acpi_pm
+current_clocksource: tsc
+well cpu frequency shows some difference:
+on kernel 3.8.13: 1466.726
+on kernel 3.14.17: 1465.200
 
-
+BRs,
+Grant
