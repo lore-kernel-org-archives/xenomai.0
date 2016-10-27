@@ -1,14 +1,13 @@
-Date: Thu, 27 Oct 2016 11:50:50 +0000 (UTC)
-From: Giulio Moro <giuliomoro@yahoo.it>
-Message-ID: <668767397.4273219.1477569050617@mail.yahoo.com>
-In-Reply-To: <1900316.qDVZsvgDXd@soho>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Thu, 27 Oct 2016 15:32:37 +0200
+Message-ID: <1660978.gTLn5jfF68@soho>
+In-Reply-To: <668767397.4273219.1477569050617@mail.yahoo.com>
 References: <308568998.3587071.1477532601674.ref@mail.yahoo.com>
- <308568998.3587071.1477532601674@mail.yahoo.com> <1900316.qDVZsvgDXd@soho>
+ <1900316.qDVZsvgDXd@soho> <668767397.4273219.1477569050617@mail.yahoo.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] accessing mmap'ed memory causes mode switches
-Reply-To: Giulio Moro <giuliomoro@yahoo.it>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,16 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Giulio Moro <giuliomoro@yahoo.it>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
->- xenomai 2.6.3 is old. 2.6.5 is the last stable version of 2.6.x branch. 
->Also, 2.6.x branch AFAIK is just in maintenance mode, so I would recommend you 
->if you are beginning a new project use Xenomai 3.x
-
-
-Thanks for the advice, the project started three years ago so it was 2.x from the beginning and then 
-It is also difficult to find BeagleBone kernels patched with Xenomai and they are all 2.6, so I guess we'll stick with 2.6.x for a while, though I will look into update to 2.6.5 soon. Do you reckon this could be related to the mode switches I am seeing?
-
-Best,
-Giulio
-
+RWwgRGlqb3VzLCAyNyBkJ29jdHVicmUgZGUgMjAxNiwgYSBsZXMgMTE6NTA6NTAsIEdpdWxpbyBN
+b3JvIHZhIGVzY3JpdXJlOgo+ID4tIHhlbm9tYWkgMi42LjMgaXMgb2xkLiAyLjYuNSBpcyB0aGUg
+bGFzdCBzdGFibGUgdmVyc2lvbiBvZiAyLjYueCBicmFuY2guCj4gPkFsc28sIDIuNi54IGJyYW5j
+aCBBRkFJSyBpcyBqdXN0IGluIG1haW50ZW5hbmNlIG1vZGUsIHNvIEkgd291bGQgcmVjb21tZW5k
+Cj4gPnlvdSBpZiB5b3UgYXJlIGJlZ2lubmluZyBhIG5ldyBwcm9qZWN0IHVzZSBYZW5vbWFpIDMu
+eAo+IAo+IFRoYW5rcyBmb3IgdGhlIGFkdmljZSwgdGhlIHByb2plY3Qgc3RhcnRlZCB0aHJlZSB5
+ZWFycyBhZ28gc28gaXQgd2FzIDIueAo+IGZyb20gdGhlIGJlZ2lubmluZyBhbmQgdGhlbiBJdCBp
+cyBhbHNvIGRpZmZpY3VsdCB0byBmaW5kIEJlYWdsZUJvbmUga2VybmVscwo+IHBhdGNoZWQgd2l0
+aCBYZW5vbWFpIGFuZCB0aGV5IGFyZSBhbGwgMi42LCBzbyBJIGd1ZXNzIHdlJ2xsIHN0aWNrIHdp
+dGgKPiAyLjYueCBmb3IgYSB3aGlsZSwgdGhvdWdoIEkgd2lsbCBsb29rIGludG8gdXBkYXRlIHRv
+IDIuNi41IHNvb24uCgoKQXJlIHlvdSB0ZWxsaW5nIG1lIHRoYXQgaXQncyBhIHByb2JsZW0gb2Yg
+Y29tcGlsZWQga2VybmVscz8gVGhlbiBpdCB3b3VsZCBiZSAKd29ydGggcHV0dGluZyBzb21lIGVm
+Zm9ydCB0byBoYXZlIGFueSBvZiB0aGVtIGFuZCBleHBlY3QgdGhlbSB0byBmaW5kIHRoZSBuZXQu
+IApFdmVuIEkgY2FuIHRyeSB0byBwcm92aWRlIG9uZS4KCj4gRG8geW91Cj4gcmVja29uIHRoaXMg
+Y291bGQgYmUgcmVsYXRlZCB0byB0aGUgbW9kZSBzd2l0Y2hlcyBJIGFtIHNlZWluZz8KCkkgZG9u
+J3Qga25vdywgYnV0IHdobyBrbm93cz8KCkxlb3BvbGQKCi0tIAotLQpMaW51eCBVc2VyIDE1MjY5
+MiAgICAgR1BHOiAwNUY0QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQotLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tCkE6IEJlY2F1c2UgaXQgbWVzc2VzIHVwIHRoZSBvcmRlciBpbiB3
+aGljaCBwZW9wbGUgbm9ybWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkgaXMgdG9wLXBvc3Rpbmcgc3Vj
+aCBhIGJhZCB0aGluZz8KQTogVG9wLXBvc3RpbmcuClE6IFdoYXQgaXMgdGhlIG1vc3QgYW5ub3lp
+bmcgdGhpbmcgaW4gZS1tYWlsPwotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0t
+LS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUu
+YXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogODE5IGJ5dGVzCkRlc2M6
+IFRoaXMgaXMgYSBkaWdpdGFsbHkgc2lnbmVkIG1lc3NhZ2UgcGFydC4KVVJMOiA8aHR0cDovL3hl
+bm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTYxMDI3LzU2MTRjYWY3
+L2F0dGFjaG1lbnQuc2lnPgo=
