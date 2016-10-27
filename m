@@ -1,13 +1,14 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Date: Thu, 27 Oct 2016 08:50:17 +0200
-Message-ID: <1900316.qDVZsvgDXd@soho>
-In-Reply-To: <308568998.3587071.1477532601674@mail.yahoo.com>
-References: <308568998.3587071.1477532601674.ref@mail.yahoo.com>
- <308568998.3587071.1477532601674@mail.yahoo.com>
+References: <05275bfd-e65c-e60d-b0b8-f7c230d6fbb9@rsi-elektrotechnik.de>
+ <573bcd4e-33a5-224f-0178-32ceb2706162@xenomai.org>
+From: Jan Leupold <leupold@rsi-elektrotechnik.de>
+Message-ID: <54ae056e-88c3-2dea-4c0f-1708c5a45fec@rsi-elektrotechnik.de>
+Date: Thu, 27 Oct 2016 11:17:43 +0200
 MIME-Version: 1.0
+In-Reply-To: <573bcd4e-33a5-224f-0178-32ceb2706162@xenomai.org>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] accessing mmap'ed memory causes mode switches
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] sigwait or pthread_sigmask behaviour misunderstood or
+ broken?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,32 +17,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, Giulio Moro <giuliomoro@yahoo.it>
+To: xenomai@xenomai.org
 
-SGkgR2l1bGlvLAoKRWwgRGlqb3VzLCAyNyBkJ29jdHVicmUgZGUgMjAxNiwgYSBsZXMgMDE6NDM6
-MjEsIEdpdWxpbyBNb3JvIHZhIGVzY3JpdXJlOgo+IEhlbGxvIHRoZXJlLAo+IAo+IEkgYW0gbmV3
-IHRvIHRoZSBsaXN0LCBJIGFtIHdvcmtpbmcgb24gdGhpcyBwcm9qZWN0Cj4gIGh0dHBzOi8vZ2l0
-aHViLmNvbS9CZWxhUGxhdGZvcm0vQmVsYS8gZm9yIHJlYWwtdGltZSBhdWRpbwo+IG9uIHRoZSBC
-ZWFnbGVCb25lIEJsYWNrIHVzaW5nIFhlbm9tYWkuCgp3ZWxjb21lISEhCgpOaWNlIHByb2plY3Qu
-Cgo+IEkgYW0gdHJ5aW5nIHRvIHVzZSBYZW5vbWFpJ3MgUE9TSVggc2tpbiB0byBjcmVhdGUgYW5k
-IGFjY2Vzcwo+ICBzaGFyZWQgbWVtb3J5IG9iamVjdHMsIGJ1dCBJIGFtIGdldHRpbmcgbW9kZSBz
-d2l0Y2hlcyB0bwo+IHNlY29uZGFyeSBtb2RlIGV2ZXJ5IHRpbWUgSSB0cnkgdG8gYWNjZXNzIChy
-ZWFkIG9yIHdyaXRlKSB0aGUKPiBtYXBwZWQgbWVtb3J5LCB1c2luZyBYZW5vbWFpIDIuNi4zIG9u
-IERlYmlhbiBBUk0gTGludXggMy44LjEzcjgxCj4gKGh0dHBzOi8vZ2l0aHViLmNvbS9Sb2JlcnRD
-TmVsc29uL2JiLWtlcm5lbC90cmVlLzMuOC4xMy14ZW5vbWFpLXI4MSApLgo+IEkgd291bGQgZXhw
-ZWN0IG5vIG1vZGUgc3dpdGNoZXMgdG8gdGFrZSBwbGFjZSBvbmNlIHRoZSBtZW1vcnkKPiBpcyBt
-YXBwZWQgYW5kIGFjY2Vzc2VkIGF0IGxlYXN0IG9uY2UuCgpKdXN0IHNvbWUgbm90ZXM6CgotIHhl
-bm9tYWkgMi42LjMgaXMgb2xkLiAyLjYuNSBpcyB0aGUgbGFzdCBzdGFibGUgdmVyc2lvbiBvZiAy
-LjYueCBicmFuY2guIApBbHNvLCAyLjYueCBicmFuY2ggQUZBSUsgaXMganVzdCBpbiBtYWludGVu
-YW5jZSBtb2RlLCBzbyBJIHdvdWxkIHJlY29tbWVuZCB5b3UgCmlmIHlvdSBhcmUgYmVnaW5uaW5n
-IGEgbmV3IHByb2plY3QgdXNlIFhlbm9tYWkgMy54CgpCZXN0IHJlZ2FyZHMsCgpMZW9wb2xkCgot
-LSAKLS0KTGludXggVXNlciAxNTI2OTIgICAgIEdQRzogMDVGNEE3QTk0OUEyRDlBQQpDYXRhbG9u
-aWEKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpBOiBCZWNhdXNlIGl0IG1l
-c3NlcyB1cCB0aGUgb3JkZXIgaW4gd2hpY2ggcGVvcGxlIG5vcm1hbGx5IHJlYWQgdGV4dC4KUTog
-V2h5IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBiYWQgdGhpbmc/CkE6IFRvcC1wb3N0aW5nLgpROiBX
-aGF0IGlzIHRoZSBtb3N0IGFubm95aW5nIHRoaW5nIGluIGUtbWFpbD8KLS0tLS0tLS0tLS0tLS0g
-bmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJi
-ZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJl
-ClNpemU6IDgxOSBieXRlcwpEZXNjOiBUaGlzIGlzIGEgZGlnaXRhbGx5IHNpZ25lZCBtZXNzYWdl
-IHBhcnQuClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2ht
-ZW50cy8yMDE2MTAyNy85YzJjNjk4ZC9hdHRhY2htZW50LnNpZz4K
+Am 25.10.2016 um 19:11 schrieb Philippe Gerum:
+> On 10/24/2016 04:22 PM, Jan Leupold wrote:
+>> Hi,
+>>
+>> My question is about Linux signal handling as it is used in the examples in
+>> Xenomai 3.0.3. My target runs on ipipe-core-4.1.18-arm7.
+>> The test program:
+>>
+>> #include <signal.h>
+>> #include <stdio.h>
+>>
+>> int
+>> main()
+>> {
+>>     sigset_t blocked_signals;
+>>     sigemptyset(&blocked_signals);
+>>     sigaddset(&blocked_signals, SIGUSR1);
+>>     pthread_sigmask(SIG_BLOCK, &blocked_signals, NULL);
+>>
+>>     int sig;
+>>     sigwait(&blocked_signals, &sig);
+>>     printf("got signal %d\n", sig);
+>>     return 0;
+>> }
+>>
+>> When compiled and linked with
+>> $CC test-sigwait.c -lpthread
+>> it works as expected: when I send SIGUSR1 it prints my message
+>> exit code 0
+>>
+>> But when compile and linked with
+>> $CC test-sigwait.c $(xeno-config --skin=posix --cflags --ldflags)
+>> it still waits for some Linux signal, but then prints
+>> "User defined signal 1",
+>> which seems to be a string from glibc.
+>> exit code 138
+>>
+>> Any ideas what is wrong here?
+>>
+> 
+> If SIGUSR1 is sent by the glibc's (pthread_)kill() service, then a
+> linux-originated signal is received by the target process. Therefore,
+> libcobalt's sigwait() won't receive it, since this is an interface for
+> receiving signals originated from the Cobalt kernel, which implements a
+> completely separate handling. When the shell's kill command is used to
+> send SIGUSR1, the glibc's implementation is picked, which explains the
+> behavior you described: glibc's internal handler will notice, but not
+> libcobalt's sigwait() call.
+> 
+> In addition, Xenomai/cobalt does not support asynchronous delivery of
+> (real-time) signals, only synchronous wait services are available. So
+> pthread_sigmask() will only deal with linux-originated events and won't
+> have any effect on Xenomai's handling of such events. Please see for
+> more details:
+> http://xenomai.org/migrating-from-xenomai-2-x-to-3-x/#Real-time_signals
+> 
+> To sum up, signals with actual real-time guarantees (i.e. with a bounded
+> latency required on delivery) have to be sent and received via Xenomai's
+> libcobalt services.
+> 
+
+Thanks a lot for this explanation!
+
+It helped me to discover --no-auto-init as xeno-config option and now I was
+able to achieve what I wanted: controlled exit behaviour for my test
+applications on Ctrl-C, by calling pthread_sigmask() and signalfd() before
+xenomai_init().
+
+Best regards,
+Jan
+
+-- 
+_____________________________________________________________
+R-S-I Elektrotechnik GmbH & Co. KG
+Woelkestrasse 11
+D-85301 Schweitenkirchen
+Fon: +49 8444 9204-0
+Fax: +49 8444 9204-50
+www.rsi-elektrotechnik.de
+
+_____________________________________________________________
+Amtsgericht Ingolstadt - GmbH: HRB 191328 - KG: HRA 170363
+Geschäftsführer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
+USt-IdNr.: DE 128592548
+
+
