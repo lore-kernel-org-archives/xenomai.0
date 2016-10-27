@@ -1,12 +1,13 @@
-Date: Thu, 27 Oct 2016 01:43:21 +0000 (UTC)
-From: Giulio Moro <giuliomoro@yahoo.it>
-Message-ID: <308568998.3587071.1477532601674@mail.yahoo.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Date: Thu, 27 Oct 2016 08:50:17 +0200
+Message-ID: <1900316.qDVZsvgDXd@soho>
+In-Reply-To: <308568998.3587071.1477532601674@mail.yahoo.com>
 References: <308568998.3587071.1477532601674.ref@mail.yahoo.com>
-Subject: [Xenomai] accessing mmap'ed memory causes mode switches
-Reply-To: Giulio Moro <giuliomoro@yahoo.it>
+ <308568998.3587071.1477532601674@mail.yahoo.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] accessing mmap'ed memory causes mode switches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,53 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org, Giulio Moro <giuliomoro@yahoo.it>
 
-Hello there,
-
-I am new to the list, I am working on this project
- https://github.com/BelaPlatform/Bela/ for real-time audio 
-on the BeagleBone Black using Xenomai.
-
-I am trying to use Xenomai's POSIX skin to create and access
- shared memory objects, but I am getting mode switches to 
-secondary mode every time I try to access (read or write) the 
-mapped memory, using Xenomai 2.6.3 on Debian ARM Linux 3.8.13r81 
-(https://github.com/RobertCNelson/bb-kernel/tree/3.8.13-xenomai-r81 ).
-I would expect no mode switches to take place once the memory 
-is mapped and accessed at least once.
-Full listing below,
-Notes:
-
-- I build with 
-gcc -I. shm.c `xeno-config --skin posix --cflags` `xeno-config --skin posix --ldflags`  `xeno-config --skin native --ldflags` -o shm
-which evaluates to 
-gcc -I. shm.c -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -D__XENO__ -I/usr/xenomai/include/posix -Wl,@/usr/xenomai/lib/posix.wrappers -L/usr/xenomai/lib -lpthread_rt -lxenomai -lpthread -lrt -lnative -L/usr/xenomai/lib -lxenomai -lpthread -lrt -o shm
-
-
-- I tried to explicitly use __wrap_shm_open and __wrap_mmap , no change.
-- I tried with and without the CONFIG_XENO_OPT_POSIX_SHM config line in the kernel, no change.
-- the documentation does not state that O_DIRECT can only be used when CONFIG_XENO_OPT_POSIX_SHM is activated
-- the description of the return values for mmap is wrong in the docs http://www.xenomai.org/documentation/trunk/html/api/group__posix__shm.html : it says it returns 0 on success, while it returns the pointer to the memory.
-
-
-minimal example (does not compile, gives you an idea)
-
-fd = shm_open(SHM_NAME, O_RDWR | O_CREAT | O_DIRECT, 0);
-size_t len = 40;
-ftruncate(fd, len);void* addr = mmap(ignored, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-float* arr = (float*)addr;
-//causes mode switches:
-printf("%f\n", arr[n]);
-
-
-
-Full listing: 
-https://gist.github.com/giuliomoro/457c8cde1eda6190a28566b3288d38c0
-Kernel config file: 
-https://gist.github.com/giuliomoro/283c92049704652c06a26ed08669966a
-
-
-Best,
-Giulio
-
+SGkgR2l1bGlvLAoKRWwgRGlqb3VzLCAyNyBkJ29jdHVicmUgZGUgMjAxNiwgYSBsZXMgMDE6NDM6
+MjEsIEdpdWxpbyBNb3JvIHZhIGVzY3JpdXJlOgo+IEhlbGxvIHRoZXJlLAo+IAo+IEkgYW0gbmV3
+IHRvIHRoZSBsaXN0LCBJIGFtIHdvcmtpbmcgb24gdGhpcyBwcm9qZWN0Cj4gIGh0dHBzOi8vZ2l0
+aHViLmNvbS9CZWxhUGxhdGZvcm0vQmVsYS8gZm9yIHJlYWwtdGltZSBhdWRpbwo+IG9uIHRoZSBC
+ZWFnbGVCb25lIEJsYWNrIHVzaW5nIFhlbm9tYWkuCgp3ZWxjb21lISEhCgpOaWNlIHByb2plY3Qu
+Cgo+IEkgYW0gdHJ5aW5nIHRvIHVzZSBYZW5vbWFpJ3MgUE9TSVggc2tpbiB0byBjcmVhdGUgYW5k
+IGFjY2Vzcwo+ICBzaGFyZWQgbWVtb3J5IG9iamVjdHMsIGJ1dCBJIGFtIGdldHRpbmcgbW9kZSBz
+d2l0Y2hlcyB0bwo+IHNlY29uZGFyeSBtb2RlIGV2ZXJ5IHRpbWUgSSB0cnkgdG8gYWNjZXNzIChy
+ZWFkIG9yIHdyaXRlKSB0aGUKPiBtYXBwZWQgbWVtb3J5LCB1c2luZyBYZW5vbWFpIDIuNi4zIG9u
+IERlYmlhbiBBUk0gTGludXggMy44LjEzcjgxCj4gKGh0dHBzOi8vZ2l0aHViLmNvbS9Sb2JlcnRD
+TmVsc29uL2JiLWtlcm5lbC90cmVlLzMuOC4xMy14ZW5vbWFpLXI4MSApLgo+IEkgd291bGQgZXhw
+ZWN0IG5vIG1vZGUgc3dpdGNoZXMgdG8gdGFrZSBwbGFjZSBvbmNlIHRoZSBtZW1vcnkKPiBpcyBt
+YXBwZWQgYW5kIGFjY2Vzc2VkIGF0IGxlYXN0IG9uY2UuCgpKdXN0IHNvbWUgbm90ZXM6CgotIHhl
+bm9tYWkgMi42LjMgaXMgb2xkLiAyLjYuNSBpcyB0aGUgbGFzdCBzdGFibGUgdmVyc2lvbiBvZiAy
+LjYueCBicmFuY2guIApBbHNvLCAyLjYueCBicmFuY2ggQUZBSUsgaXMganVzdCBpbiBtYWludGVu
+YW5jZSBtb2RlLCBzbyBJIHdvdWxkIHJlY29tbWVuZCB5b3UgCmlmIHlvdSBhcmUgYmVnaW5uaW5n
+IGEgbmV3IHByb2plY3QgdXNlIFhlbm9tYWkgMy54CgpCZXN0IHJlZ2FyZHMsCgpMZW9wb2xkCgot
+LSAKLS0KTGludXggVXNlciAxNTI2OTIgICAgIEdQRzogMDVGNEE3QTk0OUEyRDlBQQpDYXRhbG9u
+aWEKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpBOiBCZWNhdXNlIGl0IG1l
+c3NlcyB1cCB0aGUgb3JkZXIgaW4gd2hpY2ggcGVvcGxlIG5vcm1hbGx5IHJlYWQgdGV4dC4KUTog
+V2h5IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBiYWQgdGhpbmc/CkE6IFRvcC1wb3N0aW5nLgpROiBX
+aGF0IGlzIHRoZSBtb3N0IGFubm95aW5nIHRoaW5nIGluIGUtbWFpbD8KLS0tLS0tLS0tLS0tLS0g
+bmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJi
+ZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJl
+ClNpemU6IDgxOSBieXRlcwpEZXNjOiBUaGlzIGlzIGEgZGlnaXRhbGx5IHNpZ25lZCBtZXNzYWdl
+IHBhcnQuClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2ht
+ZW50cy8yMDE2MTAyNy85YzJjNjk4ZC9hdHRhY2htZW50LnNpZz4K
