@@ -1,10 +1,13 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <550719c6-8d3d-1cb1-fc74-d0922b80deb3@siemens.com>
-Date: Mon, 31 Oct 2016 16:55:25 +0100
+References: <308568998.3587071.1477532601674.ref@mail.yahoo.com>
+ <308568998.3587071.1477532601674@mail.yahoo.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4004d7e1-d78f-0f97-ee12-d3a33f16400d@xenomai.org>
+Date: Mon, 31 Oct 2016 18:40:00 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
+In-Reply-To: <308568998.3587071.1477532601674@mail.yahoo.com>
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PULL] Trying to flushing my queue...
+Subject: Re: [Xenomai] accessing mmap'ed memory causes mode switches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,63 +16,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Giulio Moro <giuliomoro@yahoo.it>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Philippe,
+On 10/27/2016 03:43 AM, Giulio Moro wrote:
+> Hello there,
+> 
+> I am new to the list, I am working on this project
+>  https://github.com/BelaPlatform/Bela/ for real-time audio 
+> on the BeagleBone Black using Xenomai.
+> 
+> I am trying to use Xenomai's POSIX skin to create and access
+>  shared memory objects, but I am getting mode switches to 
+> secondary mode every time I try to access (read or write) the 
+> mapped memory, using Xenomai 2.6.3 on Debian ARM Linux 3.8.13r81 
+> (https://github.com/RobertCNelson/bb-kernel/tree/3.8.13-xenomai-r81 ).
+> I would expect no mode switches to take place once the memory 
+> is mapped and accessed at least once.
+> Full listing below,
+> Notes:
+> 
+> - I build with 
+> gcc -I. shm.c `xeno-config --skin posix --cflags` `xeno-config --skin posix --ldflags`  `xeno-config --skin native --ldflags` -o shm
+> which evaluates to 
+> gcc -I. shm.c -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -D__XENO__ -I/usr/xenomai/include/posix -Wl,@/usr/xenomai/lib/posix.wrappers -L/usr/xenomai/lib -lpthread_rt -lxenomai -lpthread -lrt -lnative -L/usr/xenomai/lib -lxenomai -lpthread -lrt -o shm
+> 
+> 
+> - I tried to explicitly use __wrap_shm_open and __wrap_mmap , no change.
+> - I tried with and without the CONFIG_XENO_OPT_POSIX_SHM config line in the kernel, no change.
+> - the documentation does not state that O_DIRECT can only be used when CONFIG_XENO_OPT_POSIX_SHM is activated
 
-The following changes since commit 641827d0c029e3c2cf42cb02fdaa845da98b0619:
+Xenomai's legacy POSIX shm support available with 2.6 did not bring any
+actual upside, and was more or less a wrapper around the regular shm
+support. For this reason, it has been dropped in 3.x. You may want to
+use the latter directly, even with 2.6.
 
-  rtcan: ems_pci driver update to support more devices (2016-10-30 18:07:19 +0100)
+> - the description of the return values for mmap is wrong in the docs http://www.xenomai.org/documentation/trunk/html/api/group__posix__shm.html : it says it returns 0 on success, while it returns the pointer to the memory.
+> 
 
-are available in the git repository at:
+The documentation is inlined in the source code, issuing patches to
+update it is the best way to get it fixed.
 
-  git://git.xenomai.org/xenomai-jki.git for-forge
+> 
+> minimal example (does not compile, gives you an idea)
+> 
+> fd = shm_open(SHM_NAME, O_RDWR | O_CREAT | O_DIRECT, 0);
+> size_t len = 40;
+> ftruncate(fd, len);void* addr = mmap(ignored, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+> float* arr = (float*)addr;
 
-for you to fetch changes up to 8e74b54833473a96e813f787ba34980525dddf02:
+No memory reference up to this point anyway.
 
-  boilerplate: Fix enabling Xenomai only in shared libs (2016-10-31 16:40:40 +0100)
+> //causes mode switches:
+> printf("%f\n", arr[n]);
+> 
 
+This is due to minor faults, when the memory is there but not referenced
+to by a valid PTE in the page table for the current process yet.
 
-Sorry in advance if I should have missed addressing some comment given
-on one or the other patch before - some are now very old because I
-didn't find the time to go after them. Let's retry.
+Before the 3.10 series, the pipeline used to switch to secondary mode
+eagerly upon any kind of page fault including minor ones (see
+do_translation_fault() in arm/mm/fault.c), this is what your code is
+experiencing with 3.8.
 
-Jan
+Starting from 3.10 and on, those faults should be transparently handled
+by the pipeline, and should not require any transition to secondary mode
+for armv6+ CPUs.
 
-----------------------------------------------------------------
-Jan Kiszka (6):
-      testsuite/smokey: Add test case for setschedparam & Co,
-      cobalt/kernel: Allow to restart clock_nanosleep and select after signal processing
-      lib/cobalt: Provide RT-capable usleep
-      cobalt/autotune: Rework autotune_ioctl_nrt/rt for more robust request handling
-      cobalt/rtdm: Restore return code tracing
-      boilerplate: Fix enabling Xenomai only in shared libs
-
- configure.ac                                       |   1 +
- include/cobalt/uapi/kernel/thread.h                |   1 +
- include/cobalt/unistd.h                            |   2 +
- .../include/asm-generic/xenomai/ancillaries.h      |  27 ++++
- .../cobalt/include/asm-generic/xenomai/wrappers.h  |   4 +
- kernel/cobalt/posix/clock.c                        |  36 +++++-
- kernel/cobalt/posix/internal.h                     |   2 +
- kernel/cobalt/posix/io.c                           |  40 ++++--
- kernel/cobalt/posix/syscall.c                      |   5 +
- kernel/cobalt/rtdm/fd.c                            |  40 +++---
- kernel/drivers/autotune/autotune.c                 |  72 +++++++----
- lib/boilerplate/wrappers.c                         |   5 +-
- lib/cobalt/clock.c                                 |  14 +++
- lib/cobalt/cobalt.wrappers                         |   1 +
- lib/cobalt/wrappers.c                              |   6 +
- testsuite/smokey/Makefile.am                       |   1 +
- testsuite/smokey/setsched/Makefile.am              |   9 ++
- testsuite/smokey/setsched/setsched.c               | 137 +++++++++++++++++++++
- 18 files changed, 357 insertions(+), 46 deletions(-)
- create mode 100644 kernel/cobalt/include/asm-generic/xenomai/ancillaries.h
- create mode 100644 testsuite/smokey/setsched/Makefile.am
- create mode 100644 testsuite/smokey/setsched/setsched.c
+In short, you need to upgrade the pipeline code.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
