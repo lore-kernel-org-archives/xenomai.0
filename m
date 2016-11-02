@@ -1,10 +1,10 @@
+Message-ID: <581A1E18.7040405@numalliance.com>
+Date: Wed, 02 Nov 2016 18:10:48 +0100
+From: =?ISO-8859-1?Q?St=E9phane_ancelot?= <sancelot@numalliance.com>
 MIME-Version: 1.0
-From: Pierre C <cpierre0031@gmail.com>
-Date: Wed, 2 Nov 2016 14:45:09 +0100
-Message-ID: <CALJb2vDv67n902qmu04Zodr1rSap8QJ9WymN1ndRxWwO=tf3HA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] [RTnet]: select() function (on Promiscuous RAW sockets)
- return all the time, the number of initialized file descriptor.
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] ipipe tracer question
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,16 +13,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi everybody,
+Hi,
+I have got an RT task that seems being disturbed by some system driver.
 
-When i use the select() function on the RTnet Promiscuous RAW socket
-interfaces, the function return the number of initialized file descriptor
-and when i read the data received (with the "rt_dev_recv" function), the
-function return -11 for each port.
+So, I have setted up ipipe tracer in kernel.
 
-Xenomai: V3.0.2
-Kernel: 3.14.44
+But I do not know where to  go  now ?
+I suppose being on the right way, but what to do next ?
 
-Thanks alot, in advance, for your answer or solution.
+Regards,
+S.Ancelot
+
+
