@@ -1,11 +1,9 @@
-From: "mian.huang@siemens.com" <mian.huang@siemens.com>
-Date: Wed, 2 Nov 2016 14:41:42 +0800
-Message-ID: <AE798E990C72C345B223A9C86007D6E8673E6FBC48@CNSHA01078.cn001.siemens.net>
-Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Freescale's LS2085ardb
+From: Vivien LEGER <vivien.leger@gmail.com>
+Date: Wed, 2 Nov 2016 09:19:48 -0400
+Message-ID: <CA+X=5XiGUYkKiAiffg-A82ywtSJjpcbJS2C1fV4aOiHQw2i5Gw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Xenomai/Cobalt on ARM64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,25 +12,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi:
+Hello everyone.
 
-        Does the xenomial support the Freescale's LS2085ardb evaluation boa=
-rd?
+I understand that xenomai is not quite ready for ARM64 and that no ETA is
+yet determined.
 
-Best Regards!
+Would you have a rough estimate of the target for this version. Is ARM64 a
+big thing to you or is it still considered nice to have?
 
-Mianbo Huang
+I m currently building a distro using yocto and target to use xenomai with
+it. As i plan to use it on a ARM-A53 (among others) i was just wondering.
 
-Siemens Shenzhen Magnetic Resonance Ltd.(SSMR)
-HC DI MR R&D SZN SW
-Siemens MRI Center, Gaoxin C. Ave.,2nd, Hi-Tech Industrial Park, Shenzhen, =
-P.R.China
-Zip Code: 518057
-Tel: +86 755 2318-5304
-Mobile:+86 13682612959
-Email:mian.huang@siemens.com<mailto:mian.huang@siemens.com>
+Thank you very much for your wonderfull work.
 
+It is my first post on the mailling list, i ve been using xenomai for 6
+years now, and i would like to thanks anyone that indirectly helped me by
+replying to others.
 
+I have also a thought for Gilles, that wrote so many post.I ve rid him for
+hours trying to understand what i was doing wrong. The page on the xenomai
+website truly shook me.
 
+Best Regards.
+
+Vivien.
