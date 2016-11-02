@@ -1,15 +1,11 @@
-Date: Sat, 5 Nov 2016 18:22:16 +0000 (UTC)
-From: Giulio Moro <giuliomoro@yahoo.it>
-Message-ID: <698772021.248089.1478370136298@mail.yahoo.com>
-In-Reply-To: <2ef2ba48-8598-eac0-b605-4372b39dd23e@hilscher.com>
-References: <CAPdz0-x=sQMY-0DKYQX+PXjXM0br6eGm=Kyo_CrBPtwJndGfnA@mail.gmail.com>
- <20161104144806.GP1465@csclub.uwaterloo.ca>
- <2ef2ba48-8598-eac0-b605-4372b39dd23e@hilscher.com>
+From: "mian.huang@siemens.com" <mian.huang@siemens.com>
+Date: Wed, 2 Nov 2016 14:41:42 +0800
+Message-ID: <AE798E990C72C345B223A9C86007D6E8673E6FBC48@CNSHA01078.cn001.siemens.net>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Writing into files without mode switch
-Reply-To: Giulio Moro <giuliomoro@yahoo.it>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Freescale's LS2085ardb
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,18 +14,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?St=C3=A9phane_LOS?= <slos@hilscher.com>, Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, "Florian G." <florian.r.groeger@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
->You could have a Linux process writing in your file data coming from 
->your RT process through IPC RT communication.
+Hi:
 
-I have a question on this:
-what IPC method would you recommend?
-If I understand correctly, mode switches carry an overhead. If this is true, I guess is it reasonable to try to keep the non-RT thread in secondary mode. rt_pipe seems to be the only IPC method that does not force the non-RT task to switch to primary mode, but I am under the impression that using a pseudo-device may carry some overhead. Additionally, setting up a pipe is a bit cumbersome.
-All considered, how does it compare performance-wise to other methods which require the non-RT task to continuously switch mode?
-For IPC communication within the same Xenomai application, where one of the two threads needs to be in secondary mode, is it best to use rt_pipe or, e.g.: rt_queue?
+        Does the xenomial support the Freescale's LS2085ardb evaluation boa=
+rd?
 
-Thanks,
-Giulio
+Best Regards!
+
+Mianbo Huang
+
+Siemens Shenzhen Magnetic Resonance Ltd.(SSMR)
+HC DI MR R&D SZN SW
+Siemens MRI Center, Gaoxin C. Ave.,2nd, Hi-Tech Industrial Park, Shenzhen, =
+P.R.China
+Zip Code: 518057
+Tel: +86 755 2318-5304
+Mobile:+86 13682612959
+Email:mian.huang@siemens.com<mailto:mian.huang@siemens.com>
+
+
 
