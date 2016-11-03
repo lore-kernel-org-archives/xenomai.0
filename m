@@ -1,9 +1,10 @@
+From: Cyril Jourdan <cyril.jourdan@therobotstudio.com>
+Message-ID: <1676fd7b-a9a1-586a-9ffb-b27fa25c57ab@therobotstudio.com>
+Date: Thu, 3 Nov 2016 09:28:36 +0100
 MIME-Version: 1.0
-From: Vivien LEGER <vivien.leger@gmail.com>
-Date: Wed, 2 Nov 2016 09:19:48 -0400
-Message-ID: <CA+X=5XiGUYkKiAiffg-A82ywtSJjpcbJS2C1fV4aOiHQw2i5Gw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Xenomai/Cobalt on ARM64
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Xenomai for the nVidia Jetson TK1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,27 +15,27 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hello everyone.
+Hello,
 
-I understand that xenomai is not quite ready for ARM64 and that no ETA is
-yet determined.
+I would like to install Xenomai on my Linux kernel (3.10.40) of a Jetson 
+TK1 board, is there any specific release for this ARM SoC (Quad-Core 
+cortex-A15) ?
+I could change the kernel version, but I have to use a 3.x version, 
+apparently a 4.x version would not support the Jetson TK1 GPU.
+The application is for hard real time programming of a CAN bus.
 
-Would you have a rough estimate of the target for this version. Is ARM64 a
-big thing to you or is it still considered nice to have?
+Best regards,
 
-I m currently building a distro using yocto and target to use xenomai with
-it. As i plan to use it on a ARM-A53 (among others) i was just wondering.
+-- 
+Cyril JOURDAN
+Development Engineer
 
-Thank you very much for your wonderfull work.
+The Robot Studio
+122 rue de la Versoix
+01220 Divonne-les-Bains France
+Tel: +33 4 50 40 14 63
+Mob: +33 6 79 85 04 60
+Mail: cyril.jourdan@therobotstudio.com
+http://www.therobotstudio.com
 
-It is my first post on the mailling list, i ve been using xenomai for 6
-years now, and i would like to thanks anyone that indirectly helped me by
-replying to others.
 
-I have also a thought for Gilles, that wrote so many post.I ve rid him for
-hours trying to understand what i was doing wrong. The page on the xenomai
-website truly shook me.
-
-Best Regards.
-
-Vivien.
