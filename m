@@ -1,13 +1,12 @@
-References: <CAPdz0-x=sQMY-0DKYQX+PXjXM0br6eGm=Kyo_CrBPtwJndGfnA@mail.gmail.com>
- <20161104144806.GP1465@csclub.uwaterloo.ca>
-From: =?UTF-8?Q?St=c3=a9phane_LOS?= <slos@hilscher.com>
-Message-ID: <2ef2ba48-8598-eac0-b605-4372b39dd23e@hilscher.com>
-Date: Fri, 4 Nov 2016 15:57:43 +0100
+Message-ID: <581CAD5C.1090600@numalliance.com>
+Date: Fri, 04 Nov 2016 16:46:36 +0100
+From: =?UTF-8?B?U3TDqXBoYW5lIGFuY2Vsb3Q=?= <sancelot@numalliance.com>
+References: <581A1E18.7040405@numalliance.com>	<20161103093605.2228191c@md1em3qc>	<581B57C4.8020609@numalliance.com>
+ <20161103173838.16bf77c9@md1em3qc>
+In-Reply-To: <20161103173838.16bf77c9@md1em3qc>
 MIME-Version: 1.0
-In-Reply-To: <20161104144806.GP1465@csclub.uwaterloo.ca>
-Content-Type: text/plain; charset="windows-1252"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Writing into files without mode switch
+Content-Type: text/plain; charset="utf-8"
+Subject: Re: [Xenomai] ipipe tracer question
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,95 +15,98 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, "Florian G." <florian.r.groeger@gmail.com>
-Cc: xenomai@xenomai.org
+Content-Transfer-Encoding: 8bit
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-You could have a Linux process writing in your file data coming from=20
-your RT process through IPC RT communication.
+   On 03/11/2016 17:38, Henning Schild wrote:
 
-Best Regards,
-Cordialement,
+Am Thu, 3 Nov 2016 16:29:08 +0100
+schrieb Stéphane ancelot [1]<sancelot@numalliance.com>:
 
-St=E9phane LOS
-slos@hilscher.com
-Support technique
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Hilscher France
-12, rue du 35=E8me R=E9giment d'Aviation
-Miniparc du Ch=EAne
-69500 BRON
-France
-T=E9l. : +33 (0) 4 72 37 98 40
-Fax  : +33 (0) 4 78 26 83 27
-http ://www.hilscher.fr
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+On 03/11/2016 09:36, Henning Schild wrote:
 
-Le 04/11/2016 =E0 15:48, Lennart Sorensen a =E9crit :
-> On Fri, Nov 04, 2016 at 12:55:01AM +0100, Florian G. wrote:
->> I'm using Xenomai 2.6.5 on a 3.8.13 kernel on an ARM 32-bit(BeagleBone
->> Black).
->> Right now we need a way to write into files without getting a mode switc=
-h.
->> I tried to use the rtdk.h header, but it won't work.
->> rt_printf works perfectly fine, but I am not able to write something in a
->> file. The code is compiled with gcc and the xenomai flags of the native
->> skin.
->>
->> What do I do wrong?
->> Do I have to set an additional flag? Open the file in a different way?
->> Is there another way to achieve writing into a file without mode switch
->> and without writing my own RTDM?
-> Well filesystems are managed by linux, disk response time is not
-> predictable, so really, I don't see how you could do file access from
-> realtime.
->
-> I could be wrong, but I just don't see it.
->
+Am Wed, 2 Nov 2016 18:10:48 +0100
+schrieb Stéphane ancelot[2]<sancelot@numalliance.com>:
 
 
 
+Hi,
+I have got an RT task that seems being disturbed by some system
+driver.
 
-Hilscher France S.a.r.l.   |  12, rue du 35i=E8me R=E9giment d=92Aviation =
-=96 Miniparc du Ch=EAne  |  69500 Bron  |  France  |  www.hilscher.com
-Hot Line: +33 (0) 472 379 843  |  Centre de formation agr=E9=E9  |  RandD: =
-+33 (0) 472 379 840
-N=B0 de TVA intracommunautaire: FR 43 449 481 779  |  N=B0 de SIRET: 449 48=
-1 779 00014
-Dirigeant: Christophe Levra
-
-Important Information:
-This e-mail message including its attachments contains confidential and leg=
-ally protected information solely intended for the addressee. If you are no=
-t the intended addressee of this message, please contact the addresser imme=
-diately and delete this message including its attachments. The unauthorized=
- dissemination, copying and change of this e-mail are strictly forbidden. T=
-he addresser shall not be liable for the content of such changed e-mails.
-
-Hilscher cannot be held responsible of whatever nature, resulting from alte=
-ration, falsifying or using of the information contained in this message an=
-d disclaims all liability in case of contamination of the computer hardware=
- of the addressee resulting from the distribution of a virus or other compu=
-ting infections.
+So, I have setted up ipipe tracer in kernel.
 
 
-Information Importante:
-Ce message =E9lectronique incluant les pi=E8ces jointes contient des inform=
-ations confidentielles et prot=E9g=E9es par la loi qui sont =E0 l=92intenti=
-on exclusive de son destinataire. Si vous n'=EAtes pas le destinataire  de =
-ce message, merci de contactez imm=E9diatement l'exp=E9diteur et de supprim=
-er ce message incluant les pi=E8ces jointes. Toute diffusion ou copie ou mo=
-dification de ce message =E9lectronique, totale ou partielle, non autoris=
-=E9e est strictement interdit. L'exp=E9diteur ne peut =EAtre tenu responsab=
-le du contenu de tels messages =E9lectroniques qui auraient =E9t=E9 modifie=
-s.
-
-Hilscher ne pourra =EAtre tenue responsable de quelque dommage, de quelque =
-nature qu=92il soit, r=E9sultant de l=92alt=E9ration, de la falsification o=
-u de l=92utilisation des informations contenues dans ce message et d=E9clin=
-e toute responsabilit=E9 en cas de contamination des mat=E9riels informatiq=
-ues du destinataire r=E9sultant de la propagation d'un virus ou autres infe=
-ctions informatiques.
+The tracing uses the kernel tracing infrastructure. Use the
+sysfs-Interface or a tool like trace-cmd or perf to collect traces.
+[3]https://www.kernel.org/doc/Documentation/trace/ftrace.txt
 
 
 
+I am now able to trace in the kernel.
+I made some function trace in  the shell, but I have not managed to
+find where is my problem.
+I want to find where my tasks spend more time than usuallly. e.g.
+(end task - start task) > 500us
+
+I have some references to cobalt_head_sysentry , cobalt_head_sys
+I made a trace with trace-cmd and I am able to load it with
+kernelshark. a bit difficult to understand the graph.
+
+I have never worked with kernelshark, usually i read the traces in a
+pager or text-editor.
+To get a better correlation with the RT task activity and the kernel,
+you should leave traces from the application.
+Have a look at include/cobalt/trace.h to see functions that help you do
+that. Some of them are used in some of the examples, i did not find
+documentation, but the names sound kind of meaningful.
+
+
+   I found some informations in web archives regarding these functions:
+   [4]https://mail.gna.org/public/xenomai-core/2006-06/msg00180.html
+   I used xntrace_special() in my program, but unfortunately, altough it
+   does not reply with ENOSYS error, I can't sea really how it is reported
+   in trace log.
+   how can I watch the numbered given in parameters.???
+
+It is best if you stop tracing as soon as you detected a violation.
+
+Filter the trace ie with grep after you collected them, the first thing
+to read it backwards from the spike filtering by CPU. If you are lucky
+you have left a "all good" mark somewhere close above the problem.
+
+If you still have trouble to read it, maybe kernelshark can process
+parts of a whole trace. Or you will at least have a better idea where to
+zoom in.
+
+
+
+But I do not know where to  go  now ?
+I suppose being on the right way, but what to do next ?
+
+Regards,
+S.Ancelot
+
+
+_______________________________________________
+Xenomai mailing list
+[5]Xenomai@xenomai.org
+[6]https://xenomai.org/mailman/listinfo/xenomai
+
+
+_______________________________________________
+Xenomai mailing list
+[7]Xenomai@xenomai.org
+[8]https://xenomai.org/mailman/listinfo/xenomai
+
+References
+
+   1. mailto:sancelot@numalliance.com
+   2. mailto:sancelot@numalliance.com
+   3. https://www.kernel.org/doc/Documentation/trace/ftrace.txt
+   4. https://mail.gna.org/public/xenomai-core/2006-06/msg00180.html
+   5. mailto:Xenomai@xenomai.org
+   6. https://xenomai.org/mailman/listinfo/xenomai
+   7. mailto:Xenomai@xenomai.org
+   8. https://xenomai.org/mailman/listinfo/xenomai
