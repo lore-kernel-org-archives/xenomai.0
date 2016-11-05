@@ -1,7 +1,9 @@
 From: Romain Naour <romain.naour@gmail.com>
-Date: Sat,  5 Nov 2016 19:09:02 +0100
-Message-Id: <1478369343-17564-1-git-send-email-romain.naour@gmail.com>
-Subject: [Xenomai] [PATCH 1/2] bfin: remove inline keyword
+Date: Sat,  5 Nov 2016 19:09:03 +0100
+Message-Id: <1478369343-17564-2-git-send-email-romain.naour@gmail.com>
+In-Reply-To: <1478369343-17564-1-git-send-email-romain.naour@gmail.com>
+References: <1478369343-17564-1-git-send-email-romain.naour@gmail.com>
+Subject: [Xenomai] [PATCH 2/2] nios2: remove inline keyword
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,32 +22,33 @@ With gcc 5+ the weak attribute is discarded by the inline keyword,
 so each symbol are global and are redefined several time while
 linking.
 
-Fixes:
+Like for the bfin issue:
 http://autobuild.buildroot.net/results/0c2/0c2e5eb4edd4f9427f61d3c9b67a12a7a0e24140
 
 Signed-off-by: Romain Naour <romain.naour@gmail.com>
 ---
- include/asm-blackfin/syscall.h | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ include/asm-nios2/syscall.h | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/include/asm-blackfin/syscall.h b/include/asm-blackfin/syscall.h
-index 9eda8b9..b5728b5 100644
---- a/include/asm-blackfin/syscall.h
-+++ b/include/asm-blackfin/syscall.h
-@@ -132,9 +132,9 @@ static inline int __xn_interrupted_p(struct pt_regs *regs)
- #define XENOMAI_SKINCALL5(id,op,a1,a2,a3,a4,a5) XENOMAI_DO_SYSCALL(5,id,op,a1,a2,a3,a4,a5)
+diff --git a/include/asm-nios2/syscall.h b/include/asm-nios2/syscall.h
+index 44badc6..214871e 100644
+--- a/include/asm-nios2/syscall.h
++++ b/include/asm-nios2/syscall.h
+@@ -226,11 +226,9 @@ static inline int __xn_interrupted_p(struct pt_regs *regs)
  
- /* uClibc does not provide pthread_atfork() for this arch; provide it
--   here. Note: let the compiler decides whether it wants to actually
--   inline this routine, i.e. do not force always_inline. */
+ /*
+  * uClibc does not always provide the following symbols for this arch;
+- * provide placeholders here. Note: let the compiler decides whether
+- * it wants to actually inline this routine, i.e. do not force
+- * always_inline.
++ * provide placeholders here.
+  */
 -inline __attribute__((weak)) int pthread_atfork(void (*prepare)(void),
-+   here.
-+*/
 +__attribute__((weak)) int pthread_atfork(void (*prepare)(void),
  						void (*parent)(void),
  						void (*child)(void))
  {
-@@ -143,7 +143,7 @@ inline __attribute__((weak)) int pthread_atfork(void (*prepare)(void),
+@@ -239,7 +237,7 @@ inline __attribute__((weak)) int pthread_atfork(void (*prepare)(void),
  
  #include <errno.h>
  
@@ -54,7 +57,7 @@ index 9eda8b9..b5728b5 100644
  					  int oflag,
  					  mode_t mode)
  {
-@@ -151,7 +151,7 @@ inline __attribute__((weak)) int shm_open(const char *name,
+@@ -247,7 +245,7 @@ inline __attribute__((weak)) int shm_open(const char *name,
  	return -1;
  }
  
