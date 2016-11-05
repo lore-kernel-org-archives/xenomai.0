@@ -1,9 +1,15 @@
-From: Romain Naour <romain.naour@gmail.com>
-Date: Sat,  5 Nov 2016 19:09:03 +0100
-Message-Id: <1478369343-17564-2-git-send-email-romain.naour@gmail.com>
-In-Reply-To: <1478369343-17564-1-git-send-email-romain.naour@gmail.com>
-References: <1478369343-17564-1-git-send-email-romain.naour@gmail.com>
-Subject: [Xenomai] [PATCH 2/2] nios2: remove inline keyword
+Date: Sat, 5 Nov 2016 18:22:16 +0000 (UTC)
+From: Giulio Moro <giuliomoro@yahoo.it>
+Message-ID: <698772021.248089.1478370136298@mail.yahoo.com>
+In-Reply-To: <2ef2ba48-8598-eac0-b605-4372b39dd23e@hilscher.com>
+References: <CAPdz0-x=sQMY-0DKYQX+PXjXM0br6eGm=Kyo_CrBPtwJndGfnA@mail.gmail.com>
+ <20161104144806.GP1465@csclub.uwaterloo.ca>
+ <2ef2ba48-8598-eac0-b605-4372b39dd23e@hilscher.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Writing into files without mode switch
+Reply-To: Giulio Moro <giuliomoro@yahoo.it>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,61 +18,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?UTF-8?Q?St=C3=A9phane_LOS?= <slos@hilscher.com>, Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, "Florian G." <florian.r.groeger@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Xenomai user space tools fail to build for bfin target since it's
-provide it's own pthread_atfork(), shm_open() and shm_unlink()
-definition using the inline keyword and weak attribute.
+>You could have a Linux process writing in your file data coming from 
+>your RT process through IPC RT communication.
 
-With gcc 5+ the weak attribute is discarded by the inline keyword,
-so each symbol are global and are redefined several time while
-linking.
+I have a question on this:
+what IPC method would you recommend?
+If I understand correctly, mode switches carry an overhead. If this is true, I guess is it reasonable to try to keep the non-RT thread in secondary mode. rt_pipe seems to be the only IPC method that does not force the non-RT task to switch to primary mode, but I am under the impression that using a pseudo-device may carry some overhead. Additionally, setting up a pipe is a bit cumbersome.
+All considered, how does it compare performance-wise to other methods which require the non-RT task to continuously switch mode?
+For IPC communication within the same Xenomai application, where one of the two threads needs to be in secondary mode, is it best to use rt_pipe or, e.g.: rt_queue?
 
-Like for the bfin issue:
-http://autobuild.buildroot.net/results/0c2/0c2e5eb4edd4f9427f61d3c9b67a12a7a0e24140
-
-Signed-off-by: Romain Naour <romain.naour@gmail.com>
----
- include/asm-nios2/syscall.h | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
-
-diff --git a/include/asm-nios2/syscall.h b/include/asm-nios2/syscall.h
-index 44badc6..214871e 100644
---- a/include/asm-nios2/syscall.h
-+++ b/include/asm-nios2/syscall.h
-@@ -226,11 +226,9 @@ static inline int __xn_interrupted_p(struct pt_regs *regs)
- 
- /*
-  * uClibc does not always provide the following symbols for this arch;
-- * provide placeholders here. Note: let the compiler decides whether
-- * it wants to actually inline this routine, i.e. do not force
-- * always_inline.
-+ * provide placeholders here.
-  */
--inline __attribute__((weak)) int pthread_atfork(void (*prepare)(void),
-+__attribute__((weak)) int pthread_atfork(void (*prepare)(void),
- 						void (*parent)(void),
- 						void (*child)(void))
- {
-@@ -239,7 +237,7 @@ inline __attribute__((weak)) int pthread_atfork(void (*prepare)(void),
- 
- #include <errno.h>
- 
--inline __attribute__((weak)) int shm_open(const char *name,
-+__attribute__((weak)) int shm_open(const char *name,
- 					  int oflag,
- 					  mode_t mode)
- {
-@@ -247,7 +245,7 @@ inline __attribute__((weak)) int shm_open(const char *name,
- 	return -1;
- }
- 
--inline __attribute__((weak)) int shm_unlink(const char *name)
-+__attribute__((weak)) int shm_unlink(const char *name)
- {
- 	errno = ENOSYS;
- 	return -1;
--- 
-2.5.5
-
+Thanks,
+Giulio
 
