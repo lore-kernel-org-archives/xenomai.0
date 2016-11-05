@@ -1,16 +1,7 @@
-Date: Fri, 4 Nov 2016 16:59:28 +0100
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20161104165928.63865836@md1em3qc>
-In-Reply-To: <581CAD5C.1090600@numalliance.com>
-References: <581A1E18.7040405@numalliance.com>
- <20161103093605.2228191c@md1em3qc>
- <581B57C4.8020609@numalliance.com>
- <20161103173838.16bf77c9@md1em3qc>
- <581CAD5C.1090600@numalliance.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] ipipe tracer question
+From: Romain Naour <romain.naour@gmail.com>
+Date: Sat,  5 Nov 2016 19:09:02 +0100
+Message-Id: <1478369343-17564-1-git-send-email-romain.naour@gmail.com>
+Subject: [Xenomai] [PATCH 1/2] bfin: remove inline keyword
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,125 +10,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?U3TDqXBoYW5l?= ancelot <sancelot@numalliance.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Am Fri, 4 Nov 2016 16:46:36 +0100
-schrieb St=C3=A9phane ancelot <sancelot@numalliance.com>:
+Xenomai user space tools fail to build for bfin target since it's
+provide it's own pthread_atfork(), shm_open() and shm_unlink()
+definition using the inline keyword and weak attribute.
 
->    On 03/11/2016 17:38, Henning Schild wrote:
->=20
-> Am Thu, 3 Nov 2016 16:29:08 +0100
-> schrieb St=C3=A9phane ancelot [1]<sancelot@numalliance.com>:
->=20
->=20
-> On 03/11/2016 09:36, Henning Schild wrote:
->=20
-> Am Wed, 2 Nov 2016 18:10:48 +0100
-> schrieb St=C3=A9phane ancelot[2]<sancelot@numalliance.com>:
->=20
->=20
->=20
-> Hi,
-> I have got an RT task that seems being disturbed by some system
-> driver.
->=20
-> So, I have setted up ipipe tracer in kernel.
->=20
->=20
-> The tracing uses the kernel tracing infrastructure. Use the
-> sysfs-Interface or a tool like trace-cmd or perf to collect traces.
-> [3]https://www.kernel.org/doc/Documentation/trace/ftrace.txt
->=20
->=20
->=20
-> I am now able to trace in the kernel.
-> I made some function trace in  the shell, but I have not managed to
-> find where is my problem.
-> I want to find where my tasks spend more time than usuallly. e.g.
-> (end task - start task) > 500us
->=20
-> I have some references to cobalt_head_sysentry , cobalt_head_sys
-> I made a trace with trace-cmd and I am able to load it with
-> kernelshark. a bit difficult to understand the graph.
->=20
-> I have never worked with kernelshark, usually i read the traces in a
-> pager or text-editor.
-> To get a better correlation with the RT task activity and the kernel,
-> you should leave traces from the application.
-> Have a look at include/cobalt/trace.h to see functions that help you
-> do that. Some of them are used in some of the examples, i did not find
-> documentation, but the names sound kind of meaningful.
->=20
->=20
->    I found some informations in web archives regarding these
-> functions:
-> [4]https://mail.gna.org/public/xenomai-core/2006-06/msg00180.html I
-> used xntrace_special() in my program, but unfortunately, altough it
-> does not reply with ENOSYS error, I can't sea really how it is
-> reported in trace log. how can I watch the numbered given in
-> parameters.???
+With gcc 5+ the weak attribute is discarded by the inline keyword,
+so each symbol are global and are redefined several time while
+linking.
 
-I have not used them before so i am not sure. Maybe worth reading the
-code to see how they eventually make their way to ftrace calls. Maybe
-they depend on some CONFIG_
-I have once used invalid syscalls for somthing like that, not knowing
-about the official "trace api".
-That should create trace points, but be carefull not to run into valid
-syscall numbers. And doing that should be a last resort if for some
-reason you really can not use xntrace_*
+Fixes:
+http://autobuild.buildroot.net/results/0c2/0c2e5eb4edd4f9427f61d3c9b67a12a7a0e24140
 
-> XENOMAI_SYSCALL0(-1);
-> XENOMAI_SYSCALL0(-2);
-> ...
->     (skin max syscall number + 1)
+Signed-off-by: Romain Naour <romain.naour@gmail.com>
+---
+ include/asm-blackfin/syscall.h | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-
-
-> It is best if you stop tracing as soon as you detected a violation.
->=20
-> Filter the trace ie with grep after you collected them, the first
-> thing to read it backwards from the spike filtering by CPU. If you
-> are lucky you have left a "all good" mark somewhere close above the
-> problem.
->=20
-> If you still have trouble to read it, maybe kernelshark can process
-> parts of a whole trace. Or you will at least have a better idea where
-> to zoom in.
->=20
->=20
->=20
-> But I do not know where to  go  now ?
-> I suppose being on the right way, but what to do next ?
->=20
-> Regards,
-> S.Ancelot
->=20
->=20
-> _______________________________________________
-> Xenomai mailing list
-> [5]Xenomai@xenomai.org
-> [6]https://xenomai.org/mailman/listinfo/xenomai
->=20
->=20
-> _______________________________________________
-> Xenomai mailing list
-> [7]Xenomai@xenomai.org
-> [8]https://xenomai.org/mailman/listinfo/xenomai
->=20
-> References
->=20
->    1. mailto:sancelot@numalliance.com
->    2. mailto:sancelot@numalliance.com
->    3. https://www.kernel.org/doc/Documentation/trace/ftrace.txt
->    4. https://mail.gna.org/public/xenomai-core/2006-06/msg00180.html
->    5. mailto:Xenomai@xenomai.org
->    6. https://xenomai.org/mailman/listinfo/xenomai
->    7. mailto:Xenomai@xenomai.org
->    8. https://xenomai.org/mailman/listinfo/xenomai
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
+diff --git a/include/asm-blackfin/syscall.h b/include/asm-blackfin/syscall.h
+index 9eda8b9..b5728b5 100644
+--- a/include/asm-blackfin/syscall.h
++++ b/include/asm-blackfin/syscall.h
+@@ -132,9 +132,9 @@ static inline int __xn_interrupted_p(struct pt_regs *regs)
+ #define XENOMAI_SKINCALL5(id,op,a1,a2,a3,a4,a5) XENOMAI_DO_SYSCALL(5,id,op,a1,a2,a3,a4,a5)
+ 
+ /* uClibc does not provide pthread_atfork() for this arch; provide it
+-   here. Note: let the compiler decides whether it wants to actually
+-   inline this routine, i.e. do not force always_inline. */
+-inline __attribute__((weak)) int pthread_atfork(void (*prepare)(void),
++   here.
++*/
++__attribute__((weak)) int pthread_atfork(void (*prepare)(void),
+ 						void (*parent)(void),
+ 						void (*child)(void))
+ {
+@@ -143,7 +143,7 @@ inline __attribute__((weak)) int pthread_atfork(void (*prepare)(void),
+ 
+ #include <errno.h>
+ 
+-inline __attribute__((weak)) int shm_open(const char *name,
++__attribute__((weak)) int shm_open(const char *name,
+ 					  int oflag,
+ 					  mode_t mode)
+ {
+@@ -151,7 +151,7 @@ inline __attribute__((weak)) int shm_open(const char *name,
+ 	return -1;
+ }
+ 
+-inline __attribute__((weak)) int shm_unlink(const char *name)
++__attribute__((weak)) int shm_unlink(const char *name)
+ {
+ 	errno = ENOSYS;
+ 	return -1;
+-- 
+2.5.5
 
 
