@@ -1,11 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <5be8ae5e-24de-b98c-6b5a-b95cc50725a9@xenomai.org>
 References: <CA+X=5XiGUYkKiAiffg-A82ywtSJjpcbJS2C1fV4aOiHQw2i5Gw@mail.gmail.com>
  <5be8ae5e-24de-b98c-6b5a-b95cc50725a9@xenomai.org>
-From: Vivien LEGER <vivien.leger@gmail.com>
-Date: Sun, 6 Nov 2016 11:29:27 +0100
-Message-ID: <CA+X=5Xgr8B6pqpxfJBOEp15pnAxtG7EC6zsE7g0iRMdyJvUmcg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+ <CA+X=5Xgr8B6pqpxfJBOEp15pnAxtG7EC6zsE7g0iRMdyJvUmcg@mail.gmail.com>
+From: Jorge Ramirez <jro@xenomai.org>
+Message-ID: <d6b12bef-a2b6-0b64-be8d-9f4e7dad93ba@xenomai.org>
+Date: Sun, 6 Nov 2016 20:37:54 +0100
+MIME-Version: 1.0
+In-Reply-To: <CA+X=5Xgr8B6pqpxfJBOEp15pnAxtG7EC6zsE7g0iRMdyJvUmcg@mail.gmail.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Xenomai/Cobalt on ARM64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -15,57 +17,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Vivien LEGER <vivien.leger@gmail.com>, Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Thanks for this very fast anwser.
-
-I d love to say that i wish to bring my part to the edifice , still as a
-young father of two that would be unmanageable for now.
-
-I ll be using A53 series with xenomai a lot (running as an armv7), i
-quickly hope to jump to a A72 for work purpose.
-
-Thus there is some chance i end up diving in the ipipe patch for aarch64,
-be sure i ll keep in touch if i came close to something sharable.
-
-VL.
-
-Note : several of my colleague and Iare building a xenomai based distro as
-a side project, 3 of us are really arm enthousiasts, we hope to be able to
-contribute some day.
-
-On Sun, Nov 6, 2016 at 10:35 AM, Philippe Gerum <rpm@xenomai.org> wrote:
-
-> On 11/02/2016 02:19 PM, Vivien LEGER wrote:
-> > Hello everyone.
-> >
-> > I understand that xenomai is not quite ready for ARM64 and that no ETA is
-> > yet determined.
-> >
-> > Would you have a rough estimate of the target for this version. Is ARM64
-> a
-> > big thing to you or is it still considered nice to have?
+On 11/06/2016 11:29 AM, Vivien LEGER wrote:
+> Thanks for this very fast anwser.
 >
-> FWIW, I'm personally interested in using arm and arm64 as the reference
-> architectures of a more "radical", lean and mean and scalable dual
-> kernel implementation in the future than Xenomai has ever been. Having a
-> stable arm64 port in Xenomai 3 would pave this way.
+> I d love to say that i wish to bring my part to the edifice , still as a
+> young father of two that would be unmanageable for now.
 >
-> Now, this is all wishful thinking until time can be invested in fixing
-> up the I-pipe patch for the Linux 4.1 series as a starting point, and so
-> far this did not happen.
+> I ll be using A53 series with xenomai a lot (running as an armv7), i
+> quickly hope to jump to a A72 for work purpose.
+
+even thought we haven't been able to make much progress on aarch64 - in 
+terms of merging- please see the link below on some early demos
+http://www.96boards.org/blog/xenomai-on-the-96boards/
+
+During San Diego ELC-A 2016 I demonstrated Xenomai controlling motors on 
+AOSP(Android) and Debian using the HiKey board (armv8) - basically 
+having a service controlling the pwm signal to a number of servos using 
+gpios. For the AOSP the service was using glibc (not bionic)
+http://www.96boards.org/blog/servo-motor-control/
+
+if you are looking for arm64 platforms to work these are two of the ones 
+I use (HiKey and db410c)
+http://www.96boards.org/products/ce/
+
+
 >
-> >
-> > I have also a thought for Gilles, that wrote so many post.I ve rid him
-> for
-> > hours trying to understand what i was doing wrong. The page on the
-> xenomai
-> > website truly shook me.
-> >
+> Thus there is some chance i end up diving in the ipipe patch for aarch64,
+> be sure i ll keep in touch if i came close to something sharable.
 >
-> Gilles was one of a kind; who is unique won't be forgotten.
+> VL.
 >
-> --
-> Philippe.
->
+> Note : several of my colleague and Iare building a xenomai based distro as
+> a side project, 3 of us are really arm enthousiasts, we hope to be able to
+> contribute some day.
+
+
