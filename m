@@ -1,12 +1,12 @@
-References: <CA+K1mPHyTMSmiONU3yP3sEYx2oFktPqq5rHO8JPKa5deCX10-Q@mail.gmail.com>
+References: <44eg2nuhee.fsf@be-well.ilk.org> <44a8dbueie.fsf@be-well.ilk.org>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <61e05c7d-b1a6-bba1-b474-aaae2428d4b8@xenomai.org>
-Date: Fri, 11 Nov 2016 18:56:42 +0100
+Message-ID: <d9406df2-c733-579b-8494-036c7e138e7b@xenomai.org>
+Date: Mon, 14 Nov 2016 10:09:41 +0100
 MIME-Version: 1.0
-In-Reply-To: <CA+K1mPHyTMSmiONU3yP3sEYx2oFktPqq5rHO8JPKa5deCX10-Q@mail.gmail.com>
+In-Reply-To: <44a8dbueie.fsf@be-well.ilk.org>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Question regarding rt_dev_socket()
+Subject: Re: [Xenomai] irqchip missing?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,37 +15,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: C Smith <csmithquestions@gmail.com>, xenomai@xenomai.org
+To: Lowell Gilbert <kludge@be-well.ilk.org>, xenomai@xenomai.org
 
-On 11/11/2016 06:26 PM, C Smith wrote:
-> Hello,
+On 11/07/2016 11:11 PM, Lowell Gilbert wrote:
+> Lowell Gilbert <kludge@be-well.ilk.org> writes:
 > 
-> I have an existing Xenomai 2.6.4 application. I'm now developing a second
-> Xenomai application that is to run at the same time as the existing one.
-> They need to communicate, so I'm investigating IPC mechanisms:
+>> I have a system based on a Cortex A9. When I was running under Xenomai
+>> 2.6, I was able to grab interrupts in RTDM. A few months ago, I updated
+>> from a 3.16 Linux kernel and 2.6.4 Xenomai to a 4.1 kernel with 3.0.2
+>> Xenomai. I'm trying to grab the same IRQ now, and the irqchip doesn't
+>> seem to have a set_affinity callback, so I get a kernel dump.
 > 
-> I added the following lines to the existing application. However, the
-> return value of the call to rt_dev_socket() always fails (returns -97,
-> address family not supported).
-> 
->      #include <rtdk.h>
->      #include <rtdm/rtipc.h>
->      err = rt_dev_socket(PF_RTIPC, SOCK_DGRAM, IPCPROTO_BUFP);
-> 
-> Is the return value indicative of a kernel that needs to be reconfigured?
-> Must there be a device driver associated with the socket in some way?
-> 
-> Any help or reference to further documentation would be helpful. I know
-> Xenomai 2 is deprecated, but I have mature, well tested application written
-> with Xenomai 2.6.4, and don't have time to change it over to Xenomai 3.
+> ipipe_set_irq_affinity() is being called with a GPIO chip, instead of
+> the GIC that I expect. Why would that be?
 > 
 
--97 is -EAFNOSUPPORT, likely meaning that the RTDM driver implementing
-this Xenomai-specific protocol is absent from the kernel.
-
-You need CONFIG_XENO_DRIVERS_RTIPC and CONFIG_XENO_DRIVERS_RTIPC_BUFP
-set in your Kconfig, loading the module named xeno_rtipc.ko if you chose
-to build this as a dynamic module.
+ipipe_set_irq_affinity() receives an interrupt number, not an IC
+descriptor. Are you referring to the irq_set_affinity() handler from the
+irq_chip descriptor instead? Please be specific about the code you refer
+to (call site).
 
 -- 
 Philippe.
