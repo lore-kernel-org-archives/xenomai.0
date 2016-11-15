@@ -1,13 +1,12 @@
-From: Lowell Gilbert <kludge@be-well.ilk.org>
-References: <44eg2nuhee.fsf@be-well.ilk.org> <44a8dbueie.fsf@be-well.ilk.org>
- <d9406df2-c733-579b-8494-036c7e138e7b@xenomai.org>
-Date: Mon, 14 Nov 2016 16:56:30 -0500
-In-Reply-To: <d9406df2-c733-579b-8494-036c7e138e7b@xenomai.org> (Philippe
- Gerum's message of "Mon, 14 Nov 2016 10:09:41 +0100")
-Message-ID: <44inrphgj5.fsf@lowell-desk.lan>
+References: <1478369343-17564-1-git-send-email-romain.naour@gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <bdc61eee-55be-8a05-0725-67c452761684@xenomai.org>
+Date: Tue, 15 Nov 2016 09:51:37 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-Subject: Re: [Xenomai] irqchip missing?
+In-Reply-To: <1478369343-17564-1-git-send-email-romain.naour@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH 1/2] bfin: remove inline keyword
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,33 +15,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Romain Naour <romain.naour@gmail.com>, xenomai@xenomai.org
 
-Philippe Gerum <rpm@xenomai.org> writes:
+On 11/05/2016 07:09 PM, Romain Naour wrote:
+> Xenomai user space tools fail to build for bfin target since it's
+> provide it's own pthread_atfork(), shm_open() and shm_unlink()
+> definition using the inline keyword and weak attribute.
+> 
+> With gcc 5+ the weak attribute is discarded by the inline keyword,
+> so each symbol are global and are redefined several time while
+> linking.
+> 
+> Fixes:
+> http://autobuild.buildroot.net/results/0c2/0c2e5eb4edd4f9427f61d3c9b67a12a7a0e24140
+> 
+> Signed-off-by: Romain Naour <romain.naour@gmail.com>
 
-> On 11/07/2016 11:11 PM, Lowell Gilbert wrote:
->> Lowell Gilbert <kludge@be-well.ilk.org> writes:
->> 
->>> I have a system based on a Cortex A9. When I was running under Xenomai
->>> 2.6, I was able to grab interrupts in RTDM. A few months ago, I updated
->>> from a 3.16 Linux kernel and 2.6.4 Xenomai to a 4.1 kernel with 3.0.2
->>> Xenomai. I'm trying to grab the same IRQ now, and the irqchip doesn't
->>> seem to have a set_affinity callback, so I get a kernel dump.
->> 
->> ipipe_set_irq_affinity() is being called with a GPIO chip, instead of
->> the GIC that I expect. Why would that be?
->> 
->
-> ipipe_set_irq_affinity() receives an interrupt number, not an IC
-> descriptor. Are you referring to the irq_set_affinity() handler from the
-> irq_chip descriptor instead? Please be specific about the code you refer
-> to (call site).
+Merged, thanks.
 
-In ipipe_set_irq_affinity(), I checked irq_get_chip(irq)->name. That
-gave me "gpio-dwapb" rather than "GIC".  There is no irq_set_affinity
-driver on that chip, and so it crashes.
-
-I haven't figured out how the chip table gets set up.
-
-Be well.
+-- 
+Philippe.
 
