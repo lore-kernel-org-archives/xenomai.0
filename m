@@ -1,12 +1,11 @@
-References: <582ADD06.5000901@numalliance.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <7485f9e5-cba3-4766-e263-04c8e98e3ec0@xenomai.org>
-Date: Fri, 18 Nov 2016 19:17:31 +0100
+From: "Ramakrishnan, Senthil" <senthil.ramakrishnan@hp.com>
+Date: Thu, 17 Nov 2016 19:14:09 +0000
+Message-ID: <DF4PR84MB0299F84DFCDC76FD7D360B12F7B10@DF4PR84MB0299.NAMPRD84.PROD.OUTLOOK.COM>
+Content-Language: en-US
 MIME-Version: 1.0
-In-Reply-To: <582ADD06.5000901@numalliance.com>
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] ipipe trace understanding
+Subject: [Xenomai] Help needed regarding compiling/installing Xenomai patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,48 +14,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?St=c3=a9phane_ancelot?= <sancelot@numalliance.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/15/2016 11:01 AM, St=E9phane ancelot wrote:
-> Hi,
->=20
-> In order to solve my realtime pb, I  have a bit  some problems to
-> understand my ipipe trace that has been frozen.
->=20
-> My task should normally spend almost 200us to run and in this case, it
-> spends more than 500us.
->=20
-> My task starts at -723 and stops at -14.
->=20
-> I made some comments in the trace, but have problem understanding where
-> is the biggest problem.
->=20
+Dear All,
 
-[snip]
+My name is Senthil Ramakrishnan and I work for Hewlett Packard Inc, Boise, =
+Idaho.
 
-> (__cobalt_mq_timedreceive+0x25c)
-> :|  + begin   0x80000000  -439      0.220  hard_local_irq_disable+0x16
-> (__xnlock_get_irqsave.constprop.11+0x9)
-> :|  # func                -438      0.493  __put_fd+0x0 (rtdm_fd_put+0x22)
-> :|  # func                -438      0.206  __ipipe_restore_head+0x0
-> (__xnlock_put_irqrestore.constprop.10+0x67)
-> :|  + end     0x80000000  -438! 423.494  hard_local_irq_enable+0x17
-> (__ipipe_restore_head+0x70)
+We are currently in the process of doing a feasibility study on enabling Xe=
+nomai on our ARM platform. We are using the patch "xenomai-3-3.0.3" which I=
+ think is latest.
+The CPU we are targeting is AArch64 architecture(64-bit ARM). Based on that=
+ I'm trying to build the "Mercury" core using the below command line.
 
-This section denotes a transition to user-space, the application code
-resumes from a mq_timedreceive() call, running for 423 us before issuing
-another Cobalt syscall:
+configure CFLAGS=3D"-march=3Darmv8-a" LDFLAGS=3D"-march=3Darmv8-a" --build=
+=3D"i686-pc-linux-gnu" --host=3D"aarch64-linux-gnu"  --with-core=3Dmercury =
+ --enable-smp
 
-> :   + func                 -14+   2.201  ipipe_fastcall_hook+0x0
-> (system_call_after_swapgs+0x6b)
-> :   + func                 -12      0.543  handle_head_syscall+0x0
-> (ipipe_fastcall_hook+0x18)
->=20
+But I run into below error during the validation of toolchain when running =
+configure.
 
-Of course, assuming x86 is your target architecture, this might be a SMI
-event happening during this transition too, but I would investigate the
-most probable (and fixable) cause first.
+checking for target architecture...
+*******************************************
+Still unsupported target: aarch64-linux-gnu -- Sorry.
+*******************************************
+My question is if "aarch64" is supported and if this error is expected. If =
+it's not supported it would be great if you can let us know if there are pl=
+ans to enable 64-bit ARM(AArch64) and when it might be available.
 
---=20
-Philippe.
+As a hack, I currently modified Xenomai "configure" script to get around th=
+is error and I'm able to compile the Xenomai Mercury core for Arm64/AArch64=
+ using Linaro AArch64 Gcc toolchain. Do you see any issues with this?
 
+Other question I have is if RTDM User APIs are available under Mercury core=
+? I don't see User space RTDM library when compiling Mercury core, so I thi=
+nk it's not supported, but it would be great if you can confirm that or if =
+there are future plans to support this.
+We would also like to know how/where we can find the info on kernel version=
+ against each Xenomai/I-pipe patch versions are tested.
+
+Any help answering above questions would be appreciated.
+
+Best Regards,
+Senthil
