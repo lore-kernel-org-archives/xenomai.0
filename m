@@ -1,11 +1,9 @@
-From: "Ramakrishnan, Senthil" <senthil.ramakrishnan@hp.com>
-Date: Thu, 17 Nov 2016 19:14:09 +0000
-Message-ID: <DF4PR84MB0299F84DFCDC76FD7D360B12F7B10@DF4PR84MB0299.NAMPRD84.PROD.OUTLOOK.COM>
-Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Help needed regarding compiling/installing Xenomai patch
+From: "Florian G." <florian.r.groeger@gmail.com>
+Date: Mon, 21 Nov 2016 01:46:08 +0100
+Message-ID: <CAPdz0-x1Vg2LU-n9BzU4Ozt=AetkZNZYG6fZ849boWSrBgFHFg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] UART RT-Driver for BBB
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,46 +12,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Dear All,
+Hey,
 
-My name is Senthil Ramakrishnan and I work for Hewlett Packard Inc, Boise, =
-Idaho.
+I'm using Xenomai 2.6.5 on a 3.8.13 kernel on an ARM 32-bit(BeagleBone
+Black).
 
-We are currently in the process of doing a feasibility study on enabling Xe=
-nomai on our ARM platform. We are using the patch "xenomai-3-3.0.3" which I=
- think is latest.
-The CPU we are targeting is AArch64 architecture(64-bit ARM). Based on that=
- I'm trying to build the "Mercury" core using the below command line.
+I have a sensor connected via UART which I have to read in a RT_TASK.
+Therefore, I need a RT-Driver for that. Sadly I wasn't able to install
+xenomai's xeno-16550A driver because setserial does not work[1]. So, my
+first question is:
+Does an alternative for setserial exist? If not, can I get the io, irq,
+and so on from somewhere else? Maybe I could use the In-Kernel Driver
+Setup.
 
-configure CFLAGS=3D"-march=3Darmv8-a" LDFLAGS=3D"-march=3Darmv8-a" --build=
-=3D"i686-pc-linux-gnu" --host=3D"aarch64-linux-gnu"  --with-core=3Dmercury =
- --enable-smp
+I saw some discussion about that topic in the mailing list already but I
+am not sure if the problem was ever resolved.[2] Any hints here would be
+highly appreciated.
 
-But I run into below error during the validation of toolchain when running =
-configure.
+So the solutions I have in mind right now are, in case I won't be able to
+install xeno-16550A are:
+1. Reading directly from memory by using mmep
+2. Developing my own RTDM.
+(3. Using on of the PRUs)
+Did I forgot something that I could try as well?
 
-checking for target architecture...
-*******************************************
-Still unsupported target: aarch64-linux-gnu -- Sorry.
-*******************************************
-My question is if "aarch64" is supported and if this error is expected. If =
-it's not supported it would be great if you can let us know if there are pl=
-ans to enable 64-bit ARM(AArch64) and when it might be available.
+I never had to write my own driver, meaning I am also completly new to
+writing my own RTDM. In case I have to develop my own RTDM what is the
+best approach here:
+1. Just writing a RTDM, which basically only calls the working driver?
+(Not sure if this is possible)
+2. Using an existing driver, i.e. omap-serial, and change it to a RTDM
 
-As a hack, I currently modified Xenomai "configure" script to get around th=
-is error and I'm able to compile the Xenomai Mercury core for Arm64/AArch64=
- using Linaro AArch64 Gcc toolchain. Do you see any issues with this?
+I know I have a lot of questions, but this stuff keeps me busy for
+a week now. Again any hint would be highly appreciated!
 
-Other question I have is if RTDM User APIs are available under Mercury core=
-? I don't see User space RTDM library when compiling Mercury core, so I thi=
-nk it's not supported, but it would be great if you can confirm that or if =
-there are future plans to support this.
-We would also like to know how/where we can find the info on kernel version=
- against each Xenomai/I-pipe patch versions are tested.
+Thanks in advance,
+Florian
 
-Any help answering above questions would be appreciated.
-
-Best Regards,
-Senthil
+[1]https://groups.google.com/forum/#!topic/beagleboard/uxa40iKuGEY
+[2]http://www.xenomai.org/pipermail/xenomai/2014-November/032201.html
