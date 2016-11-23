@@ -1,12 +1,14 @@
-References: <AE798E990C72C345B223A9C86007D6E8687FCD05D2@CNSHA01078.cn001.siemens.net>
+References: <582ADD06.5000901@numalliance.com>
+ <7485f9e5-cba3-4766-e263-04c8e98e3ec0@xenomai.org>
+ <b40ea31f-248e-7754-de55-d527b9b994d7@numalliance.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <c458c7f2-1b27-c87d-365b-115feec2493a@xenomai.org>
-Date: Wed, 23 Nov 2016 10:19:24 +0100
+Message-ID: <0490bf7c-6cac-b464-4768-e4986e9ef85e@xenomai.org>
+Date: Wed, 23 Nov 2016 11:07:21 +0100
 MIME-Version: 1.0
-In-Reply-To: <AE798E990C72C345B223A9C86007D6E8687FCD05D2@CNSHA01078.cn001.siemens.net>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] kernel version
+In-Reply-To: <b40ea31f-248e-7754-de55-d527b9b994d7@numalliance.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] ipipe trace understanding
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,28 +17,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "mian.huang@siemens.com" <mian.huang@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/23/2016 10:13 AM, mian.huang@siemens.com wrote:
-> Hi:
-> 
-> One more question:
-> 
-> Right now I'm using the ls2085ardb for xenomai porting and its latest kernel
-> version is 4.1.8,and soon will be upgraded to 4.1.30.
-> 
-> So is it possible to patch the linux  4.1.8 src for arm64 architecture right now?
-> It seems that the xenomai-3.0.3 only provides the "ipipe-core-4.1.18-arm-8.patch" and
->  "ipipe-core-core-4.1.18-arm64-6.patch",which work correctly for 4.1.18 but
->  failed  for both 4.1.8 and 4.1.30.
-> 
-> I heard that the xenomai only provided preliminary support for arm64 arch,
-> but how can I patch the linux kernel source for arm64 architecture since it doesn't
-> provide the arm64 arch option.
+On 11/22/2016 04:57 PM, St=E9phane Ancelot wrote:
+>=20
+>=20
+> Le 18/11/2016 =E0 19:17, Philippe Gerum a =E9crit :
+>> On 11/15/2016 11:01 AM, St=E9phane ancelot wrote:
+>>> Hi,
+>>>
+>>> In order to solve my realtime pb, I  have a bit  some problems to
+>>> understand my ipipe trace that has been frozen.
+>>>
+>>> My task should normally spend almost 200us to run and in this case, it
+>>> spends more than 500us.
+>>>
+>>> My task starts at -723 and stops at -14.
+>>>
+>>> I made some comments in the trace, but have problem understanding where
+>>> is the biggest problem.
+>>>
+>> [snip]
+>>
+>>> (__cobalt_mq_timedreceive+0x25c)
+>>> :|  + begin   0x80000000  -439      0.220  hard_local_irq_disable+0x16
+>>> (__xnlock_get_irqsave.constprop.11+0x9)
+>>> :|  # func                -438      0.493  __put_fd+0x0
+>>> (rtdm_fd_put+0x22)
+>>> :|  # func                -438      0.206  __ipipe_restore_head+0x0
+>>> (__xnlock_put_irqrestore.constprop.10+0x67)
+>>> :|  + end     0x80000000  -438! 423.494  hard_local_irq_enable+0x17
+>>> (__ipipe_restore_head+0x70)
+>> This section denotes a transition to user-space, the application code
+>> resumes from a mq_timedreceive() call, running for 423 us before issuing
+>> another Cobalt syscall:
+> There is something I can't understand at the moment :
+> The problem arises when we maximize, move minimize  gui applications we
+> developped.
+>=20
+> I have not managed to activate the problem doing the same thing using
+> other programs in my system (eg glxgears, terminals...), or maybe I
+> don't have enough system load.
 
-arm64 is not in the stable branch yet, but in the -next one:
-http://git.xenomai.org/xenomai-3.git/log/?h=next
+If the issue only arises when your GUI code runs but does not with other
+graphic code such as glxgears, then this rules out an issue with the GPU
+driver (e.g. eager cache invalidation).
 
--- 
+>=20
+> I have had a look at /proc/xenomai/sched/stat .
+> I found our gui application was heavily incrementing the MSW counter,
+> but this is not a realtime task, only gui that refresh some memory data
+> linked on xenomai heap memory areas.
+>=20
+
+Consider the interactions betwen that GUI code and the real-time code.
+If data are shared, maybe some synchronization mechanism exists (sema4,
+mutex?) to serialize accesses between both worlds? If so, are you sure
+that the GUI is not delaying the rt activity just by holding that lock?
+
+> My question : could it be possible that task disturbs the realtime one ?
+> it seems ...
+
+If your GUI app shows mode switches, then some of its threads may share
+resources with the time-critical side. Make sure that they do so
+properly, i.e. without creating priority inversions.
+
+> This graphic task uses the FOX graphic api, I have had a look at it's
+> source code and found it was heavily using signal() and gettimeofday()
+> system calls .....
+
+This is not related, those calls are exclusively handled by the regular
+kernel and won't delay the real-time co-kernel.
+
+--=20
 Philippe.
 
