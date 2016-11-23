@@ -1,11 +1,12 @@
-From: "RAGAGLIA Matteo (Matteo)" <matteo_ragaglia@yanmar.com>
-Date: Wed, 23 Nov 2016 11:27:33 +0000
-Message-ID: <SG2PR04MB09259E1A276D872373BC1E4DF2B70@SG2PR04MB0925.apcprd04.prod.outlook.com>
-Content-Language: en-US
+References: <SG2PR04MB09259E1A276D872373BC1E4DF2B70@SG2PR04MB0925.apcprd04.prod.outlook.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <3bb7c778-f334-464e-b14e-74fec09914e9@xenomai.org>
+Date: Wed, 23 Nov 2016 12:36:03 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Install Xenomai 3 on Ubuntu 16.04 LTS
+In-Reply-To: <SG2PR04MB09259E1A276D872373BC1E4DF2B70@SG2PR04MB0925.apcprd04.prod.outlook.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Install Xenomai 3 on Ubuntu 16.04 LTS
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,36 +15,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "RAGAGLIA Matteo (Matteo)" <matteo_ragaglia@yanmar.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi everyone,
+On 11/23/2016 12:27 PM, RAGAGLIA Matteo (Matteo) wrote:
+> Hi everyone,
+> 
+>    I am trying to install Xenomai 3 on Ubuntu 16.04 LTS.
+> 
+> I cloned the official Xenomai repository (git://git.xenomai.org/xenomai-3.git) and I took a look at the official installation guide (https://xenomai.org/installing-xenomai-3-x/).
+> 
+> Anyway, I did not find the information regarding the proper kernel to patch and where to get it.
+> 
+> I was wondering if anyone could provide me some suggestions regarding this matter.
 
-   I am trying to install Xenomai 3 on Ubuntu 16.04 LTS.
+http://xenomai.org/start-here/#Gathering_the_Linux_kernel_bits
+http://git.xenomai.org/xenomai-3.git/tree/kernel/cobalt/arch/x86/patches/README?h=stable-3.0.x
 
-I cloned the official Xenomai repository (git://git.xenomai.org/xenomai-3.g=
-it) and I took a look at the official installation guide (https://xenomai.o=
-rg/installing-xenomai-3-x/).
+-- 
+Philippe.
 
-Anyway, I did not find the information regarding the proper kernel to patch=
- and where to get it.
-
-I was wondering if anyone could provide me some suggestions regarding this =
-matter.
-
-Thank you in advance.
-
-
-MATTEO RAGAGLIA, PhD
-Researcher
-YANMAR R&D EUROPE SRL
-PI 06157240489
-Viale Galileo, 3/A - 50125 Firenze
-Tel. +39 055 5121694/5
-Fax +39 055 5121693
-
-
-YANMAR GROUP COMPANY - CONFIDENTIALITY NOTICE: This email is for the intend=
-ed recipient only. It may contain PRIVILEGED and/or CONFIDENTIAL informatio=
-n. If you received this email in error, please delete it and notify the sen=
-der immediately. Any other use of this email or attachment(s) is prohibited=
-.
