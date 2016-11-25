@@ -1,15 +1,12 @@
-From: "Ramakrishnan, Senthil" <senthil.ramakrishnan@hp.com>
-Date: Wed, 23 Nov 2016 17:13:59 +0000
-Message-ID: <DF4PR84MB0299ABE95D22EE2DF3E6F028F7B70@DF4PR84MB0299.NAMPRD84.PROD.OUTLOOK.COM>
-References: <DF4PR84MB0299F84DFCDC76FD7D360B12F7B10@DF4PR84MB0299.NAMPRD84.PROD.OUTLOOK.COM>
- <a22149dd-141c-f148-113e-318f542095ae@xenomai.org>
-In-Reply-To: <a22149dd-141c-f148-113e-318f542095ae@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Help needed regarding compiling/installing Xenomai
- patch
+In-Reply-To: <1fcfcb68-0e15-0540-94fb-c8336515d984@siemens.com>
+References: <CAM4-srAdaAYdVQkG2_a2StVLTTFggoB7vw4hM+CoyGO4hQHM3Q@mail.gmail.com>
+ <1fcfcb68-0e15-0540-94fb-c8336515d984@siemens.com>
+From: ritika agarwal <ritika.agarwal16@gmail.com>
+Date: Fri, 25 Nov 2016 14:42:08 +0530
+Message-ID: <CAM4-srCvSR_7SxnL8Eem10XZH9xWaXGeAF4POhZ4Mu7RiqwRzw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] qemu-aarch64 smp support
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,95 +15,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-Dear Philippe,
+On Thu, Nov 24, 2016 at 8:19 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
 
-Thanks much for the response and you answered all our questions. One more q=
-uestion I have is if there is a Standalone RTDM patch available. Or, if it'=
-s possible to apply RTDM changes alone from the Xenomai-Cobalt kernel patch=
-.
+> On 2016-11-24 14:55, ritika agarwal wrote:
+> > Hello everyone,
+> >
+> > I am trying to install Xenomai with Soc based on ARM64 and
+> > running it on qemu-system-aarch64  ipipe/xenomai.
+> >
+> > I am facing problem while trying to boot it with smp support(multi core)
+> > and using following ipipe and kernel version:
+> >
+> > - ipipe:  ipipe-3.18-arm64
+> > - Kernel: 3.18
+> >
+> > And when trying to launch qemu with the following command:
+> >
+> > qemu-system-aarch64 -M virt -cpu cortex-a57 -kernel -smp 4 Image -initrd
+> > rootfs.img.gz -nographic -append "console=ttyAMA0 root=/dev/ram
+> > rootfstype=ramfs init=/bin/sh" -snapshot
+> >
+> > I am getting the below Kernel Panic:
+> >
+> > ...
+> > Freeing initrd memory: 2924K (ffffffc004000000 - ffffffc0042db000)
+> > kvm [1]: HYP mode not available
+> > futex hash table entries: 1024 (order: 4, 65536 bytes)
+> > [Xenomai] scheduling class idle registered.
+> > [Xenomai] scheduling class tp registered.
+> > [Xenomai] scheduling class quota registered.
+> > [Xenomai] scheduling class rt registered.
+> > I-pipe: head domain Xenomai registered.
+> > sched: RT throttling activated
+> > INFO: rcu_preempt self-detected stall on CPU { 2}  (t=2100 jiffies g=5
+> c=4
+> > q=25)
+> > Task dump for CPU 1:
+> > swapper/0       R  running task        0     1      0 0x00000000
+> > Call trace:
+> > [<ffffffc000086754>] __switch_to+0x74/0x8c
+> > [<ffffffc000096e58>] __ipipe_mach_get_tsc+0xc/0x34
+> > [<ffffffc00013c7dc>] __ipipe_trace+0xf0/0x7a8
+> > [<ffffffc00013dad4>] ipipe_trace_function+0x2c/0x38
+> > [<ffffffc000140e44>] ftrace_ops_no_ops+0xa4/0x1e8
+> > [<ffffffc0000910b0>] _mcount+0x30/0x3c
+> > [<ffffffc0001374b0>] __ipipe_spin_unlock_irqrestore+0x1c/0xcc
+> > [<ffffffc0003cd780>] gic_raise_softirq+0xa8/0xc4
+> > [<ffffffc000091c9c>] smp_cross_call+0x54/0xcc
+> > [<ffffffc000091d3c>] ipipe_send_ipi+0x28/0x38
+> > [<ffffffc000137e94>] ipipe_critical_enter+0x120/0x1bc
+> > [<ffffffc0000b4200>] mach_arm_calibrate+0x30/0xe4
+> > [<ffffffc0008810ac>] xnclock_init+0x20/0x5c
+> > [<ffffffc00088134c>] xenomai_init+0x264/0x4fc
+> > [<ffffffc000081808>] do_one_initcall+0x90/0x1b4
+> > [<ffffffc000871b04>] kernel_init_freeable+0x144/0x1e8
+> > [<ffffffc000634d88>] kernel_init+0x14/0xdc
+> >
+>
+> QEMU is only slowly gaining true SMP emulation support, thus you will
+> still run those 4 vCPUs strictly serialized. And that can raise stall
+> warnings already with plain Linux because 3 of the 4 cores are waiting
+> for rather long times under high load conditions - or when they even
+> busy-wait on each other (lock-holder preemption issue). Does single-core
+> work?
+>
+>
+- Yes, single core works fine for me.
 
-Thanks and Regards,
-Senthil
-
------Original Message-----
-From: Philippe Gerum [mailto:rpm@xenomai.org]=20
-Sent: Tuesday, November 22, 2016 9:31 AM
-To: Ramakrishnan, Senthil <senthil.ramakrishnan@hp.com>; xenomai@xenomai.or=
-g
-Subject: Re: [Xenomai] Help needed regarding compiling/installing Xenomai p=
-atch
-
-On 11/17/2016 08:14 PM, Ramakrishnan, Senthil wrote:
-> Dear All,
->=20
-> My name is Senthil Ramakrishnan and I work for Hewlett Packard Inc, Boise=
-, Idaho.
->=20
-> We are currently in the process of doing a feasibility study on enabling =
-Xenomai on our ARM platform. We are using the patch "xenomai-3-3.0.3" which=
- I think is latest.
-> The CPU we are targeting is AArch64 architecture(64-bit ARM). Based on th=
-at I'm trying to build the "Mercury" core using the below command line.
->=20
-> configure CFLAGS=3D"-march=3Darmv8-a" LDFLAGS=3D"-march=3Darmv8-a"=20
-> --build=3D"i686-pc-linux-gnu" --host=3D"aarch64-linux-gnu" =20
-> --with-core=3Dmercury  --enable-smp
->=20
-> But I run into below error during the validation of toolchain when runnin=
-g configure.
->=20
-> checking for target architecture...
-> *******************************************
-> Still unsupported target: aarch64-linux-gnu -- Sorry.
-> *******************************************
-> My question is if "aarch64" is supported and if this error is expected. I=
-f it's not supported it would be great if you can let us know if there are =
-plans to enable 64-bit ARM(AArch64) and when it might be available.
-
-
-Only the Cobalt core is actually requiring arch-specific support, Mercury c=
-an run on whatever arch the host kernel runs. The fact that configuring for=
- Mercury is checking for arch-specific support is wrong.
-Thanks for reporting this.
-
->=20
-> As a hack, I currently modified Xenomai "configure" script to get around =
-this error and I'm able to compile the Xenomai Mercury core for Arm64/AArch=
-64 using Linaro AArch64 Gcc toolchain. Do you see any issues with this?
-
-No.
-
->=20
-> Other question I have is if RTDM User APIs are available under Mercury co=
-re? I don't see User space RTDM library when compiling Mercury core, so I t=
-hink it's not supported, but it would be great if you can confirm that or i=
-f there are future plans to support this.
-
-Since your application runs over a single kernel configuration, you can jus=
-t use the regular POSIX interface from the glibc to interface with native L=
-inux drivers, you don't need RTDM unless you want to create drivers which y=
-ou could build and run over a single or dual kernel configuration seamlessl=
-y. But Mercury is lacking an implementation of RTDM services in kernel spac=
-e, so this would not be useful at the moment anyway.
-
-In general, there is no such RTDM user API in 3.x. One should use the regul=
-ar POSIX I/O or socket interfaces. The older rt_dev API from 2.x is obsolet=
-e, and only provided as wrappers over the POSIX calls (see include/trank/rt=
-dm).
-
-> We would also like to know how/where we can find the info on kernel versi=
-on against each Xenomai/I-pipe patch versions are tested.
->=20
-
-There is no document gathering such information; you may assume that any ke=
-rnel release for which a patch is available in kernel/cobalt/arch/*/patches=
- directories has been tested for the given architecture though.
-
-Please note that the I-pipe is only required in dual kernel mode with Cobal=
-t, you don't need that for a Mercury set up.
-
---
-Philippe.
-
+Best Regards,
+Ritika Agarwal
