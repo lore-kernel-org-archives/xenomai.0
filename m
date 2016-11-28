@@ -1,10 +1,16 @@
-From: Jorge Ramirez <jro@xenomai.org>
-Message-ID: <982f12b3-8171-c307-cbd8-f629bf2ac91e@xenomai.org>
-Date: Mon, 28 Nov 2016 13:11:14 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PULL] gpiopwm
+Date: Mon, 28 Nov 2016 14:34:03 -0500
+From: andrija@stupar.com
+In-Reply-To: <b049cec3-3df5-d18d-a50e-9a9654f9094f@xenomai.org>
+References: <e91afecfce4b074fe8e8bcce5d868237@stupar.com>
+ <b049cec3-3df5-d18d-a50e-9a9654f9094f@xenomai.org>
+Message-ID: <d990539f06316a5a249ea6dcbb0caf77@stupar.com>
+Sender: andrija@stupar.com
+Subject: Re: [Xenomai] Migrating device drivers from RTLinux to
+	Xenomai/Analogy
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,66 +19,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jorge Ramirez <jro@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hi Philippe,
+Hi Jorge,
 
-Please could you pull from
+Thanks for your reply. I have posted the driver on github:
+https://github.com/AndrijaPFC/RTDAQDriver/blob/master/acromag.c
 
-Hi Philippe
+That's the only .c file. Here is the full repo., with all the header 
+files:
+https://github.com/AndrijaPFC/RTDAQDriver
 
-This pull request implements a number of PWM generators using gpio lines.
+I don't know if I can run it on a vanilla kernel, I haven't tried. I am 
+looking at the system header files, and they don't seem to point to 
+anything unusual in the .c file itself, except possibly for rtl_debug.h 
+(which from searching for it online, I cannot determine whether it is 
+something which comes with a vanilla kernel or not).
 
-One nice feature of the demo code is that it shows how to configure a 
-udp server to receive the duty cycles over the net and submit them to 
-the driver.
+Another clue may be in the header file
+https://github.com/AndrijaPFC/RTDAQDriver/blob/master/rtce_module.h
 
-That way the user can control the motors with a simple remote 
-application like this one.
-https://github.com/ldts/servo-udp
+which itself invokes system header files rtl.h, rtl_sched.h and 
+rtl_time.h which seem to like RT-Linux specific things...or no?
 
-thanks
-jorge
+Thanks a lot again,
 
-----------------------------------------------------
+Andrija Stupar
 
-
-The following changes since commit bb7cb06bf80aa193d68906f30131b50d4b8f27a7:
-
-   lib/cobalt: Provide RT-capable usleep (2016-11-28 17:02:52 +0100)
-
-are available in the git repository at:
-
-   http://git.xenomai.org/xenomai-jro.git next
-
-for you to fetch changes up to 61051214ba8834f0289acef8bd7757a3afd1e0e0:
-
-   gpiopwm: display udp server information (2016-11-28 12:32:16 -0500)
-
-----------------------------------------------------------------
-Jorge Ramirez-Ortiz (2):
-       gpiopwm: pwm signal generator and servo motor control demo code
-       gpiopwm: display udp server information
-
-  demo/posix/cobalt/Makefile.am        |   6 ++
-  demo/posix/cobalt/gpiopwm.c          | 504 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  include/cobalt/kernel/rtdm/gpiopwm.h |  24 +++++++
-  include/rtdm/uapi/gpiopwm.h          |  56 +++++++++++++++
-  include/rtdm/uapi/rtdm.h             |   1 +
-  kernel/drivers/Kconfig               |   1 +
-  kernel/drivers/Makefile              |   3 +-
-  kernel/drivers/gpiopwm/Kconfig       |   9 +++
-  kernel/drivers/gpiopwm/Makefile      |   5 ++
-  kernel/drivers/gpiopwm/gpiopwm.c     | 301 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  10 files changed, 909 insertions(+), 1 deletion(-)
-  create mode 100644 demo/posix/cobalt/gpiopwm.c
-  create mode 100644 include/cobalt/kernel/rtdm/gpiopwm.h
-  create mode 100644 include/rtdm/uapi/gpiopwm.h
-  create mode 100644 kernel/drivers/gpiopwm/Kconfig
-  create mode 100644 kernel/drivers/gpiopwm/Makefile
-  create mode 100644 kernel/drivers/gpiopwm/gpiopwm.c
-
-
+On 2016-11-28 08:46, Jorge Ramirez wrote:
+> On 11/25/2016 11:03 PM, andrija@stupar.com wrote:
+>> How much of an effort would it be to port said drivers to 
+>> Xenomai/Analogy, approximately? Is this relatively straightforward, or 
+>> does it require writing from scratch?
+> 
+> Hi Andrija
+> 
+> It really depends on the quality of the linux driver that you are
+> trying to port and the RTLinux services that you depend on. Can your
+> driver run on a vanilla kernel?
+> Maybe you could post your driver to github and we can then try to give
+> you a ballpark estimate.
+> 
+> jorge
+> 
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
