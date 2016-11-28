@@ -1,12 +1,10 @@
-References: <baed9085e48cc80764b7.1480335483@devws148.be.alcatel-lucent.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <6e508282-b45c-95a8-4b6c-126193de0776@xenomai.org>
-Date: Mon, 28 Nov 2016 16:51:08 +0100
+From: Jorge Ramirez <jro@xenomai.org>
+Message-ID: <982f12b3-8171-c307-cbd8-f629bf2ac91e@xenomai.org>
+Date: Mon, 28 Nov 2016 13:11:14 -0500
 MIME-Version: 1.0
-In-Reply-To: <baed9085e48cc80764b7.1480335483@devws148.be.alcatel-lucent.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] Add support for mips/mips64 in configure.ac
+Subject: [Xenomai] [PULL] gpiopwm
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,35 +13,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ronny Meeus <ronny.meeus@gmail.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/28/2016 01:18 PM, Ronny Meeus wrote:
-> This patch adds support for mips/mips64 in configure.ac.
-> It has been tested on Mercury only.
-> 
-> diff --git a/configure.ac b/configure.ac
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -135,6 +135,10 @@ case "$build_for" in
->  	XENO_TARGET_ARCH=blackfin
->  	CONFIG_XENO_DEFAULT_PERIOD=100000
->  	;;
-> + mips-*|mips64-*)
-> +	XENO_TARGET_ARCH=mips
-> +	CONFIG_XENO_DEFAULT_PERIOD=100000
-> +	;;
->   arm*-*)
->  	XENO_TARGET_ARCH=arm
->  	CONFIG_XENO_DEFAULT_PERIOD=1000000
-> 
+Hi Philippe,
 
-Thanks. The same issue was discussed for aarch64 a few weeks ago:
-http://xenomai.org/pipermail/xenomai/2016-November/036871.html
+Please could you pull from
 
-A more general fix is to not restrict the set of CPU architectures when
-building for Mercury. This patch should help:
-https://git.xenomai.org/xenomai-3.git/commit/?h=stable-3.0.x&id=18493575967fe969768674096f88b63d71e032e1
+Hi Philippe
 
--- 
-Philippe.
+This pull request implements a number of PWM generators using gpio lines.
+
+One nice feature of the demo code is that it shows how to configure a 
+udp server to receive the duty cycles over the net and submit them to 
+the driver.
+
+That way the user can control the motors with a simple remote 
+application like this one.
+https://github.com/ldts/servo-udp
+
+thanks
+jorge
+
+----------------------------------------------------
+
+
+The following changes since commit bb7cb06bf80aa193d68906f30131b50d4b8f27a7:
+
+   lib/cobalt: Provide RT-capable usleep (2016-11-28 17:02:52 +0100)
+
+are available in the git repository at:
+
+   http://git.xenomai.org/xenomai-jro.git next
+
+for you to fetch changes up to 61051214ba8834f0289acef8bd7757a3afd1e0e0:
+
+   gpiopwm: display udp server information (2016-11-28 12:32:16 -0500)
+
+----------------------------------------------------------------
+Jorge Ramirez-Ortiz (2):
+       gpiopwm: pwm signal generator and servo motor control demo code
+       gpiopwm: display udp server information
+
+  demo/posix/cobalt/Makefile.am        |   6 ++
+  demo/posix/cobalt/gpiopwm.c          | 504 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  include/cobalt/kernel/rtdm/gpiopwm.h |  24 +++++++
+  include/rtdm/uapi/gpiopwm.h          |  56 +++++++++++++++
+  include/rtdm/uapi/rtdm.h             |   1 +
+  kernel/drivers/Kconfig               |   1 +
+  kernel/drivers/Makefile              |   3 +-
+  kernel/drivers/gpiopwm/Kconfig       |   9 +++
+  kernel/drivers/gpiopwm/Makefile      |   5 ++
+  kernel/drivers/gpiopwm/gpiopwm.c     | 301 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  10 files changed, 909 insertions(+), 1 deletion(-)
+  create mode 100644 demo/posix/cobalt/gpiopwm.c
+  create mode 100644 include/cobalt/kernel/rtdm/gpiopwm.h
+  create mode 100644 include/rtdm/uapi/gpiopwm.h
+  create mode 100644 kernel/drivers/gpiopwm/Kconfig
+  create mode 100644 kernel/drivers/gpiopwm/Makefile
+  create mode 100644 kernel/drivers/gpiopwm/gpiopwm.c
+
+
 
