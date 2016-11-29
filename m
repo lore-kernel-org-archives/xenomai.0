@@ -1,13 +1,12 @@
-References: <bfd126e4fbc87bb85340.1480399086@devws148.be.alcatel-lucent.com>
+References: <304110a1193e48e8304b.1480401144@devws148.be.alcatel-lucent.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <6ad89f47-9acf-90d1-eb99-901643541e61@xenomai.org>
-Date: Tue, 29 Nov 2016 09:52:49 +0100
+Message-ID: <0e747fe3-ff40-5cd7-e24b-9bb68bcd7eee@xenomai.org>
+Date: Tue, 29 Nov 2016 09:55:35 +0100
 MIME-Version: 1.0
-In-Reply-To: <bfd126e4fbc87bb85340.1480399086@devws148.be.alcatel-lucent.com>
+In-Reply-To: <304110a1193e48e8304b.1480401144@devws148.be.alcatel-lucent.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] Mercury/psos: Solve compiler warning when
- including psos.h
+Subject: Re: [Xenomai] [PATCH] psos.h: remove dependency on tunables.h
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,37 +17,45 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Ronny Meeus <ronny.meeus@gmail.com>, xenomai@xenomai.org
 
-On 11/29/2016 06:58 AM, Ronny Meeus wrote:
-> In boilerplate function 'get_program_name', basename is used.
+On 11/29/2016 07:32 AM, Ronny Meeus wrote:
+> The psos.h file pollutes the application's namespace with defines
+> of the boilerplate code because the tunables.h is included. In our
+> application we already have a definition of the list_entry macro,
+> resulting in a redefinition. The psos.h should be kept clean.
 > 
-> When libgen.h is incuded in your program, the basename gets the POSIX
-> version (no const char*, see 'man basename'):
-> char *basename(char *path);
+> Following small test program clearly shows the issue:
 > 
-> This results in the following compiler warning:
-> boilerplate/setup.h: In function 'const char* get_program_name()':
-> boilerplate/setup.h:107: error: invalid conversion from 'const char*' to 'char*'
-> boilerplate/setup.h:107: error:   initializing argument 1 of 'char* __xpg_basename(char*)'
-> 
-> Test application:
-> 
-> #include <libgen.h>
 > #include <psos/psos.h>
+> #define list_entry
 > int main(int argc, char * const argv[])
 > {
 >   return 0;
 > }
 > 
-> When the libgen.h is not included, the warning is not seen.
+> When compiling the code above a warning is generated:
 > 
-> This patch solve the above issue creating a string on the stack instead of
-> a constant string.
+> simple_test.c:3:1: warning: "list_entry" redefined
+> In file included from boilerplate/list.h:24,
+>                  from boilerplate/setup.h:21,
+>                  from boilerplate/tunables.h:22,
+>                  from psos/psos.h:28,
+>                  from simple_test.c:1:
+> boilerplate/shared-list.h:233:1: warning: this is the location of the previous definition
+> 
+> This patch resolves the issue by just removing the dependency
+> and all related functions. If the functions are actually needed, better to
+> move them in a separate header file since they are not part of the 'official'
+> psos interface.
+> 
+> diff --git a/include/psos/psos.h b/include/psos/psos.h
+> --- a/include/psos/psos.h
+> +++ b/include/psos/psos.h
+> @@ -25,7 +25,6 @@
+>  #define _XENOMAI_PSOS_PSOS_H
 > 
 
-I don't think that using the XPG version of basename() is the right
-option; it should not have to modify its argument in the first place.
-For this reason, sticking to the GNU version is better. Moving
-get_program_name() out of line to boilerplate/setup.c would make more sense.
+Ack. But then we'd also need to introduce psos/tunables.h for defining
+the bits your patch removes from psos/psos.h.
 
 -- 
 Philippe.
