@@ -1,11 +1,12 @@
-Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Message-Id: <bfd126e4fbc87bb85340.1480399086@devws148.be.alcatel-lucent.com>
-Date: Tue, 29 Nov 2016 06:58:06 +0100
+In-Reply-To: <6e508282-b45c-95a8-4b6c-126193de0776@xenomai.org>
+References: <baed9085e48cc80764b7.1480335483@devws148.be.alcatel-lucent.com>
+ <6e508282-b45c-95a8-4b6c-126193de0776@xenomai.org>
 From: Ronny Meeus <ronny.meeus@gmail.com>
-Subject: [Xenomai] [PATCH] Mercury/psos: Solve compiler warning when
-	including psos.h
+Date: Tue, 29 Nov 2016 07:14:31 +0100
+Message-ID: <CAMJ=MEedWXfZmuVeveXYNRMnc+yReM9wSpM-yodjyWkqOpeu=w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] [PATCH] Add support for mips/mips64 in configure.ac
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,44 +15,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-In boilerplate function 'get_program_name', basename is used.
+On Mon, Nov 28, 2016 at 4:51 PM, Philippe Gerum <rpm@xenomai.org> wrote:
 
-When libgen.h is incuded in your program, the basename gets the POSIX
-version (no const char*, see 'man basename'):
-char *basename(char *path);
+> On 11/28/2016 01:18 PM, Ronny Meeus wrote:
+> > This patch adds support for mips/mips64 in configure.ac.
+> > It has been tested on Mercury only.
+> >
+> > diff --git a/configure.ac b/configure.ac
+> > --- a/configure.ac
+> > +++ b/configure.ac
+> > @@ -135,6 +135,10 @@ case "$build_for" in
+> >       XENO_TARGET_ARCH=blackfin
+> >       CONFIG_XENO_DEFAULT_PERIOD=100000
+> >       ;;
+> > + mips-*|mips64-*)
+> > +     XENO_TARGET_ARCH=mips
+> > +     CONFIG_XENO_DEFAULT_PERIOD=100000
+> > +     ;;
+> >   arm*-*)
+> >       XENO_TARGET_ARCH=arm
+> >       CONFIG_XENO_DEFAULT_PERIOD=1000000
+> >
+>
+> Thanks. The same issue was discussed for aarch64 a few weeks ago:
+> http://xenomai.org/pipermail/xenomai/2016-November/036871.html
+>
+> A more general fix is to not restrict the set of CPU architectures when
+> building for Mercury. This patch should help:
+> https://git.xenomai.org/xenomai-3.git/commit/?h=stable-3.0.x&id=
+> 18493575967fe969768674096f88b63d71e032e1
+>
+>
+Philippe
 
-This results in the following compiler warning:
-boilerplate/setup.h: In function 'const char* get_program_name()':
-boilerplate/setup.h:107: error: invalid conversion from 'const char*' to 'char*'
-boilerplate/setup.h:107: error:   initializing argument 1 of 'char* __xpg_basename(char*)'
+Patch is also working well.
+Thanks.
 
-Test application:
+Ronny
 
-#include <libgen.h>
-#include <psos/psos.h>
-int main(int argc, char * const argv[])
-{
-  return 0;
-}
 
-When the libgen.h is not included, the warning is not seen.
-
-This patch solve the above issue creating a string on the stack instead of
-a constant string.
-
-diff --git a/include/boilerplate/setup.h b/include/boilerplate/setup.h
---- a/include/boilerplate/setup.h
-+++ b/include/boilerplate/setup.h
-@@ -104,7 +104,8 @@ extern struct base_setup_data __base_set
- 
- static inline const char *get_program_name(void)
- {
--	return basename(__base_setup_data.arg0 ?: "program");
-+	char local_copy[] = {'p', 'r', 'o', 'g', 'r', 'a', 'm', '\0' };
-+	return basename( (char*)(__base_setup_data.arg0 ? : local_copy) );
- }
- 
- void __trace_me(const char *fmt, ...);
-
+> --
+> Philippe.
+>
