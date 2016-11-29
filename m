@@ -1,12 +1,11 @@
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-In-Reply-To: <0e747fe3-ff40-5cd7-e24b-9bb68bcd7eee@xenomai.org>
-References: <304110a1193e48e8304b.1480401144@devws148.be.alcatel-lucent.com>
- <0e747fe3-ff40-5cd7-e24b-9bb68bcd7eee@xenomai.org>
+Content-Transfer-Encoding: 7bit
+Message-Id: <eb3a38210523ca36c62c.1480425966@devws148.be.alcatel-lucent.com>
+Date: Tue, 29 Nov 2016 14:26:06 +0100
 From: Ronny Meeus <ronny.meeus@gmail.com>
-Date: Tue, 29 Nov 2016 13:59:22 +0100
-Message-ID: <CAMJ=MEfLWvPwi5PPP0Q-fd=Q4DgSz7gDabTX5eObWxz+cF=wWw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] [PATCH] psos.h: remove dependency on tunables.h
+Subject: [Xenomai] [PATCH v2] Mercury/psos: Solve compiler warning when
+	including psos.h
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,76 +14,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Tue, Nov 29, 2016 at 9:55 AM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On 11/29/2016 07:32 AM, Ronny Meeus wrote:
->> The psos.h file pollutes the application's namespace with defines
->> of the boilerplate code because the tunables.h is included. In our
->> application we already have a definition of the list_entry macro,
->> resulting in a redefinition. The psos.h should be kept clean.
->>
->> Following small test program clearly shows the issue:
->>
->> #include <psos/psos.h>
->> #define list_entry
->> int main(int argc, char * const argv[])
->> {
->>   return 0;
->> }
->>
->> When compiling the code above a warning is generated:
->>
->> simple_test.c:3:1: warning: "list_entry" redefined
->> In file included from boilerplate/list.h:24,
->>                  from boilerplate/setup.h:21,
->>                  from boilerplate/tunables.h:22,
->>                  from psos/psos.h:28,
->>                  from simple_test.c:1:
->> boilerplate/shared-list.h:233:1: warning: this is the location of the previous definition
->>
->> This patch resolves the issue by just removing the dependency
->> and all related functions. If the functions are actually needed, better to
->> move them in a separate header file since they are not part of the 'official'
->> psos interface.
->>
->> diff --git a/include/psos/psos.h b/include/psos/psos.h
->> --- a/include/psos/psos.h
->> +++ b/include/psos/psos.h
->> @@ -25,7 +25,6 @@
->>  #define _XENOMAI_PSOS_PSOS_H
->>
->
-> Ack. But then we'd also need to introduce psos/tunables.h for defining
-> the bits your patch removes from psos/psos.h.
->
+In boilerplate function 'get_program_name', basename is used.
 
-Philippe
+When libgen.h is incuded in your program, the basename gets the POSIX
+version (no const char*, see 'man basename'):
+char *basename(char *path);
 
-I just removed the functions because I did not see a need for them.
+This results in the following compiler warning:
+boilerplate/setup.h: In function 'const char* get_program_name()':
+boilerplate/setup.h:107: error: invalid conversion from 'const char*' to 'char*'
+boilerplate/setup.h:107: error:   initializing argument 1 of 'char* __xpg_basename(char*)'
 
-People can just access the
-extern int psos_long_names
-defined in the psos.h to manipulate the behavior of the psos interface
-with respect
-to the long names behavior.
+Test application:
 
-After studying the usage of the tunables I understand the mechanism and how
-it can be used to allow certain configurations to be done up to a
-certain point (init done).
-If values are changed after that point, an assert is raised.
+#include <libgen.h>
+#include <psos/psos.h>
+int main(int argc, char * const argv[])
+{
+  return 0;
+}
 
-I have created a new patch (which I will send in a separate mail) that
-just moves the
-functionality into a separate file. But this the issue remains that
-the user can access
-(even write) the psos_long_names flag (after init) without any assert
-being triggered.
+When the libgen.h is not included, the warning is not seen.
 
+This patch solve the above issue by moving the implementation to setup.c
+instead of using an inline function.
 
-Ronny
-
-> --
-> Philippe.
+diff --git a/include/boilerplate/setup.h b/include/boilerplate/setup.h
+--- a/include/boilerplate/setup.h
++++ b/include/boilerplate/setup.h
+@@ -102,10 +102,7 @@ extern int __config_done;
+ 
+ extern struct base_setup_data __base_setup_data;
+ 
+-static inline const char *get_program_name(void)
+-{
+-	return basename(__base_setup_data.arg0 ?: "program");
+-}
++const char *get_program_name(void);
+ 
+ void __trace_me(const char *fmt, ...);
+ 
+diff --git a/lib/boilerplate/setup.c b/lib/boilerplate/setup.c
+--- a/lib/boilerplate/setup.c
++++ b/lib/boilerplate/setup.c
+@@ -644,3 +644,8 @@ void __register_setup_call(struct setup_
+ 	}
+ 	pvlist_prepend(&p->__reserved.next, &setup_list);
+ }
++
++const char *get_program_name(void)
++{
++	return basename(__base_setup_data.arg0 ?: "program");
++}
 
