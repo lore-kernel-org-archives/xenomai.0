@@ -1,16 +1,15 @@
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date: Mon, 28 Nov 2016 14:34:03 -0500
-From: andrija@stupar.com
-In-Reply-To: <b049cec3-3df5-d18d-a50e-9a9654f9094f@xenomai.org>
+Date: Tue, 29 Nov 2016 02:04:23 +0000
+From: Paul <paul_c@tuxcnc.org>
+Message-ID: <20161129020423.07be3fae@Babylon>
+In-Reply-To: <d990539f06316a5a249ea6dcbb0caf77@stupar.com>
 References: <e91afecfce4b074fe8e8bcce5d868237@stupar.com>
  <b049cec3-3df5-d18d-a50e-9a9654f9094f@xenomai.org>
-Message-ID: <d990539f06316a5a249ea6dcbb0caf77@stupar.com>
-Sender: andrija@stupar.com
+ <d990539f06316a5a249ea6dcbb0caf77@stupar.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Migrating device drivers from RTLinux to
-	Xenomai/Analogy
+ Xenomai/Analogy
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,52 +18,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jorge Ramirez <jro@xenomai.org>
+To: andrija@stupar.com
 Cc: xenomai@xenomai.org
 
-Hi Jorge,
+On Mon, 28 Nov 2016 14:34:03 -0500
+andrija@stupar.com wrote:
 
-Thanks for your reply. I have posted the driver on github:
-https://github.com/AndrijaPFC/RTDAQDriver/blob/master/acromag.c
+> Thanks for your reply. I have posted the driver on github:
+> https://github.com/AndrijaPFC/RTDAQDriver/blob/master/acromag.c
 
-That's the only .c file. Here is the full repo., with all the header 
-files:
-https://github.com/AndrijaPFC/RTDAQDriver
+Had a quick scan of the code, and have a couple of observations.
 
-I don't know if I can run it on a vanilla kernel, I haven't tried. I am 
-looking at the system header files, and they don't seem to point to 
-anything unusual in the .c file itself, except possibly for rtl_debug.h 
-(which from searching for it online, I cannot determine whether it is 
-something which comes with a vanilla kernel or not).
+The Linux kernel has seen quite a few changes since the 2.4 days. The
+makefiles for starters. There are also builtin functions for
+downloading fpga binary blobs from disk so you no longer have to hard
+code them in to the module - I'm assuming the missing fpga_prog.h
+contains the binary blob.
 
-Another clue may be in the header file
-https://github.com/AndrijaPFC/RTDAQDriver/blob/master/rtce_module.h
+The PCI interface has changed and there are also routines to handle
+Industry Pack modules - It may be worth your while contacting Acromag
+and asking them what support they can offer. You may even find drivers
+exist in the latest kernel for your IP modules - These could be used as
+a reference or modified to suit you application.
 
-which itself invokes system header files rtl.h, rtl_sched.h and 
-rtl_time.h which seem to like RT-Linux specific things...or no?
 
-Thanks a lot again,
-
-Andrija Stupar
-
-On 2016-11-28 08:46, Jorge Ramirez wrote:
-> On 11/25/2016 11:03 PM, andrija@stupar.com wrote:
->> How much of an effort would it be to port said drivers to 
->> Xenomai/Analogy, approximately? Is this relatively straightforward, or 
->> does it require writing from scratch?
-> 
-> Hi Andrija
-> 
-> It really depends on the quality of the linux driver that you are
-> trying to port and the RTLinux services that you depend on. Can your
-> driver run on a vanilla kernel?
-> Maybe you could post your driver to github and we can then try to give
-> you a ballpark estimate.
-> 
-> jorge
-> 
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
+Regards, Paul.
 
