@@ -1,12 +1,10 @@
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-In-Reply-To: <6e508282-b45c-95a8-4b6c-126193de0776@xenomai.org>
-References: <baed9085e48cc80764b7.1480335483@devws148.be.alcatel-lucent.com>
- <6e508282-b45c-95a8-4b6c-126193de0776@xenomai.org>
+Content-Transfer-Encoding: 7bit
+Message-Id: <304110a1193e48e8304b.1480401144@devws148.be.alcatel-lucent.com>
+Date: Tue, 29 Nov 2016 07:32:24 +0100
 From: Ronny Meeus <ronny.meeus@gmail.com>
-Date: Tue, 29 Nov 2016 07:14:31 +0100
-Message-ID: <CAMJ=MEedWXfZmuVeveXYNRMnc+yReM9wSpM-yodjyWkqOpeu=w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] [PATCH] Add support for mips/mips64 in configure.ac
+Subject: [Xenomai] [PATCH] psos.h: remove dependency on tunables.h
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,48 +13,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, Nov 28, 2016 at 4:51 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+The psos.h file pollutes the application's namespace with defines
+of the boilerplate code because the tunables.h is included. In our
+application we already have a definition of the list_entry macro,
+resulting in a redefinition. The psos.h should be kept clean.
 
-> On 11/28/2016 01:18 PM, Ronny Meeus wrote:
-> > This patch adds support for mips/mips64 in configure.ac.
-> > It has been tested on Mercury only.
-> >
-> > diff --git a/configure.ac b/configure.ac
-> > --- a/configure.ac
-> > +++ b/configure.ac
-> > @@ -135,6 +135,10 @@ case "$build_for" in
-> >       XENO_TARGET_ARCH=blackfin
-> >       CONFIG_XENO_DEFAULT_PERIOD=100000
-> >       ;;
-> > + mips-*|mips64-*)
-> > +     XENO_TARGET_ARCH=mips
-> > +     CONFIG_XENO_DEFAULT_PERIOD=100000
-> > +     ;;
-> >   arm*-*)
-> >       XENO_TARGET_ARCH=arm
-> >       CONFIG_XENO_DEFAULT_PERIOD=1000000
-> >
->
-> Thanks. The same issue was discussed for aarch64 a few weeks ago:
-> http://xenomai.org/pipermail/xenomai/2016-November/036871.html
->
-> A more general fix is to not restrict the set of CPU architectures when
-> building for Mercury. This patch should help:
-> https://git.xenomai.org/xenomai-3.git/commit/?h=stable-3.0.x&id=
-> 18493575967fe969768674096f88b63d71e032e1
->
->
-Philippe
+Following small test program clearly shows the issue:
 
-Patch is also working well.
-Thanks.
+#include <psos/psos.h>
+#define list_entry
+int main(int argc, char * const argv[])
+{
+  return 0;
+}
 
-Ronny
+When compiling the code above a warning is generated:
 
+simple_test.c:3:1: warning: "list_entry" redefined
+In file included from boilerplate/list.h:24,
+                 from boilerplate/setup.h:21,
+                 from boilerplate/tunables.h:22,
+                 from psos/psos.h:28,
+                 from simple_test.c:1:
+boilerplate/shared-list.h:233:1: warning: this is the location of the previous definition
 
-> --
-> Philippe.
->
+This patch resolves the issue by just removing the dependency
+and all related functions. If the functions are actually needed, better to
+move them in a separate header file since they are not part of the 'official'
+psos interface.
+
+diff --git a/include/psos/psos.h b/include/psos/psos.h
+--- a/include/psos/psos.h
++++ b/include/psos/psos.h
+@@ -25,7 +25,6 @@
+ #define _XENOMAI_PSOS_PSOS_H
+ 
+ #include <sys/types.h>
+-#include <boilerplate/tunables.h>
+ 
+ #ifndef SUCCESS
+ #define SUCCESS 0
+@@ -372,16 +371,6 @@ u_long psos_task_denormalize_priority(in
+ 
+ extern int psos_long_names;
+ 
+-static inline define_config_tunable(long_names, int, on)
+-{
+-	psos_long_names = on;
+-}
+-
+-static inline read_config_tunable(long_names, int)
+-{
+-	return psos_long_names;
+-}
+-
+ #ifdef __cplusplus
+ }
+ #endif /* __cplusplus */
+
