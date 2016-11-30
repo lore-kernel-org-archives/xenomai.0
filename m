@@ -1,14 +1,11 @@
-References: <304110a1193e48e8304b.1480401144@devws148.be.alcatel-lucent.com>
- <0e747fe3-ff40-5cd7-e24b-9bb68bcd7eee@xenomai.org>
- <CAMJ=MEfLWvPwi5PPP0Q-fd=Q4DgSz7gDabTX5eObWxz+cF=wWw@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <100ded04-e551-d9b9-90c6-83db370fee4d@xenomai.org>
-Date: Tue, 29 Nov 2016 17:18:43 +0100
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-In-Reply-To: <CAMJ=MEfLWvPwi5PPP0Q-fd=Q4DgSz7gDabTX5eObWxz+cF=wWw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] psos.h: remove dependency on tunables.h
+Message-Id: <8612d9e224a0f91950a3.1480491048@devws148.be.alcatel-lucent.com>
+Date: Wed, 30 Nov 2016 08:30:48 +0100
+From: Ronny Meeus <ronny.meeus@gmail.com>
+Subject: [Xenomai] [PATCH] copperplate/mercury: introduce weak function to
+ get OS max thread priority
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,83 +14,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ronny Meeus <ronny.meeus@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 11/29/2016 01:59 PM, Ronny Meeus wrote:
-> On Tue, Nov 29, 2016 at 9:55 AM, Philippe Gerum <rpm@xenomai.org> wrote:
->> On 11/29/2016 07:32 AM, Ronny Meeus wrote:
->>> The psos.h file pollutes the application's namespace with defines
->>> of the boilerplate code because the tunables.h is included. In our
->>> application we already have a definition of the list_entry macro,
->>> resulting in a redefinition. The psos.h should be kept clean.
->>>
->>> Following small test program clearly shows the issue:
->>>
->>> #include <psos/psos.h>
->>> #define list_entry
->>> int main(int argc, char * const argv[])
->>> {
->>>   return 0;
->>> }
->>>
->>> When compiling the code above a warning is generated:
->>>
->>> simple_test.c:3:1: warning: "list_entry" redefined
->>> In file included from boilerplate/list.h:24,
->>>                  from boilerplate/setup.h:21,
->>>                  from boilerplate/tunables.h:22,
->>>                  from psos/psos.h:28,
->>>                  from simple_test.c:1:
->>> boilerplate/shared-list.h:233:1: warning: this is the location of the previous definition
->>>
->>> This patch resolves the issue by just removing the dependency
->>> and all related functions. If the functions are actually needed, better to
->>> move them in a separate header file since they are not part of the 'official'
->>> psos interface.
->>>
->>> diff --git a/include/psos/psos.h b/include/psos/psos.h
->>> --- a/include/psos/psos.h
->>> +++ b/include/psos/psos.h
->>> @@ -25,7 +25,6 @@
->>>  #define _XENOMAI_PSOS_PSOS_H
->>>
->>
->> Ack. But then we'd also need to introduce psos/tunables.h for defining
->> the bits your patch removes from psos/psos.h.
->>
-> 
-> Philippe
-> 
-> I just removed the functions because I did not see a need for them.
-> 
-> People can just access the
-> extern int psos_long_names
-> defined in the psos.h to manipulate the behavior of the psos interface
-> with respect
-> to the long names behavior.
-> 
-> After studying the usage of the tunables I understand the mechanism and how
-> it can be used to allow certain configurations to be done up to a
-> certain point (init done).
-> If values are changed after that point, an assert is raised.
-> 
-> I have created a new patch (which I will send in a separate mail) that
-> just moves the
-> functionality into a separate file. But this the issue remains that
-> the user can access
-> (even write) the psos_long_names flag (after init) without any assert
-> being triggered.
-> 
+This patch introduces a weak function in the mercury copperplate code
+that allows to put an upper limit on the priority used by the created thread
+objects.
 
-This is all about interfaces. If user decides to bypass the interfaces
-doing silly things, other things will invariably end up hitting the fan;
-and this is true for virtually any interface exposed by the system.
+Before this patch the complete OS scheduler's FIFO range was used and it was
+not possible to restrict it. Restricting it can be useful in case other
+activities (typically platform related things) need to get a higher priority
+than the application threads.
 
-Having an interface in this case is merely a way to guarantee proper
-behavior, regardless of psos_long_names being dropped, renamed or having
-a different type in the future.
+The example below shows what needs to be implemented in the application to
+restrict the range.
 
--- 
-Philippe.
+#include <copperplate/threadobj.h>
+int threadobj_sched_get_priority_max()
+{
+    return 92;
+}
+
+NOTE: if the value returned by the function is not in the range supported by
+the OS, the OS value will be used anyhow.
+
+diff --git a/include/copperplate/threadobj.h b/include/copperplate/threadobj.h
+--- a/include/copperplate/threadobj.h
++++ b/include/copperplate/threadobj.h
+@@ -136,6 +136,8 @@ void threadobj_save_timeout(struct threa
+ 		corespec->timeout = *timeout;
+ }
+ 
++int threadobj_sched_get_priority_max(void);
++
+ #endif /* CONFIG_XENO_MERCURY */
+ 
+ /*
+diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
+--- a/lib/copperplate/threadobj.c
++++ b/lib/copperplate/threadobj.c
+@@ -539,9 +539,16 @@ static void nop_sighandler(int sig)
+ 	/* nop */
+ }
+ 
++__weak int threadobj_sched_get_priority_max(void)
++{
++	return sched_get_priority_max(SCHED_FIFO);
++}
++
+ static inline void pkg_init_corespec(void)
+ {
+ 	struct sigaction sa;
++	int max_prio;
++	int max_sched_prio;
+ 
+ 	/*
+ 	 * We don't have builtin scheduler-lock feature over Mercury,
+@@ -555,7 +562,10 @@ static inline void pkg_init_corespec(voi
+ 	 * holding the scheduler lock, unless the latter has to block
+ 	 * for some reason, defeating the purpose of such lock anyway.
+ 	 */
+-	threadobj_irq_prio = sched_get_priority_max(SCHED_FIFO);
++	max_prio = threadobj_sched_get_priority_max();
++	max_sched_prio = sched_get_priority_max(SCHED_FIFO);
++
++	threadobj_irq_prio = ((max_prio > max_sched_prio)? max_sched_prio:max_prio);
+ 	threadobj_lock_prio = threadobj_irq_prio - 1;
+ 	threadobj_high_prio = threadobj_irq_prio - 2;
+ 	threadobj_agent_prio = threadobj_high_prio;
 
