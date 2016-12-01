@@ -1,12 +1,11 @@
-Message-ID: <58403FE3.50701@numalliance.com>
-Date: Thu, 01 Dec 2016 16:21:07 +0100
-From: Benjamin ROUZAUD <brouzaud@numalliance.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <c8c57cac-bec8-069d-5522-a4895f9183fe@siemens.com>
+Date: Thu, 1 Dec 2016 17:15:09 +0100
 MIME-Version: 1.0
-References: <583D46A3.7010206@numalliance.com>
-In-Reply-To: <583D46A3.7010206@numalliance.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset=iso-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Fwd: rt,Heap segfault with unittest
+Subject: [Xenomai] [PATCH] x86/ipipe: Skip lockdep check for vector_lock
+	under I-pipe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,43 +14,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-Hello,
+The lock becomes an __ipipe_spinlock_t in that case, and that's out of
+scope for lockdep.
 
-We made a new 32 bits system with xeno v3.0.3 .
-first question, do we need to switch to git/next branch or keep it ?
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ arch/x86/kernel/apic/vector.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-During the execution of program using the library xenomai, we met a
-problem about allocation memory between two process. Indeed, with a same
-session, one program create the differents areas of memories but the
-next try and fail. We create a unittest case that reproduces the bug between the
-two process. But , since the problem has happened "randomly", depending on running context, we hope you will be able to
-reproduce it.
-
-Xenomai is configure with this flags :  --enable-smp, --enable-pshared
---enable-dlopen-libs --enable-tls
-
-You will found the differents files at google drive (cf https://drive.google.com/drive/folders/0B7MmKH2j6iMYWjJfTzVOcFVTRDQ?usp=sharing).
-  
-You will find  modification of /alchemy/heap.c file trying to
-search for the error at processing time. (cf enclosed heap.txt file)
-
-You will find too the two tests programs with a makefile in enclosed heaptest.tar.gz file. The process B
-create differents allocation areas and pauses.
-
-projetB --session=t
-
-the process C tries to create or link differents allocation areas but it crashes with segfault after many
-creation.
-
-projetC --session=t
-
-Cordially,
-B. Rouzaud
-R&D Numalliance
-
-
-
-
+diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
+index 17a4a98..244801f 100644
+--- a/arch/x86/kernel/apic/vector.c
++++ b/arch/x86/kernel/apic/vector.c
+@@ -485,7 +485,9 @@ void setup_vector_irq(int cpu)
+ {
+ 	int irq;
+ 
++#ifndef CONFIG_IPIPE
+ 	lockdep_assert_held(&vector_lock);
++#endif
+ 	/*
+ 	 * On most of the platforms, legacy PIC delivers the interrupts on the
+ 	 * boot cpu. But there are certain platforms where PIC interrupts are
+-- 
+2.1.4
 
