@@ -1,9 +1,12 @@
+Message-ID: <58403FE3.50701@numalliance.com>
+Date: Thu, 01 Dec 2016 16:21:07 +0100
+From: Benjamin ROUZAUD <brouzaud@numalliance.com>
 MIME-Version: 1.0
-From: Jayadev Kumaran <jayadevk123@gmail.com>
-Date: Thu, 1 Dec 2016 20:13:39 +0530
-Message-ID: <CAOG0fenP6pEaXF=OM0aA9eDo3opzcqgO6ueWN2JojFRC0H1_Qw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] Unable to mount shared folder from the host.
+References: <583D46A3.7010206@numalliance.com>
+In-Reply-To: <583D46A3.7010206@numalliance.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Fwd: rt,Heap segfault with unittest
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,32 +17,41 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hello ,
+Hello,
 
-I'm very new to Xenomai and currently trying to mount a shared folder from
-my host onto Xenomai running on qemu emulator (arm64 platform).
-1. I have verified that 9P options are enabled in the kernel configuration.
-2. I'm running the qemu emulator with the below command;
+We made a new 32 bits system with xeno v3.0.3 .
+first question, do we need to switch to git/next branch or keep it ?
 
-*qemu-system-aarch64 -M virt -cpu cortex-a57 -kernel Image -initrd
-rootfs.img.gz -nographic -append "console=ttyAMA0 root=/dev/ram
-rootfstype=ramfs init=/bin/sh" -snapshot -fsdev
-local,id=test_dev,path=/home/jayadev.kumaran/Documents/arm/ltp,security_model=passthrough
--device virtio-9p-pci,fsdev=test_dev,mount_tag=test_mount*
+During the execution of program using the library xenomai, we met a
+problem about allocation memory between two process. Indeed, with a same
+session, one program create the differents areas of memories but the
+next try and fail. We create a unittest case that reproduces the bug between the
+two process. But , since the problem has happened "randomly", depending on running context, we hope you will be able to
+reproduce it.
 
-3. I'm trying to mount the folder using
+Xenomai is configure with this flags :  --enable-smp, --enable-pshared
+--enable-dlopen-libs --enable-tls
+
+You will found the differents files at google drive (cf https://drive.google.com/drive/folders/0B7MmKH2j6iMYWjJfTzVOcFVTRDQ?usp=sharing).
+  
+You will find  modification of /alchemy/heap.c file trying to
+search for the error at processing time. (cf enclosed heap.txt file)
+
+You will find too the two tests programs with a makefile in enclosed heaptest.tar.gz file. The process B
+create differents allocation areas and pauses.
+
+projetB --session=t
+
+the process C tries to create or link differents allocation areas but it crashes with segfault after many
+creation.
+
+projetC --session=t
+
+Cordially,
+B. Rouzaud
+R&D Numalliance
 
 
-*mount -t 9p -o trans=virtio test_mount /tmp/shared/
--oversion=9p2000.L,posixacl,cache=loose*
-However I m seeing the below log:
-9pnet_virtio: no channels available
-mount: mounting test_mount on /tmp/shared/ failed: No such file or directory
 
-*QUERY: Am I doing it the right way ? Is there any other method by
-which I can share/copy a folder on my host system to the Qemu
-platform.*
 
-Thanks and Regards,
 
-Jayadev
