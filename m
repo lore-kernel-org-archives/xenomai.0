@@ -1,12 +1,11 @@
-References: <1789140873.1763769.1480678735123.JavaMail.zimbra@hs-harz.de>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <bf4439ee-3195-279f-732a-1d4de62b1d94@xenomai.org>
-Date: Fri, 2 Dec 2016 13:26:00 +0100
 MIME-Version: 1.0
-In-Reply-To: <1789140873.1763769.1480678735123.JavaMail.zimbra@hs-harz.de>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] porting xenomai2 modules to xenomai3
+From: Ronny Meeus <ronny.meeus@gmail.com>
+Date: Fri, 2 Dec 2016 14:03:31 +0100
+Message-ID: <CAMJ=MEdM7O5OBjpQV8sYyVfpToJbuy24MMfDRouDeMaryGcR+g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] =?utf-8?q?Question_about_config_option_=E2=80=93mem-poo?=
+	=?utf-8?q?l-size?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,49 +14,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Wisse <mwisse@hs-harz.de>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 12/02/2016 12:38 PM, Michael Wisse wrote:
-> Hello,
-> 
-> I try to get compiled some xemomai2 kernel modules with native-api to xenomai3 alchemy.
-> I have build a single kernel xenomai configuration (mercury) with a centos 3.10.0 kernel.
-> 
-> The Makefile from xenomai2 does not work anymore. The Makefiles from xenomai3 demo directory are very complex. Can I use therm for compiling an own module?
-> 
+Hello
 
-You must be looking at the autoconf-generated Makefiles, the original
-template (Makefile.am) is only 20 lines long. Those Makefiles are part
-of Xenomai's internal build system to produce the demos automatically,
-they are not intended to inspire user application Makefiles. Please
-refer to the generic documentation for building kernel modules:
-https://www.kernel.org/doc/Documentation/kbuild/modules.txt
+Context: I'm using the pSOS interface over the Mercury core (version 3.0.3)=
+.
 
-> The most important question is, will this generally work, alchemy kernel modules with xenomai mercury? 
+I have a question about option:
+=E2=80=93mem-pool-size
+described on page
+http://xenomai.org/2015/05/application-setup-and-init/
 
-No.
+Is the parameter specifying the maximum size that will be used Xenomai
+or is this the initial value that will be used while creating the main
+memory pool.
 
-- there can't be such things as alchemy kernel modules, since xenomai3
-discontinued support for user APIs in kernel space.
+The explanation makes me think it is the first case while tests show
+that it is the
+latter case. e.g. the memory pool just extends when it is depleted.
 
-- using the mercury core with Xenomai means going for a single kernel
-system, not a dual kernel configuration. In this case, you fully depend
-on the real-time capabilities of the underlying Linux kernel. The other
-option is using Xenomai's cobalt core, which implements a co-kernel
-matching the one you had with xenomai2. In any case, alchemy is only
-available from user-space, you can't write kernel modules with such API.
+To me it would make more sense that the parameter is specifying the maximum
+memory that will be used since like it is today the application's
+memory usage can
+grow until all system memory is consumed.
 
-> My modules work with pipes and the alchemy/pipe.h includes a pipe.h from cobalt/uapi/kernel, so I am afraid not.   
-> What can I do with manageable effort?
-
-You could give details about the general architecture of your software,
-such as which part runs in kernel space and why does it have to
-(functionally speaking). This should normally cover the topic of using
-message pipes, giving people some clues to answer your question.
-
-You may want to read this document too:
-http://xenomai.org/migrating-from-xenomai-2-x-to-3-x/
-
--- 
-Philippe.
+Ronny
 
