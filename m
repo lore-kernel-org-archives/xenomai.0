@@ -1,13 +1,16 @@
-Date: Fri, 2 Dec 2016 16:52:25 +0000 (UTC)
-From: Giulio Moro <giuliomoro@yahoo.it>
-Message-ID: <884477039.8840647.1480697545181@mail.yahoo.com>
+References: <CAMJ=MEdM7O5OBjpQV8sYyVfpToJbuy24MMfDRouDeMaryGcR+g@mail.gmail.com>
+ <7bcf3d70-494c-9fa1-8554-f746ef130b7c@xenomai.org>
+ <CAMJ=MEcg43Sz1aT2K3J3LMEoBhRTj8cvZqCx1a9z5y5v+XNTgg@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <6bc41409-f538-a50a-ee7c-a0116f4ebaff@xenomai.org>
+Date: Fri, 2 Dec 2016 19:33:05 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-References: <884477039.8840647.1480697545181.ref@mail.yahoo.com>
-Subject: [Xenomai] FAILURE rt_thread_body:116: no SIGDEBUG_MIGRATE_PRIOINV
- received on ARM
-Reply-To: Giulio Moro <giuliomoro@yahoo.it>
+In-Reply-To: <CAMJ=MEcg43Sz1aT2K3J3LMEoBhRTj8cvZqCx1a9z5y5v+XNTgg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai]
+ =?utf-8?q?Question_about_config_option_=E2=80=93mem-poo?=
+ =?utf-8?q?l-size?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,86 +19,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Ronny Meeus <ronny.meeus@gmail.com>
+Cc: xenomai@xenomai.org
 
-Hello,
-freshly installed Cobalt 3.0.3 on a BeagleBone Black (ARM Cortex-A8) with kernel 4.4.35 (rcn: 
-https://github.com/RobertCNelson/ti-linux-kernel-dev/tree/ti-linux-xenomai-4.4.y ).
+On 12/02/2016 03:29 PM, Ronny Meeus wrote:
+> On Fri, Dec 2, 2016 at 3:01 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+>> On 12/02/2016 02:03 PM, Ronny Meeus wrote:
+>>> Hello
+>>>
+>>> Context: I'm using the pSOS interface over the Mercury core (version 3.0.3).
+>>>
+>>> I have a question about option:
+>>> –mem-pool-size
+>>> described on page
+>>> http://xenomai.org/2015/05/application-setup-and-init/
+>>>
+>>> Is the parameter specifying the maximum size that will be used Xenomai
+>>> or is this the initial value that will be used while creating the main
+>>> memory pool.
+>>>
+>>> The explanation makes me think it is the first case while tests show
+>>> that it is the
+>>> latter case. e.g. the memory pool just extends when it is depleted.
+>>>
+>>
+>> How do you check this?
+> 
+> I check it by creating a pSOS message queue in which I sent 100k messages.
+> I see that this succeeds without errors.
+> I have also put a trace in the tlsf heap code and I see it constantly extending.
+> 
+> This is the test application:
+> 
+> #include <psos.h>
+> #include <stdio.h>
+> 
+> static void main_test_task(u_long a,u_long b,u_long c,u_long d)
+> {
+>         unsigned long qid, err;
+>         int i;
+>         unsigned long message_count = 100000;
+>         unsigned long mesg[4];
+> 
+>         q_create("LINE",0,Q_NOLIMIT|Q_PRIOR,&qid);
+>         for (i=0;i<message_count;i++)
+>         {
+>                 err = q_send(qid, mesg);
+>                 if (err != 0)
+>                     printf("Error: q_send err=%ld count=%d\n", err, i);
+>         }
+>         printf("SUCCESS: Test passed (nr messages sent=%ld)\n",message_count);
+> 
+>         while (1)
+>                 tm_wkafter(1000);
+> }
+> 
+> 
+> int main(int argc, char * const *argv)
+> {
+>         unsigned long tid;
+>         unsigned long args[4] = {0,0,0,0};
+> 
+>         t_create("MAIN",25,16000,16000,0,&tid);
+>         t_start(tid,T_PREEMPT|T_TSLICE,main_test_task,args);
+>         while (1)
+>                 tm_wkafter(1000);
+> }
+> 
+> 
+> The unclean patch below solves the issue (to better understand the issue).
+> Correct patch can be provided later.
+> 
+> I was introducing a config parameter that specifies whether the pool actually
+> needs to grow or not. To be backwards compatible the default could be to grow.
 
-When runnig xeno-test I get the below error.
-Note that latency test works ok (though the values are a bit higher than expected).
-Any suggestions?
+The intent is to enforce a limit as specified by --mem-pool-size, just
+like the malloc and pshared allocators do (see heapobj-malloc.c), since
+there is no way to extend the heap without switching to secondary mode
+with Cobalt. The tlsf_malloc() interface allocating the main pool
+implicitly does not help with this.
 
-root@beaglebone ~/xenomai_staging$ /usr/xenomai/bin/xeno-test
-Started child 4984: /bin/bash /usr/xenomai/bin/xeno-test-run-wrapper /usr/xenomai/bin/xeno-test
-++ echo 0
-++ testdir=/usr/xenomai/bin
-++ /usr/xenomai/bin/smokey --run
-arith OK
-bufp skipped (no kernel support)
-cpu_affinity OK
-iddp skipped (no kernel support)
-^C
-root@beaglebone ~/xenomai_staging$ /usr/xenomai/bin/xeno-test -k
-Started child 4989: /bin/bash /usr/xenomai/bin/xeno-test-run-wrapper /usr/xenomai/bin/xeno-test -k
-++ echo 0
-++ testdir=/usr/xenomai/bin
-++ /usr/xenomai/bin/smokey --run --keep-going
-arith OK
-bufp skipped (no kernel support)
-cpu_affinity OK
-iddp skipped (no kernel support)
-leaks OK
-net_packet_dgram skipped (no kernel support)
-net_packet_raw skipped (no kernel support)
-net_udp skipped (no kernel support)
-posix_clock OK
-posix_cond OK
-posix_fork OK
-mutex_trylock not supported
-posix_mutex OK
-posix_select OK
-rtdm skipped (no kernel support)
-sched_quota skipped (no kernel support)
-sched_tp skipped (no kernel support)
-FAILURE rt_thread_body:116: no SIGDEBUG_MIGRATE_PRIOINV received
+I plan to phase out TLSF entirely, which has poor performances with
+respect to memory fragmentation (the numbers are actually pretty ugly).
+So either we live with the current state of affairs until TLSF is
+replaced, or a trivial patch preventing the extension will do.
 
-
-
-Full Kernel config file is available here http://pastebin.com/raw/XwqZpE5t
-XENOMAI configs only:
-CONFIG_XENOMAI=y
-CONFIG_XENO_OPT_STATS=y
-CONFIG_XENO_OPT_RR_QUANTUM=1000
-CONFIG_XENO_OPT_AUTOTUNE=y
-CONFIG_XENO_OPT_TIMER_LIST=y
-CONFIG_XENO_OPT_HOSTRT=y
-CONFIG_XENO_OPT_VFILE=y
-CONFIG_XENO_OPT_REGISTRY_NRSLOTS=512
-CONFIG_XENO_OPT_SYS_HEAPSZ=512
-CONFIG_XENO_OPT_PRIVATE_HEAPSZ=64
-CONFIG_XENO_OPT_SHARED_HEAPSZ=64
-CONFIG_XENO_OPT_NRTIMERS=128
-CONFIG_XENO_OPT_TIMING_SCHEDLAT=0
-CONFIG_XENO_OPT_TIMING_KSCHEDLAT=0
-CONFIG_XENO_OPT_TIMING_IRQLAT=0
-CONFIG_XENO_OPT_DEBUG=y
-CONFIG_XENO_OPT_DEBUG_LOCKING=y
-CONFIG_XENO_OPT_WATCHDOG=y
-CONFIG_XENO_OPT_WATCHDOG_TIMEOUT=4
-CONFIG_XENO_OPT_RTDM_COMPAT_DEVNODE=y
-CONFIG_XENO_DRIVERS_AUTOTUNE=y
-CONFIG_XENO_DRIVERS_16550A=y
-CONFIG_XENO_DRIVERS_16550A_ANY=y
-CONFIG_XENO_DRIVERS_TIMERBENCH=y
-CONFIG_XENO_DRIVERS_SWITCHTEST=y
-CONFIG_XENO_ARCH_UNLOCKED_SWITCH=y
-CONFIG_XENO_ARCH_WANT_TIP=y
-CONFIG_XENO_ARCH_FPU=y
-CONFIG_XENO_ARCH_OUTOFLINE_XNLOCK=y
-CONFIG_XENO_VERSION_MAJOR=3
-CONFIG_XENO_VERSION_MINOR=0
-CONFIG_XENO_REVISION_LEVEL=3
-CONFIG_XENO_VERSION_STRING="3.0.3"
-CONFIG_XENO_VERSION_NAME="Groovy Cosmic Halo"
+-- 
+Philippe.
 
