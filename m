@@ -1,18 +1,14 @@
-References: <CAMJ=MEdM7O5OBjpQV8sYyVfpToJbuy24MMfDRouDeMaryGcR+g@mail.gmail.com>
- <7bcf3d70-494c-9fa1-8554-f746ef130b7c@xenomai.org>
- <CAMJ=MEcg43Sz1aT2K3J3LMEoBhRTj8cvZqCx1a9z5y5v+XNTgg@mail.gmail.com>
- <6bc41409-f538-a50a-ee7c-a0116f4ebaff@xenomai.org>
- <dd5d5e95-30a0-8b4e-81f6-bd8b8983413e@xenomai.org>
+References: <884477039.8840647.1480697545181.ref@mail.yahoo.com>
+ <884477039.8840647.1480697545181@mail.yahoo.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <dcf00197-8010-bca0-1095-8101ed5f43cc@xenomai.org>
-Date: Sat, 3 Dec 2016 13:15:03 +0100
+Message-ID: <daba9179-e8ae-9eea-325f-fc7735aee1ea@xenomai.org>
+Date: Sat, 3 Dec 2016 18:08:12 +0100
 MIME-Version: 1.0
-In-Reply-To: <dd5d5e95-30a0-8b4e-81f6-bd8b8983413e@xenomai.org>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <884477039.8840647.1480697545181@mail.yahoo.com>
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai]
- =?utf-8?q?Question_about_config_option_=E2=80=93mem-poo?=
- =?utf-8?q?l-size?=
+Subject: Re: [Xenomai] FAILURE rt_thread_body:116: no
+ SIGDEBUG_MIGRATE_PRIOINV received on ARM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,39 +17,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jorge Ramirez <jro@xenomai.org>, Ronny Meeus <ronny.meeus@gmail.com>
-Cc: xenomai@xenomai.org
+To: Giulio Moro <giuliomoro@yahoo.it>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 12/02/2016 10:49 PM, Jorge Ramirez wrote:
-> On 12/02/2016 01:33 PM, Philippe Gerum wrote:
->> I plan to phase out TLSF entirely, which has poor performances with
->> respect to memory fragmentation (the numbers are actually pretty ugly).
->> So either we live with the current state of affairs until TLSF is
->> replaced, or a trivial patch preventing the extension will do.
+On 12/02/2016 05:52 PM, Giulio Moro wrote:
+> Hello,
+> freshly installed Cobalt 3.0.3 on a BeagleBone Black (ARM Cortex-A8) with kernel 4.4.35 (rcn: 
+> https://github.com/RobertCNelson/ti-linux-kernel-dev/tree/ti-linux-xenomai-4.4.y ).
 > 
-> the TLSF website [1]  claims an average fragmentation lower than 15% an
-> a maximum of 25%.
+> When runnig xeno-test I get the below error.
+> Note that latency test works ok (though the values are a bit higher than expected).
 
-Which is not that great. Besides, I suspect those figures to have been
-obtained on a 32bit CPU architecture. Trying on a 64bit one, e.g.
-allocating 24 byte blocks or less from a 8Mb pool, I can see the worst
-case doubling. The Xenomai core typically allocates small blocks.
+Then maybe it does not work as expected. Could you elaborate on:
 
-Some attempts to fix this issue with the original TLSF exist:
-https://github.com/mattconte/tlsf. However, I don't think TLSF best
-matches the allocation pattern we have in kernel space.
+- the figures reported by latency
+- whether you enabled debug (--enable-debug) when building the user libs
+and programs?
+- did you run the autotuner to calibrate the core clock?
 
-> What do you hope the replacement algorithm will provide?
+You may also want to make sure that debug options like
+XENO_OPT_DEBUG_LOCKING are disabled, vanilla kernel debug options
+likewise (DEBUG_LIST, IPIPE_TRACE and so on).
+
+> Any suggestions?
 > 
-> [1] http://www.gii.upv.es/tlsf/
+> FAILURE rt_thread_body:116: no SIGDEBUG_MIGRATE_PRIOINV received
 > 
 
-Less than 10%. In addition, the cobalt core allocator direly needs
-improvements on the block release path, either by adding it a free page
-bitmap like the pshared allocator now has, or by going for the drop in
-replacement Gilles wrote. There is also the option of unifying the
-implementation on the latter, replacing both the current cobalt
-allocator and tlsf in the same move.
+That one is a known pending issues with the smoke tests exercising the
+some Xenomai debug features, but won't affect the measurement performed
+by the "latency" program.
 
 -- 
 Philippe.
