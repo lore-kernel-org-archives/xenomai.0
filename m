@@ -1,12 +1,9 @@
-Date: Sun, 4 Dec 2016 16:51:00 +0000 (UTC)
-From: Giulio Moro <giuliomoro@yahoo.it>
-Message-ID: <927861158.10199114.1480870260376@mail.yahoo.com>
 MIME-Version: 1.0
+From: Ronny Meeus <ronny.meeus@gmail.com>
+Date: Mon, 5 Dec 2016 17:36:09 +0100
+Message-ID: <CAMJ=MEfiDuUFduQp7=TgLcNn4NQvr7UKYgS1RrnZMT21+Ohsdg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-References: <927861158.10199114.1480870260376.ref@mail.yahoo.com>
-Subject: [Xenomai] cannot open autotune device / issue tracker
-Reply-To: Giulio Moro <giuliomoro@yahoo.it>
+Subject: [Xenomai] Question about the implementation of tunables.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,14 +12,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-if you have compiled with 
-CONFIG_XENO_OPT_AUTOTUNE=mthen when you run autotune you get 
-./autotune: cannot open autotune device: No such file or directory
+Hello
 
-The error message is not very informative and should suggests `modprobe xeno_autotune`.
+we use the pSOS skin over the Mercury core.
 
-Is there an issue tracker somewhere?
-What is the best way to submit patches?
+I'm preparing a set of patches that introduce new tunables.
+What I observe is that in a small test applications it works well but once I
+start to use these in our real applications, I observe that the tunables are
+not called.
+
+I have identified that the root-cause of this is that we postpone the calling
+of the static constructors to a certain point in the application init and call
+__do_global_ctors_aux ourselves.
+(to make this work our build enviroment uses the -nostartfiles linker option
+and some other constructs ...)
+
+Now the question is: are there any option to make this work or have other
+people seen similar issues before?
+So we should be able to call the static constructors of the tunables only
+before we call copperplate_init ...
+
+
+Ronny
 
