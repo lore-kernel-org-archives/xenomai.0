@@ -1,12 +1,11 @@
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-In-Reply-To: <20ca0cb9-9b12-c60b-1957-b925ed97152d@xenomai.org>
-References: <CAMJ=MEfiDuUFduQp7=TgLcNn4NQvr7UKYgS1RrnZMT21+Ohsdg@mail.gmail.com>
- <20ca0cb9-9b12-c60b-1957-b925ed97152d@xenomai.org>
+Content-Transfer-Encoding: 7bit
+Message-Id: <5e3ba13de86d172dfe04.1481033431@devws148.be.alcatel-lucent.com>
+Date: Tue, 06 Dec 2016 15:10:31 +0100
 From: Ronny Meeus <ronny.meeus@gmail.com>
-Date: Tue, 6 Dec 2016 14:18:18 +0100
-Message-ID: <CAMJ=MEenBOXEXyBaKO8nfyiwZ+7rH0a615ZhNkeeCbEveVhDPQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Question about the implementation of tunables.
+Subject: [Xenomai] [PATCH] copperplate/mercury: introduce tunable to set max
+	priority
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,50 +14,125 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Tue, Dec 6, 2016 at 1:06 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On 12/05/2016 05:36 PM, Ronny Meeus wrote:
->> Hello
->>
->> we use the pSOS skin over the Mercury core.
->>
->> I'm preparing a set of patches that introduce new tunables.
->> What I observe is that in a small test applications it works well but once I
->> start to use these in our real applications, I observe that the tunables are
->> not called.
->>
->> I have identified that the root-cause of this is that we postpone the calling
->> of the static constructors to a certain point in the application init and call
->> __do_global_ctors_aux ourselves.
->> (to make this work our build enviroment uses the -nostartfiles linker option
->> and some other constructs ...)
->>
->> Now the question is: are there any option to make this work or have other
->> people seen similar issues before?
->> So we should be able to call the static constructors of the tunables only
->> before we call copperplate_init ...
->>
->
-> It's not a matter of building a small or large application, it is a
-> matter of disabling the normal runtime init code by passing the
-> -nostartfiles option to the linker, which could affect a so-called small
-> test program the same way.
->
-> I don't see any reasonable way to fix the issue with your app: like any
-> regular user-space code may do, the Xenomai libs depends on the regular
-> C runtime startup code to execute prior to entering main(). Since you
-> manually handle the pre-main() init code yourself it seems, you need to
-> add the libcopperplate and libpsos .init sections to the list of duties
-> your own early runtime code carries out.
->
+This patch introduces a tunable in the mercury copperplate code that allows
+to put an upper limit on the priority used by the created thread objects.
 
-Thanks Philippe for the feedback.
-We will try to find a solution for this.
+Before this patch the complete OS scheduler's FIFO range was used and it was
+not possible to restrict it. Restricting it can be useful in case other
+activities (typically platform related things) need to get a higher priority
+than the application threads.
 
-Ronny
+The following tuneable can be used to configure the max priority to be 92:
+set_config_tunable(sched_max_prio, 92);
 
-> --
-> Philippe.
+or using a command-line option:
+--sched_max_prio=92
+
+diff --git a/include/copperplate/threadobj.h b/include/copperplate/threadobj.h
+--- a/include/copperplate/threadobj.h
++++ b/include/copperplate/threadobj.h
+@@ -136,6 +136,8 @@ void threadobj_save_timeout(struct threa
+ 		corespec->timeout = *timeout;
+ }
+ 
++int threadobj_sched_get_priority_max(void);
++
+ #endif /* CONFIG_XENO_MERCURY */
+ 
+ /*
+diff --git a/include/copperplate/tunables.h b/include/copperplate/tunables.h
+--- a/include/copperplate/tunables.h
++++ b/include/copperplate/tunables.h
+@@ -35,6 +35,7 @@ extern "C" {
+ #endif
+ 
+ extern struct copperplate_setup_data __copperplate_setup_data;
++extern int threadobj_sched_max_prio;
+ 
+ define_config_tunable(session_label, const char *, label);
+ 
+@@ -93,6 +94,16 @@ static inline read_config_tunable(sessio
+ 	return __copperplate_setup_data.session_gid;
+ }
+ 
++static inline define_config_tunable(sched_max_prio, int, prio)
++{
++	threadobj_sched_max_prio = prio;
++}
++
++static inline read_config_tunable(sched_max_prio, int)
++{
++	return threadobj_sched_max_prio;
++}
++
+ #ifdef __cplusplus
+ }
+ #endif
+diff --git a/lib/copperplate/init.c b/lib/copperplate/init.c
+--- a/lib/copperplate/init.c
++++ b/lib/copperplate/init.c
+@@ -77,6 +77,11 @@ static const struct option copperplate_o
+ 		.flag = &__copperplate_setup_data.shared_registry,
+ 		.val = 1,
+ 	},
++	{
++#define sched_max_prio	5
++		.name = "sched-max-prio",
++		.has_arg = required_argument,
++	},
+ 	{ /* Sentinel */ }
+ };
+ 
+@@ -264,6 +269,9 @@ static int copperplate_parse_option(int 
+ 		if (ret)
+ 			return ret;
+ 		break;
++	case sched_max_prio:
++		threadobj_sched_max_prio = atoi(optarg);
++		break;
+ 	case regroot_opt:
+ 		__copperplate_setup_data.registry_root = strdup(optarg);
+ 		break;
+@@ -285,6 +293,7 @@ static void copperplate_help(void)
+         fprintf(stderr, "--shared-registry		enable public access to registry\n");
+         fprintf(stderr, "--registry-root=<path>		root path of registry\n");
+         fprintf(stderr, "--session=<label>[/<group>]	enable shared session\n");
++        fprintf(stderr, "--sched_max_prio=<prio>	set max scheduler priority used\n");
+ }
+ 
+ static struct setup_descriptor copperplate_interface = {
+diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
+--- a/lib/copperplate/threadobj.c
++++ b/lib/copperplate/threadobj.c
+@@ -488,6 +488,7 @@ int threadobj_stat(struct threadobj *tho
+ #else /* CONFIG_XENO_MERCURY */
+ 
+ static int threadobj_lock_prio;
++int threadobj_sched_max_prio;
+ 
+ static void unblock_sighandler(int sig)
+ {
+@@ -542,6 +543,8 @@ static void nop_sighandler(int sig)
+ static inline void pkg_init_corespec(void)
+ {
+ 	struct sigaction sa;
++	int max_prio;
++	int max_sched_prio;
+ 
+ 	/*
+ 	 * We don't have builtin scheduler-lock feature over Mercury,
+@@ -555,7 +558,10 @@ static inline void pkg_init_corespec(voi
+ 	 * holding the scheduler lock, unless the latter has to block
+ 	 * for some reason, defeating the purpose of such lock anyway.
+ 	 */
+-	threadobj_irq_prio = sched_get_priority_max(SCHED_FIFO);
++	max_sched_prio = sched_get_priority_max(SCHED_FIFO);
++	max_prio = (threadobj_sched_max_prio==0) ? max_sched_prio:threadobj_sched_max_prio;
++
++	threadobj_irq_prio = ((max_prio > max_sched_prio)? max_sched_prio:max_prio);
+ 	threadobj_lock_prio = threadobj_irq_prio - 1;
+ 	threadobj_high_prio = threadobj_irq_prio - 2;
+ 	threadobj_agent_prio = threadobj_high_prio;
 
