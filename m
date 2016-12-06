@@ -1,10 +1,10 @@
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Message-Id: <4846b03e4108ca6b4036.1481033769@devws148.be.alcatel-lucent.com>
-Date: Tue, 06 Dec 2016 15:16:09 +0100
+Message-Id: <9305b0f8a1e72466ac65.1481034395@devws148.be.alcatel-lucent.com>
+Date: Tue, 06 Dec 2016 15:26:35 +0100
 From: Ronny Meeus <ronny.meeus@gmail.com>
-Subject: [Xenomai] [PATCH] psos: add tunables to configure region 0
+Subject: [Xenomai] [PATCH] copperplate: Limit memory usage tlsf-heap
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,178 +15,154 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-In the pSOS interface region 0 can be used by applications to allocate
-memory from. It contains 'system' memory and is created by default during
-system init. Region 0 is currently not supported by the xenomai psos skin.
+Before this patch the system memory pool's (tlsf variant) behavior was
+to grow in case allocations were done when depleted. This is a
+contradiction with the expected behavior (see mem-pool-size tunable
+documentation). When the pool is depleted, an error should be retuned
+instead of growing the pool.
 
-This patch adds functionality to configure the total size and the unit
-size by means of following tunabels:
-  set_config_tunable(region0_size, 128000);
-  set_config_tunable(region0_unitsize, 256);
+This patch solves this bug.
+To be backwards compatible an option has been introduced that allows the
+configuration of the pool's growing capability. The default is
+'growing is done' and it can be disabled to providing a tunable from
+the appliction code or by passing a command line parameter.
 
-The corresponding command-line options are:
-  psos-rn0-size
-  psos-rn0-unitsize
+Tunable:
+set_config_tunable(no_grow_pool, 1);
 
-diff --git a/include/psos/tunables.h b/include/psos/tunables.h
---- a/include/psos/tunables.h
-+++ b/include/psos/tunables.h
-@@ -31,6 +31,8 @@ extern "C" {
- #endif /* __cplusplus */
+Command line option:
+--no-mem-pool-grow
+
+diff --git a/include/copperplate/tunables.h b/include/copperplate/tunables.h
+--- a/include/copperplate/tunables.h
++++ b/include/copperplate/tunables.h
+@@ -27,6 +27,7 @@ struct copperplate_setup_data {
+ 	int no_registry;
+ 	int shared_registry;
+ 	size_t mem_pool;
++	int no_grow_pool;
+ 	gid_t session_gid;
+ };
  
- extern int psos_long_names;
-+extern unsigned long psos_region0_size;
-+extern unsigned long psos_region0_unitsize;
+@@ -84,6 +85,16 @@ static inline read_config_tunable(mem_po
+ 	return __copperplate_setup_data.mem_pool;
+ }
  
- static inline define_config_tunable(long_names, int, on)
++static inline define_config_tunable(no_grow_pool, int, flag)
++{
++	__copperplate_setup_data.no_grow_pool = flag;
++}
++
++static inline read_config_tunable(no_grow_pool, int)
++{
++	return __copperplate_setup_data.no_grow_pool;
++}
++
+ static inline define_config_tunable(session_gid, gid_t, gid)
  {
-@@ -42,6 +44,26 @@ static inline read_config_tunable(long_n
- 	return psos_long_names;
- }
+ 	__copperplate_setup_data.session_gid = gid;
+diff --git a/lib/boilerplate/tlsf/tlsf.c b/lib/boilerplate/tlsf/tlsf.c
+--- a/lib/boilerplate/tlsf/tlsf.c
++++ b/lib/boilerplate/tlsf/tlsf.c
+@@ -452,6 +452,12 @@ static __inline__ bhdr_t *process_area(v
+ /******************************************************************/
  
-+static inline define_config_tunable(region0_size, unsigned long, size)
-+{
-+	psos_region0_size = size;
-+}
+ static char *mp;         /* Default memory pool. */
++static int grow_mp;
 +
-+static inline read_config_tunable(region0_size, unsigned long)
++void tlsf_grow_common_pool(int grow)
 +{
-+	return psos_region0_size;
++	grow_mp = grow;
 +}
-+
-+static inline define_config_tunable(region0_unitsize, unsigned long, size)
-+{
-+	psos_region0_unitsize = size;
-+}
-+
-+static inline read_config_tunable(region0_unitsize, unsigned long)
-+{
-+	return psos_region0_unitsize;
-+}
-+
- #ifdef __cplusplus
- }
- #endif /* __cplusplus */
-diff --git a/lib/psos/init.c b/lib/psos/init.c
---- a/lib/psos/init.c
-+++ b/lib/psos/init.c
-@@ -47,6 +47,8 @@
-  * - Partitions, Regions, Timers
-  */
- int psos_long_names = 0;
-+u_long psos_region0_size;
-+u_long psos_region0_unitsize;
  
- static unsigned int clock_resolution = 1000000; /* 1ms */
+ /******************************************************************/
+ size_t init_memory_pool(size_t mem_pool_size, void *mem_pool)
+@@ -625,6 +631,7 @@ void *tlsf_malloc(size_t size)
+ 	void *area;
  
-@@ -70,6 +72,16 @@ static const struct option psos_options[
- 		.flag = &psos_long_names,
- 		.val = 1
+ 	area_size = sizeof(tlsf_t) + BHDR_OVERHEAD * 8; /* Just a safety constant */
++	area_size += size;
+ 	area_size = (area_size > DEFAULT_AREA_SIZE) ? area_size : DEFAULT_AREA_SIZE;
+ 	area = get_new_area(&area_size);
+ 	if (area == ((void *) ~0))
+@@ -710,7 +717,7 @@ void *malloc_ex(size_t size, void *mem_p
+        so they are not longer valid when the function fails */
+     b = FIND_SUITABLE_BLOCK(tlsf, &fl, &sl);
+ #if USE_MMAP || USE_SBRK
+-    if (!b && mem_pool == mp) {	/* Don't grow private pools */
++    if (!b && (mem_pool == mp) && grow_mp) {	/* Don't grow private pools */
+ 	size_t area_size;
+ 	void *area;
+ 	/* Growing the pool size when needed */
+diff --git a/lib/boilerplate/tlsf/tlsf.h b/lib/boilerplate/tlsf/tlsf.h
+--- a/lib/boilerplate/tlsf/tlsf.h
++++ b/lib/boilerplate/tlsf/tlsf.h
+@@ -37,4 +37,6 @@ extern void *tlsf_realloc(void *ptr, siz
+ extern void *tlsf_calloc(size_t nelem, size_t elem_size);
+ size_t malloc_usable_size_ex(void *ptr, void *pool);
+ 
++extern void tlsf_grow_common_pool(int grow);
++
+ #endif
+diff --git a/lib/copperplate/heapobj-tlsf.c b/lib/copperplate/heapobj-tlsf.c
+--- a/lib/copperplate/heapobj-tlsf.c
++++ b/lib/copperplate/heapobj-tlsf.c
+@@ -89,6 +89,11 @@ int heapobj_pkg_init_private(void)
+ 	 * per-block overhead for an undefined number of individual
+ 	 * allocation requests. Ugly.
+ 	 */
++	if (__copperplate_setup_data.no_grow_pool == 0)
++		tlsf_grow_common_pool(1);
++	else
++		tlsf_grow_common_pool(0);
++
+ 	mem = tlsf_malloc(__copperplate_setup_data.mem_pool);
+ 	size = init_memory_pool(__copperplate_setup_data.mem_pool, mem);
+ 	if (size == (size_t)-1)
+diff --git a/lib/copperplate/init.c b/lib/copperplate/init.c
+--- a/lib/copperplate/init.c
++++ b/lib/copperplate/init.c
+@@ -36,6 +36,7 @@
+ 
+ struct copperplate_setup_data __copperplate_setup_data = {
+ 	.mem_pool = 1024 * 1024, /* Default, 1Mb. */
++	.no_grow_pool = 0,
+ 	.no_registry = 0,
+ 	.registry_root = DEFAULT_REGISTRY_ROOT,
+ 	.session_label = NULL,
+@@ -78,10 +79,17 @@ static const struct option copperplate_o
+ 		.val = 1,
+ 	},
+ 	{
+-#define sched_max_prio	5
++#define sched_max_prio		5
+ 		.name = "sched-max-prio",
+ 		.has_arg = required_argument,
  	},
 +	{
-+#define region0_size_opt	3
-+		.name = "psos-rn0-size",
-+		.has_arg = required_argument,
-+	},
-+	{
-+#define region0_unitsize_opt	4
-+		.name = "psos-rn0-unitsize",
-+		.has_arg = required_argument,
++#define no_mempool_grow_opt	6
++		.name = "no-mem-pool-grow",
++		.has_arg = no_argument,
++		.flag = &__copperplate_setup_data.no_grow_pool,
++		.val = 1,
 +	},
  	{ /* Sentinel */ }
  };
  
-@@ -82,6 +94,12 @@ static int psos_parse_option(int optnum,
- 	case time_slice_opt:
- 		time_slice_in_ticks = atoi(optarg);
+@@ -277,6 +285,7 @@ static int copperplate_parse_option(int 
  		break;
-+	case region0_size_opt:
-+		psos_region0_size = (u_long)atol(optarg);
-+		break;
-+	case region0_unitsize_opt:
-+		psos_region0_unitsize = (u_long)atol(optarg);
-+		break;
- 	case long_names_opt:
+ 	case shared_registry_opt:
+ 	case no_registry_opt:
++	case no_mempool_grow_opt:
  		break;
  	default:
-@@ -96,6 +114,8 @@ static void psos_help(void)
+ 		/* Paranoid, can't happen. */
+@@ -289,6 +298,7 @@ static int copperplate_parse_option(int 
+ static void copperplate_help(void)
  {
-         fprintf(stderr, "--psos-clock-resolution=<ns>	tick value (default 1ms)\n");
-         fprintf(stderr, "--psos-time-slice=<psos-ticks>	round-robin time slice\n");
-+        fprintf(stderr, "--psos-rn0-size=<size>		region0 size\n");
-+        fprintf(stderr, "--psos-rn0-unitsize=<usize>	region0 unit size\n");
-         fprintf(stderr, "--psos-long-names		enable long names for objects (> 4 characters)\n");
- }
- 
-@@ -124,6 +144,17 @@ static int psos_init(void)
- 		return __bt(ret);
- 	}
- 
-+	if (psos_region0_size) {
-+		printf("Creating region 0. size=%lu\n",psos_region0_size); /*TODO meeusr */
-+		ret = rn_create_region0(psos_region0_size, psos_region0_unitsize);
-+		if (ret) {
-+			warning("%s: failed to initialize pSOS region 0 ( ret=%u ns)",
-+				__FUNCTION__, ret);
-+			return __bt(ret);
-+		}
-+	}
-+
-+
- 	/* Convert pSOS ticks to timespec. */
- 	clockobj_ticks_to_timespec(&psos_clock, time_slice_in_ticks, &psos_rrperiod);
- 
-diff --git a/lib/psos/rn.c b/lib/psos/rn.c
---- a/lib/psos/rn.c
-+++ b/lib/psos/rn.c
-@@ -35,6 +35,8 @@ struct pvcluster psos_rn_table;
- 
- static unsigned long anon_rnids;
- 
-+static u_long region0_id = 0;
-+
- static struct psos_rn *get_rn_from_id(u_long rnid, int *err_r)
- {
- 	struct psos_rn *rn = mainheap_deref(rnid, struct psos_rn);
-@@ -226,6 +228,9 @@ u_long rn_getseg(u_long rnid, u_long siz
- 	int ret = SUCCESS;
- 	void *seg;
- 
-+	if (rnid == 0)
-+		rnid = region0_id;
-+
- 	rn = get_rn_from_id(rnid, &ret);
- 	if (rn == NULL)
- 		return ret;
-@@ -303,6 +308,9 @@ u_long rn_retseg(u_long rnid, void *sega
- 	u_long size;
- 	void *seg;
- 
-+	if (rnid == 0)
-+		rnid = region0_id;
-+
- 	rn = get_rn_from_id(rnid, &ret);
- 	if (rn == NULL)
- 		return ret;
-@@ -341,3 +349,10 @@ out:
- 
- 	return ret;
- }
-+
-+u_long rn_create_region0(u_long region0_size, u_long region0_unitsize)
-+{
-+	u_long rsize;
-+	return rn_create("_RN0", xnmalloc(region0_size), region0_size,
-+			 (region0_unitsize?region0_unitsize:128), 0, &region0_id, &rsize);
-+}
-diff --git a/lib/psos/rn.h b/lib/psos/rn.h
---- a/lib/psos/rn.h
-+++ b/lib/psos/rn.h
-@@ -46,4 +46,6 @@ struct psos_rn_wait {
- 
- extern struct pvcluster psos_rn_table;
- 
-+extern u_long rn_create_region0(u_long region0_size, u_long region0_unitsize);
-+
- #endif /* _PSOS_RN_H */
+ 	fprintf(stderr, "--mem-pool-size=<size[K|M|G]> 	size of the main heap\n");
++	fprintf(stderr, "--no-mem-pool-grow	 	suppress auto-grow main heap\n");
+         fprintf(stderr, "--no-registry			suppress object registration\n");
+         fprintf(stderr, "--shared-registry		enable public access to registry\n");
+         fprintf(stderr, "--registry-root=<path>		root path of registry\n");
 
