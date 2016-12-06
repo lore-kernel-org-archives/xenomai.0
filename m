@@ -1,11 +1,10 @@
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Message-Id: <5e3ba13de86d172dfe04.1481033431@devws148.be.alcatel-lucent.com>
-Date: Tue, 06 Dec 2016 15:10:31 +0100
+Message-Id: <4846b03e4108ca6b4036.1481033769@devws148.be.alcatel-lucent.com>
+Date: Tue, 06 Dec 2016 15:16:09 +0100
 From: Ronny Meeus <ronny.meeus@gmail.com>
-Subject: [Xenomai] [PATCH] copperplate/mercury: introduce tunable to set max
-	priority
+Subject: [Xenomai] [PATCH] psos: add tunables to configure region 0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,123 +15,178 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-This patch introduces a tunable in the mercury copperplate code that allows
-to put an upper limit on the priority used by the created thread objects.
+In the pSOS interface region 0 can be used by applications to allocate
+memory from. It contains 'system' memory and is created by default during
+system init. Region 0 is currently not supported by the xenomai psos skin.
 
-Before this patch the complete OS scheduler's FIFO range was used and it was
-not possible to restrict it. Restricting it can be useful in case other
-activities (typically platform related things) need to get a higher priority
-than the application threads.
+This patch adds functionality to configure the total size and the unit
+size by means of following tunabels:
+  set_config_tunable(region0_size, 128000);
+  set_config_tunable(region0_unitsize, 256);
 
-The following tuneable can be used to configure the max priority to be 92:
-set_config_tunable(sched_max_prio, 92);
+The corresponding command-line options are:
+  psos-rn0-size
+  psos-rn0-unitsize
 
-or using a command-line option:
---sched_max_prio=92
-
-diff --git a/include/copperplate/threadobj.h b/include/copperplate/threadobj.h
---- a/include/copperplate/threadobj.h
-+++ b/include/copperplate/threadobj.h
-@@ -136,6 +136,8 @@ void threadobj_save_timeout(struct threa
- 		corespec->timeout = *timeout;
+diff --git a/include/psos/tunables.h b/include/psos/tunables.h
+--- a/include/psos/tunables.h
++++ b/include/psos/tunables.h
+@@ -31,6 +31,8 @@ extern "C" {
+ #endif /* __cplusplus */
+ 
+ extern int psos_long_names;
++extern unsigned long psos_region0_size;
++extern unsigned long psos_region0_unitsize;
+ 
+ static inline define_config_tunable(long_names, int, on)
+ {
+@@ -42,6 +44,26 @@ static inline read_config_tunable(long_n
+ 	return psos_long_names;
  }
  
-+int threadobj_sched_get_priority_max(void);
-+
- #endif /* CONFIG_XENO_MERCURY */
- 
- /*
-diff --git a/include/copperplate/tunables.h b/include/copperplate/tunables.h
---- a/include/copperplate/tunables.h
-+++ b/include/copperplate/tunables.h
-@@ -35,6 +35,7 @@ extern "C" {
- #endif
- 
- extern struct copperplate_setup_data __copperplate_setup_data;
-+extern int threadobj_sched_max_prio;
- 
- define_config_tunable(session_label, const char *, label);
- 
-@@ -93,6 +94,16 @@ static inline read_config_tunable(sessio
- 	return __copperplate_setup_data.session_gid;
- }
- 
-+static inline define_config_tunable(sched_max_prio, int, prio)
++static inline define_config_tunable(region0_size, unsigned long, size)
 +{
-+	threadobj_sched_max_prio = prio;
++	psos_region0_size = size;
 +}
 +
-+static inline read_config_tunable(sched_max_prio, int)
++static inline read_config_tunable(region0_size, unsigned long)
 +{
-+	return threadobj_sched_max_prio;
++	return psos_region0_size;
++}
++
++static inline define_config_tunable(region0_unitsize, unsigned long, size)
++{
++	psos_region0_unitsize = size;
++}
++
++static inline read_config_tunable(region0_unitsize, unsigned long)
++{
++	return psos_region0_unitsize;
 +}
 +
  #ifdef __cplusplus
  }
- #endif
-diff --git a/lib/copperplate/init.c b/lib/copperplate/init.c
---- a/lib/copperplate/init.c
-+++ b/lib/copperplate/init.c
-@@ -77,6 +77,11 @@ static const struct option copperplate_o
- 		.flag = &__copperplate_setup_data.shared_registry,
- 		.val = 1,
+ #endif /* __cplusplus */
+diff --git a/lib/psos/init.c b/lib/psos/init.c
+--- a/lib/psos/init.c
++++ b/lib/psos/init.c
+@@ -47,6 +47,8 @@
+  * - Partitions, Regions, Timers
+  */
+ int psos_long_names = 0;
++u_long psos_region0_size;
++u_long psos_region0_unitsize;
+ 
+ static unsigned int clock_resolution = 1000000; /* 1ms */
+ 
+@@ -70,6 +72,16 @@ static const struct option psos_options[
+ 		.flag = &psos_long_names,
+ 		.val = 1
  	},
 +	{
-+#define sched_max_prio	5
-+		.name = "sched-max-prio",
++#define region0_size_opt	3
++		.name = "psos-rn0-size",
++		.has_arg = required_argument,
++	},
++	{
++#define region0_unitsize_opt	4
++		.name = "psos-rn0-unitsize",
 +		.has_arg = required_argument,
 +	},
  	{ /* Sentinel */ }
  };
  
-@@ -264,6 +269,9 @@ static int copperplate_parse_option(int 
- 		if (ret)
- 			return ret;
+@@ -82,6 +94,12 @@ static int psos_parse_option(int optnum,
+ 	case time_slice_opt:
+ 		time_slice_in_ticks = atoi(optarg);
  		break;
-+	case sched_max_prio:
-+		threadobj_sched_max_prio = atoi(optarg);
++	case region0_size_opt:
++		psos_region0_size = (u_long)atol(optarg);
 +		break;
- 	case regroot_opt:
- 		__copperplate_setup_data.registry_root = strdup(optarg);
++	case region0_unitsize_opt:
++		psos_region0_unitsize = (u_long)atol(optarg);
++		break;
+ 	case long_names_opt:
  		break;
-@@ -285,6 +293,7 @@ static void copperplate_help(void)
-         fprintf(stderr, "--shared-registry		enable public access to registry\n");
-         fprintf(stderr, "--registry-root=<path>		root path of registry\n");
-         fprintf(stderr, "--session=<label>[/<group>]	enable shared session\n");
-+        fprintf(stderr, "--sched_max_prio=<prio>	set max scheduler priority used\n");
+ 	default:
+@@ -96,6 +114,8 @@ static void psos_help(void)
+ {
+         fprintf(stderr, "--psos-clock-resolution=<ns>	tick value (default 1ms)\n");
+         fprintf(stderr, "--psos-time-slice=<psos-ticks>	round-robin time slice\n");
++        fprintf(stderr, "--psos-rn0-size=<size>		region0 size\n");
++        fprintf(stderr, "--psos-rn0-unitsize=<usize>	region0 unit size\n");
+         fprintf(stderr, "--psos-long-names		enable long names for objects (> 4 characters)\n");
  }
  
- static struct setup_descriptor copperplate_interface = {
-diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
---- a/lib/copperplate/threadobj.c
-+++ b/lib/copperplate/threadobj.c
-@@ -488,6 +488,7 @@ int threadobj_stat(struct threadobj *tho
- #else /* CONFIG_XENO_MERCURY */
+@@ -124,6 +144,17 @@ static int psos_init(void)
+ 		return __bt(ret);
+ 	}
  
- static int threadobj_lock_prio;
-+int threadobj_sched_max_prio;
- 
- static void unblock_sighandler(int sig)
- {
-@@ -542,6 +543,8 @@ static void nop_sighandler(int sig)
- static inline void pkg_init_corespec(void)
- {
- 	struct sigaction sa;
-+	int max_prio;
-+	int max_sched_prio;
- 
- 	/*
- 	 * We don't have builtin scheduler-lock feature over Mercury,
-@@ -555,7 +558,10 @@ static inline void pkg_init_corespec(voi
- 	 * holding the scheduler lock, unless the latter has to block
- 	 * for some reason, defeating the purpose of such lock anyway.
- 	 */
--	threadobj_irq_prio = sched_get_priority_max(SCHED_FIFO);
-+	max_sched_prio = sched_get_priority_max(SCHED_FIFO);
-+	max_prio = (threadobj_sched_max_prio==0) ? max_sched_prio:threadobj_sched_max_prio;
++	if (psos_region0_size) {
++		printf("Creating region 0. size=%lu\n",psos_region0_size); /*TODO meeusr */
++		ret = rn_create_region0(psos_region0_size, psos_region0_unitsize);
++		if (ret) {
++			warning("%s: failed to initialize pSOS region 0 ( ret=%u ns)",
++				__FUNCTION__, ret);
++			return __bt(ret);
++		}
++	}
 +
-+	threadobj_irq_prio = ((max_prio > max_sched_prio)? max_sched_prio:max_prio);
- 	threadobj_lock_prio = threadobj_irq_prio - 1;
- 	threadobj_high_prio = threadobj_irq_prio - 2;
- 	threadobj_agent_prio = threadobj_high_prio;
++
+ 	/* Convert pSOS ticks to timespec. */
+ 	clockobj_ticks_to_timespec(&psos_clock, time_slice_in_ticks, &psos_rrperiod);
+ 
+diff --git a/lib/psos/rn.c b/lib/psos/rn.c
+--- a/lib/psos/rn.c
++++ b/lib/psos/rn.c
+@@ -35,6 +35,8 @@ struct pvcluster psos_rn_table;
+ 
+ static unsigned long anon_rnids;
+ 
++static u_long region0_id = 0;
++
+ static struct psos_rn *get_rn_from_id(u_long rnid, int *err_r)
+ {
+ 	struct psos_rn *rn = mainheap_deref(rnid, struct psos_rn);
+@@ -226,6 +228,9 @@ u_long rn_getseg(u_long rnid, u_long siz
+ 	int ret = SUCCESS;
+ 	void *seg;
+ 
++	if (rnid == 0)
++		rnid = region0_id;
++
+ 	rn = get_rn_from_id(rnid, &ret);
+ 	if (rn == NULL)
+ 		return ret;
+@@ -303,6 +308,9 @@ u_long rn_retseg(u_long rnid, void *sega
+ 	u_long size;
+ 	void *seg;
+ 
++	if (rnid == 0)
++		rnid = region0_id;
++
+ 	rn = get_rn_from_id(rnid, &ret);
+ 	if (rn == NULL)
+ 		return ret;
+@@ -341,3 +349,10 @@ out:
+ 
+ 	return ret;
+ }
++
++u_long rn_create_region0(u_long region0_size, u_long region0_unitsize)
++{
++	u_long rsize;
++	return rn_create("_RN0", xnmalloc(region0_size), region0_size,
++			 (region0_unitsize?region0_unitsize:128), 0, &region0_id, &rsize);
++}
+diff --git a/lib/psos/rn.h b/lib/psos/rn.h
+--- a/lib/psos/rn.h
++++ b/lib/psos/rn.h
+@@ -46,4 +46,6 @@ struct psos_rn_wait {
+ 
+ extern struct pvcluster psos_rn_table;
+ 
++extern u_long rn_create_region0(u_long region0_size, u_long region0_unitsize);
++
+ #endif /* _PSOS_RN_H */
 
