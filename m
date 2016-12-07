@@ -1,8 +1,10 @@
-From: Jan Leupold <leupold@rsi-elektrotechnik.de>
-Date: Wed,  7 Dec 2016 13:39:41 +0100
-Message-Id: <1481114381-17548-1-git-send-email-leupold@rsi-elektrotechnik.de>
-Subject: [Xenomai] [PATCH] analogy: fix __a4l_get_sbsize() if device has
-	only one subdevice
+From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
+Message-ID: <50ba3868-6953-faef-5ad5-a650c0c0ea24@numalliance.com>
+Date: Wed, 7 Dec 2016 15:15:39 +0100
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] memory allocation performance in kernel ipipe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,48 +13,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-All a4l_sbinfo_t are handled in __a4l_fill_desc() as a contiguous array
-and is stored as data in a4l_root_t. The old code allocated enough
-memory when the device had at least two subdevices, but missed 8 bytes
-(on ARM32), which is the difference between sizeof(a4l_root_t) and
-sizeof(a4l_leaf_t).
----
- lib/analogy/descriptor.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Hi,
 
-diff --git a/lib/analogy/descriptor.c b/lib/analogy/descriptor.c
-index bc4d7bd..fa8cf93 100644
---- a/lib/analogy/descriptor.c
-+++ b/lib/analogy/descriptor.c
-@@ -100,8 +100,9 @@ static inline a4l_leaf_t *a4l_leaf_get(a4l_leaf_t * lf,
- static int __a4l_get_sbsize(int fd, a4l_desc_t * dsc)
- {
- 	unsigned int i, j, nb_chan, nb_rng;
-+	/* all subdevice a4l_sbinfo_t are within one special leaf: the root */
- 	int ret, res =
--		dsc->nb_subd * (sizeof(a4l_sbinfo_t) + sizeof(a4l_leaf_t));
-+		sizeof(a4l_root_t) + dsc->nb_subd * (sizeof(a4l_sbinfo_t));
- 
- 	for (i = 0; i < dsc->nb_subd; i++) {
- 
--- 
-1.9.1
+I noticed very bad memory allocation performance on some of my graphic 
+programs (standard linux applications).
+
+If you run any classic program, you won't sea any difference, but it has 
+been visible in the following context :
+
+I have an application that allocates thousends of graphic widgets, 
+label, input fields  at startup (a data editor) .
+
+Using the standard kernel, the applications starts very quickly. But  
+once the ipipe patch is applied to kernel, this application makes lot of 
+seconds before appearing.
+
+I am using a 3.18 kernel.
+
+I made a diff on both standards and ipipe kernel configs :
+236a237
+ > CONFIG_KPROBES_ON_FTRACE=y
+372a374,382
+ > CONFIG_PARAVIRT=y
+ > # CONFIG_PARAVIRT_DEBUG is not set
+ > # CONFIG_PARAVIRT_SPINLOCKS is not set
+ > # CONFIG_XEN is not set
+ > CONFIG_KVM_GUEST=y
+ > # CONFIG_KVM_DEBUG_FS is not set
+ > # CONFIG_LGUEST_GUEST is not set
+ > # CONFIG_PARAVIRT_TIME_ACCOUNTING is not set
+ > CONFIG_PARAVIRT_CLOCK=y
+427,435d436
+< CONFIG_IPIPE=y
+< # CONFIG_IPIPE_LEGACY is not set
+< CONFIG_IPIPE_CORE=y
+< CONFIG_IPIPE_WANT_CLOCKSOURCE=y
+< CONFIG_IPIPE_WANT_PTE_PINNING=y
+< CONFIG_IPIPE_CORE_APIREV=2
+< CONFIG_IPIPE_TARGET_APIREV=2
+< CONFIG_IPIPE_HAVE_HOSTRT=y
+< CONFIG_IPIPE_HAVE_VM_NOTIFIER=y
+512a514,516
+ > CONFIG_TRANSPARENT_HUGEPAGE=y
+ > CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y
+ > # CONFIG_TRANSPARENT_HUGEPAGE_MADVISE is not set
+6237d6240
+< # CONFIG_IPIPE_DEBUG is not set
+6356a6360,6361
+ > CONFIG_DYNAMIC_FTRACE=y
+ > CONFIG_DYNAMIC_FTRACE_WITH_REGS=y
+6357a6363
+ > CONFIG_FTRACE_MCOUNT_RECORD=y
 
 
--- 
-_____________________________________________________________
-R-S-I Elektrotechnik GmbH & Co. KG
-Woelkestrasse 11
-D-85301 Schweitenkirchen
-Fon: +49 8444 9204-0
-Fax: +49 8444 9204-50
-www.rsi-elektrotechnik.de
-
-_____________________________________________________________
-Amtsgericht Ingolstadt - GmbH: HRB 191328 - KG: HRA 170363
-Gesch���ftsf���hrer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
-USt-IdNr.: DE 128592548
-
+Regards,
+S.Ancelot
 
