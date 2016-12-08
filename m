@@ -1,14 +1,10 @@
-Date: Thu, 8 Dec 2016 08:42:39 +0100
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20161208084239.3f0c064b@md1em3qc>
-In-Reply-To: <340fed26-23db-86a4-faf5-4e58c15504cd@numalliance.com>
-References: <50ba3868-6953-faef-5ad5-a650c0c0ea24@numalliance.com>
- <e1c90d44-be0d-91a7-98d4-e06ee0007ab1@xenomai.org>
- <340fed26-23db-86a4-faf5-4e58c15504cd@numalliance.com>
+From: Julien Stephan <julien.stephan@smile.fr>
+Message-ID: <145af902-fa69-f34a-754b-01badc8d7041@smile.fr>
+Date: Thu, 8 Dec 2016 11:33:42 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] memory allocation performance in kernel ipipe
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai] [XENOMAI] TIP_HEAD bit during Xenomai initialisation
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,52 +13,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?U3TDqXBoYW5l?= Ancelot <sancelot@numalliance.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Am Thu, 8 Dec 2016 08:28:02 +0100
-schrieb St=C3=A9phane Ancelot <sancelot@numalliance.com>:
+Hello,
 
-> Le 07/12/2016 =C3=A0 17:16, Philippe Gerum a =C3=A9crit :
-> > On 12/07/2016 03:15 PM, St=C3=A9phane Ancelot wrote: =20
-> >> Hi,
-> >>
-> >> I noticed very bad memory allocation performance on some of my
-> >> graphic programs (standard linux applications).
-> >>
-> >> If you run any classic program, you won't sea any difference, but
-> >> it has been visible in the following context :
-> >>
-> >> I have an application that allocates thousends of graphic widgets,
-> >> label, input fields  at startup (a data editor) .
-> >>
-> >> Using the standard kernel, the applications starts very quickly.
-> >> But once the ipipe patch is applied to kernel, this application
-> >> makes lot of seconds before appearing.
-> >>
-> >> I am using a 3.18 kernel.
-> >> =20
-> > Is there any question?
-> > =20
-> Euhhh ... yes,  it sounds this problem comes from ipipe
-> modifications, But I have not managed to find the reason ???
-> Is it a bug , a regression , a kernel routine where the problem is=20
-> amplified once the patch is applied ?
->=20
-> I remember I have not had this problem with previous kernel releases=20
-> (3.16.x) . I will check again with previous configurations, in order
-> to find a way of comparison.
+We are trying to port xenomai to a new architecture.
+So far, we have ported the ipipe patch, the xenomai kernel and the
+xenomai librairies, though we are not 100% sure everything is working
+properly.
 
-You can also try 4.1. And more information could be useful. Which
-version of xenomai are you using? Is your application using xenomai?
-Which architecture are you on?
+We are porting xenomai 3 ( Cobalt v3.0.3 (Groovy Cosmic Halo)  ) with a
+linux kernel 3.18. For now, we are able to boot linux correctly, with
+xenomai correctly registered:
+~ # dmesg | grep -i xenomai
+[Xenomai] scheduling class idle registered.
+[Xenomai] scheduling class rt registered.
+I-pipe: head domain Xenomai registered.
+[Xenomai] Cobalt v3.0.3 (Groovy Cosmic Halo)
 
-> Regards,
-> S.Ancelot
->=20
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
+So far so good.
+
+Now, I tried to run a very basic hello world program that has no
+real-time properties. We compile it using the example makefile given
+here (https://xenomai.org/building-applications-with-xenomai-3-x/) so
+that even if the application is not a real time application, the Xenomai
+services are initialized.
+
+At run time, we get the following error:
+0"000.000| BUG in low_init(): [main] Cobalt core not enabled in kernel
+
+This bug appears in the low_init function in lib/cobalt/init.c after the
+XENOMAI_SYSBIND call.
+By stepping into the syscall handler with gdb, I noticed that TIP_HEAD
+bit of thread_info was not set and then we just go to the slow_path,
+then root_syscall  path  (see ARM ipipe patch for assembly labels)  and
+finally end up into the traditional linux handler that return -ENOSYS as
+the syscall number of XENOMAI_SYSBIND is greater than the linux kernel
+syscall limit.
+
+So my question is: during initialization of the xenomai services, the
+TIP_HEAD bit should be set or not?
 
 
+Thanks for your help.
+Julien
+-- 
+ 
+Logo <http://www.smile.fr/>
+
+14 rue Génissieu
+38000 GRENOBLE
+www.smile.fr <http://www.smile.fr/> 	
+*Julien STEPHAN*
+Ingénieur étude et développement
+Email : julien.stephan@smile.fr <mailto:julien.stephan@smile.fr>
+Tel : +33 (0)4.58.00.19.59
+
+ 
+
+bandeaux_mail
+<http://www.smile.fr/Ressources/Livres-blancs/Ingenierie/Linux-pour-l-embarque?utm_source=signature&utm_medium=email&utm_campaign=signature>
+
+eco Pour la planète, n'imprimez ce mail que si c'est nécessaire
