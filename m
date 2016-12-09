@@ -1,11 +1,16 @@
+References: <884477039.8840647.1480697545181.ref@mail.yahoo.com>
+ <884477039.8840647.1480697545181@mail.yahoo.com>
+ <daba9179-e8ae-9eea-325f-fc7735aee1ea@xenomai.org>
+ <691807707.9610188.1480791921515@mail.yahoo.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <17386f93-13b4-e79b-475e-c63f2f78e5f9@xenomai.org>
+Date: Fri, 9 Dec 2016 15:31:32 +0100
 MIME-Version: 1.0
-From: =?UTF-8?Q?=C3=98yvind_Netland?= <oyvind@netland.name>
-Date: Fri, 6 Jan 2017 21:01:25 +0100
-Message-ID: <CAA7GYCTc7t-z4zTu-awtg96nJ70O92QfAtQaj6JNUPaGbDxZFg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Xenomai 3 with kernel 4.1 for Beaglebone (with GPIO and
-	PWM drivers)
+In-Reply-To: <691807707.9610188.1480791921515@mail.yahoo.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] FAILURE rt_thread_body:116: no
+ SIGDEBUG_MIGRATE_PRIOINV received on ARM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,40 +19,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Giulio Moro <giuliomoro@yahoo.it>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi
+On 12/03/2016 08:05 PM, Giulio Moro wrote:
+> I now rebuilt the kernel according to your recommendations (full config file here 
+> http://pastebin.com/fb623kSQ ), and then built the user-space library with 
+> --disable-debug --with-core=cobalt --enable-pshared --build=arm
+> 
+> Latency results have improved over the previous build:
+> RTS| 1.487| 6.459| 46.364| 0| 0| 00:03:19/00:03:19
+> 
+> With the new configuration, I do NOT get the FAILURE rt_thread_body:116 error when running xeno-test.
 
-I have seen several implementations of xenomai 2.x for Beaglebone, but not
-Xenomai 3. It was actually not that difficult if you just started with the
-correct commit of RobertCNelsons bb-kernel on github, and I assume that
-somebody have done it before.
+There is an ARM board exhibiting the same issue here; some runtime
+condition seems to be defeating the test. Will check.
 
-However, I thought it would be worth while to make this as easy as
-possible, thus I have made a fork of RobertCNelson on my github with a new
-"am33x-v4.1-xenomai" branch.
+> 
+>> - did you run the autotuner to calibrate the core clock?
+> 
+> I run the autotuner buy I get large variations between successive runs, so I am not sure which values I should echo to /proc/xenomai/clock/coreclk :
+> 
+> == auto-tuning started, period=1000000 ns (may take a while)
+> irq gravity... 999 ns
+> kernel gravity... 6499 ns
+> user gravity... 5999 ns
+> == auto-tuning completed after 21s
+> == auto-tuning started, period=1000000 ns (may take a while)
+> irq gravity... 2999 ns
+> kernel gravity... 5499 ns
+> user gravity... 6999 ns
+> == auto-tuning completed after 24s
+> == auto-tuning started, period=1000000 ns (may take a while)
+> irq gravity... 3499 ns
+> kernel gravity... 3499 ns
+> user gravity... 5499 ns
+> == auto-tuning completed after 23s
+> == auto-tuning started, period=1000000 ns (may take a while)
+> irq gravity... 999 ns
+> kernel gravity... 2999 ns
+> user gravity... 4499 ns
+> 
+> What do these values mean?
 
-To build, just do
-git clone https://github.com/oyvindnetland/bb-kernel.git
-cd bb-kernel
-git checkout am33x-v4.1-xenomai
-./build_kernel.sh or ./build_deb.sh
+See there:
+http://www.xenomai.org/documentation/xenomai-3/html/man1/autotune/index.html
 
-As I am using the GPIO and PWM of the Beaglebone, I have also included RTDM
-drivers for this, just enable them in the kernel menuconfig
-(Xenomai/Cobalt->Drivers->Beaglebone RTDM I/O). It will make one entry in
-/dev/rtdm for each GPIO and PWM. All GPIO available by default is enabled,
-and all 6 PWM (device tree rules are done automatically)
+> Are they supposed to vary so much? What can I do about it?
+> 
 
-I have made a simple library also available on my github (
-https://github.com/oyvindnetland/librtbbio) that allow easy use of the RTDM
-drivers. It includes a simple test, but this is not complete yet.
+Yes, they can vary, the effect of cache management can be significant on
+latency (especially on ARM systems, depending on the cache model and/or
+controller). In addition, the autotuner uses heuristics to figure out
+the best calibration values, which may cause the results to fluctuate a
+bit across calls.
 
-I have plans to expand with other RTDM drivers, e.g. UART, but have
-currently no timeframe on this, if anybody want to help with this, let me
-know.
+This said, the figures you report are counts of nanoseconds, so a
+variation of 3 us at worst on a BBB is quite small. If the application
+can't cope with this variation for carrying out real-time duties, then
+using a Linux system on a general-purpose OMAP SoC may not be the best
+option for running it anyway.
 
-Let me know if you test this and have any issues or comments!
+Keep in mind that unlike a traditional RTOS fully controlling the
+hardware, this is a dual kernel system, where a GPOS and a RTOS core are
+fundamentally competing for the hardware resources.
+e.g. plain Linux activity happily evicting cachelines used by Xenomai as
+soon as the latter temporary sleeps, adding delays due to cache misses
+when it resumes.
 
-Best regards
-=C3=98yvind Netland
+You can observe a manifestation of such competition by comparing the
+worst case latency figures obtained from sampling at 1Khz (the default
+on ARM) and 10Khz (latency -p 100).
+
+> Thanks,
+> Giulio
+> 
+> PS: For reference, these are the latency performance on the same board with Xenomai 2.6 on Linux 3.8.13
+> RTS| 3.666| 6.958| 46.124| 0| 0| 00:15:10/00:15:10
+
+Which is comparable to 3.0.x.
+
+> (I have no way to run the autotuner there as I did not build the library myself so I don't have the utility).
+> 
+
+The autotuner appeared in Xenomai 3.x, you won't find it in a 2.x
+release anyway.
+
+-- 
+Philippe.
+
