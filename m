@@ -1,9 +1,12 @@
+References: <9305b0f8a1e72466ac65.1481034395@devws148.be.alcatel-lucent.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <e782324c-47f1-a8b4-acf9-c326bf62d2a6@xenomai.org>
+Date: Fri, 9 Dec 2016 12:03:06 +0100
 MIME-Version: 1.0
-From: Ronny Meeus <ronny.meeus@gmail.com>
-Date: Tue, 13 Dec 2016 08:23:17 +0100
-Message-ID: <CAMJ=MEd=nsydR-ckQTHgwqcyp4h3UkiioFbTLiJNjKg-6mNciA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] copperplate/registry daemon connection failure
+In-Reply-To: <9305b0f8a1e72466ac65.1481034395@devws148.be.alcatel-lucent.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] copperplate: Limit memory usage tlsf-heap
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,40 +15,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Ronny Meeus <ronny.meeus@gmail.com>, xenomai@xenomai.org
 
-Hello
+On 12/06/2016 03:26 PM, Ronny Meeus wrote:
+> Before this patch the system memory pool's (tlsf variant) behavior was
+> to grow in case allocations were done when depleted. This is a
+> contradiction with the expected behavior (see mem-pool-size tunable
+> documentation). When the pool is depleted, an error should be retuned
+> instead of growing the pool.
+> 
+> This patch solves this bug.
+> To be backwards compatible an option has been introduced that allows the
+> configuration of the pool's growing capability. The default is
 
-Context: we use the Mercury core (xenomai-3.0.3).
+Since growing the pool was a bug causing an inconsistency with all other
+allocators (such as the one used when enabling process shared heaps), we
+need no backward compatibility, only the fix.
 
-in commit 880b3acbd876a65f8fbe8c27b09762b06c06e846:
-copperplate/registry: force SCHED_OTHER on helper threads
-of
-Sun Jul 26 12:37:15 2015 +0200
-
-The scheduling class of the registry threads is forced to
-SCHED_OTHER  at priority 0.
-This change is causing issues in our use case since our system
-is fully loaded during init.
-
-What I observe is that the application is not able to connect to
-the registry daemon and exists with following error:
-   0"988.361| WARNING: [main] cannot connect to registry daemon
-   0"989.141| WARNING: [main] setup call copperplate failed
-   0"989.369| BUG in xenomai_init(): [main] initialization failed, EAGAIN
-
-As a test I made a change to the code and started the registry threads
-in RR mode at a high priority and then the issue is not observed.
-In our system all threads (application and kernel one's) are running
-in the real-time domain so apps running in the OTHER domain will
-have very little CPU left to consume ...
-
-For me it is not clear how the synchronization between the daemon
-and the application is happening. The daemon is setting up a
-Unix domain socket to which the client connects. But how does the
-application knows that the daemon has finished the creation of
-the socket?
-
-Thanks
-Ronny
+-- 
+Philippe.
 
