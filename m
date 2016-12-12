@@ -1,15 +1,10 @@
-References: <c28ec7.1697.15a110b7694.Coremail.dreamtale90@163.com>
- <681ccdf8-5b7f-e9e2-2047-d789b6e0d10c@xenomai.org>
- <49057f87.58a5.15a17393fcd.Coremail.dreamtale90@163.com>
- <6bbbd9ee.29c8.15a18f1c1cf.Coremail.dreamtale90@163.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <c574772d-bc57-e6c3-d678-4cf3854d3157@xenomai.org>
-Date: Tue, 7 Feb 2017 16:17:28 +0100
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-In-Reply-To: <6bbbd9ee.29c8.15a18f1c1cf.Coremail.dreamtale90@163.com>
-Content-Type: text/plain; charset="gbk"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] some API about RT_TASK occur Segmentation fault
+Content-Transfer-Encoding: 7bit
+Message-Id: <8c50175f71b97232ddbe.1481551766@devws148.be.alcatel-lucent.com>
+Date: Mon, 12 Dec 2016 15:09:26 +0100
+From: Ronny Meeus <ronny.meeus@gmail.com>
+Subject: [Xenomai] [PATCH v2] psos: add tunables to configure region 0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,89 +13,159 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "dreamtale90@163.com" <dreamtale90@163.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-T24gMDIvMDcvMjAxNyAwMzoxOSBQTSwgZHJlYW10YWxlOTBAMTYzLmNvbSB3cm90ZToKPiBKdXN0
-IG5vdyB3aGVuIEkgY29tcGlsaW5nIHhlbm9tYWksIHJlbW92ZWQgIi0tZW5hYmxlLXBzaGFyZWQi
-Cj4gY29uZmlndXJhdGlvbiBvcHRpb24uIE15IGRlbW8gaXMgbm9ybWFsIGZpbmFsbHksIGFuZCBw
-cmludCBvdXQgdGhpcmQKPiBzZW50ZW5jZSAiZW50ZXIgZnVuYyAuLi4iIHdpdGhvdXQgc2VnbWVu
-dGFpb24gZmF1bHQuCgpJIGJlbGlldmUgdGhhdCB5b3UgYXJlIG5vdCB1c2luZyB0aGUgcmlnaHQg
-Y29kZS4gRGlkIHlvdSBwdWxsIHRoZSBjb2RlCmZyb20gdGhlIHN0YWJsZS0zLjAueCBicmFuY2gg
-YXMgbWVudGlvbmVkIGVhcmxpZXI/CgpJZiB5b3UgZGlkIHNvLCB5b3Ugc2hvdWxkIHNlZSB0aGlz
-IG91dHB1dCB3aGVuIHBhc3NpbmcgdGhlIC0tdmVyc2lvbgpzd2l0Y2ggdG8geW91ciBwcm9ncmFt
-OgoKYmFzZWQgb24gWGVub21haS9tZXJjdXJ5IHYzLjAuMyAtLSAjMDBlM2QwMSAoMjAxNy0wMS0y
-NyAxMDoxNjoxMSArMDEwMCkKCj4gQWx0aG91Z2ggdGhlIHF1ZXN0aW9uIGlzIHNvbHZlZCB0ZW1w
-b3JhcmlseSAsIGJ1dCBzdGlsbCBkb24ndCBrbm93IHRoZQo+IHJlYXNvbi4gU28gSSdtIHN0aWxs
-IHdvcnJpZWQgYWJvdXQgbXkgc3lzdGVtIGVudmlyb25tZW50IGhhdmUgc29tZSBwcm9ibGVtcy4K
-PiAKPiBUaGFua3MgYWdhaW4sIGJlc3QgcmVnYXJkcy4KPiAKPiAKPiC3otfUzfjS19PKz+S088qm
-Cj4gCj4gICAgINTaMjAxN8TqMDLUwjA3yNUgMTQ6MTijrGRyZWFtdGFsZTkwQDE2My5jb20KPiAg
-ICAgPG1haWx0bzpkcmVhbXRhbGU5MEAxNjMuY29tPiDQtLXAo7oKPiAgICAgVGhhbmsgeW91IGZv
-ciBoZWxwLgo+ICAgICBJIGhhZCBnaXQgY2xvbmUgZ2l0Oi8vZ2l0Lnhlbm9tYWkub3JnL3hlbm9t
-YWktMy5naXQsIGNvbXBpbGUgYW5kCj4gICAgIGluc3RhbGwgaXQgd2l0aKO6Cj4gICAgICAgICAu
-L3NjcmlwdHMvYm9vdHN0cmFwCj4gICAgICAgICAuLi94ZW5vbWFpLTMvY29uZmlndXJlIC0td2l0
-aC1jb3JlPW1lcmN1cnkgIC0tZW5hYmxlLXNtcAo+ICAgICAtLWVuYWJsZS1wc2hhcmVkIC0tZW5h
-YmxlLWRlYnVnPWZ1bGwKPiAgICAgICAgIG1ha2UgaW5zdGFsbAo+ICAgICBUaGVuIHJ1biBteSBk
-ZW1vLCBidXQgdGhlIHJlc3VsdCBpcyB0aGUgc2FtZSBhcyBiZWZvcmUgo7oKPiAgICAgLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQo+ICAgICAgICAwIjAw
-Mi41NzB8IFdBUk5JTkc6IFttYWluXSBYZW5vbWFpIGNvbXBpbGVkIHdpdGggZnVsbCBkZWJ1ZyBl
-bmFibGVkLAo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB2ZXJ5IGhpZ2ggbGF0
-ZW5jaWVzIGV4cGVjdGVkCj4gICAgIFstLWVuYWJsZS1kZWJ1Zz1mdWxsXQo+ICAgICBlbnRlciBm
-dW5jIC4uLgo+ICAgICBlbnRlciBmdW5jIC4uLgo+ICAgICBydF90YXNrX2NyZWF0ZToKPiAgICAg
-Li4vLi4vLi4veGVub21haS0zL2xpYi9jb3BwZXJwbGF0ZS9oZWFwb2JqLXBzaGFyZWQuYzo0NTI6
-Cj4gICAgIGFsbG9jX2Jsb2NrOiBBc3NlcnRpb24gYDAnIGZhaWxlZC4KPiAgICAgQWJvcnRlZAo+
-ICAgICAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4g
-ICAgIFllc3RlcmRheSwgSSBhZGQgc29tZSBwcmludGYgdG8gYWxsb2NfYmxvY2soKSBvZiBoZWFw
-b2JqLXBzaGFyZWQuYy4KPiAgICAgSSBmb3VuZCAgdGhhdCBzZWdtZW50YWlvbiBmYXVsdCBvY2N1
-ciB3aGVuIHJ1biB0byB0aGUKPiAgICAgbGluZSA0NTUgIisrZXh0ZW50LT5wYWdlbWFwW3BnbnVt
-XS5iY291bnQ7IiAuIEF0IHRoaXMgdGltZSB0aGUgdmFsdWUKPiAgICAgb2YgImhlYXAtPmJ1Y2tl
-dHNbaWxvZ10uZnJlZWxpc3QiIGlzIHZlcnkgYmlnLgo+IAo+ICAgICBOb3cgSSB0aGluayB3aGV0
-aGVyIG15IHhlbm9tYWkKPiAgICAgY29uZmlndXJhdGlvbiBvciBzeXN0ZW0gZW52aXJvbm1lbnQg
-aGF2ZSBzb21ldGhpbmcgd3JvbmcuCj4gICAgIEJlc2lkZXMsIG15IHN5c3RlbSh4ODZfNjRiaXQp
-IHJ1biBpbiBhIDggY29yZXMgT3JhY2xlIHZpcnR1YWwKPiAgICAgbWFjaGluZSwgdGhlIGhvc3Qg
-Y3B1IGlzIEludGVyKFIpIHhlb24oUikgQ1BVIEU1LTI2MzAgdjQgQCAyLjIwR0h6Lgo+ICAgICBJ
-IGRvbid0IGtub3cgd2hldGhlciB0aGVzZSBpbmZvcm1hdGlvbiBpcyB1c2VmdWwuCj4gCj4gICAg
-IFRoYW5rcyBpbiBhZHZhbmNlLCBiZXN0IHJlZ2FyZHMuCj4gCj4gCj4gCj4gICAgIEF0IDIwMTct
-MDItMDYgMjE6NTA6MTMsICJQaGlsaXBwZSBHZXJ1bSIgPHJwbUB4ZW5vbWFpLm9yZyA8bWFpbHRv
-OnJwbUB4ZW5vbWFpLm9yZz4+IHdyb3RlOgo+ICAgICA+T24gMDIvMDYvMjAxNyAwMjozMCBBTSwg
-ZHJlYW10YWxlOTBAMTYzLmNvbSA8bWFpbHRvOmRyZWFtdGFsZTkwQDE2My5jb20+IHdyb3RlOgo+
-ICAgICA+PiBTeXN0ZW0gY29uZmlndXJhdGlvbjoKPiAgICAgPj4gZGViaWFuLTguNiwgMy4xOC40
-Ni1ydDUwCj4gICAgID4+IFhlbm9tYWkvbWVyY3VyeSB2My4wLjMKPiAgICAgPj4gQnVpbGQgYXJn
-czogLS13aXRoLWNvcmU9bWVyY3VyeSAtLWVuYWJsZS1zbXAgLS1lbmFibGUtcHNoYXJlZAo+ICAg
-ICA+PiAKPiAgICAgPj4gTm93IEkgYW0gbmVlZCBoZWxwLiBUaGFua3MuCj4gICAgID4+IAo+ICAg
-ICA+PiAKPiAgICAgPj4gLS0tLS0tLS0gRm9yd2FyZGluZyBtZXNzYWdlcyAtLS0tLS0tLQo+ICAg
-ICA+PiBGcm9tOiAiZHJlYW10YWxlOTBAMTYzLmNvbSA8bWFpbHRvOmRyZWFtdGFsZTkwQDE2My5j
-b20+IiA8ZHJlYW10YWxlOTBAMTYzLmNvbSA8bWFpbHRvOmRyZWFtdGFsZTkwQDE2My5jb20+Pgo+
-ICAgICA+PiBEYXRlOiAyMDE3LTAyLTA0IDEyOjA0OjE1Cj4gICAgID4+IFRvOiB4ZW5vbWFpQHhl
-bm9tYWkub3JnIDxtYWlsdG86eGVub21haUB4ZW5vbWFpLm9yZz4KPiAgICAgPj4gU3ViamVjdDog
-c29tZSBBUEkgYWJvdXQgUlRfVEFTSyBvY2N1ciBTZWdtZW50YXRpb24gZmF1bHQKPiAgICAgPj4g
-SGkKPiAgICAgPj4gICAgIER1cmluZyB1c2luZyBBUEkgYWJvdXQgUlRfVEFTSyBJIGZvdW5kIHNv
-bWUgZG91YnQuCj4gICAgID4+IDEpIHJ0X3Rhc2tfaW5xdWlyZShSVF9UQVNLICogdGFzaywgUlRf
-VEFTS19JTkZPICogaW5mbyApLCBpZiBpbmZvIGlzCj4gICAgID4+IE5VTEwgd2lsbCBvY2N1ciBT
-ZWdtZW50YXRpb24gZmF1bHQsIGJ1dCBpbiBBUEkgcmVmZXJlbmNlIHRoaXMgaXMgdmFsaWQuCj4g
-ICAgID4+IGh0dHA6Ly93d3cueGVub21haS5vcmcvZG9jdW1lbnRhdGlvbi94ZW5vbWFpLTMvaHRt
-bC94ZW5vM3BybS9ncm91cF9fYWxjaGVteV9fdGFzay5odG1sI2dhNTNiYWQ2YWNmNTQ5NmY4MDA4
-ZTU5NDk1NDUwN2RjZTgKPiAgICAgPj4gCj4gICAgID4+IDIpIEFmdGVyIG1haW4gdGFzayBjYWxs
-ZWQgcnRfdGFza19zaGFkb3coKSwgcHJvZ3JhbSB3aWxsIGNyZWF0ZSBvdGhlcgo+ICAgICA+PiB0
-YXNrcyBkZXBlbmQgb24gcmVxdWVzdCwgYnV0IHdoZW4gY3JlYXRlIHNlY29uZCB0YXNrIHdpbGwg
-IG9jY3VyCj4gICAgID4+IFNlZ21lbnRhdGlvbiBmYXVsdC4KPiAgICAgPj4gTm93IG1haW4gdGFz
-ayBkb24ndCBjYWxsICBydF90YXNrX3NoYWRvdygpLCBwcm9ncmFtIHdpbGwgT0suIEkgZG9uJ3QK
-PiAgICAgPj4ga25vdyB3aHkuCj4gICAgID4+IAo+ICAgICA+PiAzKSBJIHdyaXRlIGEgZGVtbyB3
-aGljaCBjcmVhdGUgdGhlIHNhbWUgdGFzayB0aHJlZSB0aW1lcyBhcyBmb2xsb3dzOgo+ICAgICA+
-PiAjaW5jbHVkZSA8c3RkaW8uaD4KPiAgICAgPj4gI2luY2x1ZGUgPHVuaXN0ZC5oPgo+ICAgICA+
-PiAjaW5jbHVkZSA8YWxjaGVteS90YXNrLmg+Cj4gICAgID4+IFJUX1RBU0sgdGFzazE7Cj4gICAg
-ID4+IHZvaWQgZnVuYyh2b2lkICphcmcpCj4gICAgID4+IHsKPiAgICAgPj4gIHByaW50ZigiZW50
-ZXIgZnVuYyAuLi5cbiIpOwo+ICAgICA+PiB9Cj4gICAgID4+IGludCBtYWluKCkKPiAgICAgPj4g
-ewo+ICAgICA+PiAgcnRfdGFza19zcGF3bigmdGFzazEsICJ0YXNrMSIsIDAsIDgwLCAwLCBmdW5j
-LCBOVUxMKTsKPiAgICAgPj4gIHNsZWVwKDEpOwo+ICAgICA+PiAgcnRfdGFza19zcGF3bigmdGFz
-azEsICJ0YXNrMSIsIDAsIDgwLCAwLCBmdW5jLCBOVUxMKTsKPiAgICAgPj4gIHNsZWVwKDEpOwo+
-ICAgICA+PiAgcnRfdGFza19zcGF3bigmdGFzazEsICJ0YXNrMSIsIDAsIDgwLCAwLCBmdW5jLCBO
-VUxMKTsKPiAgICAgPj4gIC8vcnRfdGFza19kZWxldGUoJnRhc2sxKTsKPiAgICAgPj4gIHJldHVy
-biAwOwo+ICAgICA+PiB9Cj4gICAgID4+IAo+ICAgICA+PiBXaGVuIHRoZSB0aGlyZCB0aW1lIGNy
-ZWF0ZSAsIHByb2dyYW0gd2lsbCAgb2NjdXIgU2VnbWVudGF0aW9uIGZhdWx0Lgo+ICAgICA+PiAK
-PiAgICAgPgo+ICAgICA+VGhpcyBidWcgd2FzIGZpeGVkIGluIHRoZSBzdGFibGUgYnJhbmNoIHNv
-bWUgdGltZSBhZ286Cj4gICAgID5naXQ6Ly9naXQueGVub21haS5vcmcveGVub21haS0zLmdpdCwg
-YnJhbmNoIHN0YWJsZS0zLjAueAo+ICAgICA+Cj4gICAgID4tLSAKPiAgICAgPlBoaWxpcHBlLgo+
-IAo+IAo+IAo+ICAgICAgCj4gCgoKLS0gClBoaWxpcHBlLgoK
+In the pSOS interface region 0 can be used by applications to allocate
+memory from. It contains 'system' memory and is created by default during
+system init. Region 0 is currently not supported by the xenomai psos skin.
+
+This patch adds functionality to configure the total size and the unit
+size by means of following tunabels:
+  set_config_tunable(region0_size, 128000);
+  set_config_tunable(region0_unitsize, 256);
+
+The corresponding command-line options are:
+  psos-rn0-size
+  psos-rn0-unitsize
+
+diff --git a/include/psos/tunables.h b/include/psos/tunables.h
+--- a/include/psos/tunables.h
++++ b/include/psos/tunables.h
+@@ -31,6 +31,8 @@ extern "C" {
+ #endif /* __cplusplus */
+ 
+ extern int psos_long_names;
++extern unsigned long psos_region0_size;
++extern unsigned long psos_region0_unitsize;
+ 
+ static inline define_config_tunable(long_names, int, on)
+ {
+@@ -42,6 +44,26 @@ static inline read_config_tunable(long_n
+ 	return psos_long_names;
+ }
+ 
++static inline define_config_tunable(region0_size, unsigned long, size)
++{
++	psos_region0_size = size;
++}
++
++static inline read_config_tunable(region0_size, unsigned long)
++{
++	return psos_region0_size;
++}
++
++static inline define_config_tunable(region0_unitsize, unsigned long, size)
++{
++	psos_region0_unitsize = size;
++}
++
++static inline read_config_tunable(region0_unitsize, unsigned long)
++{
++	return psos_region0_unitsize;
++}
++
+ #ifdef __cplusplus
+ }
+ #endif /* __cplusplus */
+diff --git a/lib/psos/init.c b/lib/psos/init.c
+--- a/lib/psos/init.c
++++ b/lib/psos/init.c
+@@ -47,6 +47,8 @@
+  * - Partitions, Regions, Timers
+  */
+ int psos_long_names = 0;
++u_long psos_region0_size;
++u_long psos_region0_unitsize;
+ 
+ static unsigned int clock_resolution = 1000000; /* 1ms */
+ 
+@@ -70,6 +72,16 @@ static const struct option psos_options[
+ 		.flag = &psos_long_names,
+ 		.val = 1
+ 	},
++	{
++#define region0_size_opt	3
++		.name = "psos-rn0-size",
++		.has_arg = required_argument,
++	},
++	{
++#define region0_unitsize_opt	4
++		.name = "psos-rn0-unitsize",
++		.has_arg = required_argument,
++	},
+ 	{ /* Sentinel */ }
+ };
+ 
+@@ -82,6 +94,12 @@ static int psos_parse_option(int optnum,
+ 	case time_slice_opt:
+ 		time_slice_in_ticks = atoi(optarg);
+ 		break;
++	case region0_size_opt:
++		psos_region0_size = (u_long)atol(optarg);
++		break;
++	case region0_unitsize_opt:
++		psos_region0_unitsize = (u_long)atol(optarg);
++		break;
+ 	case long_names_opt:
+ 		break;
+ 	default:
+@@ -96,6 +114,8 @@ static void psos_help(void)
+ {
+         fprintf(stderr, "--psos-clock-resolution=<ns>	tick value (default 1ms)\n");
+         fprintf(stderr, "--psos-time-slice=<psos-ticks>	round-robin time slice\n");
++        fprintf(stderr, "--psos-rn0-size=<size>		region0 size in bytes\n");
++        fprintf(stderr, "--psos-rn0-unitsize=<usize>	region0 unit size in bytes (default 128 bytes)\n");
+         fprintf(stderr, "--psos-long-names		enable long names for objects (> 4 characters)\n");
+ }
+ 
+@@ -124,6 +144,18 @@ static int psos_init(void)
+ 		return __bt(ret);
+ 	}
+ 
++	if (psos_region0_size) {
++		u_long rsize;
++		ret = rn_create("_RN0", xnmalloc(psos_region0_size), psos_region0_size,
++				(psos_region0_unitsize?psos_region0_unitsize:128), 0, &psos_region0_id, &rsize);
++		if (ret) {
++			warning("%s: failed to initialize pSOS region 0 (ret=%u)",
++				__FUNCTION__, ret);
++			return __bt(ret);
++		}
++	}
++
++
+ 	/* Convert pSOS ticks to timespec. */
+ 	clockobj_ticks_to_timespec(&psos_clock, time_slice_in_ticks, &psos_rrperiod);
+ 
+diff --git a/lib/psos/rn.c b/lib/psos/rn.c
+--- a/lib/psos/rn.c
++++ b/lib/psos/rn.c
+@@ -35,9 +35,16 @@ struct pvcluster psos_rn_table;
+ 
+ static unsigned long anon_rnids;
+ 
++u_long psos_region0_id = 0;
++
+ static struct psos_rn *get_rn_from_id(u_long rnid, int *err_r)
+ {
+-	struct psos_rn *rn = mainheap_deref(rnid, struct psos_rn);
++	struct psos_rn *rn;
++
++	if (rnid == 0)
++		rnid = psos_region0_id;
++
++	rn = mainheap_deref(rnid, struct psos_rn);
+ 
+ 	if (rn == NULL || ((uintptr_t)rn & (sizeof(uintptr_t)-1)) != 0)
+ 		goto objid_error;
+diff --git a/lib/psos/rn.h b/lib/psos/rn.h
+--- a/lib/psos/rn.h
++++ b/lib/psos/rn.h
+@@ -45,5 +45,6 @@ struct psos_rn_wait {
+ };
+ 
+ extern struct pvcluster psos_rn_table;
++extern u_long psos_region0_id;
+ 
+ #endif /* _PSOS_RN_H */
+
