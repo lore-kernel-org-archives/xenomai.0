@@ -1,16 +1,14 @@
-From: Lowell Gilbert <kludge@be-well.ilk.org>
-References: <CAOXDmPrOH2C3voU+p4ZuPfurceVhs2B13bVDY157LUA7+o9NmA@mail.gmail.com>
- <44zihf2wt5.fsf@lowell-desk.lan>
- <CAOXDmPptZFBv5SiF_0X0cjA3us4tJ+Fuv9SR_8e2Mp0zkNmHYA@mail.gmail.com>
-Date: Wed, 22 Feb 2017 14:08:39 -0500
-In-Reply-To: <CAOXDmPptZFBv5SiF_0X0cjA3us4tJ+Fuv9SR_8e2Mp0zkNmHYA@mail.gmail.com>
- (Cong Monkey's message of "Wed, 22 Feb 2017 21:33:36 +0800")
-Message-ID: <44mvdeqc08.fsf@be-well.ilk.org>
+References: <mailman.3.1481540401.18213.xenomai@xenomai.org>
+ <68551481553062@web16j.yandex.ru> <84831481553347@web16j.yandex.ru>
+From: Johann Obermayr <johann.obermayr@sigmatek.at>
+Message-ID: <5579645d-bcee-ce14-70d2-82c73088ef8d@sigmatek.at>
+Date: Mon, 12 Dec 2016 15:49:30 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-Subject: Re: [Xenomai] Is that possible to use xenomai in multi user
-	environment without root permission?
-Reply-To: xenomai@xenomai.org
+In-Reply-To: <84831481553347@web16j.yandex.ru>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Long time system slow down on imx6
+Reply-To: johann.obermayr@sigmatek.at
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,36 +17,248 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Cong Monkey <congzhangzh@gmail.com>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-> 2017-02-22 3:00 GMT+08:00 Lowell Gilbert <kludge@be-well.ilk.org>:
->> Cong Monkey <congzhangzh@gmail.com> writes:
+Am 12.12.2016 um 15:35 schrieb Marco Baracchi:
+> Sorry I hope this format is more readable
+>
+> 12.12.2016, 15:31, "Marco Baracchi" <cormabara@yandex.com>:
+>> Sorry I hope this is the correct way to add a mail to this thread inside mailing list:
 >>
->>> I have a center server shared by multi user which is assigned sudo
->>> permission for special cmd when needed.
+>> What you mean with "lost wakeup problem" ?
+Ask google, you get many results.
+
+>>
+>> What we are checking is a timer tick missing:
+>>
+>> root@deimo-staubli ~$ cat /proc/timer_list
+i don't know timer_list yet.
+i need to look more closely.
+>>
+>> Timer List Version: v0.6
+>>
+>> HRTIMER_MAX_CLOCK_BASES: 3
+>>
+>> now at 158072087097365 nsecs
+>>
+>> cpu: 0
+>>
+>> clock 0:
+>>
+>>    .base:       80ba8380
+>>
+>>    .index:      0
+>>
+>>    .resolution: 1 nsecs
+>>
+>>    .get_time:   ktime_get
+>>
+>>    .offset:     0 nsecs
+>>
+>> active timers:
+>>
+>> #0: <80ba88a0>, tick_sched_timer, S:01
+>>
+>> # expires at 158034760000000-158034760000000 nsecs [in -37327097365 to -37327097365 nsecs]
+>>
+>> #1: <8fb57f40>, hrtimer_wakeup, S:01
+>>
+>> # expires at 158034782298842-158034782348842 nsecs [in -37304798523 to -37304748523 nsecs]
+>>
+>> #2: <8f201ad0>, hrtimer_wakeup, S:01
+>>
+>> # expires at 159434496114473-159434496164473 nsecs [in 1362409017108 to 1362409067108 nsecs]
+>>
+>> #3: <8f20bad0>, hrtimer_wakeup, S:01
+>>
+>> # expires at 159439053136473-159439057697464 nsecs [in 1366966039108 to 1366970600099 nsecs]
+>>
+>> clock 1:
+>>
+>>    .base:       80ba83b8
+>>
+>>    .index:      1
+>>
+>>    .resolution: 1 nsecs
+>>
+>>    .get_time:   ktime_get_real
+>>
+>>    .offset:     1481376344107425663 nsecs
+>>
+>> active timers:
+>>
+>> clock 2:
+>>
+>>    .base:       80ba83f0
+>>
+>>    .index:      2
+>>
+>>    .resolution: 1 nsecs
+>>
+>>    .get_time:   ktime_get_boottime
+>>
+>>    .offset:     0 nsecs
+>>
+>> active timers:
+>>
+>>    .expires_next   : 158034760000000 nsecs
+>>
+>>    .hres_active    : 1
+>>
+>>    .nr_events      : 22078740
+>>
+>>    .nr_retries     : 51929
+>>
+>>    .nr_hangs       : 0
+>>
+>>    .max_hang_time  : 0 nsecs
+>>
+>>    .nohz_mode      : 0
+>>
+>>    .idle_tick      : 0 nsecs
+>>
+>>    .tick_stopped   : 0
+>>
+>>    .idle_jiffies   : 0
+>>
+>>    .idle_calls     : 0
+>>
+>>    .idle_sleeps    : 0
+>>
+>>    .idle_entrytime : 0 nsecs
+>>
+>>    .idle_waketime  : 0 nsecs
+>>
+>>    .idle_exittime  : 0 nsecs
+>>
+>>    .idle_sleeptime : 0 nsecs
+>>
+>>    .iowait_sleeptime: 0 nsecs
+>>
+>>    .last_jiffies   : 0
+>>
+>>    .next_jiffies   : 0
+>>
+>>    .idle_expires   : 0 nsecs
+>>
+>> jiffies: 15773475
+>>
+>> Tick Device: mode:     1
+>>
+>> Per CPU device: 0
+>>
+>> Clock Event Device: mxc_timer1
+>>
+>> max_delta_ns:   4294967295
+>>
+>> min_delta_ns:   85000
+>>
+>> mult:           1
+>>
+>> shift:          0
+>>
+>> mode:           3
+>>
+>> next_event:     158034760000000 nsecs
+>>
+>> set_next_event: xnarch_next_htick_shot
+>>
+>> set_mode:       xnarch_switch_htick_mode
+>>
+>> event_handler:  hrtimer_interrupt
+>>
+>> retries:        0
+>>
+>> As you can see the next event is in the past, timer mxc_timer1 seems to have missed a tick.
+>>
+>> You mean your system is locked into a SELECT system call ?
+>>
+>> 1ms is the period of your periodic thread ?
+>>
+>> 12.12.2016, 12:00, "xenomai-request@xenomai.org" <xenomai-request@xenomai.org>:
+>>> Send Xenomai mailing list submissions to
+>>>          xenomai@xenomai.org
 >>>
->>> Is that possible to allow the user to run any self develop rt base
->>> application(the user will not attack server by this way) without root
->>> permission?
->>
->> Not really. Xenomai involves, among other things, making changes to the
->> kernel. Your user will definitely want to run his real-time application
->> on a system that isn't being used for anything else. The best way for
->> him to do that will depend entirely on what his project is.
->>
->> He can *build* his Xenomai kernel and application without any special
->> privileges, and might save a lot of time doing so if your server is very
->> fast.
+>>> To subscribe or unsubscribe via the World Wide Web, visit
+>>>          https://xenomai.org/mailman/listinfo/xenomai
+>>> or, via email, send a message with subject or body 'help' to
+>>>          xenomai-request@xenomai.org
+>>>
+>>> You can reach the person managing the list at
+>>>          xenomai-owner@xenomai.org
+>>>
+>>> When replying, please edit your Subject line so it is more specific
+>>> than "Re: Contents of Xenomai digest..."
+>>>
+>>> Today's Topics:
+>>>
+>>>     1. Re: Long time system slow down on imx6 (Johann Obermayr)
+>>>
+>>> ----------------------------------------------------------------------
+>>>
+>>> Message: 1
+>>> Date: Mon, 12 Dec 2016 11:16:33 +0100
+>>> From: Johann Obermayr <johann.obermayr@sigmatek.at>
+>>> To: Xenomai@xenomai.org
+>>> Subject: Re: [Xenomai] Long time system slow down on imx6
+>>> Message-ID: <f07822d2-e30a-d394-bae6-bdf776c0f03a@sigmatek.at>
+>>> Content-Type: text/plain; charset=utf-8; format=flowed
+>>>
+>>> Am 09.12.2016 um 23:42 schrieb Marco:
+>>>>       We are notice a very strange problem on a imx6 with kernel
+>>>>       Linux3.0.35-4.1.0 + xenomai_2.6.4. After machine runs for 8 - 10 hours
+>>>>       we found the system blocked in may different ways (user interface
+>>>>       tcp/ip interface ecc..)
+>>>>
+>>>>       ?
+>>>>
+>>>>       We check into /proc/timer_list and we found the next event was
+>>>>       scheduled in the past.
+>>>>
+>>>>       ?
+>>>>
+>>>>       We found some items about timer blocked but all the patches indicated
+>>>>       was already applied.
+>>>>
+>>>>       ?
+>>>>
+>>>>       Maybe someone have seen a similar problem ?
+>>>>   _______________________________________________
+>>>>   Xenomai mailing list
+>>>>   Xenomai@xenomai.org
+>>>>   https://xenomai.org/mailman/listinfo/xenomai
+>>> Hello,
+>>>
+>>> i don't known if it is the same problem.
+>>> But we search a lost wakeup problem with "select" and a short timeout. (1ms)
+>>>
+>>> Regards
+>>>     Johann
+>>>
+>>> ------------------------------
+>>>
+>>> Subject: Digest Footer
+>>>
+>>> _______________________________________________
+>>> Xenomai mailing list
+>>> Xenomai@xenomai.org
+>>> https://xenomai.org/mailman/listinfo/xenomai
+>>>
+>>> ------------------------------
+>>>
+>>> End of Xenomai Digest, Vol 56, Issue 11
+>>> ***************************************
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+At this time, we make many test, if this is a problem with xenomai, or a 
+pure linux problem.
+We use select with a fdevent for a releaxed wait. And sometime the task 
+will hang in the select function.
 
-Cong Monkey <congzhangzh@gmail.com> writes:
+do you use select with short timeouts in your code ?
 
-> Is there some other way different than recompile the kernel, like add
-> user to special group or change some device's permission? it will
-> really be easy if simple way is possible and the user need do nothing!
-
-It might be possible to run the application in a virtual machine.
-Of course, it wouldn't get real-time behaviour.
-
-Linux is not a real-time operating system.
+regards
+   Johann
 
