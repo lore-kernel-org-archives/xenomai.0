@@ -1,12 +1,14 @@
-References: <20170303151838.35652dab@md1em3qc>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <45d853f4-7f82-3d1c-40a6-914df5e90c54@xenomai.org>
-Date: Fri, 3 Mar 2017 16:57:04 +0100
+References: <1481114381-17548-1-git-send-email-leupold@rsi-elektrotechnik.de>
+ <965cb08c-9a13-da03-4cf5-060ce94cae6e@xenomai.org>
+From: Jan Leupold <leupold@rsi-elektrotechnik.de>
+Message-ID: <46ec47bc-286d-a206-ef85-6347ba095660@rsi-elektrotechnik.de>
+Date: Mon, 12 Dec 2016 17:59:27 +0100
 MIME-Version: 1.0
-In-Reply-To: <20170303151838.35652dab@md1em3qc>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] any extra reasons for -EINTR in xenomai
+In-Reply-To: <965cb08c-9a13-da03-4cf5-060ce94cae6e@xenomai.org>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] [PATCH] analogy: fix __a4l_get_sbsize() if device has
+ only one subdevice
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,47 +17,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 03/03/2017 03:18 PM, Henning Schild wrote:
-> Hi,
-> 
-> someone came to me asking about reasons why system calls would exit
-> with -EINTR on a xenomai 2 system. As far as i know there a are two
-> possible reasons for that to happen.
-> 1. the thread received a signal while being blocked in the call
-> 2. the thread got a rt_task_unblock
-> 
-> Now we are pretty sure that we can rule out both of these cases. It is
-> a complex system and there might be signals. But none of the
-> applications signal handlers was called and the application did not
-> exit, which only leaves very few signals as candidates. Because almost
-> all default signal handlers will end an application.
-> And my current assumption would be that default signal handlers
-> all have SA_RESTART and there would be no -EINTR. Which limits the
-> possible signals to the ones where a custom handler was installed and
-> SA_RESTART was not set. But according to the logs no custom handler was
-> called.
-> 
-> We know it happened while being blocked in rtdm_event_timedwait and the
-> documentation mentions the two reasons from above.
-> 
+Am 12.12.2016 um 16:55 schrieb Jorge Ramirez:
+> On 12/07/2016 01:39 PM, Jan Leupold wrote:
+>> All a4l_sbinfo_t are handled in __a4l_fill_desc() as a contiguous array
+>> and is stored as data in a4l_root_t. The old code allocated enough
+>> memory when the device had at least two subdevices, but missed 8 bytes
+>> (on ARM32), which is the difference between sizeof(a4l_root_t) and
+>> sizeof(a4l_leaf_t).
+>=20
+> sorry I dont understand this patch. could you expand on the scenario you
+> are testing?
 
-Somebody has to raise the XNBREAK bit in the tcb for this to happen,
-i.e. xnthread_set_info(thread, XNBREAK). There are four locations in the
-nucleus doing that, two of them happen in do_sigwake_event(). Tracing
-there would rule out the consequence of receiving a regular signal.
+Scenario: one a4l device with exactly one a4l subdevice with one channel
+and one range. A call to a4l_fill_desc() then returns -ENOMEM, which is
+caused by a check at the beginning of a4l_leaf_add().
 
-In a related case, entering xnpod_suspend_thread() in a runnable state
-with the XNKICKED bit set would also cause the XNBREAK bit to be set,
-preventing the caller to block. This should only happen if a signal is
-raised from another CPU while the caller is traversing the Xenomai
-syscall path.
+> a4l_root_setup already takes into consideration the size of the a4l_root_t
+> (check the offset initialization)
 
-Finally, there is xnpod_unblock_thread() but that one won't be called
-unless the application forcibly unblocks a thread, which you already
-ruled out.
+My interpretation of what should be constructed in sbdata memory is this:
 
--- 
-Philippe.
++---------------------------------
+|r|s|s|s|s|...|s|l|c|c|c|...
++---------------------------------
+                ^
+r =3D a4l_root_t
+s =3D a4l_sbinfo_t
+l =3D a4l_leaf_t
+c =3D a4l_chinfo_t
+
+What I mean is: the root stores the whole array of all subdevice info and
+its size must be "root + n * sbinfo" (this is where the ^ points to).
+But __a4l_get_sbsize() is implemented as "n * (leaf + sbinfo)". root and
+leaf differ in size.
+
+As soon as the a4l device has more than one subdevice (n > 1) always enough
+memory is allocated. But for n =3D=3D 1 the size difference between a4l_roo=
+t_t
+and a4l_leaf_t is not taken into account. a4l_root_setup() sets the offset
+correctly according to sizeof(a4l_root_t), but __a4l_get_sbsize() used
+sizeof(a4l_leaf_t) to calculate it.
+
+Memory size for channel and range info is also calculated as
+"n * (leaf + info)" and could be reduced to "leaf + n * info", but
+out-of-memory is not an issue here.
+
+>=20
+>=20
+>=20
+>> ---
+>>  lib/analogy/descriptor.c | 3 ++-
+>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/lib/analogy/descriptor.c b/lib/analogy/descriptor.c
+>> index bc4d7bd..fa8cf93 100644
+>> --- a/lib/analogy/descriptor.c
+>> +++ b/lib/analogy/descriptor.c
+>> @@ -100,8 +100,9 @@ static inline a4l_leaf_t *a4l_leaf_get(a4l_leaf_t * =
+lf,
+>>  static int __a4l_get_sbsize(int fd, a4l_desc_t * dsc)
+>>  {
+>>  	unsigned int i, j, nb_chan, nb_rng;
+>> +	/* all subdevice a4l_sbinfo_t are within one special leaf: the root */
+>>  	int ret, res =3D
+>> -		dsc->nb_subd * (sizeof(a4l_sbinfo_t) + sizeof(a4l_leaf_t));
+>> +		sizeof(a4l_root_t) + dsc->nb_subd * (sizeof(a4l_sbinfo_t));
+>> =20
+>>  	for (i =3D 0; i < dsc->nb_subd; i++) {
+>> =20
+>>
+>>
+>> _______________________________________________
+>> Xenomai mailing list
+>> Xenomai@xenomai.org
+>> https://xenomai.org/mailman/listinfo/xenomai
+>=20
+
+
+--=20
+_____________________________________________________________
+R-S-I Elektrotechnik GmbH & Co. KG
+Woelkestrasse 11
+D-85301 Schweitenkirchen
+Fon: +49 8444 9204-0
+Fax: +49 8444 9204-50
+www.rsi-elektrotechnik.de
+
+_____________________________________________________________
+Amtsgericht Ingolstadt - GmbH: HRB 191328 - KG: HRA 170363
+Gesch=E4ftsf=FChrer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
+USt-IdNr.: DE 128592548
+
 
