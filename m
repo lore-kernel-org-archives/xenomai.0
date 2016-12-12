@@ -1,7 +1,11 @@
-From: Michael Thalmeier <michael.thalmeier@hale.at>
-Date: Tue,  7 Feb 2017 08:19:38 +0100
-Message-Id: <20170207071938.17419-1-michael.thalmeier@hale.at>
-Subject: [Xenomai] FCSE not working correctly
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Message-Id: <3342334e44e5352a44fc.1481549526@devws148.be.alcatel-lucent.com>
+Date: Mon, 12 Dec 2016 14:32:06 +0100
+From: Ronny Meeus <ronny.meeus@gmail.com>
+Subject: [Xenomai] [PATCH v2] copperplate/mercury: introduce tunable to set
+	max priority
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,107 +15,126 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
-Cc: michael@thalmeier.at
 
-Hi,
-I am currently working on porting the FCSE patch to kernel 4.9 for our
-custom i.MX28 based board. While investigating a kernel segfault I digged
-deeper into this patchset and also re-tested our currently working 3.12
-kernel (with FCSE).
-What I found, left me wondering if the FCSE patchset was correctly working
-since the beginning. Here follow my findings:
+This patch introduces a tunable in the mercury copperplate code that allows
+to put an upper limit on the priority used by the created thread objects.
 
-To make the findings reproducible I used the ipipe-3.18 branch from the
-xenomai ipipe repository.
+Before this patch the complete OS scheduler's FIFO range was used and it was
+not possible to restrict it. Restricting it can be useful in case other
+activities (typically platform related things) need to get a higher priority
+than the application threads.
 
-root@target:~# uname -a
-Linux target 3.18.20-00004-gdddadac #5 PREEMPT Mon Feb 6 15:58:35 CET 2017
-armv5tejl GNU/Linux
+The following tuneable can be used to configure the max priority to be 92:
+set_config_tunable(sched_max_prio, 92);
 
-When looking at the memory mapping of processes, one can see, that with
-FCSE enabled e.g. shared library mappings are allocated after the stack
-that is positioned up to 0x02000000 (32MB). As the FCSE code looks if
-virtual addresses above 32MB are used, it needs to flag each process to
-exceed the 32MB memory limit and either disallow memory allocation (in
-GUARANTEED mode) or put the process in group 0 where more memory is allowed
-(BEST EFFORT mode).
+or using a command-line option:
+--sched-max-prio=92
 
-root@target:~# cat /proc/self/maps
-00008000-00076000 r-xp 00000000 00:0b 4605        /bin/busybox.nosuid
-00076000-00077000 rwxp 0006d000 00:0b 4605        /bin/busybox.nosuid
-00077000-0007a000 rwxp 00000000 00:00 0           [heap]
-01efb000-01efd000 rwxp 00000000 00:00 0
-01fdf000-02000000 rw-p 00000000 00:00 0           [stack]
-02000000-0201f000 r-xp 00000000 00:0b 4357        /lib/ld-2.21.so
-0201f000-02020000 r-xp 00000000 00:00 0           [sigpage]
-02026000-02027000 r-xp 0001e000 00:0b 4357        /lib/ld-2.21.so
-02027000-02028000 rwxp 0001f000 00:0b 4357        /lib/ld-2.21.so
-02028000-0202f000 r-xp 00000000 00:0b 4331        /lib/libcrypt-2.21.so
-0202f000-02036000 ---p 00007000 00:0b 4331        /lib/libcrypt-2.21.so
-02036000-02037000 r-xp 00006000 00:0b 4331        /lib/libcrypt-2.21.so
-02037000-02038000 rwxp 00007000 00:0b 4331        /lib/libcrypt-2.21.so
-02038000-0205f000 rwxp 00000000 00:00 0
-0205f000-0218f000 r-xp 00000000 00:0b 4340        /lib/libc-2.21.so
-0218f000-02196000 ---p 00130000 00:0b 4340        /lib/libc-2.21.so
-02196000-02198000 r-xp 0012f000 00:0b 4340        /lib/libc-2.21.so
-02198000-0219a000 rwxp 00131000 00:0b 4340        /lib/libc-2.21.so
-0219a000-0219c000 rwxp 00000000 00:00 0
-ffff0000-ffff1000 r-xp 00000000 00:00 0           [vectors]
-
-As the kernel normally uses address space randomization, this behaviour may
-not be immediately visible when not running with norandmaps cmdline option
-to disable address space randomization.
-
-I think that the root cause for this behaviour is in arch/arm/mm/mmap.c in
-the function arch_get_unmapped_area_topdown. When the addr0 parameter is
-set without the MAP_FIXED flag, for every allocation where it cannot find
-an existing vma, the block that fills the info structure and gets a new
-unmapped area via vm_unmapped_area is skipped with the goto found_addr.
-
-With the below patch I have changed this logic to only trigger when a
-vma is found. This way for me it seems to fix this behaviour.
-Here is the memory layout of the same kernel (ipipe-3.18) with the patch
-applied:
-
-root@target:~# cat /proc/self/maps
-00008000-00076000 r-xp 00000000 00:0b 4605        /bin/busybox.nosuid
-00076000-00077000 rwxp 0006d000 00:0b 4605        /bin/busybox.nosuid
-00077000-0007a000 rwxp 00000000 00:00 0           [heap]
-01d64000-01e94000 r-xp 00000000 00:0b 4340        /lib/libc-2.21.so
-01e94000-01e9b000 ---p 00130000 00:0b 4340        /lib/libc-2.21.so
-01e9b000-01e9d000 r-xp 0012f000 00:0b 4340        /lib/libc-2.21.so
-01e9d000-01e9f000 rwxp 00131000 00:0b 4340        /lib/libc-2.21.so
-01e9f000-01ea1000 rwxp 00000000 00:00 0
-01ea1000-01ea8000 r-xp 00000000 00:0b 4331        /lib/libcrypt-2.21.so
-01ea8000-01eaf000 ---p 00007000 00:0b 4331        /lib/libcrypt-2.21.so
-01eaf000-01eb0000 r-xp 00006000 00:0b 4331        /lib/libcrypt-2.21.so
-01eb0000-01eb1000 rwxp 00007000 00:0b 4331        /lib/libcrypt-2.21.so
-01eb1000-01ed8000 rwxp 00000000 00:00 0
-01ed8000-01ef7000 r-xp 00000000 00:0b 4357        /lib/ld-2.21.so
-01ef8000-01efa000 rwxp 00000000 00:00 0
-01efd000-01efe000 r-xp 00000000 00:00 0           [sigpage]
-01efe000-01eff000 r-xp 0001e000 00:0b 4357        /lib/ld-2.21.so
-01eff000-01f00000 rwxp 0001f000 00:0b 4357        /lib/ld-2.21.so
-01fdf000-02000000 rw-p 00000000 00:00 0           [stack]
-ffff0000-ffff1000 r-xp 00000000 00:00 0           [vectors]
-
-It would be helpful if someone could provide some guidance if this patch
-looks good and how to further verify that everything still works.
-
-Thanks in advance,
-Michael
-
----
-diff --git a/arch/arm/mm/mmap.c b/arch/arm/mm/mmap.c
-index ababa17..4ce4dbb 100644
---- a/arch/arm/mm/mmap.c
-+++ b/arch/arm/mm/mmap.c
-@@ -154,7 +154,7 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
-                        addr = PAGE_ALIGN(addr);
-                vma = find_vma(mm, addr);
-                if (TASK_SIZE - len > addr &&
--                               (!vma || addr + len <= vma->vm_start))
-+                               (vma && addr + len <= vma->vm_start))
-                        goto found_addr;
-        }
+diff --git a/include/copperplate/threadobj.h b/include/copperplate/threadobj.h
+--- a/include/copperplate/threadobj.h
++++ b/include/copperplate/threadobj.h
+@@ -136,6 +136,8 @@ void threadobj_save_timeout(struct threa
+ 		corespec->timeout = *timeout;
+ }
+ 
++int threadobj_sched_get_priority_max(void);
++
+ #endif /* CONFIG_XENO_MERCURY */
+ 
+ /*
+diff --git a/include/copperplate/tunables.h b/include/copperplate/tunables.h
+--- a/include/copperplate/tunables.h
++++ b/include/copperplate/tunables.h
+@@ -93,6 +93,20 @@ static inline read_config_tunable(sessio
+ 	return __copperplate_setup_data.session_gid;
+ }
+ 
++#ifdef CONFIG_XENO_MERCURY
++extern int threadobj_sched_max_prio;
++
++static inline define_config_tunable(sched_max_prio, int, prio)
++{
++	threadobj_sched_max_prio = prio;
++}
++
++static inline read_config_tunable(sched_max_prio, int)
++{
++	return threadobj_sched_max_prio;
++}
++#endif /* CONFIG_XENO_MERCURY */
++
+ #ifdef __cplusplus
+ }
+ #endif
+diff --git a/lib/copperplate/init.c b/lib/copperplate/init.c
+--- a/lib/copperplate/init.c
++++ b/lib/copperplate/init.c
+@@ -77,6 +77,13 @@ static const struct option copperplate_o
+ 		.flag = &__copperplate_setup_data.shared_registry,
+ 		.val = 1,
+ 	},
++#ifdef CONFIG_XENO_MERCURY
++	{
++#define sched_max_prio	5
++		.name = "sched-max-prio",
++		.has_arg = required_argument,
++	},
++#endif /* CONFIG_XENO_MERCURY */
+ 	{ /* Sentinel */ }
+ };
+ 
+@@ -264,6 +271,11 @@ static int copperplate_parse_option(int 
+ 		if (ret)
+ 			return ret;
+ 		break;
++#ifdef CONFIG_XENO_MERCURY
++	case sched_max_prio:
++		threadobj_sched_max_prio = atoi(optarg);
++		break;
++#endif /* CONFIG_XENO_MERCURY */
+ 	case regroot_opt:
+ 		__copperplate_setup_data.registry_root = strdup(optarg);
+ 		break;
+@@ -285,6 +297,9 @@ static void copperplate_help(void)
+         fprintf(stderr, "--shared-registry		enable public access to registry\n");
+         fprintf(stderr, "--registry-root=<path>		root path of registry\n");
+         fprintf(stderr, "--session=<label>[/<group>]	enable shared session\n");
++#ifdef CONFIG_XENO_MERCURY
++        fprintf(stderr, "--sched-max-prio=<prio>		set max scheduler priority used\n");
++#endif /* CONFIG_XENO_MERCURY */
+ }
+ 
+ static struct setup_descriptor copperplate_interface = {
+diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
+--- a/lib/copperplate/threadobj.c
++++ b/lib/copperplate/threadobj.c
+@@ -488,6 +488,7 @@ int threadobj_stat(struct threadobj *tho
+ #else /* CONFIG_XENO_MERCURY */
+ 
+ static int threadobj_lock_prio;
++int threadobj_sched_max_prio;
+ 
+ static void unblock_sighandler(int sig)
+ {
+@@ -542,6 +543,8 @@ static void nop_sighandler(int sig)
+ static inline void pkg_init_corespec(void)
+ {
+ 	struct sigaction sa;
++	int max_prio;
++	int max_sched_prio;
+ 
+ 	/*
+ 	 * We don't have builtin scheduler-lock feature over Mercury,
+@@ -555,7 +558,10 @@ static inline void pkg_init_corespec(voi
+ 	 * holding the scheduler lock, unless the latter has to block
+ 	 * for some reason, defeating the purpose of such lock anyway.
+ 	 */
+-	threadobj_irq_prio = sched_get_priority_max(SCHED_FIFO);
++	max_sched_prio = sched_get_priority_max(SCHED_FIFO);
++	max_prio = (threadobj_sched_max_prio==0) ? max_sched_prio:threadobj_sched_max_prio;
++
++	threadobj_irq_prio = ((max_prio > max_sched_prio)? max_sched_prio:max_prio);
+ 	threadobj_lock_prio = threadobj_irq_prio - 1;
+ 	threadobj_high_prio = threadobj_irq_prio - 2;
+ 	threadobj_agent_prio = threadobj_high_prio;
 
