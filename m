@@ -1,12 +1,9 @@
-References: <145af902-fa69-f34a-754b-01badc8d7041@smile.fr>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <7025074b-0a3e-b831-5bfd-5bbd7d589eb9@xenomai.org>
-Date: Fri, 9 Dec 2016 10:55:26 +0100
 MIME-Version: 1.0
-In-Reply-To: <145af902-fa69-f34a-754b-01badc8d7041@smile.fr>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [XENOMAI] TIP_HEAD bit during Xenomai initialisation
+From: Ronny Meeus <ronny.meeus@gmail.com>
+Date: Tue, 13 Dec 2016 08:23:17 +0100
+Message-ID: <CAMJ=MEd=nsydR-ckQTHgwqcyp4h3UkiioFbTLiJNjKg-6mNciA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] copperplate/registry daemon connection failure
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,57 +12,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Julien Stephan <julien.stephan@smile.fr>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 12/08/2016 11:33 AM, Julien Stephan wrote:
-> Hello,
-> 
-> We are trying to port xenomai to a new architecture.
-> So far, we have ported the ipipe patch, the xenomai kernel and the
-> xenomai librairies, though we are not 100% sure everything is working
-> properly.
-> 
-> We are porting xenomai 3 ( Cobalt v3.0.3 (Groovy Cosmic Halo)  ) with a
-> linux kernel 3.18. For now, we are able to boot linux correctly, with
-> xenomai correctly registered:
-> ~ # dmesg | grep -i xenomai
-> [Xenomai] scheduling class idle registered.
-> [Xenomai] scheduling class rt registered.
-> I-pipe: head domain Xenomai registered.
-> [Xenomai] Cobalt v3.0.3 (Groovy Cosmic Halo)
-> 
-> So far so good.
-> 
-> Now, I tried to run a very basic hello world program that has no
-> real-time properties. We compile it using the example makefile given
-> here (https://xenomai.org/building-applications-with-xenomai-3-x/) so
-> that even if the application is not a real time application, the Xenomai
-> services are initialized.
-> 
-> At run time, we get the following error:
-> 0"000.000| BUG in low_init(): [main] Cobalt core not enabled in kernel
-> 
-> This bug appears in the low_init function in lib/cobalt/init.c after the
-> XENOMAI_SYSBIND call.
-> By stepping into the syscall handler with gdb, I noticed that TIP_HEAD
-> bit of thread_info was not set and then we just go to the slow_path,
-> then root_syscall  path  (see ARM ipipe patch for assembly labels)  and
-> finally end up into the traditional linux handler that return -ENOSYS as
-> the syscall number of XENOMAI_SYSBIND is greater than the linux kernel
-> syscall limit.
-> 
-> So my question is: during initialization of the xenomai services, the
-> TIP_HEAD bit should be set or not?
-> 
+Hello
 
-No, it can't be set at this point. TIP_HEAD tags a thread which
-currently runs in primary mode (i.e. at head of the pipeline), so it has
-to be a Cobalt thread.
+Context: we use the Mercury core (xenomai-3.0.3).
 
-Since cobalt_sys_bind is issued to bind the current process to the
-Cobalt core for the first time, the current thread (i.e. main()) can't
-be a Cobalt thread yet, so it won't bear TIP_HEAD.
+in commit 880b3acbd876a65f8fbe8c27b09762b06c06e846:
+copperplate/registry: force SCHED_OTHER on helper threads
+of
+Sun Jul 26 12:37:15 2015 +0200
 
--- 
-Philippe.
+The scheduling class of the registry threads is forced to
+SCHED_OTHER  at priority 0.
+This change is causing issues in our use case since our system
+is fully loaded during init.
+
+What I observe is that the application is not able to connect to
+the registry daemon and exists with following error:
+   0"988.361| WARNING: [main] cannot connect to registry daemon
+   0"989.141| WARNING: [main] setup call copperplate failed
+   0"989.369| BUG in xenomai_init(): [main] initialization failed, EAGAIN
+
+As a test I made a change to the code and started the registry threads
+in RR mode at a high priority and then the issue is not observed.
+In our system all threads (application and kernel one's) are running
+in the real-time domain so apps running in the OTHER domain will
+have very little CPU left to consume ...
+
+For me it is not clear how the synchronization between the daemon
+and the application is happening. The daemon is setting up a
+Unix domain socket to which the client connects. But how does the
+application knows that the daemon has finished the creation of
+the socket?
+
+Thanks
+Ronny
 
