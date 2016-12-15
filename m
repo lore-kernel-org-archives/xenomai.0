@@ -1,10 +1,10 @@
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Message-Id: <872929e77371636418cf.1481802320@devws148.be.alcatel-lucent.com>
-Date: Thu, 15 Dec 2016 12:45:20 +0100
+Message-Id: <7223c73f876d31388593.1481802442@devws148.be.alcatel-lucent.com>
+Date: Thu, 15 Dec 2016 12:47:22 +0100
 From: Ronny Meeus <ronny.meeus@gmail.com>
-Subject: [Xenomai] [PATCH v2] boilerplate: Limit memory usage tlsf-heap
+Subject: [Xenomai] [PATCH] boilerplate: do not call xenomai_init 2 times
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,47 +15,49 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Before this patch the system memory pool's (tlsf variant) behavior was
-to grow in case allocations were done when depleted. This is a
-contradiction with the expected behavior (see mem-pool-size tunable
-documentation). When the pool is depleted, an error should be retuned
-instead of growing the pool.
+bootstrap.o is linked to the application code.
+In case the execution of the static constructors is postponed
+in the applicaion and the auto-init feature is used, the
+xenomai_init is called 2 times:
+- once in the path of the wrap_main
+- later in the context of the static constructor
 
-This patch solves this bug.
+A check is already in place to not call xenomain_init when it
+is called from __real_main. This patch adds a check in the
+static constructor to skip it in case the __real_main already
+did the init.
 
-diff --git a/lib/boilerplate/tlsf/tlsf.c b/lib/boilerplate/tlsf/tlsf.c
---- a/lib/boilerplate/tlsf/tlsf.c
-+++ b/lib/boilerplate/tlsf/tlsf.c
-@@ -625,6 +625,7 @@ void *tlsf_malloc(size_t size)
- 	void *area;
+diff --git a/lib/boilerplate/init/bootstrap.c b/lib/boilerplate/init/bootstrap.c
+--- a/lib/boilerplate/init/bootstrap.c
++++ b/lib/boilerplate/init/bootstrap.c
+@@ -26,6 +26,8 @@ static int early_argc;
  
- 	area_size = sizeof(tlsf_t) + BHDR_OVERHEAD * 8; /* Just a safety constant */
-+	area_size += size;
- 	area_size = (area_size > DEFAULT_AREA_SIZE) ? area_size : DEFAULT_AREA_SIZE;
- 	area = get_new_area(&area_size);
- 	if (area == ((void *) ~0))
-@@ -709,23 +710,6 @@ void *malloc_ex(size_t size, void *mem_p
-     /* Searching a free block, recall that this function changes the values of fl and sl,
-        so they are not longer valid when the function fails */
-     b = FIND_SUITABLE_BLOCK(tlsf, &fl, &sl);
--#if USE_MMAP || USE_SBRK
--    if (!b && mem_pool == mp) {	/* Don't grow private pools */
--	size_t area_size;
--	void *area;
--	/* Growing the pool size when needed */
--	area_size = size + BHDR_OVERHEAD * 8;   /* size plus enough room for the requered headers. */
--	area_size = (area_size > DEFAULT_AREA_SIZE) ? area_size : DEFAULT_AREA_SIZE;
--	area = get_new_area(&area_size);        /* Call sbrk or mmap */
--	if (area == ((void *) ~0))
--	    return NULL;        /* Not enough system memory */
--	add_new_area(area, area_size, mem_pool);
--	/* Rounding up the requested size and calculating fl and sl */
--	MAPPING_SEARCH(&size, &fl, &sl);
--	/* Searching a free block */
--	b = FIND_SUITABLE_BLOCK(tlsf, &fl, &sl);
--    }
--#endif
-     if (!b)
- 	return NULL;            /* Not found */
+ static char *const *early_argv;
  
++static int xenomai_init_done;
++
+ const int xenomai_auto_bootstrap = 1;
+ 
+ int __real_main(int argc, char *const argv[]);
+@@ -37,8 +39,9 @@ int xenomai_main(int argc, char *const a
+ {
+ 	if (early_argc)
+ 		return __real_main(early_argc, early_argv);
+-	
++
+ 	xenomai_init(&argc, &argv);
++	xenomai_init_done = 1;
+ 
+ 	return __real_main(argc, argv);
+ }
+@@ -49,6 +52,9 @@ int xenomai_main(int argc, char *const a
+ 	ssize_t len, ret;
+ 	int fd, n, argc;
+ 
++	if (xenomai_init_done)
++		return;
++
+ 	len = 1024;
+ 
+ 	for (;;) {
 
