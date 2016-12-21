@@ -1,12 +1,14 @@
-References: <CAPdz0-x1Vg2LU-n9BzU4Ozt=AetkZNZYG6fZ849boWSrBgFHFg@mail.gmail.com>
+References: <a9bb92d8-5e99-7afe-4381-7fad371632d0@smile.fr>
+ <21e6332e-1acf-d53e-3ad5-543ff548a3a5@xenomai.org>
+ <f0e3a9e8-4120-5076-e812-550d7ff4007f@smile.fr>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <88b82cb6-37ab-5a32-9381-443007580c41@xenomai.org>
-Date: Fri, 9 Dec 2016 12:38:46 +0100
+Message-ID: <92ed625a-f07f-1c76-14fd-cd5dde907898@xenomai.org>
+Date: Wed, 21 Dec 2016 16:52:51 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAPdz0-x1Vg2LU-n9BzU4Ozt=AetkZNZYG6fZ849boWSrBgFHFg@mail.gmail.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <f0e3a9e8-4120-5076-e812-550d7ff4007f@smile.fr>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] UART RT-Driver for BBB
+Subject: Re: [Xenomai] __COBALT_SYSCALL_BIT
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,55 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Florian G." <florian.r.groeger@gmail.com>, xenomai@xenomai.org
+To: Julien Stephan <julien.stephan@smile.fr>
+Cc: xenomai@xenomai.org
 
-On 11/21/2016 01:46 AM, Florian G. wrote:
-> Hey,
-> 
-> I'm using Xenomai 2.6.5 on a 3.8.13 kernel on an ARM 32-bit(BeagleBone
-> Black).
-> 
-> I have a sensor connected via UART which I have to read in a RT_TASK.
-> Therefore, I need a RT-Driver for that. Sadly I wasn't able to install
-> xenomai's xeno-16550A driver because setserial does not work[1]. So, my
+On 12/20/2016 01:36 PM, Julien Stephan wrote:
+> I'm porting Xenomai on the MPPA processor of Kalray. The problem is that
+> their Linux port is quite new and is not yet publicly available ...
 
-You mean you did not succeed to get the standard driver out of the way?
+This company presented an ongoing effort to port Linux to their MPPA
+processor back in October 2013. This hardly qualifies as a "new" effort:
+http://events.linuxfoundation.org/sites/events/files/slides/Rybczynska_Going_Linux_on_Massive_Multicore.pdf
 
-> first question is:
-> Does an alternative for setserial exist?
+Such Linux code not being publicly available after three years may be
+interpreted as an obvious unwillingness to ever disclose it.
 
-PySerial? No idea if that would work on the Beagle though.
+Therefore, the whole point of any technical discussion about your
+project on this public list would be about asking people to help your
+company delivering a development task to a customer, for your company's
+and its customer's exclusive advantage, but strictly no upside for the
+Xenomai user base.
 
- If not, can I get the io, irq,
-> and so on from somewhere else? Maybe I could use the In-Kernel Driver
-> Setup.
+As a matter of fact, nothing that could be discussed there regarding
+your project would be beneficial for the Xenomai users and contributors
+(Linux likewise), since none of them may ever have access to the
+resulting work, or learn from it for their own present or future
+projects. What might be the incentive for these people to help you with
+such port then, why would they care?
 
-I would have a look at the sysfs contents, e.g. /sys/class/tty, locating
-your device instance there. The properties such as the current irq line
-should be available as leaf nodes.
+I do understand that, as an engineer, you merely inherited the situation
+and did not create it, taking the flak for those who did. That is
+unfortunate, and I want to make clear that this is nothing personal.
+However, despite Xmas time approaching, I don't believe in Santa: such
+situation can't bring anything useful to the Xenomai project, but only
+chasing wild gooses about a secretive processor running undisclosed code.
 
-> 
-> I saw some discussion about that topic in the mailing list already but I
-> am not sure if the problem was ever resolved.[2] Any hints here would be
-> highly appreciated.
-> 
-> So the solutions I have in mind right now are, in case I won't be able to
-> install xeno-16550A are:
-> 1. Reading directly from memory by using mmep
-
-You would have to deal with TX and RX IRQs at the very least
-nevertheless, unless you want to fully operate in polled I/O mode, which
-is unlikely to be nice in terms of overhead. Besides, it could become
-uselessly complex to share the UART between processes.
-
-> 2. Developing my own RTDM.
-
-For which benefit?
-http://www.xenomai.org/pipermail/xenomai/2010-May/020419.html
-
-> (3. Using on of the PRUs)
-
-Even more complex than implementing a driver that already exists I believe.
+I'd be glad to be proven wrong though, but until this is demonstrated,
+I'll stay away from this discussion.
 
 -- 
 Philippe.
