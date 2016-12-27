@@ -1,14 +1,12 @@
-References: <eecc7588-b50f-e6b3-4a5b-a398d8134e78@siemens.com>
- <5bfef037-0efb-f82e-f036-5150a1f50ba0@siemens.com>
+References: <CAMJ=MEd=nsydR-ckQTHgwqcyp4h3UkiioFbTLiJNjKg-6mNciA@mail.gmail.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <c62f6fda-dd0e-284a-d12b-a730c21eca00@xenomai.org>
-Date: Wed, 21 Dec 2016 17:31:49 +0100
+Message-ID: <e24d081d-456f-4c99-0105-0ddf688d2319@xenomai.org>
+Date: Tue, 27 Dec 2016 10:56:26 +0100
 MIME-Version: 1.0
-In-Reply-To: <5bfef037-0efb-f82e-f036-5150a1f50ba0@siemens.com>
+In-Reply-To: <CAMJ=MEd=nsydR-ckQTHgwqcyp4h3UkiioFbTLiJNjKg-6mNciA@mail.gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PULL] ipipe: 4.4 fixes for x86 and tracer,
-	update to 4.4.37
+Subject: Re: [Xenomai] copperplate/registry daemon connection failure
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,69 +15,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Ronny Meeus <ronny.meeus@gmail.com>, xenomai@xenomai.org
 
-On 12/21/2016 05:22 PM, Jan Kiszka wrote:
-> On 2016-12-19 19:03, Jan Kiszka wrote:
->> Hi Philippe,
->>
->> The following changes since commit 8121a3aca1742df09940f29b24ebee291481c1ef:
->>
->>   ipipe: do not read irq_desc[] out of bounds with virqs (2016-11-25 17:11:39 +0100)
->>
->> are available in the git repository at:
->>
->>   git://git.xenomai.org/ipipe-jki for-upstream/4.4
->>
->> for you to fetch changes up to b0499d6f230268b60b44ccc2dcacee8a30cd4e62:
->>
->>   Merge tag 'v4.4.37' into for-upstream/4.4 (2016-12-09 19:46:32 +0100)
->>
->> As noted earlier, we missed some x86 patches from releases > 3.14. I
->> think I found them all.
->>
->> Note: The 4.4.37 merge was not tested on archs!=x86.
->>
->> Jan
->>
->> ----------------------------------------------------------------
->> [leaving out the merge part in the stats]
->>
->> Jan Kiszka (11):
->>       x86/ipipe: Skip lockdep check for vector_lock under I-pipe
->>       x86/ipipe: Always leave do_syscall_32_irqs_on with hard irqs disabled
->>       x86/ipipe: Maintain Linux IRQ tracing in enable/disable_local_irqs
->>       x86/ipipe: Fix DEBUG_LOCKS instrumentation of load_mm_ldt
->>       x86/ipipe: Fix root state on return from certain exceptions
->>       ipipe: Remove stray tabs from tracer output
->>       ipipe: Do not trace Linux irqs over the head domain
->>       x86/ipipe: Remove unneeded !CONFIG_IPIPE guard around TRACE_IRQS_OFF
->>       x86/ipipe: Resync exception handling with ipipe-3.14
->>       ipipe: Extend root domain guard to preempt_schedule_notrace
->>       Merge tag 'v4.4.37' into for-upstream/4.4
->>
->>  arch/x86/entry/common.c            | 16 ++++++++++++----
->>  arch/x86/entry/entry_64.S          |  3 +--
->>  arch/x86/include/asm/ipipe.h       | 20 +++++++++++++++++---
->>  arch/x86/include/asm/mmu_context.h |  3 ++-
->>  arch/x86/kernel/apic/vector.c      |  2 ++
->>  arch/x86/kernel/ipipe.c            | 83 +++++++++++++++++++++++++++++++----------------------------------------------------
->>  arch/x86/kernel/traps.c            | 11 ++++++++++-
->>  kernel/ipipe/tracer.c              |  4 ++--
->>  kernel/locking/lockdep.c           | 10 +++++++++-
->>  kernel/sched/core.c                |  2 +-
->>  kernel/trace/trace_irqsoff.c       |  8 ++++----
->>  11 files changed, 91 insertions(+), 71 deletions(-)
->>
+On 12/13/2016 08:23 AM, Ronny Meeus wrote:
+> Hello
 > 
-> Hold on, I've found (at least) one remaining issue and will also take
-> the chance to update the stable merge. May take longer though, this year
-> is ending "soon".
+> Context: we use the Mercury core (xenomai-3.0.3).
+> 
+> in commit 880b3acbd876a65f8fbe8c27b09762b06c06e846:
+> copperplate/registry: force SCHED_OTHER on helper threads
+> of
+> Sun Jul 26 12:37:15 2015 +0200
+> 
+> The scheduling class of the registry threads is forced to
+> SCHED_OTHER  at priority 0.
+> This change is causing issues in our use case since our system
+> is fully loaded during init.
+> 
+> What I observe is that the application is not able to connect to
+> the registry daemon and exists with following error:
+>    0"988.361| WARNING: [main] cannot connect to registry daemon
+>    0"989.141| WARNING: [main] setup call copperplate failed
+>    0"989.369| BUG in xenomai_init(): [main] initialization failed, EAGAIN
+> 
+> As a test I made a change to the code and started the registry threads
+> in RR mode at a high priority and then the issue is not observed.
+> In our system all threads (application and kernel one's) are running
+> in the real-time domain so apps running in the OTHER domain will
+> have very little CPU left to consume ...
 > 
 
-Ok.
+libfuse assumes SIGCHLD is not ignored when calling fuse_main(), this is
+the root of the issue. Thread priority is not involved in this bug,
+tweaking it may only make it less likely, but does not fix it (e.g.
+SMP). The core issue is with guaranteeing that a forkee exiting early
+stays in a zombie state until the parent can issue waitpid() to collect
+its status, which add_mount() from libfuse requires.
 
+Some details are given here:
+http://git.xenomai.org/xenomai-3.git/commit/?h=stable-3.0.x&id=4364bdd358e893b1f4f7f644a35191b3fc7f4180
+
+> For me it is not clear how the synchronization between the daemon
+> and the application is happening. The daemon is setting up a
+> Unix domain socket to which the client connects. But how does the
+> application knows that the daemon has finished the creation of
+> the socket?
+> 
+
+It does not have too. Check the combined logic in bind_socket() and
+connect_regd().
 
 -- 
 Philippe.
