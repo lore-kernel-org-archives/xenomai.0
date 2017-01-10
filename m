@@ -1,12 +1,10 @@
-References: <DB5PR0401MB1813333E8ACE184B87CFD047FE610@DB5PR0401MB1813.eurprd04.prod.outlook.com>
-From: Jorge Ramirez <jro@xenomai.org>
-Message-ID: <b93d7195-39a0-afc4-6e98-d697617579c7@xenomai.org>
-Date: Mon, 9 Jan 2017 07:42:26 +0100
+Date: Tue, 10 Jan 2017 16:07:57 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20170110160757.5eb8ccee@md1em3qc>
 MIME-Version: 1.0
-In-Reply-To: <DB5PR0401MB1813333E8ACE184B87CFD047FE610@DB5PR0401MB1813.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] arm64 support
+Subject: [Xenomai] xenomai 2 LDFLAGS wrappers, posix only
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,11 +13,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jerry Huang <jerry.huang@nxp.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>, Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
+To: xenomai@xenomai.org
 
-On 01/04/2017 04:03 PM, Jerry Huang wrote:
-> However, I don't find the context of arm64 in xenomai-3. Who can give me some comment how to get these information?
+Hi,
 
-btw I suppose you already found the arm64 support you were looking for 
-in the xenomai-3 next branch.
+i am about to include three more wrappers into xenomai2 to assert_nrt,
+later i plan to create a xenomai3 patch as well. The functions to wrap
+are __cxa_guard_(acquire|release|abort). They contain mutexes
+protecting the initialization state of static objects in c++ code,
+often found when people implement the singleton pattern.
+
+I have got the wrapping code but found that xeno-config will create the
+wrapping LDFLAGS only for the posix skin. Is that intentional or an
+inconsistency?
+Even the wrappers in the "common" skin get applied for posix only.
+
+I tried calling malloc/free in a "--skin=native" example and did not
+get the SIGXCPU.
+
+Now i am guessing that the way wrappers are applied in xenomai2 is
+somehow inconsistent. Is that something that should be fixed by having
+common and per skin wrappers, or would it be ok to simply always append
+the posix LDFLAGS as well?
+
+Henning
 
