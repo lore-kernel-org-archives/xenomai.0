@@ -1,18 +1,14 @@
-Date: Thu, 12 Jan 2017 09:42:11 -0500
-Message-ID: <20170112144211.GQ17365@csclub.uwaterloo.ca>
-References: <DB5PR0401MB1813333E8ACE184B87CFD047FE610@DB5PR0401MB1813.eurprd04.prod.outlook.com>
- <978e8199-bc2e-2241-1321-6d94b9c611e4@xenomai.org>
- <DB5PR0401MB18133712C3E024CD9B8CD907FE600@DB5PR0401MB1813.eurprd04.prod.outlook.com>
- <057c11d6-1b14-f6a1-f8a3-ddb17e24fc58@xenomai.org>
- <DB5PR0401MB1813914291F050C338CECB00FE790@DB5PR0401MB1813.eurprd04.prod.outlook.com>
- <f0c553f1-694f-2c46-2225-7adf0f7f2eb3@xenomai.org>
- <814ecf9e-3a39-3e62-cb20-b3ac6042295f@xenomai.org>
+Date: Thu, 12 Jan 2017 18:32:31 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20170112183231.12bf8d56@md1em3qc>
+In-Reply-To: <20170111154759.228693f3@md1em3qc>
+References: <20170110160757.5eb8ccee@md1em3qc>
+ <406ae4f5-885c-c624-0b7a-ece67c553b14@xenomai.org>
+ <20170111154759.228693f3@md1em3qc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <814ecf9e-3a39-3e62-cb20-b3ac6042295f@xenomai.org>
-From: lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
-Subject: Re: [Xenomai] arm64 support
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] xenomai 2 LDFLAGS wrappers, posix only
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,20 +17,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jorge Ramirez <jro@xenomai.org>
-Cc: Jerry Huang <jerry.huang@nxp.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Thu, Jan 12, 2017 at 02:04:06PM +0100, Jorge Ramirez wrote:
-> also, what hardware are you running and what is the extent of your
-> modifications?
+Am Wed, 11 Jan 2017 15:47:59 +0100
+schrieb Henning Schild <henning.schild@siemens.com>:
 
-Well the kernel dump said:
+> Am Wed, 11 Jan 2017 12:03:23 +0100
+> schrieb Philippe Gerum <rpm@xenomai.org>:
+> 
+> > On 01/10/2017 04:07 PM, Henning Schild wrote:  
+> > > Hi,
+> > > 
+> > > i am about to include three more wrappers into xenomai2 to
+> > > assert_nrt, later i plan to create a xenomai3 patch as well. The
+> > > functions to wrap are __cxa_guard_(acquire|release|abort). They
+> > > contain mutexes protecting the initialization state of static
+> > > objects in c++ code, often found when people implement the
+> > > singleton pattern.
+> > > 
+> > > I have got the wrapping code but found that xeno-config will
+> > > create the wrapping LDFLAGS only for the posix skin. Is that
+> > > intentional or an inconsistency?
+> > > Even the wrappers in the "common" skin get applied for posix only.
+> > > 
+> > > I tried calling malloc/free in a "--skin=native" example and did
+> > > not get the SIGXCPU.
+> > > 
+> > > Now i am guessing that the way wrappers are applied in xenomai2 is
+> > > somehow inconsistent. Is that something that should be fixed by
+> > > having common and per skin wrappers, or would it be ok to simply
+> > > always append the posix LDFLAGS as well?    
+> > 
+> > --posix is supposed to be passed only when a wrapping is expected.
+> > Omitting it allows to build apps over non-POSIX Xenomai APIs, while
+> > assuming that any POSIX call also present in the code can only be
+> > obtained from the glibc.  
+> 
+> Ok i see. Just adding the --posix all the time would change the
+> implementation of all the pthread_* stuff where the developer might
+> just want to use non-rt pthreads.
+> 
+> There seem to be two classes of wrappers. Those that just assert_nrt()
+> and do not change the implementation of the function to be called. And
+> the other class actually replaces the original implementation.
+> 
+> The ones that just insert the assert_nrt() are relevant for all skins
+> and should be applied there, while at the moment they are only used
+> for posix/rtdm.
+> 
+> For xenomai3 that is malloc and free (./lib/cobalt/assert_context.c),
+> for xenomai2 it is those two plus gettimeofday
+> (src/skins/common/assert_context.c). These should be wrapped in any
+> skin, not just posix.
+> 
+> The three __cxa_guard wrappers would also be of the "insert assertion"
+> type and should therefore go into all skins.
 
-LS1043A RDB
+Do you agree with the observation? Should the assert_nrt guys be
+applied on all skins? Should we add the stdc++ __cxa_guard functions as
+such wrappers?
 
-So that would be a Freescale (NXP? Qualcomm?) quad A53 chip reference
-board.
+I am working on patches to extract the assert_nrt wrappers out of
+posix.wrappers and put them into common.wrappers. The last patch of the
+series would add the stdc++ guys to the common wrappers.
 
--- 
-Len Sorensen
+The file posix.wrappers is mentioned in configure.in and
+skins/posix/Makefile.(in|am). And a new file will probably have to go
+there as well. So this seemingly little change might produce a rather
+big changeset including autotool changes.
+
+Maybe i should start with the xenomai3 version of it to have a better
+basis for a discussion?
+
+Henning
+
+> Henning
+
 
