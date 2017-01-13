@@ -1,16 +1,18 @@
-References: <20170110160757.5eb8ccee@md1em3qc>
- <406ae4f5-885c-c624-0b7a-ece67c553b14@xenomai.org>
- <20170111154759.228693f3@md1em3qc> <20170112183231.12bf8d56@md1em3qc>
- <9ecf1bb8-5633-1fdf-bf6e-afd8de03ab21@xenomai.org>
- <20170112193358.78490347@md1em3qc>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ac5a31a2-9373-b581-33d7-ba05d040d5fd@siemens.com>
-Date: Thu, 12 Jan 2017 21:27:33 +0100
+From: Jerry Huang <jerry.huang@nxp.com>
+Date: Fri, 13 Jan 2017 02:09:57 +0000
+Message-ID: <DB5PR0401MB1813A4C18AB1DB93D5309FEDFE780@DB5PR0401MB1813.eurprd04.prod.outlook.com>
+References: <DB5PR0401MB1813333E8ACE184B87CFD047FE610@DB5PR0401MB1813.eurprd04.prod.outlook.com>
+ <978e8199-bc2e-2241-1321-6d94b9c611e4@xenomai.org>
+ <DB5PR0401MB18133712C3E024CD9B8CD907FE600@DB5PR0401MB1813.eurprd04.prod.outlook.com>
+ <057c11d6-1b14-f6a1-f8a3-ddb17e24fc58@xenomai.org>
+ <DB5PR0401MB1813914291F050C338CECB00FE790@DB5PR0401MB1813.eurprd04.prod.outlook.com>
+ <f0c553f1-694f-2c46-2225-7adf0f7f2eb3@xenomai.org>
+In-Reply-To: <f0c553f1-694f-2c46-2225-7adf0f7f2eb3@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <20170112193358.78490347@md1em3qc>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xenomai 2 LDFLAGS wrappers, posix only
+Subject: Re: [Xenomai] arm64 support
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,95 +21,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, Jorge Ramirez <jro@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2017-01-12 19:33, Henning Schild wrote:
-> Am Thu, 12 Jan 2017 18:54:56 +0100
-> schrieb Philippe Gerum <rpm@xenomai.org>:
-> 
->> On 01/12/2017 06:32 PM, Henning Schild wrote:
->>> Am Wed, 11 Jan 2017 15:47:59 +0100
->>> schrieb Henning Schild <henning.schild@siemens.com>:
->>>   
->>>> Am Wed, 11 Jan 2017 12:03:23 +0100
->>>> schrieb Philippe Gerum <rpm@xenomai.org>:
->>>>  
->>>>> On 01/10/2017 04:07 PM, Henning Schild wrote:    
->>>>>> Hi,
->>>>>>
->>>>>> i am about to include three more wrappers into xenomai2 to
->>>>>> assert_nrt, later i plan to create a xenomai3 patch as well. The
->>>>>> functions to wrap are __cxa_guard_(acquire|release|abort). They
->>>>>> contain mutexes protecting the initialization state of static
->>>>>> objects in c++ code, often found when people implement the
->>>>>> singleton pattern.
->>>>>>
->>>>>> I have got the wrapping code but found that xeno-config will
->>>>>> create the wrapping LDFLAGS only for the posix skin. Is that
->>>>>> intentional or an inconsistency?
->>>>>> Even the wrappers in the "common" skin get applied for posix
->>>>>> only.
->>>>>>
->>>>>> I tried calling malloc/free in a "--skin=native" example and did
->>>>>> not get the SIGXCPU.
->>>>>>
->>>>>> Now i am guessing that the way wrappers are applied in xenomai2
->>>>>> is somehow inconsistent. Is that something that should be fixed
->>>>>> by having common and per skin wrappers, or would it be ok to
->>>>>> simply always append the posix LDFLAGS as well?      
->>>>>
->>>>> --posix is supposed to be passed only when a wrapping is expected.
->>>>> Omitting it allows to build apps over non-POSIX Xenomai APIs,
->>>>> while assuming that any POSIX call also present in the code can
->>>>> only be obtained from the glibc.    
->>>>
->>>> Ok i see. Just adding the --posix all the time would change the
->>>> implementation of all the pthread_* stuff where the developer might
->>>> just want to use non-rt pthreads.
->>>>
->>>> There seem to be two classes of wrappers. Those that just
->>>> assert_nrt() and do not change the implementation of the function
->>>> to be called. And the other class actually replaces the original
->>>> implementation.
->>>>
->>>> The ones that just insert the assert_nrt() are relevant for all
->>>> skins and should be applied there, while at the moment they are
->>>> only used for posix/rtdm.
->>>>
->>>> For xenomai3 that is malloc and free
->>>> (./lib/cobalt/assert_context.c), for xenomai2 it is those two plus
->>>> gettimeofday (src/skins/common/assert_context.c). These should be
->>>> wrapped in any skin, not just posix.  
->>
->> Is this requirement to wrap gettimeofday() on v2 a LART for preventing
->> deadlocks with the read_seqcount construct in kernel space?
-> 
-> I do not know why it is in there.
-> 
 
->From the original commit message of my patch back then (I do not find
-this in git, though, but it's in xenomai-core archives):
 
-"Provide assert_nrt helper that checks if the caller is either not a
-shadow thread or is currently running in relaxed mode. If not, SIG_XCPU
-is raised.
-
-This service is then used to provide wrappers for glibc functions that
-are not realtime-safe but do not always trigger a syscall. Such
-functions may therefore be used by RT threads in primary mode for quite
-a while without being detected via some Xenomai mode switch. Moreover,
-some functions that go through the vsyscall page even to raise an
-ordinary syscall may not allow proper stack backtraces, making it harder
-to find their callers.
-
-So far we provide wrappers (for use with the --wrap linker switch) for
-malloc/free, gettimeofday and clock_gettime. Adding more (if there
-are/will be more) is trivial."
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+> -----Original Message-----
+> From: Philippe Gerum [mailto:rpm@xenomai.org]
+> Sent: Thursday, January 12, 2017 8:04 PM
+> To: Jerry Huang <jerry.huang@nxp.com>; Jorge Ramirez <jro@xenomai.org>;
+> xenomai@xenomai.org
+> Subject: Re: [Xenomai] arm64 support
+>=20
+> On 01/12/2017 11:24 AM, Jerry Huang wrote:
+> >
+> >
+> >> -----Original Message-----
+> >> From: Jorge Ramirez [mailto:jro@xenomai.org]
+> >> Sent: Thursday, January 05, 2017 7:09 PM
+> >> To: Jerry Huang <jerry.huang@nxp.com>; xenomai@xenomai.org
+> >> Subject: Re: [Xenomai] arm64 support
+> >>
+> >> On 01/05/2017 11:39 AM, Jerry Huang wrote:
+> >>> Thanks a lot.
+> >>> I sent the request t subscribe this mail list, I don't know if the
+> >>> approval is
+> >> needed for this request.
+> >>> >From the below links, they are about the 96boards.
+> >>> I found one boards DragonBoard410c is based on ARM Contxt-A53, but I
+> >> didn't find if it is  running ARM32 or ARM64.
+> >>> Could you please point out where can I find these information?
+> >>>
+> >>> Best Regards
+> >>> Jerry Huang
+> >>
+> >> yes, both boards (HiKey and dragon410c) run in 64 bit mode.
+> >> We also demoed Android 64bit running Xenomai on the HiKey back at
+> >> ELC-A
+> >> 2016 to control motors.
+> >>
+> >> I think I wrote a simple post entry in the 96boards forum [1] about it=
+.
+> >>
+> >> please remember to not top-post when writing to the mailing list.
+> >>
+> >> [1] http://www.96boards.org/forums/
+> > I got the Ipipe patch "ipipe-core-4.1.18-arm64-6.patch" from xenomai
+> website and ported it to Linux-4.1.35 with a little modification (for
+> kernel/trace/ring_buffer.c file).
+> > But when I boot the Linux, I got the kernel panic as below shows, which
+> was caused by function "irqs_disabled", who can give more comment how to
+> fix it?
+> >
+>=20
+> All arm64 patches present in the DL area are broken, some critical change=
+s
+> are missing due to a bug in some obscure code extraction script for this
+> architecture, do not use them.
+>=20
+> Please pull the code from the I-pipe git tree instead (branch ipipe-4.1.y=
+).
+>=20
+Thanks a lot, I will try the ipipe git tree with branch ipipe-4.1.y.
 
