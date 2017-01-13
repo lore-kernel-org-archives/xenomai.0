@@ -1,13 +1,15 @@
 From: Jerry Huang <jerry.huang@nxp.com>
-Date: Fri, 13 Jan 2017 02:09:57 +0000
-Message-ID: <DB5PR0401MB1813A4C18AB1DB93D5309FEDFE780@DB5PR0401MB1813.eurprd04.prod.outlook.com>
+Date: Fri, 13 Jan 2017 02:11:52 +0000
+Message-ID: <DB5PR0401MB181324A4E61F4028C0264B1DFE780@DB5PR0401MB1813.eurprd04.prod.outlook.com>
 References: <DB5PR0401MB1813333E8ACE184B87CFD047FE610@DB5PR0401MB1813.eurprd04.prod.outlook.com>
  <978e8199-bc2e-2241-1321-6d94b9c611e4@xenomai.org>
  <DB5PR0401MB18133712C3E024CD9B8CD907FE600@DB5PR0401MB1813.eurprd04.prod.outlook.com>
  <057c11d6-1b14-f6a1-f8a3-ddb17e24fc58@xenomai.org>
  <DB5PR0401MB1813914291F050C338CECB00FE790@DB5PR0401MB1813.eurprd04.prod.outlook.com>
  <f0c553f1-694f-2c46-2225-7adf0f7f2eb3@xenomai.org>
-In-Reply-To: <f0c553f1-694f-2c46-2225-7adf0f7f2eb3@xenomai.org>
+ <814ecf9e-3a39-3e62-cb20-b3ac6042295f@xenomai.org>
+ <20170112144211.GQ17365@csclub.uwaterloo.ca>
+In-Reply-To: <20170112144211.GQ17365@csclub.uwaterloo.ca>
 Content-Language: en-US
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
@@ -21,65 +23,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Jorge Ramirez <jro@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
-
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, Jorge Ramirez <jro@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 
 > -----Original Message-----
-> From: Philippe Gerum [mailto:rpm@xenomai.org]
-> Sent: Thursday, January 12, 2017 8:04 PM
-> To: Jerry Huang <jerry.huang@nxp.com>; Jorge Ramirez <jro@xenomai.org>;
-> xenomai@xenomai.org
+> From: Lennart Sorensen [mailto:lsorense@csclub.uwaterloo.ca]
+> Sent: Thursday, January 12, 2017 10:42 PM
+> To: Jorge Ramirez <jro@xenomai.org>
+> Cc: Philippe Gerum <rpm@xenomai.org>; Jerry Huang
+> <jerry.huang@nxp.com>; xenomai@xenomai.org
 > Subject: Re: [Xenomai] arm64 support
 >=20
-> On 01/12/2017 11:24 AM, Jerry Huang wrote:
-> >
-> >
-> >> -----Original Message-----
-> >> From: Jorge Ramirez [mailto:jro@xenomai.org]
-> >> Sent: Thursday, January 05, 2017 7:09 PM
-> >> To: Jerry Huang <jerry.huang@nxp.com>; xenomai@xenomai.org
-> >> Subject: Re: [Xenomai] arm64 support
-> >>
-> >> On 01/05/2017 11:39 AM, Jerry Huang wrote:
-> >>> Thanks a lot.
-> >>> I sent the request t subscribe this mail list, I don't know if the
-> >>> approval is
-> >> needed for this request.
-> >>> >From the below links, they are about the 96boards.
-> >>> I found one boards DragonBoard410c is based on ARM Contxt-A53, but I
-> >> didn't find if it is  running ARM32 or ARM64.
-> >>> Could you please point out where can I find these information?
-> >>>
-> >>> Best Regards
-> >>> Jerry Huang
-> >>
-> >> yes, both boards (HiKey and dragon410c) run in 64 bit mode.
-> >> We also demoed Android 64bit running Xenomai on the HiKey back at
-> >> ELC-A
-> >> 2016 to control motors.
-> >>
-> >> I think I wrote a simple post entry in the 96boards forum [1] about it=
-.
-> >>
-> >> please remember to not top-post when writing to the mailing list.
-> >>
-> >> [1] http://www.96boards.org/forums/
-> > I got the Ipipe patch "ipipe-core-4.1.18-arm64-6.patch" from xenomai
-> website and ported it to Linux-4.1.35 with a little modification (for
-> kernel/trace/ring_buffer.c file).
-> > But when I boot the Linux, I got the kernel panic as below shows, which
-> was caused by function "irqs_disabled", who can give more comment how to
-> fix it?
-> >
+> On Thu, Jan 12, 2017 at 02:04:06PM +0100, Jorge Ramirez wrote:
+> > also, what hardware are you running and what is the extent of your
+> > modifications?
 >=20
-> All arm64 patches present in the DL area are broken, some critical change=
-s
-> are missing due to a bug in some obscure code extraction script for this
-> architecture, do not use them.
+> Well the kernel dump said:
 >=20
-> Please pull the code from the I-pipe git tree instead (branch ipipe-4.1.y=
-).
+> LS1043A RDB
 >=20
-Thanks a lot, I will try the ipipe git tree with branch ipipe-4.1.y.
+> So that would be a Freescale (NXP? Qualcomm?) quad A53 chip reference
+> board.
+>=20
+Yes, the board is LS1043ARDB, quad contex-A53.=20
+Former is Freescale, now is NXP, and will be Qualcomm :(
 
