@@ -1,18 +1,12 @@
-References: <DB5PR0401MB1813333E8ACE184B87CFD047FE610@DB5PR0401MB1813.eurprd04.prod.outlook.com>
- <978e8199-bc2e-2241-1321-6d94b9c611e4@xenomai.org>
- <DB5PR0401MB18133712C3E024CD9B8CD907FE600@DB5PR0401MB1813.eurprd04.prod.outlook.com>
- <057c11d6-1b14-f6a1-f8a3-ddb17e24fc58@xenomai.org>
- <DB5PR0401MB1813914291F050C338CECB00FE790@DB5PR0401MB1813.eurprd04.prod.outlook.com>
- <f0c553f1-694f-2c46-2225-7adf0f7f2eb3@xenomai.org>
- <DB5PR0401MB18131434CBF68E3283535F4DFE7D0@DB5PR0401MB1813.eurprd04.prod.outlook.com>
+References: <1984ba68-34d2-7574-f33a-0d63f07da9bc@numalliance.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <e54b3df3-eebd-156c-0470-963d18b19316@xenomai.org>
-Date: Tue, 17 Jan 2017 11:31:19 +0100
+Message-ID: <0beb5709-2600-7cbb-4091-e1bbec0b2861@xenomai.org>
+Date: Tue, 17 Jan 2017 11:32:56 +0100
 MIME-Version: 1.0
-In-Reply-To: <DB5PR0401MB18131434CBF68E3283535F4DFE7D0@DB5PR0401MB1813.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] arm64 support
+In-Reply-To: <1984ba68-34d2-7574-f33a-0d63f07da9bc@numalliance.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] 32 bits / 64 bits compatibility
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,77 +15,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jerry Huang <jerry.huang@nxp.com>, Jorge Ramirez <jro@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 01/16/2017 04:26 AM, Jerry Huang wrote:
-> 
->> -----Original Message-----
->> From: Philippe Gerum [mailto:rpm@xenomai.org]
->> Sent: Thursday, January 12, 2017 8:04 PM
->> To: Jerry Huang <jerry.huang@nxp.com>; Jorge Ramirez <jro@xenomai.org>;
->> xenomai@xenomai.org
->> Subject: Re: [Xenomai] arm64 support
->>
->> On 01/12/2017 11:24 AM, Jerry Huang wrote:
->>>
->>>
->>>> -----Original Message-----
->>>> From: Jorge Ramirez [mailto:jro@xenomai.org]
->>>> Sent: Thursday, January 05, 2017 7:09 PM
->>>> To: Jerry Huang <jerry.huang@nxp.com>; xenomai@xenomai.org
->>>> Subject: Re: [Xenomai] arm64 support
->>>>
->>>> On 01/05/2017 11:39 AM, Jerry Huang wrote:
->>>>> Thanks a lot.
->>>>> I sent the request t subscribe this mail list, I don't know if the
->>>>> approval is
->>>> needed for this request.
->>>>> >From the below links, they are about the 96boards.
->>>>> I found one boards DragonBoard410c is based on ARM Contxt-A53, but I
->>>> didn't find if it is  running ARM32 or ARM64.
->>>>> Could you please point out where can I find these information?
->>>>>
->>>>> Best Regards
->>>>> Jerry Huang
->>>>
->>>> yes, both boards (HiKey and dragon410c) run in 64 bit mode.
->>>> We also demoed Android 64bit running Xenomai on the HiKey back at
->>>> ELC-A
->>>> 2016 to control motors.
->>>>
->>>> I think I wrote a simple post entry in the 96boards forum [1] about it.
->>>>
->>>> please remember to not top-post when writing to the mailing list.
->>>>
->>>> [1] http://www.96boards.org/forums/
->>> I got the Ipipe patch "ipipe-core-4.1.18-arm64-6.patch" from xenomai
->> website and ported it to Linux-4.1.35 with a little modification (for
->> kernel/trace/ring_buffer.c file).
->>> But when I boot the Linux, I got the kernel panic as below shows, which
->> was caused by function "irqs_disabled", who can give more comment how to
->> fix it?
->>>
->>
->> All arm64 patches present in the DL area are broken, some critical changes
->> are missing due to a bug in some obscure code extraction script for this
->> architecture, do not use them.
->>
->> Please pull the code from the I-pipe git tree instead (branch ipipe-4.1.y).
-> I clone the ipipe repos (git://git.xenomai.org/ipipe.git) and checkout to branch origin/ipipe-4.1.y.
-> And using the script ./scripts/ipipe/genpatches.sh to generate the patch "ipipe-core-4.1.18-arm64-6.patch", 
-> Then applied it to my kernel Linux-4.1.35 with a litter modification (about file kernel/trace/ring_buffer.c).
-> After building the kernel and booting my board, then I got the kernel panic as the result of patch (ipipe-core-4.1.18-arm64-6.patch) from websit (http://xenomai.org/downloads/ipipe/).
-> Any comment for this issue?
+On 01/17/2017 10:30 AM, St=E9phane Ancelot wrote:
+> Hi,
+>=20
+> In order to keep graphic compatibility with an application, I must run
+> some xenomai applications in 32 bits.
+>=20
+> Is it possible to have a 64 bits kernel compile xenomai with 32 bits
+> libs for applications ?
+>=20
 
-That script is precisely the one that fails pulling the changes required
-to fixup the gic(-v3) driver for dealing with interrupt pipelining, so
-this is going to fail the same way. The panic message in your kernel log
-is a manifestation of this.
+Xenomai 3 supports this, currently for x86.
 
-You should just use the ipipe.git tree contents unmodified which is
-correct, because genpatches.sh is currently broken for extracting
-patches for arm64.
-
--- 
+--=20
 Philippe.
 
