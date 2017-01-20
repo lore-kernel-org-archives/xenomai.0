@@ -1,14 +1,13 @@
-References: <eecc7588-b50f-e6b3-4a5b-a398d8134e78@siemens.com>
- <5bfef037-0efb-f82e-f036-5150a1f50ba0@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <bc8ad741-937c-d93a-8533-497cdc540100@siemens.com>
-Date: Thu, 19 Jan 2017 18:57:57 +0100
+References: <1984ba68-34d2-7574-f33a-0d63f07da9bc@numalliance.com>
+ <0beb5709-2600-7cbb-4091-e1bbec0b2861@xenomai.org>
+From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
+Message-ID: <87033b83-e7f5-8ee2-9cac-82126f1713d6@numalliance.com>
+Date: Fri, 20 Jan 2017 17:12:15 +0100
 MIME-Version: 1.0
-In-Reply-To: <5bfef037-0efb-f82e-f036-5150a1f50ba0@siemens.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PULL v2] ipipe: 4.4 fixes for x86 and tracer,
-	update to 4.4.43
+In-Reply-To: <0beb5709-2600-7cbb-4091-e1bbec0b2861@xenomai.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] 32 bits / 64 bits compatibility
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,62 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Philippe,
+Le 17/01/2017 =E0 11:32, Philippe Gerum a =E9crit :
+> On 01/17/2017 10:30 AM, St=E9phane Ancelot wrote:
+>> Hi,
+>>
+>> In order to keep graphic compatibility with an application, I must run
+>> some xenomai applications in 32 bits.
+>>
+>> Is it possible to have a 64 bits kernel compile xenomai with 32 bits
+>> libs for applications ?
+>>
+> Xenomai 3 supports this, currently for x86.
+I managed to run 32 bits applications , with shared memory using 32 bits=20
+emulation under 64 bit kernel with xenomai 3.  (latest git next branch=20
+with 3.18.20 kernel)
 
-The following changes since commit 8121a3aca1742df09940f29b24ebee291481c1ef:
+The main problem remains with rtnet.
+ioctl replies with no such device.
 
-  ipipe: do not read irq_desc[] out of bounds with virqs (2016-11-25 17:11:39 +0100)
+This can be reproduced with rtifconfig 32 and 64 bits version against=20
+rteth0 interface (that is loaded ...).
 
-are available in the git repository at:
+rtifconfig 64bits works , not 32 bit one.
 
-  git://git.xenomai.org/ipipe-jki for-upstream/4.4
+Regards,
+S.Ancelot
 
-for you to fetch changes up to eca25839f95f585e874bf3e4d46f5761907c08df:
-
-  Merge tag 'v4.4.43' into for-upstream/4.4 (2017-01-16 17:21:42 +0100)
-
-Note: The 4.4.43 merge was not tested on archs!=x86.
-
-Changes in v2:
- - two additional fixes, interrupt-related
- - updated to 4.4.43
-
-----------------------------------------------------------------
-[leaving out the merge part in the stats]
-
-Jan Kiszka (12):
-      x86/ipipe: Skip lockdep check for vector_lock under I-pipe
-      x86/ipipe: Always leave do_syscall_32_irqs_on with hard irqs disabled
-      x86/ipipe: Maintain Linux IRQ tracing in enable/disable_local_irqs
-      x86/ipipe: Fix DEBUG_LOCKS instrumentation of load_mm_ldt
-      x86/ipipe: Fix root state on return from certain exceptions
-      ipipe: Remove stray tabs from tracer output
-      ipipe: Do not trace Linux irqs over the head domain
-      x86/ipipe: Remove unneeded !CONFIG_IPIPE guard around TRACE_IRQS_OFF
-      x86/ipipe: Resync exception handling with ipipe-3.14
-      ipipe: Extend root domain guard to preempt_schedule_notrace
-      x86/ipipe: Initialize vector_irq for IRQ_MOVE_CLEANUP_VECTOR
-      x86/ipipe: Fix deadlock on irq migration
-
- arch/x86/entry/common.c            | 16 ++++++--
- arch/x86/entry/entry_64.S          |  3 +-
- arch/x86/include/asm/ipipe.h       | 20 +++++++--
- arch/x86/include/asm/mmu_context.h |  3 +-
- arch/x86/kernel/apic/io_apic.c     |  2 +-
- arch/x86/kernel/apic/vector.c      |  2 +
- arch/x86/kernel/ipipe.c            | 83 ++++++++++++++------------------------
- arch/x86/kernel/irqinit.c          |  7 ++++
- arch/x86/kernel/traps.c            | 11 ++++-
- kernel/ipipe/tracer.c              |  4 +-
- kernel/locking/lockdep.c           | 10 ++++-
- kernel/sched/core.c                |  2 +-
- kernel/trace/trace_irqsoff.c       |  8 ++--
- 13 files changed, 99 insertions(+), 72 deletions(-)
-
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
 
