@@ -1,9 +1,15 @@
+References: <1984ba68-34d2-7574-f33a-0d63f07da9bc@numalliance.com>
+ <0beb5709-2600-7cbb-4091-e1bbec0b2861@xenomai.org>
+ <87033b83-e7f5-8ee2-9cac-82126f1713d6@numalliance.com>
+ <c8172652-79e9-3c13-1897-8008623e43ad@xenomai.org>
+From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
+Message-ID: <cfb0bcff-1c80-8f10-370e-dbff61dd2721@numalliance.com>
+Date: Mon, 23 Jan 2017 08:33:04 +0100
 MIME-Version: 1.0
-From: =?UTF-8?B?7J207ISd7ZuI?= <koon@rainbow.re.kr>
-Date: Sun, 22 Jan 2017 13:12:55 +0900
-Message-ID: <CAJEimAzwYvDuHkSeEzUibkg8oZHX1QNqUNgAzh5SM_+8sPM_vA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] Looking for help regarding implementing shared memory
+In-Reply-To: <c8172652-79e9-3c13-1897-8008623e43ad@xenomai.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] 32 bits / 64 bits compatibility
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,61 +18,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi All,
 
-I'm new to Xenomai and RT in general. I have some trouble using rtheap
-functions.
 
-Xenomai version I'm using is 3.0.2 (no ipipe patch), with linux kernel
-4.1.18, I'm using Cobalt mode, and using native skin when building.
+Le 20/01/2017 =E0 18:33, Philippe Gerum a =E9crit :
+> On 01/20/2017 05:12 PM, St=E9phane Ancelot wrote:
+>> Le 17/01/2017 =E0 11:32, Philippe Gerum a =E9crit :
+>>> On 01/17/2017 10:30 AM, St=E9phane Ancelot wrote:
+>>>> Hi,
+>>>>
+>>>> In order to keep graphic compatibility with an application, I must r=
+un
+>>>> some xenomai applications in 32 bits.
+>>>>
+>>>> Is it possible to have a 64 bits kernel compile xenomai with 32 bits
+>>>> libs for applications ?
+>>>>
+>>> Xenomai 3 supports this, currently for x86.
+>> I managed to run 32 bits applications , with shared memory using 32 bi=
+ts
+>> emulation under 64 bit kernel with xenomai 3.  (latest git next branch
+>> with 3.18.20 kernel)
+>>
+>> The main problem remains with rtnet.
+>> ioctl replies with no such device.
+>>
+>> This can be reproduced with rtifconfig 32 and 64 bits version against
+>> rteth0 interface (that is loaded ...).
+>>
+>> rtifconfig 64bits works , not 32 bit one.
+>>
+> Yes, rtnet does not support mixed ABI.
+>
+Hi,
+Weekend was useful...I have no restriction on 32bit in my realtime task=20
+... so; the realtime task will run 64 bits and gui tasks 32 bit.... :-)
+Regards,
+S.Ancelot
 
-I'm trying to use shared memory and it is not working.
-
-On program A, I call
-============================
-int err;
-    rt_printf("heap create start\n");
-
-    err = rt_heap_create(&heap_desc, "SHM001", 1024, H_SINGLE | H_NONCACHED
-| H_SHARED);
-    if(err<0) rt_printf("create_error = %d\n", err);
-
-    rt_heap_bind(&heap_desc, "SHM001", TM_INFINITE);
-
-    err = rt_heap_alloc(&heap_desc, 0, TM_INFINITE, &shm_area);
-    if(err<0) rt_printf("alloc error = %d\n", err);
-    rt_printf("rt_heap_alloc got : %x\n", shm_area);
-    char myString[10] = "test\0";
-
-    memcpy(shm_area, myString, 5);
-
-    rt_printf("heap create end\n");
-
-and this works fine, on program B, I call
-=====================================
-    RT_HEAP desc;
-    void *shm;
-
-    int err;
-
-    rt_printf("heap create start\n");
-    err = rt_heap_bind(&desc, "SHM001", TM_INFINITE);
-
-    if(err) rt_printf("failed: %d\n", err);
-
-    err = rt_heap_alloc(&desc, 0, TM_INFINITE, &shm);
-    if(err) rt_printf("alloc failed: %d\n", err);
-
-    rt_printf("heap create end\n");
-    rt_printf("content:: %s\n", shm);
-
-and rt_heap_bind would not go. When I try this using TM_NONBLOCK, it
-returns -11 and it looks like program B cannot find the symbol "SHM001"
-
-Could you help me with this? I think there should be anything I'm missing
-and I cannot find any logs from kern.log or syslog which I can use.
-
-Thank you very much.
-Koon
