@@ -1,10 +1,10 @@
 From: Henning Schild <henning.schild@siemens.com>
-Date: Wed, 25 Jan 2017 16:08:37 +0100
-Message-Id: <20170125150837.14161-3-henning.schild@siemens.com>
+Date: Wed, 25 Jan 2017 16:08:36 +0100
+Message-Id: <20170125150837.14161-2-henning.schild@siemens.com>
 In-Reply-To: <20170125150837.14161-1-henning.schild@siemens.com>
 References: <20170125150837.14161-1-henning.schild@siemens.com>
-Subject: [Xenomai] [PATCH 3/3] lib/cobalt: wrap CXXABI One-time Constructor
-	functions
+Subject: [Xenomai] [PATCH 2/3] scripts/xeno-config: apply the assert_nrt
+	wrappers on all skins
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,128 +15,116 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-The implementation of these functions uses locks and has the potential
-to trigger a SIGXCPU when contended. Wrap them with assert_nrt so they
-reliably cause a switch when used in the rt context.
+There are basically two classes of wrappers. Those that actually change
+the implementation, and those that just assert that certain calls are
+not made from a realtime context. The latter are usefull for all skins
+and should always be applied.
 
 Signed-off-by: Henning Schild <henning.schild@siemens.com>
 ---
- lib/cobalt/assert.wrappers  |  3 +++
- lib/cobalt/assert_context.c | 19 +++++++++++++++++++
- lib/cobalt/internal.h       | 12 ++++++++++++
- lib/cobalt/wrappers.c       | 37 +++++++++++++++++++++++++++++++++++++
- 4 files changed, 71 insertions(+)
+ configure.ac                  | 12 +++++++-----
+ debian/libxenomai-dev.install |  1 +
+ lib/cobalt/Makefile.am        |  4 +++-
+ lib/cobalt/assert.wrappers    |  2 ++
+ lib/cobalt/cobalt.wrappers    |  2 --
+ scripts/xeno-config-cobalt.in |  4 ++--
+ 6 files changed, 15 insertions(+), 10 deletions(-)
+ create mode 100644 lib/cobalt/assert.wrappers
 
+diff --git a/configure.ac b/configure.ac
+index f61543a..5b9f518 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -824,17 +824,19 @@ dnl Build wrapping information. XENO_POSIX_WRAPPERS lists all wrapping
+ dnl directives in a format the linker understands, for building the
+ dnl in-tree executables which require POSIX symbol wrapping.
+ 
++   assert_wrappers="$topdir/lib/cobalt/assert.wrappers"
+    cobalt_wrappers="$topdir/lib/cobalt/cobalt.wrappers"
+    if [[ $ac_cv_ld_file_option = yes ]]; then
+-	XENO_POSIX_WRAPPERS="-Wl,@$cobalt_wrappers"
++	XENO_POSIX_WRAPPERS="-Wl,@$assert_wrappers -Wl,@$cobalt_wrappers"
+    else
+-	XENO_POSIX_WRAPPERS=`while read wrap_option symbol ; do \
+-			echo -n "-Wl,$wrap_option,$symbol " ; \
+-		done < $cobalt_wrappers`
++	XENO_POSIX_WRAPPERS=`cat $assert_wrappers $cobalt_wrappers | \
++			while read wrap_option symbol ; do \
++				echo -n "-Wl,$wrap_option,$symbol " ; \
++			done`
+    fi
+ 
+    AC_SUBST(XENO_POSIX_WRAPPERS)
+-   AC_SUBST([CONFIG_STATUS_DEPENDENCIES], ["$cobalt_wrappers"])
++   AC_SUBST([CONFIG_STATUS_DEPENDENCIES], ["$assert_wrappers $cobalt_wrappers"])
+ fi
+ 
+ dnl
+diff --git a/debian/libxenomai-dev.install b/debian/libxenomai-dev.install
+index 7b107cb..6d7eb7b 100644
+--- a/debian/libxenomai-dev.install
++++ b/debian/libxenomai-dev.install
+@@ -2,5 +2,6 @@ usr/include
+ usr/lib/*.la
+ usr/lib/*.a
+ usr/lib/*.so
++usr/lib/assert.wrappers
+ usr/lib/cobalt.wrappers
+ usr/lib/dynlist.ld
+diff --git a/lib/cobalt/Makefile.am b/lib/cobalt/Makefile.am
+index 576122d..459b207 100644
+--- a/lib/cobalt/Makefile.am
++++ b/lib/cobalt/Makefile.am
+@@ -46,10 +46,12 @@ libcobalt_la_CPPFLAGS =			\
+ install-data-local:
+ 	$(mkinstalldirs) $(DESTDIR)$(libdir)
+ 	$(INSTALL_DATA) $(srcdir)/cobalt.wrappers $(DESTDIR)$(libdir)
++	$(INSTALL_DATA) $(srcdir)/assert.wrappers $(DESTDIR)$(libdir)
+ 
+ uninstall-local:
+ 	$(RM) $(DESTDIR)$(libdir)/cobalt.wrappers
++	$(RM) $(DESTDIR)$(libdir)/assert.wrappers
+ 
+-EXTRA_DIST = cobalt.wrappers
++EXTRA_DIST = cobalt.wrappers assert.wrappers
+ 
+ SUBDIRS = arch
 diff --git a/lib/cobalt/assert.wrappers b/lib/cobalt/assert.wrappers
-index 7164858..65320ab 100644
---- a/lib/cobalt/assert.wrappers
+new file mode 100644
+index 0000000..7164858
+--- /dev/null
 +++ b/lib/cobalt/assert.wrappers
-@@ -1,2 +1,5 @@
- --wrap malloc
- --wrap free
-+--wrap __cxa_guard_acquire
-+--wrap __cxa_guard_release
-+--wrap __cxa_guard_abort
-diff --git a/lib/cobalt/assert_context.c b/lib/cobalt/assert_context.c
-index 2085953..fd18d6b 100644
---- a/lib/cobalt/assert_context.c
-+++ b/lib/cobalt/assert_context.c
-@@ -66,3 +66,22 @@ COBALT_IMPL(void, free, (void *ptr))
- 	assert_nrt();
- 	__STD(free(ptr));
- }
-+
-+/* CXXABI 3.3.2 One-time Construction API */
-+COBALT_IMPL(int, __cxa_guard_acquire, (__guard *g))
-+{
-+	assert_nrt();
-+	return __STD(__cxa_guard_acquire(g));
-+}
-+
-+COBALT_IMPL(void, __cxa_guard_release, (__guard *g))
-+{
-+	assert_nrt();
-+	__STD(__cxa_guard_release(g));
-+}
-+
-+COBALT_IMPL(void, __cxa_guard_abort, (__guard *g))
-+{
-+	assert_nrt();
-+	__STD(__cxa_guard_abort(g));
-+}
-diff --git a/lib/cobalt/internal.h b/lib/cobalt/internal.h
-index 1531901..8874f71 100644
---- a/lib/cobalt/internal.h
-+++ b/lib/cobalt/internal.h
-@@ -93,4 +93,16 @@ extern int __cobalt_std_fifo_minpri,
- extern int __cobalt_std_rr_minpri,
- 	   __cobalt_std_rr_maxpri;
- 
-+#ifdef __ARM_EABI__
-+typedef uint32_t __guard;
-+#else
-+typedef uint64_t __guard;
-+#endif
-+int __real___cxa_guard_acquire(__guard*);
-+void __real___cxa_guard_release(__guard*);
-+void __real___cxa_guard_abort(__guard*);
-+int __cxa_guard_acquire(__guard*);
-+void __cxa_guard_release(__guard*);
-+void __cxa_guard_abort(__guard*);
-+
- #endif /* _LIB_COBALT_INTERNAL_H */
-diff --git a/lib/cobalt/wrappers.c b/lib/cobalt/wrappers.c
-index 43ca630..fa7fbcb 100644
---- a/lib/cobalt/wrappers.c
-+++ b/lib/cobalt/wrappers.c
-@@ -43,6 +43,7 @@
- #include <unistd.h>
- #include <malloc.h>
- #include <boilerplate/compiler.h>
-+#include <internal.h>
- 
- /* sched */
- __weak
-@@ -544,3 +545,39 @@ int __real_usleep(useconds_t usec)
- {
- 	return usleep(usec);
- }
-+
-+__weak
-+int __real___cxa_guard_acquire(__guard *g)
-+{
-+	return __cxa_guard_acquire(g);
-+}
-+
-+__weak
-+void __real___cxa_guard_release(__guard *g)
-+{
-+	return __cxa_guard_release(g);
-+}
-+
-+__weak
-+void __real___cxa_guard_abort(__guard *g)
-+{
-+	return __cxa_guard_abort(g);
-+}
-+
-+__weak
-+int __cxa_guard_acquire(__guard *g)
-+{
-+	return 0;
-+}
-+
-+__weak
-+void __cxa_guard_release(__guard *g)
-+{
-+	return;
-+}
-+
-+__weak
-+void __cxa_guard_abort(__guard *g)
-+{
-+	return;
-+}
+@@ -0,0 +1,2 @@
++--wrap malloc
++--wrap free
+diff --git a/lib/cobalt/cobalt.wrappers b/lib/cobalt/cobalt.wrappers
+index bf7a810..91bd5ef 100644
+--- a/lib/cobalt/cobalt.wrappers
++++ b/lib/cobalt/cobalt.wrappers
+@@ -94,8 +94,6 @@
+ --wrap fclose
+ --wrap syslog
+ --wrap vsyslog
+---wrap malloc
+---wrap free
+ --wrap gettimeofday
+ --wrap __vfprintf_chk
+ --wrap __vprintf_chk
+diff --git a/scripts/xeno-config-cobalt.in b/scripts/xeno-config-cobalt.in
+index d102d04..3e1f64c 100644
+--- a/scripts/xeno-config-cobalt.in
++++ b/scripts/xeno-config-cobalt.in
+@@ -235,8 +235,8 @@ if test x$do_ldflags = xy; then
+ 	echo "no API specified, missing --skin before --ldflags" 1>&2
+ 	exit 1
+     fi
+-    ldflags=
+-    test x$compat = xy && ldflags="-ltrank "
++    ldflags="`dump_wrappers assert.wrappers`"
++    test x$compat = xy && ldflags="-ltrank $ldflags"
+     copperplate=
+     for skin in $skin_list; do
+ 	case "$skin" in
 -- 
 2.10.2
 
