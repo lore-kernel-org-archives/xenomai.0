@@ -1,13 +1,10 @@
-From: =?iso-8859-1?Q?Lassi_Niemist=F6?= <lassi.niemisto@wapice.com>
-Date: Thu, 26 Jan 2017 10:12:40 +0000
-Message-ID: <dc106047074e4f73b89c1b3a7a3b7069@EDB3.wapice.localdomain>
-References: <b9af993a-5dcd-396f-e6c0-31a13efeb909@numalliance.com>
-In-Reply-To: <b9af993a-5dcd-396f-e6c0-31a13efeb909@numalliance.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Date: Thu, 26 Jan 2017 15:59:26 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20170126155926.594b8e2b@md1em3qc>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] shared heap access mixing 32 and 64 bits applications
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] RFC: switchtest FPU, introduce option to enforce testing
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,16 +13,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?iso-8859-1?Q?St=E9phane_Ancelot?= <sancelot@numalliance.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-> Is it possible to access same shared memory heaps , between 32 and 64 bit=
-s processes ?
+Hey,
 
-In regular linux I faced the wall when trying to protect the usage of the s=
-hared memory area by (pthread iirc) mutex/semaphore - those structures had =
-differences between 32/64bit platforms. I don't know if situation is same i=
-n Xenomai but pay attention also to what you are going to put in the shared=
- memory.
+currently the switchtest will not run FPU related tests on x86 when
+some kernel-CONFIGS are set. (CONFIG_X86_USE_3DNOW, CONFIG_MD_RAID456)
 
--Lassi
+http://git.xenomai.org/xenomai-3.git/tree/kernel/cobalt/arch/x86/include/asm/xenomai/fptest.h#n32
+
+The FPU switching code is infamous for popping up with every other
+kernel-release. Therefore i think this test is extremely important and
+should not "just" be ignored on a "typical" kernel config.
+
+In order to run the test today you have to change your kernel config,
+boot that kernel and run the test. If it works you can change back to
+the config you had before and you should be safe. But that is a lot of
+work and you will not be running the test on your "actual" kernel.
+
+As far as i understand the situation this is a safeguard so you do not
+mess up your raid when you do active developement on a machine with say
+a raid-rootfs. For such a scenario running that kind of stress test on
+a subsystem that is known to break easily is a bad idea.
+
+http://www.xenomai.org/pipermail/xenomai/2016-August/036598.html
+
+But say your test machine is disposable or known to not use RAID etc.
+It would be nice to have a way to enforce the test anyway. A good
+example for such a scenario is CI where you might want to test your
+actual production kernel and not a second kernel that comes close.
+
+I would like to add a --force option to switchtest, pass that up to the
+kernel to skip the sanity check there.
+
+Or would that be a bad idea?
+Henning
 
