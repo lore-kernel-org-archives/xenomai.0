@@ -1,10 +1,13 @@
-Date: Thu, 26 Jan 2017 15:59:26 +0100
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20170126155926.594b8e2b@md1em3qc>
+References: <b9af993a-5dcd-396f-e6c0-31a13efeb909@numalliance.com>
+ <dc106047074e4f73b89c1b3a7a3b7069@EDB3.wapice.localdomain>
+From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
+Message-ID: <85f10308-7c52-d242-5704-0a374ff57007@numalliance.com>
+Date: Fri, 27 Jan 2017 08:54:53 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] RFC: switchtest FPU, introduce option to enforce testing
+In-Reply-To: <dc106047074e4f73b89c1b3a7a3b7069@EDB3.wapice.localdomain>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] shared heap access mixing 32 and 64 bits applications
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,39 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: =?UTF-8?Q?Lassi_Niemist=c3=b6?= <lassi.niemisto@wapice.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hey,
 
-currently the switchtest will not run FPU related tests on x86 when
-some kernel-CONFIGS are set. (CONFIG_X86_USE_3DNOW, CONFIG_MD_RAID456)
 
-http://git.xenomai.org/xenomai-3.git/tree/kernel/cobalt/arch/x86/include/asm/xenomai/fptest.h#n32
+Le 26/01/2017 =C3=A0 11:12, Lassi Niemist=C3=B6 a =C3=A9crit :
+>> Is it possible to access same shared memory heaps , between 32 and 64 =
+bits processes ?
+> In regular linux I faced the wall when trying to protect the usage of t=
+he shared memory area by (pthread iirc) mutex/semaphore - those structure=
+s had differences between 32/64bit platforms. I don't know if situation i=
+s same in Xenomai but pay attention also to what you are going to put in =
+the shared memory.
+>
+> -Lassi
 
-The FPU switching code is infamous for popping up with every other
-kernel-release. Therefore i think this test is extremely important and
-should not "just" be ignored on a "typical" kernel config.
+I have now the answer regarding xenomai shared heaps between 32 and 64 =20
+bits processes , here is the status, if you use the latest next xenomai=20
+branch.
+within a system running 64 bits xenomai kernel, you can :
+* use shared heap areas with 32 bits xenomai processes
+* use shared heap areas with 64 bits xenomai processes
+* you can not use shared heap areas between 32 and 64 bits xenomai=20
+processes.
+Each area (32/64) are insulated, this incompatibility issue comes mainly=20
+from usage of size_t type in the xenomai  heap library which are=20
+different between 32 and 64 bits systems.
+and maybe more other reasons ...
 
-In order to run the test today you have to change your kernel config,
-boot that kernel and run the test. If it works you can change back to
-the config you had before and you should be safe. But that is a lot of
-work and you will not be running the test on your "actual" kernel.
+So, this is good to know that incompatibility , you can not mix both=20
+kind of processes in xenomai.
 
-As far as i understand the situation this is a safeguard so you do not
-mess up your raid when you do active developement on a machine with say
-a raid-rootfs. For such a scenario running that kind of stress test on
-a subsystem that is known to break easily is a bad idea.
 
-http://www.xenomai.org/pipermail/xenomai/2016-August/036598.html
 
-But say your test machine is disposable or known to not use RAID etc.
-It would be nice to have a way to enforce the test anyway. A good
-example for such a scenario is CI where you might want to test your
-actual production kernel and not a second kernel that comes close.
-
-I would like to add a --force option to switchtest, pass that up to the
-kernel to skip the sanity check there.
-
-Or would that be a bad idea?
-Henning
+Regards,
+S.Ancelot
 
