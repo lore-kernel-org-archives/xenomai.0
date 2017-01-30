@@ -1,12 +1,9 @@
-References: <8de4d9c7-231a-d954-5926-3a0367ed839e@numalliance.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <2b9cc063-765e-0246-c999-65701f980952@xenomai.org>
-Date: Sun, 29 Jan 2017 16:04:28 +0100
 MIME-Version: 1.0
-In-Reply-To: <8de4d9c7-231a-d954-5926-3a0367ed839e@numalliance.com>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] init_memory_pool error
+From: Andreas Glatz <andi.glatz@gmail.com>
+Date: Mon, 30 Jan 2017 12:27:41 +0000
+Message-ID: <CAKJ14NckF3bxk=o5k6U7krGyYLKA0bVRNmsNiT4qki==UAR6Pg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] POSIX socket() call switches to secondary mode
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,39 +12,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 01/25/2017 05:58 PM, St=E9phane Ancelot wrote:
-> Hi,
->=20
-> I am stuck with the next branch of xenomai, when using tune variables .
->=20
-> when launching the program without any parameters , I have the next
-> error message :
->=20
-> init_memory_pool(): invalid pool
->    0"006.881| BUG in heapobj_pkg_init_private(): [main] cannot
-> initialize TLSF memory manager
->=20
-> however, if I launch it with --mem-pool-size option, it runs ....
->=20
-> here is what I setted up in tunables variables :
->=20
-> static int foo_tune(void)
-> {
->=20
->              set_config_tunable(session_label, "toot");
->             set_config_tunable(mem_pool_size,8000000);
->             printf("mem pool size=3D%ld\n",
-> get_config_tunable(mem_pool_size));
->             return 0; /* Success, otherwise -errno */
-> }
->=20
+Hi
 
-A TLSF issue revealed by a recent commit. Fixed by this one:
-http://git.xenomai.org/xenomai-3.git/commit/?h=3Dstable-3.0.x&id=3D00e3d016=
-519efc54cb2b2b33437814ff6725cf33
+During optimisation I found out that I have a POSIX socket() call for
+opening a TCP connection that tends to switch to secondary mode, which
+I expected to stay in primary mode. However, then I found a post [1],
+which says that it is in fact considered normal behaviour:
 
---=20
-Philippe.
+"rt_dev_socket may cause a switch to secondary mode, yes, this is
+perfectly normal, only sending and receiving data is guaranteed to not
+cause a switch to secondary mode."
+
+I also saw that this post was from 2014.... I am wondering now if this
+is still considered normal behaviour for the current version of
+socket() (POSIX skin of Xenomai 2.4.6 on arm linux 3.0.35)?
+
+Thanks and regards,
+
+Andreas
+
+
+
+
+[1] https://xenomai.org/pipermail/xenomai/2014-December/032759.html
 
