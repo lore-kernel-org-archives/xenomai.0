@@ -1,10 +1,12 @@
-Message-ID: <1485850637.4051.13.camel@smigroup.net>
+Message-ID: <1485851307.4051.16.camel@smigroup.net>
 From: Mauro Salvini <mauro.salvini@smigroup.net>
-Date: Tue, 31 Jan 2017 09:17:17 +0100
+Date: Tue, 31 Jan 2017 09:28:27 +0100
+In-Reply-To: <1485850637.4051.13.camel@smigroup.net>
+References: <1485850637.4051.13.camel@smigroup.net>
 Content-Type: text/plain; charset="UTF-8"
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] ARM L2C-310 cahce controller enabling
+Subject: Re: [Xenomai] ARM L2C-310 cahce controller enabling
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,31 +18,48 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 
 Hi,
-I'm working on a iMX6SX custom platform and I'm trying to use Xenomai on
-top of it.
-In the past, I tried Xenomai on a iMX6SX SabreSD demoboard using kernel
-branch 4.1.15 from Freescale patched with Xenomai 3.0.1 (some little
-rejections corrected by hand), and I was able to get a maximum latency
-around 25us.
-Now, using kernel 4.1.36 from Freescale Community (that integrates the
-Freescale kernel branch) patched with Xenomai 3.0.3 I get maximum
-latencies around 45us.
+sorry, found myself the answer here:
 
-Trying to figure out what is the source(s) of increased latencies, I
-found these two kernel logs:
+http://git.xenomai.org/ipipe.git/commit/?h=ipipe-4.1.y&id=a2a9a6148449095fa658a6d0d0cbed3308be2cfb
 
-[    0.000000] L2C: I-pipe: revision >= L310-r3p2 detected, forcing WA.
-[    0.000000] L2C: I-pipe: write-allocate enabled, induces high
-latencies.
+So, should be L2 cache disabled for iMX6SX (that has a single  core)?
 
-I wonder why L2C-310 cache controllers that are greater or equal to r3p2
-revision must be forced enabled.
-
-In past I read (and asked) in this mailing list that L2 cache should be
-disabled to avoid higher latencies (as kernel log says).
-
-Thanks in advance, best regards
-
+Thanks again, regards
 Mauro
+
+On Tue, 2017-01-31 at 09:17 +0100, Mauro Salvini wrote:
+> Hi,
+> I'm working on a iMX6SX custom platform and I'm trying to use Xenomai on
+> top of it.
+> In the past, I tried Xenomai on a iMX6SX SabreSD demoboard using kernel
+> branch 4.1.15 from Freescale patched with Xenomai 3.0.1 (some little
+> rejections corrected by hand), and I was able to get a maximum latency
+> around 25us.
+> Now, using kernel 4.1.36 from Freescale Community (that integrates the
+> Freescale kernel branch) patched with Xenomai 3.0.3 I get maximum
+> latencies around 45us.
+> 
+> Trying to figure out what is the source(s) of increased latencies, I
+> found these two kernel logs:
+> 
+> [    0.000000] L2C: I-pipe: revision >= L310-r3p2 detected, forcing WA.
+> [    0.000000] L2C: I-pipe: write-allocate enabled, induces high
+> latencies.
+> 
+> I wonder why L2C-310 cache controllers that are greater or equal to r3p2
+> revision must be forced enabled.
+> 
+> In past I read (and asked) in this mailing list that L2 cache should be
+> disabled to avoid higher latencies (as kernel log says).
+> 
+> Thanks in advance, best regards
+> 
+> Mauro
+> 
+> 
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
 
