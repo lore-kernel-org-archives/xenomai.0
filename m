@@ -1,12 +1,14 @@
-MIME-Version: 1.0
-In-Reply-To: <60201cc7-e4fd-cfaa-d714-ef26d65172c8@xenomai.org>
-References: <CAKJ14NckF3bxk=o5k6U7krGyYLKA0bVRNmsNiT4qki==UAR6Pg@mail.gmail.com>
- <60201cc7-e4fd-cfaa-d714-ef26d65172c8@xenomai.org>
-From: Andreas Glatz <andi.glatz@gmail.com>
-Date: Tue, 31 Jan 2017 12:06:07 +0000
-Message-ID: <CAKJ14NftBo=S4r3iPnN_dTSjg-MmES4Adi_nGDjoMAJK964iDg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] POSIX socket() call switches to secondary mode
+Message-ID: <1485936395.4068.5.camel@smigroup.net>
+From: Mauro Salvini <mauro.salvini@smigroup.net>
+Date: Wed, 01 Feb 2017 09:06:35 +0100
+In-Reply-To: <0b7857ad-778f-0e53-cff3-555298397245@xenomai.org>
+References: <1485850637.4051.13.camel@smigroup.net>
+ <1485851307.4051.16.camel@smigroup.net>
+ <0b7857ad-778f-0e53-cff3-555298397245@xenomai.org>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] ARM L2C-310 cahce controller enabling
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,62 +20,77 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Tue, Jan 31, 2017 at 9:27 AM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On 01/30/2017 01:27 PM, Andreas Glatz wrote:
->> Hi
->>
->> During optimisation I found out that I have a POSIX socket() call for
->> opening a TCP connection that tends to switch to secondary mode, which
->> I expected to stay in primary mode. However, then I found a post [1],
->> which says that it is in fact considered normal behaviour:
->
-> A TCP socket can only be created by the regular Linux kernel, never by
-> the Xenomai co-kernel. For this reason, you cannot expect it to keep the
-> caller in primary mode anyway.
->
->>
->> "rt_dev_socket may cause a switch to secondary mode, yes, this is
->> perfectly normal, only sending and receiving data is guaranteed to not
->> cause a switch to secondary mode."
->>
->> I also saw that this post was from 2014.... I am wondering now if this
->> is still considered normal behaviour for the current version of
->> socket() (POSIX skin of Xenomai 2.4.6 on arm linux 3.0.35)?
->>
->
-> 2.4.6 dates back to Nov 2008, by current, I assume you mean 3.x.
-> Speaking about the latter, switching to secondary mode is a general rule
-> applicable to any system call that creates a new resource in the Xenomai
-> system, at the notable exception of anonymous semaphores, mutexes and
-> convars which trigger no mode transition regardless of the calling domain.
->
-> The rationale for the common behavior is based on the requirement to
-> obtain resources from the Linux kernel to fulfill the operation on the
-> Xenomai side. The process of allocating/creating the following resources
-> typically involves a switch to secondary mode:
->
-> - named semaphores
-> - message queues
-> - connections to RTDM named device
-> - creation and possibly binding to RTDM sockets (depends on the
-> implementation of the socket protocol)
-> - timerfd
-> - threads
+Thank you Philippe.
 
-Thanks for clarification. I'm actually porting a piece of software to
-Xenomai that was written for another OS, where the developers assumed
-it was OK to put initialization commands for a network connection
-directly in the main processing loop. On Xenomai the main processing
-loop should always stay in primary mode, hence my questions.
+I will try this, now I'm facing with other problems (I will send another
+mail for those).
+Only one note: for systems with L310 cache controller with version
+greater or equal to R3P2 (like iMX6SX) the "l2x0_write_allocate" kernel
+switch is useless (it's always overwritten in __l2c_init() call), will
+need a code edit to disable write-allocate.
 
-So I think my solution here is to create some sort of connection
-broker that (re)establishes the network connection to the peer in
-another thread that can mode switch, and have the main thread just
-read/write on an established network connection. As you suggested this
-would also be future proof in case things ever move to Xenomai 3.x on
-our side...
+Regards
+Mauro
 
-Kind regards,
+On Tue, 2017-01-31 at 10:34 +0100, Philippe Gerum wrote:
+> On 01/31/2017 09:28 AM, Mauro Salvini wrote:
+> > Hi,
+> > sorry, found myself the answer here:
+> > 
+> > http://git.xenomai.org/ipipe.git/commit/?h=ipipe-4.1.y&id=a2a9a6148449095fa658a6d0d0cbed3308be2cfb
+> > 
+> > So, should be L2 cache disabled for iMX6SX (that has a single  core)?
+> 
+> Not the entire cache, but you may want to try running with
+> write-allocate off using the "l2x0_write_allocate" kernel switch, since
+> cache coherence issues are not going to be relevant in this case.
+> 
+> > 
+> > Thanks again, regards
+> > Mauro
+> > 
+> > On Tue, 2017-01-31 at 09:17 +0100, Mauro Salvini wrote:
+> >> Hi,
+> >> I'm working on a iMX6SX custom platform and I'm trying to use Xenomai on
+> >> top of it.
+> >> In the past, I tried Xenomai on a iMX6SX SabreSD demoboard using kernel
+> >> branch 4.1.15 from Freescale patched with Xenomai 3.0.1 (some little
+> >> rejections corrected by hand), and I was able to get a maximum latency
+> >> around 25us.
+> >> Now, using kernel 4.1.36 from Freescale Community (that integrates the
+> >> Freescale kernel branch) patched with Xenomai 3.0.3 I get maximum
+> >> latencies around 45us.
+> >>
+> >> Trying to figure out what is the source(s) of increased latencies, I
+> >> found these two kernel logs:
+> >>
+> >> [    0.000000] L2C: I-pipe: revision >= L310-r3p2 detected, forcing WA.
+> >> [    0.000000] L2C: I-pipe: write-allocate enabled, induces high
+> >> latencies.
+> >>
+> >> I wonder why L2C-310 cache controllers that are greater or equal to r3p2
+> >> revision must be forced enabled.
+> >>
+> >> In past I read (and asked) in this mailing list that L2 cache should be
+> >> disabled to avoid higher latencies (as kernel log says).
+> >>
+> >> Thanks in advance, best regards
+> >>
+> >> Mauro
+> >>
+> >>
+> >> _______________________________________________
+> >> Xenomai mailing list
+> >> Xenomai@xenomai.org
+> >> https://xenomai.org/mailman/listinfo/xenomai
+> > 
+> > 
+> > _______________________________________________
+> > Xenomai mailing list
+> > Xenomai@xenomai.org
+> > https://xenomai.org/mailman/listinfo/xenomai
+> > 
+> 
+> 
 
-Andreas
 
