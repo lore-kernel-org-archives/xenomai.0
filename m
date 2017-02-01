@@ -1,14 +1,10 @@
-Message-ID: <1485936395.4068.5.camel@smigroup.net>
+Message-ID: <1485939628.4068.25.camel@smigroup.net>
 From: Mauro Salvini <mauro.salvini@smigroup.net>
-Date: Wed, 01 Feb 2017 09:06:35 +0100
-In-Reply-To: <0b7857ad-778f-0e53-cff3-555298397245@xenomai.org>
-References: <1485850637.4051.13.camel@smigroup.net>
- <1485851307.4051.16.camel@smigroup.net>
- <0b7857ad-778f-0e53-cff3-555298397245@xenomai.org>
+Date: Wed, 01 Feb 2017 10:00:28 +0100
 Content-Type: text/plain; charset="UTF-8"
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ARM L2C-310 cahce controller enabling
+Subject: [Xenomai] Porting Xenomai on iMX6SX
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,80 +13,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-Thank you Philippe.
+Hi,
+I'm trying to use an iMX6SX custom board with Xenomai.
+I'm able to patch the 4.1 kernel from Freescale community (based on
+4.1.15_1.2.0 branch from NXP and merged with 4.1.y branch from mainline)
+with some little rejections resolved by hand.
 
-I will try this, now I'm facing with other problems (I will send another
-mail for those).
-Only one note: for systems with L310 cache controller with version
-greater or equal to R3P2 (like iMX6SX) the "l2x0_write_allocate" kernel
-switch is useless (it's always overwritten in __l2c_init() call), will
-need a code edit to disable write-allocate.
+Kernel boots but Xenomai tests point out some weird behaviors (e.g.
+minimum latencies that constantly decreases by 0.001 us every 4 seconds,
+clocktest that reports ~10ms deltas and warps, maximum latencies that
+increases with larger sample periods, etc), so I started to read [1] to
+figure out what I'm missing.
 
-Regards
+Firstly I found that iMX6SX devicetree does not list global and twd
+timers. Adding these to dts solves some problems related to latencies.
+Now in my dmesg I see:
+[    0.000033] I-pipe, 3.000 MHz clocksource, wrap in 1431655 ms
+[    0.000046] clocksource ipipe_tsc: mask: 0xffffffffffffffff
+max_cycles: 0x1623fa770, max_idle_ns: 881590404476 ns
+[    0.000943] I-pipe, 396.000 MHz clocksource, wrap in 10845 ms
+[    0.000955] clocksource ipipe_tsc: mask: 0xffffffffffffffff
+max_cycles: 0x5b5469468b, max_idle_ns: 440795218345 ns
+.....
+[    0.080436] Switched to clocksource ipipe_tsc
+
+Following [1] I found that hardware timer isn't actually used on my
+board, because is used only if CONFIG_SMP is selected (I disabled SMP
+support because I have only one core and I noticed that SMP support
+increases real-time latencies).
+
+So, SMP support is mandatory or could be avoided and a modification to
+ipipe is required?
+
+Thanks in advance, regards
 Mauro
 
-On Tue, 2017-01-31 at 10:34 +0100, Philippe Gerum wrote:
-> On 01/31/2017 09:28 AM, Mauro Salvini wrote:
-> > Hi,
-> > sorry, found myself the answer here:
-> > 
-> > http://git.xenomai.org/ipipe.git/commit/?h=ipipe-4.1.y&id=a2a9a6148449095fa658a6d0d0cbed3308be2cfb
-> > 
-> > So, should be L2 cache disabled for iMX6SX (that has a single  core)?
-> 
-> Not the entire cache, but you may want to try running with
-> write-allocate off using the "l2x0_write_allocate" kernel switch, since
-> cache coherence issues are not going to be relevant in this case.
-> 
-> > 
-> > Thanks again, regards
-> > Mauro
-> > 
-> > On Tue, 2017-01-31 at 09:17 +0100, Mauro Salvini wrote:
-> >> Hi,
-> >> I'm working on a iMX6SX custom platform and I'm trying to use Xenomai on
-> >> top of it.
-> >> In the past, I tried Xenomai on a iMX6SX SabreSD demoboard using kernel
-> >> branch 4.1.15 from Freescale patched with Xenomai 3.0.1 (some little
-> >> rejections corrected by hand), and I was able to get a maximum latency
-> >> around 25us.
-> >> Now, using kernel 4.1.36 from Freescale Community (that integrates the
-> >> Freescale kernel branch) patched with Xenomai 3.0.3 I get maximum
-> >> latencies around 45us.
-> >>
-> >> Trying to figure out what is the source(s) of increased latencies, I
-> >> found these two kernel logs:
-> >>
-> >> [    0.000000] L2C: I-pipe: revision >= L310-r3p2 detected, forcing WA.
-> >> [    0.000000] L2C: I-pipe: write-allocate enabled, induces high
-> >> latencies.
-> >>
-> >> I wonder why L2C-310 cache controllers that are greater or equal to r3p2
-> >> revision must be forced enabled.
-> >>
-> >> In past I read (and asked) in this mailing list that L2 cache should be
-> >> disabled to avoid higher latencies (as kernel log says).
-> >>
-> >> Thanks in advance, best regards
-> >>
-> >> Mauro
-> >>
-> >>
-> >> _______________________________________________
-> >> Xenomai mailing list
-> >> Xenomai@xenomai.org
-> >> https://xenomai.org/mailman/listinfo/xenomai
-> > 
-> > 
-> > _______________________________________________
-> > Xenomai mailing list
-> > Xenomai@xenomai.org
-> > https://xenomai.org/mailman/listinfo/xenomai
-> > 
-> 
-> 
+[1]
+http://xenomai.org/2014/09/porting-xenomai-dual-kernel-to-a-new-arm-soc
 
 
