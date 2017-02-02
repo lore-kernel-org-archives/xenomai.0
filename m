@@ -1,9 +1,10 @@
-Date: Thu, 2 Feb 2017 13:02:42 +0000 (UTC)
+Date: Thu, 2 Feb 2017 13:36:23 +0000 (UTC)
 From: <thierry.xenomai43@yahoo.com>
-Message-ID: <432093591.1935102.1486040562308@mail.yahoo.com>
-In-Reply-To: <196556191.1727904.1486032563084@mail.yahoo.com>
+Message-ID: <1816752833.1971348.1486042583854@mail.yahoo.com>
+In-Reply-To: <432093591.1935102.1486040562308@mail.yahoo.com>
 References: <196556191.1727904.1486032563084.ref@mail.yahoo.com>
  <196556191.1727904.1486032563084@mail.yahoo.com>
+ <432093591.1935102.1486040562308@mail.yahoo.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
@@ -21,7 +22,23 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I forget to say that my Embeded Linux Kernel is the 4.4.21-v7
+Hello,
+To use Xenomai 2.6.4 on my Raspberry Pi 3 (ARM64) I want get a good I-pipe =
+patch
+On this URL I found several patch for Linux 4.1 and ARM 64bit : https://xen=
+omai.org/downloads/ipipe/v4.x/arm64/older-BROKEN-DO-NOT-USE/
+I think that is a problem=C2=A0beacause I have 4.4.21-v7 linux kernel.
+Where can I download the good patch for?
+
+regardsThierry
+
+=20
+
+    Le Jeudi 2 f=C3=A9vrier 2017 14h02, "thierry.xenomai43@yahoo.com" <thie=
+rry.xenomai43@yahoo.com> a =C3=A9crit :
+=20
+
+ I forget to say that my Embeded Linux Kernel is the 4.4.21-v7
 
 =C2=A0=C2=A0=C2=A0=C2=A0=20
 
@@ -53,3 +70,6 @@ nomai: /dev/rtheap is missing(chardev, major=3D10 minor=3D254)"I see on web=
  that I need to use I-pipe patch. Where can I found this patch for Raspbery=
 3, and Xenomai 2.6.4 ?
 Best regards,Thierry.
+
+
+  =20
