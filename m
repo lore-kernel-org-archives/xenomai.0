@@ -1,12 +1,12 @@
-References: <27e6bbb0-cf0c-7a7f-b62c-9ffd7debf400@matrixresearch.com>
+References: <CAJEimAzwYvDuHkSeEzUibkg8oZHX1QNqUNgAzh5SM_+8sPM_vA@mail.gmail.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <022a31aa-f24d-4e8e-aec2-7ed93f75c4c9@xenomai.org>
-Date: Thu, 2 Feb 2017 11:15:57 +0100
+Message-ID: <a0dfff76-00bc-ec06-55de-ea3c2cd6eb15@xenomai.org>
+Date: Thu, 2 Feb 2017 11:17:45 +0100
 MIME-Version: 1.0
-In-Reply-To: <27e6bbb0-cf0c-7a7f-b62c-9ffd7debf400@matrixresearch.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xenomomai-3 kernel freeze on RPI2
+In-Reply-To: <CAJEimAzwYvDuHkSeEzUibkg8oZHX1QNqUNgAzh5SM_+8sPM_vA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Looking for help regarding implementing shared memory
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,21 +15,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: John Gwynne <john.gwynne@matrixresearch.com>, xenomai@xenomai.org
+To: =?UTF-8?B?7J207ISd7ZuI?= <koon@rainbow.re.kr>, xenomai@xenomai.org
 
-On 02/01/2017 07:42 PM, John Gwynne wrote:
+On 01/22/2017 05:12 AM, 이석훈 wrote:
+> Hi All,
 > 
-> I've been watching for a while for a solution, or even conformation, of
-> a potential kernel freeze problem on the Raspberry PI 2/3 platform with
-> the Xenomai patches.  Having not seen anything that appears related, I'm
-> posting this description of what I've experienced.
+> I'm new to Xenomai and RT in general. I have some trouble using rtheap
+> functions.
+> 
+> Xenomai version I'm using is 3.0.2 (no ipipe patch), with linux kernel
+> 4.1.18, I'm using Cobalt mode, and using native skin when building.
+> 
 
+You can't run Cobalt without a pipeline patch. I'm confused by your
+configuration.
 
-Maybe you could try this port. I have only tested the BCM2835
-implementation so far, but the pipeline code for supporting the BCM2836
-is there too. I have no idea whether it boots though:
-
-http://git.xenomai.org/ipipe.git/log/?h=vendors/raspberry/ipipe-4.1
+PS: You should be running 3.0.3, at the very least.
 
 -- 
 Philippe.
