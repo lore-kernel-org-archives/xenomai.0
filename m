@@ -1,11 +1,14 @@
-Date: Thu, 2 Feb 2017 10:49:23 +0000 (UTC)
+Date: Thu, 2 Feb 2017 13:02:42 +0000 (UTC)
 From: <thierry.xenomai43@yahoo.com>
-Message-ID: <196556191.1727904.1486032563084@mail.yahoo.com>
-MIME-Version: 1.0
+Message-ID: <432093591.1935102.1486040562308@mail.yahoo.com>
+In-Reply-To: <196556191.1727904.1486032563084@mail.yahoo.com>
 References: <196556191.1727904.1486032563084.ref@mail.yahoo.com>
+ <196556191.1727904.1486032563084@mail.yahoo.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] =?utf-8?q?=5BBUILDROOT=5D_Xeno-test_don=E2=80=99t_work_?=
+Subject: Re: [Xenomai]
+ =?utf-8?q?=5BBUILDROOT=5D_Xeno-test_don=E2=80=99t_work_?=
  =?utf-8?q?=3A_Xenomai=3A_/dev/rtheap_is_missing?=
 Reply-To: thierry.xenomai43@yahoo.com
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,7 +21,15 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-=C2=A0 Hello,
+I forget to say that my Embeded Linux Kernel is the 4.4.21-v7
+
+=C2=A0=C2=A0=C2=A0=C2=A0=20
+
+    Le Jeudi 2 f=C3=A9vrier 2017 11h49, "thierry.xenomai43@yahoo.com" <thie=
+rry.xenomai43@yahoo.com> a =C3=A9crit :
+=20
+
+ =C2=A0 Hello,
 I build Embeded linux for Paspberry Pi 3 with Buildroot-2016.11.2 suite. I =
 tested Linux part and all is ok.Now I would like to use Xenomai 2.6.4 in my=
  project.
