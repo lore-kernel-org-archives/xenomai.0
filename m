@@ -1,7 +1,8 @@
 From: Dmitriy Cherkasov <dmitriy@mperpetuo.com>
-Date: Mon,  6 Feb 2017 14:51:38 -0800
-Message-Id: <1486421498-31209-1-git-send-email-dmitriy@mperpetuo.com>
-Subject: [Xenomai] [PATCH] ipipe: fix script name in genpatches usage output
+Date: Mon,  6 Feb 2017 14:52:31 -0800
+Message-Id: <1486421551-31257-1-git-send-email-dmitriy@mperpetuo.com>
+Subject: [Xenomai] [PATCH] ipipe: add missing drivers to genpatches script
+	for arm64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,25 +13,25 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-The script name was being output as "$me" when run with --help.
+This adds the clocksource and GIC drivers to the arm64 patch.
 ---
- scripts/ipipe/genpatches.sh | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ scripts/ipipe/genpatches.sh | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/scripts/ipipe/genpatches.sh b/scripts/ipipe/genpatches.sh
-index 9392a41..07b6cf3 100755
+index 07b6cf3..e2846a4 100755
 --- a/scripts/ipipe/genpatches.sh
 +++ b/scripts/ipipe/genpatches.sh
-@@ -1,7 +1,7 @@
- #! /bin/sh
+@@ -107,6 +107,9 @@ BEGIN {
  
--me=`basename $0`
--usage='usage: $me [--split] [--help] [reference]'
-+me=$(basename -- "$0")
-+usage='usage: '"$me"' [--split] [--help] [reference]'
- split=no
+     driver_arch["tty/serial/amba-pl011.c"]="arm64"
+     driver_arch["gpio/gpio-pl061.c"]="arm64"
++    driver_arch["clocksource/arm_arch_timer.c"]="arm64"
++    driver_arch["irqchip/irq-gic.c"]="arm64"
++    driver_arch["irqchip/irq-gic-v3.c"]="arm64"
  
- while test $# -gt 0; do
+     driver_arch["tty/serial/bfin_uart.c"]="blackfin"
+ 
 -- 
 1.9.1
 
