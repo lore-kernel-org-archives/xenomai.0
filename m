@@ -1,15 +1,13 @@
-Message-ID: <1486394012.6133.35.camel@smigroup.net>
-From: Mauro Salvini <mauro.salvini@smigroup.net>
-Date: Mon, 06 Feb 2017 16:13:32 +0100
-In-Reply-To: <5123915d-13f2-c909-acf2-d3890dfa2788@xenomai.org>
-References: <1485939628.4068.25.camel@smigroup.net>
- <2f2b2c8e-96a2-9f12-6af1-b23a9343ab95@xenomai.org>
- <1486369782.6133.13.camel@smigroup.net>
- <5123915d-13f2-c909-acf2-d3890dfa2788@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Porting Xenomai on iMX6SX
+References: <CAJ2oMhJMf+Tm2UnUW+Ac_OU5duU3Xe9NyXuYS=+jvPNeFjQO_A@mail.gmail.com>
+ <CAJ2oMh+YY_cWXdCvp=jEpANX2AmSsC=wOoVFEtZh9XCr9VxQTQ@mail.gmail.com>
+From: Marc Le Douarain <marc.le-douarain@laposte.net>
+Message-ID: <5dfafb49-9472-81e2-aef3-47276e3326b8@laposte.net>
+Date: Mon, 6 Feb 2017 21:39:21 +0100
+MIME-Version: 1.0
+In-Reply-To: <CAJ2oMh+YY_cWXdCvp=jEpANX2AmSsC=wOoVFEtZh9XCr9VxQTQ@mail.gmail.com>
+Content-Type: text/plain; charset="windows-1252"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Build simple application with Xenomai 3.x
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,113 +16,100 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Mon, 2017-02-06 at 15:28 +0100, Philippe Gerum wrote:
-> On 02/06/2017 09:29 AM, Mauro Salvini wrote:
-> > On Thu, 2017-02-02 at 10:52 +0100, Philippe Gerum wrote:
-> >> On 02/01/2017 10:00 AM, Mauro Salvini wrote:
-> > I restarted my tests from scratch: my current situation is SMP
-> > enabled, arm-global-timer and arm-twd-timer not configured in dts.
-> > I'm using the SabreSD board from Freescale.
-> >
-> 
-> Seems weird. Why not using a !SMP kernel on your single core SoC? There
-> may be assumptions in the code that such devices are available if SMP is
-> enabled.
+Hello Ran,
 
-I'm using the default defconfig shipped with kernel (that is multiarch
-too). I will do a try with !SMP.
+If you modified something in Makefile, others starter people would=20
+thanks you to know.
 
-> > 
-> > When I run latency test I observe two strange behaviors:
-> > 
-> > - the first is that if I change the default sampling period value
-> > (1000us) to 100us, maximum and average latencies significantly decrease
-> > (average from ~27us to ~14us, and maximum from ~40us to ~28us). Is it
-> > normal?
-> 
-> Yes, nothing strange. The more frequent the real-time cycle, the less
-> time the regular Linux kernel has for evicting the cachelines used by
-> the Cobalt co-kernel on the same CPU. The hotter the cachelines
-> referenced by Cobalt, the shorter the latencies.
+Else, if interested, here you will find a little simple example of a=20
+periodic task,
+working both with Xenomai 2 and 3, using Posix API (and not native one).
+So that the same source code can also be compiled for 'standard' Linux,=20
+really usefull !
+https://sites.google.com/site/mavati56/others-softwares/xenomai
 
-Got it.
+Best regards.
+Marc.
 
-> 
->  I don't observe this on an old x86 machine (but that runs
-> 
-> This is comparing apples and oranges. The cache performances are quite
-> different here - especially compared to the i.MX6 series with PL3xx
-> external L2 caches. Running Xenomai 3 on a properly calibrated x86 box
-> should give you better numbers than 2.5 has.
-
-Ok. Yes sorry, you are right, they are absolutely distinct worlds.
-
-> 
-> Also, make sure to calibrate the Cobalt clock before testing, e.g. using
-> the autotuner.
-
-Yes, I always do it before run xeno-test.
-
-> 
-> > xenomai 2.5). By the way, I see in configure script that ARM is the only
-> > arch that has a default sampling period at 1000us (other archs are
-> > 100us).
-> 
-> Yes, because historically, ARM v4/v5 SoCs used to be unable to sustain
-> 10Khz sampling loops without locking up the machine. This is obviously
-> not the case anymore with v7, but the conservative sampling period has
-> stuck in the config file.
-
-Ok, got it.
-
-> 
-> > 
-> > - the second is that minimum latencies constantly decrease by 0.001us at
-> > every 4 iterations (with random spurious values sometimes), instead of
-> > changing between each iteration as usual (here an example, last two
-> > columns are cut away for readability):
-> 
-> There it changed.
-> 
-> > Seems like a weird drift.
-> >
-> 
-> I don't think so, you would notice the same drift in all other columns.
-> There are too few samples listed above to conclude anything.
-
-Yes, I reported only a block of samples, but the decreasing trend stills
-on until the end of the test.
-
-These values seems me strange because I usually observed slight changes
-on values between every iteration, but always on x86 world.
-I'm new to ARM world and I have to consider some "relocation" of my
-beliefs and "experiences" :-)
-
-> > Clocktest results:
-> > == Testing built-in CLOCK_HOST_REALTIME (32)
-> > CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
-> > --- -------------------- ---------------- ---------- --------------
-> >   0                  1.7           -0.022          0            0.0
-> > 
-> > Could you point me to how to investigate about these behaviors?
-> > 
-> 
-> I see no issue here, if those values are stable: the offset and drift
-> given in micro-seconds are minimal compared to Linux's idea of time.
-> Please note that CLOCK_HOST_REALTIME is used for timestamping based on a
-> real-time compatible version of the regular CLOCK_REALTIME, this is not
-> the monotonic clock source used internally by Cobalt for timing duties.
-> 
-
-My mistake in writing order, I didn't mean that clocktest was wrong (it
-reports quite stable values), I put it there only to have a complete
-report.
-
-Philippe, thank you very much for your precious help.
-
-Mauro
+Le 06/02/2017 =E0 11:25, Ran Shalit a =E9crit :
+> It seems to be OK now.
+> I  had error in Makefile & xenomai configuration.
+>
+> Thank you,
+> Ran
+>
+> On Mon, Feb 6, 2017 at 12:02 PM, Ran Shalit <ranshalit@gmail.com> wrote:
+>> Hello,
+>> I have installed xenomai 3.3 with kernel 4.1 ,ubuntu 14.04  and it all
+>> seems to work very well, resulting in good performace ~20u  ,tested
+>> with cyclictest and latency. (I just has some issue with install,
+>> "debuild -uc -us" , seems not to created /usr/xenomai/demo, so I
+>> installed again  with "make install")
+>>
+>> Now, I then tried to build a very simlpe application.
+>> Is there a simple code sample with Makefile for xenomai 3 demonstration ?
+>>
+>> I did find the following link with example:
+>> http://www.acadis.org/pages/captain.at/timer-task
+>>
+>> So I tried it but it gives errors:
+>> 1. it first gave the following errors:
+>> "...fatal error: native/task.h: No such file or directory"
+>> so I changed from:
+>> #include <native/task.h>
+>> to:
+>> #include <trank/native/task.h>
+>> Is it correct ? Or should I use  <alchemy/task.h> instead ?
+>> 2. I also had to remove <trank/native/intr.h> bevause there is no such f=
+ile.
+>> 3. Then I got link errors:
+>>
+>> user@user-desktop:~/rt/xen/myapp$ make
+>> gcc -o test test.c -I/usr/xenomai/include/mercury
+>> -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -D__MERCURY__
+>> -I/usr/xenomai/include/vxworks -lvxworks  -lcopperplate
+>> /usr/xenomai/lib/xenomai/bootstrap.o -Wl,--wrap=3Dmain
+>> -Wl,--dynamic-list=3D/usr/xenomai/lib/dynlist.ld -L/usr/xenomai/lib
+>> -lmercury -lpthread -lrt
+>> /tmp/cc3dm9ne.o: In function `testtask':
+>> test.c:(.text+0x1e): undefined reference to `rt_timer_ns2ticks'
+>> test.c:(.text+0x30): undefined reference to `rt_task_set_periodic'
+>> test.c:(.text+0x5d): undefined reference to `rt_task_wait_period'
+>> /tmp/cc3dm9ne.o: In function `clean_exit':
+>> test.c:(.text+0xd3): undefined reference to `rt_task_delete'
+>> /tmp/cc3dm9ne.o: In function `main':
+>> test.c:(.text+0x14d): undefined reference to `rt_task_spawn'
+>> collect2: error: ld returned 1 exit status
+>> make: *** [test] Error 1
+>> user@user-desktop:~/rt/xen/myapp$
+>>
+>> The make options seems to include the required library , so I am not
+>> sure why I get these link errors.
+>>
+>>
+>> This is the makefile:
+>> =3D=3D=3D=3D=3D=3D=3D
+>> XENO_CONFIG :=3D /usr/xenomai/bin/xeno-config
+>> CFLAGS :=3D $(shell $(XENO_CONFIG) --vxworks --cflags)
+>> LDFLAGS :=3D $(shell $(XENO_CONFIG) --vxworks --ldflags)
+>> CC :=3D $(shell $(XENO_CONFIG) --cc)
+>>
+>> EXECUTABLE :=3D test
+>>
+>> all: $(EXECUTABLE)
+>>
+>> %: %.c
+>>      $(CC) -o $@ $< $(CFLAGS) $(LDFLAGS)
+>> =3D=3D=3D=3D=3D=3D
+>>
+>> Regards,
+>> Ran
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+>
 
 
