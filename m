@@ -1,12 +1,10 @@
-References: <CAJ2oMh+gxphHKPqo8QcJqZ5yH0LfdoEyJOsiqoRVNm5mVzrZhA@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <4fa097a7-96ec-608a-a16e-e70df2c639cb@xenomai.org>
-Date: Sun, 5 Feb 2017 15:11:51 +0100
+Date: Mon, 6 Feb 2017 09:30:48 +0800 (CST)
+From: "dreamtale90@163.com" <dreamtale90@163.com>
 MIME-Version: 1.0
-In-Reply-To: <CAJ2oMh+gxphHKPqo8QcJqZ5yH0LfdoEyJOsiqoRVNm5mVzrZhA@mail.gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Switching between cobalt & mercury
+Message-ID: <c28ec7.1697.15a110b7694.Coremail.dreamtale90@163.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Fw:some API about RT_TASK occur Segmentation fault
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,40 +13,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ran Shalit <ranshalit@gmail.com>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, rpm@xenomai.org
 
-On 02/05/2017 02:49 PM, Ran Shalit wrote:
-> Hello,
-> 
-> I am trying to evaluate  mercury and cobalt kernels from same version
-> of kernel source code.
-> I am using the documentation in
-> https://xenomai.org/installing-xenomai-3-x/
-> I am trying to see how simply it is to switch between the cores and
-> test each of them.
-> (without repeating the steps for each core using duplicated source folder)
-> 
-> 
-> 1. I have applied the prepare-kernel script, can I now just add RT
-> PREEMPT in order to use mercury kernel , or must I also disable all
-> Xenomai configuration and build again ? Is it possible to use kernel
-> which support both RT PRREMPT and Xenomai ?
-> 
-
-It is possible and has been done many times for custom kernel trees, but
-then you would need an I-pipe patch merged with the RT-preempt patch for
-the same target kernel. If you don't have such combo patch, then you
-will most likely have to apply the RT-preempt patch to a fresh kernel
-tree, without any I-pipe bits in, otherwise conflicts may appear at
-source level.
-
-> 2. I also assume that I will also need to install the correct build of
-> the Xenomai library (there is a build for mercury and another one for
-> cobalt).
-> 
-
-Correct.
-
--- 
-Philippe.
-
+U3lzdGVtIGNvbmZpZ3VyYXRpb246CmRlYmlhbi04LjYsIDMuMTguNDYtcnQ1MApYZW5vbWFpL21l
+cmN1cnkgdjMuMC4zCkJ1aWxkIGFyZ3M6IC0td2l0aC1jb3JlPW1lcmN1cnkgLS1lbmFibGUtc21w
+IC0tZW5hYmxlLXBzaGFyZWQKCgpOb3cgSSBhbSBuZWVkIGhlbHAuIFRoYW5rcy4KCgoKCgotLS0t
+LS0tLSBGb3J3YXJkaW5nIG1lc3NhZ2VzIC0tLS0tLS0tCkZyb206ICJkcmVhbXRhbGU5MEAxNjMu
+Y29tIiA8ZHJlYW10YWxlOTBAMTYzLmNvbT4KRGF0ZTogMjAxNy0wMi0wNCAxMjowNDoxNQpUbzog
+eGVub21haUB4ZW5vbWFpLm9yZwpTdWJqZWN0OiBzb21lIEFQSSBhYm91dCBSVF9UQVNLIG9jY3Vy
+IFNlZ21lbnRhdGlvbiBmYXVsdAoKSGkKICAgIER1cmluZyB1c2luZyBBUEkgYWJvdXQgUlRfVEFT
+SyBJIGZvdW5kIHNvbWUgZG91YnQuCjEpIHJ0X3Rhc2tfaW5xdWlyZShSVF9UQVNLICogdGFzaywg
+UlRfVEFTS19JTkZPICogaW5mbyApLCBpZiBpbmZvIGlzIE5VTEwgd2lsbCBvY2N1ciBTZWdtZW50
+YXRpb24gZmF1bHQsIGJ1dCBpbiBBUEkgcmVmZXJlbmNlIHRoaXMgaXMgdmFsaWQuCmh0dHA6Ly93
+d3cueGVub21haS5vcmcvZG9jdW1lbnRhdGlvbi94ZW5vbWFpLTMvaHRtbC94ZW5vM3BybS9ncm91
+cF9fYWxjaGVteV9fdGFzay5odG1sI2dhNTNiYWQ2YWNmNTQ5NmY4MDA4ZTU5NDk1NDUwN2RjZTgK
+CgoyKSBBZnRlciBtYWluIHRhc2sgY2FsbGVkIHJ0X3Rhc2tfc2hhZG93KCksIHByb2dyYW0gd2ls
+bCBjcmVhdGUgb3RoZXIgdGFza3MgZGVwZW5kIG9uIHJlcXVlc3QsIGJ1dCB3aGVuIGNyZWF0ZSBz
+ZWNvbmQgdGFzayB3aWxsICBvY2N1ciBTZWdtZW50YXRpb24gZmF1bHQuCk5vdyBtYWluIHRhc2sg
+ZG9uJ3QgY2FsbCAgcnRfdGFza19zaGFkb3coKSwgcHJvZ3JhbSB3aWxsIE9LLiBJIGRvbid0IGtu
+b3cgd2h5LgoKCjMpIEkgd3JpdGUgYSBkZW1vIHdoaWNoIGNyZWF0ZSB0aGUgc2FtZSB0YXNrIHRo
+cmVlIHRpbWVzIGFzIGZvbGxvd3M6CiNpbmNsdWRlIDxzdGRpby5oPgojaW5jbHVkZSA8dW5pc3Rk
+Lmg+CiNpbmNsdWRlIDxhbGNoZW15L3Rhc2suaD4KUlRfVEFTSyB0YXNrMTsKdm9pZCBmdW5jKHZv
+aWQgKmFyZykKewogcHJpbnRmKCJlbnRlciBmdW5jIC4uLlxuIik7Cn0KaW50IG1haW4oKQp7CiBy
+dF90YXNrX3NwYXduKCZ0YXNrMSwgInRhc2sxIiwgMCwgODAsIDAsIGZ1bmMsIE5VTEwpOwogc2xl
+ZXAoMSk7CiBydF90YXNrX3NwYXduKCZ0YXNrMSwgInRhc2sxIiwgMCwgODAsIDAsIGZ1bmMsIE5V
+TEwpOwogc2xlZXAoMSk7CiBydF90YXNrX3NwYXduKCZ0YXNrMSwgInRhc2sxIiwgMCwgODAsIDAs
+IGZ1bmMsIE5VTEwpOwogLy9ydF90YXNrX2RlbGV0ZSgmdGFzazEpOwogcmV0dXJuIDA7Cn0KCgpX
+aGVuIHRoZSB0aGlyZCB0aW1lIGNyZWF0ZSAsIHByb2dyYW0gd2lsbCAgb2NjdXIgU2VnbWVudGF0
+aW9uIGZhdWx0LgoKCgoKIA==
