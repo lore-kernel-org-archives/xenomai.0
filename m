@@ -1,20 +1,14 @@
-From: Jerry Huang <jerry.huang@nxp.com>
-Date: Tue, 7 Feb 2017 11:01:01 +0000
-Message-ID: <DB5PR0401MB18132D3823CCD73291A935C9FE430@DB5PR0401MB1813.eurprd04.prod.outlook.com>
-References: <DB5PR0401MB1813333E8ACE184B87CFD047FE610@DB5PR0401MB1813.eurprd04.prod.outlook.com>
- <978e8199-bc2e-2241-1321-6d94b9c611e4@xenomai.org>
- <DB5PR0401MB18133712C3E024CD9B8CD907FE600@DB5PR0401MB1813.eurprd04.prod.outlook.com>
- <057c11d6-1b14-f6a1-f8a3-ddb17e24fc58@xenomai.org>
- <DB5PR0401MB1813914291F050C338CECB00FE790@DB5PR0401MB1813.eurprd04.prod.outlook.com>
- <f0c553f1-694f-2c46-2225-7adf0f7f2eb3@xenomai.org>
- <DB5PR0401MB18131434CBF68E3283535F4DFE7D0@DB5PR0401MB1813.eurprd04.prod.outlook.com>
- <e54b3df3-eebd-156c-0470-963d18b19316@xenomai.org>
-In-Reply-To: <e54b3df3-eebd-156c-0470-963d18b19316@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Date: Tue, 7 Feb 2017 22:19:41 +0800 (GMT+08:00)
+From: "dreamtale90@163.com" <dreamtale90@163.com>
+In-Reply-To: <49057f87.58a5.15a17393fcd.Coremail.dreamtale90@163.com>
+References: <c28ec7.1697.15a110b7694.Coremail.dreamtale90@163.com>
+ <681ccdf8-5b7f-e9e2-2047-d789b6e0d10c@xenomai.org>
+ <49057f87.58a5.15a17393fcd.Coremail.dreamtale90@163.com>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] arm64 support
+Message-ID: <6bbbd9ee.29c8.15a18f1c1cf.Coremail.dreamtale90@163.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] some API about RT_TASK occur Segmentation fault
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,63 +17,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Jorge Ramirez <jro@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-> >>
-> >> All arm64 patches present in the DL area are broken, some critical
-> >> changes are missing due to a bug in some obscure code extraction
-> >> script for this architecture, do not use them.
-> >>
-> >> Please pull the code from the I-pipe git tree instead (branch ipipe-4.=
-1.y).
-> > I clone the ipipe repos (git://git.xenomai.org/ipipe.git) and checkout =
-to
-> branch origin/ipipe-4.1.y.
-> > And using the script ./scripts/ipipe/genpatches.sh to generate the
-> > patch "ipipe-core-4.1.18-arm64-6.patch",
-> > Then applied it to my kernel Linux-4.1.35 with a litter modification (a=
-bout
-> file kernel/trace/ring_buffer.c).
-> > After building the kernel and booting my board, then I got the kernel p=
-anic
-> as the result of patch (ipipe-core-4.1.18-arm64-6.patch) from websit
-> (http://xenomai.org/downloads/ipipe/).
-> > Any comment for this issue?
->=20
-> That script is precisely the one that fails pulling the changes required =
-to fixup
-> the gic(-v3) driver for dealing with interrupt pipelining, so this is goi=
-ng to fail
-> the same way. The panic message in your kernel log is a manifestation of =
-this.
->=20
-> You should just use the ipipe.git tree contents unmodified which is corre=
-ct,
-> because genpatches.sh is currently broken for extracting patches for arm6=
-4.
->=20
-> --
-> Philippe.
-Thanks a lot.=20
-I used ipipe.git tree and pull all patches for arm and arm64 from branch ip=
-ipe-4.1.y and applied all these patches to Linux kernel, and built the kern=
-el.
-Then, I boot up the Linux kernel (Linux-4.1.35) successfully.
-However, when I compile the Xenomai3 lib with command " make install ", I e=
-ncountered another issue during compiling:
-...
-make[3]: Entering directory '/home/huangcm/xenomai-3/lib/cobalt'
-  CC       libcobalt_la-assert_context.lo
-assert_context.c:27:33: fatal error: asm/xenomai/syscall.h: No such file or=
- directory
-
-I enter "./include" directory, I don't find this file. How to do this issue=
-?
-
-below is my steps (on my native ls1043a board):
-1> clone  git://git.xenomai.org/xenomai-3.git and checkout to branch "next"
-2> ./scripts/bootstrap --with-core=3Dcobalt -enable-debug=3Dpartial
-3> ./configure CFLAGS=3D"-march=3Darmv8-a" LDFLAGS=3D"-march=3Darmv8-a" --w=
-ith-core=3Dcobalt --enable-smp
-4> sudo make install
-
+SnVzdCBub3cgd2hlbiBJIGNvbXBpbGluZyB4ZW5vbWFpLCByZW1vdmVkICItLWVuYWJsZS1wc2hh
+cmVkIiBjb25maWd1cmF0aW9uIG9wdGlvbi4gTXkgZGVtbyBpcyBub3JtYWwgZmluYWxseSwgYW5k
+IHByaW50IG91dCB0aGlyZCBzZW50ZW5jZSAiZW50ZXIgZnVuYyAuLi4iIHdpdGhvdXQgc2VnbWVu
+dGFpb24gZmF1bHQuCkFsdGhvdWdoIHRoZSBxdWVzdGlvbiBpcyBzb2x2ZWQgdGVtcG9yYXJpbHkg
+LCBidXQgc3RpbGwgZG9uJ3Qga25vdyB0aGUgcmVhc29uLiBTbyBJJ20gc3RpbGwgd29ycmllZCBh
+Ym91dCBteSBzeXN0ZW0gZW52aXJvbm1lbnQgaGF2ZSBzb21lIHByb2JsZW1zLgoKVGhhbmtzIGFn
+YWluLCBiZXN0IHJlZ2FyZHMuCgoKt6LX1M340tfTys/ktPPKpgoKCtTaMjAxN8TqMDLUwjA3yNUg
+MTQ6MTijrGRyZWFtdGFsZTkwQDE2My5jb20g0LS1wKO6ClRoYW5rIHlvdSBmb3IgaGVscC4KSSBo
+YWQgZ2l0IGNsb25lIGdpdDovL2dpdC54ZW5vbWFpLm9yZy94ZW5vbWFpLTMuZ2l0LCBjb21waWxl
+IGFuZCBpbnN0YWxsIGl0IHdpdGijugogICAgLi9zY3JpcHRzL2Jvb3RzdHJhcAogICAgLi4veGVu
+b21haS0zL2NvbmZpZ3VyZSAtLXdpdGgtY29yZT1tZXJjdXJ5ICAtLWVuYWJsZS1zbXAgLS1lbmFi
+bGUtcHNoYXJlZCAtLWVuYWJsZS1kZWJ1Zz1mdWxsCgogICAgbWFrZSBpbnN0YWxsClRoZW4gcnVu
+IG15IGRlbW8sIGJ1dCB0aGUgcmVzdWx0IGlzIHRoZSBzYW1lIGFzIGJlZm9yZSCjugotLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiAgIDAiMDAyLjU3MHwg
+V0FSTklORzogW21haW5dIFhlbm9tYWkgY29tcGlsZWQgd2l0aCBmdWxsIGRlYnVnIGVuYWJsZWQs
+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHZlcnkgaGlnaCBsYXRlbmNpZXMgZXhwZWN0
+ZWQgWy0tZW5hYmxlLWRlYnVnPWZ1bGxdCmVudGVyIGZ1bmMgLi4uCmVudGVyIGZ1bmMgLi4uCnJ0
+X3Rhc2tfY3JlYXRlOiAuLi8uLi8uLi94ZW5vbWFpLTMvbGliL2NvcHBlcnBsYXRlL2hlYXBvYmot
+cHNoYXJlZC5jOjQ1MjogYWxsb2NfYmxvY2s6IEFzc2VydGlvbiBgMCcgZmFpbGVkLgpBYm9ydGVk
+Ci0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KWWVzdGVy
+ZGF5LCBJIGFkZCBzb21lIHByaW50ZiB0byBhbGxvY19ibG9jaygpIG9mIGhlYXBvYmotcHNoYXJl
+ZC5jLiBJIGZvdW5kICB0aGF0IHNlZ21lbnRhaW9uIGZhdWx0IG9jY3VyIHdoZW4gcnVuIHRvIHRo
+ZQpsaW5lIDQ1NSAiKytleHRlbnQtPnBhZ2VtYXBbcGdudW1dLmJjb3VudDsiIC4gQXQgdGhpcyB0
+aW1lIHRoZSB2YWx1ZSBvZiAiaGVhcC0+YnVja2V0c1tpbG9nXS5mcmVlbGlzdCIgaXMgdmVyeSBi
+aWcuCgoKTm93IEkgdGhpbmsgd2hldGhlciBteSB4ZW5vbWFpIGNvbmZpZ3VyYXRpb24gb3Igc3lz
+dGVtIGVudmlyb25tZW50IGhhdmUgc29tZXRoaW5nIHdyb25nLgpCZXNpZGVzLCBteSBzeXN0ZW0o
+eDg2XzY0Yml0KSBydW4gaW4gYSA4IGNvcmVzIE9yYWNsZSB2aXJ0dWFsIG1hY2hpbmUsIHRoZSBo
+b3N0IGNwdSBpcyBJbnRlcihSKSB4ZW9uKFIpIENQVSBFNS0yNjMwIHY0IEAgMi4yMEdIei4KSSBk
+b24ndCBrbm93IHdoZXRoZXIgdGhlc2UgaW5mb3JtYXRpb24gaXMgdXNlZnVsLgoKVGhhbmtzIGlu
+IGFkdmFuY2UsIGJlc3QgcmVnYXJkcy4KCgoKCgpBdCAyMDE3LTAyLTA2IDIxOjUwOjEzLCAiUGhp
+bGlwcGUgR2VydW0iIDxycG1AeGVub21haS5vcmc+IHdyb3RlOgo+T24gMDIvMDYvMjAxNyAwMjoz
+MCBBTSwgZHJlYW10YWxlOTBAMTYzLmNvbSB3cm90ZToKPj4gU3lzdGVtIGNvbmZpZ3VyYXRpb246
+Cj4+IGRlYmlhbi04LjYsIDMuMTguNDYtcnQ1MAo+PiBYZW5vbWFpL21lcmN1cnkgdjMuMC4zCj4+
+IEJ1aWxkIGFyZ3M6IC0td2l0aC1jb3JlPW1lcmN1cnkgLS1lbmFibGUtc21wIC0tZW5hYmxlLXBz
+aGFyZWQKPj4gCj4+IE5vdyBJIGFtIG5lZWQgaGVscC4gVGhhbmtzLgo+PiAKPj4gCj4+IC0tLS0t
+LS0tIEZvcndhcmRpbmcgbWVzc2FnZXMgLS0tLS0tLS0KPj4gRnJvbTogImRyZWFtdGFsZTkwQDE2
+My5jb20iIDxkcmVhbXRhbGU5MEAxNjMuY29tPgo+PiBEYXRlOiAyMDE3LTAyLTA0IDEyOjA0OjE1
+Cj4+IFRvOiB4ZW5vbWFpQHhlbm9tYWkub3JnCj4+IFN1YmplY3Q6IHNvbWUgQVBJIGFib3V0IFJU
+X1RBU0sgb2NjdXIgU2VnbWVudGF0aW9uIGZhdWx0Cj4+IEhpCj4+ICAgICBEdXJpbmcgdXNpbmcg
+QVBJIGFib3V0IFJUX1RBU0sgSSBmb3VuZCBzb21lIGRvdWJ0Lgo+PiAxKSBydF90YXNrX2lucXVp
+cmUoUlRfVEFTSyAqIHRhc2ssIFJUX1RBU0tfSU5GTyAqIGluZm8gKSwgaWYgaW5mbyBpcwo+PiBO
+VUxMIHdpbGwgb2NjdXIgU2VnbWVudGF0aW9uIGZhdWx0LCBidXQgaW4gQVBJIHJlZmVyZW5jZSB0
+aGlzIGlzIHZhbGlkLgo+PiBodHRwOi8vd3d3Lnhlbm9tYWkub3JnL2RvY3VtZW50YXRpb24veGVu
+b21haS0zL2h0bWwveGVubzNwcm0vZ3JvdXBfX2FsY2hlbXlfX3Rhc2suaHRtbCNnYTUzYmFkNmFj
+ZjU0OTZmODAwOGU1OTQ5NTQ1MDdkY2U4Cj4+IAo+PiAyKSBBZnRlciBtYWluIHRhc2sgY2FsbGVk
+IHJ0X3Rhc2tfc2hhZG93KCksIHByb2dyYW0gd2lsbCBjcmVhdGUgb3RoZXIKPj4gdGFza3MgZGVw
+ZW5kIG9uIHJlcXVlc3QsIGJ1dCB3aGVuIGNyZWF0ZSBzZWNvbmQgdGFzayB3aWxsICBvY2N1cgo+
+PiBTZWdtZW50YXRpb24gZmF1bHQuCj4+IE5vdyBtYWluIHRhc2sgZG9uJ3QgY2FsbCAgcnRfdGFz
+a19zaGFkb3coKSwgcHJvZ3JhbSB3aWxsIE9LLiBJIGRvbid0Cj4+IGtub3cgd2h5Lgo+PiAKPj4g
+MykgSSB3cml0ZSBhIGRlbW8gd2hpY2ggY3JlYXRlIHRoZSBzYW1lIHRhc2sgdGhyZWUgdGltZXMg
+YXMgZm9sbG93czoKPj4gI2luY2x1ZGUgPHN0ZGlvLmg+Cj4+ICNpbmNsdWRlIDx1bmlzdGQuaD4K
+Pj4gI2luY2x1ZGUgPGFsY2hlbXkvdGFzay5oPgo+PiBSVF9UQVNLIHRhc2sxOwo+PiB2b2lkIGZ1
+bmModm9pZCAqYXJnKQo+PiB7Cj4+ICBwcmludGYoImVudGVyIGZ1bmMgLi4uXG4iKTsKPj4gfQo+
+PiBpbnQgbWFpbigpCj4+IHsKPj4gIHJ0X3Rhc2tfc3Bhd24oJnRhc2sxLCAidGFzazEiLCAwLCA4
+MCwgMCwgZnVuYywgTlVMTCk7Cj4+ICBzbGVlcCgxKTsKPj4gIHJ0X3Rhc2tfc3Bhd24oJnRhc2sx
+LCAidGFzazEiLCAwLCA4MCwgMCwgZnVuYywgTlVMTCk7Cj4+ICBzbGVlcCgxKTsKPj4gIHJ0X3Rh
+c2tfc3Bhd24oJnRhc2sxLCAidGFzazEiLCAwLCA4MCwgMCwgZnVuYywgTlVMTCk7Cj4+ICAvL3J0
+X3Rhc2tfZGVsZXRlKCZ0YXNrMSk7Cj4+ICByZXR1cm4gMDsKPj4gfQo+PiAKPj4gV2hlbiB0aGUg
+dGhpcmQgdGltZSBjcmVhdGUgLCBwcm9ncmFtIHdpbGwgIG9jY3VyIFNlZ21lbnRhdGlvbiBmYXVs
+dC4KPj4gCj4KPlRoaXMgYnVnIHdhcyBmaXhlZCBpbiB0aGUgc3RhYmxlIGJyYW5jaCBzb21lIHRp
+bWUgYWdvOgo+Z2l0Oi8vZ2l0Lnhlbm9tYWkub3JnL3hlbm9tYWktMy5naXQsIGJyYW5jaCBzdGFi
+bGUtMy4wLngKPgo+LS0gCj5QaGlsaXBwZS4KCgoKCgog
