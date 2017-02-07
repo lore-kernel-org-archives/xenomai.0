@@ -1,8 +1,13 @@
-From: Dmitriy Cherkasov <dmitriy@mperpetuo.com>
-Date: Mon,  6 Feb 2017 14:52:31 -0800
-Message-Id: <1486421551-31257-1-git-send-email-dmitriy@mperpetuo.com>
-Subject: [Xenomai] [PATCH] ipipe: add missing drivers to genpatches script
-	for arm64
+Date: Tue, 7 Feb 2017 14:18:32 +0800 (CST)
+From: "dreamtale90@163.com" <dreamtale90@163.com>
+In-Reply-To: <681ccdf8-5b7f-e9e2-2047-d789b6e0d10c@xenomai.org>
+References: <c28ec7.1697.15a110b7694.Coremail.dreamtale90@163.com>
+ <681ccdf8-5b7f-e9e2-2047-d789b6e0d10c@xenomai.org>
+MIME-Version: 1.0
+Message-ID: <49057f87.58a5.15a17393fcd.Coremail.dreamtale90@163.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Fw:some API about RT_TASK occur Segmentation fault
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,28 +16,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-This adds the clocksource and GIC drivers to the arm64 patch.
----
- scripts/ipipe/genpatches.sh | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/scripts/ipipe/genpatches.sh b/scripts/ipipe/genpatches.sh
-index 07b6cf3..e2846a4 100755
---- a/scripts/ipipe/genpatches.sh
-+++ b/scripts/ipipe/genpatches.sh
-@@ -107,6 +107,9 @@ BEGIN {
- 
-     driver_arch["tty/serial/amba-pl011.c"]="arm64"
-     driver_arch["gpio/gpio-pl061.c"]="arm64"
-+    driver_arch["clocksource/arm_arch_timer.c"]="arm64"
-+    driver_arch["irqchip/irq-gic.c"]="arm64"
-+    driver_arch["irqchip/irq-gic-v3.c"]="arm64"
- 
-     driver_arch["tty/serial/bfin_uart.c"]="blackfin"
- 
--- 
-1.9.1
-
-
+VGhhbmsgeW91IGZvciBoZWxwLgpJIGhhZCBnaXQgY2xvbmUgZ2l0Oi8vZ2l0Lnhlbm9tYWkub3Jn
+L3hlbm9tYWktMy5naXQsIGNvbXBpbGUgYW5kIGluc3RhbGwgaXQgd2l0aKO6CiAgICAuL3Njcmlw
+dHMvYm9vdHN0cmFwCiAgICAuLi94ZW5vbWFpLTMvY29uZmlndXJlIC0td2l0aC1jb3JlPW1lcmN1
+cnkgIC0tZW5hYmxlLXNtcCAtLWVuYWJsZS1wc2hhcmVkIC0tZW5hYmxlLWRlYnVnPWZ1bGwKCiAg
+ICBtYWtlIGluc3RhbGwKVGhlbiBydW4gbXkgZGVtbywgYnV0IHRoZSByZXN1bHQgaXMgdGhlIHNh
+bWUgYXMgYmVmb3JlIKO6Ci0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0KICAgMCIwMDIuNTcwfCBXQVJOSU5HOiBbbWFpbl0gWGVub21haSBjb21waWxlZCB3
+aXRoIGZ1bGwgZGVidWcgZW5hYmxlZCwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdmVy
+eSBoaWdoIGxhdGVuY2llcyBleHBlY3RlZCBbLS1lbmFibGUtZGVidWc9ZnVsbF0KZW50ZXIgZnVu
+YyAuLi4KZW50ZXIgZnVuYyAuLi4KcnRfdGFza19jcmVhdGU6IC4uLy4uLy4uL3hlbm9tYWktMy9s
+aWIvY29wcGVycGxhdGUvaGVhcG9iai1wc2hhcmVkLmM6NDUyOiBhbGxvY19ibG9jazogQXNzZXJ0
+aW9uIGAwJyBmYWlsZWQuCkFib3J0ZWQKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLQpZZXN0ZXJkYXksIEkgYWRkIHNvbWUgcHJpbnRmIHRvIGFsbG9jX2Js
+b2NrKCkgb2YgaGVhcG9iai1wc2hhcmVkLmMuIEkgZm91bmQgIHRoYXQgc2VnbWVudGFpb24gZmF1
+bHQgb2NjdXIgd2hlbiBydW4gdG8gdGhlCmxpbmUgNDU1ICIrK2V4dGVudC0+cGFnZW1hcFtwZ251
+bV0uYmNvdW50OyIgLiBBdCB0aGlzIHRpbWUgdGhlIHZhbHVlIG9mICJoZWFwLT5idWNrZXRzW2ls
+b2ddLmZyZWVsaXN0IiBpcyB2ZXJ5IGJpZy4KCgpOb3cgSSB0aGluayB3aGV0aGVyIG15IHhlbm9t
+YWkgY29uZmlndXJhdGlvbiBvciBzeXN0ZW0gZW52aXJvbm1lbnQgaGF2ZSBzb21ldGhpbmcgd3Jv
+bmcuCkJlc2lkZXMsIG15IHN5c3RlbSh4ODZfNjRiaXQpIHJ1biBpbiBhIDggY29yZXMgT3JhY2xl
+IHZpcnR1YWwgbWFjaGluZSwgdGhlIGhvc3QgY3B1IGlzIEludGVyKFIpIHhlb24oUikgQ1BVIEU1
+LTI2MzAgdjQgQCAyLjIwR0h6LgpJIGRvbid0IGtub3cgd2hldGhlciB0aGVzZSBpbmZvcm1hdGlv
+biBpcyB1c2VmdWwuCgpUaGFua3MgaW4gYWR2YW5jZSwgYmVzdCByZWdhcmRzLgoKCgoKCkF0IDIw
+MTctMDItMDYgMjE6NTA6MTMsICJQaGlsaXBwZSBHZXJ1bSIgPHJwbUB4ZW5vbWFpLm9yZz4gd3Jv
+dGU6Cj5PbiAwMi8wNi8yMDE3IDAyOjMwIEFNLCBkcmVhbXRhbGU5MEAxNjMuY29tIHdyb3RlOgo+
+PiBTeXN0ZW0gY29uZmlndXJhdGlvbjoKPj4gZGViaWFuLTguNiwgMy4xOC40Ni1ydDUwCj4+IFhl
+bm9tYWkvbWVyY3VyeSB2My4wLjMKPj4gQnVpbGQgYXJnczogLS13aXRoLWNvcmU9bWVyY3VyeSAt
+LWVuYWJsZS1zbXAgLS1lbmFibGUtcHNoYXJlZAo+PiAKPj4gTm93IEkgYW0gbmVlZCBoZWxwLiBU
+aGFua3MuCj4+IAo+PiAKPj4gLS0tLS0tLS0gRm9yd2FyZGluZyBtZXNzYWdlcyAtLS0tLS0tLQo+
+PiBGcm9tOiAiZHJlYW10YWxlOTBAMTYzLmNvbSIgPGRyZWFtdGFsZTkwQDE2My5jb20+Cj4+IERh
+dGU6IDIwMTctMDItMDQgMTI6MDQ6MTUKPj4gVG86IHhlbm9tYWlAeGVub21haS5vcmcKPj4gU3Vi
+amVjdDogc29tZSBBUEkgYWJvdXQgUlRfVEFTSyBvY2N1ciBTZWdtZW50YXRpb24gZmF1bHQKPj4g
+SGkKPj4gICAgIER1cmluZyB1c2luZyBBUEkgYWJvdXQgUlRfVEFTSyBJIGZvdW5kIHNvbWUgZG91
+YnQuCj4+IDEpIHJ0X3Rhc2tfaW5xdWlyZShSVF9UQVNLICogdGFzaywgUlRfVEFTS19JTkZPICog
+aW5mbyApLCBpZiBpbmZvIGlzCj4+IE5VTEwgd2lsbCBvY2N1ciBTZWdtZW50YXRpb24gZmF1bHQs
+IGJ1dCBpbiBBUEkgcmVmZXJlbmNlIHRoaXMgaXMgdmFsaWQuCj4+IGh0dHA6Ly93d3cueGVub21h
+aS5vcmcvZG9jdW1lbnRhdGlvbi94ZW5vbWFpLTMvaHRtbC94ZW5vM3BybS9ncm91cF9fYWxjaGVt
+eV9fdGFzay5odG1sI2dhNTNiYWQ2YWNmNTQ5NmY4MDA4ZTU5NDk1NDUwN2RjZTgKPj4gCj4+IDIp
+IEFmdGVyIG1haW4gdGFzayBjYWxsZWQgcnRfdGFza19zaGFkb3coKSwgcHJvZ3JhbSB3aWxsIGNy
+ZWF0ZSBvdGhlcgo+PiB0YXNrcyBkZXBlbmQgb24gcmVxdWVzdCwgYnV0IHdoZW4gY3JlYXRlIHNl
+Y29uZCB0YXNrIHdpbGwgIG9jY3VyCj4+IFNlZ21lbnRhdGlvbiBmYXVsdC4KPj4gTm93IG1haW4g
+dGFzayBkb24ndCBjYWxsICBydF90YXNrX3NoYWRvdygpLCBwcm9ncmFtIHdpbGwgT0suIEkgZG9u
+J3QKPj4ga25vdyB3aHkuCj4+IAo+PiAzKSBJIHdyaXRlIGEgZGVtbyB3aGljaCBjcmVhdGUgdGhl
+IHNhbWUgdGFzayB0aHJlZSB0aW1lcyBhcyBmb2xsb3dzOgo+PiAjaW5jbHVkZSA8c3RkaW8uaD4K
+Pj4gI2luY2x1ZGUgPHVuaXN0ZC5oPgo+PiAjaW5jbHVkZSA8YWxjaGVteS90YXNrLmg+Cj4+IFJU
+X1RBU0sgdGFzazE7Cj4+IHZvaWQgZnVuYyh2b2lkICphcmcpCj4+IHsKPj4gIHByaW50ZigiZW50
+ZXIgZnVuYyAuLi5cbiIpOwo+PiB9Cj4+IGludCBtYWluKCkKPj4gewo+PiAgcnRfdGFza19zcGF3
+bigmdGFzazEsICJ0YXNrMSIsIDAsIDgwLCAwLCBmdW5jLCBOVUxMKTsKPj4gIHNsZWVwKDEpOwo+
+PiAgcnRfdGFza19zcGF3bigmdGFzazEsICJ0YXNrMSIsIDAsIDgwLCAwLCBmdW5jLCBOVUxMKTsK
+Pj4gIHNsZWVwKDEpOwo+PiAgcnRfdGFza19zcGF3bigmdGFzazEsICJ0YXNrMSIsIDAsIDgwLCAw
+LCBmdW5jLCBOVUxMKTsKPj4gIC8vcnRfdGFza19kZWxldGUoJnRhc2sxKTsKPj4gIHJldHVybiAw
+Owo+PiB9Cj4+IAo+PiBXaGVuIHRoZSB0aGlyZCB0aW1lIGNyZWF0ZSAsIHByb2dyYW0gd2lsbCAg
+b2NjdXIgU2VnbWVudGF0aW9uIGZhdWx0Lgo+PiAKPgo+VGhpcyBidWcgd2FzIGZpeGVkIGluIHRo
+ZSBzdGFibGUgYnJhbmNoIHNvbWUgdGltZSBhZ286Cj5naXQ6Ly9naXQueGVub21haS5vcmcveGVu
+b21haS0zLmdpdCwgYnJhbmNoIHN0YWJsZS0zLjAueAo+Cj4tLSAKPlBoaWxpcHBlLgo=
