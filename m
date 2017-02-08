@@ -1,16 +1,13 @@
-Date: Wed, 8 Feb 2017 10:03:25 +0800 (CST)
-From: "dreamtale90@163.com" <dreamtale90@163.com>
-In-Reply-To: <c574772d-bc57-e6c3-d678-4cf3854d3157@xenomai.org>
-References: <c28ec7.1697.15a110b7694.Coremail.dreamtale90@163.com>
- <681ccdf8-5b7f-e9e2-2047-d789b6e0d10c@xenomai.org>
- <49057f87.58a5.15a17393fcd.Coremail.dreamtale90@163.com>
- <6bbbd9ee.29c8.15a18f1c1cf.Coremail.dreamtale90@163.com>
- <c574772d-bc57-e6c3-d678-4cf3854d3157@xenomai.org>
+Date: Wed, 8 Feb 2017 10:08:17 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20170208100817.327a247b@md1em3qc>
+In-Reply-To: <1486516444-9669-1-git-send-email-dmitriy@mperpetuo.com>
+References: <3b4ebffe-e114-1c35-72e9-3fab0c962981@xenomai.org>
+ <1486516444-9669-1-git-send-email-dmitriy@mperpetuo.com>
 MIME-Version: 1.0
-Message-ID: <13024ee4.2252.15a1b760aba.Coremail.dreamtale90@163.com>
-Content-Type: text/plain; charset=GBK
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] some API about RT_TASK occur Segmentation fault
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH v2] ipipe: fix genpatches script for arm64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,94 +16,128 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Dmitriy Cherkasov <dmitriy@mperpetuo.com>
+Cc: xenomai@xenomai.org
 
-UGhpbGlwcGUsCgoKVGhhbmsgeW91IHZlcnkgbXVjaC5FeGFjdGx5IGFzIHlvdSBzYXksIHRoZSBy
-ZWFzb24gaXMgdGhhdCBteSBjb2RlIGlzbid0IGxhc3Rlc3QuCgpCZXN0IHJlZ2FyZHMuCgoKCgoK
-QXQgMjAxNy0wMi0wNyAyMzoxNzoyOCwgIlBoaWxpcHBlIEdlcnVtIiA8cnBtQHhlbm9tYWkub3Jn
-PiB3cm90ZToKPk9uIDAyLzA3LzIwMTcgMDM6MTkgUE0sIGRyZWFtdGFsZTkwQDE2My5jb20gd3Jv
-dGU6Cj4+IEp1c3Qgbm93IHdoZW4gSSBjb21waWxpbmcgeGVub21haSwgcmVtb3ZlZCAiLS1lbmFi
-bGUtcHNoYXJlZCIKPj4gY29uZmlndXJhdGlvbiBvcHRpb24uIE15IGRlbW8gaXMgbm9ybWFsIGZp
-bmFsbHksIGFuZCBwcmludCBvdXQgdGhpcmQKPj4gc2VudGVuY2UgImVudGVyIGZ1bmMgLi4uIiB3
-aXRob3V0IHNlZ21lbnRhaW9uIGZhdWx0Lgo+Cj5JIGJlbGlldmUgdGhhdCB5b3UgYXJlIG5vdCB1
-c2luZyB0aGUgcmlnaHQgY29kZS4gRGlkIHlvdSBwdWxsIHRoZSBjb2RlCj5mcm9tIHRoZSBzdGFi
-bGUtMy4wLnggYnJhbmNoIGFzIG1lbnRpb25lZCBlYXJsaWVyPwo+Cj5JZiB5b3UgZGlkIHNvLCB5
-b3Ugc2hvdWxkIHNlZSB0aGlzIG91dHB1dCB3aGVuIHBhc3NpbmcgdGhlIC0tdmVyc2lvbgo+c3dp
-dGNoIHRvIHlvdXIgcHJvZ3JhbToKPgo+YmFzZWQgb24gWGVub21haS9tZXJjdXJ5IHYzLjAuMyAt
-LSAjMDBlM2QwMSAoMjAxNy0wMS0yNyAxMDoxNjoxMSArMDEwMCkKPgo+PiBBbHRob3VnaCB0aGUg
-cXVlc3Rpb24gaXMgc29sdmVkIHRlbXBvcmFyaWx5ICwgYnV0IHN0aWxsIGRvbid0IGtub3cgdGhl
-Cj4+IHJlYXNvbi4gU28gSSdtIHN0aWxsIHdvcnJpZWQgYWJvdXQgbXkgc3lzdGVtIGVudmlyb25t
-ZW50IGhhdmUgc29tZSBwcm9ibGVtcy4KPj4gCj4+IFRoYW5rcyBhZ2FpbiwgYmVzdCByZWdhcmRz
-Lgo+PiAKPj4gCj4+ILei19TN+NLX08rP5LTzyqYKPj4gCj4+ICAgICDU2jIwMTfE6jAy1MIwN8jV
-IDE0OjE4o6xkcmVhbXRhbGU5MEAxNjMuY29tCj4+ICAgICA8bWFpbHRvOmRyZWFtdGFsZTkwQDE2
-My5jb20+INC0tcCjugo+PiAgICAgVGhhbmsgeW91IGZvciBoZWxwLgo+PiAgICAgSSBoYWQgZ2l0
-IGNsb25lIGdpdDovL2dpdC54ZW5vbWFpLm9yZy94ZW5vbWFpLTMuZ2l0LCBjb21waWxlIGFuZAo+
-PiAgICAgaW5zdGFsbCBpdCB3aXRoo7oKPj4gICAgICAgICAuL3NjcmlwdHMvYm9vdHN0cmFwCj4+
-ICAgICAgICAgLi4veGVub21haS0zL2NvbmZpZ3VyZSAtLXdpdGgtY29yZT1tZXJjdXJ5ICAtLWVu
-YWJsZS1zbXAKPj4gICAgIC0tZW5hYmxlLXBzaGFyZWQgLS1lbmFibGUtZGVidWc9ZnVsbAo+PiAg
-ICAgICAgIG1ha2UgaW5zdGFsbAo+PiAgICAgVGhlbiBydW4gbXkgZGVtbywgYnV0IHRoZSByZXN1
-bHQgaXMgdGhlIHNhbWUgYXMgYmVmb3JlIKO6Cj4+ICAgICAtLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4+ICAgICAgICAwIjAwMi41NzB8IFdBUk5JTkc6
-IFttYWluXSBYZW5vbWFpIGNvbXBpbGVkIHdpdGggZnVsbCBkZWJ1ZyBlbmFibGVkLAo+PiAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdmVyeSBoaWdoIGxhdGVuY2llcyBleHBlY3Rl
-ZAo+PiAgICAgWy0tZW5hYmxlLWRlYnVnPWZ1bGxdCj4+ICAgICBlbnRlciBmdW5jIC4uLgo+PiAg
-ICAgZW50ZXIgZnVuYyAuLi4KPj4gICAgIHJ0X3Rhc2tfY3JlYXRlOgo+PiAgICAgLi4vLi4vLi4v
-eGVub21haS0zL2xpYi9jb3BwZXJwbGF0ZS9oZWFwb2JqLXBzaGFyZWQuYzo0NTI6Cj4+ICAgICBh
-bGxvY19ibG9jazogQXNzZXJ0aW9uIGAwJyBmYWlsZWQuCj4+ICAgICBBYm9ydGVkCj4+ICAgICAt
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4+ICAgICBZ
-ZXN0ZXJkYXksIEkgYWRkIHNvbWUgcHJpbnRmIHRvIGFsbG9jX2Jsb2NrKCkgb2YgaGVhcG9iai1w
-c2hhcmVkLmMuCj4+ICAgICBJIGZvdW5kICB0aGF0IHNlZ21lbnRhaW9uIGZhdWx0IG9jY3VyIHdo
-ZW4gcnVuIHRvIHRoZQo+PiAgICAgbGluZSA0NTUgIisrZXh0ZW50LT5wYWdlbWFwW3BnbnVtXS5i
-Y291bnQ7IiAuIEF0IHRoaXMgdGltZSB0aGUgdmFsdWUKPj4gICAgIG9mICJoZWFwLT5idWNrZXRz
-W2lsb2ddLmZyZWVsaXN0IiBpcyB2ZXJ5IGJpZy4KPj4gCj4+ICAgICBOb3cgSSB0aGluayB3aGV0
-aGVyIG15IHhlbm9tYWkKPj4gICAgIGNvbmZpZ3VyYXRpb24gb3Igc3lzdGVtIGVudmlyb25tZW50
-IGhhdmUgc29tZXRoaW5nIHdyb25nLgo+PiAgICAgQmVzaWRlcywgbXkgc3lzdGVtKHg4Nl82NGJp
-dCkgcnVuIGluIGEgOCBjb3JlcyBPcmFjbGUgdmlydHVhbAo+PiAgICAgbWFjaGluZSwgdGhlIGhv
-c3QgY3B1IGlzIEludGVyKFIpIHhlb24oUikgQ1BVIEU1LTI2MzAgdjQgQCAyLjIwR0h6Lgo+PiAg
-ICAgSSBkb24ndCBrbm93IHdoZXRoZXIgdGhlc2UgaW5mb3JtYXRpb24gaXMgdXNlZnVsLgo+PiAK
-Pj4gICAgIFRoYW5rcyBpbiBhZHZhbmNlLCBiZXN0IHJlZ2FyZHMuCj4+IAo+PiAKPj4gCj4+ICAg
-ICBBdCAyMDE3LTAyLTA2IDIxOjUwOjEzLCAiUGhpbGlwcGUgR2VydW0iIDxycG1AeGVub21haS5v
-cmcgPG1haWx0bzpycG1AeGVub21haS5vcmc+PiB3cm90ZToKPj4gICAgID5PbiAwMi8wNi8yMDE3
-IDAyOjMwIEFNLCBkcmVhbXRhbGU5MEAxNjMuY29tIDxtYWlsdG86ZHJlYW10YWxlOTBAMTYzLmNv
-bT4gd3JvdGU6Cj4+ICAgICA+PiBTeXN0ZW0gY29uZmlndXJhdGlvbjoKPj4gICAgID4+IGRlYmlh
-bi04LjYsIDMuMTguNDYtcnQ1MAo+PiAgICAgPj4gWGVub21haS9tZXJjdXJ5IHYzLjAuMwo+PiAg
-ICAgPj4gQnVpbGQgYXJnczogLS13aXRoLWNvcmU9bWVyY3VyeSAtLWVuYWJsZS1zbXAgLS1lbmFi
-bGUtcHNoYXJlZAo+PiAgICAgPj4gCj4+ICAgICA+PiBOb3cgSSBhbSBuZWVkIGhlbHAuIFRoYW5r
-cy4KPj4gICAgID4+IAo+PiAgICAgPj4gCj4+ICAgICA+PiAtLS0tLS0tLSBGb3J3YXJkaW5nIG1l
-c3NhZ2VzIC0tLS0tLS0tCj4+ICAgICA+PiBGcm9tOiAiZHJlYW10YWxlOTBAMTYzLmNvbSA8bWFp
-bHRvOmRyZWFtdGFsZTkwQDE2My5jb20+IiA8ZHJlYW10YWxlOTBAMTYzLmNvbSA8bWFpbHRvOmRy
-ZWFtdGFsZTkwQDE2My5jb20+Pgo+PiAgICAgPj4gRGF0ZTogMjAxNy0wMi0wNCAxMjowNDoxNQo+
-PiAgICAgPj4gVG86IHhlbm9tYWlAeGVub21haS5vcmcgPG1haWx0bzp4ZW5vbWFpQHhlbm9tYWku
-b3JnPgo+PiAgICAgPj4gU3ViamVjdDogc29tZSBBUEkgYWJvdXQgUlRfVEFTSyBvY2N1ciBTZWdt
-ZW50YXRpb24gZmF1bHQKPj4gICAgID4+IEhpCj4+ICAgICA+PiAgICAgRHVyaW5nIHVzaW5nIEFQ
-SSBhYm91dCBSVF9UQVNLIEkgZm91bmQgc29tZSBkb3VidC4KPj4gICAgID4+IDEpIHJ0X3Rhc2tf
-aW5xdWlyZShSVF9UQVNLICogdGFzaywgUlRfVEFTS19JTkZPICogaW5mbyApLCBpZiBpbmZvIGlz
-Cj4+ICAgICA+PiBOVUxMIHdpbGwgb2NjdXIgU2VnbWVudGF0aW9uIGZhdWx0LCBidXQgaW4gQVBJ
-IHJlZmVyZW5jZSB0aGlzIGlzIHZhbGlkLgo+PiAgICAgPj4gaHR0cDovL3d3dy54ZW5vbWFpLm9y
-Zy9kb2N1bWVudGF0aW9uL3hlbm9tYWktMy9odG1sL3hlbm8zcHJtL2dyb3VwX19hbGNoZW15X190
-YXNrLmh0bWwjZ2E1M2JhZDZhY2Y1NDk2ZjgwMDhlNTk0OTU0NTA3ZGNlOAo+PiAgICAgPj4gCj4+
-ICAgICA+PiAyKSBBZnRlciBtYWluIHRhc2sgY2FsbGVkIHJ0X3Rhc2tfc2hhZG93KCksIHByb2dy
-YW0gd2lsbCBjcmVhdGUgb3RoZXIKPj4gICAgID4+IHRhc2tzIGRlcGVuZCBvbiByZXF1ZXN0LCBi
-dXQgd2hlbiBjcmVhdGUgc2Vjb25kIHRhc2sgd2lsbCAgb2NjdXIKPj4gICAgID4+IFNlZ21lbnRh
-dGlvbiBmYXVsdC4KPj4gICAgID4+IE5vdyBtYWluIHRhc2sgZG9uJ3QgY2FsbCAgcnRfdGFza19z
-aGFkb3coKSwgcHJvZ3JhbSB3aWxsIE9LLiBJIGRvbid0Cj4+ICAgICA+PiBrbm93IHdoeS4KPj4g
-ICAgID4+IAo+PiAgICAgPj4gMykgSSB3cml0ZSBhIGRlbW8gd2hpY2ggY3JlYXRlIHRoZSBzYW1l
-IHRhc2sgdGhyZWUgdGltZXMgYXMgZm9sbG93czoKPj4gICAgID4+ICNpbmNsdWRlIDxzdGRpby5o
-Pgo+PiAgICAgPj4gI2luY2x1ZGUgPHVuaXN0ZC5oPgo+PiAgICAgPj4gI2luY2x1ZGUgPGFsY2hl
-bXkvdGFzay5oPgo+PiAgICAgPj4gUlRfVEFTSyB0YXNrMTsKPj4gICAgID4+IHZvaWQgZnVuYyh2
-b2lkICphcmcpCj4+ICAgICA+PiB7Cj4+ICAgICA+PiAgcHJpbnRmKCJlbnRlciBmdW5jIC4uLlxu
-Iik7Cj4+ICAgICA+PiB9Cj4+ICAgICA+PiBpbnQgbWFpbigpCj4+ICAgICA+PiB7Cj4+ICAgICA+
-PiAgcnRfdGFza19zcGF3bigmdGFzazEsICJ0YXNrMSIsIDAsIDgwLCAwLCBmdW5jLCBOVUxMKTsK
-Pj4gICAgID4+ICBzbGVlcCgxKTsKPj4gICAgID4+ICBydF90YXNrX3NwYXduKCZ0YXNrMSwgInRh
-c2sxIiwgMCwgODAsIDAsIGZ1bmMsIE5VTEwpOwo+PiAgICAgPj4gIHNsZWVwKDEpOwo+PiAgICAg
-Pj4gIHJ0X3Rhc2tfc3Bhd24oJnRhc2sxLCAidGFzazEiLCAwLCA4MCwgMCwgZnVuYywgTlVMTCk7
-Cj4+ICAgICA+PiAgLy9ydF90YXNrX2RlbGV0ZSgmdGFzazEpOwo+PiAgICAgPj4gIHJldHVybiAw
-Owo+PiAgICAgPj4gfQo+PiAgICAgPj4gCj4+ICAgICA+PiBXaGVuIHRoZSB0aGlyZCB0aW1lIGNy
-ZWF0ZSAsIHByb2dyYW0gd2lsbCAgb2NjdXIgU2VnbWVudGF0aW9uIGZhdWx0Lgo+PiAgICAgPj4g
-Cj4+ICAgICA+Cj4+ICAgICA+VGhpcyBidWcgd2FzIGZpeGVkIGluIHRoZSBzdGFibGUgYnJhbmNo
-IHNvbWUgdGltZSBhZ286Cj4+ICAgICA+Z2l0Oi8vZ2l0Lnhlbm9tYWkub3JnL3hlbm9tYWktMy5n
-aXQsIGJyYW5jaCBzdGFibGUtMy4wLngKPj4gICAgID4KPj4gICAgID4tLSAKPj4gICAgID5QaGls
-aXBwZS4KPj4gCj4+IAo+PiAKPj4gICAgICAKPj4gCj4KPgo+LS0gCj5QaGlsaXBwZS4K
+Hi,
+
+looks to me like it should be two patches. The first one introducing
+multiarch and the second using it for arm64.
+
+Henning
+
+On Tue, 7 Feb 2017 15:14:04 -1000
+Dmitriy Cherkasov <dmitriy@mperpetuo.com> wrote:
+
+> Previous versions of genpatches.sh only allow one architecture
+> per driver. Since some drivers are shared between arm and arm64,
+> this adds new functionality to the script, allowing multiple
+> architectures to be specified per driver as a space-separated list.
+> ---
+>  scripts/ipipe/genpatches.sh | 37
+> +++++++++++++++++++++++++++++-------- 1 file changed, 29
+> insertions(+), 8 deletions(-)
+> 
+> diff --git a/scripts/ipipe/genpatches.sh b/scripts/ipipe/genpatches.sh
+> index 9392a41..3714c1b 100755
+> --- a/scripts/ipipe/genpatches.sh
+> +++ b/scripts/ipipe/genpatches.sh
+> @@ -62,7 +62,6 @@ BEGIN {
+>      driver_arch["iommu/irq_remapping.c"]="noarch"
+>  
+>      driver_arch["clk/mxs/clk-imx28.c"]="arm"
+> -    driver_arch["clocksource/arm_arch_timer.c"]="arm"
+>      driver_arch["clocksource/mxs_timer.c"]="arm"
+>      driver_arch["clocksource/arm_global_timer.c"]="arm"
+>      driver_arch["clocksource/pxa_timer.c"]="arm"
+> @@ -81,7 +80,6 @@ BEGIN {
+>      driver_arch["irqchip/spear-shirq.c"]="arm"
+>      driver_arch["irqchip/irq-mxs.c"]="arm"
+>      driver_arch["irqchip/irq-s3c24xx.c"]="arm"
+> -    driver_arch["irqchip/irq-gic.c"]="arm"
+>      driver_arch["irqchip/irq-vic.c"]="arm"
+>      driver_arch["irqchip/irq-atmel-aic.c"]="arm"
+>      driver_arch["irqchip/irq-atmel-aic5.c"]="arm"
+> @@ -89,7 +87,6 @@ BEGIN {
+>      driver_arch["irqchip/irq-bcm7120-l2.c"]="arm"
+>      driver_arch["irqchip/irq-brcmstb-l2.c"]="arm"
+>      driver_arch["irqchip/irq-dw-apb-ictl.c"]="arm"
+> -    driver_arch["irqchip/irq-gic-v3.c"]="arm"
+>      driver_arch["irqchip/irq-sunxi-nmi.c"]="arm"
+>      driver_arch["irqchip/irq-crossbar.c"]="arm"
+>      driver_arch["mfd/twl4030-irq.c"]="arm"
+> @@ -105,6 +102,10 @@ BEGIN {
+>      driver_arch["pinctrl/pinctrl-single.c"]="arm"
+>      driver_arch["tty/serial/xilinx_uartps.c"]="arm"
+>  
+> +    driver_arch["irqchip/irq-gic.c"]="arm arm64"
+> +    driver_arch["irqchip/irq-gic-v3.c"]="arm arm64"
+> +    driver_arch["clocksource/arm_arch_timer.c"]="arm arm64"
+> +
+>      driver_arch["tty/serial/amba-pl011.c"]="arm64"
+>      driver_arch["gpio/gpio-pl061.c"]="arm64"
+>  
+> @@ -123,6 +124,7 @@ match($0, /^diff --git a\/arch\/([^ \t\/]*)/) {
+>      split(substr($0, RSTART, RLENGTH), arch, /\//)
+>      a=arch[3]
+>  
+> +    is_multiarch=0
+>      set_current_arch(a)
+>      print $0 >> current_file
+>      next
+> @@ -137,14 +139,25 @@ match($0, /^diff --git a\/drivers\/([^ \t]*)/) {
+>  	 print "Error unknown architecture for driver "f
+>  	 unknown_file_error=1
+>      } else {
+> -	 a = driver_arch[f]
+> -	 set_current_arch(a)
+> -	 print $0 >> current_file
+> -	 next
+> +        a = driver_arch[f]
+> +        if(index(a, " ")) {
+> +            is_multiarch = 1
+> +            split(a, multiarch, " ")
+> +            for(a in multiarch) {
+> +                set_current_arch(multiarch[a])
+> +                print $0 >> current_file
+> +            }
+> +        } else {
+> +            is_multiarch = 0
+> +            set_current_arch(a)
+> +            print $0 >> current_file
+> +        }
+> +        next
+>      }
+>  }
+>  
+>  /^diff --git a\/scripts\/ipipe\/genpatches.sh/ {
+> +    is_multiarch=0
+>      if (splitmode == "no") {
+>  	current_file="/dev/null"
+>  	current_arch="nullarch"
+> @@ -154,6 +167,7 @@ match($0, /^diff --git a\/drivers\/([^ \t]*)/) {
+>  
+>  /^diff --git/ {
+>      set_current_arch("noarch")
+> +    is_multiarch=0
+>      print $0 >> current_file
+>      next
+>  }
+> @@ -164,7 +178,14 @@ match ($0, /#define
+> [I]PIPE_CORE_RELEASE[ \t]*([^ \t]*)/) { }
+>  
+>  {
+> -    print $0 >> current_file
+> +    if(is_multiarch) {
+> +        for(a in multiarch) {
+> +            set_current_arch(multiarch[a])
+> +            print $0 >> current_file
+> +        }
+> +    } else {
+> +        print $0 >> current_file
+> +    }
+>  }
+>  
+>  END {
+
+
