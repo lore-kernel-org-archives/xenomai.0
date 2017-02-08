@@ -1,8 +1,10 @@
 From: Dmitriy Cherkasov <dmitriy@mperpetuo.com>
-Date: Wed,  8 Feb 2017 11:40:38 -1000
-Message-Id: <1486590039-5193-1-git-send-email-dmitriy@mperpetuo.com>
-Subject: [Xenomai] [PATCH v3 1/2] ipipe: add support for multiarch drivers
-	to genpatches script
+Date: Wed,  8 Feb 2017 11:40:39 -1000
+Message-Id: <1486590039-5193-2-git-send-email-dmitriy@mperpetuo.com>
+In-Reply-To: <1486590039-5193-1-git-send-email-dmitriy@mperpetuo.com>
+References: <1486590039-5193-1-git-send-email-dmitriy@mperpetuo.com>
+Subject: [Xenomai] [PATCH v3 2/2] ipipe: add support for arm64 to genpatches
+	script
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,82 +15,52 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Previous versions of genpatches.sh only allow one architecture
-per driver. Since some drivers are shared between arm and arm64,
-this adds new functionality to the script, allowing multiple
-architectures to be specified per driver as a space-separated list.
+This adds support for properly generating arm64 patches.
 
 Signed-off-by: Dmitriy Cherkasov <dmitriy@mperpetuo.com>
 ---
- scripts/ipipe/genpatches.sh | 30 +++++++++++++++++++++++++-----
- 1 file changed, 25 insertions(+), 5 deletions(-)
+ scripts/ipipe/genpatches.sh | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/scripts/ipipe/genpatches.sh b/scripts/ipipe/genpatches.sh
-index 9392a41..4c21c9c 100755
+index 4c21c9c..3714c1b 100755
 --- a/scripts/ipipe/genpatches.sh
 +++ b/scripts/ipipe/genpatches.sh
-@@ -123,6 +123,7 @@ match($0, /^diff --git a\/arch\/([^ \t\/]*)/) {
-     split(substr($0, RSTART, RLENGTH), arch, /\//)
-     a=arch[3]
+@@ -62,7 +62,6 @@ BEGIN {
+     driver_arch["iommu/irq_remapping.c"]="noarch"
  
-+    is_multiarch=0
-     set_current_arch(a)
-     print $0 >> current_file
-     next
-@@ -137,14 +138,25 @@ match($0, /^diff --git a\/drivers\/([^ \t]*)/) {
- 	 print "Error unknown architecture for driver "f
- 	 unknown_file_error=1
-     } else {
--	 a = driver_arch[f]
--	 set_current_arch(a)
--	 print $0 >> current_file
--	 next
-+        a = driver_arch[f]
-+        if(index(a, " ")) {
-+            is_multiarch = 1
-+            split(a, multiarch, " ")
-+            for(a in multiarch) {
-+                set_current_arch(multiarch[a])
-+                print $0 >> current_file
-+            }
-+        } else {
-+            is_multiarch = 0
-+            set_current_arch(a)
-+            print $0 >> current_file
-+        }
-+        next
-     }
- }
+     driver_arch["clk/mxs/clk-imx28.c"]="arm"
+-    driver_arch["clocksource/arm_arch_timer.c"]="arm"
+     driver_arch["clocksource/mxs_timer.c"]="arm"
+     driver_arch["clocksource/arm_global_timer.c"]="arm"
+     driver_arch["clocksource/pxa_timer.c"]="arm"
+@@ -81,7 +80,6 @@ BEGIN {
+     driver_arch["irqchip/spear-shirq.c"]="arm"
+     driver_arch["irqchip/irq-mxs.c"]="arm"
+     driver_arch["irqchip/irq-s3c24xx.c"]="arm"
+-    driver_arch["irqchip/irq-gic.c"]="arm"
+     driver_arch["irqchip/irq-vic.c"]="arm"
+     driver_arch["irqchip/irq-atmel-aic.c"]="arm"
+     driver_arch["irqchip/irq-atmel-aic5.c"]="arm"
+@@ -89,7 +87,6 @@ BEGIN {
+     driver_arch["irqchip/irq-bcm7120-l2.c"]="arm"
+     driver_arch["irqchip/irq-brcmstb-l2.c"]="arm"
+     driver_arch["irqchip/irq-dw-apb-ictl.c"]="arm"
+-    driver_arch["irqchip/irq-gic-v3.c"]="arm"
+     driver_arch["irqchip/irq-sunxi-nmi.c"]="arm"
+     driver_arch["irqchip/irq-crossbar.c"]="arm"
+     driver_arch["mfd/twl4030-irq.c"]="arm"
+@@ -105,6 +102,10 @@ BEGIN {
+     driver_arch["pinctrl/pinctrl-single.c"]="arm"
+     driver_arch["tty/serial/xilinx_uartps.c"]="arm"
  
- /^diff --git a\/scripts\/ipipe\/genpatches.sh/ {
-+    is_multiarch=0
-     if (splitmode == "no") {
- 	current_file="/dev/null"
- 	current_arch="nullarch"
-@@ -154,6 +166,7 @@ match($0, /^diff --git a\/drivers\/([^ \t]*)/) {
++    driver_arch["irqchip/irq-gic.c"]="arm arm64"
++    driver_arch["irqchip/irq-gic-v3.c"]="arm arm64"
++    driver_arch["clocksource/arm_arch_timer.c"]="arm arm64"
++
+     driver_arch["tty/serial/amba-pl011.c"]="arm64"
+     driver_arch["gpio/gpio-pl061.c"]="arm64"
  
- /^diff --git/ {
-     set_current_arch("noarch")
-+    is_multiarch=0
-     print $0 >> current_file
-     next
- }
-@@ -164,7 +177,14 @@ match ($0, /#define [I]PIPE_CORE_RELEASE[ \t]*([^ \t]*)/) {
- }
- 
- {
--    print $0 >> current_file
-+    if(is_multiarch) {
-+        for(a in multiarch) {
-+            set_current_arch(multiarch[a])
-+            print $0 >> current_file
-+        }
-+    } else {
-+        print $0 >> current_file
-+    }
- }
- 
- END {
 -- 
 1.9.1
 
