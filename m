@@ -1,12 +1,10 @@
-References: <0ce3f46c-39c7-2f7e-02e1-12004a80da5d@pixelsurmer.com>
-From: thierry bultel <tbultel@pixelsurmer.com>
-Message-ID: <20cadc6f-dd3f-fd0a-14f2-1190da9316c5@pixelsurmer.com>
-Date: Thu, 9 Feb 2017 09:47:16 +0100
+From: Dmitriy Cherkasov <dmitriy@mperpetuo.com>
+Message-ID: <d2ae02b5-5df7-5d84-dc79-c491897e30a9@mperpetuo.com>
+Date: Thu, 9 Feb 2017 14:27:09 -1000
 MIME-Version: 1.0
-In-Reply-To: <0ce3f46c-39c7-2f7e-02e1-12004a80da5d@pixelsurmer.com>
-Content-Type: text/plain; charset="windows-1252"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] kernel hangs when accessing /proc/xenomai/sched/stat
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Build error with XENO_OPT_DEBUG=y
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,48 +13,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
+Hi,
 
+I've noticed that if I have XENO_OPT_DEBUG=y and XENO_OPT_DEBUG_LOCKING=n, 
+I get build errors with an undefined reference to `xnlock_stats'.
 
-Le 08/02/2017 =E0 18:36, thierry bultel a =E9crit :
-> Dear all,
->
-> After some months away from the world of realtime applications, I am
-> back on a project on which I want to use xenomai3 with cobalt.
->
-> The CPU is a IMX6solo
->
-> The linux kernel is the latest git://git.xenomai.org/ipipe.git, branch
-> ipipe-4.4.y
->
-> The issue I have is reproducible on both xenomai-3 branches master & next
->
-> I simply do
->
-> #cat /proc/xenomai/sched/stat
->
-> and this hangs the system.
+In the Kconfig, XENO_OPT_DEBUG_LOCKING is enabled by default for SMP and 
+XENO_OPT_DEBUG, but there is no hard dependency.
 
-I had the opportunity to test on an IMX6Q
-The kernel hang does not happen, regardless of CONFIG_SMP=3Dy or not
+The use case here is if I want to debug something else and don't want to 
+incur the overhead of lock debugging.
 
-However, the IMX6solo does not boot if CONFIG_SMP is not set,
-and this, even without CONFIG_IPIPE.
-It does boot with the vanilla 4.4.43, though, meaning that the bug is=20
-likely in the ipipe patch.
+This looks like a bug to me, and I just want to confirm that.
 
->
-> Best regards
->
->
->
->
->
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
->
+Thanks,
+Dmitriy
 
