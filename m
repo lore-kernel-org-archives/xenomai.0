@@ -1,14 +1,13 @@
-From: Marcel Van Mierlo <Marcel.VanMierlo@marel.com>
-Date: Thu, 16 Feb 2017 08:49:36 +0000
-Message-ID: <VI1PR0501MB260657B457773886726D0C6A915A0@VI1PR0501MB2606.eurprd05.prod.outlook.com>
-References: <VI1PR0501MB260685233C854A5963C3B46E915B0@VI1PR0501MB2606.eurprd05.prod.outlook.com>
-In-Reply-To: <VI1PR0501MB260685233C854A5963C3B46E915B0@VI1PR0501MB2606.eurprd05.prod.outlook.com>
-Content-Language: en-GB
+References: <1487178823-4062-1-git-send-email-tbultel@pixelsurmer.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <d6015da2-8e58-22df-6790-661f811d4cdc@xenomai.org>
+Date: Thu, 16 Feb 2017 10:19:25 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] [SPOOF ?] Does it make sense to patch with both
- Xenomai and	PREEMPT_RT?
+In-Reply-To: <1487178823-4062-1-git-send-email-tbultel@pixelsurmer.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] automake: add a conditionnal to rt devices
+ install
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,45 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Thierry Bultel <tbultel@pixelsurmer.com>, xenomai@xenomai.org
 
-Ah, I see this was largely answered for Ran Shalit's question on Feb 07th.
+On 02/15/2017 06:13 PM, Thierry Bultel wrote:
+> When cross building from a build system (like buildroot),
+> it is not convenient to get the sudo prompt for the installation
+> of cobalt rt devices.
+> Calling mknod is the responsibility of the build system, that
+> will perform it under a fakeroot environnement
+> The fix simply checks the existence of NO_RT_DEVICES environment
+> that can be set when bootstrapping
+> ---
+>  Makefile.am  | 2 ++
+>  configure.ac | 2 ++
+>  2 files changed, 4 insertions(+)
+> 
 
+Thanks, however this is duplicating an existing mechanism:
 
-Cheers,
+$ make SUDO=false install
 
-Marcel.
+see install-user rule in the toplevel Makefile.
 
-________________________________
-From: Xenomai <xenomai-bounces@xenomai.org> on behalf of Marcel Van Mierlo =
-<Marcel.VanMierlo@marel.com>
-Sent: 15 February 2017 16:42:38
-To: xenomai@xenomai.org
-Subject: [SPOOF ?][Xenomai] Does it make sense to patch with both Xenomai a=
-nd PREEMPT_RT?
+This said, Xenomai 3 expects udev/mdev to be enabled, so most of the
+devices rule in that Makefile is useless now; at least the install rule
+should not implicitly chain to it via install-exec-local.
 
-[This sender failed our fraud detection checks and may not be who they appe=
-ar to be. Learn about spoofing at http://aka.ms/LearnAboutSpoofing]
+-- 
+Philippe.
 
-Hi,
-
-
-Is it possible to patch a Kernel (3.18.5) with both CONFIG_PREEMPT_RT and X=
-enomai (3.0.2 Cobalt)? Does this make sense, or does the Xenomai patch intr=
-oduce RT preemption anyway?
-
-
-We have a real-time pSOS application currently running under a Xenomai patc=
-hed Kernel  (Kernel 3.18.5, Xenomai 3.0.2 Cobalt), and would like to use th=
-is environment to run an application which currently runs under a Kernel (3=
-.14.48) which is patched with PREEMPT_RT.
-
-
-Regards,
-
-Marcel.
-
-_______________________________________________
-Xenomai mailing list
-Xenomai@xenomai.org
-https://xenomai.org/mailman/listinfo/xenomai
