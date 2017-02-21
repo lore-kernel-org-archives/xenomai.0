@@ -1,9 +1,14 @@
+From: Lowell Gilbert <kludge@be-well.ilk.org>
+References: <CAOXDmPrOH2C3voU+p4ZuPfurceVhs2B13bVDY157LUA7+o9NmA@mail.gmail.com>
+Date: Tue, 21 Feb 2017 14:00:54 -0500
+In-Reply-To: <CAOXDmPrOH2C3voU+p4ZuPfurceVhs2B13bVDY157LUA7+o9NmA@mail.gmail.com>
+ (Cong Monkey's message of "Sun, 19 Feb 2017 20:39:05 +0800")
+Message-ID: <44zihf2wt5.fsf@lowell-desk.lan>
 MIME-Version: 1.0
-From: Norbert Lange <nolange79@gmail.com>
-Date: Tue, 21 Feb 2017 19:37:26 +0100
-Message-ID: <CADYdroOG6RaLGmcpwFiHjJt-cU3f9vaCQw+vJ=tFdx3sg4nvhg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] latency test and mercury
+Content-Type: text/plain
+Subject: Re: [Xenomai] Is that possible to use xenomai in multi user
+	environment without root permission?
+Reply-To: xenomai@xenomai.org
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,24 +17,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Cong Monkey <congzhangzh@gmail.com>
+Cc: xenomai@xenomai.org
 
-Hi,
+Cong Monkey <congzhangzh@gmail.com> writes:
 
-I got some really big variations on the latency test (up to 4ms), but
-I am not exactly sure if this supposed the realtime portion.
-I am unable to run kernel or irq tests.
+> I have a center server shared by multi user which is assigned sudo
+> permission for special cmd when needed.
+>
+> Is that possible to allow the user to run any self develop rt base
+> application(the user will not attack server by this way) without root
+> permission?
 
-For a user thread, this is probably like expected since this is a full
-debian desktop with RT kernel.
+Not really. Xenomai involves, among other things, making changes to the
+kernel. Your user will definitely want to run his real-time application
+on a system that isn't being used for anything else. The best way for
+him to do that will depend entirely on what his project is.
 
-If I understood the mercury model right, I could create kernel modules
-with realtime behaviour, Is there any test for latency amongst those?
-(Documentation is rather light on mercury)
-
-PS.
-I can rule out SMI interaction, the count of those is not increasing.
-
-Kind regards,
-Norbert
+He can *build* his Xenomai kernel and application without any special
+privileges, and might save a lot of time doing so if your server is very
+fast. 
 
