@@ -1,14 +1,12 @@
-From: Lowell Gilbert <kludge@be-well.ilk.org>
-References: <CAOXDmPrOH2C3voU+p4ZuPfurceVhs2B13bVDY157LUA7+o9NmA@mail.gmail.com>
-Date: Tue, 21 Feb 2017 14:00:54 -0500
-In-Reply-To: <CAOXDmPrOH2C3voU+p4ZuPfurceVhs2B13bVDY157LUA7+o9NmA@mail.gmail.com>
- (Cong Monkey's message of "Sun, 19 Feb 2017 20:39:05 +0800")
-Message-ID: <44zihf2wt5.fsf@lowell-desk.lan>
+References: <CADYdroOG6RaLGmcpwFiHjJt-cU3f9vaCQw+vJ=tFdx3sg4nvhg@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4cc7cdeb-a83d-dd78-372b-9eef06f44aaf@xenomai.org>
+Date: Wed, 22 Feb 2017 09:59:50 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-Subject: Re: [Xenomai] Is that possible to use xenomai in multi user
-	environment without root permission?
-Reply-To: xenomai@xenomai.org
+In-Reply-To: <CADYdroOG6RaLGmcpwFiHjJt-cU3f9vaCQw+vJ=tFdx3sg4nvhg@mail.gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] latency test and mercury
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,24 +15,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Cong Monkey <congzhangzh@gmail.com>
-Cc: xenomai@xenomai.org
+To: Norbert Lange <nolange79@gmail.com>, Xenomai <xenomai@xenomai.org>
 
-Cong Monkey <congzhangzh@gmail.com> writes:
+On 02/21/2017 07:37 PM, Norbert Lange wrote:
+> Hi,
+> 
+> I got some really big variations on the latency test (up to 4ms), but
+> I am not exactly sure if this supposed the realtime portion.
 
-> I have a center server shared by multi user which is assigned sudo
-> permission for special cmd when needed.
->
-> Is that possible to allow the user to run any self develop rt base
-> application(the user will not attack server by this way) without root
-> permission?
+This means that the underlying native kernel Mercury depends on has a
+latency issue for sure.
 
-Not really. Xenomai involves, among other things, making changes to the
-kernel. Your user will definitely want to run his real-time application
-on a system that isn't being used for anything else. The best way for
-him to do that will depend entirely on what his project is.
+> I am unable to run kernel or irq tests.
 
-He can *build* his Xenomai kernel and application without any special
-privileges, and might save a lot of time doing so if your server is very
-fast. 
+That is expected, since a kernel module implementing those tests is
+required, but only Cobalt provides it so far. Such module is based on
+Xenomai's RTDM kernel interface, which we don't have for Mercury (to be
+precise, we have a 10-years old POC for it which would need significant
+update).
+
+> 
+> For a user thread, this is probably like expected since this is a full
+> debian desktop with RT kernel.
+> 
+> If I understood the mercury model right, I could create kernel modules
+> with realtime behaviour, Is there any test for latency amongst those?
+> (Documentation is rather light on mercury)
+> 
+
+Mercury is basically providing a way to run the non-POSIX Xenomai APIs
+over a native kernel, nothing more than this. Said differently, this is
+a purely user-space thing, which does not introduce any kernel support.
+
+The idea behind Mercury is to allow running the RTOS emulators Xenomai
+provides (e.g. vxworks and psos) without dragging in the co-kernel
+support Cobalt introduces, which may not be required by some legacy
+applications ported to Linux, for which real-time performances are not
+actually critical. If one wants to go for the POSIX interface
+exclusively, then Mercury brings no value at all.
+
+So Mercury fully depends on the real-time capabilities of the "regular"
+Linux kernel underneath for that matter, whether it includes the
+PREEMPT_RT patch or not.
+
+> PS.
+> I can rule out SMI interaction, the count of those is not increasing.
+> 
+
+The latency test code (testsuite/latency/latency.c) is shared between
+Mercury and Cobalt cores, the major difference is that POSIX services
+this code invokes are obtained from the glibc or libcolbalt - which
+contains the syscall interface to the Cobalt co-kernel, respectively.
+
+You may want to check for issues which are specific to running real-time
+code over native kernels, like SCHED_FIFO throttling (although I doubt
+it would trigger with the latency test).
+
+-- 
+Philippe.
 
