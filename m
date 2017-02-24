@@ -1,14 +1,12 @@
-References: <mailman.3.1481540401.18213.xenomai@xenomai.org>
- <68551481553062@web16j.yandex.ru> <84831481553347@web16j.yandex.ru>
-From: Johann Obermayr <johann.obermayr@sigmatek.at>
-Message-ID: <5579645d-bcee-ce14-70d2-82c73088ef8d@sigmatek.at>
-Date: Mon, 12 Dec 2016 15:49:30 +0100
 MIME-Version: 1.0
-In-Reply-To: <84831481553347@web16j.yandex.ru>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Long time system slow down on imx6
-Reply-To: johann.obermayr@sigmatek.at
+Date: Thu, 23 Feb 2017 19:27:12 -0500
+From: andrija@stupar.com
+Message-ID: <07fe7fa20faed6e818d33b54db9001b6@stupar.com>
+Sender: andrija@stupar.com
+Subject: [Xenomai] RTDM driver init: interrupts and context objects
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,248 +15,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Am 12.12.2016 um 15:35 schrieb Marco Baracchi:
-> Sorry I hope this format is more readable
->
-> 12.12.2016, 15:31, "Marco Baracchi" <cormabara@yandex.com>:
->> Sorry I hope this is the correct way to add a mail to this thread inside mailing list:
->>
->> What you mean with "lost wakeup problem" ?
-Ask google, you get many results.
+Hi,
 
->>
->> What we are checking is a timer tick missing:
->>
->> root@deimo-staubli ~$ cat /proc/timer_list
-i don't know timer_list yet.
-i need to look more closely.
->>
->> Timer List Version: v0.6
->>
->> HRTIMER_MAX_CLOCK_BASES: 3
->>
->> now at 158072087097365 nsecs
->>
->> cpu: 0
->>
->> clock 0:
->>
->>    .base:       80ba8380
->>
->>    .index:      0
->>
->>    .resolution: 1 nsecs
->>
->>    .get_time:   ktime_get
->>
->>    .offset:     0 nsecs
->>
->> active timers:
->>
->> #0: <80ba88a0>, tick_sched_timer, S:01
->>
->> # expires at 158034760000000-158034760000000 nsecs [in -37327097365 to -37327097365 nsecs]
->>
->> #1: <8fb57f40>, hrtimer_wakeup, S:01
->>
->> # expires at 158034782298842-158034782348842 nsecs [in -37304798523 to -37304748523 nsecs]
->>
->> #2: <8f201ad0>, hrtimer_wakeup, S:01
->>
->> # expires at 159434496114473-159434496164473 nsecs [in 1362409017108 to 1362409067108 nsecs]
->>
->> #3: <8f20bad0>, hrtimer_wakeup, S:01
->>
->> # expires at 159439053136473-159439057697464 nsecs [in 1366966039108 to 1366970600099 nsecs]
->>
->> clock 1:
->>
->>    .base:       80ba83b8
->>
->>    .index:      1
->>
->>    .resolution: 1 nsecs
->>
->>    .get_time:   ktime_get_real
->>
->>    .offset:     1481376344107425663 nsecs
->>
->> active timers:
->>
->> clock 2:
->>
->>    .base:       80ba83f0
->>
->>    .index:      2
->>
->>    .resolution: 1 nsecs
->>
->>    .get_time:   ktime_get_boottime
->>
->>    .offset:     0 nsecs
->>
->> active timers:
->>
->>    .expires_next   : 158034760000000 nsecs
->>
->>    .hres_active    : 1
->>
->>    .nr_events      : 22078740
->>
->>    .nr_retries     : 51929
->>
->>    .nr_hangs       : 0
->>
->>    .max_hang_time  : 0 nsecs
->>
->>    .nohz_mode      : 0
->>
->>    .idle_tick      : 0 nsecs
->>
->>    .tick_stopped   : 0
->>
->>    .idle_jiffies   : 0
->>
->>    .idle_calls     : 0
->>
->>    .idle_sleeps    : 0
->>
->>    .idle_entrytime : 0 nsecs
->>
->>    .idle_waketime  : 0 nsecs
->>
->>    .idle_exittime  : 0 nsecs
->>
->>    .idle_sleeptime : 0 nsecs
->>
->>    .iowait_sleeptime: 0 nsecs
->>
->>    .last_jiffies   : 0
->>
->>    .next_jiffies   : 0
->>
->>    .idle_expires   : 0 nsecs
->>
->> jiffies: 15773475
->>
->> Tick Device: mode:     1
->>
->> Per CPU device: 0
->>
->> Clock Event Device: mxc_timer1
->>
->> max_delta_ns:   4294967295
->>
->> min_delta_ns:   85000
->>
->> mult:           1
->>
->> shift:          0
->>
->> mode:           3
->>
->> next_event:     158034760000000 nsecs
->>
->> set_next_event: xnarch_next_htick_shot
->>
->> set_mode:       xnarch_switch_htick_mode
->>
->> event_handler:  hrtimer_interrupt
->>
->> retries:        0
->>
->> As you can see the next event is in the past, timer mxc_timer1 seems to have missed a tick.
->>
->> You mean your system is locked into a SELECT system call ?
->>
->> 1ms is the period of your periodic thread ?
->>
->> 12.12.2016, 12:00, "xenomai-request@xenomai.org" <xenomai-request@xenomai.org>:
->>> Send Xenomai mailing list submissions to
->>>          xenomai@xenomai.org
->>>
->>> To subscribe or unsubscribe via the World Wide Web, visit
->>>          https://xenomai.org/mailman/listinfo/xenomai
->>> or, via email, send a message with subject or body 'help' to
->>>          xenomai-request@xenomai.org
->>>
->>> You can reach the person managing the list at
->>>          xenomai-owner@xenomai.org
->>>
->>> When replying, please edit your Subject line so it is more specific
->>> than "Re: Contents of Xenomai digest..."
->>>
->>> Today's Topics:
->>>
->>>     1. Re: Long time system slow down on imx6 (Johann Obermayr)
->>>
->>> ----------------------------------------------------------------------
->>>
->>> Message: 1
->>> Date: Mon, 12 Dec 2016 11:16:33 +0100
->>> From: Johann Obermayr <johann.obermayr@sigmatek.at>
->>> To: Xenomai@xenomai.org
->>> Subject: Re: [Xenomai] Long time system slow down on imx6
->>> Message-ID: <f07822d2-e30a-d394-bae6-bdf776c0f03a@sigmatek.at>
->>> Content-Type: text/plain; charset=utf-8; format=flowed
->>>
->>> Am 09.12.2016 um 23:42 schrieb Marco:
->>>>       We are notice a very strange problem on a imx6 with kernel
->>>>       Linux3.0.35-4.1.0 + xenomai_2.6.4. After machine runs for 8 - 10 hours
->>>>       we found the system blocked in may different ways (user interface
->>>>       tcp/ip interface ecc..)
->>>>
->>>>       ?
->>>>
->>>>       We check into /proc/timer_list and we found the next event was
->>>>       scheduled in the past.
->>>>
->>>>       ?
->>>>
->>>>       We found some items about timer blocked but all the patches indicated
->>>>       was already applied.
->>>>
->>>>       ?
->>>>
->>>>       Maybe someone have seen a similar problem ?
->>>>   _______________________________________________
->>>>   Xenomai mailing list
->>>>   Xenomai@xenomai.org
->>>>   https://xenomai.org/mailman/listinfo/xenomai
->>> Hello,
->>>
->>> i don't known if it is the same problem.
->>> But we search a lost wakeup problem with "select" and a short timeout. (1ms)
->>>
->>> Regards
->>>     Johann
->>>
->>> ------------------------------
->>>
->>> Subject: Digest Footer
->>>
->>> _______________________________________________
->>> Xenomai mailing list
->>> Xenomai@xenomai.org
->>> https://xenomai.org/mailman/listinfo/xenomai
->>>
->>> ------------------------------
->>>
->>> End of Xenomai Digest, Vol 56, Issue 11
->>> ***************************************
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
-At this time, we make many test, if this is a problem with xenomai, or a 
-pure linux problem.
-We use select with a fdevent for a releaxed wait. And sometime the task 
-will hang in the select function.
+I am using Xenomai 2.6.3 and I'm porting a Linux driver for an Acromag 
+PCI DAQ board to RTDM.
 
-do you use select with short timeouts in your code ?
+Since RTDM in Xenomai 2.6.3 does not support minor device numbers, and 
+there are possibly multiple PCI boards which must be accessed by this 
+driver, I am following the example given for the 16550 UART driver in 
+the Xenomai 2.6.3 source repository. There, we have a rtdm_device 
+template with a blank name and inside the init_module() function the 
+driver searches for multiple devices, and then assigns them names and 
+registers each of them separately (i.e. rtserial0, rtserial1, rtserial2, 
+etc.) so that each can be accessed as a separate device via the RTDM 
+device table. This driver maintains a static array of rtdm_device, 
+keeping there an instance of each detected device. So far so good. I am 
+following the same approach in my driver.
 
-regards
-   Johann
+However, I see some differences with which I am stuck.
+
+The driver I am porting to RTDM scans for PCI devices in the 
+init_module() method, and then, for each device found, performs some 
+set-up stuff including - this is the most important thing - setting up 
+an IRQ line.
+
+The RTDM UART driver I am using as an example does not do this - it 
+performs the IRQ line request (via rtdm_irq_request) in the open() 
+method, NOT in the init_module() method. Is there any particular reason 
+for this? Would it be incorrect to call rtdm_irq_request for each device 
+in init_module() instead of in open(...)?
+
+In order to call rtdm_irq_request, I require the irq handle, which is a 
+field of the driver-specific context structure (e.g. in the UART driver 
+case, rt_16550_context). I also have such a struct which stores some 
+information about my device. Notwithstanding the IRQ setup, some of the 
+information I would like to store in my context struct is arrived at 
+during the operations in init_module(). However, I cannot see how to 
+pass a context struct which I would create in init_module() properly 
+when registering a device...? So far, it seems that any data that I 
+obtain during init_module() I would have to save in e.g. static arrays, 
+and then copy that into the context struct in open(...) where I can 
+access the context struct for that particular device. Or do I have 
+something wrong?
+
+Any help is greatly appreciated!
+
+Thanks,
+
+Andrija Stupar
+Univ. of Toronto
 
