@@ -1,9 +1,14 @@
+Date: Mon, 27 Feb 2017 09:56:51 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20170227095651.0553fcc4@md1em3qc>
+In-Reply-To: <cac2495a-6508-6e54-b577-28f8559dcc7e@xenomai.org>
+References: <1487858660615.24262@kth.se>
+ <cac2495a-6508-6e54-b577-28f8559dcc7e@xenomai.org>
 MIME-Version: 1.0
-From: AG M <agm6274@gmail.com>
-Date: Sat, 25 Feb 2017 21:57:44 -0600
-Message-ID: <CALD0yU7aZc2gMB701Q0i1t_hm=S7i2YbTC_8zcridaDOcPqb1w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] 'pthread_create: Operation not permitted' Issue
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Where can I find the ipipe patch for linux kernel
+ v4.4.y
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,30 +17,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Nitin Kulkarni <nitink@kth.se>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello,
+Am Sat, 25 Feb 2017 18:57:56 +0100
+schrieb Philippe Gerum <rpm@xenomai.org>:
 
-I'm running Xenomai Cobalt v3.0.4 on 32 bit ARM.
+> On 02/23/2017 03:04 PM, Nitin Kulkarni wrote:
+> > Hi,
+> > 
+> > I am trying to apply the ipipe patch to an Ostro distribution which
+> > has a 4.4.36 Kernel.
+> > 
+> > I see that the latest I pipe patch on
+> > https://xenomai.org/downloads/ipipe/v4.x/x86/? is 4.1.18.
+> > 
+> > 
+> > Can you please give some insights on where to get the patch for
+> > 4.4 ?
+> > 
+> >   
+> 
+> Same location, just uploaded.
 
-To test whether everything has been installed properly, I ran
-/usr/xenomai/bin/latency -t 0 and it throws this error
-"pthread_create(latency): Operation not permitted"
+I would expect that to reflect the git-repo somehow and show up as tag
+on the ipipe-4.4.y branch. As far as i can see there are no tags on
+that branch yet, so i am also wondering where the -6 comes from.
 
-Running the same as an in-kernel periodic task
-/usr/xenomai/bin/latency -t 0 works.
-
-Couple of things
-
-1. I'm running as a root user
-(http://xenomai.org/2014/06/running-a-xenomai-application-as-a-regular-user/)
-2. The xenomai group on Linux is as follows: xenomai:x:995:debian,root
-
-
-I ran some sample programs with pthread and its the same issue as the
-latency test.
-
-What could be the issue?
-
-Thanks.
+Henning
 
