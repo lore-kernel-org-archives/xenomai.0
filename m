@@ -1,17 +1,13 @@
-References: <1487858660615.24262@kth.se>
- <cac2495a-6508-6e54-b577-28f8559dcc7e@xenomai.org>
- <20170227095651.0553fcc4@md1em3qc>
- <19bf2d00-6d10-328b-98e8-9b8544e8b718@xenomai.org>
- <20170227105711.6d08a2ee@md1em3qc>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <1f415e38-1aa2-c9f4-b81e-a7b4810eaa10@xenomai.org>
-Date: Mon, 27 Feb 2017 11:09:32 +0100
 MIME-Version: 1.0
-In-Reply-To: <20170227105711.6d08a2ee@md1em3qc>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Where can I find the ipipe patch for linux kernel
- v4.4.y
+In-Reply-To: <06614ad5-4dd0-45f2-2281-054b3e5621c9@xenomai.org>
+References: <58a70af0.cf0d1c0a.74142.a8ca@mx.google.com>
+ <06614ad5-4dd0-45f2-2281-054b3e5621c9@xenomai.org>
+From: Steve B <sbattazzo@gmail.com>
+Date: Mon, 27 Feb 2017 11:38:36 -0800
+Message-ID: <CAEMXjGxGnjER66=8cKHZwY=ay0DJtKwb=t0HVScDK5GpcSsb7g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Set CPU Clock Frequency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,53 +16,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: Nitin Kulkarni <nitink@kth.se>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 02/27/2017 10:57 AM, Henning Schild wrote:
-> Am Mon, 27 Feb 2017 10:00:49 +0100
-> schrieb Philippe Gerum <rpm@xenomai.org>:
-> 
->> On 02/27/2017 09:56 AM, Henning Schild wrote:
->>> Am Sat, 25 Feb 2017 18:57:56 +0100
->>> schrieb Philippe Gerum <rpm@xenomai.org>:
->>>   
->>>> On 02/23/2017 03:04 PM, Nitin Kulkarni wrote:  
->>>>> Hi,
->>>>>
->>>>> I am trying to apply the ipipe patch to an Ostro distribution
->>>>> which has a 4.4.36 Kernel.
->>>>>
->>>>> I see that the latest I pipe patch on
->>>>> https://xenomai.org/downloads/ipipe/v4.x/x86/? is 4.1.18.
->>>>>
->>>>>
->>>>> Can you please give some insights on where to get the patch for
->>>>> 4.4 ?
->>>>>
->>>>>     
->>>>
->>>> Same location, just uploaded.  
->>>
->>> I would expect that to reflect the git-repo somehow and show up as
->>> tag on the ipipe-4.4.y branch. As far as i can see there are no
->>> tags on that branch yet, so i am also wondering where the -6 comes
->>> from. 
->>
->> From tags that were not pushed.
-> 
-> I see those tags are at the branch-head i am already working with.
+In my application, turning CPU_FREQ off defaulted the CPU to a frequency
+that we didn't want (we wanted 100% but it for some reason set us to  a
+lower one). The other problem is that in some cases our application would
+intermittently freak out and lock things up if the frequency changed in the
+background.
 
-I pushed them an hour ago.
+What I did was leave the frequency scaling on, and then I went into the
+device tree and removed all of the options except the one we wanted.
+Depending on how your OS distribution is set up you may be able to do the
+same!
 
- When
-> is the IPIPE_CORE_RELEASE reset to 0 or 1? On the 4.1 branch it
-> started over at 1 for all archs, in 4.4 it is between 5 and 7.
-> 
+Steve
 
-It is reset when a visible (or very significant) change occurs in the
-core implementation.
 
--- 
-Philippe.
+On Fri, Feb 17, 2017 at 7:24 AM, Philippe Gerum <rpm@xenomai.org> wrote:
 
+> On 02/17/2017 03:38 PM, mobin.motallebizadeh@gmail.com wrote:
+> > Hi
+> > As we are disabling CPU_FREQ system consumes as much energy as it can
+> and it=E2=80=99s undesirable.
+> >
+> > Is there any method to set cpu clock freq to something other than 100%?
+> >
+> > Something like letting CPU_FREQ=3Dy and setting clock freq manually by
+> cpufreq utility and then re-calibrate the cobalt core. I don=E2=80=99t kn=
+ow. Just
+> guessing!
+>
+> There is no provision for this.
+>
+> --
+> Philippe.
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+>
