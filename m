@@ -1,16 +1,10 @@
-References: <20170228113150.12549-1-henning.schild@siemens.com>
- <20170228123358.03955486@md1em3qc>
- <9fda10bb-e8bc-330b-303f-90a61e03a122@siemens.com>
- <20170228132657.3a57a3d4@md1em3qc>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <28c6596b-5d87-5cb7-78b7-ae445892668b@xenomai.org>
-Date: Tue, 28 Feb 2017 16:40:59 +0100
+Date: Wed, 1 Mar 2017 18:04:23 +0800 (CST)
+From: "dreamtale90@163.com" <dreamtale90@163.com>
 MIME-Version: 1.0
-In-Reply-To: <20170228132657.3a57a3d4@md1em3qc>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] x86/mm: Fix vmalloc_fault() to handle large
- pages properly
+Message-ID: <66a54b04.d1e1.15a8953ef5c.Coremail.dreamtale90@163.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] About rt_task_delete()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,32 +13,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "rpm@xenomai.org" <rpm@xenomai.org>
 
-On 02/28/2017 01:26 PM, Henning Schild wrote:
-> Am Tue, 28 Feb 2017 13:00:43 +0100
-> schrieb Jan Kiszka <jan.kiszka@siemens.com>:
-> 
->> On 2017-02-28 12:33, Henning Schild wrote:
->>> This guy is mainline since a while, was discovered in the context of
->>> ipipe and has been backported to stable kernels. But in 4.1 it came
->>> in at 4.1.19 and ipipe sits on 18, so cherry pick it on
->>> ipipe-4.1.y.  
->>
->> 4.1 should rather be updated to recent stable version.
-> 
-> I can offer to do that rebase on linux-4.1.y (currently 4.1.38) and test
-> it for x86.
-> 
-> But i would like to see that cherry pick to be thrown on current
-> ipipe-4.1.y anyways. Because with discussions on kernel updates we run
-> the risk to not do it after all and finally forget about that known
-> problem one more time.
-> 
-
-Ok, picked it.
-
--- 
-Philippe.
-
+SSBoYXZlIGEgdGFzayB0aGF0IGxpa2UgdGhpczoKZnVuYygpCnsKICAgd2hpbGUodHJ1ZSkKICAg
+IHsKICAgICAgICAgaWYoY29uZGl0aW9uID09IHRydWUpCiAgICAgICAgIHsKICAgICAgICAgICAg
+IC4uLi4uLi4uLi4uLi4KICAgICAgICAgfQogICAgICAgICBlbHNlCiAgICAgICAgIHsKICAgICAg
+ICAgICAgICBydF90YXNrX3N1c3BlbmQoTlVMTCk7CiAgICAgICAgICAgICAgcHJpbnRmKCJyZXN1
+bWUgdGFza1xuIik7ICAvL2ZvciB0ZXN0CiAgICAgICAgICB9CiAgICB9Cn0Kd2hlbiBJIGNhbGwg
+cnRfdGFza19kZWxldGUoKSB0byBjYW5jZWwgdGhpcyB0YXNrIGluIG1haW4gdGFzaywgdGhpcyB0
+YXNrIHdpbGwgYmUgcmVzdW1lZCBtYW55IHRpbWVzLgpBbmQgbW9zdCBvZiB0aW1lIG5vIGFueSBv
+dXRwdXQsIG5vIHJlc3BvbnNlIGRpcmVjdGx5LgpOb3csIEkgZ3Vlc3MgaXQgaXMgYmVjYXVzZSBy
+dF90YXNrX3N1c3BlbmQoKSBpbiBteSBwcm9ncmFtIGlzbid0IGEgZGVlbWVkIHNhZmUgc2VjdGlv
+biBvZiBjb2RlLCBzbyB4ZW5vbWFpCm5lZWQgdG8gcmVzdW1lIGl0IHRvIHJ1biBpbnRvIGEgZGVl
+bWVkIHNhZmUgc2VjdGlvbiBvZiBjb2RlLgoKCklmIGl0IGlzIGFib3ZlIHRoaXMga2luZCBvZiBz
+aXR1YXRpb24gLCB3aGF0IHNob3VsZCBJIGRvIHRvIGF2b2lkPyBJZiBub3QsIHdoeSBpcyB0aGF0
+PwoKClN5c3RlbSBjb25maWd1cmF0aW9uOgpkZWJpYW4tOC42LCAzLjE4LjQ2LXJ0NTAKWGVub21h
+aS9tZXJjdXJ5IHYzLjAuMwpCdWlsZCBhcmdzOiAtLXdpdGgtY29yZT1tZXJjdXJ5IC0tZW5hYmxl
+LXNtcCAtLWVuYWJsZS1wc2hhcmVkCgoKCgpUaGFua3MgaW4gYWR2YW5jZSwgYmVzdCByZWdhcmRz
+LgoKCkxpdUNoYW5nCgo=
