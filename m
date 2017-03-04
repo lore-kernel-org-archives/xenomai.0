@@ -1,14 +1,10 @@
-References: <1481114381-17548-1-git-send-email-leupold@rsi-elektrotechnik.de>
- <965cb08c-9a13-da03-4cf5-060ce94cae6e@xenomai.org>
-From: Jan Leupold <leupold@rsi-elektrotechnik.de>
-Message-ID: <46ec47bc-286d-a206-ef85-6347ba095660@rsi-elektrotechnik.de>
-Date: Mon, 12 Dec 2016 17:59:27 +0100
 MIME-Version: 1.0
-In-Reply-To: <965cb08c-9a13-da03-4cf5-060ce94cae6e@xenomai.org>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] [PATCH] analogy: fix __a4l_get_sbsize() if device has
- only one subdevice
+From: Josh Bowman <jbowman@facts-inc.com>
+Date: Fri, 3 Mar 2017 21:30:18 -0500
+Message-ID: <CAGTNcBuw2Wm6J1XZ2NKesomYojKZg_jxjDjw0QBncyfHDRjwNA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] heap corruption with multiple,
+	differently-sized calls to rt_queue_alloc()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,95 +15,135 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Am 12.12.2016 um 16:55 schrieb Jorge Ramirez:
-> On 12/07/2016 01:39 PM, Jan Leupold wrote:
->> All a4l_sbinfo_t are handled in __a4l_fill_desc() as a contiguous array
->> and is stored as data in a4l_root_t. The old code allocated enough
->> memory when the device had at least two subdevices, but missed 8 bytes
->> (on ARM32), which is the difference between sizeof(a4l_root_t) and
->> sizeof(a4l_leaf_t).
->=20
-> sorry I dont understand this patch. could you expand on the scenario you
-> are testing?
+Hi,
 
-Scenario: one a4l device with exactly one a4l subdevice with one channel
-and one range. A call to a4l_fill_desc() then returns -ENOMEM, which is
-caused by a check at the beginning of a4l_leaf_add().
+I'm having a problem when trying to allocate multiple blocks using
+rt_queue_alloc(). When my client code is building a message to send to
+queue, it sometimes finds that it needs a bigger block. So it creates a new
+block via rt_queue_alloc(); copies the data from the previous block into
+the new block; and then calls rt_queue_free() on the old block.
 
-> a4l_root_setup already takes into consideration the size of the a4l_root_t
-> (check the offset initialization)
+The code included here is a simplified version of this process. It
+allocates a buffer; puts some data in it; allocates a new buffer; and then
+checks to make sure the previous buffer is intact. Then it frees the
+previous buffer and loops.
 
-My interpretation of what should be constructed in sbdata memory is this:
+When I run this code, it prints:
 
-+---------------------------------
-|r|s|s|s|s|...|s|l|c|c|c|...
-+---------------------------------
-                ^
-r =3D a4l_root_t
-s =3D a4l_sbinfo_t
-l =3D a4l_leaf_t
-c =3D a4l_chinfo_t
+ERROR: at 7, 2: after rt_queue_alloc, checkMessage failed at loc 480
 
-What I mean is: the root stores the whole array of all subdevice info and
-its size must be "root + n * sbinfo" (this is where the ^ points to).
-But __a4l_get_sbsize() is implemented as "n * (leaf + sbinfo)". root and
-leaf differ in size.
+This means the buffer previously returned by rt_queue_alloc() is damaged by
+the next call to rt_queue_alloc().  I set a watch in the debugger, and it
+looks like the damage is done at line 376 of lib/alchemy/queue.c; this
+seems to indicate the heapobj_alloc() is returning a region that overlaps
+the one previously allocated.
 
-As soon as the a4l device has more than one subdevice (n > 1) always enough
-memory is allocated. But for n =3D=3D 1 the size difference between a4l_roo=
-t_t
-and a4l_leaf_t is not taken into account. a4l_root_setup() sets the offset
-correctly according to sizeof(a4l_root_t), but __a4l_get_sbsize() used
-sizeof(a4l_leaf_t) to calculate it.
+I'm running Xenomai/mercury from stable-3.0.x on x86_64, with config:
+"--with-core=mercury --enable-smp --enable-pshared --enable-registry
+--enable-debug"
 
-Memory size for channel and range info is also calculated as
-"n * (leaf + info)" and could be reduced to "leaf + n * info", but
-out-of-memory is not an issue here.
+I build the test program with:
 
->=20
->=20
->=20
->> ---
->>  lib/analogy/descriptor.c | 3 ++-
->>  1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/lib/analogy/descriptor.c b/lib/analogy/descriptor.c
->> index bc4d7bd..fa8cf93 100644
->> --- a/lib/analogy/descriptor.c
->> +++ b/lib/analogy/descriptor.c
->> @@ -100,8 +100,9 @@ static inline a4l_leaf_t *a4l_leaf_get(a4l_leaf_t * =
-lf,
->>  static int __a4l_get_sbsize(int fd, a4l_desc_t * dsc)
->>  {
->>  	unsigned int i, j, nb_chan, nb_rng;
->> +	/* all subdevice a4l_sbinfo_t are within one special leaf: the root */
->>  	int ret, res =3D
->> -		dsc->nb_subd * (sizeof(a4l_sbinfo_t) + sizeof(a4l_leaf_t));
->> +		sizeof(a4l_root_t) + dsc->nb_subd * (sizeof(a4l_sbinfo_t));
->> =20
->>  	for (i =3D 0; i < dsc->nb_subd; i++) {
->> =20
->>
->>
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> https://xenomai.org/mailman/listinfo/xenomai
->=20
+g++ queue-2.cpp -o queue-2 -g -fno-default-inline -fno-omit-frame-pointer
+`xeno-config --skin=alchemy --cflags --no-auto-init --ldflags`
 
+Changing the realloc_count parameter causes the code to fail at different
+iterations; passing realloc_count = 3 moves the failure to the
+rt_queue_send() call. (The code runs to completion with realloc_count set
+to 1 or 2.)
 
---=20
-_____________________________________________________________
-R-S-I Elektrotechnik GmbH & Co. KG
-Woelkestrasse 11
-D-85301 Schweitenkirchen
-Fon: +49 8444 9204-0
-Fax: +49 8444 9204-50
-www.rsi-elektrotechnik.de
+I've also found that if I don't call rt_queue_free() the code runs to
+completion.
 
-_____________________________________________________________
-Amtsgericht Ingolstadt - GmbH: HRB 191328 - KG: HRA 170363
-Gesch=E4ftsf=FChrer: Dr.-Ing. Michael Sorg, Dipl.-Ing. Franz Sorg
-USt-IdNr.: DE 128592548
+Let me know if there's anything I can do to help.
 
+Thanks,
+Josh
 
+File queue-2.cpp follows:
+
+#include <alchemy/task.h>
+#include <alchemy/queue.h>
+#include <xenomai/init.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+
+RT_TASK task;
+RT_QUEUE queue;
+
+void buildMessage( char * p, int len ) {
+    for ( int i = 0; i < len; i++ )
+        p[i] = (char)i;
+}
+int checkMessage( char * p, int len ) {
+    for ( int i = 0; i < len; i++ )
+        if ( p[i] != ((char)i))
+            return i;
+    return -1;
+}
+
+int main(int argc, char *const argv[]) {
+    int priority = 12;
+    int queueSize = 50;
+    int realloc_count = 5;
+
+    xenomai_init(&argc,&argv);
+
+    if ( argc >= 2 )
+        realloc_count = atoi( argv[1] );
+
+    int err = rt_task_shadow( &task, "queueTask", priority, 0 );
+
+    if ( err != 0 ) {
+        fprintf( stderr, "ERROR: got %d from rt_task_shadow()\n", err );
+        return 2;
+    }
+
+    err = rt_queue_create(&queue, "queue", queueSize * 16384, queueSize,
+Q_FIFO );
+    if ( err != 0 ) {
+        fprintf( stderr, "ERROR: got %d (%s) from rt_queue_create()\n",
+err, strerror( -err ) );
+        return 3;
+    }
+
+    for (int i = 0; i < 40; i++) {
+        int size = 256;
+        char * msg = 0;
+        for ( int j = 0; j < (i % realloc_count + 1); j++ ) {
+            int newSize = size << 1;
+            char *newMsg = (char *)rt_queue_alloc( &queue, newSize );
+            if ( newMsg == 0 ) {
+                fprintf( stderr, "ERROR: at %d, %d: got 0 from
+rt_queue_alloc(,%d)\n", i, j, newSize );
+                return 4;
+            }
+            if ( msg != 0 ) {
+                int loc = checkMessage( msg, size );
+                if ( loc >= 0 ) {
+                    fprintf( stderr, "ERROR: at %d, %d: after
+rt_queue_alloc, checkMessage failed at loc %d\n", i, j, loc );
+                    return 4;
+                }
+                err = rt_queue_free( &queue, msg );
+                if ( err < 0 ) {
+                    fprintf( stderr, "ERROR: got %d (%s) from
+rt_queue_free()\n", err, strerror(-err) );
+                    return 5;
+                }
+            }
+            msg = newMsg;
+            size = newSize;
+            buildMessage( msg, size );
+        }
+
+        err = rt_queue_send( &queue, msg, size, Q_NORMAL );
+        if ( err < 0 ) {
+            fprintf( stderr, "ERROR: at %d, got %d (%s) from
+rt_queue_send()\n", i, err, strerror(-err) );
+            break;
+        }
+    }
+    return 0;
+}
