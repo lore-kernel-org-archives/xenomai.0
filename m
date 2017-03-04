@@ -1,10 +1,12 @@
+From: Nitin Kulkarni <nitink@kth.se>
+Date: Sat, 4 Mar 2017 03:26:23 +0000
+Message-ID: <1488597983336.36220@kth.se>
+Content-Language: en-US
 MIME-Version: 1.0
-From: Josh Bowman <jbowman@facts-inc.com>
-Date: Fri, 3 Mar 2017 21:30:18 -0500
-Message-ID: <CAGTNcBuw2Wm6J1XZ2NKesomYojKZg_jxjDjw0QBncyfHDRjwNA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] heap corruption with multiple,
-	differently-sized calls to rt_queue_alloc()
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Latency test fails after in a Xenomai patched Ostro XT
+	linux distro
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,137 +15,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 Hi,
 
-I'm having a problem when trying to allocate multiple blocks using
-rt_queue_alloc(). When my client code is building a message to send to
-queue, it sometimes finds that it needs a bigger block. So it creates a new
-block via rt_queue_alloc(); copies the data from the previous block into
-the new block; and then calls rt_queue_free() on the old block.
+I have patched the Xenomai 3.0.3 to an Ostro XT linux distribution and afte=
+r flashing the image and booting on the Intel Joule board I installed the X=
+enomai libraries natively. When I run the Latency test it gives this messag=
+e and stops.
 
-The code included here is a simplified version of this process. It
-allocates a buffer; puts some data in it; allocates a new buffer; and then
-checks to make sure the previous buffer is intact. Then it frees the
-previous buffer and loops.
 
-When I run this code, it prints:
+root@intel-corei7-64:~/Xenlib# /usr/xenomai/bin/latency
+=3D=3D Sampling period: 100 us
+=3D=3D Test mode: periodic user-mode task
+=3D=3D All results in microseconds
+/usr/xenomai/bin/latency: pthread_create(latency): Operation not permitted
 
-ERROR: at 7, 2: after rt_queue_alloc, checkMessage failed at loc 480
+Although I am running as a root user it gives this error. I have not added =
+any user group through the Kernel command line parameter xenomai.allowed_gr=
+oup?.
+when I run the command
 
-This means the buffer previously returned by rt_queue_alloc() is damaged by
-the next call to rt_queue_alloc().  I set a watch in the debugger, and it
-looks like the damage is done at line 376 of lib/alchemy/queue.c; this
-seems to indicate the heapobj_alloc() is returning a region that overlaps
-the one previously allocated.
+dmesg | grep -i xenomai
 
-I'm running Xenomai/mercury from stable-3.0.x on x86_64, with config:
-"--with-core=mercury --enable-smp --enable-pshared --enable-registry
---enable-debug"
 
-I build the test program with:
+I get this from the Kernel log
+[    0.000000] Command line: rootwait console=3Dtty0 xenomai.sysheap_size=
+=3D256 xenomai.state=3Denabled xenomai.smi=3Ddetect xenomai.smi_mask=3D1 co=
+nsole=3DttyS2,115200 video=3Defifb maxcpus=3D4 noxsave reboot=3Defi kmemlea=
+k=3Doff fsck.mode=3Dskip no-ima ro root=3DPARTUUID=3D12345678-9abc-def0-0fe=
+d-cba987654321 rootfstype=3Dext4 installer
+[    0.000000] Kernel command line: rootwait console=3Dtty0 xenomai.sysheap=
+_size=3D256 xenomai.state=3Denabled xenomai.smi=3Ddetect xenomai.smi_mask=
+=3D1 console=3DttyS2,115200 video=3Defifb maxcpus=3D4 noxsave reboot=3Defi =
+kmemleak=3Doff fsck.mode=3Dskip no-ima ro root=3DPARTUUID=3D12345678-9abc-d=
+ef0-0fed-cba987654321 rootfstype=3Dext4 installer
+[    0.668993] [Xenomai] scheduling class idle registered.
+[    0.669456] [Xenomai] scheduling class rt registered.
+[    0.670016] I-pipe: head domain Xenomai registered.
+[    0.672804] [Xenomai] Cobalt v3.0.3 (Groovy Cosmic Halo)
 
-g++ queue-2.cpp -o queue-2 -g -fno-default-inline -fno-omit-frame-pointer
-`xeno-config --skin=alchemy --cflags --no-auto-init --ldflags`
+?
+Please let me know how to handle this issue.
 
-Changing the realloc_count parameter causes the code to fail at different
-iterations; passing realloc_count = 3 moves the failure to the
-rt_queue_send() call. (The code runs to completion with realloc_count set
-to 1 or 2.)
+Regards,
+Nitin
 
-I've also found that if I don't call rt_queue_free() the code runs to
-completion.
 
-Let me know if there's anything I can do to help.
 
-Thanks,
-Josh
 
-File queue-2.cpp follows:
 
-#include <alchemy/task.h>
-#include <alchemy/queue.h>
-#include <xenomai/init.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <vector>
 
-RT_TASK task;
-RT_QUEUE queue;
 
-void buildMessage( char * p, int len ) {
-    for ( int i = 0; i < len; i++ )
-        p[i] = (char)i;
-}
-int checkMessage( char * p, int len ) {
-    for ( int i = 0; i < len; i++ )
-        if ( p[i] != ((char)i))
-            return i;
-    return -1;
-}
 
-int main(int argc, char *const argv[]) {
-    int priority = 12;
-    int queueSize = 50;
-    int realloc_count = 5;
-
-    xenomai_init(&argc,&argv);
-
-    if ( argc >= 2 )
-        realloc_count = atoi( argv[1] );
-
-    int err = rt_task_shadow( &task, "queueTask", priority, 0 );
-
-    if ( err != 0 ) {
-        fprintf( stderr, "ERROR: got %d from rt_task_shadow()\n", err );
-        return 2;
-    }
-
-    err = rt_queue_create(&queue, "queue", queueSize * 16384, queueSize,
-Q_FIFO );
-    if ( err != 0 ) {
-        fprintf( stderr, "ERROR: got %d (%s) from rt_queue_create()\n",
-err, strerror( -err ) );
-        return 3;
-    }
-
-    for (int i = 0; i < 40; i++) {
-        int size = 256;
-        char * msg = 0;
-        for ( int j = 0; j < (i % realloc_count + 1); j++ ) {
-            int newSize = size << 1;
-            char *newMsg = (char *)rt_queue_alloc( &queue, newSize );
-            if ( newMsg == 0 ) {
-                fprintf( stderr, "ERROR: at %d, %d: got 0 from
-rt_queue_alloc(,%d)\n", i, j, newSize );
-                return 4;
-            }
-            if ( msg != 0 ) {
-                int loc = checkMessage( msg, size );
-                if ( loc >= 0 ) {
-                    fprintf( stderr, "ERROR: at %d, %d: after
-rt_queue_alloc, checkMessage failed at loc %d\n", i, j, loc );
-                    return 4;
-                }
-                err = rt_queue_free( &queue, msg );
-                if ( err < 0 ) {
-                    fprintf( stderr, "ERROR: got %d (%s) from
-rt_queue_free()\n", err, strerror(-err) );
-                    return 5;
-                }
-            }
-            msg = newMsg;
-            size = newSize;
-            buildMessage( msg, size );
-        }
-
-        err = rt_queue_send( &queue, msg, size, Q_NORMAL );
-        if ( err < 0 ) {
-            fprintf( stderr, "ERROR: at %d, got %d (%s) from
-rt_queue_send()\n", i, err, strerror(-err) );
-            break;
-        }
-    }
-    return 0;
-}
