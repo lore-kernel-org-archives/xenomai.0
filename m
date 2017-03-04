@@ -1,12 +1,14 @@
 From: Nitin Kulkarni <nitink@kth.se>
-Date: Sat, 4 Mar 2017 03:26:23 +0000
-Message-ID: <1488597983336.36220@kth.se>
+Date: Sat, 4 Mar 2017 04:30:46 +0000
+Message-ID: <1488601846543.4195@kth.se>
+References: <1488597983336.36220@kth.se>
+In-Reply-To: <1488597983336.36220@kth.se>
 Content-Language: en-US
 MIME-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 Subject: [Xenomai] Latency test fails after in a Xenomai patched Ostro XT
-	linux distro
+ linux distro - part 2
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,6 +18,34 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+
+After the below things happened I added a regular user (nitin) to the allow=
+ed_group parameter file in /sys/module/xenomai/parameters/allowed_group
+
+
+Then executed the latency test to get this message :
+
+
+nitin@intel-corei7-64:/usr/bin$ /usr/xenomai/bin/latency
+   0"000.000| WARNING: [main] cannot open RTDM device /dev/rtdm/memdev-priv=
+ate: Permission denied
+   0"000.000| WARNING: [main] cannot map private umm area: Permission denie=
+d
+   0"000.000| BUG in init_bind(): [main] (CONFIG_DEVTMPFS_MOUNT not enabled=
+?)
+
+?I must be doing something wrong. Please let me know.
+
+- Nitin
+
+
+________________________________
+From: Nitin Kulkarni
+Sent: Saturday, March 4, 2017 4:26 AM
+To: xenomai@xenomai.org
+Subject: Latency test fails after in a Xenomai patched Ostro XT linux distr=
+o
+
 
 Hi,
 
