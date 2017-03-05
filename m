@@ -1,14 +1,13 @@
-Date: Fri, 10 Mar 2017 13:34:26 +0000 (UTC)
-From: Giulio Moro <giuliomoro@yahoo.it>
-Message-ID: <913208909.4906404.1489152866278@mail.yahoo.com>
-In-Reply-To: <1051219559.580434.1487468293843@mail.yahoo.com>
-References: <1051219559.580434.1487468293843.ref@mail.yahoo.com>
- <1051219559.580434.1487468293843@mail.yahoo.com>
+References: <1488597983336.36220@kth.se> <1488601846543.4195@kth.se>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <c7c077da-ea23-899a-6886-9543ce11fbb0@xenomai.org>
+Date: Sun, 5 Mar 2017 16:46:16 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] pthread_rt and C++ on Xenomai 2.6
-Reply-To: Giulio Moro <giuliomoro@yahoo.it>
+In-Reply-To: <1488601846543.4195@kth.se>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Latency test fails after in a Xenomai patched Ostro
+ XT linux distro - part 2
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,56 +16,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Nitin Kulkarni <nitink@kth.se>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I think I now have the answer to this question which was - admittedly - not=
- formulated very clearly.
-The answer I came up with is: it depends on how your c++ standard library i=
-s implemented. The one we use (libstdc++.so which comes with gcc 4.9) does =
-not make all the calls to the pthread API that I would expect. For instance=
-, it does not call "pthread_mutex_init" but it calls "gthread_mutex_init". =
-Therefore, wrapping does not work properly for the mutex API.
-Perhaps other implementations of the C++ standard library would be more wra=
-pping-friendly in this sense.Has there been any effort in writing a Xenomai=
--wrappable (or Xenomai-friendly) C++ standard library?
-Thanks,Giulio
+On 03/04/2017 05:30 AM, Nitin Kulkarni wrote:
+> After the below things happened I added a regular user (nitin) to the allowed_group parameter file in /sys/module/xenomai/parameters/allowed_group
+> 
+> 
+> Then executed the latency test to get this message :
+> 
+> 
+> nitin@intel-corei7-64:/usr/bin$ /usr/xenomai/bin/latency
+>    0"000.000| WARNING: [main] cannot open RTDM device /dev/rtdm/memdev-private: Permission denied
+>    0"000.000| WARNING: [main] cannot map private umm area: Permission denied
+>    0"000.000| BUG in init_bind(): [main] (CONFIG_DEVTMPFS_MOUNT not enabled?)
+> 
+> ?I must be doing something wrong. Please let me know.
 
+You need to tell udev to set appropriate permissions to the RTDM devices
+via some rule file, so that users from this group may access those
+devices, e.g.
 
-      From: Giulio Moro <giuliomoro@yahoo.it>
- To: Xenomai <xenomai@xenomai.org>=20
- Sent: Sunday, 19 February 2017, 1:38
- Subject: pthread_rt and C++ on Xenomai 2.6
-  =20
-What's the deal with using the posix skin to wrap C++ mutex, locks and thre=
-ads?
-I am on ARMv7 (Beaglebone Black), with gcc 4.9, xeno-config on this system =
-returns the following:$ /usr/xenomai/bin/xeno-config --skin=3Dposix --ldfla=
-gs --cflags-Wl,@/usr/xenomai/lib/posix.wrappers -L/usr/xenomai/lib -lpthrea=
-d_rt -lxenomai -lpthread -lrt-I/usr/xenomai/include -D_GNU_SOURCE -D_REENTR=
-ANT -D__XENO__ -I/usr/xenomai/include/posix
-The example code here=C2=A0http://www.cplusplus.com/reference/mutex/mutex/t=
-ry_lock/
-compiles and runs fine (i.e.: I get a reasonable number of increases of the=
- counter) with=C2=A0(1) g++ -pthread test.cpp -std=3Dc++14 -lpthread
+# Xenomai real-time devices
+SUBSYSTEM=="rtdm", MODE="0660", GROUP=<your-group>
 
-but if I wrap the posix calls with(2) gcc test.cpp -std=3Dc++14 =C2=A0-I/us=
-r/xenomai/include -D_GNU_SOURCE -D_REENTRANT -D__XENO__ -I/usr/xenomai/incl=
-ude/posix -L/usr/xenomai/lib -lstdc++ -lpthread_rt -lxenomai -lpthread -lrt=
- -Wl,@/usr/xenomai/lib/posix.wrappers -pthread
-then the mutex can never be acquired by any thread. Actually, I cannot lock=
- it even if I place mtx.try_lock() on the first line of main().Also, if I t=
-ry to sleep at sleep just before the end of attempt_10k_increases() with "s=
-td::this_thread::sleep_for", it does not sleep. Even if I increase the numb=
-er of attempts, in order for the threads to stay alive for longer, I cannot=
- see the threads show up in /proc/xenomai/stat .
-What I observe is that when using -Wl,@/usr/xenomai/lib/posix.wrapper:- mut=
-ex::try_lock fails-=C2=A0std::this_thread::sleep_for() does not sleep- thre=
-ads do not show up in /proc/xenomai/stat
-So I have two questions:a) is there any way to get -Wl,@/usr/xenomai/lib/po=
-six.wrappers to correctly wrap underlying calls to pthread_* functions whic=
-h are hidden in libstdc++ ?b) is there any way to safely link into the same=
- executable some code that calls pthread_* which you want to wrap in the Xe=
-nomai posix skin and C++ code which uses std::thread?
-Thanks,Giulio
+-- 
+Philippe.
 
-  =20
