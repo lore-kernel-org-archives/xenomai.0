@@ -1,14 +1,14 @@
-References: <1a14fe35-fa00-c088-3838-b6e25ee5bff1@xenomai.org>
- <20170522111517.76526d57@md1em3qc>
+References: <CAGTNcBuw2Wm6J1XZ2NKesomYojKZg_jxjDjw0QBncyfHDRjwNA@mail.gmail.com>
+ <469e1d96-6f47-53cc-3750-77ae8479da23@xenomai.org>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <c67ebae3-251a-d265-62b5-2c3335ef27f0@xenomai.org>
-Date: Mon, 22 May 2017 11:18:01 +0200
+Message-ID: <2e38fb9b-3e7f-ab54-576c-3080903f7459@xenomai.org>
+Date: Sun, 5 Mar 2017 15:59:50 +0100
 MIME-Version: 1.0
-In-Reply-To: <20170522111517.76526d57@md1em3qc>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+In-Reply-To: <469e1d96-6f47-53cc-3750-77ae8479da23@xenomai.org>
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 3.0.5
+Subject: Re: [Xenomai] heap corruption with multiple,
+ differently-sized calls to rt_queue_alloc()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,28 +17,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Josh Bowman <jbowman@facts-inc.com>, xenomai@xenomai.org
 
-On 05/22/2017 11:15 AM, Henning Schild wrote:
-> Am Sun, 21 May 2017 21:19:22 +0200
-> schrieb Philippe Gerum <rpm@xenomai.org>:
-> 
->> Xenomai 3.0.5 is out. A few bug fixes, most notably in the Cobalt
->> core, and several cleanups for better supporting different C
->> libraries. This release also provides support for kernel series up to
->> 4.9.x (included).
+On 03/05/2017 12:43 PM, Philippe Gerum wrote:
+> On 03/04/2017 03:30 AM, Josh Bowman wrote:
+>> Hi,
 >>
->> http://xenomai.org/downloads/xenomai/stable/latest/xenomai-3.0.5.tar.bz2
+>> I'm having a problem when trying to allocate multiple blocks using
+>> rt_queue_alloc(). When my client code is building a message to send to
+>> queue, it sometimes finds that it needs a bigger block. So it creates a new
+>> block via rt_queue_alloc(); copies the data from the previous block into
+>> the new block; and then calls rt_queue_free() on the old block.
+>>
+>> The code included here is a simplified version of this process. It
+>> allocates a buffer; puts some data in it; allocates a new buffer; and then
+>> checks to make sure the previous buffer is intact. Then it frees the
+>> previous buffer and loops.
+>>
+>> When I run this code, it prints:
+>>
+>> ERROR: at 7, 2: after rt_queue_alloc, checkMessage failed at loc 480
+>>
+>> This means the buffer previously returned by rt_queue_alloc() is damaged by
+>> the next call to rt_queue_alloc().  I set a watch in the debugger, and it
+>> looks like the damage is done at line 376 of lib/alchemy/queue.c; this
+>> seems to indicate the heapobj_alloc() is returning a region that overlaps
+>> the one previously allocated.
+>>
+>> I'm running Xenomai/mercury from stable-3.0.x on x86_64, with config:
+>> "--with-core=mercury --enable-smp --enable-pshared --enable-registry
+>> --enable-debug"
+>>
+>> I build the test program with:
+>>
+>> g++ queue-2.cpp -o queue-2 -g -fno-default-inline -fno-omit-frame-pointer
+>> `xeno-config --skin=alchemy --cflags --no-auto-init --ldflags`
+>>
+>> Changing the realloc_count parameter causes the code to fail at different
+>> iterations; passing realloc_count = 3 moves the failure to the
+>> rt_queue_send() call. (The code runs to completion with realloc_count set
+>> to 1 or 2.)
+>>
+>> I've also found that if I don't call rt_queue_free() the code runs to
+>> completion.
+>>
+>> Let me know if there's anything I can do to help.
 >>
 > 
-> This is currently just a tag on no upstream branch. Please update
-> stable-3.0.x and probably master as well.
+> Your test code perfectly reproduces the issue here, thanks. There is a
+> severe bitmap breakage, I'm on it.
 > 
 
-Master is not aimed at reflecting the latest stable, if any, it should
-reflect the tip of the development which is the -next branch; however
-this tracking is not followed. Actually the master branch should go away.
+Ugly bug affecting the page bitmap of the shared heap (--enable-pshared)
+which caused the allocator to be terminally confused by some allocation
+patterns. Fixed in the stable branch:
+
+http://git.xenomai.org/xenomai-3.git/commit/?h=stable-3.0.x&id=027898e4732cb5de9b2f1e762a61661ba9421d00
+
+Thanks.
 
 -- 
 Philippe.
