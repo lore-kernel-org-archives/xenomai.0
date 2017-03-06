@@ -1,7 +1,12 @@
-From: =?UTF-8?q?G=C3=B6kt=C3=BCrk=20Y=C3=BCksek?= <gokturk@gentoo.org>
-Date: Fri, 14 Apr 2017 13:54:11 -0400
-Message-Id: <20170414175411.11952-1-gokturk@gentoo.org>
-Subject: [Xenomai] [PATCH v1] configure: fix the help string for demodir
+References: <831575463.159236990.1488790196640.JavaMail.root@zimbra19-e3.priv.proxad.net>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <9ccb0230-8f82-dc52-ad1d-567ebdfb79db@xenomai.org>
+Date: Mon, 6 Mar 2017 10:02:49 +0100
+MIME-Version: 1.0
+In-Reply-To: <831575463.159236990.1488790196640.JavaMail.root@zimbra19-e3.priv.proxad.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Looking for training on Linux/Xenomai on i.MX6
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,28 +15,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: pierre.roumagnac@free.fr, =?UTF-8?Q?C=c3=a9dric_Perles?= <cperles@sepro-group.com>
+Cc: xenomai@xenomai.org
 
-The help string uses '--with-demo' instead of '--with-demodir',
-misinforming the user about the correct option to pass.
----
- configure.ac | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 03/06/2017 09:49 AM, pierre.roumagnac@free.fr wrote:
+> Hello Cedric
+> 
+> 6 months ago we had similar needs
+> we chose phytec that adapt their training to our specific needs
+> 
+> http://www.phytec.fr/services/formation-linux/linux-embarque-drivers-et-temps-reel/
+> 
 
-diff --git a/configure.ac b/configure.ac
-index 4792e46..d6354f1 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -746,7 +746,7 @@ AC_MSG_RESULT($XENO_TEST_DIR)
- demodir='${exec_prefix}/demo'
- AC_MSG_CHECKING(location for demo programs)
- AC_ARG_WITH(demodir,
--    AS_HELP_STRING([--with-demo=<demo-program-dir>],[location for demo programs (defaults to $prefix/demo)]),
-+    AS_HELP_STRING([--with-demodir=<demo-program-dir>],[location for demo programs (defaults to $prefix/demo)]),
-     [
- 	case "$withval" in
- 	"" | y | ye | yes | n | no)
+They may want to consider fixing the section related to real-time
+support in user-space in this presentation. LXRT has never been a
+Xenomai thing.
+
 -- 
-2.10.2
-
+Philippe.
 
