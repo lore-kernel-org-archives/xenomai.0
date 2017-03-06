@@ -1,17 +1,12 @@
-References: <CAFjt0OkDDODSAjwBC6QJ4wMyae6RnzRhqKhgT7y0qqs1tPwc7g@mail.gmail.com>
- <CAK4EZFS9BOuZWAno7ZAp=wmnue-3qh_sd601Z4THTdu72=cACQ@mail.gmail.com>
- <6fa93df9-18c4-77fe-b24e-1bd396d92da9@xenomai.org>
- <8932f1c6-676f-fa05-be4b-6e5819271d37@xenomai.org>
- <CAK4EZFR+oBxYht-Cx+Vma6u7e_dqeQeB=5D42-X7z2AZJ=qX3Q@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <b2e036e4-d46b-1ea8-0d7e-f597688fa4ed@xenomai.org>
-Date: Thu, 27 Apr 2017 19:31:45 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAK4EZFR+oBxYht-Cx+Vma6u7e_dqeQeB=5D42-X7z2AZJ=qX3Q@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RPi: Possible solution for freezes
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Date: Mon, 06 Mar 2017 10:14:37 +0100
+From: Pierre FICHEUX <pierre.ficheux@smile.fr>
+In-Reply-To: <072401d2964a$0cf736c0$26e5a440$@sepro-group.com>
+References: <072401d2964a$0cf736c0$26e5a440$@sepro-group.com>
+Message-ID: <7909795dc79824c51ea5d9abf7ee4eda@smile.fr>
+Subject: Re: [Xenomai] Looking for training on Linux/Xenomai on i.MX6
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,28 +15,89 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Adam Vaughan <vaughana@umich.edu>
-Cc: john.gwynne@matrixresearch.com, =?UTF-8?Q?Geber_Villa_Fern=c3=a1ndez?= <gebervf@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?UTF-8?Q?C=C3=A9dric_Perles?= <cperles@sepro-group.com>
+Cc: xenomai@xenomai.org
 
-On 04/27/2017 07:24 PM, Adam Vaughan wrote:
->> I don't think any regular driver thread priority could interfere with
->> the dual kernel operating in primary/real-time mode, that is actually a
->> selling point of the pipelined IRQ architecture which decouples the
->> regular kernel logic from the real-time core.
-> 
-> That's a good point.
-> 
-> I'm looking at my old code with a fresh set of eyes, and I think I
-> found a possible cause.  In debugging months prior I had apparently
-> switched from using ioctl_rt to ioctl_nrt, but never reverted back.
-> The latency numbers were apparently fine until I saw an influence of
-> heavy network usage.
-> 
+We have such a training.
 
-Ack. Downgrading to regular non-rt mode with a call to ioctl_nrt would
-definitely explain the figures, which would be those delivered by a
-stock kernel by definition, not Xenomai's.
+Regards
 
 -- 
-Philippe.
+Pierre FICHEUX -/- CTO Smile-ECS, France -\- pierre.ficheux@smile.fr
+                                     http://www.smile.fr
+                                     http://ingenierie.openwide.fr
+I would love to change the world, but they won't give me the source 
+code
+
+Le 2017-03-06 08:19, Cédric Perles a écrit :
+> Hi,
+> 
+> 
+> 
+> I work for a company based in France (La-Roche-Sur-Yon) that build
+> embedded devices and we are planning to switch from QNX to 
+> Linux/Xenomai
+> on i.MX6.
+> 
+> 
+> 
+> I am currently searching for a training center able to teach Linux and
+> Xenomai to all software team (8 people).
+> 
+> 
+> 
+> => Does anyone know a correct training center for this ?
+> 
+> 
+> 
+> => Is there anyone experienced in Xenomai on i.MX6 (tricks, classical
+> traps …) ?
+> 
+> 
+> 
+> Regards,
+> 
+> 
+> 
+> Cédric
+> 
+> 
+> Sepro
+> 
+> Cédric PERLES
+> Software R&D engineer
+> SEPRO Robotique - Rue Henry Bessemer - Zone Acti-Est - CS 10084 - 
+> 85003 La
+> Roche sur Yon Cedex (France)
+> 
+> Tel : +33 (0)2 51 45 05 31
+> 
+>   _____
+> 
+>  <http://www.sepro-group.com/fr> www.sepro-group.com |
+> <https://twitter.com/seprogroup> twitter@SeproGroup
+> 
+> 
+> 
+> 
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: image001.jpg
+> Type: image/jpeg
+> Size: 22984 bytes
+> Desc: not available
+> URL:
+> <http://xenomai.org/pipermail/xenomai/attachments/20170306/6c2f4669/attachment.jpg>
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: image004.png
+> Type: image/png
+> Size: 818 bytes
+> Desc: not available
+> URL:
+> <http://xenomai.org/pipermail/xenomai/attachments/20170306/6c2f4669/attachment.png>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
