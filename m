@@ -1,10 +1,11 @@
+From: =?iso-8859-1?Q?C=E9dric_Perles?= <cperles@sepro-group.com>
+Date: Mon, 6 Mar 2017 08:19:53 +0100 (CET)
+Message-ID: <072401d2964a$0cf736c0$26e5a440$@sepro-group.com>
 MIME-Version: 1.0
-From: Josh Bowman <jbowman@facts-inc.com>
-Date: Sat, 1 Apr 2017 02:25:09 -0400
-Message-ID: <CAGTNcBtzrhyCvWycQGo+G_gyDjK17jWCGudszBNgF1Uv=9pmcA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] latency.c: fix occasional SIGSEGV at shutdown when mode
-	is USER_TASK
+Content-Language: fr
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Looking for training on Linux/Xenomai on i.MX6
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,36 +18,65 @@ To: xenomai@xenomai.org
 
 Hi,
 
-Under Mercury, I've been seeing occasionally a "Segmentation fault" message
-when I hit ctrl-c to stop the latency test program. I caught a core dump,
-and the stack trace leads back to the sem_wait() call in the display task.
 
-I think this is caused by the cleanup() routine destroying the semaphore
-before it calls join on the display task. This patch seems to fix the issue.
 
--Josh
+I work for a company based in France (La-Roche-Sur-Yon) that build
+embedded devices and we are planning to switch from QNX to Linux/Xenomai
+on i.MX6.
 
-diff --git a/testsuite/latency/latency.c b/testsuite/latency/latency.c
-index e800361..5304342 100644
---- a/testsuite/latency/latency.c
-+++ b/testsuite/latency/latency.c
-@@ -492,6 +492,8 @@ static void cleanup(void)
-     if (test_mode == USER_TASK) {
-         pthread_cancel(latency_task);
-         pthread_join(latency_task, NULL);
-+        pthread_join(display_task, NULL);
-+
-         sem_close(display_sem);
-         sem_unlink(sem_name);
-         gavgjitter /= (test_loops > 1 ? test_loops : 2) - 1;
-@@ -504,10 +506,9 @@ static void cleanup(void)
-         gmaxjitter = overall.result.max;
-         gavgjitter = overall.result.avg;
-         goverrun = overall.result.overruns;
-+        pthread_join(display_task, NULL);
-     }
 
--    pthread_join(display_task, NULL);
--
-     if (benchdev >= 0)
-         close(benchdev);
+
+I am currently searching for a training center able to teach Linux and
+Xenomai to all software team (8 people).
+
+
+
+=3D> Does anyone know a correct training center for this ?
+
+
+
+=3D> Is there anyone experienced in Xenomai on i.MX6 (tricks, classical
+traps =85) ?
+
+
+
+Regards,
+
+
+
+C=E9dric
+
+
+Sepro
+
+C=E9dric PERLES
+Software R&D engineer
+SEPRO Robotique - Rue Henry Bessemer - Zone Acti-Est - CS 10084 - 85003 La
+Roche sur Yon Cedex (France)
+
+Tel : +33 (0)2 51 45 05 31
+
+  _____
+
+ <http://www.sepro-group.com/fr> www.sepro-group.com |
+<https://twitter.com/seprogroup> twitter@SeproGroup
+
+
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: image001.jpg
+Type: image/jpeg
+Size: 22984 bytes
+Desc: not available
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20170306/6c2f4669/at=
+tachment.jpg>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: image004.png
+Type: image/png
+Size: 818 bytes
+Desc: not available
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20170306/6c2f4669/at=
+tachment.png>
