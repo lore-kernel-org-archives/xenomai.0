@@ -1,7 +1,15 @@
+Date: Mon, 6 Mar 2017 18:04:51 +0100
 From: Henning Schild <henning.schild@siemens.com>
-Date: Tue, 16 May 2017 15:50:36 +0200
-Message-Id: <20170516135036.16880-1-henning.schild@siemens.com>
-Subject: [Xenomai] [PATCH] scripts/xeno-config: add -Wl,--no-as-needed
+Message-ID: <20170306180451.2ca3fd04@md1em3qc>
+In-Reply-To: <9eefa102-ada8-9395-4962-998714f822b4@xenomai.org>
+References: <aa57407e-6064-eebf-6d9f-be2ba864d633@xenomai.org>
+ <20170306140049.23493-1-henning.schild@siemens.com>
+ <9eefa102-ada8-9395-4962-998714f822b4@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH 1/2] cobalt: fix for incorrect assert wrappers
+	commit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,50 +18,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Linking with "--as-needed" could cause the linker to not list essential
-wrapping libraries as needed for a shared library or a dynamically
-linked binary. The result would be runtime ld.so errors for the binaries
-or linking problems with the .so.
-gcc defaults to "--no-as-needed" that is why we never needed to specify
-that flag explicitly. But gcc from Ubuntu is patched to default to
-"--as-needed".
-This patch enforces "--no-as-needed", which will have no effect on most
-toolchains. On Ubuntu it will override the default and make sure xenomai
-applications get linked as expected.
+Am Mon, 6 Mar 2017 17:18:23 +0100
+schrieb Philippe Gerum <rpm@xenomai.org>:
 
-Signed-off-by: Henning Schild <henning.schild@siemens.com>
----
- scripts/xeno-config-cobalt.in  | 1 +
- scripts/xeno-config-mercury.in | 1 +
- 2 files changed, 2 insertions(+)
+> On 03/06/2017 03:00 PM, Henning Schild wrote:
+> 
+> > -XENO_AUTOINIT_LDFLAGS='$(top_builddir)/lib/boilerplate/init/bootstrap-internal.o'"
+> > -Wl,--wrap=main -Wl,--dynamic-list=$topdir/scripts/dynlist.ld"
+> > +XENO_AUTOINIT_LDFLAGS='$(top_builddir)/lib/boilerplate/init/bootstrap-internal.o'"
+> > -Wl,--wrap=main -Wl,--dynamic-list=$topdir/scripts/dynlist.ld
+> > $XENO_ASSERT_WRAPPERS" AC_SUBST(XENO_AUTOINIT_LDFLAGS) 
+> 
+> XENO_AUTOINIT_LDFLAGS is only used internally, inside the Xenomai tree
+> for building utilities and test programs which may want the
+> auto-bootstrap feature on. Is this the intent?
 
-diff --git a/scripts/xeno-config-cobalt.in b/scripts/xeno-config-cobalt.in
-index 82815e1936..ae313d3897 100644
---- a/scripts/xeno-config-cobalt.in
-+++ b/scripts/xeno-config-cobalt.in
-@@ -282,6 +282,7 @@ if test x$do_ldflags = xy; then
- 	fi
- 	bootstrap="${XENO_LIBRARY_DIR}/xenomai/bootstrap${codegen}.o"
-     fi
-+    ldflags="-Wl,--no-as-needed $ldflags"
-     echo "$ldflags $copperplate $bootstrap $wrap_main $XENO_POSIX_LDFLAGS"
- fi
- 
-diff --git a/scripts/xeno-config-mercury.in b/scripts/xeno-config-mercury.in
-index a0aa75b737..2d2842f300 100644
---- a/scripts/xeno-config-mercury.in
-+++ b/scripts/xeno-config-mercury.in
-@@ -213,6 +213,7 @@ if test x$do_ldflags = xy; then
- 	fi
- 	bootstrap="${XENO_LIBRARY_DIR}/xenomai/bootstrap${codegen}.o"
-     fi
-+    ldflags="-Wl,--no-as-needed $ldflags"
-     echo "$ldflags $copperplate $bootstrap $wrap_main $XENO_BASE_LDFLAGS"
- fi
- 
--- 
-2.13.0
+Honestly, i am not sure where to best put that. And i do not know what
+the auto-bootstrap feature is. It does solve build problems in the tree
+i.e. for latency and smokey_net_server.
+The process of coming up with this version was a lot of looking at "make
+V=1" and pattern matching to where the flags came from.
 
+The build issues can be seen when applying 2/2 from this series on top
+of current master 027898e4732cb5de.
+
+After all the CXXAbi patch should have never come with those dummies. I
+just put them in because of the above build-problems assuming they would
+be natural for C-code and that weak symbols could not hurt.
+Both those assumption where wrong ...
+
+Would be nice if you could look at the problems and suggest a better
+place for the adjusted LDFLGAS.
+
+regards,
+Henning
 
