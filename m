@@ -1,10 +1,13 @@
-From: Wolfgang Netbal <wolfgang.netbal@sigmatek.at>
-Message-ID: <4dde2217-0520-3b4d-7aa3-2393a0e2c88c@sigmatek.at>
-Date: Fri, 5 May 2017 13:37:07 +0200
+Date: Mon, 6 Mar 2017 13:00:19 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20170306130019.4a142b63@md1em3qc>
+In-Reply-To: <45d853f4-7f82-3d1c-40a6-914df5e90c54@xenomai.org>
+References: <20170303151838.35652dab@md1em3qc>
+ <45d853f4-7f82-3d1c-40a6-914df5e90c54@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai] =?utf-8?q?Gatekeeper_taking_1ms_instead_of_13=C2=B5s?=
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] any extra reasons for -EINTR in xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,47 +16,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai Mailing List <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+Am Fri, 3 Mar 2017 16:57:04 +0100
+schrieb Philippe Gerum <rpm@xenomai.org>:
 
-I use the following configuration imx6dl with Kernel 3.10.53 and Xenomai 
-2.6.4.
+> On 03/03/2017 03:18 PM, Henning Schild wrote:
+> > Hi,
+> > 
+> > someone came to me asking about reasons why system calls would exit
+> > with -EINTR on a xenomai 2 system. As far as i know there a are two
+> > possible reasons for that to happen.
+> > 1. the thread received a signal while being blocked in the call
+> > 2. the thread got a rt_task_unblock
+> > 
+> > Now we are pretty sure that we can rule out both of these cases. It
+> > is a complex system and there might be signals. But none of the
+> > applications signal handlers was called and the application did not
+> > exit, which only leaves very few signals as candidates. Because
+> > almost all default signal handlers will end an application.
+> > And my current assumption would be that default signal handlers
+> > all have SA_RESTART and there would be no -EINTR. Which limits the
+> > possible signals to the ones where a custom handler was installed
+> > and SA_RESTART was not set. But according to the logs no custom
+> > handler was called.
+> > 
+> > We know it happened while being blocked in rtdm_event_timedwait and
+> > the documentation mentions the two reasons from above.
+> >   
+> 
+> Somebody has to raise the XNBREAK bit in the tcb for this to happen,
+> i.e. xnthread_set_info(thread, XNBREAK). There are four locations in
+> the nucleus doing that, two of them happen in do_sigwake_event().
+> Tracing there would rule out the consequence of receiving a regular
+> signal.
+> 
+> In a related case, entering xnpod_suspend_thread() in a runnable state
+> with the XNKICKED bit set would also cause the XNBREAK bit to be set,
+> preventing the caller to block. This should only happen if a signal is
+> raised from another CPU while the caller is traversing the Xenomai
+> syscall path.
+> 
+> Finally, there is xnpod_unblock_thread() but that one won't be called
+> unless the application forcibly unblocks a thread, which you already
+> ruled out.
 
-I have a periodic workflow with a timebase of 1ms.
-The timebase creates a Xenomai task (timer_task) with priority 99.
-In the normal case I have an idle time of 666µs before
-the timer_task starts the new period.
+Thanks for the analysis. I looked at the code myself and came to the
+same conclusion. To sum this up the first 3/4 are signal-related and
+the 4th one is rt_task_unblock.
+And looking at rtdm_event_timedwait it can clearly just happen under
+that one condition (XNBREAK).
 
-In the failed case the last Linux Task switching to Gatekeeper 24µs
-before the timer_task starts the new period.
-Now I see that the Gatekeeper runs 1004µs and then the normal
-workflow starts.
+So i guess we are looking at a signal after all.
 
-First of all is it possible that the timer_task (prio 99) interrupts the 
-Gatekeeper (prio 99) ?
+Henning
 
-Is there an option that the interruption of the Gatekepper is the reason for
-long runtime of the Gatekeeper in error case ?
 
-Because of the short difference (24µs) between start of Gatekeeper and
-start of timer_task can be the scheduler be part of the problem ?
 
-Here a short overview of the normal workflow
-Xenomai prio 80    53µs
-Xenomai prio 30    24µs
-Xenomai prio 29    19µs
-Xenomai prio 1         1µs
-Linux task                40µs
-Gatekeeper              71µs
-Linux task                77µs
-Gatekeeper              13µs
-idle                        666µs
--------------------------------------
-Sum                        954µs
-
-Kind regards
-Wolfgang
 
 
 
