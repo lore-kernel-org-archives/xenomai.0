@@ -1,14 +1,15 @@
-From: Nitin Kulkarni <nitink@kth.se>
-Date: Sat, 4 Mar 2017 04:30:46 +0000
-Message-ID: <1488601846543.4195@kth.se>
-References: <1488597983336.36220@kth.se>
-In-Reply-To: <1488597983336.36220@kth.se>
-Content-Language: en-US
+References: <558D5FAD.3060003@siemens.com> <20170307193444.79df74cd@md1em3qc>
+ <507e7a5d-284f-7098-7736-4644c4cd8b87@xenomai.org>
+ <ffae09d9-b277-24a7-8fd6-809e13ef8ba6@siemens.com>
+ <7194280d-f9ac-df05-8038-1280820e8f95@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5b110d60-f3b9-03b7-365e-6c3b80e30525@siemens.com>
+Date: Wed, 8 Mar 2017 12:32:29 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Latency test fails after in a Xenomai patched Ostro XT
- linux distro - part 2
+In-Reply-To: <7194280d-f9ac-df05-8038-1280820e8f95@xenomai.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Heads up: some race condition fixes for Xenomai 3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,84 +18,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Henning Schild <henning.schild@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-After the below things happened I added a regular user (nitin) to the allow=
-ed_group parameter file in /sys/module/xenomai/parameters/allowed_group
+On 2017-03-08 12:29, Philippe Gerum wrote:
+> On 03/08/2017 12:25 PM, Jan Kiszka wrote:
+>> On 2017-03-08 09:54, Philippe Gerum wrote:
+>>> On 03/07/2017 07:34 PM, Henning Schild wrote:
+>>>> Am Fri, 26 Jun 2015 16:20:29 +0200
+>>>> schrieb Jan Kiszka <jan.kiszka@siemens.com>:
+>>>>
+>>>>> Hi,
+>>>>>
+>>>>> just pushed 3 patches to git.xenomai.org/xenomai-jki.git for-forge
+>>>>> that are supposed to fix race conditions while manipulating
+>>>>> xnthread::state and info (both need to be nklock-protected). Please
+>>>>> review if finding and fixes make sense.
+>>>>>
+>>>>>       cobalt/kernel: Fix locking for xnthread info manipulations
+>>>>>       cobalt/kernel: Fix locking for setting XNFPU
+>>>>>       cobalt/kernel: Rework thread debugging helpers
+>>>>>
+>>>>> Maybe some of the issues also exist in Xenomai 2, didn't check yet.
+>>>>
+>>>> After looking deeper into the the mysterious -EINTR i asked about a few
+>>>> days ago we now got a trace that suggests something is going wrong. Jan
+>>>> remembered the race in thread flag manipulation he found in Xeno3.
+>>>>
+>>>> I did not do a thorough code analysis yet but instead just put two
+>>>> asserts into xnthread_set_info and xnthread_clear_info.
+>>>> 1. !xnlock_is_owner(&nklock)
+>>>> 2. xnpod_current_thread() != thread_to_update
+>>>>
+>>>> Both cases do happen. The flags are manipulated without holding the
+>>>> lock and the flags are manipulated from another context. I guess that
+>>>> suggests that the race found in xenomai3 is also in xenomai2.
+>>>>
+>>>
+>>> I would not compare both code bases. Much rewrite took place from the
+>>> legacy nucleus to the cobalt core.
+>>>
+>>> I have reviewed every single statement involving set/clear info bits in
+>>> 3.x and I can't seem to find any unlocked access for those. Any
+>>> specifics about the exact locations where your debug statements trigger?
+>>>
+>>
+>> One quickly discoverable example is in xnshadow_harden
+>> (xnthread_set/clear_info(curr, XNATOMIC) without nklock protection). And
+> 
+> This is v2. I'm referring to v3.
+> 
+> 
 
+I think we are talking past each out: v3 is fixed by c35b5bbfabef, this
+request is about a potential backport to v2.6, and Henning's test was
+run on 2.6.
 
-Then executed the latency test to get this message :
+Jan
 
-
-nitin@intel-corei7-64:/usr/bin$ /usr/xenomai/bin/latency
-   0"000.000| WARNING: [main] cannot open RTDM device /dev/rtdm/memdev-priv=
-ate: Permission denied
-   0"000.000| WARNING: [main] cannot map private umm area: Permission denie=
-d
-   0"000.000| BUG in init_bind(): [main] (CONFIG_DEVTMPFS_MOUNT not enabled=
-?)
-
-?I must be doing something wrong. Please let me know.
-
-- Nitin
-
-
-________________________________
-From: Nitin Kulkarni
-Sent: Saturday, March 4, 2017 4:26 AM
-To: xenomai@xenomai.org
-Subject: Latency test fails after in a Xenomai patched Ostro XT linux distr=
-o
-
-
-Hi,
-
-I have patched the Xenomai 3.0.3 to an Ostro XT linux distribution and afte=
-r flashing the image and booting on the Intel Joule board I installed the X=
-enomai libraries natively. When I run the Latency test it gives this messag=
-e and stops.
-
-
-root@intel-corei7-64:~/Xenlib# /usr/xenomai/bin/latency
-=3D=3D Sampling period: 100 us
-=3D=3D Test mode: periodic user-mode task
-=3D=3D All results in microseconds
-/usr/xenomai/bin/latency: pthread_create(latency): Operation not permitted
-
-Although I am running as a root user it gives this error. I have not added =
-any user group through the Kernel command line parameter xenomai.allowed_gr=
-oup?.
-when I run the command
-
-dmesg | grep -i xenomai
-
-
-I get this from the Kernel log
-[    0.000000] Command line: rootwait console=3Dtty0 xenomai.sysheap_size=
-=3D256 xenomai.state=3Denabled xenomai.smi=3Ddetect xenomai.smi_mask=3D1 co=
-nsole=3DttyS2,115200 video=3Defifb maxcpus=3D4 noxsave reboot=3Defi kmemlea=
-k=3Doff fsck.mode=3Dskip no-ima ro root=3DPARTUUID=3D12345678-9abc-def0-0fe=
-d-cba987654321 rootfstype=3Dext4 installer
-[    0.000000] Kernel command line: rootwait console=3Dtty0 xenomai.sysheap=
-_size=3D256 xenomai.state=3Denabled xenomai.smi=3Ddetect xenomai.smi_mask=
-=3D1 console=3DttyS2,115200 video=3Defifb maxcpus=3D4 noxsave reboot=3Defi =
-kmemleak=3Doff fsck.mode=3Dskip no-ima ro root=3DPARTUUID=3D12345678-9abc-d=
-ef0-0fed-cba987654321 rootfstype=3Dext4 installer
-[    0.668993] [Xenomai] scheduling class idle registered.
-[    0.669456] [Xenomai] scheduling class rt registered.
-[    0.670016] I-pipe: head domain Xenomai registered.
-[    0.672804] [Xenomai] Cobalt v3.0.3 (Groovy Cosmic Halo)
-
-?
-Please let me know how to handle this issue.
-
-Regards,
-Nitin
-
-
-
-
-
-
-
+-- 
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
 
