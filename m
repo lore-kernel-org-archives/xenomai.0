@@ -1,12 +1,14 @@
-References: <CAHN8pEZByi0QXdxwrDhdFshF-uyHoXYGc3z=vAdLGC=BwNmYxQ@mail.gmail.com>
+References: <1051219559.580434.1487468293843.ref@mail.yahoo.com>
+ <1051219559.580434.1487468293843@mail.yahoo.com>
+ <913208909.4906404.1489152866278@mail.yahoo.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <b3e6c123-9cef-8570-7040-aa6bd0575090@xenomai.org>
-Date: Sun, 12 Mar 2017 18:13:02 +0100
+Message-ID: <68a66f07-c704-13c1-61b7-3157a4fe79ca@xenomai.org>
+Date: Mon, 13 Mar 2017 12:52:35 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAHN8pEZByi0QXdxwrDhdFshF-uyHoXYGc3z=vAdLGC=BwNmYxQ@mail.gmail.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <913208909.4906404.1489152866278@mail.yahoo.com>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Raw Ethernet socket in Xenomai 3.0.3
+Subject: Re: [Xenomai] pthread_rt and C++ on Xenomai 2.6
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,41 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ed Hannigan <edphannigan@gmail.com>, xenomai@xenomai.org
+To: Giulio Moro <giuliomoro@yahoo.it>, Xenomai <xenomai@xenomai.org>
 
-On 03/11/2017 08:58 PM, Ed Hannigan wrote:
-> I have a Xenomai 2.6.1 userspace app that uses RTNet 0.9.13 and I can
-> send/receive raw Ethernet packets with calls rt_dev_send and rt_dev_recv.
+On 03/10/2017 02:34 PM, Giulio Moro wrote:
+> I think I now have the answer to this question which was - admittedly - not formulated very clearly.
+> The answer I came up with is: it depends on how your c++ standard library is implemented. The one we use (libstdc++.so which comes with gcc 4.9) does not make all the calls to the pthread API that I would expect. For instance, it does not call "pthread_mutex_init" but it calls "gthread_mutex_init". Therefore, wrapping does not work properly for the mutex API.
+> Perhaps other implementations of the C++ standard library would be more wrapping-friendly in this sense.Has there been any effort in writing a Xenomai-wrappable (or Xenomai-friendly) C++ standard library?
+> Thanks,Giulio
 > 
-> I am trying to migrate to Xenomai 3.0.3 but receiving a negative error
-> code from the following line:
 > 
-> s = rt_dev_socket(AF_PACKET, SOCK_RAW, MY_PROTOCOL);
+>       From: Giulio Moro <giuliomoro@yahoo.it>
+>  To: Xenomai <xenomai@xenomai.org> 
+>  Sent: Sunday, 19 February 2017, 1:38
+>  Subject: pthread_rt and C++ on Xenomai 2.6
+>    
+> What's the deal with using the posix skin to wrap C++ mutex, locks and threads?
+> I am on ARMv7 (Beaglebone Black), with gcc 4.9, xeno-config on this system returns the following:$ /usr/xenomai/bin/xeno-config --skin=posix --ldflags --cflags-Wl,@/usr/xenomai/lib/posix.wrappers -L/usr/xenomai/lib -lpthread_rt -lxenomai -lpthread -lrt-I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -D__XENO__ -I/usr/xenomai/include/posix
+> The example code here http://www.cplusplus.com/reference/mutex/mutex/try_lock/
+> compiles and runs fine (i.e.: I get a reasonable number of increases of the counter) with (1) g++ -pthread test.cpp -std=c++14 -lpthread
 > 
-> rtifconfig shows rteth0 as UP and receives packets so my
-> 8139 works.  The eth_p_all demo appears to only show packets received
-> from non-realtime cards.  Looking on the web I've seen that maybe I should
-> use rtdm_socket, rtdm_send, etc
+> but if I wrap the posix calls with(2) gcc test.cpp -std=c++14  -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -D__XENO__ -I/usr/xenomai/include/posix -L/usr/xenomai/lib -lstdc++ -lpthread_rt -lxenomai -lpthread -lrt -Wl,@/usr/xenomai/lib/posix.wrappers -pthread
+> then the mutex can never be acquired by any thread. Actually, I cannot lock it even if I place mtx.try_lock() on the first line of main().Also, if I try to sleep at sleep just before the end of attempt_10k_increases() with "std::this_thread::sleep_for", it does not sleep. Even if I increase the number of attempts, in order for the threads to stay alive for longer, I cannot see the threads show up in /proc/xenomai/stat .
+> What I observe is that when using -Wl,@/usr/xenomai/lib/posix.wrapper:- mutex::try_lock fails- std::this_thread::sleep_for() does not sleep- threads do not show up in /proc/xenomai/stat
+> So I have two questions:a) is there any way to get -Wl,@/usr/xenomai/lib/posix.wrappers to correctly wrap underlying calls to pthread_* functions which are hidden in libstdc++ ?b)
 
-No, these services belong to the inter-driver RTDM API in kernel space:
-https://xenomai.org/migrating-from-xenomai-2-x-to-3-x/#Inter-Driver_API
+Only if the static version of libstdc++ is used, otherwise it's too late
+for the linker to do any wrapping, since it obviously won't update a
+shared library on the fly while building an application which depends on it.
 
-.  If I try doing this then I run into linker
-> errors with the Cobalt core.  I need help with setup and sending/receiving
-> of raw Ethernet packets from in user-space.
+ is there any way to safely link into the same executable some code that
+calls pthread_* which you want to wrap in the Xenomai posix skin and C++
+code which uses std::thread?
 
-You can either:
-
-- convert your code from the legacy rt_dev_* API in user-space to the
-regular socket API (preferred option), which requires to enable symbol
-wrapping, so that socket/sendmsg/recvmsg/... are pulled from libcobalt
-instead of libc. See
-http://xenomai.org/2014/08/porting-a-linux-application-to-xenomai-dual-kernel/#Under_the_hood_the_8211wrap_flag
-http://www.xenomai.org/documentation/xenomai-3/html/man1/xeno-config/index.html
-
-- enable the compatibility mode for building your app, by passing the
-"--rtdm --compat" switches to xeno-config when retrieving the CFLAGS or
-LDFLAGS (xeno-config --cflags/--ldflags ...).
+You bring the safety by not passing POSIX resources initialized by
+libcobalt (e.g. pthread_mutex_init(), pthread_create(), sem_init() and
+so on) to methods dealing with POSIX resources created by the regular
+libc, and conversely.
 
 -- 
 Philippe.
