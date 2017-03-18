@@ -1,11 +1,11 @@
 References: <1489817372.4278.44.camel@gmx.de>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <d0f21b27-4070-91b3-60ac-b596673ba311@web.de>
-Date: Sat, 18 Mar 2017 09:45:25 +0100
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <e2bd4e1a-cbd8-20de-4b95-576926bf2d78@xenomai.org>
+Date: Sat, 18 Mar 2017 12:05:18 +0100
 MIME-Version: 1.0
 In-Reply-To: <1489817372.4278.44.camel@gmx.de>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] ipipe + PREEMPT_RT
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,13 +17,11 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Mike Galbraith <efault@gmx.de>, xenomai@xenomai.org
 
-On 2017-03-18 07:09, Mike Galbraith wrote:
+On 03/18/2017 07:09 AM, Mike Galbraith wrote:
 > (oops, sent before subscription confirmation.. wash/rinse/repeat)
-> =
-
+> 
 > Greetings,
-> =
-
+> 
 > Seeing PREEMPT_RT in ipipe source, I got curious, extracted 4.4.43, and
 > wedged it into 4.4.54-rt, but there are a couple places that replace a
 >  spinlock_t (not raw) with an ipipe_spinlock_t, which cause build woes
@@ -33,30 +31,17 @@ On 2017-03-18 07:09, Mike Galbraith wrote:
 > whether there's a preparatory patch for PREEMPT_RT somewhere, or
 > whether the PREEMPT_RT bits are WIP (or leftovers).
 
-A couple of times, I-pipe with Xenomai has been used in combination with
-PREEMPT-RT. That basically created 3 prio groups: regular Linux tasks,
-real-time Linux tasks hardened by PREEMPT-RT and above that
-I-pipe/Xenomai. However, the integration of both patches was never
-really fun.
+As Jan pointed out already, those reverts may well cause havoc when some
+code attempts to traverse such critical sections from a co-kernel
+context (aka "head stage"), since the purpose of the original change is
+precisely to allow this, i.e. we have to switch the spinlock construct
+from virtual IRQ disabling to real disabling.
 
-Some fragments of those efforts you still find in the code, but I think
-they haven't been stressed for a while. And, as you noticed, they do not
-work as-is. I wouldn't be surprised if your ad-hoc fix does not yet
-solve the issue, and a Xenomai use case would break. The semantics of
-each real-time patch set is already tricky on its own...
+FWIW, since commit 18aaf9db, Xenomai 3 is assuming that only raw
+spinlocks may be converted to hard pipeline locks, which is only
+partially the case for the current pipeline architecture though; however
+this is fully enforced by the next one I'm working on (i.e. dovetail).
 
-That said, I suppose such integration will return automatically once
-PREEMPT-RT makes it upstream.
+-- 
+Philippe.
 
-Was your question just out or curiosity, or is there a potential use case?
-
-Jan
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 181 bytes
-Desc: OpenPGP digital signature
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20170318/d84d2945/at=
-tachment.sig>
