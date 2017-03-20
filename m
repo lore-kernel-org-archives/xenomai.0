@@ -1,17 +1,11 @@
-References: <07fe7fa20faed6e818d33b54db9001b6@stupar.com>
- <adbf2787-6a0e-588e-272e-be15686fc2b7@xenomai.org>
- <ee4b936505fe83420d3e95303ebe6058@stupar.com>
- <ddc23472-e188-5482-be39-dc8f8917eed6@stupar.com>
- <305872a6-028d-64e3-4804-9c46e7407193@xenomai.org>
- <421f62eb9f8a46b605a2f3395c09a8fa@stupar.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <de4792b7-1dfd-b5b4-6043-9db4d72c31c4@xenomai.org>
-Date: Sun, 19 Mar 2017 19:22:04 +0100
+From: =?iso-8859-1?Q?C=E9dric_Perles?= <cperles@sepro-group.com>
+Date: Mon, 20 Mar 2017 08:52:28 +0100 (CET)
+Message-ID: <009e01d2a14e$eb682e00$c2388a00$@sepro-group.com>
 MIME-Version: 1.0
-In-Reply-To: <421f62eb9f8a46b605a2f3395c09a8fa@stupar.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RTDM driver init: interrupts and context objects
+Content-Language: fr
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Trying to install Xenomai 3.0.3 on i.MX6 Kernel 4.1.15
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,34 +14,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: andrija@stupar.com
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 03/19/2017 07:08 PM, andrija@stupar.com wrote:
-> Hi Phillipe,
-> 
-> I was under the impression that I cannot, since Cobalt is a feature of
-> Xenomai 3.x, and I am using Xenomai 2.6.5, where chasing the mode
-> switches is a bit more complicated, as explained on the page
-> https://xenomai.org//2014/06/finding-spurious-relaxes/
-> 
-> In any case, the causes of the mode switches that were troubling me were
-> obvious, just buried in the code that I have been porting to Xenomai,
+Hi community,
 
-It does not seem a mode switch problem, but merely a calling context
-issue. There is no mode switch from kernel space, however Xenomai
-switches mode automatically at the syscall boundary, as required to keep
-the core system sane regardless of how well/bad an application behaves.
-Whether such switch is acceptable latency-wise for such application is a
-totally different matter.
 
-> and therefore took a while to find (doubtlessly using the debug flag
-> would've been easier, but it did not take me weeks - this is not a
-> project I work on full time).
-> 
 
-The almost equivalent flag for Xenomai 2.6 is CONFIG_XENO_OPT_DEBUG_NUCLEUS.
+I=92m a Xenomai newby and I=92m trying to install Xenomai 3.0.3 on my i.MX6
+based board (kernel 4.1.15 from NXP).
 
--- 
-Philippe.
 
+
+So I followed the =93Installing Xenomai 3.x=94 chapter in Xenomai.org site =
+and
+began to download ipipe-core-4.1.18-arm-8.patch.
+
+Since my kernel is not 4.1.18 but 4.1.15, I had to slightly adapt the
+patch to make it fit.
+
+Then I ran prepare-kernel.sh that tells me everything was OK.
+
+Finally I successfully compiled kernel (and saw a few ipipe and xenomai
+source files were built with into kernel).
+
+
+
+However, when I boot on that newly built kernel there is absolutely no
+xenomai nor ipipe logs into kernel boot logs, and no /proc/xenomai at all.
+
+I must have missed something or doing something wrong, but I don=92t see.
+
+
+
+=3D=3D> Did somebody successfully run Xeno 3.0.3 on i.MX6 ?
+
+=3D=3D> What am I doing wrong ?
+
+
+
+Regards,
+
+
+
+C=E9dric
+
+
+
+
+Sepro
+
+C=E9dric PERLES
+Software R&D engineer
+SEPRO Robotique - Rue Henry Bessemer - Zone Acti-Est - CS 10084 - 85003 La
+Roche sur Yon Cedex (France)
+
+Tel : +33 (0)2 51 45 05 31
+
+  _____
+
+ <http://www.sepro-group.com/fr> www.sepro-group.com |
+<https://twitter.com/seprogroup> twitter@SeproGroup
+
+
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: image001.jpg
+Type: image/jpeg
+Size: 22984 bytes
+Desc: not available
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20170320/50daa0cf/at=
+tachment.jpg>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: image003.png
+Type: image/png
+Size: 818 bytes
+Desc: not available
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20170320/50daa0cf/at=
+tachment.png>
