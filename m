@@ -1,13 +1,13 @@
-References: <1488597983336.36220@kth.se>
+References: <1132124080.7126689.1490059327685.ref@mail.yahoo.com>
+ <1132124080.7126689.1490059327685@mail.yahoo.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <3054c0cd-84f5-54db-a775-a339a666d639@xenomai.org>
-Date: Sun, 5 Mar 2017 16:51:23 +0100
+Message-ID: <83e18cba-a451-4d59-9306-6638f5f52e43@xenomai.org>
+Date: Tue, 21 Mar 2017 09:50:04 +0100
 MIME-Version: 1.0
-In-Reply-To: <1488597983336.36220@kth.se>
+In-Reply-To: <1132124080.7126689.1490059327685@mail.yahoo.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Latency test fails after in a Xenomai patched Ostro
- XT linux distro
+Subject: Re: [Xenomai] Documentation for struct threadobj_stat on Alchemy
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,43 +16,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Nitin Kulkarni <nitink@kth.se>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Giulio Moro <giuliomoro@yahoo.it>, Xenomai Mailing List <xenomai@xenomai.org>
 
-On 03/04/2017 04:26 AM, Nitin Kulkarni wrote:
-> Hi,
+On 03/21/2017 02:22 AM, Giulio Moro wrote:
+> In Alchemy RT_TASK_INFO has a member struct threadobj_stat which is undocumented (https://xenomai.org//documentation/xenomai-3/html/xeno3prm/structRT__TASK__INFO.html).
+> Looking at the source of copperplate/threadobj.h (https://xenomai.org//documentation/xenomai-3/html/xeno3prm/threadobj_8h_source.html) , it turns out it has these members:
 > 
-> I have patched the Xenomai 3.0.3 to an Ostro XT linux distribution and after flashing the image and booting on the Intel Joule board I installed the Xenomai libraries natively. When I run the Latency test it gives this message and stops.
-> 
-> 
-> root@intel-corei7-64:~/Xenlib# /usr/xenomai/bin/latency
-> == Sampling period: 100 us
-> == Test mode: periodic user-mode task
-> == All results in microseconds
-> /usr/xenomai/bin/latency: pthread_create(latency): Operation not permitted
-> 
-> Although I am running as a root user it gives this error. I have not added any user group through the Kernel command line parameter xenomai.allowed_group?.
-> when I run the command
-> 
-> dmesg | grep -i xenomai
-> 
-> 
-> I get this from the Kernel log
-> [    0.000000] Command line: rootwait console=tty0 xenomai.sysheap_size=256 xenomai.state=enabled xenomai.smi=detect xenomai.smi_mask=1 console=ttyS2,115200 video=efifb maxcpus=4 noxsave reboot=efi kmemleak=off fsck.mode=skip no-ima ro root=PARTUUID=12345678-9abc-def0-0fed-cba987654321 rootfstype=ext4 installer
-> [    0.000000] Kernel command line: rootwait console=tty0 xenomai.sysheap_size=256 xenomai.state=enabled xenomai.smi=detect xenomai.smi_mask=1 console=ttyS2,115200 video=efifb maxcpus=4 noxsave reboot=efi kmemleak=off fsck.mode=skip no-ima ro root=PARTUUID=12345678-9abc-def0-0fed-cba987654321 rootfstype=ext4 installer
-> [    0.668993] [Xenomai] scheduling class idle registered.
-> [    0.669456] [Xenomai] scheduling class rt registered.
-> [    0.670016] I-pipe: head domain Xenomai registered.
-> [    0.672804] [Xenomai] Cobalt v3.0.3 (Groovy Cosmic Halo)
+> struct threadobj_stat {
+>  ticks_t xtime;
 
-v3.0.3 is outdated, with nasty issues. You should use the latest stable
-code from: git://git.xenomai.org/xenomai-3.git, branch stable-3.0.x
+Total execution time in primary mode (ns)
 
-> 
-> ?
-> Please let me know how to handle this issue.
+>  ticks_t timeout;
 
-Any message visible in the kernel log after enabling
-CONFIG_XENO_OPT_DEBUG_COBALT?
+Pending timeout (ns)
+
+>  uint64_t msw;
+
+Total count of mode switches (primary -> secondary)
+
+>  uint64_t csw;
+
+Total count of context switches
+
+>  uint64_t xsc;
+
+Total count of Cobalt system calls.
+
+>  int cpu;
+
+Current CPU.
+
+>  int schedlock;
+
+Scheduler lock depth count.
+
+>  unsigned int status;
+
+Internal status bits (from uapi/kernel/thread.h, state flags)
+
+>  uint32_t pf;
+
+Number of page faults in primary mode. Debug stuff, should be zero.
 
 -- 
 Philippe.
