@@ -1,10 +1,12 @@
-Date: Fri, 24 Mar 2017 20:05:52 +0800 (CST)
-From: =?GBK?B?stzX08H6?= <13824125580@163.com>
+References: <7df40972.9ec7.15b003569a0.Coremail.13824125580@163.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <08aefb15-4754-43e2-0dd3-42e002d14426@xenomai.org>
+Date: Sun, 26 Mar 2017 16:41:43 +0200
 MIME-Version: 1.0
-Message-ID: <7df40972.9ec7.15b003569a0.Coremail.13824125580@163.com>
-Content-Type: text/plain; charset=GBK
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] about  "xnshadow_harden" puzzle,
+In-Reply-To: <7df40972.9ec7.15b003569a0.Coremail.13824125580@163.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] about "xnshadow_harden" puzzle,
  when and where the "rthal_current_domain" became head domain?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,24 +16,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?UTF-8?B?5pu55a2Q6b6Z?= <13824125580@163.com>, xenomai@xenomai.org
 
-aSBlbmNvdW50ZXIgYSBwcm9ibGVtIHdoZW4gcmVhZGluZyB0aGUgeGVub21haSAyLjYuNSBjb2Rl
-IGFib3V0IHRoZSAieG5zaGFvZGVfaGFyZGVuIiBpbXBsZW1lbnQgaW9uLCAgd2hlbiBhIHRocmVh
-ZCBydW5uaW5nIGluIHJvb3QgZG9tYWluIG1pZ3JhdGUgdG8gdGhlIGhlYWQgZG9tYWluLCB1c3Vh
-bGx5IGJ5IGNhbGxpbmcgInhuc2hhZG93X2hhcmRlbiIgaW50ZXJmYWNlIHRvIGRvIHRoaXMuCgp0
-aGUgdGhlIG9wZXJhdGlvbiBjb21wbGV0ZWQgYnkgd2FrZXVwIHRoZSAiZ2F0ZWtlZXBlcl90aHJl
-YWQiIGFuZCB0aGVuIGNhbGwgdGhlICJ4bnBvZF9zY2hlZHVsZSIsIGZpbmFsbHksIHRoZSBzaGFk
-b3cgdGhyZWFkIGNvbWViYWNrIGZyb20gInNjaGVkdWxlIi4gCgoKbG9vayBhdCB0aGUgcmVkIHdv
-cmxkcyBiZWxvdywgaXQgc2VlbXMgaXQgd2FzIHN1cmVseSB0aGF0IHRoZSBjdXJyZW50IGRvbWFp
-biBpcyBoZWFkLCBidXQsIGR1cmluZyB0aGVzZSBvcGVyYXRpb24sIGkgZGlkIG5vdCBzZWUgYW55
-d2hlcmUgIGNoYW5nZSB0aGUgY3VycmVudCBkb21haW4gZnJvbSByb290IHRvICBoZWFkLCAgc28g
-ZGlkIGkgbWlzcyBzb21ldGhpbmcgYWJvdXQgdGhlIGZsb3c/IGFueSBvbmUgY2FuIGhlbHAgbWUs
-IHRoYW5rcyBmb3IgeW91ciBraW5kbHkgaGVscC4KaW50IHhuc2hhZG93X2hhcmRlbih2b2lkKQp7
-CgoKICAgICAgIC4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uCnNjaGVkLT5na3Rhcmdl
-dCA9IGN1cnI7CnhudGhyZWFkX3NldF9pbmZvKGN1cnIsIFhOQVRPTUlDKTsKc2V0X2N1cnJlbnRf
-c3RhdGUoVEFTS19JTlRFUlJVUFRJQkxFIHwgVEFTS19BVE9NSUNTV0lUQ0gpOwoKCndha2VfdXBf
-cHJvY2VzcyhzY2hlZC0+Z2F0ZWtlZXBlcik7CgoKc2NoZWR1bGUoKTsKICAgICAgLi4uLi4uLi4u
-Li4uLi4uLi4uLi4uLi4uLi4uCmlmIChydGhhbF9jdXJyZW50X2RvbWFpbiA9PSBydGhhbF9yb290
-X2RvbWFpbikgewogICAgICAgICAgICAgICAgICAgICAgICAgIC8vIGV4Y2VwdGlvbnMsIHJhcmVs
-eSBoYXBwZW4uCiAgICAgICB9
+On 03/24/2017 01:05 PM, 曹子龙 wrote:
+> i encounter a problem when reading the xenomai 2.6.5 code about the "xnshaode_harden" implement ion,  when a thread running in root domain migrate to the head domain, usually by calling "xnshadow_harden" interface to do this.
+> 
+> the the operation completed by wakeup the "gatekeeper_thread" and then call the "xnpod_schedule", finally, the shadow thread comeback from "schedule". 
+> 
+> 
+> look at the red worlds below, it seems it was surely that the current domain is head, but, during these operation, i did not see anywhere  change the current domain from root to  head,  so did i miss something about the flow? any one can help me, thanks for your kindly help.
+> int xnshadow_harden(void)
+> {
+> 
+> 
+>        ................................
+> sched->gktarget = curr;
+> xnthread_set_info(curr, XNATOMIC);
+> set_current_state(TASK_INTERRUPTIBLE | TASK_ATOMICSWITCH);
+> 
+> 
+> wake_up_process(sched->gatekeeper);
+> 
+> 
+> schedule();
+>       ...........................
+> if (rthal_current_domain == rthal_root_domain) {
+>                           // exceptions, rarely happen.
+>        }
+
+This is too complex to explain only in a few words and time is a scarce
+resource, so you will have to figure out the details by yourself, but
+basically:
+
+- the gatekeeper calls xnpod_schedule(), which notices that the root
+domain is current, therefore escalates the request to the primary domain
+via a pseudo IRQ.
+
+- the interrupt pipeline dispatches the pseudo IRQ back to the Xenomai
+core (xnpod_schedule_handler()), after a switch to the head domain. See
+dispatch_irq_head() from kernel/ipipe/core.c.
+
+-- 
+Philippe.
+
