@@ -1,9 +1,11 @@
+From: Marco Camurri <marco.camurri@iit.it>
+Message-ID: <ca7e025d-cc64-f190-2fbb-37fa7dffa02c@iit.it>
+Date: Thu, 30 Mar 2017 19:35:35 +0200
 MIME-Version: 1.0
-From: Benjamin Alix <alixbenjamin53@gmail.com>
-Date: Thu, 30 Mar 2017 17:56:37 +0200
-Message-ID: <CAHz_r8DdqD_jRhr452riik5wu55hDmjOr3T4ap8r3PwAaWAPpw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai]  Compilation error
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] clock_gettime() vs gettimeofday() have offset when run in
+	real-time
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,40 +16,29 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi,
+Dear all,
 
-I'm compiling Xenomai 3.0.3 with a cross toolchain built with buildroot
-(based on gcc 6.3.0) and when it comes to build xenomai I get the following
-errors :
+I need to get the wallclock time from a real-time thread under Xenomai 
+2.6.4 running on a x86_64 architecture with Ubuntu 14.04
 
-make[5]: Entering directory
-`/free/stagiaire/buildroot-2017.02/output/build/xenomai-3.0.3/lib/boilerplate/init'
-  CC       libbootstrap_a-bootstrap.o
-  CC       libbootstrap_pic_la-bootstrap.lo
-In file included from
-/free/stagiaire/buildroot-2017.02/output/build/xenomai-3.0.3/include/cobalt/time.h:26:0,
-                 from
-/free/stagiaire/buildroot-2017.02/output/host/usr/powerpc-buildroot-linux-uclibc/sysroot/usr/include/sys/types.h:132,
-                 from bootstrap.c:18:
-/free/stagiaire/buildroot-2017.02/output/build/xenomai-3.0.3/include/cobalt/stdio.h:68:1:
-error: pasting "__cobalt_" and "(" does not give a valid preprocessing token
- COBALT_DECL(int, fputc(int c, FILE *stream));
- ^
-/free/stagiaire/buildroot-2017.02/output/build/xenomai-3.0.3/include/cobalt/stdio.h:68:18:
-error: expected declaration specifiers or '...' before '(' token
- COBALT_DECL(int, fputc(int c, FILE *stream));
-                  ^
-/free/stagiaire/buildroot-2017.02/output/build/xenomai-3.0.3/include/cobalt/stdio.h:68:18:
-error: expected declaration specifiers or '...' before '(' token
- COBALT_DECL(int, fputc(int c, FILE *stream));
-                  ^
-/free/stagiaire/buildroot-2017.02/output/build/xenomai-3.0.3/include/cobalt/stdio.h:68:1:
-error: pasting "__real_" and "(" does not give a valid preprocessing token
- COBALT_DECL(int, fputc(int c, FILE *stream));
- ^
-/free/stagiaire/buildroot-2017.02/output/build/xenomai-3.0.3/include/cobalt/stdio.h:68:18:
-error: expected declaration specifiers or '...' before '(' token
- COBALT_DECL(int, fputc(int c, FILE *stream));
+After realizing that calling the function gettimeofday() I was creating 
+mode switches, I've replaced the call with the clock_gettime() (this 
+one: 
+http://www.xenomai.org/documentation/trunk/html/api/group__posix__time.html#ga10b73e75d375e5c244e32ea46be775bf)
 
-I think it has something to do with token concatenation in preprocessors in
-include/cobalt/wrappers.h but I'm not even sure. I
+with the parameter CLOCK_REALTIME.
+
+Unfortunately, when comparing the value returned by the call of 
+clock_gettime() from within the real-time thread and the gettimeofday() 
+called from a non-realtime thread, they turned out to be about 6 seconds 
+apart.
+
+when running a single non real-time thread with both functions called, 
+they return the same value.
+
+Is there a way to have the same behavior of gettimeofday from within a 
+real-time thread without having mode switches?
+
+Thanks,
+Marco.
+
