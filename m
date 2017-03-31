@@ -1,11 +1,11 @@
-From: Marco Camurri <marco.camurri@iit.it>
-Message-ID: <ca7e025d-cc64-f190-2fbb-37fa7dffa02c@iit.it>
-Date: Thu, 30 Mar 2017 19:35:35 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] clock_gettime() vs gettimeofday() have offset when run in
-	real-time
+In-Reply-To: <CAHz_r8DdqD_jRhr452riik5wu55hDmjOr3T4ap8r3PwAaWAPpw@mail.gmail.com>
+References: <CAHz_r8DdqD_jRhr452riik5wu55hDmjOr3T4ap8r3PwAaWAPpw@mail.gmail.com>
+From: Benjamin Alix <alixbenjamin53@gmail.com>
+Date: Fri, 31 Mar 2017 15:49:13 +0200
+Message-ID: <CAHz_r8DUdsE7HEDWQk1mULAEw1xZ4GqgNW71ggWUHn1_ZGtfQg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] Fwd:  Compilation error
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,29 +16,86 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Dear all,
+---------- Forwarded message ----------
+From: Benjamin Alix <alixbenjamin53@gmail.com>
+Date: 2017-03-30 17:56 GMT+02:00
+Subject: [Xenomai] Compilation error
+To: xenomai@xenomai.org
 
-I need to get the wallclock time from a real-time thread under Xenomai 
-2.6.4 running on a x86_64 architecture with Ubuntu 14.04
 
-After realizing that calling the function gettimeofday() I was creating 
-mode switches, I've replaced the call with the clock_gettime() (this 
-one: 
-http://www.xenomai.org/documentation/trunk/html/api/group__posix__time.html#ga10b73e75d375e5c244e32ea46be775bf)
+Hi,
 
-with the parameter CLOCK_REALTIME.
+I'm compiling Xenomai 3.0.3 with a cross toolchain built with
+buildroot (based on gcc 6.3.0) and when it comes to build xenomai I
+get the following errors :
 
-Unfortunately, when comparing the value returned by the call of 
-clock_gettime() from within the real-time thread and the gettimeofday() 
-called from a non-realtime thread, they turned out to be about 6 seconds 
-apart.
+make[5]: Entering directory
+`/free/stagiaire/buildroot-2017.02/output/build/xenomai-3.0.3/lib/boilerplate/init'
+  CC       libbootstrap_a-bootstrap.o
+  CC       libbootstrap_pic_la-bootstrap.lo
+In file included from
+/free/stagiaire/buildroot-2017.02/output/build/xenomai-3.0.3/include/cobalt/time.h:26:0,
+                 from
+/free/stagiaire/buildroot-2017.02/output/host/usr/powerpc-buildroot-linux-uclibc/sysroot/usr/include/sys/types.h:132,
+                 from bootstrap.c:18:
+/free/stagiaire/buildroot-2017.02/output/build/xenomai-3.0.3/include/cobalt/stdio.h:68:1:
+error: pasting "__cobalt_" and "(" does not give a valid preprocessing
+token
+ COBALT_DECL(int, fputc(int c, FILE *stream));
+ ^
+/free/stagiaire/buildroot-2017.02/output/build/xenomai-3.0.3/include/cobalt/stdio.h:68:18:
+error: expected declaration specifiers or '...' before '(' token
+ COBALT_DECL(int, fputc(int c, FILE *stream));
+                  ^
+/free/stagiaire/buildroot-2017.02/output/build/xenomai-3.0.3/include/cobalt/stdio.h:68:18:
+error: expected declaration specifiers or '...' before '(' token
+ COBALT_DECL(int, fputc(int c, FILE *stream));
+                  ^
+/free/stagiaire/buildroot-2017.02/output/build/xenomai-3.0.3/include/cobalt/stdio.h:68:1:
+error: pasting "__real_" and "(" does not give a valid preprocessing
+token
+ COBALT_DECL(int, fputc(int c, FILE *stream));
+ ^
+/free/stagiaire/buildroot-2017.02/output/build/xenomai-3.0.3/include/cobalt/stdio.h:68:18:
+error: expected declaration specifiers or '...' before '(' token
+ COBALT_DECL(int, fputc(int c, FILE *stream));
 
-when running a single non real-time thread with both functions called, 
-they return the same value.
+I think it has something to do with token concatenation in
+preprocessors in include/cobalt/wrappers.h but I'm not even sure. I
 
-Is there a way to have the same behavior of gettimeofday from within a 
-real-time thread without having mode switches?
+Sorry, I mistakingly sent the email earlier than I wanted and could'nt
+correct it until now.
 
-Thanks,
-Marco.
+More context : I'm compiling for a powerpc 32 bits architecture. The
+configuration is :
+[...]build/xenomai-3.0.3 > ./scripts/xeno-config --info
+Xenomai version: 3.0.3
+Cobalt core is NOT present on this system
+Compiler: gcc version 6.3.0 (Buildroot 2017.02)
+Build args: --target=powerpc-buildroot-linux-uclibc
+--host=powerpc-buildroot-linux-uclibc --build=x86_64-pc-linux-gnu
+--prefix=/usr --exec-prefix=/usr --sysconfdir=/etc
+--localstatedir=/var --program-prefix= --disable-gtk-doc
+--disable-gtk-doc-html --disable-doc --disable-docs
+--disable-documentation --with-xmlto=no --with-fop=no
+--disable-dependency-tracking --enable-ipv6 --disable-nls
+--disable-static --enable-shared --includedir=/usr/include/xenomai/
+--disable-doc-install build_alias=x86_64-pc-linux-gnu
+host_alias=powerpc-buildroot-linux-uclibc
+target_alias=powerpc-buildroot-linux-uclibc
+CC=/buildroot-2017.02/output/host/usr/bin/powerpc-buildroot-linux-uclibc-gcc
+CFLAGS=-D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
+-D_FILE_OFFSET_BITS=64  -O2  LDFLAGS= CPPFLAGS=-D_LARGEFILE_SOURCE
+-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+CPP=/buildroot-2017.02/output/host/usr/bin/powerpc-buildroot-linux-uclibc-cpp
+PKG_CONFIG=/buildroot-2017.02/output/host/usr/bin/pkg-config
+
+Buildroot adds a lot of configuration options, anyway I tried to
+compile outside buildroot and still got the same error message.
+
+Thanks for your attention.
+
+Regards,
+
+Benjamin
 
