@@ -1,13 +1,13 @@
-References: <ca7e025d-cc64-f190-2fbb-37fa7dffa02c@iit.it>
+References: <CAHz_r8DdqD_jRhr452riik5wu55hDmjOr3T4ap8r3PwAaWAPpw@mail.gmail.com>
+ <CAHz_r8DUdsE7HEDWQk1mULAEw1xZ4GqgNW71ggWUHn1_ZGtfQg@mail.gmail.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <f15f9a77-6e82-61c1-1bc0-90092d45d295@xenomai.org>
-Date: Sat, 1 Apr 2017 11:21:41 +0200
+Message-ID: <f6833c8c-cbdd-2d31-fbd6-f1a4e9edbc18@xenomai.org>
+Date: Sat, 1 Apr 2017 11:34:16 +0200
 MIME-Version: 1.0
-In-Reply-To: <ca7e025d-cc64-f190-2fbb-37fa7dffa02c@iit.it>
+In-Reply-To: <CAHz_r8DUdsE7HEDWQk1mULAEw1xZ4GqgNW71ggWUHn1_ZGtfQg@mail.gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] clock_gettime() vs gettimeofday() have offset when
- run in real-time
+Subject: Re: [Xenomai] Fwd: Compilation error
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,37 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marco Camurri <marco.camurri@iit.it>, xenomai@xenomai.org
+To: Benjamin Alix <alixbenjamin53@gmail.com>, xenomai@xenomai.org
 
-On 03/30/2017 07:35 PM, Marco Camurri wrote:
-> Dear all,
-> 
-> I need to get the wallclock time from a real-time thread under Xenomai
-> 2.6.4 running on a x86_64 architecture with Ubuntu 14.04
-> 
-> After realizing that calling the function gettimeofday() I was creating
-> mode switches, I've replaced the call with the clock_gettime() (this
-> one:
-> http://www.xenomai.org/documentation/trunk/html/api/group__posix__time.html#ga10b73e75d375e5c244e32ea46be775bf)
+On 03/31/2017 03:49 PM, Benjamin Alix wrote:
+> ---------- Forwarded message ----------
+> From: Benjamin Alix <alixbenjamin53@gmail.com>
+> Date: 2017-03-30 17:56 GMT+02:00
+> Subject: [Xenomai] Compilation error
+> To: xenomai@xenomai.org
 > 
 > 
-> with the parameter CLOCK_REALTIME.
+> Hi,
 > 
-> Unfortunately, when comparing the value returned by the call of
-> clock_gettime() from within the real-time thread and the gettimeofday()
-> called from a non-realtime thread, they turned out to be about 6 seconds
-> apart.
+> I'm compiling Xenomai 3.0.3 with a cross toolchain built with
+> buildroot (based on gcc 6.3.0) and when it comes to build xenomai I
+> get the following errors :
 > 
-> when running a single non real-time thread with both functions called,
-> they return the same value.
-> 
-> Is there a way to have the same behavior of gettimeofday from within a
-> real-time thread without having mode switches?
-> 
+> make[5]: Entering directory
+> `/free/stagiaire/buildroot-2017.02/output/build/xenomai-3.0.3/lib/boilerplate/init'
+>   CC       libbootstrap_a-bootstrap.o
+>   CC       libbootstrap_pic_la-bootstrap.lo
+> In file included from
+> /free/stagiaire/buildroot-2017.02/output/build/xenomai-3.0.3/include/cobalt/time.h:26:0,
+>                  from
+> /free/stagiaire/buildroot-2017.02/output/host/usr/powerpc-buildroot-linux-uclibc/sysroot/usr/include/sys/types.h:132,
+>                  from bootstrap.c:18:
+> /free/stagiaire/buildroot-2017.02/output/build/xenomai-3.0.3/include/cobalt/stdio.h:68:1:
+> error: pasting "__cobalt_" and "(" does not give a valid preprocessing
+> token
 
-CLOCK_REALTIME is based on the epoch maintained by the real-time core,
-which is distinct from the epoch maintained by the Linux kernel. You
-need CLOCK_HOST_REALTIME.
+It looks like you are building Xenomai on top of a uClibc release which
+is implementing fputc() and putchar() as macros, without defining the
+__STDIO_PUTC_MACRO indicator (anymore). You need to find a way to
+discriminate both cases, so that the right declaration block is picked
+for those routines in include/cobalt/stdio.h.
 
 -- 
 Philippe.
