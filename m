@@ -1,13 +1,13 @@
-References: <CAGTNcBtzrhyCvWycQGo+G_gyDjK17jWCGudszBNgF1Uv=9pmcA@mail.gmail.com>
+References: <ca7e025d-cc64-f190-2fbb-37fa7dffa02c@iit.it>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <722e8501-1ba7-39f1-9ba2-78b82ed43683@xenomai.org>
-Date: Sat, 1 Apr 2017 11:16:42 +0200
+Message-ID: <f15f9a77-6e82-61c1-1bc0-90092d45d295@xenomai.org>
+Date: Sat, 1 Apr 2017 11:21:41 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAGTNcBtzrhyCvWycQGo+G_gyDjK17jWCGudszBNgF1Uv=9pmcA@mail.gmail.com>
+In-Reply-To: <ca7e025d-cc64-f190-2fbb-37fa7dffa02c@iit.it>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] latency.c: fix occasional SIGSEGV at shutdown when
- mode is USER_TASK
+Subject: Re: [Xenomai] clock_gettime() vs gettimeofday() have offset when
+ run in real-time
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,20 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Josh Bowman <jbowman@facts-inc.com>, xenomai@xenomai.org
+To: Marco Camurri <marco.camurri@iit.it>, xenomai@xenomai.org
 
-On 04/01/2017 08:25 AM, Josh Bowman wrote:
-> Hi,
+On 03/30/2017 07:35 PM, Marco Camurri wrote:
+> Dear all,
 > 
-> Under Mercury, I've been seeing occasionally a "Segmentation fault" message
-> when I hit ctrl-c to stop the latency test program. I caught a core dump,
-> and the stack trace leads back to the sem_wait() call in the display task.
+> I need to get the wallclock time from a real-time thread under Xenomai
+> 2.6.4 running on a x86_64 architecture with Ubuntu 14.04
 > 
-> I think this is caused by the cleanup() routine destroying the semaphore
-> before it calls join on the display task. This patch seems to fix the issue.
+> After realizing that calling the function gettimeofday() I was creating
+> mode switches, I've replaced the call with the clock_gettime() (this
+> one:
+> http://www.xenomai.org/documentation/trunk/html/api/group__posix__time.html#ga10b73e75d375e5c244e32ea46be775bf)
+> 
+> 
+> with the parameter CLOCK_REALTIME.
+> 
+> Unfortunately, when comparing the value returned by the call of
+> clock_gettime() from within the real-time thread and the gettimeofday()
+> called from a non-realtime thread, they turned out to be about 6 seconds
+> apart.
+> 
+> when running a single non real-time thread with both functions called,
+> they return the same value.
+> 
+> Is there a way to have the same behavior of gettimeofday from within a
+> real-time thread without having mode switches?
 > 
 
-Good catch. Merged, thanks.
+CLOCK_REALTIME is based on the epoch maintained by the real-time core,
+which is distinct from the epoch maintained by the Linux kernel. You
+need CLOCK_HOST_REALTIME.
 
 -- 
 Philippe.
