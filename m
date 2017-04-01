@@ -1,11 +1,13 @@
-From: =?iso-8859-1?Q?C=E9dric_Perles?= <cperles@sepro-group.com>
-Date: Mon, 6 Mar 2017 08:19:53 +0100 (CET)
-Message-ID: <072401d2964a$0cf736c0$26e5a440$@sepro-group.com>
+References: <CAGTNcBtzrhyCvWycQGo+G_gyDjK17jWCGudszBNgF1Uv=9pmcA@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <722e8501-1ba7-39f1-9ba2-78b82ed43683@xenomai.org>
+Date: Sat, 1 Apr 2017 11:16:42 +0200
 MIME-Version: 1.0
-Content-Language: fr
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Looking for training on Linux/Xenomai on i.MX6
+In-Reply-To: <CAGTNcBtzrhyCvWycQGo+G_gyDjK17jWCGudszBNgF1Uv=9pmcA@mail.gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] latency.c: fix occasional SIGSEGV at shutdown when
+ mode is USER_TASK
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,69 +16,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Josh Bowman <jbowman@facts-inc.com>, xenomai@xenomai.org
 
-Hi,
+On 04/01/2017 08:25 AM, Josh Bowman wrote:
+> Hi,
+> 
+> Under Mercury, I've been seeing occasionally a "Segmentation fault" message
+> when I hit ctrl-c to stop the latency test program. I caught a core dump,
+> and the stack trace leads back to the sem_wait() call in the display task.
+> 
+> I think this is caused by the cleanup() routine destroying the semaphore
+> before it calls join on the display task. This patch seems to fix the issue.
+> 
 
+Good catch. Merged, thanks.
 
+-- 
+Philippe.
 
-I work for a company based in France (La-Roche-Sur-Yon) that build
-embedded devices and we are planning to switch from QNX to Linux/Xenomai
-on i.MX6.
-
-
-
-I am currently searching for a training center able to teach Linux and
-Xenomai to all software team (8 people).
-
-
-
-=3D> Does anyone know a correct training center for this ?
-
-
-
-=3D> Is there anyone experienced in Xenomai on i.MX6 (tricks, classical
-traps =85) ?
-
-
-
-Regards,
-
-
-
-C=E9dric
-
-
-Sepro
-
-C=E9dric PERLES
-Software R&D engineer
-SEPRO Robotique - Rue Henry Bessemer - Zone Acti-Est - CS 10084 - 85003 La
-Roche sur Yon Cedex (France)
-
-Tel : +33 (0)2 51 45 05 31
-
-  _____
-
- <http://www.sepro-group.com/fr> www.sepro-group.com |
-<https://twitter.com/seprogroup> twitter@SeproGroup
-
-
-
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: image001.jpg
-Type: image/jpeg
-Size: 22984 bytes
-Desc: not available
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20170306/6c2f4669/at=
-tachment.jpg>
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: image004.png
-Type: image/png
-Size: 818 bytes
-Desc: not available
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20170306/6c2f4669/at=
-tachment.png>
