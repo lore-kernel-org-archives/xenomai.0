@@ -1,14 +1,10 @@
-References: <CAHz_r8DdqD_jRhr452riik5wu55hDmjOr3T4ap8r3PwAaWAPpw@mail.gmail.com>
- <CAHz_r8DUdsE7HEDWQk1mULAEw1xZ4GqgNW71ggWUHn1_ZGtfQg@mail.gmail.com>
- <f6833c8c-cbdd-2d31-fbd6-f1a4e9edbc18@xenomai.org>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <a93b8b92-d856-1b3d-0052-64cd83c87634@xenomai.org>
-Date: Sat, 1 Apr 2017 11:40:11 +0200
+Message-ID: <3bbbaaec-cd16-ab0f-b1f1-94dc33e72318@xenomai.org>
+Date: Sun, 2 Apr 2017 17:32:50 +0200
 MIME-Version: 1.0
-In-Reply-To: <f6833c8c-cbdd-2d31-fbd6-f1a4e9edbc18@xenomai.org>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Fwd: Compilation error
+Subject: [Xenomai] Xenomai 3.0.4
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,77 +13,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Benjamin Alix <alixbenjamin53@gmail.com>, xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 04/01/2017 11:34 AM, Philippe Gerum wrote:
-> On 03/31/2017 03:49 PM, Benjamin Alix wrote:
->> ---------- Forwarded message ----------
->> From: Benjamin Alix <alixbenjamin53@gmail.com>
->> Date: 2017-03-30 17:56 GMT+02:00
->> Subject: [Xenomai] Compilation error
->> To: xenomai@xenomai.org
->>
->>
->> Hi,
->>
->> I'm compiling Xenomai 3.0.3 with a cross toolchain built with
->> buildroot (based on gcc 6.3.0) and when it comes to build xenomai I
->> get the following errors :
->>
->> make[5]: Entering directory
->> `/free/stagiaire/buildroot-2017.02/output/build/xenomai-3.0.3/lib/boilerplate/init'
->>   CC       libbootstrap_a-bootstrap.o
->>   CC       libbootstrap_pic_la-bootstrap.lo
->> In file included from
->> /free/stagiaire/buildroot-2017.02/output/build/xenomai-3.0.3/include/cobalt/time.h:26:0,
->>                  from
->> /free/stagiaire/buildroot-2017.02/output/host/usr/powerpc-buildroot-linux-uclibc/sysroot/usr/include/sys/types.h:132,
->>                  from bootstrap.c:18:
->> /free/stagiaire/buildroot-2017.02/output/build/xenomai-3.0.3/include/cobalt/stdio.h:68:1:
->> error: pasting "__cobalt_" and "(" does not give a valid preprocessing
->> token
-> 
-> It looks like you are building Xenomai on top of a uClibc release which
-> is implementing fputc() and putchar() as macros, without defining the
-> __STDIO_PUTC_MACRO indicator (anymore). You need to find a way to
-> discriminate both cases, so that the right declaration block is picked
-> for those routines in include/cobalt/stdio.h.
-> 
 
-Please try this, and let us know of the outcome:
+Xenomai 3.0.4 is out. It includes several critical bug fixes in the
+Copperplate library, which means that people running non-POSIX
+applications over earlier Xenomai 3.x releases should definitely
+consider upgrading (especially those enabling multi process
+configurations via --enable-pshared).
 
-diff --git a/include/cobalt/stdio.h b/include/cobalt/stdio.h
-index c915e6d..864f1d3 100644
---- a/include/cobalt/stdio.h
-+++ b/include/cobalt/stdio.h
-@@ -63,20 +63,18 @@ COBALT_DECL(int, puts(const char *s));
+On the kernel side, RTDM-based SPI and GPIO driver frameworks have been
+added.
 
- COBALT_DECL(int, fputs(const char *s, FILE *stream));
+http://xenomai.org/downloads/xenomai/stable/latest/xenomai-3.0.4.tar.bz2
 
--#if !defined(__UCLIBC__) || !defined(__STDIO_PUTC_MACRO)
--
--COBALT_DECL(int, fputc(int c, FILE *stream));
--
-+#ifndef putchar
- COBALT_DECL(int, putchar(int c));
--
- #else
--
--int __wrap_fputc(int c, FILE *stream);
--#define __real_fputc __wrap_fputc
--
- int __wrap_putchar(int c);
- #define __real_putchar __wrap_putchar
-+#endif
-
-+#ifndef fputc
-+COBALT_DECL(int, fputc(int c, FILE *stream));
-+#else
-+int __wrap_fputc(int c, FILE *stream);
-+#define __real_fputc __wrap_fputc
- #endif
-
- COBALT_DECL(size_t,
 -- 
 Philippe.
 
