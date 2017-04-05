@@ -1,10 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <3bbbaaec-cd16-ab0f-b1f1-94dc33e72318@xenomai.org>
-Date: Sun, 2 Apr 2017 17:32:50 +0200
+From: =?iso-8859-1?Q?H=E4nel-Baas=2C_Alexander?=
+ <alexander.haenel-baas@sieb-meyer.de>
+Date: Wed, 5 Apr 2017 07:13:30 +0000
+Message-ID: <9BA84827B30CBE4996725F98F7DC912365377038@SMExchange01.siebmeyer.org>
+Content-Language: de-DE
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Xenomai 3.0.4
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Xenomai 3.0.4 patch folder
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,20 +15,12 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
+Hi,
 
-Xenomai 3.0.4 is out. It includes several critical bug fixes in the
-Copperplate library, which means that people running non-POSIX
-applications over earlier Xenomai 3.x releases should definitely
-consider upgrading (especially those enabling multi process
-configurations via --enable-pshared).
+i missing the patch folder in Xenomai 3.0.4 under /kernel/cobalt/arch/...
 
-On the kernel side, RTDM-based SPI and GPIO driver frameworks have been
-added.
-
-http://xenomai.org/downloads/xenomai/stable/latest/xenomai-3.0.4.tar.bz2
-
--- 
-Philippe.
+With best regards,
+Alexander
 
