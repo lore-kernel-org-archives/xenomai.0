@@ -1,14 +1,9 @@
-From: "Auel, Kendall" <Kendall.Auel@3DSystems.Com>
-Date: Wed, 5 Apr 2017 19:10:45 +0000
-Message-ID: <1491419463851.38638@3DSystems.Com>
-References: <9BA84827B30CBE4996725F98F7DC912365377038@SMExchange01.siebmeyer.org>,
- <f88a5c6a-7ccc-169c-83b6-b94d5feceb13@xenomai.org>
-In-Reply-To: <f88a5c6a-7ccc-169c-83b6-b94d5feceb13@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Xenomai 3.0.4 patch folder
+From: Ashwin Narayan <ashwinnarayan1994@gmail.com>
+Date: Thu, 6 Apr 2017 20:56:33 +0800
+Message-ID: <CAKbLDQPqfaHry4UPpFTAby9naB15pph8vss37TLAR6PdQk7x4A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai] Desktop Slow after Installing Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,29 +12,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-From: Philippe Gerum <rpm@xenomai.org>=0A=
-Sent: Wednesday, April 5, 2017 12:26 AM=0A=
->On 04/05/2017 09:13 AM, H=E4nel-Baas, Alexander wrote:=0A=
->> Hi,=0A=
->>=0A=
->> i missing the patch folder in Xenomai 3.0.4 under /kernel/cobalt/arch/..=
-.=0A=
->>=0A=
->> With best regards,=0A=
->> Alexander=0A=
->>=0A=
->=0A=
->Please have a look at the README file in that directory.=0A=
->=0A=
->--=0A=
->Philippe.=0A=
-=0A=
-Note that if you decide to clone the ipipe repository, you must then=0A=
-run "scripts/ipipe/genpatches.sh" to produce the patch files. This=0A=
-was not immediately obvious to me, being somewhat new to this.=0A=
-=0A=
-Regards,=0A=
-Kendall=0A=
+Hi,
+
+I've recently compiled and installed Xenomai 3.0.4 on a Ubuntu 10.04
+PC/104 system (Intel Atom) with the 3.18.20 kernel. After the install
+there are weird bugs. I have to type really slow or the keystrokes
+don't get registered. If I press Ctrl+Alt+F1 to open a terminal only
+(with no GUI) every keystroke is registered twice. The mouse moves
+really slowly.
+
+However, if I ssh in, everything is smooth and fast.
+
+The latency tests are completely fine.
+
+Anyone know what could be going on?
+
+Thanks,
+-Ashwin
 
