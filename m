@@ -1,11 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <861193a4-0741-db5b-06ff-cdcaa3ed1d59@xenomai.org>
+In-Reply-To: <CAKbLDQNvWphPRx3nsJMbhyW=uX_G5-ur0RQ3xk-SqNBo0Nqi+A@mail.gmail.com>
 References: <CAKbLDQOXrHX2bZd0jZ=WEBG7rDZ8OeKuFHpSDZy98s6NxR50FQ@mail.gmail.com>
  <861193a4-0741-db5b-06ff-cdcaa3ed1d59@xenomai.org>
+ <CAKbLDQNvWphPRx3nsJMbhyW=uX_G5-ur0RQ3xk-SqNBo0Nqi+A@mail.gmail.com>
 From: Ashwin Narayan <ashwinnarayan1994@gmail.com>
-Date: Wed, 12 Apr 2017 19:56:11 +0800
-Message-ID: <CAKbLDQNvWphPRx3nsJMbhyW=uX_G5-ur0RQ3xk-SqNBo0Nqi+A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Date: Thu, 13 Apr 2017 14:34:03 +0800
+Message-ID: <CAKbLDQNOFPgOrCn7YzOr7mdGj4hYDZyaT7jLws3h0Q0nYSmESA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Advantech PCM3680I with Xenomai: Probe failed with
  error -5
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -19,91 +21,77 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Wed, Apr 12, 2017 at 5:14 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On 04/11/2017 12:22 PM, Ashwin Narayan wrote:
->> Dear All,
->>
->> I'm having trouble getting the Advantech PCM3680I working under
->> xenomai. I scanned the dmesg log and this is what I get:
->>
->> [    1.344697] RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development Team
->> [    1.344794] RTCAN SJA1000 driver initialized
->> [    1.344989] ADV-PCI-CAN 0000:01:04.0: RTCAN Registering card
->> [    1.345281] ADV-PCI-CAN 0000:01:04.0: RTCAN detected Advantech PCI
->> card at slot #4
->> [    1.345295] ADV-PCI-CAN: Initializing device 13fe:c002:c002
->> [    1.345310] ADV-PCI-CAN: base_addr=000000000001ef00 conf_addr=
->>     (null) irq=16 ocr=0xfa cdr=0xc0
->> [    1.345373] rtcan: registered rtcan0
->> [    1.345386] Unregistering SJA1000 device rtcan0
->> [    1.345403] RTCAN: unregistered rtcan0
->> [    1.345646] ADV-PCI-CAN: probe of 0000:01:04.0 failed with error -5
->> [    1.345793] rtcan: registered rtcan0
->> [    1.345799] rtcan0: VIRT driver loaded
->> [    1.345818] rtcan: registered rtcan1
->> [    1.345824] rtcan1: VIRT driver loaded
->>
->> At first I suspected that the problem could be that the kernel was
->> compiled with the Networking Devices -> CAN Subsystem enabled. So I
->> disabled that and recompiled the kernel and I got the same error
->> message.
->>
->> To find out where the error message is coming from, I tried running
->> the command grep -rnw . -e "probe f" from the directory
->> xenomai-3.0.4/. Couldn't find that string anywhere in the source.
->>
->
-> This message is issued by the regular Linux driver core, upon return
-> from some probe() routine in the RTCAN driver. errno 5 is EIO, you may
-> want to check sja1000/rtcan_adv_pci.c to figure out the reason for
-> receiving it.
->
-> --
-> Philippe.
-
-
-Hi Philippe,
-
->Sorry, I forgot to send the reply to the mailing list.:
-
-Thanks for the suggestion. I made some progress looking in that file.
-
-I tried adding printk() statements in rtcan_adv_pci.c and compiling
-and I figured out where the error is happening. In the rtcan_adv_pci.c
-line 202 - 207:
-
-    202 /* check if mode is set */
-    203 ret = chip->read_reg(dev, SJA_CDR);
-    204 if (ret != SJA_CDR_CAN_MODE) {
-    205     ret = -EIO;
-    206     goto failure_iounmap;
-    207 }
-
-The chip->read_reg(dev, SJA_CDR) does not return SJA_CDR_CAN_MODE. So
-ret = -EIO (-5) and the probe fails. Could this be something wrong
-with the way the driver assignes the io regions? I compared the code
-in this file with the driver that is provided by advantech (which is
-not realtime) and there were a few differences. Namely, the advantech
-driver uses request_region() instead of pci_iomap(). I tried following
-the execution paths of both the advantech and the xenomai drivers. My
-device id is c002
-
-For the advantech driver it goes like:
-pci_enable_device(pdev)
-ifndef CONFIG_PCI_MSI
-pci_enable_msi(pdev)
-#endif
-for i=0; i<2: i++
-    address = pci_resource_start(pdev, 0) + 0x100*i
-    request_region(address, 0x100, "advcan")
-
-For the xenomai driver, pci_iomap(pdev, 0, ADV_PCI_BASE_SIZE) is used instead.
-
-I basically hit a dead end here because I only have a beginner's
-knowledge of how PCI drivers work. Is this an error that is fixable by
-modifying just rtcan_adv_pci.c?
-
-Thanks for all the help,
-
--Ashwin
-
+T24gV2VkLCBBcHIgMTIsIDIwMTcgYXQgNzo1NiBQTSwgQXNod2luIE5hcmF5YW4KPGFzaHdpbm5h
+cmF5YW4xOTk0QGdtYWlsLmNvbT4gd3JvdGU6Cj4gT24gV2VkLCBBcHIgMTIsIDIwMTcgYXQgNTox
+NCBQTSwgUGhpbGlwcGUgR2VydW0gPHJwbUB4ZW5vbWFpLm9yZz4gd3JvdGU6Cj4+IE9uIDA0LzEx
+LzIwMTcgMTI6MjIgUE0sIEFzaHdpbiBOYXJheWFuIHdyb3RlOgo+Pj4gRGVhciBBbGwsCj4+Pgo+
+Pj4gSSdtIGhhdmluZyB0cm91YmxlIGdldHRpbmcgdGhlIEFkdmFudGVjaCBQQ00zNjgwSSB3b3Jr
+aW5nIHVuZGVyCj4+PiB4ZW5vbWFpLiBJIHNjYW5uZWQgdGhlIGRtZXNnIGxvZyBhbmQgdGhpcyBp
+cyB3aGF0IEkgZ2V0Ogo+Pj4KPj4+IFsgICAgMS4zNDQ2OTddIFJULVNvY2tldC1DQU4gMC45MC4y
+IC0gKEMpIDIwMDYgUlQtU29ja2V0LUNBTiBEZXZlbG9wbWVudCBUZWFtCj4+PiBbICAgIDEuMzQ0
+Nzk0XSBSVENBTiBTSkExMDAwIGRyaXZlciBpbml0aWFsaXplZAo+Pj4gWyAgICAxLjM0NDk4OV0g
+QURWLVBDSS1DQU4gMDAwMDowMTowNC4wOiBSVENBTiBSZWdpc3RlcmluZyBjYXJkCj4+PiBbICAg
+IDEuMzQ1MjgxXSBBRFYtUENJLUNBTiAwMDAwOjAxOjA0LjA6IFJUQ0FOIGRldGVjdGVkIEFkdmFu
+dGVjaCBQQ0kKPj4+IGNhcmQgYXQgc2xvdCAjNAo+Pj4gWyAgICAxLjM0NTI5NV0gQURWLVBDSS1D
+QU46IEluaXRpYWxpemluZyBkZXZpY2UgMTNmZTpjMDAyOmMwMDIKPj4+IFsgICAgMS4zNDUzMTBd
+IEFEVi1QQ0ktQ0FOOiBiYXNlX2FkZHI9MDAwMDAwMDAwMDAxZWYwMCBjb25mX2FkZHI9Cj4+PiAg
+ICAgKG51bGwpIGlycT0xNiBvY3I9MHhmYSBjZHI9MHhjMAo+Pj4gWyAgICAxLjM0NTM3M10gcnRj
+YW46IHJlZ2lzdGVyZWQgcnRjYW4wCj4+PiBbICAgIDEuMzQ1Mzg2XSBVbnJlZ2lzdGVyaW5nIFNK
+QTEwMDAgZGV2aWNlIHJ0Y2FuMAo+Pj4gWyAgICAxLjM0NTQwM10gUlRDQU46IHVucmVnaXN0ZXJl
+ZCBydGNhbjAKPj4+IFsgICAgMS4zNDU2NDZdIEFEVi1QQ0ktQ0FOOiBwcm9iZSBvZiAwMDAwOjAx
+OjA0LjAgZmFpbGVkIHdpdGggZXJyb3IgLTUKPj4+IFsgICAgMS4zNDU3OTNdIHJ0Y2FuOiByZWdp
+c3RlcmVkIHJ0Y2FuMAo+Pj4gWyAgICAxLjM0NTc5OV0gcnRjYW4wOiBWSVJUIGRyaXZlciBsb2Fk
+ZWQKPj4+IFsgICAgMS4zNDU4MThdIHJ0Y2FuOiByZWdpc3RlcmVkIHJ0Y2FuMQo+Pj4gWyAgICAx
+LjM0NTgyNF0gcnRjYW4xOiBWSVJUIGRyaXZlciBsb2FkZWQKPj4+Cj4+PiBBdCBmaXJzdCBJIHN1
+c3BlY3RlZCB0aGF0IHRoZSBwcm9ibGVtIGNvdWxkIGJlIHRoYXQgdGhlIGtlcm5lbCB3YXMKPj4+
+IGNvbXBpbGVkIHdpdGggdGhlIE5ldHdvcmtpbmcgRGV2aWNlcyAtPiBDQU4gU3Vic3lzdGVtIGVu
+YWJsZWQuIFNvIEkKPj4+IGRpc2FibGVkIHRoYXQgYW5kIHJlY29tcGlsZWQgdGhlIGtlcm5lbCBh
+bmQgSSBnb3QgdGhlIHNhbWUgZXJyb3IKPj4+IG1lc3NhZ2UuCj4+Pgo+Pj4gVG8gZmluZCBvdXQg
+d2hlcmUgdGhlIGVycm9yIG1lc3NhZ2UgaXMgY29taW5nIGZyb20sIEkgdHJpZWQgcnVubmluZwo+
+Pj4gdGhlIGNvbW1hbmQgZ3JlcCAtcm53IC4gLWUgInByb2JlIGYiIGZyb20gdGhlIGRpcmVjdG9y
+eQo+Pj4geGVub21haS0zLjAuNC8uIENvdWxkbid0IGZpbmQgdGhhdCBzdHJpbmcgYW55d2hlcmUg
+aW4gdGhlIHNvdXJjZS4KPj4+Cj4+Cj4+IFRoaXMgbWVzc2FnZSBpcyBpc3N1ZWQgYnkgdGhlIHJl
+Z3VsYXIgTGludXggZHJpdmVyIGNvcmUsIHVwb24gcmV0dXJuCj4+IGZyb20gc29tZSBwcm9iZSgp
+IHJvdXRpbmUgaW4gdGhlIFJUQ0FOIGRyaXZlci4gZXJybm8gNSBpcyBFSU8sIHlvdSBtYXkKPj4g
+d2FudCB0byBjaGVjayBzamExMDAwL3J0Y2FuX2Fkdl9wY2kuYyB0byBmaWd1cmUgb3V0IHRoZSBy
+ZWFzb24gZm9yCj4+IHJlY2VpdmluZyBpdC4KPj4KPj4gLS0KPj4gUGhpbGlwcGUuCj4KPgo+IEhp
+IFBoaWxpcHBlLAo+Cj4+U29ycnksIEkgZm9yZ290IHRvIHNlbmQgdGhlIHJlcGx5IHRvIHRoZSBt
+YWlsaW5nIGxpc3QuOgo+Cj4gVGhhbmtzIGZvciB0aGUgc3VnZ2VzdGlvbi4gSSBtYWRlIHNvbWUg
+cHJvZ3Jlc3MgbG9va2luZyBpbiB0aGF0IGZpbGUuCj4KPiBJIHRyaWVkIGFkZGluZyBwcmludGso
+KSBzdGF0ZW1lbnRzIGluIHJ0Y2FuX2Fkdl9wY2kuYyBhbmQgY29tcGlsaW5nCj4gYW5kIEkgZmln
+dXJlZCBvdXQgd2hlcmUgdGhlIGVycm9yIGlzIGhhcHBlbmluZy4gSW4gdGhlIHJ0Y2FuX2Fkdl9w
+Y2kuYwo+IGxpbmUgMjAyIC0gMjA3Ogo+Cj4gICAgIDIwMiAvKiBjaGVjayBpZiBtb2RlIGlzIHNl
+dCAqLwo+ICAgICAyMDMgcmV0ID0gY2hpcC0+cmVhZF9yZWcoZGV2LCBTSkFfQ0RSKTsKPiAgICAg
+MjA0IGlmIChyZXQgIT0gU0pBX0NEUl9DQU5fTU9ERSkgewo+ICAgICAyMDUgICAgIHJldCA9IC1F
+SU87Cj4gICAgIDIwNiAgICAgZ290byBmYWlsdXJlX2lvdW5tYXA7Cj4gICAgIDIwNyB9Cj4KPiBU
+aGUgY2hpcC0+cmVhZF9yZWcoZGV2LCBTSkFfQ0RSKSBkb2VzIG5vdCByZXR1cm4gU0pBX0NEUl9D
+QU5fTU9ERS4gU28KPiByZXQgPSAtRUlPICgtNSkgYW5kIHRoZSBwcm9iZSBmYWlscy4gQ291bGQg
+dGhpcyBiZSBzb21ldGhpbmcgd3JvbmcKPiB3aXRoIHRoZSB3YXkgdGhlIGRyaXZlciBhc3NpZ25l
+cyB0aGUgaW8gcmVnaW9ucz8gSSBjb21wYXJlZCB0aGUgY29kZQo+IGluIHRoaXMgZmlsZSB3aXRo
+IHRoZSBkcml2ZXIgdGhhdCBpcyBwcm92aWRlZCBieSBhZHZhbnRlY2ggKHdoaWNoIGlzCj4gbm90
+IHJlYWx0aW1lKSBhbmQgdGhlcmUgd2VyZSBhIGZldyBkaWZmZXJlbmNlcy4gTmFtZWx5LCB0aGUg
+YWR2YW50ZWNoCj4gZHJpdmVyIHVzZXMgcmVxdWVzdF9yZWdpb24oKSBpbnN0ZWFkIG9mIHBjaV9p
+b21hcCgpLiBJIHRyaWVkIGZvbGxvd2luZwo+IHRoZSBleGVjdXRpb24gcGF0aHMgb2YgYm90aCB0
+aGUgYWR2YW50ZWNoIGFuZCB0aGUgeGVub21haSBkcml2ZXJzLiBNeQo+IGRldmljZSBpZCBpcyBj
+MDAyCj4KPiBGb3IgdGhlIGFkdmFudGVjaCBkcml2ZXIgaXQgZ29lcyBsaWtlOgo+IHBjaV9lbmFi
+bGVfZGV2aWNlKHBkZXYpCj4gaWZuZGVmIENPTkZJR19QQ0lfTVNJCj4gcGNpX2VuYWJsZV9tc2ko
+cGRldikKPiAjZW5kaWYKPiBmb3IgaT0wOyBpPDI6IGkrKwo+ICAgICBhZGRyZXNzID0gcGNpX3Jl
+c291cmNlX3N0YXJ0KHBkZXYsIDApICsgMHgxMDAqaQo+ICAgICByZXF1ZXN0X3JlZ2lvbihhZGRy
+ZXNzLCAweDEwMCwgImFkdmNhbiIpCj4KPiBGb3IgdGhlIHhlbm9tYWkgZHJpdmVyLCBwY2lfaW9t
+YXAocGRldiwgMCwgQURWX1BDSV9CQVNFX1NJWkUpIGlzIHVzZWQgaW5zdGVhZC4KPgo+IEkgYmFz
+aWNhbGx5IGhpdCBhIGRlYWQgZW5kIGhlcmUgYmVjYXVzZSBJIG9ubHkgaGF2ZSBhIGJlZ2lubmVy
+J3MKPiBrbm93bGVkZ2Ugb2YgaG93IFBDSSBkcml2ZXJzIHdvcmsuIElzIHRoaXMgYW4gZXJyb3Ig
+dGhhdCBpcyBmaXhhYmxlIGJ5Cj4gbW9kaWZ5aW5nIGp1c3QgcnRjYW5fYWR2X3BjaS5jPwo+Cj4g
+VGhhbmtzIGZvciBhbGwgdGhlIGhlbHAsCj4KPiAtQXNod2luCgpIaSBBbGwsCgpJIG1hbmFnZWQg
+dG8gc29sdmUgdGhlIHByb2JsZW0gd2l0aCB0aGUgUENNMzY4MEkgYnkgbW9kaWZ5aW5nIHRoZSBj
+b2RlCmluIHRoZSB4ZW5vbWFpLTMuMC40L2tlcm5lbC9kcml2ZXJzL2Nhbi9zamExMDAwL3J0Y2Fu
+X2Fkdl9wY2kuYy4gSQp0aG91Z2h0IEknZCBzZW5kIG91dCBhIG1haWwgc28gdGhhdCBvdGhlcnMg
+aGF2aW5nIHRyb3VibGUgd2l0aCB0aGUKY2FyZCBjYW4gc2VlIGl0LiBJJ20gYXR0YWNoaW5nIHRo
+ZSBtb2RpZmllZCBmaWxlIGhlcmUuCgpUbyB0aGUgbWFpbnRhaW5lcnMgb2YgeGVub21haTogaXMg
+aXQgcG9zc2libGUgdG8gaW50ZWdyYXRlIHRoaXMgY2hhbmdlCmludG8gdGhlIG1haW4geGVub21h
+aSBjb2RlPyBJJ20gc3VyZSBpdCB3aWxsIGhlbHAgbG90cyBvZiBwZW9wbGUuCgpUaGFua3MgZm9y
+IGFsbCB0aGUgaGVscCA6KQoKLUFzaHdpbgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0t
+LS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBydGNh
+bl9hZHZfcGNpLmMKVHlwZTogdGV4dC94LWNzcmMKU2l6ZTogOTAyOCBieXRlcwpEZXNjOiBub3Qg
+YXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRh
+Y2htZW50cy8yMDE3MDQxMy9mZmJhOWY0Ny9hdHRhY2htZW50LmM+Cg==
