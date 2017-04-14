@@ -1,11 +1,7 @@
-From: Romain Naour <romain.naour@gmail.com>
-Message-ID: <946ea421-b654-bd7d-62ab-6131ae80dc7d@gmail.com>
-Date: Fri, 14 Apr 2017 15:48:33 +0200
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] obstack support with uClibc-ng >= 1.0.21
+From: =?UTF-8?q?G=C3=B6kt=C3=BCrk=20Y=C3=BCksek?= <gokturk@gentoo.org>
+Date: Fri, 14 Apr 2017 13:54:11 -0400
+Message-Id: <20170414175411.11952-1-gokturk@gentoo.org>
+Subject: [Xenomai] [PATCH v1] configure: fix the help string for demodir
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,23 +11,27 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
-Cc: Waldemar Brodkorb <wbx@openadk.org>, Pawel Sikora <sikor6@gmail.com>
 
-Hi all,
+The help string uses '--with-demo' instead of '--with-demodir',
+misinforming the user about the correct option to pass.
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Xenomai 3 doesn't build with recent uClibc-ng (since 1.0.21 release) since the
-obstack support has been removed [1].
+diff --git a/configure.ac b/configure.ac
+index 4792e46..d6354f1 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -746,7 +746,7 @@ AC_MSG_RESULT($XENO_TEST_DIR)
+ demodir='${exec_prefix}/demo'
+ AC_MSG_CHECKING(location for demo programs)
+ AC_ARG_WITH(demodir,
+-    AS_HELP_STRING([--with-demo=<demo-program-dir>],[location for demo programs (defaults to $prefix/demo)]),
++    AS_HELP_STRING([--with-demodir=<demo-program-dir>],[location for demo programs (defaults to $prefix/demo)]),
+     [
+ 	case "$withval" in
+ 	"" | y | ye | yes | n | no)
+-- 
+2.10.2
 
-I proposed a patch [2] disabling this feature unconditionally but I don't really
-understand how obstack support work with Xenomai and why it's required.
-
-Do we need to add a requirement on Glibc system as suggested in [3] ?
-
-Best regards,
-Romain
-
-[1]
-https://cgit.openadk.org/cgi/cgit/uclibc-ng.git/commit/?id=0bd6bfb2b643ea2b4b1440dfd917ba752f0c0d15
-[2] http://patchwork.ozlabs.org/patch/745792/
-[3] http://lists.busybox.net/pipermail/buildroot/2017-April/189244.html
 
