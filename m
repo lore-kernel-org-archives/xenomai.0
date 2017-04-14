@@ -1,9 +1,7 @@
-MIME-Version: 1.0
-From: Ashwin Narayan <ashwinnarayan1994@gmail.com>
-Date: Thu, 13 Apr 2017 20:26:14 +0800
-Message-ID: <CAKbLDQM1-9pQezpmBoesR6uuZw=croeD559729EAMG0QxF59pA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] Very strange error with rtcanconfig.
+From: Romain Naour <romain.naour@gmail.com>
+Date: Fri, 14 Apr 2017 15:08:01 +0200
+Message-Id: <20170414130801.16915-1-romain.naour@gmail.com>
+Subject: [Xenomai] [PATCH] arm: enable armv5tej support
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,36 +12,31 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hey all,
+armv5tej are not detected in lib/cobalt/arch/arm/include/asm/xenomai/features.h
 
-I've been working with the PCM-3680I - a can bus module. I'm trying to
-set up a simple C program that can send and receive can bus messages
-but I'm getting a very strange error.
+Apply the same patch from xenomai-2.6:
+https://git.xenomai.org/xenomai-2.6.git/commit/?id=ebc2779baa222db4a5936c3d3022803355585b8c
 
-In my code, when I call socket(), I always get -1 in response.
+Signed-off-by: Romain Naour <romain.naour@gmail.com>
+---
+ lib/cobalt/arch/arm/include/asm/xenomai/features.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-If I call
+diff --git a/lib/cobalt/arch/arm/include/asm/xenomai/features.h b/lib/cobalt/arch/arm/include/asm/xenomai/features.h
+index 10bd0c7..e84b809 100644
+--- a/lib/cobalt/arch/arm/include/asm/xenomai/features.h
++++ b/lib/cobalt/arch/arm/include/asm/xenomai/features.h
+@@ -34,7 +34,8 @@
+ #endif /* armv4 */
+ 
+ #if defined(__ARM_ARCH_5__) || defined(__ARM_ARCH_5T__) \
+-	|| defined(__ARM_ARCH_5E__) || defined(__ARM_ARCH_5TE__)
++	|| defined(__ARM_ARCH_5E__) || defined(__ARM_ARCH_5TE__) \
++	|| defined(__ARM_ARCH_5TEJ__)
+ #define __LINUX_ARM_ARCH__ 5
+ #endif /* armv5 */
+ 
+-- 
+2.9.3
 
-sudo LD_LIBRARY_PATH=/usr/xenomai/lib /usr/xenomai/sbin/rtcanconfig
-rtcan0 -b 1000000 -v start
-
-I get the expected response:
-mode: start (0x1)
-baudrate: 1000000
-
-Then I copied and pasted the rtcanconfig.c example from the
-documentation and compiled it and it gave me the error about sockets
-again
-
-sudo LD_LIBRARY_PATH=/usr/xenomai/lib ./rtcanconfig rtcan0 -b 1000000 -v start
-mode: start (0x1)
-Cannot open RTDM CAN socket. Maybe driver not loaded?
-
-I'm sure that the driver is loaded and the precompiled rtcanconfig
-seems to be working.
-
-Any idea what's going on here?
-
-Thanks,
--Ashwin
 
