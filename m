@@ -1,14 +1,11 @@
-References: <946ea421-b654-bd7d-62ab-6131ae80dc7d@gmail.com>
- <9acc1de8-9a6b-32c0-a1e7-521601cd84d7@xenomai.org>
-From: Romain Naour <romain.naour@gmail.com>
-Message-ID: <b5d636af-de75-67ca-53d5-bfeb2caa6314@gmail.com>
-Date: Sat, 15 Apr 2017 19:58:16 +0200
 MIME-Version: 1.0
-In-Reply-To: <9acc1de8-9a6b-32c0-a1e7-521601cd84d7@xenomai.org>
-Content-Type: text/plain; charset="windows-1252"
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] obstack support with uClibc-ng >= 1.0.21
+In-Reply-To: <CAKbLDQM1-9pQezpmBoesR6uuZw=croeD559729EAMG0QxF59pA@mail.gmail.com>
+References: <CAKbLDQM1-9pQezpmBoesR6uuZw=croeD559729EAMG0QxF59pA@mail.gmail.com>
+From: Ashwin Narayan <ashwinnarayan1994@gmail.com>
+Date: Sun, 16 Apr 2017 02:24:28 +0800
+Message-ID: <CAKbLDQPKKb7NFHfDRt1f0+yRD605kJndkQYor7jGCsgJrZsA=g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Very strange error with rtcanconfig.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,65 +14,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
-Cc: Waldemar Brodkorb <wbx@openadk.org>, Pawel Sikora <sikor6@gmail.com>
+To: xenomai@xenomai.org
 
-Hi Philippe,
+On Thu, Apr 13, 2017 at 8:26 PM, Ashwin Narayan
+<ashwinnarayan1994@gmail.com> wrote:
+> Hey all,
+>
+> I've been working with the PCM-3680I - a can bus module. I'm trying to
+> set up a simple C program that can send and receive can bus messages
+> but I'm getting a very strange error.
+>
+> In my code, when I call socket(), I always get -1 in response.
+>
+> If I call
+>
+> sudo LD_LIBRARY_PATH=/usr/xenomai/lib /usr/xenomai/sbin/rtcanconfig
+> rtcan0 -b 1000000 -v start
+>
+> I get the expected response:
+> mode: start (0x1)
+> baudrate: 1000000
+>
+> Then I copied and pasted the rtcanconfig.c example from the
+> documentation and compiled it and it gave me the error about sockets
+> again
+>
+> sudo LD_LIBRARY_PATH=/usr/xenomai/lib ./rtcanconfig rtcan0 -b 1000000 -v start
+> mode: start (0x1)
+> Cannot open RTDM CAN socket. Maybe driver not loaded?
+>
+> I'm sure that the driver is loaded and the precompiled rtcanconfig
+> seems to be working.
+>
+> Any idea what's going on here?
+>
+> Thanks,
+> -Ashwin
 
-Le 15/04/2017 =E0 17:08, Philippe Gerum a =E9crit :
-> On 04/14/2017 03:48 PM, Romain Naour wrote:
->> Hi all,
->>
->> Xenomai 3 doesn't build with recent uClibc-ng (since 1.0.21 release) sin=
-ce the
->> obstack support has been removed [1].
->>
->> I proposed a patch [2] disabling this feature unconditionally but I don'=
-t really
->> understand how obstack support work with Xenomai and why it's required.
->>
->> Do we need to add a requirement on Glibc system as suggested in [3] ?
->>
->=20
-> obstacks are used internally by helpers from our fuse-based registry
-> system (lib/copperplate/registry.c). No rocket-science in there, but not
-> a wheel that should be reinvented either, so the obstack support was
-> pulled from a gcc-based libiberty copy IIRC. Fact is that the code
-> assessing the opportunity to elide that code is terminally broken, as
-> you found out.
->=20
-> I pushed a commit [1] aimed at addressing the issue, by detecting
-> whether the underlying libc provides for native obstack support, only
-> building our replacement code if not, with some cleanups. This as been
-> tested against uClibc 1.0.22, and common glibc releases.
+So I got the code to work finally and figured out what was wrong -
+after many iterations of recompiling the kernel with different
+options. I feel like it's not very easy to figure this out from the
+documentation alone: When you compile the program you need to add
+--rtdm to the CFLAGS and LDFLAGS. For future reference, I'll leave my
+makefile up for others to refer to.
 
-Thanks for your quick feedback!
-I sent a patch to Buildroot to backport this fix and revert my workaround.
+SRC=rtcanconfig
+TARGET=rtcanconfig
 
->=20
-> PS: I pushed some changes toward supporting musl to the stable branch as
-> well, but since the latter hides linux-specific ABI bits such as
-> SIGEV_THREAD_ID, full support requires more effort. So musl support is
-> still not there yet.
+CFLAGS := $(shell xeno-config --alchemy --rtdm --cflags)
+LDFLAGS := $(shell xeno-config --alchemy --rtdm --ldflags)
+CC := $(shell xeno-config --cc)
 
-Last year (08/2016), I disabled Xenomai (v2.6.4) package in Buildroot for m=
-usl
-based toolchain [1] after trying to fixes all issues...
-Since then nobody complained that Xenomai is disabled with musl, I guess we=
- can
-wait until the musl port is complete and released :)
+$(TARGET): $(SRC).c
+    $(CC) -o $@ $< $(CFLAGS) $(LDFLAGS)
 
-Best regards,
-Romain
-
-[1]
-https://git.busybox.net/buildroot/commit/?id=3Db845a1541f4c40e028a7351ca183=
-ea3c6db56246
-
->=20
-> [1]
-> http://git.xenomai.org/xenomai-3.git/commit/?h=3Dstable-3.0.x&id=3D4c5935=
-44d2ff39ba6631cc3fa0b91493973674d4
->=20
-
+-Ashwin
 
