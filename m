@@ -1,10 +1,12 @@
-Date: Thu, 20 Apr 2017 10:58:03 +0800 (CST)
-From: "dreamtale90@163.com" <dreamtale90@163.com>
+References: <6131f754.4617.15b894b92f8.Coremail.dreamtale90@163.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <3683be1c-4616-bda9-a7aa-d8ebf94aeecc@xenomai.org>
+Date: Fri, 21 Apr 2017 16:47:32 +0200
 MIME-Version: 1.0
-Message-ID: <6131f754.4617.15b894b92f8.Coremail.dreamtale90@163.com>
-Content-Type: text/plain; charset=GBK
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] About the use of rt_task_delete API
+In-Reply-To: <6131f754.4617.15b894b92f8.Coremail.dreamtale90@163.com>
+Content-Type: text/plain; charset=gbk
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] About the use of rt_task_delete API
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,61 +15,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "rpm@xenomai.org" <rpm@xenomai.org>
+To: "dreamtale90@163.com" <dreamtale90@163.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGV5IGFsbCwKCkkgZm91bmQgdGhhdCB0aGVyZSBpcyBhIHRhc2sgbm90IGNyZWF0ZWQgd2hlbiBJ
-IGFjY2VzcyBteSBzZXJ2ZXIoWGVub21haSkgIGF0IHNlY29uZCB0aW1lLgpCZWNhdXNlIHRoaXMg
-dGFzayBoYXMgYWxyZWFkeSBleGlzdCBieSBydF90YXNrX2lucXVpcmUgQVBJLgpGaW5hbGx5LCBJ
-IGZvdW5kIHRoZSBwcm9ibGVtIGluIHJ0X3Rhc2tfZGVsZXRlKFJUX1RBU0sgKiB0YXNrKSBBUEku
-IFdoZW4gcnRfdGFza19kZWxldGUgaXMgY2FsbGVkLApJbmZvcm1hdGlvbiBpbiB2YXJpYWJsZSB0
-YXNrIHN0aWxsIGV4aXN0cy4KU28sIHRvIGlsbHVzdHJhdGUgdGhlIHByb2JsZW0sIEkgd3JvdGUg
-YSB0ZXN0IHByb2dyYW0gYXMgZm9sbG93OgovKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqU3RhcnQqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqLwojaW5jbHVkZSA8c3RkaW8uaD4KI2luY2x1ZGUgPHVuaXN0ZC5oPgojaW5jbHVkZSA8YWxj
-aGVteS90YXNrLmg+CgojZGVmaW5lIFRBU0tfTlVNICAgIDIKClJUX1RBU0sgdGFza1tUQVNLX05V
-TV07ClJUX1RBU0tfSU5GTyB0YXNrX2luZm8gPSB7MH07CmNoYXIgdGFza19uYW1lWzEwMF0gPSB7
-MH07Cgp2b2lkIGZ1bmModm9pZCAqYXJnKQp7CiAgICBydF90YXNrX3N1c3BlbmQoTlVMTCk7Cn0K
-CmludCBtYWluKCkKewogICAgaW50IGkgPSAwOwogICAgbWVtc2V0KHRhc2ssIDAsIFRBU0tfTlVN
-ICogc2l6ZW9mKFJUX1RBU0spKTsKCiAgICAvL2NyZWF0ZSB0YXNrCiAgICBwcmludGYoImZpcnN0
-IGNyZWF0ZSB0YXNrXG4iKTsKICAgIGZvcihpID0gMDsgaSA8IFRBU0tfTlVNOyBpKyspCiAgICB7
-CiAgICAgICAgaWYocnRfdGFza19pbnF1aXJlKCZ0YXNrW2ldLCAmdGFza19pbmZvKSAhPSAwKQog
-ICAgICAgIHsKICAgICAgICAgICAgbWVtc2V0KHRhc2tfbmFtZSwgMCwgc2l6ZW9mKHRhc2tfbmFt
-ZSkpOwogICAgICAgICAgICBzcHJpbnRmKHRhc2tfbmFtZSwgInRhc2slZCIsIGkpOwogICAgICAg
-ICAgICBydF90YXNrX3NwYXduKCZ0YXNrW2ldLCB0YXNrX25hbWUsIDAsIDgwLCAwLCBmdW5jLCAo
-dm9pZCAqKWkpOwogICAgICAgICAgICBwcmludGYoImNyZWF0ZSB0YXNrJWQsIGhhbmRsZSA9ICVs
-dSwgdGhyZWFkID0gJWx1XG4iLCBpLCB0YXNrW2ldLmhhbmRsZSwgdGFza1tpXS50aHJlYWQpOwog
-ICAgICAgIH0KICAgICAgICBlbHNlCiAgICAgICAgewogICAgICAgICAgICBwcmludGYoImV4aXN0
-IHRhc2slZCwgaGFuZGxlID0gJWx1LCB0aHJlYWQgPSAlbHVcbiIsIGksIHRhc2tbaV0uaGFuZGxl
-LCB0YXNrW2ldLnRocmVhZCk7CiAgICAgICAgfQogICAgfQoKICAgIHJ0X3Rhc2tfc2xlZXAoMyox
-MDAwKjEwMDAqMTAwMGxsdSk7CgogICAgLy9kZWxldGUgdGFzawogICAgcHJpbnRmKCJcbmRlbGV0
-ZSB0YXNrXG4iKTsKICAgIGZvcihpID0gMDsgaSA8IFRBU0tfTlVNOyBpKyspCiAgICB7CiAgICAg
-ICAgcnRfdGFza19kZWxldGUoJnRhc2tbaV0pOwogICAgfQoKICAgIGZvcihpID0gMDsgaSA8IFRB
-U0tfTlVNOyBpKyspCiAgICB7CiAgICAgICAgcHJpbnRmKCJkZWxldGUgdGFzayVkLCBoYW5kbGUg
-PSAlbHUsIHRocmVhZCA9ICVsdVxuIiwgaSwgdGFza1tpXS5oYW5kbGUsIHRhc2tbaV0udGhyZWFk
-KTsKICAgIH0KCiAgICAvL2NyZWF0ZSB0YXNrIGFnYWluLCBpbnZlcnRlZCBzZXF1ZW5jZQogICAg
-cHJpbnRmKCJcbnNlY29uZCBjcmVhdGUgdGFza1xuIik7CiAgICBmb3IoaSA9IFRBU0tfTlVNIC0g
-MTsgaSA+PSAwOyBpLS0pCiAgICB7CiAgICAgICAgaWYocnRfdGFza19pbnF1aXJlKCZ0YXNrW2ld
-LCAmdGFza19pbmZvKSAhPSAwKQogICAgICAgIHsKICAgICAgICAgICAgbWVtc2V0KHRhc2tfbmFt
-ZSwgMCwgc2l6ZW9mKHRhc2tfbmFtZSkpOwogICAgICAgICAgICBzcHJpbnRmKHRhc2tfbmFtZSwg
-InRhc2slZCIsIGkpOwogICAgICAgICAgICBydF90YXNrX3NwYXduKCZ0YXNrW2ldLCB0YXNrX25h
-bWUsIDAsIDgwLCAwLCBmdW5jLCAodm9pZCAqKWkpOwogICAgICAgICAgICBwcmludGYoImNyZWF0
-ZSB0YXNrJWQsIGhhbmRsZSA9ICVsdSwgdGhyZWFkID0gJWx1XG4iLCBpLCB0YXNrW2ldLmhhbmRs
-ZSwgdGFza1tpXS50aHJlYWQpOwogICAgICAgIH0KICAgICAgICBlbHNlCiAgICAgICAgewogICAg
-ICAgICAgICBwcmludGYoImV4aXN0IHRhc2slZCwgaGFuZGxlID0gJWx1LCB0aHJlYWQgPSAlbHVc
-biIsIGksIHRhc2tbaV0uaGFuZGxlLCB0YXNrW2ldLnRocmVhZCk7CiAgICAgICAgfQogICAgfQoK
-ICAgIHJ0X3Rhc2tfc2xlZXAoMyoxMDAwKjEwMDAqMTAwMGxsdSk7CiAgICByZXR1cm4gMDsKfQov
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqRW5kKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKi8KClRoZSB0ZXN0IHByb2dyYW0gb3V0cHV0
-OgovKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqU3RhcnQqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqLwpmaXJzdCBjcmVhdGUgdGFzawpj
-cmVhdGUgdGFzazAsIGhhbmRsZSA9IDUxMzc3LCB0aHJlYWQgPSAxNDA0NTQ2NDQ3Mzc3OTIKY3Jl
-YXRlIHRhc2sxLCBoYW5kbGUgPSA1MjQwMSwgdGhyZWFkID0gMTQwNDU0NjQ0NjY4MTYwCgpkZWxl
-dGUgdGFzawpkZWxldGUgdGFzazAsIGhhbmRsZSA9IDUxMzc3LCB0aHJlYWQgPSAxNDA0NTQ2NDQ3
-Mzc3OTIKZGVsZXRlIHRhc2sxLCBoYW5kbGUgPSA1MjQwMSwgdGhyZWFkID0gMTQwNDU0NjQ0NjY4
-MTYwCgpzZWNvbmQgY3JlYXRlIHRhc2sKY3JlYXRlIHRhc2sxLCBoYW5kbGUgPSA1MTM3NywgdGhy
-ZWFkID0gMTQwNDU0NjQ0NjY4MTYwCmV4aXN0IHRhc2swLCBoYW5kbGUgPSA1MTM3NywgdGhyZWFk
-ID0gMTQwNDU0NjQ0NzM3NzkyCi8qKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKipF
-bmQqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqLwoKSSdt
-IG5vdyBtYW51YWxseSBtZW1zZXQgdGFzayB2YXJpYWJsZSwgIGJ1dCBJIHN0aWxsIHdhbnQgdG8g
-ZG8gaXQgaW4gdGhlIHhlbm9tYWkgbGlicmFyeQp0byBtYWtlIG1vcmUgcGVvcGxlIGxlc3MgZGV0
-b3Vycy4KCkJlc3QgIHJlZ2FyZHMK
+On 04/20/2017 04:58 AM, dreamtale90@163.com wrote:
+> *I'm now manually memset task variable,  but I still want to do it in
+> the xenomai library
+> to make more people less detours.
+
+
+No, you are wrongly assuming that a task descriptor should still contain
+consistent data after a cancellation request is applied to it; such
+guarantee does not exist. This means that using rt_task_inquire() to
+figure out whether a task was deleted is wrong as well. A task
+descriptor is deemed consistent after a successful call to
+rt_task_create/spawn(), until that task exits, for whatever reason,
+voluntarily or not.
+
+The same goes with the POSIX nptl interface, which may recycle the
+memory which the pthread_t handle refers to at some point after a
+cancellation request is issued with this handle. That memory is managed
+into an internal cache, part of which may even be unmapped from the
+process's address space in order to shrink an overpopulated cache.
+Therefore, using a stale handle in requests would at best cause the
+process to crash when referring to invalid memory, or return
+inconsistent data pulled from reused memory.
+
+-- 
+Philippe.
+
