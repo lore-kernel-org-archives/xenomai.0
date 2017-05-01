@@ -1,12 +1,10 @@
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Date: Mon, 06 Mar 2017 10:14:37 +0100
-From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-In-Reply-To: <072401d2964a$0cf736c0$26e5a440$@sepro-group.com>
-References: <072401d2964a$0cf736c0$26e5a440$@sepro-group.com>
-Message-ID: <7909795dc79824c51ea5d9abf7ee4eda@smile.fr>
-Subject: Re: [Xenomai] Looking for training on Linux/Xenomai on i.MX6
+From: Jackson Jones <jackson.jones@gmail.com>
+Date: Mon, 1 May 2017 14:19:40 -0700
+Message-ID: <CADXNiGUww369efOQDe+BvgVyAi3FrakikgTfiPU8Ys7xDpOnnA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Cpusets and the cpu_affinity test
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,89 +13,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?C=C3=A9dric_Perles?= <cperles@sepro-group.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-We have such a training.
-
-Regards
-
--- 
-Pierre FICHEUX -/- CTO Smile-ECS, France -\- pierre.ficheux@smile.fr
-                                     http://www.smile.fr
-                                     http://ingenierie.openwide.fr
-I would love to change the world, but they won't give me the source 
-code
-
-Le 2017-03-06 08:19, Cédric Perles a écrit :
-> Hi,
-> 
-> 
-> 
-> I work for a company based in France (La-Roche-Sur-Yon) that build
-> embedded devices and we are planning to switch from QNX to 
-> Linux/Xenomai
-> on i.MX6.
-> 
-> 
-> 
-> I am currently searching for a training center able to teach Linux and
-> Xenomai to all software team (8 people).
-> 
-> 
-> 
-> => Does anyone know a correct training center for this ?
-> 
-> 
-> 
-> => Is there anyone experienced in Xenomai on i.MX6 (tricks, classical
-> traps …) ?
-> 
-> 
-> 
-> Regards,
-> 
-> 
-> 
-> Cédric
-> 
-> 
-> Sepro
-> 
-> Cédric PERLES
-> Software R&D engineer
-> SEPRO Robotique - Rue Henry Bessemer - Zone Acti-Est - CS 10084 - 
-> 85003 La
-> Roche sur Yon Cedex (France)
-> 
-> Tel : +33 (0)2 51 45 05 31
-> 
->   _____
-> 
->  <http://www.sepro-group.com/fr> www.sepro-group.com |
-> <https://twitter.com/seprogroup> twitter@SeproGroup
-> 
-> 
-> 
-> 
-> -------------- next part --------------
-> A non-text attachment was scrubbed...
-> Name: image001.jpg
-> Type: image/jpeg
-> Size: 22984 bytes
-> Desc: not available
-> URL:
-> <http://xenomai.org/pipermail/xenomai/attachments/20170306/6c2f4669/attachment.jpg>
-> -------------- next part --------------
-> A non-text attachment was scrubbed...
-> Name: image004.png
-> Type: image/png
-> Size: 818 bytes
-> Desc: not available
-> URL:
-> <http://xenomai.org/pipermail/xenomai/attachments/20170306/6c2f4669/attachment.png>
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
-
+SSBhbSBoYXZpbmcgdHJvdWJsZSBnZXR0aW5nIHRoZSBjcHVfYWZmaW5pdHkgdGVzdCB0byBydW4u
+IFRoZSBjaGVjayBmb3IgQ1BVCnJlc3RyaWN0aW9uIGFsd2F5cyBmYWlscy4gSSBoYXZlIHRyaWVk
+IHRvIHJlbWVkeSB0aGlzIGJ5IHNldHRpbmcgdGhlCmJvb3RhcmdzLgoKMS4pIEkgYW0gcnVubmlu
+ZyBhbiBOWFAgaS5NWDYgUVVBRC9EVUFMIFZBUi1TT00tTVg2IGJhc2VkIGJvYXJkIChWYXJpc2Np
+dGUKdmFyX3NvbV9teDYpLiBUaGUga2VybmVsIGlzIGFuIDQuMS4xNSBOWFQvVmFyaXNjaXRlIGtl
+cm5lbCAod2l0aCB0aGUgQlNQCnBhdGNoZWQgaW4pLiBJIHBhdGNoZWQgaW4gdGhlIGlwaXBlLWNv
+cmUtNC4xLjE1LWFybS04LnBhdGNoLgoKMi4pIEkgYW0gcnVubmluZyBYZW5vbWFpIDMuMC4zCgoz
+LikgVGhlIExpbnV4IGRpc3RybyBpcyBEZWJpYW4gSmVzc2llIDguNyAocHJvdmlkZWQgYnkgVmFy
+aXNjaXRlIGFuZCBMaW5hcm8pCgo0LikgVGhlIGdjYyB2ZXJzaW9uIGlzIDQuOS4yLCB0aGUgbGli
+YyB2ZXJzaW9uaSBpcyAyLjE5LgoKNS4pIE15IGNvbmZpZ3VyZSBvcHRpb25zIGFyZToKLi9jb25m
+aWd1cmUgXAogICAgLS13aXRoLWNvcmU9Y29iYWx0IFwKICAgIC0tZW5hYmxlLXNtcCBcCiAgICAt
+LWVuYWJsZS1yZWdpc3RyeSBcCiAgICAtLWVuYWJsZS1wc2hhcmVkIFwKICAgIC0tZW5hYmxlLWRs
+b3Blbi1saWJzIFwKICAgIC0tZW5hYmxlLXNhbml0eSBcCiAgICAtLWRpc2FibGUtdGxzIFwKICAg
+IC0tZW5hYmxlLXZhbGdyaW5kLWNsaWVudCBcCiAgICAtLWRpc2FibGUtYXNzZXJ0Cgo2LikgSGVy
+ZSBhcmUgdGhlIHVib290IHBhcmFtZXRlcnMgKGJvb3RhcmdzKToKc2V0ZW52IHZpZGVvYXJncyAn
+aWYgaGRtaWRldDsgdGhlbiBzZXRlbnYgYm9vdGFyZ3MgJHtib290YXJnc30KdmlkZW89bXhjZmIw
+OmRldj1oZG1pLDEwMjR4NzY4TUA2MCxpZj1SR0IyNDsgZWxzZSBzZXRlbnYgYm9vdGFyZ3MKJHti
+b290YXJnc30gdmlkZW89bXhjZmIwOmRldj1sZGIsYnBwPTMyOyBmaTsgc2V0ZW52IGJvb3Rhcmdz
+Cnhlbm9tYWkuc3VwcG9ydGVkX2NwdXM9MHgwMDAwMDAwZiBpc29sY3B1cz0xICR7Ym9vdGFyZ3N9
+IHZtYWxsb2M9NDAwTQpmYm1lbT0zMk0gZmJjb249MzJNIGdwdW1lbT0zMk0gZ2FsY29yZS5jb250
+aWd1b3VzU2l6ZT0yMDEzMjY1OTIKZ2FsY29yZS5jb250aWd1b3VzQmFzZT0weDAwMDAwMDAwIHZp
+ZGVvPW14Y2ZiMTpvZmYgdmlkZW89bXhjZmIyOm9mZgp2aWRlbz1teGNmYjM6b2ZmOycKCjcuKSBJ
+IGhhdmUgYXR0YWNoZWQgdGhlIGtlcm5lbCBjb25maWd1cmF0aW9uLgoKSSBub3RpY2VkIHRoYXQg
+aWYgSSBsZWF2ZSBhbnkgY3B1cyBvdXQgb2YgdGhlIHN1cHBvcnRlZCBjcHVzLCB0aGUga2VybmVs
+CndpbGwgaGFuZyAoZS5nLiBpZiBJIHB1dCBhIDcgaW5zdGVhZCBvZiBGKS4KCkkgaGF2ZSByZWFk
+IHRocm91Z2ggYWxsIHRoZSBkb2N1bWVudGF0aW9uIGFuZCBoYXZlIG5vdCBmb3VuZCBhbiBhbnN3
+ZXIuCgpUaGFua3MgaW4gYWR2YW5jZSBmb3IgYW55IGhlbHAuCgoKU2luY2VyZWx5LAoKSmFja3Nv
+biBKb25lcwoKU3RlbGxhcnRlY2ggUmVzZWFyY2ggQ29ycG9yYXRpb24KLS0tLS0tLS0tLS0tLS0g
+bmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJi
+ZWQuLi4KTmFtZTogY29uZmlnClR5cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXplOiAx
+MTEwODQgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcv
+cGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNzA1MDEvMWU1YzZmMmQvYXR0YWNobWVu
+dC5vYmo+Cg==
