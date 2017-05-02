@@ -1,10 +1,12 @@
+Date: Tue, 2 May 2017 11:20:39 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20170502112039.54c4ae04@md1em3qc>
+In-Reply-To: <CADXNiGUww369efOQDe+BvgVyAi3FrakikgTfiPU8Ys7xDpOnnA@mail.gmail.com>
+References: <CADXNiGUww369efOQDe+BvgVyAi3FrakikgTfiPU8Ys7xDpOnnA@mail.gmail.com>
 MIME-Version: 1.0
-From: Jackson Jones <jackson.jones@gmail.com>
-Date: Mon, 1 May 2017 14:19:40 -0700
-Message-ID: <CADXNiGUww369efOQDe+BvgVyAi3FrakikgTfiPU8Ys7xDpOnnA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Cpusets and the cpu_affinity test
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Cpusets and the cpu_affinity test
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,38 +15,89 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jackson Jones <jackson.jones@gmail.com>
+Cc: xenomai@xenomai.org
 
-SSBhbSBoYXZpbmcgdHJvdWJsZSBnZXR0aW5nIHRoZSBjcHVfYWZmaW5pdHkgdGVzdCB0byBydW4u
-IFRoZSBjaGVjayBmb3IgQ1BVCnJlc3RyaWN0aW9uIGFsd2F5cyBmYWlscy4gSSBoYXZlIHRyaWVk
-IHRvIHJlbWVkeSB0aGlzIGJ5IHNldHRpbmcgdGhlCmJvb3RhcmdzLgoKMS4pIEkgYW0gcnVubmlu
-ZyBhbiBOWFAgaS5NWDYgUVVBRC9EVUFMIFZBUi1TT00tTVg2IGJhc2VkIGJvYXJkIChWYXJpc2Np
-dGUKdmFyX3NvbV9teDYpLiBUaGUga2VybmVsIGlzIGFuIDQuMS4xNSBOWFQvVmFyaXNjaXRlIGtl
-cm5lbCAod2l0aCB0aGUgQlNQCnBhdGNoZWQgaW4pLiBJIHBhdGNoZWQgaW4gdGhlIGlwaXBlLWNv
-cmUtNC4xLjE1LWFybS04LnBhdGNoLgoKMi4pIEkgYW0gcnVubmluZyBYZW5vbWFpIDMuMC4zCgoz
-LikgVGhlIExpbnV4IGRpc3RybyBpcyBEZWJpYW4gSmVzc2llIDguNyAocHJvdmlkZWQgYnkgVmFy
-aXNjaXRlIGFuZCBMaW5hcm8pCgo0LikgVGhlIGdjYyB2ZXJzaW9uIGlzIDQuOS4yLCB0aGUgbGli
-YyB2ZXJzaW9uaSBpcyAyLjE5LgoKNS4pIE15IGNvbmZpZ3VyZSBvcHRpb25zIGFyZToKLi9jb25m
-aWd1cmUgXAogICAgLS13aXRoLWNvcmU9Y29iYWx0IFwKICAgIC0tZW5hYmxlLXNtcCBcCiAgICAt
-LWVuYWJsZS1yZWdpc3RyeSBcCiAgICAtLWVuYWJsZS1wc2hhcmVkIFwKICAgIC0tZW5hYmxlLWRs
-b3Blbi1saWJzIFwKICAgIC0tZW5hYmxlLXNhbml0eSBcCiAgICAtLWRpc2FibGUtdGxzIFwKICAg
-IC0tZW5hYmxlLXZhbGdyaW5kLWNsaWVudCBcCiAgICAtLWRpc2FibGUtYXNzZXJ0Cgo2LikgSGVy
-ZSBhcmUgdGhlIHVib290IHBhcmFtZXRlcnMgKGJvb3RhcmdzKToKc2V0ZW52IHZpZGVvYXJncyAn
-aWYgaGRtaWRldDsgdGhlbiBzZXRlbnYgYm9vdGFyZ3MgJHtib290YXJnc30KdmlkZW89bXhjZmIw
-OmRldj1oZG1pLDEwMjR4NzY4TUA2MCxpZj1SR0IyNDsgZWxzZSBzZXRlbnYgYm9vdGFyZ3MKJHti
-b290YXJnc30gdmlkZW89bXhjZmIwOmRldj1sZGIsYnBwPTMyOyBmaTsgc2V0ZW52IGJvb3Rhcmdz
-Cnhlbm9tYWkuc3VwcG9ydGVkX2NwdXM9MHgwMDAwMDAwZiBpc29sY3B1cz0xICR7Ym9vdGFyZ3N9
-IHZtYWxsb2M9NDAwTQpmYm1lbT0zMk0gZmJjb249MzJNIGdwdW1lbT0zMk0gZ2FsY29yZS5jb250
-aWd1b3VzU2l6ZT0yMDEzMjY1OTIKZ2FsY29yZS5jb250aWd1b3VzQmFzZT0weDAwMDAwMDAwIHZp
-ZGVvPW14Y2ZiMTpvZmYgdmlkZW89bXhjZmIyOm9mZgp2aWRlbz1teGNmYjM6b2ZmOycKCjcuKSBJ
-IGhhdmUgYXR0YWNoZWQgdGhlIGtlcm5lbCBjb25maWd1cmF0aW9uLgoKSSBub3RpY2VkIHRoYXQg
-aWYgSSBsZWF2ZSBhbnkgY3B1cyBvdXQgb2YgdGhlIHN1cHBvcnRlZCBjcHVzLCB0aGUga2VybmVs
-CndpbGwgaGFuZyAoZS5nLiBpZiBJIHB1dCBhIDcgaW5zdGVhZCBvZiBGKS4KCkkgaGF2ZSByZWFk
-IHRocm91Z2ggYWxsIHRoZSBkb2N1bWVudGF0aW9uIGFuZCBoYXZlIG5vdCBmb3VuZCBhbiBhbnN3
-ZXIuCgpUaGFua3MgaW4gYWR2YW5jZSBmb3IgYW55IGhlbHAuCgoKU2luY2VyZWx5LAoKSmFja3Nv
-biBKb25lcwoKU3RlbGxhcnRlY2ggUmVzZWFyY2ggQ29ycG9yYXRpb24KLS0tLS0tLS0tLS0tLS0g
-bmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJi
-ZWQuLi4KTmFtZTogY29uZmlnClR5cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXplOiAx
-MTEwODQgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcv
-cGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNzA1MDEvMWU1YzZmMmQvYXR0YWNobWVu
-dC5vYmo+Cg==
+Am Mon, 1 May 2017 14:19:40 -0700
+schrieb Jackson Jones <jackson.jones@gmail.com>:
+
+> I am having trouble getting the cpu_affinity test to run. The check
+> for CPU restriction always fails. I have tried to remedy this by
+> setting the bootargs.
+> 
+> 1.) I am running an NXP i.MX6 QUAD/DUAL VAR-SOM-MX6 based board
+> (Variscite var_som_mx6). The kernel is an 4.1.15 NXT/Variscite kernel
+> (with the BSP patched in). I patched in the
+> ipipe-core-4.1.15-arm-8.patch.
+> 
+> 2.) I am running Xenomai 3.0.3
+> 
+> 3.) The Linux distro is Debian Jessie 8.7 (provided by Variscite and
+> Linaro)
+> 
+> 4.) The gcc version is 4.9.2, the libc versioni is 2.19.
+> 
+> 5.) My configure options are:
+> ./configure \
+>     --with-core=cobalt \
+>     --enable-smp \
+>     --enable-registry \
+>     --enable-pshared \
+>     --enable-dlopen-libs \
+>     --enable-sanity \
+>     --disable-tls \
+>     --enable-valgrind-client \
+>     --disable-assert
+> 
+> 6.) Here are the uboot parameters (bootargs):
+> setenv videoargs 'if hdmidet; then setenv bootargs ${bootargs}
+> video=mxcfb0:dev=hdmi,1024x768M@60,if=RGB24; else setenv bootargs
+> ${bootargs} video=mxcfb0:dev=ldb,bpp=32; fi; setenv bootargs
+> xenomai.supported_cpus=0x0000000f isolcpus=1 ${bootargs} vmalloc=400M
+> fbmem=32M fbcon=32M gpumem=32M galcore.contiguousSize=201326592
+> galcore.contiguousBase=0x00000000 video=mxcfb1:off video=mxcfb2:off
+> video=mxcfb3:off;'
+> 
+> 7.) I have attached the kernel configuration.
+> 
+> I noticed that if I leave any cpus out of the supported cpus, the
+> kernel will hang (e.g. if I put a 7 instead of F).
+
+If you want to use all cores in Xenomai, that parameter is not required
+and probably should not be set. However the kernel should not hang when
+you do not include all, but that is probably another issue.
+
+Why did you set "isolcpus=1"?
+
+And please tell us how exactly the test fails and what the output is. I
+guess you are talking about smokey cpu_affinity.
+
+testsuite/smokey --run=cpu_affinity --verbose=100
+
+regards,
+Henning
+
+> I have read through all the documentation and have not found an
+> answer.
+> 
+> Thanks in advance for any help.
+> 
+> 
+> Sincerely,
+> 
+> Jackson Jones
+> 
+> Stellartech Research Corporation
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: config
+> Type: application/octet-stream
+> Size: 111084 bytes
+> Desc: not available
+> URL:
+> <http://xenomai.org/pipermail/xenomai/attachments/20170501/1e5c6f2d/attachment.obj>
+> _______________________________________________ Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+
+
