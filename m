@@ -1,7 +1,13 @@
-From: Henning Schild <henning.schild@siemens.com>
-Date: Thu,  4 May 2017 18:52:57 +0200
-Message-Id: <20170504165257.6915-1-henning.schild@siemens.com>
-Subject: [Xenomai] [PATCH] x86/ipipe: fix compilation for x86_32
+MIME-Version: 1.0
+In-Reply-To: <20170504170705.2165e3f7@md1em3qc>
+References: <CANWkrROwkn+Yjb4TYQofsTvdOVf1-r+5H26Owg69LTAduFMnhA@mail.gmail.com>
+ <20170504170705.2165e3f7@md1em3qc>
+From: Michael Smith <2michael.smith@gmail.com>
+Date: Fri, 5 May 2017 08:05:59 +0200
+Message-ID: <CANWkrRPnGWcnwh_b0msB3QS8z0jeaEfvX0NTpCM2DjbHUE=ipA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] ipipe-core-4.4.43-x86-6.patch compiler error
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,32 +16,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: Michael Smith <2michael.smith@gmail.com>
+To: Henning Schild <henning.schild@siemens.com>
+Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-AMD MCE is just relevant for the 64Bit case and causes linking problems
-for 32.
+On Thu, May 4, 2017 at 5:07 PM, Henning Schild
+<henning.schild@siemens.com> wrote:
+> Am Thu, 4 May 2017 15:01:18 +0200
+> schrieb Michael Smith <2michael.smith@gmail.com>:
+>
+>> Hi.
+>> I am compiling for the Cobal Core with Xenomai 3.0.4 on Ubuntu 16.04
+>> (kernel 4.4.0-77-generic).
+>> When compiling the Linux kernel 4.4.43 with
+>> ipipe-core-4.4.43-x86-6.patch I get the following error:
+>>
+>>   CC      arch/x86/kernel/reboot.o
+>>   CC      arch/x86/kernel/early-quirks.o
+>>   CC      arch/x86/kernel/ipipe.o
+>> arch/x86/kernel/ipipe.c: In function =E2=80=98__ipipe_enable_pipeline=E2=
+=80=99:
+>> arch/x86/kernel/ipipe.c:140:22: error: =E2=80=98smp_deferred_error_inter=
+rupt=E2=80=99
+>> undeclared (first use in this function)
+>>       __ipipe_do_IRQ, smp_deferred_error_interrupt,
+>>                       ^
+>> arch/x86/kernel/ipipe.c:140:22: note: each undeclared identifier is
+>> reported only once for each function it appears in
+>> arch/x86/kernel/ipipe.c: In function =E2=80=98__ipipe_trap_prologue=E2=
+=80=99:
+>> arch/x86/kernel/ipipe.c:343:50: warning: comparison of constant =E2=80=
+=98-1=E2=80=99
+>> with boolean expression is always true [-Wbool-compare]
+>>     if (!atomic_read(&kgdb_cpu_doing_single_step) !=3D -1 &&
+>>                                                   ^
+>> arch/x86/kernel/ipipe.c:343:50: warning: logical not is only applied
+>> to the left hand side of comparison [-Wlogical-not-parentheses]
+>> scripts/Makefile.build:258: recipe for target
+>> 'arch/x86/kernel/ipipe.o' failed make[3]: ***
+>> [arch/x86/kernel/ipipe.o] Error 1 scripts/Makefile.build:403: recipe
+>> for target 'arch/x86/kernel' failed make[2]: *** [arch/x86/kernel]
+>> Error 2 Makefile:961: recipe for target 'arch/x86' failed
+>> make[1]: *** [arch/x86] Error 2
+>>
+>> I've not seen any similar compiler issues on the mailing list and
+>> since this patch have been out for 2 months, I'm wondering is it maybe
+>> an Ubuntu specific issue?
+>> On the same Architechture (Pentium-M) the previous combination worked
+>> flawlessly nl.
+>> xenomai-3.0.3
+>> ipipe-core-4.1.18-x86-7.patch
+>> linux-4.1.18
+>>
+>> Any ideas?
+>
+> That is clearly a 64 vs 32 Bit problem, x86_32 is not as well tested as
+> its 64Bit counterpart. But with you it seems 32 bit x86 is not dead
+> yet ;).
 
-Reported-by: Michael Smith <2michael.smith@gmail.com>
-Signed-off-by: Henning Schild <henning.schild@siemens.com>
----
- arch/x86/kernel/ipipe.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Yeah its legacy hardware that I'm stuck with, that need to keep operational
+currently.
 
-diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
-index b207502..e3f5dc0 100644
---- a/arch/x86/kernel/ipipe.c
-+++ b/arch/x86/kernel/ipipe.c
-@@ -134,7 +134,7 @@ void __init __ipipe_enable_pipeline(void)
- 			  __ipipe_ack_apic);
- #endif
- 
--#ifdef CONFIG_X86_MCE_AMD
-+#if defined(CONFIG_X86_MCE_AMD) && defined(CONFIG_X86_64)
- 	ipipe_request_irq(ipipe_root_domain,
- 			  ipipe_apic_vector_irq(DEFERRED_ERROR_VECTOR),
- 			  __ipipe_do_IRQ, smp_deferred_error_interrupt,
--- 
-2.10.2
+> Should be easy to fix, i will send a patch and put you on CC.
+>
+> In the meantime you can take CONFIG_X86_MCE_AMD out of your kernel
+> config to work around that problem.
+>
+> Henning
+>
 
+Thanks for the help Henning, appreciate it.
+
+>>
+>> Thanks
+>> Michael
+>>
+>> _______________________________________________
+>> Xenomai mailing list
+>> Xenomai@xenomai.org
+>> https://xenomai.org/mailman/listinfo/xenomai
+>
 
