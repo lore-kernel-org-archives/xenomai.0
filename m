@@ -1,13 +1,13 @@
-References: <4dde2217-0520-3b4d-7aa3-2393a0e2c88c@sigmatek.at>
+References: <20170504165257.6915-1-henning.schild@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <b09e3a3a-8f90-5536-d226-c18f70d4cec4@xenomai.org>
-Date: Fri, 5 May 2017 15:52:57 +0200
+Message-ID: <bce08bc3-cb12-3067-a2be-f1b6c89fc7ab@xenomai.org>
+Date: Fri, 5 May 2017 16:08:36 +0200
 MIME-Version: 1.0
-In-Reply-To: <4dde2217-0520-3b4d-7aa3-2393a0e2c88c@sigmatek.at>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20170504165257.6915-1-henning.schild@siemens.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] =?utf-8?q?Gatekeeper_taking_1ms_instead_of_13=C2=B5s?=
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] x86/ipipe: fix compilation for x86_32
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,50 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Netbal <wolfgang.netbal@sigmatek.at>, Xenomai Mailing List <xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>, xenomai@xenomai.org
+Cc: Michael Smith <2michael.smith@gmail.com>
 
-On 05/05/2017 01:37 PM, Wolfgang Netbal wrote:
-> Hi,
+On 05/04/2017 06:52 PM, Henning Schild wrote:
+> AMD MCE is just relevant for the 64Bit case and causes linking problems
+> for 32.
 > 
-> I use the following configuration imx6dl with Kernel 3.10.53 and Xenomai
-> 2.6.4.
+> Reported-by: Michael Smith <2michael.smith@gmail.com>
+> Signed-off-by: Henning Schild <henning.schild@siemens.com>
+> ---
+>  arch/x86/kernel/ipipe.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> I have a periodic workflow with a timebase of 1ms.
-> The timebase creates a Xenomai task (timer_task) with priority 99.
-> In the normal case I have an idle time of 666µs before
-> the timer_task starts the new period.
+> diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
+> index b207502..e3f5dc0 100644
+> --- a/arch/x86/kernel/ipipe.c
+> +++ b/arch/x86/kernel/ipipe.c
+> @@ -134,7 +134,7 @@ void __init __ipipe_enable_pipeline(void)
+>  			  __ipipe_ack_apic);
+>  #endif
+>  
+> -#ifdef CONFIG_X86_MCE_AMD
+> +#if defined(CONFIG_X86_MCE_AMD) && defined(CONFIG_X86_64)
+>  	ipipe_request_irq(ipipe_root_domain,
+>  			  ipipe_apic_vector_irq(DEFERRED_ERROR_VECTOR),
+>  			  __ipipe_do_IRQ, smp_deferred_error_interrupt,
 > 
-> In the failed case the last Linux Task switching to Gatekeeper 24µs
-> before the timer_task starts the new period.
-> Now I see that the Gatekeeper runs 1004µs and then the normal
-> workflow starts.
-> 
-> First of all is it possible that the timer_task (prio 99) interrupts the
-> Gatekeeper (prio 99) ?
 
-The gatekeeper is a regular linux task, whose exclusive duty is to help
-in switching a relaxed task back to primary mode. With that in mind,
-assuming that such transition should happen in a bounded time makes no
-sense. Since this is a regular linux task, "as soon as possible" is the
-only option for this.
-
-For this reason, a real-time work loop must never depend on the
-execution time of a mode switch, this is broken logic.
-
-There are multiple reasons why a regular linux task - such as the
-gatekeeper - would experience long delays due to preemption by another
-regular linux activity. For instance, fsl-originated 3.10.x kernels tend
-to change the power state of the SDHCI controller quite frequently on
-imx6 SoCs, and that PM_RUNTIME code runs over a kernel worker context
-which introduces ugly busy waits for synchronizing with the hardware,
-while holding a spinlock, preventing preemption. Other linux tasks on
-the same CPU would have to wait until this code finishes.
-
-I'm certain that I already sent details about such issue to Sigmatek
-back in 2015, you may want to ask around for them. That problem was
-demonstrated using a plain non-rt program, on a stock fsl kernel,
-without Xenomai/I-pipe support in. > 1ms latency peaks were observed
-using ftrace's preemptoff tracer.
+Merged, thanks.
 
 -- 
 Philippe.
