@@ -1,13 +1,12 @@
-References: <20170504165257.6915-1-henning.schild@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <bce08bc3-cb12-3067-a2be-f1b6c89fc7ab@xenomai.org>
-Date: Fri, 5 May 2017 16:08:36 +0200
+From: =?iso-8859-1?Q?H=E4nel-Baas=2C_Alexander?=
+ <alexander.haenel-baas@sieb-meyer.de>
+Date: Tue, 9 May 2017 11:53:42 +0000
+Message-ID: <9BA84827B30CBE4996725F98F7DC9123654093C7@SMExchange01.siebmeyer.org>
+Content-Language: de-DE
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <20170504165257.6915-1-henning.schild@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] x86/ipipe: fix compilation for x86_32
+Subject: [Xenomai] delete a suspend rt_task xeno2<>xeno3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,36 +15,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, xenomai@xenomai.org
-Cc: Michael Smith <2michael.smith@gmail.com>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/04/2017 06:52 PM, Henning Schild wrote:
-> AMD MCE is just relevant for the 64Bit case and causes linking problems
-> for 32.
-> 
-> Reported-by: Michael Smith <2michael.smith@gmail.com>
-> Signed-off-by: Henning Schild <henning.schild@siemens.com>
-> ---
->  arch/x86/kernel/ipipe.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
-> index b207502..e3f5dc0 100644
-> --- a/arch/x86/kernel/ipipe.c
-> +++ b/arch/x86/kernel/ipipe.c
-> @@ -134,7 +134,7 @@ void __init __ipipe_enable_pipeline(void)
->  			  __ipipe_ack_apic);
->  #endif
->  
-> -#ifdef CONFIG_X86_MCE_AMD
-> +#if defined(CONFIG_X86_MCE_AMD) && defined(CONFIG_X86_64)
->  	ipipe_request_irq(ipipe_root_domain,
->  			  ipipe_apic_vector_irq(DEFERRED_ERROR_VECTOR),
->  			  __ipipe_do_IRQ, smp_deferred_error_interrupt,
-> 
+Hi,
+i'm porting our application from Xeno2 (linux 3.14) to Xeno3(Linux 4.4).
 
-Merged, thanks.
+Under Xeno3:
+When I delete a suspend task, the suspend task will begin to run.
+Under Xeno2 :
+The suspend task is deleted successfully, without that the suspend thread w=
+ill begin to run.
+=20
+Example
+rt_thread
+   for(;;){
+       rt_task_suspend(NULL);
+      printf("in loop\n");
+   }
+main:
+rt_task_spawn()
+. other stuff
+rt_task_delete()
 
--- 
-Philippe.
+So, in Xenomai 2 i have never seen the string "in loop" when we delete the =
+task, but under Xenomai 3
+after the rt_task_delete() call, i get many "in loop" messages.
+
+I notice the return value from rt_task_suspend is "operation not permitted"=
+, because i
+have delete successful the task descriptor with rt_task_delete().=20
+Right?
+Or is there a mistake in my Xenomai installation?
+
+When this point is different to xenomai2 comes here my problem:
+This was only a test example.=20
+In the real application the rt_task_suspend() call came from another task, =
+and not directly from rt_thread loop self.
+And so rt_task_suspend() is called at the right time, return "successfully"=
+ and the rt_thrad stops fine.=20
+Now, when we  want shut down the application we calling rt_task_delete(), a=
+nd then the rt_thread begins to run
+and we can't delete it.=20
+
+What can I do to delete a suspend rt_task without the task will running in =
+the loop, because the task descriptor was going invalid from delete() call?
+
+
+With best regards,
+Alexander=20
+
+
 
