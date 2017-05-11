@@ -1,11 +1,13 @@
-Date: Mon, 6 Mar 2017 21:49:58 +0800 (CST)
-From: =?GBK?B?stzX08H6?= <13824125580@163.com>
+References: <38db19d5-b6c4-1948-b2ce-ef7270350e0b@iit.it>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <632ac67c-8bee-3f25-c395-d52c06b5ea81@xenomai.org>
+Date: Thu, 11 May 2017 17:25:15 +0200
 MIME-Version: 1.0
-Message-ID: <4ab75bc8.e315.15aa3e24158.Coremail.13824125580@163.com>
-Content-Type: text/plain; charset=GBK
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] For 2.6 xenomai,
- where is scheduler spot for realtime world and linux world?
+In-Reply-To: <38db19d5-b6c4-1948-b2ce-ef7270350e0b@iit.it>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] linker error installing xenomai-3.0.4 using gcc-6
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,30 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: alessio margan <alessio.margan@iit.it>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SEk6CiAgIHRoYW5rcyBmb3IgeW91ciBraW5kbHkgcmVwbHkgYW5kIHBsZWFzZSByZWdyZXQgbWUg
-aWYgbXkgcXVlc3Rpb24gc2VlbXMgZm9vbGlzaCBmb3IgdGhpcyBpcyBteSBmaXJzdCBxdWVzdGlv
-bnMuCgoKZm9yIDIuNiB4ZW5vbWFpLCBpIGtub3cgdGhlIHN5c3RlbSBpcyBkaXZpZGVkIGludG8g
-dHdvIHdvcmxkcywgdGhlIHByaW1hcnkocnQpIHdvcmxkIGFuZCB0aGUgc2Vjb25kYXJ5KGxpbnV4
-KSB3b3JsZCwgc28gbWF5IGJlIHRoZXJlIGlzIGEgZG9vciBsaWtlIApzcGFjZS10aW1lIHRyYXZl
-bGVyIGluIHNjaWVuY2UgZmljdGlvbiBtb3ZpZS4gaSBtZWFuIG1heWJlIGEgYyBjb2RlIGxpbmUg
-KG9yIG1heWJlIGFzc2VtYmxlIGluc3R1Y3Rpb25zKSB0aGF0IGRpdmlkZWQgdGhlIHR3byB3b3Js
-ZCBpbiB0aGUgc291cmNlIGNvZGUsIHNvLCAKaWYgdGhpcyBpcyB0cnVlLCB3aGVyZSBpcyB0aGUg
-c3BvdD8KCgphbmQgaSBmb3VuZCBhIHBsYWNlIGluIGdhdGVrZWVwZXJfdGhyZWFkLCBpcyB0aGlz
-IGxpbmWjvyAgaSBtZWFuLCAgaWYgc29tZSBydC10aHJlYWQgaXMgcmVhZHksICB0aGUgc2NoZWR1
-bGUgY2FsbCB3b3VsZCBub3QgcmV0dXJuICBhbmQgc3lzdGVtIGdvZXMgdG8gcnQgd29ybGQsIAoK
-CmJ1dCB3aGVuIG5vIHJ0IHRocmVhZCBiZWluZyByZWFkeSwgdGhlIHRoZSAieHBvZF9zY2hlZHVs
-ZSIgY2FsbCBpbiBydCBkb21haW4gd291bGQgcmV0dXJuIGJhY2sgdG8gdGhlIHNjaGVkdWxlIG9m
-IGxpbnV4IHdvcmxkPyAocHJlY2lzZWx5IGlzICJjb250ZXh0X3N3aWNoIiBpbmxpbmUgYXNzZW1i
-bHksIGJlY2F1c2Ugc2NoZWR1bGUgY2FsbCBpdCksIGFtIGkgcmlnaHQ/CgoKdGhhbmtzIGZvciB5
-b3VyIGtpbmRseSByZXBseSBhZ2Fpbi4KCgpzdGF0aWMgaW50IGdhdGVrZWVwZXJfdGhyZWFkKHZv
-aWQgKmRhdGEpICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiA4NTcg
-eyAgICAgICAgICAgICAgICAgCiA4NTggICAgICAgICBzdHJ1Y3QgdGFza19zdHJ1Y3QgKnRoaXNf
-dGFzayA9IGN1cnJlbnQ7CiA4NTkgICAgICAgICBpbnQgY3B1ID0gKGxvbmcpZGF0YTsKICAgICAg
-ICAgICAgICAgLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uCiAgICAgICAgICAgICAgLi4uLi4uLi4u
-Li4uLi4uLi4uLi4uLi4uLi4uICAgICAgICAgIAogODc0ICAgICAgICAgZm9yICg7OykgewogODc1
-ICAgICAgICAgICAgICAgICB1cCgmc2NoZWQtPmdrc3luYyk7IC8qIE1ha2UgdGhlIHJlcXVlc3Qg
-dG9rZW4gYXZhaWxhYmxlLiAqLwogODc2ICAgICAgICAgICAgICAgICBzY2hlZHVsZSgpOwogODc3
-ICAgICAgICAgICAgLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLiAgICAgICAKICAg
+On 05/11/2017 04:43 PM, alessio margan wrote:
+> Hi,
+> 
+> using gcc-6 to install xenomai 3.0.4 libraries give me errors probably
+> due to gcc-6 compiled with --enable-default-pie option.
+> 
+> "/usr/bin/ld -r and -pie may not be used together"
+> 
+> as workaround I've used gcc-5.
+> 
+> How could solve this issue ?
+> 
+
+The configure script considers CC/LD flags which are preset at
+invocation time, so you may want to try this:
+
+.../configure CFLAGS=-no-pie CXXFLAGS=-no-pie LDFLAGS=-no-pie <other
+switches>
+
+-- 
+Philippe.
+
