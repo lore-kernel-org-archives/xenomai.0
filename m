@@ -1,15 +1,15 @@
-References: <4dde2217-0520-3b4d-7aa3-2393a0e2c88c@sigmatek.at>
- <b09e3a3a-8f90-5536-d226-c18f70d4cec4@xenomai.org>
- <b951310c-e367-6862-f06a-40649f24730b@sigmatek.at>
+References: <20170510170616.2f6d7a1a@md1em3qc>
+ <ea3c7c5d-37a6-ba72-e981-a6ca05f5d332@xenomai.org>
+ <20170511111022.42264367@md1em3qc>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <04c24372-5fd7-4827-f51e-cb1bc248a338@xenomai.org>
-Date: Thu, 11 May 2017 18:37:44 +0200
+Message-ID: <6d2fb0ea-e5b7-b07f-3d36-7b6146ad3379@xenomai.org>
+Date: Thu, 11 May 2017 18:42:47 +0200
 MIME-Version: 1.0
-In-Reply-To: <b951310c-e367-6862-f06a-40649f24730b@sigmatek.at>
+In-Reply-To: <20170511111022.42264367@md1em3qc>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] =?utf-8?q?Gatekeeper_taking_1ms_instead_of_13=C2=B5s?=
+Subject: Re: [Xenomai] copperplate tunables with dso
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,14 +18,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Netbal <wolfgang.netbal@sigmatek.at>, Xenomai Mailing List <xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/11/2017 05:49 PM, Wolfgang Netbal wrote:
+On 05/11/2017 11:10 AM, Henning Schild wrote:
+> Am Wed, 10 May 2017 17:36:21 +0200
+> schrieb Philippe Gerum <rpm@xenomai.org>:
+> 
+>> On 05/10/2017 05:06 PM, Henning Schild wrote:
+>>> Hi,
+>>>
+>>> today i have to a question from an application developers point of
+>>> view. How do i override the default value of a tunable when
+>>> libcobalt is linked with dlopen()?
+>>> This article https://xenomai.org/2015/05/application-setup-and-init/
+>>> describes the tunables but not the dso-case.
+>>>
+>>> Is there a way to override the default values when using dlopen()?
+>>> Maybe delaying the call to the constructors, or passing some
+>>> arguments to them?
+>>>   
+>>
+>> Since 3.0.4, DSOs can have their own bootstrap module [1]. So I would
+>> define some setup descriptor with the proper ->tune() handler in the
+>> DSO code the same way one would do in the main executable, then use
+>> xeno-config's --auto-init-solib flags for linking the resulting DSO,
+>> which would glue the bootstrap code in charge of running the setup
+>> calls.
+>>
+>> [1]
+>> http://git.xenomai.org/xenomai-3.git/commit/?id=d6d8047ecd093bd827026678b3c7619b08dd7dd2
+>>
+> 
+> Thanks, i guess i was just missing the --auto-init-solib, lets see how
+> that works out. I also saw some code copying /proc/self/cmdline and it
+> looks like that gets passed to xeno_init. I am guessing if the first
+> main() would not fail on xenomais args they would also work?
+> 
 
-> Do you have any idea why my Xenomaitask with prio 80
-> did not interrupt the gatekeeper ?
-
-Because this task is not running in primary mode.
+Yes.
 
 -- 
 Philippe.
