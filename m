@@ -1,13 +1,12 @@
-Date: Thu, 11 May 2017 11:10:22 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20170511111022.42264367@md1em3qc>
-In-Reply-To: <ea3c7c5d-37a6-ba72-e981-a6ca05f5d332@xenomai.org>
-References: <20170510170616.2f6d7a1a@md1em3qc>
- <ea3c7c5d-37a6-ba72-e981-a6ca05f5d332@xenomai.org>
+From: =?iso-8859-1?Q?H=E4nel-Baas=2C_Alexander?=
+ <alexander.haenel-baas@sieb-meyer.de>
+Date: Thu, 11 May 2017 12:45:29 +0000
+Message-ID: <9BA84827B30CBE4996725F98F7DC912365414F03@SMExchange01.siebmeyer.org>
+Content-Language: de-DE
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] copperplate tunables with dso
+Subject: [Xenomai] delete a suspend rt_task xeno2<>xeno3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,41 +15,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: "Philippe Gerum (rpm@xenomai.org)" <rpm@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Am Wed, 10 May 2017 17:36:21 +0200
-schrieb Philippe Gerum <rpm@xenomai.org>:
+Hi,
 
-> On 05/10/2017 05:06 PM, Henning Schild wrote:
-> > Hi,
-> > 
-> > today i have to a question from an application developers point of
-> > view. How do i override the default value of a tunable when
-> > libcobalt is linked with dlopen()?
-> > This article https://xenomai.org/2015/05/application-setup-and-init/
-> > describes the tunables but not the dso-case.
-> > 
-> > Is there a way to override the default values when using dlopen()?
-> > Maybe delaying the call to the constructors, or passing some
-> > arguments to them?
-> >   
-> 
-> Since 3.0.4, DSOs can have their own bootstrap module [1]. So I would
-> define some setup descriptor with the proper ->tune() handler in the
-> DSO code the same way one would do in the main executable, then use
-> xeno-config's --auto-init-solib flags for linking the resulting DSO,
-> which would glue the bootstrap code in charge of running the setup
-> calls.
-> 
-> [1]
-> http://git.xenomai.org/xenomai-3.git/commit/?id=d6d8047ecd093bd827026678b3c7619b08dd7dd2
-> 
+>What can I do to delete a suspend rt_task without the task will running in=
+ the loop, because the task descriptor was going invalid from delete() call=
+?
 
-Thanks, i guess i was just missing the --auto-init-solib, lets see how
-that works out. I also saw some code copying /proc/self/cmdline and it
-looks like that gets passed to xeno_init. I am guessing if the first
-main() would not fail on xenomais args they would also work?
+I was looking into the xenomai source alchemy/task.c and copperplate/thread=
+obj.c
 
-Henning
+When I call rt_task_delete() for an already  suspend rt_thread  the rt_thre=
+ad was unlocked by: rt_task_delete() -> threadobj_cancel() ->cancel_sync() =
+ -> request_cancel() ->threadobj_unlock().
+So the rt_thread leaves rt_task_suspend() shows my printf() message (in my =
+example) and entered rt_task_suspend() again.
+But now in rt_task_suspend() the function find_alchemy_task_or_self() retur=
+n NULL because the task descriptor is already deleted and we leaves the rt_=
+task_suspend() function again.=20
+Shows my printf and entered rt_task_suspeng()...
+
+And this loop demonstrate my short test example.
+>Example
+>rt_thread
+>  for(;;){
+>       rt_task_suspend(NULL);
+>      printf("in loop\n");
+>   }
+>main:
+>rt_task_spawn()
+>. other stuff
+>rt_task_delete()
+
+My Solution:
+In the rt_thread loop I call rt_task_self().=20
+When I get NULL I know this thread was delete and I leave the rt_thread.
+
+rt_thread
+    for(;;){
+        ret =3D rt_task_suspend(&rtTask);
+        printf("--- %s in loop a: %d ret:%d -> %s\n",rt_task_info.name,a,re=
+t,strerror(-ret));
+
+        myrt =3D rt_task_self();
+        if (myrt =3D=3D NULL){
+            goto exit;
+        }
+exit:
+}
+
+Any other solution for this?
+
+Regards,
+Alexander
+
+
+
 
