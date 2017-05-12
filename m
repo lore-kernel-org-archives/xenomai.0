@@ -1,11 +1,11 @@
-From: Henning Schild <henning.schild@siemens.com>
-Date: Mon,  6 Mar 2017 15:00:49 +0100
-Message-Id: <20170306140049.23493-2-henning.schild@siemens.com>
-In-Reply-To: <20170306140049.23493-1-henning.schild@siemens.com>
-References: <aa57407e-6064-eebf-6d9f-be2ba864d633@xenomai.org>
- <20170306140049.23493-1-henning.schild@siemens.com>
-Subject: [Xenomai] [PATCH 2/2] lib/cobalt: wrap CXXABI One-time Constructor
-	functions
+From: Johann Obermayr <johann.obermayr@sigmatek.at>
+Date: Fri, 12 May 2017 08:49:48 +0000
+Message-ID: <AM4PR0801MB1587EE72522CAA0D6223DA88F5E20@AM4PR0801MB1587.eurprd08.prod.outlook.com>
+Content-Language: de-DE
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] missing hook callback for task switching after gatekeeper
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,116 +14,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-The implementation of these functions uses locks and has the potential
-to trigger a SIGXCPU when contended. Wrap them with assert_nrt so they
-reliably cause a switch when used in the rt context.
+Hello,
 
-This is a corrected version of: be90f09cf2770
-which got reverted in: 0ef9dbd42d16d
+Kernel: 3.10.53 ARM
+Xenomai: 2.6.4
 
-Signed-off-by: Henning Schild <henning.schild@siemens.com>
----
- lib/cobalt/assert.wrappers  |  3 +++
- lib/cobalt/assert_context.c | 19 +++++++++++++++++++
- lib/cobalt/internal.h       | 12 ++++++++++++
- lib/cobalt/wrappers.c       | 19 +++++++++++++++++++
- 4 files changed, 53 insertions(+)
+We have a own tool to make task switching, IRQ, TracePoints, ... visible. (=
+TracePoint is a single marker in our tool )
+So we have a hook in the Linux scheduler and we are using rt_task_add_hook(=
+T_HOOK_SWITCH, taskSwitchXenomai)
+So we can see all linux / xenomai task switching.
+But we are missing one xenomai callback.
 
-diff --git a/lib/cobalt/assert.wrappers b/lib/cobalt/assert.wrappers
-index 7164858..65320ab 100644
---- a/lib/cobalt/assert.wrappers
-+++ b/lib/cobalt/assert.wrappers
-@@ -1,2 +1,5 @@
- --wrap malloc
- --wrap free
-+--wrap __cxa_guard_acquire
-+--wrap __cxa_guard_release
-+--wrap __cxa_guard_abort
-diff --git a/lib/cobalt/assert_context.c b/lib/cobalt/assert_context.c
-index 2085953..fd18d6b 100644
---- a/lib/cobalt/assert_context.c
-+++ b/lib/cobalt/assert_context.c
-@@ -66,3 +66,22 @@ COBALT_IMPL(void, free, (void *ptr))
- 	assert_nrt();
- 	__STD(free(ptr));
- }
-+
-+/* CXXABI 3.3.2 One-time Construction API */
-+COBALT_IMPL(int, __cxa_guard_acquire, (__guard *g))
-+{
-+	assert_nrt();
-+	return __STD(__cxa_guard_acquire(g));
-+}
-+
-+COBALT_IMPL(void, __cxa_guard_release, (__guard *g))
-+{
-+	assert_nrt();
-+	__STD(__cxa_guard_release(g));
-+}
-+
-+COBALT_IMPL(void, __cxa_guard_abort, (__guard *g))
-+{
-+	assert_nrt();
-+	__STD(__cxa_guard_abort(g));
-+}
-diff --git a/lib/cobalt/internal.h b/lib/cobalt/internal.h
-index fee3fe1..9f58c6a 100644
---- a/lib/cobalt/internal.h
-+++ b/lib/cobalt/internal.h
-@@ -73,4 +73,16 @@ void cobalt_check_features(struct cobalt_featinfo *finfo);
- 
- extern struct sigaction __cobalt_orig_sigdebug;
- 
-+#ifdef __ARM_EABI__
-+typedef uint32_t __guard;
-+#else
-+typedef uint64_t __guard;
-+#endif
-+int __real___cxa_guard_acquire(__guard*);
-+void __real___cxa_guard_release(__guard*);
-+void __real___cxa_guard_abort(__guard*);
-+int __cxa_guard_acquire(__guard*);
-+void __cxa_guard_release(__guard*);
-+void __cxa_guard_abort(__guard*);
-+
- #endif /* _LIB_COBALT_INTERNAL_H */
-diff --git a/lib/cobalt/wrappers.c b/lib/cobalt/wrappers.c
-index 09c74e5..c43772c 100644
---- a/lib/cobalt/wrappers.c
-+++ b/lib/cobalt/wrappers.c
-@@ -43,6 +43,7 @@
- #include <unistd.h>
- #include <malloc.h>
- #include <boilerplate/compiler.h>
-+#include <internal.h>
- 
- /* sched */
- __weak
-@@ -532,3 +533,21 @@ unsigned int __real_sleep(unsigned int seconds)
- {
- 	return sleep(seconds);
- }
-+
-+__weak
-+int __real___cxa_guard_acquire(__guard *g)
-+{
-+	return __cxa_guard_acquire(g);
-+}
-+
-+__weak
-+void __real___cxa_guard_release(__guard *g)
-+{
-+	return __cxa_guard_release(g);
-+}
-+
-+__weak
-+void __real___cxa_guard_abort(__guard *g)
-+{
-+	return __cxa_guard_abort(g);
-+}
--- 
-2.10.2
+We don't see the task switch , that gatekeeper have switch to xenomai, whil=
+e gatekepper is running.
 
+L-Usertask          UserTask in second domain
+X-Usertask         UserTask in primary domain
 
+Now we see follow
+
+L-Usertask is running and call a function to switch to primary domain.
+taskSwitchLinux( L-UserTask -> L-gatekeeper )
+L-gatekeeper is running
+------ >>> missing taskSwitchXenomai( xnthread_t *curr )             curr =
+=3D UserTask in primary domain
+Now we see, a TracePoint from the L-Usertask
+taskSwitchXenomai( xnthread_t *curr ) curr =3D gatekeeper task
+taskSwitchLinux( L-gatekeeper -> L-UserTask)
+
+L-UserTask description
+UserFunktion
+{
+                TracePointMake()
+                switchToSecondDomain();
+                do_something(30us)
+                switchToPromariyDomain();
+}
+
+L-UserTask
+  While(1)
+  {
+    For(I =3D 0; I < 10; i++)
+       UserFunction();
+    Usleep(1000)
+  }
+
+I hope it is understandable.
+
+Best regards
+  Johann
