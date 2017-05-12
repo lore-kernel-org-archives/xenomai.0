@@ -1,11 +1,8 @@
-From: Johann Obermayr <johann.obermayr@sigmatek.at>
-Date: Fri, 12 May 2017 08:49:48 +0000
-Message-ID: <AM4PR0801MB1587EE72522CAA0D6223DA88F5E20@AM4PR0801MB1587.eurprd08.prod.outlook.com>
-Content-Language: de-DE
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] missing hook callback for task switching after gatekeeper
+From: Henning Schild <henning.schild@siemens.com>
+Date: Fri, 12 May 2017 13:41:45 +0200
+Message-Id: <20170512114145.20024-1-henning.schild@siemens.com>
+Subject: [Xenomai] [PATCH] smokey/sigdebug: check kernel features with
+	corectl
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,55 +11,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hello,
+One of the subtests depends on a kernel feature, skip it if the feature
+was not enabled.
 
-Kernel: 3.10.53 ARM
-Xenomai: 2.6.4
+Signed-off-by: Henning Schild <henning.schild@siemens.com>
+---
+ testsuite/smokey/sigdebug/sigdebug.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-We have a own tool to make task switching, IRQ, TracePoints, ... visible. (=
-TracePoint is a single marker in our tool )
-So we have a hook in the Linux scheduler and we are using rt_task_add_hook(=
-T_HOOK_SWITCH, taskSwitchXenomai)
-So we can see all linux / xenomai task switching.
-But we are missing one xenomai callback.
+diff --git a/testsuite/smokey/sigdebug/sigdebug.c b/testsuite/smokey/sigdebug/sigdebug.c
+index a643305..87f0be6 100644
+--- a/testsuite/smokey/sigdebug/sigdebug.c
++++ b/testsuite/smokey/sigdebug/sigdebug.c
+@@ -33,6 +33,7 @@ smokey_test_plugin(sigdebug,
+ unsigned int expected_reason;
+ bool sigdebug_received;
+ pthread_mutex_t prio_invert;
++int corectl_debug;
+ sem_t send_signal;
+ char *mem;
+ FILE *wd;
+@@ -110,10 +111,15 @@ static void *rt_thread_body(void *cookie)
+ 	check_sigdebug_received("SIGDEBUG_MIGRATE_SIGNAL");
+ 
+ 	smokey_trace("relaxed mutex owner");
+-	setup_checkdebug(SIGDEBUG_MIGRATE_PRIOINV);
+-	err = pthread_mutex_lock(&prio_invert);
+-	check_no_error("pthread_mutex_lock", err);
+-	check_sigdebug_received("SIGDEBUG_MIGRATE_PRIOINV");
++	if (corectl_debug & _CC_COBALT_DEBUG_MUTEX_RELAXED) {
++		setup_checkdebug(SIGDEBUG_MIGRATE_PRIOINV);
++		err = pthread_mutex_lock(&prio_invert);
++		check_no_error("pthread_mutex_lock", err);
++		check_sigdebug_received("SIGDEBUG_MIGRATE_PRIOINV");
++	} else {
++		smokey_note("sigdebug \"SIGDEBUG_MIGRATE_PRIOINV\" skipped "
++			    "(no kernel support)");
++	}
+ 
+ 	smokey_trace("page fault");
+ 	setup_checkdebug(SIGDEBUG_MIGRATE_FAULT);
+@@ -189,6 +195,11 @@ static int run_sigdebug(struct smokey_test *t, int argc, char *const argv[])
+ 	if (err || wdog_delay == 0)
+ 		return -ENOSYS;
+ 
++	err = cobalt_corectl(_CC_COBALT_GET_DEBUG, &corectl_debug,
++			     sizeof(corectl_debug));
++	if (err)
++		return -ENOSYS;
++
+ 	smokey_parse_args(t, argc, argv);
+ 	if (!SMOKEY_ARG_ISSET(sigdebug, no_watchdog) ||
+ 	    !SMOKEY_ARG_BOOL(sigdebug, no_watchdog)) {
+-- 
+2.10.2
 
-We don't see the task switch , that gatekeeper have switch to xenomai, whil=
-e gatekepper is running.
 
-L-Usertask          UserTask in second domain
-X-Usertask         UserTask in primary domain
-
-Now we see follow
-
-L-Usertask is running and call a function to switch to primary domain.
-taskSwitchLinux( L-UserTask -> L-gatekeeper )
-L-gatekeeper is running
------- >>> missing taskSwitchXenomai( xnthread_t *curr )             curr =
-=3D UserTask in primary domain
-Now we see, a TracePoint from the L-Usertask
-taskSwitchXenomai( xnthread_t *curr ) curr =3D gatekeeper task
-taskSwitchLinux( L-gatekeeper -> L-UserTask)
-
-L-UserTask description
-UserFunktion
-{
-                TracePointMake()
-                switchToSecondDomain();
-                do_something(30us)
-                switchToPromariyDomain();
-}
-
-L-UserTask
-  While(1)
-  {
-    For(I =3D 0; I < 10; i++)
-       UserFunction();
-    Usleep(1000)
-  }
-
-I hope it is understandable.
-
-Best regards
-  Johann
