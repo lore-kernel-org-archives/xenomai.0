@@ -1,11 +1,19 @@
-From: Giulio Moro <g.moro@qmul.ac.uk>
-Date: Mon, 15 May 2017 10:04:47 +0000
-Message-ID: <DB6PR0701MB2456788DAE300E14759F9646B5E10@DB6PR0701MB2456.eurprd07.prod.outlook.com>
-Content-Language: en-GB
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+References: <CALC3Xwp-pSsQ+hF6bZFyT7BCrTOE2o0G4A3_hgD7o4i=9hdO7Q@mail.gmail.com>
+ <8ddcffac-78ab-3933-f5bf-1352f1af6a1d@xenomai.org>
+ <CALC3Xwp0soSABRS12_3V8OEfNY_18eR5mB_qZqR9MTsdfq5WMA@mail.gmail.com>
+ <CALC3XwoXJ2f6btgkOt2nJ4z1KGf=bB4g=0bE6w7jZfQD42jkRA@mail.gmail.com>
+ <CALC3XwoytMPBagjtb8eHd7HxVmbqPE4ck1woX8sWNwR_rXfz5A@mail.gmail.com>
+ <da41a276-60bc-7672-947d-2aa931c79606@xenomai.org>
+ <CALC3XwrU04LeWBCWnuaHhEfgwakMeXAJ2OkRi+LgmUEdP5zPqQ@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <b4e4e9f0-7ea7-632a-8c76-fde0876bb819@xenomai.org>
+Date: Mon, 15 May 2017 12:29:27 +0200
 MIME-Version: 1.0
-Subject: [Xenomai] rt_task_bind returns -EINVAL when not using --enable-smp
+In-Reply-To: <CALC3XwrU04LeWBCWnuaHhEfgwakMeXAJ2OkRi+LgmUEdP5zPqQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Fwd: Problem with the priority of the task
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,63 +22,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?UTF-8?Q?Aur=c3=a9lien_Le_Floc'h?= <le.floch.aurelien94@gmail.com>, xenomai@xenomai.org
 
-Hi,
-I have a 4.4.61 kernel with Xenomai 3.0.4 on am335x (BeagleBone Black) comp=
-iled with=20
+On 05/15/2017 11:37 AM, Aurélien Le Floc'h wrote:
+> Thanks for your answer.
+> I stock the output result in a string but the results are exactly the
+> same. I attached my code.
+> Do you have an idea to solve this problem ?
+> 
 
-CONFIG_BROKEN_ON_SMP=3Dy
-CONFIG_GENERIC_SMP_IDLE_THREAD=3Dy
-CONFIG_HAVE_SMP=3Dy
-# CONFIG_SMP is not set
-(see XENO flags at the bottom of the email)
+xeno-config --info would help.
 
-When I compile the user-space support with
-    /root/xenomai/configure --with-core=3Dcobalt --enable-smp --enable-psha=
-red
-my program (which uses the Alchemy API) works fine
-
-But when I do it with
-    /root/xenomai/configure --with-core=3Dcobalt --enable-pshared
-, then calls to rt_task_bind or rt_task_create return -EINVAL.
-
-Given that SMP is not enabled in the kernel, I would expect the latter to b=
-e the correct one and possibly the former to fail.
-
-Note that /usr/xenomai/bin/xeno-test and /usr/xenomai/bin/latency work ok i=
-n both cases.
-
-Here are the XENO kernel flags
-CONFIG_XENOMAI=3Dy
-CONFIG_XENO_OPT_STATS=3Dy
-CONFIG_XENO_OPT_RR_QUANTUM=3D1000
-CONFIG_XENO_OPT_AUTOTUNE=3Dy
-CONFIG_XENO_OPT_TIMER_LIST=3Dy
-CONFIG_XENO_OPT_HOSTRT=3Dy
-CONFIG_XENO_OPT_VFILE=3Dy
-CONFIG_XENO_OPT_REGISTRY_NRSLOTS=3D512
-CONFIG_XENO_OPT_SYS_HEAPSZ=3D512
-CONFIG_XENO_OPT_PRIVATE_HEAPSZ=3D64
-CONFIG_XENO_OPT_SHARED_HEAPSZ=3D64
-CONFIG_XENO_OPT_NRTIMERS=3D128
-CONFIG_XENO_OPT_TIMING_SCHEDLAT=3D0
-CONFIG_XENO_OPT_TIMING_KSCHEDLAT=3D0
-CONFIG_XENO_OPT_TIMING_IRQLAT=3D0
-CONFIG_XENO_OPT_RTDM_COMPAT_DEVNODE=3Dy
-CONFIG_XENO_DRIVERS_AUTOTUNE=3Dy
-CONFIG_XENO_DRIVERS_TIMERBENCH=3Dy
-CONFIG_XENO_DRIVERS_SWITCHTEST=3Dy
-CONFIG_XENO_ARCH_UNLOCKED_SWITCH=3Dy
-CONFIG_XENO_ARCH_WANT_TIP=3Dy
-CONFIG_XENO_ARCH_FPU=3Dy
-CONFIG_XENO_ARCH_OUTOFLINE_XNLOCK=3Dy
-CONFIG_XENO_VERSION_MAJOR=3D3
-CONFIG_XENO_VERSION_MINOR=3D0
-CONFIG_XENO_REVISION_LEVEL=3D4
-CONFIG_XENO_VERSION_STRING=3D"3.0.4"
-CONFIG_XENO_VERSION_NAME=3D"Washed Out Harlequin"
-
-Thanks,
-Giulio
+-- 
+Philippe.
 
