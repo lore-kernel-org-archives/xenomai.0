@@ -1,10 +1,7 @@
-Date: Tue, 16 May 2017 13:41:32 +0200
 From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20170516134132.3373e4a8@md1em3qc>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] linking problems on Ubuntu
+Date: Tue, 16 May 2017 15:50:36 +0200
+Message-Id: <20170516135036.16880-1-henning.schild@siemens.com>
+Subject: [Xenomai] [PATCH] scripts/xeno-config: add -Wl,--no-as-needed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,33 +10,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Hi,
+Linking with "--as-needed" could cause the linker to not list essential
+wrapping libraries as needed for a shared library or a dynamically
+linked binary. The result would be runtime ld.so errors for the binaries
+or linking problems with the .so.
+gcc defaults to "--no-as-needed" that is why we never needed to specify
+that flag explicitly. But gcc from Ubuntu is patched to default to
+"--as-needed".
+This patch enforces "--no-as-needed", which will have no effect on most
+toolchains. On Ubuntu it will override the default and make sure xenomai
+applications get linked as expected.
 
-i have been seeing occasional linking problems with 3.0.4 and Ubuntu
-16.04. The root cause of the problem is that the ubuntu toolchain
-defaults to linking with "--as-needed" while most other toolchains seem
-to default to "--no-as-needed".
-Depending on your program the linker might not recognize that some
-libraries are actually needed, because they are just pulled in by weak
-symbols. Inspecting the binary or .so with ldd will show that not all of
-the libs you specified actually made it in.
+Signed-off-by: Henning Schild <henning.schild@siemens.com>
+---
+ scripts/xeno-config-cobalt.in  | 1 +
+ scripts/xeno-config-mercury.in | 1 +
+ 2 files changed, 2 insertions(+)
 
-I will have to investigate further on how best to solve that.
-xeno-config could emit -Wl,--no-as-needed before -l.. but we can not
-really finish with "-Wl,--as-needed" because we don't know the
-toolchains default.
+diff --git a/scripts/xeno-config-cobalt.in b/scripts/xeno-config-cobalt.in
+index 82815e1936..ae313d3897 100644
+--- a/scripts/xeno-config-cobalt.in
++++ b/scripts/xeno-config-cobalt.in
+@@ -282,6 +282,7 @@ if test x$do_ldflags = xy; then
+ 	fi
+ 	bootstrap="${XENO_LIBRARY_DIR}/xenomai/bootstrap${codegen}.o"
+     fi
++    ldflags="-Wl,--no-as-needed $ldflags"
+     echo "$ldflags $copperplate $bootstrap $wrap_main $XENO_POSIX_LDFLAGS"
+ fi
+ 
+diff --git a/scripts/xeno-config-mercury.in b/scripts/xeno-config-mercury.in
+index a0aa75b737..2d2842f300 100644
+--- a/scripts/xeno-config-mercury.in
++++ b/scripts/xeno-config-mercury.in
+@@ -213,6 +213,7 @@ if test x$do_ldflags = xy; then
+ 	fi
+ 	bootstrap="${XENO_LIBRARY_DIR}/xenomai/bootstrap${codegen}.o"
+     fi
++    ldflags="-Wl,--no-as-needed $ldflags"
+     echo "$ldflags $copperplate $bootstrap $wrap_main $XENO_BASE_LDFLAGS"
+ fi
+ 
+-- 
+2.13.0
 
-The weak symbols and wrapping code depends on "--no-as-needed", for a
-sane toolchain there is no need to be explicit about that. These morons
-did not even bother changing the manpages as well ...
-
-So i guess it should be made explicit. I will probably write a patch to
-xeno-config to just add --no-as-needed regardless. It might have to go
-into the build-system as well. Any objections or ideas how to address
-that differently?
-
-Henning
 
