@@ -1,19 +1,14 @@
-References: <CALC3Xwp-pSsQ+hF6bZFyT7BCrTOE2o0G4A3_hgD7o4i=9hdO7Q@mail.gmail.com>
- <8ddcffac-78ab-3933-f5bf-1352f1af6a1d@xenomai.org>
- <CALC3Xwp0soSABRS12_3V8OEfNY_18eR5mB_qZqR9MTsdfq5WMA@mail.gmail.com>
- <CALC3XwoXJ2f6btgkOt2nJ4z1KGf=bB4g=0bE6w7jZfQD42jkRA@mail.gmail.com>
- <CALC3XwoytMPBagjtb8eHd7HxVmbqPE4ck1woX8sWNwR_rXfz5A@mail.gmail.com>
- <da41a276-60bc-7672-947d-2aa931c79606@xenomai.org>
- <CALC3XwrU04LeWBCWnuaHhEfgwakMeXAJ2OkRi+LgmUEdP5zPqQ@mail.gmail.com>
+References: <DB6PR0701MB2456788DAE300E14759F9646B5E10@DB6PR0701MB2456.eurprd07.prod.outlook.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <72f2aa94-733d-76cb-d40b-1f4c9cd97720@xenomai.org>
-Date: Tue, 16 May 2017 11:12:03 +0200
+Message-ID: <ee8f012f-ef3d-fdfc-96d6-8318e1f58dfd@xenomai.org>
+Date: Tue, 16 May 2017 11:56:35 +0200
 MIME-Version: 1.0
-In-Reply-To: <CALC3XwrU04LeWBCWnuaHhEfgwakMeXAJ2OkRi+LgmUEdP5zPqQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <DB6PR0701MB2456788DAE300E14759F9646B5E10@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Fwd: Problem with the priority of the task
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] rt_task_bind returns -EINVAL when not using
+ --enable-smp
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,39 +17,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?Aur=c3=a9lien_Le_Floc'h?= <le.floch.aurelien94@gmail.com>, xenomai@xenomai.org
+To: Giulio Moro <g.moro@qmul.ac.uk>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/15/2017 11:37 AM, Aurélien Le Floc'h wrote:
-> Thanks for your answer.
-> I stock the output result in a string but the results are exactly the
-> same. I attached my code.
-> Do you have an idea to solve this problem ?
+On 05/15/2017 12:04 PM, Giulio Moro wrote:
+> Hi,
+> I have a 4.4.61 kernel with Xenomai 3.0.4 on am335x (BeagleBone Black) compiled with 
+> 
+> CONFIG_BROKEN_ON_SMP=y
+> CONFIG_GENERIC_SMP_IDLE_THREAD=y
+> CONFIG_HAVE_SMP=y
+> # CONFIG_SMP is not set
+> (see XENO flags at the bottom of the email)
+> 
+> When I compile the user-space support with
+>     /root/xenomai/configure --with-core=cobalt --enable-smp --enable-pshared
+> my program (which uses the Alchemy API) works fine
+> 
+> But when I do it with
+>     /root/xenomai/configure --with-core=cobalt --enable-pshared
+> , then calls to rt_task_bind or rt_task_create return -EINVAL.
+> 
 
-Any improvement with this patch in?
+I can't reproduce this issue. You may want to check that your
+application is compatible with your kernel setup by looking at the
+output of <your-app> --dump-config.
 
-diff --git a/lib/copperplate/internal.c b/lib/copperplate/internal.c
-index 2549ab0..1d96526 100644
---- a/lib/copperplate/internal.c
-+++ b/lib/copperplate/internal.c
-@@ -239,14 +239,14 @@ static void *thread_trampoline(void *arg)
- 	 * with the cleanup code the client may run whenever
- 	 * copperplate_create_thread() fails.
- 	 */
--	prepare_wait_corespec();
--	__RT(sem_post(&cta->__reserved.warm));
--	thread_spawn_wait(&released);
--	__RT(sem_destroy(&released));
- 	ret = __bt(copperplate_renice_local_thread(pthread_self(),
- 			   _cta.policy, &_cta.param_ex));
- 	if (ret)
- 		warning("cannot renice core thread, %s", symerror(ret));
-+	prepare_wait_corespec();
-+	__RT(sem_post(&cta->__reserved.warm));
-+	thread_spawn_wait(&released);
-+	__RT(sem_destroy(&released));
- 
- 	return _cta.run(_cta.arg);
- fail:
+e.g.
+
+# latency --dump-config
+based on Xenomai/cobalt v3.0.4 -- #90a7ab2 (2017-05-16 11:12:57 +0200)
+CONFIG_MMU=1
+CONFIG_XENO_BUILD_ARGS=" '--host=arm-linux-gnueabihf' '--prefix=/usr'
+'--includedir=/usr/include/xenomai' '--disable-doc-install'
+'--disable-smp' '--disable-tls' '--disable-debug'
+'--disable-valgrind-client' '--with-core=cobalt' '--enable-pshared'
+'host_alias=arm-linux-gnueabihf'"
+CONFIG_XENO_BUILD_STRING="x86_64-unknown-linux-gnu"
+CONFIG_XENO_COBALT=1
+...
+
+> Given that SMP is not enabled in the kernel, I would expect the latter to be the correct one and possibly the former to fail.
+
+Running a SMP-capable application on a UP kernel is a non-issue, this
+just means that the application code is going to emit memory barriers
+uselessly in some cases. The opposite configuration is a problem though,
+which the cobalt core detects, i.e.
+
+   0"000.000| BUG in __xenomai_init(): [main] running non-SMP libraries
+on SMP kernel?
+              build with --enable-smp or disable check with --no-sanity
+
+> 
+> Note that /usr/xenomai/bin/xeno-test and /usr/xenomai/bin/latency work ok in both cases.
+>
+
+You may want to check with demo/altency, which is the strict equivalent
+of the latency test written with the legacy alchemy API.
 
 -- 
 Philippe.
