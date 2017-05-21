@@ -1,14 +1,13 @@
-References: <1495194985.29062.9.camel@smigroup.net>
+References: <20170516135036.16880-1-henning.schild@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <3621e629-53e4-288b-091d-890f6e9284f2@xenomai.org>
-Date: Sat, 20 May 2017 09:57:21 +0200
+Message-ID: <17d16a31-e815-84e2-6e91-97e0bd4ee40c@xenomai.org>
+Date: Sun, 21 May 2017 18:18:30 +0200
 MIME-Version: 1.0
-In-Reply-To: <1495194985.29062.9.camel@smigroup.net>
+In-Reply-To: <20170516135036.16880-1-henning.schild@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] TM_INFINITE and TM_NONBLOCK not documented for some
- functions
+Subject: Re: [Xenomai] [PATCH] scripts/xeno-config: add -Wl,--no-as-needed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,21 +16,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Mauro Salvini <mauro.salvini@smigroup.net>, xenomai <xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>, xenomai@xenomai.org
 
-On 05/19/2017 01:56 PM, Mauro Salvini wrote:
-> Hi,
+On 05/16/2017 03:50 PM, Henning Schild wrote:
+> Linking with "--as-needed" could cause the linker to not list essential
+> wrapping libraries as needed for a shared library or a dynamically
+> linked binary. The result would be runtime ld.so errors for the binaries
+> or linking problems with the .so.
+> gcc defaults to "--no-as-needed" that is why we never needed to specify
+> that flag explicitly. But gcc from Ubuntu is patched to default to
+> "--as-needed".
+> This patch enforces "--no-as-needed", which will have no effect on most
+> toolchains. On Ubuntu it will override the default and make sure xenomai
+> applications get linked as expected.
 > 
-> reading 3.0.4 API documentation I discovered that for some blocking
-> functions (e.g. rt_sem_p(), rt_mutex_acquire(), rt-event_wait() and
-> relative _until calls) is not documented that TM_INFINITE or TM_NONBLOCK
-> can be passed as timeout argument. Also on master branch sources doxygen
-> code for these functions does not report that.
-> Is this wanted or is a documentation leak? In the latter case, I can
-> submit a patch to fix it.
+> Signed-off-by: Henning Schild <henning.schild@siemens.com>
+> ---
+>  scripts/xeno-config-cobalt.in  | 1 +
+>  scripts/xeno-config-mercury.in | 1 +
+>  2 files changed, 2 insertions(+)
+> 
+> diff --git a/scripts/xeno-config-cobalt.in b/scripts/xeno-config-cobalt.in
+> index 82815e1936..ae313d3897 100644
+> --- a/scripts/xeno-config-cobalt.in
+> +++ b/scripts/xeno-config-cobalt.in
+> @@ -282,6 +282,7 @@ if test x$do_ldflags = xy; then
+>  	fi
+>  	bootstrap="${XENO_LIBRARY_DIR}/xenomai/bootstrap${codegen}.o"
+>      fi
+> +    ldflags="-Wl,--no-as-needed $ldflags"
+>      echo "$ldflags $copperplate $bootstrap $wrap_main $XENO_POSIX_LDFLAGS"
+>  fi
+>  
+> diff --git a/scripts/xeno-config-mercury.in b/scripts/xeno-config-mercury.in
+> index a0aa75b737..2d2842f300 100644
+> --- a/scripts/xeno-config-mercury.in
+> +++ b/scripts/xeno-config-mercury.in
+> @@ -213,6 +213,7 @@ if test x$do_ldflags = xy; then
+>  	fi
+>  	bootstrap="${XENO_LIBRARY_DIR}/xenomai/bootstrap${codegen}.o"
+>      fi
+> +    ldflags="-Wl,--no-as-needed $ldflags"
+>      echo "$ldflags $copperplate $bootstrap $wrap_main $XENO_BASE_LDFLAGS"
+>  fi
+>  
 > 
 
-This is a leak, patch welcome.
+Merged, thanks.
 
 -- 
 Philippe.
