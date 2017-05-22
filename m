@@ -1,14 +1,10 @@
-References: <CAGTNcBuw2Wm6J1XZ2NKesomYojKZg_jxjDjw0QBncyfHDRjwNA@mail.gmail.com>
- <469e1d96-6f47-53cc-3750-77ae8479da23@xenomai.org>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <2e38fb9b-3e7f-ab54-576c-3080903f7459@xenomai.org>
-Date: Sun, 5 Mar 2017 15:59:50 +0100
 MIME-Version: 1.0
-In-Reply-To: <469e1d96-6f47-53cc-3750-77ae8479da23@xenomai.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] heap corruption with multiple,
- differently-sized calls to rt_queue_alloc()
+From: =?UTF-8?Q?Aur=C3=A9lien_Le_Floc=27h?= <le.floch.aurelien94@gmail.com>
+Date: Mon, 22 May 2017 17:45:58 +0200
+Message-ID: <CALC3XwpYJZs=bmuKhSm6L7ahpW9iuGV16kaxwstDkOe5EtBF1w@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Problem with the T_LOCK
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,65 +13,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Josh Bowman <jbowman@facts-inc.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 03/05/2017 12:43 PM, Philippe Gerum wrote:
-> On 03/04/2017 03:30 AM, Josh Bowman wrote:
->> Hi,
->>
->> I'm having a problem when trying to allocate multiple blocks using
->> rt_queue_alloc(). When my client code is building a message to send to
->> queue, it sometimes finds that it needs a bigger block. So it creates a new
->> block via rt_queue_alloc(); copies the data from the previous block into
->> the new block; and then calls rt_queue_free() on the old block.
->>
->> The code included here is a simplified version of this process. It
->> allocates a buffer; puts some data in it; allocates a new buffer; and then
->> checks to make sure the previous buffer is intact. Then it frees the
->> previous buffer and loops.
->>
->> When I run this code, it prints:
->>
->> ERROR: at 7, 2: after rt_queue_alloc, checkMessage failed at loc 480
->>
->> This means the buffer previously returned by rt_queue_alloc() is damaged by
->> the next call to rt_queue_alloc().  I set a watch in the debugger, and it
->> looks like the damage is done at line 376 of lib/alchemy/queue.c; this
->> seems to indicate the heapobj_alloc() is returning a region that overlaps
->> the one previously allocated.
->>
->> I'm running Xenomai/mercury from stable-3.0.x on x86_64, with config:
->> "--with-core=mercury --enable-smp --enable-pshared --enable-registry
->> --enable-debug"
->>
->> I build the test program with:
->>
->> g++ queue-2.cpp -o queue-2 -g -fno-default-inline -fno-omit-frame-pointer
->> `xeno-config --skin=alchemy --cflags --no-auto-init --ldflags`
->>
->> Changing the realloc_count parameter causes the code to fail at different
->> iterations; passing realloc_count = 3 moves the failure to the
->> rt_queue_send() call. (The code runs to completion with realloc_count set
->> to 1 or 2.)
->>
->> I've also found that if I don't call rt_queue_free() the code runs to
->> completion.
->>
->> Let me know if there's anything I can do to help.
->>
-> 
-> Your test code perfectly reproduces the issue here, thanks. There is a
-> severe bitmap breakage, I'm on it.
-> 
-
-Ugly bug affecting the page bitmap of the shared heap (--enable-pshared)
-which caused the allocator to be terminally confused by some allocation
-patterns. Fixed in the stable branch:
-
-http://git.xenomai.org/xenomai-3.git/commit/?h=stable-3.0.x&id=027898e4732cb5de9b2f1e762a61661ba9421d00
-
-Thanks.
-
--- 
-Philippe.
-
+SGVsbG8gZXZlcnlvbmUsCgoKSSBhbSB3b3JraW5nIG9uIHRhc2sgcHJpb3JpdHkgd2l0aCBYZW5v
+bWFpLiBJIGFtIHRyeWluZyB0byBjcmVhdGUgc29tZQpleGFtcGxlIG9mIHByZWVtcHRpb24gZGVw
+ZW5kaW5nIG9uIHRoZSB0YXNrIHByaW9yaXR5LiBGb3Igbm93IEkgaGF2ZQpzb21lIGV4YW1wbGUg
+d2hpY2ggd29ya3MgdGhhbmtzIHRvIG5ldyBwYXRjaCBvbiBYZW5vbWFpLTMuMC41LiBUbyB3b3Jr
+Cm9uIHRoaXMgZXhhbXBsZSBJIHdvcmsgb24gYSBzaW5nbGUgY29yZSBoYXJkd2FyZSAoaW4gbXkg
+Y2FzZSBhClJhc3BiZXJyeSBQaSBCKykgd2hpY2ggcnVucyBYZW5vbWFpIDMgZ2VuZXJhdGVkIGJ5
+IEJ1aWxkcm9vdC4KCk9uIGFsbCB0aGlzIHByb2dyYW0geW91IGhhdmUgb25lIGZhdGhlciB0aHJl
+YWQgd2hpY2ggY3JlYXRlcyB0d28KY2hpbGRyZW5zIHRocmVhZHMgKGNoaWxkMSBhbmQgY2hpbGQy
+KS4gV2UgYXJlIG9uIGEgc2luZ2xlIGNvcmUgc28gdHdvCnRocmVhZCBjYW7igJl0IHJ1biBhdCB0
+aGUgc2FtZSB0aW1lLiBJbiB0aGlzIGNvbmZpZ3VyYXRpb24gaXQgaXMKcG9zc2libGUgdG8gcHJv
+dmlkZSBhbiBvcmRlciBvZiBhcHBhcml0aW9uIG9mIG15IHByaW50Zi4gVG8gZXhlY3V0ZQphbGwg
+bXkgcHJvZ3JhbSB0aGUgcHJpb3JpdHkgb3JkZXIgdG8gZ2l2ZSBpbiBlbnRyeSBpcyAuL1Byb2dy
+YW1fbmFtZQpwcmlvX3RocmVhZF9mYXRoZXIgcHJpb190aHJlYWRfY2hpbGQxIHByaW9fdGhyZWFk
+X2NoaWxkMgoKCkluIHRoaXMgcHJvZ3JhbSAoYXR0YWNoZWQgaW4gdGhpcyBlbWFpbCkgSSBhbSB0
+cnlpbmcgdG8gdXNlIHRoZSBUX0xPQ0sKaW4gcnRfdGFza19jcmVhdGUuIE15IGdvYWwgaXMgdG8g
+Y3JlYXRlIHRoZSB0aHJlYWRfZmF0aGVyIHdpdGggVF9MT0NLCnRoZSBjaGlsZDEgYW5kIGNoaWxk
+MiB3aXRoIFRfSk9JTkFCTEUuClRoZSBnb2FsIGlzIHRoYXQgdGhlIGZhdGhlciBpcyBhbHdheXMg
+dGVybWluYXRpbmcgYmVmb3JlIHRoZSBjaGlsZApldmVuIGlmIGhpcyBwcmlvcml0eSBpcyBsb3dl
+ciB0aGFuIHRoZSBjaGlsZC4KCkZvciBleGFtcGxlIGlmIHByaW9fZmF0aGVyIDwgcHJpb19jaGls
+ZDIgPCBwcmlvX2NoaWxkMSB0aGlzIGlzIHRoZSBvdXRwdXQKRW50cnkgaW4gdGFza19mYXRoZXIh
+CkVuZCBvZiB0YXNrX2ZhdGhlciEKRW50cnkgaW4gdGFza19jaGlsZDIhCkVudHJ5IGluIHRhc2tf
+Y2hpbGQxIQoKTm93IHRoZSBvdXRwdXQgaXMgbGlrZSB0aGlzIDoKREVCVUcKRW50cnkgaW4gdGFz
+a19mYXRoZXIhCkVudHJ5IGluIHRhc2tfY2hpbGQxIQpFbnRyeSBpbiB0YXNrX2NoaWxkMiEKRW5k
+IG9mIHRhc2tfZmF0aGVyIQoKSXQncyBzZWVtcyB0aGF0IHRoZSBUX0xPQ0sgYXJndW1lbnQgaW4g
+cnRfdGFza19jcmVhdGUgaGFzIG5vIGVmZmVjdAphbmQgb25seSB0aGUgcHJpb3JpdHkga2VlcHMg
+dGhlIGVmZmVjdC4gSSB0cnkgdG8gbG9jayB0aGUgc2NoZWR1bGVyCndpdGggbXV0ZXggYW5kIGl0
+J3Mgd29yay4gQnV0IG15IGdvYWwgaXMgdG8gaGF2ZSB0aGUgc2FtZSByZXN1bHQgd2l0aApUX0xP
+Q0suCkRvIHlvdSBoYXZlIHNvbWUgYWR2aWNlcyA/CgpUaGFua3MgaW4gYWR2YW5jZSwKCkF1csOp
+bGllbiBMZSBGbG9jJ2gKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEg
+bm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogdGVzdF9sb2NrLmMKVHlw
+ZTogdGV4dC94LWNzcmMKU2l6ZTogMjM2NCBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDog
+PGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE3MDUy
+Mi9mMjEyOGY2OC9hdHRhY2htZW50LmM+Cg==
