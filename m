@@ -1,10 +1,13 @@
+Date: Tue, 23 May 2017 11:29:37 -0400
+From: Jeff Melvile <jmelville@mitre.org>
+In-Reply-To: <c67ebae3-251a-d265-62b5-2c3335ef27f0@xenomai.org>
+Message-ID: <alpine.DEB.2.20.1705231109560.21096@af78237-pc.mitre.org>
+References: <1a14fe35-fa00-c088-3838-b6e25ee5bff1@xenomai.org>
+ <20170522111517.76526d57@md1em3qc>
+ <c67ebae3-251a-d265-62b5-2c3335ef27f0@xenomai.org>
 MIME-Version: 1.0
-From: =?UTF-8?Q?Aur=C3=A9lien_Le_Floc=27h?= <le.floch.aurelien94@gmail.com>
-Date: Mon, 22 May 2017 17:45:58 +0200
-Message-ID: <CALC3XwpYJZs=bmuKhSm6L7ahpW9iuGV16kaxwstDkOe5EtBF1w@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Problem with the T_LOCK
+Content-Type: text/plain; charset="US-ASCII"
+Subject: Re: [Xenomai] Xenomai 3.0.5
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,38 +16,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-SGVsbG8gZXZlcnlvbmUsCgoKSSBhbSB3b3JraW5nIG9uIHRhc2sgcHJpb3JpdHkgd2l0aCBYZW5v
-bWFpLiBJIGFtIHRyeWluZyB0byBjcmVhdGUgc29tZQpleGFtcGxlIG9mIHByZWVtcHRpb24gZGVw
-ZW5kaW5nIG9uIHRoZSB0YXNrIHByaW9yaXR5LiBGb3Igbm93IEkgaGF2ZQpzb21lIGV4YW1wbGUg
-d2hpY2ggd29ya3MgdGhhbmtzIHRvIG5ldyBwYXRjaCBvbiBYZW5vbWFpLTMuMC41LiBUbyB3b3Jr
-Cm9uIHRoaXMgZXhhbXBsZSBJIHdvcmsgb24gYSBzaW5nbGUgY29yZSBoYXJkd2FyZSAoaW4gbXkg
-Y2FzZSBhClJhc3BiZXJyeSBQaSBCKykgd2hpY2ggcnVucyBYZW5vbWFpIDMgZ2VuZXJhdGVkIGJ5
-IEJ1aWxkcm9vdC4KCk9uIGFsbCB0aGlzIHByb2dyYW0geW91IGhhdmUgb25lIGZhdGhlciB0aHJl
-YWQgd2hpY2ggY3JlYXRlcyB0d28KY2hpbGRyZW5zIHRocmVhZHMgKGNoaWxkMSBhbmQgY2hpbGQy
-KS4gV2UgYXJlIG9uIGEgc2luZ2xlIGNvcmUgc28gdHdvCnRocmVhZCBjYW7igJl0IHJ1biBhdCB0
-aGUgc2FtZSB0aW1lLiBJbiB0aGlzIGNvbmZpZ3VyYXRpb24gaXQgaXMKcG9zc2libGUgdG8gcHJv
-dmlkZSBhbiBvcmRlciBvZiBhcHBhcml0aW9uIG9mIG15IHByaW50Zi4gVG8gZXhlY3V0ZQphbGwg
-bXkgcHJvZ3JhbSB0aGUgcHJpb3JpdHkgb3JkZXIgdG8gZ2l2ZSBpbiBlbnRyeSBpcyAuL1Byb2dy
-YW1fbmFtZQpwcmlvX3RocmVhZF9mYXRoZXIgcHJpb190aHJlYWRfY2hpbGQxIHByaW9fdGhyZWFk
-X2NoaWxkMgoKCkluIHRoaXMgcHJvZ3JhbSAoYXR0YWNoZWQgaW4gdGhpcyBlbWFpbCkgSSBhbSB0
-cnlpbmcgdG8gdXNlIHRoZSBUX0xPQ0sKaW4gcnRfdGFza19jcmVhdGUuIE15IGdvYWwgaXMgdG8g
-Y3JlYXRlIHRoZSB0aHJlYWRfZmF0aGVyIHdpdGggVF9MT0NLCnRoZSBjaGlsZDEgYW5kIGNoaWxk
-MiB3aXRoIFRfSk9JTkFCTEUuClRoZSBnb2FsIGlzIHRoYXQgdGhlIGZhdGhlciBpcyBhbHdheXMg
-dGVybWluYXRpbmcgYmVmb3JlIHRoZSBjaGlsZApldmVuIGlmIGhpcyBwcmlvcml0eSBpcyBsb3dl
-ciB0aGFuIHRoZSBjaGlsZC4KCkZvciBleGFtcGxlIGlmIHByaW9fZmF0aGVyIDwgcHJpb19jaGls
-ZDIgPCBwcmlvX2NoaWxkMSB0aGlzIGlzIHRoZSBvdXRwdXQKRW50cnkgaW4gdGFza19mYXRoZXIh
-CkVuZCBvZiB0YXNrX2ZhdGhlciEKRW50cnkgaW4gdGFza19jaGlsZDIhCkVudHJ5IGluIHRhc2tf
-Y2hpbGQxIQoKTm93IHRoZSBvdXRwdXQgaXMgbGlrZSB0aGlzIDoKREVCVUcKRW50cnkgaW4gdGFz
-a19mYXRoZXIhCkVudHJ5IGluIHRhc2tfY2hpbGQxIQpFbnRyeSBpbiB0YXNrX2NoaWxkMiEKRW5k
-IG9mIHRhc2tfZmF0aGVyIQoKSXQncyBzZWVtcyB0aGF0IHRoZSBUX0xPQ0sgYXJndW1lbnQgaW4g
-cnRfdGFza19jcmVhdGUgaGFzIG5vIGVmZmVjdAphbmQgb25seSB0aGUgcHJpb3JpdHkga2VlcHMg
-dGhlIGVmZmVjdC4gSSB0cnkgdG8gbG9jayB0aGUgc2NoZWR1bGVyCndpdGggbXV0ZXggYW5kIGl0
-J3Mgd29yay4gQnV0IG15IGdvYWwgaXMgdG8gaGF2ZSB0aGUgc2FtZSByZXN1bHQgd2l0aApUX0xP
-Q0suCkRvIHlvdSBoYXZlIHNvbWUgYWR2aWNlcyA/CgpUaGFua3MgaW4gYWR2YW5jZSwKCkF1csOp
-bGllbiBMZSBGbG9jJ2gKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEg
-bm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogdGVzdF9sb2NrLmMKVHlw
-ZTogdGV4dC94LWNzcmMKU2l6ZTogMjM2NCBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDog
-PGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE3MDUy
-Mi9mMjEyOGY2OC9hdHRhY2htZW50LmM+Cg==
+
+
+On Mon, 22 May 2017, Philippe Gerum wrote:
+
+> On 05/22/2017 11:15 AM, Henning Schild wrote:
+> > Am Sun, 21 May 2017 21:19:22 +0200
+> > schrieb Philippe Gerum <rpm@xenomai.org>:
+> > 
+> >> Xenomai 3.0.5 is out. A few bug fixes, most notably in the Cobalt
+> >> core, and several cleanups for better supporting different C
+> >> libraries. This release also provides support for kernel series up to
+> >> 4.9.x (included).
+> >>
+> >> http://xenomai.org/downloads/xenomai/stable/latest/xenomai-3.0.5.tar.bz2
+> >>
+> > 
+> > This is currently just a tag on no upstream branch. Please update
+> > stable-3.0.x and probably master as well.
+> > 
+> 
+> Master is not aimed at reflecting the latest stable, if any, it should
+> reflect the tip of the development which is the -next branch; however
+> this tracking is not followed. Actually the master branch should go away.
+> 
+> -- 
+> Philippe.
+> 
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+> 
+
+Philippe,
+
+Can I ask a few clarifications about the release?
+
+I noticed that there is an arm64 directory in the cobalt/arch directory of 
+the tarball but it is empty. I assume this is a mistake and arm64 is not 
+supported in 3.0.5. I see cobalt/arch/arm64 in the next branch.
+
+You also mentioned that the release supports up to kernel series 4.9.x. 
+There aren't any ipipe patches beyond 4.4.x in 
+xenomai.org/downloads/ipipe. Is the ipipe-4.9.y branch generally stable 
+for use with this release? Or was your statement meant to convey that 
+3.0.5 will be compatible with an ipipe-4.9 patch when it is released?
+
+Can you (or anyone else) provide a general update on arm64 status? I 
+haven't seen anything for a few months. We're 
+currently considering migrating from an arm, Xenomai 2.6.5 setup to an 
+arm64, Xenomai 3 Cobalt configuration. We're happy to help with 
+development to the extent we're able.
+
+Thanks,
+Jeff
+
