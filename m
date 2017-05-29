@@ -1,18 +1,12 @@
-References: <1a14fe35-fa00-c088-3838-b6e25ee5bff1@xenomai.org>
- <20170522111517.76526d57@md1em3qc>
- <c67ebae3-251a-d265-62b5-2c3335ef27f0@xenomai.org>
- <20170529103746.55f26d1d@md1em3qc>
- <9262ef9c-67d0-761e-81e0-302812d59ae8@xenomai.org>
- <b7ce32c3-4c03-af35-3bf0-e9885a40eb23@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <2b98568d-3dd6-28e3-1e81-594fda7daa35@xenomai.org>
-Date: Mon, 29 May 2017 15:05:18 +0200
-MIME-Version: 1.0
-In-Reply-To: <b7ce32c3-4c03-af35-3bf0-e9885a40eb23@siemens.com>
-Content-Type: text/plain; charset=utf-8
+From: Nitin Kulkarni <nitink@kth.se>
+Date: Mon, 29 May 2017 20:27:41 +0000
+Message-ID: <1496089661516.77105@kth.se>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 3.0.5
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] GPIO Interrupt is registered in Xenomai but handler is
+ not invoked when triggered
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,50 +15,159 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/29/2017 12:56 PM, Jan Kiszka wrote:
-> On 2017-05-29 11:16, Philippe Gerum wrote:
->> On 05/29/2017 10:37 AM, Henning Schild wrote:
->>> Am Mon, 22 May 2017 11:18:01 +0200
->>> schrieb Philippe Gerum <rpm@xenomai.org>:
->>>
->>>> On 05/22/2017 11:15 AM, Henning Schild wrote:
->>>>> Am Sun, 21 May 2017 21:19:22 +0200
->>>>> schrieb Philippe Gerum <rpm@xenomai.org>:
->>>>>   
->>>>>> Xenomai 3.0.5 is out. A few bug fixes, most notably in the Cobalt
->>>>>> core, and several cleanups for better supporting different C
->>>>>> libraries. This release also provides support for kernel series up
->>>>>> to 4.9.x (included).
->>>>>>
->>>>>> http://xenomai.org/downloads/xenomai/stable/latest/xenomai-3.0.5.tar.bz2
->>>>>>  
->>>>>
->>>>> This is currently just a tag on no upstream branch. Please update
->>>>> stable-3.0.x and probably master as well.
->>>>>   
->>>>
->>>> Master is not aimed at reflecting the latest stable, if any, it should
->>>> reflect the tip of the development which is the -next branch; however
->>>> this tracking is not followed. Actually the master branch should go
->>>> away.
->>>
->>> Ok, still the tag is detached from all branches and one would have to
->>> pull with "--tags" to get it.
->>>
->>
->> Which is reasonable, I'm only pushing official release tags to the repo.
->>
-> 
-> Please just forward stable-3.0.x to commit ded4ede2d and push it so that
-> people do not accidentally base patches on the pre-release state.
-> 
+Hello all,
 
-The request is much clearer now. Done, thanks for the heads up.
+I am new to Xenomai and I am trying to run a simple interrupt handler set u=
+p for a GPIO .
+
+I have successfully set up and ran without ipipe and Xenomai patched.
+
+But when I use the RTDM interfaces rtdm_irq_request() to set up a handler, =
+it is registered and shows when I do cat /proc/xenomai/irq
+
+but the handler is not invoked when I trigger the gpio pin.
 
 
--- 
-Philippe.
+Other thing I have observed is, after patching ipipe & Xenomai when I set u=
+p a usual linux irq handler using request_irq() ,
+
+the handler is invoked continuously and the interrupt doesn't seem to be cl=
+eared after executing the handler once although I
+
+am using an edge triggered interrupt.
+
+
+I have seen similar issues posted but most of the solutions I found are spe=
+cific to HW (usually ARM).
+
+I am using an Intel Joule running Linux 4.4.43 kernel.. Did anyone face sim=
+ilar issues on x86 arch ?
+
+
+Please suggest what I might be missing. Find my code below since I couldn't=
+ attach the file because my mail exchange server complained :/
+
+
+Regards ,
+
+Nitin?
+
+
+
+
+#include <linux/gpio.h>
+#include <linux/module.h>
+#include <rtdm/driver.h>
+#include <rtdm/rtdm.h>
+#include <linux/interrupt.h>
+
+
+MODULE_DESCRIPTION("RTDM driver for Intel Joule GPIO");
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Nitin Kulkarni");
+MODULE_VERSION("1.0");
+
+static unsigned int irq_num;
+static unsigned int gpioLED =3D 340;
+static unsigned int gpioButton =3D 343;
+static bool value =3D false;
+static rtdm_irq_t irq_handle;
+static int num_of_intr =3D 0;
+
+static int gpio_irq_handler(rtdm_irq_t * irq)
+{
+value =3D !value;
+gpio_set_value(gpioLED, value); // toggle the led everytime irq handler is =
+invoked
+        printk("GPIO interrupt \n");
+num_of_intr++;
+return RTDM_IRQ_HANDLED;
+}
+
+
+static int __init rtdm_init (void)
+{
+int err;
+if ((err =3D gpio_request(gpioButton, THIS_MODULE->name)) !=3D 0) {
+printk(" gpio_request gpioButton failed ! \n");
+return err;
+}
+
+if ((err =3D gpio_direction_input(gpioButton)) !=3D 0) {
+
+printk(" gpio_direction_input gpioButton failed ! \n");
+gpio_free(gpioButton);
+                return err;
+}
+
+irq_num =3D gpio_to_irq(gpioButton);
+
+printk(" IRQ number %d !  \n",irq_num);
+
+if ((err =3D gpio_request(gpioLED, THIS_MODULE->name)) !=3D 0) {
+
+printk(" gpio_request gpioLED failed ! \n");
+gpio_free(gpioButton);
+return err;
+}
+
+if ((err =3D gpio_direction_output(gpioLED, 0)) !=3D 0) {
+
+printk(" gpio_direction_input gpioLED failed ! \n");
+gpio_free(gpioLED);
+gpio_free(gpioButton);
+return err;
+}
+
+err =3D irq_set_irq_type(irq_num,  IRQF_TRIGGER_RISING);
+
+if(err)
+{
+gpio_free(gpioLED);
+gpio_free(gpioButton);
+printk(" irq_set_irq_type failed ! \n");
+return err;
+}
+
+err =3D rtdm_irq_request(&irq_handle,irq_num,(rtdm_irq_handler_t)gpio_irq_h=
+andler, RTDM_IRQTYPE_EDGE,THIS_MODULE->name, NULL);
+
+printk("after request irq =3D %d \n",irq_handle.irq);
+
+if(err)
+{
+gpio_free(gpioLED);
+gpio_free(gpioButton);?
+printk(" rtdm_irq_request failed ! \n");
+return err;
+}
+
+err =3D rtdm_irq_enable(&irq_handle);
+
+if (err < 0) {
+printk("rtdm_irq_enable failed \n");
+return err;
+}
+return 0;
+}
+
+
+
+static void __exit rtdm_exit (void)
+{
+rtdm_irq_free(&irq_handle);
+gpio_free(gpioLED);
+gpio_free(gpioButton);
+
+printk("The number of intr is %d \n",num_of_intr);
+}
+
+
+module_init(rtdm_init);
+module_exit(rtdm_exit);
+MODULE_LICENSE("GPL");
+
+
 
