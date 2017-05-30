@@ -1,8 +1,8 @@
 From: Nitin Kulkarni <nitink@kth.se>
-Date: Tue, 30 May 2017 17:47:58 +0000
-Message-ID: <1496166479457.35714@kth.se>
-References: <mailman.115.1496162312.4225.xenomai@xenomai.org>
-In-Reply-To: <mailman.115.1496162312.4225.xenomai@xenomai.org>
+Date: Tue, 30 May 2017 18:02:34 +0000
+Message-ID: <1496167354451.78382@kth.se>
+References: <mailman.117.1496166485.4225.xenomai@xenomai.org>
+In-Reply-To: <mailman.117.1496166485.4225.xenomai@xenomai.org>
 Content-Language: en-US
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
@@ -17,23 +17,143 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "h.kuppens@cs.ru.nl" <h.kuppens@cs.ru.nl>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
+Hi Philippe,=0A=
+>From your reply I guess its the same issue  with my SoC also. Do you think =
+in my case the Intel joule pinctrl driver is not aware of Ipipe ?=0A=
+Do you have any instances where an x86 based SoC was ported to solve this i=
+ssue ?=0A=
+Thanks for the info it explains a lot of things now.=0A=
+=0A=
+- Nitin =0A=
+=0A=
+________________________________________=0A=
+From: Xenomai <xenomai-bounces@xenomai.org> on behalf of xenomai-request@xe=
+nomai.org <xenomai-request@xenomai.org>=0A=
+Sent: Tuesday, May 30, 2017 7:48 PM=0A=
+To: xenomai@xenomai.org=0A=
+Subject: Xenomai Digest, Vol 61, Issue 25=0A=
+=0A=
+Send Xenomai mailing list submissions to=0A=
+        xenomai@xenomai.org=0A=
+=0A=
+To subscribe or unsubscribe via the World Wide Web, visit=0A=
+        https://xenomai.org/mailman/listinfo/xenomai=0A=
+or, via email, send a message with subject or body 'help' to=0A=
+        xenomai-request@xenomai.org=0A=
+=0A=
+You can reach the person managing the list at=0A=
+        xenomai-owner@xenomai.org=0A=
+=0A=
+When replying, please edit your Subject line so it is more specific=0A=
+than "Re: Contents of Xenomai digest..."=0A=
+=0A=
+=0A=
+Today's Topics:=0A=
+=0A=
+   1. Re: problem gpio interrupts xenomai3 on the raspberry pi 2=0A=
+      (or 3) (Philippe Gerum)=0A=
+   2. Re: problem gpio interrupts xenomai3 on the raspberry pi  2=0A=
+      (or 3) (Nitin Kulkarni)=0A=
+=0A=
+=0A=
+----------------------------------------------------------------------=0A=
+=0A=
+Message: 1=0A=
+Date: Tue, 30 May 2017 19:30:58 +0200=0A=
+From: Philippe Gerum <rpm@xenomai.org>=0A=
+To: Harco Kuppens <h.kuppens@cs.ru.nl>, xenomai@xenomai.org=0A=
+Subject: Re: [Xenomai] problem gpio interrupts xenomai3 on the=0A=
+        raspberry pi 2 (or 3)=0A=
+Message-ID: <cb912c40-1247-6395-9a84-a3203dd5f022@xenomai.org>=0A=
+Content-Type: text/plain; charset=3Dutf-8=0A=
+=0A=
+On 05/30/2017 06:38 PM, Harco Kuppens wrote:=0A=
+> So I decided to also  test these wiringpi test programs on mine build=0A=
+> xenomai 3 image for the rpi2. Unfortunately the isr.c wiringpi program=0A=
+> didn't work anymore on mine build image. So even without using xenomai3,=
+=0A=
+> but just using linux the pi2 just hangs and a hard reset was needed.=0A=
+>=0A=
+> Thus I guess there is still something wrong with mine image?=0A=
+> Does anybody know what I'm doing wrong?=0A=
+> Or is this still a bug in the gpio library or in the patches applied?=0A=
+>=0A=
+=0A=
+It looks obvious that you tried hard and got your feet wet with Xenomai=0A=
+already, so let's go straight to the point: the lockup issue when using=0A=
+GPIO interrupts is most likely due to the I-pipe patch not properly=0A=
+adapting the GPIO chip driver for dealing with IRQ virtualization.=0A=
+=0A=
+In short, each IRQ controller which may be active on a SoC must be=0A=
+driven by I-pipe aware code. For instance, the bcm2835 family has common=0A=
+GPIOs controlled by the driver at drivers/pinctrl/pinctrl-bcm2835.c. If=0A=
+that driver has not been patched specifically for supporting the IRQ=0A=
+pipeline, then this won't work with Xenomai, and may well end up with=0A=
+painful IRQ storms causing a machine hang. The same goes for any other=0A=
+chip serving as an IRQ controller you might need on your platform.=0A=
+=0A=
+So, first and foremost, I would recommend to make sure the I-pipe code=0A=
+is right for your kernel, then build on top of that. A good way to=0A=
+figure out which IRQ controllers are active is look at the output of=0A=
+/proc/interrupts on a kernel that disables the interrupt pipeline.=0A=
+Each IRQ information mentions the label of the controller which deals=0A=
+with it. With that information, you need to cross-check whether the=0A=
+corresponding IRQ chip driver (the one that bears this label in the=0A=
+irq_chip descriptor structure) was made I-pipe aware.=0A=
+=0A=
+Some time ago, I ported Xenomai 3 to the PI Zero (kernel 4.1.18), which=0A=
+is based on the bcm2835 SoC like the PI 1 series. That code is available=0A=
+from the vendors/raspberry/ipipe-4.1 branch at=0A=
+git://git.xenomai.org/ipipe.git. This may be a good starting point, at=0A=
+least for testing with a PI 1, before working on the required fixups for=0A=
+supporting other Broadcom SoCs.=0A=
+=0A=
+IIRC, RPI 2B and RPI 3 are based on the bcm2836, bcm2837 SoCs resp.,=0A=
+which are not covered by the port just mentioned. You may find some=0A=
+preliminary I-pipe related changes in the bcm2836 core interrupt support=0A=
+code, but those have never been tested. By preliminary, I mean that=0A=
+there is likely a few more IRQ controllers to make I-pipe aware on these=0A=
+SoCs, aside of testing the initial changes.=0A=
+=0A=
+Bottom line: using a stock I-pipe patch is unlikely to work out of the=0A=
+box. The fact that such patch does support several SoCs equipped with=0A=
+Cortex A7/A9 CPUs is by no mean a guarantee that all Cortex-based SoCs=0A=
+are supported by the same code.=0A=
+=0A=
+--=0A=
+Philippe.=0A=
+=0A=
+=0A=
+=0A=
+------------------------------=0A=
+=0A=
+Message: 2=0A=
+Date: Tue, 30 May 2017 17:47:58 +0000=0A=
+From: Nitin Kulkarni <nitink@kth.se>=0A=
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "h.kuppens@cs.ru.nl"=0A=
+        <h.kuppens@cs.ru.nl>=0A=
+Subject: Re: [Xenomai] problem gpio interrupts xenomai3 on the=0A=
+        raspberry pi    2 (or 3)=0A=
+Message-ID: <1496166479457.35714@kth.se>=0A=
+Content-Type: text/plain; charset=3D"iso-8859-1"=0A=
+=0A=
 Hi Harco,=0A=
 Even I have a similar issue which I posted yesterday. Subject was "GPIO Int=
 errupt is registered in Xenomai but handler is not=0A=
-invoked when triggered". In my case I am not using an Intel Joule module. =
+invoked when triggered". In my case I am not using an Intel Joule module.=
 =0A=
 I have searched a bit and I think its an issue with the ipipe patch and GPI=
 O irq handling. My rtdm irq is registered and it shows in the /proc/xenomai=
 /irq file but it is not triggered.=0A=
 =0A=
 I am waiting for someone to reply, I am sure I missing something here or it=
-s an issue with few of the GPIO drivers not being aware of Ipipe. =0A=
+s an issue with few of the GPIO drivers not being aware of Ipipe.=0A=
 =0A=
-@Others: If you have experienced similar issues please let me know. =0A=
+@Others: If you have experienced similar issues please let me know.=0A=
 =0A=
--Nitin =0A=
+-Nitin=0A=
 =0A=
 ________________________________________=0A=
 From: Xenomai <xenomai-bounces@xenomai.org> on behalf of xenomai-request@xe=
@@ -633,5 +753,22 @@ https://xenomai.org/mailman/listinfo/xenomai=0A=
 ------------------------------=0A=
 =0A=
 End of Xenomai Digest, Vol 61, Issue 24=0A=
+***************************************=0A=
+=0A=
+=0A=
+=0A=
+------------------------------=0A=
+=0A=
+Subject: Digest Footer=0A=
+=0A=
+_______________________________________________=0A=
+Xenomai mailing list=0A=
+Xenomai@xenomai.org=0A=
+https://xenomai.org/mailman/listinfo/xenomai=0A=
+=0A=
+=0A=
+------------------------------=0A=
+=0A=
+End of Xenomai Digest, Vol 61, Issue 25=0A=
 ***************************************=0A=
 
