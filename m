@@ -1,11 +1,15 @@
 From: Giulio Moro <g.moro@qmul.ac.uk>
-Date: Sat, 10 Jun 2017 19:34:22 +0000
-Message-ID: <DB6PR0701MB24569CBFFA2BDB4E246360C8B5CF0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+Date: Sat, 10 Jun 2017 19:36:19 +0000
+Message-ID: <AM5PR0701MB244908F6BCB8CD90B348F81EB5CF0@AM5PR0701MB2449.eurprd07.prod.outlook.com>
+References: <DB6PR0701MB2456788DAE300E14759F9646B5E10@DB6PR0701MB2456.eurprd07.prod.outlook.com>,
+ <ee8f012f-ef3d-fdfc-96d6-8318e1f58dfd@xenomai.org>
+In-Reply-To: <ee8f012f-ef3d-fdfc-96d6-8318e1f58dfd@xenomai.org>
 Content-Language: en-GB
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: [Xenomai] rt_taks_bind() returns -EAGAIN for existing task
+Subject: Re: [Xenomai] rt_task_bind returns -EINVAL when not using
+ --enable-smp
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,152 +18,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
-Xenomai 3.0.5 here on kernel 4.4.68-ti-xenomai-r106 on a AM3358 (BeagleBone=
- Black).
+re-upping this old one just to say that on the newer kernel I have (Xenomai=
+ 3.0.5 here on kernel 4.4.68-ti-xenomai-r106 ) I cannot reproduce this one =
+(with or without smp I get the result I reported in the new thread I just s=
+tarted).
+________________________________________
+From: Philippe Gerum <rpm@xenomai.org>
+Sent: 16 May 2017 10:56
+To: Giulio Moro; xenomai@xenomai.org
+Subject: Re: [Xenomai] rt_task_bind returns -EINVAL when not using --enable=
+-smp
 
-If I create a task with `rt_task_create()`, I can then successfully bind to=
- it using its descriptive name from within the same process that started it=
-, e.g.:
+On 05/15/2017 12:04 PM, Giulio Moro wrote:
+> Hi,
+> I have a 4.4.61 kernel with Xenomai 3.0.4 on am335x (BeagleBone Black) co=
+mpiled with
+>
+> CONFIG_BROKEN_ON_SMP=3Dy
+> CONFIG_GENERIC_SMP_IDLE_THREAD=3Dy
+> CONFIG_HAVE_SMP=3Dy
+> # CONFIG_SMP is not set
+> (see XENO flags at the bottom of the email)
+>
+> When I compile the user-space support with
+>     /root/xenomai/configure --with-core=3Dcobalt --enable-smp --enable-ps=
+hared
+> my program (which uses the Alchemy API) works fine
+>
+> But when I do it with
+>     /root/xenomai/configure --with-core=3Dcobalt --enable-pshared
+> , then calls to rt_task_bind or rt_task_create return -EINVAL.
+>
 
-rt_task_create(&task, task_name, 0, 40, T_JOINABLE);
-rt_task_bind(&task, task_name, TM_NONBLOCK); //this returns 0: success
+I can't reproduce this issue. You may want to check that your
+application is compatible with your kernel setup by looking at the
+output of <your-app> --dump-config.
 
-But, if while this program is running (and I can see the task's stats in /p=
-roc/xenomai/sched/stat ), I start another program which tries to rt_task_bi=
-nd() to the same task, the latter's call fails with `Resource temporarily u=
-navailable(-11).`
+e.g.
 
-Note that I run both programs with --enable-shared and I tried both with --=
-skin=3Dnative and --skin=3Dalchemy.
-
-Here is an example of my code: https://github.com/giuliomoro/xenomai-mode-s=
-witch-detector
-
-This program checks if a task with a given name exists. If it does exist, i=
-t returns the number of modes switches in that task. If it does not exist, =
-then it creates and runs the task.
-
-I run the program once, wait for it to display "Run" (so I know the created=
- task is active), then while I leave that running, I run another instance o=
-f the program in another terminal. I would expect the second one to success=
-fully bind to the first one, but that is not the case (i.e.: this second in=
-stance also creates another task with the same name). I can see both runnin=
-g tasks in /proc/xenomai/sched/stat
-In both programs, the first call to rt_task_bind() fails with "Resource tem=
-porarily unavailable(-11)."
-
-A side note: it seems that calling `rt_task_bind()` causes a switch to seco=
-ndary mode, as I see the MSW counter increasing for every call to it.
-
-Thanks,
-Giulio
-
-Configuration dumps follow:
-
-Output of the --dump-config:
-
-./mode_switches_detector --dump-config
-based on Xenomai/cobalt v3.0.5 -- #48b2e57e2 (2017-05-30 09:03:41 +0200)
+# latency --dump-config
+based on Xenomai/cobalt v3.0.4 -- #90a7ab2 (2017-05-16 11:12:57 +0200)
 CONFIG_MMU=3D1
-CONFIG_SMP=3D1
-CONFIG_XENO_BUILD_ARGS=3D" '--disable-dependency-tracking' '--with-core=3Dc=
-obalt' '--enable-pshared' '--host=3Darm-linux-gnueabihf' '--build=3Darm' 'C=
-FLAGS=3D-no-pie -fno-pie -march=3Darmv7-a -mfpu=3Dvfp3' 'LDFLAGS=3D-no-pie =
--fno-pie -march=3Darmv7-a -mfpu=3Dvfp3' '--enable-smp' 'build_alias=3Darm' =
+CONFIG_XENO_BUILD_ARGS=3D" '--host=3Darm-linux-gnueabihf' '--prefix=3D/usr'
+'--includedir=3D/usr/include/xenomai' '--disable-doc-install'
+'--disable-smp' '--disable-tls' '--disable-debug'
+'--disable-valgrind-client' '--with-core=3Dcobalt' '--enable-pshared'
 'host_alias=3Darm-linux-gnueabihf'"
-CONFIG_XENO_BUILD_STRING=3D"arm-unknown-none"
+CONFIG_XENO_BUILD_STRING=3D"x86_64-unknown-linux-gnu"
 CONFIG_XENO_COBALT=3D1
-CONFIG_XENO_COMPILER=3D"gcc version 6.3.0 20170516 (Debian 6.3.0-18) "
-CONFIG_XENO_DEFAULT_PERIOD=3D1000000
-CONFIG_XENO_FORTIFY=3D1
-CONFIG_XENO_HOST_STRING=3D"arm-unknown-linux-gnueabihf"
-CONFIG_XENO_LORES_CLOCK_DISABLED=3D1
-CONFIG_XENO_PREFIX=3D"/usr/xenomai"
-CONFIG_XENO_PSHARED=3D1
-CONFIG_XENO_RAW_CLOCK_ENABLED=3D1
-CONFIG_XENO_REVISION_LEVEL=3D5
-CONFIG_XENO_SANITY=3D1
-CONFIG_XENO_TLSF=3D1
-CONFIG_XENO_TLS_MODEL=3D"initial-exec"
-CONFIG_XENO_UAPI_LEVEL=3D14
-CONFIG_XENO_VERSION_MAJOR=3D3
-CONFIG_XENO_VERSION_MINOR=3D0
-CONFIG_XENO_VERSION_NAME=3D"Sisyphus's Boulder"
-CONFIG_XENO_VERSION_STRING=3D"3.0.5"
----
-CONFIG_XENO_ASYNC_CANCEL is OFF
-CONFIG_XENO_COPPERPLATE_CLOCK_RESTRICTED is OFF
-CONFIG_XENO_DEBUG is OFF
-CONFIG_XENO_DEBUG_FULL is OFF
-CONFIG_XENO_LIBS_DLOPEN is OFF
-CONFIG_XENO_MERCURY is OFF
-CONFIG_XENO_REGISTRY is OFF
-CONFIG_XENO_REGISTRY_ROOT is OFF
-CONFIG_XENO_VALGRIND_API is OFF
-CONFIG_XENO_WORKAROUND_CONDVAR_PI is OFF
-CONFIG_XENO_X86_VSYSCALL is OFF
----
-PTHREAD_STACK_DEFAULT=3D65536
-AUTOMATIC_BOOTSTRAP=3D1
+...
 
+> Given that SMP is not enabled in the kernel, I would expect the latter to=
+ be the correct one and possibly the former to fail.
 
-Dump of Kernel flags:
+Running a SMP-capable application on a UP kernel is a non-issue, this
+just means that the application code is going to emit memory barriers
+uselessly in some cases. The opposite configuration is a problem though,
+which the cobalt core detects, i.e.
 
-$ grep XENO_ /boot/config-4.4.68-ti-xenomai-r106
-# CONFIG_XENO_OPT_SCHED_CLASSES is not set
-CONFIG_XENO_OPT_STATS=3Dy
-# CONFIG_XENO_OPT_SHIRQ is not set
-CONFIG_XENO_OPT_RR_QUANTUM=3D1000
-CONFIG_XENO_OPT_AUTOTUNE=3Dy
-# CONFIG_XENO_OPT_SCALABLE_SCHED is not set
-CONFIG_XENO_OPT_TIMER_LIST=3Dy
-# CONFIG_XENO_OPT_TIMER_RBTREE is not set
-CONFIG_XENO_OPT_HOSTRT=3Dy
-CONFIG_XENO_OPT_PIPE=3Dy
-CONFIG_XENO_OPT_MAP=3Dy
-CONFIG_XENO_OPT_VFILE=3Dy
-CONFIG_XENO_OPT_PIPE_NRDEV=3D32
-CONFIG_XENO_OPT_REGISTRY_NRSLOTS=3D512
-CONFIG_XENO_OPT_SYS_HEAPSZ=3D512
-CONFIG_XENO_OPT_PRIVATE_HEAPSZ=3D64
-CONFIG_XENO_OPT_SHARED_HEAPSZ=3D64
-CONFIG_XENO_OPT_NRTIMERS=3D128
-CONFIG_XENO_OPT_TIMING_SCHEDLAT=3D0
-CONFIG_XENO_OPT_TIMING_KSCHEDLAT=3D0
-CONFIG_XENO_OPT_TIMING_IRQLAT=3D0
-# CONFIG_XENO_OPT_DEBUG is not set
-CONFIG_XENO_OPT_RTDM_COMPAT_DEVNODE=3Dy
-CONFIG_XENO_DRIVERS_AUTOTUNE=3Dy
-CONFIG_XENO_DRIVERS_16550A=3Dm
-# CONFIG_XENO_DRIVERS_16550A_PIO is not set
-# CONFIG_XENO_DRIVERS_16550A_MMIO is not set
-CONFIG_XENO_DRIVERS_16550A_ANY=3Dy
-CONFIG_XENO_DRIVERS_TIMERBENCH=3Dy
-CONFIG_XENO_DRIVERS_SWITCHTEST=3Dy
-# CONFIG_XENO_DRIVERS_RTDMTEST is not set
-# CONFIG_XENO_DRIVERS_CAN is not set
-# CONFIG_XENO_DRIVERS_NET is not set
-# CONFIG_XENO_DRIVERS_ANALOGY is not set
-CONFIG_XENO_DRIVERS_RTIPC=3Dy
-CONFIG_XENO_DRIVERS_RTIPC_XDDP=3Dy
-CONFIG_XENO_DRIVERS_RTIPC_IDDP=3Dy
-CONFIG_XENO_OPT_IDDP_NRPORT=3D32
-CONFIG_XENO_DRIVERS_RTIPC_BUFP=3Dy
-CONFIG_XENO_OPT_BUFP_NRPORT=3D32
-CONFIG_XENO_DRIVERS_UDD=3Dm
-CONFIG_XENO_DRIVERS_GPIO=3Dm
-# CONFIG_XENO_DRIVERS_GPIO_DEBUG is not set
-CONFIG_XENO_ARCH_UNLOCKED_SWITCH=3Dy
-CONFIG_XENO_ARCH_WANT_TIP=3Dy
-CONFIG_XENO_ARCH_FPU=3Dy
-# CONFIG_XENO_ARCH_SYS3264 is not set
-CONFIG_XENO_ARCH_OUTOFLINE_XNLOCK=3Dy
-CONFIG_XENO_VERSION_MAJOR=3D3
-CONFIG_XENO_VERSION_MINOR=3D0
-CONFIG_XENO_REVISION_LEVEL=3D5
-CONFIG_XENO_VERSION_STRING=3D"3.0.5"
-CONFIG_XENO_VERSION_NAME=3D"Sisyphus's Boulder"=
+   0"000.000| BUG in __xenomai_init(): [main] running non-SMP libraries
+on SMP kernel?
+              build with --enable-smp or disable check with --no-sanity
+
+>
+> Note that /usr/xenomai/bin/xeno-test and /usr/xenomai/bin/latency work ok=
+ in both cases.
+>
+
+You may want to check with demo/altency, which is the strict equivalent
+of the latency test written with the legacy alchemy API.
+
+--
+Philippe.
 
