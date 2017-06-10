@@ -1,15 +1,13 @@
-From: Giulio Moro <g.moro@qmul.ac.uk>
-Date: Sat, 10 Jun 2017 19:36:19 +0000
-Message-ID: <AM5PR0701MB244908F6BCB8CD90B348F81EB5CF0@AM5PR0701MB2449.eurprd07.prod.outlook.com>
-References: <DB6PR0701MB2456788DAE300E14759F9646B5E10@DB6PR0701MB2456.eurprd07.prod.outlook.com>,
- <ee8f012f-ef3d-fdfc-96d6-8318e1f58dfd@xenomai.org>
-In-Reply-To: <ee8f012f-ef3d-fdfc-96d6-8318e1f58dfd@xenomai.org>
-Content-Language: en-GB
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+References: <DB6PR0701MB24569CBFFA2BDB4E246360C8B5CF0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <0403698a-861b-8ca3-6e7a-3582b6a84a3b@xenomai.org>
+Date: Sat, 10 Jun 2017 22:02:06 +0200
 MIME-Version: 1.0
-Subject: Re: [Xenomai] rt_task_bind returns -EINVAL when not using
- --enable-smp
+In-Reply-To: <DB6PR0701MB24569CBFFA2BDB4E246360C8B5CF0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] rt_taks_bind() returns -EAGAIN for existing task
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,78 +16,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Giulio Moro <g.moro@qmul.ac.uk>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-re-upping this old one just to say that on the newer kernel I have (Xenomai=
- 3.0.5 here on kernel 4.4.68-ti-xenomai-r106 ) I cannot reproduce this one =
-(with or without smp I get the result I reported in the new thread I just s=
-tarted).
-________________________________________
-From: Philippe Gerum <rpm@xenomai.org>
-Sent: 16 May 2017 10:56
-To: Giulio Moro; xenomai@xenomai.org
-Subject: Re: [Xenomai] rt_task_bind returns -EINVAL when not using --enable=
--smp
-
-On 05/15/2017 12:04 PM, Giulio Moro wrote:
+On 06/10/2017 09:34 PM, Giulio Moro wrote:
 > Hi,
-> I have a 4.4.61 kernel with Xenomai 3.0.4 on am335x (BeagleBone Black) co=
-mpiled with
->
-> CONFIG_BROKEN_ON_SMP=3Dy
-> CONFIG_GENERIC_SMP_IDLE_THREAD=3Dy
-> CONFIG_HAVE_SMP=3Dy
-> # CONFIG_SMP is not set
-> (see XENO flags at the bottom of the email)
->
-> When I compile the user-space support with
->     /root/xenomai/configure --with-core=3Dcobalt --enable-smp --enable-ps=
-hared
-> my program (which uses the Alchemy API) works fine
->
-> But when I do it with
->     /root/xenomai/configure --with-core=3Dcobalt --enable-pshared
-> , then calls to rt_task_bind or rt_task_create return -EINVAL.
->
+> Xenomai 3.0.5 here on kernel 4.4.68-ti-xenomai-r106 on a AM3358 (BeagleBone Black).
+> 
+> If I create a task with `rt_task_create()`, I can then successfully bind to it using its descriptive name from within the same process that started it, e.g.:
+> 
+> rt_task_create(&task, task_name, 0, 40, T_JOINABLE);
+> rt_task_bind(&task, task_name, TM_NONBLOCK); //this returns 0: success
+> 
+> But, if while this program is running (and I can see the task's stats in /proc/xenomai/sched/stat ), I start another program which tries to rt_task_bind() to the same task, the latter's call fails with `Resource temporarily unavailable(-11).`
+> 
+> Note that I run both programs with --enable-shared and I tried both with --skin=native and --skin=alchemy.
 
-I can't reproduce this issue. You may want to check that your
-application is compatible with your kernel setup by looking at the
-output of <your-app> --dump-config.
+"native" is a pure alias to "alchemy", not to break legacy Makefiles.
 
-e.g.
+> 
+> Here is an example of my code: https://github.com/giuliomoro/xenomai-mode-switch-detector
+> 
+> This program checks if a task with a given name exists. If it does exist, it returns the number of modes switches in that task. If it does not exist, then it creates and runs the task.
+> 
+> I run the program once, wait for it to display "Run" (so I know the created task is active), then while I leave that running, I run another instance of the program in another terminal. I would expect the second one to successfully bind to the first one, but that is not the case (i.e.: this second instance also creates another task with the same name). I can see both running tasks in /proc/xenomai/sched/stat
+> In both programs, the first call to rt_task_bind() fails with "Resource temporarily unavailable(-11)."
+> 
 
-# latency --dump-config
-based on Xenomai/cobalt v3.0.4 -- #90a7ab2 (2017-05-16 11:12:57 +0200)
-CONFIG_MMU=3D1
-CONFIG_XENO_BUILD_ARGS=3D" '--host=3Darm-linux-gnueabihf' '--prefix=3D/usr'
-'--includedir=3D/usr/include/xenomai' '--disable-doc-install'
-'--disable-smp' '--disable-tls' '--disable-debug'
-'--disable-valgrind-client' '--with-core=3Dcobalt' '--enable-pshared'
-'host_alias=3Darm-linux-gnueabihf'"
-CONFIG_XENO_BUILD_STRING=3D"x86_64-unknown-linux-gnu"
-CONFIG_XENO_COBALT=3D1
-...
+You want to use a common namespace shared between several processes.
 
-> Given that SMP is not enabled in the kernel, I would expect the latter to=
- be the correct one and possibly the former to fail.
+A bit of background first: Xenomai 3 application namespaces are
+implemented by sessions. In x3 parlance, a session is a set of one or
+more processes which cooperate, forming an application. In order for
+this cooperation to be possible, all processes which belong to a give
+session share the same central/main heap. The ability to create such
+heaps is obtained by passing --enable-pshared. With this feature, a
+real-time resource (such as a task) created by one process can be
+referred to by any other process from the same session.
 
-Running a SMP-capable application on a UP kernel is a non-issue, this
-just means that the application code is going to emit memory barriers
-uselessly in some cases. The opposite configuration is a problem though,
-which the cobalt core detects, i.e.
+By default, a process belongs to its own - anonymous - session, unless
+the --session argument is given [1], in which case it is assigned to the
+session specified. So if you want several processes to share objects
+such as tasks, you need to mention --session=<some-session-label> on the
+command line for both. Otherwise, each process would have its own
+separate namespace, and binding requests may fail unless the object you
+want to bind to was actually created by the calling process.
 
-   0"000.000| BUG in __xenomai_init(): [main] running non-SMP libraries
-on SMP kernel?
-              build with --enable-smp or disable check with --no-sanity
+e.g.:
 
->
-> Note that /usr/xenomai/bin/xeno-test and /usr/xenomai/bin/latency work ok=
- in both cases.
->
+$ ./process_A --session=foo
+$ ./process_B --session=foo
 
-You may want to check with demo/altency, which is the strict equivalent
-of the latency test written with the legacy alchemy API.
+> A side note: it seems that calling `rt_task_bind()` causes a switch to secondary mode, as I see the MSW counter increasing for every call to it.
+> 
 
---
+This should not be the case in x3; you may want to run the app over gdb,
+enabling the T_WARNSW flag at task creation, so that a signal will be
+sent to the process when a mode switch happens. Inspecting the stack
+backtrace should give us a hint about the code causing such switch.
+
+[1]
+http://xenomai.org/2015/05/application-setup-and-init/#Standard_Xenomai_command_line_options
+
+-- 
 Philippe.
 
