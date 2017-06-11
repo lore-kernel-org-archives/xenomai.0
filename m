@@ -1,14 +1,13 @@
-References: <DB6PR0701MB2456BC2070DB561D1D3EF577B5CC0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+References: <DB6PR0701MB2456A3DFDDAD4683EA2786D8B5CC0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <890b7c4a-9da6-877f-692b-26434ffc1665@xenomai.org>
-Date: Sun, 11 Jun 2017 16:38:51 +0200
+Message-ID: <b7dc2010-e046-6482-c510-830abd1814fd@xenomai.org>
+Date: Sun, 11 Jun 2017 17:05:00 +0200
 MIME-Version: 1.0
-In-Reply-To: <DB6PR0701MB2456BC2070DB561D1D3EF577B5CC0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+In-Reply-To: <DB6PR0701MB2456A3DFDDAD4683EA2786D8B5CC0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] What is the main() thread before you call
- rt_task_shadow()?
+Subject: Re: [Xenomai] Difference bewteen demo/altency and bin/latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,36 +18,35 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Giulio Moro <g.moro@qmul.ac.uk>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 06/11/2017 04:18 AM, Giulio Moro wrote:
-> Giulio Moro wrote:
->>> A side note: it seems that calling `rt_task_bind()` causes a switch to secondary mode, as I see the MSW counter increasing for every call to it.
->>>
+On 06/11/2017 05:02 AM, Giulio Moro wrote:
+> As I understand it, bin/latency is based on the posix API and demo/altency is based on the Alchemy API. On the BeagleBone black, the former always returns results which are about 10us better than the latter.
 > 
-> Philippe Gerum wrote:
->> This should not be the case in x3; you may want to run the app over gdb,
->> enabling the T_WARNSW flag at task creation, so that a signal will be
->> sent to the process when a mode switch happens. Inspecting the stack
->> backtrace should give us a hint about the code causing such switch.
-> 
-> as it turns out, if I call rt_task_shadow() before the loop where I repeatedly call rt_task_bind(), then the mode switches go away.
-> 
-> The description of the --main-prio command line option (http://xenomai.org/2015/05/application-setup-and-init/#Standard_Xenomai_command_line_options) says
-> "When xenomai_init() is called for bootstrapping the real-time services for the current process, the calling context is automatically turned into a Xenomai thread, managed by the Cobalt kernel."
-> I assumed that this would be equivalent to a call to `rt_task_shadow()` and that such an explicit call is not needed, given that the process already shows up in /proc/xenomai/sched/stat.
-> Instead, as I found out above, this is not the case.
-> 
-> So my question is: what kind of task is the main thread after bootstrap (and thus after the call to xenomai_init()), but before the call to rt_task_shadow()?
+> Is there any other difference between the two tests? Why do I get different performance? Is the Posix API more performant than the Alchemy one?
 
-By default, this is a task bound to the Cobalt core with a zero priority
-(SCHED_OTHER,0), which means that it can request services to Cobalt, but
-does not compete with actual real-time threads. As a consequence, such
-thread will switch to primary mode when issuing a Cobalt service which
-requires it (such as one called by rt_task_bind()), then switch back to
-secondary mode automatically when leaving the Cobalt syscall.
+With Xenomai 3, all non-POSIX APIs are built over the POSIX one, on top
+of the copperplate library which provides the RTOS abstractions and
+building blocks they need, i.e.
 
-This explains the MSW increase when calling rt_task_bind() over the
-default main() thread, which stops when making it a real-time thread via
-rt_task_shadow().
+libcobalt(posix) <- libcopperplate <- lib{alchemy, psos, vxworks}
+
+So, a pure POSIX app only needs libcobalt, while non-POSIX APIs need
+libcopperplate to mediate between them and the Cobalt core in kernel space.
+
+This additional indirection allows building richer APIs than POSIX,
+converting proprietary RTOS "window-dressings" to POSIX seamlessly, and
+making the dual-kernel / native Linux issue transparent, but it also
+induces the overhead you are observing. This indirection did not exist
+with Xenomai 2, where each API had its own set of system calls directly
+interfaced to the kernel (at the expense of significant maintenance issues).
+
+Generally speaking, although Alchemy will be maintained in Xenomai 3, I
+would recommend to go for the POSIX API for new developments, unless one
+wants to port legacy VxWorks/pSOS code of course.
+
+The reasoning behind is that building a dedicated service library which
+provides richer abstractions directly on top of POSIX - such as the
+RT_EVENT logic - makes more sense than implementing a full-fledged API
+for this.
 
 -- 
 Philippe.
