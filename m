@@ -1,13 +1,15 @@
-References: <DB6PR0701MB2456A3DFDDAD4683EA2786D8B5CC0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+References: <DB6PR0701MB24569CBFFA2BDB4E246360C8B5CF0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+ <0403698a-861b-8ca3-6e7a-3582b6a84a3b@xenomai.org>
+ <DB6PR0701MB2456F0521C5DE7B8D4297F24B5CC0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <b7dc2010-e046-6482-c510-830abd1814fd@xenomai.org>
-Date: Sun, 11 Jun 2017 17:05:00 +0200
+Message-ID: <7d82cdc5-22a6-66ee-5c23-7a626b5b5ef6@xenomai.org>
+Date: Sun, 11 Jun 2017 17:47:35 +0200
 MIME-Version: 1.0
-In-Reply-To: <DB6PR0701MB2456A3DFDDAD4683EA2786D8B5CC0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+In-Reply-To: <DB6PR0701MB2456F0521C5DE7B8D4297F24B5CC0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Difference bewteen demo/altency and bin/latency
+Subject: Re: [Xenomai] rt_taks_bind() returns -EAGAIN for existing task
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,35 +20,31 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Giulio Moro <g.moro@qmul.ac.uk>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 06/11/2017 05:02 AM, Giulio Moro wrote:
-> As I understand it, bin/latency is based on the posix API and demo/altency is based on the Alchemy API. On the BeagleBone black, the former always returns results which are about 10us better than the latter.
+On 06/11/2017 04:11 AM, Giulio Moro wrote:
+> Great info, it would be good to integrate these in the main docs somewhere. I had been at that URL a few times already, but the brief description of "session" given there is really not as complete as the one you just gave. I now see that "session" is mentioned twice in the task API documentation:
+> The task documentation, for instance, mhttp://xenomai.org/documentation/xenomai-3/html/xeno3prm/group__alchemy__task.html
+> Unfortunately, someone finding it there would struggle to link it back to the command line options page and to put it in a wider context.
 > 
-> Is there any other difference between the two tests? Why do I get different performance? Is the Posix API more performant than the Alchemy one?
+> Perhaps a solution would be to add an "API tag" to rt_task_shadow, rt_task_create, rt_task_bind and all the other relevant functions (I assume there must be something also, e.g.: under pipe/queue/message/semaphore?) and add your description here http://xenomai.org/documentation/xenomai-3/html/xeno3prm/api-tags.html ?
+> 
 
-With Xenomai 3, all non-POSIX APIs are built over the POSIX one, on top
-of the copperplate library which provides the RTOS abstractions and
-building blocks they need, i.e.
+Yes, that would make sense.
 
-libcobalt(posix) <- libcopperplate <- lib{alchemy, psos, vxworks}
+There is a lot to do for better documenting Xenomai, especially
+introducing a user guide and application notes. Today, most of the
+existing documentation we have belongs to the reference manual category,
+which is clearly not enough to bring newcomers up to speed for working
+with Xenomai.
 
-So, a pure POSIX app only needs libcobalt, while non-POSIX APIs need
-libcopperplate to mediate between them and the Cobalt core in kernel space.
+Technically speaking, a painful issue is that Doxygen is not very handy
+to work with, when it comes to organizing the information - not to speak
+of its parser which tend to drive people nuts when trying to figure out
+the location of a deeply buried glitch in some obscure syntax.
 
-This additional indirection allows building richer APIs than POSIX,
-converting proprietary RTOS "window-dressings" to POSIX seamlessly, and
-making the dual-kernel / native Linux issue transparent, but it also
-induces the overhead you are observing. This indirection did not exist
-with Xenomai 2, where each API had its own set of system calls directly
-interfaced to the kernel (at the expense of significant maintenance issues).
-
-Generally speaking, although Alchemy will be maintained in Xenomai 3, I
-would recommend to go for the POSIX API for new developments, unless one
-wants to port legacy VxWorks/pSOS code of course.
-
-The reasoning behind is that building a dedicated service library which
-provides richer abstractions directly on top of POSIX - such as the
-RT_EVENT logic - makes more sense than implementing a full-fledged API
-for this.
+The documentation on the website is fortunately based on asciidoc, but
+there is not much there yet. Time which could be devoted to this subject
+is too short, when other duties have to be carried out as well. Usual
+dilemma, usual outcome so far.
 
 -- 
 Philippe.
