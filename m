@@ -1,13 +1,16 @@
-References: <558D5FAD.3060003@siemens.com> <20170307193444.79df74cd@md1em3qc>
- <507e7a5d-284f-7098-7736-4644c4cd8b87@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ffae09d9-b277-24a7-8fd6-809e13ef8ba6@siemens.com>
-Date: Wed, 8 Mar 2017 12:25:26 +0100
+From: Giulio Moro <g.moro@qmul.ac.uk>
+Date: Sun, 11 Jun 2017 15:58:34 +0000
+Message-ID: <DB6PR0701MB24568E5EFFE03412FE5AC35AB5CC0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+References: <DB6PR0701MB24569CBFFA2BDB4E246360C8B5CF0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+ <0403698a-861b-8ca3-6e7a-3582b6a84a3b@xenomai.org>
+ <DB6PR0701MB2456F0521C5DE7B8D4297F24B5CC0@DB6PR0701MB2456.eurprd07.prod.outlook.com>,
+ <7d82cdc5-22a6-66ee-5c23-7a626b5b5ef6@xenomai.org>
+In-Reply-To: <7d82cdc5-22a6-66ee-5c23-7a626b5b5ef6@xenomai.org>
+Content-Language: en-GB
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <507e7a5d-284f-7098-7736-4644c4cd8b87@xenomai.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Heads up: some race condition fixes for Xenomai 3
+Subject: Re: [Xenomai] rt_taks_bind() returns -EAGAIN for existing task
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,62 +19,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Henning Schild <henning.schild@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2017-03-08 09:54, Philippe Gerum wrote:
-> On 03/07/2017 07:34 PM, Henning Schild wrote:
->> Am Fri, 26 Jun 2015 16:20:29 +0200
->> schrieb Jan Kiszka <jan.kiszka@siemens.com>:
->>
->>> Hi,
->>>
->>> just pushed 3 patches to git.xenomai.org/xenomai-jki.git for-forge
->>> that are supposed to fix race conditions while manipulating
->>> xnthread::state and info (both need to be nklock-protected). Please
->>> review if finding and fixes make sense.
->>>
->>>       cobalt/kernel: Fix locking for xnthread info manipulations
->>>       cobalt/kernel: Fix locking for setting XNFPU
->>>       cobalt/kernel: Rework thread debugging helpers
->>>
->>> Maybe some of the issues also exist in Xenomai 2, didn't check yet.
->>
->> After looking deeper into the the mysterious -EINTR i asked about a few
->> days ago we now got a trace that suggests something is going wrong. Jan
->> remembered the race in thread flag manipulation he found in Xeno3.
->>
->> I did not do a thorough code analysis yet but instead just put two
->> asserts into xnthread_set_info and xnthread_clear_info.
->> 1. !xnlock_is_owner(&nklock)
->> 2. xnpod_current_thread() != thread_to_update
->>
->> Both cases do happen. The flags are manipulated without holding the
->> lock and the flags are manipulated from another context. I guess that
->> suggests that the race found in xenomai3 is also in xenomai2.
->>
-> 
-> I would not compare both code bases. Much rewrite took place from the
-> legacy nucleus to the cobalt core.
-> 
-> I have reviewed every single statement involving set/clear info bits in
-> 3.x and I can't seem to find any unlocked access for those. Any
-> specifics about the exact locations where your debug statements trigger?
-> 
+> Time which could be devoted to this subject
+> is too short, when other duties have to be carried out as well. Usual
+> dilemma, usual outcome so far.
 
-One quickly discoverable example is in xnshadow_harden
-(xnthread_set/clear_info(curr, XNATOMIC) without nklock protection). And
-Henning also confirmed that the info field is not used only
-thread-locally, though I don't have his finding in mind. I could
-imagine, though, that do_sigwake_event would make a good one.
+Anything I and the community (us) can do to help with this?
+Pull requests with documentation amendments?
 
-So I'm pretty sure we have the same issue in Xenomai 2 as in 3. Too bad
-I didn't follow up on the backport topic back then. Do you see any
-reasons why that could be complicated?
+________________________________________
+From: Philippe Gerum <rpm@xenomai.org>
+Sent: 11 June 2017 16:47
+To: Giulio Moro; xenomai@xenomai.org
+Subject: Re: [Xenomai] rt_taks_bind() returns -EAGAIN for existing task
 
-Jan
+On 06/11/2017 04:11 AM, Giulio Moro wrote:
+> Great info, it would be good to integrate these in the main docs somewher=
+e. I had been at that URL a few times already, but the brief description of=
+ "session" given there is really not as complete as the one you just gave. =
+I now see that "session" is mentioned twice in the task API documentation:
+> The task documentation, for instance, mhttp://xenomai.org/documentation/x=
+enomai-3/html/xeno3prm/group__alchemy__task.html
+> Unfortunately, someone finding it there would struggle to link it back to=
+ the command line options page and to put it in a wider context.
+>
+> Perhaps a solution would be to add an "API tag" to rt_task_shadow, rt_tas=
+k_create, rt_task_bind and all the other relevant functions (I assume there=
+ must be something also, e.g.: under pipe/queue/message/semaphore?) and add=
+ your description here http://xenomai.org/documentation/xenomai-3/html/xeno=
+3prm/api-tags.html ?
+>
 
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+Yes, that would make sense.
+
+There is a lot to do for better documenting Xenomai, especially
+introducing a user guide and application notes. Today, most of the
+existing documentation we have belongs to the reference manual category,
+which is clearly not enough to bring newcomers up to speed for working
+with Xenomai.
+
+Technically speaking, a painful issue is that Doxygen is not very handy
+to work with, when it comes to organizing the information - not to speak
+of its parser which tend to drive people nuts when trying to figure out
+the location of a deeply buried glitch in some obscure syntax.
+
+The documentation on the website is fortunately based on asciidoc, but
+there is not much there yet. Time which could be devoted to this subject
+is too short, when other duties have to be carried out as well. Usual
+dilemma, usual outcome so far.
+
+--
+Philippe.
 
