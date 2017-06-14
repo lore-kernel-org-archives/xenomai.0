@@ -1,17 +1,20 @@
-From: Simone Zucchi <simone.zucchi@utpvision.it>
-Date: Mon, 31 Jul 2017 09:06:10 +0000
-Message-ID: <8104d884-7a76-2dc8-3e24-0fededa78390@utpvision.it>
-References: <50d70e8f-3a85-456f-8eae-ae2616ba88b1@utpvision.it>
- <DB6PR0701MB2456FF86319FA5C6E4F5A005B5B90@DB6PR0701MB2456.eurprd07.prod.outlook.com>
- <0a83d5b2-2cf2-fc19-6a79-3c85f4105a51@utpvision.it>
- <DB6PR0701MB2456927C81A5688BA1DEBFB3B5BE0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
-In-Reply-To: <DB6PR0701MB2456927C81A5688BA1DEBFB3B5BE0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+From: Nitin Kulkarni <nitink@kth.se>
+Date: Wed, 14 Jun 2017 12:57:00 +0000
+Message-ID: <1497445019861.76883@kth.se>
+References: <mailman.117.1496166485.4225.xenomai@xenomai.org>
+ <1496167354451.78382@kth.se>
+ <e1ed397b-c902-7b7d-5d1c-e78d9c5f8bf0@xenomai.org>
+ <1496226896420.15161@kth.se>
+ <78c2df60-f9d8-ff4e-a53d-1b64e4af5c4a@xenomai.org>
+ <1497222185664.65276@kth.se> <1497265336521.90775@kth.se>,
+ <af63a95f-4cb0-508c-7939-eea5b2f3c62d@xenomai.org>
+In-Reply-To: <af63a95f-4cb0-508c-7939-eea5b2f3c62d@xenomai.org>
 Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <60C31F9D5D4EBD40BEBBDC9559633D81@utpvision.local>
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Xenomai 2->3: gcc/makefile wrong include paths
+Subject: Re: [Xenomai] Problem with gpio interrupts for xenomai3 on Intel
+ joule
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,234 +23,523 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Giulio Moro <g.moro@qmul.ac.uk>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-R3JlYXQsIHRoYXQncyB0aGUgY2FzZSAtbm9zdGRpbmMuIFdoYXRldmVyLiBXaWxsIGNoZWNrIHdo
-ZXJlIHRoYXQgDQpvcHRpb25zIHBvcHMgaW4uDQpUaGFua3MNCg0KDQpPbiAwNy8yNy8yMDE3IDA2
-OjM2IFBNLCBHaXVsaW8gTW9ybyB3cm90ZToNCj4+IEkndmUgb2J0YWluZWQgdGhlIChleHBlY3Rl
-ZCkgcmVzdWx0OiBubyBzdGFuZGFyZCBpbmNsdWRlIHBhdGggaXMgaW5jbHVkZWQuDQo+IEdvb2Qs
-IGNhbiB5b3UgZm9yY2UgaXQgdG8gaW5jbHVkZSB0aGVtIGFkZGluZyB0aGUgYXBwcm9wcmlhdGUg
-YC1JYCAgdG8gQ0ZMQUdTPw0KPiBBbHNvLCBpdCBtYXkgYmUgdGhhdCB5b3VyIGNvbXBpbGVyIGlz
-IGludm9rZWQgd2l0aCBgLW5vc3RkaW5jYCwgd2hpY2ggcHJldmVudHMgaXQgZnJvbSB1c2luZyB0
-aGUgc3RhbmRhcmQgaW5jbHVkZSBwYXRocz8NCj4NCj4+IFNob3VsZCBJIGJlIGRvaW5nIHRoYXQg
-b3IgdGhlIGd1aWRlbGluZXMgYXJlIG9ic29sZXRlPw0KPiBSaWdodCBJIGZvcmdvdCBhYm91dCB0
-aGUgZ3VpZGVsaW5lcy4gSSB0aGluayB0aGV5IGFyZSBzdGlsbCB2YWxpZCwgYnV0IG5vdGUgdGhh
-dCBJIGFtIHByZXR0eSBuZXcgYXJvdW5kIGhlcmUuDQo+IFRoZSB3YXkgdGhlIHRleHQgb2YgeW91
-ciBtZXNzYWdlIHdhcyBmb3JtYXR0ZWQgdGhvdWdoIHByZXR0eQ0KPiBzdHJhbmdlLCBsaWtlDQo+
-IGJyZWFraW5nIGVhcmx5IHRvIGEgbmV3IGxpbmUNCj4gZm9yDQo+IG5vIGFwcGFyZW50IHJlYXNv
-biwgbGlrZToNCj4+ICAgICAgICBDb25maWd1cmVkIHdpdGg6IC4uL3NyYy9jb25maWd1cmUgLXYg
-LS13aXRoLXBrZ3ZlcnNpb249J0RlYmlhbg0KPj4gNi4zLjAtMTgnIC0tdw0KPj4gaXRoLWJ1Z3Vy
-bD1maWxlOi8vL3Vzci9zaGFyZS9kb2MvZ2NjLTYvUkVBRE1FLkJ1Z3MNCj4+IC0tZW5hYmxlLWxh
-bmd1YWdlcz1jLGFkYSxjKyssDQo+PiBqYXZhLGdvLGQsZm9ydHJhbixvYmpjLG9iai1jKysgLS1w
-cmVmaXg9L3VzciAtLXByb2dyYW0tc3VmZml4PS02DQo+PiAtLXByb2dyYW0tcHJlZmkNCj4+IHg9
-eDg2XzY0LWxpbnV4LWdudS0gLS1lbmFibGUtc2hhcmVkIC0tZW5hYmxlLWxpbmtlci1idWlsZC1p
-ZA0KPj4gLS1saWJleGVjZGlyPS91c3IvbA0KPj4gaWIgLS13aXRob3V0LWluY2x1ZGVkLWdldHRl
-eHQgLS1lbmFibGUtdGhyZWFkcz1wb3NpeCAtLWxpYmRpcj0vdXNyL2xpYg0KPiBJdCdzIGJyZWFr
-aW5nIHdvcmRzIG9uIG5ld2xpbmVzLCBhbmQgaW4gdGhlIGNhc2Ugb2YgTWFrZWZpbGVzLCBoYXJk
-IGxpbmUgYnJlYWtzIGFjdHVhbGx5IGJyZWFrIHRoZSBzeW50YXguDQo+DQo+IEdpdWxpbw0KPiBf
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo+IEZyb206IFNpbW9uZSBa
-dWNjaGkgPHNpbW9uZS56dWNjaGlAdXRwdmlzaW9uLml0Pg0KPiBTZW50OiAyNiBKdWx5IDIwMTcg
-MTU6MTQNCj4gVG86IEdpdWxpbyBNb3JvOyB4ZW5vbWFpQHhlbm9tYWkub3JnDQo+IFN1YmplY3Q6
-IFJlOiBYZW5vbWFpIDItPjM6IGdjYy9tYWtlZmlsZSB3cm9uZyBpbmNsdWRlIHBhdGhzDQo+DQo+
-IEhlbGxvIEdpdWxpbywNCj4gSSd2ZSBvYnRhaW5lZCB0aGUgKGV4cGVjdGVkKSByZXN1bHQ6IG5v
-IHN0YW5kYXJkIGluY2x1ZGUgcGF0aCBpcyBpbmNsdWRlZC4NCj4gQmVmb3JlIHBvc3RpbmcgdGhh
-dCBJJ2QgbGlrZSB0byBoYXZlIHByb3BlciBndWlkZWxpbmVzIHRvIHBvc3Qgb250byB0aGlzDQo+
-IG1haWxpbmcgbGlzdC4NCj4gVGhlIHNpdGUgc2F5czoNCj4NCj4gICAgICAgUGxlYXNlIG5vIHRv
-cCBwb3N0aW5nDQo+ICAgICAgIFBsZWFzZSB3cmFwIGxpbmVzIGF0IDc1IGNoYXJhY3RlcnMNCj4g
-ICAgICAgUGxlYXNlIG5vIEhUTUwsIG9ubHkgcGxhaW4gdGV4dCBlLW1haWxzLiBFdmVuIHRoZSBt
-b3N0IGhvcGVsZXNzDQo+IE1VQXMgaGF2ZSBhIHN3aXRjaCB0byB0dXJuIG9mZiBIVE1MIGluIG1l
-c3NhZ2UgY29tcG9zaXRpb24sIHBsZWFzZSB1c2UgaXQuDQo+ICAgICAgIFBsZWFzZSBETyBOT1Qg
-U0hPVVQhISEhISEgaW4gZS1tYWlscywgcGFydGljdWxhcmx5IHdoZW4gYXNraW5nIGZvcg0KPiBo
-ZWxwLiBUaGlzIHRlbmRzIHRvIG1ha2UgcGVvcGxlIGF3YWtlIGFuZCBncnVtcHkuDQo+ICAgICAg
-IFBsZWFzZSBkbyBub3Qgc2VuZCBzY3JlZW5zaG90cyB3aGVuIHBsYWluIHRleHQgcGFzdGVkIGlu
-dG8geW91cg0KPiBtZXNzYWdlIHdvdWxkIHN1ZmZpY2UuDQo+DQo+IEFjdHVhbGx5IEkndmUgbWFk
-ZSBhIG1pc3Rha2UgYW5kIHdyYXBwZWQgdGhlIGxhc3QgbWFpbCB0byA4MCBjaGFycy4NCj4gU2hv
-dWxkIEkgYmUgZG9pbmcgdGhhdCBvciB0aGUgZ3VpZGVsaW5lcyBhcmUgb2Jzb2xldGU/DQo+DQo+
-IFRoYW5rcywNCj4NCj4gU2ltb25lDQo+DQo+IE9uIDA3LzI2LzIwMTcgMDE6MjAgUE0sIEdpdWxp
-byBNb3JvIHdyb3RlOg0KPj4+IEl0IHNlZW1zIHRoYXQgZ2NjIGRvZXNuJ3QgaW5jbHVkZSBzdGFu
-ZGFyZCBpbmNsdWRlIHBhdGhzDQo+PiBJIHdvdWxkIHN1Z2dlc3QgeW91IGFkZCBgLS12ZXJib3Nl
-YCB0byB5b3VyIENGTEFHUyBzbyB5b3Ugd2lsbCBzZWUgZXhwbGljaXRseSB3aGF0IGlzIGluIHRo
-ZSBzZWFyY2ggcGF0aCBmb3IgdGhhdCBvbmUgaW52b2NhdGlvbiB0aGF0IGZhaWxzLg0KPj4NCj4+
-IEdpdWxpbw0KPj4NCj4+IFBTOiBub3RlIHRoYXQgdGhlIHdlaXJkIGxpbmUgd3JhcHBpbmcgb2Yg
-eW91ciBtZXNzYWdlIChwb3NzaWJseSBkdWUgdG8geW91ciBlbWFpbCBjbGllbnQgb3IgdGVybWlh
-bmwgb3IgYm90aD8pIG1ha2VzIHlvdXIgbWVzc2FnZSBhbmQgdGhlIGVycm9yIGxvZyBkaWZmaWN1
-bHQgdG8gcGFyc2UNCj4+DQo+Pg0KPj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fXw0KPj4gRnJvbTogWGVub21haSA8eGVub21haS1ib3VuY2VzQHhlbm9tYWkub3JnPiBv
-biBiZWhhbGYgb2YgU2ltb25lIFp1Y2NoaSA8c2ltb25lLnp1Y2NoaUB1dHB2aXNpb24uaXQ+DQo+
-PiBTZW50OiAyNiBKdWx5IDIwMTcgMTE6NDkNCj4+IFRvOiB4ZW5vbWFpQHhlbm9tYWkub3JnDQo+
-PiBTdWJqZWN0OiBbWGVub21haV0gWGVub21haSAyLT4zOiBnY2MvbWFrZWZpbGUgd3JvbmcgaW5j
-bHVkZSBwYXRocw0KPj4NCj4+IEhlbGxvIGV2ZXJ5Ym9keSwNCj4+IHRoYW5rcyB0byB5b3VyIHBy
-ZXZpb3VzIGhpbnRzIEkndmUgc3VjY2VzZnVsbHkgZ290IENvYmFsdCB3b3JraW5nLg0KPj4gSSdt
-IHRyeWluZyB0byBjb21waWxlIHNvbWUgKHByZXZpb3VzbHkgY29kZWQgZm9yIFhlbm9tYWkgMikg
-Y29kZS4NCj4+IEknbSBmYWNpbmcgYW4gb2RkIGlzc3VlIHdoaWNoIEkgZG9uJ3QgdGhpbmsgaXMg
-cmVsYXRlZCB0byBYZW5vbWFpIGJ1dA0KPj4gcmF0aGVyIHRvDQo+PiB0aGUgd2F5IG15IE1ha2Vm
-aWxlIGlzIGJ1aWx0Lg0KPj4gSSdkIGJlIHJlYWwgZ3JhdGVmdWwgdG8gYW55Ym9keSBvdXQgdGhl
-cmUgd2lsbGluZyB0byBoZWxwIG1lIGJlY2F1c2UgSSdtDQo+PiBubyBtYWtlDQo+PiBmaWxlIGV4
-cGVydCBhdCBhbGwuDQo+Pg0KPj4gSXQgc2VlbXMgdGhhdCBnY2MgZG9lc24ndCBpbmNsdWRlIHN0
-YW5kYXJkIGluY2x1ZGUgcGF0aHMgZm9yIG5vIHJlYXNvbnMNCj4+IGFwcGVyYW50DQo+PiBseSB0
-aHJvdWdoIG15IG1ha2VmaWxlLg0KPj4gSSdtIHdvcmtpbmcgb24gRGViaWFuIDkuDQo+PiBIZXJl
-J3MgdGhlIGluY2x1ZGUgcGF0aHMgb2YgZ2NjOg0KPj4NCj4+ICAgICAgICBnY2MgLXhjIC1FIC12
-IC0NCj4+ICAgICAgICBVc2luZyBidWlsdC1pbiBzcGVjcy4NCj4+ICAgICAgICBDT0xMRUNUX0dD
-Qz1nY2MNCj4+ICAgICAgICBUYXJnZXQ6IHg4Nl82NC1saW51eC1nbnUNCj4+ICAgICAgICBDb25m
-aWd1cmVkIHdpdGg6IC4uL3NyYy9jb25maWd1cmUgLXYgLS13aXRoLXBrZ3ZlcnNpb249J0RlYmlh
-bg0KPj4gNi4zLjAtMTgnIC0tdw0KPj4gaXRoLWJ1Z3VybD1maWxlOi8vL3Vzci9zaGFyZS9kb2Mv
-Z2NjLTYvUkVBRE1FLkJ1Z3MNCj4+IC0tZW5hYmxlLWxhbmd1YWdlcz1jLGFkYSxjKyssDQo+PiBq
-YXZhLGdvLGQsZm9ydHJhbixvYmpjLG9iai1jKysgLS1wcmVmaXg9L3VzciAtLXByb2dyYW0tc3Vm
-Zml4PS02DQo+PiAtLXByb2dyYW0tcHJlZmkNCj4+IHg9eDg2XzY0LWxpbnV4LWdudS0gLS1lbmFi
-bGUtc2hhcmVkIC0tZW5hYmxlLWxpbmtlci1idWlsZC1pZA0KPj4gLS1saWJleGVjZGlyPS91c3Iv
-bA0KPj4gaWIgLS13aXRob3V0LWluY2x1ZGVkLWdldHRleHQgLS1lbmFibGUtdGhyZWFkcz1wb3Np
-eCAtLWxpYmRpcj0vdXNyL2xpYg0KPj4gLS1lbmFibGUtDQo+PiBubHMgLS13aXRoLXN5c3Jvb3Q9
-LyAtLWVuYWJsZS1jbG9jYWxlPWdudSAtLWVuYWJsZS1saWJzdGRjeHgtZGVidWcNCj4+IC0tZW5h
-YmxlLWxpYnMNCj4+IHRkY3h4LXRpbWU9eWVzIC0td2l0aC1kZWZhdWx0LWxpYnN0ZGN4eC1hYmk9
-bmV3DQo+PiAtLWVuYWJsZS1nbnUtdW5pcXVlLW9iamVjdCAtLWRpcw0KPj4gYWJsZS12dGFibGUt
-dmVyaWZ5IC0tZW5hYmxlLWxpYm1weCAtLWVuYWJsZS1wbHVnaW4gLS1lbmFibGUtZGVmYXVsdC1w
-aWUNCj4+IC0td2l0aC1zDQo+PiB5c3RlbS16bGliIC0tZGlzYWJsZS1icm93c2VyLXBsdWdpbiAt
-LWVuYWJsZS1qYXZhLWF3dD1ndGsNCj4+IC0tZW5hYmxlLWd0ay1jYWlybyAtLXcNCj4+IGl0aC1q
-YXZhLWhvbWU9L3Vzci9saWIvanZtL2phdmEtMS41LjAtZ2NqLTYtYW1kNjQvanJlIC0tZW5hYmxl
-LWphdmEtaG9tZQ0KPj4gLS13aXRoLQ0KPj4ganZtLXJvb3QtZGlyPS91c3IvbGliL2p2bS9qYXZh
-LTEuNS4wLWdjai02LWFtZDY0DQo+PiAtLXdpdGgtanZtLWphci1kaXI9L3Vzci9saWIvanZtDQo+
-PiAtZXhwb3J0cy9qYXZhLTEuNS4wLWdjai02LWFtZDY0IC0td2l0aC1hcmNoLWRpcmVjdG9yeT1h
-bWQ2NA0KPj4gLS13aXRoLWVjai1qYXI9L3Vzci8NCj4+IHNoYXJlL2phdmEvZWNsaXBzZS1lY2ou
-amFyIC0td2l0aC10YXJnZXQtc3lzdGVtLXpsaWINCj4+IC0tZW5hYmxlLW9iamMtZ2M9YXV0byAt
-LWVuYQ0KPj4gYmxlLW11bHRpYXJjaCAtLXdpdGgtYXJjaC0zMj1pNjg2IC0td2l0aC1hYmk9bTY0
-DQo+PiAtLXdpdGgtbXVsdGlsaWItbGlzdD1tMzIsbTY0LG14DQo+PiAzMiAtLWVuYWJsZS1tdWx0
-aWxpYiAtLXdpdGgtdHVuZT1nZW5lcmljIC0tZW5hYmxlLWNoZWNraW5nPXJlbGVhc2UNCj4+IC0t
-YnVpbGQ9eDg2XzYNCj4+IDQtbGludXgtZ251IC0taG9zdD14ODZfNjQtbGludXgtZ251IC0tdGFy
-Z2V0PXg4Nl82NC1saW51eC1nbnUNCj4+ICAgICAgICBUaHJlYWQgbW9kZWw6IHBvc2l4DQo+PiAg
-ICAgICAgZ2NjIHZlcnNpb24gNi4zLjAgMjAxNzA1MTYgKERlYmlhbiA2LjMuMC0xOCkNCj4+ICAg
-ICAgICBDT0xMRUNUX0dDQ19PUFRJT05TPSctRScgJy12JyAnLW10dW5lPWdlbmVyaWMnICctbWFy
-Y2g9eDg2LTY0Jw0KPj4gICAgICAgICAvdXNyL2xpYi9nY2MveDg2XzY0LWxpbnV4LWdudS82L2Nj
-MSAtRSAtcXVpZXQgLXYgLWltdWx0aWFyY2gNCj4+IHg4Nl82NC1saW51eC1nDQo+PiBudSAtIC1t
-dHVuZT1nZW5lcmljIC1tYXJjaD14ODYtNjQNCj4+ICAgICAgICBpZ25vcmluZyBub25leGlzdGVu
-dCBkaXJlY3RvcnkgIi91c3IvbG9jYWwvaW5jbHVkZS94ODZfNjQtbGludXgtZ251Ig0KPj4gICAg
-ICAgIGlnbm9yaW5nIG5vbmV4aXN0ZW50IGRpcmVjdG9yeQ0KPj4gIi91c3IvbGliL2djYy94ODZf
-NjQtbGludXgtZ251LzYvLi4vLi4vLi4vLi4vDQo+PiB4ODZfNjQtbGludXgtZ251L2luY2x1ZGUi
-DQo+PiAgICAgICAgI2luY2x1ZGUgIi4uLiIgc2VhcmNoIHN0YXJ0cyBoZXJlOg0KPj4gICAgICAg
-ICNpbmNsdWRlIDwuLi4+IHNlYXJjaCBzdGFydHMgaGVyZToNCj4+ICAgICAgICAgL3Vzci9saWIv
-Z2NjL3g4Nl82NC1saW51eC1nbnUvNi9pbmNsdWRlDQo+PiAgICAgICAgIC91c3IvbG9jYWwvaW5j
-bHVkZQ0KPj4gICAgICAgICAvdXNyL2xpYi9nY2MveDg2XzY0LWxpbnV4LWdudS82L2luY2x1ZGUt
-Zml4ZWQNCj4+ICAgICAgICAgL3Vzci9pbmNsdWRlL3g4Nl82NC1saW51eC1nbnUNCj4+ICAgICAg
-ICAgL3Vzci9pbmNsdWRlDQo+PiAgICAgICAgRW5kIG9mIHNlYXJjaCBsaXN0Lg0KPj4gICAgICAg
-ICMgMSAiPHN0ZGluPiINCj4+ICAgICAgICAjIDEgIjxidWlsdC1pbj4iDQo+PiAgICAgICAgIyAx
-ICI8Y29tbWFuZC1saW5lPiINCj4+ICAgICAgICAjIDMxICI8Y29tbWFuZC1saW5lPiINCj4+ICAg
-ICAgICAjIDEgIi91c3IvaW5jbHVkZS9zdGRjLXByZWRlZi5oIiAxIDMgNA0KPj4gICAgICAgICMg
-MzIgIjxjb21tYW5kLWxpbmU+IiAyDQo+PiAgICAgICAgIyAxICI8c3RkaW4+Ig0KPj4gQ09NUElM
-RVJfUEFUSD0vdXNyL2xpYi9nY2MveDg2XzY0LWxpbnV4LWdudS82LzovdXNyL2xpYi9nY2MveDg2
-XzY0LWxpbnV4LWdudQ0KPj4gLzYvOi91c3IvbGliL2djYy94ODZfNjQtbGludXgtZ251LzovdXNy
-L2xpYi9nY2MveDg2XzY0LWxpbnV4LWdudS82LzovdXNyL2xpYi9nY2MNCj4+IC94ODZfNjQtbGlu
-dXgtZ251Lw0KPj4gTElCUkFSWV9QQVRIPS91c3IvbGliL2djYy94ODZfNjQtbGludXgtZ251LzYv
-Oi91c3IvbGliL2djYy94ODZfNjQtbGludXgtZ251Lw0KPj4gNi8uLi8uLi8uLi94ODZfNjQtbGlu
-dXgtZ251LzovdXNyL2xpYi9nY2MveDg2XzY0LWxpbnV4LWdudS82Ly4uLy4uLy4uLy4uL2xpYi86
-L2wNCj4+IGliL3g4Nl82NC1saW51eC1nbnUvOi9saWIvLi4vbGliLzovdXNyL2xpYi94ODZfNjQt
-bGludXgtZ251LzovdXNyL2xpYi8uLi9saWIvOi91DQo+PiBzci9saWIvZ2NjL3g4Nl82NC1saW51
-eC1nbnUvNi8uLi8uLi8uLi86L2xpYi86L3Vzci9saWIvDQo+PiAgICAgICAgQ09MTEVDVF9HQ0Nf
-T1BUSU9OUz0nLUUnICctdicgJy1tdHVuZT1nZW5lcmljJyAnLW1hcmNoPXg4Ni02NCcNCj4+DQo+
-Pg0KPj4gTXkgTWFrZWZpbGUgaXM6DQo+Pg0KPj4gICAgICAgICMjIyMjIyBDT05GSUdVUkFUSU9O
-ICMjIyMjIw0KPj4NCj4+ICAgICAgICAjIyMgTGlzdCBvZiBhcHBsaWNhdGlvbnMgdG8gYmUgYnVp
-bGQNCj4+ICAgICAgICBBUFBMSUNBVElPTlMgPQ0KPj4NCj4+ICAgICAgICAjIyMgTm90ZTogdG8g
-b3ZlcnJpZGUgdGhlIHNlYXJjaCBwYXRoIGZvciB0aGUgeGVuby1jb25maWcgc2NyaXB0LA0KPj4g
-dXNlICJtYWtlDQo+PiBYRU5PPS4uLiINCj4+DQo+Pg0KPj4gICAgICAgICMjIyBMaXN0IG9mIG1v
-ZHVsZXMgdG8gYmUgYnVpbGQNCj4+ICAgICAgICBNT0RVTEVTID0gbXlSdE1vZHVsZQ0KPj4NCj4+
-ICAgICAgICAjIyMgTm90ZTogdG8gb3ZlcnJpZGUgdGhlIGtlcm5lbCBzb3VyY2UgcGF0aCwgdXNl
-ICJtYWtlIEtTUkM9Li4uIg0KPj4NCj4+DQo+Pg0KPj4gICAgICAgICMjIyMjIyBVU0VSIFNQQUNF
-IEJVSUxEIChubyBjaGFuZ2UgcmVxdWlyZWQgbm9ybWFsbHkpICMjIyMjIw0KPj4gICAgICAgIGlm
-ZXEgKCQoS0VSTkVMUkVMRUFTRSksKQ0KPj4gICAgICAgIGlmbmVxICgkKEFQUExJQ0FUSU9OUyks
-KQ0KPj4NCj4+ICAgICAgICAjIyMgRGVmYXVsdCBYZW5vbWFpIGluc3RhbGxhdGlvbiBwYXRoDQo+
-PiAgICAgICAgWEVOTyA/PSAvdXNyL2xvY2FsL3hlbm9tYWkNCj4+DQo+PiAgICAgICAgWEVOT0NP
-TkZJRz0kKHNoZWxsIFBBVEg9JChYRU5PKTokKFhFTk8pL2JpbjokKFBBVEgpIHdoaWNoDQo+PiB4
-ZW5vLWNvbmZpZyAyPi9kZXYNCj4+IC9udWxsKQ0KPj4NCj4+ICAgICAgICAjIyMgU2FuaXR5IGNo
-ZWNrDQo+PiAgICAgICAgaWZlcSAoJChYRU5PQ09ORklHKSwpDQo+PiAgICAgICAgYWxsOjoNCj4+
-ICAgICAgICAgICAgQGVjaG8gIj4+PiBJbnZva2UgbWFrZSBsaWtlIHRoaXM6IFwibWFrZQ0KPj4g
-WEVOTz0vcGF0aC90by94ZW5vLWNvbmZpZ1wiIDw8PA0KPj4gIg0KPj4gICAgICAgICAgICBAZWNo
-bw0KPj4gICAgICAgIGVuZGlmDQo+Pg0KPj4NCj4+ICAgICAgICBDQz0kKHNoZWxsICQoWEVOT0NP
-TkZJRykgLS1jYykNCj4+DQo+PiAgICAgICAgQ0ZMQUdTPSQoc2hlbGwgJChYRU5PQ09ORklHKSAt
-LWFsY2hlbXkgLS1jZmxhZ3MpICQoTVlfQ0ZMQUdTKSAtSQ0KPj4gL3Vzci9sb2NhbC8NCj4+IHNy
-Yy9teVNvdXJjZS9pbmNsdWRlDQo+Pg0KPj4gICAgICAgIExERkxBR1M9JChzaGVsbCAkKFhFTk9D
-T05GSUcpIC0tYWxjaGVteSAtLWxkZmxhZ3MpICQoTVlfTERGTEFHUykNCj4+IC1sYWxjaGVteQ0K
-Pj4NCj4+ICAgICAgICAjIFRoaXMgaW5jbHVkZXMgdGhlIGxpYnJhcnkgcGF0aCBvZiBnaXZlbiBY
-ZW5vbWFpIGludG8gdGhlIGJpbmFyeQ0KPj4gdG8gbWFrZSBsaQ0KPj4gdmUNCj4+ICAgICAgICAj
-IGVhc2llciBmb3IgYmVnaW5uZXJzIGlmIFhlbm9tYWkncyBsaWJzIGFyZSBub3QgaW4gYW55IGRl
-ZmF1bHQNCj4+IHNlYXJjaCBwYXRoLg0KPj4NCj4+ICAgICAgICBMREZMQUdTKz0tWGxpbmtlciAt
-cnBhdGggLVhsaW5rZXIgJChzaGVsbCAkKFhFTk9DT05GSUcpIC0tbGliZGlyKQ0KPj4NCj4+ICAg
-ICAgICBhbGw6OiAkKEFQUExJQ0FUSU9OUykNCj4+DQo+PiAgICAgICAgY2xlYW46Og0KPj4gICAg
-ICAgICAgICAkKFJNKSAkKEFQUExJQ0FUSU9OUykgKi5vDQo+Pg0KPj4gICAgICAgIGVuZGlmDQo+
-PiAgICAgICAgZW5kaWYNCj4+DQo+Pg0KPj4NCj4+ICAgICAgICAjIyMjIyMgS0VSTkVMIE1PRFVM
-RSBCVUlMRCAobm8gY2hhbmdlIHJlcXVpcmVkIG5vcm1hbGx5KSAjIyMjIyMNCj4+ICAgICAgICBp
-Zm5lcSAoJChNT0RVTEVTKSwpDQo+Pg0KPj4gICAgICAgICMjIyBEZWZhdWx0IHRvIHNvdXJjZXMg
-b2YgY3VycmVudGx5IHJ1bm5pbmcga2VybmVsDQo+PiAgICAgICAgS1NSQyA/PSAvbGliL21vZHVs
-ZXMvJChzaGVsbCB1bmFtZSAtcikvYnVpbGQNCj4+DQo+PiAgICAgICAgT0JKUyAgICAgOj0gJHtw
-YXRzdWJzdCAlLCAlLm8sICQoTU9EVUxFUyl9DQo+PiAgICAgICAgQ0xFQU5NT0QgOj0gJHtwYXRz
-dWJzdCAlLCAuJSosICQoTU9EVUxFUyl9DQo+PiAgICAgICAgUFdEICAgICAgOj0gJChzaGVsbCBp
-ZiBbICIkJFBXRCIgIT0gIiIgXTsgdGhlbiBlY2hvICQkUFdEOyBlbHNlDQo+PiBwd2Q7IGZpKQ0K
-Pj4NCj4+ICAgICAgICBvYmotbSAgICAgICAgOj0gJChPQkpTKQ0KPj4gICAgICAgIEVYVFJBX0NG
-TEFHUyA6PSAtSSQoS1NSQykvaW5jbHVkZS94ZW5vbWFpDQo+PiAtSSQoS1NSQykvaW5jbHVkZS94
-ZW5vbWFpL3Bvc2l4ICQoDQo+PiBBRERfQ0ZMQUdTKSAtSS91c3IvbG9jYWwvc3JjL215U291cmNl
-L2luY2x1ZGUNCj4+DQo+PiAgICAgICAgYWxsOjoNCj4+ICAgICAgICAgICAgJChNQUtFKSAtQyAk
-KEtTUkMpIFNVQkRJUlM9JChQV0QpIG1vZHVsZXMNCj4+DQo+PiAgICAgICAgY2xlYW46Og0KPj4g
-ICAgICAgICAgICAkKFJNKSAkKENMRUFOTU9EKSAqLm8gKi5rbyAqLm1vZC5jIE1vZHVsZS5tYXJr
-ZXJzIG1vZHVsZXMub3JkZXINCj4+ICAgICAgICAgICAgJChSTSkgLVIgLnRtcCoNCj4+DQo+PiAg
-ICAgICAgZW5kaWYNCj4+DQo+Pg0KPj4gV2hlbiBJIHJ1biBtYWtlIHRoaXMgaXMgd2hhdCBoYXBw
-ZW5zOg0KPj4NCj4+ICAgICAgICBtYWtlIC1DIC9saWIvbW9kdWxlcy80LjkuMjQtaXBpcGUteGVu
-b21haS0zLjAuNS1jb2JhbHQvYnVpbGQNCj4+IFNVQkRJUlM9L3Vzci9sbw0KPj4gY2FsL3NyYy9t
-eS9zb3VyY2UvcnRfY29udHJvbCBtb2R1bGVzDQo+PiAgICAgICAgbWFrZVsxXTogRW50ZXJpbmcg
-ZGlyZWN0b3J5DQo+PiAnL3Vzci9sb2NhbC9zcmMvbGludXgtNC45LjI0LWlwaXBlLXhlbm9tYWkt
-My4wLjUNCj4+IC1jb2JhbHQnDQo+PiAgICAgICAgICBDQyBbTV0gL3Vzci9sb2NhbC9zcmMvbXlT
-b3VyY2Uvc291cmNlL3J0X2NvbnRyb2wvbXlSdE1vZHVsZS5vDQo+PiAgICAgICAgSW4gZmlsZSBp
-bmNsdWRlZCBmcm9tIC91c3IvbG9jYWwvc3JjL215U291cmNlL2luY2x1ZGUvY29tbW9uLmg6MTA6
-MCwNCj4+ICAgICAgICAgICAgICAgICAgICAgICAgIGZyb20NCj4+IC91c3IvbG9jYWwvc3JjL215
-U291cmNlL3NvdXJjZS9ydF9jb250cm9sL215UnRNb2R1bGUuYw0KPj4gOjMzOg0KPj4gICAgICAg
-IGluY2x1ZGUveGVub21haS9hbGNoZW15L3Rhc2suaDoyMToyMzogZmF0YWwgZXJyb3I6IHN5cy90
-eXBlcy5oOiBObw0KPj4gc3VjaCBmaWxlDQo+PiAgICAgb3IgZGlyZWN0b3J5DQo+PiAgICAgICAg
-ICNpbmNsdWRlIDxzeXMvdHlwZXMuaD4NCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-IF4NCj4+ICAgICAgICBjb21waWxhdGlvbiB0ZXJtaW5hdGVkLg0KPj4gICAgICAgIHNjcmlwdHMv
-TWFrZWZpbGUuYnVpbGQ6Mjk5OiByZWNpcGUgZm9yIHRhcmdldA0KPj4gJy91c3IvbG9jYWwvc3Jj
-L215U291cmNlL3NvdXJjDQo+PiBlL3J0X2NvbnRyb2wvbXlSdE1vZHVsZS5vJyBmYWlsZWQNCj4+
-ICAgICAgICBtYWtlWzJdOiAqKioNCj4+IFsvdXNyL2xvY2FsL3NyYy9teVNvdXJjZS9zb3VyY2Uv
-cnRfY29udHJvbC9teVJ0TW9kdWxlLm9dIEVycm9yDQo+PiAxDQo+PiAgICAgICAgTWFrZWZpbGU6
-MTQ5MDogcmVjaXBlIGZvciB0YXJnZXQNCj4+ICdfbW9kdWxlXy91c3IvbG9jYWwvc3JjL215U291
-cmNlL3NvdXJjZS9ydF8NCj4+IGNvbnRyb2wnIGZhaWxlZA0KPj4gICAgICAgIG1ha2VbMV06ICoq
-KiBbX21vZHVsZV8vdXNyL2xvY2FsL3NyYy9teVNvdXJjZS9zb3VyY2UvcnRfY29udHJvbF0NCj4+
-IEVycm9yIDINCj4+ICAgICAgICBtYWtlWzFdOiBMZWF2aW5nIGRpcmVjdG9yeQ0KPj4gJy91c3Iv
-bG9jYWwvc3JjL2xpbnV4LTQuOS4yNC1pcGlwZS14ZW5vbWFpLTMuMC41LQ0KPj4gY29iYWx0Jw0K
-Pj4gICAgICAgIE1ha2VmaWxlOjY3OiByZWNpcGUgZm9yIHRhcmdldCAnYWxsJyBmYWlsZWQNCj4+
-ICAgICAgICBtYWtlOiAqKiogW2FsbF0gRXJyb3IgMg0KPj4NCj4+IElmIEkgZXhwbGljaXQgdGhl
-IChzdGFuZGFyZD8pIGluY2x1ZGUgcGF0aCBvdmVyIGdjYyBpbnRvIG1ha2UsIGFkZGluZw0KPj4g
-Ii1JL3Vzci9pbg0KPj4gY2x1ZGUveDg2XzY0LWxpbnV4LWdudSIgYXQgdGhlIGVuZCBvZiBFWFRS
-QV9DRkxBR1MsIEkgZ2V0IHRoaXMgYmVoYXZpb3VyOg0KPj4NCj4+ICAgICAgICBtYWtlIC1DIC9s
-aWIvbW9kdWxlcy80LjkuMjQtaXBpcGUteGVub21haS0zLjAuNS1jb2JhbHQvYnVpbGQNCj4+IFNV
-QkRJUlM9L3Vzci9sbw0KPj4gY2FsL3NyYy9teVNvdXJjZS9zb3VyY2UvcnRfY29udHJvbCBtb2R1
-bGVzDQo+PiAgICAgICAgbWFrZVsxXTogRW50ZXJpbmcgZGlyZWN0b3J5DQo+PiAnL3Vzci9sb2Nh
-bC9zcmMvbGludXgtNC45LjI0LWlwaXBlLXhlbm9tYWktMy4wLjUNCj4+IC1jb2JhbHQnDQo+PiAg
-ICAgICAgICBDQyBbTV0gL3Vzci9sb2NhbC9zcmMvbXlTb3VyY2Uvc291cmNlL3J0X2NvbnRyb2wv
-bXlSdE1vZHVsZS5vDQo+PiAgICAgICAgSW4gZmlsZSBpbmNsdWRlZCBmcm9tIGluY2x1ZGUveGVu
-b21haS9hbGNoZW15L3Rhc2suaDoyMTowLA0KPj4gICAgICAgICAgICAgICAgICAgICAgICAgZnJv
-bSAvdXNyL2xvY2FsL3NyYy9teVNvdXJjZS9pbmNsdWRlL2NvbW1vbi5oOjEwLA0KPj4gICAgICAg
-ICAgICAgICAgICAgICAgICAgZnJvbQ0KPj4gL3Vzci9sb2NhbC9zcmMvbXlTb3VyY2Uvc291cmNl
-L3J0X2NvbnRyb2wvbXlSdE1vZHVsZS5jDQo+PiA6MzM6DQo+PiAgICAgICAgL3Vzci9pbmNsdWRl
-L3g4Nl82NC1saW51eC1nbnUvc3lzL3R5cGVzLmg6MjU6MjI6IGZhdGFsIGVycm9yOg0KPj4gZmVh
-dHVyZXMuaDogTm8NCj4+ICAgICBzdWNoIGZpbGUgb3IgZGlyZWN0b3J5DQo+PiAgICAgICAgICNp
-bmNsdWRlIDxmZWF0dXJlcy5oPg0KPj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICBeDQo+
-PiAgICAgICAgY29tcGlsYXRpb24gdGVybWluYXRlZC4NCj4+ICAgICAgICBzY3JpcHRzL01ha2Vm
-aWxlLmJ1aWxkOjI5OTogcmVjaXBlIGZvciB0YXJnZXQNCj4+ICcvdXNyL2xvY2FsL3NyYy9teVNv
-dXJjZS9zb3VyYw0KPj4gZS9ydF9jb250cm9sL215UnRNb2R1bGUubycgZmFpbGVkDQo+PiAgICAg
-ICAgbWFrZVsyXTogKioqDQo+PiBbL3Vzci9sb2NhbC9zcmMvbXlTb3VyY2Uvc291cmNlL3J0X2Nv
-bnRyb2wvbXlSdE1vZHVsZS5vXSBFcnJvcg0KPj4gMQ0KPj4gICAgICAgIE1ha2VmaWxlOjE0OTA6
-IHJlY2lwZSBmb3IgdGFyZ2V0DQo+PiAnX21vZHVsZV8vdXNyL2xvY2FsL3NyYy9teVNvdXJjZS9z
-b3VyY2UvcnRfDQo+PiBjb250cm9sJyBmYWlsZWQNCj4+ICAgICAgICBtYWtlWzFdOiAqKiogW19t
-b2R1bGVfL3Vzci9sb2NhbC9zcmMvbXlTb3VyY2Uvc291cmNlL3J0X2NvbnRyb2xdDQo+PiBFcnJv
-ciAyDQo+PiAgICAgICAgbWFrZVsxXTogTGVhdmluZyBkaXJlY3RvcnkNCj4+ICcvdXNyL2xvY2Fs
-L3NyYy9saW51eC00LjkuMjQtaXBpcGUteGVub21haS0zLjAuNS0NCj4+IGNvYmFsdCcNCj4+ICAg
-ICAgICBNYWtlZmlsZTo2NzogcmVjaXBlIGZvciB0YXJnZXQgJ2FsbCcgZmFpbGVkDQo+PiAgICAg
-ICAgbWFrZTogKioqIFthbGxdIEVycm9yIDINCj4+DQo+Pg0KPj4gT2YgY291cnNlIEkgZG8gaGF2
-ZSBsaWJjdi1kZXYgaW5zdGFsbGVkIGFuZCBldmVyeXRoaW5nIGlzIGluIHRoZSByaWdodA0KPj4g
-cGxhY2U6DQo+Pg0KPj4gICAgICAgIGxzIC1sIC91c3IvaW5jbHVkZS94ODZfNjQtbGludXgtZ251
-L3N5cy90eXBlcy5oDQo+PiAgICAgICAgLXJ3LXItLXItLSAxIHJvb3Qgcm9vdCA2Njg3IEp1biAx
-NSAyMToxNw0KPj4gL3Vzci9pbmNsdWRlL3g4Nl82NC1saW51eC1nbnUvc3lzL3QNCj4+IHlwZXMu
-aA0KPj4NCj4+ICAgICAgICBscyAtbCAvdXNyL2luY2x1ZGUvZmVhdHVyZXMuaA0KPj4gICAgICAg
-IC1ydy1yLS1yLS0gMSByb290IHJvb3QgMTMwNjkgSnVuIDE1IDIxOjE3IC91c3IvaW5jbHVkZS9m
-ZWF0dXJlcy5oDQo+Pg0KPj4gSG9wZSBhbnlib2R5IG91dCB0aGVyZSBjb3VsZC93aWxsIGhlbHAg
-bWUgOikNCj4+IFRoYW5rcywNCj4+DQo+PiBTaW1vbmUNCj4+IF9fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fDQo+PiBYZW5vbWFpIG1haWxpbmcgbGlzdA0KPj4g
-WGVub21haUB4ZW5vbWFpLm9yZw0KPj4gaHR0cHM6Ly94ZW5vbWFpLm9yZy9tYWlsbWFuL2xpc3Rp
-bmZvL3hlbm9tYWkNCg==
+Major change is use of handle_level_irq flow handler instead of handle_simp=
+le_irq=0A=
+& calling the ack function manually in ipipe_irq_cascade.=0A=
+Here is the Patch :=0A=
+=0A=
+diff --git a/drivers/pinctrl/intel/pinctrl-intel.c b/drivers/pinctrl/intel/=
+pinctrl-intel.c=0A=
+index 3b19ef0..4f41532 100644=0A=
+--- a/drivers/pinctrl/intel/pinctrl-intel.c=0A=
++++ b/drivers/pinctrl/intel/pinctrl-intel.c=0A=
+@@ -22,6 +22,9 @@=0A=
+ #include <linux/pinctrl/pinmux.h>=0A=
+ #include <linux/pinctrl/pinconf.h>=0A=
+ #include <linux/pinctrl/pinconf-generic.h>=0A=
++#include <linux/ipipe.h> =0A=
+ =0A=
+ #include "pinctrl-intel.h"=0A=
+ =0A=
+@@ -65,6 +68,8 @@=0A=
+ #define PADCFG1_TERM_5K			2=0A=
+ #define PADCFG1_TERM_1K			1=0A=
+ =0A=
++static struct intel_pinctrl *hack_pctrl;=0A=
++=0A=
+ struct intel_pad_context {=0A=
+ 	u32 padcfg0;=0A=
+ 	u32 padcfg1;=0A=
+@@ -94,7 +99,11 @@ struct intel_pinctrl_context {=0A=
+  */=0A=
+ struct intel_pinctrl {=0A=
+ 	struct device *dev;=0A=
+-	spinlock_t lock;=0A=
++#ifdef  CONFIG_IPIPE=0A=
++        ipipe_spinlock_t lock;=0A=
++#else=0A=
++        raw_spinlock_t lock;=0A=
++#endif=0A=
+ 	struct pinctrl_desc pctldesc;=0A=
+ 	struct pinctrl_dev *pctldev;=0A=
+ 	struct gpio_chip chip;=0A=
+@@ -324,7 +333,7 @@ static int intel_pinmux_set_mux(struct pinctrl_dev *pct=
+ldev, unsigned function,=0A=
+ 	unsigned long flags;=0A=
+ 	int i;=0A=
+ =0A=
+-	spin_lock_irqsave(&pctrl->lock, flags);=0A=
++	raw_spin_lock_irqsave(&pctrl->lock, flags);=0A=
+ =0A=
+ 	/*=0A=
+ 	 * All pins in the groups needs to be accessible and writable=0A=
+@@ -332,7 +341,7 @@ static int intel_pinmux_set_mux(struct pinctrl_dev *pct=
+ldev, unsigned function,=0A=
+ 	 */=0A=
+ 	for (i =3D 0; i < grp->npins; i++) {=0A=
+ 		if (!intel_pad_usable(pctrl, grp->pins[i])) {=0A=
+-			spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
++			raw_spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
+ 			return -EBUSY;=0A=
+ 		}=0A=
+ 	}=0A=
+@@ -351,7 +360,7 @@ static int intel_pinmux_set_mux(struct pinctrl_dev *pct=
+ldev, unsigned function,=0A=
+ 		writel(value, padcfg0);=0A=
+ 	}=0A=
+ =0A=
+-	spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
++	raw_spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
+ =0A=
+ 	return 0;=0A=
+ }=0A=
+@@ -365,10 +374,10 @@ static int intel_gpio_request_enable(struct pinctrl_d=
+ev *pctldev,=0A=
+ 	unsigned long flags;=0A=
+ 	u32 value;=0A=
+ =0A=
+-	spin_lock_irqsave(&pctrl->lock, flags);=0A=
++	raw_spin_lock_irqsave(&pctrl->lock, flags);=0A=
+ =0A=
+ 	if (!intel_pad_usable(pctrl, pin)) {=0A=
+-		spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
++		raw_spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
+ 		return -EBUSY;=0A=
+ 	}=0A=
+ =0A=
+@@ -383,7 +392,7 @@ static int intel_gpio_request_enable(struct pinctrl_dev=
+ *pctldev,=0A=
+ 	value |=3D PADCFG0_GPIOTXDIS;=0A=
+ 	writel(value, padcfg0);=0A=
+ =0A=
+-	spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
++	raw_spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
+ =0A=
+ 	return 0;=0A=
+ }=0A=
+@@ -397,7 +406,7 @@ static int intel_gpio_set_direction(struct pinctrl_dev =
+*pctldev,=0A=
+ 	unsigned long flags;=0A=
+ 	u32 value;=0A=
+ =0A=
+-	spin_lock_irqsave(&pctrl->lock, flags);=0A=
++	raw_spin_lock_irqsave(&pctrl->lock, flags);=0A=
+ =0A=
+ 	padcfg0 =3D intel_get_padcfg(pctrl, pin, PADCFG0);=0A=
+ =0A=
+@@ -408,7 +417,7 @@ static int intel_gpio_set_direction(struct pinctrl_dev =
+*pctldev,=0A=
+ 		value &=3D ~PADCFG0_GPIOTXDIS;=0A=
+ 	writel(value, padcfg0);=0A=
+ =0A=
+-	spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
++	raw_spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
+ =0A=
+ 	return 0;=0A=
+ }=0A=
+@@ -496,7 +505,7 @@ static int intel_config_set_pull(struct intel_pinctrl *=
+pctrl, unsigned pin,=0A=
+ 	int ret =3D 0;=0A=
+ 	u32 value;=0A=
+ =0A=
+-	spin_lock_irqsave(&pctrl->lock, flags);=0A=
++	raw_spin_lock_irqsave(&pctrl->lock, flags);=0A=
+ =0A=
+ 	padcfg1 =3D intel_get_padcfg(pctrl, pin, PADCFG1);=0A=
+ 	value =3D readl(padcfg1);=0A=
+@@ -550,7 +559,7 @@ static int intel_config_set_pull(struct intel_pinctrl *=
+pctrl, unsigned pin,=0A=
+ 	if (!ret)=0A=
+ 		writel(value, padcfg1);=0A=
+ =0A=
+-	spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
++	raw_spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
+ =0A=
+ 	return ret;=0A=
+ }=0A=
+@@ -617,14 +626,14 @@ static void intel_gpio_set(struct gpio_chip *chip, un=
+signed offset, int value)=0A=
+ 		unsigned long flags;=0A=
+ 		u32 padcfg0;=0A=
+ =0A=
+-		spin_lock_irqsave(&pctrl->lock, flags);=0A=
++		raw_spin_lock_irqsave(&pctrl->lock, flags);=0A=
+ 		padcfg0 =3D readl(reg);=0A=
+ 		if (value)=0A=
+ 			padcfg0 |=3D PADCFG0_GPIOTXSTATE;=0A=
+ 		else=0A=
+ 			padcfg0 &=3D ~PADCFG0_GPIOTXSTATE;=0A=
+ 		writel(padcfg0, reg);=0A=
+-		spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
++		raw_spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
+ 	}=0A=
+ }=0A=
+ =0A=
+@@ -650,14 +659,14 @@ static const struct gpio_chip intel_gpio_chip =3D {=
+=0A=
+ 	.set =3D intel_gpio_set,=0A=
+ };=0A=
+ =0A=
+-static void intel_gpio_irq_ack(struct irq_data *d)=0A=
++static void __intel_gpio_irq_ack(struct irq_data *d)=0A=
++=0A=
+ {=0A=
+ 	struct gpio_chip *gc =3D irq_data_get_irq_chip_data(d);=0A=
+ 	struct intel_pinctrl *pctrl =3D gpiochip_get_data(gc);=0A=
+ 	const struct intel_community *community;=0A=
+ 	unsigned pin =3D irqd_to_hwirq(d);=0A=
+ =0A=
+-	spin_lock(&pctrl->lock);=0A=
+ =0A=
+ 	community =3D intel_get_community(pctrl, pin);=0A=
+ 	if (community) {=0A=
+@@ -668,20 +677,32 @@ static void intel_gpio_irq_ack(struct irq_data *d)=0A=
+ 		writel(BIT(gpp_offset), community->regs + GPI_IS + gpp * 4);=0A=
+ 	}=0A=
+ =0A=
+-	spin_unlock(&pctrl->lock);=0A=
+ }=0A=
+ =0A=
++=0A=
++static void intel_gpio_irq_ack(struct irq_data *d)=0A=
++{=0A=
++	struct gpio_chip *gc =3D irq_data_get_irq_chip_data(d);=0A=
++	struct intel_pinctrl *pctrl =3D gpiochip_get_data(gc);=0A=
++=0A=
++	raw_spin_lock(&pctrl->lock);=0A=
++	__intel_gpio_irq_ack(d);=0A=
++	raw_spin_unlock(&pctrl->lock);=0A=
++}=0A=
++=0A=
++=0A=
+ static void intel_gpio_irq_enable(struct irq_data *d)=0A=
+ {=0A=
+ 	struct gpio_chip *gc =3D irq_data_get_irq_chip_data(d);=0A=
+ 	struct intel_pinctrl *pctrl =3D gpiochip_get_data(gc);=0A=
++=0A=
+ 	const struct intel_community *community;=0A=
+ 	unsigned pin =3D irqd_to_hwirq(d);=0A=
+ 	unsigned long flags;=0A=
+-=0A=
+-	spin_lock_irqsave(&pctrl->lock, flags);=0A=
++	raw_spin_lock_irqsave(&pctrl->lock, flags);=0A=
+ =0A=
+ 	community =3D intel_get_community(pctrl, pin);=0A=
++=0A=
+ 	if (community) {=0A=
+ 		unsigned padno =3D pin_to_padno(community, pin);=0A=
+ 		unsigned gpp_size =3D community->gpp_size;=0A=
+@@ -694,21 +715,24 @@ static void intel_gpio_irq_enable(struct irq_data *d)=
+=0A=
+ =0A=
+ 		value =3D readl(community->regs + community->ie_offset + gpp * 4);=0A=
+ 		value |=3D BIT(gpp_offset);=0A=
+-		writel(value, community->regs + community->ie_offset + gpp * 4);=0A=
++		writel(value, community->regs + community->ie_offset + gpp * 4);	=0A=
++=0A=
+ 	}=0A=
+ =0A=
+-	spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
++	hack_pctrl =3D pctrl;=0A=
++=0A=
++	ipipe_unlock_irq(d->irq);=0A=
++	raw_spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
+ }=0A=
+ =0A=
+-static void intel_gpio_irq_mask_unmask(struct irq_data *d, bool mask)=0A=
++static void __intel_gpio_irq_mask_unmask(struct irq_data *d, bool mask)=0A=
+ {=0A=
+ 	struct gpio_chip *gc =3D irq_data_get_irq_chip_data(d);=0A=
+ 	struct intel_pinctrl *pctrl =3D gpiochip_get_data(gc);=0A=
+ 	const struct intel_community *community;=0A=
+ 	unsigned pin =3D irqd_to_hwirq(d);=0A=
+-	unsigned long flags;=0A=
+-=0A=
+-	spin_lock_irqsave(&pctrl->lock, flags);=0A=
+ =0A=
+ 	community =3D intel_get_community(pctrl, pin);=0A=
+ 	if (community) {=0A=
+@@ -727,23 +751,63 @@ static void intel_gpio_irq_mask_unmask(struct irq_dat=
+a *d, bool mask)=0A=
+ 		writel(value, reg);=0A=
+ 	}=0A=
+ =0A=
+-	spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
+ }=0A=
+ =0A=
++=0A=
+ static void intel_gpio_irq_mask(struct irq_data *d)=0A=
+ {=0A=
+-	intel_gpio_irq_mask_unmask(d, true);=0A=
++	struct gpio_chip *gc =3D irq_data_get_irq_chip_data(d);=0A=
++	struct intel_pinctrl *pctrl =3D gpiochip_get_data(gc);=0A=
++	unsigned long flags;=0A=
++=0A=
++	raw_spin_lock_irqsave(&pctrl->lock, flags);=0A=
++	ipipe_lock_irq(d->irq);=0A=
++	__intel_gpio_irq_mask_unmask(d, true);=0A=
++	raw_spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
+ }=0A=
+ =0A=
+ static void intel_gpio_irq_unmask(struct irq_data *d)=0A=
+ {=0A=
+-	intel_gpio_irq_mask_unmask(d, false);=0A=
++	struct gpio_chip *gc =3D irq_data_get_irq_chip_data(d);=0A=
++	struct intel_pinctrl *pctrl =3D gpiochip_get_data(gc);=0A=
++	unsigned long flags;=0A=
++=0A=
++	raw_spin_lock_irqsave(&pctrl->lock, flags);=0A=
++	__intel_gpio_irq_mask_unmask(d, false);=0A=
++	ipipe_unlock_irq(d->irq);=0A=
++	raw_spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
+ }=0A=
+ =0A=
++#ifdef CONFIG_IPIPE=0A=
++=0A=
++static void intel_gpio_irq_hold(struct irq_data *d)=0A=
++{=0A=
++	struct gpio_chip *gc =3D irq_data_get_irq_chip_data(d);=0A=
++	struct intel_pinctrl *pctrl =3D gpiochip_get_data(gc);=0A=
++	unsigned long flags;=0A=
++	raw_spin_lock_irqsave(&pctrl->lock, flags);=0A=
++	__intel_gpio_irq_mask_unmask(d, true);=0A=
++	raw_spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
++=0A=
++}=0A=
++=0A=
++static void intel_gpio_irq_release(struct irq_data *d)=0A=
++{=0A=
++	struct gpio_chip *gc =3D irq_data_get_irq_chip_data(d);=0A=
++	struct intel_pinctrl *pctrl =3D gpiochip_get_data(gc);=0A=
++	unsigned long flags;=0A=
++	raw_spin_lock_irqsave(&pctrl->lock, flags);=0A=
++	__intel_gpio_irq_mask_unmask(d, false);=0A=
++	raw_spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
++ }=0A=
++ =0A=
++#endif=0A=
++=0A=
+ static int intel_gpio_irq_type(struct irq_data *d, unsigned type)=0A=
+ {=0A=
+ 	struct gpio_chip *gc =3D irq_data_get_irq_chip_data(d);=0A=
+ 	struct intel_pinctrl *pctrl =3D gpiochip_get_data(gc);=0A=
+ 	unsigned pin =3D irqd_to_hwirq(d);=0A=
+ 	unsigned long flags;=0A=
+ 	void __iomem *reg;=0A=
+@@ -763,7 +827,7 @@ static int intel_gpio_irq_type(struct irq_data *d, unsi=
+gned type)=0A=
+ 		return -EPERM;=0A=
+ 	}=0A=
+ =0A=
+-	spin_lock_irqsave(&pctrl->lock, flags);=0A=
++	raw_spin_lock_irqsave(&pctrl->lock, flags);=0A=
+ =0A=
+ 	value =3D readl(reg);=0A=
+ =0A=
+@@ -790,7 +854,7 @@ static int intel_gpio_irq_type(struct irq_data *d, unsi=
+gned type)=0A=
+ 	else if (type & IRQ_TYPE_LEVEL_MASK)=0A=
+ 		irq_set_handler_locked(d, handle_level_irq);=0A=
+ =0A=
+-	spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
++	raw_spin_unlock_irqrestore(&pctrl->lock, flags);=0A=
+ =0A=
+ 	return 0;=0A=
+ }=0A=
+@@ -840,12 +904,14 @@ static irqreturn_t intel_gpio_community_irq_handler(s=
+truct intel_pinctrl *pctrl,=0A=
+ =0A=
+ 			irq =3D irq_find_mapping(gc->irqdomain,=0A=
+ 					       community->pin_base + padno);=0A=
+-			generic_handle_irq(irq);			=0A=
++			ipipe_handle_demuxed_irq(irq);=0A=
+ =0A=
+ 			ret |=3D IRQ_HANDLED;=0A=
+ 		}=0A=
+ 	}=0A=
+ =0A=
++=0A=
+ 	return ret;=0A=
+ }=0A=
+ =0A=
+@@ -853,11 +919,13 @@ static irqreturn_t intel_gpio_irq(int irq, void *data=
+)=0A=
+ {=0A=
+ 	const struct intel_community *community;=0A=
+ 	struct intel_pinctrl *pctrl =3D data;=0A=
++=0A=
+ 	irqreturn_t ret =3D IRQ_NONE;=0A=
+ 	int i;=0A=
+ =0A=
+ 	/* Need to check all communities for pending interrupts */=0A=
+ 	for (i =3D 0; i < pctrl->ncommunities; i++) {=0A=
++=0A=
+ 		community =3D &pctrl->communities[i];=0A=
+ 		ret |=3D intel_gpio_community_irq_handler(pctrl, community);=0A=
+ 	}=0A=
+@@ -865,6 +933,20 @@ static irqreturn_t intel_gpio_irq(int irq, void *data)=
+=0A=
+ 	return ret;=0A=
+ }=0A=
+ =0A=
++static void ipipe_irq_cascade(struct irq_desc *desc)=0A=
++{=0A=
++=0A=
++#ifdef CONFIG_IPIPE=0A=
++	struct intel_pinctrl *pctrl =3D hack_pctrl;=0A=
++	int irq =3D irq_desc_get_irq(desc);=0A=
++=0A=
++	desc->irq_data.chip->irq_ack(&desc->irq_data);=0A=
++=0A=
++	intel_gpio_irq(irq,pctrl);=0A=
++#endif=0A=
++=0A=
++}=0A=
++=0A=
+ static struct irq_chip intel_gpio_irqchip =3D {=0A=
+ 	.name =3D "intel-gpio",=0A=
+ 	.irq_enable =3D intel_gpio_irq_enable,=0A=
+@@ -873,11 +955,18 @@ static struct irq_chip intel_gpio_irqchip =3D {=0A=
+ 	.irq_unmask =3D intel_gpio_irq_unmask,=0A=
+ 	.irq_set_type =3D intel_gpio_irq_type,=0A=
+ 	.irq_set_wake =3D intel_gpio_irq_wake,=0A=
++#ifdef CONFIG_IPIPE=0A=
++	.irq_hold =3D intel_gpio_irq_hold,=0A=
++	.irq_release =3D intel_gpio_irq_release,=0A=
++#endif=0A=
+ };=0A=
+ =0A=
++=0A=
++=0A=
+ static int intel_gpio_probe(struct intel_pinctrl *pctrl, int irq)=0A=
+ {=0A=
+ 	int ret;=0A=
++	=0A=
+ =0A=
+ 	pctrl->chip =3D intel_gpio_chip;=0A=
+ =0A=
+@@ -887,6 +976,7 @@ static int intel_gpio_probe(struct intel_pinctrl *pctrl=
+, int irq)=0A=
+ 	pctrl->chip.base =3D -1;=0A=
+ 	pctrl->irq =3D irq;=0A=
+ =0A=
++=0A=
+ 	ret =3D gpiochip_add_data(&pctrl->chip, pctrl);=0A=
+ 	if (ret) {=0A=
+ 		dev_err(pctrl->dev, "failed to register gpiochip\n");=0A=
+@@ -900,20 +990,28 @@ static int intel_gpio_probe(struct intel_pinctrl *pct=
+rl, int irq)=0A=
+ 		goto fail;=0A=
+ 	}=0A=
+ =0A=
++	if (IS_ENABLED(CONFIG_IPIPE))=0A=
++	{	=0A=
++		irq_set_chained_handler_and_data(irq,=0A=
++					ipipe_irq_cascade,pctrl);=0A=
++	}=0A=
++	else {=0A=
+ 	/*=0A=
+ 	 * We need to request the interrupt here (instead of providing chip=0A=
+ 	 * to the irq directly) because on some platforms several GPIO=0A=
+ 	 * controllers share the same interrupt line.=0A=
+ 	 */=0A=
+-	ret =3D devm_request_irq(pctrl->dev, irq, intel_gpio_irq, IRQF_SHARED,=0A=
+-			       dev_name(pctrl->dev), pctrl);=0A=
+-	if (ret) {=0A=
+-		dev_err(pctrl->dev, "failed to request interrupt\n");=0A=
+-		goto fail;=0A=
++		ret =3D devm_request_irq(pctrl->dev, irq, intel_gpio_irq,=0A=
++					IRQF_SHARED | IRQF_NO_THREAD,=0A=
++					dev_name(pctrl->dev), pctrl);=0A=
++		if (ret) {=0A=
++			dev_err(pctrl->dev, "failed to request interrupt\n");=0A=
++			goto fail;=0A=
++		}=0A=
+ 	}=0A=
+ =0A=
+ 	ret =3D gpiochip_irqchip_add(&pctrl->chip, &intel_gpio_irqchip, 0,=0A=
+-				   handle_simple_irq, IRQ_TYPE_NONE);=0A=
++				   handle_level_irq, IRQ_TYPE_NONE);=0A=
+ 	if (ret) {=0A=
+ 		dev_err(pctrl->dev, "failed to add irqchip\n");=0A=
+ 		goto fail;=0A=
+@@ -921,6 +1019,8 @@ static int intel_gpio_probe(struct intel_pinctrl *pctr=
+l, int irq)=0A=
+ =0A=
+ 	gpiochip_set_chained_irqchip(&pctrl->chip, &intel_gpio_irqchip, irq,=0A=
+ 				     NULL);=0A=
++=0A=
++=0A=
+ 	return 0;=0A=
+ =0A=
+ fail:=0A=
+@@ -981,7 +1081,7 @@ int intel_pinctrl_probe(struct platform_device *pdev,=
+=0A=
+ =0A=
+ 	pctrl->dev =3D &pdev->dev;=0A=
+ 	pctrl->soc =3D soc_data;=0A=
+-	spin_lock_init(&pctrl->lock);=0A=
++	raw_spin_lock_init(&pctrl->lock);=0A=
+ =0A=
+ 	/*=0A=
+ 	 * Make a copy of the communities which we can use to hold pointers=0A=
+=0A=
+Note: I am working on kernel version 4.4.43, hence there are some differenc=
+es from the recent version of pinctrl-intel.=0A=
+For example, I had to change the spinlocks into raw spinlocks. =0A=
+=0A=
+regards,=0A=
+Nitin =0A=
+________________________________________=0A=
+From: Philippe Gerum <rpm@xenomai.org>=0A=
+Sent: Wednesday, June 14, 2017 10:27 AM=0A=
+To: Nitin Kulkarni; xenomai@xenomai.org=0A=
+Subject: Re: [Xenomai] Problem with gpio interrupts for xenomai3 on Intel j=
+oule=0A=
+=0A=
+On 06/12/2017 01:02 PM, Nitin Kulkarni wrote:=0A=
+> Hi Philippe,=0A=
+> Correcting the subject of this thread and adding it to the mailing list.=
+=0A=
+> Thanks for those precise code suggestions. There are two issues.=0A=
+>=0A=
+> 1. I found that the ipipe_irq_cascade handler is called but the problem i=
+s that=0A=
+> there are 5 pinctrl devices on this soc and all of them share the same ir=
+q line. Hence I see that the intel_gpio_probe()=0A=
+> runs for all the 5 pin controllers during kernel initialization and overw=
+rites the irq descriptor with respective pinctrl data each time the probe r=
+uns.=0A=
+> When the interrupt is triggered ipipe_irq_cascade invoked with the irq de=
+sc, I always see that the pinctrl data retrieved from=0A=
+> irq_desc using  irq_desc_get_handler_data is always the last pinctrl. Hen=
+ce I do not read the right pinctrl to call intel_gpio_irq() and read the ri=
+ght interrupt enable reg for the gpio pin I enabled as interrupt.=0A=
+>=0A=
+> 2. When I forced it to read the right pinctrl data by storing that inform=
+ation when intel_gpio_irq_enable is executed.=0A=
+> The rtdm handller from my module is executed but the ack call intel_gpio_=
+irq_ack is not called. Hence the irq flags were never cleared and the mmc d=
+river also starts complaining about interrupts not being received. The whol=
+e system slows down and virtually hangs.=0A=
+>=0A=
+> *I tried some fixes*=0A=
+> -> I changed the flow handler type from handle_simple_irq to handle_edge_=
+irq  while calling  gpiochip_irqchip_add()=0A=
+>   in intel_gpio_probe.=0A=
+> -> I called the ack function in ipipe_irq_cascade using the irq_desc whic=
+h it has.=0A=
+> It seems to work perfectly with this fix but this is a raw and a hackish =
+way of doing. I am not sure if this has any consequences.=0A=
+> Can you suggest me whats wrong with the ack not being called and how to d=
+eal with multiple pinctrl devices sharing the same irq.=0A=
+>=0A=
+=0A=
+Please send a patch including your changes; it should be easier to=0A=
+review and comment.=0A=
+=0A=
+--=0A=
+Philippe.=0A=
 
