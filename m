@@ -1,12 +1,9 @@
-Date: Fri, 23 Jun 2017 13:49:26 -0400
-Message-ID: <20170623174926.GE18556@csclub.uwaterloo.ca>
-References: <343a14c9.12901.15cd3ef5a81.Coremail.kirayamato@zju.edu.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <343a14c9.12901.15cd3ef5a81.Coremail.kirayamato@zju.edu.cn>
-From: lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
-Subject: Re: [Xenomai] System freezed when loading initial ramdisk
+From: Robbert van der Bijl <rvanderbijl@seuratech.com>
+Date: Wed, 14 Jun 2017 19:51:40 -0400
+Message-ID: <CAPEB8kXw=D=WOV2VgVncK_12k8YdkoOy3SXiQ5zywMYkTdt5UA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] Mysterious Mode Switches (Xenomai 2.6.2.1)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,17 +12,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: kirayamato@zju.edu.cn
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Fri, Jun 23, 2017 at 03:51:37PM +0800, kirayamato@zju.edu.cn wrote:
-> Hi, everyone.
-> I patched kernel 3.14.17 with xenomai 2.6.4 on my laptop, but the system freezed when booting process showed loading initial ramdisk. I do not find any hints on the trouble shooting manual. Can anyone tell me how to fix it?
+All,
 
-Did you generate a new ramdisk with modules built with your new kernel?
+I'm fairly new when it comes to Linux & Xenomai, but I've been able to
+successfully put together the majority of our fairly large application on
+our Delta Tau PMAC board (PowerPC 465, dual core) in C++ so far.
 
-Modules built for a different kernel config rarely work with a new kernel.
+The one thing that stumps me though, is the mode switches that happen with
+certain memory accesses.
 
--- 
-Len Sorensen
+Take this chunk of code for instance:
+for (int i=0; i<10000; i++)
+   memset(m_pClientSendData+(32*i), 0, 32);
 
+This does NOT cause mode switches when run on a chunk of memory that's been
+malloc'ed.
+
+However, this code DOES cause a mode switch (same memory):
+memset(m_pClientSendData, 0, 320000);
+
+The for loop is obviously crazy slow compared to the single memset and not
+very practical. But I'm at a loss to explain this behavior. Similar
+problems with memcpy as well.
+
+Bottom line, what I'm trying to accomplish is getting around 400k of shared
+memory pumped out through a pipe to a TCP/IP task that runs in secondary
+mode only, as to avoid having the main task flip back and forth between
+primary and secondary modes. I tried to do this with just plain shared
+memory initially, but then found out that the mutexes I was using would
+force my TCP/IP thread into primary mode when I grabbed the mutex....
+
+Does anyone have any ideas?
+
+Thanks,
+Robbert
