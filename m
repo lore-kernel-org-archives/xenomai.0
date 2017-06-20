@@ -1,13 +1,12 @@
+Date: Tue, 20 Jun 2017 10:30:09 -0400
+Message-ID: <20170620143009.GB18556@csclub.uwaterloo.ca>
+References: <DB6PR0701MB24567D7382C2C3C1C6BBB0A3B5C60@DB6PR0701MB2456.eurprd07.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <640d22cb-ac74-6702-8c15-76ace5732262@xenomai.org>
-References: <CADXNiGXcYVk8JUDv24_TVLtvRQ=hJaaSiMzwQPct5V92U-jGYw@mail.gmail.com>
- <640d22cb-ac74-6702-8c15-76ace5732262@xenomai.org>
-From: Jackson Jones <jackson.jones@gmail.com>
-Date: Thu, 27 Jul 2017 18:29:52 -0700
-Message-ID: <CADXNiGW4EB96ovgEqutmYthLS9rk9paHGj0BGQG_dZCmiB2S6Q@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] real-time spi driver for imx6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DB6PR0701MB24567D7382C2C3C1C6BBB0A3B5C60@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+From: lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
+Subject: Re: [Xenomai] Gpio: IRQ handler is called ~4ms after state change
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,62 +15,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Giulio Moro <g.moro@qmul.ac.uk>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-UGhpbGlwcGUsCgpJIHB1dCB0b2dldGhlciBhIGRyaXZlciBmb3IgdGhlIGkubXg2LiBUaGUgRnJl
-ZXNjYWxlL05YUCBkcml2ZXIgaW4gdGhlCmtlcm5lbCBjb3ZlcmVkIGFsbCB0aGUgaW14IGNoaXBz
-LiBJIHdoaXR0bGVkIHRoYXQgZG93biB0byBqdXN0IHRoZSBpbXg2IHRvCm1ha2UgdGhpbmdzIHNp
-bXBsZXIuCgpJIGhhdmUgZ290dGVuIHRoZSBkcml2ZXIgdG8gY29tcGlsZSBpbiB0aGUgeGVub21h
-aS9rZXJuZWwvZHJpdmVyL3NwaQpkaXJlY3RvcnkgYW5kIGxpbmssIGJ1dCBpdCBkb2VzIG5vdCBl
-dmVuIGxvYWQgKG5vIG1lc3NhZ2VzIGF0IGJvb3QsIG5vCmRldmljZXMgY3JlYXRlZCkuIEkgaGF2
-ZSBhdHRhY2hlZCB0aGUgZHJpdmVyLCB0aGUgbW9kaWZpZWQgS2NvbmZpZyBhbmQKTWFrZWZpbGUg
-aW4gdGhlIHNwaSBkaXJlY3RvcnkgKHRvIGVuYWJsZSB0aGUgaW14NiBvcHRpb24sIGNvbXBpbGUg
-YW5kIGxpbmsKaXQpLiBMZXQgbWUga25vdyBpZiBhbnlvbmUgc2VlcyBhbnl0aGluZyBvYnZpb3Vz
-bHkgd3JvbmcuCgpUaGUgaW14IGRlcGVuZHMgb24gdGhlIHNwaV9iaXRiYW5nIGxheWVyLCBidXQg
-ZnJvbSB3aGF0IEkgY2FuIHNlZSwgdGhpcyBpcwpvbmx5IGlmIHlvdSBhcmUgdXNpbmcgRE1BLiBJ
-IHdyb3RlIHRoZSBkcml2ZXIgdG8gYmUgUElPIG9ubHkuIFRoZXJlIGlzIGEKd2FybmluZyBpbiB0
-aGUgY29tbWVudHMgb2YgdGhlIG1haW5saW5lIGlteCBkcml2ZXIsIHN3aXRjaGluZyBtb2Rlcwoo
-YmV0d2VlbiBtYXN0ZXIgYW5kIHNsYXZlKSBkb2VzIG5vdCB3b3JrLCB0aGVyZSBjYW4gYmUgYSBy
-YWNlIGNvbmRpdGlvbiBpbgp0aGUgaGFyZHdhcmUsIHNvIEkgd3JvdGUgdGhlIGRyaXZlciB0byBz
-dGF5IGluIG1hc3RlciBtb2RlLgoKLyoKICogVGhlIGhhcmR3YXJlIHNlZW1zIHRvIGhhdmUgYSBy
-YWNlIGNvbmRpdGlvbiB3aGVuIGNoYW5naW5nIG1vZGVzLiBUaGUKICogY3VycmVudCBhc3N1bXB0
-aW9uIGlzIHRoYXQgdGhlIHNlbGVjdGlvbiBvZiB0aGUgY2hhbm5lbCBhcnJpdmVzCiAqIGVhcmxp
-ZXIgaW4gdGhlIGhhcmR3YXJlIHRoYW4gdGhlIG1vZGUgYml0cyB3aGVuIHRoZXkgYXJlIHdyaXR0
-ZW4gYXQKICogdGhlIHNhbWUgdGltZS4KICogU28gc2V0IG1hc3RlciBtb2RlIGZvciBhbGwgY2hh
-bm5lbHMgYXMgd2UgZG8gbm90IHN1cHBvcnQgc2xhdmUgbW9kZS4KICovCgpzcGktaW14Ni5jIC0g
-Q29iYWx0IGRyaXZlcgpzcGktaW14LmMgLSBPcmlnaW5hbCBMaW51eCBkcml2ZXIKTWFrZWZpbGUg
-LSBtb2RpZmllZApLY29uZmlnIC0gbW9kaWZpZWQKY29uZmlnIC0ga2VybmVsIGNvbmZpZwoKClRo
-YW5rcyBmb3IgYW55IGhlbHAgb3IgaW5zaWdodHMsCgpKYWNrc29uCgoKCk9uIEZyaSwgSnVuIDMw
-LCAyMDE3IGF0IDEyOjI1IFBNLCBQaGlsaXBwZSBHZXJ1bSA8cnBtQHhlbm9tYWkub3JnPiB3cm90
-ZToKCj4gT24gMDYvMjkvMjAxNyAxMToxNSBQTSwgSmFja3NvbiBKb25lcyB3cm90ZToKPiA+IEFy
-ZSB0aGVyZSBhbnkgcGxhbnMgdG8gYWRkIGEgcmVhbC10aW1lIGRyaXZlciBmb3IgdGhlIGlteDYg
-c3BpPwo+ID4KPiA+Cj4KPiBObyBvbmdvaW5nIHdvcmsgdG8gbXkga25vd2xlZGdlLiBUaGUgRUNT
-UEkgaXMgZmFpcmx5IHN0cmFpZ2h0Zm9yd2FyZCB0bwo+IGNvbnRyb2wgaW4gUElPIG1vZGUuIEZX
-SVcsIEkgYmVsaWV2ZSB0aGF0IHdyaXRpbmcgYSBiYWNrZW5kIGRyaXZpbmcgdGhpcwo+IGNoaXAg
-b24gdG9wIG9mIENvYmFsdCdzIGdlbmVyaWMgU1BJIGNvcmUgc2hvdWxkIGJlIHBvc3NpYmxlLCB1
-c2luZyB0aGUKPiBiY20yODM1IGltcGxlbWVudGF0aW9uIHdlIGFscmVhZHkgaGF2ZSBpbiB0cmVl
-IGFzIGFuIGV4YW1wbGUuCj4KPiB0ZXN0c3VpdGUvc3BpdGVzdC5jIGlsbHVzdHJhdGVzIHRoZSBB
-UEkgZXhwb3NlZCB0byB1c2VybGFuZCBieSB0aGUgU1BJCj4gY29yZSwgd2hpY2ggY2FuIHVzZSBy
-ZWFkL3dyaXRlIGNhbGxzIG9yIGEgbWVtb3J5LW1hcHBlZCB0cmFuc2ZlciBidWZmZXIuCj4KPiAt
-LQo+IFBoaWxpcHBlLgo+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpB
-IG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNwaS1pbXg2LmMKVHlw
-ZTogdGV4dC94LWNzcmMKU2l6ZTogMjA0MjUgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6
-IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNzA3
-MjcvMGQwZmZlMDgvYXR0YWNobWVudC5jPgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0t
-LS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBNYWtl
-ZmlsZQpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTogMzIzIGJ5dGVzCkRlc2M6
-IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFp
-L2F0dGFjaG1lbnRzLzIwMTcwNzI3LzBkMGZmZTA4L2F0dGFjaG1lbnQub2JqPgotLS0tLS0tLS0t
-LS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBz
-Y3J1YmJlZC4uLgpOYW1lOiBLY29uZmlnClR5cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQpT
-aXplOiA2MjkgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5v
-cmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNzA3MjcvMGQwZmZlMDgvYXR0YWNo
-bWVudC0wMDAxLm9iaj4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEg
-bm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogY29uZmlnClR5cGU6IGFw
-cGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXplOiAxMTAyMTEgYnl0ZXMKRGVzYzogbm90IGF2YWls
-YWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVu
-dHMvMjAxNzA3MjcvMGQwZmZlMDgvYXR0YWNobWVudC0wMDAyLm9iaj4KLS0tLS0tLS0tLS0tLS0g
-bmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJi
-ZWQuLi4KTmFtZTogc3BpLWlteC5jClR5cGU6IHRleHQveC1jc3JjClNpemU6IDM2OTc3IGJ5dGVz
-CkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94
-ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTcwNzI3LzBkMGZmZTA4L2F0dGFjaG1lbnQtMDAwMS5jPgo=
+On Sat, Jun 17, 2017 at 04:52:18PM +0000, Giulio Moro wrote:
+> Hi,
+> I ported this GPIO driver from Xenomai 2.6 to Xenomai 3 and I run it on the Beaglebone Black: https://github.com/giuliomoro/gpio-irq-rtdm/
+> 
+> TheRTDM  irq_handler (in gpio_irq_rtdm.c) toggles a pin "kernel timingpin" as soon as the IRQ is received.
+> The test program registers a pin to monitor and sleeps in a ioctl() waiting for the pin to go low. When the kernel unblocks it from the ioctl(), the task toggles another pin "user timingpin".
+> 
+> The original authors claims that, on the BeagleBone Black, with Xenomai 2.6:
+> * the kernel timingpin will change roughly 5us after the test pin is toggled by an external clock
+> *  the user timingpin will change roughly 5-10us after the kernel timingpin
+> 
+> The above values make sense to me.
+> 
+> My observations, on the BeagleBone Black, Linux 4.4.65 with Xenomai 3.0.5:
+> * the kernel timingpin will change roughly 4ms (milliseconds) after the test pin is toggled by an external clock
+> * the user timingpin will change 40 to 60us (microseconds) after the kernel timingpin
+> 
+> So it seems that in my case it takes a long time for the irq_handler() to be called after the test pin is toggled.
+> Am I doing something wrong in the kernel module ?
+> 
+> See in particular irq_handler() and gpio_irq_ioctl_rt() in gpio_irq_rtdm.c
+> and demo() in gpio-irq-test.c
+
+The 4ms delay reminds me of a problem I had on the am57xx with a gpio irq.
+Turns out that in that case smartidle was enabled and the gpio bank
+would go into sleep mode and it took 4ms to wake up before the irq would
+show up.  Turning off the smartidle on the gpio bank so that it never
+could go to sleep solved the problem.  Maybe this TI chip has a similar
+feature.
+
+-- 
+Len Sorensen
+
