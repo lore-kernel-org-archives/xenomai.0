@@ -1,14 +1,14 @@
-References: <DEB5F512-B818-454D-A423-7CB391071BBD@gmail.com>
- <20170725190214.6f2fd892@md1em3qc>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <86e8d4b9-1118-27e5-2778-23316b0eabc8@xenomai.org>
-Date: Wed, 26 Jul 2017 11:25:51 +0200
+From: Giulio Moro <g.moro@qmul.ac.uk>
+Date: Tue, 20 Jun 2017 01:57:30 +0000
+Message-ID: <DB6PR0701MB2456EF514E9F35DE586D1EFDB5C50@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+References: <DB6PR0701MB24567D7382C2C3C1C6BBB0A3B5C60@DB6PR0701MB2456.eurprd07.prod.outlook.com>,
+ <3f72aa86-8922-540f-36ca-cad41840dcc4@xenomai.org>
+In-Reply-To: <3f72aa86-8922-540f-36ca-cad41840dcc4@xenomai.org>
+Content-Language: en-GB
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <20170725190214.6f2fd892@md1em3qc>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rt_task_create fails
+Subject: Re: [Xenomai] Gpio: IRQ handler is called ~4ms after state change
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,31 +17,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, mathew.benson@gmail.com
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/25/2017 07:02 PM, Henning Schild wrote:
-> Am Tue, 25 Jul 2017 07:48:46 -0500
-> schrieb <mathew.benson@gmail.com>:
-> 
->> I ported Xenomai 3.0.5 to Petalinux 2017.1.  The supported tests run
->> fine, but my code is failing.  rt_task_create always fails with errno
->> set to 17 (EEXIST).  Doesn't matter what arguments I give it.  Before
->> I dissect this further, does anybody have any insight?
-> 
-> Your thread might not have a shadow yet and you might see a case where
-> an EPERM is transformed into an EEXIST.
-> We did not discuss the transformation bug yet. But your solution might
-> be to just shadow on EPERM and EEXIST, or before calling anything that
-> needs a shadow.
-> 
-> http://www.xenomai.org/pipermail/xenomai/2017-July/037474.html
+> This is unlikely a Xenomai issue strictly speaking. You may want to
+> check the I-pipe code instead, there is certainly a problem with the
+> interrupt delivery code in the low level handler.
 
-Testing EPERM is not robust, there are other cases triggering such
-error. pthread_kill(pthread_self(), 0) is a better way to check whether
-the current thread is known to Cobalt (__RT(pthread_kill(...)) if symbol
-wrapping is not in effect).
+I have no idea where to start from in checking the i-pipe code.
 
--- 
-Philippe.
+What I can say is that I went back to 4.4.43, which is the version original=
+ly targeted by the i-pipe patch which is released on the xenomai website, a=
+nd the issue is still there.
+
+Any pointers appreciated.
+
+Thanks,
+Giulio=
 
