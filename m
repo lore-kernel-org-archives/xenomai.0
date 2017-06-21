@@ -1,22 +1,13 @@
-References: <664a5757-3d5a-af0d-96a0-485bc71d58f8@siemens.com>
- <73a53c88-66cd-0c01-5fe7-0303a30ccd2b@xenomai.org>
- <963cf145-9056-2b41-e5ef-0394ccf5c202@siemens.com>
- <d195f384-bc18-d3c6-d880-8ada841423c1@xenomai.org>
- <4056a282-cc9e-6f20-fe64-0bd30003416e@siemens.com>
- <8b44beec-a788-3d4a-b07b-100c4467294b@xenomai.org>
- <d3a3e753-b446-f9c0-3bd5-2dc2185990c4@siemens.com>
- <a9ef1c06-c9c2-46ca-1e3a-07de9cf12a9f@xenomai.org>
- <49f1424e-96ac-c4ef-081e-8cb6d31d1706@siemens.com>
- <99d50346-9249-772b-b4e3-cc54d4c3b2d2@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ca6a67ab-e6d0-535e-26f2-e8e41cc30076@siemens.com>
-Date: Wed, 2 Aug 2017 18:29:53 +0200
+From: Giulio Moro <g.moro@qmul.ac.uk>
+Date: Wed, 21 Jun 2017 12:35:49 +0000
+Message-ID: <DB6PR0701MB245673214C08183B8E062DDCB5DA0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+References: <VI1PR0101MB2000512FB04A44993FDD1AC6B8DA0@VI1PR0101MB2000.eurprd01.prod.exchangelabs.com>
+In-Reply-To: <VI1PR0101MB2000512FB04A44993FDD1AC6B8DA0@VI1PR0101MB2000.eurprd01.prod.exchangelabs.com>
+Content-Language: en-GB
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <99d50346-9249-772b-b4e3-cc54d4c3b2d2@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Avoid stopping all timers during debug sessions
+Subject: Re: [Xenomai] Toggling GPIO RT Xenomai on Dragonboard 41c
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,99 +16,155 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: "eladyaakovi@campus.technion.ac.il" <eladyaakovi@campus.technion.ac.il>, "xenomai@xenomai.org" <xenomai@xenomai.org>, "xenomai-request@xenomai.org" <xenomai-request@xenomai.org>
 
-On 2017-08-02 18:17, Philippe Gerum wrote:
-> On 08/02/2017 06:06 PM, Jan Kiszka wrote:
->> On 2017-08-02 17:57, Philippe Gerum wrote:
->>> On 08/02/2017 05:43 PM, Jan Kiszka wrote:
->>>> On 2017-08-02 15:05, Philippe Gerum wrote:
->>>>> On 08/02/2017 02:54 PM, Jan Kiszka wrote:
->>>>>> On 2017-08-02 14:47, Philippe Gerum wrote:
->>>>>>> On 08/02/2017 01:03 PM, Jan Kiszka wrote:
->>>>>>>> On 2017-08-02 10:12, Philippe Gerum wrote:
->>>>>>>>> On 07/27/2017 08:03 PM, Jan Kiszka wrote:
->>>>>>>>>> Hi,
->>>>>>>>>>
->>>>>>>>>> currently, when gdb interrupts a Xenomai application, all timers stop
->>>>>>>>>> firing (except for those marked with XNTIMER_NOBLCK - core timers). This
->>>>>>>>>> means, you can't debug one RT application without affecting others on
->>>>>>>>>> the same systems. I'm not wondering how to resolve this. Options:
->>>>>>>>>>
->>>>>>>>>>  - convert timer stopping to a per-process feature - implies the need to
->>>>>>>>>>    establish some timer-process relationship concept, and it might be
->>>>>>>>>>    tricky for drivers and other central timer creators
->>>>>>>>>>
->>>>>>>>>>  - let the application deal with timer overflows during debug:
->>>>>>>>>>     - make timer stop optional (in case of single applications that
->>>>>>>>>>       can't handle this yet)
->>>>>>>>>>     - do not stop timers at all
->>>>>>>>>>
->>>>>>>>>> Any opinions?
->>>>>>>>>>
->>>>>>>>>
->>>>>>>>> That stuff is a relic from the Dark Ages, which not only sits in a hot
->>>>>>>>> path, but also crashes an ARM board here when ptracing. At the very
->>>>>>>>> least, the implementation is overkill and needs fixing.
->>>>>>>>>
->>>>>>>>> I'm working on a much simpler and less intrusive approach, I'll follow
->>>>>>>>> up today on this.
->>>>>>>>
->>>>>>>> OK, looking forward.
->>>>>>>
->>>>>>> To answer your original question, I would either let the application
->>>>>>> deal with overruns, or provide an implementation that only cares for
->>>>>>> hiding overruns that may have occurred due to ptracing, instead of
->>>>>>> trying to somehow freeze time.
->>>>>>>
->>>>>>> So I pushed an implementation doing exactly that, fixing the breakage
->>>>>>> issue in the same move. There is no such thing as blocked timers
->>>>>>> anymore, we just pretend that no overrun took place when asked via
->>>>>>> xntimer_get_overrun() after a ptraced state has existed, until an
->>>>>>> originally relaxed caller eventually leaves the kernel in primary mode,
->>>>>>> at which point normal accounting is restarted.
->>>>>>>
->>>>>>> That should exactly cover the case we are interested in, i.e. a once
->>>>>>> ptraced - therefore relaxed - thread, returning from any service which
->>>>>>> may collect the overrun count, and has to do so from primary mode (e.g.
->>>>>>> sigwait(), timerfd.read(), rtdm_task_wait_period()).
->>>>>>>
->>>>>>> The code is in wip/sstep for now.
->>>>>>>
->>>>>>
->>>>>> Will have a look.
->>>>>>
->>>>
->>>> The approach looks good, but please split up refactorings from the
->>>> functional change - reviewing and also cherry-picking the patch is hard
->>>> now (I will need to keep some structuring for the rtdebug patches below).
->>>>
->>>
->>> Except for a single comment being reworded, the rest is a drop-in
->>> replacement for the previous approach, there is no refactoring. I can
->>> remove the former implementation, then add the new one in a separate
->>> patch if that helps.
->>
->> The removal of register_debugged_thread is refactoring (I will have to
->> reintroduce it).
+As you ask "Can't we work without device driver ?": here is a driver-less s=
+olution which may work on your platform (if it supports memmapping the GPIO=
+ banks) and may suit your needs.
 
-And the corresponding unregister_debugged_thread will also be needed
-again, including a call site that is - granted - not required for the
-upstream code right now.
+I have some working user-space code to read and toggle GPIOs on a BeagleBon=
+e Black, which simply uses memory mapping and is real-time safe.
+It consists of these files:
+https://github.com/BelaPlatform/Bela/blob/master/include/Gpio.h
+https://github.com/BelaPlatform/Bela/blob/master/include/GPIOcontrol.h
+https://github.com/BelaPlatform/Bela/blob/master/core/GPIOcontrol.cpp
 
-> 
-> register_debugged_thread() contained a two-liner which became a
-> one-liner in the new implementation. I don't see the inlining of such
-> one-liner as losing any information about the implementation.
+The GPIOcontrol stuff (by Derek Molloy) exports the pin through the sysfs i=
+nterface, but then in Gpio.h the actual memory mapping takes place.
+You will have to replace these constants with the ones for your architectur=
+e (the technical reference manual for your hardware should give you the cor=
+rect addresses):
 
-We have more one-liners that semantically wrap some trivial state changes.
+static const uint32_t GPIO_SIZE =3D  0x198;
+static const uint32_t GPIO_DATAIN =3D (0x138 / 4);
+static const uint32_t GPIO_CLEARDATAOUT =3D (0x190 / 4);
+static const uint32_t GPIO_SETDATAOUT =3D (0x194 / 4);
+static const uint32_t GPIO_ADDRESSES[4] =3D {
+	0x44E07000,
+	0x4804C000,
+	0x481AC000,
+	0x481AE000,
+};
 
-It would have just helped the upcoming patches and focused this change
-on the semantical differences. /me is writing a partial revert patch then.
+Hope this helps,
+Giulio
 
-Jan
+________________________________________
+From: Xenomai <xenomai-bounces@xenomai.org> on behalf of eladyaakovi@campus=
+.technion.ac.il <eladyaakovi@campus.technion.ac.il>
+Sent: 21 June 2017 09:10
+To: xenomai@xenomai.org; xenomai-request@xenomai.org
+Subject: [Xenomai] Toggling GPIO RT Xenomai on Dragonboard 41c
 
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+Hi, I wrote a code that up and down (toggling) gpio.
+I want to do the same with RT function.
+
+Here pessudo code:
+
+void not_rt_func(void *arg)
+{
+time_t t =3D time(NULL) + 10;
+while (time(NULL) < t) {
+                //gpio up
+sleep(1000);
+//gpio down
+                sleep(1000);
+}
+return NULL;
+}
+
+
+That code worked well (with up and down function, we used files:
+
+
+
+        FILE *dir;
+ dir =3D fopen("/sys/class/gpio/gpio13/value","w");
+
+
+
+
+
+
+
+        fprintf(dir, "%d", 1);  //gpio up
+
+        fprintf(dir, "%d", 0);  //gpio down
+
+
+
+
+
+
+        fclose(dir);
+
+)
+
+
+I want to make the same as real time.
+I saw examples worked with PWM but it is too complicated to my "problem".
+I just want to make this toggling with a RT process (and realtime up and do=
+wn GPIO)
+He used device driver, should i use it too ?
+Can't we work without device driver ?
+
+if we might use it, so i thought to write it like this:
+
+
+
+user function:
+
+int dev =3D open("/dev/rtdm/my_gpio",O_RDWR);
+RT_TASK rt_task;
+
+
+
+
+void rt_func(void *arg)
+{
+time_t t =3D time(NULL) + 10;
+while (time(NULL) < t) {
+ioctl(dev, GPIO_UP,NULL); //gpio up
+rt_task_sleep(1000);
+ioctl(dev, GPIO_DOWN,NULL); //gpio down
+rt_task_sleep(1000);
+}
+return NULL;
+}
+
+
+
+device driver:
+struct gpio_data {
+int gpio;
+};
+
+static int gpio_ioctl_rt(struct rtdm_fd *fd, unsigned int request, void __u=
+ser *arg)
+{
+struct gpio_data*ctx =3D rtdm_fd_to_private(fd);
+switch (request) {
+case GPIO_UP:
+if (ctx->gpio > 0)
+return -EBUSY;
+gpio_set_value(ctx->gpio, 1);
+case GPIO_DOWN:
+if (ctx->gpio =3D=3D 0)
+return -EBUSY;
+gpio_set_value(ctx->gpio, 0);
+default:
+return -EINVAL;
+}
+}
+
+
+
+
+
+Do you think it is OK ?
+
+_______________________________________________
+Xenomai mailing list
+Xenomai@xenomai.org
+https://xenomai.org/mailman/listinfo/xenomai
 
