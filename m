@@ -1,12 +1,16 @@
-Date: Thu, 10 Aug 2017 11:49:56 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20170810114956.04f62bc6@md1em3qc>
-In-Reply-To: <CADYdroNR6zjbKrPKPm3d_7+55Rg2SDbmpxiNR-xu78QNHSrr9g@mail.gmail.com>
-References: <CADYdroNR6zjbKrPKPm3d_7+55Rg2SDbmpxiNR-xu78QNHSrr9g@mail.gmail.com>
+From: "eladyaakovi@campus.technion.ac.il" <eladyaakovi@campus.technion.ac.il>
+Date: Thu, 22 Jun 2017 15:05:17 +0000
+Message-ID: <VI1PR0101MB2000C28614FCC6EED3B15A04B8DB0@VI1PR0101MB2000.eurprd01.prod.exchangelabs.com>
+References: <VI1PR0101MB2000512FB04A44993FDD1AC6B8DA0@VI1PR0101MB2000.eurprd01.prod.exchangelabs.com>,
+ <DB6PR0701MB245673214C08183B8E062DDCB5DA0@DB6PR0701MB2456.eurprd07.prod.outlook.com>,
+ <VI1PR0101MB20008C1321074C271F56BBA2B8DB0@VI1PR0101MB2000.eurprd01.prod.exchangelabs.com>,
+ <DB6PR0701MB2456F0240792DE24F631E5DFB5DB0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+In-Reply-To: <DB6PR0701MB2456F0240792DE24F631E5DFB5DB0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+Content-Language: he-IL
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Won`t build on new Debian Stable
+Content-Type: text/plain; charset="windows-1255"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Toggling GPIO RT Xenomai on Dragonboard 41c
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,39 +19,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Norbert Lange <nolange79@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Giulio Moro <g.moro@qmul.ac.uk>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Norbert,
+Is there any other sleep function for real time ?
 
-Thanks! In fact that issue has come up before and a similar workaround
-was described. It should be fixed, patches welcome!
+this sleep is not working well
 
-Henning
+oscilloscope measured 30ms.
 
-Am Wed, 9 Aug 2017 16:21:02 +0200
-schrieb Norbert Lange <nolange79@gmail.com>:
+and it is not changing when I change the values.
 
-> Hello,
-> 
-> Building the xenomai package won`t work because debian now defaults to
-> using pie, and the linker will complain with "ld: -r and -pie may not
-> be used together"
-> 
-> A workaround for now is to add the flags manually:
-> ../xenomai-3.0.5/configure LDFLAGS=-no-pie CFLAGS="-fno-PIE -fno-pie
-> -no-pie"
-> 
-> A real fix would be similar to
-> http://lists.gnu.org/archive/html/bug-grub/2016-11/msg00011.html
-> (no-pie is not supported on old and other compilers)
-> 
-> Kind regards,
-> Norbert
-> 
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
+________________________________
+=EE=E0=FA: Giulio Moro <g.moro@qmul.ac.uk>
+=FE=FE=F0=F9=EC=E7: =E9=E5=ED =E7=EE=E9=F9=E9 22 =E9=E5=F0=E9 2017 15:30:03
+=FE=FE=E0=EC: Elad Yaakovi; xenomai@xenomai.org
+=FE=FE=F0=E5=F9=E0: Re: Toggling GPIO RT Xenomai on Dragonboard 41c
 
+> Can you explain please why this is not writing to a file:
 
+Is this related to "Re: Toggling GPIO RT Xenomai on Dragonboard 41c" or sho=
+uld it go under a separate heading?
+
+> (without the rt_task_sleep(1000) and the while it works fine).
+
+Many things could be wrong with this.
+If `time_to_run` is very small (or zero), then the condition is never met. =
+On the other hand , I have no idea what time(NULL) does. Why don't you add =
+a `printf()` inside the loop to see if it gets called once at least?
+Also, I have no idea why you would try to write one byte to disk every 1 mi=
+crosecond and how / whether your system would be capable of dealing with it=
+.
+
+Are you using some Xenomai wrappers or is `fprintf` actually calling the st=
+dlib `fprintf` ? In the latter case, then I see this code as potentially ha=
+nging your system if it actually were to run and `time_to_run` is not small=
+ enough.
+
+Just guessing, because we do not see a larger portion of your code.
