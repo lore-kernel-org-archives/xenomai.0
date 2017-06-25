@@ -1,7 +1,7 @@
-Date: Sun, 25 Jun 2017 17:10:40 +0200
+Date: Sun, 25 Jun 2017 17:10:42 +0200
 From: xenomai@xenomai.org
-Message-Id: <E1dP9BR-0005ng-1m@xenomai.org>
-Subject: [Xenomai] [I-PIPE] ipipe-core-4.4.71-powerpc-7 released
+Message-Id: <E1dP9BT-0005xk-89@xenomai.org>
+Subject: [Xenomai] [I-PIPE] ipipe-core-4.4.71-x86-8 released
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,5 +12,5 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Download: https://xenomai.org/downloads/ipipe/v4.x/powerpc/ipipe-core-4.4.71-powerpc-7.patch
+Download: https://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.4.71-x86-8.patch
 
