@@ -1,12 +1,9 @@
-From: Lowell Gilbert <kludge@be-well.ilk.org>
-References: <CAFUnMkmjyjzjSZinsBGDFtDXbNU7GLbbLC7v=ztjk-MU-x2BVw@mail.gmail.com>
-Date: Wed, 28 Jun 2017 11:53:01 -0400
-In-Reply-To: <CAFUnMkmjyjzjSZinsBGDFtDXbNU7GLbbLC7v=ztjk-MU-x2BVw@mail.gmail.com>
- (Ashok kumar's message of "Wed, 28 Jun 2017 13:04:01 +0530")
-Message-ID: <44tw30nm76.fsf@be-well.ilk.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-Subject: Re: [Xenomai] watchdog triggered -- signalling runaway thread
+From: Jackson Jones <jackson.jones@gmail.com>
+Date: Thu, 29 Jun 2017 14:15:42 -0700
+Message-ID: <CADXNiGXcYVk8JUDv24_TVLtvRQ=hJaaSiMzwQPct5V92U-jGYw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] real-time spi driver for imx6
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,18 +12,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ashok kumar <ashokkumar.bb@gmail.com>
-Cc: xenomai@xenomai.org
+To: Xenomai@xenomai.org
 
-Ashok kumar <ashokkumar.bb@gmail.com> writes:
+Are there any plans to add a real-time driver for the imx6 spi?
 
-> In xenomai I am running two task for 1ms task period for two task
-> after a while  I get Cpu time limit exceeded (core dumped) in the terminal
-> and in the syslog  the error message "watchdog triggered -- signalling
-> runaway thread"
->
-> is there any solution to this problem
 
-Make sure your thread doesn't use all of the CPU.
-It should block or sleep occasionally.
+Thanks,
 
+Jackson Jones
+
+
+Jackson Jones
+Senior Project Software Engineer
+
+Stellartech Research Corporation
+560 Cottonwood Dr.
+Milpitas, CA 95035
+
+work: 408-331-3159
+cell: 408-835-5334
+Email: jjones@stellartec.com
+Home Email: jackson.jones@gmail.com
