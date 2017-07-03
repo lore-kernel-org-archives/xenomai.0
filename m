@@ -1,13 +1,13 @@
-References: <dff5d476-55b9-f609-ec06-07a3f3c88958@inova.cz>
+References: <DB6PR0701MB2456796DCEDA2465D1A7EDF6B5C70@DB6PR0701MB2456.eurprd07.prod.outlook.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <14ad8a81-a441-30d8-b158-9c6bb6205efd@xenomai.org>
-Date: Mon, 3 Jul 2017 15:52:20 +0200
+Message-ID: <f13f5701-947a-2181-b787-1c5ea60d5564@xenomai.org>
+Date: Mon, 3 Jul 2017 18:53:44 +0200
 MIME-Version: 1.0
-In-Reply-To: <dff5d476-55b9-f609-ec06-07a3f3c88958@inova.cz>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <DB6PR0701MB2456796DCEDA2465D1A7EDF6B5C70@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] High latencies with RT memory heap on xenomai 2.6.5
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] drivers/gpio/gpio-core.c is broken on 4.4.9
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,35 +16,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?SmnFmcOtIER1xaFlaw==?= <dusek@inova.cz>, xenomai@xenomai.org
+To: Giulio Moro <g.moro@qmul.ac.uk>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/03/2017 03:21 PM, Jiří Dušek wrote:
-> Hello,
+On 06/18/2017 05:09 PM, Giulio Moro wrote:
+> the `dev` member of `struct gpio_chip` was replaced by `parent` as of 
 > 
-> We have experienced high latencies when pushing our application to the
-> limits. Debugging led me to the realtime heap. Stress testing realtime
-> heap has unexpected results. Stressing realtime heap from one task has
-> no latency problem. Stressing realtime heap from two tasks bound to the
-> same CPU has no latency problem. Stressing realtimne heap from two tasks
-> bound to two distinct CPUs causes high latencies. There is nothing
-> obvious like mode switches or errors.
+> commit 58383c78425e4ee1c077253cf297b641c861c02e
+> Author: Linus Walleij <linus.walleij@linaro.org>
+> Date:   Wed Nov 4 09:56:26 2015 +0100
 > 
-> Is this expected behavior of rt_heap_alloc/free? Can we do something to
-> prevent this problem?
+>     gpio: change member .dev to .parent
+>     
+>     The name .dev in a struct is normally reserved for a struct device
+>     that is let us say a superclass to the thing described by the struct.
+>     struct gpio_chip stands out by confusingly using a struct device *dev
+>     to point to the parent device (such as a platform_device) that
+>     represents the hardware. As we want to give gpio_chip:s real devices,
+>     this is not working. We need to rename this member to parent.
+> 
+> 
+> Therefore the following patch is needed to compile drivers/xenomai/gpio/gpio-core.c. on 4.9.x
+> 
+> Notes:
+> a) Unfortunately I am not able to verify that it works because I am not on one of the devices supported by the gpio drivers
+> b) you need ifdefs around the change to make sure you do not break older builds (e.g.: on 4.4.x the original version works fine).
+> 
+> diff --git a/drivers/xenomai/gpio/gpio-core.c b/drivers/xenomai/gpio/gpio-core.c
+> index b8cb044..17d201c 100644
+> --- a/drivers/xenomai/gpio/gpio-core.c
+> +++ b/drivers/xenomai/gpio/gpio-core.c
+> @@ -428,7 +428,7 @@ static int match_gpio_chip(struct gpio_chip *gc, void *data)
+>  {
+>         struct device *dev = data;
+>  
+> -       return gc->dev == dev;
+> +       return gc->parent == dev;
+>  }
+> 
 
-~1 ms jitter is obviously totally pathological, especially when the
-typical latency is under 10 us.
-
-Xenomai 2.6.5 is EOL, and several bugs have been fixed in the pipeline
-patch since kernel 3.5, so the priority of digging any issue in such an
-outdated context is very low.
-
-To trigger some investigation, you could upgrade your setup. Xenomai
-3.0.5 over kernel 4.1 or later would do.
-
-You could also pinpoint the high latency spot by tracing the kernel,
-enabling CONFIG_IPIPE_TRACE:
-https://xenomai.org/2014/06/using-the-i-pipe-tracer/
+Picked, thanks.
 
 -- 
 Philippe.
