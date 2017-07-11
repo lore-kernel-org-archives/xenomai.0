@@ -1,9 +1,9 @@
 From: Simone Zucchi <simone.zucchi@utpvision.it>
-Date: Tue, 11 Jul 2017 14:50:15 +0000
-Message-ID: <8a41c134-9ad4-ee16-abe7-9d781713dba9@utpvision.it>
+Date: Tue, 11 Jul 2017 14:50:21 +0000
+Message-ID: <991b9f79-a482-14ad-d7f7-f0fba6d4b7b0@utpvision.it>
 Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-ID: <2C50933C4259504E835413B67E122DEA@utpvision.local>
+Content-ID: <AC617A7488119143A6479C06E6926B77@utpvision.local>
 Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 Subject: [Xenomai] Kernel CONFIG_MIGRATION flag
