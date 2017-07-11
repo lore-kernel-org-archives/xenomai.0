@@ -1,15 +1,7 @@
-References: <20170711104133.4d12cfc7@md1em3qc>
- <cd72619e-feeb-57f0-51dd-7c720b06596a@xenomai.org>
- <20170711123056.232b8640@md1em3qc>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <decf2b5e-c670-1ede-4bff-48da95d6da8e@xenomai.org>
-Date: Tue, 11 Jul 2017 12:30:24 +0200
-MIME-Version: 1.0
-In-Reply-To: <20170711123056.232b8640@md1em3qc>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] secondary mode switches on rt_task_set_priority
+From: Henning Schild <henning.schild@siemens.com>
+Date: Tue, 11 Jul 2017 13:32:12 +0200
+Message-Id: <20170711113213.16427-1-henning.schild@siemens.com>
+Subject: [Xenomai] [PATCH 1/2] lib/alchemy: fix rt_mutex_create return values
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,39 +10,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai @ xenomai . org" <xenomai@xenomai.org>
 
-On 07/11/2017 12:30 PM, Henning Schild wrote:
-> Am Tue, 11 Jul 2017 11:45:20 +0200
-> schrieb Philippe Gerum <rpm@xenomai.org>:
-> 
->> On 07/11/2017 10:41 AM, Henning Schild wrote:
->>> Hi,
->>>
->>> i was asked to assist debugging a case where a SIGXCPU is received
->>> after calling rt_task_set_priority. According to the docs that call
->>> should not cause secondary mode switches, but it seems it does.  
->>
->> This is a documented issue:
->> http://xenomai.org/migrating-from-xenomai-2-x-to-3-x/#Scheduling
->>
->>> Xenomai 3.0.5 kernel 4.4.43
->>>
->>> I did not start digging yet but wanted to ask if someone has already
->>> come across that scenario.
->>>   
->>
->> There is no work around with 3.0.x. There is a build option with the
->> upcoming 3.1 in -next called --enable-lazy-setsched, which defers the
->> priority update on the glibc-side until the target thread switches to
->> secondary mode.
-> 
-> So it is known and the call should probably be tagged switch-secondary?
-> 
+From: Henning Schild <henning.schild@siemens.com>
 
-Any patch welcome.
+rt_mutex_create turned an -EPERM from the cobalt kernel syscall path
+into an -EEXIST. If you have a model where threads create their
+shadows on demand, when seeing the first -EPERM, that return value
+must not be changed.
 
+Signed-off-by: Henning Schild <henning.schild@siemens.com>
+---
+ lib/alchemy/mutex.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/lib/alchemy/mutex.c b/lib/alchemy/mutex.c
+index 3aa55dd521..8c5e5f5968 100644
+--- a/lib/alchemy/mutex.c
++++ b/lib/alchemy/mutex.c
+@@ -96,7 +96,8 @@ static struct registry_operations registry_ops;
+  * registered mutex.
+  *
+  * - -EPERM is returned if this service was called from an
+- * asynchronous context.
++ * asynchronous context. Or - in dual kernel - when the thread is not
++ * allowed to issue syscalls.
+  *
+  * @apitags{mode-unrestricted, switch-secondary}
+  *
+@@ -147,12 +148,16 @@ int rt_mutex_create(RT_MUTEX *mutex, const char *name)
+ 		ret = 0;
+ 	}
+ 
+-	if (syncluster_addobj(&alchemy_mutex_table, mcb->name, &mcb->cobj)) {
++	if (ret = syncluster_addobj(&alchemy_mutex_table, mcb->name,
++				    &mcb->cobj))
++	{
+ 		registry_destroy_file(&mcb->fsobj);
+ 		xnfree(mcb);
+-		ret = -EEXIST;
+-	} else
++		if (ret != -EPERM)
++			ret = -EEXIST;
++	} else {
+ 		mutex->handle = mainheap_ref(mcb, uintptr_t);
++	}
+ out:
+ 	CANCEL_RESTORE(svc);
+ 
 -- 
-Philippe.
+2.13.0
+
 
