@@ -1,13 +1,16 @@
-MIME-Version: 1.0
-In-Reply-To: <20170712111931.0f78f255@md1em3qc>
+From: Simone Zucchi <simone.zucchi@utpvision.it>
+Date: Wed, 12 Jul 2017 13:02:05 +0000
+Message-ID: <886dbf04-b3ac-fbca-0a16-88e4e27bc2ff@utpvision.it>
 References: <057af6c3-168f-052d-a7c2-c4a661dc3a51@utpvision.it>
  <20170711173311.4a6c5354@md1em3qc>
  <736ba8ed-7776-4a75-d42b-7703bb4fba0e@utpvision.it>
  <20170712111931.0f78f255@md1em3qc>
-From: Ashok kumar <ashokkumar.bb@gmail.com>
-Date: Wed, 12 Jul 2017 16:13:06 +0530
-Message-ID: <CAFUnMknuEVhX0v=boyrDt3Fihd2vkGtVHD36q+UhaVFxaFMEgQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20170712111931.0f78f255@md1em3qc>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <FD9072875115EB4697067EC24C94F70A@utpvision.local>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] Cobalt core install linker problem
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -20,189 +23,133 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Henning Schild <henning.schild@siemens.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+QXQgdGhlIG1vbWVudCBJJ20gYmVuY2htYXJraW5nIGJvdGggY29yZXMsIE1lcmN1cnkgYW5kIENv
+YmFsdC4NCkJ1aWxkaW5nIFhlbm9tYWkgZm9yIE1lcmN1cnkgY29yZSB1c2FnZSBkb2Vzbid0IGJ1
+aWxkIHhlbm8tdGVzdCwgYW1vbmcgb3RoZXINCnRoaW5ncy4NCklmIEkgdW5kZXJzdGFuZCBjb3Jy
+ZWN0bHkgZG9jdW1lbnRhdGlvbiBhdCBjaGFwdGVyIFRlc3RpbmcgdGhlIHJlYWwtdGltZSANCnN5
+c3RlbQ0KKGJvdGggY29yZXMpLCBpdCBzaG91bGQgZ2V0IGJ1aWx0IGZvciBNZXJjdXJ5LCBzaG91
+bGRuJ3QgaXQ/DQoNClRoYW5rcywNCg0KU2ltb25lDQoNCk9uIDA3LzEyLzIwMTcgMTE6MTkgQU0s
+IEhlbm5pbmcgU2NoaWxkIHdyb3RlOg0KPiBBbSBXZWQsIDEyIEp1bCAyMDE3IDA3OjE2OjQ1ICsw
+MDAwDQo+IHNjaHJpZWIgU2ltb25lIFp1Y2NoaSA8c2ltb25lLnp1Y2NoaUB1dHB2aXNpb24uaXQ+
+Og0KPg0KPj4+IFJlY2VudCBjb21waWxlcnMgZGVmYXVsdCB0byBnZW5lcmF0aW5nIHBvc2l0aW9u
+IGluZGVwZW5kYW50DQo+Pj4gYmluYXJpZXMuIFRoYXQgcHJvYmxlbSBzaG91bGQgZ2V0IGZpeGVk
+IGluIHhlbm9tYWkuIEZvciB0aGUgdGltZQ0KPj4+IGJlaW5nIHlvdSBjYW4gcnVuIG1ha2UgQ0ZM
+QUdTPSItbm8tcGllIiAtaiBgbnByb2NgDQo+Pj4gdG8gd29yayBhcm91bmQgdGhlIHByb2JsZW0u
+DQo+PiBUaGF0IHdhcyB0aGUgY2FzZSEgQnVpbHQgd2l0aG91dCBhIHByb2JsZW0uVGhhbmtzIGEg
+bG90IQ0KPj4gQnkgdGhlIHdheSwgSXMgaXQgY29ycmVjdCB0aGF0IHhlbm8tdGVzdCB3b24ndCBi
+ZSBidWlsdD8NCj4gSXQgc2hvdWxkIGJlLiBJZiB5b3UNCj4gdG91Y2ggdGVzdHN1aXRlL3hlbm8t
+dGVzdC94ZW5vLXRlc3QtcnVuLmM7IG1ha2UNCj4gaXQgd2lsbCByZWJ1aWxkIHNvbWV0aGluZy4g
+QWZ0ZXIgYSAibWFrZSBpbnN0YWxsIiB5b3Ugc2hvdWxkIGJlIGFibGUgdG8NCj4gcnVuIHNvbWV0
+aGluZyBsaWtlIHRoaXM6DQo+IHhlbm8tdGVzdCAtbCAiZG9oZWxsIC1tIC90bXAgMzAwIiAtcCAx
+MDAwDQo+DQo+IE91ciBDSSBkb2VzICJkaF9hdXRvcmVjb25mOyBkcGtnLWJ1aWxkcGFja2FnZSAt
+aiQoSk9CUykgLXVjIC11cyIgYW5kDQo+IHRoZSBwYWNrYWdlcyBjb250YWluIGEgcnVubmFibGUg
+eGVuby10ZXN0DQo+DQo+IEhlbm5pbmcNCj4NCj4+IFNpbW9uZQ0KPj4NCj4+IE9uIDA3LzExLzIw
+MTcgMDU6MzMgUE0sIEhlbm5pbmcgU2NoaWxkIHdyb3RlOg0KPj4+IEFtIFR1ZSwgMTEgSnVsIDIw
+MTcgMTQ6MjI6MDIgKzAwMDANCj4+PiBzY2hyaWViIFNpbW9uZSBadWNjaGkgPHNpbW9uZS56dWNj
+aGlAdXRwdmlzaW9uLml0PjoNCj4+PiAgIA0KPj4+PiBIZWxsbyBldmVyeWJvZHksDQo+Pj4+IEkn
+bSB0cnlpbmcgdG8gY29tcGlsZSB4ZW5vbWFpIHRvb2xzIC0td2l0aC1jb3JlPWNvYmFsdCBidXQg
+SSBrZWVwDQo+Pj4+IGhhIHZpbmcgaXNzdWVzIG9uIGxhdGVuY3kgdG9vbCwgc2VlbXMgb24gbGlu
+a2luZy4NCj4+Pj4gSWYgSSB0cnkgdG8gYnVpbGQgLS13aXRoLWNvcmU9bWVyY3VyeSBzd2l0Y2gg
+aXQgd29ya3MgZmxhd2xlc3NseToNCj4+PiAuLi4NCj4+Pj4gVGhlbiBJIHRyeSB0byBidWlsZCAt
+LXdpdGgtY29yZT1jb2JhbHQgYW5kIHNvbWV0aGluZyBnb2VzIHdyb25nOg0KPj4+Pg0KPj4+PiBy
+b290QGRlYmlhbjk6L3Vzci9zcmMveGVub21haS0zLjAuNSMgLi9jb25maWd1cmUgLS13aXRoLWNv
+cmU9Y29iYWx0DQo+Pj4+IC0tcHJlZml4PS91c3IvbG9jYWwveGVub21haS9jb2JhbHQgLS1kaXNh
+YmxlLWRlYnVnIC0tZW5hYmxlLXBzaGFyZWQNCj4+Pj4gLS1lbmFibGUtc21wID4vZGV2L251bGwN
+Cj4+Pj4gcm9vdEBkZWJpYW45Oi91c3Ivc3JjL3hlbm9tYWktMy4wLjUjIHRpbWUgbWFrZSAtajgg
+Pi9kZXYvbnVsbA0KPj4+IC4uLg0KPj4+PiAvdXNyL2Jpbi9sZDogLXIgYW5kIC1waWUgbWF5IG5v
+dCBiZSB1c2VkIHRvZ2V0aGVyDQo+Pj4+IGNvbGxlY3QyOiBlcnJvcjogbGQgcmV0dXJuZWQgMSBl
+eGl0IHN0YXR1cw0KPj4+PiBtYWtlWzJdOiAqKiogW2xhdGVuY3ldIEVycm9yIDENCj4+Pj4gbWFr
+ZVsxXTogKioqIFthbGwtcmVjdXJzaXZlXSBFcnJvciAxDQo+Pj4+IG1ha2U6ICoqKiBbYWxsLXJl
+Y3Vyc2l2ZV0gRXJyb3IgMQ0KPj4+IFJlY2VudCBjb21waWxlcnMgZGVmYXVsdCB0byBnZW5lcmF0
+aW5nIHBvc2l0aW9uIGluZGVwZW5kYW50DQo+Pj4gYmluYXJpZXMuIFRoYXQgcHJvYmxlbSBzaG91
+bGQgZ2V0IGZpeGVkIGluIHhlbm9tYWkuIEZvciB0aGUgdGltZQ0KPj4+IGJlaW5nIHlvdSBjYW4g
+cnVuIG1ha2UgQ0ZMQUdTPSItbm8tcGllIiAtaiBgbnByb2NgDQo+Pj4gdG8gd29yayBhcm91bmQg
+dGhlIHByb2JsZW0uDQo+Pj4NCj4+PiBIZW5uaW5nDQo+Pj4gICANCj4+Pj4gcmVhbCAgICAwbTgu
+MDU1cw0KPj4+PiB1c2VyICAgIDBtMjYuOTI0cw0KPj4+PiBzeXMgICAgMG0xLjkyOHMNCj4+Pj4N
+Cj4+Pj4gbGQgZmFpbHMgYXQgdGhpczoNCj4+Pj4NCj4+Pj4NCj4+Pj4gICAgICAgIE1ha2luZyBh
+bGwgaW4gdGVzdHN1aXRlDQo+Pj4+ICAgICAgICBtYWtlWzFdOiBFbnRlcmluZyBkaXJlY3RvcnkN
+Cj4+Pj4gJy91c3Ivc3JjL3hlbm9tYWktMy4wLjUvdGVzdHN1aXRlJyBNYWtpbmcgYWxsIGluIGxh
+dGVuY3kNCj4+Pj4gICAgICAgIG1ha2VbMl06IEVudGVyaW5nIGRpcmVjdG9yeQ0KPj4+PiAnL3Vz
+ci9zcmMveGVub21haS0zLjAuNS90ZXN0c3VpdGUvbGF0ZW5jeScNCj4+Pj4gICAgICAgICAgQ0Mg
+ICAgICAgbGF0ZW5jeS1sYXRlbmN5Lm8NCj4+Pj4gICAgICAgICAgQ0NMRCAgICAgbGF0ZW5jeQ0K
+Pj4+PiAgICAgICAgL3Vzci9iaW4vbGQ6IC1yIGFuZCAtcGllIG1heSBub3QgYmUgdXNlZCB0b2dl
+dGhlcg0KPj4+PiAgICAgICAgY29sbGVjdDI6IGVycm9yOiBsZCByZXR1cm5lZCAxIGV4aXQgc3Rh
+dHVzDQo+Pj4+ICAgICAgICBNYWtlZmlsZTo0NTE6IHJlY2lwZSBmb3IgdGFyZ2V0ICdsYXRlbmN5
+JyBmYWlsZWQNCj4+Pj4gICAgICAgIG1ha2VbMl06ICoqKiBbbGF0ZW5jeV0gRXJyb3IgMQ0KPj4+
+PiAgICAgICAgbWFrZVsyXTogTGVhdmluZyBkaXJlY3RvcnkNCj4+Pj4gJy91c3Ivc3JjL3hlbm9t
+YWktMy4wLjUvdGVzdHN1aXRlL2xhdGVuY3knDQo+Pj4+ICAgICAgICBNYWtlZmlsZTo0MjM6IHJl
+Y2lwZSBmb3IgdGFyZ2V0ICdhbGwtcmVjdXJzaXZlJyBmYWlsZWQNCj4+Pj4gICAgICAgIG1ha2Vb
+MV06ICoqKiBbYWxsLXJlY3Vyc2l2ZV0gRXJyb3IgMQ0KPj4+PiAgICAgICAgbWFrZVsxXTogTGVh
+dmluZyBkaXJlY3RvcnkgJy91c3Ivc3JjL3hlbm9tYWktMy4wLjUvdGVzdHN1aXRlJw0KPj4+PiAg
+ICAgICAgTWFrZWZpbGU6NDYwOiByZWNpcGUgZm9yIHRhcmdldCAnYWxsLXJlY3Vyc2l2ZScgZmFp
+bGVkDQo+Pj4+ICAgICAgICBtYWtlOiAqKiogW2FsbC1yZWN1cnNpdmVdIEVycm9yIDENCj4+Pj4N
+Cj4+Pj4NCj4+Pj4gTm8gbWF0dGVyIHdoaWNoIG9wdGlvbnMgSSBpbmNsdWRlIG9yIG5vdCwgaXQg
+bmV2ZXIgZ29lcyBvdmVyIHRoaXMuDQo+Pj4+IE1ha2UgcGxhaW4gKHdpdGhvdXQgLWo4KSBkb2Vz
+bid0IGhlbHAgZWl0aGVyLg0KPj4+Pg0KPj4+PiBJJ20gd29ya2luZyBvbiBhIERlYmlhbiA5IHdo
+aWNoIEkganVzdCBjb21waWxlZCB3aXRoIENvYmFsdCBDb3JlIC0NCj4+Pj4gYnV0IGV2ZW4gd2l0
+aCBzdGFuZGFyZCBEZWJpYW4ga2VybmVsIGl0IGRvZXNuJ3QgZ28gdGhyb3VnaC4NCj4+Pj4gT2Rk
+IGVub3VnaCwgaWYgSSBidWlsZCBYZW5vbWFpIHRvb2xzIHdpdGggYSBGZWRvcmEgMjUgbWFjaGlu
+ZSwgaXQNCj4+Pj4gd29ya3MuICpISU5UKiBvbiBGZWRvcmEgSSBnb3QgYSBkaWZmZXJlbnQgbGQg
+dmVyc2lvbiAoT0xERVIpLCB3aGljaA0KPj4+PiBkb2Vzbid0IHdhcm5zIG91dCBhYm91dCAiIGFy
+OiBgdScgbW9kaWZpZXIgaWdub3JlZCBzaW5jZSBgRCcgaXMgdGhlDQo+Pj4+IGRlZmF1bHQgKHNl
+ZSBgVScpIjoNCj4+Pj4NCj4+Pj4gRkVET1JBIFZFUlNJT046DQo+Pj4+ICAgICAgICBsZCAtdg0K
+Pj4+PiAgICAgICAgR05VIGxkIHZlcnNpb24gMi4yNi4xLTEuZmMyNQ0KPj4+Pg0KPj4+Pg0KPj4+
+PiBIZXJlJ3Mgc29tZSB2ZXJzaW9uaW5nIG9uIG15IERlYmlhbiBib3g6DQo+Pj4+DQo+Pj4+IHJv
+b3RAZGViaWFuOTovdXNyL3NyYy94ZW5vbWFpLTMuMC41IyBnY2MgLXYNCj4+Pj4gVXNpbmcgYnVp
+bHQtaW4gc3BlY3MuDQo+Pj4+IENPTExFQ1RfR0NDPWdjYw0KPj4+PiBDT0xMRUNUX0xUT19XUkFQ
+UEVSPS91c3IvbGliL2djYy94ODZfNjQtbGludXgtZ251LzYvbHRvLXdyYXBwZXINCj4+Pj4gVGFy
+Z2V0OiB4ODZfNjQtbGludXgtZ251DQo+Pj4+IENvbmZpZ3VyZWQgd2l0aDogLi4vc3JjL2NvbmZp
+Z3VyZSAtdiAtLXdpdGgtcGtndmVyc2lvbj0nRGViaWFuDQo+Pj4+IDYuMy4wLTE4JyAtLXdpdGgt
+YnVndXJsPWZpbGU6Ly8vdXNyL3NoYXJlL2RvYy9nY2MtNi9SRUFETUUuQnVncw0KPj4+PiAtLWVu
+YWJsZS1sYW5ndWFnZXM9YyxhZGEsYysrLGphdmEsZ28sZCxmb3J0cmFuLG9iamMsb2JqLWMrKw0K
+Pj4+PiAtLXByZWZpeD0vdXNyIC0tcHJvZ3JhbS1zdWZmaXg9LTYNCj4+Pj4gLS1wcm9ncmFtLXBy
+ZWZpeD14ODZfNjQtbGludXgtZ251LSAtLWVuYWJsZS1zaGFyZWQNCj4+Pj4gLS1lbmFibGUtbGlu
+a2VyLWJ1aWxkLWlkIC0tbGliZXhlY2Rpcj0vdXNyL2xpYg0KPj4+PiAtLXdpdGhvdXQtaW5jbHVk
+ZWQtZ2V0dGV4dCAtLWVuYWJsZS10aHJlYWRzPXBvc2l4DQo+Pj4+IC0tbGliZGlyPS91c3IvbGli
+IC0tZW5hYmxlLW5scyAtLXdpdGgtc3lzcm9vdD0vDQo+Pj4+IC0tZW5hYmxlLWNsb2NhbGU9Z251
+IC0tZW5hYmxlLWxpYnN0ZGN4eC1kZWJ1Zw0KPj4+PiAtLWVuYWJsZS1saWJzdGRjeHgtdGltZT15
+ZXMgLS13aXRoLWRlZmF1bHQtbGlic3RkY3h4LWFiaT1uZXcNCj4+Pj4gLS1lbmFibGUtZ251LXVu
+aXF1ZS1vYmplY3QgLS1kaXNhYmxlLXZ0YWJsZS12ZXJpZnkgLS1lbmFibGUtbGlibXB4DQo+Pj4+
+IC0tZW5hYmxlLXBsdWdpbiAtLWVuYWJsZS1kZWZhdWx0LXBpZSAtLXdpdGgtc3lzdGVtLXpsaWIN
+Cj4+Pj4gLS1kaXNhYmxlLWJyb3dzZXItcGx1Z2luIC0tZW5hYmxlLWphdmEtYXd0PWd0ayAtLWVu
+YWJsZS1ndGstY2Fpcm8NCj4+Pj4gLS13aXRoLWphdmEtaG9tZT0vdXNyL2xpYi9qdm0vamF2YS0x
+LjUuMC1nY2otNi1hbWQ2NC9qcmUNCj4+Pj4gLS1lbmFibGUtamF2YS1ob21lDQo+Pj4+IC0td2l0
+aC1qdm0tcm9vdC1kaXI9L3Vzci9saWIvanZtL2phdmEtMS41LjAtZ2NqLTYtYW1kNjQNCj4+Pj4g
+LS13aXRoLWp2bS1qYXItZGlyPS91c3IvbGliL2p2bS1leHBvcnRzL2phdmEtMS41LjAtZ2NqLTYt
+YW1kNjQNCj4+Pj4gLS13aXRoLWFyY2gtZGlyZWN0b3J5PWFtZDY0DQo+Pj4+IC0td2l0aC1lY2ot
+amFyPS91c3Ivc2hhcmUvamF2YS9lY2xpcHNlLWVjai5qYXINCj4+Pj4gLS13aXRoLXRhcmdldC1z
+eXN0ZW0temxpYiAtLWVuYWJsZS1vYmpjLWdjPWF1dG8gLS1lbmFibGUtbXVsdGlhcmNoDQo+Pj4+
+IC0td2l0aC1hcmNoLTMyPWk2ODYgLS13aXRoLWFiaT1tNjQNCj4+Pj4gLS13aXRoLW11bHRpbGli
+LWxpc3Q9bTMyLG02NCxteDMyIC0tZW5hYmxlLW11bHRpbGliDQo+Pj4+IC0td2l0aC10dW5lPWdl
+bmVyaWMgLS1lbmFibGUtY2hlY2tpbmc9cmVsZWFzZQ0KPj4+PiAtLWJ1aWxkPXg4Nl82NC1saW51
+eC1nbnUgLS1ob3N0PXg4Nl82NC1saW51eC1nbnUNCj4+Pj4gLS10YXJnZXQ9eDg2XzY0LWxpbnV4
+LWdudSBUaHJlYWQgbW9kZWw6IHBvc2l4IGdjYyB2ZXJzaW9uIDYuMy4wDQo+Pj4+IDIwMTcwNTE2
+IChEZWJpYW4gNi4zLjAtMTgpIHJvb3RAZGViaWFuOTovdXNyL3NyYy94ZW5vbWFpLTMuMC41IyBs
+ZA0KPj4+PiAtdmVyc2lvbiBHTlUgbGQgKEdOVSBCaW51dGlscyBmb3IgRGViaWFuKSAyLjI4IENv
+cHlyaWdodCAoQykgMjAxNw0KPj4+PiBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb24sIEluYy4gVGhp
+cyBwcm9ncmFtIGlzIGZyZWUgc29mdHdhcmU7IHlvdQ0KPj4+PiBtYXkgcmVkaXN0cmlidXRlIGl0
+IHVuZGVyIHRoZSB0ZXJtcyBvZiB0aGUgR05VIEdlbmVyYWwgUHVibGljDQo+Pj4+IExpY2Vuc2Ug
+dmVyc2lvbiAzIG9yIChhdCB5b3VyIG9wdGlvbikgYSBsYXRlciB2ZXJzaW9uLiBUaGlzDQo+Pj4+
+IHByb2dyYW0gaGFzIGFic29sdXRlbHkgbm8gd2FycmFudHkuDQo+Pj4+DQo+Pj4+IHJvb3RAZGVi
+aWFuOTovdXNyL3NyYy94ZW5vbWFpLTMuMC41IyBtYWtlIC12DQo+Pj4+IEdOVSBNYWtlIDQuMQ0K
+Pj4+PiBCdWlsdCBmb3IgeDg2XzY0LXBjLWxpbnV4LWdudQ0KPj4+PiBDb3B5cmlnaHQgKEMpIDE5
+ODgtMjAxNCBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb24sIEluYy4NCj4+Pj4gTGljZW5zZSBHUEx2
+Mys6IEdOVSBHUEwgdmVyc2lvbiAzIG9yIGxhdGVyDQo+Pj4+IDxodHRwOi8vZ251Lm9yZy9saWNl
+bnNlcy9ncGwuaHRtbD4NCj4+Pj4gVGhpcyBpcyBmcmVlIHNvZnR3YXJlOiB5b3UgYXJlIGZyZWUg
+dG8gY2hhbmdlIGFuZCByZWRpc3RyaWJ1dGUgaXQuDQo+Pj4+IFRoZXJlIGlzIE5PIFdBUlJBTlRZ
+LCB0byB0aGUgZXh0ZW50IHBlcm1pdHRlZCBieSBsYXcuDQo+Pj4+DQo+Pj4+IHJvb3RAZGViaWFu
+OTovdXNyL3NyYy94ZW5vbWFpLTMuMC41IyBkcGtnIC1sfGdyZXAgbGlidG9vbA0KPj4+PiBpaSAg
+bGlibHRkbC1kZXY6YW1kNjQgMi40LjYtMg0KPj4+PiAgICAgYW1kNjQgICAgICAgIFN5c3RlbSBp
+bmRlcGVuZGVudCBkbG9wZW4gd3JhcHBlciBmb3IgR05VIGxpYnRvb2wNCj4+Pj4gaWkgIGxpYmx0
+ZGw3OmFtZDY0IDIuNC42LTINCj4+Pj4gICAgIGFtZDY0ICAgICAgICBTeXN0ZW0gaW5kZXBlbmRl
+bnQgZGxvcGVuIHdyYXBwZXIgZm9yIEdOVSBsaWJ0b29sDQo+Pj4+IGlpICBsaWJ0b29sIDIuNC42
+LTINCj4+Pj4gICAgIGFsbCAgICAgICAgICBHZW5lcmljIGxpYnJhcnkgc3VwcG9ydCBzY3JpcHQN
+Cj4+Pj4NCj4+Pj4gcm9vdEBkZWJpYW45Oi91c3Ivc3JjL3hlbm9tYWktMy4wLjUjIHVuYW1lIC1h
+DQo+Pj4+IExpbnV4IGRlYmlhbjkgNC45LjI0LXhlbm9tYWktMy4wLjUtY29iYWx0ICMxIFNNUCBQ
+UkVFTVBUIFR1ZSBKdWwgMTENCj4+Pj4gMTM6MTY6NDcgVVRDIDIwMTcgeDg2XzY0IEdOVS9MaW51
+eA0KPj4+Pg0KPj4+Pg0KPj4+PiBIb3BlIHNvbWVib2R5IHdpbGwgaGVscCBtZSB0byBzb3J0IHRo
+aXMgb3V0IDopDQo+Pj4+DQo+Pj4+IFNpbW9uZQ0KPj4+PiBfX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXw0KPj4+PiBYZW5vbWFpIG1haWxpbmcgbGlzdA0KPj4+
+PiBYZW5vbWFpQHhlbm9tYWkub3JnDQo+Pj4+IGh0dHBzOi8veGVub21haS5vcmcvbWFpbG1hbi9s
+aXN0aW5mby94ZW5vbWFpDQo=
 
-I want to patch xenomai on raspberry pi 3 , I have tried it but after
-compilation the xenomai kernel is not booting.
-
-kindly help me to patch xenomai on raspberry pi 3.
-
-Installation steps to install xenomai on raspberry pi 3 directly without
-cross compilation.
-
-
-Thank you
-Ashok
-
-On Wed, Jul 12, 2017 at 2:49 PM, Henning Schild <henning.schild@siemens.com>
-wrote:
-
-> Am Wed, 12 Jul 2017 07:16:45 +0000
-> schrieb Simone Zucchi <simone.zucchi@utpvision.it>:
->
-> > > Recent compilers default to generating position independant
-> > > binaries. That problem should get fixed in xenomai. For the time
-> > > being you can run make CFLAGS="-no-pie" -j `nproc`
-> > > to work around the problem.
-> >
-> > That was the case! Built without a problem.Thanks a lot!
-> > By the way, Is it correct that xeno-test won't be built?
->
-> It should be. If you
-> touch testsuite/xeno-test/xeno-test-run.c; make
-> it will rebuild something. After a "make install" you should be able to
-> run something like this:
-> xeno-test -l "dohell -m /tmp 300" -p 1000
->
-> Our CI does "dh_autoreconf; dpkg-buildpackage -j$(JOBS) -uc -us" and
-> the packages contain a runnable xeno-test
->
-> Henning
->
-> > Simone
-> >
-> > On 07/11/2017 05:33 PM, Henning Schild wrote:
-> > > Am Tue, 11 Jul 2017 14:22:02 +0000
-> > > schrieb Simone Zucchi <simone.zucchi@utpvision.it>:
-> > >
-> > >> Hello everybody,
-> > >> I'm trying to compile xenomai tools --with-core=cobalt but I keep
-> > >> ha ving issues on latency tool, seems on linking.
-> > >> If I try to build --with-core=mercury switch it works flawlessly:
-> > > ...
-> > >> Then I try to build --with-core=cobalt and something goes wrong:
-> > >>
-> > >> root@debian9:/usr/src/xenomai-3.0.5# ./configure --with-core=cobalt
-> > >> --prefix=/usr/local/xenomai/cobalt --disable-debug --enable-pshared
-> > >> --enable-smp >/dev/null
-> > >> root@debian9:/usr/src/xenomai-3.0.5# time make -j8 >/dev/null
-> > > ...
-> > >> /usr/bin/ld: -r and -pie may not be used together
-> > >> collect2: error: ld returned 1 exit status
-> > >> make[2]: *** [latency] Error 1
-> > >> make[1]: *** [all-recursive] Error 1
-> > >> make: *** [all-recursive] Error 1
-> > > Recent compilers default to generating position independant
-> > > binaries. That problem should get fixed in xenomai. For the time
-> > > being you can run make CFLAGS="-no-pie" -j `nproc`
-> > > to work around the problem.
-> > >
-> > > Henning
-> > >
-> > >> real    0m8.055s
-> > >> user    0m26.924s
-> > >> sys    0m1.928s
-> > >>
-> > >> ld fails at this:
-> > >>
-> > >>
-> > >>       Making all in testsuite
-> > >>       make[1]: Entering directory
-> > >> '/usr/src/xenomai-3.0.5/testsuite' Making all in latency
-> > >>       make[2]: Entering directory
-> > >> '/usr/src/xenomai-3.0.5/testsuite/latency'
-> > >>         CC       latency-latency.o
-> > >>         CCLD     latency
-> > >>       /usr/bin/ld: -r and -pie may not be used together
-> > >>       collect2: error: ld returned 1 exit status
-> > >>       Makefile:451: recipe for target 'latency' failed
-> > >>       make[2]: *** [latency] Error 1
-> > >>       make[2]: Leaving directory
-> > >> '/usr/src/xenomai-3.0.5/testsuite/latency'
-> > >>       Makefile:423: recipe for target 'all-recursive' failed
-> > >>       make[1]: *** [all-recursive] Error 1
-> > >>       make[1]: Leaving directory '/usr/src/xenomai-3.0.5/testsuite'
-> > >>       Makefile:460: recipe for target 'all-recursive' failed
-> > >>       make: *** [all-recursive] Error 1
-> > >>
-> > >>
-> > >> No matter which options I include or not, it never goes over this.
-> > >> Make plain (without -j8) doesn't help either.
-> > >>
-> > >> I'm working on a Debian 9 which I just compiled with Cobalt Core -
-> > >> but even with standard Debian kernel it doesn't go through.
-> > >> Odd enough, if I build Xenomai tools with a Fedora 25 machine, it
-> > >> works. *HINT* on Fedora I got a different ld version (OLDER), which
-> > >> doesn't warns out about " ar: `u' modifier ignored since `D' is the
-> > >> default (see `U')":
-> > >>
-> > >> FEDORA VERSION:
-> > >>       ld -v
-> > >>       GNU ld version 2.26.1-1.fc25
-> > >>
-> > >>
-> > >> Here's some versioning on my Debian box:
-> > >>
-> > >> root@debian9:/usr/src/xenomai-3.0.5# gcc -v
-> > >> Using built-in specs.
-> > >> COLLECT_GCC=gcc
-> > >> COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-linux-gnu/6/lto-wrapper
-> > >> Target: x86_64-linux-gnu
-> > >> Configured with: ../src/configure -v --with-pkgversion='Debian
-> > >> 6.3.0-18' --with-bugurl=file:///usr/share/doc/gcc-6/README.Bugs
-> > >> --enable-languages=c,ada,c++,java,go,d,fortran,objc,obj-c++
-> > >> --prefix=/usr --program-suffix=-6
-> > >> --program-prefix=x86_64-linux-gnu- --enable-shared
-> > >> --enable-linker-build-id --libexecdir=/usr/lib
-> > >> --without-included-gettext --enable-threads=posix
-> > >> --libdir=/usr/lib --enable-nls --with-sysroot=/
-> > >> --enable-clocale=gnu --enable-libstdcxx-debug
-> > >> --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new
-> > >> --enable-gnu-unique-object --disable-vtable-verify --enable-libmpx
-> > >> --enable-plugin --enable-default-pie --with-system-zlib
-> > >> --disable-browser-plugin --enable-java-awt=gtk --enable-gtk-cairo
-> > >> --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-6-amd64/jre
-> > >> --enable-java-home
-> > >> --with-jvm-root-dir=/usr/lib/jvm/java-1.5.0-gcj-6-amd64
-> > >> --with-jvm-jar-dir=/usr/lib/jvm-exports/java-1.5.0-gcj-6-amd64
-> > >> --with-arch-directory=amd64
-> > >> --with-ecj-jar=/usr/share/java/eclipse-ecj.jar
-> > >> --with-target-system-zlib --enable-objc-gc=auto --enable-multiarch
-> > >> --with-arch-32=i686 --with-abi=m64
-> > >> --with-multilib-list=m32,m64,mx32 --enable-multilib
-> > >> --with-tune=generic --enable-checking=release
-> > >> --build=x86_64-linux-gnu --host=x86_64-linux-gnu
-> > >> --target=x86_64-linux-gnu Thread model: posix gcc version 6.3.0
-> > >> 20170516 (Debian 6.3.0-18) root@debian9:/usr/src/xenomai-3.0.5# ld
-> > >> -version GNU ld (GNU Binutils for Debian) 2.28 Copyright (C) 2017
-> > >> Free Software Foundation, Inc. This program is free software; you
-> > >> may redistribute it under the terms of the GNU General Public
-> > >> License version 3 or (at your option) a later version. This
-> > >> program has absolutely no warranty.
-> > >>
-> > >> root@debian9:/usr/src/xenomai-3.0.5# make -v
-> > >> GNU Make 4.1
-> > >> Built for x86_64-pc-linux-gnu
-> > >> Copyright (C) 1988-2014 Free Software Foundation, Inc.
-> > >> License GPLv3+: GNU GPL version 3 or later
-> > >> <http://gnu.org/licenses/gpl.html>
-> > >> This is free software: you are free to change and redistribute it.
-> > >> There is NO WARRANTY, to the extent permitted by law.
-> > >>
-> > >> root@debian9:/usr/src/xenomai-3.0.5# dpkg -l|grep libtool
-> > >> ii  libltdl-dev:amd64 2.4.6-2
-> > >>    amd64        System independent dlopen wrapper for GNU libtool
-> > >> ii  libltdl7:amd64 2.4.6-2
-> > >>    amd64        System independent dlopen wrapper for GNU libtool
-> > >> ii  libtool 2.4.6-2
-> > >>    all          Generic library support script
-> > >>
-> > >> root@debian9:/usr/src/xenomai-3.0.5# uname -a
-> > >> Linux debian9 4.9.24-xenomai-3.0.5-cobalt #1 SMP PREEMPT Tue Jul 11
-> > >> 13:16:47 UTC 2017 x86_64 GNU/Linux
-> > >>
-> > >>
-> > >> Hope somebody will help me to sort this out :)
-> > >>
-> > >> Simone
-> > >> _______________________________________________
-> > >> Xenomai mailing list
-> > >> Xenomai@xenomai.org
-> > >> https://xenomai.org/mailman/listinfo/xenomai
->
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
->
