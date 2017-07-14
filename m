@@ -1,10 +1,9 @@
 References: <968f7e35-f447-40d9-0d41-0ed8f13c59f5@siemens.com>
- <20170714102448.0b4c3fe3@md1em3qc>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <029e78a9-49de-cfea-fd1a-7c07a3513d5c@siemens.com>
-Date: Fri, 14 Jul 2017 10:26:31 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <33b9c7be-a9c3-04d7-1ba6-88a2670b9717@xenomai.org>
+Date: Fri, 14 Jul 2017 11:08:40 +0200
 MIME-Version: 1.0
-In-Reply-To: <20170714102448.0b4c3fe3@md1em3qc>
+In-Reply-To: <968f7e35-f447-40d9-0d41-0ed8f13c59f5@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,26 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2017-07-14 10:24, Henning Schild wrote:
-> Am Thu, 13 Jul 2017 21:59:06 +0200
-> schrieb "[ext] Jan Kiszka" <jan.kiszka@siemens.com>:
+On 07/13/2017 09:59 PM, Jan Kiszka wrote:
+> Hi Philippe,
 > 
->> Hi Philippe,
->>
->> would it be possible to remove the generated docs from git? When doing
->> full-text searches, it's extremely unhandy to have them in history
->> (that's unfortunately too late now) and in the current repo (git
->> grep). Moreover, they add more and more bloat to the repo.
+> would it be possible to remove the generated docs from git? When doing
+> full-text searches, it's extremely unhandy to have them in history
+> (that's unfortunately too late now) and in the current repo (git grep).
+> Moreover, they add more and more bloat to the repo.
 > 
-> I agree that it should not be in git. My solution is to remove them and
-> i do not use git-grep anyways. 
-> For a working git-grep just do:
-> "echo 'doc/**/*' >> .gitignore"
+> I suppose you make use of them when generating release tarballs and for
+> pushing them to the webserver. But both could also be scripted, I'm sure.
+> 
 
-This doesn't work, unfortunately.
+I agree, the need for such pre-built documentation in the tree
+disappeared when the same stuff could be found on the website. I'll drop
+this in 3.1.
 
-Jan
+-- 
+Philippe.
 
