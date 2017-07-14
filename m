@@ -1,11 +1,12 @@
+Date: Fri, 14 Jul 2017 13:11:46 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20170714131146.61d08c59@md1em3qc>
+In-Reply-To: <029e78a9-49de-cfea-fd1a-7c07a3513d5c@siemens.com>
 References: <968f7e35-f447-40d9-0d41-0ed8f13c59f5@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <33b9c7be-a9c3-04d7-1ba6-88a2670b9717@xenomai.org>
-Date: Fri, 14 Jul 2017 11:08:40 +0200
+ <20170714102448.0b4c3fe3@md1em3qc>
+ <029e78a9-49de-cfea-fd1a-7c07a3513d5c@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <968f7e35-f447-40d9-0d41-0ed8f13c59f5@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [RFC] Remove generated docs from git
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -19,22 +20,34 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 07/13/2017 09:59 PM, Jan Kiszka wrote:
-> Hi Philippe,
-> 
-> would it be possible to remove the generated docs from git? When doing
-> full-text searches, it's extremely unhandy to have them in history
-> (that's unfortunately too late now) and in the current repo (git grep).
-> Moreover, they add more and more bloat to the repo.
-> 
-> I suppose you make use of them when generating release tarballs and for
-> pushing them to the webserver. But both could also be scripted, I'm sure.
-> 
+Am Fri, 14 Jul 2017 10:26:31 +0200
+schrieb Jan Kiszka <jan.kiszka@siemens.com>:
 
-I agree, the need for such pre-built documentation in the tree
-disappeared when the same stuff could be found on the website. I'll drop
-this in 3.1.
+> On 2017-07-14 10:24, Henning Schild wrote:
+> > Am Thu, 13 Jul 2017 21:59:06 +0200
+> > schrieb "[ext] Jan Kiszka" <jan.kiszka@siemens.com>:
+> >   
+> >> Hi Philippe,
+> >>
+> >> would it be possible to remove the generated docs from git? When
+> >> doing full-text searches, it's extremely unhandy to have them in
+> >> history (that's unfortunately too late now) and in the current
+> >> repo (git grep). Moreover, they add more and more bloat to the
+> >> repo.  
+> > 
+> > I agree that it should not be in git. My solution is to remove them
+> > and i do not use git-grep anyways. 
+> > For a working git-grep just do:
+> > "echo 'doc/**/*' >> .gitignore"  
+> 
+> This doesn't work, unfortunately.
 
--- 
-Philippe.
+Sorry, got confused because my doc/ was deleted already. To solve the
+messed up status i commit that away. But actually this thread is about
+solving that upstream and not finding local workarounds.
+
+Henning
+
+> Jan
+
 
