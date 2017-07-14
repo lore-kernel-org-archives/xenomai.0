@@ -1,14 +1,13 @@
-Date: Fri, 14 Jul 2017 13:11:46 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20170714131146.61d08c59@md1em3qc>
-In-Reply-To: <029e78a9-49de-cfea-fd1a-7c07a3513d5c@siemens.com>
-References: <968f7e35-f447-40d9-0d41-0ed8f13c59f5@siemens.com>
- <20170714102448.0b4c3fe3@md1em3qc>
- <029e78a9-49de-cfea-fd1a-7c07a3513d5c@siemens.com>
+From: =?UTF-8?B?SmnFmcOtIER1xaFlaw==?= <dusek@inova.cz>
+References: <dff5d476-55b9-f609-ec06-07a3f3c88958@inova.cz>
+ <14ad8a81-a441-30d8-b158-9c6bb6205efd@xenomai.org>
+Message-ID: <fd49c035-6c40-e6e7-c261-5035e7d0afe7@inova.cz>
+Date: Fri, 14 Jul 2017 15:36:57 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [RFC] Remove generated docs from git
+In-Reply-To: <14ad8a81-a441-30d8-b158-9c6bb6205efd@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] High latencies with RT memory heap on xenomai 2.6.5
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,37 +16,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Am Fri, 14 Jul 2017 10:26:31 +0200
-schrieb Jan Kiszka <jan.kiszka@siemens.com>:
 
-> On 2017-07-14 10:24, Henning Schild wrote:
-> > Am Thu, 13 Jul 2017 21:59:06 +0200
-> > schrieb "[ext] Jan Kiszka" <jan.kiszka@siemens.com>:
-> >   
-> >> Hi Philippe,
-> >>
-> >> would it be possible to remove the generated docs from git? When
-> >> doing full-text searches, it's extremely unhandy to have them in
-> >> history (that's unfortunately too late now) and in the current
-> >> repo (git grep). Moreover, they add more and more bloat to the
-> >> repo.  
-> > 
-> > I agree that it should not be in git. My solution is to remove them
-> > and i do not use git-grep anyways. 
-> > For a working git-grep just do:
-> > "echo 'doc/**/*' >> .gitignore"  
-> 
-> This doesn't work, unfortunately.
+> On 07/03/2017 03:21 PM, Jiří Dušek wrote:
+>> Hello,
+>>
+>> We have experienced high latencies when pushing our application to the
+>> limits. Debugging led me to the realtime heap. Stress testing realtime
+>> heap has unexpected results. Stressing realtime heap from one task has
+>> no latency problem. Stressing realtime heap from two tasks bound to the
+>> same CPU has no latency problem. Stressing realtimne heap from two tasks
+>> bound to two distinct CPUs causes high latencies. There is nothing
+>> obvious like mode switches or errors.
+>>
+>> Is this expected behavior of rt_heap_alloc/free? Can we do something to
+>> prevent this problem?
+> ~1 ms jitter is obviously totally pathological, especially when the
+> typical latency is under 10 us.
+>
+> Xenomai 2.6.5 is EOL, and several bugs have been fixed in the pipeline
+> patch since kernel 3.5, so the priority of digging any issue in such an
+> outdated context is very low.
+>
+> To trigger some investigation, you could upgrade your setup. Xenomai
+> 3.0.5 over kernel 4.1 or later would do.
+>
+> You could also pinpoint the high latency spot by tracing the kernel,
+> enabling CONFIG_IPIPE_TRACE:
+> https://xenomai.org/2014/06/using-the-i-pipe-tracer/
+>
+We have compiled kernel 4.9.24 with ipipe patch 4.9.24-x86-2
+and xenomai 3.0.5. There are no latency problems with
+RT_HEAP. We will upgrade our system instead of
+looking for solution with outdated xenomai and kernel versions.
 
-Sorry, got confused because my doc/ was deleted already. To solve the
-messed up status i commit that away. But actually this thread is about
-solving that upstream and not finding local workarounds.
+Thanks
+Jiri
 
-Henning
-
-> Jan
 
 
