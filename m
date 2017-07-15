@@ -1,11 +1,10 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <9cf742c9-4fa9-a236-a941-3b2565ce1e28@siemens.com>
-Date: Fri, 14 Jul 2017 21:10:20 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PULL] next: Fixes for pthread_mutex_trylock
+From: Andreas Glatz <andi.glatz@gmail.com>
+Date: Sat, 15 Jul 2017 21:37:32 +0100
+Message-ID: <CAKJ14NcXwHkEFSgrnQWG1KacvOhTp9BT9oQNZn_bdzJTCgqhvw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] Xv3.0.5 /Lv4.9.35 on wandboard: page domain fault in
+	rtudp.ko
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,45 +13,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-The following changes since commit 5bd2093981417bf21d958c4a639837ed0963838a:
+Hi
 
-  lib/cobalt: init: hint about failure due to disabled core (2017-06-03 18:10:25 +0200)
+I managed to compile and bring-up Xenomai v3.0.5, Ipipe v2, Linux
+v4.9.35 on a Wandboard Quad C1 [1]. I ran all unit-tests sucessfully
+[2] and was able to get RTnet ping to an external PC working. RT ping
+stops working after about 1000 pings... but that's a different story,
+I guess.
 
-are available in the git repository at:
+So when I try to get a simple UDP server [3] running on top of RTnet I
+get "Unhandled fault: page domain fault (0x01b)" oopses, where the
+stacktrace indicates it has to do with rtudp.ko, e.g.
+rt_udp_recvmsg+03c/0x38c. Further googling [4] told me that these
+faults are related to missing copy_from_user() calls in the udp
+driver, which seems to have been enforced in the most recent kernel
+versions (after 4.1.x?). So if I go into the rtudp.ko source code and
+start introducing copy_to_user() statements, the the page domain
+faults go away one after the other...
 
-  git://git.xenomai.org/xenomai-jki.git 51a01ff89b8d0b2160675ec03db7f92562ff0af8
+At my company I basically want to propose to upgrade our current
+kernel (3.0.35) with a more recent one. So I'm looking for a hint
+what's the best+latest+supported kernel version for i.MX6 in a
+production grade setup, which can be patched with Xenomai3 (incl.
+RTnet)?
 
-for you to fetch changes up to 51a01ff89b8d0b2160675ec03db7f92562ff0af8:
+Cheers,
 
-  cobalt: Fix slow-path of mutex_trylock in kernel (2017-07-14 20:58:38 +0200)
+Andreas
 
-At least patch 3 should go to stable as well. I tried to look for
-potential issues in stable, ie. without prio-ceiling, /wrt patch 5 as
-well but I didn't find anything obvious.
 
-Patch 1 is off-topic, but I ran into again while using syscall(invalid)
-to trigger a mode switch.
 
-Jan
-
-----------------------------------------------------------------
-Jan Kiszka (5):
-      cobalt/kernel: Handle bogus fastcall syscalls gracefully
-      smokey: Add test cases for trylock on ceiling mutexes
-      cobalt: Fix mutex_trylock slow-path in userspace
-      cobalt: Align structure of mutex_trylock with mutex_timedlock
-      cobalt: Fix slow-path of mutex_trylock in kernel
-
- kernel/cobalt/posix/mutex.c                | 16 +--------
- kernel/cobalt/posix/syscall.c              |  8 +++--
- lib/cobalt/mutex.c                         | 11 +++----
- testsuite/smokey/posix-mutex/posix-mutex.c | 52 ++++++++++++++++++++++++++++++
- 4 files changed, 63 insertions(+), 24 deletions(-)
-
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+[1] https://www.wandboard.org
+[2] https://xenomai.org/installing-xenomai-3-x/#Testing_the_real-time_system_both_cores
+[3] http://www.binarytides.com/programming-udp-sockets-c-linux/
+[4] https://stackoverflow.com/questions/39515407/how-to-handle-a-page-domain-fault-in-a-self-written-character-device-kernel-modu
 
