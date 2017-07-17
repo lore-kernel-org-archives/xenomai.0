@@ -1,13 +1,14 @@
-References: <DB6PR0701MB24567D7382C2C3C1C6BBB0A3B5C60@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+References: <CAMcKmiFbvicByv1oqbJMQx5-vOOskumHs7=60uM9QmooqdBEFg@mail.gmail.com>
+ <CAMcKmiFCy=eaoaCUP+GFUhuE9Kd_SVs401-44Dk64CQVsDPHFQ@mail.gmail.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <3f72aa86-8922-540f-36ca-cad41840dcc4@xenomai.org>
-Date: Sun, 18 Jun 2017 09:26:44 +0200
+Message-ID: <be4e97ab-f5b1-52de-ffef-90bedf167857@xenomai.org>
+Date: Mon, 17 Jul 2017 18:37:39 +0200
 MIME-Version: 1.0
-In-Reply-To: <DB6PR0701MB24567D7382C2C3C1C6BBB0A3B5C60@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+In-Reply-To: <CAMcKmiFCy=eaoaCUP+GFUhuE9Kd_SVs401-44Dk64CQVsDPHFQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Gpio: IRQ handler is called ~4ms after state change
+Subject: Re: [Xenomai] select() unblocks when no data to read()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,58 +17,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Giulio Moro <g.moro@qmul.ac.uk>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: George Broz <brozgeo@gmail.com>, xenomai@xenomai.org
 
-On 06/17/2017 06:52 PM, Giulio Moro wrote:
-> Hi,
-> I ported this GPIO driver from Xenomai 2.6 to Xenomai 3 and I run it on the Beaglebone Black: https://github.com/giuliomoro/gpio-irq-rtdm/
+On 07/13/2017 10:39 PM, George Broz wrote:
+> On 13 July 2017 at 09:26, George Broz <brozgeo@gmail.com> wrote:
+>> Hi -
+>>
+>> I'm using the UDD driver on Xenomai 3.0.4 / Linux 3.18.20 on an ARM SoC.
+>>
+>> I use select() to block on read events. The problem is select() unblocks
+>> twice in response to one interrupt event. The corresponding read()
+>> to the second erroneous unblocked select() then blocks until the next
+>> interrupt arrives.
+>>
+>> The psuedo-code in user-space looks like this:
+>>
+>>   while (active)
+>>   {
+>>     FD_ZERO (&FileDescSet);
+>>     FD_SET (FileDesc, &FileDescSet);
+>>
+>>     /* block until interrupt or timeout occurs */
+>>     IsInterruptPending = select ((FileDesc + 1), &FileDescSet, NULL,
+>> NULL, &Timeout);
+>>
+>>     /* check timeout (0) and error cases (-1) */
+>>     ...
+>>
+>>     /* otherwise, process */
+>>     if (IsInterruptPending && FD_ISSET(FileDesc, &FileDescSet))
+>>     {
+>>       err = read (FileDesc, &u32EventCount, sizeof (u32EventCount));
+>>       ...
+>>     }
+>>   }
+>>
+>>
+>> I have added debug to the UDD driver to verify udd_notify_event() is called
+>> exactly once per interrupt event, and that the ur->event is properly
+>> incremented.
+>>
+>> In udd_read_rt(), debug showing ur->event and context->event_count do what
+>> they should be doing - returning data when they mismatch and then setting
+>> one equal to the other, or blocking when they are equal. This function would
+>> be fine if select were working properly.
+>>
+>> (One thing to note is that when ur->event and context->event_count are equal,
+>> it takes two iterations of the for (;;) loop to actually block on
+>> rtdm_event_wait().)
+>>
+>> I added debug to udd_select(), but it doesn't work as expected. I had hoped
+>> to see debug emitted for each user-space call to select(), but it seems only
+>> one call is made to udd_select() the first time through the loop.
+>>
+>> In an unsuccessful workaround, I tried issuing rtdm_event_init() in an
+>> ioctl() called just before unmasking interrupts for the next iteration
+>> of the loop.
 > 
-> TheRTDM  irq_handler (in gpio_irq_rtdm.c) toggles a pin "kernel timingpin" as soon as the IRQ is received.
-> The test program registers a pin to monitor and sleeps in a ioctl() waiting for the pin to go low. When the kernel unblocks it from the ioctl(), the task toggles another pin "user timingpin".
+> However, if I add:
 > 
-> The original authors claims that, on the BeagleBone Black, with Xenomai 2.6:
-> * the kernel timingpin will change roughly 5us after the test pin is toggled by an external clock
-> *  the user timingpin will change roughly 5-10us after the kernel timingpin
-
-If by "user timing", the author claims 10 us worst-case latency for
-waking up a user task on this class of hardware, then the machine must
-have been fairly idle under test. 50 us would make more sense under
-heavy load conditions.
-
+>    rtdm_event_clear(&ur->pulse);
 > 
-> The above values make sense to me.
+> just before the return statement (return ret ?: sizeof(count);) in
+> udd_read_rt(),
+> then things to seem to work properly - select() unblocks only when there
+> is something to read...
 > 
-> My observations, on the BeagleBone Black, Linux 4.4.65 with Xenomai 3.0.5:
-> * the kernel timingpin will change roughly 4ms (milliseconds) after the test pin is toggled by an external clock
-> * the user timingpin will change 40 to 60us (microseconds) after the kernel timingpin
 
-4ms do not make sense obviously. You may be measuring the time it takes
-to catch and emit this WARN_ON() message over the IRQ handler.
+The rtdm_event_select() interface is broken. The portion signaling the
+state changes (e.g. IRQ pending <-> no IRQ pending) is simply missing...
+I'll have a look, thanks.
 
->    76.152289] irq 98, desc: dc18df00, depth: 1, count: 0, unhandled: 0
-> [   76.152314] ->handle_irq():  c008e008, handle_edge_irq+0x0/0x150
-> [   76.152351] ->irq_data.chip(): dc18d9d0, 0xdc18d9d0
-> [   76.152364] ->action():   (null)
-> [   76.152371]    IRQ_NOPROBE set
-> [   76.152378] unexpected IRQ trap at vector 62
-> [   76.156676] ------------[ cut here ]------------
-> [   76.156692] WARNING: CPU: 0 PID: 0 at kernel/irq/chip.c:843 __ipipe_ack_bad_irq+0x3c/0x48()
-> [   76.156699] Modules linked in: gpio_irq_rtdm(O) c_can_platform c_can can_dev tieqep pwm_tiehrpwm pwm_tiecap spidev usb_f_midi snd_rawmidi snd_seq_device usb_f_acm u_serial usb_f_mass_storage usb_f_rndis u_ether arc4 omap_aes_driver omap_sham uio_pruss rt2800usb rt2800lib rt2x00usb rt2x00lib mac80211 omap_rng rng_core snd_soc_davinci_mcasp cfg80211 snd_soc_edma snd_soc_omap crc_ccitt rfkill snd_soc_core snd_pcm_dmaengine snd_pcm snd_timer snd spi_omap2_mcspi soundcore evdev uio_pdrv_genirq uio libcomposite ip_tables x_tables
-> [   76.156852] CPU: 0 PID: 0 Comm: swapper Tainted: G        W  O    4.4.68-ti-xenomai-r106 #1
-> [   76.156860] Hardware name: Generic AM33XX (Flattened Device Tree)
-> [   76.156866] I-pipe domain: Linux
-> [   76.156901] [<c0018d30>] (unwind_backtrace) from [<c0015bfc>] (show_stack+0x20/0x24)
-> [   76.156922] [<c0015bfc>] (show_stack) from [<c058dc94>] (dump_stack+0x24/0x28)
-> [   76.156950] [<c058dc94>] (dump_stack) from [<c0040294>] (warn_slowpath_common+0x94/0xc0)
-> [   76.156967] [<c0040294>] (warn_slowpath_common) from [<c00403c4>] (warn_slowpath_null+0x2c/0x34)
-> [   76.156985] [<c00403c4>] (warn_slowpath_null) from [<c008d7bc>] (__ipipe_ack_bad_irq+0x3c/0x48)
-> [   76.157004] [<c008d7bc>] (__ipipe_ack_bad_irq) from [<c00e6e8c>] (__ipipe_dispatch_irq+0x8c/0x1a8)
-> [   76.157024] [<c00e6e8c>] (__ipipe_dispatch_irq) from [<c05d7ad4>] (omap_gpio_irq_handler+0x170/0x1d8)
-> [   76.157041] [<c05d7ad4>] (omap_gpio_irq_handler) from [<c008a294>] (handle_irq_event_percpu+0xa4/0x254)
-
-This is unlikely a Xenomai issue strictly speaking. You may want to
-check the I-pipe code instead, there is certainly a problem with the
-interrupt delivery code in the low level handler.
+For the time being, clearing the event manually will do the trick
+although this may be racy.
 
 -- 
 Philippe.
