@@ -1,16 +1,14 @@
-References: <9cf742c9-4fa9-a236-a941-3b2565ce1e28@siemens.com>
- <fc678dc4-244a-0c28-465b-38b0bcae1152@xenomai.org>
- <b067a021-97ee-dc20-30b4-41b0603429fa@siemens.com>
- <f9deedce-ba71-4601-15d1-4c9ca147cc8c@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <dbed3c44-4d9d-0d71-3ba0-57e129f8e28d@siemens.com>
-Date: Mon, 17 Jul 2017 17:11:27 +0200
+References: <CAKJ14NcXwHkEFSgrnQWG1KacvOhTp9BT9oQNZn_bdzJTCgqhvw@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <40f44d9b-885c-e0a7-d1ca-951943c4fdc5@xenomai.org>
+Date: Mon, 17 Jul 2017 17:12:19 +0200
 MIME-Version: 1.0
-In-Reply-To: <f9deedce-ba71-4601-15d1-4c9ca147cc8c@xenomai.org>
+In-Reply-To: <CAKJ14NcXwHkEFSgrnQWG1KacvOhTp9BT9oQNZn_bdzJTCgqhvw@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PULL] next: Fixes for pthread_mutex_trylock
+Subject: Re: [Xenomai] Xv3.0.5 /Lv4.9.35 on wandboard: page domain fault in
+ rtudp.ko
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,79 +17,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Andreas Glatz <andi.glatz@gmail.com>, xenomai@xenomai.org
 
-On 2017-07-17 16:52, Philippe Gerum wrote:
-> On 07/17/2017 04:26 PM, Jan Kiszka wrote:
->> On 2017-07-17 15:41, Philippe Gerum wrote:
->>> On 07/14/2017 09:10 PM, Jan Kiszka wrote:
->>>> The following changes since commit 5bd2093981417bf21d958c4a639837ed0963838a:
->>>>
->>>>   lib/cobalt: init: hint about failure due to disabled core (2017-06-03 18:10:25 +0200)
->>>>
->>>> are available in the git repository at:
->>>>
->>>>   git://git.xenomai.org/xenomai-jki.git 51a01ff89b8d0b2160675ec03db7f92562ff0af8
->>>>
->>>> for you to fetch changes up to 51a01ff89b8d0b2160675ec03db7f92562ff0af8:
->>>>
->>>>   cobalt: Fix slow-path of mutex_trylock in kernel (2017-07-14 20:58:38 +0200)
->>>>
->>>> At least patch 3 should go to stable as well. I tried to look for
->>>> potential issues in stable, ie. without prio-ceiling, /wrt patch 5 as
->>>> well but I didn't find anything obvious.
->>>>
->>>> Patch 1 is off-topic, but I ran into again while using syscall(invalid)
->>>> to trigger a mode switch.
->>>>
->>>> Jan
->>>>
->>>> ----------------------------------------------------------------
->>>> Jan Kiszka (5):
->>>>       cobalt/kernel: Handle bogus fastcall syscalls gracefully
->>>
->>> This one does not look good. There is no way to receive KEVENT_PROPAGATE
->>> when calling the head stage handler from a fastcall hook, since the
->>> latter only receives foreign (e.g. Cobalt's) syscalls. This case would
->>> be a kernel bug - there is no code handling such propagation in the
->>> inner syscall trampoline code.
->>>
->>> Did you actually observe this case?
->>
->> Just call syscall(0x1111).
->>
+On 07/15/2017 10:37 PM, Andreas Glatz wrote:
+> Hi
 > 
-> That one may be safer, keeping the original consistency check:
+> I managed to compile and bring-up Xenomai v3.0.5, Ipipe v2, Linux
+> v4.9.35 on a Wandboard Quad C1 [1]. I ran all unit-tests sucessfully
+> [2] and was able to get RTnet ping to an external PC working. RT ping
+> stops working after about 1000 pings... but that's a different story,
+> I guess.
 > 
-> diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscall.c
-> index 8186a0f..f05ab0d 100644
-> --- a/kernel/cobalt/posix/syscall.c
-> +++ b/kernel/cobalt/posix/syscall.c
-> @@ -26,6 +26,7 @@
->  #include <cobalt/kernel/vdso.h>
->  #include <cobalt/kernel/init.h>
->  #include <asm-generic/xenomai/mayday.h>
-> +#include <asm/syscall.h>
->  #include "internal.h"
->  #include "thread.h"
->  #include "sched.h"
-> @@ -652,6 +653,8 @@ linux_syscall:
->  		 */
->  		return KEVENT_PROPAGATE;
+> So when I try to get a simple UDP server [3] running on top of RTnet I
+> get "Unhandled fault: page domain fault (0x01b)" oopses, where the
+> stacktrace indicates it has to do with rtudp.ko, e.g.
+> rt_udp_recvmsg+03c/0x38c. Further googling [4] told me that these
+> faults are related to missing copy_from_user() calls in the udp
+> driver, which seems to have been enforced in the most recent kernel
+> versions (after 4.1.x?). So if I go into the rtudp.ko source code and
+> start introducing copy_to_user() statements, the the page domain
+> faults go away one after the other...
 > 
-> +	if (__xn_reg_sys(regs) >= NR_syscalls)
-> +		goto bad_syscall;
->  	/*
->  	 * From now on, we know that we have a valid shadow thread
->  	 * pointer.
+> At my company I basically want to propose to upgrade our current
+> kernel (3.0.35) with a more recent one. So I'm looking for a hint
+> what's the best+latest+supported kernel version for i.MX6 in a
+> production grade setup, which can be patched with Xenomai3 (incl.
+> RTnet)?
 > 
 
-Fine with me, works as desired.
+I've been working on i.MX6 (4/2/1) + Xenomai 3.x for the last couple of
+years over kernels 3.18, 4.1 and 4.4, for production grade software: so
+far so good, provided one picks the latest I-pipe patches available.
 
-Jan
+Although Xenomai 3 over kernel 4.9/arm is a bit younger, I have been
+using this combo recently on i.MX6 for (Xenomai) development purposes
+successfully, so far.
+
+I don't think that preferring any of the kernel releases mentioned above
+among others should have a visible impact on RTnet user-wise. I only
+tried with kernel 4.9 though.
 
 -- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
