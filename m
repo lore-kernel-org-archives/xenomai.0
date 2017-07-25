@@ -1,11 +1,11 @@
-MIME-Version: 1.0
-From: <duanrui830@163.com>
-Date: Tue, 25 Jul 2017 09:01:47 +0800
-Message-Id: <5976987C.4AD7C0.03331@m12-17.163.com>
-Content-Type: text/plain; charset="utf-8"
+From: mathew.benson@gmail.com
+Content-Type: text/plain;
+	charset=us-ascii
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Whether Samsung's s5p4412 or s5p4418 are supported in any
- Xenomai release
+Mime-Version: 1.0 (1.0)
+Date: Tue, 25 Jul 2017 07:48:46 -0500
+Message-Id: <DEB5F512-B818-454D-A423-7CB391071BBD@gmail.com>
+Subject: [Xenomai] rt_task_create fails
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,17 +14,12 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-To whom may concern,
-I have read the supported Embedded hardware list given in the website and I=
- cannot found the type I am using. The type of my SoC is Samsung=E2=80=99s =
-s5p4418. I am wondering whether it is supported in any Xenomai release?
-Thanks.
-Best regards.
+I ported Xenomai 3.0.5 to Petalinux 2017.1.  The supported tests run fine, b=
+ut my code is failing.  rt_task_create always fails with errno set to 17 (EE=
+XIST).  Doesn't matter what arguments I give it.  Before I dissect this furt=
+her, does anybody have any insight?
 
-Rui Duan
-
-=E5=8F=91=E9=80=81=E8=87=AA Windows 10 =E7=89=88=E9=82=AE=E4=BB=B6=E5=BA=94=
-=E7=94=A8
+Sent from my iPhone=
 
