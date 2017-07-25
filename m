@@ -1,12 +1,11 @@
-Date: Tue, 25 Jul 2017 19:02:14 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20170725190214.6f2fd892@md1em3qc>
-In-Reply-To: <DEB5F512-B818-454D-A423-7CB391071BBD@gmail.com>
-References: <DEB5F512-B818-454D-A423-7CB391071BBD@gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <87b5e4c1-a800-83ee-94af-c797091a3a13@siemens.com>
+Date: Tue, 25 Jul 2017 20:54:42 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rt_task_create fails
+Subject: [Xenomai] [RFC] Remote thread suspension vs. info flags
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,31 +14,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: mathew.benson@gmail.com
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-Am Tue, 25 Jul 2017 07:48:46 -0500
-schrieb <mathew.benson@gmail.com>:
+Hi all,
 
-> I ported Xenomai 3.0.5 to Petalinux 2017.1.  The supported tests run
-> fine, but my code is failing.  rt_task_create always fails with errno
-> set to 17 (EEXIST).  Doesn't matter what arguments I give it.  Before
-> I dissect this further, does anybody have any insight?
+don't we need this?
 
-Your thread might not have a shadow yet and you might see a case where
-an EPERM is transformed into an EEXIST.
-We did not discuss the transformation bug yet. But your solution might
-be to just shadow on EPERM and EEXIST, or before calling anything that
-needs a shadow.
+diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+index ab457da70..604179f68 100644
+--- a/kernel/cobalt/thread.c
++++ b/kernel/cobalt/thread.c
+@@ -920,8 +920,13 @@ void xnthread_suspend(struct xnthread *thread, int mask,
+ 			    (oldstate & XNTRAPLB) != 0)
+ 				goto lock_break;
+ 		}
+-		xnthread_clear_info(thread,
+-				    XNRMID|XNTIMEO|XNBREAK|XNWAKEN|XNROBBED|XNKICKED);
++		/*
++		 * Do not destroy the info left behind by yet unprocessed
++		 * wakeups when suspending a remote thread.
++		 */
++		if (thread == sched->curr)
++			xnthread_clear_info(thread, XNRMID|XNTIMEO|XNBREAK|
++						    XNWAKEN|XNROBBED|XNKICKED);
+ 	}
+ 
+ 	/*
 
-http://www.xenomai.org/pipermail/xenomai/2017-July/037474.html
+Let's assume a high prio thread is running and a low-prio is waiting for
+a timeout. Now the timeout occurs, and the low-prio is woken up but
+can't run yet. If the high-prio suspends the low-prio, XNWIMEO will be
+lost.
 
-Henning
+I've run into this with complex out-of-tree modifications, but this
+seems to affect upstream as well, no?
 
-> Sent from my iPhone
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
+Jan
 
+-- 
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
 
