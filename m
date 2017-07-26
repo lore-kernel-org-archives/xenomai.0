@@ -1,13 +1,14 @@
-References: <87b5e4c1-a800-83ee-94af-c797091a3a13@siemens.com>
+References: <E1daPZD-0000KU-Bk@xenomai.org>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <8b5e06eb-6440-ff4f-f969-2d9fca9b3995@xenomai.org>
-Date: Wed, 26 Jul 2017 17:49:41 +0200
+Message-ID: <279c3ea8-3396-161c-254a-aca7e2f6a445@xenomai.org>
+Date: Wed, 26 Jul 2017 18:59:40 +0200
 MIME-Version: 1.0
-In-Reply-To: <87b5e4c1-a800-83ee-94af-c797091a3a13@siemens.com>
+In-Reply-To: <E1daPZD-0000KU-Bk@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [RFC] Remote thread suspension vs. info flags
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt: Fix conditional
+ build of lock_vfile registration
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,44 +17,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org, xenomai-git@xenomai.org
 
-On 07/25/2017 08:54 PM, Jan Kiszka wrote:
-> Hi all,
+On 07/26/2017 06:53 PM, git repository hosting wrote:
+> Module: xenomai-jki
+> Branch: for-forge
+> Commit: 634a95c9c023dda40607e5e5c1dd43761f59e541
+> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=634a95c9c023dda40607e5e5c1dd43761f59e541
 > 
-> don't we need this?
+> Author: Jan Kiszka <jan.kiszka@siemens.com>
+> Date:   Wed Jul 26 18:50:43 2017 +0200
 > 
-> diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-> index ab457da70..604179f68 100644
-> --- a/kernel/cobalt/thread.c
-> +++ b/kernel/cobalt/thread.c
-> @@ -920,8 +920,13 @@ void xnthread_suspend(struct xnthread *thread, int mask,
->  			    (oldstate & XNTRAPLB) != 0)
->  				goto lock_break;
->  		}
-> -		xnthread_clear_info(thread,
-> -				    XNRMID|XNTIMEO|XNBREAK|XNWAKEN|XNROBBED|XNKICKED);
-> +		/*
-> +		 * Do not destroy the info left behind by yet unprocessed
-> +		 * wakeups when suspending a remote thread.
-> +		 */
-> +		if (thread == sched->curr)
-> +			xnthread_clear_info(thread, XNRMID|XNTIMEO|XNBREAK|
-> +						    XNWAKEN|XNROBBED|XNKICKED);
->  	}
->  
->  	/*
+> cobalt: Fix conditional build of lock_vfile registration
 > 
-> Let's assume a high prio thread is running and a low-prio is waiting for
-> a timeout. Now the timeout occurs, and the low-prio is woken up but
-> can't run yet. If the high-prio suspends the low-prio, XNWIMEO will be
-> lost.
+> There is and there was never a CONFIG_XENO_DEBUG_LOCKING.
+> Fixes de66d324a93d.
 > 
-> I've run into this with complex out-of-tree modifications, but this
-> seems to affect upstream as well, no?
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 > 
+> ---
+> 
+>  kernel/cobalt/procfs.c |    4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/kernel/cobalt/procfs.c b/kernel/cobalt/procfs.c
+> index 9d193af..85aea0c 100644
+> --- a/kernel/cobalt/procfs.c
+> +++ b/kernel/cobalt/procfs.c
+> @@ -216,7 +216,7 @@ static struct xnvfile_regular apc_vfile = {
+>  void xnprocfs_cleanup_tree(void)
+>  {
+>  #ifdef CONFIG_XENO_OPT_DEBUG
+> -#ifdef CONFIG_XENO_DEBUG_LOCKING
 
-Definitely, yes.
+This would reintroduce another bug [1]. Better check for the proper
+symbol instead, i.e. CONFIG_XENO_OPT_DEBUG_LOCKING.
+
+[1]  http://xenomai.org/pipermail/xenomai/2017-February/037136.html
 
 -- 
 Philippe.
