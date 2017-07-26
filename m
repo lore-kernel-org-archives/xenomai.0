@@ -1,11 +1,16 @@
-Date: Tue, 20 Jun 2017 11:06:57 +0800 (GMT+08:00)
-From: kirayamato@zju.edu.cn
-Message-ID: <6352019.c1ef.15cc377a590.Coremail.kirayamato@zju.edu.cn>
+From: Philippe Gerum <rpm@xenomai.org>
+References: <20170711113213.16427-1-henning.schild@siemens.com>
+ <20170711134009.63101673@md1em3qc>
+ <8137ae2d-e178-740c-803a-1c388b80f2f7@xenomai.org>
+Message-ID: <7c73150b-2f86-d3cd-de72-cb0bb374fbc3@xenomai.org>
+Date: Wed, 26 Jul 2017 17:34:01 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=GBK
+In-Reply-To: <8137ae2d-e178-740c-803a-1c388b80f2f7@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Xenomai: /dev/rtheap is missing (chardev,
-	major=10 minor=254)
+Subject: Re: [Xenomai] [PATCH 1/2] lib/alchemy: fix rt_mutex_create return
+ values
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,34 +19,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Henning Schild <henning.schild@siemens.com>, "xenomai @ xenomai . org" <xenomai@xenomai.org>
 
-Hello, everyone~
+On 07/26/2017 05:22 PM, Philippe Gerum wrote:
+> On 07/11/2017 01:40 PM, Henning Schild wrote:
+>> I am not sure i like what is happening there. Maybe we should just
+>> allow rt_mutex_create to return whatever syncluster_addobj returns.
+>> I just looked at the code and the pattern where any error from
+>> syncluster_addobj is turned into an EEXIST is in several places.
+>>
+> 
+> I'm not sure I like it either, that does not make any sense actually -
+> it even hides the ENOMEM error, which would be just insane. I pushed a
+> patch fixing the issue globally for all callers of syncluster_addobj(),
+> updating the inline documentation in the same move.
+> 
+>> We have an application that creates shadow threads whenever the first
+>> cobalt syscall returns -EPERM. You can argue whether that is a good
+>> idea, but turning an -EPERM into something else is also not a good idea.
+> 
+> As I mentioned lately, I would recommend pthread_kill(pthread_self(), 0)
+> as a more robust way for a thread to check this. Receiving ESRCH would
+> mean that it has not been shadowed.
+> 
 
-I am compiling xenomai 2.6.4 on ubuntu 14.04.2 with a kernel verion 3.14.17
+To clarify, I'm suggesting to use pthread_kill() in the slow/error path
+of your code to confirm that EPERM as received really means "not a
+shadow", and not the result of a consistency check performed by the core
+on the mutex object when the debug option is turned on.
 
-I can run the xeno latency test, and the latency in user space has a max value of 20 us with the select period of 100us.
+-- 
+Philippe.
 
-But when I tried to run a compiled example trivial-periodic.c under the source directory */xenomai-2.6.4/examples, the following alarm showed:
-
-root@*****:/home/robot/Desktop# ./trivial-periodic
-Xenomai: /dev/rtheap is missing
-(chardev, major=10 minor=254)
-
-and the compile command is:
-
-gcc  -I/usr/xenomai/include -D_GNU_SOURCE
--D_REENTRANT -D__XENO__    trivial-periodic.c -Xlinker -rpath
--Xlinker /usr/xenomai/lib -lnative -L/usr/xenomai/lib -lxenomai
--lpthread -lrt -o trivial-periodic
-
-The file do not exist under the /dev/ directory.
-My question is:
-Is this problem due to an error config or compiling of xenomai and the patched kernel ?
-Or it is caused by a wrong settings when I compiled the source code?
-How should I fix it?
-
-3Q~
-
-                                                                                                                    yours: Kira Yamato
-                                                                                                                       2017-06-19
