@@ -1,14 +1,15 @@
-Content-Type: text/plain;
-	charset=us-ascii
-Mime-Version: 1.0 (1.0)
-From: mathew.benson@gmail.com
-In-Reply-To: <20170725190214.6f2fd892@md1em3qc>
-Date: Wed, 26 Jul 2017 09:42:28 -0500
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <D0F23933-FC14-43CE-BC99-96B60FCE241B@gmail.com>
-References: <DEB5F512-B818-454D-A423-7CB391071BBD@gmail.com>
- <20170725190214.6f2fd892@md1em3qc>
-Subject: Re: [Xenomai] rt_task_create fails
+References: <20170711113213.16427-1-henning.schild@siemens.com>
+ <20170711134009.63101673@md1em3qc>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <8137ae2d-e178-740c-803a-1c388b80f2f7@xenomai.org>
+Date: Wed, 26 Jul 2017 17:22:22 +0200
+MIME-Version: 1.0
+In-Reply-To: <20170711134009.63101673@md1em3qc>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH 1/2] lib/alchemy: fix rt_mutex_create return
+ values
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,39 +18,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: xenomai@xenomai.org
+To: Henning Schild <henning.schild@siemens.com>, "xenomai @ xenomai . org" <xenomai@xenomai.org>
 
-I didn't create a shadow yet.  None of the sample code I found did that.  Is=
- that required?
+On 07/11/2017 01:40 PM, Henning Schild wrote:
+> I am not sure i like what is happening there. Maybe we should just
+> allow rt_mutex_create to return whatever syncluster_addobj returns.
+> I just looked at the code and the pattern where any error from
+> syncluster_addobj is turned into an EEXIST is in several places.
+> 
 
-Sent from my iPhone
+I'm not sure I like it either, that does not make any sense actually -
+it even hides the ENOMEM error, which would be just insane. I pushed a
+patch fixing the issue globally for all callers of syncluster_addobj(),
+updating the inline documentation in the same move.
 
-> On Jul 25, 2017, at 12:02 PM, Henning Schild <henning.schild@siemens.com> w=
-rote:
->=20
-> Am Tue, 25 Jul 2017 07:48:46 -0500
-> schrieb <mathew.benson@gmail.com>:
->=20
->> I ported Xenomai 3.0.5 to Petalinux 2017.1.  The supported tests run
->> fine, but my code is failing.  rt_task_create always fails with errno
->> set to 17 (EEXIST).  Doesn't matter what arguments I give it.  Before
->> I dissect this further, does anybody have any insight?
->=20
-> Your thread might not have a shadow yet and you might see a case where
-> an EPERM is transformed into an EEXIST.
-> We did not discuss the transformation bug yet. But your solution might
-> be to just shadow on EPERM and EEXIST, or before calling anything that
-> needs a shadow.
->=20
-> http://www.xenomai.org/pipermail/xenomai/2017-July/037474.html
->=20
-> Henning
->=20
->> Sent from my iPhone
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> https://xenomai.org/mailman/listinfo/xenomai
->=20
+> We have an application that creates shadow threads whenever the first
+> cobalt syscall returns -EPERM. You can argue whether that is a good
+> idea, but turning an -EPERM into something else is also not a good idea.
+
+As I mentioned lately, I would recommend pthread_kill(pthread_self(), 0)
+as a more robust way for a thread to check this. Receiving ESRCH would
+mean that it has not been shadowed.
+
+-- 
+Philippe.
 
