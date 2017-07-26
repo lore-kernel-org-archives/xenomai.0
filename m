@@ -1,12 +1,13 @@
-From: Simone Zucchi <simone.zucchi@utpvision.it>
-Date: Wed, 26 Jul 2017 10:49:26 +0000
-Message-ID: <50d70e8f-3a85-456f-8eae-ae2616ba88b1@utpvision.it>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <709631928C2ABE4AB19479A363DE22A8@utpvision.local>
-Content-Transfer-Encoding: base64
+From: Giulio Moro <g.moro@qmul.ac.uk>
+Date: Wed, 26 Jul 2017 11:20:21 +0000
+Message-ID: <DB6PR0701MB2456FF86319FA5C6E4F5A005B5B90@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+References: <50d70e8f-3a85-456f-8eae-ae2616ba88b1@utpvision.it>
+In-Reply-To: <50d70e8f-3a85-456f-8eae-ae2616ba88b1@utpvision.it>
+Content-Language: en-GB
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: [Xenomai] Xenomai 2->3: gcc/makefile wrong include paths
+Subject: Re: [Xenomai] Xenomai 2->3: gcc/makefile wrong include paths
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,160 +16,304 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Simone Zucchi <simone.zucchi@utpvision.it>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGVsbG8gZXZlcnlib2R5LA0KdGhhbmtzIHRvIHlvdXIgcHJldmlvdXMgaGludHMgSSd2ZSBzdWNj
-ZXNmdWxseSBnb3QgQ29iYWx0IHdvcmtpbmcuDQpJJ20gdHJ5aW5nIHRvIGNvbXBpbGUgc29tZSAo
-cHJldmlvdXNseSBjb2RlZCBmb3IgWGVub21haSAyKSBjb2RlLg0KSSdtIGZhY2luZyBhbiBvZGQg
-aXNzdWUgd2hpY2ggSSBkb24ndCB0aGluayBpcyByZWxhdGVkIHRvIFhlbm9tYWkgYnV0IA0KcmF0
-aGVyIHRvDQp0aGUgd2F5IG15IE1ha2VmaWxlIGlzIGJ1aWx0Lg0KSSdkIGJlIHJlYWwgZ3JhdGVm
-dWwgdG8gYW55Ym9keSBvdXQgdGhlcmUgd2lsbGluZyB0byBoZWxwIG1lIGJlY2F1c2UgSSdtIA0K
-bm8gbWFrZQ0KZmlsZSBleHBlcnQgYXQgYWxsLg0KDQpJdCBzZWVtcyB0aGF0IGdjYyBkb2Vzbid0
-IGluY2x1ZGUgc3RhbmRhcmQgaW5jbHVkZSBwYXRocyBmb3Igbm8gcmVhc29ucyANCmFwcGVyYW50
-DQpseSB0aHJvdWdoIG15IG1ha2VmaWxlLg0KSSdtIHdvcmtpbmcgb24gRGViaWFuIDkuDQpIZXJl
-J3MgdGhlIGluY2x1ZGUgcGF0aHMgb2YgZ2NjOg0KDQogICAgIGdjYyAteGMgLUUgLXYgLQ0KICAg
-ICBVc2luZyBidWlsdC1pbiBzcGVjcy4NCiAgICAgQ09MTEVDVF9HQ0M9Z2NjDQogICAgIFRhcmdl
-dDogeDg2XzY0LWxpbnV4LWdudQ0KICAgICBDb25maWd1cmVkIHdpdGg6IC4uL3NyYy9jb25maWd1
-cmUgLXYgLS13aXRoLXBrZ3ZlcnNpb249J0RlYmlhbiANCjYuMy4wLTE4JyAtLXcNCml0aC1idWd1
-cmw9ZmlsZTovLy91c3Ivc2hhcmUvZG9jL2djYy02L1JFQURNRS5CdWdzIA0KLS1lbmFibGUtbGFu
-Z3VhZ2VzPWMsYWRhLGMrKywNCmphdmEsZ28sZCxmb3J0cmFuLG9iamMsb2JqLWMrKyAtLXByZWZp
-eD0vdXNyIC0tcHJvZ3JhbS1zdWZmaXg9LTYgDQotLXByb2dyYW0tcHJlZmkNCng9eDg2XzY0LWxp
-bnV4LWdudS0gLS1lbmFibGUtc2hhcmVkIC0tZW5hYmxlLWxpbmtlci1idWlsZC1pZCANCi0tbGli
-ZXhlY2Rpcj0vdXNyL2wNCmliIC0td2l0aG91dC1pbmNsdWRlZC1nZXR0ZXh0IC0tZW5hYmxlLXRo
-cmVhZHM9cG9zaXggLS1saWJkaXI9L3Vzci9saWIgDQotLWVuYWJsZS0NCm5scyAtLXdpdGgtc3lz
-cm9vdD0vIC0tZW5hYmxlLWNsb2NhbGU9Z251IC0tZW5hYmxlLWxpYnN0ZGN4eC1kZWJ1ZyANCi0t
-ZW5hYmxlLWxpYnMNCnRkY3h4LXRpbWU9eWVzIC0td2l0aC1kZWZhdWx0LWxpYnN0ZGN4eC1hYmk9
-bmV3IA0KLS1lbmFibGUtZ251LXVuaXF1ZS1vYmplY3QgLS1kaXMNCmFibGUtdnRhYmxlLXZlcmlm
-eSAtLWVuYWJsZS1saWJtcHggLS1lbmFibGUtcGx1Z2luIC0tZW5hYmxlLWRlZmF1bHQtcGllIA0K
-LS13aXRoLXMNCnlzdGVtLXpsaWIgLS1kaXNhYmxlLWJyb3dzZXItcGx1Z2luIC0tZW5hYmxlLWph
-dmEtYXd0PWd0ayANCi0tZW5hYmxlLWd0ay1jYWlybyAtLXcNCml0aC1qYXZhLWhvbWU9L3Vzci9s
-aWIvanZtL2phdmEtMS41LjAtZ2NqLTYtYW1kNjQvanJlIC0tZW5hYmxlLWphdmEtaG9tZSANCi0t
-d2l0aC0NCmp2bS1yb290LWRpcj0vdXNyL2xpYi9qdm0vamF2YS0xLjUuMC1nY2otNi1hbWQ2NCAN
-Ci0td2l0aC1qdm0tamFyLWRpcj0vdXNyL2xpYi9qdm0NCi1leHBvcnRzL2phdmEtMS41LjAtZ2Nq
-LTYtYW1kNjQgLS13aXRoLWFyY2gtZGlyZWN0b3J5PWFtZDY0IA0KLS13aXRoLWVjai1qYXI9L3Vz
-ci8NCnNoYXJlL2phdmEvZWNsaXBzZS1lY2ouamFyIC0td2l0aC10YXJnZXQtc3lzdGVtLXpsaWIg
-DQotLWVuYWJsZS1vYmpjLWdjPWF1dG8gLS1lbmENCmJsZS1tdWx0aWFyY2ggLS13aXRoLWFyY2gt
-MzI9aTY4NiAtLXdpdGgtYWJpPW02NCANCi0td2l0aC1tdWx0aWxpYi1saXN0PW0zMixtNjQsbXgN
-CjMyIC0tZW5hYmxlLW11bHRpbGliIC0td2l0aC10dW5lPWdlbmVyaWMgLS1lbmFibGUtY2hlY2tp
-bmc9cmVsZWFzZSANCi0tYnVpbGQ9eDg2XzYNCjQtbGludXgtZ251IC0taG9zdD14ODZfNjQtbGlu
-dXgtZ251IC0tdGFyZ2V0PXg4Nl82NC1saW51eC1nbnUNCiAgICAgVGhyZWFkIG1vZGVsOiBwb3Np
-eA0KICAgICBnY2MgdmVyc2lvbiA2LjMuMCAyMDE3MDUxNiAoRGViaWFuIDYuMy4wLTE4KQ0KICAg
-ICBDT0xMRUNUX0dDQ19PUFRJT05TPSctRScgJy12JyAnLW10dW5lPWdlbmVyaWMnICctbWFyY2g9
-eDg2LTY0Jw0KICAgICAgL3Vzci9saWIvZ2NjL3g4Nl82NC1saW51eC1nbnUvNi9jYzEgLUUgLXF1
-aWV0IC12IC1pbXVsdGlhcmNoIA0KeDg2XzY0LWxpbnV4LWcNCm51IC0gLW10dW5lPWdlbmVyaWMg
-LW1hcmNoPXg4Ni02NA0KICAgICBpZ25vcmluZyBub25leGlzdGVudCBkaXJlY3RvcnkgIi91c3Iv
-bG9jYWwvaW5jbHVkZS94ODZfNjQtbGludXgtZ251Ig0KICAgICBpZ25vcmluZyBub25leGlzdGVu
-dCBkaXJlY3RvcnkgDQoiL3Vzci9saWIvZ2NjL3g4Nl82NC1saW51eC1nbnUvNi8uLi8uLi8uLi8u
-Li8NCng4Nl82NC1saW51eC1nbnUvaW5jbHVkZSINCiAgICAgI2luY2x1ZGUgIi4uLiIgc2VhcmNo
-IHN0YXJ0cyBoZXJlOg0KICAgICAjaW5jbHVkZSA8Li4uPiBzZWFyY2ggc3RhcnRzIGhlcmU6DQog
-ICAgICAvdXNyL2xpYi9nY2MveDg2XzY0LWxpbnV4LWdudS82L2luY2x1ZGUNCiAgICAgIC91c3Iv
-bG9jYWwvaW5jbHVkZQ0KICAgICAgL3Vzci9saWIvZ2NjL3g4Nl82NC1saW51eC1nbnUvNi9pbmNs
-dWRlLWZpeGVkDQogICAgICAvdXNyL2luY2x1ZGUveDg2XzY0LWxpbnV4LWdudQ0KICAgICAgL3Vz
-ci9pbmNsdWRlDQogICAgIEVuZCBvZiBzZWFyY2ggbGlzdC4NCiAgICAgIyAxICI8c3RkaW4+Ig0K
-ICAgICAjIDEgIjxidWlsdC1pbj4iDQogICAgICMgMSAiPGNvbW1hbmQtbGluZT4iDQogICAgICMg
-MzEgIjxjb21tYW5kLWxpbmU+Ig0KICAgICAjIDEgIi91c3IvaW5jbHVkZS9zdGRjLXByZWRlZi5o
-IiAxIDMgNA0KICAgICAjIDMyICI8Y29tbWFuZC1saW5lPiIgMg0KICAgICAjIDEgIjxzdGRpbj4i
-DQpDT01QSUxFUl9QQVRIPS91c3IvbGliL2djYy94ODZfNjQtbGludXgtZ251LzYvOi91c3IvbGli
-L2djYy94ODZfNjQtbGludXgtZ251DQovNi86L3Vzci9saWIvZ2NjL3g4Nl82NC1saW51eC1nbnUv
-Oi91c3IvbGliL2djYy94ODZfNjQtbGludXgtZ251LzYvOi91c3IvbGliL2djYw0KL3g4Nl82NC1s
-aW51eC1nbnUvDQpMSUJSQVJZX1BBVEg9L3Vzci9saWIvZ2NjL3g4Nl82NC1saW51eC1nbnUvNi86
-L3Vzci9saWIvZ2NjL3g4Nl82NC1saW51eC1nbnUvDQo2Ly4uLy4uLy4uL3g4Nl82NC1saW51eC1n
-bnUvOi91c3IvbGliL2djYy94ODZfNjQtbGludXgtZ251LzYvLi4vLi4vLi4vLi4vbGliLzovbA0K
-aWIveDg2XzY0LWxpbnV4LWdudS86L2xpYi8uLi9saWIvOi91c3IvbGliL3g4Nl82NC1saW51eC1n
-bnUvOi91c3IvbGliLy4uL2xpYi86L3UNCnNyL2xpYi9nY2MveDg2XzY0LWxpbnV4LWdudS82Ly4u
-Ly4uLy4uLzovbGliLzovdXNyL2xpYi8NCiAgICAgQ09MTEVDVF9HQ0NfT1BUSU9OUz0nLUUnICct
-dicgJy1tdHVuZT1nZW5lcmljJyAnLW1hcmNoPXg4Ni02NCcNCg0KDQpNeSBNYWtlZmlsZSBpczoN
-Cg0KICAgICAjIyMjIyMgQ09ORklHVVJBVElPTiAjIyMjIyMNCg0KICAgICAjIyMgTGlzdCBvZiBh
-cHBsaWNhdGlvbnMgdG8gYmUgYnVpbGQNCiAgICAgQVBQTElDQVRJT05TID0NCg0KICAgICAjIyMg
-Tm90ZTogdG8gb3ZlcnJpZGUgdGhlIHNlYXJjaCBwYXRoIGZvciB0aGUgeGVuby1jb25maWcgc2Ny
-aXB0LCANCnVzZSAibWFrZQ0KWEVOTz0uLi4iDQoNCg0KICAgICAjIyMgTGlzdCBvZiBtb2R1bGVz
-IHRvIGJlIGJ1aWxkDQogICAgIE1PRFVMRVMgPSBteVJ0TW9kdWxlDQoNCiAgICAgIyMjIE5vdGU6
-IHRvIG92ZXJyaWRlIHRoZSBrZXJuZWwgc291cmNlIHBhdGgsIHVzZSAibWFrZSBLU1JDPS4uLiIN
-Cg0KDQoNCiAgICAgIyMjIyMjIFVTRVIgU1BBQ0UgQlVJTEQgKG5vIGNoYW5nZSByZXF1aXJlZCBu
-b3JtYWxseSkgIyMjIyMjDQogICAgIGlmZXEgKCQoS0VSTkVMUkVMRUFTRSksKQ0KICAgICBpZm5l
-cSAoJChBUFBMSUNBVElPTlMpLCkNCg0KICAgICAjIyMgRGVmYXVsdCBYZW5vbWFpIGluc3RhbGxh
-dGlvbiBwYXRoDQogICAgIFhFTk8gPz0gL3Vzci9sb2NhbC94ZW5vbWFpDQoNCiAgICAgWEVOT0NP
-TkZJRz0kKHNoZWxsIFBBVEg9JChYRU5PKTokKFhFTk8pL2JpbjokKFBBVEgpIHdoaWNoIA0KeGVu
-by1jb25maWcgMj4vZGV2DQovbnVsbCkNCg0KICAgICAjIyMgU2FuaXR5IGNoZWNrDQogICAgIGlm
-ZXEgKCQoWEVOT0NPTkZJRyksKQ0KICAgICBhbGw6Og0KICAgICAgICAgQGVjaG8gIj4+PiBJbnZv
-a2UgbWFrZSBsaWtlIHRoaXM6IFwibWFrZSANClhFTk89L3BhdGgvdG8veGVuby1jb25maWdcIiA8
-PDwNCiINCiAgICAgICAgIEBlY2hvDQogICAgIGVuZGlmDQoNCg0KICAgICBDQz0kKHNoZWxsICQo
-WEVOT0NPTkZJRykgLS1jYykNCg0KICAgICBDRkxBR1M9JChzaGVsbCAkKFhFTk9DT05GSUcpIC0t
-YWxjaGVteSAtLWNmbGFncykgJChNWV9DRkxBR1MpIC1JIA0KL3Vzci9sb2NhbC8NCnNyYy9teVNv
-dXJjZS9pbmNsdWRlDQoNCiAgICAgTERGTEFHUz0kKHNoZWxsICQoWEVOT0NPTkZJRykgLS1hbGNo
-ZW15IC0tbGRmbGFncykgJChNWV9MREZMQUdTKSANCi1sYWxjaGVteQ0KDQogICAgICMgVGhpcyBp
-bmNsdWRlcyB0aGUgbGlicmFyeSBwYXRoIG9mIGdpdmVuIFhlbm9tYWkgaW50byB0aGUgYmluYXJ5
-IA0KdG8gbWFrZSBsaQ0KdmUNCiAgICAgIyBlYXNpZXIgZm9yIGJlZ2lubmVycyBpZiBYZW5vbWFp
-J3MgbGlicyBhcmUgbm90IGluIGFueSBkZWZhdWx0IA0Kc2VhcmNoIHBhdGguDQoNCiAgICAgTERG
-TEFHUys9LVhsaW5rZXIgLXJwYXRoIC1YbGlua2VyICQoc2hlbGwgJChYRU5PQ09ORklHKSAtLWxp
-YmRpcikNCg0KICAgICBhbGw6OiAkKEFQUExJQ0FUSU9OUykNCg0KICAgICBjbGVhbjo6DQogICAg
-ICAgICAkKFJNKSAkKEFQUExJQ0FUSU9OUykgKi5vDQoNCiAgICAgZW5kaWYNCiAgICAgZW5kaWYN
-Cg0KDQoNCiAgICAgIyMjIyMjIEtFUk5FTCBNT0RVTEUgQlVJTEQgKG5vIGNoYW5nZSByZXF1aXJl
-ZCBub3JtYWxseSkgIyMjIyMjDQogICAgIGlmbmVxICgkKE1PRFVMRVMpLCkNCg0KICAgICAjIyMg
-RGVmYXVsdCB0byBzb3VyY2VzIG9mIGN1cnJlbnRseSBydW5uaW5nIGtlcm5lbA0KICAgICBLU1JD
-ID89IC9saWIvbW9kdWxlcy8kKHNoZWxsIHVuYW1lIC1yKS9idWlsZA0KDQogICAgIE9CSlMgICAg
-IDo9ICR7cGF0c3Vic3QgJSwgJS5vLCAkKE1PRFVMRVMpfQ0KICAgICBDTEVBTk1PRCA6PSAke3Bh
-dHN1YnN0ICUsIC4lKiwgJChNT0RVTEVTKX0NCiAgICAgUFdEICAgICAgOj0gJChzaGVsbCBpZiBb
-ICIkJFBXRCIgIT0gIiIgXTsgdGhlbiBlY2hvICQkUFdEOyBlbHNlIA0KcHdkOyBmaSkNCg0KICAg
-ICBvYmotbSAgICAgICAgOj0gJChPQkpTKQ0KICAgICBFWFRSQV9DRkxBR1MgOj0gLUkkKEtTUkMp
-L2luY2x1ZGUveGVub21haSANCi1JJChLU1JDKS9pbmNsdWRlL3hlbm9tYWkvcG9zaXggJCgNCkFE
-RF9DRkxBR1MpIC1JL3Vzci9sb2NhbC9zcmMvbXlTb3VyY2UvaW5jbHVkZQ0KDQogICAgIGFsbDo6
-DQogICAgICAgICAkKE1BS0UpIC1DICQoS1NSQykgU1VCRElSUz0kKFBXRCkgbW9kdWxlcw0KDQog
-ICAgIGNsZWFuOjoNCiAgICAgICAgICQoUk0pICQoQ0xFQU5NT0QpICoubyAqLmtvICoubW9kLmMg
-TW9kdWxlLm1hcmtlcnMgbW9kdWxlcy5vcmRlcg0KICAgICAgICAgJChSTSkgLVIgLnRtcCoNCg0K
-ICAgICBlbmRpZg0KDQoNCldoZW4gSSBydW4gbWFrZSB0aGlzIGlzIHdoYXQgaGFwcGVuczoNCg0K
-ICAgICBtYWtlIC1DIC9saWIvbW9kdWxlcy80LjkuMjQtaXBpcGUteGVub21haS0zLjAuNS1jb2Jh
-bHQvYnVpbGQgDQpTVUJESVJTPS91c3IvbG8NCmNhbC9zcmMvbXkvc291cmNlL3J0X2NvbnRyb2wg
-bW9kdWxlcw0KICAgICBtYWtlWzFdOiBFbnRlcmluZyBkaXJlY3RvcnkgDQonL3Vzci9sb2NhbC9z
-cmMvbGludXgtNC45LjI0LWlwaXBlLXhlbm9tYWktMy4wLjUNCi1jb2JhbHQnDQogICAgICAgQ0Mg
-W01dIC91c3IvbG9jYWwvc3JjL215U291cmNlL3NvdXJjZS9ydF9jb250cm9sL215UnRNb2R1bGUu
-bw0KICAgICBJbiBmaWxlIGluY2x1ZGVkIGZyb20gL3Vzci9sb2NhbC9zcmMvbXlTb3VyY2UvaW5j
-bHVkZS9jb21tb24uaDoxMDowLA0KICAgICAgICAgICAgICAgICAgICAgIGZyb20gDQovdXNyL2xv
-Y2FsL3NyYy9teVNvdXJjZS9zb3VyY2UvcnRfY29udHJvbC9teVJ0TW9kdWxlLmMNCjozMzoNCiAg
-ICAgaW5jbHVkZS94ZW5vbWFpL2FsY2hlbXkvdGFzay5oOjIxOjIzOiBmYXRhbCBlcnJvcjogc3lz
-L3R5cGVzLmg6IE5vIA0Kc3VjaCBmaWxlDQogIG9yIGRpcmVjdG9yeQ0KICAgICAgI2luY2x1ZGUg
-PHN5cy90eXBlcy5oPg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgIF4NCiAgICAgY29tcGls
-YXRpb24gdGVybWluYXRlZC4NCiAgICAgc2NyaXB0cy9NYWtlZmlsZS5idWlsZDoyOTk6IHJlY2lw
-ZSBmb3IgdGFyZ2V0IA0KJy91c3IvbG9jYWwvc3JjL215U291cmNlL3NvdXJjDQplL3J0X2NvbnRy
-b2wvbXlSdE1vZHVsZS5vJyBmYWlsZWQNCiAgICAgbWFrZVsyXTogKioqIA0KWy91c3IvbG9jYWwv
-c3JjL215U291cmNlL3NvdXJjZS9ydF9jb250cm9sL215UnRNb2R1bGUub10gRXJyb3INCjENCiAg
-ICAgTWFrZWZpbGU6MTQ5MDogcmVjaXBlIGZvciB0YXJnZXQgDQonX21vZHVsZV8vdXNyL2xvY2Fs
-L3NyYy9teVNvdXJjZS9zb3VyY2UvcnRfDQpjb250cm9sJyBmYWlsZWQNCiAgICAgbWFrZVsxXTog
-KioqIFtfbW9kdWxlXy91c3IvbG9jYWwvc3JjL215U291cmNlL3NvdXJjZS9ydF9jb250cm9sXSAN
-CkVycm9yIDINCiAgICAgbWFrZVsxXTogTGVhdmluZyBkaXJlY3RvcnkgDQonL3Vzci9sb2NhbC9z
-cmMvbGludXgtNC45LjI0LWlwaXBlLXhlbm9tYWktMy4wLjUtDQpjb2JhbHQnDQogICAgIE1ha2Vm
-aWxlOjY3OiByZWNpcGUgZm9yIHRhcmdldCAnYWxsJyBmYWlsZWQNCiAgICAgbWFrZTogKioqIFth
-bGxdIEVycm9yIDINCg0KSWYgSSBleHBsaWNpdCB0aGUgKHN0YW5kYXJkPykgaW5jbHVkZSBwYXRo
-IG92ZXIgZ2NjIGludG8gbWFrZSwgYWRkaW5nIA0KIi1JL3Vzci9pbg0KY2x1ZGUveDg2XzY0LWxp
-bnV4LWdudSIgYXQgdGhlIGVuZCBvZiBFWFRSQV9DRkxBR1MsIEkgZ2V0IHRoaXMgYmVoYXZpb3Vy
-Og0KDQogICAgIG1ha2UgLUMgL2xpYi9tb2R1bGVzLzQuOS4yNC1pcGlwZS14ZW5vbWFpLTMuMC41
-LWNvYmFsdC9idWlsZCANClNVQkRJUlM9L3Vzci9sbw0KY2FsL3NyYy9teVNvdXJjZS9zb3VyY2Uv
-cnRfY29udHJvbCBtb2R1bGVzDQogICAgIG1ha2VbMV06IEVudGVyaW5nIGRpcmVjdG9yeSANCicv
-dXNyL2xvY2FsL3NyYy9saW51eC00LjkuMjQtaXBpcGUteGVub21haS0zLjAuNQ0KLWNvYmFsdCcN
-CiAgICAgICBDQyBbTV0gL3Vzci9sb2NhbC9zcmMvbXlTb3VyY2Uvc291cmNlL3J0X2NvbnRyb2wv
-bXlSdE1vZHVsZS5vDQogICAgIEluIGZpbGUgaW5jbHVkZWQgZnJvbSBpbmNsdWRlL3hlbm9tYWkv
-YWxjaGVteS90YXNrLmg6MjE6MCwNCiAgICAgICAgICAgICAgICAgICAgICBmcm9tIC91c3IvbG9j
-YWwvc3JjL215U291cmNlL2luY2x1ZGUvY29tbW9uLmg6MTAsDQogICAgICAgICAgICAgICAgICAg
-ICAgZnJvbSANCi91c3IvbG9jYWwvc3JjL215U291cmNlL3NvdXJjZS9ydF9jb250cm9sL215UnRN
-b2R1bGUuYw0KOjMzOg0KICAgICAvdXNyL2luY2x1ZGUveDg2XzY0LWxpbnV4LWdudS9zeXMvdHlw
-ZXMuaDoyNToyMjogZmF0YWwgZXJyb3I6IA0KZmVhdHVyZXMuaDogTm8NCiAgc3VjaCBmaWxlIG9y
-IGRpcmVjdG9yeQ0KICAgICAgI2luY2x1ZGUgPGZlYXR1cmVzLmg+DQogICAgICAgICAgICAgICAg
-ICAgICAgICAgICBeDQogICAgIGNvbXBpbGF0aW9uIHRlcm1pbmF0ZWQuDQogICAgIHNjcmlwdHMv
-TWFrZWZpbGUuYnVpbGQ6Mjk5OiByZWNpcGUgZm9yIHRhcmdldCANCicvdXNyL2xvY2FsL3NyYy9t
-eVNvdXJjZS9zb3VyYw0KZS9ydF9jb250cm9sL215UnRNb2R1bGUubycgZmFpbGVkDQogICAgIG1h
-a2VbMl06ICoqKiANClsvdXNyL2xvY2FsL3NyYy9teVNvdXJjZS9zb3VyY2UvcnRfY29udHJvbC9t
-eVJ0TW9kdWxlLm9dIEVycm9yDQoxDQogICAgIE1ha2VmaWxlOjE0OTA6IHJlY2lwZSBmb3IgdGFy
-Z2V0IA0KJ19tb2R1bGVfL3Vzci9sb2NhbC9zcmMvbXlTb3VyY2Uvc291cmNlL3J0Xw0KY29udHJv
-bCcgZmFpbGVkDQogICAgIG1ha2VbMV06ICoqKiBbX21vZHVsZV8vdXNyL2xvY2FsL3NyYy9teVNv
-dXJjZS9zb3VyY2UvcnRfY29udHJvbF0gDQpFcnJvciAyDQogICAgIG1ha2VbMV06IExlYXZpbmcg
-ZGlyZWN0b3J5IA0KJy91c3IvbG9jYWwvc3JjL2xpbnV4LTQuOS4yNC1pcGlwZS14ZW5vbWFpLTMu
-MC41LQ0KY29iYWx0Jw0KICAgICBNYWtlZmlsZTo2NzogcmVjaXBlIGZvciB0YXJnZXQgJ2FsbCcg
-ZmFpbGVkDQogICAgIG1ha2U6ICoqKiBbYWxsXSBFcnJvciAyDQoNCg0KT2YgY291cnNlIEkgZG8g
-aGF2ZSBsaWJjdi1kZXYgaW5zdGFsbGVkIGFuZCBldmVyeXRoaW5nIGlzIGluIHRoZSByaWdodCAN
-CnBsYWNlOg0KDQogICAgIGxzIC1sIC91c3IvaW5jbHVkZS94ODZfNjQtbGludXgtZ251L3N5cy90
-eXBlcy5oDQogICAgIC1ydy1yLS1yLS0gMSByb290IHJvb3QgNjY4NyBKdW4gMTUgMjE6MTcgDQov
-dXNyL2luY2x1ZGUveDg2XzY0LWxpbnV4LWdudS9zeXMvdA0KeXBlcy5oDQoNCiAgICAgbHMgLWwg
-L3Vzci9pbmNsdWRlL2ZlYXR1cmVzLmgNCiAgICAgLXJ3LXItLXItLSAxIHJvb3Qgcm9vdCAxMzA2
-OSBKdW4gMTUgMjE6MTcgL3Vzci9pbmNsdWRlL2ZlYXR1cmVzLmgNCg0KSG9wZSBhbnlib2R5IG91
-dCB0aGVyZSBjb3VsZC93aWxsIGhlbHAgbWUgOikNClRoYW5rcywNCg0KU2ltb25l
+> It seems that gcc doesn't include standard include paths
+
+I would suggest you add `--verbose` to your CFLAGS so you will see explicit=
+ly what is in the search path for that one invocation that fails.
+
+Giulio
+
+PS: note that the weird line wrapping of your message (possibly due to your=
+ email client or termianl or both?) makes your message and the error log di=
+fficult to parse
+
+
+________________________________________
+From: Xenomai <xenomai-bounces@xenomai.org> on behalf of Simone Zucchi <sim=
+one.zucchi@utpvision.it>
+Sent: 26 July 2017 11:49
+To: xenomai@xenomai.org
+Subject: [Xenomai] Xenomai 2->3: gcc/makefile wrong include paths
+
+Hello everybody,
+thanks to your previous hints I've succesfully got Cobalt working.
+I'm trying to compile some (previously coded for Xenomai 2) code.
+I'm facing an odd issue which I don't think is related to Xenomai but
+rather to
+the way my Makefile is built.
+I'd be real grateful to anybody out there willing to help me because I'm
+no make
+file expert at all.
+
+It seems that gcc doesn't include standard include paths for no reasons
+apperant
+ly through my makefile.
+I'm working on Debian 9.
+Here's the include paths of gcc:
+
+     gcc -xc -E -v -
+     Using built-in specs.
+     COLLECT_GCC=3Dgcc
+     Target: x86_64-linux-gnu
+     Configured with: ../src/configure -v --with-pkgversion=3D'Debian
+6.3.0-18' --w
+ith-bugurl=3Dfile:///usr/share/doc/gcc-6/README.Bugs
+--enable-languages=3Dc,ada,c++,
+java,go,d,fortran,objc,obj-c++ --prefix=3D/usr --program-suffix=3D-6
+--program-prefi
+x=3Dx86_64-linux-gnu- --enable-shared --enable-linker-build-id
+--libexecdir=3D/usr/l
+ib --without-included-gettext --enable-threads=3Dposix --libdir=3D/usr/lib
+--enable-
+nls --with-sysroot=3D/ --enable-clocale=3Dgnu --enable-libstdcxx-debug
+--enable-libs
+tdcxx-time=3Dyes --with-default-libstdcxx-abi=3Dnew
+--enable-gnu-unique-object --dis
+able-vtable-verify --enable-libmpx --enable-plugin --enable-default-pie
+--with-s
+ystem-zlib --disable-browser-plugin --enable-java-awt=3Dgtk
+--enable-gtk-cairo --w
+ith-java-home=3D/usr/lib/jvm/java-1.5.0-gcj-6-amd64/jre --enable-java-home
+--with-
+jvm-root-dir=3D/usr/lib/jvm/java-1.5.0-gcj-6-amd64
+--with-jvm-jar-dir=3D/usr/lib/jvm
+-exports/java-1.5.0-gcj-6-amd64 --with-arch-directory=3Damd64
+--with-ecj-jar=3D/usr/
+share/java/eclipse-ecj.jar --with-target-system-zlib
+--enable-objc-gc=3Dauto --ena
+ble-multiarch --with-arch-32=3Di686 --with-abi=3Dm64
+--with-multilib-list=3Dm32,m64,mx
+32 --enable-multilib --with-tune=3Dgeneric --enable-checking=3Drelease
+--build=3Dx86_6
+4-linux-gnu --host=3Dx86_64-linux-gnu --target=3Dx86_64-linux-gnu
+     Thread model: posix
+     gcc version 6.3.0 20170516 (Debian 6.3.0-18)
+     COLLECT_GCC_OPTIONS=3D'-E' '-v' '-mtune=3Dgeneric' '-march=3Dx86-64'
+      /usr/lib/gcc/x86_64-linux-gnu/6/cc1 -E -quiet -v -imultiarch
+x86_64-linux-g
+nu - -mtune=3Dgeneric -march=3Dx86-64
+     ignoring nonexistent directory "/usr/local/include/x86_64-linux-gnu"
+     ignoring nonexistent directory
+"/usr/lib/gcc/x86_64-linux-gnu/6/../../../../
+x86_64-linux-gnu/include"
+     #include "..." search starts here:
+     #include <...> search starts here:
+      /usr/lib/gcc/x86_64-linux-gnu/6/include
+      /usr/local/include
+      /usr/lib/gcc/x86_64-linux-gnu/6/include-fixed
+      /usr/include/x86_64-linux-gnu
+      /usr/include
+     End of search list.
+     # 1 "<stdin>"
+     # 1 "<built-in>"
+     # 1 "<command-line>"
+     # 31 "<command-line>"
+     # 1 "/usr/include/stdc-predef.h" 1 3 4
+     # 32 "<command-line>" 2
+     # 1 "<stdin>"
+COMPILER_PATH=3D/usr/lib/gcc/x86_64-linux-gnu/6/:/usr/lib/gcc/x86_64-linux-=
+gnu
+/6/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/6/:/usr/li=
+b/gcc
+/x86_64-linux-gnu/
+LIBRARY_PATH=3D/usr/lib/gcc/x86_64-linux-gnu/6/:/usr/lib/gcc/x86_64-linux-g=
+nu/
+6/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/6/../../../../li=
+b/:/l
+ib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../li=
+b/:/u
+sr/lib/gcc/x86_64-linux-gnu/6/../../../:/lib/:/usr/lib/
+     COLLECT_GCC_OPTIONS=3D'-E' '-v' '-mtune=3Dgeneric' '-march=3Dx86-64'
+
+
+My Makefile is:
+
+     ###### CONFIGURATION ######
+
+     ### List of applications to be build
+     APPLICATIONS =3D
+
+     ### Note: to override the search path for the xeno-config script,
+use "make
+XENO=3D..."
+
+
+     ### List of modules to be build
+     MODULES =3D myRtModule
+
+     ### Note: to override the kernel source path, use "make KSRC=3D..."
+
+
+
+     ###### USER SPACE BUILD (no change required normally) ######
+     ifeq ($(KERNELRELEASE),)
+     ifneq ($(APPLICATIONS),)
+
+     ### Default Xenomai installation path
+     XENO ?=3D /usr/local/xenomai
+
+     XENOCONFIG=3D$(shell PATH=3D$(XENO):$(XENO)/bin:$(PATH) which
+xeno-config 2>/dev
+/null)
+
+     ### Sanity check
+     ifeq ($(XENOCONFIG),)
+     all::
+         @echo ">>> Invoke make like this: \"make
+XENO=3D/path/to/xeno-config\" <<<
+"
+         @echo
+     endif
+
+
+     CC=3D$(shell $(XENOCONFIG) --cc)
+
+     CFLAGS=3D$(shell $(XENOCONFIG) --alchemy --cflags) $(MY_CFLAGS) -I
+/usr/local/
+src/mySource/include
+
+     LDFLAGS=3D$(shell $(XENOCONFIG) --alchemy --ldflags) $(MY_LDFLAGS)
+-lalchemy
+
+     # This includes the library path of given Xenomai into the binary
+to make li
+ve
+     # easier for beginners if Xenomai's libs are not in any default
+search path.
+
+     LDFLAGS+=3D-Xlinker -rpath -Xlinker $(shell $(XENOCONFIG) --libdir)
+
+     all:: $(APPLICATIONS)
+
+     clean::
+         $(RM) $(APPLICATIONS) *.o
+
+     endif
+     endif
+
+
+
+     ###### KERNEL MODULE BUILD (no change required normally) ######
+     ifneq ($(MODULES),)
+
+     ### Default to sources of currently running kernel
+     KSRC ?=3D /lib/modules/$(shell uname -r)/build
+
+     OBJS     :=3D ${patsubst %, %.o, $(MODULES)}
+     CLEANMOD :=3D ${patsubst %, .%*, $(MODULES)}
+     PWD      :=3D $(shell if [ "$$PWD" !=3D "" ]; then echo $$PWD; else
+pwd; fi)
+
+     obj-m        :=3D $(OBJS)
+     EXTRA_CFLAGS :=3D -I$(KSRC)/include/xenomai
+-I$(KSRC)/include/xenomai/posix $(
+ADD_CFLAGS) -I/usr/local/src/mySource/include
+
+     all::
+         $(MAKE) -C $(KSRC) SUBDIRS=3D$(PWD) modules
+
+     clean::
+         $(RM) $(CLEANMOD) *.o *.ko *.mod.c Module.markers modules.order
+         $(RM) -R .tmp*
+
+     endif
+
+
+When I run make this is what happens:
+
+     make -C /lib/modules/4.9.24-ipipe-xenomai-3.0.5-cobalt/build
+SUBDIRS=3D/usr/lo
+cal/src/my/source/rt_control modules
+     make[1]: Entering directory
+'/usr/local/src/linux-4.9.24-ipipe-xenomai-3.0.5
+-cobalt'
+       CC [M] /usr/local/src/mySource/source/rt_control/myRtModule.o
+     In file included from /usr/local/src/mySource/include/common.h:10:0,
+                      from
+/usr/local/src/mySource/source/rt_control/myRtModule.c
+:33:
+     include/xenomai/alchemy/task.h:21:23: fatal error: sys/types.h: No
+such file
+  or directory
+      #include <sys/types.h>
+                            ^
+     compilation terminated.
+     scripts/Makefile.build:299: recipe for target
+'/usr/local/src/mySource/sourc
+e/rt_control/myRtModule.o' failed
+     make[2]: ***
+[/usr/local/src/mySource/source/rt_control/myRtModule.o] Error
+1
+     Makefile:1490: recipe for target
+'_module_/usr/local/src/mySource/source/rt_
+control' failed
+     make[1]: *** [_module_/usr/local/src/mySource/source/rt_control]
+Error 2
+     make[1]: Leaving directory
+'/usr/local/src/linux-4.9.24-ipipe-xenomai-3.0.5-
+cobalt'
+     Makefile:67: recipe for target 'all' failed
+     make: *** [all] Error 2
+
+If I explicit the (standard?) include path over gcc into make, adding
+"-I/usr/in
+clude/x86_64-linux-gnu" at the end of EXTRA_CFLAGS, I get this behaviour:
+
+     make -C /lib/modules/4.9.24-ipipe-xenomai-3.0.5-cobalt/build
+SUBDIRS=3D/usr/lo
+cal/src/mySource/source/rt_control modules
+     make[1]: Entering directory
+'/usr/local/src/linux-4.9.24-ipipe-xenomai-3.0.5
+-cobalt'
+       CC [M] /usr/local/src/mySource/source/rt_control/myRtModule.o
+     In file included from include/xenomai/alchemy/task.h:21:0,
+                      from /usr/local/src/mySource/include/common.h:10,
+                      from
+/usr/local/src/mySource/source/rt_control/myRtModule.c
+:33:
+     /usr/include/x86_64-linux-gnu/sys/types.h:25:22: fatal error:
+features.h: No
+  such file or directory
+      #include <features.h>
+                           ^
+     compilation terminated.
+     scripts/Makefile.build:299: recipe for target
+'/usr/local/src/mySource/sourc
+e/rt_control/myRtModule.o' failed
+     make[2]: ***
+[/usr/local/src/mySource/source/rt_control/myRtModule.o] Error
+1
+     Makefile:1490: recipe for target
+'_module_/usr/local/src/mySource/source/rt_
+control' failed
+     make[1]: *** [_module_/usr/local/src/mySource/source/rt_control]
+Error 2
+     make[1]: Leaving directory
+'/usr/local/src/linux-4.9.24-ipipe-xenomai-3.0.5-
+cobalt'
+     Makefile:67: recipe for target 'all' failed
+     make: *** [all] Error 2
+
+
+Of course I do have libcv-dev installed and everything is in the right
+place:
+
+     ls -l /usr/include/x86_64-linux-gnu/sys/types.h
+     -rw-r--r-- 1 root root 6687 Jun 15 21:17
+/usr/include/x86_64-linux-gnu/sys/t
+ypes.h
+
+     ls -l /usr/include/features.h
+     -rw-r--r-- 1 root root 13069 Jun 15 21:17 /usr/include/features.h
+
+Hope anybody out there could/will help me :)
+Thanks,
+
+Simone
+_______________________________________________
+Xenomai mailing list
+Xenomai@xenomai.org
+https://xenomai.org/mailman/listinfo/xenomai
 
