@@ -1,11 +1,14 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <87b5e4c1-a800-83ee-94af-c797091a3a13@siemens.com>
-Date: Tue, 25 Jul 2017 20:54:42 +0200
+References: <DEB5F512-B818-454D-A423-7CB391071BBD@gmail.com>
+ <20170725190214.6f2fd892@md1em3qc>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <86e8d4b9-1118-27e5-2778-23316b0eabc8@xenomai.org>
+Date: Wed, 26 Jul 2017 11:25:51 +0200
 MIME-Version: 1.0
+In-Reply-To: <20170725190214.6f2fd892@md1em3qc>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [RFC] Remote thread suspension vs. info flags
+Subject: Re: [Xenomai] rt_task_create fails
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,44 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>, mathew.benson@gmail.com
+Cc: xenomai@xenomai.org
 
-Hi all,
+On 07/25/2017 07:02 PM, Henning Schild wrote:
+> Am Tue, 25 Jul 2017 07:48:46 -0500
+> schrieb <mathew.benson@gmail.com>:
+> 
+>> I ported Xenomai 3.0.5 to Petalinux 2017.1.  The supported tests run
+>> fine, but my code is failing.  rt_task_create always fails with errno
+>> set to 17 (EEXIST).  Doesn't matter what arguments I give it.  Before
+>> I dissect this further, does anybody have any insight?
+> 
+> Your thread might not have a shadow yet and you might see a case where
+> an EPERM is transformed into an EEXIST.
+> We did not discuss the transformation bug yet. But your solution might
+> be to just shadow on EPERM and EEXIST, or before calling anything that
+> needs a shadow.
+> 
+> http://www.xenomai.org/pipermail/xenomai/2017-July/037474.html
 
-don't we need this?
-
-diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-index ab457da70..604179f68 100644
---- a/kernel/cobalt/thread.c
-+++ b/kernel/cobalt/thread.c
-@@ -920,8 +920,13 @@ void xnthread_suspend(struct xnthread *thread, int mask,
- 			    (oldstate & XNTRAPLB) != 0)
- 				goto lock_break;
- 		}
--		xnthread_clear_info(thread,
--				    XNRMID|XNTIMEO|XNBREAK|XNWAKEN|XNROBBED|XNKICKED);
-+		/*
-+		 * Do not destroy the info left behind by yet unprocessed
-+		 * wakeups when suspending a remote thread.
-+		 */
-+		if (thread == sched->curr)
-+			xnthread_clear_info(thread, XNRMID|XNTIMEO|XNBREAK|
-+						    XNWAKEN|XNROBBED|XNKICKED);
- 	}
- 
- 	/*
-
-Let's assume a high prio thread is running and a low-prio is waiting for
-a timeout. Now the timeout occurs, and the low-prio is woken up but
-can't run yet. If the high-prio suspends the low-prio, XNWIMEO will be
-lost.
-
-I've run into this with complex out-of-tree modifications, but this
-seems to affect upstream as well, no?
-
-Jan
+Testing EPERM is not robust, there are other cases triggering such
+error. pthread_kill(pthread_self(), 0) is a better way to check whether
+the current thread is known to Cobalt (__RT(pthread_kill(...)) if symbol
+wrapping is not in effect).
 
 -- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
