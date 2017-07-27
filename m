@@ -5,8 +5,8 @@ References: <E1daPZD-0000KU-Bk@xenomai.org>
  <6eb0651a-53be-ac44-c3a6-80aaba1ce6d9@xenomai.org>
  <a9587340-a63b-d8b2-a1a5-abd7acd6ea1a@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <1dbc1387-7793-686c-78e9-740c6d55cd72@xenomai.org>
-Date: Thu, 27 Jul 2017 19:11:06 +0200
+Message-ID: <c7dd7f1f-5c87-21a1-7a24-198d256c4780@xenomai.org>
+Date: Thu, 27 Jul 2017 19:11:18 +0200
 MIME-Version: 1.0
 In-Reply-To: <a9587340-a63b-d8b2-a1a5-abd7acd6ea1a@siemens.com>
 Content-Type: text/plain; charset=utf-8
@@ -84,7 +84,7 @@ On 07/27/2017 06:32 PM, Jan Kiszka wrote:
 > Done, see for-forge.
 > 
 
-Pull into -next, thanks.
+Pulled into -next, thanks.
 
 -- 
 Philippe.
