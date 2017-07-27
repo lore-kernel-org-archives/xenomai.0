@@ -1,16 +1,16 @@
-Date: Thu, 27 Jul 2017 14:14:58 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20170727141458.446e30a4@md1em3qc>
-In-Reply-To: <7c73150b-2f86-d3cd-de72-cb0bb374fbc3@xenomai.org>
-References: <20170711113213.16427-1-henning.schild@siemens.com>
- <20170711134009.63101673@md1em3qc>
- <8137ae2d-e178-740c-803a-1c388b80f2f7@xenomai.org>
- <7c73150b-2f86-d3cd-de72-cb0bb374fbc3@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+References: <E1daPZD-0000KU-Bk@xenomai.org>
+ <279c3ea8-3396-161c-254a-aca7e2f6a445@xenomai.org>
+ <0818e9c1-a4ad-cf28-a35f-efb06a809184@siemens.com>
+Message-ID: <80934b09-9d9a-038a-e426-2eae7b27bb5f@siemens.com>
+Date: Thu, 27 Jul 2017 17:30:09 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <0818e9c1-a4ad-cf28-a35f-efb06a809184@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH 1/2] lib/alchemy: fix rt_mutex_create return
- values
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt: Fix conditional
+ build of lock_vfile registration
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,42 +19,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai @ xenomai . org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-Am Wed, 26 Jul 2017 17:34:01 +0200
-schrieb Philippe Gerum <rpm@xenomai.org>:
-
-> On 07/26/2017 05:22 PM, Philippe Gerum wrote:
-> > On 07/11/2017 01:40 PM, Henning Schild wrote:  
-> >> I am not sure i like what is happening there. Maybe we should just
-> >> allow rt_mutex_create to return whatever syncluster_addobj returns.
-> >> I just looked at the code and the pattern where any error from
-> >> syncluster_addobj is turned into an EEXIST is in several places.
-> >>  
-> > 
-> > I'm not sure I like it either, that does not make any sense
-> > actually - it even hides the ENOMEM error, which would be just
-> > insane. I pushed a patch fixing the issue globally for all callers
-> > of syncluster_addobj(), updating the inline documentation in the
-> > same move. 
-> >> We have an application that creates shadow threads whenever the
-> >> first cobalt syscall returns -EPERM. You can argue whether that is
-> >> a good idea, but turning an -EPERM into something else is also not
-> >> a good idea.  
-> > 
-> > As I mentioned lately, I would recommend
-> > pthread_kill(pthread_self(), 0) as a more robust way for a thread
-> > to check this. Receiving ESRCH would mean that it has not been
-> > shadowed. 
+On 2017-07-27 13:15, Jan Kiszka wrote:
+> On 2017-07-26 18:59, Philippe Gerum wrote:
+>> On 07/26/2017 06:53 PM, git repository hosting wrote:
+>>> Module: xenomai-jki
+>>> Branch: for-forge
+>>> Commit: 634a95c9c023dda40607e5e5c1dd43761f59e541
+>>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=634a95c9c023dda40607e5e5c1dd43761f59e541
+>>>
+>>> Author: Jan Kiszka <jan.kiszka@siemens.com>
+>>> Date:   Wed Jul 26 18:50:43 2017 +0200
+>>>
+>>> cobalt: Fix conditional build of lock_vfile registration
+>>>
+>>> There is and there was never a CONFIG_XENO_DEBUG_LOCKING.
+>>> Fixes de66d324a93d.
+>>>
+>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>>
+>>> ---
+>>>
+>>>  kernel/cobalt/procfs.c |    4 ++--
+>>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/kernel/cobalt/procfs.c b/kernel/cobalt/procfs.c
+>>> index 9d193af..85aea0c 100644
+>>> --- a/kernel/cobalt/procfs.c
+>>> +++ b/kernel/cobalt/procfs.c
+>>> @@ -216,7 +216,7 @@ static struct xnvfile_regular apc_vfile = {
+>>>  void xnprocfs_cleanup_tree(void)
+>>>  {
+>>>  #ifdef CONFIG_XENO_OPT_DEBUG
+>>> -#ifdef CONFIG_XENO_DEBUG_LOCKING
+>>
+>> This would reintroduce another bug [1]. Better check for the proper
+>> symbol instead, i.e. CONFIG_XENO_OPT_DEBUG_LOCKING.
 > 
-> To clarify, I'm suggesting to use pthread_kill() in the slow/error
-> path of your code to confirm that EPERM as received really means "not
-> a shadow", and not the result of a consistency check performed by the
-> core on the mutex object when the debug option is turned on.
+> That won't solve the issue either. There is something more seriously
+> broken in the dependencies. Analyzing....
+> 
 
-Thanks for the suggestion, i will forward it. And thanks for coming up
-with a proper fix to the observed problem.
+The problem is that #if IS_ENABLED() does not update the dependencies of
+that file so that kbuild does not recompile what is actually affected by
+config changes. A clean rebuild will work.
 
-Henning
+Solution is to replace *all* #if IS_ENABLED() by proper #ifdef.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
 
