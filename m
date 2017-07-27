@@ -1,13 +1,18 @@
-Date: Tue, 20 Jun 2017 09:40:46 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20170620094046.7cccdf20@md1em3qc>
-In-Reply-To: <6352019.c1ef.15cc377a590.Coremail.kirayamato@zju.edu.cn>
-References: <6352019.c1ef.15cc377a590.Coremail.kirayamato@zju.edu.cn>
+References: <E1daPZD-0000KU-Bk@xenomai.org>
+ <279c3ea8-3396-161c-254a-aca7e2f6a445@xenomai.org>
+ <0818e9c1-a4ad-cf28-a35f-efb06a809184@siemens.com>
+ <80934b09-9d9a-038a-e426-2eae7b27bb5f@siemens.com>
+ <6eb0651a-53be-ac44-c3a6-80aaba1ce6d9@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <a9587340-a63b-d8b2-a1a5-abd7acd6ea1a@siemens.com>
+Date: Thu, 27 Jul 2017 18:32:27 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <6eb0651a-53be-ac44-c3a6-80aaba1ce6d9@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai: /dev/rtheap is missing (chardev,
- major=10 minor=254)
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt: Fix conditional
+ build of lock_vfile registration
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,55 +21,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: kirayamato@zju.edu.cn
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-Am Tue, 20 Jun 2017 11:06:57 +0800
-schrieb <kirayamato@zju.edu.cn>:
+On 2017-07-27 18:21, Philippe Gerum wrote:
+> On 07/27/2017 05:30 PM, Jan Kiszka wrote:
+>> On 2017-07-27 13:15, Jan Kiszka wrote:
+>>> On 2017-07-26 18:59, Philippe Gerum wrote:
+>>>> On 07/26/2017 06:53 PM, git repository hosting wrote:
+>>>>> Module: xenomai-jki
+>>>>> Branch: for-forge
+>>>>> Commit: 634a95c9c023dda40607e5e5c1dd43761f59e541
+>>>>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=634a95c9c023dda40607e5e5c1dd43761f59e541
+>>>>>
+>>>>> Author: Jan Kiszka <jan.kiszka@siemens.com>
+>>>>> Date:   Wed Jul 26 18:50:43 2017 +0200
+>>>>>
+>>>>> cobalt: Fix conditional build of lock_vfile registration
+>>>>>
+>>>>> There is and there was never a CONFIG_XENO_DEBUG_LOCKING.
+>>>>> Fixes de66d324a93d.
+>>>>>
+>>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>>>>
+>>>>> ---
+>>>>>
+>>>>>  kernel/cobalt/procfs.c |    4 ++--
+>>>>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>>>>
+>>>>> diff --git a/kernel/cobalt/procfs.c b/kernel/cobalt/procfs.c
+>>>>> index 9d193af..85aea0c 100644
+>>>>> --- a/kernel/cobalt/procfs.c
+>>>>> +++ b/kernel/cobalt/procfs.c
+>>>>> @@ -216,7 +216,7 @@ static struct xnvfile_regular apc_vfile = {
+>>>>>  void xnprocfs_cleanup_tree(void)
+>>>>>  {
+>>>>>  #ifdef CONFIG_XENO_OPT_DEBUG
+>>>>> -#ifdef CONFIG_XENO_DEBUG_LOCKING
+>>>>
+>>>> This would reintroduce another bug [1]. Better check for the proper
+>>>> symbol instead, i.e. CONFIG_XENO_OPT_DEBUG_LOCKING.
+>>>
+>>> That won't solve the issue either. There is something more seriously
+>>> broken in the dependencies. Analyzing....
+>>>
+>>
+>> The problem is that #if IS_ENABLED() does not update the dependencies of
+>> that file so that kbuild does not recompile what is actually affected by
+>> config changes. A clean rebuild will work.
+>>
+>> Solution is to replace *all* #if IS_ENABLED() by proper #ifdef.
+>>
+> 
+> Yes, this was the purpose of the initial fix, which used the wrong
+> symbol though. Because the deps was broken, we ended up with some files
+> not being rebuilt when switching between debug modes, leaving
+> xnlock_stats undefined in some cases. We only need to fix the symbol,
+> i.e. #ifdef CONFIG_XENO_DEBUG_LOCKING, and all other occurrences of
+> similar constructs.
 
-> Hello, everyone~
-> 
-> I am compiling xenomai 2.6.4 on ubuntu 14.04.2 with a kernel verion
-> 3.14.17
-> 
-> I can run the xeno latency test, and the latency in user space has a
-> max value of 20 us with the select period of 100us.
-> 
-> But when I tried to run a compiled example trivial-periodic.c under
-> the source directory */xenomai-2.6.4/examples, the following alarm
-> showed:
-> 
-> root@*****:/home/robot/Desktop# ./trivial-periodic
-> Xenomai: /dev/rtheap is missing
-> (chardev, major=10 minor=254)
-> 
-> and the compile command is:
-> 
-> gcc  -I/usr/xenomai/include -D_GNU_SOURCE
-> -D_REENTRANT -D__XENO__    trivial-periodic.c -Xlinker -rpath
-> -Xlinker /usr/xenomai/lib -lnative -L/usr/xenomai/lib -lxenomai
-> -lpthread -lrt -o trivial-periodic
-> 
-> The file do not exist under the /dev/ directory.
+Done, see for-forge.
 
-Check the kernel log for errors when xenomai is initialized. I do not
-know by heart how device nodes where created in the oldish versions you
-use, maybe you need to create it manually with mknod.
+Jan
 
-Henning
-
-> My question is:
-> Is this problem due to an error config or compiling of xenomai and
-> the patched kernel ? Or it is caused by a wrong settings when I
-> compiled the source code? How should I fix it?
-> 
-> 3Q~
-> 
->                                                                                                                     yours:
-> Kira Yamato 2017-06-19
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
-
+-- 
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
 
