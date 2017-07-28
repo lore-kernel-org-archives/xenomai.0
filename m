@@ -1,11 +1,13 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <664a5757-3d5a-af0d-96a0-485bc71d58f8@siemens.com>
-Date: Thu, 27 Jul 2017 20:03:47 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Avoid stopping all timers during debug sessions
+In-Reply-To: <640d22cb-ac74-6702-8c15-76ace5732262@xenomai.org>
+References: <CADXNiGXcYVk8JUDv24_TVLtvRQ=hJaaSiMzwQPct5V92U-jGYw@mail.gmail.com>
+ <640d22cb-ac74-6702-8c15-76ace5732262@xenomai.org>
+From: Jackson Jones <jackson.jones@gmail.com>
+Date: Thu, 27 Jul 2017 18:29:52 -0700
+Message-ID: <CADXNiGW4EB96ovgEqutmYthLS9rk9paHGj0BGQG_dZCmiB2S6Q@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] real-time spi driver for imx6
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,34 +16,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi,
-
-currently, when gdb interrupts a Xenomai application, all timers stop
-firing (except for those marked with XNTIMER_NOBLCK - core timers). This
-means, you can't debug one RT application without affecting others on
-the same systems. I'm not wondering how to resolve this. Options:
-
- - convert timer stopping to a per-process feature - implies the need to
-   establish some timer-process relationship concept, and it might be
-   tricky for drivers and other central timer creators
-
- - let the application deal with timer overflows during debug:
-    - make timer stop optional (in case of single applications that
-      can't handle this yet)
-    - do not stop timers at all
-
-Any opinions?
-
-BTW, I also have pre/post-debug hook concept for applications out of
-tree that can help to make applications debug-aware. In our use cases,
-the pre-hook brings hardware into a state that permits application stop,
-and the post-host ramps everything up again.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
-
+UGhpbGlwcGUsCgpJIHB1dCB0b2dldGhlciBhIGRyaXZlciBmb3IgdGhlIGkubXg2LiBUaGUgRnJl
+ZXNjYWxlL05YUCBkcml2ZXIgaW4gdGhlCmtlcm5lbCBjb3ZlcmVkIGFsbCB0aGUgaW14IGNoaXBz
+LiBJIHdoaXR0bGVkIHRoYXQgZG93biB0byBqdXN0IHRoZSBpbXg2IHRvCm1ha2UgdGhpbmdzIHNp
+bXBsZXIuCgpJIGhhdmUgZ290dGVuIHRoZSBkcml2ZXIgdG8gY29tcGlsZSBpbiB0aGUgeGVub21h
+aS9rZXJuZWwvZHJpdmVyL3NwaQpkaXJlY3RvcnkgYW5kIGxpbmssIGJ1dCBpdCBkb2VzIG5vdCBl
+dmVuIGxvYWQgKG5vIG1lc3NhZ2VzIGF0IGJvb3QsIG5vCmRldmljZXMgY3JlYXRlZCkuIEkgaGF2
+ZSBhdHRhY2hlZCB0aGUgZHJpdmVyLCB0aGUgbW9kaWZpZWQgS2NvbmZpZyBhbmQKTWFrZWZpbGUg
+aW4gdGhlIHNwaSBkaXJlY3RvcnkgKHRvIGVuYWJsZSB0aGUgaW14NiBvcHRpb24sIGNvbXBpbGUg
+YW5kIGxpbmsKaXQpLiBMZXQgbWUga25vdyBpZiBhbnlvbmUgc2VlcyBhbnl0aGluZyBvYnZpb3Vz
+bHkgd3JvbmcuCgpUaGUgaW14IGRlcGVuZHMgb24gdGhlIHNwaV9iaXRiYW5nIGxheWVyLCBidXQg
+ZnJvbSB3aGF0IEkgY2FuIHNlZSwgdGhpcyBpcwpvbmx5IGlmIHlvdSBhcmUgdXNpbmcgRE1BLiBJ
+IHdyb3RlIHRoZSBkcml2ZXIgdG8gYmUgUElPIG9ubHkuIFRoZXJlIGlzIGEKd2FybmluZyBpbiB0
+aGUgY29tbWVudHMgb2YgdGhlIG1haW5saW5lIGlteCBkcml2ZXIsIHN3aXRjaGluZyBtb2Rlcwoo
+YmV0d2VlbiBtYXN0ZXIgYW5kIHNsYXZlKSBkb2VzIG5vdCB3b3JrLCB0aGVyZSBjYW4gYmUgYSBy
+YWNlIGNvbmRpdGlvbiBpbgp0aGUgaGFyZHdhcmUsIHNvIEkgd3JvdGUgdGhlIGRyaXZlciB0byBz
+dGF5IGluIG1hc3RlciBtb2RlLgoKLyoKICogVGhlIGhhcmR3YXJlIHNlZW1zIHRvIGhhdmUgYSBy
+YWNlIGNvbmRpdGlvbiB3aGVuIGNoYW5naW5nIG1vZGVzLiBUaGUKICogY3VycmVudCBhc3N1bXB0
+aW9uIGlzIHRoYXQgdGhlIHNlbGVjdGlvbiBvZiB0aGUgY2hhbm5lbCBhcnJpdmVzCiAqIGVhcmxp
+ZXIgaW4gdGhlIGhhcmR3YXJlIHRoYW4gdGhlIG1vZGUgYml0cyB3aGVuIHRoZXkgYXJlIHdyaXR0
+ZW4gYXQKICogdGhlIHNhbWUgdGltZS4KICogU28gc2V0IG1hc3RlciBtb2RlIGZvciBhbGwgY2hh
+bm5lbHMgYXMgd2UgZG8gbm90IHN1cHBvcnQgc2xhdmUgbW9kZS4KICovCgpzcGktaW14Ni5jIC0g
+Q29iYWx0IGRyaXZlcgpzcGktaW14LmMgLSBPcmlnaW5hbCBMaW51eCBkcml2ZXIKTWFrZWZpbGUg
+LSBtb2RpZmllZApLY29uZmlnIC0gbW9kaWZpZWQKY29uZmlnIC0ga2VybmVsIGNvbmZpZwoKClRo
+YW5rcyBmb3IgYW55IGhlbHAgb3IgaW5zaWdodHMsCgpKYWNrc29uCgoKCk9uIEZyaSwgSnVuIDMw
+LCAyMDE3IGF0IDEyOjI1IFBNLCBQaGlsaXBwZSBHZXJ1bSA8cnBtQHhlbm9tYWkub3JnPiB3cm90
+ZToKCj4gT24gMDYvMjkvMjAxNyAxMToxNSBQTSwgSmFja3NvbiBKb25lcyB3cm90ZToKPiA+IEFy
+ZSB0aGVyZSBhbnkgcGxhbnMgdG8gYWRkIGEgcmVhbC10aW1lIGRyaXZlciBmb3IgdGhlIGlteDYg
+c3BpPwo+ID4KPiA+Cj4KPiBObyBvbmdvaW5nIHdvcmsgdG8gbXkga25vd2xlZGdlLiBUaGUgRUNT
+UEkgaXMgZmFpcmx5IHN0cmFpZ2h0Zm9yd2FyZCB0bwo+IGNvbnRyb2wgaW4gUElPIG1vZGUuIEZX
+SVcsIEkgYmVsaWV2ZSB0aGF0IHdyaXRpbmcgYSBiYWNrZW5kIGRyaXZpbmcgdGhpcwo+IGNoaXAg
+b24gdG9wIG9mIENvYmFsdCdzIGdlbmVyaWMgU1BJIGNvcmUgc2hvdWxkIGJlIHBvc3NpYmxlLCB1
+c2luZyB0aGUKPiBiY20yODM1IGltcGxlbWVudGF0aW9uIHdlIGFscmVhZHkgaGF2ZSBpbiB0cmVl
+IGFzIGFuIGV4YW1wbGUuCj4KPiB0ZXN0c3VpdGUvc3BpdGVzdC5jIGlsbHVzdHJhdGVzIHRoZSBB
+UEkgZXhwb3NlZCB0byB1c2VybGFuZCBieSB0aGUgU1BJCj4gY29yZSwgd2hpY2ggY2FuIHVzZSBy
+ZWFkL3dyaXRlIGNhbGxzIG9yIGEgbWVtb3J5LW1hcHBlZCB0cmFuc2ZlciBidWZmZXIuCj4KPiAt
+LQo+IFBoaWxpcHBlLgo+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpB
+IG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNwaS1pbXg2LmMKVHlw
+ZTogdGV4dC94LWNzcmMKU2l6ZTogMjA0MjUgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6
+IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNzA3
+MjcvMGQwZmZlMDgvYXR0YWNobWVudC5jPgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0t
+LS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBNYWtl
+ZmlsZQpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTogMzIzIGJ5dGVzCkRlc2M6
+IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFp
+L2F0dGFjaG1lbnRzLzIwMTcwNzI3LzBkMGZmZTA4L2F0dGFjaG1lbnQub2JqPgotLS0tLS0tLS0t
+LS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBz
+Y3J1YmJlZC4uLgpOYW1lOiBLY29uZmlnClR5cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQpT
+aXplOiA2MjkgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5v
+cmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNzA3MjcvMGQwZmZlMDgvYXR0YWNo
+bWVudC0wMDAxLm9iaj4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEg
+bm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogY29uZmlnClR5cGU6IGFw
+cGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXplOiAxMTAyMTEgYnl0ZXMKRGVzYzogbm90IGF2YWls
+YWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVu
+dHMvMjAxNzA3MjcvMGQwZmZlMDgvYXR0YWNobWVudC0wMDAyLm9iaj4KLS0tLS0tLS0tLS0tLS0g
+bmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJi
+ZWQuLi4KTmFtZTogc3BpLWlteC5jClR5cGU6IHRleHQveC1jc3JjClNpemU6IDM2OTc3IGJ5dGVz
+CkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94
+ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTcwNzI3LzBkMGZmZTA4L2F0dGFjaG1lbnQtMDAwMS5jPgo=
