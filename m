@@ -1,14 +1,7 @@
-From: Giulio Moro <g.moro@qmul.ac.uk>
-Date: Tue, 20 Jun 2017 15:03:33 +0000
-Message-ID: <DB6PR0701MB245610FA99A3776FA22E64AFB5C50@DB6PR0701MB2456.eurprd07.prod.outlook.com>
-References: <DB6PR0701MB24567D7382C2C3C1C6BBB0A3B5C60@DB6PR0701MB2456.eurprd07.prod.outlook.com>,
- <20170620143009.GB18556@csclub.uwaterloo.ca>
-In-Reply-To: <20170620143009.GB18556@csclub.uwaterloo.ca>
-Content-Language: en-GB
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-Subject: Re: [Xenomai] Gpio: IRQ handler is called ~4ms after state change
+From: Gernot Hillier <gernot.hillier@siemens.com>
+Date: Tue,  1 Aug 2017 13:48:45 +0200
+Message-Id: <20170801114845.27937-1-gernot.hillier@siemens.com>
+Subject: [Xenomai] [PATCH] doc: fix README typo
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,20 +10,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Thanks Len,
+---
+ README | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> Turns out that in that case smartidle was enabled and the gpio bank
->  would go into sleep mode and it took 4ms to wake up before the irq would
-> show up.  Turning off the smartidle on the gpio bank so that it never
-> could go to sleep solved the problem.  Maybe this TI chip has a similar
-> feature.
+diff --git a/README b/README
+index f0be8a75d..313d8adc1 100644
+--- a/README
++++ b/README
+@@ -45,7 +45,7 @@ http://xenomai.org/installing-xenomai-3-x/
+   http://git.xenomai.org/xenomai-3.git
+ 
+   Once the repository is cloned, make sure to bootstrap the autoconf
+-  system in the top-level directory by running script/bootstrap.  In
++  system in the top-level directory by running scripts/bootstrap.  In
+   order to do this, you will need the GNU autotools installed on your
+   workstation.
+ 
+-- 
+2.12.3
 
-I do not think it is the case in my test: the GPIO banks are on (the pins g=
-et exported before the module is loaded), and I would not expect it to go t=
-o sleep in the few ms between interrupts in my test.
-
-Giulio=
 
