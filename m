@@ -1,14 +1,13 @@
-Date: Wed, 21 Jun 2017 14:28:03 -0400
-Message-ID: <20170621182803.GD18556@csclub.uwaterloo.ca>
-References: <DB6PR0701MB24567D7382C2C3C1C6BBB0A3B5C60@DB6PR0701MB2456.eurprd07.prod.outlook.com>
- <20170620143009.GB18556@csclub.uwaterloo.ca>
- <DB6PR0701MB245610FA99A3776FA22E64AFB5C50@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+References: <8763c6b1-5bcb-62ee-056b-3329696b9ee3@nta-inc.net>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <a3b259a3-af5f-e28a-8f8c-8470050dba13@xenomai.org>
+Date: Wed, 2 Aug 2017 19:04:11 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DB6PR0701MB245610FA99A3776FA22E64AFB5C50@DB6PR0701MB2456.eurprd07.prod.outlook.com>
-From: lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
-Subject: Re: [Xenomai] Gpio: IRQ handler is called ~4ms after state change
+In-Reply-To: <8763c6b1-5bcb-62ee-056b-3329696b9ee3@nta-inc.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Trouble with ipipe/linux >= 4.4.43 on x86/64 system
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,25 +16,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Giulio Moro <g.moro@qmul.ac.uk>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jeff Webb <jeff.webb@nta-inc.net>, xenomai@xenomai.org
 
-On Tue, Jun 20, 2017 at 03:03:33PM +0000, Giulio Moro wrote:
-> Thanks Len,
+On 08/02/2017 06:43 PM, Jeff Webb wrote:
+> I am attempting to upgrade our x86/64 PC systems running
+> linux-3.14.17/xenomai-2.6.4 to xenomai-3.x.  I have successfully
+> built and booted a linux-4.1.18/xenomai-3.0.5 kernel on one of
+> them using:
 > 
-> > Turns out that in that case smartidle was enabled and the gpio bank
-> >  would go into sleep mode and it took 4ms to wake up before the irq would
-> > show up.  Turning off the smartidle on the gpio bank so that it never
-> > could go to sleep solved the problem.  Maybe this TI chip has a similar
-> > feature.
+>   ipipe-core-4.1.18-x86-9.patch
 > 
-> I do not think it is the case in my test: the GPIO banks are on (the pins get exported before the module is loaded), and I would not expect it to go to sleep in the few ms between interrupts in my test.
+> however, I cannot boot systems based on:
+> 
+>   ipipe-core-4.4.43-x86-8.patch
+>   ipipe-core-4.4.71-x86-8.patch
+>   ipipe-core-4.9.24-x86-2.patch
+> 
+> with the CONFIG_IPIPE=y.  I can get these configurations to boot
+> by disabling CONFIG_IPIPE.  The main issue seems to be that
+> the primary hard drive does not work.  There also seems to be an
+> issue with some of the USB ports.
+> 
+> I have attached several files:
+> 
+> - cpuinfo.txt: cpuinfo for the first core
+> - boot-4.4.43-ipipeoff.notime: serial boot log (system works)
+> - boot-4.4.43-ipipeon.notime.matchup: serial boot log (system hangs)
+> - config-4.4.43-ipipeoff: (system works)
+> - config-4.4.43-ipipeon: (system hangs)
+> 
+> The times have been stripped from the boot logs and the second
+> boot log has been slightly rearranged to make diffing with the two
+> logseasier.  I can send the raw logs instead, if that is helpful.
+> 
+> Any help on getting later kernels to work would be appreciated.
 
-Based on my experience with the newer TI, it will.  For the auto power
-saving bit, miliseconds is a long time.
+Maybe an issue with a secondary interrupt controller.
 
-I fixed it by setting the gpio-bank to ti,no-idle in the dtb.
+- the output of /proc/interrupts on a booting kernel (say 4.9.24) would
+help figuring out which ICs are active on this hw. As a matter of fact,
+the driver has issues receiving events from the SATA controller once the
+interrupt pipeline is engaged. Likewise for the USB part as you
+mentioned as well.
+
+- does it boot in uniprocessor mode?
 
 -- 
-Len Sorensen
+Philippe.
 
