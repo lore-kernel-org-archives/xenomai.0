@@ -1,19 +1,13 @@
-References: <CADXNiGXcYVk8JUDv24_TVLtvRQ=hJaaSiMzwQPct5V92U-jGYw@mail.gmail.com>
- <640d22cb-ac74-6702-8c15-76ace5732262@xenomai.org>
- <CADXNiGW4EB96ovgEqutmYthLS9rk9paHGj0BGQG_dZCmiB2S6Q@mail.gmail.com>
- <CADXNiGW83FQPkVvdsdYzNSjVHmE0pL1YbxuNVpC4bd3uZJBN1g@mail.gmail.com>
- <4d7df01d-e90b-2598-6424-7336732c2be5@xenomai.org>
- <CADXNiGXDwfAtX3f7FpjeSRe0NsJcZi_EW2=+9MZd-93xWBQkJA@mail.gmail.com>
- <CADXNiGXfA0EE3BRKQWmDQa8Ks9rfjL+00PTsXg+1xbz3kiY2Bw@mail.gmail.com>
-From: Tom Evans <tom_usenet@optusnet.com.au>
-Message-ID: <c8debbac-f9fb-fc86-d121-92b8d4dd5284@optusnet.com.au>
-Date: Wed, 2 Aug 2017 15:41:31 +1000
+References: <664a5757-3d5a-af0d-96a0-485bc71d58f8@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <73a53c88-66cd-0c01-5fe7-0303a30ccd2b@xenomai.org>
+Date: Wed, 2 Aug 2017 10:12:50 +0200
 MIME-Version: 1.0
-In-Reply-To: <CADXNiGXfA0EE3BRKQWmDQa8Ks9rfjL+00PTsXg+1xbz3kiY2Bw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] real-time spi driver for imx6
-Reply-To: tom_usenet@optusnet.com.au
+In-Reply-To: <664a5757-3d5a-af0d-96a0-485bc71d58f8@siemens.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Avoid stopping all timers during debug sessions
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,38 +16,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org, jackson.jones@gmail.com
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 02/08/17 12:31, Jackson Jones wrote:
-> Philippe,
+On 07/27/2017 08:03 PM, Jan Kiszka wrote:
+> Hi,
+> 
+> currently, when gdb interrupts a Xenomai application, all timers stop
+> firing (except for those marked with XNTIMER_NOBLCK - core timers). This
+> means, you can't debug one RT application without affecting others on
+> the same systems. I'm not wondering how to resolve this. Options:
+> 
+>  - convert timer stopping to a per-process feature - implies the need to
+>    establish some timer-process relationship concept, and it might be
+>    tricky for drivers and other central timer creators
+> 
+>  - let the application deal with timer overflows during debug:
+>     - make timer stop optional (in case of single applications that
+>       can't handle this yet)
+>     - do not stop timers at all
+> 
+> Any opinions?
+>
 
-i.MX6 SPI Driver.
+That stuff is a relic from the Dark Ages, which not only sits in a hot
+path, but also crashes an ARM board here when ptracing. At the very
+least, the implementation is overkill and needs fixing.
 
-I hope that one is better (meaning completely rewritten) than the i.MX53 one. 
-It has all sorts of problems.
+I'm working on a much simpler and less intrusive approach, I'll follow
+up today on this.
 
-You might want to check to see if any of the i.MX53 driver problems I found 
-and fixed are in the i.MX6 ones:
+> BTW, I also have pre/post-debug hook concept for applications out of
+> tree that can help to make applications debug-aware. In our use cases,
+> the pre-hook brings hardware into a state that permits application stop,
+> and the post-host ramps everything up again.
+> 
 
-https://community.nxp.com/message/585208#585208
+Hooks sitting in kernel space?
 
-You should be able to transfer BLOCKS of data to the SPI driver and not have 
-to have it context switch on every byte.
-
-We got different performance between using the "write()" call and the 
-"ioctl(SPI_IOC_MESSAGE)" one.
-
-> We are using this in a medical device. We have the spi device
- > connected to an FPGA which in turn communicates with an RF board.
-
-Maybe you could program the FPGA to perform 64-bit (or longer) SPI reads, and 
-reduce your context switching that way.
-
-The i.MX6 SPI hardware is quite capable and smart. It is likely the driver 
-isn't using the features that would reduce the loading you're seeing.
-
-Rather than trying to write a bad Xenomai driver, getting a sensible and 
-efficient Linux driver might be a better option.
-
-
+-- 
+Philippe.
 
