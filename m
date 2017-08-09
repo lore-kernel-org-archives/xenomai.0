@@ -1,7 +1,9 @@
-From: Gernot Hillier <gernot.hillier@siemens.com>
-Date: Wed,  9 Aug 2017 13:28:57 +0200
-Message-Id: <20170809112857.16344-1-gernot.hillier@siemens.com>
-Subject: [Xenomai] [PATCH v2] doc: fix README typo
+MIME-Version: 1.0
+From: Ashok kumar <ashokkumar.bb@gmail.com>
+Date: Wed, 9 Aug 2017 18:03:25 +0530
+Message-ID: <CAFUnMknWzXi6Paibk+t-KJx_yfti7XG2wXEMbcG052kQFD-_nA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] Error in xenomai watchdog triggered
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,25 +14,16 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Signed-off-by: Gernot Hillier <gernot.hillier@siemens.com>
----
- README | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi,
 
-diff --git a/README b/README
-index f0be8a75d..313d8adc1 100644
---- a/README
-+++ b/README
-@@ -45,7 +45,7 @@ http://xenomai.org/installing-xenomai-3-x/
-   http://git.xenomai.org/xenomai-3.git
- 
-   Once the repository is cloned, make sure to bootstrap the autoconf
--  system in the top-level directory by running script/bootstrap.  In
-+  system in the top-level directory by running scripts/bootstrap.  In
-   order to do this, you will need the GNU autotools installed on your
-   workstation.
- 
--- 
-2.12.3
+I am running a task that communicates in Ethercat and it runs for a while
+and
 
+throws an error watchdog triggered -- signaling runaway thread
+xenomai watchdog triggered --killing runway thread
 
+kindly provide me a solution with example code
+
+Thank you
+
+Ashok
