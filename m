@@ -1,16 +1,10 @@
-Date: Tue, 8 Aug 2017 21:27:58 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20170808212758.550caab0@md1em3qc>
-In-Reply-To: <86562178-3b5a-55fc-8652-dc15f228e541@xenomai.org>
-References: <20170808112357.0063d74d@md1em3qc>
- <a676257d-9e88-1b81-15e6-adfffc1c7716@xenomai.org>
- <20170808134801.59ae5de6@md1em3qc>
- <86562178-3b5a-55fc-8652-dc15f228e541@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [RFC] Xenomai3 tuneables replaced by environment
-	variables
+From: Jim Langston <jim.langston@gmail.com>
+Date: Tue, 8 Aug 2017 22:07:41 -0400
+Message-ID: <CAF06wtiywQ4P7J4QO-2N1H2pPhysgoaRmhWpx7sVDaBzgp1UMA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] Issues with Xenomai 3.0.5 under Buildroot...
+Reply-To: jlangston@panurgyinc.com
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,190 +13,173 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "KISZKA, JAN" <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Am Tue, 8 Aug 2017 20:05:07 +0200
-schrieb Philippe Gerum <rpm@xenomai.org>:
+Hi all,
 
-> On 08/08/2017 01:48 PM, Henning Schild wrote:
-> > Am Tue, 8 Aug 2017 12:24:54 +0200
-> > schrieb Philippe Gerum <rpm@xenomai.org>:  
-> >> No, the core takes care of this. I'm unsure what your application
-> >> does to hit any conflict of that kind.  
-> >
-> > dlopen() so main will see arguments meant for xenomai_init() or you
-> > need to no_auto_init and fiddle with /proc/cmdline and call
-> > xenomai_init 
-> 
-> At any rate, you do not need to fiddle with /proc/cmdline manually,
-> really.
+I'm having issues porting an old driver from Xenomai 2.4 to Xenomai 3.0.5.
 
-True you construct the argv and call xenomai_init().
+The driver is written using the old 'Alchemy/Native' API, and uses the
+<native/heap.h> header file, where all my problems start.
 
-> Could you sketch the requirements of the app with respect to option 
-> parsing (namespace left aside)? Is there some main non-Xenomai 
-> executable dlopening a Xenomai-based solib defining a set of
-> rt-specific options?
+>From looking through the Xenomai headers, they all make use of the new
+"#include_next<>" statement, so at least in this case, "pthread.h" cannot
+be found:
 
-Yes the application runs its own main() and later dlopen() s multiple
-libs, some of which may be linked to xenomai. The order of the dlopens
-seems hard to control because of static c++ constructors or something
-alike. But i suggest we discuss the internals of that particular app
-after we have finished the discussion.
+rm -f *~  *mod*c  *.o  *.ko testrfi Module.symvers modules.order
+make
+CROSS_COMPILE=/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr/bin/i686-linux-
+-C
+/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/build/linux-4.1.18
+SUBDIRS=/home/jlangston/mi/Xenomai3_3365_Atom/mi750/rf/source/rfidrv modules
+make[1]: Entering directory
+'/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/build/linux-4.1.18'
+  CC [M]
+/home/jlangston/mi/Xenomai3_3365_Atom/mi750/rf/source/rfidrv/rfidrv.o
+Using built-in specs.
+COLLECT_GCC=/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr/bin/i686-linux-gcc.br_real
+Target: i686-buildroot-linux-gnu
+Configured with: ./configure
+--prefix=/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr
+--sysconfdir=/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/etc
+--enable-static --target=i686-buildroot-linux-gnu
+--with-sysroot=/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr/i686-buildroot-linux-gnu/sysroot
+--disable-__cxa_atexit --with-gnu-ld --disable-libssp --disable-multilib
+--with-gmp=/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr
+--with-mpc=/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr
+--with-mpfr=/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr
+--with-pkgversion='Buildroot 2017.02.2' --with-bugurl=
+http://bugs.buildroot.net/ --enable-libquadmath --enable-tls
+--disable-libmudflap --enable-threads --without-isl --without-cloog
+--disable-decimal-float --with-arch=atom --enable-languages=c,c++
+--with-build-time-tools=/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr/i686-buildroot-linux-gnu/bin
+--enable-shared --disable-libgomp
+Thread model: posix
+gcc version 5.4.0 (Buildroot 2017.02.2)
+COLLECT_GCC_OPTIONS='-nostdinc' '-isystem'
+'/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr/lib/gcc/i686-buildroot-linux-gnu/5.4.0/include'
+'-I' './arch/x86/include' '-I' 'arch/x86/include/generated/uapi' '-I'
+'arch/x86/include/generated' '-I' 'include' '-I' './arch/x86/include/uapi'
+'-I' 'arch/x86/include/generated/uapi' '-I' './include/uapi' '-I'
+'include/generated/uapi' '-include' './include/linux/kconfig.h' '-D'
+'__KERNEL__' '-Wall' '-Wundef' '-Wstrict-prototypes' '-Wno-trigraphs'
+'-fno-strict-aliasing' '-fno-common'
+'-Werror=implicit-function-declaration' '-Wno-format-security' '-std=gnu90'
+'-m32' '-msoft-float' '-mregparm=3' '-freg-struct-return' '-fno-pic'
+'-mpreferred-stack-boundary=2' '-march=atom' '-mtune=atom' '-mtune=generic'
+'-ffreestanding' '-D' 'CONFIG_AS_CFI=1' '-D' 'CONFIG_AS_CFI_SIGNAL_FRAME=1'
+'-D' 'CONFIG_AS_CFI_SECTIONS=1' '-D' 'CONFIG_AS_SSSE3=1' '-D'
+'CONFIG_AS_CRC32=1' '-D' 'CONFIG_AS_AVX=1' '-D' 'CONFIG_AS_AVX2=1' '-pipe'
+'-Wno-sign-compare' '-fno-asynchronous-unwind-tables' '-mno-sse' '-mno-mmx'
+'-mno-sse2' '-mno-3dnow' '-mno-avx' '-I' 'arch/x86/xenomai/include' '-I'
+'include/xenomai' '-fno-delete-null-pointer-checks' '-O2' '--param'
+'allow-store-data-races=0' '-Wframe-larger-than=2048'
+'-fno-stack-protector' '-Wno-unused-but-set-variable'
+'-fno-omit-frame-pointer' '-fno-optimize-sibling-calls'
+'-fno-var-tracking-assignments' '-Wdeclaration-after-statement'
+'-Wno-pointer-sign' '-fno-strict-overflow' '-fconserve-stack'
+'-Werror=implicit-int' '-Werror=strict-prototypes' '-Werror=date-time' '-D'
+'CC_HAVE_ASM_GOTO' '-v' '-I'
+'/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr/i686-buildroot-linux-gnu/sysroot/usr/include/xenomai/cobalt'
+'-I'
+'/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr/i686-buildroot-linux-gnu/sysroot/usr/include/xenomai'
+'-D' '_LARGEFILE_SOURCE' '-D' '_LARGEFILE64_SOURCE' '-D'
+'_FILE_OFFSET_BITS=64' '-Os' '-D' '_GNU_SOURCE' '-D' '_REENTRANT' '-D'
+'__COBALT__' '-D' '__COBALT_WRAP__' '-D' '__COBALT_WRAP__' '-I'
+'/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/build/linux-4.1.18/include/xenomai'
+'-D' 'MODULE' '-D' 'KBUILD_STR(s)=#s' '-D'
+'KBUILD_BASENAME=KBUILD_STR(rfidrv)' '-D'
+'KBUILD_MODNAME=KBUILD_STR(rfidrv)' '-c' '-o'
+'/home/jlangston/mi/Xenomai3_3365_Atom/mi750/rf/source/rfidrv/rfidrv.o'
+ /home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr/libexec/gcc/i686-buildroot-linux-gnu/5.4.0/cc1
+-quiet -nostdinc -v -I ./arch/x86/include -I
+arch/x86/include/generated/uapi -I arch/x86/include/generated -I include -I
+./arch/x86/include/uapi -I arch/x86/include/generated/uapi -I
+./include/uapi -I include/generated/uapi -I arch/x86/xenomai/include -I
+include/xenomai -I
+/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr/i686-buildroot-linux-gnu/sysroot/usr/include/xenomai/cobalt
+-I
+/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr/i686-buildroot-linux-gnu/sysroot/usr/include/xenomai
+-I
+/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/build/linux-4.1.18/include/xenomai
+-isysroot
+/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr/i686-buildroot-linux-gnu/sysroot
+-D __KERNEL__ -D CONFIG_AS_CFI=1 -D CONFIG_AS_CFI_SIGNAL_FRAME=1 -D
+CONFIG_AS_CFI_SECTIONS=1 -D CONFIG_AS_SSSE3=1 -D CONFIG_AS_CRC32=1 -D
+CONFIG_AS_AVX=1 -D CONFIG_AS_AVX2=1 -D CC_HAVE_ASM_GOTO -D
+_LARGEFILE_SOURCE -D _LARGEFILE64_SOURCE -D _FILE_OFFSET_BITS=64 -D
+_GNU_SOURCE -D _REENTRANT -D __COBALT__ -D __COBALT_WRAP__ -D
+__COBALT_WRAP__ -D MODULE -D KBUILD_STR(s)=#s -D
+KBUILD_BASENAME=KBUILD_STR(rfidrv) -D KBUILD_MODNAME=KBUILD_STR(rfidrv)
+-isystem
+/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr/lib/gcc/i686-buildroot-linux-gnu/5.4.0/include
+-include ./include/linux/kconfig.h -MD
+/home/jlangston/mi/Xenomai3_3365_Atom/mi750/rf/source/rfidrv/.rfidrv.o.d
+/home/jlangston/mi/Xenomai3_3365_Atom/mi750/rf/source/rfidrv/rfidrv.c
+-quiet -dumpbase rfidrv.c -m32 -msoft-float -mregparm=3
+-mpreferred-stack-boundary=2 -march=atom -mtune=atom -mtune=generic
+-mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -auxbase-strip
+/home/jlangston/mi/Xenomai3_3365_Atom/mi750/rf/source/rfidrv/rfidrv.o -O2
+-Os -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs
+-Werror=implicit-function-declaration -Wno-format-security
+-Wno-sign-compare -Wframe-larger-than=2048 -Wno-unused-but-set-variable
+-Wdeclaration-after-statement -Wno-pointer-sign -Werror=implicit-int
+-Werror=strict-prototypes -Werror=date-time -std=gnu90 -version
+-fno-strict-aliasing -fno-common -freg-struct-return -fno-pic
+-ffreestanding -fno-asynchronous-unwind-tables
+-fno-delete-null-pointer-checks -fno-stack-protector
+-fno-omit-frame-pointer -fno-optimize-sibling-calls
+-fno-var-tracking-assignments -fno-strict-overflow -fconserve-stack --param
+allow-store-data-races=0 -o - |
+ /home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr/lib/gcc/i686-buildroot-linux-gnu/5.4.0/../../../../i686-buildroot-linux-gnu/bin/as
+-v -I ./arch/x86/include -I arch/x86/include/generated/uapi -I
+arch/x86/include/generated -I include -I ./arch/x86/include/uapi -I
+arch/x86/include/generated/uapi -I ./include/uapi -I include/generated/uapi
+-I arch/x86/xenomai/include -I include/xenomai -I
+/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr/i686-buildroot-linux-gnu/sysroot/usr/include/xenomai/cobalt
+-I
+/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr/i686-buildroot-linux-gnu/sysroot/usr/include/xenomai
+-I
+/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/build/linux-4.1.18/include/xenomai
+--32 -mtune=generic32 -o
+/home/jlangston/mi/Xenomai3_3365_Atom/mi750/rf/source/rfidrv/rfidrv.o
+GNU assembler version 2.26.1 (i686-buildroot-linux-gnu) using BFD version
+(GNU Binutils) 2.26.1
+GNU C89 (Buildroot 2017.02.2) version 5.4.0 (i686-buildroot-linux-gnu)
+    compiled by GNU C version 5.4.0 20160609, GMP version 6.1.2, MPFR
+version 3.1.5, MPC version 1.0.3
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+ignoring duplicate directory "arch/x86/include/generated/uapi"
+ignoring duplicate directory
+"/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/build/linux-4.1.18/include/xenomai"
+#include "..." search starts here:
+#include <...> search starts here:
+ ./arch/x86/include
+ arch/x86/include/generated/uapi
+ arch/x86/include/generated
+ include
+ ./arch/x86/include/uapi
+ ./include/uapi
+ include/generated/uapi
+ arch/x86/xenomai/include
+ include/xenomai
+ /home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr/i686-buildroot-linux-gnu/sysroot/usr/include/xenomai/cobalt
+ /home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr/i686-buildroot-linux-gnu/sysroot/usr/include/xenomai
+ /home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2/output/host/usr/lib/gcc/i686-buildroot-linux-gnu/5.4.0/include
+End of search list.
 
-> 
-> >>   And ultimately it has to keep a list of  
-> >>> valid ones to do so pedanticly. If there are name clashes
-> >>> behaviour is unclear. i.e. "--help" ld.so vs. dlopen
-> >>>  
-> >>
-> >> --help can be extended. See how testsuite/latency does for an
-> >> example.  
-> >
-> > Help was just one example, you could have the same problem with any
-> > of the other parameters.  
-> 
-> I don't see any reason to override any other core parameter, beyond 
-> --help which should remain as generic as possible but still allowing
-> for all software layers existing in the application to contribute to
-> it. --xeno-help would not make any sense.
->
-> It seems that you are implicitly referring to ancillaries settings
-> such as --silent, --verbose and --quiet as being problematic. Is it
-> correct or are you referring to other parameters?
+Unfortunately, the "-nostdinc" flag seems to kill off the only path with
+the 'final' pthread.h:
 
-If your main comes before xenomai_init() it either has to be able to
-ignore xenomai args or it will need to change argv/argc before
-dlopening.
+/home/jlangston/mi/Xenomai3_3365_Atom/buildroot-2017.02.2
+/output/host/usr/i686-buildroot-linux-gnu/sysroot/usr/include/pthread.h
 
-In the first case it has to know all valid args and the second one
-does not sound very nice. And for the second one i am not sure there is
-always a time window in the face of static ctors launching threads and
-dlopening.
- 
-> >  
-> >>> 2.
-> >>> The setup_descriptors do work but they rely on getting the order
-> >>> stricly right. They have to execute before the first
-> >>> xenomai_init(). In complex applications with multithreaded init
-> >>> using dlopen() and auto-init-solib that quickly turns out to be
-> >>> unusable.  
-> >>
-> >> Well, I've been using setup descriptors on quite complex customer
-> >> applications (including lots of C++ static constructor
-> >> braindamage), and never went into any dead end like you seem to
-> >> imply since the latest additions in 3.0.5. Descriptors have their
-> >> own priorities, and you may now use auto-bootstrappable libs as
-> >> well.  
-> >
-> > I did not. I gave my customer multiple examples on how to set
-> > mem-pool-size in static, ld.so and dlopen(). They have braindamage
-> > static c++ with dlopen() and could not make it work. At the moment
-> > their main() ignores any unknown argument so they can use 1. but
-> > that needs to be fixed.
-> >  
-> 
-> The application may have to be fixed, I agree. Tunables provide a
-> safer way to wire settings compared to environment variables. If
-> settings need frequent updates, then environment variables are not
-> practical at all.
-> 
-> If the issue is with calling Xenomai services from static ctors, then
-> I can describe a way to do this. If other requirements exist along
-> this one, please let me know.
+So, while I realize that this is likely some sort of a Buildroot problem,
+I'm completely at a loss as to how to fix it... I tried adding it back to
+the end of the path using '-idirafter', but that results in a large number
+of 'redefinition' errors, so I don't think that is the right solution.
 
-Yes might be, but let discuss after we have concluded on the "there
-should be one way that always works".
+Anyone have any suggestions?
 
-> >>> Suggestions:
-> >>> 1.
-> >>> 1.1 completely drop the support for parameters and the fiddling
-> >>>     with /proc/cmdline
-> >>> 1.2 or agree on a prefix "--xeno-" so the application can ignore
-> >>> all xenomai parameters without knowing all  
-> >
->  > You did not comment on that at all.
->  >  
-> 
-> Because this is asking for Xenomai not to use a few generic options 
-> names for common ancillary services, leaving it to the application, 
-> which I see no reason for. Leaving generic names to the core makes
-> sense as much as the opposite.
-
-1.1 suggests dropping but 1.2 suggests a name convention to ease parsing
-
-> >>> 2.
-> >>> 2.1 completely drop the setup_descriptors in favour of environment
-> >>>     variables
-> >>>  
-> >>
-> >> Hell no. Environment variables are crap. Unlike options which are
-> >> explicit, those things tend to pollute some hidden namespace,
-> >> staying there long after you stopped expecting them having any
-> >> influence, set by dusty login scripts. That one is a strict nak
-> >> for me, sorry.  
-> >
-> > Ok, that is a clear opinion and i get it. Let us not discuss env
-> > variables anymore, but let us keep talking under that thread
-> > title ;). 
-> 
-> No issue with that.
-> 
-> >>> That would be a drastic change but i think we should do something
-> >>> about it. With environment variables it is clear what happens
-> >>> without messing with the applications init or parameters, getting
-> >>> rid of confusing complexity.
-> >>>
-> >>> Please let me know what you think, i would be happy to prepare
-> >>> patches.  
-> >>
-> >> What is the exact problem you face regarding options? Please also
-> >> remember that influencing the whole argument system only to
-> >> support a quite infrequent use case such as dlopen() is not the
-> >> way to go. It's ok to find a solution that might fit all usages,
-> >> it is not to introduce stuff that eases 1% of the use cases which
-> >> badly affects 99% of the rest.  
-> >
-> > My customer switched to xenomai3 and they did not manage to set the
-> > tuneables without hacks. I looked into setting them and found that
-> > there are different ways and different behaviours for these ways
-> > depending on how you link. They could not make it work ... Ok i can
-> > fix it for them without talking to the community.
-> >
-> > But i can do something about the fact that it is too complicated,
-> > and that is what i am trying to do with this mail.
-> >
-> > I would like to see only one way that always works the same no
-> > matter how you link, no questions about who wins when multiple want
-> > to tune. Maybe we can drop the "--auto-init-solib" switch
-> > eventually and just make it default.
-> >  
-> 
-> Frankly, that seems a legitimate goal, but with C++ and static ctors
-> in the picture, I don't see any one-fits-it-all solution. But there
-> is no reason not to try finding one again.
-
-I suggested one but promised to not bring it up again ;). Any other
-ideas?
- 
-> > Imho 33% of the linking cases are broken, true that dlopen() is
-> > probably not used a lot.
-> >  
-> 
-> Not to speak of the fact that it introduces its own set of linking 
-> issues (scope mess, late binding conflicts etc). I would usually use 
-> that only for pure plugin architectures with fairly simple content 
-> interfaces; I don't see any other situation that would legitimately 
-> justify this.
-
-My customers use it to have two versions of their app. A xenomai and a
-non-xenomai version and the switch is in dlopening another lib. As far
-as i know the non-xeno version is for basic testing on a regular Linux
-and in simulation/virtualization. And the whole setup would
-theoretically allow to switch the realtime provider without touching
-the app.
-I personally dont like it but just so you have some context.
-
-Henning
-
+Thanks,
+Jim
