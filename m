@@ -1,13 +1,9 @@
-References: <CAKJ14Ndf43hdOcFSVP_S-ZLji=smtpj7bih=s8618Yfsh5OG7g@mail.gmail.com>
-From: Christophe Carton <christophe.carton@ixblue.com>
-Message-ID: <0a153821-210d-0add-e986-3f424b7cf4ed@ixblue.com>
-Date: Thu, 10 Aug 2017 16:19:52 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAKJ14Ndf43hdOcFSVP_S-ZLji=smtpj7bih=s8618Yfsh5OG7g@mail.gmail.com>
-Content-Language: fr
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] UDP comms via Xenomai 3.0.5 + RTnet ? (Paul Wilkinson)
+From: saikumar kunchala <kunchalasaikumar1995@gmail.com>
+Date: Fri, 11 Aug 2017 10:54:36 +0530
+Message-ID: <CAJxuM0Mx0r0eHjkqqdJNXt5+VxADxAPKT4DMXQK+dtNSn4hs3g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] Query on installing the xenomai on ARM Cortex M3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,61 +14,13 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
+Hi team, my name is saikumar and currently I am Porting the Xenomai Cobalt
+kernel to ARM Cortex M3 and it does not support for LINUX kernel as it does
+not have MMU. So can I Port the Xenomai on UCLinux? And how to write the
+port files to  uclinux..If we can Port,  which steps should  I need to
+follow? Can anyone help me please...
 
-Le 10/08/2017 =C3=A0 15:36, Andreas Glatz a =C3=A9crit :
->> # ./rtping 10.0.0.1
->> Real-time PING 10.0.0.1 56(84) bytes of data.
->> ioctl: No route to host
-> You should populate your RTnet routing table with some meaningful
-> combinations of IP address and MAC address after bringing it up.
->
-> The other non-persistent option is to ping your RTnet device from a
-> non-RTnet device, which auto populates the RTnet routing table with
-> the IP & mac pair of the sender. After that you can rtping the other
-> device as well.
->
->> However, if I use 'rtnet start', rtping succeeds :-
->>
->> # ./rtping 10.0.0.1
->> Real-time PING 10.0.0.1 56(84) bytes of data.
->> 64 bytes from 127.0.0.1: icmp_seq=3D1 time=3D4.8 us
->> 64 bytes from 127.0.0.1: icmp_seq=3D2 time=3D4.4 us
->> 64 bytes from 127.0.0.1: icmp_seq=3D3 time=3D3.4 us
->> 64 bytes from 127.0.0.1: icmp_seq=3D4 time=3D3.7 us
->> 64 bytes from 127.0.0.1: icmp_seq=3D5 time=3D4.2 us
-> Somehow your rtnet start script does not populate the routing table
-> properly. Hence if you ping 10.0.0.1, you actually get a reply from
-> localhost (127.0.0.1).
->
->> # ./rtroute
->> Host Routing Table
->> Hash?? ?Destination?? ?HW Address?? ??? ?Device
->> 00?? ?0.0.0.0 ??? ?00:00:00:00:00:00?? ?rtlo
->> 01?? ?127.0.0.1 ??? ?00:00:00:00:00:00?? ?rtlo
->> 02?? ?10.0.0.2 ??? ?00:00:00:00:00:00?? ?rtlo
->> 3F?? ?10.255.255.255?? ?FF:FF:FF:FF:FF:FF?? ?rteth0
->>
-> See:
-> rtroute --help
->
-> E.g (assuming that 02:00:00:00:01:02 is the MAC of 10.0.0.1):
->
-> rtroute add 10.0.0.1 02:00:00:00:01:02 dev rteth0
->
-> ... after that rtping should work.
-If you do not know the MAC of 10.0.0.1 you may also execute:
+Thanks you all.
 
-rtroute solicit 10.0.0.1 dev rteht0 #See: rtroute --help
 
-This will force an ARP exchange.
-
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
-
---=20
-
-*Christophe*
-
+Board using :LPC1768 mbed board
