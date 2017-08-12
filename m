@@ -1,9 +1,9 @@
 MIME-Version: 1.0
-From: C Smith <csmithquestions@gmail.com>
-Date: Fri, 11 Aug 2017 14:59:36 -0700
-Message-ID: <CA+K1mPF52Gd8b1qviDH=KMpasF1E6CiWki0KAzY67BmCsZQfMw@mail.gmail.com>
+From: Andreas Glatz <andi.glatz@gmail.com>
+Date: Sat, 12 Aug 2017 15:26:07 +0100
+Message-ID: <CAKJ14NeJMtuA04rqvVBALYGEVg0iuuA6Hksw3RPBGQKXAT_0VQ@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] rt_pipe_* - must link xenomai and flush the pipe
+Subject: Re: [Xenomai] UDP comms via Xenomai 3.0.5 + RTnet ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,34 +12,100 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai@xenomai.org, paul.w@mrmoco.com
 
-Hi all --
+>
+>   Thank you Andreas and Christophe for helping resolve the rtroute issue.
 
-We have an architecture with 1 realtime task, and several non-realtime
-processes (other programs) that communicate with the realtime task over
-FIFOs.  We have used RTLinux in the past, and are porting to Xenomai.  I've
-had to do some voodoo to get the FIFOs working, and I wonder if this sounds
-right to you folks:
+No problem. Just a remark: I believe this mailing list doesn't like
+top-posting...
 
-We are using the rt_pipe_* API.  The process that creates the realtime task
-creates the pipes with rt_pipe_create(), before starting the realtime
-task.  The names show up in /proc/xenomai/registry/native/pipes/. The
-non-realtime processes just use open() and write() to put data into the
-pipe.  The non-realtime processes can compile and run without linking
-against xenomai libraries.
+>
+> The messed up routing table was likely as a result of my various attempts
+> to get it working.
+>
+> Unfortunately, now that I've hopefully corrected the RTnet routing table,
+> rtping hangs after printing, "Real-time PING 10.0.0.2 56(84) bytes of
+> data".
+>
+> Perhaps related, the receiver side (@10.0.0.2) of a trivial UDP
+> client/server
+> utility does not receive the UDP packets the server side is sending (both
+> when
+> sent locally to receiver (compiled and linked against cobalt), and when
+> sent
+> from 10.0.0.5 - these I can see being sent using wireshark).
+>
+> I've only configured the rteth0 interface, not rtlo.
+>
+> # ./rtroute
+> Host Routing Table
+> Hash?? ?Destination?? ?HW Address?? ??? ?Device
+> 02?? ?10.0.0.2 ??? ?5C:F9:DD:74:9C:27?? ?rteth0 - local
+> Xenomai/RTnet NIC
+> 05?? ?10.0.0.5 ??? ?D4:BE:D9:1F:88:C2?? ?rteth0 - remote Linux
+> 07?? ?192.168.1.71 ?? ?98:DE:D0:03:80:CA?? ?rteth0 - local 2nd NIC
+> 3F?? ?10.255.255.255?? ?FF:FF:FF:FF:FF:FF?? ?rteth0
+>
+> # ./rtping 10.0.0.2/ - never returns/
+> Real-time PING 10.0.0.2 56(84) bytes of data.
+> ^C
+> --- 10.0.0.2 rtping statistics ---
+> 3 packets transmitted, 0 received, 100% packet loss
+> worst case rtt = 0.0 us
+>
+> # ./rtping 10.0.0.5/ - and 10.0.0.5 can ping successfully Xenomai/RTnet/
+> Real-time PING 10.0.0.5 56(84) bytes of data.
+> 64 bytes from 10.0.0.5: icmp_seq=1 time=494.3 us
+> 64 bytes from 10.0.0.5: icmp_seq=2 time=442.9 us
+> 64 bytes from 10.0.0.5: icmp_seq=3 time=600.4 us
+> ^C
+> --- 10.0.0.5 rtping statistics ---
+> 3 packets transmitted, 3 received, 0% packet loss
+> worst case rtt = 600.4 us
 
-The two weird things I find are that:
+It's good that rtping to 10.0.0.5 works. So your kernel modules should be OK.
 
-  1) If I don't link the non-realtime processes against xenomai libraries,
-the non-realtime process can write to the pipe without error, but the
-realtime process never sees anything that it wrote; and
+W/r to the other questions: I'm still unclear about your network
+topology. As far as I understand: - rteth0 on one peer is configured
+as 10.0.0.1
+- there are 3 other peers in the network, 10.0.0.2, 10.0.0.5, and 192.168.1.71
+- all the peers are connected together via a layer2 switch
 
-  2) Even with xenomai linked in, the non-realtime task must flush the pipe
-(ioctl(fd, XNPIPEIOC_IFLUSH, 0); or else the realtime task never sees
-anything they wrote.
+rtping hanging and not complaining about a missing route is typically
+the case if the ICMP packets from rtping cannot reach the adjacent
+peer, which is generally related to a network configuration issue.
 
-I've tried this with both blocking and non-blocking rt_pipe_read().
+Another way to debug things is to load rtcap.ko before bringing up
+rteth0. Then you bring up rteth0 with rtifconfig, followed by bringing
+up rteth0 with ifconfig (on the Linux side). After that you can trace
+the traffic going through rteth0 using tcpdump (e.g. see [1] how to
+combine tcpdump and wireshark).
 
-I'd appreciate your thoughts,
-Bob
+I would start investigating UDP after verifying that rtping works. In
+my case I could get UDP working by compiling [2] using the gcc and ld
+flags provided by xeno-config (note that there is an bug in this
+example: the buffer needs to be 0 termintated between recvfrom() and
+sendto()). I started this UDP server on Xenomai, whereas on the peer
+running Linux I used a script [3] to send/receive UDP frames.
+
+
+A.
+
+[1] https://linuxexplore.com/2012/06/07/use-tcpdump-to-capture-in-a-pcap-file-wireshark-dump/
+[2] http://www.binarytides.com/programming-udp-sockets-c-linux/
+[3]
+
+# StartScript
+#!/bin/sh
+
+idx=0;
+while true;
+do
+        echo hahu${idx} | socat - UDP:192.168.3.3:8888;
+        idx=$((idx+1));
+done
+
+exit 0
+# EndScript
+
