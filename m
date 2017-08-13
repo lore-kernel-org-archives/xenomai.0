@@ -1,13 +1,13 @@
-References: <CA+K1mPF52Gd8b1qviDH=KMpasF1E6CiWki0KAzY67BmCsZQfMw@mail.gmail.com>
+References: <CAAaH=QEBiyiRuW5NTHuAKMcAB1yYLErOTsdB5b35GeiSKgOH4g@mail.gmail.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <183ffb03-aac8-85a9-e8df-da22aeddc301@xenomai.org>
-Date: Sun, 13 Aug 2017 13:11:23 +0200
+Message-ID: <ca41ec31-76eb-567b-0d9b-8019426302f7@xenomai.org>
+Date: Sun, 13 Aug 2017 18:26:04 +0200
 MIME-Version: 1.0
-In-Reply-To: <CA+K1mPF52Gd8b1qviDH=KMpasF1E6CiWki0KAzY67BmCsZQfMw@mail.gmail.com>
+In-Reply-To: <CAAaH=QEBiyiRuW5NTHuAKMcAB1yYLErOTsdB5b35GeiSKgOH4g@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rt_pipe_* - must link xenomai and flush the pipe
+Subject: Re: [Xenomai] Error while generating zImage of Xenomai on UDOO board
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,53 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: C Smith <csmithquestions@gmail.com>, xenomai@xenomai.org
+To: mohamed atef <mohamedatefmohamed95@gmail.com>, xenomai@xenomai.org
 
-On 08/11/2017 11:59 PM, C Smith wrote:
-> Hi all --
+On 08/13/2017 12:01 PM, mohamed atef wrote:
+> Hi,
 > 
-> We have an architecture with 1 realtime task, and several non-realtime
-> processes (other programs) that communicate with the realtime task over
-> FIFOs.  We have used RTLinux in the past, and are porting to Xenomai.  I've
-> had to do some voodoo to get the FIFOs working, and I wonder if this sounds
-> right to you folks:
+> I'm currently working on UDOO Quad board with 4 IMX6 multicore processor. I
+> found a linux kernel on UDOO github and am trying to adopt Xenomai to it.
+> It's based on linux 3.14.56 which has no i-pipe patch yet, so I followed
+> the patch of linux kernel 3.14.44 and modified it until my kernel is
+> patched and prepare_kernel ran successfully.
 > 
-> We are using the rt_pipe_* API.  The process that creates the realtime task
-> creates the pipes with rt_pipe_create(), before starting the realtime
-> task.  The names show up in /proc/xenomai/registry/native/pipes/. The
-> non-realtime processes just use open() and write() to put data into the
-> pipe.  The non-realtime processes can compile and run without linking
-> against xenomai libraries.
+> After that, I continued following Xenomai instructions, so I configured the
+> kernel using uddo_quad_dual_defconfig file and the Makefile was generated
+> successfully.
 > 
-> The two weird things I find are that:
+> At the last step where I try to build the zImage and modules, the operation
+> seems to enter an infinite loop. It keeps typing:
 > 
->    1) If I don't link the non-realtime processes against xenomai libraries,
-> the non-realtime process can write to the pipe without error, but the
-> realtime process never sees anything that it wrote; and
->
-
-Strange indeed. Linking is not expected to make any difference; using 
-pipes on the non-rt side only depends on regular Linux I/O services 
-tapping into a pseudo-device the real-time core exposes (just like RTLinux).
-
->    2) Even with xenomai linked in, the non-realtime task must flush the pipe
-> (ioctl(fd, XNPIPEIOC_IFLUSH, 0); or else the realtime task never sees
-> anything they wrote.
 > 
-> I've tried this with both blocking and non-blocking rt_pipe_read().
+> *GEN
+> /home/test/Desktop/Atef/Xenomai/linux_kernel-3.14-1.0.x-udoo/building_here/linux/Makefilescripts/kconfig/conf
+> --silentoldconfig Kconfig*
+> and this lasts forever as shown in the attached screenshot. I tried to
+> search for this problem, but I couldn't reach anything, neither the reason
+> nor the solution.
+> 
+> Anyone know why this happen or how to solve it?
 > 
 
-- Which Xenomai version are you using?
-- Is the reader in userland?
-- How does the reader pull data from the pipe, using which call and 
-syntax precisely?
+This question is also off-topic on the Xenomai mailing list. As often, 
+Google has the answer it seems:
+http://lmgtfy.com/?q=linux+kconfig+gen+infinite+loop+udoo
 
-PS: although this should not be related to the issue, it is worth 
-mentioning that RTLinux fifos were a byte-oriented mechanism; Xenomai 
-pipes keep message boundaries on both sides by default, which means that 
-each write() is normally paired with one read() on the remote side, with 
-all data conveyed as a single bulk. There is a way to switch to 
-byte-oriented mode in the rt -> non-rt direction though.
+First match points at a broken udoo meta layer for Yocto:
+https://lists.yoctoproject.org/pipermail/yocto/2016-January/028192.html
 
 -- 
 Philippe.
