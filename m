@@ -1,10 +1,13 @@
+References: <CA+K1mPF52Gd8b1qviDH=KMpasF1E6CiWki0KAzY67BmCsZQfMw@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <183ffb03-aac8-85a9-e8df-da22aeddc301@xenomai.org>
+Date: Sun, 13 Aug 2017 13:11:23 +0200
 MIME-Version: 1.0
-From: mohamed atef <mohamedatefmohamed95@gmail.com>
-Date: Sun, 13 Aug 2017 12:01:26 +0200
-Message-ID: <CAAaH=QEBiyiRuW5NTHuAKMcAB1yYLErOTsdB5b35GeiSKgOH4g@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Error while generating zImage of Xenomai on UDOO board
+In-Reply-To: <CA+K1mPF52Gd8b1qviDH=KMpasF1E6CiWki0KAzY67BmCsZQfMw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] rt_pipe_* - must link xenomai and flush the pipe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,28 +16,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: C Smith <csmithquestions@gmail.com>, xenomai@xenomai.org
 
-SGksCgpJJ20gY3VycmVudGx5IHdvcmtpbmcgb24gVURPTyBRdWFkIGJvYXJkIHdpdGggNCBJTVg2
-IG11bHRpY29yZSBwcm9jZXNzb3IuIEkKZm91bmQgYSBsaW51eCBrZXJuZWwgb24gVURPTyBnaXRo
-dWIgYW5kIGFtIHRyeWluZyB0byBhZG9wdCBYZW5vbWFpIHRvIGl0LgpJdCdzIGJhc2VkIG9uIGxp
-bnV4IDMuMTQuNTYgd2hpY2ggaGFzIG5vIGktcGlwZSBwYXRjaCB5ZXQsIHNvIEkgZm9sbG93ZWQK
-dGhlIHBhdGNoIG9mIGxpbnV4IGtlcm5lbCAzLjE0LjQ0IGFuZCBtb2RpZmllZCBpdCB1bnRpbCBt
-eSBrZXJuZWwgaXMKcGF0Y2hlZCBhbmQgcHJlcGFyZV9rZXJuZWwgcmFuIHN1Y2Nlc3NmdWxseS4K
-CkFmdGVyIHRoYXQsIEkgY29udGludWVkIGZvbGxvd2luZyBYZW5vbWFpIGluc3RydWN0aW9ucywg
-c28gSSBjb25maWd1cmVkIHRoZQprZXJuZWwgdXNpbmcgdWRkb19xdWFkX2R1YWxfZGVmY29uZmln
-IGZpbGUgYW5kIHRoZSBNYWtlZmlsZSB3YXMgZ2VuZXJhdGVkCnN1Y2Nlc3NmdWxseS4KCkF0IHRo
-ZSBsYXN0IHN0ZXAgd2hlcmUgSSB0cnkgdG8gYnVpbGQgdGhlIHpJbWFnZSBhbmQgbW9kdWxlcywg
-dGhlIG9wZXJhdGlvbgpzZWVtcyB0byBlbnRlciBhbiBpbmZpbml0ZSBsb29wLiBJdCBrZWVwcyB0
-eXBpbmc6CgoKKkdFTgovaG9tZS90ZXN0L0Rlc2t0b3AvQXRlZi9YZW5vbWFpL2xpbnV4X2tlcm5l
-bC0zLjE0LTEuMC54LXVkb28vYnVpbGRpbmdfaGVyZS9saW51eC9NYWtlZmlsZXNjcmlwdHMva2Nv
-bmZpZy9jb25mCi0tc2lsZW50b2xkY29uZmlnIEtjb25maWcqCmFuZCB0aGlzIGxhc3RzIGZvcmV2
-ZXIgYXMgc2hvd24gaW4gdGhlIGF0dGFjaGVkIHNjcmVlbnNob3QuIEkgdHJpZWQgdG8Kc2VhcmNo
-IGZvciB0aGlzIHByb2JsZW0sIGJ1dCBJIGNvdWxkbid0IHJlYWNoIGFueXRoaW5nLCBuZWl0aGVy
-IHRoZSByZWFzb24Kbm9yIHRoZSBzb2x1dGlvbi4KCkFueW9uZSBrbm93IHdoeSB0aGlzIGhhcHBl
-biBvciBob3cgdG8gc29sdmUgaXQ/CgpUaGFua3MgaW4gYWR2YW5jZSwK4oCLTW9oYW1lZCBBdGVm
-4oCLCuKAiy7igIsKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9u
-LXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogU2NyZWVuc2hvdCBmcm9tIDIw
-MTctMDgtMTMgMTE6NTc6NTQucG5nClR5cGU6IGltYWdlL3BuZwpTaXplOiAzMDQ3ODMgYnl0ZXMK
-RGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hl
-bm9tYWkvYXR0YWNobWVudHMvMjAxNzA4MTMvYjIzNTY4NWEvYXR0YWNobWVudC5wbmc+Cg==
+On 08/11/2017 11:59 PM, C Smith wrote:
+> Hi all --
+> 
+> We have an architecture with 1 realtime task, and several non-realtime
+> processes (other programs) that communicate with the realtime task over
+> FIFOs.  We have used RTLinux in the past, and are porting to Xenomai.  I've
+> had to do some voodoo to get the FIFOs working, and I wonder if this sounds
+> right to you folks:
+> 
+> We are using the rt_pipe_* API.  The process that creates the realtime task
+> creates the pipes with rt_pipe_create(), before starting the realtime
+> task.  The names show up in /proc/xenomai/registry/native/pipes/. The
+> non-realtime processes just use open() and write() to put data into the
+> pipe.  The non-realtime processes can compile and run without linking
+> against xenomai libraries.
+> 
+> The two weird things I find are that:
+> 
+>    1) If I don't link the non-realtime processes against xenomai libraries,
+> the non-realtime process can write to the pipe without error, but the
+> realtime process never sees anything that it wrote; and
+>
+
+Strange indeed. Linking is not expected to make any difference; using 
+pipes on the non-rt side only depends on regular Linux I/O services 
+tapping into a pseudo-device the real-time core exposes (just like RTLinux).
+
+>    2) Even with xenomai linked in, the non-realtime task must flush the pipe
+> (ioctl(fd, XNPIPEIOC_IFLUSH, 0); or else the realtime task never sees
+> anything they wrote.
+> 
+> I've tried this with both blocking and non-blocking rt_pipe_read().
+> 
+
+- Which Xenomai version are you using?
+- Is the reader in userland?
+- How does the reader pull data from the pipe, using which call and 
+syntax precisely?
+
+PS: although this should not be related to the issue, it is worth 
+mentioning that RTLinux fifos were a byte-oriented mechanism; Xenomai 
+pipes keep message boundaries on both sides by default, which means that 
+each write() is normally paired with one read() on the remote side, with 
+all data conveyed as a single bulk. There is a way to switch to 
+byte-oriented mode in the rt -> non-rt direction though.
+
+-- 
+Philippe.
+
