@@ -1,9 +1,10 @@
 MIME-Version: 1.0
-From: Andreas Glatz <andi.glatz@gmail.com>
-Date: Sat, 12 Aug 2017 15:34:40 +0100
-Message-ID: <CAKJ14NdVkRWbRGg-HKXA3TyFqhLjgHssxRjApkJ_HjU2peGC+A@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] Pagefault during RTnet tx on i.MX6
+From: mohamed atef <mohamedatefmohamed95@gmail.com>
+Date: Sun, 13 Aug 2017 12:01:26 +0200
+Message-ID: <CAAaH=QEBiyiRuW5NTHuAKMcAB1yYLErOTsdB5b35GeiSKgOH4g@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Error while generating zImage of Xenomai on UDOO board
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,33 +15,26 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
->
-> HW/SW:
-> - phyflex i.MX6 dual core SOM
-> - Linux version 3.0.43-tpcom_run2-PD13.2.4
-> - Xenomai/Ipipe: 2.6.4/1.18-3
-> - RTnet: 0.9.13
-> - custom RTnet driver
->
-> Problem:
-> Recently, we came across a case where the rx/tx through RTnet works
-> for several hours and then stops with the following errors:
-> [ 5198.831630] Xenomai: suspending kernel thread 7f022808
-> ('rtnet-stack') at 0x7f01d36c after exception #0x0
-> [ 5263.234100] INFO: rcu_preempt_state detected stalls on CPUs/tasks:
-> { 1} (detected by 0, t=6002 jiffies)
-> [ 5443.554099] INFO: rcu_preempt_state detected stalls on CPUs/tasks:
-> { 1} (detected by 0, t=24034 jiffies)
->
-> Further investigation produced the ipipe trace shown at the bottom of
-> this Email.
->
-
-In the end it turned out that VirtualBox (v5 i believe) was the
-culprit. We compiled the kernel both natively and inside VirtualBox in
-exactly the same environment and found that only the kernel compiled
-in VirtualBox caused the page faults.... Now we're using VMWare
-instead.
-
-A.
-
+SGksCgpJJ20gY3VycmVudGx5IHdvcmtpbmcgb24gVURPTyBRdWFkIGJvYXJkIHdpdGggNCBJTVg2
+IG11bHRpY29yZSBwcm9jZXNzb3IuIEkKZm91bmQgYSBsaW51eCBrZXJuZWwgb24gVURPTyBnaXRo
+dWIgYW5kIGFtIHRyeWluZyB0byBhZG9wdCBYZW5vbWFpIHRvIGl0LgpJdCdzIGJhc2VkIG9uIGxp
+bnV4IDMuMTQuNTYgd2hpY2ggaGFzIG5vIGktcGlwZSBwYXRjaCB5ZXQsIHNvIEkgZm9sbG93ZWQK
+dGhlIHBhdGNoIG9mIGxpbnV4IGtlcm5lbCAzLjE0LjQ0IGFuZCBtb2RpZmllZCBpdCB1bnRpbCBt
+eSBrZXJuZWwgaXMKcGF0Y2hlZCBhbmQgcHJlcGFyZV9rZXJuZWwgcmFuIHN1Y2Nlc3NmdWxseS4K
+CkFmdGVyIHRoYXQsIEkgY29udGludWVkIGZvbGxvd2luZyBYZW5vbWFpIGluc3RydWN0aW9ucywg
+c28gSSBjb25maWd1cmVkIHRoZQprZXJuZWwgdXNpbmcgdWRkb19xdWFkX2R1YWxfZGVmY29uZmln
+IGZpbGUgYW5kIHRoZSBNYWtlZmlsZSB3YXMgZ2VuZXJhdGVkCnN1Y2Nlc3NmdWxseS4KCkF0IHRo
+ZSBsYXN0IHN0ZXAgd2hlcmUgSSB0cnkgdG8gYnVpbGQgdGhlIHpJbWFnZSBhbmQgbW9kdWxlcywg
+dGhlIG9wZXJhdGlvbgpzZWVtcyB0byBlbnRlciBhbiBpbmZpbml0ZSBsb29wLiBJdCBrZWVwcyB0
+eXBpbmc6CgoKKkdFTgovaG9tZS90ZXN0L0Rlc2t0b3AvQXRlZi9YZW5vbWFpL2xpbnV4X2tlcm5l
+bC0zLjE0LTEuMC54LXVkb28vYnVpbGRpbmdfaGVyZS9saW51eC9NYWtlZmlsZXNjcmlwdHMva2Nv
+bmZpZy9jb25mCi0tc2lsZW50b2xkY29uZmlnIEtjb25maWcqCmFuZCB0aGlzIGxhc3RzIGZvcmV2
+ZXIgYXMgc2hvd24gaW4gdGhlIGF0dGFjaGVkIHNjcmVlbnNob3QuIEkgdHJpZWQgdG8Kc2VhcmNo
+IGZvciB0aGlzIHByb2JsZW0sIGJ1dCBJIGNvdWxkbid0IHJlYWNoIGFueXRoaW5nLCBuZWl0aGVy
+IHRoZSByZWFzb24Kbm9yIHRoZSBzb2x1dGlvbi4KCkFueW9uZSBrbm93IHdoeSB0aGlzIGhhcHBl
+biBvciBob3cgdG8gc29sdmUgaXQ/CgpUaGFua3MgaW4gYWR2YW5jZSwK4oCLTW9oYW1lZCBBdGVm
+4oCLCuKAiy7igIsKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9u
+LXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogU2NyZWVuc2hvdCBmcm9tIDIw
+MTctMDgtMTMgMTE6NTc6NTQucG5nClR5cGU6IGltYWdlL3BuZwpTaXplOiAzMDQ3ODMgYnl0ZXMK
+RGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hl
+bm9tYWkvYXR0YWNobWVudHMvMjAxNzA4MTMvYjIzNTY4NWEvYXR0YWNobWVudC5wbmc+Cg==
