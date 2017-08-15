@@ -1,13 +1,9 @@
-References: <20170809112857.16344-1-gernot.hillier@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <4476d918-e424-bb0c-addf-82677c02e213@xenomai.org>
-Date: Tue, 15 Aug 2017 12:39:55 +0200
 MIME-Version: 1.0
-In-Reply-To: <20170809112857.16344-1-gernot.hillier@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH v2] doc: fix README typo
+From: Ashwin Narayan <ashwinnarayan1994@gmail.com>
+Date: Tue, 15 Aug 2017 18:49:59 +0800
+Message-ID: <CAKbLDQMT2UZwCCH+-wt+H1rKRshdmoT3eqS5wTxTtutixSX9Hw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] Setting up the Sensoray Model 526 with Xenomai 3.0.4
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,31 +12,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gernot Hillier <gernot.hillier@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 08/09/2017 01:28 PM, Gernot Hillier wrote:
-> Signed-off-by: Gernot Hillier <gernot.hillier@siemens.com>
-> ---
->  README | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/README b/README
-> index f0be8a75d..313d8adc1 100644
-> --- a/README
-> +++ b/README
-> @@ -45,7 +45,7 @@ http://xenomai.org/installing-xenomai-3-x/
->    http://git.xenomai.org/xenomai-3.git
->  
->    Once the repository is cloned, make sure to bootstrap the autoconf
-> -  system in the top-level directory by running script/bootstrap.  In
-> +  system in the top-level directory by running scripts/bootstrap.  In
->    order to do this, you will need the GNU autotools installed on your
->    workstation.
->  
-> 
+Hi everyone,
 
-Merged, thanks.
+I'm trying to setup the Sensoray Model 526 (which is an ISA bus
+device) with Xenomai 3.0.4 on a PCM3365 (a PC/104 form factor
+computer). The PC/104 has a bridge from the PCI bus to the ISA bus.
 
--- 
-Philippe.
+First of all, the device is not automatically detected by the driver.
+There are no messages on dmesg from the xeno_analogy module.
+
+I checked the datasheet for which IRQs are free and assigned the board
+to IRQ6 (which was free) using the jumpers on the board.
+
+Now I'm suspecting that it could be the ISA address configuration
+that's the issue. I think the factory default of 0x2c0 is not
+available in the ioport range of my system. So I changed the jumpers
+on the board to a different address. However, now I'm not sure how to
+get the driver running with the new address. Are there any arguments
+to the analogy_config program using which I can specify the address of
+the board (and maybe the IRQ too?). Going through the source files
+didn't give me any ideas about how these could be specified.
+
+Thanks for helping out.
+
+-Ashwin
 
