@@ -1,14 +1,18 @@
-References: <b82b1342-701b-57de-e749-73b2f6882ee9@nta-inc.net>
- <fe69ba28-957e-b936-56d5-e1437edbb188@nta-inc.net>
-From: Jeff Webb <jeff.webb@nta-inc.net>
-Message-ID: <f2c2ad6d-5045-51ca-ca7b-512a60ec2cf7@nta-inc.net>
-Date: Mon, 28 Aug 2017 13:45:27 -0500
+References: <20170808112357.0063d74d@md1em3qc>
+ <a676257d-9e88-1b81-15e6-adfffc1c7716@xenomai.org>
+ <20170808134801.59ae5de6@md1em3qc>
+ <86562178-3b5a-55fc-8652-dc15f228e541@xenomai.org>
+ <20170808212758.550caab0@md1em3qc>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <bf9689d1-3373-ad65-97df-a67fa639c6c3@xenomai.org>
+Date: Wed, 16 Aug 2017 20:13:34 +0200
 MIME-Version: 1.0
-In-Reply-To: <fe69ba28-957e-b936-56d5-e1437edbb188@nta-inc.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20170808212758.550caab0@md1em3qc>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] UDD framework
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] [RFC] Xenomai3 tuneables replaced by environment
+	variables
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,54 +21,123 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>
+Cc: "KISZKA, JAN" <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-On 08/07/2017 11:15 AM, Jeff Webb wrote:
-> On 08/07/2017 10:08 AM, Jeff Webb wrote:
->> I am attempting to port legacy Xenomai 2.6.4 code to Xenomai 3.
->> In our current code base, we implement userspace drivers using
->> libpci, iopl, inb/outb, /dev/mem, and the pthread_intr_*_np
->> family of functions.  Since the pthread_intr_*_np functions are
->> no longer part of Xenomai, I have been researching and
->> experimenting with the new UDD framework as a replacement.
->> Although documentation and examples are a little scarce, I have
->> found most of the information I need.  I also used some
->> documentation on the Linux UIO framwork to fill in some gaps in
->> my knowledge.  My preliminary conclusion is that using the UDD
->> framework would allow us to port our existing code base without
->> too much modification, but I still have a few remaining
->> questions.
->>
->> I see the way that PCI device memory regions can be accessed
->> using mmap with UDD_MEM_PHYS mem_regions, but on some PCI devices
->> we also need to access I/O port regions, such as:
->>
->>   Region 0: Memory at f7102000 (32-bit, non-prefetchable) [size=128]
->>   Region 1: I/O ports at b100 [size=128]
->>   Region 2: I/O ports at b280 [size=4]
->>
->> The UIO documentation recommends using the struct uio_info's port
->> field (an array of 'uio_port' structs) to pass information about
->> the I/O port regions associated with the device to userspace.  I
->> did not see the equivalent of this functionality in the UDD
->> framework, and was wondering why it was omitted.  What is the
->> recommended way of determining the ports associated with a device
->> when using a UDD driver?  It seems like continuing to do this
->> using libpci and then somehow matching this up with the
->> corresponding UDD device would be messy and error-prone.
-> 
-> If no other support exists, perhaps I could use kmalloc to allocate a
-> UDD_MEM_LOGICAL region corresponding to each PCI I/O port region on the
-> card.  The kernel UDD driver would then populate these regions with
-> the I/O addresses of the corresponding PCI I/O port regions.  The
-> UDD_MEM_LOGICAL regions could then be read by the userspace driver
-> to determine the I/O address to use with inb/outb (and iopl).
-
-Another way would be to pass the port I/O region addresses (and possibly sizes) to userspace via explicit IOCTLs.  If so, should the IOCTL numbers for such a use case be standardized?
-
-If there is no standard way to do this sort of thing, and if there are no recommendations about how to do proceed, I'll just do what feels right in my case, but I thought someone might have some experience or opinion on how this should be done in the Xenomai UDD context, since the Linux UIO method of passing port information is not available.
-
-Thanks,
-
--Jeff
-
+T24gMDgvMDgvMjAxNyAwOToyNyBQTSwgSGVubmluZyBTY2hpbGQgd3JvdGU6Cj4gCj4+IENvdWxk
+IHlvdSBza2V0Y2ggdGhlIHJlcXVpcmVtZW50cyBvZiB0aGUgYXBwIHdpdGggcmVzcGVjdCB0byBv
+cHRpb24gCj4+IHBhcnNpbmcgKG5hbWVzcGFjZSBsZWZ0IGFzaWRlKT8gSXMgdGhlcmUgc29tZSBt
+YWluIG5vbi1YZW5vbWFpIAo+PiBleGVjdXRhYmxlIGRsb3BlbmluZyBhIFhlbm9tYWktYmFzZWQg
+c29saWIgZGVmaW5pbmcgYSBzZXQgb2YKPj4gcnQtc3BlY2lmaWMgb3B0aW9ucz8KPiAKPiBZZXMg
+dGhlIGFwcGxpY2F0aW9uIHJ1bnMgaXRzIG93biBtYWluKCkgYW5kIGxhdGVyIGRsb3BlbigpIHMg
+bXVsdGlwbGUKPiBsaWJzLCBzb21lIG9mIHdoaWNoIG1heSBiZSBsaW5rZWQgdG8geGVub21haS4g
+VGhlIG9yZGVyIG9mIHRoZSBkbG9wZW5zCj4gc2VlbXMgaGFyZCB0byBjb250cm9sIGJlY2F1c2Ug
+b2Ygc3RhdGljIGMrKyBjb25zdHJ1Y3RvcnMgb3Igc29tZXRoaW5nCj4gYWxpa2UuIEJ1dCBpIHN1
+Z2dlc3Qgd2UgZGlzY3VzcyB0aGUgaW50ZXJuYWxzIG9mIHRoYXQgcGFydGljdWxhciBhcHAKPiBh
+ZnRlciB3ZSBoYXZlIGZpbmlzaGVkIHRoZSBkaXNjdXNzaW9uLgo+CgpObyBuZWVkIGZvciB0aGlz
+OyBJIHdhcyBub3QgYXNraW5nIGZvciBkZXRhaWxzIGFib3V0IHRoZSBpbnRlcm5hbHMsIG9ubHkK
+Zm9yIGV4cGxpY2l0IHJlcXVpcmVtZW50cyBhYm91dCByZWNlaXZpbmcgcGFyYW1ldGVycyAvIG9w
+dGlvbnMgYW1vbmcgdGhlCnNvZnR3YXJlIGNvbXBvbmVudHMgcHJlc2VudCBpbiB5b3VyIGFwcC4g
+QW55d2F5LCBJIHRoaW5rIEkgZmlndXJlZCBpdApvdXQgZnJvbSB3aGF0IHlvdSd2ZSBqdXN0IHNh
+aWQuCgo+PiBJdCBzZWVtcyB0aGF0IHlvdSBhcmUgaW1wbGljaXRseSByZWZlcnJpbmcgdG8gYW5j
+aWxsYXJpZXMgc2V0dGluZ3MKPj4gc3VjaCBhcyAtLXNpbGVudCwgLS12ZXJib3NlIGFuZCAtLXF1
+aWV0IGFzIGJlaW5nIHByb2JsZW1hdGljLiBJcyBpdAo+PiBjb3JyZWN0IG9yIGFyZSB5b3UgcmVm
+ZXJyaW5nIHRvIG90aGVyIHBhcmFtZXRlcnM/Cj4gCj4gSWYgeW91ciBtYWluIGNvbWVzIGJlZm9y
+ZSB4ZW5vbWFpX2luaXQoKSBpdCBlaXRoZXIgaGFzIHRvIGJlIGFibGUgdG8KPiBpZ25vcmUgeGVu
+b21haSBhcmdzIG9yIGl0IHdpbGwgbmVlZCB0byBjaGFuZ2UgYXJndi9hcmdjIGJlZm9yZQo+IGRs
+b3BlbmluZy4KPiAKPiBJbiB0aGUgZmlyc3QgY2FzZSBpdCBoYXMgdG8ga25vdyBhbGwgdmFsaWQg
+YXJncwoKLi4uIHRoZSBhcHBsaWNhdGlvbiBhY2NlcHRzLiBEbyBzb21lIChub24tWGVub21haSkg
+ZGxvcGVuZWQgbGlicyBkZWZpbmUKdGhlaXIgb3duIG9wdGlvbiBuYW1lc3BhY2UgdGhlIG1haW4g
+Y29tcG9uZW50IGRvZXMgbm90IGtub3cgYWJvdXQ/IElmCm5vdCwgdGhpcyBpcyBvbmx5IGEgbWF0
+dGVyIG9mIGV4Y2x1ZGluZy9pZ25vcmluZyB0aGUgb3B0aW9ucyB3aGljaCB0aGUKYXBwbGljYXRp
+b24gZG9lcyBub3QgYWNjZXB0IHdoZW4gcGFyc2luZyB0aGUgYXJndW1lbnQgdmVjdG9yLgoKeGVu
+b21haV9pbml0KCkgd2lsbCBkbyB0aGUgc2FtZSBhZnRlcndhcmRzLCBpZ25vcmluZyB0aGUgbm9u
+LVhlbm9tYWkKb3B0aW9ucyB0cmFuc3BhcmVudGx5LiBUaGUgcG9pbnQgYmVpbmc6IHdobyBzaG91
+bGQgY2FsbCB4ZW5vbWFpX2luaXQoKQppbiB0aGUgcGx1Z2luLnNvIGZpbGUsIGFuZCB3aGVuLgoK
+IGFuZCB0aGUgc2Vjb25kIG9uZQo+IGRvZXMgbm90IHNvdW5kIHZlcnkgbmljZS4gQW5kIGZvciB0
+aGUgc2Vjb25kIG9uZSBpIGFtIG5vdCBzdXJlIHRoZXJlIGlzCj4gYWx3YXlzIGEgdGltZSB3aW5k
+b3cgaW4gdGhlIGZhY2Ugb2Ygc3RhdGljIGN0b3JzIGxhdW5jaGluZyB0aHJlYWRzIGFuZAo+IGRs
+b3BlbmluZy4KClRoYXQgaXMgbm90IGFuIGlzc3VlIGlmIFhlbm9tYWkgc2V0dXAgZGVzY3JpcHRv
+cnMgYXJlIHVzZWQgcHJvcGVybHkuIFRoZQoidHVuaW5nIiBwaGFzZSB3aGljaCBtYXkgb3ZlcnJp
+ZGUgcGFyYW1ldGVycyBhbHdheXMgcHJlY2VkZXMgdGhlICJpbml0IgpwaGFzZSB3aGljaCBjb25z
+aWRlcnMgdGhlbSB3aGVuIGFsbG9jYXRpbmcgYW5kIGJvb3RzdHJhcHBpbmcgdGhlIHJlc291cmNl
+cy4KClByYWN0aWNhbGx5OiBzYXkgeW91IGhhdmUgcGx1Z2luLnNvLCBleHBsaWNpdGx5IHNldCBk
+ZXBlbmRlbnQgb24KbGliY29iYWx0LnNvIGF0IGxpbmsgdGltZSwgeW91IHdpbGwgbmV2ZXJ0aGVs
+ZXNzIGhhdmUgYWxsIC0+dHVuZSgpCmhhbmRsZXJzIHJ1biBmaXJzdCwgYmVmb3JlIHRoZSBmaXJz
+dCAtPmluaXQoKSBoYW5kbGVyIGlzIGludm9rZWQuIEFuZAp0aGlzIHdpbGwgaGFwcGVuIG9ubHkg
+d2hlbiB4ZW5vbWFpX2luaXQoKSBpcyBjYWxsZWQ7IGFsbCBkZXNwaXRlIHRoZQpmYWN0IHRoYXQg
+c29saWJzIGFyZSBpbml0aWFsaXplZCBpbiByZXZlcnNlIGRlcGVuZGVuY3kgb3JkZXIgKGkuZS4g
+ZnJvbQp0aGUgbGVhc3QgZGVwZW5kZW50IGxpYiB0byB0aGUgbW9zdCBkZXBlbmRlbnQgb25lKS4K
+ClNvLCB0aGUgd2F5IHRoYXQgc2hvdWxkIHdvcmsgd2l0aCB5b3VyIGFwcCB3b3VsZCBiZSB0byBs
+b2FkIGEgcHJveHkKc29saWIgd2hpY2ggd2FzIG1hZGUgZGVwZW5kZW50IG9uIGxpYmNvYmFsdC5z
+byBhdCBidWlsZCB0aW1lLiBUaGF0IHByb3h5CnNoYXJlZCBsaWIgd291bGQgZGVmaW5lIGEgc2V0
+dXAgZGVzY3JpcHRvciwgd2hvc2UgLT50dW5lKCkgaGFuZGxlciBjb3VsZApwdWxsIHZhbHVlcyBm
+cm9tIHRoZSBlbnZpcm9ubWVudCBmb3Igc2V0dGluZyB3aGF0ZXZlciBydW50aW1lL2NvbmZpZwpY
+ZW5vbWFpIHR1bmFibGUgdGhhdCBvbmUgc2VlcyBmaXQuIFRoYXQgcHJvY2VzcyBpcyBndWFyYW50
+ZWVkIHRvIGhhcHBlbgpfYmVmb3JlXyB0aGUgWGVub21haSBjb3JlIGlzIGluaXRpYWxpemVkLiBU
+aGUgcHJveHkgc29saWIgd291bGQgaW5jbHVkZQphIFhlbm9tYWkgYm9vdHN0cmFwIG1vZHVsZSwg
+Y2FsbGluZyB4ZW5vbWFpX2luaXQoKS4KClRoZSBlbnRpcmUgcHJvY2VzcyB3b3VsZCB0aGVuIGxv
+b2sgbGlrZToKCi0gbWFpbigpIGVudGVyZWQKLS0gYXBwbGljYXRpb24gcGFyc2VzIGFyZ3ZbXSwg
+bm8gWGVub21haSBhcmcgaW4gdGhlIHdheQouLi4KLS0gZGxvcGVuKHBsdWdpbi5zbykKLS0tIGxp
+YmNvYmFsdC5zbyBkZXBlbmRlbmN5IGlzIGxvYWRlZCwgYWxsIHNldHVwIGRlc2NyaXB0b3JzIHJl
+Z2lzdGVyZWQKLS0tIGxpYnBsdWdpbi5zbyBpcyBsb2FkZWQsIHNldHVwIGRlc2NyaXB0b3IgcmVn
+aXN0ZXJlZAotLS0gbGlicGx1Z2luJ3MgYm9vdHN0cmFwIG1vZHVsZSBjYWxscyB4ZW5vbWFpX2lu
+aXRfZHNvKCkKLS0tLSBwbHVnaW4tPnR1bmUoKSBpcyBjYWxsZWQsIHB1bGxzIGFyZ3MgZnJvbSB0
+aGUgZW52aXJvbm1lbnQKLS0tLSBYZW5vbWFpIC0+aW5pdCgpIGhhbmRsZXJzIHJ1biAodXNpbmcg
+YXJnIHNldHRpbmdzKQotLSBiYWNrIHRvIG1haW4oKQoKV2l0aCBhbGwgWGVub21haSBiYXNlIHBh
+cmFtZXRlcnMgZXhjbHVzaXZlbHkgcHVsbGVkIGZyb20gdGhlCmVudmlyb25tZW50LCB5b3UgY291
+bGQgb21pdCBhbnkgWGVub21haS1zcGVjaWZpYyBvcHRpb24gc3dpdGNoIGZyb20gdGhlCmNvbW1h
+bmQgbGluZSB3aGVuIHNwYXduaW5nIHRoZSBhcHAsIHJlc2VydmluZyB0aGUgZW50aXJlIG9wdGlv
+bgpuYW1lc3BhY2UgdG8gdGhlIGFwcGxpY2F0aW9uLgoKSSBoYXZlIGRlbW9lZCB0aGlzIGluIHRo
+ZSBhdHRhY2hlZCBjb2RlICh0aGUgcHJveHkgbGliIGlzIGltcGxlbWVudGVkIGJ5CnBsdWdpbi5j
+KS4gVGhlIGRlbW8gY29kZSBvbmx5IHJldHJpZXZlcyB0aGUgdmVyYm9zaXR5X2xldmVsIHBhcmFt
+ZXRlcgpmcm9tIHRoZSBlbnZpcm9ubWVudCwgd2hpY2ggaXMgbm9ybWFsbHkgYWZmZWN0ZWQgYnkg
+LS1zaWxlbnQsIC0tcXVpZXQKYW5kIC0tdmVyYm9zZSBjb21tYW5kIGxpbmUgb3B0aW9ucywgYnV0
+IHlvdSBnZXQgdGhlIGlkZWEuCgpJIHVuZGVyc3RhbmQgeW91IHdvdWxkIGxpa2UgYSBwZXJtYW5l
+bnQgd2F5IG9mIGRvaW5nIHRoaXMgd2l0aG91dCBoYXZpbmcKdG8gcHJvdmlkZSBhbnkgY29kZS4g
+QWx0aG91Z2ggSSBkb24ndCBidXkgYSBzZWNvbmQgdGhlIGFyZ3VtZW50IGFib3V0CmVudnZhcnMg
+YmVpbmcgIm1vcmUgc3RhbmRhcmQiIHRoYW4gY29tbWFuZCBzd2l0Y2hlcywgSSdtIG5vdCBvcHBv
+c2VkIHRvCmdldCB0aGlzIGtpbmQgb2YgZmVhdHVyZSBpbiwgYnV0IG9ubHkgaWY6CgotIHRoZSBp
+bXBsZW1lbnRhdGlvbiBkb2VzIG5vdCByZWludmVudCB0aGUgd2hlZWwgb2YgcGFyYW1ldGVyIHBh
+cnNpbmcsCnRoaXMgd291bGQgYmUgZmFpcmx5IHNpbGx5LgotIHRoZSBuYXR1cmFsIHdheSBvZiBz
+ZXR0aW5nIFhlbm9tYWkgcGFyYW1ldGVycyByZW1haW5zIGJhc2VkIG9uIGNvbW1hbmQKbGluZSBz
+d2l0Y2hlcy4gTW9zdCBwZW9wbGUgZG8gTk9UIGNhcmUgYSBkaW1lIGFib3V0IGRlZmVycmVkIGJp
+bmRpbmcgdG8KbGliY29iYWx0LCBzbyB0aGVyZSBpcyBubyByZWFzb24gdG8gbWFrZSB0aGlzIHVz
+ZSBjYXNlIHRoZSBwcmVmZXJyZWQgb25lLgoKVGhlIHNhbmVzdCB3YXkgdG8gcHJvdmlkZSBzdWNo
+IGZlYXR1cmUgd291bGQgYmUgdG8gaW1wbGljaXRseSB0dXJuIGV2ZXJ5Cm9wdGlvbiBsYWJlbCBk
+ZWZpbmVkIGJ5IHNldHVwIGRlc2NyaXB0b3JzIGludG8gYSBwb3RlbnRpYWwgZW52dmFyLCBlLmcu
+Ci0tY3B1LWFmZmluaXR5IHdvdWxkIGJlIHVuYW1iaWd1b3VzbHkgbWF0Y2hlZCBieSBhIHZhcmlh
+YmxlIG5hbWVkCiJjcHVfYWZmaW5pdHkiLiBUaGUgY29yZSB3b3VsZCBsb29rIGZvciBzdWNoIGEg
+dmFyaWFibGUgaW4gdGhlCmVudmlyb25tZW50IGlmIHRoZSBjb21tYW5kIGxpbmUgc3dpdGNoIGlz
+IG5vdCBmb3VuZCwgaGVuY2UgZ2l2aW5nCnByZWNlZGVuY2UgdG8gdGhlIGxhdHRlciBpbXBsaWNp
+dGx5LgoKQXQgbGVhc3QsIHRoaXMgd291bGQgbGltaXQgdGhlIHJpc2sgb2YgaGF2aW5nIHRvdGFs
+bHkgdW5yZWxhdGVkIHdheXMgb2YKc2V0dGluZyBjb3JlIHBhcmFtZXRlcnMsIHdpdGggbGVzcyBi
+cmFpbmRhbWFnZSBzaWRlLWVmZmVjdHMgb24gcGVvcGxlCndpdGggdW5zdWl0YWJsZSBkYWlseSBh
+bW91bnQgb2YgY2FmZmVpbmUgZm9yIHRoZSBqb2IuCgpUaGVyZSBpcyBhIHdheSB0byBkbyB0aGlz
+IHByb3Blcmx5LCBidXQgdGhpcyBjYW5ub3QgYmUgaGlnaCBvbiBteSB0b2RvCmxpc3QgQVRNLCBn
+aXZlbiB0aGUgb25nb2luZyB3b3JrIEkgaGF2ZSBvbiBteSBwbGF0ZS4gQW55d2F5LCBpc3N1ZSBs
+b2dnZWQuCgotLSAKUGhpbGlwcGUuCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0t
+LS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHBsdWdpbi5j
+ClR5cGU6IHRleHQveC1jc3JjClNpemU6IDU1NiBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVS
+TDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE3
+MDgxNi81ODBlN2FhNC9hdHRhY2htZW50LmM+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0t
+LS0tLS0tLS0tLQoKaWZlcSAoJChYRU5PX0NPTkZJRyksKQpYRU5PX0NPTkZJRz14ZW5vLWNvbmZp
+ZwplbmRpZgoKcHJlZml4IDo9ICQoc2hlbGwgREVTVERJUj0kKERFU1RESVIpICQoWEVOT19DT05G
+SUcpIC0tcHJlZml4KQoKaWZlcSAoJChwcmVmaXgpLCkKJChlcnJvciBQbGVhc2UgYWRkIDx4ZW5v
+bWFpLWluc3RhbGwtcGF0aD4vYmluIHRvIHlvdXIgUEFUSCB2YXJpYWJsZSBvciBzcGVjaWZ5IERF
+U1RESVIpCmVuZGlmCgpsaWJkaXIgOj0gJChzaGVsbCBERVNURElSPSQoREVTVERJUikgJChYRU5P
+X0NPTkZJRykgLS1saWJkaXIpClJQQVRIPSQobGliZGlyKQpDRkxBR1MgIDo9ICQoc2hlbGwgREVT
+VERJUj0kKERFU1RESVIpICQoWEVOT19DT05GSUcpIC0tcG9zaXggLS1jZmxhZ3MpCkxERkxBR1Mg
+Oj0gJChzaGVsbCBERVNURElSPSQoREVTVERJUikgJChYRU5PX0NPTkZJRykgLS1wb3NpeCAtLWxk
+ZmxhZ3MgLS1hdXRvLWluaXQtc29saWIpCgphbGw6IGxpYnBsdWdpbi5zbyBtYWluCgpsaWJwbHVn
+aW4uc286IHBsdWdpbi5jCgkkKENST1NTX0NPTVBJTEUpJChDQykgJChDRkxBR1MpIC1mUElDIC1j
+ICQ8CgkkKENST1NTX0NPTVBJTEUpJChDQykgLXNoYXJlZCAtV2wsLXNvbmFtZSxsaWJwbHVnaW4u
+c28uMCAtbyBsaWJwbHVnaW4uc28uMC4wLjAgcGx1Z2luLm8gJChMREZMQUdTKSAtV2wsLXJwYXRo
+PSQoUlBBVEgpIC1XbCwtLWV4cG9ydC1keW5hbWljCglsbiAtc2YgbGlicGx1Z2luLnNvLjAuMC4w
+IGxpYnBsdWdpbi5zby4wCglsbiAtc2YgbGlicGx1Z2luLnNvLjAuMC4wIGxpYnBsdWdpbi5zbwoK
+bWFpbjogbWFpbi5jCgkkKENST1NTX0NPTVBJTEUpJChDQykgLW8gJEAgJDwgLWxwdGhyZWFkIC1s
+cnQgLWxkbAoKY2xlYW46CgkkKFJNKSBtYWluIGxpYnBsdWdpbi5zby4wKgotLS0tLS0tLS0tLS0t
+LSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1
+YmJlZC4uLgpOYW1lOiBtYWluLmMKVHlwZTogdGV4dC94LWNzcmMKU2l6ZTogNDAwIGJ5dGVzCkRl
+c2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5v
+bWFpL2F0dGFjaG1lbnRzLzIwMTcwODE2LzU4MGU3YWE0L2F0dGFjaG1lbnQtMDAwMS5jPgo=
