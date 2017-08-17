@@ -1,25 +1,15 @@
-From: Philippe Gerum <rpm@xenomai.org>
-References: <20170808112357.0063d74d@md1em3qc>
- <a676257d-9e88-1b81-15e6-adfffc1c7716@xenomai.org>
- <20170808134801.59ae5de6@md1em3qc>
- <86562178-3b5a-55fc-8652-dc15f228e541@xenomai.org>
- <20170808212758.550caab0@md1em3qc>
- <bf9689d1-3373-ad65-97df-a67fa639c6c3@xenomai.org>
- <20170825191604.723abf24@md1em3qc>
- <553cc0c2-2ce4-5182-b6eb-4a18ccad82b5@xenomai.org>
- <20170829142726.23ea20ef@md1em3qc>
- <445755f9-7406-98e9-7e2f-e30b4a6237b2@xenomai.org>
- <20170829192018.19f2ede9@md1em3qc>
- <46f175d1-0b72-9b94-2543-161bbbdb401f@xenomai.org>
-Message-ID: <83afcb3d-b211-c644-d71a-a153ef3cc93c@xenomai.org>
-Date: Tue, 29 Aug 2017 22:15:30 +0200
 MIME-Version: 1.0
-In-Reply-To: <46f175d1-0b72-9b94-2543-161bbbdb401f@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [RFC] Xenomai3 tuneables replaced by environment
-	variables
+In-Reply-To: <8ed35202-9444-acfa-8cd0-5081932e6a05@xenomai.org>
+References: <CA+K1mPF52Gd8b1qviDH=KMpasF1E6CiWki0KAzY67BmCsZQfMw@mail.gmail.com>
+ <183ffb03-aac8-85a9-e8df-da22aeddc301@xenomai.org>
+ <CA+K1mPFDrpDqUrNq2axA0J=+-Jm4K-DaMUhxURNMXaOby9mA4g@mail.gmail.com>
+ <CA+K1mPEhSNW2UAsHY-y+bSFueQK3HTuYMoq4o0uFqBaUMj0mPQ@mail.gmail.com>
+ <8ed35202-9444-acfa-8cd0-5081932e6a05@xenomai.org>
+From: C Smith <csmithquestions@gmail.com>
+Date: Thu, 17 Aug 2017 12:34:00 -0700
+Message-ID: <CA+K1mPFbeh3Ve+fZk7vHAwGgUeJmJctZ-J+qEPdDdEWSVWUvOw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] Fwd: rt_pipe_* - must link xenomai and flush the pipe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -28,47 +18,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: "KISZKA, JAN" <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 08/29/2017 10:02 PM, Philippe Gerum wrote:
-> On 08/29/2017 07:20 PM, Henning Schild wrote:
->> I do not mind changing the customers software to address the issue
->> there. The whole thread was about making xenomai simpler, inspired by
->> having to look deeper into the settings/tuneables.
->> The fact that we had to talk about it for so long could indicate that
->> the whole thing is not so simple.
->>
-> 
-> Don't you want to get a stab at the proposal to turn all Xenomai
-> parameters found in setup descriptors to potential/possible environment
-> variables?
-> 
-> I believe that this would fit your bill, without causing any regression
-> to other existing applications that may already depend on the tuning
-> mechanism. That seems to be a fair deal to me.
-> 
+Thanks -- I'm all for using the most-well-traveled path -- do you mean the
+message queue API?
 
-For the sake of clarity, I'm referring to introducing an automatic
-probing rule that says:
+Bob
 
-"if switch --foo exists, then maybe envvar XENO_FOO exists as well, and
-if so, let's preload the value of the foo parameter with it, leaving
-precedence to --foo eventually".
+P.S. I'll be on vacation for a week
 
-$ XENO_FOO=2 ./app
-receives foo=2
+On Wed, Aug 16, 2017 at 6:19 AM, Philippe Gerum <rpm@xenomai.org> wrote:
 
-$ XENO_FOO=2 ./app --foo 3
-receives foo=3
-
-./app --foo 4
-receives foo=4
-
-./app
-receives default core value set by Xenomai libs, or the factory setting
-defined by the application code.
-
--- 
-Philippe.
-
+> On 08/16/2017 02:14 AM, C Smith wrote:
+> > Oops, I accidentally sent this to Philippe instead of the list --
+> >
+> > ---------- Forwarded message ----------
+> > From: C Smith <csmithquestions@gmail.com>
+> > Date: Mon, Aug 14, 2017 at 3:48 PM
+> > Subject: Re: [Xenomai] rt_pipe_* - must link xenomai and flush the pipe
+> > To: Philippe Gerum <rpm@xenomai.org>
+> >
+> >
+> > Thanks -- sorry I was sparse with details --
+>
+> - what are the parameters passed to rt_pipe_create(), rt_pipe_read() in
+> the failing case? (sizes, flags etc).
+>
+> - what is the exact return value of write() on the non-rt side, which
+> does not trigger any receipt from rt_pipe_read()?
+>
+> - what is the _exact_ Xenomai 2.6 release you have been using so far?
+> Several bug fixes have been applied to the message pipes along the 2.6.x
+> lifetime, only 2.6.5 includes them all.
+>
+> >
+> > I am using xenomai 2.6.
+>
+> I would strongly recommend to use Xenomai 3.0.x instead of 2.6. The
+> Xenomai 2.6.x series is not maintained anymore (EOL since January last
+> year).
+>
+> I would also recommend to go for the POSIX interface instead of the
+> so-called native/alchemy API: less overhead, more users, better
+> maintenance. With Xenomai 3.x, the POSIX API is truly the "native" one,
+> compared to all other APIs - include alchemy - which have to go through
+> the "Copperplate" mediation layer for reaching the core real-time services.
+>
+> Xenomai's "alchemy" API should be seen as a compatibility layer for
+> people who want to port Xenomai 2.6 applications originally implemented
+> with the "native" API to Xenomai 3.x. I would NOT recommend it for new
+> projects.
+>
+>   I am observing this behavior when a non-RT task
+> > writes to the pipe using write(), and an RT task reads the pipe with
+> > rt_pipe_read.  The RT task is not a kernel module, just started from an
+> ELF
+> > executable I run from the command line.
+> >
+> > BTW, linking in xenomai libraries makes a huge difference -- according to
+> > gdb, when I leave xenomai libraries out (of a program with no xenomai
+> calls
+> > and no threading calls), the process is single-threaded; but when I link
+> it
+> > with -lxenomai -lpthread_rt then gdb shows two threads, even if I stop it
+> > immediately by typing 'break main' before 'run'.  One of the threads
+> always
+> > has this call stack:
+> >
+> > #0  0xffffe424 in __kernel_vsyscall ()
+> > #1  0xb7e90966 in nanosleep () from /lib/libpthread.so.0
+> > #2  0xb7ea0819 in printer_loop (arg=0x0) at rt_print.c:691
+> > #3  0xb7e89adf in start_thread () from /lib/libpthread.so.0
+> > #4  0xb720d55e in clone () from /lib/libc.so.6
+> >
+>
+> That is expected; this is a helper thread started from a Xenomai library
+> constructor, dealing with deferred printf() output.
+>
+> --
+> Philippe.
+>
