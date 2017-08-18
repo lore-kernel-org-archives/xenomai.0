@@ -1,15 +1,18 @@
-References: <E1dcPNl-0001Jt-0M@xenomai.org>
- <78857f31-96f4-c139-3058-71537cb3081e@siemens.com>
- <8e6ee34a-8dde-419b-abd9-c9d513140028@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <a302fbe7-202a-b2cb-f6ea-8e2882325065@siemens.com>
-Date: Thu, 31 Aug 2017 17:18:20 +0200
+References: <CA+K1mPF52Gd8b1qviDH=KMpasF1E6CiWki0KAzY67BmCsZQfMw@mail.gmail.com>
+ <183ffb03-aac8-85a9-e8df-da22aeddc301@xenomai.org>
+ <CA+K1mPFDrpDqUrNq2axA0J=+-Jm4K-DaMUhxURNMXaOby9mA4g@mail.gmail.com>
+ <CA+K1mPEhSNW2UAsHY-y+bSFueQK3HTuYMoq4o0uFqBaUMj0mPQ@mail.gmail.com>
+ <8ed35202-9444-acfa-8cd0-5081932e6a05@xenomai.org>
+ <CA+K1mPFbeh3Ve+fZk7vHAwGgUeJmJctZ-J+qEPdDdEWSVWUvOw@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <b4dea246-fd96-bb7d-d06b-a3fd9e232bba@xenomai.org>
+Date: Fri, 18 Aug 2017 10:10:10 +0200
 MIME-Version: 1.0
-In-Reply-To: <8e6ee34a-8dde-419b-abd9-c9d513140028@xenomai.org>
+In-Reply-To: <CA+K1mPFbeh3Ve+fZk7vHAwGgUeJmJctZ-J+qEPdDdEWSVWUvOw@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Jan Kiszka : cobalt: Introduce xnftrace_printf
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Fwd: rt_pipe_* - must link xenomai and flush the pipe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,33 +21,115 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: C Smith <csmithquestions@gmail.com>, xenomai@xenomai.org
 
-On 2017-08-31 17:01, Philippe Gerum wrote:
-> On 08/31/2017 04:47 PM, Jan Kiszka wrote:
-> 
->>> +	trace_puts(buf);
-> 
-> IIRC, this may need to be #ifdef'ed on CONFIG_FTRACE.
+On 08/17/2017 09:34 PM, C Smith wrote:
+> Thanks -- I'm all for using the most-well-traveled path -- do you mean the
+> message queue API?
 
-Indeed, only trace_printk is protected. Fill fix.
+I mean using the POSIX API in general for the real-time services, e.g.
+pthread*, sem*, mq* etc. The messaging system between rt and non-rt
+threads is provided by the XDDP protocol, implemented by Xenomai's RTIPC
+[1] driver; this is a replacement for the RT_PIPE mechanism exposing a
+regular socket-based interface on the rt side, usual /dev/rtp* nodes on
+the non-rt side.
+
+A few examples illustrate the usage: demo/posix/cobalt/xddp-*.c.
+
+mq* as provided by Xenomai is a rt <-> rt communication path, so this
+won't fit.
+
+To sum up:
+
+- Xenomai 3.0.5 or later when available
+- POSIX services obtained from Xenomai's libcobalt
+- XDDP channels between rt and non-rt pthreads
+
+[1] https://xenomai.org/documentation/trunk/html/api/group__rtipc.html
 
 > 
+> Bob
+> 
+> P.S. I'll be on vacation for a week
+> 
+> On Wed, Aug 16, 2017 at 6:19 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+> 
+>> On 08/16/2017 02:14 AM, C Smith wrote:
+>>> Oops, I accidentally sent this to Philippe instead of the list --
+>>>
+>>> ---------- Forwarded message ----------
+>>> From: C Smith <csmithquestions@gmail.com>
+>>> Date: Mon, Aug 14, 2017 at 3:48 PM
+>>> Subject: Re: [Xenomai] rt_pipe_* - must link xenomai and flush the pipe
+>>> To: Philippe Gerum <rpm@xenomai.org>
+>>>
+>>>
+>>> Thanks -- sorry I was sparse with details --
 >>
->> Any remarks on this approach? Does it take a reasonable direction?
+>> - what are the parameters passed to rt_pipe_create(), rt_pipe_read() in
+>> the failing case? (sizes, flags etc).
 >>
-> We need that I believe. Another option would be to connect this as
-> __xntrace_op_ftrace to save a syscall definition, although this is not
-> the same trace channel - but still ftrace underneath. No strong opinion
-> on this.
+>> - what is the exact return value of write() on the non-rt side, which
+>> does not trigger any receipt from rt_pipe_read()?
+>>
+>> - what is the _exact_ Xenomai 2.6 release you have been using so far?
+>> Several bug fixes have been applied to the message pipes along the 2.6.x
+>> lifetime, only 2.6.5 includes them all.
+>>
+>>>
+>>> I am using xenomai 2.6.
+>>
+>> I would strongly recommend to use Xenomai 3.0.x instead of 2.6. The
+>> Xenomai 2.6.x series is not maintained anymore (EOL since January last
+>> year).
+>>
+>> I would also recommend to go for the POSIX interface instead of the
+>> so-called native/alchemy API: less overhead, more users, better
+>> maintenance. With Xenomai 3.x, the POSIX API is truly the "native" one,
+>> compared to all other APIs - include alchemy - which have to go through
+>> the "Copperplate" mediation layer for reaching the core real-time services.
+>>
+>> Xenomai's "alchemy" API should be seen as a compatibility layer for
+>> people who want to port Xenomai 2.6 applications originally implemented
+>> with the "native" API to Xenomai 3.x. I would NOT recommend it for new
+>> projects.
+>>
+>>   I am observing this behavior when a non-RT task
+>>> writes to the pipe using write(), and an RT task reads the pipe with
+>>> rt_pipe_read.  The RT task is not a kernel module, just started from an
+>> ELF
+>>> executable I run from the command line.
+>>>
+>>> BTW, linking in xenomai libraries makes a huge difference -- according to
+>>> gdb, when I leave xenomai libraries out (of a program with no xenomai
+>> calls
+>>> and no threading calls), the process is single-threaded; but when I link
+>> it
+>>> with -lxenomai -lpthread_rt then gdb shows two threads, even if I stop it
+>>> immediately by typing 'break main' before 'run'.  One of the threads
+>> always
+>>> has this call stack:
+>>>
+>>> #0  0xffffe424 in __kernel_vsyscall ()
+>>> #1  0xb7e90966 in nanosleep () from /lib/libpthread.so.0
+>>> #2  0xb7ea0819 in printer_loop (arg=0x0) at rt_print.c:691
+>>> #3  0xb7e89adf in start_thread () from /lib/libpthread.so.0
+>>> #4  0xb720d55e in clone () from /lib/libc.so.6
+>>>
+>>
+>> That is expected; this is a helper thread started from a Xenomai library
+>> constructor, dealing with deferred printf() output.
+>>
+>> --
+>> Philippe.
+>>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+> 
 
-It's a different channel and we will have to cast a parameters. But if
-syscall numbers are considered valuable, I can do this.
-
-Jan
 
 -- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
