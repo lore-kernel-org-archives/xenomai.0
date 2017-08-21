@@ -1,18 +1,12 @@
-Date: Tue, 12 Sep 2017 13:51:48 +0000
-Message-ID: <20170912135148.Horde.cG39ygekOR05hM-nO07JcEH@office.mrmoco.com>
-From: Paul Wilkinson <paul.w@mrmoco.com>
-References: <20170907153622.Horde.hT_sRaGS6VmkuifQTO4pqBa@office.mrmoco.com>
- <2ceb59af-770f-d99f-1f6a-553a669d20b5@xenomai.org>
- <20170911121830.Horde.hdU-y9sijxk8OGHoWqdylfy@office.mrmoco.com>
- <d8eca49a-1491-0e42-064e-ccbe3c188949@xenomai.org>
- <20170911161756.Horde.5576SR9hJdNX3u6KppQElrb@office.mrmoco.com>
- <20170912132632.Horde.2n3kq1TB84KjAL7evP_5TA4@office.mrmoco.com>
-In-Reply-To: <20170912132632.Horde.2n3kq1TB84KjAL7evP_5TA4@office.mrmoco.com>
-Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
+Date: Mon, 21 Aug 2017 11:09:34 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20170821110934.284eb26c@md1em3qc>
+In-Reply-To: <CAAaH=QErp8b3dQJp-dEOL9zHS0FDriCfH3amRpbx0Lh+RQX_ag@mail.gmail.com>
+References: <CAAaH=QErp8b3dQJp-dEOL9zHS0FDriCfH3amRpbx0Lh+RQX_ag@mail.gmail.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-Subject: Re: [Xenomai] Questions around porting app to Xenomai/Cobalt
- resulting in SIGABRT ?
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Adopting the i-pipe patch to another kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,39 +15,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: mohamed atef <mohamedatefmohamed95@gmail.com>
+Cc: xenomai@xenomai.org
 
+Am Thu, 10 Aug 2017 15:39:36 +0200
+schrieb mohamed atef <mohamedatefmohamed95@gmail.com>:
 
-Quoting Paul Wilkinson <paul.w@mrmoco.com>:
+> Hi everyone,
+> 
+> I want to adopt an i-pipe patch to kernel 3.14.56. I have been
+> searching for one, but I didn't find anything. I think I may use
+> anyone of ipipe-core-3.14.44- patches as a reference.
+> 
+> Any help, please?
 
+Just use the git version of ipipe and merge tag 'v3.14.56' into
+ipipe-3.14. Git did not complain about conflicts so that might just
+work. For a patch against another tree run "git diff v3.14.65".
 
->
-> I changed PTHREAD_STACK_DEFAULT to ~8M and reintroduced std:thread  
-> in one case
-> where thread creation failed previously.
->
-> The SIGABRT failure mode returns, gdb stack trace below.
->
-> Stack frame 6 shows std:thread is using pthreads under the hood, but  
-> the SIGABRT
-> seems to imply that my increasing PTHREAD_STACK_DEFAULT hasn't had  
-> any effect, I
-> now doubt Xenomai Cobalt is wrapping the pthread calls and applying the new
-> PTHREAD_STACK_DEFAULT to the std::thread calls.
->
-> I'd appreciate any insight into when and when not calls such as  
-> pthread* will be
-> intercepted by Xenomai Cobalt.
->
+But the real advise is to use a more recent kernel and complain with
+the SoC vendor if they do not have one. And stop buying from them if
+they do not care.
 
+Henning
 
-I should add that the new PTHREAD_STACK_DEFAULT of ~8M that I introduced
-to ./include/boilerplate/libc.h is reflected in the initial stacksize, as
-returned by pthread_attr_getstacksize(), for the remaining threads created
-using pthread_create().
-
-
-Paul.
-
+> Thnx in advance.
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
 
