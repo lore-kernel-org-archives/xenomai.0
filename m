@@ -1,13 +1,11 @@
+From: MINIER Bertrand <Bertrand.MINIER@sercel.com>
+Date: Tue, 22 Aug 2017 15:22:59 +0000
+Message-ID: <de3553b96851471ebed51ecfb4a322eb@NANS01204.it.intra.sercel.com>
+Content-Language: fr-FR
 MIME-Version: 1.0
-In-Reply-To: <20170922144441.3e7cc374@md1em3qc>
-References: <CAB6vvjm0GH4kzobZ4c-FdqcARoDDwNFmAJBGOEWESFTwXoJw8Q@mail.gmail.com>
- <20170922144441.3e7cc374@md1em3qc>
-From: Antoine Hoarau <hoarau.robotics@gmail.com>
-Date: Sun, 24 Sep 2017 17:12:06 +0200
-Message-ID: <CAB6vvj=p0y65eM99qO104W7JF5Oo6X95KCzSEcAxNfPA0ZtWPw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] MAXSMP prevents booting on 16.04/x64-4.9.38
+Subject: [Xenomai] RTDM driver : driver to driver rtdm_ioctl() call issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,55 +14,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Le ven. 22 sept. 2017 =C3=A0 14:44, Henning Schild
-<henning.schild@siemens.com> a =C3=A9crit :
->
-> Am Thu, 21 Sep 2017 12:03:47 +0200
-> schrieb Antoine Hoarau <hoarau.robotics@gmail.com>:
->
-> > Hello,
-> >
-> > After many trials and error, I finally found the option that made both
-> > of my Ubuntu 16.04/x64 (i7 7500U and 2600K) to hang at Loading initial
-> > ramdisk.
-> >
-> > CONFIG_MAXSMP
-> >
-> > * Processor type and features
-> >   --> Enable maximum number of SMP processors and NUMA nodes
-> >
-> > It seems to be enabled by default on kernel 4.x, and causes the system
-> > to hang at
->
-> No it is not set in an x86_64 defconfig and i also do not see it in
-> ubuntu 4.4 kernels. Not sure how it got enabled in your config.
->
+Hi all,
 
-True for 4.4 kernels. I took the config from the provided 4.10 kernel :
+I'am writing a set of two RTDM drivers :  let say driver A and driver B.
+Driver B implementation depends on driver A usage.
+To serve an ioctl of Driver B, I have to call a driver A ioctl using the "d=
+river to driver API":
+                err =3D rtdm_ioctl(rt_device->fpga_event_fd, RTFPGAEV_RTIOC=
+_STOP_TIMER, &rt_device->fpga_event_timer_idx);
 
-cat /usr/src/linux-headers-4.10.0-28-generic/.config | grep MAXSMP
-CONFIG_MAXSMP=3Dy
+>From the driver A perspective, this ioctl is coded as follow:
 
+static int rtFpgaEv_ioctl(struct rtdm_fd *fd, unsigned int request, void *a=
+rg)
+{
+    struct rt_fpga_event_context *ctx;
+    int err =3D 0;
 
+    ctx =3D rtdm_fd_to_private(fd);
+    switch (request)
+    {
 
-> Henning
->
-> >    x86 : Booting SMP configuration:
-> >    .... node #0, CPUs:     #1
-> >
-> > I've always built the kernel with the xenomai patch, but I don't think
-> > the two are related.
-> > Did any of you had this issue as well ?
-> >
-> > ------
-> > Antoine Hoarau
-> >
-> > _______________________________________________
-> > Xenomai mailing list
-> > Xenomai@xenomai.org
-> > https://xenomai.org/mailman/listinfo/xenomai
->
+/* .... */
 
+        case RTFPGAEV_RTIOC_STOP_TIMER:
+           val =3D *((unsigned int *) arg);
+            if(rtdm_fd_is_user(fd))
+            {
+                err =3D rtdm_safe_copy_from_user(fd, &val, arg, sizeof(unsi=
+gned int));
+if (err)
+return err;
+            }
+            err =3D rtFpgaEv_dev_stopTimer(ctx->rt_dev, val);
+            break;
+
+/* .... */
+
+}
+    return err;
+}
+
+The rtdm_ioctl() call fails with EPERM errno. This errno come from rtdm_saf=
+e_copy_from_user() in the above code.
+As long as Driver A is opened from an RTDM driver(coded as a kernel module)=
+, I was expecting rtdm_fd_is_user(fd) to return false and so not execute th=
+e rtdm_safe_copy_from_user().
+
+Could you tell me where I'm wrong ?
+
+I'am using the following configuration:
+
+-          Xenomai-3.0.3
+
+-          Linux-4.1.18
+
+-          ipipe-core-4.1.18-arm-8.patch
+
+-
+Thanks a lot.
+Bertrand
+
+This e-mail and any accompanying attachments are confidential. If you are n=
+ot the intended recipient, you must not review, disclose, copy, distribute =
+or use this e-mail; please delete it from your system and notify the sender=
+ immediately.
