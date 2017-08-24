@@ -1,14 +1,12 @@
-Date: Wed, 27 Sep 2017 14:15:31 -0400
-Message-ID: <20170927181531.r6ufimuxxwh7lbvc@csclub.uwaterloo.ca>
-References: <CAKJ14NdyH7FF+pwj9J-FLSnCWHOqAteKVrrbagA4eqhvETgFoA@mail.gmail.com>
- <dffcf471-c697-b04c-7dc9-84c169b5be62@xenomai.org>
- <CAKJ14NdBR+VMq6ovb06nLi1EU4c2rA6TTo=VtC3Zdz1RWdKqZQ@mail.gmail.com>
+Date: Thu, 24 Aug 2017 17:50:05 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20170824175005.2da5bad5@md1em3qc>
+In-Reply-To: <CAMcKmiHUHPdgg0avFpz+RWi4r6gFDNXdLtOT2vQu1VchnkHs8w@mail.gmail.com>
+References: <CAMcKmiHUHPdgg0avFpz+RWi4r6gFDNXdLtOT2vQu1VchnkHs8w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKJ14NdBR+VMq6ovb06nLi1EU4c2rA6TTo=VtC3Zdz1RWdKqZQ@mail.gmail.com>
-From: lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
-Subject: Re: [Xenomai] Unexpected mode switches when reordering C++ lines
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] undefined symbol __wrap_malloc in 3.0.4
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,42 +15,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Andreas Glatz <andi.glatz@gmail.com>
+To: George Broz <brozgeo@gmail.com>
 Cc: xenomai@xenomai.org
 
-On Wed, Sep 27, 2017 at 06:25:18PM +0100, Andreas Glatz wrote:
-> As you say Philippe, I had to memcpy() 2xu32 from the (malloc'd)
-> memory region into an array u32 tmpVal[2] array, and then use these
-> values one-by-one to process them with ntohl(), ...
+Hey,
 
-Certainly using memcpy is the safe way to deal with unaligned data.
+you are probably a victim of canonical. 3.0.5 fixes that issue, you can
+also cherry-pick
+http://git.xenomai.org/xenomai-3.git/commit/?id=83dea2ad712ee2d2137942c7ab9891da7d4ef841
 
-Casting a char* to an int* is just not valid and breaks aliasing rules.
+Henning
 
-> I tried to cast the pDat pointer to u32* initially, but then I still
-> got the ldm instructions and hence mode switches as the assembler is
-> very good at optimizing.
->
-> I have the feeling the same could come up at other places as well as
-> we progress with the testing of our application. I guess a 'save'
-> solution is to compile the code with -O0 or -O1, because if never seen
-> these mode switches using these compiler options. However, an ideal
-> solution would be to have something to mark the memory region as
-> 'unaligned' so the assembler then only uses ldr instead of
-> instructions on it... maybe there is this unicorn running around
-> somewhere :)
+Am Thu, 24 Aug 2017 08:38:29 -0700
+schrieb George Broz <brozgeo@gmail.com>:
+
+> Hi ,
 > 
-> Anyways, many thanks for your help.
+> I am trying to run an application in Xenomai 3.0.4 that was
+> previously running fine in Xenomai 3.0.2.
+> 
+> On startup of the application, I get the message:
+> ./my_app: symbol lookup error: ./my_app: undefined symbol:
+> __wrap_malloc
+> 
+> (which terminates the application.)
+> 
+> I noticed that malloc and free are missing from the cobalt.wrappers
+> in 3.0.4. They are now in "modechk.wrappers"
+> 
+> I saw that a xeno-config option was added
+> (--no-mode-check/--mode-check) . I have added this to my link flags
+> for the application. I have tried both options
+> and I still get the same undefined symbol message on startup.
+> 
+> Can someone please tell me how I can build the application to now find
+> these wrappers? Does it require a Xenomai kernel configuration option
+> to be selected as well?
+> 
+> 
+> Thanks in advance!
+> 
+> --George Broz
+> Moog Industrial Group
+> 
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
-Is this any help:
-
-https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53016
-
-A bit of searching is starting to make me think your problem is caused
-by using reinterpret_cast rather than a plain static cast.  I think
-using that is making the compiler say "Oh this is a proper correct fully
-aligned pointer of this type, so I can assume anything I want about it".
-
--- 
-Len Sorensen
 
