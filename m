@@ -1,11 +1,13 @@
-From: Giulio Moro <g.moro@qmul.ac.uk>
-Date: Mon, 2 Oct 2017 14:08:54 +0000
-Message-ID: <DB6PR0701MB24567885F171F1129C2FCE61B57D0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
-Content-Language: en-GB
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: [Xenomai] The task calling pthread_cond_signal() has to own the lock
+In-Reply-To: <CAMcKmiHOC-UAstoUeSiS5m4Q_Qdqc55nQpn=ZjazN_5jJn3K6A@mail.gmail.com>
+References: <CAMcKmiHUHPdgg0avFpz+RWi4r6gFDNXdLtOT2vQu1VchnkHs8w@mail.gmail.com>
+ <20170824175005.2da5bad5@md1em3qc>
+ <CAMcKmiHOC-UAstoUeSiS5m4Q_Qdqc55nQpn=ZjazN_5jJn3K6A@mail.gmail.com>
+From: George Broz <brozgeo@gmail.com>
+Date: Thu, 24 Aug 2017 09:15:34 -0700
+Message-ID: <CAMcKmiGjedxqqvWd8zYLC9fGomP101MhaHH_oGPr6tzAZM7_+g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] Fwd:  undefined symbol __wrap_malloc in 3.0.4
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,58 +16,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-I am using condition variables with the Posix skin on Xenomai 3.0.5
-I find that if the thread calling pthread_cond_signal() has not acquired th=
-e lock associated with the condition variable, the waiting thread is not re=
-sumed. Is this expected behaviour? As
-According to the Posix specifications (referenced by the Xenomai docs):
-"The pthread_cond_broadcast() or pthread_cond_signal() functions may be cal=
-led by a thread whether or not it currently owns the mutex that threads cal=
-ling pthread_cond_wait() or pthread_cond_timedwait() "
-therefore, I think that what I observe is unexpected behaviour.
-Note: I am happy for my use case to accept the non-deterministic behaviour =
-caused by the signalling thread not acquiring the lock.
+---------- Forwarded message ----------
+From: George Broz <brozgeo@gmail.com>
+Date: 24 August 2017 at 09:13
+Subject: Re: [Xenomai] undefined symbol __wrap_malloc in 3.0.4
+To: Henning Schild <henning.schild@siemens.com>
 
-My test code is here: https://pastebin.com/raw/zjmQBFxr
 
-If I #define SIGNALLER_ACQUIRES_LOCK, then main() acquires mutex before cal=
-ling pthread_cond_signal() and the waiting thread is successfully resumed.
-The program therefore prints:
-main(): Signalling condition
-callback(): start
-callback(): Locking mutex
-callback(): Waiting on condition
-main(): Signalling condition
-callback(): Unlocking mutex
-callback(): Locking mutex
-callback(): Waiting on condition
-....
+On 24 August 2017 at 08:50, Henning Schild <henning.schild@siemens.com> wrote:
+> Hey,
+>
+> you are probably a victim of canonical. 3.0.5 fixes that issue, you can
+> also cherry-pick
+> http://git.xenomai.org/xenomai-3.git/commit/?id=83dea2ad712ee2d2137942c7ab9891da7d4ef841
+>
+> Henning
 
-However, if I do not define the macro, then the waiting thread is never res=
-umed, here is the printout:
-main(): Signalling condition
-callback(): start
-callback(): Locking mutex
-callback(): Waiting on condition
-main(): Signalling condition
-main(): Signalling condition
-main(): Signalling condition
-main(): Signalling condition
-main(): Signalling condition
-....
+Thanks for the quick response. I am cross-compiling for an Altera ARM
+SoC using a cross
+toolchain built by Yocto. It's the exact same toolchain I used to
+build the application under 3.0.2.
 
-I am compiling with:
-clang test-xeno-cond.c `/usr/xenomai/bin/xeno-config --skin=3Dposix --cflag=
-s --ldflags` -o cond
+I tried adding this to the linker flags anyway, but I still get the
+same unresolved symbol message.
 
-and `/usr/xenomai/bin/xeno-config --skin=3Dposix --cflags --ldflags` return=
-s:
--I/usr/xenomai/include/cobalt -I/usr/xenomai/include -march=3Darmv7-a -mfpu=
-=3Dvfp3 -D_GNU_SOURCE -D_REENTRANT -D__COBALT__ -D__COBALT_WRAP__
--Wl,--no-as-needed -Wl,@/usr/xenomai/lib/cobalt.wrappers -Wl,@/usr/xenomai/=
-lib/modechk.wrappers  /usr/xenomai/lib/xenomai/bootstrap.o -Wl,--wrap=3Dmai=
-n -Wl,--dynamic-list=3D/usr/xenomai/lib/dynlist.ld -L/usr/xenomai/lib -lcob=
-alt -lmodechk -lpthread -lrt
+Any other suggestions? Is it required now for 3.0.4 applications to
+include this mode-check flag
+in order to use malloc/free under Xenomai?
+
+
+--George
+
+>
+> Am Thu, 24 Aug 2017 08:38:29 -0700
+> schrieb George Broz <brozgeo@gmail.com>:
+>
+>> Hi ,
+>>
+>> I am trying to run an application in Xenomai 3.0.4 that was
+>> previously running fine in Xenomai 3.0.2.
+>>
+>> On startup of the application, I get the message:
+>> ./my_app: symbol lookup error: ./my_app: undefined symbol:
+>> __wrap_malloc
+>>
+>> (which terminates the application.)
+>>
+>> I noticed that malloc and free are missing from the cobalt.wrappers
+>> in 3.0.4. They are now in "modechk.wrappers"
+>>
+>> I saw that a xeno-config option was added
+>> (--no-mode-check/--mode-check) . I have added this to my link flags
+>> for the application. I have tried both options
+>> and I still get the same undefined symbol message on startup.
+>>
+>> Can someone please tell me how I can build the application to now find
+>> these wrappers? Does it require a Xenomai kernel configuration option
+>> to be selected as well?
+>>
+>>
+>> Thanks in advance!
+>>
+>> --George Broz
+>> Moog Industrial Group
+>>
+>> _______________________________________________
+>> Xenomai mailing list
+>> Xenomai@xenomai.org
+>> https://xenomai.org/mailman/listinfo/xenomai
+>
 
