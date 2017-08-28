@@ -1,14 +1,14 @@
+References: <20170808112357.0063d74d@md1em3qc>
+From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
+Message-ID: <00264fd7-9cdd-afe0-0047-db7e0c2e8f40@numalliance.com>
+Date: Mon, 28 Aug 2017 08:25:02 +0200
 MIME-Version: 1.0
-In-Reply-To: <20171012103345.04d854c2@md1em3qc>
-References: <CADYdroNR6zjbKrPKPm3d_7+55Rg2SDbmpxiNR-xu78QNHSrr9g@mail.gmail.com>
- <20170810114956.04f62bc6@md1em3qc>
- <CADYdroM8E7jhuyRoW4JkSzZfGg27VvpjLmHGmMmX79wgEqPJog@mail.gmail.com>
- <20171012103345.04d854c2@md1em3qc>
-From: Norbert Lange <nolange79@gmail.com>
-Date: Fri, 13 Oct 2017 09:13:27 +0200
-Message-ID: <CADYdroOAVb0wPAvuynvuOUtSnp85FT2Ett80amzDpDCFHPHHzA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] Won`t build on new Debian Stable
+In-Reply-To: <20170808112357.0063d74d@md1em3qc>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: fr
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] [RFC] Xenomai3 tuneables replaced by environment
+ variables
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,90 +17,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: norbert.lange@andritz.com, Xenomai <xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>, xenomai@xenomai.org
+Cc: "KISZKA, JAN" <jan.kiszka@siemens.com>
 
-Hello,
+Hi,
 
-I tracked down the source of information to this:
-https://wiki.ubuntu.com/SecurityTeam/PIE
+hardcoded and cmdline args benefits from an added value for real=20
+applications. We don't want args being "volatile"
 
-I changed the flags from "-Wl,-Ur" to "-Wl,-U -r", so you wont get an
-explanation from me, why -U has to be passed for the linker.
-And by the way, gcc accepts -U aswell, so this might be preferable to
-be used directly too.
+environment variables are volatile and sometimes difficult to propagate=20
+between shells...
 
-I don`t know why those flags aren' t documented, bug in gcc
-documentation? As far as I understand is that gcc is smart enough to
-correctly deal with the flags gcc directly received, but the linker
-lacks that information.
+Regards,
 
-I don' t know what the issue is with the C++ Constructors, in the
-context of this change?
-(I heard about the issues if those reside in a shared library, use
-function from libcobald and don't depend on libcobald. Which is more
-of a broken build to me if you don't add the depended libs, and will
-bite you the same way if you use GCCs constructor attribute)
+S.Ancelot
 
-Kind regards,
-Norbert.
 
-2017-10-12 10:33 GMT+02:00 Henning Schild <henning.schild@siemens.com>:
-> Hey Norbert,
+Le 08/08/2017 =C3=A0 11:23, Henning Schild a =C3=A9crit :
+> Hey,
 >
-> thanks for looking into that again! Could you please explain how and
-> why that works, or point out what to look at in flint? Mailing list
-> thread, commit, something like that.
+> xenomai3 has its tuneables and they can be set with command-line
+> parameters and setup_descriptors.
 >
-> As far as i can see gcc now gets a "-r" which i do not find in the
-> manpage. And ld gets a "-U" which i do not find in its manpage. And
-> there is something about c++ constructors which might change the
-> behaviour of xenomai.
+> 1.
+> The command-line parameters impose on the application, it has to be
+> modified to skip/ignore them. And ultimately it has to keep a list of
+> valid ones to do so pedanticly. If there are name clashes behaviour is
+> unclear. i.e. "--help" ld.so vs. dlopen
+>
+> 2.
+> The setup_descriptors do work but they rely on getting the order
+> stricly right. They have to execute before the first xenomai_init(). In
+> complex applications with multithreaded init using dlopen() and
+> auto-init-solib that quickly turns out to be unusable.
+>
+> Suggestions:
+> 1.
+> 1.1 completely drop the support for parameters and the fiddling
+>      with /proc/cmdline
+> 1.2 or agree on a prefix "--xeno-" so the application can ignore all
+>      xenomai parameters without knowing all
+>
+> 2.
+> 2.1 completely drop the setup_descriptors in favour of environment
+>      variables
+>
+> That would be a drastic change but i think we should do something about
+> it. With environment variables it is clear what happens without messing
+> with the applications init or parameters, getting rid of confusing
+> complexity.
+>
+> Please let me know what you think, i would be happy to prepare patches.
 >
 > Henning
 >
-> Am Tue, 10 Oct 2017 16:38:50 +0200
-> schrieb Norbert Lange <nolange79@gmail.com>:
->
->> Some highly trivial fix attached!
->> Its strange that this flag is not documented in the manual (I found
->> out abaout this fix from https://launchpad.net/ubuntu/+source/flint)
->>
->> Norbert Lange
->>
->> 2017-08-10 11:49 GMT+02:00 Henning Schild
->> <henning.schild@siemens.com>:
->> > Hi Norbert,
->> >
->> > Thanks! In fact that issue has come up before and a similar
->> > workaround was described. It should be fixed, patches welcome!
->> >
->> > Henning
->> >
->> > Am Wed, 9 Aug 2017 16:21:02 +0200
->> > schrieb Norbert Lange <nolange79@gmail.com>:
->> >
->> >> Hello,
->> >>
->> >> Building the xenomai package won`t work because debian now
->> >> defaults to using pie, and the linker will complain with "ld: -r
->> >> and -pie may not be used together"
->> >>
->> >> A workaround for now is to add the flags manually:
->> >> ../xenomai-3.0.5/configure LDFLAGS=-no-pie CFLAGS="-fno-PIE
->> >> -fno-pie -no-pie"
->> >>
->> >> A real fix would be similar to
->> >> http://lists.gnu.org/archive/html/bug-grub/2016-11/msg00011.html
->> >> (no-pie is not supported on old and other compilers)
->> >>
->> >> Kind regards,
->> >> Norbert
->> >>
->> >> _______________________________________________
->> >> Xenomai mailing list
->> >> Xenomai@xenomai.org
->> >> https://xenomai.org/mailman/listinfo/xenomai
->> >
->
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
