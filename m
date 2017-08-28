@@ -1,15 +1,9 @@
-References: <20170808112357.0063d74d@md1em3qc>
- <00264fd7-9cdd-afe0-0047-db7e0c2e8f40@numalliance.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <3d887c58-950c-cd17-2b82-5f79304012c8@siemens.com>
-Date: Mon, 28 Aug 2017 09:32:37 +0200
+Message-ID: <trinity-d9731ee4-e34a-4acf-9b6c-b6da3175962d-1503914754751@3c-app-gmx-bs61>
+From: belinea123@gmx.de
+Date: Mon, 28 Aug 2017 12:05:54 +0200
 MIME-Version: 1.0
-In-Reply-To: <00264fd7-9cdd-afe0-0047-db7e0c2e8f40@numalliance.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] [RFC] Xenomai3 tuneables replaced by environment
- variables
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] Printf does not always show on the console
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,24 +12,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>, Henning Schild <henning.schild@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 2017-08-28 08:25, Stéphane Ancelot wrote:
-> Hi,
-> 
-> hardcoded and cmdline args benefits from an added value for real
-> applications. We don't want args being "volatile"
-> 
-> environment variables are volatile and sometimes difficult to propagate
-> between shells...
 
-This is not about removing command line options completely. You can
-still choose them if they fit your case better.
+   I have troubles that the output of printf does not always show on the
+   console.
 
-But given all the problems they cause to complex programs due to their
-invasive nature, let's just make them them opt-in in 3.1 and switch to
-conceptually cleaner env vars by default. For stable 3.0, we would keep
-command line options as default, of course.
+   for(int i = 0; i<500; i++)
+   {
+      printf("this is my output. 01234567890123.....\n");
+   }
 
-Jan
+   After 240 lines, the output stops in the middle of the sentence without
+   a carriage return. The output of later printf calls appears after that.
+   Same behaviour when I compile the app for debug or release. Calling
+   fflush(stdout) does not make a difference.
+   My app links a shared object which controls a rtdm device driver.
+   The app and the shared object link xenomai and use the printf that is
+   wrapped by xenomai.
+   I couldn't reproduce it with a minimal cpp example.
 
+   When I add rt_task_sleep(1000*1000) the output is Ok.
+
+   When I start the app, I use the command line options
+   --print-buffer-size=16384 --print-buffer-count=4
+   --print-sync-delay=100. When i use print-buffer-size multiplied by 10,
+   the output is Ok.
+
+   Is this the normal behavior? This is difficult for me, as I use printf
+   for debugging. Printf never returned a negative number, so I can't
+   detect the problem in the code.
+
+   I'm running cobalt (dual kernel).
+
+   cat /proc/xenomai/version
+   3.0.4
+
+   ipipe
+   ipipe-core-4.4.43-x86-6.patch
+
+   uname -a
+   Linux my_pc 4.4.43 #1 SMP Tue May 9 13:34:48 CEST 2017 x86_64 GNU/Linux
+
+
+   Regards
+
+   Chris
