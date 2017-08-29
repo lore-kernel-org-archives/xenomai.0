@@ -1,3 +1,4 @@
+From: Philippe Gerum <rpm@xenomai.org>
 References: <20170808112357.0063d74d@md1em3qc>
  <a676257d-9e88-1b81-15e6-adfffc1c7716@xenomai.org>
  <20170808134801.59ae5de6@md1em3qc>
@@ -9,11 +10,11 @@ References: <20170808112357.0063d74d@md1em3qc>
  <20170829142726.23ea20ef@md1em3qc>
  <445755f9-7406-98e9-7e2f-e30b4a6237b2@xenomai.org>
  <20170829192018.19f2ede9@md1em3qc>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <46f175d1-0b72-9b94-2543-161bbbdb401f@xenomai.org>
-Date: Tue, 29 Aug 2017 22:02:06 +0200
+ <46f175d1-0b72-9b94-2543-161bbbdb401f@xenomai.org>
+Message-ID: <83afcb3d-b211-c644-d71a-a153ef3cc93c@xenomai.org>
+Date: Tue, 29 Aug 2017 22:15:30 +0200
 MIME-Version: 1.0
-In-Reply-To: <20170829192018.19f2ede9@md1em3qc>
+In-Reply-To: <46f175d1-0b72-9b94-2543-161bbbdb401f@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -30,21 +31,43 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Henning Schild <henning.schild@siemens.com>
 Cc: "KISZKA, JAN" <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-On 08/29/2017 07:20 PM, Henning Schild wrote:
-> I do not mind changing the customers software to address the issue
-> there. The whole thread was about making xenomai simpler, inspired by
-> having to look deeper into the settings/tuneables.
-> The fact that we had to talk about it for so long could indicate that
-> the whole thing is not so simple.
+On 08/29/2017 10:02 PM, Philippe Gerum wrote:
+> On 08/29/2017 07:20 PM, Henning Schild wrote:
+>> I do not mind changing the customers software to address the issue
+>> there. The whole thread was about making xenomai simpler, inspired by
+>> having to look deeper into the settings/tuneables.
+>> The fact that we had to talk about it for so long could indicate that
+>> the whole thing is not so simple.
+>>
+> 
+> Don't you want to get a stab at the proposal to turn all Xenomai
+> parameters found in setup descriptors to potential/possible environment
+> variables?
+> 
+> I believe that this would fit your bill, without causing any regression
+> to other existing applications that may already depend on the tuning
+> mechanism. That seems to be a fair deal to me.
 > 
 
-Don't you want to get a stab at the proposal to turn all Xenomai
-parameters found in setup descriptors to potential/possible environment
-variables?
+For the sake of clarity, I'm referring to introducing an automatic
+probing rule that says:
 
-I believe that this would fit your bill, without causing any regression
-to other existing applications that may already depend on the tuning
-mechanism. That seems to be a fair deal to me.
+"if switch --foo exists, then maybe envvar XENO_FOO exists as well, and
+if so, let's preload the value of the foo parameter with it, leaving
+precedence to --foo eventually".
+
+$ XENO_FOO=2 ./app
+receives foo=2
+
+$ XENO_FOO=2 ./app --foo 3
+receives foo=3
+
+./app --foo 4
+receives foo=4
+
+./app
+receives default core value set by Xenomai libs, or the factory setting
+defined by the application code.
 
 -- 
 Philippe.
