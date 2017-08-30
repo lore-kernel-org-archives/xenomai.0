@@ -1,24 +1,16 @@
-Date: Wed, 30 Aug 2017 09:42:28 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20170830094228.7f3dafc6@md1em3qc>
-In-Reply-To: <46f175d1-0b72-9b94-2543-161bbbdb401f@xenomai.org>
-References: <20170808112357.0063d74d@md1em3qc>
- <a676257d-9e88-1b81-15e6-adfffc1c7716@xenomai.org>
- <20170808134801.59ae5de6@md1em3qc>
- <86562178-3b5a-55fc-8652-dc15f228e541@xenomai.org>
- <20170808212758.550caab0@md1em3qc>
- <bf9689d1-3373-ad65-97df-a67fa639c6c3@xenomai.org>
- <20170825191604.723abf24@md1em3qc>
- <553cc0c2-2ce4-5182-b6eb-4a18ccad82b5@xenomai.org>
- <20170829142726.23ea20ef@md1em3qc>
- <445755f9-7406-98e9-7e2f-e30b4a6237b2@xenomai.org>
- <20170829192018.19f2ede9@md1em3qc>
- <46f175d1-0b72-9b94-2543-161bbbdb401f@xenomai.org>
+References: <b82b1342-701b-57de-e749-73b2f6882ee9@nta-inc.net>
+ <fe69ba28-957e-b936-56d5-e1437edbb188@nta-inc.net>
+ <f2c2ad6d-5045-51ca-ca7b-512a60ec2cf7@nta-inc.net>
+ <558124b7-41bc-eb45-0dd3-e3624a323f49@xenomai.org>
+From: Jeff Webb <jeff.webb@nta-inc.net>
+Message-ID: <0650fd36-851f-31ee-8b7c-080542792be2@nta-inc.net>
+Date: Wed, 30 Aug 2017 13:48:30 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <558124b7-41bc-eb45-0dd3-e3624a323f49@xenomai.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [RFC] Xenomai3 tuneables replaced by environment
-	variables
+Subject: Re: [Xenomai] UDD framework
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,34 +19,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "KISZKA, JAN" <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-Am Tue, 29 Aug 2017 22:02:06 +0200
-schrieb Philippe Gerum <rpm@xenomai.org>:
-
-> On 08/29/2017 07:20 PM, Henning Schild wrote:
-> > I do not mind changing the customers software to address the issue
-> > there. The whole thread was about making xenomai simpler, inspired
-> > by having to look deeper into the settings/tuneables.
-> > The fact that we had to talk about it for so long could indicate
-> > that the whole thing is not so simple.
-> >   
+On 08/29/2017 02:56 AM, Philippe Gerum wrote:
+> On 08/28/2017 08:45 PM, Jeff Webb wrote:
+>> On 08/07/2017 11:15 AM, Jeff Webb wrote:
+>>> On 08/07/2017 10:08 AM, Jeff Webb wrote:
+>>>> I am attempting to port legacy Xenomai 2.6.4 code to Xenomai 3.
+>>>> In our current code base, we implement userspace drivers using
+>>>> libpci, iopl, inb/outb, /dev/mem, and the pthread_intr_*_np
+>>>> family of functions.  Since the pthread_intr_*_np functions are
+>>>> no longer part of Xenomai, I have been researching and
+>>>> experimenting with the new UDD framework as a replacement.
+>>>> Although documentation and examples are a little scarce, I have
+>>>> found most of the information I need.  I also used some
+>>>> documentation on the Linux UIO framwork to fill in some gaps in
+>>>> my knowledge.  My preliminary conclusion is that using the UDD
+>>>> framework would allow us to port our existing code base without
+>>>> too much modification, but I still have a few remaining
+>>>> questions.
+>>>>
+>>>> I see the way that PCI device memory regions can be accessed
+>>>> using mmap with UDD_MEM_PHYS mem_regions, but on some PCI devices
+>>>> we also need to access I/O port regions, such as:
+>>>>
+>>>>    Region 0: Memory at f7102000 (32-bit, non-prefetchable) [size=128]
+>>>>    Region 1: I/O ports at b100 [size=128]
+>>>>    Region 2: I/O ports at b280 [size=4]
+>>>>
+>>>> The UIO documentation recommends using the struct uio_info's port
+>>>> field (an array of 'uio_port' structs) to pass information about
+>>>> the I/O port regions associated with the device to userspace.  I
+>>>> did not see the equivalent of this functionality in the UDD
+>>>> framework, and was wondering why it was omitted.  What is the
+>>>> recommended way of determining the ports associated with a device
+>>>> when using a UDD driver?  It seems like continuing to do this
+>>>> using libpci and then somehow matching this up with the
+>>>> corresponding UDD device would be messy and error-prone.
+>>>
+>>> If no other support exists, perhaps I could use kmalloc to allocate a
+>>> UDD_MEM_LOGICAL region corresponding to each PCI I/O port region on the
+>>> card.  The kernel UDD driver would then populate these regions with
+>>> the I/O addresses of the corresponding PCI I/O port regions.  The
+>>> UDD_MEM_LOGICAL regions could then be read by the userspace driver
+>>> to determine the I/O address to use with inb/outb (and iopl).
+>>
+>> Another way would be to pass the port I/O region addresses (and possibly
+>> sizes) to userspace via explicit IOCTLs.  If so, should the IOCTL
+>> numbers for such a use case be standardized?
+>>
+>> If there is no standard way to do this sort of thing, and if there are
+>> no recommendations about how to do proceed, I'll just do what feels
+>> right in my case, but I thought someone might have some experience or
+>> opinion on how this should be done in the Xenomai UDD context, since the
+>> Linux UIO method of passing port information is not available.
+>>
 > 
-> Don't you want to get a stab at the proposal to turn all Xenomai
-> parameters found in setup descriptors to potential/possible
-> environment variables?
+> I would implement this as the original UIO driver does, which is
+> basically about adding a sysfs hierarchy that represents each I/O port
+> range declared by the UIO device.
+> 
+> For UDD, that would entail adding an array of "udd_ioport" structures to
+> struct udd_device to be filled in by the caller. Then,
+> udd_register_device() would iterate over this array, creating sysfs
+> entries on the fly, based on the information available into each ioport
+> definition, such as name, start and size.
+> 
+> The sysfs mechanism has the advantage of only requiring to define a pack
+> of attributes and a couple of sysfs handlers for showing them. Besides,
+> requiring that the app retrieves those attributes from secondary mode at
+> init, using regular file I/O on sysfs entries seems acceptable, those
+> attributes are not supposed to vary anyway.
 
-No. I would like to replace one or both of the existing mechanisms with
-envvars (or something else ...). Introducing another one would make it
-even more complicated. The replaced mechanisms should be deprecated and
-eventually removed.
+That sounds like good advice, Philippe. Thanks.
 
-> I believe that this would fit your bill, without causing any
-> regression to other existing applications that may already depend on
-> the tuning mechanism. That seems to be a fair deal to me.
+Your suggestion to follow the UIO approach for the I/O ports now
+has me wondering why the Linux UIO approach and structures
+weren't mirrored more closely in Xenomai UDD. I personally like
+the way some things are done better in UDD, but I would think
+that keeping things as similar as possible to how the standard
+kernel works would ease the learning curve and allow some of the
+init code to be reused, but I might be missing something. It
+would seem that the UDD and UIO kernel-space code one would need
+to write for a particular device would be almost identical, and
+having the APIs as similar as possible would be desirable.
 
-Sure, but i am not comfortable with increasing complexity further.
 
-Henning
+Thanks,
+
+-Jeff
+
+
 
