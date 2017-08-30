@@ -1,11 +1,13 @@
-MIME-Version: 1.0
 References: <CAF06wtj2YM_Ue0Hzw5+LChWtve_3ta390aAu0CixsCQd+12bwg@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <04c0f132-1d4a-4c7e-c273-56d09da07696@xenomai.org>
+Date: Wed, 30 Aug 2017 09:20:21 +0200
+MIME-Version: 1.0
 In-Reply-To: <CAF06wtj2YM_Ue0Hzw5+LChWtve_3ta390aAu0CixsCQd+12bwg@mail.gmail.com>
-From: "Stephen D. Cohen" <steve@uscohens.com>
-Date: Wed, 30 Aug 2017 02:38:34 +0000
-Message-ID: <CAO460__o2krnbVrxCtkh3dT8Li3yUnyxm3N7T+tonPsZdq_1Gw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] Two Minor Issues with Patches
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Issues building old drivers under Xenomai 3.0.5
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,85 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: jlangston@panurgyinc.com, xenomai@xenomai.org
 
-Dear Xenomai Team,
+On 08/30/2017 03:17 AM, Jim Langston wrote:
+> Hi all,
+> 
+> I'm having trouble getting an old driver originally built for Xenomai 2.4
+> to build under Xenomai 3.0.5.  The code won't build under Ubuntu 16.04
+> patched with Xenomai 3.0.5 and kernel 4.9.24 and the IPipe patch for 4.9.24.
+> 
+> The problem seems to revolve around include pathing, and the simplest case
+> I can put together is as follows:
+> 
 
-I have run into a couple of issues recently and have finally gotten around
-to reporting them with my associated patches to correct them. These may be
-of interest to others so I am posting them to the list. I am pretty sure
-this is the correct way to submit them anyway.
+<snip>
 
-The first issue is with debug backtrace handler and slackspot. The
-backtrace handler in the kernel code is removing the virtual-memory offset
-from all backtrace PCs regardless of origin. This is not appropriate for
-executable files, and so addr2line (and thus slackspot) cannot report the
-line numbers for these spots.
+> Does anyone have a driver that they could post up that uses the heap
+> functions, a sample 'Makefile' with different flags/include options, or any
+> suggestions on how to resolve the include file mess here?
+> 
 
-The simple solution is to check the backtrace section to see if it is from
-an executable file and act accordingly. Here is the patch:
+The former "native" API of Xenomai 2.x is no more available in kernel
+space with Xenomai 3.x, as hosting application code there is discouraged.
 
------ Start Patch -----
---- a/xenomai-3.0.5/kernel/cobalt/debug.c
-+++ b/xenomai-3.0.5/kernel/cobalt/debug.c
-@@ -23,6 +23,7 @@
-#include <linux/mm.h>
-#include <linux/signal.h>
-#include <linux/vmalloc.h>
-+#include <linux/elf.h>
-#include <cobalt/kernel/sched.h>
-#include <cobalt/kernel/heap.h>
-#include <cobalt/kernel/clock.h>
-@@ -246,7 +247,11 @@
-if (vma == NULL)
-continue;
+With the latter, the only kernel space API is RTDM, for writing drivers.
+If you need a real-time allocator in kernel space to ease your port,
+there is still the option of tapping into the Cobalt core inner
+interface, using the xnheap_* services.
 
-- spot.backtrace[depth].pc = pc - vma->vm_start;
-+ if (!memcmp((u8 *)vma->vm_start, ELFMAG, SELFMAG) &&
-+ ((struct elfhdr *)vma->vm_start)->e_type == ET_EXEC)
-+ spot.backtrace[depth].pc = pc;
-+ else
-+ spot.backtrace[depth].pc = pc - vma->vm_start;
+-- 
+Philippe.
 
-/*
-* Even in case we can't fetch the map name, we still
------ End Patch -----
-
-One caveat - this issue does not appear to show up in the example on the
-web page describing slackspot, and I am at a loss to explain how that can
-be. Perhaps the ARM backtrace routines behave slightly differently and so
-this is not an issue? I tried to investigate this on ARM but was unable to
-make Xenomai on my Raspberry Pi produce ANY backtraces at all. It certainly
-holds true for both 32 and 64-bit x86.
-
-The other minor issue is the "-no-pie" problem that others have reported.
-My investigation suggests that this can be resolved by simply having the
-stage1 phase of wrap-link include the "-no-pie" flag. The following patch
-handles that issue when necessary, without breaking PIE in general:
-
-/\/\/\ Begin Patch /\/\/\
---- a/xenomai-3.0.5/scripts/wrap-link.sh
-+++ b/xenomai-3.0.5/scripts/wrap-link.sh
-@@ -203,8 +203,13 @@
-done
-
-if $stage2; then
-+ if gcc --verbose 2>&1 | grep --quiet default-pie ; then
-+ no_pie="-no-pie"
-+ else
-+ no_pie=""
-+ fi
-$verbose && set -x
-- $dryrun $cc -o "$output.tmp" -Wl,-Ur -nostdlib $stage1_args
-+ $dryrun $cc -o "$output.tmp" -Wl,-Ur $no_pie -nostdlib $stage1_args
-$dryrun $cc -o "$output" "$output.tmp" $stage2_args
-$dryrun rm -f $output.tmp
-else
-/\/\/\ End Patch /\/\/\
-
-I hope these are helpful for others. Thanks for all the hard work on
-Xenomai.
-
-Warmest Regards,
-
-Steve Cohen
