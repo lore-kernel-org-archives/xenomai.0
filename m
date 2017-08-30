@@ -1,13 +1,24 @@
-References: <CAF06wtj2YM_Ue0Hzw5+LChWtve_3ta390aAu0CixsCQd+12bwg@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <04c0f132-1d4a-4c7e-c273-56d09da07696@xenomai.org>
-Date: Wed, 30 Aug 2017 09:20:21 +0200
+Date: Wed, 30 Aug 2017 09:42:28 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20170830094228.7f3dafc6@md1em3qc>
+In-Reply-To: <46f175d1-0b72-9b94-2543-161bbbdb401f@xenomai.org>
+References: <20170808112357.0063d74d@md1em3qc>
+ <a676257d-9e88-1b81-15e6-adfffc1c7716@xenomai.org>
+ <20170808134801.59ae5de6@md1em3qc>
+ <86562178-3b5a-55fc-8652-dc15f228e541@xenomai.org>
+ <20170808212758.550caab0@md1em3qc>
+ <bf9689d1-3373-ad65-97df-a67fa639c6c3@xenomai.org>
+ <20170825191604.723abf24@md1em3qc>
+ <553cc0c2-2ce4-5182-b6eb-4a18ccad82b5@xenomai.org>
+ <20170829142726.23ea20ef@md1em3qc>
+ <445755f9-7406-98e9-7e2f-e30b4a6237b2@xenomai.org>
+ <20170829192018.19f2ede9@md1em3qc>
+ <46f175d1-0b72-9b94-2543-161bbbdb401f@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <CAF06wtj2YM_Ue0Hzw5+LChWtve_3ta390aAu0CixsCQd+12bwg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Issues building old drivers under Xenomai 3.0.5
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [RFC] Xenomai3 tuneables replaced by environment
+	variables
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,34 +27,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: jlangston@panurgyinc.com, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "KISZKA, JAN" <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-On 08/30/2017 03:17 AM, Jim Langston wrote:
-> Hi all,
+Am Tue, 29 Aug 2017 22:02:06 +0200
+schrieb Philippe Gerum <rpm@xenomai.org>:
+
+> On 08/29/2017 07:20 PM, Henning Schild wrote:
+> > I do not mind changing the customers software to address the issue
+> > there. The whole thread was about making xenomai simpler, inspired
+> > by having to look deeper into the settings/tuneables.
+> > The fact that we had to talk about it for so long could indicate
+> > that the whole thing is not so simple.
+> >   
 > 
-> I'm having trouble getting an old driver originally built for Xenomai 2.4
-> to build under Xenomai 3.0.5.  The code won't build under Ubuntu 16.04
-> patched with Xenomai 3.0.5 and kernel 4.9.24 and the IPipe patch for 4.9.24.
-> 
-> The problem seems to revolve around include pathing, and the simplest case
-> I can put together is as follows:
-> 
+> Don't you want to get a stab at the proposal to turn all Xenomai
+> parameters found in setup descriptors to potential/possible
+> environment variables?
 
-<snip>
+No. I would like to replace one or both of the existing mechanisms with
+envvars (or something else ...). Introducing another one would make it
+even more complicated. The replaced mechanisms should be deprecated and
+eventually removed.
 
-> Does anyone have a driver that they could post up that uses the heap
-> functions, a sample 'Makefile' with different flags/include options, or any
-> suggestions on how to resolve the include file mess here?
-> 
+> I believe that this would fit your bill, without causing any
+> regression to other existing applications that may already depend on
+> the tuning mechanism. That seems to be a fair deal to me.
 
-The former "native" API of Xenomai 2.x is no more available in kernel
-space with Xenomai 3.x, as hosting application code there is discouraged.
+Sure, but i am not comfortable with increasing complexity further.
 
-With the latter, the only kernel space API is RTDM, for writing drivers.
-If you need a real-time allocator in kernel space to ease your port,
-there is still the option of tapping into the Cobalt core inner
-interface, using the xnheap_* services.
-
--- 
-Philippe.
+Henning
 
