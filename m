@@ -1,18 +1,10 @@
-References: <b82b1342-701b-57de-e749-73b2f6882ee9@nta-inc.net>
- <fe69ba28-957e-b936-56d5-e1437edbb188@nta-inc.net>
- <f2c2ad6d-5045-51ca-ca7b-512a60ec2cf7@nta-inc.net>
- <558124b7-41bc-eb45-0dd3-e3624a323f49@xenomai.org>
- <0650fd36-851f-31ee-8b7c-080542792be2@nta-inc.net>
- <1b007503-1950-3566-1788-4fbbc46800fd@xenomai.org>
-From: Jeff Webb <jeff.webb@nta-inc.net>
-Message-ID: <1f9f0cf6-23a6-c803-6c25-c3e4f9c70994@nta-inc.net>
-Date: Thu, 31 Aug 2017 08:33:43 -0500
 MIME-Version: 1.0
-In-Reply-To: <1b007503-1950-3566-1788-4fbbc46800fd@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] UDD framework
+From: Ronny Meeus <ronny.meeus@gmail.com>
+Date: Thu, 31 Aug 2017 16:02:25 +0200
+Message-ID: <CAMJ=MEf5=ZhKBss8GD=ju8efx5GiO_vrGdu1jerW1orpw6+MPw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] mercury/psos: dump of long message queue causes
+	application crash
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,117 +13,152 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 08/31/2017 02:58 AM, Philippe Gerum wrote:
-> On 08/30/2017 08:48 PM, Jeff Webb wrote:
->> On 08/29/2017 02:56 AM, Philippe Gerum wrote:
->>> On 08/28/2017 08:45 PM, Jeff Webb wrote:
->>>> On 08/07/2017 11:15 AM, Jeff Webb wrote:
->>>>> On 08/07/2017 10:08 AM, Jeff Webb wrote:
->>>>>> I am attempting to port legacy Xenomai 2.6.4 code to Xenomai 3.
->>>>>> In our current code base, we implement userspace drivers using
->>>>>> libpci, iopl, inb/outb, /dev/mem, and the pthread_intr_*_np
->>>>>> family of functions.  Since the pthread_intr_*_np functions are
->>>>>> no longer part of Xenomai, I have been researching and
->>>>>> experimenting with the new UDD framework as a replacement.
->>>>>> Although documentation and examples are a little scarce, I have
->>>>>> found most of the information I need.  I also used some
->>>>>> documentation on the Linux UIO framwork to fill in some gaps in
->>>>>> my knowledge.  My preliminary conclusion is that using the UDD
->>>>>> framework would allow us to port our existing code base without
->>>>>> too much modification, but I still have a few remaining
->>>>>> questions.
->>>>>>
->>>>>> I see the way that PCI device memory regions can be accessed
->>>>>> using mmap with UDD_MEM_PHYS mem_regions, but on some PCI devices
->>>>>> we also need to access I/O port regions, such as:
->>>>>>
->>>>>>     Region 0: Memory at f7102000 (32-bit, non-prefetchable) [size=128]
->>>>>>     Region 1: I/O ports at b100 [size=128]
->>>>>>     Region 2: I/O ports at b280 [size=4]
->>>>>>
->>>>>> The UIO documentation recommends using the struct uio_info's port
->>>>>> field (an array of 'uio_port' structs) to pass information about
->>>>>> the I/O port regions associated with the device to userspace.  I
->>>>>> did not see the equivalent of this functionality in the UDD
->>>>>> framework, and was wondering why it was omitted.  What is the
->>>>>> recommended way of determining the ports associated with a device
->>>>>> when using a UDD driver?  It seems like continuing to do this
->>>>>> using libpci and then somehow matching this up with the
->>>>>> corresponding UDD device would be messy and error-prone.
->>>>>
->>>>> If no other support exists, perhaps I could use kmalloc to allocate a
->>>>> UDD_MEM_LOGICAL region corresponding to each PCI I/O port region on the
->>>>> card.  The kernel UDD driver would then populate these regions with
->>>>> the I/O addresses of the corresponding PCI I/O port regions.  The
->>>>> UDD_MEM_LOGICAL regions could then be read by the userspace driver
->>>>> to determine the I/O address to use with inb/outb (and iopl).
->>>>
->>>> Another way would be to pass the port I/O region addresses (and possibly
->>>> sizes) to userspace via explicit IOCTLs.  If so, should the IOCTL
->>>> numbers for such a use case be standardized?
->>>>
->>>> If there is no standard way to do this sort of thing, and if there are
->>>> no recommendations about how to do proceed, I'll just do what feels
->>>> right in my case, but I thought someone might have some experience or
->>>> opinion on how this should be done in the Xenomai UDD context, since the
->>>> Linux UIO method of passing port information is not available.
->>>>
->>>
->>> I would implement this as the original UIO driver does, which is
->>> basically about adding a sysfs hierarchy that represents each I/O port
->>> range declared by the UIO device.
->>>
->>> For UDD, that would entail adding an array of "udd_ioport" structures to
->>> struct udd_device to be filled in by the caller. Then,
->>> udd_register_device() would iterate over this array, creating sysfs
->>> entries on the fly, based on the information available into each ioport
->>> definition, such as name, start and size.
->>>
->>> The sysfs mechanism has the advantage of only requiring to define a pack
->>> of attributes and a couple of sysfs handlers for showing them. Besides,
->>> requiring that the app retrieves those attributes from secondary mode at
->>> init, using regular file I/O on sysfs entries seems acceptable, those
->>> attributes are not supposed to vary anyway.
->>
->> That sounds like good advice, Philippe. Thanks.
->>
->> Your suggestion to follow the UIO approach for the I/O ports now
->> has me wondering why the Linux UIO approach and structures
->> weren't mirrored more closely in Xenomai UDD. I personally like
->> the way some things are done better in UDD, but I would think
->> that keeping things as similar as possible to how the standard
->> kernel works would ease the learning curve and allow some of the
->> init code to be reused, but I might be missing something. It
->> would seem that the UDD and UIO kernel-space code one would need
->> to write for a particular device would be almost identical, and
->> having the APIs as similar as possible would be desirable.
->>
->>
-> 
-> IIRC, having to pass the mapping number in the offset field of the
-> mmap() request with UIO (offset = N * getpagesize()) was the scary API
-> detail that froze my brain machinery. 
+Hello
 
-That one boggles my mind as well.
+I have a test application that creates a psos queue and sends a lot of
+messages to it.
+The application code can be found below.
 
-> From that point, I did not care
-> that much for compatibility between UIO and UDD for the rest of the API,
-> a stance which was admittedly wrong.
-> 
-> There are things imposed on Cobalt drivers though, such as having the
-> device nodes managed by RTDM under the /dev/rtdm hierarchy, and not by
-> sysfs. The choice of using the ioctl() interface instead of
-> read()/write() for interrupt control has no particular justification.
-> 
-> So I agree with you. In retrospect, if I were to (re)write UDD, I would
-> indeed conform to the UIO interface for all technically compatible
-> aspects, except for the mmap() support where providing a distinct device
-> entry for each mapping is clearly better.
-> 
+Depending on the memory configuration it can be that error are
+generated after some
+time but that is not the issue. When dump the queue in the debug
+interface I see a crash
+of the application:
 
-Thanks for the insight.  That all makes sense.
+/mnt/xenomai/anon/root/anon/11091/psos/queues # cat LINE
+memory exhausted
+cat: can't open 'LINE': Software caused connection abort
 
--Jeff
+The root-cause of this is that the size of the obstack used in the
+registry is in fact unlimited.
+In case it needs to grow and there is no memory anymore, a handler is
+called that is
+reporting the memory shortage condition and triggers an exit.
+
+In my opinion it is not correct that this condition triggers an
+application reset. I would rather
+prefer that in case there is a memory shortage, the dump is just
+stopped or that we limit the
+memory that is used worst case in the obstack in the registry.
+
+The patch below solves the issue but I do not whether it is the right direction.
+Depending on the available memory it might still crash ...
+
+diff --git a/include/copperplate/registry-obstack.h
+b/include/copperplate/registry-obstack.h
+--- a/include/copperplate/registry-obstack.h
+diff --git a/include/copperplate/registry-obstack.h
+b/include/copperplate/registry-obstack.h
+--- a/include/copperplate/registry-obstack.h
++++ b/include/copperplate/registry-obstack.h
+@@ -35,6 +35,8 @@ struct syncobj;
+ #define obstack_chunk_alloc    pvmalloc
+ #define obstack_chunk_free     pvfree
+
++#define OBSTACK_MAX_SIZE 65536
++
+ struct threadobj;
+
+ struct fsobstack {
+diff --git a/lib/copperplate/registry.c b/lib/copperplate/registry.c
+--- a/lib/copperplate/registry.c
++++ b/lib/copperplate/registry.c
+@@ -880,9 +880,10 @@ int fsobstack_grow_format(struct fsobsta
+               n = vsnprintf(p, len, fmt, ap);
+               va_end(ap);
+
+-              if (n > 0 && n < len)
+-                      obstack_grow(&o->obstack, p, n);
+-
++               if (n > 0 && n < len) {
++                       if (obstack_object_size(&o->obstack) < OBSTACK_MAX_SIZE)
++                               obstack_grow(&o->obstack, p, n);
++               }
+               if (p != buf)
+                       pvfree(p);
+
+@@ -900,12 +901,14 @@ int fsobstack_grow_format(struct fsobsta
+
+ void fsobstack_grow_string(struct fsobstack *o, const char *s)
+ {
+-       obstack_grow(&o->obstack, s, strlen(s));
++       if (obstack_object_size(&o->obstack) < OBSTACK_MAX_SIZE)
++               obstack_grow(&o->obstack, s, strlen(s));
+ }
+
+ void fsobstack_grow_char(struct fsobstack *o, char c)
+ {
+-       obstack_1grow(&o->obstack, c);
++       if (obstack_object_size(&o->obstack) < OBSTACK_MAX_SIZE)
++               obstack_1grow(&o->obstack, c);
+ }
+
+ int fsobstack_grow_file(struct fsobstack *o, const char *path)
+@@ -925,7 +928,8 @@ int fsobstack_grow_file(struct fsobstack
+                                len = -errno;
+                        break;
+                }
+-               obstack_1grow(&o->obstack, c);
++               if (obstack_object_size(&o->obstack) < OBSTACK_MAX_SIZE)
++               i       obstack_1grow(&o->obstack, c);
+                len++;
+        }
+
+@@ -1007,8 +1011,10 @@ redo:
+        e = obstack_next_free(&cache);
+        p = obstack_finish(&cache);
+        if (ops->format_data == NULL) {
+-               if (e != p)
+-                       obstack_grow(&o->obstack, p, e - p);
++               if (e != p) {
++                       if (obstack_object_size(&o->obstack) < OBSTACK_MAX_SIZE)
++                               obstack_grow(&o->obstack, p, e - p);
++               }
+                goto out;
+
+
+Any hints/suggestions for a better implementation/solution are welcome.
+Thanks
+
+Best regards
+Ronny
+
+TEST application:
+
+#include <version.h>
+#include <psos.h>
+#include <stdio.h>
+
+static void main_test_task(u_long a,u_long b,u_long c,u_long d)
+{
+        unsigned long qid, err;
+        int i;
+        unsigned long message_count = 1000000;
+        unsigned long mesg[4];
+
+        q_create("LINE",0,Q_NOLIMIT|Q_PRIOR,&qid);
+        for (i=0;i<message_count;i++)
+        {
+                err = q_send(qid, mesg);
+                if (err != 0)
+                    printf("Error: q_send err=%ld count=%d\n", err, i);
+        }
+        printf("SUCCESS: Test passed (nr messages sent=%ld)\n",message_count);
+
+        while (1)
+                tm_wkafter(1000);
+}
+
+int main(int argc, char * const *argv)
+{
+        unsigned long tid;
+        unsigned long args[4] = {0,0,0,0};
+
+        t_create("MAIN",25,16000,16000,0,&tid);
+        t_start(tid,T_PREEMPT|T_TSLICE,main_test_task,args);
+        while (1)
+                tm_wkafter(1000);
+}
 
