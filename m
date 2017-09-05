@@ -1,11 +1,16 @@
-From: Fazio Maurizio <maurizio.fazio@leonardocompany.com>
-Date: Tue, 5 Sep 2017 15:39:57 +0000
-Message-ID: <f61b6963a0f94bd0a09eb5eb359370e5@ocnapvsw3301.ocr.priv>
-Content-Language: it-IT
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Philippe Gerum <rpm@xenomai.org>
+References: <CAF06wtj2YM_Ue0Hzw5+LChWtve_3ta390aAu0CixsCQd+12bwg@mail.gmail.com>
+ <CAO460__o2krnbVrxCtkh3dT8Li3yUnyxm3N7T+tonPsZdq_1Gw@mail.gmail.com>
+ <fa961a8b-01b6-6268-6ba4-5747c3c78513@xenomai.org>
+ <CAO460__1uc5Z8VDT+dsvkwkG+N7tiim6X7-h22nu6tBmijoG4w@mail.gmail.com>
+Message-ID: <ab4ff9e3-d6ef-39af-ce18-9894957014c7@xenomai.org>
+Date: Tue, 5 Sep 2017 19:57:11 +0200
 MIME-Version: 1.0
-Subject: [Xenomai] Xenomai 2.6.4 - POSIX skin thread creation limit
+In-Reply-To: <CAO460__1uc5Z8VDT+dsvkwkG+N7tiim6X7-h22nu6tBmijoG4w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Two Minor Issues with Patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,37 +19,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Stephen D. Cohen" <steve@uscohens.com>, xenomai@xenomai.org
 
-SGVsbG8sDQppcyB0aGVyZSBhIHRocmVhZCBjcmVhdGlvbiBsaW1pdCB1c2luZyB0aGUgUE9TSVgg
-c2tpbiBvZiBYZW5vbWFpIDIuNi40Pz8/DQpBZnRlciBhYm91dCAyMCBwdGhyZWFkX2NyZWF0ZSBp
-bnZvY2F0aW9uLCB0aGUgZnVuY3Rpb24gcmV0dXJucyAtMeKApg0KDQpUaGFua3MgZm9yIHRoZSBh
-dHRlbnRpb24NCg0KQmVzdCByZWdhcmRzDQoNCg0KDQpJbCBwcmVzZW50ZSBtZXNzYWdnaW8gZS1t
-YWlsIGUgb2duaSBzdW8gYWxsZWdhdG8gZGV2b25vIGludGVuZGVyc2kgaW5kaXJpenphdGkgZXNj
-bHVzaXZhbWVudGUgYWwgZGVzdGluYXRhcmlvIGluZGljYXRvIGUgY29uc2lkZXJhcnNpIGRhbCBj
-b250ZW51dG8gc3RyZXR0YW1lbnRlIHJpc2VydmF0byBlIGNvbmZpZGVuemlhbGUuIFNlIG5vbiBz
-aWV0ZSBsJ2VmZmV0dGl2byBkZXN0aW5hdGFyaW8gbyBhdmV0ZSByaWNldnV0byBpbCBtZXNzYWdn
-aW8gZS1tYWlsIHBlciBlcnJvcmUsIHNpZXRlIHByZWdhdGkgZGkgYXZ2ZXJ0aXJlIGltbWVkaWF0
-YW1lbnRlIGlsIG1pdHRlbnRlIGUgZGkgY2FuY2VsbGFyZSBpbCBzdWRkZXR0byBtZXNzYWdnaW8g
-ZSBvZ25pIHN1byBhbGxlZ2F0byBkYWwgdm9zdHJvIHNpc3RlbWEgaW5mb3JtYXRpY28uIFF1YWxz
-aWFzaSB1dGlsaXp6bywgZGlmZnVzaW9uZSwgY29waWEgbyBhcmNoaXZpYXppb25lIGRlbCBwcmVz
-ZW50ZSBtZXNzYWdnaW8gZGEgcGFydGUgZGkgY2hpIG5vbiBuZSDDqCBpbCBkZXN0aW5hdGFyaW8g
-w6ggc3RyZXR0YW1lbnRlIHByb2liaXRvIGUgcHXDsiBkYXIgbHVvZ28gYSByZXNwb25zYWJpbGl0
-w6AgZGkgY2FyYXR0ZXJlIGNpdmlsZSBlIHBlbmFsZSBwdW5pYmlsaSBhaSBzZW5zaSBkaSBsZWdn
-ZS4NClF1ZXN0YSBlLW1haWwgaGEgdmFsb3JlIGxlZ2FsZSBzb2xvIHNlIGZpcm1hdGEgZGlnaXRh
-bG1lbnRlIGFpIHNlbnNpIGRlbGxhIG5vcm1hdGl2YSB2aWdlbnRlLg0KDQpUaGUgY29udGVudHMg
-b2YgdGhpcyBlbWFpbCBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJlIGludGVuZGVkIHNv
-bGVseSBmb3IgdGhlIGFkZHJlc3NlZShzKSBhbmQgY29udGFpbiBjb25maWRlbnRpYWwgYW5kL29y
-IHByaXZpbGVnZWQgaW5mb3JtYXRpb24uDQpJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVj
-aXBpZW50IG9mIHRoaXMgbWVzc2FnZSwgb3IgaWYgdGhpcyBtZXNzYWdlIGhhcyBiZWVuIGFkZHJl
-c3NlZCB0byB5b3UgaW4gZXJyb3IsIHBsZWFzZSBpbW1lZGlhdGVseSBub3RpZnkgdGhlIHNlbmRl
-ciBhbmQgdGhlbiBkZWxldGUgdGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgZnJvbSB5
-b3VyIHN5c3RlbS4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFy
-ZSBoZXJlYnkgbm90aWZpZWQgdGhhdCBhbnkgdXNlLCBkaXNzZW1pbmF0aW9uLCBjb3B5aW5nLCBv
-ciBzdG9yYWdlIG9mIHRoaXMgbWVzc2FnZSBvciBpdHMgYXR0YWNobWVudHMgaXMgc3RyaWN0bHkg
-cHJvaGliaXRlZC4gVW5hdXRob3JpemVkIGRpc2Nsb3N1cmUgYW5kL29yIHVzZSBvZiBpbmZvcm1h
-dGlvbiBjb250YWluZWQgaW4gdGhpcyBlbWFpbCBtZXNzYWdlIG1heSByZXN1bHQgaW4gY2l2aWwg
-YW5kIGNyaW1pbmFsIGxpYWJpbGl0eS4g4oCcDQpUaGlzIGUtbWFpbCBoYXMgbGVnYWwgdmFsdWUg
-YWNjb3JkaW5nIHRvIHRoZSBhcHBsaWNhYmxlIGxhd3Mgb25seSBpZiBpdCBpcyBkaWdpdGFsbHkg
-c2lnbmVkIGJ5IHRoZSBzZW5kZXINCg==
+On 09/01/2017 05:48 AM, Stephen D. Cohen wrote:
+>      MAP_EXECUTABLE is set for any code section, so applies to shared
+> libraries, PIE executables, etc. as well as executable files.
+
+True, which means that this code never actually worked, even in its
+original form... The reason it _seemed_ to work back then was because
+all tests triggered relax spots from an executable, and never from DSOs:
+IOW, no offset was ever subtracted from the offending $ip, which is
+correct for pure executables.
+
+ The
+> vm_mmap() flag to follow that uniquely identifies an executable file is
+> MAP_FIXED. I encourage you to chase it down the vm_mmap() rabbit hole
+> and see that there is no corresponding flag set in the vm_flags of the
+> vm_area_struct. At least not that I could find. A quick perusal of the
+> definitions for the VM_XXX flags will show a pretty clear lack of a
+> candidate for identifying fixed mappings as well, to reinforce this finding.
+> 
+
+I did not find any. AFAICT, load_elf_binary() sets MAP_FIXED for ET_DYN
+types too, when the first loadable segment is seen by the mapping loop.
+
+>      So with no other option, I went to the brute-force look in the ELF
+> header approach I submitted. This is not really as awful as it seems,
+> given that the sum-total of its operations is to read four bytes to make
+> sure it is an mapped ELF file, then read two bytes to check the type.
+> Perhaps there is some opportunity for vmas to be marked execute only so
+> that the read would cause an issue? My tracking through the ELF mapping
+> routines suggest this does not happen - the files are always mapped with
+> read enabled. Plus the code is running in the kernel so, at least in
+> theory, has full access regardless of the vm_flags.
+> 
+
+Ack.
+
+>      So with a lack of better options, and a sort of sour taste in my
+> mouth, I implemented what I submitted. I would love to be proven wrong,
+> but in the mean time I enjoy having slackspot actually work.
+> 
+
+Ok, let's give it a day or two, so that I can squeeze in deeper review.
+If no alternate option is found which does not depend on figuring out
+the binary format the hard way, we'll go for your proposal.
+
+>     We should move that to xeno-config*.in instead, as not everyone uses
+>     wrap-link.sh. xeno-config would emit -no-pie, based on the detection
+>     done in configure.ac <http://configure.ac>, of a compiler enabling
+>     PIE by default.
+> 
+> 
+>      But the issue only applies to the stage1 phase of wrap-link. There
+> is no fundamental issue with creating and running PIE binaries under
+> Xenomai. The problem is exclusive to stage1 of wrap-link passing the
+> "-r" flag to ld.
+> 
+>     IOW, configure.ac <http://configure.ac> figures out whether $CC has
+>     default-pie, setting a
+>     substitution variable which xeno-config*.in emits when dumping the
+>     CFLAGS.
+> 
+> 
+>      But then you are preventing PIE binaries entirely. This may "solve"
+> the problem, but PIE binaries are here to stay and significantly help to
+> improve system security. Why force them off entirely without reason?
+>  
+
+The suggested approach was not aimed at forcing them off, only switching
+back to the previous situation where pie was opt-in, not default. So
+basically, changing xeno-config would make this opt-in again, but then
+wrap-link.sh would still have a problem for people enable passing
+$(xeno_config --ldflags) -pie. So, this idea was wrong and irrelevant
+anyway.
+
+Ok, fixing wrap-link.sh is the best idea. The proposed patch would break
+cross-compilation though - we are not using the host's gcc compiler in
+this case. We'd need to invoke $cc instead, but without the accumulated
+flags, only the command path when giving --version.
+
+-- 
+Philippe.
+
 
