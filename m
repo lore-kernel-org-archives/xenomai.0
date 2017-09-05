@@ -1,12 +1,11 @@
+From: Fazio Maurizio <maurizio.fazio@leonardocompany.com>
+Date: Tue, 5 Sep 2017 15:39:57 +0000
+Message-ID: <f61b6963a0f94bd0a09eb5eb359370e5@ocnapvsw3301.ocr.priv>
+Content-Language: it-IT
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <mailman.3.1504346402.23923.xenomai@xenomai.org>
-References: <mailman.3.1504346402.23923.xenomai@xenomai.org>
-From: Jim Langston <jim.langston@gmail.com>
-Date: Mon, 4 Sep 2017 07:28:28 -0400
-Message-ID: <CAF06wtgmdp=pY5AVGpT4mvo6iG0PwQO5rSn40A6c7GRrkm0aLQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] Xenomai Digest, Vol 65, Issue 2
-Reply-To: jlangston@panurgyinc.com
+Subject: [Xenomai] Xenomai 2.6.4 - POSIX skin thread creation limit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,57 +14,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Steve,
+SGVsbG8sDQppcyB0aGVyZSBhIHRocmVhZCBjcmVhdGlvbiBsaW1pdCB1c2luZyB0aGUgUE9TSVgg
+c2tpbiBvZiBYZW5vbWFpIDIuNi40Pz8/DQpBZnRlciBhYm91dCAyMCBwdGhyZWFkX2NyZWF0ZSBp
+bnZvY2F0aW9uLCB0aGUgZnVuY3Rpb24gcmV0dXJucyAtMeKApg0KDQpUaGFua3MgZm9yIHRoZSBh
+dHRlbnRpb24NCg0KQmVzdCByZWdhcmRzDQoNCg0KDQpJbCBwcmVzZW50ZSBtZXNzYWdnaW8gZS1t
+YWlsIGUgb2duaSBzdW8gYWxsZWdhdG8gZGV2b25vIGludGVuZGVyc2kgaW5kaXJpenphdGkgZXNj
+bHVzaXZhbWVudGUgYWwgZGVzdGluYXRhcmlvIGluZGljYXRvIGUgY29uc2lkZXJhcnNpIGRhbCBj
+b250ZW51dG8gc3RyZXR0YW1lbnRlIHJpc2VydmF0byBlIGNvbmZpZGVuemlhbGUuIFNlIG5vbiBz
+aWV0ZSBsJ2VmZmV0dGl2byBkZXN0aW5hdGFyaW8gbyBhdmV0ZSByaWNldnV0byBpbCBtZXNzYWdn
+aW8gZS1tYWlsIHBlciBlcnJvcmUsIHNpZXRlIHByZWdhdGkgZGkgYXZ2ZXJ0aXJlIGltbWVkaWF0
+YW1lbnRlIGlsIG1pdHRlbnRlIGUgZGkgY2FuY2VsbGFyZSBpbCBzdWRkZXR0byBtZXNzYWdnaW8g
+ZSBvZ25pIHN1byBhbGxlZ2F0byBkYWwgdm9zdHJvIHNpc3RlbWEgaW5mb3JtYXRpY28uIFF1YWxz
+aWFzaSB1dGlsaXp6bywgZGlmZnVzaW9uZSwgY29waWEgbyBhcmNoaXZpYXppb25lIGRlbCBwcmVz
+ZW50ZSBtZXNzYWdnaW8gZGEgcGFydGUgZGkgY2hpIG5vbiBuZSDDqCBpbCBkZXN0aW5hdGFyaW8g
+w6ggc3RyZXR0YW1lbnRlIHByb2liaXRvIGUgcHXDsiBkYXIgbHVvZ28gYSByZXNwb25zYWJpbGl0
+w6AgZGkgY2FyYXR0ZXJlIGNpdmlsZSBlIHBlbmFsZSBwdW5pYmlsaSBhaSBzZW5zaSBkaSBsZWdn
+ZS4NClF1ZXN0YSBlLW1haWwgaGEgdmFsb3JlIGxlZ2FsZSBzb2xvIHNlIGZpcm1hdGEgZGlnaXRh
+bG1lbnRlIGFpIHNlbnNpIGRlbGxhIG5vcm1hdGl2YSB2aWdlbnRlLg0KDQpUaGUgY29udGVudHMg
+b2YgdGhpcyBlbWFpbCBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJlIGludGVuZGVkIHNv
+bGVseSBmb3IgdGhlIGFkZHJlc3NlZShzKSBhbmQgY29udGFpbiBjb25maWRlbnRpYWwgYW5kL29y
+IHByaXZpbGVnZWQgaW5mb3JtYXRpb24uDQpJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVj
+aXBpZW50IG9mIHRoaXMgbWVzc2FnZSwgb3IgaWYgdGhpcyBtZXNzYWdlIGhhcyBiZWVuIGFkZHJl
+c3NlZCB0byB5b3UgaW4gZXJyb3IsIHBsZWFzZSBpbW1lZGlhdGVseSBub3RpZnkgdGhlIHNlbmRl
+ciBhbmQgdGhlbiBkZWxldGUgdGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgZnJvbSB5
+b3VyIHN5c3RlbS4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFy
+ZSBoZXJlYnkgbm90aWZpZWQgdGhhdCBhbnkgdXNlLCBkaXNzZW1pbmF0aW9uLCBjb3B5aW5nLCBv
+ciBzdG9yYWdlIG9mIHRoaXMgbWVzc2FnZSBvciBpdHMgYXR0YWNobWVudHMgaXMgc3RyaWN0bHkg
+cHJvaGliaXRlZC4gVW5hdXRob3JpemVkIGRpc2Nsb3N1cmUgYW5kL29yIHVzZSBvZiBpbmZvcm1h
+dGlvbiBjb250YWluZWQgaW4gdGhpcyBlbWFpbCBtZXNzYWdlIG1heSByZXN1bHQgaW4gY2l2aWwg
+YW5kIGNyaW1pbmFsIGxpYWJpbGl0eS4g4oCcDQpUaGlzIGUtbWFpbCBoYXMgbGVnYWwgdmFsdWUg
+YWNjb3JkaW5nIHRvIHRoZSBhcHBsaWNhYmxlIGxhd3Mgb25seSBpZiBpdCBpcyBkaWdpdGFsbHkg
+c2lnbmVkIGJ5IHRoZSBzZW5kZXINCg==
 
-Thanks for the tip, that helped a lot.  What led me a astray was that there
-is a set of APIs used to allocate/deallocate that block of memory that gets
-passed to xnheap_init(); I stupidly assumed that the xnheap_init() function
-was the starting point.  Silly me!
-
-The following aren't even mentioned in the DOxygen documents for the Cobalt
-API:
-
-u32 xnheap_get_size(const struct xnheap *heap)
-u32 xnheap_get_free(const struct xnheap *heap)
-void *xnheap_get_membase(const struct xnheap *heap)
-
-u32 xnheap_rounded_size(u32 size)
-void *xnheap_vmalloc(size_t size);
-void xnheap_vfree(void *p);
-
-The last three are pretty important, with the 'xnheap_rounded_size()' being
-quite useful to get the block with the right size requirements. Time to go
-debug...
-
-Thanks again for the tip!
-
-Jim
-
-On Sat, Sep 2, 2017 at 6:00 AM, <xenomai-request@xenomai.org> wrote:
-
->
-> Message: 2
-> Date: Sat, 02 Sep 2017 03:43:56 +0000
-> From: "Stephen D. Cohen" <steve@uscohens.com>
-> To: jlangston@panurgyinc.com, Philippe Gerum <rpm@xenomai.org>
-> Cc: xenomai@xenomai.org
-> Subject: Re: [Xenomai] Issues building old drivers under Xenomai 3.0.5
-> Message-ID:
->         <CAO460__UFSJ4MMGsMthASEmxWQZeEcoUkX9Nk
-> MfOGQiQYuOaqA@mail.gmail.com>
-> Content-Type: text/plain; charset="UTF-8"
->
-> Mr. Langston,
->
->      You have to provide the memory block which conforms to the
-> requirements outlined in the documentation for xnheap_init. One place you
-> can find an example of using an xnheap is in the ipc drivers. The bind
-> routines in those drivers all use xnheap to manage private heaps for the
-> interfaces.
->
-> Regards,
->
-> Steve Cohen
->
