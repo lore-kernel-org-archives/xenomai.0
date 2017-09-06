@@ -1,18 +1,14 @@
-References: <8763c6b1-5bcb-62ee-056b-3329696b9ee3@nta-inc.net>
- <a3b259a3-af5f-e28a-8f8c-8470050dba13@xenomai.org>
- <03d954a8-b1d8-b101-8ea3-80999f99178e@nta-inc.net>
- <87412c1c-90c2-9824-b057-2909515f05a0@xenomai.org>
- <b3f70312-9c73-b981-5817-14865ece6783@nta-inc.net>
- <598cb827-9cfb-4d10-6d28-3efaebc800a0@xenomai.org>
-From: Jeff Webb <jeff.webb@nta-inc.net>
-Message-ID: <e92c87fe-66d9-2af7-6af4-7882d1027c68@nta-inc.net>
-Date: Fri, 18 Aug 2017 15:37:36 -0500
+From: Fazio Maurizio <maurizio.fazio@leonardocompany.com>
+Date: Wed, 6 Sep 2017 13:07:02 +0000
+Message-ID: <0be5b5280bb04fac807e522365c22e7d@ocnapvsw3301.ocr.priv>
+References: <f61b6963a0f94bd0a09eb5eb359370e5@ocnapvsw3301.ocr.priv>
+ <2154_1504634485_59AEE675_2154_8860_1_425b607a-6b79-420c-9ec1-e441f6a1434e@xenomai.org>
+In-Reply-To: <2154_1504634485_59AEE675_2154_8860_1_425b607a-6b79-420c-9ec1-e441f6a1434e@xenomai.org>
+Content-Language: it-IT
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <598cb827-9cfb-4d10-6d28-3efaebc800a0@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Trouble with ipipe/linux >= 4.4.43 on x86/64 system
+Subject: [Xenomai] R:  Xenomai 2.6.4 - POSIX skin thread creation limit
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,117 +17,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/15/2017 08:40 AM, Philippe Gerum wrote:
-> On 08/02/2017 10:55 PM, Jeff Webb wrote:
->> On 08/02/2017 01:51 PM, Philippe Gerum wrote:
->>> On 08/02/2017 08:28 PM, Jeff Webb wrote:
->>>> On 08/02/2017 12:04 PM, Philippe Gerum wrote:
->>>>> On 08/02/2017 06:43 PM, Jeff Webb wrote:
->>>>>> I am attempting to upgrade our x86/64 PC systems running
->>>>>> linux-3.14.17/xenomai-2.6.4 to xenomai-3.x.  I have successfully
->>>>>> built and booted a linux-4.1.18/xenomai-3.0.5 kernel on one of
->>>>>> them using:
->>>>>>
->>>>>>      ipipe-core-4.1.18-x86-9.patch
->>>>>>
->>>>>> however, I cannot boot systems based on:
->>>>>>
->>>>>>      ipipe-core-4.4.43-x86-8.patch
->>>>>>      ipipe-core-4.4.71-x86-8.patch
->>>>>>      ipipe-core-4.9.24-x86-2.patch
->>>>>>
->>>>>> with the CONFIG_IPIPE=y.  I can get these configurations to boot
->>>>>> by disabling CONFIG_IPIPE.  The main issue seems to be that
->>>>>> the primary hard drive does not work.  There also seems to be an
->>>>>> issue with some of the USB ports.
->>>>>>
->>>>>> I have attached several files:
->>>>>>
->>>>>> - cpuinfo.txt: cpuinfo for the first core
->>>>>> - boot-4.4.43-ipipeoff.notime: serial boot log (system works)
->>>>>> - boot-4.4.43-ipipeon.notime.matchup: serial boot log (system hangs)
->>>>>> - config-4.4.43-ipipeoff: (system works)
->>>>>> - config-4.4.43-ipipeon: (system hangs)
->>>>>>
->>>>>> The times have been stripped from the boot logs and the second
->>>>>> boot log has been slightly rearranged to make diffing with the two
->>>>>> logseasier.  I can send the raw logs instead, if that is helpful.
->>>>>>
->>>>>> Any help on getting later kernels to work would be appreciated.
->>>>>
->>>>> Maybe an issue with a secondary interrupt controller.
->>>>>
->>>>> - the output of /proc/interrupts on a booting kernel (say 4.9.24) would
->>>>> help figuring out which ICs are active on this hw.
->>>>
->>>> Please see the interrupts.txt attachment.
->>>
->>> Ah, looks like yet another issue with interrupt remapping. Could you try
->>> without CONFIG_IRQ_REMAP in your Kconfig to check this?
->>
->> Yes, it boots when I turn off CONFIG_IRQ_REMAP.
->>
->>>>> As a matter of fact,
->>>>> the driver has issues receiving events from the SATA controller once
->>>>> the
->>>>> interrupt pipeline is engaged. Likewise for the USB part as you
->>>>> mentioned as well.
->>>>>
->>>>> - does it boot in uniprocessor mode?
->>>>>
->>>>
->>>> Yes, it boots with maxcpus=0 or noapic, but not maxcpus=1.
->>>>
->>>
->>> This affects IR, so this would make sense.
->>>
->>
->> Thanks,
->>
-> 
-> Although I could not reproduce the original issue on the couple of
-> x86 SoCs I have access to, I believe this patch should help. At any
-> rate, the current implementation is broken wrt to holding remappable
-> interrupts. If you can give this a try, any feedback welcome.
-> Thanks.
-> 
-> diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-> index f26d949..d800e58 100644
-> --- a/arch/x86/kernel/apic/io_apic.c
-> +++ b/arch/x86/kernel/apic/io_apic.c
-> @@ -1954,6 +1954,16 @@ static void hold_ioapic_irq(struct irq_data *irq_data)
->   	ioapic_ack_level(irq_data);
->   }
->   
-> +static void hold_ioapic_ir_irq(struct irq_data *irq_data)
-> +{
-> +	struct mp_chip_data *data = irq_data->chip_data;
-> +
-> +	raw_spin_lock(&ioapic_lock);
-> +	__mask_ioapic(data);
-> +	raw_spin_unlock(&ioapic_lock);
-> +	ioapic_ir_ack_level(irq_data);
-> +}
-> +
->   static void release_ioapic_irq(struct irq_data *irq_data)
->   {
->   	struct mp_chip_data *data = irq_data->chip_data;
-> @@ -1997,7 +2007,7 @@ static struct irq_chip ioapic_ir_chip __read_mostly = {
->   #ifdef CONFIG_SMP
->   	.irq_move		= move_xxapic_irq,
->   #endif
-> -	.irq_hold		= hold_ioapic_irq,
-> +	.irq_hold		= hold_ioapic_ir_irq,
->   	.irq_release		= release_ioapic_irq,
->   #endif
->   	.irq_retrigger		= irq_chip_retrigger_hierarchy,
-> 
-
-Thanks for trying to reproduce the issue, Philippe.  This fix allows the system to boot and run with CONFIG_IRQ_REMAP turned back on.  At first glance, I don't see anything strange in the boot log.  I haven't tried anything more than the latency test with Xenomai though, but so far, so good.
-
-Thanks,
-
--Jeff
+SGVsbG8sDQoNCkkgdHJpZWQgdG8gZXhlY3V0ZSB0aGUgc3dpdGh0ZXN0IGFwcGxpY2F0aW9uIGFu
+ZCB0aGUgZm9sbG93aW5nIG91dHB1dCBpcyB0aGUgcmVzdWx0Li4uDQpGb3IgbWUgSXQncyBub3Qg
+c2ltcGxlIHRvIHVuZGVyc3RhbmQgdGhlIG1lYW5pbmcgb2YgdGhpcyBvdXRwdXQuLi4gYnV0IGV2
+aWRlbnRseSB0aGVyZSBpcyBhbiBhbGxvY2F0aW9uIG1lbW9yeSBwcm9ibGVtLg0KDQpUaGUgZm9s
+bG93aW5nIGlzIHRoZSBjdXJyZW50IGtlcm5lbCBjb25maWd1cmF0aW9uLi4uIGFzIHlvdSB3cm90
+ZSBsYXN0IHRpbWUgaXQncyByZWNvbW1lbmRhYmxlIHRvIGluY3JlYXNlIENPTkZJR19YRU5PX09Q
+VF9TWVNfSEVBUFNaIGFuZCBDT05GSUdfWEVOT19PUFRfU1lTX1NUQUNLUE9PTFNaIHZhbHVlcy4u
+LiBidXQgYmVmb3JlIGEga2VybmVsIHJlY29tcGlsYXRpb24gSSB3b3VsZCBrbm93IHRoZSBtZWFu
+aW5nIG9mIHRoZXNlIHBhcmFtZXRlcnMgaW4gb3JkZXIgdG8gdW5kZXJzdGFuZCBob3cgbXVjaCBJ
+IGNhbiBpbmNyZWFzZSB0aGVzZSB2YWx1ZXMNCg0KS0VSTkVMIENPTkZHVVJBVElPTjoNCg0KQ09O
+RklHX1hFTk9fT1BUX1BJUEU9eQ0KQ09ORklHX1hFTk9fT1BUX01BUD15DQpDT05GSUdfWEVOT19P
+UFRfVkZJTEU9eQ0KQ09ORklHX1hFTk9fT1BUX1BJUEVfTlJERVY9MzINCkNPTkZJR19YRU5PX09Q
+VF9SRUdJU1RSWV9OUlNMT1RTPTUxMg0KQ09ORklHX1hFTk9fT1BUX1NZU19IRUFQU1o9MjU2DQpD
+T05GSUdfWEVOT19PUFRfU1lTX1NUQUNLUE9PTFNaPTEyOA0KQ09ORklHX1hFTk9fT1BUX1NFTV9I
+RUFQU1o9MTINCkNPTkZJR19YRU5PX09QVF9HTE9CQUxfU0VNX0hFQVBTWj0xMg0KQ09ORklHX1hF
+Tk9fT1BUX1NUQVRTPXkNCkNPTkZJR19YRU5PX09QVF9ERUJVRz15DQoNCg0KU1dJVENIVEVTVCBP
+VVRQVVQ6DQoNCj09IFRlc3RpbmcgRlBVIGNoZWNrIHJvdXRpbmVzLi4uDQpyMDogMSAhPSAyDQpy
+MTogMSAhPSAyDQpyMjogMSAhPSAyDQpyMzogMSAhPSAyDQpyNDogMSAhPSAyDQpyNTogMSAhPSAy
+DQpyNjogMSAhPSAyDQpyNzogMSAhPSAyDQp5bW0wOiAxLzEgIT0gMi8yDQp5bW0xOiAxLzEgIT0g
+Mi8yDQp5bW0yOiAxLzEgIT0gMi8yDQp5bW0zOiAxLzEgIT0gMi8yDQp5bW00OiAxLzEgIT0gMi8y
+DQp5bW01OiAxLzEgIT0gMi8yDQp5bW02OiAxLzEgIT0gMi8yDQp5bW03OiAxLzEgIT0gMi8yDQo9
+PSBGUFUgY2hlY2sgcm91dGluZXM6IE9LLg0KaW9jdGwoUlRUU1RfUlRJT0NfU1dURVNUX0NSRUFU
+RV9LVEFTSyk6IENhbm5vdCBhbGxvY2F0ZSBtZW1vcnkNCj09IFRocmVhZHM6IHNsZWVwZXJfdWZw
+czAtMCBydGswLTEgcnRrMC0yIHJ0a19mcDAtMyBydGtfZnAwLTQgcnRrX2ZwX3VmcHAwLTUgcnRr
+X2ZwX3VmcHAwLTYgcnR1cDAtNyBydHVwMC04IHJ0dXBfdWZwcDAtOSBydHVwX3VmcHAwLTEwIHJ0
+dXMwLTExIHJ0dXMwLTEyIHJ0dXNfdWZwczAtMTMgcnR1c191ZnBzMC0xNCBydHVvMC0xNSBydHVv
+MC0xNiBydHVvX3VmcHAwLTE3IHJ0dW9fdWZwcDAtMTggcnR1b191ZnBzMC0xOSBydHVvX3VmcHMw
+LTIwIHJ0dW9fdWZwcF91ZnBzMC0yMSBydHVvX3VmcHBfdWZwczAtMjIgc2xlZXBlcl91ZnBzMS0w
+IHJ0azEtMSBydGsxLTIgcnRrX2ZwMS0zIHJ0a19mcDEtNCBydGtfZnBfdWZwcDEtNSBydGtfZnBf
+dWZwcDEtNiBydHVwMS03IHJ0dXAxLTggcnR1cF91ZnBwMS05IHJ0dXBfdWZwcDEtMTAgcnR1czEt
+MTEgcnR1czEtMTIgcnR1c191ZnBzMS0xMyBydHVzX3VmcHMxLTE0IHJ0dW8xLTE1IHJ0dW8xLTE2
+IHJ0dW9fdWZwcDEtMTcgcnR1b191ZnBwMS0xOCBydHVvX3VmcHMxLTE5IHJ0dW9fdWZwczEtMjAg
+cnR1b191ZnBwX3VmcHMxLTIxIHJ0dW9fdWZwcF91ZnBzMS0yMiBzbGVlcGVyX3VmcHMyLTAgcnRr
+Mi0xIHJ0azItMiBydGtfZnAyLTNSVFR8ICA4NzY2MjE6NDY6MTcNClJUSHwtLS0tLS0tLS1jcHV8
+Y3R4IHN3aXRjaGVzfC0tLS0tLS10b3RhbA0KUlREfCAgICAgICAgICAgMHwgICAgICAgICAgIDB8
+ICAgICAgICAgICAwDQpSVER8ICAgICAgICAgICAxfCAgICAgICAgICAgMHwgICAgICAgICAgIDAN
+ClJURHwgICAgICAgICAgIDJ8ICAgICAgICAgICAwfCAgICAgICAgICAgMA0KDQoNCk1hdXJpemlv
+IEZhemlvDQoNCkNoaWVmIFRlY2huaWNhbCBPZmZpY2UgLyBBaXJjcmFmdCBTeXN0ZW1zDQpTb2Z0
+d2FyZSBFbmdpbmVlcg0KDQoNCg0KTGVvbmFyZG8gUy5wLkEuDQpDLnNvIEZyYW5jaWEsIDQyNiAt
+IFRvcmlubyAtIDEwMTQ2IC0gSXRhbHkNClRlbC4gKzM5IDAxMSA3NTYgMzMwOCAvIDM3NjENCmNl
+bGwuICszOSAzMjggMzQ4ODA3MA0KbWF1cml6aW8uZmF6aW9AbGVvbmFyZG9jb21wYW55LmNvbQ0K
+d3d3Lmxlb25hcmRvY29tcGFueS5jb20NCg0K4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
+4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
+4oCU4oCU4oCU4oCT4oCU4oCU4oCU4oCU4oCU4oCUDQpIRUxJQ09QVEVSUy9BRVJPTkFVVElDUy9F
+TEVDVFJPTklDUywgREVGRU5DRSAmIFNFQ1VSSVRZIFNZU1RFTVMvU1BBQ0UNCuKAlOKAlOKAlOKA
+lOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKA
+lOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAk+KAlOKAlOKAlOKAlOKAlOKAlA0KDQoNCg0K
+DQpJbCBwcmVzZW50ZSBtZXNzYWdnaW8gZS1tYWlsIGUgb2duaSBzdW8gYWxsZWdhdG8gZGV2b25v
+IGludGVuZGVyc2kgaW5kaXJpenphdGkgZXNjbHVzaXZhbWVudGUgYWwgZGVzdGluYXRhcmlvIGlu
+ZGljYXRvIGUgY29uc2lkZXJhcnNpIGRhbCBjb250ZW51dG8gc3RyZXR0YW1lbnRlIHJpc2VydmF0
+byBlIGNvbmZpZGVuemlhbGUuIFNlIG5vbiBzaWV0ZSBsJ2VmZmV0dGl2byBkZXN0aW5hdGFyaW8g
+byBhdmV0ZSByaWNldnV0byBpbCBtZXNzYWdnaW8gZS1tYWlsIHBlciBlcnJvcmUsIHNpZXRlIHBy
+ZWdhdGkgZGkgYXZ2ZXJ0aXJlIGltbWVkaWF0YW1lbnRlIGlsIG1pdHRlbnRlIGUgZGkgY2FuY2Vs
+bGFyZSBpbCBzdWRkZXR0byBtZXNzYWdnaW8gZSBvZ25pIHN1byBhbGxlZ2F0byBkYWwgdm9zdHJv
+IHNpc3RlbWEgaW5mb3JtYXRpY28uIFF1YWxzaWFzaSB1dGlsaXp6bywgZGlmZnVzaW9uZSwgY29w
+aWEgbyBhcmNoaXZpYXppb25lIGRlbCBwcmVzZW50ZSBtZXNzYWdnaW8gZGEgcGFydGUgZGkgY2hp
+IG5vbiBuZSDDqCBpbCBkZXN0aW5hdGFyaW8gw6ggc3RyZXR0YW1lbnRlIHByb2liaXRvIGUgcHXD
+siBkYXIgbHVvZ28gYSByZXNwb25zYWJpbGl0w6AgZGkgY2FyYXR0ZXJlIGNpdmlsZSBlIHBlbmFs
+ZSBwdW5pYmlsaSBhaSBzZW5zaSBkaSBsZWdnZS4NClF1ZXN0YSBlLW1haWwgaGEgdmFsb3JlIGxl
+Z2FsZSBzb2xvIHNlIGZpcm1hdGEgZGlnaXRhbG1lbnRlIGFpIHNlbnNpIGRlbGxhIG5vcm1hdGl2
+YSB2aWdlbnRlLg0KDQpUaGUgY29udGVudHMgb2YgdGhpcyBlbWFpbCBtZXNzYWdlIGFuZCBhbnkg
+YXR0YWNobWVudHMgYXJlIGludGVuZGVkIHNvbGVseSBmb3IgdGhlIGFkZHJlc3NlZShzKSBhbmQg
+Y29udGFpbiBjb25maWRlbnRpYWwgYW5kL29yIHByaXZpbGVnZWQgaW5mb3JtYXRpb24uDQpJZiB5
+b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50IG9mIHRoaXMgbWVzc2FnZSwgb3IgaWYg
+dGhpcyBtZXNzYWdlIGhhcyBiZWVuIGFkZHJlc3NlZCB0byB5b3UgaW4gZXJyb3IsIHBsZWFzZSBp
+bW1lZGlhdGVseSBub3RpZnkgdGhlIHNlbmRlciBhbmQgdGhlbiBkZWxldGUgdGhpcyBtZXNzYWdl
+IGFuZCBhbnkgYXR0YWNobWVudHMgZnJvbSB5b3VyIHN5c3RlbS4gSWYgeW91IGFyZSBub3QgdGhl
+IGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCBhbnkgdXNl
+LCBkaXNzZW1pbmF0aW9uLCBjb3B5aW5nLCBvciBzdG9yYWdlIG9mIHRoaXMgbWVzc2FnZSBvciBp
+dHMgYXR0YWNobWVudHMgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gVW5hdXRob3JpemVkIGRpc2Ns
+b3N1cmUgYW5kL29yIHVzZSBvZiBpbmZvcm1hdGlvbiBjb250YWluZWQgaW4gdGhpcyBlbWFpbCBt
+ZXNzYWdlIG1heSByZXN1bHQgaW4gY2l2aWwgYW5kIGNyaW1pbmFsIGxpYWJpbGl0eS4g4oCcDQpU
+aGlzIGUtbWFpbCBoYXMgbGVnYWwgdmFsdWUgYWNjb3JkaW5nIHRvIHRoZSBhcHBsaWNhYmxlIGxh
+d3Mgb25seSBpZiBpdCBpcyBkaWdpdGFsbHkgc2lnbmVkIGJ5IHRoZSBzZW5kZXINCi0tLS0tTWVz
+c2FnZ2lvIG9yaWdpbmFsZS0tLS0tDQpEYTogUGhpbGlwcGUgR2VydW0gW21haWx0bzpycG1AeGVu
+b21haS5vcmddDQpJbnZpYXRvOiBtYXJ0ZWTDrCA1IHNldHRlbWJyZSAyMDE3IDIwOjAxDQpBOiBG
+YXppbyBNYXVyaXppbzsgeGVub21haUB4ZW5vbWFpLm9yZw0KT2dnZXR0bzogUmU6IFtYZW5vbWFp
+XSBYZW5vbWFpIDIuNi40IC0gUE9TSVggc2tpbiB0aHJlYWQgY3JlYXRpb24gbGltaXQNCg0KT24g
+MDkvMDUvMjAxNyAwNTozOSBQTSwgRmF6aW8gTWF1cml6aW8gd3JvdGU6DQo+IEhlbGxvLA0KPiBp
+cyB0aGVyZSBhIHRocmVhZCBjcmVhdGlvbiBsaW1pdCB1c2luZyB0aGUgUE9TSVggc2tpbiBvZiBY
+ZW5vbWFpIDIuNi40Pz8/DQo+IEFmdGVyIGFib3V0IDIwIHB0aHJlYWRfY3JlYXRlIGludm9jYXRp
+b24sIHRoZSBmdW5jdGlvbiByZXR1cm5zIC0x4oCmDQoNCkNoZWNrDQpodHRwOi8veGVub21haS5v
+cmcvdHJvdWJsZXNob290aW5nLWEtZHVhbC1rZXJuZWwtY29uZmlndXJhdGlvbi8jcHRocmVhZF9j
+cmVhdGVfUmVzb3VyY2VfdGVtcG9yYXJpbHlfdW5hdmFpbGFibGUNCkNPTkZJR19YRU5PX09QVF9T
+RU1fSEVBUFNaIG1pZ2h0IG5lZWQgYW4gaW5jcmVhc2UgdG9vLg0KDQpKdXN0IGluIGNhc2UgdGhp
+cyByZW1hcmsgYXBwbGllcyB0byB5b3VyIGNhc2U6IHBsZWFzZSBkbyBub3QgYmFzZSBhIG5ldyBw
+cm9qZWN0IG9uIHRoZSBFT0wgMi42IHNlcmllcywgdGhpcyBpcyBhc2tpbmcgZm9yIHRyb3VibGVz
+IG1haW50ZW5hbmNlLXdpc2UuIEJlc2lkZXMsIDIuNi41IHdhcyB0aGUgbGF0ZXN0IDIuNi54IHRv
+IGJlIHJlbGVhc2VkLg0KDQotLQ0KUGhpbGlwcGUuDQo=
 
