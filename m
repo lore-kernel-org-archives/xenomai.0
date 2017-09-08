@@ -1,19 +1,14 @@
+References: <20170907153622.Horde.hT_sRaGS6VmkuifQTO4pqBa@office.mrmoco.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <2ceb59af-770f-d99f-1f6a-553a669d20b5@xenomai.org>
+Date: Fri, 8 Sep 2017 20:07:09 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Message-ID: <1504879911.59b2a527dd4c7@mail.inbox.lv>
-Date: Fri, 08 Sep 2017 17:11:51 +0300
-From: Andris <andrlv@inbox.lv>
-References: <1504766189.59b0e8edb9f7a@mail.inbox.lv>
- <ae84bec2-afdb-3cf0-031c-b8db97387f59@xenomai.org>
- <1504779380.59b11c7427039@mail.inbox.lv>
- <49358bd0-9902-ded1-8aa8-f2e91c73980f@xenomai.org>
- <1504864455.59b268c7f133b@mail.inbox.lv>
- <4a0c3249-bcdf-ea09-5b6e-bad3431ddc4d@xenomai.org>
- <2f293611-9ca8-9988-24a5-0f952874576e@xenomai.org>
-In-Reply-To: <2f293611-9ca8-9988-24a5-0f952874576e@xenomai.org>
-Subject: Re: [Xenomai] Application command line arguments(parameters)
- reordering problem
+In-Reply-To: <20170907153622.Horde.hT_sRaGS6VmkuifQTO4pqBa@office.mrmoco.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Questions around porting app to Xenomai/Cobalt
+ resulting in SIGABRT ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,35 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Paul Wilkinson <paul.w@mrmoco.com>, xenomai@xenomai.org
 
-=C2=A0
+On 09/07/2017 05:36 PM, Paul Wilkinson wrote:
+> XenomaiDemo Server listening for clients on port 26000
+> [New Thread 0x7fffef7fe700 (LWP 3493)]
+> terminate called after throwing an instance of 'std::system_error'
+>   what():  Operation not permitted
+> 
+> Program received signal SIGABRT, Aborted.
+> [Switching to Thread 0x7fffef7fe700 (LWP 3493)]
+> 0x00007ffff69fc067 in __GI_raise (sig=sig@entry=6) at
+> ../nptl/sysdeps/unix/sysv/linux/raise.c:56
+> 56    ../nptl/sysdeps/unix/sysv/linux/raise.c: No such file or
+> directory.
+> (gdb) bt
+> #0  0x00007ffff69fc067 in __GI_raise (sig=sig@entry=6) at
+> ../nptl/sysdeps/unix/sysv/linux/raise.c:56
+> #1  0x00007ffff69fd448 in __GI_abort () at abort.c:89
+> #2  0x00007ffff72e9b3d in __gnu_cxx::__verbose_terminate_handler() () from
+> /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+> #3  0x00007ffff72e7bb6 in ?? () from
+> /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+> #4  0x00007ffff72e7c01 in std::terminate() () from
+> /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+> #5  0x00007ffff733fa01 in ?? () from
+> /usr/lib/x86_64-linux-gnu/libstdc++.so.6
 
-> >>
-> >>> Just checked, it does not here. Are you sure?
-> >>
-> >> Yes, parameters are reordered, first always is
-> >> parameter starting with "--".
-> >> argv[0]: app
-> >> argv[1]: --enable-feature
-> >> argv[2]: 1
-> >> argv[3]: -p
-> >> argv[4]: 250
-> >>
-> >> But this possibly is not a problem.
-> >>
-> >
-> > Ok, the whole thing needs a review. I'll
-follow up on this.
-> >
-> > Thanks,
-> >
+Do you have the libstdc++ debug package installed? It would be useful to
+know which source location issues the exception. GDB is not able to
+resolve the symbols in the libstdc++ DSO it seems.
 
-> Please try this patch:
-
-Thanks!=20
-But I can try this patch only after 2 weeks, I
-will be out of office. Maybe my colleague can try it.
-
+-- 
+Philippe.
 
