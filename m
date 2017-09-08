@@ -1,14 +1,13 @@
-Date: Fri, 08 Sep 2017 10:08:56 +0000
-Message-ID: <20170908100856.Horde.SqkGLUjRRnFYC2FBrqJAifc@office.mrmoco.com>
-From: Paul Wilkinson <paul.w@mrmoco.com>
-References: <20170907153622.Horde.hT_sRaGS6VmkuifQTO4pqBa@office.mrmoco.com>
- <f9704809-eeea-3ee0-99f6-896ed32200be@siemens.com>
-In-Reply-To: <f9704809-eeea-3ee0-99f6-896ed32200be@siemens.com>
-Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
-Content-Disposition: inline
-Subject: Re: [Xenomai] Questions around porting app to Xenomai/Cobalt
- resulting in SIGABRT ?
+In-Reply-To: <1dac7ec4-2d53-c5d4-0ced-77db95455b56@xenomai.org>
+References: <CAMJ=MEf5=ZhKBss8GD=ju8efx5GiO_vrGdu1jerW1orpw6+MPw@mail.gmail.com>
+ <1dac7ec4-2d53-c5d4-0ced-77db95455b56@xenomai.org>
+From: Ronny Meeus <ronny.meeus@gmail.com>
+Date: Fri, 8 Sep 2017 14:26:34 +0200
+Message-ID: <CAMJ=MEcthkzCNMg8gqmixkxZ_s+i3AWXGVXdsXfCJwVq7Doycw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] mercury/psos: dump of long message queue causes
+ application crash
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,30 +16,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
+On Thu, Sep 7, 2017 at 11:32 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+>
+> Maybe you should change your subject line, since the pSOS emulator we
+> have does not benefit from registry support, only the init stubs are
+> there. This must be a locally developed extension.
 
-Quoting Jan Kiszka <jan.kiszka@siemens.com>:
+That is indeed the case but I assume it is a generic problem it the common
+services of the registry's obstack are used.
 
 >
-> Are you running the application as normal user instead of root, or is
-> something else taking away permissions (CAP_SYS_NICE) from it?
+> On 08/31/2017 04:02 PM, Ronny Meeus wrote:
+>> Hello
+>>
+>> I have a test application that creates a psos queue and sends a lot of
+>> messages to it.
+>> The application code can be found below.
+>>
+>> Depending on the memory configuration it can be that error are
+>> generated after some
+>> time but that is not the issue. When dump the queue in the debug
+>> interface I see a crash
+>> of the application:
+>>
+>> /mnt/xenomai/anon/root/anon/11091/psos/queues # cat LINE
+>> memory exhausted
+>> cat: can't open 'LINE': Software caused connection abort
+>>
+>> The root-cause of this is that the size of the obstack used in the
+>> registry is in fact unlimited.
+>> In case it needs to grow and there is no memory anymore, a handler is
+>> called that is
+>> reporting the memory shortage condition and triggers an exit.
+>>
+>> In my opinion it is not correct that this condition triggers an
+>> application reset. I would rather
+>> prefer that in case there is a memory shortage, the dump is just
+>> stopped or that we limit the
+>> memory that is used worst case in the obstack in the registry.
+>>
+>> The patch below solves the issue but I do not whether it is the right direction.
+>> Depending on the available memory it might still crash ...
+>>
+>> diff --git a/include/copperplate/registry-obstack.h
+>> b/include/copperplate/registry-obstack.h
+>> --- a/include/copperplate/registry-obstack.h
+>> diff --git a/include/copperplate/registry-obstack.h
+>> b/include/copperplate/registry-obstack.h
+>> --- a/include/copperplate/registry-obstack.h
+>> +++ b/include/copperplate/registry-obstack.h
+>> @@ -35,6 +35,8 @@ struct syncobj;
+>>  #define obstack_chunk_alloc    pvmalloc
+>>  #define obstack_chunk_free     pvfree
+>>
+>> +#define OBSTACK_MAX_SIZE 65536
+>> +
+> The general logic looks good, but fixing a hard limit that way for all
+> objects, all APIs, all platforms and all use cases would be a problem
+> for obvious reasons.
 >
-> Jan
+> Instead, this limit could be passed to fsobstack_init() by the API
+> implementation when opening the registry stream, saving it to struct
+> fsobstack, exposing it anywhere it is required for enforcing the memory
+> limit.
 >
+
+I will have a look into it and create a correct patch.
+The intent of this mail was to have some feedback of the community whether
+this is the correct way forward.
+
+Thanks
+
 > --
-> Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-> Corporate Competence Center Embedded Linux
-
-
-Ordinarily I run the app as a normal user which is a member of the
-group saved in /sys/module/xenomai/parameters/allowed_group
-
-However I have tried running it as root, with same failure mode .... as
-reflected in the gdb session provided.
-
-Paul.
-
-
+> Philippe.
 
