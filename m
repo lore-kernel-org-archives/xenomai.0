@@ -1,11 +1,12 @@
+From: Philippe Gerum <rpm@xenomai.org>
 References: <1504766189.59b0e8edb9f7a@mail.inbox.lv>
  <ae84bec2-afdb-3cf0-031c-b8db97387f59@xenomai.org>
  <1504779380.59b11c7427039@mail.inbox.lv>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <49358bd0-9902-ded1-8aa8-f2e91c73980f@xenomai.org>
-Date: Fri, 8 Sep 2017 11:05:45 +0200
+ <49358bd0-9902-ded1-8aa8-f2e91c73980f@xenomai.org>
+Message-ID: <ea35b855-7d57-c73e-1553-8f5ef228b321@xenomai.org>
+Date: Fri, 8 Sep 2017 11:27:10 +0200
 MIME-Version: 1.0
-In-Reply-To: <1504779380.59b11c7427039@mail.inbox.lv>
+In-Reply-To: <49358bd0-9902-ded1-8aa8-f2e91c73980f@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -22,25 +23,30 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Andris <andrlv@inbox.lv>
 Cc: xenomai@xenomai.org
 
-On 09/07/2017 12:16 PM, Andris wrote:
-> Thanks!
-> But this patch resolve problem only if all command line arguments starts
-> with "--", but if command line is with mixed arguments, for example:
-> ./app -p 250 --enable-feature 1
-> then the problem still exist.
+On 09/08/2017 11:05 AM, Philippe Gerum wrote:
+> On 09/07/2017 12:16 PM, Andris wrote:
+>> Thanks!
+>> But this patch resolve problem only if all command line arguments starts
+>> with "--", but if command line is with mixed arguments, for example:
+>> ./app -p 250 --enable-feature 1
+>> then the problem still exist.
+> 
+> Just checked, it does not here. Are you sure?
+> 
+>> I'm playing with Intel DPDK and Xenomai and I would like to pass command
+>> line arguments directly to DPDK. DPDK expect to get command line in
+>> following format:
+>> <eal options> -- <application specific options>
+>> for example:
+>> ./app -l 0-3 -n 3 -- -p 0x1 -q 1
+>>  
+> 
+> There is still an issue with this form though, since the double-dash
+> separator moves at the head of the vector.
+> 
 
-Just checked, it does not here. Are you sure?
-
-> I'm playing with Intel DPDK and Xenomai and I would like to pass command
-> line arguments directly to DPDK. DPDK expect to get command line in
-> following format:
-> <eal options> -- <application specific options>
-> for example:
-> ./app -l 0-3 -n 3 -- -p 0x1 -q 1
->  
-
-There is still an issue with this form though, since the double-dash
-separator moves at the head of the vector.
+Besides, the patch I sent has quite undesirable side-effects. Please
+drop it, this needs more work.
 
 -- 
 Philippe.
