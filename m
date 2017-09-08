@@ -1,13 +1,18 @@
+References: <1504766189.59b0e8edb9f7a@mail.inbox.lv>
+ <ae84bec2-afdb-3cf0-031c-b8db97387f59@xenomai.org>
+ <1504779380.59b11c7427039@mail.inbox.lv>
+ <49358bd0-9902-ded1-8aa8-f2e91c73980f@xenomai.org>
+ <1504864455.59b268c7f133b@mail.inbox.lv>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4a0c3249-bcdf-ea09-5b6e-bad3431ddc4d@xenomai.org>
+Date: Fri, 8 Sep 2017 14:57:38 +0200
 MIME-Version: 1.0
-In-Reply-To: <1dac7ec4-2d53-c5d4-0ced-77db95455b56@xenomai.org>
-References: <CAMJ=MEf5=ZhKBss8GD=ju8efx5GiO_vrGdu1jerW1orpw6+MPw@mail.gmail.com>
- <1dac7ec4-2d53-c5d4-0ced-77db95455b56@xenomai.org>
-From: Ronny Meeus <ronny.meeus@gmail.com>
-Date: Fri, 8 Sep 2017 14:26:34 +0200
-Message-ID: <CAMJ=MEcthkzCNMg8gqmixkxZ_s+i3AWXGVXdsXfCJwVq7Doycw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] mercury/psos: dump of long message queue causes
- application crash
+In-Reply-To: <1504864455.59b268c7f133b@mail.inbox.lv>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Application command line arguments(parameters)
+ reordering problem
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,80 +21,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Andris <andrlv@inbox.lv>
 Cc: xenomai@xenomai.org
 
-On Thu, Sep 7, 2017 at 11:32 AM, Philippe Gerum <rpm@xenomai.org> wrote:
->
-> Maybe you should change your subject line, since the pSOS emulator we
-> have does not benefit from registry support, only the init stubs are
-> there. This must be a locally developed extension.
+On 09/08/2017 11:54 AM, Andris wrote:
+> Subject: Re: [Xenomai] Application command line
+> arguments(parameters) reordering problem
+> Date: 8 September 2017 at 12:06:50
+> From:  Philippe Gerum <rpm@xenomai.org>
+> To:  Andris <andrlv@inbox.lv>
+>> On 09/07/2017 12:16 PM, Andris wrote:
+>>> Thanks!
+>>> But this patch resolve problem only if all
+> command line arguments starts
+>>> with "--", but if command line is with mixed
+> arguments, for example:
+>>> ./app -p 250 --enable-feature 1
+>>> then the problem still exist.
+> 
+>> Just checked, it does not here. Are you sure?
+> 
+> Yes, parameters are reordered, first always is
+> parameter starting with "--".
+> argv[0]: app
+> argv[1]: --enable-feature
+> argv[2]: 1
+> argv[3]: -p
+> argv[4]: 250
+> 
+> But this possibly is not a problem.
+> 
 
-That is indeed the case but I assume it is a generic problem it the common
-services of the registry's obstack are used.
+Ok, the whole thing needs a review. I'll follow up on this.
 
->
-> On 08/31/2017 04:02 PM, Ronny Meeus wrote:
->> Hello
->>
->> I have a test application that creates a psos queue and sends a lot of
->> messages to it.
->> The application code can be found below.
->>
->> Depending on the memory configuration it can be that error are
->> generated after some
->> time but that is not the issue. When dump the queue in the debug
->> interface I see a crash
->> of the application:
->>
->> /mnt/xenomai/anon/root/anon/11091/psos/queues # cat LINE
->> memory exhausted
->> cat: can't open 'LINE': Software caused connection abort
->>
->> The root-cause of this is that the size of the obstack used in the
->> registry is in fact unlimited.
->> In case it needs to grow and there is no memory anymore, a handler is
->> called that is
->> reporting the memory shortage condition and triggers an exit.
->>
->> In my opinion it is not correct that this condition triggers an
->> application reset. I would rather
->> prefer that in case there is a memory shortage, the dump is just
->> stopped or that we limit the
->> memory that is used worst case in the obstack in the registry.
->>
->> The patch below solves the issue but I do not whether it is the right direction.
->> Depending on the available memory it might still crash ...
->>
->> diff --git a/include/copperplate/registry-obstack.h
->> b/include/copperplate/registry-obstack.h
->> --- a/include/copperplate/registry-obstack.h
->> diff --git a/include/copperplate/registry-obstack.h
->> b/include/copperplate/registry-obstack.h
->> --- a/include/copperplate/registry-obstack.h
->> +++ b/include/copperplate/registry-obstack.h
->> @@ -35,6 +35,8 @@ struct syncobj;
->>  #define obstack_chunk_alloc    pvmalloc
->>  #define obstack_chunk_free     pvfree
->>
->> +#define OBSTACK_MAX_SIZE 65536
->> +
-> The general logic looks good, but fixing a hard limit that way for all
-> objects, all APIs, all platforms and all use cases would be a problem
-> for obvious reasons.
->
-> Instead, this limit could be passed to fsobstack_init() by the API
-> implementation when opening the registry stream, saving it to struct
-> fsobstack, exposing it anywhere it is required for enforcing the memory
-> limit.
->
+Thanks,
 
-I will have a look into it and create a correct patch.
-The intent of this mail was to have some feedback of the community whether
-this is the correct way forward.
-
-Thanks
-
-> --
-> Philippe.
+-- 
+Philippe.
 
