@@ -1,14 +1,11 @@
-References: <20170907153622.Horde.hT_sRaGS6VmkuifQTO4pqBa@office.mrmoco.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <2ceb59af-770f-d99f-1f6a-553a669d20b5@xenomai.org>
-Date: Fri, 8 Sep 2017 20:07:09 +0200
 MIME-Version: 1.0
-In-Reply-To: <20170907153622.Horde.hT_sRaGS6VmkuifQTO4pqBa@office.mrmoco.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Questions around porting app to Xenomai/Cobalt
- resulting in SIGABRT ?
+In-Reply-To: <CAMJ=MEe2+CS0nbjz+nQsFn4TDbKYjP7OQBBmOnbLtksjS-NDDA@mail.gmail.com>
+References: <CAMJ=MEe2+CS0nbjz+nQsFn4TDbKYjP7OQBBmOnbLtksjS-NDDA@mail.gmail.com>
+From: Ronny Meeus <ronny.meeus@gmail.com>
+Date: Mon, 11 Sep 2017 08:43:36 +0200
+Message-ID: <CAMJ=MEca95rQbVJhT8XBeVAAU4pN7Eh=vsNQoLNtXk+GzcyKGA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] Port of ThreadX to Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,37 +14,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paul Wilkinson <paul.w@mrmoco.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 09/07/2017 05:36 PM, Paul Wilkinson wrote:
-> XenomaiDemo Server listening for clients on port 26000
-> [New Thread 0x7fffef7fe700 (LWP 3493)]
-> terminate called after throwing an instance of 'std::system_error'
->   what():  Operation not permitted
-> 
-> Program received signal SIGABRT, Aborted.
-> [Switching to Thread 0x7fffef7fe700 (LWP 3493)]
-> 0x00007ffff69fc067 in __GI_raise (sig=sig@entry=6) at
-> ../nptl/sysdeps/unix/sysv/linux/raise.c:56
-> 56    ../nptl/sysdeps/unix/sysv/linux/raise.c: No such file or
-> directory.
-> (gdb) bt
-> #0  0x00007ffff69fc067 in __GI_raise (sig=sig@entry=6) at
-> ../nptl/sysdeps/unix/sysv/linux/raise.c:56
-> #1  0x00007ffff69fd448 in __GI_abort () at abort.c:89
-> #2  0x00007ffff72e9b3d in __gnu_cxx::__verbose_terminate_handler() () from
-> /usr/lib/x86_64-linux-gnu/libstdc++.so.6
-> #3  0x00007ffff72e7bb6 in ?? () from
-> /usr/lib/x86_64-linux-gnu/libstdc++.so.6
-> #4  0x00007ffff72e7c01 in std::terminate() () from
-> /usr/lib/x86_64-linux-gnu/libstdc++.so.6
-> #5  0x00007ffff733fa01 in ?? () from
-> /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+On Thu, Sep 7, 2017 at 12:24 PM, Ronny Meeus <ronny.meeus@gmail.com> wrote:
+> Hello
+>
+> has threadX ever been considered as a candidate to be simulated by Xenomai?
+> Or does somebody already have a private implementation available that
+> has good enough quality to be upstreamed?
+>
+> Any information related to this is much appreciated.
 
-Do you have the libstdc++ debug package installed? It would be useful to
-know which source location issues the exception. GDB is not able to
-resolve the symbols in the libstdc++ DSO it seems.
+I have been working on a prototype last Friday and there seems to be a rather
+straight-forward mapping possible between the ThreadX API and the Alchemy
+interface provided by Xenomai. I used the Mercury core for my testing.
 
--- 
-Philippe.
+For some functionality, like task creation, adaptations are needed but for most
+functionality only error interface translation, like parameters and
+error codes, is
+needed.
+
+If we would continue with this, I wonder what would be the best approach either
+we build a layer on top of the Alchemy layer or we create a kind of
+copy of the Alchemy
+layer and do the needed adaptations there.
+So this would mean that we have a ThreadX skin next to the pSOS and
+VxWorks skins
+in Xenomai, while the first solution would be outside Xenomai I assume.
+
+Feedback is welcome.
+
+For the people that do not know ThreadX, a full interface description
+can be found here:
+http://rtos.com/images/uploads/ThreadX_User_Guide_V5.pdf
+
+Best regards
+Ronny
 
