@@ -1,12 +1,14 @@
-Date: Mon, 11 Sep 2017 12:18:30 +0000
-Message-ID: <20170911121830.Horde.hdU-y9sijxk8OGHoWqdylfy@office.mrmoco.com>
-From: Paul Wilkinson <paul.w@mrmoco.com>
 References: <20170907153622.Horde.hT_sRaGS6VmkuifQTO4pqBa@office.mrmoco.com>
  <2ceb59af-770f-d99f-1f6a-553a669d20b5@xenomai.org>
-In-Reply-To: <2ceb59af-770f-d99f-1f6a-553a669d20b5@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
+ <20170911121830.Horde.hdU-y9sijxk8OGHoWqdylfy@office.mrmoco.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <d8eca49a-1491-0e42-064e-ccbe3c188949@xenomai.org>
+Date: Mon, 11 Sep 2017 16:22:53 +0200
 MIME-Version: 1.0
-Content-Disposition: inline
+In-Reply-To: <20170911121830.Horde.hdU-y9sijxk8OGHoWqdylfy@office.mrmoco.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai] Questions around porting app to Xenomai/Cobalt
  resulting in SIGABRT ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,29 +19,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Paul Wilkinson <paul.w@mrmoco.com>, xenomai@xenomai.org
 
+On 09/11/2017 02:18 PM, Paul Wilkinson wrote:
+> 
+> Quoting Philippe Gerum <rpm@xenomai.org>:
+> 
+> 
+>>
+>> Do you have the libstdc++ debug package installed? It would be useful to
+>> know which source location issues the exception. GDB is not able to
+>> resolve the symbols in the libstdc++ DSO it seems.
+>>
+> 
+> 
+> Replacing the std::thread calls with pthread* calls and increasing the
+> thread
+> stack sizes gets around this and a couple of subsequent SIGSEGV failures.
+> 
+> Although not quite running correctly yet, this enables the application
+> to get
+> significantly further.
+> 
+> I have installed the libstdc++ debug package now, though.
+> 
 
-Quoting Philippe Gerum <rpm@xenomai.org>:
+libcobalt uses the PTHREAD_STACK_DEFAULT constant as the default stack
+size, which is defined in include/boilerplate/libc.h. This value is
+currently 64k. STL is prone to massive stack usage; I'm inclined to add
+a tunable parameter for this default value.
 
-
->
-> Do you have the libstdc++ debug package installed? It would be useful to
-> know which source location issues the exception. GDB is not able to
-> resolve the symbols in the libstdc++ DSO it seems.
->
-
-
-Replacing the std::thread calls with pthread* calls and increasing the thread
-stack sizes gets around this and a couple of subsequent SIGSEGV failures.
-
-Although not quite running correctly yet, this enables the application to get
-significantly further.
-
-I have installed the libstdc++ debug package now, though.
-
-Thanks.
-
-
-
+-- 
+Philippe.
 
