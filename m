@@ -1,19 +1,14 @@
-References: <20170907153622.Horde.hT_sRaGS6VmkuifQTO4pqBa@office.mrmoco.com>
- <2ceb59af-770f-d99f-1f6a-553a669d20b5@xenomai.org>
- <20170911121830.Horde.hdU-y9sijxk8OGHoWqdylfy@office.mrmoco.com>
- <d8eca49a-1491-0e42-064e-ccbe3c188949@xenomai.org>
- <20170911161756.Horde.5576SR9hJdNX3u6KppQElrb@office.mrmoco.com>
- <20170912132632.Horde.2n3kq1TB84KjAL7evP_5TA4@office.mrmoco.com>
+References: <CAMJ=MEe2+CS0nbjz+nQsFn4TDbKYjP7OQBBmOnbLtksjS-NDDA@mail.gmail.com>
+ <CAMJ=MEca95rQbVJhT8XBeVAAU4pN7Eh=vsNQoLNtXk+GzcyKGA@mail.gmail.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <4226b20c-7598-fd17-62e7-ace127b73796@xenomai.org>
-Date: Thu, 14 Sep 2017 16:53:24 +0200
+Message-ID: <52ca2255-ebd7-388a-8f4f-cd6fb8c64dbe@xenomai.org>
+Date: Thu, 14 Sep 2017 17:16:12 +0200
 MIME-Version: 1.0
-In-Reply-To: <20170912132632.Horde.2n3kq1TB84KjAL7evP_5TA4@office.mrmoco.com>
+In-Reply-To: <CAMJ=MEca95rQbVJhT8XBeVAAU4pN7Eh=vsNQoLNtXk+GzcyKGA@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Questions around porting app to Xenomai/Cobalt
- resulting in SIGABRT ?
+Subject: Re: [Xenomai] Port of ThreadX to Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,62 +17,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paul Wilkinson <paul.w@mrmoco.com>, xenomai@xenomai.org
+To: Ronny Meeus <ronny.meeus@gmail.com>, xenomai@xenomai.org
 
-On 09/12/2017 03:26 PM, Paul Wilkinson wrote:
-> 
-> Quoting Paul Wilkinson <paul.w@mrmoco.com>:
-> 
->> Quoting Philippe Gerum <rpm@xenomai.org>:
-> 
->>>> I have installed the libstdc++ debug package now, though.
->>>>
->>>
->>> libcobalt uses the PTHREAD_STACK_DEFAULT constant as the default stack
->>> size, which is defined in include/boilerplate/libc.h. This value is
->>> currently 64k. STL is prone to massive stack usage; I'm inclined to add
->>> a tunable parameter for this default value.
+On 09/11/2017 08:43 AM, Ronny Meeus wrote:
+> On Thu, Sep 7, 2017 at 12:24 PM, Ronny Meeus <ronny.meeus@gmail.com> wrote:
+>> Hello
 >>
+>> has threadX ever been considered as a candidate to be simulated by Xenomai?
+>> Or does somebody already have a private implementation available that
+>> has good enough quality to be upstreamed?
 >>
->> Thanks Philippe.
->>
->> A tunable parameter would be very useful.
->>
->> Although knowing where to change the default may save me replacing
->> std::thread with pthread*.
+>> Any information related to this is much appreciated.
 > 
+> I have been working on a prototype last Friday and there seems to be a rather
+> straight-forward mapping possible between the ThreadX API and the Alchemy
+> interface provided by Xenomai. I used the Mercury core for my testing.
 > 
-> I changed PTHREAD_STACK_DEFAULT to ~8M and reintroduced std:thread in
-> one case
-> where thread creation failed previously.
+> For some functionality, like task creation, adaptations are needed but for most
+> functionality only error interface translation, like parameters and
+> error codes, is
+> needed.
 > 
-> The SIGABRT failure mode returns, gdb stack trace below.
+> If we would continue with this, I wonder what would be the best approach either
+> we build a layer on top of the Alchemy layer or we create a kind of
+> copy of the Alchemy
+> layer and do the needed adaptations there.
+> So this would mean that we have a ThreadX skin next to the pSOS and
+> VxWorks skins
+> in Xenomai, while the first solution would be outside Xenomai I assume.
 > 
-> Stack frame 6 shows std:thread is using pthreads under the hood, but the
-> SIGABRT
-> seems to imply that my increasing PTHREAD_STACK_DEFAULT hasn't had any
-> effect, I
-> now doubt Xenomai Cobalt is wrapping the pthread calls and applying the new
-> PTHREAD_STACK_DEFAULT to the std::thread calls.
+> Feedback is welcome.
 > 
-
-Most likely, as the dynamic linker won't do the symbol wrapping we need
-from pthread_create -> __wrap_pthread_create when loading a DSO. A not
-so elegant way to force this would be to link against the static version
-of libstdc++, but, you would risk unwanted wrapping of other POSIX calls
-throughout the library in the same move.
-
-This post may help:
-https://xenomai.org/pipermail/xenomai/2014-August/031475.html
-
-> I'd appreciate any insight into when and when not calls such as pthread*
-> will be
-> intercepted by Xenomai Cobalt.
+> For the people that do not know ThreadX, a full interface description
+> can be found here:
+> http://rtos.com/images/uploads/ThreadX_User_Guide_V5.pdf
 > 
 
-Easiest way: use gdb, setting a breakpoint in the __wrap_pthread_create
-routine. This one is provided by libcobalt, and should not be hit when
-instantiating the std::thread class from the libstdc++ DSO.
+Building a new RTOS API on top of an existing emulator is discouraged.
+The basic motivation for having libcopperplate provide RTOS building
+blocks is to allow new RTOS APIs to be implemented only by adding
+"windows dressings" to those generic services.
+
+Because most of those building blocks are fairly high-level
+abstractions, there is not much to factor out by reusing an existing
+API. On the other hand, I see a potential for clumsiness in trying to
+squeeze in significant variations on top of alchemy. Here are a few
+concerns:
+
+- the performance services can't be stacked on the alchemy code; there
+is a need for accessing inner info which may not be available from the
+alchemy API level. This concerns all ThreadX service groups (mem,
+events, sem etc).
+
+- the event mechanism is not callback-based on alchemy, so carrier
+threads may be required for dispatching the events to callbacks. That
+means yet another indirection.
+
+- no provision for dynamically selecting the sleeping priority order
+with mutexes on alchemy (i.e. tx_mutex_prioritize), just like there is
+no such thing with POSIX. There is no way to implement this on top of
+alchemy, a specific mutex API would have to be implemented from scratch
+on top of copperplate to follow the ThreadX semantics anyway.
+
+- queue space allocation won't match between ThreadX and alchemy. The
+later allocates it internally, the former sees this as a user-provided
+parameter.
+
+At a glance, there are many more differences which can't be expressed as
+non-overlapping incremental changes from alchemy to ThreadX. At the end
+of the day, I don't think option #1 would be best.
+
+At the end of the day, it looks like a ThreadX emulator should be a
+copperplate-based API in its own terms, not a variant of any existing
+emulator.
 
 -- 
 Philippe.
