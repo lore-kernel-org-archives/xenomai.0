@@ -1,12 +1,9 @@
-Date: Mon, 21 Aug 2017 11:09:34 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20170821110934.284eb26c@md1em3qc>
-In-Reply-To: <CAAaH=QErp8b3dQJp-dEOL9zHS0FDriCfH3amRpbx0Lh+RQX_ag@mail.gmail.com>
-References: <CAAaH=QErp8b3dQJp-dEOL9zHS0FDriCfH3amRpbx0Lh+RQX_ag@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Adopting the i-pipe patch to another kernel
+From: Antoine Hoarau <hoarau.robotics@gmail.com>
+Date: Thu, 14 Sep 2017 12:03:16 +0000
+Message-ID: <CAB6vvjke_16vivYH6+6QJiDR__5zcUBihvAe5+0S+CVKt1Qx8g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] Can't wait on conditions on 3.0.5
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,34 +12,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: mohamed atef <mohamedatefmohamed95@gmail.com>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Am Thu, 10 Aug 2017 15:39:36 +0200
-schrieb mohamed atef <mohamedatefmohamed95@gmail.com>:
+Hello,
+I'm porting a library that uses Xenomai 2.6.5 native to 3.0.5 alchemy on an
+x64 Ubuntu 16.04 + Cobalt kernel 4.9.38.
 
-> Hi everyone,
-> 
-> I want to adopt an i-pipe patch to kernel 3.14.56. I have been
-> searching for one, but I didn't find anything. I think I may use
-> anyone of ipipe-core-3.14.44- patches as a reference.
-> 
-> Any help, please?
+I'm stuck on conditions that do not wait signals to be emitted :
 
-Just use the git version of ipipe and merge tag 'v3.14.56' into
-ipipe-3.14. Git did not complain about conflicts so that might just
-work. For a patch against another tree run "git diff v3.14.65".
+int ret = rt_cond_wait_until(cond, mutex, rt_timer_ns2ticks(abs_time) )
+returns -ETIMEDOUT immediately.
 
-But the real advise is to use a more recent kernel and complain with
-the SoC vendor if they do not have one. And stop buying from them if
-they do not care.
+>From the documentation : -ETIMEDOUT is returned if abs_timeout is reached
+before the condition variable is signaled. But I verified that
+rt_timer_ns2ticks(abs_time)  > rt_timer_read(), so it should wait.
 
-Henning
+This lead me to beleive that something was wrong with the mutex.
 
-> Thnx in advance.
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
+1) Can rt_cond_wait return -ETIMEDOUT with the mutex ?
+2)  How would you implement a trylock() on a mutex ?
+
+        struct RT_MUTEX_INFO info;
+        rt_mutex_inquire(mutex, &info );
+        RT_TASK no_task = NO_ALCHEMY_TASK;
+        rt_task_same(&info.owner,&no_task) == 0 -> not locked !
+          --> rt_mutex_acquire(mutex,TM_NONBLOCK)
+
+Note : I compiled xenomai with --enable-debug --enable-dlopen-libs
+--enable-smp
+
+Thanks for your help !
 
 
+-- 
+Antoine Hoarau
+Robotics Engineer
