@@ -1,13 +1,19 @@
-References: <CAB6vvjke_16vivYH6+6QJiDR__5zcUBihvAe5+0S+CVKt1Qx8g@mail.gmail.com>
+References: <20170907153622.Horde.hT_sRaGS6VmkuifQTO4pqBa@office.mrmoco.com>
+ <2ceb59af-770f-d99f-1f6a-553a669d20b5@xenomai.org>
+ <20170911121830.Horde.hdU-y9sijxk8OGHoWqdylfy@office.mrmoco.com>
+ <d8eca49a-1491-0e42-064e-ccbe3c188949@xenomai.org>
+ <20170911161756.Horde.5576SR9hJdNX3u6KppQElrb@office.mrmoco.com>
+ <20170912132632.Horde.2n3kq1TB84KjAL7evP_5TA4@office.mrmoco.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <cda6fe24-2a17-03af-b6b0-58b63dc82a82@xenomai.org>
-Date: Thu, 14 Sep 2017 16:30:18 +0200
+Message-ID: <4226b20c-7598-fd17-62e7-ace127b73796@xenomai.org>
+Date: Thu, 14 Sep 2017 16:53:24 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAB6vvjke_16vivYH6+6QJiDR__5zcUBihvAe5+0S+CVKt1Qx8g@mail.gmail.com>
+In-Reply-To: <20170912132632.Horde.2n3kq1TB84KjAL7evP_5TA4@office.mrmoco.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Can't wait on conditions on 3.0.5
+Subject: Re: [Xenomai] Questions around porting app to Xenomai/Cobalt
+ resulting in SIGABRT ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,46 +22,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Antoine Hoarau <hoarau.robotics@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Paul Wilkinson <paul.w@mrmoco.com>, xenomai@xenomai.org
 
-On 09/14/2017 02:03 PM, Antoine Hoarau wrote:
-> Hello,
-> I'm porting a library that uses Xenomai 2.6.5 native to 3.0.5 alchemy on an
-> x64 Ubuntu 16.04 + Cobalt kernel 4.9.38.
+On 09/12/2017 03:26 PM, Paul Wilkinson wrote:
 > 
-> I'm stuck on conditions that do not wait signals to be emitted :
+> Quoting Paul Wilkinson <paul.w@mrmoco.com>:
 > 
-> int ret = rt_cond_wait_until(cond, mutex, rt_timer_ns2ticks(abs_time) )
-> returns -ETIMEDOUT immediately.
+>> Quoting Philippe Gerum <rpm@xenomai.org>:
 > 
->>From the documentation : -ETIMEDOUT is returned if abs_timeout is reached
-> before the condition variable is signaled. But I verified that
-> rt_timer_ns2ticks(abs_time)  > rt_timer_read(), so it should wait.
+>>>> I have installed the libstdc++ debug package now, though.
+>>>>
+>>>
+>>> libcobalt uses the PTHREAD_STACK_DEFAULT constant as the default stack
+>>> size, which is defined in include/boilerplate/libc.h. This value is
+>>> currently 64k. STL is prone to massive stack usage; I'm inclined to add
+>>> a tunable parameter for this default value.
+>>
+>>
+>> Thanks Philippe.
+>>
+>> A tunable parameter would be very useful.
+>>
+>> Although knowing where to change the default may save me replacing
+>> std::thread with pthread*.
+> 
+> 
+> I changed PTHREAD_STACK_DEFAULT to ~8M and reintroduced std:thread in
+> one case
+> where thread creation failed previously.
+> 
+> The SIGABRT failure mode returns, gdb stack trace below.
+> 
+> Stack frame 6 shows std:thread is using pthreads under the hood, but the
+> SIGABRT
+> seems to imply that my increasing PTHREAD_STACK_DEFAULT hasn't had any
+> effect, I
+> now doubt Xenomai Cobalt is wrapping the pthread calls and applying the new
+> PTHREAD_STACK_DEFAULT to the std::thread calls.
 > 
 
-You may want to check your calling args, e.g. wait for a second before
-timeout:
+Most likely, as the dynamic linker won't do the symbol wrapping we need
+from pthread_create -> __wrap_pthread_create when loading a DSO. A not
+so elegant way to force this would be to link against the static version
+of libstdc++, but, you would risk unwanted wrapping of other POSIX calls
+throughout the library in the same move.
 
-	ret = rt_cond_wait_until(&cond, &mutex, rt_timer_read() + 1000000000ULL);
-	if (ret)
-		error(1, -ret, "rt_cond_wait_until");
+This post may help:
+https://xenomai.org/pipermail/xenomai/2014-August/031475.html
 
-> This lead me to beleive that something was wrong with the mutex.
+> I'd appreciate any insight into when and when not calls such as pthread*
+> will be
+> intercepted by Xenomai Cobalt.
 > 
 
-I'm unsure to understand why.
-
-> 1) Can rt_cond_wait return -ETIMEDOUT with the mutex ?
-> 2)  How would you implement a trylock() on a mutex ?
-> 
->         struct RT_MUTEX_INFO info;
->         rt_mutex_inquire(mutex, &info );
->         RT_TASK no_task = NO_ALCHEMY_TASK;
->         rt_task_same(&info.owner,&no_task) == 0 -> not locked !
->           --> rt_mutex_acquire(mutex,TM_NONBLOCK)
-
-rt_mutex_acquire(mutex,TM_NONBLOCK) does mean trylock(), you don't need
-further checks. Besides, the code above would be racy.
+Easiest way: use gdb, setting a breakpoint in the __wrap_pthread_create
+routine. This one is provided by libcobalt, and should not be hit when
+instantiating the std::thread class from the libstdc++ DSO.
 
 -- 
 Philippe.
