@@ -1,9 +1,19 @@
+References: <CAB6vvjke_16vivYH6+6QJiDR__5zcUBihvAe5+0S+CVKt1Qx8g@mail.gmail.com>
+ <cda6fe24-2a17-03af-b6b0-58b63dc82a82@xenomai.org>
+ <CAB6vvjno8Ysd6k7fKpEkyfU-S+myKNd517ju0-X0nAOiQPJMPw@mail.gmail.com>
+ <16d2a2b6-388b-bbe8-6196-397735d5b2cb@xenomai.org>
+ <CAB6vvjmJX9P8c=bAdb7n3Li2WUx=m9xgdZrkYhKF0CeRsAZjbA@mail.gmail.com>
+ <657caa04-19cf-45ef-ca86-0e73daf7fabc@isir.upmc.fr>
+ <CAO460_8tfyQ0iPEPjPv8C4in0WhGGsk-LqdU662Pwtu9eW1Mkw@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <9cda3dec-0bd4-65c0-88f0-6ab60de52c0f@xenomai.org>
+Date: Fri, 15 Sep 2017 16:03:55 +0200
 MIME-Version: 1.0
-From: Ashok kumar <ashokkumar.bb@gmail.com>
-Date: Fri, 15 Sep 2017 17:38:21 +0530
-Message-ID: <CAFUnMk=pm2=D5R2maPW-PHTzqFU1H+CWQbY_3ibbS3Bu6PTEdQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] xenomai 3.02 hangs in raspberry pi 3
+In-Reply-To: <CAO460_8tfyQ0iPEPjPv8C4in0WhGGsk-LqdU662Pwtu9eW1Mkw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Can't wait on conditions on 3.0.5
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,16 +22,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Stephen D. Cohen" <steve@uscohens.com>, xenomai@xenomai.org
 
-Hi,
+On 09/15/2017 02:37 AM, Stephen D. Cohen wrote:
+> On Thu, Sep 14, 2017 at 2:13 PM Florian Richer <richer@isir.upmc.fr> wrote:
+> 
+>> Working as expected on my box (Beaglebone black, xeno 3.0.4 on linux
+>> 4.4.68) :
+>>
+>> rt_mutex_create -> 0
+>> rt_cond_create  -> 0
+>> rt_task_spawn   -> 0
+>> rt_cond_wait_until took 9998937664 ticks, ret -110
+>> rt_task_join    -> 0
+>>
+>> Maybe something is wrong with your kernel config ?
+>>
+> 
+> Not working on another 64-bit SMP kernel, though 4.4.71 in my case.
+> Substantially similar results to those shown by the original poster. I also
+> tried passing a timespec to rt_cond_wait_timed and got the same result - no
+> wait and a timeout report. Absolutely bizarre.
 
-I am xenomai 3.0.2 in raspberry pi 3 quad core after starting Real
-time tast the Raspberry pi freezes.
+Should be fixed by [1], hopefully.
 
-Can i use Rtprintf in xenomai 3, any api is there to use the printf
-function in xenomai 3.
+> 
+> This might also be a good time to mention that I had similar issues when I
+> originally tried to use the posix skin for my code. The routines that
+> should have produced a sleep returned immediately as if they had slept. I
+> finally gave up on the posix skin and went back to the Alchemy I knew and
+> had used before and everything worked more or less as expected.
+>
 
-Thank you
-Ashok
+More or less as expected sounds like "not properly". Do you have any
+specifics regarding unexpected behavior(s) of alchemy in v3?
+
+> I originally wrote this off as I was doing something stupid and simply
+> could not figure out what it was. Browsing through the few posix skin
+> examples did not reveal anything obvious. At that point I was busy making
+> things actually work, so I moved on.
+> 
+> I realize that the alchemy skin is implemented using the posix routines for
+> the most part,
+
+Entirely, under the hood.
+
+ but there is clearly some difference. I wonder if the two
+> issues are related...
+>
+
+The issue just fixed cannot affect the POSIX interface, which does not
+depend on libcopperplate (the dependency is the other way around).
+
+[1]
+http://git.xenomai.org/xenomai-3.git/commit/?id=c93977f5152d22200d69f8503420f79c10c052c4
+
+-- 
+Philippe.
 
