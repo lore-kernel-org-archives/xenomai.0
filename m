@@ -1,13 +1,10 @@
-References: <d62e1edb-b724-024d-eab7-4f9ed1d152c9@utpvision.it>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <3aa5f3f4-2470-1924-4e90-d455d1be6452@xenomai.org>
-Date: Tue, 19 Sep 2017 10:59:15 +0200
+Date: Wed, 20 Sep 2017 10:40:47 +0200
+From: Gwenhael Goavec-Merou <gwenj@trabucayre.com>
+Message-ID: <20170920104047.52e779c4@x230.trabucayre.com>
 MIME-Version: 1.0
-In-Reply-To: <d62e1edb-b724-024d-eab7-4f9ed1d152c9@utpvision.it>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Problems porting old xeno2 module
+Subject: [Xenomai] gpio irq problem on Zynq
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,19 +13,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Simone Zucchi <simone.zucchi@utpvision.it>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 09/19/2017 10:20 AM, Simone Zucchi wrote:
-> Hello everybody. I'm trying to port some kernel modules which we used on
-> xeno2 to xeno3 cobalt.
-> 
-> The old code used the native skin so I'm trying to get it working using the
->  transaction kit (trank/native).
+Hi,
 
-The transition kit is for porting user-space apps from the legacy
-"native" API of Xenomai 2.x to alchemy. The only API available in kernel
-space with Xenomai 3 is RTDM, for drivers.
+I use a Zynq with the latest Xenomai/Ipipe version and I've problems
+when using GPIO interrupts. Currently, my tests are only in the Linux
+domain.
 
--- 
-Philippe.
+1/ When using gpiolib the system freeze after gpio's configuration
+through /sys/class/gpio/xxx . I suspect the corresponding IRQ
+not masked or not acquitted.
+2/ With a driver the ISR is never called but the system is not freezed.
+
+I've looked on gpio-zynq.c but I've no idea about the reason why the
+system has these wrong behaviour.
+
+Thank you for all comment/advises about my issue.
+
+Gwenhael Goavec-Merou
 
