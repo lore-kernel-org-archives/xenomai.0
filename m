@@ -1,14 +1,12 @@
-From: Simone Zucchi <simone.zucchi@utpvision.it>
-Date: Fri, 22 Sep 2017 10:04:49 +0000
-Message-ID: <5eb4e541-0283-fa87-e4e7-9cacb9177744@utpvision.it>
-References: <d62e1edb-b724-024d-eab7-4f9ed1d152c9@utpvision.it>
- <3aa5f3f4-2470-1924-4e90-d455d1be6452@xenomai.org>
-In-Reply-To: <3aa5f3f4-2470-1924-4e90-d455d1be6452@xenomai.org>
-Content-Language: en-US
+Date: Fri, 22 Sep 2017 14:44:41 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20170922144441.3e7cc374@md1em3qc>
+In-Reply-To: <CAB6vvjm0GH4kzobZ4c-FdqcARoDDwNFmAJBGOEWESFTwXoJw8Q@mail.gmail.com>
+References: <CAB6vvjm0GH4kzobZ4c-FdqcARoDDwNFmAJBGOEWESFTwXoJw8Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Problems porting old xeno2 module
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] MAXSMP prevents booting on 16.04/x64-4.9.38
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,15 +15,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Antoine Hoarau <hoarau.robotics@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-VGhhbmtzIGEgbG90LCBtaXNzZWQgdGhhdCBwYXJ0IGluIHRoZSBGQVEuDQoNClNpbW9uZQ0KDQpP
-biAwOS8xOS8yMDE3IDEwOjU5IEFNLCBQaGlsaXBwZSBHZXJ1bSB3cm90ZToNCg0KT24gMDkvMTkv
-MjAxNyAxMDoyMCBBTSwgU2ltb25lIFp1Y2NoaSB3cm90ZToNCg0KDQpIZWxsbyBldmVyeWJvZHku
-IEknbSB0cnlpbmcgdG8gcG9ydCBzb21lIGtlcm5lbCBtb2R1bGVzIHdoaWNoIHdlIHVzZWQgb24N
-Cnhlbm8yIHRvIHhlbm8zIGNvYmFsdC4NCg0KVGhlIG9sZCBjb2RlIHVzZWQgdGhlIG5hdGl2ZSBz
-a2luIHNvIEknbSB0cnlpbmcgdG8gZ2V0IGl0IHdvcmtpbmcgdXNpbmcgdGhlDQogdHJhbnNhY3Rp
-b24ga2l0ICh0cmFuay9uYXRpdmUpLg0KDQoNCg0KVGhlIHRyYW5zaXRpb24ga2l0IGlzIGZvciBw
-b3J0aW5nIHVzZXItc3BhY2UgYXBwcyBmcm9tIHRoZSBsZWdhY3kNCiJuYXRpdmUiIEFQSSBvZiBY
-ZW5vbWFpIDIueCB0byBhbGNoZW15LiBUaGUgb25seSBBUEkgYXZhaWxhYmxlIGluIGtlcm5lbA0K
-c3BhY2Ugd2l0aCBYZW5vbWFpIDMgaXMgUlRETSwgZm9yIGRyaXZlcnMuDQoNCg0KDQo=
+Am Thu, 21 Sep 2017 12:03:47 +0200
+schrieb Antoine Hoarau <hoarau.robotics@gmail.com>:
+
+> Hello,
+> 
+> After many trials and error, I finally found the option that made both
+> of my Ubuntu 16.04/x64 (i7 7500U and 2600K) to hang at Loading initial
+> ramdisk.
+> 
+> CONFIG_MAXSMP
+> 
+> * Processor type and features
+>   --> Enable maximum number of SMP processors and NUMA nodes  
+> 
+> It seems to be enabled by default on kernel 4.x, and causes the system
+> to hang at
+
+No it is not set in an x86_64 defconfig and i also do not see it in
+ubuntu 4.4 kernels. Not sure how it got enabled in your config.
+
+Henning
+
+>    x86 : Booting SMP configuration:
+>    .... node #0, CPUs:     #1
+> 
+> I've always built the kernel with the xenomai patch, but I don't think
+> the two are related.
+> Did any of you had this issue as well ?
+> 
+> ------
+> Antoine Hoarau
+> 
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+
+
