@@ -1,11 +1,13 @@
-From: MINIER Bertrand <Bertrand.MINIER@sercel.com>
-Date: Tue, 22 Aug 2017 15:22:59 +0000
-Message-ID: <de3553b96851471ebed51ecfb4a322eb@NANS01204.it.intra.sercel.com>
-Content-Language: fr-FR
+References: <CAB6vvjnpmzM7U0baR3JTpzziFtoKd9KgPWBk0faYNFSYt+MC2A@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <a6a27622-2f86-ff8b-ed7d-52309276dce4@xenomai.org>
+Date: Sun, 24 Sep 2017 17:17:38 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] RTDM driver : driver to driver rtdm_ioctl() call issue
+In-Reply-To: <CAB6vvjnpmzM7U0baR3JTpzziFtoKd9KgPWBk0faYNFSYt+MC2A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Boost thread macro confilct
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,70 +16,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Antoine Hoarau <hoarau.robotics@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi all,
+On 09/24/2017 04:52 PM, Antoine Hoarau wrote:
+> Hi again,
+> 
+> I'm having some issues with boost threads macros. If I compile the
+> following code :
+> 
+> #include <alchemy/task.h>
+> #include <boost/thread.hpp>
+> int main() { return 0; }
+> 
+> g++ b.cc $(xeno-config --alchemy --cflags)  $(xeno-config --alchemy
+> --ldflags) -lboost_system -lboost_thread
+> 
+> It gives me a lot of errors regarding "barrier", a macro present in both
+> librairies. Copperplate's debug macro also created similar issues with
+> log4cpp lib.
+> 
+> It compiles only if :
+> 1) Unsetting barrier from alchemy
+> 
+> #include <alchemy/task.h>
+> #unset barrier
+> #include <boost/thread.hpp>
+> int main() { return 0; }
+> 
+> 2) Changing the order of the includes (easy here, but hard on a big library)
+> 
+> #include <boost/thread.hpp>
+> #include <alchemy/task.h>
+> int main() { return 0; }
+> 
+> I guess it's not a redefinition, but an overloading :
+> 
+> /usr/include/boost/thread/barrier.hpp:138:22: error: too many arguments
+> provided to function-like macro invocation
+>     explicit barrier(unsigned int count) :
+>                      ^
+> /usr/xenomai/include/boilerplate/atomic.h:83:9: note: macro 'barrier'
+> defined here
+> #define barrier()       __asm__ __volatile__("": : :"memory")
+> 
 
-I'am writing a set of two RTDM drivers :  let say driver A and driver B.
-Driver B implementation depends on driver A usage.
-To serve an ioctl of Driver B, I have to call a driver A ioctl using the "d=
-river to driver API":
-                err =3D rtdm_ioctl(rt_device->fpga_event_fd, RTFPGAEV_RTIOC=
-_STOP_TIMER, &rt_device->fpga_event_timer_idx);
+We want to define a compiler barrier that represents a strong sequence
+point in the instruction flow, this has nothing to do with a thread
+synchronization method. We only have a very few instances of such
+barriers, so the best fix is to rename our macro.
 
->From the driver A perspective, this ioctl is coded as follow:
+Please pull this change:
+http://git.xenomai.org/xenomai-3.git/commit/?id=cd8815510e4ea53218a36518be09276bab21750d
 
-static int rtFpgaEv_ioctl(struct rtdm_fd *fd, unsigned int request, void *a=
-rg)
-{
-    struct rt_fpga_event_context *ctx;
-    int err =3D 0;
+-- 
+Philippe.
 
-    ctx =3D rtdm_fd_to_private(fd);
-    switch (request)
-    {
-
-/* .... */
-
-        case RTFPGAEV_RTIOC_STOP_TIMER:
-           val =3D *((unsigned int *) arg);
-            if(rtdm_fd_is_user(fd))
-            {
-                err =3D rtdm_safe_copy_from_user(fd, &val, arg, sizeof(unsi=
-gned int));
-if (err)
-return err;
-            }
-            err =3D rtFpgaEv_dev_stopTimer(ctx->rt_dev, val);
-            break;
-
-/* .... */
-
-}
-    return err;
-}
-
-The rtdm_ioctl() call fails with EPERM errno. This errno come from rtdm_saf=
-e_copy_from_user() in the above code.
-As long as Driver A is opened from an RTDM driver(coded as a kernel module)=
-, I was expecting rtdm_fd_is_user(fd) to return false and so not execute th=
-e rtdm_safe_copy_from_user().
-
-Could you tell me where I'm wrong ?
-
-I'am using the following configuration:
-
--          Xenomai-3.0.3
-
--          Linux-4.1.18
-
--          ipipe-core-4.1.18-arm-8.patch
-
--
-Thanks a lot.
-Bertrand
-
-This e-mail and any accompanying attachments are confidential. If you are n=
-ot the intended recipient, you must not review, disclose, copy, distribute =
-or use this e-mail; please delete it from your system and notify the sender=
- immediately.
