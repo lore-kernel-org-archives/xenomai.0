@@ -1,11 +1,9 @@
-Date: Wed, 27 Sep 2017 04:06:52 -0500 (CDT)
-From: Per Oberg <pero@wolfram.com>
-Message-ID: <1040395742.20734635.1506503212382.JavaMail.zimbra@wolfram.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] High latency seemingly caused by Peak rtcan driver for
-	xenomai-3
+From: Andreas Glatz <andi.glatz@gmail.com>
+Date: Wed, 27 Sep 2017 14:14:43 +0100
+Message-ID: <CAKJ14NdyH7FF+pwj9J-FLSnCWHOqAteKVrrbagA4eqhvETgFoA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] Unexpected mode switches when reordering C++ lines
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,40 +14,70 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hello everyone
+Hi
 
-I have an application that uses rtcan for communicating with the=20
-outside world. My problem is that I occasionally have very high=20
-latency that I'm trying to debug. After going through the regular
-checks with kernel parameters, smi, mallocs, io etc. I have found
-that I don't even have to start my application to get the high=20
-latency issue. It is enough to simply start the rt-can interface.=20
+I've got two versions of the same piece of code, the only difference
+is that lines are reordered:
 
-So here is what I do:=20
+#if 1
+   u32Tmp        = ntohl(*reinterpret_cast<u32*>(pDat+4));
+   sPhasor.angle = interpretU32AsFloat(u32Tmp);
+   u32Tmp        = ntohl(*reinterpret_cast<u32*>(pDat));
+   sPhasor.mag   = interpretU32AsFloat(u32Tmp);
+#else
+   u32Tmp        = ntohl(*reinterpret_cast<u32*>(pDat));
+   sPhasor.mag   = interpretU32AsFloat(u32Tmp);
+   u32Tmp        = ntohl(*reinterpret_cast<u32*>(pDat+4));
+   sPhasor.angle = interpretU32AsFloat(u32Tmp);
+#endif
 
-1) Fresh reboot, no rt-modules loaded
-> latency
+In case '#if 1' sPhasor.angle is assigned before sPhasor.mag, and
+everything works fine.
 
-Results show about 1.0 us maximum.
+In case '#if 0' it's the other way round, and I get mode switches
+caused by the first (but not second) ntohl().
 
-2) Insert xeno_can_peak_pci with 2x4 channels
-> modprobe xeno_can_peak_pci
-> latency
+Looking at the assembly, there is a clear difference:
 
-Results show no difference, still low max latency
+#if 1
+   0x2ac5bcb8 <+304>:   ldr     r3, [r5]
+   0x2ac5bcbc <+308>:   ldr     r2, [r5, #4]
+   0x2ac5bcc0 <+312>:   rev     r3, r3
+   0x2ac5bcc4 <+316>:   rev     r2, r2
+[...]
+#else
+     0x2abc3cb8 <+304>:   ldm     r5, {r2, r3}
+=> 0x2abc3cbc <+308>:   rev     r2, r2
+     0x2abc3cc0 <+312>:   rev     r3, r3
+[...]
+#endif
 
-3) CAN traffic on all 8 channels, open one channel at a time=20
- test latency in between
-> rtcanconfig rtcan0 -b 1000000 up
-> latency=20
+Here the arrow indicates where the mode switch occurs, which is at the
+'rev' (for reverse byte order instruction), hence ntohl(). It seems
+that the assembler optimization that collates the two ' ldr r3, [r5]'
+and 'ldr r2, [r5, #4]' into ' ldm r5, {r2, r3}' could have something
+to do with the mode switches...
 
-Results show that the maximal latency follows the following formula
-maxLatency_uSec =3D (15*(nChannelsCard2 > 0)+15*nChannelsCard1)+
-(15*(nChannelsCard2 > 0)+15*nChannelsCard2)
+Any clues what causes the mode switches and how to avoid them?
 
-My question is thus, are these latency values normal for this kind of=20
-driver or are there things that I can do to remedy the situation?
+Cheers,
 
-Regards
-Per =C3=96berg=20
+Andreas
+
+
+Setup:
+i.MX6 dual (ARM Cortex A9)
+$> cat /proc/version
+Linux version 3.0.43-tpcom_run2-PD13.2.4 (andreas@gorse) (gcc version
+4.6.2 (OSELAS.Toolchain-2011.11.3 linaro-4.6-2011.11) ) #1 SMP PREEMPT
+Tue Sep 26 16:17:30 BST 2017
+$> cat /proc/xenomai/version
+2.6.4
+$> cat /proc/ipipe/version
+1.18-13
+$> arm-cortexa9-linux-gnueabi-gcc --version
+arm-cortexa9-linux-gnueabi-gcc (OSELAS.Toolchain-2011.11.3
+linaro-4.6-2011.11) 4.6.2
+$> arm-cortexa9-linux-gnueabi-ld --version
+GNU ld (GNU Binutils) 2.21.1
 
