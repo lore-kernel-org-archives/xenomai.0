@@ -1,15 +1,12 @@
-Date: Wed, 27 Sep 2017 13:57:41 -0400
-Message-ID: <20170927175741.e2gia5r2iaz3jsiq@csclub.uwaterloo.ca>
+Date: Wed, 27 Sep 2017 14:15:31 -0400
+Message-ID: <20170927181531.r6ufimuxxwh7lbvc@csclub.uwaterloo.ca>
 References: <CAKJ14NdyH7FF+pwj9J-FLSnCWHOqAteKVrrbagA4eqhvETgFoA@mail.gmail.com>
- <CAKJ14NfuNCtfK9bT5Oh+dRYAKhW+4KgaFO5w=xt=exJOw6forQ@mail.gmail.com>
- <e847e788-f0c4-9d27-9dd7-4cb9c22de649@xenomai.org>
- <CAKJ14NcCac2Q32b8tGsNKXYZX9toGsxBEvXGt+2Pa8FYrihdKQ@mail.gmail.com>
- <20170927143948.b5idby3cd7ncevck@csclub.uwaterloo.ca>
- <CAKJ14Nfge9hmwULBbeOBKD6okdJA1-r2qmfRdmBompJ0LLFHdg@mail.gmail.com>
+ <dffcf471-c697-b04c-7dc9-84c169b5be62@xenomai.org>
+ <CAKJ14NdBR+VMq6ovb06nLi1EU4c2rA6TTo=VtC3Zdz1RWdKqZQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAKJ14Nfge9hmwULBbeOBKD6okdJA1-r2qmfRdmBompJ0LLFHdg@mail.gmail.com>
+In-Reply-To: <CAKJ14NdBR+VMq6ovb06nLi1EU4c2rA6TTo=VtC3Zdz1RWdKqZQ@mail.gmail.com>
 From: lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
 Subject: Re: [Xenomai] Unexpected mode switches when reordering C++ lines
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -23,36 +20,38 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Andreas Glatz <andi.glatz@gmail.com>
 Cc: xenomai@xenomai.org
 
-On Wed, Sep 27, 2017 at 06:33:50PM +0100, Andreas Glatz wrote:
-> Yes, one would think so...
+On Wed, Sep 27, 2017 at 06:25:18PM +0100, Andreas Glatz wrote:
+> As you say Philippe, I had to memcpy() 2xu32 from the (malloc'd)
+> memory region into an array u32 tmpVal[2] array, and then use these
+> values one-by-one to process them with ntohl(), ...
 
-Well reading a bit, it seems by default gcc assumes all pointers are
-sensibly aligned.  Still not sure how that excuses doing a combination
-of two reads into one in this case.
+Certainly using memcpy is the safe way to deal with unaligned data.
 
-Which gcc version are you using?
+Casting a char* to an int* is just not valid and breaks aliasing rules.
 
-> I shall try to play with these options then. As explained to Philippe
-> and hinted by you one would ideally want a flag to mark a memory
-> regions as 'unaligned' so that the compiler/assembler know that they
-> should only use instructions that support unaligned access, albeit
-> being slower.
+> I tried to cast the pDat pointer to u32* initially, but then I still
+> got the ldm instructions and hence mode switches as the assembler is
+> very good at optimizing.
+>
+> I have the feeling the same could come up at other places as well as
+> we progress with the testing of our application. I guess a 'save'
+> solution is to compile the code with -O0 or -O1, because if never seen
+> these mode switches using these compiler options. However, an ideal
+> solution would be to have something to mark the memory region as
+> 'unaligned' so the assembler then only uses ldr instead of
+> instructions on it... maybe there is this unicorn running around
+> somewhere :)
 > 
-> The memory is malloc'd before the Xenomai thread starts, but after
-> locking all the pages into memory (the usual Xenomai startup stuff).
+> Anyways, many thanks for your help.
 
-So according to
-http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.faqs/ka15414.html
-only memory marked as normal allows unaligned accesses.  It also says
-that the LDM instruction is NOT allowed on unaligned accesses.  So then
-the question is why does gcc assume that pointer is always going to
-be aligned?  Is this a bug in gcc?
+Is this any help:
 
-> Apparently :) Other option would be to write my own access function
-> for this piece of memory in assembly... then there'd be no room for
-> wiggling around anymore.
+https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53016
 
-Any change adding -fno-strict-aliasing to the gcc arguments helps?
+A bit of searching is starting to make me think your problem is caused
+by using reinterpret_cast rather than a plain static cast.  I think
+using that is making the compiler say "Oh this is a proper correct fully
+aligned pointer of this type, so I can assume anything I want about it".
 
 -- 
 Len Sorensen
