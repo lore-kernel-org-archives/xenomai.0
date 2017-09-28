@@ -1,23 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <9d79f285-90a1-87b2-a8ad-1e71bef3299f@xenomai.org>
-References: <CAB6vvjnpmzM7U0baR3JTpzziFtoKd9KgPWBk0faYNFSYt+MC2A@mail.gmail.com>
- <a6a27622-2f86-ff8b-ed7d-52309276dce4@xenomai.org>
- <CAB6vvj=PpNw_zdk0KD8w3OY_Rqz0BACCNOX7oE4HRCjtuAiSrA@mail.gmail.com>
- <e4a2d533-fcb4-73dc-8225-87b9767cb494@xenomai.org>
- <35d901c2-ef20-b308-0d5d-fe37c2f92dca@xenomai.org>
- <CAB6vvj=Ef20MPv6wz48ZapnoTGhv++cGeGHnpL_PbhzQUGvW8w@mail.gmail.com>
- <a0fa0214-0884-caec-f412-6c7e45e6204f@xenomai.org>
- <CAB6vvjnv0sbWCzUaMNp20iQJ9sn-JLvddwQ_MvF5wfXqHZDD4A@mail.gmail.com>
- <3421edf2-d250-f8fe-235f-c28947601e3a@xenomai.org>
- <1825bfbf-d828-d98d-1f7c-5bd99f94ef5e@xenomai.org>
- <CAB6vvjnoQvPaKCv9hLM_R=-TUyxyhVJ6GxjfiVScC7GpSGDZmA@mail.gmail.com>
- <9d79f285-90a1-87b2-a8ad-1e71bef3299f@xenomai.org>
-From: Antoine Hoarau <hoarau.robotics@gmail.com>
-Date: Thu, 28 Sep 2017 16:36:40 +0200
-Message-ID: <CAB6vvjnKbPyw77p1Sqr1NiEWAFyTjSRZ1cBecjfdQi=6eAYSdA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Boost thread macro confilct
+In-Reply-To: <CA+K1mPHs7A6GSh281Z6Tb2a3AZQ0vasTMdgX0hsj6Fkb01_Y+A@mail.gmail.com>
+References: <CA+K1mPHs7A6GSh281Z6Tb2a3AZQ0vasTMdgX0hsj6Fkb01_Y+A@mail.gmail.com>
+From: C Smith <csmithquestions@gmail.com>
+Date: Thu, 28 Sep 2017 13:27:11 -0700
+Message-ID: <CA+K1mPEz7US3SHFwn=j9jLy0pP_3W5y37hhx=dbnBf=Hm=Tw9A@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] RT->nonRT communication (Xenomai 2.6.4)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,172 +14,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-MjAxNy0wOS0yOCAxNTozMSBHTVQrMDI6MDAgUGhpbGlwcGUgR2VydW0gPHJwbUB4ZW5vbWFpLm9y
-Zz46Cj4gT24gMDkvMjgvMjAxNyAwMzoxOSBQTSwgQW50b2luZSBIb2FyYXUgd3JvdGU6Cj4+IDIw
-MTctMDktMjYgMTk6MzQgR01UKzAyOjAwIFBoaWxpcHBlIEdlcnVtIDxycG1AeGVub21haS5vcmc+
-Ogo+Pj4gT24gMDkvMjYvMjAxNyAwNjozNyBQTSwgUGhpbGlwcGUgR2VydW0gd3JvdGU6Cj4+Pj4g
-T24gMDkvMjYvMjAxNyAwNjoxNCBQTSwgQW50b2luZSBIb2FyYXUgd3JvdGU6Cj4+Pj4+IDIwMTct
-MDktMjYgMTg6MDcgR01UKzAyOjAwIFBoaWxpcHBlIEdlcnVtIDxycG1AeGVub21haS5vcmc+Ogo+
-Pj4+Pj4gT24gMDkvMjYvMjAxNyAwNTo1MSBQTSwgQW50b2luZSBIb2FyYXUgd3JvdGU6Cj4+Pj4+
-Pj4gMjAxNy0wOS0yNSAxOTo0MCBHTVQrMDI6MDAgUGhpbGlwcGUgR2VydW0gPHJwbUB4ZW5vbWFp
-Lm9yZz46Cj4+Pj4+Pj4+IE9uIDA5LzI1LzIwMTcgMDc6MzUgUE0sIFBoaWxpcHBlIEdlcnVtIHdy
-b3RlOgo+Pj4+Pj4+Pj4gT24gMDkvMjQvMjAxNyAwODoxOSBQTSwgQW50b2luZSBIb2FyYXUgd3Jv
-dGU6Cj4+Pj4+Pj4+Pj4gMjAxNy0wOS0yNCAxNzoxNyBHTVQrMDI6MDAgUGhpbGlwcGUgR2VydW0g
-PHJwbUB4ZW5vbWFpLm9yZz46Cj4+Pj4+Pj4+Pj4+IE9uIDA5LzI0LzIwMTcgMDQ6NTIgUE0sIEFu
-dG9pbmUgSG9hcmF1IHdyb3RlOgo+Pj4+Pj4+Pj4+Pj4gSGkgYWdhaW4sCj4+Pj4+Pj4+Pj4+Pgo+
-Pj4+Pj4+Pj4+Pj4gSSdtIGhhdmluZyBzb21lIGlzc3VlcyB3aXRoIGJvb3N0IHRocmVhZHMgbWFj
-cm9zLiBJZiBJIGNvbXBpbGUgdGhlCj4+Pj4+Pj4+Pj4+PiBmb2xsb3dpbmcgY29kZSA6Cj4+Pj4+
-Pj4+Pj4+Pgo+Pj4+Pj4+Pj4+Pj4gI2luY2x1ZGUgPGFsY2hlbXkvdGFzay5oPgo+Pj4+Pj4+Pj4+
-Pj4gI2luY2x1ZGUgPGJvb3N0L3RocmVhZC5ocHA+Cj4+Pj4+Pj4+Pj4+PiBpbnQgbWFpbigpIHsg
-cmV0dXJuIDA7IH0KPj4+Pj4+Pj4+Pj4+Cj4+Pj4+Pj4+Pj4+PiBnKysgYi5jYyAkKHhlbm8tY29u
-ZmlnIC0tYWxjaGVteSAtLWNmbGFncykgICQoeGVuby1jb25maWcgLS1hbGNoZW15Cj4+Pj4+Pj4+
-Pj4+PiAtLWxkZmxhZ3MpIC1sYm9vc3Rfc3lzdGVtIC1sYm9vc3RfdGhyZWFkCj4+Pj4+Pj4+Pj4+
-Pgo+Pj4+Pj4+Pj4+Pj4gSXQgZ2l2ZXMgbWUgYSBsb3Qgb2YgZXJyb3JzIHJlZ2FyZGluZyAiYmFy
-cmllciIsIGEgbWFjcm8gcHJlc2VudCBpbiBib3RoCj4+Pj4+Pj4+Pj4+PiBsaWJyYWlyaWVzLiBD
-b3BwZXJwbGF0ZSdzIGRlYnVnIG1hY3JvIGFsc28gY3JlYXRlZCBzaW1pbGFyIGlzc3VlcyB3aXRo
-Cj4+Pj4+Pj4+Pj4+PiBsb2c0Y3BwIGxpYi4KPj4+Pj4+Pj4+Pj4+Cj4+Pj4+Pj4+Pj4+PiBJdCBj
-b21waWxlcyBvbmx5IGlmIDoKPj4+Pj4+Pj4+Pj4+IDEpIFVuc2V0dGluZyBiYXJyaWVyIGZyb20g
-YWxjaGVteQo+Pj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+Pj4+ICNpbmNsdWRlIDxhbGNoZW15L3Rhc2su
-aD4KPj4+Pj4+Pj4+Pj4+ICN1bnNldCBiYXJyaWVyCj4+Pj4+Pj4+Pj4+PiAjaW5jbHVkZSA8Ym9v
-c3QvdGhyZWFkLmhwcD4KPj4+Pj4+Pj4+Pj4+IGludCBtYWluKCkgeyByZXR1cm4gMDsgfQo+Pj4+
-Pj4+Pj4+Pj4KPj4+Pj4+Pj4+Pj4+IDIpIENoYW5naW5nIHRoZSBvcmRlciBvZiB0aGUgaW5jbHVk
-ZXMgKGVhc3kgaGVyZSwgYnV0IGhhcmQgb24gYSBiaWcgbGlicmFyeSkKPj4+Pj4+Pj4+Pj4+Cj4+
-Pj4+Pj4+Pj4+PiAjaW5jbHVkZSA8Ym9vc3QvdGhyZWFkLmhwcD4KPj4+Pj4+Pj4+Pj4+ICNpbmNs
-dWRlIDxhbGNoZW15L3Rhc2suaD4KPj4+Pj4+Pj4+Pj4+IGludCBtYWluKCkgeyByZXR1cm4gMDsg
-fQo+Pj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+Pj4+IEkgZ3Vlc3MgaXQncyBub3QgYSByZWRlZmluaXRp
-b24sIGJ1dCBhbiBvdmVybG9hZGluZyA6Cj4+Pj4+Pj4+Pj4+Pgo+Pj4+Pj4+Pj4+Pj4gL3Vzci9p
-bmNsdWRlL2Jvb3N0L3RocmVhZC9iYXJyaWVyLmhwcDoxMzg6MjI6IGVycm9yOiB0b28gbWFueSBh
-cmd1bWVudHMKPj4+Pj4+Pj4+Pj4+IHByb3ZpZGVkIHRvIGZ1bmN0aW9uLWxpa2UgbWFjcm8gaW52
-b2NhdGlvbgo+Pj4+Pj4+Pj4+Pj4gICAgIGV4cGxpY2l0IGJhcnJpZXIodW5zaWduZWQgaW50IGNv
-dW50KSA6Cj4+Pj4+Pj4+Pj4+PiAgICAgICAgICAgICAgICAgICAgICBeCj4+Pj4+Pj4+Pj4+PiAv
-dXNyL3hlbm9tYWkvaW5jbHVkZS9ib2lsZXJwbGF0ZS9hdG9taWMuaDo4Mzo5OiBub3RlOiBtYWNy
-byAnYmFycmllcicKPj4+Pj4+Pj4+Pj4+IGRlZmluZWQgaGVyZQo+Pj4+Pj4+Pj4+Pj4gI2RlZmlu
-ZSBiYXJyaWVyKCkgICAgICAgX19hc21fXyBfX3ZvbGF0aWxlX18oIiI6IDogOiJtZW1vcnkiKQo+
-Pj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+Pj4gV2Ugd2FudCB0byBkZWZpbmUgYSBj
-b21waWxlciBiYXJyaWVyIHRoYXQgcmVwcmVzZW50cyBhIHN0cm9uZyBzZXF1ZW5jZQo+Pj4+Pj4+
-Pj4+PiBwb2ludCBpbiB0aGUgaW5zdHJ1Y3Rpb24gZmxvdywgdGhpcyBoYXMgbm90aGluZyB0byBk
-byB3aXRoIGEgdGhyZWFkCj4+Pj4+Pj4+Pj4+IHN5bmNocm9uaXphdGlvbiBtZXRob2QuIFdlIG9u
-bHkgaGF2ZSBhIHZlcnkgZmV3IGluc3RhbmNlcyBvZiBzdWNoCj4+Pj4+Pj4+Pj4+IGJhcnJpZXJz
-LCBzbyB0aGUgYmVzdCBmaXggaXMgdG8gcmVuYW1lIG91ciBtYWNyby4KPj4+Pj4+Pj4+Pj4KPj4+
-Pj4+Pj4+Pj4gUGxlYXNlIHB1bGwgdGhpcyBjaGFuZ2U6Cj4+Pj4+Pj4+Pj4+IGh0dHA6Ly9naXQu
-eGVub21haS5vcmcveGVub21haS0zLmdpdC9jb21taXQvP2lkPWNkODgxNTUxMGU0ZWE1MzIxOGEz
-NjUxOGJlMDkyNzZiYWIyMTc1MGQKPj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+Pj4gLS0KPj4+Pj4+Pj4+
-Pj4gUGhpbGlwcGUuCj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+PiBFeGNlbGxlbnQsIHRoYXQgZml4ZXMg
-dGhlIGJhcnJpZXIgcHJvYmxlbS4KPj4+Pj4+Pj4+PiBUaGVyZSdzIG5vdyBhbHNvIGNseiBhbmQg
-Y2xzIGluIGJvaWxlcnBsYXRlL2NvbXBpbGVyLmgsIHRoYXQgY29uZmxpY3RzCj4+Pj4+Pj4+Pj4g
-d2l0aCBsaWJ0YmIsIGFuZCBkZWJ1ZygpIGluIGNvcHBlcnBsYXRlL2RlYnVnLmgsIHRoYXQgY29u
-ZmxpY3RzIHdpdGggYQo+Pj4+Pj4+Pj4+IGxvdCBvZiBsaWJzIEkgdXNlLgo+Pj4+Pj4+Pj4+Cj4+
-Pj4+Pj4+Pj4KPj4+Pj4+Pj4+PiBJIHJlYWxseSBkb24ndCBrbm93IHdoeSB0aGUgY29tcGlsZXIg
-Z2V0cyBzbyBjb25mdXNlZCwgaGVyZSdzIGFuIGV4YW1wbGUgOgo+Pj4+Pj4+Pj4+Cj4+Pj4+Pj4+
-Pj4gI2luY2x1ZGUgPGFsY2hlbXkvdGFzay5oPgo+Pj4+Pj4+Pj4+Cj4+Pj4+Pj4+Pj4gc3RydWN0
-IEEKPj4+Pj4+Pj4+PiB7Cj4+Pj4+Pj4+Pj4gQSgpOmRlYnVnKDApe30KPj4+Pj4+Pj4+PiBib29s
-IGRlYnVnOwo+Pj4+Pj4+Pj4+IH07Cj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+Cj4+Pj4+Pj4+PiBCZWNh
-dXNlIGl0IGVuZHMgdXAgY29tcGlsaW5nIHRoaXMgaW4gdGhlICFkZWJ1ZyBjYXNlLCBvbmNlIHRo
-ZQo+Pj4+Pj4+Pj4gcHJlcHJvY2Vzc29yIHRva2VucyBoYXZlIGJlZW4gc3Vic3RpdHV0ZWQ6Cj4+
-Pj4+Pj4+Pgo+Pj4+Pj4+Pj4gc3RydWN0IEEKPj4+Pj4+Pj4+IHsKPj4+Pj4+Pj4+IEEoKTpkbyB7
-IH0gd2hpbGUgKDApKDApe30KPj4+Pj4+Pj4+IGJvb2wgZG8geyB9IHdoaWxlICgwKTsKPj4+Pj4+
-Pj4+IH07Cj4+Pj4+Pj4+Pgo+Pj4+Pj4+Pgo+Pj4+Pj4+PiBzdHJ1Y3QgQQo+Pj4+Pj4+PiB7Cj4+
-Pj4+Pj4+IEEoKTpkbyB7IH0gd2hpbGUgKDApKDApe30KPj4+Pj4+Pj4gYm9vbCBkZWJ1ZzsKPj4+
-Pj4+Pj4gfTsKPj4+Pj4+Pj4KPj4+Pj4+Pj4gaXMgbW9yZSBsaWtlbHkuCj4+Pj4+Pj4+Cj4+Pj4+
-Pj4+IC0tCj4+Pj4+Pj4+IFBoaWxpcHBlLgo+Pj4+Pj4+Cj4+Pj4+Pj4gSSdtIG9idmlvdXNseSBm
-aW5lIHdpdGggYW55IHNvbHV0aW9uLCBidXQgd2h5IG5vdCByZW5hbWUgdGhlIGludGVybmFsCj4+
-Pj4+Pj4gbWFjcm9zIHdpdGggYSAibmFtZXNwYWNlIF9feGVubyIgLCBsaWtlIF9feGVub19kZWJ1
-ZygpLCBfX3hlbm9fY2x6KCkgPwo+Pj4+Pj4+Cj4+Pj4+Pj4gYnR3IHRoZSBsaW5lIGluIHF1ZXN0
-aW9uIGZvciBjbHooKSBpcyBoZXJlIDoKPj4+Pj4+PiBodHRwczovL2dpdGh1Yi5jb20vamNrYXJ0
-ZXIvdGJiL2Jsb2IvbWFzdGVyL2luY2x1ZGUvdGJiL21hY2hpbmUvZ2NjX2dlbmVyaWMuaCNMNzcK
-Pj4+Pj4+PiBnY2NfZ2VuZXJpYy5oIHNlZW1zIHRvIGJlIGluY2x1ZGVkIGluIG1heSBsaWJzLgo+
-Pj4+Pj4+Cj4+Pj4+Pgo+Pj4+Pj4gUHJvYmFibHkgZm9yIHRoZSBzYW1lIHJlYXNvbiB0aGFuIFRC
-QiBkb2VzIG5vdCBkZWZpbmUgdGJiX2NseigpIGJ1dCBjbHooKS4KPj4+Pj4+Cj4+Pj4+PiAtLQo+
-Pj4+Pj4gUGhpbGlwcGUuCj4+Pj4+Cj4+Pj4+IEluIFRCQiBjbHooKSBpcyBub3QgYSBwcmVwcm9j
-ZXNzb3IgbWFjcm8gYnV0IGFuIGlubGluZSBmdW5jdGlvbiB0aGF0Cj4+Pj4+IGlzIGFjdHVhbGx5
-IGRlZmluZWQgaW4gdGJiOjppbnRlcm5hbDo6Z2NjX2J1aWx0aW5zOjpjbHooKQo+Pj4+PiBUaGF0
-J3Mgd2h5IEknbSBzdWdnZXN0aW5nIHRoZSBfX3hlbm8gcHJlZml4Lgo+Pj4+Pgo+Pj4+Cj4+Pj4g
-VGhhbmtzLCBJIGNhbiBzdGlsbCByZWFkIEMrKyBhIGJpdC4KPj4+Pgo+Pj4+IEJ1dCBubywgSSBk
-b24ndCB3YW50IHRvIGFkZCB4ZW5vKiBpbiBmcm9udCBvZiBldmVyeSBzeW1ib2wsIG5vdCBvbmx5
-Cj4+Pj4gYmVjYXVzZSBJIGZpbmQgdGhpcyBwYXJ0aWN1bGFyIHByZWZpeCB1Z2x5LCBidXQgbW9y
-ZSB0byB0aGUgcG9pbnQsCj4+Pj4gYmVjYXVzZSB0aGUgc3ltYm9scyB5b3UgYXJlIHJlZmVycmlu
-ZyB0byBhcmUgcGFydCBmcm9tIHRoZSBpbnRlcm5hbAo+Pj4+IGludGVyZmFjZSwgYW5kIG5vIEMr
-KyBjbGllbnQgY29kZSBpcyBzdXBwb3NlZCB0byBldmVyIHVzZSBYZW5vbWFpJ3MKPj4+PiBkZWZp
-bml0aW9uIG9mIGl0LiBIZW5jZSB0aGUgcGF0Y2guCj4+Pj4KPj4+PiBTaG91bGQgd2Ugc3RpbGwg
-cHJlZml4IGl0IGZvciBDIGNvZGUgdGhlbj8gTWF5YmUsIGJ1dCBzbyBmYXIgbm8gY29uZmxpY3QK
-Pj4+PiB3YXMgZXZlciByZXBvcnRlZCwgc28gSSdtIGdvaW5nIHRvIHdhaXQgYW5kIHNlZSBmb3Ig
-bm93Lgo+Pj4+Cj4+Cj4+IFRoZSBjb250ZXh0IGlzIG9yb2NvcyArIGdhemVibyAodGhhdCBhcHBh
-cmVudGx5IHVzZXMgdGJiKS4gTGltaXRlZAo+PiBhdWRpZW5jZSBpbmRlZWQuCj4+Cj4+Pgo+Pj4g
-QWN0dWFsbHksIHRoZSBiZXN0IGdlbmVyYWwgZml4IGZvciB0aGVzZSBpc3N1ZXMgd291bGQgYmUg
-dG8gZ3JvdXAKPj4+IGludGVybmFsIHN0dWZmIGludG8gcHJpdmF0ZSBoZWFkZXJzLCB3aGljaCBz
-aG91bGQgbm90IGJlIGluY2x1ZGVkIGJ5Cj4+PiBwdWJsaWMgb25lcy4KPj4+Cj4+Cj4+IFRoYXQn
-ZCBiZSBhIGdvb2Qgc29sdXRpb24uCj4+IE5ldmVydGhlbGVzcyBJIHNlZSBjbHovY3R6IGFyZSBv
-bmx5IHVzZWQgaW4gaGVhcG9iai1wc2hhcmVkLmMgb25lIHRpbWUKPj4gZWFjaCwgc28gd2hhdCBh
-Ym91dCBkZWZpbmluZyB0aGUgbWFjcm9zIGluIHRoaXMgZmlsZSA/Cj4+IEZvciBub3cgSSdtIHVz
-aW5nIHRoaXMgcGF0Y2gsIHRoYXQganVzdCByZW5hbWVzIGNseiBhbmQgY3R6IHRvIF9fY2x6IGFu
-ZCBfX2N0eiA6Cj4+Cj4+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2JvaWxlcnBsYXRlL2NvbXBpbGVy
-LmggYi9pbmNsdWRlL2JvaWxlcnBsYXRlL2NvbXBpbGVyLmgKPj4gaW5kZXggMDUwOWUzMy4uYmNl
-ZjdkNCAxMDA2NDQKPj4gLS0tIGEvaW5jbHVkZS9ib2lsZXJwbGF0ZS9jb21waWxlci5oCj4+ICsr
-KyBiL2luY2x1ZGUvYm9pbGVycGxhdGUvY29tcGlsZXIuaAo+PiBAQCAtNjQsNyArNjQsNyBAQCBl
-eHRlcm4gIkMiIHsKPj4KPj4gIHZvaWQgX19pbnZhbGlkX29wZXJhbmRfc2l6ZSh2b2lkKTsKPj4K
-Pj4gLSNkZWZpbmUgY3R6KF9fdikgXAo+PiArI2RlZmluZSBfX2N0eihfX3YpIFwKPj4gICAoeyBc
-Cj4+ICAgaW50IF9fcmV0OyBcCj4+ICAgaWYgKCFfX3YpIFwKPj4gQEAgLTgzLDcgKzgzLDcgQEAg
-dm9pZCBfX2ludmFsaWRfb3BlcmFuZF9zaXplKHZvaWQpOwo+PiAgIF9fcmV0OyBcCj4+ICAgfSkK
-Pj4KPj4gLSNkZWZpbmUgY2x6KF9fdikgXAo+PiArI2RlZmluZSBfX2NseihfX3YpIFwKPj4gICAo
-eyBcCj4+ICAgaW50IF9fcmV0OyBcCj4+ICAgaWYgKCFfX3YpIFwKPj4gZGlmZiAtLWdpdCBhL2xp
-Yi9jb3BwZXJwbGF0ZS9oZWFwb2JqLXBzaGFyZWQuYwo+PiBiL2xpYi9jb3BwZXJwbGF0ZS9oZWFw
-b2JqLXBzaGFyZWQuYwo+PiBpbmRleCA1NzhmNDQyLi4wM2Q2ZWFhIDEwMDY0NAo+PiAtLS0gYS9s
-aWIvY29wcGVycGxhdGUvaGVhcG9iai1wc2hhcmVkLmMKPj4gKysrIGIvbGliL2NvcHBlcnBsYXRl
-L2hlYXBvYmotcHNoYXJlZC5jCj4+IEBAIC0yOTEsNyArMjkxLDcgQEAgc3RhdGljIGludCByZXNl
-cnZlX3BhZ2VfcmFuZ2UodWludDMyX3QgKmJpdG1hcCwKPj4gaW50IGJpdHdvcmRzLCBpbnQgbnJw
-YWdlcykKPj4gICB2ID0gYml0bWFwW25dOwo+PiAgIGIgPSAwOwo+PiAgIHdoaWxlICh2ICE9IC0x
-VSkgewo+PiAtIHIgPSBjdHoodik7Cj4+ICsgciA9IF9fY3R6KHYpOwo+PiAgIGlmIChyKSB7Cj4+
-ICAgc2VxICs9IHI7Cj4+ICAgaWYgKHNlcSA+PSBucnBhZ2VzKSB7Cj4+IEBAIC00MzIsNyArNDMy
-LDcgQEAgc3RhdGljIHZvaWQgKmFsbG9jX2Jsb2NrKHN0cnVjdCBzaGFyZWRfaGVhcCAqaGVhcCwK
-Pj4gc2l6ZV90IHNpemUpCj4+ICAgKi8KPj4gICBpZiAoc2l6ZSA8PSBIT0JKX1BBR0VfU0laRSAq
-IDIpIHsKPj4gICAvKiBGaW5kIGxvZzIoc2l6ZSkuICovCj4+IC0gbG9nMnNpemUgPSBzaXplb2Yo
-c2l6ZSkgKiA4IC0gMSAtIGNseihzaXplKTsKPj4gKyBsb2cyc2l6ZSA9IHNpemVvZihzaXplKSAq
-IDggLSAxIC0gX19jbHooc2l6ZSk7Cj4+ICAgaWYgKHNpemUgJiAoc2l6ZSAtIDEpKQo+PiAgIGxv
-ZzJzaXplKys7Cj4+ICAgLyogVGhhdCBpcyB0aGUgYWN0dWFsIGJsb2NrIHNpemUgd2UgbmVlZC4g
-Ki8KPj4KPj4KPgo+IE9rLCBJJ2xsIHBpY2sgdGhhdCBvbmUgdG8gZWFzZSB0aGUgYnVyZGVuIHVu
-dGlsIHdlIG1hbmFnZSB0byBtb3ZlIHRoZQo+IGludGVybmFsIGNvZGUgb3V0IG9mIHRoZSBwdWJs
-aWMgaGVhZGVycyBlbnRpcmVseS4gQ291bGQgeW91IHByb3ZpZGUgYQo+IHBhdGNoIGNvbmZvcm1p
-bmcgdG8gdGhlIGdpdCBmb3JtYXQgSSBjYW4gbWVyZ2UgKHdpdGggYXV0b3JzaGlwLCBzdWJqZWN0
-LAo+IGV0Yy4sIGFzIG9idGFpbmVkIGJ5IGdpdCBmb3JtYXQtcGF0Y2ggb3IgZ2l0IGxvZz8pLgo+
-Cj4gVElBLgo+Cj4gLS0KPiBQaGlsaXBwZS4KCkRvbid0IGtub3cgaWYgSSBjYW4gYXR0YWNoIGZp
-bGVzIG9uIHRoaXMgbWFpbGluZyBsaXN0LCBzbyBpJ20gcG9zdGluZwppdCBoZXJlIGFsc286CgpG
-cm9tIGRjOTllYjE4NzJlMDI0NjljMmQ1MTZiNTZiNjU2MmM3OGRiZDJkZjAgTW9uIFNlcCAxNyAw
-MDowMDowMCAyMDAxCkZyb206IEFudG9pbmUgSG9hcmF1IDxob2FyYXUucm9ib3RpY3NAZ21haWwu
-Y29tPgpEYXRlOiBUaHUsIDI4IFNlcCAyMDE3IDE2OjE5OjA5ICswMjAwClN1YmplY3Q6IFtQQVRD
-SF0gcmVuYW1lIGNseigpL2N0eigpIC0+IF9fY2x6KCkvX19jdHooKQoKUHJldmVudHMgY29uZmxp
-Y3RzIHdpdGggbGlidGJiIHRoYXQgZGVmaW5lcyBjbHogYXMgYW4gaW5saW5lIGZ1bmN0aW9uIGFu
-ZCBnZXRzCnJlcGxhY2VkIGJ5IHRob3NlIG1hY3Jvcy4gVGVtcG9yYXJ5IGZpeCB3YWl0aW5nIHRv
-IG1vdmUgdGhpcyBjb2RlIGluCnByaXZhdGUgaGVhZGVycy4KLS0tCiBpbmNsdWRlL2JvaWxlcnBs
-YXRlL2NvbXBpbGVyLmggICAgfCA0ICsrLS0KIGxpYi9jb3BwZXJwbGF0ZS9oZWFwb2JqLXBzaGFy
-ZWQuYyB8IDQgKystLQogMiBmaWxlcyBjaGFuZ2VkLCA0IGluc2VydGlvbnMoKyksIDQgZGVsZXRp
-b25zKC0pCgpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9ib2lsZXJwbGF0ZS9jb21waWxlci5oIGIvaW5j
-bHVkZS9ib2lsZXJwbGF0ZS9jb21waWxlci5oCmluZGV4IDA1MDllMzMuLmJjZWY3ZDQgMTAwNjQ0
-Ci0tLSBhL2luY2x1ZGUvYm9pbGVycGxhdGUvY29tcGlsZXIuaAorKysgYi9pbmNsdWRlL2JvaWxl
-cnBsYXRlL2NvbXBpbGVyLmgKQEAgLTY0LDcgKzY0LDcgQEAgZXh0ZXJuICJDIiB7Cgogdm9pZCBf
-X2ludmFsaWRfb3BlcmFuZF9zaXplKHZvaWQpOwoKLSNkZWZpbmUgY3R6KF9fdikgXAorI2RlZmlu
-ZSBfX2N0eihfX3YpIFwKICAoeyBcCiAgaW50IF9fcmV0OyBcCiAgaWYgKCFfX3YpIFwKQEAgLTgz
-LDcgKzgzLDcgQEAgdm9pZCBfX2ludmFsaWRfb3BlcmFuZF9zaXplKHZvaWQpOwogIF9fcmV0OyBc
-CiAgfSkKCi0jZGVmaW5lIGNseihfX3YpIFwKKyNkZWZpbmUgX19jbHooX192KSBcCiAgKHsgXAog
-IGludCBfX3JldDsgXAogIGlmICghX192KSBcCmRpZmYgLS1naXQgYS9saWIvY29wcGVycGxhdGUv
-aGVhcG9iai1wc2hhcmVkLmMKYi9saWIvY29wcGVycGxhdGUvaGVhcG9iai1wc2hhcmVkLmMKaW5k
-ZXggNTc4ZjQ0Mi4uMDNkNmVhYSAxMDA2NDQKLS0tIGEvbGliL2NvcHBlcnBsYXRlL2hlYXBvYmot
-cHNoYXJlZC5jCisrKyBiL2xpYi9jb3BwZXJwbGF0ZS9oZWFwb2JqLXBzaGFyZWQuYwpAQCAtMjkx
-LDcgKzI5MSw3IEBAIHN0YXRpYyBpbnQgcmVzZXJ2ZV9wYWdlX3JhbmdlKHVpbnQzMl90ICpiaXRt
-YXAsCmludCBiaXR3b3JkcywgaW50IG5ycGFnZXMpCiAgdiA9IGJpdG1hcFtuXTsKICBiID0gMDsK
-ICB3aGlsZSAodiAhPSAtMVUpIHsKLSByID0gY3R6KHYpOworIHIgPSBfX2N0eih2KTsKICBpZiAo
-cikgewogIHNlcSArPSByOwogIGlmIChzZXEgPj0gbnJwYWdlcykgewpAQCAtNDMyLDcgKzQzMiw3
-IEBAIHN0YXRpYyB2b2lkICphbGxvY19ibG9jayhzdHJ1Y3Qgc2hhcmVkX2hlYXAgKmhlYXAsCnNp
-emVfdCBzaXplKQogICovCiAgaWYgKHNpemUgPD0gSE9CSl9QQUdFX1NJWkUgKiAyKSB7CiAgLyog
-RmluZCBsb2cyKHNpemUpLiAqLwotIGxvZzJzaXplID0gc2l6ZW9mKHNpemUpICogOCAtIDEgLSBj
-bHooc2l6ZSk7CisgbG9nMnNpemUgPSBzaXplb2Yoc2l6ZSkgKiA4IC0gMSAtIF9fY2x6KHNpemUp
-OwogIGlmIChzaXplICYgKHNpemUgLSAxKSkKICBsb2cyc2l6ZSsrOwogIC8qIFRoYXQgaXMgdGhl
-IGFjdHVhbCBibG9jayBzaXplIHdlIG5lZWQuICovCi0tIAoyLjcuNAoKClRoYW5rIHlvdSBhZ2Fp
-biBmb3IgeW91ciBoZWxwCi0tIApBbnRvaW5lIEhvYXJhdQotLS0tLS0tLS0tLS0tLSBuZXh0IHBh
-cnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpO
-YW1lOiAwMDAxLXJlbmFtZS1jbHotY3R6LV9fY2x6LV9fY3R6LnBhdGNoClR5cGU6IHRleHQveC1w
-YXRjaApTaXplOiAxODQ5IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hl
-bm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTcwOTI4Lzc2OTQ3MTc0
-L2F0dGFjaG1lbnQuYmluPgo=
+Hi all -- I sent this last week but it never showed up in my inbox, so I'm
+assuming you haven't seen it...
+
+On Fri, Sep 22, 2017 at 5:54 PM, C Smith <csmithquestions@gmail.com> wrote:
+
+> Hi all --
+>
+> Thanks to your help, I am now using XDDP sockets for communication between
+> non-RT processes and a single RT process.  It is generally working -- I
+> start the RT task first, and it opens several sockets.  It starts doing
+> non-blocking reads and writes, and since no process is on the other end,
+> they return immediately.
+>
+> Then I start one or more non-RT processes that connect, either O_RDONLY or
+> O_WRONLY, to several of the non-RT ends of the sockets (via /dev/rtpXX).
+> That works well, now the RT and non-RT processes are exchanging data.
+>
+> The problem comes if I run one of the non-RT processes in a debugger and
+> halt it (after it has connected).  The evidence is ambiguous, but usually
+> it seems the RT task just hangs.  Then if I continue the non-RT process,
+> everything becomes healthy again and messages flow.  Or, if I kill the
+> non-RT process, at least the RT task doesn't hang.
+>
+> I haven't been able to figure out anything about the RT process when it is
+> "hung".  The first time I saw this today, it appeared that a socket
+> sendto() operation in the RT process was returning errno = ENOMEM, but I
+> wasn't able to reproduce it.  If I attach to the RT process in a debugger
+> while it is hung, I'm not able to get it to continue.  And if I start the
+> RT process in a debugger, then break when it hangs, I can single step
+> through the entire infinite loop of the RT process without problem; but
+> then when I continue it goes back to the hang behavior.  (One thing the
+> infinite loop does is increment a counter in shared memory -- I can see
+> this happen when I'm single stepping, but then when I continue I see from
+> non-RT processes that the counter in shared memory stops incrementing.)
+>
+> Any ideas, either what is expected when the process on one end of an XDDP
+> socket is suspended, or how I could figure out what's going on in the RT
+> process?
+>
+> Thanks for all you help so far!
+> Bob
+>
