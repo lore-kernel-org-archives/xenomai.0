@@ -1,3 +1,5 @@
+MIME-Version: 1.0
+In-Reply-To: <9d79f285-90a1-87b2-a8ad-1e71bef3299f@xenomai.org>
 References: <CAB6vvjnpmzM7U0baR3JTpzziFtoKd9KgPWBk0faYNFSYt+MC2A@mail.gmail.com>
  <a6a27622-2f86-ff8b-ed7d-52309276dce4@xenomai.org>
  <CAB6vvj=PpNw_zdk0KD8w3OY_Rqz0BACCNOX7oE4HRCjtuAiSrA@mail.gmail.com>
@@ -9,14 +11,12 @@ References: <CAB6vvjnpmzM7U0baR3JTpzziFtoKd9KgPWBk0faYNFSYt+MC2A@mail.gmail.com>
  <3421edf2-d250-f8fe-235f-c28947601e3a@xenomai.org>
  <1825bfbf-d828-d98d-1f7c-5bd99f94ef5e@xenomai.org>
  <CAB6vvjnoQvPaKCv9hLM_R=-TUyxyhVJ6GxjfiVScC7GpSGDZmA@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <9d79f285-90a1-87b2-a8ad-1e71bef3299f@xenomai.org>
-Date: Thu, 28 Sep 2017 15:31:57 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAB6vvjnoQvPaKCv9hLM_R=-TUyxyhVJ6GxjfiVScC7GpSGDZmA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+ <9d79f285-90a1-87b2-a8ad-1e71bef3299f@xenomai.org>
+From: Antoine Hoarau <hoarau.robotics@gmail.com>
+Date: Thu, 28 Sep 2017 16:36:40 +0200
+Message-ID: <CAB6vvjnKbPyw77p1Sqr1NiEWAFyTjSRZ1cBecjfdQi=6eAYSdA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Boost thread macro confilct
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -26,210 +26,172 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Antoine Hoarau <hoarau.robotics@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 09/28/2017 03:19 PM, Antoine Hoarau wrote:
-> 2017-09-26 19:34 GMT+02:00 Philippe Gerum <rpm@xenomai.org>:
->> On 09/26/2017 06:37 PM, Philippe Gerum wrote:
->>> On 09/26/2017 06:14 PM, Antoine Hoarau wrote:
->>>> 2017-09-26 18:07 GMT+02:00 Philippe Gerum <rpm@xenomai.org>:
->>>>> On 09/26/2017 05:51 PM, Antoine Hoarau wrote:
->>>>>> 2017-09-25 19:40 GMT+02:00 Philippe Gerum <rpm@xenomai.org>:
->>>>>>> On 09/25/2017 07:35 PM, Philippe Gerum wrote:
->>>>>>>> On 09/24/2017 08:19 PM, Antoine Hoarau wrote:
->>>>>>>>> 2017-09-24 17:17 GMT+02:00 Philippe Gerum <rpm@xenomai.org>:
->>>>>>>>>> On 09/24/2017 04:52 PM, Antoine Hoarau wrote:
->>>>>>>>>>> Hi again,
->>>>>>>>>>>
->>>>>>>>>>> I'm having some issues with boost threads macros. If I compile the
->>>>>>>>>>> following code :
->>>>>>>>>>>
->>>>>>>>>>> #include <alchemy/task.h>
->>>>>>>>>>> #include <boost/thread.hpp>
->>>>>>>>>>> int main() { return 0; }
->>>>>>>>>>>
->>>>>>>>>>> g++ b.cc $(xeno-config --alchemy --cflags)  $(xeno-config --alchemy
->>>>>>>>>>> --ldflags) -lboost_system -lboost_thread
->>>>>>>>>>>
->>>>>>>>>>> It gives me a lot of errors regarding "barrier", a macro present in both
->>>>>>>>>>> librairies. Copperplate's debug macro also created similar issues with
->>>>>>>>>>> log4cpp lib.
->>>>>>>>>>>
->>>>>>>>>>> It compiles only if :
->>>>>>>>>>> 1) Unsetting barrier from alchemy
->>>>>>>>>>>
->>>>>>>>>>> #include <alchemy/task.h>
->>>>>>>>>>> #unset barrier
->>>>>>>>>>> #include <boost/thread.hpp>
->>>>>>>>>>> int main() { return 0; }
->>>>>>>>>>>
->>>>>>>>>>> 2) Changing the order of the includes (easy here, but hard on a big library)
->>>>>>>>>>>
->>>>>>>>>>> #include <boost/thread.hpp>
->>>>>>>>>>> #include <alchemy/task.h>
->>>>>>>>>>> int main() { return 0; }
->>>>>>>>>>>
->>>>>>>>>>> I guess it's not a redefinition, but an overloading :
->>>>>>>>>>>
->>>>>>>>>>> /usr/include/boost/thread/barrier.hpp:138:22: error: too many arguments
->>>>>>>>>>> provided to function-like macro invocation
->>>>>>>>>>>     explicit barrier(unsigned int count) :
->>>>>>>>>>>                      ^
->>>>>>>>>>> /usr/xenomai/include/boilerplate/atomic.h:83:9: note: macro 'barrier'
->>>>>>>>>>> defined here
->>>>>>>>>>> #define barrier()       __asm__ __volatile__("": : :"memory")
->>>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>> We want to define a compiler barrier that represents a strong sequence
->>>>>>>>>> point in the instruction flow, this has nothing to do with a thread
->>>>>>>>>> synchronization method. We only have a very few instances of such
->>>>>>>>>> barriers, so the best fix is to rename our macro.
->>>>>>>>>>
->>>>>>>>>> Please pull this change:
->>>>>>>>>> http://git.xenomai.org/xenomai-3.git/commit/?id=cd8815510e4ea53218a36518be09276bab21750d
->>>>>>>>>>
->>>>>>>>>> --
->>>>>>>>>> Philippe.
->>>>>>>>>
->>>>>>>>> Excellent, that fixes the barrier problem.
->>>>>>>>> There's now also clz and cls in boilerplate/compiler.h, that conflicts
->>>>>>>>> with libtbb, and debug() in copperplate/debug.h, that conflicts with a
->>>>>>>>> lot of libs I use.
->>>>>>>>>
->>>>>>>>>
->>>>>>>>> I really don't know why the compiler gets so confused, here's an example :
->>>>>>>>>
->>>>>>>>> #include <alchemy/task.h>
->>>>>>>>>
->>>>>>>>> struct A
->>>>>>>>> {
->>>>>>>>> A():debug(0){}
->>>>>>>>> bool debug;
->>>>>>>>> };
->>>>>>>>>
->>>>>>>>
->>>>>>>> Because it ends up compiling this in the !debug case, once the
->>>>>>>> preprocessor tokens have been substituted:
->>>>>>>>
->>>>>>>> struct A
->>>>>>>> {
->>>>>>>> A():do { } while (0)(0){}
->>>>>>>> bool do { } while (0);
->>>>>>>> };
->>>>>>>>
->>>>>>>
->>>>>>> struct A
->>>>>>> {
->>>>>>> A():do { } while (0)(0){}
->>>>>>> bool debug;
->>>>>>> };
->>>>>>>
->>>>>>> is more likely.
->>>>>>>
->>>>>>> --
->>>>>>> Philippe.
->>>>>>
->>>>>> I'm obviously fine with any solution, but why not rename the internal
->>>>>> macros with a "namespace __xeno" , like __xeno_debug(), __xeno_clz() ?
->>>>>>
->>>>>> btw the line in question for clz() is here :
->>>>>> https://github.com/jckarter/tbb/blob/master/include/tbb/machine/gcc_generic.h#L77
->>>>>> gcc_generic.h seems to be included in may libs.
->>>>>>
->>>>>
->>>>> Probably for the same reason than TBB does not define tbb_clz() but clz().
->>>>>
->>>>> --
->>>>> Philippe.
->>>>
->>>> In TBB clz() is not a preprocessor macro but an inline function that
->>>> is actually defined in tbb::internal::gcc_builtins::clz()
->>>> That's why I'm suggesting the __xeno prefix.
->>>>
->>>
->>> Thanks, I can still read C++ a bit.
->>>
->>> But no, I don't want to add xeno* in front of every symbol, not only
->>> because I find this particular prefix ugly, but more to the point,
->>> because the symbols you are referring to are part from the internal
->>> interface, and no C++ client code is supposed to ever use Xenomai's
->>> definition of it. Hence the patch.
->>>
->>> Should we still prefix it for C code then? Maybe, but so far no conflict
->>> was ever reported, so I'm going to wait and see for now.
->>>
-> 
-> The context is orocos + gazebo (that apparently uses tbb). Limited
-> audience indeed.
-> 
->>
->> Actually, the best general fix for these issues would be to group
->> internal stuff into private headers, which should not be included by
->> public ones.
->>
-> 
-> That'd be a good solution.
-> Nevertheless I see clz/ctz are only used in heapobj-pshared.c one time
-> each, so what about defining the macros in this file ?
-> For now I'm using this patch, that just renames clz and ctz to __clz and __ctz :
-> 
-> diff --git a/include/boilerplate/compiler.h b/include/boilerplate/compiler.h
-> index 0509e33..bcef7d4 100644
-> --- a/include/boilerplate/compiler.h
-> +++ b/include/boilerplate/compiler.h
-> @@ -64,7 +64,7 @@ extern "C" {
-> 
->  void __invalid_operand_size(void);
-> 
-> -#define ctz(__v) \
-> +#define __ctz(__v) \
->   ({ \
->   int __ret; \
->   if (!__v) \
-> @@ -83,7 +83,7 @@ void __invalid_operand_size(void);
->   __ret; \
->   })
-> 
-> -#define clz(__v) \
-> +#define __clz(__v) \
->   ({ \
->   int __ret; \
->   if (!__v) \
-> diff --git a/lib/copperplate/heapobj-pshared.c
-> b/lib/copperplate/heapobj-pshared.c
-> index 578f442..03d6eaa 100644
-> --- a/lib/copperplate/heapobj-pshared.c
-> +++ b/lib/copperplate/heapobj-pshared.c
-> @@ -291,7 +291,7 @@ static int reserve_page_range(uint32_t *bitmap,
-> int bitwords, int nrpages)
->   v = bitmap[n];
->   b = 0;
->   while (v != -1U) {
-> - r = ctz(v);
-> + r = __ctz(v);
->   if (r) {
->   seq += r;
->   if (seq >= nrpages) {
-> @@ -432,7 +432,7 @@ static void *alloc_block(struct shared_heap *heap,
-> size_t size)
->   */
->   if (size <= HOBJ_PAGE_SIZE * 2) {
->   /* Find log2(size). */
-> - log2size = sizeof(size) * 8 - 1 - clz(size);
-> + log2size = sizeof(size) * 8 - 1 - __clz(size);
->   if (size & (size - 1))
->   log2size++;
->   /* That is the actual block size we need. */
-> 
-> 
-
-Ok, I'll pick that one to ease the burden until we manage to move the
-internal code out of the public headers entirely. Could you provide a
-patch conforming to the git format I can merge (with autorship, subject,
-etc., as obtained by git format-patch or git log?).
-
-TIA.
-
--- 
-Philippe.
-
+MjAxNy0wOS0yOCAxNTozMSBHTVQrMDI6MDAgUGhpbGlwcGUgR2VydW0gPHJwbUB4ZW5vbWFpLm9y
+Zz46Cj4gT24gMDkvMjgvMjAxNyAwMzoxOSBQTSwgQW50b2luZSBIb2FyYXUgd3JvdGU6Cj4+IDIw
+MTctMDktMjYgMTk6MzQgR01UKzAyOjAwIFBoaWxpcHBlIEdlcnVtIDxycG1AeGVub21haS5vcmc+
+Ogo+Pj4gT24gMDkvMjYvMjAxNyAwNjozNyBQTSwgUGhpbGlwcGUgR2VydW0gd3JvdGU6Cj4+Pj4g
+T24gMDkvMjYvMjAxNyAwNjoxNCBQTSwgQW50b2luZSBIb2FyYXUgd3JvdGU6Cj4+Pj4+IDIwMTct
+MDktMjYgMTg6MDcgR01UKzAyOjAwIFBoaWxpcHBlIEdlcnVtIDxycG1AeGVub21haS5vcmc+Ogo+
+Pj4+Pj4gT24gMDkvMjYvMjAxNyAwNTo1MSBQTSwgQW50b2luZSBIb2FyYXUgd3JvdGU6Cj4+Pj4+
+Pj4gMjAxNy0wOS0yNSAxOTo0MCBHTVQrMDI6MDAgUGhpbGlwcGUgR2VydW0gPHJwbUB4ZW5vbWFp
+Lm9yZz46Cj4+Pj4+Pj4+IE9uIDA5LzI1LzIwMTcgMDc6MzUgUE0sIFBoaWxpcHBlIEdlcnVtIHdy
+b3RlOgo+Pj4+Pj4+Pj4gT24gMDkvMjQvMjAxNyAwODoxOSBQTSwgQW50b2luZSBIb2FyYXUgd3Jv
+dGU6Cj4+Pj4+Pj4+Pj4gMjAxNy0wOS0yNCAxNzoxNyBHTVQrMDI6MDAgUGhpbGlwcGUgR2VydW0g
+PHJwbUB4ZW5vbWFpLm9yZz46Cj4+Pj4+Pj4+Pj4+IE9uIDA5LzI0LzIwMTcgMDQ6NTIgUE0sIEFu
+dG9pbmUgSG9hcmF1IHdyb3RlOgo+Pj4+Pj4+Pj4+Pj4gSGkgYWdhaW4sCj4+Pj4+Pj4+Pj4+Pgo+
+Pj4+Pj4+Pj4+Pj4gSSdtIGhhdmluZyBzb21lIGlzc3VlcyB3aXRoIGJvb3N0IHRocmVhZHMgbWFj
+cm9zLiBJZiBJIGNvbXBpbGUgdGhlCj4+Pj4+Pj4+Pj4+PiBmb2xsb3dpbmcgY29kZSA6Cj4+Pj4+
+Pj4+Pj4+Pgo+Pj4+Pj4+Pj4+Pj4gI2luY2x1ZGUgPGFsY2hlbXkvdGFzay5oPgo+Pj4+Pj4+Pj4+
+Pj4gI2luY2x1ZGUgPGJvb3N0L3RocmVhZC5ocHA+Cj4+Pj4+Pj4+Pj4+PiBpbnQgbWFpbigpIHsg
+cmV0dXJuIDA7IH0KPj4+Pj4+Pj4+Pj4+Cj4+Pj4+Pj4+Pj4+PiBnKysgYi5jYyAkKHhlbm8tY29u
+ZmlnIC0tYWxjaGVteSAtLWNmbGFncykgICQoeGVuby1jb25maWcgLS1hbGNoZW15Cj4+Pj4+Pj4+
+Pj4+PiAtLWxkZmxhZ3MpIC1sYm9vc3Rfc3lzdGVtIC1sYm9vc3RfdGhyZWFkCj4+Pj4+Pj4+Pj4+
+Pgo+Pj4+Pj4+Pj4+Pj4gSXQgZ2l2ZXMgbWUgYSBsb3Qgb2YgZXJyb3JzIHJlZ2FyZGluZyAiYmFy
+cmllciIsIGEgbWFjcm8gcHJlc2VudCBpbiBib3RoCj4+Pj4+Pj4+Pj4+PiBsaWJyYWlyaWVzLiBD
+b3BwZXJwbGF0ZSdzIGRlYnVnIG1hY3JvIGFsc28gY3JlYXRlZCBzaW1pbGFyIGlzc3VlcyB3aXRo
+Cj4+Pj4+Pj4+Pj4+PiBsb2c0Y3BwIGxpYi4KPj4+Pj4+Pj4+Pj4+Cj4+Pj4+Pj4+Pj4+PiBJdCBj
+b21waWxlcyBvbmx5IGlmIDoKPj4+Pj4+Pj4+Pj4+IDEpIFVuc2V0dGluZyBiYXJyaWVyIGZyb20g
+YWxjaGVteQo+Pj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+Pj4+ICNpbmNsdWRlIDxhbGNoZW15L3Rhc2su
+aD4KPj4+Pj4+Pj4+Pj4+ICN1bnNldCBiYXJyaWVyCj4+Pj4+Pj4+Pj4+PiAjaW5jbHVkZSA8Ym9v
+c3QvdGhyZWFkLmhwcD4KPj4+Pj4+Pj4+Pj4+IGludCBtYWluKCkgeyByZXR1cm4gMDsgfQo+Pj4+
+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+Pj4+IDIpIENoYW5naW5nIHRoZSBvcmRlciBvZiB0aGUgaW5jbHVk
+ZXMgKGVhc3kgaGVyZSwgYnV0IGhhcmQgb24gYSBiaWcgbGlicmFyeSkKPj4+Pj4+Pj4+Pj4+Cj4+
+Pj4+Pj4+Pj4+PiAjaW5jbHVkZSA8Ym9vc3QvdGhyZWFkLmhwcD4KPj4+Pj4+Pj4+Pj4+ICNpbmNs
+dWRlIDxhbGNoZW15L3Rhc2suaD4KPj4+Pj4+Pj4+Pj4+IGludCBtYWluKCkgeyByZXR1cm4gMDsg
+fQo+Pj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+Pj4+IEkgZ3Vlc3MgaXQncyBub3QgYSByZWRlZmluaXRp
+b24sIGJ1dCBhbiBvdmVybG9hZGluZyA6Cj4+Pj4+Pj4+Pj4+Pgo+Pj4+Pj4+Pj4+Pj4gL3Vzci9p
+bmNsdWRlL2Jvb3N0L3RocmVhZC9iYXJyaWVyLmhwcDoxMzg6MjI6IGVycm9yOiB0b28gbWFueSBh
+cmd1bWVudHMKPj4+Pj4+Pj4+Pj4+IHByb3ZpZGVkIHRvIGZ1bmN0aW9uLWxpa2UgbWFjcm8gaW52
+b2NhdGlvbgo+Pj4+Pj4+Pj4+Pj4gICAgIGV4cGxpY2l0IGJhcnJpZXIodW5zaWduZWQgaW50IGNv
+dW50KSA6Cj4+Pj4+Pj4+Pj4+PiAgICAgICAgICAgICAgICAgICAgICBeCj4+Pj4+Pj4+Pj4+PiAv
+dXNyL3hlbm9tYWkvaW5jbHVkZS9ib2lsZXJwbGF0ZS9hdG9taWMuaDo4Mzo5OiBub3RlOiBtYWNy
+byAnYmFycmllcicKPj4+Pj4+Pj4+Pj4+IGRlZmluZWQgaGVyZQo+Pj4+Pj4+Pj4+Pj4gI2RlZmlu
+ZSBiYXJyaWVyKCkgICAgICAgX19hc21fXyBfX3ZvbGF0aWxlX18oIiI6IDogOiJtZW1vcnkiKQo+
+Pj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+Pj4gV2Ugd2FudCB0byBkZWZpbmUgYSBj
+b21waWxlciBiYXJyaWVyIHRoYXQgcmVwcmVzZW50cyBhIHN0cm9uZyBzZXF1ZW5jZQo+Pj4+Pj4+
+Pj4+PiBwb2ludCBpbiB0aGUgaW5zdHJ1Y3Rpb24gZmxvdywgdGhpcyBoYXMgbm90aGluZyB0byBk
+byB3aXRoIGEgdGhyZWFkCj4+Pj4+Pj4+Pj4+IHN5bmNocm9uaXphdGlvbiBtZXRob2QuIFdlIG9u
+bHkgaGF2ZSBhIHZlcnkgZmV3IGluc3RhbmNlcyBvZiBzdWNoCj4+Pj4+Pj4+Pj4+IGJhcnJpZXJz
+LCBzbyB0aGUgYmVzdCBmaXggaXMgdG8gcmVuYW1lIG91ciBtYWNyby4KPj4+Pj4+Pj4+Pj4KPj4+
+Pj4+Pj4+Pj4gUGxlYXNlIHB1bGwgdGhpcyBjaGFuZ2U6Cj4+Pj4+Pj4+Pj4+IGh0dHA6Ly9naXQu
+eGVub21haS5vcmcveGVub21haS0zLmdpdC9jb21taXQvP2lkPWNkODgxNTUxMGU0ZWE1MzIxOGEz
+NjUxOGJlMDkyNzZiYWIyMTc1MGQKPj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+Pj4gLS0KPj4+Pj4+Pj4+
+Pj4gUGhpbGlwcGUuCj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+PiBFeGNlbGxlbnQsIHRoYXQgZml4ZXMg
+dGhlIGJhcnJpZXIgcHJvYmxlbS4KPj4+Pj4+Pj4+PiBUaGVyZSdzIG5vdyBhbHNvIGNseiBhbmQg
+Y2xzIGluIGJvaWxlcnBsYXRlL2NvbXBpbGVyLmgsIHRoYXQgY29uZmxpY3RzCj4+Pj4+Pj4+Pj4g
+d2l0aCBsaWJ0YmIsIGFuZCBkZWJ1ZygpIGluIGNvcHBlcnBsYXRlL2RlYnVnLmgsIHRoYXQgY29u
+ZmxpY3RzIHdpdGggYQo+Pj4+Pj4+Pj4+IGxvdCBvZiBsaWJzIEkgdXNlLgo+Pj4+Pj4+Pj4+Cj4+
+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+PiBJIHJlYWxseSBkb24ndCBrbm93IHdoeSB0aGUgY29tcGlsZXIg
+Z2V0cyBzbyBjb25mdXNlZCwgaGVyZSdzIGFuIGV4YW1wbGUgOgo+Pj4+Pj4+Pj4+Cj4+Pj4+Pj4+
+Pj4gI2luY2x1ZGUgPGFsY2hlbXkvdGFzay5oPgo+Pj4+Pj4+Pj4+Cj4+Pj4+Pj4+Pj4gc3RydWN0
+IEEKPj4+Pj4+Pj4+PiB7Cj4+Pj4+Pj4+Pj4gQSgpOmRlYnVnKDApe30KPj4+Pj4+Pj4+PiBib29s
+IGRlYnVnOwo+Pj4+Pj4+Pj4+IH07Cj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+Cj4+Pj4+Pj4+PiBCZWNh
+dXNlIGl0IGVuZHMgdXAgY29tcGlsaW5nIHRoaXMgaW4gdGhlICFkZWJ1ZyBjYXNlLCBvbmNlIHRo
+ZQo+Pj4+Pj4+Pj4gcHJlcHJvY2Vzc29yIHRva2VucyBoYXZlIGJlZW4gc3Vic3RpdHV0ZWQ6Cj4+
+Pj4+Pj4+Pgo+Pj4+Pj4+Pj4gc3RydWN0IEEKPj4+Pj4+Pj4+IHsKPj4+Pj4+Pj4+IEEoKTpkbyB7
+IH0gd2hpbGUgKDApKDApe30KPj4+Pj4+Pj4+IGJvb2wgZG8geyB9IHdoaWxlICgwKTsKPj4+Pj4+
+Pj4+IH07Cj4+Pj4+Pj4+Pgo+Pj4+Pj4+Pgo+Pj4+Pj4+PiBzdHJ1Y3QgQQo+Pj4+Pj4+PiB7Cj4+
+Pj4+Pj4+IEEoKTpkbyB7IH0gd2hpbGUgKDApKDApe30KPj4+Pj4+Pj4gYm9vbCBkZWJ1ZzsKPj4+
+Pj4+Pj4gfTsKPj4+Pj4+Pj4KPj4+Pj4+Pj4gaXMgbW9yZSBsaWtlbHkuCj4+Pj4+Pj4+Cj4+Pj4+
+Pj4+IC0tCj4+Pj4+Pj4+IFBoaWxpcHBlLgo+Pj4+Pj4+Cj4+Pj4+Pj4gSSdtIG9idmlvdXNseSBm
+aW5lIHdpdGggYW55IHNvbHV0aW9uLCBidXQgd2h5IG5vdCByZW5hbWUgdGhlIGludGVybmFsCj4+
+Pj4+Pj4gbWFjcm9zIHdpdGggYSAibmFtZXNwYWNlIF9feGVubyIgLCBsaWtlIF9feGVub19kZWJ1
+ZygpLCBfX3hlbm9fY2x6KCkgPwo+Pj4+Pj4+Cj4+Pj4+Pj4gYnR3IHRoZSBsaW5lIGluIHF1ZXN0
+aW9uIGZvciBjbHooKSBpcyBoZXJlIDoKPj4+Pj4+PiBodHRwczovL2dpdGh1Yi5jb20vamNrYXJ0
+ZXIvdGJiL2Jsb2IvbWFzdGVyL2luY2x1ZGUvdGJiL21hY2hpbmUvZ2NjX2dlbmVyaWMuaCNMNzcK
+Pj4+Pj4+PiBnY2NfZ2VuZXJpYy5oIHNlZW1zIHRvIGJlIGluY2x1ZGVkIGluIG1heSBsaWJzLgo+
+Pj4+Pj4+Cj4+Pj4+Pgo+Pj4+Pj4gUHJvYmFibHkgZm9yIHRoZSBzYW1lIHJlYXNvbiB0aGFuIFRC
+QiBkb2VzIG5vdCBkZWZpbmUgdGJiX2NseigpIGJ1dCBjbHooKS4KPj4+Pj4+Cj4+Pj4+PiAtLQo+
+Pj4+Pj4gUGhpbGlwcGUuCj4+Pj4+Cj4+Pj4+IEluIFRCQiBjbHooKSBpcyBub3QgYSBwcmVwcm9j
+ZXNzb3IgbWFjcm8gYnV0IGFuIGlubGluZSBmdW5jdGlvbiB0aGF0Cj4+Pj4+IGlzIGFjdHVhbGx5
+IGRlZmluZWQgaW4gdGJiOjppbnRlcm5hbDo6Z2NjX2J1aWx0aW5zOjpjbHooKQo+Pj4+PiBUaGF0
+J3Mgd2h5IEknbSBzdWdnZXN0aW5nIHRoZSBfX3hlbm8gcHJlZml4Lgo+Pj4+Pgo+Pj4+Cj4+Pj4g
+VGhhbmtzLCBJIGNhbiBzdGlsbCByZWFkIEMrKyBhIGJpdC4KPj4+Pgo+Pj4+IEJ1dCBubywgSSBk
+b24ndCB3YW50IHRvIGFkZCB4ZW5vKiBpbiBmcm9udCBvZiBldmVyeSBzeW1ib2wsIG5vdCBvbmx5
+Cj4+Pj4gYmVjYXVzZSBJIGZpbmQgdGhpcyBwYXJ0aWN1bGFyIHByZWZpeCB1Z2x5LCBidXQgbW9y
+ZSB0byB0aGUgcG9pbnQsCj4+Pj4gYmVjYXVzZSB0aGUgc3ltYm9scyB5b3UgYXJlIHJlZmVycmlu
+ZyB0byBhcmUgcGFydCBmcm9tIHRoZSBpbnRlcm5hbAo+Pj4+IGludGVyZmFjZSwgYW5kIG5vIEMr
+KyBjbGllbnQgY29kZSBpcyBzdXBwb3NlZCB0byBldmVyIHVzZSBYZW5vbWFpJ3MKPj4+PiBkZWZp
+bml0aW9uIG9mIGl0LiBIZW5jZSB0aGUgcGF0Y2guCj4+Pj4KPj4+PiBTaG91bGQgd2Ugc3RpbGwg
+cHJlZml4IGl0IGZvciBDIGNvZGUgdGhlbj8gTWF5YmUsIGJ1dCBzbyBmYXIgbm8gY29uZmxpY3QK
+Pj4+PiB3YXMgZXZlciByZXBvcnRlZCwgc28gSSdtIGdvaW5nIHRvIHdhaXQgYW5kIHNlZSBmb3Ig
+bm93Lgo+Pj4+Cj4+Cj4+IFRoZSBjb250ZXh0IGlzIG9yb2NvcyArIGdhemVibyAodGhhdCBhcHBh
+cmVudGx5IHVzZXMgdGJiKS4gTGltaXRlZAo+PiBhdWRpZW5jZSBpbmRlZWQuCj4+Cj4+Pgo+Pj4g
+QWN0dWFsbHksIHRoZSBiZXN0IGdlbmVyYWwgZml4IGZvciB0aGVzZSBpc3N1ZXMgd291bGQgYmUg
+dG8gZ3JvdXAKPj4+IGludGVybmFsIHN0dWZmIGludG8gcHJpdmF0ZSBoZWFkZXJzLCB3aGljaCBz
+aG91bGQgbm90IGJlIGluY2x1ZGVkIGJ5Cj4+PiBwdWJsaWMgb25lcy4KPj4+Cj4+Cj4+IFRoYXQn
+ZCBiZSBhIGdvb2Qgc29sdXRpb24uCj4+IE5ldmVydGhlbGVzcyBJIHNlZSBjbHovY3R6IGFyZSBv
+bmx5IHVzZWQgaW4gaGVhcG9iai1wc2hhcmVkLmMgb25lIHRpbWUKPj4gZWFjaCwgc28gd2hhdCBh
+Ym91dCBkZWZpbmluZyB0aGUgbWFjcm9zIGluIHRoaXMgZmlsZSA/Cj4+IEZvciBub3cgSSdtIHVz
+aW5nIHRoaXMgcGF0Y2gsIHRoYXQganVzdCByZW5hbWVzIGNseiBhbmQgY3R6IHRvIF9fY2x6IGFu
+ZCBfX2N0eiA6Cj4+Cj4+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2JvaWxlcnBsYXRlL2NvbXBpbGVy
+LmggYi9pbmNsdWRlL2JvaWxlcnBsYXRlL2NvbXBpbGVyLmgKPj4gaW5kZXggMDUwOWUzMy4uYmNl
+ZjdkNCAxMDA2NDQKPj4gLS0tIGEvaW5jbHVkZS9ib2lsZXJwbGF0ZS9jb21waWxlci5oCj4+ICsr
+KyBiL2luY2x1ZGUvYm9pbGVycGxhdGUvY29tcGlsZXIuaAo+PiBAQCAtNjQsNyArNjQsNyBAQCBl
+eHRlcm4gIkMiIHsKPj4KPj4gIHZvaWQgX19pbnZhbGlkX29wZXJhbmRfc2l6ZSh2b2lkKTsKPj4K
+Pj4gLSNkZWZpbmUgY3R6KF9fdikgXAo+PiArI2RlZmluZSBfX2N0eihfX3YpIFwKPj4gICAoeyBc
+Cj4+ICAgaW50IF9fcmV0OyBcCj4+ICAgaWYgKCFfX3YpIFwKPj4gQEAgLTgzLDcgKzgzLDcgQEAg
+dm9pZCBfX2ludmFsaWRfb3BlcmFuZF9zaXplKHZvaWQpOwo+PiAgIF9fcmV0OyBcCj4+ICAgfSkK
+Pj4KPj4gLSNkZWZpbmUgY2x6KF9fdikgXAo+PiArI2RlZmluZSBfX2NseihfX3YpIFwKPj4gICAo
+eyBcCj4+ICAgaW50IF9fcmV0OyBcCj4+ICAgaWYgKCFfX3YpIFwKPj4gZGlmZiAtLWdpdCBhL2xp
+Yi9jb3BwZXJwbGF0ZS9oZWFwb2JqLXBzaGFyZWQuYwo+PiBiL2xpYi9jb3BwZXJwbGF0ZS9oZWFw
+b2JqLXBzaGFyZWQuYwo+PiBpbmRleCA1NzhmNDQyLi4wM2Q2ZWFhIDEwMDY0NAo+PiAtLS0gYS9s
+aWIvY29wcGVycGxhdGUvaGVhcG9iai1wc2hhcmVkLmMKPj4gKysrIGIvbGliL2NvcHBlcnBsYXRl
+L2hlYXBvYmotcHNoYXJlZC5jCj4+IEBAIC0yOTEsNyArMjkxLDcgQEAgc3RhdGljIGludCByZXNl
+cnZlX3BhZ2VfcmFuZ2UodWludDMyX3QgKmJpdG1hcCwKPj4gaW50IGJpdHdvcmRzLCBpbnQgbnJw
+YWdlcykKPj4gICB2ID0gYml0bWFwW25dOwo+PiAgIGIgPSAwOwo+PiAgIHdoaWxlICh2ICE9IC0x
+VSkgewo+PiAtIHIgPSBjdHoodik7Cj4+ICsgciA9IF9fY3R6KHYpOwo+PiAgIGlmIChyKSB7Cj4+
+ICAgc2VxICs9IHI7Cj4+ICAgaWYgKHNlcSA+PSBucnBhZ2VzKSB7Cj4+IEBAIC00MzIsNyArNDMy
+LDcgQEAgc3RhdGljIHZvaWQgKmFsbG9jX2Jsb2NrKHN0cnVjdCBzaGFyZWRfaGVhcCAqaGVhcCwK
+Pj4gc2l6ZV90IHNpemUpCj4+ICAgKi8KPj4gICBpZiAoc2l6ZSA8PSBIT0JKX1BBR0VfU0laRSAq
+IDIpIHsKPj4gICAvKiBGaW5kIGxvZzIoc2l6ZSkuICovCj4+IC0gbG9nMnNpemUgPSBzaXplb2Yo
+c2l6ZSkgKiA4IC0gMSAtIGNseihzaXplKTsKPj4gKyBsb2cyc2l6ZSA9IHNpemVvZihzaXplKSAq
+IDggLSAxIC0gX19jbHooc2l6ZSk7Cj4+ICAgaWYgKHNpemUgJiAoc2l6ZSAtIDEpKQo+PiAgIGxv
+ZzJzaXplKys7Cj4+ICAgLyogVGhhdCBpcyB0aGUgYWN0dWFsIGJsb2NrIHNpemUgd2UgbmVlZC4g
+Ki8KPj4KPj4KPgo+IE9rLCBJJ2xsIHBpY2sgdGhhdCBvbmUgdG8gZWFzZSB0aGUgYnVyZGVuIHVu
+dGlsIHdlIG1hbmFnZSB0byBtb3ZlIHRoZQo+IGludGVybmFsIGNvZGUgb3V0IG9mIHRoZSBwdWJs
+aWMgaGVhZGVycyBlbnRpcmVseS4gQ291bGQgeW91IHByb3ZpZGUgYQo+IHBhdGNoIGNvbmZvcm1p
+bmcgdG8gdGhlIGdpdCBmb3JtYXQgSSBjYW4gbWVyZ2UgKHdpdGggYXV0b3JzaGlwLCBzdWJqZWN0
+LAo+IGV0Yy4sIGFzIG9idGFpbmVkIGJ5IGdpdCBmb3JtYXQtcGF0Y2ggb3IgZ2l0IGxvZz8pLgo+
+Cj4gVElBLgo+Cj4gLS0KPiBQaGlsaXBwZS4KCkRvbid0IGtub3cgaWYgSSBjYW4gYXR0YWNoIGZp
+bGVzIG9uIHRoaXMgbWFpbGluZyBsaXN0LCBzbyBpJ20gcG9zdGluZwppdCBoZXJlIGFsc286CgpG
+cm9tIGRjOTllYjE4NzJlMDI0NjljMmQ1MTZiNTZiNjU2MmM3OGRiZDJkZjAgTW9uIFNlcCAxNyAw
+MDowMDowMCAyMDAxCkZyb206IEFudG9pbmUgSG9hcmF1IDxob2FyYXUucm9ib3RpY3NAZ21haWwu
+Y29tPgpEYXRlOiBUaHUsIDI4IFNlcCAyMDE3IDE2OjE5OjA5ICswMjAwClN1YmplY3Q6IFtQQVRD
+SF0gcmVuYW1lIGNseigpL2N0eigpIC0+IF9fY2x6KCkvX19jdHooKQoKUHJldmVudHMgY29uZmxp
+Y3RzIHdpdGggbGlidGJiIHRoYXQgZGVmaW5lcyBjbHogYXMgYW4gaW5saW5lIGZ1bmN0aW9uIGFu
+ZCBnZXRzCnJlcGxhY2VkIGJ5IHRob3NlIG1hY3Jvcy4gVGVtcG9yYXJ5IGZpeCB3YWl0aW5nIHRv
+IG1vdmUgdGhpcyBjb2RlIGluCnByaXZhdGUgaGVhZGVycy4KLS0tCiBpbmNsdWRlL2JvaWxlcnBs
+YXRlL2NvbXBpbGVyLmggICAgfCA0ICsrLS0KIGxpYi9jb3BwZXJwbGF0ZS9oZWFwb2JqLXBzaGFy
+ZWQuYyB8IDQgKystLQogMiBmaWxlcyBjaGFuZ2VkLCA0IGluc2VydGlvbnMoKyksIDQgZGVsZXRp
+b25zKC0pCgpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9ib2lsZXJwbGF0ZS9jb21waWxlci5oIGIvaW5j
+bHVkZS9ib2lsZXJwbGF0ZS9jb21waWxlci5oCmluZGV4IDA1MDllMzMuLmJjZWY3ZDQgMTAwNjQ0
+Ci0tLSBhL2luY2x1ZGUvYm9pbGVycGxhdGUvY29tcGlsZXIuaAorKysgYi9pbmNsdWRlL2JvaWxl
+cnBsYXRlL2NvbXBpbGVyLmgKQEAgLTY0LDcgKzY0LDcgQEAgZXh0ZXJuICJDIiB7Cgogdm9pZCBf
+X2ludmFsaWRfb3BlcmFuZF9zaXplKHZvaWQpOwoKLSNkZWZpbmUgY3R6KF9fdikgXAorI2RlZmlu
+ZSBfX2N0eihfX3YpIFwKICAoeyBcCiAgaW50IF9fcmV0OyBcCiAgaWYgKCFfX3YpIFwKQEAgLTgz
+LDcgKzgzLDcgQEAgdm9pZCBfX2ludmFsaWRfb3BlcmFuZF9zaXplKHZvaWQpOwogIF9fcmV0OyBc
+CiAgfSkKCi0jZGVmaW5lIGNseihfX3YpIFwKKyNkZWZpbmUgX19jbHooX192KSBcCiAgKHsgXAog
+IGludCBfX3JldDsgXAogIGlmICghX192KSBcCmRpZmYgLS1naXQgYS9saWIvY29wcGVycGxhdGUv
+aGVhcG9iai1wc2hhcmVkLmMKYi9saWIvY29wcGVycGxhdGUvaGVhcG9iai1wc2hhcmVkLmMKaW5k
+ZXggNTc4ZjQ0Mi4uMDNkNmVhYSAxMDA2NDQKLS0tIGEvbGliL2NvcHBlcnBsYXRlL2hlYXBvYmot
+cHNoYXJlZC5jCisrKyBiL2xpYi9jb3BwZXJwbGF0ZS9oZWFwb2JqLXBzaGFyZWQuYwpAQCAtMjkx
+LDcgKzI5MSw3IEBAIHN0YXRpYyBpbnQgcmVzZXJ2ZV9wYWdlX3JhbmdlKHVpbnQzMl90ICpiaXRt
+YXAsCmludCBiaXR3b3JkcywgaW50IG5ycGFnZXMpCiAgdiA9IGJpdG1hcFtuXTsKICBiID0gMDsK
+ICB3aGlsZSAodiAhPSAtMVUpIHsKLSByID0gY3R6KHYpOworIHIgPSBfX2N0eih2KTsKICBpZiAo
+cikgewogIHNlcSArPSByOwogIGlmIChzZXEgPj0gbnJwYWdlcykgewpAQCAtNDMyLDcgKzQzMiw3
+IEBAIHN0YXRpYyB2b2lkICphbGxvY19ibG9jayhzdHJ1Y3Qgc2hhcmVkX2hlYXAgKmhlYXAsCnNp
+emVfdCBzaXplKQogICovCiAgaWYgKHNpemUgPD0gSE9CSl9QQUdFX1NJWkUgKiAyKSB7CiAgLyog
+RmluZCBsb2cyKHNpemUpLiAqLwotIGxvZzJzaXplID0gc2l6ZW9mKHNpemUpICogOCAtIDEgLSBj
+bHooc2l6ZSk7CisgbG9nMnNpemUgPSBzaXplb2Yoc2l6ZSkgKiA4IC0gMSAtIF9fY2x6KHNpemUp
+OwogIGlmIChzaXplICYgKHNpemUgLSAxKSkKICBsb2cyc2l6ZSsrOwogIC8qIFRoYXQgaXMgdGhl
+IGFjdHVhbCBibG9jayBzaXplIHdlIG5lZWQuICovCi0tIAoyLjcuNAoKClRoYW5rIHlvdSBhZ2Fp
+biBmb3IgeW91ciBoZWxwCi0tIApBbnRvaW5lIEhvYXJhdQotLS0tLS0tLS0tLS0tLSBuZXh0IHBh
+cnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpO
+YW1lOiAwMDAxLXJlbmFtZS1jbHotY3R6LV9fY2x6LV9fY3R6LnBhdGNoClR5cGU6IHRleHQveC1w
+YXRjaApTaXplOiAxODQ5IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hl
+bm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTcwOTI4Lzc2OTQ3MTc0
+L2F0dGFjaG1lbnQuYmluPgo=
