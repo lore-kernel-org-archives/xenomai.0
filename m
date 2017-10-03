@@ -1,7 +1,7 @@
-Date: Tue, 03 Oct 2017 16:26:04 +0200
+Date: Tue, 03 Oct 2017 16:26:06 +0200
 From: xenomai@xenomai.org
-Message-Id: <E1dzO96-0006I7-Io@xenomai.org>
-Subject: [Xenomai] [I-PIPE] ipipe-core-4.4.71-blackfin-7 released
+Message-Id: <E1dzO98-0006Km-Fq@xenomai.org>
+Subject: [Xenomai] [I-PIPE] ipipe-core-4.9.38-blackfin-2 released
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,5 +12,5 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Download: https://xenomai.org/downloads/ipipe/v4.x/blackfin/ipipe-core-4.4.71-blackfin-7.patch
+Download: https://xenomai.org/downloads/ipipe/v4.x/blackfin/ipipe-core-4.9.38-blackfin-2.patch
 
