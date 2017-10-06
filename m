@@ -1,11 +1,14 @@
-From: =?utf-8?Q?Christoph_M=C3=BCllner?=
- <christoph.muellner@theobroma-systems.com>
-Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
-Message-Id: <45EE64EE-9FEE-49D4-B676-2A712AB5A7F4@theobroma-systems.com>
-Date: Fri, 6 Oct 2017 09:55:46 +0200
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] [Patch] Add missing header file to analogy_calibrate.h
+References: <DB6PR0701MB24565343D7707462B972F1ACB5710@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <b846b4f5-2bdc-1540-1504-6973e65d6a80@xenomai.org>
+Date: Fri, 6 Oct 2017 10:27:48 +0200
+MIME-Version: 1.0
+In-Reply-To: <DB6PR0701MB24565343D7707462B972F1ACB5710@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] --session= is not a recognized option when using
+ Posix skin
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,41 +17,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Giulio Moro <g.moro@qmul.ac.uk>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGkgWGVub21haS1MaXN0LAoKYXR0YWNoZWQgaXMgYSBwYXRjaCwgd2hpY2ggc29sdmVkIGEgY29t
-cGlsYXRpb24gaXNzdWUgd2hlbiBidWlsZGluZyBYZW5vbWFpIG5leHQgKGM0YmFhOWE4NCkuCk5v
-dGUsIHRoYXQgSSBhbSBidWlsZGluZyBYZW5vbWFpIGluIEJ1aWxkcm9vdCB3aXRoIGFhcmNoNjQg
-YXMgdGFyZ2V0IGFyY2hpdGVjdHVyZS4KSSdtIHVzaW5nIEdDQyA2LCBnbGliYyAyLjI1IGFuZCBM
-aW51eCBoZWFkZXJzIGZyb20gNC4xMi4KClRoZSBjb21wbGV0ZSBlcnJvciBtZXNzYWdlIGlzOgoK
-PiAgIGtlWzNdOiBFbnRlcmluZyBkaXJlY3RvcnkgJy9ob21lL2NtdWVsbG5lci9yazMzOTkvYnVp
-bGRyb290L2J1aWxkcm9vdC0yMDE3LjA4L291dHB1dC9idWlsZC94ZW5vbWFpLW5leHQvdXRpbHMv
-YW5hbG9neScKPiBbLi4uXQo+ICAgQ0NMRCAgICAgaW5zbl9yZWFkCj4gSW4gZmlsZSBpbmNsdWRl
-ZCBmcm9tIGNhbGlicmF0aW9uX25pX20uaDoyNzowLAo+ICAgICAgICAgICAgICAgICAgZnJvbSBj
-YWxpYnJhdGlvbl9uaV9tLmM6MjY6Cj4gYW5hbG9neV9jYWxpYnJhdGUuaDogSW4gZnVuY3Rpb24g
-4oCYX19kZWJ1Z+KAmToKPiBhbmFsb2d5X2NhbGlicmF0ZS5oOjk1OjI6IGVycm9yOiBpbXBsaWNp
-dCBkZWNsYXJhdGlvbiBvZiBmdW5jdGlvbiDigJhjbG9ja19nZXR0aW1l4oCZIFstV2Vycm9yPWlt
-cGxpY2l0LWZ1bmN0aW9uLWRlY2xhcmF0aW9uXQo+ICAgY2xvY2tfZ2V0dGltZShDTE9DS19NT05P
-VE9OSUMsICZub3cpOwo+ICAgXn5+fn5+fn5+fn5+fgo+IGFuYWxvZ3lfY2FsaWJyYXRlLmg6OTU6
-MTY6IGVycm9yOiDigJhDTE9DS19NT05PVE9OSUPigJkgdW5kZWNsYXJlZCAoZmlyc3QgdXNlIGlu
-IHRoaXMgZnVuY3Rpb24pCj4gICBjbG9ja19nZXR0aW1lKENMT0NLX01PTk9UT05JQywgJm5vdyk7
-Cj4gICAgICAgICAgICAgICAgIF5+fn5+fn5+fn5+fn5+fgo+IGFuYWxvZ3lfY2FsaWJyYXRlLmg6
-OTU6MTY6IG5vdGU6IGVhY2ggdW5kZWNsYXJlZCBpZGVudGlmaWVyIGlzIHJlcG9ydGVkIG9ubHkg
-b25jZSBmb3IgZWFjaCBmdW5jdGlvbiBpdCBhcHBlYXJzIGluCj4gY2MxOiBhbGwgd2FybmluZ3Mg
-YmVpbmcgdHJlYXRlZCBhcyBlcnJvcnMKPiBNYWtlZmlsZTo2OTM6IHJlY2lwZSBmb3IgdGFyZ2V0
-ICdjYWxpYnJhdGlvbl9uaV9tLm8nIGZhaWxlZAoKVGhhbmtzLApDaHJpc3RvcGgKCi0tLS0tLS0t
-LS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2Fz
-IHNjcnViYmVkLi4uCk5hbWU6IDAwMDEtdXRpbHMtYW5hbG9neS1BZGQtbWlzc2luZy1oZWFkZXIt
-ZmlsZS5wYXRjaApUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTogMTAyMSBieXRl
-cwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwv
-eGVub21haS9hdHRhY2htZW50cy8yMDE3MTAwNi84MTIxMTQxNS9hdHRhY2htZW50Lm9iaj4KLS0t
-LS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCgoKLS0KQ2hyaXN0b3BoIE3DvGxs
-bmVyClRoZW9icm9tYSBTeXN0ZW1zIERlc2lnbiB1bmQgQ29uc3VsdGluZyBHbWJIClNlZXN0YWR0
-c3RyYcOfZSAyNyAoQXNwZXJuIElRKSwgMTIyMCBXaWVuLCBBdXN0cmlhClBob25lOiArNDMgMSAy
-MzYgOTggOTMtNDA5LCBGYXg6ICs0MyAxIDIzNiA5OCA5My05Cmh0dHA6Ly93d3cudGhlb2Jyb21h
-LXN5c3RlbXMuY29tCgoKCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0K
-QSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNj
-ClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogODQyIGJ5dGVzCkRlc2M6IE1l
-c3NhZ2Ugc2lnbmVkIHdpdGggT3BlblBHUApVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJt
-YWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNzEwMDYvODEyMTE0MTUvYXR0YWNobWVudC5zaWc+
-Cg==
+On 10/06/2017 03:58 AM, Giulio Moro wrote:
+> On Xenomai 3.0.5, if I compile a program with the posix skin and I try to run it with `--session=mySessionName`, it errors as it cannot find the `--session` option. This is strange, because main() is definitely getting wrapped: if I run `--help`, it does show some Xenomai command-line options:
+> --main-prio=<prio>		main thread priority
+> --print-buffer-size=<bytes>	size of a print relay buffer (16k)
+> --print-buffer-count=<num>	number of print relay buffers (4)
+> --print-buffer-syncdelay=<ms>	max delay of output synchronization (100 ms)
+> --cpu-affinity=<cpu[,cpu]...>	set CPU affinity of threads
+> --[no-]sanity			disable/enable sanity checks
+> --verbose[=level] 		set verbosity to desired level [=1]
+> --silent, --quiet 		same as --verbose=0
+> --trace[=level] 		set tracing to desired level [=1]
+> --version			get version information
+> --dump-config			dump configuration settings
+> --help				display help
+> 
+> When I build a program with the Alchemy skin, then `--session` works just fine, and `--help` displays a number of additional options:
+> --alchemy-clock-resolution=<ns> tick value (default 1ns, tickless)
+> --mem-pool-size=<size[K|M|G]> 	size of the main heap
+> --no-registry			suppress object registration
+> --shared-registry		enable public access to registry
+> --registry-root=<path>		root path of registry
+> --session=<label>[/<group>]	enable shared session
+> 
+> I am linking with `/usr/xenomai/bin/xeno-config --ldflags --skin=posix`, which gives the following on my system (Beaglebone Black, kernel 4.4.87)
+> -Wl,--no-as-needed -Wl,@/usr/xenomai/lib/cobalt.wrappers -Wl,@/usr/xenomai/lib/modechk.wrappers  /usr/xenomai/lib/xenomai/bootstrap.o -Wl,--wrap=main -Wl,--dynamic-list=/usr/xenomai/lib/dynlist.ld -L/usr/xenomai/lib -lcobalt -lmodechk -lpthread -lrt
+> 
+
+This feature is implemented by the so-called "copperplate" interface
+libalchemy depends on. The POSIX API does not depend on copperplate, so
+you don't have support for multi-process sessions when linking against
+libcobalt exclusively. See there http://xenomai.org/start-here/.
+
+-- 
+Philippe.
+
