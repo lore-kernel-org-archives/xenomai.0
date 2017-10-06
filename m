@@ -1,18 +1,11 @@
-Date: Fri, 25 Aug 2017 19:16:04 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20170825191604.723abf24@md1em3qc>
-In-Reply-To: <bf9689d1-3373-ad65-97df-a67fa639c6c3@xenomai.org>
-References: <20170808112357.0063d74d@md1em3qc>
- <a676257d-9e88-1b81-15e6-adfffc1c7716@xenomai.org>
- <20170808134801.59ae5de6@md1em3qc>
- <86562178-3b5a-55fc-8652-dc15f228e541@xenomai.org>
- <20170808212758.550caab0@md1em3qc>
- <bf9689d1-3373-ad65-97df-a67fa639c6c3@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [RFC] Xenomai3 tuneables replaced by environment
-	variables
+From: =?utf-8?Q?Christoph_M=C3=BCllner?=
+ <christoph.muellner@theobroma-systems.com>
+Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
+Message-Id: <45EE64EE-9FEE-49D4-B676-2A712AB5A7F4@theobroma-systems.com>
+Date: Fri, 6 Oct 2017 09:55:46 +0200
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] [Patch] Add missing header file to analogy_calibrate.h
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,177 +14,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "KISZKA, JAN" <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Am Wed, 16 Aug 2017 20:13:34 +0200
-schrieb Philippe Gerum <rpm@xenomai.org>:
-
-> On 08/08/2017 09:27 PM, Henning Schild wrote:
-> >   
-> >> Could you sketch the requirements of the app with respect to
-> >> option parsing (namespace left aside)? Is there some main
-> >> non-Xenomai executable dlopening a Xenomai-based solib defining a
-> >> set of rt-specific options?  
-> > 
-> > Yes the application runs its own main() and later dlopen() s
-> > multiple libs, some of which may be linked to xenomai. The order of
-> > the dlopens seems hard to control because of static c++
-> > constructors or something alike. But i suggest we discuss the
-> > internals of that particular app after we have finished the
-> > discussion. 
-> 
-> No need for this; I was not asking for details about the internals,
-> only for explicit requirements about receiving parameters / options
-> among the software components present in your app. Anyway, I think I
-> figured it out from what you've just said.
-> 
-> >> It seems that you are implicitly referring to ancillaries settings
-> >> such as --silent, --verbose and --quiet as being problematic. Is it
-> >> correct or are you referring to other parameters?  
-> > 
-> > If your main comes before xenomai_init() it either has to be able to
-> > ignore xenomai args or it will need to change argv/argc before
-> > dlopening.
-> > 
-> > In the first case it has to know all valid args  
-> 
-> ... the application accepts. Do some (non-Xenomai) dlopened libs
-> define their own option namespace the main component does not know
-> about? If not, this is only a matter of excluding/ignoring the
-> options which the application does not accept when parsing the
-> argument vector.
-> 
-> xenomai_init() will do the same afterwards, ignoring the non-Xenomai
-> options transparently. The point being: who should call xenomai_init()
-> in the plugin.so file, and when.
-> 
->  and the second one
-> > does not sound very nice. And for the second one i am not sure
-> > there is always a time window in the face of static ctors launching
-> > threads and dlopening.  
-> 
-> That is not an issue if Xenomai setup descriptors are used properly.
-> The "tuning" phase which may override parameters always precedes the
-> "init" phase which considers them when allocating and bootstrapping
-> the resources.
-> 
-> Practically: say you have plugin.so, explicitly set dependent on
-> libcobalt.so at link time, you will nevertheless have all ->tune()
-> handlers run first, before the first ->init() handler is invoked. And
-> this will happen only when xenomai_init() is called; all despite the
-> fact that solibs are initialized in reverse dependency order (i.e.
-> from the least dependent lib to the most dependent one).
-> 
-> So, the way that should work with your app would be to load a proxy
-> solib which was made dependent on libcobalt.so at build time. That
-> proxy shared lib would define a setup descriptor, whose ->tune()
-> handler could pull values from the environment for setting whatever
-> runtime/config Xenomai tunable that one sees fit. That process is
-> guaranteed to happen _before_ the Xenomai core is initialized. The
-> proxy solib would include a Xenomai bootstrap module, calling
-> xenomai_init().
-> 
-> The entire process would then look like:
-> 
-> - main() entered
-> -- application parses argv[], no Xenomai arg in the way
-> ...
-> -- dlopen(plugin.so)
-> --- libcobalt.so dependency is loaded, all setup descriptors
-> registered --- libplugin.so is loaded, setup descriptor registered
-> --- libplugin's bootstrap module calls xenomai_init_dso()
-> ---- plugin->tune() is called, pulls args from the environment
-> ---- Xenomai ->init() handlers run (using arg settings)
-> -- back to main()
-> 
-> With all Xenomai base parameters exclusively pulled from the
-> environment, you could omit any Xenomai-specific option switch from
-> the command line when spawning the app, reserving the entire option
-> namespace to the application.
-> 
-> I have demoed this in the attached code (the proxy lib is implemented
-> by plugin.c). The demo code only retrieves the verbosity_level
-> parameter from the environment, which is normally affected by
-> --silent, --quiet and --verbose command line options, but you get the
-> idea.
-
-I only just really looked at the example, after i asked my customer to
-look at your response. And they kept telling me that it will not work.
-
-Now i gave them a similar example a few months ago. Put the tuning in
-the lib init and you are done ...
-
-As far as i understand the situation:
-We are talking about more than one "plugin" that pulls in libcobalt.
-And the dlopens are not in main but in static ctors before main, so our
-plugin load order is "unknown/random". So the tuning would have to go
-into all plugins or we will need to find a way to have a defined "first
-plugin".
-
-I guess we can invent libtune.so and LD_PRELOAD it. Or put that as
-proxy into all plugins.  ... and all that vs "export XENO_foo"
-
-> I understand you would like a permanent way of doing this without
-> having to provide any code.
-
-No, but i anticipated a discussion and decided to write code when the
-outcome of the discussion is clear.
-
-> Although I don't buy a second the argument about envvars being "more
-> standard" than command switches,
-
-Command switches always become a problem when two or more components
-have to share the namespace. Removing your traces and not bothering
-the other/imposing on the other only works if the order is known. In
-Xenomai the order depends on how people link so we can not know it for
-the general case.
-
-I would not want to be the poor guy writing main() for an app where
-multiple libs think that argv is for them to use, especially with
-tricks to access it before main(). Just the fact that xenomai is
-stealing this out of /proc/self/cmdline should suggest how non-standard
-that is.
-
-Env variables are just there to look at, if you are not interested
-nobody will tell you to look at argc more of them. They survive a
-fork() if your main script needs to launch multiple xenomai apps with
-the same tuning.
-
-> I'm not opposed to get this kind of feature in, but only if:
->
-> - the implementation does not reinvent the wheel of parameter parsing,
-> this would be fairly silly.
-> - the natural way of setting Xenomai parameters remains based on
-> command line switches. Most people do NOT care a dime about deferred
-> binding to libcobalt, so there is no reason to make this use case the
-> preferred one.
-
-If we can not agree to drop at least the tunables, introducing another
-way would be insane.
- 
-> The sanest way to provide such feature would be to implicitly turn
-> every option label defined by setup descriptors into a potential
-> envvar, e.g. --cpu-affinity would be unambiguously matched by a
-> variable named "cpu_affinity". The core would look for such a
-> variable in the environment if the command line switch is not found,
-> hence giving precedence to the latter implicitly.
-
-Yes the command line switch should still win, if they really need to
-stay. And a prefix like XENO_ should be added.
-
-> At least, this would limit the risk of having totally unrelated ways
-> of setting core parameters, with less braindamage side-effects on
-> people with unsuitable daily amount of caffeine for the job.
-> 
-> There is a way to do this properly, but this cannot be high on my todo
-> list ATM, given the ongoing work I have on my plate. Anyway, issue
-> logged.
-
-Would you be willing to review/consider a patch that replaces the
-tuneables with env vars?
-
-Henning
-
-
-
+SGkgWGVub21haS1MaXN0LAoKYXR0YWNoZWQgaXMgYSBwYXRjaCwgd2hpY2ggc29sdmVkIGEgY29t
+cGlsYXRpb24gaXNzdWUgd2hlbiBidWlsZGluZyBYZW5vbWFpIG5leHQgKGM0YmFhOWE4NCkuCk5v
+dGUsIHRoYXQgSSBhbSBidWlsZGluZyBYZW5vbWFpIGluIEJ1aWxkcm9vdCB3aXRoIGFhcmNoNjQg
+YXMgdGFyZ2V0IGFyY2hpdGVjdHVyZS4KSSdtIHVzaW5nIEdDQyA2LCBnbGliYyAyLjI1IGFuZCBM
+aW51eCBoZWFkZXJzIGZyb20gNC4xMi4KClRoZSBjb21wbGV0ZSBlcnJvciBtZXNzYWdlIGlzOgoK
+PiAgIGtlWzNdOiBFbnRlcmluZyBkaXJlY3RvcnkgJy9ob21lL2NtdWVsbG5lci9yazMzOTkvYnVp
+bGRyb290L2J1aWxkcm9vdC0yMDE3LjA4L291dHB1dC9idWlsZC94ZW5vbWFpLW5leHQvdXRpbHMv
+YW5hbG9neScKPiBbLi4uXQo+ICAgQ0NMRCAgICAgaW5zbl9yZWFkCj4gSW4gZmlsZSBpbmNsdWRl
+ZCBmcm9tIGNhbGlicmF0aW9uX25pX20uaDoyNzowLAo+ICAgICAgICAgICAgICAgICAgZnJvbSBj
+YWxpYnJhdGlvbl9uaV9tLmM6MjY6Cj4gYW5hbG9neV9jYWxpYnJhdGUuaDogSW4gZnVuY3Rpb24g
+4oCYX19kZWJ1Z+KAmToKPiBhbmFsb2d5X2NhbGlicmF0ZS5oOjk1OjI6IGVycm9yOiBpbXBsaWNp
+dCBkZWNsYXJhdGlvbiBvZiBmdW5jdGlvbiDigJhjbG9ja19nZXR0aW1l4oCZIFstV2Vycm9yPWlt
+cGxpY2l0LWZ1bmN0aW9uLWRlY2xhcmF0aW9uXQo+ICAgY2xvY2tfZ2V0dGltZShDTE9DS19NT05P
+VE9OSUMsICZub3cpOwo+ICAgXn5+fn5+fn5+fn5+fgo+IGFuYWxvZ3lfY2FsaWJyYXRlLmg6OTU6
+MTY6IGVycm9yOiDigJhDTE9DS19NT05PVE9OSUPigJkgdW5kZWNsYXJlZCAoZmlyc3QgdXNlIGlu
+IHRoaXMgZnVuY3Rpb24pCj4gICBjbG9ja19nZXR0aW1lKENMT0NLX01PTk9UT05JQywgJm5vdyk7
+Cj4gICAgICAgICAgICAgICAgIF5+fn5+fn5+fn5+fn5+fgo+IGFuYWxvZ3lfY2FsaWJyYXRlLmg6
+OTU6MTY6IG5vdGU6IGVhY2ggdW5kZWNsYXJlZCBpZGVudGlmaWVyIGlzIHJlcG9ydGVkIG9ubHkg
+b25jZSBmb3IgZWFjaCBmdW5jdGlvbiBpdCBhcHBlYXJzIGluCj4gY2MxOiBhbGwgd2FybmluZ3Mg
+YmVpbmcgdHJlYXRlZCBhcyBlcnJvcnMKPiBNYWtlZmlsZTo2OTM6IHJlY2lwZSBmb3IgdGFyZ2V0
+ICdjYWxpYnJhdGlvbl9uaV9tLm8nIGZhaWxlZAoKVGhhbmtzLApDaHJpc3RvcGgKCi0tLS0tLS0t
+LS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2Fz
+IHNjcnViYmVkLi4uCk5hbWU6IDAwMDEtdXRpbHMtYW5hbG9neS1BZGQtbWlzc2luZy1oZWFkZXIt
+ZmlsZS5wYXRjaApUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTogMTAyMSBieXRl
+cwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwv
+eGVub21haS9hdHRhY2htZW50cy8yMDE3MTAwNi84MTIxMTQxNS9hdHRhY2htZW50Lm9iaj4KLS0t
+LS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCgoKLS0KQ2hyaXN0b3BoIE3DvGxs
+bmVyClRoZW9icm9tYSBTeXN0ZW1zIERlc2lnbiB1bmQgQ29uc3VsdGluZyBHbWJIClNlZXN0YWR0
+c3RyYcOfZSAyNyAoQXNwZXJuIElRKSwgMTIyMCBXaWVuLCBBdXN0cmlhClBob25lOiArNDMgMSAy
+MzYgOTggOTMtNDA5LCBGYXg6ICs0MyAxIDIzNiA5OCA5My05Cmh0dHA6Ly93d3cudGhlb2Jyb21h
+LXN5c3RlbXMuY29tCgoKCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0K
+QSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNj
+ClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogODQyIGJ5dGVzCkRlc2M6IE1l
+c3NhZ2Ugc2lnbmVkIHdpdGggT3BlblBHUApVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJt
+YWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNzEwMDYvODEyMTE0MTUvYXR0YWNobWVudC5zaWc+
+Cg==
