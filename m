@@ -1,13 +1,15 @@
-References: <45EE64EE-9FEE-49D4-B676-2A712AB5A7F4@theobroma-systems.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <96fb24f1-94b6-c9b3-88b6-cffb4767d61e@xenomai.org>
-Date: Fri, 6 Oct 2017 10:29:32 +0200
+From: Giulio Moro <g.moro@qmul.ac.uk>
+Date: Sat, 7 Oct 2017 01:33:06 +0000
+Message-ID: <DB6PR0701MB2456035E412673C8D6A78F47B5760@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+References: <DB6PR0701MB24565343D7707462B972F1ACB5710@DB6PR0701MB2456.eurprd07.prod.outlook.com>,
+ <b846b4f5-2bdc-1540-1504-6973e65d6a80@xenomai.org>
+In-Reply-To: <b846b4f5-2bdc-1540-1504-6973e65d6a80@xenomai.org>
+Content-Language: en-GB
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <45EE64EE-9FEE-49D4-B676-2A712AB5A7F4@theobroma-systems.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] [Patch] Add missing header file to analogy_calibrate.h
+Subject: Re: [Xenomai] --session= is not a recognized option when using
+ Posix skin
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,36 +18,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?Christoph_M=c3=bcllner?= <christoph.muellner@theobroma-systems.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10/06/2017 09:55 AM, Christoph Müllner wrote:
-> Hi Xenomai-List,
-> 
-> attached is a patch, which solved a compilation issue when building Xenomai next (c4baa9a84).
-> Note, that I am building Xenomai in Buildroot with aarch64 as target architecture.
-> I'm using GCC 6, glibc 2.25 and Linux headers from 4.12.
-> 
-> The complete error message is:
-> 
->>   ke[3]: Entering directory '/home/cmuellner/rk3399/buildroot/buildroot-2017.08/output/build/xenomai-next/utils/analogy'
->> [...]
->>   CCLD     insn_read
->> In file included from calibration_ni_m.h:27:0,
->>                  from calibration_ni_m.c:26:
->> analogy_calibrate.h: In function ‘__debug’:
->> analogy_calibrate.h:95:2: error: implicit declaration of function ‘clock_gettime’ [-Werror=implicit-function-declaration]
->>   clock_gettime(CLOCK_MONOTONIC, &now);
->>   ^~~~~~~~~~~~~
->> analogy_calibrate.h:95:16: error: ‘CLOCK_MONOTONIC’ undeclared (first use in this function)
->>   clock_gettime(CLOCK_MONOTONIC, &now);
->>                 ^~~~~~~~~~~~~~~
->> analogy_calibrate.h:95:16: note: each undeclared identifier is reported only once for each function it appears in
->> cc1: all warnings being treated as errors
->> Makefile:693: recipe for target 'calibration_ni_m.o' failed
-> 
+> The POSIX API does not depend on copperplate, so
+> you don't have support for multi-process sessions when linking against
+> libcobalt exclusively.=20
 
-Merged, thanks.
+Ok. All we need this for is to prevent multiple instances of our program to=
+ be started at the same time. What would you suggest as the best way to che=
+ck for the existence of a given real-time task using the POSIX API? We coul=
+d just grep /proc/xenomai/sched/stat, or is there a better solution?
 
--- 
-Philippe.
+Thanks,
+Giulio=
 
