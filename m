@@ -1,9 +1,11 @@
-MIME-Version: 1.0
-From: Jackson Jones <jackson.jones@gmail.com>
-Date: Fri, 6 Oct 2017 18:56:54 -0700
-Message-ID: <CADXNiGXxi3m+CK9BOGJaKdt4KzZ_KOFTdjXW3AT-cWM=YT4BHw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] rtdm_safe_copy_from_user() causing mode switch
+From: =?utf-8?Q?Christoph_M=C3=BCllner?=
+ <christoph.muellner@theobroma-systems.com>
+Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
+Message-Id: <0FA1B488-7D1D-40E2-A4B6-DE9E04852EAD@theobroma-systems.com>
+Date: Mon, 9 Oct 2017 11:22:57 +0200
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] [I-PIPE] [Patch] IRQ pipelining support for GICv3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,72 +16,44 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-I noticed that when I call rtdm_safe_copy_from_user() it causes a mode
-switch. I am looking to pass a uint32_t (u32 in kernel space) from
-user-space to a rtdm driver.
+Hi Xenomai/I-pipe devs,
 
-Is there a way of doing this that avoids a mode switch. I am doing this in
-an rtdm spi driver for the imx6. It is used to change the transfer size
-(number of words) for the next call to transfer_iobufs (using the
-SPI_RTIOC_TRANSFER ioctl).
+we have I-pipe/Cobalt/Xenomai running here on a Rockchip RK3399, which is a six core ARMv8/aarch64 SoC.
+Our current kernel is based on vanilla Linux 4.12.10 and we've applied the I-pipe patches for 4.11-arm64.
+Of course there were some conflicts, but we managed to resolve them quickly.
+On top of that we are running Xenomai 3.1 (next) in dual-kernel configuration (Cobalt).
+xeno-test did not show any errors/fails and we've successfully run latency for more than 72 hours in a row.
 
-Below is a modified spi_master_ioctl_rt which is inside of spi-master.c. I
-added an ioctl to do this. I verified that the ioctls SPI_RTIOC_SET_CONFIG,
-and SPI_RTIOC_GET_CONFIG cause a mode switch as well as the former calls
-rtdm_safe_copy_from_user() and the latter calls rtdm_safe_copy_to_user().
-Any advice would be appreciated.
+The RK3399 has an ARM GICv3 interrupt controller. Unfortunately the I-pipe patches don't include
+support for that controller. Therefore I'd like to contribute a patch for that (see attachment).
 
-147 static int spi_master_ioctl_rt(struct rtdm_fd *fd,
-148                    unsigned int request, void *arg)
-149 {
-150     struct rtdm_spi_remote_slave *slave = fd_to_slave(fd);
-151     struct rtdm_spi_master *master = slave->master;
-152     struct rtdm_spi_config config;
-153     u32 new_size = 0;
-154     int ret;
-155
-156     switch (request) {
-157     case SPI_RTIOC_SET_CONFIG:
-158         ret = rtdm_safe_copy_from_user(fd, &config,
-159                            arg, sizeof(config));
-160         if (ret == 0)
-161             ret = update_slave_config(slave, &config);
-162         break;
-163     case SPI_RTIOC_GET_CONFIG:
-164         rtdm_mutex_lock(&master->bus_lock);
-165         config = slave->config;
-166         rtdm_mutex_unlock(&master->bus_lock);
-167         ret = rtdm_safe_copy_to_user(fd, arg,
-168                          &config, sizeof(config));
-169         break;
-170     case SPI_RTIOC_TRANSFER:
-171         ret = -EINVAL;
-172         if (master->ops->transfer_iobufs) {
-173             rtdm_mutex_lock(&master->bus_lock);
-174             ret = do_chip_select(slave);
-175             if (ret == 0) {
-176                 ret = master->ops->transfer_iobufs(slave);
-177                 do_chip_deselect(slave);
-178             }
-179             rtdm_mutex_unlock(&master->bus_lock);
-180         }
-181         break;
-182
-183     // A hack to change the transfer size of the transfer buffers
-184     case SPI_RTIOC_CHANGE_XFER_SIZE:
-185         ret = rtdm_safe_copy_from_user(fd, &new_size,
-186                            arg, sizeof(u32));
-187         if (ret == 0)
-188             master->ops->change_xfer_size(slave, new_size);
-189         break;
-190
-191     default:
-192         ret = -ENOSYS;
-193     }
-194
-195     return ret;
-196 }
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: 0001-ipipe-gicv3-Enable-interrupt-pipelining.patch
+Type: application/octet-stream
+Size: 1890 bytes
+Desc: not available
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20171009/d69b8f01/attachment.obj>
+-------------- next part --------------
+
 
 Thanks,
+Christoph
 
-Jackson Jones
+--
+Christoph M?llner
+Theobroma Systems Design und Consulting GmbH
+Seestadtstra?e 27 (Aspern IQ), 1220 Wien, Austria
+Phone: +43 1 236 98 93-409, Fax: +43 1 236 98 93-9
+http://www.theobroma-systems.com
+
+
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 842 bytes
+Desc: Message signed with OpenPGP
+URL: <http://xenomai.org/pipermail/xenomai/attachments/20171009/d69b8f01/attachment.sig>
