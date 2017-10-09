@@ -1,11 +1,9 @@
-From: =?utf-8?Q?Christoph_M=C3=BCllner?=
- <christoph.muellner@theobroma-systems.com>
-Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
-Message-Id: <0FA1B488-7D1D-40E2-A4B6-DE9E04852EAD@theobroma-systems.com>
-Date: Mon, 9 Oct 2017 11:22:57 +0200
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [I-PIPE] [Patch] IRQ pipelining support for GICv3
+From: Piotr Piorkowski <qba100@gmail.com>
+Message-ID: <local-44d6e18d-7fee@nylas-mail.nylas.com>
+Date: Mon, 09 Oct 2017 20:20:32 +0000
+MIME-Version: 1.0
+Content-Type: text/plain
+Subject: [Xenomai]  Creation of RTDM thread assigned to one CPU core
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,46 +12,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai xenomai.org" <xenomai@xenomai.org>
 
-Hi Xenomai/I-pipe devs,
+   I would like to create a kernel module which would read data from A/D
+   converter and buffor them in memory. The only idea that comes to my
+   mind is creating a thread that would be assigned to one of processor's
+   cores (Linux scheduler would not have access to this core) and constant
+   data reading and bufforing.
 
-we have I-pipe/Cobalt/Xenomai running here on a Rockchip RK3399, which is a six core ARMv8/aarch64 SoC.
-Our current kernel is based on vanilla Linux 4.12.10 and we've applied the I-pipe patches for 4.11-arm64.
-Of course there were some conflicts, but we managed to resolve them quickly.
-On top of that we are running Xenomai 3.1 (next) in dual-kernel configuration (Cobalt).
-xeno-test did not show any errors/fails and we've successfully run latency for more than 72 hours in a row.
+   However I do not know how to assign the RTDM thread to a particular
+   processor's core and whether this is a right approach to this issue.
+   I tried to use function xnthread_migrate, however despite this function
+   returns correct value, all of the system freezes. I would like to ask
+   you for some ideas.
+   With regards
+   Piotr
 
-The RK3399 has an ARM GICv3 interrupt controller. Unfortunately the I-pipe patches don't include
-support for that controller. Therefore I'd like to contribute a patch for that (see attachment).
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: 0001-ipipe-gicv3-Enable-interrupt-pipelining.patch
-Type: application/octet-stream
-Size: 1890 bytes
-Desc: not available
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20171009/d69b8f01/attachment.obj>
--------------- next part --------------
-
-
-Thanks,
-Christoph
-
---
-Christoph M?llner
-Theobroma Systems Design und Consulting GmbH
-Seestadtstra?e 27 (Aspern IQ), 1220 Wien, Austria
-Phone: +43 1 236 98 93-409, Fax: +43 1 236 98 93-9
-http://www.theobroma-systems.com
-
-
-
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 842 bytes
-Desc: Message signed with OpenPGP
-URL: <http://xenomai.org/pipermail/xenomai/attachments/20171009/d69b8f01/attachment.sig>
+   [018d5550fefb14a9765686e3d5d4e140660eb4d605e2ec0f3ad13fe86bde7634]
