@@ -1,9 +1,13 @@
-From: Piotr Piorkowski <qba100@gmail.com>
-Message-ID: <local-44d6e18d-7fee@nylas-mail.nylas.com>
-Date: Mon, 09 Oct 2017 20:20:32 +0000
+References: <0FA1B488-7D1D-40E2-A4B6-DE9E04852EAD@theobroma-systems.com>
+From: Dmitriy Cherkasov <dmitriy@oss-tech.org>
+Message-ID: <1c9bedc6-892d-5624-021d-c47f69a976a8@oss-tech.org>
+Date: Mon, 9 Oct 2017 16:10:52 -0700
 MIME-Version: 1.0
-Content-Type: text/plain
-Subject: [Xenomai]  Creation of RTDM thread assigned to one CPU core
+In-Reply-To: <0FA1B488-7D1D-40E2-A4B6-DE9E04852EAD@theobroma-systems.com>
+Content-Type: text/plain; charset="windows-1252"; format="flowed"
+Content-Language: en-GB
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] [I-PIPE] [Patch] IRQ pipelining support for GICv3
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,20 +16,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-   I would like to create a kernel module which would read data from A/D
-   converter and buffor them in memory. The only idea that comes to my
-   mind is creating a thread that would be assigned to one of processor's
-   cores (Linux scheduler would not have access to this core) and constant
-   data reading and bufforing.
+On 10/09/2017 02:22 AM, Christoph M=FCllner wrote:
+> Hi Xenomai/I-pipe devs,
+>=20
+> we have I-pipe/Cobalt/Xenomai running here on a Rockchip RK3399, which is=
+ a six core ARMv8/aarch64 SoC.
+> Our current kernel is based on vanilla Linux 4.12.10 and we've applied th=
+e I-pipe patches for 4.11-arm64.
+> Of course there were some conflicts, but we managed to resolve them quick=
+ly.
+> On top of that we are running Xenomai 3.1 (next) in dual-kernel configura=
+tion (Cobalt).
+> xeno-test did not show any errors/fails and we've successfully run latenc=
+y for more than 72 hours in a row.
+>=20
+> The RK3399 has an ARM GICv3 interrupt controller. Unfortunately the I-pip=
+e patches don't include
+> support for that controller. Therefore I'd like to contribute a patch for=
+ that (see attachment).
+>=20
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: 0001-ipipe-gicv3-Enable-interrupt-pipelining.patch
+> Type: application/octet-stream
+> Size: 1890 bytes
+> Desc: not available
+> URL: <http://xenomai.org/pipermail/xenomai/attachments/20171009/d69b8f01/=
+attachment.obj>
 
-   However I do not know how to assign the RTDM thread to a particular
-   processor's core and whether this is a right approach to this issue.
-   I tried to use function xnthread_migrate, however despite this function
-   returns correct value, all of the system freezes. I would like to ask
-   you for some ideas.
-   With regards
-   Piotr
 
-   [018d5550fefb14a9765686e3d5d4e140660eb4d605e2ec0f3ad13fe86bde7634]
+Shouldn't ipipe_lock/unlock_irq() be added to the mask/unmask functions as =
+well?=20
+Otherwise hold/release don't do anything special.
+
