@@ -1,13 +1,15 @@
+References: <E1daPAo-00086l-G6@xenomai.org>
+ <b0711523-af3a-b8f3-d053-f9565d66c86e@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <90457b9a-4ee4-2174-d699-02e072097509@siemens.com>
+Date: Thu, 12 Oct 2017 09:58:04 +0200
 MIME-Version: 1.0
-In-Reply-To: <20170810114956.04f62bc6@md1em3qc>
-References: <CADYdroNR6zjbKrPKPm3d_7+55Rg2SDbmpxiNR-xu78QNHSrr9g@mail.gmail.com>
- <20170810114956.04f62bc6@md1em3qc>
-From: Norbert Lange <nolange79@gmail.com>
-Date: Tue, 10 Oct 2017 16:38:50 +0200
-Message-ID: <CADYdroM8E7jhuyRoW4JkSzZfGg27VvpjLmHGmMmX79wgEqPJog@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Won`t build on new Debian Stable
+In-Reply-To: <b0711523-af3a-b8f3-d053-f9565d66c86e@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt/syscall: Filter out
+ invalid Linux syscalls
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,32 +18,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-U29tZSBoaWdobHkgdHJpdmlhbCBmaXggYXR0YWNoZWQhCkl0cyBzdHJhbmdlIHRoYXQgdGhpcyBm
-bGFnIGlzIG5vdCBkb2N1bWVudGVkIGluIHRoZSBtYW51YWwgKEkgZm91bmQKb3V0IGFiYW91dCB0
-aGlzIGZpeCBmcm9tIGh0dHBzOi8vbGF1bmNocGFkLm5ldC91YnVudHUvK3NvdXJjZS9mbGludCkK
-Ck5vcmJlcnQgTGFuZ2UKCjIwMTctMDgtMTAgMTE6NDkgR01UKzAyOjAwIEhlbm5pbmcgU2NoaWxk
-IDxoZW5uaW5nLnNjaGlsZEBzaWVtZW5zLmNvbT46Cj4gSGkgTm9yYmVydCwKPgo+IFRoYW5rcyEg
-SW4gZmFjdCB0aGF0IGlzc3VlIGhhcyBjb21lIHVwIGJlZm9yZSBhbmQgYSBzaW1pbGFyIHdvcmth
-cm91bmQKPiB3YXMgZGVzY3JpYmVkLiBJdCBzaG91bGQgYmUgZml4ZWQsIHBhdGNoZXMgd2VsY29t
-ZSEKPgo+IEhlbm5pbmcKPgo+IEFtIFdlZCwgOSBBdWcgMjAxNyAxNjoyMTowMiArMDIwMAo+IHNj
-aHJpZWIgTm9yYmVydCBMYW5nZSA8bm9sYW5nZTc5QGdtYWlsLmNvbT46Cj4KPj4gSGVsbG8sCj4+
-Cj4+IEJ1aWxkaW5nIHRoZSB4ZW5vbWFpIHBhY2thZ2Ugd29uYHQgd29yayBiZWNhdXNlIGRlYmlh
-biBub3cgZGVmYXVsdHMgdG8KPj4gdXNpbmcgcGllLCBhbmQgdGhlIGxpbmtlciB3aWxsIGNvbXBs
-YWluIHdpdGggImxkOiAtciBhbmQgLXBpZSBtYXkgbm90Cj4+IGJlIHVzZWQgdG9nZXRoZXIiCj4+
-Cj4+IEEgd29ya2Fyb3VuZCBmb3Igbm93IGlzIHRvIGFkZCB0aGUgZmxhZ3MgbWFudWFsbHk6Cj4+
-IC4uL3hlbm9tYWktMy4wLjUvY29uZmlndXJlIExERkxBR1M9LW5vLXBpZSBDRkxBR1M9Ii1mbm8t
-UElFIC1mbm8tcGllCj4+IC1uby1waWUiCj4+Cj4+IEEgcmVhbCBmaXggd291bGQgYmUgc2ltaWxh
-ciB0bwo+PiBodHRwOi8vbGlzdHMuZ251Lm9yZy9hcmNoaXZlL2h0bWwvYnVnLWdydWIvMjAxNi0x
-MS9tc2cwMDAxMS5odG1sCj4+IChuby1waWUgaXMgbm90IHN1cHBvcnRlZCBvbiBvbGQgYW5kIG90
-aGVyIGNvbXBpbGVycykKPj4KPj4gS2luZCByZWdhcmRzLAo+PiBOb3JiZXJ0Cj4+Cj4+IF9fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4+IFhlbm9tYWkgbWFp
-bGluZyBsaXN0Cj4+IFhlbm9tYWlAeGVub21haS5vcmcKPj4gaHR0cHM6Ly94ZW5vbWFpLm9yZy9t
-YWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkKPgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0t
-LS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiAwMDAx
-LWFsbG93LWxpbmtpbmctd2l0aC1waWUtYXMtZGVmYXVsdC5wYXRjaApUeXBlOiB0ZXh0L3gtcGF0
-Y2gKU2l6ZTogMTQ2NSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5v
-bWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE3MTAxMC8yMWMxODlmZi9h
-dHRhY2htZW50LmJpbj4K
+On 2017-07-26 19:02, Philippe Gerum wrote:
+> On 07/26/2017 06:28 PM, git repository hosting wrote:
+>> Module: xenomai-jki
+>> Branch: for-forge
+>> Commit: 92fadda472ad755db2d7b9443d3b2108a35e5d14
+>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=92fadda472ad755db2d7b9443d3b2108a35e5d14
+>>
+>> Author: Jan Kiszka <jan.kiszka@siemens.com>
+>> Date:   Mon Jul 24 14:22:29 2017 +0200
+>>
+>> cobalt/syscall: Filter out invalid Linux syscalls
+>>
+>> Suggested by Philippe Gerum: Instead of propagating them down the
+>> pipeline, triggering a XENO_BUG_ON in ipipe_fastcall_hook, catch invalid
+>> Linux syscalls early and terminate them immediately.
+>>
+> 
+> I'm holding this one for now, this requires further investigation; a
+> syscall unexpectedly triggers this guard in the ARM port.
+
+What's the status of this? Did I miss a commit that resolves this? I'm
+asking as I'm still carrying that commit locally in some queue as a
+reminder.
+
+Jan
+-- 
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
+
