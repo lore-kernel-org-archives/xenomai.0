@@ -1,9 +1,15 @@
-From: Christoph Muellner <christoph.muellner@theobroma-systems.com>
-Date: Thu, 12 Oct 2017 14:49:35 +0200
-Message-Id: <20171012124935.24781-1-christoph.muellner@theobroma-systems.com>
-In-Reply-To: <6f474cec-909e-f230-73ff-b3b1fcf9c555@siemens.com>
-References: <6f474cec-909e-f230-73ff-b3b1fcf9c555@siemens.com>
-Subject: [Xenomai] [PATCH] ipipe: gicv3: [v3] Enable interrupt pipelining.
+References: <E1daPAo-00086l-G6@xenomai.org>
+ <b0711523-af3a-b8f3-d053-f9565d66c86e@xenomai.org>
+ <90457b9a-4ee4-2174-d699-02e072097509@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <9e5ca469-976a-8346-960c-ed423caa38e3@xenomai.org>
+Date: Thu, 12 Oct 2017 18:05:46 +0200
+MIME-Version: 1.0
+In-Reply-To: <90457b9a-4ee4-2174-d699-02e072097509@siemens.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt/syscall: Filter out
+ invalid Linux syscalls
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,107 +18,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: jan.kiszka@siemens.com, dmitriy@oss-tech.org, christoph.muellner@theobroma-systems.com, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-This patch enables interrupt pipelining for ARM/ARM64 SoC with a
-GICv3 interrupt controller.
+On 10/12/2017 09:58 AM, Jan Kiszka wrote:
+> On 2017-07-26 19:02, Philippe Gerum wrote:
+>> On 07/26/2017 06:28 PM, git repository hosting wrote:
+>>> Module: xenomai-jki
+>>> Branch: for-forge
+>>> Commit: 92fadda472ad755db2d7b9443d3b2108a35e5d14
+>>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=92fadda472ad755db2d7b9443d3b2108a35e5d14
+>>>
+>>> Author: Jan Kiszka <jan.kiszka@siemens.com>
+>>> Date:   Mon Jul 24 14:22:29 2017 +0200
+>>>
+>>> cobalt/syscall: Filter out invalid Linux syscalls
+>>>
+>>> Suggested by Philippe Gerum: Instead of propagating them down the
+>>> pipeline, triggering a XENO_BUG_ON in ipipe_fastcall_hook, catch invalid
+>>> Linux syscalls early and terminate them immediately.
+>>>
+>>
+>> I'm holding this one for now, this requires further investigation; a
+>> syscall unexpectedly triggers this guard in the ARM port.
+>
+> What's the status of this? Did I miss a commit that resolves this? I'm
+> asking as I'm still carrying that commit locally in some queue as a
+> reminder.
+>
 
-The patch was tested on a Rockchip RK3399 (ARM64 SoC) with
-Linux 4.12.14, I-pipe 4.11-arm64 and Xenomai/Cobalt 3.1 (next).
-xeno-test did not show any errors/fails and latency ran
-72 hours in a row.
+I did not have time to have a look at the ARM-specific issue yet.
 
-[v2]: Add I-pipe locking and the forwarding calls for locking/unlocking
-the IRQ in case of masking/unmasking.
-
-[v3]: Using hard_cond_* instead of #ifdef'd hard_local_*.
-
-Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
----
- drivers/irqchip/irq-gic-v3.c | 39 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
-
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index 9e14388403b9..381a35eb3158 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -200,7 +200,12 @@ static void gic_poke_irq(struct irq_data *d, u32 offset)
- 
- static void gic_mask_irq(struct irq_data *d)
- {
-+	unsigned long flags;
-+
-+	flags = hard_cond_local_irq_save();
-+	ipipe_lock_irq(d->irq);
- 	gic_poke_irq(d, GICD_ICENABLER);
-+	hard_cond_local_irq_restore(flags);
- }
- 
- static void gic_eoimode1_mask_irq(struct irq_data *d)
-@@ -220,7 +225,12 @@ static void gic_eoimode1_mask_irq(struct irq_data *d)
- 
- static void gic_unmask_irq(struct irq_data *d)
- {
-+	unsigned long flags;
-+
-+	flags = hard_cond_local_irq_save();
- 	gic_poke_irq(d, GICD_ISENABLER);
-+	ipipe_unlock_irq(d->irq);
-+	hard_cond_local_irq_restore(flags);
- }
- 
- static int gic_irq_set_irqchip_state(struct irq_data *d,
-@@ -294,6 +304,27 @@ static void gic_eoimode1_eoi_irq(struct irq_data *d)
- 	gic_write_dir(gic_irq(d));
- }
- 
-+#ifdef CONFIG_IPIPE
-+static void gic_hold_irq(struct irq_data *d)
-+{
-+	struct irq_chip *chip = irq_data_get_irq_chip(d);
-+
-+	gic_poke_irq(d, GICD_ICENABLER);
-+
-+	if (chip->irq_eoi == gic_eoimode1_eoi_irq) {
-+		if (irqd_is_forwarded_to_vcpu(d))
-+			gic_poke_irq(d, GICD_ICACTIVER);
-+		gic_eoimode1_eoi_irq(d);
-+	} else
-+		gic_eoi_irq(d);
-+}
-+
-+static void gic_release_irq(struct irq_data *d)
-+{
-+	gic_poke_irq(d, GICD_ISENABLER);
-+}
-+#endif /* CONFIG_IPIPE */
-+
- static int gic_set_type(struct irq_data *d, unsigned int type)
- {
- 	unsigned int irq = gic_irq(d);
-@@ -717,6 +748,10 @@ static struct irq_chip gic_chip = {
- 	.irq_unmask		= gic_unmask_irq,
- 	.irq_eoi		= gic_eoi_irq,
- 	.irq_set_type		= gic_set_type,
-+#ifdef CONFIG_IPIPE
-+	.irq_hold		= gic_hold_irq,
-+	.irq_release		= gic_release_irq,
-+#endif
- 	.irq_set_affinity	= gic_set_affinity,
- 	.irq_get_irqchip_state	= gic_irq_get_irqchip_state,
- 	.irq_set_irqchip_state	= gic_irq_set_irqchip_state,
-@@ -729,6 +764,10 @@ static struct irq_chip gic_eoimode1_chip = {
- 	.irq_unmask		= gic_unmask_irq,
- 	.irq_eoi		= gic_eoimode1_eoi_irq,
- 	.irq_set_type		= gic_set_type,
-+#ifdef CONFIG_IPIPE
-+	.irq_hold		= gic_hold_irq,
-+	.irq_release		= gic_release_irq,
-+#endif
- 	.irq_set_affinity	= gic_set_affinity,
- 	.irq_get_irqchip_state	= gic_irq_get_irqchip_state,
- 	.irq_set_irqchip_state	= gic_irq_set_irqchip_state,
 -- 
-2.11.0
-
+Philippe.
 
