@@ -1,4 +1,6 @@
-MIME-Version: 1.0
+Date: Fri, 13 Oct 2017 11:16:19 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20171013111619.1123d852@md1em3qc>
 In-Reply-To: <CADYdroNeQOY2MN-b=r6bNh=69oeGP2oWry2CXHYH9RJtTt1MFA@mail.gmail.com>
 References: <CADYdroNR6zjbKrPKPm3d_7+55Rg2SDbmpxiNR-xu78QNHSrr9g@mail.gmail.com>
  <20170810114956.04f62bc6@md1em3qc>
@@ -6,11 +8,9 @@ References: <CADYdroNR6zjbKrPKPm3d_7+55Rg2SDbmpxiNR-xu78QNHSrr9g@mail.gmail.com>
  <20171012103345.04d854c2@md1em3qc>
  <CADYdroOAVb0wPAvuynvuOUtSnp85FT2Ett80amzDpDCFHPHHzA@mail.gmail.com>
  <CADYdroNeQOY2MN-b=r6bNh=69oeGP2oWry2CXHYH9RJtTt1MFA@mail.gmail.com>
-From: Norbert Lange <nolange79@gmail.com>
-Date: Fri, 13 Oct 2017 10:38:26 +0200
-Message-ID: <CADYdroN-yNG+nLrhfiH8MgMVr7D82-wNnjvyVXcX6hNU2mikcg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Won`t build on new Debian Stable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -20,74 +20,106 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
+To: Norbert Lange <nolange79@gmail.com>
 Cc: norbert.lange@andritz.com, Xenomai <xenomai@xenomai.org>
 
-U2Vjb25kIGF0dGVtcHQgYXQgZml4aW5nIGl0LCB5b3UgY291bGQgc3VyZWx5IG1ha2UgdGhpcyBt
-b3JlIGNvbXBsZXgKdXNpbmcgYXV0b2hlbGwgYnV0IEkgYW0gbm90IGdvaW5nIHRoZXJlLgoKSWYg
-SSB1bmRlcnN0b29kIGNvcnJlY3RseSB0aGlzIHNjcmlwdCBpcyBvbmx5IG5lY2Vzc2FyeSBpZiB0
-aGUKYXBwbGljYXRpb24gaXMgbGlua2VkIC1zdGF0aWM/Ck1lYW5zIEkgd291bGQgdHJ5IHRvIGF2
-b2lkIHVzaW5nIGl0LCBhc2xvbmcgSSBkb250IGV4cGxpY2l0bHkgd2FudCB0byBkbyB0aGF0LgoK
-S2luZCByZWdhcmRzLApOb3JiZXJ0CgoyMDE3LTEwLTEzIDk6NDAgR01UKzAyOjAwIE5vcmJlcnQg
-TGFuZ2UgPG5vbGFuZ2U3OUBnbWFpbC5jb20+Ogo+IE9rIEkganVzdCByZWFsaXplZCB0aGVyZSBp
-cyBhICItVXIiIG9wdGlvbiwgYXNpZGUgZnJvbSAiLVUgLXIiLgo+Cj4gWW91IGdldCBhbG90IG90
-aGVyd2lzZSB1bmRvY3VtZW50ZWQgZmxhZ3Mgd2l0aCAiZ2NjIC0taGVscCAtdiIgQlRXCj4KPiAy
-MDE3LTEwLTEzIDk6MTMgR01UKzAyOjAwIE5vcmJlcnQgTGFuZ2UgPG5vbGFuZ2U3OUBnbWFpbC5j
-b20+Ogo+PiBIZWxsbywKPj4KPj4gSSB0cmFja2VkIGRvd24gdGhlIHNvdXJjZSBvZiBpbmZvcm1h
-dGlvbiB0byB0aGlzOgo+PiBodHRwczovL3dpa2kudWJ1bnR1LmNvbS9TZWN1cml0eVRlYW0vUElF
-Cj4+Cj4+IEkgY2hhbmdlZCB0aGUgZmxhZ3MgZnJvbSAiLVdsLC1VciIgdG8gIi1XbCwtVSAtciIs
-IHNvIHlvdSB3b250IGdldCBhbgo+PiBleHBsYW5hdGlvbiBmcm9tIG1lLCB3aHkgLVUgaGFzIHRv
-IGJlIHBhc3NlZCBmb3IgdGhlIGxpbmtlci4KPj4gQW5kIGJ5IHRoZSB3YXksIGdjYyBhY2NlcHRz
-IC1VIGFzd2VsbCwgc28gdGhpcyBtaWdodCBiZSBwcmVmZXJhYmxlIHRvCj4+IGJlIHVzZWQgZGly
-ZWN0bHkgdG9vLgo+Pgo+PiBJIGRvbmB0IGtub3cgd2h5IHRob3NlIGZsYWdzIGFyZW4nIHQgZG9j
-dW1lbnRlZCwgYnVnIGluIGdjYwo+PiBkb2N1bWVudGF0aW9uPyBBcyBmYXIgYXMgSSB1bmRlcnN0
-YW5kIGlzIHRoYXQgZ2NjIGlzIHNtYXJ0IGVub3VnaCB0bwo+PiBjb3JyZWN0bHkgZGVhbCB3aXRo
-IHRoZSBmbGFncyBnY2MgZGlyZWN0bHkgcmVjZWl2ZWQsIGJ1dCB0aGUgbGlua2VyCj4+IGxhY2tz
-IHRoYXQgaW5mb3JtYXRpb24uCj4+Cj4+IEkgZG9uJyB0IGtub3cgd2hhdCB0aGUgaXNzdWUgaXMg
-d2l0aCB0aGUgQysrIENvbnN0cnVjdG9ycywgaW4gdGhlCj4+IGNvbnRleHQgb2YgdGhpcyBjaGFu
-Z2U/Cj4+IChJIGhlYXJkIGFib3V0IHRoZSBpc3N1ZXMgaWYgdGhvc2UgcmVzaWRlIGluIGEgc2hh
-cmVkIGxpYnJhcnksIHVzZQo+PiBmdW5jdGlvbiBmcm9tIGxpYmNvYmFsZCBhbmQgZG9uJ3QgZGVw
-ZW5kIG9uIGxpYmNvYmFsZC4gV2hpY2ggaXMgbW9yZQo+PiBvZiBhIGJyb2tlbiBidWlsZCB0byBt
-ZSBpZiB5b3UgZG9uJ3QgYWRkIHRoZSBkZXBlbmRlZCBsaWJzLCBhbmQgd2lsbAo+PiBiaXRlIHlv
-dSB0aGUgc2FtZSB3YXkgaWYgeW91IHVzZSBHQ0NzIGNvbnN0cnVjdG9yIGF0dHJpYnV0ZSkKPj4K
-Pj4gS2luZCByZWdhcmRzLAo+PiBOb3JiZXJ0Lgo+Pgo+PiAyMDE3LTEwLTEyIDEwOjMzIEdNVCsw
-MjowMCBIZW5uaW5nIFNjaGlsZCA8aGVubmluZy5zY2hpbGRAc2llbWVucy5jb20+Ogo+Pj4gSGV5
-IE5vcmJlcnQsCj4+Pgo+Pj4gdGhhbmtzIGZvciBsb29raW5nIGludG8gdGhhdCBhZ2FpbiEgQ291
-bGQgeW91IHBsZWFzZSBleHBsYWluIGhvdyBhbmQKPj4+IHdoeSB0aGF0IHdvcmtzLCBvciBwb2lu
-dCBvdXQgd2hhdCB0byBsb29rIGF0IGluIGZsaW50PyBNYWlsaW5nIGxpc3QKPj4+IHRocmVhZCwg
-Y29tbWl0LCBzb21ldGhpbmcgbGlrZSB0aGF0Lgo+Pj4KPj4+IEFzIGZhciBhcyBpIGNhbiBzZWUg
-Z2NjIG5vdyBnZXRzIGEgIi1yIiB3aGljaCBpIGRvIG5vdCBmaW5kIGluIHRoZQo+Pj4gbWFucGFn
-ZS4gQW5kIGxkIGdldHMgYSAiLVUiIHdoaWNoIGkgZG8gbm90IGZpbmQgaW4gaXRzIG1hbnBhZ2Uu
-IEFuZAo+Pj4gdGhlcmUgaXMgc29tZXRoaW5nIGFib3V0IGMrKyBjb25zdHJ1Y3RvcnMgd2hpY2gg
-bWlnaHQgY2hhbmdlIHRoZQo+Pj4gYmVoYXZpb3VyIG9mIHhlbm9tYWkuCj4+Pgo+Pj4gSGVubmlu
-Zwo+Pj4KPj4+IEFtIFR1ZSwgMTAgT2N0IDIwMTcgMTY6Mzg6NTAgKzAyMDAKPj4+IHNjaHJpZWIg
-Tm9yYmVydCBMYW5nZSA8bm9sYW5nZTc5QGdtYWlsLmNvbT46Cj4+Pgo+Pj4+IFNvbWUgaGlnaGx5
-IHRyaXZpYWwgZml4IGF0dGFjaGVkIQo+Pj4+IEl0cyBzdHJhbmdlIHRoYXQgdGhpcyBmbGFnIGlz
-IG5vdCBkb2N1bWVudGVkIGluIHRoZSBtYW51YWwgKEkgZm91bmQKPj4+PiBvdXQgYWJhb3V0IHRo
-aXMgZml4IGZyb20gaHR0cHM6Ly9sYXVuY2hwYWQubmV0L3VidW50dS8rc291cmNlL2ZsaW50KQo+
-Pj4+Cj4+Pj4gTm9yYmVydCBMYW5nZQo+Pj4+Cj4+Pj4gMjAxNy0wOC0xMCAxMTo0OSBHTVQrMDI6
-MDAgSGVubmluZyBTY2hpbGQKPj4+PiA8aGVubmluZy5zY2hpbGRAc2llbWVucy5jb20+Ogo+Pj4+
-ID4gSGkgTm9yYmVydCwKPj4+PiA+Cj4+Pj4gPiBUaGFua3MhIEluIGZhY3QgdGhhdCBpc3N1ZSBo
-YXMgY29tZSB1cCBiZWZvcmUgYW5kIGEgc2ltaWxhcgo+Pj4+ID4gd29ya2Fyb3VuZCB3YXMgZGVz
-Y3JpYmVkLiBJdCBzaG91bGQgYmUgZml4ZWQsIHBhdGNoZXMgd2VsY29tZSEKPj4+PiA+Cj4+Pj4g
-PiBIZW5uaW5nCj4+Pj4gPgo+Pj4+ID4gQW0gV2VkLCA5IEF1ZyAyMDE3IDE2OjIxOjAyICswMjAw
-Cj4+Pj4gPiBzY2hyaWViIE5vcmJlcnQgTGFuZ2UgPG5vbGFuZ2U3OUBnbWFpbC5jb20+Ogo+Pj4+
-ID4KPj4+PiA+PiBIZWxsbywKPj4+PiA+Pgo+Pj4+ID4+IEJ1aWxkaW5nIHRoZSB4ZW5vbWFpIHBh
-Y2thZ2Ugd29uYHQgd29yayBiZWNhdXNlIGRlYmlhbiBub3cKPj4+PiA+PiBkZWZhdWx0cyB0byB1
-c2luZyBwaWUsIGFuZCB0aGUgbGlua2VyIHdpbGwgY29tcGxhaW4gd2l0aCAibGQ6IC1yCj4+Pj4g
-Pj4gYW5kIC1waWUgbWF5IG5vdCBiZSB1c2VkIHRvZ2V0aGVyIgo+Pj4+ID4+Cj4+Pj4gPj4gQSB3
-b3JrYXJvdW5kIGZvciBub3cgaXMgdG8gYWRkIHRoZSBmbGFncyBtYW51YWxseToKPj4+PiA+PiAu
-Li94ZW5vbWFpLTMuMC41L2NvbmZpZ3VyZSBMREZMQUdTPS1uby1waWUgQ0ZMQUdTPSItZm5vLVBJ
-RQo+Pj4+ID4+IC1mbm8tcGllIC1uby1waWUiCj4+Pj4gPj4KPj4+PiA+PiBBIHJlYWwgZml4IHdv
-dWxkIGJlIHNpbWlsYXIgdG8KPj4+PiA+PiBodHRwOi8vbGlzdHMuZ251Lm9yZy9hcmNoaXZlL2h0
-bWwvYnVnLWdydWIvMjAxNi0xMS9tc2cwMDAxMS5odG1sCj4+Pj4gPj4gKG5vLXBpZSBpcyBub3Qg
-c3VwcG9ydGVkIG9uIG9sZCBhbmQgb3RoZXIgY29tcGlsZXJzKQo+Pj4+ID4+Cj4+Pj4gPj4gS2lu
-ZCByZWdhcmRzLAo+Pj4+ID4+IE5vcmJlcnQKPj4+PiA+Pgo+Pj4+ID4+IF9fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4+Pj4gPj4gWGVub21haSBtYWlsaW5n
-IGxpc3QKPj4+PiA+PiBYZW5vbWFpQHhlbm9tYWkub3JnCj4+Pj4gPj4gaHR0cHM6Ly94ZW5vbWFp
-Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkKPj4+PiA+Cj4+PgotLS0tLS0tLS0tLS0tLSBu
-ZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJl
-ZC4uLgpOYW1lOiBmaXhfZ2NjX3dpdGhfZGVmYXVsdHBpZV9zZWNvbmR0cnkucGF0Y2gKVHlwZTog
-dGV4dC94LXBhdGNoClNpemU6IDYwMCBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0
-dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE3MTAxMy8y
-M2Y0MjY5Zi9hdHRhY2htZW50LmJpbj4K
+Am Fri, 13 Oct 2017 09:40:54 +0200
+schrieb Norbert Lange <nolange79@gmail.com>:
+
+> Ok I just realized there is a "-Ur" option, aside from "-U -r".
+
+In the docs of ld there is _only_ "-Ur", "-U" is not there and "-r" is
+not in the docs of gcc. Also when looking at "--help -v".
+
+Henning
+
+> You get alot otherwise undocumented flags with "gcc --help -v" BTW
+> 
+> 2017-10-13 9:13 GMT+02:00 Norbert Lange <nolange79@gmail.com>:
+> > Hello,
+> >
+> > I tracked down the source of information to this:
+> > https://wiki.ubuntu.com/SecurityTeam/PIE
+> >
+> > I changed the flags from "-Wl,-Ur" to "-Wl,-U -r", so you wont get
+> > an explanation from me, why -U has to be passed for the linker.
+> > And by the way, gcc accepts -U aswell, so this might be preferable
+> > to be used directly too.
+> >
+> > I don`t know why those flags aren' t documented, bug in gcc
+> > documentation? As far as I understand is that gcc is smart enough to
+> > correctly deal with the flags gcc directly received, but the linker
+> > lacks that information.
+> >
+> > I don' t know what the issue is with the C++ Constructors, in the
+> > context of this change?
+> > (I heard about the issues if those reside in a shared library, use
+> > function from libcobald and don't depend on libcobald. Which is more
+> > of a broken build to me if you don't add the depended libs, and will
+> > bite you the same way if you use GCCs constructor attribute)
+> >
+> > Kind regards,
+> > Norbert.
+> >
+> > 2017-10-12 10:33 GMT+02:00 Henning Schild
+> > <henning.schild@siemens.com>:  
+> >> Hey Norbert,
+> >>
+> >> thanks for looking into that again! Could you please explain how
+> >> and why that works, or point out what to look at in flint? Mailing
+> >> list thread, commit, something like that.
+> >>
+> >> As far as i can see gcc now gets a "-r" which i do not find in the
+> >> manpage. And ld gets a "-U" which i do not find in its manpage. And
+> >> there is something about c++ constructors which might change the
+> >> behaviour of xenomai.
+> >>
+> >> Henning
+> >>
+> >> Am Tue, 10 Oct 2017 16:38:50 +0200
+> >> schrieb Norbert Lange <nolange79@gmail.com>:
+> >>  
+> >>> Some highly trivial fix attached!
+> >>> Its strange that this flag is not documented in the manual (I
+> >>> found out abaout this fix from
+> >>> https://launchpad.net/ubuntu/+source/flint)
+> >>>
+> >>> Norbert Lange
+> >>>
+> >>> 2017-08-10 11:49 GMT+02:00 Henning Schild
+> >>> <henning.schild@siemens.com>:  
+> >>> > Hi Norbert,
+> >>> >
+> >>> > Thanks! In fact that issue has come up before and a similar
+> >>> > workaround was described. It should be fixed, patches welcome!
+> >>> >
+> >>> > Henning
+> >>> >
+> >>> > Am Wed, 9 Aug 2017 16:21:02 +0200
+> >>> > schrieb Norbert Lange <nolange79@gmail.com>:
+> >>> >  
+> >>> >> Hello,
+> >>> >>
+> >>> >> Building the xenomai package won`t work because debian now
+> >>> >> defaults to using pie, and the linker will complain with "ld:
+> >>> >> -r and -pie may not be used together"
+> >>> >>
+> >>> >> A workaround for now is to add the flags manually:
+> >>> >> ../xenomai-3.0.5/configure LDFLAGS=-no-pie CFLAGS="-fno-PIE
+> >>> >> -fno-pie -no-pie"
+> >>> >>
+> >>> >> A real fix would be similar to
+> >>> >> http://lists.gnu.org/archive/html/bug-grub/2016-11/msg00011.html
+> >>> >> (no-pie is not supported on old and other compilers)
+> >>> >>
+> >>> >> Kind regards,
+> >>> >> Norbert
+> >>> >>
+> >>> >> _______________________________________________
+> >>> >> Xenomai mailing list
+> >>> >> Xenomai@xenomai.org
+> >>> >> https://xenomai.org/mailman/listinfo/xenomai  
+> >>> >  
+> >>  
+
+
