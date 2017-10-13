@@ -1,9 +1,16 @@
+Date: Fri, 13 Oct 2017 11:27:04 +0200
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20171013112704.64fc678b@md1em3qc>
+In-Reply-To: <CADYdroOAVb0wPAvuynvuOUtSnp85FT2Ett80amzDpDCFHPHHzA@mail.gmail.com>
+References: <CADYdroNR6zjbKrPKPm3d_7+55Rg2SDbmpxiNR-xu78QNHSrr9g@mail.gmail.com>
+ <20170810114956.04f62bc6@md1em3qc>
+ <CADYdroM8E7jhuyRoW4JkSzZfGg27VvpjLmHGmMmX79wgEqPJog@mail.gmail.com>
+ <20171012103345.04d854c2@md1em3qc>
+ <CADYdroOAVb0wPAvuynvuOUtSnp85FT2Ett80amzDpDCFHPHHzA@mail.gmail.com>
 MIME-Version: 1.0
-From: Greg Gallagher <ggallagher31@gmail.com>
-Date: Mon, 20 Nov 2017 10:43:09 -0500
-Message-ID: <CAPYpnLZoqA4NGSB_zbi1GeiKr9mWekY1n_r_BKRho6xGvh4uFw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] Contributing to Xenomai
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Won`t build on new Debian Stable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,22 +19,110 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Norbert Lange <nolange79@gmail.com>
+Cc: norbert.lange@andritz.com, Xenomai <xenomai@xenomai.org>
 
-Hi,
-  I'm preparing a patch to enable RTDM gpio for the Xilinx Zynq 7000
-platform.  First, is this something that would be of value to add to
-mainline Xenomai?  I noticed there is a rtdm gpio driver for the bcm2835
-(raspberry pi) and figured it may be nice for Zynq users to have a rtdm
-gpio driver out of the box.
-    I've been digging online and I can't find any guidelines on how to
-submit a patch to Xenomai.  On the mailing list I see most patches come
-across with [PATCH] in the subject line, comments in the body, followed by
-the patch.
+Am Fri, 13 Oct 2017 09:13:27 +0200
+schrieb Norbert Lange <nolange79@gmail.com>:
 
-Any help would be appreciated and sorry if I missed this information in a
-FAQ somewhere.
+> Hello,
+> 
+> I tracked down the source of information to this:
+> https://wiki.ubuntu.com/SecurityTeam/PIE
 
-Thanks
+Ok here they suggest to invoke gcc with "-r", which seems to be a
+hidden undocumemted feature.
 
-Greg
+> I changed the flags from "-Wl,-Ur" to "-Wl,-U -r", so you wont get an
+
+This passes "-r" to gcc and an invalid "-U" to ld. How about "-Wl,-Ur
+-r" that would give the -r to ld and keep the c++ semantics.
+
+> explanation from me, why -U has to be passed for the linker.
+> And by the way, gcc accepts -U aswell, so this might be preferable to
+> be used directly too.
+
+"-U" in gcc seems to be for the preprocessor. To me that seems to be
+something very different.
+
+> I don`t know why those flags aren' t documented, bug in gcc
+> documentation? As far as I understand is that gcc is smart enough to
+> correctly deal with the flags gcc directly received, but the linker
+> lacks that information.
+> 
+> I don' t know what the issue is with the C++ Constructors, in the
+> context of this change?
+
+I do not know whether there is an issue. But we have "-Ur" as ldflag in
+there and your patch removes it.
+
+> (I heard about the issues if those reside in a shared library, use
+> function from libcobald and don't depend on libcobald. Which is more
+> of a broken build to me if you don't add the depended libs, and will
+> bite you the same way if you use GCCs constructor attribute)
+> 
+> Kind regards,
+> Norbert.
+> 
+> 2017-10-12 10:33 GMT+02:00 Henning Schild
+> <henning.schild@siemens.com>:
+> > Hey Norbert,
+> >
+> > thanks for looking into that again! Could you please explain how and
+> > why that works, or point out what to look at in flint? Mailing list
+> > thread, commit, something like that.
+> >
+> > As far as i can see gcc now gets a "-r" which i do not find in the
+> > manpage. And ld gets a "-U" which i do not find in its manpage. And
+> > there is something about c++ constructors which might change the
+> > behaviour of xenomai.
+> >
+> > Henning
+> >
+> > Am Tue, 10 Oct 2017 16:38:50 +0200
+> > schrieb Norbert Lange <nolange79@gmail.com>:
+> >  
+> >> Some highly trivial fix attached!
+> >> Its strange that this flag is not documented in the manual (I found
+> >> out abaout this fix from
+> >> https://launchpad.net/ubuntu/+source/flint)
+> >>
+> >> Norbert Lange
+> >>
+> >> 2017-08-10 11:49 GMT+02:00 Henning Schild
+> >> <henning.schild@siemens.com>:  
+> >> > Hi Norbert,
+> >> >
+> >> > Thanks! In fact that issue has come up before and a similar
+> >> > workaround was described. It should be fixed, patches welcome!
+> >> >
+> >> > Henning
+> >> >
+> >> > Am Wed, 9 Aug 2017 16:21:02 +0200
+> >> > schrieb Norbert Lange <nolange79@gmail.com>:
+> >> >  
+> >> >> Hello,
+> >> >>
+> >> >> Building the xenomai package won`t work because debian now
+> >> >> defaults to using pie, and the linker will complain with "ld: -r
+> >> >> and -pie may not be used together"
+> >> >>
+> >> >> A workaround for now is to add the flags manually:
+> >> >> ../xenomai-3.0.5/configure LDFLAGS=-no-pie CFLAGS="-fno-PIE
+> >> >> -fno-pie -no-pie"
+> >> >>
+> >> >> A real fix would be similar to
+> >> >> http://lists.gnu.org/archive/html/bug-grub/2016-11/msg00011.html
+> >> >> (no-pie is not supported on old and other compilers)
+> >> >>
+> >> >> Kind regards,
+> >> >> Norbert
+> >> >>
+> >> >> _______________________________________________
+> >> >> Xenomai mailing list
+> >> >> Xenomai@xenomai.org
+> >> >> https://xenomai.org/mailman/listinfo/xenomai  
+> >> >  
+> >  
+
+
