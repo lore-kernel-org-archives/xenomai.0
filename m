@@ -1,18 +1,18 @@
-References: <local-8a4e01bb-e3b0@nylas-mail.nylas.com>
- <1ebd2c2c-e3dd-4023-834b-1a0e4e004a08@xenomai.org>
- <local-194e31a2-e5cd@nylas-mail.nylas.com>
- <2a1f01ec-a552-22f3-ca99-9c980c8a98fc@xenomai.org>
- <local-273e51be-5420@nylas-mail.nylas.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <0f08cdc3-7e9d-dbcd-2832-c29e467d0152@xenomai.org>
-Date: Fri, 27 Oct 2017 17:01:02 +0200
 MIME-Version: 1.0
-In-Reply-To: <local-273e51be-5420@nylas-mail.nylas.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Xenomai 3.0.5 - Segmentation fault in
- xnsynch_sleep_on(); 
+In-Reply-To: <20171013113118.6e6f0fcd@md1em3qc>
+References: <CADYdroNR6zjbKrPKPm3d_7+55Rg2SDbmpxiNR-xu78QNHSrr9g@mail.gmail.com>
+ <20170810114956.04f62bc6@md1em3qc>
+ <CADYdroM8E7jhuyRoW4JkSzZfGg27VvpjLmHGmMmX79wgEqPJog@mail.gmail.com>
+ <20171012103345.04d854c2@md1em3qc>
+ <CADYdroOAVb0wPAvuynvuOUtSnp85FT2Ett80amzDpDCFHPHHzA@mail.gmail.com>
+ <CADYdroNeQOY2MN-b=r6bNh=69oeGP2oWry2CXHYH9RJtTt1MFA@mail.gmail.com>
+ <CADYdroN-yNG+nLrhfiH8MgMVr7D82-wNnjvyVXcX6hNU2mikcg@mail.gmail.com>
+ <20171013113118.6e6f0fcd@md1em3qc>
+From: Norbert Lange <nolange79@gmail.com>
+Date: Fri, 13 Oct 2017 11:37:30 +0200
+Message-ID: <CADYdroPP8ZQ91eqfJjJP9UFufpJOWm7+zsDePz-0a_TaDV_9_Q@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] Won`t build on new Debian Stable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,230 +21,126 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Piotr Piorkowski <qba100@gmail.com>
-Cc: "xenomai xenomai.org" <xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>
+Cc: norbert.lange@andritz.com, Xenomai <xenomai@xenomai.org>
 
-On 10/27/2017 04:36 PM, Piotr Piorkowski wrote:
-> So I can't use this driver to write another driver ?
+Actually your idea of just adding -r would work aswell, and looks
+cleaner and more robust to me.
 
-Not the way you do it (besides, there was no intent to support this
-usage in the implementation). The important part of my answer is about
-calling the routines from the right runtime mode. xnthread_current()
-returns NULL precisely because the calling context is wrong.
+I started with the wrong ideas because of the usual POSIX argument
+parsing like "tar -xzf file.tar.gz" being interpreted as  "tar -x -z
+-f file.tar.gz".
 
-> 
-> Pozdrawiam
-> Piotr Piórkowski
-> 
-> On paź 27 2017, at 4:27 pm, Philippe Gerum <rpm@xenomai.org> wrote:
-> 
->     On 10/27/2017 04:16 PM, Piotr Piorkowski wrote:
->     > [  239.267755] Unable to handle kernel NULL pointer dereference at
->     > virtual address 000000ec
->     > [  239.275860] pgd = af600000
->     > [  239.278568] [000000ec] *pgd=2a010831, *pte=00000000, *ppte=00000000
->     > [  239.284868] Internal error: Oops: 817 [#1] SMP ARM
->     > [  239.289660] Modules linked in: ads1256_rtdm(O+) fuse bluetooth
->     > brcmfmac brcmutil cfg80211 rfkill bcm2835_rng bcm2835_gpiomem
->     > uio_pdrv_genirq uio nfsd ip_tables x_tables ipv6 [last unloaded:
->     > ads1256_rtdm]
->     > [  239.307903] CPU: 2 PID: 1546 Comm: insmod Tainted: G           O  
->     >  4.1.21-xenomai-3.0.5 #44
->     > [  239.316341] Hardware name: BCM2709
->     > [  239.319745] task: af6ae780 ti: aa076000 task.ti: aa076000
->     > [  239.325156] PC is at xnsynch_sleep_on+0x1fc/0x210
->     > [  239.329865] LR is at ___xnlock_get+0x1c/0x80
->     > [  239.334140] pc : [<800f7d94>]    lr : [<800efc88>]    psr: 60000093
->     > [  239.334140] sp : aa0776d8  ip : aa0776c0  fp : aa077714
->     > [  239.345621] r10: 00000000  r9 : 8085fcd8  r8 : 8083a9a0
->     > [  239.350847] r7 : 8083a9a0  r6 : b98f8c34  r5 : 00000000  r4 : 00000003
->     > [  239.357376] r3 : 000000ec  r2 : 00000001  r1 : 00000002  r0 : b98f8c44
->     > [  239.363908] Flags: nZCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM
->     >  Segment user
->     > [  239.371132] Control: 10c5383d  Table: 2f60006a  DAC: 00000015
->     > [  239.376879] Process insmod (pid: 1546, stack limit = 0xaa076220)
->     > [  239.382887] Stack: (0xaa0776d8 to 0xaa078000)
->     > [  239.387247] 76c0:                                                    
->     >   bab76800 aa077720
->     > [  239.395433] 76e0: 00000000 00000000 808719a4 00000000 b98f8c34
->     > 00000000 00000000 8083a9a0
->     > [  239.403618] 7700: 8085fcd8 00000000 aa07774c aa077718 80103ed8
->     > 800f7ba4 00000000 800ca7c8
->     > [  239.411803] 7720: b997fd00 b98f8a50 00000000 00000063 af79f540
->     > 00000000 00000000 af79f664
->     > [  239.419989] 7740: aa077764 aa077750 80103f90 80103d44 00000000
->     > aa077768 aa07777c aa077768
->     > [  239.428174] 7760: 804a4fe0 80103f70 00000002 00000000 aa077794
->     > aa077780 804a50dc 804a4f68
->     > [  239.436359] 7780: aa077dbc 00000000 aa077d8c aa077798 7f3ae128
->     > 804a50b4 bab70010 00000000
->     > [  239.444544] 77a0: c831d5ca 00000004 800559c8 800566b0 af5df980
->     > bab7be00 0000cc9a 00000000
->     > [  239.452730] 77c0: 00004e20 00000000 0112a880 00000000 00000279
->     > bab7be00 800561d4 800563b8
->     > [  239.460916] 77e0: bab7be00 00000279 0002e7d0 bab7fb00 8047d7f4
->     > 0002e7d0 aa077844 aa077808
->     > [  239.469101] 7800: 800921d8 8047d548 0005fa9b 00000000 ffffffff
->     > 00ffffff aa077844 bab7bdc0
->     > [  239.477287] 7820: bab7c248 8085e940 ffffffb2 8085fcd8 00000006
->     > 000000a0 aa077854 aa077848
->     > [  239.485472] 7840: 80055080 800921a8 bab7bdc0 00000000 aa077874
->     > aa077860 800b2ce0 8001da8c
->     > [  239.493658] 7860: 0000b9ff bab7bdc0 aa077884 aa077878 805a3204
->     > 800b2cc8 aa0778fc aa077888
->     > [  239.501844] 7880: 8005ab88 805a31d4 00000000 aa076000 af6ae780
->     > bab824d8 0000009b 00000000
->     > [  239.510029] 78a0: ba49b780 00000003 00000028 ba49c400 8001d3b8
->     > 8005b59c aa07790c aa0778c8
->     > [  239.518215] 78c0: 8005b59c 8001d3b0 00000000 00000000 a609e57b
->     > 00000037 00000100 ba49c400
->     > [  239.526399] 78e0: 00009bfe aa0779a4 00000002 00000002 aa077938
->     > 00000001 00000000 8083edc0
->     > [  239.534584] 7900: aa0779fc aa077910 8005b87c 80326cd0 00000002
->     > 00000001 aa077960 00000001
->     > [  239.542770] 7920: 00000000 8083edc0 aa077a24 aa077938 8005b87c
->     > 80326cd0 8085e940 00000000
->     > [  239.550955] 7940: 0000001d 8083edc0 ba49c400 00000000 8085fcd8
->     > 0000001d 00026000 00000400
->     > [  239.559141] 7960: 0000001d 0000001d 0000001d 0000001d 00000400
->     > 000000b9 00000001 00000000
->     > [  239.567326] 7980: 00000001 00000000 00000000 ba49c280 ba49c400
->     > 000001fc 00001000 0000007f
->     > [  239.575512] 79a0: 00000131 00000131 00000131 00000098 00000400
->     > 00000400 00000002 00000000
->     > [  239.583697] 79c0: 00000001 00000002 00000001 00000000 00000000
->     > 00000000 00000000 00000400
->     > [  239.591883] 79e0: bab5ddc0 8083edc0 aa077a0c aa0779f8 aa029700
->     > aa077a74 00000020 00000002
->     > [  239.600068] 7a00: 80056a50 8005c314 00011ede 00000000 bab8ae00
->     > 00000000 8ad439f4 00000003
->     > [  239.608253] 7a20: 800559c8 800566b0 af5dfa00 bab8ae00 000151a5
->     > 00000000 00011ede 00000000
->     > [  239.616439] 7a40: aa077a8c aa077a50 800566b0 800559c0 00007e23
->     > 00000000 bab8ae00 00000000
->     > [  239.624624] 7a60: 8ad4ce6a 00000003 800559c8 800566b0 af5dfa00
->     > bab8ae00 00009476 00000000
->     > [  239.632809] 7a80: 00007e23 00000000 aa077ad4 aa077a98 800566b0
->     > 800559c0 af6ae7c8 af5c8780
->     > [  239.640994] 7aa0: bab8ae00 af5dfa00 00000000 00000000 8005663c
->     > 80059df4 bab8ae00 af5dfa00
->     > [  239.649179] 7ac0: bab8ae00 ffffffff 8b5c3c8f 00000003 bab8adc0
->     > 00000002 00000002 808d4330
->     > [  239.657365] 7ae0: bab8adc0 af6ae780 8085fcd8 00000003 8005afe8
->     > 8005ce4c 0005fa9b 00000000
->     > [  239.665550] 7b00: 808630dc 00000002 ba4fa000 8000ab00 8000ab14
->     > 80046434 8000ab00 ffffffff
->     > [  239.673735] 7b20: ba4fa000 00000002 00000000 00000000 af6aea68
->     > 00000003 aa077b6c aa077b48
->     > [  239.681920] 7b40: 80046434 8000ab0c 808d3088 00000001 00000002
->     > 00000000 aa077b7c aa077b68
->     > [  239.690106] 7b60: 800b2ce0 8001da8c 8083edc0 b9849880 aa077ba4
->     > aa077b80 8004c138 800b2cc8
->     > [  239.698291] 7b80: ba4cb980 bab8adc0 af495340 ba4cbf40 8083edc0
->     > af6aea68 aa077bf4 aa077ba8
->     > [  239.706477] 7ba0: 8059eeb0 8004c0cc 8004e1a0 805a31d4 7fffffff
->     > 7fffffff 808d4330 00000002
->     > [  239.714662] 7bc0: 00000002 3a34c000 00000000 aa076000 7fffffff
->     > 805a00cc aa077ce4 00000002
->     > [  239.722847] 7be0: bab79fc0 bab79fc0 aa077c14 aa077bf8 80024b30
->     > 8001da8c bab79e90 bab79fc0
->     > [  239.731032] 7c00: bab79e90 7f3afdc8 808719a4 bab79fc0 00000000
->     > 00000001 800efd00 800f61f4
->     > [  239.739218] 7c20: aa077c74 aa077c30 800f6144 8001da8c 00000001
->     > 8083bba0 8092ad00 aa076000
->     > [  239.747404] 7c40: 00000001 8085fcd8 aa077c6c 8083ce90 8093f500
->     > 8083ce90 8085fcd8 bab779a8
->     > [  239.755589] 7c60: 00000000 bab779a0 aa077c94 aa077c78 800f680c
->     > 800f5d48 00000411 8093f500
->     > [  239.763775] 7c80: bab779b0 00000001 aa077ce4 aa077c98 800b2b08
->     > 8001da8c 11d7affe 8083bb40
->     > [  239.771960] 7ca0: 8086ec14 8085fcd8 bab779a4 8092ad00 bab779a8
->     > 00000000 aa077d6c bab779a0
->     > [  239.780146] 7cc0: 8093f500 8092ad00 80839800 8085fcd8 aa077d6c
->     > af79f664 aa077d0c aa077ce8
->     > [  239.788331] 7ce0: 800b2c7c 8001da8c 8083bb40 8085fcd8 8093f500
->     > 8085fcd8 8083a9a0 aa077d6c
->     > [  239.796517] 7d00: aa077d2c aa077d10 800b3040 800b2c00 00000000
->     > 8083a9a0 8083ce90 8085fcd8
->     > [  239.804702] 7d20: aa077d54 aa077d30 800f9da4 800b2f74 00000000
->     > 7f3afdc8 7f3ae6dc 00000000
->     > [  239.812887] 7d40: 00000000 00000000 aa077da4 aa077d58 80104eec
->     > 800f9b5c 00000000 8006e298
->     > [  239.821072] 7d60: 00007530 00000000 00000063 00000000 7f3ae6dc
->     > 00000002 00000000 aa077dbc
->     > [  239.829258] 7d80: aa077da4 aa077d90 7f3ae210 7f3ae044 7f3af670
->     > 00000000 aa077de4 aa077da8
->     > [  239.837443] 7da0: 7f3b20c4 7f3ae1ec 00000063 80841ff0 00007530
->     > 00000000 00000000 80862198
->     > [  239.845628] 7dc0: 7f3b2000 80862198 7f3b2000 80862198 00000000
->     > 00000000 aa077e5c aa077de8
->     > [  239.853814] 7de0: 800098fc 7f3b200c 00000001 ba401f00 aa077e14
->     > aa077e00 8059f718 8059f68c
->     > [  239.861999] 7e00: 7f3af4ec ba401f00 aa077e5c aa077e18 801642c0
->     > 8001da8c 00010ec4 00000001
->     > [  239.870184] 7e20: 000000d0 00010ec8 af79f540 a0000013 00000001
->     > 7f3af4ec 00000001 7f3af4ec
->     > [  239.878369] 7e40: 00000001 af79f640 af79f380 00000001 aa077e84
->     > aa077e60 8059d240 8000986c
->     > [  239.886555] 7e60: aa077e84 aa077e70 aa077f48 00000001 af79f640
->     > 7f3af4ec aa077f44 aa077e88
->     > [  239.894740] 7e80: 8009d98c 8059d1dc 7f3af4f8 00007fff 8009a8dc
->     > aa077f48 aa077ec4 806bfa34
->     > [  239.902926] 7ea0: 806bfa0c 806bfa00 806bfa64 805a9838 7f3af4f8
->     > bc8d0ea4 7f3af65c 8085edb8
->     > [  239.911111] 7ec0: 00000028 7f3af534 bc8cd000 00003f1c 000084a4
->     > 00000000 0b300002 00000000
->     > [  239.919295] 7ee0: 00000000 00000000 00000000 00000000 00000000
->     > 00000000 00000000 00000000
->     > [  239.927479] 7f00: 00000000 00000000 00000000 00000000 00000000
->     > 00000000 00000020 00000000
->     > [  239.935665] 7f20: 00000003 0002cd30 0000017b 800100cc aa076000
->     > 00000000 aa077fa4 aa077f48
->     > [  239.943850] 7f40: 8009e1a0 8009bf48 bc8cd000 00003f1c bc8d0904
->     > bc8d075c bc8cfa18 00002074
->     > [  239.952036] 7f60: 00002294 00000000 00000000 00000000 00000024
->     > 00000025 0000001b 0000001f
->     > [  239.960221] 7f80: 00000016 00000000 00000000 3955fb00 00000002
->     > 0003f040 00000000 aa077fa8
->     > [  239.968406] 7fa0: 8000fe00 8009e11c 3955fb00 00000002 00000003
->     > 0002cd30 00000000 00000000
->     > [  239.976591] 7fc0: 3955fb00 00000002 0003f040 0000017b 00000000
->     > 000297d8 00000002 00000003
->     > [  239.984777] 7fe0: 7ee06640 7ee06630 0002212c 76e7f590 60000010
->     > 00000003 3b3fd821 3b3fdc21
->     > [  239.992976] [<800f7d94>] (xnsynch_sleep_on) from [<80103ed8>]
->     > (rtdm_event_timedwait+0x1a0/0x22c)
->     > [  240.001776] [<80103ed8>] (rtdm_event_timedwait) from [<80103f90>]
->     > (rtdm_event_wait+0x2c/0x34)
->     > [  240.010314] [<80103f90>] (rtdm_event_wait) from [<804a4fe0>]
->     > (do_transfer_irq+0x84/0x10c)
->     > [  240.018503] [<804a4fe0>] (do_transfer_irq) from [<804a50dc>]
->     > (bcm2835_write+0x34/0x40)
->     > [  240.026438] [<804a50dc>] (bcm2835_write) from [<7f3ae128>]
->     > (ads1256_rtdm_send_cmd+0xf0/0x150 [ads1256_rtdm])
->     > [  240.036300] [<7f3ae128>] (ads1256_rtdm_send_cmd [ads1256_rtdm]) from
->     > [<7f3ae210>] (ads1256_rtdm_read_register+0x30/0x58 [ads1256_rtdm])
->     > [  240.048500] [<7f3ae210>] (ads1256_rtdm_read_register [ads1256_rtdm])
->     > from [<7f3b20c4>] (ads1256_rtdm_init+0xc4/0x17c [ads1256_rtdm])
->     > [  240.060436] [<7f3b20c4>] (ads1256_rtdm_init [ads1256_rtdm]) from
->     > [<800098fc>] (do_one_initcall+0x9c/0x1e4)
->     > [  240.070105] [<800098fc>] (do_one_initcall) from [<8059d240>]
->     > (do_init_module+0x70/0x1bc)
->     > [  240.078212] [<8059d240>] (do_init_module) from [<8009d98c>]
->     > (load_module+0x1a50/0x2084)
-> 
-> 
->     bcm2835_write() is not available to other drivers, this is the endpoint
->     of the write() system call from userland. RTDM guarantees that such call
->     happens in the right runtime mode for the current thread, i.e. primary
->     mode. At the opposite, calling this routine directly over a driver init
->     context implies secondary mode, which leads to the crash.
-> 
->     -- 
->     Philippe.
-> 
-
-
--- 
-Philippe.
+2017-10-13 11:31 GMT+02:00 Henning Schild <henning.schild@siemens.com>:
+> That looks good to me.
+>
+> Henning
+>
+> Am Fri, 13 Oct 2017 10:38:26 +0200
+> schrieb Norbert Lange <nolange79@gmail.com>:
+>
+>> Second attempt at fixing it, you could surely make this more complex
+>> using autohell but I am not going there.
+>>
+>> If I understood correctly this script is only necessary if the
+>> application is linked -static?
+>> Means I would try to avoid using it, aslong I dont explicitly want to
+>> do that.
+>>
+>> Kind regards,
+>> Norbert
+>>
+>> 2017-10-13 9:40 GMT+02:00 Norbert Lange <nolange79@gmail.com>:
+>> > Ok I just realized there is a "-Ur" option, aside from "-U -r".
+>> >
+>> > You get alot otherwise undocumented flags with "gcc --help -v" BTW
+>> >
+>> > 2017-10-13 9:13 GMT+02:00 Norbert Lange <nolange79@gmail.com>:
+>> >> Hello,
+>> >>
+>> >> I tracked down the source of information to this:
+>> >> https://wiki.ubuntu.com/SecurityTeam/PIE
+>> >>
+>> >> I changed the flags from "-Wl,-Ur" to "-Wl,-U -r", so you wont get
+>> >> an explanation from me, why -U has to be passed for the linker.
+>> >> And by the way, gcc accepts -U aswell, so this might be preferable
+>> >> to be used directly too.
+>> >>
+>> >> I don`t know why those flags aren' t documented, bug in gcc
+>> >> documentation? As far as I understand is that gcc is smart enough
+>> >> to correctly deal with the flags gcc directly received, but the
+>> >> linker lacks that information.
+>> >>
+>> >> I don' t know what the issue is with the C++ Constructors, in the
+>> >> context of this change?
+>> >> (I heard about the issues if those reside in a shared library, use
+>> >> function from libcobald and don't depend on libcobald. Which is
+>> >> more of a broken build to me if you don't add the depended libs,
+>> >> and will bite you the same way if you use GCCs constructor
+>> >> attribute)
+>> >>
+>> >> Kind regards,
+>> >> Norbert.
+>> >>
+>> >> 2017-10-12 10:33 GMT+02:00 Henning Schild
+>> >> <henning.schild@siemens.com>:
+>> >>> Hey Norbert,
+>> >>>
+>> >>> thanks for looking into that again! Could you please explain how
+>> >>> and why that works, or point out what to look at in flint?
+>> >>> Mailing list thread, commit, something like that.
+>> >>>
+>> >>> As far as i can see gcc now gets a "-r" which i do not find in the
+>> >>> manpage. And ld gets a "-U" which i do not find in its manpage.
+>> >>> And there is something about c++ constructors which might change
+>> >>> the behaviour of xenomai.
+>> >>>
+>> >>> Henning
+>> >>>
+>> >>> Am Tue, 10 Oct 2017 16:38:50 +0200
+>> >>> schrieb Norbert Lange <nolange79@gmail.com>:
+>> >>>
+>> >>>> Some highly trivial fix attached!
+>> >>>> Its strange that this flag is not documented in the manual (I
+>> >>>> found out abaout this fix from
+>> >>>> https://launchpad.net/ubuntu/+source/flint)
+>> >>>>
+>> >>>> Norbert Lange
+>> >>>>
+>> >>>> 2017-08-10 11:49 GMT+02:00 Henning Schild
+>> >>>> <henning.schild@siemens.com>:
+>> >>>> > Hi Norbert,
+>> >>>> >
+>> >>>> > Thanks! In fact that issue has come up before and a similar
+>> >>>> > workaround was described. It should be fixed, patches welcome!
+>> >>>> >
+>> >>>> > Henning
+>> >>>> >
+>> >>>> > Am Wed, 9 Aug 2017 16:21:02 +0200
+>> >>>> > schrieb Norbert Lange <nolange79@gmail.com>:
+>> >>>> >
+>> >>>> >> Hello,
+>> >>>> >>
+>> >>>> >> Building the xenomai package won`t work because debian now
+>> >>>> >> defaults to using pie, and the linker will complain with "ld:
+>> >>>> >> -r and -pie may not be used together"
+>> >>>> >>
+>> >>>> >> A workaround for now is to add the flags manually:
+>> >>>> >> ../xenomai-3.0.5/configure LDFLAGS=-no-pie CFLAGS="-fno-PIE
+>> >>>> >> -fno-pie -no-pie"
+>> >>>> >>
+>> >>>> >> A real fix would be similar to
+>> >>>> >> http://lists.gnu.org/archive/html/bug-grub/2016-11/msg00011.html
+>> >>>> >> (no-pie is not supported on old and other compilers)
+>> >>>> >>
+>> >>>> >> Kind regards,
+>> >>>> >> Norbert
+>> >>>> >>
+>> >>>> >> _______________________________________________
+>> >>>> >> Xenomai mailing list
+>> >>>> >> Xenomai@xenomai.org
+>> >>>> >> https://xenomai.org/mailman/listinfo/xenomai
+>> >>>> >
+>> >>>
+>
 
