@@ -1,15 +1,17 @@
-References: <CADYdroNL-JicUU_p=GXy4_ZbR3TqBmbJxf8eoLuxn57tgWpmJA@mail.gmail.com>
- <334d5994-9ee8-9d61-1020-3579665220e0@alaxarxa.net>
+References: <1508232053.2272.23.camel@scrappix.utpvision.local>
+ <96045a73-a4c5-a441-ec74-31d03322b0d3@xenomai.org>
+ <1508306591.2177.19.camel@scrappix.utpvision.local>
+ <fb8410b0-d082-5eeb-2237-f725ba9b25af@xenomai.org>
+ <1508320551.3237.13.camel@scrappix.utpvision.local>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <e7229d4d-0315-fc6d-7087-ad1e6f34e7f4@xenomai.org>
-Date: Thu, 23 Nov 2017 12:25:38 +0100
+Message-ID: <68ab64eb-dbaf-291c-3be6-536e7b9509aa@xenomai.org>
+Date: Wed, 18 Oct 2017 18:40:33 +0200
 MIME-Version: 1.0
-In-Reply-To: <334d5994-9ee8-9d61-1020-3579665220e0@alaxarxa.net>
+In-Reply-To: <1508320551.3237.13.camel@scrappix.utpvision.local>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] Fix compilation of e1000,
- eepro100 and igp rtnet drivers
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Heap binding error (EWOULDBLOCK)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,24 +20,170 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, xenomai@xenomai.org
+To: Roberto Finazzi <rfinaz@tin.it>
+Cc: xenomai@xenomai.org
 
-On 11/23/2017 08:29 AM, Leopold Palomo-Avellaneda wrote:
-> On 21/11/17 14:00, Norbert Lange wrote:
->> Hello,
+On 10/18/2017 11:55 AM, Roberto Finazzi wrote:
+> Il giorno mer, 18/10/2017 alle 11.02 +0200, Philippe Gerum ha scritto:
+>> On 10/18/2017 08:03 AM, Roberto Finazzi wrote:
+>>> Hi,
+>>> thank you for your answer, but there was already both --enable-registry
+>>> and --enable-pshared as I can see using /usr/xenomai/sbin/version -a.
+>>>
 >>
->> enabling RTNet will result in compile failures, because there is a
->> nameclash from some linux-headers.
->> This patch fixes some intel NICs to compile
+>> Please paste the output of:
+>> # <your-test-app> --dump-config.
+>>
 > 
-> I have applied this patch and seems that works quiet well.
 > 
-> Philippe, is this a correct solution?
+> based on Xenomai/cobalt v3.0.5
+> CONFIG_MMU=1
+> CONFIG_SMP=1
+> CONFIG_XENO_BUILD_ARGS=" '--with-core=cobalt' '--disable-debug'
+> '--enable-pshared' '--enable-smp' '--enable-registry'"
+> CONFIG_XENO_BUILD_STRING="x86_64-unknown-linux-gnu"
+> CONFIG_XENO_COBALT=1
+> CONFIG_XENO_COMPILER="gcc version 6.3.0 20170516 (Debian 6.3.0-18) "
+> CONFIG_XENO_DEFAULT_PERIOD=100000
+> CONFIG_XENO_FORTIFY=1
+> CONFIG_XENO_HOST_STRING="x86_64-unknown-linux-gnu"
+> CONFIG_XENO_LORES_CLOCK_DISABLED=1
+> CONFIG_XENO_PREFIX="/usr/xenomai"
+> CONFIG_XENO_PSHARED=1
+> CONFIG_XENO_RAW_CLOCK_ENABLED=1
+> CONFIG_XENO_REGISTRY=1
+> CONFIG_XENO_REGISTRY_ROOT="/var/run/xenomai"
+> CONFIG_XENO_REVISION_LEVEL=5
+> CONFIG_XENO_SANITY=1
+> CONFIG_XENO_TLSF=1
+> CONFIG_XENO_TLS_MODEL="initial-exec"
+> CONFIG_XENO_UAPI_LEVEL=14
+> CONFIG_XENO_VERSION_MAJOR=3
+> CONFIG_XENO_VERSION_MINOR=0
+> CONFIG_XENO_VERSION_NAME="Sisyphus's Boulder"
+> CONFIG_XENO_VERSION_STRING="3.0.5"
+> CONFIG_XENO_X86_VSYSCALL=1
+> ---
+> CONFIG_XENO_ASYNC_CANCEL is OFF
+> CONFIG_XENO_COPPERPLATE_CLOCK_RESTRICTED is OFF
+> CONFIG_XENO_DEBUG is OFF
+> CONFIG_XENO_DEBUG_FULL is OFF
+> CONFIG_XENO_LIBS_DLOPEN is OFF
+> CONFIG_XENO_MERCURY is OFF
+> CONFIG_XENO_VALGRIND_API is OFF
+> CONFIG_XENO_WORKAROUND_CONDVAR_PI is OFF
+> ---
+> PTHREAD_STACK_DEFAULT=65536
+> AUTOMATIC_BOOTSTRAP=1
 > 
-> Could be applied the same for the rest of the drivers with the same problem?
+>>> Just to be sure for the code, this is the first program I used.
+>>>
+>>> #include <stdio.h>
+>>> #include <stdlib.h>
+>>> #include <signal.h>
+>>> #include <sys/mman.h>
+>>> #include <alchemy/task.h>
+>>> #include <alchemy/sem.h>
+>>>
+>>> RT_TASK task;
+>>> RT_SEM semA;
+>>>
+>>> void end(int sig) {
+>>>   rt_sem_delete(&semA);
+>>
+>> Calling rt_sem_delete() over a signal handler is unsafe.
+>>
+>>>   exit(0);
+>>> }
+>>>
+>>> int main() {
+>>> int err;
+>>>
+>>> signal (SIGINT, end);
+>>>
+>>> mlockall(MCL_CURRENT|MCL_FUTURE);
+>>
+>> Explicit mlock is redundant with Xenomai 3.x (libcobalt does this for
+>> you during early init).
+>>
+> 
+> Ok, thank you.
+> 
+>>> err=rt_task_shadow(&task, "writetest", 10, 0);
+>>>
+>>> err= rt_sem_create(&semA, "semA", 0, S_FIFO);
+>>> printf("After create= %d\n", err);
+>>>
+>>> while(1) ;
+>>>
+>>
+>> That infinite CPU-bound loop should rapidly cause a hard lockup, even on
+>> a multi-core system.
+>>
+> 
+> To simplify I removed part of source code not useful for understand the
+> problem...
+> 
+>>> }
+>>>
+>>> And this is the second one.
+>>>  
+>>> #include <stdio.h>
+>>> #include <stdlib.h>
+>>> #include <signal.h>
+>>> #include <sys/mman.h>
+>>> #include <alchemy/task.h>
+>>> #include <alchemy/sem.h>
+>>>
+>>> RT_TASK task;
+>>> RT_SEM semA;
+>>>
+>>> void end(int sig) {
+>>>
+>>>   rt_sem_unbind(&semA);
+>>>   exit(0);
+>>> }
+>>>
+>>> int main() {
+>>> int err;
+>>>
+>>> signal (SIGINT, end);
+>>>
+>>> mlockall(MCL_CURRENT|MCL_FUTURE);
+>>> err=rt_task_shadow(&task, "readtest", 10, 0);
+>>>
+>>> err= rt_sem_bind(&semA, "semA", TM_INFINITE);
+>>> printf("After bind= %d\n", err);
+>>>
+>>> while(1) ;
+>>>
+>>> }
+>>>
+>>> I started the first one and the semaphore was created without problems.
+>>> When I started the second, it remained blocked on the rt_sem_bind.
+>>>
+>>
+>> Are you starting both apps in sequence on a single shell command line,
+>> like "./sem_create_app; ./sem_bind_app"?
+>>
+> 
+> I started them in two different xterm. I tried also with one shell
+> command line with the same result.
 > 
 
-Yes, the fix makes sense. I merged it.
+You need to have both processes belong to the same session:
+http://xenomai.org/2015/05/application-setup-and-init/#Standard_Xenomai_command_line_options
+
+e.g.
+# ./app1 --session=foo
+# ./app2 --session=foo
+
+Common session names for processes cause resources to be shared between
+them. Otherwise, the binder expects the semaphore to be created in its
+own private scope, which never happens.
+
+And yes, the doc is terse regarding this and many other things, this is
+hardly well explained, if ever explained at all.
 
 -- 
 Philippe.
