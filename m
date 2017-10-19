@@ -1,17 +1,19 @@
-Date: Fri, 13 Oct 2017 11:16:19 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20171013111619.1123d852@md1em3qc>
-In-Reply-To: <CADYdroNeQOY2MN-b=r6bNh=69oeGP2oWry2CXHYH9RJtTt1MFA@mail.gmail.com>
-References: <CADYdroNR6zjbKrPKPm3d_7+55Rg2SDbmpxiNR-xu78QNHSrr9g@mail.gmail.com>
- <20170810114956.04f62bc6@md1em3qc>
- <CADYdroM8E7jhuyRoW4JkSzZfGg27VvpjLmHGmMmX79wgEqPJog@mail.gmail.com>
- <20171012103345.04d854c2@md1em3qc>
- <CADYdroOAVb0wPAvuynvuOUtSnp85FT2Ett80amzDpDCFHPHHzA@mail.gmail.com>
- <CADYdroNeQOY2MN-b=r6bNh=69oeGP2oWry2CXHYH9RJtTt1MFA@mail.gmail.com>
+References: <6f474cec-909e-f230-73ff-b3b1fcf9c555@siemens.com>
+ <20171012124935.24781-1-christoph.muellner@theobroma-systems.com>
+ <a4c6520f-c201-2006-f530-b921d722c3c1@oss-tech.org>
+ <6FABE6F5-B367-4A64-A276-2DC2DF18EBA9@theobroma-systems.com>
+ <d33ebdd9-d449-ca66-e355-f5796378804e@oss-tech.org>
+ <239A2528-8C25-4293-8832-BA7FB56AF790@theobroma-systems.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <38296c59-5584-3461-fae3-cb2bc92cc596@xenomai.org>
+Date: Thu, 19 Oct 2017 11:46:42 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Won`t build on new Debian Stable
+In-Reply-To: <239A2528-8C25-4293-8832-BA7FB56AF790@theobroma-systems.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] [PATCH] ipipe: gicv3: [v3] Enable interrupt
+	pipelining.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,106 +22,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Norbert Lange <nolange79@gmail.com>
-Cc: norbert.lange@andritz.com, Xenomai <xenomai@xenomai.org>
+To: =?UTF-8?Q?Christoph_M=c3=bcllner?= <christoph.muellner@theobroma-systems.com>, Dmitriy Cherkasov <dmitriy@oss-tech.org>
+Cc: jan.kiszka@siemens.com, xenomai@xenomai.org
 
-Am Fri, 13 Oct 2017 09:40:54 +0200
-schrieb Norbert Lange <nolange79@gmail.com>:
+On 10/19/2017 10:43 AM, Christoph Müllner wrote:
+> Is there anything else I can do to get this merged?
 
-> Ok I just realized there is a "-Ur" option, aside from "-U -r".
+All good. Merged, thanks.
 
-In the docs of ld there is _only_ "-Ur", "-U" is not there and "-r" is
-not in the docs of gcc. Also when looking at "--help -v".
-
-Henning
-
-> You get alot otherwise undocumented flags with "gcc --help -v" BTW
-> 
-> 2017-10-13 9:13 GMT+02:00 Norbert Lange <nolange79@gmail.com>:
-> > Hello,
-> >
-> > I tracked down the source of information to this:
-> > https://wiki.ubuntu.com/SecurityTeam/PIE
-> >
-> > I changed the flags from "-Wl,-Ur" to "-Wl,-U -r", so you wont get
-> > an explanation from me, why -U has to be passed for the linker.
-> > And by the way, gcc accepts -U aswell, so this might be preferable
-> > to be used directly too.
-> >
-> > I don`t know why those flags aren' t documented, bug in gcc
-> > documentation? As far as I understand is that gcc is smart enough to
-> > correctly deal with the flags gcc directly received, but the linker
-> > lacks that information.
-> >
-> > I don' t know what the issue is with the C++ Constructors, in the
-> > context of this change?
-> > (I heard about the issues if those reside in a shared library, use
-> > function from libcobald and don't depend on libcobald. Which is more
-> > of a broken build to me if you don't add the depended libs, and will
-> > bite you the same way if you use GCCs constructor attribute)
-> >
-> > Kind regards,
-> > Norbert.
-> >
-> > 2017-10-12 10:33 GMT+02:00 Henning Schild
-> > <henning.schild@siemens.com>:  
-> >> Hey Norbert,
-> >>
-> >> thanks for looking into that again! Could you please explain how
-> >> and why that works, or point out what to look at in flint? Mailing
-> >> list thread, commit, something like that.
-> >>
-> >> As far as i can see gcc now gets a "-r" which i do not find in the
-> >> manpage. And ld gets a "-U" which i do not find in its manpage. And
-> >> there is something about c++ constructors which might change the
-> >> behaviour of xenomai.
-> >>
-> >> Henning
-> >>
-> >> Am Tue, 10 Oct 2017 16:38:50 +0200
-> >> schrieb Norbert Lange <nolange79@gmail.com>:
-> >>  
-> >>> Some highly trivial fix attached!
-> >>> Its strange that this flag is not documented in the manual (I
-> >>> found out abaout this fix from
-> >>> https://launchpad.net/ubuntu/+source/flint)
-> >>>
-> >>> Norbert Lange
-> >>>
-> >>> 2017-08-10 11:49 GMT+02:00 Henning Schild
-> >>> <henning.schild@siemens.com>:  
-> >>> > Hi Norbert,
-> >>> >
-> >>> > Thanks! In fact that issue has come up before and a similar
-> >>> > workaround was described. It should be fixed, patches welcome!
-> >>> >
-> >>> > Henning
-> >>> >
-> >>> > Am Wed, 9 Aug 2017 16:21:02 +0200
-> >>> > schrieb Norbert Lange <nolange79@gmail.com>:
-> >>> >  
-> >>> >> Hello,
-> >>> >>
-> >>> >> Building the xenomai package won`t work because debian now
-> >>> >> defaults to using pie, and the linker will complain with "ld:
-> >>> >> -r and -pie may not be used together"
-> >>> >>
-> >>> >> A workaround for now is to add the flags manually:
-> >>> >> ../xenomai-3.0.5/configure LDFLAGS=-no-pie CFLAGS="-fno-PIE
-> >>> >> -fno-pie -no-pie"
-> >>> >>
-> >>> >> A real fix would be similar to
-> >>> >> http://lists.gnu.org/archive/html/bug-grub/2016-11/msg00011.html
-> >>> >> (no-pie is not supported on old and other compilers)
-> >>> >>
-> >>> >> Kind regards,
-> >>> >> Norbert
-> >>> >>
-> >>> >> _______________________________________________
-> >>> >> Xenomai mailing list
-> >>> >> Xenomai@xenomai.org
-> >>> >> https://xenomai.org/mailman/listinfo/xenomai  
-> >>> >  
-> >>  
-
+-- 
+Philippe.
 
