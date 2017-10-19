@@ -1,7 +1,7 @@
-Date: Fri, 13 Oct 2017 11:31:18 +0200
+Date: Thu, 19 Oct 2017 18:55:57 +0200
 From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20171013113118.6e6f0fcd@md1em3qc>
-In-Reply-To: <CADYdroN-yNG+nLrhfiH8MgMVr7D82-wNnjvyVXcX6hNU2mikcg@mail.gmail.com>
+Message-ID: <20171019185557.41f55c24@md1em3qc>
+In-Reply-To: <08ed4b28-608a-4a3b-6946-d910861017d3@xenomai.org>
 References: <CADYdroNR6zjbKrPKPm3d_7+55Rg2SDbmpxiNR-xu78QNHSrr9g@mail.gmail.com>
  <20170810114956.04f62bc6@md1em3qc>
  <CADYdroM8E7jhuyRoW4JkSzZfGg27VvpjLmHGmMmX79wgEqPJog@mail.gmail.com>
@@ -9,6 +9,11 @@ References: <CADYdroNR6zjbKrPKPm3d_7+55Rg2SDbmpxiNR-xu78QNHSrr9g@mail.gmail.com>
  <CADYdroOAVb0wPAvuynvuOUtSnp85FT2Ett80amzDpDCFHPHHzA@mail.gmail.com>
  <CADYdroNeQOY2MN-b=r6bNh=69oeGP2oWry2CXHYH9RJtTt1MFA@mail.gmail.com>
  <CADYdroN-yNG+nLrhfiH8MgMVr7D82-wNnjvyVXcX6hNU2mikcg@mail.gmail.com>
+ <20171013113118.6e6f0fcd@md1em3qc>
+ <CADYdroPP8ZQ91eqfJjJP9UFufpJOWm7+zsDePz-0a_TaDV_9_Q@mail.gmail.com>
+ <20171013122653.1adbf99e@md1em3qc>
+ <CADYdroP7G6irhKJUtpWfoVdivT3ey_i58zAvMz-O7E7PycH6ug@mail.gmail.com>
+ <08ed4b28-608a-4a3b-6946-d910861017d3@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -21,118 +26,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Norbert Lange <nolange79@gmail.com>
-Cc: norbert.lange@andritz.com, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: norbert.lange@andritz.com, Norbert Lange <nolange79@gmail.com>, Xenomai <xenomai@xenomai.org>
 
-That looks good to me.
+On Thu, 19 Oct 2017 12:03:33 +0200
+Philippe Gerum <rpm@xenomai.org> wrote:
+
+> On 10/13/2017 01:36 PM, Norbert Lange wrote:
+> > I works, because collect2 (the "compiler driver", which documents
+> > the -r option) now knows about the -r flag, using -Wl,-[U]r would
+> > mean the flags aren't even looked at.
+> > It can then disable functionality that is not supposed to be done at
+> > this point (see gcc/collect2.c, search for 'early_exit'). It might
+> > actually be in conflict with the -Ur option from the comments, but I
+> > don't know what this is trying to solve (the constructor tables
+> > would then be built in the second step?)
+> > 
+> > I would prefer the compiler driver knowing about the flags and
+> > correctly dealing with them, instead of replicating this logic in
+> > scripts (and keeping it up to date with this internal logic).  
+> 
+> Ack.
+> 
+> > Might be that your wrapper script is doing something similarly by
+> > filtering out the arguments for the first step, which might be the
+> > same functionally that is skipped when adding '-r'
+> > 
+> > I dont know what the -Ur flag is trying to solve, and the first
+> > patch adding -no-pie is way less likely to change something (given
+> > that I would not have compiled with -pie before).
+> > The new patch would however leave more of the magic to the toolchain
+> > and seems more "correct" to me, for whatever that's worth. But it
+> > might have some subtle differences to before, got some testcase
+> > where lacking the -Ur flag made a difference?  
+> 
+> I don't know the original intent about passing -Ur to the linker,
+> except maybe to stick to the ld manpage which states that the last
+> partial link command should be given such option.
+> 
+> However my understanding is that we don't need it in wrap-link.sh,
+> since the script eventually completes the link stage to produce a
+> fully resolved executable. That implies collecting the ctors/dtors and
+> resolving all references from the partially linked object file anyway.
+> 
+> Some testing only passing -r here seems to confirm this assumption
+> with C++ apps; C++ users may want to check this too:
+
+I just told some C++ power users to give that a try. I am not sure how
+fast the feedback will arrive, i hope in the next two weeks.
 
 Henning
 
-Am Fri, 13 Oct 2017 10:38:26 +0200
-schrieb Norbert Lange <nolange79@gmail.com>:
-
-> Second attempt at fixing it, you could surely make this more complex
-> using autohell but I am not going there.
 > 
-> If I understood correctly this script is only necessary if the
-> application is linked -static?
-> Means I would try to avoid using it, aslong I dont explicitly want to
-> do that.
+> diff --git a/scripts/wrap-link.sh b/scripts/wrap-link.sh
+> index aab7899..fa83bd5 100755
+> --- a/scripts/wrap-link.sh
+> +++ b/scripts/wrap-link.sh
+> @@ -204,7 +204,7 @@ done
 > 
-> Kind regards,
-> Norbert
+>  if $stage2; then
+>      $verbose && set -x
+> -    $dryrun $cc -o "$output.tmp" -Wl,-Ur -nostdlib $stage1_args
+> +    $dryrun $cc -o "$output.tmp" -r -nostdlib $stage1_args
+>      $dryrun $cc -o "$output" "$output.tmp" $stage2_args
+>      $dryrun rm -f $output.tmp
+>  else
 > 
-> 2017-10-13 9:40 GMT+02:00 Norbert Lange <nolange79@gmail.com>:
-> > Ok I just realized there is a "-Ur" option, aside from "-U -r".
-> >
-> > You get alot otherwise undocumented flags with "gcc --help -v" BTW
-> >
-> > 2017-10-13 9:13 GMT+02:00 Norbert Lange <nolange79@gmail.com>:  
-> >> Hello,
-> >>
-> >> I tracked down the source of information to this:
-> >> https://wiki.ubuntu.com/SecurityTeam/PIE
-> >>
-> >> I changed the flags from "-Wl,-Ur" to "-Wl,-U -r", so you wont get
-> >> an explanation from me, why -U has to be passed for the linker.
-> >> And by the way, gcc accepts -U aswell, so this might be preferable
-> >> to be used directly too.
-> >>
-> >> I don`t know why those flags aren' t documented, bug in gcc
-> >> documentation? As far as I understand is that gcc is smart enough
-> >> to correctly deal with the flags gcc directly received, but the
-> >> linker lacks that information.
-> >>
-> >> I don' t know what the issue is with the C++ Constructors, in the
-> >> context of this change?
-> >> (I heard about the issues if those reside in a shared library, use
-> >> function from libcobald and don't depend on libcobald. Which is
-> >> more of a broken build to me if you don't add the depended libs,
-> >> and will bite you the same way if you use GCCs constructor
-> >> attribute)
-> >>
-> >> Kind regards,
-> >> Norbert.
-> >>
-> >> 2017-10-12 10:33 GMT+02:00 Henning Schild
-> >> <henning.schild@siemens.com>:  
-> >>> Hey Norbert,
-> >>>
-> >>> thanks for looking into that again! Could you please explain how
-> >>> and why that works, or point out what to look at in flint?
-> >>> Mailing list thread, commit, something like that.
-> >>>
-> >>> As far as i can see gcc now gets a "-r" which i do not find in the
-> >>> manpage. And ld gets a "-U" which i do not find in its manpage.
-> >>> And there is something about c++ constructors which might change
-> >>> the behaviour of xenomai.
-> >>>
-> >>> Henning
-> >>>
-> >>> Am Tue, 10 Oct 2017 16:38:50 +0200
-> >>> schrieb Norbert Lange <nolange79@gmail.com>:
-> >>>  
-> >>>> Some highly trivial fix attached!
-> >>>> Its strange that this flag is not documented in the manual (I
-> >>>> found out abaout this fix from
-> >>>> https://launchpad.net/ubuntu/+source/flint)
-> >>>>
-> >>>> Norbert Lange
-> >>>>
-> >>>> 2017-08-10 11:49 GMT+02:00 Henning Schild
-> >>>> <henning.schild@siemens.com>:  
-> >>>> > Hi Norbert,
-> >>>> >
-> >>>> > Thanks! In fact that issue has come up before and a similar
-> >>>> > workaround was described. It should be fixed, patches welcome!
-> >>>> >
-> >>>> > Henning
-> >>>> >
-> >>>> > Am Wed, 9 Aug 2017 16:21:02 +0200
-> >>>> > schrieb Norbert Lange <nolange79@gmail.com>:
-> >>>> >  
-> >>>> >> Hello,
-> >>>> >>
-> >>>> >> Building the xenomai package won`t work because debian now
-> >>>> >> defaults to using pie, and the linker will complain with "ld:
-> >>>> >> -r and -pie may not be used together"
-> >>>> >>
-> >>>> >> A workaround for now is to add the flags manually:
-> >>>> >> ../xenomai-3.0.5/configure LDFLAGS=-no-pie CFLAGS="-fno-PIE
-> >>>> >> -fno-pie -no-pie"
-> >>>> >>
-> >>>> >> A real fix would be similar to
-> >>>> >> http://lists.gnu.org/archive/html/bug-grub/2016-11/msg00011.html
-> >>>> >> (no-pie is not supported on old and other compilers)
-> >>>> >>
-> >>>> >> Kind regards,
-> >>>> >> Norbert
-> >>>> >>
-> >>>> >> _______________________________________________
-> >>>> >> Xenomai mailing list
-> >>>> >> Xenomai@xenomai.org
-> >>>> >> https://xenomai.org/mailman/listinfo/xenomai  
-> >>>> >  
-> >>>  
 
 
