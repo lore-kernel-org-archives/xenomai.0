@@ -1,14 +1,15 @@
 References: <20171023145944.11262-1-christoph.muellner@theobroma-systems.com>
+ <20171023145944.11262-2-christoph.muellner@theobroma-systems.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <5cefd502-8f58-6da1-08ee-d43283428d7a@xenomai.org>
-Date: Sun, 29 Oct 2017 18:23:25 +0100
+Message-ID: <25908224-f350-f057-bdab-ecba63b9a762@xenomai.org>
+Date: Sun, 29 Oct 2017 18:29:44 +0100
 MIME-Version: 1.0
-In-Reply-To: <20171023145944.11262-1-christoph.muellner@theobroma-systems.com>
+In-Reply-To: <20171023145944.11262-2-christoph.muellner@theobroma-systems.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH 0/3] RTDM GPIO: Add API to set IRQ's CPU
- affinity.
+Subject: Re: [Xenomai] [PATCH 1/3] cobalt: rtdm: Add function
+ rtdm_irq_affinity().
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,39 +21,34 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Christoph Muellner <christoph.muellner@theobroma-systems.com>, xenomai@xenomai.org
 
 On 10/23/2017 04:59 PM, Christoph Muellner wrote:
-> This patch series adds an API to the RTDM GPIO layer to set a GPIO interrupt's
-> CPU affinity to Xenomai's next branch.
+> This patch adds a RTDM API to set a IRQ's CPU affinity.
 > 
-> A Xenomai application can use this API with a code similar to this:
+> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
+> ---
+>  include/cobalt/kernel/rtdm/driver.h | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
->         int mask = 1 << 4; //CPU4 only
-
-cpu_set_t would be required here. We may have more than 32 CPU cores
-only using a portion of them for rt duties.
-
->         ret = ioctl(gpio_in_fd, GPIO_RTIOC_IRQAFF, &mask);
->         if (ret) {
->                 fprintf(stderr, "Failed to set interrupt's CPU affinity.\n");
->                 return -1;
->         }
-> 
-> Of course this only works, if the underlying GPIO driver supports setting
-> the IRQ affinity. I.e. the irq_set_affinity function needs to be set in the
-> struct irq_chip.
-> 
-> Tested on a RK3399 (arm64).
-> 
-> Christoph Muellner (3):
->   cobalt: rtdm: Add function rtdm_irq_affinity().
->   RTDM: uapi: Define ioctl code to set an IRQ affinity.
->   kernel: rtdm: gpio: Add support for GPIO_RTIOC_IRQAFF.
-> 
->  include/cobalt/kernel/rtdm/driver.h |  6 ++++++
->  include/rtdm/uapi/gpio.h            |  1 +
->  kernel/drivers/gpio/gpio-core.c     | 25 +++++++++++++++++++++++++
->  3 files changed, 32 insertions(+)
+> diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
+> index 0c7b62e75..803cdbfe4 100644
+> --- a/include/cobalt/kernel/rtdm/driver.h
+> +++ b/include/cobalt/kernel/rtdm/driver.h
+> @@ -874,6 +874,12 @@ static inline int rtdm_irq_disable(rtdm_irq_t *irq_handle)
+>  	xnintr_disable(irq_handle);
+>  	return 0;
+>  }
+> +
+> +static inline int rtdm_irq_affinity(rtdm_irq_t *irq_handle, cpumask_t tgt)
+> +{
+> +	xnintr_affinity(irq_handle, tgt);
+> +	return 0;
+> +}
+>  #endif /* !DOXYGEN_CPP */
+>  
+>  /* --- non-real-time signalling services --- */
 > 
 
+A bit of documentation is missing in drvlib.c for this new call (could
+follow the doc for rtdm_irq_disable() there).
 
 -- 
 Philippe.
