@@ -1,17 +1,14 @@
+References: <20171023145944.11262-1-christoph.muellner@theobroma-systems.com>
 From: Philippe Gerum <rpm@xenomai.org>
-References: <CADXNiGXZ7sCz8ZZ0TUtPGuWzCvdyBueeAm0oqeBWs=WccZk-YA@mail.gmail.com>
- <c296ac71-b3e0-c790-6af3-b64f54a2cf2b@xenomai.org>
- <CANXti+dsa30duyCYtuiN6OWvg+AoknE_mE8qzUME3wqemzv+ag@mail.gmail.com>
- <CADXNiGUhf39WezJ543W6+tk-YSwanFQsF64gxA=ZCFQ77BirBA@mail.gmail.com>
- <c62e7217-5026-d9a1-1c49-3dde4392d5ba@xenomai.org>
-Message-ID: <07431c38-2c9e-be66-a243-8d567739e07a@xenomai.org>
-Date: Sun, 29 Oct 2017 18:20:50 +0100
+Message-ID: <5cefd502-8f58-6da1-08ee-d43283428d7a@xenomai.org>
+Date: Sun, 29 Oct 2017 18:23:25 +0100
 MIME-Version: 1.0
-In-Reply-To: <c62e7217-5026-d9a1-1c49-3dde4392d5ba@xenomai.org>
+In-Reply-To: <20171023145944.11262-1-christoph.muellner@theobroma-systems.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rt_task_set_affinity causes hang
+Subject: Re: [Xenomai] [PATCH 0/3] RTDM GPIO: Add API to set IRQ's CPU
+ affinity.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,35 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jackson Jones <jackson.jones@gmail.com>, Xenomai@xenomai.org, Piotr Piorkowski <qba100@gmail.com>
+To: Christoph Muellner <christoph.muellner@theobroma-systems.com>, xenomai@xenomai.org
 
-On 10/05/2017 11:57 AM, Philippe Gerum wrote:
-> On 10/04/2017 10:57 PM, Jackson Jones wrote:
->> I am running on an i.MX6 quad core. It is running Debian Jessie with an
->> NXP/Varscite kernel 4.1.15. So it is a 32bit ARM platform like the Pi.
->>
->> What I meant by freeze is it hangs the entire OS/SoC, a hard reset is the
->> only way out. I will check the status of all the return codes (I did not
->> write this example but I should have cleaned it up when the problem was
->> tossed to me).
->>
-> Confirmed, I can badly break a couple of SoCs here using this test
-> program, provided I run it twice. The first run passes, second time is
-> always lethal. The Cobalt core seems to be doing silly things in this case.
+On 10/23/2017 04:59 PM, Christoph Muellner wrote:
+> This patch series adds an API to the RTDM GPIO layer to set a GPIO interrupt's
+> CPU affinity to Xenomai's next branch.
 > 
-> An additional bug also affects the interrupt pipeline for any release
-> starting with kernel 4.4 onward actually hides the issue in Cobalt,
-> making the affinity setting a nop, sort of.
+> A Xenomai application can use this API with a code similar to this:
 > 
-> Ok, I'll follow up on this.
+>         int mask = 1 << 4; //CPU4 only
+
+cpu_set_t would be required here. We may have more than 32 CPU cores
+only using a portion of them for rt duties.
+
+>         ret = ioctl(gpio_in_fd, GPIO_RTIOC_IRQAFF, &mask);
+>         if (ret) {
+>                 fprintf(stderr, "Failed to set interrupt's CPU affinity.\n");
+>                 return -1;
+>         }
+> 
+> Of course this only works, if the underlying GPIO driver supports setting
+> the IRQ affinity. I.e. the irq_set_affinity function needs to be set in the
+> struct irq_chip.
+> 
+> Tested on a RK3399 (arm64).
+> 
+> Christoph Muellner (3):
+>   cobalt: rtdm: Add function rtdm_irq_affinity().
+>   RTDM: uapi: Define ioctl code to set an IRQ affinity.
+>   kernel: rtdm: gpio: Add support for GPIO_RTIOC_IRQAFF.
+> 
+>  include/cobalt/kernel/rtdm/driver.h |  6 ++++++
+>  include/rtdm/uapi/gpio.h            |  1 +
+>  kernel/drivers/gpio/gpio-core.c     | 25 +++++++++++++++++++++++++
+>  3 files changed, 32 insertions(+)
 > 
 
-That one was pretty ugly, and affects all Xenomai releases, 2.x, 3.x,
-all of them. Fixed in 3.x by this commit:
-
-http://git.xenomai.org/xenomai-3.git/commit/?id=59344943b0c58d5f0c8b58d2ad97f2d894d33354
-
-Thanks for the test code, that helped a lot.
 
 -- 
 Philippe.
