@@ -1,15 +1,12 @@
-References: <20171023145944.11262-1-christoph.muellner@theobroma-systems.com>
- <20171023145944.11262-4-christoph.muellner@theobroma-systems.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <d8476ff1-e996-b233-7922-90830aa08657@xenomai.org>
-Date: Sun, 29 Oct 2017 18:36:55 +0100
+From: =?iso-8859-1?Q?C=E9dric_Perles?= <cperles@sepro-group.com>
+Date: Tue, 31 Oct 2017 12:03:50 +0100 (CET)
+Message-ID: <006f01d35237$eedce810$cc96b830$@sepro-group.com>
 MIME-Version: 1.0
-In-Reply-To: <20171023145944.11262-4-christoph.muellner@theobroma-systems.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH 3/3] kernel: rtdm: gpio: Add support for
- GPIO_RTIOC_IRQAFF.
+Content-Language: fr
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] ipipe + preempt_rt  : spinlock issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,62 +15,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Christoph Muellner <christoph.muellner@theobroma-systems.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 10/23/2017 04:59 PM, Christoph Muellner wrote:
-> To set a GPIO interrupt's CPU affinity, we simply call
-> rtdm_irq_affinity() with a proper bitmask.
-> 
-> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
-> ---
->  kernel/drivers/gpio/gpio-core.c | 25 +++++++++++++++++++++++++
->  1 file changed, 25 insertions(+)
-> 
-> diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
-> index 55594f6ae..84153a937 100644
-> --- a/kernel/drivers/gpio/gpio-core.c
-> +++ b/kernel/drivers/gpio/gpio-core.c
-> @@ -118,6 +118,23 @@ static void release_gpio_irq(unsigned int gpio, struct rtdm_gpio_pin *pin,
->  	chan->requested = false;
->  }
->  
-> +static int set_gpio_irq_affinity(struct rtdm_gpio_pin *pin, int val)
-> +{
-> +	cpumask_t tgt;
-> +	unsigned int i = 0;
-> +
-> +	cpumask_clear(&tgt);
-> +
-> +	while (val) {
-> +		if (val & (1 << i))
-> +			cpumask_set_cpu(i, &tgt);
-> +		val &= ~(1 << i);
-> +		i++;
-> +	}
-> +
-> +	return rtdm_irq_affinity(&pin->irqh, tgt);
-> +}
-> +
+Hi,
 
-Reflecting the change from int -> cpu_set_t in the ABI, we could have
-something along these lines instead:
 
-static int set_gpio_irq_affinity(struct rtdm_gpio_pin *pin, unsigned
-long __user *u_set, size_t setsize)
-{
-	cpumask_var_t mask;
-	int ret;
 
-	if (!alloc_cpumask_var(&mask, GFP_KERNEL))
-		return -ENOMEM;
+I=92m working on an iMX6 based board with NXP kernel 4.1.15.
 
-	ret = get_user_cpu_mask(u_set, setsize, mask);
-	if (ret == 0)
-		ret = do_set_gpio_affinity(pin, mask);
+I made a Xenomai 3.0.5/ipipe bsp that works well and I also made a
+preempt-rt bsp that works well too.
 
-	free_cpumask_var(mask);
 
-	...
--- 
-Philippe.
+
+However, now I would like to make a Xenomai/ipipe + preempt_rt bsp.
+
+
+
+I adapted preempt_rt patch to fit to ipipe patched kernel but during
+compilation I=92m facing issues concerning spinlocks:
+
+
+
+drivers/gpio/gpio-generic.c:496:2: note: in expansion of macro
+'spin_lock_init'
+
+  spin_lock_init(&bgc->lock);
+
+  ^
+
+include/linux/spinlock_rt.h:17:24: error: '__ipipe_spinlock_t {aka struct
+<anonymous>}' has no member named 'lock'
+
+  rt_mutex_init(&(slock)->lock);   \
+
+
+
+
+
+Searching some help on internet, I realized that only a few people tried
+to use both Xenomai and Preempt-rt.
+
+=3D> Is it an heresy ? if so, Why ?
+
+I thought it was the best way to limit preemption for the tasks that
+switched temporarily to secondary mode.
+
+
+
+=3D> If it is not a stupid idea, did somebody already resolve this kind o=
+f
+conflict ? and how ?
+
+
+
+Regards,
+
+
+
+C=E9dric.
+
+
+
 
