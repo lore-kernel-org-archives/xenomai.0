@@ -1,13 +1,13 @@
-References: <CAOocw5uUjKL5=jWd70z8nV5BbWyDxxaAtgb6+1hZaFknfbZj2w@mail.gmail.com>
+References: <006f01d35237$eedce810$cc96b830$@sepro-group.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <0daa5cf3-7525-1e1c-a1c3-df76b66d29e5@xenomai.org>
-Date: Wed, 1 Nov 2017 21:01:49 +0100
+Message-ID: <b10550b6-327a-73da-03e6-f5f88507feb4@xenomai.org>
+Date: Wed, 1 Nov 2017 21:56:37 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAOocw5uUjKL5=jWd70z8nV5BbWyDxxaAtgb6+1hZaFknfbZj2w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <006f01d35237$eedce810$cc96b830$@sepro-group.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] prepare-kernel.sh error on Ubuntu 14.04
+Subject: Re: [Xenomai] ipipe + preempt_rt : spinlock issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,31 +16,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Danrae Pray <danrae.pray@metecs.com>, xenomai@xenomai.org
+To: =?UTF-8?Q?C=c3=a9dric_Perles?= <cperles@sepro-group.com>, xenomai@xenomai.org
 
-On 11/01/2017 07:13 PM, Danrae Pray wrote:
+On 10/31/2017 12:03 PM, Cédric Perles wrote:
 > Hi,
 > 
-> I am trying to install the COBALT kernel alongside the Ubuntu 14.04 kernel
-> in a VirtualBox VM and have executed the following script:
 > 
-> ./scripts/prepare-kernel.sh --arch=x86_64 --linux=/usr/src/linux-4.4.95
-> --ipipe=/usr/src/ipipe-core-4.4.43-x86-8.patch
 > 
-> The xenomai code and ipipe patch came from the xenomai downloads site and
-> the linux distro is from kernel.org...
+> I’m working on an iMX6 based board with NXP kernel 4.1.15.
 > 
-> Can someone please help me understand why prepare-kernel.sh is failing?
+> I made a Xenomai 3.0.5/ipipe bsp that works well and I also made a
+> preempt-rt bsp that works well too.
+> 
+> 
+> 
+> However, now I would like to make a Xenomai/ipipe + preempt_rt bsp.
+> 
+> 
+> 
+> I adapted preempt_rt patch to fit to ipipe patched kernel but during
+> compilation I’m facing issues concerning spinlocks:
+> 
+> 
+> 
+> drivers/gpio/gpio-generic.c:496:2: note: in expansion of macro
+> 'spin_lock_init'
+> 
+>   spin_lock_init(&bgc->lock);
+> 
+>   ^
+> 
+> include/linux/spinlock_rt.h:17:24: error: '__ipipe_spinlock_t {aka struct
+> <anonymous>}' has no member named 'lock'
+> 
+>   rt_mutex_init(&(slock)->lock);   \
+> 
 > 
 
-Because some changes which happened between mainline kernel 4.4.43 and
-4.4.95 are conflicting with those introduced by the I-pipe patch, which
-was originally based on 4.4.43.
+gpio-generic should use raw spinlock accessors (e.g. spin_lock_init ->
+raw_spin_lock_init()).
 
-This patch against kernel 4.4.71 is available, you may want to try it
-instead. It will still apply to 4.4.95:
+> 
+> 
+> 
+> Searching some help on internet, I realized that only a few people tried
+> to use both Xenomai and Preempt-rt.
+> 
+> => Is it an heresy ? if so, Why ?
+> 
 
-http://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.4.71-x86-10.patch
+Not particularly.
+
+> I thought it was the best way to limit preemption for the tasks that
+> switched temporarily to secondary mode.
+> 
+>
+
+That may not be the best reason to use such combo, i.e. if this is about
+papering over issues caused by dual kernel's rt threads escaping the
+proper runtime mode. Those threads should not do that in the first place.
+
+A legitimate reason to use such combo is rather to have different
+classes of rt requirements in a single application, which are best
+served by combined approaches.
+
+> 
+> => If it is not a stupid idea, did somebody already resolve this kind of
+> conflict ?
+
+Yes, this may seem daunting at first, but there are usually only a few
+of them, almost only in include/spinlock*. Conflicts in sched/core may
+be a bit trickier to address though, but they don't appear frequently.
+
+> and how ?
+> 
+> 
+Well, just as you are doing: making sense of the changes, and figuring
+out how to fix the few conflicts.
 
 -- 
 Philippe.
