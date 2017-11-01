@@ -1,9 +1,12 @@
+References: <CA+K1mPHeJwOLhPcuJGmsf9A3yrcp_aNxS=4qXVLVU67Cw_14Eg@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <744bfd85-e3f2-4624-bdf6-485fe0636481@web.de>
+Date: Wed, 1 Nov 2017 08:35:46 +0100
 MIME-Version: 1.0
-From: C Smith <csmithquestions@gmail.com>
-Date: Tue, 31 Oct 2017 23:29:10 -0700
-Message-ID: <CA+K1mPHeJwOLhPcuJGmsf9A3yrcp_aNxS=4qXVLVU67Cw_14Eg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] segfault in printer_loop()
+In-Reply-To: <CA+K1mPHeJwOLhPcuJGmsf9A3yrcp_aNxS=4qXVLVU67Cw_14Eg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] segfault in printer_loop()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,43 +15,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: C Smith <csmithquestions@gmail.com>, xenomai@xenomai.org
 
-I finally caught all the variables in a corefile in gdb:
-(gdb) bt
-#0  0xb76d70db in pthread_cond_wait@@GLIBC_2.3.2 () from
-/lib/libpthread.so.0
-#1  0xb76f97f4 in printer_loop (arg=0x0) at rt_print.c:685
-#2  0xb76d3adf in start_thread () from /lib/libpthread.so.0
-#3  0xb746444e in clone () from /lib/libc.so.6
-(gdb) print printer_wakeup
-$1 = {__data = {__lock = 0, __futex = 0, __total_seq = 0, __wakeup_seq = 0,
-__woken_seq = 0, __mutex = 0x0, __nwaiters = 0, __broadcast_seq = 0},
-__size = '\000' <repeats 47 times>, __align = 0}
-(gdb) print buffer_lock
-$2 = {__data = {__lock = 0, __count = 0, __owner = 0, __kind = 0, __nusers
-= 0, {__spins = 0, __list = {__next = 0x0}}}, __size = '\000' <repeats 23
-times>, __align = 0}
-(gdb) print buffers
-$3 = 4
-(gdb) print arg
-No symbol "arg" in current context.
-(gdb) print mask
-No symbol "mask" in current context.
-(gdb) print unlock
-$4 = {void (void *)} 0xb76f96f9 <unlock>
-(gdb) info threads
-  Id   Target Id         Frame
-  2    Thread 0xb73686c0 (LWP 20462) 0xffffe424 in ?? ()
-* 1    Thread 0xb76f5b40 (LWP 20464) 0xb76d70db in
-pthread_cond_wait@@GLIBC_2.3.2
-() from /lib/libpthread.so.0
-(gdb) print &printer_wakeup
-$5 = (pthread_cond_t *) 0xb76fda20
-(gdb) print &buffer_lock
-$6 = (pthread_mutex_t *) 0xb76fd9fc
-
-I see now that all variables used in this function are static on the heap,
-and thus they are not null pointers, so what could cause a segfault?
-
-Thanks, -C Smith
+T24gMjAxNy0xMS0wMSAwNzoyOSwgQyBTbWl0aCB3cm90ZToKPiBJIGZpbmFsbHkgY2F1Z2h0IGFs
+bCB0aGUgdmFyaWFibGVzIGluIGEgY29yZWZpbGUgaW4gZ2RiOgo+IChnZGIpIGJ0Cj4gIzAgIDB4
+Yjc2ZDcwZGIgaW4gcHRocmVhZF9jb25kX3dhaXRAQEdMSUJDXzIuMy4yICgpIGZyb20KPiAvbGli
+L2xpYnB0aHJlYWQuc28uMAo+ICMxICAweGI3NmY5N2Y0IGluIHByaW50ZXJfbG9vcCAoYXJnPTB4
+MCkgYXQgcnRfcHJpbnQuYzo2ODUKPiAjMiAgMHhiNzZkM2FkZiBpbiBzdGFydF90aHJlYWQgKCkg
+ZnJvbSAvbGliL2xpYnB0aHJlYWQuc28uMAo+ICMzICAweGI3NDY0NDRlIGluIGNsb25lICgpIGZy
+b20gL2xpYi9saWJjLnNvLjYKPiAoZ2RiKSBwcmludCBwcmludGVyX3dha2V1cAo+ICQxID0ge19f
+ZGF0YSA9IHtfX2xvY2sgPSAwLCBfX2Z1dGV4ID0gMCwgX190b3RhbF9zZXEgPSAwLCBfX3dha2V1
+cF9zZXEgPSAwLAo+IF9fd29rZW5fc2VxID0gMCwgX19tdXRleCA9IDB4MCwgX19ud2FpdGVycyA9
+IDAsIF9fYnJvYWRjYXN0X3NlcSA9IDB9LAo+IF9fc2l6ZSA9ICdcMDAwJyA8cmVwZWF0cyA0NyB0
+aW1lcz4sIF9fYWxpZ24gPSAwfQo+IChnZGIpIHByaW50IGJ1ZmZlcl9sb2NrCj4gJDIgPSB7X19k
+YXRhID0ge19fbG9jayA9IDAsIF9fY291bnQgPSAwLCBfX293bmVyID0gMCwgX19raW5kID0gMCwg
+X19udXNlcnMKPiA9IDAsIHtfX3NwaW5zID0gMCwgX19saXN0ID0ge19fbmV4dCA9IDB4MH19fSwg
+X19zaXplID0gJ1wwMDAnIDxyZXBlYXRzIDIzCj4gdGltZXM+LCBfX2FsaWduID0gMH0KPiAoZ2Ri
+KSBwcmludCBidWZmZXJzCj4gJDMgPSA0Cj4gKGdkYikgcHJpbnQgYXJnCj4gTm8gc3ltYm9sICJh
+cmciIGluIGN1cnJlbnQgY29udGV4dC4KPiAoZ2RiKSBwcmludCBtYXNrCj4gTm8gc3ltYm9sICJt
+YXNrIiBpbiBjdXJyZW50IGNvbnRleHQuCj4gKGdkYikgcHJpbnQgdW5sb2NrCj4gJDQgPSB7dm9p
+ZCAodm9pZCAqKX0gMHhiNzZmOTZmOSA8dW5sb2NrPgo+IChnZGIpIGluZm8gdGhyZWFkcwo+ICAg
+SWQgICBUYXJnZXQgSWQgICAgICAgICBGcmFtZQo+ICAgMiAgICBUaHJlYWQgMHhiNzM2ODZjMCAo
+TFdQIDIwNDYyKSAweGZmZmZlNDI0IGluID8/ICgpCj4gKiAxICAgIFRocmVhZCAweGI3NmY1YjQw
+IChMV1AgMjA0NjQpIDB4Yjc2ZDcwZGIgaW4KPiBwdGhyZWFkX2NvbmRfd2FpdEBAR0xJQkNfMi4z
+LjIKPiAoKSBmcm9tIC9saWIvbGlicHRocmVhZC5zby4wCj4gKGdkYikgcHJpbnQgJnByaW50ZXJf
+d2FrZXVwCj4gJDUgPSAocHRocmVhZF9jb25kX3QgKikgMHhiNzZmZGEyMAo+IChnZGIpIHByaW50
+ICZidWZmZXJfbG9jawo+ICQ2ID0gKHB0aHJlYWRfbXV0ZXhfdCAqKSAweGI3NmZkOWZjCj4gCj4g
+SSBzZWUgbm93IHRoYXQgYWxsIHZhcmlhYmxlcyB1c2VkIGluIHRoaXMgZnVuY3Rpb24gYXJlIHN0
+YXRpYyBvbiB0aGUgaGVhcCwKPiBhbmQgdGh1cyB0aGV5IGFyZSBub3QgbnVsbCBwb2ludGVycywg
+c28gd2hhdCBjb3VsZCBjYXVzZSBhIHNlZ2ZhdWx0PwoKVGhlIGNyYXNoIGlzIGluc2lkZSBwdGhy
+ZWFkX2NvbmRfd2FpdCwgbGlrZWx5IHdoaWxlIGl0IHRyaWVzIHRvIGFjY2Vzcwpzb21lIHBvaW50
+ZXIgdGhhdCB0aGUgY29uZHZhciBvciB0aGUgbXV0ZXggc3RydWN0dXJlIGNvbnRhaW5zLiBZb3Ug
+Y291bGQKY2hlY2sgaWYgYSkgYm90aCBoYXZlIGJlZW4gcHJvcGVybHkgaW5pdGlhbGl6ZWQgcHJp
+b3IgdG8gdGhlIGNyYXNoIGFuZApiKSBub25lIG9mIHRoZW0gaGF2ZSBiZWVuIGNvcnJ1cHRlZCBi
+eSBzb21lIGZhdWx0eSBjb2RlLiBJIHN1c3BlY3QgdGhlCmxhdHRlciBpcyBwcm9ibGVtIGhlcmUu
+CgpPbmNlIHlvdSBpZGVudGlmaWVkIGEgY29ycnVwdGVkIGZpZWxkLCB5b3UgY291bGQgc2V0IGEg
+bWVtb3J5IHdhdGNocG9pbnQKb24gaXRzIG1vZGlmaWNhdGlvbiwgaG9wZWZ1bGx5IHRyYWNraW5n
+IGRvd24gdGhlIGNhdXNpbmcgY29kZS4KCkphbgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0t
+LS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTog
+c2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDE4MSBi
+eXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly94ZW5vbWFp
+Lm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE3MTEwMS84OWNiNmViOS9hdHRh
+Y2htZW50LnNpZz4K
