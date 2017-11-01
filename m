@@ -1,20 +1,10 @@
-Date: Fri, 13 Oct 2017 12:26:53 +0200
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20171013122653.1adbf99e@md1em3qc>
-In-Reply-To: <CADYdroPP8ZQ91eqfJjJP9UFufpJOWm7+zsDePz-0a_TaDV_9_Q@mail.gmail.com>
-References: <CADYdroNR6zjbKrPKPm3d_7+55Rg2SDbmpxiNR-xu78QNHSrr9g@mail.gmail.com>
- <20170810114956.04f62bc6@md1em3qc>
- <CADYdroM8E7jhuyRoW4JkSzZfGg27VvpjLmHGmMmX79wgEqPJog@mail.gmail.com>
- <20171012103345.04d854c2@md1em3qc>
- <CADYdroOAVb0wPAvuynvuOUtSnp85FT2Ett80amzDpDCFHPHHzA@mail.gmail.com>
- <CADYdroNeQOY2MN-b=r6bNh=69oeGP2oWry2CXHYH9RJtTt1MFA@mail.gmail.com>
- <CADYdroN-yNG+nLrhfiH8MgMVr7D82-wNnjvyVXcX6hNU2mikcg@mail.gmail.com>
- <20171013113118.6e6f0fcd@md1em3qc>
- <CADYdroPP8ZQ91eqfJjJP9UFufpJOWm7+zsDePz-0a_TaDV_9_Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Won`t build on new Debian Stable
+From: Charles Kiorpes <ckiorpes@gmail.com>
+Date: Wed, 1 Nov 2017 07:42:43 -0400
+Message-ID: <CAHoW4hF15haWApb+tY6cgyZrZ2ZX4Ls2CHUK5J-NchWvAeBMNA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] Call to heapobj_pkg_init_private() in copperplate_init()
+ locks unneeded pages into memory when CONFIG_XENO_PSHARED is set
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,141 +13,102 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Norbert Lange <nolange79@gmail.com>
-Cc: norbert.lange@andritz.com, Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Am Fri, 13 Oct 2017 11:37:30 +0200
-schrieb Norbert Lange <nolange79@gmail.com>:
+Hello,
+I was noticing that my Xenomai 3.0.5 processes were consuming an
+unusually large amount of physical memory space.
 
-> Actually your idea of just adding -r would work aswell, and looks
-> cleaner and more robust to me.
+It appears that the call to heapobj_pkg_init_private() that occurs in
+copperplate_init() is temporarily allocating a private heap of size
+mem_pool_size in order to populate a static variable in
+heapobj-tlsf.c, and then immediately deallocating this heap.  However,
+this temporary allocation occurs after the call to mlockall() in
+low_init(), so the pages remain locked in physical memory.  Because I
+am using CONFIG_XENO_PSHARED, the memory pool is instead allocated out
+of Linux shared memory, so these extra locked pages are never used.
 
-Ok, in that case it would still be nice to understand why it works and
-what "-r" does to gcc.
+>From my readthrough of the code, it appears that the call to
+heapobj_pkg_init_private() doesn't need to do anything if
+CONFIG_XENO_PSHARED is set, but I may be missing something.  Putting
+in the following hack appears to fix the problem for me, and cause no
+other problems in my particular use case:
 
-If you like that better send another patch and we will see what
-Philippe says.
+diff --git a/lib/copperplate/heapobj-tlsf.c b/lib/copperplate/heapobj-tlsf.c
+index e24db15..8990936 100644
+--- a/lib/copperplate/heapobj-tlsf.c
++++ b/lib/copperplate/heapobj-tlsf.c
+@@ -74,6 +74,12 @@ int heapobj_init_array_private(struct heapobj
+*hobj, const char *name,
+        return __bt(__heapobj_init_private(hobj, name, poolsz, NULL));
+ }
 
-Henning
++#ifdef CONFIG_XENO_PSHARED
++int heapobj_pkg_init_private(void)
++{
++       return 0;
++}
++#else
+ int heapobj_pkg_init_private(void)
+ {
+        size_t size;
+@@ -101,3 +107,4 @@ int heapobj_pkg_init_private(void)
 
-> I started with the wrong ideas because of the usual POSIX argument
-> parsing like "tar -xzf file.tar.gz" being interpreted as  "tar -x -z
-> -f file.tar.gz".
-> 
-> 2017-10-13 11:31 GMT+02:00 Henning Schild
-> <henning.schild@siemens.com>:
-> > That looks good to me.
-> >
-> > Henning
-> >
-> > Am Fri, 13 Oct 2017 10:38:26 +0200
-> > schrieb Norbert Lange <nolange79@gmail.com>:
-> >  
-> >> Second attempt at fixing it, you could surely make this more
-> >> complex using autohell but I am not going there.
-> >>
-> >> If I understood correctly this script is only necessary if the
-> >> application is linked -static?
-> >> Means I would try to avoid using it, aslong I dont explicitly want
-> >> to do that.
-> >>
-> >> Kind regards,
-> >> Norbert
-> >>
-> >> 2017-10-13 9:40 GMT+02:00 Norbert Lange <nolange79@gmail.com>:  
-> >> > Ok I just realized there is a "-Ur" option, aside from "-U -r".
-> >> >
-> >> > You get alot otherwise undocumented flags with "gcc --help -v"
-> >> > BTW
-> >> >
-> >> > 2017-10-13 9:13 GMT+02:00 Norbert Lange <nolange79@gmail.com>:  
-> >> >> Hello,
-> >> >>
-> >> >> I tracked down the source of information to this:
-> >> >> https://wiki.ubuntu.com/SecurityTeam/PIE
-> >> >>
-> >> >> I changed the flags from "-Wl,-Ur" to "-Wl,-U -r", so you wont
-> >> >> get an explanation from me, why -U has to be passed for the
-> >> >> linker. And by the way, gcc accepts -U aswell, so this might be
-> >> >> preferable to be used directly too.
-> >> >>
-> >> >> I don`t know why those flags aren' t documented, bug in gcc
-> >> >> documentation? As far as I understand is that gcc is smart
-> >> >> enough to correctly deal with the flags gcc directly received,
-> >> >> but the linker lacks that information.
-> >> >>
-> >> >> I don' t know what the issue is with the C++ Constructors, in
-> >> >> the context of this change?
-> >> >> (I heard about the issues if those reside in a shared library,
-> >> >> use function from libcobald and don't depend on libcobald.
-> >> >> Which is more of a broken build to me if you don't add the
-> >> >> depended libs, and will bite you the same way if you use GCCs
-> >> >> constructor attribute)
-> >> >>
-> >> >> Kind regards,
-> >> >> Norbert.
-> >> >>
-> >> >> 2017-10-12 10:33 GMT+02:00 Henning Schild
-> >> >> <henning.schild@siemens.com>:  
-> >> >>> Hey Norbert,
-> >> >>>
-> >> >>> thanks for looking into that again! Could you please explain
-> >> >>> how and why that works, or point out what to look at in flint?
-> >> >>> Mailing list thread, commit, something like that.
-> >> >>>
-> >> >>> As far as i can see gcc now gets a "-r" which i do not find in
-> >> >>> the manpage. And ld gets a "-U" which i do not find in its
-> >> >>> manpage. And there is something about c++ constructors which
-> >> >>> might change the behaviour of xenomai.
-> >> >>>
-> >> >>> Henning
-> >> >>>
-> >> >>> Am Tue, 10 Oct 2017 16:38:50 +0200
-> >> >>> schrieb Norbert Lange <nolange79@gmail.com>:
-> >> >>>  
-> >> >>>> Some highly trivial fix attached!
-> >> >>>> Its strange that this flag is not documented in the manual (I
-> >> >>>> found out abaout this fix from
-> >> >>>> https://launchpad.net/ubuntu/+source/flint)
-> >> >>>>
-> >> >>>> Norbert Lange
-> >> >>>>
-> >> >>>> 2017-08-10 11:49 GMT+02:00 Henning Schild
-> >> >>>> <henning.schild@siemens.com>:  
-> >> >>>> > Hi Norbert,
-> >> >>>> >
-> >> >>>> > Thanks! In fact that issue has come up before and a similar
-> >> >>>> > workaround was described. It should be fixed, patches
-> >> >>>> > welcome!
-> >> >>>> >
-> >> >>>> > Henning
-> >> >>>> >
-> >> >>>> > Am Wed, 9 Aug 2017 16:21:02 +0200
-> >> >>>> > schrieb Norbert Lange <nolange79@gmail.com>:
-> >> >>>> >  
-> >> >>>> >> Hello,
-> >> >>>> >>
-> >> >>>> >> Building the xenomai package won`t work because debian now
-> >> >>>> >> defaults to using pie, and the linker will complain with
-> >> >>>> >> "ld: -r and -pie may not be used together"
-> >> >>>> >>
-> >> >>>> >> A workaround for now is to add the flags manually:
-> >> >>>> >> ../xenomai-3.0.5/configure LDFLAGS=-no-pie CFLAGS="-fno-PIE
-> >> >>>> >> -fno-pie -no-pie"
-> >> >>>> >>
-> >> >>>> >> A real fix would be similar to
-> >> >>>> >> http://lists.gnu.org/archive/html/bug-grub/2016-11/msg00011.html
-> >> >>>> >> (no-pie is not supported on old and other compilers)
-> >> >>>> >>
-> >> >>>> >> Kind regards,
-> >> >>>> >> Norbert
-> >> >>>> >>
-> >> >>>> >> _______________________________________________
-> >> >>>> >> Xenomai mailing list
-> >> >>>> >> Xenomai@xenomai.org
-> >> >>>> >> https://xenomai.org/mailman/listinfo/xenomai  
-> >> >>>> >  
-> >> >>>  
-> >  
+        return 0;
+ }
++#endif
 
+I am running the latest "next" branch.
+
+My config:
+CONFIG_MMU=1
+CONFIG_XENO_BUILD_ARGS=" 'CFLAGS=-march=armv7-a -mfpu=vfp3'
+'LDFLAGS=-march=armv7-a -mfpu=vfp3' '--with-core=cobalt'
+'--enable-pshared' '--host=arm-linux-gnueabihf' '-disable-debug'
+'host_alias=arm-linux-gnueabihf'"
+CONFIG_XENO_BUILD_STRING="x86_64-pc-linux-gnu"
+CONFIG_XENO_COBALT=1
+CONFIG_XENO_COMPILER="gcc version 6.2.1 20161016 (Linaro GCC 6.2-2016.11) "
+CONFIG_XENO_DEFAULT_PERIOD=1000000
+CONFIG_XENO_FORTIFY=1
+CONFIG_XENO_HOST_STRING="arm-unknown-linux-gnueabihf"
+CONFIG_XENO_LORES_CLOCK_DISABLED=1
+CONFIG_XENO_PREFIX="/usr/xenomai"
+CONFIG_XENO_PSHARED=1
+CONFIG_XENO_RAW_CLOCK_ENABLED=1
+CONFIG_XENO_REVISION_LEVEL=90
+CONFIG_XENO_SANITY=1
+CONFIG_XENO_TLSF=1
+CONFIG_XENO_TLS_MODEL="initial-exec"
+CONFIG_XENO_UAPI_LEVEL=15
+CONFIG_XENO_VALGRIND_API=1
+CONFIG_XENO_VERSION_MAJOR=3
+CONFIG_XENO_VERSION_MINOR=0
+CONFIG_XENO_VERSION_NAME="Xenomai -next"
+CONFIG_XENO_VERSION_STRING="3.1-devel"
+---
+CONFIG_SMP is OFF
+CONFIG_XENO_ASYNC_CANCEL is OFF
+CONFIG_XENO_COPPERPLATE_CLOCK_RESTRICTED is OFF
+CONFIG_XENO_DEBUG is OFF
+CONFIG_XENO_DEBUG_FULL is OFF
+CONFIG_XENO_LAZY_SETSCHED is OFF
+CONFIG_XENO_LIBS_DLOPEN is OFF
+CONFIG_XENO_MERCURY is OFF
+CONFIG_XENO_REGISTRY is OFF
+CONFIG_XENO_REGISTRY_ROOT is OFF
+CONFIG_XENO_WORKAROUND_CONDVAR_PI is OFF
+CONFIG_XENO_X86_VSYSCALL is OFF
+---
+PTHREAD_STACK_DEFAULT=65536
+AUTOMATIC_BOOTSTRAP=1
+
+
+Am I correct in my assessment that heapobj_pkg_init_private() doesn't
+need to do anything when CONFIG_XENO_PSHARED is set, or are there
+other code paths in which it would get called that my hack would
+break?
+
+Thank you in advance,
+Charles Kiorpes
 
