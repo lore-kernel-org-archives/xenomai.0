@@ -1,9 +1,16 @@
 MIME-Version: 1.0
-From: Danrae Pray <danrae.pray@metecs.com>
-Date: Fri, 3 Nov 2017 12:24:36 -0500
-Message-ID: <CAOocw5vJ_nz41_vqqV0e=+BgE+6u-6hYhXVpCFPuzqCh4QPp9Q@mail.gmail.com>
+In-Reply-To: <3ff3bb4a-a2a4-6593-b57a-9b9cb32a8cdd@xenomai.org>
+References: <CAHoW4hF15haWApb+tY6cgyZrZ2ZX4Ls2CHUK5J-NchWvAeBMNA@mail.gmail.com>
+ <9e406692-f2d1-465b-0c67-dc408d6a366a@xenomai.org>
+ <CAHoW4hH+W3anUTgsTf8cdjo=BHeXztD5JD-O3j1WcPcYMNGA5g@mail.gmail.com>
+ <3ff3bb4a-a2a4-6593-b57a-9b9cb32a8cdd@xenomai.org>
+From: Charles Kiorpes <ckiorpes@gmail.com>
+Date: Fri, 3 Nov 2017 13:36:10 -0400
+Message-ID: <CAHoW4hEmjRieEAsrVqpWrQxvpsYV-11UOSXmnRgUeSkZ2fZOLg@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] Running COBALT on Ubuntu 14/16
+Subject: Re: [Xenomai] Call to heapobj_pkg_init_private() in
+ copperplate_init() locks unneeded pages into memory when
+ CONFIG_XENO_PSHARED is set
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,30 +19,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hi,
+> Ok, let's merge this. Could you send back a complete patch formatted
+> with "git format-patch"? TIA,
 
-I am trying to understand how the COBALT kernel is designed and how it can
-be installed side-by-side various linux distro kernels (Gentoo, Ubuntu,
-etc).
+The formatted patch has been sent to the mailing list, but it ended up
+under a new thread.
 
-During the COBALT kernel build process on Ubuntu, for example, we actually
-pull a kernel version (based on your Ubuntu version) and build it:
+Thanks for your help,
+Charles Kiorpes
 
-https://stackoverflow.com/questions/41949678/installation-steps-for-xenomai-3-on-ubuntu-16-04
-https://xenomai.org//installing-xenomai-3-x/#Configuring_and_compiling_the_Cobalt_kernel
-
-So, I guess my questions are:
-
-1) At the end of the COBALT build / installation procedure as well as
-installing the Xenomai libs/tools, can I actually use Xenomai in the
-dual-kernel config on Ubuntu on my desktop PC for testing application
-logic?  i.e. I don't need to actually boot my machine using the newly built
-image or something...
-
-2) Why are we building a linux kernel during the COBALT build process?  Is
-COBALT actually a modified linux kernel itself?
-
-Thanks,
-Danrae
