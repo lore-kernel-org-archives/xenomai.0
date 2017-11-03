@@ -1,21 +1,8 @@
-MIME-Version: 1.0
-In-Reply-To: <20171013122653.1adbf99e@md1em3qc>
-References: <CADYdroNR6zjbKrPKPm3d_7+55Rg2SDbmpxiNR-xu78QNHSrr9g@mail.gmail.com>
- <20170810114956.04f62bc6@md1em3qc>
- <CADYdroM8E7jhuyRoW4JkSzZfGg27VvpjLmHGmMmX79wgEqPJog@mail.gmail.com>
- <20171012103345.04d854c2@md1em3qc>
- <CADYdroOAVb0wPAvuynvuOUtSnp85FT2Ett80amzDpDCFHPHHzA@mail.gmail.com>
- <CADYdroNeQOY2MN-b=r6bNh=69oeGP2oWry2CXHYH9RJtTt1MFA@mail.gmail.com>
- <CADYdroN-yNG+nLrhfiH8MgMVr7D82-wNnjvyVXcX6hNU2mikcg@mail.gmail.com>
- <20171013113118.6e6f0fcd@md1em3qc>
- <CADYdroPP8ZQ91eqfJjJP9UFufpJOWm7+zsDePz-0a_TaDV_9_Q@mail.gmail.com>
- <20171013122653.1adbf99e@md1em3qc>
-From: Norbert Lange <nolange79@gmail.com>
-Date: Fri, 13 Oct 2017 13:36:25 +0200
-Message-ID: <CADYdroP7G6irhKJUtpWfoVdivT3ey_i58zAvMz-O7E7PycH6ug@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Won`t build on new Debian Stable
+From: Charles Kiorpes <ckiorpes@gmail.com>
+Date: Fri,  3 Nov 2017 12:44:18 -0400
+Message-Id: <1509727458-9486-1-git-send-email-ckiorpes@gmail.com>
+Subject: [Xenomai] [PATCH] Fix unneeded pre-commit of memory pool when
+	CONFIG_XENO_PSHARED set
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,123 +11,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: norbert.lange@andritz.com, Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Charles Kiorpes <ckiorpes@gmail.com>
 
-SSB3b3JrcywgYmVjYXVzZSBjb2xsZWN0MiAodGhlICJjb21waWxlciBkcml2ZXIiLCB3aGljaCBk
-b2N1bWVudHMgdGhlCi1yIG9wdGlvbikgbm93IGtub3dzIGFib3V0IHRoZSAtciBmbGFnLCB1c2lu
-ZyAtV2wsLVtVXXIgd291bGQgbWVhbiB0aGUKZmxhZ3MgYXJlbid0IGV2ZW4gbG9va2VkIGF0LgpJ
-dCBjYW4gdGhlbiBkaXNhYmxlIGZ1bmN0aW9uYWxpdHkgdGhhdCBpcyBub3Qgc3VwcG9zZWQgdG8g
-YmUgZG9uZSBhdAp0aGlzIHBvaW50IChzZWUgZ2NjL2NvbGxlY3QyLmMsIHNlYXJjaCBmb3IgJ2Vh
-cmx5X2V4aXQnKS4gSXQgbWlnaHQKYWN0dWFsbHkgYmUgaW4gY29uZmxpY3Qgd2l0aCB0aGUgLVVy
-IG9wdGlvbiBmcm9tIHRoZSBjb21tZW50cywgYnV0IEkKZG9uJ3Qga25vdyB3aGF0IHRoaXMgaXMg
-dHJ5aW5nIHRvIHNvbHZlICh0aGUgY29uc3RydWN0b3IgdGFibGVzIHdvdWxkCnRoZW4gYmUgYnVp
-bHQgaW4gdGhlIHNlY29uZCBzdGVwPykKCkkgd291bGQgcHJlZmVyIHRoZSBjb21waWxlciBkcml2
-ZXIga25vd2luZyBhYm91dCB0aGUgZmxhZ3MgYW5kCmNvcnJlY3RseSBkZWFsaW5nIHdpdGggdGhl
-bSwgaW5zdGVhZCBvZiByZXBsaWNhdGluZyB0aGlzIGxvZ2ljIGluCnNjcmlwdHMgKGFuZCBrZWVw
-aW5nIGl0IHVwIHRvIGRhdGUgd2l0aCB0aGlzIGludGVybmFsIGxvZ2ljKS4KTWlnaHQgYmUgdGhh
-dCB5b3VyIHdyYXBwZXIgc2NyaXB0IGlzIGRvaW5nIHNvbWV0aGluZyBzaW1pbGFybHkgYnkKZmls
-dGVyaW5nIG91dCB0aGUgYXJndW1lbnRzIGZvciB0aGUgZmlyc3Qgc3RlcCwgd2hpY2ggbWlnaHQg
-YmUgdGhlCnNhbWUgZnVuY3Rpb25hbGx5IHRoYXQgaXMgc2tpcHBlZCB3aGVuIGFkZGluZyAnLXIn
-CgpJIGRvbnQga25vdyB3aGF0IHRoZSAtVXIgZmxhZyBpcyB0cnlpbmcgdG8gc29sdmUsIGFuZCB0
-aGUgZmlyc3QgcGF0Y2gKYWRkaW5nIC1uby1waWUgaXMgd2F5IGxlc3MgbGlrZWx5IHRvIGNoYW5n
-ZSBzb21ldGhpbmcgKGdpdmVuIHRoYXQgSQp3b3VsZCBub3QgaGF2ZSBjb21waWxlZCB3aXRoIC1w
-aWUgYmVmb3JlKS4KVGhlIG5ldyBwYXRjaCB3b3VsZCBob3dldmVyIGxlYXZlIG1vcmUgb2YgdGhl
-IG1hZ2ljIHRvIHRoZSB0b29sY2hhaW4KYW5kIHNlZW1zIG1vcmUgImNvcnJlY3QiIHRvIG1lLCBm
-b3Igd2hhdGV2ZXIgdGhhdCdzIHdvcnRoLiBCdXQgaXQKbWlnaHQgaGF2ZSBzb21lIHN1YnRsZSBk
-aWZmZXJlbmNlcyB0byBiZWZvcmUsIGdvdCBzb21lIHRlc3RjYXNlIHdoZXJlCmxhY2tpbmcgdGhl
-IC1VciBmbGFnIG1hZGUgYSBkaWZmZXJlbmNlPwoKCgoyMDE3LTEwLTEzIDEyOjI2IEdNVCswMjow
-MCBIZW5uaW5nIFNjaGlsZCA8aGVubmluZy5zY2hpbGRAc2llbWVucy5jb20+Ogo+IEFtIEZyaSwg
-MTMgT2N0IDIwMTcgMTE6Mzc6MzAgKzAyMDAKPiBzY2hyaWViIE5vcmJlcnQgTGFuZ2UgPG5vbGFu
-Z2U3OUBnbWFpbC5jb20+Ogo+Cj4+IEFjdHVhbGx5IHlvdXIgaWRlYSBvZiBqdXN0IGFkZGluZyAt
-ciB3b3VsZCB3b3JrIGFzd2VsbCwgYW5kIGxvb2tzCj4+IGNsZWFuZXIgYW5kIG1vcmUgcm9idXN0
-IHRvIG1lLgo+Cj4gT2ssIGluIHRoYXQgY2FzZSBpdCB3b3VsZCBzdGlsbCBiZSBuaWNlIHRvIHVu
-ZGVyc3RhbmQgd2h5IGl0IHdvcmtzIGFuZAo+IHdoYXQgIi1yIiBkb2VzIHRvIGdjYy4KPgo+IElm
-IHlvdSBsaWtlIHRoYXQgYmV0dGVyIHNlbmQgYW5vdGhlciBwYXRjaCBhbmQgd2Ugd2lsbCBzZWUg
-d2hhdAo+IFBoaWxpcHBlIHNheXMuCj4KPiBIZW5uaW5nCj4KPj4gSSBzdGFydGVkIHdpdGggdGhl
-IHdyb25nIGlkZWFzIGJlY2F1c2Ugb2YgdGhlIHVzdWFsIFBPU0lYIGFyZ3VtZW50Cj4+IHBhcnNp
-bmcgbGlrZSAidGFyIC14emYgZmlsZS50YXIuZ3oiIGJlaW5nIGludGVycHJldGVkIGFzICAidGFy
-IC14IC16Cj4+IC1mIGZpbGUudGFyLmd6Ii4KPj4KPj4gMjAxNy0xMC0xMyAxMTozMSBHTVQrMDI6
-MDAgSGVubmluZyBTY2hpbGQKPj4gPGhlbm5pbmcuc2NoaWxkQHNpZW1lbnMuY29tPjoKPj4gPiBU
-aGF0IGxvb2tzIGdvb2QgdG8gbWUuCj4+ID4KPj4gPiBIZW5uaW5nCj4+ID4KPj4gPiBBbSBGcmks
-IDEzIE9jdCAyMDE3IDEwOjM4OjI2ICswMjAwCj4+ID4gc2NocmllYiBOb3JiZXJ0IExhbmdlIDxu
-b2xhbmdlNzlAZ21haWwuY29tPjoKPj4gPgo+PiA+PiBTZWNvbmQgYXR0ZW1wdCBhdCBmaXhpbmcg
-aXQsIHlvdSBjb3VsZCBzdXJlbHkgbWFrZSB0aGlzIG1vcmUKPj4gPj4gY29tcGxleCB1c2luZyBh
-dXRvaGVsbCBidXQgSSBhbSBub3QgZ29pbmcgdGhlcmUuCj4+ID4+Cj4+ID4+IElmIEkgdW5kZXJz
-dG9vZCBjb3JyZWN0bHkgdGhpcyBzY3JpcHQgaXMgb25seSBuZWNlc3NhcnkgaWYgdGhlCj4+ID4+
-IGFwcGxpY2F0aW9uIGlzIGxpbmtlZCAtc3RhdGljPwo+PiA+PiBNZWFucyBJIHdvdWxkIHRyeSB0
-byBhdm9pZCB1c2luZyBpdCwgYXNsb25nIEkgZG9udCBleHBsaWNpdGx5IHdhbnQKPj4gPj4gdG8g
-ZG8gdGhhdC4KPj4gPj4KPj4gPj4gS2luZCByZWdhcmRzLAo+PiA+PiBOb3JiZXJ0Cj4+ID4+Cj4+
-ID4+IDIwMTctMTAtMTMgOTo0MCBHTVQrMDI6MDAgTm9yYmVydCBMYW5nZSA8bm9sYW5nZTc5QGdt
-YWlsLmNvbT46Cj4+ID4+ID4gT2sgSSBqdXN0IHJlYWxpemVkIHRoZXJlIGlzIGEgIi1VciIgb3B0
-aW9uLCBhc2lkZSBmcm9tICItVSAtciIuCj4+ID4+ID4KPj4gPj4gPiBZb3UgZ2V0IGFsb3Qgb3Ro
-ZXJ3aXNlIHVuZG9jdW1lbnRlZCBmbGFncyB3aXRoICJnY2MgLS1oZWxwIC12Igo+PiA+PiA+IEJU
-Vwo+PiA+PiA+Cj4+ID4+ID4gMjAxNy0xMC0xMyA5OjEzIEdNVCswMjowMCBOb3JiZXJ0IExhbmdl
-IDxub2xhbmdlNzlAZ21haWwuY29tPjoKPj4gPj4gPj4gSGVsbG8sCj4+ID4+ID4+Cj4+ID4+ID4+
-IEkgdHJhY2tlZCBkb3duIHRoZSBzb3VyY2Ugb2YgaW5mb3JtYXRpb24gdG8gdGhpczoKPj4gPj4g
-Pj4gaHR0cHM6Ly93aWtpLnVidW50dS5jb20vU2VjdXJpdHlUZWFtL1BJRQo+PiA+PiA+Pgo+PiA+
-PiA+PiBJIGNoYW5nZWQgdGhlIGZsYWdzIGZyb20gIi1XbCwtVXIiIHRvICItV2wsLVUgLXIiLCBz
-byB5b3Ugd29udAo+PiA+PiA+PiBnZXQgYW4gZXhwbGFuYXRpb24gZnJvbSBtZSwgd2h5IC1VIGhh
-cyB0byBiZSBwYXNzZWQgZm9yIHRoZQo+PiA+PiA+PiBsaW5rZXIuIEFuZCBieSB0aGUgd2F5LCBn
-Y2MgYWNjZXB0cyAtVSBhc3dlbGwsIHNvIHRoaXMgbWlnaHQgYmUKPj4gPj4gPj4gcHJlZmVyYWJs
-ZSB0byBiZSB1c2VkIGRpcmVjdGx5IHRvby4KPj4gPj4gPj4KPj4gPj4gPj4gSSBkb25gdCBrbm93
-IHdoeSB0aG9zZSBmbGFncyBhcmVuJyB0IGRvY3VtZW50ZWQsIGJ1ZyBpbiBnY2MKPj4gPj4gPj4g
-ZG9jdW1lbnRhdGlvbj8gQXMgZmFyIGFzIEkgdW5kZXJzdGFuZCBpcyB0aGF0IGdjYyBpcyBzbWFy
-dAo+PiA+PiA+PiBlbm91Z2ggdG8gY29ycmVjdGx5IGRlYWwgd2l0aCB0aGUgZmxhZ3MgZ2NjIGRp
-cmVjdGx5IHJlY2VpdmVkLAo+PiA+PiA+PiBidXQgdGhlIGxpbmtlciBsYWNrcyB0aGF0IGluZm9y
-bWF0aW9uLgo+PiA+PiA+Pgo+PiA+PiA+PiBJIGRvbicgdCBrbm93IHdoYXQgdGhlIGlzc3VlIGlz
-IHdpdGggdGhlIEMrKyBDb25zdHJ1Y3RvcnMsIGluCj4+ID4+ID4+IHRoZSBjb250ZXh0IG9mIHRo
-aXMgY2hhbmdlPwo+PiA+PiA+PiAoSSBoZWFyZCBhYm91dCB0aGUgaXNzdWVzIGlmIHRob3NlIHJl
-c2lkZSBpbiBhIHNoYXJlZCBsaWJyYXJ5LAo+PiA+PiA+PiB1c2UgZnVuY3Rpb24gZnJvbSBsaWJj
-b2JhbGQgYW5kIGRvbid0IGRlcGVuZCBvbiBsaWJjb2JhbGQuCj4+ID4+ID4+IFdoaWNoIGlzIG1v
-cmUgb2YgYSBicm9rZW4gYnVpbGQgdG8gbWUgaWYgeW91IGRvbid0IGFkZCB0aGUKPj4gPj4gPj4g
-ZGVwZW5kZWQgbGlicywgYW5kIHdpbGwgYml0ZSB5b3UgdGhlIHNhbWUgd2F5IGlmIHlvdSB1c2Ug
-R0NDcwo+PiA+PiA+PiBjb25zdHJ1Y3RvciBhdHRyaWJ1dGUpCj4+ID4+ID4+Cj4+ID4+ID4+IEtp
-bmQgcmVnYXJkcywKPj4gPj4gPj4gTm9yYmVydC4KPj4gPj4gPj4KPj4gPj4gPj4gMjAxNy0xMC0x
-MiAxMDozMyBHTVQrMDI6MDAgSGVubmluZyBTY2hpbGQKPj4gPj4gPj4gPGhlbm5pbmcuc2NoaWxk
-QHNpZW1lbnMuY29tPjoKPj4gPj4gPj4+IEhleSBOb3JiZXJ0LAo+PiA+PiA+Pj4KPj4gPj4gPj4+
-IHRoYW5rcyBmb3IgbG9va2luZyBpbnRvIHRoYXQgYWdhaW4hIENvdWxkIHlvdSBwbGVhc2UgZXhw
-bGFpbgo+PiA+PiA+Pj4gaG93IGFuZCB3aHkgdGhhdCB3b3Jrcywgb3IgcG9pbnQgb3V0IHdoYXQg
-dG8gbG9vayBhdCBpbiBmbGludD8KPj4gPj4gPj4+IE1haWxpbmcgbGlzdCB0aHJlYWQsIGNvbW1p
-dCwgc29tZXRoaW5nIGxpa2UgdGhhdC4KPj4gPj4gPj4+Cj4+ID4+ID4+PiBBcyBmYXIgYXMgaSBj
-YW4gc2VlIGdjYyBub3cgZ2V0cyBhICItciIgd2hpY2ggaSBkbyBub3QgZmluZCBpbgo+PiA+PiA+
-Pj4gdGhlIG1hbnBhZ2UuIEFuZCBsZCBnZXRzIGEgIi1VIiB3aGljaCBpIGRvIG5vdCBmaW5kIGlu
-IGl0cwo+PiA+PiA+Pj4gbWFucGFnZS4gQW5kIHRoZXJlIGlzIHNvbWV0aGluZyBhYm91dCBjKysg
-Y29uc3RydWN0b3JzIHdoaWNoCj4+ID4+ID4+PiBtaWdodCBjaGFuZ2UgdGhlIGJlaGF2aW91ciBv
-ZiB4ZW5vbWFpLgo+PiA+PiA+Pj4KPj4gPj4gPj4+IEhlbm5pbmcKPj4gPj4gPj4+Cj4+ID4+ID4+
-PiBBbSBUdWUsIDEwIE9jdCAyMDE3IDE2OjM4OjUwICswMjAwCj4+ID4+ID4+PiBzY2hyaWViIE5v
-cmJlcnQgTGFuZ2UgPG5vbGFuZ2U3OUBnbWFpbC5jb20+Ogo+PiA+PiA+Pj4KPj4gPj4gPj4+PiBT
-b21lIGhpZ2hseSB0cml2aWFsIGZpeCBhdHRhY2hlZCEKPj4gPj4gPj4+PiBJdHMgc3RyYW5nZSB0
-aGF0IHRoaXMgZmxhZyBpcyBub3QgZG9jdW1lbnRlZCBpbiB0aGUgbWFudWFsIChJCj4+ID4+ID4+
-Pj4gZm91bmQgb3V0IGFiYW91dCB0aGlzIGZpeCBmcm9tCj4+ID4+ID4+Pj4gaHR0cHM6Ly9sYXVu
-Y2hwYWQubmV0L3VidW50dS8rc291cmNlL2ZsaW50KQo+PiA+PiA+Pj4+Cj4+ID4+ID4+Pj4gTm9y
-YmVydCBMYW5nZQo+PiA+PiA+Pj4+Cj4+ID4+ID4+Pj4gMjAxNy0wOC0xMCAxMTo0OSBHTVQrMDI6
-MDAgSGVubmluZyBTY2hpbGQKPj4gPj4gPj4+PiA8aGVubmluZy5zY2hpbGRAc2llbWVucy5jb20+
-Ogo+PiA+PiA+Pj4+ID4gSGkgTm9yYmVydCwKPj4gPj4gPj4+PiA+Cj4+ID4+ID4+Pj4gPiBUaGFu
-a3MhIEluIGZhY3QgdGhhdCBpc3N1ZSBoYXMgY29tZSB1cCBiZWZvcmUgYW5kIGEgc2ltaWxhcgo+
-PiA+PiA+Pj4+ID4gd29ya2Fyb3VuZCB3YXMgZGVzY3JpYmVkLiBJdCBzaG91bGQgYmUgZml4ZWQs
-IHBhdGNoZXMKPj4gPj4gPj4+PiA+IHdlbGNvbWUhCj4+ID4+ID4+Pj4gPgo+PiA+PiA+Pj4+ID4g
-SGVubmluZwo+PiA+PiA+Pj4+ID4KPj4gPj4gPj4+PiA+IEFtIFdlZCwgOSBBdWcgMjAxNyAxNjoy
-MTowMiArMDIwMAo+PiA+PiA+Pj4+ID4gc2NocmllYiBOb3JiZXJ0IExhbmdlIDxub2xhbmdlNzlA
-Z21haWwuY29tPjoKPj4gPj4gPj4+PiA+Cj4+ID4+ID4+Pj4gPj4gSGVsbG8sCj4+ID4+ID4+Pj4g
-Pj4KPj4gPj4gPj4+PiA+PiBCdWlsZGluZyB0aGUgeGVub21haSBwYWNrYWdlIHdvbmB0IHdvcmsg
-YmVjYXVzZSBkZWJpYW4gbm93Cj4+ID4+ID4+Pj4gPj4gZGVmYXVsdHMgdG8gdXNpbmcgcGllLCBh
-bmQgdGhlIGxpbmtlciB3aWxsIGNvbXBsYWluIHdpdGgKPj4gPj4gPj4+PiA+PiAibGQ6IC1yIGFu
-ZCAtcGllIG1heSBub3QgYmUgdXNlZCB0b2dldGhlciIKPj4gPj4gPj4+PiA+Pgo+PiA+PiA+Pj4+
-ID4+IEEgd29ya2Fyb3VuZCBmb3Igbm93IGlzIHRvIGFkZCB0aGUgZmxhZ3MgbWFudWFsbHk6Cj4+
-ID4+ID4+Pj4gPj4gLi4veGVub21haS0zLjAuNS9jb25maWd1cmUgTERGTEFHUz0tbm8tcGllIENG
-TEFHUz0iLWZuby1QSUUKPj4gPj4gPj4+PiA+PiAtZm5vLXBpZSAtbm8tcGllIgo+PiA+PiA+Pj4+
-ID4+Cj4+ID4+ID4+Pj4gPj4gQSByZWFsIGZpeCB3b3VsZCBiZSBzaW1pbGFyIHRvCj4+ID4+ID4+
-Pj4gPj4gaHR0cDovL2xpc3RzLmdudS5vcmcvYXJjaGl2ZS9odG1sL2J1Zy1ncnViLzIwMTYtMTEv
-bXNnMDAwMTEuaHRtbAo+PiA+PiA+Pj4+ID4+IChuby1waWUgaXMgbm90IHN1cHBvcnRlZCBvbiBv
-bGQgYW5kIG90aGVyIGNvbXBpbGVycykKPj4gPj4gPj4+PiA+Pgo+PiA+PiA+Pj4+ID4+IEtpbmQg
-cmVnYXJkcywKPj4gPj4gPj4+PiA+PiBOb3JiZXJ0Cj4+ID4+ID4+Pj4gPj4KPj4gPj4gPj4+PiA+
-PiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+PiA+PiA+
-Pj4+ID4+IFhlbm9tYWkgbWFpbGluZyBsaXN0Cj4+ID4+ID4+Pj4gPj4gWGVub21haUB4ZW5vbWFp
-Lm9yZwo+PiA+PiA+Pj4+ID4+IGh0dHBzOi8veGVub21haS5vcmcvbWFpbG1hbi9saXN0aW5mby94
-ZW5vbWFpCj4+ID4+ID4+Pj4gPgo+PiA+PiA+Pj4KPj4gPgo+Ci0tLS0tLS0tLS0tLS0tIG5leHQg
-cGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4u
-Ck5hbWU6IDAwMDEtRml4LWJ1aWxkLXdpdGgtZ2NjLXVzaW5nLWRlZmF1bHQtUElFLnBhdGNoClR5
-cGU6IHRleHQveC1wYXRjaApTaXplOiA3NDIgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6
-IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNzEw
-MTMvMGIzYWFmODAvYXR0YWNobWVudC5iaW4+Cg==
+When CONFIG_XENO_PSHARED is set, heapobj_pkg_init_private() was causing unneeded pages to be locked into memory by performing a temporary allocation of the size of the entire memory pool.
+
+This patch reduces the size of this temporary allocation to a single page when CONFIG_XENO_PSHARED is set.
+
+Signed-off-by: Charles Kiorpes <ckiorpes@gmail.com>
+---
+ lib/copperplate/heapobj-tlsf.c | 23 ++++++++++++++++++-----
+ 1 file changed, 18 insertions(+), 5 deletions(-)
+
+diff --git a/lib/copperplate/heapobj-tlsf.c b/lib/copperplate/heapobj-tlsf.c
+index e24db15..3709852 100644
+--- a/lib/copperplate/heapobj-tlsf.c
++++ b/lib/copperplate/heapobj-tlsf.c
+@@ -19,6 +19,7 @@
+ #include <errno.h>
+ #include <stdio.h>
+ #include <stdint.h>
++#include <unistd.h>
+ #include "boilerplate/tlsf/tlsf.h"
+ #include "copperplate/heapobj.h"
+ #include "copperplate/debug.h"
+@@ -76,7 +77,12 @@ int heapobj_init_array_private(struct heapobj *hobj, const char *name,
+ 
+ int heapobj_pkg_init_private(void)
+ {
+-	size_t size;
++	#ifdef CONFIG_XENO_PSHARED
++		size_t alloc_size = sysconf(_SC_PAGE_SIZE);
++	#else
++		size_t alloc_size = __copperplate_setup_data.mem_pool;
++	#endif
++	size_t available_size;
+ 	void *mem;
+ 
+ 	/*
+@@ -88,14 +94,21 @@ int heapobj_pkg_init_private(void)
+ 	 * We include 1k of additional memory to cope with the
+ 	 * per-block overhead for an undefined number of individual
+ 	 * allocation requests. Ugly.
++	 *
++	 * CAUTION: in pshared mode, private heaps are subsidiary
++	 * storage pools, so no need to pre-commit as much memory as
++	 * we will be preallocating for the main shared pool,
++	 * especially with memory locking in effect. In that case,
++	 * creating a temporary single-page pool is enough to figure
++	 * out the allocation overhead.
+ 	 */
+-	mem = tlsf_malloc(__copperplate_setup_data.mem_pool);
+-	size = init_memory_pool(__copperplate_setup_data.mem_pool, mem);
+-	if (size == (size_t)-1)
++	mem = tlsf_malloc(alloc_size);
++	available_size = init_memory_pool(alloc_size, mem);
++	if (available_size == (size_t)-1)
+ 		panic("cannot initialize TLSF memory manager");
+ 
+ 	destroy_memory_pool(mem);
+-	tlsf_pool_overhead = __copperplate_setup_data.mem_pool - size;
++	tlsf_pool_overhead = alloc_size - available_size;
+ 	tlsf_pool_overhead = (tlsf_pool_overhead + 1024) & ~15;
+ 	tlsf_free(mem);
+ 
+-- 
+2.7.4
+
+
