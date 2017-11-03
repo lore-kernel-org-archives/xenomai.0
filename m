@@ -1,13 +1,14 @@
-MIME-Version: 1.0
-In-Reply-To: <20171103182307.6qdafqdlfge2cmmp@csclub.uwaterloo.ca>
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+From: =?utf-8?Q?Christoph_M=C3=BCllner?=
+ <christoph.muellner@theobroma-systems.com>
+In-Reply-To: <CAOocw5uQAOwo-3GMWoPCh8jn8rdj+Z+xhN2rC+gFGBFJnwe6YA@mail.gmail.com>
+Date: Fri, 3 Nov 2017 19:47:40 +0100
+Message-Id: <D417AC73-B03A-4370-A12B-83EA43621036@theobroma-systems.com>
 References: <CAOocw5vJ_nz41_vqqV0e=+BgE+6u-6hYhXVpCFPuzqCh4QPp9Q@mail.gmail.com>
  <20171103175950.lixjbhqp4op4jm6j@csclub.uwaterloo.ca>
  <CAOocw5uQAOwo-3GMWoPCh8jn8rdj+Z+xhN2rC+gFGBFJnwe6YA@mail.gmail.com>
- <20171103182307.6qdafqdlfge2cmmp@csclub.uwaterloo.ca>
-From: Danrae Pray <danrae.pray@metecs.com>
-Date: Fri, 3 Nov 2017 13:45:02 -0500
-Message-ID: <CAOocw5v+j-+=EDpo8Qx+xjRDb-DTKkMhfkMAqh9DQ-fEGfhK3w@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Running COBALT on Ubuntu 14/16
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,59 +18,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+To: Danrae Pray <danrae.pray@metecs.com>
 Cc: xenomai@xenomai.org
 
-Oh OK I'm starting to understand now.  Thanks so much for clearing that up!
-
-Sorry for being dense - but I just want to make sure I understand fully -
-the end result of the COBALT kernel build process (following instructions
-here:
-https://xenomai.org//installing-xenomai-3-x/#Configuring_and_compiling_the_Cobalt_kernel)
-is that the original distro kernel (Ubuntu kernel in my case) is actually
-replaced by the vanilla kernel?
-
-I see that they say something to that effect here (mention of replacing the
-distro kernel with a vanilla kernel):
-https://xenomai.org/2014/06/running-xenomai-on-virtualbox/#Host_Compiling_kernel_and_Xenomai
-
-If this is the case, what step during build / installation is the distro
-kernel image actually replaced?  The last step I see in the build process
-for x86 arch is "make bzImage modules"... Does this step actually swap out
-the kernel image?  Is a reboot necessary then to load the new kernel?  I
-don't see a reboot mentioned in the docs.
-
-On Fri, Nov 3, 2017 at 1:23 PM, Lennart Sorensen <
-lsorense@csclub.uwaterloo.ca> wrote:
-
-> On Fri, Nov 03, 2017 at 01:16:38PM -0500, Danrae Pray wrote:
-> > Ok great - my followup question then is, if the COBALT kernel is itself a
-> > modified linux kernel and it's the COBALT kernel that's patched with
-> ipipe
-> > (no patch is applied to the host kernel), how do POSIX API calls in
-> > user-space code get mapped to the appropriate system call in the COBALT
-> > kernel instead of the host linux kernel (in my case Ubuntu distro
-> kernel)?
-> > Does this magic happen at compile-time for the xenomai applications?
->
-> When using xenomai, you are not in any way using your distribution kernel.
-> You could uninstall it and have no problem.
->
-> Xenomai in dual kernel mode (cobalt) requires running a kernel that is
-> patched with xenomai/ipipe support.  That is a linux kernel with extra
-> features added.  The dual doesn't mean it is running your distribution
-> kernel and a cobalt kernel at the same time.  It means you are running a
-> kernel that supports running normal linux applications at the same time
-> as it can run real time domain applications (using different process
-> scheduling and system call interfaces).
->
-> In theory, someone could try to convince the main linux kernel to accept
-> the ipipe and xenomai patches to get mainlined and always included,
-> but I don't think anyone is trying to do that at this time.  If that ever
-> happened (no idea if it would have a chance of ever being accepted),
-> then you would be able to run xenomai on a default kernel, if it was
-> built with the right config items enabled.
->
-> --
-> Len Sorensen
->
+Cj4gT24gMDMgTm92IDIwMTcsIGF0IDE5OjE2LCBEYW5yYWUgUHJheSA8ZGFucmFlLnByYXlAbWV0
+ZWNzLmNvbT4gd3JvdGU6Cj4gCj4gT2sgZ3JlYXQgLSBteSBmb2xsb3d1cCBxdWVzdGlvbiB0aGVu
+IGlzLCBpZiB0aGUgQ09CQUxUIGtlcm5lbCBpcyBpdHNlbGYgYQo+IG1vZGlmaWVkIGxpbnV4IGtl
+cm5lbCBhbmQgaXQncyB0aGUgQ09CQUxUIGtlcm5lbCB0aGF0J3MgcGF0Y2hlZCB3aXRoIGlwaXBl
+Cj4gKG5vIHBhdGNoIGlzIGFwcGxpZWQgdG8gdGhlIGhvc3Qga2VybmVsKSwgaG93IGRvIFBPU0lY
+IEFQSSBjYWxscyBpbgo+IHVzZXItc3BhY2UgY29kZSBnZXQgbWFwcGVkIHRvIHRoZSBhcHByb3By
+aWF0ZSBzeXN0ZW0gY2FsbCBpbiB0aGUgQ09CQUxUCj4ga2VybmVsIGluc3RlYWQgb2YgdGhlIGhv
+c3QgbGludXgga2VybmVsIChpbiBteSBjYXNlIFVidW50dSBkaXN0cm8ga2VybmVsKT8KPiBEb2Vz
+IHRoaXMgbWFnaWMgaGFwcGVuIGF0IGNvbXBpbGUtdGltZSBmb3IgdGhlIHhlbm9tYWkgYXBwbGlj
+YXRpb25zPwoKWWVzLiBUaGUgbWFnaWMgaXMgY2FsbGVkIHN5bWJvbCB3cmFwcGluZy4KU2VlIOKA
+nOKAlHdyYXDigJ0gZG9jdW1lbnRhdGlvbiBvZiB5b3VyIGxpbmtlciAoZS5nLiBmdHA6Ly9mdHAu
+Z251Lm9yZy9vbGQtZ251L01hbnVhbHMvbGQtMi45LjEvaHRtbF9ub2RlL2xkXzMuaHRtbCA8ZnRw
+Oi8vZnRwLmdudS5vcmcvb2xkLWdudS9NYW51YWxzL2xkLTIuOS4xL2h0bWxfbm9kZS9sZF8zLmh0
+bWw+KS4KCldoZW4geW91IHVzZSB0aGUgeGVuby1jb25maWcgdG9vbCBkdXJpbmcgY29tcGlsYXRp
+b24sIGl0IHdpbGwgc2V0IHVwCnRoZSByZXF1aXJlZCBmbGFncy4KCkJSCkNocmlzdG9waAoKCj4g
+Cj4gCj4gCj4gT24gRnJpLCBOb3YgMywgMjAxNyBhdCAxMjo1OSBQTSwgTGVubmFydCBTb3JlbnNl
+biA8Cj4gbHNvcmVuc2VAY3NjbHViLnV3YXRlcmxvby5jYT4gd3JvdGU6Cj4gCj4+IE9uIEZyaSwg
+Tm92IDAzLCAyMDE3IGF0IDEyOjI0OjM2UE0gLTA1MDAsIERhbnJhZSBQcmF5IHdyb3RlOgo+Pj4g
+SSBhbSB0cnlpbmcgdG8gdW5kZXJzdGFuZCBob3cgdGhlIENPQkFMVCBrZXJuZWwgaXMgZGVzaWdu
+ZWQgYW5kIGhvdyBpdAo+PiBjYW4KPj4+IGJlIGluc3RhbGxlZCBzaWRlLWJ5LXNpZGUgdmFyaW91
+cyBsaW51eCBkaXN0cm8ga2VybmVscyAoR2VudG9vLCBVYnVudHUsCj4+PiBldGMpLgo+Pj4gCj4+
+PiBEdXJpbmcgdGhlIENPQkFMVCBrZXJuZWwgYnVpbGQgcHJvY2VzcyBvbiBVYnVudHUsIGZvciBl
+eGFtcGxlLCB3ZQo+PiBhY3R1YWxseQo+Pj4gcHVsbCBhIGtlcm5lbCB2ZXJzaW9uIChiYXNlZCBv
+biB5b3VyIFVidW50dSB2ZXJzaW9uKSBhbmQgYnVpbGQgaXQ6Cj4+PiAKPj4+IGh0dHBzOi8vc3Rh
+Y2tvdmVyZmxvdy5jb20vcXVlc3Rpb25zLzQxOTQ5Njc4L2luc3RhbGxhdGlvbi1zdGVwcy1mb3It
+Cj4+IHhlbm9tYWktMy1vbi11YnVudHUtMTYtMDQKPj4+IGh0dHBzOi8veGVub21haS5vcmcvL2lu
+c3RhbGxpbmcteGVub21haS0zLXgvIwo+PiBDb25maWd1cmluZ19hbmRfY29tcGlsaW5nX3RoZV9D
+b2JhbHRfa2VybmVsCj4+PiAKPj4+IFNvLCBJIGd1ZXNzIG15IHF1ZXN0aW9ucyBhcmU6Cj4+PiAK
+Pj4+IDEpIEF0IHRoZSBlbmQgb2YgdGhlIENPQkFMVCBidWlsZCAvIGluc3RhbGxhdGlvbiBwcm9j
+ZWR1cmUgYXMgd2VsbCBhcwo+Pj4gaW5zdGFsbGluZyB0aGUgWGVub21haSBsaWJzL3Rvb2xzLCBj
+YW4gSSBhY3R1YWxseSB1c2UgWGVub21haSBpbiB0aGUKPj4+IGR1YWwta2VybmVsIGNvbmZpZyBv
+biBVYnVudHUgb24gbXkgZGVza3RvcCBQQyBmb3IgdGVzdGluZyBhcHBsaWNhdGlvbgo+Pj4gbG9n
+aWM/ICBpLmUuIEkgZG9uJ3QgbmVlZCB0byBhY3R1YWxseSBib290IG15IG1hY2hpbmUgdXNpbmcg
+dGhlIG5ld2x5Cj4+IGJ1aWx0Cj4+PiBpbWFnZSBvciBzb21ldGhpbmcuLi4KPj4gCj4+IFlvdSBo
+YXZlIHRvIGJlIHJ1bm5pbmcgdGhhdCBrZXJuZWwuCj4+IAo+Pj4gMikgV2h5IGFyZSB3ZSBidWls
+ZGluZyBhIGxpbnV4IGtlcm5lbCBkdXJpbmcgdGhlIENPQkFMVCBidWlsZCBwcm9jZXNzPwo+PiBJ
+cwo+Pj4gQ09CQUxUIGFjdHVhbGx5IGEgbW9kaWZpZWQgbGludXgga2VybmVsIGl0c2VsZj8KPj4g
+Cj4+IFllcyBpdCBpcy4gIFRoZSBrZXJuZWwgaXMgcGF0Y2hlZCB3aXRoIGlwaXBlIGFuZCB4ZW5v
+bWFpIGV4dGVuc2lvbnMgdG8KPj4gcHJvdmlkZSB0aGUgcmVxdWlyZWQgZmVhdHVyZXMuCj4+IAo+
+PiAtLQo+PiBMZW4gU29yZW5zZW4KPj4gCj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX18KPiBYZW5vbWFpIG1haWxpbmcgbGlzdAo+IFhlbm9tYWlAeGVub21h
+aS5vcmcKPiBodHRwczovL3hlbm9tYWkub3JnL21haWxtYW4vbGlzdGluZm8veGVub21haQoKLS0t
+LS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVu
+dCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9w
+Z3Atc2lnbmF0dXJlClNpemU6IDg0MiBieXRlcwpEZXNjOiBNZXNzYWdlIHNpZ25lZCB3aXRoIE9w
+ZW5QR1AgdXNpbmcgR1BHTWFpbApVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hl
+bm9tYWkvYXR0YWNobWVudHMvMjAxNzExMDMvOWI0YzM1MTUvYXR0YWNobWVudC5zaWc+Cg==
