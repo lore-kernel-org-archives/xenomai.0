@@ -1,25 +1,15 @@
-References: <CADYdroNR6zjbKrPKPm3d_7+55Rg2SDbmpxiNR-xu78QNHSrr9g@mail.gmail.com>
- <20170810114956.04f62bc6@md1em3qc>
- <CADYdroM8E7jhuyRoW4JkSzZfGg27VvpjLmHGmMmX79wgEqPJog@mail.gmail.com>
- <20171012103345.04d854c2@md1em3qc>
- <CADYdroOAVb0wPAvuynvuOUtSnp85FT2Ett80amzDpDCFHPHHzA@mail.gmail.com>
- <CADYdroNeQOY2MN-b=r6bNh=69oeGP2oWry2CXHYH9RJtTt1MFA@mail.gmail.com>
- <CADYdroN-yNG+nLrhfiH8MgMVr7D82-wNnjvyVXcX6hNU2mikcg@mail.gmail.com>
- <20171013113118.6e6f0fcd@md1em3qc>
- <CADYdroPP8ZQ91eqfJjJP9UFufpJOWm7+zsDePz-0a_TaDV_9_Q@mail.gmail.com>
- <20171013122653.1adbf99e@md1em3qc>
- <CADYdroP7G6irhKJUtpWfoVdivT3ey_i58zAvMz-O7E7PycH6ug@mail.gmail.com>
- <08ed4b28-608a-4a3b-6946-d910861017d3@xenomai.org>
- <20171019185557.41f55c24@md1em3qc>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <b33db7eb-e88f-2253-c702-239a633c0d2f@xenomai.org>
-Date: Thu, 9 Nov 2017 10:38:42 +0100
+From: =?utf-8?Q?C=C3=A9dric_Perles?= <cperles@sepro-group.com>
+References: <006f01d35237$eedce810$cc96b830$@sepro-group.com>
+ <b10550b6-327a-73da-03e6-f5f88507feb4@xenomai.org>
+In-Reply-To: <b10550b6-327a-73da-03e6-f5f88507feb4@xenomai.org>
+Date: Thu, 9 Nov 2017 10:53:49 +0100 (CET)
+Message-ID: <02fe01d35940$a499acb0$edcd0610$@sepro-group.com>
 MIME-Version: 1.0
-In-Reply-To: <20171019185557.41f55c24@md1em3qc>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Won`t build on new Debian Stable
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Language: fr
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] ipipe + preempt_rt : spinlock issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -28,77 +18,108 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: norbert.lange@andritz.com, Norbert Lange <nolange79@gmail.com>, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 10/19/2017 06:55 PM, Henning Schild wrote:
-> On Thu, 19 Oct 2017 12:03:33 +0200
-> Philippe Gerum <rpm@xenomai.org> wrote:
-> 
->> On 10/13/2017 01:36 PM, Norbert Lange wrote:
->>> I works, because collect2 (the "compiler driver", which documents
->>> the -r option) now knows about the -r flag, using -Wl,-[U]r would
->>> mean the flags aren't even looked at.
->>> It can then disable functionality that is not supposed to be done at
->>> this point (see gcc/collect2.c, search for 'early_exit'). It might
->>> actually be in conflict with the -Ur option from the comments, but I
->>> don't know what this is trying to solve (the constructor tables
->>> would then be built in the second step?)
->>>
->>> I would prefer the compiler driver knowing about the flags and
->>> correctly dealing with them, instead of replicating this logic in
->>> scripts (and keeping it up to date with this internal logic).  
->>
->> Ack.
->>
->>> Might be that your wrapper script is doing something similarly by
->>> filtering out the arguments for the first step, which might be the
->>> same functionally that is skipped when adding '-r'
->>>
->>> I dont know what the -Ur flag is trying to solve, and the first
->>> patch adding -no-pie is way less likely to change something (given
->>> that I would not have compiled with -pie before).
->>> The new patch would however leave more of the magic to the toolchain
->>> and seems more "correct" to me, for whatever that's worth. But it
->>> might have some subtle differences to before, got some testcase
->>> where lacking the -Ur flag made a difference?  
->>
->> I don't know the original intent about passing -Ur to the linker,
->> except maybe to stick to the ld manpage which states that the last
->> partial link command should be given such option.
->>
->> However my understanding is that we don't need it in wrap-link.sh,
->> since the script eventually completes the link stage to produce a
->> fully resolved executable. That implies collecting the ctors/dtors and
->> resolving all references from the partially linked object file anyway.
->>
->> Some testing only passing -r here seems to confirm this assumption
->> with C++ apps; C++ users may want to check this too:
-> 
-> I just told some C++ power users to give that a try. I am not sure how
-> fast the feedback will arrive, i hope in the next two weeks.
-> 
-> Henning
-> 
->>
->> diff --git a/scripts/wrap-link.sh b/scripts/wrap-link.sh
->> index aab7899..fa83bd5 100755
->> --- a/scripts/wrap-link.sh
->> +++ b/scripts/wrap-link.sh
->> @@ -204,7 +204,7 @@ done
->>
->>  if $stage2; then
->>      $verbose && set -x
->> -    $dryrun $cc -o "$output.tmp" -Wl,-Ur -nostdlib $stage1_args
->> +    $dryrun $cc -o "$output.tmp" -r -nostdlib $stage1_args
->>      $dryrun $cc -o "$output" "$output.tmp" $stage2_args
->>      $dryrun rm -f $output.tmp
->>  else
->>
+Hi Philippe,
 
-Any news from the Xenomai/C++ folks regarding this change? I plan to
-merge it next week if nobody complains.
+Thank's for your answere.
+Replacing spin lock calls by equivalent raw spin lock in gpio_generic did=
+=20
+the trick.
 
--- 
+Thank's a lot.
+
+C=C3=A9dric
+
+
+-----Message d'origine-----
+De : Philippe Gerum [mailto:rpm@xenomai.org]
+Envoy=C3=A9 : mercredi 1 novembre 2017 21:57
+=C3=80 : C=C3=A9dric Perles; xenomai@xenomai.org
+Objet : Re: [Xenomai] ipipe + preempt_rt : spinlock issue
+
+On 10/31/2017 12:03 PM, C=C3=A9dric Perles wrote:
+> Hi,
+>
+>
+>
+> I=E2=80=99m working on an iMX6 based board with NXP kernel 4.1.15.
+>
+> I made a Xenomai 3.0.5/ipipe bsp that works well and I also made a
+> preempt-rt bsp that works well too.
+>
+>
+>
+> However, now I would like to make a Xenomai/ipipe + preempt_rt bsp.
+>
+>
+>
+> I adapted preempt_rt patch to fit to ipipe patched kernel but during
+> compilation I=E2=80=99m facing issues concerning spinlocks:
+>
+>
+>
+> drivers/gpio/gpio-generic.c:496:2: note: in expansion of macro
+> 'spin_lock_init'
+>
+>   spin_lock_init(&bgc->lock);
+>
+>   ^
+>
+> include/linux/spinlock_rt.h:17:24: error: '__ipipe_spinlock_t {aka
+> struct <anonymous>}' has no member named 'lock'
+>
+>   rt_mutex_init(&(slock)->lock);   \
+>
+>
+
+gpio-generic should use raw spinlock accessors (e.g. spin_lock_init ->=20
+raw_spin_lock_init()).
+
+>
+>
+>
+> Searching some help on internet, I realized that only a few people
+> tried to use both Xenomai and Preempt-rt.
+>
+> =3D> Is it an heresy ? if so, Why ?
+>
+
+Not particularly.
+
+> I thought it was the best way to limit preemption for the tasks that
+> switched temporarily to secondary mode.
+>
+>
+
+That may not be the best reason to use such combo, i.e. if this is about=20
+papering over issues caused by dual kernel's rt threads escaping the prop=
+er=20
+runtime mode. Those threads should not do that in the first place.
+
+A legitimate reason to use such combo is rather to have different classes=
+ of=20
+rt requirements in a single application, which are best served by combine=
+d=20
+approaches.
+
+>
+> =3D> If it is not a stupid idea, did somebody already resolve this kind
+> of conflict ?
+
+Yes, this may seem daunting at first, but there are usually only a few of=
+=20
+them, almost only in include/spinlock*. Conflicts in sched/core may be a =
+bit=20
+trickier to address though, but they don't appear frequently.
+
+> and how ?
+>
+>
+Well, just as you are doing: making sense of the changes, and figuring ou=
+t=20
+how to fix the few conflicts.
+
+--
 Philippe.
 
