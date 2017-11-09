@@ -1,15 +1,15 @@
 References: <20171106094646.28769-1-christoph.muellner@theobroma-systems.com>
- <20171106094646.28769-2-christoph.muellner@theobroma-systems.com>
+ <20171106094646.28769-3-christoph.muellner@theobroma-systems.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <72e1f7b8-a609-edac-5709-bed9d2fea325@xenomai.org>
-Date: Thu, 9 Nov 2017 11:00:09 +0100
+Message-ID: <813c4cb9-86e3-d13d-a52e-c13a9cd0380c@xenomai.org>
+Date: Thu, 9 Nov 2017 11:04:41 +0100
 MIME-Version: 1.0
-In-Reply-To: <20171106094646.28769-2-christoph.muellner@theobroma-systems.com>
+In-Reply-To: <20171106094646.28769-3-christoph.muellner@theobroma-systems.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] [PATCH v2 1/3] cobalt: rtdm: Add function
-	rtdm_irq_affinity().
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH v2 2/3] RTDM: uapi: Define ioctl code to set
+ an IRQ affinity.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,36 +21,41 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Christoph Muellner <christoph.muellner@theobroma-systems.com>, xenomai@xenomai.org
 
 On 11/06/2017 10:46 AM, Christoph Muellner wrote:
-> This patch adds a RTDM API to set a IRQ's CPU affinity.
+> This patch adds an ioctl code to set a GPIO IRQ's CPU affinity
+> to the RTDM user space API.
 > 
 > Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
 > ---
->  include/cobalt/kernel/rtdm/driver.h |  6 ++++++
->  kernel/cobalt/rtdm/drvlib.c         | 18 ++++++++++++++++++
->  2 files changed, 24 insertions(+)
+>  include/rtdm/uapi/gpio.h | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
-> diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
-> index 0c7b62e75..803cdbfe4 100644
-> --- a/include/cobalt/kernel/rtdm/driver.h
-> +++ b/include/cobalt/kernel/rtdm/driver.h
-> @@ -874,6 +874,12 @@ static inline int rtdm_irq_disable(rtdm_irq_t *irq_handle)
->  	xnintr_disable(irq_handle);
->  	return 0;
->  }
+> diff --git a/include/rtdm/uapi/gpio.h b/include/rtdm/uapi/gpio.h
+> index f846f48b2..e70da2621 100644
+> --- a/include/rtdm/uapi/gpio.h
+> +++ b/include/rtdm/uapi/gpio.h
+> @@ -18,10 +18,16 @@
+>  #ifndef _RTDM_UAPI_GPIO_H
+>  #define _RTDM_UAPI_GPIO_H
+>  
+> +typedef struct {
+> +	void* mask;
+
+Asking explicitly for unsigned long * may give a better hint about what
+is expected.
+
+> +	size_t size;
+> +} rtdm_cpumask_t;
 > +
-> +static inline int rtdm_irq_affinity(rtdm_irq_t *irq_handle, cpumask_t tgt)
-> +{
-> +	xnintr_affinity(irq_handle, tgt);
-> +	return 0;
-> +}
+>  #define GPIO_RTIOC_DIR_OUT		_IOW(RTDM_CLASS_GPIO, 0, int)
+>  #define GPIO_RTIOC_DIR_IN		_IO(RTDM_CLASS_GPIO, 1)
+>  #define GPIO_RTIOC_IRQEN		_IOW(RTDM_CLASS_GPIO, 2, int) /* GPIO trigger */
+>  #define GPIO_RTIOC_IRQDIS		_IO(RTDM_CLASS_GPIO, 3)
+> +#define GPIO_RTIOC_IRQAFF		_IOW(RTDM_CLASS_GPIO, 4, rtdm_cpumask_t*)
+>  
+>  #define GPIO_TRIGGER_NONE		0x0 /* unspecified */
+>  #define GPIO_TRIGGER_EDGE_RISING	0x1
+> 
 
-At the end of the day, we should be passing cpumasks by address only.
-
-So, in order to preserve this new routine from future change regarding
-the cpumask argument once ipipe_set_irq_affinity() (or its successor) is
-fixed, what about receiving a pointer to cpumask_t instead, fixing the
-signature of xnintr_affinity() along the way too? The latter belongs to
-the internal Cobalt API, we have no backward compatibility issue there.
 
 -- 
 Philippe.
