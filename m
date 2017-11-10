@@ -1,26 +1,14 @@
-References: <CADYdroNR6zjbKrPKPm3d_7+55Rg2SDbmpxiNR-xu78QNHSrr9g@mail.gmail.com>
- <20170810114956.04f62bc6@md1em3qc>
- <CADYdroM8E7jhuyRoW4JkSzZfGg27VvpjLmHGmMmX79wgEqPJog@mail.gmail.com>
- <20171012103345.04d854c2@md1em3qc>
- <CADYdroOAVb0wPAvuynvuOUtSnp85FT2Ett80amzDpDCFHPHHzA@mail.gmail.com>
- <CADYdroNeQOY2MN-b=r6bNh=69oeGP2oWry2CXHYH9RJtTt1MFA@mail.gmail.com>
- <CADYdroN-yNG+nLrhfiH8MgMVr7D82-wNnjvyVXcX6hNU2mikcg@mail.gmail.com>
- <20171013113118.6e6f0fcd@md1em3qc>
- <CADYdroPP8ZQ91eqfJjJP9UFufpJOWm7+zsDePz-0a_TaDV_9_Q@mail.gmail.com>
- <20171013122653.1adbf99e@md1em3qc>
- <CADYdroP7G6irhKJUtpWfoVdivT3ey_i58zAvMz-O7E7PycH6ug@mail.gmail.com>
- <08ed4b28-608a-4a3b-6946-d910861017d3@xenomai.org>
- <20171019185557.41f55c24@md1em3qc>
- <b33db7eb-e88f-2253-c702-239a633c0d2f@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <d57a6d7b-650f-99d1-f79a-d7c5e750fb49@siemens.com>
-Date: Thu, 9 Nov 2017 18:38:15 +0100
+References: <CA+K1mPHeJwOLhPcuJGmsf9A3yrcp_aNxS=4qXVLVU67Cw_14Eg@mail.gmail.com>
+ <744bfd85-e3f2-4624-bdf6-485fe0636481@web.de>
+ <CA+K1mPF+SOhOeVpYktjNCcD7u403CtUXkM1Hcz_SS-6wwG50xg@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <dc4da71c-f704-e817-f650-4c7dd4c68827@web.de>
+Date: Fri, 10 Nov 2017 08:02:14 +0100
 MIME-Version: 1.0
-In-Reply-To: <b33db7eb-e88f-2253-c702-239a633c0d2f@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Won`t build on new Debian Stable
+In-Reply-To: <CA+K1mPF+SOhOeVpYktjNCcD7u403CtUXkM1Hcz_SS-6wwG50xg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] segfault in printer_loop()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -29,86 +17,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Henning Schild <henning.schild@siemens.com>
-Cc: norbert.lange@andritz.com, Norbert Lange <nolange79@gmail.com>, Xenomai <xenomai@xenomai.org>
+To: C Smith <csmithquestions@gmail.com>, Xenomai <xenomai@xenomai.org>
 
-On 2017-11-09 10:38, Philippe Gerum wrote:
-> On 10/19/2017 06:55 PM, Henning Schild wrote:
->> On Thu, 19 Oct 2017 12:03:33 +0200
->> Philippe Gerum <rpm@xenomai.org> wrote:
->>
->>> On 10/13/2017 01:36 PM, Norbert Lange wrote:
->>>> I works, because collect2 (the "compiler driver", which documents
->>>> the -r option) now knows about the -r flag, using -Wl,-[U]r would
->>>> mean the flags aren't even looked at.
->>>> It can then disable functionality that is not supposed to be done at
->>>> this point (see gcc/collect2.c, search for 'early_exit'). It might
->>>> actually be in conflict with the -Ur option from the comments, but I
->>>> don't know what this is trying to solve (the constructor tables
->>>> would then be built in the second step?)
->>>>
->>>> I would prefer the compiler driver knowing about the flags and
->>>> correctly dealing with them, instead of replicating this logic in
->>>> scripts (and keeping it up to date with this internal logic).  
->>>
->>> Ack.
->>>
->>>> Might be that your wrapper script is doing something similarly by
->>>> filtering out the arguments for the first step, which might be the
->>>> same functionally that is skipped when adding '-r'
->>>>
->>>> I dont know what the -Ur flag is trying to solve, and the first
->>>> patch adding -no-pie is way less likely to change something (given
->>>> that I would not have compiled with -pie before).
->>>> The new patch would however leave more of the magic to the toolchain
->>>> and seems more "correct" to me, for whatever that's worth. But it
->>>> might have some subtle differences to before, got some testcase
->>>> where lacking the -Ur flag made a difference?  
->>>
->>> I don't know the original intent about passing -Ur to the linker,
->>> except maybe to stick to the ld manpage which states that the last
->>> partial link command should be given such option.
->>>
->>> However my understanding is that we don't need it in wrap-link.sh,
->>> since the script eventually completes the link stage to produce a
->>> fully resolved executable. That implies collecting the ctors/dtors and
->>> resolving all references from the partially linked object file anyway.
->>>
->>> Some testing only passing -r here seems to confirm this assumption
->>> with C++ apps; C++ users may want to check this too:
->>
->> I just told some C++ power users to give that a try. I am not sure how
->> fast the feedback will arrive, i hope in the next two weeks.
->>
->> Henning
->>
->>>
->>> diff --git a/scripts/wrap-link.sh b/scripts/wrap-link.sh
->>> index aab7899..fa83bd5 100755
->>> --- a/scripts/wrap-link.sh
->>> +++ b/scripts/wrap-link.sh
->>> @@ -204,7 +204,7 @@ done
->>>
->>>  if $stage2; then
->>>      $verbose && set -x
->>> -    $dryrun $cc -o "$output.tmp" -Wl,-Ur -nostdlib $stage1_args
->>> +    $dryrun $cc -o "$output.tmp" -r -nostdlib $stage1_args
->>>      $dryrun $cc -o "$output" "$output.tmp" $stage2_args
->>>      $dryrun rm -f $output.tmp
->>>  else
->>>
-> 
-> Any news from the Xenomai/C++ folks regarding this change? I plan to
-> merge it next week if nobody complains.
-> 
-
-(Henning is on vacation) What I heard from our folks who could test this
-extensively is that they are unfortunately busy right now. So, if you
-want to merge, you should probably not wait for this feedback.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
-
+T24gMjAxNy0xMS0xMCAwNzo1OCwgQyBTbWl0aCB3cm90ZToKPiBBZ3JlZWQgdGhlIHNlZ2ZhdWx0
+IGlzIGluc2lkZSBwdGhyZWFkX2NvbmRfd2FpdCgpLCB0aGUgY29udGVudHMgb2YgdGhlCj4gYXJn
+cyBhcmUgc2VlbiBpbiBwcmV2aW91cyBwb3N0Lgo+IGRtZXNnIHNheXMgdGhpczoKPiBhcHBbMTIz
+MTZdOiBzZWdmYXVsdCBhdCBjIGlwIGI3NmZlMGRiIHNwIGI3NzFjMjY4IGVycm9yIDQgaW4KPiBs
+aWJwdGhyZWFkLTIuMTUuc28gPGh0dHA6Ly9saWJwdGhyZWFkLTIuMTUuc28+W2I3NmY0MDAwKzE2
+MDAwXQo+IAo+IEFuZCBnZGIgc2hvd3MgbWUgdGhlIHNhbWUgYWRkcmVzcy4gQWZ0ZXIgYSBzZWdm
+YXVsdCBnZW5lcmF0ZWQgaW5zaWRlIGdkYjoKPiBwICRfc2lnaW5mby5fc2lmaWVsZHMuX3NpZ2Zh
+dWx0LnNpX2FkZHIKPiAkOSA9ICh2b2lkICopIDB4Ywo+IAo+IEkndmUgZG9uZSBmdXJ0aGVyIHRl
+c3RpbmcgYW5kIGluIGdkYiBJIGZvdW5kIHRoYXQgbXkgYXBwIHNlZ2ZhdWx0cwo+IGJlZm9yZSBo
+aXR0aW5nIHRoZSBmaXJzdCBsaW5lIG9mIG1haW4oKS4KPiBUaHVzIEkgYW0gdW5hYmxlIHRvIGNh
+dGNoIGl0IGluIGdkYiB3aXRoIGEgaGFyZHdhcmUgd2F0Y2hwb2ludC4gSQo+IGF0dGVtcHRlZCB0
+byBkbyBzbyBieSBmaXJzdCBtYWtpbmcgbXkKPiBhcHAgaGl0IGEgYnJlYWtwb2ludCBvbiB0aGUg
+Zmlyc3QgbGluZSBvZiBtYWluKCksIHRoZW4gSSBzZXQgYQo+IHdhdGNocG9pbnQgb24gMHhDIGlu
+Cj4gZ2RiIGFuZCBydW4sIGJ1dCBJIG5ldmVyIGdldCBhIHNlZ2ZhdWx0IGFmdGVyIHRoYXQgcG9p
+bnQsIGFmdGVyIG92ZXIgMTAwCj4gcnVucy4KCllvdSBjYW4gc2V0IGEgYnJlYWtwb2ludCBvbiBf
+X3J0X3ByaW50X2luaXQsIGUuZy4KCj4gCj4gTm90ZSB0aGF0IHRoZSBhcHAgbGF1bmNoZXMgb25s
+eSAxIHJlYWx0aW1lIHRocmVhZCBub3cgaW4gdGhlc2UgdGVzdHMgKGluCj4gb3JpZ2luYWwgdGVz
+dHMgaXQgaGFkIDMgdGhyZWFkcykuCj4gSGVyZSBpcyB0aGUgb25lIHdheSBJIHdhcyBhYmxlIHRv
+IGdldCB0aGUgYXBwIHRvIHJ1biB3aXRob3V0Cj4gc2VnZmF1bHRpbmcsIGV2ZW4gd2l0aCBtdWx0
+aXBsZSByZWFsCj4gdGltZSB0aHJlYWRzOiBJIHNldCBrZXJuZWwgYm9vdCBvcHRpb24gbWF4Y3B1
+cz0xLsKgIChvbiBhIFNNUCBrZXJuZWwgd2l0aAo+IDQgY29yZXMpLiBJIHdhcyB0aGVuIGFibGUg
+dG8gcnVuCj4gdGhlIGFwcCBvdmVyIDgwIHRpbWVzIHdpdGggbm8gc2VnZmF1bHQuCj4gCj4gU28g
+dGhlIHNlZ2ZhdWx0IGlzIGhhcHBlbmluZyBvbiBhYm91dCAxMCUgb2YgcnVucywgaW4gcHJpbnRl
+cl9sb29wKCksCj4gYXBwYXJlbnRseSBiZWZvcmUgdGhlIGZpcnN0IGxpbmUgb2YgbWFpbigpLCBh
+bmQgSSBhbSB1bmFibGUgdG8KPiBjYXRjaCB0aGUgYmFkIG1lbW9yeSBhY2Nlc3MgaW4gYSBkZWJ1
+Z2dlciB3aXRoIGEgd2F0Y2hwb2ludC4KPiBEbyB5b3UgaGF2ZSBhIHN1Z2dlc3Rpb24gYXMgdG8g
+aG93IHRvIGZ1cnRoZXIgZGVidWcgdGhpcz8KClNlZSBhYm92ZS4gTWF5YmUgdGhhdCBhbG9uZSB3
+aWxsIGdpdmUgeW91IGEgaGludDogaWYgdGhhdCBmdW5jdGlvbiwgZm9yCndoYXQgZXZlciByZWFz
+b24sIGhhcHBlbnMgdG8gYmUgY2FsbGVkIHR3aWNlLCB0aGF0IGNvdWxkIGV4cGxhaW4gdGhlCmlz
+c3VlIGFzIHdlbGwuIFRoZW4gcGxlYXNlIGNhdGNoIHRoZSBiYWNrdHJhY2VzIG9mIGFsbCBpbnZv
+Y2F0aW9ucy4KCkphbgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEg
+bm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpU
+eXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDE4MSBieXRlcwpEZXNjOiBPcGVu
+UEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwv
+eGVub21haS9hdHRhY2htZW50cy8yMDE3MTExMC9iZmFkNWQ2MS9hdHRhY2htZW50LnNpZz4K
