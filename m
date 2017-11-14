@@ -1,13 +1,14 @@
-From: MINIER Bertrand <Bertrand.MINIER@sercel.com>
-Date: Tue, 14 Nov 2017 14:47:40 +0000
-Message-ID: <b5b2efe53e934dfba00ccf6ddd9f8a8b@NANS01204.it.intra.sercel.com>
+From: =?utf-8?Q?Christoph_M=C3=BCllner?=
+ <christoph.muellner@theobroma-systems.com>
+Message-Id: <5429EFB4-E461-43C8-BF72-EAF4DEFEB21E@theobroma-systems.com>
+Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
+Date: Tue, 14 Nov 2017 17:21:33 +0100
+In-Reply-To: <b5b2efe53e934dfba00ccf6ddd9f8a8b@NANS01204.it.intra.sercel.com>
 References: <28f6b55060c9421dbfc06a64973093e8@NANS01204.it.intra.sercel.com>
  <37D41E97-DE59-44BA-984A-D8A08D6DDCB5@theobroma-systems.com>
-In-Reply-To: <37D41E97-DE59-44BA-984A-D8A08D6DDCB5@theobroma-systems.com>
-Content-Language: fr-FR
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
+ <b5b2efe53e934dfba00ccf6ddd9f8a8b@NANS01204.it.intra.sercel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] prepare-kernel.sh error on linux 4.9.24 for target
  arm64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,390 +19,173 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?iso-8859-1?Q?Christoph_M=FCllner?= <christoph.muellner@theobroma-systems.com>
+To: MINIER Bertrand <Bertrand.MINIER@sercel.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Christoph,
-
-Thank you for your answer.
-The prepare-kernel.sh script doesn't seem to support --arch=3Darm64
-
-When I execute scripts/prepare-kernel.sh --linux=3D/continuus/bm50210/linux=
--repo --ipipe=3D/continuus/bm50210/br-top/config/package/xenomai3/ipipe-cor=
-e-4.9.24-arm64-2.patch --arch=3Darm64
-The output is :
-prepare-kernel.sh: unsupported architecture: arm64
-
-I'm using Xenomai v3.0.5.
-
-Bertrand
-
------Message d'origine-----
-De : Christoph M=FCllner [mailto:christoph.muellner@theobroma-systems.com]
-Envoy=E9 : mardi 14 novembre 2017 14:47
-=C0 : MINIER Bertrand
-Cc : xenomai@xenomai.org
-Objet : Re: [Xenomai] prepare-kernel.sh error on linux 4.9.24 for target ar=
-m64
-
-
-> On 14 Nov 2017, at 13:59, MINIER Bertrand <Bertrand.MINIER@sercel.com> wr=
-ote:
->
-> Hi,
->
->
-> I am trying to install the COBALT kernel alongside the linux v4.9.24 for =
-the target AArch64 Cortex-A53.
->
->
->
-> I have executed the following script:
->
-> ./scripts/prepare-kernel.sh --linux=3D../../linux-repo --ipipe../../ipipe=
--core-4.9.24-arm64-2.patch --arch=3Darm
-
-Hi Bertrand,
-
-try with --arch=3Darm64
-
-BR
-Christoph
-
->
->
->
-> The xenomai code and ipipe patch came from the xenomai downloads site and=
- the linux kernel comes from kernel.org
->
->
->
-> Can someone please help me understand why prepare-kernel.sh is failing?
->
->
->
-> Here's the output I got from the perpare-kernel.sh script:
->
->
->
-> patching file arch/arm64/Kconfig
->
-> patching file arch/arm64/include/asm/assembler.h
->
-> patching file arch/arm64/include/asm/ipipe.h
->
-> patching file arch/arm64/include/asm/ipipe_base.h
->
-> patching file arch/arm64/include/asm/ipipe_hwirq.h
->
-> patching file arch/arm64/include/asm/irqflags.h
->
-> patching file arch/arm64/include/asm/mmu_context.h
->
-> patching file arch/arm64/include/asm/proc-fns.h
->
-> patching file arch/arm64/include/asm/smp_plat.h
->
-> patching file arch/arm64/include/asm/thread_info.h
->
-> patching file arch/arm64/include/asm/uaccess.h
->
-> patching file arch/arm64/include/asm/unistd.h
->
-> patching file arch/arm64/kernel/Makefile
->
-> patching file arch/arm64/kernel/asm-offsets.c
->
-> patching file arch/arm64/kernel/entry.S
->
-> patching file arch/arm64/kernel/fpsimd.c
->
-> patching file arch/arm64/kernel/ipipe.c
->
-> patching file arch/arm64/kernel/process.c
->
-> patching file arch/arm64/kernel/ptrace.c
->
-> patching file arch/arm64/kernel/setup.c
->
-> patching file arch/arm64/kernel/signal.c
->
-> patching file arch/arm64/kernel/smp.c
->
-> patching file arch/arm64/kernel/traps.c
->
-> patching file arch/arm64/mm/context.c
->
-> patching file arch/arm64/mm/fault.c
->
-> patching file drivers/clocksource/arm_arch_timer.c
->
-> patching file drivers/clocksource/timer-sp804.c
->
-> patching file drivers/gpio/gpio-pl061.c
->
-> patching file drivers/irqchip/irq-gic-v3.c
->
-> patching file drivers/irqchip/irq-gic.c
->
-> patching file drivers/tty/serial/amba-pl011.c
->
-> patching file drivers/cpuidle/Kconfig
->
-> patching file drivers/iommu/irq_remapping.c
->
-> patching file drivers/tty/serial/8250/8250_core.c
->
-> patching file fs/exec.c
->
-> patching file include/asm-generic/atomic.h
->
-> patching file include/asm-generic/bitops/atomic.h
->
-> patching file include/asm-generic/cmpxchg-local.h
->
-> patching file include/asm-generic/percpu.h
->
-> patching file include/asm-generic/preempt.h
->
-> patching file include/asm-generic/switch_to.h
->
-> patching file include/clocksource/timer-sp804.h
->
-> patching file include/ipipe/setup.h
->
-> patching file include/ipipe/thread_info.h
->
-> patching file include/linux/clockchips.h
->
-> patching file include/linux/clocksource.h
->
-> patching file include/linux/console.h
->
-> patching file include/linux/ftrace.h
->
-> patching file include/linux/gpio/driver.h
->
-> patching file include/linux/hardirq.h
->
-> patching file include/linux/i8253.h
->
-> patching file include/linux/ipipe.h
->
-> patching file include/linux/ipipe_base.h
->
-> patching file include/linux/ipipe_compat.h
->
-> patching file include/linux/ipipe_debug.h
->
-> patching file include/linux/ipipe_domain.h
->
-> patching file include/linux/ipipe_lock.h
->
-> patching file include/linux/ipipe_tickdev.h
->
-> patching file include/linux/ipipe_trace.h
->
-> patching file include/linux/irq.h
->
-> patching file include/linux/irqchip/arm-gic.h
->
-> patching file include/linux/irqdesc.h
->
-> patching file include/linux/irqnr.h
->
-> patching file include/linux/kernel.h
->
-> patching file include/linux/kvm_host.h
->
-> patching file include/linux/preempt.h
->
-> patching file include/linux/printk.h
->
-> patching file include/linux/rwlock.h
->
-> patching file include/linux/rwlock_api_smp.h
->
-> patching file include/linux/sched.h
->
-> patching file include/linux/spinlock.h
->
-> patching file include/linux/spinlock_api_smp.h
->
-> patching file include/linux/spinlock_up.h
->
-> patching file include/linux/timekeeper_internal.h
->
-> patching file include/soc/fsl/qe/qe_ic.h
->
-> patching file include/uapi/asm-generic/mman-common.h
->
-> patching file include/uapi/asm-generic/resource.h
->
-> patching file include/uapi/linux/resource.h
->
-> patching file init/Kconfig
->
-> patching file init/main.c
->
-> patching file kernel/Makefile
->
-> patching file kernel/context_tracking.c
->
-> patching file kernel/debug/debug_core.c
->
-> patching file kernel/debug/gdbstub.c
->
-> patching file kernel/exit.c
->
-> patching file kernel/fork.c
->
-> patching file kernel/ipipe/Kconfig
->
-> patching file kernel/ipipe/Kconfig.debug
->
-> patching file kernel/ipipe/Makefile
->
-> patching file kernel/ipipe/compat.c
->
-> patching file kernel/ipipe/core.c
->
-> patching file kernel/ipipe/ipipe.c
->
-> patching file kernel/ipipe/timer.c
->
-> patching file kernel/ipipe/tracer.c
->
-> patching file kernel/irq/chip.c
->
-> patching file kernel/irq/generic-chip.c
->
-> patching file kernel/irq/internals.h
->
-> patching file kernel/irq/irqdesc.c
->
-> patching file kernel/irq/manage.c
->
-> patching file kernel/locking/lockdep.c
->
-> patching file kernel/locking/spinlock.c
->
-> patching file kernel/module.c
->
-> patching file kernel/panic.c
->
-> patching file kernel/power/hibernate.c
->
-> patching file kernel/printk/printk.c
->
-> patching file kernel/sched/core.c
->
-> patching file kernel/sched/idle.c
->
-> patching file kernel/sched/wait.c
->
-> patching file kernel/signal.c
->
-> patching file kernel/time/clockevents.c
->
-> patching file kernel/time/clocksource.c
->
-> patching file kernel/time/tick-common.c
->
-> patching file kernel/time/tick-sched.c
->
-> patching file kernel/time/timekeeping.c
->
-> patching file kernel/time/timer.c
->
-> patching file kernel/trace/Kconfig
->
-> patching file kernel/trace/ftrace.c
->
-> patching file kernel/trace/ring_buffer.c
->
-> patching file kernel/trace/trace.c
->
-> patching file kernel/trace/trace_clock.c
->
-> patching file kernel/trace/trace_functions.c
->
-> patching file kernel/trace/trace_functions_graph.c
->
-> patching file kernel/trace/trace_irqsoff.c
->
-> patching file lib/Kconfig.debug
->
-> patching file lib/atomic64.c
->
-> patching file lib/bust_spinlocks.c
->
-> patching file lib/ioremap.c
->
-> patching file lib/smp_processor_id.c
->
-> patching file mm/memory.c
->
-> patching file mm/mlock.c
->
-> patching file mm/mmap.c
->
-> patching file mm/mmu_context.c
->
-> patching file mm/mprotect.c
->
-> patching file mm/vmalloc.c
->
-> prepare-kernel.sh: /continuus/bm50210/linux-repo has no I-pipe support fo=
-r arm
->
->
->
-> Having a look to the prepare-kernel.sh script, I seems it fails at line 3=
-50:
->
->
->
-> if test \! -r $linux_tree/arch/$linux_arch/include/asm/ipipe.h; then
->
->   echo "$me: $linux_tree has no I-pipe support for $linux_arch" >&2
->
->   exit 2
->
-> fi
->
->
->
-> I'm trying to apply the arm64 I-pipe patch so ipipe.h is applied to arch/=
-arm64 /include/asm/ folder.
->
->
->
-> I also tried to call the prepare-script with arm64 argument but the scrip=
-t doesn't support it.
->
->
->
->
->
-> Thanks
->
->
->
-> Bertrand
->
->
-> This e-mail and any accompanying attachments are confidential. If you are=
- not the intended recipient, you must not review, disclose, copy, distribut=
-e or use this e-mail; please delete it from your system and notify the send=
-er immediately.
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
-
-This e-mail and any accompanying attachments are confidential. If you are n=
-ot the intended recipient, you must not review, disclose, copy, distribute =
-or use this e-mail; please delete it from your system and notify the sender=
- immediately.
-
+Cj4gT24gMTQgTm92IDIwMTcsIGF0IDE1OjQ3LCBNSU5JRVIgQmVydHJhbmQgPEJlcnRyYW5kLk1J
+TklFUkBzZXJjZWwuY29tPiB3cm90ZToKPiAKPiBIaSBDaHJpc3RvcGgsCj4gCj4gVGhhbmsgeW91
+IGZvciB5b3VyIGFuc3dlci4KPiBUaGUgcHJlcGFyZS1rZXJuZWwuc2ggc2NyaXB0IGRvZXNuJ3Qg
+c2VlbSB0byBzdXBwb3J0IC0tYXJjaD1hcm02NAo+IAo+IFdoZW4gSSBleGVjdXRlIHNjcmlwdHMv
+cHJlcGFyZS1rZXJuZWwuc2ggLS1saW51eD0vY29udGludXVzL2JtNTAyMTAvbGludXgtcmVwbyAt
+LWlwaXBlPS9jb250aW51dXMvYm01MDIxMC9ici10b3AvY29uZmlnL3BhY2thZ2UveGVub21haTMv
+aXBpcGUtY29yZS00LjkuMjQtYXJtNjQtMi5wYXRjaCAtLWFyY2g9YXJtNjQKPiBUaGUgb3V0cHV0
+IGlzIDoKPiBwcmVwYXJlLWtlcm5lbC5zaDogdW5zdXBwb3J0ZWQgYXJjaGl0ZWN0dXJlOiBhcm02
+NAo+IAo+IEknbSB1c2luZyBYZW5vbWFpIHYzLjAuNS4KClhlbm9tYWkgdjMuMC41IGRvZXMgbm90
+IHN1cHBvcnQgYXJtNjQuClRyeSB1c2luZyB0aGUgbmV4dCBicmFuY2guCgpJbiBmYWN0IEkgYW0g
+dXNpbmcgWGVub21haS1uZXh0IHdpdGggSS1waXBlIChMaW51eCA0LjExKSBhbmQgKG5lYXJseSkg
+bWFpbmxpbmUgTGludXggNC4xMi4xNCBrZXJuZWwKb24gYSBSSzMzOTkgKGZvdXIgQ29ydGV4LUE1
+MyBjb3JlcyBwbHVzIHR3byBDb3J0ZXgtQTcyIGNvcmVzKS4KCkJSCkNocmlzdG9waAoKCj4gLS0t
+LS1NZXNzYWdlIGQnb3JpZ2luZS0tLS0tCj4gRGUgOiBDaHJpc3RvcGggTcO8bGxuZXIgW21haWx0
+bzpjaHJpc3RvcGgubXVlbGxuZXJAdGhlb2Jyb21hLXN5c3RlbXMuY29tXQo+IEVudm95w6kgOiBt
+YXJkaSAxNCBub3ZlbWJyZSAyMDE3IDE0OjQ3Cj4gw4AgOiBNSU5JRVIgQmVydHJhbmQKPiBDYyA6
+IHhlbm9tYWlAeGVub21haS5vcmcKPiBPYmpldCA6IFJlOiBbWGVub21haV0gcHJlcGFyZS1rZXJu
+ZWwuc2ggZXJyb3Igb24gbGludXggNC45LjI0IGZvciB0YXJnZXQgYXJtNjQKPiAKPiAKPj4gT24g
+MTQgTm92IDIwMTcsIGF0IDEzOjU5LCBNSU5JRVIgQmVydHJhbmQgPEJlcnRyYW5kLk1JTklFUkBz
+ZXJjZWwuY29tPiB3cm90ZToKPj4gCj4+IEhpLAo+PiAKPj4gCj4+IEkgYW0gdHJ5aW5nIHRvIGlu
+c3RhbGwgdGhlIENPQkFMVCBrZXJuZWwgYWxvbmdzaWRlIHRoZSBsaW51eCB2NC45LjI0IGZvciB0
+aGUgdGFyZ2V0IEFBcmNoNjQgQ29ydGV4LUE1My4KPj4gCj4+IAo+PiAKPj4gSSBoYXZlIGV4ZWN1
+dGVkIHRoZSBmb2xsb3dpbmcgc2NyaXB0Ogo+PiAKPj4gLi9zY3JpcHRzL3ByZXBhcmUta2VybmVs
+LnNoIC0tbGludXg9Li4vLi4vbGludXgtcmVwbyAtLWlwaXBlLi4vLi4vaXBpcGUtY29yZS00Ljku
+MjQtYXJtNjQtMi5wYXRjaCAtLWFyY2g9YXJtCj4gCj4gSGkgQmVydHJhbmQsCj4gCj4gdHJ5IHdp
+dGggLS1hcmNoPWFybTY0Cj4gCj4gQlIKPiBDaHJpc3RvcGgKPiAKPj4gCj4+IAo+PiAKPj4gVGhl
+IHhlbm9tYWkgY29kZSBhbmQgaXBpcGUgcGF0Y2ggY2FtZSBmcm9tIHRoZSB4ZW5vbWFpIGRvd25s
+b2FkcyBzaXRlIGFuZCB0aGUgbGludXgga2VybmVsIGNvbWVzIGZyb20ga2VybmVsLm9yZwo+PiAK
+Pj4gCj4+IAo+PiBDYW4gc29tZW9uZSBwbGVhc2UgaGVscCBtZSB1bmRlcnN0YW5kIHdoeSBwcmVw
+YXJlLWtlcm5lbC5zaCBpcyBmYWlsaW5nPwo+PiAKPj4gCj4+IAo+PiBIZXJlJ3MgdGhlIG91dHB1
+dCBJIGdvdCBmcm9tIHRoZSBwZXJwYXJlLWtlcm5lbC5zaCBzY3JpcHQ6Cj4+IAo+PiAKPj4gCj4+
+IHBhdGNoaW5nIGZpbGUgYXJjaC9hcm02NC9LY29uZmlnCj4+IAo+PiBwYXRjaGluZyBmaWxlIGFy
+Y2gvYXJtNjQvaW5jbHVkZS9hc20vYXNzZW1ibGVyLmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgYXJj
+aC9hcm02NC9pbmNsdWRlL2FzbS9pcGlwZS5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGFyY2gvYXJt
+NjQvaW5jbHVkZS9hc20vaXBpcGVfYmFzZS5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGFyY2gvYXJt
+NjQvaW5jbHVkZS9hc20vaXBpcGVfaHdpcnEuaAo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBhcmNoL2Fy
+bTY0L2luY2x1ZGUvYXNtL2lycWZsYWdzLmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgYXJjaC9hcm02
+NC9pbmNsdWRlL2FzbS9tbXVfY29udGV4dC5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGFyY2gvYXJt
+NjQvaW5jbHVkZS9hc20vcHJvYy1mbnMuaAo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBhcmNoL2FybTY0
+L2luY2x1ZGUvYXNtL3NtcF9wbGF0LmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgYXJjaC9hcm02NC9p
+bmNsdWRlL2FzbS90aHJlYWRfaW5mby5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGFyY2gvYXJtNjQv
+aW5jbHVkZS9hc20vdWFjY2Vzcy5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGFyY2gvYXJtNjQvaW5j
+bHVkZS9hc20vdW5pc3RkLmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgYXJjaC9hcm02NC9rZXJuZWwv
+TWFrZWZpbGUKPj4gCj4+IHBhdGNoaW5nIGZpbGUgYXJjaC9hcm02NC9rZXJuZWwvYXNtLW9mZnNl
+dHMuYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBhcmNoL2FybTY0L2tlcm5lbC9lbnRyeS5TCj4+IAo+
+PiBwYXRjaGluZyBmaWxlIGFyY2gvYXJtNjQva2VybmVsL2Zwc2ltZC5jCj4+IAo+PiBwYXRjaGlu
+ZyBmaWxlIGFyY2gvYXJtNjQva2VybmVsL2lwaXBlLmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUgYXJj
+aC9hcm02NC9rZXJuZWwvcHJvY2Vzcy5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGFyY2gvYXJtNjQv
+a2VybmVsL3B0cmFjZS5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGFyY2gvYXJtNjQva2VybmVsL3Nl
+dHVwLmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUgYXJjaC9hcm02NC9rZXJuZWwvc2lnbmFsLmMKPj4g
+Cj4+IHBhdGNoaW5nIGZpbGUgYXJjaC9hcm02NC9rZXJuZWwvc21wLmMKPj4gCj4+IHBhdGNoaW5n
+IGZpbGUgYXJjaC9hcm02NC9rZXJuZWwvdHJhcHMuYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBhcmNo
+L2FybTY0L21tL2NvbnRleHQuYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBhcmNoL2FybTY0L21tL2Zh
+dWx0LmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUgZHJpdmVycy9jbG9ja3NvdXJjZS9hcm1fYXJjaF90
+aW1lci5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGRyaXZlcnMvY2xvY2tzb3VyY2UvdGltZXItc3A4
+MDQuYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBkcml2ZXJzL2dwaW8vZ3Bpby1wbDA2MS5jCj4+IAo+
+PiBwYXRjaGluZyBmaWxlIGRyaXZlcnMvaXJxY2hpcC9pcnEtZ2ljLXYzLmMKPj4gCj4+IHBhdGNo
+aW5nIGZpbGUgZHJpdmVycy9pcnFjaGlwL2lycS1naWMuYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBk
+cml2ZXJzL3R0eS9zZXJpYWwvYW1iYS1wbDAxMS5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGRyaXZl
+cnMvY3B1aWRsZS9LY29uZmlnCj4+IAo+PiBwYXRjaGluZyBmaWxlIGRyaXZlcnMvaW9tbXUvaXJx
+X3JlbWFwcGluZy5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGRyaXZlcnMvdHR5L3NlcmlhbC84MjUw
+LzgyNTBfY29yZS5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGZzL2V4ZWMuYwo+PiAKPj4gcGF0Y2hp
+bmcgZmlsZSBpbmNsdWRlL2FzbS1nZW5lcmljL2F0b21pYy5oCj4+IAo+PiBwYXRjaGluZyBmaWxl
+IGluY2x1ZGUvYXNtLWdlbmVyaWMvYml0b3BzL2F0b21pYy5oCj4+IAo+PiBwYXRjaGluZyBmaWxl
+IGluY2x1ZGUvYXNtLWdlbmVyaWMvY21weGNoZy1sb2NhbC5oCj4+IAo+PiBwYXRjaGluZyBmaWxl
+IGluY2x1ZGUvYXNtLWdlbmVyaWMvcGVyY3B1LmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgaW5jbHVk
+ZS9hc20tZ2VuZXJpYy9wcmVlbXB0LmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgaW5jbHVkZS9hc20t
+Z2VuZXJpYy9zd2l0Y2hfdG8uaAo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBpbmNsdWRlL2Nsb2Nrc291
+cmNlL3RpbWVyLXNwODA0LmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgaW5jbHVkZS9pcGlwZS9zZXR1
+cC5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGluY2x1ZGUvaXBpcGUvdGhyZWFkX2luZm8uaAo+PiAK
+Pj4gcGF0Y2hpbmcgZmlsZSBpbmNsdWRlL2xpbnV4L2Nsb2NrY2hpcHMuaAo+PiAKPj4gcGF0Y2hp
+bmcgZmlsZSBpbmNsdWRlL2xpbnV4L2Nsb2Nrc291cmNlLmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUg
+aW5jbHVkZS9saW51eC9jb25zb2xlLmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgaW5jbHVkZS9saW51
+eC9mdHJhY2UuaAo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBpbmNsdWRlL2xpbnV4L2dwaW8vZHJpdmVy
+LmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgaW5jbHVkZS9saW51eC9oYXJkaXJxLmgKPj4gCj4+IHBh
+dGNoaW5nIGZpbGUgaW5jbHVkZS9saW51eC9pODI1My5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGlu
+Y2x1ZGUvbGludXgvaXBpcGUuaAo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBpbmNsdWRlL2xpbnV4L2lw
+aXBlX2Jhc2UuaAo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBpbmNsdWRlL2xpbnV4L2lwaXBlX2NvbXBh
+dC5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGluY2x1ZGUvbGludXgvaXBpcGVfZGVidWcuaAo+PiAK
+Pj4gcGF0Y2hpbmcgZmlsZSBpbmNsdWRlL2xpbnV4L2lwaXBlX2RvbWFpbi5oCj4+IAo+PiBwYXRj
+aGluZyBmaWxlIGluY2x1ZGUvbGludXgvaXBpcGVfbG9jay5oCj4+IAo+PiBwYXRjaGluZyBmaWxl
+IGluY2x1ZGUvbGludXgvaXBpcGVfdGlja2Rldi5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGluY2x1
+ZGUvbGludXgvaXBpcGVfdHJhY2UuaAo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBpbmNsdWRlL2xpbnV4
+L2lycS5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGluY2x1ZGUvbGludXgvaXJxY2hpcC9hcm0tZ2lj
+LmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgaW5jbHVkZS9saW51eC9pcnFkZXNjLmgKPj4gCj4+IHBh
+dGNoaW5nIGZpbGUgaW5jbHVkZS9saW51eC9pcnFuci5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGlu
+Y2x1ZGUvbGludXgva2VybmVsLmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgaW5jbHVkZS9saW51eC9r
+dm1faG9zdC5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGluY2x1ZGUvbGludXgvcHJlZW1wdC5oCj4+
+IAo+PiBwYXRjaGluZyBmaWxlIGluY2x1ZGUvbGludXgvcHJpbnRrLmgKPj4gCj4+IHBhdGNoaW5n
+IGZpbGUgaW5jbHVkZS9saW51eC9yd2xvY2suaAo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBpbmNsdWRl
+L2xpbnV4L3J3bG9ja19hcGlfc21wLmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgaW5jbHVkZS9saW51
+eC9zY2hlZC5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGluY2x1ZGUvbGludXgvc3BpbmxvY2suaAo+
+PiAKPj4gcGF0Y2hpbmcgZmlsZSBpbmNsdWRlL2xpbnV4L3NwaW5sb2NrX2FwaV9zbXAuaAo+PiAK
+Pj4gcGF0Y2hpbmcgZmlsZSBpbmNsdWRlL2xpbnV4L3NwaW5sb2NrX3VwLmgKPj4gCj4+IHBhdGNo
+aW5nIGZpbGUgaW5jbHVkZS9saW51eC90aW1la2VlcGVyX2ludGVybmFsLmgKPj4gCj4+IHBhdGNo
+aW5nIGZpbGUgaW5jbHVkZS9zb2MvZnNsL3FlL3FlX2ljLmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUg
+aW5jbHVkZS91YXBpL2FzbS1nZW5lcmljL21tYW4tY29tbW9uLmgKPj4gCj4+IHBhdGNoaW5nIGZp
+bGUgaW5jbHVkZS91YXBpL2FzbS1nZW5lcmljL3Jlc291cmNlLmgKPj4gCj4+IHBhdGNoaW5nIGZp
+bGUgaW5jbHVkZS91YXBpL2xpbnV4L3Jlc291cmNlLmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgaW5p
+dC9LY29uZmlnCj4+IAo+PiBwYXRjaGluZyBmaWxlIGluaXQvbWFpbi5jCj4+IAo+PiBwYXRjaGlu
+ZyBmaWxlIGtlcm5lbC9NYWtlZmlsZQo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBrZXJuZWwvY29udGV4
+dF90cmFja2luZy5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtlcm5lbC9kZWJ1Zy9kZWJ1Z19jb3Jl
+LmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUga2VybmVsL2RlYnVnL2dkYnN0dWIuYwo+PiAKPj4gcGF0
+Y2hpbmcgZmlsZSBrZXJuZWwvZXhpdC5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtlcm5lbC9mb3Jr
+LmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUga2VybmVsL2lwaXBlL0tjb25maWcKPj4gCj4+IHBhdGNo
+aW5nIGZpbGUga2VybmVsL2lwaXBlL0tjb25maWcuZGVidWcKPj4gCj4+IHBhdGNoaW5nIGZpbGUg
+a2VybmVsL2lwaXBlL01ha2VmaWxlCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtlcm5lbC9pcGlwZS9j
+b21wYXQuYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBrZXJuZWwvaXBpcGUvY29yZS5jCj4+IAo+PiBw
+YXRjaGluZyBmaWxlIGtlcm5lbC9pcGlwZS9pcGlwZS5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtl
+cm5lbC9pcGlwZS90aW1lci5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtlcm5lbC9pcGlwZS90cmFj
+ZXIuYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBrZXJuZWwvaXJxL2NoaXAuYwo+PiAKPj4gcGF0Y2hp
+bmcgZmlsZSBrZXJuZWwvaXJxL2dlbmVyaWMtY2hpcC5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtl
+cm5lbC9pcnEvaW50ZXJuYWxzLmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUga2VybmVsL2lycS9pcnFk
+ZXNjLmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUga2VybmVsL2lycS9tYW5hZ2UuYwo+PiAKPj4gcGF0
+Y2hpbmcgZmlsZSBrZXJuZWwvbG9ja2luZy9sb2NrZGVwLmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUg
+a2VybmVsL2xvY2tpbmcvc3BpbmxvY2suYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBrZXJuZWwvbW9k
+dWxlLmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUga2VybmVsL3BhbmljLmMKPj4gCj4+IHBhdGNoaW5n
+IGZpbGUga2VybmVsL3Bvd2VyL2hpYmVybmF0ZS5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtlcm5l
+bC9wcmludGsvcHJpbnRrLmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUga2VybmVsL3NjaGVkL2NvcmUu
+Ywo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBrZXJuZWwvc2NoZWQvaWRsZS5jCj4+IAo+PiBwYXRjaGlu
+ZyBmaWxlIGtlcm5lbC9zY2hlZC93YWl0LmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUga2VybmVsL3Np
+Z25hbC5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtlcm5lbC90aW1lL2Nsb2NrZXZlbnRzLmMKPj4g
+Cj4+IHBhdGNoaW5nIGZpbGUga2VybmVsL3RpbWUvY2xvY2tzb3VyY2UuYwo+PiAKPj4gcGF0Y2hp
+bmcgZmlsZSBrZXJuZWwvdGltZS90aWNrLWNvbW1vbi5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtl
+cm5lbC90aW1lL3RpY2stc2NoZWQuYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBrZXJuZWwvdGltZS90
+aW1la2VlcGluZy5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtlcm5lbC90aW1lL3RpbWVyLmMKPj4g
+Cj4+IHBhdGNoaW5nIGZpbGUga2VybmVsL3RyYWNlL0tjb25maWcKPj4gCj4+IHBhdGNoaW5nIGZp
+bGUga2VybmVsL3RyYWNlL2Z0cmFjZS5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtlcm5lbC90cmFj
+ZS9yaW5nX2J1ZmZlci5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtlcm5lbC90cmFjZS90cmFjZS5j
+Cj4+IAo+PiBwYXRjaGluZyBmaWxlIGtlcm5lbC90cmFjZS90cmFjZV9jbG9jay5jCj4+IAo+PiBw
+YXRjaGluZyBmaWxlIGtlcm5lbC90cmFjZS90cmFjZV9mdW5jdGlvbnMuYwo+PiAKPj4gcGF0Y2hp
+bmcgZmlsZSBrZXJuZWwvdHJhY2UvdHJhY2VfZnVuY3Rpb25zX2dyYXBoLmMKPj4gCj4+IHBhdGNo
+aW5nIGZpbGUga2VybmVsL3RyYWNlL3RyYWNlX2lycXNvZmYuYwo+PiAKPj4gcGF0Y2hpbmcgZmls
+ZSBsaWIvS2NvbmZpZy5kZWJ1Zwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBsaWIvYXRvbWljNjQuYwo+
+PiAKPj4gcGF0Y2hpbmcgZmlsZSBsaWIvYnVzdF9zcGlubG9ja3MuYwo+PiAKPj4gcGF0Y2hpbmcg
+ZmlsZSBsaWIvaW9yZW1hcC5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGxpYi9zbXBfcHJvY2Vzc29y
+X2lkLmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUgbW0vbWVtb3J5LmMKPj4gCj4+IHBhdGNoaW5nIGZp
+bGUgbW0vbWxvY2suYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBtbS9tbWFwLmMKPj4gCj4+IHBhdGNo
+aW5nIGZpbGUgbW0vbW11X2NvbnRleHQuYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBtbS9tcHJvdGVj
+dC5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIG1tL3ZtYWxsb2MuYwo+PiAKPj4gcHJlcGFyZS1rZXJu
+ZWwuc2g6IC9jb250aW51dXMvYm01MDIxMC9saW51eC1yZXBvIGhhcyBubyBJLXBpcGUgc3VwcG9y
+dCBmb3IgYXJtCj4+IAo+PiAKPj4gCj4+IEhhdmluZyBhIGxvb2sgdG8gdGhlIHByZXBhcmUta2Vy
+bmVsLnNoIHNjcmlwdCwgSSBzZWVtcyBpdCBmYWlscyBhdCBsaW5lIDM1MDoKPj4gCj4+IAo+PiAK
+Pj4gaWYgdGVzdCBcISAtciAkbGludXhfdHJlZS9hcmNoLyRsaW51eF9hcmNoL2luY2x1ZGUvYXNt
+L2lwaXBlLmg7IHRoZW4KPj4gCj4+ICBlY2hvICIkbWU6ICRsaW51eF90cmVlIGhhcyBubyBJLXBp
+cGUgc3VwcG9ydCBmb3IgJGxpbnV4X2FyY2giID4mMgo+PiAKPj4gIGV4aXQgMgo+PiAKPj4gZmkK
+Pj4gCj4+IAo+PiAKPj4gSSdtIHRyeWluZyB0byBhcHBseSB0aGUgYXJtNjQgSS1waXBlIHBhdGNo
+IHNvIGlwaXBlLmggaXMgYXBwbGllZCB0byBhcmNoL2FybTY0IC9pbmNsdWRlL2FzbS8gZm9sZGVy
+Lgo+PiAKPj4gCj4+IAo+PiBJIGFsc28gdHJpZWQgdG8gY2FsbCB0aGUgcHJlcGFyZS1zY3JpcHQg
+d2l0aCBhcm02NCBhcmd1bWVudCBidXQgdGhlIHNjcmlwdCBkb2Vzbid0IHN1cHBvcnQgaXQuCj4+
+IAo+PiAKPj4gCj4+IAo+PiAKPj4gVGhhbmtzCj4+IAo+PiAKPj4gCj4+IEJlcnRyYW5kCj4+IAo+
+PiAKPj4gVGhpcyBlLW1haWwgYW5kIGFueSBhY2NvbXBhbnlpbmcgYXR0YWNobWVudHMgYXJlIGNv
+bmZpZGVudGlhbC4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgeW91IG11
+c3Qgbm90IHJldmlldywgZGlzY2xvc2UsIGNvcHksIGRpc3RyaWJ1dGUgb3IgdXNlIHRoaXMgZS1t
+YWlsOyBwbGVhc2UgZGVsZXRlIGl0IGZyb20geW91ciBzeXN0ZW0gYW5kIG5vdGlmeSB0aGUgc2Vu
+ZGVyIGltbWVkaWF0ZWx5Lgo+PiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fXwo+PiBYZW5vbWFpIG1haWxpbmcgbGlzdAo+PiBYZW5vbWFpQHhlbm9tYWkub3Jn
+Cj4+IGh0dHBzOi8veGVub21haS5vcmcvbWFpbG1hbi9saXN0aW5mby94ZW5vbWFpCj4gCj4gVGhp
+cyBlLW1haWwgYW5kIGFueSBhY2NvbXBhbnlpbmcgYXR0YWNobWVudHMgYXJlIGNvbmZpZGVudGlh
+bC4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgeW91IG11c3Qgbm90IHJl
+dmlldywgZGlzY2xvc2UsIGNvcHksIGRpc3RyaWJ1dGUgb3IgdXNlIHRoaXMgZS1tYWlsOyBwbGVh
+c2UgZGVsZXRlIGl0IGZyb20geW91ciBzeXN0ZW0gYW5kIG5vdGlmeSB0aGUgc2VuZGVyIGltbWVk
+aWF0ZWx5LgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRl
+eHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBh
+cHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDg3NCBieXRlcwpEZXNjOiBNZXNzYWdlIHNp
+Z25lZCB3aXRoIE9wZW5QR1AKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5v
+bWFpL2F0dGFjaG1lbnRzLzIwMTcxMTE0LzYwMjk2Y2M5L2F0dGFjaG1lbnQuc2lnPgo=
