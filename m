@@ -1,16 +1,17 @@
-From: =?utf-8?Q?Christoph_M=C3=BCllner?=
- <christoph.muellner@theobroma-systems.com>
-Message-Id: <5429EFB4-E461-43C8-BF72-EAF4DEFEB21E@theobroma-systems.com>
-Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
-Date: Tue, 14 Nov 2017 17:21:33 +0100
-In-Reply-To: <b5b2efe53e934dfba00ccf6ddd9f8a8b@NANS01204.it.intra.sercel.com>
-References: <28f6b55060c9421dbfc06a64973093e8@NANS01204.it.intra.sercel.com>
- <37D41E97-DE59-44BA-984A-D8A08D6DDCB5@theobroma-systems.com>
- <b5b2efe53e934dfba00ccf6ddd9f8a8b@NANS01204.it.intra.sercel.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] prepare-kernel.sh error on linux 4.9.24 for target
- arm64
+From: Philippe Gerum <rpm@xenomai.org>
+References: <20171106094646.28769-1-christoph.muellner@theobroma-systems.com>
+ <20171106094646.28769-3-christoph.muellner@theobroma-systems.com>
+ <813c4cb9-86e3-d13d-a52e-c13a9cd0380c@xenomai.org>
+ <1FAF00CD-2C74-4405-A20F-B0D47A3B803D@theobroma-systems.com>
+Message-ID: <f0f8499d-f11f-b76f-9be1-ece179ce4d72@xenomai.org>
+Date: Tue, 14 Nov 2017 17:43:28 +0100
+MIME-Version: 1.0
+In-Reply-To: <1FAF00CD-2C74-4405-A20F-B0D47A3B803D@theobroma-systems.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] [PATCH v2 2/3] RTDM: uapi: Define ioctl code to set
+ an IRQ affinity.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,173 +20,121 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: MINIER Bertrand <Bertrand.MINIER@sercel.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?UTF-8?Q?Christoph_M=c3=bcllner?= <christoph.muellner@theobroma-systems.com>
+Cc: xenomai@xenomai.org
 
-Cj4gT24gMTQgTm92IDIwMTcsIGF0IDE1OjQ3LCBNSU5JRVIgQmVydHJhbmQgPEJlcnRyYW5kLk1J
-TklFUkBzZXJjZWwuY29tPiB3cm90ZToKPiAKPiBIaSBDaHJpc3RvcGgsCj4gCj4gVGhhbmsgeW91
-IGZvciB5b3VyIGFuc3dlci4KPiBUaGUgcHJlcGFyZS1rZXJuZWwuc2ggc2NyaXB0IGRvZXNuJ3Qg
-c2VlbSB0byBzdXBwb3J0IC0tYXJjaD1hcm02NAo+IAo+IFdoZW4gSSBleGVjdXRlIHNjcmlwdHMv
-cHJlcGFyZS1rZXJuZWwuc2ggLS1saW51eD0vY29udGludXVzL2JtNTAyMTAvbGludXgtcmVwbyAt
-LWlwaXBlPS9jb250aW51dXMvYm01MDIxMC9ici10b3AvY29uZmlnL3BhY2thZ2UveGVub21haTMv
-aXBpcGUtY29yZS00LjkuMjQtYXJtNjQtMi5wYXRjaCAtLWFyY2g9YXJtNjQKPiBUaGUgb3V0cHV0
-IGlzIDoKPiBwcmVwYXJlLWtlcm5lbC5zaDogdW5zdXBwb3J0ZWQgYXJjaGl0ZWN0dXJlOiBhcm02
-NAo+IAo+IEknbSB1c2luZyBYZW5vbWFpIHYzLjAuNS4KClhlbm9tYWkgdjMuMC41IGRvZXMgbm90
-IHN1cHBvcnQgYXJtNjQuClRyeSB1c2luZyB0aGUgbmV4dCBicmFuY2guCgpJbiBmYWN0IEkgYW0g
-dXNpbmcgWGVub21haS1uZXh0IHdpdGggSS1waXBlIChMaW51eCA0LjExKSBhbmQgKG5lYXJseSkg
-bWFpbmxpbmUgTGludXggNC4xMi4xNCBrZXJuZWwKb24gYSBSSzMzOTkgKGZvdXIgQ29ydGV4LUE1
-MyBjb3JlcyBwbHVzIHR3byBDb3J0ZXgtQTcyIGNvcmVzKS4KCkJSCkNocmlzdG9waAoKCj4gLS0t
-LS1NZXNzYWdlIGQnb3JpZ2luZS0tLS0tCj4gRGUgOiBDaHJpc3RvcGggTcO8bGxuZXIgW21haWx0
-bzpjaHJpc3RvcGgubXVlbGxuZXJAdGhlb2Jyb21hLXN5c3RlbXMuY29tXQo+IEVudm95w6kgOiBt
-YXJkaSAxNCBub3ZlbWJyZSAyMDE3IDE0OjQ3Cj4gw4AgOiBNSU5JRVIgQmVydHJhbmQKPiBDYyA6
-IHhlbm9tYWlAeGVub21haS5vcmcKPiBPYmpldCA6IFJlOiBbWGVub21haV0gcHJlcGFyZS1rZXJu
-ZWwuc2ggZXJyb3Igb24gbGludXggNC45LjI0IGZvciB0YXJnZXQgYXJtNjQKPiAKPiAKPj4gT24g
-MTQgTm92IDIwMTcsIGF0IDEzOjU5LCBNSU5JRVIgQmVydHJhbmQgPEJlcnRyYW5kLk1JTklFUkBz
-ZXJjZWwuY29tPiB3cm90ZToKPj4gCj4+IEhpLAo+PiAKPj4gCj4+IEkgYW0gdHJ5aW5nIHRvIGlu
-c3RhbGwgdGhlIENPQkFMVCBrZXJuZWwgYWxvbmdzaWRlIHRoZSBsaW51eCB2NC45LjI0IGZvciB0
-aGUgdGFyZ2V0IEFBcmNoNjQgQ29ydGV4LUE1My4KPj4gCj4+IAo+PiAKPj4gSSBoYXZlIGV4ZWN1
-dGVkIHRoZSBmb2xsb3dpbmcgc2NyaXB0Ogo+PiAKPj4gLi9zY3JpcHRzL3ByZXBhcmUta2VybmVs
-LnNoIC0tbGludXg9Li4vLi4vbGludXgtcmVwbyAtLWlwaXBlLi4vLi4vaXBpcGUtY29yZS00Ljku
-MjQtYXJtNjQtMi5wYXRjaCAtLWFyY2g9YXJtCj4gCj4gSGkgQmVydHJhbmQsCj4gCj4gdHJ5IHdp
-dGggLS1hcmNoPWFybTY0Cj4gCj4gQlIKPiBDaHJpc3RvcGgKPiAKPj4gCj4+IAo+PiAKPj4gVGhl
-IHhlbm9tYWkgY29kZSBhbmQgaXBpcGUgcGF0Y2ggY2FtZSBmcm9tIHRoZSB4ZW5vbWFpIGRvd25s
-b2FkcyBzaXRlIGFuZCB0aGUgbGludXgga2VybmVsIGNvbWVzIGZyb20ga2VybmVsLm9yZwo+PiAK
-Pj4gCj4+IAo+PiBDYW4gc29tZW9uZSBwbGVhc2UgaGVscCBtZSB1bmRlcnN0YW5kIHdoeSBwcmVw
-YXJlLWtlcm5lbC5zaCBpcyBmYWlsaW5nPwo+PiAKPj4gCj4+IAo+PiBIZXJlJ3MgdGhlIG91dHB1
-dCBJIGdvdCBmcm9tIHRoZSBwZXJwYXJlLWtlcm5lbC5zaCBzY3JpcHQ6Cj4+IAo+PiAKPj4gCj4+
-IHBhdGNoaW5nIGZpbGUgYXJjaC9hcm02NC9LY29uZmlnCj4+IAo+PiBwYXRjaGluZyBmaWxlIGFy
-Y2gvYXJtNjQvaW5jbHVkZS9hc20vYXNzZW1ibGVyLmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgYXJj
-aC9hcm02NC9pbmNsdWRlL2FzbS9pcGlwZS5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGFyY2gvYXJt
-NjQvaW5jbHVkZS9hc20vaXBpcGVfYmFzZS5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGFyY2gvYXJt
-NjQvaW5jbHVkZS9hc20vaXBpcGVfaHdpcnEuaAo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBhcmNoL2Fy
-bTY0L2luY2x1ZGUvYXNtL2lycWZsYWdzLmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgYXJjaC9hcm02
-NC9pbmNsdWRlL2FzbS9tbXVfY29udGV4dC5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGFyY2gvYXJt
-NjQvaW5jbHVkZS9hc20vcHJvYy1mbnMuaAo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBhcmNoL2FybTY0
-L2luY2x1ZGUvYXNtL3NtcF9wbGF0LmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgYXJjaC9hcm02NC9p
-bmNsdWRlL2FzbS90aHJlYWRfaW5mby5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGFyY2gvYXJtNjQv
-aW5jbHVkZS9hc20vdWFjY2Vzcy5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGFyY2gvYXJtNjQvaW5j
-bHVkZS9hc20vdW5pc3RkLmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgYXJjaC9hcm02NC9rZXJuZWwv
-TWFrZWZpbGUKPj4gCj4+IHBhdGNoaW5nIGZpbGUgYXJjaC9hcm02NC9rZXJuZWwvYXNtLW9mZnNl
-dHMuYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBhcmNoL2FybTY0L2tlcm5lbC9lbnRyeS5TCj4+IAo+
-PiBwYXRjaGluZyBmaWxlIGFyY2gvYXJtNjQva2VybmVsL2Zwc2ltZC5jCj4+IAo+PiBwYXRjaGlu
-ZyBmaWxlIGFyY2gvYXJtNjQva2VybmVsL2lwaXBlLmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUgYXJj
-aC9hcm02NC9rZXJuZWwvcHJvY2Vzcy5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGFyY2gvYXJtNjQv
-a2VybmVsL3B0cmFjZS5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGFyY2gvYXJtNjQva2VybmVsL3Nl
-dHVwLmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUgYXJjaC9hcm02NC9rZXJuZWwvc2lnbmFsLmMKPj4g
-Cj4+IHBhdGNoaW5nIGZpbGUgYXJjaC9hcm02NC9rZXJuZWwvc21wLmMKPj4gCj4+IHBhdGNoaW5n
-IGZpbGUgYXJjaC9hcm02NC9rZXJuZWwvdHJhcHMuYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBhcmNo
-L2FybTY0L21tL2NvbnRleHQuYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBhcmNoL2FybTY0L21tL2Zh
-dWx0LmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUgZHJpdmVycy9jbG9ja3NvdXJjZS9hcm1fYXJjaF90
-aW1lci5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGRyaXZlcnMvY2xvY2tzb3VyY2UvdGltZXItc3A4
-MDQuYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBkcml2ZXJzL2dwaW8vZ3Bpby1wbDA2MS5jCj4+IAo+
-PiBwYXRjaGluZyBmaWxlIGRyaXZlcnMvaXJxY2hpcC9pcnEtZ2ljLXYzLmMKPj4gCj4+IHBhdGNo
-aW5nIGZpbGUgZHJpdmVycy9pcnFjaGlwL2lycS1naWMuYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBk
-cml2ZXJzL3R0eS9zZXJpYWwvYW1iYS1wbDAxMS5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGRyaXZl
-cnMvY3B1aWRsZS9LY29uZmlnCj4+IAo+PiBwYXRjaGluZyBmaWxlIGRyaXZlcnMvaW9tbXUvaXJx
-X3JlbWFwcGluZy5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGRyaXZlcnMvdHR5L3NlcmlhbC84MjUw
-LzgyNTBfY29yZS5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGZzL2V4ZWMuYwo+PiAKPj4gcGF0Y2hp
-bmcgZmlsZSBpbmNsdWRlL2FzbS1nZW5lcmljL2F0b21pYy5oCj4+IAo+PiBwYXRjaGluZyBmaWxl
-IGluY2x1ZGUvYXNtLWdlbmVyaWMvYml0b3BzL2F0b21pYy5oCj4+IAo+PiBwYXRjaGluZyBmaWxl
-IGluY2x1ZGUvYXNtLWdlbmVyaWMvY21weGNoZy1sb2NhbC5oCj4+IAo+PiBwYXRjaGluZyBmaWxl
-IGluY2x1ZGUvYXNtLWdlbmVyaWMvcGVyY3B1LmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgaW5jbHVk
-ZS9hc20tZ2VuZXJpYy9wcmVlbXB0LmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgaW5jbHVkZS9hc20t
-Z2VuZXJpYy9zd2l0Y2hfdG8uaAo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBpbmNsdWRlL2Nsb2Nrc291
-cmNlL3RpbWVyLXNwODA0LmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgaW5jbHVkZS9pcGlwZS9zZXR1
-cC5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGluY2x1ZGUvaXBpcGUvdGhyZWFkX2luZm8uaAo+PiAK
-Pj4gcGF0Y2hpbmcgZmlsZSBpbmNsdWRlL2xpbnV4L2Nsb2NrY2hpcHMuaAo+PiAKPj4gcGF0Y2hp
-bmcgZmlsZSBpbmNsdWRlL2xpbnV4L2Nsb2Nrc291cmNlLmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUg
-aW5jbHVkZS9saW51eC9jb25zb2xlLmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgaW5jbHVkZS9saW51
-eC9mdHJhY2UuaAo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBpbmNsdWRlL2xpbnV4L2dwaW8vZHJpdmVy
-LmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgaW5jbHVkZS9saW51eC9oYXJkaXJxLmgKPj4gCj4+IHBh
-dGNoaW5nIGZpbGUgaW5jbHVkZS9saW51eC9pODI1My5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGlu
-Y2x1ZGUvbGludXgvaXBpcGUuaAo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBpbmNsdWRlL2xpbnV4L2lw
-aXBlX2Jhc2UuaAo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBpbmNsdWRlL2xpbnV4L2lwaXBlX2NvbXBh
-dC5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGluY2x1ZGUvbGludXgvaXBpcGVfZGVidWcuaAo+PiAK
-Pj4gcGF0Y2hpbmcgZmlsZSBpbmNsdWRlL2xpbnV4L2lwaXBlX2RvbWFpbi5oCj4+IAo+PiBwYXRj
-aGluZyBmaWxlIGluY2x1ZGUvbGludXgvaXBpcGVfbG9jay5oCj4+IAo+PiBwYXRjaGluZyBmaWxl
-IGluY2x1ZGUvbGludXgvaXBpcGVfdGlja2Rldi5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGluY2x1
-ZGUvbGludXgvaXBpcGVfdHJhY2UuaAo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBpbmNsdWRlL2xpbnV4
-L2lycS5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGluY2x1ZGUvbGludXgvaXJxY2hpcC9hcm0tZ2lj
-LmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgaW5jbHVkZS9saW51eC9pcnFkZXNjLmgKPj4gCj4+IHBh
-dGNoaW5nIGZpbGUgaW5jbHVkZS9saW51eC9pcnFuci5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGlu
-Y2x1ZGUvbGludXgva2VybmVsLmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgaW5jbHVkZS9saW51eC9r
-dm1faG9zdC5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGluY2x1ZGUvbGludXgvcHJlZW1wdC5oCj4+
-IAo+PiBwYXRjaGluZyBmaWxlIGluY2x1ZGUvbGludXgvcHJpbnRrLmgKPj4gCj4+IHBhdGNoaW5n
-IGZpbGUgaW5jbHVkZS9saW51eC9yd2xvY2suaAo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBpbmNsdWRl
-L2xpbnV4L3J3bG9ja19hcGlfc21wLmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgaW5jbHVkZS9saW51
-eC9zY2hlZC5oCj4+IAo+PiBwYXRjaGluZyBmaWxlIGluY2x1ZGUvbGludXgvc3BpbmxvY2suaAo+
-PiAKPj4gcGF0Y2hpbmcgZmlsZSBpbmNsdWRlL2xpbnV4L3NwaW5sb2NrX2FwaV9zbXAuaAo+PiAK
-Pj4gcGF0Y2hpbmcgZmlsZSBpbmNsdWRlL2xpbnV4L3NwaW5sb2NrX3VwLmgKPj4gCj4+IHBhdGNo
-aW5nIGZpbGUgaW5jbHVkZS9saW51eC90aW1la2VlcGVyX2ludGVybmFsLmgKPj4gCj4+IHBhdGNo
-aW5nIGZpbGUgaW5jbHVkZS9zb2MvZnNsL3FlL3FlX2ljLmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUg
-aW5jbHVkZS91YXBpL2FzbS1nZW5lcmljL21tYW4tY29tbW9uLmgKPj4gCj4+IHBhdGNoaW5nIGZp
-bGUgaW5jbHVkZS91YXBpL2FzbS1nZW5lcmljL3Jlc291cmNlLmgKPj4gCj4+IHBhdGNoaW5nIGZp
-bGUgaW5jbHVkZS91YXBpL2xpbnV4L3Jlc291cmNlLmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUgaW5p
-dC9LY29uZmlnCj4+IAo+PiBwYXRjaGluZyBmaWxlIGluaXQvbWFpbi5jCj4+IAo+PiBwYXRjaGlu
-ZyBmaWxlIGtlcm5lbC9NYWtlZmlsZQo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBrZXJuZWwvY29udGV4
-dF90cmFja2luZy5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtlcm5lbC9kZWJ1Zy9kZWJ1Z19jb3Jl
-LmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUga2VybmVsL2RlYnVnL2dkYnN0dWIuYwo+PiAKPj4gcGF0
-Y2hpbmcgZmlsZSBrZXJuZWwvZXhpdC5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtlcm5lbC9mb3Jr
-LmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUga2VybmVsL2lwaXBlL0tjb25maWcKPj4gCj4+IHBhdGNo
-aW5nIGZpbGUga2VybmVsL2lwaXBlL0tjb25maWcuZGVidWcKPj4gCj4+IHBhdGNoaW5nIGZpbGUg
-a2VybmVsL2lwaXBlL01ha2VmaWxlCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtlcm5lbC9pcGlwZS9j
-b21wYXQuYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBrZXJuZWwvaXBpcGUvY29yZS5jCj4+IAo+PiBw
-YXRjaGluZyBmaWxlIGtlcm5lbC9pcGlwZS9pcGlwZS5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtl
-cm5lbC9pcGlwZS90aW1lci5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtlcm5lbC9pcGlwZS90cmFj
-ZXIuYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBrZXJuZWwvaXJxL2NoaXAuYwo+PiAKPj4gcGF0Y2hp
-bmcgZmlsZSBrZXJuZWwvaXJxL2dlbmVyaWMtY2hpcC5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtl
-cm5lbC9pcnEvaW50ZXJuYWxzLmgKPj4gCj4+IHBhdGNoaW5nIGZpbGUga2VybmVsL2lycS9pcnFk
-ZXNjLmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUga2VybmVsL2lycS9tYW5hZ2UuYwo+PiAKPj4gcGF0
-Y2hpbmcgZmlsZSBrZXJuZWwvbG9ja2luZy9sb2NrZGVwLmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUg
-a2VybmVsL2xvY2tpbmcvc3BpbmxvY2suYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBrZXJuZWwvbW9k
-dWxlLmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUga2VybmVsL3BhbmljLmMKPj4gCj4+IHBhdGNoaW5n
-IGZpbGUga2VybmVsL3Bvd2VyL2hpYmVybmF0ZS5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtlcm5l
-bC9wcmludGsvcHJpbnRrLmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUga2VybmVsL3NjaGVkL2NvcmUu
-Ywo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBrZXJuZWwvc2NoZWQvaWRsZS5jCj4+IAo+PiBwYXRjaGlu
-ZyBmaWxlIGtlcm5lbC9zY2hlZC93YWl0LmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUga2VybmVsL3Np
-Z25hbC5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtlcm5lbC90aW1lL2Nsb2NrZXZlbnRzLmMKPj4g
-Cj4+IHBhdGNoaW5nIGZpbGUga2VybmVsL3RpbWUvY2xvY2tzb3VyY2UuYwo+PiAKPj4gcGF0Y2hp
-bmcgZmlsZSBrZXJuZWwvdGltZS90aWNrLWNvbW1vbi5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtl
-cm5lbC90aW1lL3RpY2stc2NoZWQuYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBrZXJuZWwvdGltZS90
-aW1la2VlcGluZy5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtlcm5lbC90aW1lL3RpbWVyLmMKPj4g
-Cj4+IHBhdGNoaW5nIGZpbGUga2VybmVsL3RyYWNlL0tjb25maWcKPj4gCj4+IHBhdGNoaW5nIGZp
-bGUga2VybmVsL3RyYWNlL2Z0cmFjZS5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtlcm5lbC90cmFj
-ZS9yaW5nX2J1ZmZlci5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGtlcm5lbC90cmFjZS90cmFjZS5j
-Cj4+IAo+PiBwYXRjaGluZyBmaWxlIGtlcm5lbC90cmFjZS90cmFjZV9jbG9jay5jCj4+IAo+PiBw
-YXRjaGluZyBmaWxlIGtlcm5lbC90cmFjZS90cmFjZV9mdW5jdGlvbnMuYwo+PiAKPj4gcGF0Y2hp
-bmcgZmlsZSBrZXJuZWwvdHJhY2UvdHJhY2VfZnVuY3Rpb25zX2dyYXBoLmMKPj4gCj4+IHBhdGNo
-aW5nIGZpbGUga2VybmVsL3RyYWNlL3RyYWNlX2lycXNvZmYuYwo+PiAKPj4gcGF0Y2hpbmcgZmls
-ZSBsaWIvS2NvbmZpZy5kZWJ1Zwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBsaWIvYXRvbWljNjQuYwo+
-PiAKPj4gcGF0Y2hpbmcgZmlsZSBsaWIvYnVzdF9zcGlubG9ja3MuYwo+PiAKPj4gcGF0Y2hpbmcg
-ZmlsZSBsaWIvaW9yZW1hcC5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIGxpYi9zbXBfcHJvY2Vzc29y
-X2lkLmMKPj4gCj4+IHBhdGNoaW5nIGZpbGUgbW0vbWVtb3J5LmMKPj4gCj4+IHBhdGNoaW5nIGZp
-bGUgbW0vbWxvY2suYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBtbS9tbWFwLmMKPj4gCj4+IHBhdGNo
-aW5nIGZpbGUgbW0vbW11X2NvbnRleHQuYwo+PiAKPj4gcGF0Y2hpbmcgZmlsZSBtbS9tcHJvdGVj
-dC5jCj4+IAo+PiBwYXRjaGluZyBmaWxlIG1tL3ZtYWxsb2MuYwo+PiAKPj4gcHJlcGFyZS1rZXJu
-ZWwuc2g6IC9jb250aW51dXMvYm01MDIxMC9saW51eC1yZXBvIGhhcyBubyBJLXBpcGUgc3VwcG9y
-dCBmb3IgYXJtCj4+IAo+PiAKPj4gCj4+IEhhdmluZyBhIGxvb2sgdG8gdGhlIHByZXBhcmUta2Vy
-bmVsLnNoIHNjcmlwdCwgSSBzZWVtcyBpdCBmYWlscyBhdCBsaW5lIDM1MDoKPj4gCj4+IAo+PiAK
-Pj4gaWYgdGVzdCBcISAtciAkbGludXhfdHJlZS9hcmNoLyRsaW51eF9hcmNoL2luY2x1ZGUvYXNt
-L2lwaXBlLmg7IHRoZW4KPj4gCj4+ICBlY2hvICIkbWU6ICRsaW51eF90cmVlIGhhcyBubyBJLXBp
-cGUgc3VwcG9ydCBmb3IgJGxpbnV4X2FyY2giID4mMgo+PiAKPj4gIGV4aXQgMgo+PiAKPj4gZmkK
-Pj4gCj4+IAo+PiAKPj4gSSdtIHRyeWluZyB0byBhcHBseSB0aGUgYXJtNjQgSS1waXBlIHBhdGNo
-IHNvIGlwaXBlLmggaXMgYXBwbGllZCB0byBhcmNoL2FybTY0IC9pbmNsdWRlL2FzbS8gZm9sZGVy
-Lgo+PiAKPj4gCj4+IAo+PiBJIGFsc28gdHJpZWQgdG8gY2FsbCB0aGUgcHJlcGFyZS1zY3JpcHQg
-d2l0aCBhcm02NCBhcmd1bWVudCBidXQgdGhlIHNjcmlwdCBkb2Vzbid0IHN1cHBvcnQgaXQuCj4+
-IAo+PiAKPj4gCj4+IAo+PiAKPj4gVGhhbmtzCj4+IAo+PiAKPj4gCj4+IEJlcnRyYW5kCj4+IAo+
-PiAKPj4gVGhpcyBlLW1haWwgYW5kIGFueSBhY2NvbXBhbnlpbmcgYXR0YWNobWVudHMgYXJlIGNv
-bmZpZGVudGlhbC4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgeW91IG11
-c3Qgbm90IHJldmlldywgZGlzY2xvc2UsIGNvcHksIGRpc3RyaWJ1dGUgb3IgdXNlIHRoaXMgZS1t
-YWlsOyBwbGVhc2UgZGVsZXRlIGl0IGZyb20geW91ciBzeXN0ZW0gYW5kIG5vdGlmeSB0aGUgc2Vu
-ZGVyIGltbWVkaWF0ZWx5Lgo+PiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXwo+PiBYZW5vbWFpIG1haWxpbmcgbGlzdAo+PiBYZW5vbWFpQHhlbm9tYWkub3Jn
-Cj4+IGh0dHBzOi8veGVub21haS5vcmcvbWFpbG1hbi9saXN0aW5mby94ZW5vbWFpCj4gCj4gVGhp
-cyBlLW1haWwgYW5kIGFueSBhY2NvbXBhbnlpbmcgYXR0YWNobWVudHMgYXJlIGNvbmZpZGVudGlh
-bC4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgeW91IG11c3Qgbm90IHJl
-dmlldywgZGlzY2xvc2UsIGNvcHksIGRpc3RyaWJ1dGUgb3IgdXNlIHRoaXMgZS1tYWlsOyBwbGVh
-c2UgZGVsZXRlIGl0IGZyb20geW91ciBzeXN0ZW0gYW5kIG5vdGlmeSB0aGUgc2VuZGVyIGltbWVk
-aWF0ZWx5LgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRl
-eHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBh
-cHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDg3NCBieXRlcwpEZXNjOiBNZXNzYWdlIHNp
-Z25lZCB3aXRoIE9wZW5QR1AKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5v
-bWFpL2F0dGFjaG1lbnRzLzIwMTcxMTE0LzYwMjk2Y2M5L2F0dGFjaG1lbnQuc2lnPgo=
+On 11/09/2017 11:43 AM, Christoph M=FCllner wrote:
+>=20
+>> On 9 Nov 2017, at 11:04, Philippe Gerum <rpm@xenomai.org> wrote:
+>>
+>> On 11/06/2017 10:46 AM, Christoph Muellner wrote:
+>>> This patch adds an ioctl code to set a GPIO IRQ's CPU affinity
+>>> to the RTDM user space API.
+>>>
+>>> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems=
+.com>
+>>> ---
+>>> include/rtdm/uapi/gpio.h | 6 ++++++
+>>> 1 file changed, 6 insertions(+)
+>>>
+>>> diff --git a/include/rtdm/uapi/gpio.h b/include/rtdm/uapi/gpio.h
+>>> index f846f48b2..e70da2621 100644
+>>> --- a/include/rtdm/uapi/gpio.h
+>>> +++ b/include/rtdm/uapi/gpio.h
+>>> @@ -18,10 +18,16 @@
+>>> #ifndef _RTDM_UAPI_GPIO_H
+>>> #define _RTDM_UAPI_GPIO_H
+>>>
+>>> +typedef struct {
+>>> +	void* mask;
+>>
+>> Asking explicitly for unsigned long * may give a better hint about what
+>> is expected.
+>=20
+> I agree, but then we need a cast when using cpu_set_t in user space, whic=
+h is even more ugly.
+>=20
+> This is user code, which works atm:
+>=20
+>         cpu_set_t mask;
+>         CPU_ZERO(&mask);
+>         CPU_SET(4, &mask); //CPU 4 only
+>         rtdm_cpumask_t rtdm_mask;
+>         rtdm_mask.mask =3D &mask; //assignment of mask
+>         rtdm_mask.size =3D sizeof(mask);
+>=20
+> When making mask a unsigned long*, then the assignment of mask does not w=
+ork anymore
+> without having the compiler complaining about incompatible types.
+> The reason is, that libc uses the following type hierarchy for cpu_set_t =
+(bits/sched.h):
+>=20
+> 	typedef unsigned long int __cpu_mask;
+> 	typedef struct
+> 	{
+> 	  __cpu_mask __bits[__CPU_SETSIZE / __NCPUBITS];
+> 	} cpu_set_t;
+>=20
+> So besides casting, only something like this would work:
+>=20
+> 	...
+> 	rtdm_mask.mask =3D &mask.__bits;
+> 	...
+>=20
+> Making mask a cpu_set_t* is problematic, because this type is only availa=
+ble in
+> user space and not in kernel.
+>=20
+> So I saw two choices: making a wrapper function rtdm_gpio_setirqaff(int f=
+d, cpu_set_t &mask),
+> which hides the cast or use void* for the mask. The wrapper function woul=
+d hide the cpu_set_t
+> from the kernel by using #ifndef __KERNEL__ around it.
+>=20
+> Do you prefer the wrapper function?
+>=20
+
+Not a userland wrapper, as there should not be any RTDM API in userland
+- that one was removed during the 2.x -> 3.x transition, preferring a
+POSIXish interface to real-time I/O devices.
+
+I was rather thinking about a kernel-space wrapper for cpu_set_t, which
+maps to struct cpumask, i.e.:
+
+diff --git a/include/rtdm/uapi/gpio.h b/include/rtdm/uapi/gpio.h
+index e70da26..73fa382 100644
+--- a/include/rtdm/uapi/gpio.h
++++ b/include/rtdm/uapi/gpio.h
+@@ -19,7 +19,7 @@
+ #define _RTDM_UAPI_GPIO_H
+  typedef struct {
+-	void* mask;
++	cpu_set_t *mask;
+ 	size_t size;
+ } rtdm_cpumask_t;
+ diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+index e0f0cb9..3168dfc 100644
+--- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
++++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
+@@ -150,4 +150,6 @@ devm_hwmon_device_register_with_groups(struct device
+*dev, const char *name,
+ #error "Xenomai/cobalt requires Linux kernel 3.10 or above"
+ #endif /* < 3.10 */
+ +typedef struct cpumask cpu_set_t;
++
+ #endif /* _COBALT_ASM_GENERIC_WRAPPERS_H */
+
+This said, every driver dealing with interrupts may also want to
+implement such request locally (e.g. CAN, rtnet, uarts, SPI etc), so the
+request code and the argument type should probably be made generic,
+e.g. RTIOC_SET_IRQAFFINITY or whatever, defined in uapi/rtdm.h along
+with rtdm_cpumask_t.
+
+--=20
+Philippe.
+
+
+
+
+
