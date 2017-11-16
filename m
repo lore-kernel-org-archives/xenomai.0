@@ -1,12 +1,12 @@
-From: =?iso-8859-1?Q?C=E9dric_Perles?= <cperles@sepro-group.com>
-Date: Wed, 15 Nov 2017 15:18:34 +0100 (CET)
-Message-ID: <00aa01d35e1c$9f697460$de3c5d20$@sepro-group.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Language: fr
+From: =?iso-8859-1?Q?H=E4nel-Baas=2C_Alexander?=
+ <alexander.haenel-baas@sieb-meyer.de>
+Date: Thu, 16 Nov 2017 12:45:59 +0000
+Message-ID: <c13bf74e07b340e4a3306e9d1e96f3e9@sieb-meyer.de>
+Content-Language: de-DE
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] kernel does not boot when ipipe tracer is activated
+MIME-Version: 1.0
+Subject: [Xenomai] list of threads with same session_label
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,23 +15,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 Hi,
+we use Xenomai's tuneable "session_name" to set the same session of our thr=
+eads.=20
+to do this, we used your example "Adding your own setup code" described in =
+"application-setup-and-init" and
+attach this lib to the application.
+It works fine.
 
-I=92m working on an iMX6 based board with NXP kernel 4.1.15.
-Using cyclictest and dohell, I benched latency on my Xenomai + Preempt-rt
-kernel. To understand the results, I wanted to activate ftrace and
-ipipe-tracer.
+My Question:
+How can I list all threads that live in the same session? =20
 
-While ftrace activation was not a big deal, when "I-pipe debugging" is
-activated into menuconfig my kernel does not boot anymore and hangs to
-"Starting kernel ..."
+With best regards,
+Alexander H=E4nel-Baas
 
-Did someone faced the same issue ?
-Is there a way to investigate
-
-Regards,
-
-C=E9dric.
 
