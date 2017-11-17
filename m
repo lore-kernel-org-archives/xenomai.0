@@ -1,10 +1,13 @@
+References: <c13bf74e07b340e4a3306e9d1e96f3e9@sieb-meyer.de>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <e1260ae4-8577-2410-ca75-ef5ee788073f@xenomai.org>
-Date: Thu, 16 Nov 2017 17:54:53 +0100
+Message-ID: <f9afef97-0e34-87c9-399c-f2f8af2958df@xenomai.org>
+Date: Fri, 17 Nov 2017 10:21:33 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [HEADS-UP] Xenomai 3.x / Cobalt - critical fix
+In-Reply-To: <c13bf74e07b340e4a3306e9d1e96f3e9@sieb-meyer.de>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] list of threads with same session_label
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,31 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?UTF-8?Q?H=c3=a4nel-Baas=2c_Alexander?= <alexander.haenel-baas@sieb-meyer.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
+On 11/16/2017 01:45 PM, Hänel-Baas, Alexander wrote:
+> Hi,
+> we use Xenomai's tuneable "session_name" to set the same session of our threads.
+> to do this, we used your example "Adding your own setup code" described in "application-setup-and-init" and
+> attach this lib to the application.
+> It works fine.
+> 
+> My Question:
+> How can I list all threads that live in the same session?
+> 
 
-A really bad bug has just been fixed in the implementation of a basic
-synchronization object (aka Cobalt monitor) in the Cobalt core,
-affecting SMP configs exclusively. As observed with a real world
-application, the bug could cause waiters to sleep indefinitely on a monitor.
+Assuming alchemy is your API, enable the user-space registry with 
+--enable-registry when configuring. Your application will automatically 
+maintain /var/run/xenomai/<user>/<session>/alchemy/tasks. Reading from 
+this file should give you the information needed.
 
-Cobalt monitors are heavily used in all non-POSIX Xenomai APIs
-indirectly via the syncobj abstraction from libcopperplate, i.e.
-alchemy, psos, vxworks, so all of those APIs are potentially affected by
-this bug. Strictly POSIX apps not depending on libcopperplate are immune
-to this issue though.
-
-All Xenomai 3.x releases are vulnerable. A fix is avail from the git
-repo, for the stable-3.0.x [1] and next [2] branches.
-
-This is a really creepy, timing-dependent bug. If you depend on any of
-the vulnerable APIs, you really want to pick that fix. I mean, really,
-no joke.
-
-[1]
-http://git.xenomai.org/?p=xenomai-3.git;a=commit;h=3112a3f98feaa8fa3109f89013bec8674308ede3
-[2]
-http://git.xenomai.org/?p=xenomai-3.git;a=commit;h=8211ff20e3380fffa0df4ba4bea5b62c0f4005c2
+The kernel side is not aware of the session mechanism, so you won't find 
+any reference to it under the /proc/xenomai hierarchy.
 
 -- 
 Philippe.
