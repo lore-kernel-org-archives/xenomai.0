@@ -1,14 +1,9 @@
-References: <6c55f15a-66ea-a9cd-943b-ed568f229984@xenomai.org>
- <85bfdeed-375d-7073-a53f-d9d5d22f8778@alaxarxa.net>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <62be2b45-b6f7-30b9-b3ee-891acd75ac60@xenomai.org>
-Date: Mon, 20 Nov 2017 14:38:52 +0100
 MIME-Version: 1.0
-In-Reply-To: <85bfdeed-375d-7073-a53f-d9d5d22f8778@alaxarxa.net>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Xenomai 3.0.6 doesn't build the patched kernel
+From: Greg Gallagher <ggallagher31@gmail.com>
+Date: Mon, 20 Nov 2017 10:43:09 -0500
+Message-ID: <CAPYpnLZoqA4NGSB_zbi1GeiKr9mWekY1n_r_BKRho6xGvh4uFw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] Contributing to Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,41 +12,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 11/20/2017 01:14 PM, Leopold Palomo-Avellaneda wrote:
-> Hi,
-> 
-> trying to build the new Xenomai version (3.0.6), after have prepared the linux
-> sources, I got this error:
-> 
-> In file included from arch/x86/xenomai/machine.c:22:0:
-> arch/x86/xenomai/include/asm/xenomai/syscall.h: In function ‘__xn_get_syscall_nr’:
-> arch/x86/xenomai/include/asm/xenomai/syscall.h:46:31: error: implicit
-> declaration of function ‘__COBALT_CALL32_SYSNR’
-> [-Werror=implicit-function-declaration]
->   #define __xn_syscall(regs)    __COBALT_CALL32_SYSNR(__xn_reg_sys(regs) \
->                                 ^
-> arch/x86/xenomai/include/asm/xenomai/syscall.h:60:32: note: in expansion of
-> macro ‘__xn_syscall’
->    return __xn_syscall_p(regs) ? __xn_syscall(regs) :
->                                  ^~~~~~~~~~~~
-> cc1: some warnings being treated as errors
-> 
-> I have used the prepare-kernel script and built the Debian packages. The
-> platform is a Debian Stretch (amd64) with the default compiler.
-> 
-> linux version linux-4.9.51 and
-> 
-> http://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.9.51-x86-4.patch
-> 
-> as a patch.
-> 
-> 
-> 
+Hi,
+  I'm preparing a patch to enable RTDM gpio for the Xilinx Zynq 7000
+platform.  First, is this something that would be of value to add to
+mainline Xenomai?  I noticed there is a rtdm gpio driver for the bcm2835
+(raspberry pi) and figured it may be nice for Zynq users to have a rtdm
+gpio driver out of the box.
+    I've been digging online and I can't find any guidelines on how to
+submit a patch to Xenomai.  On the mailing list I see most patches come
+across with [PATCH] in the subject line, comments in the body, followed by
+the patch.
 
-As a work around, drop CONFIG_IA32_EMULATION if you don't need it.
+Any help would be appreciated and sorry if I missed this information in a
+FAQ somewhere.
 
--- 
-Philippe.
+Thanks
 
+Greg
