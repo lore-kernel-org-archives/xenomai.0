@@ -1,16 +1,12 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-References: <6c55f15a-66ea-a9cd-943b-ed568f229984@xenomai.org>
- <85bfdeed-375d-7073-a53f-d9d5d22f8778@alaxarxa.net>
- <62be2b45-b6f7-30b9-b3ee-891acd75ac60@xenomai.org>
- <4651e006-d67f-d442-bc12-d634ec78f897@alaxarxa.net>
-Message-ID: <f7f0cc07-b729-e116-82d1-fe1caecbe5c8@alaxarxa.net>
-Date: Mon, 20 Nov 2017 17:26:36 +0100
-MIME-Version: 1.0
-In-Reply-To: <4651e006-d67f-d442-bc12-d634ec78f897@alaxarxa.net>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Xenomai 3.0.6 doesn't build the patched kernel
+From: "=?gb18030?B?SmFjayBMZWU=?=" <jacklee11@foxmail.com>
+Mime-Version: 1.0
+Date: Tue, 21 Nov 2017 13:52:50 +0800
+Message-ID: <tencent_2252D90437AFCF6B48706C45@qq.com>
+Content-Type: text/plain;
+	charset="gb18030"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] 3.0.6 with linux 4.9.51 on x86_64 Intel(R) Atom(TM) CPU
+	N2800 compilation failed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,63 +15,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
 
-On 20/11/17 17:25, Leopold Palomo-Avellaneda wrote:
-> On 20/11/17 14:38, Philippe Gerum wrote:
->> On 11/20/2017 01:14 PM, Leopold Palomo-Avellaneda wrote:
->>> Hi,
->>>
->>> trying to build the new Xenomai version (3.0.6), after have prepared the linux
->>> sources, I got this error:
->>>
->>> In file included from arch/x86/xenomai/machine.c:22:0:
->>> arch/x86/xenomai/include/asm/xenomai/syscall.h: In function
->>> ‘__xn_get_syscall_nr’:
->>> arch/x86/xenomai/include/asm/xenomai/syscall.h:46:31: error: implicit
->>> declaration of function ‘__COBALT_CALL32_SYSNR’
->>> [-Werror=implicit-function-declaration]
->>>   #define __xn_syscall(regs)    __COBALT_CALL32_SYSNR(__xn_reg_sys(regs) \
->>>                                 ^
->>> arch/x86/xenomai/include/asm/xenomai/syscall.h:60:32: note: in expansion of
->>> macro ‘__xn_syscall’
->>>    return __xn_syscall_p(regs) ? __xn_syscall(regs) :
->>>                                  ^~~~~~~~~~~~
->>> cc1: some warnings being treated as errors
->>>
->>> I have used the prepare-kernel script and built the Debian packages. The
->>> platform is a Debian Stretch (amd64) with the default compiler.
->>>
->>> linux version linux-4.9.51 and
->>>
->>> http://xenomai.org/downloads/ipipe/v4.x/x86/ipipe-core-4.9.51-x86-4.patch
->>>
->>> as a patch.
->>>
->>>
->>>
->>
->> As a work around, drop CONFIG_IA32_EMULATION if you don't need it.
->>
-> 
-> drivers/xenomai/net/stack/rtwlan.c:171:2: warning: this ‘if’ clause does not
-> guard... [-Wmisleading-indentation]
->   if (mutex_lock_interruptible(&rtdev->nrt_lock))
->   ^~
-> 
-Sorry,
-
-message not complete. I have a list of compile errors but I will send when I finish.
-
-Leopold
-
--- 
---
-Linux User 152692     GPG: 05F4A7A949A2D9AA
-Catalonia
--------------------------------------
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
-
+SGVsbG8sDQoNCiAgTXkgYm9hcmQgY3B1IGlzIEludGVsIEF0b20gQ1BVIE4yODAwLiBJIGFt
+IHVzaW5nIHhlbm9tYWkgMy4wLjYgd2l0aCBsaW51eCA0LjkuNTEuIA0KICBJIGdldCB0aGUg
+Zm9sbG93aW5nIGVycm9yIHdoZW4gY29tcGlsaW5nIHRoZSBrZXJuZWwuIENhbiBhbnlvbmUg
+Z2l2ZSBtZSBzb21lIGhlbHA/DQogIFRoYW5rcyENCg0KICBDQyAgICAgIGFyY2gveDg2L3hl
+bm9tYWkvbWFjaGluZS5vDQpJbiBmaWxlIGluY2x1ZGVkIGZyb20gYXJjaC94ODYveGVub21h
+aS9tYWNoaW5lLmM6MjI6MDoNCmFyY2gveDg2L3hlbm9tYWkvaW5jbHVkZS9hc20veGVub21h
+aS9zeXNjYWxsLmg6IEluIGZ1bmN0aW9uIKGuX194bl9nZXRfc3lzY2FsbF9ucqGvOg0KYXJj
+aC94ODYveGVub21haS9pbmNsdWRlL2FzbS94ZW5vbWFpL3N5c2NhbGwuaDo0NjozMTogZXJy
+b3I6IGltcGxpY2l0IGRlY2xhcmF0aW9uIG9mIGZ1bmN0aW9uIKGuX19DT0JBTFRfQ0FMTDMy
+X1NZU05Soa8gWy1XZXJyb3I9aW1wbGljaXQtZnVuY3Rpb24tZGVjbGFyYXRpb25dDQogI2Rl
+ZmluZSBfX3huX3N5c2NhbGwocmVncykgICAgX19DT0JBTFRfQ0FMTDMyX1NZU05SKF9feG5f
+cmVnX3N5cyhyZWdzKSBcDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXg0KYXJj
+aC94ODYveGVub21haS9pbmNsdWRlL2FzbS94ZW5vbWFpL3N5c2NhbGwuaDo2MDozMjogbm90
+ZTogaW4gZXhwYW5zaW9uIG9mIG1hY3JvIKGuX194bl9zeXNjYWxsoa8NCiAgcmV0dXJuIF9f
+eG5fc3lzY2FsbF9wKHJlZ3MpID8gX194bl9zeXNjYWxsKHJlZ3MpIDoNCiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgXg==
