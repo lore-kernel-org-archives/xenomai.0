@@ -1,11 +1,12 @@
+Date: Tue, 21 Nov 2017 09:01:29 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20171121090129.5cc3e2a6@md1em3qc>
+In-Reply-To: <e1bd3510-58dc-7ed2-ac0a-a0010eb43d73@alaxarxa.net>
 References: <tencent_2252D90437AFCF6B48706C45@qq.com>
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Message-ID: <e1bd3510-58dc-7ed2-ac0a-a0010eb43d73@alaxarxa.net>
-Date: Tue, 21 Nov 2017 08:28:11 +0100
+ <e1bd3510-58dc-7ed2-ac0a-a0010eb43d73@alaxarxa.net>
 MIME-Version: 1.0
-In-Reply-To: <tencent_2252D90437AFCF6B48706C45@qq.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] 3.0.6 with linux 4.9.51 on x86_64 Intel(R) Atom(TM)
  CPU N2800 compilation failed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,33 +17,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jack Lee <jacklee11@foxmail.com>, xenomai <xenomai@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Cc: Jack Lee <jacklee11@foxmail.com>, xenomai <xenomai@xenomai.org>
 
-T24gMjEvMTEvMTcgMDY6NTIsIEphY2sgTGVlIHdyb3RlOgo+IEhlbGxvLAo+IAo+ICAgTXkgYm9h
-cmQgY3B1IGlzIEludGVsIEF0b20gQ1BVIE4yODAwLiBJIGFtIHVzaW5nIHhlbm9tYWkgMy4wLjYg
-d2l0aCBsaW51eCA0LjkuNTEuIAo+ICAgSSBnZXQgdGhlIGZvbGxvd2luZyBlcnJvciB3aGVuIGNv
-bXBpbGluZyB0aGUga2VybmVsLiBDYW4gYW55b25lIGdpdmUgbWUgc29tZSBoZWxwPwo+ICAgVGhh
-bmtzIQo+IAo+ICAgQ0MgICAgICBhcmNoL3g4Ni94ZW5vbWFpL21hY2hpbmUubwo+IEluIGZpbGUg
-aW5jbHVkZWQgZnJvbSBhcmNoL3g4Ni94ZW5vbWFpL21hY2hpbmUuYzoyMjowOgo+IGFyY2gveDg2
-L3hlbm9tYWkvaW5jbHVkZS9hc20veGVub21haS9zeXNjYWxsLmg6IEluIGZ1bmN0aW9uIOKAmF9f
-eG5fZ2V0X3N5c2NhbGxfbnLigJk6Cj4gYXJjaC94ODYveGVub21haS9pbmNsdWRlL2FzbS94ZW5v
-bWFpL3N5c2NhbGwuaDo0NjozMTogZXJyb3I6IGltcGxpY2l0IGRlY2xhcmF0aW9uIG9mIGZ1bmN0
-aW9uIOKAmF9fQ09CQUxUX0NBTEwzMl9TWVNOUuKAmSBbLVdlcnJvcj1pbXBsaWNpdC1mdW5jdGlv
-bi1kZWNsYXJhdGlvbl0KPiAgI2RlZmluZSBfX3huX3N5c2NhbGwocmVncykgICAgX19DT0JBTFRf
-Q0FMTDMyX1NZU05SKF9feG5fcmVnX3N5cyhyZWdzKSBcCj4gICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgIF4KPiBhcmNoL3g4Ni94ZW5vbWFpL2luY2x1ZGUvYXNtL3hlbm9tYWkvc3lzY2Fs
-bC5oOjYwOjMyOiBub3RlOiBpbiBleHBhbnNpb24gb2YgbWFjcm8g4oCYX194bl9zeXNjYWxs4oCZ
-Cj4gICByZXR1cm4gX194bl9zeXNjYWxsX3AocmVncykgPyBfX3huX3N5c2NhbGwocmVncykgOgoK
-SSBoYWQgdGhlIHNhbWUgcHJvYmxlbSB5ZXN0ZXJkYXkgYW5kIFBoaWxpcHBlIEdlcnVtIGFuc3dl
-cmVkOgoKPj4gQXMgYSB3b3JrIGFyb3VuZCwgZHJvcCBDT05GSUdfSUEzMl9FTVVMQVRJT04gaWYg
-eW91IGRvbid0IG5lZWQgaXQuCgpCZXN0IHJlZ2FyZHMsCgpMZW9wb2xkCgotLSAKLS0KTGludXgg
-VXNlciAxNTI2OTIgICAgIEdQRzogMDVGNEE3QTk0OUEyRDlBQQpDYXRhbG9uaWEKLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpBOiBCZWNhdXNlIGl0IG1lc3NlcyB1cCB0aGUg
-b3JkZXIgaW4gd2hpY2ggcGVvcGxlIG5vcm1hbGx5IHJlYWQgdGV4dC4KUTogV2h5IGlzIHRvcC1w
-b3N0aW5nIHN1Y2ggYSBiYWQgdGhpbmc/CkE6IFRvcC1wb3N0aW5nLgpROiBXaGF0IGlzIHRoZSBt
-b3N0IGFubm95aW5nIHRoaW5nIGluIGUtbWFpbD8KCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAt
-LS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6
-IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiA4MzMg
-Ynl0ZXMKRGVzYzogT3BlblBHUCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8veGVub21h
-aS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNzExMjEvODM3ZDk0NTQvYXR0
-YWNobWVudC5zaWc+Cg==
+Am Tue, 21 Nov 2017 08:28:11 +0100
+schrieb Leopold Palomo-Avellaneda <leo@alaxarxa.net>:
+
+> On 21/11/17 06:52, Jack Lee wrote:
+> > Hello,
+> >=20
+> >   My board cpu is Intel Atom CPU N2800. I am using xenomai 3.0.6
+> > with linux 4.9.51. I get the following error when compiling the
+> > kernel. Can anyone give me some help? Thanks!
+> >=20
+> >   CC      arch/x86/xenomai/machine.o
+> > In file included from arch/x86/xenomai/machine.c:22:0:
+> > arch/x86/xenomai/include/asm/xenomai/syscall.h: In function
+> > =E2=80=98__xn_get_syscall_nr=E2=80=99:
+> > arch/x86/xenomai/include/asm/xenomai/syscall.h:46:31: error:
+> > implicit declaration of function
+> > =E2=80=98__COBALT_CALL32_SYSNR=E2=80=99 [-Werror=3Dimplicit-function-de=
+claration]
+> > #define __xn_syscall(regs)
+> > __COBALT_CALL32_SYSNR(__xn_reg_sys(regs) \ ^
+> > arch/x86/xenomai/include/asm/xenomai/syscall.h:60:32: note: in
+> > expansion of macro =E2=80=98__xn_syscall=E2=80=99 return __xn_syscall_p=
+(regs) ?
+> > __xn_syscall(regs) : =20
+>=20
+> I had the same problem yesterday and Philippe Gerum answered:
+>=20
+> >> As a work around, drop CONFIG_IA32_EMULATION if you don't need
+> >> it. =20
+
+There is also a commit on top of 3.0.6 that should solve that problem.
+You could try with
+http://git.xenomai.org/xenomai-3.git/snapshot/xenomai-3-cc283c7f26c1b097b94=
+a61bb25c2564f51daf16d.tar.bz2
+
+Henning
+
+> Best regards,
+>=20
+> Leopold
+>=20
+
+
