@@ -1,11 +1,11 @@
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
+Date: Tue, 21 Nov 2017 18:11:52 +0100
 MIME-Version: 1.0
-From: Norbert Lange <nolange79@gmail.com>
-Date: Tue, 21 Nov 2017 14:00:59 +0100
-Message-ID: <CADYdroNL-JicUU_p=GXy4_ZbR3TqBmbJxf8eoLuxn57tgWpmJA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] [PATCH] Fix compilation of e1000,
-	eepro100 and igp rtnet drivers
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] [RFC] RTnet, Analogy and the elephant in the room
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,13 +14,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-SGVsbG8sCgplbmFibGluZyBSVE5ldCB3aWxsIHJlc3VsdCBpbiBjb21waWxlIGZhaWx1cmVzLCBi
-ZWNhdXNlIHRoZXJlIGlzIGEKbmFtZWNsYXNoIGZyb20gc29tZSBsaW51eC1oZWFkZXJzLgpUaGlz
-IHBhdGNoIGZpeGVzIHNvbWUgaW50ZWwgTklDcyB0byBjb21waWxlCi0tLS0tLS0tLS0tLS0tIG5l
-eHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVk
-Li4uCk5hbWU6IDAwMDEtcnRuZXQtZHJpdmVyLWZpeC1jb21waWxhdGlvbi1vZi1pbnRlbC1kcml2
-ZXJzLnBhdGNoClR5cGU6IHRleHQveC1wYXRjaApTaXplOiA0MzUzIGJ5dGVzCkRlc2M6IG5vdCBh
-dmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFj
-aG1lbnRzLzIwMTcxMTIxLzYzMzllNjBlL2F0dGFjaG1lbnQuYmluPgo=
+
+As the GIT commit history shows, there has been no sustained effort in
+maintaining several of the Xenomai I/O frameworks for several months
+(e.g. RTnet, analogy), even years in some cases, despite obvious bugs
+are still haunting the code base according to the mailing list. The
+situation has reached a point where I see no alternative to dropping
+them if the situation does not improve, because there is absolutely no
+point in this project shipping bit rot software that won't ever be fixed.
+
+Unfortunately, this is only the tip of the iceberg. Let's face it, since
+Gilles passed away last year, I have not been scaling to the Xenomai
+maintenance, development and documentation tasks, with the requirement
+of running my business in parallel.
+
+The solution to this serious problem is fitting the project to the
+available resources by narrowing its goal, or conversely, by growing the
+pool of contributors.
+
+In addition, we can rework the most tricky part of the implementation to
+make it simpler to maintain, better documented, drastically lowering the
+barrier on entry for new contributors, which is what I've been working
+on for a year with the 4th generation of the interrupt pipeline.
+Progress on this front has been significant already, but once again
+limited by the time I have been able to devote to this development so far.
+
+For the past 16 years, this project has lived on various types of
+contributions from only a few committed people and companies. At this
+chance, let's mention that people who have been deploying Xenomai in
+industrial applications owe a lot to Wolfgang Denk from Denx
+Engineering, Siemens's Jan Kiszka and Jorge Ramirez, who have supported
+the project in crucial ways directly or indirectly over the years, and
+still do.
+
+Xenomai as a dual kernel technology showcase has been quietly delivering
+on the promise of real-time Linux for more than a decade now, with
+marketing tools limited to showing decent code quality, good and
+reliable performance figures. As a result, to my current knowledge,
+Xenomai is present in a broad range of applications and systems:
+magnetic resonance scanners, 2D/3D printers, navigation & positioning,
+communication equipment, autonomous vehicles, control & automation
+systems in various plants.
+
+On the sad side of the story, this project has virtually become a
+one-man show the day Gilles - my long-time friend and hacking soul mate
+- left us. That show is too big for me to run it alone, which entails
+maintaining:
+
+- the interrupt pipeline for 7 CPU architectures
+- the Cobalt co-kernel
+- 4 APIs, plus the "copperplate" mediating layer
+- several real-time I/O frameworks, including CAN, RTnet, Analogy, SPI, GPIO
+- the documentation (which is currently unfriendly to newcomers, and
+stalled two years ago or so)
+- the website
+- the testing and release processes
+
+So, let's talk about the elephant in the room: the current situation of
+the Xenomai project is not viable in the long run. I can only encourage
+people who feel concerned about it to discuss openly the practical steps
+to best address this challenge.
+
+Thanks,
+
+-- 
+Philippe.
+
