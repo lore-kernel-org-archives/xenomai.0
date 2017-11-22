@@ -1,9 +1,11 @@
 References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
+ <f7ad8163bda5484292ccdf6e8cf1a484@P10-EX02.3DSystems.Internal>
+ <02f0df6b-0854-eeaa-a168-ae2c10e1d8ab@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <1b035acc-5784-f0b0-f16f-09279d5a8845@siemens.com>
-Date: Wed, 22 Nov 2017 21:26:23 +0100
+Message-ID: <845269a3-e580-c8ff-e25d-a56d00c787fe@siemens.com>
+Date: Wed, 22 Nov 2017 21:27:56 +0100
 MIME-Version: 1.0
-In-Reply-To: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
+In-Reply-To: <02f0df6b-0854-eeaa-a168-ae2c10e1d8ab@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,52 +18,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
-Cc: Daniel Wagner <daniel.wagner@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>, "Auel, Kendall" <Kendall.Auel@3DSystems.Com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 2017-11-21 18:11, Philippe Gerum wrote:
-> So, let's talk about the elephant in the room: the current situation of
-> the Xenomai project is not viable in the long run. I can only encourage
-> people who feel concerned about it to discuss openly the practical steps
-> to best address this challenge.
+On 2017-11-22 16:32, Philippe Gerum wrote:
+> 
+> Hi Kendall,
+> 
+> On 11/21/2017 08:27 PM, Auel, Kendall wrote:
+>> Hi Philippe,
+>>
+>> Is there an online bug tracking and feature request database? This would be a useful way to distribute work and to sync up contributors. I think the kernel uses Bugzilla, and Ubuntu has Launchpad. No doubt there are many others.
+>>
+>> I'd like to contribute in some way. I've been having a lot of fun as a Xenomai user.
+>>
+> We don't have that unfortunately. As suggested by several posters,
+> moving to a git-based, integrated development framework such as gitlab
+> or github would bring in that feature, and others we need too (CI).
+> 
+> I have no issue moving the project from the current git server at
+> xenomai.org to any of these environments.
+> 
 
-Thanks for bringing this frankly on the table! For those who follow the
-project, it's likely no news. So we were working on this issue also
-internally, with users of Xenomai inside Siemens. And we have the
-backing to enhance our involvement in upstream work. Right now we are
-working on making this concrete.
+If it helps the community to grow, I would not refuse such a move. But I
+would like to raise some concerns about platforms like github or gitlab
+that we must be aware of:
 
-There are many areas where contributions can be beneficial for the
-project and its community, and many do not require deepest understanding
-of the core, like around CI, test automation, distro packaging,
-documentation, or user support. But some essential elements in my eyes are
+- lacking integration with email-based workflows (while kernel
+  development tends to be based on that...)
 
- - building up a core team of kernel maintainers for Cobalt
+- risk of decoupling communities when parts of the discussions happen on
+  tickets or PRs and parts in mailing list threads
 
- - offloading work from the shoulders of our extremely valuable
-   maintainer
+Therefore, most projects I manage on github and in our internal gitlab
+have clear policies like "no emails, only tickets and PRs" or "no PRs,
+only patches on the mailing list". Even just using the issue tracker to
+keep some to-do list requires discipline to direct discussions
+consequently to a mailing list if that exists as well (and that usually
+does not work very well).
 
-The second part will be achieved to a certain degree by the first one as
-Philippe can probably confirm. So I would like to focus this and try to
-make some first step:
-
-We are currently planning a so far internal workshop with Philippe in
-order to discuss how to bring more of our people but also others on
-board regarding kernel maintenance topics. Topics to discussed are likely
-
- - current design and how to introduce people to it (tough, yeah...)
- - possible workflows and integration paths
- - update strategy and frequency
- - testing needs and strategies
- - supportable architectures
- - state and details of the new pipeline design
- - planning of and migration path to the new design
-
-If there is interest in joining such a discussion, physically (will
-likely take place in our office in Munich, Germany) or virtually
-(provided time zones work out), please let us know. Time frame is more
-likely early next year than mid of this December. And this shall be only
-the kickoff for further discussions in the community!
+IOW: we need to be clear in what we want a platform for - and what not.
 
 Jan
 
