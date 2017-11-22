@@ -1,14 +1,12 @@
-References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
- <f7ad8163bda5484292ccdf6e8cf1a484@P10-EX02.3DSystems.Internal>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <02f0df6b-0854-eeaa-a168-ae2c10e1d8ab@xenomai.org>
-Date: Wed, 22 Nov 2017 16:32:23 +0100
+From: =?iso-8859-1?Q?C=E9dric_Perles?= <cperles@sepro-group.com>
+Date: Wed, 22 Nov 2017 17:10:37 +0100 (CET)
+Message-ID: <023601d363ac$6ce04c40$46a0e4c0$@sepro-group.com>
 MIME-Version: 1.0
-In-Reply-To: <f7ad8163bda5484292ccdf6e8cf1a484@P10-EX02.3DSystems.Internal>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [RFC] RTnet, Analogy and the elephant in the room
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Language: fr
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Strange scheduling behaviour
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,25 +15,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Auel, Kendall" <Kendall.Auel@3DSystems.Com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
+Hi,
 
-Hi Kendall,
+I=92m working on an iMX6 based board with NXP kernel 4.1.15.
+I would like to understand why latency max returned by cyclictest
+increases from 20=B5s to 100=B5s when dohell accesses to USB.
 
-On 11/21/2017 08:27 PM, Auel, Kendall wrote:
-> Hi Philippe,
-> 
-> Is there an online bug tracking and feature request database? This would be a useful way to distribute work and to sync up contributors. I think the kernel uses Bugzilla, and Ubuntu has Launchpad. No doubt there are many others.
-> 
-> I'd like to contribute in some way. I've been having a lot of fun as a Xenomai user.
-> 
-We don't have that unfortunately. As suggested by several posters,
-moving to a git-based, integrated development framework such as gitlab
-or github would bring in that feature, and others we need too (CI).
+Since i-pipe tracer refuses to work, I used ftrace to record cobalt,
+scheduling and irq events. Here is what I see on kernelshark:
 
-I have no issue moving the project from the current git server at
-xenomai.org to any of these environments.
+As expected, cyclictest has 1 xenomai thread per core (I can see them on
+/proc/xenomai/sched/threads) that wakes up periodically after a 200=B5s
+nanosleep.
 
--- 
-Philippe.
+Sometimes, the wake up seems to be delayed (400=B5s instead of 200=B5s)
+because of an USB irq treatment followed by a call to usb-storage.
+Other times, the wake up seems to be delayed (400=B5s instead of 200=B5s)=
+ by a
+Linux call to ktimersoft, rcu and cat (see
+https://drive.google.com/file/d/18-B3WO2QH7PvBzJrt9tK5-TXvAkDxTPn/view?us=
+p
+=3Dsharing)
+
+Is it normal to delay a xenomai task wake up because of a Linux interrupt
+(I expected ipipe to act as a shield) ?
+How a simple Linux "cat" can delay a xenomai wake up ?
+
+Regards,
+
+C=E9dric.
 
