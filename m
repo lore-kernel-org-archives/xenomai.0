@@ -1,14 +1,13 @@
-From: Fazio Maurizio <maurizio.fazio@leonardocompany.com>
-Date: Wed, 22 Nov 2017 17:06:32 +0000
-Message-ID: <9f207c2a1d4644d7ae06fc4f25ed761f@ocnapvsw3301.ocr.priv>
-References: <a3111b21e04e43bea8ddcd531f698074@ocnapvsw3301.ocr.priv>
- <2343_1511369670_5A15ABC6_2343_8478_1_395d4699-e04a-c026-861d-b9866b13bb57@xenomai.org>
-In-Reply-To: <2343_1511369670_5A15ABC6_2343_8478_1_395d4699-e04a-c026-861d-b9866b13bb57@xenomai.org>
-Content-Language: it-IT
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <CADYdroNdJwaHru0_T6PQQ2jo=XyP_KBMJojEgmHrghogpMZ=ng@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <c74bd1b9-331f-7d2a-6171-31fbe392b6e0@xenomai.org>
+Date: Wed, 22 Nov 2017 18:09:11 +0100
 MIME-Version: 1.0
-Subject: [Xenomai] R:  Updating from 3.0.5 to 3.0.6
+In-Reply-To: <CADYdroNdJwaHru0_T6PQQ2jo=XyP_KBMJojEgmHrghogpMZ=ng@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [RFC] RTnet, Analogy and the elephant in the room
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,98 +16,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Norbert Lange <nolange79@gmail.com>, Xenomai <xenomai@xenomai.org>
 
-VGhhbmsgeW91IHZlcnkgbXVjaA0KDQoNCg0KDQoNCg0KTWF1cml6aW8gRmF6aW8NCg0KQ2hpZWYg
-VGVjaG5pY2FsIE9mZmljZSAvIEFpcmNyYWZ0IFN5c3RlbXMNClNvZnR3YXJlIEVuZ2luZWVyDQoN
-Cg0KDQpMZW9uYXJkbyBTLnAuQS4NCkMuc28gRnJhbmNpYSwgNDI2IC0gVG9yaW5vIC0gMTAxNDYg
-LSBJdGFseQ0KVGVsLiArMzkgMDExIDc1NiAzMzA4IC8gMzc2MQ0KDQptYXVyaXppby5mYXppb0Bs
-ZW9uYXJkb2NvbXBhbnkuY29tDQp3d3cubGVvbmFyZG9jb21wYW55LmNvbQ0KDQrigJTigJTigJTi
-gJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTi
-gJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJPigJTigJTigJTigJTigJTigJQNCkhFTElD
-T1BURVJTL0FFUk9OQVVUSUNTL0VMRUNUUk9OSUNTLCBERUZFTkNFICYgU0VDVVJJVFkgU1lTVEVN
-Uy9TUEFDRQ0K4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
-4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCT4oCU4oCU
-4oCU4oCU4oCU4oCUDQoNCg0KDQpJbCBwcmVzZW50ZSBtZXNzYWdnaW8gZS1tYWlsIGUgb2duaSBz
-dW8gYWxsZWdhdG8gZGV2b25vIGludGVuZGVyc2kgaW5kaXJpenphdGkgZXNjbHVzaXZhbWVudGUg
-YWwgZGVzdGluYXRhcmlvIGluZGljYXRvIGUgY29uc2lkZXJhcnNpIGRhbCBjb250ZW51dG8gc3Ry
-ZXR0YW1lbnRlIHJpc2VydmF0byBlIGNvbmZpZGVuemlhbGUuIFNlIG5vbiBzaWV0ZSBsJ2VmZmV0
-dGl2byBkZXN0aW5hdGFyaW8gbyBhdmV0ZSByaWNldnV0byBpbCBtZXNzYWdnaW8gZS1tYWlsIHBl
-ciBlcnJvcmUsIHNpZXRlIHByZWdhdGkgZGkgYXZ2ZXJ0aXJlIGltbWVkaWF0YW1lbnRlIGlsIG1p
-dHRlbnRlIGUgZGkgY2FuY2VsbGFyZSBpbCBzdWRkZXR0byBtZXNzYWdnaW8gZSBvZ25pIHN1byBh
-bGxlZ2F0byBkYWwgdm9zdHJvIHNpc3RlbWEgaW5mb3JtYXRpY28uIFF1YWxzaWFzaSB1dGlsaXp6
-bywgZGlmZnVzaW9uZSwgY29waWEgbyBhcmNoaXZpYXppb25lIGRlbCBwcmVzZW50ZSBtZXNzYWdn
-aW8gZGEgcGFydGUgZGkgY2hpIG5vbiBuZSDDqCBpbCBkZXN0aW5hdGFyaW8gw6ggc3RyZXR0YW1l
-bnRlIHByb2liaXRvIGUgcHXDsiBkYXIgbHVvZ28gYSByZXNwb25zYWJpbGl0w6AgZGkgY2FyYXR0
-ZXJlIGNpdmlsZSBlIHBlbmFsZSBwdW5pYmlsaSBhaSBzZW5zaSBkaSBsZWdnZS4NClF1ZXN0YSBl
-LW1haWwgaGEgdmFsb3JlIGxlZ2FsZSBzb2xvIHNlIGZpcm1hdGEgZGlnaXRhbG1lbnRlIGFpIHNl
-bnNpIGRlbGxhIG5vcm1hdGl2YSB2aWdlbnRlLg0KDQpUaGUgY29udGVudHMgb2YgdGhpcyBlbWFp
-bCBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJlIGludGVuZGVkIHNvbGVseSBmb3IgdGhl
-IGFkZHJlc3NlZShzKSBhbmQgY29udGFpbiBjb25maWRlbnRpYWwgYW5kL29yIHByaXZpbGVnZWQg
-aW5mb3JtYXRpb24uDQpJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50IG9mIHRo
-aXMgbWVzc2FnZSwgb3IgaWYgdGhpcyBtZXNzYWdlIGhhcyBiZWVuIGFkZHJlc3NlZCB0byB5b3Ug
-aW4gZXJyb3IsIHBsZWFzZSBpbW1lZGlhdGVseSBub3RpZnkgdGhlIHNlbmRlciBhbmQgdGhlbiBk
-ZWxldGUgdGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgZnJvbSB5b3VyIHN5c3RlbS4g
-SWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90
-aWZpZWQgdGhhdCBhbnkgdXNlLCBkaXNzZW1pbmF0aW9uLCBjb3B5aW5nLCBvciBzdG9yYWdlIG9m
-IHRoaXMgbWVzc2FnZSBvciBpdHMgYXR0YWNobWVudHMgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4g
-VW5hdXRob3JpemVkIGRpc2Nsb3N1cmUgYW5kL29yIHVzZSBvZiBpbmZvcm1hdGlvbiBjb250YWlu
-ZWQgaW4gdGhpcyBlbWFpbCBtZXNzYWdlIG1heSByZXN1bHQgaW4gY2l2aWwgYW5kIGNyaW1pbmFs
-IGxpYWJpbGl0eS4g4oCcDQpUaGlzIGUtbWFpbCBoYXMgbGVnYWwgdmFsdWUgYWNjb3JkaW5nIHRv
-IHRoZSBhcHBsaWNhYmxlIGxhd3Mgb25seSBpZiBpdCBpcyBkaWdpdGFsbHkgc2lnbmVkIGJ5IHRo
-ZSBzZW5kZXINCi0tLS0tTWVzc2FnZ2lvIG9yaWdpbmFsZS0tLS0tDQpEYTogUGhpbGlwcGUgR2Vy
-dW0gW21haWx0bzpycG1AeGVub21haS5vcmddDQpJbnZpYXRvOiBtZXJjb2xlZMOsIDIyIG5vdmVt
-YnJlIDIwMTcgMTc6NTQNCkE6IEZhemlvIE1hdXJpemlvOyB4ZW5vbWFpQHhlbm9tYWkub3JnDQpP
-Z2dldHRvOiBSZTogW1hlbm9tYWldIFVwZGF0aW5nIGZyb20gMy4wLjUgdG8gMy4wLjYNCg0KT24g
-MTEvMjIvMjAxNyAwOTo0MiBBTSwgRmF6aW8gTWF1cml6aW8gd3JvdGU6DQo+IEkgaGF2ZSBhIHN0
-dXBpZCBxdWVzdGlvbuKApg0KDQpubyBwcm9iLiBJJ20gc3RpbGwgbG9va2luZyBmb3Igc21hcnQg
-YW5zd2Vycy4NCg0KPiBJIHdvdWxkIGxpa2UgdG8gdXBncmFkZSBteSBjdXJyZW50IHhlbm9tYWkg
-My4wLjUgYmFzZWQgc3lzdGVtIHRvDQo+IHhlbm9tYWkgMy4wLjbigKYgSSBuZWVkIHRvIHJlcGF0
-Y2ggdGhlIGtlcm5lbCB3aXRoIHRoZSBwcmVwYXJlLWtlcm5lbCBzY3JpcHQgb3IgSSBjYW4gb25s
-eSByZWJ1aWxkIGFuZCBleGVjdXRlIGEgbWFrZSBpbnN0YWxsPw0KPg0KDQpyZS1wYXRjaGluZyBp
-cyBhbHdheXMgYmV0dGVyLCBmaXJzdCB0byBnZXQgdGhlIHZlcnNpb24gc3RhbXAgcmlnaHQsIGFu
-ZCBhbHNvIGluIGNhc2Uga2VybmVsIGZpbGVzIGhhdmUgYXBwZWFyZWQvZGlzYXBwZWFyZWQgYmV0
-d2VlbiB2ZXJzaW9ucyAoYWx0aG91Z2ggdGhpcyBkb2VzIG5vdCBmcmVxdWVudGx5IGhhcHBlbiBi
-ZXR3ZWVuIGNsb3NlIG1haW50ZW5hbmNlIHJlbGVhc2VzKS4NCg0KPg0KPiBNYXVyaXppbyBGYXpp
-bw0KPg0KPiBDaGllZiBUZWNobmljYWwgT2ZmaWNlIC8gQWlyY3JhZnQgU3lzdGVtcyBTb2Z0d2Fy
-ZSBFbmdpbmVlcg0KPg0KPg0KPg0KPiBMZW9uYXJkbyBTLnAuQS4NCj4gQy5zbyBGcmFuY2lhLCA0
-MjYgLSBUb3Jpbm8gLSAxMDE0NiAtIEl0YWx5IFRlbC4gKzM5IDAxMSA3NTYgMzMwOCAvDQo+IDM3
-NjEgY2VsbC4gKzM5IDMyOCAzNDg4MDcwIG1hdXJpemlvLmZhemlvQGxlb25hcmRvY29tcGFueS5j
-b20NCj4gd3d3Lmxlb25hcmRvY29tcGFueS5jb20NCj4NCj4g4oCU4oCU4oCU4oCU4oCU4oCU4oCU
-4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
-4oCU4oCU4oCU4oCU4oCU4oCU4oCT4oCU4oCU4oCU4oCU4oCU4oCUDQo+IEhFTElDT1BURVJTL0FF
-Uk9OQVVUSUNTL0VMRUNUUk9OSUNTLCBERUZFTkNFICYgU0VDVVJJVFkgU1lTVEVNUy9TUEFDRQ0K
-PiDigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTi
-gJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJPigJTigJTigJTigJTi
-gJTigJQNCj4NCj4NCj4NCj4gSWwgcHJlc2VudGUgbWVzc2FnZ2lvIGUtbWFpbCBlIG9nbmkgc3Vv
-IGFsbGVnYXRvIGRldm9ubyBpbnRlbmRlcnNpIGluZGlyaXp6YXRpIGVzY2x1c2l2YW1lbnRlIGFs
-IGRlc3RpbmF0YXJpbyBpbmRpY2F0byBlIGNvbnNpZGVyYXJzaSBkYWwgY29udGVudXRvIHN0cmV0
-dGFtZW50ZSByaXNlcnZhdG8gZSBjb25maWRlbnppYWxlLiBTZSBub24gc2lldGUgbCdlZmZldHRp
-dm8gZGVzdGluYXRhcmlvIG8gYXZldGUgcmljZXZ1dG8gaWwgbWVzc2FnZ2lvIGUtbWFpbCBwZXIg
-ZXJyb3JlLCBzaWV0ZSBwcmVnYXRpIGRpIGF2dmVydGlyZSBpbW1lZGlhdGFtZW50ZSBpbCBtaXR0
-ZW50ZSBlIGRpIGNhbmNlbGxhcmUgaWwgc3VkZGV0dG8gbWVzc2FnZ2lvIGUgb2duaSBzdW8gYWxs
-ZWdhdG8gZGFsIHZvc3RybyBzaXN0ZW1hIGluZm9ybWF0aWNvLiBRdWFsc2lhc2kgdXRpbGl6em8s
-IGRpZmZ1c2lvbmUsIGNvcGlhIG8gYXJjaGl2aWF6aW9uZSBkZWwgcHJlc2VudGUgbWVzc2FnZ2lv
-IGRhIHBhcnRlIGRpIGNoaSBub24gbmUgw6ggaWwgZGVzdGluYXRhcmlvIMOoIHN0cmV0dGFtZW50
-ZSBwcm9pYml0byBlIHB1w7IgZGFyIGx1b2dvIGEgcmVzcG9uc2FiaWxpdMOgIGRpIGNhcmF0dGVy
-ZSBjaXZpbGUgZSBwZW5hbGUgcHVuaWJpbGkgYWkgc2Vuc2kgZGkgbGVnZ2UuDQo+IFF1ZXN0YSBl
-LW1haWwgaGEgdmFsb3JlIGxlZ2FsZSBzb2xvIHNlIGZpcm1hdGEgZGlnaXRhbG1lbnRlIGFpIHNl
-bnNpIGRlbGxhIG5vcm1hdGl2YSB2aWdlbnRlLg0KPg0KPiBUaGUgY29udGVudHMgb2YgdGhpcyBl
-bWFpbCBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJlIGludGVuZGVkIHNvbGVseSBmb3Ig
-dGhlIGFkZHJlc3NlZShzKSBhbmQgY29udGFpbiBjb25maWRlbnRpYWwgYW5kL29yIHByaXZpbGVn
-ZWQgaW5mb3JtYXRpb24uDQo+IElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQg
-b2YgdGhpcyBtZXNzYWdlLCBvciBpZiB0aGlzDQo+IG1lc3NhZ2UgaGFzIGJlZW4gYWRkcmVzc2Vk
-IHRvIHlvdSBpbiBlcnJvciwgcGxlYXNlIGltbWVkaWF0ZWx5IG5vdGlmeQ0KPiB0aGUgc2VuZGVy
-IGFuZCB0aGVuIGRlbGV0ZSB0aGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBmcm9tIHlv
-dXINCj4gc3lzdGVtLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50LCB5b3Ug
-YXJlIGhlcmVieSBub3RpZmllZA0KPiB0aGF0IGFueSB1c2UsIGRpc3NlbWluYXRpb24sIGNvcHlp
-bmcsIG9yIHN0b3JhZ2Ugb2YgdGhpcyBtZXNzYWdlIG9yDQo+IGl0cyBhdHRhY2htZW50cyBpcyBz
-dHJpY3RseSBwcm9oaWJpdGVkLiBVbmF1dGhvcml6ZWQgZGlzY2xvc3VyZSBhbmQvb3INCj4gdXNl
-IG9mIGluZm9ybWF0aW9uIGNvbnRhaW5lZCBpbiB0aGlzIGVtYWlsIG1lc3NhZ2UgbWF5IHJlc3Vs
-dCBpbiBjaXZpbA0KPiBhbmQgY3JpbWluYWwgbGlhYmlsaXR5LiDigJwgVGhpcyBlLW1haWwgaGFz
-IGxlZ2FsIHZhbHVlIGFjY29yZGluZyB0byB0aGUNCj4gYXBwbGljYWJsZSBsYXdzIG9ubHkgaWYg
-aXQgaXMgZGlnaXRhbGx5IHNpZ25lZCBieSB0aGUgc2VuZGVyDQo+IF9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo+IFhlbm9tYWkgbWFpbGluZyBsaXN0DQo+
-IFhlbm9tYWlAeGVub21haS5vcmcNCj4gaHR0cHM6Ly94ZW5vbWFpLm9yZy9tYWlsbWFuL2xpc3Rp
-bmZvL3hlbm9tYWkNCj4NCg0KDQotLQ0KUGhpbGlwcGUuDQo=
+On 11/22/2017 11:06 AM, Norbert Lange wrote:
+> Hi,
+> 
+> not really happy to hear that, but this was already my impression.
+> There is alot of knowledge of kernel, hardware and bootloader
+> knowledge necessary to be able to maintain the ipipe patch, as
+> newcomer to most of these I am just helpless. Unless someone is
+> dedicated to that,
+> there is not chance to keep up.
+> 
+> What you could do is to automate as much as possible, saving some of
+> the regular grinding work.
+> The way realtime is used with minimal configurations, FTB errors will
+> show up late,
+> and changes in kernel APIs are only carried over in actively used drivers.
+> 
+> ie.
+> -   automated builds with several kernel configs
+
+Agreed. We used to have that, until last year. We need this back.
+
+> -   potential some tests under qemu with the above.
+> 
+> Buildroot does something similar, and this is very low maintenance
+> cost once its setup,
+> could automatically report issues or non-working config-switches.
+
+Do you mean buildroot-CI?
+
+> Nowadays you can let providers like Gitlab take care of keeping the
+> servers running,
+> as I understand it you have no limits to build-time unless the project
+> is private.
+> You get some good issue tracking on top of it, patches can be
+> automatically checked in form of merge-requests.
+> (In the unlikely case they go bust or get unfriendly, you can still
+> tun an older Gitlab version on your own server)
+> 
+> 
+> I really don`t see the advantage in separating the subprojects,
+> its already complicated enough to piece everything together,
+> and with automated builds you could atleast catch build-errors or fails-to-boot.
+> I take unmaintained, but buildable code in-tree over unmaintained code
+> in a separate project everyday.
+
+Moving to Gitlab is definitely an option on the table.
+
+> 
+> Publicity
+> 
+> Dont know how to takle this, but its very easy to get a full IDE and
+> start programming some embedded CPUs.
+> Commercial OSes have a huge advantage there, cause it doesnt take much
+> to get example code running (youre only going to hit walls as your
+> problems get bigger than their ecosystem). First impressions count,
+> and being able to debug through code gets you firsthand knowledge
+> faster than any other approach.
+> 
+> In that respect some known-to-work hardware with known-to-work
+> dual-kernel with a pre-setup dev environment would go a long way to
+> ease the first steps and might gather some new interested users.
+> Some cheap, high-volume, jtag-debugable SBC would do.
+> 
+> Otherwise theres some architecture-, bios- and ever changing
+> kernel-magic involved just to get a plain system running.
+
+Agreed, the idea of, e.g. a live image booting Xenomai to lower the
+barrier on entry is a nice way to attract new users. This said, the
+discussion I would like to see first is about fixing the existing issues
+in the development and maintenance processes so that current users have
+their investment in Xenomai kept safe.
+
+-- 
+Philippe.
 
