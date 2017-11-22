@@ -1,11 +1,11 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
-Message-ID: <30092754-52b7-e4af-fff5-123737a5cc33@alaxarxa.net>
-Date: Wed, 22 Nov 2017 13:33:05 +0100
 MIME-Version: 1.0
-In-Reply-To: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <30092754-52b7-e4af-fff5-123737a5cc33@alaxarxa.net>
+References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
+ <30092754-52b7-e4af-fff5-123737a5cc33@alaxarxa.net>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Wed, 22 Nov 2017 10:17:11 -0500
+Message-ID: <CALLqZ8Qge+4w+vrJN2MwdQD-X1bJyA1mRehbsMA+=-up3-PM5g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Subject: Re: [Xenomai] [RFC] RTnet, Analogy and the elephant in the room
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,75 +17,164 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGksCgp5ZXMsIGl0J3MgdHJ1ZS4gV2UgaGF2ZSBhbiBFbG1lciBhbmQgaGlzIGNvdXNpbiBXaWxi
-dXIgaXMgcmVhciB0aGUgZG9vci4KCkxldCBtZSByZW1hcmsgc29tZSBwb2ludHMgb2YgeW91ciBn
-cmVhdCBlbWFpbDoKCi0gYWJvdXQgdGhlIEkvTyBmcmFtZXdvcmtzCgpPbiAyMS8xMS8xNyAxODox
-MSwgUGhpbGlwcGUgR2VydW0gd3JvdGU6Cj4gVGhlCj4gc2l0dWF0aW9uIGhhcyByZWFjaGVkIGEg
-cG9pbnQgd2hlcmUgSSBzZWUgbm8gYWx0ZXJuYXRpdmUgdG8gZHJvcHBpbmcKPiB0aGVtIGlmIHRo
-ZSBzaXR1YXRpb24gZG9lcyBub3QgaW1wcm92ZSwgLi4uCgotIGFib3V0IHlvdXIgcnVsZSBpbiB0
-aGUgcHJvamVjdDoKCj4gSSBoYXZlIG5vdCBiZWVuIHNjYWxpbmcgdG8gdGhlIFhlbm9tYWkKPiBt
-YWludGVuYW5jZSwgZGV2ZWxvcG1lbnQgYW5kIGRvY3VtZW50YXRpb24gdGFza3MsIHdpdGggdGhl
-IHJlcXVpcmVtZW50Cj4gb2YgcnVubmluZyBteSBidXNpbmVzcyBpbiBwYXJhbGxlbC4KCi0gYWJv
-dXQgaG93IHRvIHNvbHZlIGl0OgoKPiBUaGUgc29sdXRpb24gdG8gdGhpcyBzZXJpb3VzIHByb2Js
-ZW0gaXMgZml0dGluZyB0aGUgcHJvamVjdCB0byB0aGUKPiBhdmFpbGFibGUgcmVzb3VyY2VzIGJ5
-IG5hcnJvd2luZyBpdHMgZ29hbCwgb3IgY29udmVyc2VseSwgYnkgZ3Jvd2luZyB0aGUKPiBwb29s
-IG9mIGNvbnRyaWJ1dG9ycy4KCi0gYWJvdXQgdGhlIHByZXNlbmNlIG9mIFhlbm9tYWkgaW4gdGhl
-IHdvcmxkOgoKPiB0byBteSBjdXJyZW50IGtub3dsZWRnZSwKPiBYZW5vbWFpIGlzIHByZXNlbnQg
-aW4gYSBicm9hZCByYW5nZSBvZiBhcHBsaWNhdGlvbnMgYW5kIHN5c3RlbXM6Cj4gbWFnbmV0aWMg
-cmVzb25hbmNlIHNjYW5uZXJzLCAyRC8zRCBwcmludGVycywgbmF2aWdhdGlvbiAmIHBvc2l0aW9u
-aW5nLAo+IGNvbW11bmljYXRpb24gZXF1aXBtZW50LCBhdXRvbm9tb3VzIHZlaGljbGVzLCBjb250
-cm9sICYgYXV0b21hdGlvbgo+IHN5c3RlbXMgaW4gdmFyaW91cyBwbGFudHMuCgotIGFib3V0IHdo
-ZXJlIHdlIGNhbWUgZnJvbToKCj4gT24gdGhlIHNhZCBzaWRlIG9mIHRoZSBzdG9yeSwgdGhpcyBw
-cm9qZWN0IGhhcyB2aXJ0dWFsbHkgYmVjb21lIGEKPiBvbmUtbWFuIHNob3cgdGhlIGRheSBHaWxs
-ZXMgLSBteSBsb25nLXRpbWUgZnJpZW5kIGFuZCBoYWNraW5nIHNvdWwgbWF0ZQo+IC0gbGVmdCB1
-cy4gVGhhdCBzaG93IGlzIHRvbyBiaWcgZm9yIG1lIHRvIHJ1biBpdCBhbG9uZSAuLi4KCgpBbmQg
-ZmluYWxseSwgaWYgeW91IGxldCBtZSB0YWxrIGFib3V0IG91ciBFbG1lci4KClRoZSBJL08gZnJh
-bWV3b3JrcyBhcmUgSU1ITyBhcmUgY3J1Y2lhbC4gSXQgaGFzIGEgdmVyeSBsaW1pdGVkIHNjZW5h
-cmlvIHRvCmRldmVsb3AgYSBSVCBzeXN0ZW0gaWYgaXQgaGFzIG5vIGludGVyYWN0aW9uIHdpdGgg
-dGhlIGV4dGVybmFsIGRldmljZXMsIG9yCndoYXRldmVyLiBJIGhhdmUgdGhlIGhvcGUgKCJBIG5l
-dyBob3BlIiA7LSkpIHRoYXQgU2llbWVucyBhbmQgRGVueCBndXlzLApjb250aW51aW5nIGNvbnRy
-aWJ1dGluZyB0byB0aGUgcHJvamVjdC4gQWxzbywgSSBoYXZlIHNlZW4gdGhhdCBuZXcgcGVvcGxl
-IGhhdmUKaW50ZXJlc3QuCgpCdXQgSSB3b3VsZCBsaWtlIHRvIGFzayB5b3UgZGlyZWN0bHkgUGhp
-bGlwcGUgc29tZSBwcmFjdGljYWwgc3RlcHMgdGhhdCBjb3VsZAphZGRyZXNzIHRvIHRoaXMgY2hh
-bGxlbmdlOgoKLSBXb3VsZCB5b3UgYmUgd2lsbGluZyB0byBtb3ZlIFhlbm9tYWkgdG8gc29tZSBw
-bGF0Zm9ybSBsaWtlIGdpdGh1Yiwgb3Igc2ltaWxhcj8KSXQgd2lsbCBoYXZlIHNvbWUgYWR2YW50
-YWdlcyBsaWtlIGlzc3VlcyBtYW5hZ2VtZW50LCBtYWludGVuYW5jZSwgKG1vcmUKdmlzaWJpbGl0
-eT8pLCBldGMuCgotIFdvdWxkIHlvdSBiZSB3aWxsaW5nIHRvIGRlbGVnYXRlIHRhc2tzIG9mIHRo
-ZSBwcm9qZWN0IHRvIG90aGVyIHBlb3BsZSwgdGhhdAptYXliZSB3aWxsIG5vdCBtYWtlIGl0IGFz
-IGdvb2QgYXMgeW91IHdpbGwgZG8sIGxpa2UgZG9jdW1lbnRhdGlvbiwgd2ViIHNpdGUsIG9yCnBh
-cnRzIG9mIGNvZGUsIGJ1dCBtYWRlIHRoZW4gd2l0aCBhbiBhY2NlcHRhYmxlIHF1YWxpdHk/IEFu
-ZCBwbGVhc2UsIGRvbid0IHRha2UKYmFkLCBpdCdzIGEgZGlmZmljdWx0IHRoaW5nLiBJIGhhdmUg
-dG8gY29uZmVzcyB0aGF0IGZvciBtZSwgaXQncyB2ZXJ5IGRpZmZpY3VsdC4KCi0gV291bGQgeW91
-IGJlIHdpbGxpbmcgdG8gZ3VpZGUgbmV3IGNvbnRyaWJ1dG9ycyBhbmQgZ2l2ZSB0aGVtIHJlc3Bv
-bnNpYmlsaXRpZXMKb2YgaW1wb3J0YW50IHBhcnRzIG9mIHRoZSBjb2RlPwoKLSBXb3VsZCB5b3Ug
-YmUgd2lsbGluZyB0byBoYXZlIHRoZSByb2xlIGFzIGNvb3JkaW5hdG9yIGFuZCBsZWFkZXIgb2Yg
-dGhlIHByb2plY3QKY2hhbmdpbmcgZnJvbSBvbmUgbWFuIHNob3cgdG8gc29tZSBtb3JlIG9wZW4g
-cHJvamVjdD8gd2lsbCBiZSBpdCBwb3NzaWJsZT8gSQpkb24ndCBrbm93IGlmIGJlY2F1c2UgbGlj
-ZW5zZSBpc3N1ZXMgb3Igd2hhdGV2ZXIgd291bGQgbGV0IGl0Li4uCgotIFdvdWxkIHlvdSBiZSB3
-aWxsaW5nIHRvIGNoYW5nZSB0aGUgYnVpbGQgc3lzdGVtIGZyb20gYXV0b3Rvb2xzIHRvIGFub3Ro
-ZXIKbW9kZXJuIHRvb2w/IChFeCBDTWFrZT8pIElNSE8gZmV3IHBlb3BsZSB1bmRlcnN0YW5kIGF1
-dG90b29scyBhbmQgaXQncyBhIGJhcnJpZXIKZm9yIHRoZSBuZXcgY29udHJpYnV0b3JzLCBhdCBs
-ZWFzdCBpbiBhbm90aGVyIG9wZW5zb3VyY2UgcHJvamVjdHMuIEhvd2V2ZXIsIEkKaGF2ZSB0byBh
-ZG1pdCB0aGF0IHRoZSBlbnRyeSBsZXZlbCBpbiBYZW5vbWFpIGlzIGhpZ2gsIHNvLCBhdXRvdG9v
-bHMgc2hvdWxkIG5vdApiZSBhIHByb2JsZW0uCgpBbmQgeWVzLCB0aGUgbG9zdCBvZiBHaWxsZXMg
-d2FzIGEgZ3JlYXQgYmxvdywgb24gYSB0aGUgcGVyc29uYWwgbGV2ZWwgYW5kIGZvcgpoaXMgY29u
-dHJpYnV0aW9ucyBvbiB0aGUgcHJvamVjdC4KCkZyb20gbXkgcGFydCwgSSBjYW4gY29udHJpYnV0
-ZSBpZiB0aGVyZSdzIGludGVyZXN0LCBpbiBEZWJpYW4gKFVidW50dSkgcGFja2FnZXMuCkFsc28s
-IGluIHRlc3RpbmcgYW5kIHRyeWluZyB0byBoZWxwIGluIHRoZSBSVG5ldCBwYXJ0LCBhcyB1c2Vy
-IHRoYXQgSSdtLiBTbywgSQpjb3VsZCB0cnkgdG8gcHJvdmlkZSBzb21lIHByZWNvbmZpZ3VyZWQg
-c2NlbmFyaW9zIHRvIHRoZSBwZW9wbGUgdGhhdCB3b3VsZCBsaWtlCnRvIGVudHJ5IGluIFhlbm9t
-YWkuCgpJIGhhdmUgdG8gYWRtaXQgdGhhdCBJJ20gYSBiaXQgc2NhcmVkIGJlY2F1c2Ugd2UgZGVw
-ZW5kIG9mIFhlbm9tYWkgaW4gc29tZQpwcm9qZWN0cyBpbiBteSBVbml2ZXJzaXR5LiBCdXQsIHBy
-b2JhYmx5IHdlIGNvdWxkIHRyeSB0byBtb3ZlIHRvIFJUX1BSRU1QVC4gQnV0LApiZWNhdXNlIGl0
-cyBoaXN0b3J5IGFuZCBteSAiYWZmZWN0aW9uIiBmb3IgdGhlIHByb2plY3QgSSB3b3VsZCBwcmVm
-ZXIgc3RheSB3aXRoCml0IGFuZCB0cnkgdG8gaGVscC4KCkNoZWVycywKCkxlb3BvbGQKCi0tIAot
-LQpMaW51eCBVc2VyIDE1MjY5MiAgICAgR1BHOiAwNUY0QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQot
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkE6IEJlY2F1c2UgaXQgbWVzc2Vz
-IHVwIHRoZSBvcmRlciBpbiB3aGljaCBwZW9wbGUgbm9ybWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkg
-aXMgdG9wLXBvc3Rpbmcgc3VjaCBhIGJhZCB0aGluZz8KQTogVG9wLXBvc3RpbmcuClE6IFdoYXQg
-aXMgdGhlIG1vc3QgYW5ub3lpbmcgdGhpbmcgaW4gZS1tYWlsPwoKCgotLS0tLS0tLS0tLS0tLSBu
-ZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJl
-ZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUK
-U2l6ZTogODMzIGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0
-cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTcxMTIyL2Fm
-NmQ3YjAyL2F0dGFjaG1lbnQuc2lnPgo=
+    I really like the idea of having some TODO files, this would given new
+comers to the project a place to start.
+Improving the documentation and adding a quick start guide might help get
+more people interested in using
+Xenomai.  With more users hopefully that would lead to more contributors
+and not just more feature requests.
+
+    To increase the presence of Xenomai would it make sense to have some
+people focus on drivers and
+maintenance for some popular community boards?  I personally focus on the
+Xilinx Zynq platform,
+but it might be useful to have people build and test images for  raspberry
+pi boards, beaglebones and other
+popular maker boards for every stable release of Xenomai.  I've posted my
+steps on how to build Xenomai
+for Zynq and will start to build and maintain pre-built binaries for Zynq
+and run tests for the boards I have access to.
+I find a lot of people that give me feedback on the Xenomai on Zynq seem to
+just want to get started quickly
+and go.  This really only addresses increasing Xenomai presence and would
+increase the total work which
+might not be what's desired right now.
+
+
+On Wed, Nov 22, 2017 at 7:33 AM, Leopold Palomo-Avellaneda <leo@alaxarxa.net
+> wrote:
+
+> Hi,
+>
+> yes, it's true. We have an Elmer and his cousin Wilbur is rear the door.
+>
+> Let me remark some points of your great email:
+>
+> - about the I/O frameworks
+>
+> On 21/11/17 18:11, Philippe Gerum wrote:
+> > The
+> > situation has reached a point where I see no alternative to dropping
+> > them if the situation does not improve, ...
+>
+> - about your rule in the project:
+>
+> > I have not been scaling to the Xenomai
+> > maintenance, development and documentation tasks, with the requirement
+> > of running my business in parallel.
+>
+> - about how to solve it:
+>
+> > The solution to this serious problem is fitting the project to the
+> > available resources by narrowing its goal, or conversely, by growing the
+> > pool of contributors.
+>
+> - about the presence of Xenomai in the world:
+>
+> > to my current knowledge,
+> > Xenomai is present in a broad range of applications and systems:
+> > magnetic resonance scanners, 2D/3D printers, navigation & positioning,
+> > communication equipment, autonomous vehicles, control & automation
+> > systems in various plants.
+>
+> - about where we came from:
+>
+> > On the sad side of the story, this project has virtually become a
+> > one-man show the day Gilles - my long-time friend and hacking soul mate
+> > - left us. That show is too big for me to run it alone ...
+>
+>
+> And finally, if you let me talk about our Elmer.
+>
+> The I/O frameworks are IMHO are crucial. It has a very limited scenario to
+> develop a RT system if it has no interaction with the external devices, or
+> whatever. I have the hope ("A new hope" ;-)) that Siemens and Denx guys,
+> continuing contributing to the project. Also, I have seen that new people
+> have
+> interest.
+>
+> But I would like to ask you directly Philippe some practical steps that
+> could
+> address to this challenge:
+>
+> - Would you be willing to move Xenomai to some platform like github, or
+> similar?
+> It will have some advantages like issues management, maintenance, (more
+> visibility?), etc.
+>
+> - Would you be willing to delegate tasks of the project to other people,
+> that
+> maybe will not make it as good as you will do, like documentation, web
+> site, or
+> parts of code, but made then with an acceptable quality? And please, don't
+> take
+> bad, it's a difficult thing. I have to confess that for me, it's very
+> difficult.
+>
+> - Would you be willing to guide new contributors and give them
+> responsibilities
+> of important parts of the code?
+>
+> - Would you be willing to have the role as coordinator and leader of the
+> project
+> changing from one man show to some more open project? will be it possible?
+> I
+> don't know if because license issues or whatever would let it...
+>
+> - Would you be willing to change the build system from autotools to another
+> modern tool? (Ex CMake?) IMHO few people understand autotools and it's a
+> barrier
+> for the new contributors, at least in another opensource projects.
+> However, I
+> have to admit that the entry level in Xenomai is high, so, autotools
+> should not
+> be a problem.
+>
+> And yes, the lost of Gilles was a great blow, on a the personal level and
+> for
+> his contributions on the project.
+>
+> From my part, I can contribute if there's interest, in Debian (Ubuntu)
+> packages.
+> Also, in testing and trying to help in the RTnet part, as user that I'm.
+> So, I
+> could try to provide some preconfigured scenarios to the people that would
+> like
+> to entry in Xenomai.
+>
+> I have to admit that I'm a bit scared because we depend of Xenomai in some
+> projects in my University. But, probably we could try to move to
+> RT_PREMPT. But,
+> because its history and my "affection" for the project I would prefer stay
+> with
+> it and try to help.
+>
+> Cheers,
+>
+> Leopold
+>
+> --
+> --
+> Linux User 152692     GPG: 05F4A7A949A2D9AA
+> Catalonia
+> -------------------------------------
+> A: Because it messes up the order in which people normally read text.
+> Q: Why is top-posting such a bad thing?
+> A: Top-posting.
+> Q: What is the most annoying thing in e-mail?
+>
+>
+>
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: signature.asc
+> Type: application/pgp-signature
+> Size: 833 bytes
+> Desc: OpenPGP digital signature
+> URL: <http://xenomai.org/pipermail/xenomai/attachments/20171122/
+> af6d7b02/attachment.sig>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+>
