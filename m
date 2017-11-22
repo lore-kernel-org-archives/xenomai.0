@@ -1,11 +1,9 @@
-From: Fazio Maurizio <maurizio.fazio@leonardocompany.com>
-Date: Wed, 22 Nov 2017 08:42:16 +0000
-Message-ID: <a3111b21e04e43bea8ddcd531f698074@ocnapvsw3301.ocr.priv>
-Content-Language: it-IT
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Subject: [Xenomai] Updating from 3.0.5 to 3.0.6
+From: Norbert Lange <nolange79@gmail.com>
+Date: Wed, 22 Nov 2017 11:06:35 +0100
+Message-ID: <CADYdroNdJwaHru0_T6PQQ2jo=XyP_KBMJojEgmHrghogpMZ=ng@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] [RFC] RTnet, Analogy and the elephant in the room
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,47 +12,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-SSBoYXZlIGEgc3R1cGlkIHF1ZXN0aW9u4oCmDQpJIHdvdWxkIGxpa2UgdG8gdXBncmFkZSBteSBj
-dXJyZW50IHhlbm9tYWkgMy4wLjUgYmFzZWQgc3lzdGVtIHRvIHhlbm9tYWkgMy4wLjbigKYNCkkg
-bmVlZCB0byByZXBhdGNoIHRoZSBrZXJuZWwgd2l0aCB0aGUgcHJlcGFyZS1rZXJuZWwgc2NyaXB0
-IG9yIEkgY2FuIG9ubHkgcmVidWlsZCBhbmQgZXhlY3V0ZSBhIG1ha2UgaW5zdGFsbD8NCg0KDQpN
-YXVyaXppbyBGYXppbw0KDQpDaGllZiBUZWNobmljYWwgT2ZmaWNlIC8gQWlyY3JhZnQgU3lzdGVt
-cw0KU29mdHdhcmUgRW5naW5lZXINCg0KDQoNCkxlb25hcmRvIFMucC5BLg0KQy5zbyBGcmFuY2lh
-LCA0MjYgLSBUb3Jpbm8gLSAxMDE0NiAtIEl0YWx5DQpUZWwuICszOSAwMTEgNzU2IDMzMDggLyAz
-NzYxDQpjZWxsLiArMzkgMzI4IDM0ODgwNzANCm1hdXJpemlvLmZhemlvQGxlb25hcmRvY29tcGFu
-eS5jb20NCnd3dy5sZW9uYXJkb2NvbXBhbnkuY29tDQoNCuKAlOKAlOKAlOKAlOKAlOKAlOKAlOKA
-lOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKA
-lOKAlOKAlOKAlOKAlOKAlOKAk+KAlOKAlOKAlOKAlOKAlOKAlA0KSEVMSUNPUFRFUlMvQUVST05B
-VVRJQ1MvRUxFQ1RST05JQ1MsIERFRkVOQ0UgJiBTRUNVUklUWSBTWVNURU1TL1NQQUNFDQrigJTi
-gJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTi
-gJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJPigJTigJTigJTigJTigJTigJQN
-Cg0KDQoNCklsIHByZXNlbnRlIG1lc3NhZ2dpbyBlLW1haWwgZSBvZ25pIHN1byBhbGxlZ2F0byBk
-ZXZvbm8gaW50ZW5kZXJzaSBpbmRpcml6emF0aSBlc2NsdXNpdmFtZW50ZSBhbCBkZXN0aW5hdGFy
-aW8gaW5kaWNhdG8gZSBjb25zaWRlcmFyc2kgZGFsIGNvbnRlbnV0byBzdHJldHRhbWVudGUgcmlz
-ZXJ2YXRvIGUgY29uZmlkZW56aWFsZS4gU2Ugbm9uIHNpZXRlIGwnZWZmZXR0aXZvIGRlc3RpbmF0
-YXJpbyBvIGF2ZXRlIHJpY2V2dXRvIGlsIG1lc3NhZ2dpbyBlLW1haWwgcGVyIGVycm9yZSwgc2ll
-dGUgcHJlZ2F0aSBkaSBhdnZlcnRpcmUgaW1tZWRpYXRhbWVudGUgaWwgbWl0dGVudGUgZSBkaSBj
-YW5jZWxsYXJlIGlsIHN1ZGRldHRvIG1lc3NhZ2dpbyBlIG9nbmkgc3VvIGFsbGVnYXRvIGRhbCB2
-b3N0cm8gc2lzdGVtYSBpbmZvcm1hdGljby4gUXVhbHNpYXNpIHV0aWxpenpvLCBkaWZmdXNpb25l
-LCBjb3BpYSBvIGFyY2hpdmlhemlvbmUgZGVsIHByZXNlbnRlIG1lc3NhZ2dpbyBkYSBwYXJ0ZSBk
-aSBjaGkgbm9uIG5lIMOoIGlsIGRlc3RpbmF0YXJpbyDDqCBzdHJldHRhbWVudGUgcHJvaWJpdG8g
-ZSBwdcOyIGRhciBsdW9nbyBhIHJlc3BvbnNhYmlsaXTDoCBkaSBjYXJhdHRlcmUgY2l2aWxlIGUg
-cGVuYWxlIHB1bmliaWxpIGFpIHNlbnNpIGRpIGxlZ2dlLg0KUXVlc3RhIGUtbWFpbCBoYSB2YWxv
-cmUgbGVnYWxlIHNvbG8gc2UgZmlybWF0YSBkaWdpdGFsbWVudGUgYWkgc2Vuc2kgZGVsbGEgbm9y
-bWF0aXZhIHZpZ2VudGUuDQoNClRoZSBjb250ZW50cyBvZiB0aGlzIGVtYWlsIG1lc3NhZ2UgYW5k
-IGFueSBhdHRhY2htZW50cyBhcmUgaW50ZW5kZWQgc29sZWx5IGZvciB0aGUgYWRkcmVzc2VlKHMp
-IGFuZCBjb250YWluIGNvbmZpZGVudGlhbCBhbmQvb3IgcHJpdmlsZWdlZCBpbmZvcm1hdGlvbi4N
-CklmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQgb2YgdGhpcyBtZXNzYWdlLCBv
-ciBpZiB0aGlzIG1lc3NhZ2UgaGFzIGJlZW4gYWRkcmVzc2VkIHRvIHlvdSBpbiBlcnJvciwgcGxl
-YXNlIGltbWVkaWF0ZWx5IG5vdGlmeSB0aGUgc2VuZGVyIGFuZCB0aGVuIGRlbGV0ZSB0aGlzIG1l
-c3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBmcm9tIHlvdXIgc3lzdGVtLiBJZiB5b3UgYXJlIG5v
-dCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0aGF0IGFu
-eSB1c2UsIGRpc3NlbWluYXRpb24sIGNvcHlpbmcsIG9yIHN0b3JhZ2Ugb2YgdGhpcyBtZXNzYWdl
-IG9yIGl0cyBhdHRhY2htZW50cyBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBVbmF1dGhvcml6ZWQg
-ZGlzY2xvc3VyZSBhbmQvb3IgdXNlIG9mIGluZm9ybWF0aW9uIGNvbnRhaW5lZCBpbiB0aGlzIGVt
-YWlsIG1lc3NhZ2UgbWF5IHJlc3VsdCBpbiBjaXZpbCBhbmQgY3JpbWluYWwgbGlhYmlsaXR5LiDi
-gJwNClRoaXMgZS1tYWlsIGhhcyBsZWdhbCB2YWx1ZSBhY2NvcmRpbmcgdG8gdGhlIGFwcGxpY2Fi
-bGUgbGF3cyBvbmx5IGlmIGl0IGlzIGRpZ2l0YWxseSBzaWduZWQgYnkgdGhlIHNlbmRlcg0K
+Hi,
+
+not really happy to hear that, but this was already my impression.
+There is alot of knowledge of kernel, hardware and bootloader
+knowledge necessary to be able to maintain the ipipe patch, as
+newcomer to most of these I am just helpless. Unless someone is
+dedicated to that,
+there is not chance to keep up.
+
+What you could do is to automate as much as possible, saving some of
+the regular grinding work.
+The way realtime is used with minimal configurations, FTB errors will
+show up late,
+and changes in kernel APIs are only carried over in actively used drivers.
+
+ie.
+-   automated builds with several kernel configs
+-   potential some tests under qemu with the above.
+
+Buildroot does something similar, and this is very low maintenance
+cost once its setup,
+could automatically report issues or non-working config-switches.
+Nowadays you can let providers like Gitlab take care of keeping the
+servers running,
+as I understand it you have no limits to build-time unless the project
+is private.
+You get some good issue tracking on top of it, patches can be
+automatically checked in form of merge-requests.
+(In the unlikely case they go bust or get unfriendly, you can still
+tun an older Gitlab version on your own server)
+
+
+I really don`t see the advantage in separating the subprojects,
+its already complicated enough to piece everything together,
+and with automated builds you could atleast catch build-errors or fails-to-boot.
+I take unmaintained, but buildable code in-tree over unmaintained code
+in a separate project everyday.
+
+Publicity
+
+Dont know how to takle this, but its very easy to get a full IDE and
+start programming some embedded CPUs.
+Commercial OSes have a huge advantage there, cause it doesnt take much
+to get example code running (youre only going to hit walls as your
+problems get bigger than their ecosystem). First impressions count,
+and being able to debug through code gets you firsthand knowledge
+faster than any other approach.
+
+In that respect some known-to-work hardware with known-to-work
+dual-kernel with a pre-setup dev environment would go a long way to
+ease the first steps and might gather some new interested users.
+Some cheap, high-volume, jtag-debugable SBC would do.
+
+Otherwise theres some architecture-, bios- and ever changing
+kernel-magic involved just to get a plain system running.
 
