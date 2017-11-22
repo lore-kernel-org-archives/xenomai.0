@@ -1,13 +1,15 @@
-Date: Wed, 22 Nov 2017 07:22:48 +0800 (CST)
-From: =?GBK?B?ufm9oQ==?= <terence427@163.com>
-In-Reply-To: <0eb34529c7a646ad820d99163e420b17@ocnapvsw3301.ocr.priv>
-References: <29453_1511060241_5A10F311_29453_2763_1_6ab0c433.1119.15fd23558a7.Coremail.terence427@163.com>
- <0eb34529c7a646ad820d99163e420b17@ocnapvsw3301.ocr.priv>
+References: <tencent_2252D90437AFCF6B48706C45@qq.com>
+ <e1bd3510-58dc-7ed2-ac0a-a0010eb43d73@alaxarxa.net>
+ <20171121090129.5cc3e2a6@md1em3qc>
+From: Jack Lee <jacklee11@foxmail.com>
+Message-ID: <3bba77df-c130-b9d3-191b-3a7336b929d1@foxmail.com>+98C7BEE44CAE3CDF
+Date: Wed, 22 Nov 2017 09:44:17 +0800
 MIME-Version: 1.0
-Message-ID: <277e291c.643.15fe0e42434.Coremail.terence427@163.com>
-Content-Type: text/plain; charset="gbk"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] R:  install xenomai on centos
+In-Reply-To: <20171121090129.5cc3e2a6@md1em3qc>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] 3.0.6 with linux 4.9.51 on x86_64 Intel(R) Atom(TM)
+ CPU N2800 compilation failed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,101 +18,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Fazio Maurizio <maurizio.fazio@leonardocompany.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>, Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Cc: xenomai <xenomai@xenomai.org>
 
-CgoKCgoKLS0KCrLZx6fH+rb4uvPP/sn5o6y528envaO2+LrzyrbG96GjCgoKCkF0IDIwMTctMTEt
-MjAgMTU6Mjk6MjUsICJGYXppbyBNYXVyaXppbyIgPG1hdXJpemlvLmZhemlvQGxlb25hcmRvY29t
-cGFueS5jb20+IHdyb3RlOgo+SGVsbG8sCj5JIGluc3RhbGxlZCB0aGUgMy4xOC4yMCBsaW51eCBr
-ZXJuZWwgYnV0IHRoZSBpbnN0YWxsYXRpb24gcHJvY2VzcyBpcyB0aGUgc2FtZSBmb3IgeW91ciBr
-ZXJuZWwgdmVyc2lvbi4KPgo+VHJ5IHRoaXMgaW5zdGFsbGF0aW9uIHByb2Nlc3M6Cj4KPiMuL3hl
-bm9tYWktMy4wLjUvc2NyaXB0cy9wcmVwYXJlLWtlcm5lbC5zaCAtLWlwaXBlPWlwaXBlLWNvcmUt
-My4xMC4zMi14ODYtOS5wYXRjaCAtLWxpbnV4PWxpbnV4LTMuMTAuMzIKPgo+R28gdG8gbGludXgt
-My4xMC4zMiBmb2xkZXIgYW5kIGFmdGVyIHRoZSBrZXJuZWwgY29uZmlndXJhdGlvbiBzdGVwCj4j
-bWFrZSBycG0KPgo+QXQgdGhlIGVuZCBvZiBvcGVyYXRpb25zCj4jY2QgL3Jvb3QvcnBtYnVpbGQv
-UlBNUy94ODZfNjQKPiNycG0gLWl2aCBrZXJuZWwtMy4xMC4zMi0xLng4Nl82NC5ycG0KPiNycG0g
-LWl2aCBrZXJuZWwtZGV2ZWwtMy4xMC4zMi0xLng4Nl82NC5ycG0KPiNycG0gLWl2aCBrZXJuZWwt
-aGVhZGVycy0zLjEwLjMyLTEueDg2XzY0LnJwbQo+Cj5BdXRvIGNvbmZpZ3VyZSB0aGUgZ3J1YjIK
-PiNncnViMi1ta2NvbmZpZwo+Cgo+UmVib290IHRoZSBzeXN0ZW0KPgpJIHRyaWVkIHlvdXIgcHJv
-Y2VzcyBzdGVwLCBidXQgaXQgZG9lc24ndCB3b3JrLiBXaGVuIEkgdXNlZCBrZXJuZWwgMy4xOC4y
-MCwgaXBpcGUgaGFzIGEgYnVnLgp0aGUgZ3J1YiBpbmZvIGlzIGF0dGFjaGVkLgpjYW4geW91IGdp
-dmUgbWUgc29tZSBkZXRhaWxzID8KPgo+TWF1cml6aW8gRmF6aW8KPgo+Q2hpZWYgVGVjaG5pY2Fs
-IE9mZmljZSAvIEFpcmNyYWZ0IFN5c3RlbXMKPlNvZnR3YXJlIEVuZ2luZWVyCj4KPkxlb25hcmRv
-IFMucC5BLgo+Qy5zbyBGcmFuY2lhLCA0MjYgLSBUb3Jpbm8gLSAxMDE0NiAtIEl0YWx5Cj5UZWwu
-ICszOSAwMTEgNzU2IDMzMDggLyAzNzYxCj5tYXVyaXppby5mYXppb0BsZW9uYXJkb2NvbXBhbnku
-Y29tCj53d3cubGVvbmFyZG9jb21wYW55LmNvbQo+Cj6hqqGqoaqhqqGqoaqhqqGqoaqhqqGqoaqh
-qqGqoaqhqqGqoaqhqqGqoaqhqqGqoaqhqqGqoaqhqqGqoaqhqqGqqEOhqqGqoaqhqqGqoaoKPkhF
-TElDT1BURVJTL0FFUk9OQVVUSUNTL0VMRUNUUk9OSUNTLCBERUZFTkNFICYgU0VDVVJJVFkgU1lT
-VEVNUy9TUEFDRQo+oaqhqqGqoaqhqqGqoaqhqqGqoaqhqqGqoaqhqqGqoaqhqqGqoaqhqqGqoaqh
-qqGqoaqhqqGqoaqhqqGqoaqhqqhDoaqhqqGqoaqhqqGqCj4KPgo+Cj5JbCBwcmVzZW50ZSBtZXNz
-YWdnaW8gZS1tYWlsIGUgb2duaSBzdW8gYWxsZWdhdG8gZGV2b25vIGludGVuZGVyc2kgaW5kaXJp
-enphdGkgZXNjbHVzaXZhbWVudGUgYWwgZGVzdGluYXRhcmlvIGluZGljYXRvIGUgY29uc2lkZXJh
-cnNpIGRhbCBjb250ZW51dG8gc3RyZXR0YW1lbnRlIHJpc2VydmF0byBlIGNvbmZpZGVuemlhbGUu
-IFNlIG5vbiBzaWV0ZSBsJ2VmZmV0dGl2byBkZXN0aW5hdGFyaW8gbyBhdmV0ZSByaWNldnV0byBp
-bCBtZXNzYWdnaW8gZS1tYWlsIHBlciBlcnJvcmUsIHNpZXRlIHByZWdhdGkgZGkgYXZ2ZXJ0aXJl
-IGltbWVkaWF0YW1lbnRlIGlsIG1pdHRlbnRlIGUgZGkgY2FuY2VsbGFyZSBpbCBzdWRkZXR0byBt
-ZXNzYWdnaW8gZSBvZ25pIHN1byBhbGxlZ2F0byBkYWwgdm9zdHJvIHNpc3RlbWEgaW5mb3JtYXRp
-Y28uIFF1YWxzaWFzaSB1dGlsaXp6bywgZGlmZnVzaW9uZSwgY29waWEgbyBhcmNoaXZpYXppb25l
-IGRlbCBwcmVzZW50ZSBtZXNzYWdnaW8gZGEgcGFydGUgZGkgY2hpIG5vbiBuZSCoqCBpbCBkZXN0
-aW5hdGFyaW8gqKggc3RyZXR0YW1lbnRlIHByb2liaXRvIGUgcHWosCBkYXIgbHVvZ28gYSByZXNw
-b25zYWJpbGl0qKQgZGkgY2FyYXR0ZXJlIGNpdmlsZSBlIHBlbmFsZSBwdW5pYmlsaSBhaSBzZW5z
-aSBkaSBsZWdnZS4KPlF1ZXN0YSBlLW1haWwgaGEgdmFsb3JlIGxlZ2FsZSBzb2xvIHNlIGZpcm1h
-dGEgZGlnaXRhbG1lbnRlIGFpIHNlbnNpIGRlbGxhIG5vcm1hdGl2YSB2aWdlbnRlLgo+Cj5UaGUg
-Y29udGVudHMgb2YgdGhpcyBlbWFpbCBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJlIGlu
-dGVuZGVkIHNvbGVseSBmb3IgdGhlIGFkZHJlc3NlZShzKSBhbmQgY29udGFpbiBjb25maWRlbnRp
-YWwgYW5kL29yIHByaXZpbGVnZWQgaW5mb3JtYXRpb24uCj5JZiB5b3UgYXJlIG5vdCB0aGUgaW50
-ZW5kZWQgcmVjaXBpZW50IG9mIHRoaXMgbWVzc2FnZSwgb3IgaWYgdGhpcyBtZXNzYWdlIGhhcyBi
-ZWVuIGFkZHJlc3NlZCB0byB5b3UgaW4gZXJyb3IsIHBsZWFzZSBpbW1lZGlhdGVseSBub3RpZnkg
-dGhlIHNlbmRlciBhbmQgdGhlbiBkZWxldGUgdGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVu
-dHMgZnJvbSB5b3VyIHN5c3RlbS4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVu
-dCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCBhbnkgdXNlLCBkaXNzZW1pbmF0aW9uLCBj
-b3B5aW5nLCBvciBzdG9yYWdlIG9mIHRoaXMgbWVzc2FnZSBvciBpdHMgYXR0YWNobWVudHMgaXMg
-c3RyaWN0bHkgcHJvaGliaXRlZC4gVW5hdXRob3JpemVkIGRpc2Nsb3N1cmUgYW5kL29yIHVzZSBv
-ZiBpbmZvcm1hdGlvbiBjb250YWluZWQgaW4gdGhpcyBlbWFpbCBtZXNzYWdlIG1heSByZXN1bHQg
-aW4gY2l2aWwgYW5kIGNyaW1pbmFsIGxpYWJpbGl0eS4gobAKPlRoaXMgZS1tYWlsIGhhcyBsZWdh
-bCB2YWx1ZSBhY2NvcmRpbmcgdG8gdGhlIGFwcGxpY2FibGUgbGF3cyBvbmx5IGlmIGl0IGlzIGRp
-Z2l0YWxseSBzaWduZWQgYnkgdGhlIHNlbmRlcgo+LS0tLS1NZXNzYWdnaW8gb3JpZ2luYWxlLS0t
-LS0KPkRhOiBYZW5vbWFpIFttYWlsdG86eGVub21haS1ib3VuY2VzQHhlbm9tYWkub3JnXSBQZXIg
-Y29udG8gZGkgPz8KPkludmlhdG86IGRvbWVuaWNhIDE5IG5vdmVtYnJlIDIwMTcgMDM6NTcKPkE6
-IHhlbm9tYWlAeGVub21haS5vcmcKPk9nZ2V0dG86IFtYZW5vbWFpXSBpbnN0YWxsIHhlbm9tYWkg
-b24gY2VudG9zCj4KPkhpLAo+Cj5JIGFtIGF0dGVtcHRpbmcgdG8gaW5zdGFsbCB4ZW5vbWFpLTMu
-eCBvbiBjZW50b3M3KGtlcm5lbDogMy4xMC4wLTIyOS5lbDcueDg2XzY0LCBvciAzLjEwLjAtMjI5
-LnJ0NTYuZWw3KSBmb3IgeDg2IFhFT04gRTUuCj5JIHVzZToKPmxpbnV4LTMuMTAuMzIudGFyLnh6
-Owo+eGVub21haS0zLjAuNS50YXIuYnoyOwo+aXBpcGUtY29yZS0zLjEwLjMyLXg4Ni05LnBhdGNo
-Owo+d2hlbiBJIGZpbmlzaGVkIGluc3RhbGwgbGludXggd2l0aDoKPiMuL3hlbm9tYWktMy4wLjUv
-c2NyaXB0cy9wcmVwYXJlLWtlcm5lbC5zaCAtLWlwaXBlPWlwaXBlLWNvcmUtMy4xMC4zMi14ODYt
-OS5wYXRjaCAtLWxpbnV4PWxpbnV4LTMuMTAuMzIgI21ha2UgYnpJbWFnZSAtajIgJiYgbWFrZSBt
-b2R1bGVzIC1qMiAmJiBtYWtlIG1vZHVsZXNfaW5zdGFsbCAmJiBtYWtlIGluc3RhbGwgI3JlYm9v
-dCBidXQgdGhlIHN5c3RlbSBjYW4ndCBib290IGZyb20ga2VybmVsIDMuMTAuMzIsIGFuZCB0aGVy
-ZSB3YXMgbm8gYW55IGRpc3BsYXkgb24gc2NyZWVuLgo+Cj4KPgo+Cj4tLQo+Cj6y2cenx/q2+Lrz
-z/7J+aOsudvHp72jtvi688q2xvehowo+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX18KPlhlbm9tYWkgbWFpbGluZyBsaXN0Cj5YZW5vbWFpQHhlbm9tYWkub3Jn
-Cj5odHRwczovL3hlbm9tYWkub3JnL21haWxtYW4vbGlzdGluZm8veGVub21haQotLS0tLS0tLS0t
-LS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBz
-Y3J1YmJlZC4uLgpOYW1lOiBSSEVMXzcuMS0yMDE3LTExLTIyLTAyLTI2LTM3LnBuZwpUeXBlOiBp
-bWFnZS9wbmcKU2l6ZTogMTg3MjggYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRw
-Oi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNzExMjIvZmVi
-NzBiOTkvYXR0YWNobWVudC5wbmc+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0t
-LS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IFJIRUxfNy4x
-LTIwMTctMTEtMjItMDItMjctMjQucG5nClR5cGU6IGltYWdlL3BuZwpTaXplOiAxNTg4NCBieXRl
-cwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwv
-eGVub21haS9hdHRhY2htZW50cy8yMDE3MTEyMi9mZWI3MGI5OS9hdHRhY2htZW50LTAwMDEucG5n
-PgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRh
-Y2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBSSEVMXzcuMS0yMDE3LTExLTIyLTAyLTI3LTIw
-LnBuZwpUeXBlOiBpbWFnZS9wbmcKU2l6ZTogMTYwMDIgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJs
-ZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMv
-MjAxNzExMjIvZmViNzBiOTkvYXR0YWNobWVudC0wMDAyLnBuZz4KLS0tLS0tLS0tLS0tLS0gbmV4
-dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQu
-Li4KTmFtZTogUkhFTF83LjEtMjAxNy0xMS0yMi0wMi0yNy0yNC5wbmcKVHlwZTogaW1hZ2UvcG5n
-ClNpemU6IDE1ODg0IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9t
-YWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTcxMTIyL2ZlYjcwYjk5L2F0
-dGFjaG1lbnQtMDAwMy5wbmc+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0t
-LQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IFJIRUxfNy4xLTIw
-MTctMTEtMjItMDItMjctMjAucG5nClR5cGU6IGltYWdlL3BuZwpTaXplOiAxNjAwMiBieXRlcwpE
-ZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVu
-b21haS9hdHRhY2htZW50cy8yMDE3MTEyMi9mZWI3MGI5OS9hdHRhY2htZW50LTAwMDQucG5nPgot
-LS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2ht
-ZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBSSEVMXzcuMS0yMDE3LTExLTIyLTAyLTI2LTM3LnBu
-ZwpUeXBlOiBpbWFnZS9wbmcKU2l6ZTogMTg3MjggYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpV
-Ukw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAx
-NzExMjIvZmViNzBiOTkvYXR0YWNobWVudC0wMDA1LnBuZz4K
+
+
+On 11/21/2017 04:01 PM, Henning Schild wrote:
+> Am Tue, 21 Nov 2017 08:28:11 +0100
+> schrieb Leopold Palomo-Avellaneda <leo@alaxarxa.net>:
+>
+>> On 21/11/17 06:52, Jack Lee wrote:
+>>> Hello,
+>>>
+>>>    My board cpu is Intel Atom CPU N2800. I am using xenomai 3.0.6
+>>> with linux 4.9.51. I get the following error when compiling the
+>>> kernel. Can anyone give me some help? Thanks!
+>>>
+>>>    CC      arch/x86/xenomai/machine.o
+>>> In file included from arch/x86/xenomai/machine.c:22:0:
+>>> arch/x86/xenomai/include/asm/xenomai/syscall.h: In function
+>>> ‘__xn_get_syscall_nr’:
+>>> arch/x86/xenomai/include/asm/xenomai/syscall.h:46:31: error:
+>>> implicit declaration of function
+>>> ‘__COBALT_CALL32_SYSNR’ [-Werror=implicit-function-declaration]
+>>> #define __xn_syscall(regs)
+>>> __COBALT_CALL32_SYSNR(__xn_reg_sys(regs) \ ^
+>>> arch/x86/xenomai/include/asm/xenomai/syscall.h:60:32: note: in
+>>> expansion of macro ‘__xn_syscall’ return __xn_syscall_p(regs) ?
+>>> __xn_syscall(regs) :
+>> I had the same problem yesterday and Philippe Gerum answered:
+>>
+>>>> As a work around, drop CONFIG_IA32_EMULATION if you don't need
+>>>> it.
+I tried it, but got another error.
+
+rivers/xenomai/net/drivers/eepro100.c: In function ‘eepro100_init_module’:
+drivers/xenomai/net/drivers/eepro100.c:1832:8: error: lvalue required as 
+left operand of assignment
+   debug = speedo_debug; /* touch debug variable */
+         ^
+> There is also a commit on top of 3.0.6 that should solve that problem.
+> You could try with
+> http://git.xenomai.org/xenomai-3.git/snapshot/xenomai-3-cc283c7f26c1b097b94a61bb25c2564f51daf16d.tar.bz2
+>
+> Henning
+>
+>> Best regards,
+>>
+>> Leopold
+>>
+I didn't try it. I think I should let the system run first, so I will 
+use the 3.0.5 version temporarily and try 3.0.7 in the future.
+
+Thanks, all.
+
