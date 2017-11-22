@@ -1,9 +1,9 @@
-References: <CADYdroNdJwaHru0_T6PQQ2jo=XyP_KBMJojEgmHrghogpMZ=ng@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <c74bd1b9-331f-7d2a-6171-31fbe392b6e0@xenomai.org>
-Date: Wed, 22 Nov 2017 18:09:11 +0100
+References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <1b035acc-5784-f0b0-f16f-09279d5a8845@siemens.com>
+Date: Wed, 22 Nov 2017 21:26:23 +0100
 MIME-Version: 1.0
-In-Reply-To: <CADYdroNdJwaHru0_T6PQQ2jo=XyP_KBMJojEgmHrghogpMZ=ng@mail.gmail.com>
+In-Reply-To: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -16,80 +16,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Norbert Lange <nolange79@gmail.com>, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+Cc: Daniel Wagner <daniel.wagner@siemens.com>
 
-On 11/22/2017 11:06 AM, Norbert Lange wrote:
-> Hi,
-> 
-> not really happy to hear that, but this was already my impression.
-> There is alot of knowledge of kernel, hardware and bootloader
-> knowledge necessary to be able to maintain the ipipe patch, as
-> newcomer to most of these I am just helpless. Unless someone is
-> dedicated to that,
-> there is not chance to keep up.
-> 
-> What you could do is to automate as much as possible, saving some of
-> the regular grinding work.
-> The way realtime is used with minimal configurations, FTB errors will
-> show up late,
-> and changes in kernel APIs are only carried over in actively used drivers.
-> 
-> ie.
-> -   automated builds with several kernel configs
+On 2017-11-21 18:11, Philippe Gerum wrote:
+> So, let's talk about the elephant in the room: the current situation of
+> the Xenomai project is not viable in the long run. I can only encourage
+> people who feel concerned about it to discuss openly the practical steps
+> to best address this challenge.
 
-Agreed. We used to have that, until last year. We need this back.
+Thanks for bringing this frankly on the table! For those who follow the
+project, it's likely no news. So we were working on this issue also
+internally, with users of Xenomai inside Siemens. And we have the
+backing to enhance our involvement in upstream work. Right now we are
+working on making this concrete.
 
-> -   potential some tests under qemu with the above.
-> 
-> Buildroot does something similar, and this is very low maintenance
-> cost once its setup,
-> could automatically report issues or non-working config-switches.
+There are many areas where contributions can be beneficial for the
+project and its community, and many do not require deepest understanding
+of the core, like around CI, test automation, distro packaging,
+documentation, or user support. But some essential elements in my eyes are
 
-Do you mean buildroot-CI?
+ - building up a core team of kernel maintainers for Cobalt
 
-> Nowadays you can let providers like Gitlab take care of keeping the
-> servers running,
-> as I understand it you have no limits to build-time unless the project
-> is private.
-> You get some good issue tracking on top of it, patches can be
-> automatically checked in form of merge-requests.
-> (In the unlikely case they go bust or get unfriendly, you can still
-> tun an older Gitlab version on your own server)
-> 
-> 
-> I really don`t see the advantage in separating the subprojects,
-> its already complicated enough to piece everything together,
-> and with automated builds you could atleast catch build-errors or fails-to-boot.
-> I take unmaintained, but buildable code in-tree over unmaintained code
-> in a separate project everyday.
+ - offloading work from the shoulders of our extremely valuable
+   maintainer
 
-Moving to Gitlab is definitely an option on the table.
+The second part will be achieved to a certain degree by the first one as
+Philippe can probably confirm. So I would like to focus this and try to
+make some first step:
 
-> 
-> Publicity
-> 
-> Dont know how to takle this, but its very easy to get a full IDE and
-> start programming some embedded CPUs.
-> Commercial OSes have a huge advantage there, cause it doesnt take much
-> to get example code running (youre only going to hit walls as your
-> problems get bigger than their ecosystem). First impressions count,
-> and being able to debug through code gets you firsthand knowledge
-> faster than any other approach.
-> 
-> In that respect some known-to-work hardware with known-to-work
-> dual-kernel with a pre-setup dev environment would go a long way to
-> ease the first steps and might gather some new interested users.
-> Some cheap, high-volume, jtag-debugable SBC would do.
-> 
-> Otherwise theres some architecture-, bios- and ever changing
-> kernel-magic involved just to get a plain system running.
+We are currently planning a so far internal workshop with Philippe in
+order to discuss how to bring more of our people but also others on
+board regarding kernel maintenance topics. Topics to discussed are likely
 
-Agreed, the idea of, e.g. a live image booting Xenomai to lower the
-barrier on entry is a nice way to attract new users. This said, the
-discussion I would like to see first is about fixing the existing issues
-in the development and maintenance processes so that current users have
-their investment in Xenomai kept safe.
+ - current design and how to introduce people to it (tough, yeah...)
+ - possible workflows and integration paths
+ - update strategy and frequency
+ - testing needs and strategies
+ - supportable architectures
+ - state and details of the new pipeline design
+ - planning of and migration path to the new design
+
+If there is interest in joining such a discussion, physically (will
+likely take place in our office in Munich, Germany) or virtually
+(provided time zones work out), please let us know. Time frame is more
+likely early next year than mid of this December. And this shall be only
+the kickoff for further discussions in the community!
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
 
