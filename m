@@ -1,15 +1,15 @@
-References: <1508232053.2272.23.camel@scrappix.utpvision.local>
- <96045a73-a4c5-a441-ec74-31d03322b0d3@xenomai.org>
- <1508306591.2177.19.camel@scrappix.utpvision.local>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <fb8410b0-d082-5eeb-2237-f725ba9b25af@xenomai.org>
-Date: Wed, 18 Oct 2017 11:02:04 +0200
+From: =?utf-8?B?SMOkbmVsLUJhYXMsIEFsZXhhbmRlcg==?=
+ <alexander.haenel-baas@sieb-meyer.de>
+Date: Wed, 22 Nov 2017 12:11:13 +0000
+Message-ID: <e00810a918df4f53814fe442ab2ebfb8@sieb-meyer.de>
+References: <c13bf74e07b340e4a3306e9d1e96f3e9@sieb-meyer.de>
+ <f9afef97-0e34-87c9-399c-f2f8af2958df@xenomai.org>
+In-Reply-To: <f9afef97-0e34-87c9-399c-f2f8af2958df@xenomai.org>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <1508306591.2177.19.camel@scrappix.utpvision.local>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Heap binding error (EWOULDBLOCK)
+Subject: Re: [Xenomai] list of threads with same session_label
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,101 +18,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Roberto Finazzi <rfinaz@tin.it>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10/18/2017 08:03 AM, Roberto Finazzi wrote:
-> Hi,
-> thank you for your answer, but there was already both --enable-registry
-> and --enable-pshared as I can see using /usr/xenomai/sbin/version -a.
-> 
-
-Please paste the output of:
-# <your-test-app> --dump-config.
-
-> Just to be sure for the code, this is the first program I used.
-> 
-> #include <stdio.h>
-> #include <stdlib.h>
-> #include <signal.h>
-> #include <sys/mman.h>
-> #include <alchemy/task.h>
-> #include <alchemy/sem.h>
-> 
-> RT_TASK task;
-> RT_SEM semA;
-> 
-> void end(int sig) {
->   rt_sem_delete(&semA);
-
-Calling rt_sem_delete() over a signal handler is unsafe.
-
->   exit(0);
-> }
-> 
-> int main() {
-> int err;
-> 
-> signal (SIGINT, end);
-> 
-> mlockall(MCL_CURRENT|MCL_FUTURE);
-
-Explicit mlock is redundant with Xenomai 3.x (libcobalt does this for
-you during early init).
-
-> err=rt_task_shadow(&task, "writetest", 10, 0);
-> 
-> err= rt_sem_create(&semA, "semA", 0, S_FIFO);
-> printf("After create= %d\n", err);
-> 
-> while(1) ;
->
-
-That infinite CPU-bound loop should rapidly cause a hard lockup, even on
-a multi-core system.
-
-> }
-> 
-> And this is the second one.
->  
-> #include <stdio.h>
-> #include <stdlib.h>
-> #include <signal.h>
-> #include <sys/mman.h>
-> #include <alchemy/task.h>
-> #include <alchemy/sem.h>
-> 
-> RT_TASK task;
-> RT_SEM semA;
-> 
-> void end(int sig) {
-> 
->   rt_sem_unbind(&semA);
->   exit(0);
-> }
-> 
-> int main() {
-> int err;
-> 
-> signal (SIGINT, end);
-> 
-> mlockall(MCL_CURRENT|MCL_FUTURE);
-> err=rt_task_shadow(&task, "readtest", 10, 0);
-> 
-> err= rt_sem_bind(&semA, "semA", TM_INFINITE);
-> printf("After bind= %d\n", err);
-> 
-> while(1) ;
-> 
-> }
-> 
-> I started the first one and the semaphore was created without problems.
-> When I started the second, it remained blocked on the rt_sem_bind.
-> 
-
-Are you starting both apps in sequence on a single shell command line,
-like "./sem_create_app; ./sem_bind_app"?
-
--- 
-Philippe.
+SGkgUGhpbGlwcGUsDQoNCnRoYW5rcyBmb3IgeW91ciByZXNwb25zZS4NCg0KPiBBc3N1bWluZyBh
+bGNoZW15IGlzIHlvdXIgQVBJLCBlbmFibGUgdGhlIHVzZXItc3BhY2UgcmVnaXN0cnkgd2l0aCAt
+LWVuYWJsZS1yZWdpc3RyeSB3aGVuIGNvbmZpZ3VyaW5nLiBZb3VyIGFwcGxpY2F0aW9uIHdpbGwg
+YXV0b21hdGljYWxseSANCj4gbWFpbnRhaW4gL3Zhci9ydW4veGVub21haS88dXNlcj4vPHNlc3Np
+b24+L2FsY2hlbXkvdGFza3MuIFJlYWRpbmcgZnJvbSB0aGlzIGZpbGUgc2hvdWxkIGdpdmUgeW91
+IHRoZSBpbmZvcm1hdGlvbiBuZWVkZWQuDQoNCk9rIGZpbmUsIG5vdyB3ZSBoYXZlIFhlbm9tYWkg
+Y29uZmlndXJlZCB3aXRoIC0tZW5hYmxlLXJlZ2lzdHJ5LCBhbmQgd2UgY2FuIHNlZSB0aGUgdGFz
+ayBlbnRyZWVzIGluIC92YXIvcnVuL3hlbm9tYWkuDQpUaGFua3MgZm9yIHRoYXQuDQoNCkhvd2V2
+ZXIsIHdlIG5lZWQgdG8gc3RhcnQgdGhlIHByb2dyYW0gYXMgbm9uZSByb290IHVzZXIuIEkgcmVt
+ZW1iZXIgd2UgaGFkIGEgcG9zdCBmcm9tIEphbnVhcnkgKHhlbm9tYWkuYWxsb3dlZF9ncm91cD08
+Z2lkPikuIA0KSW4gdGhpcyBwb3N0LCB5b3UgZ2l2ZSBtZSBhIGhpbnQgb2YgdGhlIGNvbW1pdCAj
+Y2YyMWU4MDYyOTU5LiBJbiB0aGlzIGNvbW1pdCwgeW91IGV4cGxhaW4gaG93IHRvOiAiY29wcGVy
+cGxhdGU6IGVuYWJsZSBncm91cC1iYXNlZCBhY2Nlc3MgdG8gc2Vzc2lvbnMiLg0KDQpBbGwgNSBz
+dGVwcyBhcmUgYWxyZWFkeSBkb25lLiANCk9ubHkgc3RlcCAyIGlzIG5vdCBjbGVhcmx5LiBJcyAi
+L2Rldi9ydGRtIiBjb3JyZWN0IG9yZSBkaWQgeW91IG1lYW4gIi9kZXYvZnVzZSI/DQoNCkFzIHJv
+b3QgdXNlciwgaXQgd29ya3MgcHJldHR5Lg0KDQpCdXQgd2hlbiB3ZSBzdGFydCB0aGUgcHJvZ3Jh
+bSBhcyBub25lIHJvb3QgdXNlcjoNCnNldHVpZGdpZCBhZG1pbjpzdGFmZiBzZDNEbmMgLS1zZXNz
+aW9uIFNEMy9zdGFmZiANCg0Kd2UgZ2V0Og0KZnVzZXJtb3VudDogbW91bnQgZmFpbGVkOiBPcGVy
+YXRpb24gbm90IHBlcm1pdHRlZA0KICAgMCIxMjQuOTI1fCBXQVJOSU5HOiBbbWFpbl0gY2FuJ3Qg
+bW91bnQgcmVnaXN0cnkgb250byAvdmFyL3J1bi94ZW5vbWFpL2FkbWluL1NEMy9zeXN0ZW0NCiAg
+IDAiMTI1LjMxMHwgQlVHIGluIGNvcHBlcnBsYXRlX2Jvb3RzdHJhcF9pbnRlcm5hbCgpOiBbbWFp
+bl0gaW5pdGlhbGl6YXRpb24gZmFpbGVkLCBFUEVSTQ0KDQpJIGFtIG5vdCBzdXJlIHdoYXQgbXkg
+cHJvYmxlbSBpcy4gTWF5YmUgZnVzZSwgeGVub21haSBvciBwZXJtaXNzaW9ucy4gVGhlIGVycm9y
+IGNvbWVzIGZyb20gZnVzZSBhbmQgbWVhbnMgdGhhdCANCmZ1c2UgY2FuJ3QgbW91bnQgL3Zhci9y
+dW4veGVub21haS9hZG1pbi4gV2h5PyBPciBpcyB0aGUgY2FsbCBvZiBmdXNlIHdyb25nLg0KDQpD
+YW4geW91IGV4cGxhaW4gYSBsaXR0bGUgYml0Pw0KDQpQUy4gc3RhZmYgaXMgb3VyIHhlbm9tYWkg
+Z3JvdXAsIGFuZCBhZG1pbiBhIG5vcm1hbCB1c2VyLg0KICAgICAgUGVybWlzc2lvbnMgb24gL2Rl
+djogDQogICAgICBkcnd4ci14ci14ICAgICAgMiByb290ICAgICBzdGFmZiAgICAgICAgICAxNjAg
+SmFuICAxICAxOTcwIHJ0ZG0NCiAgICAgIGNyd3hyd3hyd3QgICAxIHJvb3QgICAgIHN0YWZmICAg
+ICAgMTAsIDIyOSBKYW4gIDEgMDE6NTYgZnVzZQ0KDQogICAgICBsbCAvdmFyL3J1bi94ZW5vbWFp
+Lw0KICAgICAgZHJ3eHIteHIteCAgICAyIGFkbWluICAgIHN0YWZmICAgICAgICAgICA0MCBKYW4g
+IDEgMDM6NDEgYWRtaW4NCiAgICAgIGRyd3hyLXhyLXggICAgMyByb290ICAgICByb290ICAgICAg
+ICAgICAgNjAgSmFuICAxIDAyOjU1IHJvb3QNCg0Kd2l0aCBiZXN0IHJlZ2FyZHMsDQpBbGV4YW5k
+ZXINCg0K
 
