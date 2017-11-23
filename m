@@ -1,15 +1,17 @@
-References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
- <f7ad8163bda5484292ccdf6e8cf1a484@P10-EX02.3DSystems.Internal>
- <02f0df6b-0854-eeaa-a168-ae2c10e1d8ab@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <845269a3-e580-c8ff-e25d-a56d00c787fe@siemens.com>
-Date: Wed, 22 Nov 2017 21:27:56 +0100
+References: <tencent_2252D90437AFCF6B48706C45@qq.com>
+ <e1bd3510-58dc-7ed2-ac0a-a0010eb43d73@alaxarxa.net>
+ <20171121090129.5cc3e2a6@md1em3qc>
+ <3bba77df-c130-b9d3-191b-3a7336b929d1@foxmail.com>
+ <b68ddd18-e2e1-de26-c26e-8564bf8c1509@alaxarxa.net>
+From: Jack Lee <jacklee11@foxmail.com>
+Message-ID: <5e9304d5-16db-2bbf-2cb5-ce33f48054a4@foxmail.com>+40277C8B3484861C
+Date: Thu, 23 Nov 2017 08:35:44 +0800
 MIME-Version: 1.0
-In-Reply-To: <02f0df6b-0854-eeaa-a168-ae2c10e1d8ab@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [RFC] RTnet, Analogy and the elephant in the room
+In-Reply-To: <b68ddd18-e2e1-de26-c26e-8564bf8c1509@alaxarxa.net>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] 3.0.6 with linux 4.9.51 on x86_64 Intel(R) Atom(TM)
+ CPU N2800 compilation failed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,49 +20,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "Auel, Kendall" <Kendall.Auel@3DSystems.Com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 2017-11-22 16:32, Philippe Gerum wrote:
-> 
-> Hi Kendall,
-> 
-> On 11/21/2017 08:27 PM, Auel, Kendall wrote:
->> Hi Philippe,
+
+
+On 11/22/2017 03:13 PM, Leopold Palomo-Avellaneda wrote:
+> On 22/11/17 02:44, Jack Lee wrote:
 >>
->> Is there an online bug tracking and feature request database? This would be a useful way to distribute work and to sync up contributors. I think the kernel uses Bugzilla, and Ubuntu has Launchpad. No doubt there are many others.
+>> On 11/21/2017 04:01 PM, Henning Schild wrote:
+>>> Am Tue, 21 Nov 2017 08:28:11 +0100
+>>> schrieb Leopold Palomo-Avellaneda <leo@alaxarxa.net>:
+>>>
+>>>> On 21/11/17 06:52, Jack Lee wrote:
+>>>>> Hello,
+>>>>>
+>>>>>     My board cpu is Intel Atom CPU N2800. I am using xenomai 3.0.6
+>>>>> with linux 4.9.51. I get the following error when compiling the
+>>>>> kernel. Can anyone give me some help? Thanks!
+>>>>>
+>>>>>     CC      arch/x86/xenomai/machine.o
+>>>>> In file included from arch/x86/xenomai/machine.c:22:0:
+>>>>> arch/x86/xenomai/include/asm/xenomai/syscall.h: In function
+>>>>> ‘__xn_get_syscall_nr’:
+>>>>> arch/x86/xenomai/include/asm/xenomai/syscall.h:46:31: error:
+>>>>> implicit declaration of function
+>>>>> ‘__COBALT_CALL32_SYSNR’ [-Werror=implicit-function-declaration]
+>>>>> #define __xn_syscall(regs)
+>>>>> __COBALT_CALL32_SYSNR(__xn_reg_sys(regs) \ ^
+>>>>> arch/x86/xenomai/include/asm/xenomai/syscall.h:60:32: note: in
+>>>>> expansion of macro ‘__xn_syscall’ return __xn_syscall_p(regs) ?
+>>>>> __xn_syscall(regs) :
+>>>> I had the same problem yesterday and Philippe Gerum answered:
+>>>>
+>>>>>> As a work around, drop CONFIG_IA32_EMULATION if you don't need
+>>>>>> it.
+>> I tried it, but got another error.
 >>
->> I'd like to contribute in some way. I've been having a lot of fun as a Xenomai user.
->>
-> We don't have that unfortunately. As suggested by several posters,
-> moving to a git-based, integrated development framework such as gitlab
-> or github would bring in that feature, and others we need too (CI).
-> 
-> I have no issue moving the project from the current git server at
-> xenomai.org to any of these environments.
-> 
+>> rivers/xenomai/net/drivers/eepro100.c: In function ‘eepro100_init_module’:
+>> drivers/xenomai/net/drivers/eepro100.c:1832:8: error: lvalue required as left
+>> operand of assignment
+>>    debug = speedo_debug; /* touch debug variable */
+>>          ^
+> Please,
+>
+> cloud you check the lists emails of yesterday?. Robert Lange sent a patch to
+> solve this, at least in the intel cards.
+>
+> Leopold
+Sorry, I did find the solutions posted after I sent the two emails and 
+too late to call back.
+I found that you have a tough time with this project these days. I also 
+appreciate
+that many people responded to the email Philippe sent out. Hope you will 
+conquer this and
+have a bright future.
 
-If it helps the community to grow, I would not refuse such a move. But I
-would like to raise some concerns about platforms like github or gitlab
-that we must be aware of:
+Have a nice day!
 
-- lacking integration with email-based workflows (while kernel
-  development tends to be based on that...)
 
-- risk of decoupling communities when parts of the discussions happen on
-  tickets or PRs and parts in mailing list threads
 
-Therefore, most projects I manage on github and in our internal gitlab
-have clear policies like "no emails, only tickets and PRs" or "no PRs,
-only patches on the mailing list". Even just using the issue tracker to
-keep some to-do list requires discipline to direct discussions
-consequently to a mailing list if that exists as well (and that usually
-does not work very well).
-
-IOW: we need to be clear in what we want a platform for - and what not.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
 
