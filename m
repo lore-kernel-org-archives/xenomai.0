@@ -1,16 +1,11 @@
-References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
- <f7ad8163bda5484292ccdf6e8cf1a484@P10-EX02.3DSystems.Internal>
- <02f0df6b-0854-eeaa-a168-ae2c10e1d8ab@xenomai.org>
- <845269a3-e580-c8ff-e25d-a56d00c787fe@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <2f850a60-3756-f06d-82c6-ccf6eeb58aa3@xenomai.org>
-Date: Thu, 23 Nov 2017 12:42:08 +0100
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Message-ID: <d3f6995a-1d45-d262-21a0-97a51253da91@alaxarxa.net>
+Date: Thu, 23 Nov 2017 13:10:24 +0100
 MIME-Version: 1.0
-In-Reply-To: <845269a3-e580-c8ff-e25d-a56d00c787fe@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [RFC] Service hosting for Xenomai
+Subject: [Xenomai] Cannot initialize TLSF memory manager
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,60 +14,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/22/2017 09:27 PM, Jan Kiszka wrote:
-> On 2017-11-22 16:32, Philippe Gerum wrote:
->>
->> Hi Kendall,
->>
->> On 11/21/2017 08:27 PM, Auel, Kendall wrote:
->>> Hi Philippe,
->>>
->>> Is there an online bug tracking and feature request database? This would be a useful way to distribute work and to sync up contributors. I think the kernel uses Bugzilla, and Ubuntu has Launchpad. No doubt there are many others.
->>>
->>> I'd like to contribute in some way. I've been having a lot of fun as a Xenomai user.
->>>
->> We don't have that unfortunately. As suggested by several posters,
->> moving to a git-based, integrated development framework such as gitlab
->> or github would bring in that feature, and others we need too (CI).
->>
->> I have no issue moving the project from the current git server at
->> xenomai.org to any of these environments.
->>
-> 
-> If it helps the community to grow, I would not refuse such a move. But I
-> would like to raise some concerns about platforms like github or gitlab
-> that we must be aware of:
-> 
-> - lacking integration with email-based workflows (while kernel
->   development tends to be based on that...)
-> 
-> - risk of decoupling communities when parts of the discussions happen on
->   tickets or PRs and parts in mailing list threads
-> 
-> Therefore, most projects I manage on github and in our internal gitlab
-> have clear policies like "no emails, only tickets and PRs" or "no PRs,
-> only patches on the mailing list". Even just using the issue tracker to
-> keep some to-do list requires discipline to direct discussions
-> consequently to a mailing list if that exists as well (and that usually
-> does not work very well).
-> 
-> IOW: we need to be clear in what we want a platform for - and what not.
-> 
+Hi,
 
-Forking the original thread to get input from the list specifically
-regarding the idea of moving GIT services from xenomai.org to a public
-software development platform.
 
-As Jan mentioned, there is more than having GIT underneath, there are
-deep implications on the workflow, and it really depends on what we'd
-want from such platform. If you have any thought, recommendation,
-experience with those platforms in your daily work, it would be great to
-know your views.
+I have seen this bug before, but it seems that it's again in 3.0.6. Running
+3.0.6 with:
 
-Thanks,
+ xeno-config --info
+Xenomai version: Xenomai/cobalt v3.0.6
+Linux bmm3 4.9.51-xenomai-3.0.6-ipipe #1 SMP Thu Nov 23 09:03:27 CET 2017 x86_64
+GNU/Linux
+Kernel parameters: BOOT_IMAGE=/boot/vmlinuz-4.9.51-xenomai-3.0.6-ipipe
+root=UUID=ab96eed9-cd79-4d30-9e93-e9f32a18cca6 ro quiet
+xenomai.allowed_group=113 nosmap
+I-pipe release #4 detected
+Cobalt core 3.0.6 detected
+Compiler: gcc version 6.3.0 20170516 (Debian 6.3.0-18)
+Build args: --build=x86_64-linux-gnu --includedir=/usr/include
+--mandir=/usr/share/man --infodir=/usr/share/info --sysconfdir=/etc
+--localstatedir=/var --disable-silent-rules --libdir=/usr/lib/x86_64-linux-gnu
+--libexecdir=/usr/lib/x86_64-linux-gnu --disable-maintainer-mode
+--disable-dependency-tracking --prefix=/usr --includedir=/usr/include/xenomai
+--mandir=/usr/share/man --with-testdir=/usr/lib/x86_64-linux-gnu/xenomai
+--enable-fortify --libdir=/usr/lib/x86_64-linux-gnu/ --enable-pshared
+--enable-registry --enable-doc-build --enable-dlopen-libs --enable-tls
+--enable-smp --with-core=cobalt --build x86_64-linux-gnu
+build_alias=x86_64-linux-gnu CFLAGS=-g -O2
+-fdebug-prefix-map=/build/xenomai-3.0.6+ds1=. -fstack-protector-strong -Wformat
+-Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -fno-omit-frame-pointer
+LDFLAGS=-Wl,-z,relro -Wl,-z,now -Wl,--as-needed CPPFLAGS=-Wdate-time
+-D_FORTIFY_SOURCE=2
+
+
+
+when I try xeno-test, I got:
+
+ xeno-test
+Started child 2593: /bin/bash
+/usr/lib/x86_64-linux-gnu/xenomai/xeno-test-run-wrapper /usr/bin/xeno-test
+++ echo 0
+++ testdir=/usr/lib/x86_64-linux-gnu/xenomai
+++ /usr/lib/x86_64-linux-gnu/xenomai/smokey --run
+init_memory_pool(): invalid pool
+   0"000.022| BUG in heapobj_pkg_init_private(): [main] cannot initialize TLSF
+memory manager
+
+
+Any idea?
+
+Best regards,
+
+Leopold
+
+
 
 -- 
-Philippe.
+--
+Linux User 152692     GPG: 05F4A7A949A2D9AA
+Catalonia
+-------------------------------------
+A: Because it messes up the order in which people normally read text.
+Q: Why is top-posting such a bad thing?
+A: Top-posting.
+Q: What is the most annoying thing in e-mail?
 
