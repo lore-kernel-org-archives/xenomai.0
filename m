@@ -1,18 +1,15 @@
+From: Giulio Moro <g.moro@qmul.ac.uk>
+Date: Thu, 23 Nov 2017 14:22:04 +0000
+Message-ID: <DB6PR0701MB2456F934D8EFEA530CE8BD86B5210@DB6PR0701MB2456.eurprd07.prod.outlook.com>
 References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
- <f7ad8163bda5484292ccdf6e8cf1a484@P10-EX02.3DSystems.Internal>
- <02f0df6b-0854-eeaa-a168-ae2c10e1d8ab@xenomai.org>
- <845269a3-e580-c8ff-e25d-a56d00c787fe@siemens.com>
- <2f850a60-3756-f06d-82c6-ccf6eeb58aa3@xenomai.org>
- <20171123135212.45ec5f3b@md1em3qc>
-From: Jorge Ramirez <jro@xenomai.org>
-Message-ID: <ae12e587-58dd-982f-1afa-8b7f66dbfc86@xenomai.org>
-Date: Thu, 23 Nov 2017 14:18:26 +0100
+ <1b035acc-5784-f0b0-f16f-09279d5a8845@siemens.com>,
+ <20171123132105.313c2fdc@md1em3qc>
+In-Reply-To: <20171123132105.313c2fdc@md1em3qc>
+Content-Language: en-GB
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <20171123135212.45ec5f3b@md1em3qc>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-Subject: Re: [Xenomai] [RFC] Service hosting for Xenomai
+Subject: Re: [Xenomai] [RFC] RTnet, Analogy and the elephant in the room
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,131 +18,139 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>, Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Daniel Wagner <daniel.wagner@siemens.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 11/23/2017 01:52 PM, Henning Schild wrote:
-> Am Thu, 23 Nov 2017 12:42:08 +0100
-> schrieb Philippe Gerum <rpm@xenomai.org>:
+At Bela (bela.io) we use Xenomai on the BeagleBone Black for audio. Current=
+ly our resources are pretty scarce, but hopefully from March things should =
+get better For instance, now that RobertCNelson has discontinued support fo=
+r Xenomai on the BeagleBone, we may be able to help with that (incidentally=
+ - as someone was asking - we provide a pre-built image for BeagleBone with=
+ Debian Stretch and  Xenomai 3.0.5 on Linux 4.4 (and some of our stuff too)=
+: https://github.com//BelaPlatform/bela-image-builder/releases).
+
+> We are currently planning a so far internal workshop with Philippe in
+> order to discuss how to bring more of our people but also others on
+> board regarding kernel maintenance topics. Topics to discussed are
+> likely
+
+Either way, it would be great to be able to take part in this workshop with=
+ Philippe. I think it is unlikely that we would be able to travel to Munich=
+ in January, but we should be able to attend remotely, so please keep us in=
+ the loop. I reckon it would be important (if all the involved parties agre=
+e, that is) to make a video recording of the workshop available online for =
+posterity (e.g.: a youtube live streaming and subsequently available perman=
+ently), so to make it easier for others in the future to get started with X=
+enomai's development.
+
+Thanks,
+Giulio
+
+________________________________________
+From: Xenomai <xenomai-bounces@xenomai.org> on behalf of Henning Schild <he=
+nning.schild@siemens.com>
+Sent: 23 November 2017 12:21
+To: Jan Kiszka
+Cc: Daniel Wagner; Xenomai@xenomai.org
+Subject: Re: [Xenomai] [RFC] RTnet, Analogy and the elephant in the room
+
+Am Wed, 22 Nov 2017 21:26:23 +0100
+schrieb Jan Kiszka <jan.kiszka@siemens.com>:
+
+> On 2017-11-21 18:11, Philippe Gerum wrote:
+> > So, let's talk about the elephant in the room: the current
+> > situation of the Xenomai project is not viable in the long run. I
+> > can only encourage people who feel concerned about it to discuss
+> > openly the practical steps to best address this challenge.
 >
->> On 11/22/2017 09:27 PM, Jan Kiszka wrote:
->>> On 2017-11-22 16:32, Philippe Gerum wrote:
->>>> Hi Kendall,
->>>>
->>>> On 11/21/2017 08:27 PM, Auel, Kendall wrote:
->>>>> Hi Philippe,
->>>>>
->>>>> Is there an online bug tracking and feature request database?
->>>>> This would be a useful way to distribute work and to sync up
->>>>> contributors. I think the kernel uses Bugzilla, and Ubuntu has
->>>>> Launchpad. No doubt there are many others.
->>>>>
->>>>> I'd like to contribute in some way. I've been having a lot of fun
->>>>> as a Xenomai user.
->>>> We don't have that unfortunately. As suggested by several posters,
->>>> moving to a git-based, integrated development framework such as
->>>> gitlab or github would bring in that feature, and others we need
->>>> too (CI).
->>>>
->>>> I have no issue moving the project from the current git server at
->>>> xenomai.org to any of these environments.
->>>>   
->>> If it helps the community to grow, I would not refuse such a move.
->>> But I would like to raise some concerns about platforms like github
->>> or gitlab that we must be aware of:
->>>
->>> - lacking integration with email-based workflows (while kernel
->>>    development tends to be based on that...)
->>>
->>> - risk of decoupling communities when parts of the discussions
->>> happen on tickets or PRs and parts in mailing list threads
->>>
->>> Therefore, most projects I manage on github and in our internal
->>> gitlab have clear policies like "no emails, only tickets and PRs"
->>> or "no PRs, only patches on the mailing list". Even just using the
->>> issue tracker to keep some to-do list requires discipline to direct
->>> discussions consequently to a mailing list if that exists as well
->>> (and that usually does not work very well).
->>>
->>> IOW: we need to be clear in what we want a platform for - and what
->>> not.
->> Forking the original thread to get input from the list specifically
->> regarding the idea of moving GIT services from xenomai.org to a public
->> software development platform.
->>
->> As Jan mentioned, there is more than having GIT underneath, there are
->> deep implications on the workflow, and it really depends on what we'd
->> want from such platform. If you have any thought, recommendation,
->> experience with those platforms in your daily work, it would be great
->> to know your views.
-> Jan is absolutely right here. Before moving to github (or something
-> alike) you need to set groundrules for how to deal with PRs, issues and
-> all the stuff that you suddenly gain.
+> Thanks for bringing this frankly on the table! For those who follow
+> the project, it's likely no news. So we were working on this issue
+> also internally, with users of Xenomai inside Siemens. And we have the
+> backing to enhance our involvement in upstream work. Right now we are
+> working on making this concrete.
+
+I could not agree more, thanks for bringing that up!
+
+I will also be frank and put my thoughts on the table. The most
+important point on our tasks to work on is culture. Technical details
+and who does what can be addressed later or along the way.
+
+IMHO Xenomai is not an open-source project. There is no open agenda, no
+TODO list, issue tracking, discussions etc. All this critical
+information, along with the hardcore technical details, used to be in
+the heads of two people + plus a few others guessing and helping out a
+bit. Now we are down to 1 + for quite a while. Still very much top-down
+instead of open.
+
+Looking at the project today nobody could tell where to start
+contributing. Nobody knows when the next branch will pop up in git or
+the next release will fall from the sky. Such things are not discussed,
+they just happen.
+
+Ok, now that was me expressing personal opinions and impressions, not
+addressing blame.
+
+I am convinced that a lot of this information can be opened up, maybe
+with the use of tools (issue trackers etc.). Now for the experience and
+the skills we desperately need Philippe to change his role to being
+more of a mentor. And i will be happy to work on tasks that are
+assigned to me, my solutions will lack speed and quality at first but
+that will hopefully change over time.
+
+> There are many areas where contributions can be beneficial for the
+> project and its community, and many do not require deepest
+> understanding of the core, like around CI, test automation, distro
+> packaging, documentation, or user support. But some essential
+> elements in my eyes are
 >
-> I think Xenomai could benefit from issue tracking and CI, not sure
-> whether we need github for that.
-
-issue tracking is not something that important IMO.
-I dont believe this is extensively used by any projects but mainly distros.
-
-> The CI they offer is docker-based and
-> we would likely want something more powerful. But i guess you could
-> always use docker to remote control AWS or real hardware.
-
-yes. there are a number of solutions that in fact do OTA and most of 
-them use Docker to control real hardware.
-the industry seems to be going in that direction. I think Shippable 
-should server our purpose.
-
-for instance, check out this commit:
-https://github.com/zephyrproject-rtos/zephyr/pull/5134
-
-and its shippable output
-https://app.shippable.com/github/zephyrproject-rtos/zephyr/runs/7471/summary/console
-
-> github sucks at routing mails. My github account is shared between my
-> work and personal stuff but i do not star/watch any work related
-> projects because i do not want the notifications in my personal inbox.
-
-I agree that it sucks but I dont see why this should be an issue.
-Just dont rely on github emails (I personally tend to disable them, they 
-are extremely annoying).
-
-when I need to find out how any PR is progressing (every other day) I 
-just connect to github.
-
+>  - building up a core team of kernel maintainers for Cobalt
 >
-> commitment to github etc. is likely to cause sort of a vendor lock-in.
+>  - offloading work from the shoulders of our extremely valuable
+>    maintainer
 
-? what do you mean?
-> I am sure the APIs can be used to extract some information, but will you
-> get something that you can import into your own gitlab or track later
-> on? As long as we only use git-hosting and CI from them that would not
-> be too much of a problem.
+We (Siemens) can help with 1 and therefore 2. ...for now. But adding a
+few people to the inner circle will not do the trick. Especially not if
+these people are coming from industry and only one player. The
+dedication/funding of industry players by enlarge depends on business
+decisions that are valid for one fiscal year.
+But industry is the largest user of xenomai, so to mitigate that
+problem more players are needed!
 
-yeah everything can be done (ie: at linaro we have lava-labs and 
-integrate our own CI loops with Jenkins and real hardware).
-But I dont believe Xenomai has the dedicated resources for that.
-
-BTW at ELCE in Prague, Tgx's daughter presented a very interesting 
-approach [1] to accessing real hardware on CI (using libvirt). Very cool.
-I think we should use it if in the end we decide to roll our own. But 
-IMO, Shippable should suffice.
-
-[1] 
-https://osseu17.sched.com/event/ByYA/continuous-integration-jenkins-libvirt-and-real-hardware-anna-maria-gleixner-manuel-traut-linutronix-gmbh
-
-
+> The second part will be achieved to a certain degree by the first one
+> as Philippe can probably confirm. So I would like to focus this and
+> try to make some first step:
 >
-> Henning
+> We are currently planning a so far internal workshop with Philippe in
+> order to discuss how to bring more of our people but also others on
+> board regarding kernel maintenance topics. Topics to discussed are
+> likely
 >
->> Thanks,
->>
+>  - current design and how to introduce people to it (tough, yeah...)
+>  - possible workflows and integration paths
+>  - update strategy and frequency
+>  - testing needs and strategies
+>  - supportable architectures
+>  - state and details of the new pipeline design
+>  - planning of and migration path to the new design
 >
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
+> If there is interest in joining such a discussion, physically (will
+> likely take place in our office in Munich, Germany) or virtually
+> (provided time zones work out), please let us know. Time frame is more
+> likely early next year than mid of this December. And this shall be
+> only the kickoff for further discussions in the community!
+
+Yes, anyone that wants to join such a meeting please let us know.
+Depending on the feedback we could also arrange something different.
+(i.e. collocated with FOSDEM18? )
+
+Henning
+
+> Jan
 >
 
+
+_______________________________________________
+Xenomai mailing list
+Xenomai@xenomai.org
+https://xenomai.org/mailman/listinfo/xenomai
 
