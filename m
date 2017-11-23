@@ -1,15 +1,13 @@
-References: <023601d363ac$6ce04c40$46a0e4c0$@sepro-group.com>
- <d2a2bcaf-7cfb-78f9-55cb-b1cca9b4a0be@xenomai.org>
- <02ca01d36468$537ffef0$fa7ffcd0$@sepro-group.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <b0baf0ab-e11b-0d5d-2310-72249c51b1aa@xenomai.org>
-Date: Thu, 23 Nov 2017 15:44:25 +0100
+References: <d3f6995a-1d45-d262-21a0-97a51253da91@alaxarxa.net>
+ <e665e5ab-796f-8aac-997c-33b88079d27c@xenomai.org>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Message-ID: <a30fcf3f-ad18-0210-ad51-6a0ab0b73872@alaxarxa.net>
+Date: Thu, 23 Nov 2017 15:58:32 +0100
 MIME-Version: 1.0
-In-Reply-To: <02ca01d36468$537ffef0$fa7ffcd0$@sepro-group.com>
+In-Reply-To: <e665e5ab-796f-8aac-997c-33b88079d27c@xenomai.org>
 Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Strange scheduling behaviour
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Cannot initialize TLSF memory manager
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,90 +16,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?C=c3=a9dric_Perles?= <cperles@sepro-group.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/23/2017 03:35 PM, Cédric Perles wrote:
->>> Hi,
->>>
->>> I’m working on an iMX6 based board with NXP kernel 4.1.15.
-> 
->>> Vendor kernels for i.MX6 are creepy (another vowel comes to mind). A 
->>> recent mainline kernel is just fine if the SoC supports it. If not, 
->>> porting the SoC (and/or missing driver) to mainline is often much > 
->>> better and faster than enduring a truckload of bugs.
-> 
->>> I would like to understand why latency max returned by cyclictest
->>> increases from 20µs to 100µs when dohell accesses to USB.
->>>
->>> Since i-pipe tracer refuses to work,
-> 
->> Which means?
-> 
-> I sent a message on this subject 
-> (https://xenomai.org/pipermail/xenomai/2017-November/037919.html).
-> I don't know why but my kernel don't boot when ipipe tracer is activated.
-> 
->>> I used ftrace to record cobalt,
->>> scheduling and irq events. Here is what I see on kernelshark:
->>>
->>> As expected, cyclictest has 1 xenomai thread per core (I can see them
->>> on
->>> /proc/xenomai/sched/threads) that wakes up periodically after a 200µs
->>> nanosleep.
->>>
->>> Sometimes, the wake up seems to be delayed (400µs instead of 200µs)
->>> because of an USB irq treatment followed by a call to usb-storage.
->>> Other times, the wake up seems to be delayed (400µs instead of 200µs)
->>> by a Linux call to ktimersoft, rcu and cat (see
->>> https://drive.google.com/file/d/18-B3WO2QH7PvBzJrt9tK5-TXvAkDxTPn/view
->>> ?usp
->>> =sharing)
->>>
-> 
->> The textual trace shows no issue. 40us are spent suspending a Cobalt 
->> thread, which seems reasonable on i.MX6Q with ftrace enabled and the slow 
->> PL310 L2 outer cache you have there. I likely missed your point then.
-> 
->>> Is it normal to delay a xenomai task wake up because of a Linux
->>> interrupt (I expected ipipe to act as a shield) ?
->>> How a simple Linux "cat" can delay a xenomai wake up ?
->>>
-> 
->> For instance, if the Xenomai task in question dropped to secondary mode 
->> earlier because the app is wrong somehow, then some work queue kernel 
->> thread starts running funky driver code issuing usleep() to sync with the 
->> hw. The rt thread running in non-rt mode will have to wait until the 
->> driver stops busy-waiting for a bit to toggle, causing the next rt 
->> operation for that task to appear as badly delayed. > The point is, that 
->> Xenomai is not in charge when the delay appears.
-> 
->> This case has been observed several times with MMC host and PCI host 
->> drivers on fsl kernels; I would not be surprised if that happened with 
->> other vendor-specific driver(s) too.
-> 
-> I agree, if the application dropped to secondary mode, it would explain the 
-> trace. However, I don't think we drop to secondary.
-> The application is the cyclictest included with xenomai tools to bench real 
-> time performances through posix skin. I don't expect such application to 
-> switch to secondary. Moreover, /proc/xenomai/sched/stat indicates no mode 
-> switch (MSW is stuck to 1 for this thread).
-> 
-> I made another test and set cyclictest period to 400µs. In this case, the 
-> wake up is sometime 800µs instead of 400µs. It's just like if 
-> clock_nanosleep used by cyclictest missed some events.
-> 
-
-I see no correlation between the traces you sent and the behavior just
-described though.
-
-I don't know which pipeline code you have been using so far, we follow
-mainline only. This said, some imx6 have the infamous C3STOP mode
-enabled for the TWD, which may cause the main timer to be switched to a
-general purpose timer, and the TWD to be temporarily stopped, which does
-not cope well with the current Cobalt implementation.
-
-You may want to check if the CPUIDLE framework is not getting in the way.
-
--- 
-Philippe.
-
+T24gMjMvMTEvMTcgMTM6MjIsIFBoaWxpcHBlIEdlcnVtIHdyb3RlOgo+IE9uIDExLzIzLzIwMTcg
+MDE6MTAgUE0sIExlb3BvbGQgUGFsb21vLUF2ZWxsYW5lZGEgd3JvdGU6Cj4+IEhpLAo+Pgo+Pgo+
+PiBJIGhhdmUgc2VlbiB0aGlzIGJ1ZyBiZWZvcmUsIGJ1dCBpdCBzZWVtcyB0aGF0IGl0J3MgYWdh
+aW4gaW4gMy4wLjYuIFJ1bm5pbmcKPj4gMy4wLjYgd2l0aDoKPj4KPj4gIHhlbm8tY29uZmlnIC0t
+aW5mbwo+PiBYZW5vbWFpIHZlcnNpb246IFhlbm9tYWkvY29iYWx0IHYzLjAuNgo+PiBMaW51eCBi
+bW0zIDQuOS41MS14ZW5vbWFpLTMuMC42LWlwaXBlICMxIFNNUCBUaHUgTm92IDIzIDA5OjAzOjI3
+IENFVCAyMDE3IHg4Nl82NAo+PiBHTlUvTGludXgKPj4gS2VybmVsIHBhcmFtZXRlcnM6IEJPT1Rf
+SU1BR0U9L2Jvb3Qvdm1saW51ei00LjkuNTEteGVub21haS0zLjAuNi1pcGlwZQo+PiByb290PVVV
+SUQ9YWI5NmVlZDktY2Q3OS00ZDMwLTllOTMtZTlmMzJhMThjY2E2IHJvIHF1aWV0Cj4+IHhlbm9t
+YWkuYWxsb3dlZF9ncm91cD0xMTMgbm9zbWFwCj4+IEktcGlwZSByZWxlYXNlICM0IGRldGVjdGVk
+Cj4+IENvYmFsdCBjb3JlIDMuMC42IGRldGVjdGVkCj4+IENvbXBpbGVyOiBnY2MgdmVyc2lvbiA2
+LjMuMCAyMDE3MDUxNiAoRGViaWFuIDYuMy4wLTE4KQo+PiBCdWlsZCBhcmdzOiAtLWJ1aWxkPXg4
+Nl82NC1saW51eC1nbnUgLS1pbmNsdWRlZGlyPS91c3IvaW5jbHVkZQo+PiAtLW1hbmRpcj0vdXNy
+L3NoYXJlL21hbiAtLWluZm9kaXI9L3Vzci9zaGFyZS9pbmZvIC0tc3lzY29uZmRpcj0vZXRjCj4+
+IC0tbG9jYWxzdGF0ZWRpcj0vdmFyIC0tZGlzYWJsZS1zaWxlbnQtcnVsZXMgLS1saWJkaXI9L3Vz
+ci9saWIveDg2XzY0LWxpbnV4LWdudQo+PiAtLWxpYmV4ZWNkaXI9L3Vzci9saWIveDg2XzY0LWxp
+bnV4LWdudSAtLWRpc2FibGUtbWFpbnRhaW5lci1tb2RlCj4+IC0tZGlzYWJsZS1kZXBlbmRlbmN5
+LXRyYWNraW5nIC0tcHJlZml4PS91c3IgLS1pbmNsdWRlZGlyPS91c3IvaW5jbHVkZS94ZW5vbWFp
+Cj4+IC0tbWFuZGlyPS91c3Ivc2hhcmUvbWFuIC0td2l0aC10ZXN0ZGlyPS91c3IvbGliL3g4Nl82
+NC1saW51eC1nbnUveGVub21haQo+PiAtLWVuYWJsZS1mb3J0aWZ5IC0tbGliZGlyPS91c3IvbGli
+L3g4Nl82NC1saW51eC1nbnUvIC0tZW5hYmxlLXBzaGFyZWQKPj4gLS1lbmFibGUtcmVnaXN0cnkg
+LS1lbmFibGUtZG9jLWJ1aWxkIC0tZW5hYmxlLWRsb3Blbi1saWJzIC0tZW5hYmxlLXRscwo+PiAt
+LWVuYWJsZS1zbXAgLS13aXRoLWNvcmU9Y29iYWx0IC0tYnVpbGQgeDg2XzY0LWxpbnV4LWdudQo+
+PiBidWlsZF9hbGlhcz14ODZfNjQtbGludXgtZ251IENGTEFHUz0tZyAtTzIKPj4gLWZkZWJ1Zy1w
+cmVmaXgtbWFwPS9idWlsZC94ZW5vbWFpLTMuMC42K2RzMT0uIC1mc3RhY2stcHJvdGVjdG9yLXN0
+cm9uZyAtV2Zvcm1hdAo+PiAtV2Vycm9yPWZvcm1hdC1zZWN1cml0eSAtV2RhdGUtdGltZSAtRF9G
+T1JUSUZZX1NPVVJDRT0yIC1mbm8tb21pdC1mcmFtZS1wb2ludGVyCj4+IExERkxBR1M9LVdsLC16
+LHJlbHJvIC1XbCwteixub3cgLVdsLC0tYXMtbmVlZGVkIENQUEZMQUdTPS1XZGF0ZS10aW1lCj4+
+IC1EX0ZPUlRJRllfU09VUkNFPTIKPj4KPj4KPj4KPj4gd2hlbiBJIHRyeSB4ZW5vLXRlc3QsIEkg
+Z290Ogo+Pgo+PiAgeGVuby10ZXN0Cj4+IFN0YXJ0ZWQgY2hpbGQgMjU5MzogL2Jpbi9iYXNoCj4+
+IC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUveGVub21haS94ZW5vLXRlc3QtcnVuLXdyYXBwZXIg
+L3Vzci9iaW4veGVuby10ZXN0Cj4+ICsrIGVjaG8gMAo+PiArKyB0ZXN0ZGlyPS91c3IvbGliL3g4
+Nl82NC1saW51eC1nbnUveGVub21haQo+PiArKyAvdXNyL2xpYi94ODZfNjQtbGludXgtZ251L3hl
+bm9tYWkvc21va2V5IC0tcnVuCj4+IGluaXRfbWVtb3J5X3Bvb2woKTogaW52YWxpZCBwb29sCj4+
+ICAgIDAiMDAwLjAyMnwgQlVHIGluIGhlYXBvYmpfcGtnX2luaXRfcHJpdmF0ZSgpOiBbbWFpbl0g
+Y2Fubm90IGluaXRpYWxpemUgVExTRgo+PiBtZW1vcnkgbWFuYWdlcgo+Pgo+Pgo+PiBBbnkgaWRl
+YT8KPj4KPiAKPiBDYW4geW91IGNoZWNrIHdoZXRoZXIgdGhlIGNhbGwgdG8gdGxzZl9tYWxsb2Mo
+KSBpbgo+IGhlYXBvYmpfcGtnX2luaXRfcHJpdmF0ZSgpIHJldHVybnMgbm9uLU5VTEw/Cj4gKGxp
+Yi9jb3BwZXJwbGF0ZS9oZWFwb2JqLXRsc2YuYyksIGFuZCBwcmludCBvdXQgdGhlIHZhbHVlIG9m
+IGFsbG9jX3NpemUgdG9vPwoKQ2hlY2tpbmcgdGhlIGNvZGUsIGl0IGZhaWxzIGJlZm9yZSB0byBy
+ZXR1cm4gYW55dGhpbmcuIFJ1bm5pbmcgY3Jvc3NzLWxpbmssIHRoYXQKZmFpbHMgaW4gdGhlIHNh
+bWUgZnVuY3Rpb246Ci4vY3Jvc3MtbGluawoKaW5pdF9tZW1vcnlfcG9vbCgpOiBpbnZhbGlkIHBv
+b2wKSW5pdCBtZW1vcnkgcG9vbCByZXR1cm5zIC0xIGJ5dGVzCiAgIDAiMDAwLjA0MXwgQlVHIGlu
+IGhlYXBvYmpfcGtnX2luaXRfcHJpdmF0ZSgpOiBbbWFpbl0gY2Fubm90IGluaXRpYWxpemUgVExT
+RgptZW1vcnkgbWFuYWdlcgoKCkkganVzdCBhZGRlZDoKCisgICAgICBwcmludGYoIkluaXQgbWVt
+b3J5IHBvb2wgcmV0dXJucyAlemQgYnl0ZXMgXG4iLCBhdmFpbGFibGVfc2l6ZSk7CgogICAgICAg
+IGlmIChhdmFpbGFibGVfc2l6ZSA9PSAoc2l6ZV90KS0xKQogICAgICAgICAgICAgICAgcGFuaWMo
+ImNhbm5vdCBpbml0aWFsaXplIFRMU0YgbWVtb3J5IG1hbmFnZXIiKTsKCisgICAgIHByaW50Zigi
+UnVubmluZyBhZnRlciAuLi5cbiIpOwoKCmluIHRoYXQgZnVuY3Rpb24gb2YgdGhlIGZpbGUgeW91
+IG1lbnRpb25lZC4KCkxlb3BvbGQKCgoKCi0tIAotLQpMaW51eCBVc2VyIDE1MjY5MiAgICAgR1BH
+OiAwNUY0QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tCkE6IEJlY2F1c2UgaXQgbWVzc2VzIHVwIHRoZSBvcmRlciBpbiB3aGljaCBwZW9w
+bGUgbm9ybWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkgaXMgdG9wLXBvc3Rpbmcgc3VjaCBhIGJhZCB0
+aGluZz8KQTogVG9wLXBvc3RpbmcuClE6IFdoYXQgaXMgdGhlIG1vc3QgYW5ub3lpbmcgdGhpbmcg
+aW4gZS1tYWlsPwoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9u
+LXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBl
+OiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDgzMyBieXRlcwpEZXNjOiBPcGVuUEdQ
+IGRpZ2l0YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVu
+b21haS9hdHRhY2htZW50cy8yMDE3MTEyMy9kNjM0YmZkMS9hdHRhY2htZW50LnNpZz4K
