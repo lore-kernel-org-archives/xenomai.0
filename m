@@ -1,13 +1,13 @@
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
 References: <d3f6995a-1d45-d262-21a0-97a51253da91@alaxarxa.net>
  <e665e5ab-796f-8aac-997c-33b88079d27c@xenomai.org>
  <a30fcf3f-ad18-0210-ad51-6a0ab0b73872@alaxarxa.net>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <bd2c4a53-33cf-b4aa-79c5-243fe1d5b660@xenomai.org>
-Date: Thu, 23 Nov 2017 16:04:35 +0100
+Message-ID: <c7f002e2-4945-58c3-34b8-1efa46dea68e@alaxarxa.net>
+Date: Thu, 23 Nov 2017 16:04:54 +0100
 MIME-Version: 1.0
 In-Reply-To: <a30fcf3f-ad18-0210-ad51-6a0ab0b73872@alaxarxa.net>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Language: ca-ES
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Cannot initialize TLSF memory manager
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,9 +18,9 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/23/2017 03:58 PM, Leopold Palomo-Avellaneda wrote:
+On 23/11/17 15:58, Leopold Palomo-Avellaneda wrote:
 > On 23/11/17 13:22, Philippe Gerum wrote:
 >> On 11/23/2017 01:10 PM, Leopold Palomo-Avellaneda wrote:
 >>> Hi,
@@ -97,23 +97,20 @@ On 11/23/2017 03:58 PM, Leopold Palomo-Avellaneda wrote:
 > 
 > 
 > in that function of the file you mentioned.
-> 
 
-Can you try this?
+just for FYI, if I build xenomain without pshared it works ....
 
-diff --git a/lib/copperplate/heapobj-tlsf.c b/lib/copperplate/heapobj-tlsf.c
-index 370985210..0186be423 100644
---- a/lib/copperplate/heapobj-tlsf.c
-+++ b/lib/copperplate/heapobj-tlsf.c
-@@ -103,6 +103,7 @@ int heapobj_pkg_init_private(void)
- 	 * out the allocation overhead.
- 	 */
- 	mem = tlsf_malloc(alloc_size);
-+	printf("mem=%p, alloc_size=%zu\n", mem, alloc_size);
- 	available_size = init_memory_pool(alloc_size, mem);
- 	if (available_size == (size_t)-1)
- 		panic("cannot initialize TLSF memory manager");
+Leopold
+
+
 
 -- 
-Philippe.
+--
+Linux User 152692     GPG: 05F4A7A949A2D9AA
+Catalonia
+-------------------------------------
+A: Because it messes up the order in which people normally read text.
+Q: Why is top-posting such a bad thing?
+A: Top-posting.
+Q: What is the most annoying thing in e-mail?
 
