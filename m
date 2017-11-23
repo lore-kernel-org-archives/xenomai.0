@@ -1,19 +1,19 @@
-References: <d3f6995a-1d45-d262-21a0-97a51253da91@alaxarxa.net>
- <e665e5ab-796f-8aac-997c-33b88079d27c@xenomai.org>
- <a30fcf3f-ad18-0210-ad51-6a0ab0b73872@alaxarxa.net>
- <bd2c4a53-33cf-b4aa-79c5-243fe1d5b660@xenomai.org>
- <275c60a3-db60-fdb7-7ffc-96988ca50913@alaxarxa.net>
- <a58f4cc0-0e42-c1d6-71e6-c18b00d1076d@xenomai.org>
- <52b92049-fcaa-8d48-8e89-516fc6f0ab21@alaxarxa.net>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <6d2aee3e-2ddc-3008-f00e-a350030efcf3@xenomai.org>
-Date: Thu, 23 Nov 2017 16:29:29 +0100
+References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
+ <f7ad8163bda5484292ccdf6e8cf1a484@P10-EX02.3DSystems.Internal>
+ <02f0df6b-0854-eeaa-a168-ae2c10e1d8ab@xenomai.org>
+ <845269a3-e580-c8ff-e25d-a56d00c787fe@siemens.com>
+ <2f850a60-3756-f06d-82c6-ccf6eeb58aa3@xenomai.org>
+ <20171123135212.45ec5f3b@md1em3qc>
+ <ae12e587-58dd-982f-1afa-8b7f66dbfc86@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <a883e3c3-5022-525e-8944-c702aae2e7f8@siemens.com>
+Date: Thu, 23 Nov 2017 20:39:55 +0100
 MIME-Version: 1.0
-In-Reply-To: <52b92049-fcaa-8d48-8e89-516fc6f0ab21@alaxarxa.net>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <ae12e587-58dd-982f-1afa-8b7f66dbfc86@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Cannot initialize TLSF memory manager
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] [RFC] Service hosting for Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,174 +22,158 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jorge Ramirez <jro@xenomai.org>, Henning Schild <henning.schild@siemens.com>, Philippe Gerum <rpm@xenomai.org>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 11/23/2017 04:15 PM, Leopold Palomo-Avellaneda wrote:
-> On 23/11/17 16:12, Philippe Gerum wrote:
->> On 11/23/2017 04:08 PM, Leopold Palomo-Avellaneda wrote:
->>> On 23/11/17 16:04, Philippe Gerum wrote:
->>>> On 11/23/2017 03:58 PM, Leopold Palomo-Avellaneda wrote:
->>>>> On 23/11/17 13:22, Philippe Gerum wrote:
->>>>>> On 11/23/2017 01:10 PM, Leopold Palomo-Avellaneda wrote:
->>>>>>> Hi,
->>>>>>>
->>>>>>>
->>>>>>> I have seen this bug before, but it seems that it's again in 3.0.6. Running
->>>>>>> 3.0.6 with:
->>>>>>>
->>>>>>>  xeno-config --info
->>>>>>> Xenomai version: Xenomai/cobalt v3.0.6
->>>>>>> Linux bmm3 4.9.51-xenomai-3.0.6-ipipe #1 SMP Thu Nov 23 09:03:27 CET 2017 x86_64
->>>>>>> GNU/Linux
->>>>>>> Kernel parameters: BOOT_IMAGE=/boot/vmlinuz-4.9.51-xenomai-3.0.6-ipipe
->>>>>>> root=UUID=ab96eed9-cd79-4d30-9e93-e9f32a18cca6 ro quiet
->>>>>>> xenomai.allowed_group=113 nosmap
->>>>>>> I-pipe release #4 detected
->>>>>>> Cobalt core 3.0.6 detected
->>>>>>> Compiler: gcc version 6.3.0 20170516 (Debian 6.3.0-18)
->>>>>>> Build args: --build=x86_64-linux-gnu --includedir=/usr/include
->>>>>>> --mandir=/usr/share/man --infodir=/usr/share/info --sysconfdir=/etc
->>>>>>> --localstatedir=/var --disable-silent-rules --libdir=/usr/lib/x86_64-linux-gnu
->>>>>>> --libexecdir=/usr/lib/x86_64-linux-gnu --disable-maintainer-mode
->>>>>>> --disable-dependency-tracking --prefix=/usr --includedir=/usr/include/xenomai
->>>>>>> --mandir=/usr/share/man --with-testdir=/usr/lib/x86_64-linux-gnu/xenomai
->>>>>>> --enable-fortify --libdir=/usr/lib/x86_64-linux-gnu/ --enable-pshared
->>>>>>> --enable-registry --enable-doc-build --enable-dlopen-libs --enable-tls
->>>>>>> --enable-smp --with-core=cobalt --build x86_64-linux-gnu
->>>>>>> build_alias=x86_64-linux-gnu CFLAGS=-g -O2
->>>>>>> -fdebug-prefix-map=/build/xenomai-3.0.6+ds1=. -fstack-protector-strong -Wformat
->>>>>>> -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -fno-omit-frame-pointer
->>>>>>> LDFLAGS=-Wl,-z,relro -Wl,-z,now -Wl,--as-needed CPPFLAGS=-Wdate-time
->>>>>>> -D_FORTIFY_SOURCE=2
->>>>>>>
->>>>>>>
->>>>>>>
->>>>>>> when I try xeno-test, I got:
->>>>>>>
->>>>>>>  xeno-test
->>>>>>> Started child 2593: /bin/bash
->>>>>>> /usr/lib/x86_64-linux-gnu/xenomai/xeno-test-run-wrapper /usr/bin/xeno-test
->>>>>>> ++ echo 0
->>>>>>> ++ testdir=/usr/lib/x86_64-linux-gnu/xenomai
->>>>>>> ++ /usr/lib/x86_64-linux-gnu/xenomai/smokey --run
->>>>>>> init_memory_pool(): invalid pool
->>>>>>>    0"000.022| BUG in heapobj_pkg_init_private(): [main] cannot initialize TLSF
->>>>>>> memory manager
->>>>>>>
->>>>>>>
->>>>>>> Any idea?
->>>>>>>
+On 2017-11-23 14:18, Jorge Ramirez wrote:
+> On 11/23/2017 01:52 PM, Henning Schild wrote:
+>> Am Thu, 23 Nov 2017 12:42:08 +0100
+>> schrieb Philippe Gerum <rpm@xenomai.org>:
+>>
+>>> On 11/22/2017 09:27 PM, Jan Kiszka wrote:
+>>>> On 2017-11-22 16:32, Philippe Gerum wrote:
+>>>>> Hi Kendall,
+>>>>>
+>>>>> On 11/21/2017 08:27 PM, Auel, Kendall wrote:
+>>>>>> Hi Philippe,
 >>>>>>
->>>>>> Can you check whether the call to tlsf_malloc() in
->>>>>> heapobj_pkg_init_private() returns non-NULL?
->>>>>> (lib/copperplate/heapobj-tlsf.c), and print out the value of alloc_size too?
+>>>>>> Is there an online bug tracking and feature request database?
+>>>>>> This would be a useful way to distribute work and to sync up
+>>>>>> contributors. I think the kernel uses Bugzilla, and Ubuntu has
+>>>>>> Launchpad. No doubt there are many others.
+>>>>>>
+>>>>>> I'd like to contribute in some way. I've been having a lot of fun
+>>>>>> as a Xenomai user.
+>>>>> We don't have that unfortunately. As suggested by several posters,
+>>>>> moving to a git-based, integrated development framework such as
+>>>>> gitlab or github would bring in that feature, and others we need
+>>>>> too (CI).
 >>>>>
->>>>> Checking the code, it fails before to return anything. Running crosss-link, that
->>>>> fails in the same function:
->>>>> ./cross-link
->>>>>
->>>>> init_memory_pool(): invalid pool
->>>>> Init memory pool returns -1 bytes
->>>>>    0"000.041| BUG in heapobj_pkg_init_private(): [main] cannot initialize TLSF
->>>>> memory manager
->>>>>
->>>>>
->>>>> I just added:
->>>>>
->>>>> +      printf("Init memory pool returns %zd bytes \n", available_size);
->>>>>
->>>>>         if (available_size == (size_t)-1)
->>>>>                 panic("cannot initialize TLSF memory manager");
->>>>>
->>>>> +     printf("Running after ...\n");
->>>>>
->>>>>
->>>>> in that function of the file you mentioned.
->>>>>
+>>>>> I have no issue moving the project from the current git server at
+>>>>> xenomai.org to any of these environments.
+>>>>>   
+>>>> If it helps the community to grow, I would not refuse such a move.
+>>>> But I would like to raise some concerns about platforms like github
+>>>> or gitlab that we must be aware of:
 >>>>
->>>> Can you try this?
+>>>> - lacking integration with email-based workflows (while kernel
+>>>>    development tends to be based on that...)
 >>>>
->>>> diff --git a/lib/copperplate/heapobj-tlsf.c b/lib/copperplate/heapobj-tlsf.c
->>>> index 370985210..0186be423 100644
->>>> --- a/lib/copperplate/heapobj-tlsf.c
->>>> +++ b/lib/copperplate/heapobj-tlsf.c
->>>> @@ -103,6 +103,7 @@ int heapobj_pkg_init_private(void)
->>>>  	 * out the allocation overhead.
->>>>  	 */
->>>>  	mem = tlsf_malloc(alloc_size);
->>>> +	printf("mem=%p, alloc_size=%zu\n", mem, alloc_size);
->>>>  	available_size = init_memory_pool(alloc_size, mem);
->>>>  	if (available_size == (size_t)-1)
->>>>  		panic("cannot initialize TLSF memory manager");
+>>>> - risk of decoupling communities when parts of the discussions
+>>>> happen on tickets or PRs and parts in mailing list threads
 >>>>
->>> ./cross-link
->>> mem=0x7f70b739a8e0, alloc_size=4096
->>> init_memory_pool(): invalid pool
->>> Init memory pool returns -1 bytes
->>>    0"000.029| BUG in heapobj_pkg_init_private(): [main] cannot initialize TLSF
->>> memory manager
+>>>> Therefore, most projects I manage on github and in our internal
+>>>> gitlab have clear policies like "no emails, only tickets and PRs"
+>>>> or "no PRs, only patches on the mailing list". Even just using the
+>>>> issue tracker to keep some to-do list requires discipline to direct
+>>>> discussions consequently to a mailing list if that exists as well
+>>>> (and that usually does not work very well).
+>>>>
+>>>> IOW: we need to be clear in what we want a platform for - and what
+>>>> not.
+>>> Forking the original thread to get input from the list specifically
+>>> regarding the idea of moving GIT services from xenomai.org to a public
+>>> software development platform.
 >>>
+>>> As Jan mentioned, there is more than having GIT underneath, there are
+>>> deep implications on the workflow, and it really depends on what we'd
+>>> want from such platform. If you have any thought, recommendation,
+>>> experience with those platforms in your daily work, it would be great
+>>> to know your views.
+>> Jan is absolutely right here. Before moving to github (or something
+>> alike) you need to set groundrules for how to deal with PRs, issues and
+>> all the stuff that you suddenly gain.
 >>
->> Ok, so please try this:
->>
->> diff --git a/lib/copperplate/heapobj-tlsf.c b/lib/copperplate/heapobj-tlsf.c
->> index 370985210..948f7fc52 100644
->> --- a/lib/copperplate/heapobj-tlsf.c
->> +++ b/lib/copperplate/heapobj-tlsf.c
->> @@ -78,7 +78,7 @@ int heapobj_init_array_private(struct heapobj *hobj, const char *name,
->>  int heapobj_pkg_init_private(void)
->>  {
->>  	#ifdef CONFIG_XENO_PSHARED
->> -		size_t alloc_size = sysconf(_SC_PAGE_SIZE);
->> +		size_t alloc_size = sysconf(_SC_PAGE_SIZE) * 2;
->>  	#else
->>  		size_t alloc_size = __copperplate_setup_data.mem_pool;
->>  	#endif
->>
->>
+>> I think Xenomai could benefit from issue tracking and CI, not sure
+>> whether we need github for that.
 > 
-> with my user
+> issue tracking is not something that important IMO.
+> I dont believe this is extensively used by any projects but mainly distros.
 > 
-> ./cross-link
-> mem=0x7f0d630488e0, alloc_size=8192
-> Init memory pool returns 1808 bytes
-> Running after ...
-> sysregd:
-> create_directory_recursive("/var/run/xenomai/leopold.palomo/anon@19479"):
-> Permission denied
-> sysregd:
-> create_directory_recursive("/var/run/xenomai/leopold.palomo/anon@19479"):
-> Permission denied
-> sysregd:
-> create_directory_recursive("/var/run/xenomai/leopold.palomo/anon@19479"):
-> Permission denied
->    0"610.664| WARNING: [main] cannot connect to registry daemon
->    0"610.798| WARNING: [main] setup call copperplate failed
->    0"610.830| BUG in __xenomai_init(): [main] initialization failed, EAGAIN
+>> The CI they offer is docker-based and
+>> we would likely want something more powerful. But i guess you could
+>> always use docker to remote control AWS or real hardware.
 > 
-> with sudo ...
+> yes. there are a number of solutions that in fact do OTA and most of
+> them use Docker to control real hardware.
+> the industry seems to be going in that direction. I think Shippable
+> should server our purpose.
 > 
-> leopold.palomo@bmm3 ~/xenomai/xenomai-3.0.6/system/demo$ sudo ./cross-link
-> mem=0x7fc9e73f88e0, alloc_size=8192
-> Init memory pool returns 1808 bytes
-> Running after ...
-> mem=0x7f2e146318e0, alloc_size=8192
-> Init memory pool returns 1808 bytes
-> Running after ...
-> main : can't open /dev/rtdm/rtser0 (write), No such file or directory
+> for instance, check out this commit:
+> https://github.com/zephyrproject-rtos/zephyr/pull/5134
 > 
-> 
-> seems you are near ....
+> and its shippable output
+> https://app.shippable.com/github/zephyrproject-rtos/zephyr/runs/7471/summary/console
 > 
 
-The two issues are unrelated AFAICT. The memory init issue is gone, and
-I can explain why. The Permission denied issue is odd though, and you
-may want to check /var/run/xenomai for perms.
+Shippable looks interesting. We are working internally with gitlab-ci
+and for several public projects with Travis. But the free services are
+usually nothing for "serious" workload like kernel builds because they
+either lack powerful builders or have limits on the job length - or both
+which doesn't make it better. For Jailhouse, I worked around that in
+Travis by caching the required kernel build.
 
-Not being able to open rtser0 is yet another kind of problem: the uart
-driver is not up and running, so the devices were not created. crosslink
-definitely needs such driver.
+Do you know what limits exist in shippable?
+
+> 
+>> github sucks at routing mails. My github account is shared between my
+>> work and personal stuff but i do not star/watch any work related
+>> projects because i do not want the notifications in my personal inbox.
+> 
+> I agree that it sucks but I dont see why this should be an issue.
+> Just dont rely on github emails (I personally tend to disable them, they
+> are extremely annoying).
+> 
+> when I need to find out how any PR is progressing (every other day) I
+> just connect to github.
+
+It's a personal thing, but web UIs do not scale for me. I'm on way too
+many platforms, and all suck at least a little bit in certain ways. But
+then, when you then need to combine them to keep track, the problem
+becomes serious because email do not work for most of them. Again, a
+personal issue I just happen to share with many kernel hackers.
+
+In the end, the platform we pick depends on the group of developers we
+want to attract. If the majority of our key contributors and maintainers
+become more productive for the project in a specific way, pick that one.
+But be careful with choices that cannot be changed again easily.
+
+> 
+>>
+>> commitment to github etc. is likely to cause sort of a vendor lock-in.
+> 
+> ? what do you mean?
+>> I am sure the APIs can be used to extract some information, but will you
+>> get something that you can import into your own gitlab or track later
+>> on? As long as we only use git-hosting and CI from them that would not
+>> be too much of a problem.
+> 
+> yeah everything can be done (ie: at linaro we have lava-labs and
+> integrate our own CI loops with Jenkins and real hardware).
+> But I dont believe Xenomai has the dedicated resources for that.
+> 
+> BTW at ELCE in Prague, Tgx's daughter presented a very interesting
+> approach [1] to accessing real hardware on CI (using libvirt). Very cool.
+> I think we should use it if in the end we decide to roll our own. But
+> IMO, Shippable should suffice.
+> 
+> [1]
+> https://osseu17.sched.com/event/ByYA/continuous-integration-jenkins-libvirt-and-real-hardware-anna-maria-gleixner-manuel-traut-linutronix-gmbh
+> 
+
+FWIW, collaboration projects like Automotive Grade Linux or our Civil
+Infrastructure Platform are significantly investing into LAVA now. And
+we also do this here internally. We are not yet at a point where we can
+easily spawn and/or scale out labs, but that time will come. It's an
+industry trend regarding collaborative testing right now, and I'm sure
+we will eventually be able to exploit it for Xenomai as well.
+
+But let's focus on CI first. Then maybe easily retrievable test images
+for your manually operated test lab.
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
 
