@@ -1,14 +1,14 @@
-Mime-Version: 1.0
-Sender: =?UTF-8?B?6rmA67KU7KeE?= <beomjins.kim@samsung.com>
-From: =?UTF-8?B?6rmA67KU7KeE?= <beomjins.kim@samsung.com>
-Message-ID: <20171123090035epcms1p851cbb6a7a035b573e340028e349f1254@epcms1p8>
-Date: Thu, 23 Nov 2017 09:00:35 +0000
-References: <CGME20171123090035epcms1p851cbb6a7a035b573e340028e349f1254@epcms1p8>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] I am trying to make a hard real-time application on
- Xenomai (dual-kernel configuration). Here are some questions.
-Reply-To: beomjins.kim@samsung.com
+References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
+ <30092754-52b7-e4af-fff5-123737a5cc33@alaxarxa.net>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <69a151ec-8088-e515-190b-305cbb3553a4@xenomai.org>
+Date: Thu, 23 Nov 2017 12:01:15 +0100
+MIME-Version: 1.0
+In-Reply-To: <30092754-52b7-e4af-fff5-123737a5cc33@alaxarxa.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [RFC] RTnet, Analogy and the elephant in the room
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,59 +17,122 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
-Cc: =?UTF-8?B?67CV64yA64+Z?= <daedong.park@samsung.com>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-ICAgSGVsbG8sCiAgIEkgYW0gdHJ5aW5nIHRvIG1ha2UgYSBoYXJkIHJlYWwtdGltZSBhcHBsaWNh
-dGlvbiBvbiBYZW5vbWFpCiAgIChkdWFsLWtlcm5lbCBjb25maWd1cmF0aW9uKS4gSGVyZSBhcmUg
-c29tZSBxdWVzdGlvbnMuCgoKICAgMS4gVG8gZnVsbHkgdXRpbGl6ZSB0aGUgcmVhbHRpbWUgY2Fw
-YWJpbGl0eSBvZiBYZW5vbWFpLCBzaG91bGQgSSBhcHBseQogICB4ZW5vbWFpIHRvIGFsbCB0aGUg
-YXNzb2NpYXRlZCBhcHBsaWNhdGlvbiBsaWJyYXJpZXM/CiAgIEZvciBleGFtcGxlLCBpZiBJIHJ1
-biB0aGUgJ2xkZCcgY29tbWFuZCB3aXRoIG15IHJlYWwtdGltZSBhcHBsaWNhdGlvbiwKICAgdGhl
-IG91dHB1dCBsb29rcyBsaWtlIHRoaXM6CgogICAgICAgICAgIGxpbnV4LXZkc28uc28uMSA9PiAg
-KDB4MDAwMDdmZmVjNDVlNjAwMCkKICAgICAgICAgICBsaWJ1cmRmZG9tX21vZGVsLnNvLjEuMCA9
-PgogICAvb3B0L3Jvcy9yMmIzL2xpYi94ODZfNjQtbGludXgtZ251L2xpYnVyZGZkb21fbW9kZWwu
-c28uMS4wCiAgICgweDAwMDA3ZjFkMzRhZmIwMDApCiAgICAgICAgICAgbGlic3RkYysrLnNvLjYg
-PT4gL3Vzci9saWIveDg2XzY0LWxpbnV4LWdudS9saWJzdGRjKysuc28uNgogICAoMHgwMDAwN2Yx
-ZDM0NzI3MDAwKQogICAgICAgICAgIGxpYmdjY19zLnNvLjEgPT4gL2xpYi94ODZfNjQtbGludXgt
-Z251L2xpYmdjY19zLnNvLjEKICAgKDB4MDAwMDdmMWQzNDUwZjAwMCkKICAgICAgICAgICBsaWJj
-LnNvLjYgPT4gL2xpYi94ODZfNjQtbGludXgtZ251L2xpYmMuc28uNgogICAoMHgwMDAwN2YxZDM0
-MTQ1MDAwKQogICAgICAgICAgIGxpYnRpbnl4bWwuc28uMi42LjIgPT4KICAgL3Vzci9saWIveDg2
-XzY0LWxpbnV4LWdudS9saWJ0aW55eG1sLnNvLjIuNi4yICgweDAwMDA3ZjFkMzNmMmYwMDApCiAg
-ICAgICAgICAgbGliY29uc29sZV9icmlkZ2Uuc28uMC4zID0+CiAgIC9vcHQvcm9zL3IyYjMvbGli
-L3g4Nl82NC1saW51eC1nbnUvbGliY29uc29sZV9icmlkZ2Uuc28uMC4zCiAgICgweDAwMDA3ZjFk
-MzNkMjkwMDApCiAgICAgICAgICAgbGlibS5zby42ID0+IC9saWIveDg2XzY0LWxpbnV4LWdudS9s
-aWJtLnNvLjYKICAgKDB4MDAwMDdmMWQzM2EyMDAwMCkKICAgICAgICAgICAvbGliNjQvbGQtbGlu
-dXgteDg2LTY0LnNvLjIgKDB4MDAwMDU2NDc4ZjFhMjAwMCkKCiAgIERvIEkgbmVlZCB0byByZWJ1
-aWxkIGFsbCBsaWJyYXJpZXMgaW4gdGhlIG91dHB1dCBsaXN0IChsaWJzdGRjICsrLAogICBsaWJ0
-aW55eG1sIC4uLikgYnkgYXBwbHlpbmcgdGhlIHhlbm9tYWkgY29tcGlsZSBvcHRpb24/CgoKICAg
-Mi4gSSBjYW5ub3QgZmluZCAncG9sbCgpJyBzeXNjYWxsIGZyb20gWGVub21haSBzb3VyY2VzIChh
-bHNvLCBpbgogICBjb2JhbHQud3JhcHBlcnMpLiBJcyB0aGVyZSBhbnkgcmVhc29uIHRvIG9taXQg
-dGhlIHBvbGwoKSBzeXNjYWxsIGZyb20KICAgWGVub21haT8gSG93IGRvIEkgcmUtYnVpbGQgUE9T
-SVgtYmFzZWQgZXhpc3RpbmcgY29kZSB1c2luZwogICBwb2xsKCkvZXBvbGwoKSB3aXRoIFhlbm9t
-YWk/CgoKICAgMy4gSSB0cmllZCB0byBhcHBseSBYZW5vbWFpIHRvIGEgYnJvYWRseS11c2VkIGxp
-YnJhcnkgbmFtZWQKICAgbGliUG9jb0ZvdW5kYXRpb24uIEJ1dCBpdCB0aHJvd3MgZXhjZXB0aW9u
-IGF0IHB0aHJlYWRfbXV0ZXhfaW5pdCgpIGFzCiAgIHNob3duIGJlbG93LgogICAoWzFdaHR0cHM6
-Ly9naXRodWIuY29tL3BvY29wcm9qZWN0L3BvY28vYmxvYi9kZXZlbG9wL0ZvdW5kYXRpb24vc3Jj
-L011dAogICBleF9QT1NJWC5jcHA6NjQpCgogICAgICAgIGlmIChwdGhyZWFkX211dGV4X2luaXQg
-KCYgXyBtdXRleCwgJiBhdHRyKSkKICAgICAgICB7CiAgICAgICAgICAgIHB0aHJlYWRfbXV0ZXhh
-dHRyX2Rlc3Ryb3kgKCYgYXR0cik7CiAgICAgICAgICAgIHRocm93IFN5c3RlbUV4Y2VwdGlvbiAo
-ImNhbiBub3QgY3JlYXRlIG11dGV4Iik7CiAgICAgICAgfQoKICAgSWYgeW91IHJlZmVyIHRvIG1h
-bnBhZ2UsIHB0aHJlYWRfbXV0ZXhfaW5pdCgpIGNhbm5vdCBoYXZlICcxJyBhcyByZXR1cm4KICAg
-dmFsdWUuIEhvd2V2ZXIsIHB0aHJlYWRfbXV0ZXhfaW5pdCgpIG9mIFhlbm9tYWkgYWN0dWFsbHkg
-cmV0dXJucyAnMScgYXMKICAgZXJyb3Juby4gQXMgdGhlIHJlc3VsdCwgdGhlIGFwcGxpY2F0aW9u
-IGlzIGFib3J0ZWQuCiAgIEkgd2FudCB0byBrbm93IHRoZSByZWFzb24gb2YgdGhpcyBwaGVub21l
-bm9uLgoKCiAgIFRoYW5rIHlvdSEKCgogICBCZW9tamluIEtpbSB8IEVuZ2luZWVyCgogICBBcHBs
-aWVkIFBsYXRmb3JtIFRlYW0uIHwgU29mdHdhcmUgUiZEIENlbnRlciB8IFNhbXN1bmcgRWxlY3Ry
-b25pY3MgQ28uLAogICBMdGQuCgogICBNb2JpbGUgOiArODItMTAtODQ5NS01NTIwIHwgRS1NYWls
-IDogWzJdYmVvbWppbnMua2ltQHNhbXN1bmcuY29tCgoKICAgW2NpZDpjYWZlX2ltYWdlXzBAcy1j
-b3JlLmNvLmtyXQoKICAgW3VwZGF0ZT91c2VyaWQ9YmVvbWppbnMua2ltJmRvPWJXRnBiRWxFUFRJ
-d01UY3hNVEl6TURrd01ETTFaWEJqYlhNeGNEZzEKICAgTVdOaVlqWmhOMkV3TXpWaU5UY3paVE0w
-TURBeU9HVXpORGxtTVRJMU5DWnlaV05wY0dsbGJuUkJaR1J5WlhOelBYaGxibTkKICAgdFlXbEFl
-R1Z1YjIxaGFTNXZjbWNfXQoKUmVmZXJlbmNlcwoKICAgMS4gaHR0cHM6Ly9naXRodWIuY29tL3Bv
-Y29wcm9qZWN0L3BvY28vYmxvYi9kZXZlbG9wL0ZvdW5kYXRpb24vc3JjL011dGV4X1BPU0lYLmNw
-cDo2NAogICAyLiBtYWlsdG86YmVvbWppbnMua2ltQHNhbXN1bmcuY29tCi0tLS0tLS0tLS0tLS0t
-IG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnVi
-YmVkLi4uCk5hbWU6IG5vdCBhdmFpbGFibGUKVHlwZTogaW1hZ2UvZ2lmClNpemU6IDEzNDAyIGJ5
-dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFp
-bC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTcxMTIzLzAwYzc5MjkzL2F0dGFjaG1lbnQuZ2lmPgo=
+On 11/22/2017 01:33 PM, Leopold Palomo-Avellaneda wrote:
+
+[snip]
+
+> 
+> And finally, if you let me talk about our Elmer.
+> 
+> The I/O frameworks are IMHO are crucial. It has a very limited scenario to
+> develop a RT system if it has no interaction with the external devices, or
+> whatever. I have the hope ("A new hope" ;-)) that Siemens and Denx guys,
+> continuing contributing to the project. Also, I have seen that new people have
+> interest.
+>
+
+For the record, I'm definitely not suggesting to drop all I/O device
+support from Xenomai, that would obviously make no sense. However, the
+broken code must be fixed otherwise it serves no purpose but annoying
+both users and maintainers.
+
+> But I would like to ask you directly Philippe some practical steps that could
+> address to this challenge:
+> 
+> - Would you be willing to move Xenomai to some platform like github, or similar?
+> It will have some advantages like issues management, maintenance, (more
+> visibility?), etc.
+> 
+
+Yes.
+
+> - Would you be willing to delegate tasks of the project to other people,
+
+Yes.
+
+ that
+> maybe will not make it as good as you will do, like documentation, web site, or
+> parts of code, but made then with an acceptable quality?
+
+Yes. This said, acceptable quality is a matter of taste and perception,
+and the people involved in the merging process may have different views
+on this. Fortunately for us, crap always solidly looks crap, which eases
+the decision process when deciding what to do with it.
+
+ And please, don't take
+> bad, it's a difficult thing. I have to confess that for me, it's very difficult.
+> > - Would you be willing to guide new contributors and give them
+responsibilities
+> of important parts of the code?
+> 
+
+Yes. However, we cannot expect anyone to decide for us what we could be
+interested in contributing. What needs to be done can be put on the
+table for discussion, people may add new ideas, but at the end of the
+day, one is responsible for committing to a task.
+
+> - Would you be willing to have the role as coordinator and leader of the project
+> changing from one man show to some more open project? will be it possible? I
+
+This is already the situation today, the real issue is that I'm
+contributing most of the code, and have to carry out all of the other
+tasks in the project, which ends up with nothing being done with the
+required level of predictability and quality.
+
+Even more importantly, most of the knowledge about how things work
+internally all across the core system over all CPU architectures is
+dangerously concentrated into a single person's brain. With a bus factor
+of 1, well, Houston, we have a problem.
+
+Information must flow, as a matter of fact, it does not, at the very
+least not enough. This is clearly not a matter of unwillingness from my
+end, but I tend to get lazy writing documentation about the internal
+stuff when I'm not explicitly challenged to provide information by
+people involved in the project.
+
+> don't know if because license issues or whatever would let it...
+>
+
+The licensing scheme is very simple (fully abide by the kernel GPL
+license for anything living in kernel space, use LGPL for libs in
+userland) and did not change for the past 15 years, I'm not aware of any
+issue so far.
+
+> - Would you be willing to change the build system from autotools to another
+> modern tool? (Ex CMake?) IMHO few people understand autotools and it's a barrier
+> for the new contributors, at least in another opensource projects. However, I
+> have to admit that the entry level in Xenomai is high, so, autotools should not
+> be a problem.
+
+I'm not excluding any change at this stage, which includes considering
+other options in replacement of the autotools. This said, I don't think
+the tool supporting build recipes can prevent anyone to contribute
+software. In kernel space, Kbuild has to be followed and autotools are
+not involved at all. In user-space, a recipe to build an exec or a
+library is about 10 lines of a Makefile template, with many examples
+around. And the mailing list has always been there for people to ask
+specific questions about this.
+
+> 
+> And yes, the lost of Gilles was a great blow, on a the personal level and for
+> his contributions on the project.
+> 
+>>From my part, I can contribute if there's interest, in Debian (Ubuntu) packages.
+> Also, in testing and trying to help in the RTnet part, as user that I'm. So, I
+> could try to provide some preconfigured scenarios to the people that would like
+> to entry in Xenomai.
+> 
+> I have to admit that I'm a bit scared because we depend of Xenomai in some
+> projects in my University. But, probably we could try to move to RT_PREMPT. But,
+> because its history and my "affection" for the project I would prefer stay with
+> it and try to help.
+> 
+
+Talking about the elephant in the room does not make it scarier, it has
+always been there.
+
+-- 
+Philippe.
+
