@@ -1,17 +1,13 @@
-References: <tencent_2252D90437AFCF6B48706C45@qq.com>
- <e1bd3510-58dc-7ed2-ac0a-a0010eb43d73@alaxarxa.net>
- <20171121090129.5cc3e2a6@md1em3qc>
- <3bba77df-c130-b9d3-191b-3a7336b929d1@foxmail.com>
- <b68ddd18-e2e1-de26-c26e-8564bf8c1509@alaxarxa.net>
-From: Jack Lee <jacklee11@foxmail.com>
-Message-ID: <5e9304d5-16db-2bbf-2cb5-ce33f48054a4@foxmail.com>+40277C8B3484861C
-Date: Thu, 23 Nov 2017 08:35:44 +0800
+References: <a3111b21e04e43bea8ddcd531f698074@ocnapvsw3301.ocr.priv>
+ <395d4699-e04a-c026-861d-b9866b13bb57@xenomai.org>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Message-ID: <58be6af8-2502-9aa8-b8cb-fef102bfb99b@alaxarxa.net>
+Date: Thu, 23 Nov 2017 08:26:49 +0100
 MIME-Version: 1.0
-In-Reply-To: <b68ddd18-e2e1-de26-c26e-8564bf8c1509@alaxarxa.net>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] 3.0.6 with linux 4.9.51 on x86_64 Intel(R) Atom(TM)
- CPU N2800 compilation failed
+In-Reply-To: <395d4699-e04a-c026-861d-b9866b13bb57@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Updating from 3.0.5 to 3.0.6
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,64 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Cc: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-
-
-On 11/22/2017 03:13 PM, Leopold Palomo-Avellaneda wrote:
-> On 22/11/17 02:44, Jack Lee wrote:
->>
->> On 11/21/2017 04:01 PM, Henning Schild wrote:
->>> Am Tue, 21 Nov 2017 08:28:11 +0100
->>> schrieb Leopold Palomo-Avellaneda <leo@alaxarxa.net>:
->>>
->>>> On 21/11/17 06:52, Jack Lee wrote:
->>>>> Hello,
->>>>>
->>>>>     My board cpu is Intel Atom CPU N2800. I am using xenomai 3.0.6
->>>>> with linux 4.9.51. I get the following error when compiling the
->>>>> kernel. Can anyone give me some help? Thanks!
->>>>>
->>>>>     CC      arch/x86/xenomai/machine.o
->>>>> In file included from arch/x86/xenomai/machine.c:22:0:
->>>>> arch/x86/xenomai/include/asm/xenomai/syscall.h: In function
->>>>> ‘__xn_get_syscall_nr’:
->>>>> arch/x86/xenomai/include/asm/xenomai/syscall.h:46:31: error:
->>>>> implicit declaration of function
->>>>> ‘__COBALT_CALL32_SYSNR’ [-Werror=implicit-function-declaration]
->>>>> #define __xn_syscall(regs)
->>>>> __COBALT_CALL32_SYSNR(__xn_reg_sys(regs) \ ^
->>>>> arch/x86/xenomai/include/asm/xenomai/syscall.h:60:32: note: in
->>>>> expansion of macro ‘__xn_syscall’ return __xn_syscall_p(regs) ?
->>>>> __xn_syscall(regs) :
->>>> I had the same problem yesterday and Philippe Gerum answered:
->>>>
->>>>>> As a work around, drop CONFIG_IA32_EMULATION if you don't need
->>>>>> it.
->> I tried it, but got another error.
->>
->> rivers/xenomai/net/drivers/eepro100.c: In function ‘eepro100_init_module’:
->> drivers/xenomai/net/drivers/eepro100.c:1832:8: error: lvalue required as left
->> operand of assignment
->>    debug = speedo_debug; /* touch debug variable */
->>          ^
-> Please,
->
-> cloud you check the lists emails of yesterday?. Robert Lange sent a patch to
-> solve this, at least in the intel cards.
->
-> Leopold
-Sorry, I did find the solutions posted after I sent the two emails and 
-too late to call back.
-I found that you have a tough time with this project these days. I also 
-appreciate
-that many people responded to the email Philippe sent out. Hope you will 
-conquer this and
-have a bright future.
-
-Have a nice day!
-
-
-
-
+T24gMjIvMTEvMTcgMTc6NTQsIFBoaWxpcHBlIEdlcnVtIHdyb3RlOgo+IE9uIDExLzIyLzIwMTcg
+MDk6NDIgQU0sIEZhemlvIE1hdXJpemlvIHdyb3RlOgo+PiBJIGhhdmUgYSBzdHVwaWQgcXVlc3Rp
+b27igKYKPiAKPiBubyBwcm9iLiBJJ20gc3RpbGwgbG9va2luZyBmb3Igc21hcnQgYW5zd2Vycy4K
+PiAKPj4gSSB3b3VsZCBsaWtlIHRvIHVwZ3JhZGUgbXkgY3VycmVudCB4ZW5vbWFpIDMuMC41IGJh
+c2VkIHN5c3RlbSB0byB4ZW5vbWFpIDMuMC424oCmCj4+IEkgbmVlZCB0byByZXBhdGNoIHRoZSBr
+ZXJuZWwgd2l0aCB0aGUgcHJlcGFyZS1rZXJuZWwgc2NyaXB0IG9yIEkgY2FuIG9ubHkgcmVidWls
+ZCBhbmQgZXhlY3V0ZSBhIG1ha2UgaW5zdGFsbD8KPj4KPiAKPiByZS1wYXRjaGluZyBpcyBhbHdh
+eXMgYmV0dGVyLCBmaXJzdCB0byBnZXQgdGhlIHZlcnNpb24gc3RhbXAgcmlnaHQsIGFuZAo+IGFs
+c28gaW4gY2FzZSBrZXJuZWwgZmlsZXMgaGF2ZSBhcHBlYXJlZC9kaXNhcHBlYXJlZCBiZXR3ZWVu
+IHZlcnNpb25zCj4gKGFsdGhvdWdoIHRoaXMgZG9lcyBub3QgZnJlcXVlbnRseSBoYXBwZW4gYmV0
+d2VlbiBjbG9zZSBtYWludGVuYW5jZQo+IHJlbGVhc2VzKS4KPiAKClRoZXJlIGlzIHNvbWV0aGlu
+ZyB0aGF0IHdvcnJpZXMgbWUgaXMgdGhhdCBJIGhhdmUgbm90IHNlZSBkaWZmZXJlbmNlcyBiZXR3
+ZWVuCjMuMC41IGFuZCAzLjAuNiBpbiB0aGUgUlROZXQgcGFydC4gSG93ZXZlciwgMy4wLjUgY29t
+cGlsZXMgd2l0aG91dCBhbnkgcHJvYmxlbQphbmQgMy4wLjYgbmVlZHMgdG8gYmUgcGF0Y2hlZCAo
+ZGVidWcgZnVuY3Rpb25zKS4gRG8geW91IGtub3cgd2h5PwoKQmVzdCByZWdhcmRzLAoKTGVvcG9s
+ZAoKLS0gCi0tCkxpbnV4IFVzZXIgMTUyNjkyICAgICBHUEc6IDA1RjRBN0E5NDlBMkQ5QUEKQ2F0
+YWxvbmlhCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KQTogQmVjYXVzZSBp
+dCBtZXNzZXMgdXAgdGhlIG9yZGVyIGluIHdoaWNoIHBlb3BsZSBub3JtYWxseSByZWFkIHRleHQu
+ClE6IFdoeSBpcyB0b3AtcG9zdGluZyBzdWNoIGEgYmFkIHRoaW5nPwpBOiBUb3AtcG9zdGluZy4K
+UTogV2hhdCBpcyB0aGUgbW9zdCBhbm5veWluZyB0aGluZyBpbiBlLW1haWw/CgotLS0tLS0tLS0t
+LS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBz
+Y3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWdu
+YXR1cmUKU2l6ZTogODMzIGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJM
+OiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTcx
+MTIzLzkxOWExY2Y5L2F0dGFjaG1lbnQuc2lnPgo=
