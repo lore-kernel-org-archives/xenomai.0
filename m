@@ -1,9 +1,10 @@
 References: <CADYdroNL-JicUU_p=GXy4_ZbR3TqBmbJxf8eoLuxn57tgWpmJA@mail.gmail.com>
+ <334d5994-9ee8-9d61-1020-3579665220e0@alaxarxa.net>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <c9d39efe-12f6-e0a2-9bda-872b32eedb83@xenomai.org>
-Date: Thu, 23 Nov 2017 12:18:57 +0100
+Message-ID: <e7229d4d-0315-fc6d-7087-ad1e6f34e7f4@xenomai.org>
+Date: Thu, 23 Nov 2017 12:25:38 +0100
 MIME-Version: 1.0
-In-Reply-To: <CADYdroNL-JicUU_p=GXy4_ZbR3TqBmbJxf8eoLuxn57tgWpmJA@mail.gmail.com>
+In-Reply-To: <334d5994-9ee8-9d61-1020-3579665220e0@alaxarxa.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -17,16 +18,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Norbert Lange <nolange79@gmail.com>, Xenomai <xenomai@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, xenomai@xenomai.org
 
-On 11/21/2017 02:00 PM, Norbert Lange wrote:
-> Hello,
+On 11/23/2017 08:29 AM, Leopold Palomo-Avellaneda wrote:
+> On 21/11/17 14:00, Norbert Lange wrote:
+>> Hello,
+>>
+>> enabling RTNet will result in compile failures, because there is a
+>> nameclash from some linux-headers.
+>> This patch fixes some intel NICs to compile
 > 
-> enabling RTNet will result in compile failures, because there is a
-> nameclash from some linux-headers.
-> This patch fixes some intel NICs to compile
+> I have applied this patch and seems that works quiet well.
+> 
+> Philippe, is this a correct solution?
+> 
+> Could be applied the same for the rest of the drivers with the same problem?
+> 
 
-Merged, thanks.
+Yes, the fix makes sense. I merged it.
 
 -- 
 Philippe.
