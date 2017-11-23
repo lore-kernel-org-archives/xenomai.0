@@ -1,11 +1,9 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Message-ID: <d3f6995a-1d45-d262-21a0-97a51253da91@alaxarxa.net>
-Date: Thu, 23 Nov 2017 13:10:24 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Cannot initialize TLSF memory manager
+From: Norbert Lange <nolange79@gmail.com>
+Date: Thu, 23 Nov 2017 13:17:46 +0100
+Message-ID: <CADYdroPKrKnkUEDvY84Ez47Ua98GxvgcSy54vt9KCy5U7CYO8A@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] [RFC] Service hosting for Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,69 +12,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-Hi,
+Yes, if Xenomai moves to such a service it only makes sense if all
+additional workflows that fit, will move along.
 
+Regards to issues with mailing lists:
 
-I have seen this bug before, but it seems that it's again in 3.0.6. Running
-3.0.6 with:
+At work I have a rather big problem, that the Office infrastructure
+doesn't cater to mailing lists, and the IT will violently filter out
+most protocols. This is the reason you won't get an email from my
+office account, and I am usually to lazy to copy over replies not
+directly addressed to me.
 
- xeno-config --info
-Xenomai version: Xenomai/cobalt v3.0.6
-Linux bmm3 4.9.51-xenomai-3.0.6-ipipe #1 SMP Thu Nov 23 09:03:27 CET 2017 x86_64
-GNU/Linux
-Kernel parameters: BOOT_IMAGE=/boot/vmlinuz-4.9.51-xenomai-3.0.6-ipipe
-root=UUID=ab96eed9-cd79-4d30-9e93-e9f32a18cca6 ro quiet
-xenomai.allowed_group=113 nosmap
-I-pipe release #4 detected
-Cobalt core 3.0.6 detected
-Compiler: gcc version 6.3.0 20170516 (Debian 6.3.0-18)
-Build args: --build=x86_64-linux-gnu --includedir=/usr/include
---mandir=/usr/share/man --infodir=/usr/share/info --sysconfdir=/etc
---localstatedir=/var --disable-silent-rules --libdir=/usr/lib/x86_64-linux-gnu
---libexecdir=/usr/lib/x86_64-linux-gnu --disable-maintainer-mode
---disable-dependency-tracking --prefix=/usr --includedir=/usr/include/xenomai
---mandir=/usr/share/man --with-testdir=/usr/lib/x86_64-linux-gnu/xenomai
---enable-fortify --libdir=/usr/lib/x86_64-linux-gnu/ --enable-pshared
---enable-registry --enable-doc-build --enable-dlopen-libs --enable-tls
---enable-smp --with-core=cobalt --build x86_64-linux-gnu
-build_alias=x86_64-linux-gnu CFLAGS=-g -O2
--fdebug-prefix-map=/build/xenomai-3.0.6+ds1=. -fstack-protector-strong -Wformat
--Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -fno-omit-frame-pointer
-LDFLAGS=-Wl,-z,relro -Wl,-z,now -Wl,--as-needed CPPFLAGS=-Wdate-time
--D_FORTIFY_SOURCE=2
+There is no such issues with web-based interfaces or ssh.
 
+Gitlab/Github:
+How Gitlab/github works can be seen on big projects, and IMHO its no
+surprise that they meanwhile host a huge amount of projects.
 
+-   you can search in issues (vs. some external services for mailing
+lists, which never worked in a useful manner when I tried)
+-   you can tag issues
+-   you can add them to milestones
+-   you can merge patchsets (organised in branches) to master, get
+them checked and commented
+-   you can pickup work from anyone, by simple using their branch.
 
-when I try xeno-test, I got:
+Particularly the last is a killer argument for me, since getting a
+valid source tree from multiple mails is time consuming. with a modern
+service, if you want a u-boot with fixes for RK3288 from various
+sources, just go there:
+https://github.com/nolange/u-boot/commits/ethernet_new and add yours
+on top or try rebasing, cherry-picking. You have a working setup with
+a single git clone at any rate.
 
- xeno-test
-Started child 2593: /bin/bash
-/usr/lib/x86_64-linux-gnu/xenomai/xeno-test-run-wrapper /usr/bin/xeno-test
-++ echo 0
-++ testdir=/usr/lib/x86_64-linux-gnu/xenomai
-++ /usr/lib/x86_64-linux-gnu/xenomai/smokey --run
-init_memory_pool(): invalid pool
-   0"000.022| BUG in heapobj_pkg_init_private(): [main] cannot initialize TLSF
-memory manager
+And anything is intuitively accessible and visible via a GUI.
 
+The disadvantages:
+-   you need to register (theoretically you dont need to register for
+mailing lists, but practically you still do most of the times...)
 
-Any idea?
+In short, if you want anything comparable with Mailing lists you will
+have to add services on top for handling issues (patchwork, bugzilla,
+search).
 
-Best regards,
+Or to put it another way: what workflows in regards to mailing lists
+will be broken and can`t easily adapted? (git-push instead of
+git-sendmail)
 
-Leopold
-
-
-
--- 
---
-Linux User 152692     GPG: 05F4A7A949A2D9AA
-Catalonia
--------------------------------------
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
+Kind regards,
+Norbert
 
