@@ -1,14 +1,14 @@
-References: <mailman.47.1511367834.4377.xenomai@xenomai.org>
- <2620524.eH6OsgKU20@wirbelwind>
+References: <CADYdroNL-JicUU_p=GXy4_ZbR3TqBmbJxf8eoLuxn57tgWpmJA@mail.gmail.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <1fead1f4-6be5-f057-f84e-7a9c8f4f9b9e@xenomai.org>
-Date: Thu, 23 Nov 2017 12:17:44 +0100
+Message-ID: <c9d39efe-12f6-e0a2-9bda-872b32eedb83@xenomai.org>
+Date: Thu, 23 Nov 2017 12:18:57 +0100
 MIME-Version: 1.0
-In-Reply-To: <2620524.eH6OsgKU20@wirbelwind>
+In-Reply-To: <CADYdroNL-JicUU_p=GXy4_ZbR3TqBmbJxf8eoLuxn57tgWpmJA@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [RFC] RTnet, Analogy and the elephant in the room
+Subject: Re: [Xenomai] [PATCH] Fix compilation of e1000,
+ eepro100 and igp rtnet drivers
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,44 +17,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: steven.seeger@nasa.gov, xenomai@xenomai.org
+To: Norbert Lange <nolange79@gmail.com>, Xenomai <xenomai@xenomai.org>
 
-
-Hi Steven,
-
-On 11/22/2017 05:49 PM, Steven Seeger wrote:
-> Philippe, as we have previously discussed I am willing to take over the PPC i-
-> pipe maintenance on my personal time if it will help.
-
-Thanks, that would be great.
-
- My only issue is right
-> now the only PPC board I have in my posseession is an 8548-based board. I 
-> might be able to borrow some 405 and 440-based boards from work if needed. Of 
-> course, we can always depend on the grateful Xenomai users for test and 
-> feedback. :)
->
-
-I have remote access to many ppc boards and could help here. This said
-85xx, 40x and 44x already cover much of the ppc32 scope running Xenomai
-- maybe adding mpc52xx would be good, I have one here. I don't see much
-traction these days for Xenomai over ppc64, so I'm not even sure whether
-this port is still relevant.
-
-> I am not sure my group is going to pursue RTNET otherwise I would have been 
-> happy to help there. I think negotations are still open on that one, though.
+On 11/21/2017 02:00 PM, Norbert Lange wrote:
+> Hello,
 > 
-> If we ever get around to releasing my microblaze i-pipe patch then I am happy 
-> to maintain that as well. :) Feel free to email me privately if you want to 
-> discuss.
+> enabling RTNet will result in compile failures, because there is a
+> nameclash from some linux-headers.
+> This patch fixes some intel NICs to compile
 
-Ok.
-
-> 
-> I really miss Gilles and maybe I can help carry on his memory in some small 
-> way. Hopefully he is in heaven where there are no geode CPUs to chase FPU bugs 
-> on :)
-
+Merged, thanks.
 
 -- 
 Philippe.
