@@ -1,13 +1,17 @@
-References: <d3f6995a-1d45-d262-21a0-97a51253da91@alaxarxa.net>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <e665e5ab-796f-8aac-997c-33b88079d27c@xenomai.org>
-Date: Thu, 23 Nov 2017 13:22:37 +0100
+References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
+ <f7ad8163bda5484292ccdf6e8cf1a484@P10-EX02.3DSystems.Internal>
+ <02f0df6b-0854-eeaa-a168-ae2c10e1d8ab@xenomai.org>
+ <845269a3-e580-c8ff-e25d-a56d00c787fe@siemens.com>
+ <2f850a60-3756-f06d-82c6-ccf6eeb58aa3@xenomai.org>
+From: Jorge Ramirez <jro@xenomai.org>
+Message-ID: <d4835d99-ffc5-6d1d-5ab3-8236d6d23fab@xenomai.org>
+Date: Thu, 23 Nov 2017 13:38:03 +0100
 MIME-Version: 1.0
-In-Reply-To: <d3f6995a-1d45-d262-21a0-97a51253da91@alaxarxa.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+In-Reply-To: <2f850a60-3756-f06d-82c6-ccf6eeb58aa3@xenomai.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Cannot initialize TLSF memory manager
+Content-Language: en-US
+Subject: Re: [Xenomai] [RFC] Service hosting for Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,64 +20,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 11/23/2017 01:10 PM, Leopold Palomo-Avellaneda wrote:
-> Hi,
-> 
-> 
-> I have seen this bug before, but it seems that it's again in 3.0.6. Running
-> 3.0.6 with:
-> 
->  xeno-config --info
-> Xenomai version: Xenomai/cobalt v3.0.6
-> Linux bmm3 4.9.51-xenomai-3.0.6-ipipe #1 SMP Thu Nov 23 09:03:27 CET 2017 x86_64
-> GNU/Linux
-> Kernel parameters: BOOT_IMAGE=/boot/vmlinuz-4.9.51-xenomai-3.0.6-ipipe
-> root=UUID=ab96eed9-cd79-4d30-9e93-e9f32a18cca6 ro quiet
-> xenomai.allowed_group=113 nosmap
-> I-pipe release #4 detected
-> Cobalt core 3.0.6 detected
-> Compiler: gcc version 6.3.0 20170516 (Debian 6.3.0-18)
-> Build args: --build=x86_64-linux-gnu --includedir=/usr/include
-> --mandir=/usr/share/man --infodir=/usr/share/info --sysconfdir=/etc
-> --localstatedir=/var --disable-silent-rules --libdir=/usr/lib/x86_64-linux-gnu
-> --libexecdir=/usr/lib/x86_64-linux-gnu --disable-maintainer-mode
-> --disable-dependency-tracking --prefix=/usr --includedir=/usr/include/xenomai
-> --mandir=/usr/share/man --with-testdir=/usr/lib/x86_64-linux-gnu/xenomai
-> --enable-fortify --libdir=/usr/lib/x86_64-linux-gnu/ --enable-pshared
-> --enable-registry --enable-doc-build --enable-dlopen-libs --enable-tls
-> --enable-smp --with-core=cobalt --build x86_64-linux-gnu
-> build_alias=x86_64-linux-gnu CFLAGS=-g -O2
-> -fdebug-prefix-map=/build/xenomai-3.0.6+ds1=. -fstack-protector-strong -Wformat
-> -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -fno-omit-frame-pointer
-> LDFLAGS=-Wl,-z,relro -Wl,-z,now -Wl,--as-needed CPPFLAGS=-Wdate-time
-> -D_FORTIFY_SOURCE=2
-> 
-> 
-> 
-> when I try xeno-test, I got:
-> 
->  xeno-test
-> Started child 2593: /bin/bash
-> /usr/lib/x86_64-linux-gnu/xenomai/xeno-test-run-wrapper /usr/bin/xeno-test
-> ++ echo 0
-> ++ testdir=/usr/lib/x86_64-linux-gnu/xenomai
-> ++ /usr/lib/x86_64-linux-gnu/xenomai/smokey --run
-> init_memory_pool(): invalid pool
->    0"000.022| BUG in heapobj_pkg_init_private(): [main] cannot initialize TLSF
-> memory manager
-> 
-> 
-> Any idea?
-> 
+On 11/23/2017 12:42 PM, Philippe Gerum wrote:
+> On 11/22/2017 09:27 PM, Jan Kiszka wrote:
+>> On 2017-11-22 16:32, Philippe Gerum wrote:
+>>> Hi Kendall,
+>>>
+>>> On 11/21/2017 08:27 PM, Auel, Kendall wrote:
+>>>> Hi Philippe,
+>>>>
+>>>> Is there an online bug tracking and feature request database? This would be a useful way to distribute work and to sync up contributors. I think the kernel uses Bugzilla, and Ubuntu has Launchpad. No doubt there are many others.
+>>>>
+>>>> I'd like to contribute in some way. I've been having a lot of fun as a Xenomai user.
+>>>>
+>>> We don't have that unfortunately. As suggested by several posters,
+>>> moving to a git-based, integrated development framework such as gitlab
+>>> or github would bring in that feature, and others we need too (CI).
+>>>
+>>> I have no issue moving the project from the current git server at
+>>> xenomai.org to any of these environments.
+>>>
+>> If it helps the community to grow, I would not refuse such a move. But I
+>> would like to raise some concerns about platforms like github or gitlab
+>> that we must be aware of:
+>>
+>> - lacking integration with email-based workflows (while kernel
+>>    development tends to be based on that...)
+>>
+>> - risk of decoupling communities when parts of the discussions happen on
+>>    tickets or PRs and parts in mailing list threads
+>>
+>> Therefore, most projects I manage on github and in our internal gitlab
+>> have clear policies like "no emails, only tickets and PRs" or "no PRs,
+>> only patches on the mailing list". Even just using the issue tracker to
+>> keep some to-do list requires discipline to direct discussions
+>> consequently to a mailing list if that exists as well (and that usually
+>> does not work very well).
+>>
+>> IOW: we need to be clear in what we want a platform for - and what not.
+>>
+> Forking the original thread to get input from the list specifically
+> regarding the idea of moving GIT services from xenomai.org to a public
+> software development platform.
+>
+> As Jan mentioned, there is more than having GIT underneath, there are
+> deep implications on the workflow, and it really depends on what we'd
+> want from such platform. If you have any thought, recommendation,
+> experience with those platforms in your daily work, it would be great to
+> know your views.
 
-Can you check whether the call to tlsf_malloc() in
-heapobj_pkg_init_private() returns non-NULL?
-(lib/copperplate/heapobj-tlsf.c), and print out the value of alloc_size too?
+In the past year alone I have been contributing to uboot (as board 
+maintainer), arm-trusted-firmware (board maintainer), ffmpeg (v4l2 
+support), zephyr (multiple drivers), the linux kernel (some fixes), AOSP 
+(fixes) and a few others. So I have gained certain exposure to a number 
+of workflows.
 
-Thanks,
+with this in mind I think the Zephyr workflow would suit Xenomai nicely.
 
--- 
-Philippe.
+It spins around Github and integrates with Shippable - this means that 
+on each pull request, we can trigger a full rebuild and run sanity and 
+maybe even performance tests before any code review can begin; the 
+subsystem maintainer/s then can review the pull request adding comments 
+on the code as it moves along.
+
+Xenomai also lacks an IRC channel which makes things way too quiet for a 
+small size community (in the case of ffmpeg for instance IRC is where 
+most if not all the discussions happen). IRC is - and should be for 
+Xenomai- a good place to ask for help and direction. So I vote for 
+having one.
+
+To sum up, given the low rate of patches that Xenomai handles and given 
+the need push back on performance degradation I strongly believe that 
+the Zephyr's workflow would work for us. The way performance 
+ramifications are maintained today is pretty much living in Philippe's 
+and possibly Jan's head: I think we should move from intuition to 
+explicit measurable data when merging PRs (ie, establishing a 
+multi-board CI loop)
+
+
+
+
+
 
