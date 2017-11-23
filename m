@@ -1,17 +1,16 @@
-References: <1508232053.2272.23.camel@scrappix.utpvision.local>
- <96045a73-a4c5-a441-ec74-31d03322b0d3@xenomai.org>
- <1508306591.2177.19.camel@scrappix.utpvision.local>
- <fb8410b0-d082-5eeb-2237-f725ba9b25af@xenomai.org>
- <1508320551.3237.13.camel@scrappix.utpvision.local>
+References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
+ <f7ad8163bda5484292ccdf6e8cf1a484@P10-EX02.3DSystems.Internal>
+ <02f0df6b-0854-eeaa-a168-ae2c10e1d8ab@xenomai.org>
+ <845269a3-e580-c8ff-e25d-a56d00c787fe@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <68ab64eb-dbaf-291c-3be6-536e7b9509aa@xenomai.org>
-Date: Wed, 18 Oct 2017 18:40:33 +0200
+Message-ID: <2f850a60-3756-f06d-82c6-ccf6eeb58aa3@xenomai.org>
+Date: Thu, 23 Nov 2017 12:42:08 +0100
 MIME-Version: 1.0
-In-Reply-To: <1508320551.3237.13.camel@scrappix.utpvision.local>
+In-Reply-To: <845269a3-e580-c8ff-e25d-a56d00c787fe@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Heap binding error (EWOULDBLOCK)
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] [RFC] Service hosting for Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,170 +19,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Roberto Finazzi <rfinaz@tin.it>
-Cc: xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 10/18/2017 11:55 AM, Roberto Finazzi wrote:
-> Il giorno mer, 18/10/2017 alle 11.02 +0200, Philippe Gerum ha scritto:
->> On 10/18/2017 08:03 AM, Roberto Finazzi wrote:
->>> Hi,
->>> thank you for your answer, but there was already both --enable-registry
->>> and --enable-pshared as I can see using /usr/xenomai/sbin/version -a.
->>>
+On 11/22/2017 09:27 PM, Jan Kiszka wrote:
+> On 2017-11-22 16:32, Philippe Gerum wrote:
 >>
->> Please paste the output of:
->> # <your-test-app> --dump-config.
+>> Hi Kendall,
 >>
-> 
-> 
-> based on Xenomai/cobalt v3.0.5
-> CONFIG_MMU=1
-> CONFIG_SMP=1
-> CONFIG_XENO_BUILD_ARGS=" '--with-core=cobalt' '--disable-debug'
-> '--enable-pshared' '--enable-smp' '--enable-registry'"
-> CONFIG_XENO_BUILD_STRING="x86_64-unknown-linux-gnu"
-> CONFIG_XENO_COBALT=1
-> CONFIG_XENO_COMPILER="gcc version 6.3.0 20170516 (Debian 6.3.0-18) "
-> CONFIG_XENO_DEFAULT_PERIOD=100000
-> CONFIG_XENO_FORTIFY=1
-> CONFIG_XENO_HOST_STRING="x86_64-unknown-linux-gnu"
-> CONFIG_XENO_LORES_CLOCK_DISABLED=1
-> CONFIG_XENO_PREFIX="/usr/xenomai"
-> CONFIG_XENO_PSHARED=1
-> CONFIG_XENO_RAW_CLOCK_ENABLED=1
-> CONFIG_XENO_REGISTRY=1
-> CONFIG_XENO_REGISTRY_ROOT="/var/run/xenomai"
-> CONFIG_XENO_REVISION_LEVEL=5
-> CONFIG_XENO_SANITY=1
-> CONFIG_XENO_TLSF=1
-> CONFIG_XENO_TLS_MODEL="initial-exec"
-> CONFIG_XENO_UAPI_LEVEL=14
-> CONFIG_XENO_VERSION_MAJOR=3
-> CONFIG_XENO_VERSION_MINOR=0
-> CONFIG_XENO_VERSION_NAME="Sisyphus's Boulder"
-> CONFIG_XENO_VERSION_STRING="3.0.5"
-> CONFIG_XENO_X86_VSYSCALL=1
-> ---
-> CONFIG_XENO_ASYNC_CANCEL is OFF
-> CONFIG_XENO_COPPERPLATE_CLOCK_RESTRICTED is OFF
-> CONFIG_XENO_DEBUG is OFF
-> CONFIG_XENO_DEBUG_FULL is OFF
-> CONFIG_XENO_LIBS_DLOPEN is OFF
-> CONFIG_XENO_MERCURY is OFF
-> CONFIG_XENO_VALGRIND_API is OFF
-> CONFIG_XENO_WORKAROUND_CONDVAR_PI is OFF
-> ---
-> PTHREAD_STACK_DEFAULT=65536
-> AUTOMATIC_BOOTSTRAP=1
-> 
->>> Just to be sure for the code, this is the first program I used.
+>> On 11/21/2017 08:27 PM, Auel, Kendall wrote:
+>>> Hi Philippe,
 >>>
->>> #include <stdio.h>
->>> #include <stdlib.h>
->>> #include <signal.h>
->>> #include <sys/mman.h>
->>> #include <alchemy/task.h>
->>> #include <alchemy/sem.h>
+>>> Is there an online bug tracking and feature request database? This would be a useful way to distribute work and to sync up contributors. I think the kernel uses Bugzilla, and Ubuntu has Launchpad. No doubt there are many others.
 >>>
->>> RT_TASK task;
->>> RT_SEM semA;
+>>> I'd like to contribute in some way. I've been having a lot of fun as a Xenomai user.
 >>>
->>> void end(int sig) {
->>>   rt_sem_delete(&semA);
+>> We don't have that unfortunately. As suggested by several posters,
+>> moving to a git-based, integrated development framework such as gitlab
+>> or github would bring in that feature, and others we need too (CI).
 >>
->> Calling rt_sem_delete() over a signal handler is unsafe.
->>
->>>   exit(0);
->>> }
->>>
->>> int main() {
->>> int err;
->>>
->>> signal (SIGINT, end);
->>>
->>> mlockall(MCL_CURRENT|MCL_FUTURE);
->>
->> Explicit mlock is redundant with Xenomai 3.x (libcobalt does this for
->> you during early init).
+>> I have no issue moving the project from the current git server at
+>> xenomai.org to any of these environments.
 >>
 > 
-> Ok, thank you.
+> If it helps the community to grow, I would not refuse such a move. But I
+> would like to raise some concerns about platforms like github or gitlab
+> that we must be aware of:
 > 
->>> err=rt_task_shadow(&task, "writetest", 10, 0);
->>>
->>> err= rt_sem_create(&semA, "semA", 0, S_FIFO);
->>> printf("After create= %d\n", err);
->>>
->>> while(1) ;
->>>
->>
->> That infinite CPU-bound loop should rapidly cause a hard lockup, even on
->> a multi-core system.
->>
+> - lacking integration with email-based workflows (while kernel
+>   development tends to be based on that...)
 > 
-> To simplify I removed part of source code not useful for understand the
-> problem...
+> - risk of decoupling communities when parts of the discussions happen on
+>   tickets or PRs and parts in mailing list threads
 > 
->>> }
->>>
->>> And this is the second one.
->>>  
->>> #include <stdio.h>
->>> #include <stdlib.h>
->>> #include <signal.h>
->>> #include <sys/mman.h>
->>> #include <alchemy/task.h>
->>> #include <alchemy/sem.h>
->>>
->>> RT_TASK task;
->>> RT_SEM semA;
->>>
->>> void end(int sig) {
->>>
->>>   rt_sem_unbind(&semA);
->>>   exit(0);
->>> }
->>>
->>> int main() {
->>> int err;
->>>
->>> signal (SIGINT, end);
->>>
->>> mlockall(MCL_CURRENT|MCL_FUTURE);
->>> err=rt_task_shadow(&task, "readtest", 10, 0);
->>>
->>> err= rt_sem_bind(&semA, "semA", TM_INFINITE);
->>> printf("After bind= %d\n", err);
->>>
->>> while(1) ;
->>>
->>> }
->>>
->>> I started the first one and the semaphore was created without problems.
->>> When I started the second, it remained blocked on the rt_sem_bind.
->>>
->>
->> Are you starting both apps in sequence on a single shell command line,
->> like "./sem_create_app; ./sem_bind_app"?
->>
+> Therefore, most projects I manage on github and in our internal gitlab
+> have clear policies like "no emails, only tickets and PRs" or "no PRs,
+> only patches on the mailing list". Even just using the issue tracker to
+> keep some to-do list requires discipline to direct discussions
+> consequently to a mailing list if that exists as well (and that usually
+> does not work very well).
 > 
-> I started them in two different xterm. I tried also with one shell
-> command line with the same result.
+> IOW: we need to be clear in what we want a platform for - and what not.
 > 
 
-You need to have both processes belong to the same session:
-http://xenomai.org/2015/05/application-setup-and-init/#Standard_Xenomai_command_line_options
+Forking the original thread to get input from the list specifically
+regarding the idea of moving GIT services from xenomai.org to a public
+software development platform.
 
-e.g.
-# ./app1 --session=foo
-# ./app2 --session=foo
+As Jan mentioned, there is more than having GIT underneath, there are
+deep implications on the workflow, and it really depends on what we'd
+want from such platform. If you have any thought, recommendation,
+experience with those platforms in your daily work, it would be great to
+know your views.
 
-Common session names for processes cause resources to be shared between
-them. Otherwise, the binder expects the semaphore to be created in its
-own private scope, which never happens.
-
-And yes, the doc is terse regarding this and many other things, this is
-hardly well explained, if ever explained at all.
+Thanks,
 
 -- 
 Philippe.
