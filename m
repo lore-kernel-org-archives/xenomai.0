@@ -1,13 +1,16 @@
-References: <79642a26-d54d-7362-9ea5-872a5f82f0ed@iit.it>
+References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
+ <f7ad8163bda5484292ccdf6e8cf1a484@P10-EX02.3DSystems.Internal>
+ <02f0df6b-0854-eeaa-a168-ae2c10e1d8ab@xenomai.org>
+ <845269a3-e580-c8ff-e25d-a56d00c787fe@siemens.com>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <1b9798ae-fa9e-6604-a4ef-43028b727a8b@xenomai.org>
-Date: Wed, 18 Oct 2017 18:57:47 +0200
+Message-ID: <dd181175-f34c-ddee-4a0f-6faf40ee007f@xenomai.org>
+Date: Thu, 23 Nov 2017 21:27:16 +0100
 MIME-Version: 1.0
-In-Reply-To: <79642a26-d54d-7362-9ea5-872a5f82f0ed@iit.it>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <845269a3-e580-c8ff-e25d-a56d00c787fe@siemens.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] xenomai 3 migration bitmask for calls
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [RFC] RTnet, Analogy and the elephant in the room
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,64 +19,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marco Camurri <marco.camurri@iit.it>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>, "Auel, Kendall" <Kendall.Auel@3DSystems.Com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 10/18/2017 08:50 AM, Marco Camurri wrote:
-> Dear all,
-> I'm migrating a mission critical system based on the native skin of
-> Xenomai 2 to Xenomai 3.
+On 11/22/2017 09:27 PM, Jan Kiszka wrote:
+> On 2017-11-22 16:32, Philippe Gerum wrote:
+>>
+>> Hi Kendall,
+>>
+>> On 11/21/2017 08:27 PM, Auel, Kendall wrote:
+>>> Hi Philippe,
+>>>
+>>> Is there an online bug tracking and feature request database? This would be a useful way to distribute work and to sync up contributors. I think the kernel uses Bugzilla, and Ubuntu has Launchpad. No doubt there are many others.
+>>>
+>>> I'd like to contribute in some way. I've been having a lot of fun as a Xenomai user.
+>>>
+>> We don't have that unfortunately. As suggested by several posters,
+>> moving to a git-based, integrated development framework such as gitlab
+>> or github would bring in that feature, and others we need too (CI).
+>>
+>> I have no issue moving the project from the current git server at
+>> xenomai.org to any of these environments.
+>>
 > 
-> I read from the migration guide that now this skin is called Alchemy,
-> therefore I did the modification in header includes and other things.
+> If it helps the community to grow, I would not refuse such a move. But I
+> would like to raise some concerns about platforms like github or gitlab
+> that we must be aware of:
 > 
-> However, some bitmask variables some xenomai calls have been removed.
-> I would like to replicate the exact behavior I had on Xenomai 2
-> in the new system.
-> In particular, the calls I have in the previous system are:
+> - lacking integration with email-based workflows (while kernel
+>   development tends to be based on that...)
 > 
-> 1) rt_task_spawn(&servo_ptr, name, servo_stack_size, servo_priority,
->                  T_FPU | T_JOINABLE | T_CPU(cpuID), motor_servo, NULL)
+> - risk of decoupling communities when parts of the discussions happen on
+>   tickets or PRs and parts in mailing list threads
 > 
->    T_FPU and T_CPU are removed, who do I make the new call?
->    Just with T_JOINABLE?
-
-T_FPU was dropped since any userland thread has fpu enabled implicitly
-(even in 2.6). So omitting it brings no change.
-
-T_CPU() should be replaced by an explicit call to rt_task_set_affinity().
-
+> Therefore, most projects I manage on github and in our internal gitlab
+> have clear policies like "no emails, only tickets and PRs" or "no PRs,
+> only patches on the mailing list". Even just using the issue tracker to
+> keep some to-do list requires discipline to direct discussions
+> consequently to a mailing list if that exists as well (and that usually
+> does not work very well).
 > 
-> 2) rt_heap_create(&heap,name,(size_t)(elemNum*elemSize), H_SHARED)
-> 
->    H_SHARED has been removed.
-
-Heaps shared between kernel and userland apps should be implemented by a
-memory mapping instantiated by a RTDM driver.
-
-If sharing is between userland processes, then you only need to pass
---enable-pshared when configuring userland libs for build, then specify
-a common session name (--session=<name>) when starting any process which
-should have access to shared resources (i.e. including those heaps). Or
-you can create a POSIX shared memory segment over tmpfs directly.
-
->    The only options I have now are: H_FIFO, H_PRIO, H_SINGLE.
->    What should I choose?
+> IOW: we need to be clear in what we want a platform for - and what not.
 > 
 
-Depends on what you need:
-http://www.xenomai.org/documentation/xenomai-3/html/xeno3prm/group__alchemy__heap.html#ga1d19ad24dc9f94b969aa0f574170bdc4
+Defining the process first may help, then we could certainly find a tool
+that fits the requirement. AFAICT, reports from users and maintainers
+mainly fall into these categories:
 
-> 3) rt_timer_set_mode((RTIME) TM_ONESHOT)
-> 
->    TM_ONESHOT does not exist anymore.  What should I set in the
->    rt_set_mode function?
->    The documentation only says to set 0 for no op, but it does not tell
->    anything about the other options.
+- perceived runtime bugs (confirmed or not)
+- configuration, installation problems
+- request for change, improvements
 
-As mentioned in the migration guide, that call is obsolete, there is no
-other option, you don't need it. Oneshot timing is the default, use
---alchemy-clock-resolution=<ns> to turn on periodic ticking for the
-application process.
+Reports about runtime bugs should be posted to mailing list first,
+unless they have been directly observed by a subsystem maintainer. If
+the issue is confirmed, it should be logged into the tracker by the
+concerned subsystem maintainer. Many users report bugs which have
+already been solved, the tracker should help making the solution visible
+for closed issues, or maybe we'd need another way to bring up that
+information to the attention of users.
+
+Request for changes should translate into RFCs to the mailing list so
+they can be discussed, last but not least to prevent duplicate effort
+with potentially ongoing work. A detailed description of what is
+needed/planned could then be published to a dedicated section of the web
+site in free form; this would contribute to the general TODO list Greg
+mentioned earlier.
+
+Questions about configuration and installation can be efficiently dealt
+with good documentation (TBD) and a mailing list.
+
+To get this process working, I don't think we'd need more than a tracker
+with write access to subsystem maintainers only (once we have some, that
+is), and the existing mailing list, which should prevent crosstalk.
 
 -- 
 Philippe.
