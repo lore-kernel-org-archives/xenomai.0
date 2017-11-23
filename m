@@ -1,16 +1,17 @@
-Date: Thu, 23 Nov 2017 15:35:33 -0500
-Message-ID: <20171123203533.h2qfccbyxdavhpej@csclub.uwaterloo.ca>
 References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
  <f7ad8163bda5484292ccdf6e8cf1a484@P10-EX02.3DSystems.Internal>
  <02f0df6b-0854-eeaa-a168-ae2c10e1d8ab@xenomai.org>
  <845269a3-e580-c8ff-e25d-a56d00c787fe@siemens.com>
  <2f850a60-3756-f06d-82c6-ccf6eeb58aa3@xenomai.org>
  <d4835d99-ffc5-6d1d-5ab3-8236d6d23fab@xenomai.org>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <cfcbf032-dbaf-fd64-57b5-ba68dc0fbc66@xenomai.org>
+Date: Thu, 23 Nov 2017 21:36:00 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 In-Reply-To: <d4835d99-ffc5-6d1d-5ab3-8236d6d23fab@xenomai.org>
-From: lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [RFC] Service hosting for Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -20,53 +21,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jorge Ramirez <jro@xenomai.org>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Jorge Ramirez <jro@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Thu, Nov 23, 2017 at 01:38:03PM +0100, Jorge Ramirez wrote:
-> In the past year alone I have been contributing to uboot (as board
-> maintainer), arm-trusted-firmware (board maintainer), ffmpeg (v4l2 support),
-> zephyr (multiple drivers), the linux kernel (some fixes), AOSP (fixes) and a
-> few others. So I have gained certain exposure to a number of workflows.
-> 
-> with this in mind I think the Zephyr workflow would suit Xenomai nicely.
-
-I personally like the linux kernel workflow where everything is through
-a mailing list and patches are reviewed before they go in.  I am not
-sure that workflow would work for xenomai, but I do like it.
-
-> It spins around Github and integrates with Shippable - this means that on
-> each pull request, we can trigger a full rebuild and run sanity and maybe
-> even performance tests before any code review can begin; the subsystem
-> maintainer/s then can review the pull request adding comments on the code as
-> it moves along.
-
-I am not sure build tests are that useful given the number of different
-platforms the code runs on.  Which one do you build test for?
-
+On 11/23/2017 01:38 PM, Jorge Ramirez wrote:
 > Xenomai also lacks an IRC channel which makes things way too quiet for a
-> small size community (in the case of ffmpeg for instance IRC is where most
-> if not all the discussions happen). IRC is - and should be for Xenomai- a
-> good place to ask for help and direction. So I vote for having one.
+> small size community (in the case of ffmpeg for instance IRC is where
+> most if not all the discussions happen). IRC is - and should be for
+> Xenomai- a good place to ask for help and direction. So I vote for
+> having one.
+> 
 
-IRC is useless when the community is small and spread across timezones.
-At least with the mailing list people will see the question and can
-answer it when it hits their timezone.  IRC isn't helpful when no one
-is there to read your question when you write it.  And good luck trying
-to convey anything complex in an IRC conversation.  Want to try sending
-source code patches through IRC for discussion?
-
-I check my email daily.  I don't check random websites daily to check
-the forums for project x, y and z each with a different interface.
-Too much work.
-
-> To sum up, given the low rate of patches that Xenomai handles and given the
-> need push back on performance degradation I strongly believe that the
-> Zephyr's workflow would work for us. The way performance ramifications are
-> maintained today is pretty much living in Philippe's and possibly Jan's
-> head: I think we should move from intuition to explicit measurable data when
-> merging PRs (ie, establishing a multi-board CI loop)
+IRC may be intrusive to some people, as it is by design preempting one's
+attention unlike e-mail. This might work if a sufficient number of
+people is actually willing to help on the channel though. Maybe.
 
 -- 
-Len Sorensen
+Philippe.
 
