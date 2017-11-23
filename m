@@ -1,12 +1,14 @@
 References: <d3f6995a-1d45-d262-21a0-97a51253da91@alaxarxa.net>
  <e665e5ab-796f-8aac-997c-33b88079d27c@xenomai.org>
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Message-ID: <a30fcf3f-ad18-0210-ad51-6a0ab0b73872@alaxarxa.net>
-Date: Thu, 23 Nov 2017 15:58:32 +0100
+ <a30fcf3f-ad18-0210-ad51-6a0ab0b73872@alaxarxa.net>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <bd2c4a53-33cf-b4aa-79c5-243fe1d5b660@xenomai.org>
+Date: Thu, 23 Nov 2017 16:04:35 +0100
 MIME-Version: 1.0
-In-Reply-To: <e665e5ab-796f-8aac-997c-33b88079d27c@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <a30fcf3f-ad18-0210-ad51-6a0ab0b73872@alaxarxa.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Cannot initialize TLSF memory manager
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,64 +18,102 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gMjMvMTEvMTcgMTM6MjIsIFBoaWxpcHBlIEdlcnVtIHdyb3RlOgo+IE9uIDExLzIzLzIwMTcg
-MDE6MTAgUE0sIExlb3BvbGQgUGFsb21vLUF2ZWxsYW5lZGEgd3JvdGU6Cj4+IEhpLAo+Pgo+Pgo+
-PiBJIGhhdmUgc2VlbiB0aGlzIGJ1ZyBiZWZvcmUsIGJ1dCBpdCBzZWVtcyB0aGF0IGl0J3MgYWdh
-aW4gaW4gMy4wLjYuIFJ1bm5pbmcKPj4gMy4wLjYgd2l0aDoKPj4KPj4gIHhlbm8tY29uZmlnIC0t
-aW5mbwo+PiBYZW5vbWFpIHZlcnNpb246IFhlbm9tYWkvY29iYWx0IHYzLjAuNgo+PiBMaW51eCBi
-bW0zIDQuOS41MS14ZW5vbWFpLTMuMC42LWlwaXBlICMxIFNNUCBUaHUgTm92IDIzIDA5OjAzOjI3
-IENFVCAyMDE3IHg4Nl82NAo+PiBHTlUvTGludXgKPj4gS2VybmVsIHBhcmFtZXRlcnM6IEJPT1Rf
-SU1BR0U9L2Jvb3Qvdm1saW51ei00LjkuNTEteGVub21haS0zLjAuNi1pcGlwZQo+PiByb290PVVV
-SUQ9YWI5NmVlZDktY2Q3OS00ZDMwLTllOTMtZTlmMzJhMThjY2E2IHJvIHF1aWV0Cj4+IHhlbm9t
-YWkuYWxsb3dlZF9ncm91cD0xMTMgbm9zbWFwCj4+IEktcGlwZSByZWxlYXNlICM0IGRldGVjdGVk
-Cj4+IENvYmFsdCBjb3JlIDMuMC42IGRldGVjdGVkCj4+IENvbXBpbGVyOiBnY2MgdmVyc2lvbiA2
-LjMuMCAyMDE3MDUxNiAoRGViaWFuIDYuMy4wLTE4KQo+PiBCdWlsZCBhcmdzOiAtLWJ1aWxkPXg4
-Nl82NC1saW51eC1nbnUgLS1pbmNsdWRlZGlyPS91c3IvaW5jbHVkZQo+PiAtLW1hbmRpcj0vdXNy
-L3NoYXJlL21hbiAtLWluZm9kaXI9L3Vzci9zaGFyZS9pbmZvIC0tc3lzY29uZmRpcj0vZXRjCj4+
-IC0tbG9jYWxzdGF0ZWRpcj0vdmFyIC0tZGlzYWJsZS1zaWxlbnQtcnVsZXMgLS1saWJkaXI9L3Vz
-ci9saWIveDg2XzY0LWxpbnV4LWdudQo+PiAtLWxpYmV4ZWNkaXI9L3Vzci9saWIveDg2XzY0LWxp
-bnV4LWdudSAtLWRpc2FibGUtbWFpbnRhaW5lci1tb2RlCj4+IC0tZGlzYWJsZS1kZXBlbmRlbmN5
-LXRyYWNraW5nIC0tcHJlZml4PS91c3IgLS1pbmNsdWRlZGlyPS91c3IvaW5jbHVkZS94ZW5vbWFp
-Cj4+IC0tbWFuZGlyPS91c3Ivc2hhcmUvbWFuIC0td2l0aC10ZXN0ZGlyPS91c3IvbGliL3g4Nl82
-NC1saW51eC1nbnUveGVub21haQo+PiAtLWVuYWJsZS1mb3J0aWZ5IC0tbGliZGlyPS91c3IvbGli
-L3g4Nl82NC1saW51eC1nbnUvIC0tZW5hYmxlLXBzaGFyZWQKPj4gLS1lbmFibGUtcmVnaXN0cnkg
-LS1lbmFibGUtZG9jLWJ1aWxkIC0tZW5hYmxlLWRsb3Blbi1saWJzIC0tZW5hYmxlLXRscwo+PiAt
-LWVuYWJsZS1zbXAgLS13aXRoLWNvcmU9Y29iYWx0IC0tYnVpbGQgeDg2XzY0LWxpbnV4LWdudQo+
-PiBidWlsZF9hbGlhcz14ODZfNjQtbGludXgtZ251IENGTEFHUz0tZyAtTzIKPj4gLWZkZWJ1Zy1w
-cmVmaXgtbWFwPS9idWlsZC94ZW5vbWFpLTMuMC42K2RzMT0uIC1mc3RhY2stcHJvdGVjdG9yLXN0
-cm9uZyAtV2Zvcm1hdAo+PiAtV2Vycm9yPWZvcm1hdC1zZWN1cml0eSAtV2RhdGUtdGltZSAtRF9G
-T1JUSUZZX1NPVVJDRT0yIC1mbm8tb21pdC1mcmFtZS1wb2ludGVyCj4+IExERkxBR1M9LVdsLC16
-LHJlbHJvIC1XbCwteixub3cgLVdsLC0tYXMtbmVlZGVkIENQUEZMQUdTPS1XZGF0ZS10aW1lCj4+
-IC1EX0ZPUlRJRllfU09VUkNFPTIKPj4KPj4KPj4KPj4gd2hlbiBJIHRyeSB4ZW5vLXRlc3QsIEkg
-Z290Ogo+Pgo+PiAgeGVuby10ZXN0Cj4+IFN0YXJ0ZWQgY2hpbGQgMjU5MzogL2Jpbi9iYXNoCj4+
-IC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUveGVub21haS94ZW5vLXRlc3QtcnVuLXdyYXBwZXIg
-L3Vzci9iaW4veGVuby10ZXN0Cj4+ICsrIGVjaG8gMAo+PiArKyB0ZXN0ZGlyPS91c3IvbGliL3g4
-Nl82NC1saW51eC1nbnUveGVub21haQo+PiArKyAvdXNyL2xpYi94ODZfNjQtbGludXgtZ251L3hl
-bm9tYWkvc21va2V5IC0tcnVuCj4+IGluaXRfbWVtb3J5X3Bvb2woKTogaW52YWxpZCBwb29sCj4+
-ICAgIDAiMDAwLjAyMnwgQlVHIGluIGhlYXBvYmpfcGtnX2luaXRfcHJpdmF0ZSgpOiBbbWFpbl0g
-Y2Fubm90IGluaXRpYWxpemUgVExTRgo+PiBtZW1vcnkgbWFuYWdlcgo+Pgo+Pgo+PiBBbnkgaWRl
-YT8KPj4KPiAKPiBDYW4geW91IGNoZWNrIHdoZXRoZXIgdGhlIGNhbGwgdG8gdGxzZl9tYWxsb2Mo
-KSBpbgo+IGhlYXBvYmpfcGtnX2luaXRfcHJpdmF0ZSgpIHJldHVybnMgbm9uLU5VTEw/Cj4gKGxp
-Yi9jb3BwZXJwbGF0ZS9oZWFwb2JqLXRsc2YuYyksIGFuZCBwcmludCBvdXQgdGhlIHZhbHVlIG9m
-IGFsbG9jX3NpemUgdG9vPwoKQ2hlY2tpbmcgdGhlIGNvZGUsIGl0IGZhaWxzIGJlZm9yZSB0byBy
-ZXR1cm4gYW55dGhpbmcuIFJ1bm5pbmcgY3Jvc3NzLWxpbmssIHRoYXQKZmFpbHMgaW4gdGhlIHNh
-bWUgZnVuY3Rpb246Ci4vY3Jvc3MtbGluawoKaW5pdF9tZW1vcnlfcG9vbCgpOiBpbnZhbGlkIHBv
-b2wKSW5pdCBtZW1vcnkgcG9vbCByZXR1cm5zIC0xIGJ5dGVzCiAgIDAiMDAwLjA0MXwgQlVHIGlu
-IGhlYXBvYmpfcGtnX2luaXRfcHJpdmF0ZSgpOiBbbWFpbl0gY2Fubm90IGluaXRpYWxpemUgVExT
-RgptZW1vcnkgbWFuYWdlcgoKCkkganVzdCBhZGRlZDoKCisgICAgICBwcmludGYoIkluaXQgbWVt
-b3J5IHBvb2wgcmV0dXJucyAlemQgYnl0ZXMgXG4iLCBhdmFpbGFibGVfc2l6ZSk7CgogICAgICAg
-IGlmIChhdmFpbGFibGVfc2l6ZSA9PSAoc2l6ZV90KS0xKQogICAgICAgICAgICAgICAgcGFuaWMo
-ImNhbm5vdCBpbml0aWFsaXplIFRMU0YgbWVtb3J5IG1hbmFnZXIiKTsKCisgICAgIHByaW50Zigi
-UnVubmluZyBhZnRlciAuLi5cbiIpOwoKCmluIHRoYXQgZnVuY3Rpb24gb2YgdGhlIGZpbGUgeW91
-IG1lbnRpb25lZC4KCkxlb3BvbGQKCgoKCi0tIAotLQpMaW51eCBVc2VyIDE1MjY5MiAgICAgR1BH
-OiAwNUY0QTdBOTQ5QTJEOUFBCkNhdGFsb25pYQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tCkE6IEJlY2F1c2UgaXQgbWVzc2VzIHVwIHRoZSBvcmRlciBpbiB3aGljaCBwZW9w
-bGUgbm9ybWFsbHkgcmVhZCB0ZXh0LgpROiBXaHkgaXMgdG9wLXBvc3Rpbmcgc3VjaCBhIGJhZCB0
-aGluZz8KQTogVG9wLXBvc3RpbmcuClE6IFdoYXQgaXMgdGhlIG1vc3QgYW5ub3lpbmcgdGhpbmcg
-aW4gZS1tYWlsPwoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9u
-LXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBl
-OiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDgzMyBieXRlcwpEZXNjOiBPcGVuUEdQ
-IGRpZ2l0YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVu
-b21haS9hdHRhY2htZW50cy8yMDE3MTEyMy9kNjM0YmZkMS9hdHRhY2htZW50LnNpZz4K
+On 11/23/2017 03:58 PM, Leopold Palomo-Avellaneda wrote:
+> On 23/11/17 13:22, Philippe Gerum wrote:
+>> On 11/23/2017 01:10 PM, Leopold Palomo-Avellaneda wrote:
+>>> Hi,
+>>>
+>>>
+>>> I have seen this bug before, but it seems that it's again in 3.0.6. Running
+>>> 3.0.6 with:
+>>>
+>>>  xeno-config --info
+>>> Xenomai version: Xenomai/cobalt v3.0.6
+>>> Linux bmm3 4.9.51-xenomai-3.0.6-ipipe #1 SMP Thu Nov 23 09:03:27 CET 2017 x86_64
+>>> GNU/Linux
+>>> Kernel parameters: BOOT_IMAGE=/boot/vmlinuz-4.9.51-xenomai-3.0.6-ipipe
+>>> root=UUID=ab96eed9-cd79-4d30-9e93-e9f32a18cca6 ro quiet
+>>> xenomai.allowed_group=113 nosmap
+>>> I-pipe release #4 detected
+>>> Cobalt core 3.0.6 detected
+>>> Compiler: gcc version 6.3.0 20170516 (Debian 6.3.0-18)
+>>> Build args: --build=x86_64-linux-gnu --includedir=/usr/include
+>>> --mandir=/usr/share/man --infodir=/usr/share/info --sysconfdir=/etc
+>>> --localstatedir=/var --disable-silent-rules --libdir=/usr/lib/x86_64-linux-gnu
+>>> --libexecdir=/usr/lib/x86_64-linux-gnu --disable-maintainer-mode
+>>> --disable-dependency-tracking --prefix=/usr --includedir=/usr/include/xenomai
+>>> --mandir=/usr/share/man --with-testdir=/usr/lib/x86_64-linux-gnu/xenomai
+>>> --enable-fortify --libdir=/usr/lib/x86_64-linux-gnu/ --enable-pshared
+>>> --enable-registry --enable-doc-build --enable-dlopen-libs --enable-tls
+>>> --enable-smp --with-core=cobalt --build x86_64-linux-gnu
+>>> build_alias=x86_64-linux-gnu CFLAGS=-g -O2
+>>> -fdebug-prefix-map=/build/xenomai-3.0.6+ds1=. -fstack-protector-strong -Wformat
+>>> -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -fno-omit-frame-pointer
+>>> LDFLAGS=-Wl,-z,relro -Wl,-z,now -Wl,--as-needed CPPFLAGS=-Wdate-time
+>>> -D_FORTIFY_SOURCE=2
+>>>
+>>>
+>>>
+>>> when I try xeno-test, I got:
+>>>
+>>>  xeno-test
+>>> Started child 2593: /bin/bash
+>>> /usr/lib/x86_64-linux-gnu/xenomai/xeno-test-run-wrapper /usr/bin/xeno-test
+>>> ++ echo 0
+>>> ++ testdir=/usr/lib/x86_64-linux-gnu/xenomai
+>>> ++ /usr/lib/x86_64-linux-gnu/xenomai/smokey --run
+>>> init_memory_pool(): invalid pool
+>>>    0"000.022| BUG in heapobj_pkg_init_private(): [main] cannot initialize TLSF
+>>> memory manager
+>>>
+>>>
+>>> Any idea?
+>>>
+>>
+>> Can you check whether the call to tlsf_malloc() in
+>> heapobj_pkg_init_private() returns non-NULL?
+>> (lib/copperplate/heapobj-tlsf.c), and print out the value of alloc_size too?
+> 
+> Checking the code, it fails before to return anything. Running crosss-link, that
+> fails in the same function:
+> ./cross-link
+> 
+> init_memory_pool(): invalid pool
+> Init memory pool returns -1 bytes
+>    0"000.041| BUG in heapobj_pkg_init_private(): [main] cannot initialize TLSF
+> memory manager
+> 
+> 
+> I just added:
+> 
+> +      printf("Init memory pool returns %zd bytes \n", available_size);
+> 
+>         if (available_size == (size_t)-1)
+>                 panic("cannot initialize TLSF memory manager");
+> 
+> +     printf("Running after ...\n");
+> 
+> 
+> in that function of the file you mentioned.
+> 
+
+Can you try this?
+
+diff --git a/lib/copperplate/heapobj-tlsf.c b/lib/copperplate/heapobj-tlsf.c
+index 370985210..0186be423 100644
+--- a/lib/copperplate/heapobj-tlsf.c
++++ b/lib/copperplate/heapobj-tlsf.c
+@@ -103,6 +103,7 @@ int heapobj_pkg_init_private(void)
+ 	 * out the allocation overhead.
+ 	 */
+ 	mem = tlsf_malloc(alloc_size);
++	printf("mem=%p, alloc_size=%zu\n", mem, alloc_size);
+ 	available_size = init_memory_pool(alloc_size, mem);
+ 	if (available_size == (size_t)-1)
+ 		panic("cannot initialize TLSF memory manager");
+
+-- 
+Philippe.
+
