@@ -1,19 +1,15 @@
-References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
- <f7ad8163bda5484292ccdf6e8cf1a484@P10-EX02.3DSystems.Internal>
- <02f0df6b-0854-eeaa-a168-ae2c10e1d8ab@xenomai.org>
- <845269a3-e580-c8ff-e25d-a56d00c787fe@siemens.com>
- <2f850a60-3756-f06d-82c6-ccf6eeb58aa3@xenomai.org>
- <d4835d99-ffc5-6d1d-5ab3-8236d6d23fab@xenomai.org>
- <cfcbf032-dbaf-fd64-57b5-ba68dc0fbc66@xenomai.org>
-From: Jorge Ramirez <jro@xenomai.org>
-Message-ID: <49340dbc-d5ed-f533-361e-4f10e9d9c47d@xenomai.org>
-Date: Thu, 23 Nov 2017 23:00:47 +0100
+From: Steven Seeger <steven.seeger@nasa.gov>
+Date: Thu, 23 Nov 2017 18:12:04 -0500
+Message-ID: <1716689.G3ItF9r735@wirbelwind>
+In-Reply-To: <1fead1f4-6be5-f057-f84e-7a9c8f4f9b9e@xenomai.org>
+References: <mailman.47.1511367834.4377.xenomai@xenomai.org>
+ <2620524.eH6OsgKU20@wirbelwind>
+ <1fead1f4-6be5-f057-f84e-7a9c8f4f9b9e@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <cfcbf032-dbaf-fd64-57b5-ba68dc0fbc66@xenomai.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-Subject: Re: [Xenomai] [RFC] Service hosting for Xenomai
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="utf-8"
+Subject: Re: [Xenomai] [RFC] RTnet, Analogy and the elephant in the room
+Reply-To: steven.seeger@nasa.gov
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,57 +18,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 11/23/2017 09:36 PM, Philippe Gerum wrote:
-> On 11/23/2017 01:38 PM, Jorge Ramirez wrote:
->> Xenomai also lacks an IRC channel which makes things way too quiet for a
->> small size community (in the case of ffmpeg for instance IRC is where
->> most if not all the discussions happen). IRC is - and should be for
->> Xenomai- a good place to ask for help and direction. So I vote for
->> having one.
->>
-> IRC may be intrusive to some people, as it is by design preempting one's
-> attention unlike e-mail. This might work if a sufficient number of
-> people is actually willing to help on the channel though. Maybe.
->
+> Hi Steven,
+> 
+> I have remote access to many ppc boards and could help here. This said
+> 85xx, 40x and 44x already cover much of the ppc32 scope running Xenomai
+> - maybe adding mpc52xx would be good, I have one here. I don't see much
+> traction these days for Xenomai over ppc64, so I'm not even sure whether
+> this port is still relevant.
 
-IRC notifications can be ignored just like any others (you can just 
-listen to certain nicks or keys as most users do)
-There are pretty decent tools these days. (as an example I follow ten to 
-twenty channels and it is not that bad).
+I have never used ppc64 so I would take some time coming up to speed with it 
+(and would need access to a board.) I am sure you can tell from all our 
+private emails over the last couple years that I wouldn't have a problem with 
+ppc32. 
 
-I understand the point of not having a sufficient number of people 
-willing - maybe capable is a better word?- to help (core knowledge today 
-is pretty much concentrated in yourself which is issue #1).
-But the way I see it an IRC channel should be a step towards removing 
-that issue - those that tend/need to spend more time working with 
-Xenomai (maybe developing a product) will end up driving the channel. 
-And that is something that I think is needed.
+I am unsure how remote access to boards works especially at this level of 
+work. Is there some way to power on and off if needed or do they depend on a 
+watchdog? We can discuss this offline.
 
-And clearly IRC doesnt replace mailing lists: these are different tools 
-for difference use cases.
-
-I think the tools that we provide will end up shaping the community that 
-we will have.
-To me, not having a channel is an issue. You kind of pointed out that 
-the channel -at least at the beginning- will probably just be many 
-questions and little answers.
-
-But maybe not? there are many products out there using Xenomai so who 
-knows.
-
-
-
-
-
-
-
-
-
-
-
-
-
+Steven
 
 
