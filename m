@@ -1,16 +1,13 @@
-From: =?UTF-8?Q?St=c3=a9phane_LOS?= <slos@hilscher.com>
-References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
- <1b035acc-5784-f0b0-f16f-09279d5a8845@siemens.com>
- <07716080-d5cd-2508-20cc-b679a72f6f68@xenomai.org>
- <dfe038bb-e379-bc90-5cf7-ecddce9ed887@hilscher.com>
-Message-ID: <9698a6ee-decf-f368-d6fe-47e4d67868ce@hilscher.com>
-Date: Fri, 24 Nov 2017 10:00:28 +0100
+References: <CALLqZ8TWgsZAzRuYBQ1gd4s5KO_wO_aaY+UyVEMDBw5k9rSQqQ@mail.gmail.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4a34ed44-275f-ed3a-8548-33a6f1107ef7@xenomai.org>
+Date: Fri, 24 Nov 2017 11:26:57 +0100
 MIME-Version: 1.0
-In-Reply-To: <dfe038bb-e379-bc90-5cf7-ecddce9ed887@hilscher.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Content-Language: en-GB
-Subject: Re: [Xenomai] [RFC] RTnet, Analogy and the elephant in the room
+In-Reply-To: <CALLqZ8TWgsZAzRuYBQ1gd4s5KO_wO_aaY+UyVEMDBw5k9rSQqQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Gpio-core question
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,148 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Greg Gallagher <greg@embeddedgreg.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
-
-Wouldn't integrating both projects make sense ?
-
-It seems both share a significant amount of work and similar lack of=20
-resources.
-
-Sorry, talking about the "Real Time Linux" project and "Xenomai"...
-
-And sorry for the noise added automagically to my emails. :-(
-I should use some other mail account.
-
-Best Regards,
-Cordialement,
-
-St=C3=A9phane LOS
-slos@hilscher.com
-Support technique
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Hilscher France
-12, rue du 35=C3=A8me R=C3=A9giment d'Aviation
-Miniparc du Ch=C3=AAne
-69500 BRON
-France
-T=C3=A9l. : +33 (0) 4 72 37 98 40
-Fax  : +33 (0) 4 78 26 83 27
-http ://www.hilscher.fr
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Le 24/11/2017 =C3=A0 09:52, St=C3=A9phane LOS a =C3=A9crit=C2=A0:
+On 11/24/2017 06:37 AM, Greg Gallagher wrote:
 > Hi,
->
-> Wouldn't integrating both projects make sense ?
->
-> It seems both share a significant amount of work and similar lack of=20
-> resources.
->
-> Best Regards,
-> Cordialement,
->
-> St=C3=A9phane LOS
-> slos@hilscher.com
-> Support technique
->
-> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> Hilscher France
-> 12, rue du 35=C3=A8me R=C3=A9giment d'Aviation
-> Miniparc du Ch=C3=AAne
-> 69500 BRON
-> France
-> T=C3=A9l. : +33 (0) 4 72 37 98 40
-> Fax=C2=A0 : +33 (0) 4 78 26 83 27
-> http ://www.hilscher.fr
-> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->
-> Le 23/11/2017 =C3=A0 21:45, Philippe Gerum a =C3=A9crit=C2=A0:
->> On 11/22/2017 09:26 PM, Jan Kiszka wrote:
->>> On 2017-11-21 18:11, Philippe Gerum wrote:
->>>> So, let's talk about the elephant in the room: the current=20
->>>> situation of
->>>> the Xenomai project is not viable in the long run. I can only=20
->>>> encourage
->>>> people who feel concerned about it to discuss openly the practical=20
->>>> steps
->>>> to best address this challenge.
->>> Thanks for bringing this frankly on the table! For those who follow the
->>> project, it's likely no news. So we were working on this issue also
->>> internally, with users of Xenomai inside Siemens. And we have the
->>> backing to enhance our involvement in upstream work. Right now we are
->>> working on making this concrete.
->>>
->>> There are many areas where contributions can be beneficial for the
->>> project and its community, and many do not require deepest=20
->>> understanding
->>> of the core, like around CI, test automation, distro packaging,
->>> documentation, or user support. But some essential elements in my=20
->>> eyes are
->>>
->>> =C2=A0 - building up a core team of kernel maintainers for Cobalt
->>>
->>> =C2=A0 - offloading work from the shoulders of our extremely valuable
->>> =C2=A0=C2=A0=C2=A0 maintainer
->>>
->>> The second part will be achieved to a certain degree by the first=20
->>> one as
->>> Philippe can probably confirm.
->> Yes, extending "Cobalt" to the pipeline. A significant portion of the
->> overall maintenance involves the I-pipe. Hence the work on rethinking
->> how the interrupt pipeline is integrated into the Linux kernel, how we
->> can make the former a regular feature of the latter instead of an
->> add-on, with the goal of simplifying the maintenance, but also making
->> the whole thing way more natural, easier to grasp.
->>
->
+>   I'm finishing up my work on a patch to add a RTDM gpio driver for
+> the zynq-7000 platform.  I ran into a situation where I needed to call
+> gpio_request in gpio-core because the zynq gpio driver uses the
+> gpio_request function to enable the gpio pins on the board.
+>     A side effect that I found when testing is that the driver will fail to
+> load
+> if another application has exported a gpio pin via sysfs and likewise sysfs
+> won't allow anyone to export gpio pins once the rtdm gpio driver has been
+> loaded.
+> My implementation calls gpio_request on each pin as they are  registered
+> under /dev/rtdm.
+>     I'm not sure if the above is an issue or not, if the RTDM driver has
+> claimed the
+> gpio pins then I think it would make sense for them not to be accessible by
+> applications
+> via sysfs.  If my assumption is not correct then maybe one option could be
+> to only call gpio_request on each pin as need, maybe via ioctl?
+> 
+> Any guidance would be appreciated,
+> 
 
+gpio-core deals with entire GPIO controllers, so claiming every pin from
+every bank on the controller for rt usage unconditionally seems overkill.
 
+The ioctl option seems a better option, but then you would have to be
+careful about not conflicting with request_gpio_irq() which does request
+input pins. rtdm_gpio_chan->requested tells whether a pin as already
+been claimed.
 
-Hilscher France S.a.r.l.   |  12, rue du 35i=C3=A8me R=C3=A9giment d=E2=80=
-=99Aviation =E2=80=93 Miniparc du Ch=C3=AAne  |  69500 Bron  |  France  |  =
-www.hilscher.com=0A=
-Hot Line: +33 (0) 472 379 843  |  Centre de formation agr=C3=A9=C3=A9  |  R=
-andD: +33 (0) 472 379 840=0A=
-N=C2=B0 de TVA intracommunautaire: FR 43 449 481 779  |  N=C2=B0 de SIRET: =
-449 481 779 00014=0A=
-Dirigeant: Christophe Levra=0A=
-=0A=
-Important Information:=0A=
-This e-mail message including its attachments contains confidential and leg=
-ally protected information solely intended for the addressee. If you are no=
-t the intended addressee of this message, please contact the addresser imme=
-diately and delete this message including its attachments. The unauthorized=
- dissemination, copying and change of this e-mail are strictly forbidden. T=
-he addresser shall not be liable for the content of such changed e-mails.=
-=0A=
-=0A=
-Hilscher cannot be held responsible of whatever nature, resulting from alte=
-ration, falsifying or using of the information contained in this message an=
-d disclaims all liability in case of contamination of the computer hardware=
- of the addressee resulting from the distribution of a virus or other compu=
-ting infections.=0A=
-=0A=
-=0A=
-Information Importante:=0A=
-Ce message =C3=A9lectronique incluant les pi=C3=A8ces jointes contient des =
-informations confidentielles et prot=C3=A9g=C3=A9es par la loi qui sont =C3=
-=A0 l=E2=80=99intention exclusive de son destinataire. Si vous n'=C3=AAtes =
-pas le destinataire  de ce message, merci de contactez imm=C3=A9diatement l=
-'exp=C3=A9diteur et de supprimer ce message incluant les pi=C3=A8ces jointe=
-s. Toute diffusion ou copie ou modification de ce message =C3=A9lectronique=
-, totale ou partielle, non autoris=C3=A9e est strictement interdit. L'exp=
-=C3=A9diteur ne peut =C3=AAtre tenu responsable du contenu de tels messages=
- =C3=A9lectroniques qui auraient =C3=A9t=C3=A9 modifies.=0A=
-=0A=
-Hilscher ne pourra =C3=AAtre tenue responsable de quelque dommage, de quelq=
-ue nature qu=E2=80=99il soit, r=C3=A9sultant de l=E2=80=99alt=C3=A9ration, =
-de la falsification ou de l=E2=80=99utilisation des informations contenues =
-dans ce message et d=C3=A9cline toute responsabilit=C3=A9 en cas de contami=
-nation des mat=C3=A9riels informatiques du destinataire r=C3=A9sultant de l=
-a propagation d'un virus ou autres infections informatiques.=0A=
-
-
+-- 
+Philippe.
 
