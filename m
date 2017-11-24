@@ -1,15 +1,9 @@
-From: Steven Seeger <steven.seeger@nasa.gov>
-Date: Thu, 23 Nov 2017 18:12:04 -0500
-Message-ID: <1716689.G3ItF9r735@wirbelwind>
-In-Reply-To: <1fead1f4-6be5-f057-f84e-7a9c8f4f9b9e@xenomai.org>
-References: <mailman.47.1511367834.4377.xenomai@xenomai.org>
- <2620524.eH6OsgKU20@wirbelwind>
- <1fead1f4-6be5-f057-f84e-7a9c8f4f9b9e@xenomai.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="utf-8"
-Subject: Re: [Xenomai] [RFC] RTnet, Analogy and the elephant in the room
-Reply-To: steven.seeger@nasa.gov
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Fri, 24 Nov 2017 00:37:52 -0500
+Message-ID: <CALLqZ8TWgsZAzRuYBQ1gd4s5KO_wO_aaY+UyVEMDBw5k9rSQqQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] Gpio-core question
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,26 +12,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-> Hi Steven,
-> 
-> I have remote access to many ppc boards and could help here. This said
-> 85xx, 40x and 44x already cover much of the ppc32 scope running Xenomai
-> - maybe adding mpc52xx would be good, I have one here. I don't see much
-> traction these days for Xenomai over ppc64, so I'm not even sure whether
-> this port is still relevant.
+Hi,
+  I'm finishing up my work on a patch to add a RTDM gpio driver for
+the zynq-7000 platform.  I ran into a situation where I needed to call
+gpio_request in gpio-core because the zynq gpio driver uses the
+gpio_request function to enable the gpio pins on the board.
+    A side effect that I found when testing is that the driver will fail to
+load
+if another application has exported a gpio pin via sysfs and likewise sysfs
+won't allow anyone to export gpio pins once the rtdm gpio driver has been
+loaded.
+My implementation calls gpio_request on each pin as they are  registered
+under /dev/rtdm.
+    I'm not sure if the above is an issue or not, if the RTDM driver has
+claimed the
+gpio pins then I think it would make sense for them not to be accessible by
+applications
+via sysfs.  If my assumption is not correct then maybe one option could be
+to only call gpio_request on each pin as need, maybe via ioctl?
 
-I have never used ppc64 so I would take some time coming up to speed with it 
-(and would need access to a board.) I am sure you can tell from all our 
-private emails over the last couple years that I wouldn't have a problem with 
-ppc32. 
+Any guidance would be appreciated,
 
-I am unsure how remote access to boards works especially at this level of 
-work. Is there some way to power on and off if needed or do they depend on a 
-watchdog? We can discuss this offline.
-
-Steven
-
-
+Greg
