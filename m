@@ -1,18 +1,21 @@
-From: =?utf-8?Q?Christoph_M=C3=BCllner?=
- <christoph.muellner@theobroma-systems.com>
-Message-Id: <239A2528-8C25-4293-8832-BA7FB56AF790@theobroma-systems.com>
-Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
-Date: Thu, 19 Oct 2017 10:43:31 +0200
-In-Reply-To: <d33ebdd9-d449-ca66-e355-f5796378804e@oss-tech.org>
-References: <6f474cec-909e-f230-73ff-b3b1fcf9c555@siemens.com>
- <20171012124935.24781-1-christoph.muellner@theobroma-systems.com>
- <a4c6520f-c201-2006-f530-b921d722c3c1@oss-tech.org>
- <6FABE6F5-B367-4A64-A276-2DC2DF18EBA9@theobroma-systems.com>
- <d33ebdd9-d449-ca66-e355-f5796378804e@oss-tech.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] [PATCH] ipipe: gicv3: [v3] Enable interrupt
-	pipelining.
+References: <d3f6995a-1d45-d262-21a0-97a51253da91@alaxarxa.net>
+ <e665e5ab-796f-8aac-997c-33b88079d27c@xenomai.org>
+ <a30fcf3f-ad18-0210-ad51-6a0ab0b73872@alaxarxa.net>
+ <bd2c4a53-33cf-b4aa-79c5-243fe1d5b660@xenomai.org>
+ <275c60a3-db60-fdb7-7ffc-96988ca50913@alaxarxa.net>
+ <a58f4cc0-0e42-c1d6-71e6-c18b00d1076d@xenomai.org>
+ <52b92049-fcaa-8d48-8e89-516fc6f0ab21@alaxarxa.net>
+ <6d2aee3e-2ddc-3008-f00e-a350030efcf3@xenomai.org>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Message-ID: <bc03b087-9547-64f3-ab80-f79845a997d1@alaxarxa.net>
+Date: Fri, 24 Nov 2017 11:34:37 +0100
+MIME-Version: 1.0
+In-Reply-To: <6d2aee3e-2ddc-3008-f00e-a350030efcf3@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Testing 3.0.6 (Was Re: Cannot initialize TLSF memory
+ manager)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,24 +24,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Dmitriy Cherkasov <dmitriy@oss-tech.org>
-Cc: jan.kiszka@siemens.com, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SXMgdGhlcmUgYW55dGhpbmcgZWxzZSBJIGNhbiBkbyB0byBnZXQgdGhpcyBtZXJnZWQ/CgpUaGFu
-a3MsCkNocmlzdG9waAoKCj4gT24gMTIgT2N0IDIwMTcsIGF0IDIwOjU5LCBEbWl0cml5IENoZXJr
-YXNvdiA8ZG1pdHJpeUBvc3MtdGVjaC5vcmc+IHdyb3RlOgo+IAo+IE9uIDEwLzEyLzIwMTcgMTE6
-MTYgQU0sIENocmlzdG9waCBNw7xsbG5lciB3cm90ZToKPiAKPj4gVGhhdCB3YXMgbXkgZmlyc3Qg
-YXR0ZW1wdCwgYnV0IHRoYXQgZW5kcyB1cCBpbiBhIGhhbmcgZHVyaW5nIGJvb3R1cC4KPj4gSSBz
-dXNwZWN0IHRoYXQgdGhlIC5pcnFfaG9sZCgpIGNhbGxiYWNrIG11c3Qgbm90IGNhbGwgaXBpcGVf
-bG9ja19pcnEoKS4KPj4gQW5kIHNpbmNlIEkgYWRkZWQgdGhhdCBjYWxsIHRvIGdpY19tYXNrX2ly
-cSgpLCBJIGNhbm5vdCBjYWxsIC5pcnFfbWFzaygpLgo+PiBOb3RlLCB0aGF0IHRoaXMgY29kZSBl
-cXVhbHMgYWxzbyB0aGUgR0lDdjIgaW1wbGVtZW50YXRpb24gaW4gZHJpdmVycy9pcnFjaGlwL2ly
-cS1naWMuYwo+PiAod2hlcmUgSSBnb3QgdGhlIGlkZWEgZm9yIHRoZSBwaXBlbGluZV9sb2NrKCkg
-bWFjcm9zIGluIFt2Ml0gZnJvbSkuCj4+IFRoYW5rcywKPj4gQ2hyaXN0b3BoCj4gCj4gWWVzLCB0
-aGF0J3MgY29ycmVjdCAtIGxvY2svdW5sb2NrIGRlZmluaXRlbHkgc2hvdWxkIG5vdCBiZSBjYWxs
-ZWQgZnJvbSBob2xkL3JlbGVhc2UuCj4gCj4gVGhpcyBsb29rcyBvayB0byBtZS4gVGhhbmtzIQoK
-LS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNo
-bWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlv
-bi9wZ3Atc2lnbmF0dXJlClNpemU6IDg0MiBieXRlcwpEZXNjOiBNZXNzYWdlIHNpZ25lZCB3aXRo
-IE9wZW5QR1AKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFj
-aG1lbnRzLzIwMTcxMDE5L2RkODBlNjI2L2F0dGFjaG1lbnQuc2lnPgo=
+Hi (again)
+
+running cross-link I got that:
+
+>> with my user
+>>
+>> ./cross-link
+>> mem=0x7f0d630488e0, alloc_size=8192
+>> Init memory pool returns 1808 bytes
+>> Running after ...
+>> sysregd:
+>> create_directory_recursive("/var/run/xenomai/leopold.palomo/anon@19479"):
+>> Permission denied
+
+....
+
+
+the permissions are:
+$ ls -la /var/run/xenomai/
+total 0
+drwxr-xr-x  3 root root  60 nov 23 16:03 .
+drwxr-xr-x 24 root root 860 nov 24 11:12 ..
+drwxr-xr-x  2 root root  40 nov 24 11:12 root
+
+so, IMHO this folder should belongs to xenomai group and permisions g+rw. Right?
+
+Changing the permissions manually solved it. It's something about the packaging
+or the library?
+
+
+>> leopold.palomo@bmm3 ~/xenomai/xenomai-3.0.6/system/demo$ sudo ./cross-link
+>> mem=0x7fc9e73f88e0, alloc_size=8192
+>> Init memory pool returns 1808 bytes
+>> Running after ...
+>> mem=0x7f2e146318e0, alloc_size=8192
+>> Init memory pool returns 1808 bytes
+>> Running after ...
+>> main : can't open /dev/rtdm/rtser0 (write), No such file or directory
+
+> 
+> Not being able to open rtser0 is yet another kind of problem: the uart
+> driver is not up and running, so the devices were not created. crosslink
+> definitely needs such driver.
+
+Yes, I don't have rtser0 entry in /dev/rtdm/. Who does create it?
+
+Also, /dev/cpu_dma_latency should not belongs to xenomai group?
+
+Best regards,
+
+Leopold
+
+-- 
+--
+Linux User 152692     GPG: 05F4A7A949A2D9AA
+Catalonia
+-------------------------------------
+A: Because it messes up the order in which people normally read text.
+Q: Why is top-posting such a bad thing?
+A: Top-posting.
+Q: What is the most annoying thing in e-mail?
+
