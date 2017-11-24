@@ -1,11 +1,12 @@
+From: =?UTF-8?Q?St=c3=a9phane_LOS?= <slos@hilscher.com>
 References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
  <1b035acc-5784-f0b0-f16f-09279d5a8845@siemens.com>
  <07716080-d5cd-2508-20cc-b679a72f6f68@xenomai.org>
-From: =?UTF-8?Q?St=c3=a9phane_LOS?= <slos@hilscher.com>
-Message-ID: <dfe038bb-e379-bc90-5cf7-ecddce9ed887@hilscher.com>
-Date: Fri, 24 Nov 2017 09:52:35 +0100
+ <dfe038bb-e379-bc90-5cf7-ecddce9ed887@hilscher.com>
+Message-ID: <9698a6ee-decf-f368-d6fe-47e4d67868ce@hilscher.com>
+Date: Fri, 24 Nov 2017 10:00:28 +0100
 MIME-Version: 1.0
-In-Reply-To: <07716080-d5cd-2508-20cc-b679a72f6f68@xenomai.org>
+In-Reply-To: <dfe038bb-e379-bc90-5cf7-ecddce9ed887@hilscher.com>
 Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: quoted-printable
 Content-Language: en-GB
@@ -19,7 +20,6 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
-Cc: Daniel Wagner <daniel.wagner@siemens.com>
 
 Hi,
 
@@ -27,6 +27,11 @@ Wouldn't integrating both projects make sense ?
 
 It seems both share a significant amount of work and similar lack of=20
 resources.
+
+Sorry, talking about the "Real Time Linux" project and "Xenomai"...
+
+And sorry for the noise added automagically to my emails. :-(
+I should use some other mail account.
 
 Best Regards,
 Cordialement,
@@ -46,39 +51,70 @@ Fax  : +33 (0) 4 78 26 83 27
 http ://www.hilscher.fr
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Le 23/11/2017 =C3=A0 21:45, Philippe Gerum a =C3=A9crit=C2=A0:
-> On 11/22/2017 09:26 PM, Jan Kiszka wrote:
->> On 2017-11-21 18:11, Philippe Gerum wrote:
->>> So, let's talk about the elephant in the room: the current situation of
->>> the Xenomai project is not viable in the long run. I can only encourage
->>> people who feel concerned about it to discuss openly the practical step=
-s
->>> to best address this challenge.
->> Thanks for bringing this frankly on the table! For those who follow the
->> project, it's likely no news. So we were working on this issue also
->> internally, with users of Xenomai inside Siemens. And we have the
->> backing to enhance our involvement in upstream work. Right now we are
->> working on making this concrete.
+Le 24/11/2017 =C3=A0 09:52, St=C3=A9phane LOS a =C3=A9crit=C2=A0:
+> Hi,
+>
+> Wouldn't integrating both projects make sense ?
+>
+> It seems both share a significant amount of work and similar lack of=20
+> resources.
+>
+> Best Regards,
+> Cordialement,
+>
+> St=C3=A9phane LOS
+> slos@hilscher.com
+> Support technique
+>
+> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> Hilscher France
+> 12, rue du 35=C3=A8me R=C3=A9giment d'Aviation
+> Miniparc du Ch=C3=AAne
+> 69500 BRON
+> France
+> T=C3=A9l. : +33 (0) 4 72 37 98 40
+> Fax=C2=A0 : +33 (0) 4 78 26 83 27
+> http ://www.hilscher.fr
+> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>
+> Le 23/11/2017 =C3=A0 21:45, Philippe Gerum a =C3=A9crit=C2=A0:
+>> On 11/22/2017 09:26 PM, Jan Kiszka wrote:
+>>> On 2017-11-21 18:11, Philippe Gerum wrote:
+>>>> So, let's talk about the elephant in the room: the current=20
+>>>> situation of
+>>>> the Xenomai project is not viable in the long run. I can only=20
+>>>> encourage
+>>>> people who feel concerned about it to discuss openly the practical=20
+>>>> steps
+>>>> to best address this challenge.
+>>> Thanks for bringing this frankly on the table! For those who follow the
+>>> project, it's likely no news. So we were working on this issue also
+>>> internally, with users of Xenomai inside Siemens. And we have the
+>>> backing to enhance our involvement in upstream work. Right now we are
+>>> working on making this concrete.
+>>>
+>>> There are many areas where contributions can be beneficial for the
+>>> project and its community, and many do not require deepest=20
+>>> understanding
+>>> of the core, like around CI, test automation, distro packaging,
+>>> documentation, or user support. But some essential elements in my=20
+>>> eyes are
+>>>
+>>> =C2=A0 - building up a core team of kernel maintainers for Cobalt
+>>>
+>>> =C2=A0 - offloading work from the shoulders of our extremely valuable
+>>> =C2=A0=C2=A0=C2=A0 maintainer
+>>>
+>>> The second part will be achieved to a certain degree by the first=20
+>>> one as
+>>> Philippe can probably confirm.
+>> Yes, extending "Cobalt" to the pipeline. A significant portion of the
+>> overall maintenance involves the I-pipe. Hence the work on rethinking
+>> how the interrupt pipeline is integrated into the Linux kernel, how we
+>> can make the former a regular feature of the latter instead of an
+>> add-on, with the goal of simplifying the maintenance, but also making
+>> the whole thing way more natural, easier to grasp.
 >>
->> There are many areas where contributions can be beneficial for the
->> project and its community, and many do not require deepest understanding
->> of the core, like around CI, test automation, distro packaging,
->> documentation, or user support. But some essential elements in my eyes a=
-re
->>
->>   - building up a core team of kernel maintainers for Cobalt
->>
->>   - offloading work from the shoulders of our extremely valuable
->>     maintainer
->>
->> The second part will be achieved to a certain degree by the first one as
->> Philippe can probably confirm.
-> Yes, extending "Cobalt" to the pipeline. A significant portion of the
-> overall maintenance involves the I-pipe. Hence the work on rethinking
-> how the interrupt pipeline is integrated into the Linux kernel, how we
-> can make the former a regular feature of the latter instead of an
-> add-on, with the goal of simplifying the maintenance, but also making
-> the whole thing way more natural, easier to grasp.
 >
 
 
