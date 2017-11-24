@@ -9,13 +9,14 @@ References: <d3f6995a-1d45-d262-21a0-97a51253da91@alaxarxa.net>
  <bc03b087-9547-64f3-ab80-f79845a997d1@alaxarxa.net>
  <607eb8e7-c311-bd26-0bf3-7a92ed97e48e@xenomai.org>
  <9555c324-187c-63aa-ff8c-56ce8214265d@alaxarxa.net>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <469a8021-9bc8-8c97-db67-6b8d7578686c@xenomai.org>
-Date: Fri, 24 Nov 2017 13:04:49 +0100
+ <469a8021-9bc8-8c97-db67-6b8d7578686c@xenomai.org>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Message-ID: <7a8fe24f-3db5-3b30-a080-d4207b61052d@alaxarxa.net>
+Date: Fri, 24 Nov 2017 13:10:33 +0100
 MIME-Version: 1.0
-In-Reply-To: <9555c324-187c-63aa-ff8c-56ce8214265d@alaxarxa.net>
+In-Reply-To: <469a8021-9bc8-8c97-db67-6b8d7578686c@xenomai.org>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Language: ca-ES
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Testing 3.0.6 (Was Re: Cannot initialize TLSF memory
  manager)
@@ -27,81 +28,119 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/24/2017 01:01 PM, Leopold Palomo-Avellaneda wrote:
-> On 24/11/17 11:55, Philippe Gerum wrote:
->> On 11/24/2017 11:34 AM, Leopold Palomo-Avellaneda wrote:
->>> Hi (again)
->>>
->>> running cross-link I got that:
->>>
->>>>> with my user
->>>>>
->>>>> ./cross-link
->>>>> mem=0x7f0d630488e0, alloc_size=8192
->>>>> Init memory pool returns 1808 bytes
->>>>> Running after ...
->>>>> sysregd:
->>>>> create_directory_recursive("/var/run/xenomai/leopold.palomo/anon@19479"):
->>>>> Permission denied
->>>
->>> ....
->>>
->>>
->>> the permissions are:
->>> $ ls -la /var/run/xenomai/
->>> total 0
->>> drwxr-xr-x  3 root root  60 nov 23 16:03 .
->>> drwxr-xr-x 24 root root 860 nov 24 11:12 ..
->>> drwxr-xr-x  2 root root  40 nov 24 11:12 root
->>>
->>> so, IMHO this folder should belongs to xenomai group and permisions g+rw. Right?
->>
->> There is no such official "Xenomai" group, I mean this is only a
->> template in some rule file to illustrate the fact that one could
->> actually assign rt privileges to a user group, instead of running apps
->> as a sudoer. That could be any group you are willing to mention in the
->> xenomai.allowed_group kernel parameter on the kernel command line, or no
->> group at all. This is a matter of local installation.
-> 
-> Ok, the debian package creates it. I have xenomai.allowed_group=113 in the grub.
-> So, the packaging (installation should solve it).
-> 
->>>
->>> Changing the permissions manually solved it. It's something about the packaging
->>> or the library?
->>>
->>
->> This is not a library issue.
-> 
-> Ok, mine. Packaging problem.
-> 
->>>
->>>>> leopold.palomo@bmm3 ~/xenomai/xenomai-3.0.6/system/demo$ sudo ./cross-link
->>>>> mem=0x7fc9e73f88e0, alloc_size=8192
->>>>> Init memory pool returns 1808 bytes
->>>>> Running after ...
->>>>> mem=0x7f2e146318e0, alloc_size=8192
->>>>> Init memory pool returns 1808 bytes
->>>>> Running after ...
->>>>> main : can't open /dev/rtdm/rtser0 (write), No such file or directory
->>>
+On 24/11/17 13:04, Philippe Gerum wrote:
+> On 11/24/2017 01:01 PM, Leopold Palomo-Avellaneda wrote:
+>> On 24/11/17 11:55, Philippe Gerum wrote:
+>>> On 11/24/2017 11:34 AM, Leopold Palomo-Avellaneda wrote:
+>>>> Hi (again)
 >>>>
->>>> Not being able to open rtser0 is yet another kind of problem: the uart
->>>> driver is not up and running, so the devices were not created. crosslink
->>>> definitely needs such driver.
+>>>> running cross-link I got that:
+>>>>
+>>>>>> with my user
+>>>>>>
+>>>>>> ./cross-link
+>>>>>> mem=0x7f0d630488e0, alloc_size=8192
+>>>>>> Init memory pool returns 1808 bytes
+>>>>>> Running after ...
+>>>>>> sysregd:
+>>>>>> create_directory_recursive("/var/run/xenomai/leopold.palomo/anon@19479"):
+>>>>>> Permission denied
+>>>>
+>>>> ....
+>>>>
+>>>>
+>>>> the permissions are:
+>>>> $ ls -la /var/run/xenomai/
+>>>> total 0
+>>>> drwxr-xr-x  3 root root  60 nov 23 16:03 .
+>>>> drwxr-xr-x 24 root root 860 nov 24 11:12 ..
+>>>> drwxr-xr-x  2 root root  40 nov 24 11:12 root
+>>>>
+>>>> so, IMHO this folder should belongs to xenomai group and permisions g+rw. Right?
 >>>
->>> Yes, I don't have rtser0 entry in /dev/rtdm/. Who does create it?
->>>
+>>> There is no such official "Xenomai" group, I mean this is only a
+>>> template in some rule file to illustrate the fact that one could
+>>> actually assign rt privileges to a user group, instead of running apps
+>>> as a sudoer. That could be any group you are willing to mention in the
+>>> xenomai.allowed_group kernel parameter on the kernel command line, or no
+>>> group at all. This is a matter of local installation.
 >>
->> Any RTDM driver from kernel/drivers/serial, depending on your platform.
+>> Ok, the debian package creates it. I have xenomai.allowed_group=113 in the grub.
+>> So, the packaging (installation should solve it).
+>>
+>>>>
+>>>> Changing the permissions manually solved it. It's something about the packaging
+>>>> or the library?
+>>>>
+>>>
+>>> This is not a library issue.
+>>
+>> Ok, mine. Packaging problem.
+>>
+>>>>
+>>>>>> leopold.palomo@bmm3 ~/xenomai/xenomai-3.0.6/system/demo$ sudo ./cross-link
+>>>>>> mem=0x7fc9e73f88e0, alloc_size=8192
+>>>>>> Init memory pool returns 1808 bytes
+>>>>>> Running after ...
+>>>>>> mem=0x7f2e146318e0, alloc_size=8192
+>>>>>> Init memory pool returns 1808 bytes
+>>>>>> Running after ...
+>>>>>> main : can't open /dev/rtdm/rtser0 (write), No such file or directory
+>>>>
+>>>>>
+>>>>> Not being able to open rtser0 is yet another kind of problem: the uart
+>>>>> driver is not up and running, so the devices were not created. crosslink
+>>>>> definitely needs such driver.
+>>>>
+>>>> Yes, I don't have rtser0 entry in /dev/rtdm/. Who does create it?
+>>>>
+>>>
+>>> Any RTDM driver from kernel/drivers/serial, depending on your platform.
+>>
+>> Well, I have /dev/rtdm/* entries but not that one. Is this normal?
+>>
 > 
-> Well, I have /dev/rtdm/* entries but not that one. Is this normal?
+> Do you have any RTDM-based serial driver enabled in Kconfig?
 > 
 
-Do you have any RTDM-based serial driver enabled in Kconfig?
+xeno_16550A
+
+I have all modules that I can.
+
+<M> 16550A UART driver
+                              Hardware access mode (Any access mode)  ---> (X)
+Any access mode
+
+[*] PCI board support
+                           [*]   Moxa PCI boards
+
+CONFIG_XENO_OPT_RTDM_COMPAT_DEVNODE=y
+CONFIG_XENO_DRIVERS_AUTOTUNE=m
+
+#
+# Serial drivers
+#
+CONFIG_XENO_DRIVERS_16550A=m
+# CONFIG_XENO_DRIVERS_16550A_PIO is not set
+# CONFIG_XENO_DRIVERS_16550A_MMIO is not set
+CONFIG_XENO_DRIVERS_16550A_ANY=y
+CONFIG_XENO_DRIVERS_16550A_PCI=y
+CONFIG_XENO_DRIVERS_16550A_PCI_MOXA=y
+
+
+
+
+
 
 -- 
-Philippe.
+--
+Linux User 152692     GPG: 05F4A7A949A2D9AA
+Catalonia
+-------------------------------------
+A: Because it messes up the order in which people normally read text.
+Q: Why is top-posting such a bad thing?
+A: Top-posting.
+Q: What is the most annoying thing in e-mail?
 
