@@ -7,11 +7,12 @@ References: <d3f6995a-1d45-d262-21a0-97a51253da91@alaxarxa.net>
  <52b92049-fcaa-8d48-8e89-516fc6f0ab21@alaxarxa.net>
  <6d2aee3e-2ddc-3008-f00e-a350030efcf3@xenomai.org>
  <bc03b087-9547-64f3-ab80-f79845a997d1@alaxarxa.net>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <607eb8e7-c311-bd26-0bf3-7a92ed97e48e@xenomai.org>
-Date: Fri, 24 Nov 2017 11:55:55 +0100
+ <607eb8e7-c311-bd26-0bf3-7a92ed97e48e@xenomai.org>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Message-ID: <9555c324-187c-63aa-ff8c-56ce8214265d@alaxarxa.net>
+Date: Fri, 24 Nov 2017 13:01:50 +0100
 MIME-Version: 1.0
-In-Reply-To: <bc03b087-9547-64f3-ab80-f79845a997d1@alaxarxa.net>
+In-Reply-To: <607eb8e7-c311-bd26-0bf3-7a92ed97e48e@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -25,77 +26,98 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/24/2017 11:34 AM, Leopold Palomo-Avellaneda wrote:
-> Hi (again)
-> 
-> running cross-link I got that:
-> 
->>> with my user
->>>
->>> ./cross-link
->>> mem=0x7f0d630488e0, alloc_size=8192
->>> Init memory pool returns 1808 bytes
->>> Running after ...
->>> sysregd:
->>> create_directory_recursive("/var/run/xenomai/leopold.palomo/anon@19479"):
->>> Permission denied
-> 
-> ....
-> 
-> 
-> the permissions are:
-> $ ls -la /var/run/xenomai/
-> total 0
-> drwxr-xr-x  3 root root  60 nov 23 16:03 .
-> drwxr-xr-x 24 root root 860 nov 24 11:12 ..
-> drwxr-xr-x  2 root root  40 nov 24 11:12 root
-> 
-> so, IMHO this folder should belongs to xenomai group and permisions g+rw. Right?
-
-There is no such official "Xenomai" group, I mean this is only a
-template in some rule file to illustrate the fact that one could
-actually assign rt privileges to a user group, instead of running apps
-as a sudoer. That could be any group you are willing to mention in the
-xenomai.allowed_group kernel parameter on the kernel command line, or no
-group at all. This is a matter of local installation.
-
-> 
-> Changing the permissions manually solved it. It's something about the packaging
-> or the library?
-> 
-
-This is not a library issue.
-
-> 
->>> leopold.palomo@bmm3 ~/xenomai/xenomai-3.0.6/system/demo$ sudo ./cross-link
->>> mem=0x7fc9e73f88e0, alloc_size=8192
->>> Init memory pool returns 1808 bytes
->>> Running after ...
->>> mem=0x7f2e146318e0, alloc_size=8192
->>> Init memory pool returns 1808 bytes
->>> Running after ...
->>> main : can't open /dev/rtdm/rtser0 (write), No such file or directory
-> 
+On 24/11/17 11:55, Philippe Gerum wrote:
+> On 11/24/2017 11:34 AM, Leopold Palomo-Avellaneda wrote:
+>> Hi (again)
 >>
->> Not being able to open rtser0 is yet another kind of problem: the uart
->> driver is not up and running, so the devices were not created. crosslink
->> definitely needs such driver.
+>> running cross-link I got that:
+>>
+>>>> with my user
+>>>>
+>>>> ./cross-link
+>>>> mem=0x7f0d630488e0, alloc_size=8192
+>>>> Init memory pool returns 1808 bytes
+>>>> Running after ...
+>>>> sysregd:
+>>>> create_directory_recursive("/var/run/xenomai/leopold.palomo/anon@19479"):
+>>>> Permission denied
+>>
+>> ....
+>>
+>>
+>> the permissions are:
+>> $ ls -la /var/run/xenomai/
+>> total 0
+>> drwxr-xr-x  3 root root  60 nov 23 16:03 .
+>> drwxr-xr-x 24 root root 860 nov 24 11:12 ..
+>> drwxr-xr-x  2 root root  40 nov 24 11:12 root
+>>
+>> so, IMHO this folder should belongs to xenomai group and permisions g+rw. Right?
 > 
-> Yes, I don't have rtser0 entry in /dev/rtdm/. Who does create it?
+> There is no such official "Xenomai" group, I mean this is only a
+> template in some rule file to illustrate the fact that one could
+> actually assign rt privileges to a user group, instead of running apps
+> as a sudoer. That could be any group you are willing to mention in the
+> xenomai.allowed_group kernel parameter on the kernel command line, or no
+> group at all. This is a matter of local installation.
+
+Ok, the debian package creates it. I have xenomai.allowed_group=113 in the grub.
+So, the packaging (installation should solve it).
+
+>>
+>> Changing the permissions manually solved it. It's something about the packaging
+>> or the library?
+>>
 > 
+> This is not a library issue.
 
-Any RTDM driver from kernel/drivers/serial, depending on your platform.
+Ok, mine. Packaging problem.
 
-> Also, /dev/cpu_dma_latency should not belongs to xenomai group?
+>>
+>>>> leopold.palomo@bmm3 ~/xenomai/xenomai-3.0.6/system/demo$ sudo ./cross-link
+>>>> mem=0x7fc9e73f88e0, alloc_size=8192
+>>>> Init memory pool returns 1808 bytes
+>>>> Running after ...
+>>>> mem=0x7f2e146318e0, alloc_size=8192
+>>>> Init memory pool returns 1808 bytes
+>>>> Running after ...
+>>>> main : can't open /dev/rtdm/rtser0 (write), No such file or directory
+>>
+>>>
+>>> Not being able to open rtser0 is yet another kind of problem: the uart
+>>> driver is not up and running, so the devices were not created. crosslink
+>>> definitely needs such driver.
+>>
+>> Yes, I don't have rtser0 entry in /dev/rtdm/. Who does create it?
+>>
 > 
+> Any RTDM driver from kernel/drivers/serial, depending on your platform.
 
-This is not a Xenomai resource, this one is created by the regular
-kernel. Assuming you refer to cyclictest, I don't think this code can
-run without root privileges. cyclictest is actually one of the official
-test from the preempt-rt testsuite, which also builds and runs over Cobalt.
+Well, I have /dev/rtdm/* entries but not that one. Is this normal?
+
+>> Also, /dev/cpu_dma_latency should not belongs to xenomai group?
+>>
+> 
+> This is not a Xenomai resource, this one is created by the regular
+> kernel. Assuming you refer to cyclictest, I don't think this code can
+> run without root privileges. cyclictest is actually one of the official
+> test from the preempt-rt testsuite, which also builds and runs over Cobalt.
+> 
+Ok
+
+Thanks,
+
+Leopold
 
 -- 
-Philippe.
+--
+Linux User 152692     GPG: 05F4A7A949A2D9AA
+Catalonia
+-------------------------------------
+A: Because it messes up the order in which people normally read text.
+Q: Why is top-posting such a bad thing?
+A: Top-posting.
+Q: What is the most annoying thing in e-mail?
 
