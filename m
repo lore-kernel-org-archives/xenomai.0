@@ -1,18 +1,15 @@
-Date: Mon, 27 Nov 2017 10:57:26 -0500
-Message-ID: <20171127155726.l5rxwgilynue6gug@csclub.uwaterloo.ca>
+From: Wolfgang Denk <wd@denx.de>
+MIME-Version: 1.0
+Content-type: text/plain; charset=UTF-8
+Content-transfer-encoding: 8bit
+In-reply-to: <2f850a60-3756-f06d-82c6-ccf6eeb58aa3@xenomai.org>
 References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
  <f7ad8163bda5484292ccdf6e8cf1a484@P10-EX02.3DSystems.Internal>
  <02f0df6b-0854-eeaa-a168-ae2c10e1d8ab@xenomai.org>
  <845269a3-e580-c8ff-e25d-a56d00c787fe@siemens.com>
  <2f850a60-3756-f06d-82c6-ccf6eeb58aa3@xenomai.org>
- <d4835d99-ffc5-6d1d-5ab3-8236d6d23fab@xenomai.org>
- <20171123203533.h2qfccbyxdavhpej@csclub.uwaterloo.ca>
- <92228043-c203-d4c2-7088-6f16e66f7cb4@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <92228043-c203-d4c2-7088-6f16e66f7cb4@xenomai.org>
-From: lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
+Date: Mon, 27 Nov 2017 21:41:04 +0100
+Message-Id: <20171127204105.07C3512023A@gemini.denx.de>
 Subject: Re: [Xenomai] [RFC] Service hosting for Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -22,44 +19,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jorge Ramirez <jro@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Sun, Nov 26, 2017 at 06:49:12PM +0100, Jorge Ramirez wrote:
-> we all like the kernel workflow and the release process. In fact, in seems
-> to scale ad-infinitum.
-> however we dont have this need AFAIK.
-> 
-> all the default configs in the tree. 10, 20, 200, whatever.
-> 
-> complex stuff gets discussed in ML.
-> simple stuff, information sharing, light details, simple blocks, pings, that
-> is what IRC is for.
-> 
-> tends to works well;
-> maybe try joining #ffmpeg,#kodi, #u-boot, ##linux-msm, etc and have a peak
-> if you are not used to IRC.
+Dear Philippe,
 
-I used to spend a lot of time on IRC.  Way too much time helping people
-with linux issues of various kinds.  Doing things live was way too time
-consuming, so I decided to ban myself from IRC.  I think it has been
-almost 10 years now that I have avoided IRC.
+In message <2f850a60-3756-f06d-82c6-ccf6eeb58aa3@xenomai.org> you wrote:
+>
+> As Jan mentioned, there is more than having GIT underneath, there are
+> deep implications on the workflow, and it really depends on what we'd
+> want from such platform. If you have any thought, recommendation,
+> experience with those platforms in your daily work, it would be great to
+> know your views.
 
-> this would be ridiculous if it was for an upstream complex review.
-> 
-> if it is for a quick discussion with someone in the channel, sure, you can
-> send a patch - as a code snippet - using paste services [1] obviously.
-> This is very common these days.
+Full agreement.
 
-The nice thing with the mailing list ist that everyone that is interested
-gets to see it.  With IRC only those that were around on IRC at the time
-get to see it.
+What I can offer here an now is this:
 
-> what do you mean about random websites? you lost me there.
+1) DENX can run the Xenomai mailing list.
 
-Some people think webforums are better for discussions than mailing lists.
-But that is yet another place you have to think to go read.
+   We already run some other lists, the U-Boot mailing list with
+   currently 2877 members being the most important. Adding another
+   list is just a few clicks aways.
+
+   [OK, it takes abit more work to transfer the old mail archives,
+   but all this is pretty much straightforward.]
+
+2) DENX can host one ore more repositories for Xenomai on our gitlab
+   server (gitlab.denx.de).  We're planning for an upgrade anyway,
+   and compared to other stuff we have there Xenomay is just a tiny
+   addition.
+
+Both services can be provided immediately.
+
+
+Best regards,
+
+Wolfgang Denk
 
 -- 
-Len Sorensen
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
+"The bad reputation UNIX has gotten is totally undeserved, laid on by
+people who don't understand, who have not gotten in there  and  tried
+anything."          -- Jim Joyce, owner of Jim Joyce's UNIX Bookstore
 
