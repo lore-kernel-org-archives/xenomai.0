@@ -1,15 +1,18 @@
-References: <61813822-bfb7-e2ec-bce2-85a508eab0a5@alaxarxa.net>
- <49014e60-4b55-ed4e-a8c1-576231633c50@xenomai.org>
- <94ebb798-5816-98d0-dcb6-6ebe1651861c@alaxarxa.net>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <d550bf86-3526-c0af-076f-956dc17225ba@xenomai.org>
-Date: Thu, 30 Nov 2017 17:46:37 +0100
+From: Wolfgang Denk <wd@denx.de>
 MIME-Version: 1.0
-In-Reply-To: <94ebb798-5816-98d0-dcb6-6ebe1651861c@alaxarxa.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xeno-config options to build Xenomai applications
+Content-type: text/plain; charset=UTF-8
+Content-transfer-encoding: 8bit
+In-reply-to: <20171123203533.h2qfccbyxdavhpej@csclub.uwaterloo.ca>
+References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
+ <f7ad8163bda5484292ccdf6e8cf1a484@P10-EX02.3DSystems.Internal>
+ <02f0df6b-0854-eeaa-a168-ae2c10e1d8ab@xenomai.org>
+ <845269a3-e580-c8ff-e25d-a56d00c787fe@siemens.com>
+ <2f850a60-3756-f06d-82c6-ccf6eeb58aa3@xenomai.org>
+ <d4835d99-ffc5-6d1d-5ab3-8236d6d23fab@xenomai.org>
+ <20171123203533.h2qfccbyxdavhpej@csclub.uwaterloo.ca>
+Date: Mon, 27 Nov 2017 21:47:08 +0100
+Message-Id: <20171127204708.1782712023A@gemini.denx.de>
+Subject: Re: [Xenomai] [RFC] Service hosting for Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,48 +21,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, Xenomai List <xenomai@xenomai.org>
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 11/30/2017 03:41 PM, Leopold Palomo-Avellaneda wrote:
-> Hi,
-> 
-> first of all thanks!!
-> 
-> On 30/11/17 14:31, Philippe Gerum wrote:
->> On 11/30/2017 01:32 PM, Leopold Palomo-Avellaneda wrote:
-> 
-> [....]
->>
->>> 3) C/C++ POSIX shared library with native (2.x) (--alchemy) code and xddm
->>> mechanism to interchange data. The posix code must not be wrapped
->>>
->>
->> Assuming you meant: the posix code should not be wrapped (i.e.
->> application requirement, not a Xenomai requirement).
-> 
-> ok, but could be any kind of conflict in the posix code is wrapped? xddm, etc?
+Dear Lennart,
+
+In message <20171123203533.h2qfccbyxdavhpej@csclub.uwaterloo.ca> you wrote:
 >
+> I personally like the linux kernel workflow where everything is through
+> a mailing list and patches are reviewed before they go in.  I am not
+> sure that workflow would work for xenomai, but I do like it.
 
-With the app, could be. With the Xenomai libs, should not be as there
-are provisions for avoiding this by explicitly marking the POSIX calls
-there with either __RT() or __STD().
+I share the same experience and feelings from working with U-Boot
+for 18 years.
 
-> 
-> And just asking an idea. Could be possible "in theory" to build some big library
-> as POCO to convert it to RT wrapping its POSIX funcions? I'm thinking in the
-> thread class and the network module (RTNET)
-> 
+But then, it all depends on a) people who submit patches and b)
+people who review these and c) maintainers who pull this stuff in.
 
-POSIX resources - sems, mutexes, condvars etc - can't be shared between
-rt and non-rt domains (i.e. cobalt and glibc), so blindly wrapping all
-POSIX calls may lead to unexpected results if there are calls on the
-same resources between those domains.
+It would be trivial to set up the neede dinfrastructure to process
+such patches at patchowrk, for example.  All these technical issues
+can be solved easily.
 
-Also, calling a non-wrapped portion of the library from a wrapped
-portion would defeat the purpose of switching the POSIX calls issued by
-the latter to Xenomai services. Wrapping should be handled on a case by
-case basis, I don't see any "automatic" process for this.
+It does not solve the consumer-only mindset that dominates the list
+of subscribers of the Xenomai list.
+
+
+Best regards,
+
+Wolfgang Denk
 
 -- 
-Philippe.
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
+On our campus the UNIX system has proved to be not only an  effective
+software tool, but an agent of technical and social change within the
+University.                          - John Lions (U. of Toronto (?))
 
