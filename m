@@ -1,11 +1,19 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <ff7b3efb-7fb7-a26a-7412-953076de6ce6@siemens.com>
-Date: Thu, 14 Dec 2017 20:28:48 +0100
+References: <b9dc71b8-119f-71dc-56f8-ae59bfb51a27@foxmail.com>
+ <b338d27d-a4f7-3d8f-4b6e-c5edbaf1f6f3@xenomai.org>
+ <60d13f7c-4bab-382b-3e2c-b391d74d7245@foxmail.com>
+ <79259a0a-53c6-c8fa-3f1a-11b5534dfe7d@xenomai.org>
+ <07dce87d-955a-fe9e-1230-1f11d143b90c@foxmail.com>
+ <beb3d65a-0743-0e2b-f64e-3fedd12d46d1@xenomai.org>
+From: Jack Lee <jacklee11@foxmail.com>
+Message-ID: <43bd0713-57b3-7970-7ef9-ff5d08cd6661@foxmail.com>+C25577FCE5FB546C
+Date: Tue, 28 Nov 2017 19:38:08 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <beb3d65a-0743-0e2b-f64e-3fedd12d46d1@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] ipipe: 4.4 BUG on x86, maybe on 4.9 as well
+Subject: Re: [Xenomai] Linux 4.1.18 with xenomai 3.0.3,
+	libraries build failed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,54 +22,107 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai <xenomai@xenomai.org>
 
-Hi Philippe,
 
-something got broken with the exception path rework:
 
-[    2.619458] debug: unmapping init [mem 0xffffffff81b43000-0xffffffff81ee5fff]
-[    2.622011] BUG: using __this_cpu_read() in preemptible [00000000] code: init/1
-[    2.623446] caller is __this_cpu_preempt_check+0x13/0x20
-[    2.624724] CPU: 2 PID: 1 Comm: init Not tainted 4.4.105+ #689
-[    2.626073] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.11.0-0-g63451fca13-prebuilt.qemu-project.org 04/01/2014
-[    2.628911] I-pipe domain: Linux
-[    2.630083]  ffffffff81993439 ffff88003fb43c10 ffffffff813afa45 0000000000000002
-[    2.631427]  ffff88003fb38000 ffff88003fb43c50 ffffffff813db5eb ffffffff82c57340
-[    2.631427]  ffff88003fb43c98 0000000000000002 ffff88003fb44000 0000000000000000
-[    2.631427] Call Trace:
-[    2.631427]  [<ffffffff813afa45>] dump_stack+0xb2/0xdd
-[    2.631427]  [<ffffffff813db5eb>] check_preemption_disabled+0x17b/0x1c0
-[    2.631427]  [<ffffffff813db663>] __this_cpu_preempt_check+0x13/0x20
-[    2.631427]  [<ffffffff8104eb1f>] do_page_fault+0x3f/0x60
-[    2.631427]  [<ffffffff8170f8b7>] page_fault+0x27/0x60
-[    2.631427]  [<ffffffff813bcef2>] ? __clear_user+0x42/0x70
-[    2.631427]  [<ffffffff813bcf69>] clear_user+0x49/0x80
-[    2.631427]  [<ffffffff812727d4>] padzero+0x24/0x40
-[    2.631427]  [<ffffffff81274bfe>] load_elf_binary+0x8fe/0x10f0
-[    2.631427]  [<ffffffff81116ee8>] ? ipipe_unstall_root+0x58/0x90
-[    2.631427]  [<ffffffff812222c7>] search_binary_handler+0x97/0x1d0
-[    2.631427]  [<ffffffff81223b86>] do_execveat_common.isra.40+0x5d6/0x7e0
-[    2.631427]  [<ffffffff81223aff>] ? do_execveat_common.isra.40+0x54f/0x7e0
-[    2.631427]  [<ffffffff8122bb00>] ? path_openat+0x1440/0x14e0
-[    2.631427]  [<ffffffff816fff20>] ? rest_init+0xd0/0xd0
-[    2.631427]  [<ffffffff81223dbc>] do_execve+0x2c/0x30
-[    2.631427]  [<ffffffff810002eb>] run_init_process+0x2b/0x30
-[    2.631427]  [<ffffffff816fff5d>] kernel_init+0x3d/0xe0
-[    2.631427]  [<ffffffff8170d4c0>] ret_from_fork+0x40/0x70
-[    2.631427]  [<ffffffff816fff20>] ? rest_init+0xd0/0xd0
+On 11/28/2017 05:13 PM, Philippe Gerum wrote:
+> On 11/28/2017 10:10 AM, Jack Lee wrote:
+>> On 11/28/2017 04:41 PM, Philippe Gerum wrote:
+>>> On 11/28/2017 02:05 AM, Jack Lee wrote:
+>>>> On 11/27/2017 05:13 PM, Philippe Gerum wrote:
+>>>>> On 11/27/2017 05:00 AM, Jack Lee wrote:
+>>>>>> My board cpu is intel Atom N2800, OS is Lubuntu 17.10, gcc version is
+>>>>>> 7.2.0.
+>>>>>> Since the newest 3.0.6 cannot setup on my board, I tried the older
+>>>>>> version.
+>>>>>> It works now. But when I build the xenomai libraries, it encounters
+>>>>>> the
+>>>>>> following error:
+>>>>>>
+>>>>>> -r and -pie can not be used together.
+>>>>>>
+>>>>>> then I changed the configuration to
+>>>>>>
+>>>>>> ../configure --with-core=cobalt --enable-smp --enable-pshared
+>>>>>> CFLAGS="-no-pie"
+>>>>>>
+>>>>>> It didn't work with the new error:
+>>>>>>
+>>>>>> In file included from ../../../utils/analogy/calibration_ni_m.h:27:0,
+>>>>>>                     from ../../../utils/analogy/calibration_ni_m.c:26:
+>>>>>> ../../../utils/analogy/analogy_calibrate.h: In function ‘__debug’:
+>>>>>> ../../../utils/analogy/analogy_calibrate.h:95:2: error: implicit
+>>>>>> declaration of function ‘clock_gettime’
+>>>>>> [-Werror=implicit-function-declaration]
+>>>>>>      clock_gettime(CLOCK_MONOTONIC, &now);
+>>>>>>      ^~~~~~~~~~~~~
+>>>>>> ../../../utils/analogy/analogy_calibrate.h:95:16: error:
+>>>>>> ‘CLOCK_MONOTONIC’ undeclared (first use in this function)
+>>>>>>      clock_gettime(CLOCK_MONOTONIC, &now);
+>>>>>>                    ^~~~~~~~~~~~~~~
+>>>>>> ../../../utils/analogy/analogy_calibrate.h:95:16: note: each
+>>>>>> undeclared
+>>>>>> identifier is reported only once for each function it appears in
+>>>>>>
+>>>>>> Can anyone help?
+>>>>> Instead of downgrading to a release with known core issues, you have
+>>>>> the
+>>>>> option to pull fixes for v3.0.6 from the maintenance branch:
+>>>>>
+>>>>> URL: http://git.xenomai.org/xenomai-3.git/
+>>>>> branch: stable-3.0.x
+>>>> This one seems to have no configure script.
+>>>> When I run autoconf in the top directory, I get the following error:
+>>>>
+>>>> configure.ac:51: error: possibly undefined macro: AM_CONDITIONAL
+>>>>         If this token and others are legitimate, please use
+>>>> m4_pattern_allow.
+>>>>         See the Autoconf documentation.
+>>>> configure.ac:88: error: possibly undefined macro: AC_PROG_CC_FOR_BUILD
+>>>> configure.ac:106: error: possibly undefined macro: AM_INIT_AUTOMAKE
+>>>> configure.ac:108: error: possibly undefined macro: AM_MAINTAINER_MODE
+>>>> configure.ac:109: error: possibly undefined macro: AM_PROG_AS
+>>>> configure.ac:110: error: possibly undefined macro: AM_PROG_LEX
+>>>> configure.ac:164: error: possibly undefined macro: AC_ENABLE_SHARED
+>>>> configure.ac:165: error: possibly undefined macro: AC_PROG_LIBTOOL
+>>>> configure.ac:238: error: possibly undefined macro: AM_CPPFLAGS
+>>>>
+>>>>
+>>>>
+>>>>
+>>> You need to run the bootstrap script first, see
+>>>
+>>> https://xenomai.org/installing-xenomai-3-x/#Installing_the_Xenomai_libraries_and_tools
+>>>
+>>>
+>> Thanks, but there is something wrong still.
+>>
+>> configure.ac:164: error: possibly undefined macro: AC_ENABLE_SHARED
+>>        If this token and others are legitimate, please use m4_pattern_allow.
+>>        See the Autoconf documentation.
+>> configure.ac:165: error: possibly undefined macro: AC_PROG_LIBTOOL
+>> autoreconf: /usr/bin/autoconf failed with exit status: 1
+>>
+>>
+>>
+>>
+> The doc I pointed out also mentions:
+>
+> "If you plan to build from the sources available from the Xenomai GIT
+> tree (git.xenomai.org), the autoconf (>= 2.62), automake and libtool
+> packages must be available on your build system."
+>
+Thanks for your patience. But my board can not boot with linux 4.9.51 
+and this xenomai edition.
+It stuck here:
 
-Unless you have some immediate idea, I will debug this tomorrow. Issue
-disappears when I revert the related patches in the ipipe queue.
+[0.027172]..TIMER:vector=0x30 apic1=0 pin1=2 apic2=0 pin2=0
+[1.014837]random: fast init done
 
-I also have the build fix for 4.4 lined up, basically a backport of
-"enable dev_printk() from the head stage" to that kernel. I've pushed
-things to my for-upstream/4.4 branch, though they aren't ready yet.
+my cpu is intel atom N2800.
 
-Jan
+4.1.18 with xenomai 3.0.3 works fine, but the libraries can't be built.
 
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+
 
