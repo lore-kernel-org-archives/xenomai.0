@@ -1,15 +1,18 @@
-Date: Thu, 7 Dec 2017 11:29:38 +0100
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20171207112938.514c41e5@md1em3qc>
-In-Reply-To: <20171204125358.58f923a5@md1em3qc>
-References: <b440d689-399e-32f1-c981-c66e655d955a@alaxarxa.net>
- <20171201161312.4b07fac3@md1em3qc>
- <ffa39a0b-359c-1657-12e7-4fcfdb23d32b@alaxarxa.net>
- <20171204125358.58f923a5@md1em3qc>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Debian packages for Xenomai 3.x
+From: =?utf-8?Q?Christoph_M=C3=BCllner?=
+ <christoph.muellner@theobroma-systems.com>
+Message-Id: <A2057F15-978D-486D-B202-75528DF14A31@theobroma-systems.com>
+Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
+Date: Tue, 28 Nov 2017 10:13:06 +0100
+In-Reply-To: <07dce87d-955a-fe9e-1230-1f11d143b90c@foxmail.com>
+References: <b9dc71b8-119f-71dc-56f8-ae59bfb51a27@foxmail.com>
+ <b338d27d-a4f7-3d8f-4b6e-c5edbaf1f6f3@xenomai.org>
+ <60d13f7c-4bab-382b-3e2c-b391d74d7245@foxmail.com>
+ <79259a0a-53c6-c8fa-3f1a-11b5534dfe7d@xenomai.org>
+ <07dce87d-955a-fe9e-1230-1f11d143b90c@foxmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Linux 4.1.18 with xenomai 3.0.3,
+	libraries build failed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,100 +21,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Cc: Xenomai List <xenomai@xenomai.org>
+To: Jack Lee <jacklee11@foxmail.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-Am Mon, 4 Dec 2017 12:53:58 +0100
-schrieb "[ext] Henning Schild" <henning.schild@siemens.com>:
-
-> Am Mon, 4 Dec 2017 11:34:16 +0100
-> schrieb Leopold Palomo-Avellaneda <leo@alaxarxa.net>:
-> 
-> > Hi,
-> > 
-> > On 01/12/17 16:13, Henning Schild wrote:  
-> > > Am Thu, 30 Nov 2017 12:27:22 +0100
-> > > schrieb Leopold Palomo-Avellaneda <leo@alaxarxa.net>:
-> > >     
-> > >> Hi,
-> > >>
-> > >>
-> > >> if someone is interested I have been working a bit with the
-> > >> debian directory in xenomai3.
-> > >>
-> > >> I have changed the approach to the libraries. I think that now it
-> > >> has not sense to have a libxenomai1 so I have changed it to
-> > >> xenomai3-libs.
-> > >>
-> > >> The source, and the patches applied are here:
-> > >>
-> > >> https://anonscm.debian.org/cgit/collab-maint/xenomai.git/
-> > >>
-> > >> In case there's some interest, I can try to push it again to the
-> > >> official Debian repositories.    
-> > > 
-> > > Publishing them to Debian would be the ideal case.     
-> > 
-> > Ok, so first go for it ;-)  
-> 
-> Well good luck ;). Please make sure to add this list to CC. Even if
-> you fail the feedback might be valueable to improve what we have in
-> tree. 
-> > But how about you  
-> > > send those patches to this list? After all we have the
-> > > debian-subdir and people are using it!    
-> > 
-> > Who? I think that current debian directory doesn't work for Xenomai
-> > 3. Did you try?  
-> 
-> Yes i am using it. They might not be ideal but i also did not have any
-> problems with the packages.
-> 
-> > I'm from the opinion that the debian directory, to generate debian
-> > packages doesn't belongs to upstream. But, I'm open to send any
-> > patch. Just I would like to know if there are some critical mass.  
-> 
-> We had that discussion before. I think there are quite a few people
-> that install xenomai with debian-packages. And as long as upstream
-> (Debian) does not maintain that folder, it makes some sense to keep it
-> in the sources. Otherwise we would need another repo just for that,
-> and establish a lock-step mechanism like submodules.
-> If we do not get upstream Debian to take care of them, i would suggest
-> to simplify the whole thing. i.e. maybe just throw all in one package.
-> 
-> > > I am using it and i was wondering about the names, but never had a
-> > > big enough issue to actually review what is going on in there.
-> > > So please prepare a patchq and send it here.    
-> > 
-> > Are you using it with Xenomai3?  
-> 
-> Yes both on Ubuntu 16.04 as well as Debian9.
-
-Sorry you are right. My scripts actually have one line that does make a
-difference. And that line needs to go into debin/rules
-
-"[ ! -x configure ] && dh_autoreconf"
-
-Meaning, if you call autoreconf before dpkg-build... the debian-folder
-will do its job.
-
-I might send a patch, but if you are going to rework the folder that
-might not make any sense.
-
-Henning
-
-> Henning
-> 
-> > 
-> > Leopold
-> > 
-> > 
-> >   
-> 
-> 
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
-
-
+Cj4gT24gMjggTm92IDIwMTcsIGF0IDEwOjEwLCBKYWNrIExlZSA8amFja2xlZTExQGZveG1haWwu
+Y29tPiB3cm90ZToKPiAKPiBPbiAxMS8yOC8yMDE3IDA0OjQxIFBNLCBQaGlsaXBwZSBHZXJ1bSB3
+cm90ZToKPj4gT24gMTEvMjgvMjAxNyAwMjowNSBBTSwgSmFjayBMZWUgd3JvdGU6Cj4+PiAKPj4+
+IE9uIDExLzI3LzIwMTcgMDU6MTMgUE0sIFBoaWxpcHBlIEdlcnVtIHdyb3RlOgo+Pj4+IE9uIDEx
+LzI3LzIwMTcgMDU6MDAgQU0sIEphY2sgTGVlIHdyb3RlOgo+Pj4+PiBNeSBib2FyZCBjcHUgaXMg
+aW50ZWwgQXRvbSBOMjgwMCwgT1MgaXMgTHVidW50dSAxNy4xMCwgZ2NjIHZlcnNpb24gaXMKPj4+
+Pj4gNy4yLjAuCj4+Pj4+IFNpbmNlIHRoZSBuZXdlc3QgMy4wLjYgY2Fubm90IHNldHVwIG9uIG15
+IGJvYXJkLCBJIHRyaWVkIHRoZSBvbGRlcgo+Pj4+PiB2ZXJzaW9uLgo+Pj4+PiBJdCB3b3JrcyBu
+b3cuIEJ1dCB3aGVuIEkgYnVpbGQgdGhlIHhlbm9tYWkgbGlicmFyaWVzLCBpdCBlbmNvdW50ZXJz
+IHRoZQo+Pj4+PiBmb2xsb3dpbmcgZXJyb3I6Cj4+Pj4+IAo+Pj4+PiAtciBhbmQgLXBpZSBjYW4g
+bm90IGJlIHVzZWQgdG9nZXRoZXIuCj4+Pj4+IAo+Pj4+PiB0aGVuIEkgY2hhbmdlZCB0aGUgY29u
+ZmlndXJhdGlvbiB0bwo+Pj4+PiAKPj4+Pj4gLi4vY29uZmlndXJlIC0td2l0aC1jb3JlPWNvYmFs
+dCAtLWVuYWJsZS1zbXAgLS1lbmFibGUtcHNoYXJlZAo+Pj4+PiBDRkxBR1M9Ii1uby1waWUiCj4+
+Pj4+IAo+Pj4+PiBJdCBkaWRuJ3Qgd29yayB3aXRoIHRoZSBuZXcgZXJyb3I6Cj4+Pj4+IAo+Pj4+
+PiBJbiBmaWxlIGluY2x1ZGVkIGZyb20gLi4vLi4vLi4vdXRpbHMvYW5hbG9neS9jYWxpYnJhdGlv
+bl9uaV9tLmg6Mjc6MCwKPj4+Pj4gICAgICAgICAgICAgICAgICAgZnJvbSAuLi8uLi8uLi91dGls
+cy9hbmFsb2d5L2NhbGlicmF0aW9uX25pX20uYzoyNjoKPj4+Pj4gLi4vLi4vLi4vdXRpbHMvYW5h
+bG9neS9hbmFsb2d5X2NhbGlicmF0ZS5oOiBJbiBmdW5jdGlvbiDigJhfX2RlYnVn4oCZOgo+Pj4+
+PiAuLi8uLi8uLi91dGlscy9hbmFsb2d5L2FuYWxvZ3lfY2FsaWJyYXRlLmg6OTU6MjogZXJyb3I6
+IGltcGxpY2l0Cj4+Pj4+IGRlY2xhcmF0aW9uIG9mIGZ1bmN0aW9uIOKAmGNsb2NrX2dldHRpbWXi
+gJkKPj4+Pj4gWy1XZXJyb3I9aW1wbGljaXQtZnVuY3Rpb24tZGVjbGFyYXRpb25dCj4+Pj4+ICAg
+IGNsb2NrX2dldHRpbWUoQ0xPQ0tfTU9OT1RPTklDLCAmbm93KTsKPj4+Pj4gICAgXn5+fn5+fn5+
+fn5+fgo+Pj4+PiAuLi8uLi8uLi91dGlscy9hbmFsb2d5L2FuYWxvZ3lfY2FsaWJyYXRlLmg6OTU6
+MTY6IGVycm9yOgo+Pj4+PiDigJhDTE9DS19NT05PVE9OSUPigJkgdW5kZWNsYXJlZCAoZmlyc3Qg
+dXNlIGluIHRoaXMgZnVuY3Rpb24pCj4+Pj4+ICAgIGNsb2NrX2dldHRpbWUoQ0xPQ0tfTU9OT1RP
+TklDLCAmbm93KTsKPj4+Pj4gICAgICAgICAgICAgICAgICBefn5+fn5+fn5+fn5+fn4KPj4+Pj4g
+Li4vLi4vLi4vdXRpbHMvYW5hbG9neS9hbmFsb2d5X2NhbGlicmF0ZS5oOjk1OjE2OiBub3RlOiBl
+YWNoIHVuZGVjbGFyZWQKPj4+Pj4gaWRlbnRpZmllciBpcyByZXBvcnRlZCBvbmx5IG9uY2UgZm9y
+IGVhY2ggZnVuY3Rpb24gaXQgYXBwZWFycyBpbgo+Pj4+PiAKPj4+Pj4gQ2FuIGFueW9uZSBoZWxw
+Pwo+Pj4+IEluc3RlYWQgb2YgZG93bmdyYWRpbmcgdG8gYSByZWxlYXNlIHdpdGgga25vd24gY29y
+ZSBpc3N1ZXMsIHlvdSBoYXZlIHRoZQo+Pj4+IG9wdGlvbiB0byBwdWxsIGZpeGVzIGZvciB2My4w
+LjYgZnJvbSB0aGUgbWFpbnRlbmFuY2UgYnJhbmNoOgo+Pj4+IAo+Pj4+IFVSTDogaHR0cDovL2dp
+dC54ZW5vbWFpLm9yZy94ZW5vbWFpLTMuZ2l0Lwo+Pj4+IGJyYW5jaDogc3RhYmxlLTMuMC54Cj4+
+PiBUaGlzIG9uZSBzZWVtcyB0byBoYXZlIG5vIGNvbmZpZ3VyZSBzY3JpcHQuCj4+PiBXaGVuIEkg
+cnVuIGF1dG9jb25mIGluIHRoZSB0b3AgZGlyZWN0b3J5LCBJIGdldCB0aGUgZm9sbG93aW5nIGVy
+cm9yOgo+Pj4gCj4+PiBjb25maWd1cmUuYWM6NTE6IGVycm9yOiBwb3NzaWJseSB1bmRlZmluZWQg
+bWFjcm86IEFNX0NPTkRJVElPTkFMCj4+PiAgICAgICBJZiB0aGlzIHRva2VuIGFuZCBvdGhlcnMg
+YXJlIGxlZ2l0aW1hdGUsIHBsZWFzZSB1c2UgbTRfcGF0dGVybl9hbGxvdy4KPj4+ICAgICAgIFNl
+ZSB0aGUgQXV0b2NvbmYgZG9jdW1lbnRhdGlvbi4KPj4+IGNvbmZpZ3VyZS5hYzo4ODogZXJyb3I6
+IHBvc3NpYmx5IHVuZGVmaW5lZCBtYWNybzogQUNfUFJPR19DQ19GT1JfQlVJTEQKPj4+IGNvbmZp
+Z3VyZS5hYzoxMDY6IGVycm9yOiBwb3NzaWJseSB1bmRlZmluZWQgbWFjcm86IEFNX0lOSVRfQVVU
+T01BS0UKPj4+IGNvbmZpZ3VyZS5hYzoxMDg6IGVycm9yOiBwb3NzaWJseSB1bmRlZmluZWQgbWFj
+cm86IEFNX01BSU5UQUlORVJfTU9ERQo+Pj4gY29uZmlndXJlLmFjOjEwOTogZXJyb3I6IHBvc3Np
+Ymx5IHVuZGVmaW5lZCBtYWNybzogQU1fUFJPR19BUwo+Pj4gY29uZmlndXJlLmFjOjExMDogZXJy
+b3I6IHBvc3NpYmx5IHVuZGVmaW5lZCBtYWNybzogQU1fUFJPR19MRVgKPj4+IGNvbmZpZ3VyZS5h
+YzoxNjQ6IGVycm9yOiBwb3NzaWJseSB1bmRlZmluZWQgbWFjcm86IEFDX0VOQUJMRV9TSEFSRUQK
+Pj4+IGNvbmZpZ3VyZS5hYzoxNjU6IGVycm9yOiBwb3NzaWJseSB1bmRlZmluZWQgbWFjcm86IEFD
+X1BST0dfTElCVE9PTAo+Pj4gY29uZmlndXJlLmFjOjIzODogZXJyb3I6IHBvc3NpYmx5IHVuZGVm
+aW5lZCBtYWNybzogQU1fQ1BQRkxBR1MKPj4+IAo+Pj4gCj4+PiAKPj4+IAo+PiBZb3UgbmVlZCB0
+byBydW4gdGhlIGJvb3RzdHJhcCBzY3JpcHQgZmlyc3QsIHNlZQo+PiAKPj4gaHR0cHM6Ly94ZW5v
+bWFpLm9yZy9pbnN0YWxsaW5nLXhlbm9tYWktMy14LyNJbnN0YWxsaW5nX3RoZV9YZW5vbWFpX2xp
+YnJhcmllc19hbmRfdG9vbHMKPj4gCj4gVGhhbmtzLCBidXQgdGhlcmUgaXMgc29tZXRoaW5nIHdy
+b25nIHN0aWxsLgo+IAo+IGNvbmZpZ3VyZS5hYzoxNjQ6IGVycm9yOiBwb3NzaWJseSB1bmRlZmlu
+ZWQgbWFjcm86IEFDX0VOQUJMRV9TSEFSRUQKPiAgICAgICBJZiB0aGlzIHRva2VuIGFuZCBvdGhl
+cnMgYXJlIGxlZ2l0aW1hdGUsIHBsZWFzZSB1c2UgbTRfcGF0dGVybl9hbGxvdy4KPiAgICAgICBT
+ZWUgdGhlIEF1dG9jb25mIGRvY3VtZW50YXRpb24uCj4gY29uZmlndXJlLmFjOjE2NTogZXJyb3I6
+IHBvc3NpYmx5IHVuZGVmaW5lZCBtYWNybzogQUNfUFJPR19MSUJUT09MCj4gYXV0b3JlY29uZjog
+L3Vzci9iaW4vYXV0b2NvbmYgZmFpbGVkIHdpdGggZXhpdCBzdGF0dXM6IDEKCllvdSBuZWVkIHRv
+IGluc3RhbGwgbGlidG9vbDoKYXB0IGluc3RhbGwgbGlidG9vbAoKLS0tLS0tLS0tLS0tLS0gbmV4
+dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQu
+Li4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNp
+emU6IDg3NCBieXRlcwpEZXNjOiBNZXNzYWdlIHNpZ25lZCB3aXRoIE9wZW5QR1AKVVJMOiA8aHR0
+cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTcxMTI4LzVm
+ZjExY2ZhL2F0dGFjaG1lbnQuc2lnPgo=
