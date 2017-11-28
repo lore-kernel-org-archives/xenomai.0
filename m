@@ -1,16 +1,13 @@
-References: <954f3936-9906-a33e-4d6a-fa5e640430e4@xenomai.org>
- <bb013c41-9b90-4bc1-a84a-6e5137061ceb@alaxarxa.net>
- <20f31474-8d30-fad7-c79d-bd4cf03295ae@xenomai.org>
- <56e8674c-9744-3bf4-ba7a-b3df1fd113fa@alaxarxa.net>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <da516d20-d6fd-5043-8854-d648df01cf13@xenomai.org>
-Date: Fri, 15 Dec 2017 21:47:07 +0100
+From: Giulio Moro <g.moro@qmul.ac.uk>
+Date: Tue, 28 Nov 2017 23:24:40 +0000
+Message-ID: <DB6PR0701MB24569056BAB353E42210D9CAB53A0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+References: <DB6PR0701MB2456EB08FE752DA5BF73FF6DB53A0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+In-Reply-To: <DB6PR0701MB2456EB08FE752DA5BF73FF6DB53A0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+Content-Language: en-GB
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <56e8674c-9744-3bf4-ba7a-b3df1fd113fa@alaxarxa.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RTnet fixes - testers needed
+Subject: [Xenomai] Library cannot be dlopen()ed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,44 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 12/15/2017 01:25 PM, Leopold Palomo-Avellaneda wrote:
-> Hi,
-> 
-> I forgot something more:
-> 
-> On 15/12/17 12:04, Philippe Gerum wrote:
-> 
-> [...]
->>>
->>> I guess that there's something in the kernel config or somewhere in 3.x that
->>> affects the PCI cards. In 2.6.x worked.
->>
->> On x86, I'd dare to say that it worked mostly by accident, as revealed
->> by SMAP later on. RTnet was out of the Xenomai tree in 2.6.x, some
->> changes introduced during the merge into 3.x might have caused
->> regressions, or maybe some latent issues started to bite when transposed
->> in a different environment, just like the SMAP problem on x86, revealing
->> an ancient Rnet bug. I genuinely don't know when things started to hit
->> the fan.
-> 
-> I don't know if it's relevant or not, or I didn't understand it, but I think
-> that I still have problems with SMAP. If I activate it, I got:
-> 
+Again, armv7 BeagleBone Black, Xenomai 3.0.5
 
-Please confirm that you are running wip/rtnet-fixes, and not
-stable-3.0.x or next which are still plagued with direct usermem access
-bugs. The backtrace shows SMAP biting in rt_packet_ioctl(), which is
-actually the first routine I fixed in the AF_PACKET layer, removing such
-invalid accesses, since I need that one.
+My main executable uses the posix API, hence ldd tells me :
+	libcobalt.so.2 =3D> /usr/xenomai/lib/libcobalt.so.2 (0xb6ed3000)
+	libmodechk.so.0 =3D> /usr/xenomai/lib/libmodechk.so.0 (0xb6f39000)
 
-If you still have this issue over the wip/rtnet-fixes branch, then
-please use addr2line to find out which source line triggers the bug in
-af_packet.c.
+I am trying to dlopen() a library which uses the native API (alchemy+transi=
+tion kit):
+	libtrank.so.0 =3D> /usr/xenomai/lib/libtrank.so.0 (0xb6e71000)
+	libalchemy.so.0 =3D> /usr/xenomai/lib/libalchemy.so.0 (0xb6e58000)
+	libcopperplate.so.0 =3D> /usr/xenomai/lib/libcopperplate.so.0 (0xb6e3d000)
+	libcobalt.so.2 =3D> /usr/xenomai/lib/libcobalt.so.2 (0xb6e18000)
+	libmodechk.so.0 =3D> /usr/xenomai/lib/libmodechk.so.0 (0xb6e07000)
+
+the call to dlopen() fails with the following message:
+libtrank.so.0: shared object cannot be dlopen()ed
+
+grepping the configured Xenomai source for "nodlopen" shows that all (or mo=
+st) of the libraries are compiled with -Wl,nodlopen, which is what is preve=
+nting dlopen() from working.
+
+I have two questions:
+- is it possible to dynamically load a library which uses the alchemy API f=
+rom a program that uses the cobalt API?
+- is it at all possible to dynamically load a library that uses xenomai in =
+a program that was not linked against xenomai?
 
 Thanks,
-
--- 
-Philippe.
+Giulio
 
