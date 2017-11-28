@@ -1,15 +1,17 @@
-References: <99BAB48E90E86D42AD41F0BCE3225AEB018DE4C73A@GRZSMS582.andritz.com>
- <10f50ca3-aade-c465-ce99-8d379984ecf7@numalliance.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <d7f42ee6-a7ed-1f2c-f4ed-252ba7e3e32d@siemens.com>
-Date: Wed, 6 Dec 2017 09:26:44 +0100
+References: <b9dc71b8-119f-71dc-56f8-ae59bfb51a27@foxmail.com>
+ <b338d27d-a4f7-3d8f-4b6e-c5edbaf1f6f3@xenomai.org>
+ <60d13f7c-4bab-382b-3e2c-b391d74d7245@foxmail.com>
+ <79259a0a-53c6-c8fa-3f1a-11b5534dfe7d@xenomai.org>
+From: Jack Lee <jacklee11@foxmail.com>
+Message-ID: <07dce87d-955a-fe9e-1230-1f11d143b90c@foxmail.com>+F5C97B805844DC90
+Date: Tue, 28 Nov 2017 17:10:29 +0800
 MIME-Version: 1.0
-In-Reply-To: <10f50ca3-aade-c465-ce99-8d379984ecf7@numalliance.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+In-Reply-To: <79259a0a-53c6-c8fa-3f1a-11b5534dfe7d@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] RTDM/RTNet - proposal to support sending/receiving
- multiple packets with one systemcall
+Content-Language: en-US
+Subject: Re: [Xenomai] Linux 4.1.18 with xenomai 3.0.3,
+	libraries build failed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,127 +20,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>, Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai <xenomai@xenomai.org>
 
-On 2017-12-06 09:15, Stéphane Ancelot wrote:
-> Hi,
-> 
-> I have done an application that does this thing.
-> 
-> the application manages a stack of frames with priorities. high
-> priorities frame are sent at synchronised time (each ms, synchronised by
-> external clock) and then if there is enough remaining time, low priority
-> frames. (ethercat bus application)
-> 
-> The job is not done in driver, but in realtime application process.
-> 
-> I have  2 stacks => Input / ouput packets
-> 
-> I managed to link this task with an internal software switch that
-> permits to embed ethernet packets in ethercat (EoE)
-> 
-> From my viewpoint, I don't understand the added value doing this on
-> driver side ?
+On 11/28/2017 04:41 PM, Philippe Gerum wrote:
+> On 11/28/2017 02:05 AM, Jack Lee wrote:
+>>
+>> On 11/27/2017 05:13 PM, Philippe Gerum wrote:
+>>> On 11/27/2017 05:00 AM, Jack Lee wrote:
+>>>> My board cpu is intel Atom N2800, OS is Lubuntu 17.10, gcc version is
+>>>> 7.2.0.
+>>>> Since the newest 3.0.6 cannot setup on my board, I tried the older
+>>>> version.
+>>>> It works now. But when I build the xenomai libraries, it encounters the
+>>>> following error:
+>>>>
+>>>> -r and -pie can not be used together.
+>>>>
+>>>> then I changed the configuration to
+>>>>
+>>>> ../configure --with-core=cobalt --enable-smp --enable-pshared
+>>>> CFLAGS="-no-pie"
+>>>>
+>>>> It didn't work with the new error:
+>>>>
+>>>> In file included from ../../../utils/analogy/calibration_ni_m.h:27:0,
+>>>>                    from ../../../utils/analogy/calibration_ni_m.c:26:
+>>>> ../../../utils/analogy/analogy_calibrate.h: In function ‘__debug’:
+>>>> ../../../utils/analogy/analogy_calibrate.h:95:2: error: implicit
+>>>> declaration of function ‘clock_gettime’
+>>>> [-Werror=implicit-function-declaration]
+>>>>     clock_gettime(CLOCK_MONOTONIC, &now);
+>>>>     ^~~~~~~~~~~~~
+>>>> ../../../utils/analogy/analogy_calibrate.h:95:16: error:
+>>>> ‘CLOCK_MONOTONIC’ undeclared (first use in this function)
+>>>>     clock_gettime(CLOCK_MONOTONIC, &now);
+>>>>                   ^~~~~~~~~~~~~~~
+>>>> ../../../utils/analogy/analogy_calibrate.h:95:16: note: each undeclared
+>>>> identifier is reported only once for each function it appears in
+>>>>
+>>>> Can anyone help?
+>>> Instead of downgrading to a release with known core issues, you have the
+>>> option to pull fixes for v3.0.6 from the maintenance branch:
+>>>
+>>> URL: http://git.xenomai.org/xenomai-3.git/
+>>> branch: stable-3.0.x
+>> This one seems to have no configure script.
+>> When I run autoconf in the top directory, I get the following error:
+>>
+>> configure.ac:51: error: possibly undefined macro: AM_CONDITIONAL
+>>        If this token and others are legitimate, please use m4_pattern_allow.
+>>        See the Autoconf documentation.
+>> configure.ac:88: error: possibly undefined macro: AC_PROG_CC_FOR_BUILD
+>> configure.ac:106: error: possibly undefined macro: AM_INIT_AUTOMAKE
+>> configure.ac:108: error: possibly undefined macro: AM_MAINTAINER_MODE
+>> configure.ac:109: error: possibly undefined macro: AM_PROG_AS
+>> configure.ac:110: error: possibly undefined macro: AM_PROG_LEX
+>> configure.ac:164: error: possibly undefined macro: AC_ENABLE_SHARED
+>> configure.ac:165: error: possibly undefined macro: AC_PROG_LIBTOOL
+>> configure.ac:238: error: possibly undefined macro: AM_CPPFLAGS
+>>
+>>
+>>
+>>
+> You need to run the bootstrap script first, see
+>
+> https://xenomai.org/installing-xenomai-3-x/#Installing_the_Xenomai_libraries_and_tools
+>
+Thanks, but there is something wrong still.
 
-In general, it helps a lot in such discussions to have some basic
-benchmark numbers for the existing the new pattern at hand, even if the
-latter is just a proof-of-concept hack.
+configure.ac:164: error: possibly undefined macro: AC_ENABLE_SHARED
+       If this token and others are legitimate, please use m4_pattern_allow.
+       See the Autoconf documentation.
+configure.ac:165: error: possibly undefined macro: AC_PROG_LIBTOOL
+autoreconf: /usr/bin/autoconf failed with exit status: 1
 
-Jan
 
-> 
-> Regards,
-> 
-> S.Ancelot
-> 
-> 
-> Le 05/12/2017 à 15:38, Lange Norbert a écrit :
->> Hello,
->>
->> I would like to involve the RTDM Maintainers for discussing an
->> addition to the RTDM drivermodel.
->> This work would be done by Phillipe Gerum as part of a contract, he is
->> also better suited to outline the necessary changes,
->> should nothing stand against the proposal itself.
->>
->> - Problem description
->>
->> To be compatible with existing software, Ethernet packets will be
->> polled at synchronized events.
->> The application ideally would give the kernel/rtnet stack the
->> responsibility and freedom to do this in an efficient manner,
->> and be able to directly express the intend to poll all currently
->> available packets.
->>
->> Similarly, but less time-critical thus important, sending multiple
->> packets in a burst would be a requirement.
->>
->> Lastly Linux has this functionality in form of recvmmsg and sendmmsg,
->> which would be a good fit in terms of existing interface, atleast if
->> used in non-blocking mode.
->>
->> - Hypothetical Proposal
->>
->> Adding the necessary interfaces to RTDM and RTNet
->> to allow non-blocking bulk receive/send, and offering functions not
->> unlike the mentioned recvmmsg and sendmmsg.
->>
->> - Potential issues
->>
->> Copying of multiple packets would be done in RTDM context, potentially
->> blocking resources for each packet or the whole duration.
->> For our usecase it would for example not matter if the involved
->> ethernet driver instance is not able to handle IRQs during this time,
->> but it should not significantly affect worst-case task switch times in
->> general, or block reception on other physical interfaces (Ethernet or
->> otherwise).
->>
->> recvmmsg and timeouts (blocking) are likely to be problematic, but
->> blocking mode is not required or wanted.
->>
->> - Open questions to the RTDM maintainers
->>
->> What would be the requirements of adding similar functionality to
->> recvmmsg to RTNet / RTDM,
->> and would there be any caveats that would prohibit addition from side
->> of the RTDM maintainers?
->>
->> Other than that, a mmap based approach is also an option, but that's a
->> somewhat more involved solution for both kernel and userspace as far
->> as I understood.
->>
->> Kind regards
->>
->> Norbert Lange
->>
->>
->> #####################################################################################
->>
->> This message and any attachments are solely for the use of the
->> intended recipients. They may contain privileged and/or confidential
->> information or other information protected from disclosure. If you are
->> not an intended recipient, you are hereby notified that you received
->> this email in error and that any review, dissemination, distribution
->> or copying of this email and any attachment is strictly prohibited. If
->> you have received this email in error, please contact the sender and
->> delete the message and any attachment from your system.
->> Thank You.
->>    ANDRITZ HYDRO GmbH
->>    Rechtsform/ Legal form: Gesellschaft mit beschr?nkter Haftung /
->> Corporation
->>    Firmensitz/ Registered seat: Wien
->>    Firmenbuchgericht/ Court of registry: Handelsgericht Wien
->>    Firmenbuchnummer/ Company registration: FN 61833 g
->>    DVR: 0605077
->>    UID-Nr.: ATU14756806
->> #####################################################################################
->>
->>
->>
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> https://xenomai.org/mailman/listinfo/xenomai
-> 
 
 
