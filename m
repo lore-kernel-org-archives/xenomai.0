@@ -1,18 +1,13 @@
-From: Wolfgang Denk <wd@denx.de>
-MIME-Version: 1.0
-Content-type: text/plain; charset=UTF-8
-Content-transfer-encoding: 8bit
-In-reply-to: <20171123203533.h2qfccbyxdavhpej@csclub.uwaterloo.ca>
-References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
- <f7ad8163bda5484292ccdf6e8cf1a484@P10-EX02.3DSystems.Internal>
- <02f0df6b-0854-eeaa-a168-ae2c10e1d8ab@xenomai.org>
- <845269a3-e580-c8ff-e25d-a56d00c787fe@siemens.com>
- <2f850a60-3756-f06d-82c6-ccf6eeb58aa3@xenomai.org>
- <d4835d99-ffc5-6d1d-5ab3-8236d6d23fab@xenomai.org>
- <20171123203533.h2qfccbyxdavhpej@csclub.uwaterloo.ca>
-Date: Mon, 27 Nov 2017 21:47:08 +0100
-Message-Id: <20171127204708.1782712023A@gemini.denx.de>
-Subject: Re: [Xenomai] [RFC] Service hosting for Xenomai
+Content-Type: text/plain; charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
+From: Steve Pavao <stevep@korgrd.com>
+In-Reply-To: <44r2sfzw87.fsf@lowell-desk.lan>
+Date: Thu, 30 Nov 2017 16:02:30 -0500
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <B3C2A01B-0349-4D10-A5A8-EE69B25F37B2@korgrd.com>
+References: <E6D54D1B-1536-4F5F-9E7B-C8F856F5E3EC@korgrd.com>
+ <44r2sfzw87.fsf@lowell-desk.lan>
+Subject: Re: [Xenomai] matching patch version to kernel version
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,40 +16,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Lowell Gilbert <kludge@be-well.ilk.org>
+Cc: xenomai@xenomai.org
 
-Dear Lennart,
+Hi, Lowell !
 
-In message <20171123203533.h2qfccbyxdavhpej@csclub.uwaterloo.ca> you wrote:
->
-> I personally like the linux kernel workflow where everything is through
-> a mailing list and patches are reviewed before they go in.  I am not
-> sure that workflow would work for xenomai, but I do like it.
+> On Nov 30, 2017, at 9:18 AM, Lowell Gilbert <kludge@be-well.ilk.org> =
+wrote:
+>=20
+> Hi, Steve.
+>=20
+> Steve Pavao <stevep@korgrd.com> writes:
+>=20
+>> I am building Yocto poky linux for an Intel board at head in Master
+>> branch in Yocto poky, which currently results in a kernel version
+>> 4.9.61.
+>=20
+> I stick to release branches for Poky for my own releases.
+> Probably not a big deal, as my experience using HEAD on research
+> projects hasn't been notably painful.
 
-I share the same experience and feelings from working with U-Boot
-for 18 years.
+I have been using poky pyro branch for all my previous releases, but the =
+BSP layer for this particular board caused some unusual output warnings =
+in an all-pyro build, so I opted for Poky Master branch at HEAD for this =
+build, and did not experience the warnings.  (I=E2=80=99m still trying =
+trying to understand those warnings, so I can go back to using pyro =
+branch.)
 
-But then, it all depends on a) people who submit patches and b)
-people who review these and c) maintainers who pull this stuff in.
+I just noticed that a build done in pyro today resulted in a kernel =
+version of 4.9.50.  This is much closer to 4.9.51, so maybe applying =
+that patch to the pyro branch would be less problematic.
 
-It would be trivial to set up the neede dinfrastructure to process
-such patches at patchowrk, for example.  All these technical issues
-can be solved easily.
+>> I see that the latest patch file in the xenomai download area is =
+ipipe-core-4.9.51-x86-4.patch.
+>>=20
+>> Will this patch work OK with the 4.9.61 kernel version, or should I =
+use a different approach to ensure a better match?
+>=20
+> You will need to edit the patch (I know from experience that
+> there are definitely conflicting changes in between those
+> points), but that's still -- probably -- your best bet. Since
+> you don't care about ARM-specific files, I don't think you'll
+> have too hard a time.
 
-It does not solve the consumer-only mindset that dominates the list
-of subscribers of the Xenomai list.
+I may need to do the patch for ARM-based targets as well, at some point.
 
+- Steve
 
-Best regards,
-
-Wolfgang Denk
-
--- 
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
-On our campus the UNIX system has proved to be not only an  effective
-software tool, but an agent of technical and social change within the
-University.                          - John Lions (U. of Toronto (?))
 
