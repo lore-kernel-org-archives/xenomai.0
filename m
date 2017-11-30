@@ -1,16 +1,11 @@
-From: Wolfgang Denk <wd@denx.de>
+Message-ID: <5a200d06.92b76b0a.3e1e7.c5cb@mx.google.com>
+Date: Thu, 30 Nov 2017 08:52:03 -0500
+From: Greg Gallagher <greg@embeddedgreg.com>
+In-Reply-To: <6f681e15-3c6e-6b08-975a-f04cdc8c33ad@xenomai.org>
 MIME-Version: 1.0
-Content-type: text/plain; charset=UTF-8
-Content-transfer-encoding: 8bit
-In-reply-to: <2f850a60-3756-f06d-82c6-ccf6eeb58aa3@xenomai.org>
-References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
- <f7ad8163bda5484292ccdf6e8cf1a484@P10-EX02.3DSystems.Internal>
- <02f0df6b-0854-eeaa-a168-ae2c10e1d8ab@xenomai.org>
- <845269a3-e580-c8ff-e25d-a56d00c787fe@siemens.com>
- <2f850a60-3756-f06d-82c6-ccf6eeb58aa3@xenomai.org>
-Date: Mon, 27 Nov 2017 21:41:04 +0100
-Message-Id: <20171127204105.07C3512023A@gemini.denx.de>
-Subject: Re: [Xenomai] [RFC] Service hosting for Xenomai
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Gpio-core question
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,49 +14,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Xenomai List <xenomai@xenomai.org>
 
-Dear Philippe,
+ClN1cmUgc291bmRzIGdvb2QsIEknbGwgc3RhcnQgdG9uaWdodC4KCsKgIE9yaWdpbmFsIE1lc3Nh
+Z2UgwqAKRnJvbTogcnBtQHhlbm9tYWkub3JnClNlbnQ6IE5vdmVtYmVyIDMwLCAyMDE3IDM6NTAg
+QU0KVG86IGdyZWdAZW1iZWRkZWRncmVnLmNvbTsgeGVub21haUB4ZW5vbWFpLm9yZwpTdWJqZWN0
+OiBSZTogW1hlbm9tYWldIEdwaW8tY29yZSBxdWVzdGlvbgoKT24gMTEvMjkvMjAxNyAwOTo0MCBQ
+TSwgR3JlZyBHYWxsYWdoZXIgd3JvdGU6Cj4gSGksCj7CoMKgIFNvcnJ5IGZvciB0aGUgZm9ybWF0
+dGluZyBpbiB0aGUgbGFzdCBlbWFpbCBJJ20gbm90IHN1cmUgd2hhdAo+IGhhcHBlbmVkIGluIG15
+IGVkaXRvci7CoCBJJ3ZlIGhhZCBzb21lIHRpbWUgdG8gbG9vayBpbnRvIHRoaXMgaXNzdWUuCj4g
+Rm9yIG15IGNhc2UgdGhhdCBpcyBvdXRsaW5lZCBhYm92ZSBpdCBsb29rcyBsaWtlIHdlIGluc2Vy
+dCB0aGUgZmQgaW50bwo+IHRoZSB0cmVlIGluIGNyZWF0ZSBpbnN0YW5jZSwgdGhlbiB3aGVuIHdl
+IGZhaWwgdGhlIGNhbGwgdG8KPiBkZXYtPm9wcy5vcGVuLCB0aGUgZmQgaXMgY2xlYW5lZCB1cCB3
+aXRoIGxpbnV4IGJ5IHVzaW5nIHB1dF91bnVzZWRfZmQKPiBidXQgd2UgbmV2ZXIgcmVtb3ZlIGl0
+IGZyb20gdGhlIHRyZWUuwqAgT24gdGhlIG5leHQgY2FsbCB0byBvcGVuIHdlIGdldAo+IHRoZSBz
+YW1lIGZkIGJhY2sgZnJvbSBnZXRfdW51c2VkX2ZkX2ZsYWdzIHdlIHRoZW4gY2FsbCBjcmVhdGVf
+aW5zdGFuY2UKPiBhbmQgZmFpbCBiZWNhdXNlIHRoYXQgZmQgaXMgYWxyZWFkeSBpbiB0aGUgdHJl
+ZSBmcm9tIHRoZSBwcmV2aW91cwo+IGF0dGVtcHQuwqAgSSdsbCB0ZXN0IG91dCBteSB0aGVvcnkg
+dG9uaWdodC7CoCBJZiB0aGlzIGlzIHdoYXQgaXMKPiBoYXBwZW5pbmcgc2hvdWxkIHRoZSBmZCBi
+ZSByZW1vdmVkIGZyb20gdGhlIHRyZWUgaW4gY2xlYW51cF9pbnN0YW5jZT8KPiBJIGNhbiBwbGF5
+IGFyb3VuZCB3aXRoIHhuaWRfcmVtb3ZlIGFuZCBzZWUgaWYgd29ya2luZyBpdCBpbnRvCj4gY2xl
+YW51cF9pbnN0YW5jZSB3aWxsIHNvbHZlIHRoZSBpc3N1ZS4KCllvdSBhcmUgZGVmaW5pdGVseSBy
+aWdodC4gVGhlcmUgc2hvdWxkIGJlIGFuIHVuZG8gb3BlcmF0aW9uIG9mCnJ0ZG1fZmRfZW50ZXIo
+KSBpbiBfX3J0ZG1fZGV2X29wZW4oKSBvciBfX3J0ZG1fZGV2X3NvY2tldCgpLCBpbiB0aGUKZmFp
+bF9vcGVuIGFuZCBmYWlsX3NvY2tldCBjYXNlcyByZXNwLiwgYWxvbmcgd2l0aCBkcm9wcGluZyB0
+aGUgZmlsZQpjb250ZXh0IHZpYSBjbGVhbnVwX2luc3RhbmNlKCkuCgpBbm90aGVyIG9wdGlvbiBt
+aWdodCBiZSB0byBtYWtlIHRoZSB1bmRvaW5nIHVzZWxlc3MsIGJ5IHBvc3Rwb25pbmcgdGhlCmlu
+ZGV4aW5nIHVudGlsIC0+b3BlbigpIC8gLT5zb2NrZXQoKSBoYXMgcmV0dXJuZWQgc3VjY2Vzc2Z1
+bGx5LiBUbyBkbwp0aGF0LCB3ZSB3b3VsZCBoYXZlIHRvIHNwbGl0IHJ0ZG1fZmRfZW50ZXIoKSBp
+biB0d28gZnVuY3Rpb25hbCBzdGVwcwppbnN0ZWFkIG9mIGEgc2luZ2xlIHJvdXRpbmU6CgoxLSBh
+c3NpZ24gdGhlIGRlZmF1bHQgaGFuZGxlcnMsIGluaXRpYWxpemluZyB0aGUgZmQtPiBmaWVsZHMK
+Mi0gaW5kZXggdGhlIHJ0ZG1fZmQgc3RydWN0IGluIHRoZSB4bnRyZWUuCgpUaGVuLCB3ZSB3b3Vs
+ZCBrZWVwIG9uIGRvaW5nICgxKSBhdCB0aGUgZW5kIG9mIGNyZWF0ZV9pbnN0YW5jZSgpLAp3YWl0
+aW5nIGZvciB0aGUgLT5vcGVuKCkgLyAtPnNvY2tldCgpIGhhbmRsZXIgdG8gcmV0dXJuIHN1Y2Nl
+c3NmdWxseQpiZWZvcmUgZG9pbmcgKDIpLgoKSSBkb24ndCBzZWUgYW55IHJlYXNvbiBmb3IgLT5v
+cGVuKCkgb3IgLT5zb2NrZXQoKSB0byBkZXBlbmQgb24gdGhlIGZhY3QKdGhhdCBydGRtX2ZkIGlz
+IGFscmVhZHkgaW5kZXhlZCBvbiB0aGUgdWZkLCB3aGljaCBpcyBhIHVzZXItc3BhY2UgaGFuZGxl
+CmFueXdheS4KCkRvIHlvdSB3YW50IHRvIHRha2UgYSBzdGFiIGF0IGltcGxlbWVudGluZyB0aGF0
+IHN0dWZmPwoKLS0gClBoaWxpcHBlLgo=
 
-In message <2f850a60-3756-f06d-82c6-ccf6eeb58aa3@xenomai.org> you wrote:
->
-> As Jan mentioned, there is more than having GIT underneath, there are
-> deep implications on the workflow, and it really depends on what we'd
-> want from such platform. If you have any thought, recommendation,
-> experience with those platforms in your daily work, it would be great to
-> know your views.
-
-Full agreement.
-
-What I can offer here an now is this:
-
-1) DENX can run the Xenomai mailing list.
-
-   We already run some other lists, the U-Boot mailing list with
-   currently 2877 members being the most important. Adding another
-   list is just a few clicks aways.
-
-   [OK, it takes abit more work to transfer the old mail archives,
-   but all this is pretty much straightforward.]
-
-2) DENX can host one ore more repositories for Xenomai on our gitlab
-   server (gitlab.denx.de).  We're planning for an upgrade anyway,
-   and compared to other stuff we have there Xenomay is just a tiny
-   addition.
-
-Both services can be provided immediately.
-
-
-Best regards,
-
-Wolfgang Denk
-
--- 
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
-"The bad reputation UNIX has gotten is totally undeserved, laid on by
-people who don't understand, who have not gotten in there  and  tried
-anything."          -- Jim Joyce, owner of Jim Joyce's UNIX Bookstore
 
