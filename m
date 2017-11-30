@@ -1,11 +1,12 @@
-Message-ID: <5a200d06.92b76b0a.3e1e7.c5cb@mx.google.com>
-Date: Thu, 30 Nov 2017 08:52:03 -0500
-From: Greg Gallagher <greg@embeddedgreg.com>
-In-Reply-To: <6f681e15-3c6e-6b08-975a-f04cdc8c33ad@xenomai.org>
+From: Lowell Gilbert <kludge@be-well.ilk.org>
+References: <E6D54D1B-1536-4F5F-9E7B-C8F856F5E3EC@korgrd.com>
+Date: Thu, 30 Nov 2017 09:18:00 -0500
+In-Reply-To: <E6D54D1B-1536-4F5F-9E7B-C8F856F5E3EC@korgrd.com> (Steve Pavao's
+ message of "Wed, 29 Nov 2017 16:53:49 -0500")
+Message-ID: <44r2sfzw87.fsf@lowell-desk.lan>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Gpio-core question
+Content-Type: text/plain
+Subject: Re: [Xenomai] matching patch version to kernel version
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,43 +15,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai List <xenomai@xenomai.org>
+To: Steve Pavao <stevep@korgrd.com>
+Cc: xenomai@xenomai.org
 
-ClN1cmUgc291bmRzIGdvb2QsIEknbGwgc3RhcnQgdG9uaWdodC4KCsKgIE9yaWdpbmFsIE1lc3Nh
-Z2UgwqAKRnJvbTogcnBtQHhlbm9tYWkub3JnClNlbnQ6IE5vdmVtYmVyIDMwLCAyMDE3IDM6NTAg
-QU0KVG86IGdyZWdAZW1iZWRkZWRncmVnLmNvbTsgeGVub21haUB4ZW5vbWFpLm9yZwpTdWJqZWN0
-OiBSZTogW1hlbm9tYWldIEdwaW8tY29yZSBxdWVzdGlvbgoKT24gMTEvMjkvMjAxNyAwOTo0MCBQ
-TSwgR3JlZyBHYWxsYWdoZXIgd3JvdGU6Cj4gSGksCj7CoMKgIFNvcnJ5IGZvciB0aGUgZm9ybWF0
-dGluZyBpbiB0aGUgbGFzdCBlbWFpbCBJJ20gbm90IHN1cmUgd2hhdAo+IGhhcHBlbmVkIGluIG15
-IGVkaXRvci7CoCBJJ3ZlIGhhZCBzb21lIHRpbWUgdG8gbG9vayBpbnRvIHRoaXMgaXNzdWUuCj4g
-Rm9yIG15IGNhc2UgdGhhdCBpcyBvdXRsaW5lZCBhYm92ZSBpdCBsb29rcyBsaWtlIHdlIGluc2Vy
-dCB0aGUgZmQgaW50bwo+IHRoZSB0cmVlIGluIGNyZWF0ZSBpbnN0YW5jZSwgdGhlbiB3aGVuIHdl
-IGZhaWwgdGhlIGNhbGwgdG8KPiBkZXYtPm9wcy5vcGVuLCB0aGUgZmQgaXMgY2xlYW5lZCB1cCB3
-aXRoIGxpbnV4IGJ5IHVzaW5nIHB1dF91bnVzZWRfZmQKPiBidXQgd2UgbmV2ZXIgcmVtb3ZlIGl0
-IGZyb20gdGhlIHRyZWUuwqAgT24gdGhlIG5leHQgY2FsbCB0byBvcGVuIHdlIGdldAo+IHRoZSBz
-YW1lIGZkIGJhY2sgZnJvbSBnZXRfdW51c2VkX2ZkX2ZsYWdzIHdlIHRoZW4gY2FsbCBjcmVhdGVf
-aW5zdGFuY2UKPiBhbmQgZmFpbCBiZWNhdXNlIHRoYXQgZmQgaXMgYWxyZWFkeSBpbiB0aGUgdHJl
-ZSBmcm9tIHRoZSBwcmV2aW91cwo+IGF0dGVtcHQuwqAgSSdsbCB0ZXN0IG91dCBteSB0aGVvcnkg
-dG9uaWdodC7CoCBJZiB0aGlzIGlzIHdoYXQgaXMKPiBoYXBwZW5pbmcgc2hvdWxkIHRoZSBmZCBi
-ZSByZW1vdmVkIGZyb20gdGhlIHRyZWUgaW4gY2xlYW51cF9pbnN0YW5jZT8KPiBJIGNhbiBwbGF5
-IGFyb3VuZCB3aXRoIHhuaWRfcmVtb3ZlIGFuZCBzZWUgaWYgd29ya2luZyBpdCBpbnRvCj4gY2xl
-YW51cF9pbnN0YW5jZSB3aWxsIHNvbHZlIHRoZSBpc3N1ZS4KCllvdSBhcmUgZGVmaW5pdGVseSBy
-aWdodC4gVGhlcmUgc2hvdWxkIGJlIGFuIHVuZG8gb3BlcmF0aW9uIG9mCnJ0ZG1fZmRfZW50ZXIo
-KSBpbiBfX3J0ZG1fZGV2X29wZW4oKSBvciBfX3J0ZG1fZGV2X3NvY2tldCgpLCBpbiB0aGUKZmFp
-bF9vcGVuIGFuZCBmYWlsX3NvY2tldCBjYXNlcyByZXNwLiwgYWxvbmcgd2l0aCBkcm9wcGluZyB0
-aGUgZmlsZQpjb250ZXh0IHZpYSBjbGVhbnVwX2luc3RhbmNlKCkuCgpBbm90aGVyIG9wdGlvbiBt
-aWdodCBiZSB0byBtYWtlIHRoZSB1bmRvaW5nIHVzZWxlc3MsIGJ5IHBvc3Rwb25pbmcgdGhlCmlu
-ZGV4aW5nIHVudGlsIC0+b3BlbigpIC8gLT5zb2NrZXQoKSBoYXMgcmV0dXJuZWQgc3VjY2Vzc2Z1
-bGx5LiBUbyBkbwp0aGF0LCB3ZSB3b3VsZCBoYXZlIHRvIHNwbGl0IHJ0ZG1fZmRfZW50ZXIoKSBp
-biB0d28gZnVuY3Rpb25hbCBzdGVwcwppbnN0ZWFkIG9mIGEgc2luZ2xlIHJvdXRpbmU6CgoxLSBh
-c3NpZ24gdGhlIGRlZmF1bHQgaGFuZGxlcnMsIGluaXRpYWxpemluZyB0aGUgZmQtPiBmaWVsZHMK
-Mi0gaW5kZXggdGhlIHJ0ZG1fZmQgc3RydWN0IGluIHRoZSB4bnRyZWUuCgpUaGVuLCB3ZSB3b3Vs
-ZCBrZWVwIG9uIGRvaW5nICgxKSBhdCB0aGUgZW5kIG9mIGNyZWF0ZV9pbnN0YW5jZSgpLAp3YWl0
-aW5nIGZvciB0aGUgLT5vcGVuKCkgLyAtPnNvY2tldCgpIGhhbmRsZXIgdG8gcmV0dXJuIHN1Y2Nl
-c3NmdWxseQpiZWZvcmUgZG9pbmcgKDIpLgoKSSBkb24ndCBzZWUgYW55IHJlYXNvbiBmb3IgLT5v
-cGVuKCkgb3IgLT5zb2NrZXQoKSB0byBkZXBlbmQgb24gdGhlIGZhY3QKdGhhdCBydGRtX2ZkIGlz
-IGFscmVhZHkgaW5kZXhlZCBvbiB0aGUgdWZkLCB3aGljaCBpcyBhIHVzZXItc3BhY2UgaGFuZGxl
-CmFueXdheS4KCkRvIHlvdSB3YW50IHRvIHRha2UgYSBzdGFiIGF0IGltcGxlbWVudGluZyB0aGF0
-IHN0dWZmPwoKLS0gClBoaWxpcHBlLgo=
+Hi, Steve.
 
+Steve Pavao <stevep@korgrd.com> writes:
+
+> I am building Yocto poky linux for an Intel board at head in Master
+> branch in Yocto poky, which currently results in a kernel version
+> 4.9.61.
+
+I stick to release branches for Poky for my own releases.
+Probably not a big deal, as my experience using HEAD on research
+projects hasn't been notably painful.
+
+> I see that the latest patch file in the xenomai download area is ipipe-core-4.9.51-x86-4.patch.
+>
+> Will this patch work OK with the 4.9.61 kernel version, or should I use a different approach to ensure a better match?
+
+You will need to edit the patch (I know from experience that
+there are definitely conflicting changes in between those
+points), but that's still -- probably -- your best bet. Since
+you don't care about ARM-specific files, I don't think you'll
+have too hard a time.
+
+Be well. 
 
