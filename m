@@ -1,17 +1,11 @@
-Date: Tue, 19 Dec 2017 16:46:38 -0500 (EST)
-From: Jeff Melvile <jmelville@mitre.org>
-In-Reply-To: <A396DD4B-B1F2-404E-917E-F86FBA90918E@korgrd.com>
-Message-ID: <alpine.DEB.2.20.1712191642270.9944@af78237-pc.mitre.org>
-References: <0CF46CB0-D92C-4DCE-B93F-4291374D8328@korgrd.com>
- <44y3lywp2s.fsf@lowell-desk.lan>
- <0DC99152-08CA-4152-BE75-CA0CE39D654F@korgrd.com>
- <d56f3f8e-44e0-be07-b832-bb84d93d4df7@siemens.com>
- <A396DD4B-B1F2-404E-917E-F86FBA90918E@korgrd.com>
+From: Jack Lee <jacklee11@foxmail.com>
+Message-ID: <1120067a-828f-6a38-399f-aec04c566c99@foxmail.com>+0518319AAC4E5101
+Date: Thu, 30 Nov 2017 09:13:46 +0800
 MIME-Version: 1.0
-Content-ID: <alpine.DEB.2.20.1712191646340.9944@af78237-pc.mitre.org>
-Content-Type: text/plain; charset="iso-8859-7"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Cobalt core and Yocto
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai] something wrong with drivers/xenomai/net/driver/r8169.c
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,72 +14,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Steve Pavao <stevep@korgrd.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
-SGkgU3RldmUsCgpPbiBUdWUsIDE5IERlYyAyMDE3LCBTdGV2ZSBQYXZhbyB3cm90ZToKCj4gSGkg
-SmFuLAo+IAo+ID4gT24gRGVjIDE5LCAyMDE3LCBhdCAyOjI0IFBNLCBKYW4gS2lzemthIDxqYW4u
-a2lzemthQHNpZW1lbnMuY29tPiB3cm90ZToKPiA+IAo+ID4gT24gMjAxNy0xMi0xOSAxOTo0OSwg
-U3RldmUgUGF2YW8gd3JvdGU6Cj4gPj4gSGkgTG93ZWxsLAo+ID4+IAo+ID4+IFRoYW5rcyBmb3Ig
-dGhhdCB0aXAuICBUaGF0onMgd2hhdCBJIHdhcyB0aGlua2luZyBJIG1pZ2h0IG5lZWQgdG8gZG8u
-Cj4gPj4gCj4gPj4gSSBndWVzcyB0aGUgc29sdXRpb24gaW4gWW9jdG8gdGVybXMgaXMgdG8gcmV3
-b3JrIG15IEktUElQRSBwYXRjaCByZWNpcGUgdG8gbm90IGRpcmVjdGx5IGFwcGx5IHRoZSBJLVBJ
-UEUgcGF0Y2gsIGJ1dCByYXRoZXIgdG8gY2FsbCBwcmVwYXJlLWtlcm5lbC5zaCBhbmQgYWxsb3cg
-aXQgdG8gYXBwbHkgdGhlIHBhdGNoLCBwbHVzIGRvIHRoZSBvdGhlciB0aGluZ3MgaXQgbmVlZHMg
-dG8gZG8uICBJIGd1ZXNzIHRoYXQgc2hvdWxkIGhhcHBlbiBpbiBhIGRvX2NvbmZpZ3VyZSgpIHt9
-IGJsb2NrLgo+ID4gCj4gPiBBY3R1YWxseSwgSSB3b3VsZCBtb3ZlIHRoZSBrZXJuZWwgcGF0Y2hp
-bmcgb3V0IG9mIHRoZSB4ZW5vbWFpIHJlY2lwZSBhbmQKPiA+IHJhdGhlciBoYXZlIG9uZSByZWNp
-cGUgZm9yIHRoZSB1c2Vyc3BhY2UgcGFja2FnZXMgYW5kIGEKPiA+IHhlbm9tYWkta2VybmVsLmlu
-YyB3aGljaCBhcHBlbmRzIHRoZSBrZXJuZWwgcHJlcGFyYXRpb24gdGFzayB3aXRoIHRoZQo+ID4g
-cHJlcGFyZS1rZXJuZWwuc2ggaW52b2NhdGlvbi4gSXQgd291bGQgYWxzbyBicmluZyBpbiAob25j
-ZSBhZ2FpbikgdGhlCj4gPiB4ZW5vbWFpIHNvdXJjZXMgc28gdGhhdCBpdHMga2VybmVsIGVsZW1l
-bnRzIGdldCBwdWxsZWQgaW50byB0aGUga2VybmVsCj4gPiBidWlsZC4gSW4geW91ciBrZXJuZWwg
-cmVjaXBlLCB5b3Ugd291bGQgc2ltcGx5IGluY2x1ZGUgdGhhdCBmaWxlLgo+ID4gCj4gPiBUaGlz
-IHdheSwgdGhlIGtlcm5lbCBjb3VsZCBjb21lIGZyb20gdmFyaW91cyBzb3VyY2VzLCBpbmNsdWRp
-bmcKPiA+IGdpdC54ZW5vbWFpLm9yZy9pcGlwZS5naXQsIGFuZCBqdXN0IG5lZWRzIHRvIGhhdmUg
-dGhlIEktcGlwZSBwYXRjaAo+ID4gYWxyZWFkeSBhcHBsaWVkLCBlaXRoZXIgaW4gaXQgZ2l0IHNv
-dXJjZSBvciBieSBhZGRpbmcgYSBjb3JyZXNwb25kaW5nCj4gPiBwYXRjaCB0byB0aGUgY3VzdG9t
-IGtlcm5lbCByZWNpcGUuCj4gPiAKPiA+IFRoaXMgc2VlbXMgc2ltaWxhciB0byBob3cgRUxESyBt
-b2RlbGVkIHRoaXM6Cj4gPiBodHRwOi8vZ2l0LmRlbnguZGUvP3A9ZWxkay5naXQ7YT10cmVlO2Y9
-bWV0YS1lbGRrL3JlY2lwZXMta2VybmVsL3hlbm9tYWk7aD1iZjk2NWM2ZDJmYTUxMzI0MTNiNDk4
-MTYxYzkwZjMzN2JlOGZiMTc0O2hiPXJlZnMvaGVhZHMvNS44LWVsZGsgPGh0dHA6Ly9naXQuZGVu
-eC5kZS8/cD1lbGRrLmdpdDthPXRyZWU7Zj1tZXRhLWVsZGsvcmVjaXBlcy1rZXJuZWwveGVub21h
-aTtoPWJmOTY1YzZkMmZhNTEzMjQxM2I0OTgxNjFjOTBmMzM3YmU4ZmIxNzQ7aGI9cmVmcy9oZWFk
-cy81LjgtZWxkaz4KPiAKPiBUaGFua3MgZm9yIHlvdXIgYWR2aWNlLCBKYW4uICBJIHdhcyBob3Bp
-bmcgdG8ga2VlcCB0aGluZ3MgYXMgc2ltcGxlIGFzIHBvc3NpYmxlLCB0aG91Z2guICBUaGUgRUxE
-SyBleGFtcGxlIGhhcyBhIGhpZ2hseS1jdXN0b21pemVkIGJiIHJlY2lwZS4KPiAKPiBDb3VsZCBJ
-IGFjaGlldmUgbXkgZW5kcyBJZiBJIHVzZSBteSBpbml0aWFsIGlkZWEsIHdoaWNoIGlzIHRvIGNh
-bGwgdGhlIHByZXBhcmUta2VybmVsLnNoIGZyb20gYSBkb19jb25maWd1cmUgYmxvY2ssIHJhdGhl
-ciB0aGFuIGRpcmVjdGx5IGFwcGx5aW5nIHRoZSBJLVBJUEUgcGF0Y2g/ICBJdCBzZWVtcyBsaWtl
-IGl0IHdvbqJ0IHN1Y2NlZWQsIGJhc2VkIG9uIHdoYXQgeW91IGhhdmUgc2FpZCwgcGVyaGFwcyBi
-ZWNhdXNlIHRoZSByZWNpcGUgdGhhdCBjYWxscyBwcmVwYXJlLWtlcm5lbC5zaCBpcyBnb2luZyB0
-byBuZWVkIHRvIGJlIG1vcmUgY29tcGxleCB0aGFuIHNpbXBseSBjYWxsaW5nIHRoYXQgc2NyaXB0
-LiAgKFlvdSBtZW50aW9uZWQgYWJvdXQgbmVlZGluZyB0byBwdWxsIGluIHRoZSB4ZW5vbWFpIHNv
-dXJjZXMgb25jZSBhZ2FpbikuCgpCYWNrIG9uIFhlbm9tYWkgMi42LCBJIGNyZWF0ZWQgYSBiYmFw
-cGVuZCBmb3IgdGhlIGtlcm5lbCByZWNpcGVzIHRoYXQgCnB1bGxzIGluIHRoZSBYZW5vbWFpIHNv
-dXJjZSBpbiBhZGRpdGlvbiB0byB0aGUga2VybmVsIHNvdXJjZS4gSXQgYWRkZWQgYSAKJ3ByZXBh
-cmVfeGVub21haV9rZXJuZWxfIHRhc2sgaW4gYmV0d2VlbiBkb19wYXRjaCBhbmQgZG9fa2VybmVs
-X2NvbmZpZ21lLiAKVGhlIGV4dHJhIHRhc2sgcmFuIHRoZSBwcmVwYXJlLWtlcm5lbC5zaCBzY3Jp
-cHQgYW5kIHNvbWUgb3RoZXIgY2xlYW51cC4gSW4gCm91ciBjYXNlIHdlIHdlcmUgYWN0dWFsbHkg
-YXBwZW5kaW5nIHRoZSBsaW51eC14bG54IHJlY2lwZXMgZnJvbSAKbWV0YS14aWxpbnggZm9yIHRo
-ZWlyIFp5bnEga2VybmVsIGZvcmsuIFRoZSB0YXNrIGhhZCB0byBzdXBwb3J0IHByZS9wb3N0IAp2
-ZXJzaW9ucyBvZiB0aGUgSS1waXBlIHBhdGNoIGFzIHdlbGwuIFRoZSB1c2Vyc3BhY2UgbGlicmFy
-aWVzIHdlcmUgYSAKc2VwYXJhdGUgcmVjaXBlLiBPbmUgb2YgbXkgY29sbGVhZ3VlcyBoYXMgYmVl
-biB3b3JraW5nIG9uIHRyYW5zaXRpb25pbmcgCm91ciBmbG93IHRvIFhlbm9tYWkgMyBmb3IgdGhl
-IFp5bnEgVWx0cmFTY2FsZSsgYnV0IG90aGVyIHByaW9yaXRpZXMga2VlcCAKcG9wcGluZyB1cC4g
-Cgo+IAo+IEkgdGhpbmsgSSBuZWVkIHRvIGhhbmQgdGhpcyB0YXNrIG9mZiB0byBhIGNvbGxlYWd1
-ZSB3aG8gaGFzIHNvbWUgbW9yZSBMaW51eCBpbnRlcm5hbHMgZXhwZXJpZW5jZS4KPiAKPiA+IFRo
-YXQgaXMgb3V0ZGF0ZWQgbm93LCB1bmZvcnR1bmF0ZWx5LiBEbyB5b3UgcGxhbiB0byBwdWJsaXNo
-IHlvdXIgbGF5ZXIKPiA+IGFmdGVyd2FyZHM/IEkgc3VwcG9zZSBzb21lIHBlb3BsZSB3b3VsZCBi
-ZSBoYXBweSBhYm91dCBhIG1ldGEteGVub21haQo+ID4gd2l0aCBzdXBwb3J0IGZvciBYZW5vbWFp
-IDMuCj4gCj4gSaJkIGhhdmUgdG8gY2hlY2sgd2l0aCBteSBvcmdhbml6YXRpb24uICBQZXJzb25h
-bGx5LCBJomQgbGlrZSB0byBzZWUgYW55b25lIHB1Ymxpc2ggb25lLCBpbmNsdWRpbmcgdXMuICBB
-bnl0aGluZyB0aGF0IGFsbG93cyBmb2xrcyB0byBzdGFydCB1c2luZyBYZW5vbWFpIDMgbW9yZSBl
-YXNpbHkgZnJvbSB3aXRoaW4gdGhlaXIgaGlnaGx5LWN1c3RvbWl6ZWQgUG9reSBlbnZpcm9ubWVu
-dHMgd291bGQgYmUgaGVscGZ1bC4KCisxLiBJJ2xsIGNoZWNrIGluIG9uIHRoZSBzdGF0dXMgb2Yg
-b3VyIFhlbm9tYWkgMyB3b3JrIGFuZCB3aGF0IGl0IHdvdWxkIAp0YWtlIHRvIHNoYXJlIHdoYXQg
-d2UgaGF2ZS4gSSdkIGNlcnRhaW5seSBsaWtlIHRvIHNlZSBzb21ldGhpbmcgcmV1c2FibGUgCmFy
-aXNlIGFuZCB3b3VsZCBiZSB3aWxsaW5nIHRvIGhlbHAuCj4gCj4gLSBTdGV2ZSBQYXZhbwo+IEtv
-cmcgUiZECj4gCj4gCj4gCj4gCj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KPiBYZW5vbWFpIG1haWxpbmcgbGlzdAo+IFhlbm9tYWlAeGVub21haS5vcmcK
-PiBodHRwczovL3hlbm9tYWkub3JnL21haWxtYW4vbGlzdGluZm8veGVub21haQo+CgpKZWZmCiAK
+When I build Linux 4.9.51 with the latest 
+xenomai-3-7a038dfad8d1e48b065542c8cc2e39f6b5ee4f82.tar.bz2 
+<http://git.xenomai.org/xenomai-3.git/snapshot/xenomai-3-7a038dfad8d1e48b065542c8cc2e39f6b5ee4f82.tar.bz2>
+
+there get an error.
+
+
+   CC [M]  drivers/xenomai/net/drivers/r8169.o
+drivers/xenomai/net/drivers/r8169.c:131:12: error: ‘debug’ redeclared as 
+different kind of symbol
+  static int debug = -1;
+             ^
+In file included from arch/x86/xenomai/include/asm/xenomai/thread.h:25:0,
+                  from include/xenomai/cobalt/kernel/thread.h:35,
+                  from include/xenomai/cobalt/kernel/sched.h:24,
+                  from include/xenomai/rtdm/driver.h:37,
+                  from drivers/xenomai/net/stack/include/rtnet.h:99,
+                  from drivers/xenomai/net/stack/include/rtskb.h:32,
+                  from drivers/xenomai/net/stack/include/rtdev.h:37,
+                  from drivers/xenomai/net/stack/include/rtnet_port.h:32,
+                  from drivers/xenomai/net/drivers/r8169.c:82:
+./arch/x86/include/asm/traps.h:13:17: note: previous declaration of 
+‘debug’ was here
+  asmlinkage void debug(void);
+
