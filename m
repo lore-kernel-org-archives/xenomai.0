@@ -1,14 +1,7 @@
 From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Sun,  3 Dec 2017 22:22:24 -0500
-Message-Id: <1512357744-120225-1-git-send-email-greg@embeddedgreg.com>
-Subject: [Xenomai] [PATCH] Split rtdm_fd_enter up,
-	move the functionality where we store the fd until after the open()
-	call succeeds. Calls where open() fail a fd is left in the
-	tree even after the cleanup code is executed. If this fd
-	number is used again we will fail the call to open until a
-	different fd is used. This patch addresses this situation by
-	not adding the fd into the tree until open has succeeded and
-	the fd is valid.
+Date: Sun,  3 Dec 2017 22:31:51 -0500
+Message-Id: <1512358311-120677-1-git-send-email-greg@embeddedgreg.com>
+Subject: [Xenomai] [PATCH] Add zynq-7000 rtdm gpio driver.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,154 +11,272 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
+Cc: Greg Gallagher <ggallagher31@gmail.com>
+
+From: Greg Gallagher <ggallagher31@gmail.com>
 
 ---
- include/cobalt/kernel/rtdm/fd.h |  2 ++
- kernel/cobalt/posix/mqueue.c    |  7 ++++++-
- kernel/cobalt/posix/timerfd.c   |  4 ++++
- kernel/cobalt/rtdm/core.c       | 12 +++++++++---
- kernel/cobalt/rtdm/fd.c         | 24 ++++++++++++++++--------
- 5 files changed, 37 insertions(+), 12 deletions(-)
+ For the zynq platform (and possibly others in the future) we need to modify 
+ gpio-core to request gpio pins before using them. The open() function will 
+ now request a gpio and fail if it's already reserved. This should make 
+ the pin request transparent to the user. The ability to request and release 
+ pins is also available in an ioctrl message.  Tested on Microzed Zynq-7010 
+ platform and the raspberry pi 2 board.
 
-diff --git a/include/cobalt/kernel/rtdm/fd.h b/include/cobalt/kernel/rtdm/fd.h
-index 086b04b..e504c0c 100644
---- a/include/cobalt/kernel/rtdm/fd.h
-+++ b/include/cobalt/kernel/rtdm/fd.h
-@@ -345,6 +345,8 @@ static inline int rtdm_fd_is_compat(const struct rtdm_fd *fd)
- int rtdm_fd_enter(struct rtdm_fd *rtdm_fd, int ufd,
- 		  unsigned int magic, struct rtdm_fd_ops *ops);
+---
+ include/rtdm/uapi/gpio.h            |  2 +
+ kernel/drivers/gpio/Kconfig         |  8 ++++
+ kernel/drivers/gpio/Makefile        |  1 +
+ kernel/drivers/gpio/gpio-core.c     | 87 +++++++++++++++++++++++++++----------
+ kernel/drivers/gpio/gpio-zynq7000.c | 40 +++++++++++++++++
+ 5 files changed, 116 insertions(+), 22 deletions(-)
+ create mode 100644 kernel/drivers/gpio/gpio-zynq7000.c
+
+diff --git a/include/rtdm/uapi/gpio.h b/include/rtdm/uapi/gpio.h
+index f846f48..b745f15 100644
+--- a/include/rtdm/uapi/gpio.h
++++ b/include/rtdm/uapi/gpio.h
+@@ -22,6 +22,8 @@
+ #define GPIO_RTIOC_DIR_IN		_IO(RTDM_CLASS_GPIO, 1)
+ #define GPIO_RTIOC_IRQEN		_IOW(RTDM_CLASS_GPIO, 2, int) /* GPIO trigger */
+ #define GPIO_RTIOC_IRQDIS		_IO(RTDM_CLASS_GPIO, 3)
++#define GPIO_RTIOC_REQS                _IO(RTDM_CLASS_GPIO, 4)
++#define GPIO_RTIOC_RELS                _IO(RTDM_CLASS_GPIO, 5)
  
-+int rtdm_fd_register(struct rtdm_fd *fd, int ufd);
+ #define GPIO_TRIGGER_NONE		0x0 /* unspecified */
+ #define GPIO_TRIGGER_EDGE_RISING	0x1
+diff --git a/kernel/drivers/gpio/Kconfig b/kernel/drivers/gpio/Kconfig
+index 869392f..81fc442 100644
+--- a/kernel/drivers/gpio/Kconfig
++++ b/kernel/drivers/gpio/Kconfig
+@@ -33,6 +33,14 @@ config XENO_DRIVERS_GPIO_SUN8I_H3
+ 	Suitable for the GPIO controller available from Allwinner's H3
+ 	SoC, as found on the NanoPI boards.
+ 
++config XENO_DRIVERS_GPIO_ZYNQ7000
++	depends on ARCH_ZYNQ
++	bool "Support for Zynq7000 GPIOs"
++	help
 +
- struct rtdm_fd *rtdm_fd_get(int ufd, unsigned int magic);
- 
- int rtdm_fd_lock(struct rtdm_fd *fd);
-diff --git a/kernel/cobalt/posix/mqueue.c b/kernel/cobalt/posix/mqueue.c
-index 6357d22..859e12e 100644
---- a/kernel/cobalt/posix/mqueue.c
-+++ b/kernel/cobalt/posix/mqueue.c
-@@ -267,6 +267,7 @@ static struct rtdm_fd_ops mqd_ops = {
- static inline int mqd_create(struct cobalt_mq *mq, unsigned long flags, int ufd)
- {
- 	struct cobalt_mqd *mqd;
-+	int ret;
- 
- 	if (cobalt_ppd_get(0) == &cobalt_kernel_ppd)
- 		return -EPERM;
-@@ -278,7 +279,11 @@ static inline int mqd_create(struct cobalt_mq *mq, unsigned long flags, int ufd)
- 	mqd->fd.oflags = flags;
- 	mqd->mq = mq;
- 
--	return rtdm_fd_enter(&mqd->fd, ufd, COBALT_MQD_MAGIC, &mqd_ops);
-+	ret = rtdm_fd_enter(&mqd->fd, ufd, COBALT_MQD_MAGIC, &mqd_ops);
-+	if (ret < 0)
-+		return ret;
++	Enables support for the GPIO controller available from
++	Xilinx's Zynq7000 SoC.
 +
-+	return rtdm_fd_register(&mqd->fd, ufd);
- }
+ config XENO_DRIVERS_GPIO_DEBUG
+        bool "Enable GPIO core debugging features"
  
- static int mq_open(int uqd, const char *name, int oflags,
-diff --git a/kernel/cobalt/posix/timerfd.c b/kernel/cobalt/posix/timerfd.c
-index 51e7605..217e68a 100644
---- a/kernel/cobalt/posix/timerfd.c
-+++ b/kernel/cobalt/posix/timerfd.c
-@@ -202,6 +202,10 @@ COBALT_SYSCALL(timerfd_create, lostage, (int clockid, int flags))
- 	if (ret < 0)
- 		goto fail;
+diff --git a/kernel/drivers/gpio/Makefile b/kernel/drivers/gpio/Makefile
+index 35ca52c..7f28403 100644
+--- a/kernel/drivers/gpio/Makefile
++++ b/kernel/drivers/gpio/Makefile
+@@ -8,3 +8,4 @@ xeno_gpio-y := gpio-core.o
+ xeno_gpio-$(CONFIG_XENO_DRIVERS_GPIO_BCM2835) += gpio-bcm2835.o
+ xeno_gpio-$(CONFIG_XENO_DRIVERS_GPIO_MXC) += gpio-mxc.o
+ xeno_gpio-$(CONFIG_XENO_DRIVERS_GPIO_SUN8I_H3) += gpio-sun8i-h3.o
++xeno_gpio-$(CONFIG_XENO_DRIVERS_GPIO_ZYNQ7000) += gpio-zynq7000.o
+diff --git a/kernel/drivers/gpio/gpio-core.c b/kernel/drivers/gpio/gpio-core.c
+index 55594f6..40e6993 100644
+--- a/kernel/drivers/gpio/gpio-core.c
++++ b/kernel/drivers/gpio/gpio-core.c
+@@ -36,7 +36,8 @@ struct rtdm_gpio_pin {
+ struct rtdm_gpio_chan {
+ 	int requested : 1,
+ 	    has_direction : 1,
+-	    is_output : 1 ;
++	    is_output : 1,
++            is_interrupt : 1;
+ };
  
-+	ret = rtdm_fd_register(&tfd->fd, ufd);
-+	if (ret < 0)
-+		goto fail;
-+
- 	return ufd;
- fail:
- 	xnselect_destroy(&tfd->read_select);
-diff --git a/kernel/cobalt/rtdm/core.c b/kernel/cobalt/rtdm/core.c
-index 05f273f..01d9caf 100644
---- a/kernel/cobalt/rtdm/core.c
-+++ b/kernel/cobalt/rtdm/core.c
-@@ -174,7 +174,7 @@ int __rtdm_dev_open(const char *path, int oflag)
- 
- 	context->fd.minor = dev->minor;
- 	context->fd.oflags = oflag;
--
-+	
- 	trace_cobalt_fd_open(current, &context->fd, ufd, oflag);
- 
- 	if (dev->ops.open) {
-@@ -185,9 +185,12 @@ int __rtdm_dev_open(const char *path, int oflag)
- 			goto fail_open;
- 	}
- 
--	fd_install(ufd, filp);
--
- 	trace_cobalt_fd_created(&context->fd, ufd);
-+	ret = rtdm_fd_register(&context->fd, ufd);
-+	if (ret < 0)
-+		goto fail_open;
-+
-+	fd_install(ufd, filp);
- 
- 	return ufd;
- 
-@@ -238,6 +241,9 @@ int __rtdm_dev_socket(int protocol_family, int socket_type,
- 	}
- 
- 	trace_cobalt_fd_created(&context->fd, ufd);
-+	ret = rtdm_fd_register(&context->fd, ufd);
-+	if (ret < 0)
-+		goto fail_socket;
- 
- 	return ufd;
- 
-diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
-index ffcd3aa..e355526 100644
---- a/kernel/cobalt/rtdm/fd.c
-+++ b/kernel/cobalt/rtdm/fd.c
-@@ -145,20 +145,13 @@ static inline void set_compat_bit(struct rtdm_fd *fd)
- int rtdm_fd_enter(struct rtdm_fd *fd, int ufd, unsigned int magic,
- 		  struct rtdm_fd_ops *ops)
- {
--	struct rtdm_fd_index *idx;
- 	struct cobalt_ppd *ppd;
--	spl_t s;
--	int ret;
--
-+	
- 	secondary_mode_only();
- 
- 	if (magic == 0)
+ static int gpio_pin_interrupt(rtdm_irq_t *irqh)
+@@ -60,12 +61,16 @@ static int request_gpio_irq(unsigned int gpio, struct rtdm_gpio_pin *pin,
+ 	if (trigger & ~GPIO_TRIGGER_MASK)
  		return -EINVAL;
  
--	idx = kmalloc(sizeof(*idx), GFP_KERNEL);
--	if (idx == NULL)
--		return -ENOMEM;
--
- 	assign_default_dual_handlers(ops->ioctl);
- 	assign_default_dual_handlers(ops->read);
- 	assign_default_dual_handlers(ops->write);
-@@ -175,6 +168,21 @@ int rtdm_fd_enter(struct rtdm_fd *fd, int ufd, unsigned int magic,
- 	fd->refs = 1;
- 	set_compat_bit(fd);
+-	ret = gpio_request(gpio, pin->name);
+-	if (ret) {
+-		if (ret != -EPROBE_DEFER)
+-			printk(XENO_ERR "cannot request GPIO%d\n", gpio);
+-		return ret;
+-	}
++        if (!chan->requested) {
++                ret = gpio_request(gpio, pin->name);
++	        if (ret) {
++                        if (ret != -EPROBE_DEFER)
++                                printk(XENO_ERR 
++				        "can not request GPIO%d\n", gpio);
++		        return ret;
++                }
++	        chan->requested = true;
++        }
  
+ 	ret = gpio_direction_input(gpio);
+ 	if (ret) {
+@@ -99,13 +104,14 @@ static int request_gpio_irq(unsigned int gpio, struct rtdm_gpio_pin *pin,
+ 		goto fail;
+ 	}
+ 
+-	chan->requested = true;
+ 
+ 	rtdm_irq_enable(&pin->irqh);
++        chan->is_interrupt = true;
+ 
+ 	return 0;
+ fail:
+ 	gpio_free(gpio);
++        chan->requested = false;
+ 
+ 	return ret;
+ }
+@@ -116,6 +122,7 @@ static void release_gpio_irq(unsigned int gpio, struct rtdm_gpio_pin *pin,
+ 	rtdm_irq_free(&pin->irqh);
+ 	gpio_free(gpio);
+ 	chan->requested = false;
++        chan->is_interrupt = false;
+ }
+ 
+ static int gpio_pin_ioctl_nrt(struct rtdm_fd *fd,
+@@ -134,32 +141,47 @@ static int gpio_pin_ioctl_nrt(struct rtdm_fd *fd,
+ 		ret = rtdm_safe_copy_from_user(fd, &val, arg, sizeof(val));
+ 		if (ret)
+ 			return ret;
+-		ret = gpio_direction_output(gpio, val);
+-		if (ret == 0) {
+-			chan->has_direction = true;
+-			chan->is_output = true;
+-		}
+-		break;
++                ret = gpio_direction_output(gpio, val);
++                if (ret == 0) {
++	                chan->has_direction = true;
++                        chan->is_output = true;
++                }
++	        break;
+ 	case GPIO_RTIOC_DIR_IN:
+-		ret = gpio_direction_input(gpio);
++                ret = gpio_direction_input(gpio);
+ 		if (ret == 0)
+ 			chan->has_direction = true;
+ 		break;
+ 	case GPIO_RTIOC_IRQEN:
+-		if (chan->requested)
+-			return -EBUSY;
+-		ret = rtdm_safe_copy_from_user(fd, &trigger,
++		if (chan->is_interrupt) {
++                        return -EBUSY;
++                }
++                ret = rtdm_safe_copy_from_user(fd, &trigger,
+ 				       arg, sizeof(trigger));
+ 		if (ret)
+ 			return ret;
+ 		ret = request_gpio_irq(gpio, pin, chan, trigger);
+ 		break;
+ 	case GPIO_RTIOC_IRQDIS:
+-		release_gpio_irq(gpio, pin, chan);
+-		chan->requested = false;
++		if (chan->is_interrupt) {
++                        release_gpio_irq(gpio, pin, chan);
++		        chan->requested = false;
++                        chan->is_interrupt = false;
++                }
+ 		break;
+-	default:
+-		return -EINVAL;
++	case GPIO_RTIOC_REQS:
++                ret = gpio_request(gpio, pin->name);
++                if (ret)
++                        return ret;
++                else
++                        chan->requested = true;
++                break;
++        case GPIO_RTIOC_RELS:
++                gpio_free(gpio);
++                chan->requested = false;
++                break;
++        default:
++	        return -EINVAL;
+ 	}
+ 	
+ 	return ret;
+@@ -241,6 +263,26 @@ static int gpio_pin_select(struct rtdm_fd *fd, struct xnselector *selector,
+ 	return rtdm_event_select(&pin->event, selector, type, index);
+ }
+ 
++int gpio_pin_open(struct rtdm_fd *fd, int oflags)
++{
++	struct rtdm_gpio_chan *chan = rtdm_fd_to_private(fd);
++	struct rtdm_device *dev = rtdm_fd_device(fd);
++	unsigned int gpio = rtdm_fd_minor(fd);
++	int ret = 0;
++	struct rtdm_gpio_pin *pin;
++
++	pin = container_of(dev, struct rtdm_gpio_pin, dev);
++	ret = gpio_request(gpio, pin->name);
++	if (ret) {
++		printk(XENO_ERR "failed to request pin %d : %d\n", gpio, ret);
++                return ret;
++	} else {
++		chan->requested = true;
++	}
++
 +	return 0;
 +}
 +
-+int rtdm_fd_register(struct rtdm_fd *fd, int ufd)
+ static void gpio_pin_close(struct rtdm_fd *fd)
+ {
+ 	struct rtdm_gpio_chan *chan = rtdm_fd_to_private(fd);
+@@ -361,6 +403,7 @@ int rtdm_gpiochip_add(struct rtdm_gpio_chip *rgc,
+ 	rgc->driver.device_count = gc->ngpio;
+ 	rgc->driver.context_size = sizeof(struct rtdm_gpio_chan);
+ 	rgc->driver.ops = (struct rtdm_fd_ops){
++		.open		=	gpio_pin_open,
+ 		.close		=	gpio_pin_close,
+ 		.ioctl_nrt	=	gpio_pin_ioctl_nrt,
+ 		.read_rt	=	gpio_pin_read_rt,
+diff --git a/kernel/drivers/gpio/gpio-zynq7000.c b/kernel/drivers/gpio/gpio-zynq7000.c
+new file mode 100644
+index 0000000..99b24a9
+--- /dev/null
++++ b/kernel/drivers/gpio/gpio-zynq7000.c
+@@ -0,0 +1,40 @@
++/**
++ * @note Copyright (C) 2017 Greg Gallagher <greg@embeddedgreg.com>
++ * 
++ * This driver is inspired by:
++ * gpio-bcm2835.c, please see original file for copyright information
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
++ */
++#include <linux/module.h>
++#include "gpio-core.h"
++
++#define RTDM_SUBCLASS_ZYNQ7000  4
++
++static int __init zynq7000_gpio_init(void)
 +{
-+	struct rtdm_fd_index *idx;
-+	struct cobalt_ppd *ppd;
-+	spl_t s;
-+	int ret = 0;
++ 	return rtdm_gpiochip_scan_of(NULL, "xlnx,zynq-gpio-1.0", 
++                     RTDM_SUBCLASS_ZYNQ7000);
++}
++module_init(zynq7000_gpio_init);
 +
-+	ppd = cobalt_ppd_get(0);
-+	idx = kmalloc(sizeof(*idx), GFP_KERNEL);
-+	if (idx == NULL)
-+		return -ENOMEM;
++static void __exit zynq7000_gpio_exit(void)
++{
++	rtdm_gpiochip_remove_of(RTDM_SUBCLASS_ZYNQ7000);
++}
++module_exit(zynq7000_gpio_exit);
 +
- 	idx->fd = fd;
- 
- 	xnlock_get_irqsave(&fdtree_lock, s);
++MODULE_LICENSE("GPL");
++
 -- 
 2.7.4
 
