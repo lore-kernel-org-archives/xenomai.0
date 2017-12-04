@@ -1,18 +1,14 @@
-Date: Tue, 28 Nov 2017 09:47:48 +0100
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20171128094748.379af1e2@md1em3qc>
-In-Reply-To: <34fe6fb9-1a55-e432-3ef3-e16655abc59b@xenomai.org>
-References: <abf31608-ffa8-17e0-e3eb-4d62f067e365@xenomai.org>
- <f7ad8163bda5484292ccdf6e8cf1a484@P10-EX02.3DSystems.Internal>
- <02f0df6b-0854-eeaa-a168-ae2c10e1d8ab@xenomai.org>
- <845269a3-e580-c8ff-e25d-a56d00c787fe@siemens.com>
- <2f850a60-3756-f06d-82c6-ccf6eeb58aa3@xenomai.org>
- <20171127204105.07C3512023A@gemini.denx.de>
- <34fe6fb9-1a55-e432-3ef3-e16655abc59b@xenomai.org>
+References: <b440d689-399e-32f1-c981-c66e655d955a@alaxarxa.net>
+ <20171201161312.4b07fac3@md1em3qc>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Message-ID: <ffa39a0b-359c-1657-12e7-4fcfdb23d32b@alaxarxa.net>
+Date: Mon, 4 Dec 2017 11:34:16 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20171201161312.4b07fac3@md1em3qc>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [RFC] Service hosting for Xenomai
+Subject: Re: [Xenomai] Debian packages for Xenomai 3.x
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,74 +17,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>
+Cc: Xenomai List <xenomai@xenomai.org>
 
-Am Mon, 27 Nov 2017 22:44:03 +0100
-schrieb Philippe Gerum <rpm@xenomai.org>:
+Hi,
 
-> Hello Wolfgang,
+On 01/12/17 16:13, Henning Schild wrote:
+> Am Thu, 30 Nov 2017 12:27:22 +0100
+> schrieb Leopold Palomo-Avellaneda <leo@alaxarxa.net>:
 > 
-> On 11/27/2017 09:41 PM, Wolfgang Denk wrote:
-> > Dear Philippe,
-> > 
-> > In message <2f850a60-3756-f06d-82c6-ccf6eeb58aa3@xenomai.org> you
-> > wrote:  
-> >>
-> >> As Jan mentioned, there is more than having GIT underneath, there
-> >> are deep implications on the workflow, and it really depends on
-> >> what we'd want from such platform. If you have any thought,
-> >> recommendation, experience with those platforms in your daily
-> >> work, it would be great to know your views.  
-> > 
-> > Full agreement.
-> > 
-> > What I can offer here an now is this:
-> > 
-> > 1) DENX can run the Xenomai mailing list.
-> > 
-> >    We already run some other lists, the U-Boot mailing list with
-> >    currently 2877 members being the most important. Adding another
-> >    list is just a few clicks aways.
-> > 
-> >    [OK, it takes abit more work to transfer the old mail archives,
-> >    but all this is pretty much straightforward.]
-> > 
-> > 2) DENX can host one ore more repositories for Xenomai on our gitlab
-> >    server (gitlab.denx.de).  We're planning for an upgrade anyway,
-> >    and compared to other stuff we have there Xenomay is just a tiny
-> >    addition.
-> > 
-> > Both services can be provided immediately.
-> > 
-> >   
+>> Hi,
+>>
+>>
+>> if someone is interested I have been working a bit with the debian
+>> directory in xenomai3.
+>>
+>> I have changed the approach to the libraries. I think that now it has
+>> not sense to have a libxenomai1 so I have changed it to xenomai3-libs.
+>>
+>> The source, and the patches applied are here:
+>>
+>> https://anonscm.debian.org/cgit/collab-maint/xenomai.git/
+>>
+>> In case there's some interest, I can try to push it again to the
+>> official Debian repositories.
 > 
-> Thank you for your kind proposal. Looking at the related discussion
-> earlier on this list, it seems that there is a consensus about gitlab
-> being one of the few appropriate options for the project, provided we
-> prevent cross-talk between the issue tracker and the mailing list,
-> choosing the latter exclusively.
-> 
-> I believe that such solution would be in the best interest of the user
-> base, providing for issue tracking and CI in the same move. Since
-> Gitlab also provides an integrated wiki, we could use it to publish
-> the existing documentation currently on http://xenomai.org which is
-> entirely composed of static contents.
-> 
-> This would not preclude from using additional services in the future
-> (IRC etc) hosted elsewhere, but having the core infrastructure at a
-> trusted place like Denx is the right move.
+> Publishing them to Debian would be the ideal case. 
 
-For the mailinglist we should keep the domain "xenomai.org" and the
-address. And it would be nice to move to a server that can handle
-subscribers/posters that are in a DMARC-enabled domain.
+Ok, so first go for it ;-)
 
-Henning
 
-> I'll get in touch with your team for carrying out this migration
-> gradually from my server to denx.de.
-> 
-> Thanks again.
-> 
+But how about you
+> send those patches to this list? After all we have the debian-subdir
+> and people are using it!
 
+Who? I think that current debian directory doesn't work for Xenomai 3. Did you try?
+
+I'm from the opinion that the debian directory, to generate debian packages
+doesn't belongs to upstream. But, I'm open to send any patch. Just I would like
+to know if there are some critical mass.
+
+> I am using it and i was wondering about the names, but never had a big
+> enough issue to actually review what is going on in there.
+> So please prepare a patchq and send it here.
+
+Are you using it with Xenomai3?
+
+Leopold
+
+
+
+-- 
+--
+Linux User 152692     GPG: 05F4A7A949A2D9AA
+Catalonia
+-------------------------------------
+A: Because it messes up the order in which people normally read text.
+Q: Why is top-posting such a bad thing?
+A: Top-posting.
+Q: What is the most annoying thing in e-mail?
 
