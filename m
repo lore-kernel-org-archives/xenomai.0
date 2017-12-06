@@ -1,16 +1,12 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Date: Wed, 6 Dec 2017 09:02:24 +0000
-Message-ID: <99BAB48E90E86D42AD41F0BCE3225AEB018DE4C815@GRZSMS582.andritz.com>
-References: <99BAB48E90E86D42AD41F0BCE3225AEB018DE4C73A@GRZSMS582.andritz.com>
- <10f50ca3-aade-c465-ce99-8d379984ecf7@numalliance.com>
- <d7f42ee6-a7ed-1f2c-f4ed-252ba7e3e32d@siemens.com>
-In-Reply-To: <d7f42ee6-a7ed-1f2c-f4ed-252ba7e3e32d@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Vincent Berenz <vberenz@tuebingen.mpg.de>
+Message-ID: <48bfcc92-3224-c7ce-10d9-9f4621e10331@tuebingen.mpg.de>
+Date: Wed, 6 Dec 2017 10:55:29 +0100
 MIME-Version: 1.0
-Subject: Re: [Xenomai] RTDM/RTNet - proposal to support sending/receiving
- multiple packets with one systemcall
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+Subject: [Xenomai] Xenomai 3.0.5 : RTIPC/XDDP protocol not supported by
+	kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,122 +15,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, =?utf-8?B?U3TDqXBoYW5lIEFuY2Vsb3Q=?= <sancelot@numalliance.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-DQoNCiA+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCiA+RnJvbTogSmFuIEtpc3prYSBbbWFp
-bHRvOmphbi5raXN6a2FAc2llbWVucy5jb21dDQogPlNlbnQ6IE1pdHR3b2NoLCAwNi4gRGV6ZW1i
-ZXIgMjAxNyAwOToyNw0KID5UbzogU3TDqXBoYW5lIEFuY2Vsb3Q7IExhbmdlIE5vcmJlcnQ7IFhl
-bm9tYWkgKHhlbm9tYWlAeGVub21haS5vcmcpDQogPlN1YmplY3Q6IFJlOiBbWGVub21haV0gUlRE
-TS9SVE5ldCAtIHByb3Bvc2FsIHRvIHN1cHBvcnQgc2VuZGluZy9yZWNlaXZpbmcNCiA+bXVsdGlw
-bGUgcGFja2V0cyB3aXRoIG9uZSBzeXN0ZW1jYWxsDQogPg0KID5FTUFJTCBmcm9tIGEgTk9OLUFO
-RFJJVFogU09VUkNFOiBhcyBhIHNlY3VyaXR5IG1lYXN1cmUsIHBsZWFzZSBleGVyY2lzZQ0KID5j
-YXV0aW9uIHdpdGggZW1haWwgY29udGVudCBhbmQgYW55IGxpbmtzIG9yIGF0dGFjaG1lbnRzLg0K
-ID4NCiA+DQogPk9uIDIwMTctMTItMDYgMDk6MTUsIFN0w6lwaGFuZSBBbmNlbG90IHdyb3RlOg0K
-ID4+IEhpLA0KID4+DQogPj4gSSBoYXZlIGRvbmUgYW4gYXBwbGljYXRpb24gdGhhdCBkb2VzIHRo
-aXMgdGhpbmcuDQogPj4NCiA+PiB0aGUgYXBwbGljYXRpb24gbWFuYWdlcyBhIHN0YWNrIG9mIGZy
-YW1lcyB3aXRoIHByaW9yaXRpZXMuIGhpZ2gNCiA+PiBwcmlvcml0aWVzIGZyYW1lIGFyZSBzZW50
-IGF0IHN5bmNocm9uaXNlZCB0aW1lIChlYWNoIG1zLCBzeW5jaHJvbmlzZWQgYnkNCiA+PiBleHRl
-cm5hbCBjbG9jaykgYW5kIHRoZW4gaWYgdGhlcmUgaXMgZW5vdWdoIHJlbWFpbmluZyB0aW1lLCBs
-b3cgcHJpb3JpdHkNCiA+PiBmcmFtZXMuIChldGhlcmNhdCBidXMgYXBwbGljYXRpb24pDQogPj4N
-CiA+PiBUaGUgam9iIGlzIG5vdCBkb25lIGluIGRyaXZlciwgYnV0IGluIHJlYWx0aW1lIGFwcGxp
-Y2F0aW9uIHByb2Nlc3MuDQogPj4NCiA+PiBJIGhhdmUgIDIgc3RhY2tzID0+IElucHV0IC8gb3Vw
-dXQgcGFja2V0cw0KID4+DQogPj4gSSBtYW5hZ2VkIHRvIGxpbmsgdGhpcyB0YXNrIHdpdGggYW4g
-aW50ZXJuYWwgc29mdHdhcmUgc3dpdGNoIHRoYXQNCiA+PiBwZXJtaXRzIHRvIGVtYmVkIGV0aGVy
-bmV0IHBhY2tldHMgaW4gZXRoZXJjYXQgKEVvRSkNCiA+Pg0KID4+IEZyb20gbXkgdmlld3BvaW50
-LCBJIGRvbid0IHVuZGVyc3RhbmQgdGhlIGFkZGVkIHZhbHVlIGRvaW5nIHRoaXMgb24NCiA+PiBk
-cml2ZXIgc2lkZSA/DQogPg0KID5JbiBnZW5lcmFsLCBpdCBoZWxwcyBhIGxvdCBpbiBzdWNoIGRp
-c2N1c3Npb25zIHRvIGhhdmUgc29tZSBiYXNpYw0KID5iZW5jaG1hcmsgbnVtYmVycyBmb3IgdGhl
-IGV4aXN0aW5nIHRoZSBuZXcgcGF0dGVybiBhdCBoYW5kLCBldmVuIGlmIHRoZQ0KID5sYXR0ZXIg
-aXMganVzdCBhIHByb29mLW9mLWNvbmNlcHQgaGFjay4NCg0KVGhlcmUgaXMgbW9yZSB0byB0aGlz
-IHRoYW4gYmFzaWMgcGVyZm9ybWFuY2UsIGVhc2llciBtZWFzdXJlbWVudHMgZm9yIHdvcnN0LWNh
-c2UgaW1wYWN0IGZvciBvbmUuDQpBbHNvIHRoZSBSVERNIHBhcnQgd291bGQgYmUgbWVyZWx5IGVu
-YWJsaW5nIHN1Y2ggZGlmZmVyZW50IFJUTmV0IHNjaGVtZXMsIG5vdCBieSBkZWZhdWx0IHJlcGxh
-Y2luZyBhbnl0aGluZywNCkFGQUlLIHlvdSBhbHNvIGhhdmUgYSBQQUNLRVRfTU1BUCBlcXVpdmFs
-ZW50IGluIFJURE0sIHdoaWxlIGl0cyBjdXJyZW50bHkgbm90IGF2YWlsYWJsZSBmb3IgdGhlIG5l
-dHdvcmsgc3RhY2suDQoNCk5vcmJlcnQuDQoNCiA+SmFuDQogPg0KID4+DQogPj4gUmVnYXJkcywN
-CiA+Pg0KID4+IFMuQW5jZWxvdA0KID4+DQogPj4NCiA+PiBMZSAwNS8xMi8yMDE3IMOgIDE1OjM4
-LCBMYW5nZSBOb3JiZXJ0IGEgw6ljcml0IDoNCiA+Pj4gSGVsbG8sDQogPj4+DQogPj4+IEkgd291
-bGQgbGlrZSB0byBpbnZvbHZlIHRoZSBSVERNIE1haW50YWluZXJzIGZvciBkaXNjdXNzaW5nIGFu
-DQogPj4+IGFkZGl0aW9uIHRvIHRoZSBSVERNIGRyaXZlcm1vZGVsLg0KID4+PiBUaGlzIHdvcmsg
-d291bGQgYmUgZG9uZSBieSBQaGlsbGlwZSBHZXJ1bSBhcyBwYXJ0IG9mIGEgY29udHJhY3QsIGhl
-IGlzDQogPj4+IGFsc28gYmV0dGVyIHN1aXRlZCB0byBvdXRsaW5lIHRoZSBuZWNlc3NhcnkgY2hh
-bmdlcywNCiA+Pj4gc2hvdWxkIG5vdGhpbmcgc3RhbmQgYWdhaW5zdCB0aGUgcHJvcG9zYWwgaXRz
-ZWxmLg0KID4+Pg0KID4+PiAtIFByb2JsZW0gZGVzY3JpcHRpb24NCiA+Pj4NCiA+Pj4gVG8gYmUg
-Y29tcGF0aWJsZSB3aXRoIGV4aXN0aW5nIHNvZnR3YXJlLCBFdGhlcm5ldCBwYWNrZXRzIHdpbGwg
-YmUNCiA+Pj4gcG9sbGVkIGF0IHN5bmNocm9uaXplZCBldmVudHMuDQogPj4+IFRoZSBhcHBsaWNh
-dGlvbiBpZGVhbGx5IHdvdWxkIGdpdmUgdGhlIGtlcm5lbC9ydG5ldCBzdGFjayB0aGUNCiA+Pj4g
-cmVzcG9uc2liaWxpdHkgYW5kIGZyZWVkb20gdG8gZG8gdGhpcyBpbiBhbiBlZmZpY2llbnQgbWFu
-bmVyLA0KID4+PiBhbmQgYmUgYWJsZSB0byBkaXJlY3RseSBleHByZXNzIHRoZSBpbnRlbmQgdG8g
-cG9sbCBhbGwgY3VycmVudGx5DQogPj4+IGF2YWlsYWJsZSBwYWNrZXRzLg0KID4+Pg0KID4+PiBT
-aW1pbGFybHksIGJ1dCBsZXNzIHRpbWUtY3JpdGljYWwgdGh1cyBpbXBvcnRhbnQsIHNlbmRpbmcg
-bXVsdGlwbGUNCiA+Pj4gcGFja2V0cyBpbiBhIGJ1cnN0IHdvdWxkIGJlIGEgcmVxdWlyZW1lbnQu
-DQogPj4+DQogPj4+IExhc3RseSBMaW51eCBoYXMgdGhpcyBmdW5jdGlvbmFsaXR5IGluIGZvcm0g
-b2YgcmVjdm1tc2cgYW5kIHNlbmRtbXNnLA0KID4+PiB3aGljaCB3b3VsZCBiZSBhIGdvb2QgZml0
-IGluIHRlcm1zIG9mIGV4aXN0aW5nIGludGVyZmFjZSwgYXRsZWFzdCBpZg0KID4+PiB1c2VkIGlu
-IG5vbi1ibG9ja2luZyBtb2RlLg0KID4+Pg0KID4+PiAtIEh5cG90aGV0aWNhbCBQcm9wb3NhbA0K
-ID4+Pg0KID4+PiBBZGRpbmcgdGhlIG5lY2Vzc2FyeSBpbnRlcmZhY2VzIHRvIFJURE0gYW5kIFJU
-TmV0DQogPj4+IHRvIGFsbG93IG5vbi1ibG9ja2luZyBidWxrIHJlY2VpdmUvc2VuZCwgYW5kIG9m
-ZmVyaW5nIGZ1bmN0aW9ucyBub3QNCiA+Pj4gdW5saWtlIHRoZSBtZW50aW9uZWQgcmVjdm1tc2cg
-YW5kIHNlbmRtbXNnLg0KID4+Pg0KID4+PiAtIFBvdGVudGlhbCBpc3N1ZXMNCiA+Pj4NCiA+Pj4g
-Q29weWluZyBvZiBtdWx0aXBsZSBwYWNrZXRzIHdvdWxkIGJlIGRvbmUgaW4gUlRETSBjb250ZXh0
-LCBwb3RlbnRpYWxseQ0KID4+PiBibG9ja2luZyByZXNvdXJjZXMgZm9yIGVhY2ggcGFja2V0IG9y
-IHRoZSB3aG9sZSBkdXJhdGlvbi4NCiA+Pj4gRm9yIG91ciB1c2VjYXNlIGl0IHdvdWxkIGZvciBl
-eGFtcGxlIG5vdCBtYXR0ZXIgaWYgdGhlIGludm9sdmVkDQogPj4+IGV0aGVybmV0IGRyaXZlciBp
-bnN0YW5jZSBpcyBub3QgYWJsZSB0byBoYW5kbGUgSVJRcyBkdXJpbmcgdGhpcyB0aW1lLA0KID4+
-PiBidXQgaXQgc2hvdWxkIG5vdCBzaWduaWZpY2FudGx5IGFmZmVjdCB3b3JzdC1jYXNlIHRhc2sg
-c3dpdGNoIHRpbWVzIGluDQogPj4+IGdlbmVyYWwsIG9yIGJsb2NrIHJlY2VwdGlvbiBvbiBvdGhl
-ciBwaHlzaWNhbCBpbnRlcmZhY2VzIChFdGhlcm5ldCBvcg0KID4+PiBvdGhlcndpc2UpLg0KID4+
-Pg0KID4+PiByZWN2bW1zZyBhbmQgdGltZW91dHMgKGJsb2NraW5nKSBhcmUgbGlrZWx5IHRvIGJl
-IHByb2JsZW1hdGljLCBidXQNCiA+Pj4gYmxvY2tpbmcgbW9kZSBpcyBub3QgcmVxdWlyZWQgb3Ig
-d2FudGVkLg0KID4+Pg0KID4+PiAtIE9wZW4gcXVlc3Rpb25zIHRvIHRoZSBSVERNIG1haW50YWlu
-ZXJzDQogPj4+DQogPj4+IFdoYXQgd291bGQgYmUgdGhlIHJlcXVpcmVtZW50cyBvZiBhZGRpbmcg
-c2ltaWxhciBmdW5jdGlvbmFsaXR5IHRvDQogPj4+IHJlY3ZtbXNnIHRvIFJUTmV0IC8gUlRETSwN
-CiA+Pj4gYW5kIHdvdWxkIHRoZXJlIGJlIGFueSBjYXZlYXRzIHRoYXQgd291bGQgcHJvaGliaXQg
-YWRkaXRpb24gZnJvbSBzaWRlDQogPj4+IG9mIHRoZSBSVERNIG1haW50YWluZXJzPw0KID4+Pg0K
-ID4+PiBPdGhlciB0aGFuIHRoYXQsIGEgbW1hcCBiYXNlZCBhcHByb2FjaCBpcyBhbHNvIGFuIG9w
-dGlvbiwgYnV0IHRoYXQncyBhDQogPj4+IHNvbWV3aGF0IG1vcmUgaW52b2x2ZWQgc29sdXRpb24g
-Zm9yIGJvdGgga2VybmVsIGFuZCB1c2Vyc3BhY2UgYXMgZmFyDQogPj4+IGFzIEkgdW5kZXJzdG9v
-ZC4NCiA+Pj4NCiA+Pj4gS2luZCByZWdhcmRzDQogPj4+DQogPj4+IE5vcmJlcnQgTGFuZ2UNCiA+
-Pj4NCiA+Pj4NCiA+Pj4NCiA+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0KID4jIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiA+Pj4N
-CiA+Pj4gVGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJlIHNvbGVseSBmb3IgdGhl
-IHVzZSBvZiB0aGUNCiA+Pj4gaW50ZW5kZWQgcmVjaXBpZW50cy4gVGhleSBtYXkgY29udGFpbiBw
-cml2aWxlZ2VkIGFuZC9vciBjb25maWRlbnRpYWwNCiA+Pj4gaW5mb3JtYXRpb24gb3Igb3RoZXIg
-aW5mb3JtYXRpb24gcHJvdGVjdGVkIGZyb20gZGlzY2xvc3VyZS4gSWYgeW91IGFyZQ0KID4+PiBu
-b3QgYW4gaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0aGF0IHlv
-dSByZWNlaXZlZA0KID4+PiB0aGlzIGVtYWlsIGluIGVycm9yIGFuZCB0aGF0IGFueSByZXZpZXcs
-IGRpc3NlbWluYXRpb24sIGRpc3RyaWJ1dGlvbg0KID4+PiBvciBjb3B5aW5nIG9mIHRoaXMgZW1h
-aWwgYW5kIGFueSBhdHRhY2htZW50IGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmDQogPj4+IHlv
-dSBoYXZlIHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IsIHBsZWFzZSBjb250YWN0IHRoZSBz
-ZW5kZXIgYW5kDQogPj4+IGRlbGV0ZSB0aGUgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnQgZnJv
-bSB5b3VyIHN5c3RlbS4NCiA+Pj4gVGhhbmsgWW91Lg0KID4+PiAgICBBTkRSSVRaIEhZRFJPIEdt
-YkgNCiA+Pj4gICAgUmVjaHRzZm9ybS8gTGVnYWwgZm9ybTogR2VzZWxsc2NoYWZ0IG1pdCBiZXNj
-aHI/bmt0ZXIgSGFmdHVuZyAvDQogPj4+IENvcnBvcmF0aW9uDQogPj4+ICAgIEZpcm1lbnNpdHov
-IFJlZ2lzdGVyZWQgc2VhdDogV2llbg0KID4+PiAgICBGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQg
-b2YgcmVnaXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdpZW4NCiA+Pj4gICAgRmlybWVuYnVjaG51bW1l
-ci8gQ29tcGFueSByZWdpc3RyYXRpb246IEZOIDYxODMzIGcNCiA+Pj4gICAgRFZSOiAwNjA1MDc3
-DQogPj4+ICAgIFVJRC1Oci46IEFUVTE0NzU2ODA2DQogPj4+DQogPiMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMNCiA+IyMjIyMj
-IyMjIyMjIyMjIyMjIyMjDQogPj4+DQogPj4+DQogPj4+DQogPj4+IF9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQogPj4+IFhlbm9tYWkgbWFpbGluZyBsaXN0
-DQogPj4+IFhlbm9tYWlAeGVub21haS5vcmcNCiA+Pj4gaHR0cHM6Ly94ZW5vbWFpLm9yZy9tYWls
-bWFuL2xpc3RpbmZvL3hlbm9tYWkNCiA+Pg0KDQoNCiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMNClRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1
-c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdl
-ZCBhbmQvb3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHBy
-b3RlY3RlZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lw
-aWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFp
-bCBpbiBlcnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRp
-b24gb3IgY29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3Rs
-eSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBw
-bGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBh
-dHRhY2htZW50IGZyb20geW91ciBzeXN0ZW0uDQpUaGFuayBZb3UuDQogIEFORFJJVFogSFlEUk8g
-R21iSA0KICBSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hhZnQgbWl0IGJlc2NocsOk
-bmt0ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQogIEZpcm1lbnNpdHovIFJlZ2lzdGVyZWQgc2Vh
-dDogV2llbg0KICBGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVnaXN0cnk6IEhhbmRlbHNn
-ZXJpY2h0IFdpZW4NCiAgRmlybWVuYnVjaG51bW1lci8gQ29tcGFueSByZWdpc3RyYXRpb246IEZO
-IDYxODMzIGcNCiAgRFZSOiAwNjA1MDc3DQogIFVJRC1Oci46IEFUVTE0NzU2ODA2DQojIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjDQoNCg==
+Hi,
+
+We are currently moving from xenomai 2 to xenomai 3.
+I installed xenomai 3.0.5, and all seems to be working, with low latency.
+
+I am now trying to get our legacy code to work on xenomai 3 using the transition kit.
+
+Our program compiles, but at runtime, on call to rt_pipe_create :
+     
+     0"000.000| WARNING: [main] RTIPC/XDDP protocol not supported by kernel
+
+Some info:
+
+     cat .config | grep RPIPC
+
+returns:
+
+     CONFIG_XENO_DRIVERS_RTIPC=y
+     CONFIG_XENO_DRIVERS_RTIPC_XDDP=y
+     CONFIG_XENO_DRIVERS_RTIPC_IDDP=y
+     CONFIG_XENO_DRIVERS_RTIPC_BUFP=y
+
+Following call to xeno-config + adding some definition via add_definitions in cmake, we are using these flags:
+
+     flags.make:CXX_FLAGS = -fPIC   -Wl,--no-as-needed -ltrank -Wl,@/usr/xenomai/lib/modechk.wrappers -lalchemy -lcopperplate /usr/xenomai/lib/xenomai/bootstrap.o -Wl,--wrap=main -Wl,--dynamic-list=/usr/xenomai/lib/dynlist.ld -L/usr/xenomai/lib -lcobalt -lmodechk -lpthread -lrt -I/usr/xenomai/include/trank -D__XENO_COMPAT__ -I/usr/xenomai/include/cobalt -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -D__COBALT__ -I/usr/xenomai/include/alchemy -pipe
+
+and xeno-test starts with:
+
+     arith OK
+     bufp OK
+     cpu_affinity skipped (no kernel support)
+     iddp OK
+     leaks OK
+     net_packet_dgram skipped (no kernel support)
+     net_packet_raw skipped (no kernel support)
+     net_udp skipped (no kernel support)
+     posix_clock OK
+     posix_cond OK
+     posix_fork OK
+     mutex_trylock not supported
+     posix_mutex OK
+     posix_select OK
+     rtdm skipped (no kernel support)
+     sched_quota skipped (no kernel support)
+     sched_tp skipped (no kernel support)
+     setsched OK
+     sigdebug skipped (no kernel support)
+     timerfd OK
+     tsc OK
+     vdso_access OK
+     xddp OK
+
+Anything we are doing wrong ?
+
+Many thanks
+
+Vincent
+
 
