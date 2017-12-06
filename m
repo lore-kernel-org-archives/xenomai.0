@@ -1,12 +1,9 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Date: Tue, 5 Dec 2017 14:38:08 +0000
-Message-ID: <99BAB48E90E86D42AD41F0BCE3225AEB018DE4C73A@GRZSMS582.andritz.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: [Xenomai] RTDM/RTNet - proposal to support sending/receiving
- multiple packets with one systemcall
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Wed, 6 Dec 2017 00:00:29 -0500
+Message-ID: <CALLqZ8ScsrUwM2H5WvoY_6iH5r42fx1AKkT807iri1KS=RV2Pw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] Contributing Doc
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,88 +12,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
-Cc: "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello,
+Hi,
+   I'm putting together a doc on how to contribute.  I've pasted it
+below, if anyone has some time to review and let me know what I've
+missed that would be great.
+  I wasn't sure if all development should take place against the next
+branch or not.  I'm also not sure if I linked the documents correctly
+or not in the getting setup section.
+  Once it's ready should this be sent to the mailing list as a patch
+against xenomai-kbase repo?
 
-I would like to involve the RTDM Maintainers for discussing an addition to =
-the RTDM drivermodel.
-This work would be done by Phillipe Gerum as part of a contract, he is also=
- better suited to outline the necessary changes,
-should nothing stand against the proposal itself.
+Thanks
 
-- Problem description
-
-To be compatible with existing software, Ethernet packets will be polled at=
- synchronized events.
-The application ideally would give the kernel/rtnet stack the responsibilit=
-y and freedom to do this in an efficient manner,
-and be able to directly express the intend to poll all currently available =
-packets.
-
-Similarly, but less time-critical thus important, sending multiple packets =
-in a burst would be a requirement.
-
-Lastly Linux has this functionality in form of recvmmsg and sendmmsg,
-which would be a good fit in terms of existing interface, atleast if used i=
-n non-blocking mode.
-
-- Hypothetical Proposal
-
-Adding the necessary interfaces to RTDM and RTNet
-to allow non-blocking bulk receive/send, and offering functions not unlike =
-the mentioned recvmmsg and sendmmsg.
-
-- Potential issues
-
-Copying of multiple packets would be done in RTDM context, potentially bloc=
-king resources for each packet or the whole duration.
-For our usecase it would for example not matter if the involved ethernet dr=
-iver instance is not able to handle IRQs during this time,
-but it should not significantly affect worst-case task switch times in gene=
-ral, or block reception on other physical interfaces (Ethernet or otherwise=
-).
-
-recvmmsg and timeouts (blocking) are likely to be problematic, but blocking=
- mode is not required or wanted.
-
-- Open questions to the RTDM maintainers
-
-What would be the requirements of adding similar functionality to recvmmsg =
-to RTNet / RTDM,
-and would there be any caveats that would prohibit addition from side of th=
-e RTDM maintainers?
-
-Other than that, a mmap based approach is also an option, but that's a some=
-what more involved solution for both kernel and userspace as far as I under=
-stood.
-
-Kind regards
-
-Norbert Lange
+Greg
 
 
-###########################################################################=
-##########
-This message and any attachments are solely for the use of the intended rec=
-ipients. They may contain privileged and/or confidential information or oth=
-er information protected from disclosure. If you are not an intended recipi=
-ent, you are hereby notified that you received this email in error and that=
- any review, dissemination, distribution or copying of this email and any a=
-ttachment is strictly prohibited. If you have received this email in error,=
- please contact the sender and delete the message and any attachment from y=
-our system.
-Thank You.
-  ANDRITZ HYDRO GmbH
-  Rechtsform/ Legal form: Gesellschaft mit beschr?nkter Haftung / Corporati=
-on
-  Firmensitz/ Registered seat: Wien
-  Firmenbuchgericht/ Court of registry: Handelsgericht Wien
-  Firmenbuchnummer/ Company registration: FN 61833 g
-  DVR: 0605077
-  UID-Nr.: ATU14756806
-###########################################################################=
-##########
 
+How To Contribute
+=================
+
+If you are interested in contributing to Xenomai here are some helpful hints on
+how to get started.
+
+Things you will need:
+    - Git
+    - GCC for your platform
+    - Xenomai source code
+    - Linux tree patched with Ipipe
+    - Access to the Xenomai mailing list (xenomai@xenomai.org)
+
+Getting Setup:
+--------------
+Before starting to contribute you should have read the following documents:
+    -link:Start_Here.adoc[]
+    -link:Getting_Xenomai.adoc[]
+    -link:Installing_Xenomai_3.x.adoc[]
+
+Workflow
+--------
+The above mentioned documents will guide you through acquiring the
+source code, getting the development environment set up, and building
+Xenomai.  If you are having issues getting your development
+environment setup or built please review the documents or consult the
+Xenomai mailing list.
+
+To contribute to Xenomai, switch to the branch you'd like to make your
+changes on (next branch?).  After you make your changes, one thing to
+keep in mind is that when you submit your patches to the the mailing
+list each patch should address exactly one issue.  You may want to
+make one commit for every patch you wish to generate.  This may
+be a good workflow if you are addressing more than one issue during development.
+
+Once you are done development and testing you are ready to generate
+patches.  Use git format-patch to create a patch (or patch set) that
+you can submit for review.
+
+Once we have generated our patch (or patches) we need to send them off
+the the mailing list for review. This can be done using git
+send-email.  This may be slightly tricky to set up, I suggest googling
+for the best way to set this up in your gitconfig file that best suits
+your email provider and authentication method. Once it is configured
+you can submit your patch to the mailing list.
 
