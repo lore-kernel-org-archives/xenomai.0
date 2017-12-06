@@ -1,17 +1,15 @@
-References: <b9dc71b8-119f-71dc-56f8-ae59bfb51a27@foxmail.com>
- <b338d27d-a4f7-3d8f-4b6e-c5edbaf1f6f3@xenomai.org>
- <60d13f7c-4bab-382b-3e2c-b391d74d7245@foxmail.com>
- <79259a0a-53c6-c8fa-3f1a-11b5534dfe7d@xenomai.org>
-From: Jack Lee <jacklee11@foxmail.com>
-Message-ID: <07dce87d-955a-fe9e-1230-1f11d143b90c@foxmail.com>+F5C97B805844DC90
-Date: Tue, 28 Nov 2017 17:10:29 +0800
-MIME-Version: 1.0
-In-Reply-To: <79259a0a-53c6-c8fa-3f1a-11b5534dfe7d@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+From: Lange Norbert <norbert.lange@andritz.com>
+Date: Wed, 6 Dec 2017 08:53:17 +0000
+Message-ID: <99BAB48E90E86D42AD41F0BCE3225AEB018DE4C7FD@GRZSMS582.andritz.com>
+References: <99BAB48E90E86D42AD41F0BCE3225AEB018DE4C73A@GRZSMS582.andritz.com>
+ <10f50ca3-aade-c465-ce99-8d379984ecf7@numalliance.com>
+In-Reply-To: <10f50ca3-aade-c465-ce99-8d379984ecf7@numalliance.com>
 Content-Language: en-US
-Subject: Re: [Xenomai] Linux 4.1.18 with xenomai 3.0.3,
-	libraries build failed
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: Re: [Xenomai] RTDM/RTNet - proposal to support sending/receiving
+ multiple packets with one systemcall
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,80 +18,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai <xenomai@xenomai.org>
+To: =?utf-8?B?U3TDqXBoYW5lIEFuY2Vsb3Q=?= <sancelot@numalliance.com>, "Xenomai
+ (xenomai@xenomai.org)" <xenomai@xenomai.org>
+Cc: "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
 
-On 11/28/2017 04:41 PM, Philippe Gerum wrote:
-> On 11/28/2017 02:05 AM, Jack Lee wrote:
->>
->> On 11/27/2017 05:13 PM, Philippe Gerum wrote:
->>> On 11/27/2017 05:00 AM, Jack Lee wrote:
->>>> My board cpu is intel Atom N2800, OS is Lubuntu 17.10, gcc version is
->>>> 7.2.0.
->>>> Since the newest 3.0.6 cannot setup on my board, I tried the older
->>>> version.
->>>> It works now. But when I build the xenomai libraries, it encounters the
->>>> following error:
->>>>
->>>> -r and -pie can not be used together.
->>>>
->>>> then I changed the configuration to
->>>>
->>>> ../configure --with-core=cobalt --enable-smp --enable-pshared
->>>> CFLAGS="-no-pie"
->>>>
->>>> It didn't work with the new error:
->>>>
->>>> In file included from ../../../utils/analogy/calibration_ni_m.h:27:0,
->>>>                    from ../../../utils/analogy/calibration_ni_m.c:26:
->>>> ../../../utils/analogy/analogy_calibrate.h: In function ‘__debug’:
->>>> ../../../utils/analogy/analogy_calibrate.h:95:2: error: implicit
->>>> declaration of function ‘clock_gettime’
->>>> [-Werror=implicit-function-declaration]
->>>>     clock_gettime(CLOCK_MONOTONIC, &now);
->>>>     ^~~~~~~~~~~~~
->>>> ../../../utils/analogy/analogy_calibrate.h:95:16: error:
->>>> ‘CLOCK_MONOTONIC’ undeclared (first use in this function)
->>>>     clock_gettime(CLOCK_MONOTONIC, &now);
->>>>                   ^~~~~~~~~~~~~~~
->>>> ../../../utils/analogy/analogy_calibrate.h:95:16: note: each undeclared
->>>> identifier is reported only once for each function it appears in
->>>>
->>>> Can anyone help?
->>> Instead of downgrading to a release with known core issues, you have the
->>> option to pull fixes for v3.0.6 from the maintenance branch:
->>>
->>> URL: http://git.xenomai.org/xenomai-3.git/
->>> branch: stable-3.0.x
->> This one seems to have no configure script.
->> When I run autoconf in the top directory, I get the following error:
->>
->> configure.ac:51: error: possibly undefined macro: AM_CONDITIONAL
->>        If this token and others are legitimate, please use m4_pattern_allow.
->>        See the Autoconf documentation.
->> configure.ac:88: error: possibly undefined macro: AC_PROG_CC_FOR_BUILD
->> configure.ac:106: error: possibly undefined macro: AM_INIT_AUTOMAKE
->> configure.ac:108: error: possibly undefined macro: AM_MAINTAINER_MODE
->> configure.ac:109: error: possibly undefined macro: AM_PROG_AS
->> configure.ac:110: error: possibly undefined macro: AM_PROG_LEX
->> configure.ac:164: error: possibly undefined macro: AC_ENABLE_SHARED
->> configure.ac:165: error: possibly undefined macro: AC_PROG_LIBTOOL
->> configure.ac:238: error: possibly undefined macro: AM_CPPFLAGS
->>
->>
->>
->>
-> You need to run the bootstrap script first, see
->
-> https://xenomai.org/installing-xenomai-3-x/#Installing_the_Xenomai_libraries_and_tools
->
-Thanks, but there is something wrong still.
-
-configure.ac:164: error: possibly undefined macro: AC_ENABLE_SHARED
-       If this token and others are legitimate, please use m4_pattern_allow.
-       See the Autoconf documentation.
-configure.ac:165: error: possibly undefined macro: AC_PROG_LIBTOOL
-autoreconf: /usr/bin/autoconf failed with exit status: 1
-
-
-
+Pi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQogPkZyb206IFN0w6lwaGFuZSBBbmNlbG90IFtt
+YWlsdG86c2FuY2Vsb3RAbnVtYWxsaWFuY2UuY29tXQ0KID5TZW50OiBNaXR0d29jaCwgMDYuIERl
+emVtYmVyIDIwMTcgMDk6MTUNCiA+VG86IExhbmdlIE5vcmJlcnQ7IFhlbm9tYWkgKHhlbm9tYWlA
+eGVub21haS5vcmcpDQogPkNjOiBqYW4ua2lzemthQHNpZW1lbnMuY29tDQogPlN1YmplY3Q6IFJl
+OiBbWGVub21haV0gUlRETS9SVE5ldCAtIHByb3Bvc2FsIHRvIHN1cHBvcnQgc2VuZGluZy9yZWNl
+aXZpbmcNCiA+bXVsdGlwbGUgcGFja2V0cyB3aXRoIG9uZSBzeXN0ZW1jYWxsDQogPg0KID5FTUFJ
+TCBmcm9tIGEgTk9OLUFORFJJVFogU09VUkNFOiBhcyBhIHNlY3VyaXR5IG1lYXN1cmUsIHBsZWFz
+ZSBleGVyY2lzZQ0KID5jYXV0aW9uIHdpdGggZW1haWwgY29udGVudCBhbmQgYW55IGxpbmtzIG9y
+IGF0dGFjaG1lbnRzLg0KID4NCiA+DQogPkhpLA0KID4NCiA+SSBoYXZlIGRvbmUgYW4gYXBwbGlj
+YXRpb24gdGhhdCBkb2VzIHRoaXMgdGhpbmcuDQogPg0KID50aGUgYXBwbGljYXRpb24gbWFuYWdl
+cyBhIHN0YWNrIG9mIGZyYW1lcyB3aXRoIHByaW9yaXRpZXMuIGhpZ2gNCiA+cHJpb3JpdGllcyBm
+cmFtZSBhcmUgc2VudCBhdCBzeW5jaHJvbmlzZWQgdGltZSAoZWFjaCBtcywgc3luY2hyb25pc2Vk
+IGJ5DQogPmV4dGVybmFsIGNsb2NrKSBhbmQgdGhlbiBpZiB0aGVyZSBpcyBlbm91Z2ggcmVtYWlu
+aW5nIHRpbWUsIGxvdyBwcmlvcml0eQ0KID5mcmFtZXMuIChldGhlcmNhdCBidXMgYXBwbGljYXRp
+b24pDQogPg0KID5UaGUgam9iIGlzIG5vdCBkb25lIGluIGRyaXZlciwgYnV0IGluIHJlYWx0aW1l
+IGFwcGxpY2F0aW9uIHByb2Nlc3MuDQogPg0KID5JIGhhdmUgIDIgc3RhY2tzID0+IElucHV0IC8g
+b3VwdXQgcGFja2V0cw0KID4NCiA+SSBtYW5hZ2VkIHRvIGxpbmsgdGhpcyB0YXNrIHdpdGggYW4g
+aW50ZXJuYWwgc29mdHdhcmUgc3dpdGNoIHRoYXQNCiA+cGVybWl0cyB0byBlbWJlZCBldGhlcm5l
+dCBwYWNrZXRzIGluIGV0aGVyY2F0IChFb0UpDQogPg0KID4gRnJvbSBteSB2aWV3cG9pbnQsIEkg
+ZG9uJ3QgdW5kZXJzdGFuZCB0aGUgYWRkZWQgdmFsdWUgZG9pbmcgdGhpcyBvbg0KID5kcml2ZXIg
+c2lkZSA/DQogPg0KID5SZWdhcmRzLA0KID4NCiA+Uy5BbmNlbG90DQoNCkhlbGxvLA0KDQpMb29r
+aW5nIGF0IHRoZSBwcmlvcml0aWVzLCB0aGUgc3lzdGVtIGlzIHJvdWdobHk6DQpbaXJxc10NClty
+dG5ldC9ydGRtXQ0KW3J0LWFwcGxpY2F0aW9uXQ0KDQpXZSBoYXZlIGEgY291cGxlIEdCaXQgZXRo
+ZXJuZXQgY29ubmVjdGlvbnMgd2hpY2ggZWFjaCBjb3VsZCByZWNlaXZlIDE1MDAgUGFja2V0cyBw
+ZXIgbXMgKHdvcnN0IGNhc2UpLiBBbnkgYXR0ZW1wdCB0byByZXN0cmljdCB0aGUgaW1wYWN0IG9m
+IGEgbG9hZGVkIGNvbm5lY3Rpb24gKHdoZXRoZXIgb24gcHVycG9zZSBvciBpbiBlcnJvcikgd291
+bGQgaGF2ZSB0byBiZSBkb25lIGF0IHRoZSBkcml2ZXIgc2lkZS4NClNvIGRpc2FibGluZyBpcnFz
+IG9uIHBhY2tldCByZWNlcHRpb24gYW5kIGJlaW5nIGFibGUgdG8gcHVsbCBvdXQgYXZhaWxhYmxl
+IG9uZXMgd291bGQgbmVlZCB0byBiZSBkb25lIG9uIHRoZSBkcml2ZXIgbGV2ZWwuDQoNCk91ciBw
+cmV2aW91cyBzb2Z0d2FyZSAob24gYSBSVCAiVGFza3NjaGVkdWxlciIpIGRpZCB0aGlzIGJ5IHBy
+aW1pbmcgb25seSBhIGZpeGVkIGFtb3VudCBvZiBETUEgcmVjZWl2ZSBidWZmZXJzLCB3aGljaCBt
+ZWFucyB0aGVyZSB3YXMgYSAqYm91bmRlZCogYW1vdW50IG9mIGRhdGEgdG8gaW5zcGVjdCwgYSAq
+Ym91bmRlZCogbnVtYmVyIG9mIElSUVMgKDApIGFuZCBhICpib3VuZGVkKiBudW1iZXIgb2Ygc3lz
+dGVtIGNhbGxzLA0Kd2l0aCBleGNlc3MgZGF0YSBkcm9wcGVkIGFzIGVhcmx5IGFzIHBvc3NpYmxl
+IC0gYnkgdGhlIGhhcmR3YXJlLCBpbnN0ZWFkIGJlaW5nIHBhc3NlZCBkb3duIGFuZCByZWplY3Rl
+ZCBsYXRlci4NCg0KVGh1cyB3ZSBjb3VsZCBlYXNpbHkgZ3VhcmFudGVlIGxhdGVuY2llcyBhbmQg
+YXZhaWxhYmxlIENQVSB0aW1lIGZvciB0aGUgUlQgYXBwbGljYXRpb25zLCB3aGljaCBpcyB0aGUg
+cHJpbWFyeSBwb2ludCBoZXJlIChiZXR0ZXIgcGVyZm9ybWFuY2UgaXMgYW4gYWR2YW50YWdlIHRv
+byk6IG1ha2luZyBldmVyeXRoaW5nIG1vcmUgcHJlZGljdGFibGUuDQoNClByb2JhYmx5IHNob3Vs
+ZCBleHBsYWluIHRoYXQgdGhlcmUgaXMgd29yayBkbyBiZSBkb25lIGluIHRoZSBSVE5ldCBzaWRl
+LCB3aGljaCBpcyBub3QgdGhlIGlzc3VlIGhlcmUuIFRoZXJlIGlzIGhvd2V2ZXIgd29yayBuZWVk
+ZWQgZm9yIFJURE0gdG8gZXZlbiAqYWxsb3cqIG1vZGlmeWluZyB0aGUgYmVoYXZpb3IsIGFuZCB0
+aGUgYmFzaWMgcXVlc3Rpb24gaXM6IGhvdyBhbmQgd2hhdCBjb3VsZC9zaG91bGQgYmUgZG9uZSBz
+byB1cHN0cmVhbWluZyBpcyBlYXNpbHkgZG9hYmxlLg0KDQpOb3JiZXJ0DQoNCiMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMNClRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBz
+b2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudHMuIFRoZXkgbWF5IGNv
+bnRhaW4gcHJpdmlsZWdlZCBhbmQvb3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yIG90aGVy
+IGluZm9ybWF0aW9uIHByb3RlY3RlZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90IGFu
+IGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5b3UgcmVj
+ZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBhbmQgdGhhdCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0
+aW9uLCBkaXN0cmlidXRpb24gb3IgY29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNo
+bWVudCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVt
+YWlsIGluIGVycm9yLCBwbGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgdGhlIG1l
+c3NhZ2UgYW5kIGFueSBhdHRhY2htZW50IGZyb20geW91ciBzeXN0ZW0uDQpUaGFuayBZb3UuDQog
+IEFORFJJVFogSFlEUk8gR21iSA0KICBSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hh
+ZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQogIEZpcm1lbnNpdHov
+IFJlZ2lzdGVyZWQgc2VhdDogV2llbg0KICBGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVn
+aXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdpZW4NCiAgRmlybWVuYnVjaG51bW1lci8gQ29tcGFueSBy
+ZWdpc3RyYXRpb246IEZOIDYxODMzIGcNCiAgRFZSOiAwNjA1MDc3DQogIFVJRC1Oci46IEFUVTE0
+NzU2ODA2DQojIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjDQoNCg==
 
