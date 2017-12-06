@@ -1,12 +1,11 @@
-Date: Wed, 6 Dec 2017 12:01:52 -0500
-Message-ID: <20171206170152.cdxezmvhz6cwppuz@csclub.uwaterloo.ca>
-References: <2586279.HabYCDx7pk@wirbelwind>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <954f3936-9906-a33e-4d6a-fa5e640430e4@xenomai.org>
+Date: Wed, 6 Dec 2017 18:37:46 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2586279.HabYCDx7pk@wirbelwind>
-From: lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
-Subject: Re: [Xenomai] ppc32 users
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] RTnet fixes - testers needed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,18 +14,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Steven Seeger <steven.seeger@nasa.gov>
-Cc: xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On Wed, Dec 06, 2017 at 11:35:35AM -0500, Steven Seeger wrote:
-> Is anyone actively using xenomai on ppc32? I'm going to be doing the 4.14 
-> migration of the IPIPE to ppc32 and was hoping for some volunteers to help 
-> test.
 
-Well I know the place I worked previously still is, but there is no
-way they are going to 4.14 any time soon and wouldn't be able to test
-without moving all the other stuff to a 4.14 first.
+I pushed a pile of RTnet fixes in a WIP branch of the official repo
+(wip/rtnet-fixes). Most of them address invalid direct references to
+user memory from kernel space (instead of properly copying back and
+forth via the copy_from/to_user interface), which are badly wrong at any
+rate, even breaking the kernel on SMAP-enabled x86 platforms.
+
+Most I/O calls were affected, ioctl, sendmsg and recvmsg. I'm still in
+the early process of testing the changes gradually, which involves
+running tests for all socket levels (RAW, DGRAM) and protocols (INET,
+PACKET) enabled.
+
+If you depend on RTnet and want to help with testing, you may want to
+give this branch a try. Any help with reviewing the changes would be
+beneficial to the project too.
+
+Thanks,
 
 -- 
-Len Sorensen
+Philippe.
 
