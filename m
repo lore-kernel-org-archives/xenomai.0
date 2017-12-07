@@ -1,14 +1,15 @@
-References: <48bfcc92-3224-c7ce-10d9-9f4621e10331@tuebingen.mpg.de>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <d009beb3-49d6-b318-e872-51ce93e49cf2@xenomai.org>
-Date: Thu, 7 Dec 2017 10:46:51 +0100
+Date: Thu, 7 Dec 2017 11:29:38 +0100
+From: Henning Schild <henning.schild@siemens.com>
+Message-ID: <20171207112938.514c41e5@md1em3qc>
+In-Reply-To: <20171204125358.58f923a5@md1em3qc>
+References: <b440d689-399e-32f1-c981-c66e655d955a@alaxarxa.net>
+ <20171201161312.4b07fac3@md1em3qc>
+ <ffa39a0b-359c-1657-12e7-4fcfdb23d32b@alaxarxa.net>
+ <20171204125358.58f923a5@md1em3qc>
 MIME-Version: 1.0
-In-Reply-To: <48bfcc92-3224-c7ce-10d9-9f4621e10331@tuebingen.mpg.de>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Xenomai 3.0.5 : RTIPC/XDDP protocol not supported by
- kernel
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Debian packages for Xenomai 3.x
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,25 +18,100 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Vincent Berenz <vberenz@tuebingen.mpg.de>, xenomai@xenomai.org
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Cc: Xenomai List <xenomai@xenomai.org>
 
-On 12/06/2017 10:55 AM, Vincent Berenz wrote:
-> Hi,
-> 
-> We are currently moving from xenomai 2 to xenomai 3.
-> I installed xenomai 3.0.5, and all seems to be working, with low latency.
-> 
-> I am now trying to get our legacy code to work on xenomai 3 using the
-> transition kit.
-> 
-> Our program compiles, but at runtime, on call to rt_pipe_create :
->         0"000.000| WARNING: [main] RTIPC/XDDP protocol not supported by
-> kernel
-> 
+Am Mon, 4 Dec 2017 12:53:58 +0100
+schrieb "[ext] Henning Schild" <henning.schild@siemens.com>:
 
-Do you observe the same issue with any of the native POSIX demo apps
-available from <xenomai-install>/demo/xddp-*?
+> Am Mon, 4 Dec 2017 11:34:16 +0100
+> schrieb Leopold Palomo-Avellaneda <leo@alaxarxa.net>:
+> 
+> > Hi,
+> > 
+> > On 01/12/17 16:13, Henning Schild wrote:  
+> > > Am Thu, 30 Nov 2017 12:27:22 +0100
+> > > schrieb Leopold Palomo-Avellaneda <leo@alaxarxa.net>:
+> > >     
+> > >> Hi,
+> > >>
+> > >>
+> > >> if someone is interested I have been working a bit with the
+> > >> debian directory in xenomai3.
+> > >>
+> > >> I have changed the approach to the libraries. I think that now it
+> > >> has not sense to have a libxenomai1 so I have changed it to
+> > >> xenomai3-libs.
+> > >>
+> > >> The source, and the patches applied are here:
+> > >>
+> > >> https://anonscm.debian.org/cgit/collab-maint/xenomai.git/
+> > >>
+> > >> In case there's some interest, I can try to push it again to the
+> > >> official Debian repositories.    
+> > > 
+> > > Publishing them to Debian would be the ideal case.     
+> > 
+> > Ok, so first go for it ;-)  
+> 
+> Well good luck ;). Please make sure to add this list to CC. Even if
+> you fail the feedback might be valueable to improve what we have in
+> tree. 
+> > But how about you  
+> > > send those patches to this list? After all we have the
+> > > debian-subdir and people are using it!    
+> > 
+> > Who? I think that current debian directory doesn't work for Xenomai
+> > 3. Did you try?  
+> 
+> Yes i am using it. They might not be ideal but i also did not have any
+> problems with the packages.
+> 
+> > I'm from the opinion that the debian directory, to generate debian
+> > packages doesn't belongs to upstream. But, I'm open to send any
+> > patch. Just I would like to know if there are some critical mass.  
+> 
+> We had that discussion before. I think there are quite a few people
+> that install xenomai with debian-packages. And as long as upstream
+> (Debian) does not maintain that folder, it makes some sense to keep it
+> in the sources. Otherwise we would need another repo just for that,
+> and establish a lock-step mechanism like submodules.
+> If we do not get upstream Debian to take care of them, i would suggest
+> to simplify the whole thing. i.e. maybe just throw all in one package.
+> 
+> > > I am using it and i was wondering about the names, but never had a
+> > > big enough issue to actually review what is going on in there.
+> > > So please prepare a patchq and send it here.    
+> > 
+> > Are you using it with Xenomai3?  
+> 
+> Yes both on Ubuntu 16.04 as well as Debian9.
 
--- 
-Philippe.
+Sorry you are right. My scripts actually have one line that does make a
+difference. And that line needs to go into debin/rules
+
+"[ ! -x configure ] && dh_autoreconf"
+
+Meaning, if you call autoreconf before dpkg-build... the debian-folder
+will do its job.
+
+I might send a patch, but if you are going to rework the folder that
+might not make any sense.
+
+Henning
+
+> Henning
+> 
+> > 
+> > Leopold
+> > 
+> > 
+> >   
+> 
+> 
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+
 
