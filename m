@@ -1,13 +1,15 @@
-References: <CALLqZ8ScsrUwM2H5WvoY_6iH5r42fx1AKkT807iri1KS=RV2Pw@mail.gmail.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <88a0b5c8-1033-f6a0-266a-69210190b27b@xenomai.org>
-Date: Thu, 7 Dec 2017 11:38:55 +0100
+References: <48bfcc92-3224-c7ce-10d9-9f4621e10331@tuebingen.mpg.de>
+ <d009beb3-49d6-b318-e872-51ce93e49cf2@xenomai.org>
+From: Vincent Berenz <vberenz@tuebingen.mpg.de>
+Message-ID: <3fd685e2-b399-34c7-8529-48edc391712b@tuebingen.mpg.de>
+Date: Thu, 7 Dec 2017 14:42:15 +0100
 MIME-Version: 1.0
-In-Reply-To: <CALLqZ8ScsrUwM2H5WvoY_6iH5r42fx1AKkT807iri1KS=RV2Pw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <d009beb3-49d6-b318-e872-51ce93e49cf2@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Contributing Doc
+Subject: Re: [Xenomai] Xenomai 3.0.5 : RTIPC/XDDP protocol not supported by
+ kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,127 +18,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
+
+Many thanks for the answer
+
+The demos xddp-echo , xddp-label and xddp-stream seems all to be working ok.
+
+As sanity check, I copied xddp-echo.c to my workspace and compiled it 
+with the rest of our code.
+
+Compilation goes ok, but execution fails with message:
+
+     socket: Address family not supported by protocol
+
+This brought my attention to this:
+
+    http://xenomai.org/pipermail/xenomai/2014-February/030113.html
+
+which says:
+
+   "Your application is likely not wrapping POSIX symbols properly, calling
+    regular socket() instead of the Xenomai implementation. "
+
+We do things this way, possibly something is missing ?
+
+   exec_program(${XENOMAI_ROOT}/bin/xeno-config ARGS "--skin=native 
+--cflags"
+                                                   OUTPUT_VARIABLE 
+XENOMAI_C_FLAGS)
+   exec_program(${XENOMAI_ROOT}/bin/xeno-config ARGS "--skin=native 
+--ldflags"
+     OUTPUT_VARIABLE XENOMAI_LD_FLAGS)
+
+   set(CMAKE_C_FLAGS "${XENOMAI_C_FLAGS} ${CMAKE_C_FLAGS}")
+   set(CMAKE_CPP_FLAGS "${XENOMAI_C_FLAGS} ${CMAKE_CPP_FLAGS}")
+
+   # libraries / executable are linked against this later on
+   set(LAB_STD_LIBS alchemy copperplate cobalt modechk trank pthread 
+edit curses nsl glut GL GLU X11 Xmu m)
+
+   link_directories(${XENOMAI_ROOT}/lib /usr/lib /usr/X11/lib64 
+/usr/X11/lib /usr/lib64 ${CMAKE_LIBRARY_PATH})
+
+   add_definitions(${XENOMAI_C_FLAGS})
+
+   add_definitions(-D__XENO__)
+   add_definitions(-pipe)
+   add_definitions(-D_REENTRANT)
+   add_definitions(-D_GNU_SOURCE)
+
+Best
+
+Vincent
 
 
-Hi,
-
-On 12/06/2017 06:00 AM, Greg Gallagher wrote:
-> Hi,
->    I'm putting together a doc on how to contribute.  I've pasted it
-> below, if anyone has some time to review and let me know what I've
-> missed that would be great.
->   I wasn't sure if all development should take place against the next
-> branch or not.
-
-The current scheme is to only push bug fixes and maybe new drivers to
-the stable-* branch, excluding any change that would prevent
-applications based on earlier releases from the same branch from running
-on later ones.
-
-e.g. for the 3.0.x series, an app built for 3.0.2 must build with no
-change on 3.0.6. Regarding ABI stability, the same app must run over a
-3.0.6 kernel support without rebuilding.
-
-The next branch is where new core features, new CPU architecture ports,
-or large scale changes may go, breaking the ABI between applications and
-the Cobalt core if need be.
-
-  I'm also not sure if I linked the documents correctly
-> or not in the getting setup section.
->   Once it's ready should this be sent to the mailing list as a patch
-> against xenomai-kbase repo?
-
-Patches may be easier for reviewing changes.
-
-> 
-> Thanks
-> 
-> Greg
-> 
-> 
-> 
-> How To Contribute
-> =================
-> 
-> If you are interested in contributing to Xenomai here are some helpful hints on
-> how to get started.
+On 07.12.2017 10:46, Philippe Gerum wrote:
+> On 12/06/2017 10:55 AM, Vincent Berenz wrote:
+>> Hi,
+>>
+>> We are currently moving from xenomai 2 to xenomai 3.
+>> I installed xenomai 3.0.5, and all seems to be working, with low latency.
+>>
+>> I am now trying to get our legacy code to work on xenomai 3 using the
+>> transition kit.
+>>
+>> Our program compiles, but at runtime, on call to rt_pipe_create :
+>>          0"000.000| WARNING: [main] RTIPC/XDDP protocol not supported by
+>> kernel
+>>
+> Do you observe the same issue with any of the native POSIX demo apps
+> available from <xenomai-install>/demo/xddp-*?
 >
 
-Start small, then progress as you get your feet wet. There is no such
-thing as a minor contribution, there is no shame in making mistakes. A
-contributor who submits a perfectible one-liner surely advances the
-project further than any smart lurker.
-
-> Things you will need:
->     - Git
->     - GCC for your platform
-
-autotools too.
-
->     - Xenomai source code
->     - Linux tree patched with Ipipe
->     - Access to the Xenomai mailing list (xenomai@xenomai.org)
-> 
-> Getting Setup:
-> --------------
-> Before starting to contribute you should have read the following documents:
->     -link:Start_Here.adoc[]
-
-the syntax is:
-
-	link:<public-name-of-page>[text displayed as the active link]
-
-	The page name is relative to the site root; for instance, a link
-displayed as "foo" in the text, pointing at the "start here" page, would
-be expressed as:
-
-	link:start-here[foo]
-
-You can figure out page names either by looking at the last part of an
-existing page URL in your browser, or at the title line (first one,
-underlined by '===') from each .adoc file. In the latter case, the title
-string is converted to all lowercase, replacing non-alphanumeric chars
-by a dash.
-
->     -link:Getting_Xenomai.adoc[]
->     -link:Installing_Xenomai_3.x.adoc[]
-> 
-> Workflow
-> --------
-> The above mentioned documents will guide you through acquiring the
-> source code, getting the development environment set up, and building
-> Xenomai.  If you are having issues getting your development
-> environment setup or built please review the documents or consult the
-> Xenomai mailing list.
-> 
-> To contribute to Xenomai, switch to the branch you'd like to make your
-> changes on (next branch?).
-
-Depends on the purpose as mentioned earlier.
-
-  After you make your changes, one thing to
-> keep in mind is that when you submit your patches to the the mailing
-> list each patch should address exactly one issue.  You may want to
-> make one commit for every patch you wish to generate.  This may
-> be a good workflow if you are addressing more than one issue during development.
-> 
-> Once you are done development and testing you are ready to generate
-> patches.  Use git format-patch to create a patch (or patch set) that
-> you can submit for review.
-> 
-> Once we have generated our patch (or patches) we need to send them off
-> the the mailing list for review. This can be done using git
-> send-email.  This may be slightly tricky to set up, I suggest googling
-> for the best way to set this up in your gitconfig file that best suits
-> your email provider and authentication method. Once it is configured
-> you can submit your patch to the mailing list.
-> 
-
-Generally speaking, the kernel part of Xenomai - aka Cobalt core - aims
-at following the standard kernel coding style (i.e.
-Documentation/CodingStyle).
-
--- 
-Philippe.
 
