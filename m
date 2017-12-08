@@ -1,9 +1,9 @@
 MIME-Version: 1.0
 From: Andreas Glatz <andi.glatz@gmail.com>
-Date: Fri, 8 Dec 2017 11:03:04 +0000
-Message-ID: <CAKJ14NcT45L6bT2b1jND1y1W-=uD8R1oQ18O62PN3E7YdNDKoQ@mail.gmail.com>
+Date: Fri, 8 Dec 2017 11:14:25 +0000
+Message-ID: <CAKJ14NcFezd4xy7R3vCQ2m4E7FREFJMQG_2fTmuZ=L6icKQbnA@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] RTnet fixes - testers needed (Philippe Gerum)
+Subject: Re: [Xenomai] xenomai 3.0.3 POSIX rtnet API
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,32 +12,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai@xenomai.org, jacklee11@foxmail.com
+
+> Message: 4
+> Date: Thu, 7 Dec 2017 10:35:59 +0800
+> From: JackLee <jacklee11@foxmail.com>
+> To: xenomai@xenomai.org
+> Subject: [Xenomai] xenomai 3.0.3 POSIX rtnet API
+> Message-ID:
+>         <830662c3-0cbc-78ab-b7ab-4568616793a7@foxmail.com>+45245C193B26E5A4
+> Content-Type: text/plain; charset=utf-8; format=flowed
+>
+> Hi, all,
+>
+>  ? My Xenomai version is 3.0.3 and I use the POSIX API with the
+> following build options.
+>
+>
+> XENO_CONFIG := /usr/xenomai/bin/xeno-config
+> CFLAGS := $(shell $(XENO_CONFIG) --vxworks --cflags)
+> LDFLAGS := $(shell $(XENO_CONFIG) --vxworks --ldflags)
+> CC := $(shell $(XENO_CONFIG) --cc)
+
+You say you're using the POSIX API, but these compiler options have
+the --vxworks switch... so something's not right....
 
 >
-> I pushed a pile of RTnet fixes in a WIP branch of the official repo
-> (wip/rtnet-fixes). Most of them address invalid direct references to
-> user memory from kernel space (instead of properly copying back and
-> forth via the copy_from/to_user interface), which are badly wrong at any
-> rate, even breaking the kernel on SMAP-enabled x86 platforms.
+>  ? What APIs can I use for RTnet?
 >
-> Most I/O calls were affected, ioctl, sendmsg and recvmsg. I'm still in
-> the early process of testing the changes gradually, which involves
-> running tests for all socket levels (RAW, DGRAM) and protocols (INET,
-> PACKET) enabled.
-
-I think that's exactly what I was seeing when running 4.9 Linux +
-Xenomai 3 + RTnet on i.MX6.
-
+>  ? The Link below uses alchemy APIs?
 >
-> If you depend on RTnet and want to help with testing, you may want to
-> give this branch a try. Any help with reviewing the changes would be
-> beneficial to the project too.
+> http://xenomai.org/rtnet-programming/
 >
 
-I shall try and give it a spin this weekend.
-
-Thanks.
+Basically, RTnet API calls can be derived from the equivalent POSIX
+API calls by sticking rt_dev_ in front of the original POSIX API call
+(e.g. socket() -> rt_dev_socket(), bind() -> rt_dev_bind(), ...). If
+you're using the Alchemy API then you have to do this manually. If
+you're using the Xenomai POSIX API instead, then the linker does this
+for you with the symbol wrapper script (so it auto replaces e.g.
+bind() with rt_dev_bind() before linking it to the rtdm library). In
+both cases you also need to link to the rtdm API. I don't remember all
+the details right now as I'm using Xenomai 2 at work, but I'll try to
+look it up this weekend...
 
 A.
 
