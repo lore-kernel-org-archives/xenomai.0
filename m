@@ -1,9 +1,13 @@
+References: <CAKJ14NcT45L6bT2b1jND1y1W-=uD8R1oQ18O62PN3E7YdNDKoQ@mail.gmail.com>
+From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
+Message-ID: <c3ac7a03-8202-af70-3535-7be3985dc5a5@numalliance.com>
+Date: Fri, 8 Dec 2017 15:16:37 +0100
 MIME-Version: 1.0
-From: Andreas Glatz <andi.glatz@gmail.com>
-Date: Fri, 8 Dec 2017 13:14:16 +0000
-Message-ID: <CAKJ14Nccx5_Up-7dDK1U1Meu_vQA5TgxoHkyML8dcFDZMdbYwA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] mode switch caused by __lll_lock_wait_private()
+In-Reply-To: <CAKJ14NcT45L6bT2b1jND1y1W-=uD8R1oQ18O62PN3E7YdNDKoQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: fr
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] RTnet fixes - testers needed (Philippe Gerum)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,29 +18,43 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi
+Hi,
 
-We're testing our application now by running it continuously over
-weeks. I randomly reports the following mode switches in the log:
+Do you know which release introduced this problem ?
 
-<SIGXCPU: MSW(invoked syscall) BT(4): 0x2ade5bc8 0x2af95840 0x2b03a420 0x93980 >
+Regards,
 
-With the process memory map from /proc/<pid>/maps:
+S.Ancelot
 
-...
-2af68000-2b084000 r-xp 00000000 00:0d 22235 /lib/libc-2.14.1.so
-...
 
-and output from <cross-arm>-objdump -d /lib/libc-2.14.1.so
+Le 08/12/2017 =C3=A0 12:03, Andreas Glatz a =C3=A9crit=C2=A0:
+>> I pushed a pile of RTnet fixes in a WIP branch of the official repo
+>> (wip/rtnet-fixes). Most of them address invalid direct references to
+>> user memory from kernel space (instead of properly copying back and
+>> forth via the copy_from/to_user interface), which are badly wrong at a=
+ny
+>> rate, even breaking the kernel on SMAP-enabled x86 platforms.
+>>
+>> Most I/O calls were affected, ioctl, sendmsg and recvmsg. I'm still in
+>> the early process of testing the changes gradually, which involves
+>> running tests for all socket levels (RAW, DGRAM) and protocols (INET,
+>> PACKET) enabled.
+> I think that's exactly what I was seeing when running 4.9 Linux +
+> Xenomai 3 + RTnet on i.MX6.
+>
+>> If you depend on RTnet and want to help with testing, you may want to
+>> give this branch a try. Any help with reviewing the changes would be
+>> beneficial to the project too.
+>>
+> I shall try and give it a spin this weekend.
+>
+> Thanks.
+>
+> A.
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
-I could figure out that 0x2b03a420 corresponds to glibc's
-__lll_lock_wait_private() function, which seems to cause SIGXCPU.
-
-Before digging any deeper did anyone else see Xenomai mode switches
-caused by this glibc function (google says that it's e.g. used for
-managing concurrent access to rand())?
-
-Cheers,
-
-A.
 
