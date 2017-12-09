@@ -1,14 +1,7 @@
-References: <CAKJ14NcT45L6bT2b1jND1y1W-=uD8R1oQ18O62PN3E7YdNDKoQ@mail.gmail.com>
- <c3ac7a03-8202-af70-3535-7be3985dc5a5@numalliance.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <683f9cf0-4fb2-cbdc-4fef-1c236f5ad9b9@xenomai.org>
-Date: Fri, 8 Dec 2017 15:42:55 +0100
-MIME-Version: 1.0
-In-Reply-To: <c3ac7a03-8202-af70-3535-7be3985dc5a5@numalliance.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] RTnet fixes - testers needed (Philippe Gerum)
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Fri,  8 Dec 2017 22:50:35 -0500
+Message-Id: <1512791435-4231-1-git-send-email-greg@embeddedgreg.com>
+Subject: [Xenomai] [PATCH] Fix up name collision, debug is already defined
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,57 +10,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 12/08/2017 03:16 PM, Stéphane Ancelot wrote:
-> Hi,
-> 
-> Do you know which release introduced this problem ?
-> 
+---
+When compiling for x86 and enabling experimental intel net drivers I ran
+into a compilation error where debug was defined previously.  Rename the 
+debug variable to avoid the collision.
 
-It never worked.
+---
+ kernel/drivers/net/drivers/experimental/e1000/e1000_main.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-> Regards,
-> 
-> S.Ancelot
-> 
-> 
-> Le 08/12/2017 à 12:03, Andreas Glatz a écrit :
->>> I pushed a pile of RTnet fixes in a WIP branch of the official repo
->>> (wip/rtnet-fixes). Most of them address invalid direct references to
->>> user memory from kernel space (instead of properly copying back and
->>> forth via the copy_from/to_user interface), which are badly wrong at any
->>> rate, even breaking the kernel on SMAP-enabled x86 platforms.
->>>
->>> Most I/O calls were affected, ioctl, sendmsg and recvmsg. I'm still in
->>> the early process of testing the changes gradually, which involves
->>> running tests for all socket levels (RAW, DGRAM) and protocols (INET,
->>> PACKET) enabled.
->> I think that's exactly what I was seeing when running 4.9 Linux +
->> Xenomai 3 + RTnet on i.MX6.
->>
->>> If you depend on RTnet and want to help with testing, you may want to
->>> give this branch a try. Any help with reviewing the changes would be
->>> beneficial to the project too.
->>>
->> I shall try and give it a spin this weekend.
->>
->> Thanks.
->>
->> A.
->>
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> https://xenomai.org/mailman/listinfo/xenomai
-> 
-> 
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
-
-
+diff --git a/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c b/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
+index 66ecfce..acdc13c 100644
+--- a/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
++++ b/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
+@@ -421,9 +421,9 @@ module_param_array(cards, int, NULL, 0444);
+ MODULE_PARM_DESC(cards, "array of cards to be supported (eg. 1,0,1)");
+ 
+ 
+-static int debug = NETIF_MSG_DRV | NETIF_MSG_PROBE;
+-module_param(debug, int, 0);
+-MODULE_PARM_DESC(debug, "Debug level (0=none,...,16=all)");
++static int local_debug = NETIF_MSG_DRV | NETIF_MSG_PROBE;
++module_param(local_debug, int, 0);
++MODULE_PARM_DESC(local_debug, "Debug level (0=none,...,16=all)");
+ 
+ /* The parameter 'pciif' might be used to use this driver for
+  * PCI or PCIe only NICs.
+@@ -1096,7 +1096,7 @@ static int e1000_probe(struct pci_dev *pdev,
+ 	adapter->netdev = netdev;
+ 	adapter->pdev = pdev;
+ 	adapter->hw.back = adapter;
+-	adapter->msg_enable = (1 << debug) - 1;
++	adapter->msg_enable = (1 << local_debug) - 1;
+ 
+ 	err = -EIO;
+ 	adapter->hw.hw_addr = ioremap(pci_resource_start(pdev, BAR_0),
 -- 
-Philippe.
+2.7.4
+
 
