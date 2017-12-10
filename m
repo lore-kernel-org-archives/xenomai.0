@@ -1,11 +1,14 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Message-ID: <f1db06a3-bb2c-6b80-a29a-1a0f5387b505@alaxarxa.net>
-Date: Sun, 10 Dec 2017 19:34:51 +0100
+From: Philippe Gerum <rpm@xenomai.org>
+References: <1512701420-22852-1-git-send-email-greg@embeddedgreg.com>
+ <83264938-34c8-1b50-d63e-b1743ba9efa1@xenomai.org>
+Message-ID: <0e9c94b4-02ec-bcef-1c61-cba929aff67e@xenomai.org>
+Date: Sun, 10 Dec 2017 23:15:22 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] [PATCH] Fix compilation issues for the rest of RTNet
-	drives
+In-Reply-To: <83264938-34c8-1b50-d63e-b1743ba9efa1@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] Add How To Contribute Guide
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,24 +17,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai List <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+To: Greg Gallagher <greg@embeddedgreg.com>, xenomai@xenomai.org
 
-SGksCgpJIHNlbnQgdGhpcyBwYXRjaCBzb21lIGRheXMgYWdvIGJ1dCBpdCBzZWVtcyB0aGF0IG5l
-dmVyIGFycml2ZWQuIEkgc2VudCBhZ2Fpbi4KCgpIaSwKCnRoaXMgcGF0Y2ggbGV0cyBjb21waWxl
-IFJUTkVUIGRyaXZlcnMgd2l0aCAzLjAuNiAoa2VybmVsIDQuOS41MSkuIEkgaGF2ZSBkb25lCnRo
-ZSBzYW1lIHByb2NlZHVyZSBhcyBSb2JlcnQgTGFuZ2UgZGlkIGJlZm9yZS4KCkxlb3BvbGQKCi0t
-IAotLQpMaW51eCBVc2VyIDE1MjY5MiAgICAgR1BHOiAwNUY0QTdBOTQ5QTJEOUFBCkNhdGFsb25p
-YQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkE6IEJlY2F1c2UgaXQgbWVz
-c2VzIHVwIHRoZSBvcmRlciBpbiB3aGljaCBwZW9wbGUgbm9ybWFsbHkgcmVhZCB0ZXh0LgpROiBX
-aHkgaXMgdG9wLXBvc3Rpbmcgc3VjaCBhIGJhZCB0aGluZz8KQTogVG9wLXBvc3RpbmcuClE6IFdo
-YXQgaXMgdGhlIG1vc3QgYW5ub3lpbmcgdGhpbmcgaW4gZS1tYWlsPwoKLS0tLS0tLS0tLS0tLS0g
-bmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJi
-ZWQuLi4KTmFtZTogMDAwNy1ydG5ldC1kcml2ZXItZml4LWNvbXBpbGF0aW9uLWRyaXZlcnMucGF0
-Y2gKVHlwZTogdGV4dC94LXBhdGNoClNpemU6IDExODI3IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFi
-bGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRz
-LzIwMTcxMjEwLzQ1YmFkYzcyL2F0dGFjaG1lbnQuYmluPgotLS0tLS0tLS0tLS0tLSBuZXh0IHBh
-cnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpO
-YW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTog
-ODE5IGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3hl
-bm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTcxMjEwLzQ1YmFkYzcy
-L2F0dGFjaG1lbnQuc2lnPgo=
+On 12/10/2017 05:52 PM, Philippe Gerum wrote:
+> On 12/08/2017 03:50 AM, Greg Gallagher wrote:
+>> ---
+>>  How_To_Contribute.adoc | 57 ++++++++++++++++++++++++++++++++++++++++++++++++++
+>>  1 file changed, 57 insertions(+)
+>>  create mode 100644 How_To_Contribute.adoc
+>>
+> 
+> Merged, thanks. Now visible from [1], under the new "Contribute" menu.
+> There is a TODO list brewing here, which should be added to this menu too.
+> 
+> [1] https://xenomai.org/how-to-contribute/
+> 
+
+https://xenomai.org/todo/
+
+The source page is available from xenomai-kbase.git.
+
+-- 
+Philippe.
+
