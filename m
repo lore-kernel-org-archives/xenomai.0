@@ -1,12 +1,13 @@
-Message-ID: <477CBDCD49BA4AC1BE6D820DA1BE30EE@itd206>
-From: "Sureshvs" <sureshvs@datapatterns.co.in>
-Date: Sat, 9 Dec 2017 16:39:29 +0530
+References: <1512701420-22852-1-git-send-email-greg@embeddedgreg.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <83264938-34c8-1b50-d63e-b1743ba9efa1@xenomai.org>
+Date: Sun, 10 Dec 2017 17:52:37 +0100
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Reg:synchronization between Qthread and posix pthread
-	with semaphore
+In-Reply-To: <1512701420-22852-1-git-send-email-greg@embeddedgreg.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] Add How To Contribute Guide
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,26 +16,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-Cc: bhargavram.chowdary@industeqsite.com
+To: Greg Gallagher <greg@embeddedgreg.com>, xenomai@xenomai.org
 
-Hi
+On 12/08/2017 03:50 AM, Greg Gallagher wrote:
+> ---
+>  How_To_Contribute.adoc | 57 ++++++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 57 insertions(+)
+>  create mode 100644 How_To_Contribute.adoc
+> 
 
-ARCH:x86
-Kernel : 4.4.43
-ipipe: ipipe-4-4.43-x86-8.patch
-xenomai: 3.0.5
+Merged, thanks. Now visible from [1], under the new "Contribute" menu.
+There is a TODO list brewing here, which should be added to this menu too.
 
-We are using cobalt posix semaphore(sem_post) for synchronize between =
-posix thread and Thread(sem_wait).
-The problem is semaphore not blocking in QT thread.Kindly helps to solve =
-the problem.It return value -1 (EPERM)
+[1] https://xenomai.org/how-to-contribute/
 
-Suggest how to use synchronization service between Qt thread and xenomai =
-userspace.
-
-Regards
-Suresh V.S
-
-
+-- 
+Philippe.
 
