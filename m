@@ -1,14 +1,11 @@
-References: <1512791435-4231-1-git-send-email-greg@embeddedgreg.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <782badb7-2d33-b750-4ceb-7c8821bf81fe@xenomai.org>
-Date: Sun, 10 Dec 2017 17:58:58 +0100
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Message-ID: <f1db06a3-bb2c-6b80-a29a-1a0f5387b505@alaxarxa.net>
+Date: Sun, 10 Dec 2017 19:34:51 +0100
 MIME-Version: 1.0
-In-Reply-To: <1512791435-4231-1-git-send-email-greg@embeddedgreg.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] Fix up name collision,
-	debug is already defined
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] [PATCH] Fix compilation issues for the rest of RTNet
+	drives
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,48 +14,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, xenomai@xenomai.org
+To: Xenomai List <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 
-On 12/09/2017 04:50 AM, Greg Gallagher wrote:
-> ---
-> When compiling for x86 and enabling experimental intel net drivers I ran
-> into a compilation error where debug was defined previously.  Rename the 
-> debug variable to avoid the collision.
-> 
-> ---
->  kernel/drivers/net/drivers/experimental/e1000/e1000_main.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c b/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
-> index 66ecfce..acdc13c 100644
-> --- a/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
-> +++ b/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
-> @@ -421,9 +421,9 @@ module_param_array(cards, int, NULL, 0444);
->  MODULE_PARM_DESC(cards, "array of cards to be supported (eg. 1,0,1)");
->  
->  
-> -static int debug = NETIF_MSG_DRV | NETIF_MSG_PROBE;
-> -module_param(debug, int, 0);
-> -MODULE_PARM_DESC(debug, "Debug level (0=none,...,16=all)");
-> +static int local_debug = NETIF_MSG_DRV | NETIF_MSG_PROBE;
-> +module_param(local_debug, int, 0);
-> +MODULE_PARM_DESC(local_debug, "Debug level (0=none,...,16=all)");
->  
->  /* The parameter 'pciif' might be used to use this driver for
->   * PCI or PCIe only NICs.
-> @@ -1096,7 +1096,7 @@ static int e1000_probe(struct pci_dev *pdev,
->  	adapter->netdev = netdev;
->  	adapter->pdev = pdev;
->  	adapter->hw.back = adapter;
-> -	adapter->msg_enable = (1 << debug) - 1;
-> +	adapter->msg_enable = (1 << local_debug) - 1;
->  
->  	err = -EIO;
->  	adapter->hw.hw_addr = ioremap(pci_resource_start(pdev, BAR_0),
-> 
-
-Merged, thanks.
-
--- 
-Philippe.
-
+SGksCgpJIHNlbnQgdGhpcyBwYXRjaCBzb21lIGRheXMgYWdvIGJ1dCBpdCBzZWVtcyB0aGF0IG5l
+dmVyIGFycml2ZWQuIEkgc2VudCBhZ2Fpbi4KCgpIaSwKCnRoaXMgcGF0Y2ggbGV0cyBjb21waWxl
+IFJUTkVUIGRyaXZlcnMgd2l0aCAzLjAuNiAoa2VybmVsIDQuOS41MSkuIEkgaGF2ZSBkb25lCnRo
+ZSBzYW1lIHByb2NlZHVyZSBhcyBSb2JlcnQgTGFuZ2UgZGlkIGJlZm9yZS4KCkxlb3BvbGQKCi0t
+IAotLQpMaW51eCBVc2VyIDE1MjY5MiAgICAgR1BHOiAwNUY0QTdBOTQ5QTJEOUFBCkNhdGFsb25p
+YQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkE6IEJlY2F1c2UgaXQgbWVz
+c2VzIHVwIHRoZSBvcmRlciBpbiB3aGljaCBwZW9wbGUgbm9ybWFsbHkgcmVhZCB0ZXh0LgpROiBX
+aHkgaXMgdG9wLXBvc3Rpbmcgc3VjaCBhIGJhZCB0aGluZz8KQTogVG9wLXBvc3RpbmcuClE6IFdo
+YXQgaXMgdGhlIG1vc3QgYW5ub3lpbmcgdGhpbmcgaW4gZS1tYWlsPwoKLS0tLS0tLS0tLS0tLS0g
+bmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJi
+ZWQuLi4KTmFtZTogMDAwNy1ydG5ldC1kcml2ZXItZml4LWNvbXBpbGF0aW9uLWRyaXZlcnMucGF0
+Y2gKVHlwZTogdGV4dC94LXBhdGNoClNpemU6IDExODI3IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFi
+bGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRz
+LzIwMTcxMjEwLzQ1YmFkYzcyL2F0dGFjaG1lbnQuYmluPgotLS0tLS0tLS0tLS0tLSBuZXh0IHBh
+cnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpO
+YW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTog
+ODE5IGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3hl
+bm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTcxMjEwLzQ1YmFkYzcy
+L2F0dGFjaG1lbnQuc2lnPgo=
