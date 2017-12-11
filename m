@@ -1,13 +1,12 @@
-Date: Mon, 11 Dec 2017 15:03:43 +0100
+Date: Mon, 11 Dec 2017 15:21:55 +0100
 From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20171211150343.4f95e650@md1em3qc>
-In-Reply-To: <DB6PR0701MB24569056BAB353E42210D9CAB53A0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
-References: <DB6PR0701MB2456EB08FE752DA5BF73FF6DB53A0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
- <DB6PR0701MB24569056BAB353E42210D9CAB53A0@DB6PR0701MB2456.eurprd07.prod.outlook.com>
+Message-ID: <20171211152155.54650ccd@md1em3qc>
+In-Reply-To: <CAKJ14Nccx5_Up-7dDK1U1Meu_vQA5TgxoHkyML8dcFDZMdbYwA@mail.gmail.com>
+References: <CAKJ14Nccx5_Up-7dDK1U1Meu_vQA5TgxoHkyML8dcFDZMdbYwA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Library cannot be dlopen()ed
+Subject: Re: [Xenomai] mode switch caused by __lll_lock_wait_private()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,49 +15,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Giulio Moro <g.moro@qmul.ac.uk>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Andreas Glatz <andi.glatz@gmail.com>
+Cc: xenomai@xenomai.org
 
-Am Tue, 28 Nov 2017 23:24:40 +0000
-schrieb Giulio Moro <g.moro@qmul.ac.uk>:
+Am Fri, 8 Dec 2017 13:14:16 +0000
+schrieb Andreas Glatz <andi.glatz@gmail.com>:
 
-> Again, armv7 BeagleBone Black, Xenomai 3.0.5
+> Hi
 > 
-> My main executable uses the posix API, hence ldd tells me :
-> 	libcobalt.so.2 => /usr/xenomai/lib/libcobalt.so.2 (0xb6ed3000)
-> 	libmodechk.so.0 => /usr/xenomai/lib/libmodechk.so.0
-> (0xb6f39000)
+> We're testing our application now by running it continuously over
+> weeks. I randomly reports the following mode switches in the log:
 > 
-> I am trying to dlopen() a library which uses the native API
-> (alchemy+transition kit): libtrank.so.0
-> => /usr/xenomai/lib/libtrank.so.0 (0xb6e71000) libalchemy.so.0
-> => /usr/xenomai/lib/libalchemy.so.0 (0xb6e58000) libcopperplate.so.0
-> => /usr/xenomai/lib/libcopperplate.so.0 (0xb6e3d000) libcobalt.so.2
-> => /usr/xenomai/lib/libcobalt.so.2 (0xb6e18000) libmodechk.so.0
-> => /usr/xenomai/lib/libmodechk.so.0 (0xb6e07000)
+> <SIGXCPU: MSW(invoked syscall) BT(4): 0x2ade5bc8 0x2af95840
+> 0x2b03a420 0x93980 >
 > 
-> the call to dlopen() fails with the following message:
-> libtrank.so.0: shared object cannot be dlopen()ed
+> With the process memory map from /proc/<pid>/maps:
 > 
-> grepping the configured Xenomai source for "nodlopen" shows that all
-> (or most) of the libraries are compiled with -Wl,nodlopen, which is
-> what is preventing dlopen() from working.
+> ...
+> 2af68000-2b084000 r-xp 00000000 00:0d 22235 /lib/libc-2.14.1.so
+> ...
 > 
-> I have two questions:
-> - is it possible to dynamically load a library which uses the alchemy
-> API from a program that uses the cobalt API?
-> - is it at all possible to dynamically load a library that uses
-> xenomai in a program that was not linked against xenomai?
+> and output from <cross-arm>-objdump -d /lib/libc-2.14.1.so
+> 
+> I could figure out that 0x2b03a420 corresponds to glibc's
+> __lll_lock_wait_private() function, which seems to cause SIGXCPU.
 
-Yes and yes. But i guess you have figured that out already.
+I guess translating the other 3 ips to symbols would be helpfull as
+well ;).
+
+> Before digging any deeper did anyone else see Xenomai mode switches
+> caused by this glibc function (google says that it's e.g. used for
+> managing concurrent access to rand())?
+
+There are probably a lot of glibc functions that you should not call.
+With SIGXCPU and a backtrace such pits are easy to find and not fall
+in. That said, i am afraid it will be hard to maintain a list of such
+functions. Because people that find the problem will avoid the
+function and maybe not report their finding. And whether or not a
+function is affected depends on the library
+implementation/version/configuration. But in general there is a
+mechanism to mark evil functions that just modeswitch every one in a
+while.
+One example from libstdc++ are the static constructor functions
+__cxa_guard_*.
 
 Henning
 
-> Thanks,
-> Giulio
+> Cheers,
+> 
+> A.
 > 
 > _______________________________________________
 > Xenomai mailing list
 > Xenomai@xenomai.org
 > https://xenomai.org/mailman/listinfo/xenomai
+
 
