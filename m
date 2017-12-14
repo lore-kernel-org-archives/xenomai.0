@@ -1,12 +1,9 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <45eb5a2a-6255-f3b8-484a-151d9ce931ea@siemens.com>
-Date: Thu, 14 Dec 2017 17:45:37 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PATCH] ipipe: Do not leak the preemption counter on
- interrupted migrations
+From: John Allwine <john@allwinedesigns.com>
+Date: Thu, 14 Dec 2017 10:07:49 -0700
+Message-ID: <CAA9ERVojO-dEBt_ouEdnmnucu+znLbTfg1UvhQWodntaGnSbLA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] Xenomai: halcmd[1311] cannot map MAYDAY page
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,41 +12,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+I'm using the latest machinekit image for the 3.8 kernel on the Beaglebone
+Black (
+https://rcn-ee.com/rootfs/bb.org/testing/2017-02-12/machinekit/bone-debian-8.7-machinekit-armhf-2017-02-12-4gb.img.xz).
+It's using xenomai 2.6.3. I follow the steps in this document to set up
+machinekit as a systemd service:
+https://github.com/PocketNC/pocketnc/blob/master/README.md
 
-If __schedule fails because of a pending signal, we have to re-enable
-preemption before leaving __ipipe_migrate_head. Failing to do so causes
-a leak and sooner or later a "scheduling while atomic" or similar
-errors.
+When I start machinekit manually after bootup, it seems to work fine. When
+the services are started during boot up as a systemd service, I get the
+following error (I can provide the full stack trace if that would help):
+[ 19.501859] Xenomai: halcmd[1311] cannot map MAYDAY page
+[ 19.956681] Unable to handle kernel NULL pointer dereference at virtual
+address 00000004
+[ 19.965136] pgd = de414000, hw pgd = de414000
+[ 19.969675] [00000004] *pgd=9e7c4831, *pte=00000000, *ppte=00000000
+[ 19.976229] Internal error: Oops: 817 [#1
+<https://github.com/machinekit/machinekit/issues/1>] THUMB2
+[ 19.981128] Modules linked in: g_ether libcomposite cpufreq_userspace
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
+I filed this issue on machinekit's github repo as well:
+https://github.com/machinekit/machinekit/issues/1332
 
-Sending separately as it seems critical.
+Any thoughts on what the problem could be? Or how to debug this further?
 
- kernel/sched/core.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index de3e8929a501..304399683e23 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -8672,10 +8672,10 @@ int __ipipe_migrate_head(void)
- 	if (likely(__schedule(false)))
- 		return 0;
- 
--	if (signal_pending(p))
--		return -ERESTARTSYS;
-+	BUG_ON(!signal_pending(p));
- 
--	BUG();
-+	preempt_enable();
-+	return -ERESTARTSYS;
- }
- EXPORT_SYMBOL_GPL(__ipipe_migrate_head);
- 
--- 
-2.13.6
-
+-John
