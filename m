@@ -1,13 +1,12 @@
-References: <20171214102348.tkgnln3xvzxkx5bc@linux-u7w5.ap.freescale.net>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <26353124-2b4f-b911-8729-c621d565757e@xenomai.org>
-Date: Thu, 14 Dec 2017 17:39:10 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <45eb5a2a-6255-f3b8-484a-151d9ce931ea@siemens.com>
+Date: Thu, 14 Dec 2017 17:45:37 +0100
 MIME-Version: 1.0
-In-Reply-To: <20171214102348.tkgnln3xvzxkx5bc@linux-u7w5.ap.freescale.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xenomai on ARM64 question
+Subject: [Xenomai] [PATCH] ipipe: Do not leak the preemption counter on
+ interrupted migrations
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,38 +15,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Peng Fan <van.freenix@gmail.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-On 12/14/2017 11:23 AM, Peng Fan wrote:
-> Hi,
-> 
-> I am trying xenomai on ARM64 with GICV3, but met the following error.
-> I have no good idea on this. I disabled KVM/CPUFREQ/CPUIDLE, enabled DEBUG.
-> I use ipipe-core-4.9.51-arm64-3.patch with these patches applied from 4.9.y branch
-> "
-> ipipe: printk: fix unprotected check for deferrable output
-> ipipe: drop obsolete ipipe_probe_kernel*() calls
-> lib/ipipe: make dump_stack() domain-aware
-> ipipe: gicv3: [v3] Enable interrupt pipelining.
-> ipipe: add back migration notifiers
-> "
-> 
-> Do you know what this issue maybe related about?
-> 
-> Log:
-> [   20.236548] dhd_module_init out
-> [   20.239689] ALSA device list:
-> [   20.242750]   #0: amix-audio-sai
-> [   20.246170] Unable to handle kernel NULL pointer dereference at virtual addr0
-> [   20.254331] mm_pgd = ffff000009469000, hw_pgd = ffff8000015a4000
-> [   20.260341] [00000000] *pgd=00000008bfffe003, *pud=00000008bfffd003, *pmd=000
-> [   20.268640] Internal error: Oops: 86000004 [#1] PREEMPT SMP
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Some irqchip driver enabled in your kernel is not aware of interrupt
-pipelining, i.e. not handled by the I-pipe patch. The
-->irq_hold/release() handlers for this interrupt controller are likely
-missing.
+If __schedule fails because of a pending signal, we have to re-enable
+preemption before leaving __ipipe_migrate_head. Failing to do so causes
+a leak and sooner or later a "scheduling while atomic" or similar
+errors.
 
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+
+Sending separately as it seems critical.
+
+ kernel/sched/core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index de3e8929a501..304399683e23 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -8672,10 +8672,10 @@ int __ipipe_migrate_head(void)
+ 	if (likely(__schedule(false)))
+ 		return 0;
+ 
+-	if (signal_pending(p))
+-		return -ERESTARTSYS;
++	BUG_ON(!signal_pending(p));
+ 
+-	BUG();
++	preempt_enable();
++	return -ERESTARTSYS;
+ }
+ EXPORT_SYMBOL_GPL(__ipipe_migrate_head);
+ 
 -- 
-Philippe.
+2.13.6
 
