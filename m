@@ -1,15 +1,11 @@
-References: <45eb5a2a-6255-f3b8-484a-151d9ce931ea@siemens.com>
- <dbcba4b3-ce37-8767-10f8-59d460c76bbb@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <18becf30-f03b-1623-be69-896256c6a7c7@siemens.com>
-Date: Thu, 14 Dec 2017 18:32:00 +0100
+Message-ID: <ff7b3efb-7fb7-a26a-7412-953076de6ce6@siemens.com>
+Date: Thu, 14 Dec 2017 20:28:48 +0100
 MIME-Version: 1.0
-In-Reply-To: <dbcba4b3-ce37-8767-10f8-59d460c76bbb@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] ipipe: Do not leak the preemption counter on
- interrupted migrations
+Subject: [Xenomai] ipipe: 4.4 BUG on x86, maybe on 4.9 as well
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,59 +14,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 2017-12-14 18:13, Philippe Gerum wrote:
-> On 12/14/2017 05:45 PM, Jan Kiszka wrote:
->> From: Jan Kiszka <jan.kiszka@siemens.com>
->>
->> If __schedule fails because of a pending signal, we have to re-enable
->> preemption before leaving __ipipe_migrate_head. Failing to do so causes
->> a leak and sooner or later a "scheduling while atomic" or similar
->> errors.
->>
->> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->> ---
->>
->> Sending separately as it seems critical.
->>
->>  kernel/sched/core.c | 6 +++---
->>  1 file changed, 3 insertions(+), 3 deletions(-)
->>
->> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
->> index de3e8929a501..304399683e23 100644
->> --- a/kernel/sched/core.c
->> +++ b/kernel/sched/core.c
->> @@ -8672,10 +8672,10 @@ int __ipipe_migrate_head(void)
->>  	if (likely(__schedule(false)))
->>  		return 0;
->>  
->> -	if (signal_pending(p))
->> -		return -ERESTARTSYS;
->> +	BUG_ON(!signal_pending(p));
->>  
->> -	BUG();
->> +	preempt_enable();
->> +	return -ERESTARTSYS;
->>  }
->>  EXPORT_SYMBOL_GPL(__ipipe_migrate_head);
->>  
->>
-> 
-> Merged, thanks.
-> 
+Hi Philippe,
 
-BTW, we have another problem of this kind:
+something got broken with the exception path rework:
 
-With event tracing enabled, we leak preemption locks when a RT task is
-suspended while holding that lock during a tracepoint execution. That
-only affects x86 since 3.13 because that was the point where that arch
-switched from per-task to per-cpu preemption counter.
+[    2.619458] debug: unmapping init [mem 0xffffffff81b43000-0xffffffff81ee5fff]
+[    2.622011] BUG: using __this_cpu_read() in preemptible [00000000] code: init/1
+[    2.623446] caller is __this_cpu_preempt_check+0x13/0x20
+[    2.624724] CPU: 2 PID: 1 Comm: init Not tainted 4.4.105+ #689
+[    2.626073] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.11.0-0-g63451fca13-prebuilt.qemu-project.org 04/01/2014
+[    2.628911] I-pipe domain: Linux
+[    2.630083]  ffffffff81993439 ffff88003fb43c10 ffffffff813afa45 0000000000000002
+[    2.631427]  ffff88003fb38000 ffff88003fb43c50 ffffffff813db5eb ffffffff82c57340
+[    2.631427]  ffff88003fb43c98 0000000000000002 ffff88003fb44000 0000000000000000
+[    2.631427] Call Trace:
+[    2.631427]  [<ffffffff813afa45>] dump_stack+0xb2/0xdd
+[    2.631427]  [<ffffffff813db5eb>] check_preemption_disabled+0x17b/0x1c0
+[    2.631427]  [<ffffffff813db663>] __this_cpu_preempt_check+0x13/0x20
+[    2.631427]  [<ffffffff8104eb1f>] do_page_fault+0x3f/0x60
+[    2.631427]  [<ffffffff8170f8b7>] page_fault+0x27/0x60
+[    2.631427]  [<ffffffff813bcef2>] ? __clear_user+0x42/0x70
+[    2.631427]  [<ffffffff813bcf69>] clear_user+0x49/0x80
+[    2.631427]  [<ffffffff812727d4>] padzero+0x24/0x40
+[    2.631427]  [<ffffffff81274bfe>] load_elf_binary+0x8fe/0x10f0
+[    2.631427]  [<ffffffff81116ee8>] ? ipipe_unstall_root+0x58/0x90
+[    2.631427]  [<ffffffff812222c7>] search_binary_handler+0x97/0x1d0
+[    2.631427]  [<ffffffff81223b86>] do_execveat_common.isra.40+0x5d6/0x7e0
+[    2.631427]  [<ffffffff81223aff>] ? do_execveat_common.isra.40+0x54f/0x7e0
+[    2.631427]  [<ffffffff8122bb00>] ? path_openat+0x1440/0x14e0
+[    2.631427]  [<ffffffff816fff20>] ? rest_init+0xd0/0xd0
+[    2.631427]  [<ffffffff81223dbc>] do_execve+0x2c/0x30
+[    2.631427]  [<ffffffff810002eb>] run_init_process+0x2b/0x30
+[    2.631427]  [<ffffffff816fff5d>] kernel_init+0x3d/0xe0
+[    2.631427]  [<ffffffff8170d4c0>] ret_from_fork+0x40/0x70
+[    2.631427]  [<ffffffff816fff20>] ? rest_init+0xd0/0xd0
 
-Thinking about possible solutions for a while. Best idea so far: only
-suspend RT tasks when they are sleeping already, are in userspace or are
-about to return to it (for the latter, I have a hook to be submitted
-upstream anyway).
+Unless you have some immediate idea, I will debug this tomorrow. Issue
+disappears when I revert the related patches in the ipipe queue.
+
+I also have the build fix for 4.4 lined up, basically a backport of
+"enable dev_printk() from the head stage" to that kernel. I've pushed
+things to my for-upstream/4.4 branch, though they aren't ready yet.
 
 Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
 
