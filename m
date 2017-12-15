@@ -5,13 +5,13 @@ References: <954f3936-9906-a33e-4d6a-fa5e640430e4@xenomai.org>
  <657c0db4-6cb8-5876-3349-cd784ba69077@siemens.com>
  <7c3bd3a0-5d08-f1c9-1b39-1457b0826856@xenomai.org>
  <b8766709-ab3c-b6a8-c539-77343ca5aca1@siemens.com>
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Message-ID: <da0d58d9-c63f-1a29-99b2-32c2ac88e187@alaxarxa.net>
-Date: Fri, 15 Dec 2017 14:42:24 +0100
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <bde2e3b7-94a3-57bd-c33f-fac7bdcfb0be@xenomai.org>
+Date: Fri, 15 Dec 2017 14:48:32 +0100
 MIME-Version: 1.0
 In-Reply-To: <b8766709-ab3c-b6a8-c539-77343ca5aca1@siemens.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: ca-ES
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] RTnet fixes - testers needed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -22,9 +22,9 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Leopold Palomo-Avellaneda <leo@alaxarxa.net>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 15/12/17 14:40, Jan Kiszka wrote:
+On 12/15/2017 02:40 PM, Jan Kiszka wrote:
 > On 2017-12-15 14:29, Philippe Gerum wrote:
 >> On 12/15/2017 02:20 PM, Jan Kiszka wrote:
 >>> On 2017-12-15 13:25, Leopold Palomo-Avellaneda wrote:
@@ -61,18 +61,11 @@ On 15/12/17 14:40, Jan Kiszka wrote:
 > Hmm, for the protocol core. I suspect you are missing further cases in
 > RTmac and RTcfg (provided anyone needs them).
 > 
-Yes, I need rtmac and rtcfg.
 
-Leopold
-
+The author of ioctl* support in both cases used copy_from_user directly,
+maybe that is a problem with the calling mode. Ok, I'll check whether
+rtnet_ioctls dispatcher actually routes from ioctl_nrt. Thanks.
 
 -- 
---
-Linux User 152692     GPG: 05F4A7A949A2D9AA
-Catalonia
--------------------------------------
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
+Philippe.
 
