@@ -1,17 +1,9 @@
-References: <45eb5a2a-6255-f3b8-484a-151d9ce931ea@siemens.com>
- <dbcba4b3-ce37-8767-10f8-59d460c76bbb@xenomai.org>
- <18becf30-f03b-1623-be69-896256c6a7c7@siemens.com>
- <f235ae30-d769-5ea9-1e3a-9755fceac8a6@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <0cee3e90-c14e-c5ee-2875-5e09ee37fc57@siemens.com>
-Date: Fri, 15 Dec 2017 07:17:57 +0100
 MIME-Version: 1.0
-In-Reply-To: <f235ae30-d769-5ea9-1e3a-9755fceac8a6@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] ipipe: Do not leak the preemption counter on
- interrupted migrations
+From: Andreas Glatz <andi.glatz@gmail.com>
+Date: Fri, 15 Dec 2017 09:21:59 +0000
+Message-ID: <CAKJ14NfNCoGWq0i_vDY5ORKcKWGR_jWABPU-MFO0yb-FpTKRvw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] mode switch caused by __lll_lock_wait_private()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,76 +12,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 2017-12-14 20:57, Philippe Gerum wrote:
-> On 12/14/2017 06:32 PM, Jan Kiszka wrote:
->> On 2017-12-14 18:13, Philippe Gerum wrote:
->>> On 12/14/2017 05:45 PM, Jan Kiszka wrote:
->>>> From: Jan Kiszka <jan.kiszka@siemens.com>
->>>>
->>>> If __schedule fails because of a pending signal, we have to re-enable
->>>> preemption before leaving __ipipe_migrate_head. Failing to do so causes
->>>> a leak and sooner or later a "scheduling while atomic" or similar
->>>> errors.
->>>>
->>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>>> ---
->>>>
->>>> Sending separately as it seems critical.
->>>>
->>>>  kernel/sched/core.c | 6 +++---
->>>>  1 file changed, 3 insertions(+), 3 deletions(-)
->>>>
->>>> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
->>>> index de3e8929a501..304399683e23 100644
->>>> --- a/kernel/sched/core.c
->>>> +++ b/kernel/sched/core.c
->>>> @@ -8672,10 +8672,10 @@ int __ipipe_migrate_head(void)
->>>>  	if (likely(__schedule(false)))
->>>>  		return 0;
->>>>  
->>>> -	if (signal_pending(p))
->>>> -		return -ERESTARTSYS;
->>>> +	BUG_ON(!signal_pending(p));
->>>>  
->>>> -	BUG();
->>>> +	preempt_enable();
->>>> +	return -ERESTARTSYS;
->>>>  }
->>>>  EXPORT_SYMBOL_GPL(__ipipe_migrate_head);
->>>>  
->>>>
->>>
->>> Merged, thanks.
->>>
 >>
->> BTW, we have another problem of this kind:
+>> We're testing our application now by running it continuously over
+>> weeks. I randomly reports the following mode switches in the log:
 >>
->> With event tracing enabled, we leak preemption locks when a RT task is
->> suspended while holding that lock during a tracepoint execution. That
->> only affects x86 since 3.13 because that was the point where that arch
->> switched from per-task to per-cpu preemption counter.
+>> <SIGXCPU: MSW(invoked syscall) BT(4): 0x2ade5bc8 0x2af95840
+>> 0x2b03a420 0x93980 >
 >>
-> 
-> The gist of the matter seems to be that a preemption lock is taken from
-> a context running over the head stage, isn't it?
-> 
+>> With the process memory map from /proc/<pid>/maps:
+>>
+>> ...
+>> 2af68000-2b084000 r-xp 00000000 00:0d 22235 /lib/libc-2.14.1.so
+>> ...
+>>
+>> and output from <cross-arm>-objdump -d /lib/libc-2.14.1.so
+>>
+>> I could figure out that 0x2b03a420 corresponds to glibc's
+>> __lll_lock_wait_private() function, which seems to cause SIGXCPU.
+>
+> I guess translating the other 3 ips to symbols would be helpfull as
+> well ;).
 
-Right. We are able to re-use the upstream tracepoint infrastructure
-(inlcude/linux/tracepoint.h) by allowing rcu_read_lock_sched_notrace /
-rcu_read_unlock_sched_notrace over any context. We therefore have a
-check that prevent actual Linux rescheduling when the unlock is called
-over non-Linux contexts. Unfortunately, I missed the case of enforced
-suspension back then when thinking through the boundary conditions.
+After using the unstripped debug libc binary we got the following
+stack trace from which it's fairly clear that our third party code is
+using the C++ standard list allocator. So need to change that to our
+C++ allocator that uses RT_HEAP....
 
-At the same time, I'm not sure if suspending a thread in the middle of a
-syscall may not have other surprising effects in overseen corner cases.
-Therefore my idea of allowing remote suspension only at known safe points.
+<snip>
+Program received signal SIGXCPU, CPU time limit exceeded.
+0x2b03b420 in __lll_lock_wait_private (futex=0x2c700010)
+    at ../nptl/sysdeps/unix/sysv/linux/lowlevellock.c:34
+34      ../nptl/sysdeps/unix/sysv/linux/lowlevellock.c: No such file
+or directory.
+        in ../nptl/sysdeps/unix/sysv/linux/lowlevellock.c
+(gdb) bt
+#0  0x2b03b420 in __lll_lock_wait_private (futex=0x2c700010)
+    at ../nptl/sysdeps/unix/sysv/linux/lowlevellock.c:34
+#1  0x2afd7174 in __libc_free (mem=<value optimized out>) at malloc.c:3736
+#2  0x2adab5d8 in deallocate (this=0x0)
+    at /opt/OSELAS.Toolchain-2011.11.3/arm-cortexa9-linux-gnueabi/gcc-4.6.2-glibc-2.14.1-binutils-2.21.1a-kernel-2.6.39-sanitized/lib/gcc/arm-cortexa9-linux-gnueabi/4.6.2/../../../../arm-cortexa9-linux-gnueabi/include/c++/4.6.2/ext/new_allocator.h:98
+#3  _M_put_node (this=0x0)
+    at /opt/OSELAS.Toolchain-2011.11.3/arm-cortexa9-linux-gnueabi/gcc-4.6.2-glibc-2.14.1-binutils-2.21.1a-kernel-2.6.39-sanitized/lib/gcc/arm-cortexa9-linux-gnueabi/4.6.2/../../../../arm-cortexa9-linux-gnueabi/include/c++/4.6.2/bits/stl_list.h:331
+#4  _M_erase (this=0x0)
+    at /opt/OSELAS.Toolchain-2011.11.3/arm-cortexa9-linux-gnueabi/gcc-4.6.2-glibc-2.14.1-binutils-2.21.1a-kernel-2.6.39-sanitized/lib/gcc/arm-cortexa9-linux-gnueabi/4.6.2/../../../../arm-cortexa9-linux-gnueabi/include/c++/4.6.2/bits/stl_list.h:1539
+#5  pop_front (this=0x0)
+    at /opt/OSELAS.Toolchain-2011.11.3/arm-cortexa9-linux-gnueabi/gcc-4.6.2-glibc-2.14.1-binutils-2.21.1a-kernel-2.6.39-sanitized/lib/gcc/arm-cortexa9-linux-gnueabi/4.6.2/../../../../arm-cortexa9-linux-gnueabi/include/c++/4.6.2/bits/stl_list.h:974
+---Type <return> to continue, or q <return> to quit---
+#6  RemoveHead (this=0x0) at ./src/stack/850870/tools/../oem/listdef.h:388
+#7  RemoveHead (this=0x0) at ./src/stack/850870/tools/listbase.h:58
+</snip>
 
-Jan
 
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+PS: With our setup, ptxdist 2011.11.0 and OSELAS.Toolchain-2011.11.3,
+we ran into the same problem as reported elsewhere [1] when trying to
+get a stack trace with the stripped libc binaries... our solution to
+circumvent this issue was to use the unstripped debug binaries.
+
+
+[1] https://sourceware.org/ml/libc-help/2015-06/msg00017.html
 
