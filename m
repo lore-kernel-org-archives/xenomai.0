@@ -1,9 +1,13 @@
+Date: Fri, 15 Dec 2017 17:53:45 +0800
+From: Peng Fan <van.freenix@gmail.com>
+Message-ID: <20171215095342.sjwcih77zq5zrbqj@linux-u7w5.ap.freescale.net>
+References: <20171214102348.tkgnln3xvzxkx5bc@linux-u7w5.ap.freescale.net>
+ <26353124-2b4f-b911-8729-c621d565757e@xenomai.org>
 MIME-Version: 1.0
-From: Andreas Glatz <andi.glatz@gmail.com>
-Date: Fri, 15 Dec 2017 09:21:59 +0000
-Message-ID: <CAKJ14NfNCoGWq0i_vDY5ORKcKWGR_jWABPU-MFO0yb-FpTKRvw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] mode switch caused by __lll_lock_wait_private()
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <26353124-2b4f-b911-8729-c621d565757e@xenomai.org>
+Subject: Re: [Xenomai] xenomai on ARM64 question
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,64 +16,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
->>
->> We're testing our application now by running it continuously over
->> weeks. I randomly reports the following mode switches in the log:
->>
->> <SIGXCPU: MSW(invoked syscall) BT(4): 0x2ade5bc8 0x2af95840
->> 0x2b03a420 0x93980 >
->>
->> With the process memory map from /proc/<pid>/maps:
->>
->> ...
->> 2af68000-2b084000 r-xp 00000000 00:0d 22235 /lib/libc-2.14.1.so
->> ...
->>
->> and output from <cross-arm>-objdump -d /lib/libc-2.14.1.so
->>
->> I could figure out that 0x2b03a420 corresponds to glibc's
->> __lll_lock_wait_private() function, which seems to cause SIGXCPU.
+Hi Philippe,
+On Thu, Dec 14, 2017 at 05:39:10PM +0100, Philippe Gerum wrote:
+>On 12/14/2017 11:23 AM, Peng Fan wrote:
+>> Hi,
+>> 
+>> I am trying xenomai on ARM64 with GICV3, but met the following error.
+>> I have no good idea on this. I disabled KVM/CPUFREQ/CPUIDLE, enabled DEBUG.
+>> I use ipipe-core-4.9.51-arm64-3.patch with these patches applied from 4.9.y branch
+>> "
+>> ipipe: printk: fix unprotected check for deferrable output
+>> ipipe: drop obsolete ipipe_probe_kernel*() calls
+>> lib/ipipe: make dump_stack() domain-aware
+>> ipipe: gicv3: [v3] Enable interrupt pipelining.
+>> ipipe: add back migration notifiers
+>> "
+>> 
+>> Do you know what this issue maybe related about?
+>> 
+>> Log:
+>> [   20.236548] dhd_module_init out
+>> [   20.239689] ALSA device list:
+>> [   20.242750]   #0: amix-audio-sai
+>> [   20.246170] Unable to handle kernel NULL pointer dereference at virtual addr0
+>> [   20.254331] mm_pgd = ffff000009469000, hw_pgd = ffff8000015a4000
+>> [   20.260341] [00000000] *pgd=00000008bfffe003, *pud=00000008bfffd003, *pmd=000
+>> [   20.268640] Internal error: Oops: 86000004 [#1] PREEMPT SMP
 >
-> I guess translating the other 3 ips to symbols would be helpfull as
-> well ;).
+>Some irqchip driver enabled in your kernel is not aware of interrupt
+>pipelining, i.e. not handled by the I-pipe patch. The
+>->irq_hold/release() handlers for this interrupt controller are likely
+>missing.
 
-After using the unstripped debug libc binary we got the following
-stack trace from which it's fairly clear that our third party code is
-using the C++ standard list allocator. So need to change that to our
-C++ allocator that uses RT_HEAP....
+Thanks. It is a dummy irqchip driver used for wakeup causes this issue.
 
-<snip>
-Program received signal SIGXCPU, CPU time limit exceeded.
-0x2b03b420 in __lll_lock_wait_private (futex=0x2c700010)
-    at ../nptl/sysdeps/unix/sysv/linux/lowlevellock.c:34
-34      ../nptl/sysdeps/unix/sysv/linux/lowlevellock.c: No such file
-or directory.
-        in ../nptl/sysdeps/unix/sysv/linux/lowlevellock.c
-(gdb) bt
-#0  0x2b03b420 in __lll_lock_wait_private (futex=0x2c700010)
-    at ../nptl/sysdeps/unix/sysv/linux/lowlevellock.c:34
-#1  0x2afd7174 in __libc_free (mem=<value optimized out>) at malloc.c:3736
-#2  0x2adab5d8 in deallocate (this=0x0)
-    at /opt/OSELAS.Toolchain-2011.11.3/arm-cortexa9-linux-gnueabi/gcc-4.6.2-glibc-2.14.1-binutils-2.21.1a-kernel-2.6.39-sanitized/lib/gcc/arm-cortexa9-linux-gnueabi/4.6.2/../../../../arm-cortexa9-linux-gnueabi/include/c++/4.6.2/ext/new_allocator.h:98
-#3  _M_put_node (this=0x0)
-    at /opt/OSELAS.Toolchain-2011.11.3/arm-cortexa9-linux-gnueabi/gcc-4.6.2-glibc-2.14.1-binutils-2.21.1a-kernel-2.6.39-sanitized/lib/gcc/arm-cortexa9-linux-gnueabi/4.6.2/../../../../arm-cortexa9-linux-gnueabi/include/c++/4.6.2/bits/stl_list.h:331
-#4  _M_erase (this=0x0)
-    at /opt/OSELAS.Toolchain-2011.11.3/arm-cortexa9-linux-gnueabi/gcc-4.6.2-glibc-2.14.1-binutils-2.21.1a-kernel-2.6.39-sanitized/lib/gcc/arm-cortexa9-linux-gnueabi/4.6.2/../../../../arm-cortexa9-linux-gnueabi/include/c++/4.6.2/bits/stl_list.h:1539
-#5  pop_front (this=0x0)
-    at /opt/OSELAS.Toolchain-2011.11.3/arm-cortexa9-linux-gnueabi/gcc-4.6.2-glibc-2.14.1-binutils-2.21.1a-kernel-2.6.39-sanitized/lib/gcc/arm-cortexa9-linux-gnueabi/4.6.2/../../../../arm-cortexa9-linux-gnueabi/include/c++/4.6.2/bits/stl_list.h:974
----Type <return> to continue, or q <return> to quit---
-#6  RemoveHead (this=0x0) at ./src/stack/850870/tools/../oem/listdef.h:388
-#7  RemoveHead (this=0x0) at ./src/stack/850870/tools/listbase.h:58
-</snip>
+I still have a question on my platform. with "maxcpus=1", kernel could runs
+into login shell. But if using default 4 CPUs, kernel stops at:
 
+[    4.305046] audit: initializing netlink subsys (disabled)
+[    4.305111] audit: type=2000 audit(4.032:1): initialized
+[    4.305526] [Xenomai] scheduling class idle registered.
+[    4.305530] [Xenomai] scheduling class rt registered.
+---- Stops here. 
 
-PS: With our setup, ptxdist 2011.11.0 and OSELAS.Toolchain-2011.11.3,
-we ran into the same problem as reported elsewhere [1] when trying to
-get a stack trace with the stripped libc binaries... our solution to
-circumvent this issue was to use the unstripped debug binaries.
+>From the code, I found it stops at
+                        /*
+                         * Ensure all CPUs consumed the IPI to avoid
+                         * running __ipipe_cpu_sync prematurely. This
+                         * usually resolves the deadlock reason too.
+                         */
+                        while (!cpumask_equal(&online, &__ipipe_cpu_pass_map))
+                                cpu_relax();
 
+Seems online not equal to __ipipe_cpu_pass_map. I am not sure IPI is send
+to other cores, I am using GICV3. Still debugging.
 
-[1] https://sourceware.org/ml/libc-help/2015-06/msg00017.html
+Any hints?
+
+Thanks,
+Peng.
+
+>
+>-- 
+>Philippe.
+
+-- 
 
