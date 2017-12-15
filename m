@@ -4,12 +4,12 @@ References: <ff7b3efb-7fb7-a26a-7412-953076de6ce6@siemens.com>
  <5fedac20-47d9-7617-a9d6-a38a351ae2ad@xenomai.org>
  <fc7bbd5c-796b-954a-e1b5-42c0cecd0291@siemens.com>
  <fab389a7-81c8-3fd4-3d3a-d30433395c5f@xenomai.org>
- <4dddbb6c-ce9d-fce1-75ff-d594dc05e356@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <75fa6014-ccd4-be1d-10aa-b8fd505fa680@siemens.com>
-Date: Fri, 15 Dec 2017 18:58:01 +0100
+ <10ea5fa1-e78b-e566-d3c9-183a6ee32956@siemens.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <2c98c208-7e90-4a5c-b1a4-72d7847d2c3e@xenomai.org>
+Date: Fri, 15 Dec 2017 18:59:34 +0100
 MIME-Version: 1.0
-In-Reply-To: <4dddbb6c-ce9d-fce1-75ff-d594dc05e356@xenomai.org>
+In-Reply-To: <10ea5fa1-e78b-e566-d3c9-183a6ee32956@siemens.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -22,11 +22,11 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2017-12-15 18:27, Philippe Gerum wrote:
-> On 12/15/2017 05:45 PM, Philippe Gerum wrote:
+On 12/15/2017 06:53 PM, Jan Kiszka wrote:
+> On 2017-12-15 17:45, Philippe Gerum wrote:
 >> On 12/15/2017 04:02 PM, Jan Kiszka wrote:
 >>> On 2017-12-15 15:44, Philippe Gerum wrote:
 >>>> On 12/15/2017 03:24 PM, Jan Kiszka wrote:
@@ -110,30 +110,32 @@ On 2017-12-15 18:27, Philippe Gerum wrote:
 >> Absolutely no issue with that, I'll revert those patches and let the
 >> I-pipe/x86 maintainers tackle that stuff. I can live with a separate
 >> branch anyway.
->>
 > 
-> Ok, done. I'll try to fix the issue I hinted at [1] in a separate
-> branch, checking with your config if things get better. I'll keep you
-> posted.
+> Thanks. But you probably don't need a branch of your own for using
+> ftrace, just this for now:
 > 
-> [1] http://xenomai.org/pipermail/xenomai/2017-December/038119.html
+> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+> index 834e6117f5f8..b9f6121c8530 100644
+> --- a/arch/x86/Kconfig
+> +++ b/arch/x86/Kconfig
+> @@ -83,7 +83,7 @@ config X86
+>  	select HAVE_AOUT			if X86_32
+>  	select HAVE_ARCH_AUDITSYSCALL
+>  	select HAVE_ARCH_HUGE_VMAP		if X86_64 || X86_PAE
+> -	select HAVE_ARCH_JUMP_LABEL
+> +	select HAVE_ARCH_JUMP_LABEL		if !IPIPE
+>  	select HAVE_ARCH_KASAN			if X86_64 && SPARSEMEM_VMEMMAP
+>  	select HAVE_ARCH_KGDB
+>  	select HAVE_ARCH_KMEMCHECK
+> 
+> 
+> That was (effectively) what I had to explain internally as well a while
+> ago but forgot to push it.
 > 
 
-Another thing to look into carefully is what is actually run then over
-any domain after a change like "cope with int3 triggering kernel
-probes". Just like with current tracepoint locking, also that code may
-take locks and trigger effects in Linux that may not always work over
-the head domain. IIRC, that was mostly what held me back a while a ago
-to enable dyn-ftrace, e.g., for I-pipe, but I need to refresh my memory
-on that.
+Ok, I'll try that. Thanks.
 
-Finally we need to retest KGDB. I didn't do this in a while, and maybe
-it was broken long ago. Can check this, the setup is very similar to gdb
-via QEMU/KVM.
-
-Jan
 
 -- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
