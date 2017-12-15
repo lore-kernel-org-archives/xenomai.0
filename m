@@ -1,13 +1,12 @@
-Date: Fri, 15 Dec 2017 17:53:45 +0800
-From: Peng Fan <van.freenix@gmail.com>
-Message-ID: <20171215095342.sjwcih77zq5zrbqj@linux-u7w5.ap.freescale.net>
-References: <20171214102348.tkgnln3xvzxkx5bc@linux-u7w5.ap.freescale.net>
- <26353124-2b4f-b911-8729-c621d565757e@xenomai.org>
+References: <954f3936-9906-a33e-4d6a-fa5e640430e4@xenomai.org>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Message-ID: <bb013c41-9b90-4bc1-a84a-6e5137061ceb@alaxarxa.net>
+Date: Fri, 15 Dec 2017 11:46:11 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <26353124-2b4f-b911-8729-c621d565757e@xenomai.org>
-Subject: Re: [Xenomai] xenomai on ARM64 question
+In-Reply-To: <954f3936-9906-a33e-4d6a-fa5e640430e4@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] RTnet fixes - testers needed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,72 +15,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-Hi Philippe,
-On Thu, Dec 14, 2017 at 05:39:10PM +0100, Philippe Gerum wrote:
->On 12/14/2017 11:23 AM, Peng Fan wrote:
->> Hi,
->> 
->> I am trying xenomai on ARM64 with GICV3, but met the following error.
->> I have no good idea on this. I disabled KVM/CPUFREQ/CPUIDLE, enabled DEBUG.
->> I use ipipe-core-4.9.51-arm64-3.patch with these patches applied from 4.9.y branch
->> "
->> ipipe: printk: fix unprotected check for deferrable output
->> ipipe: drop obsolete ipipe_probe_kernel*() calls
->> lib/ipipe: make dump_stack() domain-aware
->> ipipe: gicv3: [v3] Enable interrupt pipelining.
->> ipipe: add back migration notifiers
->> "
->> 
->> Do you know what this issue maybe related about?
->> 
->> Log:
->> [   20.236548] dhd_module_init out
->> [   20.239689] ALSA device list:
->> [   20.242750]   #0: amix-audio-sai
->> [   20.246170] Unable to handle kernel NULL pointer dereference at virtual addr0
->> [   20.254331] mm_pgd = ffff000009469000, hw_pgd = ffff8000015a4000
->> [   20.260341] [00000000] *pgd=00000008bfffe003, *pud=00000008bfffd003, *pmd=000
->> [   20.268640] Internal error: Oops: 86000004 [#1] PREEMPT SMP
->
->Some irqchip driver enabled in your kernel is not aware of interrupt
->pipelining, i.e. not handled by the I-pipe patch. The
->->irq_hold/release() handlers for this interrupt controller are likely
->missing.
-
-Thanks. It is a dummy irqchip driver used for wakeup causes this issue.
-
-I still have a question on my platform. with "maxcpus=1", kernel could runs
-into login shell. But if using default 4 CPUs, kernel stops at:
-
-[    4.305046] audit: initializing netlink subsys (disabled)
-[    4.305111] audit: type=2000 audit(4.032:1): initialized
-[    4.305526] [Xenomai] scheduling class idle registered.
-[    4.305530] [Xenomai] scheduling class rt registered.
----- Stops here. 
-
->From the code, I found it stops at
-                        /*
-                         * Ensure all CPUs consumed the IPI to avoid
-                         * running __ipipe_cpu_sync prematurely. This
-                         * usually resolves the deadlock reason too.
-                         */
-                        while (!cpumask_equal(&online, &__ipipe_cpu_pass_map))
-                                cpu_relax();
-
-Seems online not equal to __ipipe_cpu_pass_map. I am not sure IPI is send
-to other cores, I am using GICV3. Still debugging.
-
-Any hints?
-
-Thanks,
-Peng.
-
->
->-- 
->Philippe.
-
--- 
-
+SGksCgoKT24gMDYvMTIvMTcgMTg6MzcsIFBoaWxpcHBlIEdlcnVtIHdyb3RlOgo+IApbLi4uXQoK
+PiBJZiB5b3UgZGVwZW5kIG9uIFJUbmV0IGFuZCB3YW50IHRvIGhlbHAgd2l0aCB0ZXN0aW5nLCB5
+b3UgbWF5IHdhbnQgdG8KPiBnaXZlIHRoaXMgYnJhbmNoIGEgdHJ5LiBBbnkgaGVscCB3aXRoIHJl
+dmlld2luZyB0aGUgY2hhbmdlcyB3b3VsZCBiZQo+IGJlbmVmaWNpYWwgdG8gdGhlIHByb2plY3Qg
+dG9vLgoKSSBoYXZlIHRlc3RlZCB0aGlzIGJyYW5jaCBpbiB0d28geDg2IGJvYXJkczogb25lIG1v
+ZGVybiBpNyB3aXRuIFBDSWUgM3gsIGV0YywKYW5kIGFub3RoZXIgRHVhbC1jb3JlLiBCb3RoIHN5
+c3RlbXMgd2hlcmUgdGVzdGVkIHdpdGggdGhlIHNhbWUga2VybmVsOgoKLSA0LjkuNTEgcGF0Y2hl
+ZAotIGJhc2VkIGluIERlYmlhbiBzdHJldGNoCgoKTWFpbmx5IEkgdGVzdGVkIHRoZSBSVE5ldCBk
+cml2ZXJzLCBmb3IgdGhlIGNhcmRzIHRoYXQgSSBoYXZlOiBpbnRlbCBiYXNlZCBlMTAwMCwKZTEw
+MDBlLCBlZXBybzEwMCwgaWdiLCBhbmQgcjgxNjgsIGFuZCBQQ0llIGFuZCBQQ0kgY2FyZHMuCgpJ
+IGhhdmVyIGFsc28gc29tZSAzQ29tIGJ1dCBJIGhhdmUgbm90IHRlc3RlZCBiZWNhdXNlIHRoZXkg
+YXJlIHF1aXRlIG9sZC4KClRoZSByZXN1bHRzIGFyZSBmcnVzdHJhdGluZyAuLi4KCjEpIGluIHRo
+ZSBtb2Rlcm4gYm9hcmQsIHRoZSBpbnRlZ3JhdGVkIE5JQyBJbnRlbCBJMjE5LUxNIHdhcyBub3Qg
+ZGV0ZWN0ZWQgYnkgdGhlCnJ0IGRyaXZlci4KCjIpIGluIGJvdGggYm9hcmRzLCBub25lIG9mIHRo
+ZSBQQ0kgY2FyZHMgd29ya2VkOiBuZWl0aGVyIEludGVsIG9yIFJlYWx0ZWsuCgozKSB0aGUgUENJ
+ZSBjYXJkcyBmcm9tIGludGVsIHdvcmtlZCAoZTEwMDBlIGFuZCBpZ2IpIGluIGJvdGggbW9ib3MK
+CjQpIGluIHRoZSBtb2Rlcm4gUEMsIHRoZSByODE2OCB3YXMgbG9hZGVkIGFuZCBjcmVhdGVkIHRo
+ZSBydGV0aFggaW50ZXJmYWNlLCBidXQKaXQgd2FzIG5vdCBvcGVyYXRpb25hbCAoaGFuZ3MgdGhl
+IHByb2dyYW0pLiBJbiB0aGUgb2xkIFBDIGRvIG5vdGhpbmcuCgo1KSBpbiB0aGUgb2xkIFBDIChv
+bmx5IHRlc3RlZCB0aGVyZSkgdGhlIHI4MTY4IGRvZXNuJ3QgZGV0ZWN0IHRoZQpSVEw4MTExLzgx
+NjgvODQxMSBQQ0llIGNhcmRzIGFsdGhvdWdoIHRoZXkgYXJlIFBDSWUKCkkgZ3Vlc3MgdGhhdCB0
+aGVyZSdzIHNvbWV0aGluZyBpbiB0aGUga2VybmVsIGNvbmZpZyBvciBzb21ld2hlcmUgaW4gMy54
+IHRoYXQKYWZmZWN0cyB0aGUgUENJIGNhcmRzLiBJbiAyLjYueCB3b3JrZWQuCgpBbHNvLCBzZWVp
+bmcgdGhlIGVsZXBoYW50LCBpdCdzIG5vdCBvYnZpb3VzIChhdCBsZWFzdCBmb3IgbWUpIGhvdyB0
+byBjcmVhdGUgb3IKdXBncmFkZSBhIG5ldHdvcmsgZHJpdmVyIHRvIHdvcmsgd2l0aCBYZW5vbWFp
+LiBTbywgc29tZSB0dXRvcmlhbCB3b3VsZCBoZWxwLgoKQmVzdCByZWdhcmRzLAoKCkxlb3BvbGQK
+CgotLSAKLS0KTGludXggVXNlciAxNTI2OTIgICAgIEdQRzogMDVGNEE3QTk0OUEyRDlBQQpDYXRh
+bG9uaWEKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpBOiBCZWNhdXNlIGl0
+IG1lc3NlcyB1cCB0aGUgb3JkZXIgaW4gd2hpY2ggcGVvcGxlIG5vcm1hbGx5IHJlYWQgdGV4dC4K
+UTogV2h5IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBiYWQgdGhpbmc/CkE6IFRvcC1wb3N0aW5nLgpR
+OiBXaGF0IGlzIHRoZSBtb3N0IGFubm95aW5nIHRoaW5nIGluIGUtbWFpbD8KCi0tLS0tLS0tLS0t
+LS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNj
+cnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25h
+dHVyZQpTaXplOiA4MzMgYnl0ZXMKRGVzYzogT3BlblBHUCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6
+IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxNzEy
+MTUvMjUyODc0NDUvYXR0YWNobWVudC5zaWc+Cg==
