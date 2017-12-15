@@ -1,14 +1,15 @@
 References: <ff7b3efb-7fb7-a26a-7412-953076de6ce6@siemens.com>
  <6a4b8afd-0e6a-e2e7-ed24-7650a4d742bf@xenomai.org>
  <51da76cf-b6ee-9943-26e8-c91db5cb6b7f@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <5fedac20-47d9-7617-a9d6-a38a351ae2ad@xenomai.org>
-Date: Fri, 15 Dec 2017 15:44:51 +0100
+ <5fedac20-47d9-7617-a9d6-a38a351ae2ad@xenomai.org>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <fc7bbd5c-796b-954a-e1b5-42c0cecd0291@siemens.com>
+Date: Fri, 15 Dec 2017 16:02:20 +0100
 MIME-Version: 1.0
-In-Reply-To: <51da76cf-b6ee-9943-26e8-c91db5cb6b7f@siemens.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <5fedac20-47d9-7617-a9d6-a38a351ae2ad@xenomai.org>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] ipipe: 4.4 BUG on x86, maybe on 4.9 as well
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -18,71 +19,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 12/15/2017 03:24 PM, Jan Kiszka wrote:
-> On 2017-12-14 20:44, Philippe Gerum wrote:
->> On 12/14/2017 08:28 PM, Jan Kiszka wrote:
->>> Hi Philippe,
->>>
->>> something got broken with the exception path rework:
->>>
->>> [    2.619458] debug: unmapping init [mem 0xffffffff81b43000-0xffffffff81ee5fff]
->>> [    2.622011] BUG: using __this_cpu_read() in preemptible [00000000] code: init/1
->>> [    2.623446] caller is __this_cpu_preempt_check+0x13/0x20
->>> [    2.624724] CPU: 2 PID: 1 Comm: init Not tainted 4.4.105+ #689
->>> [    2.626073] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.11.0-0-g63451fca13-prebuilt.qemu-project.org 04/01/2014
->>> [    2.628911] I-pipe domain: Linux
->>> [    2.630083]  ffffffff81993439 ffff88003fb43c10 ffffffff813afa45 0000000000000002
->>> [    2.631427]  ffff88003fb38000 ffff88003fb43c50 ffffffff813db5eb ffffffff82c57340
->>> [    2.631427]  ffff88003fb43c98 0000000000000002 ffff88003fb44000 0000000000000000
->>> [    2.631427] Call Trace:
->>> [    2.631427]  [<ffffffff813afa45>] dump_stack+0xb2/0xdd
->>> [    2.631427]  [<ffffffff813db5eb>] check_preemption_disabled+0x17b/0x1c0
->>> [    2.631427]  [<ffffffff813db663>] __this_cpu_preempt_check+0x13/0x20
->>> [    2.631427]  [<ffffffff8104eb1f>] do_page_fault+0x3f/0x60
->>> [    2.631427]  [<ffffffff8170f8b7>] page_fault+0x27/0x60
->>> [    2.631427]  [<ffffffff813bcef2>] ? __clear_user+0x42/0x70
->>> [    2.631427]  [<ffffffff813bcf69>] clear_user+0x49/0x80
->>> [    2.631427]  [<ffffffff812727d4>] padzero+0x24/0x40
->>> [    2.631427]  [<ffffffff81274bfe>] load_elf_binary+0x8fe/0x10f0
->>> [    2.631427]  [<ffffffff81116ee8>] ? ipipe_unstall_root+0x58/0x90
->>> [    2.631427]  [<ffffffff812222c7>] search_binary_handler+0x97/0x1d0
->>> [    2.631427]  [<ffffffff81223b86>] do_execveat_common.isra.40+0x5d6/0x7e0
->>> [    2.631427]  [<ffffffff81223aff>] ? do_execveat_common.isra.40+0x54f/0x7e0
->>> [    2.631427]  [<ffffffff8122bb00>] ? path_openat+0x1440/0x14e0
->>> [    2.631427]  [<ffffffff816fff20>] ? rest_init+0xd0/0xd0
->>> [    2.631427]  [<ffffffff81223dbc>] do_execve+0x2c/0x30
->>> [    2.631427]  [<ffffffff810002eb>] run_init_process+0x2b/0x30
->>> [    2.631427]  [<ffffffff816fff5d>] kernel_init+0x3d/0xe0
->>> [    2.631427]  [<ffffffff8170d4c0>] ret_from_fork+0x40/0x70
->>> [    2.631427]  [<ffffffff816fff20>] ? rest_init+0xd0/0xd0
->>>
->>> Unless you have some immediate idea, I will debug this tomorrow. Issue
->>> disappears when I revert the related patches in the ipipe queue.
->>>
->>
->> Issue may be in the changes affecting IPIPE_DO_TRAP() [4e180c151]. The
->> sequence used to be prologue -> handler -> restore_root, it is now
->> prologue -> restore_root -> handler, which basically means that the
->> stall bit fixup is no more, ... a fixup.
-> 
-> Right, this is broken. The previous code was well matured, it just
-> excluded the case int3 for dyn-ftrace, kprobe etc. so far.
-> 
-
-Actually, the code was broken with int3 as issued by ftrace. This is
-what triggered the change.
-
-> While gaining that support would be valuable, I would still recommend to
-> revert the changes for now and redesign the int3 handling carefully on top.
-> 
-
-We should not be that far from a proper implementation. I'd like to try
-the kvm config that shows the issue. Is there any way to reproduce this
-easily?
-
--- 
-Philippe.
-
+T24gMjAxNy0xMi0xNSAxNTo0NCwgUGhpbGlwcGUgR2VydW0gd3JvdGU6Cj4gT24gMTIvMTUvMjAx
+NyAwMzoyNCBQTSwgSmFuIEtpc3prYSB3cm90ZToKPj4gT24gMjAxNy0xMi0xNCAyMDo0NCwgUGhp
+bGlwcGUgR2VydW0gd3JvdGU6Cj4+PiBPbiAxMi8xNC8yMDE3IDA4OjI4IFBNLCBKYW4gS2lzemth
+IHdyb3RlOgo+Pj4+IEhpIFBoaWxpcHBlLAo+Pj4+Cj4+Pj4gc29tZXRoaW5nIGdvdCBicm9rZW4g
+d2l0aCB0aGUgZXhjZXB0aW9uIHBhdGggcmV3b3JrOgo+Pj4+Cj4+Pj4gWyAgICAyLjYxOTQ1OF0g
+ZGVidWc6IHVubWFwcGluZyBpbml0IFttZW0gMHhmZmZmZmZmZjgxYjQzMDAwLTB4ZmZmZmZmZmY4
+MWVlNWZmZl0KPj4+PiBbICAgIDIuNjIyMDExXSBCVUc6IHVzaW5nIF9fdGhpc19jcHVfcmVhZCgp
+IGluIHByZWVtcHRpYmxlIFswMDAwMDAwMF0gY29kZTogaW5pdC8xCj4+Pj4gWyAgICAyLjYyMzQ0
+Nl0gY2FsbGVyIGlzIF9fdGhpc19jcHVfcHJlZW1wdF9jaGVjaysweDEzLzB4MjAKPj4+PiBbICAg
+IDIuNjI0NzI0XSBDUFU6IDIgUElEOiAxIENvbW06IGluaXQgTm90IHRhaW50ZWQgNC40LjEwNSsg
+IzY4OQo+Pj4+IFsgICAgMi42MjYwNzNdIEhhcmR3YXJlIG5hbWU6IFFFTVUgU3RhbmRhcmQgUEMg
+KFEzNSArIElDSDksIDIwMDkpLCBCSU9TIHJlbC0xLjExLjAtMC1nNjM0NTFmY2ExMy1wcmVidWls
+dC5xZW11LXByb2plY3Qub3JnIDA0LzAxLzIwMTQKPj4+PiBbICAgIDIuNjI4OTExXSBJLXBpcGUg
+ZG9tYWluOiBMaW51eAo+Pj4+IFsgICAgMi42MzAwODNdICBmZmZmZmZmZjgxOTkzNDM5IGZmZmY4
+ODAwM2ZiNDNjMTAgZmZmZmZmZmY4MTNhZmE0NSAwMDAwMDAwMDAwMDAwMDAyCj4+Pj4gWyAgICAy
+LjYzMTQyN10gIGZmZmY4ODAwM2ZiMzgwMDAgZmZmZjg4MDAzZmI0M2M1MCBmZmZmZmZmZjgxM2Ri
+NWViIGZmZmZmZmZmODJjNTczNDAKPj4+PiBbICAgIDIuNjMxNDI3XSAgZmZmZjg4MDAzZmI0M2M5
+OCAwMDAwMDAwMDAwMDAwMDAyIGZmZmY4ODAwM2ZiNDQwMDAgMDAwMDAwMDAwMDAwMDAwMAo+Pj4+
+IFsgICAgMi42MzE0MjddIENhbGwgVHJhY2U6Cj4+Pj4gWyAgICAyLjYzMTQyN10gIFs8ZmZmZmZm
+ZmY4MTNhZmE0NT5dIGR1bXBfc3RhY2srMHhiMi8weGRkCj4+Pj4gWyAgICAyLjYzMTQyN10gIFs8
+ZmZmZmZmZmY4MTNkYjVlYj5dIGNoZWNrX3ByZWVtcHRpb25fZGlzYWJsZWQrMHgxN2IvMHgxYzAK
+Pj4+PiBbICAgIDIuNjMxNDI3XSAgWzxmZmZmZmZmZjgxM2RiNjYzPl0gX190aGlzX2NwdV9wcmVl
+bXB0X2NoZWNrKzB4MTMvMHgyMAo+Pj4+IFsgICAgMi42MzE0MjddICBbPGZmZmZmZmZmODEwNGVi
+MWY+XSBkb19wYWdlX2ZhdWx0KzB4M2YvMHg2MAo+Pj4+IFsgICAgMi42MzE0MjddICBbPGZmZmZm
+ZmZmODE3MGY4Yjc+XSBwYWdlX2ZhdWx0KzB4MjcvMHg2MAo+Pj4+IFsgICAgMi42MzE0MjddICBb
+PGZmZmZmZmZmODEzYmNlZjI+XSA/IF9fY2xlYXJfdXNlcisweDQyLzB4NzAKPj4+PiBbICAgIDIu
+NjMxNDI3XSAgWzxmZmZmZmZmZjgxM2JjZjY5Pl0gY2xlYXJfdXNlcisweDQ5LzB4ODAKPj4+PiBb
+ICAgIDIuNjMxNDI3XSAgWzxmZmZmZmZmZjgxMjcyN2Q0Pl0gcGFkemVybysweDI0LzB4NDAKPj4+
+PiBbICAgIDIuNjMxNDI3XSAgWzxmZmZmZmZmZjgxMjc0YmZlPl0gbG9hZF9lbGZfYmluYXJ5KzB4
+OGZlLzB4MTBmMAo+Pj4+IFsgICAgMi42MzE0MjddICBbPGZmZmZmZmZmODExMTZlZTg+XSA/IGlw
+aXBlX3Vuc3RhbGxfcm9vdCsweDU4LzB4OTAKPj4+PiBbICAgIDIuNjMxNDI3XSAgWzxmZmZmZmZm
+ZjgxMjIyMmM3Pl0gc2VhcmNoX2JpbmFyeV9oYW5kbGVyKzB4OTcvMHgxZDAKPj4+PiBbICAgIDIu
+NjMxNDI3XSAgWzxmZmZmZmZmZjgxMjIzYjg2Pl0gZG9fZXhlY3ZlYXRfY29tbW9uLmlzcmEuNDAr
+MHg1ZDYvMHg3ZTAKPj4+PiBbICAgIDIuNjMxNDI3XSAgWzxmZmZmZmZmZjgxMjIzYWZmPl0gPyBk
+b19leGVjdmVhdF9jb21tb24uaXNyYS40MCsweDU0Zi8weDdlMAo+Pj4+IFsgICAgMi42MzE0Mjdd
+ICBbPGZmZmZmZmZmODEyMmJiMDA+XSA/IHBhdGhfb3BlbmF0KzB4MTQ0MC8weDE0ZTAKPj4+PiBb
+ICAgIDIuNjMxNDI3XSAgWzxmZmZmZmZmZjgxNmZmZjIwPl0gPyByZXN0X2luaXQrMHhkMC8weGQw
+Cj4+Pj4gWyAgICAyLjYzMTQyN10gIFs8ZmZmZmZmZmY4MTIyM2RiYz5dIGRvX2V4ZWN2ZSsweDJj
+LzB4MzAKPj4+PiBbICAgIDIuNjMxNDI3XSAgWzxmZmZmZmZmZjgxMDAwMmViPl0gcnVuX2luaXRf
+cHJvY2VzcysweDJiLzB4MzAKPj4+PiBbICAgIDIuNjMxNDI3XSAgWzxmZmZmZmZmZjgxNmZmZjVk
+Pl0ga2VybmVsX2luaXQrMHgzZC8weGUwCj4+Pj4gWyAgICAyLjYzMTQyN10gIFs8ZmZmZmZmZmY4
+MTcwZDRjMD5dIHJldF9mcm9tX2ZvcmsrMHg0MC8weDcwCj4+Pj4gWyAgICAyLjYzMTQyN10gIFs8
+ZmZmZmZmZmY4MTZmZmYyMD5dID8gcmVzdF9pbml0KzB4ZDAvMHhkMAo+Pj4+Cj4+Pj4gVW5sZXNz
+IHlvdSBoYXZlIHNvbWUgaW1tZWRpYXRlIGlkZWEsIEkgd2lsbCBkZWJ1ZyB0aGlzIHRvbW9ycm93
+LiBJc3N1ZQo+Pj4+IGRpc2FwcGVhcnMgd2hlbiBJIHJldmVydCB0aGUgcmVsYXRlZCBwYXRjaGVz
+IGluIHRoZSBpcGlwZSBxdWV1ZS4KPj4+Pgo+Pj4KPj4+IElzc3VlIG1heSBiZSBpbiB0aGUgY2hh
+bmdlcyBhZmZlY3RpbmcgSVBJUEVfRE9fVFJBUCgpIFs0ZTE4MGMxNTFdLiBUaGUKPj4+IHNlcXVl
+bmNlIHVzZWQgdG8gYmUgcHJvbG9ndWUgLT4gaGFuZGxlciAtPiByZXN0b3JlX3Jvb3QsIGl0IGlz
+IG5vdwo+Pj4gcHJvbG9ndWUgLT4gcmVzdG9yZV9yb290IC0+IGhhbmRsZXIsIHdoaWNoIGJhc2lj
+YWxseSBtZWFucyB0aGF0IHRoZQo+Pj4gc3RhbGwgYml0IGZpeHVwIGlzIG5vIG1vcmUsIC4uLiBh
+IGZpeHVwLgo+Pgo+PiBSaWdodCwgdGhpcyBpcyBicm9rZW4uIFRoZSBwcmV2aW91cyBjb2RlIHdh
+cyB3ZWxsIG1hdHVyZWQsIGl0IGp1c3QKPj4gZXhjbHVkZWQgdGhlIGNhc2UgaW50MyBmb3IgZHlu
+LWZ0cmFjZSwga3Byb2JlIGV0Yy4gc28gZmFyLgo+Pgo+IAo+IEFjdHVhbGx5LCB0aGUgY29kZSB3
+YXMgYnJva2VuIHdpdGggaW50MyBhcyBpc3N1ZWQgYnkgZnRyYWNlLiBUaGlzIGlzCj4gd2hhdCB0
+cmlnZ2VyZWQgdGhlIGNoYW5nZS4KCk5vcGUsIHlvdSBqdXN0IGhhZCB0byB0dXJuIHRob3NlIHRo
+aW5ncyBvZmYuIFdlIG1heSBoYXZlIG1pc3NlZCBzb21lCktjb25maWcgZGVwZW5kZW5jaWVzLCB0
+cnVlLCBidXQgd2UgbmV2ZXIgc3VwcG9ydGVkIGNvZGUgcGF0Y2hpbmcgbGlrZQpmb3IgZHluLWZ0
+cmFjZSwganVtcCBsYWJlbHMsIG9yIHNpbWlsYXIgdGhpbmdzLiBXZSBzaG91bGQsIGJ1dCBpdCdz
+IG5vdAp0cml2aWFsIGFzIHdlIHNlZS4KCj4gCj4+IFdoaWxlIGdhaW5pbmcgdGhhdCBzdXBwb3J0
+IHdvdWxkIGJlIHZhbHVhYmxlLCBJIHdvdWxkIHN0aWxsIHJlY29tbWVuZCB0bwo+PiByZXZlcnQg
+dGhlIGNoYW5nZXMgZm9yIG5vdyBhbmQgcmVkZXNpZ24gdGhlIGludDMgaGFuZGxpbmcgY2FyZWZ1
+bGx5IG9uIHRvcC4KPj4KPiAKPiBXZSBzaG91bGQgbm90IGJlIHRoYXQgZmFyIGZyb20gYSBwcm9w
+ZXIgaW1wbGVtZW50YXRpb24uIEknZCBsaWtlIHRvIHRyeQo+IHRoZSBrdm0gY29uZmlnIHRoYXQg
+c2hvd3MgdGhlIGlzc3VlLiBJcyB0aGVyZSBhbnkgd2F5IHRvIHJlcHJvZHVjZSB0aGlzCj4gZWFz
+aWx5PwoKQ09ORklHX0RFQlVHXyouIEkndmUgYXR0YWNoZWQgbWluZS4gT25lIGtleSBhc3BlY3Qg
+aXMgdGhhdCB0aGUgZml4dXAKbXVzdCBydW4gKmFmdGVyKiB0aGUgTGludXggaGFuZGxlci4gVGhp
+cyBpcyBub3cgYnJva2VuLgoKTG9vaywgSSd2ZSBkZWJ1Z2dlZCB0aGF0IHN0dWZmIG1vcmUgdGhh
+biBvbmNlLCBhbmQgaXQgdG9vayBxdWl0ZSBzb21lCmVmZm9ydCBhbmQgbXVsdGlwbGUgYXR0ZW1w
+dHMgdW50aWwgd2UgZW5kZWQgdXAgd2l0aCB0aGUgY3VycmVudCBzdGFibGUKdmVyc2lvbi4gV2Ug
+c2hvdWxkIHdvcmsgb24gdG9wIG9mIHRoYXQgdG8gZW5hYmxlIGNvZGUgcGF0Y2hpbmcgdmlhIGlu
+dDMsCnZlcnkgY2FyZWZ1bGx5IGFuZCB3aXRoIGdvb2QgZXhwbGFuYXRpb25zICh5b3UgY2FuIGZp
+bmQgbXkgYXR0ZW1wdHMgZm9yCnRoZSBjdXJyZW50IHZlcnNpb24gYWxzbyBpbiBnaXQpLiBBbmQg
+dGhhdCdzIHdoeSB3ZSBzaG91bGQgcmV2ZXJ0IGZpcnN0LgoKSmFuCgotLSAKU2llbWVucyBBRywg
+Q29ycG9yYXRlIFRlY2hub2xvZ3ksIENUIFJEQSBJVFAgU0VTLURFCkNvcnBvcmF0ZSBDb21wZXRl
+bmNlIENlbnRlciBFbWJlZGRlZCBMaW51eAotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0t
+LS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiAuY29u
+ZmlnLnh6ClR5cGU6IGFwcGxpY2F0aW9uL3gteHoKU2l6ZTogMjQ0NDQgYnl0ZXMKRGVzYzogbm90
+IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8veGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0
+YWNobWVudHMvMjAxNzEyMTUvNDM1MjEyY2QvYXR0YWNobWVudC5iaW4+Cg==
