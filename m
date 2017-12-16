@@ -1,17 +1,14 @@
-References: <954f3936-9906-a33e-4d6a-fa5e640430e4@xenomai.org>
- <bb013c41-9b90-4bc1-a84a-6e5137061ceb@alaxarxa.net>
- <20f31474-8d30-fad7-c79d-bd4cf03295ae@xenomai.org>
- <56e8674c-9744-3bf4-ba7a-b3df1fd113fa@alaxarxa.net>
- <da516d20-d6fd-5043-8854-d648df01cf13@xenomai.org>
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Message-ID: <1d12f49c-6932-73e8-d29c-939a4f355eb8@alaxarxa.net>
-Date: Fri, 15 Dec 2017 22:42:53 +0100
+Date: Sat, 16 Dec 2017 21:31:51 +0800
+From: Peng Fan <van.freenix@gmail.com>
+Message-ID: <20171216133149.abhzge7bpguhyd2r@linux-u7w5.ap.freescale.net>
+References: <20171214102348.tkgnln3xvzxkx5bc@linux-u7w5.ap.freescale.net>
+ <26353124-2b4f-b911-8729-c621d565757e@xenomai.org>
+ <20171215095342.sjwcih77zq5zrbqj@linux-u7w5.ap.freescale.net>
 MIME-Version: 1.0
-In-Reply-To: <da516d20-d6fd-5043-8854-d648df01cf13@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RTnet fixes - testers needed
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20171215095342.sjwcih77zq5zrbqj@linux-u7w5.ap.freescale.net>
+Subject: Re: [Xenomai] xenomai on ARM64 question
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,70 +17,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-El 15/12/17 a les 21:47, Philippe Gerum ha escrit:
-> On 12/15/2017 01:25 PM, Leopold Palomo-Avellaneda wrote:
->> Hi,
+On Fri, Dec 15, 2017 at 05:53:43PM +0800, Peng Fan wrote:
+>Hi Philippe,
+>On Thu, Dec 14, 2017 at 05:39:10PM +0100, Philippe Gerum wrote:
+>>On 12/14/2017 11:23 AM, Peng Fan wrote:
+>>> Hi,
+>>> 
+>>> I am trying xenomai on ARM64 with GICV3, but met the following error.
+>>> I have no good idea on this. I disabled KVM/CPUFREQ/CPUIDLE, enabled DEBUG.
+>>> I use ipipe-core-4.9.51-arm64-3.patch with these patches applied from 4.9.y branch
+>>> "
+>>> ipipe: printk: fix unprotected check for deferrable output
+>>> ipipe: drop obsolete ipipe_probe_kernel*() calls
+>>> lib/ipipe: make dump_stack() domain-aware
+>>> ipipe: gicv3: [v3] Enable interrupt pipelining.
+>>> ipipe: add back migration notifiers
+>>> "
+>>> 
+>>> Do you know what this issue maybe related about?
+>>> 
+>>> Log:
+>>> [   20.236548] dhd_module_init out
+>>> [   20.239689] ALSA device list:
+>>> [   20.242750]   #0: amix-audio-sai
+>>> [   20.246170] Unable to handle kernel NULL pointer dereference at virtual addr0
+>>> [   20.254331] mm_pgd = ffff000009469000, hw_pgd = ffff8000015a4000
+>>> [   20.260341] [00000000] *pgd=00000008bfffe003, *pud=00000008bfffd003, *pmd=000
+>>> [   20.268640] Internal error: Oops: 86000004 [#1] PREEMPT SMP
 >>
->> I forgot something more:
+>>Some irqchip driver enabled in your kernel is not aware of interrupt
+>>pipelining, i.e. not handled by the I-pipe patch. The
+>>->irq_hold/release() handlers for this interrupt controller are likely
+>>missing.
+>
+>Thanks. It is a dummy irqchip driver used for wakeup causes this issue.
+>
+>I still have a question on my platform. with "maxcpus=1", kernel could runs
+>into login shell. But if using default 4 CPUs, kernel stops at:
+>
+>[    4.305046] audit: initializing netlink subsys (disabled)
+>[    4.305111] audit: type=2000 audit(4.032:1): initialized
+>[    4.305526] [Xenomai] scheduling class idle registered.
+>[    4.305530] [Xenomai] scheduling class rt registered.
+>---- Stops here. 
+>
+>From the code, I found it stops at
+>                        /*
+>                         * Ensure all CPUs consumed the IPI to avoid
+>                         * running __ipipe_cpu_sync prematurely. This
+>                         * usually resolves the deadlock reason too.
+>                         */
+>                        while (!cpumask_equal(&online, &__ipipe_cpu_pass_map))
+>                                cpu_relax();
+>
+>Seems online not equal to __ipipe_cpu_pass_map. I am not sure IPI is send
+>to other cores, I am using GICV3. Still debugging.
+>
+>Any hints?
+
+Resolved. It is my arm trusted firmware issue, not configured ipi critical
+correctly.
+
+Thanks,
+Peng.
+
+>
+>Thanks,
+>Peng.
+>
 >>
->> On 15/12/17 12:04, Philippe Gerum wrote:
->>
->> [...]
->>>>
->>>> I guess that there's something in the kernel config or somewhere in 3.x that
->>>> affects the PCI cards. In 2.6.x worked.
->>>
->>> On x86, I'd dare to say that it worked mostly by accident, as revealed
->>> by SMAP later on. RTnet was out of the Xenomai tree in 2.6.x, some
->>> changes introduced during the merge into 3.x might have caused
->>> regressions, or maybe some latent issues started to bite when transposed
->>> in a different environment, just like the SMAP problem on x86, revealing
->>> an ancient Rnet bug. I genuinely don't know when things started to hit
->>> the fan.
->>
->> I don't know if it's relevant or not, or I didn't understand it, but I think
->> that I still have problems with SMAP. If I activate it, I got:
->>
-> 
-> Please confirm that you are running wip/rtnet-fixes, and not
-> stable-3.0.x or next which are still plagued with direct usermem access
-> bugs. The backtrace shows SMAP biting in rt_packet_ioctl(), which is
-> actually the first routine I fixed in the AF_PACKET layer, removing such
-> invalid accesses, since I need that one.
+>>-- 
+>>Philippe.
+>
+>-- 
 
-well, I'm remotely connected to my robotic platform and it seems that it's the
-version that I built on monday 3.0.6+ds2rtnet-1~drp9+20171211. I built it from:
-
-xenomai-3.git (wip/rtnet-fixes)$
-
-and these are the last two entries of the git:
-
-commit c640a6040e72c7597d06b119d3ce30fbf3408e82
-Author: Philippe Gerum <rpm@xenomai.org>
-Date:   Wed Dec 6 13:41:06 2017 +0100
-
-    net/iovec: drop useless kernel<-> iovec[] copy helpers
-
-    No more in-tree users for those, in the wake of dropping the broken
-    direct references from the kernel to user-space memory.
-
-commit 64d2b7657ce4bddb2e2cc1a209dfedfa01000502
-Author: Philippe Gerum <rpm@xenomai.org>
-Date:   Wed Dec 6 13:40:19 2017 +0100
-
-    net: convert to rtdm_get_iov_flatlen()
-
-
-> If you still have this issue over the wip/rtnet-fixes branch, then
-> please use addr2line to find out which source line triggers the bug in
-> af_packet.c.
-
-ok, on monday I will check again and I try to follow your indications.
-
-Best regards,
-
-Leopold
-
+-- 
 
