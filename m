@@ -1,10 +1,12 @@
-Message-ID: <5a369d8e.d1d6240a.67aeb.326f@mx.google.com>
-Date: Sun, 17 Dec 2017 11:38:35 -0500
-From: Greg Gallagher <greg@embeddedgreg.com>
-In-Reply-To: <5a368c2e.c49e6b0a.dbab2.19b5@mx.google.com>
+References: <5a369d8e.d1d6240a.67aeb.326f@mx.google.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <bb59fe3d-6a17-cc02-f3a8-4e34e9074c72@xenomai.org>
+Date: Sun, 17 Dec 2017 17:40:49 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
+In-Reply-To: <5a369d8e.d1d6240a.67aeb.326f@mx.google.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai] Xenomai on Arm64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -14,27 +16,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ?? ? <YuBocheng@live.cn>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Greg Gallagher <greg@embeddedgreg.com>, ?? ? <YuBocheng@live.cn>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-CkkgYmVsaWV2ZSBBcm02NCBpcyBvbmx5IGluIHRoZSBuZXh0IGJyYW5jaCwgYnV0IGknbGwgbGVh
-dmUgdGhhdCB0byBzb21lb25lIGVsc2UgdG8gY29uZmlybSBvciBjb3JyZWN0LgoKR3JlZwoKwqAg
-T3JpZ2luYWwgTWVzc2FnZSDCoApGcm9tOiBncmVnQGVtYmVkZGVkZ3JlZy5jb20KU2VudDogRGVj
-ZW1iZXIgMTcsIDIwMTcgMTA6MjQgQU0KVG86IFl1Qm9jaGVuZ0BsaXZlLmNuOyB4ZW5vbWFpQHhl
-bm9tYWkub3JnClN1YmplY3Q6IFJlOiBbWGVub21haV0gWGVub21haSBvbiBBcm02NAoKV2hhdCBr
-ZXJuZWwgYXJlIHlvdSB1c2luZyBMNFQgb3IgbWFpbmxpbmU/CgoKU2VudCBmcm9tIG15IEJsYWNr
-QmVycnkgLSB0aGUgbW9zdCBzZWN1cmUgbW9iaWxlIGRldmljZSAtIHZpYSB0aGUgUm9nZXJzIE5l
-dHdvcmsKCsKgIE9yaWdpbmFsIE1lc3NhZ2UgwqAKRnJvbTogWXVCb2NoZW5nQGxpdmUuY24KU2Vu
-dDogRGVjZW1iZXIgMTcsIDIwMTcgOTo0NCBBTQpUbzogeGVub21haUB4ZW5vbWFpLm9yZwpTdWJq
-ZWN0OiBbWGVub21haV0gWGVub21haSBvbiBBcm02NAoKSGksCgpJJ20gdHJ5aW5nIHRvIHBhdGNo
-IFhlbm9tYWkgb24gTnZpZGlhIFRYMiwgYW4gQXJtNjQgcHJvY2Vzc29yLiBXaGVuIEkgdXNlZCBY
-ZW5vbWFpIDMuMC41IGFuZCBpcGlwZS1jb3JlLTQuOS4yNC1hcm02NC0yLnBhdGNoLCBJIHdhcyBu
-b3QgYWxsb3dlZCBjb25maWcgdGhlIGtlcm5lbC4gQXMgSSB1bmRlcnN0b29kLCB0aGlzIGlzIGJl
-Y2F1c2UgWGVub21haSAzLjAuNSBkb2Vzbid0IGZ1bGx5IHN1cHBvcnQgQXJtNjQgKC9rZXJuZWwv
-Y29iYWx0L2FyY2gvYXJtNjQgaXMgZW1wdHkpLgoKU28gSSB3YXMgd29uZGVyaW5nIHdoaWNoIHZl
-cnNpb25zIG9mIFhlbm9tYWkgYW5kIGlwaXBlIEkgc2hvdWxkIHVzZT8gU3RhYmxlIHJlbGVhc2Ug
-b3IgdmVyc2lvbnMgdW5kZXIgZGV2ZWxvcG1lbnQ/CgpUaGFuayB5b3UhCgpCb2NoZW5nIFl1Cl9f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fClhlbm9tYWkgbWFp
-bGluZyBsaXN0Clhlbm9tYWlAeGVub21haS5vcmcKaHR0cHM6Ly94ZW5vbWFpLm9yZy9tYWlsbWFu
-L2xpc3RpbmZvL3hlbm9tYWkK
+On 12/17/2017 05:38 PM, Greg Gallagher wrote:
+> 
+> I believe Arm64 is only in the next branch, but i'll leave that to someone else to confirm or correct.
 
+That is correct.
+
+> 
+> Greg
+> 
+>   Original Message  
+> From: greg@embeddedgreg.com
+> Sent: December 17, 2017 10:24 AM
+> To: YuBocheng@live.cn; xenomai@xenomai.org
+> Subject: Re: [Xenomai] Xenomai on Arm64
+> 
+> What kernel are you using L4T or mainline?
+> 
+> 
+> Sent from my BlackBerry - the most secure mobile device - via the Rogers Network
+> 
+>   Original Message  
+> From: YuBocheng@live.cn
+> Sent: December 17, 2017 9:44 AM
+> To: xenomai@xenomai.org
+> Subject: [Xenomai] Xenomai on Arm64
+> 
+> Hi,
+> 
+> I'm trying to patch Xenomai on Nvidia TX2, an Arm64 processor. When I used Xenomai 3.0.5 and ipipe-core-4.9.24-arm64-2.patch, I was not allowed config the kernel. As I understood, this is because Xenomai 3.0.5 doesn't fully support Arm64 (/kernel/cobalt/arch/arm64 is empty).
+> 
+> So I was wondering which versions of Xenomai and ipipe I should use? Stable release or versions under development?
+> 
+> Thank you!
+> 
+> Bocheng Yu
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
+> 
+
+
+-- 
+Philippe.
 
