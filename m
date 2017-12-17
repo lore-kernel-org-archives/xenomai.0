@@ -1,9 +1,14 @@
+From: =?gb2312?B?sqmzzyDT4A==?= <yubocheng@live.cn>
+Date: Sun, 17 Dec 2017 17:22:08 +0000
+Message-ID: <CO2PR07MB2533556D28F1EABA8A58E7B3A9090@CO2PR07MB2533.namprd07.prod.outlook.com>
+References: <CO2PR07MB2533D3D61DD41D8DF287B84DA9090@CO2PR07MB2533.namprd07.prod.outlook.com>,
+ <5a368c2e.c49e6b0a.dbab2.19b5@mx.google.com>
+In-Reply-To: <5a368c2e.c49e6b0a.dbab2.19b5@mx.google.com>
+Content-Language: en-US
 MIME-Version: 1.0
-From: rajae rajae <samiraelmadani9@gmail.com>
-Date: Sun, 17 Dec 2017 16:49:32 +0000
-Message-ID: <CAJ+dHiL+cvgRzyE=KDATiD2WKs8u7rj1NzS5Ur21855T-UWzFg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] (no subject)
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Xenomai on Arm64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,11 +17,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Greg Gallagher <greg@embeddedgreg.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-please to uninstall xenomai or reconfigure it ,because it sounds like there
-is a problem in the configuration so that when I execute ./latency I got
-just the first three lines
-== Sampling period: 100 us
-== Test mode: periodic user-mode task
-== All results in microseconds
+SGkgR3JlZywNCg0KSSdtIHVzaW5nIEw0VC4gVGhlIGZlZWRiYWNrIGZyb20gJ3VuYW1lIC1yJyBp
+czoNCjQuNC4xNS10ZWdyYQ0KDQpXb3VsZCB0aGF0IGJlIGEgcHJvYmxlbT8NCg0KVGhhbmsgeW91
+IQ0KDQpCb2NoZW5nIFl1DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KRnJvbTog
+R3JlZyBHYWxsYWdoZXIgPGdyZWdAZW1iZWRkZWRncmVnLmNvbT4NClNlbnQ6IFN1bmRheSwgRGVj
+ZW1iZXIgMTcsIDIwMTcgMTA6MjQNClRvOiA/PyA/OyB4ZW5vbWFpQHhlbm9tYWkub3JnDQpTdWJq
+ZWN0OiBSZTogW1hlbm9tYWldIFhlbm9tYWkgb24gQXJtNjQNCg0KV2hhdCBrZXJuZWwgYXJlIHlv
+dSB1c2luZyBMNFQgb3IgbWFpbmxpbmU/DQoNCg0KDQpTZW50IGZyb20gbXkgQmxhY2tCZXJyeSAt
+IHRoZSBtb3N0IHNlY3VyZSBtb2JpbGUgZGV2aWNlIC0gdmlhIHRoZSBSb2dlcnMgTmV0d29yaw0K
+DQogIE9yaWdpbmFsIE1lc3NhZ2UNCkZyb206IFl1Qm9jaGVuZ0BsaXZlLmNuDQpTZW50OiBEZWNl
+bWJlciAxNywgMjAxNyA5OjQ0IEFNDQpUbzogeGVub21haUB4ZW5vbWFpLm9yZw0KU3ViamVjdDog
+W1hlbm9tYWldIFhlbm9tYWkgb24gQXJtNjQNCg0KSGksDQoNCkknbSB0cnlpbmcgdG8gcGF0Y2gg
+WGVub21haSBvbiBOdmlkaWEgVFgyLCBhbiBBcm02NCBwcm9jZXNzb3IuIFdoZW4gSSB1c2VkIFhl
+bm9tYWkgMy4wLjUgYW5kIGlwaXBlLWNvcmUtNC45LjI0LWFybTY0LTIucGF0Y2gsIEkgd2FzIG5v
+dCBhbGxvd2VkIGNvbmZpZyB0aGUga2VybmVsLiBBcyBJIHVuZGVyc3Rvb2QsIHRoaXMgaXMgYmVj
+YXVzZSBYZW5vbWFpIDMuMC41IGRvZXNuJ3QgZnVsbHkgc3VwcG9ydCBBcm02NCAoL2tlcm5lbC9j
+b2JhbHQvYXJjaC9hcm02NCBpcyBlbXB0eSkuDQoNClNvIEkgd2FzIHdvbmRlcmluZyB3aGljaCB2
+ZXJzaW9ucyBvZiBYZW5vbWFpIGFuZCBpcGlwZSBJIHNob3VsZCB1c2U/IFN0YWJsZSByZWxlYXNl
+IG9yIHZlcnNpb25zIHVuZGVyIGRldmVsb3BtZW50Pw0KDQpUaGFuayB5b3UhDQoNCkJvY2hlbmcg
+WXUNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQpYZW5v
+bWFpIG1haWxpbmcgbGlzdA0KWGVub21haUB4ZW5vbWFpLm9yZw0KaHR0cHM6Ly94ZW5vbWFpLm9y
+Zy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkNCg==
