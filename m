@@ -1,11 +1,11 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <558043d8-942d-f79e-2e57-cbddeb48aae1@xenomai.org>
-Date: Sun, 17 Dec 2017 19:42:05 +0100
+Message-ID: <0754fea9-838b-dfcc-ed6b-5b3976a6eec3@xenomai.org>
+Date: Sun, 17 Dec 2017 20:16:13 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Ongoing work
+Subject: [Xenomai] New year, new roles
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,40 +15,34 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, Steven Seeger <steven.seeger@nasa.gov>
 
 
-Some news about the ongoing day-to-day work:
+Sixteen years after Gilles and I founded the Xenomai project, time has
+come for me to hand over the leadership to a contributor recognized for
+his skills, bringing fresh ideas, and a creative roadmap.
 
-- the Xenomai repository is being rehosted to the gitlab facility
-offered by Denx Software Engineering (thanks Wolfgang), which currently
-mirrors the original tree. We are working at making the final repository
-publicly accessible before Xmas. We are still sorting out details for
-making the transition as smooth as possible for users currently pulling
-from the original tree.
+Jan Kiszka has agreed to take over the Xenomai leadership gradually from
+me. He will be ramping up his involvement in project steering and
+development head gatekeeping during a transition period starting today.
+This period will end by September 2018 at the latest.
 
-- the existing documentation pages available from the website have been
-made available at [1], and all changes contributed to this material are
-first channeled through this repository before ending up on the website.
-We can move this documentation to the gitlab wiki once the code
-repository is publicly accessible from denx.de.
+I will keep on maintaining the I-pipe for the ARM architecture, helping
+in reviewing changes to the Xenomai code base too. Generally speaking,
+I'll do my best to transfer knowledge about the Xenomai implementation
+to people or organizations willing to contribute to the project.
 
-- A preliminary TODO list was published on the website at [2]. If you
-have suggestions, you can submit patches against the TODO.adoc file from
-the documentation repository, to get them discussed on this mailing list.
+Steven Seeger has volunteered to maintain the I-pipe support for the
+ppc32 architecture, and I'll be working with him to ensure a smooth
+transition here too.
 
-- I have ported the I-pipe for the ARM architecture to kernel 4.14, the
-code is available from a new tree at [3]. I will post details about this
-work - and a different workflow - in a separate mail later.
+Jan's team at Siemens is ramping up their current involvement in the
+I-pipe x86 port.
 
-- Steven Seeger has started porting the I-pipe for the ppc32
-architecture to kernel 4.14 too. His public tree is available at [4].
+PS: The project is still looking for someone who would be willing to
+maintain the I-pipe arm64 port in the long run.
 
 Thanks,
-
-[1] git://git.xenomai.org/xenomai-kbase.git
-[2] https://xenomai.org/todo/
-[3] git://git.xenomai.org/ipipe-arm.git
-[4] git://git.xenomai.org/ipipe-ppc32.git
 
 -- 
 Philippe.
