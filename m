@@ -1,11 +1,11 @@
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <0754fea9-838b-dfcc-ed6b-5b3976a6eec3@xenomai.org>
-Date: Sun, 17 Dec 2017 20:16:13 +0100
+Message-ID: <da7cbdb7-b3fc-c09b-1df3-63d7602ac35e@xenomai.org>
+Date: Sun, 17 Dec 2017 20:20:23 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] New year, new roles
+Subject: [Xenomai] Looking ahead, for fun
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,34 +15,33 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
-Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, Steven Seeger <steven.seeger@nasa.gov>
 
 
-Sixteen years after Gilles and I founded the Xenomai project, time has
-come for me to hand over the leadership to a contributor recognized for
-his skills, bringing fresh ideas, and a creative roadmap.
+Dual kernel systems such as Cobalt need Linux to exhibit a high-priority
+execution stage, for running out of band co-kernel activities. This is
+the purpose of the I-pipe layer, patched in the mainline kernel for
+supporting Cobalt.
 
-Jan Kiszka has agreed to take over the Xenomai leadership gradually from
-me. He will be ramping up his involvement in project steering and
-development head gatekeeping during a transition period starting today.
-This period will end by September 2018 at the latest.
+In order to keep pace with mainline Linux development, this mechanism
+should be simple, and properly integrated as a plain Linux feature, not
+sideways. In other words, it must be possible to maintain it with common
+kernel development knowledge, at a fraction of the engineering and
+maintenance cost native preemption requires. For multiple reasons, the
+I-pipe can not fully qualify.
 
-I will keep on maintaining the I-pipe for the ARM architecture, helping
-in reviewing changes to the Xenomai code base too. Generally speaking,
-I'll do my best to transfer knowledge about the Xenomai implementation
-to people or organizations willing to contribute to the project.
+So I started experimenting with new ideas, trying new options, with no
+pressure on delivering anything, and I have absolutely no clue whether
+this will get us anywhere. This said, upstreaming a lightweight dual
+kernel technology to the greater community so we can address specific
+but critical use cases at a small cost is a goal of this work.
 
-Steven Seeger has volunteered to maintain the I-pipe support for the
-ppc32 architecture, and I'll be working with him to ensure a smooth
-transition here too.
-
-Jan's team at Siemens is ramping up their current involvement in the
-I-pipe x86 port.
-
-PS: The project is still looking for someone who would be willing to
-maintain the I-pipe arm64 port in the long run.
+Jorge Ramirez already joined me for working on the ARM64 implementation,
+we would welcome the help of those interested in building on this idea.
+More details can be read at [1].
 
 Thanks,
+
+[1] https://xenomai.org/looking-ahead/
 
 -- 
 Philippe.
