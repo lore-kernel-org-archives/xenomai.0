@@ -1,10 +1,11 @@
-Message-ID: <5a36acc4.08db240a.80186.2e7c@mx.google.com>
-Date: Sun, 17 Dec 2017 12:43:28 -0500
-From: Greg Gallagher <greg@embeddedgreg.com>
-In-Reply-To: <CO2PR07MB2533556D28F1EABA8A58E7B3A9090@CO2PR07MB2533.namprd07.prod.outlook.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <558043d8-942d-f79e-2e57-cbddeb48aae1@xenomai.org>
+Date: Sun, 17 Dec 2017 19:42:05 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Subject: Re: [Xenomai] Xenomai on Arm64
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Ongoing work
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,62 +14,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?5Y2a6K+aIOS9mQ==?= <yubocheng@live.cn>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
 
-   Hi,
-     So the best approach here would be to try to use a patch that is
-   close to 4.4.15. Apply the ipipe patches and you'll have to resolve to
-   conflicts by hand. I'm not sure how many conflicts you'll find.
-   Thanks
-   Greg
+Some news about the ongoing day-to-day work:
 
-   From: yubocheng@live.cn
-   Sent: December 17, 2017 12:22 PM
-   To: greg@embeddedgreg.com; xenomai@xenomai.org
-   Subject: Re: [Xenomai] Xenomai on Arm64
+- the Xenomai repository is being rehosted to the gitlab facility
+offered by Denx Software Engineering (thanks Wolfgang), which currently
+mirrors the original tree. We are working at making the final repository
+publicly accessible before Xmas. We are still sorting out details for
+making the transition as smooth as possible for users currently pulling
+from the original tree.
 
-   Hi Greg,
-   I'm using L4T. The feedback from 'uname -r' is:
-   4.4.15-tegra
-   Would that be a problem?
-   Thank you!
-   Bocheng Yu
-     __________________________________________________________________
+- the existing documentation pages available from the website have been
+made available at [1], and all changes contributed to this material are
+first channeled through this repository before ending up on the website.
+We can move this documentation to the gitlab wiki once the code
+repository is publicly accessible from denx.de.
 
-   From: Greg Gallagher <[1]greg@embeddedgreg.com>
-   Sent: Sunday, December 17, 2017 10:24
-   To: ?? ?; [2]xenomai@xenomai.org
-   Subject: Re: [Xenomai] Xenomai on Arm64
+- A preliminary TODO list was published on the website at [2]. If you
+have suggestions, you can submit patches against the TODO.adoc file from
+the documentation repository, to get them discussed on this mailing list.
 
-   What kernel are you using L4T or mainline?
-   Sent from my BlackBerry - the most secure mobile device - via the
-   Rogers Network
-     Original Message
-   From: [3]YuBocheng@live.cn
-   Sent: December 17, 2017 9:44 AM
-   To: [4]xenomai@xenomai.org
-   Subject: [Xenomai] Xenomai on Arm64
-   Hi,
-   I'm trying to patch Xenomai on Nvidia TX2, an Arm64 processor. When I
-   used Xenomai 3.0.5 and [5]ipipe-core-4.9.24-arm64-2.patch, I was not
-   allowed config the kernel. As I understood, this is because Xenomai
-   3.0.5 doesn't fully support Arm64 (/kernel/cobalt/arch/arm64 is empty).
-   So I was wondering which versions of Xenomai and ipipe I should use?
-   Stable release or versions under development?
-   Thank you!
-   Bocheng Yu
-   _______________________________________________
-   Xenomai mailing list
-   [6]Xenomai@xenomai.org
-   [7]https://xenomai.org/mailman/listinfo/xenomai
+- I have ported the I-pipe for the ARM architecture to kernel 4.14, the
+code is available from a new tree at [3]. I will post details about this
+work - and a different workflow - in a separate mail later.
 
-References
+- Steven Seeger has started porting the I-pipe for the ppc32
+architecture to kernel 4.14 too. His public tree is available at [4].
 
-   1. mailto:greg@embeddedgreg.com
-   2. mailto:xenomai@xenomai.org
-   3. mailto:YuBocheng@live.cn
-   4. mailto:xenomai@xenomai.org
-   5. http://ipipe-core-4.9.24-arm64-2.patch/
-   6. mailto:Xenomai@xenomai.org
-   7. https://xenomai.org/mailman/listinfo/xenomai
+Thanks,
+
+[1] git://git.xenomai.org/xenomai-kbase.git
+[2] https://xenomai.org/todo/
+[3] git://git.xenomai.org/ipipe-arm.git
+[4] git://git.xenomai.org/ipipe-ppc32.git
+
+-- 
+Philippe.
+
+
