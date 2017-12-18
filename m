@@ -1,20 +1,21 @@
-References: <ff7b3efb-7fb7-a26a-7412-953076de6ce6@siemens.com>
- <6a4b8afd-0e6a-e2e7-ed24-7650a4d742bf@xenomai.org>
- <51da76cf-b6ee-9943-26e8-c91db5cb6b7f@siemens.com>
- <5fedac20-47d9-7617-a9d6-a38a351ae2ad@xenomai.org>
- <fc7bbd5c-796b-954a-e1b5-42c0cecd0291@siemens.com>
- <fab389a7-81c8-3fd4-3d3a-d30433395c5f@xenomai.org>
- <10ea5fa1-e78b-e566-d3c9-183a6ee32956@siemens.com>
- <c162e4b7-d841-b1ee-b5d1-0be85e608d30@xenomai.org>
+References: <954f3936-9906-a33e-4d6a-fa5e640430e4@xenomai.org>
+ <bb013c41-9b90-4bc1-a84a-6e5137061ceb@alaxarxa.net>
+ <20f31474-8d30-fad7-c79d-bd4cf03295ae@xenomai.org>
+ <56e8674c-9744-3bf4-ba7a-b3df1fd113fa@alaxarxa.net>
+ <657c0db4-6cb8-5876-3349-cd784ba69077@siemens.com>
+ <7c3bd3a0-5d08-f1c9-1b39-1457b0826856@xenomai.org>
+ <b8766709-ab3c-b6a8-c539-77343ca5aca1@siemens.com>
+ <bde2e3b7-94a3-57bd-c33f-fac7bdcfb0be@xenomai.org>
+ <1ca2dd05-123b-7d95-60ef-cd24156420eb@xenomai.org>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <e4c0934b-804c-c450-b0e7-e1784a6aa975@siemens.com>
-Date: Mon, 18 Dec 2017 07:27:53 +0100
+Message-ID: <aa6f5c4c-7083-63f9-20aa-fb9929823065@siemens.com>
+Date: Mon, 18 Dec 2017 07:33:27 +0100
 MIME-Version: 1.0
-In-Reply-To: <c162e4b7-d841-b1ee-b5d1-0be85e608d30@xenomai.org>
+In-Reply-To: <1ca2dd05-123b-7d95-60ef-cd24156420eb@xenomai.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ipipe: 4.4 BUG on x86, maybe on 4.9 as well
+Subject: Re: [Xenomai] RTnet fixes - testers needed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,132 +24,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Leopold Palomo-Avellaneda <leo@alaxarxa.net>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 2017-12-15 22:29, Philippe Gerum wrote:
-> On 12/15/2017 06:53 PM, Jan Kiszka wrote:
->> On 2017-12-15 17:45, Philippe Gerum wrote:
->>> On 12/15/2017 04:02 PM, Jan Kiszka wrote:
->>>> On 2017-12-15 15:44, Philippe Gerum wrote:
->>>>> On 12/15/2017 03:24 PM, Jan Kiszka wrote:
->>>>>> On 2017-12-14 20:44, Philippe Gerum wrote:
->>>>>>> On 12/14/2017 08:28 PM, Jan Kiszka wrote:
->>>>>>>> Hi Philippe,
+On 2017-12-15 21:42, Philippe Gerum wrote:
+> On 12/15/2017 02:48 PM, Philippe Gerum wrote:
+>> On 12/15/2017 02:40 PM, Jan Kiszka wrote:
+>>> On 2017-12-15 14:29, Philippe Gerum wrote:
+>>>> On 12/15/2017 02:20 PM, Jan Kiszka wrote:
+>>>>> On 2017-12-15 13:25, Leopold Palomo-Avellaneda wrote:
+>>>>>> Hi,
+>>>>>>
+>>>>>> I forgot something more:
+>>>>>>
+>>>>>> On 15/12/17 12:04, Philippe Gerum wrote:
+>>>>>>
+>>>>>> [...]
 >>>>>>>>
->>>>>>>> something got broken with the exception path rework:
->>>>>>>>
->>>>>>>> [    2.619458] debug: unmapping init [mem 0xffffffff81b43000-0xffffffff81ee5fff]
->>>>>>>> [    2.622011] BUG: using __this_cpu_read() in preemptible [00000000] code: init/1
->>>>>>>> [    2.623446] caller is __this_cpu_preempt_check+0x13/0x20
->>>>>>>> [    2.624724] CPU: 2 PID: 1 Comm: init Not tainted 4.4.105+ #689
->>>>>>>> [    2.626073] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.11.0-0-g63451fca13-prebuilt.qemu-project.org 04/01/2014
->>>>>>>> [    2.628911] I-pipe domain: Linux
->>>>>>>> [    2.630083]  ffffffff81993439 ffff88003fb43c10 ffffffff813afa45 0000000000000002
->>>>>>>> [    2.631427]  ffff88003fb38000 ffff88003fb43c50 ffffffff813db5eb ffffffff82c57340
->>>>>>>> [    2.631427]  ffff88003fb43c98 0000000000000002 ffff88003fb44000 0000000000000000
->>>>>>>> [    2.631427] Call Trace:
->>>>>>>> [    2.631427]  [<ffffffff813afa45>] dump_stack+0xb2/0xdd
->>>>>>>> [    2.631427]  [<ffffffff813db5eb>] check_preemption_disabled+0x17b/0x1c0
->>>>>>>> [    2.631427]  [<ffffffff813db663>] __this_cpu_preempt_check+0x13/0x20
->>>>>>>> [    2.631427]  [<ffffffff8104eb1f>] do_page_fault+0x3f/0x60
->>>>>>>> [    2.631427]  [<ffffffff8170f8b7>] page_fault+0x27/0x60
->>>>>>>> [    2.631427]  [<ffffffff813bcef2>] ? __clear_user+0x42/0x70
->>>>>>>> [    2.631427]  [<ffffffff813bcf69>] clear_user+0x49/0x80
->>>>>>>> [    2.631427]  [<ffffffff812727d4>] padzero+0x24/0x40
->>>>>>>> [    2.631427]  [<ffffffff81274bfe>] load_elf_binary+0x8fe/0x10f0
->>>>>>>> [    2.631427]  [<ffffffff81116ee8>] ? ipipe_unstall_root+0x58/0x90
->>>>>>>> [    2.631427]  [<ffffffff812222c7>] search_binary_handler+0x97/0x1d0
->>>>>>>> [    2.631427]  [<ffffffff81223b86>] do_execveat_common.isra.40+0x5d6/0x7e0
->>>>>>>> [    2.631427]  [<ffffffff81223aff>] ? do_execveat_common.isra.40+0x54f/0x7e0
->>>>>>>> [    2.631427]  [<ffffffff8122bb00>] ? path_openat+0x1440/0x14e0
->>>>>>>> [    2.631427]  [<ffffffff816fff20>] ? rest_init+0xd0/0xd0
->>>>>>>> [    2.631427]  [<ffffffff81223dbc>] do_execve+0x2c/0x30
->>>>>>>> [    2.631427]  [<ffffffff810002eb>] run_init_process+0x2b/0x30
->>>>>>>> [    2.631427]  [<ffffffff816fff5d>] kernel_init+0x3d/0xe0
->>>>>>>> [    2.631427]  [<ffffffff8170d4c0>] ret_from_fork+0x40/0x70
->>>>>>>> [    2.631427]  [<ffffffff816fff20>] ? rest_init+0xd0/0xd0
->>>>>>>>
->>>>>>>> Unless you have some immediate idea, I will debug this tomorrow. Issue
->>>>>>>> disappears when I revert the related patches in the ipipe queue.
->>>>>>>>
+>>>>>>>> I guess that there's something in the kernel config or somewhere in 3.x that
+>>>>>>>> affects the PCI cards. In 2.6.x worked.
 >>>>>>>
->>>>>>> Issue may be in the changes affecting IPIPE_DO_TRAP() [4e180c151]. The
->>>>>>> sequence used to be prologue -> handler -> restore_root, it is now
->>>>>>> prologue -> restore_root -> handler, which basically means that the
->>>>>>> stall bit fixup is no more, ... a fixup.
+>>>>>>> On x86, I'd dare to say that it worked mostly by accident, as revealed
+>>>>>>> by SMAP later on. RTnet was out of the Xenomai tree in 2.6.x, some
+>>>>>>> changes introduced during the merge into 3.x might have caused
+>>>>>>> regressions, or maybe some latent issues started to bite when transposed
+>>>>>>> in a different environment, just like the SMAP problem on x86, revealing
+>>>>>>> an ancient Rnet bug. I genuinely don't know when things started to hit
+>>>>>>> the fan.
 >>>>>>
->>>>>> Right, this is broken. The previous code was well matured, it just
->>>>>> excluded the case int3 for dyn-ftrace, kprobe etc. so far.
->>>>>>
+>>>>>> I don't know if it's relevant or not, or I didn't understand it, but I think
+>>>>>> that I still have problems with SMAP. If I activate it, I got:
 >>>>>
->>>>> Actually, the code was broken with int3 as issued by ftrace. This is
->>>>> what triggered the change.
->>>>
->>>> Nope, you just had to turn those things off. We may have missed some
->>>> Kconfig dependencies, true, but we never supported code patching like
->>>> for dyn-ftrace, jump labels, or similar things. We should, but it's not
->>>> trivial as we see.
->>>>
+>>>>> You must leave SMAP off until someone develops patches to convert the
+>>>>> complete RTnet userspace API over to rtdm_copy_to/from_user.
 >>>>>
->>>>>> While gaining that support would be valuable, I would still recommend to
->>>>>> revert the changes for now and redesign the int3 handling carefully on top.
->>>>>>
->>>>>
->>>>> We should not be that far from a proper implementation. I'd like to try
->>>>> the kvm config that shows the issue. Is there any way to reproduce this
->>>>> easily?
 >>>>
->>>> CONFIG_DEBUG_*. I've attached mine. One key aspect is that the fixup
->>>> must run *after* the Linux handler. This is now broken.
->>>>
->>>> Look, I've debugged that stuff more than once, and it took quite some
->>>> effort and multiple attempts until we ended up with the current stable
->>>> version. We should work on top of that to enable code patching via int3,
->>>> very carefully and with good explanations (you can find my attempts for
->>>> the current version also in git). And that's why we should revert first.
+>>>> The patches in wip/rtnet-fixes address this issue, this is the patch
+>>>> series I was referring to in this discussion.
 >>>>
 >>>
->>> Absolutely no issue with that, I'll revert those patches and let the
->>> I-pipe/x86 maintainers tackle that stuff. I can live with a separate
->>> branch anyway.
+>>> Hmm, for the protocol core. I suspect you are missing further cases in
+>>> RTmac and RTcfg (provided anyone needs them).
+>>>
 >>
->> Thanks. But you probably don't need a branch of your own for using
->> ftrace, just this for now:
->>
->> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
->> index 834e6117f5f8..b9f6121c8530 100644
->> --- a/arch/x86/Kconfig
->> +++ b/arch/x86/Kconfig
->> @@ -83,7 +83,7 @@ config X86
->>  	select HAVE_AOUT			if X86_32
->>  	select HAVE_ARCH_AUDITSYSCALL
->>  	select HAVE_ARCH_HUGE_VMAP		if X86_64 || X86_PAE
->> -	select HAVE_ARCH_JUMP_LABEL
->> +	select HAVE_ARCH_JUMP_LABEL		if !IPIPE
->>  	select HAVE_ARCH_KASAN			if X86_64 && SPARSEMEM_VMEMMAP
->>  	select HAVE_ARCH_KGDB
->>  	select HAVE_ARCH_KMEMCHECK
->>
->>
->> That was (effectively) what I had to explain internally as well a while
->> ago but forgot to push it.
+>> The author of ioctl* support in both cases used copy_from_user directly,
+>> maybe that is a problem with the calling mode. Ok, I'll check whether
+>> rtnet_ioctls dispatcher actually routes from ioctl_nrt. Thanks.
 >>
 > 
-> Could you elaborate a bit on the reason for this patch? Is this because
-> a portion of the jump label machinery might run over the head stage with
-> dyn-ftracing?
+> RTcfg and RTmac are fine in the wip/rtnet-fixes branch. The rtnet_ioctls
+> dispatcher runs over a regular ioctl_unlocked context from a chrdev, so
+> there is no mode issue. All user memory is accessed via copy_to/from
+> routines. I see no sendmsg/recvmsg which could raise the SMAP issue there.
+> 
+> Do you have any hint about those missing cases?
 > 
 
-Jump labels modify if conditions to always take or skip a branch, i.e.
-they patch the code statically. But self-modifying code is a complex
-thing on x86. To ensure no stale obcodes are picked by the CPU during
-the transition, an int3 is injected temporarily (text_poke_bp). If we
-hit this with the current exception code path of I-pipe (apparently,
-that's easy while tracing a live Xenomai system), our problem is back.
-
-There are likely more cases like that, or there will be more. So we
-should really resolve this limitation properly.
+Nope, those two indeed seem to be fine. I didn't remember that we wrote
+them with proper copy_to/from, also for the RT part (tdma_dev.c). The
+core has a different, longer history, lacking any usercopy from day #1.
 
 Jan
 
