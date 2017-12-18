@@ -1,9 +1,11 @@
+From: Lange Norbert <norbert.lange@andritz.com>
+Date: Mon, 18 Dec 2017 14:49:59 +0000
+Message-ID: <99BAB48E90E86D42AD41F0BCE3225AEB018DE50813@GRZSMS582.andritz.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Mon, 18 Dec 2017 09:12:59 -0500
-Message-ID: <CALLqZ8SeLUSSexYTnW7=ZDMKCom6HNDssrwZ2FcUgCNDpqOYWg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: [Xenomai] rt_imx_uart
+Subject: Re: [Xenomai] Weird behavior during debug
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,17 +14,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Hi,
-  I looked into why this driver isn't compiling, basically it needs to
-be brought up to match the newer imx serial driver.  It's relying on
-files and structures that existed in earlier versions of the kernel
-before a reorganization happened (around 3.18 I think).  I have access
-to a i.mx6 board and don't mind taking this on unless someone else as
-already done it?
+Same issue with latest ipipe. Threads look like this (when the instance is =
+halted in the debugger).
+Somehow, atleast the RT Tasks will block waiting on a timerfd when one task=
+ is in state XT (whatever that means)
 
-Thanks
+# cat /proc/xenomai/sched/threads
+CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
+  0  0      idle   core       -1   -             R          [ROOT/0]
+  1  0      idle   core       -1   -             R          [ROOT/1]
+  2  0      idle   core       -1   -             R          [ROOT/2]
+  3  0      idle   core       -1   -             R          [ROOT/3]
+  2  264    rt     cobalt     20   -             XT         packetfilter
+  1  279    rt     cobalt     20   -             W          packetfilter
 
-Greg
+ >-----Original Message-----
+ >From: Lange Norbert
+ >Sent: Montag, 18. Dezember 2017 14:43
+ >To: Xenomai (xenomai@xenomai.org)
+ >Subject: Weird behavior during debug
+ >
+ >Hello,
+ >
+ >I tried debugging a cobalt application, and when I hit a breakpoint most =
+of the
+ >system freezes.
+ >If I run for example top over Serial or SSH, then the display won`t be re=
+freshed
+ >anymore,
+ >A separate program running as RT Task, waiting for an timer-event (occurr=
+ing
+ >10 times a second) will block aswell.
+ >
+ >So the debug session seems to block a rather big amount of events.
+ >
+ >I am using a 4.9 kernel with ipipe at "x86/ipipe: fix detection of unhand=
+led
+ >faults over the head domain".
+ >Looking at the logs and other threads there seems to be a bigger rework i=
+n
+ >progress?
+ >I will retry with master, and report back.
+ >
+ >Kind regards
+ >
+ >Norbert Lange
+
+________________________________
+
+This message and any attachments are solely for the use of the intended rec=
+ipients. They may contain privileged and/or confidential information or oth=
+er information protected from disclosure. If you are not an intended recipi=
+ent, you are hereby notified that you received this email in error and that=
+ any review, dissemination, distribution or copying of this email and any a=
+ttachment is strictly prohibited. If you have received this email in error,=
+ please contact the sender and delete the message and any attachment from y=
+our system.
+
+ANDRITZ HYDRO GmbH
+
+
+Rechtsform/ Legal form: Gesellschaft mit beschr=C3=A4nkter Haftung / Corpor=
+ation
+
+Firmensitz/ Registered seat: Wien
+
+Firmenbuchgericht/ Court of registry: Handelsgericht Wien
+
+Firmenbuchnummer/ Company registration: FN 61833 g
+
+DVR: 0605077
+
+UID-Nr.: ATU14756806
+
+
+Thank You
+________________________________
 
