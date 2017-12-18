@@ -1,13 +1,11 @@
-References: <e3076881-32d1-7a35-7769-632fc54a2ff7@numalliance.com>
-From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
-Message-ID: <cfd7e137-b698-ac56-a14b-6ff4e5b905fc@numalliance.com>
-Date: Mon, 18 Dec 2017 09:15:20 +0100
+From: Bastien COUNILH <bcounilh@numalliance.com>
+Message-ID: <39ebca6b-d5b4-4a70-4a81-dcf11f0393e1@numalliance.com>
+Date: Mon, 18 Dec 2017 10:38:39 +0100
 MIME-Version: 1.0
-In-Reply-To: <e3076881-32d1-7a35-7769-632fc54a2ff7@numalliance.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Content-Language: fr
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] posix thread api vs linux pthread api
+Subject: [Xenomai] Compilation flags to chose mercury API over cobalt
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,31 +14,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Xenomai@xenomai.org
 
+Hello,
 
+I am programming an application that runs in the secondary zone, 
+communicating with a primary zone application.
+(Briefly , in the primary zone , i do data acquisition that I write in a 
+shared memory. When i'm done writing data, i send a signal to my 
+seondary zone program through a pipe to start its data analysis).
 
-Le 18/12/2017 =C3=A0 09:13, St=C3=A9phane Ancelot a =C3=A9crit=C2=A0:
-> Hi,
->
-> I have got a program that uses some xeno heap api functions for shared=20
-> memory access, but I would like to be able to run my program on the=20
-> secondary space for pthreads. This is not a hard realtime task.
->
-> Is there a flag in xenomai that permits specifying which pthread_ func=20
-> we use (xenomai or linux system pthread version) ?
->
-> or everything is managed by precise compilation flags ?
->
-I mean cobalt /mercury ?
-> Regards,
->
-> S.Ancelot
->
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
+When it recieves the pipe signal, my function launches a series of 
+calculation and verifications.
+As it is not necessary done in a precise sequence, i decided to run the 
+calculcations and the verification in parallel threads. It allows to 
+gain execution time on the heavy calculations, but also to shut the 
+program down faster if an error is returned by my data verification.
+
+My problem is :
+- I use the function pthread_create that is defined both in linux 
+standard library and Cobalt core. These threads have to be created in 
+the secondary zone. Is there a compilation flag that will allow me to 
+use the regular ptrhead functions ratehr than Xenomai API ones ?
 
 
