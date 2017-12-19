@@ -1,11 +1,11 @@
-MIME-Version: 1.0
-In-Reply-To: <0CF46CB0-D92C-4DCE-B93F-4291374D8328@korgrd.com>
+From: Lowell Gilbert <kludge@be-well.ilk.org>
 References: <0CF46CB0-D92C-4DCE-B93F-4291374D8328@korgrd.com>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Tue, 19 Dec 2017 12:08:24 -0500
-Message-ID: <CALLqZ8RPsMnqy6cA9oMCnRoRHSGYYEmZ4w5YkaKPfovKNQZ2aA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Date: Tue, 19 Dec 2017 13:27:23 -0500
+In-Reply-To: <0CF46CB0-D92C-4DCE-B93F-4291374D8328@korgrd.com> (Steve Pavao's
+ message of "Tue, 19 Dec 2017 11:51:00 -0500")
+Message-ID: <44y3lywp2s.fsf@lowell-desk.lan>
+MIME-Version: 1.0
+Content-Type: text/plain
 Subject: Re: [Xenomai] Cobalt core and Yocto
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,104 +16,19 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Steve Pavao <stevep@korgrd.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Others might be able to give a more concrete answer, but usually I
-check for the existence of /proc/xenomai as a very quick test.   You
-can also run the autotune script and check that there are no errors in
-the output.  If this is meant to be a smoke test it may worth while to
-run the autotune script to calibrate the core clock timers and then
-run the latency script to verify the latency on the system.  This will
-also give you some feedback on if cobalt is up and running.
+Steve Pavao <stevep@korgrd.com> writes:
 
-On Tue, Dec 19, 2017 at 11:51 AM, Steve Pavao <stevep@korgrd.com> wrote:
-> Hello -
->
-> How should I adapt my Yocto poky recipes to make sure that Cobalt core bo=
-ots?  Right now, the only relevant information that appears on dmesg is:
->
-> "Interrupt pipeline (release #4)=E2=80=9D
->
-> Here are my recipes, which work fine, but Cobalt core does not boot.  I m=
-ust need something else in my recipe(s).
+> Here are my recipes, which work fine, but Cobalt core does not boot.  I must need something else in my recipe(s).
 >
 > For I-PIPE Patch, my recipe file is linux-intel_4.9.bbappend:
 >
-> FILESEXTRAPATHS_prepend :=3D "${THISDIR}/files:"
-> SRC_URI +=3D "file://ipipe-core-4.9.51-x86-4.patch"
->
->
-> For Xenomai 3 user libs, my recipe file is xenomai_3.0.6.bb:
->
-> DESCRIPTION =3D "Provides userspace xenomai support and libraries needed =
-to for \
-> real-time applications using the xenomai RTOS implementation (v3)"
-> LICENSE =3D "MIT"
-> LIC_FILES_CHKSUM =3D "file://include/COPYING;md5=3D79ed705ccb9481bf9e7026=
-b99f4e2b0e"
-> SECTION =3D "xenomai"
-> HOMEPAGE =3D "http://www.xenomai.org/"
-> PR =3D "r0"
->
-> SRC_URI =3D "http://xenomai.org/downloads/xenomai/stable/latest/xenomai-3=
-.0.6.tar.bz2"
->
-> S =3D "${WORKDIR}/xenomai-${PV}"
->
-> inherit autotools pkgconfig
->
-> includedir =3D "/usr/include/xenomai"
->
-> #Fixes QA Issues: non debug package contains .debug directory
-> #FILES_${PN}-dbg +=3D "/usr/bin/regression/posix/.debug"
-> #FILES_${PN}-dbg +=3D "/usr/bin/regression/native/.debug"
-> #FILES_${PN}-dbg +=3D "/usr/bin/regression/native+posix/.debug"
-> #FILES_${PN}-dbg +=3D "/usr/demo/.debug/*"
->
-> #Fixes QA Error - Non-dev package contains symlink .so
-> FILES_${PN}-dev +=3D "/usr/lib/*.se"
->
-> #Add directories to package for shipping
-> FILES_${PN} +=3D "/dev"
-> FILES_${PN} +=3D "/dev/*"
-> FILES_${PN} +=3D "/usr/bin/*"
-> FILES_${PN} +=3D "/usr/lib/*"
-> FILES_${PN} +=3D "/usr/sbin/*"
-> FILES_${PN} +=3D "/usr/include/*"
-> FILES_${PN} +=3D "/usr/lib/*"
-> FILES_${PN} +=3D "/usr/share/doc/*"
-> FILES_${PN} +=3D "/usr/share/man/*"
-> FILES_${PN} +=3D "/usr/demo/*"
->
-> SRC_URI[md5sum] =3D "6017203d0992bb5334498c196bf6f25d"
-> SRC_URI[sha256sum] =3D "2c0dd3f0e36e4a10f97e0028989bb873e80f4d1ce212ac55f=
-d3b28857c464f94"
->
-> TARGET_CC_ARCH +=3D "${LDFLAGS}=E2=80=9D
->
->
-> Thanks for any ideas.  Hopefully, I am pretty close with these recipes.
->
-> - Steve Pavao
-> Korg R&D
->
->
->
->
->
->
->
->
->
->
->
->
->
->
->
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
+> FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+> SRC_URI += "file://ipipe-core-4.9.51-x86-4.patch"
+
+This gets you the interrupt pipeline, but not Xenomai itself.
+That's the prepare-kernel.sh script, typically.
+
+Be well.
 
