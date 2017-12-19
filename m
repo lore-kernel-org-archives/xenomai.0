@@ -1,15 +1,16 @@
-Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
-From: Steve Pavao <stevep@korgrd.com>
-In-Reply-To: <d56f3f8e-44e0-be07-b832-bb84d93d4df7@siemens.com>
-Date: Tue, 19 Dec 2017 16:00:02 -0500
-Message-Id: <A396DD4B-B1F2-404E-917E-F86FBA90918E@korgrd.com>
+Date: Tue, 19 Dec 2017 16:46:38 -0500 (EST)
+From: Jeff Melvile <jmelville@mitre.org>
+In-Reply-To: <A396DD4B-B1F2-404E-917E-F86FBA90918E@korgrd.com>
+Message-ID: <alpine.DEB.2.20.1712191642270.9944@af78237-pc.mitre.org>
 References: <0CF46CB0-D92C-4DCE-B93F-4291374D8328@korgrd.com>
  <44y3lywp2s.fsf@lowell-desk.lan>
  <0DC99152-08CA-4152-BE75-CA0CE39D654F@korgrd.com>
  <d56f3f8e-44e0-be07-b832-bb84d93d4df7@siemens.com>
-Content-Type: text/plain;
-	charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+ <A396DD4B-B1F2-404E-917E-F86FBA90918E@korgrd.com>
+MIME-Version: 1.0
+Content-ID: <alpine.DEB.2.20.1712191646340.9944@af78237-pc.mitre.org>
+Content-Type: text/plain; charset="iso-8859-7"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Cobalt core and Yocto
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -19,74 +20,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+To: Steve Pavao <stevep@korgrd.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
 
-Hi Jan,
-
-> On Dec 19, 2017, at 2:24 PM, Jan Kiszka <jan.kiszka@siemens.com> =
-wrote:
->=20
-> On 2017-12-19 19:49, Steve Pavao wrote:
->> Hi Lowell,
->>=20
->> Thanks for that tip.  That=E2=80=99s what I was thinking I might need =
-to do.
->>=20
->> I guess the solution in Yocto terms is to rework my I-PIPE patch =
-recipe to not directly apply the I-PIPE patch, but rather to call =
-prepare-kernel.sh and allow it to apply the patch, plus do the other =
-things it needs to do.  I guess that should happen in a do_configure() =
-{} block.
->=20
-> Actually, I would move the kernel patching out of the xenomai recipe =
-and
-> rather have one recipe for the userspace packages and a
-> xenomai-kernel.inc which appends the kernel preparation task with the
-> prepare-kernel.sh invocation. It would also bring in (once again) the
-> xenomai sources so that its kernel elements get pulled into the kernel
-> build. In your kernel recipe, you would simply include that file.
->=20
-> This way, the kernel could come from various sources, including
-> git.xenomai.org/ipipe.git, and just needs to have the I-pipe patch
-> already applied, either in it git source or by adding a corresponding
-> patch to the custom kernel recipe.
->=20
-> This seems similar to how ELDK modeled this:
-> =
-http://git.denx.de/?p=3Deldk.git;a=3Dtree;f=3Dmeta-eldk/recipes-kernel/xen=
-omai;h=3Dbf965c6d2fa5132413b498161c90f337be8fb174;hb=3Drefs/heads/5.8-eldk=
- =
-<http://git.denx.de/?p=3Deldk.git;a=3Dtree;f=3Dmeta-eldk/recipes-kernel/xe=
-nomai;h=3Dbf965c6d2fa5132413b498161c90f337be8fb174;hb=3Drefs/heads/5.8-eld=
-k>
-
-Thanks for your advice, Jan.  I was hoping to keep things as simple as =
-possible, though.  The ELDK example has a highly-customized bb recipe.
-
-Could I achieve my ends If I use my initial idea, which is to call the =
-prepare-kernel.sh from a do_configure block, rather than directly =
-applying the I-PIPE patch?  It seems like it won=E2=80=99t succeed, =
-based on what you have said, perhaps because the recipe that calls =
-prepare-kernel.sh is going to need to be more complex than simply =
-calling that script.  (You mentioned about needing to pull in the =
-xenomai sources once again).
-
-I think I need to hand this task off to a colleague who has some more =
-Linux internals experience.
-
-> That is outdated now, unfortunately. Do you plan to publish your layer
-> afterwards? I suppose some people would be happy about a meta-xenomai
-> with support for Xenomai 3.
-
-I=E2=80=99d have to check with my organization.  Personally, I=E2=80=99d =
-like to see anyone publish one, including us.  Anything that allows =
-folks to start using Xenomai 3 more easily from within their =
-highly-customized Poky environments would be helpful.
-
-- Steve Pavao
-Korg R&D
-
-
-
-
+SGkgU3RldmUsCgpPbiBUdWUsIDE5IERlYyAyMDE3LCBTdGV2ZSBQYXZhbyB3cm90ZToKCj4gSGkg
+SmFuLAo+IAo+ID4gT24gRGVjIDE5LCAyMDE3LCBhdCAyOjI0IFBNLCBKYW4gS2lzemthIDxqYW4u
+a2lzemthQHNpZW1lbnMuY29tPiB3cm90ZToKPiA+IAo+ID4gT24gMjAxNy0xMi0xOSAxOTo0OSwg
+U3RldmUgUGF2YW8gd3JvdGU6Cj4gPj4gSGkgTG93ZWxsLAo+ID4+IAo+ID4+IFRoYW5rcyBmb3Ig
+dGhhdCB0aXAuICBUaGF0onMgd2hhdCBJIHdhcyB0aGlua2luZyBJIG1pZ2h0IG5lZWQgdG8gZG8u
+Cj4gPj4gCj4gPj4gSSBndWVzcyB0aGUgc29sdXRpb24gaW4gWW9jdG8gdGVybXMgaXMgdG8gcmV3
+b3JrIG15IEktUElQRSBwYXRjaCByZWNpcGUgdG8gbm90IGRpcmVjdGx5IGFwcGx5IHRoZSBJLVBJ
+UEUgcGF0Y2gsIGJ1dCByYXRoZXIgdG8gY2FsbCBwcmVwYXJlLWtlcm5lbC5zaCBhbmQgYWxsb3cg
+aXQgdG8gYXBwbHkgdGhlIHBhdGNoLCBwbHVzIGRvIHRoZSBvdGhlciB0aGluZ3MgaXQgbmVlZHMg
+dG8gZG8uICBJIGd1ZXNzIHRoYXQgc2hvdWxkIGhhcHBlbiBpbiBhIGRvX2NvbmZpZ3VyZSgpIHt9
+IGJsb2NrLgo+ID4gCj4gPiBBY3R1YWxseSwgSSB3b3VsZCBtb3ZlIHRoZSBrZXJuZWwgcGF0Y2hp
+bmcgb3V0IG9mIHRoZSB4ZW5vbWFpIHJlY2lwZSBhbmQKPiA+IHJhdGhlciBoYXZlIG9uZSByZWNp
+cGUgZm9yIHRoZSB1c2Vyc3BhY2UgcGFja2FnZXMgYW5kIGEKPiA+IHhlbm9tYWkta2VybmVsLmlu
+YyB3aGljaCBhcHBlbmRzIHRoZSBrZXJuZWwgcHJlcGFyYXRpb24gdGFzayB3aXRoIHRoZQo+ID4g
+cHJlcGFyZS1rZXJuZWwuc2ggaW52b2NhdGlvbi4gSXQgd291bGQgYWxzbyBicmluZyBpbiAob25j
+ZSBhZ2FpbikgdGhlCj4gPiB4ZW5vbWFpIHNvdXJjZXMgc28gdGhhdCBpdHMga2VybmVsIGVsZW1l
+bnRzIGdldCBwdWxsZWQgaW50byB0aGUga2VybmVsCj4gPiBidWlsZC4gSW4geW91ciBrZXJuZWwg
+cmVjaXBlLCB5b3Ugd291bGQgc2ltcGx5IGluY2x1ZGUgdGhhdCBmaWxlLgo+ID4gCj4gPiBUaGlz
+IHdheSwgdGhlIGtlcm5lbCBjb3VsZCBjb21lIGZyb20gdmFyaW91cyBzb3VyY2VzLCBpbmNsdWRp
+bmcKPiA+IGdpdC54ZW5vbWFpLm9yZy9pcGlwZS5naXQsIGFuZCBqdXN0IG5lZWRzIHRvIGhhdmUg
+dGhlIEktcGlwZSBwYXRjaAo+ID4gYWxyZWFkeSBhcHBsaWVkLCBlaXRoZXIgaW4gaXQgZ2l0IHNv
+dXJjZSBvciBieSBhZGRpbmcgYSBjb3JyZXNwb25kaW5nCj4gPiBwYXRjaCB0byB0aGUgY3VzdG9t
+IGtlcm5lbCByZWNpcGUuCj4gPiAKPiA+IFRoaXMgc2VlbXMgc2ltaWxhciB0byBob3cgRUxESyBt
+b2RlbGVkIHRoaXM6Cj4gPiBodHRwOi8vZ2l0LmRlbnguZGUvP3A9ZWxkay5naXQ7YT10cmVlO2Y9
+bWV0YS1lbGRrL3JlY2lwZXMta2VybmVsL3hlbm9tYWk7aD1iZjk2NWM2ZDJmYTUxMzI0MTNiNDk4
+MTYxYzkwZjMzN2JlOGZiMTc0O2hiPXJlZnMvaGVhZHMvNS44LWVsZGsgPGh0dHA6Ly9naXQuZGVu
+eC5kZS8/cD1lbGRrLmdpdDthPXRyZWU7Zj1tZXRhLWVsZGsvcmVjaXBlcy1rZXJuZWwveGVub21h
+aTtoPWJmOTY1YzZkMmZhNTEzMjQxM2I0OTgxNjFjOTBmMzM3YmU4ZmIxNzQ7aGI9cmVmcy9oZWFk
+cy81LjgtZWxkaz4KPiAKPiBUaGFua3MgZm9yIHlvdXIgYWR2aWNlLCBKYW4uICBJIHdhcyBob3Bp
+bmcgdG8ga2VlcCB0aGluZ3MgYXMgc2ltcGxlIGFzIHBvc3NpYmxlLCB0aG91Z2guICBUaGUgRUxE
+SyBleGFtcGxlIGhhcyBhIGhpZ2hseS1jdXN0b21pemVkIGJiIHJlY2lwZS4KPiAKPiBDb3VsZCBJ
+IGFjaGlldmUgbXkgZW5kcyBJZiBJIHVzZSBteSBpbml0aWFsIGlkZWEsIHdoaWNoIGlzIHRvIGNh
+bGwgdGhlIHByZXBhcmUta2VybmVsLnNoIGZyb20gYSBkb19jb25maWd1cmUgYmxvY2ssIHJhdGhl
+ciB0aGFuIGRpcmVjdGx5IGFwcGx5aW5nIHRoZSBJLVBJUEUgcGF0Y2g/ICBJdCBzZWVtcyBsaWtl
+IGl0IHdvbqJ0IHN1Y2NlZWQsIGJhc2VkIG9uIHdoYXQgeW91IGhhdmUgc2FpZCwgcGVyaGFwcyBi
+ZWNhdXNlIHRoZSByZWNpcGUgdGhhdCBjYWxscyBwcmVwYXJlLWtlcm5lbC5zaCBpcyBnb2luZyB0
+byBuZWVkIHRvIGJlIG1vcmUgY29tcGxleCB0aGFuIHNpbXBseSBjYWxsaW5nIHRoYXQgc2NyaXB0
+LiAgKFlvdSBtZW50aW9uZWQgYWJvdXQgbmVlZGluZyB0byBwdWxsIGluIHRoZSB4ZW5vbWFpIHNv
+dXJjZXMgb25jZSBhZ2FpbikuCgpCYWNrIG9uIFhlbm9tYWkgMi42LCBJIGNyZWF0ZWQgYSBiYmFw
+cGVuZCBmb3IgdGhlIGtlcm5lbCByZWNpcGVzIHRoYXQgCnB1bGxzIGluIHRoZSBYZW5vbWFpIHNv
+dXJjZSBpbiBhZGRpdGlvbiB0byB0aGUga2VybmVsIHNvdXJjZS4gSXQgYWRkZWQgYSAKJ3ByZXBh
+cmVfeGVub21haV9rZXJuZWxfIHRhc2sgaW4gYmV0d2VlbiBkb19wYXRjaCBhbmQgZG9fa2VybmVs
+X2NvbmZpZ21lLiAKVGhlIGV4dHJhIHRhc2sgcmFuIHRoZSBwcmVwYXJlLWtlcm5lbC5zaCBzY3Jp
+cHQgYW5kIHNvbWUgb3RoZXIgY2xlYW51cC4gSW4gCm91ciBjYXNlIHdlIHdlcmUgYWN0dWFsbHkg
+YXBwZW5kaW5nIHRoZSBsaW51eC14bG54IHJlY2lwZXMgZnJvbSAKbWV0YS14aWxpbnggZm9yIHRo
+ZWlyIFp5bnEga2VybmVsIGZvcmsuIFRoZSB0YXNrIGhhZCB0byBzdXBwb3J0IHByZS9wb3N0IAp2
+ZXJzaW9ucyBvZiB0aGUgSS1waXBlIHBhdGNoIGFzIHdlbGwuIFRoZSB1c2Vyc3BhY2UgbGlicmFy
+aWVzIHdlcmUgYSAKc2VwYXJhdGUgcmVjaXBlLiBPbmUgb2YgbXkgY29sbGVhZ3VlcyBoYXMgYmVl
+biB3b3JraW5nIG9uIHRyYW5zaXRpb25pbmcgCm91ciBmbG93IHRvIFhlbm9tYWkgMyBmb3IgdGhl
+IFp5bnEgVWx0cmFTY2FsZSsgYnV0IG90aGVyIHByaW9yaXRpZXMga2VlcCAKcG9wcGluZyB1cC4g
+Cgo+IAo+IEkgdGhpbmsgSSBuZWVkIHRvIGhhbmQgdGhpcyB0YXNrIG9mZiB0byBhIGNvbGxlYWd1
+ZSB3aG8gaGFzIHNvbWUgbW9yZSBMaW51eCBpbnRlcm5hbHMgZXhwZXJpZW5jZS4KPiAKPiA+IFRo
+YXQgaXMgb3V0ZGF0ZWQgbm93LCB1bmZvcnR1bmF0ZWx5LiBEbyB5b3UgcGxhbiB0byBwdWJsaXNo
+IHlvdXIgbGF5ZXIKPiA+IGFmdGVyd2FyZHM/IEkgc3VwcG9zZSBzb21lIHBlb3BsZSB3b3VsZCBi
+ZSBoYXBweSBhYm91dCBhIG1ldGEteGVub21haQo+ID4gd2l0aCBzdXBwb3J0IGZvciBYZW5vbWFp
+IDMuCj4gCj4gSaJkIGhhdmUgdG8gY2hlY2sgd2l0aCBteSBvcmdhbml6YXRpb24uICBQZXJzb25h
+bGx5LCBJomQgbGlrZSB0byBzZWUgYW55b25lIHB1Ymxpc2ggb25lLCBpbmNsdWRpbmcgdXMuICBB
+bnl0aGluZyB0aGF0IGFsbG93cyBmb2xrcyB0byBzdGFydCB1c2luZyBYZW5vbWFpIDMgbW9yZSBl
+YXNpbHkgZnJvbSB3aXRoaW4gdGhlaXIgaGlnaGx5LWN1c3RvbWl6ZWQgUG9reSBlbnZpcm9ubWVu
+dHMgd291bGQgYmUgaGVscGZ1bC4KCisxLiBJJ2xsIGNoZWNrIGluIG9uIHRoZSBzdGF0dXMgb2Yg
+b3VyIFhlbm9tYWkgMyB3b3JrIGFuZCB3aGF0IGl0IHdvdWxkIAp0YWtlIHRvIHNoYXJlIHdoYXQg
+d2UgaGF2ZS4gSSdkIGNlcnRhaW5seSBsaWtlIHRvIHNlZSBzb21ldGhpbmcgcmV1c2FibGUgCmFy
+aXNlIGFuZCB3b3VsZCBiZSB3aWxsaW5nIHRvIGhlbHAuCj4gCj4gLSBTdGV2ZSBQYXZhbwo+IEtv
+cmcgUiZECj4gCj4gCj4gCj4gCj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18KPiBYZW5vbWFpIG1haWxpbmcgbGlzdAo+IFhlbm9tYWlAeGVub21haS5vcmcK
+PiBodHRwczovL3hlbm9tYWkub3JnL21haWxtYW4vbGlzdGluZm8veGVub21haQo+CgpKZWZmCiAK
