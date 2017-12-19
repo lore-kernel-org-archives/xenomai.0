@@ -1,15 +1,9 @@
-References: <99BAB48E90E86D42AD41F0BCE3225AEB018DE50813@GRZSMS582.andritz.com>
- <a00a6566-e5f0-9496-f139-beed6d1a1bad@siemens.com>
- <99BAB48E90E86D42AD41F0BCE3225AEB018DE508FF@GRZSMS582.andritz.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <2d21cf6a-1ed6-ab61-07d6-188a48ee98de@siemens.com>
-Date: Tue, 19 Dec 2017 10:34:44 +0100
 MIME-Version: 1.0
-In-Reply-To: <99BAB48E90E86D42AD41F0BCE3225AEB018DE508FF@GRZSMS582.andritz.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Weird behavior during debug
+From: Andreas Glatz <andi.glatz@gmail.com>
+Date: Tue, 19 Dec 2017 10:17:44 +0000
+Message-ID: <CAKJ14NegF9o5h27cN1m3CKrtNHSnCZ8Fv5+Vuezd3h6r86hAAA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] RTnet fixes - testers needed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,164 +12,132 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: xenomai@xenomai.org, leo@alaxarxa.net
 
-On 2017-12-19 09:56, Lange Norbert wrote:
-> Hello Jan,
-> 
-> My follow-up post was done after running the latest ipipe-4.9.y patch, with your fix added on top.
-> 
-> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-> index 834e6117f5f8..b9f6121c8530 100644
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -83,7 +83,7 @@ config X86
->         select HAVE_AOUT                        if X86_32
->         select HAVE_ARCH_AUDITSYSCALL
->         select HAVE_ARCH_HUGE_VMAP              if X86_64 || X86_PAE
-> -       select HAVE_ARCH_JUMP_LABEL
-> +       select HAVE_ARCH_JUMP_LABEL             if !IPIPE
->         select HAVE_ARCH_KASAN                  if X86_64 && SPARSEMEM_VMEMMAP
->         select HAVE_ARCH_KGDB
->         select HAVE_ARCH_KMEMCHECK
-> 
+>
+> I have pulled wip/rtnet-fixes branch with the last commit of Philippe from Sun
+> Dec 17 15:27:04 2017 +0100: net/udp: ioctl: fix temp arg buffer type
+>
+> I have created the packages and new kernel with the same configuration that I had.
+>
+> I run my application, that it's a POSIX application Wrapped and I still have the
+> same error when I activate SMAP:
 
-Does the problem persist with
-- ipipe-core-4.9.51-x86-4
-- ipipe-4.4
-?
+I see that the page fault occurs in rt_packet_ioctl()... by the looks
+of this bug it might be similar to the one I found in udp.c (see my
+post from Sunday)... basically the ioctl still tries to access user
+memory, which causes that stack trace. I'm currently a bit busy - I
+hope I can continue debugging this by the end of this week. In the
+meantime could you recompile your kernel with debug info which should
+improve the kernel bug output?
 
-Jan
+Cheers,
 
-> Norbert
-> 
->  >-----Original Message-----
->  >From: Jan Kiszka [mailto:jan.kiszka@siemens.com]
->  >Sent: Dienstag, 19. Dezember 2017 08:16
->  >To: Lange Norbert; Xenomai (xenomai@xenomai.org)
->  >Subject: Re: Weird behavior during debug
->  >
->  >EMAIL from a NON-ANDRITZ SOURCE: as a security measure, please exercise
->  >caution with email content and any links or attachments.
->  >
->  >
->  >On 2017-12-18 15:49, Lange Norbert wrote:
->  >> Same issue with latest ipipe. Threads look like this (when the instance is
->  >halted in the debugger).
->  >> Somehow, atleast the RT Tasks will block waiting on a timerfd when one task
->  >is in state XT (whatever that means)
->  >>
->  >> # cat /proc/xenomai/sched/threads
->  >> CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
->  >>   0  0      idle   core       -1   -             R          [ROOT/0]
->  >>   1  0      idle   core       -1   -             R          [ROOT/1]
->  >>   2  0      idle   core       -1   -             R          [ROOT/2]
->  >>   3  0      idle   core       -1   -             R          [ROOT/3]
->  >>   2  264    rt     cobalt     20   -             XT         packetfilter
->  >>   1  279    rt     cobalt     20   -             W          packetfilter
->  >>
->  >
->  >Philippe reverted a number of commits in ipipe-4.9.y some days ago.
->  >Please retry either with the latest version or the last release
->  >(ipipe-core-4.9.51-x86-4).
->  >
->  >Jan
->  >
->  >>  >-----Original Message-----
->  >>  >From: Lange Norbert
->  >>  >Sent: Montag, 18. Dezember 2017 14:43
->  >>  >To: Xenomai (xenomai@xenomai.org)
->  >>  >Subject: Weird behavior during debug
->  >>  >
->  >>  >Hello,
->  >>  >
->  >>  >I tried debugging a cobalt application, and when I hit a breakpoint most of
->  >the
->  >>  >system freezes.
->  >>  >If I run for example top over Serial or SSH, then the display won`t be
->  >refreshed
->  >>  >anymore,
->  >>  >A separate program running as RT Task, waiting for an timer-event
->  >(occurring
->  >>  >10 times a second) will block aswell.
->  >>  >
->  >>  >So the debug session seems to block a rather big amount of events.
->  >>  >
->  >>  >I am using a 4.9 kernel with ipipe at "x86/ipipe: fix detection of unhandled
->  >>  >faults over the head domain".
->  >>  >Looking at the logs and other threads there seems to be a bigger rework in
->  >>  >progress?
->  >>  >I will retry with master, and report back.
->  >>  >
->  >>  >Kind regards
->  >>  >
->  >>  >Norbert Lange
->  >>
->  >> ________________________________
->  >>
->  >> This message and any attachments are solely for the use of the intended
->  >recipients. They may contain privileged and/or confidential information or
->  >other information protected from disclosure. If you are not an intended
->  >recipient, you are hereby notified that you received this email in error and that
->  >any review, dissemination, distribution or copying of this email and any
->  >attachment is strictly prohibited. If you have received this email in error, please
->  >contact the sender and delete the message and any attachment from your
->  >system.
->  >>
->  >> ANDRITZ HYDRO GmbH
->  >>
->  >>
->  >> Rechtsform/ Legal form: Gesellschaft mit beschränkter Haftung / Corporation
->  >>
->  >> Firmensitz/ Registered seat: Wien
->  >>
->  >> Firmenbuchgericht/ Court of registry: Handelsgericht Wien
->  >>
->  >> Firmenbuchnummer/ Company registration: FN 61833 g
->  >>
->  >> DVR: 0605077
->  >>
->  >> UID-Nr.: ATU14756806
->  >>
->  >>
->  >> Thank You
->  >> ________________________________
->  >>
->  >> _______________________________________________
->  >> Xenomai mailing list
->  >> Xenomai@xenomai.org
->  >> https://xenomai.org/mailman/listinfo/xenomai
->  >>
->  >
->  >--
->  >Siemens AG, Corporate Technology, CT RDA ITP SES-DE
->  >Corporate Competence Center Embedded Linux
-> ________________________________
-> 
-> This message and any attachments are solely for the use of the intended recipients. They may contain privileged and/or confidential information or other information protected from disclosure. If you are not an intended recipient, you are hereby notified that you received this email in error and that any review, dissemination, distribution or copying of this email and any attachment is strictly prohibited. If you have received this email in error, please contact the sender and delete the message and any attachment from your system.
-> 
-> ANDRITZ HYDRO GmbH
-> 
-> 
-> Rechtsform/ Legal form: Gesellschaft mit beschränkter Haftung / Corporation
-> 
-> Firmensitz/ Registered seat: Wien
-> 
-> Firmenbuchgericht/ Court of registry: Handelsgericht Wien
-> 
-> Firmenbuchnummer/ Company registration: FN 61833 g
-> 
-> DVR: 0605077
-> 
-> UID-Nr.: ATU14756806
-> 
-> 
-> Thank You
-> ________________________________
-> 
+A.
 
-
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+>
+> #######################################################3
+>
+> Dec 18 14:58:13 bmm3 kernel: [  118.545908] [Xenomai] switching slaveinfo_rt to
+> secondary mode after exception #14 in kernel-space at 0xffffffffc0743981 (pid 1742)
+> Dec 18 14:58:13 bmm3 kernel: [  118.545924] BUG: unable to handle kernel paging
+> request at 00007ffcc7389470
+> Dec 18 14:58:13 bmm3 kernel: [  118.546586] IP: [<ffffffffc0743981>]
+> rt_packet_ioctl+0x1a1/0x380 [rtpacket]
+> Dec 18 14:58:13 bmm3 kernel: [  118.547264] PGD 458a90067
+> Dec 18 14:58:13 bmm3 kernel: [  118.547273] PUD 45a127067
+> Dec 18 14:58:13 bmm3 kernel: [  118.547941] PMD 4584fe067
+> Dec 18 14:58:13 bmm3 kernel: [  118.547946] PTE 8000000452fcb067
+> Dec 18 14:58:13 bmm3 kernel: [  118.548626]
+> Dec 18 14:58:13 bmm3 kernel: [  118.549302] Oops: 0001 [#1] SMP
+> Dec 18 14:58:13 bmm3 kernel: [  118.549979] Modules linked in: rt_e1000e
+> rt_loopback rtcfg rtudp rtipv4 rtmac rtpacket cdc_acm snd_hda_codec_hdmi
+> snd_hda_codec_realtek snd_hda_codec_generic binfmt_misc intel_rapl
+> x86_pkg_temp_thermal intel_powerclamp nls_ascii coretemp nls_cp437
+> crct10dif_pclmul crc32_pclmul vfat ghash_clmulni_intel arc4 fat ppdev
+> aesni_intel ath9k i915 aes_x86_64 ath9k_common lrw ath9k_hw gf128mul glue_helper
+> pcan(O) ablk_helper ath cryptd mac80211 pcmcia pcmcia_core intel_cstate
+> drm_kms_helper efi_pstore intel_uncore drm rtnet cfg80211 i2c_algo_bit
+> fb_sys_fops intel_rapl_perf snd_hda_intel xeno_can_peak_pci syscopyarea
+> sysfillrect iTCO_wdt xeno_can_sja1000 snd_hda_codec sysimgblt xeno_can
+> iTCO_vendor_support sg snd_hda_core snd_hwdep mei_me snd_pcm snd_timer mei
+> shpchp snd soundcore evdev pcspkr serio_raw efivars
+> Dec 18 14:58:13 bmm3 kernel: [  118.554017]  battery hci_uart btbcm parport_pc
+> btqca parport btintel bluetooth wmi video rfkill intel_lpss_acpi intel_lpss
+> tpm_crb acpi_als kfifo_buf button industrialio sunrpc efivarfs ip_tables
+> x_tables autofs4 ext4 crc16 jbd2 fscrypto mbcache sd_mod crc32c_intel i2c_i801
+> i2c_smbus ahci libahci xhci_pci libata xhci_hcd scsi_mod usbcore fan i2c_hid hid
+> fjes [last unloaded: rt_e1000e]
+> Dec 18 14:58:13 bmm3 kernel: [  118.556765] CPU: 5 PID: 1742 Comm: slaveinfo_rt
+> Tainted: G           O    4.9.51-xenomai-3.0.6-ipipe #1
+> Dec 18 14:58:13 bmm3 kernel: [  118.557688] Hardware name: Gigabyte Technology
+> Co., Ltd. To be filled by O.E.M./Q170M-D3H, BIOS F2 01/11/2016
+> Dec 18 14:58:13 bmm3 kernel: [  118.558628] I-pipe domain: Linux
+> Dec 18 14:58:13 bmm3 kernel: [  118.559567] task: ffff8d711868b140 task.stack:
+> ffffa6a8409d4000
+> Dec 18 14:58:13 bmm3 kernel: [  118.560518] RIP: 0010:[<ffffffffc0743981>]
+> [<ffffffffc0743981>] rt_packet_ioctl+0x1a1/0x380 [rtpacket]
+> Dec 18 14:58:13 bmm3 kernel: [  118.561505] RSP: 0018:ffffa6a8409d7df8  EFLAGS:
+> 00010202
+> Dec 18 14:58:13 bmm3 kernel: [  118.562483] RAX: ffffa6a8409d7df8 RBX:
+> ffff8d7118f10800 RCX: 0000000000000000
+> Dec 18 14:58:13 bmm3 kernel: [  118.563471] RDX: 0000000000000000 RSI:
+> 00007ffcc7389410 RDI: ffffa6a8409d7e08
+> Dec 18 14:58:13 bmm3 kernel: [  118.564472] RBP: ffffa6a8409d7ec0 R08:
+> 26009bc300000014 R09: 000000000000005d
+> Dec 18 14:58:13 bmm3 kernel: [  118.565473] R10: 00000000000000e4 R11:
+> 00000000ffff4ebc R12: 0000000000000003
+> Dec 18 14:58:13 bmm3 kernel: [  118.566477] R13: ffff8d7118f10940 R14:
+> ffffa6a8402de040 R15: 00007ffcc7389470
+> Dec 18 14:58:13 bmm3 kernel: [  118.567485] FS:  00007f4db6a00b80(0000)
+> GS:ffff8d7120300000(0000) knlGS:0000000000000000
+> Dec 18 14:58:13 bmm3 kernel: [  118.568516] CS:  0010 DS: 0000 ES: 0000 CR0:
+> 000000008005003b
+> Dec 18 14:58:13 bmm3 kernel: [  118.569560] CR2: 00007ffcc7389470 CR3:
+> 000000045c362000 CR4: 00000000003406e0
+> Dec 18 14:58:13 bmm3 kernel: [  118.570617] DR0: 0000000000000000 DR1:
+> 0000000000000000 DR2: 0000000000000000
+> Dec 18 14:58:13 bmm3 kernel: [  118.571671] DR3: 0000000000000000 DR6:
+> 00000000fffe0ff0 DR7: 0000000000000400
+> Dec 18 14:58:13 bmm3 kernel: [  118.572733] Stack:
+> Dec 18 14:58:13 bmm3 kernel: [  118.573799]  00007ffcc7389470 26009bc300000014
+> ffff8d7118f10800 ffffa6a8409d7ec0
+> Dec 18 14:58:13 bmm3 kernel: [  118.574892]  0000000000000003 ffff8d711868b140
+> ffffa6a8402de040 0000000000011ba0
+> Dec 18 14:58:13 bmm3 kernel: [  118.575987]  ffffffff9476b9a8 00007ffcc7389400
+> 401000221868b738 0000000000000010
+> Dec 18 14:58:13 bmm3 kernel: [  118.577088] Call Trace:
+> Dec 18 14:58:13 bmm3 kernel: [  118.578180]  [<ffffffff9476b9a8>] ?
+> rtdm_fd_ioctl+0xa8/0x1e0
+> Dec 18 14:58:13 bmm3 kernel: [  118.579278]  [<ffffffff94770b20>] ?
+> CoBaLt_fcntl+0x10/0x10
+> Dec 18 14:58:13 bmm3 kernel: [  118.580377]  [<ffffffff9468298d>] ?
+> __ipipe_migrate_head+0x4d/0xb0
+> Dec 18 14:58:13 bmm3 kernel: [  118.581452]  [<ffffffff94770b20>] ?
+> CoBaLt_fcntl+0x10/0x10
+> Dec 18 14:58:13 bmm3 kernel: [  118.582541]  [<ffffffff94770b2a>] ?
+> CoBaLt_ioctl+0xa/0x10
+> Dec 18 14:58:13 bmm3 kernel: [  118.583625]  [<ffffffff947807ac>] ?
+> ipipe_syscall_hook+0xfc/0x2b0
+> Dec 18 14:58:13 bmm3 kernel: [  118.584698]  [<ffffffff946fad9a>] ?
+> __ipipe_notify_syscall+0xba/0x170
+> Dec 18 14:58:13 bmm3 kernel: [  118.585774]  [<ffffffff94b868af>] ?
+> pipeline_syscall+0x8/0x1b
+> Dec 18 14:58:13 bmm3 kernel: [  118.586836] Code: 5f c3 b9 10 00 00 00 48 89 e6
+> e8 7b 36 14 00 48 3d 00 f0 ff ff 77 d8 83 78 08 13 4c 8b 38 4c 8d ab 40 01 00 00
+> 0f 86 73 01 00 00 <66> 41 83 3f 11 0f 85 68 01 00 00 41 0f b7 6f 02 66 85 ed 0f 84
+> Dec 18 14:58:13 bmm3 kernel: [  118.589196] RIP  [<ffffffffc0743981>]
+> rt_packet_ioctl+0x1a1/0x380 [rtpacket]
+> Dec 18 14:58:13 bmm3 kernel: [  118.590308]  RSP <ffffa6a8409d7df8>
+> Dec 18 14:58:13 bmm3 kernel: [  118.591414] CR2: 00007ffcc7389470
+> Dec 18 14:58:13 bmm3 kernel: [  118.592528] ---[ end trace 7e353ae197f2ee95 ]---
+>
+> #######################################################3
+>
+> So, I'm sorry, but it still fails.
+>
+> And about the addr2line for this case, some help for dummies will be helpful.
+>
+> Leopold
+>
 
