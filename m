@@ -1,11 +1,10 @@
-From: Vincent Berenz <vberenz@tuebingen.mpg.de>
-Message-ID: <8e55e5c6-8046-b9d1-013e-8a72244169dd@tuebingen.mpg.de>
-Date: Tue, 19 Dec 2017 15:46:12 +0100
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-Subject: [Xenomai] xenomai / realtime robotics job opening at Max Planck
+From: Steve Pavao <stevep@korgrd.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
+Date: Tue, 19 Dec 2017 11:51:00 -0500
+Message-Id: <0CF46CB0-D92C-4DCE-B93F-4291374D8328@korgrd.com>
+Subject: [Xenomai] Cobalt core and Yocto
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,27 +15,90 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-A position for a roboticist / software-engineer is available at the Max 
-Planck Institute for Intelligent Systems in Tuebingen (Germany).
+Hello -
 
-The selected candidate will work on improving our software architecture 
-for the realtime control of our humanoid robots (which uses xenomai).
+How should I adapt my Yocto poky recipes to make sure that Cobalt core =
+boots?  Right now, the only relevant information that appears on dmesg =
+is:
 
-Details on the position (and how to apply) can be found here:
-https://am.is.tuebingen.mpg.de/jobs/robotics-software-engineer
+"Interrupt pipeline (release #4)=E2=80=9D
 
-Some videos of our work and robots in action:
-https://youtu.be/71gciiVrOsY
-https://youtu.be/OdE_Kj1aPkY
-https://youtu.be/jMj3Uv2Q8Xg
-https://youtu.be/VgKoX3RuvB0
+Here are my recipes, which work fine, but Cobalt core does not boot.  I =
+must need something else in my recipe(s).
 
-Vincent Berenz
+For I-PIPE Patch, my recipe file is linux-intel_4.9.bbappend:
 
-ps: this is posted with the exceptional agreement of the moderator of 
-the list, because the job is tightly related to xenomai usage. Note that 
-job posting on the list should be rare and only with the authorization 
-to do so.
+FILESEXTRAPATHS_prepend :=3D "${THISDIR}/files:"
+SRC_URI +=3D "file://ipipe-core-4.9.51-x86-4.patch"
+
+
+For Xenomai 3 user libs, my recipe file is xenomai_3.0.6.bb:
+
+DESCRIPTION =3D "Provides userspace xenomai support and libraries needed =
+to for \
+real-time applications using the xenomai RTOS implementation (v3)"
+LICENSE =3D "MIT"
+LIC_FILES_CHKSUM =3D =
+"file://include/COPYING;md5=3D79ed705ccb9481bf9e7026b99f4e2b0e"
+SECTION =3D "xenomai"
+HOMEPAGE =3D "http://www.xenomai.org/"
+PR =3D "r0"
+
+SRC_URI =3D =
+"http://xenomai.org/downloads/xenomai/stable/latest/xenomai-3.0.6.tar.bz2"=
+
+
+S =3D "${WORKDIR}/xenomai-${PV}"
+
+inherit autotools pkgconfig
+
+includedir =3D "/usr/include/xenomai"
+
+#Fixes QA Issues: non debug package contains .debug directory
+#FILES_${PN}-dbg +=3D "/usr/bin/regression/posix/.debug"
+#FILES_${PN}-dbg +=3D "/usr/bin/regression/native/.debug"
+#FILES_${PN}-dbg +=3D "/usr/bin/regression/native+posix/.debug"
+#FILES_${PN}-dbg +=3D "/usr/demo/.debug/*"
+
+#Fixes QA Error - Non-dev package contains symlink .so
+FILES_${PN}-dev +=3D "/usr/lib/*.se"
+
+#Add directories to package for shipping
+FILES_${PN} +=3D "/dev"
+FILES_${PN} +=3D "/dev/*"
+FILES_${PN} +=3D "/usr/bin/*"
+FILES_${PN} +=3D "/usr/lib/*"
+FILES_${PN} +=3D "/usr/sbin/*"
+FILES_${PN} +=3D "/usr/include/*"
+FILES_${PN} +=3D "/usr/lib/*"
+FILES_${PN} +=3D "/usr/share/doc/*"
+FILES_${PN} +=3D "/usr/share/man/*"
+FILES_${PN} +=3D "/usr/demo/*"
+
+SRC_URI[md5sum] =3D "6017203d0992bb5334498c196bf6f25d"
+SRC_URI[sha256sum] =3D =
+"2c0dd3f0e36e4a10f97e0028989bb873e80f4d1ce212ac55fd3b28857c464f94"
+
+TARGET_CC_ARCH +=3D "${LDFLAGS}=E2=80=9D=20
+
+
+Thanks for any ideas.  Hopefully, I am pretty close with these recipes.
+
+- Steve Pavao
+Korg R&D
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
