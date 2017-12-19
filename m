@@ -1,12 +1,13 @@
+From: Lange Norbert <norbert.lange@andritz.com>
+Date: Tue, 19 Dec 2017 08:56:37 +0000
+Message-ID: <99BAB48E90E86D42AD41F0BCE3225AEB018DE508FF@GRZSMS582.andritz.com>
 References: <99BAB48E90E86D42AD41F0BCE3225AEB018DE50813@GRZSMS582.andritz.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <a00a6566-e5f0-9496-f139-beed6d1a1bad@siemens.com>
-Date: Tue, 19 Dec 2017 08:16:10 +0100
-MIME-Version: 1.0
-In-Reply-To: <99BAB48E90E86D42AD41F0BCE3225AEB018DE50813@GRZSMS582.andritz.com>
-Content-Type: text/plain; charset="utf-8"
+ <a00a6566-e5f0-9496-f139-beed6d1a1bad@siemens.com>
+In-Reply-To: <a00a6566-e5f0-9496-f139-beed6d1a1bad@siemens.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] Weird behavior during debug
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -16,85 +17,100 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lange Norbert <norbert.lange@andritz.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 2017-12-18 15:49, Lange Norbert wrote:
-> Same issue with latest ipipe. Threads look like this (when the instance is halted in the debugger).
-> Somehow, atleast the RT Tasks will block waiting on a timerfd when one task is in state XT (whatever that means)
-> 
-> # cat /proc/xenomai/sched/threads
-> CPU  PID    CLASS  TYPE      PRI   TIMEOUT       STAT       NAME
->   0  0      idle   core       -1   -             R          [ROOT/0]
->   1  0      idle   core       -1   -             R          [ROOT/1]
->   2  0      idle   core       -1   -             R          [ROOT/2]
->   3  0      idle   core       -1   -             R          [ROOT/3]
->   2  264    rt     cobalt     20   -             XT         packetfilter
->   1  279    rt     cobalt     20   -             W          packetfilter
-> 
-
-Philippe reverted a number of commits in ipipe-4.9.y some days ago.
-Please retry either with the latest version or the last release
-(ipipe-core-4.9.51-x86-4).
-
-Jan
-
->  >-----Original Message-----
->  >From: Lange Norbert
->  >Sent: Montag, 18. Dezember 2017 14:43
->  >To: Xenomai (xenomai@xenomai.org)
->  >Subject: Weird behavior during debug
->  >
->  >Hello,
->  >
->  >I tried debugging a cobalt application, and when I hit a breakpoint most of the
->  >system freezes.
->  >If I run for example top over Serial or SSH, then the display won`t be refreshed
->  >anymore,
->  >A separate program running as RT Task, waiting for an timer-event (occurring
->  >10 times a second) will block aswell.
->  >
->  >So the debug session seems to block a rather big amount of events.
->  >
->  >I am using a 4.9 kernel with ipipe at "x86/ipipe: fix detection of unhandled
->  >faults over the head domain".
->  >Looking at the logs and other threads there seems to be a bigger rework in
->  >progress?
->  >I will retry with master, and report back.
->  >
->  >Kind regards
->  >
->  >Norbert Lange
-> 
-> ________________________________
-> 
-> This message and any attachments are solely for the use of the intended recipients. They may contain privileged and/or confidential information or other information protected from disclosure. If you are not an intended recipient, you are hereby notified that you received this email in error and that any review, dissemination, distribution or copying of this email and any attachment is strictly prohibited. If you have received this email in error, please contact the sender and delete the message and any attachment from your system.
-> 
-> ANDRITZ HYDRO GmbH
-> 
-> 
-> Rechtsform/ Legal form: Gesellschaft mit beschränkter Haftung / Corporation
-> 
-> Firmensitz/ Registered seat: Wien
-> 
-> Firmenbuchgericht/ Court of registry: Handelsgericht Wien
-> 
-> Firmenbuchnummer/ Company registration: FN 61833 g
-> 
-> DVR: 0605077
-> 
-> UID-Nr.: ATU14756806
-> 
-> 
-> Thank You
-> ________________________________
-> 
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
-> 
-
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+SGVsbG8gSmFuLA0KDQpNeSBmb2xsb3ctdXAgcG9zdCB3YXMgZG9uZSBhZnRlciBydW5uaW5nIHRo
+ZSBsYXRlc3QgaXBpcGUtNC45LnkgcGF0Y2gsIHdpdGggeW91ciBmaXggYWRkZWQgb24gdG9wLg0K
+DQpkaWZmIC0tZ2l0IGEvYXJjaC94ODYvS2NvbmZpZyBiL2FyY2gveDg2L0tjb25maWcNCmluZGV4
+IDgzNGU2MTE3ZjVmOC4uYjlmNjEyMWM4NTMwIDEwMDY0NA0KLS0tIGEvYXJjaC94ODYvS2NvbmZp
+Zw0KKysrIGIvYXJjaC94ODYvS2NvbmZpZw0KQEAgLTgzLDcgKzgzLDcgQEAgY29uZmlnIFg4Ng0K
+ICAgICAgICBzZWxlY3QgSEFWRV9BT1VUICAgICAgICAgICAgICAgICAgICAgICAgaWYgWDg2XzMy
+DQogICAgICAgIHNlbGVjdCBIQVZFX0FSQ0hfQVVESVRTWVNDQUxMDQogICAgICAgIHNlbGVjdCBI
+QVZFX0FSQ0hfSFVHRV9WTUFQICAgICAgICAgICAgICBpZiBYODZfNjQgfHwgWDg2X1BBRQ0KLSAg
+ICAgICBzZWxlY3QgSEFWRV9BUkNIX0pVTVBfTEFCRUwNCisgICAgICAgc2VsZWN0IEhBVkVfQVJD
+SF9KVU1QX0xBQkVMICAgICAgICAgICAgIGlmICFJUElQRQ0KICAgICAgICBzZWxlY3QgSEFWRV9B
+UkNIX0tBU0FOICAgICAgICAgICAgICAgICAgaWYgWDg2XzY0ICYmIFNQQVJTRU1FTV9WTUVNTUFQ
+DQogICAgICAgIHNlbGVjdCBIQVZFX0FSQ0hfS0dEQg0KICAgICAgICBzZWxlY3QgSEFWRV9BUkNI
+X0tNRU1DSEVDSw0KDQpOb3JiZXJ0DQoNCiA+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCiA+
+RnJvbTogSmFuIEtpc3prYSBbbWFpbHRvOmphbi5raXN6a2FAc2llbWVucy5jb21dDQogPlNlbnQ6
+IERpZW5zdGFnLCAxOS4gRGV6ZW1iZXIgMjAxNyAwODoxNg0KID5UbzogTGFuZ2UgTm9yYmVydDsg
+WGVub21haSAoeGVub21haUB4ZW5vbWFpLm9yZykNCiA+U3ViamVjdDogUmU6IFdlaXJkIGJlaGF2
+aW9yIGR1cmluZyBkZWJ1Zw0KID4NCiA+RU1BSUwgZnJvbSBhIE5PTi1BTkRSSVRaIFNPVVJDRTog
+YXMgYSBzZWN1cml0eSBtZWFzdXJlLCBwbGVhc2UgZXhlcmNpc2UNCiA+Y2F1dGlvbiB3aXRoIGVt
+YWlsIGNvbnRlbnQgYW5kIGFueSBsaW5rcyBvciBhdHRhY2htZW50cy4NCiA+DQogPg0KID5PbiAy
+MDE3LTEyLTE4IDE1OjQ5LCBMYW5nZSBOb3JiZXJ0IHdyb3RlOg0KID4+IFNhbWUgaXNzdWUgd2l0
+aCBsYXRlc3QgaXBpcGUuIFRocmVhZHMgbG9vayBsaWtlIHRoaXMgKHdoZW4gdGhlIGluc3RhbmNl
+IGlzDQogPmhhbHRlZCBpbiB0aGUgZGVidWdnZXIpLg0KID4+IFNvbWVob3csIGF0bGVhc3QgdGhl
+IFJUIFRhc2tzIHdpbGwgYmxvY2sgd2FpdGluZyBvbiBhIHRpbWVyZmQgd2hlbiBvbmUgdGFzaw0K
+ID5pcyBpbiBzdGF0ZSBYVCAod2hhdGV2ZXIgdGhhdCBtZWFucykNCiA+Pg0KID4+ICMgY2F0IC9w
+cm9jL3hlbm9tYWkvc2NoZWQvdGhyZWFkcw0KID4+IENQVSAgUElEICAgIENMQVNTICBUWVBFICAg
+ICAgUFJJICAgVElNRU9VVCAgICAgICBTVEFUICAgICAgIE5BTUUNCiA+PiAgIDAgIDAgICAgICBp
+ZGxlICAgY29yZSAgICAgICAtMSAgIC0gICAgICAgICAgICAgUiAgICAgICAgICBbUk9PVC8wXQ0K
+ID4+ICAgMSAgMCAgICAgIGlkbGUgICBjb3JlICAgICAgIC0xICAgLSAgICAgICAgICAgICBSICAg
+ICAgICAgIFtST09ULzFdDQogPj4gICAyICAwICAgICAgaWRsZSAgIGNvcmUgICAgICAgLTEgICAt
+ICAgICAgICAgICAgIFIgICAgICAgICAgW1JPT1QvMl0NCiA+PiAgIDMgIDAgICAgICBpZGxlICAg
+Y29yZSAgICAgICAtMSAgIC0gICAgICAgICAgICAgUiAgICAgICAgICBbUk9PVC8zXQ0KID4+ICAg
+MiAgMjY0ICAgIHJ0ICAgICBjb2JhbHQgICAgIDIwICAgLSAgICAgICAgICAgICBYVCAgICAgICAg
+IHBhY2tldGZpbHRlcg0KID4+ICAgMSAgMjc5ICAgIHJ0ICAgICBjb2JhbHQgICAgIDIwICAgLSAg
+ICAgICAgICAgICBXICAgICAgICAgIHBhY2tldGZpbHRlcg0KID4+DQogPg0KID5QaGlsaXBwZSBy
+ZXZlcnRlZCBhIG51bWJlciBvZiBjb21taXRzIGluIGlwaXBlLTQuOS55IHNvbWUgZGF5cyBhZ28u
+DQogPlBsZWFzZSByZXRyeSBlaXRoZXIgd2l0aCB0aGUgbGF0ZXN0IHZlcnNpb24gb3IgdGhlIGxh
+c3QgcmVsZWFzZQ0KID4oaXBpcGUtY29yZS00LjkuNTEteDg2LTQpLg0KID4NCiA+SmFuDQogPg0K
+ID4+ICA+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCiA+PiAgPkZyb206IExhbmdlIE5vcmJl
+cnQNCiA+PiAgPlNlbnQ6IE1vbnRhZywgMTguIERlemVtYmVyIDIwMTcgMTQ6NDMNCiA+PiAgPlRv
+OiBYZW5vbWFpICh4ZW5vbWFpQHhlbm9tYWkub3JnKQ0KID4+ICA+U3ViamVjdDogV2VpcmQgYmVo
+YXZpb3IgZHVyaW5nIGRlYnVnDQogPj4gID4NCiA+PiAgPkhlbGxvLA0KID4+ICA+DQogPj4gID5J
+IHRyaWVkIGRlYnVnZ2luZyBhIGNvYmFsdCBhcHBsaWNhdGlvbiwgYW5kIHdoZW4gSSBoaXQgYSBi
+cmVha3BvaW50IG1vc3Qgb2YNCiA+dGhlDQogPj4gID5zeXN0ZW0gZnJlZXplcy4NCiA+PiAgPklm
+IEkgcnVuIGZvciBleGFtcGxlIHRvcCBvdmVyIFNlcmlhbCBvciBTU0gsIHRoZW4gdGhlIGRpc3Bs
+YXkgd29uYHQgYmUNCiA+cmVmcmVzaGVkDQogPj4gID5hbnltb3JlLA0KID4+ICA+QSBzZXBhcmF0
+ZSBwcm9ncmFtIHJ1bm5pbmcgYXMgUlQgVGFzaywgd2FpdGluZyBmb3IgYW4gdGltZXItZXZlbnQN
+CiA+KG9jY3VycmluZw0KID4+ICA+MTAgdGltZXMgYSBzZWNvbmQpIHdpbGwgYmxvY2sgYXN3ZWxs
+Lg0KID4+ICA+DQogPj4gID5TbyB0aGUgZGVidWcgc2Vzc2lvbiBzZWVtcyB0byBibG9jayBhIHJh
+dGhlciBiaWcgYW1vdW50IG9mIGV2ZW50cy4NCiA+PiAgPg0KID4+ICA+SSBhbSB1c2luZyBhIDQu
+OSBrZXJuZWwgd2l0aCBpcGlwZSBhdCAieDg2L2lwaXBlOiBmaXggZGV0ZWN0aW9uIG9mIHVuaGFu
+ZGxlZA0KID4+ICA+ZmF1bHRzIG92ZXIgdGhlIGhlYWQgZG9tYWluIi4NCiA+PiAgPkxvb2tpbmcg
+YXQgdGhlIGxvZ3MgYW5kIG90aGVyIHRocmVhZHMgdGhlcmUgc2VlbXMgdG8gYmUgYSBiaWdnZXIg
+cmV3b3JrIGluDQogPj4gID5wcm9ncmVzcz8NCiA+PiAgPkkgd2lsbCByZXRyeSB3aXRoIG1hc3Rl
+ciwgYW5kIHJlcG9ydCBiYWNrLg0KID4+ICA+DQogPj4gID5LaW5kIHJlZ2FyZHMNCiA+PiAgPg0K
+ID4+ICA+Tm9yYmVydCBMYW5nZQ0KID4+DQogPj4gX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX18NCiA+Pg0KID4+IFRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xl
+bHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGludGVuZGVkDQogPnJlY2lwaWVudHMuIFRoZXkgbWF5IGNv
+bnRhaW4gcHJpdmlsZWdlZCBhbmQvb3IgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIG9yDQogPm90
+aGVyIGluZm9ybWF0aW9uIHByb3RlY3RlZCBmcm9tIGRpc2Nsb3N1cmUuIElmIHlvdSBhcmUgbm90
+IGFuIGludGVuZGVkDQogPnJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCB5
+b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBhbmQgdGhhdA0KID5hbnkgcmV2aWV3LCBk
+aXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3IgY29weWluZyBvZiB0aGlzIGVtYWlsIGFuZCBh
+bnkNCiA+YXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNl
+aXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVhc2UNCiA+Y29udGFjdCB0aGUgc2VuZGVyIGFu
+ZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50IGZyb20geW91cg0KID5zeXN0
+ZW0uDQogPj4NCiA+PiBBTkRSSVRaIEhZRFJPIEdtYkgNCiA+Pg0KID4+DQogPj4gUmVjaHRzZm9y
+bS8gTGVnYWwgZm9ybTogR2VzZWxsc2NoYWZ0IG1pdCBiZXNjaHLDpG5rdGVyIEhhZnR1bmcgLyBD
+b3Jwb3JhdGlvbg0KID4+DQogPj4gRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQog
+Pj4NCiA+PiBGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVnaXN0cnk6IEhhbmRlbHNnZXJp
+Y2h0IFdpZW4NCiA+Pg0KID4+IEZpcm1lbmJ1Y2hudW1tZXIvIENvbXBhbnkgcmVnaXN0cmF0aW9u
+OiBGTiA2MTgzMyBnDQogPj4NCiA+PiBEVlI6IDA2MDUwNzcNCiA+Pg0KID4+IFVJRC1Oci46IEFU
+VTE0NzU2ODA2DQogPj4NCiA+Pg0KID4+IFRoYW5rIFlvdQ0KID4+IF9fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fDQogPj4NCiA+PiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXw0KID4+IFhlbm9tYWkgbWFpbGluZyBsaXN0DQogPj4gWGVub21haUB4
+ZW5vbWFpLm9yZw0KID4+IGh0dHBzOi8veGVub21haS5vcmcvbWFpbG1hbi9saXN0aW5mby94ZW5v
+bWFpDQogPj4NCiA+DQogPi0tDQogPlNpZW1lbnMgQUcsIENvcnBvcmF0ZSBUZWNobm9sb2d5LCBD
+VCBSREEgSVRQIFNFUy1ERQ0KID5Db3Jwb3JhdGUgQ29tcGV0ZW5jZSBDZW50ZXIgRW1iZWRkZWQg
+TGludXgNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQoNClRoaXMgbWVzc2FnZSBh
+bmQgYW55IGF0dGFjaG1lbnRzIGFyZSBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGludGVuZGVk
+IHJlY2lwaWVudHMuIFRoZXkgbWF5IGNvbnRhaW4gcHJpdmlsZWdlZCBhbmQvb3IgY29uZmlkZW50
+aWFsIGluZm9ybWF0aW9uIG9yIG90aGVyIGluZm9ybWF0aW9uIHByb3RlY3RlZCBmcm9tIGRpc2Ns
+b3N1cmUuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJl
+Ynkgbm90aWZpZWQgdGhhdCB5b3UgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBhbmQgdGhh
+dCBhbnkgcmV2aWV3LCBkaXNzZW1pbmF0aW9uLCBkaXN0cmlidXRpb24gb3IgY29weWluZyBvZiB0
+aGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudCBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5
+b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yLCBwbGVhc2UgY29udGFjdCB0aGUg
+c2VuZGVyIGFuZCBkZWxldGUgdGhlIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50IGZyb20geW91
+ciBzeXN0ZW0uDQoNCkFORFJJVFogSFlEUk8gR21iSA0KDQoNClJlY2h0c2Zvcm0vIExlZ2FsIGZv
+cm06IEdlc2VsbHNjaGFmdCBtaXQgYmVzY2hyw6Rua3RlciBIYWZ0dW5nIC8gQ29ycG9yYXRpb24N
+Cg0KRmlybWVuc2l0ei8gUmVnaXN0ZXJlZCBzZWF0OiBXaWVuDQoNCkZpcm1lbmJ1Y2hnZXJpY2h0
+LyBDb3VydCBvZiByZWdpc3RyeTogSGFuZGVsc2dlcmljaHQgV2llbg0KDQpGaXJtZW5idWNobnVt
+bWVyLyBDb21wYW55IHJlZ2lzdHJhdGlvbjogRk4gNjE4MzMgZw0KDQpEVlI6IDA2MDUwNzcNCg0K
+VUlELU5yLjogQVRVMTQ3NTY4MDYNCg0KDQpUaGFuayBZb3UNCl9fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fDQo=
 
