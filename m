@@ -1,17 +1,18 @@
-From: Lange Norbert <norbert.lange@andritz.com>
-Date: Wed, 20 Dec 2017 17:49:07 +0000
-Message-ID: <99BAB48E90E86D42AD41F0BCE3225AEB019FBE4FE8@GRZSMS582.andritz.com>
 References: <99BAB48E90E86D42AD41F0BCE3225AEB018DE50813@GRZSMS582.andritz.com>
  <a00a6566-e5f0-9496-f139-beed6d1a1bad@siemens.com>
  <99BAB48E90E86D42AD41F0BCE3225AEB018DE508FF@GRZSMS582.andritz.com>
  <2d21cf6a-1ed6-ab61-07d6-188a48ee98de@siemens.com>
  <99BAB48E90E86D42AD41F0BCE3225AEB018DE509D8@GRZSMS582.andritz.com>
  <39f43017-33cb-c7e0-67e0-cd824a5bc6c4@siemens.com>
-In-Reply-To: <39f43017-33cb-c7e0-67e0-cd824a5bc6c4@siemens.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <99BAB48E90E86D42AD41F0BCE3225AEB019FBE4FE8@GRZSMS582.andritz.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <cbf3043f-e97b-b902-b888-a6fb60bed656@xenomai.org>
+Date: Wed, 20 Dec 2017 19:07:45 +0100
 MIME-Version: 1.0
+In-Reply-To: <99BAB48E90E86D42AD41F0BCE3225AEB019FBE4FE8@GRZSMS582.andritz.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Weird behavior during debug
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -21,58 +22,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+To: Lange Norbert <norbert.lange@andritz.com>, Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-ID4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KID5Gcm9tOiBKYW4gS2lzemthIFttYWlsdG86
-amFuLmtpc3prYUBzaWVtZW5zLmNvbV0NCiA+U2VudDogRGllbnN0YWcsIDE5LiBEZXplbWJlciAy
-MDE3IDE5OjU3DQogPlRvOiBMYW5nZSBOb3JiZXJ0OyBYZW5vbWFpICh4ZW5vbWFpQHhlbm9tYWku
-b3JnKTsgUGhpbGlwcGUgR2VydW0NCiA+U3ViamVjdDogUmU6IFdlaXJkIGJlaGF2aW9yIGR1cmlu
-ZyBkZWJ1Zw0KID4NCiA+RU1BSUwgZnJvbSBhIE5PTi1BTkRSSVRaIFNPVVJDRTogYXMgYSBzZWN1
-cml0eSBtZWFzdXJlLCBwbGVhc2UgZXhlcmNpc2UNCiA+Y2F1dGlvbiB3aXRoIGVtYWlsIGNvbnRl
-bnQgYW5kIGFueSBsaW5rcyBvciBhdHRhY2htZW50cy4NCiA+DQogPg0KID5PbiAyMDE3LTEyLTE5
-IDE0OjQ0LCBMYW5nZSBOb3JiZXJ0IHdyb3RlOg0KID4+DQogPj4gUHJvYmxlbSBwZXJzaXN0cyBp
-biBpcGlwZS1jb3JlLTQuOS41MS14ODYtNCwgaXBpcGUtNC40IGtlcm5lbCBjcmFzaGVzIGF0IGJv
-b3QNCiA+KGxpa2VseSBubyBnb29kIHN1cHBvcnQgZm9yIHRoaXMgU09DKS4NCiA+PiBVc2VkIHBy
-b2dyYW0gaXMgYXR0YWNoZWQsIGl0IGlzIGJlaW5nIGV4ZWN1dGVkIHR3aWNlLCBvbmNlIGRpcmVj
-dGx5IHZpYSBzZXJpYWwNCiA+b3Igc3NoLCBvbmNlIHZpYSBnZGJzZXJ2ZXIgb3IgZ2RiICh0ZXN0
-ZWQgdmFyaW91cyBjb21iaW5hdGlvbnMpLg0KID4+DQogPj4gVGhlIGRpcmVjdGx5IGV4ZWN1dGVk
-IHByb2dyYW0gd2lsbCBzdG9wIChzdXBwb3NlZGx5IGF0IHJlYWQpLCBhcyBzb29uIGFzIHRoZQ0K
-ID5kZWJ1Z2dlZCBwcm9ncmFtIGlzIGhhbHRlZC4NCiA+DQogPk9LLCBub3cgSSBnZXQgdGhlIHBv
-aW50OiBZb3UgbmVlZA0KID5odHRwOi8vZ2l0Lnhlbm9tYWkub3JnL3hlbm9tYWktDQogPjMuZ2l0
-L2NvbW1pdC8/aWQ9MGQ2NTNlNmRiNzVmMDEyODdmODNkZGMzYTRiYTgxODlmMGJkMDM2NiwNCiA+
-YnV0IHRoYXQgaXMgb25seSBpbiBuZXh0IHNvIGZhci4NCg0KSSBhcHBsaWVzIGNsZWFubHkgb24g
-dGhlIHdpcC9ydG5ldCBicmFuY2gsIHNvIEkgZGlkIHRlc3QgaXQgYW5kIGluZGVlZCBpdCBmaXhl
-cyB0aGUgaXNzdWUuDQoNCiA+DQogPldoYXQgaGFwcGVucyBpbiBzdGFibGUgKGFuZCBhbHNvIGlu
-IG9sZGVyIHZlcnNpb25zKSBpcyB0aGF0IGFsbCBYZW5vbWFpDQogPnRpbWVycyBpbiB0aGUgc3lz
-dGVtIGFyZSBzdG9wcGVkIG9uY2Ugb25lIFhlbm9tYWkgYXBwbGljYXRpb24gZW50ZXJzIGENCiA+
-cHRyYWNlIHN0YXRlLiBUaGF0IGlzIGdvaW5nIHRvIHZhbmlzaCBpbiB0aGUgbmV4dCB2ZXJzaW9u
-LCBhbmQgd2UgbWF5DQogPmNvbnNpZGVyIHRha2luZyBpdCB0byBzdGFibGUgYXMgd2VsbC4gV2hh
-dCBkbyB5b3UgdGhpbmssIFBoaWxpcHBlPw0KDQpJIGRvbid0IGtub3cgdGhlIGRpcmVjdGlvbiB3
-aGVyZSB5b3Ugd2FudCB0byBnbyB3aXRoIHRoZSBjb2JhbHQgZnVuY3Rpb25hbGl0eSwNCnRoaXMg
-Y2hhbmdlIGlzIElNSE8gYmFkbHkgbmVlZGVkIGFzIGRpZ2dpbmcgaW50byBvbmUgcHJvY2VzcyBz
-aG91bGQgbmV2ZXIgYWZmZWN0IG90aGVycy4NCkhvd2V2ZXIsIHRoZXJlIHN0aWxsIGlzIGEgZGlm
-ZmVyZW5jZSB0byBMaW51eCBiZWhhdmlvciwgbmFtZWx5IHRoYXQgYSBwZXJpb2RpYyB0aW1lcmZk
-IHdpbGwgcmVhZCB0aGUNCmNvdW50IG9mIGV4cGlyZWQgZXZlbnRzIGFmdGVyIGNvbnRpbnVpbmcu
-IFRoZSBjb2JhbHQgaW1wbGVtZW50YXRpb24gd2lsbCBqdXN0IGZvcmdldCBhYm91dCB0aGVtLg0K
-DQpJIHN1cHBvc2UgdGhpcyBoYWNrYXJvdW5kIGlzIG5lY2Vzc2FyeSBzbyBvbmUtc2hvdCBldmVu
-dHMgYXJlbmB0IGRyb3BwZWQ/DQoNCiAgICAgICAgICAgICAgICAvKiBIaWRlIG92ZXJydW5zIGR1
-ZSB0byB0aGUgbW9zdCByZWNlbnQgcHRyYWNpbmcgc2Vzc2lvbi4gKi8NCiAgICAgICAgICAgICAg
-ICBpZiAoeG50aHJlYWRfdGVzdF9sb2NhbGluZm8od2FpdGVyLCBYTkhJQ0NVUCkpDQogICAgICAg
-ICAgICAgICAgICAgICAgICByZXR1cm4gMDsNCg0KTm9yYmVydA0KDQogPkphbg0KDQpfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fXw0KDQpUaGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2ht
-ZW50cyBhcmUgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNpcGllbnRzLiBU
-aGV5IG1heSBjb250YWluIHByaXZpbGVnZWQgYW5kL29yIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlv
-biBvciBvdGhlciBpbmZvcm1hdGlvbiBwcm90ZWN0ZWQgZnJvbSBkaXNjbG9zdXJlLiBJZiB5b3Ug
-YXJlIG5vdCBhbiBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRo
-YXQgeW91IHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IgYW5kIHRoYXQgYW55IHJldmlldywg
-ZGlzc2VtaW5hdGlvbiwgZGlzdHJpYnV0aW9uIG9yIGNvcHlpbmcgb2YgdGhpcyBlbWFpbCBhbmQg
-YW55IGF0dGFjaG1lbnQgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2
-ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVs
-ZXRlIHRoZSBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudCBmcm9tIHlvdXIgc3lzdGVtLg0KDQpB
-TkRSSVRaIEhZRFJPIEdtYkgNCg0KDQpSZWNodHNmb3JtLyBMZWdhbCBmb3JtOiBHZXNlbGxzY2hh
-ZnQgbWl0IGJlc2NocsOkbmt0ZXIgSGFmdHVuZyAvIENvcnBvcmF0aW9uDQoNCkZpcm1lbnNpdHov
-IFJlZ2lzdGVyZWQgc2VhdDogV2llbg0KDQpGaXJtZW5idWNoZ2VyaWNodC8gQ291cnQgb2YgcmVn
-aXN0cnk6IEhhbmRlbHNnZXJpY2h0IFdpZW4NCg0KRmlybWVuYnVjaG51bW1lci8gQ29tcGFueSBy
-ZWdpc3RyYXRpb246IEZOIDYxODMzIGcNCg0KRFZSOiAwNjA1MDc3DQoNClVJRC1Oci46IEFUVTE0
-NzU2ODA2DQoNCg0KVGhhbmsgWW91DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0K
+On 12/20/2017 06:49 PM, Lange Norbert wrote:
+>  >-----Original Message-----
+>  >From: Jan Kiszka [mailto:jan.kiszka@siemens.com]
+>  >Sent: Dienstag, 19. Dezember 2017 19:57
+>  >To: Lange Norbert; Xenomai (xenomai@xenomai.org); Philippe Gerum
+>  >Subject: Re: Weird behavior during debug
+>  >
+>  >EMAIL from a NON-ANDRITZ SOURCE: as a security measure, please exercise
+>  >caution with email content and any links or attachments.
+>  >
+>  >
+>  >On 2017-12-19 14:44, Lange Norbert wrote:
+>  >>
+>  >> Problem persists in ipipe-core-4.9.51-x86-4, ipipe-4.4 kernel crashes at boot
+>  >(likely no good support for this SOC).
+>  >> Used program is attached, it is being executed twice, once directly via serial
+>  >or ssh, once via gdbserver or gdb (tested various combinations).
+>  >>
+>  >> The directly executed program will stop (supposedly at read), as soon as the
+>  >debugged program is halted.
+>  >
+>  >OK, now I get the point: You need
+>  >http://git.xenomai.org/xenomai-
+>  >3.git/commit/?id=0d653e6db75f01287f83ddc3a4ba8189f0bd0366,
+>  >but that is only in next so far.
+> 
+> I applies cleanly on the wip/rtnet branch, so I did test it and indeed it fixes the issue.
+> 
+>  >
+>  >What happens in stable (and also in older versions) is that all Xenomai
+>  >timers in the system are stopped once one Xenomai application enters a
+>  >ptrace state. That is going to vanish in the next version, and we may
+>  >consider taking it to stable as well. What do you think, Philippe?
+> 
+> I don't know the direction where you want to go with the cobalt functionality,
+> this change is IMHO badly needed as digging into one process should never affect others.
+> However, there still is a difference to Linux behavior, namely that a periodic timerfd will read the
+> count of expired events after continuing. The cobalt implementation will just forget about them.
+> 
+> I suppose this hackaround is necessary so one-shot events aren`t dropped?
+> 
+>                 /* Hide overruns due to the most recent ptracing session. */
+>                 if (xnthread_test_localinfo(waiter, XNHICCUP))
+>                         return 0;
+> 
+
+This is the core of the fix: force a zero overrun count when queried for
+a thread which has just left the ptraced state. This means ignoring all
+missed wakeup events that may have occurred while such thread was
+stopped by the debugger, and therefore unable to wait for them.
+
+-- 
+Philippe.
 
