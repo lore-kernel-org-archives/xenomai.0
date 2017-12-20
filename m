@@ -1,12 +1,14 @@
+References: <20171218022628.diwrxfzjqmuqvgml@linux-u7w5.ap.freescale.net>
+ <20171220064953.dixpj2btify6wn5g@linux-u7w5.ap.freescale.net>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <c51108d7-aa10-f721-60d6-9f0396ad75e7@xenomai.org>
+Date: Wed, 20 Dec 2017 11:07:18 +0100
 MIME-Version: 1.0
-In-Reply-To: <edafc147-2eee-249d-4ee4-b96869605ccd@alaxarxa.net>
-References: <CAKJ14NegF9o5h27cN1m3CKrtNHSnCZ8Fv5+Vuezd3h6r86hAAA@mail.gmail.com>
- <edafc147-2eee-249d-4ee4-b96869605ccd@alaxarxa.net>
-From: Andreas Glatz <andi.glatz@gmail.com>
-Date: Wed, 20 Dec 2017 09:19:39 +0000
-Message-ID: <CAKJ14Ne-pgWY_wgZ80UiDoggk8qcZD=Jrm-xG=OfwhZUYNXB2A@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] RTnet fixes - testers needed
+In-Reply-To: <20171220064953.dixpj2btify6wn5g@linux-u7w5.ap.freescale.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] xenomai cyclictest negative Max value
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,38 +17,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Cc: xenomai@xenomai.org
+To: Peng Fan <van.freenix@gmail.com>, xenomai@xenomai.org
 
->>> I have pulled wip/rtnet-fixes branch with the last commit of Philippe from Sun
->>> Dec 17 15:27:04 2017 +0100: net/udp: ioctl: fix temp arg buffer type
->>>
->>> I have created the packages and new kernel with the same configuration that I had.
->>>
->>> I run my application, that it's a POSIX application Wrapped and I still have the
->>> same error when I activate SMAP:
+On 12/20/2017 07:49 AM, Peng Fan wrote:
+> On Mon, Dec 18, 2017 at 10:26:28AM +0800, Peng Fan wrote:
+>> Hi All,
 >>
->> I see that the page fault occurs in rt_packet_ioctl()... by the looks
->> of this bug it might be similar to the one I found in udp.c (see my
->> post from Sunday)... basically the ioctl still tries to access user
->> memory, which causes that stack trace. I'm currently a bit busy - I
->> hope I can continue debugging this by the end of this week. In the
->> meantime could you recompile your kernel with debug info which should
->> improve the kernel bug output?
+>> I compiled xenomai-next on my ARM64 platform, but met Max and Avg not correct.
+>> See below:
 >>
->
-> I have compiled the kernel with  CONFIG_DEBUG_KERNEL=Y. But, I have seen that
-> there's another option.
->
-> Which one could be the best for this case?
->
+>> ./cyclictest -a -t10 -n -p99 -c 0
+>> # /dev/cpu_dma_latency set to 0us
+>> policy: fifo: loadavg: 0.97 0.51 0.21 1/135 3018
+>> policy: fifo: loadavg: 1.00 0.76 0.38 1/128 3018
+>> T:[  200.650323] random: crng init done      0 Act:    0 Avg:443149053456561 Max:      -1
+>> T: 0 ( 3002) P:99 I:1000 C: 373066 Min:      0 Act:    0 Avg:395570629834068 Max:      -11
+>> T: 1 ( 3003) P:99 I:1500 C: 248710 Min:      0 Act:    0 Avg:148339383810136 Max:      -111
+>> T: 2 ( 3004) P:99 I:2000 C: 186532 Min:      0 Act:    0 Avg:593359125738518 Max:      -1
+>> T: 3 ( 3005) P:99 I:2500 C: 149359 Min:      0 Act:    0 Avg:123506076458128 Max:      -11
+>> T: 4 ( 3006) P:99 I:3000 C: 124465 Min:      0 Act:    0 Avg:592833136181562 Max:      -1
+>> T: 5 ( 3007) P:99 I:3500 C: 106684 Min:      0 Act:    0 Avg:172910127795260 Max:      -111
+>> T: 6 ( 3008) P:99 I:4000 C:  93349 Min:      0 Act:    0 Avg:1383273613171719 Max:      -1
+>> T: 7 ( 3009) P:99 I:4500 C:  82977 Min:      0 Act:    0 Avg:666934598998863 Max:      -1
+>> T: 8 ( 3010) P:99 I:5000 C:  74679 Min:      0 Act:    0 Avg:988055226969271 Max:      -11
+>>
+>> Seems xenomai cyclictest and rt-tests cyclictest is not sync, or there are
+>> some differecense. Could you please help me clarify what's the difference
+>> between xenomai cyclictest and rt-tests cyclictest?  I did not find out which
+>> exact commit number when importing rt-tests cyclictest to xenomai.
+> 
+> I add a debug info in cyclictest.c, see below:
+> 
+> diff --git a/demo/posix/cyclictest/cyclictest.c b/demo/posix/cyclictest/cyclictest.c
+> index 31d9e5d0b..b16321cd9 100644
+> --- a/demo/posix/cyclictest/cyclictest.c
+> +++ b/demo/posix/cyclictest/cyclictest.c
+> @@ -920,6 +920,11 @@ void *timerthread(void *param)
+>                         diff = calcdiff_ns(now, next);
+>                 else
+>                         diff = calcdiff(now, next);
+> +
+> +               if (diff == -1) {
+> +                       printf("==== %ld %ld %ld %ld\n", now.tv_sec, now.tv_nsec, next.tv_sec, next.tv_nsec);
+> +                       exit(0);
+> +               }
+>                 if (diff < stat->min)
+>                         stat->min = diff;
+>                 if (diff > stat->max) {
+> 
+> And I encounter the case that diff is -1,
+> "==== 16124 21743627 16124 21744638"
+> only 1ns difference between now and next.
+> This means clock_nanosleep wakeup earlier than expected?
+> I am using 4.9.51 kernel, and xenomai-next on ARM64. I am tracking
+> the hrtimer things, but no good progress. Please advise, if you any ideas.
+> 
 
-I think you want CONFIG_DEBUG_INFO, which depends on CONFIG_DEBUG_KERNEL=Y.
+You need to calibrate the core timer with the "autotune" utility. Some
+details available here:
 
-On ARM I also enabled CONFIG_DEBUG_INFO_DWARF4... but the help says
-it's just for gdb + optimised code so I think you can leave it out.
+https://xenomai.org/documentation/xenomai-3/html/man1/autotune/index.html
 
-Cheers,
-
-A.
+-- 
+Philippe.
 
