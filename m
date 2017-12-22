@@ -1,12 +1,16 @@
-Sender: Piotr Piorkowski <qba100@gmail.com>
-Date: Thu, 21 Dec 2017 10:13:06 +0100
-From: =?utf-8?Q?Piotr_Pi=C3=B3rkowski?= <piotr.piorkow@gmail.com>
-Message-ID: <local-8ffba3d7-6f1c@qba-msi>
+References: <CAKJ14NegF9o5h27cN1m3CKrtNHSnCZ8Fv5+Vuezd3h6r86hAAA@mail.gmail.com>
+ <967c75fd-bb1d-eba3-6fa3-b4e744051689@xenomai.org>
+ <31528751-5b7a-93ea-dca3-667377ac14ea@xenomai.org>
+ <09587ae1-4a76-5a44-e435-63ddc0d05c7d@xenomai.org>
+From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Message-ID: <41b1636f-ddc4-fc3d-3251-f0efa68312a3@alaxarxa.net>
+Date: Fri, 22 Dec 2017 17:25:05 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <09587ae1-4a76-5a44-e435-63ddc0d05c7d@xenomai.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Subject: [Xenomai]  bad syscall / Illegal instruction on arm
+Subject: Re: [Xenomai] RTnet fixes - testers needed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,33 +19,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "=?utf-8?Q?Xenomai=40xenomai.org?=" <Xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Andreas Glatz <andi.glatz@gmail.com>, xenomai@xenomai.org
 
-Hi
+On 20/12/17 11:47, Philippe Gerum wrote:
+> On 12/20/2017 11:19 AM, Philippe Gerum wrote:
+>> On 12/20/2017 11:17 AM, Philippe Gerum wrote:
+>>> On 12/19/2017 11:17 AM, Andreas Glatz wrote:
+>>>>>
+>>>>> I have pulled wip/rtnet-fixes branch with the last commit of Philippe from Sun
+>>>>> Dec 17 15:27:04 2017 +0100: net/udp: ioctl: fix temp arg buffer type
+>>>>>
+>>>>> I have created the packages and new kernel with the same configuration that I had.
+>>>>>
+>>>>> I run my application, that it's a POSIX application Wrapped and I still have the
+>>>>> same error when I activate SMAP:
+>>>>
+>>>> I see that the page fault occurs in rt_packet_ioctl()... by the looks
+>>>> of this bug it might be similar to the one I found in udp.c (see my
+>>>
+>>> Confirmed, same pattern. The network address is wrongly accessed in
+>>> rt_packet_getsockname().
+>>>
+>>
+>> Likewise for the bind side.
+>>
+> 
+> That one should help fixing the the AF_PACKET layer:
+> 
+> http://git.xenomai.org/xenomai-3.git/commit/?h=wip/rtnet-fixes&id=3e388bcfde6c59bd9ec28bbcdb3757d32f19160b
+> 
+Yes!!!!!
 
-I have problem when I try run any program using Xenomai.
-I get a massege: Illegal instruction and in dmesg i get:
-[Xenomai] bad syscall <0xff7000af>
-[Xenomai] bad syscall <0xff7000ae>
-[Xenomai] bad syscall <0xff7000af>
-[Xenomai] bad syscall <0xff7000f0>
-[Xenomai] bad syscall <0xff700005>
-[Xenomai] bad syscall <0xff700092>
-[Xenomai] bad syscall <0xff7000c0>
-[Xenomai] bad syscall <0xff7000af>
-[Xenomai] bad syscall <0xff7000af>
-[Xenomai] bad syscall <0xff700014>
-[Xenomai] bad syscall <0xff7000e0>
-[Xenomai] bad syscall <0xff70010c>
-[Xenomai] bad syscall <0xff7000af>
-[Xenomai] bad syscall <0xff7000ae>
-[Xenomai] bad syscall <0xff7000af>
-[Xenomai] bad syscall <0xff700014>
-[Xenomai] bad syscall <0xff7000e0>
-[Xenomai] bad syscall <0xff70010c>
-[Xenomai] bad syscall <0xff7000af>
+fixed. I can run my program and it doesn't crash. And SMAP is enabled!!!
 
-I have Xenomai 3.0.6 and kernel 4.1.21 on rpi3 (arm).
+Good job,
 
-Best Regards
-Piotr
+Leopold
+
+-- 
+--
+Linux User 152692     GPG: 05F4A7A949A2D9AA
+Catalonia
+-------------------------------------
+A: Because it messes up the order in which people normally read text.
+Q: Why is top-posting such a bad thing?
+A: Top-posting.
+Q: What is the most annoying thing in e-mail?
+
