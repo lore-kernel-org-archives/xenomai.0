@@ -1,11 +1,14 @@
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Message-ID: <e6866402-6522-b207-d686-1e690a93448d@alaxarxa.net>
-Date: Thu, 30 Nov 2017 11:25:55 +0100
+Date: Wed, 27 Dec 2017 08:49:58 +0800
+From: Peng Fan <van.freenix@gmail.com>
+Message-ID: <20171227004958.GA28163@shlinux2>
+References: <20171218022628.diwrxfzjqmuqvgml@linux-u7w5.ap.freescale.net>
+ <20171220064953.dixpj2btify6wn5g@linux-u7w5.ap.freescale.net>
+ <c51108d7-aa10-f721-60d6-9f0396ad75e7@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] [PATCH] Fix compilation issues for the rest of RTNet
-	drives
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c51108d7-aa10-f721-60d6-9f0396ad75e7@xenomai.org>
+Subject: Re: [Xenomai] xenomai cyclictest negative Max value
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,22 +17,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai List <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-SGksCgp0aGlzIHBhdGNoIGxldHMgY29tcGlsZSBSVE5FVCBkcml2ZXJzIHdpdGggMy4wLjYgKGtl
-cm5lbCA0LjkuNTEpLiBJIGhhdmUgZG9uZQp0aGUgc2FtZSBwcm9jZWR1cmUgYXMgUm9iZXJ0IExh
-bmdlIGRpZCBiZWZvcmUuCgpMZW9wb2xkCgotLSAKLS0KTGludXggVXNlciAxNTI2OTIgICAgIEdQ
-RzogMDVGNEE3QTk0OUEyRDlBQQpDYXRhbG9uaWEKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLQpBOiBCZWNhdXNlIGl0IG1lc3NlcyB1cCB0aGUgb3JkZXIgaW4gd2hpY2ggcGVv
-cGxlIG5vcm1hbGx5IHJlYWQgdGV4dC4KUTogV2h5IGlzIHRvcC1wb3N0aW5nIHN1Y2ggYSBiYWQg
-dGhpbmc/CkE6IFRvcC1wb3N0aW5nLgpROiBXaGF0IGlzIHRoZSBtb3N0IGFubm95aW5nIHRoaW5n
-IGluIGUtbWFpbD8KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9u
-LXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogMDAwNy1ydG5ldC1kcml2ZXIt
-Zml4LWNvbXBpbGF0aW9uLWRyaXZlcnMucGF0Y2gKVHlwZTogdGV4dC94LXBhdGNoClNpemU6IDEx
-ODI2IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3Bp
-cGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTcxMTMwL2ZiMTIwZjQzL2F0dGFjaG1lbnQu
-YmluPgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBh
-dHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxp
-Y2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogODMzIGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRh
-bCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0
-dGFjaG1lbnRzLzIwMTcxMTMwL2ZiMTIwZjQzL2F0dGFjaG1lbnQuc2lnPgo=
+On Wed, Dec 20, 2017 at 11:07:18AM +0100, Philippe Gerum wrote:
+>On 12/20/2017 07:49 AM, Peng Fan wrote:
+>> On Mon, Dec 18, 2017 at 10:26:28AM +0800, Peng Fan wrote:
+>>> Hi All,
+>>>
+>>> I compiled xenomai-next on my ARM64 platform, but met Max and Avg not correct.
+>>> See below:
+>>>
+>>> ./cyclictest -a -t10 -n -p99 -c 0
+>>> # /dev/cpu_dma_latency set to 0us
+>>> policy: fifo: loadavg: 0.97 0.51 0.21 1/135 3018
+>>> policy: fifo: loadavg: 1.00 0.76 0.38 1/128 3018
+>>> T:[  200.650323] random: crng init done      0 Act:    0 Avg:443149053456561 Max:      -1
+>>> T: 0 ( 3002) P:99 I:1000 C: 373066 Min:      0 Act:    0 Avg:395570629834068 Max:      -11
+>>> T: 1 ( 3003) P:99 I:1500 C: 248710 Min:      0 Act:    0 Avg:148339383810136 Max:      -111
+>>> T: 2 ( 3004) P:99 I:2000 C: 186532 Min:      0 Act:    0 Avg:593359125738518 Max:      -1
+>>> T: 3 ( 3005) P:99 I:2500 C: 149359 Min:      0 Act:    0 Avg:123506076458128 Max:      -11
+>>> T: 4 ( 3006) P:99 I:3000 C: 124465 Min:      0 Act:    0 Avg:592833136181562 Max:      -1
+>>> T: 5 ( 3007) P:99 I:3500 C: 106684 Min:      0 Act:    0 Avg:172910127795260 Max:      -111
+>>> T: 6 ( 3008) P:99 I:4000 C:  93349 Min:      0 Act:    0 Avg:1383273613171719 Max:      -1
+>>> T: 7 ( 3009) P:99 I:4500 C:  82977 Min:      0 Act:    0 Avg:666934598998863 Max:      -1
+>>> T: 8 ( 3010) P:99 I:5000 C:  74679 Min:      0 Act:    0 Avg:988055226969271 Max:      -11
+>>>
+>>> Seems xenomai cyclictest and rt-tests cyclictest is not sync, or there are
+>>> some differecense. Could you please help me clarify what's the difference
+>>> between xenomai cyclictest and rt-tests cyclictest?  I did not find out which
+>>> exact commit number when importing rt-tests cyclictest to xenomai.
+>> 
+>> I add a debug info in cyclictest.c, see below:
+>> 
+>> diff --git a/demo/posix/cyclictest/cyclictest.c b/demo/posix/cyclictest/cyclictest.c
+>> index 31d9e5d0b..b16321cd9 100644
+>> --- a/demo/posix/cyclictest/cyclictest.c
+>> +++ b/demo/posix/cyclictest/cyclictest.c
+>> @@ -920,6 +920,11 @@ void *timerthread(void *param)
+>>                         diff = calcdiff_ns(now, next);
+>>                 else
+>>                         diff = calcdiff(now, next);
+>> +
+>> +               if (diff == -1) {
+>> +                       printf("==== %ld %ld %ld %ld\n", now.tv_sec, now.tv_nsec, next.tv_sec, next.tv_nsec);
+>> +                       exit(0);
+>> +               }
+>>                 if (diff < stat->min)
+>>                         stat->min = diff;
+>>                 if (diff > stat->max) {
+>> 
+>> And I encounter the case that diff is -1,
+>> "==== 16124 21743627 16124 21744638"
+>> only 1ns difference between now and next.
+>> This means clock_nanosleep wakeup earlier than expected?
+>> I am using 4.9.51 kernel, and xenomai-next on ARM64. I am tracking
+>> the hrtimer things, but no good progress. Please advise, if you any ideas.
+>> 
+>
+>You need to calibrate the core timer with the "autotune" utility. Some
+>details available here:
+>
+>https://xenomai.org/documentation/xenomai-3/html/man1/autotune/index.html
+
+I tried directly run "#autotune". It could fix the negative issue on i.mx6q and
+i.mx7d. But on i.MX8 ARM64, I still could met the issue. Is there something
+more that I could try?
+
+Thanks,
+Peng.
+
+>
+>-- 
+>Philippe.
+
+-- 
+
