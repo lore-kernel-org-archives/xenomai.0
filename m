@@ -1,10 +1,11 @@
-Date: Tue, 9 Jan 2018 12:22:02 +0100
-From: Henning Schild <henning.schild@siemens.com>
-Message-ID: <20180109122202.1f89c5d5@mmd1pvb1c.ad001.siemens.net>
+Message-ID: <5a54af4c.c768240a.ae588.6b30@mx.google.com>
+Date: Tue, 09 Jan 2018 07:02:14 -0500
+From: Greg Gallagher <greg@embeddedgreg.com>
+In-Reply-To: <20180109122202.1f89c5d5@mmd1pvb1c.ad001.siemens.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Xenomai community meeting 02.02.18
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Xenomai community meeting 02.02.18
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,35 +14,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "Kiszka, Jan" <jan.kiszka@siemens.com>, =?UTF-8?B?U3TDqXBoYW5l?= Ancelot <sancelot@numalliance.com>, Jorge Ramirez <jro@xenomai.org>, =?UTF-8?B?U3TDqXBoYW5l?= LOS <slos@hilscher.com>, Giulio Moro <g.moro@qmul.ac.uk>, Steven Seeger <steven.seeger@nasa.gov>, Leopold Palomo-Avellaneda <leo@alaxarxa.net>, Greg Gallagher <greg@embeddedgreg.com>, Norbert Lange <nolange79@gmail.com>, Dmitriy Cherkasov <dmitriy@oss-tech.org>, "Auel, Kendall" <Kendall.Auel@3DSystems.Com>, Wolfgang Denk <wd@denx.de>, Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, Greg Gallagher <ggallagher31@gmail.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>, Philippe Gerum <rpm@xenomai.org>, "Kiszka, Jan" <jan.kiszka@siemens.com>, =?ISO-8859-1?Q?St=E9phane_Ancelot?= <sancelot@numalliance.com>, Jorge Ramirez <jro@xenomai.org>, =?ISO-8859-1?Q?St=E9phane_LOS?= <slos@hilscher.com>, Giulio Moro <g.moro@qmul.ac.uk>, Steven Seeger <steven.seeger@nasa.gov>, Leopold Palomo-Avellaneda <leo@alaxarxa.net>, Norbert Lange <nolange79@gmail.com>, Dmitriy Cherkasov <dmitriy@oss-tech.org>, "Auel, Kendall" <Kendall.Auel@3DSystems.Com>, Wolfgang Denk <wd@denx.de>, Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, Greg Gallagher <ggallagher31@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+CkknbGwgZGVmaW5pdGVseSBhdHRlbmQgdmlhIFRlbENvLgoKwqAgT3JpZ2luYWwgTWVzc2FnZSDC
+oApGcm9tOiBoZW5uaW5nLnNjaGlsZEBzaWVtZW5zLmNvbQpTZW50OiBKYW51YXJ5IDksIDIwMTgg
+NjoyMiBBTQpUbzogcnBtQHhlbm9tYWkub3JnOyBqYW4ua2lzemthQHNpZW1lbnMuY29tOyBzYW5j
+ZWxvdEBudW1hbGxpYW5jZS5jb207IGpyb0B4ZW5vbWFpLm9yZzsgc2xvc0BoaWxzY2hlci5jb207
+IGcubW9yb0BxbXVsLmFjLnVrOyBzdGV2ZW4uc2VlZ2VyQG5hc2EuZ292OyBsZW9AYWxheGFyeGEu
+bmV0OyBncmVnQGVtYmVkZGVkZ3JlZy5jb207IG5vbGFuZ2U3OUBnbWFpbC5jb207IGRtaXRyaXlA
+b3NzLXRlY2gub3JnOyBLZW5kYWxsLkF1ZWxAM0RTeXN0ZW1zLkNvbTsgd2RAZGVueC5kZTsgbHNv
+cmVuc2VAY3NjbHViLnV3YXRlcmxvby5jYTsgZ2dhbGxhZ2hlcjMxQGdtYWlsLmNvbTsgWGVub21h
+aUB4ZW5vbWFpLm9yZwpTdWJqZWN0OiBYZW5vbWFpIGNvbW11bml0eSBtZWV0aW5nIDAyLjAyLjE4
+CgpIaSwKCndlIGhhdmUgYWxyZWFkeSB0YWxrZWQgYWJvdXQgdGhlICJlbGVwaGFudCBpbiB0aGUg
+cm9vbSIgYW5kIGluIHRoYXQKdGhyZWFkIHdlIGFsc28gdGFsa2VkIGFib3V0IGEgZmFjZS10by1m
+YWNlIG1lZXRpbmcgb2YgY3VycmVudCBhbmQKZnV0dXJlIG1haW50YWluZXJzLCBjb250cmlidXRl
+cnMgYW5kIHVzZXJzLgoKV2UgaGF2ZSBub3cgYWdyZWVkIG9uIGEgdGltZSBhbmQgcGxhY2UgZm9y
+IHRoaXMgbWVldGluZywgYW5kIGkgd2FudCB0bwphbm5vdW5jZSBpdCBhbmQgaW52aXRlIHRoZSB3
+aG9sZSBjb21tdW5pdHkgdG8gaXQuCgpXaGVyZTogc29tZXdoZXJlIGluIEJydXNzZWxzIChkZXRh
+aWxzIHdpbGwgZm9sbG93KQrCoMKgwqDCoMKgwqAgYW5kIHJlbW90ZWx5LCBUZWxDbyBsaW5rIHdp
+bGwgYmUgcHVibGlzaGVkCldoZW46IDAyLjAyLjE4IDEzOjAwLTE4OjAwIChDRVQpCldoYXQ6IHdl
+IGRvIG5vdCBoYXZlIGEgY2xlYXIgYWdlbmRhIHlldCwgYnV0IHRoZXJlIGlzIHByb2JhYmx5IGVu
+b3VnaArCoMKgwqDCoMKgIG1hdGVyaWFsIHRvIGZpbGwgdGhlIHRpbWVzbG90CkF0dGVuZGVlczog
+UGhpbGlwcGUgR2VydW0sIEphbiBLaXN6a2EgYW5kIG15c2VsZiB3aWxsIGJlIHRoZXJlLCB5b3Ug
+YXMKwqDCoMKgwqDCoMKgwqDCoMKgwqAgd2VsbD8KClRoYXQgbWVldGluZyBpcyBjb2xvY2F0ZWQg
+d2l0aCBodHRwczovL2Zvc2RlbS5vcmcvMjAxOC8gaWYgeW91IGFyZQpwbGFubmluZyB0byBhdHRl
+bmQgaW4gcGVyc29uLCBrZWVwIHRoYXQgaW4gbWluZCBhbmQgbWF5YmUgc3RheSB0aGUKd2Vla2Vu
+ZC4gSmFuIGFuZCBtZSB3aWxsIGJlIGFyb3VuZCB1bnRpbCBTdW5kYXkgYWZ0ZXJub29uLCBQaGls
+bGlwcGUKd2lsbCBsZWF2ZSBCcnVzc2VscyBvbiBTYXR1cmRheS4KClNvcnJ5IGZvciB0aGUgc2hv
+cnQgbm90aWNlLCBpIHN0aWxsIGhvcGUgbW9yZSBwZW9wbGUgd2lsbCBhdHRlbmQgaW4KcGVyc29u
+IG9yIGF0IGxlYXN0IGluIHRoZSBUZWxDby4gV2Ugd2lsbCByZW50IGEgY293b3JraW5nIHNwYWNl
+IGZvciB0aGUKbWVldGluZywgc28gdGhlIGxvY2F0aW9uIGRlcGVuZHMgb24gdGhlIG51bWJlciBv
+ZiBwYXJ0aWNpcGFudHMuCklmIHlvdSB3YW50IHRvIHBhcnRpY2lwYXRlIHBsZWFzZSBhbnN3ZXIg
+dGhpcyBtYWlsIGJlZm9yZSAwMS8yNC8xOC4KCkxvb2tpbmcgZm9yd2FyZCB0byB0aGUgbWVldGlu
+ZyEKSGVubmluZwo=
 
-we have already talked about the "elephant in the room" and in that
-thread we also talked about a face-to-face meeting of current and
-future maintainers, contributers and users.
-
-We have now agreed on a time and place for this meeting, and i want to
-announce it and invite the whole community to it.
-
-Where: somewhere in Brussels (details will follow)
-       and remotely, TelCo link will be published
-When: 02.02.18 13:00-18:00 (CET)
-What: we do not have a clear agenda yet, but there is probably enough
-      material to fill the timeslot
-Attendees: Philippe Gerum, Jan Kiszka and myself will be there, you as
-           well?
-
-That meeting is colocated with https://fosdem.org/2018/ if you are
-planning to attend in person, keep that in mind and maybe stay the
-weekend. Jan and me will be around until Sunday afternoon, Phillippe
-will leave Brussels on Saturday.
-
-Sorry for the short notice, i still hope more people will attend in
-person or at least in the TelCo. We will rent a coworking space for the
-meeting, so the location depends on the number of participants.
-If you want to participate please answer this mail before 01/24/18.
-
-Looking forward to the meeting!
-Henning
 
