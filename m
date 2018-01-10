@@ -1,17 +1,11 @@
-References: <a01aeee1-306e-ba93-2a57-02a744f0e818@utpvision.it>
- <24f99f30-49c9-c4e7-5409-ac64b0f2894b@alaxarxa.net>
- <21c4631c-0003-0490-6ea7-c3afa6741ada@utpvision.it>
- <e2e995ad-c134-828a-341e-b60ee7e4fef1@alaxarxa.net>
- <7d5898c3-c36f-f4d7-d412-82c047ba3eee@utpvision.it>
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Message-ID: <546bb397-6ad4-1aff-80df-6f454ed4d1c1@alaxarxa.net>
-Date: Wed, 10 Jan 2018 15:24:18 +0100
+From: Fazio Maurizio <maurizio.fazio@leonardocompany.com>
+Date: Wed, 10 Jan 2018 16:16:37 +0000
+Message-ID: <266d7c1efc534a3284787e54599e952b@ocnapvsw3301.ocr.priv>
+Content-Language: it-IT
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <7d5898c3-c36f-f4d7-d412-82c047ba3eee@utpvision.it>
-Content-Type: text/plain; charset=utf-8
-Content-Language: ca-ES
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 3.0.6 doesn't build the patched kernel
+Subject: [Xenomai] Xenomai 3.0.6 - ipipe-3.18.20 - kernel build error
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,32 +14,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Simone M. Zucchi" <simone.zucchi@utpvision.it>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10/01/18 15:17, Simone M. Zucchi wrote:
-> 
->> I think that you are using a version of xenomai not patched for this issue.
->>
-> maybe we're talking about different issues? 
-
-- did you follow more or less my instruccions?
-- what steps did you do to have that error?
-- what kind of environment do you have?
-
-
-What your patches do exactly?
-
-as I mentioned before:
-
-
-0005-do-not-require-SYS3264-when-reading-syscall-defs.patch
--- 
---
-Linux User 152692     GPG: 05F4A7A949A2D9AA
-Catalonia
--------------------------------------
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
+SGVsbG8sDQpJIGhhdmUgc29tZSBwcm9ibGVtcyBpbiBidWlsZGluZyB0aGUgMy4xOC4yMCBzdGFi
+bGUga2VybmVsIHBhdGNoZWQgd2l0aCBYZW5vbWFpIDMuMC42IC0gQ29iYWx0IC0gaXBpcGUtY29y
+ZS0zLjE4LjIwLXg4Ni05LnBhdGNoDQpUaGUgaW5zdGFsbGVkIG9wZXJhdGluZyBzeXN0ZW0gaXMg
+Q2VudG9zIDcuIFRoZSBzYW1lIGtlcm5lbCBwYXRjaGVkIHVzaW5nIFhlbm9tYWkgMy4wLjUgYW5k
+IHRoZSBzYW1lIGlwaXBlIHBhdGNoIHdvcmtzIHdpdGhvdXQgYW55IHByb2JsZW1zLg0KDQpUaGUg
+Zm9sbG93aW5nIGxpbmVzIGFyZSB0aGUgZXJyb3JzIGR1cmluZyB0aGUga2VybmVsIGJ1aWxkaW5n
+DQoNCkluIGZpbGUgaW5jbHVkZWQgZnJvbSBrZXJuZWwveGVub21haS9idWZkLmM6MjM6MDoNCmFy
+Y2gveDg2L3hlbm9tYWkvaW5jbHVkZS9hc20veGVub21haS9zeXNjYWxsLmg6IEluIGZ1bmN0aW9u
+IOKAmF9feG5fZ2V0X3N5c2NhbGxfbuKAmToNCmFyY2gveDg2L3hlbm9tYWkvaW5jbHVkZS9hc20v
+eGVub21haS9zeXNjYWxsLmg6NjA6MjogZXJyb3I6IGltcGxpY2l0IGRlY2xhcmF0aW9uIG9mIGZ1
+bmN0aW9uIOKAmF9fQ09CQUxUX0NBTEwzMl9TWVNOUuKAmSBbLVdlcnJvcj1pbXBsaWNpdC1mdW5j
+dGlvbi1kZWNsYXJhdGlvbl0NCiByZXR1cm4gX194bl9zeXNjYWxsX3AocmVncykgPyBfX3huX3N5
+c2NhbGwocmVncykNCg0KSW4gZmlsZSBpbmNsdWRlZCBmcm9tIGFyY2gveDg2L3hlbm9tYWkvbWFj
+aGluZS5jOjIyOjA6DQphcmNoL3g4Ni94ZW5vbWFpL2luY2x1ZGUvYXNtL3hlbm9tYWkvc3lzY2Fs
+bC5oOiBJbiBmdW5jdGlvbiDigJhfX3huX2dldF9zeXNjYWxsX27igJk6DQphcmNoL3g4Ni94ZW5v
+bWFpL2luY2x1ZGUvYXNtL3hlbm9tYWkvc3lzY2FsbC5oOjYwOjI6IGVycm9yOiBpbXBsaWNpdCBk
+ZWNsYXJhdGlvbiBvZiBmdW5jdGlvbiDigJhfX0NPQkFMVF9DQUxMMzJfU1lTTlLigJkgWy1XZXJy
+b3I9aW1wbGljaXQtZnVuY3Rpb24tZGVjbGFyYXRpb25dDQogcmV0dXJuIF9feG5fc3lzY2FsbF9w
+KHJlZ3MpID8gX194bl9zeXNjYWxsKHJlZ3MpDQoNClRoZSBvbmx5IGRpZmZlcmVuY2UgaXMgdGhl
+IG5ldyByZWxlYXNlIG9mIFhlbm9tYWkgMy4wLjYgaW5zdGVhZCBvZiB0aGUgb2xkZXIgMy4wLjUg
+dmVyc2lvbi4uLg0KDQpUaGFua3MgaW4gYWR2YW5jZQ0KDQpNYXVyaXppbyBGYXppbw0KDQpDaGll
+ZiBUZWNobmljYWwgT2ZmaWNlIC8gQWlyY3JhZnQgU3lzdGVtcw0KU29mdHdhcmUgRW5naW5lZXIN
+Cg0KDQoNCkxlb25hcmRvIFMucC5BLg0KQy5zbyBGcmFuY2lhLCA0MjYgLSBUb3Jpbm8gLSAxMDE0
+NiAtIEl0YWx5DQpUZWwuICszOSAwMTEgNzU2IDMzMDggLyAzNzYxDQoNCm1hdXJpemlvLmZhemlv
+QGxlb25hcmRvY29tcGFueS5jb20NCnd3dy5sZW9uYXJkb2NvbXBhbnkuY29tDQoNCuKAlOKAlOKA
+lOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKA
+lOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAk+KAlOKAlOKAlOKAlOKAlOKAlA0KSEVM
+SUNPUFRFUlMvQUVST05BVVRJQ1MvRUxFQ1RST05JQ1MsIERFRkVOQ0UgJiBTRUNVUklUWSBTWVNU
+RU1TL1NQQUNFDQrigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTi
+gJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJPigJTi
+gJTigJTigJTigJTigJQNCg0KDQoNCklsIHByZXNlbnRlIG1lc3NhZ2dpbyBlLW1haWwgZSBvZ25p
+IHN1byBhbGxlZ2F0byBkZXZvbm8gaW50ZW5kZXJzaSBpbmRpcml6emF0aSBlc2NsdXNpdmFtZW50
+ZSBhbCBkZXN0aW5hdGFyaW8gaW5kaWNhdG8gZSBjb25zaWRlcmFyc2kgZGFsIGNvbnRlbnV0byBz
+dHJldHRhbWVudGUgcmlzZXJ2YXRvIGUgY29uZmlkZW56aWFsZS4gU2Ugbm9uIHNpZXRlIGwnZWZm
+ZXR0aXZvIGRlc3RpbmF0YXJpbyBvIGF2ZXRlIHJpY2V2dXRvIGlsIG1lc3NhZ2dpbyBlLW1haWwg
+cGVyIGVycm9yZSwgc2lldGUgcHJlZ2F0aSBkaSBhdnZlcnRpcmUgaW1tZWRpYXRhbWVudGUgaWwg
+bWl0dGVudGUgZSBkaSBjYW5jZWxsYXJlIGlsIHN1ZGRldHRvIG1lc3NhZ2dpbyBlIG9nbmkgc3Vv
+IGFsbGVnYXRvIGRhbCB2b3N0cm8gc2lzdGVtYSBpbmZvcm1hdGljby4gUXVhbHNpYXNpIHV0aWxp
+enpvLCBkaWZmdXNpb25lLCBjb3BpYSBvIGFyY2hpdmlhemlvbmUgZGVsIHByZXNlbnRlIG1lc3Nh
+Z2dpbyBkYSBwYXJ0ZSBkaSBjaGkgbm9uIG5lIMOoIGlsIGRlc3RpbmF0YXJpbyDDqCBzdHJldHRh
+bWVudGUgcHJvaWJpdG8gZSBwdcOyIGRhciBsdW9nbyBhIHJlc3BvbnNhYmlsaXTDoCBkaSBjYXJh
+dHRlcmUgY2l2aWxlIGUgcGVuYWxlIHB1bmliaWxpIGFpIHNlbnNpIGRpIGxlZ2dlLg0KUXVlc3Rh
+IGUtbWFpbCBoYSB2YWxvcmUgbGVnYWxlIHNvbG8gc2UgZmlybWF0YSBkaWdpdGFsbWVudGUgYWkg
+c2Vuc2kgZGVsbGEgbm9ybWF0aXZhIHZpZ2VudGUuDQoNClRoZSBjb250ZW50cyBvZiB0aGlzIGVt
+YWlsIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBhcmUgaW50ZW5kZWQgc29sZWx5IGZvciB0
+aGUgYWRkcmVzc2VlKHMpIGFuZCBjb250YWluIGNvbmZpZGVudGlhbCBhbmQvb3IgcHJpdmlsZWdl
+ZCBpbmZvcm1hdGlvbi4NCklmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQgb2Yg
+dGhpcyBtZXNzYWdlLCBvciBpZiB0aGlzIG1lc3NhZ2UgaGFzIGJlZW4gYWRkcmVzc2VkIHRvIHlv
+dSBpbiBlcnJvciwgcGxlYXNlIGltbWVkaWF0ZWx5IG5vdGlmeSB0aGUgc2VuZGVyIGFuZCB0aGVu
+IGRlbGV0ZSB0aGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBmcm9tIHlvdXIgc3lzdGVt
+LiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBu
+b3RpZmllZCB0aGF0IGFueSB1c2UsIGRpc3NlbWluYXRpb24sIGNvcHlpbmcsIG9yIHN0b3JhZ2Ug
+b2YgdGhpcyBtZXNzYWdlIG9yIGl0cyBhdHRhY2htZW50cyBpcyBzdHJpY3RseSBwcm9oaWJpdGVk
+LiBVbmF1dGhvcml6ZWQgZGlzY2xvc3VyZSBhbmQvb3IgdXNlIG9mIGluZm9ybWF0aW9uIGNvbnRh
+aW5lZCBpbiB0aGlzIGVtYWlsIG1lc3NhZ2UgbWF5IHJlc3VsdCBpbiBjaXZpbCBhbmQgY3JpbWlu
+YWwgbGlhYmlsaXR5LiDigJwNClRoaXMgZS1tYWlsIGhhcyBsZWdhbCB2YWx1ZSBhY2NvcmRpbmcg
+dG8gdGhlIGFwcGxpY2FibGUgbGF3cyBvbmx5IGlmIGl0IGlzIGRpZ2l0YWxseSBzaWduZWQgYnkg
+dGhlIHNlbmRlcg0K
 
