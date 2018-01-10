@@ -1,15 +1,12 @@
-From: MINIER Bertrand <Bertrand.MINIER@sercel.com>
-Date: Tue, 30 Jan 2018 15:07:24 +0000
-Message-ID: <e7ceff746b384a7d8cdae546f104cdab@NANS01204.it.intra.sercel.com>
-References: <df27493b419a4ff4a603ddc503201523@NANS01204.it.intra.sercel.com>
- <CALLqZ8Tm90Wyg2-5qwxJfVL64ORrhBFCLCGHLiv2BsPpMjx97Q@mail.gmail.com>
-In-Reply-To: <CALLqZ8Tm90Wyg2-5qwxJfVL64ORrhBFCLCGHLiv2BsPpMjx97Q@mail.gmail.com>
-Content-Language: fr-FR
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Writing to UDD driver through mapped memory cause
- secondary mode switch
+In-Reply-To: <266d7c1efc534a3284787e54599e952b@ocnapvsw3301.ocr.priv>
+References: <266d7c1efc534a3284787e54599e952b@ocnapvsw3301.ocr.priv>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Wed, 10 Jan 2018 12:09:39 -0500
+Message-ID: <CALLqZ8S5LHPi+5qAGfiCVQOyAnK+bTjhK2Mxt1vqQei6jbfq_A@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Xenomai 3.0.6 - ipipe-3.18.20 - kernel build error
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,55 +15,102 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>
+To: Fazio Maurizio <maurizio.fazio@leonardocompany.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGVsbG8gR3JlZywNCg0KSSBkaWRuJ3Qgc3VjY2VlZCB0byBzb2x2ZSB0aGlzIGlzc3VlLg0KVGhl
-IHN3aXRjaCB0byBzZWNvbmRhcnkgbW9kZSBvbmx5IGhhcHBlbiBvbiB0aGUgZmlyc3Qgd3JpdGUg
-dG8gdGhlIG1lbW9yeSBtYXBwZWQgYXJlYS4gQXMgZmFyIGFzIEkgdW5kZXJzdG9vZCwgdGhlIHNl
-Y29uZGFyeSBtb2RlIHN3aXRjaCBpcyBjYXVzZWQgYnkgYSBwYWdlIGZhdWx0Lg0KSSB3b3JrYXJv
-dW5kIGl0IGJ5IGRvaW5nIGEgZHVtbXkgd3JpdGUganVzdCBhZnRlciB0aGUgbW1hcCgpIGNhbGws
-IHdoaWNoIGFueXdheSB0cmlnZ2VyIGEgc3dpdGNoIHRvIHNlY29uZGFyeSBtb2RlLg0KQWZ0ZXIg
-dGhpcyBmaXJzdCBkdW1teSB3cml0ZSwgbXkgcnQgdGhyZWFkIGRvZXNuJ3Qgc3dpdGNoIGFueW1v
-cmUgdG8gc2Vjb25kYXJ5IG1vZGUuDQoNCkkgdXNlZCB0aGUgZG9jdW1lbnRhdGlvbiB5b3UgcG9p
-bnQgYnV0IEkgZGlkbid0IGZvdW5kIGFueSBoZWxwIGZvciB0aGlzIGlzc3VlLg0KDQpCZXN0IHJl
-Z2FyZHMsDQoNCkJlcnRyYW5kDQoNCg0KLS0tLS1NZXNzYWdlIGQnb3JpZ2luZS0tLS0tDQpEZSA6
-IEdyZWcgR2FsbGFnaGVyIFttYWlsdG86Z3JlZ0BlbWJlZGRlZGdyZWcuY29tXQ0KRW52b3nDqSA6
-IHZlbmRyZWRpIDI2IGphbnZpZXIgMjAxOCAyMTo0Mw0Kw4AgOiBNSU5JRVIgQmVydHJhbmQNCkNj
-IDogeGVub21haUB4ZW5vbWFpLm9yZw0KT2JqZXQgOiBSZTogW1hlbm9tYWldIFdyaXRpbmcgdG8g
-VUREIGRyaXZlciB0aHJvdWdoIG1hcHBlZCBtZW1vcnkgY2F1c2Ugc2Vjb25kYXJ5IG1vZGUgc3dp
-dGNoDQoNClNvcnJ5IHRvIGJyaW5nIGJhY2sgYW4gb2xkIHRocmVhZCBidXQgSSBqdXN0IG5vdGlj
-ZWQgdGhpcy4gIERpZCB5b3Ugc29sdmUgeW91ciBpc3N1ZT8gIERpZCB5b3UgdXNlIHRoZSBkb2N1
-bWVudGF0aW9uIGluIHRoaXMgZmlsZSBmb3IgaGVscD8gaHR0cHM6Ly9naXQueGVub21haS5vcmcv
-eGVub21haS0zLmdpdC90cmVlL2luY2x1ZGUvY29iYWx0L2tlcm5lbC9ydGRtL3VkZC5oP2lkPWY0
-YTU0YjE3M2RiNzFhMTgyZDk4MjY4NTJhOTRiMjBmNjA5NWI0MTENCg0KLUdyZWcNCg0KT24gVGh1
-LCBEZWMgMTQsIDIwMTcgYXQgNjoyMyBBTSwgTUlOSUVSIEJlcnRyYW5kIDxCZXJ0cmFuZC5NSU5J
-RVJAc2VyY2VsLmNvbT4gd3JvdGU6DQo+IEhpLA0KPg0KPiBJIGltcGxlbWVudGVkIGFuIFVERCBk
-cml2ZXIgZm9yIGEgU09DIElQIG9uIG15IFhpbGlueCBVbHRyYXNjYWxlIFpDVTEwMiBib2FyZC4N
-Cj4gVGhlIGFyY2ggaXMgYXJtNjQgc28gSSdtIHVzaW5nIFhlbm9tYWkgZnJvbSB0aGUgbmV4dCBi
-cmFuY2guDQo+DQo+IFdoZW4gSSB0cnkgdG8gd3JpdGUgdG8gdGhlIG1lbW9yeSBtYXBwZWQgZnJv
-bSB0aGUgdXNlciBzcGFjZSBzaWRlLCBYZW5vbWFpIHN3aXRjaGVzIHRvIHNlY29uZGFyeSBtb2Rl
-Lg0KPg0KPiBJIGFjdGl2YXRlZCB0aGUgU0lHREVCVUcgYW5kIGF0dGFjaGVkIGFuIGhhbmRsZXIg
-dG8gcG9pbnQgdGhlIG9yaWdpbiBhbmQgdGhlIHJlYXNvbiBvZiB0aGlzIHNlY29uZGFyeSBtb2Rl
-IHN3aXRjaC4NCj4gVGhlIHJlc3VsdCBvZiBzaWdkZWJ1Z19yZWFzb24oc2lnaW5mbykgaXMgU0lH
-REVCVUdfTUlHUkFURV9GQVVMVC4NCj4NCj4gSSdtIHVzaW5nIG1tYXAgd2l0aCB0aGUgZm9sbG93
-aW5nIGF0dHJpYnV0ZXM6DQo+IG1tYXAoTlVMTCwgNDA5NiwgUFJPVF9SRUFEfFBST1RfV1JJVEUs
-IE1BUF9TSEFSRUQsIGZwZ2FNZW1mZCwgMCk7DQo+DQo+IFRoZSBmaWxlIGRlc2NyaXB0b3IgaXMg
-b3BlbmVkIHdpdGggT19SRFdSIGZsYWcuDQo+DQo+IFdoYXQgaXMgc3RyYW5nZSBpcyB0aGF0IG1l
-bW9yeSB3cml0ZSBlZmZlY3RpdmVseSB3b3JrcyBidXQgdGhlIFNJR0RFQlVHX01JR1JBVEVfRkFV
-TFQgaXMgdHJpZ2dlcmVkLiBSZWFkaW5nIHRoZSBwaHlzaWNhbCBkcml2ZXIgbWVtb3J5IHdpdGgg
-ZGV2bWVtIHJldHVybnMgdGhlIHdyaXR0ZW4gdmFsdWUuDQo+DQo+IERvZXMgYW55b25lIHdvdWxk
-IGhhdmUgYW55IGlkZWEgYWJvdXQgdGhlIG9yaWdpbiBvZiB0aGUgaXNzdWUgPw0KPg0KPiBUaGFu
-a3MsDQo+DQo+IEJlcnRyYW5kIE1pbmllcg0KPg0KPg0KPiBUaGlzIGUtbWFpbCBhbmQgYW55IGFj
-Y29tcGFueWluZyBhdHRhY2htZW50cyBhcmUgY29uZmlkZW50aWFsLiBJZiB5b3UgYXJlIG5vdCB0
-aGUgaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgbXVzdCBub3QgcmV2aWV3LCBkaXNjbG9zZSwgY29w
-eSwgZGlzdHJpYnV0ZSBvciB1c2UgdGhpcyBlLW1haWw7IHBsZWFzZSBkZWxldGUgaXQgZnJvbSB5
-b3VyIHN5c3RlbSBhbmQgbm90aWZ5IHRoZSBzZW5kZXIgaW1tZWRpYXRlbHkuDQo+IF9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo+IFhlbm9tYWkgbWFpbGlu
-ZyBsaXN0DQo+IFhlbm9tYWlAeGVub21haS5vcmcNCj4gaHR0cHM6Ly94ZW5vbWFpLm9yZy9tYWls
-bWFuL2xpc3RpbmZvL3hlbm9tYWkNClRoaXMgZS1tYWlsIGFuZCBhbnkgYWNjb21wYW55aW5nIGF0
-dGFjaG1lbnRzIGFyZSBjb25maWRlbnRpYWwuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCBy
-ZWNpcGllbnQsIHlvdSBtdXN0IG5vdCByZXZpZXcsIGRpc2Nsb3NlLCBjb3B5LCBkaXN0cmlidXRl
-IG9yIHVzZSB0aGlzIGUtbWFpbDsgcGxlYXNlIGRlbGV0ZSBpdCBmcm9tIHlvdXIgc3lzdGVtIGFu
-ZCBub3RpZnkgdGhlIHNlbmRlciBpbW1lZGlhdGVseS4NCg==
+Hi,
+  Can you post more information on how you are building the patched
+kernel?  I'm assuming you are building for x86_64?
+
+Thanks
+
+Greg
+
+On Wed, Jan 10, 2018 at 11:16 AM, Fazio Maurizio
+<maurizio.fazio@leonardocompany.com> wrote:
+> Hello,
+> I have some problems in building the 3.18.20 stable kernel patched with X=
+enomai 3.0.6 - Cobalt - ipipe-core-3.18.20-x86-9.patch
+> The installed operating system is Centos 7. The same kernel patched using=
+ Xenomai 3.0.5 and the same ipipe patch works without any problems.
+>
+> The following lines are the errors during the kernel building
+>
+> In file included from kernel/xenomai/bufd.c:23:0:
+> arch/x86/xenomai/include/asm/xenomai/syscall.h: In function =E2=80=98__xn=
+_get_syscall_n=E2=80=99:
+> arch/x86/xenomai/include/asm/xenomai/syscall.h:60:2: error: implicit decl=
+aration of function =E2=80=98__COBALT_CALL32_SYSNR=E2=80=99 [-Werror=3Dimpl=
+icit-function-declaration]
+>  return __xn_syscall_p(regs) ? __xn_syscall(regs)
+>
+> In file included from arch/x86/xenomai/machine.c:22:0:
+> arch/x86/xenomai/include/asm/xenomai/syscall.h: In function =E2=80=98__xn=
+_get_syscall_n=E2=80=99:
+> arch/x86/xenomai/include/asm/xenomai/syscall.h:60:2: error: implicit decl=
+aration of function =E2=80=98__COBALT_CALL32_SYSNR=E2=80=99 [-Werror=3Dimpl=
+icit-function-declaration]
+>  return __xn_syscall_p(regs) ? __xn_syscall(regs)
+>
+> The only difference is the new release of Xenomai 3.0.6 instead of the ol=
+der 3.0.5 version...
+>
+> Thanks in advance
+>
+> Maurizio Fazio
+>
+> Chief Technical Office / Aircraft Systems
+> Software Engineer
+>
+>
+>
+> Leonardo S.p.A.
+> C.so Francia, 426 - Torino - 10146 - Italy
+> Tel. +39 011 756 3308 / 3761
+>
+> maurizio.fazio@leonardocompany.com
+> www.leonardocompany.com
+>
+> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
+=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
+=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
+=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=93=
+=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94
+> HELICOPTERS/AERONAUTICS/ELECTRONICS, DEFENCE & SECURITY SYSTEMS/SPACE
+> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
+=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
+=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
+=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=93=
+=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94
+>
+>
+>
+> Il presente messaggio e-mail e ogni suo allegato devono intendersi indiri=
+zzati esclusivamente al destinatario indicato e considerarsi dal contenuto =
+strettamente riservato e confidenziale. Se non siete l'effettivo destinatar=
+io o avete ricevuto il messaggio e-mail per errore, siete pregati di avvert=
+ire immediatamente il mittente e di cancellare il suddetto messaggio e ogni=
+ suo allegato dal vostro sistema informatico. Qualsiasi utilizzo, diffusion=
+e, copia o archiviazione del presente messaggio da parte di chi non ne =C3=
+=A8 il destinatario =C3=A8 strettamente proibito e pu=C3=B2 dar luogo a res=
+ponsabilit=C3=A0 di carattere civile e penale punibili ai sensi di legge.
+> Questa e-mail ha valore legale solo se firmata digitalmente ai sensi dell=
+a normativa vigente.
+>
+> The contents of this email message and any attachments are intended solel=
+y for the addressee(s) and contain confidential and/or privileged informati=
+on.
+> If you are not the intended recipient of this message, or if this message=
+ has been addressed to you in error, please immediately notify the sender a=
+nd then delete this message and any attachments from your system. If you ar=
+e not the intended recipient, you are hereby notified that any use, dissemi=
+nation, copying, or storage of this message or its attachments is strictly =
+prohibited. Unauthorized disclosure and/or use of information contained in =
+this email message may result in civil and criminal liability. =E2=80=9C
+> This e-mail has legal value according to the applicable laws only if it i=
+s digitally signed by the sender
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
