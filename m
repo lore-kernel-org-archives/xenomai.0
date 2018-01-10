@@ -1,13 +1,14 @@
-From: Steven Seeger <steven.seeger@nasa.gov>
-Date: Tue, 9 Jan 2018 16:46:56 -0500
-Message-ID: <14438077.UiTS4TEoYY@wirbelwind>
-In-Reply-To: <20180109122202.1f89c5d5@mmd1pvb1c.ad001.siemens.net>
-References: <20180109122202.1f89c5d5@mmd1pvb1c.ad001.siemens.net>
+References: <a01aeee1-306e-ba93-2a57-02a744f0e818@utpvision.it>
+ <24f99f30-49c9-c4e7-5409-ac64b0f2894b@alaxarxa.net>
+From: "Simone M. Zucchi" <simone.zucchi@utpvision.it>
+Message-ID: <21c4631c-0003-0490-6ea7-c3afa6741ada@utpvision.it>
+Date: Wed, 10 Jan 2018 14:04:30 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="US-ASCII"
-Subject: Re: [Xenomai] Xenomai community meeting 02.02.18
-Reply-To: steven.seeger@nasa.gov
+In-Reply-To: <24f99f30-49c9-c4e7-5409-ac64b0f2894b@alaxarxa.net>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Xenomai 3.0.6 doesn't build the patched kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,45 +17,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>
-Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, Greg Gallagher <ggallagher31@gmail.com>, Norbert Lange <nolange79@gmail.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Tuesday, January 9, 2018 6:22:02 AM EST Henning Schild wrote:
-> Hi,
-> 
-> we have already talked about the "elephant in the room" and in that
-> thread we also talked about a face-to-face meeting of current and
-> future maintainers, contributers and users.
-> 
-> We have now agreed on a time and place for this meeting, and i want to
-> announce it and invite the whole community to it.
-> 
-> Where: somewhere in Brussels (details will follow)
->        and remotely, TelCo link will be published
-> When: 02.02.18 13:00-18:00 (CET)
-> What: we do not have a clear agenda yet, but there is probably enough
->       material to fill the timeslot
-> Attendees: Philippe Gerum, Jan Kiszka and myself will be there, you as
->            well?
-> 
-> That meeting is colocated with https://fosdem.org/2018/ if you are
-> planning to attend in person, keep that in mind and maybe stay the
-> weekend. Jan and me will be around until Sunday afternoon, Phillippe
-> will leave Brussels on Saturday.
-> 
-> Sorry for the short notice, i still hope more people will attend in
-> person or at least in the TelCo. We will rent a coworking space for the
-> meeting, so the location depends on the number of participants.
-> If you want to participate please answer this mail before 01/24/18.
-> 
-> Looking forward to the meeting!
-> Henning
+Hello,
+thank you.
+I cloned that git and proceeded the standard way (prepare-kernel.sh) but 
+it fails anyway:
 
-I won't have any way to attend personally, but I may be able to participate 
-remotely. No promises though, as it's a normal workday for me.
-
-Steven
+In file included from kernel/xenomai/bufd.c:23:0:
+arch/x86/xenomai/include/asm/xenomai/syscall.h: In function 
+‘__xn_get_syscall_nr’:
+arch/x86/xenomai/include/asm/xenomai/syscall.h:46:31: error: implicit 
+declaration of function ‘__COBALT_CALL32_SYSNR’ 
+[-Werror=implicit-function-declaration]
+  #define __xn_syscall(regs) __COBALT_CALL32_SYSNR(__xn_reg_sys(regs) \
+                                ^
+arch/x86/xenomai/include/asm/xenomai/syscall.h:60:32: note: in expansion 
+of macro ‘__xn_syscall’
+   return __xn_syscall_p(regs) ? __xn_syscall(regs) :
+                                 ^~~~~~~~~~~~
+cc1: some warnings being treated as errors
+scripts/Makefile.build:293: recipe for target 'kernel/xenomai/bufd.o' failed
+make[3]: *** [kernel/xenomai/bufd.o] Error 1
+scripts/Makefile.build:544: recipe for target 'kernel/xenomai' failed
+make[2]: *** [kernel/xenomai] Error 2
+make[2]: *** Waiting for unfinished jobs....
 
 
 
+I'm using kernel 4.9.51 with its relative ipipe patch...
+Am I doing something wrong?
+Thanks,
+
+Simone
+
+On 01/09/2018 10:24 AM, Leopold Palomo-Avellaneda wrote:
+> On 09/01/18 09:33, Simone M. Zucchi wrote:
+>> Hello everybody,
+>> I've looked up at
+>> https://xenomai.org/pipermail/xenomai/2017-November/037941.html and got the same
+>> situation.
+>> I was wondering if something has moved since November about Debian and 3.0.6.
+>> Thanks,
+> Please,
+>
+> check this repo
+>
+> https://anonscm.debian.org/gitweb/?p=collab-maint/xenomai.git
+>
+> that has the patches to solve this issue
+>
+> Leopold
+>
 
