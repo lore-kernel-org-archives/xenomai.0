@@ -1,14 +1,11 @@
-References: <1517365725-4608-1-git-send-email-greg@embeddedgreg.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <7f31d707-5a9d-8407-d48f-6093d1ccd7f1@xenomai.org>
-Date: Thu, 1 Feb 2018 11:02:27 +0100
+From: Fazio Maurizio <maurizio.fazio@leonardocompany.com>
+Date: Thu, 11 Jan 2018 15:37:40 +0000
+Message-ID: <0e3bd82f06324467932a33ca3ffe4085@ocnapvsw3301.ocr.priv>
+Content-Language: it-IT
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <1517365725-4608-1-git-send-email-greg@embeddedgreg.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] Fix up the imx uart driver so it now compiles
- with new kernels.
+Subject: [Xenomai] Xenomai 3.0.6 high latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,20 +14,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Greg Gallagher <greg@embeddedgreg.com>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 01/31/2018 03:28 AM, Greg Gallagher wrote:
-> This patch is based on one that was submitted by Wolfgang Netbal back in Feb
-> 2016 but a formal patch was never submitted.
-> I added a couple small changes (style errors and imx7 define) and tested on a
-> imx7d board. One quick note, the IMX7D define may not really be needed since
-> most imx7 uarts look to be compatible with imx6.
-
-I would drop this additional definition. DT indeed says that imx7d uarts
-can be handled by the i.MX serial driver as imx6q devices, and
-fsl,imx7d-uart is a mere alias to fsl,imx6q-uart AFAICS in the mainline
-tree up to 4.15.
-
--- 
-Philippe.
+SGVsbG8sIEkganVzdCBpbnN0YWxsZWQgeGVub21haSAzLjAuNiBpbiBhIDMuMTguMjAgcGF0Y2hl
+ZCBrZXJuZWwuDQpUaGUgb3BlcmF0aW5nIHN5c3RlbSBpcyB4ODZfNjQgQ2VudG9zIDcgLg0KDQpJ
+IGV4ZWN1dGVkIHRoZSBsYXRlbmN5IHRlc3QgYW5kIGFmdGVyIGFib3V0IDE1IG1pbnV0ZXMsIHRo
+ZSAgcmVzdWx0IHNob3dzIHRoYXQgdGhlIHdvcnN0IGxhdGVuY3kgdGltZSBpcyAxNDguNTcwIHVz
+Li4uDQoNCkJlZm9yZSB0aGlzIHRlc3QgSSBleGVjdXRlZCB0aGUgYXV0b3R1bmUgYXBwbGljYXRp
+b24gd2l0aCBkZWZhdWx0IG9wdGlvbnMuIEFzIHJlc3VsdCB0aGUgIC9wcm9jL3hlbm9tYWkvY2xv
+Y2svY29yZWNsayBpcyBjb25maWd1cmVkIGFzIGZvbGxvdzoNCg0KZ3Jhdml0eTogaXJxPTAga2Vy
+bmVsPTk5OSB1c2VyPTQ5OQ0KZGV2aWNlczogdGltZXI9bGFwaWMsIGNsb2NrPXRzYw0KIHN0YXR1
+czogb24NCiAgc2V0dXA6IDExMw0KICB0aWNrczogMTc2NTEyMjk2ODk5OTIgKDEwMGQgYmY0Njg4
+ODgpDQoNCkhhdmUgeW91IHNvbWUgYWR2aWNlcz8NCg0KTWF1cml6aW8gRmF6aW8NCg0KQ2hpZWYg
+VGVjaG5pY2FsIE9mZmljZSAvIEFpcmNyYWZ0IFN5c3RlbXMgU29mdHdhcmUgRW5naW5lZXINCg0K
+DQoNCkxlb25hcmRvIFMucC5BLg0KQy5zbyBGcmFuY2lhLCA0MjYgLSBUb3Jpbm8gLSAxMDE0NiAt
+IEl0YWx5IFRlbC4gKzM5IDAxMSA3NTYgMzMwOCAvIDM3NjENCg0KbWF1cml6aW8uZmF6aW9AbGVv
+bmFyZG9jb21wYW55LmNvbQ0Kd3d3Lmxlb25hcmRvY29tcGFueS5jb20NCg0K4oCU4oCU4oCU4oCU
+4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
+4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCT4oCU4oCU4oCU4oCU4oCU4oCUDQpIRUxJQ09Q
+VEVSUy9BRVJPTkFVVElDUy9FTEVDVFJPTklDUywgREVGRU5DRSAmIFNFQ1VSSVRZIFNZU1RFTVMv
+U1BBQ0Ug4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
+4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCT4oCU4oCU4oCU
+4oCU4oCU4oCUDQoNCg0KDQoNCg0KQ29tcGFueSBHZW5lcmFsIFVzZQ0KDQpJbCBwcmVzZW50ZSBt
+ZXNzYWdnaW8gZS1tYWlsIGUgb2duaSBzdW8gYWxsZWdhdG8gZGV2b25vIGludGVuZGVyc2kgaW5k
+aXJpenphdGkgZXNjbHVzaXZhbWVudGUgYWwgZGVzdGluYXRhcmlvIGluZGljYXRvIGUgY29uc2lk
+ZXJhcnNpIGRhbCBjb250ZW51dG8gc3RyZXR0YW1lbnRlIHJpc2VydmF0byBlIGNvbmZpZGVuemlh
+bGUuIFNlIG5vbiBzaWV0ZSBsJ2VmZmV0dGl2byBkZXN0aW5hdGFyaW8gbyBhdmV0ZSByaWNldnV0
+byBpbCBtZXNzYWdnaW8gZS1tYWlsIHBlciBlcnJvcmUsIHNpZXRlIHByZWdhdGkgZGkgYXZ2ZXJ0
+aXJlIGltbWVkaWF0YW1lbnRlIGlsIG1pdHRlbnRlIGUgZGkgY2FuY2VsbGFyZSBpbCBzdWRkZXR0
+byBtZXNzYWdnaW8gZSBvZ25pIHN1byBhbGxlZ2F0byBkYWwgdm9zdHJvIHNpc3RlbWEgaW5mb3Jt
+YXRpY28uIFF1YWxzaWFzaSB1dGlsaXp6bywgZGlmZnVzaW9uZSwgY29waWEgbyBhcmNoaXZpYXpp
+b25lIGRlbCBwcmVzZW50ZSBtZXNzYWdnaW8gZGEgcGFydGUgZGkgY2hpIG5vbiBuZSDDqCBpbCBk
+ZXN0aW5hdGFyaW8gw6ggc3RyZXR0YW1lbnRlIHByb2liaXRvIGUgcHXDsiBkYXIgbHVvZ28gYSBy
+ZXNwb25zYWJpbGl0w6AgZGkgY2FyYXR0ZXJlIGNpdmlsZSBlIHBlbmFsZSBwdW5pYmlsaSBhaSBz
+ZW5zaSBkaSBsZWdnZS4NClF1ZXN0YSBlLW1haWwgaGEgdmFsb3JlIGxlZ2FsZSBzb2xvIHNlIGZp
+cm1hdGEgZGlnaXRhbG1lbnRlIGFpIHNlbnNpIGRlbGxhIG5vcm1hdGl2YSB2aWdlbnRlLg0KDQpU
+aGUgY29udGVudHMgb2YgdGhpcyBlbWFpbCBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJl
+IGludGVuZGVkIHNvbGVseSBmb3IgdGhlIGFkZHJlc3NlZShzKSBhbmQgY29udGFpbiBjb25maWRl
+bnRpYWwgYW5kL29yIHByaXZpbGVnZWQgaW5mb3JtYXRpb24uDQpJZiB5b3UgYXJlIG5vdCB0aGUg
+aW50ZW5kZWQgcmVjaXBpZW50IG9mIHRoaXMgbWVzc2FnZSwgb3IgaWYgdGhpcyBtZXNzYWdlIGhh
+cyBiZWVuIGFkZHJlc3NlZCB0byB5b3UgaW4gZXJyb3IsIHBsZWFzZSBpbW1lZGlhdGVseSBub3Rp
+ZnkgdGhlIHNlbmRlciBhbmQgdGhlbiBkZWxldGUgdGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0YWNo
+bWVudHMgZnJvbSB5b3VyIHN5c3RlbS4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lw
+aWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCBhbnkgdXNlLCBkaXNzZW1pbmF0aW9u
+LCBjb3B5aW5nLCBvciBzdG9yYWdlIG9mIHRoaXMgbWVzc2FnZSBvciBpdHMgYXR0YWNobWVudHMg
+aXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gVW5hdXRob3JpemVkIGRpc2Nsb3N1cmUgYW5kL29yIHVz
+ZSBvZiBpbmZvcm1hdGlvbiBjb250YWluZWQgaW4gdGhpcyBlbWFpbCBtZXNzYWdlIG1heSByZXN1
+bHQgaW4gY2l2aWwgYW5kIGNyaW1pbmFsIGxpYWJpbGl0eS4g4oCcDQpUaGlzIGUtbWFpbCBoYXMg
+bGVnYWwgdmFsdWUgYWNjb3JkaW5nIHRvIHRoZSBhcHBsaWNhYmxlIGxhd3Mgb25seSBpZiBpdCBp
+cyBkaWdpdGFsbHkgc2lnbmVkIGJ5IHRoZSBzZW5kZXINCg==
 
