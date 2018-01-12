@@ -1,14 +1,15 @@
-References: <20180209161313.32524-1-henning.schild@siemens.com>
+References: <0e3bd82f06324467932a33ca3ffe4085@ocnapvsw3301.ocr.priv>
+ <16361_1515687408_5A578DF0_16361_2622_1_ffea3d58-bdb2-cc1b-d3d5-35e8a614477c@utpvision.it>
+ <0728c0c5a202411db337cb9d6f866a22@ocnapvsw3301.ocr.priv>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <8eaf133f-a235-b0c3-0260-c527800d715a@siemens.com>
-Date: Fri, 9 Feb 2018 17:48:22 +0100
+Message-ID: <f44ed317-e90e-472c-8527-4654404781f1@siemens.com>
+Date: Fri, 12 Jan 2018 14:36:35 +0100
 MIME-Version: 1.0
-In-Reply-To: <20180209161313.32524-1-henning.schild@siemens.com>
+In-Reply-To: <0728c0c5a202411db337cb9d6f866a22@ocnapvsw3301.ocr.priv>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] boilerplate: introduce big lock to serialze
- dso init calls
+Subject: Re: [Xenomai] R: Xenomai 3.0.6 high latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,55 +18,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, xenomai@xenomai.org
+To: Fazio Maurizio <maurizio.fazio@leonardocompany.com>, "Simone M. Zucchi" <simone.zucchi@utpvision.it>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2018-02-09 17:13, Henning Schild wrote:
-> When using dlopen() to include xenomai libraries into an application,
-> __xenomai_init could be running in multiple threads at a time. That
-> happens if the application dlopens multiple libs in multiple threads.
-
-So, dlopen itself is thread-safe, but it does not guarantee atomicity
-for the init functions it executes? Or would we run xenomai_init_dso
-manually in that case?
-
+On 2018-01-12 10:51, Fazio Maurizio wrote:
+> Hello,
+> I applied your solution. I launched again the latency test but again worst case was 164us...
+> I monitored the test for a while and I noticed these behaviors:
+> - When I launched the console application the worst latency grew over 100 us...
+> - After a while the monitor has gone to black screen and then I moved the mouse... even in this case  the worst latency grew over 100us
 > 
-> Introduce a big lock to serialize all calls to __xenomai_init.
+> Have you any idea?
 > 
-> Signed-off-by: Henning Schild <henning.schild@siemens.com>
-> ---
->  lib/boilerplate/setup.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/lib/boilerplate/setup.c b/lib/boilerplate/setup.c
-> index f749828b91..653bbae104 100644
-> --- a/lib/boilerplate/setup.c
-> +++ b/lib/boilerplate/setup.c
-> @@ -55,6 +55,9 @@ static int main_init_done;
->  
->  static DEFINE_PRIVATE_LIST(setup_list);
->  
-> +// serialize dlopen() init calls, which come potentially multi-threaded
 
-Style: we use /* */ comments.
+You didn't specify enough details of your hardware platform and
+configuration yet. Maybe the latencies are related to hw effects, thus
+not much that software can contribute to.
 
-> +static pthread_mutex_t dso_init_lock = PTHREAD_MUTEX_INITIALIZER;
-> +
->  static const struct option base_options[] = {
->  	{
->  #define help_opt	0
-> @@ -657,7 +660,9 @@ void xenomai_init(int *argcp, char *const **argvp)
->  
->  void xenomai_init_dso(int *argcp, char *const **argvp)
->  {
-> +	write_lock_nocancel(&dso_init_lock);
->  	__xenomai_init(argcp, argvp, "DSO");
-> +	write_unlock(&dso_init_lock);
->  	trace_me("DSO bootstrap done");
->  }
->  
-> 
+Typical sources:
+ - system management mode (BIOS)
+    -> disable SMI, if possible, via the related Xenomai logic
+ - contentions on graphic operations, specifically with built-in GPUs
+    -> head-less operation, possibly also a different graphic mode
+       (framebuffer instead of DRM)
+ - aggressive power management
+    -> disable in the kernel, watch out for suspicious BIOS settings
+
+Software-related latencies can be identified by using tracing, ftrace
+with event tracing (trace-cmd, kernelshark) or the ipipe function
+tracer. Specifically, use the latency benchmark to stop the latter when
+a new maximum arrives. If you share the trace, the community may help
+with analyzing.
 
 Jan
+
 -- 
 Siemens AG, Corporate Technology, CT RDA IOT SES-DE
 Corporate Competence Center Embedded Linux
