@@ -1,11 +1,15 @@
-From: =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>
-Message-ID: <ecce0e19-a652-0945-19e3-3bbce634a374@numalliance.com>
-Date: Wed, 14 Feb 2018 10:14:45 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: fr
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] rt_pipe_create
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Date: Sat, 13 Jan 2018 16:34:34 +0100
+From: Pierre FICHEUX <pierre.ficheux@smile.fr>
+In-Reply-To: <44tvwmwd0u.fsf@lowell-desk.lan>
+References: <0CF46CB0-D92C-4DCE-B93F-4291374D8328@korgrd.com>
+ <44y3lywp2s.fsf@lowell-desk.lan>
+ <0DC99152-08CA-4152-BE75-CA0CE39D654F@korgrd.com>
+ <44tvwmwd0u.fsf@lowell-desk.lan>
+Message-ID: <83268fef807a6af61181eb55cac6ce4f@smile.fr>
+Subject: Re: [Xenomai] Cobalt core and Yocto
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,26 +18,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Lowell Gilbert <kludge@be-well.ilk.org>
+Cc: xenomai@xenomai.org
 
 Hi,
 
-we discovered abnormal behaviour with rt pipes.
+I did a meta-xenomai layer for Yocto (Morty) and Pi 3.
 
-it is sometimes impossible to write to the pipe, it returns with ENOMEM.
+https://github.com/pficheux/meta-xenomai/tree/morty
 
-This mistake is dependant on the pipe poolsize allocated and the number=20
-of byte size written.
+regards
 
-Is there a minimum size to create a pipe? -- It seems that you have=20
-creation problems (rt_pipe_create) when you ask for a creation with a=20
-small poolsize.
+-- 
+Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
+                              http://www.smile.fr
+                              https://smile.eu/fr/offres/embarque-iot
+I would love to change the world, but they won't give me the source 
+code
 
-
-Best regards,
-
-St=C3=A9phane Ancelot
-
-
-
+Le 2017-12-19 23:47, Lowell Gilbert a écrit :
+> Steve Pavao <stevep@korgrd.com> writes:
+> 
+>> Thanks for that tip.  That’s what I was thinking I might need to do.
+>> 
+>> I guess the solution in Yocto terms is to rework my I-PIPE patch
+>> recipe to not directly apply the I-PIPE patch, but rather to call
+>> prepare-kernel.sh and allow it to apply the patch, plus do the other
+>> things it needs to do.  I guess that should happen in a 
+>> do_configure()
+>> {} block.
+> 
+> That's very much the sort of workflow towards which I was planning to 
+> move.
+> 
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
