@@ -1,24 +1,13 @@
-References: <CAOuPNLjAKofnxqE3F-CAKzPrkNak=-ZQP35L-ZE2aTvYz5ORGw@mail.gmail.com>
- <CALLqZ8R8W7XuOprQ6cxjXU2GWy8+1iw6FV-CfhLr5U1rhkmHig@mail.gmail.com>
- <CAOuPNLi8m_xtxG0cMWJXZHK0Y533fKKmOd1gbA9t-b7CHm3rUQ@mail.gmail.com>
- <CALLqZ8SQp0b6rXxecDaJRqmsCcegUyjzsWjiX28COUrwHY0f1g@mail.gmail.com>
- <CAOuPNLha-XLmhdnp3vcUktrgXOmehMOZNxF72scaiv37xV7-5g@mail.gmail.com>
- <CALLqZ8Tvs8k_356Vcy=FCFBjzu6u3_FfbGEtf_thPKeh_qVMGQ@mail.gmail.com>
- <CAOuPNLhR_na2Kk2U=poywxjAZegR2ahjjQL5HnujEqdq3Z1=kA@mail.gmail.com>
- <486ddc38-4890-0515-0f17-de8d31bbe9fa@web.de>
- <CAOuPNLhqbD=8agrNMPDWFaXKm2RniD_G6FLyNUtC4K9mhPhHRA@mail.gmail.com>
- <198d3b6e-f486-51c1-ef0d-c82461e24a4f@web.de>
- <CAOuPNLhvY_-_ZDxBXJ2GBdiEB1FtKm6i1jDRK4hhsAEx5kLLLA@mail.gmail.com>
- <CAOuPNLi_1NpGz_uNar2xTPTa-g3OC0cj_G4YUgJb6N5rsV4o_g@mail.gmail.com>
- <CAOuPNLiQCtfd_h3tQpKFyg2=z1zZgwJaQw=tf9TmXBEJ6V5VUQ@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <c7cd7331-f757-f5ae-c9c9-b593de6ddc89@web.de>
-Date: Tue, 20 Feb 2018 13:57:23 +0100
+Date: Wed, 17 Jan 2018 11:24:52 +0100
+From: ruggero <rrossi@atb-biomag.de>
+Message-ID: <20180117112452.1bb130c9@laptop.fritz.box>
+In-Reply-To: <aa1018f6-a352-5814-7bf4-0a309d84a88a@ma-info.de>
+References: <b18a880f-9765-86e1-5274-ba8bfb0cc832@xenomai.org>
+ <aa1018f6-a352-5814-7bf4-0a309d84a88a@ma-info.de>
 MIME-Version: 1.0
-In-Reply-To: <CAOuPNLiQCtfd_h3tQpKFyg2=z1zZgwJaQw=tf9TmXBEJ6V5VUQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] [rtnet] - help required with rtnet interface bring up
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] kernel panic xnclock
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,81 +16,168 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pintu Kumar <pintu.ping@gmail.com>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Gaus Bernhard, Dr. Mergenthaler GmbH & Co. KG" <bernhard.gaus@ma-info.de>, rpm@xenomai.org, xenomai@xenomai.org
 
-T24gMjAxOC0wMi0yMCAwNzo0MywgUGludHUgS3VtYXIgd3JvdGU6Cj4gRGVhciBKYW4sCj4gCj4g
-SSBoYWQgdHdvIG5ldHdvcmsgYWRhcHRlciBzZXR1cCBpbiBteSB2aXJ0dWFsIGJveDoKPiBOQVQw
-OiBOQVQgbmV0d29yawo+IE5BVDE6IEhvc3Qtb25seSBhZGFwdGVyCj4gCj4gTm93IEkgcmVtb3Zl
-ZCBOQVQxLCBhbmQgY2hhbmdlZCBOQVQwIHRvIEhvc3Qgb25seSB0eXBlCj4gU28sIG5vdyBJIGp1
-c3QgaGF2ZSBvbmx5IG9uZSBldGhlcm5ldCBpbnRlcmZhY2UgKGV0aDApLgo+IAo+IEFmdGVyIHRo
-aXMgaWYgSSBpbnN0YWxsIFJUbmV0LCBydGV0aDAgaXMgdXAsIGJ1dCBzdGlsbCBpdCBkb2VzIG5v
-dAo+IGNvbm5lY3QgdG8gdGhlIGhvc3QgUEMuCj4gKEkgY2Fubm90IHBpbmcgdGhlIElQIGFkZHJl
-c3MgZnJvbSBob3N0KS4KPiAKPiBOb3RlOiBUaGUgaXAgYWRkcmVzcyBpcyB2aXNpYmxlIG9ubHkg
-aW4gdm5pYzAgYW5kIG5vdCBpbiBydGV0aDAuCj4gCj4gQW5kIEkgc3RpbGwgZ2V0IHRoZSBrZXJu
-ZWwgZXJyb3JzIGZsb29kZWQ6Cj4gWzU4NzEwLjQzODU1Ml0gUlRjZmc6IGVycm9yIC0xMSB3aGls
-ZSBzZW5kaW5nIHN0YWdlIDEgZnJhbWUKPiBbNTg3MTAuNDM4NTg1XSBSVGNmZzogZXJyb3IgLTEx
-IHdoaWxlIHNlbmRpbmcgc3RhZ2UgMSBmcmFtZQo+IFs1ODcxMC40Mzg2MDJdIFJUY2ZnOiBlcnJv
-ciAtMTEgd2hpbGUgc2VuZGluZyBzdGFnZSAxIGZyYW1lCj4gLi4uLi4KPiAKPiBQbGVhc2UgbGV0
-IG1lIGtub3cgaWYgSSBhbSBtaXNzaW5nIHNvbWV0aGluZy4KPiAKPiBIZXJlIGlzIHRoZSBvdXRw
-dXQgZnJvbSBpZmNvbmZpZzoKPiAKPiBwaW50dUBvc2JveGVzOn4kIGlmY29uZmlnCj4gbG8gICAg
-ICAgIExpbmsgZW5jYXA6TG9jYWwgTG9vcGJhY2sKPiAgICAgICAgICAgaW5ldCBhZGRyOjEyNy4w
-LjAuMSAgTWFzazoyNTUuMC4wLjAKPiAgICAgICAgICAgaW5ldDYgYWRkcjogOjoxLzEyOCBTY29w
-ZTpIb3N0Cj4gICAgICAgICAgIFVQIExPT1BCQUNLIFJVTk5JTkcgIE1UVTo2NTUzNiAgTWV0cmlj
-OjEKPiAgICAgICAgICAgUlggcGFja2V0czo0MiBlcnJvcnM6MCBkcm9wcGVkOjAgb3ZlcnJ1bnM6
-MCBmcmFtZTowCj4gICAgICAgICAgIFRYIHBhY2tldHM6NDIgZXJyb3JzOjAgZHJvcHBlZDowIG92
-ZXJydW5zOjAgY2FycmllcjowCj4gICAgICAgICAgIGNvbGxpc2lvbnM6MCB0eHF1ZXVlbGVuOjEK
-PiAgICAgICAgICAgUlggYnl0ZXM6NDU5NCAoNC41IEtCKSAgVFggYnl0ZXM6NDU5NCAoNC41IEtC
-KQo+IAo+IHJ0ZXRoMCAgICBMaW5rIGVuY2FwOkV0aGVybmV0ICBIV2FkZHIgMDg6MDA6Mjc6NTI6
-YmE6ZjEKPiAgICAgICAgICAgaW5ldDYgYWRkcjogZmU4MDo6YTAwOjI3ZmY6ZmU1MjpiYWYxLzY0
-IFNjb3BlOkxpbmsKPiAgICAgICAgICAgVVAgQlJPQURDQVNUIFJVTk5JTkcgIE1UVToxNTAwICBN
-ZXRyaWM6MQo+ICAgICAgICAgICBSWCBwYWNrZXRzOjkyMDcxIGVycm9yczowIGRyb3BwZWQ6OTIw
-NTIgb3ZlcnJ1bnM6MCBmcmFtZTowCj4gICAgICAgICAgIFRYIHBhY2tldHM6MCBlcnJvcnM6MCBk
-cm9wcGVkOjAgb3ZlcnJ1bnM6MCBjYXJyaWVyOjAKPiAgICAgICAgICAgY29sbGlzaW9uczowIHR4
-cXVldWVsZW46MTAwMAo+ICAgICAgICAgICBSWCBieXRlczoyNTg0NTAxICgyLjUgTUIpICBUWCBi
-eXRlczowICgwLjAgQikKPiAKPiBydGV0aDAtbWFjIExpbmsgZW5jYXA6RXRoZXJuZXQgIEhXYWRk
-ciAwODowMDoyNzo1MjpiYTpmMQo+ICAgICAgICAgICBpbmV0NiBhZGRyOiBmZTgwOjphMDA6Mjdm
-ZjpmZTUyOmJhZjEvNjQgU2NvcGU6TGluawo+ICAgICAgICAgICBVUCBCUk9BRENBU1QgUlVOTklO
-RyAgTVRVOjE1MDAgIE1ldHJpYzoxCj4gICAgICAgICAgIFJYIHBhY2tldHM6OTIwNzEgZXJyb3Jz
-OjAgZHJvcHBlZDo1NyBvdmVycnVuczowIGZyYW1lOjAKPiAgICAgICAgICAgVFggcGFja2V0czow
-IGVycm9yczowIGRyb3BwZWQ6MCBvdmVycnVuczowIGNhcnJpZXI6MAo+ICAgICAgICAgICBjb2xs
-aXNpb25zOjAgdHhxdWV1ZWxlbjoxMDAwCj4gICAgICAgICAgIFJYIGJ5dGVzOjI1ODQ1MDEgKDIu
-NSBNQikgIFRYIGJ5dGVzOjAgKDAuMCBCKQo+IAo+IHJ0bG8gICAgICBMaW5rIGVuY2FwOkV0aGVy
-bmV0ICBIV2FkZHIgMDA6MDA6MDA6MDA6MDA6MDAKPiAgICAgICAgICAgaW5ldDYgYWRkcjogZmU4
-MDo6MjAwOmZmOmZlMDA6MC82NCBTY29wZTpMaW5rCj4gICAgICAgICAgIFVQIEJST0FEQ0FTVCBS
-VU5OSU5HICBNVFU6MTUwMCAgTWV0cmljOjEKPiAgICAgICAgICAgUlggcGFja2V0czo2IGVycm9y
-czowIGRyb3BwZWQ6MCBvdmVycnVuczowIGZyYW1lOjAKPiAgICAgICAgICAgVFggcGFja2V0czow
-IGVycm9yczowIGRyb3BwZWQ6MCBvdmVycnVuczowIGNhcnJpZXI6MAo+ICAgICAgICAgICBjb2xs
-aXNpb25zOjAgdHhxdWV1ZWxlbjoxMDAwCj4gICAgICAgICAgIFJYIGJ5dGVzOjUwNCAoNTA0LjAg
-QikgIFRYIGJ5dGVzOjAgKDAuMCBCKQo+IAo+IHZuaWMwICAgICBMaW5rIGVuY2FwOkV0aGVybmV0
-ICBIV2FkZHIgMDg6MDA6Mjc6NTI6YmE6ZjEKPiAgICAgICAgICAgaW5ldCBhZGRyOjE5Mi4xNjgu
-NTYuMTAyICBCY2FzdDoxOTIuMTY4LjU2LjI1NSAgTWFzazoyNTUuMjU1LjI1NS4wCj4gICAgICAg
-ICAgIGluZXQ2IGFkZHI6IGZlODA6OmEwMDoyN2ZmOmZlNTI6YmFmMS82NCBTY29wZTpMaW5rCj4g
-ICAgICAgICAgIFVQIEJST0FEQ0FTVCBSVU5OSU5HICBNVFU6MTQ5NiAgTWV0cmljOjEKPiAgICAg
-ICAgICAgUlggcGFja2V0czowIGVycm9yczowIGRyb3BwZWQ6MCBvdmVycnVuczowIGZyYW1lOjAK
-PiAgICAgICAgICAgVFggcGFja2V0czo1NyBlcnJvcnM6MCBkcm9wcGVkOjAgb3ZlcnJ1bnM6MCBj
-YXJyaWVyOjAKPiAgICAgICAgICAgY29sbGlzaW9uczowIHR4cXVldWVsZW46MTAwMAo+ICAgICAg
-ICAgICBSWCBieXRlczowICgwLjAgQikgIFRYIGJ5dGVzOjc1OTggKDcuNSBLQikKPiAKPiBwaW50
-dUBvc2JveGVzOn4kIHN1ZG8gL3Vzci94ZW5vbWFpL3NiaW4vcnRpZmNvbmZpZwo+IFtzdWRvXSBw
-YXNzd29yZCBmb3IgcGludHU6Cj4gcnRldGgwICAgIE1lZGl1bTogRXRoZXJuZXQgIEhhcmR3YXJl
-IGFkZHJlc3M6IDA4OjAwOjI3OjUyOkJBOkYxCj4gICAgICAgICAgIElQIGFkZHJlc3M6IDE5Mi4x
-NjguNTYuMTAyICBCcm9hZGNhc3QgYWRkcmVzczogMTkyLjE2OC41Ni4yNTUKPiAgICAgICAgICAg
-VVAgQlJPQURDQVNUIFJVTk5JTkcgIE1UVTogMTUwMAo+IAo+IHJ0bG8gICAgICBNZWRpdW06IExv
-Y2FsIExvb3BiYWNrCj4gICAgICAgICAgIElQIGFkZHJlc3M6IDEyNy4wLjAuMQo+ICAgICAgICAg
-ICBVUCBMT09QQkFDSyBSVU5OSU5HICBNVFU6IDE1MDAKPiAKPiBwaW50dUBvc2JveGVzOn4kIHN1
-ZG8gL3Vzci94ZW5vbWFpL3NiaW4vcnRyb3V0ZQo+IEhvc3QgUm91dGluZyBUYWJsZQo+IEhhc2gg
-RGVzdGluYXRpb24gSFcgQWRkcmVzcyBEZXZpY2UKPiAwMCAwLjAuMC4wICAwMDowMDowMDowMDow
-MDowMCBydGxvCj4gMDEgMTkyLjE2OC41Ni4xICAwQTowMDoyNzowMDowMDoxMiBydGV0aDAKPiAw
-MSAxMjcuMC4wLjEgIDAwOjAwOjAwOjAwOjAwOjAwIHJ0bG8KPiAyNiAxOTIuMTY4LjU2LjEwMiAw
-MDowMDowMDowMDowMDowMCBydGxvCj4gM0YgMTkyLjE2OC41Ni4yNTUgRkY6RkY6RkY6RkY6RkY6
-RkYgcnRldGgwCj4gCgpLZXkgcXVlc3Rpb24sIG9uY2UgYWdhaW46IERvIHlvdSB3YW50IFJUbWFj
-L1RETUEgYW5kIG1lZGl1bSBhY2Nlc3MKY29udHJvbCBtZWNoYW5pc20/IElmIHllcywgZG8geW91
-IGhhdmUgYSBmdWxsIFJUbmV0IHN0YWNrIHJ1bm5pbmcgb24KQk9USCBlbmRzIGFscmVhZHk/CgpJ
-ZiBubywgZG9uJ3QgdXNlIHRoZSBydG5ldCBzdGFydCBzY3JpcHQuIE9ubHkgY29uZmlndXJlIHdo
-YXQgeW91CmFjdHVhbGx5IG5lZWQuIFlvdSBjYW4gZm9sbG93IGluaXRfcnRuZXQoKSBmcm9tIHRo
-YXQgc2NyaXB0IGZvciB0aGVzZSBzdGVwcy4KCkphbgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0
-IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFt
-ZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDE4
-MSBieXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly94ZW5v
-bWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDE4MDIyMC84YTUyMTYzNy9h
-dHRhY2htZW50LnNpZz4K
+Hello Philippe,
+Bernard asked me to take care of the problem.
+> Hello Bernhard,
+>=20
+> On 01/15/2018 12:07 PM, Gaus Bernhard, Dr. Mergenthaler GmbH & Co. KG
+> wrote:
+> > Hello Philippe,
+> > Our elpc system a running quite well but we get some sporadic
+> > kernel panic. We are using xenomai-3.0.6. Do you have any idea
+> > what's the problem her?
+> >
+> >
+> > [ 3377.645862] Unable to handle kernel paging request at virtual
+> > address 00100104
+> > [ 3377.654967] pgd =3D 80004000, hw pgd =3D be7b0000
+> > [ 3377.660456] [00100104] *pgd=3D00000000
+> > [ 3377.664992] Internal error: Oops: 817 [#1] PREEMPT SMP THUMB2
+> > [ 3377.672227] Modules linked in: clc_phyflex clc_clock [last
+> > unloaded: spi_imx]
+> > [ 3377.681313] CPU: 0 PID: 0 Comm: swapper/0 Not tainted
+> > 3.18.20-xenomai-mergenthaler_0.0.1 #1
+> > [ 3377.691827] task: 806f8d28 ti: 806ee000 task.ti: 806ee000
+> > [ 3377.698637] PC is at xnclock_tick+0x27c/0x33c
+> > [ 3377.704129] LR is at xnclock_tick+0x1c1/0x33c =20
+>=20
+> You may want to investigate about which source line xnclock_tick+0x27
+> corresponds to, this should go a long way identifying the issue.
+> Checking with addr2line, against a kernel built with debug information
+> would give you an answer.
+addr2line gives
+/phytec/x-i.MX6Linux/platform-phyFLEX-i.MX6/build-target/linux-3.18.20/incl=
+ude/linux/list.h:42
+that is the first line of the routine __list_add().
+=20
+static inline void __list_add(struct list_head *new,
+			      struct list_head *prev,
+			      struct list_head *next)
+{
+	next->prev =3D new;  ****** line 42
+	new->next =3D next;
+	new->prev =3D prev;
+	prev->next =3D new;
+}
+
+
+This gives very little information, since __list_add is a general
+routine in the kernel.
+
+The __list_add function is called by xnclock_tick+0x27c/0x33c, that is
+in kernel/xenomai/clock.c
+
+=46rom the comparison of the disasm of the kernel and the actual code in
+clock.c, it seems that xnclock_tick+0x27c/0x33c is actually in the
+(inline) routine=20
+
+xntimer_enqueue(timer, tmq);=20
+(defined in include/xenomai/cobalt/kernel/timer.h)
+
+xntimer_enqueue starts with a call to the inlined routine
+xntimerq_insert(q, &timer->aplink);=20
+that, in case CONFIG_XENO_OPT_TIMER_LIST is defined,
+it is defined as (always in timer.h)=20
+#define xntimerq_insert(q, h) xntlist_insert((q),(h))
+
+in xntlist_insert (always defined in timer.h) there are two calls to
+list_add() (list.h: 61)=20
+that it is the interface for __list_add. It looks
+like that xnclock_tick+0x27c/0x33c is actually the second one.
+
+to summarize the stack of inlined calls we have:
+timer.h:108
+static inline void xntlist_insert(struct list_head *q, struct
+xntlholder *holder) {
+	struct xntlholder *p;
+
+	if (list_empty(q)) {
+		list_add(&holder->link, q);
+		return;
+	}
+
+	/*
+	 * Insert the new timer at the proper place in the single
+	 * queue. O(N) here, but this is the price for the increased
+	 * flexibility...
+	 */
+	list_for_each_entry_reverse(p, q, link) {
+		if ((xnsticks_t) (holder->key - p->key) > 0 ||
+		    (holder->key =3D=3D p->key && holder->prio <=3D p->prio))
+		  break;
+	}
+
+	list_add(&holder->link, &p->link); ********
+}
+
+list.h:61
+static inline void list_add(struct list_head *new, struct list_head
+*head) {
+	__list_add(new, head, head->next);
+}
+
+and finally, from the kernel disassembly
+
+static inline void list_add(struct list_head *new, struct list_head
+*head) {
+	__list_add(new, head, head->next);
+800912ee:	682b      	ldr	r3, [r5, #0]  --> load in
+r3 head->next next->prev =3D new;
+800912f0:	605c      	str	r4, [r3, #4]  --> store
+r4 in next->prev [r3+#4]
+
+and here, in one case over some millions, r3 is invalid (or something
+happen that makes r3 invalid)
+
+At this point, I'm at my limits. =20
+
+In the kernel panic message, the offending virtual address is
+always 00100104 (69 cases).
+pgd is almost always 80004000 (66 cases of 69)
+hw pgd is obviously random
+*pgd is almost always 0
+stack dump says almost always
+[<800912f0>] (xnclock_tick) from
+[<7f83f2fd>](clc_clock_handler+0x2c/0x30 [clc_clock])=20
+(in two cases the calling address is different)
+
+clc_clock_handler is in the clc module and I don't know how to explore
+it (but I'm sure I will not find anything wrong there!)
+
+>=20
+> Determining whether using OPT_TIMER_LIST or OPT_TIMER_RBTREE has an
+> influence on the manifestation of this bug would be a good idea as
+> well.
+Definitely this bug happens only using OPT_TIMER_LIST.=20
+
+for the Xenomai mailing list: we are experiencing a similar, but
+different bug using OPT_TIMER_RBTREE. It seems that the
+RBTREE bug is much more deterministic: it happens almost always after
+2-3 days running the system with a very high load. The OPT_TIMER_LIST
+is more random.
+However there is something to notice: after the kernel Oops happens
+once, the probability we get the same problem within few hours after
+reboot is quite high=20
+
+I hope you can help us,
+
+Ruggero
+
+
+>=20
+> At some point, when more information is available on your end, you may
+> want to Cc: the Xenomai mailing list when discussing this issue. As
+> you may know if you followed this list recently, I'm in the process of
+> handing my responsibilities in the Xenomai project over to other
+> contributors, so this may be useful to make them aware of any
+> potential issue.
+>=20
+> I wish you a happy new year 2018.
+>=20
+> Thanks,
+>=20
+
+
+
