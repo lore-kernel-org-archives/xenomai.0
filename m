@@ -1,11 +1,17 @@
-From: Fazio Maurizio <maurizio.fazio@leonardocompany.com>
-Date: Wed, 10 Jan 2018 16:16:37 +0000
-Message-ID: <266d7c1efc534a3284787e54599e952b@ocnapvsw3301.ocr.priv>
-Content-Language: it-IT
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Date: Wed, 17 Jan 2018 22:03:18 +0100
+From: ruggero <rrossi@atb-biomag.de>
+Message-ID: <20180117220318.1d1f7cc1@laptop>
+In-Reply-To: <ec3e2fe9-6a2a-e195-ca0c-cdf58acd7c99@xenomai.org>
+References: <b18a880f-9765-86e1-5274-ba8bfb0cc832@xenomai.org>
+ <aa1018f6-a352-5814-7bf4-0a309d84a88a@ma-info.de>
+ <20180117112452.1bb130c9@laptop.fritz.box>
+ <98376b05-0ed2-3171-7d9d-a77d42782d9f@xenomai.org>
+ <20180117173800.4bca11b9@laptop.fritz.box>
+ <ec3e2fe9-6a2a-e195-ca0c-cdf58acd7c99@xenomai.org>
 MIME-Version: 1.0
-Subject: [Xenomai] Xenomai 3.0.6 - ipipe-3.18.20 - kernel build error
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] kernel panic xnclock
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,64 +20,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, "Gaus Bernhard, Dr. Mergenthaler GmbH
+ & Co. KG" <bernhard.gaus@ma-info.de>, xenomai@xenomai.org
 
-SGVsbG8sDQpJIGhhdmUgc29tZSBwcm9ibGVtcyBpbiBidWlsZGluZyB0aGUgMy4xOC4yMCBzdGFi
-bGUga2VybmVsIHBhdGNoZWQgd2l0aCBYZW5vbWFpIDMuMC42IC0gQ29iYWx0IC0gaXBpcGUtY29y
-ZS0zLjE4LjIwLXg4Ni05LnBhdGNoDQpUaGUgaW5zdGFsbGVkIG9wZXJhdGluZyBzeXN0ZW0gaXMg
-Q2VudG9zIDcuIFRoZSBzYW1lIGtlcm5lbCBwYXRjaGVkIHVzaW5nIFhlbm9tYWkgMy4wLjUgYW5k
-IHRoZSBzYW1lIGlwaXBlIHBhdGNoIHdvcmtzIHdpdGhvdXQgYW55IHByb2JsZW1zLg0KDQpUaGUg
-Zm9sbG93aW5nIGxpbmVzIGFyZSB0aGUgZXJyb3JzIGR1cmluZyB0aGUga2VybmVsIGJ1aWxkaW5n
-DQoNCkluIGZpbGUgaW5jbHVkZWQgZnJvbSBrZXJuZWwveGVub21haS9idWZkLmM6MjM6MDoNCmFy
-Y2gveDg2L3hlbm9tYWkvaW5jbHVkZS9hc20veGVub21haS9zeXNjYWxsLmg6IEluIGZ1bmN0aW9u
-IOKAmF9feG5fZ2V0X3N5c2NhbGxfbuKAmToNCmFyY2gveDg2L3hlbm9tYWkvaW5jbHVkZS9hc20v
-eGVub21haS9zeXNjYWxsLmg6NjA6MjogZXJyb3I6IGltcGxpY2l0IGRlY2xhcmF0aW9uIG9mIGZ1
-bmN0aW9uIOKAmF9fQ09CQUxUX0NBTEwzMl9TWVNOUuKAmSBbLVdlcnJvcj1pbXBsaWNpdC1mdW5j
-dGlvbi1kZWNsYXJhdGlvbl0NCiByZXR1cm4gX194bl9zeXNjYWxsX3AocmVncykgPyBfX3huX3N5
-c2NhbGwocmVncykNCg0KSW4gZmlsZSBpbmNsdWRlZCBmcm9tIGFyY2gveDg2L3hlbm9tYWkvbWFj
-aGluZS5jOjIyOjA6DQphcmNoL3g4Ni94ZW5vbWFpL2luY2x1ZGUvYXNtL3hlbm9tYWkvc3lzY2Fs
-bC5oOiBJbiBmdW5jdGlvbiDigJhfX3huX2dldF9zeXNjYWxsX27igJk6DQphcmNoL3g4Ni94ZW5v
-bWFpL2luY2x1ZGUvYXNtL3hlbm9tYWkvc3lzY2FsbC5oOjYwOjI6IGVycm9yOiBpbXBsaWNpdCBk
-ZWNsYXJhdGlvbiBvZiBmdW5jdGlvbiDigJhfX0NPQkFMVF9DQUxMMzJfU1lTTlLigJkgWy1XZXJy
-b3I9aW1wbGljaXQtZnVuY3Rpb24tZGVjbGFyYXRpb25dDQogcmV0dXJuIF9feG5fc3lzY2FsbF9w
-KHJlZ3MpID8gX194bl9zeXNjYWxsKHJlZ3MpDQoNClRoZSBvbmx5IGRpZmZlcmVuY2UgaXMgdGhl
-IG5ldyByZWxlYXNlIG9mIFhlbm9tYWkgMy4wLjYgaW5zdGVhZCBvZiB0aGUgb2xkZXIgMy4wLjUg
-dmVyc2lvbi4uLg0KDQpUaGFua3MgaW4gYWR2YW5jZQ0KDQpNYXVyaXppbyBGYXppbw0KDQpDaGll
-ZiBUZWNobmljYWwgT2ZmaWNlIC8gQWlyY3JhZnQgU3lzdGVtcw0KU29mdHdhcmUgRW5naW5lZXIN
-Cg0KDQoNCkxlb25hcmRvIFMucC5BLg0KQy5zbyBGcmFuY2lhLCA0MjYgLSBUb3Jpbm8gLSAxMDE0
-NiAtIEl0YWx5DQpUZWwuICszOSAwMTEgNzU2IDMzMDggLyAzNzYxDQoNCm1hdXJpemlvLmZhemlv
-QGxlb25hcmRvY29tcGFueS5jb20NCnd3dy5sZW9uYXJkb2NvbXBhbnkuY29tDQoNCuKAlOKAlOKA
-lOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKA
-lOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAk+KAlOKAlOKAlOKAlOKAlOKAlA0KSEVM
-SUNPUFRFUlMvQUVST05BVVRJQ1MvRUxFQ1RST05JQ1MsIERFRkVOQ0UgJiBTRUNVUklUWSBTWVNU
-RU1TL1NQQUNFDQrigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTi
-gJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJPigJTi
-gJTigJTigJTigJTigJQNCg0KDQoNCklsIHByZXNlbnRlIG1lc3NhZ2dpbyBlLW1haWwgZSBvZ25p
-IHN1byBhbGxlZ2F0byBkZXZvbm8gaW50ZW5kZXJzaSBpbmRpcml6emF0aSBlc2NsdXNpdmFtZW50
-ZSBhbCBkZXN0aW5hdGFyaW8gaW5kaWNhdG8gZSBjb25zaWRlcmFyc2kgZGFsIGNvbnRlbnV0byBz
-dHJldHRhbWVudGUgcmlzZXJ2YXRvIGUgY29uZmlkZW56aWFsZS4gU2Ugbm9uIHNpZXRlIGwnZWZm
-ZXR0aXZvIGRlc3RpbmF0YXJpbyBvIGF2ZXRlIHJpY2V2dXRvIGlsIG1lc3NhZ2dpbyBlLW1haWwg
-cGVyIGVycm9yZSwgc2lldGUgcHJlZ2F0aSBkaSBhdnZlcnRpcmUgaW1tZWRpYXRhbWVudGUgaWwg
-bWl0dGVudGUgZSBkaSBjYW5jZWxsYXJlIGlsIHN1ZGRldHRvIG1lc3NhZ2dpbyBlIG9nbmkgc3Vv
-IGFsbGVnYXRvIGRhbCB2b3N0cm8gc2lzdGVtYSBpbmZvcm1hdGljby4gUXVhbHNpYXNpIHV0aWxp
-enpvLCBkaWZmdXNpb25lLCBjb3BpYSBvIGFyY2hpdmlhemlvbmUgZGVsIHByZXNlbnRlIG1lc3Nh
-Z2dpbyBkYSBwYXJ0ZSBkaSBjaGkgbm9uIG5lIMOoIGlsIGRlc3RpbmF0YXJpbyDDqCBzdHJldHRh
-bWVudGUgcHJvaWJpdG8gZSBwdcOyIGRhciBsdW9nbyBhIHJlc3BvbnNhYmlsaXTDoCBkaSBjYXJh
-dHRlcmUgY2l2aWxlIGUgcGVuYWxlIHB1bmliaWxpIGFpIHNlbnNpIGRpIGxlZ2dlLg0KUXVlc3Rh
-IGUtbWFpbCBoYSB2YWxvcmUgbGVnYWxlIHNvbG8gc2UgZmlybWF0YSBkaWdpdGFsbWVudGUgYWkg
-c2Vuc2kgZGVsbGEgbm9ybWF0aXZhIHZpZ2VudGUuDQoNClRoZSBjb250ZW50cyBvZiB0aGlzIGVt
-YWlsIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBhcmUgaW50ZW5kZWQgc29sZWx5IGZvciB0
-aGUgYWRkcmVzc2VlKHMpIGFuZCBjb250YWluIGNvbmZpZGVudGlhbCBhbmQvb3IgcHJpdmlsZWdl
-ZCBpbmZvcm1hdGlvbi4NCklmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQgb2Yg
-dGhpcyBtZXNzYWdlLCBvciBpZiB0aGlzIG1lc3NhZ2UgaGFzIGJlZW4gYWRkcmVzc2VkIHRvIHlv
-dSBpbiBlcnJvciwgcGxlYXNlIGltbWVkaWF0ZWx5IG5vdGlmeSB0aGUgc2VuZGVyIGFuZCB0aGVu
-IGRlbGV0ZSB0aGlzIG1lc3NhZ2UgYW5kIGFueSBhdHRhY2htZW50cyBmcm9tIHlvdXIgc3lzdGVt
-LiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBu
-b3RpZmllZCB0aGF0IGFueSB1c2UsIGRpc3NlbWluYXRpb24sIGNvcHlpbmcsIG9yIHN0b3JhZ2Ug
-b2YgdGhpcyBtZXNzYWdlIG9yIGl0cyBhdHRhY2htZW50cyBpcyBzdHJpY3RseSBwcm9oaWJpdGVk
-LiBVbmF1dGhvcml6ZWQgZGlzY2xvc3VyZSBhbmQvb3IgdXNlIG9mIGluZm9ybWF0aW9uIGNvbnRh
-aW5lZCBpbiB0aGlzIGVtYWlsIG1lc3NhZ2UgbWF5IHJlc3VsdCBpbiBjaXZpbCBhbmQgY3JpbWlu
-YWwgbGlhYmlsaXR5LiDigJwNClRoaXMgZS1tYWlsIGhhcyBsZWdhbCB2YWx1ZSBhY2NvcmRpbmcg
-dG8gdGhlIGFwcGxpY2FibGUgbGF3cyBvbmx5IGlmIGl0IGlzIGRpZ2l0YWxseSBzaWduZWQgYnkg
-dGhlIHNlbmRlcg0K
+On Wed, 17 Jan 2018 18:30:06 +0100
+Philippe Gerum <rpm@xenomai.org> wrote:
+
+> On 01/17/2018 05:38 PM, ruggero wrote:
+> > Hi Pilippe,
+> > a small addition: the driver compile when included directly in the
+> > kernel. Normally we would like to have it as a module.
+> >   
+> 
+> diff --git a/arch/arm/kernel/ipipe.c b/arch/arm/kernel/ipipe.c
+> index 771bb5eff7fe..e0624d3f1ee2 100644
+> --- a/arch/arm/kernel/ipipe.c
+> +++ b/arch/arm/kernel/ipipe.c
+> @@ -557,4 +557,6 @@ EXPORT_SYMBOL_GPL(check_and_switch_context);
+>  EXPORT_SYMBOL_GPL(__cpu_logical_map);
+>  #endif /* CONFIG_IPIPE */
+>  
+> +EXPORT_SYMBOL_GPL(__ipipe_smp_key);
+> +
+>  EXPORT_SYMBOL_GPL(cpu_architecture);
+> 
+Thank you, I was thinking something similar, but the double underscore
+scared me!
+
+ruggero
+
 
