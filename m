@@ -1,13 +1,12 @@
-From: Giulio Moro <g.moro@qmul.ac.uk>
-Date: Thu, 18 Jan 2018 12:36:19 +0000
-Message-ID: <HE1PR0701MB24576FC21F46395234887524B5E80@HE1PR0701MB2457.eurprd07.prod.outlook.com>
-References: <20180109122202.1f89c5d5@mmd1pvb1c.ad001.siemens.net>,
- <20180118115607.A689024002F@gemini.denx.de>
-In-Reply-To: <20180118115607.A689024002F@gemini.denx.de>
-Content-Language: en-GB
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+References: <20180109122202.1f89c5d5@mmd1pvb1c.ad001.siemens.net>
+From: Dmitriy Cherkasov <dmitriy@oss-tech.org>
+Message-ID: <b5f5c2f3-880f-690e-6986-ecde1ac53766@oss-tech.org>
+Date: Wed, 17 Jan 2018 17:38:19 -0800
 MIME-Version: 1.0
+In-Reply-To: <20180109122202.1f89c5d5@mmd1pvb1c.ad001.siemens.net>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Xenomai community meeting 02.02.18
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
@@ -17,26 +16,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Henning Schild <henning.schild@siemens.com>, Philippe Gerum <rpm@xenomai.org>, "Kiszka, Jan" <jan.kiszka@siemens.com>, =?UTF-8?Q?St=c3=a9phane_Ancelot?= <sancelot@numalliance.com>, Jorge Ramirez <jro@xenomai.org>, =?UTF-8?Q?St=c3=a9phane_LOS?= <slos@hilscher.com>, Giulio Moro <g.moro@qmul.ac.uk>, Steven Seeger <steven.seeger@nasa.gov>, Leopold Palomo-Avellaneda <leo@alaxarxa.net>, Greg Gallagher <greg@embeddedgreg.com>, Norbert Lange <nolange79@gmail.com>, "Auel, Kendall" <Kendall.Auel@3DSystems.Com>, Wolfgang Denk <wd@denx.de>, Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, Greg Gallagher <ggallagher31@gmail.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-In message <20180109122202.1f89c5d5@mmd1pvb1c.ad001.siemens.net> you wrote:
->
-> We have now agreed on a time and place for this meeting, and i want to
-> announce it and invite the whole community to it.
->
+On 01/09/2018 03:22 AM, Henning Schild wrote:
+
+> 
 > Where: somewhere in Brussels (details will follow)
 >        and remotely, TelCo link will be published
 > When: 02.02.18 13:00-18:00 (CET)
-> What: we do not have a clear agenda yet, but there is probably enough
->       material to fill the timeslot
-> Attendees: Philippe Gerum, Jan Kiszka and myself will be there, you as
->            well?
 
-Hi there,
-great news that the meeting is taking place! Unfortunately we will not be a=
-ble to join, and also attending remotely seems complicated on that day. Any=
- chance the meeting will be recorded? I am sure it would make an invaluable=
- resource for current and future Xenomai users/devs!
-Best,
-Giulio=
+I will try to attend via teleconference.
 
