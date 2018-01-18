@@ -1,10 +1,10 @@
-MIME-Version: 1.0
-From: Jackson Jones <jackson.jones@gmail.com>
-Date: Wed, 17 Jan 2018 13:13:59 -0800
-Message-ID: <CADXNiGW9=QJW+tBMKqCUm3Wzh4fxrCZ9MLrPWrLOFKVTi00Pdw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Shared mmap
+From: Dmitriy Cherkasov <dmitriy@oss-tech.org>
+Date: Thu, 18 Jan 2018 01:33:21 +0000
+Message-Id: <1516239201-24251-4-git-send-email-dmitriy@oss-tech.org>
+In-Reply-To: <1516239201-24251-1-git-send-email-dmitriy@oss-tech.org>
+References: <1516239201-24251-1-git-send-email-dmitriy@oss-tech.org>
+Subject: [Xenomai] [PATCH 3/3] cobalt/kernel: add missing header for 4.14
+	compatibility
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,29 +15,26 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-SSBoYXZlIHdyaXR0ZW4gYW4gUlRETSBTUEkgZHJpdmVyIGZvciB0aGUgaW14NiBjaGlwLiBJdCBm
-b2xsb3dzIHRoZQpicm9hZGNvbSBTUEkgZHJpdmVyIGV4Y2VwdCB3aGVyZSB0aGUgY2hpcHMgZGlm
-ZmVyLiBJIGFtIHVzaW5nIHhlbm9tYWkgMy4wLjUuCgpJbiB0ZXN0aW5nLCB0aGUgZHJpdmVyIHdv
-cmtzIDEwMCUgb2YgdGhlIHRpbWUuIFdoZW4gd2UgYXJlIHVzaW5nIGl0IHdpdGgKb3V0IGFwcCB3
-ZSBpbnRlcm1pdHRlbnRseSByZWFkIHplcm9zIGluIHRoZSByZWFkLXRpbWUgYXBwbGljYXRpb24g
-YWZ0ZXIKYWZ0ZXIgY2FsbGluZyB0aGUgdHJhbnNmZXJfaW9idWZzLgoKSSB1c2VkIGEgU1BJIHNu
-aWZmZXIgdG8gdmVyaWZ5IHRoYXQgdGhlIDQgd29yZHMgKDE2IGJpdCB3b3JkcykgYXJlIGNvcnJl
-Y3QKKG5vdCB6ZXJvKS4gSSB3YXMgYWxzbyBhYmxlIHRvIHZlcmlmeSB0aGF0IHRoZSBkcml2ZXIg
-Y29waWVkIHRoZSB2YWx1ZXMgb3V0Cm9mIHRoZSBSWCBoYXJkd2FyZSBidWZmZXIgaW50byB0aGUg
-c2hhcmVkIG1tYXAuCgpPbiB0aGUgYXBwIHNpZGUsIHRoaXMgd29ya3MgZmluZSA5OSUgb2YgdGhl
-IHRpbWUuIEV2ZXJ5IG9uY2UgaW4gYSB3aGlsZSBvbmUKb3IgbW9yZSBvZiB0aGUgdmFsdWVzIHdp
-bGwgYmUgemVyby4gSXQgaXMgbm90IGNvbnNpc3RlbnQgd2hpY2ggdmFsdWUocykgYXJlCnplcm8u
-CgpJIHdhcyB3b25kZXJpbmcgaWYgdGhlcmUgaXMgc29tZSBzb3J0IG9mIGxhdGVuY3kgd2l0aCB0
-aGUgc2hhcmVkIG1tYXAsIEkKaGF2ZSBhdHRhY2hlZCBhIHRlc3QgcHJvZ3JhbSBJIHdyb3RlLiBU
-aGUgY29tbWFuZHMgYXJlIGJlaW5nIHNlbnQgdG8gYW4KRlBHQSB3aGljaCByZXNwb25kcy4gVGhl
-IGFwcGxpY2F0aW9uIGlzIGRvaW5nIGEgbG90IG9mIFNQSSB0cmFuc2FjdGlvbnMuCgpJJ3ZlIGF0
-dGFjaGVkIHRoZSB0ZXN0IHByb2dyYW0gYW5kIHRoZSBkcml2ZXIgZm9yIGFueW9uZSBpbnRlcmVz
-dGVkLgoKVGhhbmtzLAoKSmFja3NvbiBKb25lcwotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0t
-LS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBz
-cGlfdGVzdDIuYwpUeXBlOiB0ZXh0L3gtY3NyYwpTaXplOiA4MTk5IGJ5dGVzCkRlc2M6IG5vdCBh
-dmFpbGFibGUKVVJMOiA8aHR0cDovL3hlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFj
-aG1lbnRzLzIwMTgwMTE3L2U2ZGE2MDBjL2F0dGFjaG1lbnQuYz4KLS0tLS0tLS0tLS0tLS0gbmV4
-dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQu
-Li4KTmFtZTogc3BpLWlteDYuYwpUeXBlOiB0ZXh0L3gtY3NyYwpTaXplOiAyNTMyMyBieXRlcwpE
-ZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVu
-b21haS9hdHRhY2htZW50cy8yMDE4MDExNy9lNmRhNjAwYy9hdHRhY2htZW50LTAwMDEuYz4K
+Add missing uaccess.h needed for copy_{to/from}_user_inatomic under Linux 4.14.
+
+Signed-off-by: Dmitriy Cherkasov <dmitriy@oss-tech.org>
+---
+ kernel/cobalt/include/asm-generic/xenomai/syscall.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall.h b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+index 84fa2efa9..92007dd23 100644
+--- a/kernel/cobalt/include/asm-generic/xenomai/syscall.h
++++ b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+@@ -20,6 +20,7 @@
+ #define _COBALT_ASM_GENERIC_SYSCALL_H
+ 
+ #include <linux/types.h>
++#include <linux/uaccess.h>
+ #include <asm/uaccess.h>
+ #include <asm/xenomai/features.h>
+ #include <asm/xenomai/wrappers.h>
+-- 
+2.14.3
+
+
