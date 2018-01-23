@@ -1,13 +1,11 @@
-References: <e6eedd86-99e4-3bc0-3054-f317ed96e511@gmx.at>
 From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <6547ef1b-f010-30a6-9f11-56c23bc4d301@xenomai.org>
-Date: Sat, 20 Jan 2018 15:46:39 +0100
+Message-ID: <cf55b724-6e0a-d445-374e-3c4f4421d7b6@xenomai.org>
+Date: Tue, 23 Jan 2018 18:21:17 +0100
 MIME-Version: 1.0
-In-Reply-To: <e6eedd86-99e4-3bc0-3054-f317ed96e511@gmx.at>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] new ipipe versions
+Subject: [Xenomai] [RFC] RTnet fixes and other updates
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,26 +14,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: jimmyo <jimmyo@gmx.at>, xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 01/20/2018 02:51 PM, jimmyo wrote:
-> Hello,
-> 
-> we have a system with a imx6 processor and kernel 3.14 with xenomai
-> 2.6.5 (native api)
-> 
-> Now we plan to switch from kernel v3.14 to a newer kernel.
-> I've seen that the last kernel ipipe supports is version 4.9.x.
-> Are there any schedule for ipipe to support a newer version of the
-> kernel (4.14, ...)
 
-Please see http://git.xenomai.org/ipipe-arm.git/
+For review by interested parties, proposed for inclusion in 3.0.6.
 
-> 
-> Are the xenomai 2.6.x working with the new ipipe version ?
+Thanks,
 
-No, 2.6 is EOL.
+===
 
+The following changes since commit 3a2fbc62b2dce64e959a49db9bcc049e6acc4e21:
+
+  cobalt/rtdm: factor out iovec[] copy routines (2018-01-23 18:12:19 +0100)
+
+are available in the git repository at:
+
+  git://xenomai.org/xenomai-3.git wip/rtnet-fixes
+
+for you to review changes up to df4f825d1d8ab1b7129af59d43b3f219f4ae5101:
+
+  net/socket: forward private ioctl requests to NIC driver (2018-01-23 18:12:28 +0100)
+
+----------------------------------------------------------------
+Philippe Gerum (26):
+      net/cap: fix panic in rtcap_signal_handler()
+      net: wire up corectl interface
+      net/tcp: fix invalid reference in getsockopt()
+      net/socket: add get_arg/put_arg helpers
+      net/iovec: add copy iterators for iovec[]
+      net/packet: ioctl: remove direct references to user memory
+      net/tcp: ioctl: remove direct references to user memory
+      net/udp: ioctl: remove direct references to user memory
+      net/packet: recvmsg: remove direct references to user memory
+      net/packet: recvmsg: write back namelen only if name required
+      net/packet: sendmsg: remove direct references to user memory
+      net/udp: recvmsg: remove direct references to user memory
+      net/udp: recvmsg: write back namelen only if name required
+      net/udp: sendmsg: remove direct references to user memory
+      net/tcp: recvmsg: remove direct references to user memory
+      net/tcp: sendmsg: remove direct references to user memory
+      net: convert to rtdm_get_iov_flatlen()
+      net/iovec: drop useless kernel<-> iovec[] copy helpers
+      net/udp: ioctl: fix temp arg buffer type
+      net/packet: ioctl: remove direct references to user memory (2)
+      net/udp: recvmsg, ioctl: remove direct references to user memory (2)
+      net/packet: ioctl: remove direct references to user memory (3)
+      net/socket: ioctl: remove direct references to user memory (2)
+      net/socket: enforce secondary mode for SIOCETHTOOL
+      net/socket: align rtdev do_ioctl handler on the regular ndo_do_ioctl
+      net/socket: forward private ioctl requests to NIC driver
+
+ kernel/drivers/net/addons/cap.c                 |  12 +++++---
+ kernel/drivers/net/drivers/igb/igb_main.c       |   7 ++---
+ kernel/drivers/net/stack/Makefile               |   3 +-
+ kernel/drivers/net/stack/corectl.c              |   9 ++++--
+ kernel/drivers/net/stack/include/rtdev.h        |   2 +-
+ kernel/drivers/net/stack/include/rtnet_iovec.h  |  26 +++++-----------
+ kernel/drivers/net/stack/include/rtnet_socket.h |  10 ++++--
+ kernel/drivers/net/stack/iovec.c                | 107 +++++++++++++++++++++++++++++++++++++++------------------------
+ kernel/drivers/net/stack/ipv4/tcp/tcp.c         | 168 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++----------------------------
+ kernel/drivers/net/stack/ipv4/udp/udp.c         | 379 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------------------------------------------------------------------------------------
+ kernel/drivers/net/stack/packet/af_packet.c     | 334 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------------------------------------------------------------------------
+ kernel/drivers/net/stack/rtnet_module.c         |   6 ++++
+ kernel/drivers/net/stack/socket.c               | 230 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++------------------------------------------------
+ 13 files changed, 823 insertions(+), 470 deletions(-)
 -- 
 Philippe.
 
