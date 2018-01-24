@@ -1,13 +1,12 @@
-References: <cf55b724-6e0a-d445-374e-3c4f4421d7b6@xenomai.org>
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Message-ID: <d0a5298c-5b04-8ac9-c85e-2196ad2d0292@alaxarxa.net>
-Date: Wed, 24 Jan 2018 09:44:52 +0100
 MIME-Version: 1.0
-In-Reply-To: <cf55b724-6e0a-d445-374e-3c4f4421d7b6@xenomai.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: ca-ES
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [RFC] RTnet fixes and other updates
+In-Reply-To: <3b845105-f0b5-6df1-c800-e4bb954d8aa0@siemens.com>
+References: <3b845105-f0b5-6df1-c800-e4bb954d8aa0@siemens.com>
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Wed, 24 Jan 2018 12:00:45 -0500
+Message-ID: <CALLqZ8TKeaL3hvDEywHsWuu5UExs=U90=6D6uUHq0PKcYMtgVA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [Xenomai] ipipe: kernel updates in the light of recent fixes
+	(meltdown...)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,93 +15,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Philippe,
+I think using the CIP kernel would be a great idea.  I can see this
+being popular with product developers.
 
+-Greg
 
-On 23/01/18 18:21, Philippe Gerum wrote:
-
-> For review by interested parties, proposed for inclusion in 3.0.6.
-
-3.0.7 ?
-
-
-Leopold
-
-
-
-
-> 
-> Thanks,
-> 
-> ===
-> 
-> The following changes since commit 3a2fbc62b2dce64e959a49db9bcc049e6acc4e21:
-> 
->   cobalt/rtdm: factor out iovec[] copy routines (2018-01-23 18:12:19 +0100)
-> 
-> are available in the git repository at:
-> 
->   git://xenomai.org/xenomai-3.git wip/rtnet-fixes
-> 
-> for you to review changes up to df4f825d1d8ab1b7129af59d43b3f219f4ae5101:
-> 
->   net/socket: forward private ioctl requests to NIC driver (2018-01-23 18:12:28 +0100)
-> 
-> ----------------------------------------------------------------
-> Philippe Gerum (26):
->       net/cap: fix panic in rtcap_signal_handler()
->       net: wire up corectl interface
->       net/tcp: fix invalid reference in getsockopt()
->       net/socket: add get_arg/put_arg helpers
->       net/iovec: add copy iterators for iovec[]
->       net/packet: ioctl: remove direct references to user memory
->       net/tcp: ioctl: remove direct references to user memory
->       net/udp: ioctl: remove direct references to user memory
->       net/packet: recvmsg: remove direct references to user memory
->       net/packet: recvmsg: write back namelen only if name required
->       net/packet: sendmsg: remove direct references to user memory
->       net/udp: recvmsg: remove direct references to user memory
->       net/udp: recvmsg: write back namelen only if name required
->       net/udp: sendmsg: remove direct references to user memory
->       net/tcp: recvmsg: remove direct references to user memory
->       net/tcp: sendmsg: remove direct references to user memory
->       net: convert to rtdm_get_iov_flatlen()
->       net/iovec: drop useless kernel<-> iovec[] copy helpers
->       net/udp: ioctl: fix temp arg buffer type
->       net/packet: ioctl: remove direct references to user memory (2)
->       net/udp: recvmsg, ioctl: remove direct references to user memory (2)
->       net/packet: ioctl: remove direct references to user memory (3)
->       net/socket: ioctl: remove direct references to user memory (2)
->       net/socket: enforce secondary mode for SIOCETHTOOL
->       net/socket: align rtdev do_ioctl handler on the regular ndo_do_ioctl
->       net/socket: forward private ioctl requests to NIC driver
-> 
->  kernel/drivers/net/addons/cap.c                 |  12 +++++---
->  kernel/drivers/net/drivers/igb/igb_main.c       |   7 ++---
->  kernel/drivers/net/stack/Makefile               |   3 +-
->  kernel/drivers/net/stack/corectl.c              |   9 ++++--
->  kernel/drivers/net/stack/include/rtdev.h        |   2 +-
->  kernel/drivers/net/stack/include/rtnet_iovec.h  |  26 +++++-----------
->  kernel/drivers/net/stack/include/rtnet_socket.h |  10 ++++--
->  kernel/drivers/net/stack/iovec.c                | 107 +++++++++++++++++++++++++++++++++++++++------------------------
->  kernel/drivers/net/stack/ipv4/tcp/tcp.c         | 168 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++----------------------------
->  kernel/drivers/net/stack/ipv4/udp/udp.c         | 379 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------------------------------------------------------------------------------------
->  kernel/drivers/net/stack/packet/af_packet.c     | 334 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------------------------------------------------------------------------
->  kernel/drivers/net/stack/rtnet_module.c         |   6 ++++
->  kernel/drivers/net/stack/socket.c               | 230 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++------------------------------------------------
->  13 files changed, 823 insertions(+), 470 deletions(-)
-> 
-
-
--- 
---
-Linux User 152692     GPG: 05F4A7A949A2D9AA
-Catalonia
--------------------------------------
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
+On Tue, Jan 23, 2018 at 12:52 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+> Hi Philippe,
+>
+> as the number of question increase here, but I bet elsewhere as well,
+> and I'm planning to work on some parts soonish, I'd like to coordinate:
+>
+> Where are we standing with 4.14 right now? There is nothing for x86 yet,
+> right?
+>
+> What are the update plans for 4.9? We currently have one x86 user on
+> that kernel, but I suppose we could also move on to 4.14 once it's
+> ready. For me the question is right now where to invest x86-wise, 4.9
+> update or 4.14 completion + update?
+>
+> For 4.4, which we will need for product use for sure, I'm considering to
+> lift the support from 4.4 LTS to the CIP [1][2] kernel. That one will be
+> longer maintained and basically differs from LTS only in mainline
+> backports of certain hardware support and critical features. Plus some
+> reverts of broken LTS commits that will later on be reverted there as
+> well. The fuss that meltdown brings in would be a good point to do the
+> jump IMHO (there is no CIP kernel with meltdown fixes yet, due to issues
+> in LTS, but that will change soon).
+>
+> Regarding spectre, I'm not expected that much impact on ipipe, but that
+> situation is still too much in flux, even in upstream.
+>
+> What do you think?
+>
+> @all: What are requirements of other users here?
+>
+> Jan
+>
+> [1] https://git.kernel.org/pub/scm/linux/kernel/git/bwh/linux-cip.git
+> [2]
+> https://wiki.linuxfoundation.org/civilinfrastructureplatform/cipkernelmaintenance
+>
+> --
+> Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+> Corporate Competence Center Embedded Linux
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> https://xenomai.org/mailman/listinfo/xenomai
 
