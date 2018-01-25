@@ -1,11 +1,9 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <c9443b76-da71-9885-82a4-9e524b460998@xenomai.org>
-Date: Thu, 25 Jan 2018 18:40:37 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [RFC] FOSDEM meeting agenda
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Thu, 25 Jan 2018 15:26:51 -0500
+Message-ID: <CALLqZ8SCqE4mx8i4p3bcztu_XmKnY6aTZFjCFyqpf-3QAOgJkg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Xenomai] meeting agenda suggestions
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,73 +12,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henning Schild <henning.schild@siemens.com>, Jan Kiszka <jan.kiszka@siemens.com>, Sebastian Smolorz <Sebastian.Smolorz@gmx.de>, Jan Leupold <leupold@rsi-elektrotechnik.de>, Jorge Ramirez <jro@xenomai.org>
-Cc: Steven Seeger <steven.seeger@nasa.gov>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Steven Seeger <steven.seeger@nasa.gov>
 
+Adding some points that I think need some attention at the meeting.
 
-Here are some points I would like to discuss during this meeting. Please
-feel free to comment:
+Drivers:
+    Currently we have support for certain boards, SOC families and
+devices.   Do we want to expand on that?  Are there commonly used
+pieces of hardware that we want to add support for?  For most devices
+it may be a port from Linux to Xenomai, which could be low effort.
+What drives improvements to our current  frameworks like gpio and spi
+?  Adding i2c, pwm and pci devices (etc) may be helpful.  Are users
+looking for full BSPs?
 
-1. Release management
+Reference Boards:
+    Projects like AGL (Automotive Grade Linux) use low cost boards as
+reference platforms so potential customers can get up and running
+quickly.  I really think this helps for prototyping.  There's already
+some support for Raspberry Pi, we could expand on that.  We could look
+at the beaglebone family of boards and potentially Zynq boards.
 
-	* Currently, the person who contributes most of the code is also the
-release manager, which is clearly not optimal. Both activities should be
-decoupled for efficiency (esp. hindsight) and practical reasons. At some
-point, I will stop acting as the release manager, so the project will
-need a different organization in this respect. Which one?
+Quick Start Guide:
+    This would probably fall under documentation but putting together
+a quick start guide for new users may be worthwhile.  It could be tied
+into the above comment of using low cost boards and we focus on a
+quick start guide for one or two community (low cost) boards.
 
-	* As a corollary, the current release process is broken: no explicit
-release plan or schedule, limited testing, barely any user feedback
-about the development version in general. Practical steps to improve
-this should be discussed.
+"How to" Articles:
+   This may go with the above point, but adding some type of doc that
+shows how to properly use the gpio, udd, ipc and other sub systems
+would help new users and people possibly evaluating Xenomai.  Having
+these on the homepage I think would show potential users that there
+are resources to help get them started.  It would give prospective
+users a general idea of what features Xenomai supports so far.  They
+could also serve as reference/example code.
 
-	* My understanding is that v3.1 is almost there feature-wise, with a
-working arm64 port Dmitriy is polishing, a bunch of rtnet fixes actually
-enabling RTnet with SMAP/x86 (which still need some feedback btw), and
-support for recent kernels up to 4.14 (arm, arm64, powerpc). x86 is
-still lagging behind with kernel 4.9 though. I'm about to queue a couple
-of ABI changes more, with the implementation of sendmmsg() and
-recvmmsg() for RTDM sockets.
+Testing:
+   How do we test Xenomai?  There's some documentation on smokey the
+smoke test framework, when are those tests run and how often?  Do we
+run those tests across all architectures? Is a regression test suite
+something we want to build?  Any reported bugs can be made into a test
+case and added to the regression tests.
 
-This raises the following questions: 1) may we freeze the v3.1 ABI, 2)
-should we wait for supporting 4.14/x86 before releasing v3.1, 3) how
-much use/testing do we currently have of the -next branch, on which CPU
-architecture(s)?
+Bug reporting:
+   When a user reports a bug on the mailing list they usually don't
+include all the information needed.  There has been discussion on
+using a bug tracking system.  Is this part of the gitlab effort? it
+would be nice to ask the users for example code to reproduce their
+bugs.  The udd issue on the todo list is hard to reproduce since there
+is only snippets of code in the email thread and not a lot of
+information on what the kernel side of the udd driver does.  We can
+also see if anyone is watching or currently working on the bug.
 
-2. Documentation
-
-	* The existing documentation has several weaknesses; from the traffic
-on the mailing list, the main one may be that it leaves newcomers with a
-steep learning curve, in some occasions, even when the information is
-published on the website and/or present in the inline documentation. How
-to improve the situation, how to better organize the existing doc so
-that people do find what they are looking for?
-
-	* Doxygen may not be the best option anymore for inline documentation;
-Chasing glitches with using the markup has been a real pain over the
-years, getting properly structured output has never been obvious. Could
-we do better with Doxygen in a reasonably simple fashion, or should
-reStructuredText and Sphinx be considered as a replacement, so that we
-can converge toward the kernel documentation system?
-
-3. Pipeline maintenance
-
-	* We now have a dedicated I-pipe maintainer per CPU architecture, which
-is a great relief to me. Now I'd like we discuss the maintenance
-process, 1) how to organize the upstream/downstream flow of the generic
-pipeline bits I still maintain currently, between other maintainers and
-me? 2) how to best disseminate knowledge about the I-pipe implementation?
-
-	* mainline vs CIP kernel, LTS maintenance policy
-
-4. Misc
-
-	* formalizing the decision about dropping the blackfin and powerpc64
-port, since we had zero feedback from users so far, so everyone must be
-fine with this.
+Xenomai's successes:
+    We could give community members and companies the opportunity to
+post their product or creation somewhere on the Xenomai home page.  It
+would give potential users the ability to see Xenomai's successes.
 
 Thanks,
 
--- 
-Philippe.
+Greg
 
