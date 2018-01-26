@@ -1,13 +1,11 @@
-References: <BN3PR1101MB10425C38098D5CD44E2EDDB2B0100@BN3PR1101MB1042.namprd11.prod.outlook.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <635d7cf3-a695-9225-9f7d-070bda57008f@xenomai.org>
-Date: Fri, 26 Jan 2018 16:22:11 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <73ef1d0b-0a83-4351-e4b5-2a544956af86@siemens.com>
+Date: Fri, 26 Jan 2018 19:32:59 +0100
 MIME-Version: 1.0
-In-Reply-To: <BN3PR1101MB10425C38098D5CD44E2EDDB2B0100@BN3PR1101MB1042.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Stack Overflow when changing Affinity
+Subject: [Xenomai] [PATCH] cobalt/intr: Move IRQ exit trace point
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,21 +14,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henry Bausley <hbausley@deltatau.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
 
-On 01/09/2018 11:35 PM, Henry Bausley wrote:
-> We have an application that gets run repeatedly that causes a stack overflow.  The source is at the end of this mail.
-> We have tracked it down to changing the affinity.
-> 
-> We have used xenomai 2.6.5 and 2.6.4 and kernels 3.14.28 and 4.1.18 and seen identical results.  Our platform is an LS1021A NXP/Freescale ARM processor.  Is this a bug or are we incorrectly using affinity
-> 
-> 
+It can be confusing for people reading a trace when a context switch due
+to a wake up in the IRQ handler comes before the handler was left. Move
+the exit instrumentation before the schedule, just like we already do in
+the clock handler.
 
-Most likely a Xenomai bug, the issue does not even happen when changing
-the affinity, but when binding a new process to the real-time core. I'd
-say that such core is doing something wrong after noticing the affinity
-change, which corrupts the kernel state/memory in some obscure ways.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/cobalt/intr.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
+diff --git a/kernel/cobalt/intr.c b/kernel/cobalt/intr.c
+index 14dc0b35e..fb27a3295 100644
+--- a/kernel/cobalt/intr.c
++++ b/kernel/cobalt/intr.c
+@@ -355,12 +355,12 @@ static void xnintr_vec_handler(unsigned int irq, void *cookie)
+ out:
+ 	xnstat_exectime_switch(sched, prev);
+ 
++	trace_cobalt_irq_exit(irq);
++
+ 	if (--sched->inesting == 0) {
+ 		sched->lflags &= ~XNINIRQ;
+ 		xnsched_run();
+ 	}
+-
+-	trace_cobalt_irq_exit(irq);
+ }
+ 
+ /*
+@@ -441,12 +441,12 @@ static void xnintr_edge_vec_handler(unsigned int irq, void *cookie)
+ out:
+ 	xnstat_exectime_switch(sched, prev);
+ 
++	trace_cobalt_irq_exit(irq);
++
+ 	if (--sched->inesting == 0) {
+ 		sched->lflags &= ~XNINIRQ;
+ 		xnsched_run();
+ 	}
+-
+-	trace_cobalt_irq_exit(irq);
+ }
+ 
+ static inline int xnintr_irq_attach(struct xnintr *intr)
 -- 
-Philippe.
+2.13.6
 
