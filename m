@@ -1,15 +1,15 @@
-References: <CGME20180130002607epcas2p15e106753c180b0e90d445b3b1d0c4b70@epcas2p1.samsung.com>
- <1517272015-6274-1-git-send-email-jy0922.shim@samsung.com>
- <32c7375e-bc97-e629-3179-4737cd192f74@siemens.com>
-From: Philippe Gerum <rpm@xenomai.org>
-Message-ID: <79c7ef15-c44c-5194-1693-74055f859377@xenomai.org>
-Date: Tue, 30 Jan 2018 10:58:40 +0100
+From: MINIER Bertrand <Bertrand.MINIER@sercel.com>
+Date: Tue, 30 Jan 2018 15:07:24 +0000
+Message-ID: <e7ceff746b384a7d8cdae546f104cdab@NANS01204.it.intra.sercel.com>
+References: <df27493b419a4ff4a603ddc503201523@NANS01204.it.intra.sercel.com>
+ <CALLqZ8Tm90Wyg2-5qwxJfVL64ORrhBFCLCGHLiv2BsPpMjx97Q@mail.gmail.com>
+In-Reply-To: <CALLqZ8Tm90Wyg2-5qwxJfVL64ORrhBFCLCGHLiv2BsPpMjx97Q@mail.gmail.com>
+Content-Language: fr-FR
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <32c7375e-bc97-e629-3179-4737cd192f74@siemens.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] rtnet/tdma: fix lockup issue
+Subject: Re: [Xenomai] Writing to UDD driver through mapped memory cause
+ secondary mode switch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,139 +18,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Joonyoung Shim <jy0922.shim@samsung.com>, xenomai@xenomai.org
+To: Greg Gallagher <greg@embeddedgreg.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 01/30/2018 07:59 AM, Jan Kiszka wrote:
-> On 2018-01-30 01:26, Joonyoung Shim wrote:
->> Sometimes the kernel lockup occurs with "rtifconfig rteth0 down" command
->> execution on TDMA slave.
->>
->> [525182.648366] INFO: rcu_sched detected stalls on CPUs/tasks:
->> [525182.648372] 	7-...: (0 ticks this GP) idle=415/140000000000000/0 softirq=1249048/1249048 fqs=6628
->> [525182.648374] 	(detected by 0, t=15002 jiffies, g=2145322, c=2145321, q=131873)
->> [525182.648376] Task dump for CPU 7:
->> [525182.648377] rtifconfig      R  running task        0 24290  24278 0x0000000c
->> [525182.648381]  0000000000000000 ffff888b9ede5640 0000000000000001 ffff8888a35bbc00
->> [525182.648384]  ffff888b8be78000 ffffb20f8413bc10 ffffffffa446e80d 000000000001aa50
->> [525182.648387]  ffff888b9ede5480 ffffb20f8413bc50 ffffffffa459720d ffff888b88510440
->> [525182.648390] Call Trace:
->> [525182.648395]  [<ffffffffa446e80d>] ? xnarch_switch_to+0x5d/0xa0
->> [525182.648398]  [<ffffffffa459720d>] ___xnsched_run.part.64+0x1ed/0x390
->> [525182.648400]  [<ffffffffa4597af3>] __xnsched_run_handler+0xc3/0xe0
->> [525182.648402]  [<ffffffffa453618c>] __ipipe_do_sync_stage+0xdc/0x170
->> [525182.648404]  [<ffffffffa45362c3>] __ipipe_do_sync_pipeline+0x33/0x90
->> [525182.648405]  [<ffffffffa453638d>] __ipipe_restore_head+0x6d/0xb0
->> [525182.648407]  [<ffffffffa45a5648>] __rtdm_synch_flush+0xf8/0x130
->> [525182.648410]  [<ffffffffa45a5781>] rtdm_event_destroy+0x21/0x70
->> [525182.648412]  [<ffffffffc0961cdb>] tdma_detach+0x1b/0x100 [tdma]
->> [525182.648415]  [<ffffffffc0956044>] rtmac_disc_detach+0x44/0xd0 [rtmac]
->> [525182.648418]  [<ffffffffc091f5f8>] rtnet_core_ioctl+0x2b8/0x490 [rtnet]
->> [525182.648421]  [<ffffffffc091f2f3>] rtnet_ioctl+0x103/0x150 [rtnet]
->> [525182.648423]  [<ffffffffa466cee1>] do_vfs_ioctl+0xa1/0x5d0
->> [525182.648425]  [<ffffffffa4668ac4>] ? putname+0x54/0x60
->> [525182.648426]  [<ffffffffa466d489>] SyS_ioctl+0x79/0x90
->> [525182.648429]  [<ffffffffa4c73257>] entry_SYSCALL_64_fastpath+0x16/0x1b
->>
->> It is suspected of causing the lockup that the sync_event used in the
->> task is destroyed in advance before the task is destroyed.
->>
->> Fixes: bd971c3a9624 ("rtnet: adapt to RTDM task management changes")
->> Signed-off-by: Joonyoung Shim <jy0922.shim@samsung.com>
->> ---
->>  kernel/drivers/net/stack/rtmac/tdma/tdma_module.c | 4 ++--
->>  1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/kernel/drivers/net/stack/rtmac/tdma/tdma_module.c b/kernel/drivers/net/stack/rtmac/tdma/tdma_module.c
->> index e367d21..854a996 100644
->> --- a/kernel/drivers/net/stack/rtmac/tdma/tdma_module.c
->> +++ b/kernel/drivers/net/stack/rtmac/tdma/tdma_module.c
->> @@ -227,14 +227,14 @@ int tdma_detach(struct rtnet_device *rtdev, void *priv)
->>      struct tdma_job     *job, *tmp;
->>  
->>  
->> +    rtdm_task_destroy(&tdma->worker_task);
->> +
->>      rtdm_event_destroy(&tdma->sync_event);
->>      rtdm_event_destroy(&tdma->xmit_event);
->>      rtdm_event_destroy(&tdma->worker_wakeup);
->>  
->>      tdma_dev_release(tdma);
->>  
->> -    rtdm_task_destroy(&tdma->worker_task);
->> -
->>      list_for_each_entry_safe(job, tmp, &tdma->first_job->entry, entry) {
->>  	if (job->id >= 0)
->>  	    tdma_cleanup_slot(tdma, SLOT_JOB(job));
->>
-> 
-> That used to work properly: The rtdm_event_destroy call would have woken
-> up the worker thread when blocked on the events, they detected the
-> destruction and terminated themselves.
-> 
-> Philippe, did something related change when mapping RTDM on Xenomai 3?
-> I'm seeing in bd971c3a9624 some other places in RTnet that were
-> reordered in the way like above, but I'm not finding a reference in the
-> migration guide Xenomai 2->3.
-> 
-> Jan
-> 
-
-For the original scheme to work reliably, I would have added this:
-
-diff --git a/kernel/drivers/net/stack/rtmac/tdma/tdma_worker.c
-b/kernel/drivers/net/stack/rtmac/tdma/tdma_worker.c
-index ad29d5dab..d21cdb5f6 100644
---- a/kernel/drivers/net/stack/rtmac/tdma/tdma_worker.c
-+++ b/kernel/drivers/net/stack/rtmac/tdma/tdma_worker.c
-@@ -189,7 +189,9 @@ void tdma_worker(void *arg)
-         switch (job->id) {
-             case WAIT_ON_SYNC:
-                 rtdm_lock_put_irqrestore(&tdma->lock, lockctx);
--                rtdm_event_wait(&tdma->sync_event);
-+                ret = rtdm_event_wait(&tdma->sync_event);
-+		if (ret == -EIDRM)
-+			return;
-                 rtdm_lock_get_irqsave(&tdma->lock, lockctx);
-                 break;
-
-AFAIU, the cancellation request is issued on behalf of a regular linux
-context calling a discipline detach handler, which originally led to the
-following sequence with v2:
-
-[detach_handler] xnsynch_destroy(&sync_event)
-                       xnsynch_flush(&sync_event, XNRMID)
-                       release event resources
-[tdma_worker]    back from rtdm_event_wait() => -ERMID
-[tdma_worker]    back sleeping on rtdm_event_wait()
-[detach_handler] rtdm_task_destroy(&tdma_worker)
-                       xnpod_delete_thread(&tdma_worker)
-                           <rip sleeping tdma_worker out of sched>
-
-Now that v3 rt threads are normal kthreads on steroids,
-rtdm_task_destroy() sends a cancellation request, but may not forcibly
-rip the canceled thread out of the scheduler like in v2. It has to wait
-for the latter to notice the pending request then act upon it, i.e.
-exit. So the new sequence is as follows:
-
-[detach_handler] xnsynch_destroy(&sync_event)
-                       xnsynch_flush(&sync_event, XNRMID)
-                       release event resources
-[tdma_worker]    back from rtdm_event_wait() => -ERMID
-[tdma_worker]    back sleeping on rtdm_event_wait()
-[detach_handler] rtdm_task_destroy(&tdma_worker)
-                       raise cancellation flag
-                       xnthread_resume(&tdma_worker)
-[tdma_worker]    ## tread on stale sync_event memory ##
-
-Moving rtdm_task_destroy() before the event deletion call fixes the
-issue with v3, since the former is synchronized, returning to the caller
-only when the task traverses a cancellation point, honoring the
-cancellation request and therefore exiting.
-
-This said, it seems a good idea to first stop the worker before dropping
-any resources it may use. An entry about the change in semantics of
-rtdm_task_destroy() in the migration guide may indeed help.
-
--- 
-Philippe.
+SGVsbG8gR3JlZywNCg0KSSBkaWRuJ3Qgc3VjY2VlZCB0byBzb2x2ZSB0aGlzIGlzc3VlLg0KVGhl
+IHN3aXRjaCB0byBzZWNvbmRhcnkgbW9kZSBvbmx5IGhhcHBlbiBvbiB0aGUgZmlyc3Qgd3JpdGUg
+dG8gdGhlIG1lbW9yeSBtYXBwZWQgYXJlYS4gQXMgZmFyIGFzIEkgdW5kZXJzdG9vZCwgdGhlIHNl
+Y29uZGFyeSBtb2RlIHN3aXRjaCBpcyBjYXVzZWQgYnkgYSBwYWdlIGZhdWx0Lg0KSSB3b3JrYXJv
+dW5kIGl0IGJ5IGRvaW5nIGEgZHVtbXkgd3JpdGUganVzdCBhZnRlciB0aGUgbW1hcCgpIGNhbGws
+IHdoaWNoIGFueXdheSB0cmlnZ2VyIGEgc3dpdGNoIHRvIHNlY29uZGFyeSBtb2RlLg0KQWZ0ZXIg
+dGhpcyBmaXJzdCBkdW1teSB3cml0ZSwgbXkgcnQgdGhyZWFkIGRvZXNuJ3Qgc3dpdGNoIGFueW1v
+cmUgdG8gc2Vjb25kYXJ5IG1vZGUuDQoNCkkgdXNlZCB0aGUgZG9jdW1lbnRhdGlvbiB5b3UgcG9p
+bnQgYnV0IEkgZGlkbid0IGZvdW5kIGFueSBoZWxwIGZvciB0aGlzIGlzc3VlLg0KDQpCZXN0IHJl
+Z2FyZHMsDQoNCkJlcnRyYW5kDQoNCg0KLS0tLS1NZXNzYWdlIGQnb3JpZ2luZS0tLS0tDQpEZSA6
+IEdyZWcgR2FsbGFnaGVyIFttYWlsdG86Z3JlZ0BlbWJlZGRlZGdyZWcuY29tXQ0KRW52b3nDqSA6
+IHZlbmRyZWRpIDI2IGphbnZpZXIgMjAxOCAyMTo0Mw0Kw4AgOiBNSU5JRVIgQmVydHJhbmQNCkNj
+IDogeGVub21haUB4ZW5vbWFpLm9yZw0KT2JqZXQgOiBSZTogW1hlbm9tYWldIFdyaXRpbmcgdG8g
+VUREIGRyaXZlciB0aHJvdWdoIG1hcHBlZCBtZW1vcnkgY2F1c2Ugc2Vjb25kYXJ5IG1vZGUgc3dp
+dGNoDQoNClNvcnJ5IHRvIGJyaW5nIGJhY2sgYW4gb2xkIHRocmVhZCBidXQgSSBqdXN0IG5vdGlj
+ZWQgdGhpcy4gIERpZCB5b3Ugc29sdmUgeW91ciBpc3N1ZT8gIERpZCB5b3UgdXNlIHRoZSBkb2N1
+bWVudGF0aW9uIGluIHRoaXMgZmlsZSBmb3IgaGVscD8gaHR0cHM6Ly9naXQueGVub21haS5vcmcv
+eGVub21haS0zLmdpdC90cmVlL2luY2x1ZGUvY29iYWx0L2tlcm5lbC9ydGRtL3VkZC5oP2lkPWY0
+YTU0YjE3M2RiNzFhMTgyZDk4MjY4NTJhOTRiMjBmNjA5NWI0MTENCg0KLUdyZWcNCg0KT24gVGh1
+LCBEZWMgMTQsIDIwMTcgYXQgNjoyMyBBTSwgTUlOSUVSIEJlcnRyYW5kIDxCZXJ0cmFuZC5NSU5J
+RVJAc2VyY2VsLmNvbT4gd3JvdGU6DQo+IEhpLA0KPg0KPiBJIGltcGxlbWVudGVkIGFuIFVERCBk
+cml2ZXIgZm9yIGEgU09DIElQIG9uIG15IFhpbGlueCBVbHRyYXNjYWxlIFpDVTEwMiBib2FyZC4N
+Cj4gVGhlIGFyY2ggaXMgYXJtNjQgc28gSSdtIHVzaW5nIFhlbm9tYWkgZnJvbSB0aGUgbmV4dCBi
+cmFuY2guDQo+DQo+IFdoZW4gSSB0cnkgdG8gd3JpdGUgdG8gdGhlIG1lbW9yeSBtYXBwZWQgZnJv
+bSB0aGUgdXNlciBzcGFjZSBzaWRlLCBYZW5vbWFpIHN3aXRjaGVzIHRvIHNlY29uZGFyeSBtb2Rl
+Lg0KPg0KPiBJIGFjdGl2YXRlZCB0aGUgU0lHREVCVUcgYW5kIGF0dGFjaGVkIGFuIGhhbmRsZXIg
+dG8gcG9pbnQgdGhlIG9yaWdpbiBhbmQgdGhlIHJlYXNvbiBvZiB0aGlzIHNlY29uZGFyeSBtb2Rl
+IHN3aXRjaC4NCj4gVGhlIHJlc3VsdCBvZiBzaWdkZWJ1Z19yZWFzb24oc2lnaW5mbykgaXMgU0lH
+REVCVUdfTUlHUkFURV9GQVVMVC4NCj4NCj4gSSdtIHVzaW5nIG1tYXAgd2l0aCB0aGUgZm9sbG93
+aW5nIGF0dHJpYnV0ZXM6DQo+IG1tYXAoTlVMTCwgNDA5NiwgUFJPVF9SRUFEfFBST1RfV1JJVEUs
+IE1BUF9TSEFSRUQsIGZwZ2FNZW1mZCwgMCk7DQo+DQo+IFRoZSBmaWxlIGRlc2NyaXB0b3IgaXMg
+b3BlbmVkIHdpdGggT19SRFdSIGZsYWcuDQo+DQo+IFdoYXQgaXMgc3RyYW5nZSBpcyB0aGF0IG1l
+bW9yeSB3cml0ZSBlZmZlY3RpdmVseSB3b3JrcyBidXQgdGhlIFNJR0RFQlVHX01JR1JBVEVfRkFV
+TFQgaXMgdHJpZ2dlcmVkLiBSZWFkaW5nIHRoZSBwaHlzaWNhbCBkcml2ZXIgbWVtb3J5IHdpdGgg
+ZGV2bWVtIHJldHVybnMgdGhlIHdyaXR0ZW4gdmFsdWUuDQo+DQo+IERvZXMgYW55b25lIHdvdWxk
+IGhhdmUgYW55IGlkZWEgYWJvdXQgdGhlIG9yaWdpbiBvZiB0aGUgaXNzdWUgPw0KPg0KPiBUaGFu
+a3MsDQo+DQo+IEJlcnRyYW5kIE1pbmllcg0KPg0KPg0KPiBUaGlzIGUtbWFpbCBhbmQgYW55IGFj
+Y29tcGFueWluZyBhdHRhY2htZW50cyBhcmUgY29uZmlkZW50aWFsLiBJZiB5b3UgYXJlIG5vdCB0
+aGUgaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgbXVzdCBub3QgcmV2aWV3LCBkaXNjbG9zZSwgY29w
+eSwgZGlzdHJpYnV0ZSBvciB1c2UgdGhpcyBlLW1haWw7IHBsZWFzZSBkZWxldGUgaXQgZnJvbSB5
+b3VyIHN5c3RlbSBhbmQgbm90aWZ5IHRoZSBzZW5kZXIgaW1tZWRpYXRlbHkuDQo+IF9fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo+IFhlbm9tYWkgbWFpbGlu
+ZyBsaXN0DQo+IFhlbm9tYWlAeGVub21haS5vcmcNCj4gaHR0cHM6Ly94ZW5vbWFpLm9yZy9tYWls
+bWFuL2xpc3RpbmZvL3hlbm9tYWkNClRoaXMgZS1tYWlsIGFuZCBhbnkgYWNjb21wYW55aW5nIGF0
+dGFjaG1lbnRzIGFyZSBjb25maWRlbnRpYWwuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCBy
+ZWNpcGllbnQsIHlvdSBtdXN0IG5vdCByZXZpZXcsIGRpc2Nsb3NlLCBjb3B5LCBkaXN0cmlidXRl
+IG9yIHVzZSB0aGlzIGUtbWFpbDsgcGxlYXNlIGRlbGV0ZSBpdCBmcm9tIHlvdXIgc3lzdGVtIGFu
+ZCBub3RpZnkgdGhlIHNlbmRlciBpbW1lZGlhdGVseS4NCg==
 
