@@ -1,14 +1,8 @@
-MIME-Version: 1.0
-In-Reply-To: <0dac1a39-4e56-5174-825a-3256876a7577@xenomai.org>
-References: <388c7d18-7726-9d20-b9c2-2113115fa348@iit.it>
- <0dac1a39-4e56-5174-825a-3256876a7577@xenomai.org>
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Mon, 29 Jan 2018 13:18:23 -0500
-Message-ID: <CALLqZ8RhtguYZ5O16OiF88UWzyMdRQnjKMLW+xrYyJs351-5Hg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] [RTnet] 3.0.6 xenomai/net/drivers 'debug' symbol
-	redeclared
+From: Joonyoung Shim <jy0922.shim@samsung.com>
+Date: Tue, 30 Jan 2018 09:26:55 +0900
+Message-id: <1517272015-6274-1-git-send-email-jy0922.shim@samsung.com>
+References: <CGME20180130002607epcas2p15e106753c180b0e90d445b3b1d0c4b70@epcas2p1.samsung.com>
+Subject: [Xenomai] [PATCH] rtnet/tdma: fix lockup issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,74 +11,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is fixed in stable-3.0.x
+Sometimes the kernel lockup occurs with "rtifconfig rteth0 down" command
+execution on TDMA slave.
 
-On Mon, Jan 29, 2018 at 1:15 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On 01/29/2018 07:01 PM, alessio margan wrote:
->> Hi all,
->>
->> I was installing xenomai 3.0.6 (
->> https://xenomai.org/downloads/xenomai/stable/ ) on a 4.9.51 kernel, I
->> get the following errors
->>
->> drivers/xenomai/net/drivers/r8169.c:131:12: error: =E2=80=98debug=E2=80=
-=99 redeclared as
->> different kind of symbol
->>
->>  static int debug =3D -1;
->>             ^
->> In file included from arch/x86/xenomai/include/asm/xenomai/thread.h:25:0=
-,
->>                  from include/xenomai/cobalt/kernel/thread.h:35,
->>                  from include/xenomai/cobalt/kernel/sched.h:24,
->>                  from include/xenomai/rtdm/driver.h:37,
->>                  from drivers/xenomai/net/stack/include/rtnet.h:99,
->>                  from drivers/xenomai/net/stack/include/rtskb.h:32,
->>                  from drivers/xenomai/net/stack/include/rtdev.h:37,
->>                  from drivers/xenomai/net/stack/include/rtnet_port.h:32,
->>                  from drivers/xenomai/net/drivers/r8169.c:82:
->> ./arch/x86/include/asm/traps.h:13:17: note: previous declaration of
->> =E2=80=98debug=E2=80=99 was here
->>  asmlinkage void debug(void);
->>
->> drivers/xenomai/net/drivers/igb/igb_main.c:280:12: error: =E2=80=98debug=
-=E2=80=99
->> redeclared as different kind of symbol
->>  static int debug =3D -1;
->>             ^
->> In file included from arch/x86/xenomai/include/asm/xenomai/thread.h:25:0=
-,
->>                  from include/xenomai/cobalt/kernel/thread.h:35,
->>                  from include/xenomai/cobalt/kernel/sched.h:24,
->>                  from include/xenomai/rtdm/driver.h:37,
->>                  from drivers/xenomai/net/stack/include/rtnet.h:99,
->>                  from drivers/xenomai/net/stack/include/rtskb.h:32,
->>                  from drivers/xenomai/net/stack/include/rtdev.h:37,
->>                  from drivers/xenomai/net/stack/include/rtnet_port.h:32,
->>                  from drivers/xenomai/net/drivers/igb/e1000_hw.h:31,
->>                  from drivers/xenomai/net/drivers/igb/e1000_mac.h:28,
->>                  from drivers/xenomai/net/drivers/igb/igb.h:30,
->>                  from drivers/xenomai/net/drivers/igb/igb_main.c:56:
->> ./arch/x86/include/asm/traps.h:13:17: note: previous declaration of
->> =E2=80=98debug=E2=80=99 was here
->>  asmlinkage void debug(void);
->>
->>
->> there is a workaround or I should try git://xenomai.org/xenomai-3.git
->> wip/rtnet-fixes and then wait for a 3.0.7 ?
->>
->
-> The rule of thumb is to track and pull the latest code from the
-> stable-3.0.x branch at git://git.xenomai.org/xenomai-3.git.
->
-> --
-> Philippe.
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> https://xenomai.org/mailman/listinfo/xenomai
+[525182.648366] INFO: rcu_sched detected stalls on CPUs/tasks:
+[525182.648372] 	7-...: (0 ticks this GP) idle=415/140000000000000/0 softirq=1249048/1249048 fqs=6628
+[525182.648374] 	(detected by 0, t=15002 jiffies, g=2145322, c=2145321, q=131873)
+[525182.648376] Task dump for CPU 7:
+[525182.648377] rtifconfig      R  running task        0 24290  24278 0x0000000c
+[525182.648381]  0000000000000000 ffff888b9ede5640 0000000000000001 ffff8888a35bbc00
+[525182.648384]  ffff888b8be78000 ffffb20f8413bc10 ffffffffa446e80d 000000000001aa50
+[525182.648387]  ffff888b9ede5480 ffffb20f8413bc50 ffffffffa459720d ffff888b88510440
+[525182.648390] Call Trace:
+[525182.648395]  [<ffffffffa446e80d>] ? xnarch_switch_to+0x5d/0xa0
+[525182.648398]  [<ffffffffa459720d>] ___xnsched_run.part.64+0x1ed/0x390
+[525182.648400]  [<ffffffffa4597af3>] __xnsched_run_handler+0xc3/0xe0
+[525182.648402]  [<ffffffffa453618c>] __ipipe_do_sync_stage+0xdc/0x170
+[525182.648404]  [<ffffffffa45362c3>] __ipipe_do_sync_pipeline+0x33/0x90
+[525182.648405]  [<ffffffffa453638d>] __ipipe_restore_head+0x6d/0xb0
+[525182.648407]  [<ffffffffa45a5648>] __rtdm_synch_flush+0xf8/0x130
+[525182.648410]  [<ffffffffa45a5781>] rtdm_event_destroy+0x21/0x70
+[525182.648412]  [<ffffffffc0961cdb>] tdma_detach+0x1b/0x100 [tdma]
+[525182.648415]  [<ffffffffc0956044>] rtmac_disc_detach+0x44/0xd0 [rtmac]
+[525182.648418]  [<ffffffffc091f5f8>] rtnet_core_ioctl+0x2b8/0x490 [rtnet]
+[525182.648421]  [<ffffffffc091f2f3>] rtnet_ioctl+0x103/0x150 [rtnet]
+[525182.648423]  [<ffffffffa466cee1>] do_vfs_ioctl+0xa1/0x5d0
+[525182.648425]  [<ffffffffa4668ac4>] ? putname+0x54/0x60
+[525182.648426]  [<ffffffffa466d489>] SyS_ioctl+0x79/0x90
+[525182.648429]  [<ffffffffa4c73257>] entry_SYSCALL_64_fastpath+0x16/0x1b
+
+It is suspected of causing the lockup that the sync_event used in the
+task is destroyed in advance before the task is destroyed.
+
+Fixes: bd971c3a9624 ("rtnet: adapt to RTDM task management changes")
+Signed-off-by: Joonyoung Shim <jy0922.shim@samsung.com>
+---
+ kernel/drivers/net/stack/rtmac/tdma/tdma_module.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/drivers/net/stack/rtmac/tdma/tdma_module.c b/kernel/drivers/net/stack/rtmac/tdma/tdma_module.c
+index e367d21..854a996 100644
+--- a/kernel/drivers/net/stack/rtmac/tdma/tdma_module.c
++++ b/kernel/drivers/net/stack/rtmac/tdma/tdma_module.c
+@@ -227,14 +227,14 @@ int tdma_detach(struct rtnet_device *rtdev, void *priv)
+     struct tdma_job     *job, *tmp;
+ 
+ 
++    rtdm_task_destroy(&tdma->worker_task);
++
+     rtdm_event_destroy(&tdma->sync_event);
+     rtdm_event_destroy(&tdma->xmit_event);
+     rtdm_event_destroy(&tdma->worker_wakeup);
+ 
+     tdma_dev_release(tdma);
+ 
+-    rtdm_task_destroy(&tdma->worker_task);
+-
+     list_for_each_entry_safe(job, tmp, &tdma->first_job->entry, entry) {
+ 	if (job->id >= 0)
+ 	    tdma_cleanup_slot(tdma, SLOT_JOB(job));
+-- 
+1.9.1
+
 
