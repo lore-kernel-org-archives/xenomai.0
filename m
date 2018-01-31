@@ -1,10 +1,11 @@
-From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Tue, 30 Jan 2018 21:36:21 -0500
-Message-Id: <1517366181-6547-3-git-send-email-greg@embeddedgreg.com>
-In-Reply-To: <1517366181-6547-1-git-send-email-greg@embeddedgreg.com>
-References: <1517366181-6547-1-git-send-email-greg@embeddedgreg.com>
-Subject: [Xenomai] [PATCH 3/3] Allow for more then one rt gpio driver to be
-	built and loaded at the same build
+From: Nihar Unadkat <Nihar@deltatau.com>
+Date: Wed, 31 Jan 2018 01:09:17 +0000
+Message-ID: <SN1PR11MB06061A18733A417D16117719D1FB0@SN1PR11MB0606.namprd11.prod.outlook.com>
+Content-Language: en-US
+MIME-Version: 1.0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] suspending kernel thread
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,134 +14,148 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: Henry Bausley <hbausley@deltatau.com>
 
-Some SOCs will have two GPIO chips that require two independent drivers.  In my
-case I was working with the Zynq SOC and needed a driver for the gpios on the
-FPGA and a driver for the gpios available on the ARM core. This change allows
-for two rt gpio drivers to be built and loaded at the same time.
-The rt gpio driver will be renamed from xeno-gpio to the following:
+Hi=20
 
-xeno-gpio-bcm2835.ko
-xeno-gpio-mxc.ko
-xeno-gpio-sun8i-h3.ko
-xeno-gpio-zynq7000.ko
+I am using ipipe-ipipe-core-4.1.18-arm-9 which is patched with xenomai-2.6.=
+5
 
-This also moves the gpio-core logic into the kernel image.
----
- kernel/drivers/gpio/Kconfig       | 12 ++++++------
- kernel/drivers/gpio/Makefile      | 22 ++++++++++++----------
- kernel/drivers/gpio/gpio-xilinx.c |  4 ++--
- 3 files changed, 20 insertions(+), 18 deletions(-)
+I am getting an error=20
+Xenomai: suspending kernel thread 7f8c2cb8 ('xxxx') at 0x7f89d6e8 after exc=
+eption #0x8
 
-diff --git a/kernel/drivers/gpio/Kconfig b/kernel/drivers/gpio/Kconfig
-index b7efa54..48475f2 100644
---- a/kernel/drivers/gpio/Kconfig
-+++ b/kernel/drivers/gpio/Kconfig
-@@ -1,7 +1,7 @@
- menu "Real-time GPIO drivers"
- 
- config XENO_DRIVERS_GPIO
--       tristate "GPIO controller"
-+       bool "GPIO controller"
-        depends on GPIOLIB
-        help
- 
-@@ -11,7 +11,7 @@ if XENO_DRIVERS_GPIO
- 
- config XENO_DRIVERS_GPIO_BCM2835
- 	depends on MACH_BCM2708 || ARCH_BCM2835
--	bool "Support for BCM2835 GPIOs"
-+	tristate "Support for BCM2835 GPIOs"
- 	help
- 
- 	Enables support for the GPIO controller available from
-@@ -19,7 +19,7 @@ config XENO_DRIVERS_GPIO_BCM2835
- 
- config XENO_DRIVERS_GPIO_MXC
- 	depends on GPIO_MXC
--	bool "Support for MXC GPIOs"
-+	tristate "Support for MXC GPIOs"
- 	help
- 
- 	Suitable for the GPIO controller available from
-@@ -27,7 +27,7 @@ config XENO_DRIVERS_GPIO_MXC
- 
- config XENO_DRIVERS_GPIO_SUN8I_H3
- 	depends on MACH_SUN8I && PINCTRL_SUN8I_H3
--	bool "Support for SUN8I H3 GPIOs"
-+	tristate "Support for SUN8I H3 GPIOs"
- 	help
- 
- 	Suitable for the GPIO controller available from Allwinner's H3
-@@ -35,7 +35,7 @@ config XENO_DRIVERS_GPIO_SUN8I_H3
- 
- config XENO_DRIVERS_GPIO_ZYNQ7000
- 	depends on ARCH_ZYNQ
--	bool "Support for Zynq7000 GPIOs"
-+	tristate "Support for Zynq7000 GPIOs"
- 	help
- 
- 	Enables support for the GPIO controller available from
-@@ -43,7 +43,7 @@ config XENO_DRIVERS_GPIO_ZYNQ7000
- 
- config XENO_DRIVERS_GPIO_XILINX
- 	depends on ARCH_ZYNQ
--	bool "Support for Xilinx GPIOs"
-+	tristate "Support for Xilinx GPIOs"
- 	help
- 
- 	Enables support for the GPIO controller available from
-diff --git a/kernel/drivers/gpio/Makefile b/kernel/drivers/gpio/Makefile
-index 3737330..8648fcc 100644
---- a/kernel/drivers/gpio/Makefile
-+++ b/kernel/drivers/gpio/Makefile
-@@ -1,12 +1,14 @@
- ccflags-$(CONFIG_XENO_DRIVERS_GPIO_DEBUG) := -DDEBUG
- 
--obj-$(CONFIG_XENO_DRIVERS_GPIO) += xeno_gpio.o
--
--xeno_gpio-y := gpio-core.o
--
--xeno_gpio-$(CONFIG_XENO_DRIVERS_GPIO_BCM2835) += gpio-bcm2835.o
--xeno_gpio-$(CONFIG_XENO_DRIVERS_GPIO_MXC) += gpio-mxc.o
--xeno_gpio-$(CONFIG_XENO_DRIVERS_GPIO_SUN8I_H3) += gpio-sun8i-h3.o
--xeno_gpio-$(CONFIG_XENO_DRIVERS_GPIO_ZYNQ7000) += gpio-zynq7000.o
--xeno_gpio-$(CONFIG_XENO_DRIVERS_GPIO_XILINX) += gpio-xilinx.o
--
-+obj-$(CONFIG_XENO_DRIVERS_GPIO_BCM2835) += xeno-gpio-bcm2835.o
-+obj-$(CONFIG_XENO_DRIVERS_GPIO_MXC) += xeno-gpio-mxc.o
-+obj-$(CONFIG_XENO_DRIVERS_GPIO_SUN8I_H3) += xeno-gpio-sun8i-h3.o
-+obj-$(CONFIG_XENO_DRIVERS_GPIO_ZYNQ7000) += xeno-gpio-zynq7000.o
-+obj-$(CONFIG_XENO_DRIVERS_GPIO_XILINX) += xeno-gpio-xilinx.o
-+obj-$(CONFIG_XENO_DRIVERS_GPIO) += gpio-core.o
-+
-+xeno-gpio-bcm2835-y := gpio-bcm2835.o
-+xeno-gpio-mxc-y := gpio-mxc.o
-+xeno-gpio-sun8i-h3-y := gpio-sun8i-h3.o
-+xeno-gpio-zynq7000-y := gpio-zynq7000.o
-+xeno-gpio-xilinx-y := gpio-xilinx.o
-diff --git a/kernel/drivers/gpio/gpio-xilinx.c b/kernel/drivers/gpio/gpio-xilinx.c
-index 72d4364..e982f5f 100644
---- a/kernel/drivers/gpio/gpio-xilinx.c
-+++ b/kernel/drivers/gpio/gpio-xilinx.c
-@@ -19,13 +19,13 @@
-  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-  */
- #include <linux/module.h>
--#include "gpio-core.h"
-+#include <rtdm/gpio.h>
- 
- #define RTDM_SUBCLASS_XILINX  5
- 
- static int __init xilinx_gpio_init(void)
- {
-- 	return rtdm_gpiochip_scan_of(NULL, "xlnx,xps-gpio-1.00.a",
-+	return rtdm_gpiochip_scan_of(NULL, "xlnx,xps-gpio-1.00.a",
-                      RTDM_SUBCLASS_XILINX);
- }
- module_init(xilinx_gpio_init);
--- 
-2.7.4
+Where ('xxxx') is our function name.
+
+So I searched for where this message comes from and  I found it in the file=
+ pod.c and the function that is causing this error is=20
+
+/*!
+ * \fn void xnpod_trap_fault(xnarch_fltinfo_t *fltinfo);
+ * \brief Default fault handler.
+ *
+ * This is the default handler which is called whenever an uncontrolled
+ * exception or fault is caught. If the fault is caught on behalf of a
+ * real-time thread, the fault is not propagated to the host system.
+ * Otherwise, the fault is unhandled by the nucleus and simply propagated.
+ *
+ * @param fltinfo An opaque pointer to the arch-specific buffer
+ * describing the fault. The actual layout is defined by the
+ * xnarch_fltinfo_t type in each arch-dependent layer file.
+ *
+ */
+
+int xnpod_trap_fault(xnarch_fltinfo_t *fltinfo)
+{
+=09xnthread_t *curr;
+
+=09if (!xnpod_active_p() ||
+=09    (!xnpod_interrupt_p() && xnpod_idle_p()))
+=09=09return 0;
+
+=09curr =3D xnpod_current_thread();
+
+=09trace_mark(xn_nucleus, thread_fault,
+=09=09   "thread %p thread_name %s ip %p type 0x%x",
+=09=09   curr, xnthread_name(curr),
+=09=09   (void *)xnarch_fault_pc(fltinfo),
+=09=09   xnarch_fault_trap(fltinfo));
+
+#ifdef __KERNEL__
+=09if (xnarch_fault_fpu_p(fltinfo)) {
+=09=09if (__xnpod_fault_init_fpu(curr))
+=09=09=09return 1;
+=09=09print_symbol("invalid use of FPU in Xenomai context at %s\n",
+=09=09=09     xnarch_fault_pc(fltinfo));
+=09}
+
+=09if (!xnpod_userspace_p()) {
+=09=09xnprintf
+=09=09    ("suspending kernel thread %p ('%s') at 0x%lx after exception #0x=
+%x\n",
+=09=09     curr, curr->name, xnarch_fault_pc(fltinfo),
+=09=09     xnarch_fault_trap(fltinfo));
+
+=09=09xnpod_suspend_thread(curr, XNSUSP, XN_INFINITE, XN_RELATIVE, NULL);
+=09=09return 1;
+=09}
+
+#ifdef CONFIG_XENO_OPT_PERVASIVE
+=09/* If we experienced a trap on behalf of a shadow thread, just
+=09   move the second to the Linux domain, so that the host O/S
+=09   (e.g. Linux) can attempt to process the exception. This is
+=09   especially useful in order to handle user-space errors or debug
+=09   stepping properly. */
+
+=09if (xnpod_shadow_p()) {
+#if XENO_DEBUG(NUCLEUS)
+=09=09if (!xnarch_fault_um(fltinfo)) {
+=09=09=09xnarch_trace_panic_freeze();
+=09=09=09xnprintf
+=09=09=09    ("Switching %s to secondary mode after exception #%u in "
+=09=09=09     "kernel-space at 0x%lx (pid %d)\n", curr->name,
+=09=09=09     xnarch_fault_trap(fltinfo),
+=09=09=09     xnarch_fault_pc(fltinfo),
+=09=09=09     xnthread_current_user_pid(curr));
+=09=09=09xnarch_trace_panic_dump();
+=09=09} else if (xnarch_fault_notify(fltinfo))=09/* Don't report debug trap=
+s */
+=09=09=09xnprintf
+=09=09=09    ("Switching %s to secondary mode after exception #%u from "
+=09=09=09     "user-space at 0x%lx (pid %d)\n", curr->name,
+=09=09=09     xnarch_fault_trap(fltinfo),
+=09=09=09     xnarch_fault_pc(fltinfo),
+=09=09=09     xnthread_current_user_pid(curr));
+#endif /* XENO_DEBUG(NUCLEUS) */
+=09=09if (xnarch_fault_pf_p(fltinfo))
+=09=09=09/* The page fault counter is not SMP-safe, but it's a
+=09=09=09   simple indicator that something went wrong wrt memory
+=09=09=09   locking anyway. */
+=09=09=09xnstat_counter_inc(&curr->stat.pf);
+
+=09=09xnshadow_relax(xnarch_fault_notify(fltinfo),
+=09=09=09       SIGDEBUG_MIGRATE_FAULT);
+=09}
+#endif /* CONFIG_XENO_OPT_PERVASIVE */
+#endif /* __KERNEL__ */
+
+=09return 0;
+}
+EXPORT_SYMBOL_GPL(xnpod_trap_fault);
+
+
+The only way for me to bypass the error Xenomai: suspending kernel thread 7=
+f8c2cb8 ('xxxx') at 0x7f89d6e8 after exception #0x8
+Was to comment out the section given below and everything works ok.
+
+/*=09if (!xnpod_userspace_p()) {
+=09=09xnprintf
+=09=09    ("suspending kernel thread %p ('%s') at 0x%lx after exception #0x=
+%x\n",
+=09=09     curr, curr->name, xnarch_fault_pc(fltinfo),
+=09=09     xnarch_fault_trap(fltinfo));
+
+=09=09xnpod_suspend_thread(curr, XNSUSP, XN_INFINITE, XN_RELATIVE, NULL);
+=09=09return 1;
+=09}
+*/
+
+My question are
+1) What does this function do?=20
+2) why am I getting that error.
+3) What is your advice or suggestion on this.
+
+Thank you=20
+
+Nihar Unadkat =A0
+Senior Firmware Engineer
+Direct: 818-444-5206
+nihar@deltatau.com
+
+OMRON DELTA TAU=20
+21314 Lassen Street, Chatsworth, CA 91311
+deltatau.com=20
+youtube.com/DeltaTauDataSystems
 
 
