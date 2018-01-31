@@ -1,16 +1,10 @@
-From: Fazio Maurizio <maurizio.fazio@leonardocompany.com>
-Date: Thu, 11 Jan 2018 15:28:27 +0000
-Message-ID: <7908062852e1470799b6c81292277d05@ocnapvsw3301.ocr.priv>
-References: <266d7c1efc534a3284787e54599e952b@ocnapvsw3301.ocr.priv>
- <11364_1515604182_5A5648D6_11364_10471_1_CALLqZ8S5LHPi+5qAGfiCVQOyAnK+bTjhK2Mxt1vqQei6jbfq_A@mail.gmail.com>
- <b9e65123fdf64354b661e1d2532e0cd2@ocnapvsw3301.ocr.priv>
- <18321_1515661993_5A572AA9_18321_4123_1_895b0fd2-5bbf-16f6-c6f3-78cf60d7d394@alaxarxa.net>
-In-Reply-To: <18321_1515661993_5A572AA9_18321_4123_1_895b0fd2-5bbf-16f6-c6f3-78cf60d7d394@alaxarxa.net>
-Content-Language: it-IT
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-Subject: [Xenomai] R: R: Xenomai 3.0.6 - ipipe-3.18.20 - kernel build error
+From: Greg Gallagher <greg@embeddedgreg.com>
+Date: Tue, 30 Jan 2018 21:36:21 -0500
+Message-Id: <1517366181-6547-3-git-send-email-greg@embeddedgreg.com>
+In-Reply-To: <1517366181-6547-1-git-send-email-greg@embeddedgreg.com>
+References: <1517366181-6547-1-git-send-email-greg@embeddedgreg.com>
+Subject: [Xenomai] [PATCH 3/3] Allow for more then one rt gpio driver to be
+	built and loaded at the same build
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,186 +13,134 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-VGhhbmtzIGEgbG90ISENCnlvdXIgc29sdXRpb24gZml4ZWQgbXkgaXNzdWUuDQoNCg0KTWF1cml6
-aW8gRmF6aW8NCg0KQ2hpZWYgVGVjaG5pY2FsIE9mZmljZSAvIEFpcmNyYWZ0IFN5c3RlbXMgU29m
-dHdhcmUgRW5naW5lZXINCg0KDQoNCkxlb25hcmRvIFMucC5BLg0KQy5zbyBGcmFuY2lhLCA0MjYg
-LSBUb3Jpbm8gLSAxMDE0NiAtIEl0YWx5IFRlbC4gKzM5IDAxMSA3NTYgMzMwOCAvIDM3NjENCg0K
-bWF1cml6aW8uZmF6aW9AbGVvbmFyZG9jb21wYW55LmNvbQ0Kd3d3Lmxlb25hcmRvY29tcGFueS5j
-b20NCg0K4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
-4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCT4oCU4oCU4oCU
-4oCU4oCU4oCUDQpIRUxJQ09QVEVSUy9BRVJPTkFVVElDUy9FTEVDVFJPTklDUywgREVGRU5DRSAm
-IFNFQ1VSSVRZIFNZU1RFTVMvU1BBQ0Ug4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
-4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
-4oCU4oCU4oCT4oCU4oCU4oCU4oCU4oCU4oCUDQoNCg0KDQoNCkNvbXBhbnkgR2VuZXJhbCBVc2UN
-Cg0KDQpJbCBwcmVzZW50ZSBtZXNzYWdnaW8gZS1tYWlsIGUgb2duaSBzdW8gYWxsZWdhdG8gZGV2
-b25vIGludGVuZGVyc2kgaW5kaXJpenphdGkgZXNjbHVzaXZhbWVudGUgYWwgZGVzdGluYXRhcmlv
-IGluZGljYXRvIGUgY29uc2lkZXJhcnNpIGRhbCBjb250ZW51dG8gc3RyZXR0YW1lbnRlIHJpc2Vy
-dmF0byBlIGNvbmZpZGVuemlhbGUuIFNlIG5vbiBzaWV0ZSBsJ2VmZmV0dGl2byBkZXN0aW5hdGFy
-aW8gbyBhdmV0ZSByaWNldnV0byBpbCBtZXNzYWdnaW8gZS1tYWlsIHBlciBlcnJvcmUsIHNpZXRl
-IHByZWdhdGkgZGkgYXZ2ZXJ0aXJlIGltbWVkaWF0YW1lbnRlIGlsIG1pdHRlbnRlIGUgZGkgY2Fu
-Y2VsbGFyZSBpbCBzdWRkZXR0byBtZXNzYWdnaW8gZSBvZ25pIHN1byBhbGxlZ2F0byBkYWwgdm9z
-dHJvIHNpc3RlbWEgaW5mb3JtYXRpY28uIFF1YWxzaWFzaSB1dGlsaXp6bywgZGlmZnVzaW9uZSwg
-Y29waWEgbyBhcmNoaXZpYXppb25lIGRlbCBwcmVzZW50ZSBtZXNzYWdnaW8gZGEgcGFydGUgZGkg
-Y2hpIG5vbiBuZSDDqCBpbCBkZXN0aW5hdGFyaW8gw6ggc3RyZXR0YW1lbnRlIHByb2liaXRvIGUg
-cHXDsiBkYXIgbHVvZ28gYSByZXNwb25zYWJpbGl0w6AgZGkgY2FyYXR0ZXJlIGNpdmlsZSBlIHBl
-bmFsZSBwdW5pYmlsaSBhaSBzZW5zaSBkaSBsZWdnZS4NClF1ZXN0YSBlLW1haWwgaGEgdmFsb3Jl
-IGxlZ2FsZSBzb2xvIHNlIGZpcm1hdGEgZGlnaXRhbG1lbnRlIGFpIHNlbnNpIGRlbGxhIG5vcm1h
-dGl2YSB2aWdlbnRlLg0KDQpUaGUgY29udGVudHMgb2YgdGhpcyBlbWFpbCBtZXNzYWdlIGFuZCBh
-bnkgYXR0YWNobWVudHMgYXJlIGludGVuZGVkIHNvbGVseSBmb3IgdGhlIGFkZHJlc3NlZShzKSBh
-bmQgY29udGFpbiBjb25maWRlbnRpYWwgYW5kL29yIHByaXZpbGVnZWQgaW5mb3JtYXRpb24uDQpJ
-ZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50IG9mIHRoaXMgbWVzc2FnZSwgb3Ig
-aWYgdGhpcyBtZXNzYWdlIGhhcyBiZWVuIGFkZHJlc3NlZCB0byB5b3UgaW4gZXJyb3IsIHBsZWFz
-ZSBpbW1lZGlhdGVseSBub3RpZnkgdGhlIHNlbmRlciBhbmQgdGhlbiBkZWxldGUgdGhpcyBtZXNz
-YWdlIGFuZCBhbnkgYXR0YWNobWVudHMgZnJvbSB5b3VyIHN5c3RlbS4gSWYgeW91IGFyZSBub3Qg
-dGhlIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCBhbnkg
-dXNlLCBkaXNzZW1pbmF0aW9uLCBjb3B5aW5nLCBvciBzdG9yYWdlIG9mIHRoaXMgbWVzc2FnZSBv
-ciBpdHMgYXR0YWNobWVudHMgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gVW5hdXRob3JpemVkIGRp
-c2Nsb3N1cmUgYW5kL29yIHVzZSBvZiBpbmZvcm1hdGlvbiBjb250YWluZWQgaW4gdGhpcyBlbWFp
-bCBtZXNzYWdlIG1heSByZXN1bHQgaW4gY2l2aWwgYW5kIGNyaW1pbmFsIGxpYWJpbGl0eS4g4oCc
-DQpUaGlzIGUtbWFpbCBoYXMgbGVnYWwgdmFsdWUgYWNjb3JkaW5nIHRvIHRoZSBhcHBsaWNhYmxl
-IGxhd3Mgb25seSBpZiBpdCBpcyBkaWdpdGFsbHkgc2lnbmVkIGJ5IHRoZSBzZW5kZXINCi0tLS0t
-TWVzc2FnZ2lvIG9yaWdpbmFsZS0tLS0tDQpEYTogTGVvcG9sZCBQYWxvbW8tQXZlbGxhbmVkYSBb
-bWFpbHRvOmxlb0BhbGF4YXJ4YS5uZXRdDQpJbnZpYXRvOiBnaW92ZWTDrCAxMSBnZW5uYWlvIDIw
-MTggMTA6MTMNCkE6IEZhemlvIE1hdXJpemlvDQpDYzogeGVub21haUB4ZW5vbWFpLm9yZw0KT2dn
-ZXR0bzogUmU6IFtYZW5vbWFpXSBSOiBYZW5vbWFpIDMuMC42IC0gaXBpcGUtMy4xOC4yMCAtIGtl
-cm5lbCBidWlsZCBlcnJvcg0KDQpUd28gd29yayB3b3JrYXJyb3VuZHM6DQoNCjEpIERpc2FibGUg
-aW4geW91IGtlcm5lbCBjb25maWcgQ09ORklHX0lBMzJfRU1VTEFUSU9ODQoNCg0KMikgYXBwbHkg
-dGhpczoNCg0KDQpodHRwczovL2dpdC54ZW5vbWFpLm9yZy94ZW5vbWFpLTMuZ2l0L2NvbW1pdC8/
-aWQ9Y2MyODNjN2YyNmMxYjA5N2I5NGE2MWJiMjVjMjU2NGY1MWRhZjE2ZA0KDQpMZW9wb2xkDQoN
-Ck9uIDExLzAxLzE4IDEwOjAwLCBGYXppbyBNYXVyaXppbyB3cm90ZToNCj4gWWVzLCBJJ20gYnVp
-bGRpbmcgZm9yIHg4Nl82NC4uLg0KPiBJIHBhdGNoZWQgdGhlIGtlcm5lbCB1c2luZyB0aGUgcHJl
-cGFyZS1rZXJuZWwgc2NyaXB0Og0KPj4+ICAuL3ByZXBhcmUta2VybmVsLnNoDQo+Pj4gLS1saW51
-eD0vaG9tZS9hbXMvbGludXhzcmMvbGludXgtMy4xOC4yMC14ZW5vbWFpDQo+Pj4gLS1pcGlwZT1p
-cGlwZS1jb3JlLTMuMTguMjAteDg2LTkucGF0Y2ggLS1hcmNoPXg4Ng0KPg0KPiBUaGVuIEkgYnVp
-bGQgdGhlIGtlcm5lbCB1c2luZyB0aGUgICJtYWtlIHJwbSIgY29tbWFuZCB1bmRlciB0aGUga2Vy
-bmVsIHRyZWUuLi4gdGhlbiAoaWYgYWxsIG9wZXJhdGlvbnMgYXJlIGNvbXBsZXRlZCkgSSBpbnN0
-YWxsIHRoZSBqdXN0IGdlbmVyYXRlZCBycG0gZmlsZXMuLi4gaW4gdGhpcyBjYXNlIHRoZSBvcGVy
-YXRpb24gZmFpbHMgZHVyaW5nIHRoZSBrZXJuZWwgYnVpbGRpbmcuLi4NCj4NCj4gSSBhdHRhY2hl
-ZCB0aGUga2VybmVsIGNvbmZpZyBmaWxlLi4uDQo+DQo+IFRoYW5rcyBpbiBhZHZhbmNlDQo+DQo+
-IE1hdXJpemlvIEZhemlvDQo+DQo+IENoaWVmIFRlY2huaWNhbCBPZmZpY2UgLyBBaXJjcmFmdCBT
-eXN0ZW1zIFNvZnR3YXJlIEVuZ2luZWVyDQo+DQo+DQo+DQo+IExlb25hcmRvIFMucC5BLg0KPiBD
-LnNvIEZyYW5jaWEsIDQyNiAtIFRvcmlubyAtIDEwMTQ2IC0gSXRhbHkgVGVsLiArMzkgMDExIDc1
-NiAzMzA4IC8NCj4gMzc2MQ0KPg0KPiBtYXVyaXppby5mYXppb0BsZW9uYXJkb2NvbXBhbnkuY29t
-DQo+IHd3dy5sZW9uYXJkb2NvbXBhbnkuY29tDQo+DQo+IOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKA
-lOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKA
-lOKAlOKAlOKAlOKAlOKAlOKAk+KAlOKAlOKAlOKAlOKAlOKAlA0KPiBIRUxJQ09QVEVSUy9BRVJP
-TkFVVElDUy9FTEVDVFJPTklDUywgREVGRU5DRSAmIFNFQ1VSSVRZIFNZU1RFTVMvU1BBQ0UNCj4g
-4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
-4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCT4oCU4oCU4oCU4oCU4oCU
-4oCUDQo+DQo+DQo+DQo+IENvbXBhbnkgR2VuZXJhbCBVc2UNCj4NCj4NCj4gSWwgcHJlc2VudGUg
-bWVzc2FnZ2lvIGUtbWFpbCBlIG9nbmkgc3VvIGFsbGVnYXRvIGRldm9ubyBpbnRlbmRlcnNpIGlu
-ZGlyaXp6YXRpIGVzY2x1c2l2YW1lbnRlIGFsIGRlc3RpbmF0YXJpbyBpbmRpY2F0byBlIGNvbnNp
-ZGVyYXJzaSBkYWwgY29udGVudXRvIHN0cmV0dGFtZW50ZSByaXNlcnZhdG8gZSBjb25maWRlbnpp
-YWxlLiBTZSBub24gc2lldGUgbCdlZmZldHRpdm8gZGVzdGluYXRhcmlvIG8gYXZldGUgcmljZXZ1
-dG8gaWwgbWVzc2FnZ2lvIGUtbWFpbCBwZXIgZXJyb3JlLCBzaWV0ZSBwcmVnYXRpIGRpIGF2dmVy
-dGlyZSBpbW1lZGlhdGFtZW50ZSBpbCBtaXR0ZW50ZSBlIGRpIGNhbmNlbGxhcmUgaWwgc3VkZGV0
-dG8gbWVzc2FnZ2lvIGUgb2duaSBzdW8gYWxsZWdhdG8gZGFsIHZvc3RybyBzaXN0ZW1hIGluZm9y
-bWF0aWNvLiBRdWFsc2lhc2kgdXRpbGl6em8sIGRpZmZ1c2lvbmUsIGNvcGlhIG8gYXJjaGl2aWF6
-aW9uZSBkZWwgcHJlc2VudGUgbWVzc2FnZ2lvIGRhIHBhcnRlIGRpIGNoaSBub24gbmUgw6ggaWwg
-ZGVzdGluYXRhcmlvIMOoIHN0cmV0dGFtZW50ZSBwcm9pYml0byBlIHB1w7IgZGFyIGx1b2dvIGEg
-cmVzcG9uc2FiaWxpdMOgIGRpIGNhcmF0dGVyZSBjaXZpbGUgZSBwZW5hbGUgcHVuaWJpbGkgYWkg
-c2Vuc2kgZGkgbGVnZ2UuDQo+IFF1ZXN0YSBlLW1haWwgaGEgdmFsb3JlIGxlZ2FsZSBzb2xvIHNl
-IGZpcm1hdGEgZGlnaXRhbG1lbnRlIGFpIHNlbnNpIGRlbGxhIG5vcm1hdGl2YSB2aWdlbnRlLg0K
-Pg0KPiBUaGUgY29udGVudHMgb2YgdGhpcyBlbWFpbCBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVu
-dHMgYXJlIGludGVuZGVkIHNvbGVseSBmb3IgdGhlIGFkZHJlc3NlZShzKSBhbmQgY29udGFpbiBj
-b25maWRlbnRpYWwgYW5kL29yIHByaXZpbGVnZWQgaW5mb3JtYXRpb24uDQo+IElmIHlvdSBhcmUg
-bm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQgb2YgdGhpcyBtZXNzYWdlLCBvciBpZiB0aGlzDQo+
-IG1lc3NhZ2UgaGFzIGJlZW4gYWRkcmVzc2VkIHRvIHlvdSBpbiBlcnJvciwgcGxlYXNlIGltbWVk
-aWF0ZWx5IG5vdGlmeQ0KPiB0aGUgc2VuZGVyIGFuZCB0aGVuIGRlbGV0ZSB0aGlzIG1lc3NhZ2Ug
-YW5kIGFueSBhdHRhY2htZW50cyBmcm9tIHlvdXINCj4gc3lzdGVtLiBJZiB5b3UgYXJlIG5vdCB0
-aGUgaW50ZW5kZWQgcmVjaXBpZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZA0KPiB0aGF0IGFu
-eSB1c2UsIGRpc3NlbWluYXRpb24sIGNvcHlpbmcsIG9yIHN0b3JhZ2Ugb2YgdGhpcyBtZXNzYWdl
-IG9yDQo+IGl0cyBhdHRhY2htZW50cyBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBVbmF1dGhvcml6
-ZWQgZGlzY2xvc3VyZSBhbmQvb3INCj4gdXNlIG9mIGluZm9ybWF0aW9uIGNvbnRhaW5lZCBpbiB0
-aGlzIGVtYWlsIG1lc3NhZ2UgbWF5IHJlc3VsdCBpbiBjaXZpbA0KPiBhbmQgY3JpbWluYWwgbGlh
-YmlsaXR5LiDigJwgVGhpcyBlLW1haWwgaGFzIGxlZ2FsIHZhbHVlIGFjY29yZGluZyB0byB0aGUN
-Cj4gYXBwbGljYWJsZSBsYXdzIG9ubHkgaWYgaXQgaXMgZGlnaXRhbGx5IHNpZ25lZCBieSB0aGUg
-c2VuZGVyDQo+IC0tLS0tTWVzc2FnZ2lvIG9yaWdpbmFsZS0tLS0tDQo+IERhOiBHcmVnIEdhbGxh
-Z2hlciBbbWFpbHRvOmdyZWdAZW1iZWRkZWRncmVnLmNvbV0NCj4gSW52aWF0bzogbWVyY29sZWTD
-rCAxMCBnZW5uYWlvIDIwMTggMTg6MTANCj4gQTogRmF6aW8gTWF1cml6aW8NCj4gQ2M6IHhlbm9t
-YWlAeGVub21haS5vcmcNCj4gT2dnZXR0bzogUmU6IFtYZW5vbWFpXSBYZW5vbWFpIDMuMC42IC0g
-aXBpcGUtMy4xOC4yMCAtIGtlcm5lbCBidWlsZA0KPiBlcnJvcg0KPg0KPiBIaSwNCj4gICBDYW4g
-eW91IHBvc3QgbW9yZSBpbmZvcm1hdGlvbiBvbiBob3cgeW91IGFyZSBidWlsZGluZyB0aGUgcGF0
-Y2hlZCBrZXJuZWw/ICBJJ20gYXNzdW1pbmcgeW91IGFyZSBidWlsZGluZyBmb3IgeDg2XzY0Pw0K
-Pg0KPiBUaGFua3MNCj4NCj4gR3JlZw0KPg0KPiBPbiBXZWQsIEphbiAxMCwgMjAxOCBhdCAxMTox
-NiBBTSwgRmF6aW8gTWF1cml6aW8gPG1hdXJpemlvLmZhemlvQGxlb25hcmRvY29tcGFueS5jb20+
-IHdyb3RlOg0KPj4gSGVsbG8sDQo+PiBJIGhhdmUgc29tZSBwcm9ibGVtcyBpbiBidWlsZGluZyB0
-aGUgMy4xOC4yMCBzdGFibGUga2VybmVsIHBhdGNoZWQNCj4+IHdpdGggWGVub21haSAzLjAuNiAt
-IENvYmFsdCAtIGlwaXBlLWNvcmUtMy4xOC4yMC14ODYtOS5wYXRjaCBUaGUgaW5zdGFsbGVkIG9w
-ZXJhdGluZyBzeXN0ZW0gaXMgQ2VudG9zIDcuIFRoZSBzYW1lIGtlcm5lbCBwYXRjaGVkIHVzaW5n
-IFhlbm9tYWkgMy4wLjUgYW5kIHRoZSBzYW1lIGlwaXBlIHBhdGNoIHdvcmtzIHdpdGhvdXQgYW55
-IHByb2JsZW1zLg0KPj4NCj4+IFRoZSBmb2xsb3dpbmcgbGluZXMgYXJlIHRoZSBlcnJvcnMgZHVy
-aW5nIHRoZSBrZXJuZWwgYnVpbGRpbmcNCj4+DQo+PiBJbiBmaWxlIGluY2x1ZGVkIGZyb20ga2Vy
-bmVsL3hlbm9tYWkvYnVmZC5jOjIzOjA6DQo+PiBhcmNoL3g4Ni94ZW5vbWFpL2luY2x1ZGUvYXNt
-L3hlbm9tYWkvc3lzY2FsbC5oOiBJbiBmdW5jdGlvbiDigJhfX3huX2dldF9zeXNjYWxsX27igJk6
-DQo+PiBhcmNoL3g4Ni94ZW5vbWFpL2luY2x1ZGUvYXNtL3hlbm9tYWkvc3lzY2FsbC5oOjYwOjI6
-IGVycm9yOiBpbXBsaWNpdA0KPj4gZGVjbGFyYXRpb24gb2YgZnVuY3Rpb24g4oCYX19DT0JBTFRf
-Q0FMTDMyX1NZU05S4oCZDQo+PiBbLVdlcnJvcj1pbXBsaWNpdC1mdW5jdGlvbi1kZWNsYXJhdGlv
-bl0NCj4+ICByZXR1cm4gX194bl9zeXNjYWxsX3AocmVncykgPyBfX3huX3N5c2NhbGwocmVncykN
-Cj4+DQo+PiBJbiBmaWxlIGluY2x1ZGVkIGZyb20gYXJjaC94ODYveGVub21haS9tYWNoaW5lLmM6
-MjI6MDoNCj4+IGFyY2gveDg2L3hlbm9tYWkvaW5jbHVkZS9hc20veGVub21haS9zeXNjYWxsLmg6
-IEluIGZ1bmN0aW9uIOKAmF9feG5fZ2V0X3N5c2NhbGxfbuKAmToNCj4+IGFyY2gveDg2L3hlbm9t
-YWkvaW5jbHVkZS9hc20veGVub21haS9zeXNjYWxsLmg6NjA6MjogZXJyb3I6IGltcGxpY2l0DQo+
-PiBkZWNsYXJhdGlvbiBvZiBmdW5jdGlvbiDigJhfX0NPQkFMVF9DQUxMMzJfU1lTTlLigJkNCj4+
-IFstV2Vycm9yPWltcGxpY2l0LWZ1bmN0aW9uLWRlY2xhcmF0aW9uXQ0KPj4gIHJldHVybiBfX3hu
-X3N5c2NhbGxfcChyZWdzKSA/IF9feG5fc3lzY2FsbChyZWdzKQ0KPj4NCj4+IFRoZSBvbmx5IGRp
-ZmZlcmVuY2UgaXMgdGhlIG5ldyByZWxlYXNlIG9mIFhlbm9tYWkgMy4wLjYgaW5zdGVhZCBvZiB0
-aGUgb2xkZXIgMy4wLjUgdmVyc2lvbi4uLg0KPj4NCj4+IFRoYW5rcyBpbiBhZHZhbmNlDQo+Pg0K
-Pj4gTWF1cml6aW8gRmF6aW8NCj4+DQo+PiBDaGllZiBUZWNobmljYWwgT2ZmaWNlIC8gQWlyY3Jh
-ZnQgU3lzdGVtcyBTb2Z0d2FyZSBFbmdpbmVlcg0KPj4NCj4+DQo+Pg0KPj4gTGVvbmFyZG8gUy5w
-LkEuDQo+PiBDLnNvIEZyYW5jaWEsIDQyNiAtIFRvcmlubyAtIDEwMTQ2IC0gSXRhbHkgVGVsLiAr
-MzkgMDExIDc1NiAzMzA4IC8NCj4+IDM3NjENCj4+DQo+PiBtYXVyaXppby5mYXppb0BsZW9uYXJk
-b2NvbXBhbnkuY29tDQo+PiB3d3cubGVvbmFyZG9jb21wYW55LmNvbQ0KPj4NCj4+IOKAlOKAlOKA
-lOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKA
-lOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAlOKAk+KAlOKAlOKAlOKAlOKAlOKAlA0KPj4g
-SEVMSUNPUFRFUlMvQUVST05BVVRJQ1MvRUxFQ1RST05JQ1MsIERFRkVOQ0UgJiBTRUNVUklUWSBT
-WVNURU1TL1NQQUNFDQo+PiDigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTi
-gJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTigJTi
-gJPigJTigJTigJTigJTigJTigJQNCj4+DQo+Pg0KPj4NCj4+IElsIHByZXNlbnRlIG1lc3NhZ2dp
-byBlLW1haWwgZSBvZ25pIHN1byBhbGxlZ2F0byBkZXZvbm8gaW50ZW5kZXJzaSBpbmRpcml6emF0
-aSBlc2NsdXNpdmFtZW50ZSBhbCBkZXN0aW5hdGFyaW8gaW5kaWNhdG8gZSBjb25zaWRlcmFyc2kg
-ZGFsIGNvbnRlbnV0byBzdHJldHRhbWVudGUgcmlzZXJ2YXRvIGUgY29uZmlkZW56aWFsZS4gU2Ug
-bm9uIHNpZXRlIGwnZWZmZXR0aXZvIGRlc3RpbmF0YXJpbyBvIGF2ZXRlIHJpY2V2dXRvIGlsIG1l
-c3NhZ2dpbyBlLW1haWwgcGVyIGVycm9yZSwgc2lldGUgcHJlZ2F0aSBkaSBhdnZlcnRpcmUgaW1t
-ZWRpYXRhbWVudGUgaWwgbWl0dGVudGUgZSBkaSBjYW5jZWxsYXJlIGlsIHN1ZGRldHRvIG1lc3Nh
-Z2dpbyBlIG9nbmkgc3VvIGFsbGVnYXRvIGRhbCB2b3N0cm8gc2lzdGVtYSBpbmZvcm1hdGljby4g
-UXVhbHNpYXNpIHV0aWxpenpvLCBkaWZmdXNpb25lLCBjb3BpYSBvIGFyY2hpdmlhemlvbmUgZGVs
-IHByZXNlbnRlIG1lc3NhZ2dpbyBkYSBwYXJ0ZSBkaSBjaGkgbm9uIG5lIMOoIGlsIGRlc3RpbmF0
-YXJpbyDDqCBzdHJldHRhbWVudGUgcHJvaWJpdG8gZSBwdcOyIGRhciBsdW9nbyBhIHJlc3BvbnNh
-YmlsaXTDoCBkaSBjYXJhdHRlcmUgY2l2aWxlIGUgcGVuYWxlIHB1bmliaWxpIGFpIHNlbnNpIGRp
-IGxlZ2dlLg0KPj4gUXVlc3RhIGUtbWFpbCBoYSB2YWxvcmUgbGVnYWxlIHNvbG8gc2UgZmlybWF0
-YSBkaWdpdGFsbWVudGUgYWkgc2Vuc2kgZGVsbGEgbm9ybWF0aXZhIHZpZ2VudGUuDQo+Pg0KPj4g
-VGhlIGNvbnRlbnRzIG9mIHRoaXMgZW1haWwgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFy
-ZSBpbnRlbmRlZCBzb2xlbHkgZm9yIHRoZSBhZGRyZXNzZWUocykgYW5kIGNvbnRhaW4gY29uZmlk
-ZW50aWFsIGFuZC9vciBwcml2aWxlZ2VkIGluZm9ybWF0aW9uLg0KPj4gSWYgeW91IGFyZSBub3Qg
-dGhlIGludGVuZGVkIHJlY2lwaWVudCBvZiB0aGlzIG1lc3NhZ2UsIG9yIGlmIHRoaXMNCj4+IG1l
-c3NhZ2UgaGFzIGJlZW4gYWRkcmVzc2VkIHRvIHlvdSBpbiBlcnJvciwgcGxlYXNlIGltbWVkaWF0
-ZWx5IG5vdGlmeQ0KPj4gdGhlIHNlbmRlciBhbmQgdGhlbiBkZWxldGUgdGhpcyBtZXNzYWdlIGFu
-ZCBhbnkgYXR0YWNobWVudHMgZnJvbSB5b3VyDQo+PiBzeXN0ZW0uIElmIHlvdSBhcmUgbm90IHRo
-ZSBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5DQo+PiBub3RpZmllZCB0aGF0IGFu
-eSB1c2UsIGRpc3NlbWluYXRpb24sIGNvcHlpbmcsIG9yIHN0b3JhZ2Ugb2YgdGhpcw0KPj4gbWVz
-c2FnZSBvciBpdHMgYXR0YWNobWVudHMgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gVW5hdXRob3Jp
-emVkDQo+PiBkaXNjbG9zdXJlIGFuZC9vciB1c2Ugb2YgaW5mb3JtYXRpb24gY29udGFpbmVkIGlu
-IHRoaXMgZW1haWwgbWVzc2FnZQ0KPj4gbWF5IHJlc3VsdCBpbiBjaXZpbCBhbmQgY3JpbWluYWwg
-bGlhYmlsaXR5LiDigJwgVGhpcyBlLW1haWwgaGFzIGxlZ2FsDQo+PiB2YWx1ZSBhY2NvcmRpbmcg
-dG8gdGhlIGFwcGxpY2FibGUgbGF3cyBvbmx5IGlmIGl0IGlzIGRpZ2l0YWxseSBzaWduZWQNCj4+
-IGJ5IHRoZSBzZW5kZXIgX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX18NCj4+IFhlbm9tYWkgbWFpbGluZyBsaXN0DQo+PiBYZW5vbWFpQHhlbm9tYWkub3JnDQo+
-PiBodHRwczovL3hlbm9tYWkub3JnL21haWxtYW4vbGlzdGluZm8veGVub21haQ0KPiAtLS0tLS0t
-LS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0gQSBub24tdGV4dCBhdHRhY2htZW50IHdh
-cw0KPiBzY3J1YmJlZC4uLg0KPiBOYW1lOiBjb25maWctMy4xOC4yMA0KPiBUeXBlOiBhcHBsaWNh
-dGlvbi9vY3RldC1zdHJlYW0NCj4gU2l6ZTogMTM4OTQ4IGJ5dGVzDQo+IERlc2M6IGNvbmZpZy0z
-LjE4LjIwDQo+IFVSTDoNCj4gPGh0dHA6Ly94ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9h
-dHRhY2htZW50cy8yMDE4MDExMS9kNzY2ZDEyOS9hdA0KPiB0YWNobWVudC5vYmo+IF9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo+IFhlbm9tYWkgbWFpbGlu
-ZyBsaXN0DQo+IFhlbm9tYWlAeGVub21haS5vcmcNCj4gaHR0cHM6Ly94ZW5vbWFpLm9yZy9tYWls
-bWFuL2xpc3RpbmZvL3hlbm9tYWkNCj4NCg0KDQotLQ0KLS0NCkxpbnV4IFVzZXIgMTUyNjkyICAg
-ICBHUEc6IDA1RjRBN0E5NDlBMkQ5QUENCkNhdGFsb25pYQ0KLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLQ0KQTogQmVjYXVzZSBpdCBtZXNzZXMgdXAgdGhlIG9yZGVyIGluIHdo
-aWNoIHBlb3BsZSBub3JtYWxseSByZWFkIHRleHQuDQpROiBXaHkgaXMgdG9wLXBvc3Rpbmcgc3Vj
-aCBhIGJhZCB0aGluZz8NCkE6IFRvcC1wb3N0aW5nLg0KUTogV2hhdCBpcyB0aGUgbW9zdCBhbm5v
-eWluZyB0aGluZyBpbiBlLW1haWw/DQo=
+Some SOCs will have two GPIO chips that require two independent drivers.  In my
+case I was working with the Zynq SOC and needed a driver for the gpios on the
+FPGA and a driver for the gpios available on the ARM core. This change allows
+for two rt gpio drivers to be built and loaded at the same time.
+The rt gpio driver will be renamed from xeno-gpio to the following:
+
+xeno-gpio-bcm2835.ko
+xeno-gpio-mxc.ko
+xeno-gpio-sun8i-h3.ko
+xeno-gpio-zynq7000.ko
+
+This also moves the gpio-core logic into the kernel image.
+---
+ kernel/drivers/gpio/Kconfig       | 12 ++++++------
+ kernel/drivers/gpio/Makefile      | 22 ++++++++++++----------
+ kernel/drivers/gpio/gpio-xilinx.c |  4 ++--
+ 3 files changed, 20 insertions(+), 18 deletions(-)
+
+diff --git a/kernel/drivers/gpio/Kconfig b/kernel/drivers/gpio/Kconfig
+index b7efa54..48475f2 100644
+--- a/kernel/drivers/gpio/Kconfig
++++ b/kernel/drivers/gpio/Kconfig
+@@ -1,7 +1,7 @@
+ menu "Real-time GPIO drivers"
+ 
+ config XENO_DRIVERS_GPIO
+-       tristate "GPIO controller"
++       bool "GPIO controller"
+        depends on GPIOLIB
+        help
+ 
+@@ -11,7 +11,7 @@ if XENO_DRIVERS_GPIO
+ 
+ config XENO_DRIVERS_GPIO_BCM2835
+ 	depends on MACH_BCM2708 || ARCH_BCM2835
+-	bool "Support for BCM2835 GPIOs"
++	tristate "Support for BCM2835 GPIOs"
+ 	help
+ 
+ 	Enables support for the GPIO controller available from
+@@ -19,7 +19,7 @@ config XENO_DRIVERS_GPIO_BCM2835
+ 
+ config XENO_DRIVERS_GPIO_MXC
+ 	depends on GPIO_MXC
+-	bool "Support for MXC GPIOs"
++	tristate "Support for MXC GPIOs"
+ 	help
+ 
+ 	Suitable for the GPIO controller available from
+@@ -27,7 +27,7 @@ config XENO_DRIVERS_GPIO_MXC
+ 
+ config XENO_DRIVERS_GPIO_SUN8I_H3
+ 	depends on MACH_SUN8I && PINCTRL_SUN8I_H3
+-	bool "Support for SUN8I H3 GPIOs"
++	tristate "Support for SUN8I H3 GPIOs"
+ 	help
+ 
+ 	Suitable for the GPIO controller available from Allwinner's H3
+@@ -35,7 +35,7 @@ config XENO_DRIVERS_GPIO_SUN8I_H3
+ 
+ config XENO_DRIVERS_GPIO_ZYNQ7000
+ 	depends on ARCH_ZYNQ
+-	bool "Support for Zynq7000 GPIOs"
++	tristate "Support for Zynq7000 GPIOs"
+ 	help
+ 
+ 	Enables support for the GPIO controller available from
+@@ -43,7 +43,7 @@ config XENO_DRIVERS_GPIO_ZYNQ7000
+ 
+ config XENO_DRIVERS_GPIO_XILINX
+ 	depends on ARCH_ZYNQ
+-	bool "Support for Xilinx GPIOs"
++	tristate "Support for Xilinx GPIOs"
+ 	help
+ 
+ 	Enables support for the GPIO controller available from
+diff --git a/kernel/drivers/gpio/Makefile b/kernel/drivers/gpio/Makefile
+index 3737330..8648fcc 100644
+--- a/kernel/drivers/gpio/Makefile
++++ b/kernel/drivers/gpio/Makefile
+@@ -1,12 +1,14 @@
+ ccflags-$(CONFIG_XENO_DRIVERS_GPIO_DEBUG) := -DDEBUG
+ 
+-obj-$(CONFIG_XENO_DRIVERS_GPIO) += xeno_gpio.o
+-
+-xeno_gpio-y := gpio-core.o
+-
+-xeno_gpio-$(CONFIG_XENO_DRIVERS_GPIO_BCM2835) += gpio-bcm2835.o
+-xeno_gpio-$(CONFIG_XENO_DRIVERS_GPIO_MXC) += gpio-mxc.o
+-xeno_gpio-$(CONFIG_XENO_DRIVERS_GPIO_SUN8I_H3) += gpio-sun8i-h3.o
+-xeno_gpio-$(CONFIG_XENO_DRIVERS_GPIO_ZYNQ7000) += gpio-zynq7000.o
+-xeno_gpio-$(CONFIG_XENO_DRIVERS_GPIO_XILINX) += gpio-xilinx.o
+-
++obj-$(CONFIG_XENO_DRIVERS_GPIO_BCM2835) += xeno-gpio-bcm2835.o
++obj-$(CONFIG_XENO_DRIVERS_GPIO_MXC) += xeno-gpio-mxc.o
++obj-$(CONFIG_XENO_DRIVERS_GPIO_SUN8I_H3) += xeno-gpio-sun8i-h3.o
++obj-$(CONFIG_XENO_DRIVERS_GPIO_ZYNQ7000) += xeno-gpio-zynq7000.o
++obj-$(CONFIG_XENO_DRIVERS_GPIO_XILINX) += xeno-gpio-xilinx.o
++obj-$(CONFIG_XENO_DRIVERS_GPIO) += gpio-core.o
++
++xeno-gpio-bcm2835-y := gpio-bcm2835.o
++xeno-gpio-mxc-y := gpio-mxc.o
++xeno-gpio-sun8i-h3-y := gpio-sun8i-h3.o
++xeno-gpio-zynq7000-y := gpio-zynq7000.o
++xeno-gpio-xilinx-y := gpio-xilinx.o
+diff --git a/kernel/drivers/gpio/gpio-xilinx.c b/kernel/drivers/gpio/gpio-xilinx.c
+index 72d4364..e982f5f 100644
+--- a/kernel/drivers/gpio/gpio-xilinx.c
++++ b/kernel/drivers/gpio/gpio-xilinx.c
+@@ -19,13 +19,13 @@
+  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+  */
+ #include <linux/module.h>
+-#include "gpio-core.h"
++#include <rtdm/gpio.h>
+ 
+ #define RTDM_SUBCLASS_XILINX  5
+ 
+ static int __init xilinx_gpio_init(void)
+ {
+- 	return rtdm_gpiochip_scan_of(NULL, "xlnx,xps-gpio-1.00.a",
++	return rtdm_gpiochip_scan_of(NULL, "xlnx,xps-gpio-1.00.a",
+                      RTDM_SUBCLASS_XILINX);
+ }
+ module_init(xilinx_gpio_init);
+-- 
+2.7.4
+
 
