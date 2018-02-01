@@ -1,14 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <9e78d306-dab0-e091-b535-2a4b0bddd178@xenomai.org>
-References: <1517366181-6547-1-git-send-email-greg@embeddedgreg.com>
- <1517366181-6547-2-git-send-email-greg@embeddedgreg.com>
- <9e78d306-dab0-e091-b535-2a4b0bddd178@xenomai.org>
+In-Reply-To: <7f31d707-5a9d-8407-d48f-6093d1ccd7f1@xenomai.org>
+References: <1517365725-4608-1-git-send-email-greg@embeddedgreg.com>
+ <7f31d707-5a9d-8407-d48f-6093d1ccd7f1@xenomai.org>
 From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Thu, 1 Feb 2018 10:21:53 -0500
-Message-ID: <CALLqZ8QbDO3dBhd5AXJWUoFp67PJjDB1eKawjortwJHsB8FbBA@mail.gmail.com>
+Date: Thu, 1 Feb 2018 10:26:35 -0500
+Message-ID: <CALLqZ8RgiLys92todoYYhZUbnp3YbpTDQiY0YREpZdqSTAH_Zg@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Subject: Re: [Xenomai] [PATCH 2/3] Handle device paths from the device tree
- that start with a forward slash
+Subject: Re: [Xenomai] [PATCH] Fix up the imx uart driver so it now compiles
+ with new kernels.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,43 +19,21 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: "Xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Yep, sorry I thought I removed that. Will update
+Makes sense, after the fact I realized this would diverge from the
+mainline structs.  Will fix up and update.
 
-On Thu, Feb 1, 2018 at 5:29 AM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On 01/31/2018 03:36 AM, Greg Gallagher wrote:
->> If the device name from the device tree starts with a forward slash (/) the
->> rtdm device stores it in the registry including the forward slash.  When we
->> go to use that device and do the registry lookup we use a relative path from
->> /dev/rtdm which doesn't contain the forward slash and fails to find a match.
->> Open won't return an error but IO calls will fail.  To fix this when we
->> register an RTDM device skip the first character if it's a forward slash.
->>
->> In my case the path from the device tree is
->>         /amba_pl/gpio@41200000/gpio905
->> which gets stored in the registry. When we want to use the device and look up
->> the device path in the registry we use
->>         amba_pl/gpio@41200000/gpio905
->> which won't find a match in the registry.
->>
+On Thu, Feb 1, 2018 at 5:02 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+> On 01/31/2018 03:28 AM, Greg Gallagher wrote:
+>> This patch is based on one that was submitted by Wolfgang Netbal back in Feb
+>> 2016 but a formal patch was never submitted.
+>> I added a couple small changes (style errors and imx7 define) and tested on a
+>> imx7d board. One quick note, the IMX7D define may not really be needed since
+>> most imx7 uarts look to be compatible with imx6.
 >
-> Good catch, thanks.
->
->> Tested on Zynq7000 gpio drivers
->> ---
->>  kernel/cobalt/rtdm/device.c | 14 +++++++++++---
->>  1 file changed, 11 insertions(+), 3 deletions(-)
->>
->> diff --git a/kernel/cobalt/rtdm/device.c b/kernel/cobalt/rtdm/device.c
->> index 4533dfb..89e0815 100644
->> --- a/kernel/cobalt/rtdm/device.c
->> +++ b/kernel/cobalt/rtdm/device.c
->> @@ -91,9 +91,12 @@ struct rtdm_device *__rtdm_get_namedev(const char *path)
->>       if (strncmp(path, "rtdm/", 5) == 0)
->>               path += 5;
->>
->> +     printk(KERN_ERR "path to bind %s\n", path);
->
-> Debug stuff to remove before merging.
+> I would drop this additional definition. DT indeed says that imx7d uarts
+> can be handled by the i.MX serial driver as imx6q devices, and
+> fsl,imx7d-uart is a mere alias to fsl,imx6q-uart AFAICS in the mainline
+> tree up to 4.15.
 >
 > --
 > Philippe.
