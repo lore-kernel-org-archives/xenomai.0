@@ -1,11 +1,13 @@
-From: Fazio Maurizio <maurizio.fazio@leonardocompany.com>
-Date: Thu, 11 Jan 2018 15:37:40 +0000
-Message-ID: <0e3bd82f06324467932a33ca3ffe4085@ocnapvsw3301.ocr.priv>
-Content-Language: it-IT
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <1517366181-6547-1-git-send-email-greg@embeddedgreg.com>
+From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <a5753245-78d0-c9b3-d7d3-c0b79b2c57c5@xenomai.org>
+Date: Thu, 1 Feb 2018 11:26:59 +0100
 MIME-Version: 1.0
-Subject: [Xenomai] Xenomai 3.0.6 high latency
+In-Reply-To: <1517366181-6547-1-git-send-email-greg@embeddedgreg.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH 1/3] Add Xilinx AXI gpio driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,53 +16,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Greg Gallagher <greg@embeddedgreg.com>, xenomai@xenomai.org
 
-SGVsbG8sIEkganVzdCBpbnN0YWxsZWQgeGVub21haSAzLjAuNiBpbiBhIDMuMTguMjAgcGF0Y2hl
-ZCBrZXJuZWwuDQpUaGUgb3BlcmF0aW5nIHN5c3RlbSBpcyB4ODZfNjQgQ2VudG9zIDcgLg0KDQpJ
-IGV4ZWN1dGVkIHRoZSBsYXRlbmN5IHRlc3QgYW5kIGFmdGVyIGFib3V0IDE1IG1pbnV0ZXMsIHRo
-ZSAgcmVzdWx0IHNob3dzIHRoYXQgdGhlIHdvcnN0IGxhdGVuY3kgdGltZSBpcyAxNDguNTcwIHVz
-Li4uDQoNCkJlZm9yZSB0aGlzIHRlc3QgSSBleGVjdXRlZCB0aGUgYXV0b3R1bmUgYXBwbGljYXRp
-b24gd2l0aCBkZWZhdWx0IG9wdGlvbnMuIEFzIHJlc3VsdCB0aGUgIC9wcm9jL3hlbm9tYWkvY2xv
-Y2svY29yZWNsayBpcyBjb25maWd1cmVkIGFzIGZvbGxvdzoNCg0KZ3Jhdml0eTogaXJxPTAga2Vy
-bmVsPTk5OSB1c2VyPTQ5OQ0KZGV2aWNlczogdGltZXI9bGFwaWMsIGNsb2NrPXRzYw0KIHN0YXR1
-czogb24NCiAgc2V0dXA6IDExMw0KICB0aWNrczogMTc2NTEyMjk2ODk5OTIgKDEwMGQgYmY0Njg4
-ODgpDQoNCkhhdmUgeW91IHNvbWUgYWR2aWNlcz8NCg0KTWF1cml6aW8gRmF6aW8NCg0KQ2hpZWYg
-VGVjaG5pY2FsIE9mZmljZSAvIEFpcmNyYWZ0IFN5c3RlbXMgU29mdHdhcmUgRW5naW5lZXINCg0K
-DQoNCkxlb25hcmRvIFMucC5BLg0KQy5zbyBGcmFuY2lhLCA0MjYgLSBUb3Jpbm8gLSAxMDE0NiAt
-IEl0YWx5IFRlbC4gKzM5IDAxMSA3NTYgMzMwOCAvIDM3NjENCg0KbWF1cml6aW8uZmF6aW9AbGVv
-bmFyZG9jb21wYW55LmNvbQ0Kd3d3Lmxlb25hcmRvY29tcGFueS5jb20NCg0K4oCU4oCU4oCU4oCU
-4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
-4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCT4oCU4oCU4oCU4oCU4oCU4oCUDQpIRUxJQ09Q
-VEVSUy9BRVJPTkFVVElDUy9FTEVDVFJPTklDUywgREVGRU5DRSAmIFNFQ1VSSVRZIFNZU1RFTVMv
-U1BBQ0Ug4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU
-4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCU4oCT4oCU4oCU4oCU
-4oCU4oCU4oCUDQoNCg0KDQoNCg0KQ29tcGFueSBHZW5lcmFsIFVzZQ0KDQpJbCBwcmVzZW50ZSBt
-ZXNzYWdnaW8gZS1tYWlsIGUgb2duaSBzdW8gYWxsZWdhdG8gZGV2b25vIGludGVuZGVyc2kgaW5k
-aXJpenphdGkgZXNjbHVzaXZhbWVudGUgYWwgZGVzdGluYXRhcmlvIGluZGljYXRvIGUgY29uc2lk
-ZXJhcnNpIGRhbCBjb250ZW51dG8gc3RyZXR0YW1lbnRlIHJpc2VydmF0byBlIGNvbmZpZGVuemlh
-bGUuIFNlIG5vbiBzaWV0ZSBsJ2VmZmV0dGl2byBkZXN0aW5hdGFyaW8gbyBhdmV0ZSByaWNldnV0
-byBpbCBtZXNzYWdnaW8gZS1tYWlsIHBlciBlcnJvcmUsIHNpZXRlIHByZWdhdGkgZGkgYXZ2ZXJ0
-aXJlIGltbWVkaWF0YW1lbnRlIGlsIG1pdHRlbnRlIGUgZGkgY2FuY2VsbGFyZSBpbCBzdWRkZXR0
-byBtZXNzYWdnaW8gZSBvZ25pIHN1byBhbGxlZ2F0byBkYWwgdm9zdHJvIHNpc3RlbWEgaW5mb3Jt
-YXRpY28uIFF1YWxzaWFzaSB1dGlsaXp6bywgZGlmZnVzaW9uZSwgY29waWEgbyBhcmNoaXZpYXpp
-b25lIGRlbCBwcmVzZW50ZSBtZXNzYWdnaW8gZGEgcGFydGUgZGkgY2hpIG5vbiBuZSDDqCBpbCBk
-ZXN0aW5hdGFyaW8gw6ggc3RyZXR0YW1lbnRlIHByb2liaXRvIGUgcHXDsiBkYXIgbHVvZ28gYSBy
-ZXNwb25zYWJpbGl0w6AgZGkgY2FyYXR0ZXJlIGNpdmlsZSBlIHBlbmFsZSBwdW5pYmlsaSBhaSBz
-ZW5zaSBkaSBsZWdnZS4NClF1ZXN0YSBlLW1haWwgaGEgdmFsb3JlIGxlZ2FsZSBzb2xvIHNlIGZp
-cm1hdGEgZGlnaXRhbG1lbnRlIGFpIHNlbnNpIGRlbGxhIG5vcm1hdGl2YSB2aWdlbnRlLg0KDQpU
-aGUgY29udGVudHMgb2YgdGhpcyBlbWFpbCBtZXNzYWdlIGFuZCBhbnkgYXR0YWNobWVudHMgYXJl
-IGludGVuZGVkIHNvbGVseSBmb3IgdGhlIGFkZHJlc3NlZShzKSBhbmQgY29udGFpbiBjb25maWRl
-bnRpYWwgYW5kL29yIHByaXZpbGVnZWQgaW5mb3JtYXRpb24uDQpJZiB5b3UgYXJlIG5vdCB0aGUg
-aW50ZW5kZWQgcmVjaXBpZW50IG9mIHRoaXMgbWVzc2FnZSwgb3IgaWYgdGhpcyBtZXNzYWdlIGhh
-cyBiZWVuIGFkZHJlc3NlZCB0byB5b3UgaW4gZXJyb3IsIHBsZWFzZSBpbW1lZGlhdGVseSBub3Rp
-ZnkgdGhlIHNlbmRlciBhbmQgdGhlbiBkZWxldGUgdGhpcyBtZXNzYWdlIGFuZCBhbnkgYXR0YWNo
-bWVudHMgZnJvbSB5b3VyIHN5c3RlbS4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lw
-aWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhhdCBhbnkgdXNlLCBkaXNzZW1pbmF0aW9u
-LCBjb3B5aW5nLCBvciBzdG9yYWdlIG9mIHRoaXMgbWVzc2FnZSBvciBpdHMgYXR0YWNobWVudHMg
-aXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gVW5hdXRob3JpemVkIGRpc2Nsb3N1cmUgYW5kL29yIHVz
-ZSBvZiBpbmZvcm1hdGlvbiBjb250YWluZWQgaW4gdGhpcyBlbWFpbCBtZXNzYWdlIG1heSByZXN1
-bHQgaW4gY2l2aWwgYW5kIGNyaW1pbmFsIGxpYWJpbGl0eS4g4oCcDQpUaGlzIGUtbWFpbCBoYXMg
-bGVnYWwgdmFsdWUgYWNjb3JkaW5nIHRvIHRoZSBhcHBsaWNhYmxlIGxhd3Mgb25seSBpZiBpdCBp
-cyBkaWdpdGFsbHkgc2lnbmVkIGJ5IHRoZSBzZW5kZXINCg==
+On 01/31/2018 03:36 AM, Greg Gallagher wrote:
+> ---
+>  kernel/drivers/gpio/Kconfig       | 10 +++++++++-
+>  kernel/drivers/gpio/Makefile      |  3 ++-
+>  kernel/drivers/gpio/gpio-xilinx.c | 40 +++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 51 insertions(+), 2 deletions(-)
+
+[snip]
+
+> diff --git a/kernel/drivers/gpio/gpio-xilinx.c b/kernel/drivers/gpio/gpio-xilinx.c
+> new file mode 100644
+> index 0000000..72d4364
+> --- /dev/null
+> +++ b/kernel/drivers/gpio/gpio-xilinx.c
+> @@ -0,0 +1,40 @@
+> +/**
+> + * @note Copyright (C) 2017 Greg Gallagher <greg@embeddedgreg.com>
+> + *
+> + * This driver controls the gpio that can be located on the PL
+> + * of the Zynq SOC
+> + *
+> + * This program is free software; you can redistribute it and/or
+> + * modify it under the terms of the GNU General Public License as
+> + * published by the Free Software Foundation; either version 2 of the
+> + * License, or (at your option) any later version.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + *
+> + * You should have received a copy of the GNU General Public License
+> + * along with this program; if not, write to the Free Software
+> + * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+> + */
+> +#include <linux/module.h>
+> +#include "gpio-core.h"
+> +
+
+The change below is required for this driver to build since recently,
+due to moving gpio-core.h to a public header containing the generic GPIO
+bits some client drivers may need. Other than that, this looks ok.
+
+diff --git a/kernel/drivers/gpio/gpio-xilinx.c
+b/kernel/drivers/gpio/gpio-xilinx.c
+index 72d436435..cae88b62f 100644
+--- a/kernel/drivers/gpio/gpio-xilinx.c
++++ b/kernel/drivers/gpio/gpio-xilinx.c
+@@ -19,7 +19,7 @@
+  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+02111-1307, USA.
+  */
+ #include <linux/module.h>
+-#include "gpio-core.h"
++#include <rtdm/gpio.h>
+
+ #define RTDM_SUBCLASS_XILINX  5
+
+-- 
+Philippe.
 
