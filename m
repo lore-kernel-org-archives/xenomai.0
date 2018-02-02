@@ -1,10 +1,10 @@
 From: Greg Gallagher <greg@embeddedgreg.com>
-Date: Thu,  1 Feb 2018 21:23:03 -0500
-Message-Id: <1517538184-25673-2-git-send-email-greg@embeddedgreg.com>
+Date: Thu,  1 Feb 2018 21:23:04 -0500
+Message-Id: <1517538184-25673-3-git-send-email-greg@embeddedgreg.com>
 In-Reply-To: <1517538184-25673-1-git-send-email-greg@embeddedgreg.com>
 References: <1517538184-25673-1-git-send-email-greg@embeddedgreg.com>
-Subject: [Xenomai] [PATCH 2/3] Handle device paths from the device tree that
-	start with a forward slash
+Subject: [Xenomai] [PATCH 3/3] Allow for more then one rt gpio driver to be
+	built and loaded at the same build
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,52 +15,110 @@ List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-If the device name from the device tree starts with a forward slash (/) the
-rtdm device stores it in the registry including the forward slash.  When we
-go to use that device and do the registry lookup we use a relative path from
-/dev/rtdm which doesn't contain the forward slash and fails to find a match.
-Open won't return an error but IO calls will fail.  To fix this when we
-register an RTDM device skip the first character if it's a forward slash.
+Some SOCs will have two GPIO chips that require two independent drivers.  In my
+case I was working with the Zynq SOC and needed a driver for the gpios on the
+FPGA and a driver for the gpios available on the ARM core. This change allows
+for two rt gpio drivers to be built and loaded at the same time.
+The rt gpio driver will be renamed from xeno-gpio to the following:
 
-In my case the path from the device tree is
-        /amba_pl/gpio@41200000/gpio905
-which gets stored in the registry. When we want to use the device and look up
-the device path in the registry we use
-        amba_pl/gpio@41200000/gpio905
-which won't find a match in the registry.
+xeno-gpio-bcm2835.ko
+xeno-gpio-mxc.ko
+xeno-gpio-sun8i-h3.ko
+xeno-gpio-zynq7000.ko
 
-Tested on Zynq7000 gpio drivers
+This also moves the gpio-core logic into the kernel image.
 ---
- kernel/cobalt/rtdm/device.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ kernel/drivers/gpio/Kconfig  | 12 ++++++------
+ kernel/drivers/gpio/Makefile | 22 ++++++++++++----------
+ 2 files changed, 18 insertions(+), 16 deletions(-)
 
-diff --git a/kernel/cobalt/rtdm/device.c b/kernel/cobalt/rtdm/device.c
-index 4533dfb..4cfdb1c 100644
---- a/kernel/cobalt/rtdm/device.c
-+++ b/kernel/cobalt/rtdm/device.c
-@@ -394,6 +394,7 @@ int rtdm_dev_register(struct rtdm_device *dev)
- 	int ret, major, minor;
- 	xnkey_t id;
- 	dev_t rdev;
-+	const char *dev_name;
+diff --git a/kernel/drivers/gpio/Kconfig b/kernel/drivers/gpio/Kconfig
+index b7efa54..48475f2 100644
+--- a/kernel/drivers/gpio/Kconfig
++++ b/kernel/drivers/gpio/Kconfig
+@@ -1,7 +1,7 @@
+ menu "Real-time GPIO drivers"
  
- 	secondary_mode_only();
+ config XENO_DRIVERS_GPIO
+-       tristate "GPIO controller"
++       bool "GPIO controller"
+        depends on GPIOLIB
+        help
  
-@@ -446,8 +447,12 @@ int rtdm_dev_register(struct rtdm_device *dev)
- 			ret = -ENOMEM;
- 			goto fail;
- 		}
+@@ -11,7 +11,7 @@ if XENO_DRIVERS_GPIO
+ 
+ config XENO_DRIVERS_GPIO_BCM2835
+ 	depends on MACH_BCM2708 || ARCH_BCM2835
+-	bool "Support for BCM2835 GPIOs"
++	tristate "Support for BCM2835 GPIOs"
+ 	help
+ 
+ 	Enables support for the GPIO controller available from
+@@ -19,7 +19,7 @@ config XENO_DRIVERS_GPIO_BCM2835
+ 
+ config XENO_DRIVERS_GPIO_MXC
+ 	depends on GPIO_MXC
+-	bool "Support for MXC GPIOs"
++	tristate "Support for MXC GPIOs"
+ 	help
+ 
+ 	Suitable for the GPIO controller available from
+@@ -27,7 +27,7 @@ config XENO_DRIVERS_GPIO_MXC
+ 
+ config XENO_DRIVERS_GPIO_SUN8I_H3
+ 	depends on MACH_SUN8I && PINCTRL_SUN8I_H3
+-	bool "Support for SUN8I H3 GPIOs"
++	tristate "Support for SUN8I H3 GPIOs"
+ 	help
+ 
+ 	Suitable for the GPIO controller available from Allwinner's H3
+@@ -35,7 +35,7 @@ config XENO_DRIVERS_GPIO_SUN8I_H3
+ 
+ config XENO_DRIVERS_GPIO_ZYNQ7000
+ 	depends on ARCH_ZYNQ
+-	bool "Support for Zynq7000 GPIOs"
++	tristate "Support for Zynq7000 GPIOs"
+ 	help
+ 
+ 	Enables support for the GPIO controller available from
+@@ -43,7 +43,7 @@ config XENO_DRIVERS_GPIO_ZYNQ7000
+ 
+ config XENO_DRIVERS_GPIO_XILINX
+ 	depends on ARCH_ZYNQ
+-	bool "Support for Xilinx GPIOs"
++	tristate "Support for Xilinx GPIOs"
+ 	help
+ 
+ 	Enables support for the GPIO controller available from
+diff --git a/kernel/drivers/gpio/Makefile b/kernel/drivers/gpio/Makefile
+index 3737330..8648fcc 100644
+--- a/kernel/drivers/gpio/Makefile
++++ b/kernel/drivers/gpio/Makefile
+@@ -1,12 +1,14 @@
+ ccflags-$(CONFIG_XENO_DRIVERS_GPIO_DEBUG) := -DDEBUG
+ 
+-obj-$(CONFIG_XENO_DRIVERS_GPIO) += xeno_gpio.o
 -
--		ret = xnregistry_enter(dev->name, dev,
-+		if (dev->name[0] == '/') {
-+			dev_name = dev->name+1;
-+		} else {
-+			dev_name = dev->name;
-+		}
-+		ret = xnregistry_enter(dev_name, dev,
- 				       &dev->named.handle, NULL);
- 		if (ret)
- 			goto fail;
+-xeno_gpio-y := gpio-core.o
+-
+-xeno_gpio-$(CONFIG_XENO_DRIVERS_GPIO_BCM2835) += gpio-bcm2835.o
+-xeno_gpio-$(CONFIG_XENO_DRIVERS_GPIO_MXC) += gpio-mxc.o
+-xeno_gpio-$(CONFIG_XENO_DRIVERS_GPIO_SUN8I_H3) += gpio-sun8i-h3.o
+-xeno_gpio-$(CONFIG_XENO_DRIVERS_GPIO_ZYNQ7000) += gpio-zynq7000.o
+-xeno_gpio-$(CONFIG_XENO_DRIVERS_GPIO_XILINX) += gpio-xilinx.o
+-
++obj-$(CONFIG_XENO_DRIVERS_GPIO_BCM2835) += xeno-gpio-bcm2835.o
++obj-$(CONFIG_XENO_DRIVERS_GPIO_MXC) += xeno-gpio-mxc.o
++obj-$(CONFIG_XENO_DRIVERS_GPIO_SUN8I_H3) += xeno-gpio-sun8i-h3.o
++obj-$(CONFIG_XENO_DRIVERS_GPIO_ZYNQ7000) += xeno-gpio-zynq7000.o
++obj-$(CONFIG_XENO_DRIVERS_GPIO_XILINX) += xeno-gpio-xilinx.o
++obj-$(CONFIG_XENO_DRIVERS_GPIO) += gpio-core.o
++
++xeno-gpio-bcm2835-y := gpio-bcm2835.o
++xeno-gpio-mxc-y := gpio-mxc.o
++xeno-gpio-sun8i-h3-y := gpio-sun8i-h3.o
++xeno-gpio-zynq7000-y := gpio-zynq7000.o
++xeno-gpio-xilinx-y := gpio-xilinx.o
 -- 
 2.7.4
 
