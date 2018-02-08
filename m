@@ -1,14 +1,13 @@
-References: <EB4794275C0C904BBABD6840AB8DC22D0598637E@DENBGAT9EL2MSX.ww902.siemens.net>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <01691a1a-f661-4c0b-890f-d83038b25344@siemens.com>
-Date: Thu, 8 Feb 2018 09:22:18 +0100
-MIME-Version: 1.0
-In-Reply-To: <EB4794275C0C904BBABD6840AB8DC22D0598637E@DENBGAT9EL2MSX.ww902.siemens.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Merging v4.4.108 into I-Pipe,
-	issue with switch_mm on x86
+Message-ID: <1518078950.2970.3.camel@sprinte.eu>
+From: Julien Blanc <julien.blanc@sprinte.eu>
+Date: Thu, 08 Feb 2018 09:35:50 +0100
+In-Reply-To: <b7dd0f59-098c-25b4-46e8-ca60250c01cd@xenomai.org>
+References: <1517561505.2571.7.camel@sprinte.eu>
+ <b7dd0f59-098c-25b4-46e8-ca60250c01cd@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Multiplexing and rtcan socket
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <https://xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,40 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Sudler, Simon (PD PA CI R&D 3)" <simon.sudler@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 2018-02-08 09:12, Sudler, Simon (PD PA CI R&D 3) wrote:
-> Hi Guys,
-> 
-> I was just about to merging the v4.4.108 tag into the I-Pipe branch when I fall over these 4
-> commits from Andy Lutomirski:
-> 
-> git log --oneline dfe513a4e8ddde75ffc6abd3f139c5d65bf925d7..4ead44fd2525ed97e5362a806d312a0e3b0ea445
-> 4ead44fd2525 x86/mm, sched/core: Turn off IRQs in switch_mm()
-> 70a39c7fd167 x86/mm, sched/core: Uninline switch_mm()
-> 83cc4b50e3a9 x86/mm: Build arch/x86/mm/tlb.c even on !SMP
-> 425f13a36652 sched/core: Add switch_mm_irqs_off() and use it in the scheduler
-> 
-> He introduces a switch_mm_irqs_off function and turns IRQs of inside the switch_mm function. In
-> the switch_mm case local_irq_save/restore is to handle the interrupt flags.
-> 
-> In the I-Pipe case, the switch_mm functions was renamed to __switch_mm which then handels the
-> irq flags with hard_cond_local_irq_save/restore.
-> 
-> So my question is: Is this double saving and restoring of the flags useful in the I-Pipe case? Maybe
-> the the hard_cond_local_irq_save/restore can be moved to the local_irq_save/restore to have the
-> irq flag handling at one place.
+Le dimanche 04 février 2018 à 10:58 +0100, Philippe Gerum a écrit :
+> On 02/02/2018 09:51 AM, Julien Blanc wrote:
+> > 
+> > I'm trying to use multiplexing wih rtcan sockets (using
+> > xeno_can_flexcan driver).
+> > 
+> > 
+> > Is it unsupported, or am i doing something wrong ? (like a missing
+> > parameter). Sample code to reproduce the issue is attached.
+> > 
+> The RTCAN stack predates the implementation of select(), and was
+> never 
+> updated to provide this, hence ENODEV. If somebody volunteers to
+> provide 
+> this, this should likely go into the code implementing the raw CAN
+> socket.
 
-Oops, when chatting with you, I totally forgot that I already did a 109
-merge last month, just didn't find enough time to test. Now that you are
-mentioning this concrete conflict, I started to remember. Please have a
-look at
-http://git.xenomai.org/ipipe-jki.git/log/?h=for-upstream/4.4-update.
-That version /seems/ to work.
+Thanks for your answer. I unfortunately will have no time to spend on
+this in the near future, since this is not a critical issue for us.
 
-Jan
+I'll look into it when possible, though, it would be a very nice to
+have feature.
 
--- 
-Siemens AG, Corporate Technology, CT RDA IOT SES-DE
-Corporate Competence Center Embedded Linux
+Regards,
+
+Julien
 
