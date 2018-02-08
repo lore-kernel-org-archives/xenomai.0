@@ -1,13 +1,14 @@
-From: "Sudler, Simon" <simon.sudler@siemens.com>
-Date: Thu, 8 Feb 2018 09:46:27 +0000
-Message-ID: <EB4794275C0C904BBABD6840AB8DC22D05986505@DENBGAT9EL2MSX.ww902.siemens.net>
 References: <EB4794275C0C904BBABD6840AB8DC22D0598637E@DENBGAT9EL2MSX.ww902.siemens.net>
  <01691a1a-f661-4c0b-890f-d83038b25344@siemens.com>
-In-Reply-To: <01691a1a-f661-4c0b-890f-d83038b25344@siemens.com>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <EB4794275C0C904BBABD6840AB8DC22D05986505@DENBGAT9EL2MSX.ww902.siemens.net>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <9cd25122-adc5-735f-0bdc-fb22028bc2ed@siemens.com>
+Date: Thu, 8 Feb 2018 13:52:51 +0100
 MIME-Version: 1.0
+In-Reply-To: <EB4794275C0C904BBABD6840AB8DC22D05986505@DENBGAT9EL2MSX.ww902.siemens.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Merging v4.4.108 into I-Pipe,
 	issue with switch_mm on x86
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,42 +19,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <https://xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, "Kiszka, Jan" <jan.kiszka@siemens.com>
+To: "Sudler, Simon (PD PA CI R&D 3)" <simon.sudler@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-PiBKYW4gS2lzemthIHdyb3RlOg0KPiANCj4gT24gMjAxOC0wMi0wOCAwOToxMiwgU3VkbGVyLCBT
-aW1vbiAoUEQgUEEgQ0kgUiZEIDMpIHdyb3RlOg0KPiA+IEhpIEd1eXMsDQo+ID4NCj4gPiBJIHdh
-cyBqdXN0IGFib3V0IHRvIG1lcmdpbmcgdGhlIHY0LjQuMTA4IHRhZyBpbnRvIHRoZSBJLVBpcGUg
-YnJhbmNoIHdoZW4gSSBmYWxsIG92ZXIgdGhlc2UgNA0KPiA+IGNvbW1pdHMgZnJvbSBBbmR5IEx1
-dG9taXJza2k6DQo+ID4NCj4gPiBnaXQgbG9nIC0tb25lbGluZSBkZmU1MTNhNGU4ZGRkZTc1ZmZj
-NmFiZDNmMTM5YzVkNjViZjkyNWQ3Li40ZWFkNDRmZDI1MjVlZDk3ZTUzNjJhODA2ZDMxMmEwZTNi
-MGVhNDQ1DQo+ID4gNGVhZDQ0ZmQyNTI1IHg4Ni9tbSwgc2NoZWQvY29yZTogVHVybiBvZmYgSVJR
-cyBpbiBzd2l0Y2hfbW0oKQ0KPiA+IDcwYTM5YzdmZDE2NyB4ODYvbW0sIHNjaGVkL2NvcmU6IFVu
-aW5saW5lIHN3aXRjaF9tbSgpDQo+ID4gODNjYzRiNTBlM2E5IHg4Ni9tbTogQnVpbGQgYXJjaC94
-ODYvbW0vdGxiLmMgZXZlbiBvbiAhU01QDQo+ID4gNDI1ZjEzYTM2NjUyIHNjaGVkL2NvcmU6IEFk
-ZCBzd2l0Y2hfbW1faXJxc19vZmYoKSBhbmQgdXNlIGl0IGluIHRoZSBzY2hlZHVsZXINCj4gPg0K
-PiA+IEhlIGludHJvZHVjZXMgYSBzd2l0Y2hfbW1faXJxc19vZmYgZnVuY3Rpb24gYW5kIHR1cm5z
-IElSUXMgb2YgaW5zaWRlIHRoZSBzd2l0Y2hfbW0gZnVuY3Rpb24uIEluDQo+ID4gdGhlIHN3aXRj
-aF9tbSBjYXNlIGxvY2FsX2lycV9zYXZlL3Jlc3RvcmUgaXMgdG8gaGFuZGxlIHRoZSBpbnRlcnJ1
-cHQgZmxhZ3MuDQo+ID4NCj4gPiBJbiB0aGUgSS1QaXBlIGNhc2UsIHRoZSBzd2l0Y2hfbW0gZnVu
-Y3Rpb25zIHdhcyByZW5hbWVkIHRvIF9fc3dpdGNoX21tIHdoaWNoIHRoZW4gaGFuZGVscyB0aGUN
-Cj4gPiBpcnEgZmxhZ3Mgd2l0aCBoYXJkX2NvbmRfbG9jYWxfaXJxX3NhdmUvcmVzdG9yZS4NCj4g
-Pg0KPiA+IFNvIG15IHF1ZXN0aW9uIGlzOiBJcyB0aGlzIGRvdWJsZSBzYXZpbmcgYW5kIHJlc3Rv
-cmluZyBvZiB0aGUgZmxhZ3MgdXNlZnVsIGluIHRoZSBJLVBpcGUgY2FzZT8gTWF5YmUNCj4gPiB0
-aGUgdGhlIGhhcmRfY29uZF9sb2NhbF9pcnFfc2F2ZS9yZXN0b3JlIGNhbiBiZSBtb3ZlZCB0byB0
-aGUgbG9jYWxfaXJxX3NhdmUvcmVzdG9yZSB0byBoYXZlIHRoZQ0KPiA+IGlycSBmbGFnIGhhbmRs
-aW5nIGF0IG9uZSBwbGFjZS4NCj4gDQo+IE9vcHMsIHdoZW4gY2hhdHRpbmcgd2l0aCB5b3UsIEkg
-dG90YWxseSBmb3Jnb3QgdGhhdCBJIGFscmVhZHkgZGlkIGEgMTA5DQo+IG1lcmdlIGxhc3QgbW9u
-dGgsIGp1c3QgZGlkbid0IGZpbmQgZW5vdWdoIHRpbWUgdG8gdGVzdC4gTm93IHRoYXQgeW91IGFy
-ZQ0KPiBtZW50aW9uaW5nIHRoaXMgY29uY3JldGUgY29uZmxpY3QsIEkgc3RhcnRlZCB0byByZW1l
-bWJlci4gUGxlYXNlIGhhdmUgYQ0KPiBsb29rIGF0DQo+IGh0dHA6Ly9naXQueGVub21haS5vcmcv
-aXBpcGUtamtpLmdpdC9sb2cvP2g9Zm9yLXVwc3RyZWFtLzQuNC11cGRhdGUuDQo+IFRoYXQgdmVy
-c2lvbiAvc2VlbXMvIHRvIHdvcmsuDQoNCk9rYXksIHlvdSBhZGRlZCB0aGUgIl9fIiB0byB0aGUg
-c3dpdGNoX21tX2lycXNfb2ZmLiBXb3VsZG4ndCBpdCBiZSBlYXNpZXIgdG8ganVzdCBhZGQNCg0K
-dm9pZCBzd2l0Y2hfbW1faXJxc19vZmYoc3RydWN0IG1tX3N0cnVjdCAqcHJldiwgc3RydWN0IG1t
-X3N0cnVjdCAqbmV4dCwNCgkJCSAgc3RydWN0IHRhc2tfc3RydWN0ICp0c2spDQp7DQojaWZkZWYg
-Q09ORklHX0lQSVBFDQoJdW5zaWduZWQgbG9uZyBmbGFncyA9IGhhcmRfY29uZF9sb2NhbF9pcnFf
-c2F2ZSgpOw0KI2VuZGlmIC8qIENPTkZJR19JUElQRSAqLw0KDQoJdW5zaWduZWQgY3B1ID0gc21w
-X3Byb2Nlc3Nvcl9pZCgpOw0KDQoNCnRvIHRoZSBtbS90bGIuYyBhbmQgcmVzdG9yZSB0aGVtIGF0
-IHRoZSBlbmQgb2YgdGhlIGZ1bmN0aW9uPyBUaGVuIHdlIGNvdWxkIGxlYWYgdGhlDQptbWNfY29u
-dGV4dC5oIHVudG91Y2hlZC4NCg0KU2ltb24NCg==
+On 2018-02-08 10:46, Sudler, Simon (PD PA CI R&D 3) wrote:
+>> Jan Kiszka wrote:
+>>
+>> On 2018-02-08 09:12, Sudler, Simon (PD PA CI R&D 3) wrote:
+>>> Hi Guys,
+>>>
+>>> I was just about to merging the v4.4.108 tag into the I-Pipe branch when I fall over these 4
+>>> commits from Andy Lutomirski:
+>>>
+>>> git log --oneline dfe513a4e8ddde75ffc6abd3f139c5d65bf925d7..4ead44fd2525ed97e5362a806d312a0e3b0ea445
+>>> 4ead44fd2525 x86/mm, sched/core: Turn off IRQs in switch_mm()
+>>> 70a39c7fd167 x86/mm, sched/core: Uninline switch_mm()
+>>> 83cc4b50e3a9 x86/mm: Build arch/x86/mm/tlb.c even on !SMP
+>>> 425f13a36652 sched/core: Add switch_mm_irqs_off() and use it in the scheduler
+>>>
+>>> He introduces a switch_mm_irqs_off function and turns IRQs of inside the switch_mm function. In
+>>> the switch_mm case local_irq_save/restore is to handle the interrupt flags.
+>>>
+>>> In the I-Pipe case, the switch_mm functions was renamed to __switch_mm which then handels the
+>>> irq flags with hard_cond_local_irq_save/restore.
+>>>
+>>> So my question is: Is this double saving and restoring of the flags useful in the I-Pipe case? Maybe
+>>> the the hard_cond_local_irq_save/restore can be moved to the local_irq_save/restore to have the
+>>> irq flag handling at one place.
+>>
+>> Oops, when chatting with you, I totally forgot that I already did a 109
+>> merge last month, just didn't find enough time to test. Now that you are
+>> mentioning this concrete conflict, I started to remember. Please have a
+>> look at
+>> http://git.xenomai.org/ipipe-jki.git/log/?h=for-upstream/4.4-update.
+>> That version /seems/ to work.
+> 
+> Okay, you added the "__" to the switch_mm_irqs_off. Wouldn't it be easier to just add
+> 
+> void switch_mm_irqs_off(struct mm_struct *prev, struct mm_struct *next,
+> 			  struct task_struct *tsk)
+> {
+> #ifdef CONFIG_IPIPE
+> 	unsigned long flags = hard_cond_local_irq_save();
+> #endif /* CONFIG_IPIPE */
+> 
+> 	unsigned cpu = smp_processor_id();
+> 
+> 
+> to the mm/tlb.c and restore them at the end of the function? Then we could leaf the
+> mmc_context.h untouched.
+> 
+
+This could be done (btw, #ifdef is unneeded), but it would redundantly
+disable/restore IRQs for all the callers of __switch_mm_irqs_off that
+already have hard IRQs off (if you find one in my merge that have them
+on, please let me know!).
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA IOT SES-DE
+Corporate Competence Center Embedded Linux
 
